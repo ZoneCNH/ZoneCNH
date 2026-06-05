@@ -100,11 +100,49 @@ Go 🐹 (主要) · Rust 🦀 (底层) · Python 🐍 (脚本/数据) · TypeScr
 | [jin10](https://github.com/ZoneCNH/jin10) | 金十快讯 |
 | [yahoo](https://github.com/ZoneCNH/yahoo) | Yahoo Finance |
 
-### 决策域 · 策略引擎
+### 数据域 · alternative-data（另类数据）
 
 | 项目 | 说明 |
 |------|------|
+| [alternative-data](https://github.com/ZoneCNH/alternative-data) | 链上数据、社交情绪、新闻 NLP |
+
+### 分析域
+
+| 项目 | 说明 |
+|------|------|
+| [factor-engine](https://github.com/ZoneCNH/factor-engine) | 因子计算引擎 |
+| [feature-store](https://github.com/ZoneCNH/feature-store) | 特征存储与版本管理 |
+| [factor-eval](https://github.com/ZoneCNH/factor-eval) | 因子评估 |
+
+### 决策域
+
+| 项目 | 说明 |
+|------|------|
+| [signal-factory](https://github.com/ZoneCNH/signal-factory) | 信号生成与组合 |
+| [backtest-engine](https://github.com/ZoneCNH/backtest-engine) | 事件驱动回测引擎 |
+| [optimizer](https://github.com/ZoneCNH/optimizer) | 参数优化 |
 | [strategies](https://github.com/ZoneCNH/strategies) | 策略引擎与信号生成 |
+
+### 执行域
+
+| 项目 | 说明 |
+|------|------|
+| [risk-engine](https://github.com/ZoneCNH/risk-engine) | 风险管理引擎 |
+| [order-engine](https://github.com/ZoneCNH/order-engine) | 订单执行引擎 |
+| [portfolio-engine](https://github.com/ZoneCNH/portfolio-engine) | 投资组合管理 |
+| [settlement](https://github.com/ZoneCNH/settlement) | 结算与对账 |
+
+### 横切
+
+| 项目 | 说明 |
+|------|------|
+| [alertx](https://github.com/ZoneCNH/alertx) | 告警引擎 |
+
+### 入口
+
+| 项目 | 说明 |
+|------|------|
+| [x.go](https://github.com/ZoneCNH/x.go) | 主程序，编排所有引擎 |
 
 ### 🦀 Rust
 
