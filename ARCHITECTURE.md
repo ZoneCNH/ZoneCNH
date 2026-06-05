@@ -143,7 +143,7 @@
 | 决策域 | [signal-factory](https://github.com/ZoneCNH/signal-factory) | 🔨 已创建 | 多因子信号生成、过滤、评分 |
 | 决策域 | [backtest-engine](https://github.com/ZoneCNH/backtest-engine) | 🔨 已创建 | 事件驱动回测、Tick 级回放 |
 | 决策域 | [optimizer](https://github.com/ZoneCNH/optimizer) | 🔨 已创建 | 参数搜索、Walk-forward 验证 |
-| 决策域 | [strategies](https://github.com/ZoneCNH/strategies) | ✅ 已有 | FMZ 策略集合 |
+| 决策域 | [strategies](https://github.com/ZoneCNH/strategies) | ✅ 已有 | 策略研究与参考库 |
 | 执行域 | [risk-engine](https://github.com/ZoneCNH/risk-engine) | 🔨 已创建 | VaR、止损、持仓限额、压力测试 |
 | 执行域 | [order-engine](https://github.com/ZoneCNH/order-engine) | 🔨 已创建 | 智能路由、TWAP/VWAP、滑点控制 |
 | 执行域 | [portfolio-engine](https://github.com/ZoneCNH/portfolio-engine) | 🔨 已创建 | 多策略资金分配、再平衡 |
