@@ -9,6 +9,8 @@ Go 🐹 (主要) · Rust 🦀 (底层) · Python 🐍 (脚本/数据) · TypeScr
 ## 🏗️ 分层架构
 
 > 📐 完整依赖拓扑、域间关系与子模块明细 → **[ARCHITECTURE.md](./ARCHITECTURE.md)**
+>
+> 📊 项目状态监控、健康度与风险追踪 → **[STATUS.md](./STATUS.md)**
 
 ```
 基座: xlib-standard → kernel → configx/observex/testkitx/resiliencx/schedulex
