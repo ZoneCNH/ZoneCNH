@@ -8,7 +8,7 @@ Go 🐹 (主要) · Rust 🦀 (底层) · Python 🐍 (脚本/数据) · TypeScr
 
 ## 🏗️ 分层架构
 
-> 📐 完整依赖拓扑、Mermaid 图与子模块明细 → **[ARCHITECTURE.md](./ARCHITECTURE.md)**
+> 📐 完整依赖拓扑、架构图与子模块明细 → **[ARCHITECTURE.md](./ARCHITECTURE.md)**
 
 ```
 xlib-standard
@@ -16,9 +16,11 @@ xlib-standard
     → L1: configx / observex / testkitx / resiliencx / schedulex
     → L2: redisx / kafkax / natsx / postgresx / taosx / ossx / clickhousex
     → L3: contracts
-    → L4: xgo-market-data (14) / xgo-macro-data (10)
-    → L5: strategies
-    → L6: x.go
+    → L4: xgo-market-data (14) / xgo-macro-data (10) / xgo-alternative-data
+    → L4.5: factor-engine / feature-store / factor-eval
+    → L5: signal-factory / backtest-engine / optimizer
+    → L5.5: risk-engine / order-engine / portfolio-engine
+    → L6: x.go / settlement / dashboard / alertx
 ```
 
 ## 📦 核心项目
