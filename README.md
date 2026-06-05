@@ -16,7 +16,7 @@ Go 🐹 (主要) · Rust 🦀 (底层) · Python 🐍 (脚本/数据) · TypeScr
                              → contracts
       │
       ▼
-数据域: xgo-market-data (14) / xgo-macro-data (10) / xgo-alternative-data
+数据域: market-data (14) / macro-data (10) / alternative-data
       │
       ▼
 分析域: factor-engine ◄──► feature-store ◄──► factor-eval
@@ -66,7 +66,7 @@ Go 🐹 (主要) · Rust 🦀 (底层) · Python 🐍 (脚本/数据) · TypeScr
 |------|------|
 | [contracts](https://github.com/ZoneCNH/contracts) | 跨模块接口与协议定义 |
 
-### 数据域 · xgo-market-data（行情数据）
+### 数据域 · market-data（行情数据）
 
 | 项目 | 交易所/数据源 |
 |------|--------|
@@ -85,7 +85,7 @@ Go 🐹 (主要) · Rust 🦀 (底层) · Python 🐍 (脚本/数据) · TypeScr
 | [coinglass](https://github.com/ZoneCNH/coinglass) | Coinglass 加密货币数据 |
 | [yield-curve](https://github.com/ZoneCNH/yield-curve) | 收益率曲线 |
 
-### 数据域 · xgo-macro-data（宏观数据）
+### 数据域 · macro-data（宏观数据）
 
 | 项目 | 数据源 |
 |------|--------|
