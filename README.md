@@ -35,7 +35,7 @@ Go 🐹 (主要) · Rust 🦀 (底层) · Python 🐍 (脚本/数据) · TypeScr
 
 ## 📦 核心项目
 
-### 基座
+### 基座 · 基础设施
 
 - [kernel](https://github.com/ZoneCNH/kernel) — 核心基础框架
 - [configx](https://github.com/ZoneCNH/configx) — 配置管理模块
@@ -43,8 +43,11 @@ Go 🐹 (主要) · Rust 🦀 (底层) · Python 🐍 (脚本/数据) · TypeScr
 - [observex](https://github.com/ZoneCNH/observex) — 可观测性模块
 - [schedulex](https://github.com/ZoneCNH/schedulex) — 调度任务模块
 - [testkitx](https://github.com/ZoneCNH/testkitx) — 测试工具包
-- [xlib-standard](https://github.com/ZoneCNH/xlib-standard) — 基础库规范
+- [xlib-standard](https://github.com/ZoneCNH/xlib-standard) — 基础库规范（基座的前置依赖）
 - [xlibgate](https://github.com/ZoneCNH/xlibgate) — 门禁与验证运行时
+
+### 基座 · 存储与中间件
+
 - [postgresx](https://github.com/ZoneCNH/postgresx) — PostgreSQL 模块
 - [redisx](https://github.com/ZoneCNH/redisx) — Redis 模块
 - [clickhousex](https://github.com/ZoneCNH/clickhousex) — ClickHouse 模块
@@ -52,14 +55,21 @@ Go 🐹 (主要) · Rust 🦀 (底层) · Python 🐍 (脚本/数据) · TypeScr
 - [kafkax](https://github.com/ZoneCNH/kafkax) — Kafka 模块
 - [natsx](https://github.com/ZoneCNH/natsx) — NATS 内部通信模块
 - [ossx](https://github.com/ZoneCNH/ossx) — 对象存储 (OSS) 模块
+
+### 基座 · 契约层
+
 - [contracts](https://github.com/ZoneCNH/contracts) — 跨模块接口与协议定义
+
+### L2.5 · 领域共享层
+
 - [decimalx](https://github.com/ZoneCNH/decimalx) — 高精度十进制类型（Decimal/Price/Qty/Ratio/Money）
 - [domain-market](https://github.com/ZoneCNH/domain-market) — 市场数据域模型（Tick/Quote/Bar/OrderBook）
 - [domain-exchange](https://github.com/ZoneCNH/domain-exchange) — 交易域模型（VenueAdapter 13 方法接口）
 - [domain-macro](https://github.com/ZoneCNH/domain-macro) — 宏观数据域模型（MacroPoint/MacroState）
 
-### 数据域 · market-data
+### 数据域 · market-data（SDK 14 + Provider 5）
 
+**交易所 SDK：**
 - [binance](https://github.com/ZoneCNH/binance) — 币安 Binance
 - [okx](https://github.com/ZoneCNH/okx) — OKX
 - [bybit](https://github.com/ZoneCNH/bybit) — Bybit
@@ -74,11 +84,13 @@ Go 🐹 (主要) · Rust 🦀 (底层) · Python 🐍 (脚本/数据) · TypeScr
 - [upbit](https://github.com/ZoneCNH/upbit) — Upbit
 - [coinglass](https://github.com/ZoneCNH/coinglass) — Coinglass 加密货币数据
 - [yield-curve](https://github.com/ZoneCNH/yield-curve) — 收益率曲线
-- [binance-market](https://github.com/ZoneCNH/binance-market) — Binance Kline/Ticker Provider
-- [bybit-market](https://github.com/ZoneCNH/bybit-market) — Bybit Kline/Ticker Provider
-- [bitget-market](https://github.com/ZoneCNH/bitget-market) — Bitget SPOT Kline/Ticker Provider
-- [okx-market](https://github.com/ZoneCNH/okx-market) — OKX Kline/Ticker Provider
-- [coinbase-market](https://github.com/ZoneCNH/coinbase-market) — Coinbase Kline/Ticker Provider
+
+**Kline/Ticker Provider：**
+- [binance-market](https://github.com/ZoneCNH/binance-market) — Binance
+- [bybit-market](https://github.com/ZoneCNH/bybit-market) — Bybit
+- [bitget-market](https://github.com/ZoneCNH/bitget-market) — Bitget SPOT
+- [okx-market](https://github.com/ZoneCNH/okx-market) — OKX
+- [coinbase-market](https://github.com/ZoneCNH/coinbase-market) — Coinbase
 
 ### 数据域 · macro-data
 

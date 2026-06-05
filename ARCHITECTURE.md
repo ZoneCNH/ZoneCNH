@@ -7,7 +7,7 @@
 ## 依赖关系图
 
 ```
-                           xlib-standard
+                           xlib-standard ← 基础库规范，基座的前置依赖
                                 │
                                 ▼
 ┌──────────────────────────────────────────────────────────────────────────────┐
@@ -99,7 +99,7 @@
 
 | 域 | 职责 | 组件 |
 |------|------|------|
-| 基座 | 生命周期、依赖注入、配置、可观测、存储、契约 | kernel, configx, observex, testkitx, resiliencx, schedulex, redisx, kafkax, natsx, postgresx, taosx, ossx, clickhousex, contracts |
+| 基座 | 生命周期、依赖注入、配置、可观测、存储、契约 | xlib-standard, kernel, configx, observex, testkitx, resiliencx, schedulex, xlibgate, redisx, kafkax, natsx, postgresx, taosx, ossx, clickhousex, contracts |
 | L2.5 | 领域共享模型，上层统一依赖 | decimalx, domain-market, domain-exchange, domain-macro |
 | 数据域 | 行情、宏观、另类数据采集 | market-data (14 SDK + 5 Provider), macro-data (10), alternative-data |
 | 分析域 | 因子计算、特征存储、因子评估（互相反馈） | factor-engine, feature-store, factor-eval |
@@ -112,9 +112,9 @@
 
 ```
 数据域 ────→ 分析域 ────→ 决策域 ────→ 执行域 ────→ x.go
-              ▲            │
-              └────────────┘   回测结果反馈因子评估
-                   反馈
+              ▲            │               │
+              └────────────┘               │
+                   反馈                     └──► 再平衡与策略调整反馈
 ```
 
 - **数据域 → 分析域**：单向，原始数据流入因子计算
@@ -139,7 +139,7 @@
 | 初始 | ░░░░ 5% | 仅 README + LICENSE，无业务代码 |
 | 骨架 | █░░░ 15% | 有 go.mod + 接口定义，核心逻辑未实现 |
 | 半成 | ██░░ 50% | 核心功能可用，缺少边界场景和文档 |
-| 成熟 | ██░░ 80% | 核心功能完整，有测试覆盖，可用于生产 |
+| 成熟 | ███░ 80% | 核心功能完整，有测试覆盖，可用于生产 |
 | 发布 | ███░ 90% | 版本化发布，文档完整，长期维护 |
 | 完备 | ████ 100% | 全功能、全测试、全文档、生产验证 |
 
@@ -148,56 +148,56 @@
 | 域 | 组件 | 版本 | 状态 | 进度 | 说明 |
 |------|------|------|------|------|------|
 | **基座** ||||||
-| 基座 | [kernel](https://github.com/ZoneCNH/kernel) | v0.7.3 | ✅ 已有 | ██░░ 80% | 核心基础框架，594KB/30 项 |
-| 基座 | [configx](https://github.com/ZoneCNH/configx) | v0.1.4 | ✅ 已有 | ██░░ 80% | 配置管理，258KB/20 项 |
-| 基座 | [observex](https://github.com/ZoneCNH/observex) | v0.3.1 | ✅ 已有 | ██░░ 80% | 可观测性，220KB/18 项 |
-| 基座 | [testkitx](https://github.com/ZoneCNH/testkitx) | v0.4.0 | ✅ 已有 | ██░░ 80% | 测试工具包，254KB/27 项 |
-| 基座 | [resiliencx](https://github.com/ZoneCNH/resiliencx) | v0.4.8 | ✅ 已有 | ██░░ 80% | 弹性与容错，707KB/27 项 |
-| 基座 | [schedulex](https://github.com/ZoneCNH/schedulex) | v0.1.2 | ✅ 已有 | ██░░ 80% | 调度任务，398KB/25 项 |
+| 基座 | [kernel](https://github.com/ZoneCNH/kernel) | v0.7.3 | ✅ 已有 | ███░ 80% | 核心基础框架，594KB/30 项 |
+| 基座 | [configx](https://github.com/ZoneCNH/configx) | v0.1.4 | ✅ 已有 | ███░ 80% | 配置管理，258KB/20 项 |
+| 基座 | [observex](https://github.com/ZoneCNH/observex) | v0.3.1 | ✅ 已有 | ███░ 80% | 可观测性，220KB/18 项 |
+| 基座 | [testkitx](https://github.com/ZoneCNH/testkitx) | v0.4.0 | ✅ 已有 | ███░ 80% | 测试工具包，254KB/27 项 |
+| 基座 | [resiliencx](https://github.com/ZoneCNH/resiliencx) | v0.4.8 | ✅ 已有 | ███░ 80% | 弹性与容错，707KB/27 项 |
+| 基座 | [schedulex](https://github.com/ZoneCNH/schedulex) | v0.1.2 | ✅ 已有 | ███░ 80% | 调度任务，398KB/25 项 |
 | 基座 | [redisx](https://github.com/ZoneCNH/redisx) | - | ✅ 已有 | █░░░ 15% | Redis，仅骨架 |
 | 基座 | [kafkax](https://github.com/ZoneCNH/kafkax) | - | ✅ 已有 | █░░░ 15% | Kafka，仅骨架 |
-| 基座 | [natsx](https://github.com/ZoneCNH/natsx) | - | ✅ 已有 | ██░░ 80% | NATS，349KB/27 项 |
+| 基座 | [natsx](https://github.com/ZoneCNH/natsx) | - | ✅ 已有 | ███░ 80% | NATS，349KB/27 项 |
 | 基座 | [postgresx](https://github.com/ZoneCNH/postgresx) | - | ✅ 已有 | █░░░ 15% | PostgreSQL，仅骨架 |
 | 基座 | [taosx](https://github.com/ZoneCNH/taosx) | - | ✅ 已有 | █░░░ 15% | TDengine，仅骨架 |
 | 基座 | [ossx](https://github.com/ZoneCNH/ossx) | - | ✅ 已有 | █░░░ 15% | 对象存储，仅骨架 |
 | 基座 | [clickhousex](https://github.com/ZoneCNH/clickhousex) | - | ✅ 已有 | █░░░ 15% | ClickHouse，仅骨架 |
-| 基座 | [contracts](https://github.com/ZoneCNH/contracts) | - | ✅ 已有 | ██░░ 80% | 跨模块接口契约，191KB/27 项 |
+| 基座 | [contracts](https://github.com/ZoneCNH/contracts) | - | ✅ 已有 | ███░ 80% | 跨模块接口契约，191KB/27 项 |
 | **L2.5 · 领域共享层** ||||||
-| L2.5 | [decimalx](https://github.com/ZoneCNH/decimalx) | v0.1.0 | ✅ P0 | ██░░ 80% | 高精度十进制类型（Decimal/Price/Qty/Ratio/Money） |
-| L2.5 | [domain-market](https://github.com/ZoneCNH/domain-market) | v0.1.0 | ✅ P0 | ██░░ 80% | 市场数据域模型（Tick/Quote/Bar/OrderBook） |
-| L2.5 | [domain-exchange](https://github.com/ZoneCNH/domain-exchange) | v0.1.0 | ✅ P0 | ██░░ 80% | 交易域模型（VenueAdapter 13 方法接口） |
-| L2.5 | [domain-macro](https://github.com/ZoneCNH/domain-macro) | v0.1.0 | ✅ P0 | ██░░ 80% | 宏观数据域模型（MacroPoint/MacroState） |
+| L2.5 | [decimalx](https://github.com/ZoneCNH/decimalx) | v0.1.0 | ✅ P0 | ███░ 80% | 高精度十进制类型（Decimal/Price/Qty/Ratio/Money） |
+| L2.5 | [domain-market](https://github.com/ZoneCNH/domain-market) | v0.1.0 | ✅ P0 | ███░ 80% | 市场数据域模型（Tick/Quote/Bar/OrderBook） |
+| L2.5 | [domain-exchange](https://github.com/ZoneCNH/domain-exchange) | v0.1.0 | ✅ P0 | ███░ 80% | 交易域模型（VenueAdapter 13 方法接口） |
+| L2.5 | [domain-macro](https://github.com/ZoneCNH/domain-macro) | v0.1.0 | ✅ P0 | ███░ 80% | 宏观数据域模型（MacroPoint/MacroState） |
 | **数据域 · 行情** ||||||
-| 数据域 | [binance](https://github.com/ZoneCNH/binance) | - | ✅ 已有 | ██░░ 80% | Binance CEX SDK |
-| 数据域 | [okx](https://github.com/ZoneCNH/okx) | - | ✅ 已有 | ██░░ 80% | OKX CEX SDK |
-| 数据域 | [bybit](https://github.com/ZoneCNH/bybit) | - | ✅ 已有 | ██░░ 80% | Bybit CEX SDK |
-| 数据域 | [bitget](https://github.com/ZoneCNH/bitget) | - | ✅ 已有 | ██░░ 80% | Bitget CEX SDK |
-| 数据域 | [kucoin](https://github.com/ZoneCNH/kucoin) | - | ✅ 已有 | ██░░ 80% | KuCoin CEX SDK |
-| 数据域 | [gate](https://github.com/ZoneCNH/gate) | - | ✅ 已有 | ██░░ 80% | Gate CEX SDK |
-| 数据域 | [mexc](https://github.com/ZoneCNH/mexc) | - | ✅ 已有 | ██░░ 80% | MEXC CEX SDK |
-| 数据域 | [htx](https://github.com/ZoneCNH/htx) | - | ✅ 已有 | ██░░ 80% | HTX CEX SDK |
-| 数据域 | [coinbase](https://github.com/ZoneCNH/coinbase) | - | ✅ 已有 | ██░░ 80% | Coinbase CEX SDK |
-| 数据域 | [hyperliquid](https://github.com/ZoneCNH/hyperliquid) | - | ✅ 已有 | ██░░ 80% | Hyperliquid DEX SDK |
-| 数据域 | [lighter](https://github.com/ZoneCNH/lighter) | - | ✅ 已有 | ██░░ 80% | Lighter DEX SDK |
-| 数据域 | [upbit](https://github.com/ZoneCNH/upbit) | - | ✅ 已有 | ██░░ 80% | Upbit CEX SDK |
-| 数据域 | [coinglass](https://github.com/ZoneCNH/coinglass) | - | ✅ 已有 | ██░░ 80% | 衍生品聚合数据 |
-| 数据域 | [yield-curve](https://github.com/ZoneCNH/yield-curve) | - | ✅ 已有 | ██░░ 80% | 收益率曲线 |
-| 数据域 | [binance-market](https://github.com/ZoneCNH/binance-market) | v0.1.0 | ✅ P0 | ██░░ 80% | Binance Kline/Ticker Provider |
-| 数据域 | [bybit-market](https://github.com/ZoneCNH/bybit-market) | v0.1.0 | ✅ P0 | ██░░ 80% | Bybit Kline/Ticker Provider |
-| 数据域 | [bitget-market](https://github.com/ZoneCNH/bitget-market) | v0.1.0 | ✅ P0 | ██░░ 80% | Bitget Kline/Ticker Provider |
-| 数据域 | [okx-market](https://github.com/ZoneCNH/okx-market) | v0.1.0 | ✅ P0 | ██░░ 80% | OKX Kline/Ticker Provider |
-| 数据域 | [coinbase-market](https://github.com/ZoneCNH/coinbase-market) | v0.1.0 | ✅ P0 | ██░░ 80% | Coinbase Kline/Ticker Provider |
+| 数据域 | [binance](https://github.com/ZoneCNH/binance) | - | ✅ 已有 | ███░ 80% | Binance CEX SDK |
+| 数据域 | [okx](https://github.com/ZoneCNH/okx) | - | ✅ 已有 | ███░ 80% | OKX CEX SDK |
+| 数据域 | [bybit](https://github.com/ZoneCNH/bybit) | - | ✅ 已有 | ███░ 80% | Bybit CEX SDK |
+| 数据域 | [bitget](https://github.com/ZoneCNH/bitget) | - | ✅ 已有 | ███░ 80% | Bitget CEX SDK |
+| 数据域 | [kucoin](https://github.com/ZoneCNH/kucoin) | - | ✅ 已有 | ███░ 80% | KuCoin CEX SDK |
+| 数据域 | [gate](https://github.com/ZoneCNH/gate) | - | ✅ 已有 | ███░ 80% | Gate CEX SDK |
+| 数据域 | [mexc](https://github.com/ZoneCNH/mexc) | - | ✅ 已有 | ███░ 80% | MEXC CEX SDK |
+| 数据域 | [htx](https://github.com/ZoneCNH/htx) | - | ✅ 已有 | ███░ 80% | HTX CEX SDK |
+| 数据域 | [coinbase](https://github.com/ZoneCNH/coinbase) | - | ✅ 已有 | ███░ 80% | Coinbase CEX SDK |
+| 数据域 | [hyperliquid](https://github.com/ZoneCNH/hyperliquid) | - | ✅ 已有 | ███░ 80% | Hyperliquid DEX SDK |
+| 数据域 | [lighter](https://github.com/ZoneCNH/lighter) | - | ✅ 已有 | ███░ 80% | Lighter DEX SDK |
+| 数据域 | [upbit](https://github.com/ZoneCNH/upbit) | - | ✅ 已有 | ███░ 80% | Upbit CEX SDK |
+| 数据域 | [coinglass](https://github.com/ZoneCNH/coinglass) | - | ✅ 已有 | ███░ 80% | 衍生品聚合数据 |
+| 数据域 | [yield-curve](https://github.com/ZoneCNH/yield-curve) | - | ✅ 已有 | ███░ 80% | 收益率曲线 |
+| 数据域 | [binance-market](https://github.com/ZoneCNH/binance-market) | v0.1.0 | ✅ P0 | ███░ 80% | Binance Kline/Ticker Provider |
+| 数据域 | [bybit-market](https://github.com/ZoneCNH/bybit-market) | v0.1.0 | ✅ P0 | ███░ 80% | Bybit Kline/Ticker Provider |
+| 数据域 | [bitget-market](https://github.com/ZoneCNH/bitget-market) | v0.1.0 | ✅ P0 | ███░ 80% | Bitget Kline/Ticker Provider |
+| 数据域 | [okx-market](https://github.com/ZoneCNH/okx-market) | v0.1.0 | ✅ P0 | ███░ 80% | OKX Kline/Ticker Provider |
+| 数据域 | [coinbase-market](https://github.com/ZoneCNH/coinbase-market) | v0.1.0 | ✅ P0 | ███░ 80% | Coinbase Kline/Ticker Provider |
 | **数据域 · 宏观** ||||||
-| 数据域 | [fred](https://github.com/ZoneCNH/fred) | - | ✅ 已有 | ██░░ 80% | 美联储 FRED |
-| 数据域 | [treasury](https://github.com/ZoneCNH/treasury) | - | ✅ 已有 | ██░░ 80% | 美国财政部 |
-| 数据域 | [bea](https://github.com/ZoneCNH/bea) | - | ✅ 已有 | ██░░ 80% | 美国经济分析局 |
-| 数据域 | [ecb](https://github.com/ZoneCNH/ecb) | - | ✅ 已有 | ██░░ 80% | 欧洲央行 |
-| 数据域 | [uk-cb](https://github.com/ZoneCNH/uk-cb) | - | ✅ 已有 | ██░░ 80% | 英国央行 |
-| 数据域 | [japan-cb](https://github.com/ZoneCNH/japan-cb) | - | ✅ 已有 | ██░░ 80% | 日本央行 |
-| 数据域 | [eastmoney](https://github.com/ZoneCNH/eastmoney) | - | ✅ 已有 | ██░░ 80% | 东方财富 A 股 |
-| 数据域 | [jinshi](https://github.com/ZoneCNH/jinshi) | - | ✅ 已有 | ██░░ 80% | 金十快讯 |
-| 数据域 | [jin10](https://github.com/ZoneCNH/jin10) | - | ✅ 已有 | ██░░ 80% | 金十行情 |
-| 数据域 | [yahoo](https://github.com/ZoneCNH/yahoo) | - | ✅ 已有 | ██░░ 80% | Yahoo Finance |
+| 数据域 | [fred](https://github.com/ZoneCNH/fred) | - | ✅ 已有 | ███░ 80% | 美联储 FRED |
+| 数据域 | [treasury](https://github.com/ZoneCNH/treasury) | - | ✅ 已有 | ███░ 80% | 美国财政部 |
+| 数据域 | [bea](https://github.com/ZoneCNH/bea) | - | ✅ 已有 | ███░ 80% | 美国经济分析局 |
+| 数据域 | [ecb](https://github.com/ZoneCNH/ecb) | - | ✅ 已有 | ███░ 80% | 欧洲央行 |
+| 数据域 | [uk-cb](https://github.com/ZoneCNH/uk-cb) | - | ✅ 已有 | ███░ 80% | 英国央行 |
+| 数据域 | [japan-cb](https://github.com/ZoneCNH/japan-cb) | - | ✅ 已有 | ███░ 80% | 日本央行 |
+| 数据域 | [eastmoney](https://github.com/ZoneCNH/eastmoney) | - | ✅ 已有 | ███░ 80% | 东方财富 A 股 |
+| 数据域 | [jinshi](https://github.com/ZoneCNH/jinshi) | - | ✅ 已有 | ███░ 80% | 金十快讯 |
+| 数据域 | [jin10](https://github.com/ZoneCNH/jin10) | - | ✅ 已有 | ███░ 80% | 金十行情 |
+| 数据域 | [yahoo](https://github.com/ZoneCNH/yahoo) | - | ✅ 已有 | ███░ 80% | Yahoo Finance |
 | **数据域 · 另类** ||||||
 | 数据域 | [alternative-data](https://github.com/ZoneCNH/alternative-data) | - | 🔨 已创建 | ░░░░ 5% | 链上、社交情绪、新闻 NLP |
 | **分析域** ||||||
@@ -215,16 +215,18 @@
 | 执行域 | [portfolio-engine](https://github.com/ZoneCNH/portfolio-engine) | - | 🔨 已创建 | ░░░░ 5% | 多策略资金分配、再平衡 |
 | 执行域 | [settlement](https://github.com/ZoneCNH/settlement) | - | 🔨 已创建 | ░░░░ 5% | PnL 计算、交易所对账 |
 | **入口** ||||||
-| 入口 | [x.go](https://github.com/ZoneCNH/x.go) | v0.0.1 | ✅ 已有 | ██░░ 80% | 主程序，2.8MB/33 项 |
+| 入口 | [x.go](https://github.com/ZoneCNH/x.go) | v0.0.1 | ✅ 已有 | ███░ 80% | 主程序，2.8MB/33 项 |
 | **横切** ||||||
 | 横切 | [alertx](https://github.com/ZoneCNH/alertx) | - | 🔨 已创建 | ░░░░ 5% | 策略异常、风控触发告警 |
-| 横切 | [observex](https://github.com/ZoneCNH/observex) | v0.3.1 | ✅ 已有 | ██░░ 80% | 可观测性（同时归属基座，提供底层 metrics/tracing/logging） |
+| 横切 | [observex](https://github.com/ZoneCNH/observex) | v0.3.1 | ✅ 已有 | ███░ 80% | 可观测性（同时归属基座，提供底层 metrics/tracing/logging） |
+| **Rust** ||||||
+| Rust | [stdlib.rs](https://github.com/ZoneCNH/stdlib.rs) | - | ✅ 已有 | - | Rust 标准库 |
 
 ## 建议实现顺序
 
 ```
 Phase 0: 领域共享层 ← decimalx + domain-market + domain-exchange + domain-macro
-         所有上层模块依赖此层，必须最先稳定
+         ✅ 已完成 (v0.1.0)，所有上层模块已依赖此层
 
 Phase 1: 分析域   ← factor-engine + feature-store + factor-eval
          数据变现第一步，依赖数据域已有能力
