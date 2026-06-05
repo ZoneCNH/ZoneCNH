@@ -1,8 +1,8 @@
-# Hey there, I'm ZoneCNH 👋
+# 你好，我是 ZoneCNH 👋
 
 **量化交易基础设施工程师** | 构建高性能、高可靠的金融数据与交易系统
 
-## 🔧 Tech Stack
+## 🔧 技术栈
 
 Go 🐹 (主要) · Rust 🦀 (底层) · Python 🐍 (脚本/数据) · TypeScript ⚡ (前端)
 
@@ -150,10 +150,10 @@ Go 🐹 (主要) · Rust 🦀 (底层) · Python 🐍 (脚本/数据) · TypeScr
 |------|------|
 | [stdlib.rs](https://github.com/ZoneCNH/stdlib.rs) | 标准库 |
 
-## 📊 GitHub Stats
+## 📊 GitHub 统计
 
 <p align="center">
-  <img src="https://github-readme-stats.vercel.app/api?username=ZoneCNH&show_icons=true&theme=radical&hide_border=true" alt="GitHub Stats" />
+  <img src="https://github-readme-stats.vercel.app/api?username=ZoneCNH&show_icons=true&theme=radical&hide_border=true" alt="GitHub 统计" />
 </p>
 
 ---
