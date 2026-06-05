@@ -121,7 +121,7 @@ Go 🐹 (主要) · Rust 🦀 (底层) · Python 🐍 (脚本/数据) · TypeScr
 | [signal-factory](https://github.com/ZoneCNH/signal-factory) | 信号生成与组合 |
 | [backtest-engine](https://github.com/ZoneCNH/backtest-engine) | 事件驱动回测引擎 |
 | [optimizer](https://github.com/ZoneCNH/optimizer) | 参数优化 |
-| [strategies](https://github.com/ZoneCNH/strategies) | 策略引擎与信号生成 |
+| [strategies](https://github.com/ZoneCNH/strategies) | 策略研究与信号参考 |
 
 ### 执行域
 
