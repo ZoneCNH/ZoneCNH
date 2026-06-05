@@ -23,8 +23,8 @@
         ┌───────────────────────┼───────────────────────┐
         ▼                       ▼                       ▼
 ┌──────────────┐  ┌──────────────────────┐  ┌──────────────────────┐
-│  xgo-market  │  │   xgo-macro-data     │  │  xgo-alternative-data│
-│  -data (14)  │  │      (10)            │  │  链上·社交·新闻NLP   │
+│  market-data │  │   macro-data         │  │  alternative-data    │
+│    (14)      │  │      (10)            │  │  链上·社交·新闻NLP   │
 └──────┬───────┘  └──────────┬───────────┘  └──────────┬───────────┘
        └──────────────────────┼─────────────────────────┘
                               │
@@ -85,7 +85,7 @@
 | 域 | 职责 | 组件 |
 |------|------|------|
 | 基座 | 生命周期、依赖注入、配置、可观测、存储、契约 | kernel, configx, observex, testkitx, resiliencx, schedulex, redisx, kafkax, natsx, postgresx, taosx, ossx, clickhousex, contracts |
-| 数据域 | 行情、宏观、另类数据采集 | xgo-market-data, xgo-macro-data, xgo-alternative-data |
+| 数据域 | 行情、宏观、另类数据采集 | market-data, macro-data, alternative-data |
 | 分析域 | 因子计算、特征存储、因子评估（互相反馈） | factor-engine, feature-store, factor-eval |
 | 决策域 | 信号生成、历史回测、参数优化（并行协作） | signal-factory, backtest-engine, optimizer |
 | 执行域 | 风险管理、订单执行、组合管理、结算 | risk-engine, order-engine, portfolio-engine, settlement |
@@ -121,9 +121,9 @@
 | 域 | 组件 | 状态 | 说明 |
 |------|------|------|------|
 | 基座 | kernel, configx, observex, ... | ✅ 已有 | L0-L3 完整 |
-| 数据域 | xgo-market-data | ✅ 已有 | 14 个交易所 SDK |
-| 数据域 | xgo-macro-data | ✅ 已有 | 10 个宏观数据源 |
-| 数据域 | xgo-alternative-data | ❌ 待建 | 链上数据、社交情绪、新闻 NLP |
+| 数据域 | market-data | ✅ 已有 | 14 个交易所 SDK |
+| 数据域 | macro-data | ✅ 已有 | 10 个宏观数据源 |
+| 数据域 | alternative-data | ❌ 待建 | 链上数据、社交情绪、新闻 NLP |
 | 分析域 | factor-engine | ❌ 待建 | 从原始数据计算 alpha 因子 |
 | 分析域 | feature-store | ❌ 待建 | 因子版本管理、IC 评估 |
 | 分析域 | factor-eval | ❌ 待建 | IC/IR/换手率评估 |
@@ -151,7 +151,7 @@ Phase 5: 入口    ← x.go，最终编排
 
 ## 数据域子模块明细
 
-### xgo-market-data（行情数据）
+### market-data（行情数据）
 
 | 模块 | 说明 |
 |------|------|
@@ -170,7 +170,7 @@ Phase 5: 入口    ← x.go，最终编排
 | [coinglass](https://github.com/ZoneCNH/coinglass) | Coinglass 加密货币数据 |
 | [yield-curve](https://github.com/ZoneCNH/yield-curve) | 收益率曲线 |
 
-### xgo-macro-data（宏观数据）
+### macro-data（宏观数据）
 
 | 模块 | 说明 |
 |------|------|
