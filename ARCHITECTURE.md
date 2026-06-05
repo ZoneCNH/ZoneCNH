@@ -13,7 +13,7 @@
 ┌──────────────────────────────────────────────────────────────────────────────┐
 │                           基座 (Foundation)                                   │
 │                                                                              │
-│   kernel → configx · observex · testkitx · resiliencx · schedulex            │
+│   kernel → configx · observex · testkitx · resiliencx · schedulex · xlibgate │
 │                                                                              │
 │   redisx · kafkax · natsx · postgresx · taosx · ossx · clickhousex           │
 │                                                                              │

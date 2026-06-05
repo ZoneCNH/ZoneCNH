@@ -38,6 +38,12 @@ reports/
 # env file
 .env
 
+# OMC runtime state
+.omc/
+
+# Claude Code local config
+.claude/
+
 # Editor/IDE
-# .idea/
-# .vscode/
+.idea/
+.vscode/

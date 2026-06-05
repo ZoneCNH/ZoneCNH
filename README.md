@@ -16,7 +16,7 @@ Go 🐹 (主要) · Rust 🦀 (底层) · Python 🐍 (脚本/数据) · TypeScr
                              → contracts
       │
       ▼
-数据域: market-data (14) / macro-data (10) / alternative-data
+数据域: market-data (19) / macro-data (10) / alternative-data
       │
       ▼
 分析域: factor-engine ◄──► feature-store ◄──► factor-eval
@@ -66,6 +66,15 @@ Go 🐹 (主要) · Rust 🦀 (底层) · Python 🐍 (脚本/数据) · TypeScr
 |------|------|
 | [contracts](https://github.com/ZoneCNH/contracts) | 跨模块接口与协议定义 |
 
+### 基座 · L2.5 领域共享层
+
+| 项目 | 说明 |
+|------|------|
+| [decimalx](https://github.com/ZoneCNH/decimalx) | 高精度十进制类型（Decimal/Price/Qty/Ratio/Money） |
+| [domain-market](https://github.com/ZoneCNH/domain-market) | 市场数据域模型（Tick/Quote/Bar/OrderBook） |
+| [domain-exchange](https://github.com/ZoneCNH/domain-exchange) | 交易域模型（VenueAdapter 13 方法接口） |
+| [domain-macro](https://github.com/ZoneCNH/domain-macro) | 宏观数据域模型（MacroPoint/MacroState） |
+
 ### 数据域 · market-data（行情数据）
 
 | 项目 | 交易所/数据源 |
@@ -84,6 +93,11 @@ Go 🐹 (主要) · Rust 🦀 (底层) · Python 🐍 (脚本/数据) · TypeScr
 | [upbit](https://github.com/ZoneCNH/upbit) | Upbit |
 | [coinglass](https://github.com/ZoneCNH/coinglass) | Coinglass 加密货币数据 |
 | [yield-curve](https://github.com/ZoneCNH/yield-curve) | 收益率曲线 |
+| [binance-market](https://github.com/ZoneCNH/binance-market) | Binance Kline/Ticker Provider |
+| [bybit-market](https://github.com/ZoneCNH/bybit-market) | Bybit Kline/Ticker Provider |
+| [bitget-market](https://github.com/ZoneCNH/bitget-market) | Bitget SPOT Kline/Ticker Provider |
+| [okx-market](https://github.com/ZoneCNH/okx-market) | OKX Kline/Ticker Provider |
+| [coinbase-market](https://github.com/ZoneCNH/coinbase-market) | Coinbase Kline/Ticker Provider |
 
 ### 数据域 · macro-data（宏观数据）
 
