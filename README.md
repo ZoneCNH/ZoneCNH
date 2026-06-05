@@ -20,7 +20,8 @@ xlib-standard
     → L4.5: factor-engine / feature-store / factor-eval
     → L5: signal-factory / backtest-engine / optimizer
     → L5.5: risk-engine / order-engine / portfolio-engine
-    → L6: x.go / settlement / dashboard / alertx
+    → L6: settlement / dashboard / alertx
+    → L7: x.go
 ```
 
 ## 📦 核心项目
