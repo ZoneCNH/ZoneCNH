@@ -8,25 +8,34 @@ Go 🐹 (主要) · Rust 🦀 (底层) · Python 🐍 (脚本/数据) · TypeScr
 
 ## 🏗️ 分层架构
 
-> 📐 完整依赖拓扑、架构图与子模块明细 → **[ARCHITECTURE.md](./ARCHITECTURE.md)**
+> 📐 完整依赖拓扑、域间关系与子模块明细 → **[ARCHITECTURE.md](./ARCHITECTURE.md)**
 
 ```
-xlib-standard
-    → L0: kernel
-    → L1: configx / observex / testkitx / resiliencx / schedulex
-    → L2: redisx / kafkax / natsx / postgresx / taosx / ossx / clickhousex
-    → L3: contracts
-    → L4: xgo-market-data (14) / xgo-macro-data (10) / xgo-alternative-data
-    → L4.5: factor-engine / feature-store / factor-eval
-    → L5: signal-factory / backtest-engine / optimizer
-    → L5.5: risk-engine / order-engine / portfolio-engine
-    → L6: settlement / dashboard / alertx
-    → L7: x.go
+基座: xlib-standard → kernel → configx/observex/testkitx/resiliencx/schedulex
+                             → redisx/kafkax/natsx/postgresx/taosx/ossx/clickhousex
+                             → contracts
+      │
+      ▼
+数据域: xgo-market-data (14) / xgo-macro-data (10) / xgo-alternative-data
+      │
+      ▼
+分析域: factor-engine ◄──► feature-store ◄──► factor-eval
+      │
+      ▼
+决策域: signal-factory / backtest-engine / optimizer
+      │
+      ▼
+执行域: risk-engine → order-engine → portfolio-engine / settlement
+      │
+      ▼
+入口: x.go
+
+横切: alertx (告警) / observex (可观测)
 ```
 
 ## 📦 核心项目
 
-### L0-L1 · 基础设施
+### 基座 · 基础设施
 
 | 项目 | 说明 |
 |------|------|
@@ -39,7 +48,7 @@ xlib-standard
 | [xlib-standard](https://github.com/ZoneCNH/xlib-standard) | 基础库规范 |
 | [xlibgate](https://github.com/ZoneCNH/xlibgate) | 门禁与验证运行时 |
 
-### L2 · 存储与中间件
+### 基座 · 存储与中间件
 
 | 项目 | 说明 |
 |------|------|
@@ -51,13 +60,13 @@ xlib-standard
 | [natsx](https://github.com/ZoneCNH/natsx) | NATS 内部通信模块 |
 | [ossx](https://github.com/ZoneCNH/ossx) | 对象存储 (OSS) 模块 |
 
-### L3 · 契约层
+### 基座 · 契约层
 
 | 项目 | 说明 |
 |------|------|
 | [contracts](https://github.com/ZoneCNH/contracts) | 跨模块接口与协议定义 |
 
-### L4 · xgo-market-data（行情数据）
+### 数据域 · xgo-market-data（行情数据）
 
 | 项目 | 交易所/数据源 |
 |------|--------|
@@ -76,7 +85,7 @@ xlib-standard
 | [coinglass](https://github.com/ZoneCNH/coinglass) | Coinglass 加密货币数据 |
 | [yield-curve](https://github.com/ZoneCNH/yield-curve) | 收益率曲线 |
 
-### L4 · xgo-macro-data（宏观数据）
+### 数据域 · xgo-macro-data（宏观数据）
 
 | 项目 | 数据源 |
 |------|--------|
@@ -91,7 +100,7 @@ xlib-standard
 | [jin10](https://github.com/ZoneCNH/jin10) | 金十快讯 |
 | [yahoo](https://github.com/ZoneCNH/yahoo) | Yahoo Finance |
 
-### L5 · 引擎层
+### 决策域 · 策略引擎
 
 | 项目 | 说明 |
 |------|------|
