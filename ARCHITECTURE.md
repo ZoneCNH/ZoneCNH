@@ -110,7 +110,7 @@
 
 1. **风控是独立引擎** — 策略只能通过 risk-engine 提交订单，不能直接调用 order-engine
 2. **回测与实盘共享代码** — signal-factory / factor-engine / risk-engine 同一套，backtest-engine 只替换数据源
-3. **contracts 定义一切接口** — 域间通过 L3 的接口通信，实现可替换
+3. **contracts 定义一切接口** — 域间通过 contracts 的接口通信，实现可替换
 4. **数据不跨域** — 数据域只负责采集和存储，因子计算在分析域，策略逻辑在决策域
 5. **执行抽象交易所差异** — order-engine 对上层暴露统一接口，内部适配各交易所
 6. **x.go 只做编排** — 不含业务逻辑，仅负责启动、配置加载和引擎组装
@@ -120,22 +120,36 @@
 
 | 域 | 组件 | 状态 | 说明 |
 |------|------|------|------|
-| 基座 | kernel, configx, observex, ... | ✅ 已有 | L0-L3 完整 |
-| 数据域 | market-data | ✅ 已有 | 14 个交易所 SDK |
-| 数据域 | macro-data | ✅ 已有 | 10 个宏观数据源 |
-| 数据域 | alternative-data | ❌ 待建 | 链上数据、社交情绪、新闻 NLP |
-| 分析域 | factor-engine | ❌ 待建 | 从原始数据计算 alpha 因子 |
-| 分析域 | feature-store | ❌ 待建 | 因子版本管理、IC 评估 |
-| 分析域 | factor-eval | ❌ 待建 | IC/IR/换手率评估 |
-| 决策域 | signal-factory | ⚠️ 演进中 | 当前 strategies 偏 FMZ，缺多因子组合 |
-| 决策域 | backtest-engine | ❌ 待建 | 事件驱动回测、Tick 级回放 |
-| 决策域 | optimizer | ❌ 待建 | 参数搜索、Walk-forward 验证 |
-| 执行域 | risk-engine | ❌ 待建 | **最关键** — 事前/事中/事后风控 |
-| 执行域 | order-engine | ❌ 待建 | 智能路由、TWAP/VWAP、滑点控制 |
-| 执行域 | portfolio-engine | ❌ 待建 | 多策略资金分配、再平衡 |
-| 执行域 | settlement | ❌ 待建 | PnL 计算、交易所对账 |
-| 入口 | x.go | ❌ 待建 | 主程序，编排所有引擎 |
-| 横切 | alertx | ❌ 待建 | 策略异常、风控触发告警 |
+| 基座 | [kernel](https://github.com/ZoneCNH/kernel) | ✅ 已有 | 核心基础框架 |
+| 基座 | [configx](https://github.com/ZoneCNH/configx) | ✅ 已有 | 配置管理 |
+| 基座 | [observex](https://github.com/ZoneCNH/observex) | ✅ 已有 | 可观测性 |
+| 基座 | [testkitx](https://github.com/ZoneCNH/testkitx) | ✅ 已有 | 测试工具包 |
+| 基座 | [resiliencx](https://github.com/ZoneCNH/resiliencx) | ✅ 已有 | 弹性与容错 |
+| 基座 | [schedulex](https://github.com/ZoneCNH/schedulex) | ✅ 已有 | 调度任务 |
+| 基座 | [redisx](https://github.com/ZoneCNH/redisx) | ✅ 已有 | Redis |
+| 基座 | [kafkax](https://github.com/ZoneCNH/kafkax) | ✅ 已有 | Kafka |
+| 基座 | [natsx](https://github.com/ZoneCNH/natsx) | ✅ 已有 | NATS |
+| 基座 | [postgresx](https://github.com/ZoneCNH/postgresx) | ✅ 已有 | PostgreSQL |
+| 基座 | [taosx](https://github.com/ZoneCNH/taosx) | ✅ 已有 | TDengine |
+| 基座 | [ossx](https://github.com/ZoneCNH/ossx) | ✅ 已有 | 对象存储 |
+| 基座 | [clickhousex](https://github.com/ZoneCNH/clickhousex) | ✅ 已有 | ClickHouse |
+| 基座 | [contracts](https://github.com/ZoneCNH/contracts) | ✅ 已有 | 跨模块接口契约 |
+| 数据域 | market-data (14 交易所 SDK) | ✅ 已有 | [binance](https://github.com/ZoneCNH/binance) [okx](https://github.com/ZoneCNH/okx) [bybit](https://github.com/ZoneCNH/bybit) [bitget](https://github.com/ZoneCNH/bitget) [kucoin](https://github.com/ZoneCNH/kucoin) [gate](https://github.com/ZoneCNH/gate) [mexc](https://github.com/ZoneCNH/mexc) [htx](https://github.com/ZoneCNH/htx) [coinbase](https://github.com/ZoneCNH/coinbase) [hyperliquid](https://github.com/ZoneCNH/hyperliquid) [lighter](https://github.com/ZoneCNH/lighter) [upbit](https://github.com/ZoneCNH/upbit) [coinglass](https://github.com/ZoneCNH/coinglass) [yield-curve](https://github.com/ZoneCNH/yield-curve) |
+| 数据域 | macro-data (10 宏观数据源) | ✅ 已有 | [fred](https://github.com/ZoneCNH/fred) [treasury](https://github.com/ZoneCNH/treasury) [bea](https://github.com/ZoneCNH/bea) [ecb](https://github.com/ZoneCNH/ecb) [uk-cb](https://github.com/ZoneCNH/uk-cb) [japan-cb](https://github.com/ZoneCNH/japan-cb) [eastmoney](https://github.com/ZoneCNH/eastmoney) [jinshi](https://github.com/ZoneCNH/jinshi) [jin10](https://github.com/ZoneCNH/jin10) [yahoo](https://github.com/ZoneCNH/yahoo) |
+| 数据域 | [alternative-data](https://github.com/ZoneCNH/alternative-data) | 🔨 已创建 | 链上数据、社交情绪、新闻 NLP |
+| 分析域 | [factor-engine](https://github.com/ZoneCNH/factor-engine) | 🔨 已创建 | 从原始数据计算 alpha 因子 |
+| 分析域 | [feature-store](https://github.com/ZoneCNH/feature-store) | 🔨 已创建 | 因子版本管理、IC 评估 |
+| 分析域 | [factor-eval](https://github.com/ZoneCNH/factor-eval) | 🔨 已创建 | IC/IR/换手率评估 |
+| 决策域 | [signal-factory](https://github.com/ZoneCNH/signal-factory) | 🔨 已创建 | 多因子信号生成、过滤、评分 |
+| 决策域 | [backtest-engine](https://github.com/ZoneCNH/backtest-engine) | 🔨 已创建 | 事件驱动回测、Tick 级回放 |
+| 决策域 | [optimizer](https://github.com/ZoneCNH/optimizer) | 🔨 已创建 | 参数搜索、Walk-forward 验证 |
+| 决策域 | [strategies](https://github.com/ZoneCNH/strategies) | ✅ 已有 | FMZ 策略集合 |
+| 执行域 | [risk-engine](https://github.com/ZoneCNH/risk-engine) | 🔨 已创建 | VaR、止损、持仓限额、压力测试 |
+| 执行域 | [order-engine](https://github.com/ZoneCNH/order-engine) | 🔨 已创建 | 智能路由、TWAP/VWAP、滑点控制 |
+| 执行域 | [portfolio-engine](https://github.com/ZoneCNH/portfolio-engine) | 🔨 已创建 | 多策略资金分配、再平衡 |
+| 执行域 | [settlement](https://github.com/ZoneCNH/settlement) | 🔨 已创建 | PnL 计算、交易所对账 |
+| 入口 | [x.go](https://github.com/ZoneCNH/x.go) | ✅ 已有 | 主程序，编排所有引擎 |
+| 横切 | [alertx](https://github.com/ZoneCNH/alertx) | 🔨 已创建 | 策略异常、风控触发告警 |
 
 ## 建议实现顺序
 
