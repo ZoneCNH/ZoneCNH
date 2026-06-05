@@ -18,13 +18,16 @@
 │   redisx · kafkax · natsx · postgresx · taosx · ossx · clickhousex           │
 │                                                                              │
 │   contracts                                                                  │
+│                                                                              │
+│   ── L2.5 领域共享层 ──                                                       │
+│   decimalx · domain-market · domain-exchange · domain-macro                  │
 └──────────────────────────────────────────────────────────────────────────────┘
                                 │
         ┌───────────────────────┼───────────────────────┐
         ▼                       ▼                       ▼
 ┌──────────────┐  ┌──────────────────────┐  ┌──────────────────────┐
 │  market-data │  │   macro-data         │  │  alternative-data    │
-│    (14)      │  │      (10)            │  │  链上·社交·新闻NLP   │
+│    (19)      │  │      (10)            │  │  链上·社交·新闻NLP   │
 └──────┬───────┘  └──────────┬───────────┘  └──────────┬───────────┘
        └──────────────────────┼─────────────────────────┘
                               │
@@ -134,6 +137,11 @@
 | 基座 | [ossx](https://github.com/ZoneCNH/ossx) | - | ✅ 已有 | █░░░ 15% | 对象存储，仅骨架 |
 | 基座 | [clickhousex](https://github.com/ZoneCNH/clickhousex) | - | ✅ 已有 | █░░░ 15% | ClickHouse，仅骨架 |
 | 基座 | [contracts](https://github.com/ZoneCNH/contracts) | - | ✅ 已有 | ██░░ 80% | 跨模块接口契约，191KB/27 项 |
+| **L2.5 · 领域共享层** ||||||
+| L2.5 | [decimalx](https://github.com/ZoneCNH/decimalx) | v0.1.0 | ✅ P0 | ██░░ 80% | 高精度十进制类型（Decimal/Price/Qty/Ratio/Money） |
+| L2.5 | [domain-market](https://github.com/ZoneCNH/domain-market) | v0.1.0 | ✅ P0 | ██░░ 80% | 市场数据域模型（Tick/Quote/Bar/OrderBook） |
+| L2.5 | [domain-exchange](https://github.com/ZoneCNH/domain-exchange) | v0.1.0 | ✅ P0 | ██░░ 80% | 交易域模型（VenueAdapter 13 方法接口） |
+| L2.5 | [domain-macro](https://github.com/ZoneCNH/domain-macro) | v0.1.0 | ✅ P0 | ██░░ 80% | 宏观数据域模型（MacroPoint/MacroState） |
 | **数据域 · 行情** ||||||
 | 数据域 | [binance](https://github.com/ZoneCNH/binance) | - | ✅ 已有 | ██░░ 80% | Binance CEX |
 | 数据域 | [okx](https://github.com/ZoneCNH/okx) | - | ✅ 已有 | ██░░ 80% | OKX CEX |
@@ -148,6 +156,11 @@
 | 数据域 | [lighter](https://github.com/ZoneCNH/lighter) | - | ✅ 已有 | ██░░ 80% | Lighter DEX |
 | 数据域 | [upbit](https://github.com/ZoneCNH/upbit) | - | ✅ 已有 | ██░░ 80% | Upbit CEX |
 | 数据域 | [coinglass](https://github.com/ZoneCNH/coinglass) | - | ✅ 已有 | ██░░ 80% | 衍生品聚合数据 |
+| 数据域 | [binance-market](https://github.com/ZoneCNH/binance-market) | v0.1.0 | ✅ P0 | ██░░ 80% | Binance Kline/Ticker Provider |
+| 数据域 | [bybit-market](https://github.com/ZoneCNH/bybit-market) | v0.1.0 | ✅ P0 | ██░░ 80% | Bybit Kline/Ticker Provider |
+| 数据域 | [bitget-market](https://github.com/ZoneCNH/bitget-market) | v0.1.0 | ✅ P0 | ██░░ 80% | Bitget SPOT Kline/Ticker Provider |
+| 数据域 | [okx-market](https://github.com/ZoneCNH/okx-market) | v0.1.0 | ✅ P0 | ██░░ 80% | OKX Kline/Ticker Provider |
+| 数据域 | [coinbase-market](https://github.com/ZoneCNH/coinbase-market) | v0.1.0 | ✅ P0 | ██░░ 80% | Coinbase Kline/Ticker Provider |
 | 数据域 | [yield-curve](https://github.com/ZoneCNH/yield-curve) | - | ✅ 已有 | ██░░ 80% | 收益率曲线 |
 | **数据域 · 宏观** ||||||
 | 数据域 | [fred](https://github.com/ZoneCNH/fred) | - | ✅ 已有 | ██░░ 80% | 美联储 FRED |
