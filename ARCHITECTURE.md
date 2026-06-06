@@ -219,6 +219,8 @@ x.go
 | 横切 | [observex](https://github.com/ZoneCNH/observex) | v0.3.1 | ✅ 已有 | ███░ 80% | 可观测性（同时归属基座，提供底层 metrics/tracing/logging） |
 | **Rust** ||||||
 | Rust | [stdlib.rs](https://github.com/ZoneCNH/stdlib.rs) | - | ✅ 已有 | - | Rust 标准库 |
+| **独立** ||||||
+| 独立 | [specs](https://github.com/ZoneCNH/specs) | - | ✅ 已有 | - | 项目技术规范与接口定义 |
 
 ## 建议实现顺序
 

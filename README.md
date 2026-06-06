@@ -136,6 +136,7 @@ L2.5: decimalx / domain-market / domain-exchange / domain-macro
 - [alertx](https://github.com/ZoneCNH/alertx) — 告警引擎
 - [x.go](https://github.com/ZoneCNH/x.go) — 组合根，负责启动、配置加载与引擎组装
 - [stdlib.rs](https://github.com/ZoneCNH/stdlib.rs) — Rust 标准库
+- [specs](https://github.com/ZoneCNH/specs) — 项目技术规范与接口定义
 
 ## 📊 GitHub 统计
 
