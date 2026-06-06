@@ -8,30 +8,28 @@ Go 🐹 (主要) · Rust 🦀 (底层) · Python 🐍 (脚本/数据) · TypeScr
 
 ## 🏗️ 分层架构
 
-> 📐 完整依赖拓扑、域间关系与子模块明细 → **[ARCHITECTURE.md](./ARCHITECTURE.md)**
+> 📐 完整依赖拓扑、域间关系、运行时组装与子模块明细 → **[ARCHITECTURE.md](./ARCHITECTURE.md)**
 >
 > 📊 项目状态监控、健康度与风险追踪 → **[STATUS.md](./STATUS.md)**
 
 ```
-基座: xlib-standard → kernel → configx/observex/testkitx/resiliencx/schedulex
-                             → redisx/kafkax/natsx/postgresx/taosx/ossx/clickhousex
-                             → contracts
+入口: x.go (Composition Root: 启动 / 配置 / 组装)
       │
       ▼
+基座: xlib-standard / kernel / configx / observex / testkitx / resiliencx / schedulex
+      redisx / kafkax / natsx / postgresx / taosx / ossx / clickhousex / contracts
+      │
+      ▼
+L2.5: decimalx / domain-market / domain-exchange / domain-macro
+      │
+      ▼
+业务流: 数据域 → 分析域 ↔ 决策域 → 执行域
 数据域: market-data (19) / macro-data (10) / alternative-data
-      │
-      ▼
-分析域: factor-engine ◄──► feature-store ◄──► factor-eval
-      │
-      ▼
-决策域: signal-factory / backtest-engine / optimizer
-      │
-      ▼
+分析域: factor-engine / feature-store / factor-eval / market_regime / macro_regime
+决策域: signal-factory / backtest-engine / optimizer / strategies
 执行域: risk-engine → order-engine → portfolio-engine / settlement
-      │
-      ▼
-入口: x.go
 
+反馈: backtest → factor-eval；fills / PnL / exposure events → 决策域
 横切: alertx (告警) / observex (可观测)
 ```
 
@@ -60,7 +58,7 @@ Go 🐹 (主要) · Rust 🦀 (底层) · Python 🐍 (脚本/数据) · TypeScr
 
 ### 基座 · 契约层
 
-- [contracts](https://github.com/ZoneCNH/contracts) — 跨模块接口与协议定义
+- [contracts](https://github.com/ZoneCNH/contracts) — 跨域稳定端口、事件协议与 DTO 契约
 
 ### L2.5 · 领域共享层
 
@@ -116,6 +114,8 @@ Go 🐹 (主要) · Rust 🦀 (底层) · Python 🐍 (脚本/数据) · TypeScr
 - [factor-engine](https://github.com/ZoneCNH/factor-engine) — 因子计算引擎
 - [feature-store](https://github.com/ZoneCNH/feature-store) — 特征存储与版本管理
 - [factor-eval](https://github.com/ZoneCNH/factor-eval) — 因子评估
+- [market_regime](https://github.com/ZoneCNH/market_regime) — 市场状态识别（牛熊震荡/趋势/波动率环境分类）
+- [macro_regime](https://github.com/ZoneCNH/macro_regime) — 宏观经济体制识别（通胀/衰退/复苏等环境分类）
 
 ### 决策域
 
@@ -134,7 +134,7 @@ Go 🐹 (主要) · Rust 🦀 (底层) · Python 🐍 (脚本/数据) · TypeScr
 ### 横切 · 入口 · Rust
 
 - [alertx](https://github.com/ZoneCNH/alertx) — 告警引擎
-- [x.go](https://github.com/ZoneCNH/x.go) — 主程序，编排所有引擎
+- [x.go](https://github.com/ZoneCNH/x.go) — 组合根，负责启动、配置加载与引擎组装
 - [stdlib.rs](https://github.com/ZoneCNH/stdlib.rs) — Rust 标准库
 
 ## 📊 GitHub 统计

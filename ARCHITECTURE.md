@@ -2,135 +2,131 @@
 
 > FoundationX 量化交易基础设施的完整依赖拓扑
 >
-> 按职责域组织，域内模块平级协作，域间按数据流方向依赖
+> 按职责域组织，拆分代码依赖、业务流与运行时组装视角
 
-## 依赖关系图
+## 架构视图
+
+依赖、业务流和运行时组装刻意分开呈现：业务数据从数据域走向执行域，代码依赖不反向穿透；`x.go` 是组合根（Composition Root），不是业务链路终点。
+
+### 代码依赖拓扑
 
 ```
-                           xlib-standard ← 基础库规范，基座的前置依赖
-                                │
-                                ▼
-┌──────────────────────────────────────────────────────────────────────────────┐
-│                           基座 (Foundation)                                   │
-│                                                                              │
-│   kernel → configx · observex · testkitx · resiliencx · schedulex · xlibgate │
-│                                                                              │
-│   redisx · kafkax · natsx · postgresx · taosx · ossx · clickhousex           │
-│                                                                              │
-│   contracts                                                                  │
-└──────────────────────────────────────────────────────────────────────────────┘
-                                │
-                    ┌───────────┴───────────┐
-                    ▼                       │
-┌──────────────────────────────────────────────────────────────────────────────┐
-│                     L2.5 领域共享层 (Domain Shared)                           │
-│                                                                              │
-│   decimalx · domain-market · domain-exchange · domain-macro                  │
-│                                                                              │
-│   上层模块统一依赖此层，避免重复定义领域模型                                     │
-└──────────────────────────────────────────────────────────────────────────────┘
-                                │
-        ┌───────────────────────┼───────────────────────┐
-        ▼                       ▼                       ▼
-┌──────────────┐  ┌──────────────────────┐  ┌──────────────────────┐
-│ market-data  │  │   macro-data         │  │  alternative-data    │
-│  SDK(14)     │  │    (10)              │  │  链上·社交·新闻NLP   │
-│ +Provider(5) │  │                      │  │                      │
-└──────┬───────┘  └──────────┬───────────┘  └──────────┬───────────┘
-       └──────────────────────┼─────────────────────────┘
-                              │
-                      ┌───────┴───────┐
-                      │   数据域       │
-                      │  (Data)       │
-                      └───────┬───────┘
-                              │
-                              ▼
-┌──────────────────────────────────────────────────────────────────────────────┐
-│                           分析域 (Analytics)                                  │
-│                                                                              │
-│    ┌──────────────┐    ┌──────────────┐    ┌──────────────┐                  │
-│    │ factor-engine │◄──►│ feature-store │◄──►│ factor-eval  │                  │
-│    └──────────────┘    └──────────────┘    └──────────────┘                  │
-│              ▲                  ▲                  ▲                          │
-│              └──────────────────┼──────────────────┘                          │
-│                        互相反馈，非线性                                        │
-└──────────────────────────────────────────────────────────────────────────────┘
-                              │
-                              ▼
-┌──────────────────────────────────────────────────────────────────────────────┐
-│                           决策域 (Decision)                                   │
-│                                                                              │
-│    ┌──────────────┐    ┌──────────────┐    ┌──────────────┐                  │
-│    │signal-factory│    │backtest-engine│    │  optimizer   │                  │
-│    └──────┬───────┘    └──────┬───────┘    └──────┬───────┘                  │
-│           └──────────────────┼────────────────────┘                          │
-│                      并行协作，回测反馈因子评估                                 │
-│                                                                              │
-│    ┌──────────────┐                                                           │
-│    │  strategies  │  策略研究与参考库                                          │
-│    └──────────────┘                                                           │
-└──────────────────────────────────────────────────────────────────────────────┘
-                              │
-                              ▼
-┌──────────────────────────────────────────────────────────────────────────────┐
-│                           执行域 (Execution)                                  │
-│                                                                              │
-│    ┌──────────────┐    ┌──────────────┐    ┌──────────────┐                  │
-│    │ risk-engine   │───►│ order-engine  │───►│portfolio-    │                  │
-│    │              │    │              │    │engine        │                  │
-│    └──────────────┘    └──────────────┘    └──────────────┘                  │
-│                                                                              │
-│    ┌──────────────┐                                                          │
-│    │ settlement   │                                                          │
-│    └──────────────┘                                                          │
-└──────────────────────────────────────────────────────────────────────────────┘
-                              │
-                              ▼
-┌──────────────────────────────────────────────────────────────────────────────┐
-│                              x.go                                            │
-└──────────────────────────────────────────────────────────────────────────────┘
+依赖方向：左侧模块可以导入右侧模块。
 
-横切关注点（贯穿所有域）：
+x.go ───────────────► 基座 / L2.5 / 数据域 / 分析域 / 决策域 / 执行域
+
+数据域 ─┐
+分析域 ─┼──────────► L2.5 Domain Shared ─────► xlib-standard
+决策域 ─┤             decimalx · domain-market · domain-exchange · domain-macro
+执行域 ─┘
+   │
+   ├───────────────► contracts
+   │                  跨域稳定端口、事件协议、DTO 契约
+   │
+   └───────────────► 基座 Foundation ─────────► xlib-standard
+                      kernel · configx · observex · testkitx · resiliencx
+                      schedulex · xlibgate · redisx · kafkax · natsx
+                      postgresx · taosx · ossx · clickhousex
+
+横切关注点：
   alertx   ─── 策略异常、风控触发告警
   observex ─── 统一 metrics / tracing / logging（同时作为基座组件提供底层能力）
+```
+
+### 业务流与反馈
+
+```
+market-data / macro-data / alternative-data
+              │
+              ▼
+factor-engine ◄──► feature-store ◄──► factor-eval
+              │                         ▲
+              ▼                         │
+signal-factory ◄── backtest-engine ─────┘
+      │              ▲
+      ▼              │
+optimizer ───────────┘
+      │
+      ▼
+risk-engine ───► order-engine ───► portfolio-engine ───► settlement
+                          │                 │
+                          └──── fills ──────┤
+                                            ▼
+决策域 ◄──── positions / PnL / exposure events
+```
+
+### 运行时组装
+
+```
+x.go
+  ├── load config
+  ├── init observability / alerting
+  ├── create data providers
+  ├── wire analytics engines
+  ├── wire decision engines
+  ├── wire execution engines
+  └── run lifecycle / graceful shutdown
 ```
 
 ## 各域说明
 
 | 域 | 职责 | 组件 |
 |------|------|------|
-| 基座 | 生命周期、依赖注入、配置、可观测、存储、契约 | xlib-standard, kernel, configx, observex, testkitx, resiliencx, schedulex, xlibgate, redisx, kafkax, natsx, postgresx, taosx, ossx, clickhousex, contracts |
-| L2.5 | 领域共享模型，上层统一依赖 | decimalx, domain-market, domain-exchange, domain-macro |
+| 基座 | 生命周期、依赖注入、配置、可观测、存储、稳定契约 | xlib-standard, kernel, configx, observex, testkitx, resiliencx, schedulex, xlibgate, redisx, kafkax, natsx, postgresx, taosx, ossx, clickhousex, contracts |
+| L2.5 | 领域值对象和语义模型，上层统一依赖 | decimalx, domain-market, domain-exchange, domain-macro |
 | 数据域 | 行情、宏观、另类数据采集 | market-data (14 SDK + 5 Provider), macro-data (10), alternative-data |
-| 分析域 | 因子计算、特征存储、因子评估（互相反馈） | factor-engine, feature-store, factor-eval |
+| 分析域 | 因子计算、特征存储、因子评估、市场/宏观环境分类（互相反馈） | factor-engine, feature-store, factor-eval, market_regime, macro_regime |
 | 决策域 | 信号生成、历史回测、参数优化（并行协作） | signal-factory, backtest-engine, optimizer, strategies |
 | 执行域 | 风险管理、订单执行、组合管理、结算 | risk-engine, order-engine, portfolio-engine, settlement |
-| 入口 | 启动、配置加载、引擎组装 | x.go |
+| 入口 | 启动、配置加载、依赖组装、生命周期控制 | x.go |
 | 横切 | 告警、可观测性 | alertx, observex |
 
-## 域间关系
+## 边界与接口职责
 
-```
-数据域 ────→ 分析域 ────→ 决策域 ────→ 执行域 ────→ x.go
-              ▲            │               │
-              └────────────┘               │
-                   反馈                     └──► 再平衡与策略调整反馈
-```
+| 边界 | 放什么 | 不放什么 |
+|------|--------|----------|
+| `L2.5` | 多个业务域共享的领域值对象、枚举、语义模型 | Provider 实现、策略逻辑、执行策略 |
+| `contracts` | 跨域稳定端口、事件协议、DTO 契约 | 域内接口、临时适配器、通用工具函数、领域模型全集 |
+| `x.go` | 配置加载、依赖创建、模块 wiring、生命周期管理 | 因子计算、信号判断、风控规则、订单路由 |
+| `observex` / `alertx` | 指标、追踪、日志、告警事件 | 业务决策和风控放行逻辑 |
 
-- **数据域 → 分析域**：单向，原始数据流入因子计算
-- **分析域 ↔ 决策域**：双向，因子驱动信号生成，回测结果反馈因子评估
-- **决策域 → 执行域**：单向，信号经风控后提交执行
-- **执行域 → 决策域**：反馈，执行结果影响组合再平衡和策略调整
+## 域间关系与反馈
+
+- **数据域 → 分析域**：单向，原始数据和标准化行情进入因子计算。
+- **分析域 ↔ 决策域**：因子驱动信号生成；回测结果和评估指标反馈到 factor-eval / feature-store。
+- **决策域 → 执行域**：信号必须先经过 risk-engine，禁止绕过风控直接调用 order-engine。
+- **执行域 → 决策域**：通过 fills / positions / PnL / exposure events 反馈组合再平衡和策略调整，不反向直接调用决策内部实现。
+- **x.go → 各域**：只做启动和组装依赖，不参与业务链路计算。
+
+## 依赖守卫
+
+| 守卫 | 允许 | 禁止 | 验收方式 |
+|------|------|------|----------|
+| 业务域依赖 | 数据域/分析域/决策域/执行域导入 L2.5、contracts 和基座 | 业务域互相导入实现包，尤其执行域反向导入决策域 | `go list` 或依赖图中无业务域实现包反向边 |
+| 决策到执行 | signal-factory / optimizer 通过 risk-engine 提交执行意图 | 绕过 risk-engine 直接调用 order-engine 或交易所 SDK | paper trade 链路能证明 risk gate 必经 |
+| 执行反馈 | fills / positions / PnL / exposure 以事件进入决策域 | execution 包同步调用 strategy / backtest 内部实现 | 事件 topic、DTO 和消费方在 contracts 固化 |
+| contracts | 跨域端口、事件协议、DTO | 领域模型全集、通用工具、域内临时接口 | 新增契约必须说明消费方、生产方和稳定期 |
+| x.go | 读取配置、创建依赖、连接模块、管理生命周期 | 因子计算、信号生成、风控判断、订单路由 | 入口包只出现 wiring / lifecycle 测试 |
+
+## 契约固化优先级
+
+1. **数据输入契约**：MarketDataProvider / MacroDataProvider
+2. **因子契约**：FactorInput / FactorOutput / FactorEvaluation
+3. **决策契约**：SignalIntent / PortfolioTarget
+4. **执行契约**：RiskDecision / OrderIntent / ExecutionReport
+5. **反馈契约**：PositionSnapshot / PnLReport / ExposureEvent
 
 ## 核心设计原则
 
 1. **风控是独立引擎** — 策略只能通过 risk-engine 提交订单，不能直接调用 order-engine
-2. **回测与实盘共享代码** — signal-factory / factor-engine / risk-engine 同一套，backtest-engine 只替换数据源
-3. **contracts 定义一切接口** — 域间通过 contracts 的接口通信，实现可替换
-4. **数据不跨域** — 数据域只负责采集和存储，因子计算在分析域，策略逻辑在决策域
-5. **执行抽象交易所差异** — order-engine 对上层暴露统一接口，内部适配各交易所
-6. **x.go 只做编排** — 不含业务逻辑，仅负责启动、配置加载和引擎组装
-7. **域内平级协作** — 同域模块不编号、不分先后，按需协作
+2. **回测与实盘共享代码** — signal-factory / factor-engine / risk-engine 同一套，backtest-engine 只替换数据源和撮合/回放环境
+3. **contracts 只定义跨域稳定契约** — 跨域端口、事件协议、DTO 放在 contracts；域内接口留在域内，领域值对象放在 L2.5
+4. **领域语义沉到 L2.5** — 多域共享的 Price/Qty/Tick/Quote/MacroPoint 等模型统一来自 decimalx / domain-*，避免各域重复定义
+5. **数据职责不跨域** — 数据域只负责采集、标准化和存储，因子计算在分析域，策略逻辑在决策域
+6. **执行抽象交易所差异** — order-engine 对上层暴露统一接口，内部适配各交易所
+7. **反馈通过事件表达** — 执行结果、仓位、PnL、风险暴露以事件反馈决策域，避免执行域反向调用决策内部实现
+8. **x.go 只做组合根** — 不含业务逻辑，仅负责启动、配置加载、依赖组装和生命周期控制
+9. **域内平级协作** — 同域模块不编号、不分先后，按需协作
 
 ## 进度校准标准
 
@@ -161,7 +157,7 @@
 | 基座 | [taosx](https://github.com/ZoneCNH/taosx) | - | ✅ 已有 | █░░░ 15% | TDengine，仅骨架 |
 | 基座 | [ossx](https://github.com/ZoneCNH/ossx) | - | ✅ 已有 | █░░░ 15% | 对象存储，仅骨架 |
 | 基座 | [clickhousex](https://github.com/ZoneCNH/clickhousex) | - | ✅ 已有 | █░░░ 15% | ClickHouse，仅骨架 |
-| 基座 | [contracts](https://github.com/ZoneCNH/contracts) | - | ✅ 已有 | ███░ 80% | 跨模块接口契约，191KB/27 项 |
+| 基座 | [contracts](https://github.com/ZoneCNH/contracts) | - | ✅ 已有 | ███░ 80% | 跨域稳定端口/事件/DTO 契约，191KB/27 项 |
 | **L2.5 · 领域共享层** ||||||
 | L2.5 | [decimalx](https://github.com/ZoneCNH/decimalx) | v0.1.0 | ✅ P0 | ███░ 80% | 高精度十进制类型（Decimal/Price/Qty/Ratio/Money） |
 | L2.5 | [domain-market](https://github.com/ZoneCNH/domain-market) | v0.1.0 | ✅ P0 | ███░ 80% | 市场数据域模型（Tick/Quote/Bar/OrderBook） |
@@ -204,6 +200,8 @@
 | 分析域 | [factor-engine](https://github.com/ZoneCNH/factor-engine) | - | 🔨 已创建 | ░░░░ 5% | 从原始数据计算 alpha 因子 |
 | 分析域 | [feature-store](https://github.com/ZoneCNH/feature-store) | - | 🔨 已创建 | ░░░░ 5% | 因子版本管理、IC 评估 |
 | 分析域 | [factor-eval](https://github.com/ZoneCNH/factor-eval) | - | 🔨 已创建 | ░░░░ 5% | IC/IR/换手率评估 |
+| 分析域 | [market_regime](https://github.com/ZoneCNH/market_regime) | - | 🔨 已创建 | ░░░░ 5% | 市场状态识别（牛熊震荡/趋势/波动率环境分类） |
+| 分析域 | [macro_regime](https://github.com/ZoneCNH/macro_regime) | - | 🔨 已创建 | ░░░░ 5% | 宏观经济体制识别（通胀/衰退/复苏等环境分类） |
 | **决策域** ||||||
 | 决策域 | [signal-factory](https://github.com/ZoneCNH/signal-factory) | - | 🔨 已创建 | ░░░░ 5% | 多因子信号生成、过滤、评分 |
 | 决策域 | [backtest-engine](https://github.com/ZoneCNH/backtest-engine) | - | 🔨 已创建 | ░░░░ 5% | 事件驱动回测、Tick 级回放 |
@@ -215,7 +213,7 @@
 | 执行域 | [portfolio-engine](https://github.com/ZoneCNH/portfolio-engine) | - | 🔨 已创建 | ░░░░ 5% | 多策略资金分配、再平衡 |
 | 执行域 | [settlement](https://github.com/ZoneCNH/settlement) | - | 🔨 已创建 | ░░░░ 5% | PnL 计算、交易所对账 |
 | **入口** ||||||
-| 入口 | [x.go](https://github.com/ZoneCNH/x.go) | v0.0.1 | ✅ 已有 | ███░ 80% | 主程序，2.8MB/33 项 |
+| 入口 | [x.go](https://github.com/ZoneCNH/x.go) | v0.0.1 | ✅ 已有 | ███░ 80% | 组合根，2.8MB/33 项 |
 | **横切** ||||||
 | 横切 | [alertx](https://github.com/ZoneCNH/alertx) | - | 🔨 已创建 | ░░░░ 5% | 策略异常、风控触发告警 |
 | 横切 | [observex](https://github.com/ZoneCNH/observex) | v0.3.1 | ✅ 已有 | ███░ 80% | 可观测性（同时归属基座，提供底层 metrics/tracing/logging） |
@@ -229,16 +227,21 @@ Phase 0: 领域共享层 ← decimalx + domain-market + domain-exchange + domain
          ✅ 已完成 (v0.1.0)，所有上层模块已依赖此层
 
 Phase 1: 分析域   ← factor-engine + feature-store + factor-eval
-         数据变现第一步，依赖数据域已有能力
+         先固化 MarketDataProvider / FactorInput / FactorOutput；
+         退出条件是 market provider → factor-engine → factor-eval 可跑通
 
 Phase 2: 决策域   ← signal-factory + backtest-engine + optimizer
-         有了因子才能生成信号和回测
+         先固化 SignalIntent / PortfolioTarget；
+         退出条件是 signal → backtest → factor feedback 可跑通
 
 Phase 3: 执行域   ← risk-engine + order-engine + portfolio-engine
-         风控通过后才能执行
+         先固化 RiskDecision / OrderIntent / ExecutionReport；
+         退出条件是 signal → risk-engine → paper order-engine → portfolio update 可跑通
 
 Phase 4: 平台化   ← settlement + alertx + alternative-data
-         生产化运维能力
+         先固化 PositionSnapshot / PnLReport / ExposureEvent；
+         生产化运维能力；执行反馈以事件回到决策域
 
-Phase 5: 入口     ← x.go 最终编排
+Phase 5: 入口验收 ← x.go
+         只补最终 wiring 和生命周期，验证完整闭环，不新增业务逻辑
 ```
