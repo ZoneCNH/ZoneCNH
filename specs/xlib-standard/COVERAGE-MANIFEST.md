@@ -15,7 +15,7 @@ Input-Count: 154
 | `<upstream:tree>`          | 上游 tree sha（**当前未固定，占位待补**） |
 | `<external:Downloads>` | 上游仓库外的本地外部规划文档目录（非仓库 tracked） |
 
-> **当前缺口**：本清单未绑定 upstream commit sha 与逐文件 sha256；任何跨机器复现仍需补充 source pack 或 digest。这是已知结构缺口（已纳入 `SPEC.md` §19 OQ-008 / §20 R-011 跟踪）。
+> **当前缺口**：本清单未绑定 upstream commit sha 与逐文件 sha256；任何跨机器复现仍需补充 source pack 或 digest。这是已知结构缺口（已纳入 `SPEC.md` §23 OQ-008 / 附录 A R-011 跟踪，并由 §22.4 NG-34 在 release 阶段强制固定）。
 
 ## 覆盖摘要
 

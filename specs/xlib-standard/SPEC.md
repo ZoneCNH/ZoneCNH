@@ -44,7 +44,7 @@ xlib-standard 是 FoundationX 量化交易基础设施的**基础库标准工厂
 
 1. **Standard Source**：定义所有基础库必须遵守的标准、规则和契约（419 条 RULE-*，203 条 docs/standard/ 规则）
 2. **Go Reference Template**：提供可编译的 Go 参考模板，通过 `scripts/render_template.sh` 生成下游基础库
-3. **Generator**：模板渲染器，将 `{{MODULE_NAME}}`/`{{MODULE_PATH}}`/`{{PACKAGE_NAME}}` 替换为具体库的标识
+3. **Generator**：模板渲染器，将 Go text/template 占位符 `{{.Module}}` / `{{.Package}}` / `{{.ModulePath}}` 替换为具体库的标识（详见 §9.1.1 / FR-015）
 4. **Harness**：Gate 执行控制面，定义 66 个 gate 条目（44 required_gates + 10 extended_gates + 6 final_gates + 6 goalcli_mva_gates）和 4 个 Context Profiles；大写 MVA 条目按 alias 处理，不生成第二套权威 gate
 5. **Evidence Runtime**：管理 Evidence Ledger（`.agent/evidence/ledger.jsonl`），证明所有声明的真实性
 6. **Debt Governance Runtime**：7 类技术债治理（ARCH/DEP/DOMAIN/DOCS/TEST/IMPL/SEC），40+ 条规则
@@ -140,23 +140,23 @@ xlib-standard 本身不包含业务逻辑，不依赖 x.go，不读取生产密�
 
 ## 6. 消费者（Consumers）
 
-| 消费者 | 层级 | 消费方式 | 采纳状态 |
-|--------|------|----------|----------|
-| kernel | L0 | 生成模板 + 标准继承 | not_adopted |
-| configx | L1 | 生成模板 + 标准继承 | not_adopted |
-| observex | L1 | 生成模板 + 标准继承 | not_adopted |
-| testkitx | L1 | 生成模板 + 标准继承 | not_adopted |
-| resiliencx | L1 | 生成模板 + 标准继承 | not_adopted |
-| schedulex | L1 | 生成模板 + 标准继承 | not_adopted |
-| redisx | L2 | 生成模板 + L2 适配规范 | not_adopted |
-| kafkax | L2 | 生成模板 + L2 适配规范 | not_adopted |
-| natsx | L2 | 生成模板 + L2 适配规范 | not_adopted |
-| postgresx | L2 | 生成模板 + L2 适配规范 | not_adopted |
-| taosx | L2 | 生成模板 + L2 适配规范 | not_adopted |
-| ossx | L2 | 生成模板 + L2 适配规范 | not_adopted |
-| clickhousex | L2 | 生成模板 + L2 适配规范 | not_adopted |
+| 消费者 | 领域 / 层级 | 消费方式 | 采纳状态 |
+|--------|-------------|----------|----------|
+| kernel | 基座 / L0 | 生成模板 + 标准继承 | not_adopted |
+| configx | 基座 / L1 | 生成模板 + 标准继承 | not_adopted |
+| observex | 基座 / L1（横切） | 生成模板 + 标准继承 | not_adopted |
+| testkitx | 基座 / L1 | 生成模板 + 标准继承 | not_adopted |
+| resiliencx | 基座 / L1 | 生成模板 + 标准继承 | not_adopted |
+| schedulex | 基座 / L1 | 生成模板 + 标准继承 | not_adopted |
+| redisx | 基座 / L2 | 生成模板 + L2 适配规范 | not_adopted |
+| kafkax | 基座 / L2 | 生成模板 + L2 适配规范 | not_adopted |
+| natsx | 基座 / L2 | 生成模板 + L2 适配规范 | not_adopted |
+| postgresx | 基座 / L2 | 生成模板 + L2 适配规范 | not_adopted |
+| taosx | 基座 / L2 | 生成模板 + L2 适配规范 | not_adopted |
+| ossx | 基座 / L2 | 生成模板 + L2 适配规范 | not_adopted |
+| clickhousex | 基座 / L2 | 生成模板 + L2 适配规范 | not_adopted |
 
-> 注：L2 适配器共 7 个。docs/l2/ 目录下有 15 个执行计划文件，覆盖上述 7 个 L2 适配器 + xlib-standard 自身 + testkitx + xlibgate + xgo-market-data + xgo-macro-data + engines + xgo runtime system gate。
+> 注：L0/L1/L2 是**基座领域内部**的依赖层级编号（详见 §15.1、ARCHITECTURE.md），不与"基座/数据域/分析域/决策域/执行域/入口"领域命名冲突。L2 适配器共 7 个。docs/l2/ 目录下有 15 个执行计划文件，覆盖上述 7 个 L2 适配器 + xlib-standard 自身 + testkitx + xlibgate + xgo-market-data + xgo-macro-data + engines + xgo runtime system gate。
 
 | 消费者 | 领域 / 层级 | 消费方式 | 采纳状态 |
 |--------|------|----------|----------|
@@ -316,8 +316,8 @@ THEN 返回新副本，secret/token/password/key 字段被替换为 `***`
 
 ### FR-015: render_template.sh 渲染
 
-WHEN 执行 `scripts/render_template.sh --module <module> --name <name> --package <package> --out <path>`
-THEN `--module`、`--name`、`--package` 和 `--out` 分别驱动 module path、module name、package name 和输出目录渲染，模板中的 `{{MODULE_NAME}}`/`{{MODULE_PATH}}`/`{{PACKAGE_NAME}}` 全部替换为实际值，输出目录结构完整
+WHEN 执行 `scripts/render_template.sh --module <module-path> --name <module-name> --package <package> --out <path>`
+THEN `--module` 驱动 `{{.ModulePath}}`（Go module path，如 `github.com/ZoneCNH/kernel`）、`--name` 驱动 `{{.Module}}`（短模块名，用于类型名前缀，如 `Kernel`）、`--package` 驱动 `{{.Package}}`（Go 包名，如 `kernel`）、`--out` 驱动输出目录；模板中所有 `{{.Module}}` / `{{.Package}}` / `{{.ModulePath}}` 占位符必须全部替换为实际值，输出目录结构完整
 
 WHEN 渲染目标目录已存在
 THEN 不覆盖已有文件，返回警告
@@ -1117,6 +1117,7 @@ const (
 | `rollback_policy`             | `RollbackPolicy`  |  ✅  | 回滚策略文件存在与摘要（NG-20）        |
 | `docker_toolchain_parity`     | `object`          |  ✅  | parity 证明（NG-21）                   |
 | `toolchain_drift_report`      | `object`          |  ✅  | docs/workflow/manifest 间一致性（NG-07 复核） |
+| `trace_coverage_todo_count`   | `int`             |  ✅  | TRACEABILITY 中 `[行级证据 TODO]` 数量（NG-33 输入） |
 | `checks`                      | `[]CheckResult`   |  ✅  | 各 gate 结果                          |
 | `contracts`                   | `[]ContractRef`   |  ✅  | 接口 / schema 锚点                    |
 | `dependencies`                | `[]Dependency`    |  ✅  | go.mod 关键 require                   |
@@ -1234,10 +1235,10 @@ type AdoptionRecord struct {
 | EC-002 | canceled / expired context | 传入 `ctx, _ := context.WithCancel(...); cancel(); New(ctx, cfg)` | 立即返回 `ErrorKindTimeout` 或 `ErrorKindUnavailable`；不发起远端连接 | TC-003 | FR-013 / FR-014 |
 | EC-003 | 多次 / 并发 Close | 同一 client `Close()` 调用 N 次（N≥2），可能并发 | 幂等：每次返回 nil；底层资源只释放一次；无 race | TC-004 / TC-008 | FR-009 |
 | EC-004 | 并发 New / Close | N goroutine 同时 `New(ctx, cfg)` 然后 `Close(ctx)` | 无 race（`go test -race` 通过）；无 FD/goroutine 泄漏（XS-CORE-011） | TC-008 | FR-009 |
-| EC-005 | 资源耗尽 | 连接池 / FD / 内存达到上限 | 返回 `ErrorKindUnavailable` 或 `ErrorKindRateLimit`；保留 cause；不 OOM | （扩展 TC） | FR-010 |
+| EC-005 | 资源耗尽 | 连接池 / FD / 内存达到上限 | 返回 `ErrorKindUnavailable` 或 `ErrorKindRateLimit`；保留 cause；不 OOM | TC-016 | FR-010 |
 | EC-006 | Sanitize 嵌套 nil map | `Config{Nested: nil}` 调用 `Sanitize()` | 返回有效 Config 副本；不 panic；nil 字段保持 nil | TC-006 | FR-014 |
 | EC-007 | HealthCheck 超时 | 下游不可达，传入 `timeoutCtx` (timeout=1ms) | 返回 `status=unhealthy / degraded`；`latency_ms ≤ timeout+epsilon`；不挂起 | TC-005 | FR-012 |
-| EC-008 | Validate 在 nil receiver | `var c *Config; c.Validate()` | 返回 `ErrorKindValidation`；禁止 panic（防御性检查） | （扩展 TC） | FR-014 |
+| EC-008 | Validate 在 nil receiver | `var c *Config; c.Validate()` | 返回 `ErrorKindValidation`；禁止 panic（防御性检查） | TC-017 | FR-014 |
 | EC-009 | Sanitize 修改返回值不影响原对象 | `s := cfg.Sanitize(); s.X = ...` | 原 `cfg` 字段不变；map/slice 不共享底层 | TC-007 | FR-014 / XS-CORE-008 |
 | EC-010 | 隐式 secret 路径读取 | 设置 `$HOME=/home/k8s` 后调用 `New(ctx, Config{})` 试图读取生产 secret | enforcer 拒绝隐式读取；返回 `ErrorKindConfig`；详见 §19.1 XS-CORE-016 | TC-009 | FR-013 |
 
@@ -1427,13 +1428,15 @@ Release ladder：
 | TC-013 | TL2 Truth-state | FR-006 / §13.2 | `adoption_status=registered` 直接尝试 → `adopted` | enforcer 拒绝；返回禁止转换原因；详见 §10.7 / FR-051 |
 | TC-014 | TL2 Contract | FR-010 / §12.1 | `IsKind(err, ErrorKindTimeout)` 应用于 `WrapError(ErrorKindTimeout, cause, "")` | 返回 true；`errors.Is(err, cause)` 也必须为 true |
 | TC-015 | TL1 Unit | FR-011 | `Metrics()` 返回值 | 长度 == 9；命名匹配 §18.1 表；无重复 |
+| TC-016 | TL2 Boundary | FR-010 / EC-005 | 注入连接池/FD/内存上限（fake limiter），调用 `New` / `client` 操作 | 返回 `ErrorKindUnavailable` 或 `ErrorKindRateLimit`；保留 cause（`errors.Is` 命中）；进程不 OOM |
+| TC-017 | TL1 Unit | FR-014 / EC-008 | `var c *Config; c.Validate()`（nil receiver） | 返回 `ErrorKindValidation`；禁止 panic（防御性检查） |
 
 **追溯绑定**：
 
 - 每条 TC 必须落到一个具体 Go test 函数（`Test<TC编号>` 或 `TestFR<NNN>_<scenario>`）。
 - 每条 TC 必须有对应的 `Evidence Ledger` 行（FR-026 / §10.5）；失败时 `status=failed` 不得删除（FR-032）。
 - 本表不替代 harness.yaml gate；harness 通过运行 `go test` + 解析 JUnit 输出消费这些 TC。
-- 下游模块在自身 SPEC §16 至少为该模块独有 FR 增补 ≥1 TC，并继承本表 TC-001..TC-015 作为"基础合规集"。
+- 下游模块在自身 SPEC §16 至少为该模块独有 FR 增补 ≥1 TC，并继承本表 TC-001..TC-017 作为"基础合规集"。
 
 ---
 
@@ -1634,7 +1637,7 @@ v1 提出概念 → v2 审计补全 → v3 修补 P0 缺口 → v5 终极版
 - [ ] Scorecard 总分 ≥ 9.8
 - [ ] release-final-check 通过
 - [ ] preflight 通过
-- [ ] §22.5 37 项 No-Go 全部为 ✅
+- [ ] §22.4 37 项 No-Go 全部为 ✅
 
 ### 22.2 DONE with evidence 模板
 
@@ -1697,7 +1700,7 @@ DONE with evidence:
 | NG-33  | TRACEABILITY 行级缺口超阈值 | `goalcli trace-coverage` | `pack/trace-coverage.json` |
 | NG-34  | COVERAGE-MANIFEST commit/tree 未固定 | `goalcli coverage-pin-check` | `pack/coverage-pin.json` |
 | NG-35  | downstream 模块未生成 adoption proof（首次 release 例外） | `goalcli adoption-proof` | `pack/adoption-proof.json` |
-| NG-36  | 13 项 xlibgate 硬性失败任一触发 | `xlibgate verify` | `pack/xlibgate-verify.json` |
+| NG-36  | 7 项 xlibgate 硬性失败任一触发（详见 §12.3） | `xlibgate verify` | `pack/xlibgate-verify.json` |
 | NG-37  | scorecard < 9.8 | `goalcli scorecard` | `latest.json.score >= 9.8` |
 
 ### 22.5 Patch 自动发布
@@ -1888,7 +1891,7 @@ Goal Runtime：`.agent/evidence/ledger.jsonl` 是目标执行源 ledger；`GOAL_
 | 指标 | 数值 |
 |------|------|
 | 输入文件总数（当前整理口径） | 154 |
-| 主规格工件总行数（不含 archive） | 2,592（SPEC 2007 + CONFLICT 180 + COVERAGE 201 + TRACEABILITY 148 + README 56） |
+| 主规格工件总行数（不含 archive） | 2,595（SPEC 2010 + CONFLICT 180 + COVERAGE 201 + TRACEABILITY 148 + README 56） |
 | 规则总数 | 419 |
 | P0 active | 119 (100%) |
 | P1 active | 244 |

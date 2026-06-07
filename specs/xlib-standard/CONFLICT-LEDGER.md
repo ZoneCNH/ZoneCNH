@@ -9,7 +9,7 @@ Last-Updated: 2026-06-08
 
 取舍：`xlib-standard` 不实现真实 L1/L2 provider runtime，也不承载业务。它只提供参考模板、契约、门禁和证据机制。
 
-Resolved-in: SPEC.md §0、§2.1
+Resolved-in: SPEC.md §1、§2.1
 
 ## 2. `corekit`、`foundationx`、`baselib-template` 的身份
 
@@ -17,7 +17,7 @@ Resolved-in: SPEC.md §0、§2.1
 
 取舍：当前主身份是 `xlib-standard`。`corekit` 仅为中性组织路径 smoke/registry 目标；`foundationx` 和 `baselib-template` 仅为迁移上下文。
 
-Resolved-in: SPEC.md §0、§17.4
+Resolved-in: SPEC.md §1、§2.1（事实层级）、§5（Non-goals）
 
 ## 3. 默认下游范围
 
@@ -25,7 +25,7 @@ Resolved-in: SPEC.md §0、§17.4
 
 取舍：默认代表下游为 `kernel`、`configx`、`redisx`。全部 L2 是矩阵和路线图对象；`x.go` 是 consumer-review-only。
 
-Resolved-in: SPEC.md §5、§17.4
+Resolved-in: SPEC.md §5、§6
 
 ## 4. `cmd/goalcli` vs scripts
 
@@ -33,7 +33,7 @@ Resolved-in: SPEC.md §5、§17.4
 
 取舍：`cmd/goalcli` 是规范入口。Makefile 可以包装；scripts 可以保留为 delegated helper 或兼容层，但不能成为事实裁决源。
 
-Resolved-in: SPEC.md §6.7（FR-042）、§17.5
+Resolved-in: SPEC.md §7.7（FR-042）、§9.3
 
 ## 5. `.config/xlib` strict root vs 当前 `.agent` / `.xlib`
 
@@ -49,7 +49,7 @@ Resolved-in: SPEC.md §14
 
 取舍：当前规格保留 `render_template.sh` 为入口，同时把 allowlist materialization、pathguard、symlink/case/path traversal/go:embed 检查列为目标约束。
 
-Resolved-in: SPEC.md §6.3（FR-015~017）、§17.4
+Resolved-in: SPEC.md §7.3（FR-015~017）、§14
 
 ## 7. Downstream sync plan vs adoption proof
 
@@ -57,7 +57,7 @@ Resolved-in: SPEC.md §6.3（FR-015~017）、§17.4
 
 取舍：downstream sync plan 只生成本地计划。Adoption 只能由下游 commit、gate outputs、proof schema 和 rollback 证明。
 
-Resolved-in: SPEC.md §6.8（FR-052）、§7.5、§11
+Resolved-in: SPEC.md §7.7（FR-052）、§7.5、§11
 
 ## 8. Evidence artifact exists vs release-ready
 
@@ -65,7 +65,7 @@ Resolved-in: SPEC.md §6.8（FR-052）、§7.5、§11
 
 取舍：存在文件只是 artifact_exists。Release-ready 必须通过 release-final/preflight 和 manifest 校验。
 
-Resolved-in: SPEC.md §6.5、§16
+Resolved-in: SPEC.md §7.5（FR-026~033）、§16
 
 ## 9. Docker Toolchain Runtime
 
@@ -73,7 +73,7 @@ Resolved-in: SPEC.md §6.5、§16
 
 取舍：Docker 只是同一套门禁的可复现执行环境，不创建独立质量声明。
 
-Resolved-in: SPEC.md §17.3
+Resolved-in: SPEC.md §17.3、§D（部署细节）
 
 ## 10. `CHECK_STATUS=passed`
 
@@ -81,7 +81,7 @@ Resolved-in: SPEC.md §17.3
 
 取舍：`CHECK_STATUS=passed` 只是 evidence 生成上下文。Release 还必须通过 release-evidence-check、score、final-check 和 preflight。
 
-Resolved-in: SPEC.md §2.1、§17.1
+Resolved-in: SPEC.md §2.1、§22.3（Gate Chain）
 
 ## 11. L2 readiness 与 release
 
@@ -89,7 +89,7 @@ Resolved-in: SPEC.md §2.1、§17.1
 
 取舍：T3 才是首个 release-allowed 阶段；T4 是 factory-grade。缺失 profile、pack、readiness 或 evidence 时 fail closed。
 
-Resolved-in: SPEC.md §15.2
+Resolved-in: SPEC.md §15.2（L2 provider 规格）、§22.4 NG-22..NG-37
 
 ## 12. 远端治理证明
 
@@ -97,7 +97,7 @@ Resolved-in: SPEC.md §15.2
 
 取舍：本地文件只能定义要求。远端状态必须用 GitHub API、CI artifact、ruleset export、required checks 或 Release object 证明。
 
-Resolved-in: SPEC.md §20.1
+Resolved-in: SPEC.md §A.1（附录 A 远端治理不可本地证明项）、§13.2.3、§22.4 NG-24..NG-27
 
 ## 13. v1.0.0 状态
 
@@ -121,7 +121,7 @@ Resolved-in: SPEC.md §11
 
 取舍：不 stash、不 commit、不 revert 既有改动。使用原生子代理完成分析；发布类判断中 dirty workspace 仍然是 fail-closed 条件。
 
-Resolved-in: SPEC.md §6.5（FR-031）
+Resolved-in: SPEC.md §7.5（FR-031）、§22.4 NG-16
 
 ## 16. 154 文件整理口径 vs 181 文件旧分析口径
 
@@ -129,7 +129,7 @@ Resolved-in: SPEC.md §6.5（FR-031）
 
 取舍：本次整理以 154 个输入文件为当前覆盖口径。181 口径只作为旧分析背景，不得覆盖当前主规格、追溯表或覆盖清单；`MODULE-SPEC.md` 仅作为历史参考。
 
-Resolved-in: SPEC.md §2.2、§22.1（关键数字）
+Resolved-in: SPEC.md §2.1、附录 E.1（关键数字）
 
 ## 17. 旧 Required family 口径 vs harness.yaml 66 gate 条目
 
@@ -137,7 +137,7 @@ Resolved-in: SPEC.md §2.2、§22.1（关键数字）
 
 取舍：当前可检查口径以 harness.yaml section 为准：44 required_gates、10 extended_gates、6 final_gates、6 goalcli_mva_gates，共 66 个 gate 条目。大写 MVA 条目按 alias 处理，不生成第二套权威 gate；发布验收以 `SPEC.md` 的 release-final、preflight 和 evidence 要求为准。
 
-Resolved-in: SPEC.md §6.4（FR-020）、§13.2
+Resolved-in: SPEC.md §7.4（FR-020）、§13.2、§22.4
 
 ## 18. ADR 10 vs 9 formal + template/history
 
@@ -145,7 +145,7 @@ Resolved-in: SPEC.md §6.4（FR-020）、§13.2
 
 取舍：正式 ADR 按 9 个 Accepted ADR 处理。template 与 `1/2/3` 历史规划文件只作为背景；若源仓库新增 ADR，必须同步更新覆盖清单、主规格和追溯表。
 
-Resolved-in: SPEC.md §18.2、§22.1
+Resolved-in: SPEC.md §18.2、附录 E.1
 
 ## 19. 1000-pass 覆盖检查 vs 语义审查
 
@@ -153,7 +153,7 @@ Resolved-in: SPEC.md §18.2、§22.1
 
 取舍：`1000-pass` 只证明输入文件集合和清单稳定。语义结论来自 agent team 分片合成、主线程收敛、追溯表和本冲突账本；具体条款仍需后续实现和门禁验证。
 
-Resolved-in: SPEC.md §2.2
+Resolved-in: SPEC.md §2.1（事实层级）
 
 ## 20. 本地规格整理完成 vs 版本控制/发布交付
 
@@ -161,7 +161,7 @@ Resolved-in: SPEC.md §2.2
 
 取舍：本地整理完成只表示规格包内容已形成并可审阅。已进入版本控制必须由 `git status`、commit 或 tag 证明；已发布必须由 release artifact 和 GitHub Release object 证明；已采用必须由下游仓库证据证明。
 
-Resolved-in: SPEC.md §0、§2.2
+Resolved-in: SPEC.md §1（元信息）、§2.1、§A.1（远端治理）
 
 ## 21. 条款级追溯 vs 逐规则证明账本
 
@@ -169,7 +169,7 @@ Resolved-in: SPEC.md §0、§2.2
 
 取舍：追溯表只证明主规格主要条款的来源锚点。逐规则或内容级证明需要 rule id 到 source span、digest/tree sha 或 evidence artifact；发布、远端和下游状态仍按运行时证据判断。
 
-Resolved-in: SPEC.md §2.2、TRACEABILITY.md 追溯边界
+Resolved-in: SPEC.md §2.1、TRACEABILITY.md 追溯边界 / 块级追溯缺口声明
 
 ## 22. 本机绝对路径清单 vs 可移植 source bundle
 
@@ -177,4 +177,4 @@ Resolved-in: SPEC.md §2.2、TRACEABILITY.md 追溯边界
 
 取舍：该清单只证明本次分析机器上的输入集合。跨机器复现必须提供 source pack、路径映射、digest/tree sha 或重新生成覆盖清单。
 
-Resolved-in: SPEC.md §2.2、COVERAGE-MANIFEST.md 可复现边界
+Resolved-in: SPEC.md §2.1、COVERAGE-MANIFEST.md 可复现边界
