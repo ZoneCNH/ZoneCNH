@@ -1,0 +1,21 @@
+{
+  "version": "v0.0.0",
+  "commit": "",
+  "commit_short": "",
+  "generated_at": "",
+  "stats": {
+    "total_components": 0,
+    "existing": 0,
+    "planned": 0,
+    "average_progress": 0,
+    "versioned": 0,
+    "repo_count": 0,
+    "markdown_files": 0,
+    "markdown_total_lines": 0
+  },
+  "sources": {
+    "status": "STATUS.md",
+    "readme": "README.md",
+    "architecture": "ARCHITECTURE.md"
+  }
+}

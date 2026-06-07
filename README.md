@@ -13,13 +13,24 @@ Go 🐹 (主要) · Rust 🦀 (底层) · Python 🐍 (脚本/数据) · TypeScr
 > 🔄 三引擎数据流全景、M×S 联合决策矩阵与契约清单 → **[DATAFLOW.md](./DATAFLOW.md)**
 >
 > 📊 项目状态监控、健康度与风险追踪 → **[STATUS.md](./STATUS.md)**
+>
+> 🧱 Foundation v1 规格、依赖矩阵、执行跟踪与 ADR → **[module/](./module/)**
 
 ```
 入口: x.go (Composition Root: 启动 / 配置 / 组装)
       │
       ▼
-基座: xlib-standard / kernel / configx / observex / testkitx / resiliencx / schedulex
-      redisx / kafkax / natsx / postgresx / taosx / ossx / clickhousex / contracts
+标准: xlib-standard (标准事实源 / 模板 / Gate / Evidence，不参与运行时)
+      │
+      ▼
+L0: kernel (stdlib-only primitives)
+      │
+      ▼
+L1 运行时: configx / observex / resiliencx / schedulex
+L1 测试: testkitx (test-only)
+      │
+      ▼
+基座扩展: redisx / kafkax / natsx / postgresx / taosx / ossx / clickhousex / contracts
       │
       ▼
 L2.5: decimalx / domain-market / domain-exchange / domain-macro
@@ -40,14 +51,16 @@ L2.5: decimalx / domain-market / domain-exchange / domain-macro
 
 ### 基座 · 基础设施
 
-- [kernel](https://github.com/ZoneCNH/kernel) — 核心基础框架 `公开`
-- [configx](https://github.com/ZoneCNH/configx) — 配置管理模块 `公开`
-- [resiliencx](https://github.com/ZoneCNH/resiliencx) — 弹性与容错模块 `公开`
-- [observex](https://github.com/ZoneCNH/observex) — 可观测性模块 `公开`
-- [schedulex](https://github.com/ZoneCNH/schedulex) — 调度任务模块 `公开`
-- [testkitx](https://github.com/ZoneCNH/testkitx) — 测试工具包 `公开`
-- [xlib-standard](https://github.com/ZoneCNH/xlib-standard) — 基础库规范（基座的前置依赖） `公开`
-- [xlibgate](https://github.com/ZoneCNH/xlibgate) — 门禁与验证运行时 `公开`
+- [kernel](https://github.com/ZoneCNH/kernel) — L0 标准库扩展原语（error/time/context/lifecycle/health/sync） `公开`
+- [configx](https://github.com/ZoneCNH/configx) — 显式配置加载、合并、校验、脱敏与 provenance `公开`
+- [observex](https://github.com/ZoneCNH/observex) — vendor-neutral 日志、指标、追踪、健康与脱敏契约 `公开`
+- [resiliencx](https://github.com/ZoneCNH/resiliencx) — 运行时弹性策略（timeout/retry/circuit/bulkhead/rate/fallback） `公开`
+- [schedulex](https://github.com/ZoneCNH/schedulex) — 确定性任务调度（trigger/clock/misfire/overlap/jitter） `公开`
+- [testkitx](https://github.com/ZoneCNH/testkitx) — 测试专用 evidence/golden/fixture/boundary 工具包 `公开`
+- [xlib-standard](https://github.com/ZoneCNH/xlib-standard) — 标准事实源、模板、Gate 与 Evidence；不作为运行时依赖 `公开`
+- [xlibgate](https://github.com/ZoneCNH/xlibgate) — import 边界、go.mod、Go baseline、release evidence 门禁 `公开`
+
+> 当前 P0：先修正 `resiliencx` 的标准模板叙事，避免与 `xlib-standard` 的身份重叠。
 
 ### 基座 · 存储与中间件
 

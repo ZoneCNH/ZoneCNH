@@ -1,0 +1,162 @@
+# 发布工作流 — 版本标签推送时自动创建 GitHub Release
+#
+# 触发条件：推送 v* 格式的 tag
+# 流程：质量门禁 → 生成 release manifest → 创建 GitHub Release
+
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  # ── 1. 质量门禁：复用 docs-ci 全部检查 ─────────────────────────
+  quality-gate:
+    name: Quality Gate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Markdownlint
+        uses: DavidAnson/markdownlint-cli2-action@v19
+        with:
+          globs: "*.md"
+          config: .markdownlint.json
+
+      - name: 链接有效性检查（lychee）
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: >-
+            --verbose
+            --no-progress
+            --exclude-loopback
+            --exclude '127\.0\.0\.1'
+            --exclude 'localhost'
+            --exclude '0\.0\.0\.0'
+            --exclude 'file://'
+            --accept 200,204,301,302,403,429
+            --timeout 30
+            --max-retries 3
+            --retry-wait-time 2
+            --max-connections 8
+            --header 'Accept=text/html'
+            -- '*.md'
+          fail: true
+
+      - name: 敏感内容守卫
+        run: bash .github/ci/grep-guard.sh
+
+      - name: 状态一致性校验
+        run: bash .github/ci/status-consistency-check.sh
+
+  # ── 2. 生成 Release Manifest ──────────────────────────────────
+  build-manifest:
+    name: Build Release Manifest
+    runs-on: ubuntu-latest
+    needs: quality-gate
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 生成 release manifest
+        run: bash .github/ci/generate-release-manifest.sh
+
+      - name: 上传 manifest 产物
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-manifest
+          path: release/manifest/
+
+  # ── 3. 创建 GitHub Release ────────────────────────────────────
+  publish-release:
+    name: Publish Release
+    runs-on: ubuntu-latest
+    needs: build-manifest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 下载 manifest 产物
+        uses: actions/download-artifact@v4
+        with:
+          name: release-manifest
+          path: release/manifest/
+
+      - name: 生成 changelog
+        id: changelog
+        run: |
+          TAG="${GITHUB_REF#refs/tags/}"
+          PREV_TAG=$(git tag --sort=-version:refname | grep -A1 "^${TAG}$" | tail -1)
+
+          if [ "$PREV_TAG" = "$TAG" ] || [ -z "$PREV_TAG" ]; then
+            # 首个 tag，列出所有提交
+            RANGE="HEAD"
+            PREV_LABEL="初始版本"
+          else
+            RANGE="${PREV_TAG}..${TAG}"
+            PREV_LABEL="$PREV_TAG"
+          fi
+
+          {
+            echo "changes<<CHANGELOG_EOF"
+            echo "## 从 ${PREV_LABEL} 到 ${TAG}"
+            echo ""
+
+            # 按 conventional commits 分类
+            echo "### ✨ 新功能"
+            git log "$RANGE" --pretty=format:"- %s (%h)" --grep="^feat" 2>/dev/null || true
+            echo ""
+            echo "### 🐛 修复"
+            git log "$RANGE" --pretty=format:"- %s (%h)" --grep="^fix" 2>/dev/null || true
+            echo ""
+            echo "### 📝 文档"
+            git log "$RANGE" --pretty=format:"- %s (%h)" --grep="^docs" 2>/dev/null || true
+            echo ""
+            echo "### 🔧 其他"
+            git log "$RANGE" --pretty=format:"- %s (%h)" --invert-grep --grep="^feat" --grep="^fix" --grep="^docs" 2>/dev/null || true
+            echo ""
+            echo "CHANGELOG_EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: 读取 manifest 摘要
+        id: manifest
+        run: |
+          if [ -f "release/manifest/release-manifest.json" ]; then
+            SUMMARY=$(jq -r '
+              "组件总数: \(.stats.total_components) | 已有: \(.stats.existing) | 已创建: \(.stats.planned)\n平均进度: \(.stats.average_progress)% | 有版本号: \(.stats.versioned)"
+            ' release/manifest/release-manifest.json)
+            {
+              echo "summary<<SUMMARY_EOF"
+              echo "$SUMMARY"
+              echo "SUMMARY_EOF"
+            } >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: 创建 GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="${GITHUB_REF#refs/tags/}"
+
+          BODY="## FoundationX 文档枢纽 ${TAG}"
+          BODY+=$'\n\n'
+          BODY+="### 📊 系统快照"
+          BODY+=$'\n'
+          BODY+="${{ steps.manifest.outputs.summary }}"
+          BODY+=$'\n\n'
+          BODY+="${{ steps.changelog.outputs.changes }}"
+          BODY+=$'\n\n'
+          BODY+="---"
+          BODY+=$'\n'
+          BODY+="📎 完整 manifest 见附件"
+
+          gh release create "$TAG" \
+            --title "FoundationX ${TAG}" \
+            --notes "$BODY" \
+            release/manifest/release-manifest.json
