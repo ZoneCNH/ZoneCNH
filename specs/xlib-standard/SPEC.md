@@ -740,7 +740,7 @@ THEN 阻断后续下游同步，记录失败原因到 downstream-sync plan
 
 ---
 
-## 8. 业务规则（Business Rules）
+## 9. 业务规则（Business Rules）
 
 ### 8.1 核心铁律（Iron Rules，7 条；亦记为 BR-001..BR-007）
 
@@ -833,7 +833,7 @@ iron-rules.md > registry.yaml > *-rules.md > ADR-* > .worktree/goal-patch.md
 
 ---
 
-## 9. 接口契约（Interface Contract）
+## 10. 接口契约（Interface Contract）
 
 ### 9.1 公共 API
 
