@@ -102,7 +102,7 @@ Status: consolidated
 
 冲突：历史材料把 17+ Required Gates 与 66 gates 混用，容易被读成互相矛盾的当前验收标准。
 
-取舍：当前口径统一为 66 个 Gates 总数，其中 17 个为 Required（11 个核心 Required + 2 个 guard + 3 个 registry + 1 个 kernel downstream），49 个为 extended/governance/release 等非 Required 分类。当前发布验收以 `SPEC.md` 中的 gate 定义、release-final 和 preflight 要求为准。
+取舍：17 Required 只表示 required gate 家族；66 Gates 表示完整 harness gate 集合（17 Required + 49 扩展/治理/发布）。当前发布验收以 `SPEC.md` 中的 gate 定义、release-final 和 preflight 要求为准，不再使用 required-only 的 66-gate 表述。
 
 ## 18. ADR 10 vs 9 formal + template/history
 
