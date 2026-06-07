@@ -2,12 +2,15 @@
 
 > FoundationX 基础库标准工厂。标准源 + Go 参考模板 + Generator + Harness + Evidence Runtime + Debt Governance Runtime。
 
-- Status: Review
+- Status: Approved
 - Spec-Version: v2.0.1
 - Last-Updated: 2026-06-08
+- Approved-By: spec-review agent（第三轮终审，独立评分 9.66/10）
+- Approved-Date: 2026-06-08
+- Approved-Commit: d7a60ef（后续补 N-1 修复 commit）
 - Owner: ZoneCNH
 - Layer: 门禁（Foundation Gate，位于所有领域之上）
-- Version: v0.6.x
+- Version: v0.6.x（目标 v1.0.0-rc.1）
 - Repository: [github.com/ZoneCNH/xlib-standard](https://github.com/ZoneCNH/xlib-standard)
 - Related: [CONSTITUTION.md](../../CONSTITUTION.md), [ARCHITECTURE.md](../../ARCHITECTURE.md), [SPEC-TEMPLATE.md](../SPEC-TEMPLATE.md), [xlibgate/SPEC.md](../xlibgate/SPEC.md), [kernel/SPEC.md](../kernel/SPEC.md), [configx/SPEC.md](../configx/SPEC.md)
 
@@ -1086,7 +1089,7 @@ const (
 
 ### 10.6 Release Manifest（latest.json）
 
-> 本表字段必须**完整覆盖 §22.5 的 37 项 No-Go 条件**——每项 No-Go 都有对应的 manifest 字段或 evidence pack 引用，否则 release-final-check 无机器可读判断依据。
+> 本表字段必须**完整覆盖 §22.4 的 37 项 No-Go 条件**——每项 No-Go 都有对应的 manifest 字段或 evidence pack 引用，否则 release-final-check 无机器可读判断依据。
 
 | 字段                          | 类型              | 必填 | 说明 / 关联 No-Go                       |
 |-------------------------------|-------------------|:----:|---------------------------------------|
@@ -1129,7 +1132,7 @@ const (
 | `artifacts`                   | `[]ArtifactRef`   |  ✅  | 产物清单                              |
 | `evidence_pack_ref`           | `string`          |  ✅  | 关联 evidence pack 路径（NG-22..NG-37 由 pack 覆盖） |
 
-剩余 NG-22..NG-37 由 `evidence_pack_ref` 指向的 pack 内部 JSON 文件覆盖，详见 §22.5 完整表。
+剩余 NG-22..NG-37 由 `evidence_pack_ref` 指向的 pack 内部 JSON 文件覆盖，详见 §22.4 完整表。
 
 ### 10.7 Adoption Registry
 
@@ -1891,7 +1894,7 @@ Goal Runtime：`.agent/evidence/ledger.jsonl` 是目标执行源 ledger；`GOAL_
 | 指标 | 数值 |
 |------|------|
 | 输入文件总数（当前整理口径） | 154 |
-| 主规格工件总行数（不含 archive） | 2,595（SPEC 2010 + CONFLICT 180 + COVERAGE 201 + TRACEABILITY 148 + README 56） |
+| 主规格工件总行数（不含 archive） | 2,598（SPEC 2013 + CONFLICT 180 + COVERAGE 201 + TRACEABILITY 148 + README 56） |
 | 规则总数 | 419 |
 | P0 active | 119 (100%) |
 | P1 active | 244 |
