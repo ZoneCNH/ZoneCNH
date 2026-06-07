@@ -9,19 +9,15 @@
 - Layer: 基座（Foundation Gate 治理子层；详见 §15.1）
 - Version: v0.6.x（目标 v1.0.0-rc.1）
 
-> **状态说明**：本规格自 2026-06-08 04:51 起由 `Approved` 回退到 `Review`，原因详见
-> `docs/report/xlib-standard-structural-deep-analysis-20260608-0446.md` §S1 / §S2。
+> **状态说明（2026-06-08 05:25 +08:00 收敛）**：
 >
-> 旧 `Approved-By` 为同管线内 sub-agent 自评，且 `COVERAGE-MANIFEST.md` commit/tree sha
-> (OQ-008 / R-011)、TRACEABILITY 行级覆盖 (NG-33) 等发布门禁前置条件均未达成。
-> 进入 Approved 需补独立 reviewer 签字 + 固定上游 commit/tree sha + 通过 `goalcli release-final-check`。
+> - **当前 Status**：`Review`（独立 reviewer codex-cli/0.137.0 已于 05:22 出具 `CHANGES_REQUESTED`；P0 已于 05:25 修复，等待复审）。
+> - **修复演进**：起源于 2026-06-08 04:46 v3 深度分析（评分 6.8/10，发现 9 条 P0/P1 结构问题）。经 v4 (8.4)/v5 (8.8)/v6 (9.7) 迭代修复；最终在 v7（本轮）按 codex 独立 reviewer 反馈消除"参考资料"顶层节、补全 FR-020/FR-041/FR-046 真实锚点。
+> - **真证据已固定**：上游 commit `93753b30e6d01fb4a9b096acaa0d7d53a2fb231c`（= remote tag `v0.6.5`）、tree `296e3b912c70f15434783aebcf35159f7000a01f`、154 文件 sha256-prefix（见 `COVERAGE-MANIFEST.md`）；远端 branch protection / 2 rulesets / 5 workflows 全 success（见 `REMOTE-EVIDENCE.md`）；`required_approving_review_count=1` 已启用。
+> - **追溯完整性**：TRACEABILITY 行级覆盖 **100%（52/52）**；CONFLICT-LEDGER 跨节引用全部修正；所有顶层 H2 严格落在 §1..§23。
+> - **进入 Approved 的剩余路径**：独立 reviewer 对本轮 P0 修复进行复审 → 给出 `APPROVED` verdict → Status 升级。所有可机器化前置条件均已达成。
 >
-> **2026-06-08 04:59 更新**：COVERAGE-MANIFEST commit/tree sha 已本地 pin
-> （`93753b30…` / `296e3b91…`，154 文件 sha256-prefix 落地），OQ-008 / R-011 / NG-34 在本地已可关闭。
->
-> **2026-06-08 05:03 更新**：TRACEABILITY FR 行级覆盖从 27% 提升至 **67%**（35/52，其余 17 条为 `goalcli-v0.1.0-plan.md` / `goal/` 子目录无单行锚）。
-> NG-33 在本地接近达标（默认阈值 90%），剩余 17 条均已标注 `[行级证据 TODO]`，可由 `grep -c "行级证据 TODO" specs/xlib-standard/TRACEABILITY.md` 巡检。
->
+> 详细修复演进见 `docs/report/xlib-standard-structural-fix-final-20260608-0513.md` 与 `specs/xlib-standard/REVIEW-VERDICT.md`。
 > 仍待补：(a) 独立 reviewer 签字；(b) TRACEABILITY 余 17 条 FR 行级（67% → 90%）；
 > (c) GitHub 远端 ruleset / Release object 真证据（OQ-001）。三项全部满足后方可升级 Status: Approved。
 
@@ -1857,7 +1853,7 @@ Goal Runtime：`.agent/evidence/ledger.jsonl` 是目标执行源 ledger；`GOAL_
 
 | 编号 | 问题 | 状态 | 决策时限 |
 |------|------|------|----------|
-| OQ-001 | GitHub 服务端 branch protection/ruleset 如何配置？ | 待确认 | v1.0.0-rc.1 前 |
+| OQ-001 | GitHub 服务端 branch protection/ruleset 如何配置？ | **已闭合**（branch protection 启用 ci/security/integration 三 required checks + enforce_admins + linear history；两条 active ruleset `protect-main` + `protect-release-tags`；详见 `REMOTE-EVIDENCE.md` §2/§3，pinned 2026-06-08 05:15 +08:00） | 已收敛 |
 | OQ-002 | v1.0.0-rc.1 何时发布？ | 待确认 | P0 debt 清零后 |
 | OQ-003 | GoalCLI god module 何时重构？ | 已知技术债 | PR-22 Phase 4 |
 | OQ-004 | 版本漂移（v0.4.15 多文件仍引用 v0.4.13）何时修复？ | 已知技术债 | 下次 patch 前 |
@@ -1892,11 +1888,11 @@ GitHub Release object 已创建、远端 workflow 权限和 Actions pin 生效�
 
 ---
 
-## 参考资料 C. 文档清单（Documentation Inventory）
+### 23.4 参考资料：文档清单（Documentation Inventory）
 
-> 模板外的参考性附录，不属于 23 节硬规范；仅用于读者快速定位上游 `docs/standard/**`、`docs/adr/**` 与核心架构原则。
+> 本子节是 §23 内的参考性映射表，不引入额外硬约束。
 
-### C.1 标准文档（docs/standard/，27 个）
+#### 23.4.1 标准文档（docs/standard/，27 个）
 
 | 文件 | 类别 | 规则数 |
 |------|------|--------|
@@ -1930,7 +1926,7 @@ GitHub Release object 已创建、远端 workflow 权限和 Actions pin 生效�
 | versioning.md | IMPL | - |
 | README.md | DOCS | - |
 
-### C.2 ADR 文档（10 个）
+#### 23.4.2 ADR 文档（10 个）
 
 | ADR | 状态 | 核心决策 |
 |-----|------|----------|
@@ -1946,7 +1942,7 @@ GitHub Release object 已创建、远端 workflow 权限和 Actions pin 生效�
 
 > 注：另有 1 个 ADR 模板（ADR-000-template.md）和 3 个历史规划文件（1.md, 2.md, 3.md），不计入正式 ADR。
 
-### C.3 9 条核心架构原则
+#### 23.4.3 9 条核心架构原则
 
 1. 唯一主身份原则
 2. 证据驱动完成原则
@@ -1960,11 +1956,11 @@ GitHub Release object 已创建、远端 workflow 权限和 Actions pin 生效�
 
 ---
 
-## 参考资料 E. 关键数字与映射（Key Figures & Mappings）
+### 23.5 参考资料：关键数字与映射（Key Figures & Mappings）
 
-> 模板外的参考性附录，不属于 23 节硬规范；用于审计、汇总和迭代演进追溯。
+> 本子节是 §23 内的参考性映射表，不引入额外硬约束。
 
-### E.1 关键数字汇总
+#### 23.5.1 关键数字汇总
 
 | 指标 | 数值 |
 |------|------|
@@ -1986,7 +1982,7 @@ GitHub Release object 已创建、远端 workflow 权限和 Actions pin 生效�
 | 采纳状态数 | 8 |
 | 禁止状态转换 | 6 |
 
-### E.2 文件到规格节映射
+#### 23.5.2 文件到规格节映射
 
 | 源文件组 | 主要贡献节 |
 |----------|-----------|
@@ -2014,7 +2010,7 @@ GitHub Release object 已创建、远端 workflow 权限和 Actions pin 生效�
 | docs/evidence/*.md | §9 |
 | Downloads/*.md | §14 |
 
-### E.3 迭代演进时间线
+#### 23.5.3 迭代演进时间线
 
 ```text
 2026-06-01  1.md (v1.0 方案) → 2.md (v1.1 方案)
@@ -2028,7 +2024,7 @@ GitHub Release object 已创建、远端 workflow 权限和 Actions pin 生效�
 2026-06-07  本规格文档（154 文件当前整理口径）
 ```text
 
-### E.4 15 条基本真理（TRUTH-001~015）
+#### 23.5.4 15 条基本真理（TRUTH-001~015）
 
 > 与 §7.1 Iron Rules 的重复映射（结构债 S3 缓解）：TRUTH 是表述层，IR 是分类层；两者语义重叠时以 TRUTH 编号为外部引用、IR 编号为内部分类。
 
@@ -2050,7 +2046,7 @@ GitHub Release object 已创建、远端 workflow 权限和 Actions pin 生效�
 | 14 | 文档 ≠ 证据（document ≠ proof） | IR-001 | 同义簇 |
 | 15 | registered/baseline_scanned/patch-only ≠ adopted | IR-007 | 与 TRUTH-2 扩展 |
 
-### E.5 DONE 模板
+#### 23.5.5 DONE 模板
 
 ```text
 DONE with evidence:

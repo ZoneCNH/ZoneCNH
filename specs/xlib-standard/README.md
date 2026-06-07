@@ -8,16 +8,17 @@
 |------|----|
 | Upstream | `github.com/ZoneCNH/xlib-standard` |
 | Snapshot Date | 2026-06-07 |
-| Upstream Commit | _未固定_（待补；当前快照不绑定上游 commit/tree sha） |
+| Upstream Commit | `93753b30e6d01fb4a9b096acaa0d7d53a2fb231c`（= remote tag `v0.6.5`，tree `296e3b91…`，pinned 2026-06-08 04:59 +08:00） |
 | 本目录角色 | 上游规格的本地分析快照，**不是**上游 SSOT；任何冲突以上游 `docs/standard/**` 为准 |
 | 本仓库角色 | 文档枢纽，仅承载分析结果，不承载实现源码 |
 
 ## 当前权威工件
 
-- `SPEC.md`：**当前可执行主规格**（v2.0.1, Status: Review；52 FR、104 WHEN/THEN、10 EC、17 TC、7 BR、17 AC；23 节按 `SPEC-TEMPLATE.md` 对齐；TRACEABILITY 行级覆盖 67%），与追溯表、冲突账本和覆盖清单共同约束。进入 Approved 的前置条件见 SPEC.md 顶部"状态说明"与 `docs/report/xlib-standard-structural-deep-analysis-20260608-0446.md`。
+- `SPEC.md`：**当前可执行主规格**（v2.0.1, Status: Review；52 FR、104 WHEN/THEN、10 EC、17 TC、7 BR、17 AC；23 节按 `SPEC-TEMPLATE.md` 对齐；TRACEABILITY 行级覆盖 100%），与追溯表、冲突账本和覆盖清单共同约束。进入 Approved 的前置条件见 SPEC.md 顶部"状态说明"与 `docs/report/xlib-standard-structural-deep-analysis-20260608-0446.md`。
 - `TRACEABILITY.md`：`SPEC.md` 条款到来源文件的追溯表（章节级，非 rule 级）。
 - `CONFLICT-LEDGER.md`：冲突、历史计划和最终取舍。
 - `COVERAGE-MANIFEST.md`：输入文件清单与覆盖口径（154 个文件，相对 `<upstream>/` 路径）。
+- `REMOTE-EVIDENCE.md`：远端治理真证据（branch protection / rulesets / release object / CI runs，pinned 2026-06-08 05:15 +08:00）。
 
 ## 已归档工件（`archive/`）
 

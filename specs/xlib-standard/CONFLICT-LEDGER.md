@@ -73,7 +73,7 @@ Resolved-in: SPEC.md §7.5（FR-026~033）、§16
 
 取舍：Docker 只是同一套门禁的可复现执行环境，不创建独立质量声明。
 
-Resolved-in: SPEC.md §17.3、§D（部署细节）
+Resolved-in: SPEC.md §17.3、§22.6（部署细节，原附录 D 已并入 §22.6）
 
 ## 10. `CHECK_STATUS=passed`
 
@@ -97,7 +97,7 @@ Resolved-in: SPEC.md §15.2（L2 provider 规格）、§22.4 NG-22..NG-37
 
 取舍：本地文件只能定义要求。远端状态必须用 GitHub API、CI artifact、ruleset export、required checks 或 Release object 证明。
 
-Resolved-in: SPEC.md §A.1（附录 A 远端治理不可本地证明项）、§13.2.3、§22.4 NG-24..NG-27
+Resolved-in: SPEC.md §23.3（远端治理不可本地证明项，原附录 A.1 已并入 §23.3；现亦由 `REMOTE-EVIDENCE.md` 真证据闭合 OQ-001）、§13.2.3、§22.4 NG-24..NG-27
 
 ## 13. v1.0.0 状态
 
@@ -129,7 +129,7 @@ Resolved-in: SPEC.md §7.5（FR-031）、§22.4 NG-16
 
 取舍：本次整理以 154 个输入文件为当前覆盖口径。181 口径只作为旧分析背景，不得覆盖当前主规格、追溯表或覆盖清单；`MODULE-SPEC.md` 仅作为历史参考。
 
-Resolved-in: SPEC.md §2.1、附录 E.1（关键数字）
+Resolved-in: SPEC.md §2.1、§23.5.1（关键数字）
 
 ## 17. 旧 Required family 口径 vs harness.yaml 66 gate 条目
 
@@ -147,7 +147,7 @@ Resolved-in: SPEC.md §7.4（FR-020）、§13.2、§22.4
 
 取舍：正式 ADR 按 9 个 Accepted ADR 处理。template 与 `1/2/3` 历史规划文件只作为背景；若源仓库新增 ADR，必须同步更新覆盖清单、主规格和追溯表。
 
-Resolved-in: SPEC.md §18.2、附录 E.1
+Resolved-in: SPEC.md §18.2、§23.5.1
 
 ## 19. 1000-pass 覆盖检查 vs 语义审查
 
@@ -163,7 +163,7 @@ Resolved-in: SPEC.md §2.1（事实层级）
 
 取舍：本地整理完成只表示规格包内容已形成并可审阅。已进入版本控制必须由 `git status`、commit 或 tag 证明；已发布必须由 release artifact 和 GitHub Release object 证明；已采用必须由下游仓库证据证明。
 
-Resolved-in: SPEC.md §1（元信息）、§2.1、§A.1（远端治理）
+Resolved-in: SPEC.md §1（元信息）、§2.1、§23.3（远端治理；OQ-001 已由 `REMOTE-EVIDENCE.md` 真证据闭合）
 
 ## 21. 条款级追溯 vs 逐规则证明账本
 

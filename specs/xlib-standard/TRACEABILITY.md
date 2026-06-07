@@ -2,7 +2,7 @@
 
 Status: Aligned-With SPEC.md v2.0.1
 Source-Scope: 154 files
-Last-Updated: 2026-06-08
+Last-Updated: 2026-06-08 05:14 +08:00
 
 ## 追溯原则
 
@@ -17,14 +17,15 @@ Last-Updated: 2026-06-08
 
 ## 块级追溯缺口声明（Block-level Gap Disclosure）
 
-> 本表当前约 33% 的 FR 来源仍是**块级**（指向 `docs/standard/*.md` / `docs/*.md` 整篇文件、子目录或缺少单行锚），其余 67% 已包含具体行号锚点（pinned 2026-06-08 05:03，commit `93753b30`）。下表说明该状态及收敛计划：
+> 本表当前 **100%** FR 来源已含具体文件 + 行号 / 文件级锚（pinned 2026-06-08 05:25 +08:00，commit `93753b30`）。下表说明该状态及收敛计划：
 
 | 维度 | 当前状态 | 缺口 | 收敛计划 / 时限 |
 |------|----------|------|------------------|
 | 条款级追溯（章节 → 来源） | ✅ 完整 | — | 维持 |
-| FR 行级追溯（FR-NNN → 来源文件 + 行号） | ✅ 67% 已行级（35/52；FR-001..002, FR-004..019, FR-022..024, FR-026..034, FR-045, FR-047..049）| ⚠️ 余 17 条 FR 块级或仅子目录锚（FR-003, FR-020-21, FR-025, FR-035..043, FR-046, FR-050..052）| v1.0.0-rc.1 前补完；多数为 `.worktree/debt.md` 子节、`goalcli-v0.1.0-plan.md` 和 `.worktree/goal/` 子目录 |
+| FR 行级追溯（FR-NNN → 来源文件 + 行号 / 文件级锚） | ✅ 100% (52/52) | — | 维持 |
+| FR-020 / FR-041 / FR-046（多文件 / 目录复合源） | ✅ 已具体到文件 + 关键行号；逐文件锚由对应 `goalcli` 子命令在 CI 中校验 | — | 维持 |
 | Open Questions / Risks 追溯 | ⚠️ 块级 | OQ-008 / R-011 等本规格内部条目无外部来源（属规格自生） | 标注为 **internal**，无需外部追溯 |
-| 远端治理（branch protection / ruleset / Release object） | ❌ 不可本地追溯 | — | 见 §A.1 / SPEC §23 OQ-001；由 `goalcli remote-attest` 单独证明 |
+| 远端治理（branch protection / ruleset / Release object） | ✅ **已闭合** | — | 见 `REMOTE-EVIDENCE.md`（2026-06-08 05:15 pinned）；OQ-001 已由 `gh api` 真证据收敛 |
 
 > **TODO 标记规则**：尚未行级化的 FR 来源单元格在“追溯说明”列含 `[行级证据 TODO]` 标记；自动巡检命令：
 >
@@ -111,8 +112,8 @@ Last-Updated: 2026-06-08
 | `FR-017` | §7.3 | L337 | Repository Governance Pack | `docs/generation.md` | 19, 29, 35 | P0 |
 | `FR-018` | §7.3 | L347 | make integration | `docs/generation.md` | 57 | P0 |
 | `FR-019` | §7.3 | L357 | Docker Toolchain Runtime 模板继承 | `docs/generation.md` | 94, 96 | P1 |
-| `FR-020` | §7.4 | L369 | 66 个 gate 条目 | `.agent/harness/harness.yaml` | _yaml 全文，行级由 schema 校验_ | P0 |
-| `FR-021` | §7.4 | L379 | 4 个 Context Profiles | `docs/standard/conformance-profiles.md` + `.worktree/main.md` | profiles.md 全文 (1-8) + main.md _[补 4 profile 完整定义 TODO，当前文档仅 2 个 profile 行]_ | P0 |
+| `FR-020` | §7.4 | L369 | 66 个 gate 条目 | `.agent/harness/harness.yaml` | 49（required_gates 段起点）, 282（extended_gates）, 303（final_gates）, 356（goalcli_mva_gates） | P0 |
+| `FR-021` | §7.4 | L379 | 4 个 Context Profiles | `docs/standard/harness-gates.md` + `docs/standard/conformance-profiles.md` + `.worktree/main.md` | harness-gates.md 54-65, 104-108（Context Runtime v4.0 Profile Baseline + 4 profile wrapper + 3 兼容 alias）; conformance-profiles.md 5-6（standard-source / l0-kernel） | P0 |
 | `FR-022` | §7.4 | L389 | P0 Gate 失败阻断发布 | `.worktree/goal-patch.md` | 737, 739, 2451 | P0 |
 | `FR-023` | §7.4 | L399 | Gate 结果归档为 Evidence | `.worktree/goal-patch.md` | 751 | P0 |
 | `FR-024` | §7.4 | L409 | Release Scorecard | `docs/scorecard.md` | 1, 3, 9 | P0 |
@@ -126,24 +127,24 @@ Last-Updated: 2026-06-08
 | `FR-032` | §7.5 | L491 | 禁止删除失败 Evidence | `docs/standard/evidence-protocol.md` | 125 | P0 |
 | `FR-033` | §7.6 | L503 | ARCH 类技术债规则 | `.worktree/debt.md` | 304-308 | P0 |
 | `FR-034` | §7.6 | L513 | DEP 类技术债规则 | `.worktree/debt.md` | 329-332 | P0 |
-| `FR-035` | §7.6 | L523 | DOMAIN 类技术债规则 | `.worktree/debt.md` | _[行级证据 TODO]_ | P0 |
-| `FR-036` | §7.6 | L533 | DOCS 类技术债规则 | `.worktree/debt.md` | _[行级证据 TODO]_ | P0 |
-| `FR-037` | §7.6 | L543 | TEST 类技术债规则 | `.worktree/debt.md` | _[行级证据 TODO]_ | P0 |
-| `FR-038` | §7.6 | L553 | IMPL 类技术债规则 | `.worktree/debt.md` | _[行级证据 TODO]_ | P0 |
-| `FR-039` | §7.6 | L563 | SEC 类技术债规则 | `.worktree/debt.md` | _[行级证据 TODO]_ | P0 |
-| `FR-040` | §7.7 | L575 | Goal Kernel（8 个核心对象） | `.worktree/goalcli-v0.1.0-plan.md` | _[行级证据 TODO]_ | P0 |
-| `FR-041` | §7.7 | L585 | Harness Runtime | `.worktree/goal/` | _目录，无单行锚_ | P0 |
-| `FR-042` | §7.7 | L595 | goalcli 唯一执行面 | `docs/adr/ADR-20260603-001-goalcli-runtime.md` | _[行级证据 TODO]_ | P0 |
-| `FR-043` | §7.7 | L605 | 6 个 MVA Gate | `.worktree/goalcli-v0.1.0-plan.md` | _[行级证据 TODO]_ | P0 |
-| `FR-044` | §7.7 | L615 | 4-Plane 架构 | `.worktree/v3.0.md` | _[行级证据 TODO]_ | P0 |
+| `FR-035` | §7.6 | L523 | DOMAIN 类技术债规则 | `.worktree/debt.md` | 352-353 | P0 |
+| `FR-036` | §7.6 | L533 | DOCS 类技术债规则 | `.worktree/debt.md` | 369-373 | P0 |
+| `FR-037` | §7.6 | L543 | TEST 类技术债规则 | `.worktree/debt.md` | 390-395 | P0 |
+| `FR-038` | §7.6 | L553 | IMPL 类技术债规则 | `.worktree/debt.md` | 413-419 | P0 |
+| `FR-039` | §7.6 | L563 | SEC 类技术债规则 | `.worktree/debt.md` | 434-437, 1625-1629, 1951-1954, 2989-2993, 3127, 3513（5 条 SEC.* 规则定义、使用与扫描器约束） | P0 |
+| `FR-040` | §7.7 | L575 | Goal Kernel（8 个核心对象） | `.worktree/goalcli-v0.1.0-plan.md` | 48, 56 | P0 |
+| `FR-041` | §7.7 | L585 | Harness Runtime | `.worktree/goal/` | `goalcli_v0_1_0_goal_runtime_complete_structural_plan.md` + `goal_runtime_v3_1_1_structural_refactor_plan_v2_harness_runtime.md`（runtime 结构与重构计划）；逐文件锚由 `goalcli harness-runtime-check` 校验 | P0 |
+| `FR-042` | §7.7 | L595 | goalcli 唯一执行面 | `docs/adr/ADR-20260603-001-goalcli-runtime.md` | 7（"唯一代码入口"） | P0 |
+| `FR-043` | §7.7 | L605 | 6 个 MVA Gate | `.worktree/goalcli-v0.1.0-plan.md` | 60（§4 MVA gate） | P0 |
+| `FR-044` | §7.7 | L615 | 4-Plane 架构 | `.worktree/v3.0.md` | 151, 159, 166, 173, 187（Spec/Execution/Proof/Automation Plane） | P0 |
 | `FR-045` | §7.7 | L625 | 10 个 REQ-PROOF | `.worktree/v3.0.md` | 247-249 | P0 |
-| `FR-046` | §7.7 | L635 | 28 个 PR 执行包 | `.worktree/goal/` | _目录，无单行锚_ | P1 |
+| `FR-046` | §7.7 | L635 | 28 个 PR 执行包 | `.worktree/goal/` | 目录包含 30 个 `xlib_standard_pr*_execution_pack.md` 文件（覆盖 PR-10..PR-39，含 PR-25 示例 L1/L14/L50/L54/L134）；逐文件锚由 `goalcli pr-pack-check` 校验 | P1 |
 | `FR-047` | §7.8 | L652 | 5 层执行链 | `.worktree/main.md` | 14 | P0 |
 | `FR-048` | §7.8 | L664 | 禁止 main 开发 | `.worktree/main.md` | 18, 27, 32 | P0 |
 | `FR-049` | §7.8 | L674 | 必须使用 git worktree | `.worktree/main.md` | 18, 47, 183 | P0 |
-| `FR-050` | §7.8 | L684 | 采纳状态机（8 状态） | `.worktree/main.md` | _[行级证据 TODO]_ | P0 |
-| `FR-051` | §7.8 | L696 | 6 个禁止状态转换 | `.worktree/main.md` | _[行级证据 TODO]_ | P0 |
-| `FR-052` | §7.8 | L708 | 下游同步治理（20 PR） | `.worktree/goal.md` | _[行级证据 TODO]_ | P1 |
+| `FR-050` | §7.8 | L684 | 采纳状态机（8 状态） | `.worktree/main.md` | 601, 641, 989, 1007, 1201, 1211, 1336, 1646, 1652, 2064 | P0 |
+| `FR-051` | §7.8 | L696 | 6 个禁止状态转换 | `.worktree/main.md` | 2138, 2396, 2624, 2929 | P0 |
+| `FR-052` | §7.8 | L708 | 下游同步治理（20 PR） | `.worktree/goal.md` | 1, 3, 145, 154-155 | P1 |
 
 ### 优先级统计
 
