@@ -183,10 +183,10 @@ THEN 返回规则编号、严重度和修复建议
 
 > 来源：debt.md | 优先级：P0
 
-### FR-003: 定义 10 条 Git 治理规则并接入执行链
+### FR-003: 定义 10 条 Git 治理规则
 
 WHEN 代码提交到仓库
-THEN Git 治理规则必须接入 FR-047 定义的 5 层执行链，不在本条款另行定义第二套执行顺序
+THEN 10 条 Git 治理规则必须映射到可执行 gate；5 层执行链的规范定义参见 FR-047
 
 WHEN Git 治理规则被违反
 THEN 对应层的 gate 阻断操作并返回违规详情
@@ -213,13 +213,13 @@ THEN adoption-check gate 失败并报告缺失项
 
 > 来源：main.md | 优先级：P0
 
-### FR-006: 定义采纳状态机入口约束
+### FR-006: 定义采纳防伪边界
 
 WHEN 下游仓库执行采纳流程
-THEN adoption_status 从 not_run 开始，并必须使用 FR-050 的 8 状态枚举和 FR-051 的禁止转换规则
+THEN 不得把 registered、dry_run、patch_only 或 baseline_scanned 声明为 adopted；8 状态枚举参见 FR-050
 
-WHEN 采纳流程尝试绕过 FR-050/FR-051
-THEN 操作被拒绝并返回禁止原因
+WHEN 尝试执行禁止转换（registered→adopted, dry_run→adopted 等）
+THEN 操作被拒绝并返回禁止原因；6 个禁止转换参见 FR-051
 
 > 来源：main.md | 优先级：P0
 
@@ -310,7 +310,7 @@ THEN 返回新副本，secret/token/password/key 字段被替换为 `***`
 ### FR-015: render_template.sh 渲染
 
 WHEN 执行 `scripts/render_template.sh --module <module> --name <name> --package <package> --out <path>`
-THEN `--module`、`--name`、`--package` 和 `--out` 分别驱动 module path、module name、package name 和输出目录渲染，模板中的 `{{MODULE_NAME}}`/`{{MODULE_PATH}}`/`{{PACKAGE_NAME}}` 全部替换为实际值，输出目录结构完整
+THEN 模板中的 `{{MODULE_NAME}}`/`{{MODULE_PATH}}`/`{{PACKAGE_NAME}}` 全部替换为实际值，输出目录结构完整
 
 WHEN 渲染目标目录已存在
 THEN 不覆盖已有文件，返回警告
@@ -647,7 +647,7 @@ THEN Phase N+1 的 PR 不得开始
 本条是 FR-003 引用的 5 层执行链权威定义。
 
 WHEN 代码变更提交
-THEN 按 FR-003 的标准源 → 生成器 → 本地 hooks → CI gate → GitHub ruleset 顺序逐层生效
+THEN 5 层执行链逐层生效：标准源定义规则 → 生成器渲染模板 → 本地 hooks 预检 → CI gate 验证 → GitHub ruleset 强制；FR-003 的 Git 治理规则通过本链落地
 
 WHEN 某层被绕过（如直接 push 跳过 hooks）
 THEN 后续层（CI/ruleset）阻断操作
@@ -679,7 +679,7 @@ THEN worktree-guard 失败并提示创建 worktree
 本条是 FR-006 引用的 adoption_status 枚举权威定义。
 
 WHEN 查询下游仓库采纳状态
-THEN adoption_status 为 FR-006 状态机中的 8 个合法值之一：not_run/registered/dry_run/patch_only/proof_verified/adopted/blocked/superseded
+THEN adoption_status 为 8 个合法值之一：not_run/registered/dry_run/patch_only/proof_verified/adopted/blocked/superseded；FR-006 定义这些状态不得被伪升级的边界
 
 WHEN adoption_status 不在合法枚举中
 THEN registry validation 失败
@@ -691,7 +691,7 @@ THEN registry validation 失败
 本条是 FR-006 引用的禁止转换权威定义。
 
 WHEN 尝试执行 registered→adopted、dry_run→adopted、patch_only→adopted、not_run→adopted、gate_outputs_missing→proof_based_adoption、baseline_scanned→adopted
-THEN 操作被拒绝，返回 FR-006 状态机的禁止原因和正确路径
+THEN 操作被拒绝，返回禁止原因和正确路径；FR-006 定义这些拒绝规则的防伪边界
 
 WHEN 按合法路径转换（如 registered→dry_run→proof_verified→adopted）
 THEN 允许转换并记录 Evidence
@@ -1470,7 +1470,7 @@ Goal Runtime：`.agent/evidence/ledger.jsonl` 是目标执行源 ledger；`GOAL_
 2026-06-04  ADR-001 (Layer Governance)
 2026-06-05  v0.4.15 深度分析（8.3/10）
 2026-06-06  第七轮审查补丁（12 个 P0 bypass）
-2026-06-07  本规格文档（154 文件当前整理口径）
+2026-06-07  本规格文档（154 文件当前整理口径，181 文件为旧分析背景）
 ```
 
 ### 22.4 15 条基本真理（TRUTH-001~015）
@@ -1511,7 +1511,7 @@ DONE with evidence:
 
 ## 23. 最终验证
 
-- [x] 覆盖 154 个输入文件（当前整理口径）
+- [x] 覆盖 154 个输入文件（7 组并行分析）
 - [x] 提取 419 条规则（7 类）
 - [x] 提取 10 个 ADR（9 条核心架构原则）
 - [x] 提取 28 个 PR 执行包（5 个 Phase）
