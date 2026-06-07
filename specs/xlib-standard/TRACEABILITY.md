@@ -48,10 +48,10 @@ Source-Scope: 154 files
 
 | 分析通道                    | 重点                                                          | 已纳入章节                                      |
 | --------------------------- | ------------------------------------------------------------- | ----------------------------------------------- |
-| Core standard               | 模块身份、边界、分层、API、Harness、Evidence                  | `SPEC.md` 1-6、8-13、16                  |
-| Runtime/config              | `goalcli`、Goal Runtime、config root 冲突、strict config 迁移 | `SPEC.md` 6-8、17；`CONFLICT-LEDGER.md`  |
-| Downstream/testing/evidence | L2、downstream proof、testing、Evidence、truth-state          | `SPEC.md` 9-13、15、17                      |
-| Historical/omission audit   | v0.4.15、v0.6.0、v1.0.0、pathguard、remote proof              | `SPEC.md` 2、17、22；`CONFLICT-LEDGER.md` |
+| Core standard               | 模块身份、边界、分层、API、Harness、Evidence                  | `SPEC.md` §0-2、§6、§8-10、§16                  |
+| Runtime/config              | `goalcli`、Goal Runtime、config root 冲突、strict config 迁移 | `SPEC.md` §6-8、§17；`CONFLICT-LEDGER.md`       |
+| Downstream/testing/evidence | L2、downstream proof、testing、Evidence、truth-state          | `SPEC.md` §9、§13、§15、§19                     |
+| Historical/omission audit   | v0.4.15、v0.6.0、v1.0.0、pathguard、remote proof              | `SPEC.md` §14、§17-18；`CONFLICT-LEDGER.md`     |
 
 ## 明确未纳入为事实的内容
 

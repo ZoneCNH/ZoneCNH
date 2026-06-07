@@ -6,6 +6,8 @@ Source-Scope: `/home/xlib-standard/.worktree/*.md`, `/home/xlib-standard/docs/**
 Input-Files: 154
 Coverage-Method: agent-team semantic synthesis; 1000-pass check verifies input file-set stability only
 
+> 历史/参考工件：当前可执行主规格以 `SPEC.md` 为准。本文件保留 154 文件整理背景，不覆盖 `SPEC.md`、`TRACEABILITY.md` 或 `CONFLICT-LEDGER.md` 的当前取舍。
+
 ## 1. 模块身份
 
 `xlib-standard` 是基础库体系的唯一标准源，不是业务库、不是生产运行时，也不是下游模块源码仓库。
