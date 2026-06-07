@@ -36,6 +36,9 @@ Status: Approved
 | AT-015 | OSS 对象存储操作 | ossx | P2 |
 | AT-016 | Contracts 契约 Breaking Change 检测 | contracts, xlibgate | P0 |
 | AT-017 | 采集器 → Kafka → 消费者链路 | market-data, kafkax, contracts | P1 |
+| AT-018 | schedulex 定时任务触发 | schedulex, kernel, observex | P1 |
+| AT-019 | testkitx 边界守卫 | testkitx, kernel, observex | P1 |
+| AT-020 | xlib-standard 门禁一致性 | xlib-standard, xlibgate | P1 |
 
 ---
 
@@ -283,6 +286,63 @@ Status: Approved
 
 ---
 
+## 工具与标准验收场景
+
+### AT-018: schedulex 定时任务触发
+
+**Given：** schedulex 已注册 cron job（`*/1 * * * *`）和 interval job（`Interval: 5s`），配置了 `OverlapPolicy = Skip` 和 `MisfirePolicy = RunOnce`
+**When：** FakeClock 推进到触发时间，然后快速推进 2 个调度周期
+**Then：**
+- cron job 按 cron 表达式触发，Handler 被调用
+- interval job 按 5s 间隔触发，Handler 被调用
+- 重复注册同一 JobID 返回 `ErrDuplicateJob`
+- `Cancel(id)` 取消后不再触发，`Cancel` 不存在的 ID 返回 `ErrJobNotFound`
+- job handler panic 被 catch，不影响其他 job 继续执行
+- `Stop(ctx)` 等待正在执行的 job 完成；超时则 force cancel，返回 `ErrShutdownTimeout`
+- 无效 cron 语法返回 `ErrInvalidTrigger`，`interval <= 0` 返回 `ErrInvalidTrigger`
+- observex 记录 job 触发、完成、失败事件
+
+**验证方法：** 集成测试，注入 FakeClock，验证触发次数、顺序和可观测事件
+
+---
+
+### AT-019: testkitx 边界守卫
+
+**Given：** Foundation 各模块（kernel、configx、observex、resiliencx、schedulex）的测试使用 testkitx 提供的 fake 实现
+**When：** 运行 `go list -deps` 检查生产依赖图，并执行 contract 测试
+**Then：**
+- `BoundaryCheck(t, module)` 验证生产包不依赖 testkitx，违反时报错并报告依赖路径
+- `GoroutineLeakCheck(t)` 验证测试结束后无 goroutine 泄漏，泄漏时报告堆栈
+- `FakeLogger` 的 `AssertLogged` / `AssertNoErrors` / `Entries()` 断言正确
+- `FakeMeter` 的 `AssertCounterValue` / `AssertHistogramRecorded` 断言正确
+- `FakeClock` 的 `Advance` / `Set` 控制时间确定性，不调用 `time.Now`
+- `FakeConfig` 的 `Get(key)` 返回正确值，不存在的 key 返回 nil
+- `Eventually(t, fn, timeout, interval)` 条件满足时通过，超时时失败并输出诊断
+- `GoldenUpdate()` 仅在 `GOLDEN_UPDATE=1` 环境变量下返回 true
+- 所有 fake 编译期接口检查通过（`var _ Interface = (*FakeImpl)(nil)`）
+- `-race` 测试通过，fake 并发安全
+
+**验证方法：** 集成测试，运行 contract test suite + boundary scan + goroutine leak check
+
+---
+
+### AT-020: xlib-standard 门禁一致性
+
+**Given：** `xlib-standard` 定义了 Gate 清单（`gates/common.yaml`）和 Evidence schema（`evidence/schema.json`），`xlibgate` 消费这些定义
+**When：** 对比 `xlib-standard` 的 Gate 定义与 `xlibgate` 的实际检查配置，并验证各模块 CI artifact
+**Then：**
+- `gates/common.yaml` 的 8 项 Gate（build、test、coverage、vet、lint、dependency、secret_scan、benchmark）与 `xlibgate.yaml` 完全匹配
+- 每个 Foundation 模块的 CI 执行所有 blocking Gate，且阈值与标准一致（coverage ≥ 80%）
+- `xlibgate check all` 对使用 `init.sh` 生成的模块骨架返回全部通过
+- Evidence schema 的 required 字段（test_coverage、race_test、secret_scan）与 CI artifact 格式一致
+- 标准规范文档（naming、errors、interfaces、directory、config）每条规范至少有一个正例和一个反例
+- Gate 定义不一致时，CI 中的同步检查报错并阻止合并
+- Evidence 格式变更时，`xlibgate check release` 检测到不兼容
+
+**验证方法：** CI 脚本，`diff` 对比 Gate 定义 + `xlibgate check all` 验证模块骨架 + JSON schema 验证 Evidence artifact
+
+---
+
 ## 4. 测试环境要求
 
 | 要求 | 说明 |
@@ -303,5 +363,6 @@ Foundation v1 整体验收通过的条件：
 - [ ] AT-008 通过（P2 场景，可推迟）
 - [ ] AT-009 至 AT-015 全部通过（存储扩展验收）
 - [ ] AT-016 至 AT-017 全部通过（跨域链路验收）
+- [ ] AT-018 至 AT-020 全部通过（工具与标准验收）
 - [ ] 所有场景无 data race（`-race` 通过）
 - [ ] 验收测试覆盖率 ≥ 80%
