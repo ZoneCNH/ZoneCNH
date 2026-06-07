@@ -12,7 +12,7 @@
 - `ARCHITECTURE.md`：依赖拓扑、领域职责、设计原则和状态表的权威文档。
 - `AGENTS.md` / `CLAUDE.md`：面向自动化代理和贡献者的工作指南。
 
-实际实现位于 `github.com/ZoneCNH` 下约 66 个独立仓库，例如 `kernel`、`binance`、`factor-engine`、`risk-engine`、`x.go`。本仓库只描述和链接这些模块，不承载它们的源码。
+实际实现位于 `github.com/ZoneCNH` 下约 70 个独立仓库，例如 `kernel`、`binance`、`factor-engine`、`risk-engine`、`x.go`。本仓库只描述和链接这些模块，不承载它们的源码。
 
 这里没有构建、lint 或测试步骤；主要工作是编辑 Markdown。
 
@@ -39,7 +39,7 @@
 - **分析域 ⇄ 决策域**：唯一双向关系；因子驱动信号生成，回测结果反馈到因子评估。
 - **横切**：`alertx` 和 `observex` 贯穿所有领域。
 
-编辑时必须保留 `ARCHITECTURE.md` 中七条核心设计原则的意图：策略只能通过 `risk-engine` 提交订单；回测与实盘共享因子、信号和风控代码；`contracts` 定义跨域接口；数据不跨域；`order-engine` 抽象交易所差异；`x.go` 只做编排；域内模块平级协作。
+编辑时必须保留 `ARCHITECTURE.md` 中九条核心设计原则的意图：策略只能通过 `risk-engine` 提交订单；回测与实盘共享因子、信号和风控代码；`contracts` 定义跨域接口；数据不跨域；`order-engine` 抽象交易所差异；`x.go` 只做编排；域内模块平级协作；反馈通过事件表达；领域语义沉到 L2.5。
 
 ## 约定
 
