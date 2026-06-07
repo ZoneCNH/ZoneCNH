@@ -3,7 +3,7 @@
 #
 # 检查项：
 #   1. .env / API key / secret / token / password 硬编码
-#   2. .omc/ .omx/ .claude/ 运行时目录
+#   2. .omc/ .omx/ 运行时目录（.claude/ .codex/ 已公开跟踪，不检查）
 #   3. 127.0.0.1 / localhost / 0.0.0.0 本地地址
 #   4. 本地绝对路径（/home/xxx, /Users/xxx, C:\xxx）
 
@@ -58,8 +58,8 @@ check_pattern "API Key / Secret / Token / Password" \
 
 # ── 2. 运行时目录 ────────────────────────────────────────
 echo "[2/4] 运行时目录检查"
-check_pattern ".omc / .omx / .claude 目录" \
-  '(\.omc/|\.omx/|\.claude/|\.omc\b|\.omx\b|\.claude\b)'
+check_pattern ".omc / .omx 运行时目录" \
+  '(\.omc/|\.omx/|\.omc\b|\.omx\b)'
 
 # ── 3. 本地地址 ──────────────────────────────────────────
 echo "[3/4] 本地地址检查"

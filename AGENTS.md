@@ -74,7 +74,7 @@ spec → spec-review → matrix → task-split → task-planner → prompt-build
 
 ### OMC Pipeline Skill
 
-已配置 OMC 技能 `.omc/skills/pipeline/SKILL.md`，支持一键触发完整管线：
+已配置 OMC 技能 `<runtime>/skills/pipeline/SKILL.md`，支持一键触发完整管线：
 
 | 触发方式 | 说明 |
 |----------|------|
@@ -83,7 +83,7 @@ spec → spec-review → matrix → task-split → task-planner → prompt-build
 | `pipeline {module} --stage matrix` | 只执行单个阶段 |
 | `开发管线 {module}` | 中文触发 |
 
-管线状态记录在 `.omc/state/pipeline/{module}.json`。
+管线状态记录在 `<runtime>/state/pipeline/{module}.json`。
 
 ### 关键文档
 
