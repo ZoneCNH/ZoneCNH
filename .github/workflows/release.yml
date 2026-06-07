@@ -43,6 +43,7 @@ jobs:
             --max-retries 3
             --retry-wait-time 2
             --header 'Accept: text/html'
+            --exclude-file .lycheeignore
             -- '*.md'
           fail: true
 
