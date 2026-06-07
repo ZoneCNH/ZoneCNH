@@ -123,7 +123,17 @@ jobs:
       - name: 校验追踪矩阵完整性
         run: bash .github/ci/traceability-check.sh
 
-  # ── 7. Spec 状态报告 ────────────────────────────────────────
+  # ── 7. Task Spec 校验 ────────────────────────────────────────
+  task-spec-validate:
+    name: Task Spec Validate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 校验 Task Spec 结构和一致性
+        run: bash .github/ci/task-spec-validate.sh
+
+  # ── 8. Spec 状态报告 ────────────────────────────────────────
   spec-status-report:
     name: Spec Status Report
     runs-on: ubuntu-latest
