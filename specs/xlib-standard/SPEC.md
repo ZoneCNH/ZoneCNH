@@ -989,7 +989,6 @@ Release ladder：
 | final_gates | 6 | 发布最终判定，包含 release_score_final、release_final_check、release_preflight、score、kernel_downstream、goalcli_g16_runtime_final |
 | goalcli_mva_gates | 6 | 大写 MVA alias，映射到 goalcli G12-G16 流程，不生成第二套权威 gate |
 
-
 > 注：9 个 proof_depth taxonomy 条目（file_exists, command_registered, dry_run, positive_fixture, negative_fixture, mutation_fixture, live_run, evidence_replay, downstream_adoption）不计入 gate 总数。
 
 **Context Profiles（4 个）**：

@@ -64,7 +64,7 @@ Verdict: **APPROVED_FOR_STRUCTURE**
 
 ## 6. Final Verdict
 
-**Verdict: APPROVED_FOR_STRUCTURE**
+### Verdict: APPROVED_FOR_STRUCTURE
 
 Reasoning: 第 6 步要求的 lint 扩展已落地，并且新的结构门禁、追溯证据类型门禁、README upstream commit 门禁和文档一致性搜索均已通过。旧 verdict 中阻断结构合规的 P0/P1/P2 问题已关闭；剩余 TC 空缺是既有非阻塞追溯 warning，不改变本轮结构通过结论。
 
