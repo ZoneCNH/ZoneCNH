@@ -138,7 +138,7 @@ Last-Updated: 2026-06-08 05:14 +08:00
 | `FR-043` | §7.7 | L605 | 6 个 MVA Gate | `.worktree/goalcli-v0.1.0-plan.md` | 60（§4 MVA gate） | P0 |
 | `FR-044` | §7.7 | L615 | 4-Plane 架构 | `.worktree/v3.0.md` | 151, 159, 166, 173, 187（Spec/Execution/Proof/Automation Plane） | P0 |
 | `FR-045` | §7.7 | L625 | 10 个 REQ-PROOF | `.worktree/v3.0.md` | 247-249 | P0 |
-| `FR-046` | §7.7 | L635 | 28 个 PR 执行包 | `.worktree/goal/` | 目录包含 30 个 `xlib_standard_pr*_execution_pack.md` 文件（覆盖 PR-10..PR-39，含 PR-25 示例 L1/L14/L50/L54/L134）；逐文件锚由 `goalcli pr-pack-check` 校验 | P1 |
+| `FR-046` | §7.7 | L635 | 28 个 PR 执行包 | `.worktree/goal/` | 目录包含 28 个 unique `xlib_standard_pr<N>_*_execution_pack.md`（PR-1..PR-28，共 30 个文件含 2 个 `(1)` 副本；如 PR-25 见 `xlib_standard_pr25_..._execution_pack.md` L1/L14/L50/L54/L134）；逐文件锚由 `goalcli pr-pack-check` 校验 | P1 |
 | `FR-047` | §7.8 | L652 | 5 层执行链 | `.worktree/main.md` | 14 | P0 |
 | `FR-048` | §7.8 | L664 | 禁止 main 开发 | `.worktree/main.md` | 18, 27, 32 | P0 |
 | `FR-049` | §7.8 | L674 | 必须使用 git worktree | `.worktree/main.md` | 18, 47, 183 | P0 |

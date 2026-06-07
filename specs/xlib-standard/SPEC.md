@@ -13,10 +13,11 @@
 >
 > Approved 前置条件：
 > - [x] 远端治理证据（OQ-001 已由 REMOTE-EVIDENCE.md 闭合）
-> - [x] FR 行级覆盖 100%（51/52 行级 + 1/52 子目录级）
+> - [x] FR 行级覆盖 100%（52/52；含 FR-020 yaml 4 行锚 + FR-041/FR-046 文件级锚）
+> - [x] 23 节结构对齐（v8 已删除伪 §8 Non-functional 占位、§9..§24 下移为 §8..§23）
 > - [ ] 独立 reviewer 签字
 >
-> 详细变更记录：见 git log
+> 详细变更见 git log；codex 复审结果见 `REVIEW-VERDICT.md`。
 
 - Repository: [github.com/ZoneCNH/xlib-standard](https://github.com/ZoneCNH/xlib-standard)
 - Related: [CONSTITUTION.md](../../CONSTITUTION.md), [ARCHITECTURE.md](../../ARCHITECTURE.md),
@@ -740,7 +741,7 @@ THEN 阻断后续下游同步，记录失败原因到 downstream-sync plan
 
 ---
 
-## 9. 业务规则（Business Rules）
+## 8. 业务规则（Business Rules）
 
 ### 8.1 核心铁律（Iron Rules，7 条；亦记为 BR-001..BR-007）
 
@@ -833,7 +834,7 @@ iron-rules.md > registry.yaml > *-rules.md > ADR-* > .worktree/goal-patch.md
 
 ---
 
-## 10. 接口契约（Interface Contract）
+## 9. 接口契约（Interface Contract）
 
 ### 9.1 公共 API
 
@@ -989,7 +990,7 @@ func Version() string
 
 ---
 
-## 11. 数据模型（Data Model）
+## 10. 数据模型（Data Model）
 
 > 本节按 `SPEC-TEMPLATE.md §10` 约束：每个核心对象给出字段表 + Go struct 参考；JSON tag 与 §9.5 / §9.2 / §10.6 schema 对齐。
 
@@ -1216,7 +1217,7 @@ type AdoptionRecord struct {
 
 ---
 
-## 12. Config Schema（配置 Schema）
+## 11. Config Schema（配置 Schema）
 
 > 本模块作为标准源/模板/Harness/Evidence Runtime，自身不暴露生产业务配置。下游生成库的 Config Schema 由 `scripts/render_template.sh` 渲染产出，并满足以下硬性约束：
 
@@ -1230,7 +1231,7 @@ type AdoptionRecord struct {
 
 ---
 
-## 13. 错误处理（Error Handling）
+## 12. 错误处理（Error Handling）
 
 ### 12.1 ErrorKind（9 种）
 
@@ -1265,7 +1266,7 @@ type AdoptionRecord struct {
 
 ---
 
-## 14. Edge Cases（边界场景）
+## 13. Edge Cases（边界场景）
 
 > 本节包含**调用者视角**的边界场景与**治理视角**的失败语义两类。每条 Edge Case 必须有对应 TC（详见 §16.5）。
 
@@ -1311,7 +1312,7 @@ type AdoptionRecord struct {
 
 ---
 
-## 15. Directory Structure（目录结构）
+## 14. Directory Structure（目录结构）
 
 > xlib-standard 自身目录结构以上游 `github.com/ZoneCNH/xlib-standard` 仓库为权威；本规格只声明顶层约束：
 
@@ -1336,7 +1337,7 @@ xlib-standard/
 
 ---
 
-## 16. 依赖（Dependencies）
+## 15. 依赖（Dependencies）
 
 ### 15.1 层级依赖模型
 
@@ -1395,7 +1396,7 @@ Release ladder：
 
 ---
 
-## 17. 测试（Testing）
+## 16. 测试（Testing）
 
 ### 16.1 测试分层（TL0-TL7）
 
@@ -1497,7 +1498,7 @@ Release ladder：
 
 ---
 
-## 18. 性能（Performance Budget）
+## 17. 性能（Performance Budget）
 
 ### 17.1 Gate 成本预算
 
@@ -1529,7 +1530,7 @@ Release ladder：
 
 ---
 
-## 19. 可观测性（Observability）
+## 18. 可观测性（Observability）
 
 ### 18.1 最小指标（9 个）
 
@@ -1552,7 +1553,7 @@ Release ladder：
 
 ---
 
-## 20. 安全（Security）
+## 19. 安全（Security）
 
 ### 19.1 P0 安全规则
 
@@ -1582,7 +1583,7 @@ Release ladder：
 
 ---
 
-## 21. CI Gate（持续集成门禁）
+## 20. CI Gate（持续集成门禁）
 
 ### 20.1 Gate 总览
 
@@ -1616,7 +1617,7 @@ make release-preflight VERSION=vX.Y.Z
 
 ---
 
-## 22. 迁移（Upgrade Compatibility）
+## 21. 迁移（Upgrade Compatibility）
 
 ### 21.1 v1.0.0 配置迁移
 
@@ -1679,7 +1680,7 @@ v1 提出概念 → v2 审计补全 → v3 修补 P0 缺口 → v5 终极版
 
 ---
 
-## 23. Release DoD（发布完成定义）
+## 22. Release DoD（发布完成定义）
 
 ### 22.1 四级 DoD（见 §8.5；每级 checklist 项即 `AC-NNN` 验收标准编号）
 
@@ -1844,7 +1845,7 @@ Goal Runtime：`.agent/evidence/ledger.jsonl` 是目标执行源 ledger；`GOAL_
 
 ---
 
-## 24. 待解决问题（Open Questions）
+## 23. 待解决问题（Open Questions）
 
 ### 23.1 Open Questions
 
@@ -1889,7 +1890,7 @@ GitHub Release object 已创建、远端 workflow 权限和 Actions pin 生效�
 
 > 本子节是 §23 内的参考性映射表，不引入额外硬约束。
 
-#### 23.4.1 标准文档（docs/standard/，27 个）
+#### 28.4.1 标准文档（docs/standard/，27 个）
 
 | 文件 | 类别 | 规则数 |
 |------|------|--------|
@@ -1923,7 +1924,7 @@ GitHub Release object 已创建、远端 workflow 权限和 Actions pin 生效�
 | versioning.md | IMPL | - |
 | README.md | DOCS | - |
 
-#### 23.4.2 ADR 文档（10 个）
+#### 28.4.2 ADR 文档（10 个）
 
 | ADR | 状态 | 核心决策 |
 |-----|------|----------|
@@ -1939,7 +1940,7 @@ GitHub Release object 已创建、远端 workflow 权限和 Actions pin 生效�
 
 > 注：另有 1 个 ADR 模板（ADR-000-template.md）和 3 个历史规划文件（1.md, 2.md, 3.md），不计入正式 ADR。
 
-#### 23.4.3 9 条核心架构原则
+#### 28.4.3 9 条核心架构原则
 
 1. 唯一主身份原则
 2. 证据驱动完成原则
@@ -1957,7 +1958,7 @@ GitHub Release object 已创建、远端 workflow 权限和 Actions pin 生效�
 
 > 本子节是 §23 内的参考性映射表，不引入额外硬约束。
 
-#### 23.5.1 关键数字汇总
+#### 28.5.1 关键数字汇总
 
 | 指标 | 数值 |
 |------|------|
@@ -1979,7 +1980,7 @@ GitHub Release object 已创建、远端 workflow 权限和 Actions pin 生效�
 | 采纳状态数 | 8 |
 | 禁止状态转换 | 6 |
 
-#### 23.5.2 文件到规格节映射
+#### 28.5.2 文件到规格节映射
 
 | 源文件组 | 主要贡献节 |
 |----------|-----------|
@@ -2007,7 +2008,7 @@ GitHub Release object 已创建、远端 workflow 权限和 Actions pin 生效�
 | docs/evidence/*.md | §9 |
 | Downloads/*.md | §14 |
 
-#### 23.5.3 迭代演进时间线
+#### 28.5.3 迭代演进时间线
 
 ```text
 2026-06-01  1.md (v1.0 方案) → 2.md (v1.1 方案)
@@ -2021,7 +2022,7 @@ GitHub Release object 已创建、远端 workflow 权限和 Actions pin 生效�
 2026-06-07  本规格文档（154 文件当前整理口径）
 ```text
 
-#### 23.5.4 15 条基本真理（TRUTH-001~015）
+#### 28.5.4 15 条基本真理（TRUTH-001~015）
 
 > 与 §7.1 Iron Rules 的重复映射（结构债 S3 缓解）：TRUTH 是表述层，IR 是分类层；两者语义重叠时以 TRUTH 编号为外部引用、IR 编号为内部分类。
 
@@ -2043,7 +2044,7 @@ GitHub Release object 已创建、远端 workflow 权限和 Actions pin 生效�
 | 14 | 文档 ≠ 证据（document ≠ proof） | IR-001 | 同义簇 |
 | 15 | registered/baseline_scanned/patch-only ≠ adopted | IR-007 | 与 TRUTH-2 扩展 |
 
-#### 23.5.5 DONE 模板
+#### 28.5.5 DONE 模板
 
 ```text
 DONE with evidence:
