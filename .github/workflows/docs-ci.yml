@@ -9,16 +9,24 @@ on:
   pull_request:
     paths:
       - "*.md"
-      - ".github/workflows/docs-ci.yml"
+      - "docs/**/*.md"
+      - "module/**/*.md"
+      - "specs/**/*.md"
+      - ".github/workflows/*.yml"
       - ".github/ci/**"
       - ".markdownlint.json"
+      - ".lycheeignore"
   push:
     branches: [main]
     paths:
       - "*.md"
-      - ".github/workflows/docs-ci.yml"
+      - "docs/**/*.md"
+      - "module/**/*.md"
+      - "specs/**/*.md"
+      - ".github/workflows/*.yml"
       - ".github/ci/**"
       - ".markdownlint.json"
+      - ".lycheeignore"
   schedule:
     # 每周一 09:17 UTC（北京时间 17:17）巡检
     - cron: "17 9 * * 1"
@@ -38,7 +46,11 @@ jobs:
       - name: 运行 markdownlint-cli2
         uses: DavidAnson/markdownlint-cli2-action@v19
         with:
-          globs: "*.md"
+          globs: |
+            *.md
+            docs/**/*.md
+            module/**/*.md
+            specs/**/*.md
           config: .markdownlint.json
 
   # ── 2. 链接有效性检查 ────────────────────────────────────────
@@ -66,6 +78,9 @@ jobs:
             --header 'Accept: text/html'
             --exclude-file .lycheeignore
             -- '*.md'
+            'docs/**/*.md'
+            'module/**/*.md'
+            'specs/**/*.md'
           fail: true
 
   # ── 3. 敏感内容守卫 ──────────────────────────────────────────
@@ -87,3 +102,33 @@ jobs:
 
       - name: 运行状态一致性检查
         run: bash .github/ci/status-consistency-check.sh
+
+  # ── 5. Spec 结构校验 ────────────────────────────────────────
+  spec-lint:
+    name: Spec Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 校验 spec 结构完整性
+        run: bash .github/ci/spec-lint.sh
+
+  # ── 6. 追踪矩阵校验 ────────────────────────────────────────
+  traceability-check:
+    name: Traceability Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 校验追踪矩阵完整性
+        run: bash .github/ci/traceability-check.sh
+
+  # ── 7. Spec 状态报告 ────────────────────────────────────────
+  spec-status-report:
+    name: Spec Status Report
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 生成 spec 状态报告
+        run: bash .github/ci/spec-status-report.sh

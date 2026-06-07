@@ -25,7 +25,7 @@
 
 ## 3. Problem
 
-分布式系统中，网络调用、交易所接口、消息队列都可能超时或失败。没有统一的弹性策略，会导致：
+分布式系统中，网络调用、交易所接口、消息队列都会面对超时或失败场景。没有统一的弹性策略，会导致：
 - 每个模块自行实现重试逻辑，代码重复且不一致
 - 熔断器缺失，故障级联传播
 - 限流策略缺失，交易所 API 被封禁
@@ -296,11 +296,11 @@ resiliencx:
 
 | 错误 | 调用方处理 |
 |------|-----------|
-| `ErrTimeout` | 检查超时时间是否合理，考虑增加或优化下游 |
+| `ErrTimeout` | 检查超时时间是否匹配 SLA，按需增加超时时间或优化下游 |
 | `ErrCircuitOpen` | 等待 recovery_timeout 后重试，或使用 fallback |
 | `ErrBulkheadFull` | 减少并发量或增加 max_concurrent |
 | `ErrRateLimited` | 降低请求频率或增加 rate 配额 |
-| `ErrMaxRetries` | 检查底层错误原因，可能是永久性错误不需要重试 |
+| `ErrMaxRetries` | 检查底层错误原因；永久性错误不得继续重试 |
 
 **错误消息格式：** `"resiliencx: <strategy>: <detail>"`
 **错误包装：** 使用 `%w` 保留底层错误链

@@ -1,0 +1,96 @@
+#!/usr/bin/env bash
+# spec-status-report.sh — 生成 spec 体系的状态摘要报告
+#
+# 输出：
+#   1. 每个 spec 的 FR/BR 数量和 23 节完整性
+#   2. TRACEABILITY.md 中各状态的行数统计
+#   3. Markdown 格式摘要（可用于 PR comment）
+
+set -euo pipefail
+
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+SPEC_DIR="$REPO_ROOT/specs"
+TRACE_FILE="$REPO_ROOT/specs/TRACEABILITY.md"
+
+echo "=== Spec Status Report ==="
+echo ""
+
+# ── 1. 模块规格统计 ─────────────────────────────────────
+
+echo "| Module | Sections | FRs | BRs | Status |"
+echo "|--------|----------|-----|-----|--------|"
+
+total_fr=0
+total_br=0
+total_modules=0
+
+for spec_file in "$SPEC_DIR"/*/SPEC.md; do
+  if [[ ! -f "$spec_file" ]]; then
+    continue
+  fi
+
+  module=$(basename "$(dirname "$spec_file")")
+  content=$(cat "$spec_file")
+
+  section_count=$(echo "$content" | grep -cP "^## \d+\." || true)
+  fr_count=$(echo "$content" | grep -oP "FR-\d+" | sort -u | wc -l)
+  br_count=$(echo "$content" | grep -oP "BR-\d+" | sort -u | wc -l)
+
+  if [[ $section_count -eq 23 ]]; then
+    status="✅"
+  elif [[ $section_count -ge 20 ]]; then
+    status="⚠️"
+  else
+    status="❌"
+  fi
+
+  echo "| $module | $section_count/23 | $fr_count | $br_count | $status |"
+
+  total_fr=$((total_fr + fr_count))
+  total_br=$((total_br + br_count))
+  total_modules=$((total_modules + 1))
+done
+
+echo ""
+echo "**Total:** $total_modules modules, $total_fr FRs, $total_br BRs"
+
+# ── 2. 追踪矩阵状态统计 ─────────────────────────────────
+
+echo ""
+echo "### Traceability Status"
+echo ""
+
+if [[ -f "$TRACE_FILE" ]]; then
+  not_started=$(grep -cP "\|\s+⬜\s+\|" "$TRACE_FILE" || true)
+  in_progress=$(grep -cP "\|\s+🔵\s+\|" "$TRACE_FILE" || true)
+  completed=$(grep -cP "\|\s+✅\s+\|" "$TRACE_FILE" || true)
+  rejected=$(grep -cP "\|\s+❌\s+\|" "$TRACE_FILE" || true)
+  deferred=$(grep -cP "\|\s+⏭️\s+\|" "$TRACE_FILE" || true)
+
+  total=$((not_started + in_progress + completed + rejected + deferred))
+
+  echo "| Status | Count | Percentage |"
+  echo "|--------|-------|------------|"
+
+  if [[ $total -gt 0 ]]; then
+    pct_not=$((not_started * 100 / total))
+    pct_prog=$((in_progress * 100 / total))
+    pct_done=$((completed * 100 / total))
+    pct_rej=$((rejected * 100 / total))
+    pct_def=$((deferred * 100 / total))
+  else
+    pct_not=0; pct_prog=0; pct_done=0; pct_rej=0; pct_def=0
+  fi
+
+  echo "| ⬜ Not started | $not_started | ${pct_not}% |"
+  echo "| 🔵 In progress | $in_progress | ${pct_prog}% |"
+  echo "| ✅ Completed | $completed | ${pct_done}% |"
+  echo "| ❌ Rejected | $rejected | ${pct_rej}% |"
+  echo "| ⏭️ Deferred | $deferred | ${pct_def}% |"
+  echo "| **Total** | **$total** | **100%** |"
+else
+  echo "⚠️  TRACEABILITY.md not found"
+fi
+
+echo ""
+echo "=== Report Complete ==="

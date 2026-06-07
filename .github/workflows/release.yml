@@ -24,7 +24,11 @@ jobs:
       - name: Markdownlint
         uses: DavidAnson/markdownlint-cli2-action@v19
         with:
-          globs: "*.md"
+          globs: |
+            *.md
+            docs/**/*.md
+            module/**/*.md
+            specs/**/*.md
           config: .markdownlint.json
 
       - name: 链接有效性检查（lychee）
@@ -45,6 +49,9 @@ jobs:
             --header 'Accept: text/html'
             --exclude-file .lycheeignore
             -- '*.md'
+            'docs/**/*.md'
+            'module/**/*.md'
+            'specs/**/*.md'
           fail: true
 
       - name: 敏感内容守卫
@@ -52,6 +59,15 @@ jobs:
 
       - name: 状态一致性校验
         run: bash .github/ci/status-consistency-check.sh
+
+      - name: Spec 结构校验
+        run: bash .github/ci/spec-lint.sh
+
+      - name: Traceability 覆盖校验
+        run: bash .github/ci/traceability-check.sh
+
+      - name: Spec 状态报告
+        run: bash .github/ci/spec-status-report.sh
 
   # ── 2. 生成 Release Manifest ──────────────────────────────────
   build-manifest:

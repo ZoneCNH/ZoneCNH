@@ -27,6 +27,15 @@ Status: Approved
 | AT-006 | 弹性策略生效 | resiliencx, kernel | P1 |
 | AT-007 | 横切模块贯穿 | alertx, observex, 业务域模块 | P1 |
 | AT-008 | 配置热更新 | configx, 业务域模块 | P2 |
+| AT-009 | Redis 缓存与分布式锁链路 | redisx | P1 |
+| AT-010 | Kafka 生产-消费链路 | kafkax | P1 |
+| AT-011 | NATS 请求-响应模式 | natsx | P1 |
+| AT-012 | Postgres 事务与迁移 | postgresx | P1 |
+| AT-013 | ClickHouse 批量写入与查询 | clickhousex | P2 |
+| AT-014 | TDengine 时序数据写入与查询 | taosx | P2 |
+| AT-015 | OSS 对象存储操作 | ossx | P2 |
+| AT-016 | Contracts 契约 Breaking Change 检测 | contracts, xlibgate | P0 |
+| AT-017 | 采集器 → Kafka → 消费者链路 | market-data, kafkax, contracts | P1 |
 
 ---
 
@@ -145,6 +154,135 @@ Status: Approved
 
 ---
 
+## 存储扩展验收场景
+
+### AT-009: Redis 缓存与分布式锁链路
+
+**Given：** redisx 已连接 Redis 实例
+**When：** 业务模块通过 redisx.Cache 写入数据，然后通过 Locker.Acquire 获取锁
+**Then：**
+- Cache.Get 返回写入的值
+- Locker.Acquire 成功获取锁
+- 重复 Acquire 返回 ErrLockHeld
+- Locker.Release 释放后可重新获取
+- 连接断开时 Health 标记为 unhealthy
+
+**验证方法：** 集成测试，使用 testcontainers 启动 Redis
+
+---
+
+### AT-010: Kafka 生产-消费链路
+
+**Given：** kafkax 已连接 Kafka 集群
+**When：** Producer.Send 发送消息，Consumer.Subscribe 订阅同一 topic
+**Then：**
+- 消息在 5s 内被消费者收到
+- Consumer.Commit 后 offset 更新
+- Producer 重试可配置（max_retries）
+- 连接断开时自动重连
+
+**验证方法：** 集成测试，使用 testcontainers 启动 Kafka
+
+---
+
+### AT-011: NATS 请求-响应模式
+
+**Given：** natsx 已连接 NATS 服务器
+**When：** 服务端 Subscribe 注册 handler，客户端 Request 发送请求
+**Then：**
+- 服务端收到请求并返回响应
+- 客户端在 timeout 内收到响应
+- 超时返回 ErrRequestTimeout
+- JetStream 持久化消息不丢失
+
+**验证方法：** 集成测试，使用嵌入式 NATS 或 testcontainers
+
+---
+
+### AT-012: Postgres 事务与迁移
+
+**Given：** postgresx 已连接 PostgreSQL 实例
+**When：** 开启事务执行多条 SQL，然后提交或回滚
+**Then：**
+- Tx.Commit 后数据持久化
+- Tx.Rollback 后数据不变
+- panic 自动 rollback
+- Migration 幂等执行（重复执行不报错）
+
+**验证方法：** 集成测试，使用 testcontainers 启动 PostgreSQL
+
+---
+
+### AT-013: ClickHouse 批量写入与查询
+
+**Given：** clickhousex 已连接 ClickHouse 实例
+**When：** InsertBatch 写入 1000 行数据，Query 查询
+**Then：**
+- 数据在 1s 内可查询到
+- Query 返回正确的行数和列类型
+- Nullable 列正确映射为 Go 指针
+- TTL 配置后数据自动过期
+
+**验证方法：** 集成测试，使用 testcontainers 启动 ClickHouse
+
+---
+
+### AT-014: TDengine 时序数据写入与查询
+
+**Given：** taosx 已连接 TDengine 实例
+**When：** InsertBatch 写入时序数据，Query 按时间范围查询
+**Then：**
+- 数据写入成功
+- 时间范围查询返回正确结果
+- 超级表继承字段正确
+- 连接断开自动重试
+
+**验证方法：** 集成测试，使用 testcontainers 启动 TDengine
+
+---
+
+### AT-015: OSS 对象存储操作
+
+**Given：** ossx 已连接对象存储服务
+**When：** Put 上传文件，Get 下载，List 列举
+**Then：**
+- Put 后 Get 返回相同内容
+- Delete 后 Get 返回 ErrObjectNotFound
+- List 返回正确的 key 列表
+- 大文件（>100MB）自动分片上传
+
+**验证方法：** 集成测试，使用 MinIO 或 localstack
+
+---
+
+## 跨域链路验收场景
+
+### AT-016: Contracts 契约 Breaking Change 检测
+
+**Given：** contracts 模块已定义 MarketDataProvider 接口
+**When：** 修改接口方法签名（如添加新参数）
+**Then：**
+- breaking change 检测脚本报告不兼容
+- CI Gate 阻止合并
+- 版本号需升级（minor → major）
+
+**验证方法：** CI 脚本，对比接口签名
+
+---
+
+### AT-017: 采集器 → Kafka → 消费者链路
+
+**Given：** market-data 采集器和消费者模块均已配置
+**When：** 采集器从交易所获取行情，通过 Kafka 发布
+**Then：**
+- 消费者在 5s 内收到行情数据
+- 数据格式符合 contracts.MarketDataProvider 定义
+- 采集器断开后消费者 Health 标记为 degraded
+
+**验证方法：** 端到端集成测试，使用 mock 交易所 + testcontainers Kafka
+
+---
+
 ## 4. 测试环境要求
 
 | 要求 | 说明 |
@@ -163,5 +301,7 @@ Foundation v1 整体验收通过的条件：
 - [ ] AT-001 至 AT-004 全部通过（P0 场景）
 - [ ] AT-005 至 AT-007 全部通过（P1 场景）
 - [ ] AT-008 通过（P2 场景，可推迟）
+- [ ] AT-009 至 AT-015 全部通过（存储扩展验收）
+- [ ] AT-016 至 AT-017 全部通过（跨域链路验收）
 - [ ] 所有场景无 data race（`-race` 通过）
 - [ ] 验收测试覆盖率 ≥ 80%

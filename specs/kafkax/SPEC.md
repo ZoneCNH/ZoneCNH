@@ -211,7 +211,7 @@ func WithConsumerCodec(codec Codec) ConsumerOption
 ```go
 // 创建 Producer
 producer := kafkax.NewProducer(
-    kafkax.WithBrokers([]string{"localhost:9092"}),
+    kafkax.WithBrokers([]string{os.Getenv("FOUNDATIONX_KAFKA_BROKER")}),
     kafkax.WithProducerAcks(-1), // all
 )
 
@@ -227,7 +227,7 @@ err = producer.SendBatch(ctx, msgs)
 
 // 创建 Consumer
 consumer := kafkax.NewConsumer(
-    kafkax.WithConsumerBrokers([]string{"localhost:9092"}),
+    kafkax.WithConsumerBrokers([]string{os.Getenv("FOUNDATIONX_KAFKA_BROKER")}),
     kafkax.WithGroupID("signal-engine"),
 )
 
@@ -280,7 +280,7 @@ type Codec interface {
 ```yaml
 kafkax:
   brokers:                        # Kafka broker 地址列表
-    - "localhost:9092"
+    - "${FOUNDATIONX_KAFKA_BROKER}"
   producer:
     acks: all                     # 确认模式：0, 1, all
     retries: 3                    # 重试次数
@@ -311,7 +311,7 @@ kafkax:
 | `ErrInvalidMessage` | 检查消息 topic、key、value 是否有效 |
 | `ErrEmptyTopics` | 传入至少一个 topic |
 | `ErrEmptyBrokers` | 传入至少一个 broker 地址 |
-| `ErrSendFailed` | 检查底层错误，可能是网络或 Kafka 服务问题 |
+| `ErrSendFailed` | 检查底层错误，优先排查网络连通性和 Kafka 服务状态 |
 | `ErrCommitFailed` | 检查消息是否有效，重试 Commit |
 
 **错误消息格式：** `"kafkax: <operation>: <detail>"`

@@ -223,7 +223,7 @@ func WithQueryTimeout(d time.Duration) Option
 ```go
 // 创建客户端
 client := postgresx.New(
-    postgresx.WithDSN("postgres://user:pass@localhost:5432/foundationx"),
+    postgresx.WithDSN(os.Getenv("FOUNDATIONX_POSTGRES_DSN")),
     postgresx.WithMaxConns(20),
 )
 defer client.Close()
@@ -301,7 +301,7 @@ type Migration struct {
 
 ```yaml
 postgresx:
-  dsn: "postgres://user:pass@localhost:5432/foundationx"  # 连接字符串（推荐通过环境变量注入）
+  dsn: "${FOUNDATIONX_POSTGRES_DSN}"  # 连接字符串（推荐通过环境变量注入）
   max_conns: 20                # 最大连接数
   min_conns: 2                 # 最小空闲连接数
   max_conn_lifetime: 1h        # 连接最大存活时间

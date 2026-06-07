@@ -15,8 +15,8 @@ REPO_ROOT="$(git rev-parse --show-toplevel)"
 echo "=== Grep Guard ==="
 echo ""
 
-# ── 只扫描跟踪中的 .md 文件 ──
-mapfile -t FILES < <(git ls-files '*.md')
+# ── 扫描已跟踪和未忽略的未跟踪 .md 文件 ──
+mapfile -t FILES < <(git ls-files --cached --others --exclude-standard '*.md')
 
 if [[ ${#FILES[@]} -eq 0 ]]; then
   echo "⚠ 未发现 .md 文件，跳过"

@@ -106,7 +106,7 @@ Status: Approved
 - **英文名：** Signal
 - **中文名：** 信号
 - **定义：** 由一个或多个因子组合生成的交易决策指示，表示买入、卖出或持有。信号是策略引擎的输出，风控引擎的输入。
-- **所属模块：** `strategy-engine`、`signal-engine`
+- **所属模块：** `signal-factory`
 
 ---
 
@@ -116,3 +116,102 @@ Status: Approved
 - **中文名：** 超额收益
 - **定义：** 投资组合相对于基准（如市场指数）的超额回报。正 Alpha 表示跑赢市场，负 Alpha 表示跑输市场。量化策略的核心目标是持续获取正 Alpha。
 - **所属模块：** 无特定模块，是量化交易的核心目标概念
+
+---
+
+### Regime（市场状态）
+
+- **英文名：** Regime
+- **中文名：** 市场状态
+- **定义：** 市场运行的状态分类。系统使用 S1-S7 描述微观结构状态（如趋势、震荡、突破），M1-M7 描述宏观环境状态（如牛市、熊市、高波动）。策略根据当前 Regime 调整参数。
+- **所属模块：** `factor-engine`、`signal-factory`
+
+---
+
+### DecisionCard（决策卡）
+
+- **英文名：** DecisionCard
+- **中文名：** 决策卡
+- **定义：** 信号工厂输出的标准化交易决策结构体，包含交易方向、目标仓位、置信度、来源因子、风控约束等字段。是信号工厂到风控引擎的传递载体。
+- **所属模块：** `signal-factory`
+
+---
+
+### TradePermission（交易许可）
+
+- **英文名：** TradePermission
+- **中文名：** 交易许可
+- **定义：** 风控引擎对 DecisionCard 审批后的结果，包含是否允许交易、允许的仓位上限、附加条件（如止损线）。只有获得 TradePermission 的决策才能提交给订单引擎。
+- **所属模块：** `risk-engine`
+
+---
+
+### PositionCaps（仓位上限）
+
+- **英文名：** PositionCaps
+- **中文名：** 仓位上限
+- **定义：** 风控引擎设定的单品种和组合层面的仓位限制，包括单品种最大持仓、行业集中度上限、总杠杆上限等。TradePermission 中的允许仓位不会超过 PositionCaps。
+- **所属模块：** `risk-engine`
+
+---
+
+### Walk-forward（滚动回测）
+
+- **英文名：** Walk-forward Analysis
+- **中文名：** 滚动回测
+- **定义：** 将历史数据分为多个训练窗口和测试窗口，用训练窗口优化参数、测试窗口验证效果，逐段向前滚动。避免过拟合，是策略验证的标准方法。
+- **所属模块：** `backtest-engine`
+
+---
+
+### IC / IR（信息系数 / 信息比率）
+
+- **英文名：** Information Coefficient / Information Ratio
+- **中文名：** 信息系数 / 信息比率
+- **定义：** IC 衡量因子预测值与实际收益的相关性（Rank IC 通常 > 0.03 为有效因子）。IR 是因子 IC 的均值与标准差之比，衡量因子预测的稳定性（IR > 0.5 为优秀因子）。
+- **所属模块：** `factor-eval`
+
+---
+
+### Slippage（滑点）
+
+- **英文名：** Slippage
+- **中文名：** 滑点
+- **定义：** 预期成交价格与实际成交价格之间的差异。回测引擎使用滑点模型模拟真实交易成本，实盘通过 ExecutionReport 中的成交均价与决策价对比来度量实际滑点。
+- **所属模块：** `backtest-engine`、`order-engine`
+
+---
+
+### TWAP / VWAP（时间加权均价 / 成交量加权均价）
+
+- **英文名：** Time-Weighted Average Price / Volume-Weighted Average Price
+- **中文名：** 时间加权均价 / 成交量加权均价
+- **定义：** TWAP 将大单拆分为等时间间隔的小单执行，VWAP 按历史成交量分布拆分。两者都是算法交易的执行策略，用于降低大单对市场的冲击成本。
+- **所属模块：** `order-engine`
+
+---
+
+### ExecutionReport（成交回报）
+
+- **英文名：** ExecutionReport
+- **中文名：** 成交回报
+- **定义：** 订单引擎从交易所收到的成交确认，包含成交价格、数量、手续费、时间戳等。通过事件发布到决策域，用于更新持仓和计算实际滑点。
+- **所属模块：** `order-engine`
+
+---
+
+### PortfolioTarget（目标持仓）
+
+- **英文名：** PortfolioTarget
+- **中文名：** 目标持仓
+- **定义：** 优化器输出的最优持仓组合，包含每个品种的目标权重或数量。与当前持仓对比后生成 OrderIntent，提交给风控引擎审批。
+- **所属模块：** `optimizer`、`portfolio-engine`
+
+---
+
+### FactorInput / FactorOutput（因子输入 / 因子输出）
+
+- **英文名：** FactorInput / FactorOutput
+- **中文名：** 因子输入 / 因子输出
+- **定义：** FactorInput 是因子计算所需的标准化输入结构（行情快照、时间戳、品种列表）。FactorOutput 是因子计算结果（因子值、置信度、元数据）。两者定义在 `contracts` 中，确保因子引擎与上下游解耦。
+- **所属模块：** `contracts`、`factor-engine`

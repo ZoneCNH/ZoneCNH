@@ -270,7 +270,7 @@ func WithWriteTimeout(d time.Duration) Option
 ```go
 // 创建客户端
 client := redisx.New(
-    redisx.WithAddr("localhost:6379"),
+    redisx.WithAddr(os.Getenv("FOUNDATIONX_REDIS_ADDR")),
     redisx.WithPoolSize(20),
 )
 
@@ -334,7 +334,7 @@ type Codec interface {
 
 ```yaml
 redisx:
-  addr: "localhost:6379"       # Redis 地址
+  addr: "${FOUNDATIONX_REDIS_ADDR}" # Redis 地址
   password: ""                 # 密码（推荐通过环境变量注入）
   db: 0                        # 数据库编号
   pool_size: 10                # 连接池大小

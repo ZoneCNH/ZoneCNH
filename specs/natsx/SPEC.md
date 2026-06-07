@@ -258,7 +258,7 @@ func WithCodec(codec Codec) Option
 ```go
 // 创建客户端
 client := natsx.New(
-    natsx.WithURL("nats://localhost:4222"),
+    natsx.WithURL(os.Getenv("FOUNDATIONX_NATS_URL")),
     natsx.WithReconnectWait(2*time.Second),
 )
 
@@ -330,7 +330,7 @@ type Codec interface {
 
 ```yaml
 natsx:
-  url: "nats://localhost:4222"   # NATS 服务器地址
+  url: "${FOUNDATIONX_NATS_URL}" # NATS 服务器地址
   name: "foundationx"            # 连接名称（用于监控）
   credentials: ""                # 凭证文件路径（可选）
   reconnect_wait: 2s             # 重连等待时间

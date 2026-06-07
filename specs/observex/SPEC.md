@@ -315,7 +315,7 @@ observex:
 | `ErrExporterFailed` | 检查 exporter 端点连通性，降级到 noop exporter |
 | `ErrLabelForbidden` | 检查 label 名，使用 AllowedLabels 中的替代 |
 | `ErrBufferFull` | 增大 buffer 或降低采集频率 |
-| `ErrShutdownFailed` | 检查 exporter 连接状态，可能需要手动清理 |
+| `ErrShutdownFailed` | 检查 exporter 连接状态；若连接未关闭，执行手动清理 |
 
 **错误消息格式：** `"observex: <operation>: <detail>"`
 **错误包装：** 使用 `%w` 保留底层错误链

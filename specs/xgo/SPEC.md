@@ -442,7 +442,7 @@ x.go 本身不产生 metric/log/span，通过 observex 初始化的 logger/meter
 | 变更类型 | 版本升级 |
 |----------|----------|
 | 新增模块 | patch |
-| 移除模块 | **minor**（可能影响部署配置） |
+| 移除模块 | **minor**（影响部署配置时升为 major） |
 | 修改配置结构 | **minor**（带默认值）或 **major**（破坏性） |
 | 修改 Go 版本 | **minor** |
 

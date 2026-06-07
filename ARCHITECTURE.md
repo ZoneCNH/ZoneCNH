@@ -146,6 +146,7 @@ Foundation 6 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中�
 | [`specs/TRACEABILITY.md`](./specs/TRACEABILITY.md) | 需求追踪 — FR → AC → TC → 实现全覆盖 |
 | [`specs/anti-requirements.md`](./specs/anti-requirements.md) | 反需求 — 明确不做之事，防止范围蔓延 |
 | [`module/ADR-TEMPLATE.md`](./module/ADR-TEMPLATE.md) | ADR 模板 — 架构决策记录标准格式 |
+| [`specs/TASK-TEMPLATE.md`](./specs/TASK-TEMPLATE.md) | Task 模板 — AI 代理任务拆分标准格式 |
 
 ## Foundation 第一阶段闭环
 
