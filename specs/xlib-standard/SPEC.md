@@ -2,13 +2,18 @@
 
 > FoundationX 基础库标准工厂。标准源 + Go 参考模板 + Generator + Harness + Evidence Runtime + Debt Governance Runtime。
 
-- Status: Draft
-- Spec-Version: v2.0.0
-- Last-Updated: 2026-06-07
+- Status: Review
+- Spec-Version: v2.0.1
+- Last-Updated: 2026-06-08
+- Owner: ZoneCNH
+- Layer: 门禁（Foundation Gate，位于所有领域之上）
+- Version: v0.6.x
+- Repository: [github.com/ZoneCNH/xlib-standard](https://github.com/ZoneCNH/xlib-standard)
+- Related: [CONSTITUTION.md](../../CONSTITUTION.md), [ARCHITECTURE.md](../../ARCHITECTURE.md), [SPEC-TEMPLATE.md](../SPEC-TEMPLATE.md), [xlibgate/SPEC.md](../xlibgate/SPEC.md), [kernel/SPEC.md](../kernel/SPEC.md), [configx/SPEC.md](../configx/SPEC.md)
 
 ---
 
-## 0. 使用边界
+## 使用边界
 
 - xlib-standard 是基础库标准工厂，不是业务库，不是 L1/L2 provider runtime。
 - 所有基础库必须使用 xlib-standard 的标准、模板和门禁。
@@ -23,7 +28,7 @@
 |------|-----|
 | 模块名 | xlib-standard |
 | 仓库 | `github.com/ZoneCNH/xlib-standard` |
-| 层级 | 标准源（L-1），位于所有层级之上 |
+| 层级 | 门禁（Foundation Gate，位于所有领域之上；详见 §15.1 领域命名口径） |
 | 角色 | Standard Source + Go Reference Template + Generator + Harness + Evidence Runtime + Debt Governance Runtime |
 | 默认下游 | kernel(L0), configx(L1), observex(L1), testkitx(L1), redisx(L2) |
 | Go 版本 | 1.23.x（遵循 `.tool-versions`，`GOWORK=off` 必须） |
@@ -118,7 +123,9 @@ xlib-standard 本身不包含业务逻辑，不依赖 x.go，不读取生产密�
 9. **Debt Governance**：7 类技术债治理规则全部纳入 Gate
 10. **自动化**：Issue → Goal → Task → Branch → Commit → PR → Version → Release → Issue Close 全链路
 
-### 4.3 不做什么（Non-Goals）
+---
+
+## 5. Non-goals（不做什么）
 
 - 不包含业务逻辑实现
 - 不替代下游仓库自身治理
@@ -131,7 +138,7 @@ xlib-standard 本身不包含业务逻辑，不依赖 x.go，不读取生产密�
 
 ---
 
-## 5. 消费者（Consumers）
+## 6. 消费者（Consumers）
 
 | 消费者 | 层级 | 消费方式 | 采纳状态 |
 |--------|------|----------|----------|
@@ -159,9 +166,9 @@ xlib-standard 本身不包含业务逻辑，不依赖 x.go，不读取生产密�
 
 ---
 
-## 6. 功能需求（Functional Requirements）
+## 7. 功能需求（Functional Requirements）
 
-### 6.1 标准源（Standard Source）
+### 7.1 标准源（Standard Source）
 
 ### FR-001: 定义 419 条 RULE-* 规则，机器化为 registry.yaml
 
@@ -193,12 +200,12 @@ THEN 对应层的 gate 阻断操作并返回违规详情
 
 > 来源：git.md | 优先级：P0
 
-### FR-004: 定义 L0-L6 层级依赖模型
+### FR-004: 定义模块依赖层级模型
 
 WHEN 模块 A 导入模块 B
-THEN 依赖方向必须符合 L→L-1 规则（L3→L2→L1→L0→stdlib），反向导入被阻断
+THEN 依赖方向必须符合**领域分层 + 门禁** 模型（详见 §15.1）：门禁 → 基座 L0 → 基座 L1 → 基座 L2 → 数据域 → 分析域/决策域 → 执行域 → 入口；横切层（observex/alertx）可被任意层依赖；反向导入被阻断
 
-WHEN L3-L6 业务模块出现在公开库的 import 中
+WHEN 私有业务模块（数据域 / 分析域 / 决策域 / 执行域 / 入口）出现在公开库的 import 中
 THEN boundary gate 失败并报告违规路径
 
 > 来源：L.md, ADR-20260604-001 | 优先级：P0
@@ -243,7 +250,7 @@ THEN 必须创建新 ADR 并遵循 ADR-000-template.md 格式
 
 > 来源：docs/adr/ | 优先级：P1
 
-### 6.2 Go 参考模板（Go Reference Template）
+### 7.2 Go 参考模板（Go Reference Template）
 
 ### FR-009: 公共 API 模板
 
@@ -305,7 +312,7 @@ THEN 返回新副本，secret/token/password/key 字段被替换为 `***`
 
 > 来源：docs/config.md | 优先级：P0
 
-### 6.3 Generator
+### 7.3 Generator
 
 ### FR-015: render_template.sh 渲染
 
@@ -357,7 +364,7 @@ THEN 工具链版本与 docs/workflow/manifest 一致，无版本漂移
 
 > 来源：docs/generation.md | 优先级：P1
 
-### 6.4 Harness
+### 7.4 Harness
 
 ### FR-020: 66 个 gate 条目
 
@@ -419,7 +426,7 @@ THEN gate 失败，P0 debt > 0 时阻断发布
 
 > 来源：docs/standard/debt-governance.md | 优先级：P0
 
-### 6.5 Evidence Runtime
+### 7.5 Evidence Runtime
 
 ### FR-026: Evidence Ledger
 
@@ -491,7 +498,7 @@ THEN evidence append-only 策略阻止操作
 
 > 来源：docs/standard/evidence-protocol.md | 优先级：P0
 
-### 6.6 Debt Governance Runtime
+### 7.6 Debt Governance Runtime
 
 ### FR-033: ARCH 类技术债规则
 
@@ -563,7 +570,7 @@ THEN 报告违规类型、严重度和修复建议
 
 > 来源：debt.md | 优先级：P0
 
-### 6.7 Goal Runtime v3.1.1
+### 7.7 Goal Runtime v3.1.1
 
 ### FR-040: Goal Kernel（8 个核心对象）
 
@@ -640,7 +647,7 @@ THEN Phase N+1 的 PR 不得开始
 > - **20 PR（Downstream Sync）**：xlib-standard 标准变更向下游传播的同步执行链，见 goal.md。
 > - 两套 PR 互相独立：Goal Runtime PR 是 xlib-standard 自身建设，Downstream Sync PR 是标准向下游扩散。
 
-### 6.8 仓库治理协议
+### 7.8 仓库治理协议
 
 ### FR-047: 5 层执行链
 
@@ -710,9 +717,9 @@ THEN 阻断后续下游同步，记录失败原因到 downstream-sync plan
 
 ---
 
-## 7. 业务规则（Business Rules）
+## 8. 业务规则（Business Rules）
 
-### 7.1 核心铁律（Iron Rules，7 条）
+### 8.1 核心铁律（Iron Rules，7 条）
 
 | 编号 | 规则 | 来源 |
 |------|------|------|
@@ -724,7 +731,9 @@ THEN 阻断后续下游同步，记录失败原因到 downstream-sync plan
 | IR-006 | Self-improving 是强制环节 | RULE-CORE-006 |
 | IR-007 | 登记态 ≠ adopted | main.md, goal.md |
 
-### 7.2 规则前缀体系（RULE Taxonomy）
+> **IR ↔ TRUTH 别名约定**（消解结构债 S11）：IR-001..007 是内部分类编号，TRUTH-001..015 是对外引用编号；当 §22.4 表格列出两者同义时，**对外引用一律使用 TRUTH 编号**，内部规则源码与 enforcer 一律使用 IR/RULE-CORE 编号，不再并列两套独立体系。
+
+### 8.2 规则前缀体系（RULE Taxonomy）
 
 419 条规则按前缀分类：
 
@@ -741,13 +750,13 @@ THEN 阻断后续下游同步，记录失败原因到 downstream-sync plan
 | RULE-ARCH | 架构规则 | RULE-ARCH-001（层级治理） |
 | RULE-DOMAIN | 领域规则 | RULE-DOMAIN-001（禁止业务术语） |
 
-### 7.3 规则权威顺序
+### 8.3 规则权威顺序
 
 ```
 iron-rules.md > registry.yaml > *-rules.md > ADR-* > .worktree/goal-patch.md
 ```
 
-### 7.4 完成定义（DoD）
+### 8.4 完成定义（DoD）
 
 | 级别 | 要求 | 来源 |
 |------|------|------|
@@ -756,7 +765,7 @@ iron-rules.md > registry.yaml > *-rules.md > ADR-* > .worktree/goal-patch.md
 | Goal DoD | 所有必需项有实现或不适用理由 + ci/integration/evidence 有新鲜结果 | docs/standard/dod.md |
 | Release DoD | manifest 生成 + release-check 通过 + score >= 9.8 + final-check + preflight 通过 | docs/standard/dod.md |
 
-### 7.5 采纳状态机禁止转换（6 个）
+### 8.5 采纳状态机禁止转换（6 个）
 
 从 `main.md` 和 `goal.md` 提取的 6 个禁止状态转换：
 
@@ -771,7 +780,7 @@ iron-rules.md > registry.yaml > *-rules.md > ADR-* > .worktree/goal-patch.md
 
 核心铁律：`registered != adopted`、`patch_only != proof_based_adoption`、`gate_outputs_missing != proof_based_adoption`。
 
-### 7.6 关键约束
+### 8.6 关键约束
 
 1. **依赖方向**：L3 → L2 → L1 → L0 → stdlib，不可反向（L.md, ADR-20260604-001）
 2. **L3 私有边界**：L3 业务系统不公开、不开源，公开库不得包含业务语义（ADR-20260604-001）
@@ -782,9 +791,9 @@ iron-rules.md > registry.yaml > *-rules.md > ADR-* > .worktree/goal-patch.md
 
 ---
 
-## 8. 接口契约（Interface Contract）
+## 9. 接口契约（Interface Contract）
 
-### 8.1 公共 API
+### 9.1 公共 API
 
 | API | 说明 | 契约 |
 |-----|------|------|
@@ -798,7 +807,86 @@ iron-rules.md > registry.yaml > *-rules.md > ADR-* > .worktree/goal-patch.md
 | `Metrics` | 指标注册 | 9 个最小指标 |
 | `Version` | 版本信息 | 返回模块版本 |
 
-### 8.2 Gate Result Envelope
+#### 9.1.1 Go 参考签名（Template Reference）
+
+下游模板渲染产物必须满足以下 Go 签名（占位符 `{Module}` 由 `scripts/render_template.sh` 替换）：
+
+```go
+package {module}
+
+import (
+    "context"
+    "time"
+)
+
+// Config 是模块对外配置结构体，所有字段必须可序列化且无生产 secret 默认值。
+// 必须由调用方显式构造，禁止隐式读取生产路径（详见 §7 FR-013、§19）。
+type Config struct {
+    // 由各模块自行定义具体字段；本规格只约束方法集。
+}
+
+// Validate 校验配置；无效时必须返回 ErrorKindValidation 包装的 error
+// （详见 §12.1 / FR-014）。
+func (c *Config) Validate() error
+
+// Sanitize 返回脱敏后的 Config 副本，可安全写入日志、Evidence、Manifest。
+// 必须屏蔽 token / secret / password / private_key / 连接凭据（XS-CORE-008）。
+func (c *Config) Sanitize() Config
+
+// {Module}Client 是公共客户端接口；具体方法由各模块定义。
+// 所有方法第一参数必须是 context.Context；返回值必须包含 error。
+type {Module}Client interface {
+    // Close 释放资源，必须幂等（多次调用不报错）。
+    Close(ctx context.Context) error
+
+    // HealthCheck 返回当前健康状态。
+    HealthCheck(ctx context.Context) (HealthStatus, error)
+}
+
+// New 构造客户端；context 不可为 nil/canceled/expired。
+func New(ctx context.Context, cfg Config) ({Module}Client, error)
+
+// HealthStatus 与 §9.5 JSON Schema 对齐。
+type HealthStatus struct {
+    Name      string                 `json:"name"`
+    Status    string                 `json:"status"` // healthy | degraded | unhealthy
+    Message   string                 `json:"message,omitempty"`
+    CheckedAt time.Time              `json:"checked_at"`
+    LatencyMs int64                  `json:"latency_ms"`
+    Metadata  map[string]any         `json:"metadata,omitempty"`
+}
+
+// ErrorKind 是 9 类错误枚举（详见 §12.1）。
+type ErrorKind string
+
+const (
+    ErrorKindConfig      ErrorKind = "config"
+    ErrorKindValidation  ErrorKind = "validation"
+    ErrorKindConnection  ErrorKind = "connection"
+    ErrorKindUnavailable ErrorKind = "unavailable"
+    ErrorKindTimeout     ErrorKind = "timeout"
+    ErrorKindAuth        ErrorKind = "auth"
+    ErrorKindConflict    ErrorKind = "conflict"
+    ErrorKindRateLimit   ErrorKind = "rate_limit"
+    ErrorKindInternal    ErrorKind = "internal"
+)
+
+// NewError / WrapError / IsKind 构成稳定错误 contract，详见 §12.2。
+func NewError(kind ErrorKind, msg string) error
+func WrapError(kind ErrorKind, cause error, msg string) error
+func IsKind(err error, kinds ...ErrorKind) bool
+
+// Version 返回模块语义化版本字符串（如 "v0.6.3"）。
+func Version() string
+```
+
+**约束**：
+- 所有方法第一参数 `context.Context`、返回值含 `error`（与 `SPEC-TEMPLATE.md §9` 一致）。
+- 接口最小化（≤ 5 方法），具体存储 / RPC 行为由各下游模块在自身 SPEC §9 扩展。
+- 禁止暴露 `float64` 表达金额（基座统一使用 `decimalx`，详见 ARCHITECTURE.md）。
+- 模板生成后必须通过 `GOWORK=off go vet ./...`（FR-009 / FR-015）。
+
+### 9.2 Gate Result Envelope
 
 ```json
 {
@@ -812,7 +900,7 @@ iron-rules.md > registry.yaml > *-rules.md > ADR-* > .worktree/goal-patch.md
 }
 ```
 
-### 8.3 Exit Code 契约
+### 9.3 Exit Code 契约
 
 | 退出码 | 含义 |
 |--------|------|
@@ -821,7 +909,7 @@ iron-rules.md > registry.yaml > *-rules.md > ADR-* > .worktree/goal-patch.md
 | 2 | 非法参数 |
 | 3-9 | 保留 |
 
-### 8.4 goalcli CLI Contract
+### 9.4 goalcli CLI Contract
 
 | 字段 | 要求 |
 |------|------|
@@ -836,7 +924,7 @@ iron-rules.md > registry.yaml > *-rules.md > ADR-* > .worktree/goal-patch.md
 
 > 注：v0.2.0 gap ledger 中有 5 个命令处于 pending 状态（score-gate、proof-replay、depth-report、conformance-check、standard-impact-report），待后续 PR 实现。
 
-### 8.5 HealthCheck JSON Schema
+### 9.5 HealthCheck JSON Schema
 
 ```json
 {
@@ -851,29 +939,66 @@ iron-rules.md > registry.yaml > *-rules.md > ADR-* > .worktree/goal-patch.md
 
 ---
 
-## 9. 数据模型（Data Model）
+## 10. 数据模型（Data Model）
 
-### 9.1 Goal 对象模型
+> 本节按 `SPEC-TEMPLATE.md §10` 约束：每个核心对象给出字段表 + Go struct 参考；JSON tag 与 §9.5 / §9.2 / §10.6 schema 对齐。
 
-```
-Goal → Spec → Requirement → Design → Plan → Task → Evidence → Review → Release → Retrospective
+### 10.1 Goal 对象模型
+
+Goal 是 Goal Runtime 的核心承载对象，贯穿 Spec → Plan → Task → Evidence → Release。
+
+| 字段          | 类型                | 必填 | 说明                                                             |
+|---------------|---------------------|:----:|------------------------------------------------------------------|
+| `ID`          | `string`            |  ✅  | 形如 `GOAL-YYYYMMDD-NNN`；全局唯一                               |
+| `Title`       | `string`            |  ✅  | 一句话目标描述                                                   |
+| `Status`      | `GoalStatus`        |  ✅  | `draft / accepted / in_progress / blocked / done / superseded`  |
+| `Priority`    | `string`            |  ✅  | `P0 / P1 / P2`                                                   |
+| `SpecRef`     | `string`            |  ✅  | 关联 SPEC.md 路径与锚点                                          |
+| `Plan`        | `[]TaskRef`         |  ⭕  | 拆解出的 Task 列表                                               |
+| `Evidence`    | `[]EvidenceRef`     |  ⭕  | Evidence Ledger 行号或路径                                       |
+| `CreatedAt`   | `time.Time`         |  ✅  | RFC3339                                                          |
+| `UpdatedAt`   | `time.Time`         |  ✅  | RFC3339                                                          |
+
+```go
+type Goal struct {
+    ID        string         `json:"id"`
+    Title     string         `json:"title"`
+    Status    GoalStatus     `json:"status"`
+    Priority  string         `json:"priority"`
+    SpecRef   string         `json:"spec_ref"`
+    Plan      []TaskRef      `json:"plan,omitempty"`
+    Evidence  []EvidenceRef  `json:"evidence,omitempty"`
+    CreatedAt time.Time      `json:"created_at"`
+    UpdatedAt time.Time      `json:"updated_at"`
+}
+
+type GoalStatus string
+
+const (
+    GoalStatusDraft       GoalStatus = "draft"
+    GoalStatusAccepted    GoalStatus = "accepted"
+    GoalStatusInProgress  GoalStatus = "in_progress"
+    GoalStatusBlocked     GoalStatus = "blocked"
+    GoalStatusDone        GoalStatus = "done"
+    GoalStatusSuperseded  GoalStatus = "superseded"
+)
 ```
 
 **Evidence Chain 9 Goal Groups**：
 
-| 组 | 目标 | 产出 |
-|----|------|------|
-| G1 | Goal Acceptance | MVA Gate 1 |
-| G2 | Spec Verification | Requirement ATDD |
-| G3 | Design Review | Architecture ADR |
-| G4 | Plan Execution | Task breakdown |
-| G5 | Task Completion | Implementation |
-| G6 | Test Evidence | Coverage report |
-| G7 | Review Approval | Code review |
-| G8 | Delivery | Release manifest |
-| G9 | Retrospective | Lessons learned |
+| 组 | 目标              | 产出              |
+|----|-------------------|-------------------|
+| G1 | Goal Acceptance   | MVA Gate 1        |
+| G2 | Spec Verification | Requirement ATDD  |
+| G3 | Design Review     | Architecture ADR  |
+| G4 | Plan Execution    | Task breakdown    |
+| G5 | Task Completion   | Implementation    |
+| G6 | Test Evidence     | Coverage report   |
+| G7 | Review Approval   | Code review       |
+| G8 | Delivery          | Release manifest  |
+| G9 | Retrospective     | Lessons learned   |
 
-### 9.2 Proof Runtime 4-Plane 架构
+### 10.2 Proof Runtime 4-Plane 架构
 
 ```
 Spec Plane → Execution Plane → Proof Plane → Automation Plane
@@ -881,24 +1006,84 @@ Spec Plane → Execution Plane → Proof Plane → Automation Plane
 
 > 注：Proof Runtime 当前完成度约 88-92%。10 个 REQ-PROOF 中，Facts SSOT、GateReport、Evidence Replay 已完全实现；Downstream Proof Schema、Proof Depth D0-D7 等处于设计封顶阶段，待 PR 逐步落地。
 
-### 9.3 Goal Kernel 对象（8 个）
+### 10.3 Goal Kernel 对象（8 个）
 
-Goal, Spec, Design, Plan, Task, Test, Evidence, Review
+每个对象都是 Go struct，导出字段为 PascalCase，JSON tag 为 snake_case。
 
-### 9.4 Harness Runtime 对象（14 个）
+| 对象       | 必填字段（最小）                                | JSON tag 关键字            |
+|------------|-------------------------------------------------|----------------------------|
+| `Goal`     | 见 §10.1                                        | 同上                       |
+| `Spec`     | `ID`, `Path`, `Version`, `FRs[]`                | `id / path / version`      |
+| `Design`   | `ID`, `GoalID`, `ADRRefs[]`                     | `id / goal_id / adr_refs`  |
+| `Plan`     | `GoalID`, `Tasks[]`                             | `goal_id / tasks`          |
+| `Task`     | `ID`, `Title`, `Status`, `Owner`                | `id / title / status`      |
+| `Test`     | `ID`, `TaskID`, `Kind`, `Result`                | `id / task_id / kind`      |
+| `Evidence` | 见 §10.5                                        | 同 §10.5                   |
+| `Review`   | `ID`, `Subject`, `Reviewer`, `Decision`         | `id / subject / decision`  |
 
-HarnessConfig, ModeRouter, GateRegistry, CommandRegistry, BlockingPolicy, EvidencePolicy, CostBudget, ConformanceLevel, RuntimeVersion, RuntimeConstitution, StopConditions, ExpansionPolicy, SimplificationPolicy, RuntimeBenchmark
+### 10.4 Harness Runtime 对象（14 个）
 
-### 9.5 Evidence Ledger
+`HarnessConfig`、`ModeRouter`、`GateRegistry`、`CommandRegistry`、`BlockingPolicy`、`EvidencePolicy`、`CostBudget`、`ConformanceLevel`、`RuntimeVersion`、`RuntimeConstitution`、`StopConditions`、`ExpansionPolicy`、`SimplificationPolicy`、`RuntimeBenchmark`。
 
-- 源：`.agent/evidence/ledger.jsonl`（append-only JSONL）
-- 派生：`release/evidence/goalcli/`（generated packs，不是 source ledger）
+完整 struct 定义由 `cmd/goalcli/internal/runtime/` 包承载；本规格只约束对象集合与边界。
 
-### 9.6 Release Manifest（latest.json）
+### 10.5 Evidence Ledger
 
-20+ 字段：module, version, commit, tree_sha, source_digest, go_version, generated_at, checks, contracts, dependencies, tools, standard_impact, downstream_sync_required, score, workflow, artifacts 等
+- **源**：`.agent/evidence/ledger.jsonl`（append-only JSONL，禁止删除失败 Evidence，FR-032）
+- **派生**：`release/evidence/goalcli/`（generated packs，不是 source ledger）
 
-### 9.7 Adoption Registry
+每一行记录 schema：
+
+| 字段              | 类型     | 必填 | 说明                                                  |
+|-------------------|----------|:----:|-------------------------------------------------------|
+| `schema_version`  | `string` |  ✅  | 形如 `"1.0"`                                          |
+| `timestamp`       | `string` |  ✅  | RFC3339                                               |
+| `goal_id`         | `string` |  ✅  | 关联 Goal                                             |
+| `gate_id`         | `string` |  ✅  | 关联 Gate                                             |
+| `status`          | `string` |  ✅  | `passed / failed / planned / gap`                     |
+| `exit_code`       | `int`    |  ✅  | 与 §9.3 一致                                          |
+| `evidence_path`   | `string` |  ⭕  | 派生 evidence pack 相对路径                            |
+| `command`         | `string` |  ⭕  | 触发命令                                              |
+| `details`         | `object` |  ⭕  | 任意 JSON 详情                                         |
+
+```go
+type EvidenceEntry struct {
+    SchemaVersion string                 `json:"schema_version"`
+    Timestamp     string                 `json:"timestamp"`
+    GoalID        string                 `json:"goal_id"`
+    GateID        string                 `json:"gate_id"`
+    Status        string                 `json:"status"`
+    ExitCode      int                    `json:"exit_code"`
+    EvidencePath  string                 `json:"evidence_path,omitempty"`
+    Command       string                 `json:"command,omitempty"`
+    Details       map[string]any         `json:"details,omitempty"`
+}
+```
+
+### 10.6 Release Manifest（latest.json）
+
+| 字段                          | 类型              | 必填 | 说明                                  |
+|-------------------------------|-------------------|:----:|---------------------------------------|
+| `module`                      | `string`          |  ✅  | 模块名                                |
+| `version`                     | `string`          |  ✅  | 形如 `v0.6.3`                         |
+| `commit`                      | `string`          |  ✅  | 40 char commit sha                    |
+| `tree_sha`                    | `string`          |  ✅  | 40 char tree sha                      |
+| `source_digest`               | `string`          |  ✅  | source pack sha256                    |
+| `go_version`                  | `string`          |  ✅  | 编译时 Go 版本                        |
+| `generated_at`                | `string`          |  ✅  | RFC3339                               |
+| `checks`                      | `[]CheckResult`   |  ✅  | 各 gate 结果                          |
+| `contracts`                   | `[]ContractRef`   |  ✅  | 接口 / schema 锚点                    |
+| `dependencies`                | `[]Dependency`    |  ✅  | go.mod 关键 require                   |
+| `tools`                       | `[]ToolPin`       |  ✅  | golangci-lint / govulncheck 等版本    |
+| `standard_impact`             | `object`          |  ⭕  | 影响下游模块清单                       |
+| `downstream_sync_required`    | `bool`            |  ⭕  | 是否要求下游同步                       |
+| `score`                       | `float`           |  ✅  | scorecard 总分（≥ 9.8 才允许 release） |
+| `workflow`                    | `string`          |  ✅  | 触发的 workflow 文件名                |
+| `artifacts`                   | `[]ArtifactRef`   |  ✅  | 产物清单                              |
+
+20+ 字段；具体扩展字段见 `docs/release.md` 与 `docs/supply-chain.md`。
+
+### 10.7 Adoption Registry
 
 ```yaml
 adoption_status: not_run | registered | dry_run | patch_only | proof_verified | adopted | blocked | superseded
@@ -906,15 +1091,56 @@ evidence_state: not_run | partial | complete
 proof_based_adoption: true | false
 ```
 
-### 9.8 配置拓扑（.config/）
+```go
+type AdoptionStatus string
 
-18 个命名空间：xlib, goals, checklists, harness, cicd, github, governance, rules, evidence, self-improving, context, facts, assertions, policies, registry, templates, standard, release
+const (
+    AdoptionNotRun         AdoptionStatus = "not_run"
+    AdoptionRegistered     AdoptionStatus = "registered"
+    AdoptionDryRun         AdoptionStatus = "dry_run"
+    AdoptionPatchOnly      AdoptionStatus = "patch_only"
+    AdoptionProofVerified  AdoptionStatus = "proof_verified"
+    AdoptionAdopted        AdoptionStatus = "adopted"
+    AdoptionBlocked        AdoptionStatus = "blocked"
+    AdoptionSuperseded     AdoptionStatus = "superseded"
+)
+
+type AdoptionRecord struct {
+    Module             string         `json:"module"`
+    AdoptionStatus     AdoptionStatus `json:"adoption_status"`
+    EvidenceState      string         `json:"evidence_state"`
+    ProofBasedAdoption bool           `json:"proof_based_adoption"`
+    LastUpdated        time.Time      `json:"last_updated"`
+}
+```
+
+合法状态转换由 FR-051 的 6 个禁止转换规则约束。
+
+### 10.8 配置拓扑（.config/）
+
+18 个命名空间：`xlib`, `goals`, `checklists`, `harness`, `cicd`, `github`, `governance`, `rules`, `evidence`, `self-improving`, `context`, `facts`, `assertions`, `policies`, `registry`, `templates`, `standard`, `release`。
+
+每个命名空间对应 `.config/<ns>/` 目录，详细 schema 由对应 `docs/standard/<ns>-*.md` 规范化（详见 §21 迁移）。
 
 ---
 
-## 10. 错误处理（Error Handling）
+## 11. Config Schema（配置 Schema）
 
-### 10.1 ErrorKind（9 种）
+> 本模块作为标准源/模板/Harness/Evidence Runtime，自身不暴露生产业务配置。下游生成库的 Config Schema 由 `scripts/render_template.sh` 渲染产出，并满足以下硬性约束：
+
+- **显式传入**：所有配置必须经构造函数显式注入；禁止隐式读取 `/home/k8s/secrets/env/*` 或任何生产路径（详见 §7 FR-013、§19 安全）。
+- **Validate**：所有 Config 必须实现 `Validate() error`，无效配置返回 `ErrorKindValidation`（详见 §7 FR-014）。
+- **Sanitize**：所有 Config 必须实现 `Sanitize() Config`，输出可入日志/Evidence；屏蔽 `token / secret / password / private_key / 连接凭据`（XS-CORE-008）。
+- **配置拓扑**：v1.0.0 目标拓扑收敛到 `.config/` 18 个命名空间，见 §10.8 与 §21 迁移。
+- **Schema 校验**：registry / release artifact 必须通过 schema validation；缺失即 fail-closed（详见 §10.5 / §20 CI Gate）。
+
+完整字段表见各下游模块自身 SPEC.md 的 §11；本规格只定义 schema 约束。
+
+---
+
+## 12. 错误处理（Error Handling）
+
+### 12.1 ErrorKind（9 种）
 
 | ErrorKind | Retryable | 说明 |
 |-----------|-----------|------|
@@ -928,14 +1154,14 @@ proof_based_adoption: true | false
 | rate_limit | 是 | 限流 |
 | internal | 否 | 内部错误 |
 
-### 10.2 错误规则
+### 12.2 错误规则
 
 - 公共错误必须使用 `Error`/`NewError`/`WrapError` 表达稳定 contract
 - 包装错误必须保留 cause，支持 `errors.Is`/`errors.As`
 - 调用方按 `IsKind(err, ErrorKind...)` 做分支判断，不依赖错误字符串
 - 错误可纳入 Evidence，但不得包含原始凭据
 
-### 10.3 xlibgate 硬性失败（7 种）
+### 12.3 xlibgate 硬性失败（7 种）
 
 1. secret_leak
 2. layer_violation
@@ -947,71 +1173,118 @@ proof_based_adoption: true | false
 
 ---
 
-## 11. 安全（Security）
+## 13. Edge Cases（边界场景）
 
-### 11.1 P0 安全规则
+> 标准源/Harness/Evidence Runtime 的边界场景以 **xlibgate 硬性失败** 与 **truth-state 规则** 为机器化表述：
 
-| 规则 | 来源 |
-|------|------|
-| 不得隐式读取 `/home/k8s/secrets/env/*` | XS-CORE-016 |
-| 不得将密钥内容写入源码/README/测试日志/manifest/PR/Evidence | XS-CORE-017 |
-| 日志不得输出 secret/token/password/private key/连接凭据 | XS-CORE-008 |
-| Claude review 仅限本地执行，不使用 repo API key | ARA-002 |
-| Claude 审查脚本禁用工具访问，禁止 push/branch/close/settings 操作 | ARA-003 |
-| 第三方 Action 必须固定为 40 位 commit SHA | docs/supply-chain.md |
-| Docker image build context 不得包含 Git metadata 或 Agent 运行态 | DTS-003 |
-| 未列入 contract 的私密变量不得默认传入容器 | DTS-005 |
+### 13.1 xlibgate 硬性失败（7 种）
 
-### 11.2 安全扫描工具
+见 §12.3。任一触发即 fail-closed，不得降级。
 
-- `govulncheck`：固定版本 `golang.org/x/vuln/cmd/govulncheck@v1.3.0`
-- `golangci-lint`：固定版本 `v2.1.6`
-- `XLIB_ENABLE_VULNCHECK=1`：强制启用漏洞扫描
+### 13.2 弱事实禁止升级（truth-state）
 
-### 11.3 AI 审查边界
+- `registered` ≠ `adopted`
+- `baseline_scanned` ≠ `implemented`
+- `dry_run_ready` ≠ `executed`
+- `artifact_exists` ≠ `usable`
+- `CHECK_STATUS=passed` ≠ release-ready evidence
+- downstream sync plan ≠ downstream adoption proof
 
-- Copilot review 通过 GitHub ruleset 配置
-- Claude review 仅限本地执行
-- AI review 是 advisory，除非 ruleset 明确提升为 required status check
-- auto-merge 默认禁用
+详见 §2.1 / §8.6 / `CONFLICT-LEDGER.md`。
+
+### 13.3 远端治理不可本地证明（详见 §A.1 / §20.1）
+
+本地文件不能证明 GitHub branch protection 已启用、ruleset 生效、required checks 绑定、GitHub Release object 已创建等。这些必须通过远端 API / CI artifact / ruleset export 单独证明。
 
 ---
 
-## 12. 性能（Performance）
+## 14. Directory Structure（目录结构）
 
-### 12.1 Gate 成本预算
+> xlib-standard 自身目录结构以上游 `github.com/ZoneCNH/xlib-standard` 仓库为权威；本规格只声明顶层约束：
 
-- 每个 Gate 必须有成本预算（runtime_cost_budget.yaml）
-- A-Z 是 Capability Catalog，不是必经流程
-- Full Mode 不得滥用，只在高风险上下文阻断
+```text
+xlib-standard/
+├── cmd/goalcli/          # 唯一 Go runtime 执行面
+├── scripts/              # render_template.sh 等 helper
+├── docs/
+│   ├── standard/         # 27 个标准文档（详见 §C.1）
+│   ├── adr/              # 9 个正式 ADR + 1 模板 + 3 历史（详见 §C.2）
+│   ├── l2/               # L2 适配器执行计划
+│   ├── testing/          # L2 测试与 evidence 标准
+│   └── evidence/         # Evidence 协议补充
+├── contracts/            # goalcli-report.schema.json 等
+├── .agent/               # 控制面（registries / policies / inbox / evidence ledger）
+├── .xlib/                # facts（v1.0.0 前与 .agent 并存）
+├── .config/              # v1.0.0 目标数据面（18 命名空间，详见 §10.8）
+└── .worktree/            # 当前工作上下文与历史规划
+```
 
-### 12.2 测试性能要求
-
-- Race detection gate 必须通过（`go test -race`）
-- 竞态/共享状态必须通过 race gate 验证（XS-CORE-010）
-- 不得创建隐藏全局 client、后台 goroutine 或不可关闭资源（XS-CORE-011）
-
-### 12.3 CI 性能约束
-
-| 指标 | 目标 |
-|------|------|
-| 单 Gate 最大执行时间 | < 5 分钟 |
-| 核心质量 Gates（fmt/vet/lint/test/race 等） | < 15 分钟 |
-| Release Scorecard 计算 | < 30 秒 |
-| Evidence Manifest 生成 | < 10 秒 |
-| goalcli score --min 9.8 | < 60 秒 |
-
-### 12.4 模板渲染性能
-
-- `scripts/render_template.sh` 单次渲染 < 10 秒
-- `make integration`（渲染 3 个临时下游库）< 2 分钟
-- 并行渲染时文件锁必须互斥
+下游生成库的目录结构由模板渲染保证（详见 §7 FR-015~017）。
 
 ---
 
-## 13. 测试（Testing）
+## 15. 依赖（Dependencies）
 
-### 13.1 测试分层（L0-L7）
+### 15.1 层级依赖模型
+
+> **领域命名口径**：与 `ARCHITECTURE.md` / `CLAUDE.md` 一致，采用 **领域分层**（基座 / 数据域 / 分析域 / 决策域 / 执行域 / 入口 / 横切）+ **门禁层**，不再使用 L-1..L6 数字层级作为对外口径。下表保留旧 L 编号仅作历史映射。
+
+```
+门禁（Foundation Gate）：xlib-standard, xlibgate
+    ↓
+基座 L0（原 L0）：kernel
+    ↓
+基座 L1（原 L1）：configx / observex / testkitx / resiliencx / schedulex
+    ↓
+基座 L2（原 L2）：redisx / kafkax / natsx / postgresx / taosx / ossx / clickhousex
+    ↓
+（以下为私有域，不开源；对应 ARCHITECTURE.md 的数据域 / 分析域 / 决策域 / 执行域 / 入口）
+xgo-contracts → xgo-market-data, xgo-macro-data → market-engine, macro-engine, regime-engine → x.go
+```
+
+### 15.2 L2 Provider 规格
+
+L2 模块包括 `postgresx`、`redisx`、`kafkax`、`natsx`、`taosx`、`ossx`、`clickhousex`。
+
+L2 交付链：capability manifest → contract pack → adapter implementation → evidence pack → contract/integration/chaos/benchmark/adoption gates → xlibgate release judgment。
+
+Release ladder：
+
+| 阶段 | 语义 |
+|------|------|
+| T0 | 文档和计划存在，不可发布。 |
+| T1 | capability 和 contract 初步存在，不可发布。 |
+| T2 | 本地 contract/integration 有证据，但未达 release profile。 |
+| T3 | 首个 release-allowed 阶段。 |
+| T4 | factory-grade；包括更完整的故障、性能、兼容和 adoption 证据。 |
+
+缺失 profile、pack、readiness 或证据时，L2 release 必须 fail closed。
+
+### 15.3 依赖方向规则
+
+- 依赖只能从高层指向低层，不可反向
+- L3-L6 不公开、不开源
+- xlib-standard 不得依赖 x.go 或业务仓库
+- 生成库不得依赖 x.go
+
+### 15.4 工具依赖
+
+| 工具 | 版本 | 用途 |
+|------|------|------|
+| Go | 1.23.x | 编译 |
+| golangci-lint | v2.1.6 | Lint |
+| govulncheck | v1.3.0 | 漏洞扫描 |
+| python3 | 3.x | 脚本 |
+| sha256sum | - | 校验和 |
+| make | - | 构建 |
+| git | - | 版本控制 |
+| Docker | - | 工具链运行时 |
+
+---
+
+## 16. 测试（Testing）
+
+### 16.1 测试分层（L0-L7）
 
 | 层 | 名称 | 说明 |
 |----|------|------|
@@ -1024,7 +1297,7 @@ proof_based_adoption: true | false
 | L6 | Release Evidence | 发布证据测试 |
 | L7 | Profile-Specific Heavy | 特定 Profile 重型测试 |
 
-### 13.2 Gate 分类（66 个 harness.yaml 条目）
+### 16.2 Gate 分类（66 个 harness.yaml 条目）
 
 | harness.yaml section | 数量 | 语义边界 |
 |----------------------|------|----------|
@@ -1046,7 +1319,7 @@ proof_based_adoption: true | false
 | context-full | governance-check + p1-governance-check + p2-runtime-check |
 | context-release | context-full + integration + dependency-check + standard-impact-check + score-check + evidence + release-evidence |
 
-### 13.3 Profile Gates
+### 16.3 Profile Gates
 
 | Profile | 库类型 | 特殊要求 |
 |---------|--------|----------|
@@ -1056,7 +1329,7 @@ proof_based_adoption: true | false
 | Storage Library | postgresx, redisx, taosx, ossx, clickhousex | 连接池/事务 |
 | Messaging Library | kafkax | 消息语义 |
 
-### 13.4 必需覆盖
+### 16.4 必需覆盖
 
 - `go test ./...` 覆盖公共包、internal/、contracts/、testkit/ 和 examples/
 - 配置校验/脱敏、typed error kind、wrapped cause、客户端创建/取消/过期/幂等关闭
@@ -1065,9 +1338,128 @@ proof_based_adoption: true | false
 
 ---
 
-## 14. 迁移（Migration）
+## 17. 性能（Performance Budget）
 
-### 14.1 v1.0.0 配置迁移
+### 17.1 Gate 成本预算
+
+- 每个 Gate 必须有成本预算（runtime_cost_budget.yaml）
+- A-Z 是 Capability Catalog，不是必经流程
+- Full Mode 不得滥用，只在高风险上下文阻断
+
+### 17.2 测试性能要求
+
+- Race detection gate 必须通过（`go test -race`）
+- 竞态/共享状态必须通过 race gate 验证（XS-CORE-010）
+- 不得创建隐藏全局 client、后台 goroutine 或不可关闭资源（XS-CORE-011）
+
+### 17.3 CI 性能约束
+
+| 指标 | 目标 |
+|------|------|
+| 单 Gate 最大执行时间 | < 5 分钟 |
+| 核心质量 Gates（fmt/vet/lint/test/race 等） | < 15 分钟 |
+| Release Scorecard 计算 | < 30 秒 |
+| Evidence Manifest 生成 | < 10 秒 |
+| goalcli score --min 9.8 | < 60 秒 |
+
+### 17.4 模板渲染性能
+
+- `scripts/render_template.sh` 单次渲染 < 10 秒
+- `make integration`（渲染 3 个临时下游库）< 2 分钟
+- 并行渲染时文件锁必须互斥
+
+---
+
+## 18. 可观测性（Observability）
+
+### 18.1 最小指标（9 个）
+
+| 指标 | 类型 | 说明 |
+|------|------|------|
+| client_created_total | counter | 客户端创建 |
+| client_closed_total | counter | 客户端关闭 |
+| client_errors_total | counter | 错误计数 |
+| client_health_status | gauge | 健康状态 |
+| client_health_latency_ms | histogram | 健康检查延迟 |
+| client_requests_total | counter | 请求计数 |
+| client_request_duration_seconds | histogram | 请求延迟 |
+| client_retries_total | counter | 重试计数 |
+| client_inflight | gauge | 进行中请求 |
+
+### 18.2 Metrics 规则
+
+- metrics label 不能包含高基数字段、用户凭据或业务私有标识（XS-CORE-009）
+- 只能记录脱敏配置，不得记录原始凭据
+
+---
+
+## 19. 安全（Security）
+
+### 19.1 P0 安全规则
+
+| 规则 | 来源 |
+|------|------|
+| 不得隐式读取 `/home/k8s/secrets/env/*` | XS-CORE-016 |
+| 不得将密钥内容写入源码/README/测试日志/manifest/PR/Evidence | XS-CORE-017 |
+| 日志不得输出 secret/token/password/private key/连接凭据 | XS-CORE-008 |
+| Claude review 仅限本地执行，不使用 repo API key | ARA-002 |
+| Claude 审查脚本禁用工具访问，禁止 push/branch/close/settings 操作 | ARA-003 |
+| 第三方 Action 必须固定为 40 位 commit SHA | docs/supply-chain.md |
+| Docker image build context 不得包含 Git metadata 或 Agent 运行态 | DTS-003 |
+| 未列入 contract 的私密变量不得默认传入容器 | DTS-005 |
+
+### 19.2 安全扫描工具
+
+- `govulncheck`：固定版本 `golang.org/x/vuln/cmd/govulncheck@v1.3.0`
+- `golangci-lint`：固定版本 `v2.1.6`
+- `XLIB_ENABLE_VULNCHECK=1`：强制启用漏洞扫描
+
+### 19.3 AI 审查边界
+
+- Copilot review 通过 GitHub ruleset 配置
+- Claude review 仅限本地执行
+- AI review 是 advisory，除非 ruleset 明确提升为 required status check
+- auto-merge 默认禁用
+
+---
+
+## 20. CI Gate（持续集成门禁）
+
+### 20.1 Gate 总览
+
+Harness 定义 **66 个 gate 条目**（44 required_gates + 10 extended_gates + 6 final_gates + 6 goalcli_mva_gates）与 **4 个 Context Profiles**（detail 见 §7 FR-020~025 与 §16.2）。
+
+### 20.2 必经检查链（与发布流程一致）
+
+```bash
+make docs-check
+make governance-check
+make integration
+make evidence
+make release-check
+make release-evidence-check
+goalcli score --min 9.8
+make release-final-check
+make release-preflight VERSION=vX.Y.Z
+```
+
+### 20.3 阻断语义
+
+- 任一 P0 Gate 失败 → 阻断发布（FR-022）
+- skipped gate 不得记为 passed（FR-030）
+- dirty workspace 不得 release（FR-031）
+- 失败 Evidence 不得删除（FR-032）
+- 7 种 xlibgate 硬性失败 fail-closed（详见 §12.3）
+
+### 20.4 三层硬约束
+
+本地 hooks + CI gate + GitHub Ruleset，三者必须同时生效（FR-047 5 层执行链）。本地文件不能证明 GitHub Ruleset 已启用——见 §A.1 远端治理不可本地证明项。
+
+---
+
+## 21. 迁移（Upgrade Compatibility）
+
+### 21.1 v1.0.0 配置迁移
 
 - **目标**：`.config/` 作为唯一机器可读事实源
 - **迁移表**：20+ 条目（`.agent/` → `.config/`，`.xlib/` → `.config/`）
@@ -1101,13 +1493,13 @@ proof_based_adoption: true | false
   4. generated_projection（生成投影，如 CODEOWNERS）
   5. forbidden_legacy（禁止遗留）
 
-### 14.2 迁移路径
+### 21.2 迁移路径
 
 ```
 v1 提出概念 → v2 审计补全 → v3 修补 P0 缺口 → v5 终极版
 ```
 
-### 14.3 关键决策
+### 21.3 关键决策
 
 - `.agent/` 控制面保留，`.config/` 数据面统一
 - 迁移必须有回滚计划
@@ -1116,154 +1508,97 @@ v1 提出概念 → v2 审计补全 → v3 修补 P0 缺口 → v5 终极版
 
 ---
 
-## 15. 依赖（Dependencies）
+## 22. Release DoD（发布完成定义）
 
-### 15.1 层级依赖模型
+### 22.1 四级 DoD（见 §8.4）
 
-```
-xlib-standard（标准源，L-1）
-    ↓
-L0: kernel
-    ↓
-L1: configx / observex / testkitx / resiliencx / schedulex
-    ↓
-L2: redisx / kafkax / natsx / postgresx / taosx / ossx / clickhousex
-    ↓
-L3: xgo-contracts（私有）
-    ↓
-L4: xgo-market-data / xgo-macro-data（私有）
-    ↓
-L5: market-engine / macro-engine / regime-engine（私有）
-    ↓
-L6: x.go（私有）
-```
-
-### 15.2 L2 Provider 规格
-
-L2 模块包括 `postgresx`、`redisx`、`kafkax`、`natsx`、`taosx`、`ossx`、`clickhousex`。
-
-L2 交付链：capability manifest → contract pack → adapter implementation → evidence pack → contract/integration/chaos/benchmark/adoption gates → xlibgate release judgment。
-
-Release ladder：
-
-| 阶段 | 语义 |
+| 级别 | 要求 |
 |------|------|
-| T0 | 文档和计划存在，不可发布。 |
-| T1 | capability 和 contract 初步存在，不可发布。 |
-| T2 | 本地 contract/integration 有证据，但未达 release profile。 |
-| T3 | 首个 release-allowed 阶段。 |
-| T4 | factory-grade；包括更完整的故障、性能、兼容和 adoption 证据。 |
+| Task DoD | 变更范围明确 + 测试/检查已运行 + 文档有入口 + known gap 已记录 |
+| Issue DoD | 验收标准满足 + 相关 gate 通过 + review checklist 完成 + 无违规 |
+| Goal DoD | 所有必需项有实现或不适用理由 + ci/integration/evidence 有新鲜结果 |
+| Release DoD | manifest 生成 + release-check 通过 + score >= 9.8 + final-check + preflight 通过 |
 
-缺失 profile、pack、readiness 或证据时，L2 release 必须 fail closed。
+### 22.2 DONE with evidence 模板
 
-### 15.3 依赖方向规则
-
-- 依赖只能从高层指向低层，不可反向
-- L3-L6 不公开、不开源
-- xlib-standard 不得依赖 x.go 或业务仓库
-- 生成库不得依赖 x.go
-
-### 15.3 工具依赖
-
-| 工具 | 版本 | 用途 |
-|------|------|------|
-| Go | 1.23.x | 编译 |
-| golangci-lint | v2.1.6 | Lint |
-| govulncheck | v1.3.0 | 漏洞扫描 |
-| python3 | 3.x | 脚本 |
-| sha256sum | - | 校验和 |
-| make | - | 构建 |
-| git | - | 版本控制 |
-| Docker | - | 工具链运行时 |
-
----
-
-## 16. 可观测性（Monitoring）
-
-### 16.1 最小指标（9 个）
-
-| 指标 | 类型 | 说明 |
-|------|------|------|
-| client_created_total | counter | 客户端创建 |
-| client_closed_total | counter | 客户端关闭 |
-| client_errors_total | counter | 错误计数 |
-| client_health_status | gauge | 健康状态 |
-| client_health_latency_ms | histogram | 健康检查延迟 |
-| client_requests_total | counter | 请求计数 |
-| client_request_duration_seconds | histogram | 请求延迟 |
-| client_retries_total | counter | 重试计数 |
-| client_inflight | gauge | 进行中请求 |
-
-### 16.2 Metrics 规则
-
-- metrics label 不能包含高基数字段、用户凭据或业务私有标识（XS-CORE-009）
-- 只能记录脱敏配置，不得记录原始凭据
-
----
-
-## 17. 部署（Deployment）
-
-### 17.1 发布流程
-
-```
-make docs-check
-make governance-check
-make integration
-make evidence
-make release-check
-make release-evidence-check
-goalcli score --min 9.8
-make release-final-check
-make release-preflight VERSION=vX.Y.Z
-git tag vX.Y.Z
-git push origin vX.Y.Z
+```text
+DONE with evidence:
+- Scope:
+- Source files:
+- Commands:
+- Artifacts:
+- Manifest:
+- Downstream:
+- Release status:
+- Known gaps:
 ```
 
-### 17.2 Main 合并自动 Patch 发布
+没有 Evidence 的完成声明不能作为 release / adoption / final-complete 事实（FR-028 / FR-029）。
 
-`.github/workflows/release-auto-patch.yml` 自动计算 `vX.Y.(Z+1)` 并发布
+### 22.3 发布前 Gate Chain
 
-### 17.3 Docker Toolchain Runtime
+见 §20.2。任一步骤失败即 fail-closed，不得跳过、不得 dry-run 代替（FR-030 / FR-031）。
 
-- Docker 是工具链运行时，不是第二套 gate
-- .dockerignore 必须排除 .git/.omc/.omx/.worktree/本地 Evidence
-- 环境变量必须显式传递并记录语义
+### 22.4 v1.0.0 No-Go 条件
 
-### 17.4 生成器详细规格
+详见 §21.1 v1.0.0 配置迁移 37 项 No-Go 条件清单。
 
-当前标准入口：`scripts/render_template.sh --module <module> --name <name> --package <package> --out <path>`
+### 22.5 Patch 自动发布
 
-- 输出目录不得是 `xlib-standard` 根，也不得落在本仓库内部。
-- 输出目录必须不存在或为空。
-- 必须替换 module/name/package/import path、README、docs、contracts、examples、scripts、manifest、Makefile、CI 中的模板 token。
-- 必须去除旧身份 token 和不可提交的生成态 latest 文件。
-- 必须排除 `.git`、`.omc`、`.omx`、`.worktree`、`.agent/inbox`、临时缓存、历史生成产物、release/debt latest。
-- 生成库必须通过 `GOWORK=off go test ./...` 和标准门禁。
-- 生成库不得引入 `x.go`、业务导入、生产 secret 路径或 provider 真实凭证。
-
-治理包渲染：下游使用 `--enable-governance` 时，必须写入标准版本、标准 commit、layer、lock 文件和治理材料。
-
-默认代表下游：`kernel`（L0）、`configx`（L1）、`redisx`（L2）。
-
-### 17.5 goalcli 运行时规格
-
-`cmd/goalcli` 是唯一 Go runtime execution face。通用 CLI 契约：
-
-- 除明确 delegated script 外，所有命令输出 JSON。
-- JSON 必须包含 `command`、`status`，并可包含 `details`、`gaps`。
-- 报告 schema 使用 `contracts/goalcli-report.schema.json`。
-- 所有命令本地、非破坏、默认 dry-run。
-- `--verify` 和 `--strict` 必须阻断 planned/gap/unknown。
-
-退出码：`passed`→0，`failed`/`planned`/`gap`→1，`unknown`/illegal invocation/schema violation→2。
-
-Goal Runtime：`.agent/evidence/ledger.jsonl` 是目标执行源 ledger；`GOAL_ID` 必须绑定目标执行；G12-G16 为阻断型目标门禁。
+`.github/workflows/release-auto-patch.yml` 自动计算 `vX.Y.(Z+1)` 并发布（详见 §D 部署细节）。
 
 ---
 
-## 18. 文档（Documentation）
+## 23. 待解决问题（Open Questions）
 
-### 18.1 标准文档（docs/standard/，27 个）
+| 编号 | 问题 | 状态 | 决策时限 |
+|------|------|------|----------|
+| OQ-001 | GitHub 服务端 branch protection/ruleset 如何配置？ | 待确认 | v1.0.0-rc.1 前 |
+| OQ-002 | v1.0.0-rc.1 何时发布？ | 待确认 | P0 debt 清零后 |
+| OQ-003 | GoalCLI god module 何时重构？ | 已知技术债 | PR-22 Phase 4 |
+| OQ-004 | 版本漂移（v0.4.15 多文件仍引用 v0.4.13）何时修复？ | 已知技术债 | 下次 patch 前 |
+| OQ-005 | 债务检测从 marker text 扫描升级到语义分析的时间线？ | 已知技术债 | PR-28 Phase 5 |
+| OQ-006 | render-check 在 Makefile 中缺失如何补齐？ | 已记录 | PR-10 |
+| OQ-007 | P1 活跃覆盖 81.3% < 90%，需再索引 26 条 P1 规则 | 已记录 | v1.0.0-rc.1 前 |
+
+---
+
+## 附录 A. 风险（Risks）
+
+| 编号 | 风险 | 级别 | 缓解措施 |
+|------|------|------|----------|
+| R-001 | L2 适配器全部停留在 L2-T0/T1 | 高 | 按 docs/l2/ 执行计划逐个推进 |
+| R-002 | v0.6.0 计划与实际脱节 | 中 | 归档 v0.6.0 计划，标注为历史规划 |
+| R-003 | AI 审查 402 配额限制 | 中 | 降级为 advisory，不作为 blocking gate |
+| R-004 | govulncheck 暂停 | 中 | 通过 XLIB_ENABLE_VULNCHECK=1 强制启用 |
+| R-005 | 规则绑定语义漂移 | 中 | 后续 enforcer 改名时需同步更新 |
+| R-006 | 本地 hooks 可被绕过 | 高 | 升级为 GitHub ruleset 强制 |
+| R-007 | 重复文件未实质修改 | 低 | 清理冗余副本 |
+| R-008 | 本地文件不能证明远端治理状态 | 高 | 通过 GitHub API、ruleset export、CI artifact 或 Release object 证明 |
+| R-009 | 13 个下游库全部 not_adopted | 高 | 至少推进 kernel 首次采纳，证明模板可用 |
+| R-010 | 规格膨胀（当前 1500 行，含实现细节） | 中 | 将 PR 执行包清单、goalcli 命令列表拆分到 docs/ 子文档；目标控制在 1200 行内 |
+
+### A.1 远端治理不可本地证明项
+
+本地文件不能证明：GitHub branch protection 已启用、ruleset 生效、required checks 绑定、GitHub Release object 已创建、远端 workflow 权限和 Actions pin 生效、下游仓库已接受标准 patch。这些项必须通过远端 API、CI artifact、GitHub Release、ruleset export 或下游仓库 commit proof 单独证明。
+
+---
+
+## 附录 B. 未来考虑（Future Considerations）
+
+1. **v1.0.0-rc.1**：先进入 rc.1，P0 清零后再发布 stable
+2. **Goal Runtime v3.1.1**：28 个 PR 执行包逐步落地
+3. **L2 测试工厂**：15 个适配器全部达到 L2-T2+
+4. **自动化全链路**：Issue → Goal → ... → Release → Issue Close
+5. **xlibctl**：pinned CLI binary 用于工具链分发
+6. **Proof Depth D0-D7**：gate 验证深度标准化
+7. **Standard Production Kernel**：Canonical Facts → Standard Graph → Goal Graph → Debt Graph → Harness Proof Graph → Evidence Ledger
+
+---
+
+## 附录 C. 文档清单（Documentation Inventory）
+
+### C.1 标准文档（docs/standard/，27 个）
 
 | 文件 | 类别 | 规则数 |
 |------|------|--------|
@@ -1297,7 +1632,7 @@ Goal Runtime：`.agent/evidence/ledger.jsonl` 是目标执行源 ledger；`GOAL_
 | versioning.md | IMPL | - |
 | README.md | DOCS | - |
 
-### 18.2 ADR 文档（10 个）
+### C.2 ADR 文档（10 个）
 
 | ADR | 状态 | 核心决策 |
 |-----|------|----------|
@@ -1313,7 +1648,7 @@ Goal Runtime：`.agent/evidence/ledger.jsonl` 是目标执行源 ledger；`GOAL_
 
 > 注：另有 1 个 ADR 模板（ADR-000-template.md）和 3 个历史规划文件（1.md, 2.md, 3.md），不计入正式 ADR。
 
-### 18.3 9 条核心架构原则
+### C.3 9 条核心架构原则
 
 1. 唯一主身份原则
 2. 证据驱动完成原则
@@ -1327,61 +1662,74 @@ Goal Runtime：`.agent/evidence/ledger.jsonl` 是目标执行源 ledger；`GOAL_
 
 ---
 
-## 19. 待解决问题（Open Questions）
+## 附录 D. 部署与发布细节（Deployment Details）
 
-| 编号 | 问题 | 状态 | 决策时限 |
-|------|------|------|----------|
-| OQ-001 | GitHub 服务端 branch protection/ruleset 如何配置？ | 待确认 | v1.0.0-rc.1 前 |
-| OQ-002 | v1.0.0-rc.1 何时发布？ | 待确认 | P0 debt 清零后 |
-| OQ-003 | GoalCLI god module 何时重构？ | 已知技术债 | PR-22 Phase 4 |
-| OQ-004 | 版本漂移（v0.4.15 多文件仍引用 v0.4.13）何时修复？ | 已知技术债 | 下次 patch 前 |
-| OQ-005 | 债务检测从 marker text 扫描升级到语义分析的时间线？ | 已知技术债 | PR-28 Phase 5 |
-| OQ-006 | render-check 在 Makefile 中缺失如何补齐？ | 已记录 | PR-10 |
-| OQ-007 | P1 活跃覆盖 81.3% < 90%，需再索引 26 条 P1 规则 | 已记录 | v1.0.0-rc.1 前 |
+### D.1 发布流程
+
+```
+make docs-check
+make governance-check
+make integration
+make evidence
+make release-check
+make release-evidence-check
+goalcli score --min 9.8
+make release-final-check
+make release-preflight VERSION=vX.Y.Z
+git tag vX.Y.Z
+git push origin vX.Y.Z
+```
+
+### D.2 Main 合并自动 Patch 发布
+
+`.github/workflows/release-auto-patch.yml` 自动计算 `vX.Y.(Z+1)` 并发布
+
+### D.3 Docker Toolchain Runtime
+
+- Docker 是工具链运行时，不是第二套 gate
+- .dockerignore 必须排除 .git/.omc/.omx/.worktree/本地 Evidence
+- 环境变量必须显式传递并记录语义
+
+### D.4 生成器详细规格
+
+当前标准入口：`scripts/render_template.sh --module <module> --name <name> --package <package> --out <path>`
+
+- 输出目录不得是 `xlib-standard` 根，也不得落在本仓库内部。
+- 输出目录必须不存在或为空。
+- 必须替换 module/name/package/import path、README、docs、contracts、examples、scripts、manifest、Makefile、CI 中的模板 token。
+- 必须去除旧身份 token 和不可提交的生成态 latest 文件。
+- 必须排除 `.git`、`.omc`、`.omx`、`.worktree`、`.agent/inbox`、临时缓存、历史生成产物、release/debt latest。
+- 生成库必须通过 `GOWORK=off go test ./...` 和标准门禁。
+- 生成库不得引入 `x.go`、业务导入、生产 secret 路径或 provider 真实凭证。
+
+治理包渲染：下游使用 `--enable-governance` 时，必须写入标准版本、标准 commit、layer、lock 文件和治理材料。
+
+默认代表下游：`kernel`（L0）、`configx`（L1）、`redisx`（L2）。
+
+### D.5 goalcli 运行时规格
+
+`cmd/goalcli` 是唯一 Go runtime execution face。通用 CLI 契约：
+
+- 除明确 delegated script 外，所有命令输出 JSON。
+- JSON 必须包含 `command`、`status`，并可包含 `details`、`gaps`。
+- 报告 schema 使用 `contracts/goalcli-report.schema.json`。
+- 所有命令本地、非破坏、默认 dry-run。
+- `--verify` 和 `--strict` 必须阻断 planned/gap/unknown。
+
+退出码：`passed`→0，`failed`/`planned`/`gap`→1，`unknown`/illegal invocation/schema violation→2。
+
+Goal Runtime：`.agent/evidence/ledger.jsonl` 是目标执行源 ledger；`GOAL_ID` 必须绑定目标执行；G12-G16 为阻断型目标门禁。
 
 ---
 
-## 20. 风险（Risks）
+## 附录 E. 关键数字与映射（Key Figures & Mappings）
 
-| 编号 | 风险 | 级别 | 缓解措施 |
-|------|------|------|----------|
-| R-001 | L2 适配器全部停留在 L2-T0/T1 | 高 | 按 docs/l2/ 执行计划逐个推进 |
-| R-002 | v0.6.0 计划与实际脱节 | 中 | 归档 v0.6.0 计划，标注为历史规划 |
-| R-003 | AI 审查 402 配额限制 | 中 | 降级为 advisory，不作为 blocking gate |
-| R-004 | govulncheck 暂停 | 中 | 通过 XLIB_ENABLE_VULNCHECK=1 强制启用 |
-| R-005 | 规则绑定语义漂移 | 中 | 后续 enforcer 改名时需同步更新 |
-| R-006 | 本地 hooks 可被绕过 | 高 | 升级为 GitHub ruleset 强制 |
-| R-007 | 重复文件未实质修改 | 低 | 清理冗余副本 |
-| R-008 | 本地文件不能证明远端治理状态 | 高 | 通过 GitHub API、ruleset export、CI artifact 或 Release object 证明 |
-| R-009 | 13 个下游库全部 not_adopted | 高 | 至少推进 kernel 首次采纳，证明模板可用 |
-| R-010 | 规格膨胀（~900 行含实现细节） | 中 | 将 PR 执行包清单、goalcli 命令列表拆分到 docs/ 子文档 |
-
-### 20.1 远端治理不可本地证明项
-
-本地文件不能证明：GitHub branch protection 已启用、ruleset 生效、required checks 绑定、GitHub Release object 已创建、远端 workflow 权限和 Actions pin 生效、下游仓库已接受标准 patch。这些项必须通过远端 API、CI artifact、GitHub Release、ruleset export 或下游仓库 commit proof 单独证明。
-
----
-
-## 21. 未来考虑（Future Considerations）
-
-1. **v1.0.0-rc.1**：先进入 rc.1，P0 清零后再发布 stable
-2. **Goal Runtime v3.1.1**：28 个 PR 执行包逐步落地
-3. **L2 测试工厂**：15 个适配器全部达到 L2-T2+
-4. **自动化全链路**：Issue → Goal → ... → Release → Issue Close
-5. **xlibctl**：pinned CLI binary 用于工具链分发
-6. **Proof Depth D0-D7**：gate 验证深度标准化
-7. **Standard Production Kernel**：Canonical Facts → Standard Graph → Goal Graph → Debt Graph → Harness Proof Graph → Evidence Ledger
-
----
-
-## 22. 附录（Appendix）
-
-### 22.1 关键数字汇总
+### E.1 关键数字汇总
 
 | 指标 | 数值 |
 |------|------|
 | 输入文件总数（当前整理口径） | 154 |
-| 分析报告总行数 | 2,878 |
+| 主规格工件总行数（不含 archive） | 2,416（SPEC 1848 + CONFLICT 180 + COVERAGE 201 + TRACEABILITY 131 + README 56） |
 | 规则总数 | 419 |
 | P0 active | 119 (100%) |
 | P1 active | 244 |
@@ -1398,7 +1746,7 @@ Goal Runtime：`.agent/evidence/ledger.jsonl` 是目标执行源 ledger；`GOAL_
 | 采纳状态数 | 8 |
 | 禁止状态转换 | 6 |
 
-### 22.2 文件到规格节映射
+### E.2 文件到规格节映射
 
 | 源文件组 | 主要贡献节 |
 |----------|-----------|
@@ -1426,7 +1774,7 @@ Goal Runtime：`.agent/evidence/ledger.jsonl` 是目标执行源 ledger；`GOAL_
 | docs/evidence/*.md | §9 |
 | Downloads/*.md | §14 |
 
-### 22.3 迭代演进时间线
+### E.3 迭代演进时间线
 
 ```
 2026-06-01  1.md (v1.0 方案) → 2.md (v1.1 方案)
@@ -1440,7 +1788,7 @@ Goal Runtime：`.agent/evidence/ledger.jsonl` 是目标执行源 ledger；`GOAL_
 2026-06-07  本规格文档（154 文件当前整理口径）
 ```
 
-### 22.4 15 条基本真理（TRUTH-001~015）
+### E.4 15 条基本真理（TRUTH-001~015）
 
 > 与 §7.1 Iron Rules 的重复映射（结构债 S3 缓解）：TRUTH 是表述层，IR 是分类层；两者语义重叠时以 TRUTH 编号为外部引用、IR 编号为内部分类。
 
@@ -1462,7 +1810,7 @@ Goal Runtime：`.agent/evidence/ledger.jsonl` 是目标执行源 ledger；`GOAL_
 | 14 | 文档 ≠ 证据（document ≠ proof） | IR-001 | 同义簇 |
 | 15 | registered/baseline_scanned/patch-only ≠ adopted | IR-007 | 与 TRUTH-2 扩展 |
 
-### 22.5 DONE 模板
+### E.5 DONE 模板
 
 ```text
 DONE with evidence:
@@ -1480,7 +1828,7 @@ DONE with evidence:
 
 ---
 
-## 23. 最终验证
+## 附录 F. 整理交付自检（Final Verification Checklist）
 
 - [x] 覆盖 154 个输入文件（当前整理口径）
 - [x] 提取 419 条规则（7 类）

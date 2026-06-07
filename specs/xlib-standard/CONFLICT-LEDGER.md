@@ -1,6 +1,7 @@
 # xlib-standard 冲突与取舍账本
 
-Status: consolidated
+Status: Aligned-With SPEC.md v2.0.1
+Last-Updated: 2026-06-08
 
 ## 1. 标准源 vs 运行时实现
 

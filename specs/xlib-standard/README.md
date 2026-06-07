@@ -14,7 +14,7 @@
 
 ## 当前权威工件
 
-- `SPEC.md`：**当前可执行主规格**（52 FR、104 WHEN/THEN），与追溯表、冲突账本和覆盖清单共同约束。
+- `SPEC.md`：**当前可执行主规格**（v2.0.1, Status: Review；52 FR、104 WHEN/THEN；23 节按 `SPEC-TEMPLATE.md` 对齐），与追溯表、冲突账本和覆盖清单共同约束。
 - `TRACEABILITY.md`：`SPEC.md` 条款到来源文件的追溯表（章节级，非 rule 级）。
 - `CONFLICT-LEDGER.md`：冲突、历史计划和最终取舍。
 - `COVERAGE-MANIFEST.md`：输入文件清单与覆盖口径（154 个文件，相对 `<upstream>/` 路径）。

@@ -1,18 +1,21 @@
 # xlib-standard 覆盖清单
 
-Status: consolidated
+Status: Aligned-With SPEC.md v2.0.1
 Generated-Date: 2026-06-07
 Path-Update: 2026-06-08（改为占位符相对路径）
+Last-Updated: 2026-06-08
 Input-Count: 154
 
 ## 路径占位符
 
 | 占位符 | 解析 |
 |--------|------|
-| `<upstream:xlib-standard>` | `github.com/ZoneCNH/xlib-standard` 仓库根（snapshot 未固定 commit） |
+| `<upstream:xlib-standard>` | `github.com/ZoneCNH/xlib-standard` 仓库根 |
+| `<upstream:commit>`        | 上游 commit sha（**当前未固定，占位待补**，参见下方"可复现边界"） |
+| `<upstream:tree>`          | 上游 tree sha（**当前未固定，占位待补**） |
 | `<external:Downloads>` | 上游仓库外的本地外部规划文档目录（非仓库 tracked） |
 
-> **当前缺口**：本清单未绑定 upstream commit sha 与逐文件 sha256；任何跨机器复现仍需补充 source pack 或 digest。这是已知结构缺口（见 `../docs/report/xlib-standard-specs-structural-review-*.md` S6）。
+> **当前缺口**：本清单未绑定 upstream commit sha 与逐文件 sha256；任何跨机器复现仍需补充 source pack 或 digest。这是已知结构缺口（已纳入 `SPEC.md` §19 OQ-008 / §20 R-011 跟踪）。
 
 ## 覆盖摘要
 
