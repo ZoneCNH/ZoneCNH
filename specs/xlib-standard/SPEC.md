@@ -72,7 +72,7 @@ xlib-standard 本身不包含业务逻辑，不依赖 x.go，不读取生产密�
 
 | 事项 | 本规格当前结论 | 升级为 passed/adopted/release-ready 所需证明 |
 |------|--------------|------------------------------------------|
-| 输入覆盖 | 154 个输入文件被纳入当前整理口径。 | 新增或删除源文件后同步更新覆盖清单和追溯表。 |
+| 输入覆盖 | 154 个源文件被纳入当前覆盖清单和追溯矩阵。 | 新增或删除源文件后同步更新覆盖清单、追溯表和冲突账本。 |
 | 语义整理 | 7 组并行分析 + 主线程证据收敛。 | 具体条款仍以来源追溯、冲突账本和后续实现验证为准。 |
 | Release-ready | 仅定义 release-ready 条件和 fail-closed 规则。 | release-final、preflight、manifest、score、evidence check、clean workspace 和 GitHub Release proof。 |
 | 远端治理 | 仅定义 branch protection、ruleset、required checks 和 workflow 权限要求。 | GitHub API、ruleset export、required checks、CI artifact 或仓库设置证据。 |
@@ -644,10 +644,10 @@ THEN Phase N+1 的 PR 不得开始
 
 ### FR-047: 5 层执行链
 
-本条是 FR-003 引用的 5 层执行链权威定义。
+> 与 FR-003 使用同一 5 层执行链定义；本条在仓库治理协议中复用该链路，不另行定义第二套执行顺序。
 
 WHEN 代码变更提交
-THEN 5 层执行链逐层生效：标准源定义规则 → 生成器渲染模板 → 本地 hooks 预检 → CI gate 验证 → GitHub ruleset 强制；FR-003 的 Git 治理规则通过本链落地
+THEN 按 FR-003 的标准源 → 生成器 → 本地 hooks → CI gate → GitHub ruleset 顺序逐层生效
 
 WHEN 某层被绕过（如直接 push 跳过 hooks）
 THEN 后续层（CI/ruleset）阻断操作
@@ -676,10 +676,10 @@ THEN worktree-guard 失败并提示创建 worktree
 
 ### FR-050: 采纳状态机（8 状态）
 
-本条是 FR-006 引用的 adoption_status 枚举权威定义。
+> 与 FR-006 使用同一采纳状态机；本条只展开状态枚举，不能定义与 FR-006 竞争的状态机。
 
 WHEN 查询下游仓库采纳状态
-THEN adoption_status 为 8 个合法值之一：not_run/registered/dry_run/patch_only/proof_verified/adopted/blocked/superseded；FR-006 定义这些状态不得被伪升级的边界
+THEN adoption_status 为 FR-006 状态机中的 8 个合法值之一：not_run/registered/dry_run/patch_only/proof_verified/adopted/blocked/superseded
 
 WHEN adoption_status 不在合法枚举中
 THEN registry validation 失败
@@ -688,10 +688,10 @@ THEN registry validation 失败
 
 ### FR-051: 6 个禁止状态转换
 
-本条是 FR-006 引用的禁止转换权威定义。
+> 与 FR-006 使用同一禁止转换集合；本条只列出治理协议中的拒绝条件，不能扩展为第二套 adoption 流程。
 
 WHEN 尝试执行 registered→adopted、dry_run→adopted、patch_only→adopted、not_run→adopted、gate_outputs_missing→proof_based_adoption、baseline_scanned→adopted
-THEN 操作被拒绝，返回禁止原因和正确路径；FR-006 定义这些拒绝规则的防伪边界
+THEN 操作被拒绝，返回 FR-006 状态机的禁止原因和正确路径
 
 WHEN 按合法路径转换（如 registered→dry_run→proof_verified→adopted）
 THEN 允许转换并记录 Evidence
@@ -1413,7 +1413,7 @@ Goal Runtime：`.agent/evidence/ledger.jsonl` 是目标执行源 ledger；`GOAL_
 
 | 指标 | 数值 |
 |------|------|
-| 输入文件总数（当前整理口径） | 154 |
+| 源文件总数（当前覆盖） | 154 |
 | 分析报告总行数 | 2,878 |
 | 规则总数 | 419 |
 | P0 active | 119 (100%) |
@@ -1470,7 +1470,7 @@ Goal Runtime：`.agent/evidence/ledger.jsonl` 是目标执行源 ledger；`GOAL_
 2026-06-04  ADR-001 (Layer Governance)
 2026-06-05  v0.4.15 深度分析（8.3/10）
 2026-06-06  第七轮审查补丁（12 个 P0 bypass）
-2026-06-07  本规格文档（154 文件当前整理口径，181 文件为旧分析背景）
+2026-06-07  本规格文档（154 文件当前覆盖，181 文件旧分析仅作历史背景）
 ```
 
 ### 22.4 15 条基本真理（TRUTH-001~015）
@@ -1511,7 +1511,7 @@ DONE with evidence:
 
 ## 23. 最终验证
 
-- [x] 覆盖 154 个输入文件（7 组并行分析）
+- [x] 覆盖 154 个源文件（见 COVERAGE-MANIFEST.md）
 - [x] 提取 419 条规则（7 类）
 - [x] 提取 10 个 ADR（9 条核心架构原则）
 - [x] 提取 28 个 PR 执行包（5 个 Phase）
