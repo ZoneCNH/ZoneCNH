@@ -16,7 +16,7 @@ Go 🐹 (主要) · Rust 🦀 (底层) · Python 🐍 (脚本/数据) · TypeScr
 >
 > 🧱 Foundation v1 规格、依赖矩阵、执行跟踪与 ADR → **[module/](./module/)**
 
-```
+```text
 入口: x.go (Composition Root: 启动 / 配置 / 组装)
       │
       ▼
@@ -86,6 +86,7 @@ L2.5: decimalx / domain-market / domain-exchange / domain-macro
 ### 数据域 · market-data（SDK 14 + Provider 5）
 
 **交易所 SDK：**
+
 - [binance](https://github.com/ZoneCNH/binance) — 币安 Binance `公开`
 - [okx](https://github.com/ZoneCNH/okx) — OKX `公开`
 - [bybit](https://github.com/ZoneCNH/bybit) — Bybit `公开`
@@ -102,6 +103,7 @@ L2.5: decimalx / domain-market / domain-exchange / domain-macro
 - [yield-curve](https://github.com/ZoneCNH/yield-curve) — 收益率曲线 `公开`
 
 **Kline/Ticker Provider：**
+
 - [binance-market](https://github.com/ZoneCNH/binance-market) — Binance `公开`
 - [bybit-market](https://github.com/ZoneCNH/bybit-market) — Bybit `公开`
 - [bitget-market](https://github.com/ZoneCNH/bitget-market) — Bitget SPOT `公开`

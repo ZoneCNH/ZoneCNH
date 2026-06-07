@@ -8,7 +8,7 @@
 
 ## 全景数据流
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────────────────────┐
 │                                  数据域                                          │
 │                                                                                 │
@@ -158,6 +158,7 @@
 | OrderBook | Bids[]/Asks[] | 盘口深度 |
 
 **质量门禁规则**（`ValidateBarQuality`）：
+
 1. High < Low → `ErrHighBelowLow`
 2. Close ≤ 0 → `ErrZeroPrice` / `ErrNegativePrice`
 3. OpenTime 为零 → `ErrMissingEventTime`
@@ -217,6 +218,7 @@
 | | RevisionVersion / IsPreliminary | 修正版本 |
 
 **防泄露过滤**（`FilterMacroPointsForBacktest`）：
+
 - `AvailableAt` 为零 → `ErrMissingAvailableAt`
 - `ObservedAt > DecisionTime` → 排除（未来观测值）
 - `ReleasedAt > DecisionTime` → 排除（未发布数据）
@@ -354,7 +356,7 @@
 
 每次 regime_engine 决策自动写入决策日志，结构：
 
-```
+```text
 DecisionLog
 ├── log_id (UUID v4)
 ├── timestamp (RFC3339)
@@ -401,7 +403,7 @@ DecisionLog
 
 ## 实现路径
 
-```
+```text
 Phase 1a: market_regime 实现
   依赖: domain-market ✅ + factor-engine (特征计算)
   退出: market-data → market_regime → RegimeSnapshot 可跑通

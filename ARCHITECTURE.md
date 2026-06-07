@@ -12,7 +12,7 @@
 
 ### 代码依赖拓扑
 
-```
+```text
 依赖方向：左侧模块可以导入右侧模块。
 
 x.go ───────────────► 基座运行时 / L2.5 / 数据域 / 分析域 / 决策域 / 执行域
@@ -43,7 +43,7 @@ x.go ───────────────► 基座运行时 / L2.5 / �
 
 ### 业务流与反馈
 
-```
+```text
 market-data (19) ──────────────► market_regime ──┐
   domain-market (Bar/Tick/OB)     S1-S7 状态     │
   质量门禁 → 特征 → 分类器       bias/permission  │
@@ -70,7 +70,7 @@ risk-engine ───► order-engine ───► portfolio-engine ───►
 
 ### 运行时组装
 
-```
+```text
 x.go
   ├── load config
   ├── init observability / alerting
@@ -308,7 +308,7 @@ Foundation 6 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中�
 
 ## 建议实现顺序
 
-```
+```text
 Foundation P0: 基础闭环校准 ← kernel + configx + observex + testkitx + resiliencx + schedulex
                1. resiliencx 从标准模板身份改回运行时弹性策略库
                2. xlib-standard 固定为标准事实源 / 模板 / Gate / Evidence
