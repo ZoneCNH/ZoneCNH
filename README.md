@@ -16,7 +16,7 @@ Go 🐹 (主要) · Rust 🦀 (底层) · Python 🐍 (脚本/数据) · TypeScr
 >
 > 🧱 Foundation v1 规格、依赖矩阵、执行跟踪与 ADR → **[module/](./module/)**
 >
-> 📋 6 模块独立完整规格 → **[specs/](./specs/)**
+> 📋 16 模块独立完整规格 → **[specs/](./specs/)**
 
 ```text
 入口: x.go (Composition Root: 启动 / 配置 / 组装)

@@ -117,6 +117,16 @@ Foundation 6 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中�
 | resiliencx | [`specs/resiliencx/SPEC.md`](./specs/resiliencx/SPEC.md) |
 | schedulex | [`specs/schedulex/SPEC.md`](./specs/schedulex/SPEC.md) |
 | testkitx | [`specs/testkitx/SPEC.md`](./specs/testkitx/SPEC.md) |
+| xlibgate | [`specs/xlibgate/SPEC.md`](./specs/xlibgate/SPEC.md) |
+| xlib-standard | [`specs/xlib-standard/SPEC.md`](./specs/xlib-standard/SPEC.md) |
+| contracts | [`specs/contracts/SPEC.md`](./specs/contracts/SPEC.md) |
+| redisx | [`specs/redisx/SPEC.md`](./specs/redisx/SPEC.md) |
+| kafkax | [`specs/kafkax/SPEC.md`](./specs/kafkax/SPEC.md) |
+| natsx | [`specs/natsx/SPEC.md`](./specs/natsx/SPEC.md) |
+| postgresx | [`specs/postgresx/SPEC.md`](./specs/postgresx/SPEC.md) |
+| taosx | [`specs/taosx/SPEC.md`](./specs/taosx/SPEC.md) |
+| ossx | [`specs/ossx/SPEC.md`](./specs/ossx/SPEC.md) |
+| clickhousex | [`specs/clickhousex/SPEC.md`](./specs/clickhousex/SPEC.md) |
 
 ## Foundation 第一阶段闭环
 

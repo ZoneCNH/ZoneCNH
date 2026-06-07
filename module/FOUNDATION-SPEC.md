@@ -331,6 +331,20 @@ deadline budget
 `schedulex` 是确定性任务调度库，不是分布式任务平台。
 
 ```go
+func NewScheduler(options Options) Scheduler
+
+type Options struct {
+    Clock          Clock
+    EventSink      EventSink
+    MaxConcurrency int
+}
+
+type Clock interface {
+    Now() time.Time
+    After(d time.Duration) <-chan time.Time
+    Sleep(ctx context.Context, d time.Duration) error
+}
+
 type Scheduler interface {
     AddJob(job Job) error
     Start(ctx context.Context) error
@@ -392,6 +406,97 @@ type Lease interface {
 ### 1.6 `testkitx`
 
 `testkitx` 是测试专用能力库。
+
+最小调用契约：
+
+```go
+type TestingT interface {
+    Helper()
+    Errorf(format string, args ...any)
+    Fatalf(format string, args ...any)
+}
+
+type Clock interface {
+    Now() time.Time
+    Sleep(ctx context.Context, d time.Duration) error
+}
+
+// assertx
+func Equal[T comparable](t TestingT, want, got T)
+func NoError(t TestingT, err error)
+func ErrorKind(t TestingT, err error, want string)
+func Eventually(t TestingT, options EventuallyOptions, check func(context.Context) (bool, error))
+
+type EventuallyOptions struct {
+    Timeout  time.Duration
+    Interval time.Duration
+    Clock    Clock
+}
+
+// golden
+type GoldenOptions struct {
+    Path      string
+    Update    bool
+    Normalize func([]byte) ([]byte, error)
+}
+
+func AssertJSON(t TestingT, options GoldenOptions, got any)
+func AssertBytes(t TestingT, options GoldenOptions, got []byte)
+
+// contract
+type Contract struct {
+    Name    string
+    Version string
+    Schema  []byte
+    Payload any
+}
+
+func Hash(contract Contract) (string, error)
+func AssertHash(t TestingT, contract Contract, want string)
+
+// fixture
+type FixtureOptions struct {
+    Env  map[string]string
+    Home bool
+}
+
+type Fixture struct {
+    Dir     string
+    Home    string
+    Env     map[string]string
+    Cleanup func()
+}
+
+func NewFixture(t TestingT, options FixtureOptions) Fixture
+
+// harness
+type Command struct {
+    Path    string
+    Args    []string
+    Env     map[string]string
+    Dir     string
+    Timeout time.Duration
+}
+
+type CommandResult struct {
+    ExitCode  int
+    Stdout    []byte
+    Stderr    []byte
+    EnvDigest string
+    Duration  time.Duration
+}
+
+func RunCommand(t TestingT, command Command) CommandResult
+
+// boundarytest
+type BoundaryRule struct {
+    Root          string
+    ForbidImports []string
+    IncludeTests  bool
+}
+
+func CheckImports(t TestingT, rule BoundaryRule)
+```
 
 能力：
 
