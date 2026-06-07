@@ -741,6 +741,36 @@ THEN 阻断后续下游同步，记录失败原因到 downstream-sync plan
 
 ---
 
+## 8. 非功能需求（Non-functional Requirements）
+
+### 8.1 性能
+
+- Generator 生成单个基础库骨架 ≤ 30s（含模板渲染 + 文件写入 + go vet）
+- Harness 门禁扫描 66 项 gate entries ≤ 60s
+- Evidence Runtime 收集 154 文件 sha256-prefix ≤ 10s
+
+### 8.2 可靠性
+
+- Generator 模板渲染失败时必须回滚已写入文件（原子性）
+- Harness 扫描中断时输出已完成项 + 未完成项清单
+- Evidence Runtime sha256 计算使用 streaming 模式，内存占用 ≤ 64MB
+
+### 8.3 可维护性
+
+- Generator 模板文件与 Go 代码分离，模板修改无需重新编译
+- Harness gate entries 定义在 YAML，新增 gate 无需改代码
+- 所有 RULE-* 规则可通过 registry.yaml 查询，无需 grep 源码
+
+### 8.4 可移植性
+
+- Generator 支持 Linux / macOS（Windows 为 P2）
+- Harness 依赖的外部工具（git, sha256sum, go）均为标准工具链
+- 模板渲染引擎不限定操作系统路径分隔符
+
+> 来源：SPEC-TEMPLATE.md §8；本节为结构补齐，具体阈值待 v1.0.0-rc.1 前压测确认。
+
+---
+
 ## 9. 业务规则（Business Rules）
 
 ### 9.1 核心铁律（Iron Rules，7 条；亦记为 BR-001..BR-007）
