@@ -42,7 +42,6 @@ jobs:
             --timeout 30
             --max-retries 3
             --retry-wait-time 2
-            --max-connections 8
             --header 'Accept=text/html'
             -- '*.md'
           fail: true
