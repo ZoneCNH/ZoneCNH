@@ -8,7 +8,9 @@
 
 ## 1. Metadata
 
-- Status: Active
+- Status: Draft
+- Spec-Version: v1.0.0
+- Last-Updated: 2026-06-07
 - Owner: ZoneCNH
 - Layer: L0 基座
 - Version: v0.1.0
@@ -16,6 +18,12 @@
 - Related: [CONSTITUTION.md](../CONSTITUTION.md), [ARCHITECTURE.md](../ARCHITECTURE.md), [xlib-standard](../xlib-standard/SPEC.md)
 
 ---
+
+### 1.1 变更历史
+
+| 日期 | 版本 | 变更内容 | 作者 |
+|------|------|----------|------|
+| 2026-06-07 | v1.0.0 | 初始版本 | ZoneCNH |
 
 ## 2. Summary
 

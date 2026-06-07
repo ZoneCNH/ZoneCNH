@@ -142,3 +142,23 @@ jobs:
 
       - name: 生成 spec 状态报告
         run: bash .github/ci/spec-status-report.sh
+
+  # ── 9. 术语一致性检查 ──────────────────────────────────────
+  glossary-consistency:
+    name: Glossary Consistency
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 检查术语与 GLOSSARY.md 一致性
+        run: bash .github/ci/glossary-consistency.sh
+
+  # ── 10. 反需求扫描 ─────────────────────────────────────────
+  anti-requirement-scan:
+    name: Anti-Requirement Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 扫描 spec 代码片段违反反需求
+        run: bash .github/ci/anti-requirement-scan.sh

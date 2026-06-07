@@ -7,6 +7,7 @@
 #   3. 模糊词检测：grep 模糊词列表，发现则 WARN
 #   4. FR 编号连续：FR-001 到 FR-{N} 无跳号
 #   5. Non-goals 非空：Section 4 至少有 1 条
+#   6. Metadata 必填项：Status / Spec-Version / Last-Updated 符合生命周期规范
 
 set -euo pipefail
 
@@ -79,6 +80,41 @@ check_spec() {
   if [[ $non_goals -eq 0 ]]; then
     issues+=("⚠️  Section 4 Non-goals is empty")
     WARN=1
+  fi
+
+  # 7. Status 字段校验（六态：Draft/Review/Approved/Implemented/Changed/Deprecated）
+  local status_val
+  status_val=$(grep -oP "^- Status:\s*\K\S+" "$spec_file" || true)
+  if [[ -z "$status_val" ]]; then
+    issues+=("❌ missing Status metadata")
+    FAIL=1
+  else
+    case "$status_val" in
+      Draft|Review|Approved|Implemented|Changed|Deprecated) ;;
+      *)
+        issues+=("❌ invalid Status: $status_val (expected: Draft|Review|Approved|Implemented|Changed|Deprecated)")
+        FAIL=1
+        ;;
+    esac
+  fi
+
+  # 8. Spec-Version 字段校验
+  local spec_version
+  spec_version=$(grep -oP "^- Spec-Version:\s*\Kv[0-9]+\.[0-9]+\.[0-9]+$" "$spec_file" || true)
+  if [[ -z "$spec_version" ]]; then
+    issues+=("❌ missing or invalid Spec-Version metadata (expected: vX.Y.Z)")
+    FAIL=1
+  fi
+
+  # 9. Last-Updated 字段校验
+  local last_updated
+  last_updated=$(grep -oP "^- Last-Updated:\s*\K[0-9]{4}-[0-9]{2}-[0-9]{2}$" "$spec_file" || true)
+  if [[ -z "$last_updated" ]]; then
+    issues+=("❌ missing or invalid Last-Updated metadata (expected: YYYY-MM-DD)")
+    FAIL=1
+  elif ! date -d "$last_updated" "+%F" >/dev/null 2>&1; then
+    issues+=("❌ invalid Last-Updated date: $last_updated")
+    FAIL=1
   fi
 
   # 输出结果

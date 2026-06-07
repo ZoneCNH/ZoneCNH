@@ -547,6 +547,7 @@ AI 代理在生成或审查代码时：
 | 存储扩展 | ossx | [SPEC](./specs/ossx/SPEC.md) | [ossx](https://github.com/ZoneCNH/ossx) |
 | 存储扩展 | clickhousex | [SPEC](./specs/clickhousex/SPEC.md) | [clickhousex](https://github.com/ZoneCNH/clickhousex) |
 | 契约 | contracts | [SPEC](./specs/contracts/SPEC.md) | [contracts](https://github.com/ZoneCNH/contracts) |
+| 组合根 | x.go | [SPEC](./specs/xgo/SPEC.md) | [x.go](https://github.com/ZoneCNH/x.go) |
 
 ## 附录 B：与 CLAUDE.md 的关系
 

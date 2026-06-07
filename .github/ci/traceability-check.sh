@@ -5,13 +5,16 @@
 #   1. 模块覆盖：必须包含所有 16 个模块 + x.go
 #   2. FR 覆盖：每个 spec 的 FR 在追踪表中都有对应行
 #   3. AC 非空：每个 FR 行的 Acceptance Criteria 列不为 "-"
-#   4. Status 有效：Status 列只能是 ⬜ / 🔵 / ✅ / ❌ / ⏭️
-#   5. 交叉验证：TRACEABILITY.md 中的 FR 数量与对应 spec 一致
+#   4. TC 非空：每个 FR/BR 行的 Test Case 列不为 "-"
+#   5. Status 有效：Status 列只能是 ⬜ / 🔵 / ✅ / ❌ / ⏭️
+#   6. 交叉验证：TRACEABILITY.md 中的 FR 数量与对应 spec 一致
+#   7. TRACEABILITY_STRICT=1 时警告升级为失败
 
 set -euo pipefail
 
 FAIL=0
 WARN=0
+STRICT="${TRACEABILITY_STRICT:-0}"
 REPO_ROOT="$(git rev-parse --show-toplevel)"
 TRACE_FILE="$REPO_ROOT/specs/TRACEABILITY.md"
 SPEC_DIR="$REPO_ROOT/specs"
@@ -68,6 +71,42 @@ check_module() {
     WARN=1
   fi
 
+  # 检查 TC 非空。TC 空缺暂作为警告，严格模式可升级为失败。
+  local empty_tc
+  empty_tc=$(awk -F'|' -v m="$module" '
+    $0 ~ "^## " m "$" { found=1; next }
+    found && /^## / { found=0 }
+    found && /\| (FR|BR)-/ {
+      tc=$5
+      gsub(/^[ \t]+|[ \t]+$/, "", tc)
+      if (tc == "-" || tc == "") count++
+    }
+    END { print count+0 }
+  ' "$TRACE_FILE")
+
+  if [[ $empty_tc -gt 0 ]]; then
+    echo "  ⚠️  $module: $empty_tc requirements with empty TC"
+    WARN=1
+  fi
+
+  # 检查 Status 只使用约定枚举值。
+  local invalid_status
+  invalid_status=$(awk -F'|' -v m="$module" '
+    $0 ~ "^## " m "$" { found=1; next }
+    found && /^## / { found=0 }
+    found && /\| (FR|BR)-/ {
+      status=$6
+      gsub(/^[ \t]+|[ \t]+$/, "", status)
+      if (status != "⬜" && status != "🔵" && status != "✅" && status != "❌" && status != "⏭️") count++
+    }
+    END { print count+0 }
+  ' "$TRACE_FILE")
+
+  if [[ $invalid_status -gt 0 ]]; then
+    echo "  ❌ $module: $invalid_status rows with invalid Status"
+    FAIL=1
+  fi
+
   echo "  ✅ $module: $trace_fr_count/$spec_fr_count FRs traced"
 }
 
@@ -98,6 +137,9 @@ echo ""
 echo "=== 结果 ==="
 if [[ $FAIL -ne 0 ]]; then
   echo "❌ Traceability Check 失败 — 请修复上述错误"
+  exit 1
+elif [[ $WARN -ne 0 && "$STRICT" == "1" ]]; then
+  echo "❌ Traceability Check 失败 — TRACEABILITY_STRICT=1 且存在警告"
   exit 1
 elif [[ $WARN -ne 0 ]]; then
   echo "⚠️  Traceability Check 通过（有警告）"

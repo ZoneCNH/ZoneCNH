@@ -1,16 +1,19 @@
 #!/usr/bin/env bash
-# status-consistency-check.sh — 校验 README / ARCHITECTURE / STATUS 三文件组件数量一致性
+# status-consistency-check.sh — 校验 README / ARCHITECTURE / STATUS / specs 数量一致性
 #
 # 检查逻辑：
 #   1. 从 README.md 提取 market-data / macro-data / L2.5 / 分析域 / 决策域 / 横切 组件数量
 #   2. 从 ARCHITECTURE.md 提取相同指标
 #   3. 从 STATUS.md 提取 domain-level 统计表中的组件数量
-#   4. 比对三方是否一致
+#   4. 从 specs/ 提取 Foundation + x.go 规格数量
+#   5. 校验 STATUS 进度分布、版本覆盖与域统计合计
+#   6. 比对各方是否一致
 
 set -euo pipefail
 
 FAIL=0
 REPO_ROOT="$(git rev-parse --show-toplevel)"
+SPEC_DIR="$REPO_ROOT/specs"
 
 echo "=== Status Consistency Check ==="
 echo ""
@@ -85,9 +88,18 @@ ARCH_INDEP=$(count_arch_domain "独立")
 STATUS_TOTAL=$(grep -oP '组件总数:\s*\K[0-9]+' "$REPO_ROOT/STATUS.md" | head -1)
 
 # 从 STATUS.md "文档同步检查" 表提取（匹配表格行 "| 组件总数"）
-STATUS_SYNC_TOTAL=$(awk -F'|' '/^\| 组件总数/{gsub(/[ \t*\r]/, "", $4); match($4, /^[0-9]+/); print substr($4, RSTART, RLENGTH)}' "$REPO_ROOT/STATUS.md")
-STATUS_SYNC_MD=$(awk -F'|' '/^\| market-data/{gsub(/[ \t*\r]/, "", $4); match($4, /^[0-9]+/); print substr($4, RSTART, RLENGTH)}' "$REPO_ROOT/STATUS.md")
-STATUS_SYNC_MACRO=$(awk -F'|' '/^\| macro-data/{gsub(/[ \t*\r]/, "", $4); match($4, /^[0-9]+/); print substr($4, RSTART, RLENGTH)}' "$REPO_ROOT/STATUS.md")
+STATUS_SYNC_TOTAL=$(awk -F'|' '/^\| 组件总数/{gsub(/[ \t*\r]/, "", $5); match($5, /^[0-9]+/); print substr($5, RSTART, RLENGTH)}' "$REPO_ROOT/STATUS.md")
+STATUS_SYNC_MD=$(awk -F'|' '/^\| market-data/{gsub(/[ \t*\r]/, "", $5); match($5, /^[0-9]+/); print substr($5, RSTART, RLENGTH)}' "$REPO_ROOT/STATUS.md")
+STATUS_SYNC_MACRO=$(awk -F'|' '/^\| macro-data/{gsub(/[ \t*\r]/, "", $5); match($5, /^[0-9]+/); print substr($5, RSTART, RLENGTH)}' "$REPO_ROOT/STATUS.md")
+STATUS_PROGRESS_BUCKET_TOTAL=$(awk '/进度分布:/{found=1; next} found && /^$/{found=0} found { print }' "$REPO_ROOT/STATUS.md" | grep -oP '[0-9]+(?= 个)' | awk '{sum += $1} END { print sum+0 }')
+STATUS_VERSIONED=$(grep -oP '版本覆盖:\s*有版本号\s*\K[0-9]+' "$REPO_ROOT/STATUS.md" | head -1)
+STATUS_UNVERSIONED=$(grep -oP '版本覆盖:.*无版本号\s*\K[0-9]+' "$REPO_ROOT/STATUS.md" | head -1)
+STATUS_DOMAIN_VERSIONED=$(awk -F'|' '/^\| \*\*合计/ {gsub(/[^0-9]/, "", $7); print $7}' "$REPO_ROOT/STATUS.md")
+
+# 从 specs/ 提取规格数量：Foundation 16 + x.go 组合根 1
+SPEC_COUNT=$(find "$SPEC_DIR" -mindepth 2 -maxdepth 2 -name SPEC.md | wc -l | tr -d ' ')
+XGO_SPEC_COUNT=$(find "$SPEC_DIR/xgo" -maxdepth 1 -name SPEC.md 2>/dev/null | wc -l | tr -d ' ')
+FOUNDATION_SPEC_COUNT=$((SPEC_COUNT - XGO_SPEC_COUNT))
 
 echo "--- 数据采集 ---"
 echo "README 架构图:     market-data = $README_MD_NUM, macro-data = $README_MACRO_NUM"
@@ -96,6 +108,8 @@ echo "ARCHITECTURE 图:   market-data = $ARCH_MD_NUM, macro-data = $ARCH_MACRO_N
 echo "ARCHITECTURE 表:   基座=$ARCH_BASE, L2.5=$ARCH_L25, 数据域=$ARCH_DATA, 分析域=$ARCH_ANALYSIS, 决策域=$ARCH_DECISION, 执行域=$ARCH_EXEC, 入口=$ARCH_ENTRY, 横切=$ARCH_CROSS, Rust=$ARCH_RUST, 独立=$ARCH_INDEP"
 echo "STATUS 总数:       $STATUS_TOTAL"
 echo "STATUS 同步表:     总计=$STATUS_SYNC_TOTAL, market-data=$STATUS_SYNC_MD, macro-data=$STATUS_SYNC_MACRO"
+echo "STATUS 分布/版本:  进度分布合计=$STATUS_PROGRESS_BUCKET_TOTAL, 版本覆盖=$STATUS_VERSIONED+$STATUS_UNVERSIONED, 域统计有版本号=$STATUS_DOMAIN_VERSIONED"
+echo "Spec 规格计数:     Foundation=$FOUNDATION_SPEC_COUNT, x.go=$XGO_SPEC_COUNT, 总计=$SPEC_COUNT"
 echo ""
 
 # ── 一致性检查 ───────────────────────────────────────────
@@ -135,6 +149,17 @@ check "组件总数 (ARCHITECTURE 表合计 vs STATUS)" "$ARCH_TOTAL" "$STATUS_T
 # 5. STATUS 组件总数行 vs 同步表
 check "STATUS (仪表盘总数 vs 同步表总计)" "$STATUS_TOTAL" "$STATUS_SYNC_TOTAL"
 
+# 6. specs/ 数量口径：Foundation 16 + x.go 组合根 1
+check "规格总数 (Foundation 16 + x.go)" "$SPEC_COUNT" "17"
+check "Foundation 规格数" "$FOUNDATION_SPEC_COUNT" "16"
+check "x.go 组合根规格数" "$XGO_SPEC_COUNT" "1"
+
+# 7. STATUS 内部统计应与仪表盘总数一致
+check "STATUS (进度分布合计 vs 仪表盘总数)" "$STATUS_PROGRESS_BUCKET_TOTAL" "$STATUS_TOTAL"
+VERSION_TOTAL=$((STATUS_VERSIONED + STATUS_UNVERSIONED))
+check "STATUS (版本覆盖合计 vs 仪表盘总数)" "$VERSION_TOTAL" "$STATUS_TOTAL"
+check "STATUS (版本覆盖 vs 域统计合计)" "$STATUS_VERSIONED" "$STATUS_DOMAIN_VERSIONED"
+
 echo ""
 
 # ── 结果 ─────────────────────────────────────────────────
@@ -145,7 +170,9 @@ if [[ $FAIL -ne 0 ]]; then
   echo "修复提示："
   echo "  1. 确保 README.md / ARCHITECTURE.md 中的 market-data (N) / macro-data (N) 数字与实际列表条目一致"
   echo "  2. 确保 STATUS.md 的「组件总数」和「文档同步检查」表中的数字一致"
-  echo "  3. 新增/删除组件时，同步更新三个文件中的所有引用"
+  echo "  3. 确保 STATUS.md 的进度分布、版本覆盖与域统计合计一致"
+  echo "  4. 新增/删除规格时，同步更新 specs/README.md 与 Foundation/x.go 数量口径"
+  echo "  5. 新增/删除组件时，同步更新三个文件中的所有引用"
   exit 1
 else
   echo "✅ Status Consistency Check 全部通过"
