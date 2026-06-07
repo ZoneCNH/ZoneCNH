@@ -13,9 +13,9 @@
 
 ## 阅读规则
 
-- 当前可执行主规格以 `SPEC.md` 为准；结构检查覆盖章节、FR 连续性和 WHEN 子句，追溯完整性以 `TRACEABILITY.md` 的条款级来源矩阵为准。
-- `MODULE-SPEC.md` 已废弃为主规格，其独有内容（权威来源层级、生成器规格、goalcli 运行时、L2 Provider、Evidence 协议、远端治理、DONE 模板）已合并入 SPEC.md。
-- `DEEP-ANALYSIS.md` 中的 181 文件、未分层 gate 统计、10 ADR 等数字均为历史口径；当前 gate 口径以 `SPEC.md` 的 66 Gates（17 Required + 49 扩展/治理/发布）为准。
+- 当前可执行主规格以 `SPEC.md` 为准；其 23 节结构、FR 连续性、WHEN 子句和追溯完整性必须通过对应校验后才能作为已验证事实。
+- `MODULE-SPEC.md` 已废弃为主规格，其独有内容（来源层级、生成器规格、goalcli 运行时、L2 Provider、Evidence 协议、远端治理、DONE 模板）已合并入 SPEC.md。
+- `DEEP-ANALYSIS.md` 中的 181 文件、66 gates、10 ADR 等数字均为历史口径，不得覆盖当前主规格。
 - `TRACEABILITY.md` 是条款级来源矩阵，不是逐规则证明账本；需要内容级复现时必须提供 source pack、digest/tree sha 或重新生成覆盖清单。
 - 下游采用、release-ready、远端 ruleset/CI 状态必须由下游仓库或远端证据证明；本目录只记录本地分析、要求和风险。
 - `1000-pass` 只表示输入文件集合和清单稳定性检查，不表示每条语义经过 1000 次独立审查。

@@ -259,8 +259,8 @@
 **D-003: harness gates 数量不同步**
 
 - 严重度：P2
-- 问题：~~SPEC.md 写 "17+ Required Gates"~~ 历史修正曾写成 "66 个 Required Gates"；当前主规格应区分 66 个 Gates 与其中 17 个 Required gates（其余为 extended/governance/docker/release/MVA）
-- 状态：已修复（SPEC.md FR-020 和 §2 已更新为 66）
+- 问题：历史材料曾混用 "17+ Required Gates" 和 66 gates；当前口径应区分 66 Gates 总数与 17 Required + 49 extended/governance/release
+- 状态：已修复（当前 SPEC.md FR-020、§2 和 §13.2 使用区分口径）
 
 **D-004: docs/standard/ 27 个文件但 SPEC.md 只列出 18 个**
 
