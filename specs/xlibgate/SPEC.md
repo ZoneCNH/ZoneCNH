@@ -34,6 +34,7 @@
 ## 3. Problem
 
 Foundation 由 70+ 个 Go 模块组成，模块间的依赖关系、import 边界和发布质量需要机器强制执行。没有统一门禁工具，会导致：
+
 - 业务域模块反向依赖 Foundation 基座层，破坏分层架构
 - 生产包意外依赖 `testkitx`，引入测试代码到生产环境
 - `go.mod` 不整洁，依赖树不可重现
@@ -189,7 +190,7 @@ xlibgate check all --config deps.yaml [--output json] [--artifact result.json]
 
 # 版本
 xlibgate version
-```
+```text
 
 ### 9.2 Exit Code 定义
 
@@ -197,7 +198,7 @@ xlibgate version
 0 — pass：所有检查通过
 1 — fail：至少一项检查未通过
 2 — error：发生内部错误（配置无效、文件缺失等）
-```
+```text
 
 ### 9.3 JSON 输出格式
 
@@ -220,7 +221,7 @@ xlibgate version
     "errors": 0
   }
 }
-```
+```text
 
 ### 9.4 配置格式
 
@@ -243,7 +244,7 @@ release:
     - secret_scan_pass
     - gomod_tidy
     - vet_clean
-```
+```text
 
 ---
 
@@ -261,7 +262,7 @@ var (
     ErrImportViolation  = errors.New("xlibgate: import boundary violation")
     ErrGomodDirty       = errors.New("xlibgate: go.mod not tidy")
 )
-```
+```text
 
 ### 10.2 检查结果结构
 
@@ -286,7 +287,7 @@ type Violation struct {
     Line    int    `json:"line,omitempty"`
     Message string `json:"message"`
 }
-```
+```text
 
 ---
 
@@ -308,7 +309,7 @@ release:
 secret_scan:
   enabled: bool               # default: true
   config_path: string         # gitleaks 配置文件路径（可选）
-```
+```text
 
 ---
 
@@ -348,7 +349,7 @@ secret_scan:
 
 ## 14. Directory Structure
 
-```
+```text
 xlibgate/
 ├── go.mod
 ├── go.sum
@@ -385,7 +386,7 @@ xlibgate/
 ├── example_test.go
 ├── benchmark_test.go
 └── integration_test.go         # //go:build integration
-```
+```text
 
 ---
 
@@ -393,11 +394,11 @@ xlibgate/
 
 ### 15.1 go.mod
 
-```
+```text
 module github.com/ZoneCNH/xlibgate
 
 go 1.23
-```
+```text
 
 ### 15.2 依赖方向
 

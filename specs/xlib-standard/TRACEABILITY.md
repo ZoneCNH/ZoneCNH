@@ -27,9 +27,11 @@ Last-Updated: 2026-06-08
 | 远端治理（branch protection / ruleset / Release object） | ❌ 不可本地追溯 | — | 见 §A.1 / SPEC §23 OQ-001；由 `goalcli remote-attest` 单独证明 |
 
 > **TODO 标记规则**：尚未行级化的 FR 来源单元格在“追溯说明”列含 `[行级证据 TODO]` 标记；自动巡检命令：
+>
 > ```bash
 > grep -n "\[行级证据 TODO\]" specs/xlib-standard/TRACEABILITY.md | wc -l
 > ```
+>
 > 该数字进入 `latest.json.trace_coverage_todo_count`，是 NG-33 的输入。
 
 ## 核心条款追溯

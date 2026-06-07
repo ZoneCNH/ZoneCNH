@@ -9,9 +9,17 @@
 - Layer: 基座（Foundation Gate 治理子层；详见 §15.1）
 - Version: v0.6.x（目标 v1.0.0-rc.1）
 
-> **状态说明**：本规格自 2026-06-08 04:51 起由 `Approved` 回退到 `Review`，原因详见 `docs/report/xlib-standard-structural-deep-analysis-20260608-0446.md` §S1 / §S2 — 旧 `Approved-By` 为同管线内 sub-agent 自评，且 `COVERAGE-MANIFEST.md` commit/tree sha (OQ-008 / R-011)、TRACEABILITY 行级覆盖 (NG-33) 等发布门禁前置条件均未达成。进入 Approved 需补独立 reviewer 签字 + 固定上游 commit/tree sha + 通过 `goalcli release-final-check`。
+> **状态说明**：本规格自 2026-06-08 04:51 起由 `Approved` 回退到 `Review`，原因详见
+> `docs/report/xlib-standard-structural-deep-analysis-20260608-0446.md` §S1 / §S2。
+>
+> 旧 `Approved-By` 为同管线内 sub-agent 自评，且 `COVERAGE-MANIFEST.md` commit/tree sha
+> (OQ-008 / R-011)、TRACEABILITY 行级覆盖 (NG-33) 等发布门禁前置条件均未达成。
+> 进入 Approved 需补独立 reviewer 签字 + 固定上游 commit/tree sha + 通过 `goalcli release-final-check`。
+
 - Repository: [github.com/ZoneCNH/xlib-standard](https://github.com/ZoneCNH/xlib-standard)
-- Related: [CONSTITUTION.md](../../CONSTITUTION.md), [ARCHITECTURE.md](../../ARCHITECTURE.md), [SPEC-TEMPLATE.md](../SPEC-TEMPLATE.md), [xlibgate/SPEC.md](../xlibgate/SPEC.md), [kernel/SPEC.md](../kernel/SPEC.md), [configx/SPEC.md](../configx/SPEC.md)
+- Related: [CONSTITUTION.md](../../CONSTITUTION.md), [ARCHITECTURE.md](../../ARCHITECTURE.md),
+  [SPEC-TEMPLATE.md](../SPEC-TEMPLATE.md), [xlibgate/SPEC.md](../xlibgate/SPEC.md),
+  [kernel/SPEC.md](../kernel/SPEC.md), [configx/SPEC.md](../configx/SPEC.md)
 
 ---
 
@@ -156,7 +164,9 @@ xlib-standard 本身不包含业务逻辑，不依赖 x.go，不读取生产密�
 | ossx | 基座 / L2 | 生成模板 + L2 适配规范 | not_adopted |
 | clickhousex | 基座 / L2 | 生成模板 + L2 适配规范 | not_adopted |
 
-> 注：L0/L1/L2 是**基座领域内部**的依赖层级编号（详见 §15.1、ARCHITECTURE.md），不与"基座/数据域/分析域/决策域/执行域/入口"领域命名冲突。L2 适配器共 7 个。docs/l2/ 目录下有 15 个执行计划文件，覆盖上述 7 个 L2 适配器 + xlib-standard 自身 + testkitx + xlibgate + xgo-market-data + xgo-macro-data + engines + xgo runtime system gate。
+> 注：L0/L1/L2 是**基座领域内部**的依赖层级编号（详见 §15.1、ARCHITECTURE.md），不与"基座/数据域/分析域/决策域/执行域/入口"领域命名冲突。L2 适配器共 7 个。
+>
+> docs/l2/ 目录下有 15 个执行计划文件，覆盖上述 7 个 L2 适配器 + xlib-standard 自身 + testkitx + xlibgate + xgo-market-data + xgo-macro-data + engines + xgo runtime system gate。
 
 | 消费者 | 领域 / 层级 | 消费方式 | 采纳状态 |
 |--------|------|----------|----------|
@@ -278,7 +288,9 @@ WHEN 客户端创建、关闭、请求、重试、健康检查等操作发生
 THEN 对应 counter/gauge/histogram 指标自动递增或记录
 
 WHEN Prometheus scrape /metrics 端点
-THEN 返回 9 个最小指标（client_created_total, client_closed_total, client_errors_total, client_health_status, client_health_latency_ms, client_requests_total, client_request_duration_seconds, client_retries_total, client_inflight）
+THEN 返回 9 个最小指标（client_created_total, client_closed_total, client_errors_total,
+client_health_status, client_health_latency_ms, client_requests_total,
+client_request_duration_seconds, client_retries_total, client_inflight）
 
 > 来源：docs/observability.md | 优先级：P0
 
@@ -317,7 +329,10 @@ THEN 返回新副本，secret/token/password/key 字段被替换为 `***`
 ### FR-015: render_template.sh 渲染
 
 WHEN 执行 `scripts/render_template.sh --module <module-path> --name <module-name> --package <package> --out <path>`
-THEN `--module` 驱动 `{{.ModulePath}}`（Go module path，如 `github.com/ZoneCNH/kernel`）、`--name` 驱动 `{{.Module}}`（短模块名，用于类型名前缀，如 `Kernel`）、`--package` 驱动 `{{.Package}}`（Go 包名，如 `kernel`）、`--out` 驱动输出目录；模板中所有 `{{.Module}}` / `{{.Package}}` / `{{.ModulePath}}` 占位符必须全部替换为实际值，输出目录结构完整
+THEN `--module` 驱动 `{{.ModulePath}}`（Go module path，如 `github.com/ZoneCNH/kernel`）、
+`--name` 驱动 `{{.Module}}`（短模块名，用于类型名前缀，如 `Kernel`）、
+`--package` 驱动 `{{.Package}}`（Go 包名，如 `kernel`）、`--out` 驱动输出目录；
+模板中所有 `{{.Module}}` / `{{.Package}}` / `{{.ModulePath}}` 占位符必须全部替换为实际值，输出目录结构完整
 
 WHEN 渲染目标目录已存在
 THEN 不覆盖已有文件，返回警告
@@ -441,7 +456,9 @@ THEN evidence_replay gate 失败，checksum 不匹配
 ### FR-027: Release Manifest
 
 WHEN `make evidence` 执行
-THEN 生成 `release/manifest/latest.json`，包含 module/version/commit/tree_sha/source_digest/go_version/generated_at/checks/contracts/dependencies/tools/standard_impact/downstream_sync_required/score/workflow/artifacts 等 20+ 字段
+THEN 生成 `release/manifest/latest.json`，包含 module/version/commit/tree_sha/source_digest/
+go_version/generated_at/checks/contracts/dependencies/tools/standard_impact/
+downstream_sync_required/score/workflow/artifacts 等 20+ 字段
 
 WHEN manifest schema 验证失败
 THEN evidence gate 失败并报告缺失字段
@@ -641,9 +658,13 @@ WHEN Phase N 的 PR 未完成
 THEN Phase N+1 的 PR 不得开始
 
 > 来源：.worktree/goal/ | 优先级：P1
-
+>
 > **两套 PR 体系说明**：
-> - **28 PR（Goal Runtime）**：xlib-standard 自身的 Goal Runtime v3.1.1 执行包，Phase 1 MVA Core（PR-1~8）→ Phase 2 可信治理（PR-9~13,18~20）→ Phase 3 生态与协作（PR-14~17,23）→ Phase 4 成熟化（PR-21~22,24~27）→ Phase 5 自动化（PR-28）。当前状态：设计封顶，进入执行阶段，无 PR 完成。
+>
+> - **28 PR（Goal Runtime）**：xlib-standard 自身的 Goal Runtime v3.1.1 执行包，
+>   Phase 1 MVA Core（PR-1~8）→ Phase 2 可信治理（PR-9~13,18~20）→
+>   Phase 3 生态与协作（PR-14~17,23）→ Phase 4 成熟化（PR-21~22,24~27）→
+>   Phase 5 自动化（PR-28）。当前状态：设计封顶，进入执行阶段，无 PR 完成。
 > - **20 PR（Downstream Sync）**：xlib-standard 标准变更向下游传播的同步执行链，见 goal.md。
 > - 两套 PR 互相独立：Goal Runtime PR 是 xlib-standard 自身建设，Downstream Sync PR 是标准向下游扩散。
 
@@ -752,13 +773,30 @@ THEN 阻断后续下游同步，记录失败原因到 downstream-sync plan
 | RULE-ARCH | 架构规则 | RULE-ARCH-001（层级治理） |
 | RULE-DOMAIN | 领域规则 | RULE-DOMAIN-001（禁止业务术语） |
 
-### 8.3 规则权威顺序
+### 8.3 RULE 前缀 ↔ FR 映射（消解结构债 S7）
 
-```
+> 419 条 RULE-* 按前缀汇总到 FR 覆盖区段。本表为**块级**映射，行级 RULE→FR→TC 映射由 `registry.yaml` + `goalcli trace-coverage` 维护，行级缺口由 NG-33 阻断（详见 §22.4 / TRACEABILITY.md §"块级追溯缺口声明"）。
+
+| RULE 前缀 | 主要覆盖 FR | 覆盖说明 |
+|-----------|-------------|----------|
+| RULE-CORE | FR-001 / FR-007（BR-001..BR-007 / TRUTH-001..015） | 7 条铁律 / 15 条真理 |
+| RULE-HARNESS | FR-020..FR-025 | 66 个 gate 条目、Profile、Scorecard、Debt Gate |
+| RULE-EVIDENCE | FR-026..FR-032 | Evidence Ledger、Manifest、DONE 格式、4 项禁止 |
+| RULE-DEP | FR-004 / FR-015..FR-019 | 依赖方向、模板渲染依赖、Docker 工具链 |
+| RULE-IMPL | FR-009..FR-014 / FR-040..FR-046 | Go 参考模板、Goal Runtime |
+| RULE-TEST | FR-020 / §16（TC-001..017） | 测试分层、覆盖率、race gate |
+| RULE-DOCS | FR-008 / §C 文档清单 | ADR、文档入口 |
+| RULE-ARCH | FR-004 / §15 | 层级治理 |
+| RULE-DOMAIN | FR-005 / FR-047..FR-052 | 仓库治理、采纳状态机、下游同步 |
+| RULE-SEC | §19 / FR-013 / FR-014 | 配置脱敏、secret policy、日志脱敏 |
+
+### 8.4 规则权威顺序
+
+```text
 iron-rules.md > registry.yaml > *-rules.md > ADR-* > .worktree/goal-patch.md
-```
+```text
 
-### 8.4 完成定义（DoD）
+### 8.5 完成定义（DoD）
 
 | 级别 | 要求 | 来源 |
 |------|------|------|
@@ -767,7 +805,7 @@ iron-rules.md > registry.yaml > *-rules.md > ADR-* > .worktree/goal-patch.md
 | Goal DoD | 所有必需项有实现或不适用理由 + ci/integration/evidence 有新鲜结果 | docs/standard/dod.md |
 | Release DoD | manifest 生成 + release-check 通过 + score >= 9.8 + final-check + preflight 通过 | docs/standard/dod.md |
 
-### 8.5 采纳状态机禁止转换（6 个）
+### 8.6 采纳状态机禁止转换（6 个）
 
 从 `main.md` 和 `goal.md` 提取的 6 个禁止状态转换：
 
@@ -782,7 +820,7 @@ iron-rules.md > registry.yaml > *-rules.md > ADR-* > .worktree/goal-patch.md
 
 核心铁律：`registered != adopted`、`patch_only != proof_based_adoption`、`gate_outputs_missing != proof_based_adoption`。
 
-### 8.6 关键约束
+### 8.7 关键约束
 
 1. **依赖方向**：L3 → L2 → L1 → L0 → stdlib，不可反向（L.md, ADR-20260604-001）
 2. **L3 私有边界**：L3 业务系统不公开、不开源，公开库不得包含业务语义（ADR-20260604-001）
@@ -884,10 +922,11 @@ func WrapError(kind ErrorKind, cause error, msg string) error
 func IsKind(err error, kinds ...ErrorKind) bool
 func Metrics() []MetricDescriptor
 func Version() string
-```
+```text
 
 **约束**：
-- 模板渲染入口：`scripts/render_template.sh --module <name> --package <pkg>`，替换 `{{.Module}}` / `{{.Package}}` 占位符；渲染产物路径不得落在本仓库内（详见 §7 FR-015 / 附录 D.4）。
+
+- 模板渲染入口：`scripts/render_template.sh --module <name> --package <pkg>`，替换 `{{.Module}}` / `{{.Package}}` 占位符；渲染产物路径不得落在本仓库内（详见 §7 FR-015 / §22.6.4）。
 - 接口最小化（`Client` 仅 `Close` + `HealthCheck` 两方法）；其余 §9.1 表中的 API 作为**包级独立函数 / 类型**（`New / Validate / Sanitize / NewError / Metrics / Version`），不强制塞入 Client 接口。
 - 所有方法 / 函数第一参数 `context.Context`（构造、Close、HealthCheck），返回值含 `error`。
 - 接收器一致性：`Config.Validate()` 与 `Config.Sanitize()` 统一为 **pointer 接收器读取 + 返回值类型副本**；Sanitize 必须做 deep copy（不得共享 map/slice 底层数组）。
@@ -907,7 +946,7 @@ func Version() string
   "timestamp": "2026-06-07T...",
   "evidence_path": "..."
 }
-```
+```text
 
 ### 9.3 Exit Code 契约
 
@@ -944,7 +983,7 @@ func Version() string
   "latency_ms": 0,
   "metadata": {}
 }
-```
+```text
 
 ---
 
@@ -991,7 +1030,7 @@ const (
     GoalStatusDone        GoalStatus = "done"
     GoalStatusSuperseded  GoalStatus = "superseded"
 )
-```
+```text
 
 **Evidence Chain 9 Goal Groups**：
 
@@ -1009,9 +1048,9 @@ const (
 
 ### 10.2 Proof Runtime 4-Plane 架构
 
-```
+```text
 Spec Plane → Execution Plane → Proof Plane → Automation Plane
-```
+```text
 
 > 注：Proof Runtime 当前完成度约 88-92%。10 个 REQ-PROOF 中，Facts SSOT、GateReport、Evidence Replay 已完全实现；Downstream Proof Schema、Proof Depth D0-D7 等处于设计封顶阶段，待 PR 逐步落地。
 
@@ -1084,7 +1123,7 @@ const (
     TruthStateUnverifiedRemote TruthState = "unverified_remote" // 远端治理不可本地证明
     TruthStateIncomplete       TruthState = "incomplete"       // manifest 字段缺失等
 )
-```
+```text
 
 ### 10.6 Release Manifest（latest.json）
 
@@ -1139,7 +1178,7 @@ const (
 adoption_status: not_run | registered | dry_run | patch_only | proof_verified | adopted | blocked | superseded
 evidence_state: not_run | partial | complete
 proof_based_adoption: true | false
-```
+```text
 
 ```go
 type AdoptionStatus string
@@ -1162,13 +1201,14 @@ type AdoptionRecord struct {
     ProofBasedAdoption bool           `json:"proof_based_adoption"`
     LastUpdated        time.Time      `json:"last_updated"`
 }
-```
+```text
 
 合法状态转换由 FR-051 的 6 个禁止转换规则约束。
 
 ### 10.8 配置拓扑（.config/）
 
-18 个命名空间：`xlib`, `goals`, `checklists`, `harness`, `cicd`, `github`, `governance`, `rules`, `evidence`, `self-improving`, `context`, `facts`, `assertions`, `policies`, `registry`, `templates`, `standard`, `release`。
+18 个命名空间：`xlib`, `goals`, `checklists`, `harness`, `cicd`, `github`, `governance`, `rules`,
+`evidence`, `self-improving`, `context`, `facts`, `assertions`, `policies`, `registry`, `templates`, `standard`, `release`。
 
 每个命名空间对应 `.config/<ns>/` 目录，详细 schema 由对应 `docs/standard/<ns>-*.md` 规范化（详见 §21 迁移）。
 
@@ -1248,7 +1288,7 @@ type AdoptionRecord struct {
 
 #### 13.2.1 xlibgate 硬性失败（7 种）
 
-见 §12.3。任一触发即 fail-closed，不得降级。每条对应 §A 风险表与 §10.5 EvidenceEntry 中 `truth_state=violated` 记录。
+见 §12.3。任一触发即 fail-closed，不得降级。每条对应 §23.2 风险表与 §10.5 EvidenceEntry 中 `truth_state=violated` 记录。
 
 #### 13.2.2 弱事实禁止升级（truth-state）
 
@@ -1261,11 +1301,11 @@ type AdoptionRecord struct {
 | EC-G5 | `CHECK_STATUS=passed` | `release-ready evidence` | §22.3 Gate Chain |
 | EC-G6 | downstream sync plan | downstream adoption proof | FR-052 / FR-006 |
 
-详见 §2.1 / §8.6 / `CONFLICT-LEDGER.md`。
+详见 §2.1 / §8.7 / `CONFLICT-LEDGER.md`。
 
 #### 13.2.3 远端治理不可本地证明
 
-本地文件不能证明 GitHub branch protection 已启用、ruleset 生效、required checks 绑定、GitHub Release object 已创建等。详见 §A.1 / §23 OQ-001。这些必须通过远端 API / CI artifact / ruleset export 单独证明，记录为 EvidenceEntry 中 `truth_state=unverified_remote`。
+本地文件不能证明 GitHub branch protection 已启用、ruleset 生效、required checks 绑定、GitHub Release object 已创建等。详见 §23.3 / §23 OQ-001。这些必须通过远端 API / CI artifact / ruleset export 单独证明，记录为 EvidenceEntry 中 `truth_state=unverified_remote`。
 
 ---
 
@@ -1288,7 +1328,7 @@ xlib-standard/
 ├── .xlib/                # facts（v1.0.0 前与 .agent 并存）
 ├── .config/              # v1.0.0 目标数据面（18 命名空间，详见 §10.8）
 └── .worktree/            # 当前工作上下文与历史规划
-```
+```text
 
 下游生成库的目录结构由模板渲染保证（详见 §7 FR-015~017）。
 
@@ -1300,7 +1340,7 @@ xlib-standard/
 
 > **领域命名口径**：与 `ARCHITECTURE.md` / `CLAUDE.md` 一致，采用 **领域分层**（基座 / 数据域 / 分析域 / 决策域 / 执行域 / 入口 / 横切）。`xlib-standard`、`xlibgate` 属于 **基座领域的 Foundation Gate 治理子层**，不是独立于五领域之外的第六领域。下表保留旧 L 编号仅作历史映射。
 
-```
+```text
 基座 · Foundation Gate 子层：xlib-standard, xlibgate
     ↓
 基座 L0（原 L0）：kernel
@@ -1311,7 +1351,7 @@ xlib-standard/
     ↓
 （以下为私有域，不开源；对应 ARCHITECTURE.md 的数据域 / 分析域 / 决策域 / 执行域 / 入口）
 xgo-contracts → xgo-market-data, xgo-macro-data → market-engine, macro-engine, regime-engine → x.go
-```
+```text
 
 ### 15.2 L2 Provider 规格
 
@@ -1558,7 +1598,7 @@ make release-evidence-check
 goalcli score --min 9.8
 make release-final-check
 make release-preflight VERSION=vX.Y.Z
-```
+```text
 
 ### 20.3 阻断语义
 
@@ -1570,7 +1610,7 @@ make release-preflight VERSION=vX.Y.Z
 
 ### 20.4 三层硬约束
 
-本地 hooks + CI gate + GitHub Ruleset，三者必须同时生效（FR-047 5 层执行链）。本地文件不能证明 GitHub Ruleset 已启用——见 §A.1 远端治理不可本地证明项。
+本地 hooks + CI gate + GitHub Ruleset，三者必须同时生效（FR-047 5 层执行链）。本地文件不能证明 GitHub Ruleset 已启用——见 §23.3 远端治理不可本地证明项。
 
 ---
 
@@ -1612,9 +1652,9 @@ make release-preflight VERSION=vX.Y.Z
 
 ### 21.2 迁移路径
 
-```
+```text
 v1 提出概念 → v2 审计补全 → v3 修补 P0 缺口 → v5 终极版
-```
+```text
 
 ### 21.3 关键决策
 
@@ -1623,32 +1663,48 @@ v1 提出概念 → v2 审计补全 → v3 修补 P0 缺口 → v5 终极版
 - 下游 effective subset 限制为 7 个文件
 - CODEOWNERS 从 `.config/github/codeowners.json` 生成
 
+### 21.4 未来考虑（Future Considerations）
+
+> 原 §附录 B，2026-06-08 并入 §21（消解结构债 S3）。
+
+1. **v1.0.0-rc.1**：先进入 rc.1，P0 清零后再发布 stable
+2. **Goal Runtime v3.1.1**：28 个 PR 执行包逐步落地
+3. **L2 测试工厂**：15 个适配器全部达到 L2-T2+
+4. **自动化全链路**：Issue → Goal → ... → Release → Issue Close
+5. **xlibctl**：pinned CLI binary 用于工具链分发
+6. **Proof Depth D0-D7**：gate 验证深度标准化
+7. **Standard Production Kernel**：Canonical Facts → Standard Graph → Goal Graph → Debt Graph → Harness Proof Graph → Evidence Ledger
+
 ---
 
 ## 22. Release DoD（发布完成定义）
 
-### 22.1 四级 DoD（见 §8.4；每级 checklist 项即 `AC-NNN` 验收标准编号）
+### 22.1 四级 DoD（见 §8.5；每级 checklist 项即 `AC-NNN` 验收标准编号）
 
 > **AC 编号约定**：`AC-T01..T04` 为 Task DoD、`AC-I01..I04` 为 Issue DoD、`AC-G01..G03` 为 Goal DoD、`AC-R01..R06` 为 Release DoD。`TRACEABILITY.md` / 下游 Task Spec 通过 `AC-*` 引用本表条目，闭合 FR↔BR↔AC↔TC 四向链。
 
 **Task DoD**：
+
 - [ ] **AC-T01** 变更范围明确（goal_id / issue 关联）
 - [ ] **AC-T02** 测试 / 检查已运行并产生 evidence
 - [ ] **AC-T03** 文档有入口（README/CHANGELOG/docs 至少一处）
 - [ ] **AC-T04** Known gap 已记录到 ledger
 
 **Issue DoD**：
+
 - [ ] **AC-I01** 验收标准全部满足
 - [ ] **AC-I02** 相关 gate 通过（exit code == 0）
 - [ ] **AC-I03** Review checklist 完成
 - [ ] **AC-I04** 无 XLIB_DEBT_VIOLATIONS
 
 **Goal DoD**：
+
 - [ ] **AC-G01** 所有必需项有实现或不适用理由
 - [ ] **AC-G02** CI / integration / evidence 有当日新鲜结果
 - [ ] **AC-G03** EvidenceEntry.truth_state ∈ {verified, planned}（无 violated）
 
 **Release DoD**：
+
 - [ ] **AC-R01** Manifest（latest.json）生成且字段完整（§10.6）
 - [ ] **AC-R02** release-check 通过
 - [ ] **AC-R03** Scorecard 总分 ≥ 9.8
@@ -1668,7 +1724,7 @@ DONE with evidence:
 - Downstream:
 - Release status:
 - Known gaps:
-```
+```text
 
 没有 Evidence 的完成声明不能作为 release / adoption / final-complete 事实（FR-028 / FR-029）。
 
@@ -1705,7 +1761,7 @@ DONE with evidence:
 | NG-21  | docker toolchain parity 失败 | `make docker-parity` | `latest.json.docker_toolchain_parity` |
 | NG-22  | evidence pack 缺失 | `goalcli pack-validate` | `latest.json.evidence_pack_ref` |
 | NG-23  | evidence pack 内 ledger 缺日 / 缺 goal | `goalcli ledger-coverage` | `pack/ledger-coverage.json` |
-| NG-24  | branch protection 未启用 / required checks 不匹配 | `goalcli remote-attest branch-protection` | `pack/branch-protection.json`（远端，§A.1） |
+| NG-24  | branch protection 未启用 / required checks 不匹配 | `goalcli remote-attest branch-protection` | `pack/branch-protection.json`（远端，§23.3） |
 | NG-25  | ruleset 未生效 | `goalcli remote-attest ruleset` | `pack/ruleset-export.json` |
 | NG-26  | GitHub Release object 未创建 / asset 缺失 | `goalcli remote-attest release` | `pack/release-object.json` |
 | NG-27  | required check 未绑定到 protected branch | `goalcli remote-attest required-checks` | `pack/required-checks.json` |
@@ -1722,11 +1778,73 @@ DONE with evidence:
 
 ### 22.5 Patch 自动发布
 
-`.github/workflows/release-auto-patch.yml` 自动计算 `vX.Y.(Z+1)` 并发布（详见 §D 部署细节）。Patch 仍须通过 §22.4 全部 37 项 No-Go。
+`.github/workflows/release-auto-patch.yml` 自动计算 `vX.Y.(Z+1)` 并发布（详见 §22.6.2）。Patch 仍须通过 §22.4 全部 37 项 No-Go。
+
+### 22.6 部署与运行时细节
+
+> 原 §附录 D，2026-06-08 并入 §22（消解结构债 S3）。
+
+#### 22.6.1 发布流程
+
+```text
+make docs-check
+make governance-check
+make integration
+make evidence
+make release-check
+make release-evidence-check
+goalcli score --min 9.8
+make release-final-check
+make release-preflight VERSION=vX.Y.Z
+git tag vX.Y.Z
+git push origin vX.Y.Z
+```text
+
+#### 22.6.2 Main 合并自动 Patch 发布
+
+`.github/workflows/release-auto-patch.yml` 自动计算 `vX.Y.(Z+1)` 并发布。
+
+#### 22.6.3 Docker Toolchain Runtime
+
+- Docker 是工具链运行时，不是第二套 gate
+- `.dockerignore` 必须排除 `.git`/`.omc`/`.omx`/`.worktree`/本地 Evidence
+- 环境变量必须显式传递并记录语义
+
+#### 22.6.4 生成器详细规格
+
+当前标准入口：`scripts/render_template.sh --module <module> --name <name> --package <package> --out <path>`
+
+- 输出目录不得是 `xlib-standard` 根，也不得落在本仓库内部。
+- 输出目录必须不存在或为空。
+- 必须替换 module/name/package/import path、README、docs、contracts、examples、scripts、manifest、Makefile、CI 中的模板 token。
+- 必须去除旧身份 token 和不可提交的生成态 latest 文件。
+- 必须排除 `.git`、`.omc`、`.omx`、`.worktree`、`.agent/inbox`、临时缓存、历史生成产物、release/debt latest。
+- 生成库必须通过 `GOWORK=off go test ./...` 和标准门禁。
+- 生成库不得引入 `x.go`、业务导入、生产 secret 路径或 provider 真实凭证。
+
+治理包渲染：下游使用 `--enable-governance` 时，必须写入标准版本、标准 commit、layer、lock 文件和治理材料。
+
+默认代表下游：`kernel`（L0）、`configx`（L1）、`redisx`（L2）。
+
+#### 22.6.5 goalcli 运行时规格
+
+`cmd/goalcli` 是唯一 Go runtime execution face。通用 CLI 契约：
+
+- 除明确 delegated script 外，所有命令输出 JSON。
+- JSON 必须包含 `command`、`status`，并可包含 `details`、`gaps`。
+- 报告 schema 使用 `contracts/goalcli-report.schema.json`。
+- 所有命令本地、非破坏、默认 dry-run。
+- `--verify` 和 `--strict` 必须阻断 planned/gap/unknown。
+
+退出码：`passed`→0，`failed`/`planned`/`gap`→1，`unknown`/illegal invocation/schema violation→2。
+
+Goal Runtime：`.agent/evidence/ledger.jsonl` 是目标执行源 ledger；`GOAL_ID` 必须绑定目标执行；G12-G16 为阻断型目标门禁。
 
 ---
 
 ## 23. 待解决问题（Open Questions）
+
+### 23.1 Open Questions
 
 | 编号 | 问题 | 状态 | 决策时限 |
 |------|------|------|----------|
@@ -1737,11 +1855,11 @@ DONE with evidence:
 | OQ-005 | 债务检测从 marker text 扫描升级到语义分析的时间线？ | 已知技术债 | PR-28 Phase 5 |
 | OQ-006 | render-check 在 Makefile 中缺失如何补齐？ | 已记录 | PR-10 |
 | OQ-007 | P1 活跃覆盖 81.3% < 90%，需再索引 26 条 P1 规则 | 已记录 | v1.0.0-rc.1 前 |
-| OQ-008 | COVERAGE-MANIFEST.md 的 commit / tree sha 何时固定？ | 待确认 | v1.0.0-rc.1 前（详见 R-011） |
+| OQ-008 | COVERAGE-MANIFEST.md 的 commit / tree sha 何时固定？ | **已固定**（93753b30 / 296e3b91，2026-06-08 04:59 +08:00；详见 COVERAGE-MANIFEST.md "路径占位符"段） | 已收敛 |
 
----
+### 23.2 风险（Risks）
 
-## 附录 A. 风险（Risks）
+> 原 §附录 A，2026-06-08 并入 §23（消解结构债 S3）。
 
 | 编号 | 风险 | 级别 | 缓解措施 |
 |------|------|------|----------|
@@ -1755,27 +1873,19 @@ DONE with evidence:
 | R-008 | 本地文件不能证明远端治理状态 | 高 | 通过 GitHub API、ruleset export、CI artifact 或 Release object 证明 |
 | R-009 | 13 个下游库全部 not_adopted | 高 | 至少推进 kernel 首次采纳，证明模板可用 |
 | R-010 | 规格膨胀（当前规模含实现细节） | 中 | 将 PR 执行包清单、goalcli 命令列表拆分到 docs/ 子文档 |
-| R-011 | COVERAGE-MANIFEST 的 commit/tree sha 未固定，存在漂移风险 | 中 | 在 v1.0.0-rc.1 前由 release-final-check 强制固定，写入 manifest 并被 NG-34 覆盖（详见 OQ-008） |
+| R-011 | COVERAGE-MANIFEST 的 commit/tree sha 未固定，存在漂移风险 | **已收敛**（2026-06-08 04:59 本地 pin；commit `93753b30…`、tree `296e3b91…`、154 文件 sha256-prefix 已写入 COVERAGE-MANIFEST §"文件级 sha256"）；release 阶段仍由 NG-34 强制重算复核 |
 
-### A.1 远端治理不可本地证明项
+### 23.3 远端治理不可本地证明项
 
-本地文件不能证明：GitHub branch protection 已启用、ruleset 生效、required checks 绑定、GitHub Release object 已创建、远端 workflow 权限和 Actions pin 生效、下游仓库已接受标准 patch。这些项必须通过远端 API、CI artifact、GitHub Release、ruleset export 或下游仓库 commit proof 单独证明。
-
----
-
-## 附录 B. 未来考虑（Future Considerations）
-
-1. **v1.0.0-rc.1**：先进入 rc.1，P0 清零后再发布 stable
-2. **Goal Runtime v3.1.1**：28 个 PR 执行包逐步落地
-3. **L2 测试工厂**：15 个适配器全部达到 L2-T2+
-4. **自动化全链路**：Issue → Goal → ... → Release → Issue Close
-5. **xlibctl**：pinned CLI binary 用于工具链分发
-6. **Proof Depth D0-D7**：gate 验证深度标准化
-7. **Standard Production Kernel**：Canonical Facts → Standard Graph → Goal Graph → Debt Graph → Harness Proof Graph → Evidence Ledger
+本地文件不能证明：GitHub branch protection 已启用、ruleset 生效、required checks 绑定、
+GitHub Release object 已创建、远端 workflow 权限和 Actions pin 生效、下游仓库已接受标准 patch。
+这些项必须通过远端 API、CI artifact、GitHub Release、ruleset export 或下游仓库 commit proof 单独证明。
 
 ---
 
-## 附录 C. 文档清单（Documentation Inventory）
+## 参考资料 C. 文档清单（Documentation Inventory）
+
+> 模板外的参考性附录，不属于 23 节硬规范；仅用于读者快速定位上游 `docs/standard/**`、`docs/adr/**` 与核心架构原则。
 
 ### C.1 标准文档（docs/standard/，27 个）
 
@@ -1841,67 +1951,9 @@ DONE with evidence:
 
 ---
 
-## 附录 D. 部署与发布细节（Deployment Details）
+## 参考资料 E. 关键数字与映射（Key Figures & Mappings）
 
-### D.1 发布流程
-
-```
-make docs-check
-make governance-check
-make integration
-make evidence
-make release-check
-make release-evidence-check
-goalcli score --min 9.8
-make release-final-check
-make release-preflight VERSION=vX.Y.Z
-git tag vX.Y.Z
-git push origin vX.Y.Z
-```
-
-### D.2 Main 合并自动 Patch 发布
-
-`.github/workflows/release-auto-patch.yml` 自动计算 `vX.Y.(Z+1)` 并发布
-
-### D.3 Docker Toolchain Runtime
-
-- Docker 是工具链运行时，不是第二套 gate
-- .dockerignore 必须排除 .git/.omc/.omx/.worktree/本地 Evidence
-- 环境变量必须显式传递并记录语义
-
-### D.4 生成器详细规格
-
-当前标准入口：`scripts/render_template.sh --module <module> --name <name> --package <package> --out <path>`
-
-- 输出目录不得是 `xlib-standard` 根，也不得落在本仓库内部。
-- 输出目录必须不存在或为空。
-- 必须替换 module/name/package/import path、README、docs、contracts、examples、scripts、manifest、Makefile、CI 中的模板 token。
-- 必须去除旧身份 token 和不可提交的生成态 latest 文件。
-- 必须排除 `.git`、`.omc`、`.omx`、`.worktree`、`.agent/inbox`、临时缓存、历史生成产物、release/debt latest。
-- 生成库必须通过 `GOWORK=off go test ./...` 和标准门禁。
-- 生成库不得引入 `x.go`、业务导入、生产 secret 路径或 provider 真实凭证。
-
-治理包渲染：下游使用 `--enable-governance` 时，必须写入标准版本、标准 commit、layer、lock 文件和治理材料。
-
-默认代表下游：`kernel`（L0）、`configx`（L1）、`redisx`（L2）。
-
-### D.5 goalcli 运行时规格
-
-`cmd/goalcli` 是唯一 Go runtime execution face。通用 CLI 契约：
-
-- 除明确 delegated script 外，所有命令输出 JSON。
-- JSON 必须包含 `command`、`status`，并可包含 `details`、`gaps`。
-- 报告 schema 使用 `contracts/goalcli-report.schema.json`。
-- 所有命令本地、非破坏、默认 dry-run。
-- `--verify` 和 `--strict` 必须阻断 planned/gap/unknown。
-
-退出码：`passed`→0，`failed`/`planned`/`gap`→1，`unknown`/illegal invocation/schema violation→2。
-
-Goal Runtime：`.agent/evidence/ledger.jsonl` 是目标执行源 ledger；`GOAL_ID` 必须绑定目标执行；G12-G16 为阻断型目标门禁。
-
----
-
-## 附录 E. 关键数字与映射（Key Figures & Mappings）
+> 模板外的参考性附录，不属于 23 节硬规范；用于审计、汇总和迭代演进追溯。
 
 ### E.1 关键数字汇总
 
@@ -1955,7 +2007,7 @@ Goal Runtime：`.agent/evidence/ledger.jsonl` 是目标执行源 ledger；`GOAL_
 
 ### E.3 迭代演进时间线
 
-```
+```text
 2026-06-01  1.md (v1.0 方案) → 2.md (v1.1 方案)
 2026-06-02  ADR-001 (身份确立) → ADR-002 (kernel 命名) → ADR-003 (Core Gate)
 2026-06-03  ADR-001 (goalcli) → ADR-002 (registry SSOT) → ADR-003 (域规则)
@@ -1965,7 +2017,7 @@ Goal Runtime：`.agent/evidence/ledger.jsonl` 是目标执行源 ledger；`GOAL_
 2026-06-05  v0.4.15 深度分析（8.3/10）
 2026-06-06  第七轮审查补丁（12 个 P0 bypass）
 2026-06-07  本规格文档（154 文件当前整理口径）
-```
+```text
 
 ### E.4 15 条基本真理（TRUTH-001~015）
 
@@ -2001,27 +2053,6 @@ DONE with evidence:
 - Downstream:
 - Release status:
 - Known gaps:
-```
+```text
 
 没有 Evidence 的完成声明不能作为 release、adoption 或 final-complete 事实。
-
----
-
-## 附录 F. 整理交付自检（Final Verification Checklist）
-
-- [x] 覆盖 154 个输入文件（当前整理口径）
-- [x] 提取 419 条规则（7 类）
-- [x] 提取 9 个正式 ADR、1 个模板和 3 个历史方案文档
-- [x] 提取 28 个 PR 执行包（5 个 Phase）
-- [x] 提取 10 个 REQ-PROOF（4-Plane 架构）
-- [x] 提取 8 个仓库治理 REQ（5 层执行链）
-- [x] 提取 15 条基本真理
-- [x] 提取采纳状态机（8 状态，6 个禁止转换）
-- [x] 提取 L0-L6 层级模型
-- [x] 提取 Goal 对象模型（8 个核心对象）
-- [x] 提取 Evidence 协议（15 条规则）
-- [x] 提取 Release Scorecard（10 维度，阈值 9.8）
-- [x] 提取 v1.0.0 配置迁移计划（18 命名空间，12 No-Go）
-- [x] 提取 L2 测试工厂（15 适配器，5 级 Release Level）
-- [x] 提取 v1.0.0 delivery checklist 演进（v1→v5）
-- [x] 识别 7 个风险和 7 个待解决问题
