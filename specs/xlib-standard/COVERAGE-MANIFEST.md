@@ -13,7 +13,7 @@ Input-Count: 154
 | `<upstream:xlib-standard>` | `github.com/ZoneCNH/xlib-standard` 仓库根（本地工作副本 `/home/xlib-standard`） |
 | `<upstream:commit>`        | `93753b30e6d01fb4a9b096acaa0d7d53a2fb231c`（pinned 2026-06-08 04:59 +08:00） |
 | `<upstream:tree>`          | `296e3b912c70f15434783aebcf35159f7000a01f`（HEAD^{tree}，同 commit） |
-| `<external:Downloads>` | `/home/zone/Downloads/xlib-standard/`（上游仓库外的本地外部规划文档目录，非仓库 tracked） |
+| `<external:Downloads>` | `<external-downloads>/`（上游仓库外的本地外部规划文档目录，非仓库 tracked） |
 
 > **缺口已收敛**（2026-06-08 04:59）：upstream commit/tree sha 已固定；154 个文件已全部计算 sha256-prefix（16 hex chars，详见 §"文件级 sha256（pinned）"）。
 > NG-34 / OQ-008 / R-011 在本机已可关闭，待 release-final-check 写入 `latest.json.coverage_pin` 后 release 阶段亦关闭。
@@ -34,7 +34,7 @@ Input-Count: 154
 > git rev-parse HEAD^{tree}     # 期望 296e3b912c70f15434783aebcf35159f7000a01f
 > { find .worktree -maxdepth 1 -name "*.md" -type f -printf '%p\n'; find docs -type f -name "*.md"; } \
 >   | sort | xargs sha256sum | awk '{print substr($1,1,16)"  <upstream:xlib-standard>/"$2}'
-> find /home/zone/Downloads/xlib-standard -type f | sort \
+> find <external-downloads>/xlib-standard -type f | sort \
 >   | xargs sha256sum | awk -F/ '{print substr($1,1,16)"  <external:Downloads>/"$NF}'
 > ```
 
@@ -50,7 +50,7 @@ Input-Count: 154
 
 ## 可复现边界
 
-本清单记录的是上游仓库 snapshot 下的输入集合，不是可移植 source bundle。原清单使用本机绝对路径（`/home/xlib-standard/...`），已于 2026-06-08 统一替换为占位符相对路径以提升可读性与可移植性。若迁移到其他机器或重新执行分析，必须提供同一 source pack、路径映射，或重新生成本清单。
+本清单记录的是上游仓库 snapshot 下的输入集合，不是可移植 source bundle。原清单使用本机绝对路径（`<upstream-root>/...`），已于 2026-06-08 统一替换为占位符相对路径以提升可读性与可移植性。若迁移到其他机器或重新执行分析，必须提供同一 source pack、路径映射，或重新生成本清单。
 
 本清单证明输入文件集合数量和路径稳定，不证明这些源文件内容在未来时间点保持不变。若需要内容级复现，必须补充 source digest、tree sha 或归档 artifact。
 
@@ -195,9 +195,9 @@ Input-Count: 154
 
 ## `<external:Downloads>/**`
 
-- `<external:Downloads>/.omc/state/sessions/8f79f61c-b905-43ee-ac14-793222c63d3b/session-started.json`
-- `<external:Downloads>/.omc/state/sessions/99d6ec5a-4516-4cb7-b155-ae16afb484ef/session-started.json`
-- `<external:Downloads>/.omc/state/sessions/fba51ec5-f66f-401c-8921-81d5eee0bbd1/session-started.json`
+- `<external:Downloads>/<runtime-state>/session-started.json`
+- `<external:Downloads>/<runtime-state>/session-started.json`
+- `<external:Downloads>/<runtime-state>/session-started.json`
 - `<external:Downloads>/seventh_review_addendum.md`
 - `<external:Downloads>/xlib-standard-latest-v0.4.15-complete-optimization-20260605.md`
 - `<external:Downloads>/xlib-standard-strict-config-root-goal-plan-v2-audited (1).md`

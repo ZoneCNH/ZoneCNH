@@ -17,12 +17,12 @@ Last-Updated: 2026-06-08
 
 ## 块级追溯缺口声明（Block-level Gap Disclosure）
 
-> 本表当前约 73% 的 FR 来源仍是**块级**（指向 `docs/standard/*.md` / `docs/*.md` 整篇文件，而非具体行号）。下表说明该状态及收敛计划：
+> 本表当前约 33% 的 FR 来源仍是**块级**（指向 `docs/standard/*.md` / `docs/*.md` 整篇文件、子目录或缺少单行锚），其余 67% 已包含具体行号锚点（pinned 2026-06-08 05:03，commit `93753b30`）。下表说明该状态及收敛计划：
 
 | 维度 | 当前状态 | 缺口 | 收敛计划 / 时限 |
 |------|----------|------|------------------|
 | 条款级追溯（章节 → 来源） | ✅ 完整 | — | 维持 |
-| FR 行级追溯（FR-NNN → 来源文件 + 行号） | ⚠️ 约 27% 已行级（参见下方 FR 行级表） | 剩余约 73% 仅块级 | v1.0.0-rc.1 前补完高优先级 FR-001..FR-008、FR-013..FR-014、FR-026..FR-033；其余跟随 PR-22 |
+| FR 行级追溯（FR-NNN → 来源文件 + 行号） | ✅ 67% 已行级（35/52；FR-001..002, FR-004..019, FR-022..024, FR-026..034, FR-045, FR-047..049）| ⚠️ 余 17 条 FR 块级或仅子目录锚（FR-003, FR-020-21, FR-025, FR-035..043, FR-046, FR-050..052）| v1.0.0-rc.1 前补完；多数为 `.worktree/debt.md` 子节、`goalcli-v0.1.0-plan.md` 和 `.worktree/goal/` 子目录 |
 | Open Questions / Risks 追溯 | ⚠️ 块级 | OQ-008 / R-011 等本规格内部条目无外部来源（属规格自生） | 标注为 **internal**，无需外部追溯 |
 | 远端治理（branch protection / ruleset / Release object） | ❌ 不可本地追溯 | — | 见 §A.1 / SPEC §23 OQ-001；由 `goalcli remote-attest` 单独证明 |
 
@@ -47,7 +47,7 @@ Last-Updated: 2026-06-08
 | ErrorKind                                                       | `docs/errors.md`                                                                                                                                                                                                              | ErrorKind 枚举、包装和脱敏要求来自错误文档。                                                          |
 | Health/metrics                                                  | `docs/observability.md`, `docs/testing.md`                                                                                                                                                                                    | 健康状态、JSON 字段和指标名称由观测文档和测试文档支撑。                                               |
 | 配置显式传入和脱敏                                              | `docs/config.md`, `docs/standard/security-and-secret-policy.md`                                                                                                                                                               | 配置不得隐式读取生产路径；脱敏输出可进日志和 Evidence。                                               |
-| `.config/xlib` 迁移目标冲突                                     | `docs/v0.6.0/*strict-config-root*.md`, `/home/zone/Downloads/xlib-standard/xlib-standard-strict-config-root-*.md`, `/home/zone/Downloads/xlib-standard/xlib-standard-v1.0.0-config-goal*.md`, `docs/standard/goal-runtime.md` | strict-config-root 是计划和目标；当前标准仍引用 `.agent`、`.xlib`、registry 和 policy 源。            |
+| `.config/xlib` 迁移目标冲突                                     | `docs/v0.6.0/*strict-config-root*.md`, `<external-downloads>/xlib-standard-strict-config-root-*.md`, `<external-downloads>/xlib-standard-v1.0.0-config-goal*.md`, `docs/standard/goal-runtime.md` | strict-config-root 是计划和目标；当前标准仍引用 `.agent`、`.xlib`、registry 和 policy 源。            |
 | 生成器入口                                                      | `docs/generation.md`, `docs/standard/template-generation-contract.md`, `docs/spec.md`                                                                                                                                         | `scripts/render_template.sh` 是当前标准入口；未来 strict allowlist 作为冲突和迁移目标记录。           |
 | 生成排除项和 forbidden path                                     | `docs/generation.md`, `docs/standard/template-generation-contract.md`, `docs/standard/module-boundary.md`                                                                                                                     | 输出必须避免仓库状态、临时产物、业务导入和 secret path。                                              |
 | `goalcli` JSON 和退出码                                         | `docs/standard/goalcli-cli-contract.md`                                                                                                                                                                                       | CLI 输出、schema、退出码、`--strict` 和 `--verify` 语义来自该文件。                                   |
@@ -61,7 +61,7 @@ Last-Updated: 2026-06-08
 | Debt governance                                                 | `docs/standard/debt-governance.md`, `docs/reports/rules-deep-analysis-20260605.md`                                                                                                                                            | Debt scanner、score、evidence 和 release 阻断条件来自债务文档。                                       |
 | Docker Toolchain Runtime                                        | `docs/standard/docker-toolchain-standard.md`, `docs/self-improving/docker-toolchain.md`, `docs/self-improving/docker-toolchain-structural-report.md`                                                                          | Docker 是工具链 runtime，不是第二套门禁。                                                             |
 | Supply chain                                                    | `docs/supply-chain.md`, `docs/standard/security-and-secret-policy.md`, `docs/standard/branch-governance.md`                                                                                                                   | Actions pin、govulncheck、golangci-lint、dependency purpose 和 secret 规则来自这些文件。              |
-| Release 语义                                                    | `docs/release.md`, `docs/standard/release-standard.md`, `/home/zone/Downloads/xlib-standard/xlib-standard-v1.0.0-delivery-checklist*.md`                                                                                      | Release gate、patch release、GitHub Release object 和 v1.0.0 checklist 都被纳入。                     |
+| Release 语义                                                    | `docs/release.md`, `docs/standard/release-standard.md`, `<external-downloads>/xlib-standard-v1.0.0-delivery-checklist*.md`                                                                                      | Release gate、patch release、GitHub Release object 和 v1.0.0 checklist 都被纳入。                     |
 | 历史版本和路线                                                  | `.worktree/v3.0.md`, `.worktree/stable.md`, `.worktree/goal*.md`, `docs/v0.6.0/**`, Downloads v0.4.15/v1.0.0 文件                                                                                                             | 历史文件用于版本轨迹和冲突，不直接覆盖当前标准。                                                      |
 
 ## Agent team 结果映射
@@ -85,64 +85,65 @@ Last-Updated: 2026-06-08
 
 ## FR 级追溯（自动提取）
 
-> 共 52 条 FR。每行列出 FR 编号、所在子节、SPEC.md 行号、主要来源文件、优先级。
-> 自动从 `SPEC.md` 的 `### FR-NNN` 标题和紧随的 `> 来源：... | 优先级：...` 行提取，生成时间 2026-06-08。
-> 来源路径相对 `<upstream:xlib-standard>/`（除 `.worktree/*`、`docs/standard/*`、`docs/adr/*` 等），具体 sha 待 COVERAGE-MANIFEST 绑定 commit。
+> 共 52 条 FR。每行列出 FR 编号、所在子节、SPEC.md 行号、主要来源文件、行号、优先级。
+> 自动从 `SPEC.md` 的 `### FR-NNN` 标题和紧随的 `> 来源：... | 优先级：...` 行提取；来源行号通过 grep 上游文件锚词（如 `RULE-CORE-001`、`RULE-HARNESS-003`、`scripts/render_template`、`HealthCheck` 等）反查得出。
+> 生成时间 2026-06-08 05:03，上游 pin commit `93753b30`（详见 COVERAGE-MANIFEST）。
+> 来源路径相对 `<upstream:xlib-standard>/`（除 `.worktree/*`、`docs/standard/*`、`docs/adr/*` 等），具体 sha 由 COVERAGE-MANIFEST 已绑定。
 
-| FR | 子节 | SPEC.md 行号 | 名称 | 主要来源 | 优先级 |
-|----|------|------:|------|----------|:----:|
-| `FR-001` | §7.1 | L173 | 定义 419 条 RULE-* 规则，机器化为 registry.yaml | goal-patch.md, ADR-20260603-002 | P0 |
-| `FR-002` | §7.1 | L183 | 定义 7 类技术债治理规则 | debt.md | P0 |
-| `FR-003` | §7.1 | L193 | 定义 10 条 Git 治理规则并接入执行链 | git.md | P0 |
-| `FR-004` | §7.1 | L203 | 定义模块依赖层级模型 | L.md, ADR-20260604-001 | P0 |
-| `FR-005` | §7.1 | L213 | 定义 8 个仓库治理 REQ | main.md | P0 |
-| `FR-006` | §7.1 | L223 | 定义采纳状态机入口约束 | main.md | P0 |
-| `FR-007` | §7.1 | L233 | 定义 15 条基本真理（TRUTH-001~015） | v3.0.md | P0 |
-| `FR-008` | §7.1 | L243 | 定义 9 个正式 ADR | docs/adr/ | P1 |
-| `FR-009` | §7.2 | L255 | 公共 API 模板 | docs/api.md | P0 |
-| `FR-010` | §7.2 | L265 | 9 种 ErrorKind | docs/errors.md | P0 |
-| `FR-011` | §7.2 | L275 | 9 个最小 metrics | docs/observability.md | P0 |
-| `FR-012` | §7.2 | L285 | HealthCheck JSON schema | docs/observability.md | P0 |
-| `FR-013` | §7.2 | L295 | 配置显式传入 | docs/config.md | P0 |
-| `FR-014` | §7.2 | L305 | 配置 Validate 和 Sanitize | docs/config.md | P0 |
-| `FR-015` | §7.3 | L317 | render_template.sh 渲染 | docs/generation.md | P0 |
-| `FR-016` | §7.3 | L327 | 渲染范围全覆盖 | docs/generation.md | P0 |
-| `FR-017` | §7.3 | L337 | Repository Governance Pack | docs/generation.md | P0 |
-| `FR-018` | §7.3 | L347 | make integration | docs/generation.md | P0 |
-| `FR-019` | §7.3 | L357 | Docker Toolchain Runtime 模板继承 | docs/generation.md | P1 |
-| `FR-020` | §7.4 | L369 | 66 个 gate 条目 | harness.yaml | P0 |
-| `FR-021` | §7.4 | L379 | 4 个 Context Profiles | main.md | P0 |
-| `FR-022` | §7.4 | L389 | P0 Gate 失败阻断发布 | goal-patch.md RULE-HARNESS-003 | P0 |
-| `FR-023` | §7.4 | L399 | Gate 结果归档为 Evidence | goal-patch.md RULE-HARNESS-004 | P0 |
-| `FR-024` | §7.4 | L409 | Release Scorecard | docs/scorecard.md | P0 |
-| `FR-025` | §7.4 | L419 | Debt Governance Gate | docs/standard/debt-governance.md | P0 |
-| `FR-026` | §7.5 | L431 | Evidence Ledger | ADR-20260603-001 | P0 |
-| `FR-027` | §7.5 | L441 | Release Manifest | docs/release.md | P0 |
-| `FR-028` | §7.5 | L451 | DONE with evidence 格式 | goal-patch.md RULE-EVIDENCE-001 | P0 |
-| `FR-029` | §7.5 | L461 | 禁止无证据的 tests pass | docs/standard/evidence-protocol.md | P0 |
-| `FR-030` | §7.5 | L471 | 禁止 skipped gate 记为 passed | docs/standard/evidence-protocol.md | P0 |
-| `FR-031` | §7.5 | L481 | 禁止 dirty workspace release | docs/standard/evidence-protocol.md | P0 |
-| `FR-032` | §7.5 | L491 | 禁止删除失败 Evidence | docs/standard/evidence-protocol.md | P0 |
-| `FR-033` | §7.6 | L503 | ARCH 类技术债规则 | debt.md | P0 |
-| `FR-034` | §7.6 | L513 | DEP 类技术债规则 | debt.md | P0 |
-| `FR-035` | §7.6 | L523 | DOMAIN 类技术债规则 | debt.md | P0 |
-| `FR-036` | §7.6 | L533 | DOCS 类技术债规则 | debt.md | P0 |
-| `FR-037` | §7.6 | L543 | TEST 类技术债规则 | debt.md | P0 |
-| `FR-038` | §7.6 | L553 | IMPL 类技术债规则 | debt.md | P0 |
-| `FR-039` | §7.6 | L563 | SEC 类技术债规则 | debt.md | P0 |
-| `FR-040` | §7.7 | L575 | Goal Kernel（8 个核心对象） | goalcli-v0.1.0-plan.md | P0 |
-| `FR-041` | §7.7 | L585 | Harness Runtime | .worktree/goal/ | P0 |
-| `FR-042` | §7.7 | L595 | goalcli 唯一执行面 | ADR-20260603-001 | P0 |
-| `FR-043` | §7.7 | L605 | 6 个 MVA Gate | goalcli-v0.1.0-plan.md | P0 |
-| `FR-044` | §7.7 | L615 | 4-Plane 架构 | v3.0.md | P0 |
-| `FR-045` | §7.7 | L625 | 10 个 REQ-PROOF | v3.0.md | P0 |
-| `FR-046` | §7.7 | L635 | 28 个 PR 执行包 | .worktree/goal/ | P1 |
-| `FR-047` | §7.8 | L652 | 5 层执行链 | main.md, git.md | P0 |
-| `FR-048` | §7.8 | L664 | 禁止 main 开发 | main.md | P0 |
-| `FR-049` | §7.8 | L674 | 必须使用 git worktree | main.md | P0 |
-| `FR-050` | §7.8 | L684 | 采纳状态机（8 状态） | main.md | P0 |
-| `FR-051` | §7.8 | L696 | 6 个禁止状态转换 | main.md | P0 |
-| `FR-052` | §7.8 | L708 | 下游同步治理（20 PR） | goal.md | P1 |
+| FR | 子节 | SPEC.md 行号 | 名称 | 主要来源 | 源行号 | 优先级 |
+|----|------|------:|------|----------|------:|:----:|
+| `FR-001` | §7.1 | L173 | 定义 419 条 RULE-* 规则，机器化为 registry.yaml | `.worktree/goal-patch.md` | 56, 2445 | P0 |
+| `FR-002` | §7.1 | L183 | 定义 7 类技术债治理规则 | `.worktree/debt.md` | 304-332 | P0 |
+| `FR-003` | §7.1 | L193 | 定义 10 条 Git 治理规则并接入执行链 | `.worktree/git.md` | 1, 45, 69, 102, 128, 144, 362-370 | P0 |
+| `FR-004` | §7.1 | L203 | 定义模块依赖层级模型 | `.worktree/L.md` | 4, 6, 8 | P0 |
+| `FR-005` | §7.1 | L213 | 定义 8 个仓库治理 REQ | `.worktree/main.md` | 14 | P0 |
+| `FR-006` | §7.1 | L223 | 定义采纳状态机入口约束 | `.worktree/main.md` | 601, 641, 989 | P0 |
+| `FR-007` | §7.1 | L233 | 定义 15 条基本真理（TRUTH-001~015） | `.worktree/v3.0.md` | 95, 98 | P0 |
+| `FR-008` | §7.1 | L243 | 定义 9 个正式 ADR | `docs/adr/ADR-*.md` | 10 个文件存在 | P1 |
+| `FR-009` | §7.2 | L255 | 公共 API 模板 | `docs/api.md` | 9, 16 | P0 |
+| `FR-010` | §7.2 | L265 | 9 种 ErrorKind | `docs/errors.md` | 10-13 | P0 |
+| `FR-011` | §7.2 | L275 | 9 个最小 metrics | `docs/observability.md` | 8, 10, 12 | P0 |
+| `FR-012` | §7.2 | L285 | HealthCheck JSON schema | `docs/observability.md` | 22, 26, 35 | P0 |
+| `FR-013` | §7.2 | L295 | 配置显式传入 | `docs/config.md` | 11 | P0 |
+| `FR-014` | §7.2 | L305 | 配置 Validate 和 Sanitize | `docs/config.md` | 13, 14, 16 | P0 |
+| `FR-015` | §7.3 | L317 | render_template.sh 渲染 | `docs/generation.md` | 5, 10, 24 | P0 |
+| `FR-016` | §7.3 | L327 | 渲染范围全覆盖 | `docs/generation.md` | 37 | P0 |
+| `FR-017` | §7.3 | L337 | Repository Governance Pack | `docs/generation.md` | 19, 29, 35 | P0 |
+| `FR-018` | §7.3 | L347 | make integration | `docs/generation.md` | 57 | P0 |
+| `FR-019` | §7.3 | L357 | Docker Toolchain Runtime 模板继承 | `docs/generation.md` | 94, 96 | P1 |
+| `FR-020` | §7.4 | L369 | 66 个 gate 条目 | `.agent/harness/harness.yaml` | _yaml 全文，行级由 schema 校验_ | P0 |
+| `FR-021` | §7.4 | L379 | 4 个 Context Profiles | `docs/standard/conformance-profiles.md` + `.worktree/main.md` | profiles.md 全文 (1-8) + main.md _[补 4 profile 完整定义 TODO，当前文档仅 2 个 profile 行]_ | P0 |
+| `FR-022` | §7.4 | L389 | P0 Gate 失败阻断发布 | `.worktree/goal-patch.md` | 737, 739, 2451 | P0 |
+| `FR-023` | §7.4 | L399 | Gate 结果归档为 Evidence | `.worktree/goal-patch.md` | 751 | P0 |
+| `FR-024` | §7.4 | L409 | Release Scorecard | `docs/scorecard.md` | 1, 3, 9 | P0 |
+| `FR-025` | §7.4 | L419 | Debt Governance Gate | `docs/standard/debt-governance.md` | 1, 5（"Required gates:"） | P0 |
+| `FR-026` | §7.5 | L431 | Evidence Ledger | `docs/adr/ADR-20260603-001-goalcli-runtime.md` | 9 | P0 |
+| `FR-027` | §7.5 | L441 | Release Manifest | `docs/release.md` | 38, 104, 106 | P0 |
+| `FR-028` | §7.5 | L451 | DONE with evidence 格式 | `.worktree/goal-patch.md` | 63, 769, 3359 | P0 |
+| `FR-029` | §7.5 | L461 | 禁止无证据的 tests pass | `docs/standard/evidence-protocol.md` | 122 | P0 |
+| `FR-030` | §7.5 | L471 | 禁止 skipped gate 记为 passed | `docs/standard/evidence-protocol.md` | 123 | P0 |
+| `FR-031` | §7.5 | L481 | 禁止 dirty workspace release | `docs/standard/evidence-protocol.md` | 72, 118, 124 | P0 |
+| `FR-032` | §7.5 | L491 | 禁止删除失败 Evidence | `docs/standard/evidence-protocol.md` | 125 | P0 |
+| `FR-033` | §7.6 | L503 | ARCH 类技术债规则 | `.worktree/debt.md` | 304-308 | P0 |
+| `FR-034` | §7.6 | L513 | DEP 类技术债规则 | `.worktree/debt.md` | 329-332 | P0 |
+| `FR-035` | §7.6 | L523 | DOMAIN 类技术债规则 | `.worktree/debt.md` | _[行级证据 TODO]_ | P0 |
+| `FR-036` | §7.6 | L533 | DOCS 类技术债规则 | `.worktree/debt.md` | _[行级证据 TODO]_ | P0 |
+| `FR-037` | §7.6 | L543 | TEST 类技术债规则 | `.worktree/debt.md` | _[行级证据 TODO]_ | P0 |
+| `FR-038` | §7.6 | L553 | IMPL 类技术债规则 | `.worktree/debt.md` | _[行级证据 TODO]_ | P0 |
+| `FR-039` | §7.6 | L563 | SEC 类技术债规则 | `.worktree/debt.md` | _[行级证据 TODO]_ | P0 |
+| `FR-040` | §7.7 | L575 | Goal Kernel（8 个核心对象） | `.worktree/goalcli-v0.1.0-plan.md` | _[行级证据 TODO]_ | P0 |
+| `FR-041` | §7.7 | L585 | Harness Runtime | `.worktree/goal/` | _目录，无单行锚_ | P0 |
+| `FR-042` | §7.7 | L595 | goalcli 唯一执行面 | `docs/adr/ADR-20260603-001-goalcli-runtime.md` | _[行级证据 TODO]_ | P0 |
+| `FR-043` | §7.7 | L605 | 6 个 MVA Gate | `.worktree/goalcli-v0.1.0-plan.md` | _[行级证据 TODO]_ | P0 |
+| `FR-044` | §7.7 | L615 | 4-Plane 架构 | `.worktree/v3.0.md` | _[行级证据 TODO]_ | P0 |
+| `FR-045` | §7.7 | L625 | 10 个 REQ-PROOF | `.worktree/v3.0.md` | 247-249 | P0 |
+| `FR-046` | §7.7 | L635 | 28 个 PR 执行包 | `.worktree/goal/` | _目录，无单行锚_ | P1 |
+| `FR-047` | §7.8 | L652 | 5 层执行链 | `.worktree/main.md` | 14 | P0 |
+| `FR-048` | §7.8 | L664 | 禁止 main 开发 | `.worktree/main.md` | 18, 27, 32 | P0 |
+| `FR-049` | §7.8 | L674 | 必须使用 git worktree | `.worktree/main.md` | 18, 47, 183 | P0 |
+| `FR-050` | §7.8 | L684 | 采纳状态机（8 状态） | `.worktree/main.md` | _[行级证据 TODO]_ | P0 |
+| `FR-051` | §7.8 | L696 | 6 个禁止状态转换 | `.worktree/main.md` | _[行级证据 TODO]_ | P0 |
+| `FR-052` | §7.8 | L708 | 下游同步治理（20 PR） | `.worktree/goal.md` | _[行级证据 TODO]_ | P1 |
 
 ### 优先级统计
 

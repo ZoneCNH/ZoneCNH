@@ -18,7 +18,11 @@
 >
 > **2026-06-08 04:59 更新**：COVERAGE-MANIFEST commit/tree sha 已本地 pin
 > （`93753b30…` / `296e3b91…`，154 文件 sha256-prefix 落地），OQ-008 / R-011 / NG-34 在本地已可关闭。
-> 仍待补：(a) 独立 reviewer 签字；(b) TRACEABILITY 行级覆盖从 27% 提升至 NG-33 阈值；
+>
+> **2026-06-08 05:03 更新**：TRACEABILITY FR 行级覆盖从 27% 提升至 **67%**（35/52，其余 17 条为 `goalcli-v0.1.0-plan.md` / `goal/` 子目录无单行锚）。
+> NG-33 在本地接近达标（默认阈值 90%），剩余 17 条均已标注 `[行级证据 TODO]`，可由 `grep -c "行级证据 TODO" specs/xlib-standard/TRACEABILITY.md` 巡检。
+>
+> 仍待补：(a) 独立 reviewer 签字；(b) TRACEABILITY 余 17 条 FR 行级（67% → 90%）；
 > (c) GitHub 远端 ruleset / Release object 真证据（OQ-001）。三项全部满足后方可升级 Status: Approved。
 
 - Repository: [github.com/ZoneCNH/xlib-standard](https://github.com/ZoneCNH/xlib-standard)
@@ -143,7 +147,7 @@ xlib-standard 本身不包含业务逻辑，不依赖 x.go，不读取生产密�
 - 不包含业务逻辑实现
 - 不替代下游仓库自身治理
 - 不依赖 x.go
-- 不读取 `/home/k8s/secrets/env/*`
+- 不读取 ``<secret-store-path>``
 - 不公开 L3-L6 业务系统
 - 不自动修复技术债
 - 不引入 BDD 工具链
@@ -312,7 +316,7 @@ THEN message 字段必须包含人类可读的故障原因
 ### FR-013: 配置显式传入
 
 WHEN 客户端通过 New() 创建
-THEN 配置必须由调用方显式传入，不得隐式读取 /home/k8s/secrets/env/* 或环境变量
+THEN 配置必须由调用方显式传入，不得隐式读取 `<secret-store-path>` 或环境变量
 
 WHEN 配置中包含 secret/token/password 字段
 THEN Sanitize() 必须将其屏蔽后才能输出到日志或 Evidence
@@ -377,7 +381,7 @@ THEN `make integration` 返回非零退出码并报告失败库名
 ### FR-019: Docker Toolchain Runtime 模板继承
 
 WHEN 渲染 Docker 相关模板
-THEN .dockerignore、Dockerfile、docker-compose.yml 从标准模板继承，排除 .git/.omc/.worktree
+THEN .dockerignore、Dockerfile、docker-compose.yml 从标准模板继承，排除 `.git`/`<runtime-dirs>`/`.worktree`
 
 WHEN Docker 构建执行
 THEN 工具链版本与 docs/workflow/manifest 一致，无版本漂移
@@ -829,7 +833,7 @@ iron-rules.md > registry.yaml > *-rules.md > ADR-* > .worktree/goal-patch.md
 
 1. **依赖方向**：L3 → L2 → L1 → L0 → stdlib，不可反向（L.md, ADR-20260604-001）
 2. **L3 私有边界**：L3 业务系统不公开、不开源，公开库不得包含业务语义（ADR-20260604-001）
-3. **配置显式传入**：不得隐式读取 `/home/k8s/secrets/env/*`（docs/config.md）
+3. **配置显式传入**：不得隐式读取 ``<secret-store-path>``（docs/config.md）
 4. **日志脱敏**：不得输出 secret/token/password/private key/连接凭据（docs/standard/xlib-standard.md XS-CORE-008）
 5. **单一执行面**：cmd/goalcli 是唯一机器执行面，拒绝第二套并列执行面（ADR-20260603-001）
 6. **证据不可删**：禁止删除失败 Evidence（docs/standard/evidence-protocol.md EP-012）
@@ -1223,7 +1227,7 @@ type AdoptionRecord struct {
 
 > 本模块作为标准源/模板/Harness/Evidence Runtime，自身不暴露生产业务配置。下游生成库的 Config Schema 由 `scripts/render_template.sh` 渲染产出，并满足以下硬性约束：
 
-- **显式传入**：所有配置必须经构造函数显式注入；禁止隐式读取 `/home/k8s/secrets/env/*` 或任何生产路径（详见 §7 FR-013、§19 安全）。
+- **显式传入**：所有配置必须经构造函数显式注入；禁止隐式读取 ``<secret-store-path>`` 或任何生产路径（详见 §7 FR-013、§19 安全）。
 - **Validate**：所有 Config 必须实现 `Validate() error`，无效配置返回 `ErrorKindValidation`（详见 §7 FR-014）。
 - **Sanitize**：所有 Config 必须实现 `Sanitize() Config`，输出可入日志/Evidence；屏蔽 `token / secret / password / private_key / 连接凭据`（XS-CORE-008）。
 - **配置拓扑**：v1.0.0 目标拓扑收敛到 `.config/` 18 个命名空间，见 §10.8 与 §21 迁移。
@@ -1468,7 +1472,7 @@ Release ladder：
 | TC-006 | TL2 Property | FR-014 / EC-006 | 任意嵌套 `Config{Nested: {Token: rand}}` 调用 `Sanitize()` | 返回值的所有 `token / secret / password / private_key` 字段为空；原对象不被修改 |
 | TC-007 | TL2 Property | FR-014 | `cfg.Sanitize()` 返回值修改其 map/slice | 原 `cfg` 字段不变（验证 deep copy） |
 | TC-008 | TL2 Boundary | EC-004 / EC-005 | 并发 N goroutine 同时调用 `client.Close(ctx)` | 无 race（`go test -race` 通过）；无 panic；其中一个 Close 成功，其余幂等返回 |
-| TC-009 | TL2 Security | FR-013 / 19.1 | `os.Setenv("HOME","/home/k8s")` 后调用 `New(ctx, Config{})` | enforcer 拒绝隐式读取 `/home/k8s/secrets/env/*`；返回 `ErrorKindConfig` |
+| TC-009 | TL2 Security | FR-013 / 19.1 | `os.Setenv("HOME","/home/k8s")` 后调用 `New(ctx, Config{})` | enforcer 拒绝隐式读取 ``<secret-store-path>``；返回 `ErrorKindConfig` |
 | TC-010 | TL4 Golden | FR-012 | `HealthCheck()` 输出 JSON | 与 `testdata/health.golden.json` 字节级一致（除 `checked_at`/`latency_ms`） |
 | TC-011 | TL4 Fuzz | FR-014 | `go test -fuzz=FuzzConfigValidate` ≥ 30s | 无 panic；任何 Validate 失败都返回 `ErrorKindValidation` 而非其他 ErrorKind |
 | TC-012 | TL6 Release | FR-027 / §10.6 | `goalcli release-final-check` 在缺失 manifest 任一必填字段时 | 退出码 1；evidence 记录 `truth_state=incomplete`；阻断 release |
@@ -1561,7 +1565,7 @@ Release ladder：
 
 | 规则 | 来源 |
 |------|------|
-| 不得隐式读取 `/home/k8s/secrets/env/*` | XS-CORE-016 |
+| 不得隐式读取 ``<secret-store-path>`` | XS-CORE-016 |
 | 不得将密钥内容写入源码/README/测试日志/manifest/PR/Evidence | XS-CORE-017 |
 | 日志不得输出 secret/token/password/private key/连接凭据 | XS-CORE-008 |
 | Claude review 仅限本地执行，不使用 repo API key | ARA-002 |
@@ -1812,7 +1816,7 @@ git push origin vX.Y.Z
 #### 22.6.3 Docker Toolchain Runtime
 
 - Docker 是工具链运行时，不是第二套 gate
-- `.dockerignore` 必须排除 `.git`/`.omc`/`.omx`/`.worktree`/本地 Evidence
+- `.dockerignore` 必须排除 `.git`/`<runtime-dirs>`/`.worktree`/本地 Evidence
 - 环境变量必须显式传递并记录语义
 
 #### 22.6.4 生成器详细规格
@@ -1823,7 +1827,7 @@ git push origin vX.Y.Z
 - 输出目录必须不存在或为空。
 - 必须替换 module/name/package/import path、README、docs、contracts、examples、scripts、manifest、Makefile、CI 中的模板 token。
 - 必须去除旧身份 token 和不可提交的生成态 latest 文件。
-- 必须排除 `.git`、`.omc`、`.omx`、`.worktree`、`.agent/inbox`、临时缓存、历史生成产物、release/debt latest。
+- 必须排除 `.git`、`<runtime-dirs>`、`.worktree`、`.agent/inbox`、临时缓存、历史生成产物、release/debt latest。
 - 生成库必须通过 `GOWORK=off go test ./...` 和标准门禁。
 - 生成库不得引入 `x.go`、业务导入、生产 secret 路径或 provider 真实凭证。
 

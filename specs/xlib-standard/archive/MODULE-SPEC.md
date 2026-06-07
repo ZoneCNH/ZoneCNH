@@ -2,7 +2,7 @@
 
 Status: **archived**（2026-06-08 归档；非当前权威）
 Spec-Version: 2026-06-07.agent-team
-Source-Scope: `/home/xlib-standard/.worktree/*.md`, `/home/xlib-standard/docs/**`, `/home/zone/Downloads/xlib-standard/**`
+Source-Scope: `<upstream-root>/.worktree/*.md`, `<upstream-root>/docs/**`, `<external-downloads>/**`
 Input-Files: 154
 Coverage-Method: agent-team semantic synthesis; 1000-pass check verifies input file-set stability only
 
@@ -97,7 +97,7 @@ x.go / business
 
 - L1/L2 真实 provider runtime、真实连接池、真实队列/数据库客户端。
 - `x.go` 业务模型、业务仓库导入、私有策略、交易或生产配置。
-- 隐式读取 `/home/k8s/secrets/env/*` 或其他生产 secret 路径。
+- 隐式读取 ``<secret-store-path>`` 或其他生产 secret 路径。
 - 隐藏全局 client、不可关闭后台资源、不可审计副作用。
 - 把 `baselib-template`、`foundationx`、`corekit` 当作主身份。
 - 把 release manifest/latest、debt latest、临时 evidence latest 当作应提交源文件。
@@ -165,7 +165,7 @@ scripts/render_template.sh --module <module> --name <name> --package <package> -
 - 输出目录必须不存在或为空。
 - 必须替换 module/name/package/import path、README、docs、contracts、examples、scripts、manifest、Makefile、CI 中的模板 token。
 - 必须去除旧身份 token 和不可提交的生成态 latest 文件。
-- 必须排除 `.git`、`.omc`、`.omx`、`.worktree`、`.agent/inbox`、临时缓存、历史生成产物、release/debt latest。
+- 必须排除 `.git`、`<runtime-dirs>`、`.worktree`、`.agent/inbox`、临时缓存、历史生成产物、release/debt latest。
 - 生成库必须通过 `GOWORK=off go test ./...` 和标准门禁。
 - 生成库不得引入 `x.go`、业务导入、生产 secret 路径或 provider 真实凭证。
 
@@ -350,7 +350,7 @@ Release ladder：
 - `golangci-lint` baseline 缺失时失败。
 - `govulncheck` 在启用、force 或窗口期要求时必须可用；缺失即失败。
 - Docker image 固定工具链；安装 Go、make、git、jq、curl、ca certs、python3-yaml、golangci-lint、govulncheck。
-- Docker build context 必须排除 `.git`、`.omc`、`.omx`、`.worktree`、local evidence、cache、output。
+- Docker build context 必须排除 `.git`、`<runtime-dirs>`、`.worktree`、local evidence、cache、output。
 - release metadata bind mount 是例外，但必须可审计。
 
 ## 15. Debt Governance

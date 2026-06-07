@@ -2,7 +2,7 @@
 
 - 报告日期：2026-06-08 04:46 (+08:00)
 - 报告作者：Copilot CLI（Claude Opus 4.7）
-- 分析对象：`/home/ZoneCNH/specs/xlib-standard/`
+- 分析对象：`specs/xlib-standard/`
 - 对照基线：`specs/SPEC-TEMPLATE.md`、`specs/README.md`、`specs/LIFECYCLE.md`、`specs/DEFINITION-OF-READY.md`、`specs/TRACEABILITY.md`、`CONSTITUTION.md`、`ARCHITECTURE.md`
 - 自动化证据：`bash .github/ci/spec-lint.sh`、`spec-drift-guard.sh`、`traceability-check.sh`、`status-consistency-check.sh`
 - 方法：模板节序对照 + 编号体系闭环扫描 + CI lint 实际运行 + 跨文档状态一致性核对 + 与前两版报告差异对比

@@ -1,7 +1,7 @@
 # `specs/xlib-standard/` 结构性问题深度分析
 
 - 报告日期：2026-06-08 03:41 (+08:00)
-- 分析对象：`/home/ZoneCNH/specs/xlib-standard/`
+- 分析对象：`specs/xlib-standard/`
   - 主目录：`README.md`(56) · `SPEC.md`(1500) · `TRACEABILITY.md`(62) · `CONFLICT-LEDGER.md`(179) · `COVERAGE-MANIFEST.md`(198)
   - 归档：`archive/MODULE-SPEC.md`(450) · `archive/DEEP-ANALYSIS.md`(538) · `archive/README.md`(16)
 - 对照基线：`specs/SPEC-TEMPLATE.md`(23 节模板)、`specs/README.md`、`CONSTITUTION.md`、`ARCHITECTURE.md`

@@ -1,7 +1,7 @@
 # `specs/xlib-standard/` 结构性问题深度分析
 
 - 报告日期：2026-06-08
-- 分析对象：`/home/ZoneCNH/specs/xlib-standard/`（7 个 Markdown 工件，共 2,908 行）
+- 分析对象：`specs/xlib-standard/`（7 个 Markdown 工件，共 2,908 行）
 - 分析方法：逐工件读取 + 交叉引用 + 数字一致性核对 + 角色边界审查
 - 结论概览：**总分 5.4 / 10（中低）**，结构问题集中在"多权威源并存、口径不统一、追溯弱、自我定位摇摆"四个方向
 
@@ -88,7 +88,7 @@
 
 - 无 rule-id（419 条 RULE-\*）到 file:line 的映射
 - 无 commit/tree-sha
-- 路径是本机绝对路径 `/home/xlib-standard/...`
+- 路径是本机绝对路径 `<upstream-root>/...`
 - 同一文档自述："本表只证明主要条款有来源锚点，不是逐规则证明账本"
 
 **与 SPEC.md 自我目标矛盾**：FR-001 要求"419 条规则全部机器化为 registry.yaml"，TRUTH-04 要求 "Proof 是完成的唯一合法证明"，但本目录的追溯证据本身就达不到机器化、可证明的标准。
@@ -99,7 +99,7 @@
 
 ### S6【高】覆盖清单依赖本机绝对路径，跨环境不可复现
 
-`COVERAGE-MANIFEST.md` 罗列 154 条 `/home/xlib-standard/...` 和 `/home/zone/Downloads/...` 路径，自承"不是可移植 source bundle"、"若迁移到其他机器必须重新生成"。
+`COVERAGE-MANIFEST.md` 罗列 154 条 `<upstream-root>/...` 和 `<external-downloads>/...` 路径，自承"不是可移植 source bundle"、"若迁移到其他机器必须重新生成"。
 
 - 缺：commit sha、tree sha、文件级 sha256
 - 缺：相对路径或仓库根锚点
@@ -205,7 +205,7 @@ SSOT          ███░░░░░░░ 3
 
 ### P1（影响可追溯性 / 可机读性）
 
-1. **覆盖清单加 digest**：每个输入文件增加 `sha256` 与相对路径（相对 upstream 仓库根），删除 `/home/xlib-standard/` 前缀。
+1. **覆盖清单加 digest**：每个输入文件增加 `sha256` 与相对路径（相对 upstream 仓库根），删除 `<upstream-root>/` 前缀。
 2. **追溯表升级为 rule 级**：从 419 条 RULE-\* / 52 个 FR 各取唯一 ID，映射到 `file:line` 或 `file#anchor`，生成 `traceability.yaml`。
 3. **抽取机器可读 schema**：419 规则 / 66 gate / 8 状态 / 9 ErrorKind / 15 TRUTH 生成 `registry/*.yaml`，Markdown 表格改为从 yaml 渲染。
 

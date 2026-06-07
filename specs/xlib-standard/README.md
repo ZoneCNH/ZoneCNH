@@ -14,7 +14,7 @@
 
 ## 当前权威工件
 
-- `SPEC.md`：**当前可执行主规格**（v2.0.1, Status: Review；52 FR、104 WHEN/THEN、10 EC、17 TC、7 BR、17 AC；23 节按 `SPEC-TEMPLATE.md` 对齐），与追溯表、冲突账本和覆盖清单共同约束。进入 Approved 的前置条件见 SPEC.md 顶部"状态说明"与 `docs/report/xlib-standard-structural-deep-analysis-20260608-0446.md`。
+- `SPEC.md`：**当前可执行主规格**（v2.0.1, Status: Review；52 FR、104 WHEN/THEN、10 EC、17 TC、7 BR、17 AC；23 节按 `SPEC-TEMPLATE.md` 对齐；TRACEABILITY 行级覆盖 67%），与追溯表、冲突账本和覆盖清单共同约束。进入 Approved 的前置条件见 SPEC.md 顶部"状态说明"与 `docs/report/xlib-standard-structural-deep-analysis-20260608-0446.md`。
 - `TRACEABILITY.md`：`SPEC.md` 条款到来源文件的追溯表（章节级，非 rule 级）。
 - `CONFLICT-LEDGER.md`：冲突、历史计划和最终取舍。
 - `COVERAGE-MANIFEST.md`：输入文件清单与覆盖口径（154 个文件，相对 `<upstream>/` 路径）。
@@ -45,12 +45,12 @@
 本次输入共 154 个文件：
 
 - `.worktree/*.md`：12 个。
-- `/home/xlib-standard/docs/**`：121 个。
-- `/home/zone/Downloads/xlib-standard/**`：21 个。
+- `<upstream-root>/docs/**`：121 个。
+- `<external-downloads>/**`：21 个。
 
 权威顺序：
 
-1. `/home/xlib-standard/docs/standard/**` 与根级 `docs/*.md` 的当前标准条款。
-2. `/home/xlib-standard/docs/testing/**`、`docs/l2/**`、`docs/evidence/**` 的领域补充。
-3. `/home/xlib-standard/.worktree/*.md` 与 Downloads 中的计划、复盘、历史审查和迁移目标。
+1. `<upstream-root>/docs/standard/**` 与根级 `docs/*.md` 的当前标准条款。
+2. `<upstream-root>/docs/testing/**`、`docs/l2/**`、`docs/evidence/**` 的领域补充。
+3. `<upstream-root>/.worktree/*.md` 与 Downloads 中的计划、复盘、历史审查和迁移目标。
 4. 当来源冲突时，以当前标准条款为可执行事实，以历史计划作为风险和迁移目标记录。
