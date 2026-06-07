@@ -6,161 +6,323 @@
 
 ---
 
-## 1. 定位
+## 1. Metadata
 
-`resiliencx` 负责控制失败传播和副作用边界，让系统在外部依赖不稳定时保持可控。
-
-### 核心职责
-
-- timeout（PerAttemptTimeout + TotalTimeout）
-- retry（max attempts、max elapsed、backoff、jitter）
-- exponential backoff / jitter
-- circuit breaker（closed/open/half-open 状态机）
-- rate limiter（QPS、burst、按 key 限流）
-- bulkhead（并发隔离、队列上限、快速拒绝）
-- fallback（显式降级函数）
-- retryable error classifier
-- idempotency hint（非幂等操作默认禁止自动 retry）
-- policy event sink
-- context cancellation
-- metrics / tracing hook
-
-### 明确不做
-
-- 不决定业务是否可重试
-- 不吞掉错误
-- 不写交易所或订单语义
-- 不做交易风控（属于 `risk-engine`）
-- 不做调度（属于 `schedulex`）
-
-### 身份修复（P0）
-
-当前 `resiliencx` README 描述的 Standard Source / Generator / Harness / Evidence Runtime 叙事必须迁回 `xlib-standard`。`resiliencx` 围绕 timeout、retry、circuit、bulkhead、rate limit、fallback 和 policy event 建模。
-
-| 边界 | `kernel.retryx` | `resiliencx` |
-|------|-----------------|--------------|
-| 层级 | L0 primitive | L1 runtime policy |
-| 主要职责 | backoff、retry marker、简单 retry loop | timeout、retry、circuit、bulkhead、rate、fallback |
-| 观测 | 不负责完整 metrics | 输出 policy events，交给 `observex` 记录 |
-| 状态 | 尽量无状态 | circuit breaker / limiter 可有状态 |
-| 依赖 | stdlib only | 可依赖 `kernel`，观测通过接口注入 |
-| 使用场景 | 基础库内部轻量重试 | 外部 API、交易所、数据源、消息、任务执行 |
+- Status: Active
+- Owner: ZoneCNH
+- Layer: L1 基础能力
+- Version: v0.7.3
+- Repository: [github.com/ZoneCNH/resiliencx](https://github.com/ZoneCNH/resiliencx)
+- Related: [CONSTITUTION.md](../CONSTITUTION.md), [ARCHITECTURE.md](../ARCHITECTURE.md)
 
 ---
 
-## 2. 接口契约
+## 2. Summary
 
-### 2.1 Policy
+`resiliencx` 是策略库，提供 timeout、retry、circuit breaker、bulkhead、rate limiter、fallback 等弹性原语。策略由业务模块在运行时组装，不提供 harness 或自动注入。
+
+---
+
+## 3. Problem
+
+分布式系统中，网络调用、交易所接口、消息队列都可能超时或失败。没有统一的弹性策略，会导致：
+- 每个模块自行实现重试逻辑，代码重复且不一致
+- 熔断器缺失，故障级联传播
+- 限流策略缺失，交易所 API 被封禁
+- 策略参数散落在各处配置中，无法统一调优
+
+---
+
+## 4. Goals
+
+- 提供声明式弹性原语：timeout / retry / circuit breaker / bulkhead / rate limiter / fallback
+- 支持策略组合（嵌套执行）
+- 配置驱动，参数从 `configx.Reader` 读取
+- 可观测（每个策略的执行结果可被 metrics 采集）
+- 不引入框架（stdlib + 最少依赖）
+
+---
+
+## 5. Non-goals
+
+- 不做应用生命周期管理（→ `kernel`）
+- 不做日志实现（→ `observex`）
+- 不做配置加载（→ `configx`）
+- 不做定时调度（→ `schedulex`）
+- 不做测试编排（→ `testkitx`）
+- 不提供 harness 或自动注入（策略由业务模块自行组装）
+
+---
+
+## 6. Consumers
+
+| 消费者 | 使用方式 |
+|--------|----------|
+| `market-data` | 对交易所 API 调用设置 timeout + retry + circuit breaker |
+| `risk-engine` | 对下单接口设置 rate limiter + fallback |
+| `signal-engine` | 对因子计算设置 timeout |
+| `order-engine` | 对交易所 API 设置 bulkhead + retry |
+| 业务域模块 | 按需组装策略，通过 `resiliencx.Policies` 传递 |
+
+---
+
+## 7. Functional Requirements
+
+### FR-001: Timeout
+
+WHEN 调用 `Timeout(ctx, duration, fn)` 且 fn 在 duration 内完成
+THEN 返回 fn 的结果
+
+WHEN 调用 `Timeout(ctx, duration, fn)` 且 fn 超过 duration
+THEN 返回 `ErrTimeout`
+
+WHEN ctx 在 fn 完成前被取消
+THEN 返回 ctx.Err()
+
+### FR-002: Retry
+
+WHEN 调用 `Retry(ctx, policy, fn)` 且 fn 首次成功
+THEN 返回结果，不重试
+
+WHEN 调用 `Retry(ctx, policy, fn)` 且 fn 持续失败
+THEN 按 policy 重试，直到达到 max_retries
+
+WHEN 达到 max_retries 且仍失败
+THEN 返回最后一次的错误
+
+WHEN retry 期间 ctx 被取消
+THEN 立即返回 ctx.Err()
+
+### FR-003: CircuitBreaker
+
+WHEN 调用 `circuit.Execute(fn)` 且 circuit 为 Closed 状态
+THEN 执行 fn，成功计数，失败计数
+
+WHEN 失败率超过 threshold 且连续失败超过 min_failures
+THEN circuit 转为 Open，后续调用立即返回 `ErrCircuitOpen`
+
+WHEN circuit 为 Open 且 recovery_timeout 已过
+THEN circuit 转为 Half-Open，允许一次试探调用
+
+WHEN 试探调用成功
+THEN circuit 转为 Closed
+
+WHEN 试探调用失败
+THEN circuit 保持 Open，重置 recovery_timeout
+
+### FR-004: Bulkhead
+
+WHEN 调用 `bulkhead.Execute(fn)` 且并发数 < max_concurrent
+THEN 执行 fn
+
+WHEN 调用 `bulkhead.Execute(fn)` 且并发数已达 max_concurrent
+THEN 等待直到有空位或 ctx 超时，超时返回 `ErrBulkheadFull`
+
+### FR-005: RateLimiter
+
+WHEN 调用 `limiter.Allow()` 且当前速率 < max_rate
+THEN 返回 true
+
+WHEN 调用 `limiter.Allow()` 且当前速率 >= max_rate
+THEN 返回 false
+
+WHEN 调用 `limiter.Wait(ctx)` 且需要等待
+THEN 阻塞直到允许或 ctx 超时
+
+### FR-006: Fallback
+
+WHEN 调用 `Fallback(primary, secondary)` 且 primary 成功
+THEN 返回 primary 的结果
+
+WHEN 调用 `Fallback(primary, secondary)` 且 primary 失败
+THEN 执行 secondary，返回 secondary 的结果
+
+---
+
+## 8. Business Rules
+
+| 编号 | 规则 |
+|------|------|
+| BR-001 | 所有策略必须接受 `context.Context` 参数 |
+| BR-002 | 策略参数从 `configx.Reader` 读取，不硬编码 |
+| BR-003 | 策略组合时，外层策略包装内层策略（装饰器模式） |
+| BR-004 | 熔断器状态必须并发安全 |
+| BR-005 | 限流器必须并发安全 |
+| BR-006 | 策略执行的 metrics 通过 `observex.Meter` 采集 |
+| BR-007 | 策略库不引入框架，使用 stdlib + 最少依赖 |
+| BR-008 | 策略必须可独立测试，不依赖外部服务 |
+
+---
+
+## 9. Interface Contract
+
+### 9.1 策略接口
 
 ```go
-type Policy struct {
-    Retry     *RetryPolicy
-    Timeout   time.Duration
-    Breaker   *BreakerPolicy
-    RateLimit *RateLimitPolicy
-    Bulkhead  *BulkheadPolicy
-    Fallback  func(ctx context.Context, err error) error
-}
+// Timeout
+func Timeout(ctx context.Context, d time.Duration, fn func(ctx context.Context) error) error
 
+// Retry
 type RetryPolicy struct {
-    MaxAttempts   int
-    InitialBackoff time.Duration
-    MaxBackoff    time.Duration
-    Multiplier    float64
-    Jitter        float64
-    Classifier    RetryClassifier
+    MaxRetries  int
+    InitialWait time.Duration
+    MaxWait     time.Duration
+    Multiplier  float64
 }
+func Retry(ctx context.Context, policy RetryPolicy, fn func(ctx context.Context) error) error
 
-type RetryClassifier func(err error) bool // true = 可重试
-
-type BreakerPolicy struct {
-    FailureThreshold int
-    SuccessThreshold int
-    OpenDuration     time.Duration
+// CircuitBreaker
+type CircuitBreaker interface {
+    Execute(fn func() error) error
+    State() CircuitState
 }
-
-type RateLimitPolicy struct {
-    Rate  float64 // 每秒令牌数
-    Burst int
-    Key   string  // 按 key 限流
-}
-
-type BulkheadPolicy struct {
-    MaxConcurrency int
-    MaxWait        time.Duration
-}
-```
-
-### 2.2 Executor
-
-```go
-type Executor interface {
-    Execute(ctx context.Context, policy Policy, fn func(ctx context.Context) error) error
-}
-```
-
-### 2.3 Breaker
-
-```go
-type BreakerState int
-
+type CircuitState int
 const (
-    BreakerClosed   BreakerState = iota
-    BreakerOpen
-    BreakerHalfOpen
+    CircuitClosed   CircuitState = iota
+    CircuitOpen
+    CircuitHalfOpen
+)
+func NewCircuitBreaker(opts ...CircuitOption) CircuitBreaker
+
+// Bulkhead
+type Bulkhead interface {
+    Execute(fn func() error) error
+    Available() int
+}
+func NewBulkhead(maxConcurrent int, opts ...BulkheadOption) Bulkhead
+
+// RateLimiter
+type RateLimiter interface {
+    Allow() bool
+    Wait(ctx context.Context) error
+    Rate() float64
+}
+func NewRateLimiter(rate float64, burst int) RateLimiter
+
+// Fallback
+func Fallback(primary func() error, fallbacks ...func() error) error
+
+// Policies 组合（传给模块的可选依赖）
+type Policies struct {
+    Timeout    time.Duration
+    Retry      RetryPolicy
+    Circuit    CircuitBreaker
+    Bulkhead   Bulkhead
+    RateLimit  RateLimiter
+}
+```
+
+### 9.2 用法示例
+
+```go
+// 策略组合：timeout + retry + circuit breaker
+cb := resiliencx.NewCircuitBreaker(
+    resiliencx.WithFailureThreshold(5),
+    resiliencx.WithRecoveryTimeout(30*time.Second),
 )
 
-type Breaker interface {
-    State() BreakerState
-    Allow() bool
-    Success()
-    Failure()
-    Reset()
-}
+err := resiliencx.Timeout(ctx, 5*time.Second, func(ctx context.Context) error {
+    return resiliencx.Retry(ctx, resiliencx.RetryPolicy{
+        MaxRetries:  3,
+        InitialWait: 100 * time.Millisecond,
+        MaxWait:     2 * time.Second,
+        Multiplier:  2.0,
+    }, func(ctx context.Context) error {
+        return cb.Execute(func() error {
+            return exchangeClient.GetTicker(ctx, "BTCUSDT")
+        })
+    })
+})
 ```
 
-### 2.4 Timeout 语义
+---
 
-```go
-// PerAttemptTimeout: 每次重试的超时
-// TotalTimeout: 整个操作（含所有重试）的超时
-type TimeoutConfig struct {
-    PerAttempt time.Duration
-    Total      time.Duration
-}
-```
+## 10. Data Model
 
-### 2.5 策略链执行顺序
-
-```
-context budget → rate limit → bulkhead → circuit breaker → timeout → retry loop → fallback → event sink
-```
-
-### 2.6 契约约束
-
-- `Execute` 必须在 `ctx.Done()` 后立即返回，不继续执行副作用
-- `RetryClassifier` 返回 `false` 时立即停止重试，不消耗后续 attempt
-- `Breaker` 状态转换必须是原子的、并发安全的
-- 默认 `MaxAttempts` 上限为 10，防止配置错误导致无限重试
-- 非幂等操作默认禁止自动 retry（`idempotency hint`）
-- `Fallback` 只在最终失败后调用，不掩盖中间成功
-
-### 2.7 公共错误
+### 10.1 公共错误
 
 ```go
 var (
-    ErrTimeout        = errors.New("resiliencx: operation timeout")
-    ErrRetryExhausted = errors.New("resiliencx: retry attempts exhausted")
-    ErrCircuitOpen    = errors.New("resiliencx: circuit breaker is open")
-    ErrRateLimited    = errors.New("resiliencx: rate limit exceeded")
-    ErrBulkheadFull   = errors.New("resiliencx: bulkhead capacity exceeded")
-    ErrNonIdempotent  = errors.New("resiliencx: non-idempotent operation cannot retry")
+    ErrTimeout       = errors.New("resiliencx: timeout")
+    ErrCircuitOpen   = errors.New("resiliencx: circuit breaker open")
+    ErrBulkheadFull  = errors.New("resiliencx: bulkhead full")
+    ErrRateLimited   = errors.New("resiliencx: rate limited")
+    ErrMaxRetries    = errors.New("resiliencx: max retries exceeded")
 )
+```
+
+### 10.2 配置结构
+
+```go
+type CircuitConfig struct {
+    FailureThreshold int           `yaml:"failure_threshold"` // 连续失败次数触发熔断
+    RecoveryTimeout  time.Duration `yaml:"recovery_timeout"`  // 熔断恢复超时
+    HalfOpenMax      int           `yaml:"half_open_max"`     // Half-Open 状态最大试探次数
+}
+
+type BulkheadConfig struct {
+    MaxConcurrent int           `yaml:"max_concurrent"` // 最大并发数
+    MaxWait       time.Duration `yaml:"max_wait"`       // 最大等待时间
+}
 ```
 
 ---
 
-## 3. 目录结构
+## 11. Config Schema
+
+```yaml
+resiliencx:
+  default_timeout: 5s
+  default_retry:
+    max_retries: 3
+    initial_wait: 100ms
+    max_wait: 2s
+    multiplier: 2.0
+  circuit_breaker:
+    failure_threshold: 5
+    recovery_timeout: 30s
+    half_open_max: 1
+  bulkhead:
+    max_concurrent: 10
+    max_wait: 5s
+  rate_limiter:
+    rate: 100        # requests per second
+    burst: 200       # burst capacity
+```
+
+---
+
+## 12. Error Handling
+
+| 错误 | 调用方处理 |
+|------|-----------|
+| `ErrTimeout` | 检查超时时间是否合理，考虑增加或优化下游 |
+| `ErrCircuitOpen` | 等待 recovery_timeout 后重试，或使用 fallback |
+| `ErrBulkheadFull` | 减少并发量或增加 max_concurrent |
+| `ErrRateLimited` | 降低请求频率或增加 rate 配额 |
+| `ErrMaxRetries` | 检查底层错误原因，可能是永久性错误不需要重试 |
+
+**错误消息格式：** `"resiliencx: <strategy>: <detail>"`
+**错误包装：** 使用 `%w` 保留底层错误链
+
+---
+
+## 13. Edge Cases
+
+| 场景 | 预期行为 |
+|------|----------|
+| retry policy 的 max_retries=0 | 不重试，直接返回错误 |
+| circuit breaker 的 failure_threshold=0 | 第一次失败就熔断 |
+| bulkhead 的 max_concurrent=0 | 返回配置错误 |
+| rate limiter 的 rate=0 | 永远不允许（所有请求被限流） |
+| 策略组合嵌套过深（>10 层） | 正常执行，无栈溢出 |
+| 并发调用 circuit breaker 状态变更 | 需要加锁，保证并发安全 |
+| ctx 在 retry 等待期间取消 | 立即返回，不继续重试 |
+| fn panic | 被 catch，返回 panic 错误 |
+
+---
+
+## 14. Directory Structure
 
 ```
 resiliencx/
@@ -170,40 +332,19 @@ resiliencx/
 ├── CHANGELOG.md
 ├── LICENSE
 ├── doc.go
-├── resiliencx.go               # Executor / Policy 顶层导出
-├── errors.go
-├── options.go
-├── policy.go                   # Policy 构造和验证
-├── runner.go                   # 策略链执行器
-├── operation.go                # 操作包装
-├── timeout/
-│   ├── timeout.go              # PerAttemptTimeout + TotalTimeout
-│   └── timeout_test.go
-├── retry/
-│   ├── retry.go
-│   ├── backoff.go              # exponential + jitter
-│   └── retry_test.go
-├── breaker/
-│   ├── breaker.go              # closed/open/half-open 状态机
-│   └── breaker_test.go
-├── bulkhead/
-│   ├── bulkhead.go             # 并发隔离、队列上限
-│   └── bulkhead_test.go
-├── ratelimit/
-│   ├── ratelimit.go            # QPS、burst、按 key 限流
-│   └── ratelimit_test.go
-├── fallback/
-│   ├── fallback.go             # 显式降级函数
-│   └── fallback_test.go
-├── classifier.go               # retryable / non-retryable / fatal
-├── idempotency.go              # 非幂等操作禁止自动 retry
-├── event.go                    # policy event sink
-├── noop.go                     # 未配置时安全运行
+├── timeout.go              # Timeout 策略
+├── retry.go                # Retry 策略
+├── circuit.go              # CircuitBreaker 策略
+├── bulkhead.go             # Bulkhead 策略
+├── ratelimit.go            # RateLimiter 策略
+├── fallback.go             # Fallback 策略
+├── policies.go             # Policies 组合结构体
+├── options.go              # Option 模式
+├── errors.go               # 公共错误变量
 ├── internal/
-│   ├── token/                  # 令牌桶实现
-│   └── state/                  # 状态机实现
+│   └── atomic/             # 原子操作工具
 ├── testdata/
-│   └── *.golden
+│   └── config.yaml
 ├── example_test.go
 ├── benchmark_test.go
 └── integration_test.go
@@ -211,9 +352,9 @@ resiliencx/
 
 ---
 
-## 4. 依赖
+## 15. Dependencies
 
-### 4.1 go.mod
+### 15.1 go.mod
 
 ```
 module github.com/ZoneCNH/resiliencx
@@ -221,20 +362,122 @@ module github.com/ZoneCNH/resiliencx
 go 1.23
 ```
 
-### 4.2 依赖方向
+### 15.2 依赖方向
 
 | 可以依赖 | 禁止依赖 |
 |----------|----------|
-| kernel（L0 原语） | configx |
-| observex（interface-only） | schedulex |
-| stdlib | testkitx（仅 test） |
+| stdlib | kernel |
+| `configx`（读取策略配置） | observex, schedulex, testkitx |
 | | 所有业务域实现 |
+| | 所有存储/中间件扩展 |
 
 ---
 
-## 5. CI Gate
+## 16. Testing
 
-### 5.1 通用 Gate
+### 16.1 单元测试
+
+| 测试场景 | 验证点 |
+|----------|--------|
+| timeout 未超时 | fn 正常返回 |
+| timeout 超时 | 返回 ErrTimeout |
+| retry 首次成功 | 不重试 |
+| retry 持续失败 | 达到 max_retries 后返回最后一次错误 |
+| retry 期间 ctx 取消 | 立即返回 |
+| circuit breaker 正常 | Closed 状态，fn 正常执行 |
+| circuit breaker 熔断 | Open 状态，立即返回 ErrCircuitOpen |
+| circuit breaker 恢复 | Half-Open → Closed |
+| bulkhead 并发控制 | 超过 max_concurrent 时等待或拒绝 |
+| rate limiter 限流 | 超过 rate 时 Allow() 返回 false |
+| fallback 主成功 | 不执行 secondary |
+| fallback 主失败 | 执行 secondary |
+| 策略组合 | timeout + retry + circuit breaker 正确嵌套 |
+| 并发安全 | -race 测试通过 |
+
+### 16.2 Given/When/Then 用例
+
+**TC-001: timeout + retry 组合**
+Given timeout=1s，retry max_retries=3
+When fn 首次超时，第二次成功
+Then 第一次超时后重试，第二次返回成功
+
+**TC-002: circuit breaker 熔断**
+Given failure_threshold=3，recovery_timeout=5s
+When fn 连续失败 3 次
+Then circuit 转为 Open
+And 后续调用立即返回 ErrCircuitOpen
+
+**TC-003: circuit breaker 恢复**
+Given circuit 为 Open，recovery_timeout 已过
+When 试探调用成功
+Then circuit 转为 Closed
+And 后续调用正常执行
+
+**TC-004: bulkhead 并发限制**
+Given max_concurrent=2
+When 3 个并发请求同时调用
+Then 前 2 个立即执行
+And 第 3 个等待或超时
+
+### 16.3 Benchmark
+
+| 场景 | 目标 |
+|------|------|
+| 单次 timeout 调用（无超时） | < 100ns 额外开销 |
+| 单次 retry 调用（无重试） | < 200ns 额外开销 |
+| circuit breaker 状态检查 | < 50ns |
+| rate limiter Allow() | < 100ns |
+| 策略组合（5 层嵌套） | < 1μs 额外开销 |
+
+### 16.4 集成测试
+
+| 场景 | 验证点 |
+|------|--------|
+| 模拟交易所超时 | timeout 生效，retry 重试 |
+| 模拟连续失败 | circuit breaker 熔断并恢复 |
+| 高并发场景 | bulkhead + rate limiter 正确限流 |
+
+---
+
+## 17. Performance Budget
+
+| 操作 | 目标 | 测量方式 |
+|------|------|----------|
+| 单策略调用开销 | < 200ns | benchmark test |
+| 5 层嵌套策略开销 | < 1μs | benchmark test |
+| circuit breaker 状态检查 | < 50ns | benchmark test |
+| 常驻内存（per circuit breaker） | < 1KB | profiling |
+
+---
+
+## 18. Observability
+
+| 类型 | 名称 | 说明 |
+|------|------|------|
+| metric | `resiliencx.timeout.count` | counter，超时次数 |
+| metric | `resiliencx.retry.count` | counter，重试次数 |
+| metric | `resiliencx.retry.success` | counter，重试后成功次数 |
+| metric | `resiliencx.circuit.state` | gauge，熔断器状态（0=closed, 1=open, 2=half-open） |
+| metric | `resiliencx.circuit.open.count` | counter，熔断器打开次数 |
+| metric | `resiliencx.bulkhead.rejected` | counter，被拒绝的请求数 |
+| metric | `resiliencx.ratelimit.rejected` | counter，被限流的请求数 |
+| log | `resiliencx.circuit.state_change` | info，熔断器状态变更 |
+| log | `resiliencx.retry.exhausted` | warn，重试耗尽 |
+
+---
+
+## 19. Security
+
+| 要求 | 实现方式 |
+|------|----------|
+| 错误消息不泄露敏感数据 | 错误消息只包含策略名和错误类型，不包含请求内容 |
+| rate limiter 防绕过 | 使用令牌桶算法，不依赖客户端行为 |
+
+---
+
+## 20. CI Gate
+
+### 20.1 通用 Gate
 
 | Gate | 命令 | 阻塞条件 |
 |------|------|----------|
@@ -247,167 +490,48 @@ go 1.23
 | Secret 扫描 | `gitleaks detect --no-git` | 泄露 secret |
 | Benchmark | `go test -bench=. -benchmem -count=3 ./...` | 结果附在 PR comment |
 
-### 5.2 resiliencx 专属 Gate
+### 20.2 resiliencx 专属 Gate
 
 | Gate | 命令 | 阻塞条件 |
 |------|------|----------|
-| identity check | `make identity-check` | README 中出现 Standard Source / Generator / Harness 叙事 |
-| policy chain order | `go test -run TestPolicyChainOrder ./...` | 策略链执行顺序不符合规范 |
+| 不依赖 kernel | `go list -deps ./... \| grep "kernel"` | 依赖 kernel |
+| 不依赖 observex | `go list -deps ./... \| grep "observex"` | 依赖 observex |
 
 ---
 
-## 6. 测试矩阵
-
-### 6.1 单元测试
-
-| 测试场景 | 验证点 |
-|----------|--------|
-| retry 成功 | 第 2 次成功 → 总共调用 2 次 |
-| retry 用尽 | 全部失败 → 返回最后一次错误 |
-| classifier 拒绝 | 不可重试错误 → 立即返回 |
-| backoff 递增 | delay 按 multiplier 递增 |
-| jitter 范围 | delay 在 [base, base*(1+jitter)] 范围内 |
-| circuit breaker 状态转换 | closed → open → half-open → closed |
-| breaker 并发安全 | 100 goroutine 同时操作无 race |
-| timeout (PerAttempt) | 每次尝试超时后 ctx cancelled |
-| timeout (Total) | 整个操作超时后 ctx cancelled |
-| context 取消 | parent cancel → 不继续重试 |
-| rate limiter | 超过 rate → 请求被拒 |
-| bulkhead | 超过 max_concurrency → 等待或拒绝 |
-| fallback | 最终失败后调用 fallback |
-| non-idempotent | 非幂等操作 → `ErrNonIdempotent` |
-| noop executor | 未配置策略 → 直接执行 |
-| policy event | 策略事件正确输出到 sink |
-
-### 6.2 Benchmark
-
-| 场景 | 目标 |
-|------|------|
-| retry 无重试开销 | < 500ns |
-| breaker 检查 | < 100ns |
-| rate limiter 令牌获取 | < 200ns |
-
-### 6.3 集成测试
-
-| 场景 | 验证点 |
-|------|--------|
-| retry + breaker 组合 | retry 用尽 → breaker 记录失败 → breaker open |
-| schedulex + resiliencx | job 失败 → retry → breaker open → 后续 fail-fast |
-
----
-
-## 7. 性能预算
-
-| 操作 | 目标 | 测量方式 |
-|------|------|----------|
-| retry 包装开销（无重试时） | < 500ns | benchmark test |
-| circuit breaker 状态检查 | < 100ns | benchmark test |
-| rate limiter 令牌获取 | < 200ns | benchmark test |
-| 常驻内存 | < 1MB | profiling |
-
----
-
-## 8. 可观测输出
-
-| 类型 | 名称 | 说明 |
-|------|------|------|
-| metric | `resiliencx.retry.attempts` | histogram，每次操作的重试次数 |
-| metric | `resiliencx.retry.total` | counter，重试总次数，label: result(success/fail) |
-| metric | `resiliencx.circuit.state` | gauge，circuit breaker 当前状态（0=closed, 1=open, 2=half-open） |
-| metric | `resiliencx.circuit.transitions` | counter，状态转换次数，label: from→to |
-| metric | `resiliencx.timeout.triggered` | counter，超时触发次数 |
-| metric | `resiliencx.ratelimit.rejected` | counter，被限流拒绝的请求数 |
-| metric | `resiliencx.bulkhead.rejected` | counter，被隔离拒绝的请求数 |
-| log | `resiliencx.circuit.opened` | warn，circuit breaker 打开，含 failure count + component |
-| log | `resiliencx.circuit.closed` | info，circuit breaker 恢复关闭 |
-| log | `resiliencx.retry.exhausted` | error，重试次数用尽，含 operation + last error |
-| span | `resiliencx.retry` | 包含重试逻辑的 span，attribute: attempt, delay |
-
----
-
-## 9. 故障模式
-
-| 故障场景 | 降级行为 | 是否阻塞启动 |
-|----------|----------|--------------|
-| circuit breaker 全开 | **快速失败**：调用方立即收到错误，不排队等待 | 否（运行时） |
-| 内部 panic | **隔离**：不传播到调用方，记录 panic 信息和堆栈 | 否 |
-| rate limiter 配置错误 | **保守默认**：max_attempts 上限 10，防止无限重试 | 否 |
-
----
-
-## 10. 安全要求
-
-| 要求 | 实现方式 |
-|------|----------|
-| 重试不放大攻击面 | 默认 max_attempts 上限（如 10），防止配置错误导致无限重试 |
-| circuit breaker 不泄露内部状态 | 对外只暴露 open/closed/half-open，不暴露具体失败计数 |
-| 非幂等操作保护 | 默认禁止自动 retry，需显式标记 `Idempotent: true` |
-
----
-
-## 11. 配置 schema
-
-```yaml
-resiliencx:
-  defaults:
-    retry:
-      max_attempts: 3
-      initial_backoff: 100ms
-      max_backoff: 10s
-      multiplier: 2.0
-      jitter: 0.1
-    timeout:
-      per_attempt: 5s
-      total: 30s
-    circuit_breaker:
-      failure_threshold: 5
-      success_threshold: 3
-      open_duration: 30s
-    rate_limiter:
-      rate: 1000
-      burst: 50
-    bulkhead:
-      max_concurrency: 100
-      max_wait: 5s
-```
-
----
-
-## 12. 与 risk-engine 的边界
-
-| 属于 `resiliencx` | 属于 `risk-engine` |
-|-------------------|---------------------|
-| timeout/retry/circuit/bulkhead/rate/fallback | 仓位大小、杠杆、订单拒绝 |
-| 操作级容错 | 策略权限、暴露限制 |
-| 外部依赖弹性 | 交易风控决策 |
-
----
-
-## 13. 升级兼容
+## 21. Upgrade Compatibility
 
 | 变更类型 | 版本升级 |
 |----------|----------|
-| Executor / Breaker interface 变更 | **major** |
-| Policy 结构体字段变更 | **major** |
-| 新增可选配置字段 | patch / minor |
-| 新增必填配置字段 | **minor**（带默认值） |
-| 修复 bug | **patch** |
+| 策略函数签名变更 | **major** |
+| 新增可选策略 | minor |
+| Policies 结构体新增字段 | minor |
+| 默认参数变更 | **minor**（注意行为变化） |
+| 新增配置字段 | minor |
 
 ---
 
-## 14. 发布 DoD
+## 22. Release DoD
 
 - [ ] 所有公共接口有 godoc 注释
 - [ ] 所有公共类型有示例代码
 - [ ] CHANGELOG.md 已更新
 - [ ] README.md 包含：模块定位、快速开始、配置说明、API 概览
-- [ ] README 中无 Standard Source / Generator / Harness 叙事
 - [ ] 单元测试覆盖率 ≥ 80%
 - [ ] `-race` 测试通过
 - [ ] Benchmark 结果无 > 10% 回退
 - [ ] `go vet` 无警告
 - [ ] `golangci-lint` 无错误
-- [ ] identity check 通过
-- [ ] policy chain order 测试通过
 - [ ] Secret 扫描通过
 - [ ] 公共 API 无破坏性变更（或已 bump major）
+- [ ] 所有 Functional Requirements 有对应测试
+- [ ] 所有 Edge Cases 有对应测试
+
+---
+
+## 23. Open Questions
+
+- 是否需要支持自适应 retry（根据历史成功率动态调整策略）？
+- 是否需要支持分布式 circuit breaker（多实例共享熔断状态）？
+- rate limiter 是否需要支持多维度限流（per-endpoint, per-user）？
+- 策略配置是否需要支持运行时动态更新？

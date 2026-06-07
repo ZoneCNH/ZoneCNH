@@ -6,28 +6,49 @@
 
 ---
 
-## 1. 定位
+## 1. Metadata
 
-`testkitx` 是测试基础设施，帮助各模块稳定验证边界、错误路径和集成行为。
+- Status: Active
+- Owner: ZoneCNH
+- Layer: L1 test-only
+- Version: v0.7.3
+- Repository: [github.com/ZoneCNH/testkitx](https://github.com/ZoneCNH/testkitx)
+- Related: [CONSTITUTION.md](../CONSTITUTION.md), [ARCHITECTURE.md](../ARCHITECTURE.md)
 
-### 核心职责
+---
 
-- fake clock / deterministic time
-- fake config、logger、metrics、tracer
-- fixture loader
-- golden test helper
-- contract test harness
-- fault injection
-- temporary environment
-- async eventually/assert helper
-- lifecycle test helper
+## 2. Summary
+
+`testkitx` 是测试基础设施，提供 fake 实现、fixture 加载、golden 测试、contract 测试、边界扫描等工具，帮助各模块稳定验证边界、错误路径和集成行为。禁止进入生产依赖图。
+
+---
+
+## 3. Problem
+
+各模块测试中重复实现 fake、fixture、assert 逻辑，导致：
+
+- 每个模块自行实现 FakeLogger、FakeMeter，行为不一致
+- fixture 加载逻辑散落各处，路径硬编码
+- golden 文件更新无统一开关，CI 误更新
+- 生产包意外依赖 test 工具，二进制膨胀
+- contract 测试缺失，fake 与真实实现偏差未被发现
+- goroutine 泄漏检测缺失，测试间相互干扰
+
+---
+
+## 4. Goals
+
+- 统一 fake 实现：FakeConfig / FakeLogger / FakeMeter / FakeTracer / FakeClock / FakeBreaker
+- 编译期接口检查（`var _ Interface = (*FakeImpl)(nil)`）
+- deterministic fake：不调用 `time.Now()` 或 `math.Rand()`
+- fixture loader + golden helper
 - production import boundary scanner
 - goroutine leak checker
-- unified assert API
-- unified fixture loader
-- unified contract hash helper
+- contract test harness
 
-### 明确不做
+---
+
+## 5. Non-goals
 
 - 不进入生产依赖路径
 - 不承载业务模型
@@ -36,9 +57,132 @@
 
 ---
 
-## 2. 接口契约
+## 6. Consumers
 
-### 2.1 Fake 实现
+| 消费者 | 使用方式 |
+|--------|----------|
+| `kernel` 测试 | 使用 FakeLogger / FakeMeter 验证模块生命周期 |
+| `configx` 测试 | 使用 FakeConfig 提供测试配置 |
+| `observex` 测试 | 使用 FakeExporter 验证遥测输出 |
+| `resiliencx` 测试 | 使用 FakeClock 控制时间、FakeBreaker 模拟熔断 |
+| `schedulex` 测试 | 使用 FakeClock 控制调度时间 |
+| 业务域模块测试 | 使用 fake + fixture + golden 验证业务逻辑 |
+
+---
+
+## 7. Functional Requirements
+
+### FR-001: FakeConfig
+
+WHEN 调用 `FakeConfig(values)` 创建配置
+THEN 返回 `configx.Reader`，`Get(key)` 返回对应值
+
+WHEN 调用 `FakeConfig(values)` 且 key 不存在
+THEN 返回 nil
+
+### FR-002: FakeLogger
+
+WHEN 调用 `FakeLogger()` 创建 logger
+THEN 返回 `(*FakeLoggerImpl, observex.Logger)`
+
+WHEN 调用 `fakeLogger.AssertLogged(level, contains)`
+THEN 断言指定 level 的日志包含指定文本
+
+WHEN 调用 `fakeLogger.AssertNoErrors()`
+THEN 断言没有 Error 级别日志
+
+WHEN 调用 `fakeLogger.Entries()`
+THEN 返回所有日志条目
+
+### FR-003: FakeMeter
+
+WHEN 调用 `FakeMeter()` 创建 meter
+THEN 返回 `(*FakeMeterImpl, observex.Meter)`
+
+WHEN 调用 `fakeMeter.AssertCounterValue(name, expected)`
+THEN 断言计数器值等于 expected
+
+WHEN 调用 `fakeMeter.AssertHistogramRecorded(name)`
+THEN 断言直方图有记录
+
+### FR-004: FakeTracer
+
+WHEN 调用 `FakeTracer()` 创建 tracer
+THEN 返回 `(*FakeTracerImpl, observex.Tracer)`
+
+WHEN 调用 `fakeTracer.AssertSpanCount(expected)`
+THEN 断言 span 数量等于 expected
+
+WHEN 调用 `fakeTracer.AssertTraceID()`
+THEN 断言 trace_id 已传播
+
+### FR-005: FakeClock
+
+WHEN 调用 `FakeClock(at)` 创建时钟
+THEN 返回 `*FakeClock`，`Now()` 返回 at
+
+WHEN 调用 `fakeClock.Advance(d)`
+THEN `Now()` 返回 at + d
+
+WHEN 调用 `fakeClock.Set(t)`
+THEN `Now()` 返回 t
+
+### FR-006: FakeBreaker
+
+WHEN 调用 `FakeBreaker(initial)` 创建熔断器
+THEN 返回 `resiliencx.Breaker`，状态为 initial
+
+### FR-007: Eventually
+
+WHEN 调用 `Eventually(t, fn, timeout, interval)` 且 fn 在 timeout 内返回 true
+THEN 测试通过
+
+WHEN 调用 `Eventually(t, fn, timeout, interval)` 且 fn 超时仍返回 false
+THEN 测试失败，输出清晰诊断
+
+### FR-008: GoldenUpdate
+
+WHEN 环境变量 `GOLDEN_UPDATE=1`
+THEN `GoldenUpdate()` 返回 true
+
+WHEN 环境变量 `GOLDEN_UPDATE` 未设置
+THEN `GoldenUpdate()` 返回 false
+
+### FR-009: BoundaryCheck
+
+WHEN 调用 `BoundaryCheck(t, module)` 且生产包依赖 testkitx
+THEN 测试失败，报告依赖路径
+
+WHEN 调用 `BoundaryCheck(t, module)` 且生产包不依赖 testkitx
+THEN 测试通过
+
+### FR-010: GoroutineLeakCheck
+
+WHEN 调用 `GoroutineLeakCheck(t)` 且测试结束后有 goroutine 泄漏
+THEN 测试失败，报告泄漏的 goroutine 堆栈
+
+WHEN 调用 `GoroutineLeakCheck(t)` 且无泄漏
+THEN 测试通过
+
+---
+
+## 8. Business Rules
+
+| 编号 | 规则 |
+|------|------|
+| BR-001 | 所有 fake 必须实现对应接口，编译期检查：`var _ observex.Logger = (*FakeLoggerImpl)(nil)` |
+| BR-002 | fake 行为必须确定性，不引入 `time.Now()` 或 `math.Rand()` |
+| BR-003 | Eventually 使用 `testing.T` 而非 `panic`，失败时输出清晰诊断 |
+| BR-004 | GoldenUpdate() 只在 `GOLDEN_UPDATE=1` 环境变量下返回 true |
+| BR-005 | 生产 import graph 中不能出现 testkitx（go list 验证） |
+| BR-006 | testkitx 是唯一允许依赖所有 Foundation L1 模块的包（仅 go test） |
+| BR-007 | golden 文件不泄露 secret（更新时自动检查） |
+
+---
+
+## 9. Interface Contract
+
+### 9.1 Fake 实现
 
 ```go
 func FakeConfig(values map[string]any) configx.Reader
@@ -50,7 +194,7 @@ func FakeBreaker(initial resiliencx.BreakerState) resiliencx.Breaker
 func FakeExporter() *FakeExporterImpl
 ```
 
-### 2.2 FakeLoggerImpl
+### 9.2 FakeLoggerImpl
 
 ```go
 type FakeLoggerImpl struct{ /* ... */ }
@@ -60,7 +204,7 @@ func (l *FakeLoggerImpl) AssertNoErrors()
 func (l *FakeLoggerImpl) Entries() []LogEntry
 ```
 
-### 2.3 FakeMeterImpl
+### 9.3 FakeMeterImpl
 
 ```go
 type FakeMeterImpl struct{ /* ... */ }
@@ -69,7 +213,7 @@ func (m *FakeMeterImpl) AssertCounterValue(name string, expected float64)
 func (m *FakeMeterImpl) AssertHistogramRecorded(name string)
 ```
 
-### 2.4 FakeTracerImpl
+### 9.4 FakeTracerImpl
 
 ```go
 type FakeTracerImpl struct{ /* ... */ }
@@ -78,7 +222,7 @@ func (t *FakeTracerImpl) AssertSpanCount(expected int)
 func (t *FakeTracerImpl) AssertTraceID propagated
 ```
 
-### 2.5 FakeClock
+### 9.5 FakeClock
 
 ```go
 type FakeClock struct{ /* ... */ }
@@ -88,7 +232,7 @@ func (c *FakeClock) Advance(d time.Duration)
 func (c *FakeClock) Set(t time.Time)
 ```
 
-### 2.6 FakeExporterImpl
+### 9.6 FakeExporterImpl
 
 ```go
 type FakeExporterImpl struct{ /* ... */ }
@@ -98,14 +242,14 @@ func (e *FakeExporterImpl) AssertMetricRecorded(name string)
 func (e *FakeExporterImpl) AssertLogContains(contains string)
 ```
 
-### 2.7 辅助函数
+### 9.7 辅助函数
 
 ```go
 func Eventually(t *testing.T, fn func() bool, timeout, interval time.Duration)
 func GoldenUpdate() bool // 环境变量 GOLDEN_UPDATE=1 时更新 golden 文件
 ```
 
-### 2.8 边界扫描
+### 9.8 边界扫描
 
 ```go
 // BoundaryCheck 检查生产包是否依赖 testkitx
@@ -115,16 +259,58 @@ func BoundaryCheck(t *testing.T, module string)
 func GoroutineLeakCheck(t *testing.T)
 ```
 
-### 2.9 契约约束
+---
 
-- 所有 fake 必须实现对应接口，编译期检查：`var _ observex.Logger = (*FakeLoggerImpl)(nil)`
-- fake 行为必须确定性，不引入 `time.Now()` 或 `math.Rand()`
-- `Eventually` 使用 `testing.T` 而非 `panic`，失败时输出清晰诊断
-- `GoldenUpdate()` 只在 `GOLDEN_UPDATE=1` 环境变量下返回 true
+## 10. Data Model
+
+### 10.1 公共错误
+
+```go
+var (
+    ErrBoundaryViolation = errors.New("testkitx: production dependency on testkitx")
+    ErrGoroutineLeak     = errors.New("testkitx: goroutine leak detected")
+    ErrGoldenMismatch    = errors.New("testkitx: golden file mismatch")
+)
+```
 
 ---
 
-## 3. 目录结构
+## 11. Config Schema
+
+testkitx 不读取配置。行为通过环境变量控制：
+
+```bash
+GOLDEN_UPDATE=1    # 更新 golden 文件
+```
+
+---
+
+## 12. Error Handling
+
+| 错误 | 调用方处理 |
+|------|-----------|
+| `ErrBoundaryViolation` | 移除生产代码对 testkitx 的依赖 |
+| `ErrGoroutineLeak` | 检查测试中的 goroutine 清理逻辑 |
+| `ErrGoldenMismatch` | 更新 golden 文件或修复代码输出 |
+
+**错误消息格式：** `"testkitx: <operation>: <detail>"`
+
+---
+
+## 13. Edge Cases
+
+| 场景 | 预期行为 |
+|------|----------|
+| FakeConfig 的 values 为 nil | 所有 Get 返回 nil |
+| FakeLogger 并发写入 | 无 data race（-race 测试通过） |
+| FakeClock 未 Advance | Now() 始终返回初始时间 |
+| Eventually timeout = 0 | 立即检查一次，不等待 |
+| BoundaryCheck 检查自身 | 通过（testkitx 自身依赖自己不算违规） |
+| GoldenUpdate 在 CI 中设置 | CI Gate 阻止（golden update guard） |
+
+---
+
+## 14. Directory Structure
 
 ```
 testkitx/
@@ -170,9 +356,9 @@ testkitx/
 
 ---
 
-## 4. 依赖
+## 15. Dependencies
 
-### 4.1 go.mod
+### 15.1 go.mod
 
 ```
 module github.com/ZoneCNH/testkitx
@@ -180,7 +366,7 @@ module github.com/ZoneCNH/testkitx
 go 1.23
 ```
 
-### 4.2 依赖方向
+### 15.2 依赖方向
 
 | 可以依赖 | 禁止依赖 |
 |----------|----------|
@@ -191,40 +377,15 @@ go 1.23
 | schedulex（test） | |
 | stdlib | |
 
-### 4.3 特殊说明
+### 15.3 特殊说明
 
 testkitx 是唯一允许依赖所有 Foundation L1 模块的包，但仅在 `go test` 中使用。生产 import graph 中不能出现 testkitx。
 
 ---
 
-## 5. CI Gate
+## 16. Testing
 
-### 5.1 通用 Gate
-
-| Gate | 命令 | 阻塞条件 |
-|------|------|----------|
-| 编译 | `go build ./...` | 编译失败 |
-| 测试 | `go test ./... -race -count=1` | 任何测试失败或 data race |
-| 覆盖率 | `go test ./... -coverprofile=cover.out && go tool cover -func=cover.out` | 总覆盖率 < 80% |
-| vet | `go vet ./...` | 任何 vet 错误 |
-| lint | `golangci-lint run` | 任何 lint 错误 |
-| 依赖检查 | `go mod tidy && git diff --exit-code go.mod go.sum` | go.mod 不整洁 |
-| Secret 扫描 | `gitleaks detect --no-git` | 泄露 secret |
-| Benchmark | `go test -bench=. -benchmem -count=3 ./...` | 结果附在 PR comment |
-
-### 5.2 testkitx 专属 Gate
-
-| Gate | 命令 | 阻塞条件 |
-|------|------|----------|
-| no-production-import | `go list -deps github.com/ZoneCNH/x.go/... 2>/dev/null \| grep testkitx` | 生产包依赖 testkitx |
-| contract tests | `go test ./contract/... -race -count=1` | 任何 contract test 失败 |
-| golden update guard | 检查 `GOLDEN_UPDATE` 不在 CI 中设置 | CI 中误更新 golden 文件 |
-
----
-
-## 6. 测试矩阵
-
-### 6.1 单元测试
+### 16.1 单元测试
 
 | 测试场景 | 验证点 |
 |----------|--------|
@@ -239,7 +400,7 @@ testkitx 是唯一允许依赖所有 Foundation L1 模块的包，但仅在 `go 
 | BoundaryCheck | 生产包不依赖 testkitx |
 | GoroutineLeakCheck | 测试结束后无 goroutine 泄漏 |
 
-### 6.2 编译期检查
+### 16.2 编译期检查
 
 | 场景 | 验证点 |
 |------|--------|
@@ -249,7 +410,7 @@ testkitx 是唯一允许依赖所有 Foundation L1 模块的包，但仅在 `go 
 | FakeConfig 接口实现 | `var _ configx.Reader = (*FakeConfigImpl)(nil)` |
 | FakeBreaker 接口实现 | `var _ resiliencx.Breaker = (*FakeBreakerImpl)(nil)` |
 
-### 6.3 Contract 测试
+### 16.3 Contract 测试
 
 | Contract | 验证内容 |
 |----------|----------|
@@ -262,7 +423,7 @@ testkitx 是唯一允许依赖所有 Foundation L1 模块的包，但仅在 `go 
 | `TestContract_Meter_LabelCardinality` | FakeMeter 拒绝高基数 label |
 | `TestContract_Config_Fingerprint` | FakeConfig fingerprint 稳定性 |
 
-### 6.4 Benchmark
+### 16.4 Benchmark
 
 | 场景 | 目标 |
 |------|------|
@@ -270,7 +431,7 @@ testkitx 是唯一允许依赖所有 Foundation L1 模块的包，但仅在 `go 
 
 ---
 
-## 7. 性能预算
+## 17. Performance Budget
 
 | 操作 | 目标 | 测量方式 |
 |------|------|----------|
@@ -279,7 +440,7 @@ testkitx 是唯一允许依赖所有 Foundation L1 模块的包，但仅在 `go 
 
 ---
 
-## 8. 可观测输出
+## 18. Observability
 
 testkitx 不 emit 生产可观测数据。它提供 fake exporter 用于测试验证：
 
@@ -293,15 +454,7 @@ exporter.AssertSpanCount(3)
 
 ---
 
-## 9. 故障模式
-
-| 故障场景 | 降级行为 | 是否阻塞启动 |
-|----------|----------|--------------|
-| fake 行为与真实实现偏差 | **测试失败**：contract test 应捕获偏差 | N/A（仅测试） |
-
----
-
-## 10. 安全要求
+## 19. Security
 
 | 要求 | 实现方式 |
 |------|----------|
@@ -310,13 +463,32 @@ exporter.AssertSpanCount(3)
 
 ---
 
-## 11. Go baseline
+## 20. CI Gate
 
-testkitx 的 `go.mod` 必须与其他 Foundation 模块对齐到 Go 1.23。当前状态：Go 1.24，需要降级。
+### 20.1 通用 Gate
+
+| Gate | 命令 | 阻塞条件 |
+|------|------|----------|
+| 编译 | `go build ./...` | 编译失败 |
+| 测试 | `go test ./... -race -count=1` | 任何测试失败或 data race |
+| 覆盖率 | `go test ./... -coverprofile=cover.out && go tool cover -func=cover.out` | 总覆盖率 < 80% |
+| vet | `go vet ./...` | 任何 vet 错误 |
+| lint | `golangci-lint run` | 任何 lint 错误 |
+| 依赖检查 | `go mod tidy && git diff --exit-code go.mod go.sum` | go.mod 不整洁 |
+| Secret 扫描 | `gitleaks detect --no-git` | 泄露 secret |
+| Benchmark | `go test -bench=. -benchmem -count=3 ./...` | 结果附在 PR comment |
+
+### 20.2 testkitx 专属 Gate
+
+| Gate | 命令 | 阻塞条件 |
+|------|------|----------|
+| no-production-import | `go list -deps github.com/ZoneCNH/x.go/... 2>/dev/null \| grep testkitx` | 生产包依赖 testkitx |
+| contract tests | `go test ./contract/... -race -count=1` | 任何 contract test 失败 |
+| golden update guard | 检查 `GOLDEN_UPDATE` 不在 CI 中设置 | CI 中误更新 golden 文件 |
 
 ---
 
-## 12. 升级兼容
+## 21. Upgrade Compatibility
 
 | 变更类型 | 版本升级 |
 |----------|----------|
@@ -327,7 +499,7 @@ testkitx 的 `go.mod` 必须与其他 Foundation 模块对齐到 Go 1.23。当�
 
 ---
 
-## 13. 发布 DoD
+## 22. Release DoD
 
 - [ ] 所有公共接口有 godoc 注释
 - [ ] 所有公共类型有示例代码
@@ -343,3 +515,14 @@ testkitx 的 `go.mod` 必须与其他 Foundation 模块对齐到 Go 1.23。当�
 - [ ] Go baseline 与 Foundation 其他模块对齐（1.23）
 - [ ] Secret 扫描通过
 - [ ] 公共 API 无破坏性变更（或已 bump major）
+- [ ] 所有 Functional Requirements 有对应测试
+- [ ] 所有 Edge Cases 有对应测试
+
+---
+
+## 23. Open Questions
+
+- 是否需要支持自定义 fake 行为（如 FakeLogger 的 level 过滤模拟）？
+- fixture loader 是否需要支持 YAML/TOML 格式（当前仅 JSON/golden）？
+- contract test 是否需要覆盖 schedulex.Scheduler 接口？
+- BoundaryCheck 是否需要支持白名单（允许特定测试包依赖 testkitx）？

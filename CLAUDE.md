@@ -10,6 +10,7 @@
 
 - `README.md`：个人主页、技术栈、分层架构摘要和组件仓库索引。
 - `ARCHITECTURE.md`：依赖拓扑、领域职责、设计原则和状态表的权威文档。
+- `CONSTITUTION.md`：模块宪法 — 13 条治理条款，AI 代理和人类贡献者的最高权威参考。
 - `AGENTS.md` / `CLAUDE.md`：面向自动化代理和贡献者的工作指南。
 
 实际实现位于 `github.com/ZoneCNH` 下约 70 个独立仓库，例如 `kernel`、`binance`、`factor-engine`、`risk-engine`、`x.go`。本仓库只描述和链接这些模块，不承载它们的源码。
@@ -46,4 +47,5 @@
 - **语言**：所有文档和提交信息默认使用中文，英文保留给仓库名、模块名、命令和标准技术术语。
 - **提交**：使用 Conventional Commits 前缀和中文描述，例如 `docs:`、`feat:`、`refactor:`、`fix:`。
 - **链接**：引用组件时，使用既有表格风格的 `https://github.com/ZoneCNH/<repo>` 链接。
+- **规格标准**：模块规格遵循 `CONSTITUTION.md` 第四条，采用 23 节结构（行为规格 WHEN/THEN、接口契约、业务规则、错误处理、边界场景、验收标准等）。模板见 `specs/README.md`。
 - **安全**：不要提交凭证、API key、账户 ID、私有端点或实盘交易配置。

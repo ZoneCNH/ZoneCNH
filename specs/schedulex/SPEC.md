@@ -6,36 +6,175 @@
 
 ---
 
-## 1. 定位
+## 1. Metadata
 
-`schedulex` 是调度运行时，负责可靠地在指定时间触发任务，并管理并发、错过执行和停机语义。
+- Status: Active
+- Owner: ZoneCNH
+- Layer: L1 基础能力
+- Version: v0.7.3
+- Repository: [github.com/ZoneCNH/schedulex](https://github.com/ZoneCNH/schedulex)
+- Related: [CONSTITUTION.md](../CONSTITUTION.md), [ARCHITECTURE.md](../ARCHITECTURE.md)
 
-### 核心职责
+---
 
-- cron / interval / delay job
-- timezone 规则
-- jitter
-- overlap policy（Skip / Queue / Replace）
-- misfire policy（Skip / RunOnce / CatchUp）
-- max concurrency
-- graceful shutdown
-- distributed lock 可选适配
-- job event hook
-- 与 `observex` 和 `resiliencx` 集成
+## 2. Summary
 
-### 明确不做
+`schedulex` 是调度运行时，负责可靠地在指定时间触发任务，并管理并发、错过执行和停机语义。支持 cron/interval/delay 三种触发方式，提供 overlap 和 misfire 策略，可选分布式锁。
 
-- 不负责业务为什么触发
-- 不应内置策略调仓、行情拉取或订单逻辑
+---
+
+## 3. Problem
+
+量化交易系统有多种定时任务（行情拉取、因子计算、风控检查、报表生成），没有统一调度器会导致：
+
+- 各模块自行使用 `time.Ticker`，时区处理不一致
+- 任务错过执行（misfire）无策略，数据缺失
+- 任务重叠执行（overlap）导致重复下单或数据竞争
+- 优雅停机时任务未完成就被杀死
+- 单节点和分布式部署的调度逻辑不统一
+
+---
+
+## 4. Goals
+
+- 统一 cron / interval / delay 任务调度
+- 明确的 overlap 策略：Skip / Queue / Replace
+- 明确的 misfire 策略：Skip / RunOnce / CatchUp
+- 支持 timezone 规则和 DST 切换
+- 可选分布式锁，防止多实例重复执行
+- 可注入时钟，支持测试确定性
+- job event hook 用于可观测集成
+
+---
+
+## 5. Non-goals
+
+- 不负责业务为什么触发（不内置策略调仓、行情拉取等逻辑）
 - 不替代 Kafka/NATS 等消息队列
 - 不实现业务工作流
 - 不决定策略何时调仓
 
 ---
 
-## 2. 接口契约
+## 6. Consumers
 
-### 2.1 Scheduler
+| 消费者 | 使用方式 |
+|--------|----------|
+| `x.go`（组合根） | 创建 Scheduler，注册 job，调用 Start |
+| `market-data` | 定时拉取行情数据 |
+| `factor-engine` | 定时计算因子 |
+| `risk-engine` | 定时执行风控检查 |
+| `report-engine` | 定时生成报表 |
+| 业务域模块 | 通过 Scheduler.Schedule 注册定时任务 |
+
+---
+
+## 7. Functional Requirements
+
+### FR-001: Schedule
+
+WHEN 调用 `Schedule(job Job)` 且 trigger 合法
+THEN 注册 job，返回 JobID
+
+WHEN 调用 `Schedule(job Job)` 且 cron 语法错误
+THEN 返回 `ErrInvalidTrigger`
+
+WHEN 调用 `Schedule(job Job)` 且 interval <= 0
+THEN 返回 `ErrInvalidTrigger`
+
+WHEN 调用 `Schedule(job Job)` 且 JobID 已存在
+THEN 返回 `ErrDuplicateJob`
+
+### FR-002: Trigger
+
+WHEN job 使用 cron 触发且到达调度时间
+THEN 调用 JobHandler
+
+WHEN job 使用 interval 触发且间隔到期
+THEN 调用 JobHandler
+
+WHEN job 设置 Delay 首次延迟
+THEN 等待 Delay 后首次触发
+
+### FR-003: Overlap Policy
+
+WHEN OverlapPolicy = Skip 且上次执行未完成
+THEN 跳过本次触发
+
+WHEN OverlapPolicy = Queue 且上次执行未完成
+THEN 排队等待上次完成后执行
+
+WHEN OverlapPolicy = Replace 且上次执行未完成
+THEN 取消旧的执行，启动新的
+
+### FR-004: Misfire Policy
+
+WHEN MisfirePolicy = Skip 且触发被错过
+THEN 跳过本次，等待下一个调度周期
+
+WHEN MisfirePolicy = RunOnce 且触发被错过
+THEN 补执行一次
+
+WHEN MisfirePolicy = CatchUp 且触发被错过
+THEN 补执行所有错过的次数
+
+### FR-005: Cancel
+
+WHEN 调用 `Cancel(id)` 且 job 存在
+THEN 取消 job，返回 nil
+
+WHEN 调用 `Cancel(id)` 且 job 不存在
+THEN 返回 `ErrJobNotFound`
+
+### FR-006: Stop
+
+WHEN 调用 `Stop(ctx)`
+THEN 等待正在执行的 job 完成或超时
+
+WHEN Stop 期间 job 超过 deadline
+THEN 强制取消，返回 `ErrShutdownTimeout`
+
+### FR-007: EventSink
+
+WHEN job 触发、开始、完成、失败或 misfire
+THEN 调用注册的 JobEvent 回调
+
+### FR-008: Locker
+
+WHEN 分布式锁获取成功
+THEN 执行 job
+
+WHEN 分布式锁获取失败
+THEN 跳过本次执行，等待下一个调度周期
+
+WHEN lock TTL < job 最大执行时间
+THEN 返回配置错误
+
+### FR-009: Clock
+
+WHEN 注入 FakeClock
+THEN 所有调度基于 FakeClock，不调用 time.Now（测试确定性）
+
+---
+
+## 8. Business Rules
+
+| 编号 | 规则 |
+|------|------|
+| BR-001 | Schedule 必须校验 trigger 合法性（cron 语法 / interval > 0） |
+| BR-002 | 同一 JobID 重复注册返回 ErrDuplicateJob |
+| BR-003 | Stop 必须等待正在执行的 job 完成或超时 |
+| BR-004 | overlap 行为由 OverlapPolicy 决定，不内置隐式策略 |
+| BR-005 | job panic 被 catch，不影响其他 job |
+| BR-006 | lock TTL > job 最大执行时间，防止锁提前释放导致重复执行 |
+| BR-007 | DST 切换时触发时间必须正确（不能跳过或重复触发） |
+| BR-008 | job handler 必须接受 context.Context，支持取消传播 |
+
+---
+
+## 9. Interface Contract
+
+### 9.1 Scheduler
 
 ```go
 type Scheduler interface {
@@ -49,7 +188,7 @@ type Scheduler interface {
 type JobID string
 ```
 
-### 2.2 Job
+### 9.2 Job
 
 ```go
 type Job struct {
@@ -86,7 +225,7 @@ const (
 )
 ```
 
-### 2.3 JobStatus
+### 9.3 JobStatus
 
 ```go
 type JobStatus struct {
@@ -110,7 +249,7 @@ const (
 )
 ```
 
-### 2.4 事件 Hook
+### 9.4 EventSink
 
 ```go
 type JobEvent func(event JobEventData)
@@ -134,7 +273,7 @@ const (
 )
 ```
 
-### 2.5 Locker（分布式锁）
+### 9.5 Locker
 
 ```go
 type Locker interface {
@@ -143,16 +282,7 @@ type Locker interface {
 }
 ```
 
-### 2.6 契约约束
-
-- `Schedule` 必须校验 trigger 合法性（cron 语法 / interval > 0）
-- 同一 `JobID` 重复注册返回 `ErrDuplicateJob`
-- `Stop` 必须等待正在执行的 job 完成或超时
-- overlap 行为由 `OverlapPolicy` 决定，不内置隐式策略
-- job panic 被 catch → 不影响其他 job
-- lock TTL > job 最大执行时间，防止锁提前释放导致重复执行
-
-### 2.7 公共错误
+### 9.6 公共错误
 
 ```go
 var (
@@ -166,7 +296,77 @@ var (
 
 ---
 
-## 3. 目录结构
+## 10. Data Model
+
+### 10.1 配置结构
+
+```go
+type SchedulerConfig struct {
+    Timezone        string        `yaml:"timezone"`
+    OverlapPolicy   OverlapPolicy `yaml:"overlap_policy"`
+    MisfirePolicy   MisfirePolicy `yaml:"misfire_policy"`
+    MaxConcurrency  int           `yaml:"max_concurrency"`
+    DefaultTimeout  time.Duration `yaml:"default_timeout"`
+    ShutdownTimeout time.Duration `yaml:"shutdown_timeout"`
+}
+```
+
+---
+
+## 11. Config Schema
+
+```yaml
+schedulex:
+  timezone: UTC
+  overlap_policy: skip        # skip / queue / replace
+  misfire_policy: skip        # skip / run_once / catch_up
+  max_concurrency: 10
+  default_timeout: 5m
+  shutdown_timeout: 30s
+  distributed_lock:
+    enabled: false
+    backend: redis             # redis / postgres
+    ttl: 30s
+  jitter:
+    enabled: true
+    max: 5s
+```
+
+---
+
+## 12. Error Handling
+
+| 错误 | 调用方处理 |
+|------|-----------|
+| `ErrDuplicateJob` | 检查 JobID 是否重复，使用不同 ID |
+| `ErrInvalidTrigger` | 检查 cron 语法或 interval 值 |
+| `ErrJobNotFound` | 检查 JobID 拼写，确认 job 已注册 |
+| `ErrShutdownTimeout` | 增加 shutdown_timeout 或检查 job 是否阻塞 |
+| `ErrLockAcquire` | 检查锁后端连通性，等待下一个调度周期 |
+
+**错误消息格式：** `"schedulex: <operation>: <detail>"`
+**错误包装：** 使用 `%w` 保留底层错误链
+
+---
+
+## 13. Edge Cases
+
+| 场景 | 预期行为 |
+|------|----------|
+| cron 表达式语法错误 | 返回 ErrInvalidTrigger，不注册 job |
+| interval = 0 | 返回 ErrInvalidTrigger |
+| DST 切换（春/秋） | 触发时间正确，不跳过或重复 |
+| job panic | catch panic，记录日志，不影响其他 job |
+| 停机时 job 正在执行 | 等待完成或超时后 force cancel |
+| 分布式锁获取失败 | 跳过本次，等待下一个调度周期 |
+| lock TTL < job 执行时间 | 返回配置错误 |
+| 0 个 job 注册后 Start | 正常启动，等待 Stop |
+| 时区为 UTC+0 与本地时区差异 | 按配置时区计算触发时间 |
+| 并发 Schedule + Cancel | 需要加锁，保证并发安全 |
+
+---
+
+## 14. Directory Structure
 
 ```
 schedulex/
@@ -203,9 +403,9 @@ schedulex/
 
 ---
 
-## 4. 依赖
+## 15. Dependencies
 
-### 4.1 go.mod
+### 15.1 go.mod
 
 ```
 module github.com/ZoneCNH/schedulex
@@ -213,47 +413,20 @@ module github.com/ZoneCNH/schedulex
 go 1.23
 ```
 
-### 4.2 依赖方向
+### 15.2 依赖方向
 
 | 可以依赖 | 禁止依赖 |
 |----------|----------|
 | kernel（L0 原语） | configx |
-| observex（interface-only） | |
-| resiliencx（可选，job wrapper） | testkitx（仅 test） |
-| stdlib | 所有业务域实现 |
+| observex（interface-only） | testkitx（仅 test） |
+| resiliencx（可选，job wrapper） | 所有业务域实现 |
+| stdlib | |
 
 ---
 
-## 5. CI Gate
+## 16. Testing
 
-### 5.1 通用 Gate
-
-| Gate | 命令 | 阻塞条件 |
-|------|------|----------|
-| 编译 | `go build ./...` | 编译失败 |
-| 测试 | `go test ./... -race -count=1` | 任何测试失败或 data race |
-| 覆盖率 | `go test ./... -coverprofile=cover.out && go tool cover -func=cover.out` | 总覆盖率 < 80% |
-| vet | `go vet ./...` | 任何 vet 错误 |
-| lint | `golangci-lint run` | 任何 lint 错误 |
-| 依赖检查 | `go mod tidy && git diff --exit-code go.mod go.sum` | go.mod 不整洁 |
-| Secret 扫描 | `gitleaks detect --no-git` | 泄露 secret |
-| Benchmark | `go test -bench=. -benchmem -count=3 ./...` | 结果附在 PR comment |
-
-### 5.2 schedulex 专属 Gate
-
-| Gate | 命令 | 阻塞条件 |
-|------|------|----------|
-| DST/timezone golden | `go test -run TestDST ./...` | 时区切换行为不正确 |
-| misfire contract | `go test -run TestMisfireContract ./...` | misfire 策略行为不符合规范 |
-| overlap contract | `go test -run TestOverlapContract ./...` | overlap 策略行为不符合规范 |
-| shutdown leak | `go test -run TestShutdownLeak ./...` | 停机后有 goroutine 泄漏 |
-| shutdown race | `go test -race -run TestShutdownRace ./...` | 停机过程有 data race |
-
----
-
-## 6. 测试矩阵
-
-### 6.1 单元测试
+### 16.1 单元测试
 
 | 测试场景 | 验证点 |
 |----------|--------|
@@ -272,10 +445,39 @@ go 1.23
 | trigger 验证 | cron 语法错误 → `ErrInvalidTrigger` |
 | 重复注册 | 同一 JobID → `ErrDuplicateJob` |
 | DST 切换 | 夏令时切换时触发时间正确 |
-| 触发确定性 | 相同 clock → 相同 next time |
+| 触发确定性 | 相同 FakeClock → 相同 next time |
 | event hook | 事件正确输出到 hook |
 
-### 6.2 集成测试
+### 16.2 Given/When/Then 用例
+
+**TC-001: 正常 cron 触发**
+Given 注册 cron job `*/1 * * * *`
+When FakeClock 推进到下一分钟
+Then JobHandler 被调用一次
+
+**TC-002: OverlapSkip 跳过**
+Given OverlapPolicy = Skip，job 执行需 10s
+When 第二次触发在 5s 时到来
+Then 第二次触发被跳过
+
+**TC-003: MisfireRunOnce 补执行**
+Given MisfirePolicy = RunOnce，调度间隔 1s
+When FakeClock 推进 5s（跳过 5 次触发）
+Then 补执行 1 次
+
+**TC-004: 分布式锁失败跳过**
+Given Locker.Acquire 返回 false
+When 到达触发时间
+Then 跳过本次执行，等待下一个调度周期
+
+### 16.3 Benchmark
+
+| 场景 | 目标 |
+|------|------|
+| 1000 个 job 内存 | < 10MB |
+| job 触发延迟 | < 10ms |
+
+### 16.4 集成测试
 
 | 场景 | 验证点 |
 |------|--------|
@@ -283,16 +485,9 @@ go 1.23
 | job 触发延迟 | < 10ms |
 | schedulex + resiliencx | job 失败 → retry → breaker open → 后续 fail-fast |
 
-### 6.3 Benchmark
-
-| 场景 | 目标 |
-|------|------|
-| 1000 个 job 内存 | < 10MB |
-| job 触发延迟 | < 10ms |
-
 ---
 
-## 7. 性能预算
+## 17. Performance Budget
 
 | 操作 | 目标 | 测量方式 |
 |------|------|----------|
@@ -302,7 +497,7 @@ go 1.23
 
 ---
 
-## 8. 可观测输出
+## 18. Observability
 
 | 类型 | 名称 | 说明 |
 |------|------|------|
@@ -324,18 +519,7 @@ go 1.23
 
 ---
 
-## 9. 故障模式
-
-| 故障场景 | 降级行为 | 是否阻塞启动 |
-|----------|----------|--------------|
-| job 执行 panic | **隔离 + 记录**：catch panic，记录 job ID 和堆栈，不影响其他 job | 否 |
-| misfire | **按策略处理**：skip / run once / catch up，由配置决定 | 否 |
-| 分布式锁获取失败 | **skip 本次执行**：记录日志，等待下一个调度周期 | 否 |
-| 停机超时 | **force cancel**：超过 deadline 后强制取消正在执行的 job | 否（运行时） |
-
----
-
-## 10. 安全要求
+## 19. Security
 
 | 要求 | 实现方式 |
 |------|----------|
@@ -344,28 +528,34 @@ go 1.23
 
 ---
 
-## 11. 配置 schema
+## 20. CI Gate
 
-```yaml
-schedulex:
-  timezone: UTC
-  overlap_policy: skip        # skip / queue / replace
-  misfire_policy: skip        # skip / run_once / catch_up
-  max_concurrency: 10
-  default_timeout: 5m
-  shutdown_timeout: 30s
-  distributed_lock:
-    enabled: false
-    backend: redis             # redis / postgres
-    ttl: 30s
-  jitter:
-    enabled: true
-    max: 5s
-```
+### 20.1 通用 Gate
+
+| Gate | 命令 | 阻塞条件 |
+|------|------|----------|
+| 编译 | `go build ./...` | 编译失败 |
+| 测试 | `go test ./... -race -count=1` | 任何测试失败或 data race |
+| 覆盖率 | `go test ./... -coverprofile=cover.out && go tool cover -func=cover.out` | 总覆盖率 < 80% |
+| vet | `go vet ./...` | 任何 vet 错误 |
+| lint | `golangci-lint run` | 任何 lint 错误 |
+| 依赖检查 | `go mod tidy && git diff --exit-code go.mod go.sum` | go.mod 不整洁 |
+| Secret 扫描 | `gitleaks detect --no-git` | 泄露 secret |
+| Benchmark | `go test -bench=. -benchmem -count=3 ./...` | 结果附在 PR comment |
+
+### 20.2 schedulex 专属 Gate
+
+| Gate | 命令 | 阻塞条件 |
+|------|------|----------|
+| DST/timezone golden | `go test -run TestDST ./...` | 时区切换行为不正确 |
+| misfire contract | `go test -run TestMisfireContract ./...` | misfire 策略行为不符合规范 |
+| overlap contract | `go test -run TestOverlapContract ./...` | overlap 策略行为不符合规范 |
+| shutdown leak | `go test -run TestShutdownLeak ./...` | 停机后有 goroutine 泄漏 |
+| shutdown race | `go test -race -run TestShutdownRace ./...` | 停机过程有 data race |
 
 ---
 
-## 12. 升级兼容
+## 21. Upgrade Compatibility
 
 | 变更类型 | 版本升级 |
 |----------|----------|
@@ -377,7 +567,7 @@ schedulex:
 
 ---
 
-## 13. 发布 DoD
+## 22. Release DoD
 
 - [ ] 所有公共接口有 godoc 注释
 - [ ] 所有公共类型有示例代码
@@ -395,3 +585,14 @@ schedulex:
 - [ ] shutdown race 测试通过
 - [ ] Secret 扫描通过
 - [ ] 公共 API 无破坏性变更（或已 bump major）
+- [ ] 所有 Functional Requirements 有对应测试
+- [ ] 所有 Edge Cases 有对应测试
+
+---
+
+## 23. Open Questions
+
+- 是否需要支持动态添加/移除 job（运行时 Schedule/Cancel）的并发安全保证级别？
+- 是否需要支持 job 优先级（高优先级 job 可抢占低优先级的执行槽）？
+- 分布式锁是否需要支持 Redis 以外的后端（PostgreSQL Advisory Lock）？
+- misfire CatchUp 策略是否有上限（最多补执行 N 次）？

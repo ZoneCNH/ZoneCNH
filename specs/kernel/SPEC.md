@@ -6,33 +6,141 @@
 
 ---
 
-## 1. 定位
+## 1. Metadata
 
-`kernel` 是应用的运行时骨架，负责把模块组织成一个可启动、可停止、可观测、可验证的应用。
-
-### 核心职责
-
-- `App` / `Module` / `Lifecycle` 抽象
-- 模块注册、依赖声明和依赖图校验
-- 启动顺序、停止顺序和优雅退出
-- readiness / liveness / health 状态
-- 启动失败、停止失败、panic 的处理规则
-- context 传递和 cancellation
-- 与 `configx`、`observex`、`resiliencx`、`schedulex` 的标准集成点
-
-### 明确不做
-
-- 不做配置解析细节
-- 不做日志实现
-- 不做重试策略
-- 不放交易、行情、风控、订单逻辑
-- 不做存储、网络、业务 DTO
+- Status: Active
+- Owner: ZoneCNH
+- Layer: L0 原语
+- Version: v0.7.3
+- Repository: [github.com/ZoneCNH/kernel](https://github.com/ZoneCNH/kernel)
+- Related: [CONSTITUTION.md](../CONSTITUTION.md), [ARCHITECTURE.md](../ARCHITECTURE.md)
 
 ---
 
-## 2. 接口契约
+## 2. Summary
 
-### 2.1 Module / App / Lifecycle
+`kernel` 是应用的运行时骨架，负责把模块组织成一个可启动、可停止、可观测、可验证的应用。stdlib-only，零外部依赖。
+
+---
+
+## 3. Problem
+
+量化交易系统由 70+ 个模块组成，每个模块有自己的启动顺序、依赖关系和生命周期。没有统一的生命周期管理，会导致：
+- 模块启动顺序靠人工协调，容易出错
+- 循环依赖在运行时才发现
+- 优雅停机无法保证反序释放资源
+- 健康检查各自为政，无法统一报告
+
+---
+
+## 4. Goals
+
+- 提供 `App` / `Module` / `Lifecycle` 抽象，统一模块生命周期
+- 自动检测循环依赖，启动前 fail-fast
+- 按拓扑序启动、反序停止
+- 统一 readiness / liveness / health 状态
+- 处理启动失败、停止超时、panic
+- stdlib-only，零外部依赖
+
+---
+
+## 5. Non-goals
+
+- 不做配置解析细节（→ `configx`）
+- 不做日志实现（→ `observex`）
+- 不做重试策略（→ `resiliencx`）
+- 不放交易、行情、风控、订单逻辑
+- 不做存储、网络、业务 DTO
+- 不做服务发现或远程调用
+
+---
+
+## 6. Consumers
+
+| 消费者 | 使用方式 |
+|--------|----------|
+| `x.go`（组合根） | 创建 App，Register 所有模块，调用 Run |
+| L1 运行时模块 | 实现 Module 接口，被 kernel 管理生命周期 |
+| 业务域模块 | 实现 Module 接口，通过 Deps 接收 L1 能力 |
+| 运维/监控 | 通过 Health() 查询模块状态 |
+
+---
+
+## 7. Functional Requirements
+
+### FR-001: Register
+
+WHEN 调用 `Register(m Module)` 且模块名未注册
+THEN 模块加入注册表，返回 nil
+
+WHEN 调用 `Register(m Module)` 且模块名已注册
+THEN 返回 `ErrAlreadyRegistered`，注册表不变
+
+WHEN 调用 `Register(nil)`
+THEN 返回错误，注册表不变
+
+### FR-002: Run
+
+WHEN 调用 `Run(ctx)` 且依赖图无环
+THEN 按拓扑序依次调用每个模块的 `Init` → `Start`，返回 nil
+
+WHEN 调用 `Run(ctx)` 且依赖图有环
+THEN 返回 `ErrCycleDetected`，不启动任何模块
+
+WHEN 启动过程中某模块 `Init` 失败
+THEN 已 Init 的模块被 Stop，返回该模块的错误（fail-fast）
+
+WHEN 启动过程中某模块 `Start` 失败
+THEN 已 Start 的模块被 Stop，返回该模块的错误（fail-fast）
+
+WHEN ctx 在启动过程中被取消
+THEN 中断启动，已启动的模块被 Stop
+
+### FR-003: Shutdown
+
+WHEN 调用 `Shutdown(ctx)`
+THEN 按启动反序调用每个模块的 `Stop`
+
+WHEN 某模块 `Stop` 超过 deadline
+THEN 强制跳过该模块，继续停止后续模块，返回 `ErrShutdownTimeout`
+
+WHEN ctx 在停机过程中被取消
+THEN 立即返回，记录未完成模块
+
+### FR-004: ModuleHealth
+
+WHEN 调用 `ModuleHealth(name)` 且模块已注册
+THEN 返回该模块的 `HealthStatus`
+
+WHEN 调用 `ModuleHealth(name)` 且模块未注册
+THEN 返回 `ErrModuleNotFound`
+
+### FR-005: DependencyGraph
+
+WHEN 调用 `DependencyGraph()`
+THEN 返回当前依赖图的只读副本
+
+---
+
+## 8. Business Rules
+
+| 编号 | 规则 |
+|------|------|
+| BR-001 | 依赖图不允许环（检测到即 fail-fast） |
+| BR-002 | 启动顺序必须是拓扑序（依赖先于被依赖者） |
+| BR-003 | 停止顺序必须是启动反序（被依赖者先于依赖者停止） |
+| BR-004 | Init 失败的模块不能进入 Start |
+| BR-005 | Health() 必须是幂等的、无副作用的 |
+| BR-006 | Stop 超时后 force shutdown，记录未完成模块 |
+| BR-007 | panic 必须被 catch，不传播到调用方 |
+| BR-008 | kernel 不 import 任何非 stdlib 包 |
+| BR-009 | Deps 中的接口类型由消费方组装时注入，kernel 不知道具体实现 |
+
+---
+
+## 9. Interface Contract
+
+### 9.1 Module / App / Lifecycle
 
 ```go
 type Module interface {
@@ -67,29 +175,106 @@ type App interface {
 }
 ```
 
-### 2.2 契约约束
+### 9.2 用法示例
 
-- `Register` 后必须校验依赖图，循环依赖返回 `ErrCycleDetected`
-- `Run` 按拓扑序启动，`Shutdown` 按反序停止
-- `Init` 失败的模块不能进入 `Start`
-- `Health()` 是幂等的、无副作用的
-- `Stop` 超时后 force shutdown，记录未完成模块
+```go
+app := kernel.New()
 
-### 2.3 公共错误
+// 注册模块
+app.Register(&marketDataModule{})
+app.Register(&strategyModule{})
+
+// 启动（自动拓扑序）
+if err := app.Run(ctx); err != nil {
+    log.Fatal(err)
+}
+
+// 停机（自动反序）
+app.Shutdown(ctx)
+```
+
+---
+
+## 10. Data Model
+
+### 10.1 公共错误
 
 ```go
 var (
-    ErrCycleDetected    = errors.New("kernel: dependency cycle detected")
-    ErrModuleNotFound   = errors.New("kernel: module not found")
+    ErrCycleDetected     = errors.New("kernel: dependency cycle detected")
+    ErrModuleNotFound    = errors.New("kernel: module not found")
     ErrAlreadyRegistered = errors.New("kernel: module already registered")
-    ErrStartupFailed    = errors.New("kernel: startup failed")
-    ErrShutdownTimeout  = errors.New("kernel: shutdown timeout")
+    ErrStartupFailed     = errors.New("kernel: startup failed")
+    ErrShutdownTimeout   = errors.New("kernel: shutdown timeout")
+    ErrNilModule         = errors.New("kernel: nil module")
+)
+```
+
+### 10.2 模块状态
+
+```go
+type ModuleState int
+
+const (
+    StateRegistered ModuleState = iota  // 已注册，未启动
+    StateStarting                        // 正在启动
+    StateRunning                         // 运行中
+    StateStopping                        // 正在停止
+    StateStopped                         // 已停止
+    StateError                           // 启动/运行出错
 )
 ```
 
 ---
 
-## 3. 目录结构
+## 11. Config Schema
+
+kernel 通过 `configx.Reader` 接收以下配置：
+
+```yaml
+kernel:
+  startup_timeout: 30s        # 模块启动超时
+  shutdown_timeout: 15s       # 优雅停机超时
+  health_check_interval: 10s  # 健康检查周期
+  modules: []                 # 显式模块列表（可选，默认自动发现）
+```
+
+---
+
+## 12. Error Handling
+
+| 错误 | 调用方处理 |
+|------|-----------|
+| `ErrCycleDetected` | 修复依赖关系，不能重试 |
+| `ErrAlreadyRegistered` | 检查模块名是否重复，不能重试 |
+| `ErrNilModule` | 传入有效模块，不能重试 |
+| `ErrStartupFailed` | 检查失败模块的 Init/Start 日志，修复后重试 |
+| `ErrShutdownTimeout` | 检查哪些模块 Stop 超时，考虑增加 shutdown_timeout |
+| `ErrModuleNotFound` | 检查模块名拼写，确认已 Register |
+
+**错误消息格式：** `"kernel: <operation>: <detail>"`
+**错误包装：** 使用 `%w` 保留底层错误链
+
+---
+
+## 13. Edge Cases
+
+| 场景 | 预期行为 |
+|------|----------|
+| 空 App（无模块注册） | Run 立即返回 nil |
+| 单模块无依赖 | 正常启动和停止 |
+| 自引用依赖（A→A） | 视为环，`ErrCycleDetected` |
+| 并发 Register | 需要加锁，保证并发安全 |
+| 并发 Run | 第二次调用返回错误或等待 |
+| Run 后再 Register | 返回错误（已启动不允许新增） |
+| 模块 Start panic | catch panic，返回 `ErrStartupFailed` |
+| 模块 Stop panic | catch panic，记录日志，继续停止后续模块 |
+| ctx 在 Init 期间取消 | 中断 Init，已 Init 的模块被 Stop |
+| 100+ 模块 | 拓扑排序 < 1ms |
+
+---
+
+## 14. Directory Structure
 
 ```
 kernel/
@@ -119,9 +304,9 @@ kernel/
 
 ---
 
-## 4. 依赖
+## 15. Dependencies
 
-### 4.1 go.mod
+### 15.1 go.mod
 
 ```
 module github.com/ZoneCNH/kernel
@@ -129,7 +314,7 @@ module github.com/ZoneCNH/kernel
 go 1.23
 ```
 
-### 4.2 依赖方向
+### 15.2 依赖方向
 
 | 可以依赖 | 禁止依赖 |
 |----------|----------|
@@ -138,95 +323,15 @@ go 1.23
 | | 所有 L2.5 领域共享层 |
 | | 所有存储/中间件扩展 |
 
-### 4.3 特殊说明
+### 15.3 特殊说明
 
 kernel 是 stdlib-only 的 L0 原语层。它通过接口接收 `configx.Reader`、`observex.Logger` 等，但不 import 这些包。`Deps` 结构体的类型定义在消费方（如 `x.go`）组装时注入。
 
 ---
 
-## 5. CI Gate
+## 16. Testing
 
-### 5.1 通用 Gate
-
-| Gate | 命令 | 阻塞条件 |
-|------|------|----------|
-| 编译 | `go build ./...` | 编译失败 |
-| 测试 | `go test ./... -race -count=1` | 任何测试失败或 data race |
-| 覆盖率 | `go test ./... -coverprofile=cover.out && go tool cover -func=cover.out` | 总覆盖率 < 80% |
-| vet | `go vet ./...` | 任何 vet 错误 |
-| lint | `golangci-lint run` | 任何 lint 错误 |
-| 依赖检查 | `go mod tidy && git diff --exit-code go.mod go.sum` | go.mod 不整洁 |
-| Secret 扫描 | `gitleaks detect --no-git` | 泄露 secret |
-| Benchmark | `go test -bench=. -benchmem -count=3 ./...` | 结果附在 PR comment |
-
-### 5.2 kernel 专属 Gate
-
-| Gate | 命令 | 阻塞条件 |
-|------|------|----------|
-| stdlib-only | `go list -deps ./... \| grep -v "^std" \| grep -v "kernel"` | 任何非 stdlib 依赖 |
-| no-hidden-goroutine | `grep -rn "go func" --include="*.go" . \| grep -v _test.go \| grep -v internal/` | 非 internal 包启动 goroutine |
-
-### 5.3 CI Pipeline
-
-```yaml
-# .github/workflows/ci.yml
-name: CI
-on: [push, pull_request]
-
-jobs:
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
-        with: { go-version: '1.23' }
-      - run: golangci-lint run
-
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
-        with: { go-version: '1.23' }
-      - run: go test ./... -race -count=1 -coverprofile=cover.out
-      - name: Coverage gate
-        run: |
-          COV=$(go tool cover -func=cover.out | grep total | awk '{print $3}' | tr -d '%')
-          if (( $(echo "$COV < 80" | bc -l) )); then
-            echo "FAIL: coverage $COV% < 80%"
-            exit 1
-          fi
-
-  stdlib-only:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
-        with: { go-version: '1.23' }
-      - run: |
-          EXTERNAL=$(go list -deps ./... | grep -v "^std" | grep -v "github.com/ZoneCNH/kernel" || true)
-          if [ -n "$EXTERNAL" ]; then
-            echo "BLOCKED: kernel has external dependencies:"
-            echo "$EXTERNAL"
-            exit 1
-          fi
-
-  benchmark:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
-        with: { go-version: '1.23' }
-      - run: go test -bench=. -benchmem -count=3 ./... | tee bench.txt
-      - uses: actions/upload-artifact@v4
-        with: { name: benchmark, path: bench.txt }
-```
-
----
-
-## 6. 测试矩阵
-
-### 6.1 单元测试
+### 16.1 单元测试
 
 | 测试场景 | 验证点 |
 |----------|--------|
@@ -241,7 +346,33 @@ jobs:
 | 模块未找到 | `ModuleHealth("unknown")` → `ErrModuleNotFound` |
 | panic 隔离 | 模块 Start panic → 被 catch → App 返回错误 |
 
-### 6.2 Benchmark
+### 16.2 Given/When/Then 用例
+
+**TC-001: 正常启动和停止**
+Given 注册模块 A（无依赖）
+When 调用 Run
+Then A.Init 被调用，然后 A.Start 被调用
+When 调用 Shutdown
+Then A.Stop 被调用
+
+**TC-002: 循环依赖**
+Given 注册模块 A 依赖 B，B 依赖 A
+When 调用 Run
+Then 返回 ErrCycleDetected
+And 无模块被启动
+
+**TC-003: 启动失败回滚**
+Given 注册模块 A（无依赖）和 B（依赖 A）
+When A.Start 成功，B.Start 失败
+Then A.Stop 被调用
+And 返回 B 的错误
+
+**TC-004: 停止超时**
+Given 模块 A.Stop 需要 10s，shutdown_timeout = 1s
+When 调用 Shutdown
+Then 1s 后强制返回 ErrShutdownTimeout
+
+### 16.3 Benchmark
 
 | 场景 | 目标 |
 |------|------|
@@ -249,7 +380,7 @@ jobs:
 | 冷启动（不含业务模块） | < 100ms |
 | 依赖图拓扑排序（100 节点） | < 1ms |
 
-### 6.3 集成测试
+### 16.4 集成测试
 
 | 场景 | 验证点 |
 |------|--------|
@@ -258,7 +389,7 @@ jobs:
 
 ---
 
-## 7. 性能预算
+## 17. Performance Budget
 
 | 操作 | 目标 | 测量方式 |
 |------|------|----------|
@@ -269,7 +400,7 @@ jobs:
 
 ---
 
-## 8. 可观测输出
+## 18. Observability
 
 | 类型 | 名称 | 说明 |
 |------|------|------|
@@ -287,18 +418,7 @@ jobs:
 
 ---
 
-## 9. 故障模式
-
-| 故障场景 | 降级行为 | 是否阻塞启动 |
-|----------|----------|--------------|
-| 模块启动失败 | **fail-fast**：记录失败模块，拒绝启动整个应用 | 是 |
-| 模块停止超时 | **force shutdown**：超过 deadline 后强制终止，记录未完成模块 | 否（运行时） |
-| 依赖图存在循环 | **fail-fast**：启动前检测，报错并退出 | 是 |
-| 模块 panic | **隔离**：catch panic，记录堆栈，返回错误 | 是（启动时）/ 否（运行时） |
-
----
-
-## 10. 安全要求
+## 19. Security
 
 | 要求 | 实现方式 |
 |------|----------|
@@ -307,21 +427,31 @@ jobs:
 
 ---
 
-## 11. 配置依赖
+## 20. CI Gate
 
-kernel 通过 `configx.Reader` 接收以下配置：
+### 20.1 通用 Gate
 
-```yaml
-kernel:
-  startup_timeout: 30s        # 模块启动超时
-  shutdown_timeout: 15s       # 优雅停机超时
-  health_check_interval: 10s  # 健康检查周期
-  modules: []                 # 显式模块列表（可选，默认自动发现）
-```
+| Gate | 命令 | 阻塞条件 |
+|------|------|----------|
+| 编译 | `go build ./...` | 编译失败 |
+| 测试 | `go test ./... -race -count=1` | 任何测试失败或 data race |
+| 覆盖率 | `go test ./... -coverprofile=cover.out && go tool cover -func=cover.out` | 总覆盖率 < 80% |
+| vet | `go vet ./...` | 任何 vet 错误 |
+| lint | `golangci-lint run` | 任何 lint 错误 |
+| 依赖检查 | `go mod tidy && git diff --exit-code go.mod go.sum` | go.mod 不整洁 |
+| Secret 扫描 | `gitleaks detect --no-git` | 泄露 secret |
+| Benchmark | `go test -bench=. -benchmem -count=3 ./...` | 结果附在 PR comment |
+
+### 20.2 kernel 专属 Gate
+
+| Gate | 命令 | 阻塞条件 |
+|------|------|----------|
+| stdlib-only | `go list -deps ./... \| grep -v "^std" \| grep -v "kernel"` | 任何非 stdlib 依赖 |
+| no-hidden-goroutine | `grep -rn "go func" --include="*.go" . \| grep -v _test.go \| grep -v internal/` | 非 internal 包启动 goroutine |
 
 ---
 
-## 12. 升级兼容
+## 21. Upgrade Compatibility
 
 | 变更类型 | 版本升级 |
 |----------|----------|
@@ -332,7 +462,7 @@ kernel:
 
 ---
 
-## 13. 发布 DoD
+## 22. Release DoD
 
 - [ ] 所有公共接口有 godoc 注释
 - [ ] 所有公共类型有示例代码
@@ -346,3 +476,13 @@ kernel:
 - [ ] stdlib-only 检查通过
 - [ ] Secret 扫描通过
 - [ ] 公共 API 无破坏性变更（或已 bump major）
+- [ ] 所有 Functional Requirements 有对应测试
+- [ ] 所有 Edge Cases 有对应测试
+
+---
+
+## 23. Open Questions
+
+- 模块是否需要支持动态注册（运行时新增模块）？当前设计只允许启动前注册。
+- 是否需要支持模块间依赖注入（除了通过 Deps 结构体）？
+- health check 是否需要支持自定义检查间隔（per-module）？

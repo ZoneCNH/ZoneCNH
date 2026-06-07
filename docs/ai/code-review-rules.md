@@ -1,0 +1,156 @@
+# Code Review Rules: FoundationX
+
+> AI 代理进行代码审查时必须遵循的检查清单。
+
+最后更新：2026-06-07
+Status: Approved
+
+---
+
+## 1. Review 触发条件
+
+以下场景**必须**进行 code review：
+
+| 场景 | 说明 |
+|------|------|
+| 新增模块 | 完整审查：接口设计、依赖方向、测试覆盖 |
+| 修改公共接口 | 重点审查：API 兼容性、调用方影响 |
+| 修改内部实现 | 标准审查：逻辑正确性、性能、测试更新 |
+| 修复 bug | 重点审查：回归测试、根因分析 |
+| 安全相关代码 | 强制使用 `security-reviewer` 代理 |
+| 更新文档 | 轻量审查：准确性、一致性 |
+
+---
+
+## 2. 严重级别定义
+
+| 级别 | 含义 | 行动 |
+|------|------|------|
+| **CRITICAL** | 安全漏洞、数据丢失风险、生产事故 | **阻塞** — 必须修复后才能合并 |
+| **HIGH** | Bug、重大质量问题、违反 CONSTITUTION.md | **警告** — 应修复后合并 |
+| **MEDIUM** | 可维护性问题、命名不规范、缺少注释 | **建议** — 考虑修复 |
+| **LOW** | 风格偏好、微小优化 | **可选** — 按团队判断 |
+
+---
+
+## 3. 安全审查清单
+
+- [ ] 无硬编码 secret（API key、密码、token、账户 ID）
+- [ ] 无 SQL 注入风险（使用参数化查询）
+- [ ] 无 XSS 风险（用户输入已转义/净化）
+- [ ] 无 CSRF 漏洞（状态变更接口有防护）
+- [ ] 敏感数据不写入日志
+- [ ] 错误消息不泄露配置细节或内部状态
+- [ ] 不使用 `unsafe` 包（除非有充分理由并记录）
+- [ ] 密钥通过环境变量或密钥管理器注入
+- [ ] 文件路径经过校验，无路径遍历风险
+- [ ] 外部输入在系统边界处校验
+
+---
+
+## 4. 代码质量清单
+
+### 4.1 函数与文件
+
+- [ ] 函数 < 50 行（超过需拆分）
+- [ ] 文件 < 800 行（超过需提取模块）
+- [ ] 嵌套深度 ≤ 4 层（超过使用提前返回重构）
+
+### 4.2 错误处理
+
+- [ ] 错误显式处理，不静默吞掉
+- [ ] 使用 `%w` 保留错误链
+- [ ] 错误消息格式：`"package: operation: detail"`
+- [ ] 公共错误定义在 `errors.go`
+- [ ] 库代码不使用 `log.Fatal` / `os.Exit` / `panic`
+
+### 4.3 命名与可读性
+
+- [ ] 变量和函数使用 `camelCase`，描述性命名
+- [ ] 布尔值使用 `is` / `has` / `should` / `can` 前缀
+- [ ] 接口和类型使用 `PascalCase`
+- [ ] 常量使用 `UPPER_SNAKE_CASE`
+- [ ] 魔法数字替换为命名常量
+
+### 4.4 不可变性
+
+- [ ] 优先返回新对象，不修改输入参数
+- [ ] 配置值读取后不修改
+- [ ] 并发共享数据使用 `sync.RWMutex` 或 `atomic`
+
+---
+
+## 5. 性能审查清单
+
+- [ ] 无 N+1 查询（使用 JOIN 或批处理）
+- [ ] 查询有分页（添加 LIMIT）
+- [ ] 查询有约束（无无界查询）
+- [ ] 昂贵操作有缓存
+- [ ] 循环内无重复计算（提取到循环外）
+- [ ] 大数据集使用流式处理，不全量加载到内存
+- [ ] Benchmark 结果符合 spec 中的 Performance Budget
+
+---
+
+## 6. Spec 遵循检查
+
+- [ ] 实现符合 spec Section 7（Functional Requirements）的 WHEN/THEN
+- [ ] 遵循 spec Section 8（Business Rules）
+- [ ] 处理 spec Section 12（Error Handling）中列出的所有错误
+- [ ] 覆盖 spec Section 13（Edge Cases）
+- [ ] 满足 spec Section 16（Testing）中的测试要求
+- [ ] 符合 spec Section 17（Performance Budget）
+
+---
+
+## 7. 架构合规检查
+
+- [ ] 依赖方向正确（数据域 → 基座，执行域 → 决策域，不反向）
+- [ ] 跨域调用通过 `contracts` 接口，不直接 import 实现
+- [ ] 数据职责不跨域
+- [ ] 策略只能通过 `risk-engine` 提交订单
+- [ ] L2.5 领域共享层（`decimalx`、`domain-market` 等）被正确复用
+- [ ] `x.go` 只做组合，不含业务逻辑
+
+---
+
+## 8. 测试审查
+
+- [ ] 新增/修改的公共方法有测试
+- [ ] 新增/修改的公共错误有测试
+- [ ] 测试使用 Given/When/Then 格式
+- [ ] 测试名包含 TC 编号
+- [ ] `-race` 测试通过
+- [ ] 覆盖率 ≥ 80%
+- [ ] 测试不依赖外部服务
+- [ ] 测试数据不包含敏感信息
+
+---
+
+## 9. 批准标准
+
+| 条件 | 结果 |
+|------|------|
+| 无 CRITICAL 和 HIGH 问题 | **Approve** |
+| 仅有 HIGH 问题（≤ 2 个） | **Approve with Warning** — 合并后跟踪 |
+| 有 CRITICAL 问题 | **Block** — 必须修复后重新审查 |
+| 未经 security-reviewer 审查的安全相关代码 | **Block** — 必须先完成安全审查 |
+
+---
+
+## 10. Agent 选择
+
+根据变更内容选择合适的审查代理：
+
+| 变更类型 | 推荐代理 |
+|----------|----------|
+| 通用代码质量 | `code-reviewer` |
+| 安全相关代码 | `security-reviewer` |
+| TypeScript / JavaScript | `typescript-reviewer` |
+| Python | `python-reviewer` |
+| Go | `go-reviewer` / `ecc:go-reviewer` |
+| Rust | `rust-reviewer` |
+| 架构变更 | `architect` |
+| 性能敏感代码 | `performance-optimizer` |
+
+多个代理可并行使用，各自负责不同维度。

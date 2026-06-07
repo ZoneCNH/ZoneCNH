@@ -106,27 +106,46 @@ Foundation 6 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中�
 | [`module/FOUNDATION-DEPS.yaml`](./module/FOUNDATION-DEPS.yaml) | 机器可读依赖矩阵，CI 可消费 |
 | [`module/ADR-foundationx-exit.md`](./module/ADR-foundationx-exit.md) | ADR：foundationx 兼容退出计划 |
 | [`module/FOUNDATION-TRACKER.md`](./module/FOUNDATION-TRACKER.md) | 执行跟踪器 — P0/P1/P2 Issue 检查清单 |
+| [`CONSTITUTION.md`](./CONSTITUTION.md) | 模块宪法 — 16 模块最高治理文件，AI 代理和人类贡献者的权威参考 |
 
-每个模块的独立完整规格（接口契约、目录结构、CI Gate、测试矩阵、性能预算、可观测输出、故障模式、安全要求、发布 DoD）：
+16 个基座模块的独立完整规格（23 节结构：行为规格 WHEN/THEN、接口契约、业务规则、错误处理、边界场景、验收标准、目录结构、CI Gate、测试矩阵、性能预算、可观测输出、发布 DoD），按架构层级组织。完整索引见 [`specs/README.md`](./specs/README.md)。全部 16 模块已完成 23 节结构升级。
 
-| 模块 | 完整规格 |
-|------|----------|
-| kernel | [`specs/kernel/SPEC.md`](./specs/kernel/SPEC.md) |
-| configx | [`specs/configx/SPEC.md`](./specs/configx/SPEC.md) |
-| observex | [`specs/observex/SPEC.md`](./specs/observex/SPEC.md) |
-| resiliencx | [`specs/resiliencx/SPEC.md`](./specs/resiliencx/SPEC.md) |
-| schedulex | [`specs/schedulex/SPEC.md`](./specs/schedulex/SPEC.md) |
-| testkitx | [`specs/testkitx/SPEC.md`](./specs/testkitx/SPEC.md) |
-| xlibgate | [`specs/xlibgate/SPEC.md`](./specs/xlibgate/SPEC.md) |
-| xlib-standard | [`specs/xlib-standard/SPEC.md`](./specs/xlib-standard/SPEC.md) |
-| contracts | [`specs/contracts/SPEC.md`](./specs/contracts/SPEC.md) |
-| redisx | [`specs/redisx/SPEC.md`](./specs/redisx/SPEC.md) |
-| kafkax | [`specs/kafkax/SPEC.md`](./specs/kafkax/SPEC.md) |
-| natsx | [`specs/natsx/SPEC.md`](./specs/natsx/SPEC.md) |
-| postgresx | [`specs/postgresx/SPEC.md`](./specs/postgresx/SPEC.md) |
-| taosx | [`specs/taosx/SPEC.md`](./specs/taosx/SPEC.md) |
-| ossx | [`specs/ossx/SPEC.md`](./specs/ossx/SPEC.md) |
-| clickhousex | [`specs/clickhousex/SPEC.md`](./specs/clickhousex/SPEC.md) |
+| 层级 | 模块 | 完整规格 |
+|------|------|----------|
+| **L0 原语** | kernel | [`specs/kernel/SPEC.md`](./specs/kernel/SPEC.md) |
+| **L1 运行时** | configx | [`specs/configx/SPEC.md`](./specs/configx/SPEC.md) |
+| | observex | [`specs/observex/SPEC.md`](./specs/observex/SPEC.md) |
+| | resiliencx | [`specs/resiliencx/SPEC.md`](./specs/resiliencx/SPEC.md) |
+| | schedulex | [`specs/schedulex/SPEC.md`](./specs/schedulex/SPEC.md) |
+| **L1 测试** | testkitx | [`specs/testkitx/SPEC.md`](./specs/testkitx/SPEC.md) |
+| **门禁** | xlib-standard | [`specs/xlib-standard/SPEC.md`](./specs/xlib-standard/SPEC.md) |
+| | xlibgate | [`specs/xlibgate/SPEC.md`](./specs/xlibgate/SPEC.md) |
+| **存储扩展** | redisx | [`specs/redisx/SPEC.md`](./specs/redisx/SPEC.md) |
+| | kafkax | [`specs/kafkax/SPEC.md`](./specs/kafkax/SPEC.md) |
+| | natsx | [`specs/natsx/SPEC.md`](./specs/natsx/SPEC.md) |
+| | postgresx | [`specs/postgresx/SPEC.md`](./specs/postgresx/SPEC.md) |
+| | taosx | [`specs/taosx/SPEC.md`](./specs/taosx/SPEC.md) |
+| | ossx | [`specs/ossx/SPEC.md`](./specs/ossx/SPEC.md) |
+| | clickhousex | [`specs/clickhousex/SPEC.md`](./specs/clickhousex/SPEC.md) |
+| **契约** | contracts | [`specs/contracts/SPEC.md`](./specs/contracts/SPEC.md) |
+| **组合根** | x.go | [`specs/xgo/SPEC.md`](./specs/xgo/SPEC.md) |
+
+### 规格体系与治理文档
+
+| 文档 | 定位 |
+|------|------|
+| [`docs/product/product-spec.md`](./docs/product/product-spec.md) | 产品规格 — Vision、Users、Goals、MVP Scope |
+| [`docs/testing/test-strategy.md`](./docs/testing/test-strategy.md) | 测试策略 — 覆盖率、格式、工具、CI 集成 |
+| [`docs/testing/acceptance-tests.md`](./docs/testing/acceptance-tests.md) | 验收测试 — 端到端验收场景和检查清单 |
+| [`docs/ai/agent-rules.md`](./docs/ai/agent-rules.md) | AI 代理规则 — 编码、测试、安全、禁止事项 |
+| [`docs/ai/prompt-templates.md`](./docs/ai/prompt-templates.md) | Prompt 模板 — 审查、拆分、实现、自查、修复 |
+| [`docs/ai/code-review-rules.md`](./docs/ai/code-review-rules.md) | 代码审查规则 — AI 代理审查标准和流程 |
+| [`GLOSSARY.md`](./GLOSSARY.md) | 术语表 — 系统核心概念和缩写定义 |
+| [`specs/DEFINITION-OF-READY.md`](./specs/DEFINITION-OF-READY.md) | Spec Ready — spec 可以进入开发的前置条件 |
+| [`specs/DEFINITION-OF-DONE.md`](./specs/DEFINITION-OF-DONE.md) | Spec Done — 模块实现完成的验收条件 |
+| [`specs/TRACEABILITY.md`](./specs/TRACEABILITY.md) | 需求追踪 — FR → AC → TC → 实现全覆盖 |
+| [`specs/anti-requirements.md`](./specs/anti-requirements.md) | 反需求 — 明确不做之事，防止范围蔓延 |
+| [`module/ADR-TEMPLATE.md`](./module/ADR-TEMPLATE.md) | ADR 模板 — 架构决策记录标准格式 |
 
 ## Foundation 第一阶段闭环
 
