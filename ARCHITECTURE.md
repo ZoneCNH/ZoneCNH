@@ -157,6 +157,8 @@ x.go
 | 基座 | [testkitx](https://github.com/ZoneCNH/testkitx) | v0.4.0 | ✅ 已有 | ███░ 80% | 测试工具包，254KB/27 项 |
 | 基座 | [resiliencx](https://github.com/ZoneCNH/resiliencx) | v0.4.8 | ✅ 已有 | ███░ 80% | 弹性与容错，707KB/27 项 |
 | 基座 | [schedulex](https://github.com/ZoneCNH/schedulex) | v0.1.2 | ✅ 已有 | ███░ 80% | 调度任务，398KB/25 项 |
+| 基座 | [xlibgate](https://github.com/ZoneCNH/xlibgate) | - | ✅ 已有 | - | 门禁与验证运行时 |
+| 基座 | [xlib-standard](https://github.com/ZoneCNH/xlib-standard) | - | ✅ 已有 | - | 基础库规范（基座的前置依赖） |
 | 基座 | [redisx](https://github.com/ZoneCNH/redisx) | - | ✅ 已有 | █░░░ 15% | Redis，仅骨架 |
 | 基座 | [kafkax](https://github.com/ZoneCNH/kafkax) | - | ✅ 已有 | █░░░ 15% | Kafka，仅骨架 |
 | 基座 | [natsx](https://github.com/ZoneCNH/natsx) | - | ✅ 已有 | ███░ 80% | NATS，349KB/27 项 |
