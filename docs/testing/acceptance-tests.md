@@ -366,3 +366,37 @@ Foundation v1 整体验收通过的条件：
 - [ ] AT-018 至 AT-020 全部通过（工具与标准验收）
 - [ ] 所有场景无 data race（`-race` 通过）
 - [ ] 验收测试覆盖率 ≥ 80%
+
+---
+
+## 6. 性能预算验收
+
+> 将各 SPEC.md 中定义的 Performance Budget 纳入验收条件。
+
+### AT-PERF-001: 模块性能预算达标
+
+**前置条件**：模块已实现并通过所有功能验收
+
+**验收标准**：
+- [ ] 各 SPEC.md §17 定义的延迟指标达标（P99 < 标注值）
+- [ ] 各 SPEC.md §17 定义的内存指标达标
+- [ ] Benchmark 结果记录在模块 README.md 中
+- [ ] 无性能退化（与基线对比 < 10%）
+
+**验证方式**：`go test -bench=. -benchmem -count=3 ./...`
+
+---
+
+## 7. 非功能测试策略
+
+### 7.1 Fuzz Testing
+
+- 对所有解析类函数（配置加载、协议解析、类型转换）补充 fuzz 测试
+- 使用 Go 1.18+ 原生 fuzz，文件命名 `*_fuzz_test.go`
+- CI 中以 `-fuzz=. -fuzztime=30s` 运行
+
+### 7.2 Soak Testing
+
+- 对长时间运行模块（schedulex、kafkax、natsx）补充 soak 测试
+- 持续运行 ≥ 10 分钟，监控内存泄漏和 goroutine 泄漏
+- 使用 `runtime.NumGoroutine()` 和 `runtime.ReadMemStats()` 断言
