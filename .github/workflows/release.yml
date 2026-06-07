@@ -63,6 +63,9 @@ jobs:
       - name: Spec 结构校验
         run: bash .github/ci/spec-lint.sh
 
+      - name: Spec 漂移防护
+        run: bash .github/ci/spec-drift-guard.sh
+
       - name: Traceability 覆盖校验
         run: bash .github/ci/traceability-check.sh
 

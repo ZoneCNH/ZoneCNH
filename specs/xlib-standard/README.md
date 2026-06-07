@@ -4,16 +4,19 @@
 
 ## 工件
 
-- `MODULE-SPEC.md`：完整模块规格，作为本次整理后的主规格。
+- `SPEC.md`：**当前可执行主规格**（23 节、52 FR、104 WHEN/THEN），经 CI（spec-lint + traceability-check）校验。
+- `MODULE-SPEC.md`：历史整理工件（20 节、154 文件口径），其独有内容已合并入 SPEC.md，保留供参考。
 - `TRACEABILITY.md`：规格条款到来源文件的追溯表。
 - `CONFLICT-LEDGER.md`：冲突、历史计划和最终取舍。
 - `COVERAGE-MANIFEST.md`：输入文件清单与覆盖口径。
-- `SPEC.md`、`DEEP-ANALYSIS.md`：历史分析工件，保留旧口径和问题背景，不作为当前主规格。
+- `DEEP-ANALYSIS.md`：历史深度分析报告（181 文件旧口径），保留用于问题背景。
 
 ## 阅读规则
 
-- 当前可执行主规格以 `MODULE-SPEC.md` 为准；`TRACEABILITY.md`、`CONFLICT-LEDGER.md` 和 `COVERAGE-MANIFEST.md` 是配套约束。
-- `SPEC.md` 与 `DEEP-ANALYSIS.md` 中的 181 文件、17+ gates、66 gates、10 ADR 等数字均为历史口径，不得覆盖本次 154 文件覆盖口径。
+- 当前可执行主规格以 `SPEC.md` 为准；CI 校验其 23 节结构、FR 连续性、WHEN 子句和追溯完整性。
+- `MODULE-SPEC.md` 已废弃为主规格，其独有内容（权威来源层级、生成器规格、goalcli 运行时、L2 Provider、Evidence 协议、远端治理、DONE 模板）已合并入 SPEC.md。
+- `DEEP-ANALYSIS.md` 中的 181 文件、66 gates、10 ADR 等数字均为历史口径，不得覆盖当前主规格。
+- `TRACEABILITY.md` 是条款级来源矩阵，不是逐规则证明账本；需要内容级复现时必须提供 source pack、digest/tree sha 或重新生成覆盖清单。
 - 下游采用、release-ready、远端 ruleset/CI 状态必须由下游仓库或远端证据证明；本目录只记录本地分析、要求和风险。
 - `1000-pass` 只表示输入文件集合和清单稳定性检查，不表示每条语义经过 1000 次独立审查。
 
@@ -21,6 +24,7 @@
 
 - 本目录可作为本地规格整理包；只有 `git status`、commit、tag 或 release artifact 能证明它已经进入版本控制或发布边界。
 - 未运行远端 API、CI artifact、ruleset export 或下游仓库验证前，不得声明 branch protection/ruleset enabled、release-ready 或 downstream adopted。
+- 覆盖清单使用本机绝对路径，迁移环境时不得把路径存在性等同于可复现 source bundle。
 - 修改输入范围后，必须同时更新 `MODULE-SPEC.md`、`TRACEABILITY.md`、`CONFLICT-LEDGER.md` 和 `COVERAGE-MANIFEST.md`。
 
 ## 覆盖口径

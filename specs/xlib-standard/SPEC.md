@@ -1,13 +1,19 @@
-# xlib-standard 历史规格草案（非当前主规格）
+# xlib-standard SPEC
 
-> **历史工件**：本文件保留 v2.0.0/181 文件历史口径，仅用于背景追溯。当前可执行主规格以 `MODULE-SPEC.md` 为准；当前覆盖口径以 `COVERAGE-MANIFEST.md` 的 154 个文件为准；冲突裁决以 `CONFLICT-LEDGER.md` 为准。
->
 > FoundationX 基础库标准工厂。标准源 + Go 参考模板 + Generator + Harness + Evidence Runtime + Debt Governance Runtime。
 
-- Status: Superseded historical draft（非当前主规格）
+- Status: Draft
 - Spec-Version: v2.0.0
 - Last-Updated: 2026-06-07
-- 历史分析覆盖：181 个源文件（.worktree/ 42 + docs/ 121 + Downloads/ 18），7 组并行深度分析
+
+---
+
+## 0. 使用边界
+
+- xlib-standard 是基础库标准工厂，不是业务库，不是 L1/L2 provider runtime。
+- 所有基础库必须使用 xlib-standard 的标准、模板和门禁。
+- 下游库（kernel、configx、redisx 等）消费 xlib-standard 的产物，不反向依赖。
+- x.go 是私有业务 consumer，不作为标准门禁的前置条件。
 
 ---
 
@@ -39,6 +45,38 @@ xlib-standard 是 FoundationX 量化交易基础设施的**基础库标准工厂
 6. **Debt Governance Runtime**：7 类技术债治理（ARCH/DEP/DOMAIN/DOCS/TEST/IMPL/SEC），40+ 条规则
 
 xlib-standard 本身不包含业务逻辑，不依赖 x.go，不读取生产密钥。它是所有基础库的"工程基因库"。
+
+### 2.1 权威来源与事实层级
+
+规格按事实强度分层：
+
+| 层级 | 来源 | 用法 |
+|------|------|------|
+| Current Standard | `docs/standard/**`、根级 `docs/*.md` | 当前可执行规范和门禁事实。 |
+| Domain Supplement | `docs/testing/**`、`docs/l2/**`、`docs/evidence/**` | 下游、L2、测试和证据补充。 |
+| Historical Plan | `.worktree/*.md`、`docs/v0.6.0/**`、Downloads | 迁移目标、历史审查、未落地设计和冲突证据。 |
+| Runtime Proof | release/evidence、ledger、CI artifact、remote ruleset proof | 只有真实产物可证明执行状态或远端状态。 |
+
+禁止把弱事实升级为强事实：
+
+- `registered` ≠ `adopted`
+- `baseline_scanned` ≠ `implemented`
+- `dry_run_ready` ≠ `executed`
+- `artifact_exists` ≠ `usable`
+- `CHECK_STATUS=passed` ≠ release-ready evidence
+- downstream sync plan ≠ downstream adoption proof
+
+### 2.2 当前事实边界
+
+本规格只能证明本地输入文件已被整理成规格包；不能单独证明远端、发布或下游仓库的当前状态。
+
+| 事项 | 本规格当前结论 | 升级为 passed/adopted/release-ready 所需证明 |
+|------|--------------|------------------------------------------|
+| 输入覆盖 | 181 个源文件被纳入分析。 | 新增或删除源文件后同步更新覆盖清单和追溯表。 |
+| 语义整理 | 7 组并行分析 + 主线程证据收敛。 | 具体条款仍以来源追溯、冲突账本和后续实现验证为准。 |
+| Release-ready | 仅定义 release-ready 条件和 fail-closed 规则。 | release-final、preflight、manifest、score、evidence check、clean workspace 和 GitHub Release proof。 |
+| 远端治理 | 仅定义 branch protection、ruleset、required checks 和 workflow 权限要求。 | GitHub API、ruleset export、required checks、CI artifact 或仓库设置证据。 |
+| 下游采用 | 仅定义 adoption proof 条件。 | 下游仓库 commit、gate output、proof schema、rollback plan 和下游 CI 证据。 |
 
 ---
 
@@ -1125,7 +1163,25 @@ L5: market-engine / macro-engine / regime-engine（私有）
 L6: x.go（私有）
 ```
 
-### 15.2 依赖方向规则
+### 15.2 L2 Provider 规格
+
+L2 模块包括 `postgresx`、`redisx`、`kafkax`、`natsx`、`taosx`、`ossx`、`clickhousex`。
+
+L2 交付链：capability manifest → contract pack → adapter implementation → evidence pack → contract/integration/chaos/benchmark/adoption gates → xlibgate release judgment。
+
+Release ladder：
+
+| 阶段 | 语义 |
+|------|------|
+| T0 | 文档和计划存在，不可发布。 |
+| T1 | capability 和 contract 初步存在，不可发布。 |
+| T2 | 本地 contract/integration 有证据，但未达 release profile。 |
+| T3 | 首个 release-allowed 阶段。 |
+| T4 | factory-grade；包括更完整的故障、性能、兼容和 adoption 证据。 |
+
+缺失 profile、pack、readiness 或证据时，L2 release 必须 fail closed。
+
+### 15.3 依赖方向规则
 
 - 依赖只能从高层指向低层，不可反向
 - L3-L6 不公开、不开源
@@ -1197,6 +1253,36 @@ git push origin vX.Y.Z
 - Docker 是工具链运行时，不是第二套 gate
 - .dockerignore 必须排除 .git/.omc/.omx/.worktree/本地 Evidence
 - 环境变量必须显式传递并记录语义
+
+### 17.4 生成器详细规格
+
+当前标准入口：`scripts/render_template.sh --module <module> --name <name> --package <package> --out <path>`
+
+- 输出目录不得是 `xlib-standard` 根，也不得落在本仓库内部。
+- 输出目录必须不存在或为空。
+- 必须替换 module/name/package/import path、README、docs、contracts、examples、scripts、manifest、Makefile、CI 中的模板 token。
+- 必须去除旧身份 token 和不可提交的生成态 latest 文件。
+- 必须排除 `.git`、`.omc`、`.omx`、`.worktree`、`.agent/inbox`、临时缓存、历史生成产物、release/debt latest。
+- 生成库必须通过 `GOWORK=off go test ./...` 和标准门禁。
+- 生成库不得引入 `x.go`、业务导入、生产 secret 路径或 provider 真实凭证。
+
+治理包渲染：下游使用 `--enable-governance` 时，必须写入标准版本、标准 commit、layer、lock 文件和治理材料。
+
+默认代表下游：`kernel`（L0）、`configx`（L1）、`redisx`（L2）。
+
+### 17.5 goalcli 运行时规格
+
+`cmd/goalcli` 是唯一 Go runtime execution face。通用 CLI 契约：
+
+- 除明确 delegated script 外，所有命令输出 JSON。
+- JSON 必须包含 `command`、`status`，并可包含 `details`、`gaps`。
+- 报告 schema 使用 `contracts/goalcli-report.schema.json`。
+- 所有命令本地、非破坏、默认 dry-run。
+- `--verify` 和 `--strict` 必须阻断 planned/gap/unknown。
+
+退出码：`passed`→0，`failed`/`planned`/`gap`→1，`unknown`/illegal invocation/schema violation→2。
+
+Goal Runtime：`.agent/evidence/ledger.jsonl` 是目标执行源 ledger；`GOAL_ID` 必须绑定目标执行；G12-G16 为阻断型目标门禁。
 
 ---
 
@@ -1291,6 +1377,13 @@ git push origin vX.Y.Z
 | R-005 | 规则绑定语义漂移 | 中 | 后续 enforcer 改名时需同步更新 |
 | R-006 | 本地 hooks 可被绕过 | 高 | 升级为 GitHub ruleset 强制 |
 | R-007 | 重复文件未实质修改 | 低 | 清理冗余副本 |
+| R-008 | 本地文件不能证明远端治理状态 | 高 | 通过 GitHub API、ruleset export、CI artifact 或 Release object 证明 |
+| R-009 | 13 个下游库全部 not_adopted | 高 | 至少推进 kernel 首次采纳，证明模板可用 |
+| R-010 | 规格膨胀（~900 行含实现细节） | 中 | 将 PR 执行包清单、goalcli 命令列表拆分到 docs/ 子文档 |
+
+### 20.1 远端治理不可本地证明项
+
+本地文件不能证明：GitHub branch protection 已启用、ruleset 生效、required checks 绑定、GitHub Release object 已创建、远端 workflow 权限和 Actions pin 生效、下游仓库已接受标准 patch。这些项必须通过远端 API、CI artifact、GitHub Release、ruleset export 或下游仓库 commit proof 单独证明。
 
 ---
 
@@ -1389,6 +1482,22 @@ git push origin vX.Y.Z
 13. Self-improving 是强制环节
 14. 文档 ≠ 证据（document ≠ proof）
 15. registered/baseline_scanned/patch-only ≠ adopted
+
+### 22.5 DONE 模板
+
+```text
+DONE with evidence:
+- Scope:
+- Source files:
+- Commands:
+- Artifacts:
+- Manifest:
+- Downstream:
+- Release status:
+- Known gaps:
+```
+
+没有 Evidence 的完成声明不能作为 release、adoption 或 final-complete 事实。
 
 ---
 

@@ -14,6 +14,12 @@ Input-Count: 154
 
 总数：154 个文件。
 
+## 可复现边界
+
+本清单记录的是本次分析机器上的本地绝对路径集合，不是可移植 source bundle。本次修复时本机校验结果为 154 个路径全部存在；若迁移到其他机器或重新执行分析，必须提供同一 source pack、路径映射，或重新生成本清单。
+
+本清单证明输入文件集合数量和路径稳定，不证明这些源文件内容在未来时间点保持不变。若需要内容级复现，必须补充 source digest、tree sha 或归档 artifact。
+
 ## `.worktree/*.md`
 
 - `/home/xlib-standard/.worktree/L.md`

@@ -102,7 +102,7 @@ Status: consolidated
 
 冲突：`SPEC.md` 摘要使用 17+ 个 Required Gates，`DEEP-ANALYSIS.md` 又记录 66 个 gates。两者统计粒度不同，容易被读成互相矛盾的当前验收标准。
 
-取舍：17+ 只表示核心 required gate 家族；66 是旧深度分析对 harness 分类展开后的历史统计。当前发布验收以 `MODULE-SPEC.md` 中列出的 gate 顺序、release-final 和 preflight 要求为准。
+取舍：~~17+ 只表示核心 required gate 家族~~。SPEC.md 已统一为 "66 个 Required Gates"（FR-020 和 §2），与 harness.yaml 实际数据一致。当前发布验收以 SPEC.md 中的 gate 定义、release-final 和 preflight 要求为准。
 
 ## 18. ADR 10 vs 9 formal + template/history
 
@@ -121,3 +121,15 @@ Status: consolidated
 冲突：本目录文件存在并通过本地检查，容易被误写成已经提交、发布或被下游采用。
 
 取舍：本地整理完成只表示规格包内容已形成并可审阅。已进入版本控制必须由 `git status`、commit 或 tag 证明；已发布必须由 release artifact 和 GitHub Release object 证明；已采用必须由下游仓库证据证明。
+
+## 21. 条款级追溯 vs 逐规则证明账本
+
+冲突：`TRACEABILITY.md` 容易被理解为 154 个输入文件对所有规则的逐项证明。
+
+取舍：追溯表只证明主规格主要条款的来源锚点。逐规则或内容级证明需要 rule id 到 source span、digest/tree sha 或 evidence artifact；发布、远端和下游状态仍按运行时证据判断。
+
+## 22. 本机绝对路径清单 vs 可移植 source bundle
+
+冲突：`COVERAGE-MANIFEST.md` 使用 `/home/...` 绝对路径，容易被误解为任何环境都可复现。
+
+取舍：该清单只证明本次分析机器上的输入集合。跨机器复现必须提供 source pack、路径映射、digest/tree sha 或重新生成覆盖清单。

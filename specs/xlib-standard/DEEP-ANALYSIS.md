@@ -20,7 +20,7 @@
 | 结构债 | ✅ 低   | 分层清晰，boundary gate 强制执行，零外部依赖                               |
 | 实现债 | ⚠️ 中   | cmd/goalcli 两个文件过大，正则解析 YAML，常量硬编码                        |
 | 测试债 | ⚠️ 中   | pkg/templatex 测试完备（含 fuzz/property/golden），但 governance.go 无测试 |
-| 文档债 | ⚠️ 中   | ADR 已存在（10 个），但下游矩阵全 `not_adopted`，SPEC 膨胀风险             |
+| 文档债 | ⚠️ 中   | ADR 已存在（9 个 Accepted），但下游矩阵全 `not_adopted`，SPEC 膨胀风险      |
 | 依赖债 | ✅ 极低 | go.mod 零外部依赖，仅标准库                                                |
 | 领域债 | ⚠️ 中   | 6 类职责边界清晰但 Harness/Evidence 有交叉                                 |
 
@@ -259,8 +259,8 @@
 **D-003: harness gates 数量不同步**
 
 - 严重度：P2
-- 问题：SPEC.md 写 "17+ Required Gates"，实际 harness.yaml 有 66 个 gates（含 required/extended/governance/docker/release/MVA）
-- 建议：更新 SPEC.md 为 "66 个 gates（17 required + 49 extended/governance/release/MVA）"
+- 问题：~~SPEC.md 写 "17+ Required Gates"~~ 已修正为 "66 个 Required Gates"，harness.yaml 确认 66 个 gates（含 required/extended/governance/docker/release/MVA）
+- 状态：已修复（SPEC.md FR-020 和 §2 已更新为 66）
 
 **D-004: docs/standard/ 27 个文件但 SPEC.md 只列出 18 个**
 
@@ -532,7 +532,7 @@ gate 失败 → retrospective → patches (harness/prompt/rule) → gate 收紧 
 | 维度         | 评分 | 说明                                                |
 | ------------ | ---- | --------------------------------------------------- |
 | 完整性       | 9/10 | 23 节全覆盖，419 条规则、10 ADR、28 PR 包           |
-| 准确性       | 8/10 | gates 数量（17+ vs 66）和文档列表（18 vs 27）有偏差 |
+| 准确性       | 9/10 | gates 数量已统一为 66，文档列表仍待补全（18 vs 27） |
 | 可执行性     | 9/10 | 每个 FR 有来源、每个 gate 有 proof_depth            |
 | 膨胀度       | 6/10 | ~800 行，含大量实现细节（PR 包清单、命令列表）      |
 | 与仓库一致性 | 8/10 | 核心一致，细节有滞后                                |

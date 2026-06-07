@@ -49,7 +49,7 @@ Docker Toolchain Runtime 只是可复现工具链环境，不是第二套发布�
 
 | 事项 | 本目录当前结论 | 升级为 passed/adopted/release-ready 所需证明 |
 | --- | --- | --- |
-| 输入覆盖 | 154 个本地输入文件被纳入清单和追溯。 | 新增或删除输入文件后同步更新 `COVERAGE-MANIFEST.md`、`TRACEABILITY.md` 和本规格。 |
+| 输入覆盖 | 154 个本地绝对路径输入文件被纳入清单和追溯。 | 新增或删除输入文件后同步更新 `COVERAGE-MANIFEST.md`、`TRACEABILITY.md` 和本规格；跨机器复现还需要同一 source pack、路径映射或重新生成覆盖清单。 |
 | 语义整理 | agent team 分片合成并由主规格收敛。 | 具体条款仍以来源追溯、冲突账本和后续实现验证为准。 |
 | 1000-pass 检查 | 只证明输入文件集合和清单稳定。 | 不得解释为同一语义经过 1000 次独立人工审查。 |
 | Release-ready | 仅定义 release-ready 条件和 fail-closed 规则。 | release-final、preflight、manifest、score、evidence check、clean workspace 和 GitHub Release proof。 |

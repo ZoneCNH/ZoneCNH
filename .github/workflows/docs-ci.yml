@@ -113,6 +113,16 @@ jobs:
       - name: 校验 spec 结构完整性
         run: bash .github/ci/spec-lint.sh
 
+  # ── 5b. Spec 漂移防护 ──────────────────────────────────────
+  spec-drift-guard:
+    name: Spec Drift Guard
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 检测 SPEC.md 被外部篡改
+        run: bash .github/ci/spec-drift-guard.sh
+
   # ── 6. 追踪矩阵校验 ────────────────────────────────────────
   traceability-check:
     name: Traceability Check
