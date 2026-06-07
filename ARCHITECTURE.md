@@ -153,7 +153,9 @@ Foundation 6 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中�
 
 ## Foundation 第一阶段闭环
 
-这 6 个基础模块可以构成第一阶段最小闭环：`kernel` 提供 L0 原语，`configx` / `observex` / `resiliencx` / `schedulex` 提供 L1 运行时横切能力，`testkitx` 只服务测试期。`xlib-standard` 是独立 Go module，承担标准事实源、Go Reference Template、Generator、Harness Gate 和 Evidence Runtime 五类职责，不作为其他模块的运行时 import 依赖。
+这 6 个基础模块可以构成第一阶段最小闭环：`kernel` 提供 L0 原语，`configx` / `observex` / `resiliencx` / `schedulex` 提供 L1 运行时横切能力，`testkitx` 只服务测试期。
+
+`xlib-standard` 是独立 Go module，承担标准事实源、Go Reference Template、Generator、Harness Gate 和 Evidence Runtime 五类职责，不作为其他模块的运行时 import 依赖。
 
 | 模块            | 层级          | 拥有                                                                                                        | 不拥有                                                     |
 | --------------- | ------------- | ----------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
@@ -167,9 +169,12 @@ Foundation 6 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中�
 
 ### `resiliencx` 身份修复
 
-`resiliencx` 必须回到 operational resilience：对不稳定外部依赖、任务、数据源、交易所 API、消息处理和调度任务提供可组合故障控制策略。`risk-engine` 才负责 trading risk，二者不能混用。
+`resiliencx` 必须回到 operational resilience：对不稳定外部依赖、任务、数据源、交易所 API、消息处理和调度任务提供可组合故障控制策略。
+
+`risk-engine` 才负责 trading risk，二者不能混用。
 
 当前 P0 是确认 `xlib-standard` 的五类职责（Standard Source / Go Reference Template / Generator / Harness / Evidence Runtime）已完整落地，并让 `resiliencx` 围绕 timeout、retry、circuit、bulkhead、rate limit、fallback 和 policy event 建模。
+
 
 | 边界     | `kernel.retryx`                        | `resiliencx`                                      |
 | -------- | -------------------------------------- | ------------------------------------------------- |

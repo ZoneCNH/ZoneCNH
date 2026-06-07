@@ -70,6 +70,7 @@ Status: Approved
 - 说明哪些场景未覆盖
 
 测试格式：
+
 - 使用 Given/When/Then 注释
 - 测试名包含 TC 编号
 - 使用 `testdata/` 存放测试数据
