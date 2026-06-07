@@ -2,26 +2,16 @@
 
 > FoundationX 基础库标准工厂。标准源 + Go 参考模板 + Generator + Harness + Evidence Runtime + Debt Governance Runtime。
 
-- Status: Approved
+- Status: Review
 - Spec-Version: v2.0.1
 - Last-Updated: 2026-06-08
-- Approved-By: spec-review agent（第三轮终审，独立评分 9.66/10）
-- Approved-Date: 2026-06-08
-- Approved-Commit: d7a60ef（后续补 N-1 修复 commit）
 - Owner: ZoneCNH
-- Layer: 门禁（Foundation Gate，位于所有领域之上）
+- Layer: 基座（Foundation Gate 治理子层；详见 §15.1）
 - Version: v0.6.x（目标 v1.0.0-rc.1）
+
+> **状态说明**：本规格自 2026-06-08 04:51 起由 `Approved` 回退到 `Review`，原因详见 `docs/report/xlib-standard-structural-deep-analysis-20260608-0446.md` §S1 / §S2 — 旧 `Approved-By` 为同管线内 sub-agent 自评，且 `COVERAGE-MANIFEST.md` commit/tree sha (OQ-008 / R-011)、TRACEABILITY 行级覆盖 (NG-33) 等发布门禁前置条件均未达成。进入 Approved 需补独立 reviewer 签字 + 固定上游 commit/tree sha + 通过 `goalcli release-final-check`。
 - Repository: [github.com/ZoneCNH/xlib-standard](https://github.com/ZoneCNH/xlib-standard)
 - Related: [CONSTITUTION.md](../../CONSTITUTION.md), [ARCHITECTURE.md](../../ARCHITECTURE.md), [SPEC-TEMPLATE.md](../SPEC-TEMPLATE.md), [xlibgate/SPEC.md](../xlibgate/SPEC.md), [kernel/SPEC.md](../kernel/SPEC.md), [configx/SPEC.md](../configx/SPEC.md)
-
----
-
-## 使用边界
-
-- xlib-standard 是基础库标准工厂，不是业务库，不是 L1/L2 provider runtime。
-- 所有基础库必须使用 xlib-standard 的标准、模板和门禁。
-- 下游库（kernel、configx、redisx 等）消费 xlib-standard 的产物，不反向依赖。
-- x.go 是私有业务 consumer，不作为标准门禁的前置条件。
 
 ---
 
@@ -31,7 +21,7 @@
 |------|-----|
 | 模块名 | xlib-standard |
 | 仓库 | `github.com/ZoneCNH/xlib-standard` |
-| 层级 | 门禁（Foundation Gate，位于所有领域之上；详见 §15.1 领域命名口径） |
+| 层级 | 基座（Foundation Gate 治理子层；属于 ARCHITECTURE.md 五领域之"基座"内的标准/门禁子层，不新建第六领域。详见 §15.1） |
 | 角色 | Standard Source + Go Reference Template + Generator + Harness + Evidence Runtime + Debt Governance Runtime |
 | 默认下游 | kernel(L0), configx(L1), observex(L1), testkitx(L1), redisx(L2) |
 | Go 版本 | 1.23.x（遵循 `.tool-versions`，`GOWORK=off` 必须） |
@@ -53,6 +43,13 @@ xlib-standard 是 FoundationX 量化交易基础设施的**基础库标准工厂
 6. **Debt Governance Runtime**：7 类技术债治理（ARCH/DEP/DOMAIN/DOCS/TEST/IMPL/SEC），40+ 条规则
 
 xlib-standard 本身不包含业务逻辑，不依赖 x.go，不读取生产密钥。它是所有基础库的"工程基因库"。
+
+### 2.0 使用边界（Scope Boundary）
+
+- xlib-standard 是基础库标准工厂，不是业务库，不是 L1/L2 provider runtime。
+- 所有基础库必须使用 xlib-standard 的标准、模板和门禁。
+- 下游库（kernel、configx、redisx 等）消费 xlib-standard 的产物，不反向依赖。
+- x.go 是私有业务 consumer，不作为标准门禁的前置条件。
 
 ### 2.1 权威来源与事实层级
 
@@ -112,19 +109,19 @@ xlib-standard 本身不包含业务逻辑，不依赖 x.go，不读取生产密�
 
 ### 4.1 P0 目标（必须达成）
 
-1. **唯一主身份**：xlib-standard 是唯一主身份，承担 6 类职责（ADR-20260602-001）
-2. **规则机器化**：419 条规则全部机器化为 registry.yaml，P0=100% 有 enforcer（ADR-20260603-002/004/005）
-3. **证据驱动完成**：没有 Evidence 不允许 DONE，完成声明必须使用 `DONE with evidence:` 格式
-4. **Proof-based adoption**：登记态 ≠ adopted，只有 downstream repo 自身生成的 proof-based adoption 才能进入 registry
-5. **配置统一**：v1.0.0 前将配置拓扑收敛到 `.config/`（18 个命名空间）
-6. **三层硬约束**：本地 hooks + CI gate + GitHub Ruleset 三重强制
+- **G-P0-1 唯一主身份**：xlib-standard 是唯一主身份，承担 6 类职责（ADR-20260602-001）
+- **G-P0-2 规则机器化**：419 条规则全部机器化为 registry.yaml，P0=100% 有 enforcer（ADR-20260603-002/004/005）
+- **G-P0-3 证据驱动完成**：没有 Evidence 不允许 DONE，完成声明必须使用 `DONE with evidence:` 格式
+- **G-P0-4 Proof-based adoption**：登记态 ≠ adopted，只有 downstream repo 自身生成的 proof-based adoption 才能进入 registry
+- **G-P0-5 配置统一**：v1.0.0 前将配置拓扑收敛到 `.config/`（18 个命名空间）
+- **G-P0-6 三层硬约束**：本地 hooks + CI gate + GitHub Ruleset 三重强制
 
 ### 4.2 P1 目标（应当达成）
 
-7. **Goal Runtime v3.1.1**：28 个 PR 执行包全部落地，Goal Kernel + Harness Runtime + Extensions 架构
-8. **L2 测试工厂**：15 个 L2 适配器全部达到 L2-T2 级别
-9. **Debt Governance**：7 类技术债治理规则全部纳入 Gate
-10. **自动化**：Issue → Goal → Task → Branch → Commit → PR → Version → Release → Issue Close 全链路
+- **G-P1-7 Goal Runtime v3.1.1**：28 个 PR 执行包全部落地，Goal Kernel + Harness Runtime + Extensions 架构
+- **G-P1-8 L2 测试工厂**：15 个 L2 适配器全部达到 L2-T2 级别
+- **G-P1-9 Debt Governance**：7 类技术债治理规则全部纳入 Gate
+- **G-P1-10 自动化**：Issue → Goal → Task → Branch → Commit → PR → Version → Release → Issue Close 全链路
 
 ---
 
@@ -722,19 +719,21 @@ THEN 阻断后续下游同步，记录失败原因到 downstream-sync plan
 
 ## 8. 业务规则（Business Rules）
 
-### 8.1 核心铁律（Iron Rules，7 条）
+### 8.1 核心铁律（Iron Rules，7 条；亦记为 BR-001..BR-007）
 
-| 编号 | 规则 | 来源 |
-|------|------|------|
-| IR-001 | 没有证据，不允许 DONE | RULE-CORE-001 |
-| IR-002 | Goal 必须从真实上下文开始 | RULE-CORE-002 |
-| IR-003 | 需求必须可验证 | RULE-CORE-003 |
-| IR-004 | 所有变更必须可追踪 | RULE-CORE-004 |
-| IR-005 | Harness 是机器裁判 | RULE-CORE-005 |
-| IR-006 | Self-improving 是强制环节 | RULE-CORE-006 |
-| IR-007 | 登记态 ≠ adopted | main.md, goal.md |
+> **编号别名（消解结构债 S4 / S11）**：`BR-NNN` 为对外引用的业务规则编号，`IR-NNN` 为内部分类编号，`TRUTH-NNN` 为治理真理编号，`RULE-CORE-NNN` 为 enforcer 源码编号。四者在本表一一对应；对外文档 / 追溯矩阵 / Task Spec 一律使用 `BR-NNN`，enforcer 与 registry.yaml 一律使用 `RULE-CORE-NNN`。
 
-> **IR ↔ TRUTH 别名约定**（消解结构债 S11）：IR-001..007 是内部分类编号，TRUTH-001..015 是对外引用编号；当 §22.4 表格列出两者同义时，**对外引用一律使用 TRUTH 编号**，内部规则源码与 enforcer 一律使用 IR/RULE-CORE 编号，不再并列两套独立体系。
+| BR | IR | TRUTH | 规则 | 来源 |
+|----|----|-------|------|------|
+| BR-001 | IR-001 | TRUTH-001 | 没有证据，不允许 DONE | RULE-CORE-001 |
+| BR-002 | IR-002 | TRUTH-002 | Goal 必须从真实上下文开始 | RULE-CORE-002 |
+| BR-003 | IR-003 | TRUTH-003 | 需求必须可验证 | RULE-CORE-003 |
+| BR-004 | IR-004 | TRUTH-004 | 所有变更必须可追踪 | RULE-CORE-004 |
+| BR-005 | IR-005 | TRUTH-005 | Harness 是机器裁判 | RULE-CORE-005 |
+| BR-006 | IR-006 | TRUTH-006 | Self-improving 是强制环节 | RULE-CORE-006 |
+| BR-007 | IR-007 | TRUTH-007 | 登记态 ≠ adopted | main.md, goal.md |
+
+> §22.4 / TRACEABILITY 中过去并列出现 `IR-001 / TRUTH-001` 两套编号的位置，对外一律改写为 `BR-001`，内部规则源码与 enforcer 保留 `RULE-CORE-001`，不再并列两套独立体系。
 
 ### 8.2 规则前缀体系（RULE Taxonomy）
 
@@ -1236,7 +1235,7 @@ type AdoptionRecord struct {
 |-------|------|----------|----------|---------|---------|
 | EC-001 | nil context | `New(nil, cfg)` / `Close(nil)` / `HealthCheck(nil)` | 返回 `ErrorKindValidation`；禁止 panic | TC-002 | FR-014 |
 | EC-002 | canceled / expired context | 传入 `ctx, _ := context.WithCancel(...); cancel(); New(ctx, cfg)` | 立即返回 `ErrorKindTimeout` 或 `ErrorKindUnavailable`；不发起远端连接 | TC-003 | FR-013 / FR-014 |
-| EC-003 | 多次 / 并发 Close | 同一 client `Close()` 调用 N 次（N≥2），可能并发 | 幂等：每次返回 nil；底层资源只释放一次；无 race | TC-004 / TC-008 | FR-009 |
+| EC-003 | 多次 / 并发 Close | 同一 client `Close()` 调用 N 次（N≥2），允许并发 | 幂等：每次返回 nil；底层资源只释放一次；无 race | TC-004 / TC-008 | FR-009 |
 | EC-004 | 并发 New / Close | N goroutine 同时 `New(ctx, cfg)` 然后 `Close(ctx)` | 无 race（`go test -race` 通过）；无 FD/goroutine 泄漏（XS-CORE-011） | TC-008 | FR-009 |
 | EC-005 | 资源耗尽 | 连接池 / FD / 内存达到上限 | 返回 `ErrorKindUnavailable` 或 `ErrorKindRateLimit`；保留 cause；不 OOM | TC-016 | FR-010 |
 | EC-006 | Sanitize 嵌套 nil map | `Config{Nested: nil}` 调用 `Sanitize()` | 返回有效 Config 副本；不 panic；nil 字段保持 nil | TC-006 | FR-014 |
@@ -1299,10 +1298,10 @@ xlib-standard/
 
 ### 15.1 层级依赖模型
 
-> **领域命名口径**：与 `ARCHITECTURE.md` / `CLAUDE.md` 一致，采用 **领域分层**（基座 / 数据域 / 分析域 / 决策域 / 执行域 / 入口 / 横切）+ **门禁层**，不再使用 L-1..L6 数字层级作为对外口径。下表保留旧 L 编号仅作历史映射。
+> **领域命名口径**：与 `ARCHITECTURE.md` / `CLAUDE.md` 一致，采用 **领域分层**（基座 / 数据域 / 分析域 / 决策域 / 执行域 / 入口 / 横切）。`xlib-standard`、`xlibgate` 属于 **基座领域的 Foundation Gate 治理子层**，不是独立于五领域之外的第六领域。下表保留旧 L 编号仅作历史映射。
 
 ```
-门禁（Foundation Gate）：xlib-standard, xlibgate
+基座 · Foundation Gate 子层：xlib-standard, xlibgate
     ↓
 基座 L0（原 L0）：kernel
     ↓
@@ -1439,7 +1438,20 @@ Release ladder：
 - 每条 TC 必须落到一个具体 Go test 函数（`Test<TC编号>` 或 `TestFR<NNN>_<scenario>`）。
 - 每条 TC 必须有对应的 `Evidence Ledger` 行（FR-026 / §10.5）；失败时 `status=failed` 不得删除（FR-032）。
 - 本表不替代 harness.yaml gate；harness 通过运行 `go test` + 解析 JUnit 输出消费这些 TC。
+- **TC 编号命名空间**：本表的 `TC-001..TC-017` 属于 `xlib-standard` 命名空间。下游模块在自身 SPEC §16 复用时**必须加模块前缀**（`<module>-TC-NNN`，如 `redisx-TC-001`），并在自身追溯表标注"继承自 xlib-standard TC-NNN"，禁止裸 `TC-NNN` 跨模块复用。
 - 下游模块在自身 SPEC §16 至少为该模块独有 FR 增补 ≥1 TC，并继承本表 TC-001..TC-017 作为"基础合规集"。
+
+**无显式 TC 的 FR 处理**（traceability-check.sh 已报警的 5 条）：
+
+| 无 TC 的 FR | 由何替代覆盖 | 证据路径 |
+|-------------|--------------|----------|
+| FR-001 (419 条规则) | harness gate `registry-validate` | `pack/registry-validate.json` |
+| FR-002 (7 类技术债) | harness gate `debt-scan` | `pack/debt-scan.json` |
+| FR-005 (8 个 REQ) | harness gate `adoption-check` | `pack/adoption-check.json` |
+| FR-046 (28 个 PR 包) | 计划性 FR，由 `goal-runtime` ledger 追踪，无单元 TC | `.agent/evidence/ledger.jsonl` |
+| FR-052 (20 PR 下游同步) | 计划性 FR，由 `downstream-sync-policy` gate 追踪 | `pack/downstream-sync.json` |
+
+> 上述 5 条 FR 不在 §16.5 单元 TC 集合内是**设计选择**（gate 级而非 unit 级），但 `traceability-check.sh` 仍会标黄；本表显式列出替代证据后视为已解释，进入 Approved 前由 reviewer 复核。
 
 ---
 
@@ -1615,32 +1627,34 @@ v1 提出概念 → v2 审计补全 → v3 修补 P0 缺口 → v5 终极版
 
 ## 22. Release DoD（发布完成定义）
 
-### 22.1 四级 DoD（见 §8.4）
+### 22.1 四级 DoD（见 §8.4；每级 checklist 项即 `AC-NNN` 验收标准编号）
+
+> **AC 编号约定**：`AC-T01..T04` 为 Task DoD、`AC-I01..I04` 为 Issue DoD、`AC-G01..G03` 为 Goal DoD、`AC-R01..R06` 为 Release DoD。`TRACEABILITY.md` / 下游 Task Spec 通过 `AC-*` 引用本表条目，闭合 FR↔BR↔AC↔TC 四向链。
 
 **Task DoD**：
-- [ ] 变更范围明确（goal_id / issue 关联）
-- [ ] 测试 / 检查已运行并产生 evidence
-- [ ] 文档有入口（README/CHANGELOG/docs 至少一处）
-- [ ] Known gap 已记录到 ledger
+- [ ] **AC-T01** 变更范围明确（goal_id / issue 关联）
+- [ ] **AC-T02** 测试 / 检查已运行并产生 evidence
+- [ ] **AC-T03** 文档有入口（README/CHANGELOG/docs 至少一处）
+- [ ] **AC-T04** Known gap 已记录到 ledger
 
 **Issue DoD**：
-- [ ] 验收标准全部满足
-- [ ] 相关 gate 通过（exit code == 0）
-- [ ] Review checklist 完成
-- [ ] 无 XLIB_DEBT_VIOLATIONS
+- [ ] **AC-I01** 验收标准全部满足
+- [ ] **AC-I02** 相关 gate 通过（exit code == 0）
+- [ ] **AC-I03** Review checklist 完成
+- [ ] **AC-I04** 无 XLIB_DEBT_VIOLATIONS
 
 **Goal DoD**：
-- [ ] 所有必需项有实现或不适用理由
-- [ ] CI / integration / evidence 有当日新鲜结果
-- [ ] EvidenceEntry.truth_state ∈ {verified, planned}（无 violated）
+- [ ] **AC-G01** 所有必需项有实现或不适用理由
+- [ ] **AC-G02** CI / integration / evidence 有当日新鲜结果
+- [ ] **AC-G03** EvidenceEntry.truth_state ∈ {verified, planned}（无 violated）
 
 **Release DoD**：
-- [ ] Manifest（latest.json）生成且字段完整（§10.6）
-- [ ] release-check 通过
-- [ ] Scorecard 总分 ≥ 9.8
-- [ ] release-final-check 通过
-- [ ] preflight 通过
-- [ ] §22.4 37 项 No-Go 全部为 ✅
+- [ ] **AC-R01** Manifest（latest.json）生成且字段完整（§10.6）
+- [ ] **AC-R02** release-check 通过
+- [ ] **AC-R03** Scorecard 总分 ≥ 9.8
+- [ ] **AC-R04** release-final-check 通过
+- [ ] **AC-R05** preflight 通过
+- [ ] **AC-R06** §22.4 37 项 No-Go 全部为 ✅
 
 ### 22.2 DONE with evidence 模板
 

@@ -27,8 +27,8 @@
 
 stdlib-only 基础原语。所有上层模块的根依赖。
 
-| 模块 | 规格 | 核心职责 |
-|------|------|----------|
+| 模块   | 规格                        | 核心职责                                                                                     |
+| ------ | --------------------------- | -------------------------------------------------------------------------------------------- |
 | kernel | [SPEC.md](./kernel/SPEC.md) | Module/App/Lifecycle、依赖图校验、拓扑序启动、优雅停机、error/time/context/health/validation |
 
 ---
@@ -37,12 +37,12 @@ stdlib-only 基础原语。所有上层模块的根依赖。
 
 共享横切能力。可选依赖，按需引入。
 
-| 模块 | 规格 | 核心职责 |
-|------|------|----------|
-| configx | [SPEC.md](./configx/SPEC.md) | Reader/Manager/Provider、多源合并、schema 校验、脱敏、热加载 |
-| observex | [SPEC.md](./observex/SPEC.md) | Logger/Meter/Tracer/Exporter、label policy、metrics 命名规范 |
+| 模块       | 规格                            | 核心职责                                                                        |
+| ---------- | ------------------------------- | ------------------------------------------------------------------------------- |
+| configx    | [SPEC.md](./configx/SPEC.md)    | Reader/Manager/Provider、多源合并、schema 校验、脱敏、热加载                    |
+| observex   | [SPEC.md](./observex/SPEC.md)   | Logger/Meter/Tracer/Exporter、label policy、metrics 命名规范                    |
 | resiliencx | [SPEC.md](./resiliencx/SPEC.md) | Policy/Executor/Breaker、策略链（rate→bulkhead→circuit→timeout→retry→fallback） |
-| schedulex | [SPEC.md](./schedulex/SPEC.md) | Scheduler/Job/Trigger/Locker、overlap/misfire 策略、DST 处理 |
+| schedulex  | [SPEC.md](./schedulex/SPEC.md)  | Scheduler/Job/Trigger/Locker、overlap/misfire 策略、DST 处理                    |
 
 ---
 
@@ -50,8 +50,8 @@ stdlib-only 基础原语。所有上层模块的根依赖。
 
 test-only，不参与生产运行时。
 
-| 模块 | 规格 | 核心职责 |
-|------|------|----------|
+| 模块     | 规格                          | 核心职责                                                                   |
+| -------- | ----------------------------- | -------------------------------------------------------------------------- |
 | testkitx | [SPEC.md](./testkitx/SPEC.md) | Fake 实现、contract test harness、boundary scanner、goroutine leak checker |
 
 ---
@@ -60,10 +60,10 @@ test-only，不参与生产运行时。
 
 标准源和机器门禁，不参与运行时。
 
-| 模块 | 规格 | 核心职责 |
-|------|------|----------|
-| xlib-standard | [SPEC.md](./xlib-standard/SPEC.md) | 标准事实源、Go Reference Template、Gate/Evidence 定义 |
-| xlibgate | [SPEC.md](./xlibgate/SPEC.md) | CLI 门禁、import 边界扫描、Go baseline 对齐、release evidence 校验 |
+| 模块          | 规格                               | 核心职责                                                           |
+| ------------- | ---------------------------------- | ------------------------------------------------------------------ |
+| xlib-standard | [SPEC.md](./xlib-standard/SPEC.md) | 标准事实源、Go Reference Template、Gate/Evidence 定义              |
+| xlibgate      | [SPEC.md](./xlibgate/SPEC.md)      | CLI 门禁、import 边界扫描、Go baseline 对齐、release evidence 校验 |
 
 ---
 
@@ -71,15 +71,15 @@ test-only，不参与生产运行时。
 
 基础设施客户端封装。均为可选，按需引入。
 
-| 模块 | 规格 | 封装目标 |
-|------|------|----------|
-| redisx | [SPEC.md](./redisx/SPEC.md) | Redis — 缓存、分布式锁、Pub/Sub |
-| kafkax | [SPEC.md](./kafkax/SPEC.md) | Kafka — 消息队列、事件流 |
-| natsx | [SPEC.md](./natsx/SPEC.md) | NATS — 内部通信、JetStream |
-| postgresx | [SPEC.md](./postgresx/SPEC.md) | PostgreSQL — 关系型存储、事务、迁移 |
-| taosx | [SPEC.md](./taosx/SPEC.md) | TDengine — 时序数据写入与查询 |
-| ossx | [SPEC.md](./ossx/SPEC.md) | 对象存储 — S3/MinIO/local 多后端 |
-| clickhousex | [SPEC.md](./clickhousex/SPEC.md) | ClickHouse — OLAP 查询、批量写入 |
+| 模块        | 规格                             | 封装目标                            |
+| ----------- | -------------------------------- | ----------------------------------- |
+| redisx      | [SPEC.md](./redisx/SPEC.md)      | Redis — 缓存、分布式锁、Pub/Sub     |
+| kafkax      | [SPEC.md](./kafkax/SPEC.md)      | Kafka — 消息队列、事件流            |
+| natsx       | [SPEC.md](./natsx/SPEC.md)       | NATS — 内部通信、JetStream          |
+| postgresx   | [SPEC.md](./postgresx/SPEC.md)   | PostgreSQL — 关系型存储、事务、迁移 |
+| taosx       | [SPEC.md](./taosx/SPEC.md)       | TDengine — 时序数据写入与查询       |
+| ossx        | [SPEC.md](./ossx/SPEC.md)        | 对象存储 — S3/MinIO/local 多后端    |
+| clickhousex | [SPEC.md](./clickhousex/SPEC.md) | ClickHouse — OLAP 查询、批量写入    |
 
 ---
 
@@ -87,8 +87,8 @@ test-only，不参与生产运行时。
 
 跨域稳定端口和事件协议。
 
-| 模块 | 规格 | 核心职责 |
-|------|------|----------|
+| 模块      | 规格                           | 核心职责                                                                            |
+| --------- | ------------------------------ | ----------------------------------------------------------------------------------- |
 | contracts | [SPEC.md](./contracts/SPEC.md) | MarketDataProvider/MacroDataProvider 端口、事件协议、DTO 契约、breaking change 检测 |
 
 ---
@@ -97,8 +97,8 @@ test-only，不参与生产运行时。
 
 应用入口，负责配置加载、依赖组装和生命周期管理。
 
-| 模块 | 规格 | 核心职责 |
-|------|------|----------|
+| 模块 | 规格                     | 核心职责                                               |
+| ---- | ------------------------ | ------------------------------------------------------ |
 | x.go | [SPEC.md](./xgo/SPEC.md) | 组合根 — 配置加载、模块 wiring、生命周期控制、优雅停机 |
 
 ---
@@ -109,55 +109,55 @@ test-only，不参与生产运行时。
 
 ### Part 1: 身份与范围
 
-| 章节 | 说明 |
-|------|------|
-| 1. Metadata | 状态、负责人、日期、关联文档 |
-| 2. Summary | 一句话描述 |
-| 3. Problem | 解决什么痛点 |
-| 4. Goals | 要实现什么 |
-| 5. Non-goals | 不做什么 |
+| 章节         | 说明                         |
+| ------------ | ---------------------------- |
+| 1. Metadata  | 状态、负责人、日期、关联文档 |
+| 2. Summary   | 一句话描述                   |
+| 3. Problem   | 解决什么痛点                 |
+| 4. Goals     | 要实现什么                   |
+| 5. Non-goals | 不做什么                     |
 
 ### Part 2: 行为契约
 
-| 章节 | 说明 |
-|------|------|
-| 6. Consumers | 谁用这个模块（哪些模块/角色） |
-| 7. Functional Requirements | 每个公共方法的 WHEN/THEN |
-| 8. Business Rules | 不变量、校验规则 |
+| 章节                       | 说明                          |
+| -------------------------- | ----------------------------- |
+| 6. Consumers               | 谁用这个模块（哪些模块/角色） |
+| 7. Functional Requirements | 每个公共方法的 WHEN/THEN      |
+| 8. Business Rules          | 不变量、校验规则              |
 
 ### Part 3: 技术契约
 
-| 章节 | 说明 |
-|------|------|
-| 9. Interface Contract | Go 接口 + 用法示例 |
-| 10. Data Model | 结构体、常量、错误变量 |
-| 11. Config Schema | 配置结构 |
-| 12. Error Handling | 错误分类 + 调用方处理指南 |
-| 13. Edge Cases | 边界场景 |
-| 14. Directory Structure | 推荐的包布局 |
+| 章节                    | 说明                      |
+| ----------------------- | ------------------------- |
+| 9. Interface Contract   | Go 接口 + 用法示例        |
+| 10. Data Model          | 结构体、常量、错误变量    |
+| 11. Config Schema       | 配置结构                  |
+| 12. Error Handling      | 错误分类 + 调用方处理指南 |
+| 13. Edge Cases          | 边界场景                  |
+| 14. Directory Structure | 推荐的包布局              |
 
 ### Part 4: 质量契约
 
-| 章节 | 说明 |
-|------|------|
-| 15. Dependencies | 可以依赖 / 禁止依赖 |
-| 16. Testing | 单元/集成/基准测试 + Given/When/Then 用例 |
-| 17. Performance Budget | 延迟/吞吐目标 |
-| 18. Observability | metrics/logs/traces 清单 |
-| 19. Security | 密钥管理、输入校验、数据保护 |
+| 章节                   | 说明                                      |
+| ---------------------- | ----------------------------------------- |
+| 15. Dependencies       | 可以依赖 / 禁止依赖                       |
+| 16. Testing            | 单元/集成/基准测试 + Given/When/Then 用例 |
+| 17. Performance Budget | 延迟/吞吐目标                             |
+| 18. Observability      | metrics/logs/traces 清单                  |
+| 19. Security           | 密钥管理、输入校验、数据保护              |
 
 ### Part 5: 生命周期
 
-| 章节 | 说明 |
-|------|------|
-| 20. CI Gate | 编译、测试、覆盖率、特定检查 |
-| 21. Upgrade Compatibility | 向后兼容和迁移策略 |
-| 22. Release DoD | 可发布的验收清单 |
+| 章节                      | 说明                         |
+| ------------------------- | ---------------------------- |
+| 20. CI Gate               | 编译、测试、覆盖率、特定检查 |
+| 21. Upgrade Compatibility | 向后兼容和迁移策略           |
+| 22. Release DoD           | 可发布的验收清单             |
 
 ### Part 6: 开放
 
-| 章节 | 说明 |
-|------|------|
+| 章节               | 说明       |
+| ------------------ | ---------- |
 | 23. Open Questions | 未决定的事 |
 
 ### 设计原则
@@ -191,22 +191,30 @@ Code → Test → PR
 
 ### 文档结构映射
 
-| 层级 | 文档 | 位置 |
-|------|------|------|
-| Product Spec | 产品规格 | [`docs/product/product-spec.md`](../docs/product/product-spec.md) |
-| Feature Spec | 模块完整规格 | [`specs/*/SPEC.md`](#分层索引)（23 节结构） |
-| Technical Spec | 架构 + 宪法 | [`ARCHITECTURE.md`](../ARCHITECTURE.md) + [`CONSTITUTION.md`](../CONSTITUTION.md) |
-| Test Spec | 测试策略 | [`docs/testing/test-strategy.md`](../docs/testing/test-strategy.md) |
-| Agent Spec | AI 代理规格模板 | [`specs/AGENT-SPEC-TEMPLATE.md`](./AGENT-SPEC-TEMPLATE.md)（规则：[`agent-rules.md`](../docs/ai/agent-rules.md)、Prompt：[`prompt-templates.md`](../docs/ai/prompt-templates.md)） |
+| 层级           | 文档            | 位置                                                                                                                                                                               |
+| -------------- | --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Product Spec   | 产品规格        | [`docs/product/product-spec.md`](../docs/product/product-spec.md)                                                                                                                  |
+| Feature Spec   | 模块完整规格    | [`specs/*/SPEC.md`](#分层索引)（23 节结构）                                                                                                                                        |
+| Technical Spec | 架构 + 宪法     | [`ARCHITECTURE.md`](../ARCHITECTURE.md) + [`CONSTITUTION.md`](../CONSTITUTION.md)                                                                                                  |
+| Test Spec      | 测试策略        | [`docs/testing/test-strategy.md`](../docs/testing/test-strategy.md)                                                                                                                |
+| Agent Spec     | AI 代理规格模板 | [`specs/AGENT-SPEC-TEMPLATE.md`](./AGENT-SPEC-TEMPLATE.md)（规则：[`agent-rules.md`](../docs/ai/agent-rules.md)、Prompt：[`prompt-templates.md`](../docs/ai/prompt-templates.md)） |
 
 ### 治理文件
 
-| 文件 | 用途 |
-|------|------|
-| [`DEFINITION-OF-READY.md`](./DEFINITION-OF-READY.md) | spec 可以进入开发的前置条件 |
-| [`DEFINITION-OF-DONE.md`](./DEFINITION-OF-DONE.md) | 模块实现完成的验收条件 |
-| [`SPEC-TEMPLATE.md`](./SPEC-TEMPLATE.md) | 23 节结构模板 — 新建模块规格时复制本文件 |
-| [`TRACEABILITY.md`](./TRACEABILITY.md) | 需求追踪表：FR → AC → TC → 实现 |
+| 文件                                                         | 用途                                                    |
+| ------------------------------------------------------------ | ------------------------------------------------------- |
+| [`DEFINITION-OF-READY.md`](./DEFINITION-OF-READY.md)         | spec 可以进入开发的前置条件                             |
+| [`DEFINITION-OF-DONE.md`](./DEFINITION-OF-DONE.md)           | 模块实现完成的验收条件                                  |
+| [`SPEC-TEMPLATE.md`](./SPEC-TEMPLATE.md)                     | 23 节结构模板 — 新建模块规格时复制本文件                |
+| [`TRACEABILITY.md`](./TRACEABILITY.md)                       | 需求追踪表：FR → AC → TC → 实现                         |
+| [`DEVELOPMENT-WORKFLOW.md`](./DEVELOPMENT-WORKFLOW.md)       | Spec → Ship 完整管线总览                                |
+| [`PRE-DEVELOPMENT.md`](./PRE-DEVELOPMENT.md)                 | 开发前准备 — 实现策略、Task 拆分、追溯矩阵              |
+| [`CODING-SESSION-PROTOCOL.md`](./CODING-SESSION-PROTOCOL.md) | 编码会话协议 — Context Packet、Plan-first、自查、Review |
+| [`SPEC-DRIFT-PROTOCOL.md`](./SPEC-DRIFT-PROTOCOL.md)         | Spec Drift 处理 — 代码与 Spec 不一致时的协议            |
+| [`TESTING-STRATEGY.md`](./TESTING-STRATEGY.md)               | 测试策略 — 从 Spec 生成测试、优先级、验收               |
+| [`PR-TEMPLATE.md`](./PR-TEMPLATE.md)                         | PR/Issue/Branch/Commit 模板和命名规则                   |
+| [`DEPLOYMENT.md`](./DEPLOYMENT.md)                           | 部署清单 — RC 检查、Smoke Test、CI 配置                 |
+| [`REVIEW-STRATEGY.md`](./REVIEW-STRATEGY.md)                 | 审查策略 — 每层轻审查、转换点强审查、高风险点反审查    |
 
 ### Spec 状态流转
 
@@ -220,18 +228,18 @@ Draft → Review → Approved → Implemented → Changed → Deprecated
 
 ## 相关文档
 
-| 文档 | 定位 |
-|------|------|
-| [`ARCHITECTURE.md`](../ARCHITECTURE.md) | 系统全局架构、依赖拓扑、设计原则 |
-| [`CONSTITUTION.md`](../CONSTITUTION.md) | 模块宪法 — 13 条治理条款 |
-| [`docs/product/product-spec.md`](../docs/product/product-spec.md) | 产品规格 — Vision、Users、Goals、MVP Scope |
-| [`docs/testing/test-strategy.md`](../docs/testing/test-strategy.md) | 测试策略 — 覆盖率、格式、工具、CI 集成 |
-| [`docs/ai/agent-rules.md`](../docs/ai/agent-rules.md) | AI 代理规则 — 编码、测试、安全、禁止事项 |
-| [`docs/ai/prompt-templates.md`](../docs/ai/prompt-templates.md) | Prompt 模板 — 审查、拆分、实现、自查、修复 |
-| [`module/foundation-modules.md`](../module/foundation-modules.md) | Why & What — 模块定位和能力需求 |
-| [`module/FOUNDATION-SPEC.md`](../module/FOUNDATION-SPEC.md) | How & Check — 接口签名和 CI gate |
-| [`module/FOUNDATION-DEPS.yaml`](../module/FOUNDATION-DEPS.yaml) | 机器可读依赖矩阵 |
-| [`module/FOUNDATION-V1.md`](../module/FOUNDATION-V1.md) | v1 路线图 |
+| 文档                                                                | 定位                                       |
+| ------------------------------------------------------------------- | ------------------------------------------ |
+| [`ARCHITECTURE.md`](../ARCHITECTURE.md)                             | 系统全局架构、依赖拓扑、设计原则           |
+| [`CONSTITUTION.md`](../CONSTITUTION.md)                             | 模块宪法 — 13 条治理条款                   |
+| [`docs/product/product-spec.md`](../docs/product/product-spec.md)   | 产品规格 — Vision、Users、Goals、MVP Scope |
+| [`docs/testing/test-strategy.md`](../docs/testing/test-strategy.md) | 测试策略 — 覆盖率、格式、工具、CI 集成     |
+| [`docs/ai/agent-rules.md`](../docs/ai/agent-rules.md)               | AI 代理规则 — 编码、测试、安全、禁止事项   |
+| [`docs/ai/prompt-templates.md`](../docs/ai/prompt-templates.md)     | Prompt 模板 — 审查、拆分、实现、自查、修复 |
+| [`module/foundation-modules.md`](../module/foundation-modules.md)   | Why & What — 模块定位和能力需求            |
+| [`module/FOUNDATION-SPEC.md`](../module/FOUNDATION-SPEC.md)         | How & Check — 接口签名和 CI gate           |
+| [`module/FOUNDATION-DEPS.yaml`](../module/FOUNDATION-DEPS.yaml)     | 机器可读依赖矩阵                           |
+| [`module/FOUNDATION-V1.md`](../module/FOUNDATION-V1.md)             | v1 路线图                                  |
 
 ---
 
