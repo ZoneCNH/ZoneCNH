@@ -45,6 +45,33 @@
 
 Spec 编写完成后，不是直接写代码，而是按管线推进：Spec → Review → Approve → Matrix → Tasks → Plan → Prompt → Code → 验收 → Ship。详见 `specs/DEVELOPMENT-WORKFLOW.md`。
 
+### Agents — Spec → Code 管线
+
+本仓库配置了双平台代理（Claude Code + Codex），功能角色相同，配置格式不同：
+
+| 平台 | 配置目录 | 模型 | 格式 |
+|------|----------|------|------|
+| Claude Code | `.claude/agents/` | Sonnet / Opus | Markdown frontmatter |
+| Codex | `.codex/agents/` | GPT-5.5 + reasoning effort | TOML |
+
+| Agent | 步骤 | 用途 | 可改文件 | 可写代码 | Claude 模型 | Codex reasoning |
+|-------|------|------|----------|----------|-------------|-----------------|
+| `spec` | Spec | 编写或修订项目 spec，补齐 23 节结构与追溯链 | Spec 文档 | 否 | Opus | high |
+| `spec-review` | Review | 对抗性审查 spec，给出 Go/No-Go 判断 | 无 | 否 | Opus | high |
+| `matrix` | Matrix | 生成或校验需求追溯矩阵，闭合 FR/BR/AC/TC 链条 | Traceability 文档 | 否 | Sonnet | high |
+| `task-split` | Tasks | 将 Approved Spec 和 Matrix 拆成可执行 Task Spec | Task / Matrix 文档 | 否 | Sonnet | high |
+| `task-planner` | Plan | 生成实现顺序、依赖、验证命令和风险计划 | Plan 文档 | 否 | Opus | high |
+| `prompt-builder` | Prompt | 为单个 Task 生成 Context Packet 与开发 Prompt | Prompt 文档 | 否 | Sonnet | medium |
+| `task-executor` | Code | 按单个 Task 和 Prompt 编写代码与测试，验证后回填证据 | Task 指定源码/测试 | 是 | Sonnet | high |
+| `code-reviewer` | Review | 代码审查 | 无 | 否 | — | — |
+| `tdd-guide` | Test | 测试驱动开发 | 测试 / 必要实现 | 是 | — | — |
+
+管线流程：
+
+```text
+spec → spec-review → matrix → task-split → task-planner → prompt-builder → task-executor
+```
+
 ### 关键文档
 
 | 文档 | 用途 |
@@ -58,17 +85,3 @@ Spec 编写完成后，不是直接写代码，而是按管线推进：Spec → 
 | `specs/DEFINITION-OF-READY.md` | 进入开发的前置条件 |
 | `specs/DEFINITION-OF-DONE.md` | 完成验收条件 |
 | `CONSTITUTION.md` | 最高治理权威（13 条） |
-
-### Agents — Spec → Code 管线
-
-| Agent | 步骤 | 用途 | 可改文件 | 可写代码 |
-|-------|------|------|----------|----------|
-| `spec` | Spec | 编写或修订项目 spec，补齐 23 节结构与追溯链 | Spec 文档 | 否 |
-| `spec-review` | Review | 对抗性审查 spec，给出 Go/No-Go 判断 | 无 | 否 |
-| `matrix` | Matrix | 生成或校验需求追溯矩阵，闭合 FR/BR/AC/TC 链条 | Traceability 文档 | 否 |
-| `task-split` | Tasks | 将 Approved Spec 和 Matrix 拆成可执行 Task Spec | Task / Matrix 文档 | 否 |
-| `task-planner` | Plan | 生成实现顺序、依赖、验证命令和风险计划 | Plan 文档 | 否 |
-| `prompt-builder` | Prompt | 为单个 Task 生成 Context Packet 与开发 Prompt | Prompt 文档 | 否 |
-| `task-executor` | Code | 按单个 Task 和 Prompt 编写代码与测试，验证后回填证据 | Task 指定源码/测试 | 是 |
-| `code-reviewer` | Review | 代码审查 | 无 | 否 |
-| `tdd-guide` | Test | 测试驱动开发 | 测试 / 必要实现 | 是 |
