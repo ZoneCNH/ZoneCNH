@@ -12,6 +12,7 @@
 > **Status: Review**（独立结构 review 已签字；升级 Approved 仍需 owner 按生命周期执行）
 >
 > Approved 前置条件：
+>
 > - [x] 远端治理证据（OQ-001 已由 REMOTE-EVIDENCE.md 闭合）
 > - [x] FR 来源覆盖 100%（52/52；证据类型按 `line` / `file` / `validator-output` 分层，非 line 证据不计入行级覆盖）
 > - [x] 23 节结构对齐（v8 已删除伪 §9 Non-functional 占位，并将参考资料收敛到 §23.7）
@@ -988,7 +989,6 @@ Release ladder：
 | final_gates | 6 | 发布最终判定，包含 release_score_final、release_final_check、release_preflight、score、kernel_downstream、goalcli_g16_runtime_final |
 | goalcli_mva_gates | 6 | 大写 MVA alias，映射到 goalcli G12-G16 流程，不生成第二套权威 gate |
 
-> 口径：66 个 gate 条目 = 44 required_gates + 10 extended_gates + 6 final_gates + 6 goalcli_mva_gates。`gate_link_semantics.authority_source` 指向 `required_gates[].id`，重复 command link 只表示 alias。
 
 > 注：9 个 proof_depth taxonomy 条目（file_exists, command_registered, dry_run, positive_fixture, negative_fixture, mutation_fixture, live_run, evidence_replay, downstream_adoption）不计入 gate 总数。
 
