@@ -5,14 +5,14 @@ Source-Scope: 154 files
 
 ## 追溯原则
 
-本表把 `MODULE-SPEC.md` 的主要条款映射到来源文件。若多个来源冲突，当前 `docs/standard/**` 和根级 `docs/*.md` 优先；`.worktree`、`docs/v0.6.0/**` 和 Downloads 主要用于历史、迁移目标和冲突账本。
+本表把当前可执行主规格 `SPEC.md` 的主要条款映射到来源文件。若多个来源冲突，当前 `docs/standard/**` 和根级 `docs/*.md` 优先；`.worktree`、`docs/v0.6.0/**` 和 Downloads 主要用于历史、迁移目标和冲突账本。
 
 ## 追溯边界
 
 - 本表是条款级来源矩阵，不是 154 个输入文件的逐规则证明账本。
-- 本表证明 `MODULE-SPEC.md` 的主要条款有来源锚点；不能单独证明 release-ready、remote ruleset/CI enabled、GitHub Release object 或 downstream adoption。
+- 本表证明 `SPEC.md` 的主要条款有来源锚点；不能单独证明 release-ready、remote ruleset/CI enabled、GitHub Release object 或 downstream adoption。
 - 来源路径保留本次分析机器上的绝对路径。迁移到其他环境时，必须提供同一 source pack、路径映射或重新生成 `COVERAGE-MANIFEST.md`。
-- 当本表、历史稿和当前主规格冲突时，以 `MODULE-SPEC.md` 的事实边界和 `CONFLICT-LEDGER.md` 的取舍为准。
+- 当本表、历史稿和当前主规格冲突时，以 `SPEC.md` 的事实边界和 `CONFLICT-LEDGER.md` 的取舍为准。
 
 ## 核心条款追溯
 
@@ -48,10 +48,10 @@ Source-Scope: 154 files
 
 | 分析通道                    | 重点                                                          | 已纳入章节                                      |
 | --------------------------- | ------------------------------------------------------------- | ----------------------------------------------- |
-| Core standard               | 模块身份、边界、分层、API、Harness、Evidence                  | `MODULE-SPEC.md` 1-5、8-10、16                  |
-| Runtime/config              | `goalcli`、Goal Runtime、config root 冲突、strict config 迁移 | `MODULE-SPEC.md` 6-8、17；`CONFLICT-LEDGER.md`  |
-| Downstream/testing/evidence | L2、downstream proof、testing、Evidence、truth-state          | `MODULE-SPEC.md` 10-13、19                      |
-| Historical/omission audit   | v0.4.15、v0.6.0、v1.0.0、pathguard、remote proof              | `MODULE-SPEC.md` 6、17-18；`CONFLICT-LEDGER.md` |
+| Core standard               | 模块身份、边界、分层、API、Harness、Evidence                  | `SPEC.md` 1-6、8-13、16                  |
+| Runtime/config              | `goalcli`、Goal Runtime、config root 冲突、strict config 迁移 | `SPEC.md` 6-8、17；`CONFLICT-LEDGER.md`  |
+| Downstream/testing/evidence | L2、downstream proof、testing、Evidence、truth-state          | `SPEC.md` 9-13、15、17                      |
+| Historical/omission audit   | v0.4.15、v0.6.0、v1.0.0、pathguard、remote proof              | `SPEC.md` 2、17、22；`CONFLICT-LEDGER.md` |
 
 ## 明确未纳入为事实的内容
 

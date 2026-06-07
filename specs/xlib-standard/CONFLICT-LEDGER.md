@@ -94,15 +94,15 @@ Status: consolidated
 
 ## 16. 154 文件整理口径 vs 181 文件旧分析口径
 
-冲突：`MODULE-SPEC.md` 与 `COVERAGE-MANIFEST.md` 使用 154 个输入文件；`SPEC.md` 与 `DEEP-ANALYSIS.md` 仍保留 181 个源文件的历史口径。
+冲突：`COVERAGE-MANIFEST.md`、`TRACEABILITY.md` 和当前 `SPEC.md` 使用 154 个输入文件；`DEEP-ANALYSIS.md` 仍保留 181 个源文件的历史口径。
 
-取舍：本次整理以 154 个输入文件为当前覆盖口径。181 口径只作为旧分析背景，不得覆盖当前主规格、追溯表或覆盖清单。
+取舍：本次整理以 154 个输入文件为当前覆盖口径。181 口径只作为旧分析背景，不得覆盖当前主规格、追溯表或覆盖清单；`MODULE-SPEC.md` 仅作为历史参考。
 
 ## 17. Required Gates 17+ vs harness gates 66
 
-冲突：`SPEC.md` 摘要使用 17+ 个 Required Gates，`DEEP-ANALYSIS.md` 又记录 66 个 gates。两者统计粒度不同，容易被读成互相矛盾的当前验收标准。
+冲突：旧稿把 17+ Required Gates 和 66 个 gates 混写；`DEEP-ANALYSIS.md` 也记录 66 个 gates。两者统计粒度不同，容易被读成互相矛盾的当前验收标准。
 
-取舍：~~17+ 只表示核心 required gate 家族~~。SPEC.md 已统一为 "66 个 Required Gates"（FR-020 和 §2），与 harness.yaml 实际数据一致。当前发布验收以 SPEC.md 中的 gate 定义、release-final 和 preflight 要求为准。
+取舍：17 Required 只表示 required gate 家族；66 Gates 表示完整 harness gate 集合（17 Required + 49 扩展/治理/发布）。当前发布验收以 `SPEC.md` 中的 gate 定义、release-final 和 preflight 要求为准，不再使用“66 Required Gates”表述。
 
 ## 18. ADR 10 vs 9 formal + template/history
 
