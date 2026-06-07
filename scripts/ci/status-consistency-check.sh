@@ -75,6 +75,7 @@ ARCH_L25=$(count_arch_domain "L2.5")
 ARCH_DATA=$(count_arch_domain "数据域")
 ARCH_ANALYSIS=$(count_arch_domain "分析域")
 ARCH_DECISION=$(count_arch_domain "决策域")
+ARCH_EXEC=$(count_arch_domain "执行域")
 ARCH_ENTRY=$(count_arch_domain "入口")
 ARCH_CROSS=$(count_arch_domain "横切")
 ARCH_RUST=$(count_arch_domain "Rust")
@@ -92,7 +93,7 @@ echo "--- 数据采集 ---"
 echo "README 架构图:     market-data = $README_MD_NUM, macro-data = $README_MACRO_NUM"
 echo "README 列表计数:   market-data = $README_MARKET, macro-data = $README_MACRO, L2.5 = $README_L25"
 echo "ARCHITECTURE 图:   market-data = $ARCH_MD_NUM, macro-data = $ARCH_MACRO_NUM"
-echo "ARCHITECTURE 表:   基座=$ARCH_BASE, L2.5=$ARCH_L25, 数据域=$ARCH_DATA, 分析域=$ARCH_ANALYSIS, 决策域=$ARCH_DECISION, 入口=$ARCH_ENTRY, 横切=$ARCH_CROSS, Rust=$ARCH_RUST, 独立=$ARCH_INDEP"
+echo "ARCHITECTURE 表:   基座=$ARCH_BASE, L2.5=$ARCH_L25, 数据域=$ARCH_DATA, 分析域=$ARCH_ANALYSIS, 决策域=$ARCH_DECISION, 执行域=$ARCH_EXEC, 入口=$ARCH_ENTRY, 横切=$ARCH_CROSS, Rust=$ARCH_RUST, 独立=$ARCH_INDEP"
 echo "STATUS 总数:       $STATUS_TOTAL"
 echo "STATUS 同步表:     总计=$STATUS_SYNC_TOTAL, market-data=$STATUS_SYNC_MD, macro-data=$STATUS_SYNC_MACRO"
 echo ""
@@ -128,7 +129,7 @@ check "market-data (列表条目 vs 图中标注)" "$README_MARKET" "$README_MD_
 check "macro-data (列表条目 vs 图中标注)" "$README_MACRO" "$README_MACRO_NUM"
 
 # 4. ARCHITECTURE 状态表组件行总数 vs STATUS 总数
-ARCH_TOTAL=$((ARCH_BASE + ARCH_L25 + ARCH_DATA + ARCH_ANALYSIS + ARCH_DECISION + ARCH_ENTRY + ARCH_CROSS + ARCH_RUST + ARCH_INDEP))
+ARCH_TOTAL=$((ARCH_BASE + ARCH_L25 + ARCH_DATA + ARCH_ANALYSIS + ARCH_DECISION + ARCH_EXEC + ARCH_ENTRY + ARCH_CROSS + ARCH_RUST + ARCH_INDEP))
 check "组件总数 (ARCHITECTURE 表合计 vs STATUS)" "$ARCH_TOTAL" "$STATUS_TOTAL"
 
 # 5. STATUS 组件总数行 vs 同步表
