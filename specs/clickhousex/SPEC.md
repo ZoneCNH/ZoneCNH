@@ -490,6 +490,21 @@ Given 表有 Nullable(Int32) 列
 When 查询该列为 NULL 的行
 Then Scan 到 *int32 类型，值为 nil
 
+**TC-005: NewClient 配置校验**
+Given DSN 缺失或格式非法
+When 创建 NewClient
+Then 返回配置错误且不建立连接
+
+**TC-006: Health 检查**
+Given ClickHouse 连接正常
+When 调用 Health
+Then 返回 healthy；连接失败时返回 unhealthy
+
+**TC-007: Close 幂等**
+Given client 已关闭
+When 再次调用 Close
+Then 返回 nil 且不 panic
+
 ### 16.3 Benchmark
 
 | 场景 | 目标 |

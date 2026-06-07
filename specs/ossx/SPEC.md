@@ -481,6 +481,36 @@ Given backend 为 "local"，base_path 为 "/tmp/ossx-test"
 When Put/Get/Delete/List
 Then 操作对应本地文件系统
 
+**TC-005: NewClient 配置校验**
+Given endpoint 或 bucket 缺失
+When 创建 NewClient
+Then 返回配置错误且不建立连接
+
+**TC-006: Delete 幂等**
+Given object 不存在
+When 调用 Delete
+Then 返回 nil 或约定的 not-found 语义且可重复调用
+
+**TC-007: List 前缀**
+Given bucket 中存在不同前缀对象
+When 调用 List("logs/")
+Then 只返回 logs/ 前缀下对象
+
+**TC-008: PresignURL**
+Given object key 合法且过期时间有效
+When 调用 PresignURL
+Then 返回包含签名和过期时间的 URL
+
+**TC-009: Health 检查**
+Given OSS 后端可达
+When 调用 Health
+Then 返回 healthy；后端不可达时返回 unhealthy
+
+**TC-010: Close 幂等**
+Given client 已关闭
+When 再次调用 Close
+Then 返回 nil 且不 panic
+
 ### 16.3 Benchmark
 
 | 场景 | 目标 |

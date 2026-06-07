@@ -485,6 +485,31 @@ Given Redis 连接正常
 When Redis 短暂不可用后恢复
 Then 下一次操作自动重连成功
 
+**TC-005: Exists 与 Expire**
+Given key 已 Set 且设置 TTL
+When 调用 Exists 和 Expire
+Then Exists 返回 true，TTL 更新成功
+
+**TC-006: Hash 读写**
+Given Redis 连接正常
+When HSet("hash", "field", "value") 后 HGet
+Then 返回 "value"
+
+**TC-007: List 操作**
+Given Redis 连接正常
+When LPush 两个元素后 LRange
+Then 按约定顺序返回两个元素
+
+**TC-008: Pub/Sub**
+Given subscriber 已订阅 subject
+When publisher 发布消息
+Then subscriber 收到该消息
+
+**TC-009: Health 检查**
+Given Redis 连接正常
+When 调用 Health
+Then 返回 healthy；连接失败时返回 unhealthy
+
 ### 16.3 Benchmark
 
 | 场景 | 目标 |

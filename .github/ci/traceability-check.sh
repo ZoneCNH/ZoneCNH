@@ -2,13 +2,14 @@
 # traceability-check.sh — 校验 specs/TRACEABILITY.md 的完整性
 #
 # 检查逻辑：
-#   1. 模块覆盖：必须包含所有 16 个模块 + x.go
+#   1. 模块覆盖：必须包含所有 Foundation 模块 + xgo
 #   2. FR 覆盖：每个 spec 的 FR 在追踪表中都有对应行
 #   3. AC 非空：每个 FR 行的 Acceptance Criteria 列不为 "-"
 #   4. TC 非空：每个 FR/BR 行的 Test Case 列不为 "-"
 #   5. Status 有效：Status 列只能是 ⬜ / 🔵 / ✅ / ❌ / ⏭️
-#   6. 交叉验证：TRACEABILITY.md 中的 FR 数量与对应 spec 一致
-#   7. TRACEABILITY_STRICT=1 时警告升级为失败
+#   6. TC 引用：TRACEABILITY.md 中的 TC-### 必须存在于对应 SPEC.md
+#   7. 交叉验证：TRACEABILITY.md 中的 FR 数量与对应 spec 一致
+#   8. TRACEABILITY_STRICT=1 时警告升级为失败
 
 set -euo pipefail
 
@@ -57,12 +58,12 @@ check_module() {
     FAIL=1
   fi
 
-  # 检查 AC 非空
+  # 检查 AC 非空（匹配 AC 列为 "-" 的行，跳过 TC 列的 "-"）
   local empty_ac
   empty_ac=$(awk -v m="$module" '
     $0 ~ "^## " m "$" { found=1; next }
     found && /^## / { found=0 }
-    found && /\| FR-/ && /\| - \|/ { count++ }
+    found && /\| FR-/ && /\| FR-[^|]*\|[^|]*\| - \|/ { count++ }
     END { print count+0 }
   ' "$TRACE_FILE")
 
@@ -87,6 +88,56 @@ check_module() {
   if [[ $empty_tc -gt 0 ]]; then
     echo "  ⚠️  $module: $empty_tc requirements with empty TC"
     WARN=1
+  fi
+
+  # 检查 TC token 格式。允许 CI Gate/-race/import check 等非 TC 说明，
+  # 但凡出现 TC-*，必须是 TC-###。
+  local invalid_tc_tokens
+  invalid_tc_tokens=$(awk -F'|' -v m="$module" '
+    $0 ~ "^## " m "$" { found=1; next }
+    found && /^## / { found=0 }
+    found && /\| (FR|BR)-/ {
+      tc=$5
+      while (match(tc, /TC-[^, \t|]+/)) {
+        token=substr(tc, RSTART, RLENGTH)
+        if (token !~ /^TC-[0-9][0-9][0-9]$/) print token
+        tc=substr(tc, RSTART + RLENGTH)
+      }
+    }
+  ' "$TRACE_FILE" | sort -u)
+
+  if [[ -n "$invalid_tc_tokens" ]]; then
+    echo "  ❌ $module: invalid TC token(s)"
+    printf '%s\n' "$invalid_tc_tokens" | sed 's/^/     - /'
+    FAIL=1
+  fi
+
+  # 检查 TRACEABILITY.md 引用的 TC 是否存在于对应 SPEC.md。
+  if [[ -f "$spec_file" ]]; then
+    local missing_tc=0
+    local referenced_tcs
+    referenced_tcs=$(awk -F'|' -v m="$module" '
+      $0 ~ "^## " m "$" { found=1; next }
+      found && /^## / { found=0 }
+      found && /\| (FR|BR)-/ {
+        tc=$5
+        while (match(tc, /TC-[0-9][0-9][0-9]/)) {
+          print substr(tc, RSTART, RLENGTH)
+          tc=substr(tc, RSTART + RLENGTH)
+        }
+      }
+    ' "$TRACE_FILE" | sort -u)
+
+    for tc in $referenced_tcs; do
+      if ! grep -q "\\*\\*$tc:" "$spec_file"; then
+        echo "  ❌ $module: $tc referenced in TRACEABILITY.md but missing from SPEC.md"
+        missing_tc=1
+      fi
+    done
+
+    if [[ $missing_tc -ne 0 ]]; then
+      FAIL=1
+    fi
   fi
 
   # 检查 Status 只使用约定枚举值。

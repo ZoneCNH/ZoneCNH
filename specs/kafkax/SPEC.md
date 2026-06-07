@@ -437,6 +437,11 @@ Given Kafka 短暂不可用
 When Send 重试 3 次
 Then 第 3 次成功或返回最终错误
 
+**TC-005: Health 检查**
+Given Kafka broker 可达
+When 调用 Health
+Then 返回 healthy；broker 不可达时返回 unhealthy
+
 ### 16.3 Benchmark
 
 | 场景 | 目标 |

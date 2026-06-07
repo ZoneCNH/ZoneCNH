@@ -495,6 +495,21 @@ Given 定义了 8 个 Topic 常量
 When 检查是否有重复值
 Then 无重复
 
+**TC-005: Event 接口完整性**
+Given 事件类型实现 Event
+When 编译 contract test
+Then Topic、Key、OccurredAt 和 Payload 方法均满足接口
+
+**TC-006: 端口接口方法数**
+Given 端口接口定义完成
+When 运行接口规范检查
+Then 每个端口接口包含 3-5 个业务方法
+
+**TC-007: DTO 不可变性**
+Given DTO 已创建
+When 调用公开方法
+Then 不暴露可变内部切片或 map
+
 ### 16.3 Benchmark
 
 | 场景 | 目标 |

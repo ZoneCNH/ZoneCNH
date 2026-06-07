@@ -478,6 +478,31 @@ Given Locker.Acquire 返回 false
 When 到达触发时间
 Then 跳过本次执行，等待下一个调度周期
 
+**TC-005: Cancel job**
+Given 已注册 JobID `daily`
+When 调用 Cancel("daily")
+Then 后续触发周期不再执行该 job
+
+**TC-006: Stop 等待与 panic 隔离**
+Given job 正在执行且另一个 job panic
+When 调用 Stop
+Then panic 被捕获，Stop 等待运行中 job 结束或超时
+
+**TC-007: EventSink 输出**
+Given 配置了 EventSink
+When job 触发、成功或失败
+Then EventSink 收到对应生命周期事件
+
+**TC-008: Clock 与 DST**
+Given FakeClock 位于 DST 切换边界
+When 计算下一次触发时间
+Then 结果符合目标时区的 cron 语义
+
+**TC-009: 重复 JobID**
+Given JobID `daily` 已注册
+When 再次注册同名 job
+Then 返回 ErrDuplicateJob
+
 ### 16.3 Benchmark
 
 | 场景 | 目标 |

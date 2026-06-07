@@ -376,6 +376,16 @@ Given 已加载配置
 When 100 个 goroutine 并发调用 `Get("symbol")`
 Then 无 data race，所有返回值一致
 
+**TC-004: Watch 配置监听**
+Given 配置文件已加载并开启 Watch
+When 文件内容变更且通过校验
+Then Reader 读到新值并触发变更回调
+
+**TC-005: Reader 只读视图**
+Given 已创建配置 Reader
+When 调用读取接口
+Then 不能通过 Reader 修改底层配置
+
 ### 16.3 Benchmark
 
 | 场景 | 目标 |

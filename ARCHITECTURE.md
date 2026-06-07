@@ -33,7 +33,7 @@ x.go ───────────────► 基座运行时 / L2.5 / �
                       契约: contracts
 
 标准与门禁：
-  xlib-standard ─── 标准事实源 / 模板 / Gate / Evidence，不参与业务运行
+  xlib-standard ─── 标准事实源 / Go Reference Template / Generator / Harness Gate / Evidence Runtime，不参与业务运行
   xlibgate      ─── import 边界、go.mod、Go baseline、release evidence 机器门禁
 
 横切关注点：
@@ -153,11 +153,11 @@ Foundation 6 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中�
 
 ## Foundation 第一阶段闭环
 
-这 6 个基础模块可以构成第一阶段最小闭环：`kernel` 提供 L0 原语，`configx` / `observex` / `resiliencx` / `schedulex` 提供 L1 运行时横切能力，`testkitx` 只服务测试期。`xlib-standard` 是标准事实源和门禁输入，不作为运行时依赖。
+这 6 个基础模块可以构成第一阶段最小闭环：`kernel` 提供 L0 原语，`configx` / `observex` / `resiliencx` / `schedulex` 提供 L1 运行时横切能力，`testkitx` 只服务测试期。`xlib-standard` 是独立 Go module，承担标准事实源、Go Reference Template、Generator、Harness Gate 和 Evidence Runtime 五类职责，不作为其他模块的运行时 import 依赖。
 
 | 模块            | 层级          | 拥有                                                                                                        | 不拥有                                                     |
 | --------------- | ------------- | ----------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
-| `xlib-standard` | 标准源        | 标准事实源、模板、Gate、Evidence                                                                            | 业务运行、运行时依赖、模块实现身份                         |
+| `xlib-standard` | 标准源        | 标准事实源、Go Reference Template、Generator、Harness Gate、Evidence Runtime                                | 业务运行、运行时 import 依赖、模块实现身份                 |
 | `kernel`        | L0 原语       | error、time、context、lifecycle、shutdown、health、validation、sync、version、minimal retry                 | 配置解析、观测后端、存储、网络、业务 DTO、全局可变单例     |
 | `configx`       | L1 运行时     | explicit source、merge、decode、validate、sanitize、provenance、config hash                                 | secret backend、全局配置中心、自动发现、业务配置结构体     |
 | `observex`      | L1 运行时契约 | logger、metrics、tracer、field、redactor、label policy、health schema、noop、memory recorder                | Prometheus/Otel/Zap 直接绑定、alert routing、业务监控规则  |
@@ -169,7 +169,7 @@ Foundation 6 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中�
 
 `resiliencx` 必须回到 operational resilience：对不稳定外部依赖、任务、数据源、交易所 API、消息处理和调度任务提供可组合故障控制策略。`risk-engine` 才负责 trading risk，二者不能混用。
 
-当前 P0 是把 Standard Source / Go Reference Template / Generator / Harness / Evidence Runtime 叙事迁回 `xlib-standard`，并让 `resiliencx` 围绕 timeout、retry、circuit、bulkhead、rate limit、fallback 和 policy event 建模。
+当前 P0 是确认 `xlib-standard` 的五类职责（Standard Source / Go Reference Template / Generator / Harness / Evidence Runtime）已完整落地，并让 `resiliencx` 围绕 timeout、retry、circuit、bulkhead、rate limit、fallback 和 policy event 建模。
 
 | 边界     | `kernel.retryx`                        | `resiliencx`                                      |
 | -------- | -------------------------------------- | ------------------------------------------------- |
@@ -196,7 +196,7 @@ Foundation 6 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中�
 
 | 边界                                                | 放什么                                                      | 不放什么                                         |
 | --------------------------------------------------- | ----------------------------------------------------------- | ------------------------------------------------ |
-| `xlib-standard`                                     | 标准事实源、模板、Gate、Evidence                            | 运行时业务依赖、具体弹性策略实现                 |
+| `xlib-standard`                                     | 标准事实源、Go Reference Template、Generator、Harness Gate、Evidence Runtime | 运行时业务依赖、具体弹性策略实现                 |
 | `kernel`                                            | 最小稳定原语和 stdlib-only 基础能力                         | 配置解析、观测后端、业务 DTO、存储/网络适配器    |
 | `configx` / `observex` / `resiliencx` / `schedulex` | L1 横切运行时能力，彼此通过窄接口协作                       | 业务模型、组合根职责、对彼此的强耦合反向依赖     |
 | `testkitx`                                          | 测试、golden、contract、fixture、harness、boundary evidence | production import graph、真实外部系统入口        |
@@ -239,7 +239,7 @@ Foundation 6 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中�
 ## 核心设计原则
 
 1. **Foundation 先边界后功能** — 先固化 `xlib-standard`、依赖矩阵、Go baseline 和 release gate，再扩大 L1 能力面
-2. **`xlib-standard` 不是运行时依赖** — 它是标准事实源、模板、Gate 和 Evidence 输入，不承载业务运行
+2. **`xlib-standard` 不是运行时依赖** — 它是独立 Go module，承担标准事实源、Go Reference Template、Generator、Harness Gate 和 Evidence Runtime 五类职责，不承载业务运行
 3. **`resiliencx` 只做运行时弹性** — timeout/retry/circuit/bulkhead/rate/fallback 属于它，交易风控属于 `risk-engine`
 4. **`testkitx` 只能 test-only** — 生产 import graph 不允许出现测试工具包
 5. **风控是独立引擎** — 策略只能通过 risk-engine 提交订单，不能直接调用 order-engine
@@ -275,7 +275,7 @@ Foundation 6 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中�
 | 基座                  | [resiliencx](https://github.com/ZoneCNH/resiliencx)             | v0.4.8 | ⚠️ P0     | ██░░ 50% | 身份需从标准模板库修正为运行时弹性策略库：timeout/retry/circuit/bulkhead/rate/fallback    |
 | 基座                  | [schedulex](https://github.com/ZoneCNH/schedulex)               | v0.1.2 | ✅ 已有   | ███░ 80% | 确定性任务调度：trigger/clock/misfire/overlap/jitter/EventSink/Locker interface           |
 | 基座                  | [xlibgate](https://github.com/ZoneCNH/xlibgate)                 | -      | ✅ 已有   | -        | import 边界、go.mod、Go baseline、release evidence 机器门禁                               |
-| 基座                  | [xlib-standard](https://github.com/ZoneCNH/xlib-standard)       | -      | ✅ 已有   | -        | 标准事实源、模板、Gate 与 Evidence；不参与运行时依赖                                      |
+| 基座                  | [xlib-standard](https://github.com/ZoneCNH/xlib-standard)       | -      | ✅ 已有   | -        | 标准事实源、Go Reference Template、Generator、Harness Gate、Evidence Runtime；不参与运行时 import |
 | 基座                  | [redisx](https://github.com/ZoneCNH/redisx)                     | -      | ✅ 已有   | █░░░ 15% | Redis，仅骨架                                                                             |
 | 基座                  | [kafkax](https://github.com/ZoneCNH/kafkax)                     | -      | ✅ 已有   | █░░░ 15% | Kafka，仅骨架                                                                             |
 | 基座                  | [natsx](https://github.com/ZoneCNH/natsx)                       | -      | ✅ 已有   | ███░ 80% | NATS，349KB/27 项                                                                         |
@@ -355,7 +355,7 @@ Foundation 6 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中�
 ```text
 Foundation P0: 基础闭环校准 ← kernel + configx + observex + testkitx + resiliencx + schedulex
                1. resiliencx 从标准模板身份改回运行时弹性策略库
-               2. xlib-standard 固定为标准事实源 / 模板 / Gate / Evidence
+               2. xlib-standard 固定为标准事实源 / Go Reference Template / Generator / Harness Gate / Evidence Runtime
                3. configx / observex 迁移到 kernel，或标注 foundationx 兼容期
                4. 统一 Foundation Go baseline
                5. 用 xlibgate / 脚本执行依赖矩阵、testkitx 边界和 release evidence

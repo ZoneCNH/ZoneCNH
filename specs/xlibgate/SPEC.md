@@ -463,6 +463,16 @@ Given imports 检查正常，baseline 检查因配置缺失报 error
 When 运行 `check all`
 Then imports 结果正常输出，baseline 标记为 error，继续执行其余检查，exit code 2
 
+**TC-006: check release evidence**
+Given release evidence 文件存在且 schema 合法
+When 运行 `check release`
+Then 输出 pass，exit code 0
+
+**TC-007: 输出格式**
+Given 检查结果包含 pass、fail 和 error
+When 使用 JSON 输出
+Then 输出包含 check、status、message 和 evidence 字段
+
 ### 16.3 Benchmark
 
 | 场景 | 目标 |

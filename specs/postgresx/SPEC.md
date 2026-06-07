@@ -460,6 +460,11 @@ Given 已应用版本 1 和 2
 When 调用 Migrate
 Then 只执行版本 3 及以后的迁移
 
+**TC-005: Health 检查**
+Given 数据库连接正常
+When 调用 Health
+Then 返回 healthy；连接失败时返回 unhealthy
+
 ### 16.3 Benchmark
 
 | 场景 | 目标 |

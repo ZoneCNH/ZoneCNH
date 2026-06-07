@@ -380,6 +380,36 @@ Given 模块 A.Stop 需要 10s，shutdown_timeout = 1s
 When 调用 Shutdown
 Then 1s 后强制返回 ErrShutdownTimeout
 
+**TC-005: context 取消**
+Given parent context 已 cancel
+When 调用 Run
+Then 已启动模块收到 cancel 并退出
+
+**TC-006: panic 隔离**
+Given 模块 A.Start panic
+When 调用 Run
+Then panic 被转换为错误并触发已启动模块回滚
+
+**TC-007: 模块未找到**
+Given 未注册模块 unknown
+When 调用 ModuleHealth("unknown")
+Then 返回 ErrModuleNotFound
+
+**TC-008: 重复注册**
+Given 模块 A 已注册
+When 再次注册同名模块
+Then 返回 ErrAlreadyRegistered
+
+**TC-009: 模块健康查询**
+Given 模块 A 处于 Running
+When 调用 ModuleHealth("A")
+Then 返回 A 的健康状态且不触发副作用
+
+**TC-010: 依赖图输出**
+Given 注册 A -> B 依赖关系
+When 导出依赖图
+Then 输出包含 A、B 和 A depends-on B
+
 ### 16.3 Benchmark
 
 | 场景 | 目标 |

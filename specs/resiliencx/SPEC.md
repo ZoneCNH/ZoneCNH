@@ -427,6 +427,16 @@ When 3 个并发请求同时调用
 Then 前 2 个立即执行
 And 第 3 个等待或超时
 
+**TC-005: rate limiter 限流**
+Given rate=2/s，burst=2
+When 瞬时发起 3 次 Allow
+Then 前 2 次通过，第 3 次被拒绝或等待
+
+**TC-006: fallback 降级**
+Given primary 返回错误，secondary 可用
+When 调用 Fallback
+Then 返回 secondary 的结果并记录 primary 错误
+
 ### 16.3 Benchmark
 
 | 场景 | 目标 |

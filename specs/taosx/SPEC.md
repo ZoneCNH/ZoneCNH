@@ -432,6 +432,21 @@ Given 10000 行数据
 When 调用 InsertBatch
 Then 使用 STMT 模式批量写入，< 1s 完成
 
+**TC-004: NewClient 配置校验**
+Given DSN 或 endpoint 缺失
+When 创建 NewClient
+Then 返回配置错误且不建立连接
+
+**TC-005: Health 检查**
+Given TDengine 连接正常
+When 调用 Health
+Then 返回 healthy；连接失败时返回 unhealthy
+
+**TC-006: Close 幂等**
+Given client 已关闭
+When 再次调用 Close
+Then 返回 nil 且不 panic
+
 ### 16.3 Benchmark
 
 | 场景 | 目标 |

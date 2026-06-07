@@ -489,6 +489,11 @@ Given NATS 连接正常
 When NATS 短暂不可用后恢复
 Then 自动重连成功，后续操作正常
 
+**TC-005: Health 检查**
+Given NATS 连接正常
+When 调用 Health
+Then 返回 healthy；连接断开时返回 unhealthy
+
 ### 16.3 Benchmark
 
 | 场景 | 目标 |

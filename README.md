@@ -24,7 +24,7 @@ Go 🐹 (主要) · Rust 🦀 (底层) · Python 🐍 (脚本/数据) · TypeScr
 入口: x.go (Composition Root: 启动 / 配置 / 组装)
       │
       ▼
-标准: xlib-standard (标准事实源 / 模板 / Gate / Evidence，不参与运行时)
+标准: xlib-standard (标准事实源 / Go Reference Template / Generator / Harness Gate / Evidence Runtime，不参与运行时)
       │
       ▼
 L0: kernel (stdlib-only primitives)
@@ -61,7 +61,7 @@ L2.5: decimalx / domain-market / domain-exchange / domain-macro
 - [resiliencx](https://github.com/ZoneCNH/resiliencx) — 运行时弹性策略（timeout/retry/circuit/bulkhead/rate/fallback） `公开`
 - [schedulex](https://github.com/ZoneCNH/schedulex) — 确定性任务调度（trigger/clock/misfire/overlap/jitter） `公开`
 - [testkitx](https://github.com/ZoneCNH/testkitx) — 测试专用 evidence/golden/fixture/boundary 工具包 `公开`
-- [xlib-standard](https://github.com/ZoneCNH/xlib-standard) — 标准事实源、模板、Gate 与 Evidence；不作为运行时依赖 `公开`
+- [xlib-standard](https://github.com/ZoneCNH/xlib-standard) — 标准事实源、Go Reference Template、Generator、Harness Gate 与 Evidence Runtime；不作为运行时 import 依赖 `公开`
 - [xlibgate](https://github.com/ZoneCNH/xlibgate) — import 边界、go.mod、Go baseline、release evidence 门禁 `公开`
 
 > 当前 P0：先修正 `resiliencx` 的标准模板叙事，避免与 `xlib-standard` 的身份重叠。

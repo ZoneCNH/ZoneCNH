@@ -136,18 +136,64 @@
 
 ## xlib-standard
 
-| Requirement | Description          | Acceptance Criteria | Test Case       | Status |
-| ----------- | -------------------- | ------------------- | --------------- | ------ |
-| FR-001      | 命名规范             | DoD: 所有 FR 有测试 | TC-004         | ⬜     |
-| FR-002      | 错误规范             | DoD: 所有 FR 有测试 | TC-005         | ⬜     |
-| FR-003      | 接口规范             | DoD: 所有 FR 有测试 | TC-006         | ⬜     |
-| FR-004      | 目录规范             | DoD: 所有 FR 有测试 | TC-007         | ⬜     |
-| FR-005      | 配置规范             | DoD: 所有 FR 有测试 | TC-008         | ⬜     |
-| FR-006      | Gate 定义            | DoD: Gate 一致性    | TC-003          | ⬜     |
-| FR-007      | Evidence 定义        | DoD: 所有 FR 有测试 | TC-009         | ⬜     |
-| FR-008      | 模块骨架生成         | DoD: 模板可编译     | TC-001, TC-002  | ⬜     |
-| BR-001      | 唯一标准来源         | -                   | TC-010         | ⬜     |
-| BR-004      | Reference Template 可编译 | -              | TC-002          | ⬜     |
+| Requirement | Description | Acceptance Criteria | Test Case | Status |
+| ----------- | ----------- | ------------------- | --------- | ------ |
+| FR-001 | 定义 419 条 RULE-* 规则 | DoD: registry.yaml 机器可读 | - | ⬜ |
+| FR-002 | 7 类技术债治理规则 | DoD: ARCH/DEP/DOMAIN/DOCS/TEST/IMPL/SEC 全覆盖 | - | ⬜ |
+| FR-003 | 10 条 Git 治理规则和 5 层执行链 | DoD: 执行链可验证 | - | ⬜ |
+| FR-004 | L0-L6 层级依赖模型 | DoD: 依赖方向可机器检查 | - | ⬜ |
+| FR-005 | 8 个仓库治理 REQ | DoD: worktree/hooks/Makefile/CI/ruleset/evidence/audit/no-false-adopted | - | ⬜ |
+| FR-006 | 采纳状态机（8 状态，6 个禁止转换） | DoD: 状态机可机器验证 | - | ⬜ |
+| FR-007 | 15 条基本真理 | DoD: TRUTH-001~015 全部有 enforcer | - | ⬜ |
+| FR-008 | 10 个 ADR | DoD: ADR 状态为 Accepted | - | ⬜ |
+| FR-009 | 公共 API 模板 | DoD: Config/Validate/Sanitize/New/Close/HealthCheck/Error/Metrics/Version | - | ⬜ |
+| FR-010 | 9 种 ErrorKind | DoD: 9 种类型全覆盖 | - | ⬜ |
+| FR-011 | 9 个最小 metrics | DoD: metrics 注册可验证 | - | ⬜ |
+| FR-012 | HealthCheck JSON schema | DoD: 符合 health.schema.json | - | ⬜ |
+| FR-013 | 配置显式传入 | DoD: 禁止隐式读取生产密钥 | - | ⬜ |
+| FR-014 | 配置 Validate 和 Sanitize | DoD: 无效配置被拒绝 | - | ⬜ |
+| FR-015 | render_template.sh 渲染 | DoD: 渲染后可编译 | - | ⬜ |
+| FR-016 | 渲染范围全覆盖 | DoD: Go/JSON/shell/Makefile/CI/文档 | - | ⬜ |
+| FR-017 | Repository Governance Pack | DoD: --enable-governance 生效 | - | ⬜ |
+| FR-018 | make integration | DoD: kernel/configx/redisx 渲染验证 | - | ⬜ |
+| FR-019 | Docker Toolchain Runtime 模板继承 | DoD: Docker 构建可验证 | - | ⬜ |
+| FR-020 | 17+ 个 Required Gates | DoD: gate 全部可执行 | - | ⬜ |
+| FR-021 | 4 个 Context Profiles | DoD: local/release/downstream/docker | - | ⬜ |
+| FR-022 | P0 Gate 失败阻断发布 | DoD: gate 失败时发布被阻止 | - | ⬜ |
+| FR-023 | Gate 结果归档为 Evidence | DoD: evidence ledger 有记录 | - | ⬜ |
+| FR-024 | Release Scorecard（阈值 9.8） | DoD: score < 9.8 阻断发布 | - | ⬜ |
+| FR-025 | Debt Governance Gate | DoD: make debt + min-score 9.8 | - | ⬜ |
+| FR-026 | Evidence Ledger | DoD: .agent/evidence/ledger.jsonl 存在 | - | ⬜ |
+| FR-027 | Release Manifest（20+ 字段） | DoD: latest.json schema 通过 | - | ⬜ |
+| FR-028 | DONE with evidence 格式 | DoD: 唯一完成声明格式 | - | ⬜ |
+| FR-029 | 禁止无证据的 tests pass | DoD: 命令输出必须支撑声明 | - | ⬜ |
+| FR-030 | 禁止 skipped gate 记为 passed | DoD: gate 状态一致性 | - | ⬜ |
+| FR-031 | 禁止 dirty workspace release | DoD: workspace 干净才可发布 | - | ⬜ |
+| FR-032 | 禁止删除失败 Evidence | DoD: evidence append-only | - | ⬜ |
+| FR-033 | ARCH 类技术债规则 | DoD: NO_XGO_IMPORT 等 5 条 | - | ⬜ |
+| FR-034 | DEP 类技术债规则 | DoD: GOVULNCHECK 等 10 条 | - | ⬜ |
+| FR-035 | DOMAIN 类技术债规则 | DoD: FORBIDDEN_BUSINESS_TERM 等 2 条 | - | ⬜ |
+| FR-036 | DOCS 类技术债规则 | DoD: MISSING_REQUIRED_ADR 等 5 条 | - | ⬜ |
+| FR-037 | TEST 类技术债规则 | DoD: MISSING_CRITICAL_BEHAVIOR 等 6 条 | - | ⬜ |
+| FR-038 | IMPL 类技术债规则 | DoD: PANIC_RUNTIME 等 | - | ⬜ |
+| FR-039 | SEC 类技术债规则 | DoD: 安全合规全覆盖 | - | ⬜ |
+| FR-040 | Goal Kernel（8 个核心对象） | DoD: Goal/Spec/Design/Plan/Task/Test/Evidence/Review | - | ⬜ |
+| FR-041 | Harness Runtime | DoD: Mode Router/Gate Registry/Command Registry/Blocking Policy | - | ⬜ |
+| FR-042 | goalcli 唯一执行面 | DoD: cmd/goalcli 可执行 | - | ⬜ |
+| FR-043 | 6 个 MVA Gate | DoD: goal-acceptance/delivery/handover/downstream-adopt/certify/runtime-final | - | ⬜ |
+| FR-044 | 4-Plane 架构 | DoD: Spec/Execution/Proof/Automation 分离 | - | ⬜ |
+| FR-045 | 10 个 REQ-PROOF | DoD: Facts SSOT/GateReport/Evidence Replay 等 | - | ⬜ |
+| FR-046 | 28 个 PR 执行包 | DoD: Phase 1~5 全部有 plan | - | ⬜ |
+| FR-047 | 5 层执行链 | DoD: 标准源→生成器→hooks→CI→ruleset | - | ⬜ |
+| FR-048 | 禁止 main 开发 | DoD: pre-commit + pre-push + goalcli main-guard | - | ⬜ |
+| FR-049 | 必须使用 git worktree | DoD: goalcli worktree-guard 生效 | - | ⬜ |
+| FR-050 | 采纳状态机（8 状态） | DoD: 状态转换可机器验证 | - | ⬜ |
+| FR-051 | 6 个禁止状态转换 | DoD: 禁止转换被阻止 | - | ⬜ |
+| FR-052 | 下游同步治理（20 PR） | DoD: 同步计划可执行 | - | ⬜ |
+| BR-001 | 唯一标准来源 | - | - | ⬜ |
+| BR-004 | Reference Template 可编译 | - | - | ⬜ |
+| BR-011 | latest.json 不提交 | - | - | ⬜ |
+| BR-014 | proof_depth 不升级 | - | - | ⬜ |
 
 ---
 

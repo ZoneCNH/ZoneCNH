@@ -448,6 +448,26 @@ Given 在 goroutine A 中创建 span
 When goroutine B 从 ctx 中读取 trace_id
 Then trace_id 与 A 中创建的一致
 
+**TC-004: Exporter 降级**
+Given exporter 后端不可用
+When 写入日志、指标或 span
+Then 调用方不 panic，并返回可观测错误或降级状态
+
+**TC-005: Redaction 脱敏**
+Given 日志字段包含 secret、token 或 password
+When 写入结构化日志
+Then 输出中敏感值被替换为 `***`
+
+**TC-006: Health schema**
+Given observex 已初始化
+When 调用 Health
+Then 返回符合约定 JSON schema 的健康状态
+
+**TC-007: Metrics 命名规范**
+Given 指标名不符合命名规范
+When 注册 counter 或 histogram
+Then 返回命名错误并拒绝注册
+
 ### 16.3 Benchmark
 
 | 场景 | 目标 |

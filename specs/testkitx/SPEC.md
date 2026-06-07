@@ -431,7 +431,59 @@ testkitx 是唯一允许依赖所有 Foundation L1 模块的包，但仅在 `go 
 | `TestContract_Meter_LabelCardinality` | FakeMeter 拒绝高基数 label |
 | `TestContract_Config_Fingerprint` | FakeConfig fingerprint 稳定性 |
 
-### 16.4 Benchmark
+### 16.4 Given/When/Then 用例
+
+**TC-001: FakeConfig 类型安全**
+Given FakeConfig 设置 `symbol=BTCUSDT`
+When 调用 GetString("symbol")
+Then 返回 BTCUSDT 且类型断言成功
+
+**TC-002: FakeLogger 编译期检查**
+Given FakeLogger 实现 observex.Logger
+When 编译 contract test
+Then 接口断言通过
+
+**TC-003: FakeMeter 编译期检查**
+Given FakeMeter 实现 observex.Meter
+When 编译 contract test
+Then 接口断言通过
+
+**TC-004: FakeTracer 编译期检查**
+Given FakeTracer 实现 observex.Tracer
+When 编译 contract test
+Then 接口断言通过
+
+**TC-005: FakeClock 确定性**
+Given FakeClock 初始时间固定
+When Advance(1s)
+Then Now 返回初始时间加 1s
+
+**TC-006: FakeBreaker 编译期检查**
+Given FakeBreaker 实现 resiliencx.Breaker
+When 编译 contract test
+Then 接口断言通过
+
+**TC-007: Eventually 收敛**
+Given 条件在 3 次轮询后满足
+When 调用 Eventually
+Then Eventually 在超时前返回成功
+
+**TC-008: GoldenUpdate**
+Given GOLDEN_UPDATE=1
+When golden 内容变化
+Then golden 文件被更新
+
+**TC-009: BoundaryCheck**
+Given 生产包 import testkitx
+When 运行 BoundaryCheck
+Then 返回边界违规
+
+**TC-010: GoroutineLeakCheck**
+Given 测试后仍有新增 goroutine
+When 运行 GoroutineLeakCheck
+Then 报告泄漏并失败
+
+### 16.5 Benchmark
 
 | 场景 | 目标 |
 |------|------|

@@ -377,6 +377,21 @@ Given 配置中 market_data.enabled = false
 When 运行 x.go
 Then market-data 模块不注册，其他模块正常启动
 
+**TC-004: Health 健康聚合**
+Given 多个模块已启动
+When 调用健康检查入口
+Then 返回每个模块的健康状态和整体状态
+
+**TC-005: Signal 信号处理**
+Given x.go 正在运行
+When 收到 SIGTERM
+Then 触发优雅停机并返回退出码 0
+
+**TC-006: Config 配置加载**
+Given 配置文件包含模块 enabled 开关
+When 启动 x.go
+Then 按配置装配模块且配置错误时 fail-fast
+
 ### 16.3 Benchmark
 
 | 场景 | 目标 |
