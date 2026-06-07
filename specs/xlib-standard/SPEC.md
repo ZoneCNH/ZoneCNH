@@ -9,17 +9,14 @@
 - Layer: 基座（Foundation Gate 治理子层；详见 §15.1）
 - Version: v0.6.x（目标 v1.0.0-rc.1）
 
-> **状态说明（2026-06-08 05:25 +08:00 收敛）**：
+> **Status: Review**（待独立 reviewer 签字后升级 Approved）
 >
-> - **当前 Status**：`Review`（独立 reviewer codex-cli/0.137.0 已于 05:22 出具 `CHANGES_REQUESTED`；P0 已于 05:25 修复，等待复审）。
-> - **修复演进**：起源于 2026-06-08 04:46 v3 深度分析（评分 6.8/10，发现 9 条 P0/P1 结构问题）。经 v4 (8.4)/v5 (8.8)/v6 (9.7) 迭代修复；最终在 v7（本轮）按 codex 独立 reviewer 反馈消除"参考资料"顶层节、补全 FR-020/FR-041/FR-046 真实锚点。
-> - **真证据已固定**：上游 commit `93753b30e6d01fb4a9b096acaa0d7d53a2fb231c`（= remote tag `v0.6.5`）、tree `296e3b912c70f15434783aebcf35159f7000a01f`、154 文件 sha256-prefix（见 `COVERAGE-MANIFEST.md`）；远端 branch protection / 2 rulesets / 5 workflows 全 success（见 `REMOTE-EVIDENCE.md`）；`required_approving_review_count=1` 已启用。
-> - **追溯完整性**：TRACEABILITY 行级覆盖 **100%（52/52）**；CONFLICT-LEDGER 跨节引用全部修正；所有顶层 H2 严格落在 §1..§23。
-> - **进入 Approved 的剩余路径**：独立 reviewer 对本轮 P0 修复进行复审 → 给出 `APPROVED` verdict → Status 升级。所有可机器化前置条件均已达成。
+> Approved 前置条件：
+> - [x] 远端治理证据（OQ-001 已由 REMOTE-EVIDENCE.md 闭合）
+> - [x] FR 行级覆盖 100%（51/52 行级 + 1/52 子目录级）
+> - [ ] 独立 reviewer 签字
 >
-> 详细修复演进见 `docs/report/xlib-standard-structural-fix-final-20260608-0513.md` 与 `specs/xlib-standard/REVIEW-VERDICT.md`。
-> 仍待补：(a) 独立 reviewer 签字；(b) TRACEABILITY 余 17 条 FR 行级（67% → 90%）；
-> (c) GitHub 远端 ruleset / Release object 真证据（OQ-001）。三项全部满足后方可升级 Status: Approved。
+> 详细变更记录：见 git log
 
 - Repository: [github.com/ZoneCNH/xlib-standard](https://github.com/ZoneCNH/xlib-standard)
 - Related: [CONSTITUTION.md](../../CONSTITUTION.md), [ARCHITECTURE.md](../../ARCHITECTURE.md),
@@ -992,7 +989,7 @@ func Version() string
 
 ---
 
-## 10. 数据模型（Data Model）
+## 11. 数据模型（Data Model）
 
 > 本节按 `SPEC-TEMPLATE.md §10` 约束：每个核心对象给出字段表 + Go struct 参考；JSON tag 与 §9.5 / §9.2 / §10.6 schema 对齐。
 
@@ -1219,7 +1216,7 @@ type AdoptionRecord struct {
 
 ---
 
-## 11. Config Schema（配置 Schema）
+## 12. Config Schema（配置 Schema）
 
 > 本模块作为标准源/模板/Harness/Evidence Runtime，自身不暴露生产业务配置。下游生成库的 Config Schema 由 `scripts/render_template.sh` 渲染产出，并满足以下硬性约束：
 
@@ -1233,7 +1230,7 @@ type AdoptionRecord struct {
 
 ---
 
-## 12. 错误处理（Error Handling）
+## 13. 错误处理（Error Handling）
 
 ### 12.1 ErrorKind（9 种）
 
@@ -1268,7 +1265,7 @@ type AdoptionRecord struct {
 
 ---
 
-## 13. Edge Cases（边界场景）
+## 14. Edge Cases（边界场景）
 
 > 本节包含**调用者视角**的边界场景与**治理视角**的失败语义两类。每条 Edge Case 必须有对应 TC（详见 §16.5）。
 
@@ -1314,7 +1311,7 @@ type AdoptionRecord struct {
 
 ---
 
-## 14. Directory Structure（目录结构）
+## 15. Directory Structure（目录结构）
 
 > xlib-standard 自身目录结构以上游 `github.com/ZoneCNH/xlib-standard` 仓库为权威；本规格只声明顶层约束：
 
@@ -1339,7 +1336,7 @@ xlib-standard/
 
 ---
 
-## 15. 依赖（Dependencies）
+## 16. 依赖（Dependencies）
 
 ### 15.1 层级依赖模型
 
@@ -1398,7 +1395,7 @@ Release ladder：
 
 ---
 
-## 16. 测试（Testing）
+## 17. 测试（Testing）
 
 ### 16.1 测试分层（TL0-TL7）
 
@@ -1500,7 +1497,7 @@ Release ladder：
 
 ---
 
-## 17. 性能（Performance Budget）
+## 18. 性能（Performance Budget）
 
 ### 17.1 Gate 成本预算
 
@@ -1532,7 +1529,7 @@ Release ladder：
 
 ---
 
-## 18. 可观测性（Observability）
+## 19. 可观测性（Observability）
 
 ### 18.1 最小指标（9 个）
 
@@ -1555,7 +1552,7 @@ Release ladder：
 
 ---
 
-## 19. 安全（Security）
+## 20. 安全（Security）
 
 ### 19.1 P0 安全规则
 
@@ -1585,7 +1582,7 @@ Release ladder：
 
 ---
 
-## 20. CI Gate（持续集成门禁）
+## 21. CI Gate（持续集成门禁）
 
 ### 20.1 Gate 总览
 
@@ -1619,7 +1616,7 @@ make release-preflight VERSION=vX.Y.Z
 
 ---
 
-## 21. 迁移（Upgrade Compatibility）
+## 22. 迁移（Upgrade Compatibility）
 
 ### 21.1 v1.0.0 配置迁移
 
@@ -1682,7 +1679,7 @@ v1 提出概念 → v2 审计补全 → v3 修补 P0 缺口 → v5 终极版
 
 ---
 
-## 22. Release DoD（发布完成定义）
+## 23. Release DoD（发布完成定义）
 
 ### 22.1 四级 DoD（见 §8.5；每级 checklist 项即 `AC-NNN` 验收标准编号）
 
@@ -1847,7 +1844,7 @@ Goal Runtime：`.agent/evidence/ledger.jsonl` 是目标执行源 ledger；`GOAL_
 
 ---
 
-## 23. 待解决问题（Open Questions）
+## 24. 待解决问题（Open Questions）
 
 ### 23.1 Open Questions
 

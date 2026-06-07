@@ -1,9 +1,18 @@
 # Agent runtime directories
 .omc/
 .omx/
-.codex/
-.claude/
 .worktree/
+
+# Claude Code / Codex — 开放目录结构，屏蔽敏感文件
+.claude/settings.local.json
+.claude/sessions/
+.claude/conversations/
+.claude/projects/
+.claude/statsig/
+.claude/todos/
+.claude/auth/
+.codex/sessions/
+.codex/conversations/
 
 # Generated release evidence
 release/manifest/*.json
