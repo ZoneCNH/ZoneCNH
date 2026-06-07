@@ -12,7 +12,7 @@
 - `ARCHITECTURE.md`：依赖拓扑、领域职责、设计原则和状态表的权威文档。
 - `AGENTS.md` / `CLAUDE.md`：面向自动化代理和贡献者的工作指南。
 
-实际实现位于 `github.com/ZoneCNH` 下约 60 个独立仓库，例如 `kernel`、`binance`、`factor-engine`、`risk-engine`、`x.go`。本仓库只描述和链接这些模块，不承载它们的源码。
+实际实现位于 `github.com/ZoneCNH` 下约 66 个独立仓库，例如 `kernel`、`binance`、`factor-engine`、`risk-engine`、`x.go`。本仓库只描述和链接这些模块，不承载它们的源码。
 
 这里没有构建、lint 或测试步骤；主要工作是编辑 Markdown。
 

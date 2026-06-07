@@ -8,6 +8,8 @@
 
 依赖、业务流和运行时组装刻意分开呈现：业务数据从数据域走向执行域，代码依赖不反向穿透；`x.go` 是组合根（Composition Root），不是业务链路终点。
 
+> 🔄 三引擎数据流全景（market_engine→S / macro_engine→M / regime_engine→DecisionCard）、M×S 矩阵、契约固化清单 → **[DATAFLOW.md](./DATAFLOW.md)**
+
 ### 代码依赖拓扑
 
 ```
@@ -36,23 +38,28 @@ x.go ───────────────► 基座 / L2.5 / 数据域 
 ### 业务流与反馈
 
 ```
-market-data / macro-data / alternative-data
-              │
-              ▼
-factor-engine ◄──► feature-store ◄──► factor-eval
+market-data (19) ──────────────► market_regime ──┐
+  domain-market (Bar/Tick/OB)     S1-S7 状态     │
+  质量门禁 → 特征 → 分类器       bias/permission  │
+                                               ├──► regime-engine ──► DecisionCard
+macro-data (10) ───────────────► macro_regime ──┘     M×S 融合        action A-E
+  domain-macro (MacroPoint)      M1-M7 状态           冲突门           profile
+  LGIP 四因子                    LGIP 得分            风险放大          risk_tier
+                                                                 position_caps
+factor-engine ◄──► feature-store ◄──► factor-eval                     template
               │                         ▲
               ▼                         │
-signal-factory ◄── backtest-engine ─────┘
+signal-factory ◄── backtest-engine ─────┘    ◄── DecisionCard (action/risk/template)
       │              ▲
       ▼              │
 optimizer ───────────┘
       │
       ▼
 risk-engine ───► order-engine ───► portfolio-engine ───► settlement
-                          │                 │
-                          └──── fills ──────┤
-                                            ▼
-决策域 ◄──── positions / PnL / exposure events
+  ◄── trade_permission                │                 │
+      position_caps                   └──── fills ──────┤
+      risk_multiplier                                  ▼
+                              决策域 ◄──── positions / PnL / exposure events
 ```
 
 ### 运行时组装
@@ -75,7 +82,7 @@ x.go
 | 基座 | 生命周期、依赖注入、配置、可观测、存储、稳定契约 | xlib-standard, kernel, configx, observex, testkitx, resiliencx, schedulex, xlibgate, redisx, kafkax, natsx, postgresx, taosx, ossx, clickhousex, contracts |
 | L2.5 | 领域值对象和语义模型，上层统一依赖 | decimalx, domain-market, domain-exchange, domain-macro |
 | 数据域 | 行情、宏观、另类数据采集 | market-data (14 SDK + 5 Provider), macro-data (10), alternative-data |
-| 分析域 | 因子计算、特征存储、因子评估、市场/宏观环境分类（互相反馈） | factor-engine, feature-store, factor-eval, market_regime, macro_regime |
+| 分析域 | 因子计算、特征存储、因子评估、市场/宏观环境分类、M×S 联合决策（三引擎：market_engine→S / macro_engine→M / regime_engine→M+S） | factor-engine, feature-store, factor-eval, market_regime, macro_regime, regime-engine, mxs |
 | 决策域 | 信号生成、历史回测、参数优化（并行协作） | signal-factory, backtest-engine, optimizer, strategies |
 | 执行域 | 风险管理、订单执行、组合管理、结算 | risk-engine, order-engine, portfolio-engine, settlement |
 | 入口 | 启动、配置加载、依赖组装、生命周期控制 | x.go |
@@ -200,8 +207,10 @@ x.go
 | 分析域 | [factor-engine](https://github.com/ZoneCNH/factor-engine) | - | 🔨 已创建 | ░░░░ 5% | 从原始数据计算 alpha 因子 |
 | 分析域 | [feature-store](https://github.com/ZoneCNH/feature-store) | - | 🔨 已创建 | ░░░░ 5% | 因子版本管理、IC 评估 |
 | 分析域 | [factor-eval](https://github.com/ZoneCNH/factor-eval) | - | 🔨 已创建 | ░░░░ 5% | IC/IR/换手率评估 |
-| 分析域 | [market_regime](https://github.com/ZoneCNH/market_regime) | - | 🔨 已创建 | ░░░░ 5% | 市场状态识别（牛熊震荡/趋势/波动率环境分类） |
-| 分析域 | [macro_regime](https://github.com/ZoneCNH/macro_regime) | - | 🔨 已创建 | ░░░░ 5% | 宏观经济体制识别（通胀/衰退/复苏等环境分类） |
+| 分析域 | [market_regime](https://github.com/ZoneCNH/market_regime) | - | 🔨 已创建 | ░░░░ 5% | 市场状态识别（S1-S7：多头趋势/挤空/空头/踩踏/震荡/低波/压缩） |
+| 分析域 | [macro_regime](https://github.com/ZoneCNH/macro_regime) | - | 🔨 已创建 | ░░░░ 5% | 宏观经济体制识别（M1-M7：流动牛市/再通复苏/软着繁荣/鹰派通胀/衰退降息/信用去杠/滞胀冲击） |
+| 分析域 | [regime-engine](https://github.com/ZoneCNH/regime-engine) | - | 🔨 已创建 | ░░░░ 5% | M×S 联合决策引擎（M+S → action/risk_tier/position_caps/trade_permission） |
+| 分析域 | [mxs](https://github.com/ZoneCNH/mxs) | - | ✅ 已有 | - | M×S 系统架构分析体系 |
 | **决策域** ||||||
 | 决策域 | [signal-factory](https://github.com/ZoneCNH/signal-factory) | - | 🔨 已创建 | ░░░░ 5% | 多因子信号生成、过滤、评分 |
 | 决策域 | [backtest-engine](https://github.com/ZoneCNH/backtest-engine) | - | 🔨 已创建 | ░░░░ 5% | 事件驱动回测、Tick 级回放 |

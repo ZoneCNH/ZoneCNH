@@ -26,6 +26,9 @@ go.work.sum
 
 # Local agent runtime worktrees
 .worktree/
+.omc/
+.omx/
+
 
 # Generated release evidence
 release/manifest/*.json

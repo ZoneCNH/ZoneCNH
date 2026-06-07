@@ -10,6 +10,8 @@ Go 🐹 (主要) · Rust 🦀 (底层) · Python 🐍 (脚本/数据) · TypeScr
 
 > 📐 完整依赖拓扑、域间关系、运行时组装与子模块明细 → **[ARCHITECTURE.md](./ARCHITECTURE.md)**
 >
+> 🔄 三引擎数据流全景、M×S 联合决策矩阵与契约清单 → **[DATAFLOW.md](./DATAFLOW.md)**
+>
 > 📊 项目状态监控、健康度与风险追踪 → **[STATUS.md](./STATUS.md)**
 
 ```
@@ -25,7 +27,8 @@ L2.5: decimalx / domain-market / domain-exchange / domain-macro
       ▼
 业务流: 数据域 → 分析域 ↔ 决策域 → 执行域
 数据域: market-data (19) / macro-data (10) / alternative-data
-分析域: factor-engine / feature-store / factor-eval / market_regime / macro_regime
+分析域: factor-engine / feature-store / factor-eval / market_regime / macro_regime / regime-engine / mxs
+       三引擎: market_engine(market facts → S state) / macro_engine(macro facts → M state) / regime_engine(M+S → action/risk/permission)
 决策域: signal-factory / backtest-engine / optimizer / strategies
 执行域: risk-engine → order-engine → portfolio-engine / settlement
 
@@ -114,8 +117,10 @@ L2.5: decimalx / domain-market / domain-exchange / domain-macro
 - [factor-engine](https://github.com/ZoneCNH/factor-engine) — 因子计算引擎
 - [feature-store](https://github.com/ZoneCNH/feature-store) — 特征存储与版本管理
 - [factor-eval](https://github.com/ZoneCNH/factor-eval) — 因子评估
-- [market_regime](https://github.com/ZoneCNH/market_regime) — 市场状态识别（牛熊震荡/趋势/波动率环境分类）
-- [macro_regime](https://github.com/ZoneCNH/macro_regime) — 宏观经济体制识别（通胀/衰退/复苏等环境分类）
+- [market_regime](https://github.com/ZoneCNH/market_regime) — 市场状态识别（S1-S7：多头趋势/挤空/空头/踩踏/震荡/低波/压缩）
+- [macro_regime](https://github.com/ZoneCNH/macro_regime) — 宏观经济体制识别（M1-M7：流动牛市/再通复苏/软着繁荣/鹰派通胀/衰退降息/信用去杠/滞胀冲击）
+- [regime-engine](https://github.com/ZoneCNH/regime-engine) — M×S 联合决策引擎（M state + S state → action A-E / risk_tier / position_caps / trade_permission）
+- [mxs](https://github.com/ZoneCNH/mxs) — M×S 系统架构分析体系
 
 ### 决策域
 
