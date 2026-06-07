@@ -3,7 +3,7 @@
 > **非当前主分析**：本报告基于 `SPEC.md` v2.0.0 和 181 文件历史口径，保留用于问题背景。当前可执行主规格以 `SPEC.md` 为准；当前覆盖口径以 `COVERAGE-MANIFEST.md` 的 154 个文件为准。
 >
 > 本文中的 181 文件、66 gates、10 ADR、28 个 PR 执行包等统计均为历史分析口径，不得作为当前交付判定。
-
+>
 > 分析时间：2026-06-07（v2 修正版）
 > 分析范围：`github.com/ZoneCNH/xlib-standard` 仓库 + `specs/xlib-standard/SPEC.md` v2.0.0
 > 分析框架：Goal Runtime + Recursive Self-Improvement + Autoresearch + 六类债务
@@ -259,8 +259,8 @@
 **D-003: harness gates 数量不同步**
 
 - 严重度：P2
-- 问题：历史版本曾把 17-plus gate 家族写成 Required 总量，后续又曾把全部 66 个 gates 误标为 Required；当前主规格应区分 66 个 Gates 与其中 17 个 Required gates（其余为 extended/governance/docker/release/MVA）
-- 状态：已修复（SPEC.md FR-020 和 §2 已更新为 66）
+- 问题：历史材料曾混用 "17+ Required Gates" 和 66 gates；当前口径应区分 66 Gates 总数与 17 Required + 49 extended/governance/release
+- 状态：已修复（当前 SPEC.md FR-020、§2 和 §13.2 使用区分口径）
 
 **D-004: docs/standard/ 27 个文件但 SPEC.md 只列出 18 个**
 
