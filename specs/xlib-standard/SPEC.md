@@ -158,11 +158,11 @@ xlib-standard 本身不包含业务逻辑，不依赖 x.go，不读取生产密�
 
 > 注：L2 适配器共 7 个。docs/l2/ 目录下有 15 个执行计划文件，覆盖上述 7 个 L2 适配器 + xlib-standard 自身 + testkitx + xlibgate + xgo-market-data + xgo-macro-data + engines + xgo runtime system gate。
 
-| 消费者 | 层级 | 消费方式 | 采纳状态 |
+| 消费者 | 领域 / 层级 | 消费方式 | 采纳状态 |
 |--------|------|----------|----------|
-| xgo-market-data | L4 | 标准继承 | consumer-only |
-| xgo-macro-data | L4 | 标准继承 | consumer-only |
-| x.go | L6 | 标准继承（consumer-only） | consumer-only |
+| xgo-market-data | 数据域（私有） | 标准继承 | consumer-only |
+| xgo-macro-data | 数据域（私有） | 标准继承 | consumer-only |
+| x.go | 入口（私有） | 标准继承（consumer-only） | consumer-only |
 
 ---
 
@@ -809,10 +809,10 @@ iron-rules.md > registry.yaml > *-rules.md > ADR-* > .worktree/goal-patch.md
 
 #### 9.1.1 Go 参考签名（Template Reference）
 
-下游模板渲染产物必须满足以下 Go 签名（占位符 `{Module}` 由 `scripts/render_template.sh` 替换）：
+> **格式说明**：下方 fenced block 是 **text/template 源**（使用 Go template 占位符 `{{.Module}}` / `{{.Package}}`），不是可直接 `go vet` 的 Go 源文件。模板渲染产物（替换占位符后的 `.go` 文件）才是 §7 FR-009 / FR-015 中 `go vet ./...` 的目标。
 
-```go
-package {module}
+```gotemplate
+package {{.Package}}
 
 import (
     "context"
@@ -829,13 +829,15 @@ type Config struct {
 // （详见 §12.1 / FR-014）。
 func (c *Config) Validate() error
 
-// Sanitize 返回脱敏后的 Config 副本，可安全写入日志、Evidence、Manifest。
+// Sanitize 返回脱敏后的 Config 深拷贝（值类型），可安全写入日志、Evidence、Manifest。
 // 必须屏蔽 token / secret / password / private_key / 连接凭据（XS-CORE-008）。
+// 实现必须深拷贝所有引用类型字段（map/slice/pointer），不得共享底层数组。
 func (c *Config) Sanitize() Config
 
-// {Module}Client 是公共客户端接口；具体方法由各模块定义。
-// 所有方法第一参数必须是 context.Context；返回值必须包含 error。
-type {Module}Client interface {
+// {{.Module}}Client 是公共客户端接口；本规格只约束最小方法集（Close + HealthCheck）。
+// 其余 §9.1 表中声明的 API（Metrics / Version / Error 系列）按下方"独立函数 / 包级 API"
+// 提供；模块特有方法由各下游 SPEC §9 自行扩展。
+type {{.Module}}Client interface {
     // Close 释放资源，必须幂等（多次调用不报错）。
     Close(ctx context.Context) error
 
@@ -844,7 +846,7 @@ type {Module}Client interface {
 }
 
 // New 构造客户端；context 不可为 nil/canceled/expired。
-func New(ctx context.Context, cfg Config) ({Module}Client, error)
+func New(ctx context.Context, cfg Config) ({{.Module}}Client, error)
 
 // HealthStatus 与 §9.5 JSON Schema 对齐。
 type HealthStatus struct {
@@ -871,20 +873,25 @@ const (
     ErrorKindInternal    ErrorKind = "internal"
 )
 
-// NewError / WrapError / IsKind 构成稳定错误 contract，详见 §12.2。
+// 包级独立 API（不属于 Client 接口）：
+//   NewError / WrapError / IsKind 构成稳定错误 contract，详见 §12.2。
+//   Metrics 返回需注册到 observex 的 9 个最小指标定义（详见 §18.1）。
+//   Version 返回模块语义化版本字符串（如 "v0.6.3"）。
 func NewError(kind ErrorKind, msg string) error
 func WrapError(kind ErrorKind, cause error, msg string) error
 func IsKind(err error, kinds ...ErrorKind) bool
-
-// Version 返回模块语义化版本字符串（如 "v0.6.3"）。
+func Metrics() []MetricDescriptor
 func Version() string
 ```
 
 **约束**：
-- 所有方法第一参数 `context.Context`、返回值含 `error`（与 `SPEC-TEMPLATE.md §9` 一致）。
-- 接口最小化（≤ 5 方法），具体存储 / RPC 行为由各下游模块在自身 SPEC §9 扩展。
+- 模板渲染入口：`scripts/render_template.sh --module <name> --package <pkg>`，替换 `{{.Module}}` / `{{.Package}}` 占位符；渲染产物路径不得落在本仓库内（详见 §7 FR-015 / 附录 D.4）。
+- 接口最小化（`Client` 仅 `Close` + `HealthCheck` 两方法）；其余 §9.1 表中的 API 作为**包级独立函数 / 类型**（`New / Validate / Sanitize / NewError / Metrics / Version`），不强制塞入 Client 接口。
+- 所有方法 / 函数第一参数 `context.Context`（构造、Close、HealthCheck），返回值含 `error`。
+- 接收器一致性：`Config.Validate()` 与 `Config.Sanitize()` 统一为 **pointer 接收器读取 + 返回值类型副本**；Sanitize 必须做 deep copy（不得共享 map/slice 底层数组）。
 - 禁止暴露 `float64` 表达金额（基座统一使用 `decimalx`，详见 ARCHITECTURE.md）。
 - 模板生成后必须通过 `GOWORK=off go vet ./...`（FR-009 / FR-015）。
+- 需要 Go ≥ 1.18（`map[string]any` 别名）；模块根 `go.mod` 必须声明 `go 1.23` 与 `.tool-versions` 一致（§1 元信息）。
 
 ### 9.2 Gate Result Envelope
 
@@ -1032,7 +1039,7 @@ Spec Plane → Execution Plane → Proof Plane → Automation Plane
 - **源**：`.agent/evidence/ledger.jsonl`（append-only JSONL，禁止删除失败 Evidence，FR-032）
 - **派生**：`release/evidence/goalcli/`（generated packs，不是 source ledger）
 
-每一行记录 schema：
+每一行记录 schema（与 §13.2 truth-state、§10.7 AdoptionStatus 共享枚举）：
 
 | 字段              | 类型     | 必填 | 说明                                                  |
 |-------------------|----------|:----:|-------------------------------------------------------|
@@ -1042,35 +1049,74 @@ Spec Plane → Execution Plane → Proof Plane → Automation Plane
 | `gate_id`         | `string` |  ✅  | 关联 Gate                                             |
 | `status`          | `string` |  ✅  | `passed / failed / planned / gap`                     |
 | `exit_code`       | `int`    |  ✅  | 与 §9.3 一致                                          |
+| `truth_state`     | `string` |  ✅  | `verified / planned / weak / violated / unverified_remote / incomplete`；详见 §13.2 / §2.1 |
+| `adoption_status` | `string` |  ⭕  | 与 §10.7 AdoptionStatus 枚举一致；仅 downstream 相关 gate 必填 |
+| `evidence_state`  | `string` |  ⭕  | `not_run / partial / complete`；与 §10.7 一致         |
 | `evidence_path`   | `string` |  ⭕  | 派生 evidence pack 相对路径                            |
 | `command`         | `string` |  ⭕  | 触发命令                                              |
 | `details`         | `object` |  ⭕  | 任意 JSON 详情                                         |
 
 ```go
 type EvidenceEntry struct {
-    SchemaVersion string                 `json:"schema_version"`
-    Timestamp     string                 `json:"timestamp"`
-    GoalID        string                 `json:"goal_id"`
-    GateID        string                 `json:"gate_id"`
-    Status        string                 `json:"status"`
-    ExitCode      int                    `json:"exit_code"`
-    EvidencePath  string                 `json:"evidence_path,omitempty"`
-    Command       string                 `json:"command,omitempty"`
-    Details       map[string]any         `json:"details,omitempty"`
+    SchemaVersion   string          `json:"schema_version"`
+    Timestamp       string          `json:"timestamp"`
+    GoalID          string          `json:"goal_id"`
+    GateID          string          `json:"gate_id"`
+    Status          string          `json:"status"`
+    ExitCode        int             `json:"exit_code"`
+    TruthState      TruthState      `json:"truth_state"`
+    AdoptionStatus  AdoptionStatus  `json:"adoption_status,omitempty"`
+    EvidenceState   string          `json:"evidence_state,omitempty"`
+    EvidencePath    string          `json:"evidence_path,omitempty"`
+    Command         string          `json:"command,omitempty"`
+    Details         map[string]any  `json:"details,omitempty"`
 }
+
+type TruthState string
+
+const (
+    TruthStateVerified         TruthState = "verified"
+    TruthStatePlanned          TruthState = "planned"
+    TruthStateWeak             TruthState = "weak"             // registered / baseline_scanned / dry_run_ready 等弱事实
+    TruthStateViolated         TruthState = "violated"         // 弱事实尝试升级为强事实
+    TruthStateUnverifiedRemote TruthState = "unverified_remote" // 远端治理不可本地证明
+    TruthStateIncomplete       TruthState = "incomplete"       // manifest 字段缺失等
+)
 ```
 
 ### 10.6 Release Manifest（latest.json）
 
-| 字段                          | 类型              | 必填 | 说明                                  |
+> 本表字段必须**完整覆盖 §22.5 的 37 项 No-Go 条件**——每项 No-Go 都有对应的 manifest 字段或 evidence pack 引用，否则 release-final-check 无机器可读判断依据。
+
+| 字段                          | 类型              | 必填 | 说明 / 关联 No-Go                       |
 |-------------------------------|-------------------|:----:|---------------------------------------|
 | `module`                      | `string`          |  ✅  | 模块名                                |
-| `version`                     | `string`          |  ✅  | 形如 `v0.6.3`                         |
+| `version`                     | `string`          |  ✅  | 形如 `v0.6.3`（NG-01 CHANGELOG 条目对应） |
 | `commit`                      | `string`          |  ✅  | 40 char commit sha                    |
 | `tree_sha`                    | `string`          |  ✅  | 40 char tree sha                      |
 | `source_digest`               | `string`          |  ✅  | source pack sha256                    |
-| `go_version`                  | `string`          |  ✅  | 编译时 Go 版本                        |
+| `go_version`                  | `string`          |  ✅  | 编译时 Go 版本（NG-07 toolchain 漂移） |
 | `generated_at`                | `string`          |  ✅  | RFC3339                               |
+| `changelog_entry`             | `string`          |  ✅  | CHANGELOG.md 中本版本条目锚点（NG-01） |
+| `public_api_surface`          | `object`          |  ✅  | API 冻结快照（NG-02）                  |
+| `surface_classification`      | `object`          |  ✅  | stable / experimental / internal 分类（NG-03） |
+| `breaking_changes`            | `[]BreakingChange`|  ⭕  | 含 migration_note（NG-04）             |
+| `release_entrypoint`          | `string`          |  ✅  | 必须为 `cmd/goalcli`，不得为 `cmd/xlibgate`（NG-05 / NG-06） |
+| `workflow_pins`               | `[]WorkflowPin`   |  ✅  | 每个 workflow action 的 40-char SHA（NG-08） |
+| `workflow_permissions`        | `[]WorkflowPerm`  |  ✅  | 每个 workflow 的 explicit permissions（NG-09） |
+| `pr_template_present`         | `bool`            |  ✅  | PR template + CODEOWNERS 存在（NG-10） |
+| `registry_validation_status`  | `string`          |  ✅  | `passed / failed`（NG-11）             |
+| `release_artifact_validation` | `string`          |  ✅  | `passed / failed`（NG-12）             |
+| `generator_determinism`       | `object`          |  ✅  | determinism / idempotency 证据（NG-13） |
+| `downstream_replays`          | `[]ReplayResult`  |  ✅  | kernel/configx/redisx replay 结果（NG-14） |
+| `downstream_status`           | `[]AdoptionRecord`|  ✅  | 不得把 not_run 报告为 passed（NG-15）  |
+| `p0_debt_count`               | `int`             |  ✅  | 必须 == 0（NG-16）                     |
+| `truth_state_violations`      | `int`             |  ✅  | 必须 == 0（NG-17）                     |
+| `manifest_blocks_present`     | `[]string`        |  ✅  | 必须含 goal/worktree/branch/cicd/governance/risk/downstream（NG-18） |
+| `open_blockers`               | `[]BlockerRef`    |  ✅  | P0 blocker / RC blocker 必须为空（NG-19） |
+| `rollback_policy`             | `RollbackPolicy`  |  ✅  | 回滚策略文件存在与摘要（NG-20）        |
+| `docker_toolchain_parity`     | `object`          |  ✅  | parity 证明（NG-21）                   |
+| `toolchain_drift_report`      | `object`          |  ✅  | docs/workflow/manifest 间一致性（NG-07 复核） |
 | `checks`                      | `[]CheckResult`   |  ✅  | 各 gate 结果                          |
 | `contracts`                   | `[]ContractRef`   |  ✅  | 接口 / schema 锚点                    |
 | `dependencies`                | `[]Dependency`    |  ✅  | go.mod 关键 require                   |
@@ -1080,8 +1126,9 @@ type EvidenceEntry struct {
 | `score`                       | `float`           |  ✅  | scorecard 总分（≥ 9.8 才允许 release） |
 | `workflow`                    | `string`          |  ✅  | 触发的 workflow 文件名                |
 | `artifacts`                   | `[]ArtifactRef`   |  ✅  | 产物清单                              |
+| `evidence_pack_ref`           | `string`          |  ✅  | 关联 evidence pack 路径（NG-22..NG-37 由 pack 覆盖） |
 
-20+ 字段；具体扩展字段见 `docs/release.md` 与 `docs/supply-chain.md`。
+剩余 NG-22..NG-37 由 `evidence_pack_ref` 指向的 pack 内部 JSON 文件覆盖，详见 §22.5 完整表。
 
 ### 10.7 Adoption Registry
 
@@ -1175,26 +1222,47 @@ type AdoptionRecord struct {
 
 ## 13. Edge Cases（边界场景）
 
-> 标准源/Harness/Evidence Runtime 的边界场景以 **xlibgate 硬性失败** 与 **truth-state 规则** 为机器化表述：
+> 本节包含**调用者视角**的边界场景与**治理视角**的失败语义两类。每条 Edge Case 必须有对应 TC（详见 §16.5）。
 
-### 13.1 xlibgate 硬性失败（7 种）
+### 13.1 调用者视角边界（Caller-Side Edge Cases）
 
-见 §12.3。任一触发即 fail-closed，不得降级。
+> 下游模块在自身 §13 沿用并扩展。本表为 Go 参考模板的最小集，对应 §9.1.1 接口签名。
 
-### 13.2 弱事实禁止升级（truth-state）
+| EC ID | 场景 | 触发条件 | 预期行为 | 对应 TC | 对应 FR |
+|-------|------|----------|----------|---------|---------|
+| EC-001 | nil context | `New(nil, cfg)` / `Close(nil)` / `HealthCheck(nil)` | 返回 `ErrorKindValidation`；禁止 panic | TC-002 | FR-014 |
+| EC-002 | canceled / expired context | 传入 `ctx, _ := context.WithCancel(...); cancel(); New(ctx, cfg)` | 立即返回 `ErrorKindTimeout` 或 `ErrorKindUnavailable`；不发起远端连接 | TC-003 | FR-013 / FR-014 |
+| EC-003 | 多次 / 并发 Close | 同一 client `Close()` 调用 N 次（N≥2），可能并发 | 幂等：每次返回 nil；底层资源只释放一次；无 race | TC-004 / TC-008 | FR-009 |
+| EC-004 | 并发 New / Close | N goroutine 同时 `New(ctx, cfg)` 然后 `Close(ctx)` | 无 race（`go test -race` 通过）；无 FD/goroutine 泄漏（XS-CORE-011） | TC-008 | FR-009 |
+| EC-005 | 资源耗尽 | 连接池 / FD / 内存达到上限 | 返回 `ErrorKindUnavailable` 或 `ErrorKindRateLimit`；保留 cause；不 OOM | （扩展 TC） | FR-010 |
+| EC-006 | Sanitize 嵌套 nil map | `Config{Nested: nil}` 调用 `Sanitize()` | 返回有效 Config 副本；不 panic；nil 字段保持 nil | TC-006 | FR-014 |
+| EC-007 | HealthCheck 超时 | 下游不可达，传入 `timeoutCtx` (timeout=1ms) | 返回 `status=unhealthy / degraded`；`latency_ms ≤ timeout+epsilon`；不挂起 | TC-005 | FR-012 |
+| EC-008 | Validate 在 nil receiver | `var c *Config; c.Validate()` | 返回 `ErrorKindValidation`；禁止 panic（防御性检查） | （扩展 TC） | FR-014 |
+| EC-009 | Sanitize 修改返回值不影响原对象 | `s := cfg.Sanitize(); s.X = ...` | 原 `cfg` 字段不变；map/slice 不共享底层 | TC-007 | FR-014 / XS-CORE-008 |
+| EC-010 | 隐式 secret 路径读取 | 设置 `$HOME=/home/k8s` 后调用 `New(ctx, Config{})` 试图读取生产 secret | enforcer 拒绝隐式读取；返回 `ErrorKindConfig`；详见 §19.1 XS-CORE-016 | TC-009 | FR-013 |
 
-- `registered` ≠ `adopted`
-- `baseline_scanned` ≠ `implemented`
-- `dry_run_ready` ≠ `executed`
-- `artifact_exists` ≠ `usable`
-- `CHECK_STATUS=passed` ≠ release-ready evidence
-- downstream sync plan ≠ downstream adoption proof
+### 13.2 治理视角失败语义（Governance Edge Cases）
+
+#### 13.2.1 xlibgate 硬性失败（7 种）
+
+见 §12.3。任一触发即 fail-closed，不得降级。每条对应 §A 风险表与 §10.5 EvidenceEntry 中 `truth_state=violated` 记录。
+
+#### 13.2.2 弱事实禁止升级（truth-state）
+
+| Edge | 弱事实 | 不可视为 | 检测点 |
+|------|--------|----------|--------|
+| EC-G1 | `registered` | `adopted` | FR-006 / FR-051 / §10.7 AdoptionStatus 枚举 |
+| EC-G2 | `baseline_scanned` | `implemented` | §10.5 EvidenceEntry.truth_state |
+| EC-G3 | `dry_run_ready` | `executed` | §9.3 退出码 / §10.5 status |
+| EC-G4 | `artifact_exists` | `usable` | release-final-check / §10.6 字段完整性 |
+| EC-G5 | `CHECK_STATUS=passed` | `release-ready evidence` | §22.3 Gate Chain |
+| EC-G6 | downstream sync plan | downstream adoption proof | FR-052 / FR-006 |
 
 详见 §2.1 / §8.6 / `CONFLICT-LEDGER.md`。
 
-### 13.3 远端治理不可本地证明（详见 §A.1 / §20.1）
+#### 13.2.3 远端治理不可本地证明
 
-本地文件不能证明 GitHub branch protection 已启用、ruleset 生效、required checks 绑定、GitHub Release object 已创建等。这些必须通过远端 API / CI artifact / ruleset export 单独证明。
+本地文件不能证明 GitHub branch protection 已启用、ruleset 生效、required checks 绑定、GitHub Release object 已创建等。详见 §A.1 / §23 OQ-001。这些必须通过远端 API / CI artifact / ruleset export 单独证明，记录为 EvidenceEntry 中 `truth_state=unverified_remote`。
 
 ---
 
@@ -1284,18 +1352,20 @@ Release ladder：
 
 ## 16. 测试（Testing）
 
-### 16.1 测试分层（L0-L7）
+### 16.1 测试分层（TL0-TL7）
+
+> **命名口径**：测试分层使用前缀 `TL`（Test Layer），避免与 §15.1 领域分层 "基座 L0/L1/L2" 撞名。
 
 | 层 | 名称 | 说明 |
 |----|------|------|
-| L0 | Spec/ATDD | 验收测试驱动 |
-| L1 | Unit/TDD | 单元测试 |
-| L2 | Contract/Boundary/Security | 契约/边界/安全测试 |
-| L3 | Integration Smoke | 集成冒烟测试 |
-| L4 | Property/Fuzz/Golden | 属性/模糊/黄金测试 |
-| L5 | Compatibility/Observability | 兼容性/可观测性测试 |
-| L6 | Release Evidence | 发布证据测试 |
-| L7 | Profile-Specific Heavy | 特定 Profile 重型测试 |
+| TL0 | Spec/ATDD | 验收测试驱动 |
+| TL1 | Unit/TDD | 单元测试 |
+| TL2 | Contract/Boundary/Security | 契约/边界/安全测试 |
+| TL3 | Integration Smoke | 集成冒烟测试 |
+| TL4 | Property/Fuzz/Golden | 属性/模糊/黄金测试 |
+| TL5 | Compatibility/Observability | 兼容性/可观测性测试 |
+| TL6 | Release Evidence | 发布证据测试 |
+| TL7 | Profile-Specific Heavy | 特定 Profile 重型测试 |
 
 ### 16.2 Gate 分类（66 个 harness.yaml 条目）
 
@@ -1335,6 +1405,35 @@ Release ladder：
 - 配置校验/脱敏、typed error kind、wrapped cause、客户端创建/取消/过期/幂等关闭
 - HealthCheck JSON contract、生命周期 metrics、Config.Sanitize secret 不变量（property test）
 - Config 边界输入（fuzz-smoke）、HealthStatus JSON 输出（golden test）
+
+### 16.5 TC ↔ FR 追溯矩阵（核心 P0）
+
+> **范围**：以下表覆盖 §13 Edge Cases 与 §7.2 Go 参考模板 FR (FR-009..FR-014) 的最小用例集。其余 P0 FR 的 TC 由 harness.yaml 的 gate 输出 + Evidence pack 间接证明；本表为"代码可写"的最小用例样板，下游模块在自身 SPEC §16 沿用并扩展。
+
+| TC ID | 测试类型 (TL) | 对应 FR / Edge | 场景 (Given/When) | 预期结果 (Then) |
+|-------|---------------|----------------|--------------------|------------------|
+| TC-001 | TL1 Unit | FR-009 / FR-013 | 调用 `New(ctx, Config{})` 传入零值 Config | 返回 `ErrorKindValidation`；未创建任何 goroutine/FD |
+| TC-002 | TL1 Unit | FR-014 / EC-001 | 调用 `New(nil, validCfg)` 传入 nil context | 返回 `ErrorKindValidation`；panic 不被允许 |
+| TC-003 | TL1 Unit | EC-002 | 调用 `New(canceledCtx, validCfg)` | 立即返回 `ErrorKindTimeout` 或 `ErrorKindUnavailable`；不发起远端连接 |
+| TC-004 | TL1 Unit | EC-003 | `client.Close(ctx)` 调用 N 次（N>=2） | 幂等：每次都返回 nil；底层资源只释放一次 |
+| TC-005 | TL2 Contract | FR-012 / EC-007 | `client.HealthCheck(timeoutCtx)`，timeout=1ms，下游不可用 | 返回 `status=unhealthy / degraded`，`latency_ms<=timeout+epsilon`；不挂起 |
+| TC-006 | TL2 Property | FR-014 / EC-006 | 任意嵌套 `Config{Nested: {Token: rand}}` 调用 `Sanitize()` | 返回值的所有 `token / secret / password / private_key` 字段为空；原对象不被修改 |
+| TC-007 | TL2 Property | FR-014 | `cfg.Sanitize()` 返回值修改其 map/slice | 原 `cfg` 字段不变（验证 deep copy） |
+| TC-008 | TL2 Boundary | EC-004 / EC-005 | 并发 N goroutine 同时调用 `client.Close(ctx)` | 无 race（`go test -race` 通过）；无 panic；其中一个 Close 成功，其余幂等返回 |
+| TC-009 | TL2 Security | FR-013 / 19.1 | `os.Setenv("HOME","/home/k8s")` 后调用 `New(ctx, Config{})` | enforcer 拒绝隐式读取 `/home/k8s/secrets/env/*`；返回 `ErrorKindConfig` |
+| TC-010 | TL4 Golden | FR-012 | `HealthCheck()` 输出 JSON | 与 `testdata/health.golden.json` 字节级一致（除 `checked_at`/`latency_ms`） |
+| TC-011 | TL4 Fuzz | FR-014 | `go test -fuzz=FuzzConfigValidate` ≥ 30s | 无 panic；任何 Validate 失败都返回 `ErrorKindValidation` 而非其他 ErrorKind |
+| TC-012 | TL6 Release | FR-027 / §10.6 | `goalcli release-final-check` 在缺失 manifest 任一必填字段时 | 退出码 1；evidence 记录 `truth_state=incomplete`；阻断 release |
+| TC-013 | TL2 Truth-state | FR-006 / §13.2 | `adoption_status=registered` 直接尝试 → `adopted` | enforcer 拒绝；返回禁止转换原因；详见 §10.7 / FR-051 |
+| TC-014 | TL2 Contract | FR-010 / §12.1 | `IsKind(err, ErrorKindTimeout)` 应用于 `WrapError(ErrorKindTimeout, cause, "")` | 返回 true；`errors.Is(err, cause)` 也必须为 true |
+| TC-015 | TL1 Unit | FR-011 | `Metrics()` 返回值 | 长度 == 9；命名匹配 §18.1 表；无重复 |
+
+**追溯绑定**：
+
+- 每条 TC 必须落到一个具体 Go test 函数（`Test<TC编号>` 或 `TestFR<NNN>_<scenario>`）。
+- 每条 TC 必须有对应的 `Evidence Ledger` 行（FR-026 / §10.5）；失败时 `status=failed` 不得删除（FR-032）。
+- 本表不替代 harness.yaml gate；harness 通过运行 `go test` + 解析 JUnit 输出消费这些 TC。
+- 下游模块在自身 SPEC §16 至少为该模块独有 FR 增补 ≥1 TC，并继承本表 TC-001..TC-015 作为"基础合规集"。
 
 ---
 
@@ -1512,12 +1611,30 @@ v1 提出概念 → v2 审计补全 → v3 修补 P0 缺口 → v5 终极版
 
 ### 22.1 四级 DoD（见 §8.4）
 
-| 级别 | 要求 |
-|------|------|
-| Task DoD | 变更范围明确 + 测试/检查已运行 + 文档有入口 + known gap 已记录 |
-| Issue DoD | 验收标准满足 + 相关 gate 通过 + review checklist 完成 + 无违规 |
-| Goal DoD | 所有必需项有实现或不适用理由 + ci/integration/evidence 有新鲜结果 |
-| Release DoD | manifest 生成 + release-check 通过 + score >= 9.8 + final-check + preflight 通过 |
+**Task DoD**：
+- [ ] 变更范围明确（goal_id / issue 关联）
+- [ ] 测试 / 检查已运行并产生 evidence
+- [ ] 文档有入口（README/CHANGELOG/docs 至少一处）
+- [ ] Known gap 已记录到 ledger
+
+**Issue DoD**：
+- [ ] 验收标准全部满足
+- [ ] 相关 gate 通过（exit code == 0）
+- [ ] Review checklist 完成
+- [ ] 无 XLIB_DEBT_VIOLATIONS
+
+**Goal DoD**：
+- [ ] 所有必需项有实现或不适用理由
+- [ ] CI / integration / evidence 有当日新鲜结果
+- [ ] EvidenceEntry.truth_state ∈ {verified, planned}（无 violated）
+
+**Release DoD**：
+- [ ] Manifest（latest.json）生成且字段完整（§10.6）
+- [ ] release-check 通过
+- [ ] Scorecard 总分 ≥ 9.8
+- [ ] release-final-check 通过
+- [ ] preflight 通过
+- [ ] §22.5 37 项 No-Go 全部为 ✅
 
 ### 22.2 DONE with evidence 模板
 
@@ -1539,13 +1656,53 @@ DONE with evidence:
 
 见 §20.2。任一步骤失败即 fail-closed，不得跳过、不得 dry-run 代替（FR-030 / FR-031）。
 
-### 22.4 v1.0.0 No-Go 条件
+### 22.4 v1.0.0 No-Go 条件（37 项完整列表）
 
-详见 §21.1 v1.0.0 配置迁移 37 项 No-Go 条件清单。
+> 每一行：触发条件 → 验证命令 → gate-id → evidence 路径 / manifest 字段。机器化扫描入口：`goalcli release-final-check --no-go-table`。
+
+| NG-ID  | No-Go 触发条件 | 验证命令 / Gate | Evidence 字段 / 路径 |
+|--------|----------------|------------------|---------------------|
+| NG-01  | CHANGELOG.md 缺本版本条目 | `make changelog-check` | `latest.json.changelog_entry` |
+| NG-02  | 公共 API surface 未冻结 / 与 manifest 不一致 | `make api-freeze-check` | `latest.json.public_api_surface` |
+| NG-03  | surface 分类（stable/experimental/internal）缺失 | `make api-classify-check` | `latest.json.surface_classification` |
+| NG-04  | breaking change 未带 migration_note | `make breaking-check` | `latest.json.breaking_changes[].migration_note` |
+| NG-05  | release entrypoint 误用 `cmd/xlibgate` | `make entrypoint-check` | `latest.json.release_entrypoint == "cmd/goalcli"` |
+| NG-06  | xlibgate 二进制被发布 | `make release-binary-audit` | `evidence/release-binary-audit.json` |
+| NG-07  | go_version 在 docs / workflow / manifest 间漂移 | `make toolchain-drift-check` | `latest.json.toolchain_drift_report` |
+| NG-08  | workflow action 未 pin 至 40-char SHA | `make workflow-pin-check` | `latest.json.workflow_pins` |
+| NG-09  | workflow 未声明 explicit permissions | `make workflow-perm-check` | `latest.json.workflow_permissions` |
+| NG-10  | PR template / CODEOWNERS 缺失 | `make pr-template-check` | `latest.json.pr_template_present == true` |
+| NG-11  | registry validation 失败 | `goalcli registry-validate` | `latest.json.registry_validation_status` |
+| NG-12  | release artifact validation 失败 | `goalcli artifact-validate` | `latest.json.release_artifact_validation` |
+| NG-13  | generator 非 deterministic / 非 idempotent | `make generator-determinism` | `latest.json.generator_determinism` |
+| NG-14  | downstream replay（kernel/configx/redisx）失败 | `make replay-downstream` | `latest.json.downstream_replays` |
+| NG-15  | downstream adoption 状态把 not_run 标为 passed | §10.7 AdoptionStatus 校验 | `latest.json.downstream_status` |
+| NG-16  | P0 debt count > 0 | `goalcli debt-scan --p0` | `latest.json.p0_debt_count == 0` |
+| NG-17  | truth_state violations > 0 | `goalcli truth-check` | `latest.json.truth_state_violations == 0` |
+| NG-18  | manifest 缺失必备 block | `goalcli manifest-validate` | `latest.json.manifest_blocks_present` |
+| NG-19  | P0 / RC blocker 未清零 | `goalcli blocker-list --release-blocking` | `latest.json.open_blockers == []` |
+| NG-20  | rollback policy 缺失或未签出摘要 | `make rollback-policy-check` | `latest.json.rollback_policy` |
+| NG-21  | docker toolchain parity 失败 | `make docker-parity` | `latest.json.docker_toolchain_parity` |
+| NG-22  | evidence pack 缺失 | `goalcli pack-validate` | `latest.json.evidence_pack_ref` |
+| NG-23  | evidence pack 内 ledger 缺日 / 缺 goal | `goalcli ledger-coverage` | `pack/ledger-coverage.json` |
+| NG-24  | branch protection 未启用 / required checks 不匹配 | `goalcli remote-attest branch-protection` | `pack/branch-protection.json`（远端，§A.1） |
+| NG-25  | ruleset 未生效 | `goalcli remote-attest ruleset` | `pack/ruleset-export.json` |
+| NG-26  | GitHub Release object 未创建 / asset 缺失 | `goalcli remote-attest release` | `pack/release-object.json` |
+| NG-27  | required check 未绑定到 protected branch | `goalcli remote-attest required-checks` | `pack/required-checks.json` |
+| NG-28  | govulncheck 未通过 / 未启用 | `make vulncheck` | `pack/govulncheck.json` |
+| NG-29  | golangci-lint 失败 | `make lint` | `pack/lint.json` |
+| NG-30  | go test -race 失败 | `make test-race` | `pack/test-race.json` |
+| NG-31  | coverage 阈值未达（lib / generator / runtime） | `make coverage-check` | `pack/coverage.json` |
+| NG-32  | spec-lint 不为零失败 | `bash specs/scripts/spec-lint.sh` | `pack/spec-lint.json` |
+| NG-33  | TRACEABILITY 行级缺口超阈值 | `goalcli trace-coverage` | `pack/trace-coverage.json` |
+| NG-34  | COVERAGE-MANIFEST commit/tree 未固定 | `goalcli coverage-pin-check` | `pack/coverage-pin.json` |
+| NG-35  | downstream 模块未生成 adoption proof（首次 release 例外） | `goalcli adoption-proof` | `pack/adoption-proof.json` |
+| NG-36  | 13 项 xlibgate 硬性失败任一触发 | `xlibgate verify` | `pack/xlibgate-verify.json` |
+| NG-37  | scorecard < 9.8 | `goalcli scorecard` | `latest.json.score >= 9.8` |
 
 ### 22.5 Patch 自动发布
 
-`.github/workflows/release-auto-patch.yml` 自动计算 `vX.Y.(Z+1)` 并发布（详见 §D 部署细节）。
+`.github/workflows/release-auto-patch.yml` 自动计算 `vX.Y.(Z+1)` 并发布（详见 §D 部署细节）。Patch 仍须通过 §22.4 全部 37 项 No-Go。
 
 ---
 
@@ -1560,6 +1717,7 @@ DONE with evidence:
 | OQ-005 | 债务检测从 marker text 扫描升级到语义分析的时间线？ | 已知技术债 | PR-28 Phase 5 |
 | OQ-006 | render-check 在 Makefile 中缺失如何补齐？ | 已记录 | PR-10 |
 | OQ-007 | P1 活跃覆盖 81.3% < 90%，需再索引 26 条 P1 规则 | 已记录 | v1.0.0-rc.1 前 |
+| OQ-008 | COVERAGE-MANIFEST.md 的 commit / tree sha 何时固定？ | 待确认 | v1.0.0-rc.1 前（详见 R-011） |
 
 ---
 
@@ -1576,7 +1734,8 @@ DONE with evidence:
 | R-007 | 重复文件未实质修改 | 低 | 清理冗余副本 |
 | R-008 | 本地文件不能证明远端治理状态 | 高 | 通过 GitHub API、ruleset export、CI artifact 或 Release object 证明 |
 | R-009 | 13 个下游库全部 not_adopted | 高 | 至少推进 kernel 首次采纳，证明模板可用 |
-| R-010 | 规格膨胀（当前 1500 行，含实现细节） | 中 | 将 PR 执行包清单、goalcli 命令列表拆分到 docs/ 子文档；目标控制在 1200 行内 |
+| R-010 | 规格膨胀（当前规模含实现细节） | 中 | 将 PR 执行包清单、goalcli 命令列表拆分到 docs/ 子文档 |
+| R-011 | COVERAGE-MANIFEST 的 commit/tree sha 未固定，存在漂移风险 | 中 | 在 v1.0.0-rc.1 前由 release-final-check 强制固定，写入 manifest 并被 NG-34 覆盖（详见 OQ-008） |
 
 ### A.1 远端治理不可本地证明项
 
@@ -1729,7 +1888,7 @@ Goal Runtime：`.agent/evidence/ledger.jsonl` 是目标执行源 ledger；`GOAL_
 | 指标 | 数值 |
 |------|------|
 | 输入文件总数（当前整理口径） | 154 |
-| 主规格工件总行数（不含 archive） | 2,416（SPEC 1848 + CONFLICT 180 + COVERAGE 201 + TRACEABILITY 131 + README 56） |
+| 主规格工件总行数（不含 archive） | 2,592（SPEC 2007 + CONFLICT 180 + COVERAGE 201 + TRACEABILITY 148 + README 56） |
 | 规则总数 | 419 |
 | P0 active | 119 (100%) |
 | P1 active | 244 |

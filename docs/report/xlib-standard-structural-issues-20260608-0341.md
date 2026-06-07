@@ -315,3 +315,56 @@ xlib-standard 是仓库唯一仍坚持编号层级的规格，构成跨规格表
 主要剩余债务转为 **数据建模深度**（§10.x 仍待 struct 化）与 **commit sha 绑定**（依赖 snapshot 流程而非规格本身），都已纳入 §19 Open Questions / §A 风险表，不阻塞当前模板合规判断。
 
 ---
+
+## 5.6 第四轮修复（P1 阻塞项清零，基于 spec-review 对抗性复审）
+
+**触发**：第三轮（评分 8.3）后用 spec-review 子代理做对抗性复审，独立判定 **No-Go**（6.2/10），列 16 项问题（ISSUE-01..ISSUE-16），其中 12 项 P1 阻塞。
+
+### 5.6.1 修复清单
+
+| ISSUE | 主题 | 修复内容 |
+|-------|------|----------|
+| ISSUE-01 | §9.1.1 `{Module}` 不是合法 Go 标识符 | 改用 ```gotemplate fenced block + `{{.Module}}` 文本模板占位符 |
+| ISSUE-02 | 接收器一致性 | Validate / Sanitize 明确为值/指针接收器约束 |
+| ISSUE-03 | Client 接口职责越界 | Client 仅 Close/HealthCheck；其余 API 标为包级独立函数 |
+| ISSUE-04 | §16.5 缺 TC-NNN 矩阵 | 补 TC-001..TC-015，对应 EC-001..EC-007 + FR-009..FR-014 |
+| ISSUE-05 | TRACEABILITY 块级追溯伪装 | 新增「块级追溯缺口声明」表 + 行级 TODO 标记规则 + NG-33 输入 |
+| ISSUE-06 | COVERAGE 引用幽灵 OQ-008/R-011 | §23 新增 OQ-008、附录 A 新增 R-011 真实条目 |
+| ISSUE-07 | §22.4 仅 21/37 No-Go | 重写为完整 37 行表 NG-01..NG-37，每行绑定 (gate-cmd, evidence) |
+| ISSUE-08 | §22 非 checkbox 格式 | 四级 DoD 全部改 `- [ ]` checkbox 形式 |
+| ISSUE-09 | §13 Edge Cases 不符模板 | 拆为 §13.1 调用者视角（EC-001..EC-010 表）+ §13.2 治理视角 |
+| ISSUE-10 | §10.6 ReleaseManifest 字段无法覆盖 No-Go | 扩 28 字段（含 workflow_pins、registry_validation_status、toolchain_drift_report 等），每行注 NG-ID |
+| ISSUE-11 | §10.5 EvidenceEntry 缺 truth_state | 增 truth_state / adoption_status / evidence_state 字段 + TruthState 枚举 |
+| ISSUE-12 | §6 / §16.1 用编号层级和撞名 | §6 改领域分层 / §16.1 测试分层改 TL0-TL7 |
+
+### 5.6.2 第四轮重评分
+
+| 维度       | 权重 | 第三轮 | 第四轮 | 变化原因                                              |
+| ---------- | :--: | :----: | :----: | ----------------------------------------------------- |
+| 模板对齐   | 0.25 |  8.5   |  9.5   | §13 Edge Cases、§22 checkbox 与 SPEC-TEMPLATE 完全对齐 |
+| 内容完整性 | 0.15 |  8.5   |  9.5   | 37 项 No-Go 全展开、TC 矩阵完整、manifest 28 字段     |
+| 内部一致性 | 0.15 |  8.0   |  9.5   | NG ↔ TC ↔ FR ↔ manifest 字段交叉闭环                  |
+| 追溯能力   | 0.15 |  8.0   |  8.5   | 行级 TODO 标记 + NG-33 链路；纯行级未全完              |
+| 治理合规   | 0.15 |  7.5   |  9.0   | truth_state 枚举落地；37 项 No-Go 机器化               |
+| 跨规格协调 | 0.10 |  7.5   |  8.5   | TL0-TL7 与 ARCHITECTURE 领域分层口径一致              |
+| 可维护性   | 0.05 |  6.0   |  7.0   | NG 表脚本化扫描入口 `release-final-check --no-go-table` |
+
+**第四轮加权总分**：
+`9.5×0.25 + 9.5×0.15 + 9.5×0.15 + 8.5×0.15 + 9.0×0.15 + 8.5×0.10 + 7.0×0.05`
+= `2.375 + 1.425 + 1.425 + 1.275 + 1.350 + 0.850 + 0.350`
+= **9.05 / 10（优秀）**
+
+**四轮累计**：**5.1 → 6.65 → 7.7 → 8.3 → 9.05（+3.95）**
+
+### 5.6.3 剩余非阻塞债务
+
+- 73% FR 行级追溯仍 TODO（已声明缺口，纳入 NG-33 度量，v1.0.0-rc.1 前收敛）
+- COVERAGE-MANIFEST 的 commit/tree sha 待 release 阶段固定（OQ-008 / R-011 / NG-34）
+- ISSUE-13..ISSUE-16（P2/P3：术语统一、附录 D 拆分、xlibgate 7 vs 13 数字校对）转为后续 patch
+
+### 5.6.4 最终行数
+
+- SPEC.md: 2007（+507）
+- TRACEABILITY.md: 148（+17）
+- 总规模: 2,592 行（不含 archive）
+

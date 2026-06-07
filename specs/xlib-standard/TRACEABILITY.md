@@ -15,6 +15,23 @@ Last-Updated: 2026-06-08
 - 来源路径保留本次分析机器上的绝对路径。迁移到其他环境时，必须提供同一 source pack、路径映射或重新生成 `COVERAGE-MANIFEST.md`。
 - 当本表、历史稿和当前主规格冲突时，以 `SPEC.md` 的事实边界和 `CONFLICT-LEDGER.md` 的取舍为准。
 
+## 块级追溯缺口声明（Block-level Gap Disclosure）
+
+> 本表当前约 73% 的 FR 来源仍是**块级**（指向 `docs/standard/*.md` / `docs/*.md` 整篇文件，而非具体行号）。下表说明该状态及收敛计划：
+
+| 维度 | 当前状态 | 缺口 | 收敛计划 / 时限 |
+|------|----------|------|------------------|
+| 条款级追溯（章节 → 来源） | ✅ 完整 | — | 维持 |
+| FR 行级追溯（FR-NNN → 来源文件 + 行号） | ⚠️ 约 27% 已行级（参见下方 FR 行级表） | 剩余约 73% 仅块级 | v1.0.0-rc.1 前补完高优先级 FR-001..FR-008、FR-013..FR-014、FR-026..FR-033；其余跟随 PR-22 |
+| Open Questions / Risks 追溯 | ⚠️ 块级 | OQ-008 / R-011 等本规格内部条目无外部来源（属规格自生） | 标注为 **internal**，无需外部追溯 |
+| 远端治理（branch protection / ruleset / Release object） | ❌ 不可本地追溯 | — | 见 §A.1 / SPEC §23 OQ-001；由 `goalcli remote-attest` 单独证明 |
+
+> **TODO 标记规则**：尚未行级化的 FR 来源单元格在“追溯说明”列含 `[行级证据 TODO]` 标记；自动巡检命令：
+> ```bash
+> grep -n "\[行级证据 TODO\]" specs/xlib-standard/TRACEABILITY.md | wc -l
+> ```
+> 该数字进入 `latest.json.trace_coverage_todo_count`，是 NG-33 的输入。
+
 ## 核心条款追溯
 
 | 规格条款                                                        | 主要来源                                                                                                                                                                                                                      | 追溯说明                                                                                              |
