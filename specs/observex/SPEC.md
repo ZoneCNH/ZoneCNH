@@ -336,13 +336,13 @@ observex:
   metrics:
     enabled: true
     exporter: otlp            # otlp / prometheus / noop
-    endpoint: localhost:4317
+    endpoint: otel-collector:4317
     interval: 15s
     prefix: fx
   tracing:
     enabled: true
     exporter: otlp
-    endpoint: localhost:4317
+    endpoint: otel-collector:4317
     sampler: parentbased_traceidratio
     sample_rate: 0.1
     propagation: tracecontext # tracecontext / b3 / both
