@@ -17,7 +17,7 @@
 
 ### 上层 `x.go` 应该只做
 
-```
+```text
 load config
 → validate config
 → initialize observability
@@ -28,11 +28,11 @@ load config
 → expose health
 → graceful shutdown
 → emit release/runtime evidence
-```
+```text
 
 ### 上层 `x.go` 不应该重新实现
 
-```
+```text
 配置合并
 secret 脱敏
 logger/metrics/tracer 抽象
@@ -42,7 +42,7 @@ fake clock
 golden test
 import boundary check
 release manifest
-```
+```text
 
 ---
 
@@ -73,7 +73,7 @@ release manifest
 
 #### 关键边界 — 拒绝这些 PR
 
-```
+```text
 拒绝配置文件解析
 拒绝 Prometheus/OpenTelemetry/Zap 绑定
 拒绝 Redis/Postgres/Kafka/HTTP client
@@ -81,17 +81,18 @@ release manifest
 拒绝后台 goroutine runtime
 拒绝全局 logger/config/client
 拒绝业务 event/DTO
-```
+```text
 
 #### kernel 下一步（4 件事）
 
 1. **API freeze 文件**
-   ```
+
+   ```text
    contracts/public_api/kernel_v0.schema.json
    contracts/public_api/errx.json
    contracts/public_api/healthx.json
    contracts/public_api/lifecycx.json
-   ```
+   ```text
 
 2. **primitive admission gate**
    每个新增包必须通过 L0 审查：
@@ -119,14 +120,14 @@ release manifest
 
 #### 应该回答的问题
 
-```
+```text
 这个服务最终使用了什么配置？
 每个配置来自哪里？
 哪个 source 覆盖了哪个 source？
 哪些字段是 secret？
 哪些字段被脱敏后可以进入日志/health/manifest？
 当前 effective config 是否可复现？
-```
+```text
 
 #### 应补的核心能力
 
@@ -165,7 +166,7 @@ func (r LoadResult) Sanitize() SanitizedResult
 func (r LoadResult) Hash() string
 func Decode[T any](r LoadResult, target *T, opts ...DecodeOption) error
 func SchemaOf[T any]() Schema
-```
+```text
 
 #### 不要做的事
 
@@ -200,7 +201,7 @@ func SchemaOf[T any]() Schema
 
 #### 必须补的 gate
 
-```
+```text
 指标名是否符合规范
 label 是否低基数
 label 是否包含 secret/account/order_id
@@ -208,7 +209,7 @@ label 是否包含 secret/account/order_id
 health JSON 是否泄漏配置 secret
 trace attribute 是否含高基数字段
 errx.Kind 是否映射成统一 error_kind
-```
+```text
 
 建议增加：
 
@@ -217,29 +218,29 @@ make observability-contract-check
 make label-policy-check
 make redaction-leak-check
 make health-json-contract-check
-```
+```text
 
 #### 指标命名规范
 
 基础库指标统一成：
 
-```
+```text
 foundationx_<module>_<operation>_<measure>
-```
+```text
 
 示例：
 
-```
+```text
 foundationx_configx_load_duration_seconds
 foundationx_configx_decode_errors_total
 foundationx_resiliencx_circuit_state
 foundationx_schedulex_job_runs_total
 foundationx_schedulex_job_duration_seconds
-```
+```text
 
 **label 允许列表：**
 
-```
+```text
 module
 component
 operation
@@ -247,19 +248,19 @@ status
 error_kind
 policy
 job
-```
+```text
 
 **label 谨慎使用：**
 
-```
+```text
 symbol
 exchange
 provider
-```
+```text
 
 **label 默认禁止：**
 
-```
+```text
 api_key
 account_id
 order_id
@@ -268,7 +269,7 @@ request_id
 raw_error
 config_value
 secret_path
-```
+```text
 
 ---
 
@@ -282,7 +283,7 @@ secret_path
 
 每个 Foundation repo 都应该能复用：
 
-```
+```text
 assertx
 golden
 contract
@@ -294,17 +295,17 @@ leaktest
 boundarytest
 manifesttest
 repotest
-```
+```text
 
 #### 最关键的边界 gate
 
-```
+```text
 生产 Go 文件不得 import testkitx
 testkitx 不得读取真实 secret
 testkitx 不得连接真实 Redis/Postgres/Kafka
 testkitx 不得改写 golden，除非 TESTKITX_UPDATE_GOLDEN=1
 testkitx 不得成为下游 production dependency
-```
+```text
 
 #### 下游统一 Make target
 
@@ -318,7 +319,7 @@ make golden
 make boundary
 make leak
 make evidence
-```
+```text
 
 其中 `make boundary` 必须检查 `pkg/`、`internal/`、`cmd/` 这些生产路径不能出现 `testkitx` 导入。
 
@@ -332,14 +333,14 @@ make evidence
 
 #### 身份重定义
 
-```
+```text
 xlib-standard = 标准源 / 模板 / generator / harness / evidence
 resiliencx    = runtime resilience policy library
-```
+```text
 
 #### 应该解决的问题
 
-```
+```text
 外部依赖不稳定怎么办？
 交易所 API 慢怎么办？
 行情 provider 临时失败怎么办？
@@ -348,7 +349,7 @@ Kafka publish timeout 怎么处理？
 哪些错误可以 retry，哪些错误绝对不能 retry？
 下单类操作是否允许 retry？
 同一个 provider 挂了是否要熔断？
-```
+```text
 
 #### 最小公共 API
 
@@ -383,7 +384,7 @@ type Event struct {
     ErrorKind  string
     Duration   time.Duration
 }
-```
+```text
 
 #### 必备策略
 
@@ -401,12 +402,13 @@ type Event struct {
 
 #### 和交易风控严格分开
 
-```
+```text
 resiliencx = operational resilience
 risk-engine = trading risk
-```
+```text
 
 `resiliencx` **可以**判断：
+
 - provider timeout
 - too many requests
 - temporary network error
@@ -414,6 +416,7 @@ risk-engine = trading risk
 - bulkhead full
 
 `resiliencx` **绝不能**判断：
+
 - 仓位是否过大
 - 杠杆是否过高
 - 订单是否应该拒绝
@@ -422,7 +425,7 @@ risk-engine = trading risk
 
 #### v0.1 目标目录
 
-```
+```text
 pkg/resiliencx/
   policy.go
   runner.go
@@ -453,11 +456,11 @@ docs/
   idempotency.md
   observability.md
   testing.md
-```
+```text
 
 #### 策略链默认执行顺序
 
-```
+```text
 context budget
 → rate limit
 → bulkhead
@@ -466,21 +469,21 @@ context budget
 → retry loop
 → fallback
 → event sink
-```
+```text
 
 **两种 timeout 语义：**
 
-```
+```text
 PerAttemptTimeout：每次尝试单独 timeout
 TotalTimeout：整个 operation 总 timeout
-```
+```text
 
 **交易所下单类操作默认：**
 
-```
+```text
 Idempotent=false
 Retry disabled unless explicit idempotency key exists
-```
+```text
 
 ---
 
@@ -492,14 +495,14 @@ Retry disabled unless explicit idempotency key exists
 
 #### 应该解决的问题
 
-```
+```text
 什么时候运行任务？
 服务暂停后错过任务怎么办？
 上一轮任务没跑完下一轮来了怎么办？
 多个实例是否允许同时跑？
 如何用 fake clock 做确定性测试？
 任务事件如何输出给 observex？
-```
+```text
 
 #### 最小公共 API
 
@@ -523,7 +526,7 @@ type Trigger interface {
 type EventSink interface {
     Emit(ctx context.Context, event JobEvent)
 }
-```
+```text
 
 #### 必须补齐的测试
 
@@ -541,12 +544,12 @@ type EventSink interface {
 
 `schedulex` 不应该直接依赖 `resiliencx`。正确关系：
 
-```
+```text
 x.go 或上层 job wrapper:
   schedulex job
     → resiliencx runner
       → external provider call
-```
+```text
 
 ```go
 job := schedulex.JobFunc{
@@ -557,7 +560,7 @@ job := schedulex.JobFunc{
         })
     },
 }
-```
+```text
 
 `schedulex` 保持纯调度，`resiliencx` 负责容错策略。
 
@@ -569,19 +572,19 @@ job := schedulex.JobFunc{
 
 当前状态：
 
-```
+```text
 kernel / configx / observex / resiliencx / schedulex → Go 1.23
 testkitx → Go 1.24
-```
+```text
 
 `testkitx` 会被大量下游测试依赖；如果它要求更高的 Go 版本，会把下游测试工具链抬高。
 
 **建议：**
 
-```
+```text
 方案 A（推荐短期）：全部统一到 Go 1.23
 方案 B（中期）：全部统一到 Go 1.24
-```
+```text
 
 短期用方案 A，等全仓库和 CI 都确认后，再统一升级到 Go 1.24。
 
@@ -589,16 +592,16 @@ testkitx → Go 1.24
 
 当前状态：
 
-```
+```text
 configx go.mod → github.com/ZoneCNH/foundationx v0.0.0（本地 replace）
 observex go.mod → github.com/ZoneCNH/foundationx v0.1.0
-```
+```text
 
 如果 Foundation 底座已收敛到 `kernel`，这些 compatibility 依赖应迁移或明确生命周期。
 
 **建议 ADR：**
 
-```
+```text
 ADR-Foundation-Compatibility-Exit
 
 Decision:
@@ -609,7 +612,7 @@ Decision:
 
 Deadline:
   remove foundationx dependency before configx v0.3 / observex v0.4.
-```
+```text
 
 ---
 
@@ -621,7 +624,7 @@ Deadline:
 
 **xlibgate 应该检查：**
 
-```
+```text
 go.mod module path 是否正确
 Go version 是否符合 baseline
 是否有禁止依赖
@@ -633,7 +636,7 @@ Go version 是否符合 baseline
 是否有 public API snapshot
 是否有 docs drift
 是否有 contracts drift
-```
+```text
 
 可以先不新建 repo，先放在 `xlib-standard/cmd/xlibgate`，稳定后再独立。
 
@@ -643,13 +646,13 @@ Go version 是否符合 baseline
 
 **未来 secrectx 定位：**
 
-```
+```text
 secret provider interface
 secret lease metadata
 rotation metadata
 redaction integration
 local dev secret source
-```
+```text
 
 `configx` 仍然只消费 source，不拥有 secret backend。
 
@@ -657,17 +660,17 @@ local dev secret source
 
 比继续新建业务模块更重要。做一个很小的 repo 或 example：
 
-```
+```text
 foundation-example/
   cmd/demo/
   internal/app/
   configs/
   tests/
-```
+```text
 
 **必须演示：**
 
-```
+```text
 configx 加载 env + yaml + override
 observex 注入 memory logger/metrics/tracer
 kernel lifecycx 管理 start/stop
@@ -675,7 +678,7 @@ resiliencx 包裹一个 fake external API
 schedulex 每 1s 调度一次 job
 testkitx fake clock + golden + boundary + leak
 release manifest 生成
-```
+```text
 
 只要这个 example 跑通，Foundation v1 才算真正闭环。
 
@@ -701,7 +704,7 @@ release manifest 生成
 
 #### Issue 1：resiliencx identity reset
 
-```
+```text
 标题：Redefine resiliencx as runtime resilience policy library
 
 验收：
@@ -710,11 +713,11 @@ release manifest 生成
 - 新增 docs/identity.md、docs/boundary.md
 - 新增 policy/retry/circuit/bulkhead/ratelimit/fallback 最小 API
 - 删除或迁移模板叙事
-```
+```text
 
 #### Issue 2：Foundation dependency matrix
 
-```
+```text
 标题：Add machine-readable Foundation dependency matrix
 
 验收：
@@ -724,77 +727,77 @@ release manifest 生成
 - kernel stdlib-only
 - testkitx production import 禁止
 - 基础库不得依赖 x.go
-```
+```text
 
 #### Issue 3：Go baseline alignment
 
-```
+```text
 标题：Align Foundation Go baseline
 
 验收：
 - 6 个模块 Go version 一致
 - CI matrix 使用相同 Go version
 - README/AGENTS/Release docs 同步
-```
+```text
 
 #### Issue 4：foundationx compatibility exit plan
 
-```
+```text
 标题：Define and start foundationx compatibility exit
 
 验收：
 - ADR 写清 compatibility 生命周期
 - configx/observex 列出依赖 kernel 替代方案
 - 不再新增 foundationx usage
-```
+```text
 
 ### P1：每个模块补最小 v1 能力
 
 #### kernel
 
-```
+```text
 - public API snapshot
 - primitive admission check
 - stdlib-only check
 - no hidden goroutine check
 - retryx/obsx boundary docs
-```
+```text
 
 #### configx
 
-```
+```text
 - provenance per key
 - effective config hash
 - sanitized manifest
 - strict decode
 - schema generation
 - secret leak golden
-```
+```text
 
 #### observex
 
-```
+```text
 - label policy checker
 - redaction leak checker
 - metrics contract
 - health JSON schema
 - memory recorder contract
 - errx.Kind mapping
-```
+```text
 
 #### testkitx
 
-```
+```text
 - production import boundary scanner stable API
 - fake clock deterministic examples
 - golden update guard
 - release manifest fixture
 - goroutine leak checker hardening
-```
+```text
 
 #### resiliencx
 
-```
+```text
 - timeout
 - retry
 - circuit breaker
@@ -804,22 +807,22 @@ release manifest 生成
 - idempotency guard
 - policy event sink
 - fake-clock tests
-```
+```text
 
 #### schedulex
 
-```
+```text
 - DST/timezone golden
 - misfire contract
 - overlap contract
 - lock interface contract
 - event sink schema
 - shutdown leak/race tests
-```
+```text
 
 ### P2：Foundation example 闭环
 
-```
+```text
 标题：Add foundation-example vertical smoke
 
 验收：
@@ -831,7 +834,7 @@ release manifest 生成
 - lifecycle managed by kernel
 - tested with testkitx
 - produces release manifest
-```
+```text
 
 ---
 
@@ -852,7 +855,7 @@ make secret-scan
 make evidence
 make release-check
 make release-final-check
-```
+```text
 
 ### 各模块 profile-specific gate
 
@@ -888,13 +891,13 @@ make trigger-determinism-check
 make timezone-dst-golden-check
 make misfire-contract-check
 make lock-interface-check
-```
+```text
 
 ---
 
 ## 8. 模块最终关系
 
-```
+```text
 xlib-standard
   标准源 / 模板 / generator / harness / evidence
   不作为普通运行时依赖
@@ -932,7 +935,7 @@ x.go
   composition root
   consumes all above
   owns wiring only
-```
+```text
 
 ---
 
@@ -940,7 +943,7 @@ x.go
 
 够做 Foundation v1。前提是不要把它们做散。它们必须共同完成一条基础闭环：
 
-```
+```text
 configx 产生配置事实
 observex 产生观测语义
 kernel 管生命周期、错误、时间、健康、关闭
@@ -948,11 +951,11 @@ resiliencx 保护不稳定外部调用
 schedulex 管确定性任务
 testkitx 验证以上所有行为
 xlib-standard/xlibgate 负责标准和机器执法
-```
+```text
 
 ### 真正需要补的（按优先级）
 
-```
+```text
 1. resiliencx 身份修复
 2. Go baseline 统一
 3. foundationx compatibility 退出计划
@@ -961,7 +964,7 @@ xlib-standard/xlibgate 负责标准和机器执法
 6. observability label/redaction gate
 7. schedulex DST/misfire/lock contract
 8. foundation-example 最小闭环
-```
+```text
 
 > **现在不要再横向扩基础模块。先把这 6 个做成"可证明、可组合、可被 x.go 消费"的 Foundation v1。尤其先修 `resiliencx`，否则 Foundation 层会同时存在两个"标准源/模板仓库"，但缺一个真正的弹性容错运行时。**
 

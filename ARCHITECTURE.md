@@ -39,7 +39,7 @@ x.go ───────────────► 基座运行时 / L2.5 / �
 横切关注点：
   alertx   ─── 策略异常、风控触发告警
   observex ─── 统一 metrics / tracing / logging（同时作为基座组件提供底层能力）
-```
+```text
 
 ### 业务流与反馈
 
@@ -66,7 +66,7 @@ risk-engine ───► order-engine ───► portfolio-engine ───►
       position_caps                   └──── fills ──────┤
       risk_multiplier                                  ▼
                               决策域 ◄──── positions / PnL / exposure events
-```
+```text
 
 ### 运行时组装
 
@@ -79,7 +79,7 @@ x.go
   ├── wire decision engines
   ├── wire execution engines
   └── run lifecycle / graceful shutdown
-```
+```text
 
 ## 各域说明
 
@@ -174,7 +174,6 @@ Foundation 6 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中�
 `risk-engine` 才负责 trading risk，二者不能混用。
 
 当前 P0 是确认 `xlib-standard` 的五类职责（Standard Source / Go Reference Template / Generator / Harness / Evidence Runtime）已完整落地，并让 `resiliencx` 围绕 timeout、retry、circuit、bulkhead、rate limit、fallback 和 policy event 建模。
-
 
 | 边界     | `kernel.retryx`                        | `resiliencx`                                      |
 | -------- | -------------------------------------- | ------------------------------------------------- |
@@ -386,4 +385,4 @@ Phase 4: 平台化   ← settlement + alertx + alternative-data
 
 Phase 5: 入口验收 ← x.go
          只补最终 wiring 和生命周期，验证完整闭环，不新增业务逻辑
-```
+```text

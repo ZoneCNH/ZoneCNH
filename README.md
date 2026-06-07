@@ -49,7 +49,7 @@ L2.5: decimalx / domain-market / domain-exchange / domain-macro
 
 反馈: backtest → factor-eval；fills / PnL / exposure events → 决策域
 横切: alertx (告警) / observex (可观测)
-```
+```text
 
 ## 📦 核心项目
 

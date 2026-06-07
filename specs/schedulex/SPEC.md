@@ -194,7 +194,7 @@ type Scheduler interface {
 }
 
 type JobID string
-```
+```text
 
 ### 9.2 Job
 
@@ -231,7 +231,7 @@ const (
     MisfireRunOnce                      // 错过触发 → 补执行一次
     MisfireCatchUp                      // 错过触发 → 补执行所有错过的
 )
-```
+```text
 
 ### 9.3 JobStatus
 
@@ -255,7 +255,7 @@ const (
     JobFailed
     JobCancelled
 )
-```
+```text
 
 ### 9.4 EventSink
 
@@ -279,7 +279,7 @@ const (
     EventMisfired
     EventSkipped
 )
-```
+```text
 
 ### 9.5 Locker
 
@@ -288,7 +288,7 @@ type Locker interface {
     Acquire(ctx context.Context, key string, ttl time.Duration) (bool, error)
     Release(ctx context.Context, key string) error
 }
-```
+```text
 
 ### 9.6 公共错误
 
@@ -300,7 +300,7 @@ var (
     ErrShutdownTimeout = errors.New("schedulex: shutdown timeout")
     ErrLockAcquire     = errors.New("schedulex: lock acquire failed")
 )
-```
+```text
 
 ---
 
@@ -317,7 +317,7 @@ type SchedulerConfig struct {
     DefaultTimeout  time.Duration `yaml:"default_timeout"`
     ShutdownTimeout time.Duration `yaml:"shutdown_timeout"`
 }
-```
+```text
 
 ---
 
@@ -338,7 +338,7 @@ schedulex:
   jitter:
     enabled: true
     max: 5s
-```
+```text
 
 ---
 
@@ -376,7 +376,7 @@ schedulex:
 
 ## 14. Directory Structure
 
-```
+```text
 schedulex/
 ├── go.mod
 ├── go.sum
@@ -407,7 +407,7 @@ schedulex/
 ├── example_test.go
 ├── benchmark_test.go
 └── integration_test.go
-```
+```text
 
 ---
 
@@ -415,11 +415,11 @@ schedulex/
 
 ### 15.1 go.mod
 
-```
+```text
 module github.com/ZoneCNH/schedulex
 
 go 1.23
-```
+```text
 
 ### 15.2 依赖方向
 

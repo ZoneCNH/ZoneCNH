@@ -35,7 +35,7 @@ Status: Approved
 4. Missing edge cases（缺失的边界场景）
 5. Recommended spec edits（建议的 spec 修改）
 6. Ready / Not ready（是否可以进入开发）
-```
+```text
 
 ---
 
@@ -64,7 +64,7 @@ Status: Approved
 - Depends on: (none / TASK-xxx)
 
 不写代码。
-```
+```text
 
 ---
 
@@ -96,7 +96,7 @@ Status: Approved
 4. 新增或更新的测试（TC 编号）
 5. 如何验证（命令）
 6. 风险
-```
+```text
 
 ---
 
@@ -127,7 +127,7 @@ Status: Approved
 | FR-002 | ❌ | 未实现 |
 
 不要修改代码。
-```
+```text
 
 ---
 
@@ -146,7 +146,7 @@ Status: Approved
 - 每个修复对应一个独立的 commit
 
 完成后重新输出自查结果。
-```
+```text
 
 ---
 
@@ -174,7 +174,7 @@ Status: Approved
 |---|---|---|
 | 编译 | go build ./... | ✅ / ❌ |
 | ... | ... | ... |
-```
+```text
 
 ---
 
@@ -205,7 +205,7 @@ Status: Approved
 - Suggested rewrites（建议重写的段落）
 - Missing sections（缺失的章节）
 - Final readiness score: 0-100
-```
+```text
 
 ---
 
@@ -231,7 +231,7 @@ Status: Approved
 4. 建议的修复动作
 
 不要修改代码。
-```
+```text
 
 ---
 

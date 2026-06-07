@@ -62,7 +62,7 @@ Add screenshots or notes if UI changed.
 ## Risks
 
 - 
-```
+```text
 
 ### 这个模板的作用
 
@@ -70,7 +70,7 @@ Add screenshots or notes if UI changed.
 
 ```text
 代码变更 ↔ Spec ↔ Task ↔ Test
-```
+```text
 
 的一致性。
 
@@ -118,7 +118,7 @@ SPEC-{NNN}: {spec 标题}
 
 - {测试项 1}
 - {测试项 2}
-```
+```text
 
 ---
 
@@ -132,7 +132,7 @@ feature/task-003-task-list
 fix/task-002-validation-error
 test/task-009-task-crud-tests
 refactor/task-011-task-feature-cleanup
-```
+```text
 
 **不要一个 branch 混多个大功能。**
 
@@ -150,7 +150,7 @@ feat(task-002): add create task form
 test(task-002): cover empty task validation
 fix(task-002): trim title before saving
 docs(task-002): update task implementation notes
-```
+```text
 
 ### 为什么
 
@@ -158,7 +158,7 @@ docs(task-002): update task implementation notes
 哪个 commit 对应哪个 spec？
 哪个 task 改了哪些文件？
 哪个需求被实现了？
-```
+```text
 
 全部可追溯。
 

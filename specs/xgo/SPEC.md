@@ -214,7 +214,7 @@ func main() {
         os.Exit(1)
     }
 }
-```
+```text
 
 ---
 
@@ -246,7 +246,7 @@ modules:
     enabled: true
   order_engine:
     enabled: true
-```
+```text
 
 ---
 
@@ -260,7 +260,7 @@ x.go 读取的配置由 configx 解析，x.go 本身不定义 schema。各模块
 app:          # 应用级配置（name, environment）
 kernel:       # kernel 配置（超时、健康检查）
 modules:      # 各模块配置（按模块名组织）
-```
+```text
 
 ---
 
@@ -291,7 +291,7 @@ modules:      # 各模块配置（按模块名组织）
 
 ## 14. Directory Structure
 
-```
+```text
 x.go/
 ├── go.mod                  # 依赖所有 L1 模块
 ├── go.sum
@@ -306,7 +306,7 @@ x.go/
 ├── testdata/
 │   └── *.golden
 └── main_test.go            # 集成测试
-```
+```text
 
 ---
 
@@ -314,7 +314,7 @@ x.go/
 
 ### 15.1 go.mod
 
-```
+```text
 module github.com/ZoneCNH/x.go
 
 go 1.23
@@ -337,7 +337,7 @@ require (
     github.com/ZoneCNH/order-engine v0.1.0
     // ...
 )
-```
+```text
 
 ### 15.2 依赖方向
 

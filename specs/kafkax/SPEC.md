@@ -34,6 +34,7 @@
 ## 3. Problem
 
 70+ 模块中有多个需要使用 Kafka（事件流、日志采集、跨域消息），各自封装会导致：
+
 - Producer/Consumer 配置不一致，部分模块未正确处理重试和超时
 - 序列化方式不统一
 - 消费组管理混乱，offset 提交策略不一致
@@ -190,7 +191,7 @@ type HealthStatus struct {
 
 func NewProducer(opts ...ProducerOption) Producer
 func NewConsumer(opts ...ConsumerOption) Consumer
-```
+```text
 
 ### 9.1 Option 模式
 
@@ -212,7 +213,7 @@ func WithConsumerBrokers(brokers []string) ConsumerOption
 func WithGroupID(groupID string) ConsumerOption
 func WithAutoOffsetReset(reset string) ConsumerOption
 func WithConsumerCodec(codec Codec) ConsumerOption
-```
+```text
 
 ### 9.2 用法示例
 
@@ -251,7 +252,7 @@ for {
     processMessage(msg)
     consumer.Commit(ctx, msg)
 }
-```
+```text
 
 ---
 
@@ -270,7 +271,7 @@ var (
     ErrSendFailed        = errors.New("kafkax: send failed")
     ErrCommitFailed      = errors.New("kafkax: commit failed")
 )
-```
+```text
 
 ### 10.2 Codec 接口
 
@@ -279,7 +280,7 @@ type Codec interface {
     Marshal(v any) ([]byte, error)
     Unmarshal(data []byte, v any) error
 }
-```
+```text
 
 ---
 
@@ -305,7 +306,7 @@ kafkax:
     heartbeat_interval: 10s       # 心跳间隔
   codec: json                     # 序列化方式：json / msgpack / protobuf
   health_check_interval: 10s      # 健康检查周期
-```
+```text
 
 ---
 
@@ -347,7 +348,7 @@ kafkax:
 
 ## 14. Directory Structure
 
-```
+```text
 kafkax/
 ├── go.mod
 ├── go.sum
@@ -370,7 +371,7 @@ kafkax/
 ├── example_test.go
 ├── benchmark_test.go
 └── integration_test.go         # //go:build integration
-```
+```text
 
 ---
 
@@ -378,11 +379,11 @@ kafkax/
 
 ### 15.1 go.mod
 
-```
+```text
 module github.com/ZoneCNH/kafkax
 
 go 1.23
-```
+```text
 
 ### 15.2 依赖方向
 

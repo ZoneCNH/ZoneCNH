@@ -148,7 +148,8 @@
 
 ### S10【低】缺乏机器可读 schema 产物
 
-419 条规则号、66 个 gate id、8 个采纳状态、9 种 ErrorKind、9 个最小 metrics、4 个 Context Profiles、10 个 REQ-PROOF、15 条 TRUTH 全部以 Markdown 表格存在。无 `*.yaml` / `*.json` index、无 generator script。这违反 SPEC 自己宣称的"规则机器化优先原则"（核心架构原则之 4）。
+419 条规则号、66 个 gate id、8 个采纳状态、9 种 ErrorKind、9 个最小 metrics、4 个 Context Profiles、10 个 REQ-PROOF、15 条 TRUTH 全部以 Markdown 表格存在。
+无 `*.yaml` / `*.json` index、无 generator script。这违反 SPEC 自己宣称的"规则机器化优先原则"（核心架构原则之 4）。
 
 **影响维度**：可机读性
 
@@ -182,7 +183,7 @@
 
 ### 维度雷达（文本）
 
-```
+```text
 一致性        ████░░░░░░ 4
 SSOT          ███░░░░░░░ 3
 可追溯性      ████░░░░░░ 4
@@ -191,7 +192,7 @@ SSOT          ███░░░░░░░ 3
 边界清晰度    █████░░░░░ 5
 可移植性      ███░░░░░░░ 3
 维护成本      █████░░░░░ 5
-```
+```text
 
 ---
 
@@ -204,20 +205,20 @@ SSOT          ███░░░░░░░ 3
 
 ### P1（影响可追溯性 / 可机读性）
 
-3. **覆盖清单加 digest**：每个输入文件增加 `sha256` 与相对路径（相对 upstream 仓库根），删除 `/home/xlib-standard/` 前缀。
-4. **追溯表升级为 rule 级**：从 419 条 RULE-\* / 52 个 FR 各取唯一 ID，映射到 `file:line` 或 `file#anchor`，生成 `traceability.yaml`。
-5. **抽取机器可读 schema**：419 规则 / 66 gate / 8 状态 / 9 ErrorKind / 15 TRUTH 生成 `registry/*.yaml`，Markdown 表格改为从 yaml 渲染。
+1. **覆盖清单加 digest**：每个输入文件增加 `sha256` 与相对路径（相对 upstream 仓库根），删除 `/home/xlib-standard/` 前缀。
+2. **追溯表升级为 rule 级**：从 419 条 RULE-\* / 52 个 FR 各取唯一 ID，映射到 `file:line` 或 `file#anchor`，生成 `traceability.yaml`。
+3. **抽取机器可读 schema**：419 规则 / 66 gate / 8 状态 / 9 ErrorKind / 15 TRUTH 生成 `registry/*.yaml`，Markdown 表格改为从 yaml 渲染。
 
 ### P2（影响可读性 / 维护成本）
 
-6. **拆分 SPEC.md**：按主题切到 `spec/00-metadata.md`、`spec/01-functional-requirements.md`、`spec/02-contracts.md`……目录化；保留 SPEC.md 作目录入口。
-7. **消除 Iron Rules / TRUTH 重复**：合并为单一 `truths.yaml`，按编号分类，Markdown 只渲染。
-8. **CONFLICT-LEDGER 与 SPEC 章节互引**：每条取舍加 `Resolved in: SPEC §X.Y` 字段，SPEC 端反向加 `See: CONFLICT-LEDGER §N`。
+1. **拆分 SPEC.md**：按主题切到 `spec/00-metadata.md`、`spec/01-functional-requirements.md`、`spec/02-contracts.md`……目录化；保留 SPEC.md 作目录入口。
+2. **消除 Iron Rules / TRUTH 重复**：合并为单一 `truths.yaml`，按编号分类，Markdown 只渲染。
+3. **CONFLICT-LEDGER 与 SPEC 章节互引**：每条取舍加 `Resolved in: SPEC §X.Y` 字段，SPEC 端反向加 `See: CONFLICT-LEDGER §N`。
 
 ### P3（清理项）
 
-9. **§22.1 关键数字表自动生成**：从 schema 渲染，禁止与正文出现差异。
-10. **§23 最终验证**：替换为 CI 跑出的 checklist artifact，不再是文档内手填 checkbox。
+1. **§22.1 关键数字表自动生成**：从 schema 渲染，禁止与正文出现差异。
+2. **§23 最终验证**：替换为 CI 跑出的 checklist artifact，不再是文档内手填 checkbox。
 
 ---
 

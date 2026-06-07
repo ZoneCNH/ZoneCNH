@@ -34,6 +34,7 @@
 ## 3. Problem
 
 70+ 模块中有多个需要使用 Redis（缓存、状态存储、分布式锁、Pub/Sub），各自封装会导致：
+
 - 连接池配置不一致，部分模块创建过多连接
 - 序列化方式不统一（JSON / msgpack / protobuf 混用）
 - 健康检查各自为政，无法统一报告 Redis 可用性
@@ -255,7 +256,7 @@ type HealthStatus struct {
 
 func New(opts ...Option) Client
 func NewLocker(client Client, opts ...LockerOption) Locker
-```
+```text
 
 ### 9.1 Option 模式
 
@@ -271,7 +272,7 @@ func WithHealthCheckInterval(d time.Duration) Option
 func WithMaxRetries(n int) Option
 func WithReadTimeout(d time.Duration) Option
 func WithWriteTimeout(d time.Duration) Option
-```
+```text
 
 ### 9.2 用法示例
 
@@ -308,7 +309,7 @@ ch, _ := client.Subscribe(ctx, "events:order")
 for msg := range ch {
     fmt.Printf("received: %s\n", msg.Payload)
 }
-```
+```text
 
 ---
 
@@ -325,7 +326,7 @@ var (
     ErrSubscribeFailed   = errors.New("redisx: subscribe failed")
     ErrCodecNotSet       = errors.New("redisx: codec not configured")
 )
-```
+```text
 
 ### 10.2 Codec 接口
 
@@ -334,7 +335,7 @@ type Codec interface {
     Marshal(v any) ([]byte, error)
     Unmarshal(data []byte, v any) error
 }
-```
+```text
 
 ---
 
@@ -353,7 +354,7 @@ redisx:
   dial_timeout: 5s             # 连接超时
   health_check_interval: 10s   # 健康检查周期
   codec: json                  # 序列化方式：json / msgpack / protobuf
-```
+```text
 
 ---
 
@@ -393,7 +394,7 @@ redisx:
 
 ## 14. Directory Structure
 
-```
+```text
 redisx/
 ├── go.mod
 ├── go.sum
@@ -417,7 +418,7 @@ redisx/
 ├── example_test.go
 ├── benchmark_test.go
 └── integration_test.go         # //go:build integration
-```
+```text
 
 ---
 
@@ -425,11 +426,11 @@ redisx/
 
 ### 15.1 go.mod
 
-```
+```text
 module github.com/ZoneCNH/redisx
 
 go 1.23
-```
+```text
 
 ### 15.2 依赖方向
 

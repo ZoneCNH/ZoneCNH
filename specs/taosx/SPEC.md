@@ -212,7 +212,7 @@ type HealthStatus struct {
     Live    bool
     Message string
 }
-```
+```text
 
 ### 9.2 Config
 
@@ -224,7 +224,7 @@ type Config struct {
     ConnectTimeout time.Duration // 连接超时，默认 5s
     QueryTimeout   time.Duration // 查询超时，默认 30s
 }
-```
+```text
 
 ### 9.3 用法示例
 
@@ -255,7 +255,7 @@ for rs.Next() {
     var close float64
     rs.Scan(&ts, &close)
 }
-```
+```text
 
 ---
 
@@ -272,7 +272,7 @@ var (
     ErrPoolExhausted       = errors.New("taosx: connection pool exhausted")
     ErrBatchPartialFail    = errors.New("taosx: batch insert partial failure")
 )
-```
+```text
 
 ### 10.2 健康状态枚举
 
@@ -284,7 +284,7 @@ const (
     PoolLow                        // 连接池低水位
     PoolExhausted                  // 连接池耗尽
 )
-```
+```text
 
 ---
 
@@ -299,7 +299,7 @@ taosx:
   query_timeout: 30s                        # 查询超时
   retry_count: 3                            # 连接重试次数
   retry_backoff: 100ms                      # 重试基础退避时间
-```
+```text
 
 ---
 
@@ -339,7 +339,7 @@ taosx:
 
 ## 14. Directory Structure
 
-```
+```text
 taosx/
 ├── go.mod
 ├── go.sum
@@ -362,7 +362,7 @@ taosx/
 ├── example_test.go
 ├── benchmark_test.go
 └── integration_test.go         //go:build integration
-```
+```text
 
 ---
 
@@ -370,11 +370,11 @@ taosx/
 
 ### 15.1 go.mod
 
-```
+```text
 module github.com/ZoneCNH/taosx
 
 go 1.23
-```
+```text
 
 ### 15.2 依赖方向
 

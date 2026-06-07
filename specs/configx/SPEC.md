@@ -34,6 +34,7 @@
 ## 3. Problem
 
 70+ 模块各自加载配置，格式不统一、覆盖优先级不明确、缺少验证，导致：
+
 - 同一配置在不同模块中 key 名不同
 - 环境变量和文件冲突时行为不确定
 - 配置错误在运行时才发现，定位困难
@@ -157,7 +158,7 @@ type Config interface {
 }
 
 func New(opts ...Option) Config
-```
+```text
 
 ### 9.1 Option 模式
 
@@ -168,7 +169,7 @@ func WithDefaults(defaults map[string]interface{}) Option
 func WithSchema(schema *jsonschema.Schema) Option
 func WithEnvPrefix(prefix string) Option
 func WithStrictMode(strict bool) Option  // 未定义的 key 报错
-```
+```text
 
 ### 9.2 用法示例
 
@@ -196,7 +197,7 @@ if err := cfg.Validate(); err != nil {
 
 // 读取配置
 symbol := cfg.GetString("data.market.symbol")  // → "BTCUSDT" 或环境变量覆盖值
-```
+```text
 
 ---
 
@@ -212,7 +213,7 @@ var (
     ErrTypeMismatch      = errors.New("configx: type mismatch")
     ErrAlreadyLoaded     = errors.New("configx: already loaded")
 )
-```
+```text
 
 ### 10.2 配置覆盖层次
 
@@ -224,7 +225,7 @@ var (
 配置文件（YAML/TOML/JSON）
     ↑ 覆盖
 默认值（WithDefaults）
-```
+```text
 
 ---
 
@@ -239,7 +240,7 @@ config:
   env_prefix: APP             # 环境变量前缀
   strict: false               # 未定义 key 是否报错
   watch: false                # 是否启用文件监控（可选）
-```
+```text
 
 其他模块的配置通过统一的 schema 定义：
 
@@ -252,7 +253,7 @@ data:
     depth: int                # default: 20
   macro:
     providers: []string       # required
-```
+```text
 
 ---
 
@@ -288,7 +289,7 @@ data:
 
 ## 14. Directory Structure
 
-```
+```text
 configx/
 ├── go.mod
 ├── go.sum
@@ -316,7 +317,7 @@ configx/
 │   └── schema.json
 ├── example_test.go
 └── integration_test.go
-```
+```text
 
 ---
 
@@ -324,11 +325,11 @@ configx/
 
 ### 15.1 go.mod
 
-```
+```text
 module github.com/ZoneCNH/configx
 
 go 1.23
-```
+```text
 
 ### 15.2 依赖方向
 

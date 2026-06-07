@@ -133,9 +133,11 @@ Resolved-in: SPEC.md §2.1、附录 E.1（关键数字）
 
 ## 17. 旧 Required family 口径 vs harness.yaml 66 gate 条目
 
-冲突：历史材料把 "17+ Required Gates"、语义 gate 家族和 harness.yaml 的 66 个 gate 条目混用，容易被读成互相矛盾的当前验收标准。
+冲突：历史材料把 "17+ Required Gates"、语义 gate 家族和 harness.yaml 的 66 个 gate 条目混用，
+容易被读成互相矛盾的当前验收标准。
 
-取舍：当前可检查口径以 harness.yaml section 为准：44 required_gates、10 extended_gates、6 final_gates、6 goalcli_mva_gates，共 66 个 gate 条目。大写 MVA 条目按 alias 处理，不生成第二套权威 gate；发布验收以 `SPEC.md` 的 release-final、preflight 和 evidence 要求为准。
+取舍：当前可检查口径以 harness.yaml section 为准：44 required_gates、10 extended_gates、6 final_gates、6 goalcli_mva_gates，共 66 个 gate 条目。
+大写 MVA 条目按 alias 处理，不生成第二套权威 gate；发布验收以 `SPEC.md` 的 release-final、preflight 和 evidence 要求为准。
 
 Resolved-in: SPEC.md §7.4（FR-020）、§13.2、§22.4
 

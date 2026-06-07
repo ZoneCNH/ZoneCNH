@@ -49,6 +49,7 @@ Status: Approved
 **Given** x.go 配置文件就绪，包含 kernel、configx、observex 及若干业务域模块的配置
 **When** 执行 `x.go` 启动应用
 **Then**
+
 - configx 读取并校验配置成功
 - observex 初始化 logger、meter、tracer
 - kernel 按拓扑序依次 Init → Start 所有模块
@@ -64,6 +65,7 @@ Status: Approved
 **Given** 配置文件包含各模块的配置项
 **When** configx 加载配置，kernel 初始化模块
 **Then**
+
 - 每个模块通过 `Deps.Config` 读取到正确的配置值
 - 配置校验失败的模块不启动，返回明确错误
 - 缺失必填配置的模块返回 `ValidationError`
@@ -78,6 +80,7 @@ Status: Approved
 **Given** 注册模块 A（无依赖）、B（依赖 A）、C（依赖 A）
 **When** A.Start 成功，B.Start 失败
 **Then**
+
 - kernel 立即中断启动流程
 - A.Stop 被调用（反序清理）
 - C 不启动（fail-fast）
@@ -93,6 +96,7 @@ Status: Approved
 **Given** 应用处于 Running 状态，所有模块正常运行
 **When** 收到 SIGTERM 信号
 **Then**
+
 - kernel 按启动反序调用每个模块的 Stop
 - 每个模块在 shutdown_timeout 内完成 Stop
 - 超时模块被强制跳过，记录 `ErrShutdownTimeout`
@@ -108,6 +112,7 @@ Status: Approved
 **Given** 应用处于 Running 状态
 **When** 调用 `ModuleHealth(name)` 查询每个模块
 **Then**
+
 - 每个模块返回 `HealthStatus{Ready: true, Live: true}`
 - `Health()` 调用无副作用（幂等）
 - 模块内部状态变化时，Health() 反映最新状态
@@ -121,6 +126,7 @@ Status: Approved
 **Given** resiliencx 配置了重试策略（max_retries=3）和超时策略（timeout=5s）
 **When** 业务模块调用外部服务，首次失败后重试
 **Then**
+
 - 重试 3 次后成功 → 返回成功结果
 - 重试 3 次后仍失败 → 返回错误，observex 记录重试日志
 - 超时策略触发 → 操作在 5s 后中断，返回超时错误
@@ -134,6 +140,7 @@ Status: Approved
 **Given** alertx 和 observex 已注册，业务域模块产生告警事件
 **When** 业务模块触发告警条件
 **Then**
+
 - alertx 收到告警事件，发送通知
 - observex 记录告警日志，包含 trace ID
 - 告警不影响业务模块的正常运行
@@ -148,6 +155,7 @@ Status: Approved
 **Given** 应用运行中，configx 支持配置热更新
 **When** 配置文件变更
 **Then**
+
 - configx 检测到变更并重新加载
 - 受影响的模块收到配置更新通知
 - 不受影响的模块不重启
@@ -164,6 +172,7 @@ Status: Approved
 **Given：** redisx 已连接 Redis 实例
 **When：** 业务模块通过 redisx.Cache 写入数据，然后通过 Locker.Acquire 获取锁
 **Then：**
+
 - Cache.Get 返回写入的值
 - Locker.Acquire 成功获取锁
 - 重复 Acquire 返回 ErrLockHeld
@@ -179,6 +188,7 @@ Status: Approved
 **Given：** kafkax 已连接 Kafka 集群
 **When：** Producer.Send 发送消息，Consumer.Subscribe 订阅同一 topic
 **Then：**
+
 - 消息在 5s 内被消费者收到
 - Consumer.Commit 后 offset 更新
 - Producer 重试可配置（max_retries）
@@ -193,6 +203,7 @@ Status: Approved
 **Given：** natsx 已连接 NATS 服务器
 **When：** 服务端 Subscribe 注册 handler，客户端 Request 发送请求
 **Then：**
+
 - 服务端收到请求并返回响应
 - 客户端在 timeout 内收到响应
 - 超时返回 ErrRequestTimeout
@@ -207,6 +218,7 @@ Status: Approved
 **Given：** postgresx 已连接 PostgreSQL 实例
 **When：** 开启事务执行多条 SQL，然后提交或回滚
 **Then：**
+
 - Tx.Commit 后数据持久化
 - Tx.Rollback 后数据不变
 - panic 自动 rollback
@@ -221,6 +233,7 @@ Status: Approved
 **Given：** clickhousex 已连接 ClickHouse 实例
 **When：** InsertBatch 写入 1000 行数据，Query 查询
 **Then：**
+
 - 数据在 1s 内可查询到
 - Query 返回正确的行数和列类型
 - Nullable 列正确映射为 Go 指针
@@ -235,6 +248,7 @@ Status: Approved
 **Given：** taosx 已连接 TDengine 实例
 **When：** InsertBatch 写入时序数据，Query 按时间范围查询
 **Then：**
+
 - 数据写入成功
 - 时间范围查询返回正确结果
 - 超级表继承字段正确
@@ -249,6 +263,7 @@ Status: Approved
 **Given：** ossx 已连接对象存储服务
 **When：** Put 上传文件，Get 下载，List 列举
 **Then：**
+
 - Put 后 Get 返回相同内容
 - Delete 后 Get 返回 ErrObjectNotFound
 - List 返回正确的 key 列表
@@ -265,6 +280,7 @@ Status: Approved
 **Given：** contracts 模块已定义 MarketDataProvider 接口
 **When：** 修改接口方法签名（如添加新参数）
 **Then：**
+
 - breaking change 检测脚本报告不兼容
 - CI Gate 阻止合并
 - 版本号需升级（minor → major）
@@ -278,6 +294,7 @@ Status: Approved
 **Given：** market-data 采集器和消费者模块均已配置
 **When：** 采集器从交易所获取行情，通过 Kafka 发布
 **Then：**
+
 - 消费者在 5s 内收到行情数据
 - 数据格式符合 contracts.MarketDataProvider 定义
 - 采集器断开后消费者 Health 标记为 degraded
@@ -293,6 +310,7 @@ Status: Approved
 **Given：** schedulex 已注册 cron job（`*/1 * * * *`）和 interval job（`Interval: 5s`），配置了 `OverlapPolicy = Skip` 和 `MisfirePolicy = RunOnce`
 **When：** FakeClock 推进到触发时间，然后快速推进 2 个调度周期
 **Then：**
+
 - cron job 按 cron 表达式触发，Handler 被调用
 - interval job 按 5s 间隔触发，Handler 被调用
 - 重复注册同一 JobID 返回 `ErrDuplicateJob`
@@ -311,6 +329,7 @@ Status: Approved
 **Given：** Foundation 各模块（kernel、configx、observex、resiliencx、schedulex）的测试使用 testkitx 提供的 fake 实现
 **When：** 运行 `go list -deps` 检查生产依赖图，并执行 contract 测试
 **Then：**
+
 - `BoundaryCheck(t, module)` 验证生产包不依赖 testkitx，违反时报错并报告依赖路径
 - `GoroutineLeakCheck(t)` 验证测试结束后无 goroutine 泄漏，泄漏时报告堆栈
 - `FakeLogger` 的 `AssertLogged` / `AssertNoErrors` / `Entries()` 断言正确
@@ -331,6 +350,7 @@ Status: Approved
 **Given：** `xlib-standard` 定义了 Gate 清单（`gates/common.yaml`）和 Evidence schema（`evidence/schema.json`），`xlibgate` 消费这些定义
 **When：** 对比 `xlib-standard` 的 Gate 定义与 `xlibgate` 的实际检查配置，并验证各模块 CI artifact
 **Then：**
+
 - `gates/common.yaml` 的 8 项 Gate（build、test、coverage、vet、lint、dependency、secret_scan、benchmark）与 `xlibgate.yaml` 完全匹配
 - 每个 Foundation 模块的 CI 执行所有 blocking Gate，且阈值与标准一致（coverage ≥ 80%）
 - `xlibgate check all` 对使用 `init.sh` 生成的模块骨架返回全部通过
@@ -378,6 +398,7 @@ Foundation v1 整体验收通过的条件：
 **前置条件**：模块已实现并通过所有功能验收
 
 **验收标准**：
+
 - [ ] 各 SPEC.md §17 定义的延迟指标达标（P99 < 标注值）
 - [ ] 各 SPEC.md §17 定义的内存指标达标
 - [ ] Benchmark 结果记录在模块 README.md 中

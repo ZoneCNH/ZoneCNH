@@ -26,7 +26,7 @@ Spec Approved（状态流转）     ← LIFECYCLE.md
 Feature 验收                 ← DEFINITION-OF-DONE.md
   ↓
 PR / Ship
-```
+```text
 
 **核心原则：Spec 做完后，不是直接写代码，而是先 review、批准、拆 task，然后一小步一小步按 spec 实现和验收。**
 
@@ -40,7 +40,7 @@ Spec 编写完成后，第一件事是让 AI 当审查者，不是开发者。
 
 ```text
 Agent(subagent_type="spec-review", prompt="审查 specs/{module}/SPEC.md，判断是否可以进入开发")
-```
+```text
 
 ### 审查重点
 
@@ -69,7 +69,7 @@ Spec 是否足够清楚？
 AI 是否会误解？
 需求是否能被测试？
 还有没有没决定的问题？
-```
+```text
 
 ---
 
@@ -90,7 +90,7 @@ Spec 里的未定问题必须分级处理。
 
 ### Future（未来考虑）
 - 是否支持标签？
-```
+```text
 
 ### 处理规则
 
@@ -108,7 +108,7 @@ Spec 里的未定问题必须分级处理。
 - MVP 使用 localStorage 持久化
 - 删除任务不需要确认弹窗
 - 允许重复任务标题
-```
+```text
 
 ---
 
@@ -122,7 +122,7 @@ Spec 状态必须流转到 `Approved` 才能进入开发。
 Draft → Review → Approved → Implemented
                  ↑
               Changed ──→ Review
-```
+```text
 
 ### 操作
 
@@ -149,13 +149,13 @@ Draft → Review → Approved → Implemented
 |---|---|---|---|---|---|
 | FR-001 | Create Task | AC-001 | TC-001 | TASK-001 | ⬜ |
 | FR-002 | Reject Empty | AC-002 | TC-002 | TASK-001 | ⬜ |
-```
+```text
 
 ### 生成方式
 
 ```text
 Agent(subagent_type="task-split", prompt="根据 specs/{module}/SPEC.md 生成 Traceability Matrix")
-```
+```text
 
 ### 校验规则
 
@@ -179,7 +179,7 @@ Spec 是功能合同，Task 是 AI 能执行的小任务。
 ✅ TASK-002: 实现任务 storage/service
 ✅ TASK-003: 实现新增任务表单
 ✅ TASK-004: 实现任务列表展示
-```
+```text
 
 ### 拆分规则（详见 TASK-TEMPLATE.md）
 
@@ -207,17 +207,18 @@ Integration
 Tests 补全
   ↓
 Review + Polish
-```
+```text
 
 ### 使用方式
 
 ```text
 Agent(subagent_type="task-split", prompt="根据 specs/{module}/SPEC.md 拆分 Task")
-```
+```text
 
 ### 输出格式
 
 每个 Task 包含：
+
 1. Task ID
 2. Goal（一句话目标）
 3. Scope（做什么）
@@ -257,7 +258,7 @@ Code Review
 更新 Traceability Matrix
   ↓
 实现 TASK-{NNN+1}
-```
+```text
 
 ### 开发 Prompt
 
@@ -283,7 +284,7 @@ Code Review
 4. 新增测试
 5. 如何运行测试
 6. 风险或假设
-```
+```text
 
 ### 自查 Prompt
 
@@ -299,7 +300,7 @@ Code Review
 4. Deviations from spec
 5. Required fixes
 6. Suggested improvements
-```
+```text
 
 ### Review Prompt
 
@@ -323,7 +324,7 @@ Code Review
 - Should fix
 - Nice to have
 - Accepted
-```
+```text
 
 ---
 
@@ -366,7 +367,7 @@ Code Review
 - Missing items
 - Required fixes
 - Final recommendation
-```
+```text
 
 ### 状态流转
 
@@ -375,7 +376,7 @@ Code Review
 ```text
 Spec Status: Approved → Implemented
 Traceability Matrix: 所有 Status → ✅
-```
+```text
 
 ---
 
@@ -405,7 +406,7 @@ PR 描述应引用 Spec：
 |---|---|
 | AC-001 | ✅ |
 | AC-002 | ✅ |
-```
+```text
 
 ---
 

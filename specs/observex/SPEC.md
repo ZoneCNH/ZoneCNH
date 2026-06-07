@@ -184,7 +184,7 @@ type Field struct {
     Key   string
     Value any
 }
-```
+```text
 
 ### 9.2 Meter
 
@@ -200,7 +200,7 @@ type Histogram interface{ Record(ctx context.Context, value float64, attrs ...At
 type Gauge interface{ Set(ctx context.Context, value float64, attrs ...Attr) }
 
 type Attr struct{ Key, Value string }
-```
+```text
 
 ### 9.3 Tracer
 
@@ -221,7 +221,7 @@ type SpanOption func(*SpanConfig)
 type SpanConfig struct {
     Kind SpanKind // client / server / internal / producer / consumer
 }
-```
+```text
 
 ### 9.4 Exporter
 
@@ -232,7 +232,7 @@ type Exporter interface {
     ExportSpans(ctx context.Context, spans []SpanData) error
     Shutdown(ctx context.Context) error
 }
-```
+```text
 
 ### 9.5 Label Policy
 
@@ -251,7 +251,7 @@ var ForbiddenLabels = []string{
     "order_id", "account_id", "trace_id", "request_id",
     "user_id", "session_id",
 }
-```
+```text
 
 ---
 
@@ -266,7 +266,7 @@ var (
     ErrBufferFull       = errors.New("observex: buffer full")
     ErrShutdownFailed   = errors.New("observex: shutdown failed")
 )
-```
+```text
 
 ### 10.2 标准字段常量
 
@@ -279,7 +279,7 @@ const (
     FieldOperation  = "operation"
     FieldErrorCode  = "error_code"
 )
-```
+```text
 
 ---
 
@@ -312,7 +312,7 @@ observex:
     - secret
     - api_key
     - token
-```
+```text
 
 ---
 
@@ -348,7 +348,7 @@ observex:
 
 ## 14. Directory Structure
 
-```
+```text
 observex/
 ├── go.mod
 ├── go.sum
@@ -385,7 +385,7 @@ observex/
 ├── example_test.go
 ├── benchmark_test.go
 └── integration_test.go
-```
+```text
 
 ---
 
@@ -393,11 +393,11 @@ observex/
 
 ### 15.1 go.mod
 
-```
+```text
 module github.com/ZoneCNH/observex
 
 go 1.23
-```
+```text
 
 ### 15.2 依赖方向
 
@@ -519,9 +519,9 @@ Then 返回命名错误并拒绝注册
 
 ### secret 识别模式
 
-```
+```text
 (?i)(password|passwd|secret|token|api[_-]?key|access[_-]?key|private[_-]?key|credential|auth)
-```
+```text
 
 ---
 

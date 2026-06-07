@@ -77,7 +77,7 @@ AI 输出变更报告
 Merge
   ↓
 更新 spec 状态为 Implemented
-```
+```text
 
 ---
 

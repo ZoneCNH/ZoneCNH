@@ -240,7 +240,7 @@ type putOptions struct {
     ContentType string
     Metadata    map[string]string
 }
-```
+```text
 
 ### 9.2 Config
 
@@ -258,7 +258,7 @@ type Config struct {
     PartSize           int64         // 分片大小，默认 5MB
     MaxResults         int           // List 默认最大条数，默认 1000
 }
-```
+```text
 
 ### 9.3 用法示例
 
@@ -288,7 +288,7 @@ objects, err := client.List(ctx, "reports/2026/01/")
 
 // 预签名 URL
 url, err := client.PresignURL(ctx, "reports/2026/01/backtest.json", 1*time.Hour)
-```
+```text
 
 ---
 
@@ -307,7 +307,7 @@ var (
     ErrUploadFailed       = errors.New("ossx: upload failed")
     ErrDownloadFailed     = errors.New("ossx: download failed")
 )
-```
+```text
 
 ### 10.2 后端枚举
 
@@ -317,7 +317,7 @@ const (
     BackendMinIO = "minio"
     BackendLocal = "local"
 )
-```
+```text
 
 ---
 
@@ -338,7 +338,7 @@ ossx:
   max_results: 1000                    # List 默认最大条数
   connect_timeout: 10s                 # 连接超时
   request_timeout: 60s                 # 请求超时
-```
+```text
 
 ---
 
@@ -383,7 +383,7 @@ ossx:
 
 ## 14. Directory Structure
 
-```
+```text
 ossx/
 ├── go.mod
 ├── go.sum
@@ -406,7 +406,7 @@ ossx/
 │   └── *.golden
 ├── example_test.go
 └── integration_test.go         //go:build integration
-```
+```text
 
 ---
 
@@ -414,11 +414,11 @@ ossx/
 
 ### 15.1 go.mod
 
-```
+```text
 module github.com/ZoneCNH/ossx
 
 go 1.23
-```
+```text
 
 ### 15.2 依赖方向
 

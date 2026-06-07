@@ -34,6 +34,7 @@
 ## 3. Problem
 
 分布式系统中，网络调用、交易所接口、消息队列都会面对超时或失败场景。没有统一的弹性策略，会导致：
+
 - 每个模块自行实现重试逻辑，代码重复且不一致
 - 熔断器缺失，故障级联传播
 - 限流策略缺失，交易所 API 被封禁
@@ -218,7 +219,7 @@ type Policies struct {
     Bulkhead   Bulkhead
     RateLimit  RateLimiter
 }
-```
+```text
 
 ### 9.2 用法示例
 
@@ -241,7 +242,7 @@ err := resiliencx.Timeout(ctx, 5*time.Second, func(ctx context.Context) error {
         })
     })
 })
-```
+```text
 
 ---
 
@@ -257,7 +258,7 @@ var (
     ErrRateLimited   = errors.New("resiliencx: rate limited")
     ErrMaxRetries    = errors.New("resiliencx: max retries exceeded")
 )
-```
+```text
 
 ### 10.2 配置结构
 
@@ -272,7 +273,7 @@ type BulkheadConfig struct {
     MaxConcurrent int           `yaml:"max_concurrent"` // 最大并发数
     MaxWait       time.Duration `yaml:"max_wait"`       // 最大等待时间
 }
-```
+```text
 
 ---
 
@@ -296,7 +297,7 @@ resiliencx:
   rate_limiter:
     rate: 100        # requests per second
     burst: 200       # burst capacity
-```
+```text
 
 ---
 
@@ -332,7 +333,7 @@ resiliencx:
 
 ## 14. Directory Structure
 
-```
+```text
 resiliencx/
 ├── go.mod
 ├── go.sum
@@ -356,7 +357,7 @@ resiliencx/
 ├── example_test.go
 ├── benchmark_test.go
 └── integration_test.go
-```
+```text
 
 ---
 
@@ -364,11 +365,11 @@ resiliencx/
 
 ### 15.1 go.mod
 
-```
+```text
 module github.com/ZoneCNH/resiliencx
 
 go 1.23
-```
+```text
 
 ### 15.2 依赖方向
 

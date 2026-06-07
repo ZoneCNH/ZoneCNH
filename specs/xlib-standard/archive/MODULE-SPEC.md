@@ -79,7 +79,7 @@ x.go / business
   -> L1 support libraries
   -> L0 kernel
   -> xlib-standard contracts/template/gates
-```
+```text
 
 `xlib-standard` 不依赖 `x.go`、业务仓库、已生成运行时或 profile runtime。
 
@@ -155,7 +155,7 @@ x.go / business
 
 ```bash
 scripts/render_template.sh --module <module> --name <name> --package <package> --out <path>
-```
+```text
 
 当前可执行 CLI 契约以 `SPEC.md` FR-015 为准；本历史副本不得成为竞争性的生成器接口定义。
 
@@ -238,7 +238,7 @@ Goal Runtime：
 
 ```bash
 XLIB_CONTEXT=release_verify GOWORK=off make release-check
-```
+```text
 
 ## 10. Evidence 协议
 
@@ -301,7 +301,7 @@ capability manifest
   -> evidence pack
   -> contract / integration / chaos / benchmark / adoption gates
   -> xlibgate release judgment
-```
+```text
 
 Release ladder：
 
@@ -445,6 +445,6 @@ DONE with evidence:
 - Downstream:
 - Release status:
 - Known gaps:
-```
+```text
 
 没有 Evidence 的完成声明不能作为 release、adoption 或 final-complete 事实。

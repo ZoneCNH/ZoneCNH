@@ -15,7 +15,7 @@ Functional Requirements
 Acceptance Criteria
 Test Cases
 Edge Cases
-```
+```text
 
 ---
 
@@ -33,7 +33,7 @@ Edge Cases
 - 区分 unit / component / integration / e2e
 - 标出 P0 / P1 / P2 优先级
 - 不写代码
-```
+```text
 
 ### 输出示例
 
@@ -46,7 +46,7 @@ Edge Cases
 | TC-004 | Unit | FR-004, AC-004 | P0 | Edit task |
 | TC-005 | Unit | FR-005, AC-005 | P0 | Delete task |
 | TC-006 | E2E | MVP flow | P1 | Full task CRUD flow |
-```
+```text
 
 ---
 
@@ -82,7 +82,7 @@ P2:
 - 连续快速点击
 - localStorage 不可用
 - 500 条任务性能
-```
+```text
 
 **先覆盖 P0，再覆盖 P1。**
 
@@ -104,7 +104,7 @@ Unit:       70%
 Component:  20%
 Integration: 8%
 E2E:         2%
-```
+```text
 
 ---
 
@@ -121,7 +121,7 @@ E2E:         2%
 
 **Covers:** FR-001, AC-001
 **Priority:** P0
-```
+```text
 
 ### Edge Case Test
 
@@ -134,7 +134,7 @@ E2E:         2%
 
 **Covers:** FR-002, BR-001
 **Priority:** P1
-```
+```text
 
 ---
 
@@ -175,7 +175,7 @@ E2E:         2%
 ## Result
 
 Pass / Fail
-```
+```text
 
 ---
 
@@ -205,7 +205,7 @@ Pass / Fail
 - Missing items
 - Required fixes
 - Recommended status
-```
+```text
 
 ---
 
@@ -228,7 +228,7 @@ Pass / Fail
 - [ ] App loads
 - [ ] No blank screen
 - [ ] No critical console errors
-```
+```text
 
 每次大改前后都跑。
 

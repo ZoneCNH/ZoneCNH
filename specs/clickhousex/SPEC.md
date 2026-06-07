@@ -236,7 +236,7 @@ type HealthStatus struct {
     Live    bool
     Message string
 }
-```
+```text
 
 ### 9.2 Config
 
@@ -250,7 +250,7 @@ type Config struct {
     MaxOpenConns   int           // 最大打开连接数
     MaxIdleConns   int           // 最大空闲连接数
 }
-```
+```text
 
 ### 9.3 用法示例
 
@@ -293,7 +293,7 @@ for rs.Next() {
     var avgValue float64
     rs.Scan(&factor, &avgValue)
 }
-```
+```text
 
 ---
 
@@ -311,7 +311,7 @@ var (
     ErrTypeMismatch        = errors.New("clickhousex: type mismatch")
     ErrPoolExhausted       = errors.New("clickhousex: connection pool exhausted")
 )
-```
+```text
 
 ### 10.2 类型映射表
 
@@ -343,7 +343,7 @@ clickhousex:
   max_idle_conns: 10                            # 最大空闲连接数
   retry_count: 3                                # 连接重试次数
   retry_backoff: 100ms                          # 重试基础退避时间
-```
+```text
 
 ---
 
@@ -386,7 +386,7 @@ clickhousex:
 
 ## 14. Directory Structure
 
-```
+```text
 clickhousex/
 ├── go.mod
 ├── go.sum
@@ -410,7 +410,7 @@ clickhousex/
 ├── example_test.go
 ├── benchmark_test.go
 └── integration_test.go         //go:build integration
-```
+```text
 
 ---
 
@@ -418,11 +418,11 @@ clickhousex/
 
 ### 15.1 go.mod
 
-```
+```text
 module github.com/ZoneCNH/clickhousex
 
 go 1.23
-```
+```text
 
 ### 15.2 依赖方向
 

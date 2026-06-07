@@ -16,7 +16,7 @@ configx / observex / resiliencx / schedulex：L1 运行时横切能力
 testkitx：L1 测试专用能力，只能 test-only 使用
     ↓
 x.go：组合根，负责显式装配和生命周期 wiring
-```
+```text
 
 基础模块只提供工程能力，不承载交易语义。
 
@@ -183,7 +183,7 @@ x.go：组合根，负责显式装配和生命周期 wiring
 ```text
 resiliencx = operational resilience
 risk-engine = trading risk
-```
+```text
 
 必需能力：
 
@@ -278,7 +278,7 @@ type JobRunEvent struct {
     ErrorKind   string
     Attempt     int
 }
-```
+```text
 
 ## 依赖与集成矩阵
 
@@ -301,7 +301,7 @@ x.go
   -> resiliencx.New(policy, observer adapter)
   -> schedulex.New(clock, event sink adapter)
   -> business providers / engines
-```
+```text
 
 基础模块暴露 typed options；`x.go` 负责从 `configx` 的 typed config 生成 options 并显式传入。
 
@@ -324,7 +324,7 @@ foundation:
     timezone: UTC
     misfire: run_once
     overlap: skip
-```
+```text
 
 约束：
 

@@ -34,6 +34,7 @@
 ## 3. Problem
 
 量化交易系统由多个领域组成（数据域、分析域、决策域、执行域），域间通信如果没有统一契约，会导致：
+
 - 域间直接依赖具体实现，耦合度过高
 - 接口定义散落在各域内部，变更时无法感知影响范围
 - 事件协议不统一，消息格式混乱
@@ -200,7 +201,7 @@ type MacroDataProvider interface {
     GetHistory(ctx context.Context, req MacroHistoryRequest) ([]MacroPoint, error)
     Subscribe(ctx context.Context, indicators []string) (<-chan MacroEvent, error)
 }
-```
+```text
 
 ### 9.2 事件协议
 
@@ -224,7 +225,7 @@ const (
     TopicRisk        = "risk.alert"
     TopicAlternative = "alternative.data"
 )
-```
+```text
 
 ### 9.3 核心 DTO
 
@@ -294,7 +295,7 @@ type MacroHistoryRequest struct {
     End       time.Time `json:"end"`
     Limit     int       `json:"limit,omitempty"`
 }
-```
+```text
 
 ---
 
@@ -312,7 +313,7 @@ var (
     ErrSymbolNotFound    = errors.New("contracts: symbol not found")
     ErrIndicatorNotFound = errors.New("contracts: indicator not found")
 )
-```
+```text
 
 ### 10.2 版本管理
 
@@ -333,7 +334,7 @@ type Change struct {
     Description string `json:"description"`
     Affected    string `json:"affected"`    // 受影响的接口/DTO
 }
-```
+```text
 
 ### 10.3 事件 Topic 映射
 
@@ -348,7 +349,7 @@ var TopicEventTypes = map[string]reflect.Type{
     TopicRisk:        reflect.TypeOf(RiskEvent{}),
     TopicAlternative: reflect.TypeOf(AlternativeEvent{}),
 }
-```
+```text
 
 ---
 
@@ -363,7 +364,7 @@ events:
   serialization: json          # json / protobuf / avro
   compression: gzip            # none / gzip / snappy / lz4
   max_message_size: 1MB        # 单条消息最大大小
-```
+```text
 
 ---
 
@@ -403,7 +404,7 @@ events:
 
 ## 14. Directory Structure
 
-```
+```text
 contracts/
 ├── go.mod
 ├── go.sum
@@ -431,7 +432,7 @@ contracts/
 ├── example_test.go
 ├── benchmark_test.go
 └── breaking_test.go            # breaking change 检测测试
-```
+```text
 
 ---
 
@@ -439,11 +440,11 @@ contracts/
 
 ### 15.1 go.mod
 
-```
+```text
 module github.com/ZoneCNH/contracts
 
 go 1.23
-```
+```text
 
 ### 15.2 依赖方向
 

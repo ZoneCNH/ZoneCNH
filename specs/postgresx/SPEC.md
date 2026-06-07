@@ -34,6 +34,7 @@
 ## 3. Problem
 
 70+ 模块中有多个需要使用 PostgreSQL（持久化存储、历史数据查询），各自封装会导致：
+
 - 连接池配置不一致，部分模块创建过多连接
 - SQL 拼接方式不统一，存在 SQL 注入风险
 - 事务管理各自为政，回滚逻辑容易遗漏
@@ -209,7 +210,7 @@ type HealthStatus struct {
 }
 
 func New(opts ...Option) Client
-```
+```text
 
 ### 9.1 Option 模式
 
@@ -224,7 +225,7 @@ func WithMaxConnIdleTime(d time.Duration) Option
 func WithHealthCheckPeriod(d time.Duration) Option
 func WithConnectTimeout(d time.Duration) Option
 func WithQueryTimeout(d time.Duration) Option
-```
+```text
 
 ### 9.2 用法示例
 
@@ -273,7 +274,7 @@ migrations := []postgresx.Migration{
     {Version: 2, SQL: `ALTER TABLE users ADD COLUMN email TEXT`},
 }
 err = client.Migrate(ctx, migrations)
-```
+```text
 
 ---
 
@@ -290,7 +291,7 @@ var (
     ErrInvalidDSN       = errors.New("postgresx: invalid DSN")
     ErrTxPanic          = errors.New("postgresx: transaction panic")
 )
-```
+```text
 
 ### 10.2 Migration 结构
 
@@ -301,7 +302,7 @@ type Migration struct {
     SQL         string
     DownSQL     string // 回滚 SQL（可选）
 }
-```
+```text
 
 ---
 
@@ -318,7 +319,7 @@ postgresx:
   connect_timeout: 5s          # 连接超时
   query_timeout: 30s           # 默认查询超时
   migration_table: schema_migrations  # 迁移版本表名
-```
+```text
 
 ---
 
@@ -362,7 +363,7 @@ postgresx:
 
 ## 14. Directory Structure
 
-```
+```text
 postgresx/
 ├── go.mod
 ├── go.sum
@@ -391,7 +392,7 @@ postgresx/
 ├── example_test.go
 ├── benchmark_test.go
 └── integration_test.go         # //go:build integration
-```
+```text
 
 ---
 
@@ -399,11 +400,11 @@ postgresx/
 
 ### 15.1 go.mod
 
-```
+```text
 module github.com/ZoneCNH/postgresx
 
 go 1.23
-```
+```text
 
 ### 15.2 依赖方向
 

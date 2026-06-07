@@ -33,7 +33,7 @@
 
 ```text
 基座 → 数据域 → 分析域 ⇄ 决策域 → 执行域 → x.go
-```
+```text
 
 - **基座**：生命周期、依赖注入、配置、可观测、存储和契约，包括 `kernel`、`configx`、`observex`、`contracts`、`redisx`、`kafkax` 等；同时包含 L2.5 领域共享层 `decimalx`、`domain-market`、`domain-exchange`、`domain-macro`。
 - **数据域**：market-data、macro-data、alternative-data 采集器，按交易所或数据源拆分。

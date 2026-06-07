@@ -141,7 +141,7 @@
 │  │ VaR/止损  │                │  决策域 ◄── positions / PnL / exposure events   │
 │  └───────────┘                │  (反馈回路)                                     │
 └───────────────────────────────┴─────────────────────────────────────────────────┘
-```
+```text
 
 ---
 
@@ -377,7 +377,7 @@ DecisionLog
     ├── schema_version
     ├── execution_time_ms
     └── trace_id / span_id
-```
+```text
 
 **存储策略**：热数据 7 天（高速存储）→ 温数据 30 天（标准存储）→ 冷数据归档（审计保留 365 天）
 
@@ -424,4 +424,4 @@ Phase 3: 下游集成
   signal-factory 消费 DecisionCard
   risk-engine 消费 trade_permission + position_caps
   backtest-engine 回放 M×S 决策日志
-```
+```text

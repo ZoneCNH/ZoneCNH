@@ -15,9 +15,10 @@ Status: Approved
          ├─────────────┤
          │   单元测试     │  大量，验证单模块行为
          └─────────────┘
-```
+```text
 
 Foundation 模块是基础设施层，不涉及 UI，因此测试重点在：
+
 - **单元测试**：每个模块的公共接口、错误处理、边界场景
 - **集成测试**：模块间通过接口协作（如 kernel + configx）
 - **Benchmark**：性能预算验证
@@ -58,7 +59,7 @@ func TestApp_Run_TC001(t *testing.T) {
     assert.True(t, m.initCalled)
     assert.True(t, m.startCalled)
 }
-```
+```text
 
 ### 2.3 测试命名
 
@@ -71,6 +72,7 @@ func TestApp_Run_TC001(t *testing.T) {
 ### 3.1 单元测试
 
 每个模块必须包含：
+
 - 公共接口的正常路径测试
 - 公共接口的错误路径测试
 - Edge Cases 测试（来自 spec Section 13）
@@ -80,6 +82,7 @@ func TestApp_Run_TC001(t *testing.T) {
 ### 3.2 集成测试
 
 标记为 `//go:build integration`，验证：
+
 - 模块间通过接口协作的正确性
 - 完整的启动-运行-停止生命周期
 - 配置加载 → 模块初始化 → 运行的完整链路
@@ -87,6 +90,7 @@ func TestApp_Run_TC001(t *testing.T) {
 ### 3.3 Benchmark 测试
 
 每个模块必须有 benchmark，验证 spec 中的 Performance Budget：
+
 - 关键操作的延迟目标
 - 内存使用目标
 - 并发性能目标
@@ -129,7 +133,7 @@ golangci-lint run
 
 # 6. Benchmark
 go test -bench=. -benchmem -count=3 ./...
-```
+```text
 
 覆盖率 < 80% 阻塞合并。
 

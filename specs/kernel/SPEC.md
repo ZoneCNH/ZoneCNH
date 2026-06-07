@@ -34,6 +34,7 @@
 ## 3. Problem
 
 量化交易系统由 70+ 个模块组成，每个模块有自己的启动顺序、依赖关系和生命周期。没有统一的生命周期管理，会导致：
+
 - 模块启动顺序靠人工协调，容易出错
 - 循环依赖在运行时才发现
 - 优雅停机无法保证反序释放资源
@@ -181,7 +182,7 @@ type App interface {
     ModuleHealth(name string) HealthStatus
     DependencyGraph() graph.DirectedGraph
 }
-```
+```text
 
 ### 9.2 用法示例
 
@@ -199,7 +200,7 @@ if err := app.Run(ctx); err != nil {
 
 // 停机（自动反序）
 app.Shutdown(ctx)
-```
+```text
 
 ---
 
@@ -216,7 +217,7 @@ var (
     ErrShutdownTimeout   = errors.New("kernel: shutdown timeout")
     ErrNilModule         = errors.New("kernel: nil module")
 )
-```
+```text
 
 ### 10.2 模块状态
 
@@ -231,7 +232,7 @@ const (
     StateStopped                         // 已停止
     StateError                           // 启动/运行出错
 )
-```
+```text
 
 ---
 
@@ -245,7 +246,7 @@ kernel:
   shutdown_timeout: 15s       # 优雅停机超时
   health_check_interval: 10s  # 健康检查周期
   modules: []                 # 显式模块列表（可选，默认自动发现）
-```
+```text
 
 ---
 
@@ -284,7 +285,7 @@ kernel:
 
 ## 14. Directory Structure
 
-```
+```text
 kernel/
 ├── go.mod                      # stdlib-only，无外部依赖
 ├── go.sum
@@ -308,7 +309,7 @@ kernel/
 ├── example_test.go
 ├── benchmark_test.go
 └── integration_test.go         # //go:build integration
-```
+```text
 
 ---
 
@@ -316,11 +317,11 @@ kernel/
 
 ### 15.1 go.mod
 
-```
+```text
 module github.com/ZoneCNH/kernel
 
 go 1.23
-```
+```text
 
 ### 15.2 依赖方向
 

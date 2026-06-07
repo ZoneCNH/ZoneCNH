@@ -200,7 +200,7 @@ func FakeTracer() (*FakeTracerImpl, observex.Tracer)
 func FakeClock(at time.Time) *FakeClock
 func FakeBreaker(initial resiliencx.BreakerState) resiliencx.Breaker
 func FakeExporter() *FakeExporterImpl
-```
+```text
 
 ### 9.2 FakeLoggerImpl
 
@@ -210,7 +210,7 @@ type FakeLoggerImpl struct{ /* ... */ }
 func (l *FakeLoggerImpl) AssertLogged(level LogLevel, contains string)
 func (l *FakeLoggerImpl) AssertNoErrors()
 func (l *FakeLoggerImpl) Entries() []LogEntry
-```
+```text
 
 ### 9.3 FakeMeterImpl
 
@@ -219,7 +219,7 @@ type FakeMeterImpl struct{ /* ... */ }
 
 func (m *FakeMeterImpl) AssertCounterValue(name string, expected float64)
 func (m *FakeMeterImpl) AssertHistogramRecorded(name string)
-```
+```text
 
 ### 9.4 FakeTracerImpl
 
@@ -228,7 +228,7 @@ type FakeTracerImpl struct{ /* ... */ }
 
 func (t *FakeTracerImpl) AssertSpanCount(expected int)
 func (t *FakeTracerImpl) AssertTraceID propagated
-```
+```text
 
 ### 9.5 FakeClock
 
@@ -238,7 +238,7 @@ type FakeClock struct{ /* ... */ }
 func (c *FakeClock) Now() time.Time
 func (c *FakeClock) Advance(d time.Duration)
 func (c *FakeClock) Set(t time.Time)
-```
+```text
 
 ### 9.6 FakeExporterImpl
 
@@ -248,14 +248,14 @@ type FakeExporterImpl struct{ /* ... */ }
 func (e *FakeExporterImpl) AssertSpanCount(expected int)
 func (e *FakeExporterImpl) AssertMetricRecorded(name string)
 func (e *FakeExporterImpl) AssertLogContains(contains string)
-```
+```text
 
 ### 9.7 辅助函数
 
 ```go
 func Eventually(t *testing.T, fn func() bool, timeout, interval time.Duration)
 func GoldenUpdate() bool // 环境变量 GOLDEN_UPDATE=1 时更新 golden 文件
-```
+```text
 
 ### 9.8 边界扫描
 
@@ -265,7 +265,7 @@ func BoundaryCheck(t *testing.T, module string)
 
 // GoroutineLeakCheck 检查测试结束后是否有 goroutine 泄漏
 func GoroutineLeakCheck(t *testing.T)
-```
+```text
 
 ---
 
@@ -279,7 +279,7 @@ var (
     ErrGoroutineLeak     = errors.New("testkitx: goroutine leak detected")
     ErrGoldenMismatch    = errors.New("testkitx: golden file mismatch")
 )
-```
+```text
 
 ---
 
@@ -289,7 +289,7 @@ testkitx 不读取配置。行为通过环境变量控制：
 
 ```bash
 GOLDEN_UPDATE=1    # 更新 golden 文件
-```
+```text
 
 ---
 
@@ -320,7 +320,7 @@ GOLDEN_UPDATE=1    # 更新 golden 文件
 
 ## 14. Directory Structure
 
-```
+```text
 testkitx/
 ├── go.mod
 ├── go.sum
@@ -360,7 +360,7 @@ testkitx/
 │   └── *.golden
 ├── example_test.go
 └── benchmark_test.go
-```
+```text
 
 ---
 
@@ -368,11 +368,11 @@ testkitx/
 
 ### 15.1 go.mod
 
-```
+```text
 module github.com/ZoneCNH/testkitx
 
 go 1.23
-```
+```text
 
 ### 15.2 依赖方向
 
@@ -510,7 +510,7 @@ exporter := testkitx.NewFakeExporter()
 exporter.AssertMetricRecorded("resiliencx.retry.attempts")
 exporter.AssertLogContains("kernel.module.start_failed")
 exporter.AssertSpanCount(3)
-```
+```text
 
 ---
 

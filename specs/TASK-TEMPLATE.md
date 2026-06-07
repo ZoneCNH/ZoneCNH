@@ -10,11 +10,11 @@
 
 Task Spec 是 Feature Spec（`specs/*/SPEC.md`）到代码实现的中间层。AI 代理在实现模块时，必须先将 Feature Spec 拆分为 Task Spec，再逐个实现。
 
-```
+```text
 Product Spec → Feature Spec → Task Spec → 代码实现 → 测试
                                     ↑
                               本模板定义的格式
-```
+```text
 
 ---
 
@@ -40,7 +40,7 @@ TASK-{MODULE}-{NNN}:           # 唯一 ID，如 TASK-KERNEL-001
   estimated_effort: "1h"        # 预估工作量（可选）
   priority: P0                  # P0/P1/P2
   status: pending               # pending/in_progress/done/blocked
-```
+```text
 
 ---
 
@@ -106,7 +106,7 @@ TASK-KERNEL-001:
   estimated_effort: "2h"
   priority: P0
   status: pending
-```
+```text
 
 ### 示例 2：多 FR 实现
 
@@ -135,7 +135,7 @@ TASK-REDISX-003:
   estimated_effort: "4h"
   priority: P0
   status: pending
-```
+```text
 
 ### 示例 3：依赖链
 
@@ -158,7 +158,7 @@ TASK-CONFIGX-001:
   estimated_effort: "2h"
   priority: P0
   status: pending
-```
+```text
 
 ---
 
@@ -182,7 +182,7 @@ AI 代理在拆分 task 时，使用以下 prompt：
 - 一个 task 最多实现 3 个 FR
 - 每个 task 必须有 spec_ref 和 acceptance_criteria
 - 被依赖的 task 必须先列出
-```
+```text
 
 ---
 

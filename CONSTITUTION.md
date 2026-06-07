@@ -63,7 +63,7 @@ FoundationX 基座层由 16 个模块组成，为量化交易系统提供生命�
 
 ### 明确不做
 - （不做什么）
-```
+```text
 
 ### 2.2 边界违规判定
 
@@ -105,7 +105,7 @@ x.go ──→ 基座运行时 / L2.5 / 数据域 / 分析域 / 决策域 / 执�
          L1: configx · observex · resiliencx · schedulex
          L1 test-only: testkitx
          扩展: redisx · kafkax · natsx · postgresx · taosx · ossx · clickhousex
-```
+```text
 
 ### 3.2 依赖规则
 
@@ -170,7 +170,7 @@ type Config struct {
     // 提供 Validate() error 方法
     // 提供默认值
 }
-```
+```text
 
 ### 4.4 行为规格（WHEN/THEN）
 
@@ -191,7 +191,7 @@ type Config struct {
 WHEN [条件/输入]
 THEN [系统行为/输出]
 AND [副作用/状态变更]
-```
+```text
 
 **示例（configx.Reader.Get）：**
 
@@ -204,7 +204,7 @@ THEN 返回零值和 false
 
 WHEN path 存在但类型不匹配
 THEN 返回零值和 ErrTypeMismatch
-```
+```text
 
 **规则：**
 
@@ -243,7 +243,7 @@ func TestFunctionName_Scenario_ExpectedBehavior(t *testing.T) {
     // Act      — 执行被测函数
     // Assert   — 验证结果
 }
-```
+```text
 
 ### 5.4 禁止事项
 
@@ -260,7 +260,7 @@ func TestFunctionName_Scenario_ExpectedBehavior(t *testing.T) {
 
 ```text
 foundationx_<module>_<operation>_<measure>
-```
+```text
 
 | 部分 | 说明 | 示例 |
 |------|------|------|
@@ -337,7 +337,7 @@ var ErrConnectionClosed = errors.New("redisx: connection closed")
 if err != nil {
     return fmt.Errorf("redisx: get %q: %w", key, err)
 }
-```
+```text
 
 ### 8.2 错误规则
 
@@ -421,7 +421,7 @@ if err != nil {
 2. 提供迁移指南
 3. 保留至少一个 MINOR 版本周期
 4. 下一个 MAJOR 版本中移除
-```
+```text
 
 ### 10.4 版本号规则
 
@@ -432,7 +432,7 @@ v<MAJOR>.<MINOR>.<PATCH>
 
 v0.x.x  — 初始开发，API 不稳定
 v1.0.0  — 首个稳定 API 承诺
-```
+```text
 
 ---
 
@@ -492,7 +492,7 @@ AI 代理在生成或审查代码时：
 3. 更新 ARCHITECTURE.md（如涉及拓扑变更）
 4. 更新 FOUNDATION-DEPS.yaml（如涉及依赖变更）
 5. 同步 README.md
-```
+```text
 
 ### 12.3 修正记录
 
@@ -518,7 +518,7 @@ AI 代理在生成或审查代码时：
 模块详情 (module/foundation-modules.md, FOUNDATION-SPEC.md)
   ↓
 其他文档
-```
+```text
 
 ### 13.2 适用范围
 

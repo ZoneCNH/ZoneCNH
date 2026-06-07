@@ -102,19 +102,19 @@ Status: **archived**（2026-06-08 归档；非当前权威）
 
 ### 3.2 发现的结构问题
 
-**S-001: cmd/goalcli/governance.go 过大**
+### S-001: cmd/goalcli/governance.go 过大
 
 - 严重度：P1
 - 问题：单文件包含 `emitReport`、`runVersion`、`runDoctor`、`runMainGuard`、`runWorktreeGuard`、`runWorktreeCheck`、`runContextCheck` 等 10+ 个函数
 - 建议：拆分为 `report.go`（emitReport）、`guard.go`（main-guard/worktree-guard）、`doctor.go`
 
-**S-002: cmd/goalcli/traceability.go 过大**
+### S-002: cmd/goalcli/traceability.go 过大
 
 - 严重度：P1
 - 问题：单文件包含解析、校验、路径判定等 200+ 行逻辑
 - 建议：拆分为 `trace_parser.go` + `trace_checker.go`
 
-**S-003: internal/ 包过多（9 个）**
+### S-003: internal/ 包过多（9 个）
 
 - 严重度：P2
 - 问题：debtcheck、goalcli、goalruntime、releasequality、runtime、sanitize、tools、validation、xlibfacts，部分职责重叠
@@ -126,13 +126,13 @@ Status: **archived**（2026-06-08 归档；非当前权威）
 
 ### 4.1 重复代码
 
-**I-001: emitReport 函数重复调用模式**
+### I-001: emitReport 函数重复调用模式
 
 - 严重度：P2
 - 问题：每个 `run*` 函数都重复 `if len(gaps) > 0 { return emitReport(...) } return emitReport(...)` 模式
 - 建议：提取 `runGate(cmdName string, details []string, gaps []string) int` 通用函数
 
-**I-002: 文件存在性检查重复**
+### I-002: 文件存在性检查重复
 
 - 严重度：P2
 - 问题：`runDoctor`、`runContextCheck`、`runSelfImprovingCheck` 都有类似的 `for _, p := range required { if !fileExists(p) { gaps = append(...) } }` 模式
@@ -140,13 +140,13 @@ Status: **archived**（2026-06-08 归档；非当前权威）
 
 ### 4.2 过时模式
 
-**I-003: validation.go 使用反射解析 YAML**
+### I-003: validation.go 使用反射解析 YAML
 
 - 严重度：P2
 - 问题：`ValidateRuntimeFileOwnership` 使用 `reflect` 包，Go 1.23 已有更简洁的方式
 - 建议：使用 `gopkg.in/yaml.v3` 或 `encoding/json` 替代
 
-**I-004: selfimproving.go 使用正则解析 YAML**
+### I-004: selfimproving.go 使用正则解析 YAML
 
 - 严重度：P2
 - 问题：`statusRe := regexp.MustCompile(...)` 和 `patchIDRe := regexp.MustCompile(...)` 用正则解析 YAML 结构
@@ -154,7 +154,7 @@ Status: **archived**（2026-06-08 归档；非当前权威）
 
 ### 4.3 补丁热点
 
-**I-005: xlibfacts 常量硬编码**
+### I-005: xlibfacts 常量硬编码
 
 - 严重度：P1
 - 问题：`CurrentReleaseVersion = "v0.6.1"` 等常量硬编码在 Go 源码中，与 `.xlib/facts/xlib.yaml` 双重维护
@@ -178,26 +178,26 @@ Status: **archived**（2026-06-08 归档；非当前权威）
 
 ### 5.2 测试覆盖分析
 
-**T-001: pkg/templatex 测试完备**
+### T-001: pkg/templatex 测试完备
 
 - 严重度：✅ 无问题
 - 现状：8 个测试文件，覆盖单元+fuzz+property+golden，是仓库测试最完备的包
 - 结论：参考模板质量有保障
 
-**T-002: cmd/goalcli 测试覆盖不均**
+### T-002: cmd/goalcli 测试覆盖不均
 
 - 严重度：P1
 - 现状：`governance.go` 是最大的文件但没有对应的 `governance_test.go`
 - 问题：核心治理逻辑（main-guard、worktree-guard、doctor、context-check）缺少单元测试
 - 建议：添加 `governance_test.go`，覆盖 `emitReport`、`runDoctor`、`runMainGuard` 等
 
-**T-003: 内部包测试缺失**
+### T-003: 内部包测试缺失
 
 - 严重度：P2
 - 现状：`internal/runtime`、`internal/releasequality`、`internal/goalcli`、`internal/goalruntime`、`internal/tools` 没有测试文件
 - 建议：至少为 `runtime` 和 `releasequality` 添加基础测试
 
-**T-004: 脚本测试为 Go 包装**
+### T-004: 脚本测试为 Go 包装
 
 - 严重度：P2
 - 现状：`scripts/check_dependency_diff_test.go` 等是 Go 测试包装 shell 脚本
@@ -206,13 +206,13 @@ Status: **archived**（2026-06-08 归档；非当前权威）
 
 ### 5.3 脆弱测试风险
 
-**T-005: selfimproving_test.go 依赖文件系统**
+### T-005: selfimproving_test.go 依赖文件系统
 
 - 严重度：P2
 - 问题：测试直接读取 `.agent/` 目录，依赖仓库结构
 - 建议：使用 `t.TempDir()` 构造 fixture
 
-**T-006: traceability_test.go 依赖矩阵文件**
+### T-006: traceability_test.go 依赖矩阵文件
 
 - 严重度：P2
 - 问题：测试读取 `.agent/traceability/traceability-matrix.md`
@@ -242,25 +242,25 @@ Status: **archived**（2026-06-08 归档；非当前权威）
 
 ### 6.2 文档与代码一致性
 
-**D-001: 下游矩阵全 `not_adopted`**
+### D-001: 下游矩阵全 `not_adopted`
 
 - 严重度：P1
 - 问题：13 个下游库全部 `not_adopted` / `not_run`，标准定义与实际采纳脱节
 - 建议：至少让 `kernel` 完成首次采纳，证明模板可用
 
-**D-002: SPEC.md 膨胀风险**
+### D-002: SPEC.md 膨胀风险
 
 - 严重度：P1
 - 问题：SPEC.md 已达 ~800 行、23 节，包含大量实现细节（28 个 PR 执行包、106 个 goalcli 命令、419 条规则清单），与"规格文档"的定位有偏差
 - 建议：将实现细节（PR 执行包清单、goalcli 命令列表、规则清单）拆分到 `docs/` 子文档，SPEC.md 保留架构决策和验收标准
 
-**D-003: harness gates 数量不同步**
+### D-003: harness gates 数量不同步
 
 - 严重度：P2
 - 问题：历史材料曾混用 "17+ Required Gates"、语义 gate 家族和 66 个 gate 条目；当前口径应区分 harness.yaml 的 66 个 gate 条目（44 required_gates + 10 extended_gates + 6 final_gates + 6 goalcli_mva_gates）与旧 required-family 说法
 - 状态：已修复（当前 SPEC.md FR-020、§2 和 §13.2 使用 harness.yaml section 口径）
 
-**D-004: docs/standard/ 27 个文件但 SPEC.md 只列出 18 个**
+### D-004: docs/standard/ 27 个文件但 SPEC.md 只列出 18 个
 
 - 严重度：P2
 - 问题：SPEC.md Section 18.1 列出 18 个文件 + "其他 9 个文件"
@@ -272,11 +272,11 @@ Status: **archived**（2026-06-08 归档；非当前权威）
 
 ### 7.1 依赖清单
 
-```
+```text
 module github.com/ZoneCNH/xlib-standard
 go 1.23
 // 零外部依赖
-```
+```text
 
 | 检查项         | 结果                                 |
 | -------------- | ------------------------------------ |
@@ -343,7 +343,7 @@ xlib-standard 已实现完整的 recursive self-improvement 循环：
 
 ```text
 gate 失败 → retrospective → patches (harness/prompt/rule) → gate 收紧 → 再验证
-```
+```text
 
 但存在两个断点：
 

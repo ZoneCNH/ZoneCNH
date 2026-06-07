@@ -17,7 +17,7 @@
                                           testkitx            taosx
                                                               ossx
                                                               clickhousex
-```
+```text
 
 依赖方向：自上而下。同层模块平级协作，不存在编译期依赖。
 
@@ -187,7 +187,7 @@ Task Spec（本次改什么）        → AI 按 prompt 模板拆分
 Prompt（让 AI 执行哪一步）     → docs/ai/prompt-templates.md
   ↓
 Code → Test → PR
-```
+```text
 
 ### 文档结构映射
 
@@ -220,7 +220,7 @@ Code → Test → PR
 
 ```text
 Draft → Review → Approved → Implemented → Changed → Deprecated
-```
+```text
 
 完整状态机定义、流转规则、CI 集成点详见 [`LIFECYCLE.md`](./LIFECYCLE.md)。
 
@@ -251,14 +251,14 @@ Draft → Review → Approved → Implemented → Changed → Deprecated
 请 review specs/<module>/SPEC.md。
 重点检查：模糊需求、冲突要求、缺失边界、缺失验收标准、缺失测试用例。
 输出：Blocking issues / Non-blocking suggestions / Ready or Not ready。
-```
+```text
 
 ### 2. 任务拆分
 
 ```markdown
 请根据 specs/<module>/SPEC.md 生成 implementation tasks。
 每个 task 控制在 200 行以内，对应 requirement IDs，有 acceptance criteria。
-```
+```text
 
 ### 3. 模块实现
 
@@ -266,13 +266,13 @@ Draft → Review → Approved → Implemented → Changed → Deprecated
 请实现 specs/<module>/SPEC.md。
 上下文：SPEC.md + ARCHITECTURE.md + CONSTITUTION.md + agent-rules.md。
 限制：只做 spec 范围内的内容，不引入新依赖。
-```
+```text
 
 ### 4. 自查
 
 ```markdown
 请检查当前实现是否符合 spec。
 输出：Requirement coverage table / AC result / Test coverage / Deviations。
-```
+```text
 
 详细 prompt 模板见 [`docs/ai/prompt-templates.md`](../docs/ai/prompt-templates.md)。

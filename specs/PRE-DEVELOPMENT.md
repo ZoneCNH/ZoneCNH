@@ -15,13 +15,13 @@ Spec 完成后，下一步不是代码，而是生成：
 2. Task Breakdown          任务拆分
 3. Implementation Plan     实现顺序
 4. TASK-001 Prompt         第一个开发提示词
-```
+```text
 
 即：
 
 ```text
 Spec → Matrix → Tasks → Plan → Prompt → Code
-```
+```text
 
 **原则：先让 AI 生成这些，但不让它写代码。**
 
@@ -52,7 +52,7 @@ Spec → Matrix → Tasks → Plan → Prompt → Code
 - Testing Plan
 - Recommended First Task
 - TASK-001 Development Prompt
-```
+```text
 
 ---
 
@@ -66,7 +66,7 @@ Spec → Matrix → Tasks → Plan → Prompt → Code
 
 ```text
 Data Model → Validation → Service → API → UI → Tests
-```
+```text
 
 **适合：** 架构复杂、后端较多、数据模型重要、多人协作
 
@@ -79,7 +79,7 @@ Data Model → Validation → Service → API → UI → Tests
 
 ```text
 Create Task (e2e) → View Tasks (e2e) → Toggle Complete (e2e) → ...
-```
+```text
 
 **适合：** MVP、小产品、快速验证、个人项目
 
@@ -90,7 +90,7 @@ Create Task (e2e) → View Tasks (e2e) → Toggle Complete (e2e) → ...
 
 ```text
 先垂直切，再轻量重构
-```
+```text
 
 即：
 
@@ -121,7 +121,7 @@ Create Task (e2e) → View Tasks (e2e) → Toggle Complete (e2e) → ...
 9. Accessibility
 10. Docs
 11. Build / Deploy
-```
+```text
 
 **注意：** TASK-000 可以是骨架任务，不一定对应某个业务需求。
 
@@ -144,7 +144,7 @@ specs/{module}/tasks/
 ├── TASK-008-error-empty-states.md
 ├── TASK-009-tests.md
 └── TASK-010-release.md
-```
+```text
 
 ---
 
@@ -156,7 +156,7 @@ specs/{module}/tasks/
 | FR-001 | Create Task | AC-001 | TC-001 | TASK-002 | ⬜ |
 | FR-002 | Reject Empty | AC-002 | TC-002 | TASK-002 | ⬜ |
 | FR-003 | View List | AC-003 | TC-003 | TASK-003 | ⬜ |
-```
+```text
 
 状态符号：
 
@@ -198,7 +198,7 @@ specs/{module}/tasks/
 | 9 | TASK-008 | 003 | P1 |
 | 10 | TASK-009 | ALL | P0 |
 | 11 | TASK-010 | ALL | P0 |
-```
+```text
 
 ---
 

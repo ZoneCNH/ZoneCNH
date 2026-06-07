@@ -52,7 +52,7 @@ Feature 做完后，进入 PR 前，做一次 RC 检查。
 - [ ] .env.example updated, if needed
 - [ ] Changelog updated
 - [ ] Spec status updated
-```
+```text
 
 ---
 
@@ -97,7 +97,7 @@ Feature 做完后，进入 PR 前，做一次 RC 检查。
 - [ ] Previous version available
 - [ ] Migration reversible, if applicable
 - [ ] Known limitations documented
-```
+```text
 
 ---
 
@@ -142,7 +142,7 @@ Expected:
 
 Expected:
 - Data persists (if persistence is in MVP)
-```
+```text
 
 ---
 
@@ -182,7 +182,7 @@ jobs:
 
       - name: Lint
         uses: golangci/golangci-lint-action@v4
-```
+```text
 
 ### CI 的作用
 
@@ -190,7 +190,7 @@ jobs:
 防止 AI 写出本地没跑过的代码
 防止后续 task 破坏前面功能
 防止 review 靠感觉
-```
+```text
 
 ---
 
@@ -221,7 +221,7 @@ jobs:
 
 - No cloud sync
 - No authentication
-```
+```text
 
 ### 从 Diff 生成 Changelog
 
@@ -233,7 +233,7 @@ jobs:
 - 引用相关 Spec 和 Task
 - 不夸大功能
 - 不写未实现的内容
-```
+```text
 
 ---
 
@@ -247,7 +247,7 @@ specs/{module}/SPEC.md
 specs/{module}/tasks/TASK-*.md
 CHANGELOG.md
 .env.example
-```
+```text
 
 ### 同步 Prompt
 
@@ -265,7 +265,7 @@ CHANGELOG.md
 2. 更新原因
 3. 建议修改内容
 4. 不要修改代码
-```
+```text
 
 ---
 
@@ -294,7 +294,7 @@ CHANGELOG.md
 - 不实现新功能
 
 请先输出重构计划，不要直接改代码。
-```
+```text
 
 ### 重构后验收
 
@@ -307,7 +307,7 @@ CHANGELOG.md
 - Risks
 - Files changed
 - Any accidental feature changes
-```
+```text
 
 ---
 

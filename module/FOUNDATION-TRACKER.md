@@ -14,10 +14,10 @@
 
 ### Issue 1：resiliencx identity reset ⬜
 
-```
+```text
 标题：Redefine resiliencx as runtime resilience policy library
 仓库：ZoneCNH/resiliencx
-```
+```text
 
 - [ ] README 重写：删除 Standard Source / Generator / Harness 叙事
 - [ ] README 重写：明确身份为 runtime resilience policy library
@@ -37,10 +37,10 @@
 
 ### Issue 2：Foundation dependency matrix ⬜
 
-```
+```text
 标题：Add machine-readable Foundation dependency matrix
 仓库：ZoneCNH/ZoneCNH（本文档仓库）
-```
+```text
 
 - [x] 新增 `module/FOUNDATION-DEPS.yaml`（已完成）
 - [ ] CI 中增加 `check-deps.sh` 脚本（从 yaml 解析）
@@ -51,10 +51,10 @@
 
 ### Issue 3：Go baseline alignment ⬜
 
-```
+```text
 标题：Align Foundation Go baseline to 1.23
 仓库：所有 6 个模块
-```
+```text
 
 - [ ] `kernel` go.mod 确认 Go 1.23
 - [ ] `configx` go.mod 确认 Go 1.23
@@ -67,10 +67,10 @@
 
 ### Issue 4：foundationx compatibility exit plan ⬜
 
-```
+```text
 标题：Define and start foundationx compatibility exit
 仓库：ZoneCNH/configx, ZoneCNH/observex
-```
+```text
 
 - [x] ADR 已编写：`module/ADR-foundationx-exit.md`（已完成）
 - [ ] `configx`：列出所有 foundationx 用法和替代方案
@@ -174,10 +174,10 @@
 
 ### Issue：foundation-example vertical smoke ⬜
 
-```
+```text
 标题：Add foundation-example vertical smoke
 仓库：新建 ZoneCNH/foundation-example 或放在 docs/example/
-```
+```text
 
 - [ ] demo app 启动和关闭
 - [ ] configx 加载 env + yaml + override
@@ -205,7 +205,7 @@
 
 ## 关键依赖链
 
-```
+```text
 Issue 1 (resiliencx identity)
   → P1 resiliencx 全部能力
   → P2 foundation-example
@@ -222,11 +222,11 @@ P1 kernel
 
 P1 testkitx
   → P2 foundation-example
-```
+```text
 
 ## 建议执行顺序
 
-```
+```text
 第一批（并行）：
   Issue 1: resiliencx identity reset
   Issue 3: Go baseline alignment
@@ -245,4 +245,4 @@ P1 testkitx
 
 第四批：
   P2 foundation-example
-```
+```text

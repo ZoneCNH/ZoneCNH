@@ -22,7 +22,7 @@ configx / observex / resiliencx / schedulex：L1 运行时横切能力
 testkitx：L1 测试专用能力，只能 test-only 使用
     ↓
 x.go：组合根，负责显式装配和生命周期 wiring
-```
+```text
 
 硬约束：
 
@@ -114,7 +114,7 @@ type Backoff interface {
 type RetryMarker interface {
     Retryable() bool
 }
-```
+```text
 
 约束：
 
@@ -178,7 +178,7 @@ type FieldSchema struct {
 type Validator[T any] interface {
     Validate(ctx context.Context, cfg T) error
 }
-```
+```text
 
 约束：
 
@@ -238,7 +238,7 @@ type LabelPolicy interface {
 type Redactor interface {
     Redact(fields ...Field) []Field
 }
-```
+```text
 
 约束：
 
@@ -303,7 +303,7 @@ type Event struct {
     ErrorKind string        `json:"error_kind,omitempty"`
     Duration  time.Duration `json:"duration"`
 }
-```
+```text
 
 组合顺序：
 
@@ -315,7 +315,7 @@ deadline budget
   -> rate limit
   -> retry
   -> fallback
-```
+```text
 
 约束：
 
@@ -389,7 +389,7 @@ type Lease interface {
     Release(ctx context.Context) error
     Renew(ctx context.Context, ttl time.Duration) error
 }
-```
+```text
 
 约束：
 
@@ -496,7 +496,7 @@ type BoundaryRule struct {
 }
 
 func CheckImports(t TestingT, rule BoundaryRule)
-```
+```text
 
 能力：
 
@@ -538,7 +538,7 @@ pkg/kernel/
   versionx/
   retryx/
   obsx/
-```
+```text
 
 ### 2.2 `configx`
 
@@ -557,7 +557,7 @@ pkg/configx/
   manifest/
   schema/
   configx.go
-```
+```text
 
 ### 2.3 `observex`
 
@@ -572,7 +572,7 @@ pkg/observex/
   health.go
   noop/
   recorder/
-```
+```text
 
 供应商绑定只允许放在显式 adapter 包或下游仓库，不属于核心契约。
 
@@ -591,7 +591,7 @@ pkg/resiliencx/
   idempotency.go
   event.go
   policy.go
-```
+```text
 
 ### 2.5 `schedulex`
 
@@ -611,7 +611,7 @@ pkg/schedulex/
   event.go
   locker.go
   snapshot.go
-```
+```text
 
 ### 2.6 `testkitx`
 
@@ -627,7 +627,7 @@ pkg/testkitx/
   leaktest/
   boundarytest/
   manifesttest/
-```
+```text
 
 ---
 
@@ -660,7 +660,7 @@ make boundary
 make contract
 make secret-scan
 make evidence
-```
+```text
 
 基础规则：
 

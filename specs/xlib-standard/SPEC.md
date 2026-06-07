@@ -15,6 +15,11 @@
 > 旧 `Approved-By` 为同管线内 sub-agent 自评，且 `COVERAGE-MANIFEST.md` commit/tree sha
 > (OQ-008 / R-011)、TRACEABILITY 行级覆盖 (NG-33) 等发布门禁前置条件均未达成。
 > 进入 Approved 需补独立 reviewer 签字 + 固定上游 commit/tree sha + 通过 `goalcli release-final-check`。
+>
+> **2026-06-08 04:59 更新**：COVERAGE-MANIFEST commit/tree sha 已本地 pin
+> （`93753b30…` / `296e3b91…`，154 文件 sha256-prefix 落地），OQ-008 / R-011 / NG-34 在本地已可关闭。
+> 仍待补：(a) 独立 reviewer 签字；(b) TRACEABILITY 行级覆盖从 27% 提升至 NG-33 阈值；
+> (c) GitHub 远端 ruleset / Release object 真证据（OQ-001）。三项全部满足后方可升级 Status: Approved。
 
 - Repository: [github.com/ZoneCNH/xlib-standard](https://github.com/ZoneCNH/xlib-standard)
 - Related: [CONSTITUTION.md](../../CONSTITUTION.md), [ARCHITECTURE.md](../../ARCHITECTURE.md),
@@ -1873,7 +1878,7 @@ Goal Runtime：`.agent/evidence/ledger.jsonl` 是目标执行源 ledger；`GOAL_
 | R-008 | 本地文件不能证明远端治理状态 | 高 | 通过 GitHub API、ruleset export、CI artifact 或 Release object 证明 |
 | R-009 | 13 个下游库全部 not_adopted | 高 | 至少推进 kernel 首次采纳，证明模板可用 |
 | R-010 | 规格膨胀（当前规模含实现细节） | 中 | 将 PR 执行包清单、goalcli 命令列表拆分到 docs/ 子文档 |
-| R-011 | COVERAGE-MANIFEST 的 commit/tree sha 未固定，存在漂移风险 | **已收敛**（2026-06-08 04:59 本地 pin；commit `93753b30…`、tree `296e3b91…`、154 文件 sha256-prefix 已写入 COVERAGE-MANIFEST §"文件级 sha256"）；release 阶段仍由 NG-34 强制重算复核 |
+| R-011 | COVERAGE-MANIFEST 的 commit/tree sha 未固定，存在漂移风险 | 中（**本地已收敛**） | 2026-06-08 04:59 本地 pin；commit `93753b30…`、tree `296e3b91…`、154 文件 sha256-prefix 已写入 COVERAGE-MANIFEST §"文件级 sha256"；release 阶段仍由 NG-34 强制重算复核 |
 
 ### 23.3 远端治理不可本地证明项
 

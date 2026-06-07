@@ -33,7 +33,7 @@
                   └─────────┘                        │
                                                      │
                 Deprecated ◄─────────────────────────┘
-```
+```text
 
 **合法流转**：
 
@@ -71,7 +71,7 @@
 - Layer: L1 存储扩展
 - Version: v0.7.3
 - Repository: [github.com/ZoneCNH/xxx](https://github.com/ZoneCNH/xxx)
-```
+```text
 
 | 字段 | 说明 |
 |------|------|

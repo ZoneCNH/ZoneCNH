@@ -91,7 +91,7 @@ SPEC.md 自身记录的发布阻断项（OQ + R + NG）与 `Status: Approved` �
 
 SPEC.md 的 H2 层级实际结构：
 
-```
+```text
 ## 使用边界          ← 模板外（line 19）
 ## 1. 元信息
 ## 2. 概述
@@ -103,7 +103,7 @@ SPEC.md 的 H2 层级实际结构：
 ## 附录 D. 部署与发布细节
 ## 附录 E. 关键数字与映射
 ## 附录 F. 整理交付自检
-```
+```text
 
 问题：
 
@@ -149,10 +149,10 @@ SPEC.md 的 H2 层级实际结构：
 
 `SPEC.md` §1 与 §15.1 自创 **"门禁（Foundation Gate，位于所有领域之上）"**，而 `ARCHITECTURE.md` 已固化的领域是：
 
-```
+```text
 基座 → 数据域 → 分析域 ⇄ 决策域 → 执行域 → x.go
 横切：observex / alertx
-```
+```text
 
 未定义"门禁"层。FR-004 也借此引入 `门禁 → 基座 L0 → ...` 八元链，但其他 16 个模块 SPEC 均按 5 领域命名（已通过 `spec-drift-guard` 校验）。
 

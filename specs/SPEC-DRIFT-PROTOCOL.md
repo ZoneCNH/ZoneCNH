@@ -14,7 +14,7 @@
 Spec 写的是 A
 实现发现 A 不合理
 代码做成了 B
-```
+```text
 
 **不能默默接受。** 需求变了，Spec 也必须变。
 
@@ -30,7 +30,7 @@ Spec 写的是 A
 请将代码改回符合 Spec 的行为。
 不要修改 Spec。
 不要实现额外功能。
-```
+```text
 
 ---
 
@@ -49,7 +49,7 @@ Spec 写的是 A
 3. 推荐的 Spec 修改
 4. 修改后会影响哪些 Requirements
 5. 修改后需要新增或修改哪些 Test Cases
-```
+```text
 
 ---
 
@@ -65,7 +65,7 @@ Spec 写的是 A
 - Changed delete behavior from immediate delete to confirmation dialog
 - Added AC-006
 - Added TC-006
-```
+```text
 
 ---
 
@@ -74,7 +74,7 @@ Spec 写的是 A
 ```text
 不要让代码偷偷改变需求。
 需求变了，Spec 也必须变。
-```
+```text
 
 ---
 
@@ -107,7 +107,7 @@ Spec 写的是 A
 接口合同变了 → 更新 Spec
 数据含义变了 → 更新 Spec
 安全规则变了 → 更新 Spec
-```
+```text
 
 ---
 
@@ -129,7 +129,7 @@ Spec 写的是 A
 - Contract drift（接口偏差）
 - Scope drift（范围偏差）
 - Security drift（安全偏差）
-```
+```text
 
 ---
 

@@ -34,6 +34,7 @@
 ## 3. Problem
 
 70+ 模块之间需要低延迟的内部通信机制，各自封装 NATS 客户端会导致：
+
 - 连接配置不一致，部分模块未正确处理重连
 - Core NATS 和 JetStream 使用场景混淆
 - subject 命名不规范，消息路由混乱
@@ -245,7 +246,7 @@ type HealthStatus struct {
 }
 
 func New(opts ...Option) Client
-```
+```text
 
 ### 9.1 Option 模式
 
@@ -259,7 +260,7 @@ func WithReconnectWait(d time.Duration) Option
 func WithMaxReconnects(n int) Option
 func WithJetStreamEnabled(enabled bool) Option
 func WithCodec(codec Codec) Option
-```
+```text
 
 ### 9.2 用法示例
 
@@ -301,7 +302,7 @@ js.Subscribe(ctx, "orders.>", func(msg *natsx.Msg) {
     processOrder(msg.Data)
     // handler 内部自动 ack
 }, natsx.WithDurable("risk-engine"))
-```
+```text
 
 ---
 
@@ -321,7 +322,7 @@ var (
     ErrInvalidSubject    = errors.New("natsx: invalid subject")
     ErrDrainTimeout      = errors.New("natsx: drain timeout")
 )
-```
+```text
 
 ### 10.2 Codec 接口
 
@@ -330,7 +331,7 @@ type Codec interface {
     Marshal(v any) ([]byte, error)
     Unmarshal(data []byte, v any) error
 }
-```
+```text
 
 ---
 
@@ -351,7 +352,7 @@ natsx:
     enabled: true                # 是否启用 JetStream
     domain: ""                   # JetStream domain（可选）
   health_check_interval: 10s     # 健康检查周期
-```
+```text
 
 ---
 
@@ -394,7 +395,7 @@ natsx:
 
 ## 14. Directory Structure
 
-```
+```text
 natsx/
 ├── go.mod
 ├── go.sum
@@ -419,7 +420,7 @@ natsx/
 ├── example_test.go
 ├── benchmark_test.go
 └── integration_test.go         # //go:build integration
-```
+```text
 
 ---
 
@@ -427,11 +428,11 @@ natsx/
 
 ### 15.1 go.mod
 
-```
+```text
 module github.com/ZoneCNH/natsx
 
 go 1.23
-```
+```text
 
 ### 15.2 依赖方向
 

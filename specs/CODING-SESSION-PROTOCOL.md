@@ -19,7 +19,7 @@
 8. Human Review        人工审查
 9. Fix                 修复
 10. Commit / PR        提交
-```
+```text
 
 **原则：先喂上下文，再确认范围，再让它出计划，你看完计划，再让它写代码。**
 
@@ -72,7 +72,7 @@ specs/{module}/SPEC.md
 go build ./...
 go test ./... -race
 golangci-lint run
-```
+```text
 
 ## Required Output
 
@@ -81,7 +81,8 @@ golangci-lint run
 - Tests added
 - Verification result
 - Risks
-```
+
+```text
 
 ### 为什么需要 Context Packet
 
@@ -119,7 +120,7 @@ golangci-lint run
 6. 是否发现 spec 或 task 有歧义
 
 不要写代码。
-```
+```text
 
 ### 审批后实现
 
@@ -133,7 +134,7 @@ golangci-lint run
 - 不做 scope 外功能
 - 不引入新依赖
 - 添加必要测试
-```
+```text
 
 **这个节奏可以显著减少 AI 乱改。**
 
@@ -158,7 +159,7 @@ golangci-lint run
 - Extra functionality not in spec
 - Test coverage
 - Risks
-```
+```text
 
 ### 理想输出
 
@@ -169,7 +170,7 @@ golangci-lint run
 | FR-002 | Empty title rejected | Yes | validateTaskTitle | Covered by test |
 | BR-001 | Trim title | Yes | validation.ts | Covered by test |
 | AC-001 | Task appears in list | Yes | TaskList render | Manual + component test |
-```
+```text
 
 ---
 
@@ -189,7 +190,7 @@ AI 很容易做多。你只让它做创建任务，它顺手做了编辑、删�
 4. 建议保留还是回滚
 
 不要修改代码。
-```
+```text
 
 ### 移除 Prompt
 
@@ -200,7 +201,7 @@ AI 很容易做多。你只让它做创建任务，它顺手做了编辑、删�
 
 不要改变已通过的 TASK-{NNN} 行为。
 不要新增功能。
-```
+```text
 
 ---
 
@@ -238,7 +239,7 @@ AI 自查不够，你还要看 diff。
 3. Nice to have
 4. Accepted parts
 5. Final recommendation
-```
+```text
 
 ---
 
@@ -261,7 +262,7 @@ AI 自查不够，你还要看 diff。
 3. 哪些 Must fix 已解决
 4. 如何验证
 5. 是否引入新风险
-```
+```text
 
 ---
 
@@ -272,29 +273,32 @@ AI 自查不够，你还要看 diff。
 **表现：** 你让它做创建任务，它顺便做了编辑、删除、登录、数据库
 
 **处理：**
+
 ```markdown
 请回滚或移除当前 Task 范围外的实现。
 只保留 TASK-{NNN} 需要的代码。
-```
+```text
 
 ### 错误 2：改了架构
 
 **表现：** 引入新框架、重写目录结构、换 UI 库、新建一堆抽象
 
 **处理：**
+
 ```markdown
 当前修改违反 architecture spec。
 
 请移除不必要的架构改动，恢复到现有项目结构。
 不引入新依赖。
 只保留最小实现。
-```
+```text
 
 ### 错误 3：测试覆盖假阳性
 
 **表现：** 测试只检查组件存在，没有真正验证行为
 
 **处理：**
+
 ```markdown
 请增强测试，让测试真正覆盖用户行为和 Acceptance Criteria。
 
@@ -302,13 +306,14 @@ AI 自查不够，你还要看 diff。
 - 使用用户可见行为断言
 - 不只测试 implementation details
 - 每个测试映射到 Requirement ID
-```
+```text
 
 ### 错误 4：错误处理太粗糙
 
 **表现：** catch 后什么都不做，console.error 后继续，用户看不到错误
 
 **处理：**
+
 ```markdown
 请按照 Spec 的 Error Handling 要求修复错误处理。
 
@@ -317,11 +322,12 @@ AI 自查不够，你还要看 diff。
 - 系统错误显示通用提示
 - 不暴露 stack trace
 - 不吞掉错误
-```
+```text
 
 ### 错误 5：Spec 和代码不一致
 
 **处理：**
+
 ```markdown
 请列出当前实现与 Spec 的所有不一致。
 
@@ -333,7 +339,7 @@ AI 自查不够，你还要看 diff。
 - Impact
 - Recommended fix
 - Fix code or update spec
-```
+```text
 
 ---
 
@@ -402,7 +408,7 @@ TASK-{NNN}: {任务标题}
 4. 如何验证
 5. 是否有 out-of-scope changes
 6. 风险或假设
-```
+```text
 
 ---
 
@@ -461,7 +467,7 @@ TASK-{NNN}: {任务标题}
 3. Nice to have
 4. Accepted
 5. Final decision: Approve / Request changes
-```
+```text
 
 ---
 
@@ -483,7 +489,7 @@ TASK-{NNN}: {任务标题}
 - 更新 Task 状态
 - 更新 traceability
 - 写 commit / PR
-```
+```text
 
 ### 单个 Task 的理想时间分配
 
@@ -493,7 +499,7 @@ Code   40%
 Test   25%
 Review 20%
 Docs   10%
-```
+```text
 
 **不要：** Code 95%, Review 0%, Test 5%
 

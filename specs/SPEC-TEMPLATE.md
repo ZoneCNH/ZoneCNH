@@ -21,7 +21,7 @@
 - Version: v0.1.0
 - Repository: [github.com/ZoneCNH/{module}](https://github.com/ZoneCNH/{module})
 - Related: [CONSTITUTION.md](../CONSTITUTION.md), [ARCHITECTURE.md](../ARCHITECTURE.md), {依赖模块}
-```
+```text
 
 | 字段 | 说明 |
 |------|------|
@@ -42,7 +42,7 @@
 
 ```markdown
 `{module}` 提供 {核心能力}。{解决什么问题}，{为谁服务}。
-```
+```text
 
 **要求**：不超过 3 句话，能让人在 30 秒内理解模块价值。
 
@@ -58,9 +58,10 @@
 - {问题 1}
 - {问题 2}
 - {问题 3}
-```
+```text
 
 **要求**：
+
 - 至少列出 3 个具体问题
 - 有量化数据优先（如"延迟 > 500ms"、"重复代码 > 200 行"）
 - 不写"不够好"这类模糊表述
@@ -75,9 +76,10 @@
 - 提供 {接口名} 接口，支持 {能力}
 - 管理 {资源}，支持 {配置项}
 - 集成 {依赖模块} 的 {能力}
-```
+```text
 
 **要求**：
+
 - 每条 Goal 对应一个或多个 FR
 - 使用可测试表述（"提供 X 接口"而非"支持 X"）
 - 不超过 8 条
@@ -92,9 +94,10 @@
 - 不做 {功能 A}（由 {模块/层级} 负责）
 - 不做 {功能 B}（超出本模块职责）
 - 不做 {功能 C}（当前版本不支持）
-```
+```text
 
 **要求**：
+
 - `spec-lint.sh` 校验此节不能为空
 - 每条 Non-goal 应说明为什么不做（谁负责 / 为什么超出范围）
 - 至少 3 条
@@ -110,9 +113,10 @@
 |--------|----------|
 | `{module-a}` | 调用 {接口} 做 {用途} |
 | `{module-b}` | 调用 {接口} 做 {用途} |
-```
+```text
 
 **要求**：
+
 - 列出所有已知消费者
 - 说明每个消费者使用哪个接口
 - 如果消费者尚未实现，标注"待创建"
@@ -133,9 +137,10 @@
 
 **WHEN** {另一个触发条件}
 **THEN** {另一个预期行为}
-```
+```text
 
 **要求**：
+
 - FR 编号连续（FR-001, FR-002, ...），`spec-lint.sh` 校验
 - 每个 FR 至少有 1 条 WHEN/THEN，`spec-lint.sh` 校验
 - WHEN 描述触发条件，THEN 描述系统行为
@@ -155,9 +160,10 @@
 
 **约束**：{具体约束条件}
 **违反时**：{错误处理方式}
-```
+```text
 
 **要求**：
+
 - BR 编号连续（BR-001, BR-002, ...）
 - 每条 BR 必须有"违反时"的处理方式
 - BR 不可与 FR 冲突
@@ -176,9 +182,10 @@ type {InterfaceName} interface {
     {Method}(ctx context.Context, {params}) ({returns}, error)
 }
 ```​
-```
+```text
 
 **要求**：
+
 - 接口由消费方定义（`contracts` 包）
 - 接口尽量小（1-5 个方法）
 - 每个方法必须有 `context.Context` 参数
@@ -197,9 +204,10 @@ type {InterfaceName} interface {
 | 字段 | 类型 | 必填 | 说明 |
 |------|------|------|------|
 | {Field} | `{type}` | ✅/❌ | {说明} |
-```
+```text
 
 **要求**：
+
 - 使用 Go 结构体定义
 - 标注 JSON tag（如需要序列化）
 - 标注必填/可选
@@ -215,9 +223,10 @@ type {InterfaceName} interface {
 | 配置项 | 类型 | 默认值 | 说明 |
 |--------|------|--------|------|
 | `{key}` | `{type}` | `{default}` | {说明} |
-```
+```text
 
 **要求**：
+
 - 使用 `configx` 的配置格式
 - 每个配置项必须有默认值
 - 敏感配置（密码、密钥）不写默认值，标注"从环境变量读取"
@@ -232,9 +241,10 @@ type {InterfaceName} interface {
 | 错误 | 触发条件 | 处理方式 | 错误码 |
 |------|----------|----------|--------|
 | `{ErrName}` | {条件} | {处理} | `{code}` |
-```
+```text
 
 **要求**：
+
 - 公共错误变量定义在 `errors.go`
 - 错误消息格式：`"package: operation: detail"`
 - 使用 `%w` 保留错误链
@@ -252,9 +262,10 @@ type {InterfaceName} interface {
 | 空输入 | {描述} | {行为} |
 | 超时 | {描述} | {行为} |
 | 并发 | {描述} | {行为} |
-```
+```text
 
 **要求**：
+
 - 至少覆盖：空值、超时、并发、重试、资源耗尽
 - 每个 Edge Case 对应至少一个测试用例
 
@@ -273,9 +284,10 @@ type {InterfaceName} interface {
 ├── go.mod               # 模块定义
 ├── testdata/            # 测试数据
 └── README.md            # 模块文档
-```
+```text
 
 **要求**：
+
 - 遵循 Go 项目布局惯例
 - 测试文件与源文件同目录
 - 测试数据放在 `testdata/` 目录
@@ -298,9 +310,10 @@ type {InterfaceName} interface {
 | 依赖 | 被谁引入 | 用途 |
 |------|----------|------|
 | `{pkg}` | `{direct-dep}` | {用途} |
-```
+```text
 
 **要求**：
+
 - 优先使用标准库
 - 第三方依赖需经 spec 批准
 - 使用 `configx` 管理配置，不直接读取环境变量
@@ -331,9 +344,10 @@ type {InterfaceName} interface {
 | 文件 | 用途 |
 |------|------|
 | `testdata/{file}` | {用途} |
-```
+```text
 
 **要求**：
+
 - 每个 FR 至少对应 1 个 TC
 - 测试使用 Given/When/Then 注释
 - 测试名包含 TC 编号（如 `TestRegister_TC001`）
@@ -351,9 +365,10 @@ type {InterfaceName} interface {
 | {Operation} | 延迟 P99 | < {X}ms | `go test -bench` |
 | {Operation} | 内存 | < {X}MB | `go test -benchmem` |
 | {Operation} | 吞吐 | > {X}/s | `go test -bench` |
-```
+```text
 
 **要求**：
+
 - 每个性能敏感的操作必须有预算
 - 使用具体数值，不写"快速"、"高效"
 - 标注测量方式
@@ -382,9 +397,10 @@ type {InterfaceName} interface {
 | 事件 | 级别 | 说明 |
 |------|------|------|
 | `{event}` | info/warn/error | {说明} |
-```
+```text
 
 **要求**：
+
 - 使用 `observex` 的 `metrics` / `tracing` / `logging` 子模块
 - 不直接使用 prometheus/jaeger/logrus
 
@@ -399,9 +415,10 @@ type {InterfaceName} interface {
 - 不在日志中记录敏感数据
 - 用户输入必须校验
 - {模块特有的安全要求}
-```
+```text
 
 **要求**：
+
 - 每个模块必须有此节
 - 至少包含通用安全要求（硬编码、日志、输入校验）
 
@@ -430,9 +447,10 @@ type {InterfaceName} interface {
 | Gate | 命令 | 通过条件 |
 |------|------|----------|
 | {自定义} | `{命令}` | {条件} |
-```
+```text
 
 **要求**：
+
 - 通用 Gate 不可修改
 - 模块专属 Gate 根据模块特性定义（如 redisx 需要 Redis 连接测试）
 
@@ -446,9 +464,10 @@ type {InterfaceName} interface {
 | 变更类型 | 兼容性 | 迁移方式 |
 |----------|--------|----------|
 | {变更} | 向后兼容 / Breaking | {迁移步骤} |
-```
+```text
 
 **要求**：
+
 - 每个接口变更必须标注兼容性
 - Breaking Change 必须提供迁移步骤
 - 遵循 CONSTITUTION.md 第十条的变更分类
@@ -468,9 +487,10 @@ type {InterfaceName} interface {
 - [ ] Performance Budget 达标
 - [ ] 追溯矩阵更新完成
 - [ ] spec 状态更新为 Implemented
-```
+```text
 
 **要求**：
+
 - 使用 checkbox 格式
 - 每项可验证
 - 对应 DEFINITION-OF-DONE.md 的要求
@@ -499,9 +519,10 @@ type {InterfaceName} interface {
 | ID | 问题 | 状态 | 负责人 |
 |----|------|------|--------|
 | OQ-003 | {问题} | 待评估 | - |
-```
+```text
 
 **要求**：
+
 - Blocking 问题必须在开发前解决
 - Non-blocking 问题可以在开发中解决
 - Future 问题记录备忘，不承诺解决时间

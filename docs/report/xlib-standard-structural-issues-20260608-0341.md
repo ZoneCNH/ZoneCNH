@@ -67,10 +67,10 @@
 
 ### S2【严重】节号冲突：两个 §15.3
 
-```
+```text
 1159: ### 15.3 依赖方向规则
 1166: ### 15.3 工具依赖
-```
+```text
 
 第二个 §15.3 应为 §15.4。任何按节号锚点的工具链（追溯表、外部引用、目录生成）都会出错。
 
@@ -89,9 +89,10 @@
 - Version: v0.1.0
 - Repository: ...
 - Related: ...
-```
+```text
 
 SPEC.md 实际（L6-8 + L20-33 表格）：
+
 - 列表块只有 `Status / Spec-Version / Last-Updated` 三项，缺 `Owner / Layer / Version / Repository / Related`
 - 然后用一张表格补 `模块名/仓库/层级/角色/默认下游/Go 版本/当前基线版本/Goal ID/目标版本`，但字段名与模板不一致（"层级"非 `Layer`，"当前基线版本"非 `Version`）
 
@@ -368,7 +369,6 @@ xlib-standard 是仓库唯一仍坚持编号层级的规格，构成跨规格表
 - TRACEABILITY.md: 148（+17）
 - 总规模: 2,592 行（不含 archive）
 
-
 ## 5.7 第五轮修复（spec-review 第二轮残留 8 项）
 
 **触发**：spec-review 第二轮判定 Go（有条件），独立打分 8.75/10，列 2 P1 + 4 P2 + 2 P3 残留。
@@ -409,7 +409,6 @@ xlib-standard 是仓库唯一仍坚持编号层级的规格，构成跨规格表
 - CONFLICT-LEDGER.md: 180（节号修正，行数不变）
 - COVERAGE-MANIFEST.md: 201（节号修正，行数不变）
 - 总规模: 2,595 行
-
 
 ## 5.8 第六轮终审（spec-review 第三轮）
 
@@ -472,4 +471,3 @@ R-1（占位符统一）/ R-2（TC-016/017 双向闭环）/ R-3（trace_coverage
 - 三条核心追溯链全部闭环
 - 23 节模板完整合规、CONSTITUTION 13 条零违反
 - 进入 `v1.0.0-rc.1` 发布候选状态
-
