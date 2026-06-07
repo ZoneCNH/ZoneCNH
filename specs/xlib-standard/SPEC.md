@@ -40,7 +40,7 @@ xlib-standard 是 FoundationX 量化交易基础设施的**基础库标准工厂
 1. **Standard Source**：定义所有基础库必须遵守的标准、规则和契约（419 条 RULE-*，203 条 docs/standard/ 规则）
 2. **Go Reference Template**：提供可编译的 Go 参考模板，通过 `scripts/render_template.sh` 生成下游基础库
 3. **Generator**：模板渲染器，将 `{{MODULE_NAME}}`/`{{MODULE_PATH}}`/`{{PACKAGE_NAME}}` 替换为具体库的标识
-4. **Harness**：Gate 执行控制面，定义 66 个 Gates（17 Required + 49 扩展/治理/发布）和 4 个 Context Profiles
+4. **Harness**：Gate 执行控制面，定义 66 个 gate 条目（44 required_gates + 10 extended_gates + 6 final_gates + 6 goalcli_mva_gates）和 4 个 Context Profiles；大写 MVA 条目按 alias 处理，不生成第二套权威 gate
 5. **Evidence Runtime**：管理 Evidence Ledger（`.agent/evidence/ledger.jsonl`），证明所有声明的真实性
 6. **Debt Governance Runtime**：7 类技术债治理（ARCH/DEP/DOMAIN/DOCS/TEST/IMPL/SEC），40+ 条规则
 
@@ -359,10 +359,10 @@ THEN 工具链版本与 docs/workflow/manifest 一致，无版本漂移
 
 ### 6.4 Harness
 
-### FR-020: 66 个 Gates
+### FR-020: 66 个 gate 条目
 
 WHEN harness.yaml 被 goalcli 加载
-THEN 66 个 gate 全部有定义（11 核心 + 2 guard + 3 registry + 4 governance + 3 chain + 5 integration + 10 docker + 3 release scope + 5 release + 6 MVA + 5 extended + 6 别名 + 1 其他）
+THEN 66 个 gate 条目全部按 harness.yaml section 定义：44 required_gates、10 extended_gates、6 final_gates、6 goalcli_mva_gates；大写 MVA 条目作为 alias，不生成第二套权威 gate
 
 WHEN 某个 gate 的 command 未在 Makefile 中注册
 THEN harness validation 失败并报告未注册 gate
@@ -996,7 +996,7 @@ proof_based_adoption: true | false
 | 指标 | 目标 |
 |------|------|
 | 单 Gate 最大执行时间 | < 5 分钟 |
-| 全 Required Gates（11 核心） | < 15 分钟 |
+| 核心质量 Gates（fmt/vet/lint/test/race 等） | < 15 分钟 |
 | Release Scorecard 计算 | < 30 秒 |
 | Evidence Manifest 生成 | < 10 秒 |
 | goalcli score --min 9.8 | < 60 秒 |
@@ -1024,49 +1024,16 @@ proof_based_adoption: true | false
 | L6 | Release Evidence | 发布证据测试 |
 | L7 | Profile-Specific Heavy | 特定 Profile 重型测试 |
 
-### 13.2 Gate 分类（66 个，来自 harness.yaml）
+### 13.2 Gate 分类（66 个 harness.yaml 条目）
 
-**核心 Required Gates（11 个）**：
+| harness.yaml section | 数量 | 语义边界 |
+|----------------------|------|----------|
+| required_gates | 44 | required_gates 是当前权威 gate 定义来源，覆盖 fmt/vet/lint/test/race、治理、registry、Docker、release scope、evidence、version、doctor 等必跑条目 |
+| extended_gates | 10 | 扩展验证，包含 property、golden、fuzz_smoke、ci_extended、release_check_extended 和 goalcli G12-G15 下游/交付条目 |
+| final_gates | 6 | 发布最终判定，包含 release_score_final、release_final_check、release_preflight、score、kernel_downstream、goalcli_g16_runtime_final |
+| goalcli_mva_gates | 6 | 大写 MVA alias，映射到 goalcli G12-G16 流程，不生成第二套权威 gate |
 
-| Gate | 命令 | 目的 |
-|------|------|------|
-| fmt | `make fmt` | Go 格式稳定 |
-| vet | `make vet` | 基础静态检查 |
-| lint | `make lint` | golangci-lint 强制检查 |
-| test | `make test` | 单元和示例 smoke |
-| race | `make race` | 并发安全基线 |
-| boundary | `make boundary` | 模块边界和模板禁止项 |
-| security | `make security` | secret scan + govulncheck |
-| contracts | `make contracts` | schema、metrics 和 manifest contract |
-| docs_check | `make docs-check` | 文档、链接、命名、下游同步策略 |
-| integration | `make integration` | generator 和 downstream smoke |
-| debt | `make debt` | 技术债治理检查 |
-
-**Guard Gates（2 个）**：main_guard, worktree_guard
-
-**Registry Gates（3 个）**：issue_registry, command_registry, makefile_baseline
-
-**Governance Gates（4 个）**：governance_check, p1_governance_check, p2_runtime_check, adoption_check
-
-**Chain Gates（3 个）**：governance_chain, p1_governance_chain, p2_runtime_chain
-
-**Integration Gates（5 个）**：score_check, evidence, debt_evidence, version, doctor
-
-**Docker Gates（10 个）**：docker_toolchain_check, docker_build_check, docker_ci, docker_release_check, docker_release_final_check, docker_goalcli_image, docker_goalcli_version, docker_runtime_check, docker_drift_check, docker_contract
-
-**Release Scope Gates（3 个）**：governance_release_scope, p1_governance_release_scope, p2_runtime_release_scope
-
-**Release Gates（5 个）**：release_evidence_check, release_score_final, release_final_check, release_preflight, score
-
-**MVA Gates（6 个）**：goalcli_g12_acceptance, goalcli_g13_delivery, goalcli_g14_handover, goalcli_g15a_downstream_adoption, goalcli_g15b_certify, goalcli_g16_runtime_final
-
-**Extended Gates（5 个）**：property, golden, fuzz_smoke, ci_extended, release_check_extended
-
-**别名 Gates（6 个，大写 MVA 别名）**：G12_ACCEPTANCE, G13_DELIVERY, G14_HANDOVER, G15_DOWNSTREAM_ADOPTION, G16_CERTIFY, G12_G16_FINAL
-
-**其他（1 个）**：kernel_downstream
-
-> 口径：66 个 Gates 总数 = 17 个 Required（11 个核心 Required + 2 个 Guard + 3 个 Registry + kernel_downstream）+ 49 个 extended/governance/release 等非 Required 分类。6 个大写 MVA 别名计入总数但不得被读作额外 Required gate。
+> 口径：66 个 gate 条目 = 44 required_gates + 10 extended_gates + 6 final_gates + 6 goalcli_mva_gates。`gate_link_semantics.authority_source` 指向 `required_gates[].id`，重复 command link 只表示 alias。
 
 > 注：9 个 proof_depth taxonomy 条目（file_exists, command_registered, dry_run, positive_fixture, negative_fixture, mutation_fixture, live_run, evidence_replay, downstream_adoption）不计入 gate 总数。
 
@@ -1423,7 +1390,7 @@ Goal Runtime：`.agent/evidence/ledger.jsonl` 是目标执行源 ledger；`GOAL_
 | ADR 数量 | 9（正式）+ 1 模板 + 3 历史文件 |
 | PR 执行包数 | 28 |
 | L2 适配器 | 7（执行计划文件 15） |
-| Gates | 66（17 Required + 49 扩展/治理/发布） |
+| Gates | 66（44 required_gates + 10 extended_gates + 6 final_gates + 6 goalcli_mva_gates） |
 | goalcli P0 命令 | 68 |
 | goalcli 总命令 | 106 |
 | Evidence 协议规则 | 15 |
@@ -1475,21 +1442,25 @@ Goal Runtime：`.agent/evidence/ledger.jsonl` 是目标执行源 ledger；`GOAL_
 
 ### 22.4 15 条基本真理（TRUTH-001~015）
 
-1. 规则不进入 Gate 就不是规则
-2. 登记态 ≠ adopted
-3. goalcli 是唯一执行面
-4. Proof 是完成的唯一合法证明
-5. 依赖方向只能从高层指向低层
-6. 本地 + CI + GitHub Ruleset 三重硬约束
-7. 4-Plane 分离关注点
-8. 没有 Evidence 不允许 DONE
-9. Goal 必须从真实上下文开始
-10. 需求必须可验证
-11. 所有变更必须可追踪
-12. Harness 是机器裁判
-13. Self-improving 是强制环节
-14. 文档 ≠ 证据（document ≠ proof）
-15. registered/baseline_scanned/patch-only ≠ adopted
+> 与 §7.1 Iron Rules 的重复映射（结构债 S3 缓解）：TRUTH 是表述层，IR 是分类层；两者语义重叠时以 TRUTH 编号为外部引用、IR 编号为内部分类。
+
+| # | TRUTH | 对应 IR | 说明 |
+|--:|-------|--------|------|
+| 1 | 规则不进入 Gate 就不是规则 | IR-005 | Harness 是机器裁判 |
+| 2 | 登记态 ≠ adopted | IR-007 | 与 TRUTH-15 同义，TRUTH-15 是扩展形式 |
+| 3 | goalcli 是唯一执行面 | — | FR-042 权威 |
+| 4 | Proof 是完成的唯一合法证明 | IR-001 | 与 TRUTH-8 同义 |
+| 5 | 依赖方向只能从高层指向低层 | — | §7.6 关键约束 1、FR-004 |
+| 6 | 本地 + CI + GitHub Ruleset 三重硬约束 | — | FR-047 5 层执行链 |
+| 7 | 4-Plane 分离关注点 | — | FR-044 |
+| 8 | 没有 Evidence 不允许 DONE | IR-001 | 与 TRUTH-4 同义；FR-028 |
+| 9 | Goal 必须从真实上下文开始 | IR-002 | |
+| 10 | 需求必须可验证 | IR-003 | |
+| 11 | 所有变更必须可追踪 | IR-004 | |
+| 12 | Harness 是机器裁判 | IR-005 | 与 TRUTH-1 同义 |
+| 13 | Self-improving 是强制环节 | IR-006 | |
+| 14 | 文档 ≠ 证据（document ≠ proof） | IR-001 | 同义簇 |
+| 15 | registered/baseline_scanned/patch-only ≠ adopted | IR-007 | 与 TRUTH-2 扩展 |
 
 ### 22.5 DONE 模板
 
@@ -1513,7 +1484,7 @@ DONE with evidence:
 
 - [x] 覆盖 154 个输入文件（当前整理口径）
 - [x] 提取 419 条规则（7 类）
-- [x] 提取 10 个 ADR（9 条核心架构原则）
+- [x] 提取 9 个正式 ADR、1 个模板和 3 个历史方案文档
 - [x] 提取 28 个 PR 执行包（5 个 Phase）
 - [x] 提取 10 个 REQ-PROOF（4-Plane 架构）
 - [x] 提取 8 个仓库治理 REQ（5 层执行链）

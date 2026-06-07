@@ -1,12 +1,14 @@
-# xlib-standard 模块规格
+# xlib-standard 模块规格（已归档）
 
-Status: consolidated
+Status: **archived**（2026-06-08 归档；非当前权威）
 Spec-Version: 2026-06-07.agent-team
 Source-Scope: `/home/xlib-standard/.worktree/*.md`, `/home/xlib-standard/docs/**`, `/home/zone/Downloads/xlib-standard/**`
 Input-Files: 154
 Coverage-Method: agent-team semantic synthesis; 1000-pass check verifies input file-set stability only
 
-> 历史/参考工件：当前可执行主规格以 `SPEC.md` 为准。本文件保留 154 文件整理背景，不覆盖 `SPEC.md`、`TRACEABILITY.md` 或 `CONFLICT-LEDGER.md` 的当前取舍。
+> **归档说明**：本文件已于 2026-06-08 移入 `archive/`，独有内容已合并入 `../SPEC.md`。
+> 不得作为当前规格、追溯、冲突取舍或门禁事实引用。当前权威以 `../SPEC.md` 为准。
+> 仅供溯源比对；任何引用都应同步指向 `../SPEC.md` 对应章节。
 
 ## 1. 模块身份
 
@@ -155,7 +157,7 @@ x.go / business
 scripts/render_template.sh --module <module> --name <name> --package <package> --out <path>
 ```
 
-Current executable contract is `SPEC.md` FR-015; this historical copy must not become a competing generator CLI definition.
+当前可执行 CLI 契约以 `SPEC.md` FR-015 为准；本历史副本不得成为竞争性的生成器接口定义。
 
 要求：
 

@@ -1,8 +1,10 @@
-# xlib-standard 历史深度分析报告（非当前主分析）
+# xlib-standard 历史深度分析报告（已归档）
 
-> **非当前主分析**：本报告基于 `SPEC.md` v2.0.0 和 181 文件历史口径，保留用于问题背景。当前可执行主规格以 `SPEC.md` 为准；当前覆盖口径以 `COVERAGE-MANIFEST.md` 的 154 个文件为准。
->
-> 本文中的 181 文件、66 gates、10 ADR、28 个 PR 执行包等统计均为历史分析口径，不得作为当前交付判定。
+Status: **archived**（2026-06-08 归档；非当前权威）
+
+> **归档说明**：本报告基于 181 文件旧口径，与当前 154 文件主规格冲突，已于 2026-06-08 移入 `archive/`。
+> 文中所有口径（181 文件、旧 gate 分类、旧 ADR 汇总、v1→v2 修正历史）**不得**作为当前交付判定。
+> 当前权威以 `../SPEC.md` 为准；冲突解释见 `../CONFLICT-LEDGER.md` §16。
 >
 > 分析时间：2026-06-07（v2 修正版）
 > 分析范围：`github.com/ZoneCNH/xlib-standard` 仓库 + `specs/xlib-standard/SPEC.md` v2.0.0
@@ -13,7 +15,7 @@
 
 ## 0. 执行摘要
 
-按历史 v2 口径，SPEC.md 已从 v0.3.7 升级到 v2.0.0（23 节、~800 行），历史分析采用 181-file source set、419 条规则、10 个 ADR、28 个 PR 执行包。仓库治理成熟度极高，但存在 **下游采纳断层** 和 **规格膨胀** 两类核心问题。
+按历史 v2 口径，SPEC.md 已从 v0.3.7 升级到 v2.0.0（23 节、~800 行），历史分析采用 181-file source set、419 条规则、旧 ADR 汇总、28 个 PR 执行包。仓库治理成熟度极高，但存在 **下游采纳断层** 和 **规格膨胀** 两类核心问题。
 
 | 维度   | 评级    | 关键发现                                                                   |
 | ------ | ------- | -------------------------------------------------------------------------- |
@@ -30,9 +32,9 @@
 
 | v1 结论                                  | 实际状态                                                         | 修正     |
 | ---------------------------------------- | ---------------------------------------------------------------- | -------- |
-| D-001: 无独立 ADR 目录                   | ✅ `docs/adr/` 存在，12 个文件（10 ADR + template + 3 方案文档） | **撤回** |
+| D-001: 无独立 ADR 目录                   | ✅ `docs/adr/` 存在，13 个文件（9 个 Accepted ADR + template + 3 个历史方案文档） | **撤回** |
 | D-002: SPEC.md 版本号 v0.3.7 滞后        | ✅ SPEC.md 已升级为 v2.0.0                                       | **撤回** |
-| harness.yaml 有 20+ gates                | 实际 66 个 gates（9 proof_depth + 57 功能 gate）                 | **修正** |
+| harness.yaml 有 20+ gates                | 实际 66 个 gate 条目（44 required_gates + 10 extended_gates + 6 final_gates + 6 goalcli_mva_gates），另有 9 级 proof_depth taxonomy | **修正** |
 | .agent/registries/ 有 4 个 SSOT registry | 实际 14 个文件（含 downstream-registry、command-registry 等）    | **修正** |
 | ci.yml 只有一个 job                      | 确认：ci.yml 确实是单 job（`make release-check`）                | **确认** |
 | governance.go 过大                       | 确认：仍是最大文件，无对应测试                                   | **确认** |
@@ -47,7 +49,7 @@
 | 组件                          | 状态                  | 实际数据                                                                                                            |
 | ----------------------------- | --------------------- | ------------------------------------------------------------------------------------------------------------------- |
 | `cmd/goalcli` CLI             | ✅ 19 个 Go 文件      | governance/traceability/debt/adoption/selfimproving/audit/dashboard/downstream-sync/schema-check                    |
-| `.agent/harness/harness.yaml` | ✅ schema_version 3.1 | **66 个 gates**（非 20+），proof_depth taxonomy 9 级                                                                |
+| `.agent/harness/harness.yaml` | ✅ schema_version 3.1 | **66 个 gate 条目**（44 required_gates + 10 extended_gates + 6 final_gates + 6 goalcli_mva_gates），proof_depth taxonomy 9 级 |
 | `.agent/registries/`          | ✅ **14 个文件**      | command-registry、issue-registry、makefile-baseline、downstream-registry、downstream-adoption-status 等             |
 | `.agent/policies/debt/`       | ✅ 完整               | rules.yaml、exceptions.yaml、profile.yaml、dependency-purpose.yaml                                                  |
 | Makefile                      | ✅ 50+ targets        | required/extended/governance/release/docker 分层                                                                    |
@@ -55,20 +57,16 @@
 | Evidence Protocol             | ✅ 完整               | `DONE with evidence:` + manifest lifecycle + SHA256                                                                 |
 | Docker Toolchain              | ✅ 完整               | Dockerfile + docker-compose.yml + devcontainer                                                                      |
 | `pkg/templatex/`              | ✅ 17 个文件          | client/config/errors/health/metrics/version/options/doc + 8 个测试文件（含 fuzz/property/golden）                   |
-| `docs/adr/`                   | ✅ 12 个文件          | 10 个 ADR（20260602-001 ~ 20260604-001）+ template + 3 方案文档                                                     |
+| `docs/adr/`                   | ✅ 13 个文件          | 9 个 Accepted ADR（20260602-001 ~ 20260604-001）+ template + 3 个历史方案文档                                      |
 
 ### 2.2 Harness Gates 分类（66 个）
 
-| 类别                 | 数量 | 代表 gates                                                                                                                                                                                                       |
-| -------------------- | ---- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Required（核心）     | 17   | fmt, vet, lint, test, race, docs_check, debt, boundary, security, contracts, integration, evidence, score, main_guard, worktree_guard, evidence_check, cli_contract                                              |
-| Governance Chain     | 6    | governance_check, p1_governance_check, p2_runtime_check, governance_chain, p1_governance_chain, p2_runtime_chain                                                                                                 |
-| Registry             | 3    | issue_registry, command_registry, makefile_baseline                                                                                                                                                              |
-| Docker               | 11   | docker_toolchain_check, docker_build_check, docker_ci, docker_release_check, docker_release_final_check, docker_goalcli_image, docker_goalcli_version, docker_runtime_check, docker_drift_check, docker_contract |
-| Release              | 7    | release_evidence_check, release_score_final, release_final_check, release_preflight, release_check_extended, score_check, version                                                                                |
-| MVA (Goal Lifecycle) | 12   | goalcli_g12_acceptance ~ goalcli_g16_runtime_final, G12_ACCEPTANCE ~ G12_G16_FINAL                                                                                                                               |
-| Extended             | 4    | property, golden, fuzz_smoke, ci_extended                                                                                                                                                                        |
-| Adoption             | 3    | adoption_check, kernel_downstream, doctor                                                                                                                                                                        |
+| harness.yaml section | 数量 | 代表 gates |
+| -------------------- | ---- | ---------- |
+| required_gates       | 44   | fmt, vet, lint, test, race, docs_check, debt, governance_check, docker_*、release_evidence_check、governance_release_scope |
+| extended_gates       | 10   | property, golden, fuzz_smoke, ci_extended, release_check_extended, goalcli_g12_acceptance ~ goalcli_g15b_certify |
+| final_gates          | 6    | release_score_final, release_final_check, release_preflight, score, kernel_downstream, goalcli_g16_runtime_final |
+| goalcli_mva_gates    | 6    | G12_ACCEPTANCE ~ G12_G16_FINAL；按 alias 处理，不生成第二套权威 gate |
 
 ### 2.3 14 个 Registry 文件
 
@@ -226,7 +224,7 @@
 
 ### 6.1 ADR 已存在（v1 错误修正）
 
-`docs/adr/` 目录存在，包含 12 个文件：
+`docs/adr/` 目录存在，包含 13 个文件，其中 9 个为 Accepted ADR，另有 template 和 3 个历史方案文档：
 
 | ADR              | 状态     | 核心决策                             |
 | ---------------- | -------- | ------------------------------------ |
@@ -259,8 +257,8 @@
 **D-003: harness gates 数量不同步**
 
 - 严重度：P2
-- 问题：历史材料曾混用 "17+ Required Gates" 和 66 gates；当前口径应区分 66 Gates 总数与 17 Required + 49 extended/governance/release
-- 状态：已修复（当前 SPEC.md FR-020、§2 和 §13.2 使用区分口径）
+- 问题：历史材料曾混用 "17+ Required Gates"、语义 gate 家族和 66 个 gate 条目；当前口径应区分 harness.yaml 的 66 个 gate 条目（44 required_gates + 10 extended_gates + 6 final_gates + 6 goalcli_mva_gates）与旧 required-family 说法
+- 状态：已修复（当前 SPEC.md FR-020、§2 和 §13.2 使用 harness.yaml section 口径）
 
 **D-004: docs/standard/ 27 个文件但 SPEC.md 只列出 18 个**
 
@@ -326,8 +324,8 @@ go 1.23
 **DM-002: "gate" 术语过载**
 
 - 严重度：P2
-- 问题：66 个 gates 横跨 7 个类别（required/governance/docker/release/MVA/extended/adoption），"gate" 在不同上下文含义不同
-- 建议：在 GLOSSARY.md 中明确区分 `required-gate`、`governance-gate`、`docker-gate`、`release-gate`、`mva-gate`
+- 问题：66 个 gate 条目横跨 4 个 harness section，且大写 MVA 条目是 alias，"gate" 在不同上下文含义不同
+- 建议：在 GLOSSARY.md 中明确区分 `required-gate`、`extended-gate`、`final-gate`、`mva-alias` 和 `proof_depth`
 
 **DM-003: proof_depth 与 status 语义重叠**
 
@@ -531,7 +529,7 @@ gate 失败 → retrospective → patches (harness/prompt/rule) → gate 收紧 
 
 | 维度         | 评分 | 说明                                                |
 | ------------ | ---- | --------------------------------------------------- |
-| 完整性       | 9/10 | 23 节全覆盖，419 条规则、10 ADR、28 PR 包           |
+| 完整性       | 9/10 | 23 节全覆盖，419 条规则、9 formal ADR + template/history、28 PR 包 |
 | 准确性       | 9/10 | gates 数量已统一为 66，文档列表仍待补全（18 vs 27） |
 | 可执行性     | 9/10 | 每个 FR 有来源、每个 gate 有 proof_depth            |
 | 膨胀度       | 6/10 | ~800 行，含大量实现细节（PR 包清单、命令列表）      |
