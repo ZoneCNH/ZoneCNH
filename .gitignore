@@ -16,6 +16,13 @@ reports/
 # env file
 .env
 
+# OS files
+.DS_Store
+Thumbs.db
+
 # Editor/IDE
 .idea/
 .vscode/
+*.swp
+*.swo
+*~
