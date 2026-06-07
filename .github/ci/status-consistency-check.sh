@@ -32,7 +32,7 @@ count_readme_section() {
 # 从 ARCHITECTURE.md 状态总览表，按域列匹配
 count_arch_domain() {
   local domain="$1"
-  grep -cP "^\| ${domain} \| \[" "$REPO_ROOT/ARCHITECTURE.md" 2>/dev/null || echo "0"
+  grep -cP "^\|\s*${domain}\s*\|\s*\[" "$REPO_ROOT/ARCHITECTURE.md" 2>/dev/null || echo "0"
 }
 
 # 从 STATUS.md 统计表提取某域的 "总数" 列
