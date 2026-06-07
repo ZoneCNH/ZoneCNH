@@ -107,6 +107,17 @@ Foundation 6 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中�
 | [`module/ADR-foundationx-exit.md`](./module/ADR-foundationx-exit.md) | ADR：foundationx 兼容退出计划 |
 | [`module/FOUNDATION-TRACKER.md`](./module/FOUNDATION-TRACKER.md) | 执行跟踪器 — P0/P1/P2 Issue 检查清单 |
 
+每个模块的独立完整规格（接口契约、目录结构、CI Gate、测试矩阵、性能预算、可观测输出、故障模式、安全要求、发布 DoD）：
+
+| 模块 | 完整规格 |
+|------|----------|
+| kernel | [`specs/kernel/SPEC.md`](./specs/kernel/SPEC.md) |
+| configx | [`specs/configx/SPEC.md`](./specs/configx/SPEC.md) |
+| observex | [`specs/observex/SPEC.md`](./specs/observex/SPEC.md) |
+| resiliencx | [`specs/resiliencx/SPEC.md`](./specs/resiliencx/SPEC.md) |
+| schedulex | [`specs/schedulex/SPEC.md`](./specs/schedulex/SPEC.md) |
+| testkitx | [`specs/testkitx/SPEC.md`](./specs/testkitx/SPEC.md) |
+
 ## Foundation 第一阶段闭环
 
 这 6 个基础模块可以构成第一阶段最小闭环：`kernel` 提供 L0 原语，`configx` / `observex` / `resiliencx` / `schedulex` 提供 L1 运行时横切能力，`testkitx` 只服务测试期。`xlib-standard` 是标准事实源和门禁输入，不作为运行时依赖。

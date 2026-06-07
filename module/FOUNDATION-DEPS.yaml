@@ -1,0 +1,241 @@
+# Foundation 依赖矩阵 — 机器可读
+# CI 可直接消费此文件执行依赖守卫检查
+# 与 FOUNDATION-V1.md Issue 2 对应
+
+version: "1.0"
+updated: "2026-06-07"
+
+# ============================================================
+# Go baseline
+# ============================================================
+go_baseline: "1.23"
+go_baseline_note: >
+  所有 Foundation 模块统一 Go 1.23。
+  等全仓库 CI 确认后再统一升级到 1.24。
+  testkitx 当前 go.mod 是 1.24，需要降级对齐。
+
+# ============================================================
+# 模块定义
+# ============================================================
+modules:
+  kernel:
+    path: github.com/ZoneCNH/kernel
+    layer: L0
+    stdlib_only: true
+    description: "L0 原语底座，只使用 Go 标准库"
+
+  configx:
+    path: github.com/ZoneCNH/configx
+    layer: L1
+    stdlib_only: false
+    description: "配置加载、合并、解码、校验、脱敏"
+
+  observex:
+    path: github.com/ZoneCNH/observex
+    layer: L1
+    stdlib_only: false
+    description: "可观测性语义契约库"
+
+  resiliencx:
+    path: github.com/ZoneCNH/resiliencx
+    layer: L1
+    stdlib_only: false
+    description: "弹性容错运行时库"
+
+  schedulex:
+    path: github.com/ZoneCNH/schedulex
+    layer: L1
+    stdlib_only: false
+    description: "确定性调度器"
+
+  testkitx:
+    path: github.com/ZoneCNH/testkitx
+    layer: L1
+    stdlib_only: false
+    description: "测试专用能力库，生产禁止 import"
+
+# ============================================================
+# 允许的依赖关系（单向箭头 = 调用方可以依赖被调方）
+# ============================================================
+allowed_deps:
+  kernel:        []                                    # stdlib-only
+  configx:       [kernel]                              # 显式配置契约，可使用 kernel 原语
+  observex:      [kernel]                              # 只依赖 kernel
+  resiliencx:    [kernel]                              # 观测通过本地接口或 adapter 接入
+  schedulex:     [kernel]                              # 不直接依赖 resiliencx/observex
+  testkitx:      [kernel, configx, observex, resiliencx, schedulex]  # 测试所有
+
+# ============================================================
+# 禁止的依赖（任何基础模块都不得导入）
+# ============================================================
+forbidden_deps:
+  # 业务域实现
+  - github.com/ZoneCNH/binance
+  - github.com/ZoneCNH/okx
+  - github.com/ZoneCNH/bybit
+  - github.com/ZoneCNH/bitget
+  - github.com/ZoneCNH/kucoin
+  - github.com/ZoneCNH/gate
+  - github.com/ZoneCNH/mexc
+  - github.com/ZoneCNH/htx
+  - github.com/ZoneCNH/coinbase
+  - github.com/ZoneCNH/hyperliquid
+  - github.com/ZoneCNH/lighter
+  - github.com/ZoneCNH/upbit
+  - github.com/ZoneCNH/coinglass
+  - github.com/ZoneCNH/yield-curve
+  - github.com/ZoneCNH/binance-market
+  - github.com/ZoneCNH/bybit-market
+  - github.com/ZoneCNH/bitget-market
+  - github.com/ZoneCNH/okx-market
+  - github.com/ZoneCNH/coinbase-market
+  - github.com/ZoneCNH/fred
+  - github.com/ZoneCNH/treasury
+  - github.com/ZoneCNH/bea
+  - github.com/ZoneCNH/ecb
+  - github.com/ZoneCNH/uk-cb
+  - github.com/ZoneCNH/japan-cb
+  - github.com/ZoneCNH/eastmoney
+  - github.com/ZoneCNH/jinshi
+  - github.com/ZoneCNH/jin10
+  - github.com/ZoneCNH/yahoo
+  - github.com/ZoneCNH/alternative-data
+  - github.com/ZoneCNH/factor-engine
+  - github.com/ZoneCNH/feature-store
+  - github.com/ZoneCNH/factor-eval
+  - github.com/ZoneCNH/market_regime
+  - github.com/ZoneCNH/macro_regime
+  - github.com/ZoneCNH/regime-engine
+  - github.com/ZoneCNH/ms_brain
+  - github.com/ZoneCNH/signal-factory
+  - github.com/ZoneCNH/backtest-engine
+  - github.com/ZoneCNH/optimizer
+  - github.com/ZoneCNH/strategies
+  - github.com/ZoneCNH/risk-engine
+  - github.com/ZoneCNH/order-engine
+  - github.com/ZoneCNH/portfolio-engine
+  - github.com/ZoneCNH/settlement
+  - github.com/ZoneCNH/alertx
+
+  # 入口（基础库不得反向依赖 x.go）
+  - github.com/ZoneCNH/x.go
+
+# ============================================================
+# 特殊约束
+# ============================================================
+constraints:
+  kernel:
+    - id: stdlib-only
+      check: go list -m all | grep -v "^github.com/ZoneCNH/kernel" | grep -v "^std"
+      fail_if: "任何非 stdlib 依赖存在"
+      message: "kernel 只能使用 Go 标准库"
+
+    - id: no-hidden-goroutine
+      check: grep -rn "go func" --include="*.go" | grep -v "_test.go" | grep -v "internal/test"
+      fail_if: "生产代码中有未文档化的 goroutine 启动"
+      message: "kernel 不允许隐藏后台 goroutine"
+
+  testkitx:
+    - id: no-production-import
+      check: |
+        for pkg in $(go list ./...); do
+          if [[ "$pkg" != *"testkitx"* ]] && [[ "$pkg" != *"test"* ]]; then
+            if grep -rq "testkitx" <(go list -f '{{.Imports}}' "$pkg" 2>/dev/null); then
+              echo "BLOCKED: $pkg imports testkitx"
+              exit 1
+            fi
+          fi
+        done
+      fail_if: "生产包 import testkitx"
+      message: "testkitx 只能在测试中使用"
+
+  configx:
+    - id: no-foundationx-new-usage
+      check: grep -rn "foundationx" --include="*.go" | grep -v "_test.go" | grep -v "internal/foundationx"
+      fail_if: "新增 foundationx 依赖"
+      message: "不再新增 foundationx usage，走 ADR 退出计划"
+
+  observex:
+    - id: no-foundationx-new-usage
+      check: grep -rn "foundationx" --include="*.go" | grep -v "_test.go"
+      fail_if: "新增 foundationx 依赖"
+      message: "不再新增 foundationx usage，走 ADR 退出计划"
+
+  resiliencx:
+    - id: no-hard-observex-core-import
+      check: grep -rn "github.com/ZoneCNH/observex" --include="*.go" | grep -v "_test.go" | grep -v "/adapter"
+      fail_if: "核心包硬 import observex"
+      message: "resiliencx 核心只输出本地 policy event/observer 接口，observex 绑定放 adapter 或调用方"
+
+  schedulex:
+    - id: no-hard-observex-or-resiliencx-core-import
+      check: grep -rnE "github.com/ZoneCNH/(observex|resiliencx)" --include="*.go" | grep -v "_test.go" | grep -v "/adapter"
+      fail_if: "核心包硬 import observex 或 resiliencx"
+      message: "schedulex 核心只声明 EventSink/Locker 接口，观测和弹性策略由调用方组合"
+
+# ============================================================
+# 允许但不形成 go.mod 边的接口集成
+# ============================================================
+interface_only_integrations:
+  resiliencx:
+    observex:
+      mode: "interface-only"
+      rule: "核心包可暴露本地 Observer/EventSink 回调输出 policy event；不得硬 import observex。"
+    schedulex:
+      mode: "caller-composition"
+      rule: "调度任务需要弹性策略时，由 x.go 或调用方把 job handler 包进 resiliencx policy。"
+
+  schedulex:
+    observex:
+      mode: "interface-only"
+      rule: "核心包只声明 JobRunEvent/EventSink；观测记录由调用方或 adapter 完成。"
+
+  x.go:
+    foundation:
+      mode: "composition-root"
+      rule: "x.go 可以装配 configx、observex、resiliencx、schedulex 和业务模块；基础模块不得反向依赖 x.go。"
+
+# ============================================================
+# 基础模块间禁止的依赖边
+# ============================================================
+forbidden_foundation_edges:
+  - from: kernel
+    to: [configx, observex, resiliencx, schedulex, testkitx, x.go, business]
+    rule: "kernel 是 L0 原语层，只允许 Go 标准库依赖。"
+
+  - from: configx
+    to: [observex, resiliencx, schedulex, x.go, business]
+    rule: "configx 只负责显式配置 source、decode、validate、redaction、provenance 和 manifest。"
+
+  - from: observex
+    to: [configx, resiliencx, schedulex, x.go, business]
+    rule: "observex 只定义 vendor-neutral 观测契约，不读取配置、不调用策略、不理解业务。"
+
+  - from: resiliencx
+    to: [configx, observex, schedulex, x.go, business]
+    rule: "resiliencx 是 operational resilience；观测只能通过本地接口或 adapter，不能硬依赖 observex。"
+
+  - from: schedulex
+    to: [configx, observex, resiliencx, x.go, business]
+    rule: "schedulex 是 deterministic scheduler；重试/熔断由调用方组合，观测通过 EventSink 接口。"
+
+  - from: production
+    to: [testkitx]
+    rule: "testkitx 只能 test-only 使用，不得进入生产 import graph。"
+
+# ============================================================
+# foundationx compatibility（待退出）
+# ============================================================
+foundationx_compatibility:
+  status: "transitional"
+  adr: "module/ADR-foundationx-exit.md"
+  current_usage:
+    configx:
+      version: "v0.0.0"
+      replace: "./internal/foundationx"
+      note: "本地 replace，非远程依赖"
+    observex:
+      version: "v0.1.0"
+      note: "远程依赖，需迁移"
+  deadline: "configx v0.3 / observex v0.4"
+  migration_target: "kernel 原语 + 本地显式契约"

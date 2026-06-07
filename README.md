@@ -15,6 +15,8 @@ Go 🐹 (主要) · Rust 🦀 (底层) · Python 🐍 (脚本/数据) · TypeScr
 > 📊 项目状态监控、健康度与风险追踪 → **[STATUS.md](./STATUS.md)**
 >
 > 🧱 Foundation v1 规格、依赖矩阵、执行跟踪与 ADR → **[module/](./module/)**
+>
+> 📋 6 模块独立完整规格 → **[specs/](./specs/)**
 
 ```text
 入口: x.go (Composition Root: 启动 / 配置 / 组装)
@@ -162,6 +164,7 @@ L2.5: decimalx / domain-market / domain-exchange / domain-macro
 
 <p align="center">
   <img src="https://github-readme-stats.vercel.app/api?username=ZoneCNH&show_icons=true&theme=radical&hide_border=true" alt="GitHub 统计" />
+  <!-- Google tag (gtag.js) --> <script async src="https://www.googletagmanager.com/gtag/js?id=G-CFBC2G78ZJ"></script> <script> window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-CFBC2G78ZJ'); </script>
 </p>
 
 ---
