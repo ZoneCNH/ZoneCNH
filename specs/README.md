@@ -1,6 +1,6 @@
-# 基座模块完整规格索引
+# Foundation 与组合根规格索引
 
-> 16 个基座模块的独立完整规格，按架构层级组织。
+> 16 个基座模块的独立完整规格，加上 x.go 组合根规格；共 17 份规格，按架构层级组织。
 
 最后更新：2026-06-07
 
@@ -197,7 +197,7 @@ Code → Test → PR
 | Feature Spec | 模块完整规格 | [`specs/*/SPEC.md`](#分层索引)（23 节结构） |
 | Technical Spec | 架构 + 宪法 | [`ARCHITECTURE.md`](../ARCHITECTURE.md) + [`CONSTITUTION.md`](../CONSTITUTION.md) |
 | Test Spec | 测试策略 | [`docs/testing/test-strategy.md`](../docs/testing/test-strategy.md) |
-| Agent Spec | AI 规则 + Prompt | [`docs/ai/agent-rules.md`](../docs/ai/agent-rules.md) + [`docs/ai/prompt-templates.md`](../docs/ai/prompt-templates.md) |
+| Agent Spec | AI 代理规格模板 | [`specs/AGENT-SPEC-TEMPLATE.md`](./AGENT-SPEC-TEMPLATE.md)（规则：[`agent-rules.md`](../docs/ai/agent-rules.md)、Prompt：[`prompt-templates.md`](../docs/ai/prompt-templates.md)） |
 
 ### 治理文件
 
@@ -205,6 +205,7 @@ Code → Test → PR
 |------|------|
 | [`DEFINITION-OF-READY.md`](./DEFINITION-OF-READY.md) | spec 可以进入开发的前置条件 |
 | [`DEFINITION-OF-DONE.md`](./DEFINITION-OF-DONE.md) | 模块实现完成的验收条件 |
+| [`SPEC-TEMPLATE.md`](./SPEC-TEMPLATE.md) | 23 节结构模板 — 新建模块规格时复制本文件 |
 | [`TRACEABILITY.md`](./TRACEABILITY.md) | 需求追踪表：FR → AC → TC → 实现 |
 
 ### Spec 状态流转
@@ -212,6 +213,8 @@ Code → Test → PR
 ```text
 Draft → Review → Approved → Implemented → Changed → Deprecated
 ```
+
+完整状态机定义、流转规则、CI 集成点详见 [`LIFECYCLE.md`](./LIFECYCLE.md)。
 
 ---
 
