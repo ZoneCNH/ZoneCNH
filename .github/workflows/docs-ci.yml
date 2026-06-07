@@ -1,0 +1,89 @@
+# 文档 CI — 纯 Markdown 仓库的质量守卫
+#
+# 触发条件：PR、push to main、每周一定时巡检
+# 四项检查：markdownlint / link-check / grep-guard / status-consistency
+
+name: Docs CI
+
+on:
+  pull_request:
+    paths:
+      - "*.md"
+      - ".github/workflows/docs-ci.yml"
+      - "scripts/ci/**"
+      - ".markdownlint.json"
+  push:
+    branches: [main]
+    paths:
+      - "*.md"
+      - ".github/workflows/docs-ci.yml"
+      - "scripts/ci/**"
+      - ".markdownlint.json"
+  schedule:
+    # 每周一 09:17 UTC（北京时间 17:17）巡检
+    - cron: "17 9 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  # ── 1. Markdown 格式规范 ──────────────────────────────────────
+  markdownlint:
+    name: Markdownlint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 运行 markdownlint-cli2
+        uses: DavidAnson/markdownlint-cli2-action@v19
+        with:
+          globs: "*.md"
+          config: .markdownlint.json
+
+  # ── 2. 链接有效性检查 ────────────────────────────────────────
+  link-check:
+    name: Link Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 检查链接有效性（lychee）
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: >-
+            --verbose
+            --no-progress
+            --exclude-loopback
+            --exclude '127\.0\.0\.1'
+            --exclude 'localhost'
+            --exclude '0\.0\.0\.0'
+            --exclude 'file://'
+            --accept 200,204,301,302,403,429
+            --timeout 30
+            --max-retries 3
+            --retry-wait-time 2
+            --max-connections 8
+            --header 'Accept=text/html'
+            -- '*.md'
+          fail: true
+
+  # ── 3. 敏感内容守卫 ──────────────────────────────────────────
+  grep-guard:
+    name: Grep Guard
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 运行 grep 守卫脚本
+        run: bash scripts/ci/grep-guard.sh
+
+  # ── 4. 状态一致性校验 ────────────────────────────────────────
+  status-consistency:
+    name: Status Consistency
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 运行状态一致性检查
+        run: bash scripts/ci/status-consistency-check.sh

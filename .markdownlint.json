@@ -1,0 +1,32 @@
+{
+  "default": true,
+
+  "MD013": {
+    "line_length": 200,
+    "tables": false,
+    "code_blocks": false,
+    "headings": false
+  },
+
+  "MD033": {
+    "allowed_elements": ["img", "p", "br", "i", "b", "a", "details", "summary"]
+  },
+
+  "MD024": {
+    "siblings_only": true
+  },
+
+  "MD041": false,
+
+  "MD034": false,
+
+  "MD052": false,
+
+  "MD055": false,
+
+  "MD049": false,
+
+  "MD046": {
+    "style": "fenced"
+  }
+}
