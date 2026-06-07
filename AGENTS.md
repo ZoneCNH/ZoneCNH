@@ -72,6 +72,19 @@ Spec 编写完成后，不是直接写代码，而是按管线推进：Spec → 
 spec → spec-review → matrix → task-split → task-planner → prompt-builder → task-executor
 ```
 
+### OMC Pipeline Skill
+
+已配置 OMC 技能 `.omc/skills/pipeline/SKILL.md`，支持一键触发完整管线：
+
+| 触发方式 | 说明 |
+|----------|------|
+| `pipeline {module}` | 从头启动完整管线 |
+| `pipeline {module} --from spec-review` | 从某个阶段恢复 |
+| `pipeline {module} --stage matrix` | 只执行单个阶段 |
+| `开发管线 {module}` | 中文触发 |
+
+管线状态记录在 `.omc/state/pipeline/{module}.json`。
+
 ### 关键文档
 
 | 文档 | 用途 |

@@ -29,14 +29,11 @@ Input-Count: 154
 > **复算命令**（任何 reviewer 可重放）：
 >
 > ```bash
-> cd /home/xlib-standard
-> git rev-parse HEAD            # 期望 93753b30e6d01fb4a9b096acaa0d7d53a2fb231c
-> git rev-parse HEAD^{tree}     # 期望 296e3b912c70f15434783aebcf35159f7000a01f
-> { find .worktree -maxdepth 1 -name "*.md" -type f -printf '%p\n'; find docs -type f -name "*.md"; } \
->   | sort | xargs sha256sum | awk '{print substr($1,1,16)"  <upstream:xlib-standard>/"$2}'
-> find <external-downloads>/xlib-standard -type f | sort \
->   | xargs sha256sum | awk -F/ '{print substr($1,1,16)"  <external:Downloads>/"$NF}'
+> cd <upstream:xlib-standard> && bash scripts/recompute-coverage.sh
 > ```
+>
+> 脚本输出 commit/tree sha + 154 文件 sha256 前缀，与下方表逐行比对。
+> 外部 Downloads 路径通过 `EXTERNAL_DOWNLOADS` 环境变量传入（可选）。
 
 ## 覆盖摘要
 
@@ -380,4 +377,4 @@ ad3510ac14abce42  <external:Downloads>/xlib-standard-v1.0.0-delivery-checklist.m
 5edaf6ab3e88ebc0  <external:Downloads>/xlib-standard-v1.0.0-delivery-checklist-reviewed.md
 f85d76b561a4572a  <external:Downloads>/xlib_standard_v3_proof_runtime_goal_checked_v1_1.md
 f8dffdcb010ad2b7  <external:Downloads>/xlib_standard_v3_proof_runtime_goal.md
-```text
+```

@@ -14,16 +14,18 @@
 
 ## 当前权威工件
 
-- `SPEC.md`：**当前可执行主规格**（v2.0.1, Status: Review；52 FR、104 WHEN/THEN、10 EC、17 TC、7 BR、17 AC；23 节按 `SPEC-TEMPLATE.md` 对齐；TRACEABILITY 行级覆盖 100%），与追溯表、冲突账本和覆盖清单共同约束。进入 Approved 的前置条件见 SPEC.md 顶部"状态说明"与 `docs/report/xlib-standard-structural-deep-analysis-20260608-0446.md`。
+- `SPEC.md`：**当前可执行主规格**（v2.0.1, Status: Review；52 FR、104 WHEN/THEN、10 EC、17 TC、7 BR、17 AC；23 节按 `SPEC-TEMPLATE.md` 对齐；TRACEABILITY 来源覆盖 100%，证据类型按 `line` / `file` / `validator-output` 分层），与追溯表、冲突账本和覆盖清单共同约束。进入 Approved 的前置条件见 SPEC.md 顶部"状态说明"与 `docs/report/xlib-standard-structural-deep-analysis-20260608-0446.md`。
 - `TRACEABILITY.md`：`SPEC.md` 条款到来源文件的追溯表（章节级，非 rule 级）。
 - `CONFLICT-LEDGER.md`：冲突、历史计划和最终取舍。
 - `COVERAGE-MANIFEST.md`：输入文件清单与覆盖口径（154 个文件，相对 `<upstream>/` 路径）。
 - `REMOTE-EVIDENCE.md`：远端治理真证据（branch protection / rulesets / release object / CI runs，pinned 2026-06-08 05:15 +08:00）。
 
-## 已归档工件（`archive/`）
+## 已归档工件
 
-- `archive/MODULE-SPEC.md`：历史 20 节整理工件，独有内容已合并入 `SPEC.md`，于 2026-06-08 归档。
-- `archive/DEEP-ANALYSIS.md`：181 文件旧口径深度分析，与当前 154 文件主规格冲突，于 2026-06-08 归档。
+原 `archive/` 目录的历史文件已迁移至 `docs/report/`，不再位于本目录下：
+
+- `docs/report/xlib-standard-module-spec-archived.md`：历史 20 节整理工件。
+- `docs/report/xlib-standard-deep-analysis-archived.md`：181 文件旧口径深度分析。
 - 归档工件 **不得** 作为当前规格、追溯、冲突取舍或门禁事实引用，仅供溯源比对。
 
 ## 阅读规则
