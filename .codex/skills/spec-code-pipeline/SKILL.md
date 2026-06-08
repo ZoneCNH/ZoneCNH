@@ -39,8 +39,8 @@ Expanded repo gate sequence (每个 executor 后都接 **三平台团队评分 +
 
 ```text
 spec
-  -> [spec-team-score: claude + codex + copilot]
-  -> pipeline-arbiter  (gate: composite_score >= 98 且无红线、低置信度、异常分差)
+  -> [spec-team-score: claude + codex + copilot + rules-engine]
+  -> pipeline-arbiter  (gate: composite_score >= 98 且无红线、低置信度、异常分差、异构一致)
   -> 自动翻转 Status: Approved
   -> matrix
   -> [matrix-team-score] -> pipeline-arbiter (gate)
@@ -56,12 +56,14 @@ spec
 
 每个阶段必须满足（唯一门禁）：
 
-- `composite_score = min(claude.score, codex.score, copilot.score)`
+- `composite_score = min(claude.score, codex.score, copilot.score, rules.score)`
 - `composite_score >= 98`
 - 无任一平台红线
 - 无任一平台低置信度，且三平台分差不超过阈值
 
-Confidence 与分差属于 gate 条件，不能被忽略或人工豁免。失败一律自动路由回当前阶段 executor 或 scorer 修复；3 次失败自动升级到上一阶段；上游再失败继续向上直到 spec，由 spec executor 重写后继续循环。**全自动，无人工接管**。
+Confidence 与分差属于 gate 条件，不能被忽略或人工豁免。失败一律自动路由回当前阶段 executor 或 scorer 修复；同阶段 3 次失败自动升级到上一阶段；上游再失败继续向上直到 spec。修复循环必须有界：默认 `max_stage_attempts = 3`，`max_total_gate_failures = 18`。达到全链路上限后输出 `pipeline_blocked` 和 retrospective，不得无限循环。
+
+Workflow self-improvement is allowed only as bounded RSI: create `specs/workflow-improvement/{YYYYMMDD}-{slug}/SPEC.md`, run the same Spec -> Matrix -> Tasks -> Plan -> Prompt -> Code gates, and obey `CONSTITUTION.md` §14 for protected files.
 
 详见 `specs/STRUCTURAL-SCORING.md` 与 `specs/scoring/ARBITER-PROTOCOL.md`。
 
@@ -77,20 +79,31 @@ Confidence 与分差属于 gate 条件，不能被忽略或人工豁免。失败
 | Code | `task-executor` | `code-structural-score` × 3 | `composite_score >= 98` 且无红线、低置信度、异常分差 |
 
 Arbiter agent：`pipeline-arbiter`（三平台均有实现，结果等价）。
-状态目录：`.omx/state/pipeline/{module}/{stage}/{scores/,verdict.json,attempts.json}`。
+状态目录：`.omc/state/pipeline/{module}/{stage}/{scores/,verdict.json,attempts.json}`。
+
+每个阶段在三 LLM 评分后、调用 arbiter 前，必须运行规则引擎评分：
+
+```bash
+python3 scripts/rule-scorer.py <stage> <module>
+# 写入 .omc/state/pipeline/<module>/<stage>/scores/rules.json
+```
+
+`rules.json` 是宪法 §14.4 要求的异构第 4 源；arbiter 期望 4 个 scores/*.json 文件齐全。
 
 ## Execution Rules
 
 1. Work one module at a time.
 2. Do not code from a Draft spec.
-3. **Every stage must pass team-scoring gate (`composite_score >= 98`, no redline, no low confidence, bounded score spread) before advancing. This is the only gate.**
-4. **Every stage uses an agent team: executor + 3 scorers (claude/codex/copilot) + pipeline-arbiter.**
+3. **Every stage must pass team-scoring gate (`composite_score = min(claude, codex, copilot, rules) >= 98`, no redline, no low confidence, bounded score spread, heterogeneous divergence <= 15) before advancing. This is the only gate.**
+4. **Every stage uses an agent team: executor + 3 LLM scorers + rule-scorer.py + pipeline-arbiter.**
 5. Do not skip Matrix or Tasks before Plan.
 6. Do not ask `task-executor` to implement more than one task unless the user explicitly requests a batch.
 7. When using `--stage`, verify upstream artifacts AND upstream verdicts (`verdict.json` gate=pass) exist first.
 8. When using `--from`, resume from that stage; downstream `verdict.json` and `scores/` must be re-generated.
 9. Update `TRACEABILITY.md` and task status after each code task.
 10. Never bypass scoring gate by editing `verdict.json` manually. There is no human override path.
+11. Enforce bounded RSI: after 3 failed attempts in one stage, escalate upstream; after 18 total gate failures, write `pipeline_blocked` plus `PIPELINE-RETROSPECTIVE.md` and stop automatic advancement.
+12. Do not modify protected workflow/rubric/agent/arbiter files through normal repair routing. Open a workflow-improvement spec and apply `CONSTITUTION.md` §14.
 
 ## Repair Routing
 
@@ -107,7 +120,7 @@ Arbiter agent：`pipeline-arbiter`（三平台均有实现，结果等价）。
 Per-stage state under:
 
 ```text
-.omx/state/pipeline/{module}/{stage}/
+.omc/state/pipeline/{module}/{stage}/
 ├── scores/
 │   ├── claude.json   ├── claude.md
 │   ├── codex.json    ├── codex.md
@@ -119,7 +132,10 @@ Per-stage state under:
 Top-level pipeline state:
 
 ```text
-.omx/state/pipeline/{module}.json
+.omc/state/pipeline/{module}.json
+.omc/state/pipeline/{module}/repair-budget.json
+.omc/state/pipeline/{module}/pipeline_blocked.json
+specs/{module}/PIPELINE-RETROSPECTIVE.md
 ```
 
 ## Final Report

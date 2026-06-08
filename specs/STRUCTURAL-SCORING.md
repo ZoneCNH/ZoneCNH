@@ -19,17 +19,21 @@
 
 ---
 
-## 2. 三平台并行评分
+## 2. 四源并行评分（三 LLM + 一规则引擎）
 
-每个阶段必须由 **三个独立平台** 并行评分：
+每个阶段必须由 **三个独立 LLM 平台 + 一个规则引擎** 并行评分：
 
-| 平台 | Agent 路径 | 模型 |
+| 源 | 路径 | 模型/类型 |
 |------|------------|------|
 | Claude Code | `.claude/agents/{stage}-structural-score.md` | Opus |
 | Codex | `.codex/agents/{stage}-structural-score.toml` | gpt-5.5 high |
 | Copilot CLI | `.copilot/agents/{stage}-structural-score.md` | Claude Opus 4.7 |
+| Rules（异构）| `scripts/rule-scorer.py` | 纯 Python 规则引擎，零 LLM |
 
-三个平台必须读取相同 rubric，独立打分，互相不可见对方结果。
+三个 LLM 平台必须读取相同 rubric，独立打分，互相不可见对方结果。
+规则引擎不读 rubric 文本，按宪法 §14.4 要求作为**异构信号源**打破同源相关性：
+若 `abs(rules.score - median(llm_scores)) > 15`，仲裁器记录 `heterogeneous_divergence`
+失败并路由 meta-arbiter 诊断（可能是 Goodhart 信号）。
 
 ---
 
@@ -38,7 +42,7 @@
 每个 scorer 必须输出符合以下 schema 的 JSON 报告，写入：
 
 ```text
-.omx/state/pipeline/{module}/{stage}/scores/{platform}.json
+.omc/state/pipeline/{module}/{stage}/scores/{platform}.json
 ```
 
 Schema：
@@ -74,7 +78,7 @@ Schema：
 
 | 规则 | 阈值 |
 |------|------|
-| 门禁公式 | `composite_score = min(claude.score, codex.score, copilot.score)` 且 `composite_score >= 98` |
+| 门禁公式 | `composite_score = min(claude.score, codex.score, copilot.score, rules.score)` 且 `composite_score >= 98` |
 | 红线 | 任一平台 `redline: true` → 阻塞 |
 | 置信度 | 任一平台 `confidence: low` → 阻塞并重评 |
 | 分差 | `max(score) - min(score) > 5` → 阻塞并进入评分差异调解 |
@@ -84,15 +88,16 @@ Schema：
 仲裁输出写入：
 
 ```text
-.omx/state/pipeline/{module}/{stage}/verdict.json
+.omc/state/pipeline/{module}/{stage}/verdict.json
 ```
 
 ```json
 {
   "stage": "matrix",
-  "scores": { "claude": 97, "codex": 99, "copilot": 98 },
-  "min": 97,
+  "scores": { "claude": 97, "codex": 99, "copilot": 98, "rules": 96 },
+  "min": 96,
   "max": 99,
+  "heterogeneous_divergence": 2,
   "redlines": [],
   "gate": "fail",
   "reason": "min(97) < 98",
@@ -100,7 +105,7 @@ Schema：
 }
 ```
 
-`gate=pass` 才允许进入下一阶段。`gate=fail` 自动路由回当前阶段 executor 修复，循环至通过。
+`gate=pass` 才允许进入下一阶段。`gate=fail` 自动路由回当前阶段 executor 修复；修复循环受第 7 节 attempt 与全链路 repair budget 限制。
 
 ---
 
@@ -132,16 +137,30 @@ Schema：
 
 ---
 
-## 7. 失败循环
+## 7. 有界失败循环
 
 同一阶段连续 3 次仲裁失败自动路由到上游阶段重新生成产物：
 
 - Code 失败 3 次 → 自动回 Prompt
 - Prompt 失败 3 次 → 自动回 Plan
 - 一路向上直到 Spec
-- Spec 失败时由 `spec` executor 重写后继续重跑评分
+- Spec 失败时由 `spec` executor 重写后继续重跑评分，但仍计入全链路 repair budget
 
-**全流程自动循环，无人工接管。** 终止条件唯一：三平台仲裁 `gate=pass`。
+默认限制：
+
+```text
+max_stage_attempts = 3
+max_total_gate_failures = 18
+```
+
+推进下一阶段的唯一条件是三平台仲裁 `gate=pass`。自动修复循环还有独立停止条件：达到 `max_total_gate_failures` 后，arbiter 必须输出 `pipeline_blocked`，生成 retrospective，并停止自动推进；不得用无限重写 Spec 的方式绕过结构性缺陷。
+
+阻塞状态必须写入：
+
+```text
+.omc/state/pipeline/{module}/pipeline_blocked.json
+specs/{module}/PIPELINE-RETROSPECTIVE.md
+```
 
 ---
 
@@ -159,9 +178,11 @@ Schema：
 
 本评分体系本身受 `CONSTITUTION.md` 第十四条约束：
 
-- **受保护文件清单**（见宪法 §14.1）：`specs/scoring/RUBRIC-*.md`、本文件、`ARBITER-PROTOCOL.md`、`.claude/agents/`、`.codex/agents/`、`.copilot/agents/`、`.omx/state/outer-metrics/`、`CONSTITUTION.md`。所有 LLM agent **只读**。
-- **外部指标只读**（宪法 §14.2）：`.omx/state/outer-metrics/` 由 CI / 生产观测 / git 历史 / 人类维护者写入；任何 scorer、arbiter、executor 均不得写入。
+- **受保护文件清单**（见宪法 §14.1）：`specs/scoring/RUBRIC-*.md`、本文件、`ARBITER-PROTOCOL.md`、`.claude/agents/`、`.codex/agents/`、`.copilot/agents/`、`.omc/state/outer-metrics/`、`CONSTITUTION.md`。所有 LLM agent **只读**。
+- **外部指标只读**（宪法 §14.2）：`.omc/state/outer-metrics/` 由 CI / 生产观测 / git 历史 / 人类维护者写入；任何 scorer、arbiter、executor 均不得写入。
 - **合法 RSI 流程**（宪法 §14.3）：修改受保护文件必须经过 fork → A/B → outer-metric 评判 → 人类批准。
 - **Goodhart 防线**（宪法 §14.4）：scorer 评分与 outer metric 相关性低于阈值时自动冻结，触发 RSI 审议。
+
+普通阶段产物的 RSI 是自动修复；评分体系、rubric、agent、arbiter、工作流入口等受保护文件的 RSI 是元级改进流程。后者必须先创建 `specs/workflow-improvement/{YYYYMMDD}-{slug}/SPEC.md` 并通过同一条管线，再执行宪法 §14.3 的 fork、A/B、outer metric 与人类批准。
 
 `composite_score >= 98` 仅是必要条件，不构成自我授权修改评分体系的依据。
