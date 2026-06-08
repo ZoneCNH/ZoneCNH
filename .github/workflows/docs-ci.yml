@@ -175,10 +175,11 @@ jobs:
 
   # ── 11. Outer Metrics 写入源守卫（宪法 §14.2） ──────────────
   # 禁止 LLM agent 修改 .omc/state/outer-metrics/；只允许 github-actions[bot]
-  # 或带 [outer-metrics] 标记的提交。
+  # 或带 [outer-metrics] 标记的提交。仅在 PR 上运行（push 已合并不再守卫）。
   outer-metrics-guard:
     name: Outer Metrics Guard
     runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
     steps:
       - uses: actions/checkout@v4
         with:

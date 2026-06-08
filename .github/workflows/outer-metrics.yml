@@ -60,19 +60,27 @@ jobs:
             echo "goodhart=false" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: 提交 outer-metrics 变更
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add .omc/state/outer-metrics/
-          if git diff --cached --quiet; then
-            echo "无变更"
-            exit 0
-          fi
-          git commit -m "[outer-metrics] scheduled update via outer-metrics-eval.sh
+      - name: 创建 outer-metrics PR
+        uses: peter-evans/create-pull-request@v7
+        with:
+          commit-message: |
+            [outer-metrics] scheduled update via outer-metrics-eval.sh
 
-          Co-authored-by: outer-metrics-eval.sh <noreply@github.com>"
-          git push
+            Co-authored-by: outer-metrics-eval.sh <noreply@github.com>
+          title: "[outer-metrics] 定时指标更新"
+          body: |
+            由 `.github/workflows/outer-metrics.yml` 自动生成的 outer-metrics 更新。
+
+            - 数据来源：`scripts/outer-metrics-from-git.sh` + `scripts/outer-metrics-eval.sh`
+            - 受宪法 §14.2 保护：本 PR 由 `github-actions[bot]` 签发，validate.sh 应放行。
+
+            如 outer-metrics-guard 报错，请检查 commit message 是否含 `[outer-metrics]` 标记。
+          branch: outer-metrics/auto-update
+          delete-branch: true
+          add-paths: |
+            .omc/state/outer-metrics/**
+          author: "github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>"
+          committer: "github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>"
 
       - name: 触发 RSI Issue（Goodhart 信号）
         if: steps.eval.outputs.goodhart == 'true'
