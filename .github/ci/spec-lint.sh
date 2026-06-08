@@ -2,7 +2,7 @@
 # spec-lint.sh — 校验所有 specs/*/SPEC.md 的结构完整性
 #
 # 检查逻辑：
-#   1. 23 节检查：每个 spec 必须包含且仅包含 ## 1. 到 ## 23. 的节标题
+#   1. 23 节检查：每个 spec 必须按序包含 ## 1. 到 ## 23.，其后允许 ## Appendix A: 附录
 #   2. WHEN/THEN 覆盖：每个 FR 至少有 1 条 WHEN
 #   3. 模糊词检测：grep 模糊词列表，发现则 WARN
 #   4. FR 编号连续：FR-001 到 FR-{N} 无跳号
@@ -66,29 +66,44 @@ check_spec() {
   module=$(basename "$(dirname "$spec_file")")
   local issues=()
 
-  # 1. 23 节检查
-  local missing_sections=()
-  for s in $EXPECTED_SECTIONS; do
-    if ! grep -qP "^## ${s}\." "$spec_file"; then
-      missing_sections+=("$s")
-    fi
-  done
-  if [[ ${#missing_sections[@]} -gt 0 ]]; then
-    issues+=("❌ missing sections: ${missing_sections[*]}")
-    FAIL=1
-  fi
-
+  # 1. 23 节检查：§1..§23 必须存在且按序；其后允许 Appendix H2
   local section_count
-  section_count=$(grep -cP "^## \d+\." "$spec_file" || true)
-  if [[ "$section_count" -ne 23 ]]; then
-    issues+=("❌ top-level numbered section count is $section_count, expected 23")
+  local h2_issues
+  h2_issues=$(
+    grep -n '^## ' "$spec_file" | awk '
+      BEGIN { expected = 1 }
+      {
+        line_no = $0
+        sub(/:.*/, "", line_no)
+        line = $0
+        sub(/^[0-9]+:/, "", line)
+        if (expected <= 23) {
+          pattern = "^## " expected "\\. "
+          if (line !~ pattern) {
+            printf "%s: expected ## %d. as top-level section %d, found: %s\n", line_no, expected, expected, line
+          }
+          expected++
+        } else if (line !~ /^## Appendix [A-Z]: /) {
+          printf "%s: expected Appendix H2 after §23, found: %s\n", line_no, line
+        }
+      }
+      END {
+        if (expected <= 23) {
+          printf "EOF: missing top-level numbered sections %d..23\n", expected
+        }
+      }
+    '
+  )
+  section_count=$(grep -cP '^## ([1-9]|1[0-9]|2[0-3])\. ' "$spec_file" || true)
+  if [[ -n "$h2_issues" ]]; then
+    issues+=("❌ invalid H2 section order: $(echo "$h2_issues" | paste -sd ';' -)")
     FAIL=1
   fi
 
   local invalid_h2
-  invalid_h2=$(grep -nP '^## (?!([1-9]|1[0-9]|2[0-3])\.)' "$spec_file" || true)
+  invalid_h2=$(grep -nP '^## (2[4-9]|[3-9][0-9]|[1-9][0-9]{2,})\. ' "$spec_file" || true)
   if [[ -n "$invalid_h2" ]]; then
-    issues+=("❌ extra or out-of-range H2 sections: $(echo "$invalid_h2" | paste -sd ';' -)")
+    issues+=("❌ out-of-range numbered H2 sections: $(echo "$invalid_h2" | paste -sd ';' -)")
     FAIL=1
   fi
 

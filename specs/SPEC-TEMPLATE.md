@@ -529,16 +529,27 @@ type {InterfaceName} interface {
 
 ---
 
+### 附录区（可选）
+
+当 spec 内容超出 23 节标准结构时，可在最后追加附录章节：
+- 编号使用 `## Appendix A: 标题` / `## Appendix B: 标题` ... 字母序，**不**使用 `## 24. ...`；
+- 附录内容仅用于参考性映射、历史溯源、关键数字汇总等**非规范性**材料；
+- 规范性条款（FR / BR / AC / NFR / TC）必须留在 §1–§23 内，附录不得引入新的规范条款；
+- 附录子节使用 `### Appendix X.1` / `### Appendix X.2`，不强制层级深度。
+
+---
+
 ## 使用指南
 
 1. 复制本文件为 `specs/{module}/SPEC.md`
 2. 填写 Metadata，设置 `Status: Draft`
 3. 按 23 节顺序填写内容
-4. 确保每个 FR 有 WHEN/THEN
-5. 确保每个 BR 有"违反时"处理
-6. 确保每个 TC 对应至少一个 FR
-7. 运行 `spec-lint.sh` 验证结构
-8. 提交 PR，进入 Review
+4. 如需补充非规范性材料，可在 §23 后追加 `## Appendix A: ...` 附录区
+5. 确保每个 FR 有 WHEN/THEN
+6. 确保每个 BR 有"违反时"处理
+7. 确保每个 TC 对应至少一个 FR
+8. 运行 `spec-lint.sh` 验证结构
+9. 提交 PR，进入 Review
 
 ---
 
