@@ -2,6 +2,10 @@
 
 本文件说明 Claude Code 在本仓库中工作时应遵循的约束。
 
+## 最高指令源
+
+当本文件与 `CONSTITUTION.md` 冲突时，以 `CONSTITUTION.md` 为准。`CONSTITUTION.md` 是系统级最高治理文件，定义了模块实现（§1-§14）和交付管线（§15-§19）的技术标准。本文件仅规定仓库级操作约定（文档同步、提交格式、安全红线）。
+
 ## 本仓库定位
 
 本仓库是 ZoneCNH 的 `FoundationX` 量化交易基础设施文档枢纽，也是 `ZoneCNH/ZoneCNH` GitHub 个人主页仓库，其中 `README.md` 会渲染到个人主页。
@@ -10,7 +14,7 @@
 
 - `README.md`：个人主页、技术栈、分层架构摘要和组件仓库索引。
 - `ARCHITECTURE.md`：依赖拓扑、领域职责、设计原则和状态表的权威文档。
-- `CONSTITUTION.md`：模块宪法 — 13 条治理条款，AI 代理和人类贡献者的最高权威参考。
+- `CONSTITUTION.md`：模块宪法 — §0-§19 治理条款（含分支纪律、十三条设计原则、交付管线、CRI），AI 代理和人类贡献者的最高权威参考。
 - `AGENTS.md` / `CLAUDE.md`：面向自动化代理和贡献者的工作指南。
 
 实际实现位于 `github.com/ZoneCNH` 下约 70 个独立仓库，例如 `kernel`、`binance`、`factor-engine`、`risk-engine`、`x.go`。本仓库只描述和链接这些模块，不承载它们的源码。
@@ -42,10 +46,19 @@
 
 编辑时必须保留 `ARCHITECTURE.md` 中九条核心设计原则的意图：策略只能通过 `risk-engine` 提交订单；回测与实盘共享因子、信号和风控代码；`contracts` 定义跨域接口；数据不跨域；`order-engine` 抽象交易所差异；`x.go` 只做编排；域内模块平级协作；反馈通过事件表达；领域语义沉到 L2.5。
 
+## 分支纪律（最高优先级）
+
+> 详见 `CONSTITUTION.md` 第零条。本条优先级高于以下所有条款。
+
+- **禁止**在 `main` 分支上直接编辑文件或提交变更。
+- 所有开发工作必须通过 `git worktree` 或 feature branch 进行。
+- 工作完成后通过 PR 或 merge 合入 main，随后清理 worktree。
+- 仅 `git merge`/`git rebase`/`git pull` 和紧急 hotfix 允许在 main 上执行。
+
 ## 约定
 
 - **语言**：Claude 的所有回复、文档和提交信息默认使用中文，英文保留给仓库名、模块名、命令和标准技术术语。
 - **提交**：使用 Conventional Commits 前缀和中文描述，例如 `docs:`、`feat:`、`refactor:`、`fix:`。
 - **链接**：引用组件时，使用既有表格风格的 `https://github.com/ZoneCNH/<repo>` 链接。
-- **规格标准**：模块规格遵循 `CONSTITUTION.md` 第四条，采用 23 节结构（行为规格 WHEN/THEN、接口契约、业务规则、错误处理、边界场景、验收标准等）。模板见 `module/README.md`。
+- **规格标准**：模块规格遵循 `CONSTITUTION.md` 第四条，采用 23 节结构（行为规格 WHEN/THEN、接口契约、业务规则、错误处理、边界场景、验收标准等）。模板见 `module/README.md`。追溯矩阵规范见 `docs/governance/TRACEABILITY.md`，具体矩阵位于 `module/{module}/TRACEABILITY.md`。
 - **安全**：不要提交凭证、API key、账户 ID、私有端点或实盘交易配置。
