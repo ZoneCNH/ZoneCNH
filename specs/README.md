@@ -40,7 +40,7 @@ stdlib-only 基础原语。所有上层模块的根依赖。
 | 模块       | 规格                            | 核心职责                                                                        |
 | ---------- | ------------------------------- | ------------------------------------------------------------------------------- |
 | configx    | [SPEC.md](./configx/SPEC.md) · [tasks/](./configx/tasks/) | Reader/Config/Option、多源合并、schema 校验、环境变量覆盖、Watch（5 FR，10 tasks） |
-| observex   | [SPEC.md](./observex/SPEC.md)   | Logger/Meter/Tracer/Exporter、label policy、metrics 命名规范                    |
+| observex   | [SPEC.md](./observex/SPEC.md) · [tasks/](./observex/tasks/) | Logger/Meter/Tracer/Exporter、Redaction、Label Policy、Health（7 FR，11 tasks） |
 | resiliencx | [SPEC.md](./resiliencx/SPEC.md) | Policy/Executor/Breaker、策略链（rate→bulkhead→circuit→timeout→retry→fallback） |
 | schedulex  | [SPEC.md](./schedulex/SPEC.md)  | Scheduler/Job/Trigger/Locker、overlap/misfire 策略、DST 处理                    |
 
