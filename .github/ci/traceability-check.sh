@@ -3,12 +3,13 @@
 #
 # 检查逻辑：
 #   1. 模块覆盖：必须包含所有 Foundation 模块 + xgo
-#   2. FR 覆盖：每个 spec 的 FR 在追踪表中都有对应行
+#   2. FR 覆盖：每个模块的 FR 参考文件在追踪表中都有对应行
 #   3. AC 非空：每个 FR 行的 Acceptance Criteria 列不为 "-"
 #   4. TC 非空：每个 FR/BR 行的 Test Case 列不为 "-"
 #   5. Status 有效：Status 列只能是 ⬜ / 🔵 / ✅ / ❌ / ⏭️
-#   6. TC 引用：TRACEABILITY.md 中的 TC-### 必须存在于对应 SPEC.md
-#   7. 交叉验证：TRACEABILITY.md 中的 FR 数量与对应 spec 一致
+#   6. TC 引用：TRACEABILITY.md 中的 TC-### 必须存在于对应 SPEC.md；
+#      没有当前 SPEC.md 的快照型模块跳过此引用存在性检查
+#   7. 交叉验证：TRACEABILITY.md 中的 FR 数量与对应 FR 参考文件一致
 #   8. TRACEABILITY_STRICT=1 时警告升级为失败
 
 set -euo pipefail
@@ -29,6 +30,15 @@ REQUIRED_MODULES="kernel configx resiliencx observex schedulex testkitx xlibgate
 check_module() {
   local module="$1"
   local spec_file="$SPEC_DIR/$module/SPEC.md"
+  local fr_reference_file="$spec_file"
+  local tc_reference_file="$spec_file"
+
+  # xlib-standard 当前在本仓库内是上游分析快照，不再以旧 SPEC.md
+  # 作为 FR 分母；52 条 FR 的行为明细以 FR-DETAIL.md 为准。
+  if [[ "$module" == "xlib-standard" && -f "$SPEC_DIR/xlib-standard/FR-DETAIL.md" ]]; then
+    fr_reference_file="$SPEC_DIR/xlib-standard/FR-DETAIL.md"
+    tc_reference_file=""
+  fi
 
   # 检查追踪表中是否有该模块的 section
   if ! grep -qP "^## ${module}$" "$TRACE_FILE" && ! grep -qP "^## ${module}\b" "$TRACE_FILE"; then
@@ -37,10 +47,10 @@ check_module() {
     return
   fi
 
-  # 从 spec 文件提取 FR 数量
+  # 从当前模块的 FR 参考文件提取 FR 数量。
   local spec_fr_count=0
-  if [[ -f "$spec_file" ]]; then
-    spec_fr_count=$(grep -oP "FR-\d+" "$spec_file" | sort -u | wc -l)
+  if [[ -f "$fr_reference_file" ]]; then
+    spec_fr_count=$(grep -oP "FR-\d+" "$fr_reference_file" | sort -u | wc -l)
   fi
 
   # 从追踪表提取该模块的 FR 行数
@@ -113,7 +123,8 @@ check_module() {
   fi
 
   # 检查 TRACEABILITY.md 引用的 TC 是否存在于对应 SPEC.md。
-  if [[ -f "$spec_file" ]]; then
+  # 快照型模块可以没有本地 SPEC.md，因此跳过此引用存在性检查。
+  if [[ -n "$tc_reference_file" && -f "$tc_reference_file" ]]; then
     local missing_tc=0
     local referenced_tcs
     referenced_tcs=$(awk -F'|' -v m="$module" '
@@ -129,7 +140,7 @@ check_module() {
     ' "$TRACE_FILE" | sort -u)
 
     for tc in $referenced_tcs; do
-      if ! grep -q "\\*\\*$tc:" "$spec_file"; then
+      if ! grep -q "\\*\\*$tc:" "$tc_reference_file"; then
         echo "  ❌ $module: $tc referenced in TRACEABILITY.md but missing from SPEC.md"
         missing_tc=1
       fi

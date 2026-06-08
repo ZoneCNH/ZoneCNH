@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# spec-lint.sh — 校验所有 specs/*/SPEC.md 的结构完整性
+# spec-lint.sh — 校验 specs/*/SPEC.md 与特殊分析快照的结构完整性
 #
 # 检查逻辑：
 #   1. 23 节检查：每个 spec 必须按序包含 ## 1. 到 ## 23.，其后允许 ## Appendix A: 附录
@@ -9,7 +9,8 @@
 #   5. Non-goals 非空：Section 4 至少有 1 条
 #   6. Metadata 必填项：Status / Spec-Version / Last-Updated 符合生命周期规范
 #   7. Markdown fence 结束标记必须为裸 ```
-#   8. xlib-standard 追溯证据类型与摘要口径一致
+#   8. xlib-standard 分析快照使用 ANALYSIS.md / FR-DETAIL.md / TRACEABILITY.md 门禁，
+#      不再把归档 SPEC.md 当作当前权威规格入口
 
 set -euo pipefail
 
@@ -56,6 +57,42 @@ check_markdown_fences() {
   if [[ -n "$output" ]]; then
     echo "  ❌ $rel_path has invalid fenced code block markers:"
     echo "$output" | sed 's/^/     - /'
+    FAIL=1
+  fi
+}
+
+check_numbered_h2_sequence() {
+  local md_file="$1"
+  local rel_path="${md_file#$REPO_ROOT/}"
+  local h2_issues
+
+  h2_issues=$(
+    (grep -nP '^## [0-9]+\. ' "$md_file" || true) | awk '
+      BEGIN { expected = 1 }
+      {
+        line_no = $0
+        sub(/:.*/, "", line_no)
+        line = $0
+        sub(/^[0-9]+:/, "", line)
+        num = line
+        sub(/^## /, "", num)
+        sub(/\..*/, "", num)
+        if ((num + 0) != expected) {
+          printf "%s: expected ## %d. as numbered H2, found: %s\n", line_no, expected, line
+        }
+        expected++
+      }
+      END {
+        if (expected == 1) {
+          printf "EOF: no numbered H2 sections found\n"
+        }
+      }
+    '
+  )
+
+  if [[ -n "$h2_issues" ]]; then
+    echo "  ❌ $rel_path has invalid numbered H2 sequence:"
+    echo "$h2_issues" | sed 's/^/     - /'
     FAIL=1
   fi
 }
@@ -214,12 +251,95 @@ check_xlib_standard_artifacts() {
   local xlib_dir="$SPEC_DIR/xlib-standard"
   [[ -d "$xlib_dir" ]] || return
 
-  local md_name
-  for md_name in SPEC.md COVERAGE-MANIFEST.md TRACEABILITY.md README.md REVIEW-VERDICT.md; do
-    if [[ -f "$xlib_dir/$md_name" ]]; then
-      check_markdown_fences "$xlib_dir/$md_name"
+  local required_files=(
+    README.md
+    ANALYSIS.md
+    FR-DETAIL.md
+    INDEX.md
+    TRACEABILITY.md
+    CONFLICT-LEDGER.md
+    SNAPSHOT-BOUNDARY.md
+    COVERAGE-MANIFEST.md
+    REMOTE-EVIDENCE.md
+    REVIEW-VERDICT.md
+    analysis/rules.md
+    analysis/template.md
+    analysis/runtime.md
+    analysis/governance.md
+  )
+
+  local rel_file
+  local missing=0
+  for rel_file in "${required_files[@]}"; do
+    if [[ ! -f "$xlib_dir/$rel_file" ]]; then
+      echo "  ❌ specs/xlib-standard/$rel_file is required for the analysis snapshot"
+      FAIL=1
+      missing=1
     fi
   done
+  [[ "$missing" -eq 0 ]] || return
+
+  for rel_file in "${required_files[@]}"; do
+    check_markdown_fences "$xlib_dir/$rel_file"
+  done
+
+  if [[ -f "$xlib_dir/SPEC.md" ]]; then
+    check_markdown_fences "$xlib_dir/SPEC.md"
+  fi
+
+  check_numbered_h2_sequence "$xlib_dir/ANALYSIS.md"
+
+  local snapshot_file
+  for snapshot_file in README.md ANALYSIS.md INDEX.md analysis/rules.md analysis/template.md analysis/runtime.md analysis/governance.md; do
+    if ! grep -qP '不是.*可执行规格|不.*声明.*可执行规格|不.*作为.*可执行规格' "$xlib_dir/$snapshot_file"; then
+      echo "  ❌ specs/xlib-standard/$snapshot_file must state that it is not an executable spec"
+      FAIL=1
+    fi
+  done
+
+  if ! grep -qP 'Upstream Commit \| `[0-9a-f]{40}`' "$xlib_dir/README.md"; then
+    echo "  ❌ specs/xlib-standard/README.md must pin the upstream commit with a full 40-char sha"
+    FAIL=1
+  fi
+
+  for rel_file in ANALYSIS.md FR-DETAIL.md TRACEABILITY.md; do
+    if ! grep -q "$rel_file" "$xlib_dir/README.md"; then
+      echo "  ❌ specs/xlib-standard/README.md must list $rel_file as a current artifact"
+      FAIL=1
+    fi
+  done
+
+  if [[ -f "$xlib_dir/SPEC.md" ]]; then
+    if ! grep -qP 'SPEC\.md.*(旧|归档|历史)' "$xlib_dir/README.md"; then
+      echo "  ❌ specs/xlib-standard/README.md must classify SPEC.md as legacy/archived"
+      FAIL=1
+    fi
+    if ! grep -qP '归档说明.*不再作为.*可执行规格' "$xlib_dir/SPEC.md"; then
+      echo "  ❌ specs/xlib-standard/SPEC.md must carry an archived/non-authoritative notice"
+      FAIL=1
+    fi
+  fi
+
+  local fr_detail_file="$xlib_dir/FR-DETAIL.md"
+  local fr_detail_count
+  local detail_when_count
+  local detail_then_count
+  fr_detail_count=$(grep -cP '^### FR-[0-9]{3}\b' "$fr_detail_file" || true)
+  detail_when_count=$(grep -cP '^WHEN\b' "$fr_detail_file" || true)
+  detail_then_count=$(grep -cP '^THEN\b' "$fr_detail_file" || true)
+
+  if [[ "$fr_detail_count" -ne 52 ]]; then
+    echo "  ❌ specs/xlib-standard/FR-DETAIL.md has $fr_detail_count FR detail blocks, expected 52"
+    FAIL=1
+  fi
+  if [[ "$detail_when_count" -ne 104 ]]; then
+    echo "  ❌ specs/xlib-standard/FR-DETAIL.md has $detail_when_count WHEN clauses, expected 104"
+    FAIL=1
+  fi
+  if [[ "$detail_then_count" -ne 104 ]]; then
+    echo "  ❌ specs/xlib-standard/FR-DETAIL.md has $detail_then_count THEN clauses, expected 104"
+    FAIL=1
+  fi
 
   local trace_file="$xlib_dir/TRACEABILITY.md"
   if [[ -f "$trace_file" ]]; then
@@ -269,8 +389,31 @@ check_xlib_standard_artifacts() {
     fi
   fi
 
+  local trace_ids
+  local detail_ids
+  local missing_in_detail
+  local missing_in_trace
+  trace_ids=$(mktemp)
+  detail_ids=$(mktemp)
+  (grep -oP '^\| `\KFR-[0-9]{3}' "$trace_file" || true) | sort -u >"$trace_ids"
+  (grep -oP '^### \KFR-[0-9]{3}' "$fr_detail_file" || true) | sort -u >"$detail_ids"
+  missing_in_detail=$(comm -23 "$trace_ids" "$detail_ids" || true)
+  missing_in_trace=$(comm -13 "$trace_ids" "$detail_ids" || true)
+  rm -f "$trace_ids" "$detail_ids"
+
+  if [[ -n "$missing_in_detail" ]]; then
+    echo "  ❌ xlib-standard FRs present in TRACEABILITY.md but missing from FR-DETAIL.md:"
+    echo "$missing_in_detail" | sed 's/^/     - /'
+    FAIL=1
+  fi
+  if [[ -n "$missing_in_trace" ]]; then
+    echo "  ❌ xlib-standard FRs present in FR-DETAIL.md but missing from TRACEABILITY.md:"
+    echo "$missing_in_trace" | sed 's/^/     - /'
+    FAIL=1
+  fi
+
   if grep -qP 'FR (行级追溯|行级覆盖).*100%|TRACEABILITY 行级覆盖 100%' \
-    "$xlib_dir/SPEC.md" "$xlib_dir/TRACEABILITY.md" "$xlib_dir/README.md" 2>/dev/null; then
+    "$xlib_dir"/*.md "$xlib_dir"/analysis/*.md 2>/dev/null; then
     echo "  ❌ xlib-standard still reports mixed evidence as 100% line-level coverage"
     FAIL=1
   fi
@@ -279,25 +422,117 @@ check_xlib_standard_artifacts() {
     echo "  ❌ specs/xlib-standard/README.md must pin the upstream commit"
     FAIL=1
   fi
+
+  if [[ $FAIL -eq 0 ]]; then
+    echo "  ✅ xlib-standard snapshot: ${fr_detail_count} FR details, ${detail_when_count} WHEN clauses, ${detail_then_count} THEN clauses"
+  fi
 }
 
-# 遍历所有 spec
+# 遍历所有 spec：只扫描含 SPEC.md 的目录，不把分析快照当作可执行规格
 for spec_file in "$SPEC_DIR"/*/SPEC.md; do
-  if [[ -f "$spec_file" ]]; then
-    check_spec "$spec_file"
+  [[ -f "$spec_file" ]] || continue
+  if [[ "$(basename "$(dirname "$spec_file")")" == "xlib-standard" && -f "$SPEC_DIR/xlib-standard/ANALYSIS.md" ]]; then
+    continue
+  fi
+  check_spec "$spec_file"
+done
+
+check_xlib_standard_artifacts
+
+# === Analysis Lint ===
+echo ""
+echo "=== Analysis Lint ==="
+echo ""
+
+ANALYSIS_FAIL=0
+
+for analysis_dir in "$SPEC_DIR"/*/; do
+  [[ -f "$analysis_dir/ANALYSIS.md" ]] || continue
+
+  module=$(basename "$analysis_dir")
+  if [[ "$module" == "xlib-standard" ]]; then
+    # xlib-standard is a non-executable analysis snapshot with a dedicated gate above.
+    continue
+  fi
+  module_fail=0
+
+  # 必备根级文件
+  for required in ANALYSIS.md INDEX.md SNAPSHOT-BOUNDARY.md README.md; do
+    if [[ ! -f "$analysis_dir/$required" ]]; then
+      echo "  ❌ $module: 缺少必备文件 $required"
+      ANALYSIS_FAIL=1
+      module_fail=1
+    fi
+  done
+
+  # ANALYSIS.md 元信息字段
+  for field in "Snapshot-Date" "Upstream-Commit" "Analysis-Version"; do
+    if ! grep -q "^- $field:" "$analysis_dir/ANALYSIS.md"; then
+      echo "  ❌ $module/ANALYSIS.md: 缺少元信息字段 $field"
+      ANALYSIS_FAIL=1
+      module_fail=1
+    fi
+  done
+
+  # ANALYSIS.md 章节序（§1..§9 单调递增）
+  sections=$(grep -E "^## [0-9]+\. " "$analysis_dir/ANALYSIS.md" | sed -E 's/^## ([0-9]+)\..*/\1/' || true)
+  expected=1
+  for n in $sections; do
+    if [[ "$n" != "$expected" ]]; then
+      echo "  ❌ $module/ANALYSIS.md: 章节序错乱（期望 §$expected，实得 §$n）"
+      ANALYSIS_FAIL=1
+      module_fail=1
+      break
+    fi
+    expected=$((expected + 1))
+  done
+
+  # 禁止“本规格”措辞
+  if grep -rln "本规格" "$analysis_dir" >/dev/null 2>&1; then
+    count=$(grep -rln "本规格" "$analysis_dir" | wc -l)
+    echo "  ❌ $module: 仍有 $count 个文件含'本规格'措辞（应使用'本分析'/'上游规格'）"
+    ANALYSIS_FAIL=1
+    module_fail=1
+  fi
+
+  analysis_subdir="${analysis_dir%/}/analysis"
+
+  # 子分析文件 Parent 字段
+  if [[ -d "$analysis_subdir" ]]; then
+    for sub in "$analysis_subdir/"*.md; do
+      [[ -f "$sub" ]] || continue
+      if ! grep -q "^- Parent:" "$sub"; then
+        echo "  ❌ ${sub#$REPO_ROOT/}: 缺少 Parent 字段"
+        ANALYSIS_FAIL=1
+        module_fail=1
+      fi
+    done
+  fi
+
+  if [[ "$module_fail" -eq 0 ]]; then
+    section_count=$(echo "$sections" | wc -w)
+    if [[ -d "$analysis_subdir" ]]; then
+      sub_count=$(find "$analysis_subdir" -maxdepth 1 -type f -name '*.md' 2>/dev/null | wc -l)
+    else
+      sub_count=0
+    fi
+    echo "  ✅ $module: ANALYSIS $section_count sections, $sub_count sub-analyses"
   fi
 done
-check_xlib_standard_artifacts
+
+if [[ "$ANALYSIS_FAIL" -ne 0 ]]; then
+  FAIL=1
+fi
 
 echo ""
 echo "=== 结果 ==="
 if [[ $FAIL -ne 0 ]]; then
-  echo "❌ Spec Lint 失败 — 请修复上述错误"
+  echo "❌ Spec/Analysis Lint 失败 — 请修复上述错误"
   exit 1
 elif [[ $WARN -ne 0 ]]; then
-  echo "⚠️  Spec Lint 通过（有警告）"
+  echo "⚠️  Spec/Analysis Lint 通过（有警告）"
   exit 0
 else
-  echo "✅ Spec Lint 全部通过"
+  echo "✅ Spec/Analysis Lint 全部通过"
   exit 0
 fi
