@@ -21,6 +21,7 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
   issues: write
 
 jobs:
@@ -41,16 +42,22 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y jq
 
       - name: 采集每个模块的 git 指标
+        id: collect
         run: |
+          collected=0
           for module_dir in specs/*/; do
             module=$(basename "$module_dir")
             [[ -f "$module_dir/SPEC.md" ]] || continue
             echo "── 采集 $module"
-            bash scripts/outer-metrics-from-git.sh "$module" HEAD~200 || true
+            if bash scripts/outer-metrics-from-git.sh "$module" HEAD~200; then
+              collected=$((collected + 1))
+            fi
           done
+          echo "collected=$collected" >> "$GITHUB_OUTPUT"
 
       - name: 计算相关系数与 Goodhart 信号
         id: eval
+        if: steps.collect.outputs.collected != '0'
         run: |
           bash scripts/outer-metrics-eval.sh | tee /tmp/eval.log
           if grep -q "触发宪法 §14.3" /tmp/eval.log; then
@@ -61,6 +68,7 @@ jobs:
           fi
 
       - name: 创建 outer-metrics PR
+        if: steps.collect.outputs.collected != '0'
         uses: peter-evans/create-pull-request@v7
         with:
           commit-message: |
