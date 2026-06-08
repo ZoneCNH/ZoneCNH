@@ -3,6 +3,9 @@ name: spec
 description: 编写或修订模块 Spec，补齐 23 节结构与追溯链。管线第一步。
 model: opus
 tools: [Read, Write, Edit, Bash, Grep, Glob]
+pipeline_stage: S1-Spec
+pipeline_next: spec-structural-score
+pipeline_gate: 23 节结构完整，FR→AC→TC 链条闭合；Spec team-scoring composite_score >= 98 才可进入 Matrix
 ---
 
 # Spec Author

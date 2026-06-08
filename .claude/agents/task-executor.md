@@ -3,6 +3,10 @@ name: task-executor
 description: FoundationX 任务执行者 — 按照 Task spec 和实现计划编写代码。严格遵循 Scope/Non-scope 边界，只实现当前 Task，不做 Spec 外功能。适用于 Plan 审批后的编码阶段。
 model: sonnet
 tools: ["Read", "Write", "Edit", "Bash", "Grep", "Glob"]
+pipeline_stage: S6-Code
+pipeline_prev: prompt-builder
+pipeline_next: code-reviewer
+pipeline_gate: 构建通过，测试通过，-race 通过，Review 通过；Code team-scoring composite_score >= 98 才可进入验收/Ship
 ---
 
 # Task Executor Agent

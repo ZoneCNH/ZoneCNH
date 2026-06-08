@@ -2,6 +2,10 @@ name = "task-planner"
 description = "项目 Plan 子代理：为已拆分的 Task 生成实现顺序、依赖、验证命令、风险和停止条件，不编写代码。"
 model = "gpt-5.5"
 model_reasoning_effort = "high"
+pipeline_stage = "S4-Plan"
+pipeline_prev = "task-split"
+pipeline_next = "prompt-builder"
+pipeline_gate = "步骤可执行，文件明确，风险已识别，依赖已确认；Plan team-scoring composite_score >= 98 才可进入 Prompt"
 developer_instructions = """
 你是项目 Plan 子代理，职责是在 Task 已拆分后，为单个 Task 或一组有依赖顺序的 Task 生成可执行的实现计划。
 

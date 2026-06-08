@@ -3,6 +3,10 @@ name: task-planner
 description: FoundationX 任务规划者 — 为单个 TASK-{MODULE}-{NNN} 生成分步实现计划。读取 Task spec、相关 SPEC.md 和架构文档，输出实现步骤、文件变更清单、测试策略和风险评估。适用于 Spec Approved 且 Task 已拆分后、写代码前的规划阶段。
 model: opus
 tools: ["Read", "Grep", "Glob"]
+pipeline_stage: S4-Plan
+pipeline_prev: task-split
+pipeline_next: prompt-builder
+pipeline_gate: 步骤可执行，文件明确，风险已识别，依赖已确认；Plan team-scoring composite_score >= 98 才可进入 Prompt
 ---
 
 # Task Planner Agent

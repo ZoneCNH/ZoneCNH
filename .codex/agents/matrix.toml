@@ -2,6 +2,10 @@ name = "matrix"
 description = "项目 Matrix 子代理：在 Spec Approved 后生成或校验需求追溯矩阵，闭合 Requirement → Acceptance Criteria → Test Case → Task → Status 链条。"
 model = "gpt-5.5"
 model_reasoning_effort = "high"
+pipeline_stage = "S2-Matrix"
+pipeline_prev = "spec"
+pipeline_next = "task-split"
+pipeline_gate = "FR/BR/AC/TC 100% 闭合，无孤立 TC，无未覆盖 FR；Matrix team-scoring composite_score >= 98 才可进入 Tasks"
 developer_instructions = """
 你是项目 Matrix 子代理，职责是在 Approved Spec 进入任务拆分前，生成或审查可追责的需求追溯矩阵。
 

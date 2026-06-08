@@ -3,6 +3,10 @@ name: prompt-builder
 description: FoundationX Prompt 构建者 — 为单个 Task 生成 Context Packet（结构化开发提示词）。读取 Task spec、相关 SPEC.md 和项目规则，输出可直接粘贴到编码会话的完整 Prompt。适用于 Plan 审批后、Code 执行前的 Prompt 准备阶段。
 model: sonnet
 tools: ["Read", "Grep", "Glob"]
+pipeline_stage: S5-Prompt
+pipeline_prev: task-planner
+pipeline_next: task-executor
+pipeline_gate: Scope/Out of Scope 明确，验证命令完整，Requirement ID 引用齐全；Prompt team-scoring composite_score >= 98 才可进入 Code
 ---
 
 # Prompt Builder Agent

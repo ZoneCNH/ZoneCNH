@@ -3,6 +3,10 @@ name: matrix
 description: 生成或校验需求追溯矩阵，闭合 FR/BR/AC/TC 链条。管线第二步。
 model: sonnet
 tools: [Read, Write, Edit, Grep, Glob]
+pipeline_stage: S2-Matrix
+pipeline_prev: spec
+pipeline_next: task-split
+pipeline_gate: FR/BR/AC/TC 100% 闭合，无孤立 TC，无未覆盖 FR；Matrix team-scoring composite_score >= 98 才可进入 Tasks
 ---
 
 # Traceability Matrix Agent

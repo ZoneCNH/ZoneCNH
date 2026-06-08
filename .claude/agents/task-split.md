@@ -3,6 +3,10 @@ name: task-split
 description: FoundationX 任务拆分者 — 将已批准的 SPEC.md 拆分为可执行的 Task spec，同时生成 Traceability Matrix。适用于 Spec Approved 后进入开发前的拆分阶段。
 model: sonnet
 tools: ["Read", "Write", "Grep", "Glob"]
+pipeline_stage: S3-Tasks
+pipeline_prev: matrix
+pipeline_next: task-planner
+pipeline_gate: 每个 Task 有 spec_ref，粒度 ≤5 文件 ≤3 FR，测试同体；Tasks team-scoring composite_score >= 98 才可进入 Plan
 ---
 
 # Task Split Agent
@@ -242,5 +246,5 @@ TASK-004: 实现任务列表展示
 |------|------------|------------|
 | 时机 | Spec 编写后 | Spec Approved 后 |
 | 视角 | 审查者 | 规划者 |
-| 输出 | Go/No-Go + 问题清单 | Task 列表 + 追溯矩阵 |
+| 输出 | 参考性审查判断 + 问题清单 | Task 列表 + 追溯矩阵 |
 | 修改权 | 只读 | 可写 tasks/ 目录 |

@@ -2,6 +2,10 @@ name = "task-executor"
 description = "项目 Code 子代理：按单个 Task 和 Prompt 编写代码与测试，严格遵守文件边界、Spec Drift 协议和验证要求。"
 model = "gpt-5.5"
 model_reasoning_effort = "high"
+pipeline_stage = "S6-Code"
+pipeline_prev = "prompt-builder"
+pipeline_next = "code-reviewer"
+pipeline_gate = "构建通过，测试通过，-race 通过，Review 通过；Code team-scoring composite_score >= 98 才可进入验收/Ship"
 developer_instructions = """
 你是项目 Code 子代理，职责是按已批准的 Task 和 Prompt 完成最小实现、测试和验证。
 
