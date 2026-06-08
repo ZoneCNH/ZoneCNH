@@ -73,7 +73,7 @@ test-only，不参与生产运行时。
 
 | 模块        | 规格                             | 封装目标                            |
 | ----------- | -------------------------------- | ----------------------------------- |
-| redisx      | [SPEC.md](./redisx/SPEC.md)      | Redis — 缓存、分布式锁、Pub/Sub     |
+| redisx      | [SPEC.md](./redisx/SPEC.md) · [tasks/](./redisx/tasks/) | Get/Set/Del/Exists/Expire/HGet/HSet/LPush/LRange/Subscribe/Pipeline/Locker/Health（12 FR，10 tasks） |
 | kafkax      | [SPEC.md](./kafkax/SPEC.md)      | Kafka — 消息队列、事件流            |
 | natsx       | [SPEC.md](./natsx/SPEC.md)       | NATS — 内部通信、JetStream          |
 | postgresx   | [SPEC.md](./postgresx/SPEC.md)   | PostgreSQL — 关系型存储、事务、迁移 |
@@ -89,7 +89,7 @@ test-only，不参与生产运行时。
 
 | 模块      | 规格                           | 核心职责                                                                            |
 | --------- | ------------------------------ | ----------------------------------------------------------------------------------- |
-| contracts | [SPEC.md](./contracts/SPEC.md) | MarketDataProvider/MacroDataProvider 端口、事件协议、DTO 契约、breaking change 检测 |
+| contracts | [SPEC.md](./contracts/SPEC.md) · [tasks/](./contracts/tasks/) | MarketDataProvider/MacroDataProvider、Event、Topic、DTO、Breaking Change（6 FR，5 tasks） |
 
 ---
 
