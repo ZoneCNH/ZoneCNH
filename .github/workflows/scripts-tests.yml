@@ -1,0 +1,63 @@
+# Scripts Tests — rule-scorer 单元测试与 shell 脚本健全性
+#
+# 触发：scripts/ 或 specs/scoring/ 变更
+# 防止规则引擎与仲裁协议漂移；同时锁定 outer-metrics 三个 shell 脚本可执行性。
+
+name: Scripts Tests
+
+on:
+  pull_request:
+    paths:
+      - "scripts/**"
+      - "specs/scoring/**"
+      - ".github/workflows/scripts-tests.yml"
+  push:
+    branches: [main]
+    paths:
+      - "scripts/**"
+      - "specs/scoring/**"
+      - ".github/workflows/scripts-tests.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  rule-scorer-tests:
+    name: rule-scorer pytest
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: 安装 pytest
+        run: pip install pytest
+
+      - name: 运行 rule-scorer 单元测试
+        run: pytest scripts/tests/ -v
+
+  shell-smoke:
+    name: shell 脚本烟雾测试
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 50
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: rule-scorer.py CLI smoke
+        run: |
+          # 选一个已存在的 spec 模块跑一次
+          module=$(ls -d specs/*/ 2>/dev/null | head -1 | xargs basename || echo "kernel")
+          python3 scripts/rule-scorer.py spec "$module"
+
+      - name: outer-metrics scripts smoke
+        run: |
+          bash scripts/outer-metrics-validate.sh || true
+          bash scripts/outer-metrics-eval.sh

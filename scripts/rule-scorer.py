@@ -319,7 +319,7 @@ def score_plan(module: str) -> Score:
 
     required = ["Steps", "Dependencies", "Validation", "Risks", "Rollback"]
     for sect in required:
-        if not re.search(rf"^#{1,3}\s+{sect}", text, re.MULTILINE | re.IGNORECASE):
+        if not re.search(rf"^#{{1,3}}\s+{sect}", text, re.MULTILINE | re.IGNORECASE):
             s.deduct(8, f"plan_missing_{sect.lower()}", f"缺 {sect} 段")
 
     # 步骤可执行性（含 bash 块、文件路径）
