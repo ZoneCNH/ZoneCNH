@@ -1,0 +1,108 @@
+# Outer Metrics CI — 评分体系的外部锚点采集与 Goodhart 检测
+#
+# 触发：合并到 main / 每日定时 / 手动
+# 操作：
+#   1. 对所有模块运行 git-based 指标采集
+#   2. 计算 scorer 评分与真实质量的相关系数
+#   3. 若触发 Goodhart 信号，自动开 Issue（不自动改 rubric）
+#
+# 宪法 §14.2 强制：本 workflow 是 outer-metrics 的合法写入源之一。
+# LLM agent 在 PR 中修改 .omc/state/outer-metrics/ 将被 outer-metrics-validate.sh 阻断。
+
+name: Outer Metrics
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    # 每日 02:30 UTC（北京时间 10:30）
+    - cron: "30 2 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  collect-and-evaluate:
+    name: Collect & Evaluate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # 完整历史用于 git-based 指标
+
+      - name: 设置 Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: 安装 jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+
+      - name: 采集每个模块的 git 指标
+        run: |
+          for module_dir in specs/*/; do
+            module=$(basename "$module_dir")
+            [[ -f "$module_dir/SPEC.md" ]] || continue
+            echo "── 采集 $module"
+            bash scripts/outer-metrics-from-git.sh "$module" HEAD~200 || true
+          done
+
+      - name: 计算相关系数与 Goodhart 信号
+        id: eval
+        run: |
+          bash scripts/outer-metrics-eval.sh | tee /tmp/eval.log
+          if grep -q "触发宪法 §14.3" /tmp/eval.log; then
+            echo "goodhart=true" >> "$GITHUB_OUTPUT"
+            grep "冻结组件:" /tmp/eval.log >> "$GITHUB_OUTPUT" || true
+          else
+            echo "goodhart=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: 提交 outer-metrics 变更
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .omc/state/outer-metrics/
+          if git diff --cached --quiet; then
+            echo "无变更"
+            exit 0
+          fi
+          git commit -m "[outer-metrics] scheduled update via outer-metrics-eval.sh
+
+          Co-authored-by: outer-metrics-eval.sh <noreply@github.com>"
+          git push
+
+      - name: 触发 RSI Issue（Goodhart 信号）
+        if: steps.eval.outputs.goodhart == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const body = `## Goodhart 信号触发\n\n` +
+              `outer-metrics 检测到 scorer 评分与真实质量相关性低于宪法 §14.4 阈值。\n\n` +
+              `请按宪法 §14.3 RSI 流程处理：\n` +
+              `1. Fork 受影响的 rubric / agent 配置到新版本目录\n` +
+              `2. 在至少 3 个模块上跑 A/B\n` +
+              `3. 用 outer-metrics 评判，而非 scorer 自身\n` +
+              `4. 提交 PR 由人类维护者审批\n\n` +
+              `详细数据见 \`.omc/state/outer-metrics/correlation.json\`。`;
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: "[RSI] Goodhart 信号触发：评分体系需要审议",
+              body: body,
+              labels: ["rsi", "anti-goodhart", "constitution-14"]
+            });
+
+  validate-write-source:
+    name: Validate write source (LLM block)
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 拒绝 LLM agent 写入 outer-metrics
+        run: bash scripts/outer-metrics-validate.sh

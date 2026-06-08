@@ -1,5 +1,8 @@
 # Agent runtime directories
-.omc/
+.omc/*
+!.omc/state/
+.omc/state/*
+!.omc/state/outer-metrics/
 .omx/
 .worktree/
 

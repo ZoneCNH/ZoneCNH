@@ -172,3 +172,17 @@ jobs:
 
       - name: 扫描 spec 代码片段违反反需求
         run: bash .github/ci/anti-requirement-scan.sh
+
+  # ── 11. Outer Metrics 写入源守卫（宪法 §14.2） ──────────────
+  # 禁止 LLM agent 修改 .omc/state/outer-metrics/；只允许 github-actions[bot]
+  # 或带 [outer-metrics] 标记的提交。
+  outer-metrics-guard:
+    name: Outer Metrics Guard
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 校验 outer-metrics 写入源合法性
+        run: bash scripts/outer-metrics-validate.sh

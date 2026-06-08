@@ -1,0 +1,31 @@
+{
+  "computed_at": "2026-06-08T01:17:18Z",
+  "window": "last_0_modules",
+  "by_platform": {
+    "claude": {
+      "correlation": null,
+      "modules_evaluated": 0
+    },
+    "codex": {
+      "correlation": null,
+      "modules_evaluated": 0
+    },
+    "copilot": {
+      "correlation": null,
+      "modules_evaluated": 0
+    }
+  },
+  "by_stage": {
+    "spec": null,
+    "matrix": null,
+    "tasks": null,
+    "plan": null,
+    "prompt": null,
+    "code": null
+  },
+  "composite_score_vs_real_quality": null,
+  "goodhart_signal": false,
+  "frozen_components": [],
+  "rsi_recommendation": null,
+  "_note": "由 scripts/outer-metrics-eval.sh 写入。LLM agent 严禁修改。"
+}
