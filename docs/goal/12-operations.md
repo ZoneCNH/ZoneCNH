@@ -27,7 +27,7 @@ Reason: 运营需要按季度分析订单。
 Impact Analysis:
 - Goal: 不变
 - Spec: SPEC-order-export-v1.0 需要更新
-- Matrix: MILE-GOAL-20260601-001-003 需要更新
+- Matrix: REQ-SPEC-order-export-v1.0-003 需要更新
 - Tasks: TASK-GOAL-20260601-001-003 CSV 生成可能受影响
 - Plan: 需要增加性能验证
 - Prompt: PROMPT-TASK-GOAL-20260601-001-003-001 需要更新
@@ -132,28 +132,29 @@ Step 12: Validate Goal  上线后用指标验证 Goal 是否达成
 
 ## 6. 制品版本管理
 
-Goal/Spec/Matrix/Task 等制品通过 Git 管理，遵循以下规范。
+Goal 的规范文档通过 Git 管理；Goal 的运行状态、Registry、Matrix、Evidence 和恢复上下文统一存放在本地 `.config/goal/`，不进入仓库。
 
 ### 6.1 目录结构
 
 ```text
-.agent/
-├── registry/          # Registry YAML 文件
-│   ├── goals.yaml
-│   ├── tasks.yaml
-│   ├── issues.yaml
-│   ├── releases.yaml
-│   ├── risks.yaml
-│   └── decisions.yaml
-├── specs/             # Spec 文件
-├── tasks/             # Task 文件
-├── evidence/          # Evidence 目录（按日期/Task 分组）
+.config/goal/
+├── registry/
+│   ├── goals.yaml         # Goal Registry
+│   ├── tasks.yaml         # Task Registry
+│   ├── issues.yaml        # Issue Registry
+│   ├── releases.yaml      # Release Registry
+│   ├── risks.yaml         # Risk Registry
+│   └── decisions.yaml     # Decision Registry
+├── matrix.yaml            # Traceability Matrix
+├── evidence/              # Evidence 目录（按日期/Task 分组）
 │   └── 2026-06-08/
-│       └── TASK-GOAL-001-001/
+│       └── TASK-GOAL-20260608-001-001/
 │           └── evidence.md
-├── matrix.yaml        # Traceability Matrix
-├── state/             # 运行时状态
-└── context.md         # 上下文恢复文件
+├── state/                 # Goal 运行时状态
+└── context.md             # Goal 上下文恢复文件
+docs/goal/
+├── *.md               # Goal 方法论、门禁、模板和治理文档
+└── tools/             # Goal 检查与生成工具
 ```
 
 ### 6.2 PR 工作流
@@ -161,7 +162,7 @@ Goal/Spec/Matrix/Task 等制品通过 Git 管理，遵循以下规范。
 ```text
 1. 创建分支: goal/<goal-id> 或 task/<task-id>
 2. 修改制品文件
-3. 运行 lint 检查（计划中）: ./docs/goal/tools/lint-goal.sh .agent/
+3. 运行 lint 检查（计划中）: ./docs/goal/tools/lint-goal.sh docs/goal/
 4. 运行 gate 检查（计划中）: ./docs/goal/tools/gate-check.sh .
 5. 提交并推送
 6. PR 描述使用 Release Manifest 模板（见 [17-risk-and-decisions.md §3](17-risk-and-decisions.md#3-release-manifest)）

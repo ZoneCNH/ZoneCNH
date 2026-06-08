@@ -20,6 +20,8 @@
 | Governance Agent | 风险、决策、复盘、Prompt / Harness / Rule Patch |
 | Research Agent | 未知项、外部资料、API 行为、版本变更的 AutoResearch |
 
+> 已实现的 Claude Code Agent 定义文件见 [.claude/agents/goal-*.md](../../.claude/agents/)：`goal-spec`、`goal-matrix`、`goal-reviewer`、`goal-prompt-builder`、`goal-evidence`。
+
 ---
 
 ## 2. Agent Worktree 协议
@@ -36,7 +38,7 @@
 ### 每个 Worktree 必须有
 
 ```text
-.agent-local/
+.config/goal/agent-local/
   context.md          — 上下文恢复文件
   task.md             — 当前任务描述
   registry_snapshot.yaml — Registry 快照
@@ -74,9 +76,9 @@ locks:
 ### 恢复文件
 
 ```text
-.agent/state/current_context.md    — 当前上下文
-.agent/state/execution_state.md    — 执行状态
-.agent/state/last_run_summary.md   — 上轮摘要
+.config/goal/state/current_context.md      — 当前上下文
+.config/goal/state/execution_state.md      — 执行状态
+.config/goal/state/last_run_summary.md     — 上轮摘要
 ```
 
 ### 恢复字段

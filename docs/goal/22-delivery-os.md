@@ -1,5 +1,7 @@
 # Delivery OS 架构
 
+> **状态：愿景架构（Vision）** — 本文档描述目标形态，尚未完整实现。部分能力已通过 Goal Agent（`.claude/agents/goal-*.md`）和 `.config/goal/` 目录落地。
+
 Delivery OS 是把 Goal 工作流从文档方法升级为可执行工程系统的架构。它的公式是：
 
 ```text

@@ -4,6 +4,7 @@
 .omc/state/*
 !.omc/state/outer-metrics/
 .omx/
+.config/
 .worktree/
 
 # Claude Code / Codex — 开放目录结构，屏蔽敏感文件

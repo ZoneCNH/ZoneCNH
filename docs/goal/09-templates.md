@@ -1,13 +1,13 @@
 # 模板库
 
-> **ID 格式说明**：本文档使用新格式 ID（如 GOAL-20260608-001、TASK-GOAL-20260608-001-001），详见 [07-id-system.md](07-id-system.md)。
+> **ID 格式说明**：本文档使用新格式 ID（如 GOAL-20260608-001、TASK-GOAL-20260608-001-001），详见 [07-id-system.md#id-格式](07-id-system.md#1-id-格式)。
 
 ## 1. 端到端模板
 
 可以直接复制使用的完整模板：
 
 ```text
-# Goal → Spec → Matrix → Tasks → Plan → Prompt → Code Template
+# Goal → Spec → Design → Plan → Tasks → Prompt → Code → Test Template
 
 ## 1. Goal
 
@@ -50,7 +50,7 @@ Out of Scope:
 ## 2. Spec
 
 ### Spec ID
-SPEC-<domain>-v<major>.<minor>
+SPEC-<domain>-v1
 
 ### Source Goal
 GOAL-YYYYMMDD-NNN
@@ -59,8 +59,8 @@ GOAL-YYYYMMDD-NNN
 作为【角色】，我希望【能力】，以便【价值】。
 
 ### Functional Requirements
-- FR-001:
-- FR-002:
+- REQ-SPEC-<domain>-v1-001:
+- REQ-SPEC-<domain>-v1-002:
 
 ### Business Rules
 - BR-001:
@@ -83,20 +83,44 @@ GOAL-YYYYMMDD-NNN
 - PERF-002:
 
 ### Acceptance Criteria
-- AC-001:
-- AC-002:
+- AC-REQ-SPEC-<domain>-v1-001-001:
+- AC-REQ-SPEC-<domain>-v1-002-001:
 
 ---
 
-## 3. Matrix
+## 3. Design
 
-| Goal ID | Spec ID | Requirement | Acceptance Criteria | Task ID | Prompt ID | Code Module | Test Case | Status |
-|---|---|---|---|---|---|---|---|---|
-| GOAL-YYYYMMDD-NNN | SPEC-<domain>-v<major>.<minor> | REQ-SPEC-NNN | AC-REQ-NNN | TASK-GOAL-YYYYMMDD-NNN-NNN | P-<task-id>-NNN |  | TC-NNN | Todo |
+### Design ID
+DESIGN-<domain>-v1.0
+
+### Source Spec
+SPEC-<domain>-v1
+
+### Modules
+- 【模块 1】
+- 【模块 2】
+
+### Interfaces
+- 【接口 1】
+- 【接口 2】
+
+### Data Flow / Dependencies / ADR / Risks
 
 ---
 
-## 4. Tasks
+## 4. Plan
+
+### Plan ID
+PLAN-GOAL-YYYYMMDD-NNN-v1
+
+### Source Goal
+GOAL-YYYYMMDD-NNN
+
+### Execution Strategy / Phases / Risks / Rollback / Final Validation
+
+---
+
+## 5. Tasks
 
 ### Task ID
 TASK-GOAL-YYYYMMDD-NNN-NNN
@@ -105,7 +129,7 @@ TASK-GOAL-YYYYMMDD-NNN-NNN
 【任务名称】
 
 ### Source
-Goal: GOAL-YYYYMMDD-NNN / Spec: SPEC-<domain>-v<major>.<minor>
+Goal: GOAL-YYYYMMDD-NNN / Spec: SPEC-<domain>-v1 / Plan: PLAN-GOAL-YYYYMMDD-NNN-v1
 
 ### Objective
 【任务目标】
@@ -114,21 +138,29 @@ Goal: GOAL-YYYYMMDD-NNN / Spec: SPEC-<domain>-v<major>.<minor>
 
 ---
 
-## 5. Plan
+## 6. Matrix（横切追溯表）
 
-### Plan Name / Source Goal / Execution Strategy / Phases / Risks / Rollback
+| Goal ID | Spec ID | Requirement | Acceptance Criteria | Task ID | Prompt ID | Code Module | Test Case | Status |
+|---|---|---|---|---|---|---|---|---|
+| GOAL-YYYYMMDD-NNN | SPEC-<domain>-v1 | REQ-SPEC-<domain>-v1-001 | AC-REQ-SPEC-<domain>-v1-001-001 | TASK-GOAL-YYYYMMDD-NNN-NNN | PROMPT-TASK-GOAL-YYYYMMDD-NNN-NNN-NNN |  | TEST-TASK-GOAL-YYYYMMDD-NNN-NNN-NNN | Unmapped |
 
 ---
 
-## 6. Prompt
+## 7. Prompt
 
 ### Prompt ID / Role / Source / Context / Objective / Requirements / Constraints / Output / Acceptance Criteria / Test Requirements / Do Not
 
 ---
 
-## 7. Code Delivery
+## 8. Code Delivery
 
 ### Code Module / Source / Changes / Tests / Validation Result / Matrix Update
+
+---
+
+## 9. Test Evidence
+
+### Test Cases / Commands / Results / Evidence ID / Matrix Update
 ```
 
 ---
@@ -141,7 +173,7 @@ Goal: GOAL-YYYYMMDD-NNN / Spec: SPEC-<domain>-v<major>.<minor>
 
 ## Source
 Goal: GOAL-20260608-001 新增邮箱验证码登录能力
-Spec: SPEC-auth-v1.0 邮箱验证码登录
+Spec: SPEC-auth-v1 邮箱验证码登录
 Tasks: TASK-GOAL-20260608-001-001, TASK-GOAL-20260608-001-002, TASK-GOAL-20260608-001-003, TASK-GOAL-20260608-001-004
 
 ## Changes
@@ -206,9 +238,9 @@ constraints:
   - existing order list page must remain unchanged
   - only users with order_export permission can export
 acceptance_criteria:
-  - id: AC-001
+  - id: AC-REQ-SPEC-export-v1-001-001
     description: authorized users can export CSV
-  - id: AC-002
+  - id: AC-REQ-SPEC-export-v1-001-002
     description: unauthorized users cannot export CSV
 ```
 
@@ -217,14 +249,14 @@ acceptance_criteria:
 ```yaml
 matrix:
   - goal: GOAL-20260608-002
-    spec: SPEC-export-v1.0
-    requirement: REQ-SPEC-export-001
-    acceptance_criteria: AC-REQ-export-001
+    spec: SPEC-export-v1
+    requirement: REQ-SPEC-export-v1-001
+    acceptance_criteria: AC-REQ-SPEC-export-v1-001-001
     task: TASK-GOAL-20260608-002-001
     prompt: PROMPT-TASK-GOAL-20260608-002-001-001
     code_module: ExportController.createExportTask
-    test_case: TC-001
-    status: Todo
+    test_case: TEST-TASK-GOAL-20260608-002-001-001
+    status: Unmapped
 ```
 
 ### Task YAML
@@ -234,7 +266,7 @@ id: TASK-GOAL-20260608-002-003
 name: Generate Order CSV
 source:
   goal: GOAL-20260608-002
-  spec: SPEC-export-v1.0
+  spec: SPEC-export-v1
 objective: Generate CSV file for order export tasks.
 inputs: [exportTaskId]
 outputs: [csvFile, downloadUrl]
@@ -243,7 +275,7 @@ acceptance_criteria:
   - CSV file contains correct headers
   - CSV file contains filtered orders
   - empty result exports headers only
-tests: [TC-003, TC-004]
+tests: [TEST-TASK-GOAL-20260608-002-003-001, TEST-TASK-GOAL-20260608-002-003-002]
 priority: P0
 ```
 
@@ -260,8 +292,8 @@ priority: P0
     "successMetrics": [{"metric": "report_preparation_time", "target": "<= 5 minutes"}],
     "scope": {"in": ["CSV export", "permission check"], "out": ["Excel export"]}
   },
-  "specs": [{"id": "SPEC-export-v1.0", "goalId": "GOAL-20260608-002", "requirements": [{"id": "REQ-SPEC-export-001", "description": "User can create an export task."}]}],
-  "matrix": [{"goalId": "GOAL-20260608-002", "specId": "SPEC-export-v1.0", "taskId": "TASK-GOAL-20260608-002-001", "status": "Todo"}]
+  "specs": [{"id": "SPEC-export-v1", "goalId": "GOAL-20260608-002", "requirements": [{"id": "REQ-SPEC-export-v1-001", "description": "User can create an export task."}]}],
+  "matrix": [{"goalId": "GOAL-20260608-002", "specId": "SPEC-export-v1", "taskId": "TASK-GOAL-20260608-002-001", "status": "Unmapped"}]
 }
 ```
 
@@ -273,11 +305,11 @@ priority: P0
 project/
   docs/
     goals/       GOAL-20260608-002-order-export-goal.md
-    specs/       SPEC-export-v1.0-order-export-spec.md
+    specs/       SPEC-export-v1-order-export-spec.md
     matrix/      matrix-export-traceability.md
     tasks/       TASK-GOAL-20260608-002-001-create-export-task.md, TASK-GOAL-20260608-002-002-...
-    plans/       PLAN-GOAL-20260608-002-v1.0-order-export.md
-    prompts/     PROMPT-TASK-GOAL-20260608-002-001-001-design-export-api.md, P-...
+    plans/       PLAN-GOAL-20260608-002-v1-order-export.md
+    prompts/     PROMPT-TASK-GOAL-20260608-002-001-001-design-export-api.md
   src/modules/export/
   tests/export/
 ```
@@ -290,10 +322,10 @@ project/
 
 ```text
 GOAL-20260608-002-order-export-goal.md
-SPEC-export-v1.0-order-export-spec.md
+SPEC-export-v1-order-export-spec.md
 matrix-export-traceability.md
 TASK-GOAL-20260608-002-001-create-export-task.md
-PLAN-GOAL-20260608-002-v1.0-order-export.md
+PLAN-GOAL-20260608-002-v1-order-export.md
 PROMPT-TASK-GOAL-20260608-002-001-001-implement-export-task.md
 ```
 

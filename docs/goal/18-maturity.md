@@ -1,6 +1,6 @@
 # 18. 成熟度模型
 
-> 本文档从原 `17-maturity-and-improvement.md` 拆分而来，聚焦于成熟度升级路径、体系度量、故障排查和非代码场景适配。Self-improving 复利机制已拆分至 [19-self-improving.md](19-self-improving.md)。
+> 本文档从原 `17-maturity-and-improvement.md` 拆分而来，聚焦于成熟度升级路径、体系度量、故障排查和非代码场景适配。Self-improving 复利机制已拆分至 [19-self-improving.md#self-improving-机制](19-self-improving.md#1-self-improving-机制)。
 
 ---
 

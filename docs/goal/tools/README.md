@@ -16,12 +16,20 @@
 ### Gate 检查
 
 ```bash
-# 检查项目 .agent/ 目录下的完整性
+# 检查项目 docs/goal 与 .config/goal 目录下的完整性
 ./docs/goal/tools/gate-check.sh .
 
 # 检查指定目录
 ./docs/goal/tools/gate-check.sh /path/to/project
 ```
+
+Gate 检查需要项目已经生成运行制品：
+
+- `.config/goal/registry/tasks.yaml`
+- `.config/goal/matrix.yaml`
+- `.config/goal/evidence/`
+
+仅维护规则文档、尚未落地具体 Goal 的仓库，应先运行 `lint-goal.sh`、`bash -n` 和 `matrix-gen.py --help`；不要把 `gate-check.sh .` 作为无运行制品仓库的必过检查。
 
 检查内容：
 
@@ -36,22 +44,22 @@
 ```bash
 # 从 Spec 和 Tasks 生成 Matrix
 python3 docs/goal/tools/matrix-gen.py \
-  --spec-dir .agent/specs \
-  --task-dir .agent/tasks \
-  --output .agent/matrix.yaml \
+  --spec-dir docs/goal/specs \
+  --task-dir docs/goal/tasks \
+  --output .config/goal/matrix.yaml \
   --goal-id GOAL-20260608-001
 
 # 仅检查现有 Matrix
 python3 docs/goal/tools/matrix-gen.py \
   --check-only \
-  --matrix .agent/matrix.yaml
+  --matrix .config/goal/matrix.yaml
 ```
 
 ### Evidence 收集
 
 ```bash
 # 为指定 Task 收集 Evidence
-./docs/goal/tools/evidence-collect.sh TASK-GOAL-001-001 GOAL-20260608-001
+./docs/goal/tools/evidence-collect.sh TASK-GOAL-20260608-001-001 GOAL-20260608-001
 ```
 
 自动生成：
@@ -68,7 +76,7 @@ python3 docs/goal/tools/matrix-gen.py \
 ./docs/goal/tools/lint-goal.sh docs/goal/02-goal-standard.md
 
 # 检查整个目录
-./docs/goal/tools/lint-goal.sh .agent/
+./docs/goal/tools/lint-goal.sh docs/goal/
 ```
 
 检查规则：
@@ -78,7 +86,7 @@ python3 docs/goal/tools/matrix-gen.py \
 - GL-003: Goal 不应包含实现细节
 - SL-001: Spec 必须有 Acceptance Criteria
 - SL-002: Spec 必须有边界场景
-- SL-003: FR 必须有测试覆盖
+- SL-003: Requirement 必须有测试覆盖
 - ML-001: Matrix 不允许空 Goal ID
 - ML-002: Matrix 不允许空 Task ID
 - ML-003: 每个 AC 必须有 Test Case
@@ -98,10 +106,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Gate Check
-        run: ./docs/goal/tools/gate-check.sh .
       - name: Lint Goal
-        run: ./docs/goal/tools/lint-goal.sh .agent/
+        run: ./docs/goal/tools/lint-goal.sh docs/goal/
+      - name: Gate Check
+        run: |
+          if [ -f .config/goal/registry/tasks.yaml ]; then
+            ./docs/goal/tools/gate-check.sh .
+          else
+            echo "skip gate-check: no goal runtime artifacts"
+          fi
 ```
 
 ## 依赖

@@ -12,7 +12,8 @@ TIMESTAMP=$(date +%Y%m%d)
 EVID_ID="EVID-${TASK_ID}-${TIMESTAMP}-001"
 
 ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
-EVIDENCE_DIR="$ROOT/.agent/evidence/$DATE/$TASK_ID"
+EVIDENCE_ROOT="${GOAL_EVIDENCE_DIR:-$ROOT/.config/goal/evidence}"
+EVIDENCE_DIR="$EVIDENCE_ROOT/$DATE/$TASK_ID"
 EVIDENCE_FILE="$EVIDENCE_DIR/evidence.md"
 
 mkdir -p "$EVIDENCE_DIR"

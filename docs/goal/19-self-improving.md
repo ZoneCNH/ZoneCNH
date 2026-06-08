@@ -1,6 +1,6 @@
 # 19. Self-improving 复利机制
 
-> 本文档从原 `17-maturity-and-improvement.md` 拆分而来，聚焦于 Self-improving 复利闭环、Patch 系统、多团队协作和体系演进记录。成熟度模型（L0-L5）已拆分至 [18-maturity.md](18-maturity.md)。
+> 本文档从原 `17-maturity-and-improvement.md` 拆分而来，聚焦于 Self-improving 复利闭环、Patch 系统、多团队协作和体系演进记录。成熟度模型（L0-L5）已拆分至 [18-maturity.md#成熟度模型](18-maturity.md#1-成熟度模型)。
 
 ---
 
@@ -128,7 +128,7 @@ Team A 定义接口 → Team B/C 评审 → ADR 记录 → 各自独立开发 �
 # Goal 体系演进日志
 
 ## v1.0 (2026-06-01)
-- 初始版本：Goal → Spec → Matrix → Tasks → Plan → Prompt → Code
+- 初始版本：Goal → Spec → Design → Plan → Tasks → Prompt → Code
 - 7 层工作流
 - 7 道质量门禁
 

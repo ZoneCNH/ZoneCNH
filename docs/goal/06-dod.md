@@ -2,9 +2,9 @@
 
 > **本文档是 DoR/DoD 的唯一权威来源（SSOT）**。其他文件中的 DoR/DoD 定义应引用本文档。
 >
-> 各层标准见 [05-layer-standards.md](05-layer-standards.md)。
+> 各层标准见 [05-layer-standards.md#spec-标准](05-layer-standards.md#1-spec-标准)、[plan-标准](05-layer-standards.md#3-plan-标准)、[tasks-标准](05-layer-standards.md#4-tasks-标准)、[prompt-标准](05-layer-standards.md#5-prompt-标准)、[matrix-标准](05-layer-standards.md#9-matrix-横切标准)。
 
-本文档定义 Goal 驱动交付体系中 **Goal、Spec、Matrix、Tasks、Plan、Prompt、Code、Design、Test、Review、Issue、Release、Retrospective** 各层的准备标准和完成标准。
+本文档定义 Goal 驱动交付体系中 **Goal、Spec、Design、Plan、Tasks、Prompt、Code、Test、Review、Issue、Release、Retrospective** 的准备标准和完成标准。主流程顺序与 [03-pipeline.md#完整管线](03-pipeline.md#1-完整管线) 保持一致；Matrix Coverage 是横切追溯制品的覆盖检查，不是主流程阶段，也不是独立 Gate。
 
 ---
 
@@ -57,58 +57,36 @@
 
 ---
 
-## 3. Matrix DoR / DoD
+## 3. Design DoR / DoD
 
-### DoR（进入 Matrix 前必须满足）
+### DoR（进入设计前必须满足）
 
 ```text
-- Goal/Spec/Acceptance Criteria 已编号
+- Spec 已审批
+- 核心需求已明确
+- 技术约束已识别
+- 依赖关系基本清楚
 ```
 
-### DoD（Matrix 完成时必须满足）
+### DoD（设计完成时必须满足）
 
 ```text
-- 每个 Goal Item 有 Spec 覆盖
-- 每条 Spec 有 Task 覆盖
-- 每个关键验收标准有 Test 覆盖
-- 无孤立 Task/Code/需求
-```
-
----
-
-## 4. Tasks DoR / DoD
-
-### DoR（进入 Tasks 前必须满足）
-
-```text
-- Matrix 已明确覆盖关系
-- 实现方向可判断
-- 主要模块和依赖已知
-```
-
-### DoD（Tasks 完成时必须满足）
-
-```text
-- Task 目标完成
-- 每个 Task 有明确输入/输出/验收标准/依赖关系
-- 能在合理时间内完成
-- 能追溯到 Goal 和 Spec
-- 文件范围未越界
-- 验证命令通过
-- Evidence 已生成
-- Risk 已记录
-- Rollback 已说明
+- 每个 Spec Requirement 有对应 Module
+- 模块边界清晰
+- 接口可测试
+- 无循环依赖
+- ADR 记录关键决策
 ```
 
 ---
 
-## 5. Plan DoR / DoD
+## 4. Plan DoR / DoD
 
 ### DoR（进入 Plan 前必须满足）
 
 ```text
-- Tasks 已拆分
-- 依赖关系已明确
+- Design 已完成
+- 主要模块和依赖已知
 - 风险点已识别
 ```
 
@@ -121,11 +99,58 @@
 - 高风险任务提前处理
 - 有回滚策略
 - 可增量交付
+- 已定义 Task 拆分边界和依赖顺序
 ```
 
 ---
 
-## 6. Prompt DoR / DoD
+## 5. Tasks DoR / DoD
+
+### DoR（进入 Tasks 前必须满足）
+
+```text
+- Plan 已完成
+- Task 拆分边界已明确
+- Matrix 可记录 Goal/Spec/Acceptance Criteria 覆盖关系
+```
+
+### DoD（Tasks 完成时必须满足）
+
+```text
+- 每个 Task 有明确输入/输出/验收标准/依赖关系
+- 每个 Task 足够小，能在合理时间内完成
+- 每个 Task 能追溯到 Goal 和 Spec
+- 每个 Task 有明确 DoD、验证命令、Evidence 要求和 Rollback 要求
+- 无无来源 Task
+```
+
+---
+
+## 6. Matrix Coverage DoR / DoD
+
+Matrix Coverage 横切主流程维护，通常在 Spec 后初始化，在 Plan、Tasks、Prompt、Code、Test、Evidence 变化时更新。它不改变 `Goal → Spec → Design → Plan → Tasks → Prompt → Code → Test → Review → Release → Retrospective` 的主流程顺序。
+
+### DoR（初始化或更新 Matrix 覆盖检查前必须满足）
+
+```text
+- Goal/Spec/Acceptance Criteria 已编号
+- Plan 已完成
+- Tasks 已拆分
+```
+
+### DoD（Matrix 覆盖检查完成时必须满足）
+
+```text
+- 每个 Goal Item 有 Spec 覆盖
+- 每条 Spec 有 Task 覆盖
+- 每个关键验收标准有 Test 覆盖计划
+- 无孤立 Task/Code/需求
+- 覆盖检查结果可作为 G5 Task Gate 证据
+```
+
+---
+
+## 7. Prompt DoR / DoD
 
 ### DoR（进入 Prompt 前必须满足）
 
@@ -148,7 +173,7 @@
 
 ---
 
-## 7. Code DoR / DoD
+## 8. Code DoR / DoD
 
 ### DoR（进入 Code 前必须满足）
 
@@ -167,29 +192,6 @@
 - PR 描述能追溯到 Goal
 - 不包含无关功能
 - 没有破坏已有能力
-```
-
----
-
-## 8. Design DoR / DoD
-
-### DoR（进入设计前必须满足）
-
-```text
-- Spec 已审批
-- 核心需求已明确
-- 技术约束已识别
-- 依赖关系基本清楚
-```
-
-### DoD（设计完成时必须满足）
-
-```text
-- 每个 Spec Requirement 有对应 Module
-- 模块边界清晰
-- 接口可测试
-- 无循环依赖
-- ADR 记录关键决策
 ```
 
 ---

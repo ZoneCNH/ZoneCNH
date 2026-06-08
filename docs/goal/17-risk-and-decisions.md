@@ -101,8 +101,8 @@ Design Review:
 - [变更 2]
 
 ## 5. Tasks Completed
-- T001:
-- T002:
+- TASK-GOAL-20260608-001-001:
+- TASK-GOAL-20260608-001-002:
 
 ## 6. Verification
 Commands: [验证命令]
@@ -154,7 +154,7 @@ known_risks:
 ### 1 天计划（MVA 最小可行）
 
 ```text
-- 建 .agent/ 目录结构
+- 建 docs/goal 与 .config/goal 目录结构
 - 写 Goal
 - 写 Task
 - 写 DoD

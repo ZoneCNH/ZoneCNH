@@ -1,116 +1,16 @@
 # 质量门禁
 
-> Gate 体系（G0-G11）的权威定义见 [04-gates.md](04-gates.md)。本文档聚焦各层的 DoR/DoD 质量标准和评分体系。
+> Gate 体系（G0-G11）的权威定义见 [04-gates.md#gate-类型](04-gates.md#1-gate-类型)。本文档聚焦各层的 DoR/DoD 质量标准和评分体系。
 
 ## 1. 各层质量标准
 
-在每一层设置 Gate，防止问题流到下一层。对应 Gate 编号见 [04-gates.md](04-gates.md)。
-
-### Goal Review（对应 G1: Goal Gate）
-
-进入 Spec 前，检查 Goal 是否合格。
-
-```text
-- 是否说明了业务背景？
-- 是否说明了目标用户？
-- 是否是结果导向，而不是实现方案？
-- 是否有成功指标？
-- 是否有验收标准？
-- 是否有范围边界？
-- 是否写明 Non-goals？
-- 是否有约束条件？
-```
-
-### Spec Review（对应 G2: Spec Gate）
-
-进入 Matrix 前，检查 Spec 是否足够清晰。
-
-```text
-- 每条需求是否可实现？
-- 每条需求是否可测试？
-- 是否覆盖正常路径？
-- 是否覆盖异常路径？
-- 是否覆盖边界条件？
-- 是否有安全要求？
-- 是否有性能要求？
-- 是否写明不做什么？
-```
-
-### Matrix Review（对应 G5: Task Gate 一部分）
-
-进入 Tasks 前，检查覆盖关系。
-
-```text
-- 每个 Goal 是否有 Spec 覆盖？
-- 每个 Spec 是否有 Task 覆盖？
-- 每个验收标准是否有 Test 覆盖？
-- 是否存在无来源 Task？
-- 是否存在无测试关键需求？
-- 是否存在重复任务？
-- 是否存在范围膨胀？
-```
-
-### Task Review（对应 G5: Task Gate）
-
-进入 Plan 前，检查任务是否可执行。
-
-```text
-- Task 是否足够小？
-- Task 是否有明确输入？
-- Task 是否有明确输出？
-- Task 是否有完成标准？
-- Task 是否有依赖关系？
-- Task 是否能独立验证？
-```
-
-### Plan Review（对应 G4: Plan Gate）
-
-进入 Prompt 前，检查执行顺序是否合理。
-
-```text
-- 是否先做基础能力？
-- 是否先处理高风险任务？
-- 是否有阶段性验证点？
-- 是否有回滚方案？
-- 是否避免阻塞依赖？
-- 是否能增量交付？
-```
-
-### Prompt Review（对应 G6: Implementation Gate 一部分）
-
-进入 Code 前，检查 Prompt 是否足够明确。
-
-```text
-- 是否包含 Goal？
-- 是否包含 Task？
-- 是否包含上下文？
-- 是否包含约束？
-- 是否包含输出格式？
-- 是否包含验收标准？
-- 是否包含测试要求？
-- 是否写明禁止事项？
-```
-
-### Code Review（对应 G9: Review Gate）
-
-最终交付前，检查代码是否真的满足目标。
-
-```text
-- 是否实现了对应 Task？
-- 是否满足 Spec？
-- 是否覆盖 Matrix 行？
-- 是否有测试？
-- 是否处理异常情况？
-- 是否满足安全要求？
-- 是否满足性能要求？
-- 是否没有引入无关功能？
-```
+各 Gate 的具体检查项见 [04-gates.md §3](04-gates.md#3-必备-gates)。
 
 ---
 
 ## 2. Definition of Ready / Definition of Done
 
-> 各层 DoR/DoD 的权威定义见 [06-dod.md](06-dod.md)。本文档不重复定义。
+> 各层 DoR/DoD 的权威定义见 [06-dod.md#goal-dor--dod](06-dod.md#1-goal-dor--dod)。本文档不重复定义。
 
 ---
 
@@ -176,16 +76,7 @@ Prompt 低于 80 分，通常会导致 AI 输出不稳定。
 
 ## 6. Release 前检查
 
-```text
-- Matrix 全部关键项为 Done
-- P0/P1 测试全部通过
-- 无权限绕过风险
-- 无数据破坏风险
-- 有日志和监控
-- 有 Feature Flag 或回滚方案
-- 有灰度策略
-- 有上线后指标观察计划
-```
+> Release 前检查清单（SSOT）见 [04-gates.md G10 Release Gate](04-gates.md#g10-release-gate)。
 
 ---
 

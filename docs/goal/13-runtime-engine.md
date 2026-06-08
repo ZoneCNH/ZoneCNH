@@ -1,6 +1,6 @@
 # 运行引擎
 
-本文档定义 Goal 驱动交付的运行时机制。工作流和状态机的权威定义见 [03-pipeline.md](03-pipeline.md)，Gate 体系见 [04-gates.md](04-gates.md)，ID 系统见 [07-id-system.md](07-id-system.md)。
+本文档定义 Goal 驱动交付的运行时机制。工作流和状态机的权威定义见 [03-pipeline.md#状态机](03-pipeline.md#2-状态机)，Gate 体系见 [04-gates.md#gate-类型](04-gates.md#1-gate-类型)，ID 系统见 [07-id-system.md#id-格式](07-id-system.md#1-id-格式)。
 
 ---
 
@@ -24,21 +24,22 @@
 ### Lite Mode（CL0/CL1）
 
 ```text
-包含：Goal → Task → DoD → Evidence → Review
+包含：Goal → Plan → Tasks → Prompt → Code → Test → Review
 强制 Gate：Task Gate (G5)、Test Gate (G7)、Evidence Gate (G8)、Review Gate (G9)
+裁剪说明：Spec / Design 可合并进 Goal 或 Plan 说明；Release / Retrospective 可记录在 Review 结论中；Matrix 可选维护但始终是横切追溯制品，不作为阶段。
 ```
 
 ### Standard Mode（CL2）
 
 ```text
-包含：Goal → Spec → Design → Plan → Tasks → Harness → Evidence → Review → Release → Retrospective
-强制：Traceability Matrix、Risk Register、Release Manifest
+包含：Goal → Spec → Design → Plan → Tasks → Prompt → Code → Test → Review → Release → Retrospective
+强制：Traceability Matrix（横切制品，不作为阶段）、Risk Register、Release Manifest、Evidence
 ```
 
 ### Full Mode（CL3/CL4/CL5）
 
 ```text
-包含：全部对象和门禁 + Registry + State Machine + Human Approval Gate + Rollback Protocol + Change Propagation Matrix
+包含：Standard Mode 主流程 + Registry + State Machine + Human Approval Gate + Rollback Protocol + Change Propagation Matrix
 强制：ADR、Human Approval、Executable Gates、Release Manifest、Rollback
 ```
 
@@ -48,11 +49,11 @@
 
 所有执行对象必须可追踪。
 
-### 核心对象（19 个）
+### 核心对象
 
 ```text
 Goal、Spec、Requirement、Acceptance Criteria、Design、ADR、Plan、Milestone、
-Task、Test、Evidence、Risk、Decision、Review、Release、Retrospective、
+Task、Prompt、Code、Test、Evidence、Risk、Decision、Review、Release、Retrospective、
 Prompt Patch、Harness Patch、Rule Patch
 ```
 
@@ -65,8 +66,10 @@ Requirement verified_by Acceptance Criteria
 Requirement implemented_by Design
 Design executed_by Plan
 Plan decomposes_to Tasks
-Task changes Files
-Task verified_by Tests
+Task instructed_by Prompt
+Prompt drives Code
+Code changes Files
+Code verified_by Tests
 Task proven_by Evidence
 Evidence supports Review
 Review unlocks Release
@@ -246,12 +249,12 @@ Release 到生产环境必须人工确认
 
 | 变更对象         | 必须同步                                          |
 | ---------------- | ------------------------------------------------- |
-| Goal 变更        | Spec / Plan / Tasks / Registry / Issue            |
-| Spec 变更        | Design / Plan / Tasks / Tests / Traceability      |
+| Goal 变更        | Spec / Design / Plan / Tasks / Registry / Issue   |
+| Spec 变更        | Design / Plan / Tasks / Test / Traceability       |
 | Requirement 变更 | Acceptance Criteria / Tasks / Tests / Evidence    |
 | Design 变更      | ADR / Plan / Tasks / Risk / Docs                  |
 | Plan 变更        | Tasks / Dependency Graph / Registry               |
-| Task 变更        | Evidence / Registry / Issue / PR                  |
+| Task 变更        | Prompt / Code / Test / Evidence / Registry / Issue / PR |
 | Public API 变更  | Docs / Tests / CHANGELOG / ADR / Release Manifest |
 | Storage 变更     | Migration / Rollback / Tests / Release Manifest   |
 | Config 变更      | Example / Docs / Tests / Release Manifest         |

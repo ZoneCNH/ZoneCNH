@@ -131,3 +131,50 @@ Spec → Matrix → Tasks → Plan → Prompt → Code
 | `specs/DEFINITION-OF-READY.md` | 进入开发的前置条件 |
 | `specs/DEFINITION-OF-DONE.md` | 完成验收条件 |
 | `CONSTITUTION.md` | 最高治理权威（13 条） |
+
+## Goal 驱动交付体系
+
+Goal 驱动交付体系确保每一行代码都能追溯到一个可验证的业务目标。详见 `docs/goal/` 目录。
+
+### Agents — Goal 管线
+
+| Agent | 职责 | 维护文件 | 模型 |
+|-------|------|----------|------|
+| `goal-spec` | Goal/Spec/Design/Plan 编写 | `.config/goal/registry/*.yaml`, `.config/goal/pipeline/state.yaml` | Opus |
+| `goal-reviewer` | 对抗性审查 | `.config/goal/gates/state.yaml` | Opus |
+| `goal-matrix` | 追溯矩阵管理 | `.config/goal/matrix/matrix.yaml` | Sonnet |
+| `goal-prompt-builder` | Context Package 构建 | `.config/goal/prompts/TASK-*/` | Sonnet |
+| `goal-evidence` | 证据收集与验证 | `.config/goal/evidence/EVID-*.md` | Sonnet |
+
+### 统一配置中心
+
+所有 Goal 相关状态统一存放在 `.config/goal/`：
+
+```text
+.config/goal/
+├── registry/          # Registry 子系统（6 个文件）
+├── matrix/            # 追溯矩阵
+├── gates/             # Gate 状态（G0-G11）
+├── pipeline/          # Pipeline 状态机
+├── evidence/          # Evidence 文件
+└── prompts/           # Prompt 版本
+```
+
+### Goal 管线流程
+
+```text
+Goal → Spec → Design → Plan → Tasks → Prompt → Code → Test → Review → Release → Retrospective
+```
+
+Matrix 是横切追溯制品，贯穿所有阶段但不作为主流程阶段。
+
+### 关键文档
+
+| 文档 | 用途 |
+|------|------|
+| `docs/goal/README.md` | Goal 体系总览 |
+| `docs/goal/00-quickstart.md` | 5 分钟快速开始 |
+| `docs/goal/03-pipeline.md` | 管线与状态机 |
+| `docs/goal/04-gates.md` | Gate 体系（G0-G11） |
+| `docs/goal/15-registry.md` | Registry 系统 |
+| `.config/goal/README.md` | 配置中心索引 |

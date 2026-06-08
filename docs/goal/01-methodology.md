@@ -1,10 +1,10 @@
 # 核心方法论
 
-> **ID 格式说明**：本文档使用新格式 ID（如 GOAL-YYYYMMDD-NNN、SPEC-domain-v1.0），详见 [07-id-system.md](07-id-system.md)。
+> **ID 格式说明**：本文档使用新格式 ID（如 GOAL-YYYYMMDD-NNN、SPEC-domain-v1.0），详见 [07-id-system.md#id-格式](07-id-system.md#1-id-格式)。
 
 ## 1. 工作流定位
 
-> 简化版，完整管线定义见 [03-pipeline.md](03-pipeline.md)。
+> 简化版，完整管线定义见 [03-pipeline.md#完整管线](03-pipeline.md#1-完整管线)。
 
 在 **Goal → Spec → Design → Plan → Tasks → Prompt → Code → Test → Review → Release → Retrospective** 工作流里，**Goal 是最上游的"结果锚点"**。
 
@@ -16,21 +16,7 @@
 
 这条链路的关键不是"写文档"，而是建立一套 **可追踪、可验证、可执行、可复用** 的交付系统。
 
-> 完整管线（11 层）和状态机定义见 [03-pipeline.md](03-pipeline.md)。
-
-```text
-Goal   定义结果
-Spec   定义需求
-Design 定义方案
-Plan   安排执行
-Tasks  拆成动作
-Prompt 驱动生成
-Code   实现交付
-Test   验证正确
-Review 审查质量
-Release 发布上线
-Retrospective 复盘改进
-```
+> 完整 11 层管线定义见 [03-pipeline.md §1](03-pipeline.md#1-完整管线)，状态机见 [03-pipeline.md §2](03-pipeline.md#2-状态机)。
 
 ## 3. Goal 的输入
 
@@ -170,7 +156,7 @@ Spec Change
   ↓
 Matrix Update
   ↓
-Tasks → Plan → Prompt → Code
+Plan → Tasks → Prompt → Code
 ```
 
 ## 9. 最终判断标准

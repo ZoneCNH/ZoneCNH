@@ -12,26 +12,55 @@
 
 ## 工作流全景
 
-> 完整管线（11 层）和状态机定义见 [03-pipeline.md](03-pipeline.md)。
+> 完整管线（11 层）和状态机定义见 [03-pipeline.md#完整管线](03-pipeline.md#1-完整管线)、[状态机](03-pipeline.md#2-状态机)。
 
-最小闭环（简化版）：
+唯一主流程（完整 11 层）：
 
 ```text
-Goal 定义结果 → Spec 定义需求 → Tasks 拆解执行 → Prompt 驱动生成 → Code 完成交付 → Test 验证
+Goal 定义结果 → Spec 定义需求 → Design 定义方案 → Plan 定义顺序 → Tasks 拆解执行 → Prompt 驱动执行 → Code 完成交付 → Test 验证实现 → Review 审查闭环 → Release 发布 → Retrospective 复盘改进
 ```
 
-每一层都必须回答一个问题：
+各层核心问题和输出物见 [03-pipeline.md §1 完整管线](03-pipeline.md#1-完整管线)。
 
-| 层级   | 核心问题                   | 输出物     |
-| ------ | -------------------------- | ---------- |
-| Goal   | 为什么做？做到什么算成功？ | 目标定义   |
-| Spec   | 具体要做什么？边界是什么？ | 需求规格   |
-| Tasks  | 需要拆成哪些可执行任务？   | 任务清单   |
-| Prompt | 如何让 AI/工程师准确执行？ | 指令模板   |
-| Code   | 最终实现是否满足验收？     | 代码与测试 |
-| Test   | 实现是否正确？             | 测试结果   |
+Matrix（追溯矩阵）是横切追溯制品，贯穿主流程但不作为主流程阶段，也不写入主流程箭头。它在 Spec 后可初始化，并随 Design、Plan、Tasks、Prompt、Code、Test、Evidence 更新。详见 [05-layer-standards.md §9](05-layer-standards.md#9-matrix-横切标准)。
 
-Matrix（追溯矩阵）是横切制品，贯穿所有阶段，不是独立的管线层。详见 [05-layer-standards.md §4.3](05-layer-standards.md#43-matrix-标准)。
+## 统一配置中心
+
+所有 Goal 相关状态统一存放在 `.config/goal/`，由 5 个 Goal Agent 共同维护：
+
+```text
+.config/goal/
+├── README.md                    # 目录索引
+├── registry/                    # Registry 子系统（6 个文件）
+│   ├── goals.yaml              # Goal Registry
+│   ├── tasks.yaml              # Task Registry
+│   ├── issues.yaml             # Issue Registry
+│   ├── releases.yaml           # Release Registry
+│   ├── risks.yaml              # Risk Registry
+│   └── decisions.yaml          # Decision Registry
+├── matrix/
+│   └── matrix.yaml             # Traceability Matrix
+├── gates/
+│   └── state.yaml              # Gate 状态（G0-G11）
+├── pipeline/
+│   └── state.yaml              # Pipeline 状态机
+├── evidence/
+│   └── EVID-*.md               # Evidence 文件
+└── prompts/
+    └── TASK-*/                 # Prompt 版本
+        ├── v1.md
+        └── prompt-meta.yaml
+```
+
+**Agent 职责分工**：
+
+| Agent | 维护文件 | 职责 |
+|-------|----------|------|
+| goal-spec | `registry/*.yaml`, `pipeline/state.yaml` | Goal/Task/Issue/Release/Risk/Decision 注册 |
+| goal-matrix | `matrix/matrix.yaml` | 追溯矩阵生成与维护 |
+| goal-reviewer | `gates/state.yaml` | Gate 状态检查与记录 |
+| goal-prompt-builder | `prompts/TASK-*/` | Context Package 构建与版本管理 |
+| goal-evidence | `evidence/EVID-*.md` | 证据收集与验证 |
 
 ## 文档索引
 
@@ -43,8 +72,8 @@ Matrix（追溯矩阵）是横切制品，贯穿所有阶段，不是独立的�
 | [02-goal-standard.md](02-goal-standard.md)             | Goal 标准：结构、模板、评分、Lint 规则                                       |
 | [03-pipeline.md](03-pipeline.md)                       | 统一管线与状态机：完整管线、12 态状态机、完整链路示例                         |
 | [04-gates.md](04-gates.md)                             | Gate 体系：G0-G11 定义、类型、结构、结果                                     |
-| [05-layer-standards.md](05-layer-standards.md)         | 各层标准：Spec / Design / Matrix / Tasks / Plan / Prompt / Code / Test      |
-| [06-dod.md](06-dod.md)                                 | 分层 DoD：Task / Issue / Goal / Release / Retrospective 完成标准            |
+| [05-layer-standards.md](05-layer-standards.md)         | 主流程层级与 Matrix 横切标准：Spec / Design / Plan / Tasks / Prompt / Code / Test |
+| [06-dod.md](06-dod.md)                                 | 分层 DoR/DoD：Goal / Spec / Design / Plan / Tasks / Prompt / Code / Test / Review / Release / Retrospective |
 | [07-id-system.md](07-id-system.md)                     | ID 系统：格式、规则、旧格式兼容                                              |
 | [08-quality-gates.md](08-quality-gates.md)             | 质量门禁：DoR/DoD、评分体系、孤儿检查                                        |
 | [09-templates.md](09-templates.md)                     | 模板库：端到端模板、YAML 化、JSON 化、仓库目录结构                           |
@@ -58,45 +87,52 @@ Matrix（追溯矩阵）是横切制品，贯穿所有阶段，不是独立的�
 | [17-risk-and-decisions.md](17-risk-and-decisions.md)   | 风险、决策与发布：Risk Register、ADR、Release Manifest、落地计划              |
 | [18-maturity.md](18-maturity.md)                       | 成熟度模型：L0-L5 升级路径、体系度量、故障排查、非代码场景适配                |
 | [19-self-improving.md](19-self-improving.md)           | Self-improving 复利机制：Patch 系统、多团队协作、体系演进记录                |
-| [tools/](tools/README.md)                              | 可执行工具：Gate 检查、Matrix 生成、Evidence 收集、Lint 脚本                  |
+| [tools/](tools/README.md)                              | 工具脚本（planned）：Gate 检查、Matrix 生成、Evidence 收集、Lint 脚本          |
 | [20-metrics-evidence.md](20-metrics-evidence.md)       | 指标与证据闭环：Metrics Review、Validation Gate、Gap Report、Evidence Graph |
 | [21-controlled-rsi.md](21-controlled-rsi.md)           | 受控递归改进：Controlled RSI、改进循环、不变量、策略边界                    |
 | [22-delivery-os.md](22-delivery-os.md)                 | Delivery OS：五个运行时、Workflow-as-Code、Compiler、控制平面               |
 | [23-workflow-governance-checks.md](23-workflow-governance-checks.md) | 工作流治理检查：Drift Checks、Test Deletion Guard、Workflow Test Pyramid、Release Simulation |
+| [24-standard-unification-analysis.md](24-standard-unification-analysis.md) | 标准统一深度分析：ID、schema、状态、Matrix、Evidence、Gate 与工具一致性 |
 
 ## 复杂度分级
 
 | 复杂度 | 特征                 | 推荐流程                                   |
 | ------ | -------------------- | ------------------------------------------ |
-| XS     | 小修复，低风险       | Goal + Task + Test                         |
-| S      | 小功能，影响单模块   | Goal + Spec + Task + Code                  |
-| M      | 中型功能，影响多模块 | Goal + Spec + Matrix + Tasks + Plan + Code |
+| XS     | 小修复，低风险       | Goal + Plan + Tasks + Code + Test          |
+| S      | 小功能，影响单模块   | Goal + Spec + Design + Plan + Tasks + Code + Test |
+| M      | 中型功能，影响多模块 | Goal + Spec + Design + Plan + Tasks + Prompt + Code + Test（Matrix 横切维护） |
 | L      | 大功能，跨团队       | 全流程                                     |
 | XL     | 架构级变化，高风险   | 全流程 + RFC + 风险评审 + 灰度计划         |
 
 ## 最小闭环
 
 ```text
-Goal → Spec → Task → Test → Code
+Goal → Plan → Tasks → Code → Test → Review
 ```
 
-> 这是简化版，完整管线定义见 [03-pipeline.md](03-pipeline.md)。
+> 这是低风险裁剪版，只能省略部分层级，不能改变主流程相对顺序。完整管线定义见 [03-pipeline.md#完整管线](03-pipeline.md#1-完整管线)。
 
 ## 增强闭环
 
 ```text
-Goal → Spec → Matrix → Tasks → Plan → Prompt → Code → Test → Matrix Update
+Goal → Spec → Design → Plan → Tasks → Prompt → Code → Test → Review → Release → Retrospective
 ```
 
-> Matrix 是横切制品，详见 [05-layer-standards.md §4.3](05-layer-standards.md#43-matrix-标准)。
+> Matrix 在 Spec 后初始化，并在 Plan、Tasks、Prompt、Code、Test、Evidence 变化时横切更新；Matrix 不作为主流程阶段。详见 [05-layer-standards.md §9](05-layer-standards.md#9-matrix-横切标准)。
 
 ## 最理想闭环
 
+在增强闭环的 11 层主流程基础上，叠加三层治理增强，形成完整 Delivery OS：
+
 ```text
-Goal → Spec → Design → Plan → Tasks → Prompt → Code → Test → Review → Release → Retrospective → Metric Validation → Controlled RSI → Workflow Governance
+Goal → Spec → Design → Plan → Tasks → Prompt → Code → Test → Review → Release → Retrospective
+                                                                                      ↓
+                                                               Metric Validation ← 指标验证目标
+                                                               Controlled RSI ← 持续修正工作流
+                                                               Workflow Governance ← 防止改进失控
 ```
 
-> 完整 11 层管线定义见 [03-pipeline.md](03-pipeline.md)。
+> 完整 11 层管线定义见 [03-pipeline.md#完整管线](03-pipeline.md#1-完整管线)。Metric Validation、Controlled RSI、Workflow Governance 是 Retrospective 之后的治理增强，不属于主流程阶段。
 
 Code 完成并不是终点，真正的终点是：**上线后指标证明 Goal 被达成。**
 

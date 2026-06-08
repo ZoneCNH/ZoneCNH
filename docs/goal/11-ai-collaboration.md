@@ -68,9 +68,9 @@ Spec:
 SPEC-order-export-v1.0 订单导出功能。
 
 Matrix Rows:
-- MILE-GOAL-20260601-001-003: 生成 CSV 文件
-- MILE-GOAL-20260601-001-004: CSV 字段顺序正确
-- MILE-GOAL-20260601-001-005: 空数据时仍生成表头
+- REQ-SPEC-order-export-v1.0-003: 生成 CSV 文件
+- REQ-SPEC-order-export-v1.0-004: CSV 字段顺序正确
+- REQ-SPEC-order-export-v1.0-005: 空数据时仍生成表头
 
 Current Task:
 TASK-GOAL-20260601-001-004 实现 CsvExportService.generateOrderCsv()
@@ -129,7 +129,7 @@ Change Log:
 
 ### Prompt 质量标准
 
-> Prompt 质量标准（6 条）见 [05-layer-standards.md §4.6](05-layer-standards.md#46-prompt-质量标准)。
+> Prompt 质量标准（6 条）见 [05-layer-standards.md §5](05-layer-standards.md#5-prompt-标准)。
 
 ---
 
@@ -263,14 +263,14 @@ Implementation Report:
 - src/export/ExportTaskService.ts
 
 2. Matrix Coverage
-- MILE-GOAL-20260601-001-001: Covered
-- MILE-GOAL-20260601-001-002: Covered
-- MILE-GOAL-20260601-001-003: Partially Covered
+- REQ-SPEC-order-export-v1.0-001: Covered
+- REQ-SPEC-order-export-v1.0-002: Covered
+- REQ-SPEC-order-export-v1.0-003: Partially Covered
 
 3. Acceptance Criteria
-- AC-001: Passed
-- AC-002: Passed
-- AC-003: Missing test
+- AC-REQ-SPEC-export-v1-001-001: Passed
+- AC-REQ-SPEC-export-v1-002-001: Passed
+- AC-REQ-SPEC-export-v1-003-001: Missing test
 
 4. Tests Added
 - test_create_export_task_success

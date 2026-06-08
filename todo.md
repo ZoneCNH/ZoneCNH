@@ -44,7 +44,14 @@ goal 添加 进度状态跟踪记录
 
 
 
+深度分析 
+docs/goal/
+深度思考，添加 项目Spec  subagent
+创建对应的 subagent
 
+goal 模块相关所有状态，统一 在.config/
+
+深度分析，goal还有哪些需要统一标准，统一规范
 
 
 

@@ -8,19 +8,33 @@ matrix-gen.py — Matrix 生成与更新脚本
   python3 docs/goal/tools/matrix-gen.py --check-only --matrix <matrix文件>
 
 功能:
-  --spec-dir    Spec 文件目录（扫描 *.md 中的 FR-xxx）
-  --task-dir    Task 文件目录（扫描 TASK-xxx）
+  --spec-dir    Spec 文件目录（扫描 *.md 中的 REQ-SPEC-*，兼容旧 Requirement 标记）
+  --task-dir    Task 文件目录（扫描 TASK-GOAL-*）
   --output      输出 Matrix YAML 文件路径
   --check-only  仅检查现有 Matrix 的完整性
   --matrix      指定 Matrix 文件（配合 --check-only）
 """
 
 import argparse
-import os
 import re
 import sys
 from pathlib import Path
 from datetime import datetime
+
+SPEC_ID_RE = re.compile(r"(?<![A-Za-z0-9-])SPEC-[A-Za-z0-9][A-Za-z0-9-]*-v\d+\b")
+REQ_ID_RE = re.compile(r"(?<![A-Za-z0-9-])REQ-SPEC-[A-Za-z0-9][A-Za-z0-9-]*-v\d+-\d{3}\b")
+LEGACY_REQ_RE = re.compile(r"\bFR-\d{3}\b")
+TASK_ID_RE = re.compile(r"(?<![A-Za-z0-9-])TASK-GOAL-\d{8}-\d{3}-\d{3}\b")
+DEFAULT_GOAL_ID = "GOAL-20260608-001"
+DEFAULT_MATRIX_FILE = ".config/goal/matrix.yaml"
+
+
+def trailing_line_text(content: str, start: int) -> str:
+    """提取 ID 所在行中 ID 后面的描述文本。"""
+    line_end = content.find("\n", start)
+    if line_end == -1:
+        line_end = len(content)
+    return content[start:line_end].lstrip(" :：-\t").strip()
 
 
 def extract_requirements(spec_dir: str) -> list[dict]:
@@ -33,15 +47,33 @@ def extract_requirements(spec_dir: str) -> list[dict]:
 
     for md_file in spec_path.rglob("*.md"):
         content = md_file.read_text(encoding="utf-8")
-        spec_match = re.search(r"Spec\s*(?:ID|编号)[:\s]*(\S+)", content)
-        spec_id = spec_match.group(1) if spec_match else md_file.stem
+        spec_match = SPEC_ID_RE.search(content)
+        spec_id = spec_match.group(0) if spec_match else md_file.stem
 
-        for match in re.finditer(r"(FR-\d+)[:\s]+(.+?)(?:\n|$)", content):
-            fr_id = match.group(1)
-            desc = match.group(2).strip()
+        seen_req_ids = set()
+        for match in REQ_ID_RE.finditer(content):
+            req_id = match.group(0)
+            if req_id in seen_req_ids:
+                continue
+            seen_req_ids.add(req_id)
+            desc = trailing_line_text(content, match.end()) or "Requirement extracted from spec"
             requirements.append({
                 "spec_id": spec_id,
-                "req_id": fr_id,
+                "req_id": req_id,
+                "id_format": "canonical",
+                "description": desc,
+            })
+
+        for match in LEGACY_REQ_RE.finditer(content):
+            req_id = match.group(0)
+            if req_id in seen_req_ids:
+                continue
+            seen_req_ids.add(req_id)
+            desc = trailing_line_text(content, match.end()) or "Legacy requirement extracted from spec"
+            requirements.append({
+                "spec_id": spec_id,
+                "req_id": req_id,
+                "id_format": "legacy",
                 "description": desc,
             })
 
@@ -58,14 +90,14 @@ def extract_tasks(task_dir: str) -> list[dict]:
 
     for md_file in task_path.rglob("*.md"):
         content = md_file.read_text(encoding="utf-8")
-        for match in re.finditer(r"TASK-[\w-]+", content):
+        for match in TASK_ID_RE.finditer(content):
             task_id = match.group(0)
             tasks.append({"task_id": task_id, "file": str(md_file)})
 
     return tasks
 
 
-def generate_matrix(requirements: list[dict], tasks: list[dict], goal_id: str = "GOAL-AUTO") -> str:
+def generate_matrix(requirements: list[dict], tasks: list[dict], goal_id: str = DEFAULT_GOAL_ID) -> str:
     """生成 Matrix YAML"""
     lines = [
         f"# 自动生成的 Traceability Matrix",
@@ -80,9 +112,9 @@ def generate_matrix(requirements: list[dict], tasks: list[dict], goal_id: str = 
         lines.append(f"    spec_id: {req['spec_id']}")
         lines.append(f"    requirement_id: {req['req_id']}")
         lines.append(f'    description: "{req["description"]}"')
-        lines.append(f'    task_id: ""  # TODO: 填入对应 Task ID')
+        lines.append(f'    task_id: ""  # TODO: 如 TASK-GOAL-20260608-001-001')
         lines.append(f'    code_module: ""  # TODO: 填入代码模块')
-        lines.append(f'    test_case: ""  # TODO: 填入测试用例')
+        lines.append(f'    test_case: ""  # TODO: 如 TEST-TASK-GOAL-20260608-001-001-001')
         lines.append(f"    status: Unmapped")
         lines.append(f"    risk: Low")
         lines.append("")
@@ -108,24 +140,36 @@ def generate_matrix(requirements: list[dict], tasks: list[dict], goal_id: str = 
 
 def check_matrix(matrix_file: str) -> dict:
     """检查现有 Matrix 的完整性"""
-    result = {"total": 0, "mapped": 0, "unmapped": 0, "orphan_tasks": 0, "missing_tests": 0}
+    result = {
+        "missing": False,
+        "total": 0,
+        "mapped": 0,
+        "unmapped": 0,
+        "missing_tasks": 0,
+        "orphan_tasks": 0,
+        "missing_tests": 0,
+    }
 
     path = Path(matrix_file)
     if not path.exists():
         print(f"[ERROR] Matrix 文件不存在: {matrix_file}", file=sys.stderr)
+        result["missing"] = True
         return result
 
     content = path.read_text(encoding="utf-8")
 
-    entries = re.findall(r"- goal_id:", content)
+    entries = re.findall(r"^[ \t]*-[ \t]*goal_id:", content, re.MULTILINE)
     result["total"] = len(entries)
 
     mapped = re.findall(r"status:\s*(Done|Implemented|Tested)", content)
     result["mapped"] = len(mapped)
     result["unmapped"] = result["total"] - result["mapped"]
 
-    empty_tasks = re.findall(r'task_id:\s*""', content)
-    result["orphan_tasks"] = len(empty_tasks)
+    missing_tasks = re.findall(r'task_id:\s*""', content)
+    result["missing_tasks"] = len(missing_tasks)
+
+    orphan_tasks = re.findall(r'requirement_id:\s*""', content)
+    result["orphan_tasks"] = len(orphan_tasks)
 
     empty_tests = re.findall(r'test_case:\s*""', content)
     result["missing_tests"] = len(empty_tests)
@@ -138,25 +182,29 @@ def main():
     parser.add_argument("--spec-dir", help="Spec 文件目录")
     parser.add_argument("--task-dir", help="Task 文件目录")
     parser.add_argument("--output", help="输出 Matrix YAML 文件")
-    parser.add_argument("--goal-id", default="GOAL-AUTO", help="Goal ID")
+    parser.add_argument("--goal-id", default=DEFAULT_GOAL_ID, help="Goal ID")
     parser.add_argument("--check-only", action="store_true", help="仅检查现有 Matrix")
     parser.add_argument("--matrix", help="Matrix 文件路径（配合 --check-only）")
     args = parser.parse_args()
 
     if args.check_only:
-        matrix_file = args.matrix or ".agent/matrix.yaml"
+        matrix_file = args.matrix or DEFAULT_MATRIX_FILE
         result = check_matrix(matrix_file)
         print(f"Matrix 完整性检查:")
         print(f"  总行数:        {result['total']}")
         print(f"  已完成:        {result['mapped']}")
         print(f"  未完成:        {result['unmapped']}")
+        print(f"  缺失 Task 映射: {result['missing_tasks']}")
         print(f"  孤儿 Task:     {result['orphan_tasks']}")
         print(f"  缺失测试覆盖:  {result['missing_tests']}")
+
+        if result["missing"] or result["total"] == 0:
+            sys.exit(1)
 
         if result['total'] > 0:
             coverage = result['mapped'] * 100 // result['total']
             print(f"  覆盖率:        {coverage}%")
-            if coverage < 70:
+            if coverage < 70 or result["missing_tasks"] > 0 or result["missing_tests"] > 0:
                 sys.exit(1)
         sys.exit(0)
 

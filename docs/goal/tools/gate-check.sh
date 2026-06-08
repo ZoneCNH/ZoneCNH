@@ -6,10 +6,11 @@
 set -euo pipefail
 
 ROOT="${1:-.}"
-AGENT_DIR="$ROOT/.agent"
-REGISTRY_DIR="$AGENT_DIR/registry"
-EVIDENCE_DIR="$AGENT_DIR/evidence"
-MATRIX_FILE="$AGENT_DIR/matrix.yaml"
+CONFIG_GOAL_DIR="${GOAL_CONFIG_DIR:-$ROOT/.config/goal}"
+DOC_GOAL_DIR="${DOC_GOAL_DIR:-$ROOT/docs/goal}"
+REGISTRY_DIR="${GOAL_REGISTRY_DIR:-$CONFIG_GOAL_DIR/registry}"
+EVIDENCE_DIR="${GOAL_EVIDENCE_DIR:-$CONFIG_GOAL_DIR/evidence}"
+MATRIX_FILE="${GOAL_MATRIX_FILE:-$CONFIG_GOAL_DIR/matrix.yaml}"
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -20,9 +21,9 @@ PASS=0
 FAIL=0
 WARN=0
 
-pass() { echo -e "${GREEN}✓ PASS${NC}: $1"; ((PASS++)); }
-fail() { echo -e "${RED}✗ FAIL${NC}: $1"; ((FAIL++)); }
-warn() { echo -e "${YELLOW}⚠ WARN${NC}: $1"; ((WARN++)); }
+pass() { echo -e "${GREEN}✓ PASS${NC}: $1"; ((PASS += 1)); }
+fail() { echo -e "${RED}✗ FAIL${NC}: $1"; ((FAIL += 1)); }
+warn() { echo -e "${YELLOW}⚠ WARN${NC}: $1"; ((WARN += 1)); }
 
 echo "=========================================="
 echo "  Goal 驱动交付 — Gate 完整性检查"
@@ -32,7 +33,7 @@ echo ""
 # --- G5: Task Gate ---
 echo "--- G5: Task Gate ---"
 if [ -f "$REGISTRY_DIR/tasks.yaml" ]; then
-    TOTAL=$(grep -c "^- task_id:" "$REGISTRY_DIR/tasks.yaml" 2>/dev/null || echo 0)
+    TOTAL=$(grep -cE "^[[:space:]-]*task_id:" "$REGISTRY_DIR/tasks.yaml" 2>/dev/null || echo 0)
     WITH_DOD=$(grep -c "dod:" "$REGISTRY_DIR/tasks.yaml" 2>/dev/null || echo 0)
     if [ "$TOTAL" -gt 0 ]; then
         COVERAGE=$((WITH_DOD * 100 / TOTAL))
@@ -86,7 +87,7 @@ if [ -d "$EVIDENCE_DIR" ]; then
         # 检查 Evidence 必须字段
         MISSING_FIELDS=0
         for f in $(find "$EVIDENCE_DIR" -name "evidence.md" 2>/dev/null); do
-            for field in "Evidence ID" "Task ID" "Status" "Files Changed" "Commands Run"; do
+            for field in "Evidence ID" "Test ID" "Status" "Files Changed" "Commands Run"; do
                 if ! grep -qi "$field" "$f" 2>/dev/null; then
                     warn "$f 缺少字段: $field"
                     ((MISSING_FIELDS++))
@@ -107,7 +108,7 @@ echo ""
 # --- Matrix 覆盖率 ---
 echo "--- Matrix 覆盖率 ---"
 if [ -f "$MATRIX_FILE" ]; then
-    MATRIX_ROWS=$(grep -c "^-" "$MATRIX_FILE" 2>/dev/null || echo 0)
+    MATRIX_ROWS=$(grep -cE "^[[:space:]]*-[[:space:]]*goal_id:" "$MATRIX_FILE" 2>/dev/null || echo 0)
     MAPPED=$(grep -c "status:.*\(Done\|Implemented\|Tested\)" "$MATRIX_FILE" 2>/dev/null || echo 0)
     if [ "$MATRIX_ROWS" -gt 0 ]; then
         MATRIX_COVERAGE=$((MAPPED * 100 / MATRIX_ROWS))
@@ -129,9 +130,9 @@ echo ""
 # --- 孤儿检查 ---
 echo "--- 孤儿检查 ---"
 if [ -f "$REGISTRY_DIR/tasks.yaml" ]; then
-    ORPHAN_TASKS=$(grep -c "source_goal:" "$REGISTRY_DIR/tasks.yaml" 2>/dev/null || echo 0)
-    if [ "$TOTAL" -gt 0 ] && [ "$ORPHAN_TASKS" -lt "$TOTAL" ]; then
-        ORPHAN_COUNT=$((TOTAL - ORPHAN_TASKS))
+    TASKS_WITH_GOAL=$(grep -cE "^[[:space:]]*goal_id:" "$REGISTRY_DIR/tasks.yaml" 2>/dev/null || echo 0)
+    if [ "$TOTAL" -gt 0 ] && [ "$TASKS_WITH_GOAL" -lt "$TOTAL" ]; then
+        ORPHAN_COUNT=$((TOTAL - TASKS_WITH_GOAL))
         fail "发现 ${ORPHAN_COUNT} 个无 Goal 来源的孤儿 Task"
     elif [ "$TOTAL" -gt 0 ]; then
         pass "无孤儿 Task"

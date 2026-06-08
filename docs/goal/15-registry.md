@@ -4,12 +4,30 @@
 
 Registry 保存长期状态，所有 Agent 共享。
 
+## 统一状态路径
+
+所有 Goal 相关状态统一存放在 `.config/goal/`，由 5 个 Goal Agent 共同维护：
+
+| 目录 | 文件 | 维护 Agent |
+|------|------|------------|
+| `.config/goal/registry/` | `goals.yaml` | goal-spec |
+| `.config/goal/registry/` | `tasks.yaml` | goal-spec |
+| `.config/goal/registry/` | `issues.yaml` | goal-spec |
+| `.config/goal/registry/` | `releases.yaml` | goal-spec |
+| `.config/goal/registry/` | `risks.yaml` | goal-spec |
+| `.config/goal/registry/` | `decisions.yaml` | goal-spec |
+| `.config/goal/matrix/` | `matrix.yaml` | goal-matrix |
+| `.config/goal/gates/` | `state.yaml` | goal-reviewer |
+| `.config/goal/pipeline/` | `state.yaml` | goal-spec |
+| `.config/goal/evidence/` | `EVID-*.md` | goal-evidence |
+| `.config/goal/prompts/` | `TASK-*/v*.md` | goal-prompt-builder |
+
 ---
 
 ## 1. Goal Registry
 
 ```yaml
-goal_id: G-2026-001
+goal_id: GOAL-20260608-001
 title: x.go Market Data MVP
 status: active
 owner: architect-agent
@@ -19,7 +37,7 @@ current_phase: design_ready
 related_issues:
   - "#1393"
 related_specs:
-  - .agent/specs/market_data_spec.md
+  - docs/goal/specs/SPEC-market-data-v1-market-data.md
 success_criteria:
   - market_data 独立运行
   - 支持历史 K 线采集
@@ -27,17 +45,17 @@ success_criteria:
   - CI 测试通过
 ```
 
-路径：`.agent/registry/goals.yaml`
+路径：`.config/goal/registry/goals.yaml`
 
 ---
 
 ## 2. Task Registry
 
 ```yaml
-task_id: T-2026-001-003
-goal_id: G-2026-001
+task_id: TASK-GOAL-20260608-001-003
+goal_id: GOAL-20260608-001
 title: Implement WS subscription handler
-status: executing
+status: In Progress
 owner: agent-market-data
 priority: P0
 dod:
@@ -46,10 +64,10 @@ dod:
   - 断线重连有效
   - 测试通过
 evidence:
-  - .agent/evidence/2026-05-31/TASK-GOAL-20260601-001-003/evidence.md
+  - .config/goal/evidence/EVID-TEST-TASK-GOAL-20260608-001-003-001-001.md
 ```
 
-路径：`.agent/registry/tasks.yaml`
+路径：`.config/goal/registry/tasks.yaml`
 
 ---
 
@@ -61,20 +79,20 @@ source: github
 title: Market Data module foundation
 status: in_progress
 priority: P0
-goal_id: G-2026-001
+goal_id: GOAL-20260608-001
 spec_id: SPEC-market-data-v1
 design_id: DESIGN-market-data-v1
 tasks:
-  - T001
-  - T002
-  - T003
+  - TASK-GOAL-20260608-001-001
+  - TASK-GOAL-20260608-001-002
+  - TASK-GOAL-20260608-001-003
 labels:
   - market-data
   - p0
   - architecture
 ```
 
-路径：`.agent/registry/issues.yaml`
+路径：`.config/goal/registry/issues.yaml`
 
 ---
 
@@ -92,8 +110,8 @@ OPEN → TRIAGED → SPEC_READY → DESIGN_READY → TASKS_READY
 ## 5. Release Registry
 
 ```yaml
-release_id: REL-2026-05-31-market-data
-goal_id: G-2026-001
+release_id: REL-20260608-market-data
+goal_id: GOAL-20260608-001
 version: v0.3.0
 status: ready_for_pr
 linked_issues:
@@ -103,20 +121,20 @@ tests:
 docs_updated:
   - README.md
   - CHANGELOG.md
-rollback_plan: .agent/release/rollback_market_data.md
-evidence_manifest: .agent/evidence/2026-05-31/release_manifest.md
+rollback_plan: docs/goal/release/rollback-market-data.md
+evidence_manifest: .config/goal/evidence/REL-20260608-market-data-manifest.md
 ```
 
-路径：`.agent/registry/releases.yaml`
+路径：`.config/goal/registry/releases.yaml`
 
 ---
 
 ## 6. Risk Registry
 
 ```yaml
-risk_id: RISK-GOAL-20260601-001-001
-goal_id: GOAL-20260601-001
-task_id: TASK-GOAL-20260601-001-003
+risk_id: RISK-GOAL-20260608-001-001
+goal_id: GOAL-20260608-001
+task_id: TASK-GOAL-20260608-001-003
 type: Performance Risk
 description: WS 断线重连可能导致数据丢失
 probability: Medium
@@ -128,14 +146,15 @@ owner: agent-market-data
 status: open
 ```
 
-路径：`.agent/registry/risks.yaml`
+路径：`.config/goal/registry/risks.yaml`
 
 ---
 
 ## 7. Decision Registry
 
 ```yaml
-decision_id: ADR-0001
+decision_id: DEC-20260608-001
+adr_id: ADR-20260608-001
 title: Market Data module boundary
 status: accepted
 context: market_data 需要独立运行并支持多数据源
@@ -147,4 +166,4 @@ rationale: 降低供应商耦合
 rollback: 可退回单一 Binance client 实现
 ```
 
-路径：`.agent/registry/decisions.yaml` 和 `docs/adr/`
+路径：`.config/goal/registry/decisions.yaml`；ADR 正文放在 `docs/adr/`

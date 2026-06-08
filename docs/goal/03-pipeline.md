@@ -28,7 +28,7 @@ Goal → Spec → Design → Plan → Tasks → Prompt → Code → Test → Rev
 | Release      | 是否可上线？               | 发布清单     |
 | Retrospective| 哪里可以改进？             | 复盘与 Patch |
 
-> **Matrix（追溯矩阵）** 是横切制品，贯穿所有阶段，不是独立的管线层。它将 Goal → Spec → Requirement → AC → Task → Test → Evidence 串联为可追溯的映射关系。详见 [05-layer-standards.md §4.3](05-layer-standards.md#43-matrix-标准)。
+> **Matrix（追溯矩阵）** 是横切追溯制品，贯穿所有阶段，不是独立的管线层，也不出现在状态流 From/To 中。它将 Goal → Spec → Requirement → AC → Task → Prompt → Code → Test → Evidence 串联为可追溯的映射关系。详见 [05-layer-standards.md §9](05-layer-standards.md#9-matrix-横切标准)。
 
 ---
 
@@ -86,6 +86,24 @@ Recommended Next Action: [建议下一步]
 | RELEASING | RETROSPECTING | Release Gate PASS |
 | RETROSPECTING | DONE | Retrospective Gate PASS |
 
+### 2.5 对象状态总表
+
+> SSOT：各对象的权威状态定义所在文件。其他文件引用本表，不再重复定义。
+
+| 对象 | 状态值 | 定义位置 |
+|------|--------|----------|
+| Goal | Draft → Active → Paused → Achieved / Abandoned | [10-object-lifecycle.md §1](10-object-lifecycle.md#1-goal-生命周期) |
+| Spec | Draft → Review → Approved → Superseded / Deprecated | [05-layer-standards.md §2](05-layer-standards.md#2-spec-标准) |
+| Design | Draft → Review → Approved → Superseded | [05-layer-standards.md §3](05-layer-standards.md#3-design-标准) |
+| Plan | Draft → Approved → Superseded | [05-layer-standards.md §4](05-layer-standards.md#4-plan-标准) |
+| Task | Unmapped → Mapped → In Progress → Done → Blocked | [05-layer-standards.md §4](05-layer-standards.md#4-plan-标准) |
+| Matrix | Unmapped → Mapped → Linked → Verified → Drifted → Stale | [05-layer-standards.md §9](05-layer-standards.md#9-matrix-标准) |
+| Pipeline | INIT→…→DONE（见 §2.1） | [本文件 §2.1](#21-主状态机) |
+| Issue | open → in_progress → resolved → closed | [10-object-lifecycle.md](10-object-lifecycle.md) |
+| Gate | PASS / FAIL / WAIVED | [04-gates.md](04-gates.md) |
+| Maturity | L0–L5 | [18-maturity.md](18-maturity.md) |
+| Change Level | CL0–CL5 | [17-risk-and-decisions.md](17-risk-and-decisions.md) |
+
 回退规则：
 
 | From | To | 条件 |
@@ -109,36 +127,36 @@ Goal (GOAL-20260608-001):
 为已注册用户提供邮箱验证码登录，验证码登录成功率 ≥ 95%，有效期 10 分钟，使用后不可重复使用。
 
 ↓ Spec (SPEC-auth-v1.0)
-FR-001: 用户可以请求邮箱验证码
-FR-002: 验证码为 6 位数字
-FR-003: 验证码 10 分钟过期
-FR-004: 验证码正确后创建登录态
-FR-005: 验证码使用后立即失效
-FR-006: 发送频率需要限制
+REQ-SPEC-auth-v1-001: 用户可以请求邮箱验证码
+REQ-SPEC-auth-v1-002: 验证码为 6 位数字
+REQ-SPEC-auth-v1-003: 验证码 10 分钟过期
+REQ-SPEC-auth-v1-004: 验证码正确后创建登录态
+REQ-SPEC-auth-v1-005: 验证码使用后立即失效
+REQ-SPEC-auth-v1-006: 发送频率需要限制
 
 ↓ Design (DESIGN-auth-v1.0)
 Modules: AuthController, AuthService, CodeStore, RateLimiter, SessionService
 Interfaces: sendCode(), verifyCode(), createSession()
-ADR-0001: 使用 Redis 存储验证码
-
-↓ Matrix
-GOAL-20260608-001 → FR-001 → TASK-GOAL-20260608-001-001 → PROMPT-TASK-GOAL-20260608-001-001-001 → AuthController.sendCode → test_send_code
-GOAL-20260608-001 → FR-004 → TASK-GOAL-20260608-001-004 → PROMPT-TASK-GOAL-20260608-001-004-001 → AuthService.verifyCode → test_verify_code_success
-GOAL-20260608-001 → FR-005 → TASK-GOAL-20260608-001-004 → PROMPT-TASK-GOAL-20260608-001-004-001 → CodeStore.invalidate → test_code_reuse_failed
-GOAL-20260608-001 → FR-006 → TASK-GOAL-20260608-001-003 → PROMPT-TASK-GOAL-20260608-001-003-001 → RateLimiter → test_rate_limit
-
-↓ Tasks
-TASK-GOAL-001-001: 实现发送验证码接口
-TASK-GOAL-001-002: 实现验证码生成和存储
-TASK-GOAL-001-003: 实现频率限制
-TASK-GOAL-001-004: 实现验证码校验和登录
-TASK-GOAL-001-005: 编写测试
+DEC-20260608-001: 使用 Redis 存储验证码
 
 ↓ Plan (PLAN-GOAL-20260608-001-v1.0)
 Phase 1: 验证码存储（TASK-GOAL-20260608-001-002）
 Phase 2: 发送接口（TASK-GOAL-20260608-001-001）+ 频率限制（TASK-GOAL-20260608-001-003）
 Phase 3: 校验登录（TASK-GOAL-20260608-001-004）
 Phase 4: 测试和验收（TASK-GOAL-20260608-001-005）
+
+↓ Tasks
+TASK-GOAL-20260608-001-001: 实现发送验证码接口
+TASK-GOAL-20260608-001-002: 实现验证码生成和存储
+TASK-GOAL-20260608-001-003: 实现频率限制
+TASK-GOAL-20260608-001-004: 实现验证码校验和登录
+TASK-GOAL-20260608-001-005: 编写测试
+
+↔ Matrix（横切追溯制品，随 Plan / Tasks / Prompt / Code / Test 更新）
+GOAL-20260608-001 → REQ-SPEC-auth-v1-001 → TASK-GOAL-20260608-001-001 → PROMPT-TASK-GOAL-20260608-001-001-001 → AuthController.sendCode → TEST-TASK-GOAL-20260608-001-001-001
+GOAL-20260608-001 → REQ-SPEC-auth-v1-004 → TASK-GOAL-20260608-001-004 → PROMPT-TASK-GOAL-20260608-001-004-001 → AuthService.verifyCode → TEST-TASK-GOAL-20260608-001-004-001
+GOAL-20260608-001 → REQ-SPEC-auth-v1-005 → TASK-GOAL-20260608-001-004 → PROMPT-TASK-GOAL-20260608-001-004-001 → CodeStore.invalidate → TEST-TASK-GOAL-20260608-001-004-002
+GOAL-20260608-001 → REQ-SPEC-auth-v1-006 → TASK-GOAL-20260608-001-003 → PROMPT-TASK-GOAL-20260608-001-003-001 → RateLimiter → TEST-TASK-GOAL-20260608-001-003-001
 
 ↓ Prompt (PROMPT-TASK-GOAL-20260608-001-004-001)
 请实现 TASK-GOAL-20260608-001-004 验证码校验和登录逻辑，要求验证码正确、未过期、未使用，成功后创建登录态，并立即使验证码失效。

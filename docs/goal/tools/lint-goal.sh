@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # lint-goal.sh — Goal/Spec/Matrix Lint 规则检查
-# 执行 docs/goal/06-lint-rules.md 中定义的自动化检查
+# 执行 docs/goal/10-lint-rules.md 中定义的自动化检查
 # 用法: ./docs/goal/tools/lint-goal.sh <目标目录或文件>
 
 set -euo pipefail
@@ -15,8 +15,8 @@ NC='\033[0m'
 ERRORS=0
 WARNINGS=0
 
-error() { echo -e "${RED}ERROR${NC}: $1"; ((ERRORS++)); }
-warn()  { echo -e "${YELLOW}WARN${NC}:  $1"; ((WARNINGS++)); }
+error() { echo -e "${RED}ERROR${NC}: $1"; ((ERRORS += 1)); }
+warn()  { echo -e "${YELLOW}WARN${NC}:  $1"; ((WARNINGS += 1)); }
 ok()    { echo -e "${GREEN}OK${NC}:    $1"; }
 
 echo "=========================================="
@@ -84,11 +84,11 @@ for f in $FILES; do
             warn "[$BASENAME] SL-002: Spec 缺少边界场景或错误处理"
         fi
 
-        # SL-003: FR 必须可测试
-        FR_COUNT=$(echo "$CONTENT" | grep -c "FR-" || echo 0)
+        # SL-003: Requirement 必须可测试（兼容旧 FR-*，优先使用 REQ-SPEC-*）
+        REQ_COUNT=$(echo "$CONTENT" | grep -cE "REQ-SPEC-|FR-" || echo 0)
         AC_COUNT=$(echo "$CONTENT" | grep -cE "AC-|test_|测试" || echo 0)
-        if [ "$FR_COUNT" -gt 0 ] && [ "$AC_COUNT" -eq 0 ]; then
-            error "[$BASENAME] SL-003: 有 $FR_COUNT 个 FR 但无测试覆盖"
+        if [ "$REQ_COUNT" -gt 0 ] && [ "$AC_COUNT" -eq 0 ]; then
+            error "[$BASENAME] SL-003: 有 $REQ_COUNT 个 Requirement 但无测试覆盖"
         fi
     fi
 

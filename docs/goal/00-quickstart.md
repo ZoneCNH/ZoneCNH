@@ -2,7 +2,7 @@
 
 > **5 分钟理解体系 → 10 分钟走完案例 → 1 分钟选对模式**
 
-> **ID 格式说明**：本文档使用新格式 ID（如 TASK-GOAL-20260601-001-001、REQ-SPEC-order-export-001），详见 [07-id-system.md](07-id-system.md)。
+> **ID 格式说明**：本文档使用新格式 ID（如 TASK-GOAL-20260601-001-001、REQ-SPEC-order-export-001），详见 [07-id-system.md#id-格式](07-id-system.md#1-id-格式)。
 
 ---
 
@@ -248,7 +248,7 @@ Result:   ✓ Goal 达成
 │   └─ Goal → Task → DoD → Code → Test → Evidence → Review
 │
 ├─ 新增一个功能 → Standard Mode
-│   └─ Goal → Spec → Matrix → Tasks → Plan → Code → Test → Review → Release
+│   └─ Goal → Spec → Design → Plan → Tasks → Prompt → Code → Test → Review → Release
 │
 ├─ 改公共接口/改架构 → Full Mode
 │   └─ 全流程 + ADR + Human Approval + Release Manifest + Rollback
@@ -304,6 +304,24 @@ Result:   ✓ Goal 达成
 
 ```text
 全部按顺序读：00 → 01 → 02 → 03 → 04 → 05 → 06 → 07 → 08 → 09 → 10 → 11
+```
+
+### 高级使用（按需）
+
+> 以下文件覆盖运行引擎、Agent 协议、CI/CD、风险决策、成熟度、递归改进和 Delivery OS。适合需要深入治理和自动化的团队。
+
+```text
+13-runtime-engine.md     — 执行模式、对象模型、Evidence、失败预算
+14-agent-protocols.md    — Agent Team 协作、Worktree 隔离
+15-registry.md           — Registry 子系统（Goal/Task/Issue/Release/Risk/Decision）
+16-ci-cd.md              — CI Gates、x.go 规则、反模式
+17-risk-and-decisions.md — Risk Register、ADR、Release Manifest
+18-maturity.md           — L0-L5 成熟度升级路径
+19-self-improving.md     — Patch 系统、体系演进
+20-metrics-evidence.md   — Metrics Review、Evidence Graph
+21-controlled-rsi.md     — 受控递归改进
+22-delivery-os.md        — Delivery OS 五个运行时（愿景架构）
+23-workflow-governance-checks.md — 工作流治理检查（愿景架构）
 ```
 
 ---

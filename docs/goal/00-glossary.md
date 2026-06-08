@@ -5,12 +5,12 @@
 | 术语 | 定义 | 权威定义位置 |
 |------|------|-------------|
 | Goal | 可验证的业务目标，包含目标动作、结果对象、衡量指标、目标值和截止时间 | [02-goal-standard.md](02-goal-standard.md) |
-| Spec | 需求规格，定义具体要做什么、边界是什么 | [05-layer-standards.md §4.1](05-layer-standards.md#41-spec-标准) |
-| Design | 设计方案，回答怎么拆、怎么隔离 | [05-layer-standards.md §4.2](05-layer-standards.md#42-design-标准) |
-| Matrix | 追溯矩阵，将 Goal/Spec/AC/Task/Test/Evidence 串联为可追溯映射 | [05-layer-standards.md §4.3](05-layer-standards.md#43-matrix-标准) |
-| Task | 可执行的原子任务，有明确输入、输出和完成标准 | [05-layer-standards.md §4.4](05-layer-standards.md#44-tasks-标准) |
-| Plan | 执行计划，定义任务执行顺序、阶段和验证点 | [05-layer-standards.md §4.5](05-layer-standards.md#45-plan-标准) |
-| Prompt | 驱动 AI/工程师执行的指令模板 | [05-layer-standards.md §4.6](05-layer-standards.md#46-prompt-标准) |
+| Spec | 需求规格，定义具体要做什么、边界是什么 | [05-layer-standards.md §1](05-layer-standards.md#1-spec-标准) |
+| Design | 设计方案，回答怎么拆、怎么隔离 | [05-layer-standards.md §2](05-layer-standards.md#2-design-标准) |
+| Matrix | 追溯矩阵，将 Goal/Spec/AC/Task/Test/Evidence 串联为可追溯映射 | [05-layer-standards.md §9](05-layer-standards.md#9-matrix-横切标准) |
+| Plan | 执行计划，定义任务执行顺序、阶段和验证点 | [05-layer-standards.md §3](05-layer-standards.md#3-plan-标准) |
+| Task | 可执行的原子任务，有明确输入、输出和完成标准 | [05-layer-standards.md §4](05-layer-standards.md#4-tasks-标准) |
+| Prompt | 驱动 AI/工程师执行的指令模板 | [05-layer-standards.md §5](05-layer-standards.md#5-prompt-标准) |
 | Gate | 质量门禁，阻止问题流到下一层 | [04-gates.md](04-gates.md) |
 | Evidence | 交付证据，证明任务已完成且满足验收标准 | [13-runtime-engine.md §4](13-runtime-engine.md#4-evidence-协议) |
 | Registry | 注册表，保存长期共享状态 | [15-registry.md](15-registry.md) |
@@ -20,11 +20,11 @@
 | DoD | Definition of Done，完成某阶段时必须满足的条件 | [06-dod.md](06-dod.md) |
 | RSI | Recursive Self-Improvement，受控递归改进机制 | [21-controlled-rsi.md](21-controlled-rsi.md) |
 | ADR | Architecture Decision Record，架构决策记录 | [17-risk-and-decisions.md §2](17-risk-and-decisions.md#2-decision-logadr) |
-| AC | Acceptance Criteria，验收标准，定义需求何时算完成 | [05-layer-standards.md §4.1](05-layer-standards.md#41-spec-标准) |
+| AC | Acceptance Criteria，验收标准，定义需求何时算完成 | [05-layer-standards.md §1](05-layer-standards.md#1-spec-标准) |
 | RFC | Request for Comments，征求意见稿，用于技术方案评审 | [11-ai-collaboration.md](11-ai-collaboration.md) |
 | RACI | Responsible/Accountable/Consulted/Informed，责任分配矩阵 | [06-dod.md](06-dod.md) |
 | CWV | Core Web Vitals，核心网页指标（LCP/FID/CLS） | [20-metrics-evidence.md](20-metrics-evidence.md) |
-| Non-goal | 明确声明不做的事情，防范围蔓延 | [02-goal-standard.md §4](02-goal-standard.md#4-non-goal) |
+| Non-goal | 明确声明不做的事情，防范围蔓延 | [02-goal-standard.md §7](02-goal-standard.md#7-non-goals) |
 | Retrospective | 复盘，Goal 完成后的回顾总结 | [06-dod.md](06-dod.md) |
 | Prompt Patch | 针对 Prompt 层的改进补丁 | [19-self-improving.md §1](19-self-improving.md#1-self-improving-机制) |
 | Harness Patch | 针对测试/验证工具链的改进补丁 | [19-self-improving.md §1](19-self-improving.md#1-self-improving-机制) |

@@ -1,8 +1,10 @@
 # 各层标准
 
-> 管线定义见 [03-pipeline.md](03-pipeline.md)，Gate 体系见 [04-gates.md](04-gates.md)。
+> 管线定义见 [03-pipeline.md#完整管线](03-pipeline.md#1-完整管线)，Gate 体系见 [04-gates.md#gate-类型](04-gates.md#1-gate-类型)。
 
-本文档定义 Goal 驱动交付体系中 **Spec、Design、Matrix、Tasks、Plan、Prompt、Code、Test** 八层的标准。
+本文档定义 Goal 驱动交付体系中 **Spec、Design、Plan、Tasks、Prompt、Code、Test** 的主流程层级标准，并定义 **Matrix** 作为横切追溯制品的维护标准。唯一主流程顺序定义见 [03-pipeline.md §1 完整管线](03-pipeline.md#1-完整管线)。
+
+Matrix 不参与主流程排序，不作为状态机阶段。
 
 ---
 
@@ -59,13 +61,13 @@ Out of Scope:             不包含内容
 合格：
 
 ```text
-FR-001: 用户可以点击导出按钮。
-FR-002: 系统校验用户导出权限。
-FR-003: 系统校验筛选时间范围。
-FR-004: 系统创建导出任务。
-FR-005: 系统生成 CSV 文件。
-FR-006: 系统提供下载链接。
-FR-007: 系统记录导出日志。
+REQ-SPEC-export-v1-001: 用户可以点击导出按钮。
+REQ-SPEC-export-v1-002: 系统校验用户导出权限。
+REQ-SPEC-export-v1-003: 系统校验筛选时间范围。
+REQ-SPEC-export-v1-004: 系统创建导出任务。
+REQ-SPEC-export-v1-005: 系统生成 CSV 文件。
+REQ-SPEC-export-v1-006: 系统提供下载链接。
+REQ-SPEC-export-v1-007: 系统记录导出日志。
 ```
 
 ### Spec 状态
@@ -105,76 +107,49 @@ Risks:        技术风险
 
 ---
 
-## 3. Matrix 标准
+## 3. Plan 标准
 
-### 推荐字段
+Plan 在 Design 之后、Tasks 之前产出，先定义执行策略、阶段顺序、风险处理和拆分边界，再生成可执行 Task 清单。
 
-| 字段 | 说明 |
-|------|------|
-| Goal ID | 目标编号 |
-| Goal Item | 目标中的具体成功项 |
-| Spec ID | 对应需求 |
-| Requirement | 具体需求点 |
-| Acceptance Criteria | 验收标准 |
-| Task ID | 对应任务 |
-| Prompt ID | 对应 Prompt |
-| Code Module | 对应代码模块 |
-| Test Case | 对应测试 |
-| Status | 状态 |
-| Risk | 风险 |
-
-### 合格标准
+### 结构
 
 ```text
-1. 每个 Goal 至少对应一个 Spec。
-2. 每个 Spec 至少对应一个 Task。
-3. 每个 Task 至少对应一个 Prompt 或执行说明。
-4. 每个关键 Task 必须对应 Code Module。
-5. 每个 Acceptance Criteria 必须对应 Test Case。
-6. 不允许出现没有 Goal 来源的 Task。
-7. 不允许出现没有测试覆盖的关键需求。
+Plan Name:          PLAN-<goal-id>-v<major>.<minor>
+Source Goal:        对应 Goal
+Execution Strategy: 整体执行策略
+Phases:             阶段列表（每阶段含 Task、Goal、Output、Validation）
+Risks:              风险清单 → 应对方式
+Checkpoints:        检查点
+Rollback Plan:      回滚方式
+Final Validation:   最终验收方式
 ```
 
-### Matrix 生命周期
+### Plan → Tasks 排序规则
 
 ```text
-创建时机：Spec 审批后立即创建
-维护人：Tech Lead（A），Engineer（R）
-更新触发：
-  - Spec 变更 → 同步更新 Matrix
-  - Task 拆分 → 补充 Matrix 行
-  - Task 完成 → 更新 Status
-  - 测试通过 → 更新 Test Case 列
-完整性检查：
-  - Gate G5（Task Gate）自动检查 Matrix 覆盖率
-  - Release 前必须 100% 行有 Status = Done 或 Dropped（有理由）
+1. 先处理不确定性最高的任务（Technical Spike）
+2. 再处理核心主路径（Happy Path）
+3. 再处理边界条件（Business Rules）
+4. 再处理安全与性能（Security / Performance）
+5. 最后处理体验优化和文档（Tests / Docs / Release）
 ```
 
-### Matrix 状态
+### Plan 检查标准
 
 ```text
-Unmapped → Mapped → Planned → Implemented → Tested → Done
-                                                      ↓
-                                                   Blocked / Changed / Dropped
-```
-
-### 风险字段
-
-```text
-Risk Level: Low / Medium / High
-
-Risk Type:
-- Requirement Risk
-- Technical Risk
-- Security Risk
-- Performance Risk
-- Dependency Risk
-- Data Risk
+- 是否先做基础能力？
+- 是否先处理高风险任务？
+- 是否有阶段性验证点？
+- 是否有回滚方案？
+- 是否避免阻塞依赖？
+- 是否能增量交付？
 ```
 
 ---
 
 ## 4. Tasks 标准
+
+Tasks 在 Plan 之后产出，遵循 Plan 定义的执行顺序、依赖关系和风险优先级。
 
 ### 结构
 
@@ -217,50 +192,12 @@ Priority:       P0 / P1 / P2
 ### Task 状态
 
 ```text
-Todo → Ready → In Progress → Blocked → In Review → Done → Dropped
+Unmapped → Mapped → In Progress → Blocked → In Review → Done → Dropped
 ```
 
 ---
 
-## 5. Plan 标准
-
-### 结构
-
-```text
-Plan Name:          PLAN-<goal-id>-v<major>.<minor>
-Source Goal:        对应 Goal
-Execution Strategy: 整体执行策略
-Phases:             阶段列表（每阶段含 Task、Goal、Output、Validation）
-Risks:              风险清单 → 应对方式
-Checkpoints:        检查点
-Rollback Plan:      回滚方式
-Final Validation:   最终验收方式
-```
-
-### Tasks → Plan 排序规则
-
-```text
-1. 先处理不确定性最高的任务（Technical Spike）
-2. 再处理核心主路径（Happy Path）
-3. 再处理边界条件（Business Rules）
-4. 再处理安全与性能（Security / Performance）
-5. 最后处理体验优化和文档（Tests / Docs / Release）
-```
-
-### Plan 检查标准
-
-```text
-- 是否先做基础能力？
-- 是否先处理高风险任务？
-- 是否有阶段性验证点？
-- 是否有回滚方案？
-- 是否避免阻塞依赖？
-- 是否能增量交付？
-```
-
----
-
-## 6. Prompt 标准
+## 5. Prompt 标准
 
 ### 结构
 
@@ -302,7 +239,7 @@ Do Not:       禁止事项
 
 ---
 
-## 7. Code 标准
+## 6. Code 标准
 
 ### 交付标准
 
@@ -323,39 +260,99 @@ Code Deliverable:
 代码写完后，不是问"代码能不能跑？"，而是问"它是否完成了 Goal？"
 
 ```text
-Code → Test → Task → Spec → Goal
+Code → Test → Tasks → Spec → Goal
 ```
 
 ---
 
-## 8. Test 标准
+## 7. Test 标准
 
 Test 贯穿全程，不是 Code 写完后才想。
 
 ```text
-Goal → Spec → Design → Plan → Tasks → Prompt → Code
+Goal → Spec → Design → Plan → Tasks → Prompt → Code → Test → Review → Release → Retrospective
                                          ↓         ↑
                                        Tests ← Acceptance Criteria
 ```
-
-| 测试类型 | 来源 |
-|----------|------|
-| 单元测试 | Task / Function Requirement |
-| 集成测试 | Spec / User Flow |
-| E2E 测试 | Goal / Acceptance Criteria |
-| 性能测试 | Success Metrics / Performance Requirement |
-| 安全测试 | Security Requirement |
-| 回归测试 | Existing Behavior / Constraints |
-
----
-
-## 9. 测试在工作流中的位置
 
 | 测试类型 | 来源 | 执行阶段 |
 |----------|------|----------|
 | 单元测试 | Task / Function Requirement | EXECUTING → VERIFYING |
 | 集成测试 | Spec / User Flow | VERIFYING |
 | E2E 测试 | Goal / Acceptance Criteria | REVIEWING |
-| 性能测试 | Success Metrics | REVIEWING |
+| 性能测试 | Success Metrics / Performance Requirement | REVIEWING |
 | 安全测试 | Security Requirement | REVIEWING |
-| 回归测试 | Existing Behavior | VERIFYING |
+| 回归测试 | Existing Behavior / Constraints | VERIFYING |
+
+---
+
+## 9. Matrix 横切标准
+
+> Matrix 是横切追溯制品，不参与主流程排序，不作为状态机阶段。它在 Spec 审批后可初始化，并随 Design、Plan、Tasks、Prompt、Code、Test、Evidence 更新。
+
+### 推荐字段
+
+| 字段 | 说明 |
+|------|------|
+| Goal ID | 目标编号 |
+| Goal Item | 目标中的具体成功项 |
+| Spec ID | 对应需求 |
+| Requirement | 具体需求点 |
+| Acceptance Criteria | 验收标准 |
+| Task ID | 对应任务 |
+| Prompt ID | 对应 Prompt |
+| Code Module | 对应代码模块 |
+| Test Case | 对应测试 |
+| Status | 状态 |
+| Risk | 风险 |
+
+### 合格标准
+
+```text
+1. 每个 Goal 至少对应一个 Spec。
+2. 每个 Spec 至少对应一个 Task。
+3. 每个 Task 至少对应一个 Prompt 或执行说明。
+4. 每个关键 Task 必须对应 Code Module。
+5. 每个 Acceptance Criteria 必须对应 Test Case。
+6. 不允许出现没有 Goal 来源的 Task。
+7. 不允许出现没有测试覆盖的关键需求。
+```
+
+### Matrix 生命周期
+
+```text
+创建时机：Spec 审批后立即创建
+维护人：Tech Lead（A），Engineer（R）
+更新触发：
+  - Spec 变更 → 同步更新 Matrix
+  - Plan 完成 → 标记执行顺序和依赖
+  - Task 拆分 → 补充 Matrix 行
+  - Task 完成 → 更新 Status
+  - Prompt / Code 变更 → 同步对应列
+  - 测试通过 → 更新 Test Case 列
+完整性检查：
+  - Gate G5（Task Gate）自动检查 Matrix 覆盖率
+  - Release 前必须 100% 行有 Status = Done 或 Dropped（有理由）
+```
+
+### Matrix 状态
+
+```text
+Unmapped → Mapped → Planned → Implemented → Tested → Done
+                                                      ↓
+                                                   Blocked / Changed / Dropped
+```
+
+### 风险字段
+
+```text
+Risk Level: Low / Medium / High
+
+Risk Type:
+- Requirement Risk
+- Technical Risk
+- Security Risk
+- Performance Risk
+- Dependency Risk
+- Data Risk
+```
