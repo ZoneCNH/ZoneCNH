@@ -27,19 +27,12 @@ permissions:
 jobs:
   collect-and-evaluate:
     name: Collect & Evaluate
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64]
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0  # 完整历史用于 git-based 指标
-
-      - name: 设置 Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-
-      - name: 安装 jq
-        run: sudo apt-get update && sudo apt-get install -y jq
 
       - name: 采集每个模块的 git 指标
         id: collect
@@ -113,7 +106,8 @@ jobs:
 
   validate-write-source:
     name: Validate write source (LLM block)
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64]
+    timeout-minutes: 10
     if: github.event_name == 'pull_request'
     steps:
       - uses: actions/checkout@v4

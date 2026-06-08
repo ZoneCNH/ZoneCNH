@@ -6,6 +6,7 @@
 name: Docs CI
 
 on:
+  workflow_call:
   pull_request:
     paths:
       - "*.md"
@@ -39,7 +40,8 @@ jobs:
   # ── 1. Markdown 格式规范 ──────────────────────────────────────
   markdownlint:
     name: Markdownlint
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64]
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
 
@@ -56,7 +58,8 @@ jobs:
   # ── 2. 链接有效性检查 ────────────────────────────────────────
   link-check:
     name: Link Check
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64]
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
 
@@ -86,7 +89,8 @@ jobs:
   # ── 3. 敏感内容守卫 ──────────────────────────────────────────
   grep-guard:
     name: Grep Guard
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64]
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
 
@@ -96,7 +100,8 @@ jobs:
   # ── 4. 状态一致性校验 ────────────────────────────────────────
   status-consistency:
     name: Status Consistency
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64]
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
 
@@ -106,7 +111,8 @@ jobs:
   # ── 5. Spec 结构校验 ────────────────────────────────────────
   spec-lint:
     name: Spec Lint
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64]
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
 
@@ -116,7 +122,8 @@ jobs:
   # ── 5b. Spec 漂移防护 ──────────────────────────────────────
   spec-drift-guard:
     name: Spec Drift Guard
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64]
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
 
@@ -126,7 +133,8 @@ jobs:
   # ── 6. 追踪矩阵校验 ────────────────────────────────────────
   traceability-check:
     name: Traceability Check
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64]
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
 
@@ -136,7 +144,8 @@ jobs:
   # ── 7. Task Spec 校验 ────────────────────────────────────────
   task-spec-validate:
     name: Task Spec Validate
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64]
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
 
@@ -146,7 +155,8 @@ jobs:
   # ── 8. Spec 状态报告 ────────────────────────────────────────
   spec-status-report:
     name: Spec Status Report
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64]
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
 
@@ -156,7 +166,8 @@ jobs:
   # ── 9. 术语一致性检查 ──────────────────────────────────────
   glossary-consistency:
     name: Glossary Consistency
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64]
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
 
@@ -166,7 +177,8 @@ jobs:
   # ── 10. 反需求扫描 ─────────────────────────────────────────
   anti-requirement-scan:
     name: Anti-Requirement Scan
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64]
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
 
@@ -175,11 +187,11 @@ jobs:
 
   # ── 11. Outer Metrics 写入源守卫（宪法 §14.2） ──────────────
   # 禁止 LLM agent 修改 .omc/state/outer-metrics/；只允许 github-actions[bot]
-  # 或带 [outer-metrics] 标记的提交。仅在 PR 上运行（push 已合并不再守卫）。
+  # 或带 [outer-metrics] 标记的提交。
   outer-metrics-guard:
     name: Outer Metrics Guard
-    runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
+    runs-on: [self-hosted, Linux, X64]
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
         with:

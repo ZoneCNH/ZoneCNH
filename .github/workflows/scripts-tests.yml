@@ -25,31 +25,22 @@ permissions:
 jobs:
   rule-scorer-tests:
     name: rule-scorer pytest
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64]
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
-
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-
-      - name: 安装 pytest
-        run: pip install pytest
 
       - name: 运行 rule-scorer 单元测试
         run: pytest scripts/tests/ -v
 
   shell-smoke:
     name: shell 脚本烟雾测试
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64]
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 50
-
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
 
       - name: rule-scorer.py CLI smoke
         run: |
@@ -59,5 +50,5 @@ jobs:
 
       - name: outer-metrics scripts smoke
         run: |
-          bash scripts/outer-metrics-validate.sh || true
+          bash scripts/outer-metrics-validate.sh
           bash scripts/outer-metrics-eval.sh

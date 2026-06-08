@@ -16,66 +16,13 @@ permissions:
 jobs:
   # ── 1. 质量门禁：复用 docs-ci 全部检查 ─────────────────────────
   quality-gate:
-    name: Quality Gate
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Markdownlint
-        uses: DavidAnson/markdownlint-cli2-action@v19
-        with:
-          globs: |
-            *.md
-            docs/**/*.md
-            module/**/*.md
-            specs/**/*.md
-          config: .markdownlint.json
-
-      - name: 链接有效性检查（lychee）
-        uses: lycheeverse/lychee-action@v2
-        with:
-          args: >-
-            --verbose
-            --no-progress
-            --exclude-loopback
-            --exclude '127\.0\.0\.1'
-            --exclude 'localhost'
-            --exclude '0\.0\.0\.0'
-            --exclude 'file://'
-            --accept 200,204,301,302,403,429
-            --timeout 30
-            --max-retries 3
-            --retry-wait-time 2
-            --header 'Accept: text/html'
-            --exclude-file .lycheeignore
-            -- '*.md'
-            'docs/**/*.md'
-            'module/**/*.md'
-            'specs/**/*.md'
-          fail: true
-
-      - name: 敏感内容守卫
-        run: bash .github/ci/grep-guard.sh
-
-      - name: 状态一致性校验
-        run: bash .github/ci/status-consistency-check.sh
-
-      - name: Spec 结构校验
-        run: bash .github/ci/spec-lint.sh
-
-      - name: Spec 漂移防护
-        run: bash .github/ci/spec-drift-guard.sh
-
-      - name: Traceability 覆盖校验
-        run: bash .github/ci/traceability-check.sh
-
-      - name: Spec 状态报告
-        run: bash .github/ci/spec-status-report.sh
+    uses: ./.github/workflows/docs-ci.yml
 
   # ── 2. 生成 Release Manifest ──────────────────────────────────
   build-manifest:
     name: Build Release Manifest
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64]
+    timeout-minutes: 15
     needs: quality-gate
     steps:
       - uses: actions/checkout@v4
@@ -94,7 +41,8 @@ jobs:
   # ── 3. 创建 GitHub Release ────────────────────────────────────
   publish-release:
     name: Publish Release
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64]
+    timeout-minutes: 10
     needs: build-manifest
     steps:
       - uses: actions/checkout@v4
