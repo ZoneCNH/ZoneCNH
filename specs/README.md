@@ -2,7 +2,7 @@
 
 > 16 个基座模块的独立完整规格，加上 x.go 组合根规格；共 17 份规格，按架构层级组织。
 
-最后更新：2026-06-07
+最后更新：2026-06-08
 
 ---
 
@@ -17,7 +17,7 @@
                                           testkitx            taosx
                                                               ossx
                                                               clickhousex
-```text
+```
 
 依赖方向：自上而下。同层模块平级协作，不存在编译期依赖。
 
@@ -62,7 +62,7 @@ test-only，不参与生产运行时。
 
 | 模块          | 规格                               | 核心职责                                                           |
 | ------------- | ---------------------------------- | ------------------------------------------------------------------ |
-| xlib-standard | [SPEC.md](./xlib-standard/SPEC.md) | 标准事实源、Go Reference Template、Gate/Evidence 定义              |
+| xlib-standard | [SPEC.md](./xlib-standard/SPEC.md) · [tasks/](./xlib-standard/tasks/) | 标准事实源、Go Reference Template、Generator、Harness Gate、Evidence Runtime（52 FR，12 tasks） |
 | xlibgate      | [SPEC.md](./xlibgate/SPEC.md)      | CLI 门禁、import 边界扫描、Go baseline 对齐、release evidence 校验 |
 
 ---
@@ -187,7 +187,7 @@ Task Spec（本次改什么）        → AI 按 prompt 模板拆分
 Prompt（让 AI 执行哪一步）     → docs/ai/prompt-templates.md
   ↓
 Code → Test → PR
-```text
+```
 
 ### 文档结构映射
 
@@ -220,7 +220,7 @@ Code → Test → PR
 
 ```text
 Draft → Review → Approved → Implemented → Changed → Deprecated
-```text
+```
 
 完整状态机定义、流转规则、CI 集成点详见 [`LIFECYCLE.md`](./LIFECYCLE.md)。
 
@@ -245,34 +245,45 @@ Draft → Review → Approved → Implemented → Changed → Deprecated
 
 ## AI 工作流速查
 
+### 0. 端到端工作流
+
+```text
+$spec-code-pipeline <module>
+/project:spec-code-pipeline <module>
+
+Spec → Matrix → Tasks → Plan → Prompt → Code
+```
+
+Codex 使用 `.codex/skills/spec-code-pipeline/SKILL.md`，Claude Code 使用 `.claude/commands/spec-code-pipeline.md`。Matrix 前仍需 `spec-review` Go 判断和 `Status: Approved`。
+
 ### 1. Spec 审查
 
 ```markdown
 请 review specs/<module>/SPEC.md。
 重点检查：模糊需求、冲突要求、缺失边界、缺失验收标准、缺失测试用例。
 输出：Blocking issues / Non-blocking suggestions / Ready or Not ready。
-```text
+```
 
 ### 2. 任务拆分
 
 ```markdown
-请根据 specs/<module>/SPEC.md 生成 implementation tasks。
-每个 task 控制在 200 行以内，对应 requirement IDs，有 acceptance criteria。
-```text
+请根据 Approved 的 specs/<module>/SPEC.md 和 specs/<module>/TRACEABILITY.md 生成 implementation tasks。
+每个 task 控制在 200 行以内，对应 requirement IDs / acceptance criteria / test cases。
+```
 
 ### 3. 模块实现
 
 ```markdown
-请实现 specs/<module>/SPEC.md。
-上下文：SPEC.md + ARCHITECTURE.md + CONSTITUTION.md + agent-rules.md。
-限制：只做 spec 范围内的内容，不引入新依赖。
-```text
+请根据 specs/<module>/TASK-<NNN>-PROMPT.md 实现当前 ready task。
+上下文：SPEC.md + TRACEABILITY.md + task spec + IMPLEMENTATION-PLAN.md + AGENTS.md。
+限制：只做当前 task 范围内的内容，不引入新依赖。
+```
 
 ### 4. 自查
 
 ```markdown
 请检查当前实现是否符合 spec。
 输出：Requirement coverage table / AC result / Test coverage / Deviations。
-```text
+```
 
 详细 prompt 模板见 [`docs/ai/prompt-templates.md`](../docs/ai/prompt-templates.md)。
