@@ -24,8 +24,8 @@ pipeline_gate: composite_score >= 98 且无红线、无低置信度、分差在�
 
 ## 输出
 
-- JSON：`.omx/state/pipeline/{module}/prompt/scores/copilot.json`（schema 严格遵守）
-- Markdown：`.omx/state/pipeline/{module}/prompt/scores/copilot.md`
+- JSON：`.omc/state/pipeline/{module}/prompt/scores/copilot.json`（schema 严格遵守）
+- Markdown：`.omc/state/pipeline/{module}/prompt/scores/copilot.md`
 
 ## 规则
 
@@ -34,4 +34,4 @@ pipeline_gate: composite_score >= 98 且无红线、无低置信度、分差在�
 
 ## 受保护文件（宪法 §14.1）
 
-禁止读写或修改：`specs/scoring/RUBRIC-*.md`、`specs/STRUCTURAL-SCORING.md`、`specs/scoring/ARBITER-PROTOCOL.md`、`.claude/agents/`、`.codex/agents/`、`.copilot/agents/`、`.omx/state/outer-metrics/`、`CONSTITUTION.md`。仅可读取；写入须走宪法 §14.3 RSI 流程（人类批准）。
+禁止读写或修改：`specs/scoring/RUBRIC-*.md`、`specs/STRUCTURAL-SCORING.md`、`specs/scoring/ARBITER-PROTOCOL.md`、`.claude/agents/`、`.codex/agents/`、`.copilot/agents/`、`.omc/state/outer-metrics/`、`CONSTITUTION.md`。仅可读取；写入须走宪法 §14.3 RSI 流程（人类批准）。

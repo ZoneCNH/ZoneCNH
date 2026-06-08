@@ -30,7 +30,7 @@ FoundationX 文档仓库的 Claude Code 代理配置。Claude Code 在三平台�
 | Agent | 用途 |
 |-------|------|
 | pipeline-arbiter | 汇总三平台评分，按 `specs/scoring/ARBITER-PROTOCOL.md` 输出 gate 判定 |
-| meta-arbiter | 读 `.omx/state/outer-metrics/`，按宪法 §14.4 诊断 Goodhart 信号、输出 RSI 建议（不修改任何受保护文件） |
+| meta-arbiter | 读 `.omc/state/outer-metrics/`，按宪法 §14.4 诊断 Goodhart 信号、输出 RSI 建议（不修改任何受保护文件） |
 
 ## 使用方式
 

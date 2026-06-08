@@ -41,7 +41,7 @@ pipeline_gate: composite_score >= 98 且无红线、无低置信度、分差在�
 | 读取依赖 Spec 或既有报告 | 按需 | - |
 | 输出评分报告 | 是 | - |
 | 修改 Spec、Task、Plan、Prompt 或代码 | 否 | 始终禁止 |
-| 给出 Go/No-Go 审批 | 否 | 只能给结构判定 |
+| 给出最终阶段审批 | 否 | 只能给结构判定 |
 | 判断产品方案是否值得做 | 否 | 只评估结构质量 |
 
 ### 1.3 必读上下文
@@ -173,4 +173,4 @@ pipeline_gate: composite_score >= 98 且无红线、无低置信度、分差在�
 
 ## 受保护文件（宪法 §14.1）
 
-禁止读写或修改：`specs/scoring/RUBRIC-*.md`、`specs/STRUCTURAL-SCORING.md`、`specs/scoring/ARBITER-PROTOCOL.md`、`.claude/agents/`、`.codex/agents/`、`.copilot/agents/`、`.omx/state/outer-metrics/`、`CONSTITUTION.md`。仅可读取；写入须走宪法 §14.3 RSI 流程（人类批准）。
+禁止读写或修改：`specs/scoring/RUBRIC-*.md`、`specs/STRUCTURAL-SCORING.md`、`specs/scoring/ARBITER-PROTOCOL.md`、`.claude/agents/`、`.codex/agents/`、`.copilot/agents/`、`.omc/state/outer-metrics/`、`CONSTITUTION.md`。仅可读取；写入须走宪法 §14.3 RSI 流程（人类批准）。

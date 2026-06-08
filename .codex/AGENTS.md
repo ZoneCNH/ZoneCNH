@@ -30,7 +30,7 @@ FoundationX 文档仓库的 Codex 代理配置。Codex 在三平台评分体系�
 | Agent | 用途 |
 |-------|------|
 | pipeline-arbiter | 汇总三平台评分，按 `specs/scoring/ARBITER-PROTOCOL.md` 输出 gate 判定 |
-| meta-arbiter | 读 `.omx/state/outer-metrics/`，按宪法 §14.4 诊断 Goodhart 信号、输出 RSI 建议（不修改任何受保护文件） |
+| meta-arbiter | 读 `.omc/state/outer-metrics/`，按宪法 §14.4 诊断 Goodhart 信号、输出 RSI 建议（不修改任何受保护文件） |
 
 所有评分与仲裁 agent 均使用 `gpt-5.5` 模型 + `high` reasoning。
 

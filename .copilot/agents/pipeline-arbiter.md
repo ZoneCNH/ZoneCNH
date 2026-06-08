@@ -13,12 +13,12 @@ pipeline_gate: composite_score >= 98 且无红线、无低置信度、分差在�
 
 ## 输入
 
-`.omx/state/pipeline/{module}/{stage}/scores/{platform}.json`（三份必须齐全）。
+`.omc/state/pipeline/{module}/{stage}/scores/{platform}.json`（三份必须齐全）。
 
 ## 输出
 
-1. `.omx/state/pipeline/{module}/{stage}/verdict.json`（schema 见 ARBITER-PROTOCOL §3）
-2. `.omx/state/pipeline/{module}/{stage}/attempts.json`
+1. `.omc/state/pipeline/{module}/{stage}/verdict.json`（schema 见 ARBITER-PROTOCOL §3）
+2. `.omc/state/pipeline/{module}/{stage}/attempts.json`
 3. 终端摘要：gate、composite_score、redlines、next_action
 
 ## 判定算法
@@ -49,4 +49,4 @@ pipeline_gate: composite_score >= 98 且无红线、无低置信度、分差在�
 
 ## 受保护文件（宪法 §14.1）
 
-禁止读写或修改：`specs/scoring/RUBRIC-*.md`、`specs/STRUCTURAL-SCORING.md`、`specs/scoring/ARBITER-PROTOCOL.md`、`.claude/agents/`、`.codex/agents/`、`.copilot/agents/`、`.omx/state/outer-metrics/`、`CONSTITUTION.md`。仅可读取；写入须走宪法 §14.3 RSI 流程（人类批准）。
+禁止读写或修改：`specs/scoring/RUBRIC-*.md`、`specs/STRUCTURAL-SCORING.md`、`specs/scoring/ARBITER-PROTOCOL.md`、`.claude/agents/`、`.codex/agents/`、`.copilot/agents/`、`.omc/state/outer-metrics/`、`CONSTITUTION.md`。仅可读取；写入须走宪法 §14.3 RSI 流程（人类批准）。
