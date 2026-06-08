@@ -63,7 +63,7 @@ test-only，不参与生产运行时。
 | 模块          | 规格                               | 核心职责                                                           |
 | ------------- | ---------------------------------- | ------------------------------------------------------------------ |
 | xlib-standard | [SPEC.md](./xlib-standard/SPEC.md) · [tasks/](./xlib-standard/tasks/) | 标准事实源、Go Reference Template、Generator、Harness Gate、Evidence Runtime（52 FR，12 tasks） |
-| xlibgate      | [SPEC.md](./xlibgate/SPEC.md)      | CLI 门禁、import 边界扫描、Go baseline 对齐、release evidence 校验 |
+| xlibgate      | [SPEC.md](./xlibgate/SPEC.md) · [tasks/](./xlibgate/tasks/) | check imports/gomod/baseline/release/all、输出格式（6 FR，9 tasks） |
 
 ---
 
@@ -209,7 +209,7 @@ Code → Test → PR
 | [`TRACEABILITY.md`](./TRACEABILITY.md)                       | 需求追踪表：FR → AC → TC → 实现                         |
 | [`DEVELOPMENT-WORKFLOW.md`](./DEVELOPMENT-WORKFLOW.md)       | Spec → Ship 完整管线总览                                |
 | [`STRUCTURAL-SCORING.md`](./STRUCTURAL-SCORING.md)           | 每阶段结构评分、98 分门禁和有界递归自改进               |
-| [`scoring/ARBITER-PROTOCOL.md`](./scoring/ARBITER-PROTOCOL.md) | 三平台评分仲裁、repair budget 和 pipeline_blocked 规则   |
+| [`scoring/ARBITER-PROTOCOL.md`](./scoring/ARBITER-PROTOCOL.md) | 四源评分仲裁、repair budget 和 pipeline_blocked 规则   |
 | [`PRE-DEVELOPMENT.md`](./PRE-DEVELOPMENT.md)                 | 开发前准备 — 实现策略、Task 拆分、追溯矩阵              |
 | [`CODING-SESSION-PROTOCOL.md`](./CODING-SESSION-PROTOCOL.md) | 编码会话协议 — Context Packet、Plan-first、自查、Review |
 | [`SPEC-DRIFT-PROTOCOL.md`](./SPEC-DRIFT-PROTOCOL.md)         | Spec Drift 处理 — 代码与 Spec 不一致时的协议            |
@@ -256,7 +256,7 @@ $spec-code-pipeline <module>
 Spec → Matrix → Tasks → Plan → Prompt → Code
 ```
 
-Codex 使用 `.codex/skills/spec-code-pipeline/SKILL.md`，Claude Code 使用 `.claude/commands/spec-code-pipeline.md`，Copilot 使用 `.copilot/commands/spec-code-pipeline.md`。每个阶段进入下一阶段前都必须由 Claude / Copilot / Codex team scoring 和 `pipeline-arbiter` 通过：`composite_score = min(三平台评分) >= 98`，且无红线、低置信度或异常分差；Spec 通过后由 arbiter 自动翻转 `Status: Approved`，`spec-review` 仅作为参考证据。
+Codex 使用 `.codex/skills/spec-code-pipeline/SKILL.md`，Claude Code 使用 `.claude/commands/spec-code-pipeline.md`，Copilot 使用 `.copilot/commands/spec-code-pipeline.md`。每个阶段进入下一阶段前都必须由 Claude / Copilot / Codex team scoring 和 `pipeline-arbiter` 通过：`composite_score = min(四源评分) >= 98`，且无红线、低置信度或异常分差；Spec 通过后由 arbiter 自动翻转 `Status: Approved`，`spec-review` 仅作为参考证据。
 
 ### 1. Spec 审查
 
