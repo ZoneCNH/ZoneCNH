@@ -1,9 +1,9 @@
 # xlib-standard FR 详细规格
 
 > 本文件包含全部 52 个 FR 的 WHEN/THEN 行为规格。
-> SPEC.md §7 保留 FR 摘要表，详细内容以本文件为准。
+> ANALYSIS.md / analysis/*.md 保留 FR 摘要表，详细内容以本文件为准。
 
-Status: Aligned-With SPEC.md v2.0.1
+Status: Aligned-With ANALYSIS.md v3.0.0
 Last-Updated: 2026-06-08
 
 ---
@@ -70,10 +70,10 @@ THEN 操作被拒绝并返回禁止原因
 
 > 来源：main.md | 优先级：P0
 
-### FR-007: 定义 15 条基本真理（TRUTH-001~015）
+### FR-007: 定义 15 条基本真理（同义表见 `analysis/governance.md`）
 
 WHEN goalcli 执行任何 gate
-THEN TRUTH-001~015 作为不可违反的前置条件被检查
+THEN 基本真理同义表作为不可违反的前置条件被检查（推荐引用 BR / FR）
 
 WHEN 基本真理被违反（如无证据宣称 DONE）
 THEN 对应 gate 失败并引用具体 TRUTH 编号

@@ -14,7 +14,7 @@ Verdict: **APPROVED_FOR_STRUCTURE**
 覆盖范围：
 
 - `.github/ci/spec-lint.sh`
-- `specs/xlib-standard/SPEC.md`
+- `specs/xlib-standard/ANALYSIS.md`
 - `specs/xlib-standard/TRACEABILITY.md`
 - `specs/xlib-standard/COVERAGE-MANIFEST.md`
 - `specs/xlib-standard/README.md`
@@ -51,7 +51,7 @@ Verdict: **APPROVED_FOR_STRUCTURE**
 | 旧问题 | 处置 |
 |--------|------|
 | P0-1：SPEC 存在额外顶层参考资料章节 | CLOSED；参考资料已收敛到 `§23.7`，lint 已阻止额外 H2 |
-| P0-2：TRACEABILITY 将非行级证据混写为 100% 行级追溯 | CLOSED；已改为来源覆盖 100%，并用 `证据类型` 区分 `line` / `file` / `validator-output` |
+| P0-2：TRACEABILITY 将非行级证据混写为 100% 行级追溯 | CLOSED；已改为 FR 来源锚定 52/52，并用 `证据类型` 区分 `line` / `file` / `validator-output`；不得解读为语义验证完整 |
 | P1-1：README upstream commit 未固定 | CLOSED；README 已固定 `93753b30e6d01fb4a9b096acaa0d7d53a2fb231c` |
 | P1-2：SPEC 顶部存在陈旧状态说明 | CLOSED；Approved 前置条件已改为当前结构和来源覆盖状态 |
 | P2-1：spec-lint 未禁止额外顶层 H2 | CLOSED；lint 已新增严格章节边界检查 |

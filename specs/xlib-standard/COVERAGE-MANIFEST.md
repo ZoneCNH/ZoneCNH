@@ -1,6 +1,6 @@
 # xlib-standard 覆盖清单
 
-Status: Aligned-With SPEC.md v2.0.1
+Status: Aligned-With ANALYSIS.md v3.0.0
 Generated-Date: 2026-06-07
 Path-Update: 2026-06-08（改为占位符相对路径）
 Last-Updated: 2026-06-08
@@ -18,7 +18,7 @@ Input-Count: 154
 > **缺口已收敛**（2026-06-08 04:59）：upstream commit/tree sha 已固定；154 个文件已全部计算 sha256-prefix（16 hex chars，详见 §"文件级 sha256（pinned）"）。
 > NG-34 / OQ-008 / R-011 在本机已可关闭，待 release-final-check 写入 `latest.json.coverage_pin` 后 release 阶段亦关闭。
 >
-> **固定程序**（pinning procedure，进入 `SPEC.md` Status: Approved 的前置条件）：
+> **固定程序**（pinning procedure，固定本地分析快照的前置条件）：
 >
 > 1. `cd <upstream:xlib-standard> && git rev-parse HEAD` → 写入 `<upstream:commit>` 槽位；
 > 2. `git rev-parse HEAD^{tree}` → 写入 `<upstream:tree>` 槽位；
