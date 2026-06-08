@@ -1,0 +1,9 @@
+name: Runner Test
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: [self-hosted, Linux, X64, homepage]
+    steps:
+      - run: echo "runner works" && hostname && whoami && date
