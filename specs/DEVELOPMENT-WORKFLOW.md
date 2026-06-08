@@ -11,36 +11,153 @@
 ```text
 Spec 编写
   ↓
-Spec Review（对抗性审查）     ← spec-review agent
+[Spec Team Score: claude + codex + copilot] → pipeline-arbiter（composite_score >= 98 且无红线/低置信度/异常分差）
+  ↓ 自动批准：arbiter 通过后自动翻转 SPEC.md 为 Status: Approved
+Matrix → [Matrix Team Score × 3] → arbiter（composite_score >= 98 且无红线/低置信度/异常分差）
   ↓
-解决 Open Questions
+Tasks → [Tasks Team Score × 3] → arbiter（composite_score >= 98 且无红线/低置信度/异常分差）
   ↓
-Spec Approved（状态流转）     ← LIFECYCLE.md
+Plan → [Plan Team Score × 3] → arbiter（composite_score >= 98 且无红线/低置信度/异常分差）
   ↓
-生成 Traceability Matrix     ← TRACEABILITY.md
+Prompt → [Prompt Team Score × 3] → arbiter（composite_score >= 98 且无红线/低置信度/异常分差）
   ↓
-拆分 Task                    ← task-split agent
+Code → [Code Team Score × 3] → arbiter（composite_score >= 98 且无红线/低置信度/异常分差）
   ↓
-按 Task 逐个开发
-  ↓  ↺ 自查 → 修复 → 测试 → Review
-Feature 验收                 ← DEFINITION-OF-DONE.md
+Feature 验收                       ← DEFINITION-OF-DONE.md
   ↓
 PR / Ship
-```text
+```
 
-**核心原则：Spec 做完后，不是直接写代码，而是先 review、批准、拆 task，然后一小步一小步按 spec 实现和验收。**
+**核心原则**：
+
+1. Spec 做完后按 `Spec → Matrix → Tasks → Plan → Prompt → Code` 推进，不直接编码。
+2. **每个阶段都由 agent team 执行**：1 个 executor + 3 个独立平台 scorer（claude / codex / copilot）+ 1 个 pipeline-arbiter。
+3. **每个阶段都必须通过结构性评分门禁**：`composite_score = min(claude.score, codex.score, copilot.score)`，且 `composite_score >= 98`、无红线、无低置信度、平台分差不超过阈值，才能进入下一阶段。
+4. **唯一门禁**：不再设置 `spec-review` Go/No-Go 或人工批准作为额外门禁。Spec 阶段三平台 pass 后，arbiter 自动翻转状态为 `Approved`。`spec-review` agent 仅作为额外的对抗性视角参考，不构成独立 gate。
+
+详见 `specs/STRUCTURAL-SCORING.md` 和 `specs/scoring/ARBITER-PROTOCOL.md`。
 
 ---
 
-## 第一步：Spec Review
+## 团队评分体系
+
+### 三平台并行评分
+
+每个阶段产物由三个独立平台并行评分，互不可见对方结果：
+
+| 平台 | Scorer 配置目录 | 模型 |
+|------|-----------------|------|
+| Claude Code | `.claude/agents/{stage}-structural-score.md` | Opus |
+| Codex | `.codex/agents/{stage}-structural-score.toml` | gpt-5.5 high |
+| Copilot CLI | `.copilot/agents/{stage}-structural-score.md` | Claude Opus 4.7 |
+
+### 评分对象与 Rubric
+
+| 阶段 | 评分对象 | Rubric |
+|------|----------|--------|
+| Spec | `specs/{module}/SPEC.md` | `specs/scoring/RUBRIC-spec.md` |
+| Matrix | `specs/{module}/TRACEABILITY.md` | `specs/scoring/RUBRIC-matrix.md` |
+| Tasks | `specs/{module}/tasks/TASK-*.md` | `specs/scoring/RUBRIC-tasks.md` |
+| Plan | `specs/{module}/IMPLEMENTATION-PLAN.md` | `specs/scoring/RUBRIC-plan.md` |
+| Prompt | `specs/{module}/TASK-*-PROMPT.md` | `specs/scoring/RUBRIC-prompt.md` |
+| Code | 本次 Task diff + 测试 + 验证证据 | `specs/scoring/RUBRIC-code.md` |
+
+### 仲裁门禁
+
+`pipeline-arbiter` 读取三平台 JSON 报告，按以下顺序判定（任一失败即 fail）：
+
+1. 三平台齐全
+2. 无红线
+3. `composite_score = min(claude.score, codex.score, copilot.score)`，且 `composite_score >= 98`
+4. 任一平台 `confidence: low` 直接 fail
+5. 三平台分差 `max(score) - min(score) <= 5`
+
+Confidence 与平台分差是 gate 条件，不能用作豁免理由。
+
+### 状态目录
+
+```text
+.omx/state/pipeline/{module}/{stage}/
+├── scores/
+│   ├── claude.json    ├── claude.md
+│   ├── codex.json     ├── codex.md
+│   └── copilot.json   └── copilot.md
+├── verdict.json       # 仲裁结果，gate=pass|fail
+└── attempts.json      # 重试计数与升级链
+```
+
+### 失败循环（全自动）
+
+| 尝试次数 | 处理 |
+|----------|------|
+| 1-2 | 路由回当前阶段 executor 修复 |
+| 3+ | 路由回上一阶段 executor，重置 attempt，继续循环 |
+
+升级链：`code → prompt → plan → tasks → matrix → spec → spec → ...`
+
+**全自动循环，无人工接管**。终止条件唯一：`composite_score >= 98`、无红线、无低置信度且分差在阈值内。
+
+---
+
+## 一键工作流入口
+
+```text
+Spec → Matrix → Tasks → Plan → Prompt → Code
+```
+
+| 平台 | 触发方式 | 定义文件 |
+|------|----------|----------|
+| Codex | `$spec-code-pipeline {module}` | `.codex/skills/spec-code-pipeline/SKILL.md` |
+| Claude Code | `/project:spec-code-pipeline {module}` | `.claude/commands/spec-code-pipeline.md` |
+| Copilot CLI | `/project:spec-code-pipeline {module}` | `.copilot/commands/spec-code-pipeline.md` |
+
+### 恢复与单阶段执行
+
+```text
+$spec-code-pipeline {module} --from matrix
+$spec-code-pipeline {module} --stage prompt
+```
+
+`--stage` 时必须先验证上游 `verdict.json` 已 `gate=pass`。`--from` 时下游 `scores/` 与 `verdict.json` 必须重新生成。
+
+### 阶段产物与门禁
+
+| 阶段 | Executor | 团队 Scorer (并行 × 3) | Gate（唯一） |
+|------|----------|-----------------------|--------------|
+| Spec | `spec` | `spec-structural-score` × claude/codex/copilot | `composite_score >= 98` 且无红线、低置信度、异常分差 |
+| Matrix | `matrix` | `matrix-structural-score` × 3 | `composite_score >= 98` 且无红线、低置信度、异常分差 |
+| Tasks | `task-split` | `tasks-structural-score` × 3 | `composite_score >= 98` 且无红线、低置信度、异常分差 |
+| Plan | `task-planner` | `plan-structural-score` × 3 | `composite_score >= 98` 且无红线、低置信度、异常分差 |
+| Prompt | `prompt-builder` | `prompt-structural-score` × 3 | `composite_score >= 98` 且无红线、低置信度、异常分差 |
+| Code | `task-executor` | `code-structural-score` × 3 | `composite_score >= 98` 且无红线、低置信度、异常分差 |
+
+仲裁 agent：`pipeline-arbiter`（三平台均有等价实现）。门禁纯机器判定，无人工分支。Code 阶段的"测试/lint/race 通过"由 `code-structural-score` 在 rubric 中作为评分维度纳入，不再额外设独立门禁。
+
+---
+
+## 每阶段结构评分硬门禁
+
+Spec / Matrix / Tasks / Plan / Prompt / Code 每个阶段的团队评分（claude / codex / copilot 三平台）都是正式且**唯一**的门禁。每次阶段产物修订后必须重跑三平台评分，仲裁 `gate=pass` 才能进入下一阶段。
+
+下面"第一步…第十步"为流程参考说明，描述各阶段的内容与产物形态。**实际进入下一阶段的判定一律由 `pipeline-arbiter` 完成**：`composite_score = min(三平台评分)` 且 `composite_score >= 98`、无红线、无低置信度、分差在阈值内 → 自动推进，否则自动路由回 executor 或 scorer 修复。`spec-review` agent 与 `Status: Approved` 等历史人工门已不再作为独立 gate，仅作为 scorer 评分时的输入证据保留。
+
+---
+
+## 第一步：Spec 编写与团队评分
 
 Spec 编写完成后，第一件事是让 AI 当审查者，不是开发者。
 
 ### 使用方式
 
 ```text
-Agent(subagent_type="spec-review", prompt="审查 specs/{module}/SPEC.md，判断是否可以进入开发")
-```text
+agent team:
+  - spec-structural-score (Claude)
+  - spec-structural-score (Codex)
+  - spec-structural-score (Copilot)
+  - pipeline-arbiter
+optional evidence:
+  - spec-review（只读对抗性参考报告，不构成独立门禁）
+```
 
 ### 审查重点
 
@@ -60,7 +177,7 @@ Agent(subagent_type="spec-review", prompt="审查 specs/{module}/SPEC.md，判�
 - Missing edge cases
 - Missing test cases
 - Recommended spec edits
-- **Go / No-Go 判断**
+- **参考性 Ready 风险判断**
 
 ### 目标
 
@@ -69,7 +186,7 @@ Spec 是否足够清楚？
 AI 是否会误解？
 需求是否能被测试？
 还有没有没决定的问题？
-```text
+```
 
 ---
 
@@ -90,7 +207,7 @@ Spec 里的未定问题必须分级处理。
 
 ### Future（未来考虑）
 - 是否支持标签？
-```text
+```
 
 ### 处理规则
 
@@ -108,7 +225,7 @@ Spec 里的未定问题必须分级处理。
 - MVP 使用 localStorage 持久化
 - 删除任务不需要确认弹窗
 - 允许重复任务标题
-```text
+```
 
 ---
 
@@ -122,14 +239,14 @@ Spec 状态必须流转到 `Approved` 才能进入开发。
 Draft → Review → Approved → Implemented
                  ↑
               Changed ──→ Review
-```text
+```
 
 ### 操作
 
 1. 解决所有 Blocking Open Questions
-2. spec-review agent 给出 Go 判断
-3. 修改 Metadata 节：`Status: Draft` → `Status: Approved`
-4. 更新 `Last-Updated` 日期
+2. Spec team-scoring 产出 Claude / Codex / Copilot 三方结构评分
+3. `pipeline-arbiter` 判定 `composite_score >= 98`、无红线、无低置信度、分差在阈值内
+4. Arbiter pass 后自动修改 Metadata：`Status: Draft` → `Status: Approved`，并更新 `Last-Updated` 日期
 
 ### 禁止
 
@@ -149,13 +266,13 @@ Draft → Review → Approved → Implemented
 |---|---|---|---|---|---|
 | FR-001 | Create Task | AC-001 | TC-001 | TASK-001 | ⬜ |
 | FR-002 | Reject Empty | AC-002 | TC-002 | TASK-001 | ⬜ |
-```text
+```
 
 ### 生成方式
 
 ```text
-Agent(subagent_type="task-split", prompt="根据 specs/{module}/SPEC.md 生成 Traceability Matrix")
-```text
+Agent(subagent_type="matrix", prompt="根据 specs/{module}/SPEC.md 生成或校验 Traceability Matrix")
+```
 
 ### 校验规则
 
@@ -179,7 +296,7 @@ Spec 是功能合同，Task 是 AI 能执行的小任务。
 ✅ TASK-002: 实现任务 storage/service
 ✅ TASK-003: 实现新增任务表单
 ✅ TASK-004: 实现任务列表展示
-```text
+```
 
 ### 拆分规则（详见 TASK-TEMPLATE.md）
 
@@ -207,13 +324,13 @@ Integration
 Tests 补全
   ↓
 Review + Polish
-```text
+```
 
 ### 使用方式
 
 ```text
-Agent(subagent_type="task-split", prompt="根据 specs/{module}/SPEC.md 拆分 Task")
-```text
+Agent(subagent_type="task-split", prompt="根据 specs/{module}/SPEC.md 和 specs/{module}/TRACEABILITY.md 拆分 Task")
+```
 
 ### 输出格式
 
@@ -232,11 +349,70 @@ Agent(subagent_type="task-split", prompt="根据 specs/{module}/SPEC.md 拆分 T
 
 ---
 
-## 第六步：按 Task 逐个开发
+## 第六步：生成 Implementation Plan
+
+Task 拆分后，先生成实现顺序，不直接编码。
+
+### 使用方式
+
+```text
+Agent(subagent_type="task-planner", prompt="根据 specs/{module}/SPEC.md、specs/{module}/TRACEABILITY.md 和 specs/{module}/tasks/ 生成 IMPLEMENTATION-PLAN.md")
+```
+
+### 输出
+
+`specs/{module}/IMPLEMENTATION-PLAN.md` 至少包含：
+
+1. Task 执行顺序
+2. 依赖关系和阻塞点
+3. 每个 Task 的目标文件范围
+4. 每个 Task 的验证命令
+5. 高风险实现点
+6. 回滚或修复策略
+
+### 门禁
+
+- 不允许跳过前置依赖 Task
+- 不允许一次计划跨多个模块
+- 不允许把 Spec 外功能塞进执行顺序
+
+---
+
+## 第七步：生成 Task Prompt
+
+编码前，为当前 ready task 生成单任务 Context Packet。
+
+### 使用方式
+
+```text
+Agent(subagent_type="prompt-builder", prompt="根据 specs/{module}/IMPLEMENTATION-PLAN.md 和当前 ready task 生成 TASK-{MODULE}-{NNN}-PROMPT.md")
+```
+
+### 输出
+
+`specs/{module}/TASK-{MODULE}-{NNN}-PROMPT.md` 至少包含：
+
+1. 当前 Task ID 和目标
+2. Spec / Matrix / Task / Plan 引用
+3. 可改文件范围
+4. 不可做事项
+5. 验收标准
+6. 必跑验证命令
+7. 完成后需要回填的证据
+
+### 门禁
+
+- 一个 Prompt 只服务一个 Task
+- Prompt 不得扩大 Task scope
+- Prompt 必须引用 Requirement / Acceptance Criteria / Test Case ID
+
+---
+
+## 第八步：按 Task 编码
 
 ### 执行顺序
 
-选第一个最底层、最少依赖的 Task。
+按 `IMPLEMENTATION-PLAN.md` 选择第一个 ready task。默认一次只执行一个 Task。
 
 ### 每个 Task 的执行循环
 
@@ -258,7 +434,7 @@ Code Review
 更新 Traceability Matrix
   ↓
 实现 TASK-{NNN+1}
-```text
+```
 
 ### 开发 Prompt
 
@@ -284,7 +460,7 @@ Code Review
 4. 新增测试
 5. 如何运行测试
 6. 风险或假设
-```text
+```
 
 ### 自查 Prompt
 
@@ -300,7 +476,7 @@ Code Review
 4. Deviations from spec
 5. Required fixes
 6. Suggested improvements
-```text
+```
 
 ### Review Prompt
 
@@ -324,11 +500,11 @@ Code Review
 - Should fix
 - Nice to have
 - Accepted
-```text
+```
 
 ---
 
-## 第七步：Feature 验收
+## 第九步：Feature 验收
 
 当一个模块的所有 Task 都完成后，做完整验收。
 
@@ -367,7 +543,7 @@ Code Review
 - Missing items
 - Required fixes
 - Final recommendation
-```text
+```
 
 ### 状态流转
 
@@ -376,11 +552,11 @@ Code Review
 ```text
 Spec Status: Approved → Implemented
 Traceability Matrix: 所有 Status → ✅
-```text
+```
 
 ---
 
-## 第八步：PR / Ship
+## 第十步：PR / Ship
 
 PR 描述应引用 Spec：
 
@@ -406,22 +582,40 @@ PR 描述应引用 Spec：
 |---|---|
 | AC-001 | ✅ |
 | AC-002 | ✅ |
-```text
+```
 
 ---
 
 ## Agent 清单
 
+### 执行类（每阶段一个 executor）
+
 | Agent | 步骤 | 用途 | 模型 | 可写代码 |
 |-------|------|------|------|----------|
-| `spec` | Spec | 编写或修订项目 spec | sonnet | 是 |
-| `spec-review` | Spec | 对抗性审查 spec，Go/No-Go 判断 | opus | 否 |
-| `task-split` | Matrix / Tasks | 拆分 Task + 生成追溯矩阵 | sonnet | 是 |
-| `task-planner` | Plan | 为单个 Task 生成分步实现计划 | opus | 否 |
-| `prompt-builder` | Prompt | 为单个 Task 生成 Context Packet | sonnet | 否 |
-| `task-executor` | Code | 按照 Task spec 编写代码 | sonnet | 是 |
-| `code-reviewer` | Review | 代码审查 | opus | 否 |
-| `tdd-guide` | Test | 测试驱动开发 | sonnet | 是 |
+| `spec` | Spec | 编写或修订项目 spec，补齐 23 节结构与追溯链 | opus / gpt-5.5 | 否 |
+| `spec-review` | Review | 对抗性审查 spec，作为结构评分证据与参考 | opus / gpt-5.5 | 否 |
+| `matrix` | Matrix | 生成或校验需求追溯矩阵 | sonnet / gpt-5.5 | 否 |
+| `task-split` | Tasks | 将 Approved Spec 拆成可执行 Task | sonnet / gpt-5.5 | 否 |
+| `task-planner` | Plan | 生成实现顺序、依赖、验证命令和风险计划 | opus / gpt-5.5 | 否 |
+| `prompt-builder` | Prompt | 为单个 Task 生成 Context Packet | sonnet / gpt-5.5 | 否 |
+| `task-executor` | Code | 按单个 Task 编写代码与测试 | sonnet / gpt-5.5 | 是 |
+
+### 评分类（每阶段三平台并行）
+
+| Agent | 阶段 | 平台 |
+|-------|------|------|
+| `spec-structural-score` | Spec | claude / codex / copilot |
+| `matrix-structural-score` | Matrix | claude / codex / copilot |
+| `tasks-structural-score` | Tasks | claude / codex / copilot |
+| `plan-structural-score` | Plan | claude / codex / copilot |
+| `prompt-structural-score` | Prompt | claude / codex / copilot |
+| `code-structural-score` | Code | claude / codex / copilot |
+
+### 仲裁类
+
+| Agent | 用途 |
+|-------|------|
+| `pipeline-arbiter` | 汇总三平台评分，按 `ARBITER-PROTOCOL.md` 输出 gate 判定 |
 
 ---
 
@@ -449,4 +643,7 @@ PR 描述应引用 Spec：
 | `specs/TRACEABILITY.md` | 需求追踪矩阵规范 |
 | `specs/DEFINITION-OF-READY.md` | 进入开发的前置条件 |
 | `specs/DEFINITION-OF-DONE.md` | 完成验收条件 |
+| `specs/STRUCTURAL-SCORING.md` | 三平台评分体系与统一红线 |
+| `specs/scoring/ARBITER-PROTOCOL.md` | 仲裁算法、门禁、升级链 |
+| `specs/scoring/RUBRIC-*.md` | 各阶段评分维度与红线 |
 | `CONSTITUTION.md` | 最高治理权威 |
