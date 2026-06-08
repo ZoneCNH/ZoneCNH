@@ -17,7 +17,7 @@
 .omx/state/pipeline/{module}/{stage}/scores/rules.json
 ```
 
-四个文件均必须存在；缺一报错并 `gate=fail`，原因 `missing_platform_score`。
+四个文件均必须存在；缺一报错并 `gate=fail`，原因 `missing_score_source`。
 
 `claude` / `codex` / `copilot` 是 LLM scorer 输出。`rules` 是 `scripts/rule-scorer.py`
 输出的纯机械规则评分，作为宪法 §14.4 要求的异构信号源，用于打破 LLM 同源相关性。
@@ -28,7 +28,7 @@
 
 按顺序执行，**任一规则失败即 `gate=fail`**：
 
-1. **四源齐全**：缺任一源 → fail（`missing_platform_score`）。
+1. **四源齐全**：缺任一源 → fail（`missing_score_source`）。
 2. **无红线**：任一源 `redline: true` → fail，记录红线列表。
 3. **综合分门禁**：`composite_score = min(claude.score, codex.score, copilot.score, rules.score)`，且 `composite_score >= 98` → 否则 fail。
 4. **置信度门禁**：任一 LLM 源 `confidence: low` → fail（`low_confidence_score`）。`rules` 源的 `confidence` 仅作诊断，不参与 gate（规则引擎在 code 阶段允许 low/medium）。
@@ -85,7 +85,7 @@
 | pass | `advance_to_next_stage`；若为 spec 阶段，同时自动翻转 SPEC.md 为 `Status: Approved` |
 | fail（红线） | `route_to_executor_for_repair`，附带所有红线证据 |
 | fail（分数 < 98） | `route_to_executor_for_repair`，附带三平台扣分账本合集 |
-| fail（平台缺失） | `route_to_missing_platform_scorer` |
+| fail（评分源缺失） | `route_to_missing_score_source` |
 | fail（低置信度） | `route_to_low_confidence_scorer_for_rerun` |
 | fail（分差过大） | `route_to_scorers_for_reconciliation` |
 | fail（异构分歧） | `route_to_meta_arbiter_for_diagnosis`，附 LLM vs rules 对照表 |
@@ -100,7 +100,7 @@
 仲裁器维护尝试计数：
 
 ```text
-.omc/state/pipeline/{module}/{stage}/attempts.json
+.omx/state/pipeline/{module}/{stage}/attempts.json
 ```
 
 | 尝试次数 | 处理 |
@@ -126,7 +126,7 @@ max_total_gate_failures = 18
 推进下一阶段的唯一条件：三平台仲裁 `gate=pass`。自动修复循环的停止条件：达到 `max_total_gate_failures` 后，仲裁器必须输出 `pipeline_blocked_for_retrospective`，并写入：
 
 ```text
-.omc/state/pipeline/{module}/pipeline_blocked.json
+.omx/state/pipeline/{module}/pipeline_blocked.json
 specs/{module}/PIPELINE-RETROSPECTIVE.md
 ```
 
