@@ -27,4 +27,4 @@
 
 ## 通过门禁
 
-`composite_score = min(三平台评分)` 且 `composite_score >= 98`、无红线、无低置信度、分差在阈值内 → 进入 Code 阶段。
+`composite_score = min(四源评分)` 且 `composite_score >= 98`、无红线、无 LLM 低置信度、LLM 分差与 rules 异构分歧在阈值内 → 进入 Code 阶段。

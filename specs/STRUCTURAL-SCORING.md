@@ -42,8 +42,10 @@
 每个 scorer 必须输出符合以下 schema 的 JSON 报告，写入：
 
 ```text
-.omc/state/pipeline/{module}/{stage}/scores/{platform}.json
+{state_root}/pipeline/{module}/{stage}/scores/{platform}.json
 ```
+
+`state_root` 按运行时选择：Claude `.omc/state`，Codex `.omx/state`，Copilot `.copilot/state`。
 
 Schema：
 
@@ -79,16 +81,17 @@ Schema：
 | 规则 | 阈值 |
 |------|------|
 | 门禁公式 | `composite_score = min(claude.score, codex.score, copilot.score, rules.score)` 且 `composite_score >= 98` |
-| 红线 | 任一平台 `redline: true` → 阻塞 |
-| 置信度 | 任一平台 `confidence: low` → 阻塞并重评 |
-| 分差 | `max(score) - min(score) > 5` → 阻塞并进入评分差异调解 |
+| 红线 | 任一评分源 `redline: true` → 阻塞 |
+| 置信度 | 任一 LLM 平台 `confidence: low` → 阻塞并重评 |
+| 分差 | `max(llm_scores) - min(llm_scores) > 5` → 阻塞并进入评分差异调解 |
+| 异构分歧 | `abs(rules.score - median(llm_scores)) > 15` → 阻塞并进入 meta-arbiter 诊断 |
 
 **纯机器门禁，不引入人工**。Confidence 与分差是门禁字段：任一低置信度或平台分差超过阈值，gate 必须 fail 并自动路由重评或修复。
 
 仲裁输出写入：
 
 ```text
-.omc/state/pipeline/{module}/{stage}/verdict.json
+{state_root}/pipeline/{module}/{stage}/verdict.json
 ```
 
 ```json
@@ -153,12 +156,12 @@ max_stage_attempts = 3
 max_total_gate_failures = 18
 ```
 
-推进下一阶段的唯一条件是三平台仲裁 `gate=pass`。自动修复循环还有独立停止条件：达到 `max_total_gate_failures` 后，arbiter 必须输出 `pipeline_blocked`，生成 retrospective，并停止自动推进；不得用无限重写 Spec 的方式绕过结构性缺陷。
+推进下一阶段的唯一条件是四源仲裁 `gate=pass`。自动修复循环还有独立停止条件：达到 `max_total_gate_failures` 后，arbiter 必须输出 `pipeline_blocked`，生成 retrospective，并停止自动推进；不得用无限重写 Spec 的方式绕过结构性缺陷。
 
 阻塞状态必须写入：
 
 ```text
-.omc/state/pipeline/{module}/pipeline_blocked.json
+{state_root}/pipeline/{module}/pipeline_blocked.json
 specs/{module}/PIPELINE-RETROSPECTIVE.md
 ```
 
@@ -166,10 +169,10 @@ specs/{module}/PIPELINE-RETROSPECTIVE.md
 
 ## 8. 唯一门禁
 
-每个阶段的进入下一阶段的**唯一**条件：三平台仲裁 `gate=pass`。
+每个阶段的进入下一阶段的**唯一**条件：四源仲裁 `gate=pass`。
 
 - 不再设置 `spec-review` Go/No-Go 作为额外门禁。
-- 不再设置 `Status: Approved` 作为额外门禁；Spec 阶段三平台 pass 后由 arbiter 自动将 SPEC.md 状态翻转为 `Approved`。
+- 不再设置 `Status: Approved` 作为额外门禁；Spec 阶段四源 pass 后由 arbiter 自动将 SPEC.md 状态翻转为 `Approved`。
 - `spec-review` agent 仍可在 Spec 阶段作为额外的对抗性视角，但其结论只作为 scorer 的输入证据，不构成独立 gate。
 
 ---
@@ -178,8 +181,8 @@ specs/{module}/PIPELINE-RETROSPECTIVE.md
 
 本评分体系本身受 `CONSTITUTION.md` 第十四条约束：
 
-- **受保护文件清单**（见宪法 §14.1）：`specs/scoring/RUBRIC-*.md`、本文件、`ARBITER-PROTOCOL.md`、`.claude/agents/`、`.codex/agents/`、`.copilot/agents/`、`.omc/state/outer-metrics/`、`CONSTITUTION.md`。所有 LLM agent **只读**。
-- **外部指标只读**（宪法 §14.2）：`.omc/state/outer-metrics/` 由 CI / 生产观测 / git 历史 / 人类维护者写入；任何 scorer、arbiter、executor 均不得写入。
+- **受保护文件清单**（见宪法 §14.1）：`specs/scoring/RUBRIC-*.md`、本文件、`ARBITER-PROTOCOL.md`、`.claude/agents/`、`.codex/agents/`、`.copilot/agents/`、`.omc/state/outer-metrics/`、`.omx/state/outer-metrics/`、`.copilot/state/outer-metrics/`、`CONSTITUTION.md`。所有 LLM agent **只读**。
+- **外部指标只读**（宪法 §14.2）：三套运行时的 `outer-metrics/` 由 CI / 生产观测 / git 历史 / 人类维护者写入；任何 scorer、arbiter、executor 均不得写入。
 - **合法 RSI 流程**（宪法 §14.3）：修改受保护文件必须经过 fork → A/B → outer-metric 评判 → 人类批准。
 - **Goodhart 防线**（宪法 §14.4）：scorer 评分与 outer metric 相关性低于阈值时自动冻结，触发 RSI 审议。
 

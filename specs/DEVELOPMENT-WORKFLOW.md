@@ -13,27 +13,30 @@ Spec 编写
   ↓
 [Spec Team Score: claude + codex + copilot] → pipeline-arbiter（composite_score >= 98 且无红线/低置信度/异常分差）
   ↓ 自动批准：arbiter 通过后自动翻转 SPEC.md 为 Status: Approved
-Matrix → [Matrix Team Score × 3] → arbiter（composite_score >= 98 且无红线/低置信度/异常分差）
+Matrix → [Matrix Team Score: claude + codex + copilot + rules] → arbiter（composite_score >= 98 且无红线/低置信度/异常分差）
   ↓
-Tasks → [Tasks Team Score × 3] → arbiter（composite_score >= 98 且无红线/低置信度/异常分差）
+Tasks → [Tasks Team Score: claude + codex + copilot + rules] → arbiter（composite_score >= 98 且无红线/低置信度/异常分差）
   ↓
-Plan → [Plan Team Score × 3] → arbiter（composite_score >= 98 且无红线/低置信度/异常分差）
+Plan → [Plan Team Score: claude + codex + copilot + rules] → arbiter（composite_score >= 98 且无红线/低置信度/异常分差）
   ↓
-Prompt → [Prompt Team Score × 3] → arbiter（composite_score >= 98 且无红线/低置信度/异常分差）
+Prompt → [Prompt Team Score: claude + codex + copilot + rules] → arbiter（composite_score >= 98 且无红线/低置信度/异常分差）
   ↓
-Code → [Code Team Score × 3] → arbiter（composite_score >= 98 且无红线/低置信度/异常分差）
+Code → [Code Team Score: claude + codex + copilot + rules] → arbiter（composite_score >= 98 且无红线/低置信度/异常分差）
   ↓
 Feature 验收                       ← DEFINITION-OF-DONE.md
   ↓
 PR / Ship
+  ↓
+Workflow Retrospective / RSI Review（可选，受宪法 §14 约束）
 ```
 
 **核心原则**：
 
 1. Spec 做完后按 `Spec → Matrix → Tasks → Plan → Prompt → Code` 推进，不直接编码。
 2. **每个阶段都由 agent team 执行**：1 个 executor + 3 个独立平台 scorer（claude / codex / copilot）+ 1 个 pipeline-arbiter。
-3. **每个阶段都必须通过结构性评分门禁**：`composite_score = min(claude.score, codex.score, copilot.score)`，且 `composite_score >= 98`、无红线、无低置信度、平台分差不超过阈值，才能进入下一阶段。
+3. **每个阶段都必须通过结构性评分门禁**：`composite_score = min(claude.score, codex.score, copilot.score, rules.score)`，且 `composite_score >= 98`、无红线、无 LLM 低置信度、LLM 分差与 rules 异构分歧在阈值内，才能进入下一阶段。
 4. **唯一门禁**：不再设置 `spec-review` Go/No-Go 或人工批准作为额外门禁。Spec 阶段三平台 pass 后，arbiter 自动翻转状态为 `Approved`。`spec-review` agent 仅作为额外的对抗性视角参考，不构成独立 gate。
+5. **递归自改进必须有界**：普通产物可以自动修复和上游回退；工作流、rubric、agent、arbiter 等受保护文件的自改只能作为元级 Spec 进入同一条管线，并受 `CONSTITUTION.md` 第十四条约束。
 
 详见 `specs/STRUCTURAL-SCORING.md` 和 `specs/scoring/ARBITER-PROTOCOL.md`。
 
@@ -68,7 +71,7 @@ PR / Ship
 
 1. 三平台齐全
 2. 无红线
-3. `composite_score = min(claude.score, codex.score, copilot.score)`，且 `composite_score >= 98`
+3. `composite_score = min(claude.score, codex.score, copilot.score, rules.score)`，且 `composite_score >= 98`
 4. 任一平台 `confidence: low` 直接 fail
 5. 三平台分差 `max(score) - min(score) <= 5`
 
@@ -86,16 +89,96 @@ Confidence 与平台分差是 gate 条件，不能用作豁免理由。
 └── attempts.json      # 重试计数与升级链
 ```
 
-### 失败循环（全自动）
+### 失败循环（有界自动）
 
 | 尝试次数 | 处理 |
 |----------|------|
 | 1-2 | 路由回当前阶段 executor 修复 |
-| 3+ | 路由回上一阶段 executor，重置 attempt，继续循环 |
+| 3 | 路由回上一阶段 executor，重置当前阶段 attempt，记录 `escalation_chain` |
 
-升级链：`code → prompt → plan → tasks → matrix → spec → spec → ...`
+升级链：`code → prompt → plan → tasks → matrix → spec`
 
-**全自动循环，无人工接管**。终止条件唯一：`composite_score >= 98`、无红线、无低置信度且分差在阈值内。
+推进下一阶段的唯一条件仍是：`composite_score >= 98`、无红线、无低置信度且分差在阈值内。自动修复循环还有独立停止条件：单阶段 3 次失败后必须上游回退；全链路 `max_total_gate_failures = 18` 后必须停止推进，写出 `pipeline_blocked` verdict 和 retrospective，不得无限循环。
+
+---
+
+## 有界递归自改进（RSI）
+
+本工作流支持 recursive self-improvement，但只支持**有界、可审计、不可自授权**的形式。
+
+### 1. 阶段内自修复
+
+每个阶段的 executor 只能修复当前阶段授权产物：
+
+| 阶段 | 可自动修复对象 |
+|------|----------------|
+| Spec | `specs/{module}/SPEC.md` |
+| Matrix | `specs/{module}/TRACEABILITY.md` |
+| Tasks | `specs/{module}/tasks/TASK-*.md` |
+| Plan | `specs/{module}/IMPLEMENTATION-PLAN.md` |
+| Prompt | `specs/{module}/TASK-*-PROMPT.md` |
+| Code | 当前 task 指定源码、测试与证据回填 |
+
+每次 `gate=fail` 后，arbiter 必须合并三平台扣分账本，生成当前阶段 repair prompt，交回 executor。修复后必须重跑四源评分和仲裁。
+
+### 2. 上游回退
+
+如果同一阶段连续 3 次 `gate=fail`，说明当前产物无法在本阶段局部修好，必须按升级链回到上游阶段：
+
+```text
+code -> prompt -> plan -> tasks -> matrix -> spec
+```
+
+上游修复后，从该上游阶段重新评分，并重新生成所有受影响下游产物。不得只改下游产物来掩盖上游缺陷。
+
+### 3. 全链路停止条件
+
+每次 arbiter 产生 `gate=fail` 都计入全链路 repair budget。默认上限：
+
+```text
+max_stage_attempts = 3
+max_total_gate_failures = 18
+```
+
+达到全链路上限后，arbiter 必须输出：
+
+```text
+.omx/state/pipeline/{module}/pipeline_blocked.json
+specs/{module}/PIPELINE-RETROSPECTIVE.md
+```
+
+`PIPELINE-RETROSPECTIVE.md` 至少包含失败分类、重复扣分项、升级链、最小复现证据、建议的上游改写点。此状态不是 pass，不能进入下一阶段。
+
+### 4. 工作流自身改进
+
+如果 retrospective 证明问题来自工作流、rubric、agent、arbiter 或命令入口本身，不能直接修改受保护文件。必须创建元级改进规格：
+
+```text
+specs/workflow-improvement/{YYYYMMDD}-{slug}/SPEC.md
+```
+
+该元级 Spec 也必须走同一条管线：
+
+```text
+Spec -> Matrix -> Tasks -> Plan -> Prompt -> Code
+```
+
+并满足同样的 98 分三平台门禁。若改动触及 `CONSTITUTION.md` 第十四条的受保护文件，仍必须额外完成 fork、A/B、outer metric 验证和人类批准。`composite_score >= 98` 只是必要条件，不是自我授权。
+
+### 5. 状态记录
+
+RSI 相关状态必须落盘，供下一轮代理恢复：
+
+```text
+.omx/state/pipeline/{module}/
+├── repair-budget.json
+├── failure-taxonomy.json
+├── escalation-chain.json
+├── pipeline_blocked.json        # 仅阻塞时存在
+└── rsi-retrospective.json
+```
+
+受保护文件和 outer metrics 不得由普通 executor、scorer 或 arbiter 写入。
 
 ---
 
@@ -124,12 +207,12 @@ $spec-code-pipeline {module} --stage prompt
 
 | 阶段 | Executor | 团队 Scorer (并行 × 3) | Gate（唯一） |
 |------|----------|-----------------------|--------------|
-| Spec | `spec` | `spec-structural-score` × claude/codex/copilot | `composite_score >= 98` 且无红线、低置信度、异常分差 |
-| Matrix | `matrix` | `matrix-structural-score` × 3 | `composite_score >= 98` 且无红线、低置信度、异常分差 |
-| Tasks | `task-split` | `tasks-structural-score` × 3 | `composite_score >= 98` 且无红线、低置信度、异常分差 |
-| Plan | `task-planner` | `plan-structural-score` × 3 | `composite_score >= 98` 且无红线、低置信度、异常分差 |
-| Prompt | `prompt-builder` | `prompt-structural-score` × 3 | `composite_score >= 98` 且无红线、低置信度、异常分差 |
-| Code | `task-executor` | `code-structural-score` × 3 | `composite_score >= 98` 且无红线、低置信度、异常分差 |
+| Spec | `spec` | `spec-structural-score` × claude/codex/copilot | `composite_score >= 98` 且无红线、无 LLM 低置信度、无异常 LLM 分差或 rules 异构分歧 |
+| Matrix | `matrix` | `matrix-structural-score` × 3 | `composite_score >= 98` 且无红线、无 LLM 低置信度、无异常 LLM 分差或 rules 异构分歧 |
+| Tasks | `task-split` | `tasks-structural-score` × 3 | `composite_score >= 98` 且无红线、无 LLM 低置信度、无异常 LLM 分差或 rules 异构分歧 |
+| Plan | `task-planner` | `plan-structural-score` × 3 | `composite_score >= 98` 且无红线、无 LLM 低置信度、无异常 LLM 分差或 rules 异构分歧 |
+| Prompt | `prompt-builder` | `prompt-structural-score` × 3 | `composite_score >= 98` 且无红线、无 LLM 低置信度、无异常 LLM 分差或 rules 异构分歧 |
+| Code | `task-executor` | `code-structural-score` × 3 | `composite_score >= 98` 且无红线、无 LLM 低置信度、无异常 LLM 分差或 rules 异构分歧 |
 
 仲裁 agent：`pipeline-arbiter`（三平台均有等价实现）。门禁纯机器判定，无人工分支。Code 阶段的"测试/lint/race 通过"由 `code-structural-score` 在 rubric 中作为评分维度纳入，不再额外设独立门禁。
 
@@ -137,9 +220,9 @@ $spec-code-pipeline {module} --stage prompt
 
 ## 每阶段结构评分硬门禁
 
-Spec / Matrix / Tasks / Plan / Prompt / Code 每个阶段的团队评分（claude / codex / copilot 三平台）都是正式且**唯一**的门禁。每次阶段产物修订后必须重跑三平台评分，仲裁 `gate=pass` 才能进入下一阶段。
+Spec / Matrix / Tasks / Plan / Prompt / Code 每个阶段的团队评分（claude / codex / copilot 三平台）都是正式且**唯一**的门禁。每次阶段产物修订后必须重跑四源评分，仲裁 `gate=pass` 才能进入下一阶段。
 
-下面"第一步…第十步"为流程参考说明，描述各阶段的内容与产物形态。**实际进入下一阶段的判定一律由 `pipeline-arbiter` 完成**：`composite_score = min(三平台评分)` 且 `composite_score >= 98`、无红线、无低置信度、分差在阈值内 → 自动推进，否则自动路由回 executor 或 scorer 修复。`spec-review` agent 与 `Status: Approved` 等历史人工门已不再作为独立 gate，仅作为 scorer 评分时的输入证据保留。
+下面"第一步…第十步"为流程参考说明，描述各阶段的内容与产物形态。**实际进入下一阶段的判定一律由 `pipeline-arbiter` 完成**：`composite_score = min(四源评分)` 且 `composite_score >= 98`、无红线、无 LLM 低置信度、LLM 分差与 rules 异构分歧在阈值内 → 自动推进，否则自动路由回 executor 或 scorer 修复。`spec-review` agent 与 `Status: Approved` 等历史人工门已不再作为独立 gate，仅作为 scorer 评分时的输入证据保留。
 
 ---
 
@@ -244,8 +327,8 @@ Draft → Review → Approved → Implemented
 ### 操作
 
 1. 解决所有 Blocking Open Questions
-2. Spec team-scoring 产出 Claude / Codex / Copilot 三方结构评分
-3. `pipeline-arbiter` 判定 `composite_score >= 98`、无红线、无低置信度、分差在阈值内
+2. Spec team-scoring 产出 Claude / Codex / Copilot 四源结构评分
+3. `pipeline-arbiter` 判定 `composite_score >= 98`、无红线、无 LLM 低置信度、LLM 分差与 rules 异构分歧在阈值内
 4. Arbiter pass 后自动修改 Metadata：`Status: Draft` → `Status: Approved`，并更新 `Last-Updated` 日期
 
 ### 禁止
@@ -615,7 +698,7 @@ PR 描述应引用 Spec：
 
 | Agent | 用途 |
 |-------|------|
-| `pipeline-arbiter` | 汇总三平台评分，按 `ARBITER-PROTOCOL.md` 输出 gate 判定 |
+| `pipeline-arbiter` | 汇总四源评分，按 `ARBITER-PROTOCOL.md` 输出 gate 判定 |
 
 ---
 
@@ -643,7 +726,7 @@ PR 描述应引用 Spec：
 | `specs/TRACEABILITY.md` | 需求追踪矩阵规范 |
 | `specs/DEFINITION-OF-READY.md` | 进入开发的前置条件 |
 | `specs/DEFINITION-OF-DONE.md` | 完成验收条件 |
-| `specs/STRUCTURAL-SCORING.md` | 三平台评分体系与统一红线 |
+| `specs/STRUCTURAL-SCORING.md` | 四源评分体系与统一红线 |
 | `specs/scoring/ARBITER-PROTOCOL.md` | 仲裁算法、门禁、升级链 |
 | `specs/scoring/RUBRIC-*.md` | 各阶段评分维度与红线 |
 | `CONSTITUTION.md` | 最高治理权威 |

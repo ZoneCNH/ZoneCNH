@@ -35,12 +35,12 @@ Spec 到 Code {module}
 Spec -> Matrix -> Tasks -> Plan -> Prompt -> Code
 ```
 
-Expanded repo gate sequence (每个 executor 后都接 **三平台团队评分 + 仲裁**)：
+Expanded repo gate sequence (每个 executor 后都接 **四源团队评分 + 仲裁**)：
 
 ```text
 spec
   -> [spec-team-score: claude + codex + copilot + rules-engine]
-  -> pipeline-arbiter  (gate: composite_score >= 98 且无红线、低置信度、异常分差、异构一致)
+  -> pipeline-arbiter  (gate: composite_score = min(claude.score, codex.score, copilot.score, rules.score) >= 98 且无红线、无 LLM 低置信度、LLM 分差与 rules 异构分歧在阈值内)
   -> 自动翻转 Status: Approved
   -> matrix
   -> [matrix-team-score] -> pipeline-arbiter (gate)
@@ -58,8 +58,9 @@ spec
 
 - `composite_score = min(claude.score, codex.score, copilot.score, rules.score)`
 - `composite_score >= 98`
-- 无任一平台红线
-- 无任一平台低置信度，且三平台分差不超过阈值
+- 无任一评分源红线
+- 无任一 LLM 平台低置信度，且三 LLM 平台分差不超过阈值
+- `rules.score` 与三 LLM 中位数的异构分歧不超过阈值
 
 Confidence 与分差属于 gate 条件，不能被忽略或人工豁免。失败一律自动路由回当前阶段 executor 或 scorer 修复；同阶段 3 次失败自动升级到上一阶段；上游再失败继续向上直到 spec。修复循环必须有界：默认 `max_stage_attempts = 3`，`max_total_gate_failures = 18`。达到全链路上限后输出 `pipeline_blocked` 和 retrospective，不得无限循环。
 
@@ -71,21 +72,25 @@ Workflow self-improvement is allowed only as bounded RSI: create `specs/workflow
 
 | Stage | Executor | Team Scorers (并行) | Gate（唯一） |
 |-------|----------|--------------------|--------------|
-| Spec | `spec` | claude / codex / copilot `spec-structural-score` | `composite_score >= 98` 且无红线、低置信度、异常分差 |
-| Matrix | `matrix` | `matrix-structural-score` × 3 | `composite_score >= 98` 且无红线、低置信度、异常分差 |
-| Tasks | `task-split` | `tasks-structural-score` × 3 | `composite_score >= 98` 且无红线、低置信度、异常分差 |
-| Plan | `task-planner` | `plan-structural-score` × 3 | `composite_score >= 98` 且无红线、低置信度、异常分差 |
-| Prompt | `prompt-builder` | `prompt-structural-score` × 3 | `composite_score >= 98` 且无红线、低置信度、异常分差 |
-| Code | `task-executor` | `code-structural-score` × 3 | `composite_score >= 98` 且无红线、低置信度、异常分差 |
+| Spec | `spec` | claude / codex / copilot `spec-structural-score` + rules | `composite_score >= 98` 且无红线、无 LLM 低置信度、LLM 分差与 rules 异构分歧在阈值内 |
+| Matrix | `matrix` | `matrix-structural-score` × 3 + rules | `composite_score >= 98` 且无红线、无 LLM 低置信度、LLM 分差与 rules 异构分歧在阈值内 |
+| Tasks | `task-split` | `tasks-structural-score` × 3 + rules | `composite_score >= 98` 且无红线、无 LLM 低置信度、LLM 分差与 rules 异构分歧在阈值内 |
+| Plan | `task-planner` | `plan-structural-score` × 3 + rules | `composite_score >= 98` 且无红线、无 LLM 低置信度、LLM 分差与 rules 异构分歧在阈值内 |
+| Prompt | `prompt-builder` | `prompt-structural-score` × 3 + rules | `composite_score >= 98` 且无红线、无 LLM 低置信度、LLM 分差与 rules 异构分歧在阈值内 |
+| Code | `task-executor` | `code-structural-score` × 3 + rules | `composite_score >= 98` 且无红线、无 LLM 低置信度、LLM 分差与 rules 异构分歧在阈值内 |
 
-Arbiter agent：`pipeline-arbiter`（三平台均有实现，结果等价）。
-状态目录：`.omc/state/pipeline/{module}/{stage}/{scores/,verdict.json,attempts.json}`。
+Arbiter agent：`pipeline-arbiter`（三运行时均有等价实现，结果等价）。
+状态目录由运行时决定：
+
+- Claude：`.omc/state/pipeline/{module}/{stage}/{scores/,verdict.json,attempts.json}`
+- Codex：`.omx/state/pipeline/{module}/{stage}/{scores/,verdict.json,attempts.json}`
+- Copilot：`.copilot/state/pipeline/{module}/{stage}/{scores/,verdict.json,attempts.json}`
 
 每个阶段在三 LLM 评分后、调用 arbiter 前，必须运行规则引擎评分：
 
 ```bash
-python3 scripts/rule-scorer.py <stage> <module>
-# 写入 .omc/state/pipeline/<module>/<stage>/scores/rules.json
+python3 scripts/rule-scorer.py <stage> <module> --runtime <claude|codex|copilot>
+# 默认读取 SPEC_PIPELINE_RUNTIME；未设置时写入 .omc/state/pipeline/<module>/<stage>/scores/rules.json
 ```
 
 `rules.json` 是宪法 §14.4 要求的异构第 4 源；arbiter 期望 4 个 scores/*.json 文件齐全。
@@ -94,7 +99,7 @@ python3 scripts/rule-scorer.py <stage> <module>
 
 1. Work one module at a time.
 2. Do not code from a Draft spec.
-3. **Every stage must pass team-scoring gate (`composite_score = min(claude, codex, copilot, rules) >= 98`, no redline, no low confidence, bounded score spread, heterogeneous divergence <= 15) before advancing. This is the only gate.**
+3. **Every stage must pass team-scoring gate (`composite_score = min(claude.score, codex.score, copilot.score, rules.score) >= 98`, no redline, no LLM low confidence, bounded LLM score spread, heterogeneous divergence <= 15) before advancing. This is the only gate.**
 4. **Every stage uses an agent team: executor + 3 LLM scorers + rule-scorer.py + pipeline-arbiter.**
 5. Do not skip Matrix or Tasks before Plan.
 6. Do not ask `task-executor` to implement more than one task unless the user explicitly requests a batch.
@@ -120,11 +125,12 @@ python3 scripts/rule-scorer.py <stage> <module>
 Per-stage state under:
 
 ```text
-.omc/state/pipeline/{module}/{stage}/
+{state_root}/pipeline/{module}/{stage}/
 ├── scores/
 │   ├── claude.json   ├── claude.md
 │   ├── codex.json    ├── codex.md
-│   └── copilot.json  └── copilot.md
+│   ├── copilot.json  ├── copilot.md
+│   └── rules.json
 ├── verdict.json      # arbiter output (gate=pass|fail)
 └── attempts.json     # retry counter & escalation chain
 ```
@@ -132,9 +138,9 @@ Per-stage state under:
 Top-level pipeline state:
 
 ```text
-.omc/state/pipeline/{module}.json
-.omc/state/pipeline/{module}/repair-budget.json
-.omc/state/pipeline/{module}/pipeline_blocked.json
+{state_root}/pipeline/{module}.json
+{state_root}/pipeline/{module}/repair-budget.json
+{state_root}/pipeline/{module}/pipeline_blocked.json
 specs/{module}/PIPELINE-RETROSPECTIVE.md
 ```
 

@@ -257,12 +257,12 @@ Matrix 做完整性和合规性检查
 ## 推荐流程
 
 ```text
-1. Spec 审查                    ← spec-review agent
-2. Spec → Matrix 转换审查        ← 轻量，人工或 task-split 自查
-3. Matrix → Tasks 覆盖性审查     ← 轻量，人工确认
-4. Tasks → Plan 可执行性审查     ← task-planner 输出后人工审批
-5. Plan → Prompt 可传达性审查    ← prompt-builder 输出后人工确认
-6. Prompt → Code 实现审查        ← task-executor 完成后 code-reviewer
+1. Spec 结构评分                 ← Claude / Copilot / Codex team scoring + pipeline-arbiter
+2. Matrix 结构评分               ← Claude / Copilot / Codex team scoring + pipeline-arbiter
+3. Tasks 结构评分                ← Claude / Copilot / Codex team scoring + pipeline-arbiter
+4. Plan 结构评分                 ← Claude / Copilot / Codex team scoring + pipeline-arbiter
+5. Prompt 结构评分               ← Claude / Copilot / Codex team scoring + pipeline-arbiter
+6. Code 结构评分与实现审查        ← Claude / Copilot / Codex team scoring + pipeline-arbiter
 7. Code → Spec 反向验收          ← 反向追溯，确认无野生需求
 ```text
 

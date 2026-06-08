@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # outer-metrics-eval.sh
 #
-# 读取所有 .omc/state/outer-metrics/{module}.json，计算 scorer 评分与 real_quality_index 的相关系数，
-# 写入 .omc/state/outer-metrics/correlation.json。
+# 读取当前运行时 state_root/outer-metrics/{module}.json，计算 scorer 评分与 real_quality_index 的相关系数，
+# 写入当前运行时 state_root/outer-metrics/correlation.json。
 # 按宪法 §14.4 触发 Goodhart 信号。
 #
 # 严禁由 LLM agent 调用；由 cron / CI 触发。
@@ -12,8 +12,24 @@
 set -euo pipefail
 
 ROOT="$(git rev-parse --show-toplevel)"
-METRICS_DIR="$ROOT/.omc/state/outer-metrics"
-STATE_DIR="$ROOT/.omc/state/pipeline"
+RUNTIME="${SPEC_PIPELINE_RUNTIME:-claude}"
+case "$RUNTIME" in
+  claude)
+    STATE_BASE=".omc/state"
+    ;;
+  codex)
+    STATE_BASE=".omx/state"
+    ;;
+  copilot)
+    STATE_BASE=".copilot/state"
+    ;;
+  *)
+    echo "✗ 不支持的 SPEC_PIPELINE_RUNTIME: $RUNTIME" >&2
+    exit 2
+    ;;
+esac
+METRICS_DIR="$ROOT/$STATE_BASE/outer-metrics"
+STATE_DIR="$ROOT/$STATE_BASE/pipeline"
 OUTPUT="$METRICS_DIR/correlation.json"
 
 python3 - <<PYEOF
@@ -37,7 +53,7 @@ def rqi(m):
       - 50  * g("ci_failure_rate_post_merge_7d", 0) * 10
       - 30  * g("developer_override_count"))
 
-# 收集 (module, real_quality, per-platform-min-score, per-stage-min-score)
+# 收集 (module, real_quality, per-source-min-score, per-stage-min-score)
 records = []
 for f in sorted(glob.glob(os.path.join(METRICS_DIR, "*.json"))):
     if os.path.basename(f) in ("correlation.json",): continue
@@ -56,7 +72,7 @@ for f in sorted(glob.glob(os.path.join(METRICS_DIR, "*.json"))):
 
     # 读对应模块各阶段 verdict.json
     per_stage = {}
-    per_platform = {"claude":[], "codex":[], "copilot":[]}
+    per_source = {"claude":[], "codex":[], "copilot":[], "rules":[]}
     stages = ["spec","matrix","tasks","plan","prompt","code"]
     for stage in stages:
         v = os.path.join(STATE_DIR, module, stage, "verdict.json")
@@ -71,16 +87,16 @@ for f in sorted(glob.glob(os.path.join(METRICS_DIR, "*.json"))):
             sv = scores.get(p)
             if isinstance(sv, dict): return sv.get("score")
             return sv
-        per_stage[stage] = vd.get("min") or (min([x for x in [s("claude"),s("codex"),s("copilot")] if x is not None] or [None]))
-        for p in per_platform:
+        per_stage[stage] = vd.get("min") or (min([x for x in [s("claude"),s("codex"),s("copilot"),s("rules")] if x is not None] or [None]))
+        for p in per_source:
             v = s(p)
-            if v is not None: per_platform[p].append(v)
+            if v is not None: per_source[p].append(v)
     if quality is None: continue
     records.append({
         "module": module,
         "quality": quality,
         "per_stage_min": per_stage,
-        "per_platform_avg": {p: (sum(v)/len(v) if v else None) for p,v in per_platform.items()}
+        "per_source_avg": {p: (sum(v)/len(v) if v else None) for p,v in per_source.items()}
     })
 
 def spearman(xs, ys):
@@ -100,13 +116,13 @@ def spearman(xs, ys):
 n = len(records)
 window = f"last_{n}_modules"
 
-# 每平台相关性：用各模块的"平台平均分" vs quality
-by_platform = {}
-for p in ["claude","codex","copilot"]:
-    xs = [r["per_platform_avg"].get(p) for r in records]
+# 每评分源相关性：用各模块的"评分源平均分" vs quality
+by_source = {}
+for p in ["claude","codex","copilot","rules"]:
+    xs = [r["per_source_avg"].get(p) for r in records]
     ys = [r["quality"] for r in records]
     corr = spearman(xs, ys)
-    by_platform[p] = {"correlation": corr, "modules_evaluated": n}
+    by_source[p] = {"correlation": corr, "modules_evaluated": n}
 
 # 每阶段相关性
 by_stage = {}
@@ -124,10 +140,10 @@ composite_corr = spearman(composite_xs, [r["quality"] for r in records])
 
 # Goodhart 信号与冻结
 frozen = []
-for p, info in by_platform.items():
+for p, info in by_source.items():
     c = info["correlation"]
     if c is not None and c < 0.6 and n >= 5:
-        frozen.append(f"platform:{p}")
+        frozen.append(f"source:{p}")
 for s, c in by_stage.items():
     if c is not None and c < 0.5 and n >= 5:
         frozen.append(f"stage:{s}")
@@ -142,7 +158,7 @@ if frozen:
 result = {
     "computed_at": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
     "window": window,
-    "by_platform": by_platform,
+    "by_source": by_source,
     "by_stage": by_stage,
     "composite_score_vs_real_quality": composite_corr,
     "goodhart_signal": goodhart_signal,

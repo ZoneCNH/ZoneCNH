@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # outer-metrics-from-git.sh
 #
-# 从 git 历史机械计算真实质量指标，写入 .omc/state/outer-metrics/{module}.json
+# 从 git 历史机械计算真实质量指标，写入当前运行时 state_root/outer-metrics/{module}.json
 # 严禁由 LLM agent 调用；由 cron / CI 触发。
 #
 # 用法：scripts/outer-metrics-from-git.sh <module> [<since_ref>]
@@ -11,7 +11,23 @@ set -euo pipefail
 MODULE="${1:?usage: $0 <module> [since_ref]}"
 SINCE="${2:-HEAD~100}"
 ROOT="$(git rev-parse --show-toplevel)"
-OUTPUT="$ROOT/.omc/state/outer-metrics/${MODULE}.json"
+RUNTIME="${SPEC_PIPELINE_RUNTIME:-claude}"
+case "$RUNTIME" in
+  claude)
+    STATE_BASE=".omc/state"
+    ;;
+  codex)
+    STATE_BASE=".omx/state"
+    ;;
+  copilot)
+    STATE_BASE=".copilot/state"
+    ;;
+  *)
+    echo "✗ 不支持的 SPEC_PIPELINE_RUNTIME: $RUNTIME" >&2
+    exit 2
+    ;;
+esac
+OUTPUT="$ROOT/$STATE_BASE/outer-metrics/${MODULE}.json"
 
 cd "$ROOT"
 

@@ -33,21 +33,42 @@ def env(tmp_path, monkeypatch):
     return tmp_path
 
 
-def _write_scores(env_path: Path, module: str, stage: str, scores: dict[str, dict]):
-    d = env_path / ".omc/state/pipeline" / module / stage / "scores"
+def _write_scores(env_path: Path, module: str, stage: str, scores: dict[str, dict], runtime: str = "claude"):
+    d = ar.state_root(runtime) / module / stage / "scores"
     d.mkdir(parents=True, exist_ok=True)
     for src, payload in scores.items():
         (d / f"{src}.json").write_text(json.dumps(payload), encoding="utf-8")
 
 
-def _full_scores(s_claude=99, s_codex=99, s_copilot=99, s_rules=99, redlines=None, confs=None):
+def _score_payload(source, module, stage, score, redline=False, confidence="high"):
+    return {
+        "source": source,
+        "module": module,
+        "stage": stage,
+        "score": score,
+        "redline": redline,
+        "confidence": confidence,
+        "deductions": [],
+    }
+
+
+def _full_scores(
+    s_claude=99,
+    s_codex=99,
+    s_copilot=99,
+    s_rules=99,
+    redlines=None,
+    confs=None,
+    module="m1",
+    stage="matrix",
+):
     redlines = redlines or {}
     confs = confs or {}
     base = {
-        "claude": {"score": s_claude, "redline": redlines.get("claude", False), "confidence": confs.get("claude", "high")},
-        "codex": {"score": s_codex, "redline": redlines.get("codex", False), "confidence": confs.get("codex", "high")},
-        "copilot": {"score": s_copilot, "redline": redlines.get("copilot", False), "confidence": confs.get("copilot", "high")},
-        "rules": {"score": s_rules, "redline": redlines.get("rules", False), "confidence": confs.get("rules", "high")},
+        "claude": _score_payload("claude", module, stage, s_claude, redlines.get("claude", False), confs.get("claude", "high")),
+        "codex": _score_payload("codex", module, stage, s_codex, redlines.get("codex", False), confs.get("codex", "high")),
+        "copilot": _score_payload("copilot", module, stage, s_copilot, redlines.get("copilot", False), confs.get("copilot", "high")),
+        "rules": _score_payload("rules", module, stage, s_rules, redlines.get("rules", False), confs.get("rules", "high")),
     }
     return base
 
@@ -64,7 +85,7 @@ def test_all_pass(env):
 
 
 def test_spec_pass_auto_approve(env):
-    _write_scores(env, "m1", "spec", _full_scores(98, 98, 98, 98))
+    _write_scores(env, "m1", "spec", _full_scores(98, 98, 98, 98, stage="spec"))
     v = ar.arbitrate("m1", "spec", 3, 18)
     assert v["gate"] == "pass"
     assert v["next_action"] == "advance_to_next_stage_and_approve_spec"
@@ -75,14 +96,14 @@ def test_spec_pass_auto_approve(env):
 
 def test_missing_source(env):
     _write_scores(env, "m1", "matrix", {
-        "claude": {"score": 99, "redline": False, "confidence": "high"},
-        "codex": {"score": 99, "redline": False, "confidence": "high"},
+        "claude": _score_payload("claude", "m1", "matrix", 99),
+        "codex": _score_payload("codex", "m1", "matrix", 99),
         # 缺 copilot 和 rules
     })
     v = ar.arbitrate("m1", "matrix", 3, 18)
     assert v["gate"] == "fail"
-    assert any("missing_platform_score" in r for r in v["reasons"])
-    assert v["next_action"] == "route_to_missing_platform_scorer"
+    assert any("missing_score_source" in r for r in v["reasons"])
+    assert v["next_action"] == "route_to_missing_score_source"
 
 
 # ---- fail: redline ----
@@ -120,7 +141,7 @@ def test_low_confidence(env):
 
 def test_rules_low_confidence_not_blocking(env):
     """rules 源 low confidence 仅诊断不参与 gate"""
-    _write_scores(env, "m1", "code", _full_scores(confs={"rules": "low"}))
+    _write_scores(env, "m1", "code", _full_scores(confs={"rules": "low"}, stage="code"))
     v = ar.arbitrate("m1", "code", 3, 18)
     assert v["gate"] == "pass"
 
@@ -154,15 +175,15 @@ def test_stage_attempt_exhausted_routes_back(env):
     for _ in range(3):
         _write_scores(env, "m1", "matrix", _full_scores(95, 99, 99, 99))
         ar.arbitrate("m1", "matrix", 3, 18)
-    last = json.loads((env / ".omc/state/pipeline/m1/matrix/verdict.json").read_text())
+    last = json.loads((ar.state_root("claude") / "m1/matrix/verdict.json").read_text())
     assert last["next_action"] == "route_back_to_spec"
 
 
 def test_spec_failure_loops_to_rewrite(env):
     for _ in range(3):
-        _write_scores(env, "m1", "spec", _full_scores(95, 99, 99, 99))
+        _write_scores(env, "m1", "spec", _full_scores(95, 99, 99, 99, stage="spec"))
         ar.arbitrate("m1", "spec", 3, 18)
-    last = json.loads((env / ".omc/state/pipeline/m1/spec/verdict.json").read_text())
+    last = json.loads((ar.state_root("claude") / "m1/spec/verdict.json").read_text())
     assert last["next_action"] == "route_back_to_spec_executor_for_rewrite"
 
 
@@ -170,7 +191,7 @@ def test_total_budget_exhausted(env):
     for _ in range(18):
         _write_scores(env, "m1", "matrix", _full_scores(95, 99, 99, 99))
         ar.arbitrate("m1", "matrix", 100, 18)  # 大 stage 限制只测总预算
-    last = json.loads((env / ".omc/state/pipeline/m1/matrix/verdict.json").read_text())
+    last = json.loads((ar.state_root("claude") / "m1/matrix/verdict.json").read_text())
     assert last["next_action"] == "pipeline_blocked_for_retrospective"
 
 
@@ -182,8 +203,29 @@ def test_verdict_schema(env):
     v = ar.arbitrate("m1", "matrix", 3, 18)
     for k in ("module", "stage", "arbitrated_at", "scores", "composite_score",
               "score_range", "heterogeneous_divergence", "redlines", "gate",
-              "reasons", "next_action", "attempt", "repair_budget", "arbiter_engine"):
+              "reasons", "next_action", "attempt", "repair_budget", "arbiter_engine",
+              "runtime", "state_root"):
         assert k in v
     assert v["arbiter_engine"] == "deterministic-1.0"
     for src in ("claude", "codex", "copilot", "rules"):
         assert src in v["scores"]
+
+
+def test_codex_runtime_uses_omx_state(env):
+    _write_scores(env, "m1", "matrix", _full_scores(), runtime="codex")
+    v = ar.arbitrate("m1", "matrix", 3, 18, runtime="codex")
+    assert v["gate"] == "pass"
+    assert v["runtime"] == "codex"
+    assert v["state_root"] == ".omx/state/pipeline"
+    assert (env / ".omx/state/pipeline/m1/matrix/verdict.json").exists()
+    assert not (env / ".omc/state/pipeline/m1/matrix/verdict.json").exists()
+
+
+def test_copilot_runtime_uses_copilot_state(env):
+    _write_scores(env, "m1", "matrix", _full_scores(), runtime="copilot")
+    v = ar.arbitrate("m1", "matrix", 3, 18, runtime="copilot")
+    assert v["gate"] == "pass"
+    assert v["runtime"] == "copilot"
+    assert v["state_root"] == ".copilot/state/pipeline"
+    assert (env / ".copilot/state/pipeline/m1/matrix/verdict.json").exists()
+    assert not (env / ".omc/state/pipeline/m1/matrix/verdict.json").exists()

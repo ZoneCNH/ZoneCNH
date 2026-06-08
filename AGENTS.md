@@ -47,43 +47,76 @@ Spec 编写完成后，不是直接写代码，而是按管线推进：Spec → 
 
 ### Agents — Spec → Code 管线
 
-本仓库配置了双平台代理（Claude Code + Codex），功能角色相同，配置格式不同：
+本仓库配置了三平台代理（Claude Code + Codex + Copilot CLI），功能角色相同，配置格式不同：
 
 | 平台 | 配置目录 | 模型 | 格式 |
 |------|----------|------|------|
 | Claude Code | `.claude/agents/` | Sonnet / Opus | Markdown frontmatter |
 | Codex | `.codex/agents/` | GPT-5.5 + reasoning effort | TOML |
+| Copilot CLI | `.copilot/agents/` | Copilot/Claude 模型 | Markdown prompt |
 
-| Agent | 步骤 | 用途 | 可改文件 | 可写代码 | Claude 模型 | Codex reasoning |
-|-------|------|------|----------|----------|-------------|-----------------|
-| `spec` | Spec | 编写或修订项目 spec，补齐 23 节结构与追溯链 | Spec 文档 | 否 | Opus | high |
-| `spec-review` | Review | 对抗性审查 spec，给出 Go/No-Go 判断 | 无 | 否 | Opus | high |
-| `matrix` | Matrix | 生成或校验需求追溯矩阵，闭合 FR/BR/AC/TC 链条 | Traceability 文档 | 否 | Sonnet | high |
-| `task-split` | Tasks | 将 Approved Spec 和 Matrix 拆成可执行 Task Spec | Task / Matrix 文档 | 否 | Sonnet | high |
-| `task-planner` | Plan | 生成实现顺序、依赖、验证命令和风险计划 | Plan 文档 | 否 | Opus | high |
-| `prompt-builder` | Prompt | 为单个 Task 生成 Context Packet 与开发 Prompt | Prompt 文档 | 否 | Sonnet | medium |
-| `task-executor` | Code | 按单个 Task 和 Prompt 编写代码与测试，验证后回填证据 | Task 指定源码/测试 | 是 | Sonnet | high |
-| `code-reviewer` | Review | 代码审查 | 无 | 否 | — | — |
-| `tdd-guide` | Test | 测试驱动开发 | 测试 / 必要实现 | 是 | — | — |
+运行时状态目录按平台隔离：Claude 使用 `.omc/state/pipeline/`，Codex 使用 `.omx/state/pipeline/`，Copilot 使用 `.copilot/state/pipeline/`。
+
+| Agent | 流水线阶段 | 用途 | 可改文件 | 可写代码 | Claude 模型 | Codex reasoning |
+|-------|-----------|------|----------|----------|-------------|-----------------|
+| `spec` | S1-Spec | 编写或修订项目 spec，补齐 23 节结构与追溯链 | Spec 文档 | 否 | Opus | high |
+| `spec-review` | S1-Review | 对抗性审查 spec，作为结构评分证据与参考 | 无 | 否 | Opus | high |
+| `matrix` | S2-Matrix | 生成或校验需求追溯矩阵，闭合 FR/BR/AC/TC 链条 | Traceability 文档 | 否 | Sonnet | high |
+| `task-split` | S3-Tasks | 将 Approved Spec 和 Matrix 拆成可执行 Task Spec | Task / Matrix 文档 | 否 | Sonnet | high |
+| `task-planner` | S4-Plan | 生成实现顺序、依赖、验证命令和风险计划 | Plan 文档 | 否 | Opus | high |
+| `prompt-builder` | S5-Prompt | 为单个 Task 生成 Context Packet 与开发 Prompt | Prompt 文档 | 否 | Sonnet | medium |
+| `task-executor` | S6-Code | 按单个 Task 和 Prompt 编写代码与测试，验证后回填证据 | Task 指定源码/测试 | 是 | Sonnet | high |
+| `*-structural-score` | S1-S6 Score | 每阶段结构性问题分析，Claude / Codex / Copilot 分别输出评分、红线和扣分账本；rules scorer 输出机械第四源 | 无 | 否 | Opus | high |
+| `pipeline-arbiter` | S1-S6 Gate | 汇总 `claude/codex/copilot/rules` 四源评分，计算 `composite_score = min(...)`，判定是否达到 98 分门禁 | Verdict / Attempts | 否 | Opus | high |
+| `code-reviewer` | — | 代码审查 | 无 | 否 | — | — |
+| `tdd-guide` | — | 测试驱动开发 | 测试 / 必要实现 | 是 | — | — |
 
 管线流程：
 
 ```text
-spec → spec-review → matrix → task-split → task-planner → prompt-builder → task-executor
+每阶段通用门禁：
+
+executor → [claude scorer | codex scorer | copilot scorer | rules scorer]（agent team 并行）
+        → pipeline-arbiter（composite_score = min(claude.score, codex.score, copilot.score, rules.score)；composite_score >= 98 且无红线、无 LLM 低置信度、无异常 LLM 分差或 rules 异构分歧）
+        → 下一阶段
+
+规范阶段顺序：
+
+Spec → Matrix → Tasks → Plan → Prompt → Code
 ```
 
-### OMC Pipeline Skill
+每个阶段都必须做结构性问题分析和四源评分。任一评分源低于 98、触发红线、任一 LLM 低置信度、三 LLM 分差超过阈值或 rules 与 LLM 中位数异构分歧过大，均不得进入下一阶段。Spec 阶段由 `pipeline-arbiter` 在 pass 后自动翻转 `Status: Approved`；`spec-review` 仅作为对抗性参考证据，不构成独立门禁。
 
-已配置 OMC 技能 `<runtime>/skills/pipeline/SKILL.md`，支持一键触发完整管线：
+管线支持有界递归自改进：同阶段最多 3 次自动修复，失败后回退上游；全链路默认最多 18 次 gate fail，耗尽后写出 `pipeline_blocked` 与 `PIPELINE-RETROSPECTIVE.md`，不得无限重写 Spec。工作流、rubric、agent、arbiter 等受保护文件的改进必须作为 `specs/workflow-improvement/{YYYYMMDD}-{slug}/SPEC.md` 进入同一条 98 分管线，并遵守 `CONSTITUTION.md` 第十四条。
+
+### OMX Pipeline Skill
+
+已配置 OMX 技能 `<runtime>/skills/pipeline/SKILL.md`，支持一键触发完整管线：
 
 | 触发方式 | 说明 |
 |----------|------|
 | `pipeline {module}` | 从头启动完整管线 |
-| `pipeline {module} --from spec-review` | 从某个阶段恢复 |
+| `pipeline {module} --from spec-structural-score` | 从某个阶段恢复 |
 | `pipeline {module} --stage matrix` | 只执行单个阶段 |
 | `开发管线 {module}` | 中文触发 |
 
 管线状态记录在 `<runtime>/state/pipeline/{module}.json`。
+
+### Spec → Code Workflow Skill
+
+本仓库新增项目内端到端工作流入口，用于把单个模块从规格推进到一个可验证的编码任务：
+
+```text
+Spec → Matrix → Tasks → Plan → Prompt → Code
+```
+
+| 平台 | 触发方式 | 定义文件 |
+|------|----------|----------|
+| Codex | `$spec-code-pipeline {module}` | `.codex/skills/spec-code-pipeline/SKILL.md` |
+| Claude Code | `/project:spec-code-pipeline {module}` | `.claude/commands/spec-code-pipeline.md` |
+| Copilot CLI | `/project:spec-code-pipeline {module}` | `.copilot/commands/spec-code-pipeline.md` |
+
+该入口要求每个阶段都通过 agent team 结构评分门禁：`composite_score >= 98` 且无红线、无 LLM 低置信度、LLM 分差与 rules 异构分歧在阈值内。Spec 的 `Status: Approved` 由 arbiter pass 后自动翻转；`spec-review` 仅作为额外对抗性证据，不构成独立门禁。
 
 ### 关键文档
 

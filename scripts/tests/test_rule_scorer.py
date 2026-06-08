@@ -12,6 +12,7 @@ rule-scorer.py 单元测试
 from __future__ import annotations
 
 import importlib.util
+import json
 import sys
 from pathlib import Path
 
@@ -281,3 +282,49 @@ def test_to_json_schema(tmp_module):
     assert 0 <= payload["score"] <= 100
     assert isinstance(payload["redline"], bool)
     assert payload["confidence"] in {"high", "medium", "low"}
+
+
+def test_main_default_runtime_writes_claude_state(tmp_module, monkeypatch):
+    mod_dir, module = tmp_module
+    (mod_dir / "SPEC.md").write_text(_perfect_spec_text(), encoding="utf-8")
+    monkeypatch.setattr(sys, "argv", ["rule-scorer.py", "spec", module])
+
+    assert rs.main() == 0
+
+    out = rs.ROOT / ".omc/state/pipeline" / module / "spec/scores/rules.json"
+    assert out.exists()
+    assert json.loads(out.read_text(encoding="utf-8"))["source"] == "rules"
+
+
+def test_main_codex_runtime_writes_omx_state(tmp_module, monkeypatch):
+    mod_dir, module = tmp_module
+    (mod_dir / "SPEC.md").write_text(_perfect_spec_text(), encoding="utf-8")
+    monkeypatch.setattr(sys, "argv", ["rule-scorer.py", "spec", module, "--runtime", "codex"])
+
+    assert rs.main() == 0
+
+    out = rs.ROOT / ".omx/state/pipeline" / module / "spec/scores/rules.json"
+    assert out.exists()
+    assert not (rs.ROOT / ".omc/state/pipeline" / module / "spec/scores/rules.json").exists()
+
+
+def test_main_copilot_runtime_writes_copilot_state(tmp_module, monkeypatch):
+    mod_dir, module = tmp_module
+    (mod_dir / "SPEC.md").write_text(_perfect_spec_text(), encoding="utf-8")
+    monkeypatch.setattr(sys, "argv", ["rule-scorer.py", "spec", module, "--runtime", "copilot"])
+
+    assert rs.main() == 0
+
+    out = rs.ROOT / ".copilot/state/pipeline" / module / "spec/scores/rules.json"
+    assert out.exists()
+    assert not (rs.ROOT / ".omc/state/pipeline" / module / "spec/scores/rules.json").exists()
+
+
+def test_main_explicit_out_can_write_outside_runtime_state(tmp_module, monkeypatch):
+    mod_dir, module = tmp_module
+    (mod_dir / "SPEC.md").write_text(_perfect_spec_text(), encoding="utf-8")
+    out = rs.ROOT / "custom-scores" / "rules.json"
+    monkeypatch.setattr(sys, "argv", ["rule-scorer.py", "spec", module, "--runtime", "codex", "--out", str(out)])
+
+    assert rs.main() == 0
+    assert out.exists()

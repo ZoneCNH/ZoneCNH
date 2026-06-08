@@ -13,27 +13,59 @@ arbiter.py — 确定性仲裁器（替代/补充 LLM pipeline-arbiter agent）
 写出 verdict.json，更新 attempts.json，决定 next_action。
 
 用法：
-  arbiter.py <module> <stage>
-  arbiter.py <module> <stage> --max-stage-attempts 3 --max-total 18
+  arbiter.py <module> <stage> [--runtime claude|codex|copilot]
+  arbiter.py <module> <stage> --runtime codex --max-stage-attempts 3 --max-total 18
 """
 
 from __future__ import annotations
 
 import argparse
 import datetime as dt
+import importlib.util
 import json
+import os
 import statistics
 import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
+RUNTIME_STATE_ROOTS = {
+    "claude": ".omc/state/pipeline",
+    "codex": ".omx/state/pipeline",
+    "copilot": ".copilot/state/pipeline",
+}
 LLM_SOURCES = ("claude", "codex", "copilot")
 ALL_SOURCES = LLM_SOURCES + ("rules",)
 STAGE_ORDER = ("spec", "matrix", "tasks", "plan", "prompt", "code")
 
 
-def _state_dir(module: str, stage: str) -> Path:
-    return ROOT / ".omc/state/pipeline" / module / stage
+def _load_validator():
+    spec = importlib.util.spec_from_file_location(
+        "score_validator", ROOT / "scripts/score-validate.py"
+    )
+    mod = importlib.util.module_from_spec(spec)
+    sys.modules.setdefault("score_validator", mod)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+_validator = _load_validator()
+
+
+def default_runtime() -> str:
+    runtime = os.environ.get("SPEC_PIPELINE_RUNTIME", "claude").lower()
+    if runtime not in RUNTIME_STATE_ROOTS:
+        allowed = ", ".join(sorted(RUNTIME_STATE_ROOTS))
+        raise SystemExit(f"不支持的 SPEC_PIPELINE_RUNTIME={runtime!r}; 可选: {allowed}")
+    return runtime
+
+
+def state_root(runtime: str) -> Path:
+    return ROOT / RUNTIME_STATE_ROOTS[runtime]
+
+
+def _state_dir(module: str, stage: str, runtime: str = "claude") -> Path:
+    return state_root(runtime) / module / stage
 
 
 def _now() -> str:
@@ -49,8 +81,8 @@ def _load_score(path: Path) -> dict | None:
         return None
 
 
-def _load_attempts(module: str, stage: str) -> dict:
-    p = _state_dir(module, stage) / "attempts.json"
+def _load_attempts(module: str, stage: str, runtime: str) -> dict:
+    p = _state_dir(module, stage, runtime) / "attempts.json"
     if not p.exists():
         return {"stage_attempt": 0, "total_gate_failures": 0}
     try:
@@ -64,21 +96,32 @@ def _save_json(path: Path, payload: dict) -> None:
     path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
 
 
-def arbitrate(module: str, stage: str, max_stage_attempts: int, max_total: int) -> dict:
-    state = _state_dir(module, stage)
+def arbitrate(
+    module: str,
+    stage: str,
+    max_stage_attempts: int,
+    max_total: int,
+    runtime: str = "claude",
+) -> dict:
+    state = _state_dir(module, stage, runtime)
     scores_dir = state / "scores"
 
-    # 1. 四源齐全
+    # 1. 四源齐全 + schema 校验
     sources_data: dict[str, dict] = {}
     missing: list[str] = []
+    invalid: list[tuple[str, list[str]]] = []
     for src in ALL_SOURCES:
         data = _load_score(scores_dir / f"{src}.json")
         if data is None:
             missing.append(src)
-        else:
-            sources_data[src] = data
+            continue
+        errs = _validator.validate(data)
+        if errs:
+            invalid.append((src, errs))
+            continue
+        sources_data[src] = data
 
-    attempts = _load_attempts(module, stage)
+    attempts = _load_attempts(module, stage, runtime)
     attempts["stage_attempt"] += 1
     # 失败时增加 total_gate_failures（计在末尾）
 
@@ -88,10 +131,20 @@ def arbitrate(module: str, stage: str, max_stage_attempts: int, max_total: int) 
 
     if missing:
         gate = "fail"
-        reasons.append(f"missing_platform_score:{','.join(missing)}")
-        next_action = "route_to_missing_platform_scorer"
+        reasons.append(f"missing_score_source:{','.join(missing)}")
+        next_action = "route_to_missing_score_source"
         composite_score = 0
         llm_scores: list[int] = []
+    elif invalid:
+        gate = "fail"
+        invalid_sources = ",".join(src for src, _ in invalid)
+        reasons.append(f"invalid_score_schema:{invalid_sources}")
+        for src, errs in invalid:
+            for err in errs[:3]:
+                reasons.append(f"invalid_score_schema:{src}:{err}")
+        next_action = "route_to_invalid_score_source"
+        composite_score = 0
+        llm_scores = []
     else:
         # 2. 红线
         for src, d in sources_data.items():
@@ -139,7 +192,9 @@ def arbitrate(module: str, stage: str, max_stage_attempts: int, max_total: int) 
             else "advance_to_next_stage"
         )
     elif missing:
-        next_action = "route_to_missing_platform_scorer"
+        next_action = "route_to_missing_score_source"
+    elif invalid:
+        next_action = "route_to_invalid_score_source"
     elif redlines:
         next_action = "route_to_executor_for_repair"
     else:
@@ -170,6 +225,8 @@ def arbitrate(module: str, stage: str, max_stage_attempts: int, max_total: int) 
     verdict = {
         "module": module,
         "stage": stage,
+        "runtime": runtime,
+        "state_root": RUNTIME_STATE_ROOTS[runtime],
         "arbitrated_at": _now(),
         "scores": {
             src: {
@@ -191,9 +248,13 @@ def arbitrate(module: str, stage: str, max_stage_attempts: int, max_total: int) 
         ),
         "heterogeneous_divergence": (
             abs(int(sources_data["rules"]["score"]) - int(statistics.median(llm_scores)))
-            if not missing
+            if not missing and not invalid
             else None
         ),
+        "invalid_scores": [
+            {"source": src, "errors": errs}
+            for src, errs in invalid
+        ],
         "redlines": redlines,
         "gate": gate,
         "reasons": reasons,
@@ -217,11 +278,17 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("module")
     ap.add_argument("stage", choices=list(STAGE_ORDER))
+    ap.add_argument(
+        "--runtime",
+        choices=sorted(RUNTIME_STATE_ROOTS),
+        default=default_runtime(),
+        help="状态运行时：claude=.omc，codex=.omx，copilot=.copilot",
+    )
     ap.add_argument("--max-stage-attempts", type=int, default=3)
     ap.add_argument("--max-total", type=int, default=18)
     args = ap.parse_args()
 
-    verdict = arbitrate(args.module, args.stage, args.max_stage_attempts, args.max_total)
+    verdict = arbitrate(args.module, args.stage, args.max_stage_attempts, args.max_total, args.runtime)
     print(json.dumps(verdict, ensure_ascii=False, indent=2))
     print(f"\ngate = {verdict['gate']}  next_action = {verdict['next_action']}", file=sys.stderr)
     return 0 if verdict["gate"] == "pass" else 1

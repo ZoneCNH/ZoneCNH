@@ -1,23 +1,37 @@
 # 仲裁协议
 
-> 三平台评分聚合与门禁判定规则。`pipeline-arbiter` agent 必须严格遵守本协议。
+> 评分聚合与门禁判定规则。**首选**由确定性脚本 `scripts/arbiter.py` 执行；LLM `pipeline-arbiter` agent 仅作为协议文档参考与兜底（必须输出与脚本相同的 verdict）。
 
 最后更新：2026-06-08
 
 ---
+
+## 0. 推荐执行方式
+
+```bash
+python3 scripts/arbiter.py <module> <stage> --runtime <claude|codex|copilot>
+# 默认读取 SPEC_PIPELINE_RUNTIME；未设置时写入 .omc/state/pipeline/<module>/<stage>/{verdict,attempts}.json
+# 退出码 0=pass，1=fail
+```
+
+确定性脚本与本协议算法 1:1 对应，单元测试覆盖 13 个分支
+（`scripts/tests/test_arbiter.py`）。LLM agent 不再担任 gate 判定者，
+仅在脚本不可用或需要诊断时输出参考意见。
 
 ## 1. 输入
 
 仲裁器读取：
 
 ```text
-.omx/state/pipeline/{module}/{stage}/scores/claude.json
-.omx/state/pipeline/{module}/{stage}/scores/codex.json
-.omx/state/pipeline/{module}/{stage}/scores/copilot.json
-.omx/state/pipeline/{module}/{stage}/scores/rules.json
+{state_root}/pipeline/{module}/{stage}/scores/claude.json
+{state_root}/pipeline/{module}/{stage}/scores/codex.json
+{state_root}/pipeline/{module}/{stage}/scores/copilot.json
+{state_root}/pipeline/{module}/{stage}/scores/rules.json
 ```
 
 四个文件均必须存在；缺一报错并 `gate=fail`，原因 `missing_score_source`。
+
+`state_root` 按运行时选择：Claude `.omc/state`，Codex `.omx/state`，Copilot `.copilot/state`。
 
 `claude` / `codex` / `copilot` 是 LLM scorer 输出。`rules` 是 `scripts/rule-scorer.py`
 输出的纯机械规则评分，作为宪法 §14.4 要求的异构信号源，用于打破 LLM 同源相关性。
@@ -43,7 +57,7 @@
 
 ## 3. 输出 Schema
 
-写入 `.omx/state/pipeline/{module}/{stage}/verdict.json`：
+写入 `{state_root}/pipeline/{module}/{stage}/verdict.json`：
 
 ```json
 {
@@ -100,12 +114,12 @@
 仲裁器维护尝试计数：
 
 ```text
-.omx/state/pipeline/{module}/{stage}/attempts.json
+{state_root}/pipeline/{module}/{stage}/attempts.json
 ```
 
 | 尝试次数 | 处理 |
 |----------|------|
-| 1-2 | 路由回当前阶段 executor 修复，重跑三平台评分 + 仲裁 |
+| 1-2 | 路由回当前阶段 executor 修复，重跑四源评分 + 仲裁 |
 | 3 | 自动路由回上一阶段 executor（`escalation=upstream`），重置当前阶段 attempt |
 | 上游再失败 | 继续向上路由，直到 spec |
 | spec 失败 | 由 spec executor 重写 SPEC.md 后继续评分，但仍计入全链路预算 |
@@ -123,10 +137,10 @@ max_stage_attempts = 3
 max_total_gate_failures = 18
 ```
 
-推进下一阶段的唯一条件：三平台仲裁 `gate=pass`。自动修复循环的停止条件：达到 `max_total_gate_failures` 后，仲裁器必须输出 `pipeline_blocked_for_retrospective`，并写入：
+推进下一阶段的唯一条件：四源仲裁 `gate=pass`。自动修复循环的停止条件：达到 `max_total_gate_failures` 后，仲裁器必须输出 `pipeline_blocked_for_retrospective`，并写入：
 
 ```text
-.omx/state/pipeline/{module}/pipeline_blocked.json
+{state_root}/pipeline/{module}/pipeline_blocked.json
 specs/{module}/PIPELINE-RETROSPECTIVE.md
 ```
 
@@ -139,7 +153,7 @@ specs/{module}/PIPELINE-RETROSPECTIVE.md
 `gate=pass` 是进入下一阶段的**唯一**条件。任何 agent 或脚本都不得：
 
 - 直接改写 `verdict.json` 让 fail 变 pass。
-- 跳过任一平台的评分。
+- 跳过任一评分源的评分。
 - 在 attempt 未达成 pass 前推进到下一阶段。
 
 普通产物内的红线类问题（凭证、Constitution 违反、跨模块写入）由 scorer 自动识别报告，仲裁器自动 fail，并按有界 repair routing 修复。若修复需要修改受保护文件或解释/变更宪法规则，必须进入元级 RSI 流程。

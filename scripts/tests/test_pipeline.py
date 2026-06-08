@@ -29,12 +29,11 @@ pl = _load()
 @pytest.fixture
 def env(tmp_path, monkeypatch):
     monkeypatch.setattr(pl, "ROOT", tmp_path)
-    monkeypatch.setattr(pl, "STATE_ROOT", tmp_path / ".omc/state/pipeline")
     return tmp_path
 
 
-def _write_verdict(env_path, module, stage, gate, composite=99, next_action="advance"):
-    d = env_path / ".omc/state/pipeline" / module / stage
+def _write_verdict(env_path, module, stage, gate, composite=99, next_action="advance", runtime="claude"):
+    d = pl.state_root(runtime) / module / stage
     d.mkdir(parents=True, exist_ok=True)
     (d / "verdict.json").write_text(json.dumps({
         "gate": gate, "composite_score": composite,
@@ -76,4 +75,21 @@ def test_status_runs(env, capsys):
     assert rc == 0
     out = capsys.readouterr().out
     assert "Pipeline status: m1" in out
+    assert "Runtime: `claude`" in out
     assert "spec" in out and "pass" in out
+
+
+def test_next_codex_runtime(env, capsys):
+    _write_verdict(env, "m1", "spec", "pass", runtime="codex")
+    rc = pl.cmd_next("m1", runtime="codex")
+    assert rc == 0
+    assert capsys.readouterr().out.strip() == "matrix"
+
+
+def test_status_copilot_runtime(env, capsys):
+    _write_verdict(env, "m1", "spec", "pass", composite=98, runtime="copilot")
+    rc = pl.cmd_status("m1", runtime="copilot")
+    assert rc == 0
+    out = capsys.readouterr().out
+    assert "Runtime: `copilot`" in out
+    assert ".copilot/state/pipeline" in out

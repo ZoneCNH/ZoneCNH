@@ -1,0 +1,152 @@
+# 统一管线与状态机
+
+> Gate 体系（G0-G11）的定义见 [04-gates.md](04-gates.md)。各层标准见 [05-layer-standards.md](05-layer-standards.md)。
+
+本文档定义 Goal 驱动交付体系的**统一管线**和**状态机**。
+
+---
+
+## 1. 完整管线
+
+```text
+Goal → Spec → Design → Plan → Tasks → Prompt → Code → Test → Review → Release → Retrospective
+```
+
+每一层回答一个核心问题：
+
+| 层级         | 核心问题                   | 输出物       |
+| ------------ | -------------------------- | ------------ |
+| Goal         | 为什么做？做到什么算成功？ | 目标定义     |
+| Spec         | 具体要做什么？边界是什么？ | 需求规格     |
+| Design       | 怎么做？架构怎么拆？       | 设计方案     |
+| Plan         | 任务按什么顺序执行？       | 执行计划     |
+| Tasks        | 需要拆成哪些可执行任务？   | 任务清单     |
+| Prompt       | 如何让 AI/工程师准确执行？ | 指令模板     |
+| Code         | 最终实现是否满足验收？     | 代码与测试   |
+| Test         | 实现是否正确？             | 测试结果     |
+| Review       | 是否满足 Goal/Spec/Design？ | 审查结论    |
+| Release      | 是否可上线？               | 发布清单     |
+| Retrospective| 哪里可以改进？             | 复盘与 Patch |
+
+> **Matrix（追溯矩阵）** 是横切制品，贯穿所有阶段，不是独立的管线层。它将 Goal → Spec → Requirement → AC → Task → Test → Evidence 串联为可追溯的映射关系。详见 [05-layer-standards.md §4.3](05-layer-standards.md#43-matrix-标准)。
+
+---
+
+## 2. 状态机
+
+### 2.1 正常状态流
+
+```text
+INIT → CONTEXT_READY → GOAL_READY → SPEC_READY → DESIGN_READY
+→ PLAN_READY → TASKS_READY → EXECUTING → VERIFYING
+→ REVIEWING → RELEASING → RETROSPECTING → DONE
+```
+
+### 2.2 异常状态
+
+```text
+BLOCKED             — 依赖缺失 / 权限缺失
+FAILED              — 执行失败
+NEEDS_RESEARCH      — 未知项阻塞决策
+NEEDS_DECISION      — 多方案且影响 CL3+
+NEEDS_REPLAN        — Spec/Design 变更影响 Plan
+NEEDS_ROLLBACK      — Release Gate FAIL 后回滚
+NEEDS_HUMAN_APPROVAL — CL3+ 变更需人工确认
+INCONSISTENT_STATE  — Registry/Artifact/CI 冲突
+```
+
+### 2.3 状态输出格式
+
+每次状态输出必须包含：
+
+```text
+Current State:       [当前状态]
+Next State:          [下一个状态]
+Allowed Actions:     [允许的操作]
+Blocked By:          [阻塞项]
+Required Gate:       [需要通过的 Gate]
+Evidence Required:   [需要的证据]
+Recommended Next Action: [建议下一步]
+```
+
+### 2.4 状态转换规则
+
+| From | To | Guard 条件 |
+|------|-----|-----------|
+| INIT | CONTEXT_READY | Context Gate PASS |
+| CONTEXT_READY | GOAL_READY | Goal Gate PASS |
+| GOAL_READY | SPEC_READY | Spec Gate PASS |
+| SPEC_READY | DESIGN_READY | Design Gate PASS |
+| DESIGN_READY | PLAN_READY | Plan Gate PASS |
+| PLAN_READY | TASKS_READY | Task Gate PASS |
+| TASKS_READY | EXECUTING | Task selected / Owner assigned |
+| EXECUTING | VERIFYING | Implementation done |
+| VERIFYING | REVIEWING | Test Gate + Evidence Gate PASS |
+| REVIEWING | RELEASING | Review PASS |
+| RELEASING | RETROSPECTING | Release Gate PASS |
+| RETROSPECTING | DONE | Retrospective Gate PASS |
+
+回退规则：
+
+| From | To | 条件 |
+|------|-----|------|
+| VERIFYING | EXECUTING | Test Gate FAIL → 修复实现 |
+| REVIEWING | EXECUTING | Review FAIL: implementation → 修复实现 |
+| REVIEWING | DESIGN_READY | Review FAIL: design → 修改设计 |
+| RELEASING | NEEDS_ROLLBACK | Release Gate FAIL after release → 回滚 |
+| ANY | BLOCKED | 依赖缺失 / 权限缺失 |
+| ANY | NEEDS_RESEARCH | Unknown 阻塞决策 |
+| ANY | NEEDS_DECISION | 多方案且影响 CL3+ |
+| ANY | NEEDS_REPLAN | Spec/Design 变更影响 Plan |
+| ANY | INCONSISTENT_STATE | Registry/Artifact/CI 冲突 |
+
+---
+
+## 3. 完整链路示例
+
+```text
+Goal (GOAL-20260608-001):
+为已注册用户提供邮箱验证码登录，验证码登录成功率 ≥ 95%，有效期 10 分钟，使用后不可重复使用。
+
+↓ Spec (SPEC-auth-v1.0)
+FR-001: 用户可以请求邮箱验证码
+FR-002: 验证码为 6 位数字
+FR-003: 验证码 10 分钟过期
+FR-004: 验证码正确后创建登录态
+FR-005: 验证码使用后立即失效
+FR-006: 发送频率需要限制
+
+↓ Design (DESIGN-auth-v1.0)
+Modules: AuthController, AuthService, CodeStore, RateLimiter, SessionService
+Interfaces: sendCode(), verifyCode(), createSession()
+ADR-0001: 使用 Redis 存储验证码
+
+↓ Matrix
+GOAL-20260608-001 → FR-001 → TASK-GOAL-20260608-001-001 → PROMPT-TASK-GOAL-20260608-001-001-001 → AuthController.sendCode → test_send_code
+GOAL-20260608-001 → FR-004 → TASK-GOAL-20260608-001-004 → PROMPT-TASK-GOAL-20260608-001-004-001 → AuthService.verifyCode → test_verify_code_success
+GOAL-20260608-001 → FR-005 → TASK-GOAL-20260608-001-004 → PROMPT-TASK-GOAL-20260608-001-004-001 → CodeStore.invalidate → test_code_reuse_failed
+GOAL-20260608-001 → FR-006 → TASK-GOAL-20260608-001-003 → PROMPT-TASK-GOAL-20260608-001-003-001 → RateLimiter → test_rate_limit
+
+↓ Tasks
+TASK-GOAL-001-001: 实现发送验证码接口
+TASK-GOAL-001-002: 实现验证码生成和存储
+TASK-GOAL-001-003: 实现频率限制
+TASK-GOAL-001-004: 实现验证码校验和登录
+TASK-GOAL-001-005: 编写测试
+
+↓ Plan (PLAN-GOAL-20260608-001-v1.0)
+Phase 1: 验证码存储（TASK-GOAL-20260608-001-002）
+Phase 2: 发送接口（TASK-GOAL-20260608-001-001）+ 频率限制（TASK-GOAL-20260608-001-003）
+Phase 3: 校验登录（TASK-GOAL-20260608-001-004）
+Phase 4: 测试和验收（TASK-GOAL-20260608-001-005）
+
+↓ Prompt (PROMPT-TASK-GOAL-20260608-001-004-001)
+请实现 TASK-GOAL-20260608-001-004 验证码校验和登录逻辑，要求验证码正确、未过期、未使用，成功后创建登录态，并立即使验证码失效。
+
+↓ Code
+AuthCodeService.verify()
+SessionService.create()
+CodeStore.invalidate()
+
+↓ Test → Review → Release → Retrospective
+```

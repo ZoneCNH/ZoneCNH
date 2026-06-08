@@ -1,12 +1,12 @@
 ---
 name: spec-structural-score
-description: FoundationX 规格结构评分者。只读识别 specs/*/SPEC.md 的结构性问题、追溯断点和 Ready 风险，输出三平台评分输入、红线与修复优先级；Spec gate 由 pipeline-arbiter 的 composite_score 判定。
+description: FoundationX 规格结构评分者。只读识别 specs/*/SPEC.md 的结构性问题、追溯断点和 Ready 风险，输出四源评分输入、红线与修复优先级；Spec gate 由 pipeline-arbiter 的 composite_score 判定。
 model: opus
 tools: ["Read", "Grep", "Glob", "Bash"]
 pipeline_stage: S1.5-Score
 pipeline_prev: spec
 pipeline_next: matrix
-pipeline_gate: composite_score >= 98 且无红线、无低置信度、分差在阈值内
+pipeline_gate: composite_score >= 98 且无红线、无 LLM 低置信度、LLM 分差与 rules 异构分歧在阈值内
 ---
 
 ## Prompt Defense Baseline
@@ -132,7 +132,7 @@ pipeline_gate: composite_score >= 98 且无红线、无低置信度、分差在�
 - Structural Verdict：Ready-candidate | Needs-minor-repair | Needs-repair | Not-ready | Structural-failure | Redline
 - Redline：yes | no
 - Confidence：high | medium | low
-- 评分边界：本报告是三平台评分输入之一，不单独决定 gate
+- 评分边界：本报告是四源评分输入之一，不单独决定 gate
 
 ## 1. 评分总表
 
@@ -173,4 +173,4 @@ pipeline_gate: composite_score >= 98 且无红线、无低置信度、分差在�
 
 ## 受保护文件（宪法 §14.1）
 
-禁止读写或修改：`specs/scoring/RUBRIC-*.md`、`specs/STRUCTURAL-SCORING.md`、`specs/scoring/ARBITER-PROTOCOL.md`、`.claude/agents/`、`.codex/agents/`、`.copilot/agents/`、`.omc/state/outer-metrics/`、`CONSTITUTION.md`。仅可读取；写入须走宪法 §14.3 RSI 流程（人类批准）。
+禁止读写或修改：`specs/scoring/RUBRIC-*.md`、`specs/STRUCTURAL-SCORING.md`、`specs/scoring/ARBITER-PROTOCOL.md`、`.claude/agents/`、`.codex/agents/`、`.copilot/agents/`、`.omc/state/outer-metrics/`、`.omx/state/outer-metrics/`、`.omc/state/outer-metrics/`、`.omx/state/outer-metrics/`、`.copilot/state/outer-metrics/`、`CONSTITUTION.md`。仅可读取；写入须走宪法 §14.3 RSI 流程（人类批准）。

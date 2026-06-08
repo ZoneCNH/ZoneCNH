@@ -2,9 +2,9 @@ name = "spec"
 description = "项目 Spec 编写子代理：基于用户意图、CONSTITUTION 和 SPEC-TEMPLATE 起草或修订 specs/{module}/SPEC.md，并准备交给 Spec 结构评分 team 与 pipeline-arbiter。"
 model = "gpt-5.5"
 model_reasoning_effort = "high"
-pipeline_stage = "S1-Spec"
-pipeline_next = "spec-structural-score"
-pipeline_gate = "23 节结构完整，FR→AC→TC 链条闭合；Spec team-scoring composite_score >= 98 才可进入 Matrix"
+# pipeline_stage = "S1-Spec"
+# pipeline_next = "spec-structural-score"
+# pipeline_gate = "23 节结构完整，FR→AC→TC 链条闭合；Spec team-scoring composite_score >= 98 才可进入 Matrix"
 developer_instructions = """
 你是 FoundationX 的项目 Spec 编写子代理，职责是把用户目标、架构约束和治理规则转化为可审查、可开发、可验收的 `specs/{module}/SPEC.md`。
 

@@ -3,7 +3,7 @@
 rule-scorer.py — 异构第 4 评分源（规则引擎 / 静态分析）
 
 宪法 §14.4 要求：评分体系必须包含至少一个与 LLM 无相关性的独立信号源。
-本脚本以纯机械规则评估 6 个管线阶段，输出格式与三平台 LLM scorer 一致，
+本脚本以纯机械规则评估 6 个管线阶段，输出格式与三平台 LLM scorer + rules 一致，
 作为仲裁器的第 4 个证据来源。
 
 特性：
@@ -12,7 +12,7 @@ rule-scorer.py — 异构第 4 评分源（规则引擎 / 静态分析）
 - 输出：JSON 评分（与 LLM scorer 同 schema）
 
 用法：
-  rule-scorer.py <stage> <module> [--out PATH]
+  rule-scorer.py <stage> <module> [--runtime claude|codex|copilot] [--out PATH]
 
 阶段：spec / matrix / tasks / plan / prompt / code
 """
@@ -21,12 +21,37 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
+RUNTIME_STATE_ROOTS = {
+    "claude": ".omc/state/pipeline",
+    "codex": ".omx/state/pipeline",
+    "copilot": ".copilot/state/pipeline",
+}
+
+
+def default_runtime() -> str:
+    runtime = os.environ.get("SPEC_PIPELINE_RUNTIME", "claude").lower()
+    if runtime not in RUNTIME_STATE_ROOTS:
+        allowed = ", ".join(sorted(RUNTIME_STATE_ROOTS))
+        raise SystemExit(f"不支持的 SPEC_PIPELINE_RUNTIME={runtime!r}; 可选: {allowed}")
+    return runtime
+
+
+def state_root(runtime: str) -> Path:
+    return ROOT / RUNTIME_STATE_ROOTS[runtime]
+
+
+def display_path(path: Path) -> str:
+    try:
+        return str(path.relative_to(ROOT))
+    except ValueError:
+        return str(path)
 
 
 # ---------- 工具 ----------
@@ -442,6 +467,12 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("stage", choices=list(SCORERS.keys()))
     ap.add_argument("module")
+    ap.add_argument(
+        "--runtime",
+        choices=sorted(RUNTIME_STATE_ROOTS),
+        default=default_runtime(),
+        help="状态运行时：claude=.omc，codex=.omx，copilot=.copilot",
+    )
     ap.add_argument("--out", type=Path, default=None, help="JSON 输出路径")
     args = ap.parse_args()
 
@@ -451,17 +482,13 @@ def main() -> int:
     out_path = (
         args.out
         if args.out is not None
-        else ROOT
-        / ".omc/state/pipeline"
-        / args.module
-        / args.stage
-        / "scores/rules.json"
+        else state_root(args.runtime) / args.module / args.stage / "scores/rules.json"
     )
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
 
     print(json.dumps(payload, ensure_ascii=False, indent=2))
-    print(f"\n✓ 写入 {out_path.relative_to(ROOT)}", file=sys.stderr)
+    print(f"\n✓ 写入 {display_path(out_path)}", file=sys.stderr)
     return 0
 
 

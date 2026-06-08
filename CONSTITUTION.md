@@ -1,23 +1,24 @@
-# 模块宪法
+# FoundationX 宪法
 
-> FoundationX 基座模块的最高治理文件。
+> FoundationX 全系统的最高治理文件。
 >
-> 本文件是 AI 代理和人类贡献者在实现、审查或修改任何基座模块时的最高权威参考。
-> 当本文件与 `specs/*/SPEC.md`、`module/FOUNDATION-SPEC.md` 或其他文档冲突时，以本文件为准。
+> 本文件是 AI 代理和人类贡献者在实现、审查或修改任何模块或交付流程时的最高权威参考。
+> 当本文件与 `specs/*/SPEC.md`、`module/FOUNDATION-SPEC.md`、`specs/DEVELOPMENT-WORKFLOW.md` 或其他文档冲突时，以本文件为准。
 
-最后更新：2026-06-07
+最后更新：2026-06-08
 
 ---
 
 ## 序言
 
-FoundationX 基座层由 16 个模块组成，为量化交易系统提供生命周期管理、配置、可观测、弹性、调度、存储和跨域契约。本宪法规定这些模块必须遵守的不变量，确保系统在演进过程中保持一致性和可维护性。
+FoundationX 由基座层（16 个模块）、L2.5 领域共享层（4 个模块）以及数据域、分析域、决策域、执行域组成。本宪法规定模块实现和交付管线必须遵守的不变量，确保系统在演进过程中保持一致性、可追溯性和可维护性。
 
 本宪法的约束对象：
 
-- 所有 16 个基座模块的源码实现
+- 所有基座模块和领域模块的源码实现
+- 全系统的交付管线（Goal → Spec → Matrix → Tasks → Plan → Prompt → Code → Test → Release → Metrics）
 - 所有 `specs/*/SPEC.md` 规格文档
-- 所有 AI 代理在基座模块上的代码生成、审查和重构行为
+- 所有 AI 代理的代码生成、审查和重构行为
 - 所有人类贡献者的 PR 和代码审查
 
 ---
@@ -28,26 +29,26 @@ FoundationX 基座层由 16 个模块组成，为量化交易系统提供生命�
 
 ### 1.1 基座原则
 
-| 编号 | 原则 | 含义 |
-|------|------|------|
-| P1 | Foundation 先边界后功能 | 先固化 `xlib-standard`、依赖矩阵、Go baseline 和 release gate，再扩大 L1 能力面 |
-| P2 | `xlib-standard` 不是运行时依赖 | 它是标准事实源、模板、Gate 和 Evidence 输入，不承载业务运行 |
-| P3 | `resiliencx` 只做运行时弹性 | timeout/retry/circuit/bulkhead/rate/fallback 属于它，交易风控属于 `risk-engine` |
-| P4 | `testkitx` 只能 test-only | 生产 import graph 不允许出现测试工具包 |
+| 编号 | 原则                           | 含义                                                                            |
+| ---- | ------------------------------ | ------------------------------------------------------------------------------- |
+| P1   | Foundation 先边界后功能        | 先固化 `xlib-standard`、依赖矩阵、Go baseline 和 release gate，再扩大 L1 能力面 |
+| P2   | `xlib-standard` 不是运行时依赖 | 它是标准事实源、模板、Gate 和 Evidence 输入，不承载业务运行                     |
+| P3   | `resiliencx` 只做运行时弹性    | timeout/retry/circuit/bulkhead/rate/fallback 属于它，交易风控属于 `risk-engine` |
+| P4   | `testkitx` 只能 test-only      | 生产 import graph 不允许出现测试工具包                                          |
 
 ### 1.2 领域原则
 
-| 编号 | 原则 | 含义 |
-|------|------|------|
-| P5 | 风控是独立引擎 | 策略只能通过 risk-engine 提交订单，不能直接调用 order-engine |
-| P6 | 回测与实盘共享代码 | signal-factory / factor-engine / risk-engine 同一套，backtest-engine 只替换数据源和撮合/回放环境 |
-| P7 | `contracts` 只定义跨域稳定契约 | 跨域端口、事件协议、DTO 放在 contracts；域内接口留在域内，领域值对象放在 L2.5 |
-| P8 | 领域语义沉到 L2.5 | 多域共享的 Price/Qty/Tick/Quote/MacroPoint 等模型统一来自 decimalx / domain-*，避免各域重复定义 |
-| P9 | 数据职责不跨域 | 数据域只负责采集、标准化和存储，因子计算在分析域，策略逻辑在决策域 |
-| P10 | 执行抽象交易所差异 | order-engine 对上层暴露统一接口，内部适配各交易所 |
-| P11 | 反馈通过事件表达 | 执行结果、仓位、PnL、风险暴露以事件反馈决策域，避免执行域反向调用决策内部实现 |
-| P12 | x.go 只做组合根 | 不含业务逻辑，仅负责启动、配置加载、依赖组装和生命周期控制 |
-| P13 | 域内平级协作 | 同域模块不编号、不分先后，按需协作 |
+| 编号 | 原则                           | 含义                                                                                             |
+| ---- | ------------------------------ | ------------------------------------------------------------------------------------------------ |
+| P5   | 风控是独立引擎                 | 策略只能通过 risk-engine 提交订单，不能直接调用 order-engine                                     |
+| P6   | 回测与实盘共享代码             | signal-factory / factor-engine / risk-engine 同一套，backtest-engine 只替换数据源和撮合/回放环境 |
+| P7   | `contracts` 只定义跨域稳定契约 | 跨域端口、事件协议、DTO 放在 contracts；域内接口留在域内，领域值对象放在 L2.5                    |
+| P8   | 领域语义沉到 L2.5              | 多域共享的 Price/Qty/Tick/Quote/MacroPoint 等模型统一来自 decimalx / domain-\*，避免各域重复定义 |
+| P9   | 数据职责不跨域                 | 数据域只负责采集、标准化和存储，因子计算在分析域，策略逻辑在决策域                               |
+| P10  | 执行抽象交易所差异             | order-engine 对上层暴露统一接口，内部适配各交易所                                                |
+| P11  | 反馈通过事件表达               | 执行结果、仓位、PnL、风险暴露以事件反馈决策域，避免执行域反向调用决策内部实现                    |
+| P12  | x.go 只做组合根                | 不含业务逻辑，仅负责启动、配置加载、依赖组装和生命周期控制                                       |
+| P13  | 域内平级协作                   | 同域模块不编号、不分先后，按需协作                                                               |
 
 ---
 
@@ -57,7 +58,7 @@ FoundationX 基座层由 16 个模块组成，为量化交易系统提供生命�
 
 每个模块的 SPEC.md 必须包含明确的职责边界：
 
-```text
+````text
 ### 核心职责
 - （做什么）
 
@@ -481,7 +482,7 @@ AI 代理在生成或审查代码时：
 本宪法的修正需要满足：
 
 1. 明确的问题陈述（为什么现有条款不够）
-2. 影响分析（对现有模块的影响）
+2. 影响分析（对现有模块和交付管线的影响）
 3. 迁移方案（如涉及 breaking change）
 
 ### 12.2 修正流程
@@ -491,14 +492,16 @@ AI 代理在生成或审查代码时：
 2. 更新受影响的 specs/*/SPEC.md
 3. 更新 ARCHITECTURE.md（如涉及拓扑变更）
 4. 更新 FOUNDATION-DEPS.yaml（如涉及依赖变更）
-5. 同步 README.md
+5. 更新受影响的 specs/ 治理文档（如涉及 §15-§19）
+6. 同步 README.md
 ```text
 
 ### 12.3 修正记录
 
 | 日期 | 条款 | 变更内容 | 理由 |
 |------|------|----------|------|
-| 2026-06-07 | 全文 | 初始版本 | 建立基座模块治理框架 |
+| 2026-06-07 | 全文 | 初始版本（§1-§14） | 建立基座模块治理框架 |
+| 2026-06-08 | §15-§19 | 新增交付管线治理条款 | 将交付方法论提升为宪法约束 |
 
 ---
 
@@ -513,6 +516,8 @@ AI 代理在生成或审查代码时：
   ↓
 模块规格 (specs/*/SPEC.md)
   ↓
+交付治理文档 (specs/DEVELOPMENT-WORKFLOW.md, TRACEABILITY.md, LIFECYCLE.md 等)
+  ↓
 架构文档 (ARCHITECTURE.md)
   ↓
 模块详情 (module/foundation-modules.md, FOUNDATION-SPEC.md)
@@ -522,9 +527,12 @@ AI 代理在生成或审查代码时：
 
 ### 13.2 适用范围
 
-本宪法适用于 `github.com/ZoneCNH` 下所有基座层模块（16 个），以及 L2.5 领域共享层（4 个）中涉及基座契约的部分。
+本宪法适用于 `github.com/ZoneCNH` 下：
 
-本宪法不直接约束业务域模块（数据域、分析域、决策域、执行域），但业务域模块必须遵守第三条依赖方向和第七条 contracts 规则。
+- **模块实现**：所有基座层模块（16 个）和 L2.5 领域共享层（4 个）
+- **交付管线**：数据域、分析域、决策域、执行域的功能开发（Bug 修复和配置变更可走轻量流程，但仍需满足 §15.2 D1 和 D6）
+
+§1-§14 约束模块实现质量；§15-§19 约束交付流程质量。两者互补，不可互相豁免。
 
 ### 13.3 解释权
 
@@ -534,7 +542,7 @@ AI 代理在生成或审查代码时：
 
 ## 第十四条：管线自改约束（Anti-Goodhart）
 
-> 适用于 Spec → Code 三平台评分管线本身。目的是防止 RSI（递归自我改进）退化为 mode collapse 与 Goodhart 优化。
+> 适用于 Spec → Code 四源评分管线本身。目的是防止 RSI（递归自我改进）退化为 mode collapse 与 Goodhart 优化。
 
 ### 14.1 受保护文件清单
 
@@ -547,14 +555,14 @@ AI 代理在生成或审查代码时：
 | 仲裁协议 | `specs/scoring/ARBITER-PROTOCOL.md` |
 | Agent 配置 | `.claude/agents/`、`.codex/agents/`、`.copilot/agents/` 下所有文件 |
 | 工作流入口 | `.claude/commands/spec-code-pipeline.md`、`.codex/skills/spec-code-pipeline/`、`.copilot/commands/spec-code-pipeline.md` |
-| 外部指标 | `.omc/state/outer-metrics/` 下所有文件 |
+| 外部指标 | `.omc/state/outer-metrics/`、`.omx/state/outer-metrics/`、`.copilot/state/outer-metrics/` 下所有文件 |
 | 本宪法 | `CONSTITUTION.md` |
 
 scorer 的 `min ≥ 98` 仲裁结果**不构成**修改上述文件的授权。
 
 ### 14.2 外部指标不可篡改
 
-`.omc/state/outer-metrics/{module}.json` 只能由以下来源写入：
+`{state_root}/outer-metrics/{module}.json` 只能由以下来源写入，其中 Claude 使用 `.omc/state`，Codex 使用 `.omx/state`，Copilot 使用 `.copilot/state`：
 
 - CI 流水线（GitHub Actions、外部检查）
 - 生产观测系统（实际运行数据）
@@ -575,23 +583,211 @@ scorer 的 `min ≥ 98` 仲裁结果**不构成**修改上述文件的授权。
 
 未走该流程的任何受保护文件改动一律视为宪法违反，应被代码审查阻塞。
 
+普通阶段产物允许自动修复和上游回退，但评分体系本身的 RSI 不得由当前评分结果自我授权。工作流、rubric、agent、arbiter、命令入口或本宪法的改进必须先作为 `specs/workflow-improvement/{YYYYMMDD}-{slug}/SPEC.md` 通过同一条 Spec → Matrix → Tasks → Plan → Prompt → Code 管线，再进入本节的 fork、A/B、outer metric 与人类批准流程。
+
 ### 14.4 Goodhart 防线
 
 - 任一 scorer 平台连续 N 个模块的评分与 outer metric 相关系数低于 0.6，必须冻结该 scorer 并触发 §14.3 RSI 流程。
 - 任一阶段的"平均通过分数"持续上升但 outer metric 退化，视为 Goodhart 早期信号，必须冻结该阶段评分体系并触发 §14.3。
-- 三平台 `min ≥ 98` 不豁免本条款，只是必要条件。
+- 四源 `min ≥ 98` 不豁免本条款，只是必要条件。
 
 ### 14.5 同源相关性披露
 
 `claude`、`codex`、`copilot` 三平台底层模型存在训练数据重叠，"独立评分"是工程近似，**不是统计独立**。本宪法承认此局限并要求：
 
 - 任何新加入的平台必须公开模型族系与训练数据假设。
-- 鼓励引入异构评分源（不同模型族、不同语料、规则引擎、静态分析器）作为补充。
-- 长期目标：将"三平台共识"扩展为"异构多源共识"。
+- `rules` 是当前要求的异构第四源；鼓励继续引入不同模型族、不同语料、静态分析器或生产反馈作为补充。
+- 当前门禁已扩展为 `claude/codex/copilot/rules` 四源共识；长期目标是继续强化异构多源共识。
 
 ### 14.6 例外条款
 
 §14.1 受保护文件清单本身的修订必须走 §14.3 RSI 流程，但 §14.2 至 §14.5 的条款只能由 §第十二条修正程序修改。这是为了防止"通过 RSI 自我废除 Anti-Goodhart 约束"。
+
+### 14.7 与 §19 的关系
+
+§14 管"评分体系本身的 RSI"（受保护文件清单、outer metric 验证）。§19 管"交付流程的 CRI"（模板、Gate、Prompt 的改进）。两者互补：
+
+- §14 的改进必须走 fork/A/B/outer-metric/人类批准
+- §19 的改进按风险分级审批
+- 两者都禁止自证成功
+
+---
+
+## 第十五条：交付管线
+
+> 适用于所有新功能开发。Bug 修复、文档更新、配置变更可走轻量流程，但仍需满足 D1（有来源）和 D6（有测试）。
+
+### 15.1 管线模型
+
+```text
+Goal → Spec → Matrix → Tasks → Plan → Prompt → Code → Test → Release → Metrics
+```
+
+每层必须产出一个具体制品，作为下一层的输入契约。
+
+### 15.2 管线七律
+
+| 编号 | 原则 | 含义 |
+|------|------|------|
+| D1 | 无 Goal 不开始 | 任何代码变更必须追溯到已批准的 Goal |
+| D2 | 无 Spec 不拆解 | Goal 必须转化为可测试的 Spec 才能进入 Tasks |
+| D3 | 无 Matrix 不开工 | 追溯矩阵必须建立才能开始编码 |
+| D4 | 无 Task 不生成 | Prompt 必须引用具体 Task，不得开放式生成 |
+| D5 | 无 Prompt 不交给 AI | AI 编码必须有结构化上下文和约束 |
+| D6 | 无 Test 不完成 | 每条验收标准必须有对应测试 |
+| D7 | 无 Metrics 不算成功 | 上线后必须验证 Goal 达成 |
+
+### 15.3 变更传播
+
+需求变更必须流经完整链条（Goal/Spec → Matrix → Tasks → Plan → Prompt → Code → Test），禁止直接跳到代码修改。
+
+### 15.4 实现细节
+
+本条款的详细流程、制品模板和 Agent 编排规则见 `specs/DEVELOPMENT-WORKFLOW.md`。
+
+---
+
+## 第十六条：追溯与门禁
+
+### 16.1 统一制品 ID
+
+| 前缀 | 制品 | 示例 |
+|------|------|------|
+| G- | Goal | G-001 |
+| S- | Spec | S-001 |
+| M- | Matrix 行 | M-001 |
+| T- | Task | TASK-REDISX-000 |
+| P- | Prompt | P-001 |
+| C- | Code Module | CsvExportService |
+| TC- | Test Case | TC-001 |
+
+### 16.2 追溯覆盖要求
+
+- 每个 Goal 必须有 Spec 覆盖
+- 每个 P0 验收标准必须有 Test 覆盖
+- 每个 Task 必须有 Goal 来源
+- 每个 Code 变更必须有 Matrix 映射
+
+### 16.3 孤儿检测
+
+- 无 Goal 来源的 Task = 范围蔓延，必须标记或删除
+- 无 Matrix 映射的 Code = 孤儿代码，必须标记或删除
+- 无 Test 的 AC = 不可验证，不得标记完成
+
+### 16.4 门禁
+
+每层之间必须有质量门禁（DoR/DoD）。门禁可渐进增强（Shadow → Advisory → Enforced），但不可绕过。
+
+### 16.5 实现细节
+
+本条款的详细追溯矩阵和门禁规则见 `specs/TRACEABILITY.md`、`specs/DEFINITION-OF-READY.md`、`specs/DEFINITION-OF-DONE.md`、`specs/LIFECYCLE.md`。
+
+---
+
+## 第十七条：AI 辅助交付
+
+### 17.1 Prompt 质量标准
+
+AI 编码 Prompt 必须包含：
+
+| 必需项 | 说明 |
+|--------|------|
+| Task ID | 本次执行的 Task 引用 |
+| Spec 引用 | 相关需求上下文 |
+| Matrix 行 | 覆盖的追溯行 |
+| 输入输出 | 明确的 I/O 契约 |
+| 约束条件 | 不可违反的规则 |
+| 禁止项 | 明确不得做的事情 |
+| 测试要求 | 必须生成的测试 |
+
+### 17.2 代码边界
+
+Prompt 必须声明允许修改的文件/模块和禁止修改的文件/模块。Code Review 必须验证 AI 未越界。
+
+### 17.3 输出验证
+
+AI 生成的代码必须经过：
+
+1. **自检**：是否只改了当前 Task 需要的内容
+2. **矩阵检查**：是否覆盖所有 AC
+3. **边界检查**：是否引入不必要依赖或破坏旧接口
+4. **安全检查**：是否有安全问题
+
+### 17.4 与 §11.3 的关系
+
+§11.3 规定 AI 代理的审查规则（读 SPEC、检查设计原则、验证依赖方向）。本条款规定 AI 编码的输入质量标准。两者共同约束 AI 辅助交付的全链路。
+
+---
+
+## 第十八条：制品完成层级
+
+### 18.1 四级 Done
+
+| 层级 | 名称 | 含义 | 验证方式 |
+|------|------|------|---------|
+| L1 | Code Done | 代码写完 | 编译通过 |
+| L2 | Test Done | 测试通过 | 全量测试绿 |
+| L3 | Release Done | 功能上线 | 部署成功 |
+| L4 | Goal Done | 目标达成 | 指标验证 |
+
+### 18.2 Done 规则
+
+- Code Done ≠ Test Done ≠ Release Done ≠ Goal Done
+- PR 合并至少需要 Test Done
+- 功能完成需要 Goal Done
+- 不得将 Code Done 宣告为功能完成
+
+### 18.3 Goal 验证
+
+每个 Goal 必须定义可观测的成功指标。上线后必须回看指标，验证 Goal 是否真正达成。
+
+### 18.4 实现细节
+
+本条款的详细 DoD 清单见 `specs/DEFINITION-OF-DONE.md`。
+
+---
+
+## 第十九条：受控递归改进（CRI）
+
+> 适用于交付流程的改进（模板、Gate、Prompt、Spec 格式等）。评分体系本身的 RSI 由 §14 管辖。
+
+### 19.1 CRI 七原则
+
+| 编号 | 原则 | 含义 |
+|------|------|------|
+| R1 | 证据驱动 | 基于真实缺陷和指标改进，不凭感觉 |
+| R2 | 有界 | 改进交付系统，不改业务目标和成功标准 |
+| R3 | 可追溯 | 每次改进可追溯到问题和根因 |
+| R4 | 可验证 | 每次改进有验证方式 |
+| R5 | 可回滚 | 坏的改进可以撤销 |
+| R6 | 人工审批 | 高风险变更必须人工批准 |
+| R7 | 价值导向 | 改进必须减少真实失败，不是增加仪式 |
+
+### 19.2 改进对象边界
+
+| 对象 | CRI 可做 | CRI 不可做 |
+|------|---------|-----------|
+| Goal | 提出澄清建议 | 自动改目标 |
+| Metrics | 建议补充指标 | 自动降低目标值 |
+| Spec | 建议补充边界 | 删除已批准需求 |
+| Matrix | 发现缺口 | 把缺口标记为 Done |
+| Test | 建议新增测试 | 删除失败测试 |
+| Prompt | 优化模板 | 诱导绕过约束 |
+| Code | 生成修复建议 | 自动合并生产代码 |
+| Gate | 建议增强 | 自动削弱 |
+
+### 19.3 审批分级
+
+| 风险 | 示例 | 审批要求 |
+|------|------|---------|
+| R0 高 | 修改 Release Gate、权限规则 | 必须人工审批 |
+| R1 中高 | 修改 CI 阻断规则 | Tech Lead 审批 |
+| R2 中 | 修改 Prompt/Spec 模板 | 工程 Owner 审批 |
+| R3 低 | 增加模板示例 | 可自动或轻审批 |
+
+### 19.4 改进记录
+
+所有 CRI 改进必须作为 `specs/workflow-improvement/{YYYYMMDD}-{slug}/SPEC.md` 通过同一条 Spec → Matrix → Tasks → Plan → Prompt → Code 管线，确保改进本身可追溯、可验证、可回滚。
 
 ---
 
@@ -619,11 +815,12 @@ scorer 的 `min ≥ 98` 仲裁结果**不构成**修改上述文件的授权。
 
 ## 附录 B：与 CLAUDE.md 的关系
 
-`CLAUDE.md` 是 Claude Code 的工作指南，规定仓库级别的操作约定（文档同步、提交格式、安全红线）。本宪法是模块级别的治理文件，规定模块实现的技术标准。
+`CLAUDE.md` 是 Claude Code 的工作指南，规定仓库级别的操作约定（文档同步、提交格式、安全红线）。本宪法是系统级别的治理文件，规定模块实现和交付管线的技术标准。
 
 两者互补：
 
 - `CLAUDE.md` 管"怎么编辑这个仓库"
-- 本宪法管"怎么实现基座模块"
+- 本宪法管"怎么实现模块"（§1-§14）和"怎么交付功能"（§15-§19）
 
 当两者冲突时，`CLAUDE.md` 中的安全条款（不提交凭证等）优先；技术条款以本宪法为准。
+````

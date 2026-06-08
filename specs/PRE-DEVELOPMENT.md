@@ -208,5 +208,7 @@ specs/{module}/tasks/
 |------|------|
 | `specs/TASK-TEMPLATE.md` | Task spec 模板 |
 | `specs/TRACEABILITY.md` | 追溯矩阵规范 |
-| `specs/DEVELOPMENT-WORKFLOW.md` | 完整管线总览 |
+| `specs/DEVELOPMENT-WORKFLOW.md` | 完整管线总览（含 Agent 编排与门禁定义） |
 | `specs/CODING-SESSION-PROTOCOL.md` | 编码会话协议 |
+
+> 完整工作流定义见 `specs/DEVELOPMENT-WORKFLOW.md`，其中包含每个阶段的 Agent 分配、进入/退出门禁、产物定义和状态管理。

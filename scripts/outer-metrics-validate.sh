@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # outer-metrics-validate.sh
 #
-# CI 守卫：拒绝 LLM agent 对 .omc/state/outer-metrics/ 的写入。
+# CI 守卫：拒绝 LLM agent 对三套运行时 outer-metrics 目录的写入。
 # 根据宪法 §14.2，本目录仅允许 CI / 生产观测 / git 历史脚本 / 人类维护者写入。
 #
 # 触发：PR 检查（在 docs-ci.yml 中调用）
@@ -10,7 +10,6 @@
 set -euo pipefail
 
 ROOT="$(git rev-parse --show-toplevel)"
-PROTECTED_DIR=".omc/state/outer-metrics"
 
 cd "$ROOT"
 
@@ -22,7 +21,8 @@ else
   base="HEAD~1"
 fi
 
-changed_files=$(git diff --name-only "$base"...HEAD 2>/dev/null | grep -E "^${PROTECTED_DIR}/" || true)
+changed_files=$(git diff --name-only "$base"...HEAD 2>/dev/null \
+  | grep -E '^(\.omc/state/outer-metrics|\.omx/state/outer-metrics|\.copilot/state/outer-metrics)/' || true)
 
 if [[ -z "$changed_files" ]]; then
   echo "✓ outer-metrics 目录未变更"
