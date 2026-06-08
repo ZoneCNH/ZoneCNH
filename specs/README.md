@@ -52,7 +52,7 @@ test-only，不参与生产运行时。
 
 | 模块     | 规格                          | 核心职责                                                                   |
 | -------- | ----------------------------- | -------------------------------------------------------------------------- |
-| testkitx | [SPEC.md](./testkitx/SPEC.md) | Fake 实现、contract test harness、boundary scanner、goroutine leak checker |
+| testkitx | [SPEC.md](./testkitx/SPEC.md) · [tasks/](./testkitx/tasks/) | FakeConfig/FakeLogger/FakeMeter/FakeTracer/Eventually/GoldenUpdate/BoundaryCheck（10 FR，11 tasks） |
 
 ---
 
