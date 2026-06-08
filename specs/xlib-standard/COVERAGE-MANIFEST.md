@@ -1,9 +1,12 @@
 # xlib-standard 覆盖清单
 
-Status: Aligned-With ANALYSIS.md v3.0.0
+Status: Aligned-With ANALYSIS.md v3.1.0
 Generated-Date: 2026-06-07
 Path-Update: 2026-06-08（改为占位符相对路径）
 Last-Updated: 2026-06-08
+- Snapshot-Date: 2026-06-08
+- Upstream-Commit: `93753b30e6d01fb4a9b096acaa0d7d53a2fb231c` (v0.6.5)
+- Analysis-Version: v3.1.0
 Input-Count: 154
 
 ## 路径占位符
@@ -15,7 +18,7 @@ Input-Count: 154
 | `<upstream:tree>`          | `296e3b912c70f15434783aebcf35159f7000a01f`（HEAD^{tree}，同 commit） |
 | `<external:Downloads>` | `<external-downloads>/`（上游仓库外的本地外部规划文档目录，非仓库 tracked） |
 
-> **缺口已收敛**（2026-06-08 04:59）：upstream commit/tree sha 已固定；154 个文件已全部计算 sha256-prefix（16 hex chars，详见 §"文件级 sha256（pinned）"）。
+> **缺口已收敛**（2026-06-08 04:59）：upstream commit/tree sha 已固定；154 个文件已全部计算 sha256-prefix（16 hex chars，详见本文件“文件级 sha256（pinned）”）。
 > NG-34 / OQ-008 / R-011 在本机已可关闭，待 release-final-check 写入 `latest.json.coverage_pin` 后 release 阶段亦关闭。
 >
 > **固定程序**（pinning procedure，固定本地分析快照的前置条件）：

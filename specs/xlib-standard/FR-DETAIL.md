@@ -3,12 +3,22 @@
 > 本文件包含全部 52 个 FR 的 WHEN/THEN 行为规格。
 > ANALYSIS.md / analysis/*.md 保留 FR 摘要表，详细内容以本文件为准。
 
-Status: Aligned-With ANALYSIS.md v3.0.0
+> 权威来源：本文件；按 4 类职责分组阅读：§1..§4：
+>
+> - §1 规则源与 Debt Governance：FR-001..FR-008、FR-033..FR-039
+> - §2 Go 参考模板与 Generator：FR-009..FR-019
+> - §3 Harness、Evidence 与 Goal Runtime：FR-020..FR-032、FR-040..FR-046
+> - §4 仓库治理协议：FR-047..FR-052
+
+Status: Aligned-With ANALYSIS.md v3.1.0
 Last-Updated: 2026-06-08
+- Snapshot-Date: 2026-06-08
+- Upstream-Commit: `93753b30e6d01fb4a9b096acaa0d7d53a2fb231c` (v0.6.5)
+- Analysis-Version: v3.1.0
 
 ---
 
-## §7.1 标准源（Standard Source）
+## 1. 规则源与 Debt Governance
 
 ### FR-001: 定义 419 条 RULE-* 规则，机器化为 registry.yaml
 
@@ -43,7 +53,7 @@ THEN 对应层的 gate 阻断操作并返回违规详情
 ### FR-004: 定义模块依赖层级模型
 
 WHEN 模块 A 导入模块 B
-THEN 依赖方向必须符合**领域分层 + 门禁** 模型（详见 §16.1）：门禁 → 基座 L0 → 基座 L1 → 基座 L2 → 数据域 → 分析域/决策域 → 执行域 → 入口；横切层（observex/alertx）可被任意层依赖；反向导入被阻断
+THEN 依赖方向必须符合**领域分层 + 门禁** 模型（详见 analysis/governance.md §3.6）：门禁 → 基座 L0 → 基座 L1 → 基座 L2 → 数据域 → 分析域/决策域 → 执行域 → 入口；横切层（observex/alertx）可被任意层依赖；反向导入被阻断
 
 WHEN 私有业务模块（数据域 / 分析域 / 决策域 / 执行域 / 入口）出现在公开库的 import 中
 THEN boundary gate 失败并报告违规路径
@@ -92,7 +102,7 @@ THEN 必须创建新 ADR 并遵循 ADR-000-template.md 格式
 
 ---
 
-## §7.2 Go 参考模板（Go Reference Template）
+## 2. Go 参考模板与 Generator
 
 ### FR-009: 公共 API 模板
 
@@ -158,7 +168,7 @@ THEN 返回新副本，secret/token/password/key 字段被替换为 `***`
 
 ---
 
-## §7.3 Generator
+## 2.1 Generator
 
 ### FR-015: render_template.sh 渲染
 
@@ -215,7 +225,7 @@ THEN 工具链版本与 docs/workflow/manifest 一致，无版本漂移
 
 ---
 
-## §7.4 Harness
+## 3. Harness、Evidence 与 Goal Runtime
 
 ### FR-020: 66 个 gate 条目
 
@@ -279,7 +289,7 @@ THEN gate 失败，P0 debt > 0 时阻断发布
 
 ---
 
-## §7.5 Evidence Runtime
+## 3.1 Evidence Runtime
 
 ### FR-026: Evidence Ledger
 
@@ -355,7 +365,7 @@ THEN evidence append-only 策略阻止操作
 
 ---
 
-## §7.6 Debt Governance Runtime
+## 1.1 Debt Governance Runtime
 
 ### FR-033: ARCH 类技术债规则
 
@@ -429,7 +439,7 @@ THEN 报告违规类型、严重度和修复建议
 
 ---
 
-## §7.7 Goal Runtime v3.1.1
+## 3.2 Goal Runtime v3.1.1
 
 ### FR-040: Goal Kernel（8 个核心对象）
 
@@ -512,7 +522,7 @@ THEN Phase N+1 的 PR 不得开始
 
 ---
 
-## §7.8 仓库治理协议
+## 4. 仓库治理协议
 
 ### FR-047: 5 层执行链
 

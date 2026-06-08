@@ -1,6 +1,6 @@
 # xlib-standard 追溯矩阵
 
-Status: Aligned-With ANALYSIS.md v3.0.0
+Status: Aligned-With ANALYSIS.md v3.1.0
 Source-Scope: 154 files
 Last-Updated: 2026-06-08 05:49 +08:00
 
@@ -71,10 +71,10 @@ Last-Updated: 2026-06-08 05:49 +08:00
 
 | 分析通道                    | 重点                                                          | 已纳入章节                                      |
 | --------------------------- | ------------------------------------------------------------- | ----------------------------------------------- |
-| Core standard               | 模块身份、边界、分层、API、Harness、Evidence                  | `ANALYSIS.md` §0-2、§6、§8-10、§16                  |
-| Runtime/config              | `goalcli`、Goal Runtime、config root 冲突、strict config 迁移 | `ANALYSIS.md` §6-8、§17；`CONFLICT-LEDGER.md`       |
-| Downstream/testing/evidence | L2、downstream proof、testing、Evidence、truth-state          | `ANALYSIS.md` §9、§13、§15、§19                     |
-| Historical/omission audit   | v0.4.15、v0.6.0、v1.0.0、pathguard、remote proof              | `ANALYSIS.md` §14、§17-18；`CONFLICT-LEDGER.md`     |
+| Core standard               | 模块身份、边界、分层、API、Harness、Evidence                  | `ANALYSIS.md` §1-7；`analysis/template.md` §3；`analysis/runtime.md` §3                  |
+| Runtime/config              | `goalcli`、Goal Runtime、config root 冲突、strict config 迁移 | `ANALYSIS.md` §7；`analysis/runtime.md` §3；`CONFLICT-LEDGER.md`       |
+| Downstream/testing/evidence | L2、downstream proof、testing、Evidence、truth-state          | `analysis/governance.md` §3-4；`analysis/runtime.md` §3、§6                     |
+| Historical/omission audit   | v0.4.15、v0.6.0、v1.0.0、pathguard、remote proof              | `ANALYSIS.md` §8；`analysis/runtime.md` §4；`CONFLICT-LEDGER.md`     |
 
 ## 明确未纳入为事实的内容
 
@@ -158,7 +158,7 @@ Last-Updated: 2026-06-08 05:49 +08:00
 
 ## FR → AC → TC 闭合矩阵
 
-> 来源：AC 编号取自 ANALYSIS.md §23.1（AC-T01\~T04 / AC-I01\~I04 / AC-G01\~G03 / AC-R01\~R06），TC 编号取自 `analysis/runtime.md`，命名空间为 `xlib-TC-001\~xlib-TC-017`。
+> 来源：AC 编号取自 ANALYSIS.md §9（AC-T01\~T04 / AC-I01\~I04 / AC-G01\~G03 / AC-R01\~R06），TC 编号取自 `analysis/runtime.md`，命名空间为 `xlib-TC-001\~xlib-TC-017`。
 > 空单元格表示该 FR 暂无对应 AC/TC 覆盖，属已知缺口（见下方覆盖统计）。
 
 | FR | 名称 | AC | TC |
@@ -225,5 +225,5 @@ Last-Updated: 2026-06-08 05:49 +08:00
 | xlib-TC → FR（反向） | 17 | 17 | 17/17 |
 
 > **缺口说明**：FR→xlib-TC 覆盖率 19%（10/52）仅反映 `analysis/runtime.md` 显式列出的 17 个 `xlib-TC`。
-> 其余 42 个 FR 的 TC 由 harness.yaml 66 个 gate 输出 + Evidence pack 间接证明（见 §17.2）。
+> 其余 42 个 FR 的 TC 由 harness.yaml 66 个 gate 输出 + Evidence pack 间接证明（见 analysis/runtime.md §3.1）。
 > 下游模块 SPEC §17 应沿用 xlib-TC-001\~xlib-TC-017 模板并扩展覆盖。

@@ -2,37 +2,41 @@
 
 本文件是本地索引，不是可执行规格。上游事实以 `github.com/ZoneCNH/xlib-standard@93753b30e6d01fb4a9b096acaa0d7d53a2fb231c` 为准。
 
+- Snapshot-Date: 2026-06-08
+- Upstream-Commit: `93753b30e6d01fb4a9b096acaa0d7d53a2fb231c` (v0.6.5)
+- Analysis-Version: v3.1.0
+
 ## 1. docs/standard/（27 个文件）
 
 | # | 上游文件 | 本地分析锚点 | 说明 |
 |---:|----------|--------------|------|
-| 1 | `docs/standard/README.md` | `COVERAGE-MANIFEST.md` / `TRACEABILITY.md` | 标准目录入口 |
-| 2 | `docs/standard/acceptance-matrix.md` | `COVERAGE-MANIFEST.md` / `TRACEABILITY.md` | 验收矩阵 |
-| 3 | `docs/standard/agent-team-contract.md` | `COVERAGE-MANIFEST.md` / `TRACEABILITY.md` | Agent 团队契约 |
-| 4 | `docs/standard/ai-review-automation.md` | `COVERAGE-MANIFEST.md` / `TRACEABILITY.md` | AI review automation |
-| 5 | `docs/standard/branch-governance.md` | `COVERAGE-MANIFEST.md` / `TRACEABILITY.md` | 分支治理 |
-| 6 | `docs/standard/conformance-profiles.md` | `COVERAGE-MANIFEST.md` / `TRACEABILITY.md` | 符合性 profiles |
-| 7 | `docs/standard/debt-governance.md` | `COVERAGE-MANIFEST.md` / `TRACEABILITY.md` | 技术债治理 |
-| 8 | `docs/standard/docker-toolchain-standard.md` | `COVERAGE-MANIFEST.md` / `TRACEABILITY.md` | Docker 工具链标准 |
-| 9 | `docs/standard/dod.md` | `COVERAGE-MANIFEST.md` / `TRACEABILITY.md` | DoD 标准 |
-| 10 | `docs/standard/downstream-compatibility.md` | `COVERAGE-MANIFEST.md` / `TRACEABILITY.md` | 下游兼容 |
-| 11 | `docs/standard/downstream-registry.md` | `COVERAGE-MANIFEST.md` / `TRACEABILITY.md` | 下游登记 |
-| 12 | `docs/standard/evidence-protocol.md` | `COVERAGE-MANIFEST.md` / `TRACEABILITY.md` | 证据协议 |
-| 13 | `docs/standard/goal-runtime.md` | `COVERAGE-MANIFEST.md` / `TRACEABILITY.md` | Goal runtime |
-| 14 | `docs/standard/goalcli-cli-contract.md` | `COVERAGE-MANIFEST.md` / `TRACEABILITY.md` | goalcli CLI 契约 |
-| 15 | `docs/standard/goalcli-runtime.md` | `COVERAGE-MANIFEST.md` / `TRACEABILITY.md` | goalcli runtime |
-| 16 | `docs/standard/harness-gates.md` | `COVERAGE-MANIFEST.md` / `TRACEABILITY.md` | Harness gates |
-| 17 | `docs/standard/layer-governance-rules.md` | `COVERAGE-MANIFEST.md` / `TRACEABILITY.md` | 层级治理规则 |
-| 18 | `docs/standard/layering.md` | `COVERAGE-MANIFEST.md` / `TRACEABILITY.md` | 分层 |
-| 19 | `docs/standard/module-boundary.md` | `COVERAGE-MANIFEST.md` / `TRACEABILITY.md` | 模块边界 |
-| 20 | `docs/standard/release-standard.md` | `COVERAGE-MANIFEST.md` / `TRACEABILITY.md` | 发布标准 |
-| 21 | `docs/standard/repository-roles.md` | `COVERAGE-MANIFEST.md` / `TRACEABILITY.md` | 仓库角色 |
-| 22 | `docs/standard/retrospective-and-patches.md` | `COVERAGE-MANIFEST.md` / `TRACEABILITY.md` | 复盘与补丁 |
-| 23 | `docs/standard/security-and-secret-policy.md` | `COVERAGE-MANIFEST.md` / `TRACEABILITY.md` | 安全与 secret |
-| 24 | `docs/standard/template-generation-contract.md` | `COVERAGE-MANIFEST.md` / `TRACEABILITY.md` | 模板生成契约 |
-| 25 | `docs/standard/truth-state.md` | `COVERAGE-MANIFEST.md` / `TRACEABILITY.md` | truth-state |
-| 26 | `docs/standard/versioning.md` | `COVERAGE-MANIFEST.md` / `TRACEABILITY.md` | 版本语义 |
-| 27 | `docs/standard/xlib-standard.md` | `COVERAGE-MANIFEST.md` / `TRACEABILITY.md` | xlib-standard 主标准 |
+| 1 | `docs/standard/README.md` | `ANALYSIS.md` §1 | 标准目录入口 |
+| 2 | `docs/standard/acceptance-matrix.md` | `TRACEABILITY.md` | 验收矩阵 |
+| 3 | `docs/standard/agent-team-contract.md` | `analysis/governance.md` §3.1 | Agent 团队契约 |
+| 4 | `docs/standard/ai-review-automation.md` | `analysis/rules.md` §3.7 | AI review automation |
+| 5 | `docs/standard/branch-governance.md` | `analysis/governance.md` §3.1 | 分支治理 |
+| 6 | `docs/standard/conformance-profiles.md` | `analysis/runtime.md` §3.7 | 符合性 profiles |
+| 7 | `docs/standard/debt-governance.md` | `analysis/rules.md` §2.2 / §3.3 | 技术债治理 |
+| 8 | `docs/standard/docker-toolchain-standard.md` | `analysis/template.md` §3.6 / `analysis/runtime.md` §3.8 | Docker 工具链标准 |
+| 9 | `docs/standard/dod.md` | `analysis/runtime.md` §4 | DoD 标准 |
+| 10 | `docs/standard/downstream-compatibility.md` | `analysis/governance.md` §3.4 / §3.5 | 下游兼容 |
+| 11 | `docs/standard/downstream-registry.md` | `analysis/governance.md` §3.2 / §3.4 | 下游登记 |
+| 12 | `docs/standard/evidence-protocol.md` | `analysis/runtime.md` §3.5 / §4 | 证据协议 |
+| 13 | `docs/standard/goal-runtime.md` | `analysis/runtime.md` §3.4 | Goal runtime |
+| 14 | `docs/standard/goalcli-cli-contract.md` | `analysis/runtime.md` §3.2 / §3.3 | goalcli CLI 契约 |
+| 15 | `docs/standard/goalcli-runtime.md` | `analysis/runtime.md` §3.4 | goalcli runtime |
+| 16 | `docs/standard/harness-gates.md` | `analysis/runtime.md` §3.1 | Harness gates |
+| 17 | `docs/standard/layer-governance-rules.md` | `analysis/governance.md` §3.6 | 层级治理规则 |
+| 18 | `docs/standard/layering.md` | `analysis/governance.md` §3.6 | 分层 |
+| 19 | `docs/standard/module-boundary.md` | `analysis/template.md` §3.5 / `analysis/governance.md` §3.6 | 模块边界 |
+| 20 | `docs/standard/release-standard.md` | `analysis/runtime.md` §3.6 / §7 | 发布标准 |
+| 21 | `docs/standard/repository-roles.md` | `analysis/governance.md` §3.5 | 仓库角色 |
+| 22 | `docs/standard/retrospective-and-patches.md` | `TRACEABILITY.md` | 复盘与补丁 |
+| 23 | `docs/standard/security-and-secret-policy.md` | `analysis/rules.md` §3.7 / `analysis/template.md` §4.2 | 安全与 secret |
+| 24 | `docs/standard/template-generation-contract.md` | `analysis/template.md` §3.2 / §3.5 | 模板生成契约 |
+| 25 | `docs/standard/truth-state.md` | `analysis/governance.md` §4.2 | truth-state |
+| 26 | `docs/standard/versioning.md` | `analysis/runtime.md` §3.6 | 版本语义 |
+| 27 | `docs/standard/xlib-standard.md` | `ANALYSIS.md` §2 / §7 | xlib-standard 主标准 |
 
 ## 2. ADR（9 个 Accepted）
 

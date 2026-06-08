@@ -2,12 +2,22 @@
 
 本文件是本地分析，不是可执行规格。覆盖仓库治理、采纳状态机与远端治理。
 
+- Snapshot-Date: 2026-06-08
+- Upstream-Commit: `93753b30e6d01fb4a9b096acaa0d7d53a2fb231c` (v0.6.5)
+- Analysis-Version: v3.1.0
+- Parent: ../ANALYSIS.md
+
 ## 1. 分析边界
 
 - 本仓库不证明上游远端规则、release object 或下游采纳状态；这些必须由 GitHub API、CI artifact、release artifact 或下游仓库 commit 证明。
 - 采纳状态、远端治理和 release-ready 差距类事项统一记录到 `../SNAPSHOT-BOUNDARY.md`。
+- 完整 FR WHEN/THEN 详见 `../FR-DETAIL.md`；本文件只保存治理语义和引用锚点。
 
-### 7.8 仓库治理协议
+## 2. 覆盖职责（FR 摘要）
+
+### 2.1 仓库治理协议
+
+> 权威来源：`../FR-DETAIL.md` FR-047..FR-052。
 
 | FR | 名称 | 优先级 | 说明 |
 |----|------|--------|------|
@@ -18,24 +28,13 @@
 | FR-051 | 6 个禁止状态转换 | P0 | 禁止 registered→adopted 等 6 种跳跃 |
 | FR-052 | 下游同步治理（20 PR） | P1 | 标准变更按依赖顺序同步下游 |
 
----
+## 3. 仓库治理与采纳状态机正文
 
-### 9.6 采纳状态机禁止转换（6 个）
+### 3.1 Branch Governance 与 5 层执行链
 
-从 `main.md` 和 `goal.md` 提取的 6 个禁止状态转换：
+FR-047 定义的执行链为：标准源 → 生成器 → hooks → CI → GitHub Ruleset。任何单层通过都不得替代全链路通过；远端 ruleset 和 branch protection 必须由 GitHub API / ruleset export 证明。
 
-| # | 禁止转换 | 原因 |
-|---|----------|------|
-| 1 | registered → adopted | 登记态不等于已采纳，必须经过 proof-based adoption |
-| 2 | dry_run → adopted | dry-run 只验证流程，不证明落地 |
-| 3 | patch_only → adopted | patch-only 不等于 proof-based adoption |
-| 4 | not_run → adopted | 未运行禁止直接 adopted |
-| 5 | gate_outputs_missing → proof_based_adoption | 缺少 gate 输出不能声称 proof-based（条件状态：evidence_state=partial 时的中间态） |
-| 6 | baseline_scanned → adopted | 基线扫描不等于采纳完成（条件状态：adoption_status=registered 时的扫描态） |
-
-核心铁律：`registered != adopted`、`patch_only != proof_based_adoption`、`gate_outputs_missing != proof_based_adoption`。
-
-### 11.7 Adoption Registry
+### 3.2 Adoption Registry
 
 ```yaml
 adoption_status: not_run | registered | dry_run | patch_only | proof_verified | adopted | blocked | superseded
@@ -56,69 +55,52 @@ const (
     AdoptionBlocked        AdoptionStatus = "blocked"
     AdoptionSuperseded     AdoptionStatus = "superseded"
 )
-
-type AdoptionRecord struct {
-    Module             string         `json:"module"`
-    AdoptionStatus     AdoptionStatus `json:"adoption_status"`
-    EvidenceState      string         `json:"evidence_state"`
-    ProofBasedAdoption bool           `json:"proof_based_adoption"`
-    LastUpdated        time.Time      `json:"last_updated"`
-}
 ```
 
 合法状态转换由 FR-051 的 6 个禁止转换规则约束。
 
-### 14.2 治理视角失败语义（Governance Edge Cases）
+### 3.3 采纳状态机禁止转换（6 个）
 
-#### 14.2.1 xlibgate 硬性失败（7 种）
+| # | 禁止转换 | 原因 |
+|---|----------|------|
+| 1 | registered → adopted | 登记态不等于已采纳，必须经过 proof-based adoption |
+| 2 | dry_run → adopted | dry-run 只验证流程，不证明落地 |
+| 3 | patch_only → adopted | patch-only 不等于 proof-based adoption |
+| 4 | not_run → adopted | 未运行禁止直接 adopted |
+| 5 | gate_outputs_missing → proof_based_adoption | 缺少 gate 输出不能声称 proof-based |
+| 6 | baseline_scanned → adopted | 基线扫描不等于采纳完成 |
 
-见 §13.3。任一触发即 fail-closed，不得降级。每条对应 §23.7.2 风险表与 §11.5 EvidenceEntry 中 `truth_state=violated` 记录。
+### 3.4 下游同步治理
 
-#### 14.2.2 弱事实禁止升级（truth-state）
+下游同步计划、patch-only 和 registry 记录不得升级为 adopted；需要下游 commit、gate output、proof schema 和 rollback。该边界对应 `../SNAPSHOT-BOUNDARY.md` B-02。
 
-| Edge | 弱事实 | 不可视为 | 检测点 |
-|------|--------|----------|--------|
-| EC-G1 | `registered` | `adopted` | FR-006 / FR-051 / §11.7 AdoptionStatus 枚举 |
-| EC-G2 | `baseline_scanned` | `implemented` | §11.5 EvidenceEntry.truth_state |
-| EC-G3 | `dry_run_ready` | `executed` | §10.3 退出码 / §11.5 status |
-| EC-G4 | `artifact_exists` | `usable` | release-final-check / §11.6 字段完整性 |
-| EC-G5 | `CHECK_STATUS=passed` | `release-ready evidence` | §23.3 Gate Chain |
-| EC-G6 | downstream sync plan | downstream adoption proof | FR-052 / FR-006 |
+### 3.5 消费者与仓库角色
 
-详见 §2.1 / §9.7 / `CONFLICT-LEDGER.md`。
+默认代表下游为 `kernel`、`configx`、`redisx`。全部 L2 是矩阵和路线图对象；`x.go` 是 consumer-review-only。仓库角色、repository roles 和 downstream registry 的上游位置见 `../INDEX.md` §1。
 
-#### 14.2.3 远端治理不可本地证明
+### 3.6 层级依赖模型
 
-本地文件不能证明 GitHub branch protection 已启用、ruleset 生效、required checks 绑定、GitHub Release object 已创建等。详见 §23.7.3 / §23.7 OQ-001。这些必须通过远端 API / CI artifact / ruleset export 单独证明，记录为 EvidenceEntry 中 `truth_state=unverified_remote`。
-
----
-
-## 16. 依赖（Dependencies）
-
-### 16.1 层级依赖模型
-
-> **领域命名口径**：与 `ARCHITECTURE.md` / `CLAUDE.md` 一致，采用 **领域分层**（基座 / 数据域 / 分析域 / 决策域 / 执行域 / 入口 / 横切）。`xlib-standard`、`xlibgate` 属于 **基座领域的 Foundation Gate 治理子层**，不是独立于五领域之外的第六领域。下表保留旧 L 编号仅作历史映射。
+> 领域命名口径：与 `ARCHITECTURE.md` / `CLAUDE.md` 一致，采用领域分层（基座 / 数据域 / 分析域 / 决策域 / 执行域 / 入口 / 横切）。`xlib-standard`、`xlibgate` 属于基座领域的 Foundation Gate 治理子层。
 
 ```text
 基座 · Foundation Gate 子层：xlib-standard, xlibgate
     ↓
-基座 L0（原 L0）：kernel
+基座 L0：kernel
     ↓
-基座 L1（原 L1）：configx / observex / testkitx / resiliencx / schedulex
+基座 L1：configx / observex / testkitx / resiliencx / schedulex
     ↓
-基座 L2（原 L2）：redisx / kafkax / natsx / postgresx / taosx / ossx / clickhousex
+基座 L2：redisx / kafkax / natsx / postgresx / taosx / ossx / clickhousex
     ↓
-（以下为私有域，不开源；对应 ARCHITECTURE.md 的数据域 / 分析域 / 决策域 / 执行域 / 入口）
-xgo-contracts → xgo-market-data, xgo-macro-data → market-engine, macro-engine, regime-engine → x.go
+私有域：xgo-contracts → xgo-market-data, xgo-macro-data → engines → x.go
 ```
 
-### 16.2 L2 Provider 规格
+依赖只能从高层指向低层，不可反向；L3-L6 不公开、不开源；`xlib-standard` 不得依赖 `x.go` 或业务仓库；生成库不得依赖 `x.go`。
+
+### 3.7 L2 Provider 规格
 
 L2 模块包括 `postgresx`、`redisx`、`kafkax`、`natsx`、`taosx`、`ossx`、`clickhousex`。
 
 L2 交付链：capability manifest → contract pack → adapter implementation → evidence pack → contract/integration/chaos/benchmark/adoption gates → xlibgate release judgment。
-
-Release ladder：
 
 | 阶段 | 语义 |
 |------|------|
@@ -128,93 +110,50 @@ Release ladder：
 | T3 | 首个 release-allowed 阶段。 |
 | T4 | factory-grade；包括更完整的故障、性能、兼容和 adoption 证据。 |
 
-缺失 profile、pack、readiness 或证据时，L2 release 必须 fail closed。
+## 4. 边界场景 / 失败语义
 
-### 16.3 依赖方向规则
+### 4.1 xlibgate 硬性失败（7 种）
 
-- 依赖只能从高层指向低层，不可反向
-- L3-L6 不公开、不开源
-- xlib-standard 不得依赖 x.go 或业务仓库
-- 生成库不得依赖 x.go
+见 `analysis/template.md` §4.2。任一触发即 fail-closed，不得降级；对应 EvidenceEntry 中 `truth_state=violated` 记录。
 
-### 16.4 工具依赖
+### 4.2 弱事实禁止升级（truth-state）
 
-| 工具 | 版本 | 用途 |
-|------|------|------|
-| Go | 1.23.x | 编译 |
-| golangci-lint | v2.1.6 | Lint |
-| govulncheck | v1.3.0 | 漏洞扫描 |
-| python3 | 3.x | 脚本 |
-| sha256sum | - | 校验和 |
-| make | - | 构建 |
-| git | - | 版本控制 |
-| Docker | - | 工具链运行时 |
+| Edge | 弱事实 | 不可视为 | 检测点 |
+|------|--------|----------|--------|
+| EC-G1 | `registered` | `adopted` | FR-006 / FR-051 / §3.2 AdoptionStatus 枚举 |
+| EC-G2 | `baseline_scanned` | `implemented` | `analysis/runtime.md` §3.5 EvidenceEntry.truth_state |
+| EC-G3 | `dry_run_ready` | `executed` | `analysis/runtime.md` §3.2 退出码 / §3.5 status |
+| EC-G4 | `artifact_exists` | `usable` | release-final-check / `analysis/runtime.md` §3.6 字段完整性 |
+| EC-G5 | `CHECK_STATUS=passed` | `release-ready evidence` | GitHub checks + release evidence pack |
+| EC-G6 | downstream sync plan | downstream adoption proof | FR-052 / FR-006 |
 
----
+详见 `../CONFLICT-LEDGER.md` 与 `../SNAPSHOT-BOUNDARY.md`。
 
-## 22. 迁移（Upgrade Compatibility）
+### 4.3 远端治理不可本地证明
 
-### 22.1 v1.0.0 配置迁移
+本地文件不能证明 GitHub branch protection 已启用、ruleset 生效、required checks 绑定、GitHub Release object 已创建等。这些必须通过远端 API / CI artifact / ruleset export 单独证明，记录为 EvidenceEntry 中 `truth_state=unverified_remote`。pinned 证据见 `../REMOTE-EVIDENCE.md`。
 
-- **目标**：`.config/` 作为唯一机器可读事实源
-- **迁移表**：20+ 条目（`.agent/` → `.config/`，`.xlib/` → `.config/`）
-- **37 No-Go 条件**（Part F）：任一为真则不得发布 v1.0.0，核心包括：
-  - CHANGELOG 缺 v1.0.0 条目
-  - public API surface 未冻结
-  - stable/experimental/internal surface 未分类
-  - breaking change 缺 migration note
-  - release.yml 仍使用 cmd/xlibgate
-  - workflow 仍使用 deprecated release entrypoint
-  - toolchain 版本在 docs/workflow/manifest 间漂移
-  - 任一 workflow action 未 pin 40-char SHA
-  - workflow 无 explicit permissions
-  - PR template / CODEOWNERS 缺失
-  - registry schema validation 缺失
-  - release artifact schema validation 缺失
-  - generator determinism / idempotency 未证明
-  - kernel/configx/redisx replay 未通过
-  - downstream not_run 被报告为 passed
-  - P0 debt > 0
-  - truth-state violation > 0
-  - release manifest 缺 goal/worktree/branch/cicd/governance/risk/downstream blocks
-  - open P0 blocker / RC blocker 未清零
-  - rollback policy 缺失
-  - Docker toolchain runtime parity 未证明
-  - 其余 16 条见源文件 Part F 完整列表
-- **平台适配器分类学**（5 类）：
-  1. xlib_standard_fact（标准源事实）
-  2. platform_native（平台原生）
-  3. thin_adapter（薄适配器）
-  4. generated_projection（生成投影，如 CODEOWNERS）
-  5. forbidden_legacy（禁止遗留）
+### 4.4 v1.0.0 配置迁移
 
-### 22.2 迁移路径
+`.config/` 是目标数据面；当前上游仍有 `.agent/**`、`.xlib/**`、registry、policy 和 evidence ledger。No-Go 条件与 release 裁决标准详见上游 `docs/standard/release-standard.md`；本地边界记录见 `../SNAPSHOT-BOUNDARY.md` B-01 / B-05。
 
-```text
-v1 提出概念 → v2 审计补全 → v3 修补 P0 缺口 → v5 终极版
-```
+## 5. 与其他子分析的交叉引用
 
-### 22.3 关键决策
+| 主题 | 位置 |
+|------|------|
+| 核心规则、RULE 前缀和 Debt Governance | `analysis/rules.md` §3 |
+| 模板配置、错误、安全和 xlibgate 失败 | `analysis/template.md` §3、§4 |
+| Evidence Ledger、Release Manifest 和 TC 表 | `analysis/runtime.md` §3、§6 |
+| 远端证据 | `../REMOTE-EVIDENCE.md` |
+| 快照边界 | `../SNAPSHOT-BOUNDARY.md` |
 
-- `.agent/` 控制面保留，`.config/` 数据面统一
-- 迁移必须有回滚计划
-- 下游 effective subset 限制为 7 个文件
-- CODEOWNERS 从 `.config/github/codeowners.json` 生成
+## 6. TC / EC 命名空间
 
-### 22.4 未来考虑（Future Considerations）
+治理类边界场景使用 EC-G1..EC-G6。与测试用例绑定时引用 `analysis/runtime.md` §6 的 `xlib-TC-013`（truth-state / adoption）及相关 gate 级 Evidence。
 
-> 原 §附录 B，2026-06-08 并入 §21（消解结构债 S3）。
+## 7. 附录或同义引用表
 
-1. **v1.0.0-rc.1**：先进入 rc.1，P0 清零后再发布 stable
-2. **Goal Runtime v3.1.1**：28 个 PR 执行包逐步落地
-3. **L2 测试工厂**：15 个适配器全部达到 L2-T2+
-4. **自动化全链路**：Issue → Goal → ... → Release → Issue Close
-5. **xlibctl**：pinned CLI binary 用于工具链分发
-6. **Proof Depth D0-D7**：gate 验证深度标准化
-7. **Standard Production Kernel**：Canonical Facts → Standard Graph → Goal Graph → Debt Graph → Harness Proof Graph → Evidence Ledger
-
----
-## 7. TRUTH 同义引用表（非独立编号空间）
+### 附录 A：TRUTH 同义引用表（非独立编号空间）
 
 `TRUTH-NNN` 只在本表作为 BR / FR 的同义表述保留；跨文档引用应使用 `BR-NNN`、`FR-NNN` 或 `RULE-CORE-NNN`。
 

@@ -11,13 +11,13 @@ Last-Pushed: 2026-06-07T10:04:12Z
 
 ## 1. Tag ↔ Pinned commit 一致性
 
-本规格 `COVERAGE-MANIFEST.md` 与 `TRACEABILITY.md` pin 的 upstream commit `93753b30e6d01fb4a9b096acaa0d7d53a2fb231c` **正是** 远端 release tag `v0.6.5` 指向的 commit：
+本分析 `COVERAGE-MANIFEST.md` 与 `TRACEABILITY.md` pin 的 upstream commit `93753b30e6d01fb4a9b096acaa0d7d53a2fb231c` **正是** 远端 release tag `v0.6.5` 指向的 commit：
 
 | 维度                     | 值                                         |
 | ------------------------ | ------------------------------------------ |
 | Tag                      | `v0.6.5`                                   |
 | Tag commit SHA           | `93753b30e6d01fb4a9b096acaa0d7d53a2fb231c` |
-| 本规格 pin 的 commit     | `93753b30e6d01fb4a9b096acaa0d7d53a2fb231c` |
+| 本分析 pin 的 commit     | `93753b30e6d01fb4a9b096acaa0d7d53a2fb231c` |
 | Release published_at     | `2026-06-07T10:04:14Z`                     |
 | Release name / body 长度 | `v0.6.5` / 222 字节                        |
 | Release target_commitish | `main`                                     |

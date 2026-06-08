@@ -2,6 +2,10 @@
 
 本文件收纳“本地分析快照 vs 上游/远端/下游现实”的边界条目。它们不是同一 SSOT 内部硬冲突，因此不再放入 `CONFLICT-LEDGER.md`。
 
+- Snapshot-Date: 2026-06-08
+- Upstream-Commit: `93753b30e6d01fb4a9b096acaa0d7d53a2fb231c` (v0.6.5)
+- Analysis-Version: v3.1.0
+
 | # | 边界条目 | 口径 |
 |---:|----------|------|
 | B-01 | strict-config 迁移目标 vs 当前路径现实 | `.config/xlib` 是迁移目标；当前上游仍有 `.agent/**`、`.xlib/**`、registry、policy 和 evidence ledger。 |

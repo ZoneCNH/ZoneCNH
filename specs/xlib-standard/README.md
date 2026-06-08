@@ -15,6 +15,7 @@
 ## 当前权威工件
 
 - `ANALYSIS.md`：本地结构分析入口；只保留事实层级、关键数字、职责拆分和冲突总览，不声明可执行生命周期状态。
+- `FR-DETAIL.md`：52 条 FR 的完整 WHEN/THEN 细节；行为细节以此文件为准，不声明可执行生命周期状态。
 - `INDEX.md`：上游 SSOT 索引；列出 `docs/standard/` 27 个文件、9 个 Accepted ADR 与 `harness.yaml` gate section。
 - `analysis/rules.md`：规则源、`BR-NNN` / `RULE-CORE-NNN`、Debt Governance 分析。
 - `analysis/template.md`：Go 参考模板、公共 API、Generator 与边界场景分析。
@@ -26,13 +27,14 @@
 - `COVERAGE-MANIFEST.md`：输入文件清单与覆盖口径（154 个文件，相对 `<upstream>/` 路径）。
 - `REMOTE-EVIDENCE.md`：远端治理 pinned 证据（branch protection / rulesets / release object / CI runs，pinned 2026-06-08 05:15 +08:00）。
 
-## 已归档工件
+## 已退出当前目录的历史工件
 
-原 `archive/` 目录的历史文件已迁移至 `docs/report/`，不再位于本目录下：
+原 `archive/` 目录的历史文件已迁移至 `docs/report/`，旧 `SPEC.md` 23 节整理稿也已退出当前目录；这些历史内容不再作为当前分析、lint 或 independent review verdict 的入口：
 
+- `SPEC.md`：旧 23 节整理稿；当前权威入口是 `ANALYSIS.md` / `FR-DETAIL.md` / `TRACEABILITY.md`，旧稿不再位于本目录，也不再作为可执行规格或归档规格入口。
 - `docs/report/xlib-standard-module-spec-archived.md`：历史 20 节整理工件。
 - `docs/report/xlib-standard-deep-analysis-archived.md`：181 文件旧口径深度分析。
-- 归档工件 **不得** 作为当前分析、追溯、冲突取舍或门禁事实引用，仅供溯源比对。
+- 历史工件 **不得** 作为当前分析、追溯、冲突取舍或门禁事实引用，仅供溯源比对。
 
 ## 阅读规则
 
