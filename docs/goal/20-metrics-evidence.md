@@ -52,7 +52,7 @@ follow_up:
 
 Metrics Review 应在发布后约定窗口内完成。窗口过短会误判，窗口过长会丢失反馈速度。
 
-## Metrics Validation Gate
+## Metrics Validation Check
 
 | 状态 | 含义 | 下一步 |
 |------|------|--------|
@@ -62,7 +62,7 @@ Metrics Review 应在发布后约定窗口内完成。窗口过短会误判，�
 | Not Achieved | 核心指标未达标 | RCA、回退或新一轮 Goal |
 | Invalid Metric | 指标无法代表原目标 | 发起指标修正 CR，不能直接宣称成功 |
 
-Gate 的结论必须写回 Goal 或 Release 记录，避免“PR 已合并”掩盖“目标未达成”。
+Metrics Validation Check 的结论必须写回 Goal 或 Release 记录，避免“PR 已合并”掩盖“目标未达成”。
 
 ## Metrics Gap Report
 

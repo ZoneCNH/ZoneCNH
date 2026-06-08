@@ -115,7 +115,7 @@ Team A 定义接口 → Team B/C 评审 → ADR 记录 → 各自独立开发 �
 
 ```text
 各团队共享同一个 Registry，但各自维护自己的 Task 和 Evidence。
-公共接口变更必须通过 Human Approval Gate。
+公共接口变更必须通过 Human Approval Check，并把结论作为 G9 Review Gate 或 G10 Release Gate 证据。
 ```
 
 ---

@@ -237,6 +237,8 @@ Do Not:       禁止事项
 - 不允许 AI 自行扩大范围
 ```
 
+对应的自动化检查映射见 [10-lint-rules.md §4 Prompt Lint](10-lint-rules.md#4-prompt-lint)。
+
 ---
 
 ## 6. Code 标准
@@ -332,16 +334,17 @@ Goal → Spec → Design → Plan → Tasks → Prompt → Code → Test → Rev
   - 测试通过 → 更新 Test Case 列
 完整性检查：
   - Gate G5（Task Gate）自动检查 Matrix 覆盖率
-  - Release 前必须 100% 行有 Status = Done 或 Dropped（有理由）
+  - Release 前必须 100% 行有 Status = Verified，或 Status = Dropped 且有 drop_reason
 ```
 
 ### Matrix 状态
 
 ```text
-Unmapped → Mapped → Planned → Implemented → Tested → Done
-                                                      ↓
-                                                   Blocked / Changed / Dropped
+Unmapped → Mapped → Linked → Verified
+                         ↘ Dropped（必须有 drop_reason）
 ```
+
+`Blocked`、`Changed`、`Drifted`、`Stale` 是漂移或阻塞元状态，不是完成终态。它们必须回到 `Linked` 后重新验证，或转为带原因的 `Dropped`。
 
 ### 风险字段
 

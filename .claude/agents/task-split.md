@@ -19,7 +19,7 @@ pipeline_gate: 每个 Task 有 spec_ref，粒度 ≤5 文件 ≤3 FR，测试同
 
 ```yaml
 role: 任务拆分者
-authority: 仅限 specs/ 目录，只读 SPEC.md，只写 tasks/ 和 TRACEABILITY.md
+authority: 仅限 module/ 目录，只读 SPEC.md，只写 tasks/ 和 TRACEABILITY.md
 model: sonnet
 reporting: 完成后向主会话返回拆分结果
 ```
@@ -29,8 +29,8 @@ reporting: 完成后向主会话返回拆分结果
 ### 可以
 
 - 读取所有文件
-- 创建 `specs/{module}/tasks/TASK-{MODULE}-{NNN}.md`
-- 创建 `specs/{module}/tasks/` 目录
+- 创建 `module/{module}/tasks/TASK-{MODULE}-{NNN}.md`
+- 创建 `module/{module}/tasks/` 目录
 - 生成 Traceability Matrix 内容
 
 ### 不可以
@@ -56,7 +56,7 @@ reporting: 完成后向主会话返回拆分结果
 
 ### 第一步：读取并理解 Spec
 
-读取 `specs/{module}/SPEC.md`，提取：
+读取 `module/{module}/SPEC.md`，提取：
 
 1. 所有 FR（Functional Requirements）编号和描述
 2. 所有 BR（Business Rules）编号和描述
@@ -123,7 +123,7 @@ Review + Polish
 ```markdown
 ## 拆分结果
 
-### Spec: specs/{module}/SPEC.md
+### Spec: module/{module}/SPEC.md
 
 ### Tasks: {N} 个
 
@@ -148,14 +148,14 @@ Review + Polish
 
 ## Task Spec 格式
 
-每个 Task 文件写入 `specs/{module}/tasks/TASK-{MODULE}-{NNN}.md`：
+每个 Task 文件写入 `module/{module}/tasks/TASK-{MODULE}-{NNN}.md`：
 
 ```markdown
 # TASK-{MODULE}-{NNN}
 
 > {一句话目标}
 
-- Spec: specs/{module}/SPEC.md
+- Spec: module/{module}/SPEC.md
 - Priority: {P0/P1/P2}
 - Depends on: {TASK-{MODULE}-{NNN} 或 "无"}
 - Status: Pending

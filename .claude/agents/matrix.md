@@ -25,8 +25,8 @@ pipeline_gate: FR/BR/AC/TC 100% 闭合，无孤立 TC，无未覆盖 FR；Matrix
 ### Step 1：加载输入
 
 ```text
-读取 specs/{module}/SPEC.md           ← 来源 Spec
-读取 specs/TRACEABILITY.md            ← 追踪矩阵规范
+读取 module/{module}/SPEC.md           ← 来源 Spec
+读取 docs/governance/TRACEABILITY.md            ← 追踪矩阵规范
 ```
 
 ### Step 2：提取需求项
@@ -68,7 +68,7 @@ BR-001 → AC-004 → TC-005
 ### Step 5：输出
 
 ```text
-创建或更新 specs/{module}/TRACEABILITY.md
+创建或更新 module/{module}/TRACEABILITY.md
 输出覆盖率报告
 标记问题项
 ```

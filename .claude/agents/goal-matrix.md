@@ -158,7 +158,7 @@ Task Traceability: 有 Spec 的 Task / 总 Task × 100%
 ```bash
 # 从 Spec 和 Tasks 生成 Matrix
 python3 docs/goal/tools/matrix-gen.py \
-  --spec-dir docs/goal/specs \
+  --spec-dir module \
   --task-dir docs/goal/tasks \
   --output .config/goal/matrix.yaml \
   --goal-id GOAL-20260608-001

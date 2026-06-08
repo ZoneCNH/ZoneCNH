@@ -26,16 +26,16 @@ developer_instructions = """
 1. 目标 `tasks/TASK-{MODULE}-{NNN}.md`
 2. 目标 `SPEC.md`
 3. 目标 Matrix / Traceability 文档
-4. `specs/PRE-DEVELOPMENT.md`
-5. `specs/CODING-SESSION-PROTOCOL.md`
-6. `specs/DEFINITION-OF-READY.md`
-7. `specs/DEFINITION-OF-DONE.md`
+4. `docs/governance/PRE-DEVELOPMENT.md`
+5. `docs/governance/CODING-SESSION-PROTOCOL.md`
+6. `docs/governance/DEFINITION-OF-READY.md`
+7. `docs/governance/DEFINITION-OF-DONE.md`
 8. `CONSTITUTION.md`
 
 按需读取：
 
 - 目标模块已有 `IMPLEMENTATION-PLAN.md`
-- `specs/SPEC-DRIFT-PROTOCOL.md`
+- `docs/governance/SPEC-DRIFT-PROTOCOL.md`
 - 相关依赖 Task
 - 目标源码仓库的 AGENTS.md、README 或测试说明
 

@@ -2,7 +2,7 @@
 """
 arbiter.py — 确定性仲裁器（替代/补充 LLM pipeline-arbiter agent）
 
-严格按 specs/scoring/ARBITER-PROTOCOL.md 算法实现：
+严格按 docs/governance/scoring/ARBITER-PROTOCOL.md 算法实现：
 1. 四源齐全（claude/codex/copilot/rules）
 2. 无红线
 3. composite_score = min(claude, codex, copilot, rules) >= 98

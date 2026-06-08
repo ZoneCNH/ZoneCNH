@@ -1,25 +1,29 @@
 #!/usr/bin/env bash
 # evidence-collect.sh — Evidence 自动收集脚本
 # 从 Git diff 和测试结果自动生成 Evidence 文件
-# 用法: ./docs/goal/tools/evidence-collect.sh <task-id> [goal-id]
+# 用法: ./docs/goal/tools/evidence-collect.sh <task-id> <spec-id> <acceptance-criteria-id> <test-id> [goal-id]
 
 set -euo pipefail
 
-TASK_ID="${1:?用法: $0 <task-id> [goal-id]}"
-GOAL_ID="${2:-GOAL-AUTO}"
+TASK_ID="${1:?用法: $0 <task-id> <spec-id> <acceptance-criteria-id> <test-id> [goal-id]}"
+SPEC_ID="${2:?用法: $0 <task-id> <spec-id> <acceptance-criteria-id> <test-id> [goal-id]}"
+AC_ID="${3:?用法: $0 <task-id> <spec-id> <acceptance-criteria-id> <test-id> [goal-id]}"
+TEST_ID="${4:?用法: $0 <task-id> <spec-id> <acceptance-criteria-id> <test-id> [goal-id]}"
+GOAL_ID="${5:-GOAL-AUTO}"
 DATE=$(date +%Y-%m-%d)
-TIMESTAMP=$(date +%Y%m%d)
-EVID_ID="EVID-${TASK_ID}-${TIMESTAMP}-001"
+EVID_ID="EVID-${TEST_ID}-001"
 
 ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
 EVIDENCE_ROOT="${GOAL_EVIDENCE_DIR:-$ROOT/.config/goal/evidence}"
-EVIDENCE_DIR="$EVIDENCE_ROOT/$DATE/$TASK_ID"
-EVIDENCE_FILE="$EVIDENCE_DIR/evidence.md"
+EVIDENCE_FILE="$EVIDENCE_ROOT/$DATE/$TASK_ID/$EVID_ID.md"
 
-mkdir -p "$EVIDENCE_DIR"
+mkdir -p "$(dirname "$EVIDENCE_FILE")"
 
 echo "收集 Evidence: $EVID_ID"
 echo "Task: $TASK_ID"
+echo "Spec: $SPEC_ID"
+echo "Acceptance Criteria: $AC_ID"
+echo "Test: $TEST_ID"
 echo "Goal: $GOAL_ID"
 echo "日期: $DATE"
 echo ""
@@ -38,7 +42,7 @@ DIFF_STAT=$(git diff --stat HEAD~1 2>/dev/null || echo "(无法获取)")
 # --- 测试结果 ---
 echo "=== 运行测试 ==="
 TEST_RESULT=""
-TEST_STATUS="UNKNOWN"
+TEST_STATUS="PARTIAL"
 
 # 尝试 Go 测试
 if [ -f "go.mod" ]; then
@@ -51,7 +55,7 @@ if [ -f "go.mod" ]; then
 fi
 
 # 尝试 Node 测试
-if [ -f "package.json" ] && [ "$TEST_STATUS" = "UNKNOWN" ]; then
+if [ -f "package.json" ] && [ "$TEST_STATUS" = "PARTIAL" ]; then
     TEST_RESULT=$(npm test 2>&1 | tail -20 || true)
     if echo "$TEST_RESULT" | grep -q "passing"; then
         TEST_STATUS="PASS"
@@ -61,7 +65,7 @@ if [ -f "package.json" ] && [ "$TEST_STATUS" = "UNKNOWN" ]; then
 fi
 
 # 尝试 Python 测试
-if { [ -f "requirements.txt" ] || [ -f "pyproject.toml" ]; } && [ "$TEST_STATUS" = "UNKNOWN" ]; then
+if { [ -f "requirements.txt" ] || [ -f "pyproject.toml" ]; } && [ "$TEST_STATUS" = "PARTIAL" ]; then
     TEST_RESULT=$(python -m pytest 2>&1 | tail -20 || true)
     if echo "$TEST_RESULT" | grep -q "passed"; then
         TEST_STATUS="PASS"
@@ -77,10 +81,15 @@ cat > "$EVIDENCE_FILE" << EOF
 ## 基本信息
 
 - **Evidence ID**: $EVID_ID
+- **Acceptance Criteria ID**: $AC_ID
+- **Test ID**: $TEST_ID
 - **Task ID**: $TASK_ID
+- **Spec ID**: $SPEC_ID
 - **Goal ID**: $GOAL_ID
 - **Date**: $DATE
 - **Status**: $TEST_STATUS
+- **Files Changed**: see section below
+- **Commands Run**: see section below
 
 ## 文件变更
 
@@ -120,9 +129,9 @@ git diff --stat HEAD~1
 
 ## 需求证明
 
-<!-- TODO: 填入此 Evidence 对应的 Acceptance Criteria -->
+<!-- TODO: 核对此 Evidence 对应的 Acceptance Criteria 是否完全满足 -->
 
-- [ ] AC-xxx: <!-- 填入验收标准 -->
+- [ ] $AC_ID: <!-- 填入验收标准 -->
 
 ## 已知限制
 

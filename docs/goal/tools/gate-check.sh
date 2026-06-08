@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# gate-check.sh — Gate 完整性检查脚本
-# 检查 Matrix 覆盖率、Evidence 字段完整性、测试覆盖率
+# gate-check.sh — Gate 制品就绪检查脚本
+# 检查 Matrix 覆盖率、Evidence 字段完整性、测试覆盖率；不替代四源 Gate arbiter。
 # 用法: ./docs/goal/tools/gate-check.sh [项目根目录]
 
 set -euo pipefail
@@ -10,7 +10,7 @@ CONFIG_GOAL_DIR="${GOAL_CONFIG_DIR:-$ROOT/.config/goal}"
 DOC_GOAL_DIR="${DOC_GOAL_DIR:-$ROOT/docs/goal}"
 REGISTRY_DIR="${GOAL_REGISTRY_DIR:-$CONFIG_GOAL_DIR/registry}"
 EVIDENCE_DIR="${GOAL_EVIDENCE_DIR:-$CONFIG_GOAL_DIR/evidence}"
-MATRIX_FILE="${GOAL_MATRIX_FILE:-$CONFIG_GOAL_DIR/matrix.yaml}"
+MATRIX_FILE="${GOAL_MATRIX_FILE:-$CONFIG_GOAL_DIR/matrix/matrix.yaml}"
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -26,7 +26,7 @@ fail() { echo -e "${RED}✗ FAIL${NC}: $1"; ((FAIL += 1)); }
 warn() { echo -e "${YELLOW}⚠ WARN${NC}: $1"; ((WARN += 1)); }
 
 echo "=========================================="
-echo "  Goal 驱动交付 — Gate 完整性检查"
+echo "  Goal 驱动交付 — Gate 制品就绪检查"
 echo "=========================================="
 echo ""
 
@@ -69,7 +69,7 @@ if [ -f "$REGISTRY_DIR/tasks.yaml" ]; then
 fi
 
 # 检查测试文件是否存在
-TEST_COUNT=$(find "$ROOT" -name "*_test.go" -o -name "*.test.ts" -o -name "*.spec.ts" -o -name "test_*.py" 2>/dev/null | wc -l)
+TEST_COUNT=$(find "$ROOT" -type f \( -name "*_test.go" -o -name "*.test.ts" -o -name "*.spec.ts" -o -name "test_*.py" \) 2>/dev/null | wc -l)
 if [ "$TEST_COUNT" -gt 0 ]; then
     pass "发现 ${TEST_COUNT} 个测试文件"
 else
@@ -80,17 +80,17 @@ echo ""
 # --- G8: Evidence Gate ---
 echo "--- G8: Evidence Gate ---"
 if [ -d "$EVIDENCE_DIR" ]; then
-    EVIDENCE_FILES=$(find "$EVIDENCE_DIR" -name "*.md" -o -name "*.log" 2>/dev/null | wc -l)
+    EVIDENCE_FILES=$(find "$EVIDENCE_DIR" -type f -name "EVID-*.md" 2>/dev/null | wc -l)
     if [ "$EVIDENCE_FILES" -gt 0 ]; then
         pass "发现 ${EVIDENCE_FILES} 份 Evidence 文件"
 
         # 检查 Evidence 必须字段
         MISSING_FIELDS=0
-        for f in $(find "$EVIDENCE_DIR" -name "evidence.md" 2>/dev/null); do
-            for field in "Evidence ID" "Test ID" "Status" "Files Changed" "Commands Run"; do
+        for f in $(find "$EVIDENCE_DIR" -type f -name "EVID-*.md" 2>/dev/null); do
+            for field in "Evidence ID" "Acceptance Criteria ID" "Test ID" "Task ID" "Spec ID" "Goal ID" "Date" "Status" "Files Changed" "Commands Run"; do
                 if ! grep -qi "$field" "$f" 2>/dev/null; then
                     warn "$f 缺少字段: $field"
-                    ((MISSING_FIELDS++))
+                    ((MISSING_FIELDS += 1))
                 fi
             done
         done
@@ -108,16 +108,42 @@ echo ""
 # --- Matrix 覆盖率 ---
 echo "--- Matrix 覆盖率 ---"
 if [ -f "$MATRIX_FILE" ]; then
-    MATRIX_ROWS=$(grep -cE "^[[:space:]]*-[[:space:]]*goal_id:" "$MATRIX_FILE" 2>/dev/null || echo 0)
-    MAPPED=$(grep -c "status:.*\(Done\|Implemented\|Tested\)" "$MATRIX_FILE" 2>/dev/null || echo 0)
+    MATRIX_ROWS=$(grep -cE "^[[:space:]]*-[[:space:]]*goal_id:" "$MATRIX_FILE" 2>/dev/null || true)
+    MAPPED=$(grep -c "status:.*\(Verified\|Dropped\)" "$MATRIX_FILE" 2>/dev/null || true)
     if [ "$MATRIX_ROWS" -gt 0 ]; then
         MATRIX_COVERAGE=$((MAPPED * 100 / MATRIX_ROWS))
         if [ "$MATRIX_COVERAGE" -ge 95 ]; then
             pass "Matrix 完成率 ${MATRIX_COVERAGE}% (${MAPPED}/${MATRIX_ROWS})"
-        elif [ "$MATRIX_COVERAGE" -ge 70 ]; then
-            warn "Matrix 完成率 ${MATRIX_COVERAGE}% (${MAPPED}/${MATRIX_ROWS})"
         else
             fail "Matrix 完成率 ${MATRIX_COVERAGE}% (${MAPPED}/${MATRIX_ROWS})"
+        fi
+
+        DROPPED_WITHOUT_REASON=$(python3 - "$MATRIX_FILE" <<'PY'
+import re
+import sys
+
+rows = []
+current = None
+for line in open(sys.argv[1], encoding="utf-8"):
+    if re.match(r"^\s*-\s+goal_id:", line):
+        if current is not None:
+            rows.append(current)
+        current = {}
+        continue
+    if current is None:
+        continue
+    match = re.match(r"^\s+([A-Za-z_]+):\s*(.*)\s*$", line)
+    if match:
+        value = match.group(2).strip().strip('"').strip("'")
+        current[match.group(1)] = value
+if current is not None:
+    rows.append(current)
+
+print(sum(1 for row in rows if row.get("status") == "Dropped" and not row.get("drop_reason")))
+PY
+)
+        if [ "$DROPPED_WITHOUT_REASON" -gt 0 ]; then
+            fail "Matrix 有 ${DROPPED_WITHOUT_REASON} 个 Dropped 行缺少非空 drop_reason"
         fi
     else
         warn "Matrix 文件为空或格式无法解析"

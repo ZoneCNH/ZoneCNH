@@ -11,7 +11,7 @@ Use this skill when the user asks for a complete development workflow, "开发�
 Spec -> Matrix -> Tasks -> Plan -> Prompt -> Code
 ```
 
-The workflow target is one module under `specs/{module}/`. It turns an approved module spec into traceability, tasks, implementation plan, task prompt, and one bounded code execution.
+The workflow target is one module under `module/{module}/`. It turns an approved module spec into traceability, tasks, implementation plan, task prompt, and one bounded code execution.
 
 ## Invocation
 
@@ -64,9 +64,9 @@ spec
 
 Confidence 与分差属于 gate 条件，不能被忽略或人工豁免。失败一律自动路由回当前阶段 executor 或 scorer 修复；同阶段 3 次失败自动升级到上一阶段；上游再失败继续向上直到 spec。修复循环必须有界：默认 `max_stage_attempts = 3`，`max_total_gate_failures = 18`。达到全链路上限后输出 `pipeline_blocked` 和 retrospective，不得无限循环。
 
-Workflow self-improvement is allowed only as bounded RSI: create `specs/workflow-improvement/{YYYYMMDD}-{slug}/SPEC.md`, run the same Spec -> Matrix -> Tasks -> Plan -> Prompt -> Code gates, and obey `CONSTITUTION.md` §14 for protected files.
+Workflow self-improvement is allowed only as bounded RSI: create `docs/governance/improvements/{YYYYMMDD}-{slug}/SPEC.md`, run the same Spec -> Matrix -> Tasks -> Plan -> Prompt -> Code gates, and obey `CONSTITUTION.md` §14 for protected files.
 
-详见 `specs/STRUCTURAL-SCORING.md` 与 `specs/scoring/ARBITER-PROTOCOL.md`。
+详见 `docs/governance/STRUCTURAL-SCORING.md` 与 `docs/governance/scoring/ARBITER-PROTOCOL.md`。
 
 ## Stage Contract
 
@@ -141,7 +141,7 @@ Top-level pipeline state:
 {state_root}/pipeline/{module}.json
 {state_root}/pipeline/{module}/repair-budget.json
 {state_root}/pipeline/{module}/pipeline_blocked.json
-specs/{module}/PIPELINE-RETROSPECTIVE.md
+module/{module}/PIPELINE-RETROSPECTIVE.md
 ```
 
 ## Final Report

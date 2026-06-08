@@ -52,8 +52,8 @@ reporting: 完成后向主会话返回 Context Packet
 
 ### 第一步：读取输入
 
-1. `specs/{module}/tasks/TASK-{MODULE}-{NNN}.md` — 当前 Task
-2. `specs/{module}/SPEC.md` — 相关规格
+1. `module/{module}/tasks/TASK-{MODULE}-{NNN}.md` — 当前 Task
+2. `module/{module}/SPEC.md` — 相关规格
 3. `AGENTS.md` — 项目规则
 4. `ARCHITECTURE.md` — 架构约束
 5. 实现计划（如果有 task-planner 的输出）
@@ -107,7 +107,7 @@ TASK-{MODULE}-{NNN}: {任务标题}
 
 ## Related Spec
 
-specs/{module}/SPEC.md
+module/{module}/SPEC.md
 
 ## Related Requirements
 

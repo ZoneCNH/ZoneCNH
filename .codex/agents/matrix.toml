@@ -13,7 +13,8 @@ developer_instructions = """
 
 ## 角色边界
 
-- 允许创建或修订目标模块的 `TRACEABILITY.md`，或按现有结构更新 `specs/TRACEABILITY.md` 中的目标模块段落。
+- 允许创建或修订 `module/{module}/TRACEABILITY.md`。
+- `docs/governance/TRACEABILITY.md` 只作为追溯矩阵规范读取，不得写入具体模块行或目标模块段落。
 - 允许标记尚未拆分的 Task 为 `TBD`，并说明进入 `task-split` 的输入缺口。
 - 不得修改 Spec 语义、批准 Spec、拆 Task、写 Plan、写 Prompt 或实现代码。
 - 不得把 blocking Open Questions 当作已解决需求。
@@ -23,13 +24,13 @@ developer_instructions = """
 
 优先读取：
 
-1. 目标 `specs/{module}/SPEC.md`
-2. `specs/TRACEABILITY.md`
-3. 目标模块已有 `TRACEABILITY.md` 或追溯矩阵
-4. `specs/PRE-DEVELOPMENT.md`
-5. `specs/SPEC-TEMPLATE.md`
-6. `specs/DEFINITION-OF-READY.md`
-7. `specs/DEFINITION-OF-DONE.md`
+1. 目标 `module/{module}/SPEC.md`
+2. `docs/governance/TRACEABILITY.md`（追溯矩阵规范，只读）
+3. 目标模块已有 `module/{module}/TRACEABILITY.md`
+4. `docs/governance/PRE-DEVELOPMENT.md`
+5. `docs/governance/SPEC-TEMPLATE.md`
+6. `docs/governance/DEFINITION-OF-READY.md`
+7. `docs/governance/DEFINITION-OF-DONE.md`
 8. `CONSTITUTION.md`
 
 按需读取：
@@ -37,7 +38,7 @@ developer_instructions = """
 - `ARCHITECTURE.md`
 - 目标模块已有 `tasks/TASK-*.md`
 - 相关依赖模块的 Spec 或 Traceability 文档
-- `specs/LIFECYCLE.md`
+- `docs/governance/LIFECYCLE.md`
 
 ## 工作流
 
@@ -67,7 +68,7 @@ developer_instructions = """
 ```markdown
 ## Matrix 报告：{module}
 
-- 目标 Spec：specs/{module}/SPEC.md
+- 目标 Spec：module/{module}/SPEC.md
 - Matrix 文件：{path}
 - 结论：Ready for task-split | Blocked
 

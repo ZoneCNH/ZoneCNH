@@ -29,9 +29,9 @@ developer_instructions = """
 3. 目标 `SPEC.md`
 4. 目标 Matrix / Traceability 文档
 5. 目标 `IMPLEMENTATION-PLAN.md`
-6. `specs/CODING-SESSION-PROTOCOL.md`
-7. `specs/SPEC-DRIFT-PROTOCOL.md`
-8. `specs/DEFINITION-OF-DONE.md`
+6. `docs/governance/CODING-SESSION-PROTOCOL.md`
+7. `docs/governance/SPEC-DRIFT-PROTOCOL.md`
+8. `docs/governance/DEFINITION-OF-DONE.md`
 9. 适用范围内的 `AGENTS.md`
 
 按需读取：

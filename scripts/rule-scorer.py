@@ -136,7 +136,7 @@ SPEC_REQUIRED_SECTIONS = [
 
 def score_spec(module: str) -> Score:
     s = Score()
-    spec_path = ROOT / "specs" / module / "SPEC.md"
+    spec_path = ROOT / "module" / module / "SPEC.md"
     text = read(spec_path)
     if text is None:
         s.flag_redline("spec_missing", f"未找到 {spec_path.relative_to(ROOT)}")
@@ -219,8 +219,8 @@ def _section_body(text: str, heading: str) -> str:
 def score_matrix(module: str) -> Score:
     s = Score()
     candidates = [
-        ROOT / "specs" / module / "TRACEABILITY.md",
-        ROOT / "specs" / module / "MATRIX.md",
+        ROOT / "module" / module / "TRACEABILITY.md",
+        ROOT / "module" / module / "MATRIX.md",
     ]
     path = next((p for p in candidates if p.exists()), None)
     if path is None:
@@ -230,7 +230,7 @@ def score_matrix(module: str) -> Score:
         return s
 
     text = read(path) or ""
-    spec_text = read(ROOT / "specs" / module / "SPEC.md") or ""
+    spec_text = read(ROOT / "module" / module / "SPEC.md") or ""
 
     fr_in_spec = set(re.findall(r"\bFR-\d{3}\b", spec_text))
     fr_in_matrix = set(re.findall(r"\bFR-\d{3}\b", text))
@@ -278,7 +278,7 @@ def score_matrix(module: str) -> Score:
 
 def score_tasks(module: str) -> Score:
     s = Score()
-    tasks_dir = ROOT / "specs" / module / "tasks"
+    tasks_dir = ROOT / "module" / module / "tasks"
     if not tasks_dir.exists() or not tasks_dir.is_dir():
         s.flag_redline("tasks_dir_missing", f"未找到 {tasks_dir.relative_to(ROOT)}")
         s.score = 0
@@ -291,7 +291,7 @@ def score_tasks(module: str) -> Score:
         s.score = 0
         return s
 
-    spec_text = read(ROOT / "specs" / module / "SPEC.md") or ""
+    spec_text = read(ROOT / "module" / module / "SPEC.md") or ""
     fr_in_spec = set(re.findall(r"\bFR-\d{3}\b", spec_text))
     fr_covered_by_tasks: set[str] = set()
 
@@ -330,8 +330,8 @@ def score_tasks(module: str) -> Score:
 def score_plan(module: str) -> Score:
     s = Score()
     candidates = [
-        ROOT / "specs" / module / "IMPLEMENTATION-PLAN.md",
-        ROOT / "specs" / module / "PLAN.md",
+        ROOT / "module" / module / "IMPLEMENTATION-PLAN.md",
+        ROOT / "module" / module / "PLAN.md",
     ]
     path = next((p for p in candidates if p.exists()), None)
     if path is None:
@@ -366,7 +366,7 @@ def score_plan(module: str) -> Score:
 
 def score_prompt(module: str) -> Score:
     s = Score()
-    candidates = sorted((ROOT / "specs" / module).glob("TASK-*-PROMPT.md"))
+    candidates = sorted((ROOT / "module" / module).glob("TASK-*-PROMPT.md"))
     if not candidates:
         s.flag_redline("prompt_missing", "未找到 TASK-*-PROMPT.md")
         s.score = 0

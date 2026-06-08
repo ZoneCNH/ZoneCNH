@@ -1,7 +1,7 @@
 # kernel 规格结构性评估报告
 
 > 评估日期：2026-06-08
-> 评估范围：`specs/kernel/` 目录全部 15 个 .md 文件
+> 评估范围：`module/kernel/` 目录全部 15 个 .md 文件
 > 评估版本：SPEC v1.1.0
 
 ---
@@ -65,7 +65,7 @@ SPEC §15.1 的 go.mod 示例声明 `go 1.23`，而 TASK-001-PROMPT.md 的 go.mo
 
 #### M-01: TASK-001-PROMPT.md 是游离于任务体系之外的孤岛文件
 
-**位置**：`specs/kernel/TASK-001-PROMPT.md`
+**位置**：`module/kernel/TASK-001-PROMPT.md`
 
 该文件：
 - 不在 `tasks/` 子目录中，与 TASK-KERNEL-000~010 的组织结构不一致
@@ -220,7 +220,7 @@ TASK-KERNEL-007 修改 TASK-KERNEL-004 和 005 创建的文件（lifecycle.go、
 
 **优点**：
 - 11 个任务文件格式高度统一（YAML frontmatter + Requirements Covered + Test Plan + Implementation Notes）
-- 所有 spec_ref 引用使用一致的 `specs/kernel/SPEC.md#节号` 格式
+- 所有 spec_ref 引用使用一致的 `module/kernel/SPEC.md#节号` 格式
 
 **扣分**：
 - TASK-001-PROMPT.md 位于根目录而非 tasks/ 子目录，格式与任务文件不同

@@ -1,4 +1,4 @@
-# 14. Agent 协议
+# Agent 协议
 
 > 本文档从原 `advanced-operations.md` 拆分而来，聚焦于 Agent Team 协作、Worktree 隔离和 Context Recovery。
 

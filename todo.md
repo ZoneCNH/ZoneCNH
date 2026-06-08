@@ -9,8 +9,8 @@
 
 
 
-深度分析 .worktree/goal.md
-整理完整的goal 保存 docs/goal/
+深度分析  docs/goal/ ,存在哪些问题，结构性问题，打分
+报告保存 docs/report/goal/
 
 自动compact
 
@@ -21,7 +21,7 @@
 全局工作流
 
 
-specs/ 要完整迁移到 module/
+module/ 要完整迁移到 module/
 
 
 
@@ -52,6 +52,15 @@ docs/goal/
 goal 模块相关所有状态，统一 在.config/
 
 深度分析，goal还有哪些需要统一标准，统一规范
+
+
+
+/goal 深度分析 specs,要把 specs 完整迁移到 module/,以完整适配goal 规则
+
+
+
+
+docs/report
 
 
 

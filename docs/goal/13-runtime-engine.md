@@ -1,6 +1,6 @@
 # 运行引擎
 
-本文档定义 Goal 驱动交付的运行时机制。工作流和状态机的权威定义见 [03-pipeline.md#状态机](03-pipeline.md#2-状态机)，Gate 体系见 [04-gates.md#gate-类型](04-gates.md#1-gate-类型)，ID 系统见 [07-id-system.md#id-格式](07-id-system.md#1-id-格式)。
+本文档定义 Goal 驱动交付的运行时机制。工作流和状态机的权威定义见 [03-pipeline.md#双轴状态机](03-pipeline.md#2-双轴状态机)，Gate 体系见 [04-gates.md#gate-类型](04-gates.md#1-gate-类型)，ID 系统见 [07-id-system.md#id-格式](07-id-system.md#1-id-格式)。
 
 ---
 
@@ -23,11 +23,10 @@
 
 ### Lite Mode（CL0/CL1）
 
-```text
-包含：Goal → Plan → Tasks → Prompt → Code → Test → Review
-强制 Gate：Task Gate (G5)、Test Gate (G7)、Evidence Gate (G8)、Review Gate (G9)
-裁剪说明：Spec / Design 可合并进 Goal 或 Plan 说明；Release / Retrospective 可记录在 Review 结论中；Matrix 可选维护但始终是横切追溯制品，不作为阶段。
-```
+| 级别 | 适用场景 | 最小流程 | 强制 Gate | 裁剪说明 |
+|------|----------|----------|-----------|----------|
+| CL0 | 仅文档、注释或元数据修正，不改变行为、接口、Gate、状态机或可执行规则 | Goal → Plan → Docs Change → Evidence → Review | Evidence Gate (G8)、Review Gate (G9) | Spec / Design / Matrix 可省略；如修改治理规则、状态、模板、脚本或追溯协议，必须升为 CL1+ |
+| CL1 | 局部实现、规则或文档体系修正，不改变公共接口和跨模块契约 | Goal → Plan → Tasks → Prompt → Code → Test → Evidence → Review | Task Gate (G5)、Test Gate (G7)、Evidence Gate (G8)、Review Gate (G9) | Spec / Design 可合并进 Goal 或 Plan；当 AC / Test / Evidence 追溯发生变化时，Matrix 必须维护 |
 
 ### Standard Mode（CL2）
 
@@ -39,8 +38,8 @@
 ### Full Mode（CL3/CL4/CL5）
 
 ```text
-包含：Standard Mode 主流程 + Registry + State Machine + Human Approval Gate + Rollback Protocol + Change Propagation Matrix
-强制：ADR、Human Approval、Executable Gates、Release Manifest、Rollback
+包含：Standard Mode 主流程 + Registry + State Machine + Human Approval Check + Rollback Protocol + Change Propagation Matrix
+强制：ADR、Human Approval Check、Executable Gates、Release Manifest、Rollback
 ```
 
 ---
@@ -120,6 +119,7 @@ Priority Score
 ```text
 Evidence ID:     EVID-xxx
 Task ID:         TASK-xxx
+Test ID:         TEST-xxx
 Goal ID:         GOAL-xxx
 Date:            YYYY-MM-DD
 Status:          PASS / FAIL / PARTIAL
@@ -203,7 +203,7 @@ Follow-up:   [后续行动]
 
 ---
 
-## 7. 人工审批门禁
+## 7. 人工审批检查
 
 ### 需要人工确认的场景
 
@@ -219,18 +219,20 @@ Release Approval（发布审批）
 Rollback Execution（回滚执行）
 ```
 
-### 审批门禁（H-G1 ~ H-G8）
+### 审批检查（H-CHK1 ~ H-CHK8）
 
-| 门禁 | 名称                                  |
+H-CHK* 是人工审批检查项，不是独立 Gate 编号；阻塞和通过结论归属对应的 G9 Review Gate 或 G10 Release Gate 证据。
+
+| 检查项 | 名称                                  |
 | ---- | ------------------------------------- |
-| H-G1 | Spec Freeze Approval                  |
-| H-G2 | Design Review Approval                |
-| H-G3 | Public API Change Approval            |
-| H-G4 | Architecture Boundary Change Approval |
-| H-G5 | Migration Approval                    |
-| H-G6 | Risk Acceptance Approval              |
-| H-G7 | Release Approval                      |
-| H-G8 | Rollback Approval                     |
+| H-CHK1 | Spec Freeze Approval                  |
+| H-CHK2 | Design Review Approval                |
+| H-CHK3 | Public API Change Approval            |
+| H-CHK4 | Architecture Boundary Change Approval |
+| H-CHK5 | Migration Approval                    |
+| H-CHK6 | Risk Acceptance Approval              |
+| H-CHK7 | Release Approval                      |
+| H-CHK8 | Rollback Approval                     |
 
 ### 规则
 

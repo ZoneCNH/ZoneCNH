@@ -11,7 +11,7 @@ set -euo pipefail
 FAIL=0
 WARN=0
 REPO_ROOT="$(git rev-parse --show-toplevel)"
-SPEC_DIR="$REPO_ROOT/specs"
+SPEC_DIR="$REPO_ROOT/module"
 GLOSSARY="$REPO_ROOT/GLOSSARY.md"
 
 echo "=== Glossary Consistency Check ==="

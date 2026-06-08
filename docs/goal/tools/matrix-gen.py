@@ -26,7 +26,7 @@ REQ_ID_RE = re.compile(r"(?<![A-Za-z0-9-])REQ-SPEC-[A-Za-z0-9][A-Za-z0-9-]*-v\d+
 LEGACY_REQ_RE = re.compile(r"\bFR-\d{3}\b")
 TASK_ID_RE = re.compile(r"(?<![A-Za-z0-9-])TASK-GOAL-\d{8}-\d{3}-\d{3}\b")
 DEFAULT_GOAL_ID = "GOAL-20260608-001"
-DEFAULT_MATRIX_FILE = ".config/goal/matrix.yaml"
+DEFAULT_MATRIX_FILE = ".config/goal/matrix/matrix.yaml"
 
 
 def trailing_line_text(content: str, start: int) -> str:
@@ -113,8 +113,11 @@ def generate_matrix(requirements: list[dict], tasks: list[dict], goal_id: str = 
         lines.append(f"    requirement_id: {req['req_id']}")
         lines.append(f'    description: "{req["description"]}"')
         lines.append(f'    task_id: ""  # TODO: 如 TASK-GOAL-20260608-001-001')
+        lines.append(f"    acceptance_criteria: []  # TODO: 如 AC-{req['req_id']}-001")
         lines.append(f'    code_module: ""  # TODO: 填入代码模块')
         lines.append(f'    test_case: ""  # TODO: 如 TEST-TASK-GOAL-20260608-001-001-001')
+        lines.append(f'    prompt_id: ""  # TODO: 如 PROMPT-TASK-GOAL-20260608-001-001')
+        lines.append(f"    evidence_ids: []  # TODO: 如 EVID-TEST-TASK-GOAL-20260608-001-001-001-001")
         lines.append(f"    status: Unmapped")
         lines.append(f"    risk: Low")
         lines.append("")
@@ -129,8 +132,11 @@ def generate_matrix(requirements: list[dict], tasks: list[dict], goal_id: str = 
             lines.append(f'    requirement_id: ""')
             lines.append(f'    description: "孤儿 Task: {task["task_id"]}"')
             lines.append(f'    task_id: "{task["task_id"]}"')
+            lines.append(f"    acceptance_criteria: []")
             lines.append(f'    code_module: ""')
             lines.append(f'    test_case: ""')
+            lines.append(f'    prompt_id: ""')
+            lines.append(f"    evidence_ids: []")
             lines.append(f"    status: Unmapped")
             lines.append(f"    risk: Medium")
             lines.append("")
@@ -143,11 +149,12 @@ def check_matrix(matrix_file: str) -> dict:
     result = {
         "missing": False,
         "total": 0,
-        "mapped": 0,
-        "unmapped": 0,
+        "terminal": 0,
+        "non_terminal": 0,
         "missing_tasks": 0,
         "orphan_tasks": 0,
         "missing_tests": 0,
+        "dropped_without_reason": 0,
     }
 
     path = Path(matrix_file)
@@ -158,12 +165,16 @@ def check_matrix(matrix_file: str) -> dict:
 
     content = path.read_text(encoding="utf-8")
 
-    entries = re.findall(r"^[ \t]*-[ \t]*goal_id:", content, re.MULTILINE)
+    entries = [
+        entry
+        for entry in re.split(r"\n(?=[ \t]*-[ \t]*goal_id:)", content)
+        if re.search(r"^[ \t]*-[ \t]*goal_id:", entry, re.MULTILINE)
+    ]
     result["total"] = len(entries)
 
-    mapped = re.findall(r"status:\s*(Done|Implemented|Tested)", content)
-    result["mapped"] = len(mapped)
-    result["unmapped"] = result["total"] - result["mapped"]
+    terminal = re.findall(r"status:\s*(Verified|Dropped)\b", content)
+    result["terminal"] = len(terminal)
+    result["non_terminal"] = result["total"] - result["terminal"]
 
     missing_tasks = re.findall(r'task_id:\s*""', content)
     result["missing_tasks"] = len(missing_tasks)
@@ -173,6 +184,12 @@ def check_matrix(matrix_file: str) -> dict:
 
     empty_tests = re.findall(r'test_case:\s*""', content)
     result["missing_tests"] = len(empty_tests)
+
+    for entry in entries:
+        if re.search(r"status:\s*Dropped\b", entry) and not re.search(
+            r"drop_reason:\s*(?!\"\"|''|$).+", entry
+        ):
+            result["dropped_without_reason"] += 1
 
     return result
 
@@ -192,19 +209,25 @@ def main():
         result = check_matrix(matrix_file)
         print(f"Matrix 完整性检查:")
         print(f"  总行数:        {result['total']}")
-        print(f"  已完成:        {result['mapped']}")
-        print(f"  未完成:        {result['unmapped']}")
+        print(f"  已终态:        {result['terminal']}")
+        print(f"  未终态:        {result['non_terminal']}")
         print(f"  缺失 Task 映射: {result['missing_tasks']}")
         print(f"  孤儿 Task:     {result['orphan_tasks']}")
         print(f"  缺失测试覆盖:  {result['missing_tests']}")
+        print(f"  Dropped 缺原因: {result['dropped_without_reason']}")
 
         if result["missing"] or result["total"] == 0:
             sys.exit(1)
 
         if result['total'] > 0:
-            coverage = result['mapped'] * 100 // result['total']
+            coverage = result['terminal'] * 100 // result['total']
             print(f"  覆盖率:        {coverage}%")
-            if coverage < 70 or result["missing_tasks"] > 0 or result["missing_tests"] > 0:
+            if (
+                coverage < 95
+                or result["missing_tasks"] > 0
+                or result["missing_tests"] > 0
+                or result["dropped_without_reason"] > 0
+            ):
                 sys.exit(1)
         sys.exit(0)
 

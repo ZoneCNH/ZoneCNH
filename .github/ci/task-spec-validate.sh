@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # task-spec-validate.sh — 校验 Task Spec 的结构和一致性
 #
-# 校验规则（来源：specs/TASK-TEMPLATE.md）：
+# 校验规则（来源：docs/governance/TASK-TEMPLATE.md）：
 #   1. ID 唯一性：TASK-{MODULE}-{NNN} 格式，同模块内不重复
-#   2. spec_ref 有效：引用的 specs/*/SPEC.md#FR-xxx 存在
+#   2. spec_ref 有效：引用的 module/*/SPEC.md#FR-xxx 存在
 #   3. AC 覆盖：每个 task 至少有 1 条 acceptance_criteria
 #   4. 依赖无环：depends_on 不形成循环依赖
 #   5. 文件不冲突：同模块内不同 in_progress task 的 files 列表无交集
@@ -14,7 +14,7 @@ set -euo pipefail
 FAIL=0
 WARN=0
 REPO_ROOT="$(git rev-parse --show-toplevel)"
-SPEC_DIR="$REPO_ROOT/specs"
+SPEC_DIR="$REPO_ROOT/module"
 TASK_DATA_DIR="$SPEC_DIR/TASKS"
 
 echo "=== Task Spec Validate ==="
@@ -93,7 +93,7 @@ parse_tasks() {
       TASK_PRIORITY["$current_id"]="${BASH_REMATCH[1]// /}"
     elif [[ "$line" =~ ^[[:space:]]+status:[[:space:]]*(.+) ]]; then
       TASK_STATUS["$current_id"]="${BASH_REMATCH[1]// /}"
-    elif [[ "$line" =~ ^[[:space:]]+-[[:space:]]+\"?(specs/.+)\"?$ ]]; then
+    elif [[ "$line" =~ ^[[:space:]]+-[[:space:]]+\"?(module/.+)\"?$ ]]; then
       local ref="${BASH_REMATCH[1]//\"/}"
       TASK_SPECREFS["$current_id"]+="$ref"$'\n'
       TASK_FR_COUNT["$current_id"]=$(( ${TASK_FR_COUNT["$current_id"]} + 1 ))
@@ -149,8 +149,8 @@ for id in "${ALL_IDS[@]}"; do
   [[ -z "$task_refs" ]] && continue
   while IFS= read -r ref; do
     [[ -z "$ref" ]] && continue
-    # 解析 spec_ref 格式: specs/{module}/SPEC.md#FR-NNN
-    if [[ "$ref" =~ ^(specs/[^/]+/SPEC\.md)(#.*)?$ ]]; then
+    # 解析 spec_ref 格式: module/{module}/SPEC.md#FR-NNN
+    if [[ "$ref" =~ ^(module/[^/]+/SPEC\.md)(#.*)?$ ]]; then
       spec_path="${REPO_ROOT}/${BASH_REMATCH[1]}"
       if [[ ! -f "$spec_path" ]]; then
         add_error "spec_ref 文件不存在: $ref ($id)"

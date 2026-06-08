@@ -1,5 +1,5 @@
 name = "prompt-structural-score"
-description = "prompt 阶段产物结构评分子代理（Codex 平台）。读取 specs/scoring/RUBRIC-prompt.md 对 prompt 产物打 100 分，输出红线与扣分账本。只读。"
+description = "prompt 阶段产物结构评分子代理（Codex 平台）。读取 docs/governance/scoring/RUBRIC-prompt.md 对 prompt 产物打 100 分，输出红线与扣分账本。只读。"
 model = "gpt-5.5"
 model_reasoning_effort = "high"
 # pipeline_stage = "prompt-Score"
@@ -11,10 +11,10 @@ developer_instructions = """
 
 ## 必读
 
-- 评分方法论：specs/STRUCTURAL-SCORING.md
-- 本阶段 Rubric：specs/scoring/RUBRIC-prompt.md
-- 仲裁协议：specs/scoring/ARBITER-PROTOCOL.md
-- CONSTITUTION.md、specs/LIFECYCLE.md、specs/TRACEABILITY.md
+- 评分方法论：docs/governance/STRUCTURAL-SCORING.md
+- 本阶段 Rubric：docs/governance/scoring/RUBRIC-prompt.md
+- 仲裁协议：docs/governance/scoring/ARBITER-PROTOCOL.md
+- CONSTITUTION.md、docs/governance/LIFECYCLE.md、docs/governance/TRACEABILITY.md
 
 ## 输入
 
@@ -40,5 +40,5 @@ developer_instructions = """
 
 ## 受保护文件（宪法 §14.1）
 
-禁止读写或修改：specs/scoring/RUBRIC-*.md、specs/STRUCTURAL-SCORING.md、specs/scoring/ARBITER-PROTOCOL.md、.claude/agents/、.codex/agents/、.copilot/agents/、.omc/state/outer-metrics/、.omx/state/outer-metrics/、.omc/state/outer-metrics/、.omx/state/outer-metrics/、.copilot/state/outer-metrics/、CONSTITUTION.md。仅可读取；写入须走宪法 §14.3 RSI 流程（人类批准）。
+禁止读写或修改：docs/governance/scoring/RUBRIC-*.md、docs/governance/STRUCTURAL-SCORING.md、docs/governance/scoring/ARBITER-PROTOCOL.md、.claude/agents/、.codex/agents/、.copilot/agents/、.omc/state/outer-metrics/、.omx/state/outer-metrics/、.omc/state/outer-metrics/、.omx/state/outer-metrics/、.copilot/state/outer-metrics/、CONSTITUTION.md。仅可读取；写入须走宪法 §14.3 RSI 流程（人类批准）。
 """

@@ -8,20 +8,20 @@
 
 CI/CD 不只跑测试，还要验证交付物完整性。
 
-### CI Gates
+### CI Checks
 
-| Gate  | 名称                   | 检查内容     |
+| Check | 名称                   | 检查内容     |
 | ----- | ---------------------- | ------------ |
-| CI-G0 | Repository Cleanliness | 工作区干净   |
-| CI-G1 | Build                  | 编译通过     |
-| CI-G2 | Unit Tests             | 单元测试通过 |
-| CI-G3 | Integration Tests      | 集成测试通过 |
-| CI-G4 | Lint / Format          | 代码风格一致 |
-| CI-G5 | Architecture Rules     | 架构规则合规 |
-| CI-G6 | Docs Sync              | 文档同步     |
-| CI-G7 | Changelog Sync         | 变更日志同步 |
-| CI-G8 | Evidence Manifest      | 证据清单完整 |
-| CI-G9 | Release Manifest       | 发布清单完整 |
+| CI-CHK0 | Repository Cleanliness | 工作区干净   |
+| CI-CHK1 | Build                  | 编译通过     |
+| CI-CHK2 | Unit Tests             | 单元测试通过 |
+| CI-CHK3 | Integration Tests      | 集成测试通过 |
+| CI-CHK4 | Lint / Format          | 代码风格一致 |
+| CI-CHK5 | Architecture Rules     | 架构规则合规 |
+| CI-CHK6 | Docs Sync              | 文档同步     |
+| CI-CHK7 | Changelog Sync         | 变更日志同步 |
+| CI-CHK8 | Evidence Manifest      | 证据清单完整 |
+| CI-CHK9 | Release Manifest       | 发布清单完整 |
 
 ### 检查规则
 
@@ -148,7 +148,7 @@ Macro Data 不直接依赖 Market Data 内部实现
 Regime Engine 只消费标准化状态输入
 Storage 必须通过 interface 隔离
 Config 不使用隐式全局状态
-CI Gate 优先 Go 化
+CI Check 优先 Go 化
 Gate 规则不应长期散落 Python / Shell / Go 多语言实现，除非边界明确
 ```
 
@@ -190,18 +190,20 @@ Market Regime + Macro Regime → MxS Decision Matrix → Action Profile → Risk
 - 有 Traceability Matrix
 ```
 
-### 4.4 x.go 专用 Gate
+### 4.4 x.go 专用检查
 
-| Gate  | 名称                             |
+XG-CHK* 是 x.go 代码仓库的 CI 检查项，不是 Goal 体系的独立 Gate 编号；其结果应回填到对应的 G7 Test Gate、G8 Evidence Gate 或 G9 Review Gate。
+
+| 检查项 | 名称                             |
 | ----- | -------------------------------- |
-| XG-G1 | Module Boundary Gate             |
-| XG-G2 | No Fake Implementation Gate      |
-| XG-G3 | Config Example Gate              |
-| XG-G4 | Docs / CHANGELOG Gate            |
-| XG-G5 | Release Manifest Gate            |
-| XG-G6 | Go-first Gate for Internal Tools |
-| XG-G7 | Secrets Path Gate                |
-| XG-G8 | Issue Sync Gate                  |
+| XG-CHK1 | Module Boundary Check             |
+| XG-CHK2 | No Fake Implementation Check      |
+| XG-CHK3 | Config Example Check              |
+| XG-CHK4 | Docs / CHANGELOG Check            |
+| XG-CHK5 | Release Manifest Check            |
+| XG-CHK6 | Go-first Check for Internal Tools |
+| XG-CHK7 | Secrets Path Check                |
+| XG-CHK8 | Issue Sync Check                  |
 
 ### 4.5 Secrets 约束
 

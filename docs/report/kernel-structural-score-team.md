@@ -1,6 +1,6 @@
 # kernel Spec 结构性评估报告
 
-> 评估对象：`specs/kernel/` 目录全部文件
+> 评估对象：`module/kernel/` 目录全部文件
 > 评估日期：2026-06-08
 > 评估人：spec-analysis（Critic）
 
@@ -51,14 +51,14 @@ kernel spec 目录包含 SPEC.md（23 节完整规格，705 行）、IMPLEMENTAT
 
 | ID | 问题 | 位置 |
 |----|------|------|
-| D1-1 | **缺少 `specs/kernel/README.md`**：父目录 `specs/README.md` 有完整索引，但 kernel 子目录无本地 README。缺少快速入口点说明 kernel spec 包的文件清单、使用方式和导航 | `specs/kernel/` |
-| D1-2 | **`TASK-001-PROMPT.md` 命名不一致**：所有任务文件遵循 `TASK-KERNEL-XXX.md` 命名，唯独此文件名为 `TASK-001-PROMPT.md`，且使用后缀 `-PROMPT` 而非纯任务名 | `specs/kernel/TASK-001-PROMPT.md` |
+| D1-1 | **缺少 `module/kernel/README.md`**：父目录 `module/README.md` 有完整索引，但 kernel 子目录无本地 README。缺少快速入口点说明 kernel spec 包的文件清单、使用方式和导航 | `module/kernel/` |
+| D1-2 | **`TASK-001-PROMPT.md` 命名不一致**：所有任务文件遵循 `TASK-KERNEL-XXX.md` 命名，唯独此文件名为 `TASK-001-PROMPT.md`，且使用后缀 `-PROMPT` 而非纯任务名 | `module/kernel/TASK-001-PROMPT.md` |
 
 **💡 改进建议**
 
 | ID | 建议 |
 |----|------|
-| D1-3 | 考虑添加 `specs/kernel/INDEX.md`，作为 11 个 task 文件的快速索引（当前需遍历目录才能了解全貌） |
+| D1-3 | 考虑添加 `module/kernel/INDEX.md`，作为 11 个 task 文件的快速索引（当前需遍历目录才能了解全貌） |
 
 ---
 
@@ -66,7 +66,7 @@ kernel spec 目录包含 SPEC.md（23 节完整规格，705 行）、IMPLEMENTAT
 
 **✅ 优点**
 - 11 个 task 文件严格遵循统一模板：YAML frontmatter → Requirements Covered → Test Plan → Implementation Notes
-- SPEC.md 遵循 `specs/README.md` 定义的 23 节模板
+- SPEC.md 遵循 `module/README.md` 定义的 23 节模板
 - TRACEABILITY.md 使用统一的 6 列表格（Requirement / Description / AC / TC / Task / Status）
 - 所有文件使用中文描述，英文保留给仓库名、模块名和技术术语
 
@@ -90,7 +90,7 @@ kernel spec 目录包含 SPEC.md（23 节完整规格，705 行）、IMPLEMENTAT
 **✅ 优点**
 - **追溯矩阵零缺口**：5 FR / 9 BR / 8 AC / 18 TC 全部有覆盖，Coverage Summary 表验证无 gap
 - Traceability Rules Verification 全部勾选 ✅
-- 所有 task 文件的 `spec_ref` 字段正确指向 `specs/kernel/SPEC.md#§编号`
+- 所有 task 文件的 `spec_ref` 字段正确指向 `module/kernel/SPEC.md#§编号`
 - IMPLEMENTATION-PLAN 的 DAG 与 task 文件的 `depends_on` 一致（全部 11 个 task 引用匹配）
 - task 文件的 Requirements Covered 表正确引用 FR/BR 编号
 - task 文件的 Test Plan 正确引用 TC 编号
@@ -122,7 +122,7 @@ kernel spec 目录包含 SPEC.md（23 节完整规格，705 行）、IMPLEMENTAT
 
 | ID | 问题 | 位置 |
 |----|------|------|
-| D4-1 | **TASK-001-PROMPT.md 定位模糊**：它是 TASK-KERNEL-000 的可执行 prompt（内容完全对应 000 的 scope），但放在根目录而非 tasks/ 子目录，且命名不一致。其余 10 个 task 没有对应的 PROMPT 文件 | `specs/kernel/TASK-001-PROMPT.md` |
+| D4-1 | **TASK-001-PROMPT.md 定位模糊**：它是 TASK-KERNEL-000 的可执行 prompt（内容完全对应 000 的 scope），但放在根目录而非 tasks/ 子目录，且命名不一致。其余 10 个 task 没有对应的 PROMPT 文件 | `module/kernel/TASK-001-PROMPT.md` |
 | D4-2 | **IMPLEMENTATION-PLAN 与 task 文件内容部分重叠**：plan 的"实现顺序"表和 task 的 `depends_on` + `estimated_effort` 描述同一信息，维护时需同步两处 | `IMPLEMENTATION-PLAN.md:28-40` vs `tasks/*.md` |
 
 **💡 改进建议**
@@ -161,7 +161,7 @@ kernel spec 目录包含 SPEC.md（23 节完整规格，705 行）、IMPLEMENTAT
 ### 6. SPEC 质量（9/10）
 
 **✅ 优点**
-- **23 节结构完整**：从 §1 Metadata 到 §23 Open Questions，严格遵循 specs/README.md 模板
+- **23 节结构完整**：从 §1 Metadata 到 §23 Open Questions，严格遵循 module/README.md 模板
 - **WHEN/THEN 语义清晰**：FR-001~FR-005 每个都覆盖了正常路径、异常路径和边界路径（共 17 个 WHEN/THEN 子句）
 - **Business Rules 完备**：9 条规则全部有"违反时"处理说明（BR-001~BR-009）
 - **Edge Cases 深入**：21 个边界场景，覆盖并发、空状态、panic、超时、死锁等
@@ -208,7 +208,7 @@ kernel spec 目录包含 SPEC.md（23 节完整规格，705 行）、IMPLEMENTAT
 ### 8. 可维护性（8/10）
 
 **✅ 优点**
-- **目录结构清晰**：`specs/kernel/` + `specs/kernel/tasks/` 二级结构
+- **目录结构清晰**：`module/kernel/` + `module/kernel/tasks/` 二级结构
 - **命名规范一致**：TASK-KERNEL-{NNN}.md 格式，三位数编号
 - **文件粒度合理**：task 文件平均 60 行（53~72 行），易于 AI 代理单次读取
 - **SPEC.md 有变更历史**：§1.1 记录了 v1.0.0 → v1.1.0 的变更内容
@@ -236,7 +236,7 @@ kernel spec 目录包含 SPEC.md（23 节完整规格，705 行）、IMPLEMENTAT
 |--------|----|------|------|--------|
 | P1 | D3-1 | AC 编号体系不统一，AC-NEW-XX 未进入追溯矩阵 | 追溯盲区，可能导致 task 级 AC 被遗漏 | 中（更新 TRACEABILITY.md） |
 | P1 | D8-2 | go.mod Go 版本 1.23 vs 1.24 不一致 | 开发者困惑，可能导致编译问题 | 小（改一处数字） |
-| P2 | D1-1 | 缺少 specs/kernel/README.md | 新人/代理无法快速了解 spec 包结构 | 小（新建一个文件） |
+| P2 | D1-1 | 缺少 module/kernel/README.md | 新人/代理无法快速了解 spec 包结构 | 小（新建一个文件） |
 | P2 | D4-1 | TASK-001-PROMPT.md 命名和位置不一致 | 文件组织混乱 | 小（移文件+重命名） |
 | P2 | D7-1 | DAG 树形图不准确表示多父依赖 | 误导开发顺序理解 | 中（改用 Mermaid） |
 | P2 | D7-2 | Phase 缺少退出标准 | Phase 间质量门不明确 | 中（为 9 个 Phase 补标准） |

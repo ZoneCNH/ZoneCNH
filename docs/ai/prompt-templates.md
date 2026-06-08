@@ -12,7 +12,7 @@ Status: Approved
 用于让 AI 审查 spec 是否可以进入开发。
 
 ```markdown
-请 review specs/<module>/SPEC.md。
+请 review module/<module>/SPEC.md。
 
 重点检查：
 - 是否有模糊需求（参考 docs/ai/prompt-templates.md §9 模糊词替换表）
@@ -44,7 +44,7 @@ Status: Approved
 用于让 AI 把一个 Feature Spec 拆成可执行的 Task。
 
 ```markdown
-请根据 specs/<module>/SPEC.md 生成 implementation tasks。
+请根据 module/<module>/SPEC.md 生成 implementation tasks。
 
 要求：
 - 每个 task 控制在 200 行代码以内
@@ -73,10 +73,10 @@ Status: Approved
 用于让 AI 实现单个模块。
 
 ```markdown
-请实现 specs/<module>/SPEC.md 中定义的模块。
+请实现 module/<module>/SPEC.md 中定义的模块。
 
 上下文：
-- Spec: specs/<module>/SPEC.md
+- Spec: module/<module>/SPEC.md
 - Architecture: ARCHITECTURE.md
 - Constitution: CONSTITUTION.md
 - Agent Rules: docs/ai/agent-rules.md
@@ -107,7 +107,7 @@ Status: Approved
 ```markdown
 请根据以下文件检查当前实现是否符合 spec：
 
-- specs/<module>/SPEC.md
+- module/<module>/SPEC.md
 - docs/ai/agent-rules.md
 - CONSTITUTION.md
 
@@ -183,7 +183,7 @@ Status: Approved
 用于让 AI 检查 spec 质量。
 
 ```markdown
-请对 specs/<module>/SPEC.md 做一次 Spec Lint。
+请对 module/<module>/SPEC.md 做一次 Spec Lint。
 
 检查规则：
 1. 每个 Functional Requirement 必须有编号（FR-xxx）
@@ -214,7 +214,7 @@ Status: Approved
 用于让 AI 检查需求追踪完整性。
 
 ```markdown
-请检查 specs/TRACEABILITY.md 的完整性。
+请检查 docs/governance/TRACEABILITY.md 的完整性。
 
 验证：
 1. 每个 FR/BR 是否有对应的 AC

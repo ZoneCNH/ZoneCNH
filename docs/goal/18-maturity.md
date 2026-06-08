@@ -97,7 +97,7 @@
 
 必须做到：
 - Agent 能自动完成 Context Recovery → Task → Evidence → Review
-- 人类只在 Human Approval Gate 做决策
+- 人类只在 Human Approval Check 做决策，结论回填为 G9 Review Gate 或 G10 Release Gate 证据
 - Agent 能自动触发 AutoResearch
 - Agent 能自动检测异常状态并降级
 

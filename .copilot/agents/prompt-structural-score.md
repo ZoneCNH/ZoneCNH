@@ -1,6 +1,6 @@
 ---
 name: prompt-structural-score
-description: prompt 阶段产物结构评分者（Copilot 平台）。读取 specs/scoring/RUBRIC-prompt.md 对 prompt 产物打 100 分。只读。
+description: prompt 阶段产物结构评分者（Copilot 平台）。读取 docs/governance/scoring/RUBRIC-prompt.md 对 prompt 产物打 100 分。只读。
 platform: copilot
 pipeline_stage: prompt-Score
 pipeline_role: scorer
@@ -13,10 +13,10 @@ pipeline_gate: composite_score >= 98 且无红线、无 LLM 低置信度、LLM �
 
 ## 必读
 
-- `specs/STRUCTURAL-SCORING.md`
-- `specs/scoring/RUBRIC-prompt.md`
-- `specs/scoring/ARBITER-PROTOCOL.md`
-- `CONSTITUTION.md`、`specs/LIFECYCLE.md`、`specs/TRACEABILITY.md`
+- `docs/governance/STRUCTURAL-SCORING.md`
+- `docs/governance/scoring/RUBRIC-prompt.md`
+- `docs/governance/scoring/ARBITER-PROTOCOL.md`
+- `CONSTITUTION.md`、`docs/governance/LIFECYCLE.md`、`docs/governance/TRACEABILITY.md`
 
 ## 输入
 
@@ -34,4 +34,4 @@ pipeline_gate: composite_score >= 98 且无红线、无 LLM 低置信度、LLM �
 
 ## 受保护文件（宪法 §14.1）
 
-禁止读写或修改：`specs/scoring/RUBRIC-*.md`、`specs/STRUCTURAL-SCORING.md`、`specs/scoring/ARBITER-PROTOCOL.md`、`.claude/agents/`、`.codex/agents/`、`.copilot/agents/`、`.omc/state/outer-metrics/`、`.omx/state/outer-metrics/`、`.copilot/state/outer-metrics/`、`CONSTITUTION.md`。仅可读取；写入须走宪法 §14.3 RSI 流程（人类批准）。
+禁止读写或修改：`docs/governance/scoring/RUBRIC-*.md`、`docs/governance/STRUCTURAL-SCORING.md`、`docs/governance/scoring/ARBITER-PROTOCOL.md`、`.claude/agents/`、`.codex/agents/`、`.copilot/agents/`、`.omc/state/outer-metrics/`、`.omx/state/outer-metrics/`、`.copilot/state/outer-metrics/`、`CONSTITUTION.md`。仅可读取；写入须走宪法 §14.3 RSI 流程（人类批准）。

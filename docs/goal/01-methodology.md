@@ -1,6 +1,6 @@
 # 核心方法论
 
-> **ID 格式说明**：本文档使用新格式 ID（如 GOAL-YYYYMMDD-NNN、SPEC-domain-v1.0），详见 [07-id-system.md#id-格式](07-id-system.md#1-id-格式)。
+> **ID 格式说明**：本文档使用新格式 ID（如 GOAL-YYYYMMDD-NNN、SPEC-domain-v1），详见 [07-id-system.md#id-格式](07-id-system.md#1-id-格式)。
 
 ## 1. 工作流定位
 
@@ -16,7 +16,7 @@
 
 这条链路的关键不是"写文档"，而是建立一套 **可追踪、可验证、可执行、可复用** 的交付系统。
 
-> 完整 11 层管线定义见 [03-pipeline.md §1](03-pipeline.md#1-完整管线)，状态机见 [03-pipeline.md §2](03-pipeline.md#2-状态机)。
+> 完整 11 层管线定义见 [03-pipeline.md §1](03-pipeline.md#1-完整管线)，状态机见 [03-pipeline.md §2](03-pipeline.md#2-双轴状态机)。
 
 ## 3. Goal 的输入
 
@@ -92,7 +92,7 @@ Code Contract:    告诉 Review 和 Release 代码满足了哪些目标、测试
 
 ```text
 GOAL-20260608-001 Goal
-  ├── SPEC-auth-v1.0 Spec
+  ├── SPEC-auth-v1 Spec
   │     ├── REQ-SPEC-auth-001 Requirement
   │     │     ├── TASK-GOAL-20260608-001-001 Task
   │     │     │     ├── PROMPT-TASK-GOAL-20260608-001-001-001 Prompt
@@ -140,7 +140,7 @@ GOAL → SPEC → REQ → AC → TC
 最终闭环：
 
 ```text
-Goal → Spec → Requirement → Task → Prompt → Code → Test → Acceptance Criteria → Goal
+Goal → Spec → Requirement → Acceptance Criteria → Task → Prompt → Code → Test → Evidence → Goal
 ```
 
 ## 8. 反馈闭环

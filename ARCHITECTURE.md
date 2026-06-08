@@ -106,29 +106,29 @@ Foundation 6 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中�
 | [`module/FOUNDATION-DEPS.yaml`](./module/FOUNDATION-DEPS.yaml) | 机器可读依赖矩阵，CI 可消费 |
 | [`module/ADR-foundationx-exit.md`](./module/ADR-foundationx-exit.md) | ADR：foundationx 兼容退出计划 |
 | [`module/FOUNDATION-TRACKER.md`](./module/FOUNDATION-TRACKER.md) | 执行跟踪器 — P0/P1/P2 Issue 检查清单 |
-| [`CONSTITUTION.md`](./CONSTITUTION.md) | 模块宪法 — 16 个基座模块最高治理文件，AI 代理和人类贡献者的权威参考 |
+| [`CONSTITUTION.md`](./CONSTITUTION.md) | 系统宪法 — FoundationX 全系统最高治理文件，覆盖模块实现与交付管线 |
 
-16 个基座模块的独立完整规格，加上 x.go 组合根规格（共 17 份，均为 23 节结构：行为规格 WHEN/THEN、接口契约、业务规则、错误处理、边界场景、验收标准、目录结构、CI Gate、测试矩阵、性能预算、可观测输出、发布 DoD），按架构层级组织。完整索引见 [`specs/README.md`](./specs/README.md)。16 个基座模块与 x.go 均已完成 23 节结构升级。
+16 个基座模块的独立完整规格，加上 x.go 组合根规格（共 17 份，均为 23 节结构：行为规格 WHEN/THEN、接口契约、业务规则、错误处理、边界场景、验收标准、目录结构、CI Gate、测试矩阵、性能预算、可观测输出、发布 DoD），按架构层级组织。完整索引见 [`module/README.md`](./module/README.md)。16 个基座模块与 x.go 均已完成 23 节结构升级。
 
 | 层级 | 模块 | 完整规格 |
 |------|------|----------|
-| **L0 原语** | kernel | [`specs/kernel/SPEC.md`](./specs/kernel/SPEC.md) |
-| **L1 运行时** | configx | [`specs/configx/SPEC.md`](./specs/configx/SPEC.md) |
-| | observex | [`specs/observex/SPEC.md`](./specs/observex/SPEC.md) |
-| | resiliencx | [`specs/resiliencx/SPEC.md`](./specs/resiliencx/SPEC.md) |
-| | schedulex | [`specs/schedulex/SPEC.md`](./specs/schedulex/SPEC.md) |
-| **L1 测试** | testkitx | [`specs/testkitx/SPEC.md`](./specs/testkitx/SPEC.md) |
-| **门禁** | xlib-standard | [`specs/xlib-standard/SPEC.md`](./specs/xlib-standard/SPEC.md) |
-| | xlibgate | [`specs/xlibgate/SPEC.md`](./specs/xlibgate/SPEC.md) |
-| **存储扩展** | redisx | [`specs/redisx/SPEC.md`](./specs/redisx/SPEC.md) |
-| | kafkax | [`specs/kafkax/SPEC.md`](./specs/kafkax/SPEC.md) |
-| | natsx | [`specs/natsx/SPEC.md`](./specs/natsx/SPEC.md) |
-| | postgresx | [`specs/postgresx/SPEC.md`](./specs/postgresx/SPEC.md) |
-| | taosx | [`specs/taosx/SPEC.md`](./specs/taosx/SPEC.md) |
-| | ossx | [`specs/ossx/SPEC.md`](./specs/ossx/SPEC.md) |
-| | clickhousex | [`specs/clickhousex/SPEC.md`](./specs/clickhousex/SPEC.md) |
-| **契约** | contracts | [`specs/contracts/SPEC.md`](./specs/contracts/SPEC.md) |
-| **组合根** | x.go | [`specs/xgo/SPEC.md`](./specs/xgo/SPEC.md) |
+| **L0 原语** | kernel | [`module/kernel/SPEC.md`](./module/kernel/SPEC.md) |
+| **L1 运行时** | configx | [`module/configx/SPEC.md`](./module/configx/SPEC.md) |
+| | observex | [`module/observex/SPEC.md`](./module/observex/SPEC.md) |
+| | resiliencx | [`module/resiliencx/SPEC.md`](./module/resiliencx/SPEC.md) |
+| | schedulex | [`module/schedulex/SPEC.md`](./module/schedulex/SPEC.md) |
+| **L1 测试** | testkitx | [`module/testkitx/SPEC.md`](./module/testkitx/SPEC.md) |
+| **门禁** | xlib-standard | [`module/xlib-standard/SPEC.md`](./module/xlib-standard/SPEC.md) |
+| | xlibgate | [`module/xlibgate/SPEC.md`](./module/xlibgate/SPEC.md) |
+| **存储扩展** | redisx | [`module/redisx/SPEC.md`](./module/redisx/SPEC.md) |
+| | kafkax | [`module/kafkax/SPEC.md`](./module/kafkax/SPEC.md) |
+| | natsx | [`module/natsx/SPEC.md`](./module/natsx/SPEC.md) |
+| | postgresx | [`module/postgresx/SPEC.md`](./module/postgresx/SPEC.md) |
+| | taosx | [`module/taosx/SPEC.md`](./module/taosx/SPEC.md) |
+| | ossx | [`module/ossx/SPEC.md`](./module/ossx/SPEC.md) |
+| | clickhousex | [`module/clickhousex/SPEC.md`](./module/clickhousex/SPEC.md) |
+| **契约** | contracts | [`module/contracts/SPEC.md`](./module/contracts/SPEC.md) |
+| **组合根** | x.go | [`module/xgo/SPEC.md`](./module/xgo/SPEC.md) |
 
 ### 规格体系与治理文档
 
@@ -141,15 +141,15 @@ Foundation 6 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中�
 | [`docs/ai/prompt-templates.md`](./docs/ai/prompt-templates.md) | Prompt 模板 — 审查、拆分、实现、自查、修复 |
 | [`docs/ai/code-review-rules.md`](./docs/ai/code-review-rules.md) | 代码审查规则 — AI 代理审查标准和流程 |
 | [`GLOSSARY.md`](./GLOSSARY.md) | 术语表 — 系统核心概念和缩写定义 |
-| [`specs/DEFINITION-OF-READY.md`](./specs/DEFINITION-OF-READY.md) | Spec Ready — spec 可以进入开发的前置条件 |
-| [`specs/DEFINITION-OF-DONE.md`](./specs/DEFINITION-OF-DONE.md) | Spec Done — 模块实现完成的验收条件 |
-| [`specs/TRACEABILITY.md`](./specs/TRACEABILITY.md) | 需求追踪 — FR → AC → TC → 实现全覆盖 |
-| [`specs/anti-requirements.md`](./specs/anti-requirements.md) | 反需求 — 明确不做之事，防止范围蔓延 |
+| [`docs/governance/DEFINITION-OF-READY.md`](./docs/governance/DEFINITION-OF-READY.md) | Spec Ready — spec 可以进入开发的前置条件 |
+| [`docs/governance/DEFINITION-OF-DONE.md`](./docs/governance/DEFINITION-OF-DONE.md) | Spec Done — 模块实现完成的验收条件 |
+| [`docs/governance/TRACEABILITY.md`](./docs/governance/TRACEABILITY.md) | 需求追踪 — FR → AC → TC → 实现全覆盖 |
+| [`docs/governance/anti-requirements.md`](./docs/governance/anti-requirements.md) | 反需求 — 明确不做之事，防止范围蔓延 |
 | [`module/ADR-TEMPLATE.md`](./module/ADR-TEMPLATE.md) | ADR 模板 — 架构决策记录标准格式 |
-| [`specs/TASK-TEMPLATE.md`](./specs/TASK-TEMPLATE.md) | Task 模板 — AI 代理任务拆分标准格式 |
-| [`specs/LIFECYCLE.md`](./specs/LIFECYCLE.md) | 规格生命周期 — 六态状态机、流转规则、CI 集成 |
-| [`specs/SPEC-TEMPLATE.md`](./specs/SPEC-TEMPLATE.md) | 23 节结构模板 — 新建模块规格时复制本文件 |
-| [`specs/AGENT-SPEC-TEMPLATE.md`](./specs/AGENT-SPEC-TEMPLATE.md) | Agent Spec 模板 — 五层规格体系第五层，AI 代理角色/约束/协作 |
+| [`docs/governance/TASK-TEMPLATE.md`](./docs/governance/TASK-TEMPLATE.md) | Task 模板 — AI 代理任务拆分标准格式 |
+| [`docs/governance/LIFECYCLE.md`](./docs/governance/LIFECYCLE.md) | 规格生命周期 — 六态状态机、流转规则、CI 集成 |
+| [`docs/governance/SPEC-TEMPLATE.md`](./docs/governance/SPEC-TEMPLATE.md) | 23 节结构模板 — 新建模块规格时复制本文件 |
+| [`docs/governance/AGENT-SPEC-TEMPLATE.md`](./docs/governance/AGENT-SPEC-TEMPLATE.md) | Agent Spec 模板 — 五层规格体系第五层，AI 代理角色/约束/协作 |
 
 ## Foundation 第一阶段闭环
 
@@ -352,7 +352,8 @@ Foundation 6 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中�
 | **Rust**              |                                                                 |        |           |          |                                                                                           |
 | Rust                  | [stdlib.rs](https://github.com/ZoneCNH/stdlib.rs)               | -      | ✅ 已有   | -        | Rust 标准库                                                                               |
 | **独立**              |                                                                 |        |           |          |                                                                                           |
-| 独立                  | [specs](https://github.com/ZoneCNH/specs)                       | -      | ✅ 已有   | -        | 项目技术规范与接口定义                                                                    |
+| 独立                  | [module](./module/README.md)                                    | -      | ✅ 已有   | -        | 项目技术规范、接口定义与 Goal 适配模块索引                                                |
+| 独立                  | [docs/governance](./docs/governance/README.md)                  | -      | ✅ 已有   | -        | Spec → Code 交付治理、模板、门禁与评分规则                                                |
 
 ## 建议实现顺序
 

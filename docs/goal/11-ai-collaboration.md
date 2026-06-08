@@ -65,12 +65,12 @@ Goal:
 GOAL-20260601-001 订单 CSV 导出，目标是让运营用户在 5 分钟内完成日报整理。
 
 Spec:
-SPEC-order-export-v1.0 订单导出功能。
+SPEC-order-export-v1 订单导出功能。
 
 Matrix Rows:
-- REQ-SPEC-order-export-v1.0-003: 生成 CSV 文件
-- REQ-SPEC-order-export-v1.0-004: CSV 字段顺序正确
-- REQ-SPEC-order-export-v1.0-005: 空数据时仍生成表头
+- REQ-SPEC-order-export-v1-003: 生成 CSV 文件
+- REQ-SPEC-order-export-v1-004: CSV 字段顺序正确
+- REQ-SPEC-order-export-v1-005: 空数据时仍生成表头
 
 Current Task:
 TASK-GOAL-20260601-001-004 实现 CsvExportService.generateOrderCsv()
@@ -149,13 +149,7 @@ PROMPT-...-007 Summarize  → 输出 PR 描述和 Matrix 更新建议
 
 ### Prompt 分层
 
-| Prompt 类型 | 作用 |
-|-------------|------|
-| Analysis Prompt | 分析需求和风险 |
-| Design Prompt | 设计方案和接口 |
-| Implementation Prompt | 生成代码 |
-| Test Prompt | 生成测试 |
-| Review Prompt | 检查代码是否满足 Matrix |
+> Prompt 分层标准（SSOT）见 [05-layer-standards.md §5 Prompt 分层](05-layer-standards.md#5-prompt-标准)。
 
 ---
 
@@ -263,14 +257,14 @@ Implementation Report:
 - src/export/ExportTaskService.ts
 
 2. Matrix Coverage
-- REQ-SPEC-order-export-v1.0-001: Covered
-- REQ-SPEC-order-export-v1.0-002: Covered
-- REQ-SPEC-order-export-v1.0-003: Partially Covered
+- REQ-SPEC-order-export-v1-001: Covered
+- REQ-SPEC-order-export-v1-002: Covered
+- REQ-SPEC-order-export-v1-003: Partially Covered
 
 3. Acceptance Criteria
-- AC-REQ-SPEC-export-v1-001-001: Passed
-- AC-REQ-SPEC-export-v1-002-001: Passed
-- AC-REQ-SPEC-export-v1-003-001: Missing test
+- AC-REQ-SPEC-order-export-v1-001-001: Passed
+- AC-REQ-SPEC-order-export-v1-002-001: Passed
+- AC-REQ-SPEC-order-export-v1-003-001: Missing test
 
 4. Tests Added
 - test_create_export_task_success

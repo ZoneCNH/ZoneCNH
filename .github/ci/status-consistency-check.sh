@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# status-consistency-check.sh — 校验 README / ARCHITECTURE / STATUS / specs 数量一致性
+# status-consistency-check.sh — 校验 README / ARCHITECTURE / STATUS / module 数量一致性
 #
 # 检查逻辑：
 #   1. 从 README.md 提取 market-data / macro-data / L2.5 / 分析域 / 决策域 / 横切 组件数量
 #   2. 从 ARCHITECTURE.md 提取相同指标
 #   3. 从 STATUS.md 提取 domain-level 统计表中的组件数量
-#   4. 从 specs/ 提取 Foundation + x.go 规格数量
+#   4. 从 module/ 提取 Foundation + x.go 规格数量
 #   5. 校验 STATUS 进度分布、版本覆盖与域统计合计
 #   6. 比对各方是否一致
 
@@ -13,7 +13,7 @@ set -euo pipefail
 
 FAIL=0
 REPO_ROOT="$(git rev-parse --show-toplevel)"
-SPEC_DIR="$REPO_ROOT/specs"
+SPEC_DIR="$REPO_ROOT/module"
 
 echo "=== Status Consistency Check ==="
 echo ""
@@ -96,7 +96,7 @@ STATUS_VERSIONED=$(grep -oP '版本覆盖:\s*有版本号\s*\K[0-9]+' "$REPO_ROO
 STATUS_UNVERSIONED=$(grep -oP '版本覆盖:.*无版本号\s*\K[0-9]+' "$REPO_ROOT/STATUS.md" | head -1)
 STATUS_DOMAIN_VERSIONED=$(awk -F'|' '/^\| \*\*合计/ {gsub(/[^0-9]/, "", $7); print $7}' "$REPO_ROOT/STATUS.md")
 
-# 从 specs/ 提取规格数量：Foundation 16 + x.go 组合根 1
+# 从 module/ 提取规格数量：Foundation 16 + x.go 组合根 1
 SPEC_COUNT=$(find "$SPEC_DIR" -mindepth 2 -maxdepth 2 -name SPEC.md | wc -l | tr -d ' ')
 XGO_SPEC_COUNT=$(find "$SPEC_DIR/xgo" -maxdepth 1 -name SPEC.md 2>/dev/null | wc -l | tr -d ' ')
 FOUNDATION_SPEC_COUNT=$((SPEC_COUNT - XGO_SPEC_COUNT))
@@ -149,7 +149,7 @@ check "组件总数 (ARCHITECTURE 表合计 vs STATUS)" "$ARCH_TOTAL" "$STATUS_T
 # 5. STATUS 组件总数行 vs 同步表
 check "STATUS (仪表盘总数 vs 同步表总计)" "$STATUS_TOTAL" "$STATUS_SYNC_TOTAL"
 
-# 6. specs/ 数量口径：Foundation 16 + x.go 组合根 1
+# 6. module/ 数量口径：Foundation 16 + x.go 组合根 1
 check "规格总数 (Foundation 16 + x.go)" "$SPEC_COUNT" "17"
 check "Foundation 规格数" "$FOUNDATION_SPEC_COUNT" "16"
 check "x.go 组合根规格数" "$XGO_SPEC_COUNT" "1"
@@ -171,7 +171,7 @@ if [[ $FAIL -ne 0 ]]; then
   echo "  1. 确保 README.md / ARCHITECTURE.md 中的 market-data (N) / macro-data (N) 数字与实际列表条目一致"
   echo "  2. 确保 STATUS.md 的「组件总数」和「文档同步检查」表中的数字一致"
   echo "  3. 确保 STATUS.md 的进度分布、版本覆盖与域统计合计一致"
-  echo "  4. 新增/删除规格时，同步更新 specs/README.md 与 Foundation/x.go 数量口径"
+  echo "  4. 新增/删除规格时，同步更新 module/README.md 与 Foundation/x.go 数量口径"
   echo "  5. 新增/删除组件时，同步更新三个文件中的所有引用"
   exit 1
 else

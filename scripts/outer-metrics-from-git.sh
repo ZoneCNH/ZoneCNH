@@ -32,7 +32,7 @@ OUTPUT="$ROOT/$STATE_BASE/outer-metrics/${MODULE}.json"
 cd "$ROOT"
 
 # 模块路径定位
-MODULE_DIR="specs/${MODULE}"
+MODULE_DIR="module/${MODULE}"
 if [[ ! -d "$MODULE_DIR" ]]; then
   echo "✗ 模块目录不存在: $MODULE_DIR" >&2
   exit 1

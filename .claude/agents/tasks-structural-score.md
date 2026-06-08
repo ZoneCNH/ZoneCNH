@@ -1,6 +1,6 @@
 ---
 name: tasks-structural-score
-description: tasks 阶段产物结构评分者。读取 specs/scoring/RUBRIC-tasks.md 对当前模块的 tasks 产物打 100 分，输出红线与扣分账本。只读，不修改任何产物。
+description: tasks 阶段产物结构评分者。读取 docs/governance/scoring/RUBRIC-tasks.md 对当前模块的 tasks 产物打 100 分，输出红线与扣分账本。只读，不修改任何产物。
 model: opus
 tools: ["Read", "Grep", "Glob", "Bash"]
 pipeline_stage: tasks-Score
@@ -15,10 +15,10 @@ pipeline_gate: composite_score >= 98 且无红线、无 LLM 低置信度、LLM �
 
 ## 必读
 
-- 评分方法论：`specs/STRUCTURAL-SCORING.md`
-- 本阶段 Rubric：`specs/scoring/RUBRIC-tasks.md`
-- 仲裁协议：`specs/scoring/ARBITER-PROTOCOL.md`
-- `CONSTITUTION.md`、`specs/LIFECYCLE.md`、`specs/TRACEABILITY.md`
+- 评分方法论：`docs/governance/STRUCTURAL-SCORING.md`
+- 本阶段 Rubric：`docs/governance/scoring/RUBRIC-tasks.md`
+- 仲裁协议：`docs/governance/scoring/ARBITER-PROTOCOL.md`
+- `CONSTITUTION.md`、`docs/governance/LIFECYCLE.md`、`docs/governance/TRACEABILITY.md`
 
 ## 输入
 
@@ -44,4 +44,4 @@ pipeline_gate: composite_score >= 98 且无红线、无 LLM 低置信度、LLM �
 
 ## 受保护文件（宪法 §14.1）
 
-禁止读写或修改：`specs/scoring/RUBRIC-*.md`、`specs/STRUCTURAL-SCORING.md`、`specs/scoring/ARBITER-PROTOCOL.md`、`.claude/agents/`、`.codex/agents/`、`.copilot/agents/`、`.omc/state/outer-metrics/`、`.omx/state/outer-metrics/`、`.omc/state/outer-metrics/`、`.omx/state/outer-metrics/`、`.copilot/state/outer-metrics/`、`CONSTITUTION.md`。仅可读取；写入须走宪法 §14.3 RSI 流程（人类批准）。
+禁止读写或修改：`docs/governance/scoring/RUBRIC-*.md`、`docs/governance/STRUCTURAL-SCORING.md`、`docs/governance/scoring/ARBITER-PROTOCOL.md`、`.claude/agents/`、`.codex/agents/`、`.copilot/agents/`、`.omc/state/outer-metrics/`、`.omx/state/outer-metrics/`、`.omc/state/outer-metrics/`、`.omx/state/outer-metrics/`、`.copilot/state/outer-metrics/`、`CONSTITUTION.md`。仅可读取；写入须走宪法 §14.3 RSI 流程（人类批准）。

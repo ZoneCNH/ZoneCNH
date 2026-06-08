@@ -32,7 +32,7 @@ spec
 
 ## Rules
 
-1. Resolve the module as `specs/{module}/`.
+1. Resolve the module as `module/{module}/`.
 2. Verify `SPEC.md` exists or create/revise it with the `spec` agent.
 3. **Every stage must pass team-scoring gate**: 3 LLM platforms (claude/codex/copilot) + 1 rule engine (`scripts/rule-scorer.py`) score in parallel; `pipeline-arbiter` enforces `composite_score = min(claude.score, codex.score, copilot.score, rules.score)`, `composite_score >= 98`, no redline, no LLM low confidence, bounded LLM score spread, and heterogeneous divergence ≤ 15. This is the only gate at every stage.
 4. After Spec stage gate passes, arbiter auto-flips SPEC.md to `Status: Approved`. No separate `spec-review` Go/No-Go required.
@@ -42,10 +42,10 @@ spec
 8. Generate one ready task prompt with `prompt-builder`; then prompt team-scoring + arbiter.
 9. Implement exactly one task with `task-executor`; then code team-scoring + arbiter.
 10. After every gate fail: auto-route back to current executor for repair. 3 fails in the same stage → auto-route to upstream stage. Default limits: `max_stage_attempts = 3`, `max_total_gate_failures = 18`.
-11. If the total failure budget is exhausted, write `pipeline_blocked` and `specs/{module}/PIPELINE-RETROSPECTIVE.md`; do not continue after budget exhaustion.
-12. Workflow self-improvement must be a meta-spec under `specs/workflow-improvement/{YYYYMMDD}-{slug}/SPEC.md`, pass the same 98-point pipeline, and obey `CONSTITUTION.md` §14 for protected files.
+11. If the total failure budget is exhausted, write `pipeline_blocked` and `module/{module}/PIPELINE-RETROSPECTIVE.md`; do not continue after budget exhaustion.
+12. Workflow self-improvement must be a meta-spec under `docs/governance/improvements/{YYYYMMDD}-{slug}/SPEC.md`, pass the same 98-point pipeline, and obey `CONSTITUTION.md` §14 for protected files.
 13. State directory: `.omc/state/pipeline/{module}/{stage}/{scores/,verdict.json,attempts.json}` plus top-level repair budget and blocked state.
-14. Reference: `specs/STRUCTURAL-SCORING.md`, `specs/scoring/ARBITER-PROTOCOL.md`, `specs/scoring/RUBRIC-*.md`.
+14. Reference: `docs/governance/STRUCTURAL-SCORING.md`, `docs/governance/scoring/ARBITER-PROTOCOL.md`, `docs/governance/scoring/RUBRIC-*.md`.
 
 ## Output
 

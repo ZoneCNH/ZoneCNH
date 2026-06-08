@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# spec-lint.sh — 校验 specs/*/SPEC.md 与特殊分析快照的结构完整性
+# spec-lint.sh — 校验 module/*/SPEC.md 与特殊分析快照的结构完整性
 #
 # 检查逻辑：
 #   1. 23 节检查：每个 spec 必须按序包含 ## 1. 到 ## 23.，其后允许 ## Appendix A: 附录
@@ -17,7 +17,7 @@ set -euo pipefail
 FAIL=0
 WARN=0
 REPO_ROOT="$(git rev-parse --show-toplevel)"
-SPEC_DIR="$REPO_ROOT/specs"
+SPEC_DIR="$REPO_ROOT/module"
 
 echo "=== Spec Lint ==="
 echo ""
@@ -272,7 +272,7 @@ check_xlib_standard_artifacts() {
   local missing=0
   for rel_file in "${required_files[@]}"; do
     if [[ ! -f "$xlib_dir/$rel_file" ]]; then
-      echo "  ❌ specs/xlib-standard/$rel_file is required for the analysis snapshot"
+      echo "  ❌ module/xlib-standard/$rel_file is required for the analysis snapshot"
       FAIL=1
       missing=1
     fi
@@ -292,30 +292,30 @@ check_xlib_standard_artifacts() {
   local snapshot_file
   for snapshot_file in README.md ANALYSIS.md INDEX.md analysis/rules.md analysis/template.md analysis/runtime.md analysis/governance.md; do
     if ! grep -qP '不是.*可执行规格|不.*声明.*可执行规格|不.*作为.*可执行规格' "$xlib_dir/$snapshot_file"; then
-      echo "  ❌ specs/xlib-standard/$snapshot_file must state that it is not an executable spec"
+      echo "  ❌ module/xlib-standard/$snapshot_file must state that it is not an executable spec"
       FAIL=1
     fi
   done
 
   if ! grep -qP 'Upstream Commit \| `[0-9a-f]{40}`' "$xlib_dir/README.md"; then
-    echo "  ❌ specs/xlib-standard/README.md must pin the upstream commit with a full 40-char sha"
+    echo "  ❌ module/xlib-standard/README.md must pin the upstream commit with a full 40-char sha"
     FAIL=1
   fi
 
   for rel_file in ANALYSIS.md FR-DETAIL.md TRACEABILITY.md; do
     if ! grep -q "$rel_file" "$xlib_dir/README.md"; then
-      echo "  ❌ specs/xlib-standard/README.md must list $rel_file as a current artifact"
+      echo "  ❌ module/xlib-standard/README.md must list $rel_file as a current artifact"
       FAIL=1
     fi
   done
 
   if [[ -f "$xlib_dir/SPEC.md" ]]; then
     if ! grep -qP 'SPEC\.md.*(旧|归档|历史)' "$xlib_dir/README.md"; then
-      echo "  ❌ specs/xlib-standard/README.md must classify SPEC.md as legacy/archived"
+      echo "  ❌ module/xlib-standard/README.md must classify SPEC.md as legacy/archived"
       FAIL=1
     fi
     if ! grep -qP '归档说明.*不再作为.*可执行规格' "$xlib_dir/SPEC.md"; then
-      echo "  ❌ specs/xlib-standard/SPEC.md must carry an archived/non-authoritative notice"
+      echo "  ❌ module/xlib-standard/SPEC.md must carry an archived/non-authoritative notice"
       FAIL=1
     fi
   fi
@@ -329,29 +329,29 @@ check_xlib_standard_artifacts() {
   detail_then_count=$(grep -cP '^THEN\b' "$fr_detail_file" || true)
 
   if [[ "$fr_detail_count" -ne 52 ]]; then
-    echo "  ❌ specs/xlib-standard/FR-DETAIL.md has $fr_detail_count FR detail blocks, expected 52"
+    echo "  ❌ module/xlib-standard/FR-DETAIL.md has $fr_detail_count FR detail blocks, expected 52"
     FAIL=1
   fi
   if [[ "$detail_when_count" -ne 104 ]]; then
-    echo "  ❌ specs/xlib-standard/FR-DETAIL.md has $detail_when_count WHEN clauses, expected 104"
+    echo "  ❌ module/xlib-standard/FR-DETAIL.md has $detail_when_count WHEN clauses, expected 104"
     FAIL=1
   fi
   if [[ "$detail_then_count" -ne 104 ]]; then
-    echo "  ❌ specs/xlib-standard/FR-DETAIL.md has $detail_then_count THEN clauses, expected 104"
+    echo "  ❌ module/xlib-standard/FR-DETAIL.md has $detail_then_count THEN clauses, expected 104"
     FAIL=1
   fi
 
   local trace_file="$xlib_dir/TRACEABILITY.md"
   if [[ -f "$trace_file" ]]; then
     if ! grep -qP '^\| FR \|.*\| 证据类型 \|' "$trace_file"; then
-      echo "  ❌ specs/xlib-standard/TRACEABILITY.md missing 证据类型 column"
+      echo "  ❌ module/xlib-standard/TRACEABILITY.md missing 证据类型 column"
       FAIL=1
     fi
 
     local fr_rows
     fr_rows=$(grep -cP '^\| `FR-[0-9]{3}` ' "$trace_file" || true)
     if [[ "$fr_rows" -ne 52 ]]; then
-      echo "  ❌ specs/xlib-standard/TRACEABILITY.md has $fr_rows FR rows, expected 52"
+      echo "  ❌ module/xlib-standard/TRACEABILITY.md has $fr_rows FR rows, expected 52"
       FAIL=1
     fi
 
@@ -383,7 +383,7 @@ check_xlib_standard_artifacts() {
       ' "$trace_file"
     )
     if [[ -n "$bad_types" ]]; then
-      echo "  ❌ specs/xlib-standard/TRACEABILITY.md has invalid evidence types:"
+      echo "  ❌ module/xlib-standard/TRACEABILITY.md has invalid evidence types:"
       echo "$bad_types" | sed 's/^/     - /'
       FAIL=1
     fi
@@ -419,7 +419,7 @@ check_xlib_standard_artifacts() {
   fi
 
   if [[ -f "$xlib_dir/README.md" ]] && grep -q 'Upstream Commit | `未固定`' "$xlib_dir/README.md"; then
-    echo "  ❌ specs/xlib-standard/README.md must pin the upstream commit"
+    echo "  ❌ module/xlib-standard/README.md must pin the upstream commit"
     FAIL=1
   fi
 

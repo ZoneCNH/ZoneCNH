@@ -71,6 +71,17 @@ P-LINT-009: Prompt 不能要求一次性实现多个无关任务
 P-LINT-010: Prompt 不能允许自行扩大范围
 ```
 
+### Prompt 质量标准映射
+
+| 质量标准 | 覆盖规则 |
+|----------|----------|
+| 不依赖猜测 | P-LINT-001、P-LINT-002、P-LINT-003、P-LINT-006 |
+| 不缺上下文 | P-LINT-001、P-LINT-003、P-LINT-004、P-LINT-007 |
+| 不省略约束 | P-LINT-003、P-LINT-004、P-LINT-005、P-LINT-007 |
+| 不混合多个目标 | P-LINT-002、P-LINT-009 |
+| 不产生无法验证的输出 | P-LINT-006、P-LINT-007 |
+| 不允许 AI 自行扩大范围 | P-LINT-008、P-LINT-010 |
+
 ---
 
 ## 5. Code Lint
@@ -91,8 +102,8 @@ C-LINT-005: PR 不能包含未关联 Task 的大规模代码改动
 
 | 层级 | 检查时机 | 自动化程度 |
 |------|----------|------------|
-| Goal Lint | Goal Review Gate 前 | 可半自动（关键词扫描） |
-| Spec Lint | Spec Review Gate 前 | 可半自动（结构检查） |
-| Matrix Lint | Matrix Review Gate 前 | 可全自动（覆盖关系检查） |
+| Goal Lint | G1 Goal Gate 前 | 可半自动（关键词扫描） |
+| Spec Lint | G2 Spec Gate 前 | 可半自动（结构检查） |
+| Matrix Lint | G5 Task Gate 前的 Matrix 覆盖检查 | 可全自动（覆盖关系检查） |
 | Prompt Lint | Prompt 生成后 | 可全自动（字段完整性） |
 | Code Lint | PR 提交时 | 可全自动（CI 集成） |

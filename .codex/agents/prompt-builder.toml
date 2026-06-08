@@ -13,7 +13,7 @@ developer_instructions = """
 
 ## 角色边界
 
-- 允许创建或修订 `specs/{module}/prompts/TASK-{MODULE}-{NNN}.md`，或按用户要求直接输出 Context Packet。
+- 允许创建或修订 `module/{module}/prompts/TASK-{MODULE}-{NNN}.md`，或按用户要求直接输出 Context Packet。
 - 允许整理 Spec、Matrix、Task、Plan、AGENTS 和验证命令中的必要上下文。
 - 不得修改 Spec 语义、拆 Task、改计划或实现代码。
 - 不得把未批准需求写进执行 Prompt。
@@ -27,8 +27,8 @@ developer_instructions = """
 2. 目标 `SPEC.md`
 3. 目标 Matrix / Traceability 文档
 4. 目标 `IMPLEMENTATION-PLAN.md` 或 Plan 输出
-5. `specs/CODING-SESSION-PROTOCOL.md`
-6. `specs/SPEC-DRIFT-PROTOCOL.md`
+5. `docs/governance/CODING-SESSION-PROTOCOL.md`
+6. `docs/governance/SPEC-DRIFT-PROTOCOL.md`
 7. 适用范围内的 `AGENTS.md`
 8. `CONSTITUTION.md`
 
@@ -36,7 +36,7 @@ developer_instructions = """
 
 - 目标源码仓库的 README、测试说明、CI 配置或已有相邻实现
 - 相关依赖 Task
-- `specs/DEFINITION-OF-DONE.md`
+- `docs/governance/DEFINITION-OF-DONE.md`
 
 ## 工作流
 

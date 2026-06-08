@@ -2,6 +2,84 @@
 
 > 记录 docs/goal/ 体系的重大结构性变更。
 
+## 2026-06-09 — 深度分析残留项对齐
+
+### SSOT 对齐
+
+- 在 `03-pipeline.md` 明确 Pipeline 状态枚举是 Registry、Glossary、Runtime、Gate 与脚本校验的唯一状态来源。
+- 将 `15-registry.md` 的 Issue 异常状态对齐到 Pipeline 异常状态枚举，并移除本地新增状态。
+
+### 运行协议
+
+- 在 `13-runtime-engine.md` 拆分 CL0 / CL1 Lite Mode，明确治理规则、状态、模板、脚本或追溯协议变更必须升为 CL1+。
+- 在 Evidence 模板中补充 `Test ID: TEST-xxx`，对齐 ID 体系中 Evidence 必须绑定 Test ID 的要求。
+
+### Lint 映射
+
+- 在 `05-layer-standards.md` 将 Prompt 质量标准链接到 Prompt Lint。
+- 在 `10-lint-rules.md` 增加 Prompt 质量标准到 `P-LINT-*` 规则的映射表。
+
+## 2026-06-09 — 深度分析报告修复（断链 + SSOT + 格式）
+
+### 断链修复
+
+- **GLOSSARY.md L27**: Non-goal 锚点从 `02-goal-standard.md#7-non-goals` 修正为 `02-goal-standard.md#5-goal-模板`（Non-goals 在模板 §5 内，非顶层 §7）
+
+### SSOT 消除
+
+- **11-ai-collaboration.md §4 Prompt 分层**: 删除与 05-layer-standards.md §5 完全重复的 Prompt 类型表，改为引用 SSOT
+
+### 格式统一
+
+- **14-agent-protocols.md**: 标题从 `# 14. Agent 协议` 改为 `# Agent 协议`，与其他文件格式统一
+- **15-registry.md**: 标题从 `# 15. Registry 系统` 改为 `# Registry 系统`，与其他文件格式统一
+
+## 2026-06-09 — GLOSSARY 扩展（45 → 53 条术语）
+
+### 新增术语
+
+- 新增 8 个术语定义：AutoResearch、Code Boundary、Context Package、Failure Budget、Human Approval Check、MVA、North Star、PromptOps
+- 来源文件：`11-ai-collaboration.md`、`13-runtime-engine.md`、`15-registry.md`、`17-risk-and-decisions.md`
+- DoR 和 Change Level 已存在，本轮未重复添加
+
+## 2026-06-09 — 评分体系全覆盖（11/11 阶段）
+
+### 新增 RUBRIC
+
+- 新增 5 个阶段评分 Rubric：`RUBRIC-design.md`、`RUBRIC-test.md`、`RUBRIC-review.md`、`RUBRIC-release.md`、`RUBRIC-retrospective.md`
+- `score.schema.json` stage 枚举从 6 扩展到 11，覆盖完整管线
+- `08-quality-gates.md` §3 评分体系从 3 个内联表扩展到 12 个（含 Matrix 横切制品）
+
+### 覆盖矩阵
+
+| 阶段 | 之前 | 现在 |
+|------|------|------|
+| Goal | 引用 02-goal-standard | 引用 02-goal-standard |
+| Spec | ✅ schema + RUBRIC + 内联 | ✅ |
+| Design | ❌ | ✅ schema + RUBRIC + 内联 |
+| Plan | ✅ schema + RUBRIC | ✅ + 内联 |
+| Tasks | ✅ schema + RUBRIC | ✅ + 内联 |
+| Prompt | ✅ schema + RUBRIC + 内联 | ✅ |
+| Code | ✅ schema + RUBRIC | ✅ + 内联 |
+| Test | ❌ | ✅ schema + RUBRIC + 内联 |
+| Review | ❌ | ✅ schema + RUBRIC + 内联 |
+| Release | ❌ | ✅ schema + RUBRIC + 内联 |
+| Retrospective | ❌ | ✅ schema + RUBRIC + 内联 |
+| Matrix | ✅ schema + RUBRIC | ✅ + 内联 |
+
+## 2026-06-09 — module 规格库迁移与同步基线
+
+### 规格库迁移
+
+- 将模块规格库口径统一到 `module/`：模块 SPEC、TRACEABILITY、tasks 和 governance 制品均以 `module/` 为当前事实源。
+- 明确 `docs/goal/` 只定义 Goal 驱动交付规则、状态机、Gate、Registry 和 Evidence，不复制完整模块规格。
+- 明确 `.config/goal/` 是 Goal 运行状态 SSOT，Goal 制品通过 ID 和路径引用 `module/`。
+
+### 同步门禁
+
+- 增补 `module/` 与 `docs/goal/` 的同步边界，禁止恢复旧 `specs/` 目录。
+- 将旧路径扫描、`spec-lint.sh`、`status-consistency-check.sh`、`spec-drift-guard.sh`、`traceability-check.sh` 和 `task-spec-validate.sh` 作为当前同步验证基线。
+
 ## 2026-06-08 — 结构性修正
 
 ### SSOT 消除

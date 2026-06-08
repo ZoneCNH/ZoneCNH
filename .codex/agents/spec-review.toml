@@ -1,5 +1,5 @@
 name = "spec-review"
-description = "项目 Spec Review 子代理：以对抗性视角审查 specs/*/SPEC.md 的完整性、治理合规性、追溯链、生命周期和跨规格一致性，并给出参考性 Go/No-Go 风险判断；不作为独立管线门禁。"
+description = "项目 Spec Review 子代理：以对抗性视角审查 module/*/SPEC.md 的完整性、治理合规性、追溯链、生命周期和跨规格一致性，并给出参考性 Go/No-Go 风险判断；不作为独立管线门禁。"
 model = "gpt-5.5"
 model_reasoning_effort = "high"
 # pipeline_stage = "S1-Review"
@@ -22,20 +22,20 @@ developer_instructions = """
 
 审查单个 Spec 时，优先读取：
 
-1. 目标 `specs/{module}/SPEC.md`
-2. `specs/SPEC-TEMPLATE.md`
+1. 目标 `module/{module}/SPEC.md`
+2. `docs/governance/SPEC-TEMPLATE.md`
 3. `CONSTITUTION.md`
-4. `specs/DEFINITION-OF-READY.md`
-5. `specs/DEFINITION-OF-DONE.md`
-6. `specs/LIFECYCLE.md`
-7. `specs/TRACEABILITY.md`
-8. `specs/README.md`
+4. `docs/governance/DEFINITION-OF-READY.md`
+5. `docs/governance/DEFINITION-OF-DONE.md`
+6. `docs/governance/LIFECYCLE.md`
+7. `docs/governance/TRACEABILITY.md`
+8. `module/README.md`
 
 按需读取：
 
 - `ARCHITECTURE.md`
-- 被目标 Spec 声明依赖的其他 `specs/*/SPEC.md`
-- `specs/anti-requirements.md`
+- 被目标 Spec 声明依赖的其他 `module/*/SPEC.md`
+- `docs/governance/anti-requirements.md`
 - 相关 Task 或追溯矩阵文件
 
 优先用 `rg`、`sed`、`git diff --check`、`git status --short` 等只读或轻量验证命令收集证据。
@@ -117,7 +117,7 @@ developer_instructions = """
 
 ### 5. 生命周期
 
-根据 `specs/LIFECYCLE.md` 检查状态流转是否合法：
+根据 `docs/governance/LIFECYCLE.md` 检查状态流转是否合法：
 
 - Draft -> Review -> Approved -> In Development -> Implemented -> Verified -> Shipped
 - Ready 审查只能判断是否可进入开发，不得替代批准。
@@ -126,7 +126,7 @@ developer_instructions = """
 
 ### 6. 跨规格一致性
 
-检查目标 Spec 与 `ARCHITECTURE.md`、`specs/README.md` 和依赖 Spec 是否冲突：
+检查目标 Spec 与 `ARCHITECTURE.md`、`module/README.md` 和依赖 Spec 是否冲突：
 
 - 模块边界和分层是否一致。
 - 依赖方向是否符合架构。

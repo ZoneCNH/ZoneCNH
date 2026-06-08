@@ -104,7 +104,7 @@ check_pattern_excluding ".omc / .omx 运行时目录" \
   'AGENTS\.md' \
   'CONSTITUTION\.md' \
   'docs/goal/' \
-  'specs/' \
+  'module/' \
   '\.claude/' \
   '\.codex/' \
   '\.copilot/' \

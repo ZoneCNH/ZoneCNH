@@ -1,6 +1,6 @@
-# 15. Registry 系统
+# Registry 系统
 
-> 本文档从原 `advanced-operations.md` 拆分而来，聚焦于 Registry 7 个子系统的完整定义。
+> 本文档从原 `advanced-operations.md` 拆分而来，聚焦于 6 个业务 Registry 文件及横切运行制品的完整定义。
 
 Registry 保存长期状态，所有 Agent 共享。
 
@@ -33,11 +33,13 @@ status: active
 owner: architect-agent
 priority: P0
 north_star: 完成市场数据模块独立化、可运行、可验证
-current_phase: design_ready
+pipeline_state: DESIGN_READY
+  current_phase: DESIGN
+  phase_status: READY
 related_issues:
   - "#1393"
 related_specs:
-  - docs/goal/specs/SPEC-market-data-v1-market-data.md
+  - module/market-data/SPEC.md
 success_criteria:
   - market_data 独立运行
   - 支持历史 K 线采集
@@ -64,7 +66,7 @@ dod:
   - 断线重连有效
   - 测试通过
 evidence:
-  - .config/goal/evidence/EVID-TEST-TASK-GOAL-20260608-001-003-001-001.md
+  - .config/goal/evidence/2026-06-08/TASK-GOAL-20260608-001-003/EVID-TEST-TASK-GOAL-20260608-001-003-001-001.md
 ```
 
 路径：`.config/goal/registry/tasks.yaml`
@@ -103,7 +105,9 @@ OPEN → TRIAGED → SPEC_READY → DESIGN_READY → TASKS_READY
 → IN_PROGRESS → IN_REVIEW → READY_FOR_RELEASE → DONE
 ```
 
-异常状态：`BLOCKED`、`NEEDS_RESEARCH`、`NEEDS_DECISION`、`NEEDS_REPLAN`、`NEEDS_SPLIT`
+Issue 生命周期的异常状态沿用 Pipeline 异常状态枚举；完整 SSOT 见 [03-pipeline.md §2.2](03-pipeline.md#22-异常状态)。Registry 不新增本地异常状态。
+
+异常状态：`BLOCKED`、`FAILED`、`NEEDS_RESEARCH`、`NEEDS_DECISION`、`NEEDS_REPLAN`、`NEEDS_ROLLBACK`、`NEEDS_HUMAN_APPROVAL`、`INCONSISTENT_STATE`
 
 ---
 

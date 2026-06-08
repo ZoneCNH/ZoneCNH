@@ -83,7 +83,7 @@ FoundationX 是一套模块化的量化交易基础设施，为策略开发者�
 ### UC-05: AI 代理实现新模块
 
 AI 代理被要求实现一个新的存储扩展模块。
-→ 参考 `specs/*/SPEC.md` 的 23 节结构，按 spec 施工，按验收标准自查。
+→ 参考 `module/*/SPEC.md` 的 23 节结构，按 spec 施工，按验收标准自查。
 
 ---
 
@@ -120,7 +120,7 @@ AI 代理被要求实现一个新的存储扩展模块。
 |------|------|----------|
 | 模块独立可测试 | 每个模块可以 `go test ./...` 独立运行 | CI 每个模块独立 job，覆盖率 ≥ 80% |
 | 接口契约完整 | 所有跨域交互通过 `contracts` 接口 | xlibgate import check 零违规 |
-| Spec 覆盖率 | Foundation 16/16 模块 + x.go 组合根共 17/17 份 spec 完整 | specs/README.md 索引计数：Foundation=16、System=17，每个 spec 23/23 节 |
+| Spec 覆盖率 | Foundation 16/16 模块 + x.go 组合根共 17/17 份 spec 完整 | module/README.md 索引计数：Foundation=16、System=17，每个 spec 23/23 节 |
 | CI Gate 通过 | 所有模块 CI 绿灯 | xlibgate check-all exit code = 0 |
 | WHEN/THEN 覆盖 | 每个 FR 至少 1 条 WHEN/THEN | TRACEABILITY.md 无空 AC 列 |
 | 验收测试通过 | AT-001 至 AT-017 全部通过 | acceptance-tests.md 验收清单全勾 |

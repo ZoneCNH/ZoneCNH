@@ -1,7 +1,6 @@
 # 规格文件变更需要维护者 review
-specs/*/SPEC.md        @ZoneCNH
-specs/TRACEABILITY.md  @ZoneCNH
-specs/LIFECYCLE.md     @ZoneCNH
+module/*/SPEC.md        @ZoneCNH
+docs/governance/**      @ZoneCNH
 CONSTITUTION.md        @ZoneCNH
 ARCHITECTURE.md        @ZoneCNH
 GLOSSARY.md            @ZoneCNH

@@ -19,7 +19,7 @@ Status: Approved
 
 ## 2. 开始编码前必须确认
 
-1. **相关 spec**：找到对应的 `specs/*/SPEC.md`
+1. **相关 spec**：找到对应的 `module/*/SPEC.md`
 2. **受影响文件**：预判本次变更涉及哪些文件
 3. **验收标准**：确认 spec 中的 Acceptance Criteria
 4. **测试用例**：确认 spec 中的 Test Cases
@@ -132,7 +132,7 @@ Status: Approved
 
 当实现新模块时，遵循以下顺序：
 
-1. 阅读 `specs/<module>/SPEC.md` 全文
+1. 阅读 `module/<module>/SPEC.md` 全文
 2. 创建 `go.mod` 和目录结构（spec Section 14）
 3. 定义接口（spec Section 9）
 4. 定义错误变量（spec Section 10）

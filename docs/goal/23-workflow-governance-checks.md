@@ -43,6 +43,17 @@ RSI 补丁没有通过这些检查时，只能进入 Improvement Backlog，不�
 
 Drift Check 的输出应是结构化报告，至少包含 `detected_at`、`artifact`、`expected`、`actual`、`impact`、`required_action`。
 
+### 当前仓库同步基线
+
+| 基线 | 权威位置 | 失败信号 | 验证方式 |
+|------|----------|----------|----------|
+| 模块规格库 | `module/*/SPEC.md`、`module/*/TRACEABILITY.md`、`module/*/tasks/` | Goal、Prompt、agent 或 CI 仍引用旧规格路径 | 旧路径扫描必须为空 |
+| 管线治理规则 | `docs/governance/` | DoR/DoD、Template、Scoring、Arbiter 口径不一致 | `spec-lint.sh`、`spec-drift-guard.sh` |
+| Goal 运行状态 | `.config/goal/` | Registry、Gate、Evidence 与模块任务断链 | `traceability-check.sh`、`task-spec-validate.sh` |
+| 公开索引 | `README.md`、`ARCHITECTURE.md`、`STATUS.md` | 组件数量、模块路径或 Goal 适配入口不一致 | `status-consistency-check.sh` |
+
+`Artifact Drift` 在本仓库中必须覆盖 `module/` 与 `docs/goal/` 的双向引用：Goal 规则可以引用模块制品，但不能复制模块规格；模块规格可以引用 Goal ID 和 Gate 口径，但不能改写 Goal 状态机。
+
 ## 删除与放宽防护
 
 | 防护 | 禁止行为 |
@@ -127,7 +138,7 @@ rollback_drill:
 2. 有 CR 或明确的 Auto-allowed 依据。
 3. 有历史案例或样例任务验证。
 4. 没有删除失败测试、失败证据或关键 Gate。
-5. Matrix、Prompt、Gate、Metric 的相关产物已同步。
+5. Module、Matrix、Prompt、Gate、Metric 的相关产物已同步，且没有旧规格路径残留。
 6. Scorecard 定义了后验观察指标。
 
 满足这些条件，Controlled RSI 才是受控改进；否则只是把复盘意见写进了流程。

@@ -18,18 +18,18 @@ FoundationX 文档仓库的 Claude Code 代理配置。Claude Code 是三大 LLM
 
 | Agent | 阶段 | Rubric |
 |-------|------|--------|
-| spec-structural-score | Spec | `specs/scoring/RUBRIC-spec.md` |
-| matrix-structural-score | Matrix | `specs/scoring/RUBRIC-matrix.md` |
-| tasks-structural-score | Tasks | `specs/scoring/RUBRIC-tasks.md` |
-| plan-structural-score | Plan | `specs/scoring/RUBRIC-plan.md` |
-| prompt-structural-score | Prompt | `specs/scoring/RUBRIC-prompt.md` |
-| code-structural-score | Code | `specs/scoring/RUBRIC-code.md` |
+| spec-structural-score | Spec | `docs/governance/scoring/RUBRIC-spec.md` |
+| matrix-structural-score | Matrix | `docs/governance/scoring/RUBRIC-matrix.md` |
+| tasks-structural-score | Tasks | `docs/governance/scoring/RUBRIC-tasks.md` |
+| plan-structural-score | Plan | `docs/governance/scoring/RUBRIC-plan.md` |
+| prompt-structural-score | Prompt | `docs/governance/scoring/RUBRIC-prompt.md` |
+| code-structural-score | Code | `docs/governance/scoring/RUBRIC-code.md` |
 
 ## 仲裁类代理
 
 | Agent | 用途 |
 |-------|------|
-| pipeline-arbiter | 汇总四源评分，按 `specs/scoring/ARBITER-PROTOCOL.md` 输出 gate 判定 |
+| pipeline-arbiter | 汇总四源评分，按 `docs/governance/scoring/ARBITER-PROTOCOL.md` 输出 gate 判定 |
 | meta-arbiter | 读 `.omc/state/outer-metrics/`，按宪法 §14.4 诊断 Goodhart 信号、输出 RSI 建议（不修改任何受保护文件） |
 
 ## 使用方式
@@ -58,7 +58,7 @@ executor → [claude scorer | codex scorer | copilot scorer | rules scorer]（�
         → 通过则进入下一阶段；失败则路由回 executor 修复
 ```
 
-详见 `specs/STRUCTURAL-SCORING.md` 与 `specs/scoring/ARBITER-PROTOCOL.md`。
+详见 `docs/governance/STRUCTURAL-SCORING.md` 与 `docs/governance/scoring/ARBITER-PROTOCOL.md`。
 
 ## 目录结构
 

@@ -165,7 +165,7 @@ known_risks:
 
 ```text
 - 建 Registry 系统（goals.yaml、tasks.yaml）
-- 建 CI Gate（至少 5 个）
+- 建 CI Check（至少 5 个，编号使用 `CI-CHK*`）
 - 建 Evidence 目录结构
 - 建 Traceability Matrix
 - 建 Risk Register

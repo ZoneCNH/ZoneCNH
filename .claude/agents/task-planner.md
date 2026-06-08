@@ -56,8 +56,8 @@ reporting: 完成后向主会话返回实现计划
 
 读取以下文件：
 
-1. `specs/{module}/tasks/TASK-{MODULE}-{NNN}.md` — 当前 Task
-2. `specs/{module}/SPEC.md` — 相关规格
+1. `module/{module}/tasks/TASK-{MODULE}-{NNN}.md` — 当前 Task
+2. `module/{module}/SPEC.md` — 相关规格
 3. `ARCHITECTURE.md` — 架构约束
 4. `AGENTS.md` — 编码规范
 5. 相关源代码文件（根据 Task 的 "Files Likely to Change" 列表）

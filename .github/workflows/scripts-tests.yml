@@ -1,6 +1,6 @@
 # Scripts Tests — rule-scorer 单元测试与 shell 脚本健全性
 #
-# 触发：scripts/ 或 specs/scoring/ 变更
+# 触发：scripts/ 或 docs/governance/scoring/ 变更
 # 防止规则引擎与仲裁协议漂移；同时锁定 outer-metrics 三个 shell 脚本可执行性。
 
 name: Scripts Tests
@@ -9,13 +9,13 @@ on:
   pull_request:
     paths:
       - "scripts/**"
-      - "specs/scoring/**"
+      - "docs/governance/scoring/**"
       - ".github/workflows/scripts-tests.yml"
   push:
     branches: [main]
     paths:
       - "scripts/**"
-      - "specs/scoring/**"
+      - "docs/governance/scoring/**"
       - ".github/workflows/scripts-tests.yml"
   workflow_dispatch:
 
@@ -45,7 +45,7 @@ jobs:
       - name: rule-scorer.py CLI smoke
         run: |
           # 选一个已存在的 spec 模块跑一次
-          module=$(ls -d specs/*/ 2>/dev/null | head -1 | xargs basename || echo "kernel")
+          module=$(ls -d module/*/ 2>/dev/null | head -1 | xargs basename || echo "kernel")
           python3 scripts/rule-scorer.py spec "$module"
 
       - name: outer-metrics scripts smoke

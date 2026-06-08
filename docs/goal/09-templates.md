@@ -305,7 +305,7 @@ priority: P0
 project/
   docs/
     goals/       GOAL-20260608-002-order-export-goal.md
-    specs/       SPEC-export-v1-order-export-spec.md
+    module/       SPEC-export-v1-order-export-spec.md
     matrix/      matrix-export-traceability.md
     tasks/       TASK-GOAL-20260608-002-001-create-export-task.md, TASK-GOAL-20260608-002-002-...
     plans/       PLAN-GOAL-20260608-002-v1-order-export.md

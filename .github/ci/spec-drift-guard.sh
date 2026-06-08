@@ -12,7 +12,7 @@ set -euo pipefail
 
 FAIL=0
 REPO_ROOT="$(git rev-parse --show-toplevel)"
-SPEC_DIR="$REPO_ROOT/specs"
+SPEC_DIR="$REPO_ROOT/module"
 
 echo "=== Spec Drift Guard ==="
 echo ""
@@ -67,6 +67,11 @@ check_drift() {
 
 for spec_file in "$SPEC_DIR"/*/SPEC.md; do
   if [[ -f "$spec_file" ]]; then
+    module="$(basename "$(dirname "$spec_file")")"
+    if [[ "$module" == "xlib-standard" && -f "$SPEC_DIR/xlib-standard/ANALYSIS.md" ]]; then
+      echo "  ✅ xlib-standard: analysis snapshot uses dedicated lint gate"
+      continue
+    fi
     check_drift "$spec_file"
   fi
 done

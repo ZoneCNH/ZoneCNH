@@ -38,7 +38,7 @@ jobs:
         id: collect
         run: |
           collected=0
-          for module_dir in specs/*/; do
+          for module_dir in module/*/; do
             module=$(basename "$module_dir")
             [[ -f "$module_dir/SPEC.md" ]] || continue
             echo "── 采集 $module"

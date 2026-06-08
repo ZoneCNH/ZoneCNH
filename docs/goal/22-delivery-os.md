@@ -138,7 +138,7 @@ docs/goal/
   README.md
   01-methodology.md
   ...
-specs/
+module/
   <module>/SPEC.md
   <module>/TRACEABILITY.md
   <module>/TASKS.md

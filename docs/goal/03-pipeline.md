@@ -2,7 +2,7 @@
 
 > Gate 体系（G0-G11）的定义见 [04-gates.md](04-gates.md)。各层标准见 [05-layer-standards.md](05-layer-standards.md)。
 
-本文档定义 Goal 驱动交付体系的**统一管线**和**状态机**。
+本文档定义 Goal 驱动交付体系的**统一管线**和**双轴状态机**。
 
 ---
 
@@ -32,7 +32,9 @@ Goal → Spec → Design → Plan → Tasks → Prompt → Code → Test → Rev
 
 ---
 
-## 2. 状态机
+## 2. 双轴状态机
+
+本节是 Pipeline 状态枚举 SSOT。Registry、Glossary、Runtime、Gate 与脚本校验不得定义本地新增状态，只能引用或校验本节枚举。
 
 ### 2.1 正常状态流
 
@@ -92,17 +94,19 @@ Recommended Next Action: [建议下一步]
 
 | 对象 | 状态值 | 定义位置 |
 |------|--------|----------|
-| Goal | Draft → Active → Paused → Achieved / Abandoned | [10-object-lifecycle.md §1](10-object-lifecycle.md#1-goal-生命周期) |
+| Goal | Draft → Active → Paused → Achieved / Abandoned | [15-registry.md §1](15-registry.md#1-goal-registry) |
 | Spec | Draft → Review → Approved → Superseded / Deprecated | [05-layer-standards.md §2](05-layer-standards.md#2-spec-标准) |
 | Design | Draft → Review → Approved → Superseded | [05-layer-standards.md §3](05-layer-standards.md#3-design-标准) |
 | Plan | Draft → Approved → Superseded | [05-layer-standards.md §4](05-layer-standards.md#4-plan-标准) |
-| Task | Unmapped → Mapped → In Progress → Done → Blocked | [05-layer-standards.md §4](05-layer-standards.md#4-plan-标准) |
-| Matrix | Unmapped → Mapped → Linked → Verified → Drifted → Stale | [05-layer-standards.md §9](05-layer-standards.md#9-matrix-标准) |
-| Pipeline | INIT→…→DONE（见 §2.1） | [本文件 §2.1](#21-主状态机) |
-| Issue | open → in_progress → resolved → closed | [10-object-lifecycle.md](10-object-lifecycle.md) |
-| Gate | PASS / FAIL / WAIVED | [04-gates.md](04-gates.md) |
+| Task | Unmapped → Mapped → In Progress → Blocked → In Review → Done / Dropped | [05-layer-standards.md §5](05-layer-standards.md#5-tasks-标准) |
+| Matrix | Unmapped → Mapped → Linked → Verified / Dropped；Drifted / Stale / Blocked / Changed 为漂移或阻塞元状态 | [05-layer-standards.md §9](05-layer-standards.md#9-matrix-横切标准) |
+| Pipeline | INIT→…→DONE（见 §2.1） | [本文件 §2.1](#21-正常状态流) |
+| Issue | OPEN → TRIAGED → SPEC_READY → DESIGN_READY → TASKS_READY → IN_PROGRESS → IN_REVIEW → READY_FOR_RELEASE → DONE | [15-registry.md §4](15-registry.md#4-issue-生命周期) |
+| Gate | PASS / PASS_WITH_RISK / FAIL / BLOCKED | [04-gates.md](04-gates.md) |
 | Maturity | L0–L5 | [18-maturity.md](18-maturity.md) |
-| Change Level | CL0–CL5 | [17-risk-and-decisions.md](17-risk-and-decisions.md) |
+| Change Level | CL0–CL5 | [13-runtime-engine.md](13-runtime-engine.md) |
+
+`WAIVED` 是豁免策略，不是 Gate 结果值。豁免记录必须保留 `approver`、`reason`、`expires_at`，并在最终 Gate 结果中映射为 `PASS_WITH_RISK` 或 `BLOCKED`。
 
 回退规则：
 
@@ -126,7 +130,7 @@ Recommended Next Action: [建议下一步]
 Goal (GOAL-20260608-001):
 为已注册用户提供邮箱验证码登录，验证码登录成功率 ≥ 95%，有效期 10 分钟，使用后不可重复使用。
 
-↓ Spec (SPEC-auth-v1.0)
+↓ Spec (SPEC-auth-v1)
 REQ-SPEC-auth-v1-001: 用户可以请求邮箱验证码
 REQ-SPEC-auth-v1-002: 验证码为 6 位数字
 REQ-SPEC-auth-v1-003: 验证码 10 分钟过期
@@ -134,12 +138,12 @@ REQ-SPEC-auth-v1-004: 验证码正确后创建登录态
 REQ-SPEC-auth-v1-005: 验证码使用后立即失效
 REQ-SPEC-auth-v1-006: 发送频率需要限制
 
-↓ Design (DESIGN-auth-v1.0)
+↓ Design (DESIGN-auth-v1)
 Modules: AuthController, AuthService, CodeStore, RateLimiter, SessionService
 Interfaces: sendCode(), verifyCode(), createSession()
 DEC-20260608-001: 使用 Redis 存储验证码
 
-↓ Plan (PLAN-GOAL-20260608-001-v1.0)
+↓ Plan (PLAN-GOAL-20260608-001-v1)
 Phase 1: 验证码存储（TASK-GOAL-20260608-001-002）
 Phase 2: 发送接口（TASK-GOAL-20260608-001-001）+ 频率限制（TASK-GOAL-20260608-001-003）
 Phase 3: 校验登录（TASK-GOAL-20260608-001-004）

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-score-validate.py — 校验 scorer 输出 JSON 是否符合 specs/scoring/score.schema.json
+score-validate.py — 校验 scorer 输出 JSON 是否符合 docs/governance/scoring/score.schema.json
 
 任何 scorer agent（LLM 或规则引擎）写入对应运行时 state_root 下的
 pipeline/.../scores/*.json 都必须通过本校验，否则 arbiter 拒绝接受。
@@ -20,7 +20,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-SCHEMA_PATH = ROOT / "specs/scoring/score.schema.json"
+SCHEMA_PATH = ROOT / "docs/governance/scoring/score.schema.json"
 RUNTIME_STATE_ROOTS = {
     "claude": ".omc/state/pipeline",
     "codex": ".omx/state/pipeline",

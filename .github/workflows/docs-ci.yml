@@ -12,7 +12,7 @@ on:
       - "*.md"
       - "docs/**/*.md"
       - "module/**/*.md"
-      - "specs/**/*.md"
+      - "module/**/*.md"
       - ".github/workflows/*.yml"
       - ".github/ci/**"
       - ".markdownlint.json"
@@ -23,7 +23,7 @@ on:
       - "*.md"
       - "docs/**/*.md"
       - "module/**/*.md"
-      - "specs/**/*.md"
+      - "module/**/*.md"
       - ".github/workflows/*.yml"
       - ".github/ci/**"
       - ".markdownlint.json"
@@ -52,7 +52,7 @@ jobs:
             *.md
             docs/**/*.md
             module/**/*.md
-            specs/**/*.md
+            module/**/*.md
           config: .markdownlint.json
 
   # ── 2. 链接有效性检查 ────────────────────────────────────────
@@ -83,7 +83,7 @@ jobs:
             -- '*.md'
             'docs/**/*.md'
             'module/**/*.md'
-            'specs/**/*.md'
+            'module/**/*.md'
           fail: true
 
   # ── 3. 敏感内容守卫 ──────────────────────────────────────────

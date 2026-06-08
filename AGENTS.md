@@ -43,7 +43,7 @@
 
 ## Spec 开发管线
 
-Spec 编写完成后，不是直接写代码，而是按管线推进：Spec → Review → Approve → Matrix → Tasks → Plan → Prompt → Code → 验收 → Ship。详见 `specs/DEVELOPMENT-WORKFLOW.md`。
+Spec 编写完成后，不是直接写代码，而是按管线推进：Spec → Review → Approve → Matrix → Tasks → Plan → Prompt → Code → 验收 → Ship。详见 `docs/governance/DEVELOPMENT-WORKFLOW.md`。
 
 ### Agents — Spec → Code 管线
 
@@ -87,7 +87,7 @@ Spec → Matrix → Tasks → Plan → Prompt → Code
 
 每个阶段都必须做结构性问题分析和四源评分。任一评分源低于 98、触发红线、任一 LLM 低置信度、三 LLM 分差超过阈值或 rules 与 LLM 中位数异构分歧过大，均不得进入下一阶段。Spec 阶段由 `pipeline-arbiter` 在 pass 后自动翻转 `Status: Approved`；`spec-review` 仅作为对抗性参考证据，不构成独立门禁。
 
-管线支持有界递归自改进：同阶段最多 3 次自动修复，失败后回退上游；全链路默认最多 18 次 gate fail，耗尽后写出 `pipeline_blocked` 与 `PIPELINE-RETROSPECTIVE.md`，不得无限重写 Spec。工作流、rubric、agent、arbiter 等受保护文件的改进必须作为 `specs/workflow-improvement/{YYYYMMDD}-{slug}/SPEC.md` 进入同一条 98 分管线，并遵守 `CONSTITUTION.md` 第十四条。
+管线支持有界递归自改进：同阶段最多 3 次自动修复，失败后回退上游；全链路默认最多 18 次 gate fail，耗尽后写出 `pipeline_blocked` 与 `PIPELINE-RETROSPECTIVE.md`，不得无限重写 Spec。工作流、rubric、agent、arbiter 等受保护文件的改进必须作为 `docs/governance/improvements/{YYYYMMDD}-{slug}/SPEC.md` 进入同一条 98 分管线，并遵守 `CONSTITUTION.md` 第十四条。
 
 ### OMX Pipeline Skill
 
@@ -122,14 +122,14 @@ Spec → Matrix → Tasks → Plan → Prompt → Code
 
 | 文档 | 用途 |
 |------|------|
-| `specs/README.md` | 规格库索引 |
-| `specs/DEVELOPMENT-WORKFLOW.md` | Spec → Ship 完整管线 |
-| `specs/SPEC-TEMPLATE.md` | 23 节 spec 模板 |
-| `specs/TASK-TEMPLATE.md` | Task spec 模板 |
-| `specs/LIFECYCLE.md` | Spec 状态流转规则 |
-| `specs/TRACEABILITY.md` | 需求追踪矩阵规范 |
-| `specs/DEFINITION-OF-READY.md` | 进入开发的前置条件 |
-| `specs/DEFINITION-OF-DONE.md` | 完成验收条件 |
+| `module/README.md` | 规格库索引 |
+| `docs/governance/DEVELOPMENT-WORKFLOW.md` | Spec → Ship 完整管线 |
+| `docs/governance/SPEC-TEMPLATE.md` | 23 节 spec 模板 |
+| `docs/governance/TASK-TEMPLATE.md` | Task spec 模板 |
+| `docs/governance/LIFECYCLE.md` | Spec 状态流转规则 |
+| `docs/governance/TRACEABILITY.md` | 需求追踪矩阵规范 |
+| `docs/governance/DEFINITION-OF-READY.md` | 进入开发的前置条件 |
+| `docs/governance/DEFINITION-OF-DONE.md` | 完成验收条件 |
 | `CONSTITUTION.md` | 最高治理权威（13 条） |
 
 ## Goal 驱动交付体系

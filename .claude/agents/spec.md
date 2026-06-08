@@ -24,9 +24,9 @@ pipeline_gate: 23 节结构完整，FR→AC→TC 链条闭合；Spec team-scorin
 ### Step 1：加载规范
 
 ```text
-读取 specs/SPEC-TEMPLATE.md      ← 23 节模板
+读取 docs/governance/SPEC-TEMPLATE.md      ← 23 节模板
 读取 CONSTITUTION.md 第四条       ← 最高权威约束
-读取 specs/TRACEABILITY.md       ← 追踪矩阵规范
+读取 docs/governance/TRACEABILITY.md       ← 追踪矩阵规范
 ```
 
 ### Step 2：理解模块
@@ -80,7 +80,7 @@ pipeline_gate: 23 节结构完整，FR→AC→TC 链条闭合；Spec team-scorin
 ### Step 5：输出
 
 ```text
-创建或更新 specs/{module}/SPEC.md
+创建或更新 module/{module}/SPEC.md
 输出追溯完整性报告
 列出开放问题和待确认项
 ```

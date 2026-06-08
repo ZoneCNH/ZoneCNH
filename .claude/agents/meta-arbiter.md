@@ -16,8 +16,8 @@ pipeline_platform: claude
 
 - `CONSTITUTION.md` 第十四条（管线自改约束）
 - `.omc/state/outer-metrics/SCHEMA.md`（指标定义与阈值）
-- `specs/STRUCTURAL-SCORING.md` §9（Anti-Goodhart 约束）
-- `specs/scoring/ARBITER-PROTOCOL.md`
+- `docs/governance/STRUCTURAL-SCORING.md` §9（Anti-Goodhart 约束）
+- `docs/governance/scoring/ARBITER-PROTOCOL.md`
 
 ## 输入
 
@@ -54,7 +54,7 @@ pipeline_platform: claude
 ## RSI 建议
 - 是否触发：yes / no
 - 受影响组件：{list}
-- 建议 fork 路径：specs/scoring/v{N+1}/RUBRIC-{stage}.md
+- 建议 fork 路径：docs/governance/scoring/v{N+1}/RUBRIC-{stage}.md
 - A/B 候选模块（≥3）：{list}
 - 评判信号：outer_metrics 中哪些字段最相关
 ```
@@ -71,4 +71,4 @@ pipeline_platform: claude
 
 ## 受保护文件（宪法 §14.1）
 
-禁止读写或修改：`specs/scoring/RUBRIC-*.md`、`specs/STRUCTURAL-SCORING.md`、`specs/scoring/ARBITER-PROTOCOL.md`、`.claude/agents/`、`.codex/agents/`、`.copilot/agents/`、`.omc/state/outer-metrics/`、`.omx/state/outer-metrics/`、`.omc/state/outer-metrics/`、`.omx/state/outer-metrics/`、`.copilot/state/outer-metrics/`、`CONSTITUTION.md`。仅可读取；写入须走宪法 §14.3 RSI 流程（人类批准）。
+禁止读写或修改：`docs/governance/scoring/RUBRIC-*.md`、`docs/governance/STRUCTURAL-SCORING.md`、`docs/governance/scoring/ARBITER-PROTOCOL.md`、`.claude/agents/`、`.codex/agents/`、`.copilot/agents/`、`.omc/state/outer-metrics/`、`.omx/state/outer-metrics/`、`.omc/state/outer-metrics/`、`.omx/state/outer-metrics/`、`.copilot/state/outer-metrics/`、`CONSTITUTION.md`。仅可读取；写入须走宪法 §14.3 RSI 流程（人类批准）。

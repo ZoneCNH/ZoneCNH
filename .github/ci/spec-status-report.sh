@@ -3,14 +3,14 @@
 #
 # 输出：
 #   1. 每个 spec 的 FR/BR 数量和 23 节完整性
-#   2. TRACEABILITY.md 中各状态的行数统计
+#   2. module/*/TRACEABILITY.md 中各状态的行数统计
 #   3. Markdown 格式摘要（可用于 PR comment）
 
 set -euo pipefail
 
 REPO_ROOT="$(git rev-parse --show-toplevel)"
-SPEC_DIR="$REPO_ROOT/specs"
-TRACE_FILE="$REPO_ROOT/specs/TRACEABILITY.md"
+SPEC_DIR="$REPO_ROOT/module"
+TRACE_ROOT="$REPO_ROOT/module"
 
 echo "=== Spec Status Report ==="
 echo ""
@@ -60,12 +60,33 @@ echo ""
 echo "### Traceability Status"
 echo ""
 
-if [[ -f "$TRACE_FILE" ]]; then
-  not_started=$(grep -cP "\|\s+⬜\s+\|" "$TRACE_FILE" || true)
-  in_progress=$(grep -cP "\|\s+🔵\s+\|" "$TRACE_FILE" || true)
-  completed=$(grep -cP "\|\s+✅\s+\|" "$TRACE_FILE" || true)
-  rejected=$(grep -cP "\|\s+❌\s+\|" "$TRACE_FILE" || true)
-  deferred=$(grep -cP "\|\s+⏭️\s+\|" "$TRACE_FILE" || true)
+count_status() {
+  local pattern="$1"
+  local count=0
+  local matched=0
+  local trace_file
+
+  for trace_file in "$TRACE_ROOT"/*/TRACEABILITY.md; do
+    [[ -f "$trace_file" ]] || continue
+    matched=$(grep -Ec "\\|[[:space:]]*(${pattern})[[:space:]]*\\|" "$trace_file" || true)
+    count=$((count + matched))
+  done
+
+  echo "$count"
+}
+
+trace_file_count=0
+for trace_file in "$TRACE_ROOT"/*/TRACEABILITY.md; do
+  [[ -f "$trace_file" ]] || continue
+  trace_file_count=$((trace_file_count + 1))
+done
+
+if [[ $trace_file_count -gt 0 ]]; then
+  not_started=$(count_status "Pending|⬜")
+  in_progress=$(count_status "In Progress|🔵")
+  completed=$(count_status "Done|✅")
+  rejected=$(count_status "Failed|❌")
+  deferred=$(count_status "Deferred|⏭️")
 
   total=$((not_started + in_progress + completed + rejected + deferred))
 
@@ -88,8 +109,10 @@ if [[ -f "$TRACE_FILE" ]]; then
   echo "| ❌ Rejected | $rejected | ${pct_rej}% |"
   echo "| ⏭️ Deferred | $deferred | ${pct_def}% |"
   echo "| **Total** | **$total** | **100%** |"
+  echo ""
+  echo "**Traceability files:** $trace_file_count"
 else
-  echo "⚠️  TRACEABILITY.md not found"
+  echo "⚠️  module/*/TRACEABILITY.md not found"
 fi
 
 echo ""

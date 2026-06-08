@@ -13,13 +13,13 @@ Copilot CLI 在本仓库中承担两类职责：
 
 | Agent | 评分对象 | Rubric |
 |-------|----------|--------|
-| `spec-structural-score` | `specs/{module}/SPEC.md` | `specs/scoring/RUBRIC-spec.md` |
-| `matrix-structural-score` | `specs/{module}/TRACEABILITY.md` | `specs/scoring/RUBRIC-matrix.md` |
-| `tasks-structural-score` | `specs/{module}/tasks/TASK-*.md` | `specs/scoring/RUBRIC-tasks.md` |
-| `plan-structural-score` | `specs/{module}/IMPLEMENTATION-PLAN.md` | `specs/scoring/RUBRIC-plan.md` |
-| `prompt-structural-score` | `specs/{module}/TASK-*-PROMPT.md` | `specs/scoring/RUBRIC-prompt.md` |
-| `code-structural-score` | 本次 Task diff + 测试输出 | `specs/scoring/RUBRIC-code.md` |
-| `pipeline-arbiter` | 四源评分聚合 | `specs/scoring/ARBITER-PROTOCOL.md` |
+| `spec-structural-score` | `module/{module}/SPEC.md` | `docs/governance/scoring/RUBRIC-spec.md` |
+| `matrix-structural-score` | `module/{module}/TRACEABILITY.md` | `docs/governance/scoring/RUBRIC-matrix.md` |
+| `tasks-structural-score` | `module/{module}/tasks/TASK-*.md` | `docs/governance/scoring/RUBRIC-tasks.md` |
+| `plan-structural-score` | `module/{module}/IMPLEMENTATION-PLAN.md` | `docs/governance/scoring/RUBRIC-plan.md` |
+| `prompt-structural-score` | `module/{module}/TASK-*-PROMPT.md` | `docs/governance/scoring/RUBRIC-prompt.md` |
+| `code-structural-score` | 本次 Task diff + 测试输出 | `docs/governance/scoring/RUBRIC-code.md` |
+| `pipeline-arbiter` | 四源评分聚合 | `docs/governance/scoring/ARBITER-PROTOCOL.md` |
 | `meta-arbiter` | 元仲裁，Goodhart 诊断与 RSI 建议 | `CONSTITUTION.md` §14、`.copilot/state/outer-metrics/SCHEMA.md` |
 
 ## 评分门禁
@@ -31,7 +31,7 @@ composite_score = min(claude.score, codex.score, copilot.score, rules.score)
 composite_score >= 98 且无红线、无 LLM 低置信度、LLM 分差与 rules 异构分歧在阈值内 → gate=pass
 ```
 
-详见 `specs/STRUCTURAL-SCORING.md` 与 `specs/scoring/ARBITER-PROTOCOL.md`。
+详见 `docs/governance/STRUCTURAL-SCORING.md` 与 `docs/governance/scoring/ARBITER-PROTOCOL.md`。
 
 ## 状态目录
 

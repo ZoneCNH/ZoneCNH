@@ -2,7 +2,7 @@
 
 > **5 分钟理解体系 → 10 分钟走完案例 → 1 分钟选对模式**
 
-> **ID 格式说明**：本文档使用新格式 ID（如 TASK-GOAL-20260601-001-001、REQ-SPEC-order-export-001），详见 [07-id-system.md#id-格式](07-id-system.md#1-id-格式)。
+> **ID 格式说明**：本文档使用新格式 ID（如 TASK-GOAL-20260601-001-001、REQ-SPEC-order-export-v1-001、AC-REQ-SPEC-order-export-v1-001-001），详见 [07-id-system.md#id-格式](07-id-system.md#1-id-格式)。
 
 ---
 
@@ -92,20 +92,21 @@ Non-goals:  不做 Excel 导出、不做定时邮件、不做报表可视化
 ### 4.2 Spec
 
 ```text
-Spec ID: SPEC-order-export-v1.0
+Spec ID: SPEC-order-export-v1
 
 Requirements:
-  REQ-SPEC-order-export-v1.0-001: 用户可按日期范围筛选订单
-  REQ-SPEC-order-export-v1.0-002: 用户可按订单状态筛选
-  REQ-SPEC-order-export-v1.0-003: 导出文件为 CSV 格式
-  REQ-SPEC-order-export-v1.0-004: CSV 字段顺序固定
-  REQ-SPEC-order-export-v1.0-005: 空数据时仍生成表头
+  REQ-SPEC-order-export-v1-001: 用户可按日期范围筛选订单
+  REQ-SPEC-order-export-v1-002: 用户可按订单状态筛选
+  REQ-SPEC-order-export-v1-003: 导出文件为 CSV 格式
+  REQ-SPEC-order-export-v1-004: CSV 字段顺序固定
+  REQ-SPEC-order-export-v1-005: 空数据时仍生成表头
 
 Acceptance Criteria:
-  AC-REQ-order-export-001-001: 选择日期范围后，只导出该范围内的订单
-  AC-REQ-order-export-002-001: 选择"已完成"状态后，只导出已完成订单
-  AC-REQ-order-export-003-001: CSV 文件可在 Excel 中正常打开
-  AC-REQ-order-export-004-001: 空筛选条件下，CSV 只包含表头行
+  AC-REQ-SPEC-order-export-v1-001-001: 选择日期范围后，只导出该范围内的订单
+  AC-REQ-SPEC-order-export-v1-002-001: 选择"已完成"状态后，只导出已完成订单
+  AC-REQ-SPEC-order-export-v1-003-001: CSV 文件可在 Excel 中正常打开
+  AC-REQ-SPEC-order-export-v1-004-001: CSV 字段顺序为订单号、用户、日期、状态、金额
+  AC-REQ-SPEC-order-export-v1-005-001: 空数据时仍生成表头
 
 Out of Scope:
   - Excel 导出
@@ -124,11 +125,11 @@ Out of Scope:
 ```text
 | Req ID  | AC ID  | Task ID | Test ID | Status |
 |---------|--------|---------|---------|--------|
-| REQ-SPEC-order-export-v1.0-001 | AC-REQ-order-export-001-001 | TASK-GOAL-20260601-001-001 | TEST-TASK-GOAL-20260601-001-001-001 | — |
-| REQ-SPEC-order-export-v1.0-002 | AC-REQ-order-export-002-001 | TASK-GOAL-20260601-001-001 | TEST-TASK-GOAL-20260601-001-001-002 | — |
-| REQ-SPEC-order-export-v1.0-003 | AC-REQ-order-export-003-001 | TASK-GOAL-20260601-001-002 | TEST-TASK-GOAL-20260601-001-002-001 | — |
-| REQ-SPEC-order-export-v1.0-004 | AC-REQ-order-export-004-001 | TASK-GOAL-20260601-001-002 | TEST-TASK-GOAL-20260601-001-002-002 | — |
-| REQ-SPEC-order-export-v1.0-005 | AC-REQ-order-export-004-001 | TASK-GOAL-20260601-001-002 | TEST-TASK-GOAL-20260601-001-002-003 | — |
+| REQ-SPEC-order-export-v1-001 | AC-REQ-SPEC-order-export-v1-001-001 | TASK-GOAL-20260601-001-001 | TEST-TASK-GOAL-20260601-001-001-001 | Unmapped |
+| REQ-SPEC-order-export-v1-002 | AC-REQ-SPEC-order-export-v1-002-001 | TASK-GOAL-20260601-001-001 | TEST-TASK-GOAL-20260601-001-001-002 | Unmapped |
+| REQ-SPEC-order-export-v1-003 | AC-REQ-SPEC-order-export-v1-003-001 | TASK-GOAL-20260601-001-002 | TEST-TASK-GOAL-20260601-001-002-001 | Unmapped |
+| REQ-SPEC-order-export-v1-004 | AC-REQ-SPEC-order-export-v1-004-001 | TASK-GOAL-20260601-001-002 | TEST-TASK-GOAL-20260601-001-002-002 | Unmapped |
+| REQ-SPEC-order-export-v1-005 | AC-REQ-SPEC-order-export-v1-005-001 | TASK-GOAL-20260601-001-002 | TEST-TASK-GOAL-20260601-001-002-003 | Unmapped |
 ```
 
 **Gate 检查（Matrix）：**
@@ -170,8 +171,8 @@ Phase 3: TASK-GOAL-20260601-001-003（依赖 TASK-GOAL-20260601-001-002 的输�
 Context Package: CP-002
 
 Goal: GOAL-20260601-001 订单 CSV 导出
-Spec: SPEC-order-export-v1.0
-Matrix: REQ-SPEC-order-export-v1.0-003→AC-REQ-order-export-003-001→TASK-GOAL-20260601-001-002, REQ-SPEC-order-export-v1.0-004→AC-REQ-order-export-004-001→TASK-GOAL-20260601-001-002, REQ-SPEC-order-export-v1.0-005→AC-REQ-order-export-004-001→TASK-GOAL-20260601-001-002
+Spec: SPEC-order-export-v1
+Matrix: REQ-SPEC-order-export-v1-003→AC-REQ-SPEC-order-export-v1-003-001→TASK-GOAL-20260601-001-002, REQ-SPEC-order-export-v1-004→AC-REQ-SPEC-order-export-v1-004-001→TASK-GOAL-20260601-001-002, REQ-SPEC-order-export-v1-005→AC-REQ-SPEC-order-export-v1-005-001→TASK-GOAL-20260601-001-002
 Task: TASK-GOAL-20260601-001-002 实现 CsvExportService.generateOrderCsv()
 
 Existing Code:
@@ -204,12 +205,17 @@ Do Not:
 ### 4.8 Evidence
 
 ```text
-Evidence ID: EVID-TASK-GOAL-20260601-001-002-20260601-001
+Evidence ID: EVID-TEST-TASK-GOAL-20260601-001-002-001-001
+Goal ID: GOAL-20260601-001
+Spec ID: SPEC-order-export-v1
 Task ID: TASK-GOAL-20260601-001-002
+Acceptance Criteria ID: AC-REQ-SPEC-order-export-v1-003-001
+Test ID: TEST-TASK-GOAL-20260601-001-002-001
+Status: PASS
 Files Changed: src/export/CsvExportService.ts, tests/export/csv.test.ts
 Commands Run: npm test -- --grep "csv"
 Results: 3/3 passed
-Requirement Proof: REQ-SPEC-order-export-v1.0-003 ✓, REQ-SPEC-order-export-v1.0-004 ✓, REQ-SPEC-order-export-v1.0-005 ✓
+Requirement Proof: REQ-SPEC-order-export-v1-003 ✓, REQ-SPEC-order-export-v1-004 ✓, REQ-SPEC-order-export-v1-005 ✓
 ```
 
 ### 4.9 Matrix 更新
@@ -217,14 +223,14 @@ Requirement Proof: REQ-SPEC-order-export-v1.0-003 ✓, REQ-SPEC-order-export-v1.
 ```text
 | Req ID  | AC ID  | Task ID | Test ID | Status |
 |---------|--------|---------|---------|--------|
-| REQ-SPEC-order-export-v1.0-001 | AC-REQ-order-export-001-001 | TASK-GOAL-20260601-001-001 | TEST-TASK-GOAL-20260601-001-001-001 | PASS |
-| REQ-SPEC-order-export-v1.0-002 | AC-REQ-order-export-002-001 | TASK-GOAL-20260601-001-001 | TEST-TASK-GOAL-20260601-001-001-002 | PASS |
-| REQ-SPEC-order-export-v1.0-003 | AC-REQ-order-export-003-001 | TASK-GOAL-20260601-001-002 | TEST-TASK-GOAL-20260601-001-002-001 | PASS |
-| REQ-SPEC-order-export-v1.0-004 | AC-REQ-order-export-004-001 | TASK-GOAL-20260601-001-002 | TEST-TASK-GOAL-20260601-001-002-002 | PASS |
-| REQ-SPEC-order-export-v1.0-005 | AC-REQ-order-export-004-001 | TASK-GOAL-20260601-001-002 | TEST-TASK-GOAL-20260601-001-002-003 | PASS |
+| REQ-SPEC-order-export-v1-001 | AC-REQ-SPEC-order-export-v1-001-001 | TASK-GOAL-20260601-001-001 | TEST-TASK-GOAL-20260601-001-001-001 | Verified |
+| REQ-SPEC-order-export-v1-002 | AC-REQ-SPEC-order-export-v1-002-001 | TASK-GOAL-20260601-001-001 | TEST-TASK-GOAL-20260601-001-001-002 | Verified |
+| REQ-SPEC-order-export-v1-003 | AC-REQ-SPEC-order-export-v1-003-001 | TASK-GOAL-20260601-001-002 | TEST-TASK-GOAL-20260601-001-002-001 | Verified |
+| REQ-SPEC-order-export-v1-004 | AC-REQ-SPEC-order-export-v1-004-001 | TASK-GOAL-20260601-001-002 | TEST-TASK-GOAL-20260601-001-002-002 | Verified |
+| REQ-SPEC-order-export-v1-005 | AC-REQ-SPEC-order-export-v1-005-001 | TASK-GOAL-20260601-001-002 | TEST-TASK-GOAL-20260601-001-002-003 | Verified |
 ```
 
-全部 PASS → **Release Gate 通过**。
+全部 Verified → **Release Gate 通过**。
 
 ### 4.10 上线后验证
 
@@ -242,10 +248,10 @@ Result:   ✓ Goal 达成
 你的变更是什么类型？
 │
 ├─ 只改文档/修 typo → Lite Mode
-│   └─ Goal → Task → DoD → Evidence → Review
+│   └─ Goal → DoD → Evidence → Review
 │
 ├─ 改一个函数/修一个 bug → Lite Mode
-│   └─ Goal → Task → DoD → Code → Test → Evidence → Review
+│   └─ Goal → DoD → Code → Test → Evidence → Review
 │
 ├─ 新增一个功能 → Standard Mode
 │   └─ Goal → Spec → Design → Plan → Tasks → Prompt → Code → Test → Review → Release
@@ -278,7 +284,7 @@ Result:   ✓ Goal 达成
 ### 快速上手（30 分钟）
 
 ```text
-1. 00-glossary.md — 核心术语定义
+1. GLOSSARY.md — 核心术语定义
 2. 00-quickstart.md（本文件）— 建立整体认知
 3. 01-methodology.md — 理解核心原理
 4. 09-templates.md — 拿到可用模板
@@ -314,7 +320,7 @@ Result:   ✓ Goal 达成
 13-runtime-engine.md     — 执行模式、对象模型、Evidence、失败预算
 14-agent-protocols.md    — Agent Team 协作、Worktree 隔离
 15-registry.md           — Registry 子系统（Goal/Task/Issue/Release/Risk/Decision）
-16-ci-cd.md              — CI Gates、x.go 规则、反模式
+16-ci-cd.md              — CI Checks、x.go 规则、反模式
 17-risk-and-decisions.md — Risk Register、ADR、Release Manifest
 18-maturity.md           — L0-L5 成熟度升级路径
 19-self-improving.md     — Patch 系统、体系演进
@@ -330,7 +336,7 @@ Result:   ✓ Goal 达成
 
 ### "这套体系太重了，我的小任务也要走这么多步骤？"
 
-不需要。用 Lite Mode，5 步搞定：Goal → Task → DoD → Code → Done。
+不需要。文档修正等 CL0 变更用 Lite Mode：Goal → DoD → Evidence → Review。需要改代码的 CL1 变更再补 Code 和 Test，并在 DoD/Evidence 中绑定必要 Task：Goal → DoD → Code → Test → Evidence → Review。
 
 ### "Matrix 真的有必要吗？"
 

@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/ZoneCNH/ZoneCNH/docs/governance/scoring/score.schema.json",
+  "title": "Structural Scoring Output",
+  "description": "Schema for .omc/state/pipeline/{module}/{stage}/scores/{source}.json. All four sources (claude/codex/copilot/rules) must produce conformant files.",
+  "type": "object",
+  "required": ["source", "stage", "module", "score", "redline", "confidence", "deductions"],
+  "additionalProperties": true,
+  "properties": {
+    "source": {
+      "type": "string",
+      "enum": ["claude", "codex", "copilot", "rules"]
+    },
+    "stage": {
+      "type": "string",
+      "enum": ["spec", "matrix", "tasks", "plan", "prompt", "code", "design", "test", "review", "release", "retrospective"]
+    },
+    "module": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[a-z0-9][a-z0-9.-]*$"
+    },
+    "score": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "redline": {
+      "type": "boolean"
+    },
+    "confidence": {
+      "type": "string",
+      "enum": ["high", "medium", "low"]
+    },
+    "deductions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["rule", "points", "evidence"],
+        "properties": {
+          "rule": {"type": "string", "minLength": 1},
+          "points": {"type": "integer", "minimum": 0, "maximum": 100},
+          "evidence": {"type": "string"},
+          "redline": {"type": "boolean"}
+        },
+        "additionalProperties": true
+      }
+    },
+    "rule_engine_version": {"type": "string"},
+    "report_md": {"type": "string"}
+  }
+}

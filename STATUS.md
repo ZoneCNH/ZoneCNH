@@ -4,13 +4,15 @@
 >
 > 数据来源：各 GitHub 仓库实际状态，定期更新
 >
-> 最后更新：2026-06-07
+> 最后更新：2026-06-09
+>
+> 同步基线：`module/` 为模块规格库 SSOT，`docs/governance/` 为 Spec 治理 SSOT，`docs/goal/` 为 Goal 规则 SSOT，`specs/` 已移除。
 
 ---
 
 ## 总览仪表盘
 
-```text
+```
 组件总数: 70    已有: 54    已创建: 16    平均进度: 47%
 
 进度分布:
@@ -221,7 +223,7 @@
 | [alertx](https://github.com/ZoneCNH/alertx)       | 横切 | -      | ░░░░ 5%  | 告警引擎                 |
 | [observex](https://github.com/ZoneCNH/observex)   | 横切 | v0.3.1 | ███░ 80% | 可观测性（同时归属基座） |
 | [stdlib.rs](https://github.com/ZoneCNH/stdlib.rs) | Rust | -      | -        | Rust 标准库              |
-| [specs](https://github.com/ZoneCNH/specs)         | 独立 | -      | -        | 项目技术规范与接口定义   |
+| [module](./module/README.md)                      | 独立 | -      | -        | 项目技术规范与接口定义   |
 
 ---
 
@@ -288,3 +290,12 @@
 | 横切组件         | 2      | 2            | 2                                 | ✅     |
 
 注：README 按域视图计数，observex 同时归属基座与横切，因此与唯一仓库链接数不完全等价。
+
+### 迁移与门禁基线
+
+| 项目 | 当前状态 | 验证方式 |
+| ---- | -------- | -------- |
+| 规格库入口 | `module/` 承载 17 份模块与组合根规格；`docs/governance/` 承载治理模板、生命周期、追溯与评分规则 | 旧路径扫描、`spec-lint.sh`、治理路径扫描 |
+| Goal 规则入口 | `docs/goal/` 定义交付规则；`.config/goal/` 承载运行状态 | `traceability-check.sh`、`task-spec-validate.sh` |
+| 公开索引 | `README.md`、`ARCHITECTURE.md`、`STATUS.md` 区分 `module/` 与 `docs/governance/` 入口 | `status-consistency-check.sh`、治理路径扫描 |
+| 漂移防护 | 不恢复旧 `specs/` 与 `module/governance` 路径，agent 与 CI 引用保持 `module/` + `docs/governance/` 口径 | 旧路径扫描、`spec-drift-guard.sh` |

@@ -1,6 +1,6 @@
 # Gate 体系
 
-> 管线和状态机定义见 [03-pipeline.md#完整管线](03-pipeline.md#1-完整管线)、[状态机](03-pipeline.md#2-状态机)。
+> 管线和双轴状态机定义见 [03-pipeline.md#完整管线](03-pipeline.md#1-完整管线)、[双轴状态机](03-pipeline.md#2-双轴状态机)。
 
 本文档定义 Goal 驱动交付体系的 **Gate 体系（G0-G11）**，并作为 Gate 编号、名称、顺序和阻塞语义的权威来源。其他文档只能引用或细化这些 Gate，不得新增独立 Gate 编号。
 
@@ -217,7 +217,7 @@ Prompt Review 检查项:
 阻塞: true
 
 检查项:
-- [ ] Matrix 全部关键项为 Done
+- [ ] Matrix 全部关键项为 `Verified`，或为 `Dropped` 且有 `drop_reason`
 - [ ] P0/P1 测试全部通过
 - [ ] 无权限绕过风险
 - [ ] 无数据破坏风险

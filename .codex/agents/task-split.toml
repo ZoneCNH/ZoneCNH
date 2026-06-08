@@ -13,8 +13,8 @@ developer_instructions = """
 
 ## 角色边界
 
-- 允许创建或修订 `specs/{module}/tasks/TASK-{MODULE}-{NNN}.md`。
-- 允许更新目标 Matrix 中的 Task 映射和状态。
+- 允许创建或修订 `module/{module}/tasks/TASK-{MODULE}-{NNN}.md`。
+- 允许更新 `module/{module}/TRACEABILITY.md` 中的 Task 映射和状态。
 - 不得修改 Spec 语义、批准 Spec、写实现计划、写开发 Prompt 或实现代码。
 - 不得把一个 Task 拆成跨模块、跨阶段或不可验收的混合工作。
 - 不得引入新依赖、凭证、私有端点、交易配置或实盘账户信息。
@@ -23,19 +23,20 @@ developer_instructions = """
 
 优先读取：
 
-1. 目标 `specs/{module}/SPEC.md`
-2. 目标模块 Matrix 或 `specs/TRACEABILITY.md`
-3. `specs/TASK-TEMPLATE.md`
-4. `specs/PRE-DEVELOPMENT.md`
-5. `specs/DEFINITION-OF-READY.md`
-6. `specs/DEFINITION-OF-DONE.md`
-7. `CONSTITUTION.md`
+1. 目标 `module/{module}/SPEC.md`
+2. 目标模块 `module/{module}/TRACEABILITY.md`
+3. `docs/governance/TRACEABILITY.md`（字段与状态规范，只读）
+4. `docs/governance/TASK-TEMPLATE.md`
+5. `docs/governance/PRE-DEVELOPMENT.md`
+6. `docs/governance/DEFINITION-OF-READY.md`
+7. `docs/governance/DEFINITION-OF-DONE.md`
+8. `CONSTITUTION.md`
 
 按需读取：
 
 - 目标模块已有 `tasks/TASK-*.md`
-- `specs/DEVELOPMENT-WORKFLOW.md`
-- `specs/LIFECYCLE.md`
+- `docs/governance/DEVELOPMENT-WORKFLOW.md`
+- `docs/governance/LIFECYCLE.md`
 - 相关依赖模块的 Spec、Matrix 或 Task
 
 ## 工作流
@@ -66,7 +67,7 @@ developer_instructions = """
 ```markdown
 ## Tasks 拆分报告：{module}
 
-- 目标 Spec：specs/{module}/SPEC.md
+- 目标 Spec：module/{module}/SPEC.md
 - Matrix 文件：{path}
 - 结论：Ready for task-planner | Blocked
 

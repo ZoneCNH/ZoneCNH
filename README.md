@@ -16,9 +16,11 @@ Go 🐹 (主要) · Rust 🦀 (底层) · Python 🐍 (脚本/数据) · TypeScr
 >
 > 🧱 Foundation v1 规格、依赖矩阵、执行跟踪与 ADR → **[module/](./module/)**
 >
-> 📋 16 个基座模块 + x.go 组合根规格 → **[specs/](./specs/)**
+> 📋 16 个基座模块 + x.go 组合根规格 → **[module/](./module/)**
 >
-> 📜 模块宪法（AI 代理最高治理文件）→ **[CONSTITUTION.md](./CONSTITUTION.md)**
+> 🧭 Spec 治理模板、生命周期、追溯与评分规则 → **[docs/governance/](./docs/governance/)**
+>
+> 📜 系统宪法（AI 代理最高治理文件）→ **[CONSTITUTION.md](./CONSTITUTION.md)**
 
 ```text
 入口: x.go (Composition Root: 启动 / 配置 / 组装)
@@ -160,7 +162,8 @@ L2.5: decimalx / domain-market / domain-exchange / domain-macro
 - [alertx](https://github.com/ZoneCNH/alertx) — 告警引擎 `公开`
 - [x.go](https://github.com/ZoneCNH/x.go) — 组合根，负责启动、配置加载与引擎组装 `私有`
 - [stdlib.rs](https://github.com/ZoneCNH/stdlib.rs) — Rust 标准库 `公开`
-- [specs](https://github.com/ZoneCNH/specs) — 项目技术规范与接口定义 `私有`
+- [module](./module/README.md) — 项目技术规范、接口定义与 Goal 适配模块索引
+- [docs/governance](./docs/governance/README.md) — Spec → Code 交付治理、模板、门禁与评分规则
 
 ## 📊 GitHub 统计
 

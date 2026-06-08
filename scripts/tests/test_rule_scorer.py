@@ -1,7 +1,7 @@
 """
 rule-scorer.py 单元测试
 
-构造合成 fixture 模块（specs/{module}/），覆盖：
+构造合成 fixture 模块（module/{module}/），覆盖：
 - 完美评分（接近 100）
 - 缺章节扣分
 - 红线触发
@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import shutil
 import sys
 from pathlib import Path
 
@@ -37,9 +38,9 @@ rs = _load_scorer()
 @pytest.fixture
 def tmp_module(tmp_path, monkeypatch):
     module = "fixturemod"
-    (tmp_path / "specs" / module).mkdir(parents=True)
+    (tmp_path / "module" / module).mkdir(parents=True)
     monkeypatch.setattr(rs, "ROOT", tmp_path)
-    return tmp_path / "specs" / module, module
+    return tmp_path / "module" / module, module
 
 
 # ---------- spec ----------
@@ -234,7 +235,8 @@ go test ./...
 
 
 def test_code_no_module_dir_low_confidence(tmp_module):
-    _, module = tmp_module
+    mod_dir, module = tmp_module
+    shutil.rmtree(mod_dir)
     s = rs.score_code(module)
     assert s.confidence == "low"
     assert any(d["rule"] == "code_dir_not_in_repo" for d in s.deductions)

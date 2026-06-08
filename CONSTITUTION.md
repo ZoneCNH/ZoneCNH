@@ -3,7 +3,7 @@
 > FoundationX 全系统的最高治理文件。
 >
 > 本文件是 AI 代理和人类贡献者在实现、审查或修改任何模块或交付流程时的最高权威参考。
-> 当本文件与 `specs/*/SPEC.md`、`module/FOUNDATION-SPEC.md`、`specs/DEVELOPMENT-WORKFLOW.md` 或其他文档冲突时，以本文件为准。
+> 当本文件与 `module/*/SPEC.md`、`module/FOUNDATION-SPEC.md`、`docs/governance/DEVELOPMENT-WORKFLOW.md` 或其他文档冲突时，以本文件为准。
 
 最后更新：2026-06-08
 
@@ -17,7 +17,7 @@ FoundationX 由基座层（16 个模块）、L2.5 领域共享层（4 个模块�
 
 - 所有基座模块和领域模块的源码实现
 - 全系统的交付管线（Goal → Spec → Matrix → Tasks → Plan → Prompt → Code → Test → Release → Metrics）
-- 所有 `specs/*/SPEC.md` 规格文档
+- 所有 `module/*/SPEC.md` 规格文档
 - 所有 AI 代理的代码生成、审查和重构行为
 - 所有人类贡献者的 PR 和代码审查
 
@@ -81,7 +81,7 @@ FoundationX 由基座层（16 个模块）、L2.5 领域共享层（4 个模块�
 当两个模块的边界存在争议时，按以下优先级裁定：
 
 1. 本宪法第一条设计原则
-2. `specs/*/SPEC.md` 中的"明确不做"声明
+2. `module/*/SPEC.md` 中的"明确不做"声明
 3. `ARCHITECTURE.md` 中的依赖拓扑
 4. `module/foundation-modules.md` 中的能力需求
 
@@ -320,7 +320,7 @@ foundationx_<module>_<operation>_<measure>
 |------|------|------|
 | Go 源码 | snake_case | `client.go`, `health_check.go` |
 | 测试文件 | `<source>_test.go` | `client_test.go` |
-| 规格文档 | `SPEC.md` | `specs/redisx/SPEC.md` |
+| 规格文档 | `SPEC.md` | `module/redisx/SPEC.md` |
 | 变更日志 | `CHANGELOG.md` | 每个模块根目录 |
 
 ---
@@ -467,7 +467,7 @@ v1.0.0  — 首个稳定 API 承诺
 
 AI 代理在生成或审查代码时：
 
-1. **必须**先读取目标模块的 `specs/*/SPEC.md`
+1. **必须**先读取目标模块的 `module/*/SPEC.md`
 2. **必须**检查本宪法第一条设计原则
 3. **必须**验证依赖方向符合第三条
 4. **不得**生成违反本宪法的代码
@@ -489,12 +489,12 @@ AI 代理在生成或审查代码时：
 
 ```text
 1. 提出修正案 → 修改本文件
-2. 更新受影响的 specs/*/SPEC.md
+2. 更新受影响的 module/*/SPEC.md
 3. 更新 ARCHITECTURE.md（如涉及拓扑变更）
 4. 更新 FOUNDATION-DEPS.yaml（如涉及依赖变更）
-5. 更新受影响的 specs/ 治理文档（如涉及 §15-§19）
+5. 更新受影响的 `module/*` 规格或 `docs/governance/` 治理文档（如涉及 §15-§19）
 6. 同步 README.md
-```text
+```
 
 ### 12.3 修正记录
 
@@ -514,9 +514,9 @@ AI 代理在生成或审查代码时：
 ```text
 本宪法 (CONSTITUTION.md)
   ↓
-模块规格 (specs/*/SPEC.md)
+模块规格 (module/*/SPEC.md)
   ↓
-交付治理文档 (specs/DEVELOPMENT-WORKFLOW.md, TRACEABILITY.md, LIFECYCLE.md 等)
+交付治理文档 (docs/governance/DEVELOPMENT-WORKFLOW.md, TRACEABILITY.md, LIFECYCLE.md 等)
   ↓
 架构文档 (ARCHITECTURE.md)
   ↓
@@ -550,9 +550,9 @@ AI 代理在生成或审查代码时：
 
 | 类别 | 路径 |
 |------|------|
-| Rubric | `specs/scoring/RUBRIC-*.md` |
-| 评分方法论 | `specs/STRUCTURAL-SCORING.md` |
-| 仲裁协议 | `specs/scoring/ARBITER-PROTOCOL.md` |
+| Rubric | `docs/governance/scoring/RUBRIC-*.md` |
+| 评分方法论 | `docs/governance/STRUCTURAL-SCORING.md` |
+| 仲裁协议 | `docs/governance/scoring/ARBITER-PROTOCOL.md` |
 | Agent 配置 | `.claude/agents/`、`.codex/agents/`、`.copilot/agents/` 下所有文件 |
 | 工作流入口 | `.claude/commands/spec-code-pipeline.md`、`.codex/skills/spec-code-pipeline/`、`.copilot/commands/spec-code-pipeline.md` |
 | 外部指标 | `.omc/state/outer-metrics/`、`.omx/state/outer-metrics/`、`.copilot/state/outer-metrics/` 下所有文件 |
@@ -575,7 +575,7 @@ scorer 的 `min ≥ 98` 仲裁结果**不构成**修改上述文件的授权。
 
 若需修改 §14.1 中的受保护文件，必须走 **outer-metric 验证的 RSI 流程**：
 
-1. **Fork**：在新分支或新版本目录（`specs/scoring/v{N+1}/`）创建候选 rubric / agent。
+1. **Fork**：在新分支或新版本目录（`docs/governance/scoring/v{N+1}/`）创建候选 rubric / agent。
 2. **A/B**：在至少 3 个真实模块上并行运行旧版与新版评分。
 3. **Outer 验证**：以 `outer-metrics/` 中的真实指标（bug 数、返工次数、CI 失败率）评判，**不以 scorer 自身分数评判**。
 4. **人类批准**：A/B 结果由人类维护者审阅并批准（这是宪法层面唯一的人工门）。
@@ -583,7 +583,7 @@ scorer 的 `min ≥ 98` 仲裁结果**不构成**修改上述文件的授权。
 
 未走该流程的任何受保护文件改动一律视为宪法违反，应被代码审查阻塞。
 
-普通阶段产物允许自动修复和上游回退，但评分体系本身的 RSI 不得由当前评分结果自我授权。工作流、rubric、agent、arbiter、命令入口或本宪法的改进必须先作为 `specs/workflow-improvement/{YYYYMMDD}-{slug}/SPEC.md` 通过同一条 Spec → Matrix → Tasks → Plan → Prompt → Code 管线，再进入本节的 fork、A/B、outer metric 与人类批准流程。
+普通阶段产物允许自动修复和上游回退，但评分体系本身的 RSI 不得由当前评分结果自我授权。工作流、rubric、agent、arbiter、命令入口或本宪法的改进必须先作为 `docs/governance/improvements/{YYYYMMDD}-{slug}/SPEC.md` 通过同一条 Spec → Matrix → Tasks → Plan → Prompt → Code 管线，再进入本节的 fork、A/B、outer metric 与人类批准流程。
 
 ### 14.4 Goodhart 防线
 
@@ -643,7 +643,7 @@ Goal → Spec → Matrix → Tasks → Plan → Prompt → Code → Test → Rel
 
 ### 15.4 实现细节
 
-本条款的详细流程、制品模板和 Agent 编排规则见 `specs/DEVELOPMENT-WORKFLOW.md`。
+本条款的详细流程、制品模板和 Agent 编排规则见 `docs/governance/DEVELOPMENT-WORKFLOW.md`。
 
 ---
 
@@ -680,7 +680,7 @@ Goal → Spec → Matrix → Tasks → Plan → Prompt → Code → Test → Rel
 
 ### 16.5 实现细节
 
-本条款的详细追溯矩阵和门禁规则见 `specs/TRACEABILITY.md`、`specs/DEFINITION-OF-READY.md`、`specs/DEFINITION-OF-DONE.md`、`specs/LIFECYCLE.md`。
+本条款的详细追溯矩阵和门禁规则见 `docs/governance/TRACEABILITY.md`、`docs/governance/DEFINITION-OF-READY.md`、`docs/governance/DEFINITION-OF-DONE.md`、`docs/governance/LIFECYCLE.md`。
 
 ---
 
@@ -743,7 +743,7 @@ AI 生成的代码必须经过：
 
 ### 18.4 实现细节
 
-本条款的详细 DoD 清单见 `specs/DEFINITION-OF-DONE.md`。
+本条款的详细 DoD 清单见 `docs/governance/DEFINITION-OF-DONE.md`。
 
 ---
 
@@ -787,7 +787,7 @@ AI 生成的代码必须经过：
 
 ### 19.4 改进记录
 
-所有 CRI 改进必须作为 `specs/workflow-improvement/{YYYYMMDD}-{slug}/SPEC.md` 通过同一条 Spec → Matrix → Tasks → Plan → Prompt → Code 管线，确保改进本身可追溯、可验证、可回滚。
+所有 CRI 改进必须作为 `docs/governance/improvements/{YYYYMMDD}-{slug}/SPEC.md` 通过同一条 Spec → Matrix → Tasks → Plan → Prompt → Code 管线，确保改进本身可追溯、可验证、可回滚。
 
 ---
 
@@ -795,23 +795,23 @@ AI 生成的代码必须经过：
 
 | 层级 | 模块 | 规格 | 仓库 |
 |------|------|------|------|
-| L0 | kernel | [SPEC](./specs/kernel/SPEC.md) | [kernel](https://github.com/ZoneCNH/kernel) |
-| L1 | configx | [SPEC](./specs/configx/SPEC.md) | [configx](https://github.com/ZoneCNH/configx) |
-| L1 | observex | [SPEC](./specs/observex/SPEC.md) | [observex](https://github.com/ZoneCNH/observex) |
-| L1 | resiliencx | [SPEC](./specs/resiliencx/SPEC.md) | [resiliencx](https://github.com/ZoneCNH/resiliencx) |
-| L1 | schedulex | [SPEC](./specs/schedulex/SPEC.md) | [schedulex](https://github.com/ZoneCNH/schedulex) |
-| L1 test-only | testkitx | [SPEC](./specs/testkitx/SPEC.md) | [testkitx](https://github.com/ZoneCNH/testkitx) |
-| 门禁 | xlib-standard | [SPEC](./specs/xlib-standard/SPEC.md) | [xlib-standard](https://github.com/ZoneCNH/xlib-standard) |
-| 门禁 | xlibgate | [SPEC](./specs/xlibgate/SPEC.md) | [xlibgate](https://github.com/ZoneCNH/xlibgate) |
-| 存储扩展 | redisx | [SPEC](./specs/redisx/SPEC.md) | [redisx](https://github.com/ZoneCNH/redisx) |
-| 存储扩展 | kafkax | [SPEC](./specs/kafkax/SPEC.md) | [kafkax](https://github.com/ZoneCNH/kafkax) |
-| 存储扩展 | natsx | [SPEC](./specs/natsx/SPEC.md) | [natsx](https://github.com/ZoneCNH/natsx) |
-| 存储扩展 | postgresx | [SPEC](./specs/postgresx/SPEC.md) | [postgresx](https://github.com/ZoneCNH/postgresx) |
-| 存储扩展 | taosx | [SPEC](./specs/taosx/SPEC.md) | [taosx](https://github.com/ZoneCNH/taosx) |
-| 存储扩展 | ossx | [SPEC](./specs/ossx/SPEC.md) | [ossx](https://github.com/ZoneCNH/ossx) |
-| 存储扩展 | clickhousex | [SPEC](./specs/clickhousex/SPEC.md) | [clickhousex](https://github.com/ZoneCNH/clickhousex) |
-| 契约 | contracts | [SPEC](./specs/contracts/SPEC.md) | [contracts](https://github.com/ZoneCNH/contracts) |
-| 组合根 | x.go | [SPEC](./specs/xgo/SPEC.md) | [x.go](https://github.com/ZoneCNH/x.go) |
+| L0 | kernel | [SPEC](./module/kernel/SPEC.md) | [kernel](https://github.com/ZoneCNH/kernel) |
+| L1 | configx | [SPEC](./module/configx/SPEC.md) | [configx](https://github.com/ZoneCNH/configx) |
+| L1 | observex | [SPEC](./module/observex/SPEC.md) | [observex](https://github.com/ZoneCNH/observex) |
+| L1 | resiliencx | [SPEC](./module/resiliencx/SPEC.md) | [resiliencx](https://github.com/ZoneCNH/resiliencx) |
+| L1 | schedulex | [SPEC](./module/schedulex/SPEC.md) | [schedulex](https://github.com/ZoneCNH/schedulex) |
+| L1 test-only | testkitx | [SPEC](./module/testkitx/SPEC.md) | [testkitx](https://github.com/ZoneCNH/testkitx) |
+| 门禁 | xlib-standard | [SPEC](./module/xlib-standard/SPEC.md) | [xlib-standard](https://github.com/ZoneCNH/xlib-standard) |
+| 门禁 | xlibgate | [SPEC](./module/xlibgate/SPEC.md) | [xlibgate](https://github.com/ZoneCNH/xlibgate) |
+| 存储扩展 | redisx | [SPEC](./module/redisx/SPEC.md) | [redisx](https://github.com/ZoneCNH/redisx) |
+| 存储扩展 | kafkax | [SPEC](./module/kafkax/SPEC.md) | [kafkax](https://github.com/ZoneCNH/kafkax) |
+| 存储扩展 | natsx | [SPEC](./module/natsx/SPEC.md) | [natsx](https://github.com/ZoneCNH/natsx) |
+| 存储扩展 | postgresx | [SPEC](./module/postgresx/SPEC.md) | [postgresx](https://github.com/ZoneCNH/postgresx) |
+| 存储扩展 | taosx | [SPEC](./module/taosx/SPEC.md) | [taosx](https://github.com/ZoneCNH/taosx) |
+| 存储扩展 | ossx | [SPEC](./module/ossx/SPEC.md) | [ossx](https://github.com/ZoneCNH/ossx) |
+| 存储扩展 | clickhousex | [SPEC](./module/clickhousex/SPEC.md) | [clickhousex](https://github.com/ZoneCNH/clickhousex) |
+| 契约 | contracts | [SPEC](./module/contracts/SPEC.md) | [contracts](https://github.com/ZoneCNH/contracts) |
+| 组合根 | x.go | [SPEC](./module/xgo/SPEC.md) | [x.go](https://github.com/ZoneCNH/x.go) |
 
 ## 附录 B：与 CLAUDE.md 的关系
 

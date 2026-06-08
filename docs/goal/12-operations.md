@@ -26,8 +26,8 @@ Reason: 运营需要按季度分析订单。
 
 Impact Analysis:
 - Goal: 不变
-- Spec: SPEC-order-export-v1.0 需要更新
-- Matrix: REQ-SPEC-order-export-v1.0-003 需要更新
+- Spec: SPEC-order-export-v1 需要更新
+- Matrix: REQ-SPEC-order-export-v1-003 需要更新
 - Tasks: TASK-GOAL-20260601-001-003 CSV 生成可能受影响
 - Plan: 需要增加性能验证
 - Prompt: PROMPT-TASK-GOAL-20260601-001-003-001 需要更新
@@ -145,7 +145,8 @@ Goal 的规范文档通过 Git 管理；Goal 的运行状态、Registry、Matrix
 │   ├── releases.yaml      # Release Registry
 │   ├── risks.yaml         # Risk Registry
 │   └── decisions.yaml     # Decision Registry
-├── matrix.yaml            # Traceability Matrix
+├── matrix/
+│   └── matrix.yaml        # Traceability Matrix
 ├── evidence/              # Evidence 目录（按日期/Task 分组）
 │   └── 2026-06-08/
 │       └── TASK-GOAL-20260608-001-001/

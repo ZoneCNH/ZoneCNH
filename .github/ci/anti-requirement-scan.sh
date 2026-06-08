@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# anti-requirement-scan.sh — 扫描 specs/ 中的代码片段是否违反 anti-requirements.md
+# anti-requirement-scan.sh — 扫描 module/ 中的代码片段是否违反 anti-requirements.md
 #
 # 检查逻辑：
 #   1. log.Fatal / log.Fatalf / log.Fatalln — 库中禁止使用
@@ -14,7 +14,7 @@ set -euo pipefail
 FAIL=0
 WARN=0
 REPO_ROOT="$(git rev-parse --show-toplevel)"
-SPEC_DIR="$REPO_ROOT/specs"
+SPEC_DIR="$REPO_ROOT/module"
 
 echo "=== Anti-Requirement Scan ==="
 echo ""

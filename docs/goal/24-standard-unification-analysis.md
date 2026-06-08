@@ -13,16 +13,16 @@ Goal 体系目前不是缺少标准，而是多个标准面并存：权威 ID、
 
 ## 评分账本
 
-| 维度 | 统一度 | 判断 |
-| ---- | ------ | ---- |
-| 运行时目录 | 82 | `.config/goal/` 已成为主要运行时目录，但旧模板仍保留 `docs/goals/` 等目录结构 |
-| Gate 编号与权威 | 78 | G0-G11 权威清晰，但 `PASS_WITH_RISK` 与状态流转关系仍需补齐 |
-| ID 与版本 | 60 | `vN`、`v1.0`、`v<major>.<minor>` 混用，工具 regex 只接受部分格式 |
-| Goal schema | 62 | 标准、模板、Registry 使用不同字段命名 |
-| 状态枚举 | 58 | `status`、`current_phase`、`gate_result`、`metric_conclusion` 混杂 |
-| Matrix schema | 55 | 展示字段、YAML 模板、脚本字段、覆盖率口径不一致 |
-| Evidence schema | 50 | ID、路径、必填字段、生成器、Gate 检查存在明显漂移 |
-| Lint 与工具覆盖 | 57 | 规则文档完整，但脚本只实现子集 |
+| 维度            | 统一度 | 判断                                                                                                            |
+| --------------- | ------ | --------------------------------------------------------------------------------------------------------------- |
+| 运行时目录      | 82     | `.config/goal/` 已成为主要运行时目录，规格制品入口已收敛到 `module/`；仍需明确哪些 `.config/goal/` 子目录可提交 |
+| Gate 编号与权威 | 78     | G0-G11 权威清晰，但 `PASS_WITH_RISK` 与状态流转关系仍需补齐                                                     |
+| ID 与版本       | 60     | `vN`、`v1.0`、`v<major>.<minor>` 混用，工具 regex 只接受部分格式                                                |
+| Goal schema     | 62     | 标准、模板、Registry 使用不同字段命名                                                                           |
+| 状态枚举        | 58     | `status`、`current_phase`、`gate_result`、`metric_conclusion` 混杂                                              |
+| Matrix schema   | 55     | 展示字段、YAML 模板、脚本字段、覆盖率口径不一致                                                                 |
+| Evidence schema | 50     | ID、路径、必填字段、生成器、Gate 检查存在明显漂移                                                               |
+| Lint 与工具覆盖 | 57     | 规则文档完整，但脚本只实现子集                                                                                  |
 
 综合评分：**66 / 100**。
 
@@ -92,20 +92,20 @@ Goal 体系目前不是缺少标准，而是多个标准面并存：权威 ID、
 优先级：P0
 置信度：High
 
-当前问题：
+历史问题（已修复）：
 
 - `05-layer-standards.md` 的 Matrix 字段更像展示表头：`Goal ID`、`Goal Item`、`Spec ID`、`Requirement`、`Acceptance Criteria`、`Task ID`、`Prompt ID`、`Code Module`、`Test Case`、`Status`、`Risk`。
 - `09-templates.md` 的 YAML Matrix 模板使用 `goal`、`spec`、`requirement`、`task`、`prompt`。
 - `matrix-gen.py` 输出 `goal_id`、`spec_id`、`requirement_id`、`description`、`task_id`、`code_module`、`test_case`、`status`、`risk`。
-- `gate-check.sh` 统计 `Done`、`Implemented`、`Tested` 作为 mapped 状态。
-- `05-layer-standards.md` 又定义 Matrix 状态为 `Unmapped`、`Mapped`、`Planned`、`Implemented`、`Tested`、`Done`，例外状态为 `Blocked`、`Changed`、`Dropped`。
+- 旧版 `gate-check.sh` 曾把 Task 进度类状态误算入 Matrix 完成覆盖率；当前终态覆盖率仅按 `Verified` 与带 `drop_reason` 的 `Dropped` 计算。
+- 旧版 `05-layer-standards.md` 曾把规划、实现、测试与完成语义混入 Matrix 状态；当前状态流统一为 `Unmapped → Mapped → Linked → Verified / Dropped`，`Blocked`、`Changed`、`Drifted`、`Stale` 仅作为漂移或阻塞元状态。
 
 统一目标：
 
 - 定义唯一机器 schema。
 - 定义展示字段与机器字段的映射。
 - 明确覆盖率统计口径：哪些状态算 mapped，哪些状态算 releasable，哪些状态只算 planned。
-- Matrix Gate、lint、generator 必须共享同一状态枚举。
+- G10 Matrix Review、lint、generator 必须共享同一状态枚举。
 
 ### 5. Evidence schema 与生成器协议
 
@@ -155,7 +155,7 @@ Goal 体系目前不是缺少标准，而是多个标准面并存：权威 ID、
 当前问题：
 
 - `12-operations.md` 已经把 runtime state、registry、matrix、evidence、context 统一到 `.config/goal/`。
-- `09-templates.md` 仍保留 `docs/goals/`、`docs/specs/`、`docs/matrix/`、`docs/tasks/`、`docs/plans/`、`docs/prompts/` 目录结构。
+- 规格制品入口已收敛到 `module/`，但 Goal 运行时、Registry、Matrix、Evidence 仍位于 `.config/goal/`，需要继续明确哪些子目录应作为可提交配置。
 - `12-operations.md` 一方面说明 `.config/goal/` 默认不入库，另一方面又提到 Registry YAML 使用 Merge Commit、Evidence 不可变。
 
 统一目标：
@@ -165,7 +165,7 @@ Goal 体系目前不是缺少标准，而是多个标准面并存：权威 ID、
   - local runtime state
   - CI / release artifacts
 - 明确 `.config/goal/registry` 与 `.config/goal/evidence` 是否在具体模块仓库中可提交。
-- 旧 `docs/goals/` 等目录模板如不再使用，应标记为 legacy 或删除。
+- 已弃用的旧目录口径需要继续从历史报告或迁移说明中隔离，避免被当成当前规则。
 
 ### 8. Lint 规则与实现覆盖
 

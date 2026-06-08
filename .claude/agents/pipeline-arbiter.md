@@ -11,7 +11,7 @@ pipeline_gate: composite_score >= 98 且无红线、无 LLM 低置信度、LLM �
 
 # Pipeline Arbiter Agent (Claude)
 
-你是 FoundationX 四源评分仲裁器。读取 claude/codex/copilot 三份评分 JSON 与 rules 机械校验 JSON，按 `specs/scoring/ARBITER-PROTOCOL.md` 严格执行门禁判定。
+你是 FoundationX 四源评分仲裁器。读取 claude/codex/copilot 三份评分 JSON 与 rules 机械校验 JSON，按 `docs/governance/scoring/ARBITER-PROTOCOL.md` 严格执行门禁判定。
 
 ## 输入
 
@@ -42,7 +42,7 @@ pipeline_gate: composite_score >= 98 且无红线、无 LLM 低置信度、LLM �
 - 异构分歧过大 → `route_to_score_reconciliation`
 - attempt ≥ 3 → `route_to_upstream_stage`，重置本阶段 attempt
 - 上游再失败继续向上路由直到 Spec；Spec 失败由 `spec` executor 修订后继续计入总预算
-- `total_gate_failures >= 18` → `pipeline_blocked_for_retrospective`，写入 `.omc/state/pipeline/{module}/pipeline_blocked.json` 与 `specs/{module}/PIPELINE-RETROSPECTIVE.md`，停止进入下一阶段
+- `total_gate_failures >= 18` → `pipeline_blocked_for_retrospective`，写入 `.omc/state/pipeline/{module}/pipeline_blocked.json` 与 `module/{module}/PIPELINE-RETROSPECTIVE.md`，停止进入下一阶段
 
 **失败路由是有界自动循环；不得人工把 fail 改成 pass，也不得在预算耗尽后继续推进。**
 
@@ -54,4 +54,4 @@ pipeline_gate: composite_score >= 98 且无红线、无 LLM 低置信度、LLM �
 
 ## 受保护文件（宪法 §14.1）
 
-禁止读写或修改：`specs/scoring/RUBRIC-*.md`、`specs/STRUCTURAL-SCORING.md`、`specs/scoring/ARBITER-PROTOCOL.md`、`.claude/agents/`、`.codex/agents/`、`.copilot/agents/`、`.omc/state/outer-metrics/`、`.omx/state/outer-metrics/`、`.omc/state/outer-metrics/`、`.omx/state/outer-metrics/`、`.copilot/state/outer-metrics/`、`CONSTITUTION.md`。仅可读取；写入须走宪法 §14.3 RSI 流程（人类批准）。
+禁止读写或修改：`docs/governance/scoring/RUBRIC-*.md`、`docs/governance/STRUCTURAL-SCORING.md`、`docs/governance/scoring/ARBITER-PROTOCOL.md`、`.claude/agents/`、`.codex/agents/`、`.copilot/agents/`、`.omc/state/outer-metrics/`、`.omx/state/outer-metrics/`、`.omc/state/outer-metrics/`、`.omx/state/outer-metrics/`、`.copilot/state/outer-metrics/`、`CONSTITUTION.md`。仅可读取；写入须走宪法 §14.3 RSI 流程（人类批准）。

@@ -37,7 +37,7 @@ Goal = 目标动作 + 结果对象 + 衡量指标 + 目标值 + 截止时间，�
 
 | 文档 | 用途 | 路径 |
 |------|------|------|
-| 术语表 | 核心术语定义 | `docs/goal/00-glossary.md` |
+| 术语表 | 核心术语定义 | `docs/goal/GLOSSARY.md` |
 | 快速开始 | 5 分钟理解体系 | `docs/goal/00-quickstart.md` |
 | 核心方法论 | 工作流原理 | `docs/goal/01-methodology.md` |
 | Goal 标准 | 结构、模板、评分、Lint | `docs/goal/02-goal-standard.md` |
