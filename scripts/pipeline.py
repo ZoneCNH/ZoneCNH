@@ -1,0 +1,170 @@
+#!/usr/bin/env python3
+"""
+pipeline.py — 管线驱动器
+
+围绕 .omc/state/pipeline/{module}/{stage}/ 提供：
+- status <module>              查看所有阶段评分与 gate 状态
+- arbitrate <module> <stage>   运行 rule-scorer + arbiter，返回 gate
+- reset <module> [<stage>]     清空状态（小心使用）
+- next <module>                返回下一个需要工作的阶段（或 done）
+
+LLM executor 与 scorer 仍由人工或平台 CLI 触发；本脚本只串联
+确定性环节（rule-scorer + arbiter）并提供可视化。
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import shutil
+import subprocess
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+STATE_ROOT = ROOT / ".omc/state/pipeline"
+STAGES = ("spec", "matrix", "tasks", "plan", "prompt", "code")
+LLM_SOURCES = ("claude", "codex", "copilot")
+ALL_SOURCES = LLM_SOURCES + ("rules",)
+
+
+def _stage_dir(module: str, stage: str) -> Path:
+    return STATE_ROOT / module / stage
+
+
+def _load_json(p: Path) -> dict | None:
+    if not p.exists():
+        return None
+    try:
+        return json.loads(p.read_text(encoding="utf-8"))
+    except Exception:
+        return None
+
+
+def _module_dir(module: str) -> Path:
+    return STATE_ROOT / module
+
+
+# ---------- status ----------
+
+
+def cmd_status(module: str) -> int:
+    print(f"# Pipeline status: {module}\n")
+    print(f"State: `{_module_dir(module).relative_to(ROOT) if _module_dir(module).exists() else '(empty)'}`\n")
+
+    rows = []
+    for stage in STAGES:
+        sd = _stage_dir(module, stage)
+        scores_dir = sd / "scores"
+        sources_present = []
+        scores = {}
+        for src in ALL_SOURCES:
+            data = _load_json(scores_dir / f"{src}.json")
+            if data:
+                sources_present.append(src)
+                scores[src] = data.get("score", "?")
+        verdict = _load_json(sd / "verdict.json")
+        gate = verdict["gate"] if verdict else "-"
+        composite = verdict["composite_score"] if verdict else "-"
+        next_action = verdict["next_action"] if verdict else "-"
+        attempt = verdict["attempt"] if verdict else 0
+        rows.append((stage, len(sources_present), composite, gate, attempt, next_action))
+
+    print("| Stage | Sources | Composite | Gate | Attempt | Next Action |")
+    print("|-------|---------|-----------|------|---------|-------------|")
+    for r in rows:
+        print(f"| {r[0]} | {r[1]}/4 | {r[2]} | {r[3]} | {r[4]} | {r[5]} |")
+    return 0
+
+
+# ---------- arbitrate ----------
+
+
+def cmd_arbitrate(module: str, stage: str) -> int:
+    print(f"── 运行 rule-scorer: {stage} {module}", file=sys.stderr)
+    rc = subprocess.run(
+        ["python3", str(ROOT / "scripts/rule-scorer.py"), stage, module],
+        capture_output=True, text=True,
+    )
+    if rc.returncode != 0:
+        print(rc.stderr, file=sys.stderr)
+        return rc.returncode
+    print("  ✓ rule-scorer 完成", file=sys.stderr)
+
+    print(f"── 运行 arbiter: {stage} {module}", file=sys.stderr)
+    rc = subprocess.run(
+        ["python3", str(ROOT / "scripts/arbiter.py"), module, stage],
+        text=True,
+    )
+    return rc.returncode
+
+
+# ---------- next ----------
+
+
+def cmd_next(module: str) -> int:
+    for stage in STAGES:
+        v = _load_json(_stage_dir(module, stage) / "verdict.json")
+        if v is None:
+            print(stage)
+            return 0
+        if v["gate"] != "pass":
+            print(stage)
+            return 0
+    print("done")
+    return 0
+
+
+# ---------- reset ----------
+
+
+def cmd_reset(module: str, stage: str | None) -> int:
+    target = _stage_dir(module, stage) if stage else _module_dir(module)
+    if not target.exists():
+        print(f"路径不存在: {target}", file=sys.stderr)
+        return 1
+    confirm = input(f"删除 {target.relative_to(ROOT)} ? [y/N] ").strip().lower()
+    if confirm != "y":
+        print("取消")
+        return 1
+    shutil.rmtree(target)
+    print(f"✓ 已删除 {target.relative_to(ROOT)}")
+    return 0
+
+
+# ---------- main ----------
+
+
+def main() -> int:
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    sub = ap.add_subparsers(dest="cmd", required=True)
+
+    p_status = sub.add_parser("status", help="查看模块管线状态")
+    p_status.add_argument("module")
+
+    p_arb = sub.add_parser("arbitrate", help="运行 rule-scorer + arbiter")
+    p_arb.add_argument("module")
+    p_arb.add_argument("stage", choices=STAGES)
+
+    p_next = sub.add_parser("next", help="下一个需要工作的阶段")
+    p_next.add_argument("module")
+
+    p_reset = sub.add_parser("reset", help="清空状态")
+    p_reset.add_argument("module")
+    p_reset.add_argument("stage", nargs="?", choices=STAGES, default=None)
+
+    args = ap.parse_args()
+
+    if args.cmd == "status":
+        return cmd_status(args.module)
+    if args.cmd == "arbitrate":
+        return cmd_arbitrate(args.module, args.stage)
+    if args.cmd == "next":
+        return cmd_next(args.module)
+    if args.cmd == "reset":
+        return cmd_reset(args.module, args.stage)
+    return 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())
