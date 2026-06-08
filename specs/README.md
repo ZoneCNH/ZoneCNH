@@ -39,7 +39,7 @@ stdlib-only 基础原语。所有上层模块的根依赖。
 
 | 模块       | 规格                            | 核心职责                                                                        |
 | ---------- | ------------------------------- | ------------------------------------------------------------------------------- |
-| configx    | [SPEC.md](./configx/SPEC.md)    | Reader/Manager/Provider、多源合并、schema 校验、脱敏、热加载                    |
+| configx    | [SPEC.md](./configx/SPEC.md) · [tasks/](./configx/tasks/) | Reader/Config/Option、多源合并、schema 校验、环境变量覆盖、Watch（5 FR，10 tasks） |
 | observex   | [SPEC.md](./observex/SPEC.md)   | Logger/Meter/Tracer/Exporter、label policy、metrics 命名规范                    |
 | resiliencx | [SPEC.md](./resiliencx/SPEC.md) | Policy/Executor/Breaker、策略链（rate→bulkhead→circuit→timeout→retry→fallback） |
 | schedulex  | [SPEC.md](./schedulex/SPEC.md)  | Scheduler/Job/Trigger/Locker、overlap/misfire 策略、DST 处理                    |
@@ -208,6 +208,8 @@ Code → Test → PR
 | [`SPEC-TEMPLATE.md`](./SPEC-TEMPLATE.md)                     | 23 节结构模板 — 新建模块规格时复制本文件                |
 | [`TRACEABILITY.md`](./TRACEABILITY.md)                       | 需求追踪表：FR → AC → TC → 实现                         |
 | [`DEVELOPMENT-WORKFLOW.md`](./DEVELOPMENT-WORKFLOW.md)       | Spec → Ship 完整管线总览                                |
+| [`STRUCTURAL-SCORING.md`](./STRUCTURAL-SCORING.md)           | 每阶段结构评分、98 分门禁和有界递归自改进               |
+| [`scoring/ARBITER-PROTOCOL.md`](./scoring/ARBITER-PROTOCOL.md) | 三平台评分仲裁、repair budget 和 pipeline_blocked 规则   |
 | [`PRE-DEVELOPMENT.md`](./PRE-DEVELOPMENT.md)                 | 开发前准备 — 实现策略、Task 拆分、追溯矩阵              |
 | [`CODING-SESSION-PROTOCOL.md`](./CODING-SESSION-PROTOCOL.md) | 编码会话协议 — Context Packet、Plan-first、自查、Review |
 | [`SPEC-DRIFT-PROTOCOL.md`](./SPEC-DRIFT-PROTOCOL.md)         | Spec Drift 处理 — 代码与 Spec 不一致时的协议            |
@@ -254,7 +256,7 @@ $spec-code-pipeline <module>
 Spec → Matrix → Tasks → Plan → Prompt → Code
 ```
 
-Codex 使用 `.codex/skills/spec-code-pipeline/SKILL.md`，Claude Code 使用 `.claude/commands/spec-code-pipeline.md`。Matrix 前仍需 `spec-review` Go 判断和 `Status: Approved`。
+Codex 使用 `.codex/skills/spec-code-pipeline/SKILL.md`，Claude Code 使用 `.claude/commands/spec-code-pipeline.md`，Copilot 使用 `.copilot/commands/spec-code-pipeline.md`。每个阶段进入下一阶段前都必须由 Claude / Copilot / Codex team scoring 和 `pipeline-arbiter` 通过：`composite_score = min(三平台评分) >= 98`，且无红线、低置信度或异常分差；Spec 通过后由 arbiter 自动翻转 `Status: Approved`，`spec-review` 仅作为参考证据。
 
 ### 1. Spec 审查
 
