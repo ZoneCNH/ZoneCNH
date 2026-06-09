@@ -32,6 +32,31 @@
 
 ---
 
+## Goal 文档索引
+
+以下 `goal/1.md` 来自 `/home/zone/Downloads/xlib-v1.0-module-goals-md/xlib-v1.0-module-goals/` 的 1.0 发布基线，用于定义模块发布定位、边界、契约、测试证据和 DoD；`SPEC.md` 仍是模块功能规格 SSOT。
+
+| 模块 | 1.0 Goal |
+| ---- | -------- |
+| xlib-standard | [goal/1.md](./xlib-standard/goal/1.md) |
+| kernel | [goal/1.md](./kernel/goal/1.md) |
+| configx | [goal/1.md](./configx/goal/1.md) |
+| observex | [goal/1.md](./observex/goal/1.md) |
+| testkitx | [goal/1.md](./testkitx/goal/1.md) |
+| resiliencx | [goal/1.md](./resiliencx/goal/1.md) |
+| schedulex | [goal/1.md](./schedulex/goal/1.md) |
+| xlibgate | [goal/1.md](./xlibgate/goal/1.md) |
+| redisx | [goal/1.md](./redisx/goal/1.md) |
+| kafkax | [goal/1.md](./kafkax/goal/1.md) |
+| natsx | [goal/1.md](./natsx/goal/1.md) |
+| postgresx | [goal/1.md](./postgresx/goal/1.md) |
+| taosx | [goal/1.md](./taosx/goal/1.md) |
+| ossx | [goal/1.md](./ossx/goal/1.md) |
+| clickhousex | [goal/1.md](./clickhousex/goal/1.md) |
+| contracts | [goal/1.md](./contracts/goal/1.md) |
+
+---
+
 ## L0 原语（1 个）
 
 stdlib-only 基础原语。所有上层模块的根依赖。
