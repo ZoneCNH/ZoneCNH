@@ -1,6 +1,6 @@
 # 运行引擎
 
-本文档定义 Goal 驱动交付的运行时机制。工作流和状态机的权威定义见 [03-pipeline.md#双轴状态机](03-pipeline.md#2-双轴状态机)，Gate 体系见 [04-gates.md#gate-类型](04-gates.md#1-gate-类型)，ID 系统见 [07-id-system.md#id-格式](07-id-system.md#1-id-格式)。
+本文档定义 Goal 驱动交付的运行时机制。工作流和四轴状态模型的权威定义见 [03-pipeline.md#四轴状态模型](03-pipeline.md#2-四轴状态模型)，Gate 体系见 [04-gates.md#gate-类型](04-gates.md#1-gate-类型)，ID 系统见 [07-id-system.md#id-格式](07-id-system.md#1-id-格式)。
 
 ---
 
@@ -25,7 +25,7 @@
 
 | 级别 | 适用场景 | 最小流程 | 强制 Gate | 裁剪说明 |
 |------|----------|----------|-----------|----------|
-| CL0 | 仅文档、注释或元数据修正，不改变行为、接口、Gate、状态机或可执行规则 | Goal → Plan → Docs Change → Evidence → Review | Evidence Gate (G8)、Review Gate (G9) | Spec / Design / Matrix 可省略；如修改治理规则、状态、模板、脚本或追溯协议，必须升为 CL1+ |
+| CL0 | 仅文档、注释或元数据修正，不改变行为、接口、Gate、状态模型或可执行规则 | Goal → Plan → Docs Change → Evidence → Review | Evidence Gate (G8)、Review Gate (G9) | Spec / Design / Matrix 可省略；如修改治理规则、状态、模板、脚本或追溯协议，必须升为 CL1+ |
 | CL1 | 局部实现、规则或文档体系修正，不改变公共接口和跨模块契约 | Goal → Plan → Tasks → Prompt → Code → Test → Evidence → Review | Task Gate (G5)、Test Gate (G7)、Evidence Gate (G8)、Review Gate (G9) | Spec / Design 可合并进 Goal 或 Plan；当 AC / Test / Evidence 追溯发生变化时，Matrix 必须维护 |
 
 ### Standard Mode（CL2）

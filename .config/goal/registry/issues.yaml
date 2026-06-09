@@ -1,0 +1,40 @@
+# Issue Registry
+# 权威来源：docs/goal/15-registry.md §3-4
+# 路径：.config/goal/registry/issues.yaml
+
+issues: []
+
+# 示例条目：
+# - issue_id: "#1393"
+#   document_version: "2026-06-09"
+#   source: github
+#   title: Market Data module foundation
+#   status: IN_PROGRESS
+#   priority: P0
+#   goal_id: GOAL-20260608-001
+#   spec_id: SPEC-market-data-v1
+#   design_id: DESIGN-market-data-v1
+#   created_at: "2026-06-08"
+#   updated_at: "2026-06-08"
+#   tasks:
+#     - TASK-GOAL-20260608-001-001
+#     - TASK-GOAL-20260608-001-002
+#     - TASK-GOAL-20260608-001-003
+#   labels:
+#     - market-data
+#     - p0
+#     - architecture
+
+# 状态枚举（生命周期）：
+# OPEN → TRIAGED → SPEC_READY → DESIGN_READY → TASKS_READY
+# → IN_PROGRESS → IN_REVIEW → READY_FOR_RELEASE → DONE
+#
+# 异常状态：
+# BLOCKED
+# FAILED
+# NEEDS_RESEARCH
+# NEEDS_DECISION
+# NEEDS_REPLAN
+# NEEDS_ROLLBACK
+# NEEDS_HUMAN_APPROVAL
+# INCONSISTENT_STATE

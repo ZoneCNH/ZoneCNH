@@ -1,0 +1,36 @@
+# Risk Registry
+# 权威来源：docs/goal/15-registry.md §6
+# 路径：.config/goal/registry/risks.yaml
+
+risks: []
+
+# 示例条目：
+# - risk_id: RISK-GOAL-20260608-001-001
+#   document_version: "2026-06-09"
+#   goal_id: GOAL-20260608-001
+#   title: WS 连接稳定性风险
+#   severity: High
+#   probability: Medium
+#   impact: High
+#   status: Open
+#   owner: agent-market-data
+#   created_at: "2026-06-08"
+#   updated_at: "2026-06-08"
+#   mitigation:
+#     - 实现断线重连机制
+#     - 添加心跳检测
+#     - 设置超时阈值
+#   contingency:
+#     - 降级为 HTTP 轮询
+#   related_tasks:
+#     - TASK-GOAL-20260608-001-003
+
+# 严重程度枚举：
+# Low / Medium / High / Critical
+#
+# 概率枚举：
+# Low / Medium / High
+#
+# 状态枚举：
+# Open → Mitigated → Closed
+# 异常状态：Escalated

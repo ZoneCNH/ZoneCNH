@@ -4,7 +4,37 @@
 .omc/state/*
 !.omc/state/outer-metrics/
 .omx/
-.config/
+.config/*
+!.config/goal/
+.config/goal/*
+!.config/goal/README.md
+!.config/goal/schema/
+!.config/goal/schema/**
+!.config/goal/registry/
+!.config/goal/registry/**
+!.config/goal/matrix/
+!.config/goal/matrix/**
+!.config/goal/gates/
+!.config/goal/gates/**
+!.config/goal/pipeline/
+!.config/goal/pipeline/**
+!.config/goal/evidence/
+!.config/goal/evidence/**
+!.config/goal/prompts/
+!.config/goal/prompts/**
+.config/goal/runtime/
+.config/goal/locks/
+.config/goal/local/
+.config/goal/cache/
+.config/goal/logs/
+.config/goal/**/runtime/
+.config/goal/**/locks/
+.config/goal/**/local/
+.config/goal/**/cache/
+.config/goal/**/logs/
+.config/goal/**/*.lock
+.config/goal/**/*.tmp
+.config/goal/**/*.log
 .worktree/
 
 # Claude Code / Codex — 开放目录结构，屏蔽敏感文件
@@ -44,3 +74,10 @@ Thumbs.db
 __pycache__/
 *.pyc
 .pytest_cache/
+
+# Node dependencies (report tooling)
+node_modules/
+docs/report/node_modules/
+
+# Separate k8s project (not part of this repo)
+k8s/

@@ -1,0 +1,262 @@
+# Pipeline 状态快照
+# 权威来源：docs/goal/03-pipeline.md 与 docs/goal/00-authority-map.md
+# 路径：.config/goal/pipeline/state.yaml
+# 规则：本文件保存状态快照，不定义状态枚举；枚举以 .config/goal/schema/rules.yaml 为机器校验投影。
+
+schema_version: "2026-06-09"
+
+authority_source:
+  - docs/goal/00-authority-map.md
+  - docs/goal/03-pipeline.md
+
+pipeline:
+  - goal_id: GOAL-20260608-001
+    pipeline_state: DONE
+    previous_pipeline_state: RETROSPECTING
+    current_phase: RETROSPECTIVE
+    phase_status: DONE
+    workflow_step: RETROSPECTIVE_EXECUTION
+    state_model: four_axis
+    state_axes:
+      pipeline_state: docs/goal/03-pipeline.md#20-状态轴边界
+      current_phase: docs/goal/03-pipeline.md#20-状态轴边界
+      phase_status: docs/goal/03-pipeline.md#20-状态轴边界
+      workflow_step: docs/goal/03-pipeline.md#20-状态轴边界
+    artifacts_ready:
+      - matrix
+      - prompt
+      - code
+      - test
+      - review
+      - release
+      - retrospective
+    state_history:
+      - event: INIT
+        pipeline_state: INIT
+        current_phase: GOAL
+        phase_status: NOT_STARTED
+        workflow_step: CONTEXT_PREPARATION
+        entered_at: "2026-06-08T08:00:00Z"
+        exited_at: "2026-06-08T08:01:00Z"
+        duration: "1m"
+      - event: CONTEXT_READY
+        pipeline_state: CONTEXT_READY
+        current_phase: GOAL
+        phase_status: READY
+        workflow_step: CONTEXT_PREPARATION
+        entered_at: "2026-06-08T08:01:00Z"
+        exited_at: "2026-06-08T08:05:00Z"
+        duration: "4m"
+      - event: GOAL_AUTHORING
+        pipeline_state: CONTEXT_READY
+        current_phase: GOAL
+        phase_status: IN_PROGRESS
+        workflow_step: GOAL_AUTHORING
+        entered_at: "2026-06-08T08:05:00Z"
+        exited_at: "2026-06-08T08:10:00Z"
+        duration: "5m"
+      - event: GOAL_REVIEW
+        pipeline_state: CONTEXT_READY
+        current_phase: GOAL
+        phase_status: IN_REVIEW
+        workflow_step: GOAL_REVIEW
+        entered_at: "2026-06-08T08:10:00Z"
+        exited_at: "2026-06-08T08:15:00Z"
+        duration: "5m"
+      - event: GOAL_APPROVAL
+        pipeline_state: GOAL_READY
+        current_phase: GOAL
+        phase_status: DONE
+        workflow_step: GOAL_APPROVAL
+        entered_at: "2026-06-08T08:15:00Z"
+        exited_at: "2026-06-08T08:16:00Z"
+        duration: "1m"
+      - event: SPEC_AUTHORING
+        pipeline_state: GOAL_READY
+        current_phase: SPEC
+        phase_status: IN_PROGRESS
+        workflow_step: SPEC_AUTHORING
+        entered_at: "2026-06-08T08:16:00Z"
+        exited_at: "2026-06-08T08:20:00Z"
+        duration: "4m"
+      - event: SPEC_REVIEW
+        pipeline_state: GOAL_READY
+        current_phase: SPEC
+        phase_status: IN_REVIEW
+        workflow_step: SPEC_REVIEW
+        entered_at: "2026-06-08T08:20:00Z"
+        exited_at: "2026-06-08T08:25:00Z"
+        duration: "5m"
+      - event: SPEC_APPROVAL
+        pipeline_state: SPEC_READY
+        current_phase: SPEC
+        phase_status: DONE
+        workflow_step: SPEC_APPROVAL
+        entered_at: "2026-06-08T08:25:00Z"
+        exited_at: "2026-06-08T08:26:00Z"
+        duration: "1m"
+      - event: DESIGN_AUTHORING
+        pipeline_state: SPEC_READY
+        current_phase: DESIGN
+        phase_status: IN_PROGRESS
+        workflow_step: DESIGN_AUTHORING
+        entered_at: "2026-06-08T08:26:00Z"
+        exited_at: "2026-06-08T08:30:00Z"
+        duration: "4m"
+      - event: DESIGN_REVIEW
+        pipeline_state: SPEC_READY
+        current_phase: DESIGN
+        phase_status: IN_REVIEW
+        workflow_step: DESIGN_REVIEW
+        entered_at: "2026-06-08T08:30:00Z"
+        exited_at: "2026-06-08T08:35:00Z"
+        duration: "5m"
+      - event: DESIGN_APPROVAL
+        pipeline_state: DESIGN_READY
+        current_phase: DESIGN
+        phase_status: DONE
+        workflow_step: DESIGN_APPROVAL
+        entered_at: "2026-06-08T08:35:00Z"
+        exited_at: "2026-06-08T08:36:00Z"
+        duration: "1m"
+      - event: PLAN_AUTHORING
+        pipeline_state: DESIGN_READY
+        current_phase: PLAN
+        phase_status: IN_PROGRESS
+        workflow_step: PLAN_AUTHORING
+        entered_at: "2026-06-08T08:36:00Z"
+        exited_at: "2026-06-08T08:40:00Z"
+        duration: "4m"
+      - event: PLAN_REVIEW
+        pipeline_state: DESIGN_READY
+        current_phase: PLAN
+        phase_status: IN_REVIEW
+        workflow_step: PLAN_REVIEW
+        entered_at: "2026-06-08T08:40:00Z"
+        exited_at: "2026-06-08T08:45:00Z"
+        duration: "5m"
+      - event: PLAN_APPROVAL
+        pipeline_state: PLAN_READY
+        current_phase: PLAN
+        phase_status: DONE
+        workflow_step: PLAN_APPROVAL
+        entered_at: "2026-06-08T08:45:00Z"
+        exited_at: "2026-06-08T08:46:00Z"
+        duration: "1m"
+      - event: TASK_AUTHORING
+        pipeline_state: PLAN_READY
+        current_phase: TASKS
+        phase_status: IN_PROGRESS
+        workflow_step: TASK_AUTHORING
+        entered_at: "2026-06-08T08:46:00Z"
+        exited_at: "2026-06-08T08:50:00Z"
+        duration: "4m"
+      - event: TASK_REVIEW
+        pipeline_state: PLAN_READY
+        current_phase: TASKS
+        phase_status: IN_REVIEW
+        workflow_step: TASK_REVIEW
+        entered_at: "2026-06-08T08:50:00Z"
+        exited_at: "2026-06-08T08:55:00Z"
+        duration: "5m"
+      - event: TASK_APPROVAL
+        pipeline_state: TASKS_READY
+        current_phase: TASKS
+        phase_status: DONE
+        workflow_step: TASK_APPROVAL
+        artifacts_ready:
+          - matrix
+        entered_at: "2026-06-08T08:55:00Z"
+        exited_at: "2026-06-08T08:56:00Z"
+        duration: "1m"
+      - event: PROMPT_AUTHORING
+        pipeline_state: TASKS_READY
+        current_phase: PROMPT
+        phase_status: IN_PROGRESS
+        workflow_step: PROMPT_AUTHORING
+        entered_at: "2026-06-08T08:56:00Z"
+        exited_at: "2026-06-08T09:00:00Z"
+        duration: "4m"
+      - event: PROMPT_REVIEW
+        pipeline_state: TASKS_READY
+        current_phase: PROMPT
+        phase_status: IN_REVIEW
+        workflow_step: PROMPT_REVIEW
+        entered_at: "2026-06-08T09:00:00Z"
+        exited_at: "2026-06-08T09:05:00Z"
+        duration: "5m"
+      - event: PROMPT_APPROVAL
+        pipeline_state: TASKS_READY
+        current_phase: PROMPT
+        phase_status: DONE
+        workflow_step: PROMPT_APPROVAL
+        artifacts_ready:
+          - matrix
+          - prompt
+        entered_at: "2026-06-08T09:05:00Z"
+        exited_at: "2026-06-08T09:06:00Z"
+        duration: "1m"
+      - event: CODE_IMPLEMENTATION
+        pipeline_state: EXECUTING
+        current_phase: CODE
+        phase_status: IN_PROGRESS
+        workflow_step: CODE_IMPLEMENTATION
+        entered_at: "2026-06-08T09:06:00Z"
+        exited_at: "2026-06-08T09:10:00Z"
+        duration: "4m"
+      - event: TEST_EXECUTION
+        pipeline_state: VERIFYING
+        current_phase: TEST
+        phase_status: IN_PROGRESS
+        workflow_step: TEST_EXECUTION
+        entered_at: "2026-06-08T09:10:00Z"
+        exited_at: "2026-06-08T09:12:00Z"
+        duration: "2m"
+      - event: REVIEWING
+        pipeline_state: REVIEWING
+        current_phase: REVIEW
+        phase_status: IN_REVIEW
+        workflow_step: REVIEW_EXECUTION
+        entered_at: "2026-06-08T09:12:00Z"
+        exited_at: "2026-06-08T09:14:00Z"
+        duration: "2m"
+      - event: RELEASING
+        pipeline_state: RELEASING
+        current_phase: RELEASE
+        phase_status: IN_PROGRESS
+        workflow_step: RELEASE_EXECUTION
+        entered_at: "2026-06-08T09:14:00Z"
+        exited_at: "2026-06-08T09:15:00Z"
+        duration: "1m"
+      - event: RETROSPECTING
+        pipeline_state: RETROSPECTING
+        current_phase: RETROSPECTIVE
+        phase_status: IN_PROGRESS
+        workflow_step: RETROSPECTIVE_EXECUTION
+        entered_at: "2026-06-08T09:15:00Z"
+        exited_at: "2026-06-08T09:16:00Z"
+        duration: "1m"
+      - event: DONE
+        pipeline_state: DONE
+        current_phase: RETROSPECTIVE
+        phase_status: DONE
+        workflow_step: RETROSPECTIVE_EXECUTION
+        entered_at: "2026-06-08T09:16:00Z"
+    gates_passed:
+      - G0
+      - G1
+      - G2
+      - G3
+      - G4
+      - G5
+      - G6
+      - G7
+      - G8
+      - G9
+      - G10
+      - G11
+    gates_pending: []
+    blockers: []
+    updated_at: "2026-06-08T09:16:00Z"
+
+# 阻塞与异常条件记录到 blockers[]、gate_failures[]、Decision 或 Evidence。

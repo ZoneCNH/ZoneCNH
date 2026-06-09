@@ -17,7 +17,7 @@ Goal 体系目前不是缺少标准，而是多个标准面并存：权威 ID、
 | --------------- | ------ | --------------------------------------------------------------------------------------------------------------- |
 | 运行时目录      | 82     | `.config/goal/` 已成为主要运行时目录，规格制品入口已收敛到 `module/`；仍需明确哪些 `.config/goal/` 子目录可提交 |
 | Gate 编号与权威 | 78     | G0-G11 权威清晰，但 `PASS_WITH_RISK` 与状态流转关系仍需补齐                                                     |
-| ID 与版本       | 60     | `vN`、`v1.0`、`v<major>.<minor>` 混用，工具 regex 只接受部分格式                                                |
+| ID 与版本       | 60     | 整数版号与语义版本式示例混用，工具 regex 只接受部分格式                                                        |
 | Goal schema     | 62     | 标准、模板、Registry 使用不同字段命名                                                                           |
 | 状态枚举        | 58     | `status`、`current_phase`、`gate_result`、`metric_conclusion` 混杂                                              |
 | Matrix schema   | 55     | 展示字段、YAML 模板、脚本字段、覆盖率口径不一致                                                                 |
@@ -36,8 +36,8 @@ Goal 体系目前不是缺少标准，而是多个标准面并存：权威 ID、
 当前问题：
 
 - `07-id-system.md` 规定 `SPEC-<domain>-vN`、`DESIGN-<domain>-vN`、`PLAN-<goal-id>-vN`、`PROMPT-<task-id>-NNN`、`EVID-<test-id>-NNN`。
-- `05-layer-standards.md` 同时使用 `v<major>.<minor>`。
-- `09-templates.md` 混合使用 `SPEC-<domain>-v1`、`DESIGN-<domain>-v1.0`、`PLAN-GOAL-YYYYMMDD-NNN-v1`。
+- `05-layer-standards.md` 曾同时使用整数版号和语义版本式占位符。
+- `09-templates.md` 曾混合使用整数版号与语义版本式 Design 示例。
 - `12-operations.md` 的版本管理使用 `v0.1`、`v0.2`、`v1.0`、`v1.1`、`v2.0`。
 - `matrix-gen.py` 的 regex 只接受 `v\d+`，不能识别 `v1.0`。
 

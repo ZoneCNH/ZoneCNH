@@ -1,0 +1,308 @@
+# Goal 规则机器可读投影
+# 权威来源：docs/goal/00-authority-map.md 与 authority_source 所列 docs/goal 文档
+# 路径：.config/goal/schema/rules.yaml
+
+document_version: "2026-06-09"
+
+authority_source:
+  - docs/goal/00-authority-map.md
+  - docs/goal/02-goal-standard.md
+  - docs/goal/03-pipeline.md
+  - docs/goal/04-gates.md
+  - docs/goal/05-layer-standards.md
+  - docs/goal/07-id-system.md
+  - docs/goal/13-runtime-engine.md
+  - docs/goal/15-registry.md
+
+canonical_goal_object:
+  schema_name: "canonical Goal object"
+  document_version_field: document_version
+  release_version_field: release_version
+  template_view: "docs/goal/09-templates.md"
+  registry_view: ".config/goal/registry/*.yaml"
+  matrix_view: ".config/goal/matrix/matrix.yaml"
+  required_goal_fields:
+    - goal_id
+    - document_version
+    - title
+    - status
+    - owner
+    - priority
+    - success_criteria
+
+ids:
+  goal_id_pattern: "^GOAL-[0-9]{8}-[0-9]{3}$"
+  spec_id_pattern: "^SPEC-[a-z0-9-]+-v[0-9]+$"
+  requirement_id_pattern: "^REQ-SPEC-[a-z0-9-]+-v[0-9]+-[0-9]{3}$"
+  acceptance_criteria_id_pattern: "^AC-REQ-SPEC-[a-z0-9-]+-v[0-9]+-[0-9]{3}-[0-9]{3}$"
+  design_id_pattern: "^DESIGN-[a-z0-9-]+-v[0-9]+$"
+  plan_id_pattern: "^PLAN-GOAL-[0-9]{8}-[0-9]{3}-v[0-9]+$"
+  task_id_pattern: "^TASK-GOAL-[0-9]{8}-[0-9]{3}-[0-9]{3}$"
+  prompt_id_pattern: "^PROMPT-TASK-GOAL-[0-9]{8}-[0-9]{3}-[0-9]{3}-[0-9]{3}$"
+  test_id_pattern: "^TEST-TASK-GOAL-[0-9]{8}-[0-9]{3}-[0-9]{3}-[0-9]{3}$"
+  evidence_id_pattern: "^EVID-TEST-TASK-GOAL-[0-9]{8}-[0-9]{3}-[0-9]{3}-[0-9]{3}-[0-9]{3}$"
+  issue_id_pattern: "^(#[0-9]+|[A-Z]+-[0-9]+)$"
+  risk_id_pattern: "^RISK-GOAL-[0-9]{8}-[0-9]{3}-[0-9]{3}$"
+  decision_id_pattern: "^DEC-[0-9]{8}-[0-9]{3}$"
+  release_id_pattern: "^REL-[0-9]{8}-[a-z0-9-]+$"
+
+registry:
+  directory: ".config/goal/registry"
+  files:
+    - goals.yaml
+    - tasks.yaml
+    - issues.yaml
+    - releases.yaml
+    - risks.yaml
+    - decisions.yaml
+  goal_statuses:
+    - Draft
+    - Active
+    - Paused
+    - Achieved
+    - Abandoned
+  issue_statuses:
+    - OPEN
+    - TRIAGED
+    - SPEC_READY
+    - DESIGN_READY
+    - TASKS_READY
+    - IN_PROGRESS
+    - IN_REVIEW
+    - READY_FOR_RELEASE
+    - DONE
+    - BLOCKED
+    - FAILED
+    - NEEDS_RESEARCH
+    - NEEDS_DECISION
+    - NEEDS_REPLAN
+    - NEEDS_ROLLBACK
+    - NEEDS_HUMAN_APPROVAL
+    - INCONSISTENT_STATE
+  release_statuses:
+    - draft
+    - ready_for_pr
+    - in_review
+    - approved
+    - released
+    - rejected
+  risk_statuses:
+    - Open
+    - Mitigated
+    - Closed
+    - Escalated
+  decision_statuses:
+    - Proposed
+    - Accepted
+    - Rejected
+    - Superseded
+
+matrix:
+  file: ".config/goal/matrix/matrix.yaml"
+  model: edge
+  statuses:
+    - Unmapped
+    - Mapped
+    - Linked
+    - Verified
+    - Dropped
+    - Drifted
+    - Stale
+    - Blocked
+    - Changed
+  terminal_statuses:
+    - Verified
+    - Dropped
+  relations:
+    - decomposes_to
+    - contains
+    - accepted_by
+    - planned_by
+    - implemented_by
+    - prompted_by
+    - verified_by
+    - evidenced_by
+  required_fields:
+    - source_id
+    - target_id
+    - relation
+    - status
+    - evidence_id
+    - gate_id
+    - owner
+    - updated_at
+  optional_fields:
+    - drop_reason
+  status_rules:
+    Verified:
+      requires:
+        - evidence_id
+    Dropped:
+      requires:
+        - drop_reason
+  edge_constraints:
+    verified_requires_evidence: true
+    dropped_requires_reason: true
+  risks:
+    - Low
+    - Medium
+    - High
+  coverage_threshold: 95
+
+evidence:
+  directory: ".config/goal/evidence"
+  path_pattern: ".config/goal/evidence/YYYY-MM-DD/TASK_ID/EVID_ID.md"
+  id_pattern: "^EVID-TEST-TASK-GOAL-[0-9]{8}-[0-9]{3}-[0-9]{3}-[0-9]{3}-[0-9]{3}$"
+  task_id_pattern: "^TASK-GOAL-[0-9]{8}-[0-9]{3}-[0-9]{3}$"
+  required_fields:
+    - Evidence ID
+    - Acceptance Criteria ID
+    - Test ID
+    - Task ID
+    - Spec ID
+    - Goal ID
+    - Date
+    - Status
+    - Files Changed
+    - Commands Run
+  statuses:
+    - PASS
+    - PARTIAL
+    - FAIL
+
+gate:
+  file: ".config/goal/gates/state.yaml"
+  ids:
+    - G0
+    - G1
+    - G2
+    - G3
+    - G4
+    - G5
+    - G6
+    - G7
+    - G8
+    - G9
+    - G10
+    - G11
+  status_values:
+    - PASS
+    - PASS_WITH_RISK
+    - FAIL
+    - BLOCKED
+  result_verdicts:
+    - PASS
+    - PASS_WITH_RISK
+    - FAIL
+    - BLOCKED
+
+pipeline:
+  file: ".config/goal/pipeline/state.yaml"
+  state_model: four_axis
+  state_axes:
+    pipeline_state: "docs/goal/03-pipeline.md#20-状态轴边界"
+    current_phase: "docs/goal/03-pipeline.md#20-状态轴边界"
+    phase_status: "docs/goal/03-pipeline.md#20-状态轴边界"
+    workflow_step: "docs/goal/03-pipeline.md#20-状态轴边界"
+  states:
+    - INIT
+    - CONTEXT_READY
+    - GOAL_READY
+    - SPEC_READY
+    - DESIGN_READY
+    - PLAN_READY
+    - TASKS_READY
+    - EXECUTING
+    - VERIFYING
+    - REVIEWING
+    - RELEASING
+    - RETROSPECTING
+    - DONE
+    - BLOCKED
+    - FAILED
+    - NEEDS_RESEARCH
+    - NEEDS_DECISION
+    - NEEDS_REPLAN
+    - NEEDS_ROLLBACK
+    - NEEDS_HUMAN_APPROVAL
+    - INCONSISTENT_STATE
+  phases:
+    - GOAL
+    - SPEC
+    - DESIGN
+    - PLAN
+    - TASKS
+    - PROMPT
+    - CODE
+    - TEST
+    - REVIEW
+    - RELEASE
+    - RETROSPECTIVE
+  phase_statuses:
+    - NOT_STARTED
+    - READY
+    - IN_PROGRESS
+    - IN_REVIEW
+    - DONE
+    - BLOCKED
+    - SKIPPED
+    - STALE
+  workflow_steps:
+    - CONTEXT_PREPARATION
+    - GOAL_AUTHORING
+    - GOAL_REVIEW
+    - GOAL_APPROVAL
+    - SPEC_AUTHORING
+    - SPEC_REVIEW
+    - SPEC_APPROVAL
+    - DESIGN_AUTHORING
+    - DESIGN_REVIEW
+    - DESIGN_APPROVAL
+    - PLAN_AUTHORING
+    - PLAN_REVIEW
+    - PLAN_APPROVAL
+    - TASK_AUTHORING
+    - TASK_REVIEW
+    - TASK_APPROVAL
+    - PROMPT_AUTHORING
+    - PROMPT_REVIEW
+    - PROMPT_APPROVAL
+    - CODE_IMPLEMENTATION
+    - TEST_EXECUTION
+    - REVIEW_EXECUTION
+    - RELEASE_EXECUTION
+    - RETROSPECTIVE_EXECUTION
+    - ROOT_CAUSE_ANALYSIS
+    - DESIGN_TASK_REVIEW
+    - HUMAN_APPROVAL
+    - ROLLBACK_EXECUTION
+  legacy_state_mapping: {}
+  migration_policy:
+    mode: import_only
+    write_back: false
+    target_model: four_axis
+    note: "旧执行步骤只能在导入时转换为四轴状态；控制面不得继续写入旧步骤名。"
+
+task:
+  statuses:
+    - Unmapped
+    - Mapped
+    - In Progress
+    - Blocked
+    - In Review
+    - Done
+    - Dropped
+
+ci:
+  workflow: ".github/workflows/goal-ci.yml"
+  required_jobs:
+    - yaml-lint
+    - registry-check
+    - rule-drift-check
+    - id-format-check
+    - matrix-coverage
+    - gate-check
+    - orphan-check
+    - agent-check
+    - docs-check
+    - summary

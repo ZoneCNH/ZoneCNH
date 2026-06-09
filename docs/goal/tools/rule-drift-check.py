@@ -15,7 +15,13 @@ from typing import Any
 
 
 def clean_value(raw: str) -> str:
-    value = raw.split("#", 1)[0].strip()
+    value = raw.strip()
+    if len(value) >= 2 and value[0] in {"'", '"'}:
+        quote = value[0]
+        end = value.rfind(quote)
+        if end > 0:
+            return value[1:end]
+    value = value.split("#", 1)[0].strip()
     if len(value) >= 2 and value[0] == value[-1] and value[0] in {"'", '"'}:
         value = value[1:-1]
     return value
@@ -41,6 +47,41 @@ def as_list(value: Any) -> list[str]:
     if isinstance(value, str):
         return parse_inline_list(value)
     return []
+
+
+EDGE_REQUIRED_FIELDS = {
+    "source_id",
+    "target_id",
+    "relation",
+    "status",
+    "evidence_id",
+    "gate_id",
+    "owner",
+    "updated_at",
+}
+EDGE_NON_EMPTY_FIELDS = EDGE_REQUIRED_FIELDS - {"evidence_id"}
+EDGE_RELATIONS = {
+    "decomposes_to",
+    "contains",
+    "accepted_by",
+    "planned_by",
+    "implemented_by",
+    "prompted_by",
+    "verified_by",
+    "evidenced_by",
+}
+EDGE_STATUSES = {
+    "Unmapped",
+    "Mapped",
+    "Linked",
+    "Verified",
+    "Dropped",
+    "Drifted",
+    "Stale",
+    "Blocked",
+    "Changed",
+}
+EDGE_TERMINAL_STATUSES = {"Verified", "Dropped"}
 
 
 def load_rules(path: Path) -> dict[str, dict[str, Any]]:
@@ -69,6 +110,14 @@ def load_rules(path: Path) -> dict[str, dict[str, Any]]:
         if child and section:
             key, value = child.group(1), clean_value(child.group(2) or "")
             rules[section][key] = parse_int(value) if value else []
+            continue
+
+        nested = re.match(r"^    ([A-Za-z_]+):(?:\s*(.*))?$", raw_line)
+        if nested and section and key:
+            if not isinstance(rules[section].get(key), dict):
+                rules[section][key] = {}
+            name, value = nested.group(1), clean_value(nested.group(2) or "")
+            rules[section][key][name] = parse_int(value) if value else {}
             continue
 
         item = re.match(r"^    -\s*(.+?)\s*$", raw_line)
@@ -102,25 +151,25 @@ def parse_matrix(path: Path) -> list[dict[str, Any]]:
     current_key: str | None = None
 
     for raw_line in path.read_text(encoding="utf-8").splitlines():
-        start = re.match(r"^\s*-\s+goal_id:\s*(.*)$", raw_line)
+        start = re.match(r"^\s*-\s+(source_id|goal_id):\s*(.*)$", raw_line)
         if start:
             if current:
                 rows.append(current)
-            current = {"goal_id": clean_value(start.group(1))}
-            current_key = "goal_id"
+            current = {"source_id": clean_value(start.group(2))}
+            current_key = "source_id"
             continue
 
         if current is None:
             continue
 
-        field = re.match(r"^\s{4}([A-Za-z_]+):\s*(.*)$", raw_line)
+        field = re.match(r"^\s+([A-Za-z_]+):\s*(.*)$", raw_line)
         if field:
             current_key = field.group(1)
             value = clean_value(field.group(2))
             current[current_key] = parse_inline_list(value) if value.startswith("[") else value
             continue
 
-        item = re.match(r"^\s{6}-\s*(.+?)\s*$", raw_line)
+        item = re.match(r"^\s+-\s*(.+?)\s*$", raw_line)
         if item and current_key:
             current.setdefault(current_key, [])
             if not isinstance(current[current_key], list):
@@ -152,44 +201,60 @@ def check_matrix(root: Path, rules: dict[str, dict[str, Any]], report: Report) -
         return set()
 
     rows = parse_matrix(matrix_file)
-    required = set(as_list(rules["matrix"]["required_fields"]))
-    allowed_statuses = set(as_list(rules["matrix"]["statuses"]))
-    terminal_statuses = set(as_list(rules["matrix"]["terminal_statuses"]))
-    allowed_risks = set(as_list(rules["matrix"]["risks"]))
-    threshold = int(rules["matrix"]["coverage_threshold"])
+    configured_required = set(as_list(rules["matrix"].get("required_fields", [])))
+    allowed_statuses = set(as_list(rules["matrix"].get("statuses", []))) or EDGE_STATUSES
+    terminal_statuses = (
+        set(as_list(rules["matrix"].get("terminal_statuses", []))) or EDGE_TERMINAL_STATUSES
+    )
+    allowed_relations = set(as_list(rules["matrix"].get("relations", []))) or EDGE_RELATIONS
+    threshold = int(rules["matrix"].get("coverage_threshold", 95))
+
+    if configured_required and configured_required != EDGE_REQUIRED_FIELDS:
+        report.fail(
+            "rules.yaml matrix.required_fields drift: "
+            f"expected {sorted(EDGE_REQUIRED_FIELDS)}, actual {sorted(configured_required)}"
+        )
 
     if not rows:
-        report.fail("Matrix has no rows")
+        report.fail("Matrix has no edge rows")
         return set()
 
     evidence_refs: set[str] = set()
     terminal = 0
     for index, row in enumerate(rows, start=1):
-        missing = sorted(field for field in required if field not in row)
+        missing = sorted(field for field in EDGE_REQUIRED_FIELDS if field not in row)
         if missing:
             report.fail(f"Matrix row {index} missing fields: {', '.join(missing)}")
 
+        empty = sorted(
+            field
+            for field in EDGE_NON_EMPTY_FIELDS
+            if field in row and not str(row.get(field, "")).strip()
+        )
+        if empty:
+            report.fail(f"Matrix row {index} has empty edge fields: {', '.join(empty)}")
+
         status = str(row.get("status", ""))
-        risk = str(row.get("risk", ""))
+        relation = str(row.get("relation", ""))
+        if relation not in allowed_relations:
+            report.fail(f"Matrix row {index} has invalid relation: {relation}")
         if status not in allowed_statuses:
             report.fail(f"Matrix row {index} has invalid status: {status}")
-        if risk and risk not in allowed_risks:
-            report.fail(f"Matrix row {index} has invalid risk: {risk}")
         if status in terminal_statuses:
             terminal += 1
 
-        evidence_ids = as_list(row.get("evidence_ids", []))
+        evidence_ids = [ref for ref in as_list(row.get("evidence_id", "")) if ref]
         if status == "Verified" and not evidence_ids:
-            report.fail(f"Matrix row {index} is Verified but has no evidence_ids")
+            report.fail(f"Matrix row {index} is Verified but has no evidence_id")
         if status == "Dropped" and not row.get("drop_reason"):
             report.fail(f"Matrix row {index} is Dropped but has no drop_reason")
         evidence_refs.update(evidence_ids)
 
     coverage = terminal * 100 // len(rows)
     if coverage < threshold:
-        report.fail(f"Matrix terminal coverage {coverage}% is below {threshold}%")
+        report.fail(f"Matrix edge terminal coverage {coverage}% is below {threshold}%")
     else:
-        report.pass_(f"Matrix terminal coverage {coverage}% meets threshold {threshold}%")
+        report.pass_(f"Matrix edge terminal coverage {coverage}% meets threshold {threshold}%")
 
     return evidence_refs
 
@@ -254,7 +319,7 @@ def check_evidence(
     missing_refs = sorted(ref for ref in matrix_refs if ref not in found)
     orphan_files = sorted(evid for evid in found if evid and evid not in matrix_refs)
     if missing_refs:
-        report.fail(f"Matrix evidence_ids missing files: {', '.join(missing_refs)}")
+        report.fail(f"Matrix evidence references missing files: {', '.join(missing_refs)}")
     if orphan_files:
         report.fail(f"Evidence files not referenced by Matrix: {', '.join(orphan_files)}")
     if files and not missing_refs and not orphan_files:
@@ -312,24 +377,50 @@ def check_pipeline(root: Path, rules: dict[str, dict[str, Any]], report: Report)
         report.fail(f"Pipeline file missing: {pipeline_file}")
         return
 
-    states = set(as_list(rules["pipeline"]["states"]))
-    phases = set(as_list(rules["pipeline"]["phases"]))
-    phase_statuses = set(as_list(rules["pipeline"]["phase_statuses"]))
+    pipeline_rules = rules["pipeline"]
+    states = set(as_list(pipeline_rules["states"]))
+    phases = set(as_list(pipeline_rules["phases"]))
+    phase_statuses = set(as_list(pipeline_rules["phase_statuses"]))
+    state_axes = pipeline_rules.get("state_axes", {})
+    workflow_steps = set(as_list(pipeline_rules.get("workflow_steps", [])))
     text = pipeline_file.read_text(encoding="utf-8")
 
+    axis_ok = True
+    expected_axes = {"pipeline_state", "current_phase", "phase_status", "workflow_step"}
+    if not isinstance(state_axes, dict) or set(state_axes) != expected_axes:
+        axis_ok = False
+        actual_axes = sorted(state_axes) if isinstance(state_axes, dict) else state_axes
+        report.fail(f"pipeline.state_axes mismatch: expected {sorted(expected_axes)}, actual {actual_axes}")
+    if not workflow_steps:
+        axis_ok = False
+        report.fail("pipeline.workflow_steps enum is empty")
+
     invalid: list[str] = []
-    for field, value in re.findall(r"^\s*(pipeline_state|previous_pipeline_state|current_phase|phase_status):\s*([A-Z_]+)", text, re.MULTILINE):
+    seen_workflow_step = False
+    value_pattern = (
+        r"^\s*(pipeline_state|previous_pipeline_state|current_phase|phase_status|workflow_step):"
+        r"\s*([A-Za-z0-9_-]+)\s*(?:#.*)?$"
+    )
+    for field, value in re.findall(value_pattern, text, re.MULTILINE):
         if field in {"pipeline_state", "previous_pipeline_state"} and value not in states:
             invalid.append(f"{field}={value}")
         elif field == "current_phase" and value not in phases:
             invalid.append(f"{field}={value}")
         elif field == "phase_status" and value not in phase_statuses:
             invalid.append(f"{field}={value}")
+        elif field == "workflow_step":
+            seen_workflow_step = True
+            if value not in workflow_steps:
+                invalid.append(f"{field}={value}")
+
+    if axis_ok and not seen_workflow_step:
+        report.fail("Pipeline file has no workflow_step values")
+        axis_ok = False
 
     if invalid:
         report.fail(f"Pipeline values outside rules.yaml: {', '.join(invalid)}")
-    else:
-        report.pass_("Pipeline state, phase, and phase_status values match rules.yaml")
+    elif axis_ok:
+        report.pass_("Pipeline state, phase, phase_status, and workflow_step values match rules.yaml")
 
 
 def check_ci(root: Path, rules: dict[str, dict[str, Any]], report: Report) -> None:

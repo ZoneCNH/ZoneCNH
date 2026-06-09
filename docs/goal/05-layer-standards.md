@@ -4,7 +4,7 @@
 
 本文档定义 Goal 驱动交付体系中 **Spec、Design、Plan、Tasks、Prompt、Code、Test** 的主流程层级标准，并定义 **Matrix** 作为横切追溯制品的维护标准。唯一主流程顺序定义见 [03-pipeline.md §1 完整管线](03-pipeline.md#1-完整管线)。
 
-Matrix 不参与主流程排序，不作为状态机阶段。
+Matrix 不参与主流程排序，不作为状态模型阶段。
 
 ---
 
@@ -13,7 +13,7 @@ Matrix 不参与主流程排序，不作为状态机阶段。
 ### 结构
 
 ```text
-Spec ID:        SPEC-<domain>-v<major>.<minor>
+Spec ID:        SPEC-<domain>-vN
 Spec Name:      需求名称
 Source Goal:    来自哪个 Goal
 User Story:     作为【角色】，我希望【能力】，以便【价值】
@@ -85,7 +85,7 @@ Design 在 Spec 之后、Plan 之前，回答"怎么拆、怎么隔离"。
 ### 结构
 
 ```text
-Design ID:    DESIGN-<domain>-v<major>.<minor>
+Design ID:    DESIGN-<domain>-vN
 Source Spec:  对应 Spec
 Modules:      模块拆分
 Interfaces:   接口定义
@@ -114,7 +114,7 @@ Plan 在 Design 之后、Tasks 之前产出，先定义执行策略、阶段顺�
 ### 结构
 
 ```text
-Plan Name:          PLAN-<goal-id>-v<major>.<minor>
+Plan ID:            PLAN-<goal-id>-vN
 Source Goal:        对应 Goal
 Execution Strategy: 整体执行策略
 Phases:             阶段列表（每阶段含 Task、Goal、Output、Validation）
@@ -202,7 +202,7 @@ Unmapped → Mapped → In Progress → Blocked → In Review → Done → Dropp
 ### 结构
 
 ```text
-Prompt ID:    P-XXX
+Prompt ID:    PROMPT-<task-id>-NNN
 Role:         AI 或执行者角色
 Source:       Task ID
 Context:      系统背景

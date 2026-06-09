@@ -4,6 +4,8 @@
 
 本文档集定义了一套完整的 **Goal 驱动交付体系**，用于确保每一行代码都能追溯到一个可验证的业务目标。
 
+权威边界入口见 [00-authority-map.md](00-authority-map.md)。本文档是索引和概览；状态枚举、Gate、ID、Registry、Matrix、Evidence、配置与运行态边界均以权威映射指向的 SSOT 为准。
+
 ## 核心公式
 
 > **Goal = 目标动作 + 结果对象 + 衡量指标 + 目标值 + 截止时间**
@@ -12,7 +14,7 @@
 
 ## 工作流全景
 
-> 完整管线（11 层）和双轴状态机定义见 [03-pipeline.md#完整管线](03-pipeline.md#1-完整管线)、[双轴状态机](03-pipeline.md#2-双轴状态机)。
+> 完整管线（11 层）和四轴状态模型定义见 [03-pipeline.md#完整管线](03-pipeline.md#1-完整管线)、[四轴状态模型](03-pipeline.md#2-四轴状态模型)。
 
 唯一主流程（完整 11 层）：
 
@@ -26,11 +28,13 @@ Matrix（追溯矩阵）是横切追溯制品，贯穿主流程但不作为主�
 
 ## 统一配置中心
 
-所有 Goal 相关状态统一存放在 `.config/goal/`，由 5 个 Goal Agent 共同维护：
+`.config/goal/` 是 Goal 控制面的可提交配置、schema 与审计快照目录；本地运行态、锁、缓存、local 覆盖和日志不作为权威制品，应写入 `.config/goal/runtime/`、`.omx/state/` 或对应 ignored 目录。
 
 ```text
 .config/goal/
 ├── README.md                    # 目录索引
+├── schema/
+│   └── rules.yaml               # docs/goal/ 权威规则的机器可读投影
 ├── registry/                    # Registry 子系统（6 个文件）
 │   ├── goals.yaml              # Goal Registry
 │   ├── tasks.yaml              # Task Registry
@@ -46,10 +50,11 @@ Matrix（追溯矩阵）是横切追溯制品，贯穿主流程但不作为主�
 │   └── state.yaml              # Pipeline 状态机
 ├── evidence/
 │   └── EVID-*.md               # Evidence 文件
-└── prompts/
-    └── TASK-*/                 # Prompt 版本
-        ├── v1.md
-        └── prompt-meta.yaml
+├── prompts/
+│   └── TASK-*/                 # Prompt 版本
+│       ├── v1.md
+│       └── prompt-meta.yaml
+└── runtime/                    # 本地运行态，忽略提交
 ```
 
 **Agent 职责分工**：
@@ -79,6 +84,7 @@ Goal 体系定义目标交付规则、状态机、Gate、Registry 和证据闭�
 
 | 文件                                                   | 内容                                                                         |
 | ------------------------------------------------------ | ---------------------------------------------------------------------------- |
+| [00-authority-map.md](00-authority-map.md)             | 权威边界：SSOT、投影、配置控制面与本地运行态边界                             |
 | [GLOSSARY.md](GLOSSARY.md)                             | 术语表：Goal 驱动交付体系核心术语定义                                        |
 | [00-quickstart.md](00-quickstart.md)                   | 快速开始：5 分钟理解体系、端到端案例、模式选择决策树、常见问题               |
 | [01-methodology.md](01-methodology.md)                 | 核心方法论：工作流原理、输入输出、闭环逻辑                                   |

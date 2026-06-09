@@ -1,8 +1,8 @@
-# 统一管线与状态机
+# 统一管线与状态模型
 
 > Gate 体系（G0-G11）的定义见 [04-gates.md](04-gates.md)。各层标准见 [05-layer-standards.md](05-layer-standards.md)。
 
-本文档定义 Goal 驱动交付体系的**统一管线**和**双轴状态机**。
+本文档定义 Goal 驱动交付体系的**统一管线**和**四轴状态模型**。
 
 ---
 
@@ -32,9 +32,18 @@ Goal → Spec → Design → Plan → Tasks → Prompt → Code → Test → Rev
 
 ---
 
-## 2. 双轴状态机
+## 2. 四轴状态模型
 
-本节是 Pipeline 状态枚举 SSOT。Registry、Glossary、Runtime、Gate 与脚本校验不得定义本地新增状态，只能引用或校验本节枚举。
+本节是 Pipeline 状态枚举与状态轴边界的 SSOT。Registry、Glossary、Runtime、Gate 与脚本校验不得定义本地新增状态，只能引用或校验本节枚举。
+
+### 2.0 状态轴边界
+
+| 状态轴 | 含义 | 合法取值来源 | 写入边界 |
+| ------ | ---- | ------------ | -------- |
+| `pipeline_state` | 全局管线状态机位置 | 本文 §2.1、§2.2 | Pipeline 运行器或 Gate 仲裁器写入 |
+| `current_phase` | 当前主流程层级 | `GOAL`、`SPEC`、`DESIGN`、`PLAN`、`TASKS`、`PROMPT`、`CODE`、`TEST`、`REVIEW`、`RELEASE`、`RETROSPECTIVE` | 主流程推进时写入；Matrix 不得写入 |
+| `phase_status` | 当前主流程层级的局部进度 | `NOT_STARTED`、`IN_PROGRESS`、`IN_REVIEW`、`READY`、`DONE`、`BLOCKED`、`SKIPPED`、`STALE` | 当前阶段 owner 或 Gate 仲裁器写入 |
+| `workflow_step` | SOP、Runtime 或 CI 的执行步骤 / 剖面 | `.config/goal/schema/rules.yaml` 的 `pipeline.workflow_steps` 投影 | 运行器、SOP 或 CI 写入；不得覆盖 `current_phase` 或 `pipeline_state` |
 
 ### 2.1 正常状态流
 
@@ -95,10 +104,10 @@ Recommended Next Action: [建议下一步]
 | 对象 | 状态值 | 定义位置 |
 |------|--------|----------|
 | Goal | Draft → Active → Paused → Achieved / Abandoned | [15-registry.md §1](15-registry.md#1-goal-registry) |
-| Spec | Draft → Review → Approved → Superseded / Deprecated | [05-layer-standards.md §2](05-layer-standards.md#2-spec-标准) |
-| Design | Draft → Review → Approved → Superseded | [05-layer-standards.md §3](05-layer-standards.md#3-design-标准) |
-| Plan | Draft → Approved → Superseded | [05-layer-standards.md §4](05-layer-standards.md#4-plan-标准) |
-| Task | Unmapped → Mapped → In Progress → Blocked → In Review → Done / Dropped | [05-layer-standards.md §5](05-layer-standards.md#5-tasks-标准) |
+| Spec | Draft → Review → Approved → Superseded / Deprecated | [05-layer-standards.md §1](05-layer-standards.md#1-spec-标准) |
+| Design | Draft → Review → Approved → Superseded | [05-layer-standards.md §2](05-layer-standards.md#2-design-标准) |
+| Plan | Draft → Approved → Superseded | [05-layer-standards.md §3](05-layer-standards.md#3-plan-标准) |
+| Task | Unmapped → Mapped → In Progress → Blocked → In Review → Done / Dropped | [05-layer-standards.md §4](05-layer-standards.md#4-tasks-标准) |
 | Matrix | Unmapped → Mapped → Linked → Verified / Dropped；Drifted / Stale / Blocked / Changed 为漂移或阻塞元状态 | [05-layer-standards.md §9](05-layer-standards.md#9-matrix-横切标准) |
 | Pipeline | INIT→…→DONE（见 §2.1） | [本文件 §2.1](#21-正常状态流) |
 | Issue | OPEN → TRIAGED → SPEC_READY → DESIGN_READY → TASKS_READY → IN_PROGRESS → IN_REVIEW → READY_FOR_RELEASE → DONE | [15-registry.md §4](15-registry.md#4-issue-生命周期) |
