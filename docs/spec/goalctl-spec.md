@@ -101,6 +101,6 @@ Acceptance Criteria for final review:
 Edge-case and error-handling rules:
 
 - Missing or stale source files emit `GOALCTL-REF-001` and block acceptance.
-- Registry drift from `.config/goal/schema/rules.yaml` emits `GOALCTL-REG-001` and block acceptance.
+- Registry drift from `.config/goal/schema/rules.yaml` emits `GOALCTL-REG-001` and blocks acceptance.
 - Evidence that omits Acceptance Criteria ID or Spec ID emits `GOALCTL-EVID-001` and blocks Done/Verified claims.
 - Any `docs/goal/` diff during this review is a scope violation and must be reverted before reporting completion.
