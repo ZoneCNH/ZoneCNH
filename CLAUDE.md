@@ -51,8 +51,8 @@
 > 详见 `CONSTITUTION.md` 第零条。本条优先级高于以下所有条款。
 
 - **禁止**在 `main` 分支上直接编辑文件或提交变更。
-- 所有开发工作必须通过 `git worktree` 或 feature branch 进行。
-- 工作完成后通过 PR 或 merge 合入 main，随后清理 worktree。
+- 所有开发工作必须通过 feature branch 进行。
+- 工作完成后通过 PR 或 merge 合入 main，随后删除分支。
 - 仅 `git merge`/`git rebase`/`git pull` 和紧急 hotfix 允许在 main 上执行。
 
 ## 约定
