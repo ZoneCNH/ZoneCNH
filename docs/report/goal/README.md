@@ -58,19 +58,22 @@
 
 ## 当前 dirty/untracked 注意事项
 
-以下状态来自 2026-06-09 修复验收后的显式检查。当前 `git status --short --untracked-files=all` 仅显示本轮报告证据补录的两份文件；新增 Goal 控制面、权威文档和报告制品已经进入 Git 跟踪面。`.worktree/` 作为本地工作目录继续忽略。
+以下状态来自 2026-06-09 worker-1 复核。复核前目标 worker worktree 的 `git status --short --untracked-files=all` 无输出；本次文档修订期间只允许出现本节列出的报告/工具说明文件修改。新增 Goal 控制面、权威文档和报告制品已经进入 Git 跟踪面。`.worktree/` 是父级工作区的本地执行目录，不是目标 worker worktree 内的仓内目录。
 
 | 状态 | 路径 | 注意事项 |
 | --- | --- | --- |
-| modified | `docs/report/goal/README.md` | 本轮补录报告入口的最终 Git 状态说明。 |
-| modified | `docs/report/goal/goal-docs-fix-verification-20260609.md` | 本轮补录修复验收证据；除这两份报告外无其他 status 输出。 |
+| clean baseline | worker repo root | worker-1 复核开始时 `git status --short --untracked-files=all` 无输出。 |
+| scoped edit | `docs/report/goal/README.md` | 本次补录报告入口的当前 Git/ignore 边界。 |
+| scoped edit | `docs/report/goal/ISSUE-LEDGER.md` | 本次补录 residual 项的复核结论。 |
+| scoped edit | `docs/report/goal/goal-docs-fix-verification-20260609.md` | 本次补录修复验收证据。 |
+| scoped edit | `docs/goal/tools/README.md` | 为 `GDR-FIXTURE-01` 增加负例 fixture 覆盖契约，未新增依赖。 |
 | tracked | `.config/goal/schema/rules.yaml` | `git ls-files --error-unmatch .config/goal/schema/rules.yaml` 通过，控制面 schema 已在跟踪面内。 |
 | tracked | `docs/goal/00-authority-map.md` | `git ls-files --error-unmatch docs/goal/00-authority-map.md` 通过，权威映射已在跟踪面内。 |
 | tracked | `docs/report/goal/README.md` | 报告目录入口已在跟踪面内。 |
 | tracked | `docs/report/goal/goal-docs-fix-verification-20260609.md` | 修复验收报告已在跟踪面内。 |
 | not ignored | `.config/goal/schema/rules.yaml` | `git check-ignore -v .config/goal/schema/rules.yaml` 无输出，符合控制面可审查边界。 |
 | ignored | `.config/goal/runtime/cache.json` | 被 `.gitignore:30:.config/goal/**/runtime/` 忽略；runtime 缓存保持忽略符合预期。 |
-| ignored | `.worktree/todo.md` | `git status --ignored --short .worktree/todo.md` 输出 `!! .worktree/`；本地执行 TODO 保持不入库。 |
+| ignored local | `/home/ZoneCNH/.worktree/todo.md` | `git -C /home/ZoneCNH check-ignore -v .worktree/todo.md` 命中 `.gitignore:38:.worktree/`；本地执行 TODO 保持不入库。 |
 
 ## 文件生命周期
 
