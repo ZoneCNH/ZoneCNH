@@ -146,6 +146,9 @@ THEN 返回 `HealthStatus{Ready: false, Live: false}`
 WHEN 调用 `ModuleHealth(name)` 且模块处于 Error 状态（启动失败）
 THEN 返回 `HealthStatus{Ready: false, Live: false, Message: "<错误信息>"}`
 
+WHEN 调用 `ModuleHealth(name)` 且模块 Health 方法 panic
+THEN 返回 `HealthStatus{Ready: false, Live: false, Message: "health check panic"}`，panic 不传播
+
 ### FR-005: DependencyGraph
 
 WHEN 调用 `DependencyGraph()`

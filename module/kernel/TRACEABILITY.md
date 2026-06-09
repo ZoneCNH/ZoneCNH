@@ -26,8 +26,8 @@
 | BR-005 | Health(ctx) 必须幂等、无副作用 | AC-005 | TC-009 | TASK-KERNEL-006 | Pending |
 | BR-006 | Stop 超时后 force shutdown，记录未完成模块 | AC-003 | TC-004 | TASK-KERNEL-005 | Pending |
 | BR-007 | panic 必须被 catch，不传播到调用方 | AC-007 | TC-006, TC-016, TC-017 | TASK-KERNEL-007 | Pending |
-| BR-008 | kernel 不 import 任何非 stdlib 包 | AC-008 | CI stdlib-only gate | TASK-KERNEL-000 | Pending |
-| BR-009 | Deps 中的接口类型由消费方组装时注入 | AC-008 | CI stdlib-only gate | TASK-KERNEL-001 | Pending |
+| BR-008 | kernel 不 import 任何非 stdlib 包 | AC-008 | TC-019 | TASK-KERNEL-000 | Pending |
+| BR-009 | Deps 中的接口类型由消费方组装时注入 | AC-008 | TC-019 | TASK-KERNEL-001 | Pending |
 
 ## Acceptance Criteria
 
@@ -64,6 +64,7 @@
 | TC-016 | Init panic 隔离 | FR-002 | BR-007 | TASK-KERNEL-007 | Pending |
 | TC-017 | Stop panic 隔离 | FR-003 | BR-007 | TASK-KERNEL-007 | Pending |
 | TC-018 | Init 失败不进入 Start | FR-002 | BR-004 | TASK-KERNEL-004 | Pending |
+| TC-019 | stdlib-only gate | — | BR-008, BR-009 | TASK-KERNEL-000, TASK-KERNEL-001 | Pending |
 
 ## Coverage Summary
 
@@ -72,7 +73,7 @@
 | FR | 5 | 5 | None |
 | BR | 9 | 9 | None |
 | AC | 8 | 8 | None |
-| TC | 18 | 18 | None |
+| TC | 19 | 19 | None |
 
 ## 编号说明
 

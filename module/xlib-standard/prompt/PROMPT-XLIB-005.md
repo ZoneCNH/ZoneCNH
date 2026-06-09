@@ -1,82 +1,88 @@
 # Context Packet — TASK-XLIB-005
 
-> 最终验收 — 生成库验证、100 次自检、tag
-> 无独立分支，在全部 PR 合并后于 main 执行
+> 最终验收 — 生成库验证、100 次自检、tag v1.0.0
+> 工作分支: `feat/xlib-v1-release`
 
 ## Current Task
 
-TASK-XLIB-005: 最终验收 — 生成库验证、100 次自检、tag
+TASK-XLIB-005: 生成库验收、selfcheck-100.sh、最终 gate
 
 ## Related Spec
 
-- module/xlib-standard/SPEC.md (§20 Release DoD, §19 CI Gate)
+- module/xlib-standard/SPEC.md §22 Release DoD
 
 ## Related Requirements
 
-- FR-009: 生成器接受目标模块路径
-- FR-010: 生成器输出可编译的 Go 基座库
-- FR-012: 自动生成校验
-- AC-021: 生成的库满足 spec-lint 通过
-- AC-027: selfcheck-100.sh 运行 100 次无失败
+- FR-010: 生成库无模板残留
+- FR-014: release final check 通过
+- AC-001~AC-007
 
 ## Current Scope
 
-执行最终验收：
-
-1. **生成库验证** — 用生成器创建测试库，验证：
-   - `go build ./...` 通过
-   - `go test ./... -race` 通过
-   - `go vet ./...` 通过
-   - 目录结构符合 standard.md
-   - spec-lint 通过
-
-2. **100 次自检** — 运行 `selfcheck-100.sh`：
-   - 100 次 spec-lint + task-lint + trace-lint
-   - 0 失败
-
-3. **Tag** — 打 `v1.0.0` tag
+1. **selfcheck-100.sh** — 100 次渲染 + 测试脚本
+2. **生成库验收** — 临时目录 go test / race / 残留检查
+3. **最终 gate** — make ci / release-check / release-final-check
 
 ## Out of Scope
 
-- 不修改任何代码
-- 不修改文档
-- 只做验证和打 tag
+- 不创建或推送 git tag
+- 不修改已通过验收的标准库 API
+- 不扩大生成脚本参数集
+
+## Allowed Files
+
+- `selfcheck-100.sh`
+
+## Prohibited Actions
+
+- 禁止修改 pkg/templatex/ 已验收代码
+- 禁止推送 git tag
+- 禁止修改生成脚本参数
+
+## Acceptance Criteria
+
+- AC-001: 临时目录生成库 `go test ./...` 通过
+- AC-002: 临时目录生成库 `go test -race ./...` 通过
+- AC-003: 生成库无 templatex/xlib-standard/foundationx/baselib-template 残留
+- AC-004: `selfcheck-100.sh` 100 次全部通过
+- AC-005: `make ci` 通过
+- AC-006: `make release-check` 通过
+- AC-007: `make release-final-check` 通过
 
 ## Validation Commands
 
 ```bash
-# 生成器验证
-go run ./cmd/xlib-generate --module-path test.example/xlib-demo --package-name xlibdemo --module-name xlib-demo --output /tmp/xlib-demo
-cd /tmp/xlib-demo && go build ./... && go test ./... -race && go vet ./...
-bash scripts/spec-lint.sh /tmp/xlib-demo
-
-# 100 次自检
-bash scripts/selfcheck-100.sh
-
-# Tag
-git tag v1.0.0
+tmp="$(mktemp -d)"
+scripts/render_template.sh \
+  --module-path github.com/ZoneCNH/kernel \
+  --package-name kernel \
+  --out "$tmp/kernel"
+cd "$tmp/kernel"
+GOWORK=off go test ./...
+GOWORK=off go test -race ./...
+! grep -R "templatex" "$tmp/kernel" --exclude-dir=.git
+! grep -R "xlib-standard" "$tmp/kernel" --exclude-dir=.git
+cd -
+rm -rf "$tmp"
+./selfcheck-100.sh
+GOWORK=off make ci
+GOWORK=off make release-check
+GOWORK=off make release-final-check
 ```
-
-## Required Output
-
-1. 生成库验证结果
-2. 100 次自检结果
-3. Tag 信息
-4. 最终验收清单确认
 
 ## Evidence Format
 
-完成后提交 evidence 到 `.config/goal/evidence/` 目录，格式如下：
-
 ```markdown
 - **Evidence ID**: EVID-TEST-TASK-XLIB-005-001
-- **Status**: PASS
-- **Files Changed**: <实际修改的文件列表>
-- **Commands Run**: <实际执行的命令及输出>
+- **Task ID**: TASK-XLIB-005
+- **Status**: PASS/FAIL
+- **Validation Run**: <命令及输出>
+- **Files Changed**: <文件列表>
+- **AC Verified**: AC-001~AC-007
+- **Timestamp**: <ISO-8601>
+- **Verifier**: <agent/human>
 ```
 
-## Project Rules
+## Test Case Reference
 
-- Follow AGENTS.md
-- 验证失败则不打 tag
-- 所有验证必须在 main 分支上执行
+参见 `module/xlib-standard/TRACEABILITY.md` FR-010 / FR-014 对应 TC。

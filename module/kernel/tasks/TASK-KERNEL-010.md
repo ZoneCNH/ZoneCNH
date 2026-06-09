@@ -52,44 +52,17 @@ status: pending
 - 不实现业务逻辑（→ TASK-KERNEL-002~008）
 - 不实现集成测试（→ TASK-KERNEL-009）
 - 不修改已有代码
-  - "TASK-KERNEL-002"
-  - "TASK-KERNEL-003"
-  - "TASK-KERNEL-004"
-  - "TASK-KERNEL-005"
-  - "TASK-KERNEL-006"
-  - "TASK-KERNEL-007"
-  - "TASK-KERNEL-008"
-  - "TASK-KERNEL-009"
-estimated_effort: "2h"
-priority: P1
-status: pending
-```
-
----
-
-## Files Likely to Change
-
-- `README.md` — 新建
-- `CHANGELOG.md` — 新建
-- `example_test.go` — 新建
-
-## Requirements Covered
-
-| Requirement | Description | Acceptance Criteria |
-|---|---|---|
-| §22 | Release DoD：文档、示例、覆盖率、CI | 所有 Release DoD 条目通过 |
-| §9.2 | 用法示例 | README 和 example_test.go 包含用法示例 |
 
 ## Test Plan
 
 | Test Case | Type | Description |
 |---|---|---|
-| — | CI Gate | `go test ./... -coverprofile=cover.out` 覆盖率 >= 90% |
-| — | CI Gate | `go test ./... -race -count=1` 无 data race |
-| — | CI Gate | `go vet ./...` 无警告 |
-| — | CI Gate | `go list -deps ./... | grep -v "^std" | grep -v "kernel"` 无输出 |
-| — | CI Gate | `golangci-lint run` 无错误 |
-| — | CI Gate | `go test -bench=. -benchmem -count=3 ./...` 结果附在 PR |
+| TC-019 | CI Gate | stdlib-only：`go list -deps ./... | grep -v "^std" | grep -v "kernel"` 无输出 |
+| — | CI Gate | 覆盖率：`go test ./... -coverprofile=cover.out` >= 90% |
+| — | CI Gate | data race：`go test ./... -race -count=1` |
+| — | CI Gate | vet：`go vet ./...` 无警告 |
+| — | CI Gate | lint：`golangci-lint run` 无错误 |
+| — | CI Gate | benchmark：`go test -bench=. -benchmem -count=3 ./...` 结果附在 PR |
 | — | Review | README 内容完整性检查 |
 | — | Review | godoc 注释完整性检查 |
 

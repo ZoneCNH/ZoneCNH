@@ -9,6 +9,31 @@ Updated: 2026-06-09
 
 本规格定义 `xlib-standard` 作为 Go 基础库标准模板的最小可交付范围。它约束公共 API、模板生成、验证 gate、release manifest 与最终验收，不承载业务域实现。
 
+## Constitution Compliance
+
+| 条款 | 要求 | 遵循方式 |
+|------|------|----------|
+| §1 分层领域模型 | 模板不承载业务域，只生成基座库骨架 | 模板仅含 Config/Error/Health/Metrics/Client/Version |
+| §3 接口契约优先 | `contracts/` 定义跨域接口 | errors.schema.json、health.schema.json、metrics.json |
+| §5 配置外部化 | 配置由调用方显式传入 | Config 结构体必填字段校验 |
+| §7 错误处理规范 | 8 种 ErrorKind 稳定 | errors.go 实现 NewError/WrapError/IsKind |
+| §9 可观测性 | P0 指标名稳定、label 低基数 | NoopMetrics + 5 个 P0 指标 |
+| §11 发布流程 | release manifest + checksum | release_check.sh 生成 latest.json + .sha256 |
+| §13 安全红线 | 不提交 secret/API key | Sanitize 脱敏 + security gate 扫描 |
+
+## Lifecycle State
+
+| 阶段 | 状态 | 说明 |
+|------|------|------|
+| Spec | Approved | 2026-06-09 批准 |
+| Plan | Approved | 6 子任务依赖拓扑已确认 |
+| Tasks | Ready | 9 个 task spec 已拆分 |
+| Prompt | Ready | 9 个 context packet 已生成 |
+| Code | Pending | 待执行 |
+| Test | Pending | 待执行 |
+| Release | Pending | 待 v1.0.0 发布 |
+
+
 ## Summary
 
 `xlib-standard` 提供一个可编译、可渲染、可验证的 Go library 标准源，用于生成 `kernel`、`market-data`、`factor-engine` 等模块的基础库骨架。交付物包括模板源码、渲染脚本、边界检查、合约检查、安全检查、CI gate、release manifest 和最终发布检查。
@@ -279,6 +304,14 @@ CI 必须运行 `GOWORK=off make ci` 和 `GOWORK=off make release-check`。`make
 ## Dependencies
 
 模板优先使用 Go 标准库。允许使用本仓库已有脚本、Makefile 和 GitHub Actions。不得为模板生成、边界检查或 release manifest 引入新的外部运行时依赖，除非后续规格显式批准。
+
+## Breaking Change Policy
+
+破坏性接口变更（ErrorKind 增删、Config 字段类型变更、Metrics label 变更）必须：
+1. 在  兼容矩阵中记录。
+2. 在 release manifest 中体现版本 bump。
+3. 提供迁移脚本或回滚说明。
+4. 经下游消费者确认后方可合入。
 
 ## Rollout
 

@@ -1,82 +1,77 @@
 # Context Packet — TASK-XLIB-004
 
-> PR-5: release 标准 — release manifest、semver 兼容矩阵
+> PR-5：release 标准 — release manifest、semver 兼容矩阵
 > 工作分支: `feat/xlib-v1-release`
-> 工作目录: worktree/xlib-v1-release/
 
 ## Current Task
 
-TASK-XLIB-004: release 标准 — release manifest、semver 兼容矩阵
+TASK-XLIB-004: release manifest 生成和 semver 兼容矩阵
 
 ## Related Spec
 
-- module/xlib-standard/SPEC.md (§7 FR-013~FR-014, §20 Release DoD, §21 Upgrade Compatibility)
+- module/xlib-standard/SPEC.md §21 Release DoD, §22 Upgrade Compatibility
 
 ## Related Requirements
 
-- FR-013: 发布制品与版本管理
-- FR-014: 版本兼容性矩阵
-- AC-025: release 目录仅含 manifest 和兼容性矩阵
+- FR-013: release manifest 字段完整
+- FR-014: release final check checksum 通过
+- AC-001~AC-005
 
 ## Current Scope
 
-实现以下发布标准：
-
-1. **pkg/templatex/release.go** — Release manifest 生成：
-   - `GenerateManifest(cfg ManifestConfig) (*ReleaseManifest, error)`
-   - 输出 JSON 格式的 release manifest
-   - 包含模块名、版本、Go 版本、依赖列表、校验和
-
-2. **pkg/templatex/compat.go** — Semver 兼容性矩阵：
-   - `CompatibilityMatrix` 结构体
-   - Go 版本与模块版本的兼容性映射
-   - 向前兼容规则定义
-
-3. **pkg/templatex/release_test.go** — 测试
-
-4. **pkg/templatex/compat_test.go** — 测试
+1. **release/manifest/** — release_check.sh 生成 `latest.json` + `latest.json.sha256`
+2. **SEMANTIC-VERSIONING.md** — ErrorKind / Metrics / Generator 参数兼容性矩阵
+3. **.gitignore** — 忽略 `release/manifest/latest.json*`
 
 ## Out of Scope
 
-- 不实现生成器 CLI
-- 不修改 CI 配置
-- 不修改文档
-- 不引入外部依赖
+- 不发布 tag、不推送远端
+- 不把 governance score、agent review、docker runtime 写入 manifest
+- 不改变前序标准库 API
+
+## Allowed Files
+
+- `release/manifest/` (目录)
+- `SEMANTIC-VERSIONING.md`
+- `.gitignore`
+
+## Prohibited Actions
+
+- 禁止引入新依赖
+- 禁止修改 pkg/templatex/
+- 禁止发布 git tag
+
+## Acceptance Criteria
+
+- AC-001: `release_check.sh` 生成 `release/manifest/latest.json` 和 `.sha256`
+- AC-002: manifest 包含 module_path/package_name/version/commit/tree_sha/go_version/contracts_sha256/gates/generated_at
+- AC-003: manifest 不包含 goal_runtime/score/debt/branch_governance/agent_review/downstream_matrix/docker_runtime
+- AC-004: `.gitignore` 包含 release manifest 路径
+- AC-005: `SEMANTIC-VERSIONING.md` 覆盖 ErrorKind / Metrics / Generator 兼容性
 
 ## Validation Commands
 
 ```bash
-# 编译通过
-go build ./...
-
-# 测试通过
-go test ./... -race
-
-# manifest 生成可验证
-go run -run TestGenerateManifest
+GOWORK=off make release-check
+test -f release/manifest/latest.json
+test -f release/manifest/latest.json.sha256
+cat release/manifest/latest.json | python3 -m json.tool
+grep "goal_runtime" release/manifest/latest.json  # 应无输出
 ```
-
-## Required Output
-
-1. 文件变更清单
-2. 需求覆盖表（FR-013, FR-014, AC-025）
-3. 测试覆盖报告
-4. 验证结果
 
 ## Evidence Format
 
-完成后提交 evidence 到 `.config/goal/evidence/` 目录，格式如下：
-
 ```markdown
 - **Evidence ID**: EVID-TEST-TASK-XLIB-004-001
-- **Status**: PASS
-- **Files Changed**: <实际修改的文件列表>
-- **Commands Run**: <实际执行的命令及输出>
+- **Task ID**: TASK-XLIB-004
+- **Status**: PASS/FAIL
+- **Validation Run**: <命令及输出>
+- **Files Changed**: <文件列表>
+- **AC Verified**: AC-001~AC-005
+- **Timestamp**: <ISO-8601>
+- **Verifier**: <agent/human>
 ```
 
-## Project Rules
+## Test Case Reference
 
-- Follow AGENTS.md
-- JSON 输出使用 `encoding/json`
-- 版本遵循 semver 2.0.0
-- 不引入外部依赖
+参见 `module/xlib-standard/TRACEABILITY.md` FR-013 / FR-014 对应 TC。
