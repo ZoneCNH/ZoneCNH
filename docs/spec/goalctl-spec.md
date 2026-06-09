@@ -1,485 +1,212 @@
-# goalctl 完整规格（Spec）
+# goalctl 规格：Goal 权威规则、状态与 Gate（worker-1 切片）
 
-- Spec ID: `SPEC-goalctl-v1`
-- Status: Draft for review
-- Date: 2026-06-09
-- Owner: OMX team task `home-zonecnh-worktree-6c1b0874/task-3`
-- Scope: define the complete `goalctl` command, validation, reporting, evidence, and acceptance contract from `docs/goal` and `.config/goal`.
-- Non-scope: this document does not change `docs/goal` authority rules and does not implement a runtime binary.
+## 1. 范围
 
-## 1. Purpose and success metrics
+本文是 `goalctl` 规格的 worker-1 切片，只固化 `docs/goal/` 与 `.config/goal/` 中已经存在的权威规则、状态模型、Gate 语义和当前审计快照。CLI 命令形态、配置加载、运行时错误处理和 Evidence 采集实现由其他切片补充。
 
-`goalctl` is the CLI adapter for the Goal control plane. It reads Goal authority documents and projected config, validates drift, reports traceability, and prepares machine-readable evidence for operators and CI.
+`goalctl` MUST NOT 修改或反向定义 `docs/goal/`。当机器可读配置与权威文档冲突时，`goalctl` 必须报告冲突并阻止静默规范化。
 
-Success is measurable by these metrics:
+## 2. 权威与投影合同
 
-1. 100% of normative `goalctl` commands, data fields, and error semantics in this spec cite an authoritative source path in Section 2.
-2. 100% of acceptance criteria in Section 12 map to at least one `REQ-SPEC-goalctl-v1-*` requirement.
-3. Matrix coverage checks use the configured `95%` threshold from `.config/goal/schema/rules.yaml`.
-4. All Goal state checks use the four-axis model: `pipeline_state`, `current_phase`, `phase_status`, and `workflow_step`.
-
-## 2. Source map and authority hierarchy
-
-`goalctl` MUST treat `docs/goal` as the system of record and `.config/goal` as a projected control-plane/config surface. It MUST NOT invent new state enums, Gate IDs, Registry files, Matrix relations, Evidence IDs, or authority boundaries.
-
-| Contract area | Authoritative source | Projection / check source | `goalctl` obligation |
-| --- | --- | --- | --- |
-| Authority hierarchy | `docs/goal/00-authority-map.md:3-10`, `docs/goal/00-authority-map.md:45-61` | `.config/goal/README.md:44-54` | Report any value defined in projection but not sourced from `docs/goal` as authority drift. |
-| Four-axis state | `docs/goal/00-authority-map.md:30-39`, `docs/goal/03-pipeline.md:37-46` | `.config/goal/pipeline/state.yaml`, `.config/goal/schema/rules.yaml:200-207` | Validate all four axes independently; never collapse them into one `status`. |
-| Pipeline and Matrix traceability | `docs/goal/03-pipeline.md:31`, `docs/goal/03-pipeline.md:87-118` | `.config/goal/schema/rules.yaml:101-150` | Check the chain Goal → Spec → Requirement → AC → Task → Prompt → Code → Test → Evidence. |
-| Gate IDs and semantics | `docs/goal/04-gates.md:5-6`, `docs/goal/04-gates.md:33-48`, `docs/goal/04-gates.md:80-96` | `.config/goal/schema/rules.yaml:174-190` | Validate G0-G11, blocking semantics, and `PASS_WITH_RISK` vs `BLOCKED` waiver mapping. |
-| Goal object | `docs/goal/02-goal-standard.md:34-45`, `docs/goal/02-goal-standard.md:51-100`, `docs/goal/02-goal-standard.md:134-186` | `.config/goal/schema/rules.yaml:34-43` | Validate minimum Goal fields and ID patterns; flag unresolved alias drift. |
-| Registry boundary | `docs/goal/15-registry.md:7-23`, `docs/goal/15-registry.md:108-110` | `.config/goal/README.md:36-40`, `.config/goal/schema/rules.yaml:50-57` | Treat only six YAML files as Registry; treat schema/matrix/gates/pipeline/evidence/prompts as sidecars. |
-| Evidence protocol | `docs/goal/13-runtime-engine.md:115-123`, `docs/goal/20-metrics-evidence.md:9-12`, `docs/goal/20-metrics-evidence.md:111-123` | `.config/goal/schema/rules.yaml:153-168` | Enforce Evidence ID, Task ID, Test ID, Goal ID, reproducibility, and No Evidence No Done. |
-| Runtime/config boundary | `.config/goal/README.md:3-6`, `.config/goal/README.md:60-72`, `.config/goal/README.md:80-107` | .config/goal ignore rules | Prevent credentials, private endpoints, account IDs, trading config, local paths, cache/log/temp/lock artifacts. |
-| Known standard gaps | `docs/goal/24-standard-unification-analysis.md:17-25`, `docs/goal/24-standard-unification-analysis.md:50-168`, `docs/goal/24-standard-unification-analysis.md:215-223` | N/A | Report current schema/term/status drift explicitly; do not silently normalize it away. |
-
-Authority order:
-
-1. docs/goal authority files authoritative SSOT documents.
-2. `.config/goal/schema/rules.yaml` and .config/goal sidecar directories as projections/checkable sidecars.
-3. `.omx/` and local runtime/cache/log/temp files as non-authoritative execution state.
-
-## 3. Canonical terms and migration aliases
-
-`goalctl` MUST expose canonical names in machine-readable output. Aliases MAY be accepted for reporting and migration warnings only.
-
-| Canonical term | Accepted aliases for detection | Rule |
+| 主题 | goalctl 要求 | 权威来源 |
 | --- | --- | --- |
-| `goal.id` | `goal_id`, `goalId`, YAML `id` under a Goal object | Canonical output MUST be `goal.id`; invalid pattern emits `GOALCTL-ID-001`. |
-| `goal.name` | `title`, YAML `name` | Output SHOULD keep `goal.name`; conflicting `name`/`title` emits `GOALCTL-TERM-001`. |
-| `goal.objective` | `north_star`, `objective` | `objective` is canonical for Goal spec output; `north_star` is a drift alias. |
-| `goal.success_metrics` | `success_criteria`, `metric_targets` | Metrics must stay measurable; criteria belong to AC objects. |
-| `lifecycle_status` | plain `status` on Goal lifecycle records | Lifecycle status is separate from pipeline/gate/metric status. |
-| `pipeline_state` | legacy execution/control tokens | Must use Pipeline enum from `03-pipeline`; legacy one-field states are illegal. |
-| `current_phase` | `phase` | Must be validated as a separate axis. |
-| `phase_status` | `phaseState` | Must be validated as a separate axis. |
-| `workflow_step` | `step`, `current_step` | Must not reuse `pipeline_state` enum names. |
-| `gate_result` | `gate_status`, `status` in Gate context | `WAIVED` is not a final Gate result; map to `PASS_WITH_RISK` or `BLOCKED`. |
-| `metric_conclusion` | `metric_status` | Metric conclusion must not redefine Gate or Pipeline statuses. |
+| SSOT 边界 | `docs/goal/` 是方法论与规格权威；README、SOP、Runtime、CI、schema 和 examples 只能引用、验证或投影 SSOT，不得新增状态、Gate、ID、Registry、Evidence 或 Matrix 枚举。 | `docs/goal/00-authority-map.md:3`, `docs/goal/00-authority-map.md:7-10` |
+| 机器投影 | `.config/goal/schema` 是机器可读投影；`.config/goal/{registry,matrix,gates,pipeline,evidence,prompts}` 是审计快照；`.config/goal/runtime`、`.omx/state`、log 不是 Goal 权威。 | `docs/goal/00-authority-map.md:41-54`, `.config/goal/schema/rules.yaml:1-3` |
+| 权威表 | pipeline、四轴状态、Matrix、Gate、ID、Registry、Evidence、CI/x.go 和 config/runtime 边界都必须按 Authority Map 指向的文件解析。 | `docs/goal/00-authority-map.md:16-26` |
+| 同步约束 | 修改权威规则后必须同步 schema、snapshots、examples 和 CI 校验；未同步时必须产生 drift/blocker，而不是推进 Gate。 | `docs/goal/00-authority-map.md:58-61` |
 
-Known drift in `docs/goal/24-standard-unification-analysis.md` is a validation target for `goalctl doctor`; it is not a license to redefine authority in this spec.
 
-## 4. CLI surface
+### 2.1 边界场景与错误处理
 
-All commands support `--repo-root <path>` with default current working directory, `--json`, and deterministic exit codes. Human output MAY be localized, but JSON field names MUST remain stable.
+`goalctl` 遇到权威冲突、未知状态、非法 Gate ID、缺失 Evidence、P0/P1 `STALE`、release-blocking risk 或投影漂移时，必须输出 blocker/diagnostic 并拒绝推进对应 Gate；不得以默认值、隐式转换或局部配置覆盖 SSOT。
 
-### 4.1 `goalctl status`
+## 3. Pipeline 与四轴状态模型
 
-Usage:
+### 3.1 Pipeline 主链路
 
-```bash
-goalctl status [--goal GOAL-ID] [--json]
+标准链路是：
+
+```text
+Goal → Spec → Design → Plan → Tasks → Prompt → Code → Test → Review → Release → Retrospective
 ```
 
-Behavior:
+Matrix 是横切追踪工件，不是 pipeline layer，也不是 from/to 状态。`goalctl` 在生成或校验状态时不得把 Matrix 写入 `current_phase` 或 `pipeline_state`。
 
-- Reads `.config/goal/pipeline/state.yaml` and the matching Goal/Matrix/Evidence sidecars.
-- Prints four-axis state: `pipeline_state`, `current_phase`, `phase_status`, `workflow_step`.
-- Reports stale or missing projection files as warnings unless `--strict` is supplied through CI wrapper.
+来源：`docs/goal/03-pipeline.md:11-13`, `docs/goal/03-pipeline.md:31`。
 
-### 4.2 `goalctl validate`
+### 3.2 四轴状态
 
-Usage:
-
-```bash
-goalctl validate [--all|--registry|--matrix|--gates|--pipeline|--evidence|--references] [--strict] [--json]
-```
-
-Behavior:
-
-- `--references`: validates every source path/reference used by specs and sidecars.
-- `--registry`: validates the six Registry files only.
-- `--matrix`: validates Matrix schema, relation enum, statuses, required fields, and 95% threshold.
-- `--gates`: validates G0-G11, order, blocking semantics, and waiver mapping.
-- `--pipeline`: validates four-axis state fields and legal transitions.
-- `--evidence`: validates Evidence ID, path, required fields, status, and reproducibility.
-- `--all`: runs every validator and aggregates failures.
-
-### 4.3 `goalctl registry`
-
-Usage:
-
-```bash
-goalctl registry list [--json]
-goalctl registry get --type goals|specs|features|issues|tasks|agents --id ID [--json]
-goalctl registry lint [--json]
-```
-
-Rules:
-
-- Registry scope is limited to the six YAML files listed by `.config/goal/README.md` and `.config/goal/schema/rules.yaml`.
-- Pipeline, Gate, Matrix, Evidence, schema, and prompt files are sidecars, not Registry members.
-- Exceptional Issue statuses reuse Pipeline exceptional states; Registry cannot define local exceptional states.
-
-### 4.4 `goalctl matrix`
-
-Usage:
-
-```bash
-goalctl matrix check [--goal GOAL-ID] [--min-coverage 95] [--json]
-goalctl matrix trace --goal GOAL-ID [--json]
-```
-
-Rules:
-
-- Validates `source_id`, `target_id`, `relation`, `status`, `evidence_id`, `gate_id`, `owner`, and `updated_at`.
-- Valid relations are sourced from `.config/goal/schema/rules.yaml`.
-- Trace command must render Goal → Spec → Requirement → AC → Task → Prompt → Code → Test → Evidence.
-- Missing links, stale links, and drifted links must be reported as separate findings.
-
-### 4.5 `goalctl gate`
-
-Usage:
-
-```bash
-goalctl gate list [--json]
-goalctl gate check --gate G0|G1|G2|G3|G4|G5|G6|G7|G8|G9|G10|G11 [--goal GOAL-ID] [--json]
-```
-
-Rules:
-
-- Valid Gate IDs are exactly G0 through G11.
-- G2 Spec Gate must verify completeness, testability, normal paths, error paths, boundary paths, security, performance, and non-goals.
-- `WAIVED` is an input policy/decision note, not a final Gate result. Final JSON must use `PASS`, `PASS_WITH_RISK`, or `BLOCKED` as applicable.
-
-### 4.6 `goalctl pipeline`
-
-Usage:
-
-```bash
-goalctl pipeline get --goal GOAL-ID [--json]
-goalctl pipeline transition --goal GOAL-ID \
-  --pipeline-state STATE \
-  --current-phase PHASE \
-  --phase-status STATUS \
-  --workflow-step STEP \
-  [--json]
-```
-
-Rules:
-
-- Transition proposals must be validated before write.
-- `workflow_step` must not use `pipeline_state` enum values.
-- Legacy single-field `status` cannot be accepted as a Pipeline transition request.
-- Failed transition validation must be non-destructive.
-
-### 4.7 `goalctl evidence`
-
-Usage:
-
-```bash
-goalctl evidence verify --task TASK-ID --test TEST-ID --goal GOAL-ID [--json]
-goalctl evidence collect --task TASK-ID --test TEST-ID --goal GOAL-ID --from PATH [--json]
-```
-
-Rules:
-
-- `verify` checks Evidence ID, Task ID, Test ID, Goal ID, status, reproducibility, and trace link.
-- `collect` must not store credentials, account IDs, private endpoints, trading config, or local personal paths.
-- Evidence is required before Done: if evidence is absent, emit `GOALCTL-EVID-001` and return non-zero.
-
-### 4.8 `goalctl doctor`
-
-Usage:
-
-```bash
-goalctl doctor [--json]
-```
-
-Behavior:
-
-- Runs reference, authority, projection, Registry, Matrix, Gate, Pipeline, Evidence, and config-boundary checks.
-- Reports standard gaps from `docs/goal/24-standard-unification-analysis.md` as known drift until the SSOT repair package is applied.
-
-### 4.9 `goalctl report acceptance`
-
-Usage:
-
-```bash
-goalctl report acceptance --spec SPEC-goalctl-v1 [--json]
-```
-
-Behavior:
-
-- Emits the Section 12 acceptance checklist with pass/fail/blocked status.
-- Includes the validation command, timestamp, input file, and evidence references for every checklist item.
-
-## 5. Configuration and runtime model
-
-`goalctl` MUST respect these write boundaries:
-
-1. Read docs/goal authority files as authority; do not mutate authority files during validation/report commands.
-2. Read `.config/goal/schema/rules.yaml` as the auditable projection of rules.
-3. Read/write only permitted `.config/goal` sidecar files when a command explicitly performs a checked update.
-4. Treat `.omx`, local caches, logs, temp files, and lock files as runtime artifacts, never as authority.
-5. Reject or redact credentials, credential keys, account IDs, private endpoints, trading configuration, and local personal paths in committed `.config/goal` content.
-
-Boundary and error handling:
-
-- Missing `.config/goal` projection: warning in audit mode; error in strict mode.
-- Projection defines values absent from `docs/goal`: authority drift error.
-- `docs/goal` source changed but projection not synchronized: sync drift warning in audit mode; error in strict mode.
-- Runtime cache/log/temp file present under committed config paths: config-boundary error.
-
-## 6. Data contracts
-
-### 6.1 IDs
-
-`goalctl` MUST use regex patterns from `.config/goal/schema/rules.yaml` for Goal and Evidence IDs. Invalid IDs emit `GOALCTL-ID-001`.
-
-### 6.2 Registry
-
-The Registry consists only of:
-
-1. `goals.yaml`
-2. `specs.yaml`
-3. `features.yaml`
-4. `issues.yaml`
-5. `tasks.yaml`
-6. `agents.yaml`
-
-No command may add a seventh Registry file without an authority update in `docs/goal/15-registry.md` and synchronized projection.
-
-### 6.3 Matrix
-
-A Matrix row MUST include:
-
-- `source_id`
-- `target_id`
-- `relation`
-- `status`
-- `evidence_id`
-- `gate_id`
-- `owner`
-- `updated_at`
-
-The default coverage threshold is 95%. Boundary cases include missing edge, duplicate edge, unsupported relation, stale link, drifted link, and evidence-free verified status.
-
-### 6.4 Gate
-
-Gate IDs are `G0` through `G11`. Gate output MUST include:
-
-- `gate_id`
-- `goal_id` when applicable
-- `result`
-- `blocking`
-- `evidence`
-- `risks`
-- `checked_at`
-
-### 6.5 Pipeline state
-
-Pipeline output MUST include the four axes:
-
-- `pipeline_state`
-- `current_phase`
-- `phase_status`
-- `workflow_step`
-
-A plain `status` field MAY appear only as a lifecycle status outside Pipeline state. `workflow_step` names MUST NOT equal `pipeline_state` enum names.
-
-### 6.6 Evidence
-
-Evidence output MUST include:
-
-- `evidence_id`
-- `task_id`
-- `test_id`
-- `goal_id`
-- `status`
-- `reproduce_command`
-- `artifact_path`
-- `created_at`
-
-No Evidence No Done is mandatory: a Done/Verified claim without linked evidence is invalid.
-
-## 7. JSON output contract
-
-All JSON commands MUST return this top-level shape:
-
-```json
-{
-  "tool": "goalctl",
-  "command": "validate",
-  "repo_root": "/repo",
-  "rules_version": "from .config/goal/schema/rules.yaml when available",
-  "inputs": [],
-  "checks": [],
-  "result": "pass|warn|fail|blocked",
-  "errors": [],
-  "warnings": [],
-  "evidence": [],
-  "generated_at": "RFC3339 timestamp",
-  "exit_code": 0
-}
-```
-
-Error entries MUST include:
-
-```json
-{
-  "code": "GOALCTL-PIPE-001",
-  "severity": "error|warning|info",
-  "message": "human-readable summary",
-  "source": "path:line-range when known",
-  "expected": "contract expected by authority",
-  "actual": "observed value",
-  "remediation": "specific next action"
-}
-```
-
-## 8. Error model
-
-| Code | Severity | Meaning | Boundary / edge case |
+| 轴 | 含义 | 合法值 / 来源 | 写入者约束 |
 | --- | --- | --- | --- |
-| `GOALCTL-SSOT-001` | error | Projection/config defines authority not present in `docs/goal`. | `.config/goal` creates new enum, Gate ID, or Registry file. |
-| `GOALCTL-REF-001` | error | Cited source path or line anchor is missing/stale. | A spec references a deleted `docs/goal` file. |
-| `GOALCTL-ID-001` | error | ID does not match the configured pattern. | `goalId` alias has unsupported casing or prefix. |
-| `GOALCTL-TERM-001` | warning/error | Alias conflicts with canonical term. | Both `name` and `title` exist with different values. |
-| `GOALCTL-REG-001` | error | Registry shape violates six-file boundary. | Seventh Registry YAML or sidecar treated as Registry. |
-| `GOALCTL-MATRIX-001` | error | Matrix schema, relation, status, or coverage is invalid. | Coverage below 95%, stale link, missing evidence edge. |
-| `GOALCTL-GATE-001` | error | Gate ID/status/waiver semantics are invalid. | Final result is `WAIVED` instead of `PASS_WITH_RISK` or `BLOCKED`. |
-| `GOALCTL-PIPE-001` | error | Pipeline four-axis state or transition is invalid. | `workflow_step` reuses a `pipeline_state` value. |
-| `GOALCTL-EVID-001` | error | Evidence ID/path/required fields/reproducibility invalid. | Done claim has no linked Evidence ID. |
-| `GOALCTL-SECRET-001` | error | Committed config/evidence contains prohibited secret/local data. | API key, account ID, private endpoint, trading config, local personal path. |
+| `pipeline_state` | 全局状态机位置。 | `INIT`, `CONTEXT_READY`, `GOAL_READY`, `SPEC_READY`, `DESIGN_READY`, `PLAN_READY`, `TASKS_READY`, `EXECUTING`, `VERIFYING`, `REVIEWING`, `RELEASING`, `RETROSPECTING`, `DONE`, plus exception states. | pipeline runner / Gate arbiter；旧式单段 step/control token 不是合法 `pipeline_state`。 |
+| `current_phase` | 当前工作阶段。 | `GOAL`, `SPEC`, `DESIGN`, `PLAN`, `TASKS`, `PROMPT`, `CODE`, `TEST`, `REVIEW`, `RELEASE`, `RETROSPECTIVE`。 | 由 pipeline 进展决定；Matrix 不得写入。 |
+| `phase_status` | 当前阶段内状态。 | `NOT_STARTED`, `IN_PROGRESS`, `IN_REVIEW`, `READY`, `DONE`, `BLOCKED`, `SKIPPED`, `STALE`。 | 当前阶段 owner / Gate arbiter。 |
+| `workflow_step` | SOP/runtime/CI/profile 执行步。 | 从 `.config/goal/schema/rules.yaml` 投影，例如 `RELEASE_EXECUTION`。 | operator/runtime/CI；不得覆盖 `current_phase` 或 `pipeline_state`。 |
 
-## 9. Verification plan
+来源：`docs/goal/00-authority-map.md:28-39`, `docs/goal/03-pipeline.md:35-46`, `.config/goal/schema/rules.yaml:200-270`。
 
-Typecheck/build:
+### 3.3 Pipeline 状态值
 
-- `test ! -f tsconfig.json && test ! -f package.json && echo "PASS: no TypeScript project/typecheck equivalent in docs-only worktree"`
+正常流：
 
-Diagnostics and tests:
+```text
+INIT → CONTEXT_READY → GOAL_READY → SPEC_READY → DESIGN_READY → PLAN_READY → TASKS_READY → EXECUTING → VERIFYING → REVIEWING → RELEASING → RETROSPECTING → DONE
+```
 
-- `bash docs/goal/tools/lint-goal.sh docs/spec/goalctl-spec.md`
-- `bash docs/goal/tools/self-test.sh`
-- `python3 docs/goal/tools/goal-validate.py --root . --mode audit --format json`
-- `python3 docs/goal/tools/rule-drift-check.py --root . --quiet`
-- Custom Python verifier over `docs/spec/goalctl-spec.md`.
+异常状态：`BLOCKED`, `FAILED`, `NEEDS_RESEARCH`, `NEEDS_DECISION`, `NEEDS_REPLAN`, `NEEDS_ROLLBACK`, `NEEDS_HUMAN_APPROVAL`, `INCONSISTENT_STATE`。
 
-Runtime E2E note:
+来源：`docs/goal/03-pipeline.md:50-67`, `.config/goal/schema/rules.yaml:207-228`。
 
-- A `goalctl` binary is not present in this repository at this task stage. End-to-end execution for this task is therefore spec-level: the verifier proves that the command surface, JSON contract, error model, data contracts, and acceptance checklist required for a future implementation are present and source-backed.
+### 3.4 状态输出合同
 
-## 10. Reference consistency checklist
+`goalctl status` 类输出必须包含以下字段，缺失时不得声称状态可操作：
 
-- [ ] Every source path in Section 2 exists.
-- [ ] All state terms use four-axis Pipeline naming.
-- [ ] Gate IDs are exactly G0-G11.
-- [ ] `WAIVED` is not documented as a final Gate result.
-- [ ] Registry contains exactly six YAML files.
-- [ ] Matrix relations/status/required fields are sourced from `.config/goal/schema/rules.yaml`.
-- [ ] Evidence fields include Evidence ID, Task ID, Test ID, and Goal ID.
-- [ ] `.config/goal` boundary excludes credentials, account IDs, private endpoints, trading config, local personal paths, cache, logs, temp, and lock artifacts.
-- [ ] Known standard gaps are referenced through `docs/goal/24-standard-unification-analysis.md`.
-- [ ] The trace chain Goal → Spec → Requirement → AC → Task → Prompt → Code → Test → Evidence appears in CLI and acceptance requirements.
+- `Current State`
+- `Next State`
+- `Allowed Actions`
+- `Blocked By`
+- `Required Gate`
+- `Evidence Required`
+- `Recommended Next Action`
 
-## 11. Acceptance checklist
+来源：`docs/goal/03-pipeline.md:71-80`。
 
-| Checklist ID | Required evidence | Status rule |
+### 3.5 转换守卫
+
+| From | To | 必要守卫 |
 | --- | --- | --- |
-| `CHECK-SPEC-goalctl-v1-001` | `docs/spec/goalctl-spec.md` exists. | PASS only if file exists. |
-| `CHECK-SPEC-goalctl-v1-002` | `git diff --name-only` contains only `docs/spec/goalctl-spec.md` before commit. | PASS only if no `docs/goal` files changed. |
-| `CHECK-SPEC-goalctl-v1-003` | Source paths from Section 2 exist. | PASS only if every path exists. |
-| `CHECK-SPEC-goalctl-v1-004` | `REQ-SPEC-goalctl-v1-*` IDs and their acceptance IDs are present. | PASS only if all 8 requirement groups have AC coverage. |
-| `CHECK-SPEC-goalctl-v1-005` | CLI surface includes status, validate, registry, matrix, gate, pipeline, evidence, doctor, and acceptance report. | PASS only if all command groups are present. |
-| `CHECK-SPEC-goalctl-v1-006` | Error model includes `GOALCTL-SSOT-001`, `GOALCTL-REF-001`, `GOALCTL-ID-001`, `GOALCTL-REG-001`, `GOALCTL-MATRIX-001`, `GOALCTL-GATE-001`, `GOALCTL-PIPE-001`, `GOALCTL-EVID-001`, and `GOALCTL-SECRET-001`. | PASS only if all codes are documented. |
-| `CHECK-SPEC-goalctl-v1-007` | Four-axis fields and G0-G11 are present. | PASS only if no single-field Pipeline status is normative. |
-| `CHECK-SPEC-goalctl-v1-008` | Validation commands in Section 10 run with PASS/N/A evidence. | PASS only after fresh local verification. |
+| `INIT` | `CONTEXT_READY` | Context Gate PASS |
+| `CONTEXT_READY` | `GOAL_READY` | Goal Gate PASS |
+| `GOAL_READY` | `SPEC_READY` | Spec Gate PASS |
+| `SPEC_READY` | `DESIGN_READY` | Design Gate PASS |
+| `DESIGN_READY` | `PLAN_READY` | Plan Gate PASS |
+| `PLAN_READY` | `TASKS_READY` | Task Gate PASS |
+| `TASKS_READY` | `EXECUTING` | Task selected / Owner assigned |
+| `EXECUTING` | `VERIFYING` | Implementation done |
+| `VERIFYING` | `REVIEWING` | Test Gate + Evidence Gate PASS |
+| `REVIEWING` | `RELEASING` | Review PASS |
+| `RELEASING` | `RETROSPECTING` | Release Gate PASS |
+| `RETROSPECTING` | `DONE` | Retrospective Gate PASS |
 
-## 12. Assumptions and open implementation notes
+回退规则必须按 Pipeline 文档执行：测试失败回 `EXECUTING`；review 失败可回 `EXECUTING` 或 `DESIGN_READY`；release 后失败进入 `NEEDS_ROLLBACK`；依赖/权限缺失进入 `BLOCKED`；未知阻塞进入 `NEEDS_RESEARCH`；CL3+ 多方案进入 `NEEDS_DECISION`；Spec/Design 影响 Plan 时进入 `NEEDS_REPLAN`；Registry/Artifact/CI 冲突进入 `INCONSISTENT_STATE`。
 
-- This is a specification deliverable for `goalctl`; a runtime executable is out of scope for task 3.
-- `goalctl` implementation should reuse existing validators where possible before adding new logic.
-- Standard-gap remediation should be performed by updating `docs/goal` authority docs first, then synchronizing `.config/goal` projections.
-- This document intentionally records alias drift rather than hiding it, because the current authority set documents those drift risks as unresolved.
+来源：`docs/goal/03-pipeline.md:85-98`, `docs/goal/03-pipeline.md:120-132`。
 
-## 13. Requirements and 验收标准
+## 4. 对象、Registry 与 Matrix 状态
 
-This section is the explicit acceptance.criteria / 验收标准 block for `SPEC-goalctl-v1`. It includes normal, 边界, 异常, and 错误处理 coverage.
+### 4.1 对象状态
 
+`goalctl` 应使用 Pipeline 对象状态总表作为跨对象入口：Goal `Draft → Active → Paused → Achieved / Abandoned`；Spec `Draft → Review → Approved → Superseded / Deprecated`；Design `Draft → Review → Approved → Superseded`；Plan `Draft → Approved → Superseded`；Task `Unmapped → Mapped → In Progress → Blocked → In Review → Done / Dropped`；Gate `PASS / PASS_WITH_RISK / FAIL / BLOCKED`。
 
-### REQ-SPEC-goalctl-v1-001 — Authority and reference integrity
+来源：`docs/goal/03-pipeline.md:100-118`。
 
-`goalctl` MUST validate that every normative rule, reference, and projection is traceable to `docs/goal` or an allowed `.config/goal` projection.
+### 4.2 已知生命周期命名差异
 
-Acceptance Criteria:
+`docs/goal/02-goal-standard.md` 同时描述了 Goal 生命周期 `Draft → Reviewed → Approved → In Progress → Validated / Partially Validated / Failed → Deprecated`。这与 Pipeline/Registry 的 Goal 状态表不同。
 
-- `AC-REQ-SPEC-goalctl-v1-001-001`: Given a valid source map, `goalctl validate --references --json` returns `result=pass` and zero `GOALCTL-REF-001` errors.
-- `AC-REQ-SPEC-goalctl-v1-001-002`: Given a missing or stale source path, the command emits `GOALCTL-REF-001` with the broken path and remediation.
-- `AC-REQ-SPEC-goalctl-v1-001-003`: Given a projection-only enum, the command emits `GOALCTL-SSOT-001`.
+`goalctl` MUST NOT 自行合并为新 enum。正确行为是：
 
-### REQ-SPEC-goalctl-v1-002 — CLI completeness
+1. 在读取或迁移时保留来源文件和原始状态值。
+2. 对跨文档冲突输出 `INCONSISTENT_STATE` 或 blocker 诊断。
+3. 要求先更新 Authority Map 指向的权威文档，再同步 `.config/goal/schema` 投影。
 
-`goalctl` MUST provide status, validate, registry, matrix, gate, pipeline, evidence, doctor, and acceptance report commands.
+来源：`docs/goal/02-goal-standard.md:163-167`, `docs/goal/03-pipeline.md:100-118`, `docs/goal/00-authority-map.md:7-10`。
 
-Acceptance Criteria:
+### 4.3 Registry 边界
 
-- `AC-REQ-SPEC-goalctl-v1-002-001`: `goalctl --help` lists all command groups in Section 4.
-- `AC-REQ-SPEC-goalctl-v1-002-002`: Every command supports `--repo-root` and `--json`.
-- `AC-REQ-SPEC-goalctl-v1-002-003`: Unknown commands return non-zero and produce a JSON error when `--json` is supplied.
+Registry 是长期共享状态，位于 `.config/goal/registry` 的六类 YAML：`goals.yaml`, `issues.yaml`, `decisions.yaml`, `risks.yaml`, `releases.yaml`, `maturity.yaml`。其他 `.config/goal` 目录是 sidecar component 或 snapshot，不属于 Registry 子系统。
 
-### REQ-SPEC-goalctl-v1-003 — Config/runtime boundary
+Issue 的异常状态复用 Pipeline exception enum，不得定义本地 exception 状态。
 
-`goalctl` MUST keep authority, projection, and runtime artifacts separate.
+来源：`docs/goal/15-registry.md:5-23`, `docs/goal/15-registry.md:108-110`, `.config/goal/README.md`。
 
-Acceptance Criteria:
+### 4.4 Matrix 状态与漂移
 
-- `AC-REQ-SPEC-goalctl-v1-003-001`: Validation rejects Registry files outside the six-file boundary.
-- `AC-REQ-SPEC-goalctl-v1-003-002`: Validation rejects credentials, credential keys, account IDs, private endpoints, trading config, and local personal paths in committed `.config/goal` content.
-- `AC-REQ-SPEC-goalctl-v1-003-003`: Runtime cache/log/temp/lock files are ignored or flagged according to `.config/goal` boundary rules and never treated as authority.
+Matrix 状态为 `Unmapped`, `Mapped`, `Linked`, `Verified`, `Dropped`, `Drifted`, `Stale`, `Blocked`, `Changed`。`Verified` 必须有 `evidence_id`，`Dropped` 必须有 `drop_reason`；coverage threshold 为 95%。Release 前关键行必须 `Verified`，或 `Dropped` 且有 `drop_reason`。
 
-### REQ-SPEC-goalctl-v1-004 — Four-axis Pipeline and Gate semantics
+`Blocked`、`Changed`、`Drifted`、`Stale` 是漂移或阻塞元状态，不是完成终态；它们必须回到 `Linked` 后重新验证，或转为带原因的 `Dropped`。上游对象变更后，下游对象自动进入 `STALE`；`STALE` 必须重新验证；Release Gate 禁止存在 P0/P1 `STALE` 对象；Spec/Design 变更必须触发 `NEEDS_REPLAN`。
 
-`goalctl` MUST validate Pipeline and Gate state without collapsing independent status categories.
+来源：`.config/goal/schema/rules.yaml:92-115`, `docs/goal/05-layer-standards.md:335-347`, `docs/goal/13-runtime-engine.md:248-274`。
 
-Acceptance Criteria:
+## 5. Gate 合同
 
-- `AC-REQ-SPEC-goalctl-v1-004-001`: A Pipeline record missing any of `pipeline_state`, `current_phase`, `phase_status`, or `workflow_step` emits `GOALCTL-PIPE-001`.
-- `AC-REQ-SPEC-goalctl-v1-004-002`: A `workflow_step` equal to a `pipeline_state` enum emits `GOALCTL-PIPE-001`.
-- `AC-REQ-SPEC-goalctl-v1-004-003`: A final Gate result of `WAIVED` emits `GOALCTL-GATE-001` and recommends `PASS_WITH_RISK` or `BLOCKED`.
-- `AC-REQ-SPEC-goalctl-v1-004-004`: G2 checks spec completeness, testability, normal, error, boundary, security, performance, and non-goal coverage.
+### 5.1 Gate 编号与结果
 
-### REQ-SPEC-goalctl-v1-005 — Registry, Matrix, and Evidence contracts
+G0-G11 的编号、名称、顺序和阻塞语义只由 `docs/goal/04-gates.md` 定义；其他文档可引用或细化，不得添加独立 Gate 编号。`XG-*`, `XG-CHK*`, `H-CHK*` 或 CI checks 是 check/profile/evidence，不是 Goal Gate ID。
 
-`goalctl` MUST validate Registry membership, Matrix edges, and Evidence records using projected rules.
+Gate 结果只允许：
 
-Acceptance Criteria:
+- `PASS`：达到阈值且无 blocking risk。
+- `PASS_WITH_RISK`：达到 risk band，风险字段完整，但不能用于 G6/G10。
+- `FAIL`：未达阈值、critical check failed 或 risk fields missing。
+- `BLOCKED`：外部依赖、stale risk 或 release_blocking risk 阻止判断。
 
-- `AC-REQ-SPEC-goalctl-v1-005-001`: Registry validation passes only when the six YAML files are present and no sidecar is counted as Registry.
-- `AC-REQ-SPEC-goalctl-v1-005-002`: Matrix validation checks required fields, legal relation, legal status, evidence link, owner, updated timestamp, and 95% coverage.
-- `AC-REQ-SPEC-goalctl-v1-005-003`: Evidence validation checks Evidence ID, Task ID, Test ID, Goal ID, status, reproducibility, and artifact path.
-- `AC-REQ-SPEC-goalctl-v1-005-004`: Done/Verified claims without evidence emit `GOALCTL-EVID-001`.
+`WAIVED` 是豁免策略，不是 Gate 结果值；最终 Gate 结果必须映射为 `PASS_WITH_RISK` 或 `BLOCKED`，并保留 `approver`、`reason`、`expires_at`。
 
-### REQ-SPEC-goalctl-v1-006 — Deterministic output and error model
+来源：`docs/goal/04-gates.md:5`, `docs/goal/04-gates.md:245-249`, `docs/goal/03-pipeline.md:118`, `.config/goal/gates/state.yaml:1-6`, `.config/goal/gates/state.yaml:392-396`, `docs/goal/16-ci-cd.md:205-207`。
 
-`goalctl` MUST emit stable JSON and deterministic error codes.
+### 5.2 Gate 总表
 
-Acceptance Criteria:
+| Gate | 名称 | 类型 | 通过标准摘要 |
+| --- | --- | --- | --- |
+| G0 | Context Gate | Hybrid | 上下文恢复完成。 |
+| G1 | Goal Gate | Semantic | Goal 满足 SMART。 |
+| G2 | Spec Gate | Semantic | Spec 完整、可测试。 |
+| G3 | Design Gate | Semantic | Design 映射到模块。 |
+| G4 | Plan Gate | Semantic | Plan 依赖顺序正确。 |
+| G5 | Task Gate | Executable | Task 原子且有 DoD。 |
+| G6 | Implementation Gate | Executable | 实现未越界；G6 不允许 `PASS_WITH_RISK`。 |
+| G7 | Test Gate | Executable | 测试通过。 |
+| G8 | Evidence Gate | Executable | Evidence 完整。 |
+| G9 | Review Gate | Semantic | Review 通过。 |
+| G10 | Release Gate | Hybrid | Release 就绪；G10 不允许 `PASS_WITH_RISK`。 |
+| G11 | Retrospective Gate | Semantic | Retrospective 完成。 |
 
-- `AC-REQ-SPEC-goalctl-v1-006-001`: JSON output matches Section 7 top-level shape.
-- `AC-REQ-SPEC-goalctl-v1-006-002`: Every failed check includes `code`, `severity`, `message`, `source`, `expected`, `actual`, and `remediation` when known.
-- `AC-REQ-SPEC-goalctl-v1-006-003`: The same invalid input produces the same code and exit status across repeated runs.
+来源：`docs/goal/04-gates.md:35-48`, `.config/goal/gates/state.yaml:25-42`。
 
-### REQ-SPEC-goalctl-v1-007 — Traceability and reporting
+### 5.3 G8 Evidence Gate
 
-`goalctl` MUST report traceability from Goal to Evidence.
+G8 必须检查 Evidence 文件完整、traceability 完整、test result 完整、review evidence 存在。PASS 标准是 Evidence 覆盖所有 acceptance criteria；缺失或不完整必须 FAIL。
 
-Acceptance Criteria:
+Runtime Evidence 至少包含：Evidence ID、Task ID、Test ID、Goal ID、Date、Status (`PASS`/`FAIL`/`PARTIAL`)、Files Changed、Commands Run、Results、Logs、Diff Summary、Requirement Proof、Known Limitations、Risks、Rollback。
 
-- `AC-REQ-SPEC-goalctl-v1-007-001`: `goalctl matrix trace --goal GOAL-ID --json` renders Goal → Spec → Requirement → AC → Task → Prompt → Code → Test → Evidence.
-- `AC-REQ-SPEC-goalctl-v1-007-002`: Missing, stale, drifted, blocked, and changed links are distinct statuses in output.
-- `AC-REQ-SPEC-goalctl-v1-007-003`: Acceptance reports include command, timestamp, source input, result, errors, warnings, and evidence references.
+禁止使用“done”声明替代 Evidence：无 logs、无 tests、无 file list 或无 risk note 的完成声明不合法。原则是 “No Evidence, No Done”。
 
-### REQ-SPEC-goalctl-v1-008 — Spec-level validation and acceptance checklist
+来源：`docs/goal/04-gates.md:184-194`, `docs/goal/13-runtime-engine.md:115-144`, `docs/goal/20-metrics-evidence.md:5-12`。
 
-This spec MUST be self-checkable by repo-local validators and a references/checklist verifier.
+### 5.4 G10 Release Gate
 
-Acceptance Criteria:
+G10 为 blocking Hybrid Gate。Release 前必须满足：Matrix 全部关键项 `Verified`，或 `Dropped` 且有 `drop_reason`；P0/P1 tests 全部通过；无权限绕过风险；无数据破坏风险；有日志和监控；有 Feature Flag 或 rollback；有灰度策略；有上线后指标观察计划。
 
-- `AC-REQ-SPEC-goalctl-v1-008-001`: `docs/spec/goalctl-spec.md` exists and is the only modified file for worker-3 task output.
-- `AC-REQ-SPEC-goalctl-v1-008-002`: `bash docs/goal/tools/lint-goal.sh docs/spec/goalctl-spec.md` exits 0.
-- `AC-REQ-SPEC-goalctl-v1-008-003`: `python3 docs/goal/tools/goal-validate.py --root . --mode audit --format json` exits 0.
-- `AC-REQ-SPEC-goalctl-v1-008-004`: A custom verifier confirms required source paths, command groups, error codes, state fields, Gate IDs, trace chain, and acceptance checklist terms.
+`.config/goal/gates/state.yaml` 当前 closure policy 进一步约束：G10 不允许 `PASS_WITH_RISK`；任何未关闭 `release_blocking` risk 阻塞 G10；P0/P1、permission、data、rollback、observability、Release Evidence gaps 必须 `FAIL` 或 `BLOCKED`。
 
+来源：`docs/goal/04-gates.md:214-230`, `.config/goal/gates/state.yaml:25-42`, `docs/goal/16-ci-cd.md:31-47`。
+
+## 6. DoD、CI 与变更级别
+
+DoR/DoD 的 SSOT 在 `docs/goal/06-dod.md`。Goal 完成必须满足 linked Issues 完成、Success Criteria、P0/P1 PASS、Release Manifest、Retrospective 等要求；Task DoD 必须包含 input/output/AC/deps、traceability、DoD、verification commands、Evidence 和 Rollback。
+
+测试结果必须写入 Evidence，CI 只可作为 workflow/profile/check 执行面：build、unit、integration、lint、format、regression、smoke 等结果填充 G7/G8/G9，不得创建新 Gate。G10 无 PASS 时不得 release。
+
+CL0 文档级变更的最小流为 `Goal → Plan → Docs Change → Evidence → Review`，仍然必须通过 G8/G9。
+
+来源：`docs/goal/06-dod.md:3-7`, `docs/goal/06-dod.md:25-35`, `docs/goal/06-dod.md:117-125`, `docs/goal/06-dod.md:209-217`, `docs/goal/13-runtime-engine.md:13-43`, `docs/goal/16-ci-cd.md:11-27`, `docs/goal/16-ci-cd.md:31-55`, `docs/goal/16-ci-cd.md:88-94`。
+
+## 7. 当前审计快照
+
+`.config/goal/pipeline/state.yaml` 当前记录：`goal_id: GOAL-20260608-001`，`pipeline_state: BLOCKED`，previous state `RELEASING`，`current_phase: RELEASE`，`phase_status: BLOCKED`，`workflow_step: RELEASE_EXECUTION`。Matrix、prompt、code、test、review artifacts ready；G6/G10 仍 blocking；G2/G4/G7 存在 release-blocking risk，原因包括 release precheck automation 未与 G10 block 条件对齐、G7 evidence lint/collector 未与 metadata/proof body 对齐等。
+
+`goalctl` 在读取该快照时必须报告 release blocked，而不是从 artifacts ready 推断可 release。
+
+来源：`.config/goal/pipeline/state.yaml:12-30`, `.config/goal/pipeline/state.yaml:257-267`。
+
+## 8. Worker-1 验收标准与检查
+
+本切片完成时必须满足：
+
+- `docs/goal/` 未被修改。
+- 本文件只引用既有 SSOT 和 `.config/goal` 投影/快照，不引入新 enum、Gate ID 或 Registry 状态。
+- 状态模型包含 `pipeline_state`、`current_phase`、`phase_status`、`workflow_step` 四轴。
+- Gate 模型包含 G0-G11、`PASS`、`PASS_WITH_RISK`、`FAIL`、`BLOCKED`、G6/G10 特殊约束、G8 Evidence、G10 Release blocking 条件。
+- Matrix 漂移、`STALE` 传播、P0/P1 `STALE` release 禁止和 object lifecycle 命名差异均被显式记录。
+- 验证结果和提交哈希必须报告给 leader。
