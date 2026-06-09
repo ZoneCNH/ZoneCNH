@@ -11,7 +11,7 @@ scope: "重写 README.md 和 docs/ 目录，确保只描述 4 项职责，docs �
 spec_ref:
   - "module/xlib-standard/SPEC.md#2"
   - "module/xlib-standard/SPEC.md#4"
-  - "module/xlib-standard/goal/1.md#5"
+  - "module/xlib-standard/goal.md#5"
 files:
   - "README.md"
   - "docs/standard.md"
@@ -44,7 +44,7 @@ status: pending
 |---|---|---|
 | §2 Summary | 模块定位描述 | README 只描述 4 项职责 |
 | §5 Non-goals | 不做运行时 | README 不出现运行时引用 |
-| goal/1.md §5 | PR-2 文档要求 | docs 只保留 9 个文件 |
+| goal.md §5 | PR-2 文档要求 | docs 只保留 9 个文件 |
 
 ## Test Plan
 
@@ -59,7 +59,7 @@ grep -c "enable-governance" docs/generation.md  # 应为 0
 
 ## Implementation Notes
 
-1. README.md 按 goal/1.md §5.1 格式重写
-2. docs/ 按 goal/1.md §5.2 只保留 9 个文件
-3. docs/standard.md 按 goal/1.md §5.3 包含 12 章
-4. docs/generation.md 按 goal/1.md §5.4 只支持 4 个参数
+1. README.md 按 goal.md §5.1 格式重写
+2. docs/ 按 goal.md §5.2 只保留 9 个文件
+3. docs/standard.md 按 goal.md §5.3 包含 12 章
+4. docs/generation.md 按 goal.md §5.4 只支持 4 个参数

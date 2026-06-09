@@ -12,10 +12,10 @@ spec_ref:
   - "module/xlib-standard/SPEC.md#7"
   - "module/xlib-standard/SPEC.md#9"
   - "module/xlib-standard/SPEC.md#10"
-  - "module/xlib-standard/goal/1.md#7"
-  - "module/xlib-standard/goal/1.md#8"
-  - "module/xlib-standard/goal/1.md#9"
-  - "module/xlib-standard/goal/1.md#10"
+  - "module/xlib-standard/goal.md#7"
+  - "module/xlib-standard/goal.md#8"
+  - "module/xlib-standard/goal.md#9"
+  - "module/xlib-standard/goal.md#10"
 files:
   - "pkg/templatex/doc.go"
   - "pkg/templatex/config.go"
@@ -80,13 +80,13 @@ grep -c "conflict" contracts/errors.schema.json  # 应为 0
 
 ## Implementation Notes
 
-1. pkg/templatex/ 按 goal/1.md §7.1 只保留 11 个文件
-2. 公共 API 按 goal/1.md §7.2 实现
-3. Config 按 goal/1.md §7.3 实现（显式传入、Validate、Sanitize）
-4. ErrorKind 按 goal/1.md §7.4 只有 8 种
-5. Metrics 按 goal/1.md §7.5 只有 5 个 P0
-6. Health 按 goal/1.md §7.6 实现
-7. contracts 按 goal/1.md §8 更新 JSON schema
-8. 测试按 goal/1.md §9 编写
-9. examples 按 goal/1.md §10.1 只保留 basic/main.go
-10. testkit 按 goal/1.md §10.2 只保留 metrics.go 和 assertions.go
+1. pkg/templatex/ 按 goal.md §7.1 只保留 11 个文件
+2. 公共 API 按 goal.md §7.2 实现
+3. Config 按 goal.md §7.3 实现（显式传入、Validate、Sanitize）
+4. ErrorKind 按 goal.md §7.4 只有 8 种
+5. Metrics 按 goal.md §7.5 只有 5 个 P0
+6. Health 按 goal.md §7.6 实现
+7. contracts 按 goal.md §8 更新 JSON schema
+8. 测试按 goal.md §9 编写
+9. examples 按 goal.md §10.1 只保留 basic/main.go
+10. testkit 按 goal.md §10.2 只保留 metrics.go 和 assertions.go

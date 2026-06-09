@@ -10,7 +10,7 @@ module: xlib-standard
 scope: "重写 Makefile、scripts/、.github/，确保只有最小 gate 集和标准脚本"
 spec_ref:
   - "module/xlib-standard/SPEC.md#20"
-  - "module/xlib-standard/goal/1.md#6"
+  - "module/xlib-standard/goal.md#6"
 files:
   - "Makefile"
   - "scripts/render_template.sh"
@@ -58,10 +58,10 @@ scripts/render_template.sh --help 2>&1 | grep -c "enable-governance"  # 应为 0
 
 ## Implementation Notes
 
-1. Makefile 按 goal/1.md §6.1 重写
-2. scripts 按 goal/1.md §6.2 只保留 7 个
-3. render_template.sh 按 goal/1.md §6.3-§6.4 实现 7 步
-4. check_boundary.sh 按 goal/1.md §6.5 检查 6 项
-5. check_contracts.sh 按 goal/1.md §6.6 检查 3 个 contract
-6. check_security.sh 按 goal/1.md §6.7 检查 5 类密钥
-7. CI 按 goal/1.md §6.8 配置
+1. Makefile 按 goal.md §6.1 重写
+2. scripts 按 goal.md §6.2 只保留 7 个
+3. render_template.sh 按 goal.md §6.3-§6.4 实现 7 步
+4. check_boundary.sh 按 goal.md §6.5 检查 6 项
+5. check_contracts.sh 按 goal.md §6.6 检查 3 个 contract
+6. check_security.sh 按 goal.md §6.7 检查 5 类密钥
+7. CI 按 goal.md §6.8 配置
