@@ -81,3 +81,7 @@ docs/report/node_modules/
 
 # Separate k8s project (not part of this repo)
 k8s/
+
+# Report tooling npm artifacts
+docs/report/package.json
+docs/report/package-lock.json
