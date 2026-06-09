@@ -138,7 +138,7 @@ tools: [Read, Grep, Glob, Bash]
 **Lint 规则**（M-LINT-001~008）：
 - M-LINT-006: 不允许存在 Orphan Task
 - M-LINT-007: 不允许存在 Orphan Code
-- M-LINT-008: Done 状态必须同时满足 Code + Test
+- M-LINT-008: Verified 状态必须同时满足 Code + Test
 
 ### 7. 孤儿检查
 

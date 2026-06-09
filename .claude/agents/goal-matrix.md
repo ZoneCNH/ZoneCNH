@@ -54,16 +54,29 @@ tools: [Read, Write, Grep, Glob]
   - 测试通过 → 更新 Test Case 列
 完整性检查：
   - Gate G5（Task Gate）自动检查 Matrix 覆盖率
-  - Release 前必须 100% 行有 Status = Done 或 Dropped（有理由）
+  - Release 前必须 100% 行有 Status = Verified 或 Dropped（有理由）
 ```
 
 ## Matrix 状态
 
+> 权威来源：`docs/goal/05-layer-standards.md §9`
+
 ```text
-Unmapped → Mapped → Planned → Implemented → Tested → Done
-                                                      ↓
-                                                   Blocked / Changed / Dropped
+主状态：Unmapped → Mapped → Linked → Verified / Dropped
+元状态（漂移/阻塞）：Blocked | Changed | Drifted | Stale
 ```
+
+- **Unmapped**：Spec 已审批，但尚未创建 Matrix 行
+- **Mapped**：Matrix 行已创建，关联了 Goal/Spec/REQ
+- **Linked**：关联了 Task/Test/Code（追溯链闭合）
+- **Verified**：Evidence 已通过 Gate 验证（终态）
+- **Dropped**：明确放弃，必须有 `drop_reason`（终态）
+- **Blocked**：被外部依赖阻塞（元状态）
+- **Changed**：上游变更导致需要重新验证（元状态）
+- **Drifted**：检测到追溯链漂移（元状态）
+- **Stale**：制品版本过期（元状态）
+
+**覆盖率统计口径**：仅 `Verified` + 有 `drop_reason` 的 `Dropped` 计入终态覆盖率。
 
 ## 推荐字段
 
@@ -151,7 +164,7 @@ Task Traceability: 有 Spec 的 Task / 总 Task × 100%
 - M-LINT-005: 每个 Task 必须能追溯到 Matrix Row
 - M-LINT-006: 不允许存在 Orphan Task
 - M-LINT-007: 不允许存在 Orphan Code
-- M-LINT-008: Done 状态必须同时满足 Code + Test
+- M-LINT-008: Verified 状态必须同时满足 Code + Test
 
 ## 工具集成
 
@@ -182,7 +195,7 @@ python3 docs/goal/tools/matrix-gen.py \
 
 | Goal ID | Spec ID | Requirement | Acceptance Criteria | Task ID | Prompt ID | Code Module | Test Case | Status | Risk |
 |---------|---------|-------------|---------------------|---------|-----------|-------------|-----------|--------|------|
-| GOAL-... | SPEC-... | REQ-SPEC-...-001 | AC-REQ-...-001-001 | TASK-... | PROMPT-... | ... | TEST-... | Done | Low |
+| GOAL-... | SPEC-... | REQ-SPEC-...-001 | AC-REQ-...-001-001 | TASK-... | PROMPT-... | ... | TEST-... | Verified | Low |
 ```
 
 ### 覆盖率报告
