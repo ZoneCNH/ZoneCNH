@@ -1,0 +1,232 @@
+name: Foundation Dependency Matrix
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "module/FOUNDATION-DEPS.yaml"
+      - "**/go.mod"
+      - "**/go.sum"
+      - ".github/workflows/deps-matrix.yml"
+  push:
+    branches: [main]
+    paths:
+      - "module/FOUNDATION-DEPS.yaml"
+      - "**/go.mod"
+      - "**/go.sum"
+      - ".github/workflows/deps-matrix.yml"
+  workflow_dispatch:
+
+jobs:
+  yaml-lint:
+    name: Validate YAML
+    runs-on: [self-hosted, Linux, X64]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate FOUNDATION-DEPS.yaml
+        run: |
+          python3 -c "
+          import yaml, sys
+          with open('module/FOUNDATION-DEPS.yaml') as f:
+              data = yaml.safe_load(f)
+          required = ['version', 'modules', 'allowed_deps', 'forbidden_deps']
+          missing = [k for k in required if k not in data]
+          if missing:
+              print(f'ERROR: Missing required fields: {missing}')
+              sys.exit(1)
+          print(f'OK: version={data[\"version\"]}, modules={len(data[\"modules\"])}')
+          "
+
+  deps-check:
+    name: Check Dependencies
+    runs-on: [self-hosted, Linux, X64]
+    needs: yaml-lint
+    outputs:
+      violations: ${{ steps.check.outputs.violations }}
+      has_violations: ${{ steps.check.outputs.has_violations }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.23"
+
+      - name: Check dependency matrix
+        id: check
+        run: |
+          python3 << 'PYEOF'
+          import yaml, subprocess, json, os, sys
+
+          with open("module/FOUNDATION-DEPS.yaml") as f:
+              matrix = yaml.safe_load(f)
+
+          go_baseline = matrix.get("go_baseline", "1.23")
+          modules = matrix.get("modules", {})
+          allowed = matrix.get("allowed_deps", {})
+          forbidden = matrix.get("forbidden_deps", [])
+
+          violations = []
+
+          for mod_name, mod_def in modules.items():
+              repo_url = f"https://github.com/ZoneCNH/{mod_name}.git"
+              clone_dir = f"/tmp/check-{mod_name}"
+
+              # Clone
+              ret = subprocess.run(
+                  ["git", "clone", "--depth=1", repo_url, clone_dir],
+                  capture_output=True, text=True
+              )
+              if ret.returncode != 0:
+                  violations.append({
+                      "module": mod_name,
+                      "type": "SKIP",
+                      "detail": f"Cannot clone: {ret.stderr.strip()}"
+                  })
+                  continue
+
+              gomod = os.path.join(clone_dir, "go.mod")
+              if not os.path.exists(gomod):
+                  violations.append({
+                      "module": mod_name,
+                      "type": "SKIP",
+                      "detail": "go.mod not found"
+                  })
+                  continue
+
+              # Check Go version
+              with open(gomod) as f:
+                  for line in f:
+                      if line.startswith("go "):
+                          ver = line.strip().split()[1]
+                          if ver != go_baseline:
+                              violations.append({
+                                  "module": mod_name,
+                                  "type": "GO_VERSION",
+                                  "detail": f"Declared {ver}, expected {go_baseline}"
+                              })
+                          break
+
+              # Check stdlib-only
+              if mod_def.get("stdlib_only"):
+                  ret = subprocess.run(
+                      ["go", "list", "-m", "all"],
+                      cwd=clone_dir, capture_output=True, text=True
+                  )
+                  if ret.returncode == 0:
+                      for dep_line in ret.stdout.strip().split("\n"):
+                          dep = dep_line.split()[0] if dep_line.strip() else ""
+                          if dep and "/" in dep and not dep.startswith("github.com/ZoneCNH/"):
+                              pass  # stdlib packages have no /
+                          elif dep and not dep.startswith(mod_name) and "/" in dep:
+                              violations.append({
+                                  "module": mod_name,
+                                  "type": "STDLIB_VIOLATION",
+                                  "detail": f"Third-party dep: {dep}"
+                              })
+
+              # Check allowed deps
+              mod_allowed = set(allowed.get(mod_name, []))
+              if mod_allowed:
+                  ret = subprocess.run(
+                      ["go", "list", "-m", "all"],
+                      cwd=clone_dir, capture_output=True, text=True
+                  )
+                  if ret.returncode == 0:
+                      for dep_line in ret.stdout.strip().split("\n"):
+                          dep = dep_line.split()[0] if dep_line.strip() else ""
+                          if dep.startswith("github.com/ZoneCNH/") and dep != f"github.com/ZoneCNH/{mod_name}":
+                              dep_short = dep.replace("github.com/ZoneCNH/", "")
+                              if dep_short not in mod_allowed:
+                                  violations.append({
+                                      "module": mod_name,
+                                      "type": "UNAUTHORIZED_DEP",
+                                      "detail": f"Depends on {dep_short} (not in allowed list)"
+                                  })
+
+              # Check forbidden deps
+              for forb in forbidden:
+                  ret = subprocess.run(
+                      ["grep", "-r", forb, gomod],
+                      capture_output=True, text=True
+                  )
+                  if ret.returncode == 0:
+                      violations.append({
+                          "module": mod_name,
+                          "type": "FORBIDDEN_DEP",
+                          "detail": f"Forbidden dep found: {forb}"
+                      })
+
+          # Output
+          has_v = len(violations) > 0
+          print(f"violations={json.dumps(violations)}")
+          print(f"has_violations={'true' if has_v else 'false'}")
+
+          with open(os.environ.get("GITHUB_OUTPUT", "/dev/null"), "a") as gh:
+              gh.write(f"violations={json.dumps(violations)}\n")
+              gh.write(f"has_violations={'true' if has_v else 'false'}\n")
+
+          if has_v:
+              print(f"\n❌ {len(violations)} violation(s) found:")
+              for v in violations:
+                  print(f"  [{v['type']}] {v['module']}: {v['detail']}")
+              sys.exit(1)
+          else:
+              print("\n✅ All dependency checks passed.")
+          PYEOF
+
+  pr-comment:
+    name: PR Comment
+    runs-on: [self-hosted, Linux, X64]
+    needs: deps-check
+    if: github.event_name == 'pull_request' && needs.deps-check.outputs.has_violations == 'true'
+    steps:
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            const violations = JSON.parse('${{ needs.deps-check.outputs.violations }}');
+            let body = '## ❌ Foundation Dependency Matrix Violations\n\n';
+            body += '| Module | Type | Detail |\n|--------|------|--------|\n';
+            for (const v of violations) {
+              body += `| ${v.module} | ${v.type} | ${v.detail} |\n`;
+            }
+            body += '\n**Fix**: Update go.mod to comply with [FOUNDATION-DEPS.yaml](../blob/main/module/FOUNDATION-DEPS.yaml).\n';
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            const existing = comments.find(c => c.body.includes('Foundation Dependency Matrix Violations'));
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+            }
+
+  summary:
+    name: Summary
+    runs-on: [self-hosted, Linux, X64]
+    needs: [deps-check]
+    if: always()
+    steps:
+      - name: Write summary
+        run: |
+          if [ "${{ needs.deps-check.outputs.has_violations }}" = "true" ]; then
+            echo "## ❌ Dependency Matrix: VIOLATIONS FOUND" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo '```json' >> $GITHUB_STEP_SUMMARY
+            echo '${{ needs.deps-check.outputs.violations }}' | python3 -m json.tool >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+          else
+            echo "## ✅ Dependency Matrix: All Checks Passed" >> $GITHUB_STEP_SUMMARY
+          fi
