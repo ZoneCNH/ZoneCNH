@@ -1,0 +1,36 @@
+# Decision Registry
+# 权威来源：docs/goal/15-registry.md §7
+# 路径：.config/goal/registry/decisions.yaml
+
+decisions: []
+
+# 示例条目：
+# - decision_id: DEC-20260608-001
+#   document_version: "2026-06-09"
+#   goal_id: GOAL-20260608-001
+#   title: 选择 gorilla/websocket 作为 WS 库
+#   status: Accepted
+#   maker: architect-agent
+#   created_at: "2026-06-08"
+#   updated_at: "2026-06-08"
+#   context: |
+#     需要选择一个稳定的 WebSocket 库用于实时数据订阅。
+#     候选方案：gorilla/websocket、nhooyr/websocket、gobwas/ws
+#   decision: |
+#     选择 gorilla/websocket，因为：
+#     1. 社区活跃，文档完善
+#     2. 性能优秀，内存占用低
+#     3. 已有项目使用经验
+#   alternatives:
+#     - name: nhooyr/websocket
+#       reason: "API 更现代，但社区较小"
+#     - name: gobwas/ws
+#       reason: "零拷贝性能好，但 API 复杂"
+#   consequences:
+#     - 需要处理 gorilla/websocket 的并发限制
+#     - 需要封装连接池管理
+#   related_tasks:
+#     - TASK-GOAL-20260608-001-003
+
+# 状态枚举：
+# Proposed → Accepted → Rejected → Superseded

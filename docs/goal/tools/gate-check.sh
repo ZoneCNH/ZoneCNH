@@ -108,8 +108,114 @@ echo ""
 # --- Matrix 覆盖率 ---
 echo "--- Matrix 覆盖率 ---"
 if [ -f "$MATRIX_FILE" ]; then
-    MATRIX_ROWS=$(grep -cE "^[[:space:]]*-[[:space:]]*goal_id:" "$MATRIX_FILE" 2>/dev/null || true)
-    MAPPED=$(grep -c "status:.*\(Verified\|Dropped\)" "$MATRIX_FILE" 2>/dev/null || true)
+    MATRIX_ROWS=0
+    MAPPED=0
+    MATRIX_MISSING_REQUIRED=0
+    MATRIX_INVALID_RELATION=0
+    MATRIX_INVALID_STATUS=0
+    MATRIX_VERIFIED_WITHOUT_EVIDENCE=0
+    MATRIX_DROPPED_WITHOUT_REASON=0
+
+    while IFS='=' read -r key value; do
+        case "$key" in
+            rows) MATRIX_ROWS="$value" ;;
+            terminal) MAPPED="$value" ;;
+            missing_required) MATRIX_MISSING_REQUIRED="$value" ;;
+            invalid_relation) MATRIX_INVALID_RELATION="$value" ;;
+            invalid_status) MATRIX_INVALID_STATUS="$value" ;;
+            verified_without_evidence) MATRIX_VERIFIED_WITHOUT_EVIDENCE="$value" ;;
+            dropped_without_reason) MATRIX_DROPPED_WITHOUT_REASON="$value" ;;
+        esac
+    done < <(python3 - "$MATRIX_FILE" <<'PY'
+import re
+import sys
+
+path = sys.argv[1]
+required = [
+    "source_id",
+    "target_id",
+    "relation",
+    "status",
+    "evidence_id",
+    "gate_id",
+    "owner",
+    "updated_at",
+]
+non_empty = {"source_id", "target_id", "relation", "status", "gate_id", "owner", "updated_at"}
+relations = {
+    "decomposes_to",
+    "contains",
+    "accepted_by",
+    "planned_by",
+    "implemented_by",
+    "prompted_by",
+    "verified_by",
+    "evidenced_by",
+}
+statuses = {"Unmapped", "Mapped", "Linked", "Verified", "Dropped", "Drifted", "Stale", "Blocked", "Changed"}
+
+
+def clean(value: str) -> str:
+    value = value.split("#", 1)[0].strip()
+    if (value.startswith('"') and value.endswith('"')) or (value.startswith("'") and value.endswith("'")):
+        value = value[1:-1]
+    return value.strip()
+
+
+rows = []
+current = None
+for raw_line in open(path, encoding="utf-8"):
+    start = re.match(r"^\s*-\s+(source_id|goal_id):\s*(.*)$", raw_line)
+    if start:
+        if current is not None:
+            rows.append(current)
+        current = {"source_id": clean(start.group(2))}
+        continue
+    if current is None:
+        continue
+    match = re.match(r"^\s+([A-Za-z_]+):\s*(.*)\s*$", raw_line)
+    if match:
+        current[match.group(1)] = clean(match.group(2))
+if current is not None:
+    rows.append(current)
+
+missing_required = 0
+invalid_relation = 0
+invalid_status = 0
+verified_without_evidence = 0
+dropped_without_reason = 0
+terminal = 0
+
+for row in rows:
+    if any(name not in row for name in required):
+        missing_required += 1
+    elif any(row.get(name, "") == "" for name in non_empty):
+        missing_required += 1
+
+    relation = row.get("relation", "")
+    if relation and relation not in relations:
+        invalid_relation += 1
+
+    status = row.get("status", "")
+    if status and status not in statuses:
+        invalid_status += 1
+    if status in {"Verified", "Dropped"}:
+        terminal += 1
+    if status == "Verified" and row.get("evidence_id", "") == "":
+        verified_without_evidence += 1
+    if status == "Dropped" and row.get("drop_reason", "") == "":
+        dropped_without_reason += 1
+
+print(f"rows={len(rows)}")
+print(f"terminal={terminal}")
+print(f"missing_required={missing_required}")
+print(f"invalid_relation={invalid_relation}")
+print(f"invalid_status={invalid_status}")
+print(f"verified_without_evidence={verified_without_evidence}")
+print(f"dropped_without_reason={dropped_without_reason}")
+PY
+)
+
     if [ "$MATRIX_ROWS" -gt 0 ]; then
         MATRIX_COVERAGE=$((MAPPED * 100 / MATRIX_ROWS))
         if [ "$MATRIX_COVERAGE" -ge 95 ]; then
@@ -118,35 +224,23 @@ if [ -f "$MATRIX_FILE" ]; then
             fail "Matrix 完成率 ${MATRIX_COVERAGE}% (${MAPPED}/${MATRIX_ROWS})"
         fi
 
-        DROPPED_WITHOUT_REASON=$(python3 - "$MATRIX_FILE" <<'PY'
-import re
-import sys
-
-rows = []
-current = None
-for line in open(sys.argv[1], encoding="utf-8"):
-    if re.match(r"^\s*-\s+goal_id:", line):
-        if current is not None:
-            rows.append(current)
-        current = {}
-        continue
-    if current is None:
-        continue
-    match = re.match(r"^\s+([A-Za-z_]+):\s*(.*)\s*$", line)
-    if match:
-        value = match.group(2).strip().strip('"').strip("'")
-        current[match.group(1)] = value
-if current is not None:
-    rows.append(current)
-
-print(sum(1 for row in rows if row.get("status") == "Dropped" and not row.get("drop_reason")))
-PY
-)
-        if [ "$DROPPED_WITHOUT_REASON" -gt 0 ]; then
-            fail "Matrix 有 ${DROPPED_WITHOUT_REASON} 个 Dropped 行缺少非空 drop_reason"
+        if [ "$MATRIX_MISSING_REQUIRED" -gt 0 ]; then
+            fail "Matrix 有 ${MATRIX_MISSING_REQUIRED} 条 edge 缺少必填字段或必填值"
+        fi
+        if [ "$MATRIX_INVALID_RELATION" -gt 0 ]; then
+            fail "Matrix 有 ${MATRIX_INVALID_RELATION} 条 edge 使用非法 relation"
+        fi
+        if [ "$MATRIX_INVALID_STATUS" -gt 0 ]; then
+            fail "Matrix 有 ${MATRIX_INVALID_STATUS} 条 edge 使用非法 status"
+        fi
+        if [ "$MATRIX_VERIFIED_WITHOUT_EVIDENCE" -gt 0 ]; then
+            fail "Matrix 有 ${MATRIX_VERIFIED_WITHOUT_EVIDENCE} 条 Verified edge 缺少 evidence_id"
+        fi
+        if [ "$MATRIX_DROPPED_WITHOUT_REASON" -gt 0 ]; then
+            fail "Matrix 有 ${MATRIX_DROPPED_WITHOUT_REASON} 条 Dropped edge 缺少非空 drop_reason"
         fi
     else
-        warn "Matrix 文件为空或格式无法解析"
+        warn "Matrix 文件为空或未发现 source_id/goal_id edge"
     fi
 else
     fail "Matrix 文件不存在: $MATRIX_FILE"

@@ -1,0 +1,29 @@
+# Goal Registry
+# 权威来源：docs/goal/15-registry.md §1
+# 路径：.config/goal/registry/goals.yaml
+
+goals:
+  - goal_id: GOAL-20260608-001
+    document_version: "2026-06-09"
+    title: Goal 驱动交付体系落地
+    status: Active
+    owner: zone
+    priority: P0
+    north_star: 建立完整的 Goal 驱动交付体系，确保每一行代码都能追溯到可验证的业务目标
+    pipeline_state: DONE
+    current_phase: RETROSPECTIVE
+    phase_status: DONE
+    workflow_step: RETROSPECTIVE_EXECUTION
+    created_at: "2026-06-08"
+    updated_at: "2026-06-08"
+    related_issues: []
+    related_specs:
+      - docs/goal/README.md
+    success_criteria:
+      - 创建 5 个 Goal Agent
+      - 建立统一配置中心 .config/goal/
+      - 更新 AGENTS.md 文档
+      - 验证 Agent 协作流程
+
+# 状态枚举（权威来源：docs/goal/03-pipeline.md §2.5）：
+# Draft → Active → Paused → Achieved / Abandoned

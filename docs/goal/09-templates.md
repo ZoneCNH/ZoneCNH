@@ -91,7 +91,7 @@ GOAL-YYYYMMDD-NNN
 ## 3. Design
 
 ### Design ID
-DESIGN-<domain>-v1.0
+DESIGN-<domain>-v1
 
 ### Source Spec
 SPEC-<domain>-v1

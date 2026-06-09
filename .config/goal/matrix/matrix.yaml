@@ -1,0 +1,260 @@
+# Traceability Matrix
+# 权威来源：docs/goal/05-layer-standards.md §3
+# 路径：.config/goal/matrix/matrix.yaml
+# 字段契约：每行只能使用 source_id、target_id、relation、status、evidence_id、gate_id、owner、updated_at
+# status: Unmapped | Mapped | Linked | Verified | Dropped | Blocked | Changed
+
+matrix:
+  - source_id: GOAL-20260608-001
+    target_id: SPEC-goal-system-v1
+    relation: decomposes_to
+    status: Verified
+    evidence_id: EVID-TEST-TASK-GOAL-20260608-001-001-001-001
+    gate_id: G1
+    owner: goal-matrix
+    updated_at: "2026-06-09"
+
+  - source_id: SPEC-goal-system-v1
+    target_id: REQ-SPEC-goal-system-v1-001
+    relation: contains
+    status: Verified
+    evidence_id: EVID-TEST-TASK-GOAL-20260608-001-001-001-001
+    gate_id: G2
+    owner: goal-matrix
+    updated_at: "2026-06-09"
+
+  - source_id: SPEC-goal-system-v1
+    target_id: REQ-SPEC-goal-system-v1-002
+    relation: contains
+    status: Verified
+    evidence_id: EVID-TEST-TASK-GOAL-20260608-001-002-001-001
+    gate_id: G2
+    owner: goal-matrix
+    updated_at: "2026-06-09"
+
+  - source_id: SPEC-goal-system-v1
+    target_id: REQ-SPEC-goal-system-v1-003
+    relation: contains
+    status: Verified
+    evidence_id: EVID-TEST-TASK-GOAL-20260608-001-003-001-001
+    gate_id: G2
+    owner: goal-matrix
+    updated_at: "2026-06-09"
+
+  - source_id: REQ-SPEC-goal-system-v1-001
+    target_id: AC-REQ-SPEC-goal-system-v1-001-001
+    relation: accepted_by
+    status: Verified
+    evidence_id: EVID-TEST-TASK-GOAL-20260608-001-001-001-001
+    gate_id: G2
+    owner: goal-matrix
+    updated_at: "2026-06-09"
+
+  - source_id: REQ-SPEC-goal-system-v1-002
+    target_id: AC-REQ-SPEC-goal-system-v1-002-001
+    relation: accepted_by
+    status: Verified
+    evidence_id: EVID-TEST-TASK-GOAL-20260608-001-002-001-001
+    gate_id: G2
+    owner: goal-matrix
+    updated_at: "2026-06-09"
+
+  - source_id: REQ-SPEC-goal-system-v1-003
+    target_id: AC-REQ-SPEC-goal-system-v1-003-001
+    relation: accepted_by
+    status: Verified
+    evidence_id: EVID-TEST-TASK-GOAL-20260608-001-003-001-001
+    gate_id: G2
+    owner: goal-matrix
+    updated_at: "2026-06-09"
+
+  - source_id: REQ-SPEC-goal-system-v1-003
+    target_id: AC-REQ-SPEC-goal-system-v1-003-002
+    relation: accepted_by
+    status: Verified
+    evidence_id: EVID-TEST-TASK-GOAL-20260608-001-003-002-001
+    gate_id: G2
+    owner: goal-matrix
+    updated_at: "2026-06-09"
+
+  - source_id: REQ-SPEC-goal-system-v1-003
+    target_id: AC-REQ-SPEC-goal-system-v1-003-003
+    relation: accepted_by
+    status: Verified
+    evidence_id: EVID-TEST-TASK-GOAL-20260608-001-003-003-001
+    gate_id: G2
+    owner: goal-matrix
+    updated_at: "2026-06-09"
+
+  - source_id: AC-REQ-SPEC-goal-system-v1-001-001
+    target_id: TASK-GOAL-20260608-001-001
+    relation: implemented_by
+    status: Verified
+    evidence_id: EVID-TEST-TASK-GOAL-20260608-001-001-001-001
+    gate_id: G5
+    owner: goal-matrix
+    updated_at: "2026-06-09"
+
+  - source_id: AC-REQ-SPEC-goal-system-v1-002-001
+    target_id: TASK-GOAL-20260608-001-002
+    relation: implemented_by
+    status: Verified
+    evidence_id: EVID-TEST-TASK-GOAL-20260608-001-002-001-001
+    gate_id: G5
+    owner: goal-matrix
+    updated_at: "2026-06-09"
+
+  - source_id: AC-REQ-SPEC-goal-system-v1-003-001
+    target_id: TASK-GOAL-20260608-001-003
+    relation: implemented_by
+    status: Verified
+    evidence_id: EVID-TEST-TASK-GOAL-20260608-001-003-001-001
+    gate_id: G5
+    owner: goal-matrix
+    updated_at: "2026-06-09"
+
+  - source_id: AC-REQ-SPEC-goal-system-v1-003-002
+    target_id: TASK-GOAL-20260608-001-003
+    relation: implemented_by
+    status: Verified
+    evidence_id: EVID-TEST-TASK-GOAL-20260608-001-003-002-001
+    gate_id: G5
+    owner: goal-matrix
+    updated_at: "2026-06-09"
+
+  - source_id: AC-REQ-SPEC-goal-system-v1-003-003
+    target_id: TASK-GOAL-20260608-001-003
+    relation: implemented_by
+    status: Verified
+    evidence_id: EVID-TEST-TASK-GOAL-20260608-001-003-003-001
+    gate_id: G5
+    owner: goal-matrix
+    updated_at: "2026-06-09"
+
+  - source_id: TASK-GOAL-20260608-001-001
+    target_id: PROMPT-TASK-GOAL-20260608-001-001-001
+    relation: prompted_by
+    status: Verified
+    evidence_id: EVID-TEST-TASK-GOAL-20260608-001-001-001-001
+    gate_id: G5
+    owner: goal-matrix
+    updated_at: "2026-06-09"
+
+  - source_id: TASK-GOAL-20260608-001-002
+    target_id: PROMPT-TASK-GOAL-20260608-001-002-001
+    relation: prompted_by
+    status: Verified
+    evidence_id: EVID-TEST-TASK-GOAL-20260608-001-002-001-001
+    gate_id: G5
+    owner: goal-matrix
+    updated_at: "2026-06-09"
+
+  - source_id: TASK-GOAL-20260608-001-003
+    target_id: PROMPT-TASK-GOAL-20260608-001-003-001
+    relation: prompted_by
+    status: Verified
+    evidence_id: EVID-TEST-TASK-GOAL-20260608-001-003-001-001
+    gate_id: G5
+    owner: goal-matrix
+    updated_at: "2026-06-09"
+
+  - source_id: PROMPT-TASK-GOAL-20260608-001-001-001
+    target_id: TEST-TASK-GOAL-20260608-001-001-001
+    relation: verified_by
+    status: Verified
+    evidence_id: EVID-TEST-TASK-GOAL-20260608-001-001-001-001
+    gate_id: G7
+    owner: goal-matrix
+    updated_at: "2026-06-09"
+
+  - source_id: PROMPT-TASK-GOAL-20260608-001-002-001
+    target_id: TEST-TASK-GOAL-20260608-001-002-001
+    relation: verified_by
+    status: Verified
+    evidence_id: EVID-TEST-TASK-GOAL-20260608-001-002-001-001
+    gate_id: G7
+    owner: goal-matrix
+    updated_at: "2026-06-09"
+
+  - source_id: PROMPT-TASK-GOAL-20260608-001-003-001
+    target_id: TEST-TASK-GOAL-20260608-001-003-001
+    relation: verified_by
+    status: Verified
+    evidence_id: EVID-TEST-TASK-GOAL-20260608-001-003-001-001
+    gate_id: G7
+    owner: goal-matrix
+    updated_at: "2026-06-09"
+
+  - source_id: PROMPT-TASK-GOAL-20260608-001-003-001
+    target_id: TEST-TASK-GOAL-20260608-001-003-002
+    relation: verified_by
+    status: Verified
+    evidence_id: EVID-TEST-TASK-GOAL-20260608-001-003-002-001
+    gate_id: G7
+    owner: goal-matrix
+    updated_at: "2026-06-09"
+
+  - source_id: PROMPT-TASK-GOAL-20260608-001-003-001
+    target_id: TEST-TASK-GOAL-20260608-001-003-003
+    relation: verified_by
+    status: Verified
+    evidence_id: EVID-TEST-TASK-GOAL-20260608-001-003-003-001
+    gate_id: G7
+    owner: goal-matrix
+    updated_at: "2026-06-09"
+
+  - source_id: TEST-TASK-GOAL-20260608-001-001-001
+    target_id: EVID-TEST-TASK-GOAL-20260608-001-001-001-001
+    relation: evidenced_by
+    status: Verified
+    evidence_id: EVID-TEST-TASK-GOAL-20260608-001-001-001-001
+    gate_id: G8
+    owner: goal-matrix
+    updated_at: "2026-06-09"
+
+  - source_id: TEST-TASK-GOAL-20260608-001-002-001
+    target_id: EVID-TEST-TASK-GOAL-20260608-001-002-001-001
+    relation: evidenced_by
+    status: Verified
+    evidence_id: EVID-TEST-TASK-GOAL-20260608-001-002-001-001
+    gate_id: G8
+    owner: goal-matrix
+    updated_at: "2026-06-09"
+
+  - source_id: TEST-TASK-GOAL-20260608-001-003-001
+    target_id: EVID-TEST-TASK-GOAL-20260608-001-003-001-001
+    relation: evidenced_by
+    status: Verified
+    evidence_id: EVID-TEST-TASK-GOAL-20260608-001-003-001-001
+    gate_id: G8
+    owner: goal-matrix
+    updated_at: "2026-06-09"
+
+  - source_id: TEST-TASK-GOAL-20260608-001-003-002
+    target_id: EVID-TEST-TASK-GOAL-20260608-001-003-002-001
+    relation: evidenced_by
+    status: Verified
+    evidence_id: EVID-TEST-TASK-GOAL-20260608-001-003-002-001
+    gate_id: G8
+    owner: goal-matrix
+    updated_at: "2026-06-09"
+
+  - source_id: TEST-TASK-GOAL-20260608-001-003-003
+    target_id: EVID-TEST-TASK-GOAL-20260608-001-003-003-001
+    relation: evidenced_by
+    status: Verified
+    evidence_id: EVID-TEST-TASK-GOAL-20260608-001-003-003-001
+    gate_id: G8
+    owner: goal-matrix
+    updated_at: "2026-06-09"
+
+# 状态枚举（权威来源：docs/goal/03-pipeline.md §2.5）：
+# Unmapped → Mapped → Linked → Verified / Dropped
+# 完成态：Verified；带理由例外终态：Dropped；终态覆盖率按 Verified + Dropped 计算
+# 异常状态：Blocked / Changed
+
+# 覆盖率目标：
+# Goal Coverage: ≥ 95%
+# Spec Coverage: ≥ 95%
+# AC Coverage: ≥ 95%
+# Task Traceability: ≥ 95%

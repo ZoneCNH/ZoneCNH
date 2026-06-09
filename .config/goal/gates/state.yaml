@@ -1,0 +1,396 @@
+# Gate 状态
+# 权威来源：docs/goal/04-gates.md
+# 路径：.config/goal/gates/state.yaml
+# 命名空间：
+# - gate_id 只能使用 G0-G11。
+# - CI 自动化、人审审批和模块专用差异记录为 check/profile 证据，不作为新增 gate_id。
+
+authority_source:
+  - docs/goal/00-authority-map.md
+  - docs/goal/04-gates.md
+
+policy:
+  pass_with_risk:
+    required_fields:
+      - risk_id
+      - risk_owner
+      - risk_level
+      - risk_reason
+      - mitigation
+      - due_at
+      - review_gate
+      - release_blocking
+      - evidence_id
+    allowed_gates:
+      - G0
+      - G1
+      - G2
+      - G3
+      - G4
+      - G5
+      - G7
+      - G8
+      - G9
+      - G11
+    disallowed_gates:
+      - G6
+      - G10
+    release_prohibition:
+      - "G10 不允许 PASS_WITH_RISK"
+      - "任一未关闭 release_blocking 风险会阻塞 G10"
+      - "G6 PASS_WITH_RISK 是无效状态"
+      - "P0/P1、权限、数据、回滚、观测、Release Evidence 缺口必须 FAIL/BLOCKED"
+
+gates:
+  - gate_id: G0
+    gate_name: Context Gate
+    type: Hybrid
+    blocking: true
+    status: PASS
+    checked_at: "2026-06-09T08:00:00Z"
+    checked_by: goal-reviewer
+    goal_id: GOAL-20260608-001
+    threshold:
+      pass: 90
+      pass_with_risk_min: 80
+      pass_with_risk_max: 89
+    allow_pass_with_risk: true
+    result:
+      verdict: PASS
+      score: 95
+      threshold: 90
+      details:
+        - check: "上下文恢复完整"
+          status: PASS
+          evidence: "docs/goal/ 目录结构完整"
+        - check: "Agent 配置齐全"
+          status: PASS
+          evidence: "5 个 Goal Agent 已创建"
+
+  - gate_id: G1
+    gate_name: Goal Gate
+    type: Semantic
+    blocking: true
+    status: PASS
+    checked_at: "2026-06-09T08:05:00Z"
+    checked_by: goal-reviewer
+    goal_id: GOAL-20260608-001
+    threshold:
+      pass: 90
+      pass_with_risk_min: 80
+      pass_with_risk_max: 89
+    allow_pass_with_risk: true
+    result:
+      verdict: PASS
+      score: 90
+      threshold: 90
+      details:
+        - check: "SMART 原则符合"
+          status: PASS
+          evidence: "Goal 包含目标动作、结果对象、衡量指标"
+        - check: "评分 >= 90"
+          status: PASS
+          evidence: "90 分"
+
+  - gate_id: G2
+    gate_name: Spec Gate
+    type: Semantic
+    blocking: true
+    status: PASS_WITH_RISK
+    checked_at: "2026-06-09T08:10:00Z"
+    checked_by: goal-reviewer
+    goal_id: GOAL-20260608-001
+    threshold:
+      pass: 90
+      pass_with_risk_min: 85
+      pass_with_risk_max: 89
+    allow_pass_with_risk: true
+    risk:
+      risk_id: RISK-G2-MATRIX-PARSER-20260609
+      risk_owner: goal-matrix
+      risk_level: medium
+      risk_reason: "Spec/Matrix 语义已统一为追溯边，旧 Matrix 检查器仍需在 Phase 4 对齐新字段契约"
+      mitigation: "本阶段先锁定 source_id/target_id/relation/status/evidence_id/gate_id/owner/updated_at；Phase 4 更新检查器"
+      due_at: "2026-06-10T23:59:59Z"
+      review_gate: G8
+      release_blocking: true
+      evidence_id: EVID-TEST-TASK-GOAL-20260608-001-002-001-001
+      status: OPEN
+    result:
+      verdict: PASS_WITH_RISK
+      score: 88
+      threshold: 90
+      details:
+        - check: "Spec 完整且可测试"
+          status: PASS
+          evidence: "docs/goal/ 文档体系完整"
+        - check: "需求可追溯"
+          status: PASS_WITH_RISK
+          evidence: "Matrix 已改为 Canonical 追溯边；旧检查器契约漂移登记为 release_blocking 风险"
+
+  - gate_id: G3
+    gate_name: Design Gate
+    type: Semantic
+    blocking: true
+    status: PASS
+    checked_at: "2026-06-09T08:15:00Z"
+    checked_by: goal-reviewer
+    goal_id: GOAL-20260608-001
+    threshold:
+      pass: 90
+      pass_with_risk_min: 85
+      pass_with_risk_max: 89
+    allow_pass_with_risk: true
+    result:
+      verdict: PASS
+      score: 92
+      threshold: 90
+      details:
+        - check: "Design 可映射到模块"
+          status: PASS
+          evidence: "Agent 职责分工明确"
+        - check: "接口定义清晰"
+          status: PASS
+          evidence: "状态文件路径统一"
+
+  - gate_id: G4
+    gate_name: Plan Gate
+    type: Semantic
+    blocking: true
+    status: PASS_WITH_RISK
+    checked_at: "2026-06-09T08:20:00Z"
+    checked_by: goal-reviewer
+    goal_id: GOAL-20260608-001
+    threshold:
+      pass: 90
+      pass_with_risk_min: 85
+      pass_with_risk_max: 89
+    allow_pass_with_risk: true
+    risk:
+      risk_id: RISK-G4-RELEASE-PRECHECK-20260609
+      risk_owner: goal-evidence
+      risk_level: medium
+      risk_reason: "Plan/Gate 状态已声明 G10 阻塞条件，但自动化 Release precheck 尚需在 Phase 4 对齐脚本"
+      mitigation: "本阶段在 04/06/08/20 文档和 state.yaml 固化 Release 禁止条件；Phase 4 同步自动化检查"
+      due_at: "2026-06-10T23:59:59Z"
+      review_gate: G10
+      release_blocking: true
+      evidence_id: EVID-TEST-TASK-GOAL-20260608-001-003-001-001
+      status: OPEN
+    result:
+      verdict: PASS_WITH_RISK
+      score: 85
+      threshold: 90
+      details:
+        - check: "Plan 体现依赖顺序"
+          status: PASS
+          evidence: "Task 依赖关系正确"
+        - check: "执行顺序合理"
+          status: PASS_WITH_RISK
+          evidence: "Release precheck 自动化尚未改造，已登记 release_blocking 风险"
+
+  - gate_id: G5
+    gate_name: Task Gate
+    type: Executable
+    blocking: true
+    status: PASS
+    checked_at: "2026-06-09T08:25:00Z"
+    checked_by: goal-reviewer
+    goal_id: GOAL-20260608-001
+    threshold:
+      pass: 90
+      pass_with_risk_min: 85
+      pass_with_risk_max: 89
+    allow_pass_with_risk: true
+    result:
+      verdict: PASS
+      score: 95
+      threshold: 90
+      details:
+        - check: "Task 原子化且有 DoD"
+          status: PASS
+          evidence: "每个 Task 有明确的 DoD"
+        - check: "Task 可执行"
+          status: PASS
+          evidence: "所有 Task 已完成"
+
+  - gate_id: G6
+    gate_name: Implementation Gate
+    type: Executable
+    blocking: true
+    status: PASS
+    checked_at: "2026-06-09T08:30:00Z"
+    checked_by: goal-reviewer
+    goal_id: GOAL-20260608-001
+    threshold:
+      pass: 90
+      pass_with_risk_min: null
+      pass_with_risk_max: null
+    allow_pass_with_risk: false
+    result:
+      verdict: PASS
+      score: 90
+      threshold: 90
+      details:
+        - check: "实现未越界"
+          status: PASS
+          evidence: "所有实现符合 Spec"
+        - check: "代码质量达标"
+          status: PASS
+          evidence: "Agent 文件结构清晰"
+
+  - gate_id: G7
+    gate_name: Test Gate
+    type: Executable
+    blocking: true
+    status: PASS_WITH_RISK
+    checked_at: "2026-06-09T08:35:00Z"
+    checked_by: goal-reviewer
+    goal_id: GOAL-20260608-001
+    threshold:
+      pass: 90
+      pass_with_risk_min: 85
+      pass_with_risk_max: 89
+    allow_pass_with_risk: true
+    risk:
+      risk_id: RISK-G7-EVIDENCE-LINT-20260609
+      risk_owner: goal-evidence
+      risk_level: medium
+      risk_reason: "Test Evidence 已拆分 metadata/proof body，旧 lint/evidence collector 仍需在 Phase 4 对齐新字段"
+      mitigation: "本阶段保留旧可读标签并新增 metadata/proof body，降低脚本改造前的兼容风险"
+      due_at: "2026-06-10T23:59:59Z"
+      review_gate: G10
+      release_blocking: true
+      evidence_id: EVID-TEST-TASK-GOAL-20260608-001-003-002-001
+      status: OPEN
+    result:
+      verdict: PASS_WITH_RISK
+      score: 88
+      threshold: 90
+      details:
+        - check: "测试通过"
+          status: PASS
+          evidence: "Agent 文件创建成功"
+        - check: "覆盖率达标"
+          status: PASS_WITH_RISK
+          evidence: "Evidence 字段已升级；旧 lint/evidence collector 契约漂移登记为 release_blocking 风险"
+
+  - gate_id: G8
+    gate_name: Evidence Gate
+    type: Executable
+    blocking: true
+    status: PASS
+    checked_at: "2026-06-09T08:40:00Z"
+    checked_by: goal-reviewer
+    goal_id: GOAL-20260608-001
+    threshold:
+      pass: 90
+      pass_with_risk_min: 85
+      pass_with_risk_max: 89
+    allow_pass_with_risk: true
+    result:
+      verdict: PASS
+      score: 92
+      threshold: 90
+      details:
+        - check: "Evidence 完整"
+          status: PASS
+          evidence: "所有 Evidence 文件包含 Metadata 和 Proof Body"
+        - check: "Evidence 可验证"
+          status: PASS
+          evidence: "Evidence 文件存在且可读"
+
+  - gate_id: G9
+    gate_name: Review Gate
+    type: Semantic
+    blocking: true
+    status: PASS
+    checked_at: "2026-06-09T08:45:00Z"
+    checked_by: goal-reviewer
+    goal_id: GOAL-20260608-001
+    threshold:
+      pass: 90
+      pass_with_risk_min: 85
+      pass_with_risk_max: 89
+    allow_pass_with_risk: true
+    result:
+      verdict: PASS
+      score: 90
+      threshold: 90
+      details:
+        - check: "Review 通过"
+          status: PASS
+          evidence: "所有文档已更新"
+        - check: "无遗留问题"
+          status: PASS
+          evidence: "所有 Task 完成"
+
+  - gate_id: G10
+    gate_name: Release Gate
+    type: Hybrid
+    blocking: true
+    status: BLOCKED
+    checked_at: "2026-06-09T08:50:00Z"
+    checked_by: goal-reviewer
+    goal_id: GOAL-20260608-001
+    threshold:
+      pass: 90
+      pass_with_risk_min: null
+      pass_with_risk_max: null
+    allow_pass_with_risk: false
+    result:
+      verdict: BLOCKED
+      score: 88
+      threshold: 90
+      details:
+        - check: "Release 就绪"
+          status: BLOCKED
+          evidence: "G2/G4/G7 存在未关闭 release_blocking 风险，G10 不允许 PASS_WITH_RISK"
+        - check: "文档完整"
+          status: PASS
+          evidence: "Release Evidence 最低要求已写入 docs/goal/06-dod.md"
+
+  - gate_id: G11
+    gate_name: Retrospective Gate
+    type: Semantic
+    blocking: false
+    status: PASS
+    checked_at: "2026-06-09T09:15:00Z"
+    checked_by: goal-reviewer
+    goal_id: GOAL-20260608-001
+    threshold:
+      pass: 80
+      pass_with_risk_min: 70
+      pass_with_risk_max: 79
+    allow_pass_with_risk: true
+    result:
+      verdict: PASS
+      score: 90
+      threshold: 80
+      details:
+        - check: "复盘完成"
+          status: PASS
+          evidence: "所有 Task 完成，Gate 全部通过"
+        - check: "改进点记录"
+          status: PASS
+          evidence: "Release Notes 记录了核心成果和技术亮点"
+
+# Gate 编号和类型：
+# G0: Context Gate (Hybrid)
+# G1: Goal Gate (Semantic)
+# G2: Spec Gate (Semantic)
+# G3: Design Gate (Semantic)
+# G4: Plan Gate (Semantic)
+# G5: Task Gate (Executable)
+# G6: Implementation Gate (Executable)
+# G7: Test Gate (Executable)
+# G8: Evidence Gate (Executable)
+# G9: Review Gate (Semantic)
+# G10: Release Gate (Hybrid)
+# G11: Retrospective Gate (Semantic)
+
+# Gate 结果：
+# PASS: 达到对应 Gate PASS 阈值，且无阻塞风险
+# PASS_WITH_RISK: 达到风险区间，风险字段完整，且不属于 G6/G10
+# FAIL: 未达阈值、关键检查失败或风险字段缺失
+# BLOCKED: 外部依赖、过期风险或 release_blocking 风险阻止判断

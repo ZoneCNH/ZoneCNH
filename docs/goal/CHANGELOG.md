@@ -2,6 +2,18 @@
 
 > 记录 docs/goal/ 体系的重大结构性变更。
 
+## 2026-06-09 — Phase 1 权威边界与配置边界固化
+
+### 权威边界
+
+- 将 `00-authority-map.md` 纳入 `README.md` 和 `GLOSSARY.md` 入口，明确 README、Glossary、schema 与状态快照是 SSOT 的索引或投影。
+- 在 `.config/goal/schema/rules.yaml`、`.config/goal/pipeline/state.yaml`、`.config/goal/gates/state.yaml` 增加 `authority_source`，只指向 `docs/goal/` 权威文档。
+
+### 配置边界
+
+- 调整 `.gitignore`，允许提交 `.config/goal/` 控制面目录中的 schema、Registry、Matrix、Gate、Pipeline、Evidence 和 Prompt 审计快照。
+- 继续忽略 `.config/goal/runtime/`、`locks/`、`local/`、`cache/`、`logs/` 以及本地 lock/tmp/log 文件。
+
 ## 2026-06-09 — 深度分析残留项对齐
 
 ### SSOT 对齐
@@ -73,7 +85,7 @@
 
 - 将模块规格库口径统一到 `module/`：模块 SPEC、TRACEABILITY、tasks 和 governance 制品均以 `module/` 为当前事实源。
 - 明确 `docs/goal/` 只定义 Goal 驱动交付规则、状态机、Gate、Registry 和 Evidence，不复制完整模块规格。
-- 明确 `.config/goal/` 是 Goal 运行状态 SSOT，Goal 制品通过 ID 和路径引用 `module/`。
+- 明确 `.config/goal/` 是 Goal 控制面配置与审计快照目录；Goal 制品通过 ID 和路径引用 `module/`，本地运行态不作为 SSOT。
 
 ### 同步门禁
 

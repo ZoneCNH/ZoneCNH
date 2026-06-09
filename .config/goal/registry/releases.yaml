@@ -1,0 +1,54 @@
+# Release Registry
+# 权威来源：docs/goal/15-registry.md §5
+# 路径：.config/goal/registry/releases.yaml
+
+releases:
+  - release_id: REL-20260608-goal-system
+    document_version: "2026-06-09"
+    goal_id: GOAL-20260608-001
+    release_version: v1.0.0
+    status: released
+    created_at: "2026-06-08"
+    updated_at: "2026-06-08"
+    linked_issues: []
+    linked_tasks:
+      - TASK-GOAL-20260608-001-001
+      - TASK-GOAL-20260608-001-002
+      - TASK-GOAL-20260608-001-003
+    evidence:
+      - .claude/agents/goal-spec.md
+      - .claude/agents/goal-reviewer.md
+      - .claude/agents/goal-matrix.md
+      - .claude/agents/goal-prompt-builder.md
+      - .claude/agents/goal-evidence.md
+      - .config/goal/README.md
+      - .config/goal/registry/goals.yaml
+      - .config/goal/registry/tasks.yaml
+      - .config/goal/registry/issues.yaml
+      - .config/goal/registry/releases.yaml
+      - .config/goal/registry/risks.yaml
+      - .config/goal/registry/decisions.yaml
+      - .config/goal/matrix/matrix.yaml
+      - .config/goal/gates/state.yaml
+      - .config/goal/pipeline/state.yaml
+      - docs/goal/README.md
+      - docs/goal/15-registry.md
+      - AGENTS.md
+    release_notes: |
+      Goal 驱动交付体系 v1.0.0 正式发布。
+
+      核心成果：
+      - 创建 5 个 Goal Agent（goal-spec, goal-reviewer, goal-matrix, goal-prompt-builder, goal-evidence）
+      - 建立统一配置中心 .config/goal/（10 个状态文件）
+      - 更新 3 个文档文件（docs/goal/README.md, docs/goal/15-registry.md, AGENTS.md）
+      - 验证完整工作流（Goal → Spec → Design → Plan → Tasks → Code → Test → Review → Release）
+
+      技术亮点：
+      - 统一状态路径：所有 Goal 相关状态存放在 .config/goal/
+      - Agent 职责分工：5 个 Agent 各司其职，协作完成 Goal 管线
+      - 追溯矩阵：Goal→Spec→AC→Task→Test→Evidence 全链路可追溯
+      - Gate 体系：G0-G11 共 12 个质量门禁，确保交付质量
+
+# 状态枚举：
+# draft → ready_for_pr → in_review → approved → released
+# 异常状态：rejected（需说明原因）

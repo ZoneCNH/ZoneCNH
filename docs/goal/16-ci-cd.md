@@ -41,6 +41,8 @@ PR 合并    → 必须有 release manifest
 
 严格按以下阶段执行。
 
+本节 Phase 是 CI / `workflow_step` 执行剖面，用于组织检查和报告；它不是 `current_phase` 主流程枚举，也不得覆盖 `pipeline_state`。CI 可把 Phase 结果投影到 Gate / Evidence，但主流程层级仍以 [03-pipeline.md §1](03-pipeline.md#1-完整管线) 为准。
+
 ### Phase 0: Pre-flight
 
 ```text

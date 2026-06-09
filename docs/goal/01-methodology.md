@@ -16,7 +16,7 @@
 
 这条链路的关键不是"写文档"，而是建立一套 **可追踪、可验证、可执行、可复用** 的交付系统。
 
-> 完整 11 层管线定义见 [03-pipeline.md §1](03-pipeline.md#1-完整管线)，状态机见 [03-pipeline.md §2](03-pipeline.md#2-双轴状态机)。
+> 完整 11 层管线定义见 [03-pipeline.md §1](03-pipeline.md#1-完整管线)，四轴状态模型见 [03-pipeline.md §2](03-pipeline.md#2-四轴状态模型)。
 
 ## 3. Goal 的输入
 
@@ -78,12 +78,15 @@ Non-goals:
 
 ```text
 Goal Contract:    告诉 Spec 为什么做、做到什么算成功。
-Spec Contract:    告诉 Matrix 有哪些需求、规则、验收条件。
-Matrix Contract:  告诉 Tasks 每个需求要被谁实现、谁验证。
-Tasks Contract:   告诉 Plan 每个任务的输入、输出、依赖和完成标准。
-Plan Contract:    告诉 Prompt 当前任务应该何时执行、依赖什么、风险是什么。
+Spec Contract:    告诉 Design 有哪些需求、规则、验收条件和边界。
+Design Contract:  告诉 Plan 模块边界、接口、依赖和关键决策。
+Plan Contract:    告诉 Tasks 执行顺序、依赖、风险和验证点。
+Tasks Contract:   告诉 Prompt 每个任务的输入、输出、依赖和完成标准。
 Prompt Contract:  告诉 Code 只能实现什么、不能实现什么、如何验证。
 Code Contract:    告诉 Review 和 Release 代码满足了哪些目标、测试覆盖了哪些验收标准。
+Review Contract:  告诉 Release 是否可发布、哪些风险需要保留。
+Release Contract: 告诉 Retrospective 实际发布结果、回滚点和监控信号。
+Matrix Contract:  横切记录 Goal/Spec/Design/Plan/Tasks/Prompt/Code/Test/Evidence 的追溯关系。
 ```
 
 > **每一层不是文档，而是下一层的输入契约。**

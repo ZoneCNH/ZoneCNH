@@ -77,11 +77,11 @@ v2.0  Major Change（重大变更）
 |------|----------|
 | Product / Owner | Goal、Scope、Success Metrics |
 | Analyst / PM | Spec、Acceptance Criteria |
-| Tech Lead | Matrix、Plan、Architecture |
+| Tech Lead | Design、Plan、架构边界、Matrix 追溯完整性 |
 | Engineer | Tasks、Prompt、Code、Tests |
-| QA | Test Matrix、Acceptance Validation |
-| Reviewer | Code Review、Matrix Review |
-| Ops / SRE | Release、Monitoring、Rollback |
+| QA | Test、Evidence、验收验证、Matrix 覆盖校验 |
+| Reviewer | Code Review、Release Readiness、Matrix Review |
+| Ops / SRE | Release、Monitoring、Rollback、Retrospective 输入 |
 
 ---
 
@@ -94,18 +94,23 @@ C = Consulted，被咨询者
 I = Informed，被通知者
 ```
 
-| 阶段 | Product | Tech Lead | Engineer | QA |
-|------|---------|-----------|----------|-----|
-| Goal | A/R | C | I | I |
-| Spec | A/R | C | C | C |
-| Matrix | C | A/R | C | C |
-| Tasks | I | A | R | C |
-| Plan | C | A/R | R | C |
-| Prompt | I | C | A/R | C |
-| Code | I | C | A/R | C |
-| Test | C | C | R | A/R |
+| 阶段 | Product | Analyst/PM | Tech Lead | Engineer | QA | Ops/SRE |
+|------|---------|------------|-----------|----------|----|---------|
+| Goal | A/R | C | C | I | I | I |
+| Spec | A | R | C | C | C | I |
+| Design | C | C | A/R | C | C | I |
+| Plan | C | C | A/R | R | C | C |
+| Tasks | I | C | A | R | C | I |
+| Prompt | I | C | C | A/R | C | I |
+| Code | I | I | C | A/R | C | I |
+| Test | C | C | C | R | A/R | I |
+| Review | A | C | C | R | C | I |
+| Release | A | I | C | C | C | A/R |
+| Retrospective | A/R | C | C | C | C | R |
 
 ---
+
+Matrix 是横切追溯制品，不作为 RACI 阶段；它随 Spec、Design、Plan、Tasks、Prompt、Code、Test、Evidence、Review、Release 的变更同步更新。Tech Lead 对追溯完整性负责，各阶段执行者负责把本阶段事实回填到 Matrix。
 
 ## 5. 标准操作流程
 
@@ -113,16 +118,18 @@ I = Informed，被通知者
 Step 1:  写 Goal        明确背景、目标、指标、范围、非目标
 Step 2:  评审 Goal      确认目标不是方案，确认成功可验证
 Step 3:  写 Spec        把目标拆成系统需求、规则、边界、验收标准
-Step 4:  建 Matrix      把 Goal、Spec、Task、Prompt、Code、Test 串起来
-Step 5:  拆 Tasks       按照 Matrix 拆成可执行任务
-Step 6:  排 Plan        按照风险、依赖和交付价值排序
+Step 4:  写 Design      固化模块边界、接口、数据流、ADR 和风险
+Step 5:  排 Plan        按照风险、依赖和交付价值排序
+Step 6:  拆 Tasks       把计划拆成可执行任务
 Step 7:  写 Prompt      把每个 Task 转成可执行指令
 Step 8:  生成或编写 Code  只实现当前 Task 范围内的内容
 Step 9:  写 Test        测试必须覆盖验收标准
 Step 10: Review         对照 Matrix 检查覆盖、范围和风险
 Step 11: Release        灰度、监控、回滚方案准备好再上线
-Step 12: Validate Goal  上线后用指标验证 Goal 是否达成
+Step 12: Retrospective  上线后复盘指标、风险、规则和自动化改进
 ```
+
+Matrix 在 Spec 后初始化，之后在 Design、Plan、Tasks、Prompt、Code、Test、Evidence、Review、Release 变更时横切更新；它不作为主流程步骤编号，也不改变 Goal → Spec → Design → Plan → Tasks → Prompt → Code → Test → Review → Release → Retrospective 顺序。
 
 > 质量指标定义见 [08-quality-gates.md §5](08-quality-gates.md#5-质量指标)。
 > 上线后 Goal 验证见 [08-quality-gates.md §7](08-quality-gates.md#7-上线后-goal-验证)。
@@ -132,12 +139,15 @@ Step 12: Validate Goal  上线后用指标验证 Goal 是否达成
 
 ## 6. 制品版本管理
 
-Goal 的规范文档通过 Git 管理；Goal 的运行状态、Registry、Matrix、Evidence 和恢复上下文统一存放在本地 `.config/goal/`，不进入仓库。
+Goal 的规范文档通过 Git 管理；`.config/goal/` 是统一配置中心，区分可审查控制面与本地运行态。`schema/`、`registry/`、`matrix/`、`gates/`、`pipeline/`、`evidence/` 和 `prompts/` 可进入仓库作为审查快照；`runtime/` 只保存本地缓存、恢复上下文和临时运行态，必须保持 ignored。权威边界见 [00-authority-map.md](00-authority-map.md)。
 
 ### 6.1 目录结构
 
 ```text
 .config/goal/
+├── README.md              # 配置中心索引
+├── schema/
+│   └── rules.yaml         # 从 SSOT 镜像出的校验规则
 ├── registry/
 │   ├── goals.yaml         # Goal Registry
 │   ├── tasks.yaml         # Task Registry
@@ -147,12 +157,14 @@ Goal 的规范文档通过 Git 管理；Goal 的运行状态、Registry、Matrix
 │   └── decisions.yaml     # Decision Registry
 ├── matrix/
 │   └── matrix.yaml        # Traceability Matrix
-├── evidence/              # Evidence 目录（按日期/Task 分组）
-│   └── 2026-06-08/
-│       └── TASK-GOAL-20260608-001-001/
-│           └── evidence.md
-├── state/                 # Goal 运行时状态
-└── context.md             # Goal 上下文恢复文件
+├── gates/
+│   └── state.yaml         # G0-G11 Gate 状态快照
+├── pipeline/
+│   └── state.yaml         # 四轴 Pipeline 状态快照
+├── evidence/              # Evidence 目录
+│   └── EVID-GOAL-20260608-001-001.md
+├── prompts/               # Prompt 版本与 Context Package
+└── runtime/               # 本地运行态与恢复缓存；不进入仓库
 docs/goal/
 ├── *.md               # Goal 方法论、门禁、模板和治理文档
 └── tools/             # Goal 检查与生成工具
@@ -163,8 +175,8 @@ docs/goal/
 ```text
 1. 创建分支: goal/<goal-id> 或 task/<task-id>
 2. 修改制品文件
-3. 运行 lint 检查（计划中）: ./docs/goal/tools/lint-goal.sh docs/goal/
-4. 运行 gate 检查（计划中）: ./docs/goal/tools/gate-check.sh .
+3. 运行 lint 检查: ./docs/goal/tools/lint-goal.sh docs/goal/
+4. 运行 gate 检查: ./docs/goal/tools/gate-check.sh .
 5. 提交并推送
 6. PR 描述使用 Release Manifest 模板（见 [17-risk-and-decisions.md §3](17-risk-and-decisions.md#3-release-manifest)）
 7. Review 通过后合并
