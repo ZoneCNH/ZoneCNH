@@ -1,26 +1,34 @@
 # TASK-XLIB-002
 
-> 采纳状态机：8 状态枚举、6 禁止转换、状态转换验证
+> PR-3：骨架代码 — Makefile、scripts、CI
 
 ---
 
 ```yaml
 task_id: TASK-XLIB-002
 module: xlib-standard
-scope: "实现 AdoptionStatus 8 状态枚举、6 个禁止转换规则和状态转换验证逻辑"
+scope: "重写 Makefile、scripts/、.github/，确保只有最小 gate 集和标准脚本"
 spec_ref:
-  - "module/xlib-standard/SPEC.md#FR-005"
-  - "module/xlib-standard/SPEC.md#FR-006"
-  - "module/xlib-standard/SPEC.md#BR-006"
+  - "module/xlib-standard/SPEC.md#20"
+  - "module/xlib-standard/goal/1.md#6"
 files:
-  - "docs/standard/adoption-status.yaml"
-  - "docs/standard/adoption-transitions.yaml"
+  - "Makefile"
+  - "scripts/render_template.sh"
+  - "scripts/check_rendered_template.sh"
+  - "scripts/check_boundary.sh"
+  - "scripts/check_contracts.sh"
+  - "scripts/check_security.sh"
+  - "scripts/release_check.sh"
+  - "scripts/release_final_check.sh"
+  - ".github/workflows/ci.yml"
 acceptance_criteria:
-  - "AC-I01: 8 状态枚举和 6 个禁止转换规则正确执行"
-  - "FR-005 WHEN 查询 adoption_status THEN 返回 8 种状态之一"
-  - "FR-006 WHEN adoption_status=registered 直接尝试 -> adopted THEN enforcer 拒绝"
+  - "AC-001: Makefile 包含 fmt/vet/lint/test/race/contracts/boundary/render-smoke/security/ci/release-check/release-final-check targets"
+  - "AC-002: scripts/ 目录只有 7 个脚本"
+  - "AC-003: render_template.sh 只接受 --module-path/--package-name/--out/--module-name 参数"
+  - "AC-004: check_boundary.sh 检查 6 项（x.go/internal、/home/k8s/secrets/env、foundationx、baselib-template、templatex、xlib-standard）"
+  - "AC-005: CI workflow 执行 GOWORK=off make ci 和 GOWORK=off make release-check"
 depends_on:
-  - "TASK-XLIB-001"
+  - "TASK-XLIB-000"
 estimated_effort: "2h"
 priority: P0
 status: pending
@@ -30,49 +38,30 @@ status: pending
 
 ## Requirements Covered
 
-| Requirement | Description |
-|---|---|
-| FR-005 | 8 个 REQ 采纳状态枚举 |
-| FR-006 | 状态转换验证（6 个禁止转换） |
-| BR-006 | 状态转换必须经过验证 |
+| Requirement | Description | Acceptance Criteria |
+|---|---|---|
+| §20.1 | 9 个最小 gate | Makefile 包含全部 gate targets |
+| §20.2 | CI 配置 | workflow 执行 make ci |
+| FR-009 | render_template.sh | 只接受 4 个参数 |
+| FR-011 | 9 个 gate | make ci 全通过 |
+| FR-012 | boundary gate | 检查 6 项非法引用 |
 
 ## Test Plan
 
-| Test Case | Type | Description |
-|---|---|---|
-| xlib-TC-013 | TL2 Truth-state | registered -> adopted 被拒绝 |
-| — | Unit | 所有合法转换路径可执行 |
-| — | Unit | 6 个禁止转换全部返回错误 |
+```bash
+# 验收命令
+make -n fmt  # 应成功
+make -n ci  # 应列出所有 gate
+ls scripts/*.sh | wc -l  # 应为 7
+scripts/render_template.sh --help 2>&1 | grep -c "enable-governance"  # 应为 0
+```
 
-## Implementation Plan
+## Implementation Notes
 
-### Step 1: 定义状态枚举
-- 创建 `adoption-status.yaml`，定义 8 个状态：
-  - `not_adopted` → `registered` → `validating` → `validated` → `integrating` → `integrated` → `adopted` → `deprecated`
-
-### Step 2: 定义转换规则
-- 创建 `adoption-transitions.yaml`
-- 定义合法转换路径和 6 个禁止转换：
-  - registered → adopted（跳过中间状态）
-  - deprecated → adopted（不可回退）
-  - not_adopted → adopted（跳过全部）
-  - adopted → registered（不可回退）
-  - deprecated → registered（不可回退）
-  - not_adopted → deprecated（跳过全部）
-
-### Step 3: 实现验证逻辑
-- goalcli `adoption-check` 命令读取转换规则
-- 验证状态转换合法性
-- 返回拒绝原因
-
-### Step 4: 验证
-- xlib-TC-013 通过
-- 所有合法转换可执行
-- 6 个禁止转换全部返回错误
-
-### 风险评估
-
-| 风险 | 概率 | 影响 | 缓解 |
-|------|------|------|------|
-| 状态枚举遗漏 | 低 | 高 | 对照上游 governance.md §3.5 核对 |
-| 禁止转换规则不完整 | 低 | 中 | 从 CONFLICT-LEDGER.md 提取 |
+1. Makefile 按 goal/1.md §6.1 重写
+2. scripts 按 goal/1.md §6.2 只保留 7 个
+3. render_template.sh 按 goal/1.md §6.3-§6.4 实现 7 步
+4. check_boundary.sh 按 goal/1.md §6.5 检查 6 项
+5. check_contracts.sh 按 goal/1.md §6.6 检查 3 个 contract
+6. check_security.sh 按 goal/1.md §6.7 检查 5 类密钥
+7. CI 按 goal/1.md §6.8 配置

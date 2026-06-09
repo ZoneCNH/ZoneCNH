@@ -1,30 +1,34 @@
 # TASK-XLIB-005
 
-> 生成器：render_template.sh 模板渲染、排除项、integration 测试
+> 最终验收 — 生成库验证、100 次自检、tag
 
 ---
 
 ```yaml
 task_id: TASK-XLIB-005
 module: xlib-standard
-scope: "实现 render_template.sh 模板渲染脚本——从 Go 参考模板生成下游模块代码，支持排除项和 dry-run 模式"
+scope: "生成库验收、100 次自检脚本、tag v1.0.0"
 spec_ref:
-  - "module/xlib-standard/SPEC.md#FR-015"
-  - "module/xlib-standard/SPEC.md#FR-016"
-  - "module/xlib-standard/SPEC.md#FR-017"
-  - "module/xlib-standard/SPEC.md#FR-018"
-  - "module/xlib-standard/SPEC.md#FR-019"
+  - "module/xlib-standard/SPEC.md#22"
+  - "module/xlib-standard/goal/1.md#12"
+  - "module/xlib-standard/goal/1.md#13"
 files:
-  - "render_template.sh"
-  - "template/exclude.yaml"
-  - "Makefile"
+  - "selfcheck-100.sh"
 acceptance_criteria:
-  - "AC-I02: `make integration` 渲染 kernel/configx/redisx 三个下游库，编译通过"
-  - "FR-015 WHEN render_template.sh 执行 THEN 从 template/ 生成目标文件"
-  - "FR-018 WHEN `make integration` 执行 THEN 3 个下游库编译通过且 gate 全过"
+  - "AC-001: 临时目录生成库 GOWORK=off go test ./... 通过"
+  - "AC-002: 临时目录生成库 GOWORK=off go test -race ./... 通过"
+  - "AC-003: 生成库无 templatex/xlib-standard/foundationx/baselib-template 残留"
+  - "AC-004: selfcheck-100.sh 100 次全部通过"
+  - "AC-005: GOWORK=off make ci 通过"
+  - "AC-006: GOWORK=off make release-check 通过"
+  - "AC-007: GOWORK=off make release-final-check 通过"
 depends_on:
+  - "TASK-XLIB-000"
+  - "TASK-XLIB-001"
+  - "TASK-XLIB-002"
+  - "TASK-XLIB-003"
   - "TASK-XLIB-004"
-estimated_effort: "4h"
+estimated_effort: "1h"
 priority: P0
 status: pending
 ```
@@ -33,47 +37,41 @@ status: pending
 
 ## Requirements Covered
 
-| Requirement | Description |
-|---|---|
-| FR-015 | render_template.sh 模板渲染 |
-| FR-016 | 排除项配置 |
-| FR-017 | dry-run 模式 |
-| FR-018 | integration 测试（3 个下游库） |
-| FR-019 | 渲染产物 go vet 通过 |
+| Requirement | Description | Acceptance Criteria |
+|---|---|---|
+| §22 | Release DoD | 所有 AC 通过 |
+| goal/1.md §12 | 生成库验收 | 临时目录测试通过 |
+| goal/1.md §13 | 最终验收命令 | 100 次自检通过 |
 
 ## Test Plan
 
-| Test Case | Type | Description |
-|---|---|---|
-| — | CI Gate | `make integration` 通过 |
-| — | CI Gate | 渲染产物 `go vet ./...` 零警告 |
-| — | Unit | dry-run 模式不写入文件 |
+```bash
+# 验收命令
+tmp="$(mktemp -d)"
+scripts/render_template.sh \
+  --module-path github.com/ZoneCNH/kernel \
+  --package-name kernel \
+  --out "$tmp/kernel"
+cd "$tmp/kernel"
+GOWORK=off go test ./...
+GOWORK=off go test -race ./...
+! grep -R "templatex" "$tmp/kernel" --exclude-dir=.git
+! grep -R "xlib-standard" "$tmp/kernel" --exclude-dir=.git
+cd -
+rm -rf "$tmp"
 
-## Implementation Plan
+# 100 次自检
+./selfcheck-100.sh
 
-### Step 1: 实现 render_template.sh
-- 读取 `template/go/` 下所有 Go 源文件
-- 应用模板变量替换（模块名、包名等）
-- 输出到目标目录
-- 支持 `--dry-run` 模式（只输出不写入）
+# 最终门控
+GOWORK=off make ci
+GOWORK=off make release-check
+GOWORK=off make release-final-check
+```
 
-### Step 2: 创建排除项配置
-- `template/exclude.yaml`：排除文件列表和排除模式
-- 支持 glob 匹配
+## Implementation Notes
 
-### Step 3: 实现 Makefile targets
-- `make render`：执行模板渲染
-- `make integration`：渲染 kernel/configx/redisx 三个下游库
-- `make integration-test`：渲染后编译验证
-
-### Step 4: 验证
-- `make integration` 渲染 3 个下游库，编译通过
-- 渲染产物 `go vet ./...` 零警告
-- dry-run 模式不写入文件
-
-### 风险评估
-
-| 风险 | 概率 | 影响 | 缓解 |
-|------|------|------|------|
-| 模板变量遗漏 | 中 | 高 | 对照上游 render_template.sh 核对 |
-| 排除项配置不完整 | 低 | 中 | 从上游 template/exclude.yaml 提取 |
+1. 按 goal/1.md §12 实现生成库验收流程
+2. 创建 selfcheck-100.sh 脚本，100 次渲染 + 测试
+3. 按 goal/1.md §13 执行最终验收
+4. 全部通过后 tag v1.0.0
