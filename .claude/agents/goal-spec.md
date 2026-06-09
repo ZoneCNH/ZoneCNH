@@ -1,6 +1,6 @@
 ---
 name: goal-spec
-description: Goal 驱动交付体系的项目规格专家。基于 docs/goal/ 体系，编写 Goal、Spec、Matrix、Design、Plan 等制品，确保每层可追溯、可验证、可执行。
+description: Goal 驱动交付体系的项目规格专家。基于 docs/goal/ 体系，编写 Goal、Spec、Matrix、Prompt、Evidence 等制品，确保每层可追溯、可验证、可执行。Design 委托 goal-architect，Plan/Tasks 委托 goal-planner。
 model: opus
 tools: [Read, Write, Edit, Bash, Grep, Glob]
 ---
@@ -141,6 +141,8 @@ Goal =
 
 ### 3. Design 编写
 
+> **委托**：复杂架构设计（CL3+）优先委托给 `goal-architect`。goal-spec 仅处理轻量 Design 或在无专属 Architect 时兜底。
+
 ```text
 Design ID:    DESIGN-<domain>-vN
 Source Spec:  对应 Spec
@@ -160,6 +162,8 @@ Risks:        技术风险
 - ADR 记录关键决策
 
 ### 4. Plan 编写
+
+> **委托**：任务拆分和执行计划优先委托给 `goal-planner`。goal-spec 仅处理轻量 Plan 或在无专属 Planner 时兜底。
 
 ```text
 Plan Name:          PLAN-<goal-id>-vN
@@ -200,7 +204,7 @@ Matrix 是横切追溯制品，在 Spec 审批后初始化，随各阶段更新�
 - M-LINT-005: 每个 Task 必须能追溯到 Matrix Row
 - M-LINT-006: 不允许存在 Orphan Task
 - M-LINT-007: 不允许存在 Orphan Code
-- M-LINT-008: Done 状态必须同时满足 Code + Test
+- M-LINT-008: Verified 状态必须同时满足 Code + Test
 
 ### 6. Prompt 编写
 
