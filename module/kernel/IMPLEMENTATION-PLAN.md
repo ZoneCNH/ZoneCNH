@@ -101,3 +101,24 @@ TASK-KERNEL-006（健康检查）与 Phase 4-5（lifecycle/shutdown）无文件�
 | panic recovery 遗漏 | 调用方崩溃 | 逐一检查 Init/Start/Stop 调用点 |
 | 并发安全 | race condition | `-race` 测试 + `sync.Mutex` 保护 |
 | stdlib-only 被破坏 | CONSTITUTION 违反 | CI gate + `go list -deps` |
+
+---
+
+## 回滚策略
+
+### TASK-KERNEL-004（启动生命周期）
+
+| 失败场景 | 回滚步骤 |
+|----------|----------|
+| 拓扑排序 panic | 捕获 panic → 返回 ErrStartupFailed → 不调用任何模块 Init/Start |
+| 某模块 Init 失败 | 遍历已 Init 模块反序调用 Stop → 返回原始错误 |
+| 某模块 Start 失败 | 遍历已 Start 模块反序调用 Stop → 返回原始错误 |
+| ctx 取消 | 检测 ctx.Done() → 遍历已启动模块反序 Stop → 返回 ctx.Err() |
+
+### TASK-KERNEL-005（停机生命周期）
+
+| 失败场景 | 回滚步骤 |
+|----------|----------|
+| 某模块 Stop 超时 | 记录超时模块名 → 继续 Stop 后续模块 → 返回 ErrShutdownTimeout |
+| 某模块 Stop panic | 捕获 panic → 记录日志 → 继续 Stop 后续模块 |
+| 并发 Shutdown | 互斥锁保护 → 第二次调用返回 ErrShutdownInProgress 或 nil（已完成后） |

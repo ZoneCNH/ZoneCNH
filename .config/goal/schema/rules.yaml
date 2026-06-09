@@ -165,7 +165,7 @@ matrix:
 evidence:
   directory: ".config/goal/evidence"
   path_pattern: ".config/goal/evidence/YYYY-MM-DD/TASK_ID/EVID_ID.md"
-  id_pattern: "^EVID-TEST-TASK-(GOAL|XLIB)-[0-9]{3,8}[A-Z]?-[0-9]{3}(-[0-9]{3}){0,2}$"
+  id_pattern: "^EVID-TEST-TASK-(GOAL|XLIB)-[0-9]{3,8}[A-Z]?-[0-9]{3}(-[0-9]{3}){0,4}$"
   task_id_pattern: "^TASK-(GOAL-[0-9]{8}-[0-9]{3}-[0-9]{3}|XLIB-[0-9]{3}[A-Z]?)$"
   required_fields:
     - Evidence ID
@@ -203,11 +203,13 @@ gate:
     - PASS_WITH_RISK
     - FAIL
     - BLOCKED
+    - NOT_STARTED
   result_verdicts:
     - PASS
     - PASS_WITH_RISK
     - FAIL
     - BLOCKED
+    - NOT_STARTED
 
 pipeline:
   file: ".config/goal/pipeline/state.yaml"

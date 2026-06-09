@@ -55,6 +55,18 @@
 - MUST 保持零业务语义和最小第三方依赖。
 - MUST 对 Public API 做兼容性承诺，1.x 内不得破坏签名和语义。
 
+### 量化目标
+
+| 指标 | 基线 | 目标值 | 验证方式 |
+|------|------|--------|----------|
+| 单元测试覆盖率 | 0% | ≥ 90% | `go tool cover` |
+| 50 模块注册 + 依赖图校验 | — | < 10ms | Benchmark |
+| 冷启动（50 模块拓扑序启动） | — | < 100ms | Benchmark |
+| 100 节点拓扑排序 | — | < 1ms | Benchmark |
+| graceful shutdown | — | < 5s | Benchmark |
+| stdlib-only | — | 0 外部依赖 | `go list -deps` CI gate |
+| Public API 兼容性 | — | 1.x 内零 breaking change | CI gate |
+
 ## 3. 核心场景
 
 | 场景 | 说明 | 1.0 期望结果 |

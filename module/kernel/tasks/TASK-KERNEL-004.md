@@ -25,7 +25,6 @@ acceptance_criteria:
   - "AC-NEW-26: Run 已停止时返回 ErrAlreadyStopped"
   - "AC-NEW-27: 依赖图有环时返回 ErrCycleDetected"
 depends_on:
-  - "TASK-KERNEL-001"
   - "TASK-KERNEL-002"
   - "TASK-KERNEL-003"
 estimated_effort: "4h"
