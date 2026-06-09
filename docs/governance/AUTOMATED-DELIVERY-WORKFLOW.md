@@ -8,6 +8,7 @@
 - 只允许从非 `main` 分支合并到 `main`。
 - 合并前确认 `main` 干净且与 `origin/main` 一致。
 - 合并只使用 `fast-forward`，失败时保留分支和 worktree 供人工处理。
+- 若提交已完成但合并曾被阻断，后续 clean feature 分支可重试合并和清理。
 - 合并成功后自动清理 feature worktree 和已合并分支。
 - 运行状态写入 Git 内部目录，不污染待提交文件。
 
@@ -26,6 +27,7 @@
 | `AUTO_DELIVERY_FORCE` | `0` | 设为 `1` 时跳过完成事件检测 |
 | `AUTO_DELIVERY_REQUIRE_TASK_COMPLETE` | `1` | 设为 `0` 时每次 Stop 都尝试交付 |
 | `AUTO_DELIVERY_MERGE` | `1` | 设为 `0` 时只提交不合并 |
+| `AUTO_DELIVERY_RETRY_MERGE` | `1` | clean feature 分支上重试合并和清理 |
 | `AUTO_DELIVERY_PUSH` | `0` | 设为 `1` 时合并后 `git push origin main` |
 | `AUTO_DELIVERY_CLEANUP` | `1` | 设为 `0` 时保留 worktree 和分支 |
 | `AUTO_DELIVERY_VERIFY_CMD` | `git diff --check && git diff --cached --check` | 覆盖提交前验证命令 |
@@ -38,8 +40,8 @@
 1. 确认当前目录属于 Git 仓库。
 2. Hook 模式下检测 `task_complete`；未检测到则跳过。
 3. 确认当前分支不是 `main`，且不是 detached HEAD。
-4. 确认工作区存在变更。
-5. `git add -A` 后扫描 staged 文件名和 diff 内容，阻止凭证、密钥和 `.env` 等敏感内容自动提交。
+4. 若工作区无变更且启用 `AUTO_DELIVERY_RETRY_MERGE=1`，直接进入合并重试路径。
+5. 若工作区存在变更，`git add -A` 后扫描 staged 文件名和 diff 内容，阻止凭证、密钥和 `.env` 等敏感内容自动提交。
 6. 执行验证命令。
 7. 使用 Lore 协议生成提交信息并提交。
 8. 若启用合并，确认 `main` worktree 干净且 `main == origin/main`。
@@ -89,6 +91,12 @@ python3 -m pytest scripts/tests
 
 ```text
 AUTO_DELIVERY_FORCE=1 AUTO_DELIVERY_MERGE=0 scripts/auto-deliver-on-complete.sh --hook < /dev/null
+```
+
+如需在提交已存在、工作区干净时重试合并：
+
+```text
+AUTO_DELIVERY_FORCE=1 scripts/auto-deliver-on-complete.sh --hook < /dev/null
 ```
 
 ## 受保护工作流说明

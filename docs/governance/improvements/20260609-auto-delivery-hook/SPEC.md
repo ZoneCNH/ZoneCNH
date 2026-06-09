@@ -15,6 +15,7 @@ Status: Draft
 - 在 Stop hook 检测到 `task_complete` 后触发自动交付。
 - 在非 `main` 分支自动提交已验证变更。
 - 在 `main` 干净且同步时自动 fast-forward 合并。
+- 当提交已完成但合并曾被阻断时，可在 clean feature 分支重试合并和清理。
 - 合并成功后自动清理 feature worktree 和已合并分支。
 - 失败时保留可诊断日志和状态，不破坏 Codex 会话。
 
@@ -49,6 +50,7 @@ Status: Draft
 | FR-5 | 脚本能在 `main` 干净且同步时 fast-forward 合并 |
 | FR-6 | 脚本能在合并成功后清理 worktree 和分支 |
 | FR-7 | 脚本能把状态和日志写入非版本控制路径 |
+| FR-8 | 脚本能在 feature 分支工作区干净时重试合并已提交变更 |
 
 ## 8. 行为需求
 
@@ -58,6 +60,7 @@ Status: Draft
 | BR-2 | 任何门禁失败时停止后续提交或合并 |
 | BR-3 | Hook 模式下所有结果都返回 `continue: true` |
 | BR-4 | dry-run 模式不得修改 index、提交或合并 |
+| BR-5 | clean feature 分支的重试合并仍必须执行 `main` 干净、同步和 fast-forward 门禁 |
 
 ## 9. 验收标准
 
@@ -68,6 +71,7 @@ Status: Draft
 | AC-3 | `python3 -m pytest scripts/tests` 通过 |
 | AC-4 | 当前 `main` 不干净或不同步时自动合并被阻断 |
 | AC-5 | 新文档明确说明第零条和第十四条约束 |
+| AC-6 | 工作区干净时可进入重试合并路径，dry-run 不执行真实合并 |
 
 ## 10. 追溯矩阵
 
@@ -80,10 +84,13 @@ Status: Draft
 | FR-5 | BR-2 | AC-4 |
 | FR-6 | BR-2 | AC-4 |
 | FR-7 | BR-3 | AC-1 |
+| FR-8 | BR-2, BR-4, BR-5 | AC-4, AC-6 |
 
 ## 11. 设计
 
 采用一个 Bash 脚本作为唯一执行入口，repo-local `.codex/hooks.json` 只负责调用脚本。脚本内部执行门禁、提交、合并和清理，运行状态写入 `.git/auto-delivery/`。
+
+当 feature 分支工作区已经干净时，脚本默认不再直接跳过，而是按 `AUTO_DELIVERY_RETRY_MERGE=1` 进入合并重试路径。该路径用于恢复“提交成功但合并被 `main` 状态阻断”的任务，不重新提交，不绕过同步门禁。
 
 ## 12. 数据与状态
 
@@ -127,10 +134,12 @@ Status: Draft
 | `main` 不干净 | block |
 | `main` 未同步 | block |
 | 非 fast-forward | block |
+| clean feature 分支重试合并但 `main` 未就绪 | block |
 
 ## 19. 测试计划
 
 - dry-run hook 调用。
+- clean feature 分支重试合并 dry-run。
 - `git diff --check`。
 - 既有 Python 测试套件。
 - 人工检查自动合并阻断条件。

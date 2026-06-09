@@ -22,6 +22,7 @@ Environment:
   AUTO_DELIVERY_FORCE=1                  Bypass task-complete detection.
   AUTO_DELIVERY_REQUIRE_TASK_COMPLETE=0  Run on every Stop hook.
   AUTO_DELIVERY_MERGE=0                  Commit only, do not merge to main.
+  AUTO_DELIVERY_RETRY_MERGE=0            Do not retry merge on a clean feature branch.
   AUTO_DELIVERY_PUSH=1                   Push main after a successful merge.
   AUTO_DELIVERY_CLEANUP=0                Keep the feature worktree and branch.
   AUTO_DELIVERY_VERIFY_CMD='...'         Override validation command.
@@ -352,8 +353,11 @@ assert_main_ready() {
 }
 
 merge_to_main() {
+  ready_status="${1:-committed}"
+  ready_message="${2:-已自动提交}"
+
   if [ "${AUTO_DELIVERY_MERGE:-1}" != "1" ]; then
-    finish "committed" "已自动提交；AUTO_DELIVERY_MERGE=0，跳过合并" 0
+    finish "$ready_status" "$ready_message；AUTO_DELIVERY_MERGE=0，跳过合并" 0
   fi
 
   branch="$(current_branch)"
@@ -401,6 +405,13 @@ main() {
   assert_safe_branch
 
   if ! working_tree_has_changes; then
+    if [ "$DRY_RUN" = "1" ]; then
+      finish "dry-run" "工作区没有变更；非 dry-run 模式会按配置尝试重试合并" 0
+    fi
+    if [ "${AUTO_DELIVERY_RETRY_MERGE:-1}" = "1" ]; then
+      log_line "no worktree changes; retrying merge path"
+      merge_to_main "ready" "工作区没有变更，尝试重试合并"
+    fi
     finish "skipped" "工作区没有变更" 0
   fi
 
@@ -414,7 +425,7 @@ main() {
   stage_and_scan
   run_validation
   create_commit
-  merge_to_main
+  merge_to_main "committed" "已自动提交"
 }
 
 main
