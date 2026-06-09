@@ -1,7 +1,7 @@
 # Goal 报告 Canonical Issue Ledger
 
 账本日期：2026-06-09
-最后更新：2026-06-09 agent team 修复验收后
+最后更新：2026-06-09 worker-1 Git/ignore 复核后
 适用范围：`docs/goal/`, `.config/goal/`, `docs/goal/tools/`, `docs/report/goal/`, `.worktree/todo.md`
 
 ## 状态定义
@@ -61,9 +61,9 @@
 
 | ID | Priority | Status | 说明 |
 | --- | --- | --- | --- |
-| `GDR-FIXTURE-01` | P2 | deferred | 可继续沉淀独立负例 fixture 套件，当前真实配置与脚本自检已覆盖本轮目标 |
-| `GDR-REPORT-01` | P3 | deferred | `docs/report/goal/` 是分析制品目录，尚未纳入 Goal runtime gate |
-| `GDR-WORKTREE-01` | P3 | deferred | 当前 worktree 存在无关历史脏文件/未跟踪目录，本轮按用户请求未清理 |
+| `GDR-FIXTURE-01` | P2 | deferred | 已在 `docs/goal/tools/README.md` 指定负例 fixture 覆盖契约；独立可执行 fixture 套件仍 deferred，当前真实配置与脚本自检覆盖本轮目标 |
+| `GDR-REPORT-01` | P3 | deferred | `docs/report/goal/` 是分析制品目录；`docs/goal/00-authority-map.md` 仅把它列为分析/计划来源，不纳入 Goal runtime gate |
+| `GDR-WORKTREE-01` | P3 | deferred | worker-1 复核时目标 worktree 为 clean；父级 `/home/ZoneCNH/.worktree/todo.md` 保持 ignored/local，未清理以避免误删并行工作区内容 |
 
 ## 本轮验证命令
 

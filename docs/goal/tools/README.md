@@ -109,6 +109,25 @@ python3 docs/goal/tools/matrix-gen.py \
 python3 docs/goal/tools/rule-drift-check.py --root . --quiet
 ```
 
+## 负例 fixture 覆盖契约（GDR-FIXTURE-01）
+
+当前工具链以真实 Goal 控制面和脚本自检作为基线。独立负例 fixture 套件落地前，任何新增 fixture 必须保持以下覆盖契约，不引入非标准库依赖：
+
+| Fixture 类别 | 目标工具 | 期望结果 | 验收点 |
+| --- | --- | --- | --- |
+| 旧工作流状态或旧路径字面量 | `rule-drift-check.py --root <fixture-root>` | 非零退出 | 报出 stale literal / path drift，不能静默通过 |
+| 占位或格式错误的追溯 ID | `lint-goal.sh <fixture-docs>` 与 `matrix-gen.py --check-only --matrix <fixture-matrix>` | 非零退出 | 指向具体文件或 Matrix edge |
+| Evidence 缺失或字段不完整 | `gate-check.sh <fixture-root>` 与 `rule-drift-check.py --root <fixture-root>` | 非零退出 | 报出缺失 Evidence 或必填字段 |
+| Matrix orphan / 非终态 / 非法 relation | `matrix-gen.py --check-only --matrix <fixture-matrix>` | 非零退出 | 覆盖率、relation/status 或 orphan 类错误可定位 |
+| Gate 结果与规则不一致 | `gate-check.sh <fixture-root>` | 非零退出 | `FAIL>0`，且不把风险降级为通过 |
+
+关闭 `GDR-FIXTURE-01` 的最低门槛：
+
+1. 新增正例 fixture 和至少一组负例 fixture，放在工具目录下的专用 fixture 子目录或同等隔离路径。
+2. 每个负例必须在对应工具上返回非零，并在输出中包含可定位的字段、文件或 edge 信息。
+3. 正例仍通过 `lint-goal.sh`、`rule-drift-check.py`、`matrix-gen.py --check-only`、`gate-check.sh` 的基线组合。
+4. fixture 验收命令必须写回 `docs/report/goal/ISSUE-LEDGER.md` 和验证报告后，才能把该项从 deferred 改为 fixed。
+
 ## CI 集成
 
 在 CI 流水线中添加：
