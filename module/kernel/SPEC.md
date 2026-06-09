@@ -134,11 +134,17 @@ THEN 返回 `ErrShutdownInProgress`
 
 ### FR-004: ModuleHealth
 
-WHEN 调用 `ModuleHealth(name)` 且模块已注册
-THEN 返回该模块的 `HealthStatus`
+WHEN 调用 `ModuleHealth(name)` 且模块已注册且处于 Running 状态
+THEN 返回该模块的 `HealthStatus`（Ready/Live/Message 由模块实现决定）
 
 WHEN 调用 `ModuleHealth(name)` 且模块未注册
 THEN 返回 `ErrModuleNotFound`
+
+WHEN 调用 `ModuleHealth(name)` 且 App 尚未 Run
+THEN 返回 `HealthStatus{Ready: false, Live: false}`
+
+WHEN 调用 `ModuleHealth(name)` 且模块处于 Error 状态（启动失败）
+THEN 返回 `HealthStatus{Ready: false, Live: false, Message: "<错误信息>"}`
 
 ### FR-005: DependencyGraph
 
@@ -485,7 +491,7 @@ kernel 是 stdlib-only 的 L0 原语层。`Deps` 中的所有字段类型均为 
 | AC-005 | BR-005 | ModuleHealth 多次调用返回相同结果，不触发任何副作用 | TC-009, TC-013 |
 | AC-006 | FR-005 | DependencyGraph 返回正确的 GraphView | TC-010 |
 | AC-007 | BR-007 | 模块 Start/Stop panic 时，panic 被捕获并转换为错误 | TC-006, TC-016, TC-017 |
-| AC-008 | BR-009 | kernel 包内无 L1 包的 import 语句 | CI stdlib-only gate |
+| AC-008 | BR-009 | kernel 包内无 L1 包的 import 语句 | TC-019 |
 
 ### 16.3 Given/When/Then 用例
 
@@ -582,6 +588,11 @@ Then panic 被捕获，记录日志，后续模块继续被 Stop
 Given 模块 A.Init 返回错误
 When 调用 Run
 Then A.Start 不被调用，A.Stop 被调用（清理已 Init 资源）
+
+**TC-019: stdlib-only gate**
+Given kernel 包已编译
+When 运行 `go list -deps ./... | grep -v "^std" | grep -v "^github.com/ZoneCNH/kernel$"`
+Then 无输出（无非 stdlib 依赖）
 
 ### 16.4 Benchmark
 

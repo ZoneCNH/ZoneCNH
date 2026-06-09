@@ -114,9 +114,22 @@ Shutdown(ctx)
 C.Stop(ctx) → B.Stop(ctx) → A.Stop(ctx)  // 反序
 ```
 
+### 5.1 ModuleHealth 查询流
+
+`ModuleHealth(name)` 的内部查询路径：
+
+1. `app.ModuleHealth(name)` 被调用
+2. 从 `registry` 查询模块是否存在 → 不存在则返回 `ErrModuleNotFound`
+3. 检查 App 是否已 Run → 未 Run 则返回 `HealthStatus{Ready: false, Live: false}`
+4. 调用 `module.Health(ctx)` 获取模块自报告状态
+5. 如果模块 Health 方法 panic，catch 并返回 `HealthStatus{Ready: false, Live: false, Message: "health check panic"}`
+6. 返回 HealthStatus 给调用方
+
+**设计约束**：Health 必须是幂等且无副作用的（BR-005），调用 Health 不应改变模块状态。
+
 ---
 
-## 5. 关键架构决策
+## 5.2 关键架构决策
 
 ### ADR-001: Deps 接口内聚
 
@@ -187,7 +200,64 @@ kernel (L0)
 - 不实现日志/指标/追踪的具体实现（Non-goal）
 - 公开 API 1.x 内向后兼容
 
-## 9. 可扩展性与演进
+## 10. 核心数据结构
+
+### 10.1 app struct
+
+```go
+type app struct {
+    modules        map[string]Module      // 已注册模块（name → Module）
+    graph          *graph                  // 依赖图
+    order          []string                // 拓扑排序后的启动顺序
+    startupTimeout time.Duration           // 单模块启动超时
+    shutdownTimeout time.Duration          // 优雅停机超时
+    mu             sync.RWMutex            // 保护 running/shutdown 状态
+    running        bool                    // App 是否正在运行
+    shutdown       bool                    // App 是否已停机
+    logger         Logger                  // 日志接口
+    meter          Meter                   // 指标接口
+}
+```
+
+### 10.2 registry（内部 map）
+
+```go
+type registry struct {
+    mu      sync.RWMutex
+    modules map[string]Module  // name → Module，注册时写入，Run 后只读
+    order   []string           // 注册顺序（用于确定性遍历）
+}
+```
+
+### 10.3 graph（邻接表）
+
+```go
+type graph struct {
+    mu       sync.RWMutex
+    adj      map[string][]string  // 邻接表：node → [依赖者列表]
+    inDegree map[string]int       // 入度表：用于 Kahn 算法
+    nodes    []string             // 所有节点名
+}
+```
+
+---
+
+## 11. Mock 策略
+
+### 11.1 单元测试
+
+- **Module 接口**：测试中使用 stub 实现（如 `stubModule`），可控返回值和 panic 行为
+- **Deps 字段**：注入 mock Logger（记录日志调用）、mock Meter（验证指标上报）
+- **CI gate**：`go list -deps` 验证无非 stdlib 依赖，无需 mock
+
+### 11.2 集成测试
+
+- 使用真实 `app` 实例 + stub Module，验证完整启动-运行-停止流程
+- signal handler 使用 `internal/signal` 包的可注入 hook（避免真实 OS 信号）
+
+---
+
+## 12. 可扩展性与演进
 
 ### 9.1 已知扩展路径
 

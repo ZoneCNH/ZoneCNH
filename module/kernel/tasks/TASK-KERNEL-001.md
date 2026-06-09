@@ -15,7 +15,7 @@ spec_ref:
 files:
   - "kernel.go"
 acceptance_criteria:
-  - "AC-009: go list -deps ./... 无非 stdlib 依赖"
+  - "AC-008: go list -deps ./... 无非 stdlib 依赖"
   - "AC-NEW-04: Module 接口包含 Name()、Init()、Start()、Stop()、Health() 5 个方法"
   - "AC-NEW-05: Deps 结构体包含 Config、Logger、Meter、Tracer、Resilient、Scheduler 6 个字段"
   - "AC-NEW-06: GraphView 接口包含 Nodes()、Edges()、TopologicalOrder() 3 个方法"

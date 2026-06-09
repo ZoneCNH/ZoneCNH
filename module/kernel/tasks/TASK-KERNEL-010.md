@@ -26,8 +26,7 @@ acceptance_criteria:
   - "AC-NEW-60: stdlib-only 检查通过"
   - "AC-NEW-61: 所有 Functional Requirements 有对应测试"
 depends_on:
-  - "TASK-KERNEL-000"
-  - "TASK-KERNEL-001"
+  - "TASK-KERNEL-009"
   - "TASK-KERNEL-002"
   - "TASK-KERNEL-003"
   - "TASK-KERNEL-004"

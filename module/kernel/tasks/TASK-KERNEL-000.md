@@ -17,7 +17,7 @@ files:
   - "doc.go"
   - "errors.go"
 acceptance_criteria:
-  - "AC-009: go list -deps ./... 无非 stdlib 依赖"
+  - "AC-008: go list -deps ./... 无非 stdlib 依赖"
   - "AC-NEW-01: 所有 10 个错误变量可被外部包引用（首字母大写）"
   - "AC-NEW-02: go build ./... 编译通过"
   - "AC-NEW-03: go vet ./... 无警告"
