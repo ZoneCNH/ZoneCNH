@@ -67,18 +67,19 @@ Matrix（追溯矩阵）是横切追溯制品，贯穿主流程但不作为主�
 | goal-prompt-builder | `prompts/TASK-*/` | Context Package 构建与版本管理 |
 | goal-evidence | `evidence/EVID-*.md` | 证据收集与验证 |
 
-## 与 module/ 和 docs/governance/ 的同步边界
+## 与 docs/spec、module/ 和 docs/governance/ 的同步边界
 
-Goal 体系定义目标交付规则、状态机、Gate、Registry 和证据闭环；`module/` 定义模块规格制品；`docs/governance/` 定义 Spec → Code 流程、模板、门禁与评分规则。三者分工如下：
+Goal 体系定义目标交付规则、状态机、Gate、Registry 和证据闭环；`docs/spec/` 定义由 Goal 体系需求派生的产品级或工具级规格；`module/` 定义模块规格制品；`docs/governance/` 定义 Spec → Code 流程、模板、门禁与评分规则。四者分工如下：
 
 | 范围 | 权威位置 | 同步规则 |
 |------|----------|----------|
 | Goal 方法、Gate、Registry、Evidence | `docs/goal/` + `.config/goal/` | 描述目标、状态、门禁和运行证据，不复制模块完整规格 |
+| 产品/工具级 Spec | `docs/spec/` | 由 `docs/goal/` 的 Goal、Spec、Gate、Matrix、Evidence、Registry、Lint 等需求派生；不作为模块事实源，不新增 Goal 体系语义 |
 | 模块 Feature Spec、Traceability、Task、Prompt 输入 | `module/` | 作为编码前模块制品事实源，通过 Goal ID / Task ID / 路径被引用 |
 | Spec → Code 模板、生命周期、门禁、评分与仲裁规则 | `docs/governance/` | 作为流程与治理规则事实源，被模块制品、agent 和 CI 引用 |
 | 根目录索引与三平台 agent 入口 | `README.md`、`ARCHITECTURE.md`、`STATUS.md`、`.claude/`、`.codex/`、`.copilot/` | 只同步入口、路径和门禁口径，不成为新的 SSOT |
 
-迁移后不得恢复旧 `specs/` 目录；若 Goal 文档、agent 配置或 CI 脚本需要引用规格制品，应指向 `module/` 或 `docs/governance/`。
+迁移后不得恢复旧 `specs/` 目录；若 Goal 文档、agent 配置或 CI 脚本需要引用模块规格制品，应指向 `module/` 或 `docs/governance/`；若引用 Goal 体系自身工具或控制面规格，应指向 `docs/spec/`，且必须声明 Source Goal / Source Requirement 与对应 `docs/goal/` 权威来源。
 
 ## 文档索引
 
