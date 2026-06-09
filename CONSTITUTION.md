@@ -28,6 +28,7 @@
 
 所有开发工作必须通过 `git worktree` 或 feature branch 进行：
 
+0. **所有分支必须从 `main` HEAD 创建**——禁止从其他 feature branch、旧 commit 或 detached HEAD 拉取新分支。创建前必须先 `git fetch origin && git rebase origin/main`（或 `git pull --rebase`）确保本地 main 为最新。
 1. **每个独立任务**必须在独立 worktree 中执行
 2. **worktree 命名**必须遵循 `{branch-name}` 或 `{module}-{purpose}` 格式
 3. **工作完成后**通过 PR 或 merge 合入 main，随后清理 worktree

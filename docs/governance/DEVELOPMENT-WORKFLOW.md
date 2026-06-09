@@ -6,6 +6,51 @@
 
 ---
 
+## 分支创建纪律
+
+> 本节操作约束优先级等同于 `CONSTITUTION.md` §0.2。所有 Agent 和人类贡献者必须遵守。
+
+### 规则
+
+**所有分支必须从 `main` HEAD 创建。**
+
+### 操作步骤
+
+在创建任何 worktree 或 feature branch 之前，必须执行以下前置检查：
+
+```bash
+# 1. 确保本地 main 为最新
+git checkout main
+git fetch origin
+git rebase origin/main
+
+# 2. 从最新 main 创建分支
+git checkout -b <branch-name>
+# 或通过 worktree
+git worktree add .worktree/<name> -b <branch-name> main
+```
+
+### 禁止行为
+
+| 行为 | 原因 |
+|------|------|
+| 从其他 feature branch 创建新分支 | 污染依赖链，引入未合入的变更 |
+| 从旧 commit 创建分支 | 缺少最新修复和变更 |
+| 从 detached HEAD 创建分支 | 无法追溯来源 |
+| 跳过 `git fetch && git rebase` | 本地 main 可能落后于远程 |
+
+### Agent 检查清单
+
+AI 代理在创建分支前必须：
+
+1. [ ] 确认当前不在 main 分支（§0.3）
+2. [ ] 执行 `git fetch origin && git rebase origin/main`
+3. [ ] 确认 main HEAD 与 `origin/main` 一致
+4. [ ] 从 main HEAD 创建新分支
+5. [ ] 记录创建来源（commit SHA）到 worktree 元数据
+
+---
+
 ## 总览
 
 ```text
