@@ -30,6 +30,37 @@ git checkout -b <branch-name>
 git worktree add .worktree/<name> -b <branch-name> main
 ```
 
+**当不在 main worktree 时**（已在其他 worktree 中，无法 `git checkout main`）：
+
+```bash
+# 更新本地 main 指针，无需 checkout
+git fetch origin
+git branch -f main origin/main
+
+# 从最新 main 创建 worktree
+git worktree add .worktree/<name> -b <branch-name> main
+```
+
+### 分支来源验证
+
+创建分支后，必须验证其起点确实是 main HEAD：
+
+```bash
+# 验证分支起点是 main（返回 0 表示合规）
+git merge-base --is-ancestor main <branch-name>
+
+# 查看分支起点 commit
+git log --oneline main..HEAD | tail -1
+```
+
+### 冲突处理
+
+| 场景 | 处理 |
+|------|------|
+| `git rebase origin/main` 冲突 | 解决冲突后 `git rebase --continue`；无法解决则 `git rebase --abort` 并人工介入 |
+| main 有未推送的本地提交 | 先 `git push` 确保远程 main 为最新，再 rebase |
+| worktree 创建失败（路径已存在） | 清理旧 worktree：`git worktree remove .worktree/<name>`，或使用不同名称 |
+
 ### 禁止行为
 
 | 行为 | 原因 |
@@ -43,11 +74,12 @@ git worktree add .worktree/<name> -b <branch-name> main
 
 AI 代理在创建分支前必须：
 
-1. [ ] 确认当前不在 main 分支（§0.3）
-2. [ ] 执行 `git fetch origin && git rebase origin/main`
+1. [ ] 确认当前不在 main 分支（§0.3，git 操作除外）
+2. [ ] 执行 `git fetch origin && git rebase origin/main`（或 `git branch -f main origin/main`）
 3. [ ] 确认 main HEAD 与 `origin/main` 一致
 4. [ ] 从 main HEAD 创建新分支
-5. [ ] 记录创建来源（commit SHA）到 worktree 元数据
+5. [ ] 验证分支来源：`git merge-base --is-ancestor main <branch-name>`
+6. [ ] 记录创建来源（commit SHA）到 worktree 元数据
 
 ---
 

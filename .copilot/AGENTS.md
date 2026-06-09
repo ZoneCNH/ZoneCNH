@@ -9,6 +9,14 @@ Copilot CLI 在本仓库中承担两类职责：
 1. **管线主代理（leader）**：协调 Spec → Code 全流程，调度 scorer 与 arbiter。
 2. **Copilot LLM scorer**：与 Claude / Codex 并行对每个阶段产物独立打分。
 
+## 分支纪律
+
+> 详见 `CONSTITUTION.md` 第零条。
+
+- **所有分支必须从 `main` HEAD 创建**。创建前必须先 `git fetch origin && git rebase origin/main` 确保本地 main 为最新。
+- 禁止从其他 feature branch 或旧 commit 拉取新分支。
+- 所有开发工作必须通过 `git worktree` 或 feature branch 进行。
+
 ## Scorer 代理清单
 
 | Agent | 评分对象 | Rubric |
