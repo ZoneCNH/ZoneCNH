@@ -41,6 +41,8 @@ MD_COUNT=$(git ls-files '*.md' | wc -l)
 MD_TOTAL_LINES=$(git ls-files '*.md' | xargs wc -l 2>/dev/null | tail -1 | awk '{print $1}')
 
 # ── 生成 JSON manifest ─────────────────────────────────────────
+mkdir -p release/manifest
+
 cat > release/manifest/release-manifest.json <<EOF
 {
   "version": "${TAG}",

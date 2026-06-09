@@ -1,7 +1,7 @@
 # 发布工作流 — 版本标签推送时自动创建 GitHub Release
 #
 # 触发条件：推送 v* 格式的 tag
-# 流程：质量门禁 → 生成 release manifest → 创建 GitHub Release
+# 流程：docs-ci 质量门禁 → Goal CI → Goal release gate → 生成 release manifest → 创建 GitHub Release
 
 name: Release
 
@@ -18,12 +18,38 @@ jobs:
   quality-gate:
     uses: ./.github/workflows/docs-ci.yml
 
-  # ── 2. 生成 Release Manifest ──────────────────────────────────
+  # ── 2. Goal 控制面 CI：复用 Goal CI 全部检查 ────────────────────
+  goal-control-plane:
+    uses: ./.github/workflows/goal-ci.yml
+
+  # ── 3. Goal 发布硬阻断：未满足 G10/风险/证据合同不得发布 ─────────
+  release-gate:
+    name: Goal Release Gate
+    runs-on: [self-hosted, Linux, X64]
+    timeout-minutes: 10
+    needs:
+      - quality-gate
+      - goal-control-plane
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 执行 Goal release gate
+        run: bash .github/ci/goal-release-gate.sh
+
+      - name: 上传 Goal release gate 产物
+        uses: actions/upload-artifact@v4
+        with:
+          name: goal-release-gate
+          path: release/manifest/goal-release-gate.json
+
+  # ── 4. 生成 Release Manifest ──────────────────────────────────
   build-manifest:
     name: Build Release Manifest
     runs-on: [self-hosted, Linux, X64]
     timeout-minutes: 15
-    needs: quality-gate
+    needs: release-gate
     steps:
       - uses: actions/checkout@v4
         with:
@@ -38,7 +64,7 @@ jobs:
           name: release-manifest
           path: release/manifest/
 
-  # ── 3. 创建 GitHub Release ────────────────────────────────────
+  # ── 5. 创建 GitHub Release ────────────────────────────────────
   publish-release:
     name: Publish Release
     runs-on: [self-hosted, Linux, X64]

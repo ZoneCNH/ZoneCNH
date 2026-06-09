@@ -122,6 +122,7 @@ write_validator_gates() {
       printf '    owner: goal-reviewer\n'
       printf '    updated_at: 2026-06-09\n'
       if [[ "$with_risk" == "true" && "$gate" == "G2" ]]; then
+        printf '    allow_pass_with_risk: true\n'
         cat <<YAML
     risk:
       risk_id: $risk_id
@@ -159,7 +160,7 @@ write_validator_fixture() {
   local risk_id="${12:-$VALIDATOR_RISK_ID}"
 
   mkdir -p "$root/.config/goal/matrix" "$root/.config/goal/registry" \
-    "$root/.config/goal/pipeline" "$root/.github/workflows"
+    "$root/.config/goal/pipeline" "$root/.config/goal/schema" "$root/.github/workflows"
 
   case "$gitignore_mode" in
     good)
@@ -258,13 +259,50 @@ YAML
 name: Goal fixture
 on: [push]
 jobs:
-  current:
+  goal-validator:
     runs-on: ubuntu-latest
     steps:
       - run: python3 docs/goal/tools/goal-validate.py --root . --mode strict --format text
       - run: echo "source_id target_id evidence_id BLOCKED"
 YAML
   fi
+
+  cat >"$root/.config/goal/schema/rules.yaml" <<'YAML'
+ci:
+  workflow: ".github/workflows/goal-ci.yml"
+  required_jobs:
+    - goal-validator
+YAML
+}
+
+write_release_gate_fixture() {
+  local root="$1"
+  local with_risk="$2"
+  local registry_has_risk="$3"
+  local g10_status="$4"
+  local g11_status="$5"
+  local evidence_mode="${6:-present}"
+
+  write_validator_fixture "$root" "$with_risk" "$registry_has_risk" \
+    "$g10_status" "$g11_status" BLOCKED in_review false false "" good
+
+  if [[ "$evidence_mode" == "present" ]]; then
+    mkdir -p "$root/.config/goal/evidence/2026-06-09/TASK-GOAL-20260608-001-001"
+    cat >"$root/.config/goal/evidence/2026-06-09/TASK-GOAL-20260608-001-001/$VALIDATOR_EVIDENCE_ID.md" <<'MD'
+# Evidence Fixture
+
+## Evidence ID
+EVID-TEST-TASK-GOAL-20260608-001-001-001-001
+
+## Result
+PASS
+MD
+  fi
+}
+
+run_goal_release_gate() {
+  GOAL_VALIDATOR_SCRIPT="$SCRIPT_DIR/goal-validate.py" \
+    bash "$REPO_ROOT/.github/ci/goal-release-gate.sh" "$1"
 }
 
 for script in "$SCRIPT_DIR"/*.sh; do
@@ -428,6 +466,46 @@ jobs:
 YAML
 run_failure_contains "goal validator rejects missing CI strict validator" "GV-CONSISTENCY-CI-MISSING-GOAL-VALIDATOR" \
   python3 "$SCRIPT_DIR/goal-validate.py" --root "$validator_missing_ci_validator" --mode strict --format text
+
+validator_missing_required_job="$TMP_ROOT/validator-missing-required-job"
+write_validator_fixture "$validator_missing_required_job" false false PASS PASS DONE released false false "" good
+cat >"$validator_missing_required_job/.config/goal/schema/rules.yaml" <<'YAML'
+ci:
+  workflow: ".github/workflows/goal-ci.yml"
+  required_jobs:
+    - summary
+YAML
+run_failure_contains "goal validator rejects missing strict validator required job" "GV-CONSISTENCY-CI-MISSING-GOAL-VALIDATOR" \
+  python3 "$SCRIPT_DIR/goal-validate.py" --root "$validator_missing_required_job" --mode strict --format text
+
+release_gate_ready="$TMP_ROOT/release-gate-ready"
+write_release_gate_fixture "$release_gate_ready" false false PASS BLOCKED present
+run_success "goal release gate accepts G10 pass with evidence" \
+  run_goal_release_gate "$release_gate_ready"
+
+release_gate_open_risk="$TMP_ROOT/release-gate-open-risk"
+write_release_gate_fixture "$release_gate_open_risk" true true BLOCKED BLOCKED present
+run_failure_contains "goal release gate blocks open release risk" "GRG-OPEN-RELEASE-RISK" \
+  run_goal_release_gate "$release_gate_open_risk"
+
+release_gate_missing_evidence="$TMP_ROOT/release-gate-missing-evidence"
+write_release_gate_fixture "$release_gate_missing_evidence" false false PASS BLOCKED missing
+run_failure_contains "goal release gate blocks missing evidence package" "GRG-EVIDENCE-MISSING" \
+  run_goal_release_gate "$release_gate_missing_evidence"
+
+release_gate_missing_ci="$TMP_ROOT/release-gate-missing-ci"
+write_release_gate_fixture "$release_gate_missing_ci" false false PASS BLOCKED present
+cat >"$release_gate_missing_ci/.github/workflows/goal-ci.yml" <<'YAML'
+name: Goal fixture
+on: [push]
+jobs:
+  summary:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "source_id target_id evidence_id BLOCKED"
+YAML
+run_failure_contains "goal release gate requires goal-validator job" "GV-CONSISTENCY-CI-MISSING-GOAL-VALIDATOR" \
+  run_goal_release_gate "$release_gate_missing_ci"
 
 printf '\nself-test summary: PASS=%s FAIL=%s\n' "$PASS" "$FAIL"
 [[ "$FAIL" -eq 0 ]]

@@ -199,6 +199,43 @@ def find_duplicate_ids(path: Path, extractors: tuple[re.Pattern[str], ...]) -> d
     return {value: lines for value, lines in seen.items() if len(lines) > 1}
 
 
+def parse_ci_required_jobs(path: Path) -> set[str]:
+    if not path.exists():
+        return set()
+
+    required_jobs: set[str] = set()
+    in_ci = False
+    in_required_jobs = False
+
+    for raw_line in read_lines(path):
+        if not raw_line.strip() or raw_line.lstrip().startswith("#"):
+            continue
+
+        top_level = re.match(r"^([A-Za-z0-9_]+):\s*(.*)$", raw_line)
+        if top_level:
+            in_ci = top_level.group(1) == "ci"
+            in_required_jobs = False
+            continue
+
+        if not in_ci:
+            continue
+
+        ci_field = re.match(r"^  ([A-Za-z0-9_]+):\s*(.*)$", raw_line)
+        if ci_field:
+            key, raw_value = ci_field.group(1), ci_field.group(2)
+            in_required_jobs = key == "required_jobs"
+            if in_required_jobs:
+                required_jobs.update(parse_inline_list(raw_value))
+            continue
+
+        if in_required_jobs:
+            item = re.match(r"^\s*-\s*(.+?)\s*$", raw_line)
+            if item:
+                required_jobs.add(clean_value(item.group(1)))
+
+    return required_jobs
+
+
 def parse_matrix(path: Path) -> list[dict[str, Any]]:
     if not path.exists():
         return []
@@ -829,6 +866,17 @@ def check_workflow_stale_contract(root: Path, report: Report) -> None:
             )
 
     active_text = "\n".join(active_lines)
+    job_ids = set(re.findall(r"^  ([A-Za-z0-9_-]+):\s*$", workflow.read_text(encoding="utf-8"), re.MULTILINE))
+    if "goal-validator" not in job_ids:
+        report.error(
+            "GV-CONSISTENCY-CI-MISSING-GOAL-VALIDATOR",
+            "consistency",
+            workflow,
+            "GitHub workflow must define goal-validator as the independent strict validator job",
+            "jobs.goal-validator",
+            sorted(job_ids),
+        )
+
     if "docs/goal/tools/goal-validate.py" not in active_text or "--mode strict" not in active_text:
         report.error(
             "GV-CONSISTENCY-CI-MISSING-GOAL-VALIDATOR",
@@ -837,6 +885,18 @@ def check_workflow_stale_contract(root: Path, report: Report) -> None:
             "GitHub workflow must run the Goal control-plane validator in strict mode",
             "python3 docs/goal/tools/goal-validate.py --root . --mode strict",
             "<missing>",
+        )
+
+    rules = root / ".config/goal/schema/rules.yaml"
+    required_jobs = parse_ci_required_jobs(rules)
+    if rules.exists() and "goal-validator" not in required_jobs:
+        report.error(
+            "GV-CONSISTENCY-CI-MISSING-GOAL-VALIDATOR",
+            "consistency",
+            rules,
+            "rules.yaml ci.required_jobs must require the strict Goal validator job",
+            "ci.required_jobs includes goal-validator",
+            sorted(required_jobs),
         )
 
 

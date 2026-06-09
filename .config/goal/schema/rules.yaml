@@ -299,6 +299,7 @@ ci:
     - yaml-lint
     - registry-check
     - rule-drift-check
+    - goal-validator
     - id-format-check
     - matrix-coverage
     - gate-check

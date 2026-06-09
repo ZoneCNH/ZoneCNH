@@ -5,6 +5,7 @@
 name: Goal CI
 
 on:
+  workflow_call:
   push:
     branches: [main]
     paths:
@@ -16,6 +17,9 @@ on:
       - '.copilot/agents/goal-*'
       - 'AGENTS.md'
       - '.github/workflows/goal-ci.yml'
+      - '.github/workflows/release.yml'
+      - '.github/ci/goal-release-gate.sh'
+      - '.github/ci/generate-release-manifest.sh'
   pull_request:
     branches: [main]
     paths:
@@ -27,6 +31,9 @@ on:
       - '.copilot/agents/goal-*'
       - 'AGENTS.md'
       - '.github/workflows/goal-ci.yml'
+      - '.github/workflows/release.yml'
+      - '.github/ci/goal-release-gate.sh'
+      - '.github/ci/generate-release-manifest.sh'
 
 jobs:
   # 1. YAML 语法检查
@@ -115,7 +122,7 @@ jobs:
           python3 docs/goal/tools/rule-drift-check.py --root .
 
   # 4. Goal 控制面一致性验证
-  goal-validate:
+  goal-validator:
     name: Goal Control-Plane Validation
     runs-on: [self-hosted, Linux, X64]
     timeout-minutes: 10
@@ -132,7 +139,7 @@ jobs:
     name: ID Format Validation
     runs-on: [self-hosted, Linux, X64]
     timeout-minutes: 10
-    needs: goal-validate
+    needs: goal-validator
     steps:
       - uses: actions/checkout@v4
 
@@ -177,7 +184,7 @@ jobs:
     name: Matrix Coverage
     runs-on: [self-hosted, Linux, X64]
     timeout-minutes: 10
-    needs: goal-validate
+    needs: goal-validator
     steps:
       - uses: actions/checkout@v4
 
@@ -246,7 +253,7 @@ jobs:
     name: Gate Status Validation
     runs-on: [self-hosted, Linux, X64]
     timeout-minutes: 10
-    needs: goal-validate
+    needs: goal-validator
     steps:
       - uses: actions/checkout@v4
 
@@ -297,7 +304,7 @@ jobs:
     name: Orphan Detection
     runs-on: [self-hosted, Linux, X64]
     timeout-minutes: 10
-    needs: goal-validate
+    needs: goal-validator
     steps:
       - uses: actions/checkout@v4
 
@@ -412,7 +419,7 @@ jobs:
       - yaml-lint
       - registry-check
       - rule-drift-check
-      - goal-validate
+      - goal-validator
       - id-format-check
       - matrix-coverage
       - gate-check
@@ -430,7 +437,7 @@ jobs:
           echo "| YAML Lint | ${{ needs.yaml-lint.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Registry | ${{ needs.registry-check.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Rule Drift | ${{ needs.rule-drift-check.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Goal Validator | ${{ needs.goal-validate.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Goal Validator | ${{ needs['goal-validator'].result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| ID Format | ${{ needs.id-format-check.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Matrix Coverage | ${{ needs.matrix-coverage.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Gate Status | ${{ needs.gate-check.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY

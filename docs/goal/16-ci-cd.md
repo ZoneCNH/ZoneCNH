@@ -22,6 +22,8 @@ CI/CD 不只跑测试，还要验证交付物完整性。
 | CI-CHK7 | Changelog Sync         | 变更日志同步 |
 | CI-CHK8 | Evidence Manifest      | 证据清单完整 |
 | CI-CHK9 | Release Manifest       | 发布清单完整 |
+| CI-CHK10 | Goal Control Plane     | `goal-validator` strict 验证通过 |
+| CI-CHK11 | Release Gate Hard Block | G10 PASS、无打开的 release_blocking 风险、有 Evidence 包 |
 
 ### 检查规则
 
@@ -33,7 +35,15 @@ CI/CD 不只跑测试，还要验证交付物完整性。
 存储变更   → 必须有 migration + rollback
 Issue 完成 → 必须有 evidence
 PR 合并    → 必须有 release manifest
+发布 tag   → 必须先通过 Goal CI 与 release gate
+G10 未 PASS → 禁止创建 Release
 ```
+
+### Release 硬阻断
+
+tag 发布顺序固定为：docs-ci 质量门禁 → 可复用 Goal CI → `.github/ci/goal-release-gate.sh` → release manifest → GitHub Release。
+
+release gate 在以下情况必须非零退出：G10 未 PASS、存在打开的 `release_blocking` 风险、缺失 `.config/goal/evidence/**/*.md`、Goal CI 未定义或未要求 `goal-validator`。
 
 ---
 
@@ -103,7 +113,7 @@ PR 合并    → 必须有 release manifest
 
 ```text
 目标：形成可合并交付
-输出：commit summary、PR title、PR description、test evidence、linked issues、release note、rollback plan
+输出：commit summary、PR title、PR description、test evidence、linked issues、release note、rollback plan、Goal release gate verdict
 ```
 
 ### Phase 8: Retrospective
