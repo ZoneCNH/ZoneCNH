@@ -193,6 +193,11 @@ Goal → Spec → Design → Plan → Tasks → Prompt → Code → Test → Rev
 
 Matrix 是横切追溯制品，贯穿所有阶段但不作为主流程阶段。
 
+### 模块级 Goal 文档命名规则
+
+- 模块级 Goal 文档固定为 `module/{module}/goal.md`。
+- 禁止新建 `module/{module}/goal/` 目录、`module/{module}/goal/1.md` 或 `goal/*.md` 多文件槽位；未来如需多版本 Goal，必须先更新 `docs/goal/00-authority-map.md`、`.config/goal/schema/rules.yaml` 和 `module/README.md`。
+
 ### 关键文档
 
 | 文档                            | 用途                                   |

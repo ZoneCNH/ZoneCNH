@@ -2,6 +2,13 @@
 
 > 记录 docs/goal/ 体系的重大结构性变更。
 
+## 2026-06-09 — 模块级 Goal 文档路径固化
+
+### 命名规则
+
+- 固定模块级 Goal 文档路径为 `module/{module}/goal.md`，禁止 `module/{module}/goal/`、`module/{module}/goal/1.md` 和 `goal/*.md` 槽位。
+- 同步 `module/README.md`、`AGENTS.md` 与 `.config/goal/schema/rules.yaml`，避免后续导入重新生成目录式 Goal。
+
 ## 2026-06-09 — Phase 1 权威边界与配置边界固化
 
 ### 权威边界
