@@ -36,6 +36,24 @@ status: pending
 
 ---
 
+## Scope
+
+- 重写 `Makefile`、`scripts/*.sh` 和 `.github/workflows/ci.yml`，提供最小 gate 集。
+- 实现 `render_template.sh` 的 4 参数渲染入口。
+- 实现 boundary、contracts、security、release check 与 final check 脚本。
+
+## Non-scope
+
+- 不增加 governance runtime 或 agent runtime 检查项。
+- 不引入 Docker、devcontainer 或外部 CI 依赖。
+- 不扩大模板 API 到非标准库职责。
+
+## Acceptance
+
+- `Makefile` 包含 fmt/vet/lint/test/race/contracts/boundary/render-smoke/security/ci/release-check/release-final-check targets。
+- `scripts/` 目录只有 7 个脚本。
+- `GOWORK=off make ci` 和 `GOWORK=off make release-check` 可由 CI 执行。
+
 ## Requirements Covered
 
 | Requirement | Description | Acceptance Criteria |

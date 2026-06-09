@@ -26,7 +26,7 @@ depends_on:
   - "TASK-XLIB-000"
   - "TASK-XLIB-001"
   - "TASK-XLIB-002"
-  - "TASK-XLIB-003"
+  - "TASK-XLIB-008"
   - "TASK-XLIB-004"
 estimated_effort: "1h"
 priority: P0
@@ -35,10 +35,30 @@ status: pending
 
 ---
 
+## Scope
+
+- 验证生成库不含模板残留并通过普通测试与 race 测试。
+- 创建并执行 `selfcheck-100.sh`。
+- 执行最终 `ci`、`release-check` 与 `release-final-check` gate。
+
+## Non-scope
+
+- 不创建或推送 git tag。
+- 不修改已通过验收的标准库 API。
+- 不扩大生成脚本参数集。
+
+## Acceptance
+
+- 临时目录生成库 `GOWORK=off go test ./...` 和 `GOWORK=off go test -race ./...` 通过。
+- 生成库不包含 templatex、xlib-standard、foundationx 或 baselib-template 残留。
+- `./selfcheck-100.sh`、`GOWORK=off make ci`、`GOWORK=off make release-check`、`GOWORK=off make release-final-check` 全部通过。
+
 ## Requirements Covered
 
 | Requirement | Description | Acceptance Criteria |
 |---|---|---|
+| FR-010 | 生成库无模板残留 | 生成库不包含 templatex、xlib-standard、foundationx 或 baselib-template 残留 |
+| FR-014 | release final check | release-final-check 通过 |
 | §22 | Release DoD | 所有 AC 通过 |
 | goal.md §12 | 生成库验收 | 临时目录测试通过 |
 | goal.md §13 | 最终验收命令 | 100 次自检通过 |

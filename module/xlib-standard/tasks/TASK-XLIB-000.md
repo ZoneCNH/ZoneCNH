@@ -46,6 +46,24 @@ status: pending
 
 ---
 
+## Scope
+
+- 删除 xlib-standard 目标边界之外的治理运行时、agent runtime、债务治理、Docker 与历史模板目录。
+- 保留 `README.md`、`docs/`、`templates/`、`scripts/`、`contracts/`、`pkg/templatex/` 等标准库交付所需资产。
+- 更新残留引用，使公开文档只描述 xlib-standard 标准库职责。
+
+## Non-scope
+
+- 不实现业务运行时、Goal Runtime、Evidence Runtime 或 Debt Governance。
+- 不引入新的脚本依赖、包管理器或外部服务。
+- 不修改本任务未列出的模块仓库。
+
+## Acceptance
+
+- 不再存在 `.agent`、`.codex`、`.omx`、`cmd`、`templates/l2`、`docs/goal`、`docs/adr` 等非目标目录。
+- `GOWORK=off go test ./...` 通过。
+- `README.md` 不再引用已删除目录。
+
 ## Requirements Covered
 
 | Requirement | Description | Acceptance Criteria |

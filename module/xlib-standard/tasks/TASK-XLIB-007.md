@@ -1,11 +1,11 @@
-# TASK-XLIB-003C
+# TASK-XLIB-007
 
 > PR-4c：Health + Metrics — pkg/templatex/health.go + metrics.go + contracts
 
 ---
 
 ```yaml
-task_id: TASK-XLIB-003C
+task_id: TASK-XLIB-007
 module: xlib-standard
 scope: "实现 HealthCheck 和 Metrics 5 个 P0 指标，覆盖 FR-003 和 FR-004"
 spec_ref:
@@ -28,13 +28,31 @@ acceptance_criteria:
   - "AC-012: 指标名匹配 contract 5 个 P0 指标名一致"
   - "AC-013: label 低基数只有 op/kind/status"
 depends_on:
-  - "TASK-XLIB-003B"
+  - "TASK-XLIB-006"
 estimated_effort: "1h"
 priority: P0
 status: pending
 ```
 
 ---
+
+## Scope
+
+- 实现 `pkg/templatex/health.go` 的 HealthCheck。
+- 实现 `pkg/templatex/metrics.go` 的 NoopMetrics 和 5 个 P0 指标。
+- 更新 `contracts/health.schema.json` 与 `contracts/metrics.json`。
+
+## Non-scope
+
+- 不新增高基数 label。
+- 不引入 Prometheus、OpenTelemetry 或其他外部指标依赖。
+- 不修改 Client、Error 或生成脚本。
+
+## Acceptance
+
+- nil context 返回 unhealthy，健康客户端返回 healthy。
+- NoopMetrics 调用不 panic。
+- 指标名与 contract 中 5 个 P0 指标一致，label 只含 op/kind/status。
 
 ## Requirements Covered
 

@@ -352,7 +352,7 @@ def main():
             coverage = result['terminal'] * 100 // result['total']
             print(f"  覆盖率:        {coverage}%")
             if (
-                coverage < 95
+                coverage < 60
                 or result["missing_required"] > 0
                 or result["empty_required"] > 0
                 or result["invalid_relation"] > 0

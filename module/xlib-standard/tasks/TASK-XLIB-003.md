@@ -1,11 +1,11 @@
-# TASK-XLIB-003A
+# TASK-XLIB-003
 
 > PR-4a：Config 标准 — pkg/templatex/config.go
 
 ---
 
 ```yaml
-task_id: TASK-XLIB-003A
+task_id: TASK-XLIB-003
 module: xlib-standard
 scope: "实现 Config 结构体、Validate、Sanitize，覆盖 FR-001 和 Version API"
 spec_ref:
@@ -29,6 +29,24 @@ status: pending
 ```
 
 ---
+
+## Scope
+
+- 实现 `pkg/templatex/config.go` 的 Config、Validate、Sanitize。
+- 实现 `pkg/templatex/doc.go` 与版本 API。
+- 覆盖 FR-001 和 FR-006 的最小公共接口。
+
+## Non-scope
+
+- 不实现 Client、Error、Health 或 Metrics 标准。
+- 不新增运行时配置发现、环境变量加载或 secret 管理器。
+- 不修改生成脚本和 release gate。
+
+## Acceptance
+
+- Config 必填字段缺失和负数 timeout 返回 validation 类错误。
+- Sanitize 对 secret 值输出 `***`。
+- 版本 API 返回 module path、version、commit 与 build time。
 
 ## Requirements Covered
 

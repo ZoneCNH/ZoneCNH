@@ -71,8 +71,8 @@ DONE_PIPELINE_STATES = {"DONE"}
 RISK_ID_PATTERN = re.compile(r"^RISK-GOAL-\d{8}-\d{3}-\d{3}$")
 RISK_ID_EXPECTED = "RISK-GOAL-YYYYMMDD-NNN-NNN"
 GATE_ID_EXTRACTORS = (
-    re.compile(r"^\s*-\s+gate_id:\s*(G\d+)\s*$"),
-    re.compile(r"^  (G\d+):\s*$"),
+    re.compile(r"^\s*-\s+gate_id:\s*(GK-\d+|G\d+)\s*$"),
+    re.compile(r"^  (GK-\d+|G\d+):\s*$"),
 )
 RISK_ID_EXTRACTORS = (re.compile(r"^\s*-\s+risk_id:\s*(.+?)\s*$"),)
 
@@ -292,7 +292,7 @@ def parse_gates(path: Path) -> dict[str, dict[str, Any]]:
         if not raw_line.strip() or raw_line.lstrip().startswith("#"):
             continue
 
-        start = re.match(r"^\s*-\s+gate_id:\s*(G\d+)\s*$", raw_line)
+        start = re.match(r"^\s*-\s+gate_id:\s*(GK-\d+|G\d+)\s*$", raw_line)
         if start:
             gate_id = start.group(1)
             current = {"gate_id": gate_id, "_line": line_number, "risk": {}, "result": {}}
@@ -300,7 +300,7 @@ def parse_gates(path: Path) -> dict[str, dict[str, Any]]:
             section = None
             continue
 
-        mapping_start = re.match(r"^  (G\d+):\s*$", raw_line)
+        mapping_start = re.match(r"^  (GK-\d+|G\d+):\s*$", raw_line)
         if mapping_start:
             gate_id = mapping_start.group(1)
             current = {"gate_id": gate_id, "_line": line_number, "risk": {}, "result": {}}
