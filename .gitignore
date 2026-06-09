@@ -80,3 +80,6 @@ k8s/
 # Report tooling npm artifacts
 docs/report/package.json
 docs/report/package-lock.json
+
+# Goal 运行态（不进入仓库）
+.config/goal/runtime/

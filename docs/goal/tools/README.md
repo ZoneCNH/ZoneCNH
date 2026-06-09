@@ -6,6 +6,8 @@
 
 | 工具                                       | 语言     | 功能                                                              |
 | ------------------------------------------ | -------- | ----------------------------------------------------------------- |
+| [goal-delivery.sh](goal-delivery.sh)       | Bash     | 端到端交付编排：init、goal、spec、design、plan、tasks、prompt、matrix、evidence、status、check、dashboard |
+| [goal-workflow.sh](goal-workflow.sh)       | Bash     | 统一工作流入口：preflight、validate、gate、ci、release             |
 | [gate-check.sh](gate-check.sh)             | Bash     | Gate 制品就绪检查：Matrix 终态覆盖率、Evidence 字段、测试覆盖、孤儿检查 |
 | [goal-validate.py](goal-validate.py)       | Python 3 | Goal 控制面一致性验证：runtime root、Matrix、Gate、Risk、CI 合约 |
 | [matrix-gen.py](matrix-gen.py)             | Python 3 | Matrix 生成与更新：从 Spec/Tasks 自动生成 Traceability Matrix     |
@@ -16,6 +18,67 @@
 | [.github/ci/goal-release-gate.sh](../../../.github/ci/goal-release-gate.sh) | Bash/Python | 发布硬阻断：strict validator、G10、release-blocking 风险、Evidence、Goal CI 合约 |
 
 ## 使用方式
+
+### 统一工作流入口
+
+```bash
+bash docs/goal/tools/goal-workflow.sh preflight
+bash docs/goal/tools/goal-workflow.sh validate
+bash docs/goal/tools/goal-workflow.sh gate
+bash docs/goal/tools/goal-workflow.sh ci
+bash docs/goal/tools/goal-workflow.sh release
+```
+
+`goal-workflow.sh` 是 `docs/goal` 的默认执行入口；直接调用底层脚本只用于调试单个检查器。
+
+### 端到端交付编排
+
+```bash
+# 初始化项目结构和配置中心
+bash docs/goal/tools/goal-delivery.sh init
+
+# 按管线顺序创建制品
+bash docs/goal/tools/goal-delivery.sh goal --title "订单 CSV 导出"
+bash docs/goal/tools/goal-delivery.sh spec --goal-id GOAL-20260609-001
+bash docs/goal/tools/goal-delivery.sh design --spec-id SPEC-feature-v1
+bash docs/goal/tools/goal-delivery.sh plan --goal-id GOAL-20260609-001
+bash docs/goal/tools/goal-delivery.sh tasks --plan-id PLAN-GOAL-20260609-001-v1
+bash docs/goal/tools/goal-delivery.sh prompt --task-id TASK-GOAL-20260609-001-001
+bash docs/goal/tools/goal-delivery.sh evidence --task-id TASK-GOAL-20260609-001-001
+
+# 运行 Gate 检查
+bash docs/goal/tools/goal-delivery.sh check --gate G1
+bash docs/goal/tools/goal-delivery.sh check        # 全量 G0-G11
+
+# 查看状态和看板
+bash docs/goal/tools/goal-delivery.sh status
+bash docs/goal/tools/goal-delivery.sh dashboard
+```
+
+`goal-delivery.sh` 覆盖 Goal→Spec→Design→Plan→Tasks→Prompt→Code→Test→Review→Release→Retrospective 全 11 层管线的制品创建和 Gate 检查。与 `goal-workflow.sh` 互补：后者负责验证/检查，前者负责编排/创建。
+
+支持三种复杂度模式（通过 `--mode` 参数）：
+
+| 模式 | 适用场景 | 流程 |
+| ---- | -------- | ---- |
+| `lite` | CL0/CL1 文档/配置变更 | Goal→Plan→Tasks→Code→Test→Evidence→Review |
+| `standard` | CL2 功能开发 | 全流程 + Matrix + Risk + Evidence |
+| `full` | CL3+ 架构变更 | 全流程 + ADR + Human Approval + Rollback |
+
+| 命令 | 执行内容 | 使用场景 |
+| ---- | -------- | -------- |
+| `preflight` | Python 编译、Shell 语法、规则漂移、Goal 文档 lint | 修改 `docs/goal` 或工具脚本后的最快反馈 |
+| `validate` | `preflight` + strict 控制面验证 + Matrix check-only | PR 前的默认本地验证 |
+| `gate` | `validate` + Gate 制品就绪检查 | 已有 `.config/goal` 运行制品时的合入前门禁 |
+| `ci` | `validate` + 工具链自测 + 有运行制品时自动 Gate 检查 | CI workflow 的聚合入口 |
+| `release` | `gate` + `.github/ci/goal-release-gate.sh` | tag/release 前硬阻断；通过时会写 `release/manifest/goal-release-gate.json` |
+| `self-test` | 仅运行工具链 fixture 自测 | 调试工具链自身 |
+
+可选参数：
+
+```bash
+bash docs/goal/tools/goal-workflow.sh validate --root . --mode strict --format text
+```
 
 ### Goal 控制面验证
 
@@ -198,34 +261,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Compile Goal Tools
-        run: python3 -m py_compile docs/goal/tools/goal-validate.py docs/goal/tools/matrix-gen.py docs/goal/tools/rule-drift-check.py
-      - name: Rule Drift Check
-        run: python3 docs/goal/tools/rule-drift-check.py --root . --quiet
-      - name: Goal Validator Strict
-        run: python3 docs/goal/tools/goal-validate.py --root . --mode strict --format text
+      - name: Goal Workflow Validate
+        run: bash docs/goal/tools/goal-workflow.sh validate
   lint:
     runs-on: ubuntu-latest
     needs: goal-validator
     steps:
       - uses: actions/checkout@v4
-      - name: Lint Goal
-        run: ./docs/goal/tools/lint-goal.sh docs/goal/
-      - name: Goal Tool Self Test
-        run: ./docs/goal/tools/self-test.sh
-      - name: Gate Check
-        run: |
-          if [ -f .config/goal/registry/tasks.yaml ]; then
-            ./docs/goal/tools/gate-check.sh .
-          else
-            echo "skip gate-check: no goal runtime artifacts"
-          fi
+      - name: Goal Workflow CI
+        run: bash docs/goal/tools/goal-workflow.sh ci
 ```
 
 发布 workflow 必须先复用 `.github/workflows/goal-ci.yml`，再执行 `bash .github/ci/goal-release-gate.sh`；只有 gate 产出 `release/manifest/goal-release-gate.json` 后，才允许生成 release manifest 和创建 GitHub Release。
 
 ## 依赖
 
+- `goal-delivery.sh`: bash, grep, find, git, awk
+- `goal-workflow.sh`: bash, Python 3.10+, grep, find, git
 - `gate-check.sh`: bash, grep, find
 - `goal-validate.py`: Python 3.10+
 - `matrix-gen.py`: Python 3.10+

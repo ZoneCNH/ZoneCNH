@@ -175,11 +175,13 @@ docs/goal/
 ```text
 1. 创建分支: goal/<goal-id> 或 task/<task-id>
 2. 修改制品文件
-3. 运行 lint 检查: ./docs/goal/tools/lint-goal.sh docs/goal/
-4. 运行 gate 检查: ./docs/goal/tools/gate-check.sh .
-5. 提交并推送
-6. PR 描述使用 Release Manifest 模板（见 [17-risk-and-decisions.md §3](17-risk-and-decisions.md#3-release-manifest)）
-7. Review 通过后合并
+3. 运行本地预检: bash docs/goal/tools/goal-workflow.sh preflight
+4. 运行工作流验证: bash docs/goal/tools/goal-workflow.sh validate
+5. 有运行制品时运行 Gate: bash docs/goal/tools/goal-workflow.sh gate
+6. Release 前运行硬阻断: bash docs/goal/tools/goal-workflow.sh release
+7. 提交并推送
+8. PR 描述使用 Release Manifest 模板（见 [17-risk-and-decisions.md §3](17-risk-and-decisions.md#3-release-manifest)）
+9. Review 通过后合并
 ```
 
 ### 6.3 Review 过程
