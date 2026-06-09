@@ -19,7 +19,7 @@
 
 - redefine the pipeline order, four-axis state model, Gate IDs, Gate result enum, ID formats, registry namespace, or evidence schema;
 - write to `docs/goal/` during normal operation;
-- treat `.omx/state`, `.omx/logs`, `.config/goal/runtime`, or `.config/cache` as authoritative Goal rules;
+- treat OMX runtime state/log locations, `.config/goal/runtime`, or `.config/cache` as authoritative Goal rules;
 - introduce additional Gate IDs for CI checks, x.go checks, or human-approval checks;
 - mark work complete without evidence.
 
@@ -169,8 +169,7 @@ The following paths are runtime or external workflow state and must not be treat
 ```text
 .config/goal/runtime/       # private/local goalctl runtime, if present
 .config/cache/              # local cache/root used by existing validators
-.omx/state/                 # OMX runtime state
-.omx/logs/                  # OMX logs
+OMX runtime state/logs      # external workflow runtime, never Goal authority
 ```
 
 ### 4.3 Optional local configuration
@@ -259,6 +258,17 @@ Multiple readers are allowed. Stale lock recovery must be explicit and auditable
 ```
 
 Diagnostics must identify the path and authority reference when known. Diagnostics must not include secrets, credentials, or full private logs unless the caller explicitly requests verbose local output.
+
+### 6.3 Boundary scenarios and error handling
+
+`goalctl` must handle these edge cases without guessing or mutating authority:
+
+- partial checkout or wrong root: `doctor` may diagnose missing `docs/goal/` or `.config/goal/`, while other commands fail with `MISSING_CONTEXT`;
+- unknown authority vocabulary: new Gate IDs, state literals, registry namespaces, Matrix phases, or evidence statuses fail with `AUTHORITY_DRIFT`;
+- blocked release context: open `release_blocking` risks, missing G10 evidence, or G10 not `PASS` fail with `RELEASE_BLOCKED`;
+- concurrent writers: stale locks, dirty target files, or `--expected-current` mismatches fail with `WRITE_CONFLICT`;
+- incomplete evidence: missing logs, command provenance, changed-file list, risk notes, or required IDs fails with `VALIDATION_FAILED`;
+- human-approval boundary: missing required `H-CHK*` evidence fails with `HUMAN_APPROVAL_REQUIRED` and must not be converted into a Gate waiver.
 
 ## 7. Acceptance checklist for this spec
 
