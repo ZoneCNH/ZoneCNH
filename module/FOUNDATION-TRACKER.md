@@ -88,39 +88,39 @@
 
 > P0 完成后开始。每个模块独立，可并行。
 
-### kernel ⬜
+### kernel ✅ (PR #9 合入)
 
-- [ ] public API snapshot 文件（`contracts/public_api/kernel_v0.schema.json`）
-- [ ] primitive admission gate（新增包的 L0 审查脚本）
-- [ ] stdlib-only CI check
-- [ ] no-hidden-goroutine CI check
-- [ ] `retryx` 限界文档：只能做 backoff/retry marker
-- [ ] `obsx` 限界文档：只能给 L0 包自用极简 no-op interface
-- [ ] API freeze 声明（`contracts/public_api/errx.json` 等）
+- [x] public API snapshot 文件（`contracts/public_api/kernel_v0.schema.json`）
+- [x] primitive admission gate（`scripts/check-admission.sh` + `contracts/admitted_packages.txt`）
+- [x] stdlib-only CI check（`scripts/check-stdlib-only.sh`）
+- [x] no-hidden-goroutine CI check（`scripts/check-no-goroutine.sh`）
+- [x] `retryx` 限界文档（`pkg/retryx/BOUNDARY.md`）
+- [x] `obsx` 限界文档（`pkg/obsx/BOUNDARY.md`）
+- [x] API freeze 声明（`contracts/public_api/FREEZE.md`）
 
-### configx ⬜
+### configx ✅ (PR #1 + #2 合入)
 
-- [ ] `Provenance`：每个 key 记录 source、priority、override 链路
-- [ ] `EffectiveConfigHash`：配置指纹，可复现
-- [ ] `SanitizedManifest`：安全进入日志/health/CI artifact
-- [ ] `Schema`：机器可读配置契约
-- [ ] `StrictDecode`：未识别字段、重复字段、类型错误 fail-fast
-- [ ] `SecretPolicy`：统一 secret key 识别规则
-- [ ] `ValidationReport`：字段级证据
-- [ ] `NoGlobalStateGate`：防止引入进程级 config singleton
-- [ ] secret leak golden test
-- [ ] source precedence golden test
+- [x] `Provenance`：每个 key 记录 source、priority、override 链路
+- [x] `EffectiveConfigHash`：配置指纹，可复现
+- [x] `SanitizedManifest`：安全进入日志/health/CI artifact
+- [x] `Schema`：机器可读配置契约
+- [x] `StrictDecode`：未识别字段、重复字段、类型错误 fail-fast
+- [x] `SecretPolicy`：统一 secret key 识别规则
+- [x] `ValidationReport`：字段级证据
+- [x] `NoGlobalStateGate`：防止引入进程级 config singleton
+- [x] secret leak golden test
+- [x] source precedence golden test
 
-### observex ⬜
+### observex ✅ (PR #3 合入)
 
-- [ ] label policy checker（`make label-policy-check`）
-- [ ] redaction leak checker（`make redaction-leak-check`）
-- [ ] metrics contract（指标命名规范检查）
-- [ ] health JSON schema（health 输出契约）
-- [ ] memory recorder contract（测试用 recorder 行为规范）
-- [ ] `errx.Kind` → `error_kind` label 映射
-- [ ] 指标命名前缀 `foundationx_<module>_<operation>_<measure>`
-- [ ] label 允许/禁止列表实现
+- [x] label policy checker（`scripts/check-label-policy.sh`）
+- [x] redaction leak checker（`scripts/check-redaction-leak.sh`）
+- [x] metrics contract（`docs/metrics-contract.md`）
+- [x] health JSON schema（`contracts/health.schema.json`）
+- [x] memory recorder contract（`docs/memory-recorder-contract.md`）
+- [x] `errx.Kind` → `error_kind` label 映射（`pkg/observex/errx_kind.go`）
+- [x] 指标命名前缀 helper（`pkg/observex/metric_name.go`）
+- [x] label 允许/禁止列表实现（`pkg/observex/label_policy.go`）
 
 ### testkitx ⬜
 
@@ -133,22 +133,21 @@
 - [ ] 统一 fixture loader
 - [ ] 统一 contract hash helper
 
-### resiliencx ⬜
+### resiliencx ✅ (PR #15 + #16 合入)
 
-> 依赖 Issue 1（身份修复）完成
+> Issue 1（身份修复）已完成
 
-- [ ] `timeout.go`：PerAttemptTimeout + TotalTimeout
-- [ ] `retry.go`：max attempts、max elapsed、backoff、jitter
-- [ ] `backoff.go`：exponential + jitter
-- [ ] `circuit.go`：closed/open/half-open 状态机
-- [ ] `bulkhead.go`：并发隔离、队列上限、快速拒绝
-- [ ] `ratelimit.go`：QPS、burst、按 key 限流
-- [ ] `fallback.go`：显式降级函数
-- [ ] `classifier.go`：retryable / non-retryable / fatal
-- [ ] `idempotency.go`：非幂等操作默认禁止自动 retry
-- [ ] `event.go`：策略事件 sink
-- [ ] `noop.go`：未配置时安全运行
-- [ ] `options.go`：Option 模式配置
+- [x] `timeout.go`：PerAttemptTimeout + TotalTimeout
+- [x] `retry.go`：max attempts、max elapsed、backoff、jitter
+- [x] `circuit.go`：closed/open/half-open 状态机
+- [x] `bulkhead.go`：并发隔离、队列上限、快速拒绝
+- [x] `ratelimit.go`：QPS、burst、按 key 限流
+- [x] `fallback.go`：显式降级函数
+- [x] `classifier.go`：retryable / non-retryable / fatal（PR #16）
+- [x] `idempotency.go`：非幂等操作默认禁止自动 retry（PR #16）
+- [x] `event.go`：策略事件 sink（PR #16）
+- [x] `noop.go`：未配置时安全运行（PR #16）
+- [x] `options.go`：Option 模式配置（PR #16）
 - [ ] fake-clock 测试
 - [ ] circuit breaker 状态转换测试
 - [ ] bulkhead 并发安全测试
@@ -196,10 +195,10 @@
 
 | 优先级 | Issue 数 | 完成 | 进度 |
 |---|---|---|---|
-| P0 | 4 | 2 部分完成（ADR + DEPS yaml） | █░░░ |
-| P1 | 6 模块 | 0 | ░░░░ |
+| P0 | 4 | 4 | ████ |
+| P1 | 6 模块 | 4（kernel/configx/observex/resiliencx） | ███░ |
 | P2 | 1 | 0 | ░░░░ |
-| **总计** | **11** | **2 部分** | **█░░░** |
+| **总计** | **11** | **8** | **████** |
 
 ---
 
