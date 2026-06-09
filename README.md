@@ -14,6 +14,8 @@ Go 🐹 (主要) · Rust 🦀 (底层) · Python 🐍 (脚本/数据) · TypeScr
 >
 > 📊 项目状态监控、健康度与风险追踪 → **[STATUS.md](./STATUS.md)**
 >
+> 🗺️ 六阶段交付路线图、任务编号与验收标准 → **[ROADMAP.md](./ROADMAP.md)**
+>
 > 🧱 Foundation v1 规格、依赖矩阵、执行跟踪与 ADR → **[module/](./module/)**
 >
 > 📋 16 个基座模块 + x.go 组合根规格 → **[module/](./module/)**

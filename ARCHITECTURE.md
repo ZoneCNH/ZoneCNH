@@ -9,6 +9,8 @@
 依赖、业务流和运行时组装刻意分开呈现：业务数据从数据域走向执行域，代码依赖不反向穿透；`x.go` 是组合根（Composition Root），不是业务链路终点。
 
 > 🔄 三引擎数据流全景（market_engine→S / macro_engine→M / regime_engine→DecisionCard）、M×S 矩阵、契约固化清单 → **[DATAFLOW.md](./DATAFLOW.md)**
+>
+> 🗺️ 六阶段交付路线图、任务编号与验收标准 → **[ROADMAP.md](./ROADMAP.md)**
 
 ### 代码依赖拓扑
 
@@ -106,6 +108,7 @@ Foundation 6 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中�
 | [`module/FOUNDATION-DEPS.yaml`](./module/FOUNDATION-DEPS.yaml) | 机器可读依赖矩阵，CI 可消费 |
 | [`module/ADR-foundationx-exit.md`](./module/ADR-foundationx-exit.md) | ADR：foundationx 兼容退出计划 |
 | [`module/FOUNDATION-TRACKER.md`](./module/FOUNDATION-TRACKER.md) | 执行跟踪器 — P0/P1/P2 Issue 检查清单 |
+| [`ROADMAP.md`](./ROADMAP.md) | 六阶段交付路线图 — 任务编号、依赖链、验收标准 |
 | [`CONSTITUTION.md`](./CONSTITUTION.md) | 系统宪法 — FoundationX 全系统最高治理文件，覆盖模块实现与交付管线 |
 
 16 个基座模块的独立完整规格，加上 x.go 组合根规格（共 17 份，均为 23 节结构：行为规格 WHEN/THEN、接口契约、业务规则、错误处理、边界场景、验收标准、目录结构、CI Gate、测试矩阵、性能预算、可观测输出、发布 DoD），按架构层级组织。完整索引见 [`module/README.md`](./module/README.md)。16 个基座模块与 x.go 均已完成 23 节结构升级。
