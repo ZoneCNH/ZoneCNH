@@ -41,6 +41,14 @@ warn()  { echo -e "${YELLOW}WARN${NC}:  $1"; ((WARNINGS += 1)); }
 ok()    { echo -e "${GREEN}OK${NC}:    $1"; }
 mark_rule() { RULE_SEEN["$1:$2"]=1; }
 finding() { ((RULE_FINDINGS["$1"] += 1)); }
+file_has() { grep -qi -- "$1" "$f"; }
+file_has_ext() { grep -qE -- "$1" "$f"; }
+file_has_literal() { grep -qF -- "$1" "$f"; }
+file_count_ext() {
+    local count
+    count=$(grep -cE -- "$1" "$f" || true)
+    printf '%s\n' "${count:-0}"
+}
 
 echo "=========================================="
 echo "  Goal 体系 Lint 检查"
@@ -65,9 +73,9 @@ for f in $FILES; do
 
         # G-LINT-001: Goal 必须有衡量指标
         mark_rule "G" "G-LINT-001"
-        if grep -qi "goal" "$f"; then
-            if ! grep -qE "[0-9]+(%|秒|分钟|小时|ms|个|次|条|行)" "$f"; then
-                if grep -qi "成功\|完成\|达到\|目标" "$f"; then
+        if file_has "goal"; then
+            if ! file_has_ext "[0-9]+(%|秒|分钟|小时|ms|个|次|条|行)"; then
+                if file_has "成功\|完成\|达到\|目标"; then
                     warn "[$BASENAME] G-LINT-001: Goal 描述成功但缺少量化指标"
                     finding "G"
                 fi
@@ -78,8 +86,9 @@ for f in $FILES; do
         mark_rule "G" "G-LINT-002"
         FUZZY_WORDS=("优化" "提升" "改善" "完善" "加强" "尽量" "尽可能" "适时" "酌情")
         for word in "${FUZZY_WORDS[@]}"; do
-            if grep -q "$word" "$f"; then
-                if ! grep -A1 "$word" "$f" | grep -qE "[0-9]+"; then
+            if file_has_literal "$word"; then
+                WORD_CONTEXT=$(grep -A1 -- "$word" "$f" || true)
+                if ! grep -qE "[0-9]+" <<< "$WORD_CONTEXT"; then
                     warn "[$BASENAME] G-LINT-002: 发现模糊词「$word」且无量化说明"
                     finding "G"
                 fi
@@ -90,8 +99,9 @@ for f in $FILES; do
         mark_rule "G" "G-LINT-003"
         IMPL_WORDS=("数据库" "Redis" "PostgreSQL" "API" "接口" "前端" "后端" "微服务" "SDK")
         for word in "${IMPL_WORDS[@]}"; do
-            if grep -q "$word" "$f"; then
-                if grep -B2 "$word" "$f" | grep -qi "goal"; then
+            if file_has_literal "$word"; then
+                WORD_CONTEXT=$(grep -B2 -- "$word" "$f" || true)
+                if grep -qi "goal" <<< "$WORD_CONTEXT"; then
                     warn "[$BASENAME] G-LINT-003: Goal 包含实现细节「$word」，应改为结果描述"
                     finding "G"
                 fi
@@ -104,22 +114,22 @@ for f in $FILES; do
 
         # S-LINT-001: Spec 必须有 Acceptance Criteria
         mark_rule "S" "S-LINT-001"
-        if ! grep -qi "acceptance.criteria\|验收标准\|AC-" "$f"; then
+        if ! file_has "acceptance.criteria\|验收标准\|AC-"; then
             error "[$BASENAME] S-LINT-001: Spec 缺少 Acceptance Criteria"
             finding "S"
         fi
 
         # S-LINT-002: Spec 必须有边界场景
         mark_rule "S" "S-LINT-002"
-        if ! grep -qi "edge.case\|边界\|异常\|错误处理\|error.handling" "$f"; then
+        if ! file_has "edge.case\|边界\|异常\|错误处理\|error.handling"; then
             warn "[$BASENAME] S-LINT-002: Spec 缺少边界场景或错误处理"
             finding "S"
         fi
 
         # S-LINT-003: Requirement 必须可测试（兼容旧 FR-*，优先使用 REQ-SPEC-*）
         mark_rule "S" "S-LINT-003"
-        REQ_COUNT=$(grep -cE "REQ-SPEC-|FR-" "$f" || true)
-        AC_COUNT=$(grep -cE "AC-|test_|测试" "$f" || true)
+        REQ_COUNT=$(file_count_ext "REQ-SPEC-|FR-")
+        AC_COUNT=$(file_count_ext "AC-|test_|测试")
         if [ "$REQ_COUNT" -gt 0 ] && [ "$AC_COUNT" -eq 0 ]; then
             error "[$BASENAME] S-LINT-003: 有 $REQ_COUNT 个 Requirement 但无测试覆盖"
             finding "S"
@@ -245,24 +255,24 @@ PY
 
         # P-LINT-001: Prompt 必须有 Constraints
         mark_rule "P" "P-LINT-001"
-        if ! grep -qi "constraint\|限制\|禁止\|do.not" "$f"; then
+        if ! file_has "constraint\|限制\|禁止\|do.not"; then
             warn "[$BASENAME] P-LINT-001: Prompt 缺少 Constraints/限制条件"
             finding "P"
         fi
 
         # P-LINT-002: Prompt 必须有明确输出格式
         mark_rule "P" "P-LINT-002"
-        if ! grep -qi "output\|输出\|格式\|format" "$f"; then
+        if ! file_has "output\|输出\|格式\|format"; then
             warn "[$BASENAME] P-LINT-002: Prompt 缺少输出格式说明"
             finding "P"
         fi
     fi
 
     # === 通用检查 ===
-    if grep -qE "[0-9]{5,}.*@(163|qq|gmail)\.(com|cn)" "$f"; then
+    if file_has_ext "[0-9]{5,}.*@(163|qq|gmail)\.(com|cn)"; then
         error "[$BASENAME] 安全: 发现疑似真实邮箱地址"
     fi
-    if grep -qE "api[_-]?key.*=.*[A-Za-z0-9]{20,}" "$f"; then
+    if file_has_ext "api[_-]?key.*=.*[A-Za-z0-9]{20,}"; then
         error "[$BASENAME] 安全: 发现疑似 API Key"
     fi
 
