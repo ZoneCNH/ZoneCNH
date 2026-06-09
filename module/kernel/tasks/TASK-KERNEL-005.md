@@ -34,6 +34,13 @@ status: pending
 
 ---
 
+## Files Likely to Change
+
+- `shutdown.go` — 新建
+- `internal/signal/signal.go` — 新建
+- `shutdown_test.go` — 新建
+- `internal/signal/signal_test.go` — 新建
+
 ## Requirements Covered
 
 | Requirement | Description | Acceptance Criteria |

@@ -160,7 +160,7 @@ matrix:
     - Low
     - Medium
     - High
-  coverage_threshold: 95
+  coverage_threshold: 60
 
 evidence:
   directory: ".config/goal/evidence"

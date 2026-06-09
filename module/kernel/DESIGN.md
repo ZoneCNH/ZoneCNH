@@ -186,3 +186,21 @@ kernel (L0)
 - 不包含业务语义（Non-goal）
 - 不实现日志/指标/追踪的具体实现（Non-goal）
 - 公开 API 1.x 内向后兼容
+
+## 9. 可扩展性与演进
+
+### 9.1 已知扩展路径
+
+| 扩展方向 | 当前设计支撑 | 演进方式 |
+|----------|-------------|----------|
+| 多 App 实例 | App 通过 `New()` 创建，无全局单例 | 直接创建多个独立 App 实例 |
+| 自定义 GraphView 策略 | GraphView 为接口，内部实现可替换 | 未来可注入自定义拓扑排序算法 |
+| 模块热注册 | 当前 Run 后禁止 Register（BR-004） | 未来可增加 `RegisterLazy()` 支持延迟注册 |
+| 停机钩子 | Shutdown 仅调用 Stop | 未来可增加 `OnShutdown(ctx)` 回调链 |
+| 健康检查策略 | HealthStatus 为固定结构 | 未来可扩展为 `HealthChecker` 接口支持自定义检查 |
+
+### 9.2 设计不阻塞的演进方向
+
+- Deps 结构体通过接口注入，新增能力只需扩展 Deps 字段，不改 Module 接口
+- errors.go 使用 `errors.New` 裸变量，未来可升级为结构化错误码体系
+- Option 模式配置（TASK-KERNEL-008）天然支持向后兼容扩展

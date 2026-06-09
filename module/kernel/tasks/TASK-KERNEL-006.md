@@ -29,6 +29,11 @@ status: pending
 
 ---
 
+## Files Likely to Change
+
+- `health.go` — 新建
+- `health_test.go` — 新建
+
 ## Requirements Covered
 
 | Requirement | Description | Acceptance Criteria |

@@ -30,6 +30,12 @@ status: pending
 
 ---
 
+## Files Likely to Change
+
+- `options.go` — 新建
+- `kernel.go` — 修改（App 增加 cfg 字段）
+- `options_test.go` — 新建
+
 ## Requirements Covered
 
 | Requirement | Description | Acceptance Criteria |

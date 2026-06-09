@@ -30,6 +30,10 @@ status: pending
 
 ---
 
+## Files Likely to Change
+
+- `kernel.go` — 新建（接口定义）
+
 ## Requirements Covered
 
 | Requirement | Description | Acceptance Criteria |

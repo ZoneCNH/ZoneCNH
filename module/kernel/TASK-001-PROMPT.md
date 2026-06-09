@@ -97,12 +97,12 @@ var (
 
 ## 验收标准
 
-| AC | 验证命令 | 预期结果 |
-|----|----------|----------|
-| AC-009 | `go list -deps ./... \| grep -v "^std" \| grep -v "^github.com/ZoneCNH/kernel$"` | 无输出 |
-| AC-NEW-01 | `go build ./...` | 编译通过 |
-| AC-NEW-02 | `go vet ./...` | 无警告 |
-| AC-NEW-03 | 检查 errors.go 包含 10 个 `Err` 变量 | 全部首字母大写 |
+| AC | 关联 FR/TC | 验证命令 | 预期结果 |
+|----|-----------|----------|----------|
+| AC-008 | FR-001, BR-008, BR-009 | `go list -deps ./... \| grep -v "^std" \| grep -v "^github.com/ZoneCNH/kernel$"` | 无输出 |
+| AC-NEW-01 | — | `go build ./...` | 编译通过 |
+| AC-NEW-02 | — | `go vet ./...` | 无警告 |
+| AC-NEW-03 | — | 检查 errors.go 包含 10 个 `Err` 变量 | 全部首字母大写 |
 
 ## 禁止事项
 

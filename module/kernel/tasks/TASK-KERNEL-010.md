@@ -43,6 +43,12 @@ status: pending
 
 ---
 
+## Files Likely to Change
+
+- `README.md` — 新建
+- `CHANGELOG.md` — 新建
+- `example_test.go` — 新建
+
 ## Requirements Covered
 
 | Requirement | Description | Acceptance Criteria |

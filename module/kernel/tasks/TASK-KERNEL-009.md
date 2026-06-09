@@ -37,6 +37,11 @@ status: pending
 
 ---
 
+## Files Likely to Change
+
+- `integration_test.go` — 新建
+- `benchmark_test.go` — 新建
+
 ## Requirements Covered
 
 | Requirement | Description | Acceptance Criteria |
