@@ -122,16 +122,16 @@
 - [x] 指标命名前缀 helper（`pkg/observex/metric_name.go`）
 - [x] label 允许/禁止列表实现（`pkg/observex/label_policy.go`）
 
-### testkitx ⬜
+### testkitx ✅ (PR #1 合入)
 
-- [ ] production import boundary scanner 稳定 API
-- [ ] fake clock 确定性示例
-- [ ] golden update guard（`TESTKITX_UPDATE_GOLDEN=1` 控制）
-- [ ] release manifest fixture
-- [ ] goroutine leak checker 加固
-- [ ] 统一 assert API（`assertx` 包）
-- [ ] 统一 fixture loader
-- [ ] 统一 contract hash helper
+- [x] production import boundary scanner 稳定 API（`pkg/testkitx/boundarytest/`）
+- [x] fake clock 确定性示例（`examples/fake_clock_test.go`）
+- [x] golden update guard（`pkg/testkitx/golden/guard.go`）
+- [x] release manifest fixture（`testdata/fixtures/release_manifest.json`）
+- [x] goroutine leak checker 加固（`pkg/testkitx/leaktest/leak_checker.go`）
+- [x] 统一 assert API（`pkg/testkitx/assertx/assert_more.go`）
+- [x] 统一 fixture loader（`pkg/testkitx/fixture/loader.go`）
+- [x] 统一 contract hash helper（`pkg/testkitx/contract/hash.go`）
 
 ### resiliencx ✅ (PR #15 + #16 合入)
 
@@ -153,17 +153,17 @@
 - [ ] bulkhead 并发安全测试
 - [ ] 策略链集成测试
 
-### schedulex ⬜
+### schedulex ✅ (PR #3 合入)
 
-- [ ] DST/timezone golden test
-- [ ] misfire contract test（skip/run_once/catch_up）
-- [ ] overlap contract test（skip/queue_one/allow）
-- [ ] lock interface contract（`Locker` 接口行为规范）
-- [ ] event sink schema（`JobEvent` 结构规范）
-- [ ] shutdown leak test
-- [ ] shutdown race test
-- [ ] trigger determinism test（相同 clock → 相同 next time）
-- [ ] 和 resiliencx 的集成示例（job wrapper pattern）
+- [x] DST/timezone golden test（`testdata/golden/dst_transitions.json`，8 场景）
+- [x] misfire contract test（skip/run_once/catch_up）
+- [x] overlap contract test（skip/queue_one/allow）
+- [x] lock interface contract（`docs/lock-contract.md`）
+- [x] event sink schema（`docs/job-event-schema.md`）
+- [x] shutdown leak test（100 job + goroutine 对比）
+- [x] shutdown race test（并发 Stop/触发/AddJob）
+- [x] trigger determinism test（100 次一致性 + DST golden）
+- [x] resiliencx 集成示例（`examples/resilient_job/main.go`）
 
 ---
 
@@ -196,9 +196,9 @@
 | 优先级 | Issue 数 | 完成 | 进度 |
 |---|---|---|---|
 | P0 | 4 | 4 | ████ |
-| P1 | 6 模块 | 4（kernel/configx/observex/resiliencx） | ███░ |
+| P1 | 6 模块 | 6（全部完成） | ██████ |
 | P2 | 1 | 0 | ░░░░ |
-| **总计** | **11** | **8** | **████** |
+| **总计** | **11** | **10** | **█████** |
 
 ---
 
