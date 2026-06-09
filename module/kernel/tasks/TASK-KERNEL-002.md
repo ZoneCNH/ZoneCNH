@@ -34,6 +34,13 @@ status: pending
 
 ---
 
+## Files Likely to Change
+
+- `graph.go` — 新建
+- `internal/dag/dag.go` — 新建
+- `graph_test.go` — 新建
+- `internal/dag/dag_test.go` — 新建
+
 ## Requirements Covered
 
 | Requirement | Description | Acceptance Criteria |

@@ -29,6 +29,12 @@ status: pending
 
 ---
 
+## Files Likely to Change
+
+- `go.mod` — 新建
+- `doc.go` — 新建
+- `errors.go` — 新建
+
 ## Requirements Covered
 
 | Requirement | Description | Acceptance Criteria |

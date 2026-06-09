@@ -34,6 +34,11 @@ status: pending
 
 ---
 
+## Files Likely to Change
+
+- `lifecycle.go` — 新建
+- `lifecycle_test.go` — 新建
+
 ## Requirements Covered
 
 | Requirement | Description | Acceptance Criteria |

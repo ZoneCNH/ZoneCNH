@@ -29,6 +29,11 @@ status: pending
 
 ---
 
+## Files Likely to Change
+
+- `registry.go` — 新建
+- `registry_test.go` — 新建
+
 ## Requirements Covered
 
 | Requirement | Description | Acceptance Criteria |

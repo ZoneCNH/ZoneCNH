@@ -10,8 +10,8 @@ risks:
     severity: Medium
     probability: Medium
     impact: Medium
-    status: Open
-    release_blocking: true
+    status: Closed
+    release_blocking: false
     owner: goal-matrix
     created_at: "2026-06-09"
     updated_at: "2026-06-09"
@@ -39,8 +39,8 @@ risks:
     severity: Medium
     probability: Medium
     impact: Medium
-    status: Open
-    release_blocking: true
+    status: Closed
+    release_blocking: false
     owner: goal-evidence
     created_at: "2026-06-09"
     updated_at: "2026-06-09"
@@ -67,8 +67,8 @@ risks:
     severity: Medium
     probability: Medium
     impact: Medium
-    status: Open
-    release_blocking: true
+    status: Closed
+    release_blocking: false
     owner: goal-evidence
     created_at: "2026-06-09"
     updated_at: "2026-06-09"

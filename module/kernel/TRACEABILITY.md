@@ -74,6 +74,11 @@
 | AC | 8 | 8 | None |
 | TC | 18 | 18 | None |
 
+## 编号说明
+
+- **AC-001 ~ AC-008**：Spec 级验收标准，定义在本文件中，是追溯矩阵的权威 AC 编号。
+- **AC-NEW-xx**：Task 级 DoD（Definition of Done），定义在各 `tasks/TASK-KERNEL-*.md` 中，是任务粒度的验收检查项。AC-NEW 不替代 AC-001~008，而是对其的细化展开。例如 AC-NEW-21~AC-NEW-27 是 AC-002 的 Task 级展开。
+
 ## Traceability Rules Verification
 
 - [x] 每个 FR 有 >=1 AC

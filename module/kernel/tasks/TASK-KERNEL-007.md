@@ -33,6 +33,13 @@ status: pending
 
 ---
 
+## Files Likely to Change
+
+- `lifecycle.go` — 修改（Init/Start 增加 panic catch）
+- `shutdown.go` — 修改（Stop 增加 panic catch）
+- `lifecycle_test.go` — 新建
+- `shutdown_test.go` — 新建
+
 ## Requirements Covered
 
 | Requirement | Description | Acceptance Criteria |
