@@ -43,6 +43,12 @@ status: pending
 | §11 | Config Schema：startup_timeout, shutdown_timeout, health_check_interval | Option 函数覆盖所有配置项 |
 | §9.1 | App 接口的构造函数 | New() 支持 Option 模式 |
 
+## Non-scope
+
+- 不实现启动/停止逻辑（→ TASK-KERNEL-004, 005）
+- 不实现依赖图（→ TASK-KERNEL-002）
+- 不实现注册表（→ TASK-KERNEL-003）
+
 ## Test Plan
 
 | Test Case | Type | Description |

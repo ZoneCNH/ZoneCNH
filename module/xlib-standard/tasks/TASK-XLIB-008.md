@@ -1,11 +1,11 @@
-# TASK-XLIB-003D
+# TASK-XLIB-008
 
 > PR-4d：API 模板 + examples + testkit — 公共 API 模板和辅助包
 
 ---
 
 ```yaml
-task_id: TASK-XLIB-003D
+task_id: TASK-XLIB-008
 module: xlib-standard
 scope: "实现公共 API 模板、examples/basic、testkit，覆盖 FR-007 和 FR-008"
 spec_ref:
@@ -20,13 +20,31 @@ acceptance_criteria:
   - "AC-020: 模板 go vet 零警告"
   - "AC-021: 模板 go test 全部通过"
 depends_on:
-  - "TASK-XLIB-003C"
+  - "TASK-XLIB-007"
 estimated_effort: "0.5h"
 priority: P1
 status: pending
 ```
 
 ---
+
+## Scope
+
+- 实现 `examples/basic/main.go`。
+- 实现 `testkit/metrics.go` 与 `testkit/assertions.go`。
+- 验证公共 API 模板可 build、vet、test 和 race。
+
+## Non-scope
+
+- 不新增复杂示例、二级模板或业务专用 helper。
+- 不修改标准错误、配置、health 或 metrics 合约。
+- 不引入外部测试框架。
+
+## Acceptance
+
+- `GOWORK=off go build ./...` 通过。
+- `GOWORK=off go vet ./...` 零警告。
+- `GOWORK=off go test ./...` 与 `GOWORK=off go test -race ./...` 通过。
 
 ## Requirements Covered
 

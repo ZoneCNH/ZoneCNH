@@ -26,8 +26,32 @@ acceptance_criteria:
   - "AC-NEW-60: stdlib-only 检查通过"
   - "AC-NEW-61: 所有 Functional Requirements 有对应测试"
 depends_on:
-  - "TASK-KERNEL-000"
-  - "TASK-KERNEL-001"
+  - "TASK-KERNEL-009"
+estimated_effort: "2h"
+priority: P1
+status: pending
+```
+
+---
+
+## Files Likely to Change
+
+- `README.md` — 新建
+- `CHANGELOG.md` — 新建
+- `example_test.go` — 新建
+
+## Requirements Covered
+
+| Requirement | Description | Acceptance Criteria |
+|---|---|---|
+| §22 | Release DoD | 所有 DoD 项通过 |
+| §9.2 | 用法示例 | example_test.go 可运行 |
+
+## Non-scope
+
+- 不实现业务逻辑（→ TASK-KERNEL-002~008）
+- 不实现集成测试（→ TASK-KERNEL-009）
+- 不修改已有代码
   - "TASK-KERNEL-002"
   - "TASK-KERNEL-003"
   - "TASK-KERNEL-004"

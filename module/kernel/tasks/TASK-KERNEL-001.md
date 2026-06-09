@@ -15,7 +15,7 @@ spec_ref:
 files:
   - "kernel.go"
 acceptance_criteria:
-  - "AC-009: go list -deps ./... 无非 stdlib 依赖"
+  - "AC-008: go list -deps ./... 无非 stdlib 依赖"
   - "AC-NEW-04: Module 接口包含 Name()、Init()、Start()、Stop()、Health() 5 个方法"
   - "AC-NEW-05: Deps 结构体包含 Config、Logger、Meter、Tracer、Resilient、Scheduler 6 个字段"
   - "AC-NEW-06: GraphView 接口包含 Nodes()、Edges()、TopologicalOrder() 3 个方法"
@@ -41,6 +41,12 @@ status: pending
 | §9.1 | Module / App / Lifecycle 接口定义 | 所有接口和结构体按 spec 定义 |
 | §10.2 | 模块状态枚举 | 6 个状态值：Registered, Starting, Running, Stopping, Stopped, Error |
 | BR-009 | Deps 中的接口类型由消费方组装时注入 | kernel 包内定义所有 Deps 字段类型 |
+
+## Non-scope
+
+- 不实现具体模块（→ TASK-KERNEL-003~008）
+- 不创建 go.mod（→ TASK-KERNEL-000）
+- 不实现依赖图算法（→ TASK-KERNEL-002）
 
 ## Test Plan
 

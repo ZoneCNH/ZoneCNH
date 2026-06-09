@@ -24,13 +24,31 @@ acceptance_criteria:
   - "AC-005: SEMANTIC-VERSIONING.md 包含 ErrorKind/Metrics/Generator 参数的兼容性矩阵"
 depends_on:
   - "TASK-XLIB-002"
-  - "TASK-XLIB-003"
+  - "TASK-XLIB-008"
 estimated_effort: "1h"
 priority: P0
 status: pending
 ```
 
 ---
+
+## Scope
+
+- 实现 release manifest 生成和 checksum 输出。
+- 更新 `.gitignore`，忽略生成的 release manifest 文件。
+- 编写 `SEMANTIC-VERSIONING.md` 的兼容矩阵。
+
+## Non-scope
+
+- 不发布 tag、不推送远端、不执行生产发布。
+- 不把 governance score、agent review、docker runtime 或 downstream matrix 写入 manifest。
+- 不改变前序标准库 API。
+
+## Acceptance
+
+- `GOWORK=off make release-check` 生成 `release/manifest/latest.json` 与 `.sha256`。
+- manifest 包含标准字段且不包含治理运行时字段。
+- `SEMANTIC-VERSIONING.md` 覆盖 ErrorKind、Metrics 与 Generator 参数兼容性。
 
 ## Requirements Covered
 

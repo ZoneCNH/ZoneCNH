@@ -40,7 +40,7 @@
 | AC-005 | ModuleHealth 幂等无副作用 | TC-009 | TASK-KERNEL-006 | Pending |
 | AC-006 | DependencyGraph 返回正确 GraphView（节点、边、拓扑序） | TC-010, TC-014 | TASK-KERNEL-002 | Pending |
 | AC-007 | Start/Stop panic 被捕获转换为错误 | TC-006, TC-016, TC-017 | TASK-KERNEL-007 | Pending |
-| AC-008 | kernel 包内无 L1 包 import（CI stdlib-only gate） | CI gate | TASK-KERNEL-000, TASK-KERNEL-001 | Pending |
+| AC-008 | kernel 包内无 L1 包 import（CI stdlib-only gate） | TC-019 | TASK-KERNEL-000, TASK-KERNEL-001 | Pending |
 
 ## Test Cases
 

@@ -25,19 +25,19 @@ TASK-KERNEL-000 (骨架)
 
 ## 实现顺序
 
-| Phase | Task | 文件 | 依赖 | 可并行 | Effort |
-|-------|------|------|------|--------|--------|
-| 1 | TASK-KERNEL-000 | go.mod, doc.go, errors.go | — | — | 0.5h |
-| 2 | TASK-KERNEL-001 | kernel.go, interfaces.go | 000 | — | 1h |
-| 3a | TASK-KERNEL-002 | graph.go, graph_test.go | 001 | ✅ 与 003, 008 并行 | 3h |
-| 3b | TASK-KERNEL-003 | registry.go, registry_test.go | 001 | ✅ 与 002, 008 并行 | 2h |
-| 3c | TASK-KERNEL-008 | options.go, kernel.go, options_test.go | 001 | ✅ 与 002, 003 并行 | 1h |
-| 4 | TASK-KERNEL-004 | lifecycle.go, lifecycle_test.go | 002, 003 | — | 4h |
-| 5 | TASK-KERNEL-005 | shutdown.go, shutdown_test.go | 004 | — | 3h |
-| 6 | TASK-KERNEL-006 | health.go, health_test.go | 001, 003 | — | 1.5h |
-| 7 | TASK-KERNEL-007 | lifecycle.go, shutdown.go (修改) | 004, 005 | — | 2h |
-| 8 | TASK-KERNEL-009 | integration_test.go, benchmark_test.go | 004-008 | — | 3h |
-| 9 | TASK-KERNEL-010 | README.md, example_test.go | 009 | — | 2h |
+| Phase | Task | 文件 | 依赖 | 可并行 | Effort | 验证命令 |
+|-------|------|------|------|--------|--------|----------|
+| 1 | TASK-KERNEL-000 | go.mod, doc.go, errors.go | — | — | 0.5h | `go build ./... && go list -deps ./... \| grep -v "^std" && go vet ./...` |
+| 2 | TASK-KERNEL-001 | kernel.go, interfaces.go | 000 | — | 1h | `go build ./... && go vet ./...` |
+| 3a | TASK-KERNEL-002 | graph.go, graph_test.go | 001 | ✅ 与 003, 008 并行 | 3h | `go test -race -run TestGraph -count=1 ./...` |
+| 3b | TASK-KERNEL-003 | registry.go, registry_test.go | 001 | ✅ 与 002, 008 并行 | 2h | `go test -race -run TestRegistry -count=1 ./...` |
+| 3c | TASK-KERNEL-008 | options.go, kernel.go, options_test.go | 001 | ✅ 与 002, 003 并行 | 1h | `go test -race -run TestOption -count=1 ./...` |
+| 4 | TASK-KERNEL-004 | lifecycle.go, lifecycle_test.go | 002, 003 | — | 4h | `go test -race -run TestLifecycle -count=1 ./...` |
+| 5 | TASK-KERNEL-005 | shutdown.go, shutdown_test.go | 004 | — | 3h | `go test -race -run TestShutdown -count=1 ./...` |
+| 6 | TASK-KERNEL-006 | health.go, health_test.go | 001, 003 | — | 1.5h | `go test -race -run TestHealth -count=1 ./...` |
+| 7 | TASK-KERNEL-007 | lifecycle.go, shutdown.go (修改) | 004, 005 | — | 2h | `go test -race -run TestPanic -count=1 ./...` |
+| 8 | TASK-KERNEL-009 | integration_test.go, benchmark_test.go | 004-008 | — | 3h | `go test -tags=integration -race ./... && go test -bench=. -benchmem -count=3 ./...` |
+| 9 | TASK-KERNEL-010 | README.md, example_test.go | 009 | — | 2h | `go test -race ./... && go test -coverprofile=c.out ./... && go tool cover -func=c.out` |
 
 ---
 

@@ -17,7 +17,7 @@ files:
   - "doc.go"
   - "errors.go"
 acceptance_criteria:
-  - "AC-009: go list -deps ./... 无非 stdlib 依赖"
+  - "AC-008: go list -deps ./... 无非 stdlib 依赖"
   - "AC-NEW-01: 所有 10 个错误变量可被外部包引用（首字母大写）"
   - "AC-NEW-02: go build ./... 编译通过"
   - "AC-NEW-03: go vet ./... 无警告"
@@ -42,6 +42,12 @@ status: pending
 | §10.1 | 公共错误变量定义 | 所有 10 个错误变量均为 `errors.New` 创建 |
 | §15.1 | go.mod stdlib-only | `go list -deps` 无非 stdlib 依赖 |
 | BR-008 | kernel 不 import 任何非 stdlib 包 | CI stdlib-only gate 通过 |
+
+## Non-scope
+
+- 不定义接口（→ TASK-KERNEL-001）
+- 不实现依赖图（→ TASK-KERNEL-002）
+- 不实现注册表（→ TASK-KERNEL-003）
 
 ## Test Plan
 

@@ -47,6 +47,12 @@ status: pending
 | BR-002 | 启动顺序必须是拓扑序 | 按拓扑序调用 Init → Start |
 | BR-004 | Init 失败的模块不能进入 Start | Init 返回错误后不调用 Start |
 
+## Non-scope
+
+- 不实现停机逻辑（→ TASK-KERNEL-005）
+- 不实现 panic 隔离（→ TASK-KERNEL-007）
+- 不实现健康检查（→ TASK-KERNEL-006）
+
 ## Test Plan
 
 | Test Case | Type | Description |

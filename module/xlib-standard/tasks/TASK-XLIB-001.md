@@ -38,6 +38,24 @@ status: pending
 
 ---
 
+## Scope
+
+- 重写 `README.md`、`INDEX.md` 和 `docs/*.md`，只保留 xlib-standard 的标准定义、模板、生成库和最小 gate 说明。
+- 将 `docs/standard.md` 对齐为 12 章结构。
+- 将 `docs/generation.md` 限定为 4 个生成参数。
+
+## Non-scope
+
+- 不恢复 Goal Runtime、Evidence Runtime、Agent Runtime 或 Debt Governance 文档。
+- 不新增 docs 目录外的产品说明页。
+- 不改变标准库实现代码。
+
+## Acceptance
+
+- `README.md` 只描述 4 项职责，且不出现运行时治理词汇。
+- `docs/` 目录只有 9 个 Markdown 文件。
+- `docs/generation.md` 不出现 `enable-governance`。
+
 ## Requirements Covered
 
 | Requirement | Description | Acceptance Criteria |
