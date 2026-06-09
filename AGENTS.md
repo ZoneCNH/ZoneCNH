@@ -45,6 +45,23 @@
 
 不要提交凭证、交易所 API key、账户 ID、私有端点或实盘交易配置。本仓库只应包含公开架构说明和项目元数据。
 
+## 分支纪律
+
+> 详见 `CONSTITUTION.md` 第零条。本节约定优先于以下所有管线规则。
+
+- **禁止**在 `main` 分支上直接编辑文件或提交变更。
+- **所有分支必须从 `main` HEAD 创建**。创建前必须先 `git fetch origin && git rebase origin/main` 确保本地 main 为最新。禁止从其他 feature branch 或旧 commit 拉取新分支。
+- 所有开发工作必须通过 `git worktree` 或 feature branch 进行。
+- 工作完成后通过 PR 或 merge 合入 main，随后清理 worktree。
+
+Agent 创建分支前的检查清单：
+
+1. 确认当前不在 main 分支
+2. 执行 `git fetch origin && git rebase origin/main`
+3. 确认 main HEAD 与 `origin/main` 一致
+4. 从 main HEAD 创建新分支或 worktree
+5. 记录创建来源 commit SHA
+
 ## Spec 开发管线
 
 Spec 编写完成后，不是直接写代码，而是按管线推进：Spec → Review → Approve → Matrix → Tasks → Plan → Prompt → Code → 验收 → Ship。详见 `docs/governance/DEVELOPMENT-WORKFLOW.md`。

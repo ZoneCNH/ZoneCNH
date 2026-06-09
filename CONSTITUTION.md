@@ -38,7 +38,7 @@
 
 所有 AI 代理（Claude、Codex、Copilot 及任何未来代理）在本仓库工作时：
 
-1. **必须**在开始编辑前确认当前不在 main 分支
+1. **必须**在开始**编辑文件**前确认当前不在 main 分支（`git checkout main` 等 git 操作不受此约束）
 2. **必须**使用 worktree 隔离开发任务
 3. **禁止**在 main 上直接 commit
 4. **发现** main 上有未提交变更时，**必须**停止并警告人类维护者
@@ -49,7 +49,7 @@
 
 - `git merge` / `git rebase` 合并已完成的分支
 - `git pull` 同步远程更新
-- 紧急 hotfix（需事后补充 worktree 流程记录）
+- 紧急 hotfix（需事后补充 worktree 流程记录）。hotfix 分支**同样必须从 `main` HEAD 创建**，不得从其他 feature branch 拉取
 
 ---
 
