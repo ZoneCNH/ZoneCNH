@@ -71,7 +71,7 @@ gates:
     gate_name: Goal Gate
     type: Semantic
     blocking: true
-    status: PASS
+    status: FAIL
     checked_at: "2026-06-09T08:05:00Z"
     checked_by: goal-reviewer
     goal_id: GOAL-20260608-001
@@ -96,7 +96,7 @@ gates:
     gate_name: Spec Gate
     type: Semantic
     blocking: true
-    status: PASS_WITH_RISK
+    status: FAIL
     checked_at: "2026-06-09T08:10:00Z"
     checked_by: goal-reviewer
     goal_id: GOAL-20260608-001
@@ -132,7 +132,7 @@ gates:
     gate_name: Design Gate
     type: Semantic
     blocking: true
-    status: PASS
+    status: FAIL
     checked_at: "2026-06-09T08:15:00Z"
     checked_by: goal-reviewer
     goal_id: GOAL-20260608-001
@@ -157,7 +157,7 @@ gates:
     gate_name: Plan Gate
     type: Semantic
     blocking: true
-    status: PASS_WITH_RISK
+    status: FAIL
     checked_at: "2026-06-09T08:20:00Z"
     checked_by: goal-reviewer
     goal_id: GOAL-20260608-001
@@ -218,7 +218,7 @@ gates:
     gate_name: Implementation Gate
     type: Executable
     blocking: true
-    status: PASS
+    status: FAIL
     checked_at: "2026-06-09T08:30:00Z"
     checked_by: goal-reviewer
     goal_id: GOAL-20260608-001
@@ -243,7 +243,7 @@ gates:
     gate_name: Test Gate
     type: Executable
     blocking: true
-    status: PASS_WITH_RISK
+    status: FAIL
     checked_at: "2026-06-09T08:35:00Z"
     checked_by: goal-reviewer
     goal_id: GOAL-20260608-001
@@ -329,7 +329,7 @@ gates:
     gate_name: Release Gate
     type: Hybrid
     blocking: true
-    status: BLOCKED
+    status: FAIL
     checked_at: "2026-06-09T08:50:00Z"
     checked_by: goal-reviewer
     goal_id: GOAL-20260608-001
@@ -354,7 +354,7 @@ gates:
     gate_name: Retrospective Gate
     type: Semantic
     blocking: false
-    status: BLOCKED
+    status: PASS
     checked_at: "2026-06-09T08:55:00Z"
     checked_by: goal-reviewer
     goal_id: GOAL-20260608-001
@@ -394,3 +394,202 @@ gates:
 # PASS_WITH_RISK: 达到风险区间，风险字段完整，且不属于 G6/G10
 # FAIL: 未达阈值、关键检查失败或风险字段缺失
 # BLOCKED: 外部依赖、过期风险或 release_blocking 风险阻止判断
+
+# === kernel module gates ===
+  - gate_id: G0
+    gate_name: Context Gate
+    type: Hybrid
+    blocking: true
+    status: PASS
+    checked_at: "2026-06-09T10:00:00Z"
+    checked_by: goal-architect
+    goal_id: GOAL-KERNEL-20260609-001
+    threshold:
+      pass: 90
+      pass_with_risk_min: 80
+      pass_with_risk_max: 89
+    allow_pass_with_risk: true
+    result:
+      verdict: PASS
+      score: 95
+      threshold: 90
+      details:
+        - check: "Goal 文档存在"
+          status: PASS
+          evidence: "module/kernel/goal.md"
+        - check: "上下文完整"
+          status: PASS
+          evidence: "module/kernel/ 目录包含 SPEC、DESIGN、IMPLEMENTATION-PLAN、TRACEABILITY、11 个 TASK"
+
+  - gate_id: G1
+    gate_name: Goal Gate
+    type: Semantic
+    blocking: true
+    status: PASS
+    checked_at: "2026-06-09T10:00:00Z"
+    checked_by: goal-architect
+    goal_id: GOAL-KERNEL-20260609-001
+    threshold:
+      pass: 90
+      pass_with_risk_min: 80
+      pass_with_risk_max: 89
+    allow_pass_with_risk: true
+    result:
+      verdict: PASS
+      score: 92
+      threshold: 90
+      details:
+        - check: "SMART 原则符合"
+          status: PASS
+          evidence: "Goal 包含 north_star、success_criteria、scope"
+        - check: "评分 >= 90"
+          status: PASS
+          evidence: "92 分"
+
+  - gate_id: G2
+    gate_name: Spec Gate
+    type: Semantic
+    blocking: true
+    status: PASS
+    checked_at: "2026-06-09T10:00:00Z"
+    checked_by: goal-architect
+    goal_id: GOAL-KERNEL-20260609-001
+    threshold:
+      pass: 90
+      pass_with_risk_min: 85
+      pass_with_risk_max: 89
+    allow_pass_with_risk: true
+    result:
+      verdict: PASS
+      score: 94
+      threshold: 90
+      details:
+        - check: "23 节结构完整"
+          status: PASS
+          evidence: "SPEC-kernel-v1.1.0.md 23 节全覆盖"
+        - check: "5 FR / 9 BR / 8 AC / 18 TC"
+          status: PASS
+          evidence: "TRACEABILITY.md 全部列出"
+        - check: "Spec Approved"
+          status: PASS
+          evidence: "status: Approved, version: v1.1.0"
+
+  - gate_id: G3
+    gate_name: Design Gate
+    type: Semantic
+    blocking: true
+    status: PASS
+    checked_at: "2026-06-09T10:00:00Z"
+    checked_by: goal-architect
+    goal_id: GOAL-KERNEL-20260609-001
+    threshold:
+      pass: 90
+      pass_with_risk_min: 85
+      pass_with_risk_max: 89
+    allow_pass_with_risk: true
+    result:
+      verdict: PASS
+      score: 92
+      threshold: 90
+      details:
+        - check: "Design 文档存在"
+          status: PASS
+          evidence: "module/kernel/DESIGN.md"
+        - check: "可映射到模块"
+          status: PASS
+          evidence: "模块拆分表、接口设计、ADR 完整"
+
+  - gate_id: G4
+    gate_name: Plan Gate
+    type: Semantic
+    blocking: true
+    status: PASS
+    checked_at: "2026-06-09T10:00:00Z"
+    checked_by: goal-architect
+    goal_id: GOAL-KERNEL-20260609-001
+    threshold:
+      pass: 90
+      pass_with_risk_min: 85
+      pass_with_risk_max: 89
+    allow_pass_with_risk: true
+    result:
+      verdict: PASS
+      score: 95
+      threshold: 90
+      details:
+        - check: "DAG 完整"
+          status: PASS
+          evidence: "IMPLEMENTATION-PLAN.md 9 阶段 11 任务"
+        - check: "关键路径清晰"
+          status: PASS
+          evidence: "000→001→002/003→004→005→007→009→010"
+
+  - gate_id: G5
+    gate_name: Task Gate
+    type: Executable
+    blocking: true
+    status: PASS
+    checked_at: "2026-06-09T10:00:00Z"
+    checked_by: goal-architect
+    goal_id: GOAL-KERNEL-20260609-001
+    threshold:
+      pass: 90
+      pass_with_risk_min: 80
+      pass_with_risk_max: 89
+    allow_pass_with_risk: true
+    result:
+      verdict: PASS
+      score: 95
+      threshold: 90
+      details:
+        - check: "11 个 TASK 文件存在"
+          status: PASS
+          evidence: "TASK-KERNEL-000~010.md"
+        - check: "DAG 依赖一致"
+          status: PASS
+          evidence: "depends_on 与 IMPLEMENTATION-PLAN.md 一致"
+        - check: "DoD 明确"
+          status: PASS
+          evidence: "每个 TASK 有 dod 列表"
+
+  - gate_id: G6
+    gate_name: Implementation Gate
+    type: Executable
+    blocking: true
+    status: NOT_STARTED
+    goal_id: GOAL-KERNEL-20260609-001
+
+  - gate_id: G7
+    gate_name: Test Gate
+    type: Executable
+    blocking: true
+    status: NOT_STARTED
+    goal_id: GOAL-KERNEL-20260609-001
+
+  - gate_id: G8
+    gate_name: Evidence Gate
+    type: Executable
+    blocking: true
+    status: NOT_STARTED
+    goal_id: GOAL-KERNEL-20260609-001
+
+  - gate_id: G9
+    gate_name: Review Gate
+    type: Semantic
+    blocking: true
+    status: NOT_STARTED
+    goal_id: GOAL-KERNEL-20260609-001
+
+  - gate_id: G10
+    gate_name: Release Gate
+    type: Hybrid
+    blocking: true
+    status: NOT_STARTED
+    goal_id: GOAL-KERNEL-20260609-001
+
+  - gate_id: G11
+    gate_name: Retrospective Gate
+    type: Semantic
+    blocking: false
+    status: NOT_STARTED
+    goal_id: GOAL-KERNEL-20260609-001

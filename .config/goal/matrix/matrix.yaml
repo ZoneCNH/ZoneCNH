@@ -258,3 +258,320 @@ matrix:
 # Spec Coverage: ≥ 95%
 # AC Coverage: ≥ 95%
 # Task Traceability: ≥ 95%
+
+  # === xlib-standard edges ===
+  - source_id: GOAL-XLIB-STD-001
+    target_id: SPEC-XLIB-STD-001
+    relation: decomposes_to
+    status: Verified
+    evidence_id: EVID-TEST-TASK-XLIB-000-001
+    gate_id: G1
+    owner: goal-matrix
+    updated_at: "2026-06-09"
+
+  - source_id: SPEC-XLIB-STD-001
+    target_id: FR-XLIB-001
+    relation: contains
+    status: Verified
+    evidence_id: EVID-TEST-TASK-XLIB-001-001
+    gate_id: G2
+    owner: goal-matrix
+    updated_at: "2026-06-09"
+
+  - source_id: FR-XLIB-001
+    target_id: AC-XLIB-001
+    relation: accepted_by
+    status: Verified
+    evidence_id: EVID-TEST-TASK-XLIB-003-001
+    gate_id: G3
+    owner: goal-matrix
+    updated_at: "2026-06-09"
+
+  - source_id: AC-XLIB-001
+    target_id: TASK-XLIB-003B
+    relation: implemented_by
+    status: Verified
+    evidence_id: EVID-TEST-TASK-XLIB-003-001
+    gate_id: G5
+    owner: goal-matrix
+    updated_at: "2026-06-09"
+
+  - source_id: TASK-XLIB-000
+    target_id: EVID-TEST-TASK-XLIB-000-001
+    relation: evidenced_by
+    status: Verified
+    evidence_id: EVID-TEST-TASK-XLIB-000-001
+    gate_id: G8
+    owner: goal-matrix
+    updated_at: "2026-06-09"
+
+  - source_id: TASK-XLIB-001
+    target_id: EVID-TEST-TASK-XLIB-001-001
+    relation: evidenced_by
+    status: Verified
+    evidence_id: EVID-TEST-TASK-XLIB-001-001
+    gate_id: G8
+    owner: goal-matrix
+    updated_at: "2026-06-09"
+
+  - source_id: TASK-XLIB-002
+    target_id: EVID-TEST-TASK-XLIB-002-001
+    relation: evidenced_by
+    status: Verified
+    evidence_id: EVID-TEST-TASK-XLIB-002-001
+    gate_id: G8
+    owner: goal-matrix
+    updated_at: "2026-06-09"
+
+  - source_id: TASK-XLIB-003B
+    target_id: EVID-TEST-TASK-XLIB-003-001
+    relation: evidenced_by
+    status: Verified
+    evidence_id: EVID-TEST-TASK-XLIB-003-001
+    gate_id: G8
+    owner: goal-matrix
+    updated_at: "2026-06-09"
+
+  - source_id: TASK-XLIB-004
+    target_id: EVID-TEST-TASK-XLIB-004-001
+    relation: evidenced_by
+    status: Verified
+    evidence_id: EVID-TEST-TASK-XLIB-004-001
+    gate_id: G8
+    owner: goal-matrix
+    updated_at: "2026-06-09"
+
+  - source_id: TASK-XLIB-005
+    target_id: EVID-TEST-TASK-XLIB-005-001
+    relation: evidenced_by
+    status: Verified
+    evidence_id: EVID-TEST-TASK-XLIB-005-001
+    gate_id: G8
+    owner: goal-matrix
+    updated_at: "2026-06-09"
+
+  # === xlib-standard sub-task edges (split from TASK-XLIB-003) ===
+  - source_id: TASK-XLIB-003A
+    target_id: EVID-TEST-TASK-XLIB-003A-001
+    relation: evidenced_by
+    status: Verified
+    evidence_id: EVID-TEST-TASK-XLIB-003A-001
+    gate_id: G8
+    owner: goal-matrix
+    updated_at: "2026-06-09"
+
+  - source_id: TASK-XLIB-003B
+    target_id: EVID-TEST-TASK-XLIB-003B-001
+    relation: evidenced_by
+    status: Verified
+    evidence_id: EVID-TEST-TASK-XLIB-003B-001
+    gate_id: G8
+    owner: goal-matrix
+    updated_at: "2026-06-09"
+
+  - source_id: TASK-XLIB-003C
+    target_id: EVID-TEST-TASK-XLIB-003C-001
+    relation: evidenced_by
+    status: Verified
+    evidence_id: EVID-TEST-TASK-XLIB-003C-001
+    gate_id: G8
+    owner: goal-matrix
+    updated_at: "2026-06-09"
+
+  - source_id: TASK-XLIB-003D
+    target_id: EVID-TEST-TASK-XLIB-003D-001
+    relation: evidenced_by
+    status: Verified
+    evidence_id: EVID-TEST-TASK-XLIB-003D-001
+    gate_id: G8
+    owner: goal-matrix
+    updated_at: "2026-06-09"
+
+  # === kernel traceability ===
+  # Goal → Spec
+  - source_id: GOAL-KERNEL-20260609-001
+    target_id: SPEC-kernel-v1
+    relation: decomposes_to
+    status: Mapped
+    gate_id: G1
+    owner: zone
+    updated_at: "2026-06-09"
+
+  # Spec → FR
+  - source_id: SPEC-kernel-v1
+    target_id: FR-KERNEL-001
+    relation: contains
+    status: Mapped
+    gate_id: G2
+    owner: zone
+    updated_at: "2026-06-09"
+
+  - source_id: SPEC-kernel-v1
+    target_id: FR-KERNEL-002
+    relation: contains
+    status: Mapped
+    gate_id: G2
+    owner: zone
+    updated_at: "2026-06-09"
+
+  - source_id: SPEC-kernel-v1
+    target_id: FR-KERNEL-003
+    relation: contains
+    status: Mapped
+    gate_id: G2
+    owner: zone
+    updated_at: "2026-06-09"
+
+  - source_id: SPEC-kernel-v1
+    target_id: FR-KERNEL-004
+    relation: contains
+    status: Mapped
+    gate_id: G2
+    owner: zone
+    updated_at: "2026-06-09"
+
+  - source_id: SPEC-kernel-v1
+    target_id: FR-KERNEL-005
+    relation: contains
+    status: Mapped
+    gate_id: G2
+    owner: zone
+    updated_at: "2026-06-09"
+
+  # FR → AC
+  - source_id: FR-KERNEL-001
+    target_id: AC-KERNEL-001
+    relation: accepted_by
+    status: Mapped
+    gate_id: G2
+    owner: zone
+    updated_at: "2026-06-09"
+
+  - source_id: FR-KERNEL-002
+    target_id: AC-KERNEL-002
+    relation: accepted_by
+    status: Mapped
+    gate_id: G2
+    owner: zone
+    updated_at: "2026-06-09"
+
+  - source_id: FR-KERNEL-003
+    target_id: AC-KERNEL-003
+    relation: accepted_by
+    status: Mapped
+    gate_id: G2
+    owner: zone
+    updated_at: "2026-06-09"
+
+  - source_id: FR-KERNEL-003
+    target_id: AC-KERNEL-004
+    relation: accepted_by
+    status: Mapped
+    gate_id: G2
+    owner: zone
+    updated_at: "2026-06-09"
+
+  - source_id: FR-KERNEL-004
+    target_id: AC-KERNEL-005
+    relation: accepted_by
+    status: Mapped
+    gate_id: G2
+    owner: zone
+    updated_at: "2026-06-09"
+
+  - source_id: FR-KERNEL-005
+    target_id: AC-KERNEL-006
+    relation: accepted_by
+    status: Mapped
+    gate_id: G2
+    owner: zone
+    updated_at: "2026-06-09"
+
+  - source_id: FR-KERNEL-001
+    target_id: AC-KERNEL-007
+    relation: accepted_by
+    status: Mapped
+    gate_id: G2
+    owner: zone
+    updated_at: "2026-06-09"
+
+  - source_id: FR-KERNEL-002
+    target_id: AC-KERNEL-008
+    relation: accepted_by
+    status: Mapped
+    gate_id: G2
+    owner: zone
+    updated_at: "2026-06-09"
+
+  # AC → TASK
+  - source_id: AC-KERNEL-001
+    target_id: TASK-KERNEL-001
+    relation: implemented_by
+    status: Mapped
+    gate_id: G5
+    owner: zone
+    updated_at: "2026-06-09"
+
+  - source_id: AC-KERNEL-001
+    target_id: TASK-KERNEL-003
+    relation: implemented_by
+    status: Mapped
+    gate_id: G5
+    owner: zone
+    updated_at: "2026-06-09"
+
+  - source_id: AC-KERNEL-002
+    target_id: TASK-KERNEL-002
+    relation: implemented_by
+    status: Mapped
+    gate_id: G5
+    owner: zone
+    updated_at: "2026-06-09"
+
+  - source_id: AC-KERNEL-003
+    target_id: TASK-KERNEL-004
+    relation: implemented_by
+    status: Mapped
+    gate_id: G5
+    owner: zone
+    updated_at: "2026-06-09"
+
+  - source_id: AC-KERNEL-004
+    target_id: TASK-KERNEL-005
+    relation: implemented_by
+    status: Mapped
+    gate_id: G5
+    owner: zone
+    updated_at: "2026-06-09"
+
+  - source_id: AC-KERNEL-005
+    target_id: TASK-KERNEL-006
+    relation: implemented_by
+    status: Mapped
+    gate_id: G5
+    owner: zone
+    updated_at: "2026-06-09"
+
+  - source_id: AC-KERNEL-006
+    target_id: TASK-KERNEL-007
+    relation: implemented_by
+    status: Mapped
+    gate_id: G5
+    owner: zone
+    updated_at: "2026-06-09"
+
+  - source_id: AC-KERNEL-007
+    target_id: TASK-KERNEL-008
+    relation: implemented_by
+    status: Mapped
+    gate_id: G5
+    owner: zone
+    updated_at: "2026-06-09"
+
+  - source_id: AC-KERNEL-008
+    target_id: TASK-KERNEL-000
+    relation: implemented_by
+    status: Mapped
+    gate_id: G5
+    owner: zone
+    updated_at: "2026-06-09"

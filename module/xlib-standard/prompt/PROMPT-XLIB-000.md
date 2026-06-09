@@ -56,6 +56,17 @@ test -f Makefile && echo "Makefile preserved"
 2. 验证结果
 3. 风险评估
 
+## Evidence Format
+
+完成后提交 evidence 到 `.config/goal/evidence/` 目录，格式如下：
+
+```markdown
+- **Evidence ID**: EVID-TEST-TASK-XLIB-000-001
+- **Status**: PASS
+- **Files Changed**: <实际删除的文件列表>
+- **Commands Run**: <验证命令及输出>
+```
+
 ## Project Rules
 
 - Follow AGENTS.md

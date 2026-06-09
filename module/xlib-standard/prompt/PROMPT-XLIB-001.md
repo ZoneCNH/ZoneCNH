@@ -59,6 +59,17 @@ test -f docs/INDEX.md && wc -l docs/INDEX.md | awk '{if ($1 > 50) exit 1}'
 2. 需求覆盖表
 3. 验证结果
 
+## Evidence Format
+
+完成后提交 evidence 到 `.config/goal/evidence/` 目录，格式如下：
+
+```markdown
+- **Evidence ID**: EVID-TEST-TASK-XLIB-001-001
+- **Status**: PASS
+- **Files Changed**: <实际修改的文件列表>
+- **Commands Run**: <实际执行的命令及输出>
+```
+
 ## Project Rules
 
 - Follow AGENTS.md

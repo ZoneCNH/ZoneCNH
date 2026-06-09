@@ -1,0 +1,10 @@
+- **Evidence ID**: EVID-TEST-TASK-XLIB-003C-001
+- **Acceptance Criteria ID**: AC-009, AC-010, AC-011, AC-012, AC-013, AC-020, AC-021
+- **Test ID**: TEST-TASK-XLIB-003C-001
+- **Task ID**: TASK-XLIB-003C
+- **Spec ID**: SPEC-XLIB-STD-001
+- **Goal ID**: GOAL-XLIB-STD-001
+- **Date**: 2026-06-09
+- **Status**: PARTIAL
+- **Files Changed**: pkg/templatex/health.go, pkg/templatex/health_test.go, pkg/templatex/metrics.go, pkg/templatex/metrics_test.go, contracts/health.schema.json, contracts/metrics.json, examples/basic/main.go, testkit/metrics.go, testkit/assertions.go
+- **Commands Run**: GOWORK=off go test ./pkg/templatex/ -run TestHealth -v; GOWORK=off go test ./pkg/templatex/ -run TestMetrics -v; GOWORK=off go test ./...; GOWORK=off go test -race ./...

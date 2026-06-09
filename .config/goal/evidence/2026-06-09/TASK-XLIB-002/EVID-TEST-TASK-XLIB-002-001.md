@@ -1,0 +1,10 @@
+- **Evidence ID**: EVID-TEST-TASK-XLIB-002-001
+- **Acceptance Criteria ID**: AC-002
+- **Test ID**: TEST-TASK-XLIB-002-001
+- **Task ID**: TASK-XLIB-002
+- **Spec ID**: SPEC-XLIB-STD-001
+- **Goal ID**: GOAL-XLIB-STD-001
+- **Date**: 2026-06-09
+- **Status**: PARTIAL
+- **Files Changed**: module/xlib-standard/tasks/TASK-XLIB-002.md, module/xlib-standard/prompt/PROMPT-XLIB-002.md
+- **Commands Run**: make -n build && make -n test && make -n lint; test -x scripts/spec-lint.sh

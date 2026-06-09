@@ -55,7 +55,22 @@ bash docs/goal/tools/goal-delivery.sh status
 bash docs/goal/tools/goal-delivery.sh dashboard
 ```
 
-`goal-delivery.sh` 覆盖 Goal→Spec→Design→Plan→Tasks→Prompt→Code→Test→Review→Release→Retrospective 全 11 层管线的制品创建和 Gate 检查。与 `goal-workflow.sh` 互补：后者负责验证/检查，前者负责编排/创建。
+`goal-delivery.sh` (v2) 覆盖 Goal→Spec→Design→Plan→Tasks→Prompt→Code→Test→Review→Release→Retrospective 全 11 层管线的制品创建和 Gate 检查。与 `goal-workflow.sh` 互补：后者负责验证/检查，前者负责编排/创建。
+
+v2 优化：
+- Gate 检查委托给 `gate-check.sh` / `goal-validate.py`，不做弱实现
+- 每步完成后自动推进 `pipeline/state.yaml` 和 `gates/state.yaml`
+- 新增 `auto` 命令：根据当前管线阶段自动推进
+- 新增 `change` 命令：支持 CL0-CL5 变更级别管理
+- Evidence 模板补齐 `gate-check.sh` 要求的全部必须字段
+
+```bash
+# 自动推进：检测当前阶段并运行对应 Gate 检查
+bash docs/goal/tools/goal-delivery.sh auto
+
+# 变更管理：记录变更级别，推荐对应模式
+bash docs/goal/tools/goal-delivery.sh change --goal-id GOAL-20260609-001 --level CL2
+```
 
 支持三种复杂度模式（通过 `--mode` 参数）：
 
@@ -276,7 +291,7 @@ jobs:
 
 ## 依赖
 
-- `goal-delivery.sh`: bash, grep, find, git, awk
+- `goal-delivery.sh`: bash, grep, find, git, awk（v2：自动状态推进、Gate 委托、auto/change 命令）
 - `goal-workflow.sh`: bash, Python 3.10+, grep, find, git
 - `gate-check.sh`: bash, grep, find
 - `goal-validate.py`: Python 3.10+

@@ -8,33 +8,33 @@
 
 | FR | Description | AC | TC | Task | Status |
 |----|-------------|----|----|------|--------|
-| FR-001 | Config 标准 | AC-001: Validate 必填字段缺失返回 ErrorKindValidation | TC-001 | TASK-XLIB-003 | pending |
-| FR-001 | Config 标准 | AC-002: Validate 负数 timeout 返回 ErrorKindValidation | TC-002 | TASK-XLIB-003 | pending |
-| FR-001 | Config 标准 | AC-003: Sanitize 脱敏 secret 替换为 `***` | TC-003 | TASK-XLIB-003 | pending |
-| FR-002 | Error 标准 | AC-004: NewError 创建 Error 字段正确 | TC-004 | TASK-XLIB-003 | pending |
-| FR-002 | Error 标准 | AC-005: WrapError 包装 errors.Is 可穿透 | TC-005 | TASK-XLIB-003 | pending |
-| FR-002 | Error 标准 | AC-006: IsKind 匹配返回 true | TC-006 | TASK-XLIB-003 | pending |
-| FR-002 | Error 标准 | AC-007: context.DeadlineExceeded ErrorKind = timeout | TC-007 | TASK-XLIB-003 | pending |
-| FR-002 | Error 标准 | AC-008: closed error ErrorKind = closed | TC-008 | TASK-XLIB-003 | pending |
-| FR-003 | Health 标准 | AC-009: HealthCheck nil context 返回 unhealthy | TC-009 | TASK-XLIB-003 | pending |
-| FR-003 | Health 标准 | AC-010: HealthCheck 健康客户端返回 healthy | TC-010 | TASK-XLIB-003 | pending |
-| FR-004 | Metrics 标准 | AC-011: NoopMetrics 不 panic | TC-011 | TASK-XLIB-003 | pending |
-| FR-004 | Metrics 标准 | AC-012: 指标名匹配 contract 5 个 P0 指标名一致 | TC-012 | TASK-XLIB-003 | pending |
-| FR-004 | Metrics 标准 | AC-013: label 低基数只有 op/kind/status | TC-013 | TASK-XLIB-003 | pending |
-| FR-005 | Client 标准 | AC-014: New nil context 返回错误 | TC-014 | TASK-XLIB-003 | pending |
-| FR-005 | Client 标准 | AC-015: New canceled context 返回错误 | TC-015 | TASK-XLIB-003 | pending |
-| FR-005 | Client 标准 | AC-016: New 无效 config 返回错误 | TC-016 | TASK-XLIB-003 | pending |
-| FR-005 | Client 标准 | AC-017: New 正常创建返回 *Client | TC-017 | TASK-XLIB-003 | pending |
-| FR-005 | Client 标准 | AC-018: Close 幂等多次调用不 panic | TC-018 | TASK-XLIB-003 | pending |
-| FR-006 | Version 标准 | AC-019: 版本信息返回 module path/version/commit/build time | - | TASK-XLIB-003 | pending |
-| FR-007 | 公共 API 模板 | AC-020: 模板 go vet 零警告 | TC-019 | TASK-XLIB-003 | pending |
-| FR-008 | 模板可编译 | AC-021: 模板 go test 全部通过 | TC-020 | TASK-XLIB-003 | pending |
+| FR-001 | Config 标准 | AC-001: Validate 必填字段缺失返回 ErrorKindValidation | TC-001 | TASK-XLIB-003A | pending |
+| FR-001 | Config 标准 | AC-002: Validate 负数 timeout 返回 ErrorKindValidation | TC-002 | TASK-XLIB-003A | pending |
+| FR-001 | Config 标准 | AC-003: Sanitize 脱敏 secret 替换为 `***` | TC-003 | TASK-XLIB-003A | pending |
+| FR-002 | Error 标准 | AC-004: NewError 创建 Error 字段正确 | TC-004 | TASK-XLIB-003B | pending |
+| FR-002 | Error 标准 | AC-005: WrapError 包装 errors.Is 可穿透 | TC-005 | TASK-XLIB-003B | pending |
+| FR-002 | Error 标准 | AC-006: IsKind 匹配返回 true | TC-006 | TASK-XLIB-003B | pending |
+| FR-002 | Error 标准 | AC-007: context.DeadlineExceeded ErrorKind = timeout | TC-007 | TASK-XLIB-003B | pending |
+| FR-002 | Error 标准 | AC-008: closed error ErrorKind = closed | TC-008 | TASK-XLIB-003B | pending |
+| FR-003 | Health 标准 | AC-009: HealthCheck nil context 返回 unhealthy | TC-009 | TASK-XLIB-003C | pending |
+| FR-003 | Health 标准 | AC-010: HealthCheck 健康客户端返回 healthy | TC-010 | TASK-XLIB-003C | pending |
+| FR-004 | Metrics 标准 | AC-011: NoopMetrics 不 panic | TC-011 | TASK-XLIB-003C | pending |
+| FR-004 | Metrics 标准 | AC-012: 指标名匹配 contract 5 个 P0 指标名一致 | TC-012 | TASK-XLIB-003C | pending |
+| FR-004 | Metrics 标准 | AC-013: label 低基数只有 op/kind/status | TC-013 | TASK-XLIB-003C | pending |
+| FR-005 | Client 标准 | AC-014: New nil context 返回错误 | TC-014 | TASK-XLIB-003B | pending |
+| FR-005 | Client 标准 | AC-015: New canceled context 返回错误 | TC-015 | TASK-XLIB-003B | pending |
+| FR-005 | Client 标准 | AC-016: New 无效 config 返回错误 | TC-016 | TASK-XLIB-003B | pending |
+| FR-005 | Client 标准 | AC-017: New 正常创建返回 *Client | TC-017 | TASK-XLIB-003B | pending |
+| FR-005 | Client 标准 | AC-018: Close 幂等多次调用不 panic | TC-018 | TASK-XLIB-003B | pending |
+| FR-006 | Version 标准 | AC-019: 版本信息返回 module path/version/commit/build time | N/A (API check) | TASK-XLIB-003A | pending |
+| FR-007 | 公共 API 模板 | AC-020: 模板 go vet 零警告 | TC-019 | TASK-XLIB-003D | pending |
+| FR-008 | 模板可编译 | AC-021: 模板 go test 全部通过 | TC-020 | TASK-XLIB-003D | pending |
 | FR-009 | render_template.sh | AC-022: 渲染输出目录结构完整 | TC-021 | TASK-XLIB-002 | pending |
 | FR-010 | 生成库无残留 | AC-023: grep 无 templatex/xlib-standard | TC-022 | TASK-XLIB-005 | pending |
 | FR-011 | 9 个最小 gate | AC-024: make ci 9 个 gate 全通过 | TC-023 | TASK-XLIB-002 | pending |
-| FR-012 | boundary gate | AC-025: check_boundary.sh 检查 6 项 | - | TASK-XLIB-002 | pending |
+| FR-012 | boundary gate | AC-025: check_boundary.sh 检查 6 项 | TC-023 | TASK-XLIB-002 | pending |
 | FR-013 | release manifest | AC-026: manifest 生成且字段完整 | TC-024 | TASK-XLIB-004 | pending |
-| FR-014 | release final check | AC-027: checksum 校验通过 | - | TASK-XLIB-005 | pending |
+| FR-014 | release final check | AC-027: checksum 校验通过 | TC-024 | TASK-XLIB-005 | pending |
 
 ---
 
@@ -59,6 +59,35 @@
 | TASK-XLIB-000 | - | 目录删除验收 |
 | TASK-XLIB-001 | - | 文档验收 |
 | TASK-XLIB-002 | FR-009, FR-011, FR-012 | AC-022, AC-024, AC-025 |
-| TASK-XLIB-003 | FR-001~FR-008 | AC-001~AC-021 |
+| TASK-XLIB-003B | FR-001~FR-008 | AC-001~AC-021 |
 | TASK-XLIB-004 | FR-013, FR-014 | AC-026 |
 | TASK-XLIB-005 | FR-010, FR-014 | AC-023, AC-027 |
+
+---
+
+## Evidence 引用
+
+| Evidence ID | Task ID | AC | Status |
+|-------------|---------|-----|--------|
+| EVID-TEST-TASK-XLIB-000-001 | TASK-XLIB-000 | AC-000 | PASS |
+| EVID-TEST-TASK-XLIB-001-001 | TASK-XLIB-001 | AC-001 | PASS |
+| EVID-TEST-TASK-XLIB-002-001 | TASK-XLIB-002 | AC-002 | PARTIAL |
+| EVID-TEST-TASK-XLIB-003B-001 | TASK-XLIB-003B | AC-003 | PARTIAL |
+| EVID-TEST-TASK-XLIB-004-001 | TASK-XLIB-004 | AC-004 | PARTIAL |
+| EVID-TEST-TASK-XLIB-005-001 | TASK-XLIB-005 | AC-005 | PARTIAL |
+| EVID-TEST-TASK-XLIB-003A-001 | TASK-XLIB-003A | AC-001~AC-003, AC-019 | pending |
+| EVID-TEST-TASK-XLIB-003B-001 | TASK-XLIB-003B | AC-004~AC-008, AC-014~AC-018 | pending |
+| EVID-TEST-TASK-XLIB-003C-001 | TASK-XLIB-003C | AC-009~AC-013 | pending |
+| EVID-TEST-TASK-XLIB-003D-001 | TASK-XLIB-003D | AC-020, AC-021 | pending |
+
+## BR 覆盖
+
+| BR | Description | Violation Consequence | Verification | Task |
+|----|-------------|----------------------|--------------|------|
+| BR-001 | Config 必填字段不可零值 | 返回 ErrorKindValidation | TC-001 | TASK-XLIB-003A |
+| BR-002 | ErrorKind 只能是 8 种之一 | 序列化失败返回 internal | TC-004~TC-008 | TASK-XLIB-003B |
+| BR-003 | HealthStatus 只能是 3 种之一 | 序列化失败返回 unknown | TC-009~TC-010 | TASK-XLIB-003C |
+| BR-004 | Metrics label 低基数 | 高基数 label 导致内存爆炸 | TC-013 | TASK-XLIB-003C |
+| BR-005 | Client.Close 幂等 | 第二次 Close panic | TC-018 | TASK-XLIB-003B |
+| BR-006 | Secret 字段必须脱敏 | 明文存储泄露凭证 | TC-003 | TASK-XLIB-003A |
+| BR-007 | errors.Is 可穿透 | 调用方无法判断错误类型 | TC-005 | TASK-XLIB-003B |

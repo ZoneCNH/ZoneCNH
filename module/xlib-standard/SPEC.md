@@ -9,6 +9,7 @@
 ## 1. Metadata
 
 - Status: Draft
+- Spec ID: SPEC-XLIB-STD-001
 - Spec-Version: v2.0.0
 - Last-Updated: 2026-06-09
 - Owner: ZoneCNH
@@ -16,6 +17,20 @@
 - Version: v1.0.0
 - Repository: [github.com/ZoneCNH/xlib-standard](https://github.com/ZoneCNH/xlib-standard)
 - Related: [CONSTITUTION.md](../../CONSTITUTION.md), [ARCHITECTURE.md](../../ARCHITECTURE.md), [goal.md](./goal.md)
+
+### 1.2 Constitution 合规
+
+本模块遵守 [CONSTITUTION.md](../../CONSTITUTION.md) 全部条款：
+
+| 条款 | 合规要求 | 本模块实现 |
+|------|----------|-----------|
+| §1 基座依赖 | 依赖 kernel/configx/observex | go.mod 声明 |
+| §3 contracts 接口 | 跨域交互通过 contracts | pkg/templatex 实现 |
+| §5 错误规范 | ErrorKind 8 种 | errors.go 实现 |
+| §6 可观测 | Metrics/Health | metrics.go + health.go |
+| §7 配置规范 | Validate/Sanitize | config.go 实现 |
+| §8 测试规范 | ≥80% 覆盖率 | _test.go 全覆盖 |
+| §13 边界约束 | 不越界实现 | Non-goals 明确 |
 
 | 字段 | 说明 |
 |------|------|
@@ -713,7 +728,25 @@ jobs:
 
 ---
 
-## 23. Open Questions
+## 23. Lifecycle
+
+### 23.1 生命周期状态
+
+| 状态 | 含义 | 进入条件 | 退出条件 |
+|------|------|----------|----------|
+| Draft | 初始起草 | 创建 | 评审通过 |
+| Active | 生效中 | 评审通过 | 废弃 |
+| Deprecated | 废弃 | 标记废弃 | 删除 |
+
+### 23.2 变更策略
+
+- Breaking change 需要主版本号升级
+- 新增 FR 需要对应 TC 和 AC
+- 删除 FR 需要更新 TRACEABILITY.md
+
+---
+
+## 24. Open Questions
 
 ### Blocking（阻塞开发）
 

@@ -1,0 +1,51 @@
+# TASK-XLIB-003A
+
+> PR-4a：Config 标准 — pkg/templatex/config.go
+
+---
+
+```yaml
+task_id: TASK-XLIB-003A
+module: xlib-standard
+scope: "实现 Config 结构体、Validate、Sanitize，覆盖 FR-001 和 Version API"
+spec_ref:
+  - "module/xlib-standard/SPEC.md#7"
+  - "module/xlib-standard/goal.md#7"
+files:
+  - "pkg/templatex/doc.go"
+  - "pkg/templatex/config.go"
+  - "pkg/templatex/config_test.go"
+acceptance_criteria:
+  - "AC-001: Config 必填字段缺失返回 ErrorKindValidation"
+  - "AC-002: 负数 timeout 返回 ErrorKindValidation"
+  - "AC-003: Sanitize 脱敏 secret 替换为 `***`"
+  - "AC-019: 版本信息返回 module path/version/commit/build time"
+depends_on:
+  - "TASK-XLIB-000"
+  - "TASK-XLIB-001"
+estimated_effort: "1.5h"
+priority: P0
+status: pending
+```
+
+---
+
+## Requirements Covered
+
+| Requirement | Description | Acceptance Criteria |
+|---|---|---|
+| FR-001 | Config 标准 | Config/Validate/Sanitize 存在 |
+| FR-006 | Version 标准 | 版本信息返回正确 |
+
+## Test Plan
+
+```bash
+GOWORK=off go test ./pkg/templatex/ -run TestConfig -v
+GOWORK=off go test -race ./pkg/templatex/ -run TestConfig
+```
+
+## Implementation Notes
+
+1. Config 按 goal.md §7.3 实现（显式传入、Validate、Sanitize）
+2. Version 按 goal.md §7.7 实现
+3. doc.go 包含 package-level 文档

@@ -64,6 +64,17 @@ git tag v1.0.0
 3. Tag 信息
 4. 最终验收清单确认
 
+## Evidence Format
+
+完成后提交 evidence 到 `.config/goal/evidence/` 目录，格式如下：
+
+```markdown
+- **Evidence ID**: EVID-TEST-TASK-XLIB-005-001
+- **Status**: PASS
+- **Files Changed**: <实际修改的文件列表>
+- **Commands Run**: <实际执行的命令及输出>
+```
+
 ## Project Rules
 
 - Follow AGENTS.md

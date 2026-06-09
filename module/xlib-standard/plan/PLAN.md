@@ -31,6 +31,27 @@ PR-1 ──→ PR-2 ──→ PR-3 ──→ PR-4 ──→ PR-5
 - PR-3 依赖 PR-1（删除后才能重写构建）
 - PR-4 依赖 PR-1 + PR-2（需要文档定义的规范）
 - PR-5 依赖 PR-3 + PR-4（需要骨架和核心包）
+### 子任务依赖拓扑
+
+```text
+PR-2 (文档对齐)
+  ↓
+PR-3 (骨架代码)
+  ↓
+PR-4a (Config + Version)    ← 2 FR
+  ↓
+PR-4b (Error + Client)      ← 2 FR
+  ↓
+PR-4c (Health + Metrics)    ← 2 FR
+  ↓
+PR-4d (API 模板 + 测试工具)  ← 2 FR
+  ↓
+PR-5 (Release)
+```
+
+**合并顺序**：PR-2 先合并 → PR-3 在 PR-2 基础上创建新文件 → PR-4a~4d 串行合并 → PR-5 最后合并。
+
+
 
 ---
 

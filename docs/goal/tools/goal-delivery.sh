@@ -1,33 +1,20 @@
 #!/usr/bin/env bash
 # ============================================================
-# Goal 驱动交付体系 — 端到端工作流编排
+# Goal 驱动交付体系 — 端到端工作流编排 (v2)
 # ============================================================
 # 基于 docs/goal/ 体系，编排完整 11 层管线：
 #   Goal → Spec → Design → Plan → Tasks → Prompt → Code → Test → Review → Release → Retrospective
 #
-# 支持三种复杂度模式：
-#   lite     — CL0/CL1：Goal → Plan → Tasks → Code → Test → Evidence → Review
-#   standard — CL2：全流程 + Matrix + Risk + Evidence
-#   full     — CL3+：全流程 + ADR + Human Approval + Rollback
+# v2 优化：
+#   - Gate 检查委托给 gate-check.sh / goal-validate.py，不做弱实现
+#   - 每步完成后自动推进 pipeline/state.yaml 和 gates/state.yaml
+#   - 新增 auto 命令：根据复杂度自动选择流程并推进
+#   - 新增 change 命令：支持变更管理和版本递增
+#   - Evidence 模板补齐 gate-check.sh 要求的全部必须字段
+#   - 统一入口：本脚本是用户唯一入口，内部调用 goal-workflow.sh
 #
 # 用法：
 #   bash docs/goal/tools/goal-delivery.sh <command> [options]
-#
-# Commands:
-#   init       初始化 Goal 项目结构和配置
-#   goal       创建 Goal 制品
-#   spec       从 Goal 生成 Spec 框架
-#   design     从 Spec 生成 Design 框架
-#   plan       从 Design 生成 Plan
-#   tasks      从 Plan 拆解 Tasks
-#   prompt     为 Task 生成 Context Package
-#   matrix     生成/更新追溯矩阵
-#   evidence   收集 Evidence
-#   status     显示当前管线状态
-#   check      运行 Gate 检查
-#   validate   运行完整验证
-#   release    运行发布前检查
-#   dashboard  显示交付看板
 # ============================================================
 set -euo pipefail
 
@@ -35,6 +22,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(cd "$SCRIPT_DIR/../../.." && pwd)"
 CONFIG_DIR="$ROOT/.config/goal"
 TODAY=$(date +%Y%m%d)
+NOW=$(date +%Y-%m-%d)
 MODE="standard"
 
 # ─── 颜色 ───────────────────────────────────────────────
@@ -44,6 +32,7 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 CYAN='\033[0;36m'
 BOLD='\033[1m'
+DIM='\033[2m'
 NC='\033[0m'
 
 # ─── 工具函数 ───────────────────────────────────────────
@@ -54,6 +43,7 @@ err()   { printf "${RED}✗${NC}  %s\n" "$*" >&2; }
 title() { printf "\n${BOLD}${CYAN}═══ %s ═══${NC}\n\n" "$*"; }
 step()  { printf "${BOLD}→${NC}  %s\n" "$*"; }
 header(){ printf "\n${BOLD}┌─ %s ─┐${NC}\n" "$*"; }
+dim()   { printf "${DIM}  %s${NC}\n" "$*"; }
 
 die() {
   err "$*"
@@ -68,56 +58,83 @@ require_config() {
   [[ -d "$CONFIG_DIR" ]] || die "未找到 .config/goal/ 目录，请先运行: goal-delivery.sh init"
 }
 
+# ─── YAML 工具 ──────────────────────────────────────────
+# 读取 pipeline/state.yaml 中最后一个匹配的字段（处理历史记录格式）
+yaml_get() {
+  local file="$1" key="$2"
+  [[ -f "$file" ]] || return 1
+  awk -v k="$key" '
+    $1==k":"{val=$2}
+    END{if(val) print val}
+  ' "$file"
+}
+
+# 读取 gates/state.yaml 中指定 Gate 的 status
+# 格式: - gate_id: G0 ... status: PASS
+gate_status() {
+  local gate="$1"
+  [[ -f "$CONFIG_DIR/gates/state.yaml" ]] || { echo "NOT_STARTED"; return; }
+  awk -v g="$gate" '
+    /gate_id: / && $NF==g {found=1; next}
+    found && /^[[:space:]]+status:/ {print $2; found=0; exit}
+  ' "$CONFIG_DIR/gates/state.yaml"
+}
+
+# 更新 pipeline/state.yaml 末尾追加新状态记录
+yaml_set() {
+  local file="$1" key="$2" value="$3"
+  [[ -f "$file" ]] || return 1
+  # 在文件末尾追加新的状态记录
+  printf '    %s: %s\n' "$key" "$value" >>"$file"
+}
+
+# 更新 gates/state.yaml 中指定 Gate 的 status
+# 匹配 "- gate_id: GX" 后的第一个 "status:" 行
+gate_set() {
+  local gate="$1" status="$2"
+  local file="$CONFIG_DIR/gates/state.yaml"
+  [[ -f "$file" ]] || return 1
+  local tmp="${file}.tmp"
+  awk -v g="$gate" -v s="$status" -v d="$NOW" '
+    /gate_id: / && $NF==g {found=1; print; next}
+    found && /^[[:space:]]+status:/ {print "    status: "s; found=0; next}
+    found && /^[[:space:]]+checked_at:/ {print "    checked_at: \""d"\""; next}
+    {print}
+  ' "$file" >"$tmp"
+  mv "$tmp" "$file"
+}
+
 # ─── 帮助 ───────────────────────────────────────────────
 usage() {
   cat <<'EOF'
-Goal 驱动交付体系 — 端到端工作流编排
+Goal 驱动交付体系 — 端到端工作流编排 (v2)
 
 用法:
   bash docs/goal/tools/goal-delivery.sh <command> [options]
 
-命令:
-  init [--goal-id ID] [--title TITLE]
-      初始化 Goal 项目结构和配置中心
+制品创建命令（按管线顺序）:
+  init                初始化项目结构和配置中心
+  goal                创建 Goal 制品（SMART 模板）
+  spec --goal-id ID   从 Goal 生成 Spec 框架
+  design --spec-id ID 从 Spec 生成 Design 框架
+  plan --goal-id ID   从 Design 生成执行计划
+  tasks --plan-id ID  从 Plan 拆解可执行 Tasks
+  prompt --task-id ID 为指定 Task 生成 Context Package
+  evidence --task-id ID 为指定 Task 收集 Evidence
 
-  goal [--goal-id ID] [--title TITLE]
-      创建 Goal 制品（交互式引导）
+矩阵与变更:
+  matrix [generate|check|update]  追溯矩阵管理
+  change --goal-id ID --level N   变更管理（CL0-CL5）
 
-  spec --goal-id ID [--spec-id ID]
-      从 Goal 生成 Spec 框架
+验证与门禁:
+  check [--gate G0-G11]  运行 Gate 检查（委托 gate-check.sh / goal-validate.py）
+  validate               运行完整验证（委托 goal-workflow.sh）
+  release                运行发布前硬阻断检查
 
-  design --spec-id ID
-      从 Spec 生成 Design 框架
-
-  plan --goal-id ID
-      从 Design 生成执行计划
-
-  tasks --plan-id ID
-      从 Plan 拆解可执行 Tasks
-
-  prompt --task-id ID
-      为指定 Task 生成 Context Package
-
-  matrix [--action generate|check|update]
-      生成、检查或更新追溯矩阵
-
-  evidence --task-id ID [--test-id ID]
-      为指定 Task 收集 Evidence
-
-  status [--goal-id ID]
-      显示当前管线状态和进度
-
-  check [--gate G0-G11]
-      运行指定 Gate 检查
-
-  validate
-      运行完整验证（preflight + validate + gate）
-
-  release
-      运行发布前硬阻断检查
-
-  dashboard
-      显示交付看板（所有 Goal 的状态汇总）
+状态与看板:
+  status    显示当前管线状态
+  dashboard 显示交付看板
+  auto      根据复杂度模式自动推进管线
 
 选项:
   --root DIR      仓库根目录（默认自动检测）
@@ -156,13 +173,22 @@ gen_evidence_id() {
   printf 'EVID-%s-%s' "$test_id" "$(date +%Y%m%d%H%M%S)"
 }
 
+# ─── 管线状态推进 ───────────────────────────────────────
+PIPELINE_PHASES=("INIT" "CONTEXT_READY" "GOAL_READY" "SPEC_READY" "DESIGN_READY" "PLAN_READY" "TASKS_READY" "EXECUTING" "VERIFYING" "REVIEWING" "RELEASING" "RETROSPECTING" "DONE")
+
+advance_pipeline() {
+  local new_phase="$1" new_state="${2:-}"
+  local file="$CONFIG_DIR/pipeline/state.yaml"
+  [[ -f "$file" ]] || return 0
+  yaml_set "$file" "current_phase" "$new_phase"
+  [[ -n "$new_state" ]] && yaml_set "$file" "pipeline_state" "$new_state"
+  dim "Pipeline → $new_phase ($new_state)"
+}
+
 # ─── init：初始化项目结构 ────────────────────────────────
 cmd_init() {
   title "初始化 Goal 驱动交付项目结构"
   require_root
-
-  local goal_id
-  goal_id=$(gen_goal_id)
 
   step "创建配置中心目录结构"
   mkdir -p "$CONFIG_DIR"/{schema,registry,matrix,gates,pipeline,evidence,prompts,runtime}
@@ -200,79 +226,75 @@ GITIGNORE
   # ── Matrix ──
   step "初始化追溯矩阵"
   if [[ ! -f "$CONFIG_DIR/matrix/matrix.yaml" ]]; then
-    cat >"$CONFIG_DIR/matrix/matrix.yaml" <<'YAML'
-matrix: []
-YAML
+    printf 'matrix: []\n' >"$CONFIG_DIR/matrix/matrix.yaml"
     ok "创建 matrix/matrix.yaml"
   fi
 
   # ── Gates ──
   step "初始化 Gate 状态"
   if [[ ! -f "$CONFIG_DIR/gates/state.yaml" ]]; then
-    local today
-    today=$(date +%Y-%m-%d)
     cat >"$CONFIG_DIR/gates/state.yaml" <<YAML
 gates:
   G0:
     name: Context Gate
     status: NOT_STARTED
     owner: goal-reviewer
-    updated_at: ${today}
+    updated_at: ${NOW}
   G1:
     name: Goal Gate
     status: NOT_STARTED
     owner: goal-reviewer
-    updated_at: ${today}
+    updated_at: ${NOW}
   G2:
     name: Spec Gate
     status: NOT_STARTED
     owner: goal-reviewer
-    updated_at: ${today}
+    updated_at: ${NOW}
   G3:
     name: Design Gate
     status: NOT_STARTED
     owner: goal-reviewer
-    updated_at: ${today}
+    updated_at: ${NOW}
   G4:
     name: Plan Gate
     status: NOT_STARTED
     owner: goal-reviewer
-    updated_at: ${today}
+    updated_at: ${NOW}
   G5:
     name: Task Gate
     status: NOT_STARTED
     owner: goal-reviewer
-    updated_at: ${today}
+    updated_at: ${NOW}
   G6:
     name: Implementation Gate
     status: NOT_STARTED
     owner: goal-reviewer
-    updated_at: ${today}
+    updated_at: ${NOW}
   G7:
     name: Test Gate
     status: NOT_STARTED
     owner: goal-reviewer
-    updated_at: ${today}
+    updated_at: ${NOW}
   G8:
     name: Evidence Gate
     status: NOT_STARTED
     owner: goal-reviewer
-    updated_at: ${today}
+    updated_at: ${NOW}
   G9:
     name: Review Gate
     status: NOT_STARTED
     owner: goal-reviewer
-    updated_at: ${today}
+    updated_at: ${NOW}
   G10:
     name: Release Gate
     status: NOT_STARTED
     owner: goal-reviewer
-    updated_at: ${today}
+    updated_at: ${NOW}
   G11:
     name: Retrospective Gate
     status: NOT_STARTED
     owner: goal-reviewer
-    updated_at: ${today}
+    updated_at: ${NOW}
 YAML
     ok "创建 gates/state.yaml（G0-G11）"
   fi
@@ -284,7 +306,7 @@ YAML
 pipeline:
   current_phase: GOAL
   pipeline_state: INIT
-  updated_at: $(date +%Y-%m-%d)
+  updated_at: ${NOW}
 YAML
     ok "创建 pipeline/state.yaml"
   fi
@@ -351,6 +373,7 @@ YAML
     ok "创建 schema/rules.yaml"
   fi
 
+  advance_pipeline "CONTEXT_READY" "CONTEXT_READY"
   printf "\n"
   ok "Goal 项目结构初始化完成"
   info "配置中心: $CONFIG_DIR"
@@ -419,8 +442,9 @@ Out of Scope (Non-goals):
 待填写
 YAML
 
-  # 注册到 Registry
   register_goal "$goal_id" "$title_text"
+  gate_set "G0" "PASS"
+  advance_pipeline "GOAL_READY" "GOAL_READY"
 
   ok "Goal 已创建: $goal_file"
   info "请编辑 Goal 文件，填写 Context、Objective、Success Metrics 等"
@@ -437,8 +461,9 @@ register_goal() {
   - goal_id: ${goal_id}
     title: "${title_text}"
     status: Draft
-    created_at: $(date +%Y-%m-%d)
-    updated_at: $(date +%Y-%m-%d)
+    change_level: CL2
+    created_at: ${NOW}
+    updated_at: ${NOW}
 YAML
     ok "已注册到 Goal Registry"
   fi
@@ -503,6 +528,7 @@ ${goal_id}
 - 待填写
 YAML
 
+  advance_pipeline "SPEC_READY" "SPEC_READY"
   ok "Spec 已创建: $spec_file"
   info "请逐条填写 Functional Requirements 和 Acceptance Criteria"
   info "完成后运行: bash docs/goal/tools/goal-delivery.sh check --gate G2"
@@ -564,6 +590,7 @@ ${spec_id}
 - 待填写风险 1
 YAML
 
+  advance_pipeline "DESIGN_READY" "DESIGN_READY"
   ok "Design 已创建: $design_file"
   info "请填写模块拆分、接口定义、ADR"
   info "完成后运行: bash docs/goal/tools/goal-delivery.sh check --gate G3"
@@ -641,6 +668,7 @@ ${goal_id}
 所有 Acceptance Criteria 通过，Matrix 全部 Verified。
 YAML
 
+  advance_pipeline "PLAN_READY" "PLAN_READY"
   ok "Plan 已创建: $plan_file"
   info "请填写执行策略、阶段划分、风险应对"
   info "完成后运行: bash docs/goal/tools/goal-delivery.sh check --gate G4"
@@ -692,19 +720,16 @@ ${task_id}
 待填写
 
 ## Acceptance Criteria
-<!-- 完成标准 -->
-- 待填写
+<!-- 完成标准，每条可独立验证 -->
+- AC-1: 待填写
 
 ## Dependencies
 <!-- 依赖的其他 Task -->
 - 无
 
 ## Test Requirement
-<!-- 测试要求 -->
+<!-- 测试要求：必须覆盖哪些场景 -->
 - 待填写
-
-## Priority
-P1
 
 ## DoD (Definition of Done)
 - [ ] 代码实现对应 Task
@@ -714,6 +739,7 @@ P1
 YAML
 
   register_task "$task_id" "$goal_id"
+  advance_pipeline "TASKS_READY" "TASKS_READY"
 
   ok "Task 已创建: $task_file"
   info "请为每个 Task 创建独立文件，遵循 TASK-${goal_id}-NNN 格式"
@@ -731,8 +757,10 @@ register_task() {
   - task_id: ${task_id}
     goal_id: ${goal_id}
     status: Unmapped
-    created_at: $(date +%Y-%m-%d)
-    updated_at: $(date +%Y-%m-%d)
+    dod: false
+    evidence: ""
+    created_at: ${NOW}
+    updated_at: ${NOW}
 YAML
     ok "已注册到 Task Registry"
   fi
@@ -817,13 +845,112 @@ YAML
 prompt_id: ${prompt_id}
 task_id: ${task_id}
 version: "1.0"
-created_at: $(date +%Y-%m-%d)
-updated_at: $(date +%Y-%m-%d)
+created_at: ${NOW}
+updated_at: ${NOW}
 YAML
 
   ok "Context Package 已生成: $prompt_file"
   info "请根据 Goal/Spec/Matrix 填充具体内容"
-  info "完成后运行: bash docs/goal/tools/goal-delivery.sh check --gate G6"
+}
+
+# ─── evidence：收集 Evidence ─────────────────────────────
+cmd_evidence() {
+  title "Step 8: Evidence 收集"
+  require_config
+
+  local task_id="${1:-}"
+  local test_id="${2:-TEST-${task_id}-001}"
+  [[ -n "$task_id" ]] || die "需要 --task-id 参数"
+
+  # 从 Registry 读取关联的 goal_id
+  local goal_id=""
+  if [[ -f "$CONFIG_DIR/registry/tasks.yaml" ]]; then
+    goal_id=$(awk -v tid="$task_id" '/task_id:/{id=$3} id==tid && /goal_id:/{print $2; exit}' "$CONFIG_DIR/registry/tasks.yaml")
+  fi
+
+  local evidence_id
+  evidence_id=$(gen_evidence_id "$test_id")
+  local evidence_dir="$CONFIG_DIR/evidence/$(date +%Y-%m-%d)/${task_id}"
+  local evidence_file="${evidence_dir}/${evidence_id}.md"
+
+  mkdir -p "$evidence_dir"
+
+  step "为 Task $task_id 收集 Evidence"
+
+  local diff_summary=""
+  if git rev-parse HEAD >/dev/null 2>&1; then
+    diff_summary=$(git diff --stat HEAD~1 2>/dev/null || echo "无变更")
+  fi
+
+  # 生成符合 gate-check.sh 要求的完整 Evidence 模板
+  cat >"$evidence_file" <<YAML
+# Evidence: ${evidence_id}
+
+## Evidence ID
+${evidence_id}
+
+## Task ID
+${task_id}
+
+## Test ID
+${test_id}
+
+## Goal ID
+${goal_id:-待填写}
+
+## Spec ID
+待填写
+
+## Acceptance Criteria ID
+待填写
+
+## Date
+$(date +%Y-%m-%d)
+
+## Status
+待验证
+
+## Files Changed
+\`\`\`
+${diff_summary}
+\`\`\`
+
+## Commands Run
+\`\`\`
+待填写测试命令
+\`\`\`
+
+## Results
+待运行测试
+
+## Logs
+<!-- 关键日志 -->
+待填写
+
+## Diff Summary
+变更摘要待填写
+
+## Requirement Proof
+<!-- 对应需求证明：哪条 Requirement 被这个 Evidence 证明 -->
+- REQ: 待填写
+- AC: 待填写
+
+## Known Limitations
+<!-- 已知限制 -->
+- 无
+
+## Risks
+<!-- 风险 -->
+- 无
+
+## Rollback
+<!-- 回滚方案 -->
+待填写
+YAML
+
+  ok "Evidence 已创建: $evidence_file"
+  info "请填写测试结果、命令输出、需求证明"
+  dim "注意: gate-check.sh 要求 Evidence 包含 Evidence ID / Task ID / Test ID / Goal ID / Spec ID / Acceptance Criteria ID / Date / Status / Files Changed / Commands Run"
 }
 
 # ─── matrix：追溯矩阵管理 ───────────────────────────────
@@ -873,89 +1000,253 @@ cmd_matrix() {
   esac
 }
 
-# ─── evidence：收集 Evidence ─────────────────────────────
-cmd_evidence() {
-  title "Step 8: Evidence 收集"
+# ─── change：变更管理 ────────────────────────────────────
+cmd_change() {
+  title "变更管理"
   require_config
 
-  local task_id="${1:-}"
-  local test_id="${2:-}"
-  [[ -n "$task_id" ]] || die "需要 --task-id 参数"
+  local goal_id="${1:-}"
+  local level="${2:-CL2}"
+  [[ -n "$goal_id" ]] || die "需要 --goal-id 参数"
 
-  local evidence_id
-  evidence_id=$(gen_evidence_id "${test_id:-TEST-${task_id}-001}")
-  local evidence_dir="$CONFIG_DIR/evidence/$(date +%Y-%m-%d)/${task_id}"
-  local evidence_file="${evidence_dir}/${evidence_id}.md"
+  step "记录变更: Goal=$goal_id Level=$level"
 
-  mkdir -p "$evidence_dir"
-
-  step "为 Task $task_id 收集 Evidence"
-
-  local diff_summary=""
-  if git rev-parse HEAD >/dev/null 2>&1; then
-    diff_summary=$(git diff --stat HEAD~1 2>/dev/null || echo "无变更")
+  local reg_file="$CONFIG_DIR/registry/goals.yaml"
+  if [[ -f "$reg_file" ]] && grep -q "$goal_id" "$reg_file"; then
+    # 更新 change_level
+    local tmp="${reg_file}.tmp"
+    awk -v gid="$goal_id" -v lv="$level" '
+      /goal_id:/{cur=$3}
+      cur==gid && /change_level/{$0="    change_level: "lv}
+      {print}
+    ' "$reg_file" >"$tmp"
+    mv "$tmp" "$reg_file"
+    ok "已更新 change_level: $level"
   fi
 
-  cat >"$evidence_file" <<YAML
-# Evidence: ${evidence_id}
+  info "变更级别说明:"
+  dim "  CL0: 文档变更 → lite 模式"
+  dim "  CL1: 配置/脚本变更 → lite 模式"
+  dim "  CL2: 功能开发 → standard 模式"
+  dim "  CL3: 跨模块变更 → full 模式"
+  dim "  CL4: 数据模型变更 → full + 迁移验证"
+  dim "  CL5: 安全/合规变更 → full + 人工审批"
 
-## Evidence ID
-${evidence_id}
+  case "$level" in
+    CL0|CL1) info "推荐模式: lite" ;;
+    CL2)     info "推荐模式: standard" ;;
+    CL3|CL4|CL5) info "推荐模式: full" ;;
+  esac
+}
 
-## Task ID
-${task_id}
+# ─── check：Gate 检查（委托给专业工具）──────────────────
+cmd_check() {
+  local gate="${1:-}"
 
-## Test ID
-${test_id:-待填写}
+  if [[ -n "$gate" ]]; then
+    title "Gate 检查: $gate"
+    run_single_gate "$gate"
+  else
+    title "全量 Gate 检查 (G0-G11)"
+    local all_pass=true
+    for g in G0 G1 G2 G3 G4 G5 G6 G7 G8 G9 G10 G11; do
+      run_single_gate "$g" || all_pass=false
+    done
+    $all_pass && ok "全部 Gate 通过" || warn "存在未通过的 Gate"
+  fi
+}
 
-## Goal ID
-待填写
+run_single_gate() {
+  local gate="$1"
+  local pass=true
 
-## Date
-$(date +%Y-%m-%d)
+  case "$gate" in
+    G0)
+      step "G0 Context Gate — 上下文恢复完整"
+      [[ -d "$CONFIG_DIR" ]] || { warn "缺少 .config/goal/"; pass=false; }
+      [[ -f "$CONFIG_DIR/registry/goals.yaml" ]] || { warn "缺少 goals.yaml"; pass=false; }
+      [[ -f "$CONFIG_DIR/gates/state.yaml" ]] || { warn "缺少 gates/state.yaml"; pass=false; }
+      [[ -f "$CONFIG_DIR/pipeline/state.yaml" ]] || { warn "缺少 pipeline/state.yaml"; pass=false; }
+      ;;
+    G1)
+      step "G1 Goal Gate — SMART 合规"
+      if [[ -f "$SCRIPT_DIR/lint-goal.sh" ]]; then
+        bash "$SCRIPT_DIR/lint-goal.sh" "$ROOT/docs/goal" 2>/dev/null || pass=false
+      fi
+      # 检查 Goal 制品存在且包含必要字段
+      local goals_dir="$ROOT/docs/goal/goals"
+      if [[ ! -d "$goals_dir" ]] || [[ -z "$(ls -A "$goals_dir" 2>/dev/null)" ]]; then
+        warn "未找到 Goal 制品"; pass=false
+      else
+        for f in "$goals_dir"/*.md; do
+          [[ -f "$f" ]] || continue
+          for field in "Success Metrics" "Acceptance Criteria" "Deadline"; do
+            grep -q "$field" "$f" 2>/dev/null || { warn "$(basename "$f"): 缺少 $field"; pass=false; }
+          done
+          if grep -qiE "^[[:space:]]*-( 待填写|待确认)" "$f" 2>/dev/null; then
+            warn "$(basename "$f"): 包含未填写的占位符"; pass=false
+          fi
+        done
+      fi
+      ;;
+    G2)
+      step "G2 Spec Gate — 需求完整且可测试"
+      local specs_dir="$ROOT/docs/goal/specs"
+      if [[ ! -d "$specs_dir" ]] || [[ -z "$(ls -A "$specs_dir" 2>/dev/null)" ]]; then
+        warn "未找到 Spec 制品"; pass=false
+      else
+        for f in "$specs_dir"/*.md; do
+          [[ -f "$f" ]] || continue
+          for field in "Acceptance Criteria" "Edge Cases" "REQ-"; do
+            grep -q "$field" "$f" 2>/dev/null || { warn "$(basename "$f"): 缺少 $field"; pass=false; }
+          done
+        done
+      fi
+      ;;
+    G3)
+      step "G3 Design Gate — 模块映射"
+      local designs_dir="$ROOT/docs/goal/designs"
+      if [[ ! -d "$designs_dir" ]] || [[ -z "$(ls -A "$designs_dir" 2>/dev/null)" ]]; then
+        warn "未找到 Design 制品"; pass=false
+      else
+        for f in "$designs_dir"/*.md; do
+          [[ -f "$f" ]] || continue
+          for field in "Modules" "Interfaces"; do
+            grep -q "$field" "$f" 2>/dev/null || { warn "$(basename "$f"): 缺少 $field"; pass=false; }
+          done
+        done
+      fi
+      ;;
+    G4)
+      step "G4 Plan Gate — 依赖顺序"
+      local plans_dir="$ROOT/docs/goal/plans"
+      if [[ ! -d "$plans_dir" ]] || [[ -z "$(ls -A "$plans_dir" 2>/dev/null)" ]]; then
+        warn "未找到 Plan 制品"; pass=false
+      else
+        for f in "$plans_dir"/*.md; do
+          [[ -f "$f" ]] || continue
+          for field in "Phase" "Rollback"; do
+            grep -qi "$field" "$f" 2>/dev/null || { warn "$(basename "$f"): 缺少 $field"; pass=false; }
+          done
+        done
+      fi
+      ;;
+    G5)
+      step "G5 Task Gate — 原子化且有 DoD"
+      # 委托给 gate-check.sh 做真正的 Task DoD 覆盖率检查
+      if [[ -f "$SCRIPT_DIR/gate-check.sh" ]]; then
+        bash "$SCRIPT_DIR/gate-check.sh" "$ROOT" 2>/dev/null || pass=false
+      else
+        # 回退：基本检查
+        local tasks_dir="$ROOT/docs/goal/tasks"
+        if [[ ! -d "$tasks_dir" ]] || [[ -z "$(ls -A "$tasks_dir" 2>/dev/null)" ]]; then
+          warn "未找到 Task 制品"; pass=false
+        else
+          for f in "$tasks_dir"/*.md; do
+            [[ -f "$f" ]] || continue
+            for field in "DoD" "Input" "Output" "TASK-"; do
+              grep -q "$field" "$f" 2>/dev/null || { warn "$(basename "$f"): 缺少 $field"; pass=false; }
+            done
+          done
+        fi
+      fi
+      ;;
+    G6)
+      step "G6 Implementation Gate — Prompt 完整"
+      local prompts_dir="$CONFIG_DIR/prompts"
+      if [[ ! -d "$prompts_dir" ]] || [[ -z "$(ls -A "$prompts_dir" 2>/dev/null)" ]]; then
+        warn "未找到 Prompt/Context Package"; pass=false
+      else
+        for f in "$prompts_dir"/*/v*.md; do
+          [[ -f "$f" ]] || continue
+          for field in "Constraints" "Do Not"; do
+            grep -qi "$field" "$f" 2>/dev/null || { warn "$(basename "$(dirname "$f")"): 缺少 $field"; pass=false; }
+          done
+        done
+      fi
+      ;;
+    G7)
+      step "G7 Test Gate — 测试通过"
+      # 委托给 goal-workflow.sh 做真正的验证
+      if [[ -f "$SCRIPT_DIR/goal-workflow.sh" ]]; then
+        info "委托 goal-workflow.sh validate 执行测试验证"
+        bash "$SCRIPT_DIR/goal-workflow.sh" validate --root "$ROOT" 2>/dev/null || pass=false
+      else
+        info "G7 需要在代码实现后运行实际测试"
+      fi
+      ;;
+    G8)
+      step "G8 Evidence Gate — Evidence 完整"
+      # 委托给 gate-check.sh 做 Evidence 字段完整性检查
+      if [[ -f "$SCRIPT_DIR/gate-check.sh" ]]; then
+        bash "$SCRIPT_DIR/gate-check.sh" "$ROOT" 2>/dev/null || pass=false
+      else
+        local evid_dir="$CONFIG_DIR/evidence"
+        if [[ ! -d "$evid_dir" ]] || [[ -z "$(find "$evid_dir" -name "EVID-*.md" -type f 2>/dev/null)" ]]; then
+          warn "未找到 Evidence 文件"; pass=false
+        fi
+      fi
+      ;;
+    G9)
+      step "G9 Review Gate — 人工审查"
+      info "G9 需要 Reviewer 人工确认"
+      info "检查项: 代码满足 Task/Spec、Matrix 覆盖、无 CRITICAL/HIGH 问题"
+      ;;
+    G10)
+      step "G10 Release Gate — 发布就绪"
+      # 委托给 goal-workflow.sh release
+      if [[ -f "$SCRIPT_DIR/goal-workflow.sh" ]]; then
+        info "委托 goal-workflow.sh release 执行发布前检查"
+        bash "$SCRIPT_DIR/goal-workflow.sh" release --root "$ROOT" 2>/dev/null || pass=false
+      else
+        info "G10 检查: Matrix 全部 Verified、P0/P1 测试通过、回滚方案就绪"
+      fi
+      ;;
+    G11)
+      step "G11 Retrospective Gate — 复盘完成"
+      info "G11 检查: 复盘文档已编写、改进项已识别"
+      ;;
+    *)
+      die "未知 Gate: $gate (可选 G0-G11)"
+      ;;
+  esac
 
-## Status
-待验证
+  if $pass; then
+    ok "$gate PASS"
+    gate_set "$gate" "PASS"
+    return 0
+  else
+    warn "$gate 需要完善"
+    gate_set "$gate" "FAIL"
+    return 1
+  fi
+}
 
-## Files Changed
-\`\`\`
-${diff_summary}
-\`\`\`
+# ─── validate：完整验证 ──────────────────────────────────
+cmd_validate() {
+  title "完整验证"
+  require_config
 
-## Commands Run
-\`\`\`
-待填写测试命令
-\`\`\`
+  if [[ -f "$SCRIPT_DIR/goal-workflow.sh" ]]; then
+    step "委托 goal-workflow.sh validate"
+    bash "$SCRIPT_DIR/goal-workflow.sh" validate --root "$ROOT" || true
+  else
+    warn "goal-workflow.sh 不可用"
+    cmd_check
+  fi
+}
 
-## Results
-待运行测试
+# ─── release：发布前检查 ─────────────────────────────────
+cmd_release() {
+  title "发布前检查"
+  require_config
 
-## Logs
-<!-- 关键日志 -->
-待填写
-
-## Diff Summary
-变更摘要待填写
-
-## Requirement Proof
-<!-- 对应需求证明 -->
-- 待填写
-
-## Known Limitations
-<!-- 已知限制 -->
-- 无
-
-## Risks
-<!-- 风险 -->
-- 无
-
-## Rollback
-<!-- 回滚方案 -->
-待填写
-YAML
-
-  ok "Evidence 已创建: $evidence_file"
-  info "请填写测试结果、命令输出、需求证明"
+  if [[ -f "$SCRIPT_DIR/goal-workflow.sh" ]]; then
+    step "委托 goal-workflow.sh release"
+    bash "$SCRIPT_DIR/goal-workflow.sh" release --root "$ROOT" || true
+  else
+    warn "goal-workflow.sh 不可用"
+  fi
 }
 
 # ─── status：显示管线状态 ────────────────────────────────
@@ -965,31 +1256,27 @@ cmd_status() {
 
   # Pipeline 状态
   header "Pipeline 状态"
-  if [[ -f "$CONFIG_DIR/pipeline/state.yaml" ]]; then
-    local phase state
-    phase=$(awk '/^pipeline:/{f=1} f && /current_phase:/{print $2; exit}' "$CONFIG_DIR/pipeline/state.yaml")
-    state=$(awk '/^pipeline:/{f=1} f && /pipeline_state:/{print $2; exit}' "$CONFIG_DIR/pipeline/state.yaml")
-    printf "  当前阶段: ${BOLD}%s${NC}\n" "$phase"
-    printf "  管线状态: ${BOLD}%s${NC}\n" "$state"
-  fi
+  local phase state
+  phase=$(yaml_get "$CONFIG_DIR/pipeline/state.yaml" "current_phase") || phase="UNKNOWN"
+  state=$(yaml_get "$CONFIG_DIR/pipeline/state.yaml" "pipeline_state") || state="UNKNOWN"
+  printf "  当前阶段: ${BOLD}%s${NC}\n" "$phase"
+  printf "  管线状态: ${BOLD}%s${NC}\n" "$state"
 
   # Gate 状态
   header "Gate 状态 (G0-G11)"
-  if [[ -f "$CONFIG_DIR/gates/state.yaml" ]]; then
-    for gate in G0 G1 G2 G3 G4 G5 G6 G7 G8 G9 G10 G11; do
-      local status
-      status=$(grep -A2 "^  ${gate}:" "$CONFIG_DIR/gates/state.yaml" | grep "status:" | awk '{print $2}' 2>/dev/null || echo "NOT_STARTED")
-      local icon
-      case "$status" in
-        PASS)            icon="${GREEN}✓ PASS${NC}" ;;
-        PASS_WITH_RISK)  icon="${YELLOW}⚠ PASS_WITH_RISK${NC}" ;;
-        FAIL)            icon="${RED}✗ FAIL${NC}" ;;
-        BLOCKED)         icon="${RED}⊘ BLOCKED${NC}" ;;
-        *)               icon="${CYAN}○ ${status}${NC}" ;;
-      esac
-      printf "  %-4s %b\n" "$gate" "$icon"
-    done
-  fi
+  for gate in G0 G1 G2 G3 G4 G5 G6 G7 G8 G9 G10 G11; do
+    local gs
+    gs=$(gate_status "$gate")
+    local icon
+    case "$gs" in
+      PASS)            icon="${GREEN}✓ PASS${NC}" ;;
+      PASS_WITH_RISK)  icon="${YELLOW}⚠ PASS_WITH_RISK${NC}" ;;
+      FAIL)            icon="${RED}✗ FAIL${NC}" ;;
+      BLOCKED)         icon="${RED}⊘ BLOCKED${NC}" ;;
+      *)               icon="${CYAN}○ ${gs}${NC}" ;;
+    esac
+    printf "  %-4s %b\n" "$gate" "$icon"
+  done
 
   # Goal 列表
   header "Goals"
@@ -1014,263 +1301,6 @@ cmd_status() {
   printf "  Evidence 文件数: %s\n" "$evid_count"
 }
 
-# ─── check：Gate 检查 ────────────────────────────────────
-cmd_check() {
-  local gate="${1:-}"
-
-  if [[ -n "$gate" ]]; then
-    title "Gate 检查: $gate"
-    case "$gate" in
-      G0)  check_g0 ;;
-      G1)  check_g1 ;;
-      G2)  check_g2 ;;
-      G3)  check_g3 ;;
-      G4)  check_g4 ;;
-      G5)  check_g5 ;;
-      G6)  check_g6 ;;
-      G7)  check_g7 ;;
-      G8)  check_g8 ;;
-      G9)  check_g9 ;;
-      G10) check_g10 ;;
-      G11) check_g11 ;;
-      *)   die "未知 Gate: $gate (可选 G0-G11)" ;;
-    esac
-  else
-    title "全量 Gate 检查"
-    for g in G0 G1 G2 G3 G4 G5 G6 G7 G8 G9 G10 G11; do
-      cmd_check "$g" || true
-    done
-  fi
-}
-
-check_g0() {
-  step "G0 Context Gate — 上下文恢复完整"
-  local pass=true
-
-  [[ -d "$CONFIG_DIR" ]] || { warn "缺少 .config/goal/"; pass=false; }
-  [[ -f "$CONFIG_DIR/registry/goals.yaml" ]] || { warn "缺少 goals.yaml"; pass=false; }
-  [[ -f "$CONFIG_DIR/gates/state.yaml" ]] || { warn "缺少 gates/state.yaml"; pass=false; }
-
-  $pass && ok "G0 PASS" || warn "G0 需要补充上下文"
-}
-
-check_g1() {
-  step "G1 Goal Gate — SMART 合规"
-  local pass=true
-  local goals_dir="$ROOT/docs/goal/goals"
-
-  if [[ ! -d "$goals_dir" ]] || [[ -z "$(ls -A "$goals_dir" 2>/dev/null)" ]]; then
-    warn "未找到 Goal 制品"
-    return 1
-  fi
-
-  for goal_file in "$goals_dir"/*.md; do
-    [[ -f "$goal_file" ]] || continue
-    local name
-    name=$(basename "$goal_file")
-
-    grep -q "Success Metrics" "$goal_file" || { warn "$name: 缺少 Success Metrics"; pass=false; }
-    grep -q "Deadline\|截止时间" "$goal_file" || { warn "$name: 缺少 Deadline"; pass=false; }
-    grep -q "Non-goals\|Out of Scope" "$goal_file" || { warn "$name: 缺少 Non-goals"; pass=false; }
-    grep -q "Acceptance Criteria" "$goal_file" || { warn "$name: 缺少 Acceptance Criteria"; pass=false; }
-
-    if grep -qiE "尽快|尽量|最好|可能|大概|差不多" "$goal_file"; then
-      warn "$name: 包含模糊词（尽快/尽量/最好/可能/大概）"
-      pass=false
-    fi
-  done
-
-  $pass && ok "G1 PASS" || warn "G1 需要完善 Goal"
-}
-
-check_g2() {
-  step "G2 Spec Gate — 需求完整且可测试"
-  local pass=true
-  local specs_dir="$ROOT/docs/goal/specs"
-
-  if [[ ! -d "$specs_dir" ]] || [[ -z "$(ls -A "$specs_dir" 2>/dev/null)" ]]; then
-    warn "未找到 Spec 制品"
-    return 1
-  fi
-
-  for spec_file in "$specs_dir"/*.md; do
-    [[ -f "$spec_file" ]] || continue
-    local name
-    name=$(basename "$spec_file")
-
-    grep -q "Acceptance Criteria" "$spec_file" || { warn "$name: 缺少 Acceptance Criteria"; pass=false; }
-    grep -q "Edge Cases\|边界" "$spec_file" || { warn "$name: 缺少边界场景"; pass=false; }
-    grep -q "REQ-" "$spec_file" || { warn "$name: 缺少编号化 Requirement"; pass=false; }
-  done
-
-  $pass && ok "G2 PASS" || warn "G2 需要完善 Spec"
-}
-
-check_g3() {
-  step "G3 Design Gate — 模块映射"
-  local pass=true
-  local designs_dir="$ROOT/docs/goal/designs"
-
-  if [[ ! -d "$designs_dir" ]] || [[ -z "$(ls -A "$designs_dir" 2>/dev/null)" ]]; then
-    warn "未找到 Design 制品"
-    return 1
-  fi
-
-  for design_file in "$designs_dir"/*.md; do
-    [[ -f "$design_file" ]] || continue
-    local name
-    name=$(basename "$design_file")
-
-    grep -q "Modules" "$design_file" || { warn "$name: 缺少 Modules"; pass=false; }
-    grep -q "Interfaces" "$design_file" || { warn "$name: 缺少 Interfaces"; pass=false; }
-  done
-
-  $pass && ok "G3 PASS" || warn "G3 需要完善 Design"
-}
-
-check_g4() {
-  step "G4 Plan Gate — 依赖顺序"
-  local pass=true
-  local plans_dir="$ROOT/docs/goal/plans"
-
-  if [[ ! -d "$plans_dir" ]] || [[ -z "$(ls -A "$plans_dir" 2>/dev/null)" ]]; then
-    warn "未找到 Plan 制品"
-    return 1
-  fi
-
-  for plan_file in "$plans_dir"/*.md; do
-    [[ -f "$plan_file" ]] || continue
-    local name
-    name=$(basename "$plan_file")
-
-    grep -q "Phase" "$plan_file" || { warn "$name: 缺少 Phases"; pass=false; }
-    grep -q "Rollback\|回滚" "$plan_file" || { warn "$name: 缺少回滚方案"; pass=false; }
-  done
-
-  $pass && ok "G4 PASS" || warn "G4 需要完善 Plan"
-}
-
-check_g5() {
-  step "G5 Task Gate — 原子化且有 DoD"
-  local pass=true
-  local tasks_dir="$ROOT/docs/goal/tasks"
-
-  if [[ ! -d "$tasks_dir" ]] || [[ -z "$(ls -A "$tasks_dir" 2>/dev/null)" ]]; then
-    warn "未找到 Task 制品"
-    return 1
-  fi
-
-  for task_file in "$tasks_dir"/*.md; do
-    [[ -f "$task_file" ]] || continue
-    local name
-    name=$(basename "$task_file")
-
-    grep -q "DoD\|Definition of Done" "$task_file" || { warn "$name: 缺少 DoD"; pass=false; }
-    grep -q "Input" "$task_file" || { warn "$name: 缺少 Input"; pass=false; }
-    grep -q "Output" "$task_file" || { warn "$name: 缺少 Output"; pass=false; }
-    grep -q "TASK-" "$task_file" || { warn "$name: 缺少 Task ID"; pass=false; }
-  done
-
-  $pass && ok "G5 PASS" || warn "G5 需要完善 Tasks"
-}
-
-check_g6() {
-  step "G6 Implementation Gate — Prompt 完整"
-  local pass=true
-  local prompts_dir="$CONFIG_DIR/prompts"
-
-  if [[ ! -d "$prompts_dir" ]] || [[ -z "$(ls -A "$prompts_dir" 2>/dev/null)" ]]; then
-    warn "未找到 Prompt/Context Package"
-    return 1
-  fi
-
-  for prompt_file in "$prompts_dir"/*/v*.md; do
-    [[ -f "$prompt_file" ]] || continue
-    local name
-    name=$(basename "$(dirname "$prompt_file")")
-
-    grep -q "Constraints\|约束" "$prompt_file" || { warn "$name: 缺少 Constraints"; pass=false; }
-    grep -q "Do Not\|禁止" "$prompt_file" || { warn "$name: 缺少 Do Not"; pass=false; }
-  done
-
-  $pass && ok "G6 PASS" || warn "G6 需要完善 Prompt"
-}
-
-check_g7() {
-  step "G7 Test Gate — 测试通过"
-  info "G7 需要在代码实现后运行实际测试"
-  info "运行: bash docs/goal/tools/goal-workflow.sh validate"
-}
-
-check_g8() {
-  step "G8 Evidence Gate — Evidence 完整"
-  local pass=true
-  local evid_dir="$CONFIG_DIR/evidence"
-
-  if [[ ! -d "$evid_dir" ]] || [[ -z "$(find "$evid_dir" -name "EVID-*.md" -type f 2>/dev/null)" ]]; then
-    warn "未找到 Evidence 文件"
-    return 1
-  fi
-
-  local count=0
-  for evid_file in "$evid_dir"/**/EVID-*.md; do
-    [[ -f "$evid_file" ]] || continue
-    count=$((count + 1))
-    local name
-    name=$(basename "$evid_file")
-
-    grep -q "Status" "$evid_file" || { warn "$name: 缺少 Status"; pass=false; }
-    grep -q "Files Changed" "$evid_file" || { warn "$name: 缺少 Files Changed"; pass=false; }
-    grep -q "Results" "$evid_file" || { warn "$name: 缺少 Results"; pass=false; }
-  done
-
-  info "Evidence 文件数: $count"
-  $pass && ok "G8 PASS" || warn "G8 需要完善 Evidence"
-}
-
-check_g9() {
-  step "G9 Review Gate — 人工审查"
-  info "G9 需要 Reviewer 人工确认"
-  info "检查项: 代码满足 Task/Spec、Matrix 覆盖、无 CRITICAL/HIGH 问题"
-}
-
-check_g10() {
-  step "G10 Release Gate — 发布就绪"
-  info "G10 检查: Matrix 全部 Verified、P0/P1 测试通过、回滚方案就绪"
-  info "运行: bash docs/goal/tools/goal-workflow.sh release"
-}
-
-check_g11() {
-  step "G11 Retrospective Gate — 复盘完成"
-  info "G11 检查: 复盘文档已编写、改进项已识别"
-}
-
-# ─── validate：完整验证 ──────────────────────────────────
-cmd_validate() {
-  title "完整验证"
-  require_config
-
-  step "运行 goal-workflow.sh validate"
-  if [[ -f "$SCRIPT_DIR/goal-workflow.sh" ]]; then
-    bash "$SCRIPT_DIR/goal-workflow.sh" validate --root "$ROOT" || true
-  else
-    warn "goal-workflow.sh 不可用，跳过"
-  fi
-}
-
-# ─── release：发布前检查 ─────────────────────────────────
-cmd_release() {
-  title "发布前检查"
-  require_config
-
-  step "运行 goal-workflow.sh release"
-  if [[ -f "$SCRIPT_DIR/goal-workflow.sh" ]]; then
-    bash "$SCRIPT_DIR/goal-workflow.sh" release --root "$ROOT" || true
-  else
-    warn "goal-workflow.sh 不可用，跳过"
-  fi
-}
-
 # ─── dashboard：交付看板 ─────────────────────────────────
 cmd_dashboard() {
   title "Goal 交付看板"
@@ -1287,16 +1317,14 @@ cmd_dashboard() {
   printf "  ${BOLD}Tasks${NC}:     %s\n" "$task_count"
   printf "  ${BOLD}Evidence${NC}:  %s\n" "$evid_count"
 
-  if [[ -f "$CONFIG_DIR/pipeline/state.yaml" ]]; then
-    local phase state
-    phase=$(awk '/^pipeline:/{f=1} f && /current_phase:/{print $2; exit}' "$CONFIG_DIR/pipeline/state.yaml")
-    state=$(awk '/^pipeline:/{f=1} f && /pipeline_state:/{print $2; exit}' "$CONFIG_DIR/pipeline/state.yaml")
-    printf "  ${BOLD}Phase${NC}:     %s → %s\n" "$phase" "$state"
-  fi
+  local phase state
+  phase=$(yaml_get "$CONFIG_DIR/pipeline/state.yaml" "current_phase") || phase="UNKNOWN"
+  state=$(yaml_get "$CONFIG_DIR/pipeline/state.yaml" "pipeline_state") || state="UNKNOWN"
+  printf "  ${BOLD}Phase${NC}:     %s → %s\n" "$phase" "$state"
 
   if [[ -f "$CONFIG_DIR/gates/state.yaml" ]]; then
     local pass_count=0
-    pass_count=$(awk '/^  G[0-9]+:/{g=1} g && /status: PASS$/{c++; g=0} g && /status: [^P]/{g=0} END{print c+0}' "$CONFIG_DIR/gates/state.yaml")
+    pass_count=$(awk '/gate_id: G[0-9]/{g=1} g && /status: PASS/{c++; g=0} g && /status: [^P]/{g=0} END{print c+0}' "$CONFIG_DIR/gates/state.yaml")
     printf "  ${BOLD}Gates${NC}:     %s/12 通过\n" "$pass_count"
   fi
 
@@ -1304,8 +1332,7 @@ cmd_dashboard() {
   printf "  "
   local phases=("Goal" "Spec" "Design" "Plan" "Tasks" "Prompt" "Code" "Test" "Review" "Release" "Retro")
   local current_phase=""
-  [[ -f "$CONFIG_DIR/pipeline/state.yaml" ]] && \
-    current_phase=$(awk '/^pipeline:/{f=1} f && /current_phase:/{print $2; exit}' "$CONFIG_DIR/pipeline/state.yaml")
+  current_phase=$(yaml_get "$CONFIG_DIR/pipeline/state.yaml" "current_phase") || current_phase=""
 
   local found_current=false
   for p in "${phases[@]}"; do
@@ -1323,6 +1350,72 @@ cmd_dashboard() {
   printf "Done\n"
 }
 
+# ─── auto：自动推进 ─────────────────────────────────────
+cmd_auto() {
+  title "自动推进管线"
+  require_config
+
+  local phase
+  phase=$(yaml_get "$CONFIG_DIR/pipeline/state.yaml" "current_phase") || phase="INIT"
+
+  info "当前阶段: $phase"
+  info "模式: $MODE"
+
+  case "$phase" in
+    INIT|CONTEXT_READY)
+      step "检测到需要创建 Goal"
+      info "请运行: goal-delivery.sh goal --title \"你的目标\""
+      ;;
+    GOAL|GOAL_READY)
+      step "Goal 已就绪，检查 G1"
+      run_single_gate "G1" && info "下一步: goal-delivery.sh spec --goal-id <ID>" || warn "请先完善 Goal"
+      ;;
+    SPEC|SPEC_READY)
+      step "Spec 已就绪，检查 G2"
+      run_single_gate "G2" && info "下一步: goal-delivery.sh design --spec-id <ID>" || warn "请先完善 Spec"
+      ;;
+    DESIGN|DESIGN_READY)
+      step "Design 已就绪，检查 G3"
+      run_single_gate "G3" && info "下一步: goal-delivery.sh plan --goal-id <ID>" || warn "请先完善 Design"
+      ;;
+    PLAN|PLAN_READY)
+      step "Plan 已就绪，检查 G4"
+      run_single_gate "G4" && info "下一步: goal-delivery.sh tasks --plan-id <ID>" || warn "请先完善 Plan"
+      ;;
+    TASKS|TASKS_READY)
+      step "Tasks 已就绪，检查 G5"
+      run_single_gate "G5" && info "下一步: goal-delivery.sh prompt --task-id <ID>" || warn "请先完善 Tasks"
+      ;;
+    PROMPT|EXECUTING)
+      step "正在执行，检查 G6"
+      run_single_gate "G6" && info "下一步: 编写代码，然后运行 goal-delivery.sh evidence --task-id <ID>" || warn "请先完善 Prompt"
+      ;;
+    CODE|VERIFYING)
+      step "正在验证，检查 G7/G8"
+      run_single_gate "G7"
+      run_single_gate "G8"
+      ;;
+    TEST|REVIEWING)
+      step "正在审查，检查 G9"
+      run_single_gate "G9"
+      ;;
+    REVIEW|RELEASE|RELEASING)
+      step "正在发布，检查 G10"
+      run_single_gate "G10"
+      ;;
+    RETROSPECTING|RETRO)
+      step "正在复盘，检查 G11"
+      run_single_gate "G11"
+      ;;
+    DONE)
+      ok "管线已完成！"
+      ;;
+    *)
+      warn "未知阶段: $phase"
+      ;;
+  esac
+}
+
 # ─── 参数解析 ────────────────────────────────────────────
 COMMAND=""
 ARG1=""
@@ -1334,6 +1427,7 @@ parse_args() {
       --root)
         [[ $# -ge 2 ]] || die "--root 需要值"
         ROOT="$2"
+        CONFIG_DIR="$ROOT/.config/goal"
         shift 2
         ;;
       --mode)
@@ -1348,11 +1442,6 @@ parse_args() {
         ;;
       --spec-id)
         [[ $# -ge 2 ]] || die "--spec-id 需要值"
-        ARG1="$2"
-        shift 2
-        ;;
-      --design-id)
-        [[ $# -ge 2 ]] || die "--design-id 需要值"
         ARG1="$2"
         shift 2
         ;;
@@ -1379,6 +1468,11 @@ parse_args() {
       --gate)
         [[ $# -ge 2 ]] || die "--gate 需要值"
         ARG1="$2"
+        shift 2
+        ;;
+      --level)
+        [[ $# -ge 2 ]] || die "--level 需要值"
+        ARG2="$2"
         shift 2
         ;;
       --action)
@@ -1417,13 +1511,15 @@ main() {
     plan)      cmd_plan "$ARG1" ;;
     tasks)     cmd_tasks "$ARG1" ;;
     prompt)    cmd_prompt "$ARG1" ;;
-    matrix)    cmd_matrix "$ARG1" ;;
     evidence)  cmd_evidence "$ARG1" "$ARG2" ;;
+    matrix)    cmd_matrix "$ARG1" ;;
+    change)    cmd_change "$ARG1" "$ARG2" ;;
     status)    cmd_status ;;
     check)     cmd_check "$ARG1" ;;
     validate)  cmd_validate ;;
     release)   cmd_release ;;
     dashboard) cmd_dashboard ;;
+    auto)      cmd_auto ;;
     help|"")   usage ;;
     *)         die "未知命令: $COMMAND" ;;
   esac

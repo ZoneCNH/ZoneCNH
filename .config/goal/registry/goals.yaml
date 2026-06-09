@@ -32,3 +32,51 @@ goals:
     status: Draft
     created_at: 2026-06-09
     updated_at: 2026-06-09
+
+  - goal_id: GOAL-KERNEL-20260609-001
+    document_version: "2026-06-09"
+    title: "kernel v1.0 — Foundation L0 应用运行时骨架"
+    status: Active
+    owner: zone
+    priority: P0
+    north_star: "提供 xlib 所有模块共享的最小稳定原语，统一模块生命周期管理（注册、启动、停止、健康检查），stdlib-only 零外部依赖"
+    pipeline_state: TASKS_READY
+    current_phase: TASKS
+    phase_status: DONE
+    workflow_step: TASKS_READY
+    created_at: "2026-06-09"
+    updated_at: "2026-06-09"
+    related_specs:
+      - module/kernel/SPEC.md
+      - module/kernel/goal.md
+      - module/kernel/DESIGN.md
+    success_criteria:
+      - 5 个 FR 全部实现
+      - 8 个 AC 全部通过
+      - 18 个 TC 全部通过
+      - stdlib-only gate 通过
+      - 覆盖率 >= 90%
+      - Public API 冻结
+
+  - goal_id: GOAL-XLIB-STD-001
+    document_version: "2026-06-09"
+    title: "xlib-standard v1.0.0 — Go 基础库模板标准源"
+    status: Active
+    owner: zone
+    priority: P0
+    north_star: "成为 xlib 体系的唯一标准源，定义所有模块必须遵循的工程规则、接口规则、配置规则、错误规则、观测规则、测试规则、版本规则和扩展规则"
+    pipeline_state: IN_PROGRESS
+    current_phase: RELEASE
+    phase_status: BLOCKED
+    workflow_step: RELEASE_GATE
+    created_at: "2026-06-09"
+    updated_at: "2026-06-09"
+    related_specs:
+      - module/xlib-standard/SPEC.md
+      - module/xlib-standard/goal.md
+    success_criteria:
+      - 14 条 FR 全部实现
+      - 24 个 TC 全部通过
+      - 9 个 CI Gate 全部通过
+      - 生成库可编译无残留
+      - release manifest 生成且 checksum 校验通过

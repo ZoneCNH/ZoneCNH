@@ -1,0 +1,10 @@
+- **Evidence ID**: EVID-TEST-TASK-XLIB-003D-001
+- **Acceptance Criteria ID**: AC-020, AC-021
+- **Test ID**: TEST-TASK-XLIB-003D-001
+- **Task ID**: TASK-XLIB-003D
+- **Spec ID**: SPEC-XLIB-STD-001
+- **Goal ID**: GOAL-XLIB-STD-001
+- **Date**: 2026-06-09
+- **Status**: PARTIAL
+- **Files Changed**: examples/basic/main.go, testkit/metrics.go, testkit/assertions.go
+- **Commands Run**: GOWORK=off go vet ./...; GOWORK=off go test ./...; GOWORK=off go test -race ./...

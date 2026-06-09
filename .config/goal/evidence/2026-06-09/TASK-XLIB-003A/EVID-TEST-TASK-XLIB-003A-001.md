@@ -1,0 +1,10 @@
+- **Evidence ID**: EVID-TEST-TASK-XLIB-003A-001
+- **Acceptance Criteria ID**: AC-001, AC-002, AC-003, AC-019
+- **Test ID**: TEST-TASK-XLIB-003A-001
+- **Task ID**: TASK-XLIB-003A
+- **Spec ID**: SPEC-XLIB-STD-001
+- **Goal ID**: GOAL-XLIB-STD-001
+- **Date**: 2026-06-09
+- **Status**: PARTIAL
+- **Files Changed**: pkg/templatex/doc.go, pkg/templatex/config.go, pkg/templatex/config_test.go
+- **Commands Run**: GOWORK=off go test ./pkg/templatex/ -run TestConfig -v; GOWORK=off go test -race ./pkg/templatex/ -run TestConfig

@@ -1,0 +1,10 @@
+- **Evidence ID**: EVID-TEST-TASK-XLIB-003-001
+- **Acceptance Criteria ID**: AC-003
+- **Test ID**: TEST-TASK-XLIB-003-001
+- **Task ID**: TASK-XLIB-003
+- **Spec ID**: SPEC-XLIB-STD-001
+- **Goal ID**: GOAL-XLIB-STD-001
+- **Date**: 2026-06-09
+- **Status**: PARTIAL
+- **Files Changed**: module/xlib-standard/tasks/TASK-XLIB-003.md, module/xlib-standard/prompt/PROMPT-XLIB-003.md
+- **Commands Run**: GOWORK=off go test ./...; GOWORK=off go test -race ./...
