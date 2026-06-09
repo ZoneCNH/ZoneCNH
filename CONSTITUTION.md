@@ -17,29 +17,28 @@
 
 **严禁**在 `main` 分支上直接进行任何开发工作（包括但不限于：编写代码、编辑文档、运行实验性变更）。
 
-| 操作             | main                           | feature branch            |
+| 操作             | main                           | worktree / feature branch |
 | ---------------- | ------------------------------ | ------------------------- |
 | 编辑文件         | ❌ 禁止                        | ✅ 必须                   |
 | 提交变更         | ❌ 禁止（仅允许 merge/rebase） | ✅ 必须                   |
 | 运行实验         | ❌ 禁止                        | ✅ 必须                   |
 | 合并已完成的工作 | ✅ 允许（通过 PR 或 merge）    | —                         |
 
-### 0.2 强制使用 feature branch
+### 0.2 强制使用 worktree
 
-所有开发工作必须通过 feature branch 进行：
+所有开发工作必须通过 `git worktree` 或 feature branch 进行：
 
-1. **每个独立任务**必须在独立 feature branch 中执行
-2. **分支命名**必须遵循 `{purpose}-{描述}` 格式（如 `fix/convergence-spec`）
-3. **工作完成后**通过 merge 或 PR 合入 main，随后删除分支
-4. **禁止**在 main 中堆积未提交变更
-5. **可选**：对需要环境隔离的复杂任务，可使用 `git worktree`
+1. **每个独立任务**必须在独立 worktree 中执行
+2. **worktree 命名**必须遵循 `{branch-name}` 或 `{module}-{purpose}` 格式
+3. **工作完成后**通过 PR 或 merge 合入 main，随后清理 worktree
+4. **禁止**在 main worktree 中堆积未提交变更
 
 ### 0.3 Agent 约束
 
 所有 AI 代理（Claude、Codex、Copilot 及任何未来代理）在本仓库工作时：
 
 1. **必须**在开始编辑前确认当前不在 main 分支
-2. **必须**使用 feature branch 隔离开发任务
+2. **必须**使用 worktree 隔离开发任务
 3. **禁止**在 main 上直接 commit
 4. **发现** main 上有未提交变更时，**必须**停止并警告人类维护者
 
@@ -49,7 +48,7 @@
 
 - `git merge` / `git rebase` 合并已完成的分支
 - `git pull` 同步远程更新
-- 紧急 hotfix（需事后补充 PR 和流程记录）
+- 紧急 hotfix（需事后补充 worktree 流程记录）
 
 ---
 
@@ -546,8 +545,7 @@ AI 代理在生成或审查代码时：
 |------|------|----------|------|
 | 2026-06-07 | 全文 | 初始版本（§1-§14） | 建立基座模块治理框架 |
 | 2026-06-08 | §15-§19 | 新增交付管线治理条款 | 将交付方法论提升为宪法约束 |
-| 2026-06-09 | §0 | 新增第零条：分支纪律（最高优先级） | 禁止 main 开发，强制 feature branch 隔离 |
-| 2026-06-09 | §0.2, §0.3 | 简化分支纪律：worktree 降为可选项 | 纯文档仓库 worktree 成本过高，feature branch 足够 |
+| 2026-06-09 | §0 | 新增第零条：分支纪律（最高优先级） | 禁止 main 开发，强制 worktree 隔离 |
 
 ---
 
