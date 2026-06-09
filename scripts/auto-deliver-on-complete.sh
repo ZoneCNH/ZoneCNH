@@ -129,7 +129,7 @@ status = os.environ.get("AUTO_DELIVERY_HOOK_STATUS", "")
 message = os.environ.get("AUTO_DELIVERY_HOOK_MESSAGE", "")
 print(json.dumps({
     "continue": True,
-    "additionalContext": f"auto-delivery: {status} - {message}",
+    "stopReason": f"auto-delivery: {status} - {message}",
 }, ensure_ascii=False))
 PY
     exit 0
@@ -243,7 +243,17 @@ def contains_task_complete(value):
 def collect_paths(value, out):
     if isinstance(value, dict):
         for key, item in value.items():
-            if key in {"transcript_path", "session_path", "conversation_path", "log_path", "path"} and isinstance(item, str):
+            if key in {
+                "transcript_path",
+                "transcriptPath",
+                "session_path",
+                "sessionPath",
+                "conversation_path",
+                "conversationPath",
+                "log_path",
+                "logPath",
+                "path",
+            } and isinstance(item, str):
                 out.append(item)
             else:
                 collect_paths(item, out)
@@ -276,10 +286,11 @@ if contains_task_complete(payload):
     raise SystemExit(0)
 
 candidates = []
-for name in ("CODEX_SESSION_FILE", "CODEX_SESSION_PATH", "OMX_SESSION_FILE", "OMX_SESSION_PATH"):
-    value = os.environ.get(name)
-    if value:
-        candidates.append(value)
+if os.environ.get("AUTO_DELIVERY_ALLOW_SESSION_ENV", "0") == "1":
+    for name in ("CODEX_SESSION_FILE", "CODEX_SESSION_PATH", "OMX_SESSION_FILE", "OMX_SESSION_PATH"):
+        value = os.environ.get(name)
+        if value:
+            candidates.append(value)
 collect_paths(payload, candidates)
 
 for candidate in candidates:
@@ -435,7 +446,7 @@ merge_to_main() {
 main() {
   if ! init_repo_context; then
     if [ "$HOOK_MODE" -eq 1 ]; then
-      printf '{"continue":true,"additionalContext":"auto-delivery: skipped - not a git repo"}\n'
+      printf '{"continue":true,"stopReason":"auto-delivery: skipped - not a git repo"}\n'
       exit 0
     fi
     printf '%s\n' "not a git repo" >&2
