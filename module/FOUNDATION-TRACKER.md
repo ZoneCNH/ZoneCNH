@@ -171,23 +171,23 @@
 
 > P1 核心能力完成后开始。
 
-### Issue：foundation-example vertical smoke ⬜
+### Issue：foundation-example vertical smoke ✅
 
 ```text
 标题：Add foundation-example vertical smoke
-仓库：新建 ZoneCNH/foundation-example 或放在 docs/example/
+仓库：ZoneCNH/foundation-example
 ```text
 
-- [ ] demo app 启动和关闭
-- [ ] configx 加载 env + yaml + override
-- [ ] observex 注入 memory logger/metrics/tracer
-- [ ] kernel lifecycx 管理 start/stop
-- [ ] resiliencx 包裹 fake external API
-- [ ] schedulex 每 1s 调度一次 job（fake clock）
-- [ ] testkitx fake clock + golden + boundary + leak
-- [ ] release manifest 生成
-- [ ] 所有 `make` target 可运行
-- [ ] CI 全绿
+- [x] demo app 启动和关闭
+- [x] configx 加载 env + yaml + override
+- [x] observex 注入 memory logger/metrics/tracer
+- [x] kernel lifecycx 管理 start/stop
+- [x] resiliencx 包裹 fake external API（retry + timeout）
+- [x] schedulex 每 1s 调度一次 job（fake clock）
+- [x] testkitx fake clock + golden + boundary + leak
+- [x] release manifest 生成
+- [x] 所有 `make` target 可运行
+- [x] CI 全绿（Go 1.23 matrix）
 
 ---
 
@@ -197,8 +197,8 @@
 |---|---|---|---|
 | P0 | 4 | 4 | ████ |
 | P1 | 6 模块 | 6（全部完成） | ██████ |
-| P2 | 1 | 0 | ░░░░ |
-| **总计** | **11** | **10** | **█████** |
+| P2 | 1 | 1 | █ |
+| **总计** | **11** | **11** | **██████** |
 
 ---
 
