@@ -106,7 +106,7 @@ gates:
       pass_with_risk_max: 89
     allow_pass_with_risk: true
     risk:
-      risk_id: RISK-G2-MATRIX-PARSER-20260609
+      risk_id: RISK-GOAL-20260608-001-001
       risk_owner: goal-matrix
       risk_level: medium
       risk_reason: "Spec/Matrix 语义已统一为追溯边，旧 Matrix 检查器仍需在 Phase 4 对齐新字段契约"
@@ -167,7 +167,7 @@ gates:
       pass_with_risk_max: 89
     allow_pass_with_risk: true
     risk:
-      risk_id: RISK-G4-RELEASE-PRECHECK-20260609
+      risk_id: RISK-GOAL-20260608-001-002
       risk_owner: goal-evidence
       risk_level: medium
       risk_reason: "Plan/Gate 状态已声明 G10 阻塞条件，但自动化 Release precheck 尚需在 Phase 4 对齐脚本"
@@ -253,7 +253,7 @@ gates:
       pass_with_risk_max: 89
     allow_pass_with_risk: true
     risk:
-      risk_id: RISK-G7-EVIDENCE-LINT-20260609
+      risk_id: RISK-GOAL-20260608-001-003
       risk_owner: goal-evidence
       risk_level: medium
       risk_reason: "Test Evidence 已拆分 metadata/proof body，旧 lint/evidence collector 仍需在 Phase 4 对齐新字段"
@@ -354,8 +354,8 @@ gates:
     gate_name: Retrospective Gate
     type: Semantic
     blocking: false
-    status: PASS
-    checked_at: "2026-06-09T09:15:00Z"
+    status: BLOCKED
+    checked_at: "2026-06-09T08:55:00Z"
     checked_by: goal-reviewer
     goal_id: GOAL-20260608-001
     threshold:
@@ -364,16 +364,16 @@ gates:
       pass_with_risk_max: 79
     allow_pass_with_risk: true
     result:
-      verdict: PASS
-      score: 90
+      verdict: BLOCKED
+      score: 0
       threshold: 80
       details:
         - check: "复盘完成"
-          status: PASS
-          evidence: "所有 Task 完成，Gate 全部通过"
+          status: BLOCKED
+          evidence: "G10 Release Gate 仍因 G2/G4/G7 release_blocking 风险阻塞，G11 不得先于 G10 完成"
         - check: "改进点记录"
-          status: PASS
-          evidence: "Release Notes 记录了核心成果和技术亮点"
+          status: BLOCKED
+          evidence: "待 release_blocking 风险关闭并完成发布后记录复盘结论"
 
 # Gate 编号和类型：
 # G0: Context Gate (Hybrid)

@@ -11,11 +11,11 @@ authority_source:
 
 pipeline:
   - goal_id: GOAL-20260608-001
-    pipeline_state: DONE
-    previous_pipeline_state: RETROSPECTING
-    current_phase: RETROSPECTIVE
-    phase_status: DONE
-    workflow_step: RETROSPECTIVE_EXECUTION
+    pipeline_state: BLOCKED
+    previous_pipeline_state: RELEASING
+    current_phase: RELEASE
+    phase_status: BLOCKED
+    workflow_step: RELEASE_EXECUTION
     state_model: four_axis
     state_axes:
       pipeline_state: docs/goal/03-pipeline.md#20-状态轴边界
@@ -28,8 +28,6 @@ pipeline:
       - code
       - test
       - review
-      - release
-      - retrospective
     state_history:
       - event: INIT
         pipeline_state: INIT
@@ -228,20 +226,18 @@ pipeline:
         entered_at: "2026-06-08T09:14:00Z"
         exited_at: "2026-06-08T09:15:00Z"
         duration: "1m"
-      - event: RETROSPECTING
-        pipeline_state: RETROSPECTING
-        current_phase: RETROSPECTIVE
-        phase_status: IN_PROGRESS
-        workflow_step: RETROSPECTIVE_EXECUTION
+      - event: RELEASE_BLOCKED
+        pipeline_state: BLOCKED
+        current_phase: RELEASE
+        phase_status: BLOCKED
+        workflow_step: RELEASE_EXECUTION
         entered_at: "2026-06-08T09:15:00Z"
-        exited_at: "2026-06-08T09:16:00Z"
-        duration: "1m"
-      - event: DONE
-        pipeline_state: DONE
-        current_phase: RETROSPECTIVE
-        phase_status: DONE
-        workflow_step: RETROSPECTIVE_EXECUTION
-        entered_at: "2026-06-08T09:16:00Z"
+        exited_at: null
+        duration: null
+        blockers:
+          - RISK-GOAL-20260608-001-001
+          - RISK-GOAL-20260608-001-002
+          - RISK-GOAL-20260608-001-003
     gates_passed:
       - G0
       - G1
@@ -253,10 +249,19 @@ pipeline:
       - G7
       - G8
       - G9
+    gates_pending:
       - G10
       - G11
-    gates_pending: []
-    blockers: []
-    updated_at: "2026-06-08T09:16:00Z"
+    blockers:
+      - blocker_id: RISK-GOAL-20260608-001-001
+        gate_id: G2
+        reason: "旧 Matrix 检查器仍需对齐 canonical edge 字段契约"
+      - blocker_id: RISK-GOAL-20260608-001-002
+        gate_id: G4
+        reason: "Release precheck 自动化尚未对齐 G10 阻塞条件"
+      - blocker_id: RISK-GOAL-20260608-001-003
+        gate_id: G7
+        reason: "Evidence lint/evidence collector 尚未对齐 metadata/proof body 字段契约"
+    updated_at: "2026-06-09T08:55:00Z"
 
 # 阻塞与异常条件记录到 blockers[]、gate_failures[]、Decision 或 Evidence。

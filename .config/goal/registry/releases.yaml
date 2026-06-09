@@ -7,9 +7,9 @@ releases:
     document_version: "2026-06-09"
     goal_id: GOAL-20260608-001
     release_version: v1.0.0
-    status: released
+    status: in_review
     created_at: "2026-06-08"
-    updated_at: "2026-06-08"
+    updated_at: "2026-06-09"
     linked_issues: []
     linked_tasks:
       - TASK-GOAL-20260608-001-001
@@ -35,9 +35,9 @@ releases:
       - docs/goal/15-registry.md
       - AGENTS.md
     release_notes: |
-      Goal 驱动交付体系 v1.0.0 正式发布。
+      Goal 驱动交付体系 v1.0.0 发布候选进入审核，当前受 G2/G4/G7 release_blocking 风险阻塞，尚未正式发布。
 
-      核心成果：
+      候选成果：
       - 创建 5 个 Goal Agent（goal-spec, goal-reviewer, goal-matrix, goal-prompt-builder, goal-evidence）
       - 建立统一配置中心 .config/goal/（10 个状态文件）
       - 更新 3 个文档文件（docs/goal/README.md, docs/goal/15-registry.md, AGENTS.md）

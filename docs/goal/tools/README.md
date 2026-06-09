@@ -7,6 +7,7 @@
 | 工具                                       | 语言     | 功能                                                              |
 | ------------------------------------------ | -------- | ----------------------------------------------------------------- |
 | [gate-check.sh](gate-check.sh)             | Bash     | Gate 制品就绪检查：Matrix 终态覆盖率、Evidence 字段、测试覆盖、孤儿检查 |
+| [goal-validate.py](goal-validate.py)       | Python 3 | Goal 控制面一致性验证：runtime root、Matrix、Gate、Risk、CI 合约 |
 | [matrix-gen.py](matrix-gen.py)             | Python 3 | Matrix 生成与更新：从 Spec/Tasks 自动生成 Traceability Matrix     |
 | [evidence-collect.sh](evidence-collect.sh) | Bash     | Evidence 收集：从 Git diff 和测试结果自动生成 Evidence 文件       |
 | [lint-goal.sh](lint-goal.sh)               | Bash     | Lint 规则检查：Goal/Spec/Matrix/Prompt 的自动化规则验证           |
@@ -14,6 +15,29 @@
 | [self-test.sh](self-test.sh)               | Bash     | 工具链自测：执行正向基线与负向 fixture，验证工具不会静默放行错误  |
 
 ## 使用方式
+
+### Goal 控制面验证
+
+```bash
+# 审计模式：报告 ERROR/WARN，但即使存在 ERROR 也返回 0，适合人工盘点或迁移期间观察
+python3 docs/goal/tools/goal-validate.py --root . --mode audit --format text
+
+# 严格模式：存在 ERROR 时返回非零，适合 CI 强门禁
+python3 docs/goal/tools/goal-validate.py --root . --mode strict --format json
+
+# 只检查部分区域
+python3 docs/goal/tools/goal-validate.py --root . --only gate,risk,consistency
+```
+
+`goal-validate.py` 是单文件、标准库实现。它不修复制品，只把当前控制面是否可发布说清楚：
+
+- runtime/cache 输出根必须是 `.config/cache/`，不得继续使用 `.config/goal/runtime|cache|logs`。
+- Matrix 行必须使用 canonical edge 字段：`source_id`、`target_id`、`relation`、`status`、`evidence_id`、`gate_id`、`owner`、`updated_at`。
+- Gate 必须覆盖 `G0`-`G11`，每个 `gate_id` 只能出现一次；状态/裁决枚举必须是 `PASS|PASS_WITH_RISK|FAIL|BLOCKED`，不得再出现 `PENDING`。
+- `PASS_WITH_RISK` 必须有结构化风险元数据，且 `G6`、`G10` 不允许风险通过。
+- Risk Registry 的 `risk_id` 必须唯一，并使用 `RISK-GOAL-YYYYMMDD-NNN-NNN` 格式。
+- 打开的 `release_blocking` 风险必须进入 Risk Registry；存在这类风险时，`G10`、`G11`、Pipeline、Release 状态不得伪装为完成/发布。
+- GitHub workflow 中不得保留旧字段或旧枚举，例如 `requirement_id`、`evidence_ids`、`PENDING`；result verdict 必须包含 `BLOCKED`，并且必须调用 `goal-validate.py --mode strict`。
 
 ### Gate 制品就绪检查
 
@@ -129,13 +153,16 @@ python3 docs/goal/tools/rule-drift-check.py --root . --quiet
 | Evidence 缺失或字段不完整 | `gate-check.sh <fixture-root>` 与 `rule-drift-check.py --root <fixture-root>` | 非零退出 | 报出缺失 Evidence 或必填字段 |
 | Matrix orphan / 非终态 / 非法 relation | `matrix-gen.py --check-only --matrix <fixture-matrix>` | 非零退出 | 覆盖率、relation/status 或 orphan 类错误可定位 |
 | Gate 结果与规则不一致 | `gate-check.sh <fixture-root>` | 非零退出 | `FAIL>0`，且不把风险降级为通过 |
+| 控制面发布状态不一致 | `goal-validate.py --root <fixture-root> --mode strict` | 非零退出 | runtime root、Matrix 字段、Gate 枚举、Risk Registry、G10/G11、Pipeline/Release、CI 合约错误可定位 |
 
 本轮已落地的自测覆盖：
 
-1. 正例基线：shell 语法、Python 编译、Goal lint、rule drift、Matrix check-only、Gate check 均通过。
+1. 正例基线：shell 语法、Python 编译、Goal lint、rule drift、Goal validator strict、Matrix check-only、Gate check 均通过。
 2. Matrix 负例：非法 relation 与缺失 evidence 必须被 `matrix-gen.py --check-only` 拒绝。
 3. Rule drift 负例：临时复制的工具树注入旧可执行规则字面量后必须被 `rule-drift-check.py --quiet` 拒绝。
 4. Gate 负例：只有 Task 与 Matrix、缺少 Evidence 文件时必须被 `gate-check.sh` 拒绝。
+5. Goal validator 正例：临时构造的 canonical 控制面必须在 `strict` 模式下通过。
+6. Goal validator 负例：缺失 `.config/cache/` ignore、旧 `.config/goal/runtime` 根、旧 Matrix 字段、`PENDING` Gate、Risk Registry 漏登、风险 ID 格式错误、Gate/Risk ID 重复、G10/G11 顺序错误、Pipeline/Release 伪完成、CI 未调用 strict validator 和 CI 旧合约都必须被拒绝。
 
 ## CI 集成
 
@@ -153,9 +180,11 @@ jobs:
       - name: Lint Goal
         run: ./docs/goal/tools/lint-goal.sh docs/goal/
       - name: Compile Goal Tools
-        run: python3 -m py_compile docs/goal/tools/matrix-gen.py docs/goal/tools/rule-drift-check.py
+        run: python3 -m py_compile docs/goal/tools/goal-validate.py docs/goal/tools/matrix-gen.py docs/goal/tools/rule-drift-check.py
       - name: Rule Drift Check
         run: python3 docs/goal/tools/rule-drift-check.py --root . --quiet
+      - name: Goal Validator Strict
+        run: python3 docs/goal/tools/goal-validate.py --root . --mode strict --format text
       - name: Goal Tool Self Test
         run: ./docs/goal/tools/self-test.sh
       - name: Gate Check
@@ -170,8 +199,9 @@ jobs:
 ## 依赖
 
 - `gate-check.sh`: bash, grep, find
-- `matrix-gen.py`: Python 3.9+
+- `goal-validate.py`: Python 3.10+
+- `matrix-gen.py`: Python 3.10+
 - `evidence-collect.sh`: bash, git
 - `lint-goal.sh`: bash, grep, find
-- `rule-drift-check.py`: Python 3.9+
-- `self-test.sh`: bash, Python 3.9+, grep, find, git
+- `rule-drift-check.py`: Python 3.10+
+- `self-test.sh`: bash, Python 3.10+, grep, find, git

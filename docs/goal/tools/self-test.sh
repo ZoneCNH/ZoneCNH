@@ -8,6 +8,8 @@ trap 'rm -rf "$TMP_ROOT"' EXIT
 
 PASS=0
 FAIL=0
+VALIDATOR_RISK_ID="RISK-GOAL-20260608-001-001"
+VALIDATOR_EVIDENCE_ID="EVID-TEST-TASK-GOAL-20260608-001-001-001-001"
 
 safe_name() {
   printf '%s' "$1" | tr -c 'A-Za-z0-9_' '_'
@@ -60,14 +62,221 @@ run_failure() {
   fi
 }
 
+run_failure_contains() {
+  local label="$1"
+  local pattern="$2"
+  shift 2
+  local out
+  out="$(output_path "$label")"
+
+  if "$@" >"$out" 2>&1; then
+    printf 'FAIL %s\nexpected command to fail, but it passed\n' "$label"
+    FAIL=$((FAIL + 1))
+  elif grep -q "$pattern" "$out"; then
+    record_pass "$label"
+  else
+    printf 'FAIL %s\nexpected output to contain: %s\n' "$label" "$pattern"
+    if [[ -s "$out" ]]; then
+      sed -n '1,80p' "$out"
+    fi
+    FAIL=$((FAIL + 1))
+  fi
+}
+
+write_validator_gates() {
+  local root="$1"
+  local with_risk="$2"
+  local g10_status="$3"
+  local g11_status="$4"
+  local pending_gate="${5:-}"
+  local risk_id="${6:-$VALIDATOR_RISK_ID}"
+  local gates="$root/.config/goal/gates/state.yaml"
+  local i gate status verdict
+
+  mkdir -p "$(dirname "$gates")"
+  {
+    printf 'gates:\n'
+    for i in $(seq 0 11); do
+      gate="G$i"
+      status="PASS"
+      verdict="PASS"
+      if [[ "$gate" == "G10" ]]; then
+        status="$g10_status"
+        verdict="$g10_status"
+      fi
+      if [[ "$gate" == "G11" ]]; then
+        status="$g11_status"
+        verdict="$g11_status"
+      fi
+      if [[ "$with_risk" == "true" && "$gate" == "G2" ]]; then
+        status="PASS_WITH_RISK"
+        verdict="PASS_WITH_RISK"
+      fi
+      if [[ -n "$pending_gate" && "$gate" == "$pending_gate" ]]; then
+        status="PENDING"
+        verdict="PENDING"
+      fi
+
+      printf '  %s:\n' "$gate"
+      printf '    status: %s\n' "$status"
+      printf '    owner: goal-reviewer\n'
+      printf '    updated_at: 2026-06-09\n'
+      if [[ "$with_risk" == "true" && "$gate" == "G2" ]]; then
+        cat <<YAML
+    risk:
+      risk_id: $risk_id
+      risk_owner: goal-reviewer
+      risk_level: medium
+      risk_reason: fixture
+      mitigation: close fixture risk
+      due_at: "2026-06-10T00:00:00Z"
+      review_gate: G10
+      release_blocking: true
+      evidence_id: $VALIDATOR_EVIDENCE_ID
+      status: OPEN
+YAML
+      fi
+      printf '    result:\n'
+      printf '      verdict: %s\n' "$verdict"
+      printf '      score: 100\n'
+      printf '      details: fixture\n'
+    done
+  } >"$gates"
+}
+
+write_validator_fixture() {
+  local root="$1"
+  local with_risk="$2"
+  local registry_has_risk="$3"
+  local g10_status="$4"
+  local g11_status="$5"
+  local pipeline_state="$6"
+  local release_status="$7"
+  local workflow_stale="$8"
+  local matrix_legacy="$9"
+  local pending_gate="${10:-}"
+  local gitignore_mode="${11:-good}"
+  local risk_id="${12:-$VALIDATOR_RISK_ID}"
+
+  mkdir -p "$root/.config/goal/matrix" "$root/.config/goal/registry" \
+    "$root/.config/goal/pipeline" "$root/.github/workflows"
+
+  case "$gitignore_mode" in
+    good)
+      cat >"$root/.gitignore" <<'GITIGNORE'
+.config/*
+!.config/goal/
+!.config/goal/**
+.config/cache/
+GITIGNORE
+      ;;
+    missing_cache)
+      cat >"$root/.gitignore" <<'GITIGNORE'
+.config/*
+!.config/goal/
+!.config/goal/**
+GITIGNORE
+      ;;
+    old_runtime)
+      cat >"$root/.gitignore" <<'GITIGNORE'
+.config/*
+!.config/goal/
+!.config/goal/**
+.config/cache/
+.config/goal/runtime/
+GITIGNORE
+      ;;
+  esac
+
+  if [[ "$matrix_legacy" == "true" ]]; then
+    cat >"$root/.config/goal/matrix/matrix.yaml" <<'YAML'
+matrix:
+  - requirement_id: REQ-GOAL-20260608-001-001
+    target_id: TASK-GOAL-20260608-001-001
+    relation: implements
+    status: Verified
+    evidence_ids: []
+    gate_id: G2
+    owner: goal-matrix
+    updated_at: 2026-06-09
+YAML
+  else
+    cat >"$root/.config/goal/matrix/matrix.yaml" <<YAML
+matrix:
+  - source_id: GOAL-20260608-001
+    target_id: TASK-GOAL-20260608-001-001
+    relation: decomposes_to
+    status: Verified
+    evidence_id: $VALIDATOR_EVIDENCE_ID
+    gate_id: G1
+    owner: goal-matrix
+    updated_at: 2026-06-09
+YAML
+  fi
+
+  write_validator_gates "$root" "$with_risk" "$g10_status" "$g11_status" "$pending_gate" "$risk_id"
+
+  if [[ "$registry_has_risk" == "true" ]]; then
+    cat >"$root/.config/goal/registry/risks.yaml" <<YAML
+risks:
+  - risk_id: $risk_id
+    status: Open
+    release_blocking: true
+    owner: goal-reviewer
+YAML
+  else
+    printf 'risks: []\n' >"$root/.config/goal/registry/risks.yaml"
+  fi
+
+  cat >"$root/.config/goal/pipeline/state.yaml" <<YAML
+pipeline:
+  - goal_id: GOAL-20260608-001
+    pipeline_state: $pipeline_state
+YAML
+
+  cat >"$root/.config/goal/registry/releases.yaml" <<YAML
+releases:
+  - release_id: REL-20260608-goal-system
+    status: $release_status
+YAML
+
+  if [[ "$workflow_stale" == "true" ]]; then
+    cat >"$root/.github/workflows/goal-ci.yml" <<'YAML'
+name: Goal fixture
+on: [push]
+jobs:
+  stale:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          required = ['requirement_id', 'evidence_ids']
+          valid_gate_statuses = ['PASS', 'PASS_WITH_RISK', 'FAIL', 'BLOCKED', 'PENDING']
+          valid_result_verdicts = ['PASS', 'PASS_WITH_RISK', 'FAIL']
+YAML
+  else
+    cat >"$root/.github/workflows/goal-ci.yml" <<'YAML'
+name: Goal fixture
+on: [push]
+jobs:
+  current:
+    runs-on: ubuntu-latest
+    steps:
+      - run: python3 docs/goal/tools/goal-validate.py --root . --mode strict --format text
+      - run: echo "source_id target_id evidence_id BLOCKED"
+YAML
+  fi
+}
+
 for script in "$SCRIPT_DIR"/*.sh; do
   run_success "shell syntax $(basename "$script")" bash -n "$script"
 done
 
 run_success "python compile" \
-  python3 -m py_compile "$SCRIPT_DIR/matrix-gen.py" "$SCRIPT_DIR/rule-drift-check.py"
+  python3 -m py_compile "$SCRIPT_DIR/goal-validate.py" "$SCRIPT_DIR/matrix-gen.py" "$SCRIPT_DIR/rule-drift-check.py"
 run_success "goal lint baseline" bash "$SCRIPT_DIR/lint-goal.sh" "$REPO_ROOT/docs/goal"
 run_success "rule drift baseline" python3 "$SCRIPT_DIR/rule-drift-check.py" --root "$REPO_ROOT" --quiet
+run_success "goal validator strict baseline" \
+  python3 "$SCRIPT_DIR/goal-validate.py" --root "$REPO_ROOT" --mode strict --format json
 run_success "matrix baseline" python3 "$SCRIPT_DIR/matrix-gen.py" \
   --check-only --matrix "$REPO_ROOT/.config/goal/matrix/matrix.yaml"
 run_success "gate baseline" bash "$SCRIPT_DIR/gate-check.sh" "$REPO_ROOT"
@@ -118,6 +327,107 @@ matrix:
     updated_at: 2026-06-09
 YAML
 run_failure "gate rejects missing DoD evidence files" bash "$SCRIPT_DIR/gate-check.sh" "$gate_root"
+
+validator_base="$TMP_ROOT/validator-base"
+write_validator_fixture "$validator_base" false false PASS PASS DONE released false false "" good
+run_success "goal validator strict fixture baseline" \
+  python3 "$SCRIPT_DIR/goal-validate.py" --root "$validator_base" --mode strict --format text
+
+validator_missing_cache="$TMP_ROOT/validator-missing-cache"
+write_validator_fixture "$validator_missing_cache" false false PASS PASS DONE released false false "" missing_cache
+run_failure "goal validator rejects missing runtime cache ignore" \
+  python3 "$SCRIPT_DIR/goal-validate.py" --root "$validator_missing_cache" --mode strict --format text
+
+validator_old_runtime="$TMP_ROOT/validator-old-runtime"
+write_validator_fixture "$validator_old_runtime" false false PASS PASS DONE released false false "" old_runtime
+run_failure "goal validator rejects old goal runtime root" \
+  python3 "$SCRIPT_DIR/goal-validate.py" --root "$validator_old_runtime" --mode strict --format text
+
+validator_legacy_matrix="$TMP_ROOT/validator-legacy-matrix"
+write_validator_fixture "$validator_legacy_matrix" false false PASS PASS DONE released false true "" good
+run_failure "goal validator rejects legacy matrix fields" \
+  python3 "$SCRIPT_DIR/goal-validate.py" --root "$validator_legacy_matrix" --mode strict --format text
+
+validator_pending_gate="$TMP_ROOT/validator-pending-gate"
+write_validator_fixture "$validator_pending_gate" false false PASS PASS DONE released false false G3 good
+run_failure "goal validator rejects pending gate status" \
+  python3 "$SCRIPT_DIR/goal-validate.py" --root "$validator_pending_gate" --mode strict --format text
+
+validator_missing_registry="$TMP_ROOT/validator-missing-registry"
+write_validator_fixture "$validator_missing_registry" true false BLOCKED BLOCKED BLOCKED in_review false false "" good
+run_failure "goal validator rejects missing release-blocking risk registry entry" \
+  python3 "$SCRIPT_DIR/goal-validate.py" --root "$validator_missing_registry" --mode strict --format text
+
+validator_bad_risk_id="$TMP_ROOT/validator-bad-risk-id"
+write_validator_fixture "$validator_bad_risk_id" true true BLOCKED BLOCKED BLOCKED in_review false false "" good RISK-G2-BAD
+run_failure_contains "goal validator rejects malformed gate risk id" "GV-GATE-RISK-ID-FORMAT" \
+  python3 "$SCRIPT_DIR/goal-validate.py" --root "$validator_bad_risk_id" --mode strict --format text
+
+validator_bad_registry_risk_id="$TMP_ROOT/validator-bad-registry-risk-id"
+write_validator_fixture "$validator_bad_registry_risk_id" false true BLOCKED BLOCKED BLOCKED in_review false false "" good RISK-GOAL-BAD
+run_failure_contains "goal validator rejects malformed registry risk id" "GV-RISK-ID-FORMAT" \
+  python3 "$SCRIPT_DIR/goal-validate.py" --root "$validator_bad_registry_risk_id" --mode strict --format text
+
+validator_duplicate_risk="$TMP_ROOT/validator-duplicate-risk"
+write_validator_fixture "$validator_duplicate_risk" true true BLOCKED BLOCKED BLOCKED in_review false false "" good
+cat >>"$validator_duplicate_risk/.config/goal/registry/risks.yaml" <<YAML
+  - risk_id: $VALIDATOR_RISK_ID
+    status: Open
+    release_blocking: true
+    owner: duplicate-fixture
+YAML
+run_failure_contains "goal validator rejects duplicate risk id" "GV-RISK-DUPLICATE-ID" \
+  python3 "$SCRIPT_DIR/goal-validate.py" --root "$validator_duplicate_risk" --mode strict --format text
+
+validator_duplicate_gate="$TMP_ROOT/validator-duplicate-gate"
+write_validator_fixture "$validator_duplicate_gate" false false PASS PASS DONE released false false "" good
+cat >>"$validator_duplicate_gate/.config/goal/gates/state.yaml" <<'YAML'
+  G0:
+    status: PASS
+    result:
+      verdict: PASS
+YAML
+run_failure_contains "goal validator rejects duplicate gate id" "GV-GATE-DUPLICATE-ID" \
+  python3 "$SCRIPT_DIR/goal-validate.py" --root "$validator_duplicate_gate" --mode strict --format text
+
+validator_g10_pass="$TMP_ROOT/validator-g10-pass"
+write_validator_fixture "$validator_g10_pass" true true PASS BLOCKED BLOCKED in_review false false "" good
+run_failure "goal validator rejects G10 pass with open release-blocking risk" \
+  python3 "$SCRIPT_DIR/goal-validate.py" --root "$validator_g10_pass" --mode strict --format text
+
+validator_g11_after_g10="$TMP_ROOT/validator-g11-after-g10"
+write_validator_fixture "$validator_g11_after_g10" true true BLOCKED PASS BLOCKED in_review false false "" good
+run_failure "goal validator rejects G11 pass before G10 pass" \
+  python3 "$SCRIPT_DIR/goal-validate.py" --root "$validator_g11_after_g10" --mode strict --format text
+
+validator_pipeline_done="$TMP_ROOT/validator-pipeline-done"
+write_validator_fixture "$validator_pipeline_done" true true BLOCKED BLOCKED DONE in_review false false "" good
+run_failure "goal validator rejects pipeline done with open release-blocking risk" \
+  python3 "$SCRIPT_DIR/goal-validate.py" --root "$validator_pipeline_done" --mode strict --format text
+
+validator_released="$TMP_ROOT/validator-released"
+write_validator_fixture "$validator_released" true true BLOCKED BLOCKED BLOCKED released false false "" good
+run_failure "goal validator rejects released status with open release-blocking risk" \
+  python3 "$SCRIPT_DIR/goal-validate.py" --root "$validator_released" --mode strict --format text
+
+validator_stale_ci="$TMP_ROOT/validator-stale-ci"
+write_validator_fixture "$validator_stale_ci" false false PASS PASS DONE released true false "" good
+run_failure_contains "goal validator rejects stale CI validation vocabulary" "GV-CONSISTENCY-CI-STALE-CONTRACT" \
+  python3 "$SCRIPT_DIR/goal-validate.py" --root "$validator_stale_ci" --mode strict --format text
+
+validator_missing_ci_validator="$TMP_ROOT/validator-missing-ci-validator"
+write_validator_fixture "$validator_missing_ci_validator" false false PASS PASS DONE released false false "" good
+cat >"$validator_missing_ci_validator/.github/workflows/goal-ci.yml" <<'YAML'
+name: Goal fixture
+on: [push]
+jobs:
+  current:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "source_id target_id evidence_id BLOCKED"
+YAML
+run_failure_contains "goal validator rejects missing CI strict validator" "GV-CONSISTENCY-CI-MISSING-GOAL-VALIDATOR" \
+  python3 "$SCRIPT_DIR/goal-validate.py" --root "$validator_missing_ci_validator" --mode strict --format text
 
 printf '\nself-test summary: PASS=%s FAIL=%s\n' "$PASS" "$FAIL"
 [[ "$FAIL" -eq 0 ]]

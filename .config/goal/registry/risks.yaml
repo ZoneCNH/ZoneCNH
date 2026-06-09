@@ -2,7 +2,92 @@
 # 权威来源：docs/goal/15-registry.md §6
 # 路径：.config/goal/registry/risks.yaml
 
-risks: []
+risks:
+  - risk_id: RISK-GOAL-20260608-001-001
+    document_version: "2026-06-09"
+    goal_id: GOAL-20260608-001
+    title: Matrix 检查器字段契约漂移
+    severity: Medium
+    probability: Medium
+    impact: Medium
+    status: Open
+    release_blocking: true
+    owner: goal-matrix
+    created_at: "2026-06-09"
+    updated_at: "2026-06-09"
+    due_at: "2026-06-10T23:59:59Z"
+    review_gate: G8
+    evidence_id: EVID-TEST-TASK-GOAL-20260608-001-002-001-001
+    risk_owner: goal-matrix
+    risk_level: medium
+    risk_reason: "Spec/Matrix 语义已统一为追溯边，旧 Matrix 检查器仍需在 Phase 4 对齐新字段契约"
+    mitigation:
+      - 锁定 source_id/target_id/relation/status/evidence_id/gate_id/owner/updated_at 字段契约
+      - 在 Phase 4 更新 Matrix 检查器
+    contingency:
+      - 在 G8 复核前保持 G10 阻塞
+    related_gates:
+      - G2
+      - G8
+      - G10
+    related_tasks:
+      - TASK-GOAL-20260608-001-002
+  - risk_id: RISK-GOAL-20260608-001-002
+    document_version: "2026-06-09"
+    goal_id: GOAL-20260608-001
+    title: Release precheck 自动化未对齐
+    severity: Medium
+    probability: Medium
+    impact: Medium
+    status: Open
+    release_blocking: true
+    owner: goal-evidence
+    created_at: "2026-06-09"
+    updated_at: "2026-06-09"
+    due_at: "2026-06-10T23:59:59Z"
+    review_gate: G10
+    evidence_id: EVID-TEST-TASK-GOAL-20260608-001-003-001-001
+    risk_owner: goal-evidence
+    risk_level: medium
+    risk_reason: "Plan/Gate 状态已声明 G10 阻塞条件，但自动化 Release precheck 尚需在 Phase 4 对齐脚本"
+    mitigation:
+      - 更新 Release 状态快照与阻塞说明
+      - 在 Phase 4 对齐 Release precheck 脚本
+    contingency:
+      - 在 precheck 对齐前保持 G10 阻塞
+    related_gates:
+      - G4
+      - G10
+    related_tasks:
+      - TASK-GOAL-20260608-001-003
+  - risk_id: RISK-GOAL-20260608-001-003
+    document_version: "2026-06-09"
+    goal_id: GOAL-20260608-001
+    title: Evidence lint 字段契约漂移
+    severity: Medium
+    probability: Medium
+    impact: Medium
+    status: Open
+    release_blocking: true
+    owner: goal-evidence
+    created_at: "2026-06-09"
+    updated_at: "2026-06-09"
+    due_at: "2026-06-10T23:59:59Z"
+    review_gate: G10
+    evidence_id: EVID-TEST-TASK-GOAL-20260608-001-003-002-001
+    risk_owner: goal-evidence
+    risk_level: medium
+    risk_reason: "Test Evidence 已拆分 metadata/proof body，旧 lint/evidence collector 仍需在 Phase 4 对齐新字段"
+    mitigation:
+      - 锁定 Test Evidence metadata/proof body 字段契约
+      - 在 Phase 4 对齐 evidence lint 与 evidence collector
+    contingency:
+      - 在 lint 对齐前保持 G10 阻塞
+    related_gates:
+      - G7
+      - G10
+    related_tasks:
+      - TASK-GOAL-20260608-001-003
 
 # 示例条目：
 # - risk_id: RISK-GOAL-20260608-001-001
