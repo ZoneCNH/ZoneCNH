@@ -886,3 +886,1051 @@ Roadmap 应始终回答三个问题：
 3. 哪些事情暂时不做或存在风险？
 
 只要 `ROADMAP.md` 能清楚回答这三个问题，它就是有效的。
+
+---
+
+## 26. Roadmap 决策规则
+
+Roadmap 中的每一项都应经过基本判断，不应因为"想做"就直接加入当前版本。
+
+建议在加入前回答以下问题：
+
+```md
+- 这个事项解决什么问题？
+- 对用户或项目有什么价值？
+- 是否属于当前阶段目标？
+- 是否存在更高优先级事项？
+- 是否有明确完成标准？
+- 是否依赖其他未完成事项？
+- 是否应该放入 Backlog，而不是当前 Milestone？
+```
+
+---
+
+### 26.1 加入当前版本的条件
+
+一个事项适合加入当前版本，通常应满足：
+
+* 与当前版本主题直接相关
+* 对核心流程有明显价值
+* 范围可控
+* 能在当前周期内完成
+* 依赖项基本明确
+* 完成标准可验证
+
+---
+
+### 26.2 放入 Backlog 的条件
+
+一个事项更适合放入 Backlog，通常是因为：
+
+* 有价值但不紧急
+* 方向还不够明确
+* 依赖尚未完成
+* 缺少设计方案
+* 当前版本范围已经过大
+* 只是一个想法或候选方案
+
+---
+
+### 26.3 延后的条件
+
+一个事项应标记为 `Deferred`，通常是因为：
+
+* 当前资源不足
+* 当前版本目标变化
+* 依赖未完成
+* 技术方案需要重新评估
+* 用户价值暂时不明确
+* 有更重要事项需要优先处理
+
+---
+
+## 27. Roadmap 评审规则
+
+Roadmap 应定期评审，避免变成过期文档。
+
+### 27.1 评审频率
+
+推荐频率：
+
+| 项目阶段 | 建议频率 |
+|---------|---------|
+| 早期探索阶段 | 每 1-2 周 |
+| 快速开发阶段 | 每 2-4 周 |
+| 稳定维护阶段 | 每个版本结束后 |
+| 长期维护项目 | 每 1-2 个月 |
+
+---
+
+### 27.2 评审内容
+
+每次评审应检查：
+
+```md
+- 当前重点是否仍然准确？
+- 当前 Milestone 是否过大？
+- 是否有任务已经完成但未标记？
+- 是否有任务长期停留在 In Progress？
+- 是否有任务长期 Blocked？
+- Backlog 是否过期或重复？
+- 风险是否仍然存在？
+- 目标日期是否需要调整？
+- 是否需要同步 CHANGELOG.md？
+```
+
+---
+
+### 27.3 长期未更新处理
+
+如果某个 Roadmap 条目长期没有变化，应重新评估。
+
+建议规则：
+
+```md
+- 30 天无变化：检查状态是否准确
+- 60 天无变化：评估是否仍属于当前版本
+- 90 天无变化：考虑移入 Deferred 或 Backlog
+```
+
+---
+
+## 28. 标签规范
+
+为了方便分类，可以为 Roadmap 条目增加标签。
+
+推荐标签：
+
+| 标签 | 含义 |
+|------|------|
+| `feature` | 新功能 |
+| `improvement` | 功能改进 |
+| `architecture` | 架构调整 |
+| `performance` | 性能优化 |
+| `security` | 安全相关 |
+| `documentation` | 文档相关 |
+| `testing` | 测试相关 |
+| `maintenance` | 维护清理 |
+| `breaking-change` | 破坏性变更 |
+| `research` | 调研事项 |
+
+示例：
+
+```md
+### Plugin System
+
+Status: Planned
+Priority: High
+Target: v0.5.0
+Tags: feature, architecture
+```
+
+---
+
+## 29. 依赖关系规则
+
+如果某个事项依赖其他事项，应显式写出。
+
+推荐格式：
+
+```md
+### Audit Log
+
+Status: Planned
+Priority: Medium
+Target: v0.4.0
+
+Depends on:
+
+- User Permission Model
+- Database Migration v2
+```
+
+---
+
+### 29.1 避免隐藏依赖
+
+不推荐只写：
+
+```md
+- [ ] 增加审计日志
+```
+
+如果它实际上依赖权限系统、数据库结构和后台页面，应写清楚。
+
+推荐：
+
+```md
+### Audit Log
+
+Depends on:
+
+- 权限模型稳定
+- 操作记录表设计完成
+- 管理后台基础页面完成
+```
+
+---
+
+### 29.2 阻塞项必须可追踪
+
+如果状态为 `Blocked`，必须说明被什么阻塞。
+
+```md
+Status: Blocked
+
+Blocked by:
+
+- Waiting for permission model design
+```
+
+---
+
+## 30. 指标规则
+
+对于性能、稳定性、增长类目标，应尽量写出可衡量指标。
+
+### 30.1 性能类
+
+推荐：
+
+```md
+Done when:
+
+- 首页首屏加载时间低于 2 秒
+- 常用查询在 500ms 内返回
+- 批量导入 10,000 条数据不会超时
+```
+
+不推荐：
+
+```md
+Done when:
+
+- 性能变好
+- 查询更快
+```
+
+---
+
+### 30.2 稳定性类
+
+推荐：
+
+```md
+Done when:
+
+- 核心流程有自动化测试覆盖
+- 常见异常有明确错误提示
+- 服务异常时不会导致数据丢失
+```
+
+---
+
+### 30.3 文档类
+
+推荐：
+
+```md
+Done when:
+
+- README 包含安装步骤
+- 文档包含至少一个完整使用示例
+- 新用户可以根据文档完成本地启动
+```
+
+---
+
+## 31. 破坏性变更规则
+
+如果 Roadmap 中包含破坏性变更，必须明确标注。
+
+示例：
+
+```md
+### Configuration Format v2
+
+Status: Planned
+Priority: High
+Target: v1.0.0
+Tags: breaking-change, architecture
+
+Breaking Changes:
+
+- 旧版配置字段 `server.port` 将改为 `app.server.port`
+- 旧版插件配置格式不再兼容
+
+Migration Plan:
+
+- 提供迁移脚本
+- 在文档中说明新旧配置差异
+- 在 v0.9.x 中提前提示废弃信息
+```
+
+---
+
+### 31.1 破坏性变更必须包含迁移方案
+
+不允许只写破坏性变更，不写迁移路径。
+
+必须说明：
+
+* 影响范围
+* 旧行为
+* 新行为
+* 迁移方式
+* 预计生效版本
+
+---
+
+## 32. 废弃计划规则
+
+如果某项能力未来会移除，应在 Roadmap 中提前记录。
+
+推荐格式：
+
+```md
+### Deprecate Legacy Import API
+
+Status: Planned
+Priority: Medium
+Target: v1.0.0
+Tags: breaking-change, maintenance
+
+Reason:
+
+旧导入接口难以维护，且已被新的通用导入系统替代。
+
+Deprecation Plan:
+
+- v0.8.0 标记为 deprecated
+- v0.9.0 输出迁移提示
+- v1.0.0 正式移除
+
+Migration:
+
+- 使用 `/api/import/v2`
+- 参考新版导入文档
+```
+
+---
+
+## 33. 发布门禁规则
+
+Roadmap 中的版本不应只看功能完成，还应满足发布条件。
+
+推荐发布门禁：
+
+```md
+Release checklist:
+
+- [ ] 当前版本目标全部完成或明确移出
+- [ ] 关键测试通过
+- [ ] README 已更新
+- [ ] CHANGELOG 已更新
+- [ ] 已知风险已记录
+- [ ] 破坏性变更已说明
+- [ ] 迁移说明已补充
+- [ ] 没有未处理的 Critical 问题
+```
+
+---
+
+## 34. Roadmap 与 CHANGELOG 的衔接
+
+Roadmap 记录计划，CHANGELOG 记录事实。
+
+### 34.1 Roadmap 中的 Done 不等于发布
+
+Roadmap 条目标记为 `Done`，表示该目标完成。
+
+但只有正式发布后，相关内容才应写入 `CHANGELOG.md`。
+
+---
+
+### 34.2 发布后同步
+
+版本发布后，应进行同步：
+
+```md
+- ROADMAP.md：将版本状态改为 Done
+- CHANGELOG.md：记录实际发布内容
+- README.md：更新使用方式
+- TODO.md / Issues：关闭或调整相关任务
+```
+
+---
+
+## 35. Roadmap 与架构决策的关系
+
+Roadmap 不应替代架构决策记录。
+
+如果某个路线项涉及重要架构选择，应链接到 ADR 或设计文档。
+
+推荐：
+
+```md
+### Plugin System
+
+Status: Planned
+Priority: High
+Target: v0.5.0
+
+Related Docs:
+
+- ADR-003: Plugin Loading Strategy
+- docs/design/plugin-system.md
+```
+
+---
+
+### 35.1 需要单独设计文档的情况
+
+以下事项不建议只写在 Roadmap 中：
+
+* 权限模型重构
+* 插件系统
+* 数据库迁移
+* API 版本升级
+* 多租户架构
+* 大规模性能优化
+* 安全模型调整
+
+这些事项应在 Roadmap 中保留摘要，并链接到详细设计文档。
+
+---
+
+## 36. 负责人规则
+
+团队项目中，较大的 Roadmap 条目建议设置负责人。
+
+推荐格式：
+
+```md
+Owner: @username
+```
+
+或：
+
+```md
+Owner: Backend Team
+```
+
+---
+
+### 36.1 Owner 的职责
+
+Owner 不一定是唯一实现者，但应负责：
+
+* 推进该事项
+* 更新状态
+* 记录阻塞
+* 协调依赖
+* 确认完成标准
+* 在版本结束时同步结果
+
+---
+
+### 36.2 无负责人事项
+
+如果事项没有负责人，应谨慎加入当前 Milestone。
+
+可以放在 Backlog：
+
+```md
+Status: Backlog
+Owner: Unassigned
+```
+
+---
+
+## 37. 范围控制规则
+
+Roadmap 最常见的问题是范围膨胀。
+
+### 37.1 每个 Milestone 应限制范围
+
+建议：
+
+```md
+- 当前版本只保留最关键目标
+- 不把所有 Backlog 都塞进下个版本
+- 不在开发中途随意加入大功能
+- 新增范围必须说明原因
+```
+
+---
+
+### 37.2 范围变更必须记录
+
+示例：
+
+```md
+Scope changes:
+
+### 2026-06-09
+
+- Added audit log because permission changes need traceability.
+- Moved plugin marketplace to Deferred because plugin core is not stable yet.
+```
+
+---
+
+## 38. 当前重点规则
+
+`Current Focus` 应保持非常简短。
+
+推荐只写 1-3 项：
+
+```md
+## Current Focus
+
+- 完成用户认证闭环
+- 稳定配置系统
+- 补齐核心文档
+```
+
+不推荐：
+
+```md
+## Current Focus
+
+- 用户认证
+- 配置系统
+- 插件系统
+- 性能优化
+- 管理后台
+- 部署平台
+- 多语言
+- 数据导入
+- 数据导出
+```
+
+如果当前重点超过 3 项，通常说明没有重点。
+
+---
+
+## 39. Roadmap 精简规则
+
+Roadmap 应清晰，不应无限增长。
+
+### 39.1 可归档内容
+
+以下内容可以移出主 Roadmap：
+
+* 已完成很久的版本
+* 已取消很久的计划
+* 过期讨论记录
+* 太细的任务列表
+* 已迁移到 Issue 的执行细节
+
+---
+
+### 39.2 归档方式
+
+可以创建：
+
+```md
+docs/archive/ROADMAP-2025.md
+docs/archive/ROADMAP-v0.x.md
+```
+
+主 `ROADMAP.md` 中只保留：
+
+```md
+## Archive
+
+- [ROADMAP-2025](docs/archive/ROADMAP-2025.md)
+- [ROADMAP-v0.x](docs/archive/ROADMAP-v0.x.md)
+```
+
+---
+
+## 40. 机器可读字段规范
+
+如果项目需要自动化解析 Roadmap，建议统一字段格式。
+
+推荐字段：
+
+```md
+Status: Planned
+Priority: High
+Target: v0.4.0
+Target Date: 2026-07-15
+Owner: @username
+Tags: feature, backend
+```
+
+不推荐：
+
+```md
+状态大概是还没开始
+优先级应该挺高
+预计下个月吧
+```
+
+---
+
+### 40.1 字段顺序
+
+推荐固定顺序：
+
+```md
+Status:
+Priority:
+Target:
+Target Date:
+Owner:
+Tags:
+```
+
+完整示例：
+
+```md
+### User Permission Model
+
+Status: In Progress
+Priority: High
+Target: v0.4.0
+Target Date: 2026-07-15
+Owner: Backend Team
+Tags: feature, security, architecture
+```
+
+---
+
+## 41. Roadmap Lint 规则
+
+可以用人工或脚本检查 Roadmap 质量。
+
+建议检查项：
+
+```md
+- [ ] 是否存在没有 Status 的大条目？
+- [ ] 是否存在没有 Priority 的当前版本任务？
+- [ ] 是否存在没有 Done when 的重要任务？
+- [ ] 是否存在模糊词，例如"尽快""优化一下""完善一下"？
+- [ ] 是否存在 Target Date 格式不统一？
+- [ ] 是否存在长期 Blocked 但没有原因的事项？
+- [ ] 是否存在 Cancelled 但没有原因的事项？
+- [ ] 是否存在 Deferred 但没有重新评估时间的事项？
+```
+
+---
+
+## 42. 模糊词限制
+
+Roadmap 中应避免模糊表达。
+
+不推荐：
+
+```md
+- 尽快支持插件
+- 后面优化性能
+- 完善用户体验
+- 做一下管理后台
+- 重构一下代码
+```
+
+推荐：
+
+```md
+- 支持本地插件加载
+- 将首页加载时间优化到 2 秒以内
+- 改进登录失败时的错误提示
+- 增加用户列表和角色管理页面
+- 拆分认证模块和用户资料模块
+```
+
+---
+
+## 43. 研究类任务规则
+
+有些事项还不能直接开发，需要先调研。
+
+推荐使用 `research` 标签。
+
+示例：
+
+```md
+### Evaluate Search Engine Options
+
+Status: Planned
+Priority: Medium
+Target: v0.6.0
+Tags: research, architecture
+
+Goal:
+
+评估是否需要引入独立搜索服务。
+
+Questions:
+
+- 当前数据库搜索是否足够？
+- 数据量增长后性能是否可接受？
+- 是否需要全文搜索？
+- 是否需要多语言分词？
+
+Done when:
+
+- 完成至少两个方案对比
+- 明确推荐方案
+- 记录取舍原因
+- 决定是否进入实现阶段
+```
+
+---
+
+## 44. 安全相关规则
+
+涉及安全的路线项应更严格。
+
+安全类任务应包含：
+
+```md
+- 风险说明
+- 影响范围
+- 完成标准
+- 测试要求
+- 回滚或缓解方案
+```
+
+示例：
+
+```md
+### Strengthen API Authentication
+
+Status: Planned
+Priority: Critical
+Target: v0.4.0
+Tags: security, backend
+
+Description:
+
+增强 API 认证机制，降低未授权访问风险。
+
+Done when:
+
+- 所有受保护接口都需要认证
+- Token 过期逻辑生效
+- 未授权请求返回明确错误
+- 关键路径有测试覆盖
+```
+
+---
+
+## 45. 数据迁移规则
+
+如果路线项涉及数据迁移，必须写明迁移策略。
+
+示例：
+
+```md
+### Database Schema v2
+
+Status: Planned
+Priority: High
+Target: v0.5.0
+Tags: architecture, migration
+
+Migration Plan:
+
+- 新增字段时保持向后兼容
+- 先写入新旧字段
+- 验证数据一致性
+- 再移除旧字段
+
+Rollback Plan:
+
+- 保留旧字段一个版本
+- 保留迁移前备份
+- 迁移失败时恢复旧结构
+```
+
+---
+
+## 46. 回滚规则
+
+高风险路线项应包含回滚方案。
+
+适用场景：
+
+* 数据库迁移
+* 权限模型调整
+* 配置格式变化
+* API 版本升级
+* 依赖服务替换
+* 核心流程重构
+
+推荐格式：
+
+```md
+Rollback Plan:
+
+- 保留旧逻辑到下一个小版本
+- 增加开关控制新功能
+- 出现严重问题时恢复旧实现
+```
+
+---
+
+## 47. 实验功能规则
+
+实验性功能不应直接写成稳定承诺。
+
+推荐格式：
+
+```md
+### Experimental AI Assistant
+
+Status: Planned
+Priority: Low
+Target: v0.7.0
+Tags: experimental, research
+
+Experiment Goal:
+
+验证 AI 助手是否能提升用户配置效率。
+
+Success Criteria:
+
+- 用户能通过自然语言完成基础配置
+- 错误率在可接受范围内
+- 不影响现有手动配置流程
+
+Exit Criteria:
+
+- 如果效果不稳定，则移入 Deferred
+- 如果验证成功，则拆分为正式功能规划
+```
+
+---
+
+## 48. 多版本规划规则
+
+Roadmap 可以规划多个版本，但不应过度详细规划太远的未来。
+
+推荐：
+
+```md
+## Milestones
+
+### v0.2.0 - Core Features
+详细规划
+
+### v0.3.0 - Stability
+中等详细
+
+### v0.4.0 - Extensions
+粗略规划
+```
+
+---
+
+### 48.1 越远的版本越粗略
+
+推荐原则：
+
+```md
+当前版本：明确任务、完成标准、目标日期
+下一个版本：明确方向、核心目标
+更远版本：只保留主题和候选事项
+```
+
+---
+
+## 49. Roadmap 冲突处理规则
+
+如果 Roadmap 与实际开发不一致，应及时修正。
+
+### 49.1 实际已经改变
+
+如果实际开发方向已经变化，不要保留旧 Roadmap 假装仍然有效。
+
+应更新：
+
+```md
+- Current Focus
+- Milestones
+- Backlog
+- Deferred
+- Cancelled
+- Changelog
+```
+
+---
+
+### 49.2 计划无法完成
+
+如果当前版本目标无法完成，应选择：
+
+```md
+- 缩小范围
+- 移到下个版本
+- 拆分任务
+- 标记 Deferred
+- 调整目标日期
+```
+
+不建议静默拖延。
+
+---
+
+## 50. Roadmap 最终质量标准
+
+一个合格的 `ROADMAP.md` 应满足：
+
+```md
+- 新成员能看懂项目方向
+- 维护者能知道当前重点
+- 贡献者能判断什么适合贡献
+- 用户能理解未来大致计划
+- 已完成和未完成事项区分清楚
+- 延后和取消事项有原因
+- 风险和依赖有记录
+- 文档不过度承诺
+- 内容不会替代 Issue 或 TODO
+```
+
+---
+
+## 51. 推荐最终文件结构
+
+完整项目中，可以采用：
+
+```text
+.
+├── README.md
+├── ROADMAP.md
+├── CHANGELOG.md
+├── CONTRIBUTING.md
+├── TODO.md
+└── docs/
+    ├── design/
+    │   └── plugin-system.md
+    ├── adr/
+    │   └── ADR-001-project-structure.md
+    └── archive/
+        └── ROADMAP-2025.md
+```
+
+---
+
+## 52. 简洁版规则
+
+如果项目较小，可以使用简洁版 Roadmap。
+
+```md
+# Roadmap
+
+## Current Focus
+
+- 当前重点 1
+- 当前重点 2
+- 当前重点 3
+
+## Now
+
+- [ ] 正在做的事项 1
+- [ ] 正在做的事项 2
+
+## Next
+
+- [ ] 下一阶段事项 1
+- [ ] 下一阶段事项 2
+
+## Later
+
+- [ ] 未来可能做的事项 1
+- [ ] 未来可能做的事项 2
+
+## Done
+
+- [x] 已完成事项 1
+- [x] 已完成事项 2
+```
+
+适合：
+
+* 个人项目
+* 早期原型
+* 小型工具
+* 不需要复杂版本规划的项目
+
+---
+
+## 53. 严格版规则
+
+如果项目较大，可以使用严格版 Roadmap。
+
+```md
+# Roadmap
+
+## Vision
+
+## Strategy
+
+## Current Focus
+
+## Milestones
+
+## Release Plan
+
+## Feature Roadmap
+
+## Architecture Roadmap
+
+## Security Roadmap
+
+## Performance Roadmap
+
+## Backlog
+
+## Deferred
+
+## Cancelled
+
+## Risks & Dependencies
+
+## Metrics
+
+## Changelog
+
+## Archive
+```
+
+适合：
+
+* 团队项目
+* 商业项目
+* 长期维护项目
+* 多模块系统
+* 有正式发布节奏的项目
+
+---
+
+## 54. 最终建议
+
+`ROADMAP.md` 的目标不是写得越多越好，而是让项目方向更清楚。
+
+维护时优先保证：
+
+```md
+清晰 > 完整
+准确 > 详细
+可验证 > 好听
+可维护 > 复杂
+```
+
+Roadmap 应该随着项目演进而变化，但不应该频繁失真。
+
+一个好的 Roadmap 应该让读者快速知道：
+
+```md
+现在做什么
+下一步做什么
+以后可能做什么
+为什么这样安排
+什么事情暂时不做
+什么风险需要注意
+```
