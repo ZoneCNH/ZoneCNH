@@ -245,24 +245,24 @@ PY
 
         # P-LINT-001: Prompt 必须有 Constraints
         mark_rule "P" "P-LINT-001"
-        if ! echo "$CONTENT" | grep -qi "constraint\|限制\|禁止\|do.not"; then
+        if ! grep -qi "constraint\|限制\|禁止\|do.not" "$f"; then
             warn "[$BASENAME] P-LINT-001: Prompt 缺少 Constraints/限制条件"
             finding "P"
         fi
 
         # P-LINT-002: Prompt 必须有明确输出格式
         mark_rule "P" "P-LINT-002"
-        if ! echo "$CONTENT" | grep -qi "output\|输出\|格式\|format"; then
+        if ! grep -qi "output\|输出\|格式\|format" "$f"; then
             warn "[$BASENAME] P-LINT-002: Prompt 缺少输出格式说明"
             finding "P"
         fi
     fi
 
     # === 通用检查 ===
-    if echo "$CONTENT" | grep -qE "[0-9]{5,}.*@(163|qq|gmail)\.(com|cn)"; then
+    if grep -qE "[0-9]{5,}.*@(163|qq|gmail)\.(com|cn)" "$f"; then
         error "[$BASENAME] 安全: 发现疑似真实邮箱地址"
     fi
-    if echo "$CONTENT" | grep -qE "api[_-]?key.*=.*[A-Za-z0-9]{20,}"; then
+    if grep -qE "api[_-]?key.*=.*[A-Za-z0-9]{20,}" "$f"; then
         error "[$BASENAME] 安全: 发现疑似 API Key"
     fi
 
