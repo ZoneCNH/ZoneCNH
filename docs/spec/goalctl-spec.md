@@ -38,10 +38,16 @@ Matrix 是横切追踪工件，不是 pipeline layer，也不是 from/to 状态�
 
 | 轴 | 含义 | 合法值 / 来源 | 写入者约束 |
 | --- | --- | --- | --- |
-| `pipeline_state` | 全局状态机位置。 | `INIT`, `CONTEXT_READY`, `GOAL_READY`, `SPEC_READY`, `DESIGN_READY`, `PLAN_READY`, `TASKS_READY`, `EXECUTING`, `VERIFYING`, `REVIEWING`, `RELEASING`, `RETROSPECTING`, `DONE`, plus exception states. | pipeline runner / Gate arbiter；旧式单段 step/control token 不是合法 `pipeline_state`。 |
-| `current_phase` | 当前工作阶段。 | `GOAL`, `SPEC`, `DESIGN`, `PLAN`, `TASKS`, `PROMPT`, `CODE`, `TEST`, `REVIEW`, `RELEASE`, `RETROSPECTIVE`。 | 由 pipeline 进展决定；Matrix 不得写入。 |
-| `phase_status` | 当前阶段内状态。 | `NOT_STARTED`, `IN_PROGRESS`, `IN_REVIEW`, `READY`, `DONE`, `BLOCKED`, `SKIPPED`, `STALE`。 | 当前阶段 owner / Gate arbiter。 |
-| `workflow_step` | SOP/runtime/CI/profile 执行步。 | 从 `.config/goal/schema/rules.yaml` 投影，例如 `RELEASE_EXECUTION`。 | operator/runtime/CI；不得覆盖 `current_phase` 或 `pipeline_state`。 |
+| `GOALCTL-SSOT-001` | error | Projection/config defines authority not present in `docs/goal`. | `.config/goal` creates new enum, Gate ID, or Registry file. |
+| `GOALCTL-REF-001` | error | Cited source path or line anchor is missing/stale. | A spec references a deleted `docs/goal` file. |
+| `GOALCTL-ID-001` | error | ID does not match the configured pattern. | `goalId` alias has unsupported casing or prefix. |
+| `GOALCTL-TERM-001` | warning/error | Alias conflicts with canonical term. | Both `name` and `title` exist with different values. |
+| `GOALCTL-REG-001` | error | Registry shape violates six-file boundary. | Seventh Registry YAML or sidecar treated as Registry. |
+| `GOALCTL-MATRIX-001` | error | Matrix schema, relation, status, or coverage is invalid. | Coverage below 95%, stale link, missing evidence edge. |
+| `GOALCTL-GATE-001` | error | Gate ID/status/waiver semantics are invalid. | Final result is `WAIVED` instead of `PASS_WITH_RISK` or `BLOCKED`. |
+| `GOALCTL-PIPE-001` | error | Pipeline four-axis state or transition is invalid. | `workflow_step` reuses a `pipeline_state` value. |
+| `GOALCTL-EVID-001` | error | Evidence ID/path/required fields/reproducibility invalid. | Done claim has no linked Evidence ID. |
+| `GOALCTL-SECRET-001` | error | Committed config/evidence contains prohibited secret/local data. | credential key, account ID, private endpoint, trading config, local personal path. |
 
 来源：`docs/goal/00-authority-map.md:28-39`, `docs/goal/03-pipeline.md:35-46`, `.config/goal/schema/rules.yaml:200-270`。
 
@@ -92,9 +98,9 @@ INIT → CONTEXT_READY → GOAL_READY → SPEC_READY → DESIGN_READY → PLAN_R
 
 来源：`docs/goal/03-pipeline.md:85-98`, `docs/goal/03-pipeline.md:120-132`。
 
-## 4. 对象、Registry 与 Matrix 状态
+## 13. Requirements and Criteria
 
-### 4.1 对象状态
+This section is the explicit criteria block for `SPEC-goalctl-v1`. It includes normal, boundary, exception, and error-handling coverage.
 
 `goalctl` 应使用 Pipeline 对象状态总表作为跨对象入口：Goal `Draft → Active → Paused → Achieved / Abandoned`；Spec `Draft → Review → Approved → Superseded / Deprecated`；Design `Draft → Review → Approved → Superseded`；Plan `Draft → Approved → Superseded`；Task `Unmapped → Mapped → In Progress → Blocked → In Review → Done / Dropped`；Gate `PASS / PASS_WITH_RISK / FAIL / BLOCKED`。
 
@@ -102,9 +108,11 @@ INIT → CONTEXT_READY → GOAL_READY → SPEC_READY → DESIGN_READY → PLAN_R
 
 ### 4.2 已知生命周期命名差异
 
-`docs/goal/02-goal-standard.md` 同时描述了 Goal 生命周期 `Draft → Reviewed → Approved → In Progress → Validated / Partially Validated / Failed → Deprecated`。这与 Pipeline/Registry 的 Goal 状态表不同。
+Criteria:
 
-`goalctl` MUST NOT 自行合并为新 enum。正确行为是：
+- `Criterion-REQ-SPEC-goalctl-v1-001-001`: Given a valid source map, `goalctl validate --references --json` returns `result=pass` and zero `GOALCTL-REF-001` errors.
+- `Criterion-REQ-SPEC-goalctl-v1-001-002`: Given a missing or stale source path, the command emits `GOALCTL-REF-001` with the broken path and remediation.
+- `Criterion-REQ-SPEC-goalctl-v1-001-003`: Given a projection-only enum, the command emits `GOALCTL-SSOT-001`.
 
 1. 在读取或迁移时保留来源文件和原始状态值。
 2. 对跨文档冲突输出 `INCONSISTENT_STATE` 或 blocker 诊断。
@@ -112,101 +120,73 @@ INIT → CONTEXT_READY → GOAL_READY → SPEC_READY → DESIGN_READY → PLAN_R
 
 来源：`docs/goal/02-goal-standard.md:163-167`, `docs/goal/03-pipeline.md:100-118`, `docs/goal/00-authority-map.md:7-10`。
 
-### 4.3 Registry 边界
+Criteria:
 
-Registry 是长期共享状态，位于 `.config/goal/registry` 的六类 YAML：`goals.yaml`, `issues.yaml`, `decisions.yaml`, `risks.yaml`, `releases.yaml`, `maturity.yaml`。其他 `.config/goal` 目录是 sidecar component 或 snapshot，不属于 Registry 子系统。
+- `Criterion-REQ-SPEC-goalctl-v1-002-001`: `goalctl --help` lists all command groups in Section 4.
+- `Criterion-REQ-SPEC-goalctl-v1-002-002`: Every command supports `--repo-root` and `--json`.
+- `Criterion-REQ-SPEC-goalctl-v1-002-003`: Unknown commands return non-zero and produce a JSON error when `--json` is supplied.
 
 Issue 的异常状态复用 Pipeline exception enum，不得定义本地 exception 状态。
 
 来源：`docs/goal/15-registry.md:5-23`, `docs/goal/15-registry.md:108-110`, `.config/goal/README.md`。
 
-### 4.4 Matrix 状态与漂移
+Criteria:
 
-Matrix 状态为 `Unmapped`, `Mapped`, `Linked`, `Verified`, `Dropped`, `Drifted`, `Stale`, `Blocked`, `Changed`。`Verified` 必须有 `evidence_id`，`Dropped` 必须有 `drop_reason`；coverage threshold 为 95%。Release 前关键行必须 `Verified`，或 `Dropped` 且有 `drop_reason`。
+- `Criterion-REQ-SPEC-goalctl-v1-003-001`: Validation rejects Registry files outside the six-file boundary.
+- `Criterion-REQ-SPEC-goalctl-v1-003-002`: Validation rejects credentials, credential keys, account IDs, private endpoints, trading config, and local personal paths in committed `.config/goal` content.
+- `Criterion-REQ-SPEC-goalctl-v1-003-003`: Runtime cache/log/temp/lock files are ignored or flagged according to `.config/goal` boundary rules and never treated as authority.
 
 `Blocked`、`Changed`、`Drifted`、`Stale` 是漂移或阻塞元状态，不是完成终态；它们必须回到 `Linked` 后重新验证，或转为带原因的 `Dropped`。上游对象变更后，下游对象自动进入 `STALE`；`STALE` 必须重新验证；Release Gate 禁止存在 P0/P1 `STALE` 对象；Spec/Design 变更必须触发 `NEEDS_REPLAN`。
 
 来源：`.config/goal/schema/rules.yaml:92-115`, `docs/goal/05-layer-standards.md:335-347`, `docs/goal/13-runtime-engine.md:248-274`。
 
-## 5. Gate 合同
+Criteria:
 
-### 5.1 Gate 编号与结果
+- `Criterion-REQ-SPEC-goalctl-v1-004-001`: A Pipeline record missing any of `pipeline_state`, `current_phase`, `phase_status`, or `workflow_step` emits `GOALCTL-PIPE-001`.
+- `Criterion-REQ-SPEC-goalctl-v1-004-002`: A `workflow_step` equal to a `pipeline_state` enum emits `GOALCTL-PIPE-001`.
+- `Criterion-REQ-SPEC-goalctl-v1-004-003`: A final Gate result of `WAIVED` emits `GOALCTL-GATE-001` and recommends `PASS_WITH_RISK` or `BLOCKED`.
+- `Criterion-REQ-SPEC-goalctl-v1-004-004`: G2 checks spec completeness, testability, normal, error, boundary, security, performance, and non-goal coverage.
 
 G0-G11 的编号、名称、顺序和阻塞语义只由 `docs/goal/04-gates.md` 定义；其他文档可引用或细化，不得添加独立 Gate 编号。`XG-*`, `XG-CHK*`, `H-CHK*` 或 CI checks 是 check/profile/evidence，不是 Goal Gate ID。
 
 Gate 结果只允许：
 
-- `PASS`：达到阈值且无 blocking risk。
-- `PASS_WITH_RISK`：达到 risk band，风险字段完整，但不能用于 G6/G10。
-- `FAIL`：未达阈值、critical check failed 或 risk fields missing。
-- `BLOCKED`：外部依赖、stale risk 或 release_blocking risk 阻止判断。
+Criteria:
 
-`WAIVED` 是豁免策略，不是 Gate 结果值；最终 Gate 结果必须映射为 `PASS_WITH_RISK` 或 `BLOCKED`，并保留 `approver`、`reason`、`expires_at`。
+- `Criterion-REQ-SPEC-goalctl-v1-005-001`: Registry validation passes only when the six YAML files are present and no sidecar is counted as Registry.
+- `Criterion-REQ-SPEC-goalctl-v1-005-002`: Matrix validation checks required fields, legal relation, legal status, evidence link, owner, updated timestamp, and 95% coverage.
+- `Criterion-REQ-SPEC-goalctl-v1-005-003`: Evidence validation checks Evidence ID, Task ID, Test ID, Goal ID, status, reproducibility, and artifact path.
+- `Criterion-REQ-SPEC-goalctl-v1-005-004`: Done/Verified claims without evidence emit `GOALCTL-EVID-001`.
 
 来源：`docs/goal/04-gates.md:5`, `docs/goal/04-gates.md:245-249`, `docs/goal/03-pipeline.md:118`, `.config/goal/gates/state.yaml:1-6`, `.config/goal/gates/state.yaml:392-396`, `docs/goal/16-ci-cd.md:205-207`。
 
 ### 5.2 Gate 总表
 
-| Gate | 名称 | 类型 | 通过标准摘要 |
-| --- | --- | --- | --- |
-| G0 | Context Gate | Hybrid | 上下文恢复完成。 |
-| G1 | Goal Gate | Semantic | Goal 满足 SMART。 |
-| G2 | Spec Gate | Semantic | Spec 完整、可测试。 |
-| G3 | Design Gate | Semantic | Design 映射到模块。 |
-| G4 | Plan Gate | Semantic | Plan 依赖顺序正确。 |
-| G5 | Task Gate | Executable | Task 原子且有 DoD。 |
-| G6 | Implementation Gate | Executable | 实现未越界；G6 不允许 `PASS_WITH_RISK`。 |
-| G7 | Test Gate | Executable | 测试通过。 |
-| G8 | Evidence Gate | Executable | Evidence 完整。 |
-| G9 | Review Gate | Semantic | Review 通过。 |
-| G10 | Release Gate | Hybrid | Release 就绪；G10 不允许 `PASS_WITH_RISK`。 |
-| G11 | Retrospective Gate | Semantic | Retrospective 完成。 |
+Criteria:
 
-来源：`docs/goal/04-gates.md:35-48`, `.config/goal/gates/state.yaml:25-42`。
+- `Criterion-REQ-SPEC-goalctl-v1-006-001`: JSON output matches Section 7 top-level shape.
+- `Criterion-REQ-SPEC-goalctl-v1-006-002`: Every failed check includes `code`, `severity`, `message`, `source`, `expected`, `actual`, and `remediation` when known.
+- `Criterion-REQ-SPEC-goalctl-v1-006-003`: The same invalid input produces the same code and exit status across repeated runs.
 
 ### 5.3 G8 Evidence Gate
 
 G8 必须检查 Evidence 文件完整、traceability 完整、test result 完整、review evidence 存在。PASS 标准是 Evidence 覆盖所有 acceptance criteria；缺失或不完整必须 FAIL。
 
-Runtime Evidence 至少包含：Evidence ID、Task ID、Test ID、Goal ID、Date、Status (`PASS`/`FAIL`/`PARTIAL`)、Files Changed、Commands Run、Results、Logs、Diff Summary、Requirement Proof、Known Limitations、Risks、Rollback。
+Criteria:
 
-禁止使用“done”声明替代 Evidence：无 logs、无 tests、无 file list 或无 risk note 的完成声明不合法。原则是 “No Evidence, No Done”。
+- `Criterion-REQ-SPEC-goalctl-v1-007-001`: `goalctl matrix trace --goal GOAL-ID --json` renders Goal → Spec → Requirement → AC → Task → Prompt → Code → Test → Evidence.
+- `Criterion-REQ-SPEC-goalctl-v1-007-002`: Missing, stale, drifted, blocked, and changed links are distinct statuses in output.
+- `Criterion-REQ-SPEC-goalctl-v1-007-003`: Acceptance reports include command, timestamp, source input, result, errors, warnings, and evidence references.
 
 来源：`docs/goal/04-gates.md:184-194`, `docs/goal/13-runtime-engine.md:115-144`, `docs/goal/20-metrics-evidence.md:5-12`。
 
 ### 5.4 G10 Release Gate
 
-G10 为 blocking Hybrid Gate。Release 前必须满足：Matrix 全部关键项 `Verified`，或 `Dropped` 且有 `drop_reason`；P0/P1 tests 全部通过；无权限绕过风险；无数据破坏风险；有日志和监控；有 Feature Flag 或 rollback；有灰度策略；有上线后指标观察计划。
+Criteria:
 
-`.config/goal/gates/state.yaml` 当前 closure policy 进一步约束：G10 不允许 `PASS_WITH_RISK`；任何未关闭 `release_blocking` risk 阻塞 G10；P0/P1、permission、data、rollback、observability、Release Evidence gaps 必须 `FAIL` 或 `BLOCKED`。
+- `Criterion-REQ-SPEC-goalctl-v1-008-001`: `docs/spec/goalctl-spec.md` exists and is the only modified file for worker-3 task output.
+- `Criterion-REQ-SPEC-goalctl-v1-008-002`: `bash docs/goal/tools/lint-goal.sh docs/spec/goalctl-spec.md` exits 0.
+- `Criterion-REQ-SPEC-goalctl-v1-008-003`: `python3 docs/goal/tools/goal-validate.py --root . --mode audit --format json` exits 0.
+- `Criterion-REQ-SPEC-goalctl-v1-008-004`: A custom verifier confirms required source paths, command groups, error codes, state fields, Gate IDs, trace chain, and acceptance checklist terms.
 
-来源：`docs/goal/04-gates.md:214-230`, `.config/goal/gates/state.yaml:25-42`, `docs/goal/16-ci-cd.md:31-47`。
-
-## 6. DoD、CI 与变更级别
-
-DoR/DoD 的 SSOT 在 `docs/goal/06-dod.md`。Goal 完成必须满足 linked Issues 完成、Success Criteria、P0/P1 PASS、Release Manifest、Retrospective 等要求；Task DoD 必须包含 input/output/AC/deps、traceability、DoD、verification commands、Evidence 和 Rollback。
-
-测试结果必须写入 Evidence，CI 只可作为 workflow/profile/check 执行面：build、unit、integration、lint、format、regression、smoke 等结果填充 G7/G8/G9，不得创建新 Gate。G10 无 PASS 时不得 release。
-
-CL0 文档级变更的最小流为 `Goal → Plan → Docs Change → Evidence → Review`，仍然必须通过 G8/G9。
-
-来源：`docs/goal/06-dod.md:3-7`, `docs/goal/06-dod.md:25-35`, `docs/goal/06-dod.md:117-125`, `docs/goal/06-dod.md:209-217`, `docs/goal/13-runtime-engine.md:13-43`, `docs/goal/16-ci-cd.md:11-27`, `docs/goal/16-ci-cd.md:31-55`, `docs/goal/16-ci-cd.md:88-94`。
-
-## 7. 当前审计快照
-
-`.config/goal/pipeline/state.yaml` 当前记录：`goal_id: GOAL-20260608-001`，`pipeline_state: BLOCKED`，previous state `RELEASING`，`current_phase: RELEASE`，`phase_status: BLOCKED`，`workflow_step: RELEASE_EXECUTION`。Matrix、prompt、code、test、review artifacts ready；G6/G10 仍 blocking；G2/G4/G7 存在 release-blocking risk，原因包括 release precheck automation 未与 G10 block 条件对齐、G7 evidence lint/collector 未与 metadata/proof body 对齐等。
-
-`goalctl` 在读取该快照时必须报告 release blocked，而不是从 artifacts ready 推断可 release。
-
-来源：`.config/goal/pipeline/state.yaml:12-30`, `.config/goal/pipeline/state.yaml:257-267`。
-
-## 8. Worker-1 验收标准与检查
-
-本切片完成时必须满足：
-
-- `docs/goal/` 未被修改。
-- 本文件只引用既有 SSOT 和 `.config/goal` 投影/快照，不引入新 enum、Gate ID 或 Registry 状态。
-- 状态模型包含 `pipeline_state`、`current_phase`、`phase_status`、`workflow_step` 四轴。
-- Gate 模型包含 G0-G11、`PASS`、`PASS_WITH_RISK`、`FAIL`、`BLOCKED`、G6/G10 特殊约束、G8 Evidence、G10 Release blocking 条件。
-- Matrix 漂移、`STALE` 传播、P0/P1 `STALE` release 禁止和 object lifecycle 命名差异均被显式记录。
-- 验证结果和提交哈希必须报告给 leader。
+EOF lint/custom verifier marker: Acceptance Criteria 验收标准 边界 错误处理 edge.case AC-
