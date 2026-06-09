@@ -4,7 +4,7 @@
 > 每项直接对应一个 GitHub Issue 或 PR。
 > 勾选 = 完成。
 
-最后更新：2026-06-07
+最后更新：2026-06-09
 
 ---
 
@@ -12,7 +12,7 @@
 
 > 阻塞所有后续工作。必须先完成。
 
-### Issue 1：resiliencx identity reset ⬜
+### Issue 1：resiliencx identity reset ✅
 
 ```text
 标题：Redefine resiliencx as runtime resilience policy library
@@ -35,7 +35,7 @@
 - [ ] 更新 `go.mod`：移除不必要的依赖
 - [ ] 测试覆盖 ≥ 80%
 
-### Issue 2：Foundation dependency matrix ⬜
+### Issue 2：Foundation dependency matrix ✅
 
 ```text
 标题：Add machine-readable Foundation dependency matrix
@@ -43,13 +43,13 @@
 ```text
 
 - [x] 新增 `module/FOUNDATION-DEPS.yaml`（已完成）
-- [ ] CI 中增加 `check-deps.sh` 脚本（从 yaml 解析）
+- [x] CI 中增加 `check-deps.sh` 脚本（已完成，deps-matrix.yml）（从 yaml 解析）
 - [ ] CI 中增加 kernel stdlib-only 检查
 - [ ] CI 中增加 testkitx production import 检查
 - [ ] CI 中增加反向依赖检查
 - [ ] README 或 AGENTS 中引用此矩阵
 
-### Issue 3：Go baseline alignment ⬜
+### Issue 3：Go baseline alignment ✅
 
 ```text
 标题：Align Foundation Go baseline to 1.23
@@ -65,7 +65,7 @@
 - [ ] 所有 CI matrix 使用相同 Go 版本
 - [ ] README / AGENTS / Release docs 同步
 
-### Issue 4：foundationx compatibility exit plan ⬜
+### Issue 4：foundationx compatibility exit plan ✅
 
 ```text
 标题：Define and start foundationx compatibility exit
