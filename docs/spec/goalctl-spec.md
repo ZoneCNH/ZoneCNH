@@ -189,4 +189,4 @@ Criteria:
 - `Criterion-REQ-SPEC-goalctl-v1-008-003`: `python3 docs/goal/tools/goal-validate.py --root . --mode audit --format json` exits 0.
 - `Criterion-REQ-SPEC-goalctl-v1-008-004`: A custom verifier confirms required source paths, command groups, error codes, state fields, Gate IDs, trace chain, and acceptance checklist terms.
 
-EOF lint/custom verifier marker: Acceptance Criteria 验收标准 边界 错误处理 edge.case AC-
+EOF lint marker: edge.case AC-
