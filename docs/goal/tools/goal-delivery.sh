@@ -882,70 +882,29 @@ cmd_evidence() {
     diff_summary=$(git diff --stat HEAD~1 2>/dev/null || echo "无变更")
   fi
 
-  # 生成符合 gate-check.sh 要求的完整 Evidence 模板
+  # 生成符合 rule-drift-check.py 要求的 Evidence 模板（`- **Field**: value` 格式）
   cat >"$evidence_file" <<YAML
 # Evidence: ${evidence_id}
 
-## Evidence ID
-${evidence_id}
-
-## Task ID
-${task_id}
-
-## Test ID
-${test_id}
-
-## Goal ID
-${goal_id:-待填写}
-
-## Spec ID
-待填写
-
-## Acceptance Criteria ID
-待填写
-
-## Date
-$(date +%Y-%m-%d)
-
-## Status
-待验证
-
-## Files Changed
-\`\`\`
-${diff_summary}
-\`\`\`
-
-## Commands Run
-\`\`\`
-待填写测试命令
-\`\`\`
+- **Evidence ID**: ${evidence_id}
+- **Task ID**: ${task_id}
+- **Test ID**: ${test_id}
+- **Goal ID**: ${goal_id:-待填写}
+- **Spec ID**: 待填写
+- **Acceptance Criteria ID**: 待填写
+- **Date**: $(date +%Y-%m-%d)
+- **Status**: 待验证
+- **Files Changed**: ${diff_summary}
+- **Commands Run**: 待填写测试命令
 
 ## Results
+
 待运行测试
 
-## Logs
-<!-- 关键日志 -->
-待填写
-
-## Diff Summary
-变更摘要待填写
-
 ## Requirement Proof
-<!-- 对应需求证明：哪条 Requirement 被这个 Evidence 证明 -->
+
 - REQ: 待填写
 - AC: 待填写
-
-## Known Limitations
-<!-- 已知限制 -->
-- 无
-
-## Risks
-<!-- 风险 -->
-- 无
-
-## Rollback
-<!-- 回滚方案 -->
-待填写
 YAML
 
   ok "Evidence 已创建: $evidence_file"

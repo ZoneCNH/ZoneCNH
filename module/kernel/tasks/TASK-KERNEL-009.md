@@ -9,9 +9,10 @@ task_id: TASK-KERNEL-009
 module: kernel
 scope: "实现集成测试（完整启动-运行-停止）和性能基准（注册、冷启动、拓扑排序、停机）"
 spec_ref:
-  - "module/kernel/SPEC.md#16.5"
-  - "module/kernel/SPEC.md#16.4"
-  - "module/kernel/SPEC.md#17"
+  - "module/kernel/SPEC.md#FR-002"
+  - "module/kernel/SPEC.md#FR-003"
+  - "module/kernel/SPEC.md#FR-004"
+  - "module/kernel/SPEC.md#FR-005"
 files:
   - "integration_test.go"
   - "benchmark_test.go"

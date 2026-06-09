@@ -111,9 +111,20 @@ var (
 - 不要创建除 go.mod、doc.go、errors.go 以外的文件
 - 不要使用 `fmt.Errorf` 定义错误（必须用 `errors.New`）
 
+## 证据回填
+
+完成后提交以下产物到 `.config/goal/evidence/` 目录：
+
+1. `go build ./...` 输出（编译通过）
+2. `go vet ./...` 输出（无警告）
+3. `go list -deps ./...` 输出（仅 stdlib）
+4. `errors.go` 文件清单（10 个 Err 变量确认）
+5. `go.mod` 内容确认（无 require 块）
+
 ## 完成后
 
 1. 运行 `go build ./...` 确认编译通过
 2. 运行 `go vet ./...` 确认无警告
 3. 运行 `go list -deps ./...` 确认无外部依赖
-4. 将 task 状态更新为 completed
+4. 将证据产物写入 `.config/goal/evidence/2026-06-09/TASK-KERNEL-000/`
+5. 将 task 状态更新为 completed

@@ -291,11 +291,16 @@ write_release_gate_fixture() {
     cat >"$root/.config/goal/evidence/2026-06-09/TASK-GOAL-20260608-001-001/$VALIDATOR_EVIDENCE_ID.md" <<'MD'
 # Evidence Fixture
 
-## Evidence ID
-EVID-TEST-TASK-GOAL-20260608-001-001-001-001
-
-## Result
-PASS
+- **Evidence ID**: EVID-TEST-TASK-GOAL-20260608-001-001-001-001
+- **Task ID**: TASK-GOAL-20260608-001-001
+- **Test ID**: TEST-TASK-GOAL-20260608-001-001-001
+- **Goal ID**: GOAL-20260608-001
+- **Spec ID**: SPEC-GOAL-20260608-001
+- **Acceptance Criteria ID**: AC-GOAL-20260608-001-001
+- **Date**: 2026-06-09
+- **Status**: PASS
+- **Files Changed**: fixture
+- **Commands Run**: self-test
 MD
   fi
 }
