@@ -2,9 +2,11 @@
 
 > 项目中长期规划的统一入口。不记录临时待办或过细实现细节。
 >
+> 编写规范见 [docs/governance/ROADMAP-RULES.md](./docs/governance/ROADMAP-RULES.md)（§1-54，含状态流转、决策规则、评审频率、标签规范）。
+>
 > 详细执行跟踪见 [module/FOUNDATION-TRACKER.md](./module/FOUNDATION-TRACKER.md)、[STATUS.md](./STATUS.md)、[DATAFLOW.md](./DATAFLOW.md)。
 
-最后更新：2026-06-09
+最后更新：2026-06-10
 
 ---
 
@@ -32,7 +34,10 @@
 
 Status: In Progress
 Priority: Critical
+Target: v0.1.0
 Target Date: 2026-08
+Owner: ZoneCNH
+Tags: architecture, maintenance
 
 Description:
 
@@ -69,7 +74,10 @@ Done when:
 
 Status: Planned
 Priority: High
+Target: v0.2.0
 Target Date: 2026-11
+Owner: ZoneCNH
+Tags: feature, architecture
 
 Description:
 
@@ -107,7 +115,10 @@ Blocked By:
 
 Status: Planned
 Priority: High
+Target: v0.3.0
 Target Date: 2027-02
+Owner: ZoneCNH
+Tags: feature, architecture
 
 Description:
 
@@ -145,7 +156,10 @@ Blocked By:
 
 Status: Planned
 Priority: High
+Target: v0.4.0
 Target Date: 2027-05
+Owner: ZoneCNH
+Tags: feature, security
 
 Description:
 
@@ -183,7 +197,10 @@ Blocked By:
 
 Status: Planned
 Priority: Medium
+Target: v0.5.0
 Target Date: 2027-08
+Owner: ZoneCNH
+Tags: feature, maintenance
 
 Description:
 
@@ -194,7 +211,7 @@ Scope:
 - settlement：PnL 计算 + 交易所对账 + 资金流水
 - alertx：策略异常 + 风控触发 + 系统健康三类告警
 - alternative-data：链上数据 + 社交情绪 + 新闻 NLP
-- 存储层按需实现：redisx / kafkax（P1）、postgresx / clickhousex（P2）
+- 存储层分优先级实现：redisx / kafkax（P1 优先）、postgresx / clickhousex（P2 按数据量增长驱动）
 
 Out of Scope:
 
@@ -218,7 +235,10 @@ Blocked By:
 
 Status: Planned
 Priority: Medium
+Target: v1.0.0
 Target Date: 2027-10
+Owner: ZoneCNH
+Tags: architecture, testing
 
 Description:
 
@@ -255,48 +275,48 @@ Blocked By:
 
 ### 功能类
 
-- [ ] 实盘交易模式（替代 paper trading）
-- [ ] 多集群部署支持
-- [ ] 策略市场 / 策略分享
-- [ ] Web 管理界面
-- [ ] 移动端监控
+- [ ] 实盘交易模式（替代 paper trading） — `feature`
+- [ ] 多集群部署支持 — `architecture`
+- [ ] 策略市场 / 策略分享 — `feature`
+- [ ] Web 管理界面 — `feature`
+- [ ] 移动端监控 — `feature`
 
 ### 架构类
 
-- [ ] secrectx 设计与实现（中期，不污染 configx）
-- [ ] appx / runx 框架层（可选，当前不推荐）
-- [ ] ratelimitx / lockx / eventx / httpx / cachex（按需）
-- [ ] 仓库命名规范化（`foundation-*` / `adapter-*` / `engine-*` 前缀）
+- [ ] secrectx 设计与实现（中期，不污染 configx） — `security`
+- [ ] appx / runx 框架层（可选，当前不推荐） — `architecture`
+- [ ] ratelimitx / lockx / eventx / httpx / cachex（按优先级排序：ratelimitx > cachex > lockx > eventx > httpx） — `architecture`
+- [ ] 仓库命名规范化（`foundation-*` / `adapter-*` / `engine-*` 前缀） — `maintenance`
 
 ### 文档类
 
-- [ ] observex 双重归属边界文档（基座 vs 横切）
-- [ ] strategies 定位澄清（策略研究参考库）
-- [ ] 快速开始文档
-- [ ] API 示例文档
+- [ ] observex 双重归属边界文档（基座 vs 横切） — `documentation`
+- [ ] strategies 定位澄清（策略研究参考库） — `documentation`
+- [ ] 快速开始文档 — `documentation`
+- [ ] API 示例文档 — `documentation`
 
 ### 横切质量
 
-- [ ] 每个模块 CI 独立 job + 覆盖率 ≥ 80%
-- [ ] xlibgate import check 全域覆盖
-- [ ] Spec → Code 四源评分管线运行
-- [ ] 追溯矩阵完整性检查（无孤儿 Task / 无空 AC）
-- [ ] 14 个交易所 SDK 版本化发布
-- [ ] 宏观数据源适配器合并评估
+- [ ] 每个模块 CI 独立 job + 覆盖率 ≥ 80% — `testing`
+- [ ] xlibgate import check 全域覆盖 — `testing`
+- [ ] Spec → Code 四源评分管线运行 — `testing`
+- [ ] 追溯矩阵完整性检查（无孤儿 Task / 无空 AC） — `testing`
+- [ ] 14 个交易所 SDK 版本化发布 — `maintenance`
+- [ ] 宏观数据源适配器合并评估 — `maintenance`
 
 ---
 
 ## Risks & Dependencies
 
-| 风险 | 级别 | 影响 | 缓解措施 |
-|------|------|------|----------|
-| 分析域/决策域/执行域完成度极低（5-8%） | Critical | 核心业务链路断裂 | 聚焦 v0.2.0，先固化契约再实现 |
-| resiliencx 身份未修复 | Critical | Foundation 层两个"标准源"冲突 | v0.1.0 最高优先级 |
-| x.go 2.8MB 体量异常 | High | 可能违反组合根边界 | v0.1.0 体检与瘦身 |
-| 14 个交易所 SDK 无版本号 | High | 无法追踪 API 兼容性 | Backlog 中跟进 |
-| 宏观数据源同质化 | Medium | 维护成本高 | Backlog 中评估合并 |
-| 单人开发 + AI 代理，资源有限 | Medium | 进度可能延期 | 严格优先级，先闭环后扩展 |
-| 回测与实盘共享代码验证不足 | Medium | P6 原则未落地 | v0.3.0 回测引擎必须验证共享代码路径 |
+| 风险 | 级别 | Status | 缓解措施 |
+|------|------|--------|----------|
+| 分析域/决策域/执行域完成度极低（5-8%） | Critical | Active | 聚焦 v0.2.0，先固化契约再实现 |
+| resiliencx 身份未修复 | Critical | Active | v0.1.0 最高优先级 |
+| x.go 2.8MB 体量异常 | High | Active | v0.1.0 体检与瘦身 |
+| 14 个交易所 SDK 无版本号 | High | Monitoring | Backlog 中跟进 |
+| 宏观数据源同质化 | Medium | Monitoring | Backlog 中评估合并 |
+| 单人开发 + AI 代理，资源有限 | Medium | Active | 严格优先级，先闭环后扩展 |
+| 回测与实盘共享代码验证不足 | Medium | Monitoring | v0.3.0 回测引擎必须验证共享代码路径 |
 
 ---
 
@@ -314,6 +334,54 @@ Blocked By:
 
 ---
 
+## Deferred
+
+> 延后处理的事项。移入前必须说明延后原因，移出时记录新目标版本。
+
+当前无延后事项。
+
+---
+
+## Cancelled
+
+> 已取消的事项。记录取消原因，保留历史决策上下文。
+
+当前无取消事项。
+
+---
+
+## Release Gate
+
+> 每个版本发布前必须满足以下门禁条件（§33）。
+
+```md
+- [ ] 当前版本目标全部完成或明确移出
+- [ ] 关键测试通过
+- [ ] README 已更新
+- [ ] CHANGELOG 已更新
+- [ ] 已知风险已记录
+- [ ] 破坏性变更已说明（如有）
+- [ ] 迁移说明已补充（如有）
+- [ ] 没有未处理的 Critical 问题
+```
+
+---
+
+## Review Rules
+
+> Roadmap 应定期评审，避免变成过期文档（§27）。
+
+| 项目阶段 | 建议频率 |
+|---------|---------|
+| 早期探索阶段 | 每 1-2 周 |
+| 快速开发阶段 | 每 2-4 周 |
+| 稳定维护阶段 | 每个版本结束后 |
+| 长期维护项目 | 每 1-2 个月 |
+
+长期未更新的条目应重新评估：30 天无变化检查状态，60 天评估版本归属，90 天考虑移入 Deferred 或 Backlog。
+
+---
+
 ## Related Documents
 
 | 文档 | 用途 |
@@ -323,12 +391,25 @@ Blocked By:
 | [module/FOUNDATION-TRACKER.md](./module/FOUNDATION-TRACKER.md) | Foundation v1 执行跟踪 — P0/P1/P2 Issue 检查清单 |
 | [module/](./module/) | 16 个基座模块 + x.go 的 23 节规格 |
 | [docs/governance/](./docs/governance/) | Spec 治理模板、生命周期、追溯与评分规则 |
+| [docs/governance/ROADMAP-RULES.md](./docs/governance/ROADMAP-RULES.md) | ROADMAP 编写规范 — 状态流转、决策规则、评审频率、标签规范（§1-54） |
 | [CONSTITUTION.md](./CONSTITUTION.md) | 系统宪法 — AI 代理最高治理文件 |
 | [ARCHITECTURE.md](./ARCHITECTURE.md) | 完整依赖拓扑、域间关系、运行时组装 |
 
 ---
 
 ## Changelog
+
+### 2026-06-10
+
+- 按 ROADMAP-RULES.md 规范（§1-54）优化，补齐 12 项合规缺口
+- 增加 Owner / Tags / Target 字段到所有 Milestone（§5/§28/§36）
+- 风险表增加 Status 列（Active / Monitoring）（§14）
+- 增加 Deferred / Cancelled 区域（§10 状态流转）
+- 增加 Release Gate 发布门禁（§33）
+- 增加 Review Rules 评审频率（§27）
+- Backlog 条目增加标签分类，清理模糊词"按需"（§28/§42）
+- 头部增加 ROADMAP-RULES.md 规范引用
+- Related Documents 增加 ROADMAP-RULES.md 链接
 
 ### 2026-06-09
 
