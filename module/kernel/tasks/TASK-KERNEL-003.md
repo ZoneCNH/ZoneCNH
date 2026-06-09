@@ -41,6 +41,12 @@ status: pending
 | FR-001 | Register：注册、重复检测、nil 检查、已启动拒绝 | 4 个 WHEN/THEN 场景全部覆盖 |
 | BR-009 | Deps 接口由消费方注入 | Register 只接受 Module 接口，不关心 Deps 具体实现 |
 
+## Non-scope
+
+- 不实现拓扑排序（→ TASK-KERNEL-002）
+- 不实现启动逻辑（→ TASK-KERNEL-004）
+- 不实现健康检查（→ TASK-KERNEL-006）
+
 ## Test Plan
 
 | Test Case | Type | Description |

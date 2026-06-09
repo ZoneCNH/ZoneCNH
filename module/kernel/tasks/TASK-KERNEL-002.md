@@ -49,6 +49,12 @@ status: pending
 | BR-001 | 依赖图不允许环 | 检测到环返回 ErrCycleDetected |
 | BR-002 | 启动顺序必须是拓扑序 | TopologicalOrder 返回正确的拓扑序 |
 
+## Non-scope
+
+- 不实现启动/停止逻辑（→ TASK-KERNEL-004）
+- 不实现注册表（→ TASK-KERNEL-003）
+- 不处理 OS signal（→ TASK-KERNEL-005）
+
 ## Test Plan
 
 | Test Case | Type | Description |

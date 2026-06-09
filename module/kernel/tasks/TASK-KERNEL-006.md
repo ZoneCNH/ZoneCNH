@@ -41,6 +41,12 @@ status: pending
 | FR-004 | ModuleHealth：查询已注册/未注册模块健康状态 | 2 个 WHEN/THEN 场景 |
 | BR-005 | Health(ctx) 必须幂等、无副作用 | 多次调用返回相同结果 |
 
+## Non-scope
+
+- 不实现启动/停止逻辑（→ TASK-KERNEL-004, 005）
+- 不实现依赖图（→ TASK-KERNEL-002）
+- 不实现注册表（→ TASK-KERNEL-003）
+
 ## Test Plan
 
 | Test Case | Type | Description |

@@ -49,6 +49,12 @@ status: pending
 | BR-003 | 停止顺序必须是启动反序 | 反序遍历启动列表 |
 | BR-006 | Stop 超时后 force shutdown，记录未完成模块 | 超时后跳过并记录 |
 
+## Non-scope
+
+- 不实现启动逻辑（→ TASK-KERNEL-004）
+- 不实现 panic 隔离（→ TASK-KERNEL-007）
+- 不实现健康检查（→ TASK-KERNEL-006）
+
 ## Test Plan
 
 | Test Case | Type | Description |

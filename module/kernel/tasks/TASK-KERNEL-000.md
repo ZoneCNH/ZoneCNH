@@ -43,6 +43,12 @@ status: pending
 | §15.1 | go.mod stdlib-only | `go list -deps` 无非 stdlib 依赖 |
 | BR-008 | kernel 不 import 任何非 stdlib 包 | CI stdlib-only gate 通过 |
 
+## Non-scope
+
+- 不定义接口（→ TASK-KERNEL-001）
+- 不实现依赖图（→ TASK-KERNEL-002）
+- 不实现注册表（→ TASK-KERNEL-003）
+
 ## Test Plan
 
 | Test Case | Type | Description |

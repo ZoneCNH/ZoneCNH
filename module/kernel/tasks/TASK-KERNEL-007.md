@@ -48,6 +48,12 @@ status: pending
 | FR-003 | Shutdown 中 Stop panic 被捕获 | panic 被捕获，后续模块继续 Stop |
 | BR-007 | panic 必须被 catch，不传播到调用方 | 所有 panic 路径均有 recover |
 
+## Non-scope
+
+- 不实现启动逻辑（→ TASK-KERNEL-004）
+- 不实现停机逻辑（→ TASK-KERNEL-005）
+- 不实现健康检查（→ TASK-KERNEL-006）
+
 ## Test Plan
 
 | Test Case | Type | Description |

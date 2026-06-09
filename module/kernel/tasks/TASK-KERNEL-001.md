@@ -42,6 +42,12 @@ status: pending
 | §10.2 | 模块状态枚举 | 6 个状态值：Registered, Starting, Running, Stopping, Stopped, Error |
 | BR-009 | Deps 中的接口类型由消费方组装时注入 | kernel 包内定义所有 Deps 字段类型 |
 
+## Non-scope
+
+- 不实现具体模块（→ TASK-KERNEL-003~008）
+- 不创建 go.mod（→ TASK-KERNEL-000）
+- 不实现依赖图算法（→ TASK-KERNEL-002）
+
 ## Test Plan
 
 | Test Case | Type | Description |

@@ -48,6 +48,12 @@ status: pending
 |---|---|---|
 | §16.5 | 集成测试：完整启动-运行-停止 | App.Run → 全部 Running → Shutdown → 全部 Stopped |
 | §16.5 | 集成测试：启动失败回滚 | 部分 Init 成功、Start 失败 → 已 Init 模块被 Stop |
+
+## Non-scope
+
+- 不实现单元测试（→ TASK-KERNEL-002~008）
+- 不实现文档（→ TASK-KERNEL-010）
+- 不修改业务逻辑（仅测试）
 | §16.4 | Benchmark：50 模块注册 + 依赖图校验 | < 10ms |
 | §16.4 | Benchmark：冷启动 | < 100ms |
 | §16.4 | Benchmark：100 节点拓扑排序 | < 1ms |
