@@ -148,22 +148,50 @@ queue_cleanup() {
   cleanup_repo_root="$2"
   cleanup_branch="$3"
   cleanup_log="$4"
+  cleanup_slug="$(printf '%s' "$cleanup_branch" | tr -c 'A-Za-z0-9._-' '_')"
+  cleanup_script="$state_dir/cleanup-$cleanup_slug-$$.sh"
 
-  nohup /usr/bin/env bash -c '
+  cat > "$cleanup_script" <<'CLEANUP'
+#!/usr/bin/env bash
+set -u
+
 main_worktree="$1"
 repo_root="$2"
 branch="$3"
 log_file="$4"
+cleanup_script="$5"
 
+cd / || exit 0
 sleep 2
 {
-  printf "%s\tcleanup: removing worktree %s\n" "$(date -Is)" "$repo_root"
-  git -C "$main_worktree" worktree remove "$repo_root"
-  git -C "$main_worktree" branch -d "$branch"
+  printf "%s\tcleanup: start for %s\n" "$(date -Is)" "$branch"
+
+  if git -C "$main_worktree" worktree list --porcelain | grep -Fx "worktree $repo_root" >/dev/null; then
+    git -C "$main_worktree" worktree remove "$repo_root"
+  else
+    printf "%s\tcleanup: worktree already absent %s\n" "$(date -Is)" "$repo_root"
+  fi
+
+  if git -C "$main_worktree" show-ref --verify --quiet "refs/heads/$branch"; then
+    git -C "$main_worktree" branch -d "$branch"
+  else
+    printf "%s\tcleanup: branch already absent %s\n" "$(date -Is)" "$branch"
+  fi
+
   printf "%s\tcleanup: complete for %s\n" "$(date -Is)" "$branch"
+  rm -f "$cleanup_script"
 } >> "$log_file" 2>&1
-' auto-delivery-cleanup "$cleanup_main_worktree" "$cleanup_repo_root" "$cleanup_branch" "$cleanup_log" \
-    >/dev/null 2>&1 &
+CLEANUP
+  chmod 700 "$cleanup_script"
+  log_line "cleanup: queued script $cleanup_script"
+
+  if command -v setsid >/dev/null 2>&1; then
+    setsid "$cleanup_script" "$cleanup_main_worktree" "$cleanup_repo_root" "$cleanup_branch" "$cleanup_log" "$cleanup_script" \
+      >/dev/null 2>&1 < /dev/null &
+  else
+    nohup "$cleanup_script" "$cleanup_main_worktree" "$cleanup_repo_root" "$cleanup_branch" "$cleanup_log" "$cleanup_script" \
+      >/dev/null 2>&1 < /dev/null &
+  fi
 }
 
 capture_hook_payload() {
