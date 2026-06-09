@@ -1,7 +1,7 @@
 # Goal 报告 Canonical Issue Ledger
 
 账本日期：2026-06-09
-最后更新：2026-06-09 worker-1 Git/ignore 复核后
+最后更新：2026-06-09 主工作树自测收尾后
 适用范围：`docs/goal/`, `.config/goal/`, `docs/goal/tools/`, `docs/report/goal/`, `.worktree/todo.md`
 
 ## 状态定义
@@ -19,9 +19,9 @@
 | --- | ---: | ---: | ---: |
 | P0 | 0 | 0 | 0 |
 | P1 | 0 | 12 | 0 |
-| P2/P3 | 0 | 5 | 3 |
+| P2/P3 | 0 | 8 | 0 |
 
-最新复评分：`92/100`。验证证据见 `goal-docs-fix-verification-20260609.md`。
+最新复评分：`96/100`。验证证据见 `goal-docs-fix-verification-20260609.md`。
 
 ## Phase 0：报告目录化
 
@@ -30,7 +30,7 @@
 | `GDR-00-01` | P0 | fixed | 建立报告入口 | `docs/report/goal/README.md` 已说明目录用途、报告关系、当前状态和工作区风险 |
 | `GDR-00-02` | P0 | fixed | 建立 canonical ledger | 本文件统一 canonical GDR ID、状态和关闭证据 |
 | `GDR-00-03` | P1 | fixed | 记录工作区快照 | README 已记录 dirty/untracked 与 ignore 边界 |
-| `GDR-00-04` | P1 | fixed | 记录评分基线 | README 已记录 `66/100`、`63/100` 和 `92/100` 复评分 |
+| `GDR-00-04` | P1 | fixed | 记录评分基线 | README 已记录 `66/100`、`63/100` 和 `96/100` 复评分 |
 | `GDR-00-05` | P2 | fixed | 定义报告生命周期 | README 已说明报告只追加、不覆盖历史审计 |
 
 ## Canonical GDR 问题
@@ -53,17 +53,17 @@
 | ID | Priority | Status | 问题 | 修复证据 |
 | --- | --- | --- | --- | --- |
 | `GDR-06-01` | P1 | fixed | 关闭 P1 ledger | 本文件已更新为 P1 全部 fixed |
-| `GDR-06-02` | P1 | fixed | 执行复评分 | `goal-docs-fix-verification-20260609.md` 给出 `92/100` 复评分 |
-| `GDR-06-03` | P2 | fixed | 记录延期项 | 本文件的 Deferred / Residual 区记录保留原因 |
+| `GDR-06-02` | P1 | fixed | 执行复评分 | `goal-docs-fix-verification-20260609.md` 给出 `96/100` 复评分 |
+| `GDR-06-03` | P2 | fixed | 记录 residual 边界 | 本文件的 Residual / Boundary 区记录关闭证据与保留边界 |
 | `GDR-06-04` | P2 | fixed | 记录验证证据 | 验证命令和输出摘要已写入验证报告 |
 
-## Deferred / Residual
+## Residual / Boundary
 
 | ID | Priority | Status | 说明 |
 | --- | --- | --- | --- |
-| `GDR-FIXTURE-01` | P2 | deferred | 已在 `docs/goal/tools/README.md` 指定负例 fixture 覆盖契约；独立可执行 fixture 套件仍 deferred，当前真实配置与脚本自检覆盖本轮目标 |
-| `GDR-REPORT-01` | P3 | deferred | `docs/report/goal/` 是分析制品目录；`docs/goal/00-authority-map.md` 仅把它列为分析/计划来源，不纳入 Goal runtime gate |
-| `GDR-WORKTREE-01` | P3 | deferred | worker-1 复核时目标 worktree 为 clean；父级 `/home/ZoneCNH/.worktree/todo.md` 保持 ignored/local，未清理以避免误删并行工作区内容 |
+| `GDR-FIXTURE-01` | P2 | fixed | `docs/goal/tools/self-test.sh` 已执行正向基线和三类负向 fixture：非法 Matrix edge、旧状态 drift、缺失 DoD Evidence，负例均以非零退出被拒绝 |
+| `GDR-REPORT-01` | P3 | fixed | `docs/report/goal/` 明确保持分析/计划/关闭证据目录，不纳入 Goal runtime gate；该边界已在报告入口与验证报告中记录 |
+| `GDR-WORKTREE-01` | P3 | fixed | worker-1 目标 worktree clean；父级 `/home/ZoneCNH/.worktree/todo.md` 保持 ignored/local，并作为本地执行快照更新，不进入 Git 跟踪面 |
 
 ## 本轮验证命令
 
@@ -75,6 +75,7 @@ bash docs/goal/tools/lint-goal.sh docs/goal
 python3 docs/goal/tools/rule-drift-check.py --root .
 python3 docs/goal/tools/matrix-gen.py --check-only --matrix .config/goal/matrix/matrix.yaml
 bash docs/goal/tools/gate-check.sh .
+./docs/goal/tools/self-test.sh
 git check-ignore -v .config/goal/schema/rules.yaml
 git check-ignore -v .config/goal/runtime/cache.json
 git -C /home/ZoneCNH check-ignore -v .worktree/todo.md

@@ -11,6 +11,7 @@
 | [evidence-collect.sh](evidence-collect.sh) | Bash     | Evidence 收集：从 Git diff 和测试结果自动生成 Evidence 文件       |
 | [lint-goal.sh](lint-goal.sh)               | Bash     | Lint 规则检查：Goal/Spec/Matrix/Prompt 的自动化规则验证           |
 | [rule-drift-check.py](rule-drift-check.py) | Python 3 | 规则漂移检查：扫描旧路径、旧状态、旧 Gate/CI 命名和旧 ID 示例     |
+| [self-test.sh](self-test.sh)               | Bash     | 工具链自测：执行正向基线与负向 fixture，验证工具不会静默放行错误  |
 
 ## 使用方式
 
@@ -109,9 +110,17 @@ python3 docs/goal/tools/matrix-gen.py \
 python3 docs/goal/tools/rule-drift-check.py --root . --quiet
 ```
 
+### 工具链自测
+
+```bash
+./docs/goal/tools/self-test.sh
+```
+
+`self-test.sh` 在临时目录中构造 fixture，不修改仓库制品；它先运行真实控制面的正向基线，再验证负例会被对应工具以非零退出拒绝。
+
 ## 负例 fixture 覆盖契约（GDR-FIXTURE-01）
 
-当前工具链以真实 Goal 控制面和脚本自检作为基线。独立负例 fixture 套件落地前，任何新增 fixture 必须保持以下覆盖契约，不引入非标准库依赖：
+当前工具链以真实 Goal 控制面、脚本自检和临时负例 fixture 作为基线。新增 fixture 必须保持以下覆盖契约，不引入非标准库依赖：
 
 | Fixture 类别 | 目标工具 | 期望结果 | 验收点 |
 | --- | --- | --- | --- |
@@ -121,12 +130,12 @@ python3 docs/goal/tools/rule-drift-check.py --root . --quiet
 | Matrix orphan / 非终态 / 非法 relation | `matrix-gen.py --check-only --matrix <fixture-matrix>` | 非零退出 | 覆盖率、relation/status 或 orphan 类错误可定位 |
 | Gate 结果与规则不一致 | `gate-check.sh <fixture-root>` | 非零退出 | `FAIL>0`，且不把风险降级为通过 |
 
-关闭 `GDR-FIXTURE-01` 的最低门槛：
+本轮已落地的自测覆盖：
 
-1. 新增正例 fixture 和至少一组负例 fixture，放在工具目录下的专用 fixture 子目录或同等隔离路径。
-2. 每个负例必须在对应工具上返回非零，并在输出中包含可定位的字段、文件或 edge 信息。
-3. 正例仍通过 `lint-goal.sh`、`rule-drift-check.py`、`matrix-gen.py --check-only`、`gate-check.sh` 的基线组合。
-4. fixture 验收命令必须写回 `docs/report/goal/ISSUE-LEDGER.md` 和验证报告后，才能把该项从 deferred 改为 fixed。
+1. 正例基线：shell 语法、Python 编译、Goal lint、rule drift、Matrix check-only、Gate check 均通过。
+2. Matrix 负例：非法 relation 与缺失 evidence 必须被 `matrix-gen.py --check-only` 拒绝。
+3. Rule drift 负例：临时复制的工具树注入旧可执行规则字面量后必须被 `rule-drift-check.py --quiet` 拒绝。
+4. Gate 负例：只有 Task 与 Matrix、缺少 Evidence 文件时必须被 `gate-check.sh` 拒绝。
 
 ## CI 集成
 
@@ -147,6 +156,8 @@ jobs:
         run: python3 -m py_compile docs/goal/tools/matrix-gen.py docs/goal/tools/rule-drift-check.py
       - name: Rule Drift Check
         run: python3 docs/goal/tools/rule-drift-check.py --root . --quiet
+      - name: Goal Tool Self Test
+        run: ./docs/goal/tools/self-test.sh
       - name: Gate Check
         run: |
           if [ -f .config/goal/registry/tasks.yaml ]; then
@@ -163,3 +174,4 @@ jobs:
 - `evidence-collect.sh`: bash, git
 - `lint-goal.sh`: bash, grep, find
 - `rule-drift-check.py`: Python 3.9+
+- `self-test.sh`: bash, Python 3.9+, grep, find, git
