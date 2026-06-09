@@ -76,3 +76,7 @@ test -f docs/INDEX.md && wc -l docs/INDEX.md | awk '{if ($1 > 50) exit 1}'
 - 使用中文
 - 引用组件用 `https://github.com/ZoneCNH/<repo>` 格式
 - 不引入新依赖
+
+## Test Case Reference
+
+参见 `module/xlib-standard/TRACEABILITY.md` FR-007 对应 TC-019~TC-020。文档变更通过 grep 验证内容完整性。

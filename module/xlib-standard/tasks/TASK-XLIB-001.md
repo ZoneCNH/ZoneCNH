@@ -23,6 +23,18 @@ files:
   - "docs/testing.md"
   - "docs/generation.md"
   - "docs/release.md"
+
+files_change:
+- "README.md"
+  - "docs/standard.md"
+  - "docs/api.md"
+  - "docs/config.md"
+  - "docs/errors.md"
+  - "docs/health.md"
+  - "docs/metrics.md"
+  - "docs/testing.md"
+  - "docs/generation.md"
+  - "docs/release.md"
 acceptance_criteria:
   - "AC-001: README.md 只描述 4 项职责（定义标准、提供模板、生成库、最小 gate）"
   - "AC-002: README.md 不出现 Goal Runtime / Evidence Runtime / Agent Runtime / Debt Governance"

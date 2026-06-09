@@ -21,6 +21,17 @@ files:
   - "scripts/release_check.sh"
   - "scripts/release_final_check.sh"
   - ".github/workflows/ci.yml"
+
+files_change:
+- "Makefile"
+  - "scripts/render_template.sh"
+  - "scripts/check_rendered_template.sh"
+  - "scripts/check_boundary.sh"
+  - "scripts/check_contracts.sh"
+  - "scripts/check_security.sh"
+  - "scripts/release_check.sh"
+  - "scripts/release_final_check.sh"
+  - ".github/workflows/ci.yml"
 acceptance_criteria:
   - "AC-001: Makefile 包含 fmt/vet/lint/test/race/contracts/boundary/render-smoke/security/ci/release-check/release-final-check targets"
   - "AC-002: scripts/ 目录只有 7 个脚本"

@@ -16,6 +16,11 @@ files:
   - "examples/basic/main.go"
   - "testkit/metrics.go"
   - "testkit/assertions.go"
+
+files_change:
+- "examples/basic/main.go"
+  - "testkit/metrics.go"
+  - "testkit/assertions.go"
 acceptance_criteria:
   - "AC-020: 模板 go vet 零警告"
   - "AC-021: 模板 go test 全部通过"
@@ -56,24 +61,21 @@ status: pending
 ## Test Plan
 
 ```bash
-# 1. 编译验证
-GOWORK=off go build ./...
-
-# 2. vet 零警告
+# TC-019: 模板 go vet 零警告
 GOWORK=off go vet ./... 2>&1 | tee /tmp/vet.out
-test ! -s /tmp/vet.out  # 无输出 = 零警告
+test ! -s /tmp/vet.out
 
-# 3. 全量测试
+# TC-020: 模板 go test 全部通过
 GOWORK=off go test ./... -v 2>&1 | tee /tmp/test.out
 grep -c 'FAIL' /tmp/test.out  # 应为 0
 
-# 4. 竞态检测
+# Race 检测
 GOWORK=off go test -race ./...
 
-# 5. 文件数量验证
+# 文件数量验证
 test $(ls pkg/templatex/ | wc -l) -eq 11
 
-# 6. example 可运行
+# Example 可运行
 GOWORK=off go run examples/basic/main.go
 ```
 

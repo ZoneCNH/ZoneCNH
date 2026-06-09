@@ -95,3 +95,7 @@ cd examples && go run main.go
 - 错误处理使用 `fmt.Errorf` + `%w`
 - 不引入外部依赖
 - 每个导出函数/类型必须有注释
+
+## Test Case Reference
+
+参见 `module/xlib-standard/TRACEABILITY.md` FR-001 对应 TC-001~TC-003，FR-006 对应 TC-019。

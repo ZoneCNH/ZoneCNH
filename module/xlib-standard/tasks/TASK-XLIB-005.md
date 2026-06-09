@@ -14,6 +14,9 @@ spec_ref:
   - "module/xlib-standard/goal.md#13"
 files:
   - "selfcheck-100.sh"
+
+files_change:
+- "selfcheck-100.sh"
 acceptance_criteria:
   - "AC-001: 临时目录生成库 GOWORK=off go test ./... 通过"
   - "AC-002: 临时目录生成库 GOWORK=off go test -race ./... 通过"

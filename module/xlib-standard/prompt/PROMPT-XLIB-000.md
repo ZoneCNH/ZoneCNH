@@ -73,3 +73,7 @@ test -f Makefile && echo "Makefile preserved"
 - 只删除，不修改
 - 删除前确认目标文件/目录存在
 - 不引入新依赖
+
+## Test Case Reference
+
+参见 `module/xlib-standard/TRACEABILITY.md`。本 task 为治理清理，无特定 TC，验证通过目录删除和 git status 确认。

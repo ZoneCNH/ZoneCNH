@@ -15,6 +15,11 @@ files:
   - "pkg/templatex/doc.go"
   - "pkg/templatex/config.go"
   - "pkg/templatex/config_test.go"
+
+files_change:
+- "pkg/templatex/doc.go"
+  - "pkg/templatex/config.go"
+  - "pkg/templatex/config_test.go"
 acceptance_criteria:
   - "AC-001: Config 必填字段缺失返回 ErrorKindValidation"
   - "AC-002: 负数 timeout 返回 ErrorKindValidation"
@@ -58,8 +63,23 @@ status: pending
 ## Test Plan
 
 ```bash
-GOWORK=off go test ./pkg/templatex/ -run TestConfig -v
-GOWORK=off go test -race ./pkg/templatex/ -run TestConfig
+# TC-001: Config 必填字段缺失返回 validation kind
+GOWORK=off go test ./pkg/templatex/ -run TestConfigValidate -v
+
+# TC-002: 负数 timeout 返回 validation kind
+GOWORK=off go test ./pkg/templatex/ -run TestConfigNegativeTimeout -v
+
+# TC-003: Sanitize 脱敏 secret 替换为 ***
+GOWORK=off go test ./pkg/templatex/ -run TestConfigSanitize -v
+
+# TC-019: 版本信息返回正确字段
+GOWORK=off go test ./pkg/templatex/ -run TestVersion -v
+
+# Race 检测
+GOWORK=off go test -race ./pkg/templatex/
+
+# 编译验证
+GOWORK=off go build ./pkg/templatex/
 ```
 
 ## Implementation Notes

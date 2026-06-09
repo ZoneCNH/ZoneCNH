@@ -21,6 +21,14 @@ files:
   - "pkg/templatex/metrics_test.go"
   - "contracts/health.schema.json"
   - "contracts/metrics.json"
+
+files_change:
+- "pkg/templatex/health.go"
+  - "pkg/templatex/health_test.go"
+  - "pkg/templatex/metrics.go"
+  - "pkg/templatex/metrics_test.go"
+  - "contracts/health.schema.json"
+  - "contracts/metrics.json"
 acceptance_criteria:
   - "AC-009: HealthCheck nil context 返回 unhealthy"
   - "AC-010: HealthCheck 健康客户端返回 healthy"
@@ -64,8 +72,22 @@ status: pending
 ## Test Plan
 
 ```bash
-GOWORK=off go test ./pkg/templatex/ -run TestHealth -v
-GOWORK=off go test ./pkg/templatex/ -run TestMetrics -v
+# TC-009: HealthCheck nil context → unhealthy
+GOWORK=off go test ./pkg/templatex/ -run TestHealthNilContext -v
+
+# TC-010: HealthCheck 健康客户端 → healthy
+GOWORK=off go test ./pkg/templatex/ -run TestHealthHealthy -v
+
+# TC-011: NoopMetrics 不 panic
+GOWORK=off go test ./pkg/templatex/ -run TestNoopMetrics -v
+
+# TC-012: 指标名匹配 contract 5 个 P0
+GOWORK=off go test ./pkg/templatex/ -run TestMetricsNames -v
+
+# TC-013: label 低基数只有 op/kind/status
+GOWORK=off go test ./pkg/templatex/ -run TestMetricsLabels -v
+
+# Race 检测
 GOWORK=off go test -race ./pkg/templatex/
 ```
 

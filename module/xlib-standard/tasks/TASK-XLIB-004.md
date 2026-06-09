@@ -16,6 +16,11 @@ files:
   - "release/manifest/ (目录)"
   - "SEMANTIC-VERSIONING.md"
   - ".gitignore"
+
+files_change:
+- "release/manifest/ (目录)"
+  - "SEMANTIC-VERSIONING.md"
+  - ".gitignore"
 acceptance_criteria:
   - "AC-001: release_check.sh 生成 release/manifest/latest.json 和 latest.json.sha256"
   - "AC-002: manifest 包含 module_path/package_name/version/commit/tree_sha/go_version/contracts_sha256/gates/generated_at"

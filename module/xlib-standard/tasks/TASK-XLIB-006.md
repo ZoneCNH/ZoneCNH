@@ -22,6 +22,13 @@ files:
   - "pkg/templatex/client.go"
   - "pkg/templatex/client_test.go"
   - "contracts/errors.schema.json"
+
+files_change:
+- "pkg/templatex/errors.go"
+  - "pkg/templatex/errors_test.go"
+  - "pkg/templatex/client.go"
+  - "pkg/templatex/client_test.go"
+  - "contracts/errors.schema.json"
 acceptance_criteria:
   - "AC-004: NewError 创建 Error 字段正确"
   - "AC-005: WrapError 包装 errors.Is 可穿透"
@@ -73,9 +80,28 @@ status: pending
 ## Test Plan
 
 ```bash
-GOWORK=off go test ./pkg/templatex/ -run TestError -v
+# TC-004: NewError 创建 Error 字段正确
+GOWORK=off go test ./pkg/templatex/ -run TestNewError -v
+
+# TC-005: WrapError 包装 errors.Is 可穿透
+GOWORK=off go test ./pkg/templatex/ -run TestWrapError -v
+
+# TC-006: IsKind 匹配返回 true
+GOWORK=off go test ./pkg/templatex/ -run TestIsKind -v
+
+# TC-007: deadline cause → timeout kind
+GOWORK=off go test ./pkg/templatex/ -run TestErrorDeadline -v
+
+# TC-008: closed cause → closed kind
+GOWORK=off go test ./pkg/templatex/ -run TestErrorClosed -v
+
+# TC-014~018: Client New/Close
 GOWORK=off go test ./pkg/templatex/ -run TestClient -v
+
+# Race 检测
 GOWORK=off go test -race ./pkg/templatex/
+
+# Contract 验证
 grep -c "validation" contracts/errors.schema.json
 grep -c "conflict" contracts/errors.schema.json
 ```
