@@ -304,6 +304,9 @@ assert_safe_branch() {
     finish "blocked" "detached HEAD 不允许自动交付" 2
   fi
   if [ "$branch" = "main" ]; then
+    if [ "$HOOK_MODE" -eq 1 ]; then
+      finish "skipped" "当前位于 main，跳过自动交付以遵守 CONSTITUTION.md 第零条" 0
+    fi
     finish "blocked" "当前位于 main，CONSTITUTION.md 第零条禁止自动提交" 2
   fi
 }
@@ -340,25 +343,23 @@ run_validation() {
 
 create_commit() {
   verify_cmd="${AUTO_DELIVERY_VERIFY_CMD:-git diff --check && git diff --cached --check}"
-  commit_msg="$state_dir/commit-message.txt"
-  subject="${AUTO_DELIVERY_COMMIT_SUBJECT:-chore: 自动交付已验证的任务完成变更}"
+  subject="${AUTO_DELIVERY_COMMIT_SUBJECT:-保存已验证变更以完成自动交付闭环}"
   tested="${AUTO_DELIVERY_TESTED:-$verify_cmd}"
   not_tested="${AUTO_DELIVERY_NOT_TESTED:-远端 CI / PR 检查未在本地 hook 中执行}"
 
-  cat > "$commit_msg" <<EOF
-$subject
-
-Constraint: 仅允许在非 main 分支、敏感内容扫描通过、验证命令通过后自动提交。
+  git commit \
+    -m "$subject" \
+    -m "Constraint: 仅允许在非 main 分支、敏感内容扫描通过、验证命令通过后自动提交。
 Rejected: 直接在 main 提交 | 违反 CONSTITUTION.md 第零条。
 Rejected: 强制合并或强制清理 | 只能在 fast-forward 合并成功且 worktree 干净时清理。
+Rejected: 使用 message-file 或编辑器消息入口 | 会触发当前 OMX 提交守卫。
 Confidence: medium
 Scope-risk: moderate
 Directive: main 未同步、main 不干净、验证失败或发现敏感内容时必须阻断合并。
 Tested: $tested
 Not-tested: $not_tested
-EOF
 
-  git commit -F "$commit_msg" >> "$log_file" 2>&1
+Co-authored-by: OmX <omx@oh-my-codex.dev>" >> "$log_file" 2>&1
 }
 
 find_main_worktree() {
@@ -448,24 +449,28 @@ main() {
     finish "skipped" "未检测到 task_complete 事件" 0
   fi
 
+  if [ "$DRY_RUN" = "1" ]; then
+    verify_cmd="${AUTO_DELIVERY_VERIFY_CMD:-git diff --check}"
+    log_line "dry-run verify: $verify_cmd"
+    sh -c "$verify_cmd" >> "$log_file" 2>&1 || finish "blocked" "dry-run 验证失败：$verify_cmd" 2
+    branch="$(current_branch)"
+    if [ -z "$branch" ]; then
+      finish "dry-run" "检测到 detached HEAD；非 dry-run 模式会阻断自动交付" 0
+    fi
+    if ! working_tree_has_changes; then
+      finish "dry-run" "工作区没有变更；非 dry-run 模式会执行分支门禁后按配置尝试重试合并" 0
+    fi
+    finish "dry-run" "检测到变更；当前分支 $branch；非 dry-run 模式会执行分支门禁后再交付" 0
+  fi
+
   assert_safe_branch
 
   if ! working_tree_has_changes; then
-    if [ "$DRY_RUN" = "1" ]; then
-      finish "dry-run" "工作区没有变更；非 dry-run 模式会按配置尝试重试合并" 0
-    fi
     if [ "${AUTO_DELIVERY_RETRY_MERGE:-1}" = "1" ]; then
       log_line "no worktree changes; retrying merge path"
       merge_to_main "ready" "工作区没有变更，尝试重试合并"
     fi
     finish "skipped" "工作区没有变更" 0
-  fi
-
-  if [ "$DRY_RUN" = "1" ]; then
-    verify_cmd="${AUTO_DELIVERY_VERIFY_CMD:-git diff --check}"
-    log_line "dry-run verify: $verify_cmd"
-    sh -c "$verify_cmd" >> "$log_file" 2>&1 || finish "blocked" "dry-run 验证失败：$verify_cmd" 2
-    finish "dry-run" "检测到变更；将会在非 dry-run 模式下 stage、扫描、提交并按配置合并" 0
   fi
 
   stage_and_scan
