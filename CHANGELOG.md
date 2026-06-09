@@ -8,7 +8,7 @@
 
 （暂无）
 
-## [v1.0.0] - 2026-06-09
+## [v0.5.0] - 2026-06-09
 
 ### Added
 
@@ -75,7 +75,7 @@
 
 版本历史锚点：
 
-- [v1.0.0]: https://github.com/ZoneCNH/ZoneCNH/releases/tag/v1.0.0
+- [v0.5.0]: https://github.com/ZoneCNH/ZoneCNH/releases/tag/v0.5.0
 - [v0.4.1]: https://github.com/ZoneCNH/ZoneCNH/releases/tag/v0.4.1
 - [v0.4.0]: https://github.com/ZoneCNH/ZoneCNH/releases/tag/v0.4.0
 - [v0.3.1]: https://github.com/ZoneCNH/ZoneCNH/releases/tag/v0.3.1
