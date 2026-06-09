@@ -5,6 +5,7 @@
 !.omc/state/outer-metrics/
 .omx/
 .config/*
+.config/cache/
 !.config/goal/
 .config/goal/*
 !.config/goal/README.md
@@ -22,16 +23,10 @@
 !.config/goal/evidence/**
 !.config/goal/prompts/
 !.config/goal/prompts/**
-.config/goal/runtime/
 .config/goal/locks/
 .config/goal/local/
-.config/goal/cache/
-.config/goal/logs/
-.config/goal/**/runtime/
 .config/goal/**/locks/
 .config/goal/**/local/
-.config/goal/**/cache/
-.config/goal/**/logs/
 .config/goal/**/*.lock
 .config/goal/**/*.tmp
 .config/goal/**/*.log

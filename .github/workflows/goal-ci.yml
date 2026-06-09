@@ -15,6 +15,7 @@ on:
       - '.codex/agents/goal-*'
       - '.copilot/agents/goal-*'
       - 'AGENTS.md'
+      - '.github/workflows/goal-ci.yml'
   pull_request:
     branches: [main]
     paths:
@@ -25,6 +26,7 @@ on:
       - '.codex/agents/goal-*'
       - '.copilot/agents/goal-*'
       - 'AGENTS.md'
+      - '.github/workflows/goal-ci.yml'
 
 jobs:
   # 1. YAML 语法检查
@@ -112,12 +114,25 @@ jobs:
         run: |
           python3 docs/goal/tools/rule-drift-check.py --root .
 
-  # 4. ID 格式检查
+  # 4. Goal 控制面一致性验证
+  goal-validate:
+    name: Goal Control-Plane Validation
+    runs-on: [self-hosted, Linux, X64]
+    timeout-minutes: 10
+    needs: rule-drift-check
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate Goal control-plane invariants
+        run: |
+          python3 docs/goal/tools/goal-validate.py --root . --mode strict --format text
+
+  # 5. ID 格式检查
   id-format-check:
     name: ID Format Validation
     runs-on: [self-hosted, Linux, X64]
     timeout-minutes: 10
-    needs: rule-drift-check
+    needs: goal-validate
     steps:
       - uses: actions/checkout@v4
 
@@ -136,35 +151,33 @@ jobs:
               'decision_id': r'^DEC-GOAL-\d{8}-\d{3}-\d{3}$',
           }
 
-          # Check Goals
-          with open('.config/goal/registry/goals.yaml') as f:
-              data = yaml.safe_load(f)
-              for goal in data.get('goals', []):
-                  goal_id = goal.get('goal_id', '')
-                  if not re.match(patterns['goal_id'], goal_id):
-                      print(f'❌ Invalid goal_id: {goal_id}')
-                      exit(1)
-                  print(f'✅ Valid goal_id: {goal_id}')
+          registry_checks = [
+              ('.config/goal/registry/goals.yaml', 'goals', 'goal_id'),
+              ('.config/goal/registry/tasks.yaml', 'tasks', 'task_id'),
+              ('.config/goal/registry/releases.yaml', 'releases', 'release_id'),
+              ('.config/goal/registry/risks.yaml', 'risks', 'risk_id'),
+              ('.config/goal/registry/decisions.yaml', 'decisions', 'decision_id'),
+          ]
 
-          # Check Tasks
-          with open('.config/goal/registry/tasks.yaml') as f:
-              data = yaml.safe_load(f)
-              for task in data.get('tasks', []):
-                  task_id = task.get('task_id', '')
-                  if not re.match(patterns['task_id'], task_id):
-                      print(f'❌ Invalid task_id: {task_id}')
+          for path, section, field in registry_checks:
+              with open(path) as f:
+                  data = yaml.safe_load(f) or {}
+              for item in data.get(section, []):
+                  value = item.get(field, '')
+                  if not re.match(patterns[field], value):
+                      print(f'❌ Invalid {field}: {value}')
                       exit(1)
-                  print(f'✅ Valid task_id: {task_id}')
+                  print(f'✅ Valid {field}: {value}')
 
           print('✅ All ID formats valid')
           "
 
-  # 5. Matrix 覆盖率检查
+  # 6. Matrix 覆盖率检查
   matrix-coverage:
     name: Matrix Coverage
     runs-on: [self-hosted, Linux, X64]
     timeout-minutes: 10
-    needs: rule-drift-check
+    needs: goal-validate
     steps:
       - uses: actions/checkout@v4
 
@@ -192,7 +205,7 @@ jobs:
           if invalid:
               print('❌ Matrix contains invalid statuses:')
               for e in invalid:
-                  print(f\"  - {e.get('requirement_id')}: {e.get('status')}\")
+                  print(f\"  - {e.get('source_id')} -> {e.get('target_id')}: {e.get('status')}\")
               exit(1)
 
           total = len(entries)
@@ -207,18 +220,18 @@ jobs:
           print(f'Dropped entries: {len(dropped)}')
           print(f'Coverage: {coverage:.1f}%')
 
-          missing_evidence = [e for e in verified if not e.get('evidence_ids')]
+          missing_evidence = [e for e in verified if not e.get('evidence_id')]
           if missing_evidence:
-              print('❌ Verified Matrix entries missing evidence_ids:')
+              print('❌ Verified Matrix entries missing evidence_id:')
               for e in missing_evidence:
-                  print(f\"  - {e.get('requirement_id')}\")
+                  print(f\"  - {e.get('source_id')} -> {e.get('target_id')}\")
               exit(1)
 
           missing_drop_reason = [e for e in dropped if not e.get('drop_reason')]
           if missing_drop_reason:
               print('❌ Dropped Matrix entries missing drop_reason:')
               for e in missing_drop_reason:
-                  print(f\"  - {e.get('requirement_id')}\")
+                  print(f\"  - {e.get('source_id')} -> {e.get('target_id')}\")
               exit(1)
 
           if coverage < 95:
@@ -228,12 +241,12 @@ jobs:
               print(f'✅ Coverage {coverage:.1f}% meets threshold')
           "
 
-  # 6. Gate 状态检查
+  # 7. Gate 状态检查
   gate-check:
     name: Gate Status Validation
     runs-on: [self-hosted, Linux, X64]
     timeout-minutes: 10
-    needs: rule-drift-check
+    needs: goal-validate
     steps:
       - uses: actions/checkout@v4
 
@@ -247,8 +260,8 @@ jobs:
 
           gate_list = gates.get('gates', [])
           required_gates = ['G0', 'G1', 'G2', 'G3', 'G4', 'G5', 'G6', 'G7', 'G8', 'G9', 'G10', 'G11']
-          valid_gate_statuses = ['PASS', 'PASS_WITH_RISK', 'FAIL', 'BLOCKED', 'PENDING']
-          valid_result_verdicts = ['PASS', 'PASS_WITH_RISK', 'FAIL']
+          valid_gate_statuses = ['PASS', 'PASS_WITH_RISK', 'FAIL', 'BLOCKED']
+          valid_result_verdicts = ['PASS', 'PASS_WITH_RISK', 'FAIL', 'BLOCKED']
 
           found_gates = [g['gate_id'] for g in gate_list]
 
@@ -279,12 +292,12 @@ jobs:
               print(f'✅ Gate {gate}: {status}')
           "
 
-  # 7. 孤儿检查
+  # 8. 孤儿检查
   orphan-check:
     name: Orphan Detection
     runs-on: [self-hosted, Linux, X64]
     timeout-minutes: 10
-    needs: rule-drift-check
+    needs: goal-validate
     steps:
       - uses: actions/checkout@v4
 
@@ -319,7 +332,7 @@ jobs:
               print(f'✅ No orphan tasks found')
           "
 
-  # 8. Agent 文件检查
+  # 9. Agent 文件检查
   agent-check:
     name: Agent Files Validation
     runs-on: [self-hosted, Linux, X64]
@@ -357,7 +370,7 @@ jobs:
             fi
           done
 
-  # 9. 文档一致性检查
+  # 10. 文档一致性检查
   docs-check:
     name: Documentation Consistency
     runs-on: [self-hosted, Linux, X64]
@@ -390,7 +403,7 @@ jobs:
             exit 1
           fi
 
-  # 10. 完整性汇总
+  # 11. 完整性汇总
   summary:
     name: CI Summary
     runs-on: [self-hosted, Linux, X64]
@@ -399,6 +412,7 @@ jobs:
       - yaml-lint
       - registry-check
       - rule-drift-check
+      - goal-validate
       - id-format-check
       - matrix-coverage
       - gate-check
@@ -416,6 +430,7 @@ jobs:
           echo "| YAML Lint | ${{ needs.yaml-lint.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Registry | ${{ needs.registry-check.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Rule Drift | ${{ needs.rule-drift-check.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Goal Validator | ${{ needs.goal-validate.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| ID Format | ${{ needs.id-format-check.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Matrix Coverage | ${{ needs.matrix-coverage.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Gate Status | ${{ needs.gate-check.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
