@@ -1,35 +1,31 @@
 # TASK-XLIB-004
 
-> Go 参考模板：公共 API、HealthCheck、Error Handling、Config Sanitize
+> PR-5：release 标准 — release manifest、semver 兼容矩阵
 
 ---
 
 ```yaml
 task_id: TASK-XLIB-004
 module: xlib-standard
-scope: "实现 Go 参考模板——公共 API（New/Close/HealthCheck）、ErrorKind 体系、Config Sanitize、Metrics 接口"
+scope: "实现 release manifest 生成和 semver 兼容矩阵"
 spec_ref:
-  - "module/xlib-standard/SPEC.md#FR-009"
-  - "module/xlib-standard/SPEC.md#FR-010"
-  - "module/xlib-standard/SPEC.md#FR-011"
-  - "module/xlib-standard/SPEC.md#FR-012"
-  - "module/xlib-standard/SPEC.md#FR-013"
-  - "module/xlib-standard/SPEC.md#FR-014"
+  - "module/xlib-standard/SPEC.md#21"
+  - "module/xlib-standard/SPEC.md#22"
+  - "module/xlib-standard/goal/1.md#11"
 files:
-  - "template/go/client.go"
-  - "template/go/error.go"
-  - "template/go/config.go"
-  - "template/go/health.go"
-  - "template/go/metrics.go"
+  - "release/manifest/ (目录)"
+  - "SEMANTIC-VERSIONING.md"
+  - ".gitignore"
 acceptance_criteria:
-  - "AC-T01: 模板渲染产物通过 `go vet ./...` 零警告"
-  - "xlib-TC-001: New(ctx, Config{}) 零值 Config 返回 ErrorKindValidation"
-  - "xlib-TC-004: Close(ctx) 调用 N 次幂等"
-  - "xlib-TC-006: Sanitize() 所有 secret 字段为空"
-  - "xlib-TC-014: IsKind(err, ErrorKindTimeout) 正确匹配"
+  - "AC-001: release_check.sh 生成 release/manifest/latest.json 和 latest.json.sha256"
+  - "AC-002: manifest 包含 module_path/package_name/version/commit/tree_sha/go_version/contracts_sha256/gates/generated_at"
+  - "AC-003: manifest 不包含 goal_runtime/score/debt/branch_governance/agent_review/downstream_matrix/docker_runtime"
+  - "AC-004: .gitignore 包含 release/manifest/latest.json 和 release/manifest/latest.json.sha256"
+  - "AC-005: SEMANTIC-VERSIONING.md 包含 ErrorKind/Metrics/Generator 参数的兼容性矩阵"
 depends_on:
-  - "TASK-XLIB-000"
-estimated_effort: "6h"
+  - "TASK-XLIB-002"
+  - "TASK-XLIB-003"
+estimated_effort: "1h"
 priority: P0
 status: pending
 ```
@@ -38,56 +34,27 @@ status: pending
 
 ## Requirements Covered
 
-| Requirement | Description |
-|---|---|
-| FR-009 | 公共 API（New/Close） |
-| FR-010 | ErrorKind 体系 |
-| FR-011 | Metrics 接口（9 个指标） |
-| FR-012 | HealthCheck 接口 |
-| FR-013 | Config 必须显式传入 |
-| FR-014 | Config Sanitize（deep copy + secret 清除） |
+| Requirement | Description | Acceptance Criteria |
+|---|---|---|
+| FR-013 | release manifest | manifest 生成且字段完整 |
+| FR-014 | release final check | checksum 校验通过 |
+| §21 | Upgrade Compatibility | 兼容性矩阵文档 |
+| §22 | Release DoD | 发布完成定义 |
 
 ## Test Plan
 
-| Test Case | Type | Description |
-|---|---|---|
-| xlib-TC-001~017 | TL1~TL4 | 17 个 TC 全部覆盖 |
-| — | CI Gate | `go vet ./...` 零警告 |
-| — | CI Gate | `go test -race ./...` 通过 |
+```bash
+# 验收命令
+GOWORK=off make release-check
+test -f release/manifest/latest.json
+test -f release/manifest/latest.json.sha256
+cat release/manifest/latest.json | python3 -m json.tool  # 验证 JSON 合法
+grep "goal_runtime" release/manifest/latest.json  # 应无输出
+```
 
-## Implementation Plan
+## Implementation Notes
 
-### Step 1: 定义 ErrorKind 体系
-- `error.go`：ErrorKind 枚举（Validation, Timeout, Unavailable, Config, RateLimit, Internal）
-- `WrapError(kind, cause, msg)` 函数
-- `IsKind(err, kind)` 函数
-- `errors.Is(err, cause)` 兼容
-
-### Step 2: 实现 Config Sanitize
-- `config.go`：Config 结构体定义
-- `Sanitize()` 方法：deep copy + 清除所有 secret 字段
-- `Validate()` 方法：校验必填字段
-- nil receiver 防护
-
-### Step 3: 实现公共 API
-- `client.go`：`New(ctx, Config)` 和 `Close(ctx)` 函数
-- 零值 Config 返回 ErrorKindValidation
-- nil context 返回 ErrorKindValidation
-- canceled context 返回 ErrorKindTimeout
-- Close 幂等
-
-### Step 4: 实现 HealthCheck 和 Metrics
-- `health.go`：`HealthCheck(ctx)` 返回 status/latency_ms/checked_at
-- `metrics.go`：9 个指标定义
-
-### Step 5: 验证
-- xlib-TC-001~017 全部通过
-- `go vet ./...` 零警告
-- `go test -race ./...` 通过
-
-### 风险评估
-
-| 风险 | 概率 | 影响 | 缓解 |
-|------|------|------|------|
-| ErrorKind 语义与上游不一致 | 中 | 高 | 从上游 template/go/error.go 提取 |
-| Sanitize 遗漏 secret 字段 | 中 | 高 | 对照上游 template/go/config.go 核对 |
+1. release_check.sh 按 goal/1.md §11.1 生成 manifest
+2. manifest 字段按 goal/1.md §11.2 定义
+3. .gitignore 按 goal/1.md §11.3 更新
+4. SEMANTIC-VERSIONING.md 按 §21.1 记录 breaking changes

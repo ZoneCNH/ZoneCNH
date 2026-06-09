@@ -1,27 +1,49 @@
 # TASK-XLIB-003
 
-> 规则治理：PR 流程、ADR 管理、规则生命周期
+> PR-4：核心包 — pkg/templatex、contracts、examples、testkit
 
 ---
 
 ```yaml
 task_id: TASK-XLIB-003
 module: xlib-standard
-scope: "建立规则治理协议——PR 流程（proposal/review/approve/merge）、ADR 管理和规则生命周期（active/deprecated/superseded）"
+scope: "重写 pkg/templatex/ 为核心包，更新 contracts/、examples/、testkit/"
 spec_ref:
-  - "module/xlib-standard/SPEC.md#FR-007"
-  - "module/xlib-standard/SPEC.md#FR-008"
+  - "module/xlib-standard/SPEC.md#7"
+  - "module/xlib-standard/SPEC.md#9"
+  - "module/xlib-standard/SPEC.md#10"
+  - "module/xlib-standard/goal/1.md#7"
+  - "module/xlib-standard/goal/1.md#8"
+  - "module/xlib-standard/goal/1.md#9"
+  - "module/xlib-standard/goal/1.md#10"
 files:
-  - "docs/standard/governance/CONTRIBUTING.md"
-  - "docs/standard/governance/rule-lifecycle.yaml"
-  - "docs/adr/ADR-TEMPLATE.md"
-  - "docs/adr/ADR-001-standard-source-of-truth.md"
-  - "docs/adr/ADR-002-harness-gate-design.md"
+  - "pkg/templatex/doc.go"
+  - "pkg/templatex/config.go"
+  - "pkg/templatex/errors.go"
+  - "pkg/templatex/metrics.go"
+  - "pkg/templatex/client.go"
+  - "pkg/templatex/health.go"
+  - "pkg/templatex/config_test.go"
+  - "pkg/templatex/errors_test.go"
+  - "pkg/templatex/metrics_test.go"
+  - "pkg/templatex/client_test.go"
+  - "pkg/templatex/health_test.go"
+  - "contracts/errors.schema.json"
+  - "contracts/health.schema.json"
+  - "contracts/metrics.json"
+  - "examples/basic/main.go"
+  - "testkit/metrics.go"
+  - "testkit/assertions.go"
 acceptance_criteria:
-  - "AC-T03: docs/adr/ 存在 9 个 Accepted ADR"
-  - "FR-007 WHEN 新规则通过 PR 提交 THEN 经过 proposal -> review -> approve -> merge 流程"
-  - "FR-008 WHEN ADR 被创建 THEN 格式符合模板且状态为 Accepted"
+  - "AC-001: pkg/templatex/ 只有 11 个文件（5 源码 + 5 测试 + 1 doc.go）"
+  - "AC-002: 公共 API 包含 Config/Validate/Sanitize/New/Close/HealthCheck/Error/Metrics/Version"
+  - "AC-003: ErrorKind 只有 8 种（validation/config/connection/auth/timeout/unavailable/closed/internal）"
+  - "AC-004: P0 metrics 只有 5 个（client_created_total/client_closed_total/client_errors_total/client_health_status/client_health_latency_ms）"
+  - "AC-005: contracts/errors.schema.json 的 kind enum 只有 8 种"
+  - "AC-006: GOWORK=off go test ./... 通过"
+  - "AC-007: GOWORK=off go test -race ./... 无竞态"
 depends_on:
+  - "TASK-XLIB-000"
   - "TASK-XLIB-001"
 estimated_effort: "4h"
 priority: P0
@@ -32,47 +54,39 @@ status: pending
 
 ## Requirements Covered
 
-| Requirement | Description |
-|---|---|
-| FR-007 | 规则治理 PR 流程 |
-| FR-008 | ADR 管理（9 个 Accepted ADR） |
+| Requirement | Description | Acceptance Criteria |
+|---|---|---|
+| FR-001 | Config 标准 | Config/Validate/Sanitize 存在 |
+| FR-002 | Error 标准 | 8 种 ErrorKind |
+| FR-003 | Health 标准 | HealthCheck 返回格式正确 |
+| FR-004 | Metrics 标准 | 5 个 P0 指标 |
+| FR-005 | Client 标准 | New/Close/HealthCheck 存在 |
+| FR-007 | 公共 API 模板 | 全部 API 存在 |
+| FR-008 | 模板可编译 | go test 通过 |
+| §9 | Interface Contract | 接口定义正确 |
+| §10 | Data Model | ErrorKind/HealthStatus 正确 |
+| §12 | Error Handling | 8 个错误变量 |
 
 ## Test Plan
 
-| Test Case | Type | Description |
-|---|---|---|
-| — | File Check | docs/adr/ 存在 9 个 Accepted ADR |
-| — | CI Gate | ADR 格式验证通过 |
+```bash
+# 验收命令
+GOWORK=off go test ./...
+GOWORK=off go test -race ./...
+ls pkg/templatex/ | wc -l  # 应为 11
+grep -c "validation" contracts/errors.schema.json  # 应 > 0
+grep -c "conflict" contracts/errors.schema.json  # 应为 0
+```
 
-## Implementation Plan
+## Implementation Notes
 
-### Step 1: 创建 ADR 模板
-- 创建 `docs/adr/ADR-TEMPLATE.md`
-- 包含：标题、状态、上下文、决策、后果
-
-### Step 2: 创建 9 个 Accepted ADR
-- ADR-001: Standard Source of Truth
-- ADR-002: Harness Gate Design
-- ADR-003: Evidence Runtime
-- ADR-004: Go Reference Template
-- ADR-005: Generator Strategy
-- ADR-006: Debt Governance
-- ADR-007: Goal Runtime Architecture
-- ADR-008: Downstream Sync Protocol
-- ADR-009: Security Boundary
-
-### Step 3: 创建治理文件
-- `governance/CONTRIBUTING.md`：PR 流程（proposal → review → approve → merge）
-- `governance/rule-lifecycle.yaml`：规则生命周期（active/deprecated/superseded）
-
-### Step 4: 验证
-- docs/adr/ 存在 9 个 Accepted ADR
-- ADR 格式验证通过
-- PR 流程文档完整
-
-### 风险评估
-
-| 风险 | 概率 | 影响 | 缓解 |
-|------|------|------|------|
-| ADR 内容不准确 | 中 | 中 | 从上游 docs/adr/ 提取已有内容 |
-| PR 流程与上游不一致 | 低 | 中 | 参照上游 CONTRIBUTING.md |
+1. pkg/templatex/ 按 goal/1.md §7.1 只保留 11 个文件
+2. 公共 API 按 goal/1.md §7.2 实现
+3. Config 按 goal/1.md §7.3 实现（显式传入、Validate、Sanitize）
+4. ErrorKind 按 goal/1.md §7.4 只有 8 种
+5. Metrics 按 goal/1.md §7.5 只有 5 个 P0
+6. Health 按 goal/1.md §7.6 实现
+7. contracts 按 goal/1.md §8 更新 JSON schema
+8. 测试按 goal/1.md §9 编写
+9. examples 按 goal/1.md §10.1 只保留 basic/main.go
+10. testkit 按 goal/1.md §10.2 只保留 metrics.go 和 assertions.go

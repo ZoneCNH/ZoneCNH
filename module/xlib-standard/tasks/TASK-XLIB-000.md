@@ -1,27 +1,45 @@
 # TASK-XLIB-000
 
-> 基础设施：目录结构、schema 定义、基础配置文件
+> PR-1：删除治理运行时与冗余目录
 
 ---
 
 ```yaml
 task_id: TASK-XLIB-000
 module: xlib-standard
-scope: "创建标准源目录结构、JSON Schema 定义和基础配置文件"
+scope: "删除 governance-runtime、evidence-runtime、debt-governance、adrs、internal 等非目标目录和文件"
 spec_ref:
-  - "module/xlib-standard/SPEC.md#14"
-  - "module/xlib-standard/SPEC.md#11"
+  - "module/xlib-standard/SPEC.md#5"
+  - "module/xlib-standard/goal/1.md#4"
 files:
-  - "docs/standard/schema/rule.schema.json"
-  - "docs/standard/schema/harness.schema.json"
-  - "docs/standard/schema/manifest.schema.json"
-  - "docs/standard/schema/goalcli-report.schema.json"
-  - "harness.yaml"
+  - ".agent/ (删除)"
+  - ".codex/ (删除)"
+  - ".devcontainer/ (删除)"
+  - ".githooks/ (删除)"
+  - ".omx/ (删除)"
+  - ".worktree/ (删除)"
+  - ".xlib/ (删除)"
+  - "cmd/ (删除)"
+  - "mk/ (删除)"
+  - "release/debt/ (删除)"
+  - "templates/l2/ (删除)"
+  - ".dockerignore (删除)"
+  - "Dockerfile (删除)"
+  - "docker-compose.yml (删除)"
+  - "AGENTS.md (删除)"
+  - "CLAUDE.md (删除)"
+  - "CONSTITUTION.md (删除)"
+  - "releasemanifest (删除)"
+  - "renovate.json (删除)"
+  - "docs/goal/ (删除)"
+  - "docs/adr/ (删除)"
 acceptance_criteria:
-  - "AC-T04: registry.yaml 条目可通过 rule.schema.json 验证"
-  - "目录结构符合 SPEC.md §14 定义"
+  - "AC-001: test ! -e .agent && test ! -e cmd && test ! -e Dockerfile"
+  - "AC-002: test ! -e docker-compose.yml && test ! -e templates/l2"
+  - "AC-003: test ! -e docs/goal && test ! -e docs/adr"
+  - "AC-004: GOWORK=off go test ./... 通过"
 depends_on: []
-estimated_effort: "2h"
+estimated_effort: "0.5h"
 priority: P0
 status: pending
 ```
@@ -30,47 +48,27 @@ status: pending
 
 ## Requirements Covered
 
-| Requirement | Description |
-|---|---|
-| §14 | 目录结构定义 |
-| §11 | 配置 schema（harness.yaml / registry.yaml） |
-| BR-015 | harness.yaml 为唯一机器可读配置源 |
+| Requirement | Description | Acceptance Criteria |
+|---|---|---|
+| §5 Non-goals | 不做 Goal Runtime / Evidence Runtime / Debt Governance | 相关目录不存在 |
+| goal/1.md §4 | PR-1 删除命令 | 目录删除 + 测试通过 |
 
 ## Test Plan
 
-| Test Case | Type | Description |
-|---|---|---|
-| — | Schema | 所有 schema 文件通过 JSON Schema Draft-07 验证 |
-| — | CI Gate | `make registry-validate` 通过 |
+```bash
+# 验收命令
+test ! -e .agent
+test ! -e cmd
+test ! -e Dockerfile
+test ! -e docker-compose.yml
+test ! -e templates/l2
+test ! -e docs/goal
+test ! -e docs/adr
+GOWORK=off go test ./...
+```
 
-## Implementation Plan
+## Implementation Notes
 
-### Step 1: 创建目录结构
-- 创建 `docs/standard/schema/` 目录
-- 创建 `docs/standard/governance/` 目录
-- 创建 `docs/adr/` 目录
-- 创建 `cmd/goalcli/` 目录
-- 创建 `goal-runtime/` 目录
-- 创建 `pack/` 目录
-- 创建 `template/go/` 目录
-
-### Step 2: 定义 JSON Schema
-- `rule.schema.json`：规则条目 schema（id, prefix, category, priority, description, severity）
-- `harness.schema.json`：gate 条目 schema（name, type, command, timeout, blocking）
-- `manifest.schema.json`：Release Manifest schema（version, gates, score, timestamp）
-- `goalcli-report.schema.json`：goalcli JSON 输出 schema
-
-### Step 3: 创建 harness.yaml 骨架
-- 66 个 gate 条目的 YAML 结构
-- 分为 required_gates（44）、extended_gates（10）、final_gates（6）、goalcli_mva_gates（6）
-
-### Step 4: 验证
-- 所有 schema 文件通过 JSON Schema Draft-07 验证
-- `make registry-validate` 通过
-
-### 风险评估
-
-| 风险 | 概率 | 影响 | 缓解 |
-|------|------|------|------|
-| schema 定义不完整 | 中 | 高 | 从上游 docs/standard/** 提取已有定义 |
-| 目录结构与上游不一致 | 低 | 中 | 参照 INDEX.md 上游路径 |
+1. 执行 goal/1.md §4.1 的删除命令
+2. 执行 goal/1.md §4.2 的验收命令
+3. 确保 README.md 不再引用已删目录
