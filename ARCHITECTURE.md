@@ -359,6 +359,63 @@ Foundation 6 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中�
 | 独立                  | [module](./module/README.md)                                    | -      | ✅ 已有   | -        | 项目技术规范、接口定义与 Goal 适配模块索引                                                |
 | 独立                  | [docs/governance](./docs/governance/README.md)                  | -      | ✅ 已有   | -        | Spec → Code 交付治理、模板、门禁与评分规则                                                |
 
+## 本地开发路径
+
+> 所有模块位于 `/home/{module-name}/`，与 GitHub 仓库名一一对应。本地路径仅用于开发时快速定位代码，不参与运行时。
+
+| 域              | 模块                                                                                                      | 本地路径                            |
+| --------------- | --------------------------------------------------------------------------------------------------------- | ----------------------------------- |
+| **基座**        |                                                                                                           |                                     |
+| 基座            | kernel                                                                                                    | `/home/kernel/`                     |
+| 基座            | configx                                                                                                   | `/home/configx/`                    |
+| 基座            | observex                                                                                                  | `/home/observex/`                   |
+| 基座            | testkitx                                                                                                  | `/home/testkitx/`                   |
+| 基座            | resiliencx                                                                                                | `/home/resiliencx/`                 |
+| 基座            | schedulex                                                                                                 | `/home/schedulex/`                  |
+| 基座            | xlibgate                                                                                                  | `/home/xlibgate/`                   |
+| 基座            | xlib-standard                                                                                             | `/home/xlib-standard/`              |
+| 基座            | redisx                                                                                                    | `/home/redisx/`                     |
+| 基座            | kafkax                                                                                                    | `/home/kafkax/`                     |
+| 基座            | natsx                                                                                                     | `/home/natsx/`                      |
+| 基座            | postgresx                                                                                                 | `/home/postgresx/`                  |
+| 基座            | clickhousex                                                                                               | `/home/clickhousex/`                |
+| 基座            | taosx                                                                                                     | `/home/taosx/`                      |
+| 基座            | ossx                                                                                                      | `/home/ossx/`                       |
+| 基座            | decimalx                                                                                                  | `/home/decimalx/`                   |
+| 基座            | domain-market                                                                                             | `/home/domain-market/`              |
+| 基座            | domain-exchange                                                                                           | `/home/domain-exchange/`            |
+| 基座            | domain-macro                                                                                              | `/home/domain-macro/`               |
+| **数据域 · 行情** |                                                                                                         |                                     |
+| 数据域          | binance, binance-market                                                                                   | `/home/binance/`, `/home/binance-market/` |
+| 数据域          | okx, okx-market                                                                                           | `/home/okx/`, `/home/okx-market/`         |
+| 数据域          | bybit, bybit-market                                                                                       | `/home/bybit/`, `/home/bybit-market/`     |
+| 数据域          | bitget, bitget-market                                                                                     | `/home/bitget/`, `/home/bitget-market/`   |
+| 数据域          | coinbase, coinbase-market                                                                                 | `/home/coinbase/`, `/home/coinbase-market/` |
+| 数据域          | gate                                                                                                      | `/home/gate/`                       |
+| 数据域          | kucoin                                                                                                    | `/home/kucoin/`                     |
+| 数据域          | mexc                                                                                                      | `/home/mexc/`                       |
+| 数据域          | htx                                                                                                       | `/home/htx/`                        |
+| 数据域          | upbit                                                                                                     | `/home/upbit/`                      |
+| 数据域          | hyperliquid                                                                                               | `/home/hyperliquid/`                |
+| 数据域          | lighter                                                                                                   | `/home/lighter/`                    |
+| 数据域          | coinglass                                                                                                 | `/home/coinglass/`                  |
+| **数据域 · 宏观** |                                                                                                         |                                     |
+| 数据域          | fred                                                                                                      | `/home/fred/`                       |
+| 数据域          | treasury                                                                                                  | `/home/treasury/`                   |
+| 数据域          | bea                                                                                                       | `/home/bea/`                        |
+| 数据域          | ecb                                                                                                       | `/home/ecb/`                        |
+| 数据域          | uk-cb                                                                                                     | `/home/uk-cb/`                      |
+| 数据域          | japan-cb                                                                                                  | `/home/japan-cb/`                   |
+| 数据域          | eastmoney                                                                                                 | `/home/eastmoney/`                  |
+| 数据域          | jinshi                                                                                                    | `/home/jinshi/`                     |
+| 数据域          | jin10                                                                                                     | `/home/jin10/`                      |
+| 数据域          | yahoo                                                                                                     | `/home/yahoo/`                      |
+| 数据域          | yield-curve                                                                                               | `/home/yield-curve/`                |
+| **入口**        |                                                                                                           |                                     |
+| 入口            | x.go                                                                                                      | `/home/x.go/`                       |
+
+> 完整仓库 URL 映射见上方状态总览表。分析域、决策域、执行域、横切域模块暂无本地检出。
+
 ## 建议实现顺序
 
 ```text
