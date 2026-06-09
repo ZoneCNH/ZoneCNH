@@ -143,6 +143,29 @@ PY
   exit "$code"
 }
 
+queue_cleanup() {
+  cleanup_main_worktree="$1"
+  cleanup_repo_root="$2"
+  cleanup_branch="$3"
+  cleanup_log="$4"
+
+  nohup /usr/bin/env bash -c '
+main_worktree="$1"
+repo_root="$2"
+branch="$3"
+log_file="$4"
+
+sleep 2
+{
+  printf "%s\tcleanup: removing worktree %s\n" "$(date -Is)" "$repo_root"
+  git -C "$main_worktree" worktree remove "$repo_root"
+  git -C "$main_worktree" branch -d "$branch"
+  printf "%s\tcleanup: complete for %s\n" "$(date -Is)" "$branch"
+} >> "$log_file" 2>&1
+' auto-delivery-cleanup "$cleanup_main_worktree" "$cleanup_repo_root" "$cleanup_branch" "$cleanup_log" \
+    >/dev/null 2>&1 &
+}
+
 capture_hook_payload() {
   if [ "$HOOK_MODE" -ne 1 ]; then
     printf '{}' > "$payload_file"
@@ -373,12 +396,7 @@ merge_to_main() {
   fi
 
   if [ "${AUTO_DELIVERY_CLEANUP:-1}" = "1" ] && [ "$repo_root" != "$main_worktree" ]; then
-    cleanup_log="$log_file"
-    (
-      sleep 2
-      git -C "$main_worktree" worktree remove "$repo_root" >> "$cleanup_log" 2>&1 &&
-        git -C "$main_worktree" branch -d "$branch" >> "$cleanup_log" 2>&1 || true
-    ) >/dev/null 2>&1 &
+    queue_cleanup "$main_worktree" "$repo_root" "$branch" "$log_file"
     finish "merged" "已 fast-forward 合并到 main；worktree 和分支清理已排队" 0
   fi
 
