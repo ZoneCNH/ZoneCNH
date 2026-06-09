@@ -11,7 +11,7 @@
 - `.config/goal/` 从全目录忽略改为控制面可审查、runtime 可忽略。
 - 本轮验收命令全部通过。
 
-剩余扣分项是 P2/P3 级工程化增强，不阻塞当前 90+ 目标：专用负例 fixture 套件尚未单独沉淀，且当前 worktree 存在与本轮无关的历史脏文件/未跟踪目录。
+剩余扣分项是 P2/P3 级工程化增强，不阻塞当前 90+ 目标：专用负例 fixture 套件尚未单独沉淀；`.worktree/` 保持本地忽略。最新显式 `git status --short --untracked-files=all` 仅显示本报告和目录 README 的证据补录修改。
 
 ## 2. Agent Team 执行结果
 
@@ -39,7 +39,7 @@
 以下命令均已在仓库根目录执行。
 
 ```bash
-git status --short
+git status --short --untracked-files=all
 git diff --check
 bash -n docs/goal/tools/*.sh
 python3 -m py_compile docs/goal/tools/matrix-gen.py docs/goal/tools/rule-drift-check.py
@@ -49,6 +49,9 @@ python3 docs/goal/tools/matrix-gen.py --check-only --matrix .config/goal/matrix/
 bash docs/goal/tools/gate-check.sh .
 git check-ignore -v .config/goal/schema/rules.yaml
 git check-ignore -v .config/goal/runtime/cache.json
+git ls-files --error-unmatch docs/goal/00-authority-map.md .config/goal/schema/rules.yaml docs/report/goal/README.md docs/report/goal/goal-docs-fix-verification-20260609.md
+git diff --cached --name-only
+git status --ignored --short .worktree/todo.md
 rg -n "GOAL_DRAFTING|SPEC_REVIEWING|PROMPTING|CODING|TESTING|PAUSED|CANCELLED|P-XXX|docs/goals|docs/module" docs/goal .config/goal
 ```
 
@@ -56,6 +59,7 @@ rg -n "GOAL_DRAFTING|SPEC_REVIEWING|PROMPTING|CODING|TESTING|PAUSED|CANCELLED|P-
 
 | 命令 | 结果 |
 | --- | --- |
+| `git status --short --untracked-files=all` | 仅显示 `M docs/report/goal/README.md` 与 `M docs/report/goal/goal-docs-fix-verification-20260609.md` |
 | `git diff --check` | 通过，无尾随空格或补丁格式问题 |
 | `bash -n docs/goal/tools/*.sh` | 通过 |
 | `python3 -m py_compile ...` | 通过 |
@@ -63,8 +67,11 @@ rg -n "GOAL_DRAFTING|SPEC_REVIEWING|PROMPTING|CODING|TESTING|PAUSED|CANCELLED|P-
 | `rule-drift-check.py --root .` | 8 项全部 `[PASS]`，包括状态词表、CI job、stale literal、Evidence closure |
 | `matrix-gen.py --check-only ...` | 27/27 edge 终态，覆盖率 100%，无非法 relation/status |
 | `gate-check.sh .` | `PASS=7 FAIL=0 WARN=0` |
-| `.config/goal/schema/rules.yaml` ignore 检查 | 被 `.gitignore:12:!.config/goal/schema/**` 放行 |
+| `.config/goal/schema/rules.yaml` ignore 检查 | `git check-ignore -v` 无输出，说明控制面 schema 未被 ignore |
 | `.config/goal/runtime/cache.json` ignore 检查 | 被 `.gitignore:30:.config/goal/**/runtime/` 忽略 |
+| `git ls-files --error-unmatch ...` | `00-authority-map.md`、控制面 schema 与报告文件均在 Git 跟踪面内 |
+| `git diff --cached --name-only` | 无输出，没有暂存内容 |
+| `.worktree/todo.md` ignore 检查 | `!! .worktree/`，本地执行 TODO 保持忽略 |
 | stale literal `rg` | 退出码 1，预期无命中 |
 
 ## 6. 复评分
@@ -82,7 +89,7 @@ rg -n "GOAL_DRAFTING|SPEC_REVIEWING|PROMPTING|CODING|TESTING|PAUSED|CANCELLED|P-
 扣分保留：
 
 - 专用负例 fixture 尚未独立成套，当前主要依赖真实配置与脚本自检。
-- 当前 worktree 有与本轮无关的未跟踪目录和历史删除项，未在本轮清理。
+- 历史 worktree 噪声已在执行计划中作为 P3 风险记录；最新显式 `git status --short --untracked-files=all` 仅显示本轮报告证据补录文件。
 - `docs/report/goal/` 下报告文件为分析制品，不参与 Goal runtime gate。
 
 ## 7. 当前停止条件

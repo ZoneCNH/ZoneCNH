@@ -58,26 +58,19 @@
 
 ## 当前 dirty/untracked 注意事项
 
-以下状态来自 2026-06-09 修复验收后的 `git status --short` 与 `git check-ignore -v` 检查；无关脏文件未在本轮清理：
+以下状态来自 2026-06-09 修复验收后的显式检查。当前 `git status --short --untracked-files=all` 仅显示本轮报告证据补录的两份文件；新增 Goal 控制面、权威文档和报告制品已经进入 Git 跟踪面。`.worktree/` 作为本地工作目录继续忽略。
 
 | 状态 | 路径 | 注意事项 |
 | --- | --- | --- |
-| `M` | `.gitignore` | 已存在修改；与 GDR-CONFIG-01 的 `.config/goal` 边界决策相关，Phase 0 不回滚。 |
-| `M` | `docs/goal/CHANGELOG.md` | 已存在修改；后续信息架构或治理关闭记录可能需要纳入 GDR-INFO-01。 |
-| `M` | `docs/goal/GLOSSARY.md` | 已存在修改；后续术语权威修复可能需要纳入 GDR-AUTH-01。 |
-| `M` | `docs/goal/README.md` | 已存在修改；后续入口分层修复可能需要纳入 GDR-AUTH-01/GDR-INFO-01。 |
-| `M` | `docs/goal/tools/lint-goal.sh` | 已存在修改；后续工具治理修复需要确认是否纳入 GDR-TOOLS-01。 |
-| `D` | `todo.md` | 根目录 TODO 已删除；不要在 Phase 0 中回滚。 |
-| `??` | `.config/` | 未跟踪控制面目录；需在 GDR-CONFIG-01 中区分 schema、registry、runtime 和本地缓存边界。 |
-| `??` | `docs/goal/00-authority-map.md` | 未跟踪但与 GDR-AUTH-01/GDR-CONFIG-01 直接相关。 |
-| `??` | `docs/report/goal/goal-docs-deep-analysis-20260609.md` | 补充报告未跟踪；本目录 ledger 仍引用其诊断内容。 |
-| `??` | `docs/report/goal/goal-docs-deep-structural-audit-20260609.md` | 补充报告未跟踪；本目录 ledger 仍引用其诊断内容。 |
-| `??` | `docs/report/node_modules/` | 报告目录存在依赖产物；后续应确认是否需要清理或忽略。 |
-| `??` | `docs/report/package-lock.json` | 报告工具链文件未跟踪；后续应确认治理边界。 |
-| `??` | `docs/report/package.json` | 报告工具链文件未跟踪；后续应确认治理边界。 |
-| `??` | `k8s/` | 与本次 report governance lane 无直接关系。 |
-| tracked-eligible | `.config/goal/schema/rules.yaml` | 被 `.gitignore:12:!.config/goal/schema/**` 放行，符合控制面可审查边界。 |
+| modified | `docs/report/goal/README.md` | 本轮补录报告入口的最终 Git 状态说明。 |
+| modified | `docs/report/goal/goal-docs-fix-verification-20260609.md` | 本轮补录修复验收证据；除这两份报告外无其他 status 输出。 |
+| tracked | `.config/goal/schema/rules.yaml` | `git ls-files --error-unmatch .config/goal/schema/rules.yaml` 通过，控制面 schema 已在跟踪面内。 |
+| tracked | `docs/goal/00-authority-map.md` | `git ls-files --error-unmatch docs/goal/00-authority-map.md` 通过，权威映射已在跟踪面内。 |
+| tracked | `docs/report/goal/README.md` | 报告目录入口已在跟踪面内。 |
+| tracked | `docs/report/goal/goal-docs-fix-verification-20260609.md` | 修复验收报告已在跟踪面内。 |
+| not ignored | `.config/goal/schema/rules.yaml` | `git check-ignore -v .config/goal/schema/rules.yaml` 无输出，符合控制面可审查边界。 |
 | ignored | `.config/goal/runtime/cache.json` | 被 `.gitignore:30:.config/goal/**/runtime/` 忽略；runtime 缓存保持忽略符合预期。 |
+| ignored | `.worktree/todo.md` | `git status --ignored --short .worktree/todo.md` 输出 `!! .worktree/`；本地执行 TODO 保持不入库。 |
 
 ## 文件生命周期
 
