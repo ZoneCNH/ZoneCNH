@@ -11,7 +11,7 @@ scope: "实现 release manifest 生成和 semver 兼容矩阵"
 spec_ref:
   - "module/xlib-standard/SPEC.md#21"
   - "module/xlib-standard/SPEC.md#22"
-  - "module/xlib-standard/goal/1.md#11"
+  - "module/xlib-standard/goal.md#11"
 files:
   - "release/manifest/ (目录)"
   - "SEMANTIC-VERSIONING.md"
@@ -54,7 +54,7 @@ grep "goal_runtime" release/manifest/latest.json  # 应无输出
 
 ## Implementation Notes
 
-1. release_check.sh 按 goal/1.md §11.1 生成 manifest
-2. manifest 字段按 goal/1.md §11.2 定义
-3. .gitignore 按 goal/1.md §11.3 更新
+1. release_check.sh 按 goal.md §11.1 生成 manifest
+2. manifest 字段按 goal.md §11.2 定义
+3. .gitignore 按 goal.md §11.3 更新
 4. SEMANTIC-VERSIONING.md 按 §21.1 记录 breaking changes

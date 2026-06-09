@@ -6,7 +6,9 @@
 
 ## [Unreleased]
 
-（暂无）
+### Changed
+
+- 固化模块级 Goal 文档路径为 `module/{module}/goal.md`，禁止 `goal/` 目录和 `goal/1.md` 槽位。
 
 ## [v0.5.0] - 2026-06-09
 

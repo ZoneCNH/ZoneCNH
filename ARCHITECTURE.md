@@ -98,7 +98,7 @@ x.go
 
 ## Foundation v1 规格文档
 
-Foundation 6 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中在 `module/` 目录：
+Foundation v1 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中在 `module/` 目录：
 
 | 文档 | 定位 |
 |------|------|
@@ -112,7 +112,7 @@ Foundation 6 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中�
 | [`docs/governance/ROADMAP-RULES.md`](./docs/governance/ROADMAP-RULES.md) | ROADMAP 编写规范 — 状态流转、版本规划、任务拆分、维护原则 |
 | [`CONSTITUTION.md`](./CONSTITUTION.md) | 系统宪法 — FoundationX 全系统最高治理文件，覆盖模块实现与交付管线 |
 
-16 个基座模块的独立完整规格，加上 x.go 组合根规格（共 17 份，均为 23 节结构：行为规格 WHEN/THEN、接口契约、业务规则、错误处理、边界场景、验收标准、目录结构、CI Gate、测试矩阵、性能预算、可观测输出、发布 DoD），按架构层级组织。完整索引见 [`module/README.md`](./module/README.md)。16 个基座模块与 x.go 均已完成 23 节结构升级。
+16 个基座模块的独立完整规格均为 23 节结构：行为规格 WHEN/THEN、接口契约、业务规则、错误处理、边界场景、验收标准、目录结构、CI Gate、测试矩阵、性能预算、可观测输出、发布 DoD。完整索引见 [`module/README.md`](./module/README.md)。`x.go` 组合根仍作为运行时入口维护，但不再作为 `module/` 下的模块规格。
 
 | 层级 | 模块 | 完整规格 |
 |------|------|----------|
@@ -132,7 +132,6 @@ Foundation 6 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中�
 | | ossx | [`module/ossx/SPEC.md`](./module/ossx/SPEC.md) |
 | | clickhousex | [`module/clickhousex/SPEC.md`](./module/clickhousex/SPEC.md) |
 | **契约** | contracts | [`module/contracts/SPEC.md`](./module/contracts/SPEC.md) |
-| **组合根** | x.go | [`module/xgo/SPEC.md`](./module/xgo/SPEC.md) |
 
 ### 规格体系与治理文档
 

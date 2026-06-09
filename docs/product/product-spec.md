@@ -106,7 +106,7 @@ AI 代理被要求实现一个新的存储扩展模块。
 ### Excluded (Future)
 
 - 业务域模块（market-data, factor-engine, risk-engine 等）
-- x.go 组合根的运行时实现（Foundation v1 仅保留组合根规格与边界验收）
+- x.go 组合根的运行时实现（Foundation v1 仅保留组合根边界验收，不在 `module/` 下维护独立 x.go 规格）
 - L2.5 领域共享层（decimalx, domain-market 等）
 - 回测框架
 - 实盘执行引擎
@@ -120,7 +120,7 @@ AI 代理被要求实现一个新的存储扩展模块。
 |------|------|----------|
 | 模块独立可测试 | 每个模块可以 `go test ./...` 独立运行 | CI 每个模块独立 job，覆盖率 ≥ 80% |
 | 接口契约完整 | 所有跨域交互通过 `contracts` 接口 | xlibgate import check 零违规 |
-| Spec 覆盖率 | Foundation 16/16 模块 + x.go 组合根共 17/17 份 spec 完整 | module/README.md 索引计数：Foundation=16、System=17，每个 spec 23/23 节 |
+| Spec 覆盖率 | Foundation 16/16 模块 spec 完整 | module/README.md 索引计数：Foundation=16，每个 spec 23/23 节 |
 | CI Gate 通过 | 所有模块 CI 绿灯 | xlibgate check-all exit code = 0 |
 | WHEN/THEN 覆盖 | 每个 FR 至少 1 条 WHEN/THEN | TRACEABILITY.md 无空 AC 列 |
 | 验收测试通过 | AT-001 至 AT-017 全部通过 | acceptance-tests.md 验收清单全勾 |

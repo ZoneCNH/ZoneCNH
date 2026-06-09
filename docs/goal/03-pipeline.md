@@ -30,6 +30,24 @@ Goal → Spec → Design → Plan → Tasks → Prompt → Code → Test → Rev
 
 > **Matrix（追溯矩阵）** 是横切追溯制品，贯穿所有阶段，不是独立的管线层，也不出现在状态流 From/To 中。它将 Goal → Spec → Requirement → AC → Task → Prompt → Code → Test → Evidence 串联为可追溯的映射关系。详见 [05-layer-standards.md §9](05-layer-standards.md#9-matrix-横切标准)。
 
+### 1.1 可执行工作流剖面
+
+`docs/goal` 的可执行入口是 `docs/goal/tools/goal-workflow.sh`。它把规则、控制面、Matrix、Gate 和 CI 自测串成固定剖面，避免直接调用下层脚本时漏掉横切检查。
+
+| 命令 | 覆盖范围 | 状态语义 |
+| ---- | -------- | -------- |
+| `preflight` | Python 工具编译、Shell 语法、规则漂移、Goal 文档 lint | 工具和规则自检；不推进状态 |
+| `validate` | `preflight` + `.config/goal` 严格校验 + Matrix `check-only` | 验证控制面和追溯矩阵一致性 |
+| `gate` | `validate` + Gate 制品就绪检查 | 验证进入 Review / Release 前的就绪度 |
+| `ci` | `validate` + 工具链自测 + 有运行制品时自动 Gate | PR / CI 默认剖面 |
+| `release` | `gate` + Release hard blocker | Release 前硬阻断；通过后可写 Release Gate manifest |
+
+```bash
+bash docs/goal/tools/goal-workflow.sh validate
+bash docs/goal/tools/goal-workflow.sh gate
+bash docs/goal/tools/goal-workflow.sh ci
+```
+
 ---
 
 ## 2. 四轴状态模型

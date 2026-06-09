@@ -10,7 +10,7 @@ module: xlib-standard
 scope: "删除 governance-runtime、evidence-runtime、debt-governance、adrs、internal 等非目标目录和文件"
 spec_ref:
   - "module/xlib-standard/SPEC.md#5"
-  - "module/xlib-standard/goal/1.md#4"
+  - "module/xlib-standard/goal.md#4"
 files:
   - ".agent/ (删除)"
   - ".codex/ (删除)"
@@ -51,7 +51,7 @@ status: pending
 | Requirement | Description | Acceptance Criteria |
 |---|---|---|
 | §5 Non-goals | 不做 Goal Runtime / Evidence Runtime / Debt Governance | 相关目录不存在 |
-| goal/1.md §4 | PR-1 删除命令 | 目录删除 + 测试通过 |
+| goal.md §4 | PR-1 删除命令 | 目录删除 + 测试通过 |
 
 ## Test Plan
 
@@ -69,6 +69,6 @@ GOWORK=off go test ./...
 
 ## Implementation Notes
 
-1. 执行 goal/1.md §4.1 的删除命令
-2. 执行 goal/1.md §4.2 的验收命令
+1. 执行 goal.md §4.1 的删除命令
+2. 执行 goal.md §4.2 的验收命令
 3. 确保 README.md 不再引用已删目录

@@ -32,6 +32,18 @@ Goal 驱动交付的核心就一件事：**让每一行代码都能追溯到一�
 Goal → Task → DoD → Code → Test → Done
 ```
 
+### 先跑本地工作流
+
+修改 Goal 规则、控制面或运行制品后，先用统一入口拿到机器验证结果：
+
+```bash
+bash docs/goal/tools/goal-workflow.sh preflight
+bash docs/goal/tools/goal-workflow.sh validate
+bash docs/goal/tools/goal-workflow.sh gate
+```
+
+日常 PR 至少运行 `validate`；已有 `.config/goal` 运行制品时运行 `gate`；CI 使用 `ci`。
+
 ### Step 1: 写 Goal
 
 ```text

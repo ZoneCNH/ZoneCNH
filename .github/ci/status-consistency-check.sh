@@ -5,7 +5,7 @@
 #   1. 从 README.md 提取 market-data / macro-data / L2.5 / 分析域 / 决策域 / 横切 组件数量
 #   2. 从 ARCHITECTURE.md 提取相同指标
 #   3. 从 STATUS.md 提取 domain-level 统计表中的组件数量
-#   4. 从 module/ 提取 Foundation + x.go 规格数量
+#   4. 从 module/ 提取 Foundation 规格数量
 #   5. 校验 STATUS 进度分布、版本覆盖与域统计合计
 #   6. 比对各方是否一致
 
@@ -96,10 +96,9 @@ STATUS_VERSIONED=$(grep -oP '版本覆盖:\s*有版本号\s*\K[0-9]+' "$REPO_ROO
 STATUS_UNVERSIONED=$(grep -oP '版本覆盖:.*无版本号\s*\K[0-9]+' "$REPO_ROOT/STATUS.md" | head -1)
 STATUS_DOMAIN_VERSIONED=$(awk -F'|' '/^\| \*\*合计/ {gsub(/[^0-9]/, "", $7); print $7}' "$REPO_ROOT/STATUS.md")
 
-# 从 module/ 提取规格数量：Foundation 16 + x.go 组合根 1
+# 从 module/ 提取规格数量：Foundation 16
 SPEC_COUNT=$(find "$SPEC_DIR" -mindepth 2 -maxdepth 2 -name SPEC.md | wc -l | tr -d ' ')
-XGO_SPEC_COUNT=$(find "$SPEC_DIR/xgo" -maxdepth 1 -name SPEC.md 2>/dev/null | wc -l | tr -d ' ')
-FOUNDATION_SPEC_COUNT=$((SPEC_COUNT - XGO_SPEC_COUNT))
+FOUNDATION_SPEC_COUNT="$SPEC_COUNT"
 
 echo "--- 数据采集 ---"
 echo "README 架构图:     market-data = $README_MD_NUM, macro-data = $README_MACRO_NUM"
@@ -109,7 +108,7 @@ echo "ARCHITECTURE 表:   基座=$ARCH_BASE, L2.5=$ARCH_L25, 数据域=$ARCH_DAT
 echo "STATUS 总数:       $STATUS_TOTAL"
 echo "STATUS 同步表:     总计=$STATUS_SYNC_TOTAL, market-data=$STATUS_SYNC_MD, macro-data=$STATUS_SYNC_MACRO"
 echo "STATUS 分布/版本:  进度分布合计=$STATUS_PROGRESS_BUCKET_TOTAL, 版本覆盖=$STATUS_VERSIONED+$STATUS_UNVERSIONED, 域统计有版本号=$STATUS_DOMAIN_VERSIONED"
-echo "Spec 规格计数:     Foundation=$FOUNDATION_SPEC_COUNT, x.go=$XGO_SPEC_COUNT, 总计=$SPEC_COUNT"
+echo "Spec 规格计数:     Foundation=$FOUNDATION_SPEC_COUNT, 总计=$SPEC_COUNT"
 echo ""
 
 # ── 一致性检查 ───────────────────────────────────────────
@@ -143,16 +142,16 @@ check "market-data (列表条目 vs 图中标注)" "$README_MARKET" "$README_MD_
 check "macro-data (列表条目 vs 图中标注)" "$README_MACRO" "$README_MACRO_NUM"
 
 # 4. ARCHITECTURE 状态表组件行总数 vs STATUS 总数
-ARCH_TOTAL=$((ARCH_BASE + ARCH_L25 + ARCH_DATA + ARCH_ANALYSIS + ARCH_DECISION + ARCH_EXEC + ARCH_ENTRY + ARCH_CROSS + ARCH_RUST + ARCH_INDEP))
-check "组件总数 (ARCHITECTURE 表合计 vs STATUS)" "$ARCH_TOTAL" "$STATUS_TOTAL"
+# x.go 是入口/组合根，不再纳入 module 规格和 STATUS 组件总数。
+ARCH_TOTAL=$((ARCH_BASE + ARCH_L25 + ARCH_DATA + ARCH_ANALYSIS + ARCH_DECISION + ARCH_EXEC + ARCH_CROSS + ARCH_RUST + ARCH_INDEP))
+check "组件总数 (ARCHITECTURE 表合计不含入口 vs STATUS)" "$ARCH_TOTAL" "$STATUS_TOTAL"
 
 # 5. STATUS 组件总数行 vs 同步表
 check "STATUS (仪表盘总数 vs 同步表总计)" "$STATUS_TOTAL" "$STATUS_SYNC_TOTAL"
 
-# 6. module/ 数量口径：Foundation 16 + x.go 组合根 1
-check "规格总数 (Foundation 16 + x.go)" "$SPEC_COUNT" "17"
+# 6. module/ 数量口径：Foundation 16
+check "规格总数 (Foundation 16)" "$SPEC_COUNT" "16"
 check "Foundation 规格数" "$FOUNDATION_SPEC_COUNT" "16"
-check "x.go 组合根规格数" "$XGO_SPEC_COUNT" "1"
 
 # 7. STATUS 内部统计应与仪表盘总数一致
 check "STATUS (进度分布合计 vs 仪表盘总数)" "$STATUS_PROGRESS_BUCKET_TOTAL" "$STATUS_TOTAL"
@@ -171,7 +170,7 @@ if [[ $FAIL -ne 0 ]]; then
   echo "  1. 确保 README.md / ARCHITECTURE.md 中的 market-data (N) / macro-data (N) 数字与实际列表条目一致"
   echo "  2. 确保 STATUS.md 的「组件总数」和「文档同步检查」表中的数字一致"
   echo "  3. 确保 STATUS.md 的进度分布、版本覆盖与域统计合计一致"
-  echo "  4. 新增/删除规格时，同步更新 module/README.md 与 Foundation/x.go 数量口径"
+  echo "  4. 新增/删除规格时，同步更新 module/README.md 与 Foundation 数量口径"
   echo "  5. 新增/删除组件时，同步更新三个文件中的所有引用"
   exit 1
 else

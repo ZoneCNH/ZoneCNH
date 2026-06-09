@@ -30,6 +30,19 @@ canonical_goal_object:
     - priority
     - success_criteria
 
+module_goal_document:
+  canonical_path_pattern: "module/{module}/goal.md"
+  source_index: "module/README.md"
+  authority_view: "docs/goal/00-authority-map.md"
+  required_filename: "goal.md"
+  forbidden_patterns:
+    - "module/{module}/goal/"
+    - "module/{module}/goal/1.md"
+    - "module/{module}/goal/*.md"
+    - "goal/1.md"
+    - "goal/*.md"
+  module_count: 16
+
 ids:
   goal_id_pattern: "^GOAL-[0-9]{8}-[0-9]{3}$"
   spec_id_pattern: "^SPEC-[a-z0-9-]+-v[0-9]+$"

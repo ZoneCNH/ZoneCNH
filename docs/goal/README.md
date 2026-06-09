@@ -26,6 +26,26 @@ Goal 定义结果 → Spec 定义需求 → Design 定义方案 → Plan 定义�
 
 Matrix（追溯矩阵）是横切追溯制品，贯穿主流程但不作为主流程阶段，也不写入主流程箭头。它在 Spec 后可初始化，并随 Design、Plan、Tasks、Prompt、Code、Test、Evidence 更新。详见 [05-layer-standards.md §9](05-layer-standards.md#9-matrix-横切标准)。
 
+## 可执行入口
+
+`docs/goal` 的默认本地工作流入口是：
+
+```bash
+bash docs/goal/tools/goal-workflow.sh preflight
+bash docs/goal/tools/goal-workflow.sh validate
+bash docs/goal/tools/goal-workflow.sh gate
+bash docs/goal/tools/goal-workflow.sh ci
+```
+
+执行口径：
+
+- `preflight`：工具编译、Shell 语法、规则漂移和文档 lint。
+- `validate`：`preflight` + strict 控制面验证 + Matrix check-only，是 PR 前默认检查。
+- `gate`：`validate` + Gate 制品就绪检查，适用于已有 `.config/goal` 运行制品的仓库。
+- `ci`：CI 聚合入口，运行 `validate`、工具链自测，并在运行制品完整时自动执行 Gate 检查。
+
+底层脚本仍保留为调试入口；日常执行优先使用 `goal-workflow.sh`，避免不同文档、CI 与人工命令产生漂移。
+
 ## 统一配置中心
 
 `.config/goal/` 是 Goal 控制面的可提交配置、schema 与审计快照目录；本地运行态、锁、缓存、local 覆盖和日志不作为权威制品，应写入 `.config/goal/runtime/`、`.omx/state/` 或对应 ignored 目录。
@@ -67,18 +87,21 @@ Matrix（追溯矩阵）是横切追溯制品，贯穿主流程但不作为主�
 | goal-prompt-builder | `prompts/TASK-*/` | Context Package 构建与版本管理 |
 | goal-evidence | `evidence/EVID-*.md` | 证据收集与验证 |
 
-## 与 module/ 和 docs/governance/ 的同步边界
+## 与 docs/spec、module/ 和 docs/governance/ 的同步边界
 
-Goal 体系定义目标交付规则、状态机、Gate、Registry 和证据闭环；`module/` 定义模块规格制品；`docs/governance/` 定义 Spec → Code 流程、模板、门禁与评分规则。三者分工如下：
+Goal 体系定义目标交付规则、状态机、Gate、Registry 和证据闭环；`docs/spec/` 定义由 Goal 体系需求派生的产品级或工具级规格；`module/` 定义模块规格制品；`docs/governance/` 定义 Spec → Code 流程、模板、门禁与评分规则。四者分工如下：
 
 | 范围 | 权威位置 | 同步规则 |
 |------|----------|----------|
 | Goal 方法、Gate、Registry、Evidence | `docs/goal/` + `.config/goal/` | 描述目标、状态、门禁和运行证据，不复制模块完整规格 |
-| 模块 Feature Spec、Traceability、Task、Prompt 输入 | `module/` | 作为编码前模块制品事实源，通过 Goal ID / Task ID / 路径被引用 |
+| 产品/工具级 Spec | `docs/spec/` | 由 `docs/goal/` 的 Goal、Spec、Gate、Matrix、Evidence、Registry、Lint 等需求派生；不作为模块事实源，不新增 Goal 体系语义 |
+| 模块 Feature Spec、Traceability、Task、Prompt 输入与模块级 Goal 文档 | `module/` | 作为编码前模块制品事实源，通过 Goal ID / Task ID / 路径被引用；模块级 Goal 固定为 `module/{module}/goal.md`，不得使用 `goal/` 目录或 `goal/1.md` |
 | Spec → Code 模板、生命周期、门禁、评分与仲裁规则 | `docs/governance/` | 作为流程与治理规则事实源，被模块制品、agent 和 CI 引用 |
 | 根目录索引与三平台 agent 入口 | `README.md`、`ARCHITECTURE.md`、`STATUS.md`、`.claude/`、`.codex/`、`.copilot/` | 只同步入口、路径和门禁口径，不成为新的 SSOT |
 
-迁移后不得恢复旧 `specs/` 目录；若 Goal 文档、agent 配置或 CI 脚本需要引用规格制品，应指向 `module/` 或 `docs/governance/`。
+迁移后不得恢复旧 `specs/` 目录；若 Goal 文档、agent 配置或 CI 脚本需要引用模块规格制品，应指向 `module/` 或 `docs/governance/`；若引用 Goal 体系自身工具或控制面规格，应指向 `docs/spec/`，且必须声明 Source Goal / Source Requirement 与对应 `docs/goal/` 权威来源。
+
+模块级 Goal 文档是模块规格制品的一部分，固定路径为 `module/{module}/goal.md`；不得使用 `module/{module}/goal/` 目录、`module/{module}/goal/1.md` 或 `goal/*.md` 多文件槽位。
 
 ## 文档索引
 
@@ -106,7 +129,7 @@ Goal 体系定义目标交付规则、状态机、Gate、Registry 和证据闭�
 | [17-risk-and-decisions.md](17-risk-and-decisions.md)   | 风险、决策与发布：Risk Register、ADR、Release Manifest、落地计划              |
 | [18-maturity.md](18-maturity.md)                       | 成熟度模型：L0-L5 升级路径、体系度量、故障排查、非代码场景适配                |
 | [19-self-improving.md](19-self-improving.md)           | Self-improving 复利机制：Patch 系统、多团队协作、体系演进记录                |
-| [tools/](tools/README.md)                              | 工具脚本：Gate 制品就绪检查、Matrix 生成、Evidence 收集、Lint 与漂移检查      |
+| [tools/](tools/README.md)                              | 工具脚本：统一工作流入口、Gate 制品就绪检查、Matrix 生成、Evidence 收集、Lint 与漂移检查 |
 | [20-metrics-evidence.md](20-metrics-evidence.md)       | 指标与证据闭环：Metrics Review、Validation Check、Gap Report、Evidence Graph |
 | [21-controlled-rsi.md](21-controlled-rsi.md)           | 受控递归改进：Controlled RSI、改进循环、不变量、策略边界                    |
 | [22-delivery-os.md](22-delivery-os.md)                 | Delivery OS：五个运行时、Workflow-as-Code、Compiler、控制平面               |

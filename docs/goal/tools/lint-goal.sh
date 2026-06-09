@@ -58,7 +58,6 @@ else
 fi
 
 for f in $FILES; do
-    CONTENT=$(cat "$f")
     BASENAME=$(basename "$f")
 
     # === Goal Lint 规则 ===
@@ -66,9 +65,9 @@ for f in $FILES; do
 
         # G-LINT-001: Goal 必须有衡量指标
         mark_rule "G" "G-LINT-001"
-        if echo "$CONTENT" | grep -qi "goal"; then
-            if ! echo "$CONTENT" | grep -qE "[0-9]+(%|秒|分钟|小时|ms|个|次|条|行)"; then
-                if echo "$CONTENT" | grep -qi "成功\|完成\|达到\|目标"; then
+        if grep -qi "goal" "$f"; then
+            if ! grep -qE "[0-9]+(%|秒|分钟|小时|ms|个|次|条|行)" "$f"; then
+                if grep -qi "成功\|完成\|达到\|目标" "$f"; then
                     warn "[$BASENAME] G-LINT-001: Goal 描述成功但缺少量化指标"
                     finding "G"
                 fi
@@ -79,8 +78,8 @@ for f in $FILES; do
         mark_rule "G" "G-LINT-002"
         FUZZY_WORDS=("优化" "提升" "改善" "完善" "加强" "尽量" "尽可能" "适时" "酌情")
         for word in "${FUZZY_WORDS[@]}"; do
-            if echo "$CONTENT" | grep -q "$word"; then
-                if ! echo "$CONTENT" | grep -A1 "$word" | grep -qE "[0-9]+"; then
+            if grep -q "$word" "$f"; then
+                if ! grep -A1 "$word" "$f" | grep -qE "[0-9]+"; then
                     warn "[$BASENAME] G-LINT-002: 发现模糊词「$word」且无量化说明"
                     finding "G"
                 fi
@@ -91,8 +90,8 @@ for f in $FILES; do
         mark_rule "G" "G-LINT-003"
         IMPL_WORDS=("数据库" "Redis" "PostgreSQL" "API" "接口" "前端" "后端" "微服务" "SDK")
         for word in "${IMPL_WORDS[@]}"; do
-            if echo "$CONTENT" | grep -q "$word"; then
-                if echo "$CONTENT" | grep -B2 "$word" | grep -qi "goal"; then
+            if grep -q "$word" "$f"; then
+                if grep -B2 "$word" "$f" | grep -qi "goal"; then
                     warn "[$BASENAME] G-LINT-003: Goal 包含实现细节「$word」，应改为结果描述"
                     finding "G"
                 fi
@@ -105,22 +104,22 @@ for f in $FILES; do
 
         # S-LINT-001: Spec 必须有 Acceptance Criteria
         mark_rule "S" "S-LINT-001"
-        if ! echo "$CONTENT" | grep -qi "acceptance.criteria\|验收标准\|AC-"; then
+        if ! grep -qi "acceptance.criteria\|验收标准\|AC-" "$f"; then
             error "[$BASENAME] S-LINT-001: Spec 缺少 Acceptance Criteria"
             finding "S"
         fi
 
         # S-LINT-002: Spec 必须有边界场景
         mark_rule "S" "S-LINT-002"
-        if ! echo "$CONTENT" | grep -qi "edge.case\|边界\|异常\|错误处理\|error.handling"; then
+        if ! grep -qi "edge.case\|边界\|异常\|错误处理\|error.handling" "$f"; then
             warn "[$BASENAME] S-LINT-002: Spec 缺少边界场景或错误处理"
             finding "S"
         fi
 
         # S-LINT-003: Requirement 必须可测试（兼容旧 FR-*，优先使用 REQ-SPEC-*）
         mark_rule "S" "S-LINT-003"
-        REQ_COUNT=$(echo "$CONTENT" | grep -cE "REQ-SPEC-|FR-" || echo 0)
-        AC_COUNT=$(echo "$CONTENT" | grep -cE "AC-|test_|测试" || echo 0)
+        REQ_COUNT=$(grep -cE "REQ-SPEC-|FR-" "$f" || true)
+        AC_COUNT=$(grep -cE "AC-|test_|测试" "$f" || true)
         if [ "$REQ_COUNT" -gt 0 ] && [ "$AC_COUNT" -eq 0 ]; then
             error "[$BASENAME] S-LINT-003: 有 $REQ_COUNT 个 Requirement 但无测试覆盖"
             finding "S"
@@ -246,24 +245,24 @@ PY
 
         # P-LINT-001: Prompt 必须有 Constraints
         mark_rule "P" "P-LINT-001"
-        if ! echo "$CONTENT" | grep -qi "constraint\|限制\|禁止\|do.not"; then
+        if ! grep -qi "constraint\|限制\|禁止\|do.not" "$f"; then
             warn "[$BASENAME] P-LINT-001: Prompt 缺少 Constraints/限制条件"
             finding "P"
         fi
 
         # P-LINT-002: Prompt 必须有明确输出格式
         mark_rule "P" "P-LINT-002"
-        if ! echo "$CONTENT" | grep -qi "output\|输出\|格式\|format"; then
+        if ! grep -qi "output\|输出\|格式\|format" "$f"; then
             warn "[$BASENAME] P-LINT-002: Prompt 缺少输出格式说明"
             finding "P"
         fi
     fi
 
     # === 通用检查 ===
-    if echo "$CONTENT" | grep -qE "[0-9]{5,}.*@(163|qq|gmail)\.(com|cn)"; then
+    if grep -qE "[0-9]{5,}.*@(163|qq|gmail)\.(com|cn)" "$f"; then
         error "[$BASENAME] 安全: 发现疑似真实邮箱地址"
     fi
-    if echo "$CONTENT" | grep -qE "api[_-]?key.*=.*[A-Za-z0-9]{20,}"; then
+    if grep -qE "api[_-]?key.*=.*[A-Za-z0-9]{20,}" "$f"; then
         error "[$BASENAME] 安全: 发现疑似 API Key"
     fi
 

@@ -81,3 +81,8 @@ tasks:
 # 状态枚举（权威来源：docs/goal/03-pipeline.md §2.5）：
 # Unmapped → Mapped → In Progress → Done → Blocked
 # 异常状态：Dropped（需说明原因）
+  - task_id: TASK-GOAL-20260609-001-001
+    goal_id: GOAL-20260609-001
+    status: Unmapped
+    created_at: 2026-06-09
+    updated_at: 2026-06-09

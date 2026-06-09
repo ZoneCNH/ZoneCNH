@@ -315,6 +315,7 @@ run_success "goal lint baseline" bash "$SCRIPT_DIR/lint-goal.sh" "$REPO_ROOT/doc
 run_success "rule drift baseline" python3 "$SCRIPT_DIR/rule-drift-check.py" --root "$REPO_ROOT" --quiet
 run_success "goal validator strict baseline" \
   python3 "$SCRIPT_DIR/goal-validate.py" --root "$REPO_ROOT" --mode strict --format json
+run_success "goal workflow validate baseline" bash "$SCRIPT_DIR/goal-workflow.sh" validate --root "$REPO_ROOT"
 run_success "matrix baseline" python3 "$SCRIPT_DIR/matrix-gen.py" \
   --check-only --matrix "$REPO_ROOT/.config/goal/matrix/matrix.yaml"
 run_success "gate baseline" bash "$SCRIPT_DIR/gate-check.sh" "$REPO_ROOT"

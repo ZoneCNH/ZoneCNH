@@ -10,8 +10,8 @@ module: xlib-standard
 scope: "生成库验收、100 次自检脚本、tag v1.0.0"
 spec_ref:
   - "module/xlib-standard/SPEC.md#22"
-  - "module/xlib-standard/goal/1.md#12"
-  - "module/xlib-standard/goal/1.md#13"
+  - "module/xlib-standard/goal.md#12"
+  - "module/xlib-standard/goal.md#13"
 files:
   - "selfcheck-100.sh"
 acceptance_criteria:
@@ -40,8 +40,8 @@ status: pending
 | Requirement | Description | Acceptance Criteria |
 |---|---|---|
 | §22 | Release DoD | 所有 AC 通过 |
-| goal/1.md §12 | 生成库验收 | 临时目录测试通过 |
-| goal/1.md §13 | 最终验收命令 | 100 次自检通过 |
+| goal.md §12 | 生成库验收 | 临时目录测试通过 |
+| goal.md §13 | 最终验收命令 | 100 次自检通过 |
 
 ## Test Plan
 
@@ -71,7 +71,7 @@ GOWORK=off make release-final-check
 
 ## Implementation Notes
 
-1. 按 goal/1.md §12 实现生成库验收流程
+1. 按 goal.md §12 实现生成库验收流程
 2. 创建 selfcheck-100.sh 脚本，100 次渲染 + 测试
-3. 按 goal/1.md §13 执行最终验收
+3. 按 goal.md §13 执行最终验收
 4. 全部通过后 tag v1.0.0

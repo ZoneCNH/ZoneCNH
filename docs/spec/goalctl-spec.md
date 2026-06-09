@@ -3,10 +3,13 @@
 | 字段 | 值 |
 | --- | --- |
 | Spec ID | `SPEC-goalctl-v1` |
-| 状态 | Draft, Implementation Ready |
+| 状态 | Draft |
+| 就绪度 | Implementation Ready |
 | 版本 | `v1.2.0` |
 | 日期 | 2026-06-09 |
 | 权威来源 | `docs/goal/` 与 `.config/goal/schema/rules.yaml` |
+| Source Goal | Goal 驱动交付体系的本地命令控制面 |
+| Source Requirement | `docs/goal/00-authority-map.md`、`02-goal-standard.md`、`04-gates.md`、`05-layer-standards.md`、`06-dod.md`、`10-lint-rules.md`、`13-runtime-engine.md`、`15-registry.md` |
 | 输出位置 | `docs/spec/goalctl-spec.md` |
 
 ## 1. 目标
@@ -49,6 +52,20 @@
 | Lint 规则 | `docs/goal/10-lint-rules.md` | 执行 G-LINT/S-LINT/M-LINT/P-LINT/C-LINT 共 38 条规则校验 |
 | CI | `docs/goal/16-ci-cd.md` 与 schema rules | 对齐 CI job 名称、检查项和失败语义 |
 | Schema | `.config/goal/schema/rules.yaml` | 作为可执行规则镜像，用于命令校验 |
+
+### 3.1 与 docs/goal 需求的关系
+
+本规格是 `docs/goal/` 的派生控制面 Spec，不是 `module/` 规格，也不定义新的 Goal 体系语义。若本规格与 `docs/goal/00-authority-map.md` 指向的 SSOT 冲突，以 `docs/goal/` 权威为准；本规格只能更新命令行为描述，不能反向覆盖 Pipeline、Gate、ID、Registry、Matrix 或 Evidence 规则。
+
+| `docs/goal` 需求 | 权威位置 | `goalctl` 派生契约 |
+| --- | --- | --- |
+| 每一行交付可追溯到可验证 Goal | `docs/goal/README.md`、`02-goal-standard.md` | `trace`、`matrix`、`evidence` 命令必须能解释 Goal -> Spec -> Requirement -> Acceptance Criteria -> Test/Evidence 链路 |
+| Spec 必须原子化、可实现、可测试 | `docs/goal/05-layer-standards.md`、`06-dod.md` | `lint spec` 与 `validate --strict` 必须检查 Requirement、Acceptance Criteria、边界场景和测试映射 |
+| Matrix 是横切制品，不是主阶段 | `docs/goal/05-layer-standards.md` | `status` 与 `pipeline status` 不得把 Matrix 输出为 `current_phase` |
+| G0-G11 是固定 Gate 集合 | `docs/goal/04-gates.md` | `gate check`、`gate explain` 只能接受 canonical Gate，不允许新增 Gate 编号或 waiver 结果 |
+| Evidence 支撑验收与发布判断 | `docs/goal/06-dod.md`、`13-runtime-engine.md` | `evidence check` 与 `release readiness` 必须检查命令日志、测试结果、文件列表、风险和阻塞信息 |
+| Registry 六文件是业务注册权威 | `docs/goal/15-registry.md` | `registry validate` 只把 `.config/goal/registry/` 中六个 YAML 文件作为 Registry 权威 |
+| 自动化 Lint 规则必须可执行 | `docs/goal/10-lint-rules.md` | `lint` 命令必须覆盖 G-LINT、S-LINT、M-LINT、P-LINT、C-LINT 规则，并输出可行动失败信息 |
 
 ## 4. 领域模型
 
@@ -202,6 +219,8 @@ NEEDS_HUMAN_APPROVAL
 INCONSISTENT_STATE
 ```
 
+`INCONSISTENT_STATE` 是 `pipeline_state` 值；命令错误码使用第 15 节定义的 `GOALCTL_STATE_INCONSISTENT`。
+
 ### 7.3 当前阶段
 
 ```text
@@ -265,7 +284,7 @@ gate_check
 | `evidence_required` | 需要补齐的证据类型 |
 | `recommended_next_action` | 下一条可执行动作 |
 
-若状态文件缺失，命令返回 `INIT` 推断结果，并在 `warnings` 中说明缺失文件。若四轴互相冲突，返回 `INCONSISTENT_STATE`。
+若状态文件缺失，命令返回 `INIT` 推断结果，并在 `warnings` 中说明缺失文件。若四轴互相冲突，`current_state` 标记为 `INCONSISTENT_STATE`，错误码返回 `GOALCTL_STATE_INCONSISTENT`。
 
 ## 9. Registry 契约
 
@@ -866,7 +885,7 @@ CL4 和 CL5 默认需要人工批准；命令不得自动放行。
 | --- | --- | --- | --- |
 | `REQ-SPEC-goalctl-v1-001` | `goalctl` 必须从 `docs/goal/` 与 schema rules 读取权威语义。 | `AC-REQ-SPEC-goalctl-v1-001-001` | 给定任意命令，输出必须声明使用的 authority source；当输入与 authority map 冲突时返回 `GOALCTL_AUTHORITY_VIOLATION`。 |
 | `REQ-SPEC-goalctl-v1-002` | `goalctl` 必须保持 Matrix 为横切产物。 | `AC-REQ-SPEC-goalctl-v1-002-001` | `goalctl status` 和 `goalctl pipeline status` 不得把 Matrix 输出为 `current_phase`。 |
-| `REQ-SPEC-goalctl-v1-003` | `goalctl` 必须校验四轴状态。 | `AC-REQ-SPEC-goalctl-v1-003-001` | 当 `pipeline_state`、`current_phase`、`phase_status`、`workflow_step` 冲突时，命令返回 `INCONSISTENT_STATE` 与退出码 9。 |
+| `REQ-SPEC-goalctl-v1-003` | `goalctl` 必须校验四轴状态。 | `AC-REQ-SPEC-goalctl-v1-003-001` | 当 `pipeline_state`、`current_phase`、`phase_status`、`workflow_step` 冲突时，命令返回 `GOALCTL_STATE_INCONSISTENT` 与退出码 9。 |
 | `REQ-SPEC-goalctl-v1-004` | `goalctl` 必须支持固定主流程。 | `AC-REQ-SPEC-goalctl-v1-004-001` | 任意阶段命令只接受 11 个 canonical phase，未知 phase 必须失败。 |
 | `REQ-SPEC-goalctl-v1-005` | `goalctl` 必须校验 canonical ID。 | `AC-REQ-SPEC-goalctl-v1-005-001` | `goalctl validate --strict` 对所有 ID 执行 schema regex 校验，并拒绝重复 ID。 |
 | `REQ-SPEC-goalctl-v1-006` | 验收项 ID 必须使用 `AC-<req-id>-NNN` 格式。 | `AC-REQ-SPEC-goalctl-v1-006-001` | 任意不符合该格式的验收项引用必须返回 `GOALCTL_ID_INVALID`。 |
@@ -884,7 +903,7 @@ CL4 和 CL5 默认需要人工批准；命令不得自动放行。
 | `REQ-SPEC-goalctl-v1-018` | `goalctl` 必须输出可行动的阻塞信息。 | `AC-REQ-SPEC-goalctl-v1-018-001` | 任意失败输出必须至少包含错误、阻塞对象或下一动作。 |
 | `REQ-SPEC-goalctl-v1-019` | `goalctl` 必须和 CI 检查项对齐。 | `AC-REQ-SPEC-goalctl-v1-019-001` | `goalctl validate --strict` 至少覆盖 yaml-lint、registry-check、rule-drift-check、goal-validator、id-format-check、matrix-coverage、gate-check、orphan-check、agent-check、docs-check 的本地等价检查。 |
 | `REQ-SPEC-goalctl-v1-020` | `goalctl` 必须提供 release readiness 报告。 | `AC-REQ-SPEC-goalctl-v1-020-001` | 报告必须聚合 G7-G10、Matrix 终态、Evidence 状态、阻塞风险和回滚字段。 |
-| `REQ-SPEC-goalctl-v1-021` | `goalctl gate check G9/G10` 必须校验 H-CHK。 | `AC-REQ-SPEC-goalctl-v1-021-001` | `goalctl gate check G9` 和 `check G10` 必须校验对应 CL 级别的 H-CHK1~H-CHK8 是否已标记完成；缺失时返回 `GOALCTL_GATE_FAIL`。 |
+| `REQ-SPEC-goalctl-v1-021` | `goalctl gate check G9/G10` 必须校验 H-CHK。 | `AC-REQ-SPEC-goalctl-v1-021-001` | `goalctl gate check G9` 和 `check G10` 必须校验对应 CL 级别的 H-CHK1~H-CHK8 是否已标记完成；缺失时返回 `GOALCTL_GATE_BLOCKED`。 |
 | `REQ-SPEC-goalctl-v1-022` | `goalctl` 必须执行 Lint 规则。 | `AC-REQ-SPEC-goalctl-v1-022-001` | `goalctl lint` 必须执行 `10-lint-rules.md` 定义的 G-LINT/S-LINT/M-LINT/P-LINT/C-LINT 共 38 条规则。 |
 | `REQ-SPEC-goalctl-v1-023` | `goalctl` 必须校验变更传播。 | `AC-REQ-SPEC-goalctl-v1-023-001` | `goalctl propagation check` 必须检测上游变更后下游未标记 STALE 的违规项。 |
 

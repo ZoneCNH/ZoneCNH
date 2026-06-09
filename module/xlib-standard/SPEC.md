@@ -15,7 +15,7 @@
 - Layer: 基座（标准与门禁）
 - Version: v1.0.0
 - Repository: [github.com/ZoneCNH/xlib-standard](https://github.com/ZoneCNH/xlib-standard)
-- Related: [CONSTITUTION.md](../../CONSTITUTION.md), [ARCHITECTURE.md](../../ARCHITECTURE.md), [goal/1.md](./goal/1.md)
+- Related: [CONSTITUTION.md](../../CONSTITUTION.md), [ARCHITECTURE.md](../../ARCHITECTURE.md), [goal.md](./goal.md)
 
 | 字段 | 说明 |
 |------|------|
@@ -69,7 +69,7 @@ FoundationX 由 70+ 个 Go 模块组成，缺乏统一模板标准会导致：
 ## 5. Non-goals
 
 - **不做运行时代码**：不实现真实 provider runtime，不承载业务逻辑（由 kernel、configx、redisx 等模块实现）。
-- **不做 Goal Runtime**：可执行目标文档以 goal/*.md 形式存在，不实现 goalcli 二进制或 .agent 运行时。
+- **不做 Goal Runtime**：可执行目标文档以 goal.md 形式存在，不实现 goalcli 二进制或 .agent 运行时。
 - **不做 Evidence Runtime**：不实现证据收集、验证、存储的运行时系统。
 - **不做 Debt Governance**：不实现技术债治理规则检查器。
 - **不做下游矩阵**：不追踪下游模块的采纳状态或兼容性矩阵。
