@@ -51,7 +51,8 @@ git check-ignore -v .config/goal/schema/rules.yaml
 git check-ignore -v .config/goal/runtime/cache.json
 git ls-files --error-unmatch docs/goal/00-authority-map.md .config/goal/schema/rules.yaml docs/report/goal/README.md docs/report/goal/goal-docs-fix-verification-20260609.md
 git diff --cached --name-only
-git status --ignored --short .worktree/todo.md
+git -C /home/ZoneCNH check-ignore -v .worktree/todo.md
+git -C /home/ZoneCNH status --ignored --short .worktree/todo.md
 rg -n "GOAL_DRAFTING|SPEC_REVIEWING|PROMPTING|CODING|TESTING|PAUSED|CANCELLED|P-XXX|docs/goals|docs/module" docs/goal .config/goal
 ```
 

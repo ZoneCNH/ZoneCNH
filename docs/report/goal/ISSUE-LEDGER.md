@@ -77,5 +77,7 @@ python3 docs/goal/tools/matrix-gen.py --check-only --matrix .config/goal/matrix/
 bash docs/goal/tools/gate-check.sh .
 git check-ignore -v .config/goal/schema/rules.yaml
 git check-ignore -v .config/goal/runtime/cache.json
+git -C /home/ZoneCNH check-ignore -v .worktree/todo.md
+git -C /home/ZoneCNH status --ignored --short .worktree/todo.md
 rg -n "GOAL_DRAFTING|SPEC_REVIEWING|PROMPTING|CODING|TESTING|PAUSED|CANCELLED|P-XXX|docs/goals|docs/module" docs/goal .config/goal
 ```
