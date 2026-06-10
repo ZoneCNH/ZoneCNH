@@ -29,7 +29,15 @@ EDGE_REQUIRED_FIELDS = [
     "updated_at",
 ]
 EDGE_NON_EMPTY_FIELDS = set(EDGE_REQUIRED_FIELDS) - {"evidence_id"}
-EDGE_ALLOWED_FIELDS = set(EDGE_REQUIRED_FIELDS) | {"drop_reason"}
+EDGE_OPTIONAL_FIELDS = {
+    "edge_id",
+    "source_type",
+    "target_type",
+    "priority",
+    "risk_id",
+    "drop_reason",
+}
+EDGE_ALLOWED_FIELDS = set(EDGE_REQUIRED_FIELDS) | EDGE_OPTIONAL_FIELDS
 EDGE_LEGACY_FIELDS = {"goal_id", "requirement_id", "evidence_ids"}
 EDGE_RELATIONS = {
     "decomposes_to",
@@ -512,29 +520,29 @@ def check_matrix(root: Path, report: Report) -> None:
         )
         return
 
-    rows = parse_matrix(matrix_path)
-    if not rows:
+    edges = parse_matrix(matrix_path)
+    if not edges:
         report.error(
             "GV-MATRIX-EMPTY",
             "matrix",
             matrix_path,
-            "Traceability matrix has no rows",
+            "Traceability matrix has no edges",
             "at least one matrix edge",
             0,
         )
         return
 
-    for index, row in enumerate(rows, start=1):
-        row_path = path_at(matrix_path, row.get("_line"))
-        keys = set(str(key) for key in row.get("_keys", []))
+    for index, edge in enumerate(edges, start=1):
+        edge_path = path_at(matrix_path, edge.get("_line"))
+        keys = set(str(key) for key in edge.get("_keys", []))
 
         legacy = sorted(keys & EDGE_LEGACY_FIELDS)
         if legacy:
             report.error(
                 "GV-MATRIX-LEGACY-FIELD",
                 "matrix",
-                row_path,
-                "matrix row uses legacy flat-traceability fields",
+                edge_path,
+                "matrix edge uses legacy flat-traceability fields",
                 ", ".join(EDGE_REQUIRED_FIELDS),
                 legacy,
             )
@@ -544,19 +552,19 @@ def check_matrix(root: Path, report: Report) -> None:
             report.error(
                 "GV-MATRIX-UNKNOWN-FIELD",
                 "matrix",
-                row_path,
-                "matrix row contains fields outside the canonical edge contract",
+                edge_path,
+                "matrix edge contains fields outside the canonical edge contract",
                 ", ".join(sorted(EDGE_ALLOWED_FIELDS)),
                 unknown,
             )
 
-        missing = [field for field in EDGE_REQUIRED_FIELDS if field not in row]
+        missing = [field for field in EDGE_REQUIRED_FIELDS if field not in edge]
         if missing:
             report.error(
                 "GV-MATRIX-MISSING-FIELD",
                 "matrix",
-                row_path,
-                f"matrix row {index} is missing canonical fields",
+                edge_path,
+                f"matrix edge {index} is missing canonical fields",
                 ", ".join(EDGE_REQUIRED_FIELDS),
                 missing,
             )
@@ -564,58 +572,58 @@ def check_matrix(root: Path, report: Report) -> None:
         empty = [
             field
             for field in EDGE_NON_EMPTY_FIELDS
-            if field in row and not str(row.get(field, "")).strip()
+            if field in edge and not str(edge.get(field, "")).strip()
         ]
         if empty:
             report.error(
                 "GV-MATRIX-EMPTY-FIELD",
                 "matrix",
-                row_path,
-                f"matrix row {index} has empty required fields",
+                edge_path,
+                f"matrix edge {index} has empty required fields",
                 "non-empty source_id,target_id,relation,status,gate_id,owner,updated_at",
                 empty,
             )
 
-        relation = str(row.get("relation", ""))
+        relation = str(edge.get("relation", ""))
         if relation and relation not in EDGE_RELATIONS:
             report.error(
                 "GV-MATRIX-BAD-RELATION",
                 "matrix",
-                row_path,
-                "matrix row has invalid relation",
+                edge_path,
+                "matrix edge has invalid relation",
                 ", ".join(sorted(EDGE_RELATIONS)),
                 relation,
             )
 
-        status = str(row.get("status", ""))
+        status = str(edge.get("status", ""))
         if status and status not in EDGE_STATUSES:
             report.error(
                 "GV-MATRIX-BAD-STATUS",
                 "matrix",
-                row_path,
-                "matrix row has invalid status",
+                edge_path,
+                "matrix edge has invalid status",
                 ", ".join(sorted(EDGE_STATUSES)),
                 status,
             )
 
-        if status == "Verified" and not str(row.get("evidence_id", "")).strip():
+        if status == "Verified" and not str(edge.get("evidence_id", "")).strip():
             report.error(
                 "GV-MATRIX-VERIFIED-EVIDENCE",
                 "matrix",
-                row_path,
-                "Verified matrix rows must carry a single evidence_id",
+                edge_path,
+                "Verified matrix edges must carry a single evidence_id",
                 "non-empty evidence_id",
-                row.get("evidence_id"),
+                edge.get("evidence_id"),
             )
 
-        if status == "Dropped" and not str(row.get("drop_reason", "")).strip():
+        if status == "Dropped" and not str(edge.get("drop_reason", "")).strip():
             report.error(
                 "GV-MATRIX-DROPPED-REASON",
                 "matrix",
-                row_path,
-                "Dropped matrix rows must explain why the edge was dropped",
+                edge_path,
+                "Dropped matrix edges must explain why the edge was dropped",
                 "non-empty drop_reason",
-                row.get("drop_reason"),
+                edge.get("drop_reason"),
             )
 
 
@@ -846,8 +854,8 @@ def check_risk(root: Path, report: Report) -> None:
                 "GV-RISK-REGISTRY-MISSING",
                 "risk",
                 risks_path,
-                "open release_blocking gate risks must be tracked in the Risk Registry",
-                "registry entries for every open release_blocking gate risk",
+                "unresolved Open/Escalated release_blocking gate risks must be tracked in the Risk Registry",
+                "registry entries for every unresolved Open/Escalated release_blocking gate risk",
                 sorted(gate_risks),
             )
         return
@@ -881,7 +889,7 @@ def check_risk(root: Path, report: Report) -> None:
             "GV-RISK-GATE-REGISTRY-DRIFT",
             "risk",
             risks_path,
-            "open release_blocking gate risks are missing from the Risk Registry",
+            "unresolved Open/Escalated release_blocking gate risks are missing from the Risk Registry",
             "matching risk_id entries in .config/goal/registry/risks.yaml",
             missing,
         )
@@ -981,7 +989,7 @@ def check_consistency(root: Path, report: Report) -> None:
             "GV-CONSISTENCY-G10-OPEN-RISK",
             "consistency",
             path_at(gates_path, gates.get("G10", {}).get("_line")),
-            "open release_blocking risks must block G10",
+            "unresolved Open/Escalated release_blocking risks must block G10",
             "G10 status/result.verdict: BLOCKED",
             g10_status,
         )
@@ -1004,7 +1012,7 @@ def check_consistency(root: Path, report: Report) -> None:
                 "GV-CONSISTENCY-PIPELINE-DONE-WITH-RISK",
                 "consistency",
                 path_at(pipeline_path, pipeline.get("_line")),
-                "pipeline cannot be DONE with open release_blocking risks",
+                "pipeline cannot be DONE with unresolved Open/Escalated release_blocking risks",
                 "pipeline_state: BLOCKED or an active review/remediation state",
                 pipeline_state,
             )
@@ -1016,7 +1024,7 @@ def check_consistency(root: Path, report: Report) -> None:
                     "GV-CONSISTENCY-RELEASED-WITH-RISK",
                     "consistency",
                     path_at(releases_path, release.get("_line")),
-                    "release cannot be marked released with open release_blocking risks",
+                    "release cannot be marked released with unresolved Open/Escalated release_blocking risks",
                     "status: in_review, rejected, or draft until risks are closed",
                     {"release_id": release.get("release_id"), "status": release.get("status")},
                 )

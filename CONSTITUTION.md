@@ -704,7 +704,7 @@ Goal → Spec → Matrix → Tasks → Plan → Prompt → Code → Test → Rel
 |------|------|------|
 | G- | Goal | G-001 |
 | S- | Spec | S-001 |
-| M- | Matrix 行 | M-001 |
+| M- | Matrix edge | M-001 |
 | T- | Task | TASK-REDISX-000 |
 | P- | Prompt | P-001 |
 | C- | Code Module | CsvExportService |
@@ -743,7 +743,7 @@ AI 编码 Prompt 必须包含：
 |--------|------|
 | Task ID | 本次执行的 Task 引用 |
 | Spec 引用 | 相关需求上下文 |
-| Matrix 行 | 覆盖的追溯行 |
+| Matrix edge | 覆盖的追溯 edge |
 | 输入输出 | 明确的 I/O 契约 |
 | 约束条件 | 不可违反的规则 |
 | 禁止项 | 明确不得做的事情 |

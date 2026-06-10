@@ -61,7 +61,7 @@ tools: [Read, Write, Grep, Glob]
 
 ### 3. 追溯矩阵初始化
 
-为每个任务创建 Matrix 行：
+为每个任务创建 Matrix edge：
 
 - `goal_id` → `spec_id` → `requirement_id` → `task_id`
 - 状态初始化为 `Unmapped`

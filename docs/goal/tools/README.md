@@ -116,7 +116,7 @@ python3 docs/goal/tools/goal-validate.py --root . --only gate,risk,consistency
 - 当 Gate 同时记录数值型 `result.score` 和 `result.threshold` 时，`PASS` 必须满足 `score >= threshold`。
 - `PASS_WITH_RISK` 必须有结构化风险元数据，且 `G6`、`G10` 不允许风险通过。
 - Risk Registry 的 `risk_id` 必须唯一，并使用 `RISK-GOAL-YYYYMMDD-NNN-NNN` 格式。
-- 打开的 `release_blocking` 风险必须进入 Risk Registry；存在这类风险时，`G10`、`G11`、Pipeline、Release 状态不得伪装为完成/发布。
+- 未解除（`Open` / `Escalated`）的 `release_blocking` 风险必须进入 Risk Registry；存在这类风险时，`G10`、`G11`、Pipeline、Release 状态不得伪装为完成/发布。
 - GitHub workflow 中不得保留旧字段或旧枚举，例如 `requirement_id`、`evidence_ids`、`PENDING`；result verdict 必须包含 `BLOCKED`，并且必须定义 `goal-validator` 独立 job、在 `.config/goal/schema/rules.yaml` 的 `ci.required_jobs` 中列出它、调用 `goal-validate.py --mode strict`。
 
 ### Release 发布硬阻断
@@ -128,7 +128,7 @@ bash .github/ci/goal-release-gate.sh
 `goal-release-gate.sh` 是 tag/release workflow 的硬门禁。它先运行 `goal-validate.py --mode strict`，然后继续检查：
 
 - `G10` 的 gate 状态和 `result.verdict` 必须都是 `PASS`。
-- 不得存在打开的 `release_blocking` 风险，来源包括 Gate 元数据和 Risk Registry。
+- 不得存在未解除（`Open` / `Escalated`）的 `release_blocking` 风险，来源包括 Gate 元数据和 Risk Registry。
 - 必须存在至少一个 `.config/goal/evidence/**/*.md` Evidence 包。
 - Goal CI 必须定义 `goal-validator` job，并且 `.config/goal/schema/rules.yaml` 的 `ci.required_jobs` 必须要求 `goal-validator`。
 
@@ -160,7 +160,7 @@ bash .github/ci/goal-release-gate.sh
 - G7 Test Gate：测试文件存在性、Evidence 覆盖率
 - G8 Evidence Gate：Evidence 文件完整性、必须字段
 - Matrix 覆盖率：`Verified` / `Dropped` 终态覆盖率，目标不低于 95%
-- Dropped 行约束：每个 `Dropped` 行必须有 `drop_reason`
+- Dropped edge 约束：每个 `Dropped` edge 必须有 `drop_reason`
 - 孤儿检查：无 Goal 来源的 Task
 
 ### Matrix 生成
@@ -249,7 +249,7 @@ python3 docs/goal/tools/rule-drift-check.py --root . --quiet
 | Matrix orphan / 非终态 / 非法 relation | `matrix-gen.py --check-only --matrix <fixture-matrix>` | 非零退出 | 覆盖率、relation/status 或 orphan 类错误可定位 |
 | Gate 结果与规则不一致 | `gate-check.sh <fixture-root>` | 非零退出 | `FAIL>0`，且不把风险降级为通过 |
 | 控制面发布状态不一致 | `goal-validate.py --root <fixture-root> --mode strict` | 非零退出 | runtime root、Matrix 字段、Gate 枚举、Risk Registry、G10/G11、Pipeline/Release、CI 合约错误可定位 |
-| Release gate 硬阻断 | `.github/ci/goal-release-gate.sh <fixture-root>` | 非零退出 | G10 未 PASS、打开 release_blocking 风险、Evidence 缺失、Goal CI 合约漂移都不能发布 |
+| Release gate 硬阻断 | `.github/ci/goal-release-gate.sh <fixture-root>` | 非零退出 | G10 未 PASS、存在 Open/Escalated release_blocking 风险、Evidence 缺失、Goal CI 合约漂移都不能发布 |
 
 本轮已落地的自测覆盖：
 

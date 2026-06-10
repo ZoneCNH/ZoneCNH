@@ -436,7 +436,7 @@ run_failure_contains "goal validator rejects duplicate gate id" "GV-GATE-DUPLICA
 
 validator_g10_pass="$TMP_ROOT/validator-g10-pass"
 write_validator_fixture "$validator_g10_pass" true true PASS BLOCKED BLOCKED in_review false false "" good
-run_failure "goal validator rejects G10 pass with open release-blocking risk" \
+run_failure "goal validator rejects G10 pass with unresolved release-blocking risk" \
   python3 "$SCRIPT_DIR/goal-validate.py" --root "$validator_g10_pass" --mode strict --format text
 
 validator_g11_after_g10="$TMP_ROOT/validator-g11-after-g10"
@@ -446,12 +446,12 @@ run_failure "goal validator rejects G11 pass before G10 pass" \
 
 validator_pipeline_done="$TMP_ROOT/validator-pipeline-done"
 write_validator_fixture "$validator_pipeline_done" true true BLOCKED BLOCKED DONE in_review false false "" good
-run_failure "goal validator rejects pipeline done with open release-blocking risk" \
+run_failure "goal validator rejects pipeline done with unresolved release-blocking risk" \
   python3 "$SCRIPT_DIR/goal-validate.py" --root "$validator_pipeline_done" --mode strict --format text
 
 validator_released="$TMP_ROOT/validator-released"
 write_validator_fixture "$validator_released" true true BLOCKED BLOCKED BLOCKED released false false "" good
-run_failure "goal validator rejects released status with open release-blocking risk" \
+run_failure "goal validator rejects released status with unresolved release-blocking risk" \
   python3 "$SCRIPT_DIR/goal-validate.py" --root "$validator_released" --mode strict --format text
 
 validator_stale_ci="$TMP_ROOT/validator-stale-ci"
@@ -491,7 +491,7 @@ run_success "goal release gate accepts G10 pass with evidence" \
 
 release_gate_open_risk="$TMP_ROOT/release-gate-open-risk"
 write_release_gate_fixture "$release_gate_open_risk" true true BLOCKED BLOCKED present
-run_failure_contains "goal release gate blocks open release risk" "GRG-OPEN-RELEASE-RISK" \
+run_failure_contains "goal release gate blocks unresolved release risk" "GRG-OPEN-RELEASE-RISK" \
   run_goal_release_gate "$release_gate_open_risk"
 
 release_gate_missing_evidence="$TMP_ROOT/release-gate-missing-evidence"

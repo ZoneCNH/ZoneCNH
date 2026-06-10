@@ -48,13 +48,13 @@ tools: [Read, Write, Grep, Glob]
 维护触发：
   - Spec 变更 → 同步更新 Matrix
   - Plan 完成 → 标记执行顺序和依赖
-  - Task 拆分 → 补充 Matrix 行
+  - Task 拆分 → 补充 Matrix edge
   - Task 完成 → 更新 Status
-  - Prompt / Code 变更 → 同步对应列
-  - 测试通过 → 更新 Test Case 列
+  - Prompt / Code 变更 → 同步对应 edge
+  - 测试通过 → 更新 Test edge
 完整性检查：
   - Gate G5（Task Gate）自动检查 Matrix 覆盖率
-  - Release 前必须 100% 行有 Status = Verified 或 Dropped（有理由）
+  - Release 前必须 100% edge 有 Status = Verified 或 Dropped（有理由）
 ```
 
 ## Matrix 状态
@@ -66,8 +66,8 @@ tools: [Read, Write, Grep, Glob]
 元状态（漂移/阻塞）：Blocked | Changed | Drifted | Stale
 ```
 
-- **Unmapped**：Spec 已审批，但尚未创建 Matrix 行
-- **Mapped**：Matrix 行已创建，关联了 Goal/Spec/REQ
+- **Unmapped**：Spec 已审批，但尚未创建 Matrix edge
+- **Mapped**：Matrix edge 已创建，关联了 Goal/Spec/REQ
 - **Linked**：关联了 Task/Test/Code（追溯链闭合）
 - **Verified**：Evidence 已通过 Gate 验证（终态）
 - **Dropped**：明确放弃，必须有 `drop_reason`（终态）
@@ -122,10 +122,10 @@ tools: [Read, Write, Grep, Glob]
 
 | 变更对象 | 更新动作 |
 |----------|----------|
-| Spec 变更 | 新增/删除/修改 Matrix 行 |
-| Task 拆分 | 补充新 Task 对应的 Matrix 行 |
+| Spec 变更 | 新增/删除/修改 Matrix edge |
+| Task 拆分 | 补充新 Task 对应的 Matrix edge |
 | Task 完成 | 更新 Status 为 Implemented |
-| 测试通过 | 更新 Test Case 列和 Status |
+| 测试通过 | 更新 Test edge 和 Status |
 | Evidence 生成 | 关联 Evidence ID |
 
 ### 3. 孤儿检查
@@ -158,10 +158,10 @@ Task Traceability: 有 Spec 的 Task / 总 Task × 100%
 按 M-LINT-001~008 规则检查：
 
 - M-LINT-001: 每个 Goal 至少对应一个 Spec
-- M-LINT-002: 每个 Spec Requirement 至少对应一个 Matrix Row
-- M-LINT-003: 每个 Matrix Row 必须有 Task
-- M-LINT-004: 每个 P0/P1 Matrix Row 必须有 Test Case
-- M-LINT-005: 每个 Task 必须能追溯到 Matrix Row
+- M-LINT-002: 每个 Spec Requirement 至少对应一个 Matrix edge
+- M-LINT-003: 每个 release-critical Matrix edge 必须连接 Task/Test/Decision
+- M-LINT-004: 每个 P0/P1 Matrix edge 必须连接 Test edge 与 Evidence edge
+- M-LINT-005: 每个 Task 必须能追溯到 Matrix edge
 - M-LINT-006: 不允许存在 Orphan Task
 - M-LINT-007: 不允许存在 Orphan Code
 - M-LINT-008: Verified 状态必须同时满足 Code + Test

@@ -1,8 +1,10 @@
 # Traceability Matrix
-# 权威来源：docs/goal/05-layer-standards.md §3
+# 权威来源：docs/goal/05-layer-standards.md §9
 # 路径：.config/goal/matrix/matrix.yaml
-# 字段契约：每行只能使用 source_id、target_id、relation、status、evidence_id、gate_id、owner、updated_at；Dropped 行必须额外提供 drop_reason
-# status: Unmapped | Mapped | Linked | Verified | Dropped | Blocked | Changed
+# 模型：横切追溯 edge graph，不是主流程阶段
+# 必填字段：source_id、target_id、relation、status、evidence_id、gate_id、owner、updated_at
+# 可选字段：edge_id、source_type、target_type、priority、risk_id、drop_reason；Dropped edge 必须提供 drop_reason
+# status: Unmapped | Mapped | Linked | Verified | Dropped | Drifted | Stale | Blocked | Changed
 
 matrix:
   - source_id: GOAL-20260608-001

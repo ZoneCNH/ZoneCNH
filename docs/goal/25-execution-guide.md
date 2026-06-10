@@ -53,7 +53,7 @@ Matrix 是横切追溯制品，不是主流程阶段。它必须在各阶段持�
 - P0 / P1 AC 没有测试证据和评审或验证证据。
 - Evidence Bundle 缺少命令、环境、commit/artifact、结果或 owner。
 - Matrix release-critical edge 存在 orphan、未验证或未说明 drop reason。
-- Risk Register 存在 open `release_blocking` 风险。
+- Risk Register 存在未解除（`Open` / `Escalated`）的 `release_blocking` 风险。
 - G10 缺少 Release Manifest、Risk Register、validation summary 或 rollback validation。
 - 需要修改 Constitution、CI、agent 配置、schema 投影、Release Gate、Rollback、Incident 规则、P0/P1 语义或安全相关约束，但没有 Change Request 和 Human Approval。
 - 发现 `docs/goal/` 与 `.config/goal/`、CI、Constitution 或 Agent 配置漂移，且漂移会影响 Gate、Evidence、Release 或安全边界。
@@ -100,6 +100,6 @@ Change Request 至少包含 evidence、impact、root cause、proposed patch、va
 - 哪些 Gate 通过，哪些 Gate 有风险接受。
 - Evidence Bundle 的路径或 ID 是什么。
 - Matrix release-critical edges 是否全部 Verified 或 Dropped with reason。
-- Risk Register 是否存在 open `release_blocking`。
+- Risk Register 是否存在未解除（`Open` / `Escalated`）的 `release_blocking` 风险。
 - Release Manifest 和 rollback validation 是否存在。
 - 哪些内容仍是 `Hypothesis` 或需要 Human Approval。

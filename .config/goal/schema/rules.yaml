@@ -11,8 +11,15 @@ authority_source:
   - docs/goal/04-gates.md
   - docs/goal/05-layer-standards.md
   - docs/goal/07-id-system.md
+  - docs/goal/10-lint-rules.md
   - docs/goal/13-runtime-engine.md
+  - docs/goal/14-agent-protocols.md
   - docs/goal/15-registry.md
+  - docs/goal/16-ci-cd.md
+  - docs/goal/17-risk-and-decisions.md
+  - docs/goal/20-metrics-evidence.md
+  - docs/goal/21-controlled-rsi.md
+  - docs/goal/25-execution-guide.md
 
 canonical_goal_object:
   schema_name: "canonical Goal object"
@@ -162,6 +169,21 @@ registry:
 matrix:
   file: ".config/goal/matrix/matrix.yaml"
   model: edge
+  canonical_fields:
+    - edge_id
+    - source_type
+    - source_id
+    - target_type
+    - target_id
+    - relation
+    - priority
+    - status
+    - owner
+    - evidence_id
+    - risk_id
+    - gate_id
+    - drop_reason
+    - updated_at
   statuses:
     - Unmapped
     - Mapped
@@ -194,6 +216,11 @@ matrix:
     - owner
     - updated_at
   optional_fields:
+    - edge_id
+    - source_type
+    - target_type
+    - priority
+    - risk_id
     - drop_reason
   status_rules:
     Verified:
@@ -209,6 +236,7 @@ matrix:
     - Low
     - Medium
     - High
+    - Critical
   coverage_threshold: 95
   terminal_coverage_threshold: 95
   warning_coverage_threshold: 60
@@ -238,6 +266,53 @@ evidence:
     - PASS
     - PARTIAL
     - FAIL
+  bundle_required_fields:
+    - evidence_bundle_id
+    - goal_id
+    - task_id
+    - release_id
+    - commit
+    - environment
+    - validator
+    - matrix
+    - tests
+    - review
+    - risk_register
+    - release_manifest
+    - rollback_validation
+    - artifacts
+    - created_at
+    - owner
+
+release_gate:
+  gate_id: G10
+  required_inputs:
+    - strict_validator_result
+    - matrix_check_only_result
+    - evidence_bundle
+    - release_manifest
+    - risk_register
+    - rollback_validation
+  blocking_conditions:
+    - open_release_blocking_risk
+    - missing_evidence_bundle
+    - missing_release_manifest
+    - missing_rollback_validation
+    - g10_pass_with_risk
+
+controlled_rsi:
+  gates:
+    - R0_EVIDENCE_INTAKE
+    - R1_SCOPE_CLASSIFICATION
+    - R2_PROTECTED_ASSET_CHECK
+    - R3_SAFETY_PRESERVATION
+    - R4_EVALUATION_REPLAY
+    - R5_PROJECTION_CONSISTENCY
+    - R6_APPROVAL
+    - R7_ROLLOUT_SCOPE
+    - R8_ROLLBACK
+    - R9_RETROSPECTIVE
+  protected_assets_require_approval: true
 
 gate:
   file: ".config/goal/gates/state.yaml"

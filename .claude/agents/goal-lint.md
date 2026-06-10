@@ -62,10 +62,10 @@ tools: [Read, Bash, Grep, Glob]
 > 权威来源：`docs/goal/10-lint-rules.md §3` + `docs/goal/05-layer-standards.md §9`
 
 - M-LINT-001：每个 Goal 至少对应一个 Spec
-- M-LINT-002：每个 Spec Requirement 至少对应一个 Matrix Row
-- M-LINT-003：每个 Matrix Row 必须有 Task
-- M-LINT-004：每个 P0/P1 Matrix Row 必须有 Test Case
-- M-LINT-005：每个 Task 必须能追溯到 Matrix Row
+- M-LINT-002：每个 Spec Requirement 至少对应一个 Matrix edge
+- M-LINT-003：每个 release-critical Matrix edge 必须连接 Task/Test/Decision
+- M-LINT-004：每个 P0/P1 Matrix edge 必须连接 Test edge 与 Evidence edge
+- M-LINT-005：每个 Task 必须能追溯到 Matrix edge
 - M-LINT-006：不允许存在 Orphan Task（有 Task 找不到 Spec/Goal）
 - M-LINT-007：不允许存在 Orphan Code（有代码找不到 Task）
 - M-LINT-008：Verified 状态必须同时满足 Code + Test

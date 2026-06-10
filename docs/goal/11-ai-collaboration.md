@@ -163,7 +163,7 @@ You are implementing a task in a traceable delivery workflow.
 Source:
 - Goal: {goal_id} {goal_name}
 - Spec: {spec_id} {spec_name}
-- Matrix Edges: {matrix_rows}
+- Matrix Edges: {matrix_edges}
 - Task: {task_id} {task_name}
 
 Context:

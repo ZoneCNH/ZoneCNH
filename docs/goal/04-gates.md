@@ -221,7 +221,7 @@ Prompt Review 检查项:
 - [ ] Matrix 全部 release-critical edge 为 `Verified`，或为 `Dropped` 且有 `drop_reason`
 - [ ] P0/P1 测试全部通过，并有 Evidence Bundle 记录命令、环境、commit 和结果
 - [ ] Release Manifest 已创建，包含 `release_id`、`goal_id`、commit/artifact、`validation_summary`、`evidence_manifest`、`risk_register`、`rollback_plan`
-- [ ] Risk Register 无打开的 `release_blocking` 风险；所有 High/Critical residual risk 均有 owner、mitigation、接受记录或阻断结论
+- [ ] Risk Register 无未解除（`Open` / `Escalated`）的 `release_blocking` 风险；所有 High/Critical residual risk 均有 owner、mitigation、接受记录或阻断结论
 - [ ] 无权限绕过风险
 - [ ] 无数据破坏风险
 - [ ] 有日志和监控
@@ -230,7 +230,7 @@ Prompt Review 检查项:
 - [ ] 有上线后指标观察计划
 
 通过标准: Release 就绪；strict validator、Matrix、Evidence Bundle、Risk Register、Release Manifest 和 rollback validation 可共同证明 G10 PASS。
-失败标准: G10 未 PASS、存在打开的 `release_blocking` 风险、缺少 Evidence Bundle / Release Manifest / rollback plan / validation summary，或存在未处理的权限、数据、安全、资金、隐私阻断风险。
+失败标准: G10 未 PASS、存在未解除（`Open` / `Escalated`）的 `release_blocking` 风险、缺少 Evidence Bundle / Release Manifest / rollback plan / validation summary，或存在未处理的权限、数据、安全、资金、隐私阻断风险。
 
 ### G11 Retrospective Gate
 

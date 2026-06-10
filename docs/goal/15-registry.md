@@ -173,7 +173,7 @@ review_cadence: before G10
 decision_id: DEC-20260608-001
 adr_id: ADR-20260608-001
 title: Market Data module boundary
-status: accepted
+status: Accepted
 context: market_data 需要独立运行并支持多数据源
 options:
   - 直接耦合 Binance SDK

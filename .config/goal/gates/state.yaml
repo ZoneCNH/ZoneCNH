@@ -38,7 +38,7 @@ policy:
       - G10
     release_prohibition:
       - "G10 不允许 PASS_WITH_RISK"
-      - "任一未关闭 release_blocking 风险会阻塞 G10"
+      - "任一 Open/Escalated release_blocking 风险会阻塞 G10"
       - "G6 PASS_WITH_RISK 是无效状态"
       - "P0/P1、权限、数据、回滚、观测、Release Evidence 缺口必须 FAIL/BLOCKED"
 

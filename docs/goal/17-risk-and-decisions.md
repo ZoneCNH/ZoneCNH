@@ -32,7 +32,7 @@ Review Cadence: [per PR / before G10 / post-release]
 ### Risk Register 合格条件
 
 - High/Critical 或 `release_blocking=true` 的风险 MUST 有 owner、mitigation、linked gate、linked evidence 和 residual risk。
-- `release_blocking=true` 且 Status 不是 `Mitigated`、`Closed` 或明确 `Accepted` 的风险 MUST 阻断 G10。
+- `release_blocking=true` 且 Status 为 `Open` 或 `Escalated` 的风险 MUST 阻断 G10。
 - `Accepted` 风险 MUST 记录接受人、日期、原因和到期复查条件；不得用 `Accepted` 掩盖缺失的缓解方案。
 - Release 前 MUST 生成 Risk Register 摘要，并被 Release Manifest 引用。
 - 风险关闭 MUST 引用 Evidence；没有 Evidence 的风险只能从 `Open` 进入 `Mitigated` 待验证，不能直接 `Closed`。
@@ -149,7 +149,7 @@ Rollback validation: [dry-run / 演练 / fallback evidence 路径]
 - [ ] Rollback plan exists
 - [ ] Goal strict validation passed
 - [ ] Matrix check-only passed
-- [ ] Risk Register has no open release_blocking risk
+- [ ] Risk Register has no Open/Escalated release_blocking risk
 - [ ] Validation summary exists
 - [ ] Rollback validation evidence exists
 ```

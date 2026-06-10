@@ -198,10 +198,10 @@ Matrix 是横切追溯制品，在 Spec 审批后初始化，随各阶段更新�
 
 **Lint 规则**：
 - M-LINT-001: 每个 Goal 至少对应一个 Spec
-- M-LINT-002: 每个 Spec Requirement 至少对应一个 Matrix Row
-- M-LINT-003: 每个 Matrix Row 必须有 Task
-- M-LINT-004: 每个 P0/P1 Matrix Row 必须有 Test Case
-- M-LINT-005: 每个 Task 必须能追溯到 Matrix Row
+- M-LINT-002: 每个 Spec Requirement 至少对应一个 Matrix edge
+- M-LINT-003: 每个 release-critical Matrix edge 必须连接 Task/Test/Decision
+- M-LINT-004: 每个 P0/P1 Matrix edge 必须连接 Test edge 与 Evidence edge
+- M-LINT-005: 每个 Task 必须能追溯到 Matrix edge
 - M-LINT-006: 不允许存在 Orphan Task
 - M-LINT-007: 不允许存在 Orphan Code
 - M-LINT-008: Verified 状态必须同时满足 Code + Test
@@ -213,7 +213,7 @@ Matrix 是横切追溯制品，在 Spec 审批后初始化，随各阶段更新�
 ```text
 1. Goal 摘要
 2. Spec 摘要
-3. Matrix 行
+3. Matrix edge
 4. 当前 Task
 5. 相关代码结构
 6. 相关接口约定
