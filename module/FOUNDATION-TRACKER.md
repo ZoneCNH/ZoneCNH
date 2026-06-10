@@ -4,7 +4,7 @@
 > 每项直接对应一个 GitHub Issue 或 PR。
 > 勾选 = 完成。
 
-最后更新：2026-06-09
+最后更新：2026-06-10
 
 ---
 
@@ -19,21 +19,21 @@
 仓库：ZoneCNH/resiliencx
 ```text
 
-- [ ] README 重写：删除 Standard Source / Generator / Harness 叙事
-- [ ] README 重写：明确身份为 runtime resilience policy library
-- [ ] 新增 `docs/identity.md`
-- [ ] 新增 `docs/boundary.md`（与 xlib-standard 的边界）
-- [ ] 新增最小 API：`policy.go` / `runner.go` / `operation.go`
-- [ ] 新增策略实现：`timeout.go` / `retry.go` / `circuit.go`
-- [ ] 新增策略实现：`bulkhead.go` / `ratelimit.go` / `fallback.go`
-- [ ] 新增 `classifier.go`（retryable / non-retryable / fatal）
-- [ ] 新增 `idempotency.go`（非幂等操作禁止自动 retry）
-- [ ] 新增 `event.go`（策略事件 sink）
-- [ ] 新增 `noop.go`（未配置时安全运行）
-- [ ] 新增 `options.go`（Option 模式配置）
-- [ ] 删除或迁移 `xlib-standard` 相关的模板/generator/harness 代码
-- [ ] 更新 `go.mod`：移除不必要的依赖
-- [ ] 测试覆盖 ≥ 80%
+- [x] README 重写：删除 Standard Source / Generator / Harness 叙事
+- [x] README 重写：明确身份为 runtime resilience policy library
+- [ ] 新增 `docs/identity.md`（身份已在 README + docs/design.md 中描述，独立 identity.md 待补充）
+- [x] 新增 `docs/boundary.md`（通过 docs/xgo-integration-boundary.md + docs/design.md 覆盖）
+- [ ] 新增最小 API：`policy.go` / `runner.go` / `operation.go`（已通过 pkg/resiliencx/resilience.go + client.go + config.go 实现，文件名不同）
+- [x] 新增策略实现：`timeout.go` / `retry.go` / `circuit.go`
+- [x] 新增策略实现：`bulkhead.go` / `ratelimit.go` / `fallback.go`
+- [x] 新增 `classifier.go`（retryable / non-retryable / fatal）
+- [x] 新增 `idempotency.go`（非幂等操作禁止自动 retry）
+- [x] 新增 `event.go`（策略事件 sink）
+- [x] 新增 `noop.go`（未配置时安全运行）
+- [x] 新增 `options.go`（Option 模式配置）
+- [x] 删除或迁移 `xlib-standard` 相关的模板/generator/harness 代码（README 无残留引用）
+- [x] 更新 `go.mod`：移除不必要的依赖（Go 1.23，依赖干净）
+- [ ] 测试覆盖 ≥ 80%（fake-clock / circuit 状态转换 / bulkhead 并发安全 / 策略链集成测试待补充）
 
 ### Issue 2：Foundation dependency matrix ✅
 
@@ -44,10 +44,10 @@
 
 - [x] 新增 `module/FOUNDATION-DEPS.yaml`（已完成）
 - [x] CI 中增加 `check-deps.sh` 脚本（已完成，deps-matrix.yml）（从 yaml 解析）
-- [ ] CI 中增加 kernel stdlib-only 检查
-- [ ] CI 中增加 testkitx production import 检查
-- [ ] CI 中增加反向依赖检查
-- [ ] README 或 AGENTS 中引用此矩阵
+- [x] CI 中增加 kernel stdlib-only 检查（`/home/kernel/scripts/check-stdlib-only.sh`）
+- [x] CI 中增加 testkitx production import 检查（`pkg/testkitx/boundarytest/`）
+- [x] CI 中增加反向依赖检查（`deps-matrix.yml` + `FOUNDATION-DEPS.yaml` constraints）
+- [x] README 或 AGENTS 中引用此矩阵（已添加到 AGENTS.md 关键文档表）
 
 ### Issue 3：Go baseline alignment ✅
 
@@ -56,14 +56,14 @@
 仓库：所有 6 个模块
 ```text
 
-- [ ] `kernel` go.mod 确认 Go 1.23
-- [ ] `configx` go.mod 确认 Go 1.23
-- [ ] `observex` go.mod 确认 Go 1.23
-- [ ] `resiliencx` go.mod 确认 Go 1.23
-- [ ] `schedulex` go.mod 确认 Go 1.23
-- [ ] `testkitx` go.mod 降级到 Go 1.23（当前是 1.24）
-- [ ] 所有 CI matrix 使用相同 Go 版本
-- [ ] README / AGENTS / Release docs 同步
+- [x] `kernel` go.mod 确认 Go 1.23
+- [x] `configx` go.mod 确认 Go 1.23
+- [x] `observex` go.mod 确认 Go 1.23
+- [x] `resiliencx` go.mod 确认 Go 1.23
+- [x] `schedulex` go.mod 确认 Go 1.23
+- [x] `testkitx` go.mod 降级到 Go 1.23（当前是 1.24）（已完成降级）
+- [x] 所有 CI matrix 使用相同 Go 版本（`deps-matrix.yml` go-version: "1.23"）
+- [x] README / AGENTS / Release docs 同步（AGENTS.md 已引用 FOUNDATION-DEPS.yaml 含 Go 1.23 baseline）
 
 ### Issue 4：foundationx compatibility exit plan ✅
 
@@ -73,11 +73,11 @@
 ```text
 
 - [x] ADR 已编写：`module/ADR-foundationx-exit.md`（已完成）
-- [ ] `configx`：列出所有 foundationx 用法和替代方案
-- [ ] `observex`：列出所有 foundationx 用法和替代方案
-- [ ] `configx`：冻结，不再新增 foundationx usage
-- [ ] `observex`：冻结，不再新增 foundationx usage
-- [ ] CI 中增加 foundationx 新增用法检查
+- [x] `configx`：列出所有 foundationx 用法和替代方案（`docs/foundationx-compatibility.md`）
+- [ ] `observex`：列出所有 foundationx 用法和替代方案（待补充）
+- [ ] `configx`：冻结，不再新增 foundationx usage（still has `internal/foundationx`）
+- [ ] `observex`：冻结，不再新增 foundationx usage（still has `internal/foundationx`）
+- [x] CI 中增加 foundationx 新增用法检查（`FOUNDATION-DEPS.yaml` constraints: no-foundationx-new-usage）
 - [ ] `configx` v0.3 前完成迁移
 - [ ] `observex` v0.4 前完成迁移
 - [ ] 迁移完成后删除 `internal/foundationx`
