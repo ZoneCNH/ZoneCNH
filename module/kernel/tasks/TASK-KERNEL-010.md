@@ -58,7 +58,7 @@ status: pending
 | Test Case | Type | Description |
 |---|---|---|
 | TC-019 | CI Gate | stdlib-only：`go list -deps ./... | grep -v "^std" | grep -v "kernel"` 无输出 |
-| — | CI Gate | 覆盖率：`go test ./... -coverprofile=cover.out` >= 90% |
+| — | CI Gate | 覆盖率：`mkdir -p .coverage && go test ./... -coverprofile=.coverage/cover.out` >= 90% |
 | — | CI Gate | data race：`go test ./... -race -count=1` |
 | — | CI Gate | vet：`go vet ./...` 无警告 |
 | — | CI Gate | lint：`golangci-lint run` 无错误 |

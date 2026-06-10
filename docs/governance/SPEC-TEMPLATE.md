@@ -435,7 +435,7 @@ type {InterfaceName} interface {
 |------|------|----------|
 | 编译 | `go build ./...` | 零错误 |
 | 测试 | `go test ./... -race -count=1` | 全部通过 |
-| 覆盖率 | `go tool cover -func=cover.out` | ≥ 80% |
+| 覆盖率 | `mkdir -p .coverage && go test ./... -coverprofile=.coverage/cover.out && go tool cover -func=.coverage/cover.out` | ≥ 80% |
 | Vet | `go vet ./...` | 零警告 |
 | Lint | `golangci-lint run` | 零警告 |
 | 依赖 | `go mod tidy && git diff --exit-code` | 无变更 |

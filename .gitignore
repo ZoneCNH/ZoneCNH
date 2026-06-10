@@ -51,6 +51,11 @@ release/manifest/*.json.sha256
 # Generated local scan reports
 reports/
 
+# Go coverage artifacts
+/.coverage/
+/cover.out
+*.coverprofile
+
 # env file
 .env
 

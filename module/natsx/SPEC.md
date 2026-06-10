@@ -570,7 +570,7 @@ Then 返回 healthy；连接断开时返回 unhealthy
 |------|------|----------|
 | 编译 | `go build ./...` | 编译失败 |
 | 测试 | `go test ./... -race -count=1` | 任何测试失败或 data race |
-| 覆盖率 | `go test ./... -coverprofile=cover.out && go tool cover -func=cover.out` | 总覆盖率 < 80% |
+| 覆盖率 | `mkdir -p .coverage && go test ./... -coverprofile=.coverage/cover.out && go tool cover -func=.coverage/cover.out` | 总覆盖率 < 80% |
 | vet | `go vet ./...` | 任何 vet 错误 |
 | lint | `golangci-lint run` | 任何 lint 错误 |
 | 依赖检查 | `go mod tidy && git diff --exit-code go.mod go.sum` | go.mod 不整洁 |
