@@ -134,212 +134,20 @@ jobs:
         run: |
           python3 docs/goal/tools/goal-validate.py --root . --mode strict --format text
 
-  # 5. ID 格式检查
-  id-format-check:
-    name: ID Format Validation
+  # 5. 统一 Goal 工具链检查
+  goal-toolchain-check:
+    name: Unified Goal Toolchain Check
     runs-on: [self-hosted, Linux, X64]
     timeout-minutes: 10
     needs: goal-validator
     steps:
       - uses: actions/checkout@v4
 
-      - name: Validate ID formats
+      - name: Run unified Goal workflow gate
         run: |
-          python3 -c "
-          import yaml
-          import re
+          bash docs/goal/tools/goal-workflow.sh gate --root . --mode strict --format text
 
-          # ID patterns
-          patterns = {
-              'goal_id': r'^GOAL-\d{8}-\d{3}$',
-              'task_id': r'^TASK-GOAL-\d{8}-\d{3}-\d{3}$',
-              'release_id': r'^REL-\d{8}-[\w-]+$',
-              'risk_id': r'^RISK-GOAL-\d{8}-\d{3}-\d{3}$',
-              'decision_id': r'^DEC-GOAL-\d{8}-\d{3}-\d{3}$',
-          }
-
-          registry_checks = [
-              ('.config/goal/registry/goals.yaml', 'goals', 'goal_id'),
-              ('.config/goal/registry/tasks.yaml', 'tasks', 'task_id'),
-              ('.config/goal/registry/releases.yaml', 'releases', 'release_id'),
-              ('.config/goal/registry/risks.yaml', 'risks', 'risk_id'),
-              ('.config/goal/registry/decisions.yaml', 'decisions', 'decision_id'),
-          ]
-
-          for path, section, field in registry_checks:
-              with open(path) as f:
-                  data = yaml.safe_load(f) or {}
-              for item in data.get(section, []):
-                  value = item.get(field, '')
-                  if not re.match(patterns[field], value):
-                      print(f'❌ Invalid {field}: {value}')
-                      exit(1)
-                  print(f'✅ Valid {field}: {value}')
-
-          print('✅ All ID formats valid')
-          "
-
-  # 6. Matrix 覆盖率检查
-  matrix-coverage:
-    name: Matrix Coverage
-    runs-on: [self-hosted, Linux, X64]
-    timeout-minutes: 10
-    needs: goal-validator
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Check Matrix coverage
-        run: |
-          python3 -c "
-          import yaml
-
-          # Load Matrix
-          with open('.config/goal/matrix/matrix.yaml') as f:
-              matrix = yaml.safe_load(f)
-
-          entries = matrix.get('matrix', [])
-          if not entries:
-              print('⚠️ Matrix is empty')
-              exit(0)
-
-          valid_statuses = {
-              'Unmapped', 'Mapped', 'Linked', 'Verified', 'Dropped',
-              'Drifted', 'Stale', 'Blocked', 'Changed',
-          }
-          terminal_statuses = {'Verified', 'Dropped'}
-
-          invalid = [e for e in entries if e.get('status') not in valid_statuses]
-          if invalid:
-              print('❌ Matrix contains invalid statuses:')
-              for e in invalid:
-                  print(f\"  - {e.get('source_id')} -> {e.get('target_id')}: {e.get('status')}\")
-              exit(1)
-
-          total = len(entries)
-          terminal = sum(1 for e in entries if e.get('status') in terminal_statuses)
-          verified = [e for e in entries if e.get('status') == 'Verified']
-          dropped = [e for e in entries if e.get('status') == 'Dropped']
-          coverage = (terminal / total * 100) if total > 0 else 0
-
-          print(f'Matrix entries: {total}')
-          print(f'Terminal entries: {terminal}')
-          print(f'Verified entries: {len(verified)}')
-          print(f'Dropped entries: {len(dropped)}')
-          print(f'Coverage: {coverage:.1f}%')
-
-          missing_evidence = [e for e in verified if not e.get('evidence_id')]
-          if missing_evidence:
-              print('❌ Verified Matrix entries missing evidence_id:')
-              for e in missing_evidence:
-                  print(f\"  - {e.get('source_id')} -> {e.get('target_id')}\")
-              exit(1)
-
-          missing_drop_reason = [e for e in dropped if not e.get('drop_reason')]
-          if missing_drop_reason:
-              print('❌ Dropped Matrix entries missing drop_reason:')
-              for e in missing_drop_reason:
-                  print(f\"  - {e.get('source_id')} -> {e.get('target_id')}\")
-              exit(1)
-
-          if coverage < 95:
-              print(f'❌ Coverage {coverage:.1f}% below 95% threshold')
-              exit(1)
-          else:
-              print(f'✅ Coverage {coverage:.1f}% meets threshold')
-          "
-
-  # 7. Gate 状态检查
-  gate-check:
-    name: Gate Status Validation
-    runs-on: [self-hosted, Linux, X64]
-    timeout-minutes: 10
-    needs: goal-validator
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Validate Gate states
-        run: |
-          python3 -c "
-          import yaml
-
-          with open('.config/goal/gates/state.yaml') as f:
-              gates = yaml.safe_load(f)
-
-          gate_list = gates.get('gates', [])
-          required_gates = ['G0', 'G1', 'G2', 'G3', 'G4', 'G5', 'G6', 'G7', 'G8', 'G9', 'G10', 'G11']
-          valid_gate_statuses = ['PASS', 'PASS_WITH_RISK', 'FAIL', 'BLOCKED']
-          valid_result_verdicts = ['PASS', 'PASS_WITH_RISK', 'FAIL', 'BLOCKED']
-
-          found_gates = [g['gate_id'] for g in gate_list]
-
-          for gate in required_gates:
-              if gate not in found_gates:
-                  print(f'❌ Missing gate: {gate}')
-                  exit(1)
-
-              gate_data = next(g for g in gate_list if g['gate_id'] == gate)
-              status = gate_data.get('status')
-
-              if status not in valid_gate_statuses:
-                  print(f'❌ Gate {gate} has invalid status: {status}')
-                  exit(1)
-
-              result = gate_data.get('result') or {}
-              verdict = result.get('verdict')
-              if verdict not in valid_result_verdicts:
-                  print(f'❌ Gate {gate} has invalid result verdict: {verdict}')
-                  exit(1)
-
-              for detail in result.get('details') or []:
-                  detail_status = detail.get('status')
-                  if detail_status not in valid_result_verdicts:
-                      print(f'❌ Gate {gate} has invalid detail status: {detail_status}')
-                      exit(1)
-
-              print(f'✅ Gate {gate}: {status}')
-          "
-
-  # 8. 孤儿检查
-  orphan-check:
-    name: Orphan Detection
-    runs-on: [self-hosted, Linux, X64]
-    timeout-minutes: 10
-    needs: goal-validator
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Check for orphan tasks
-        run: |
-          python3 -c "
-          import yaml
-
-          # Load Goals
-          with open('.config/goal/registry/goals.yaml') as f:
-              goals_data = yaml.safe_load(f)
-          goal_ids = {g['goal_id'] for g in goals_data.get('goals', [])}
-
-          # Load Tasks
-          with open('.config/goal/registry/tasks.yaml') as f:
-              tasks_data = yaml.safe_load(f)
-          tasks = tasks_data.get('tasks', [])
-
-          # Check orphan tasks
-          orphan_tasks = []
-          for task in tasks:
-              goal_id = task.get('goal_id')
-              if goal_id not in goal_ids:
-                  orphan_tasks.append(task['task_id'])
-
-          if orphan_tasks:
-              print(f'❌ Found {len(orphan_tasks)} orphan tasks:')
-              for t in orphan_tasks:
-                  print(f'  - {t}')
-              exit(1)
-          else:
-              print(f'✅ No orphan tasks found')
-          "
-
-  # 9. Agent 文件检查
+  # 6. Agent 文件检查
   agent-check:
     name: Agent Files Validation
     runs-on: [self-hosted, Linux, X64]
@@ -410,7 +218,7 @@ jobs:
             exit 1
           fi
 
-  # 11. 完整性汇总
+  # 8. 完整性汇总
   summary:
     name: CI Summary
     runs-on: [self-hosted, Linux, X64]
@@ -420,10 +228,7 @@ jobs:
       - registry-check
       - rule-drift-check
       - goal-validator
-      - id-format-check
-      - matrix-coverage
-      - gate-check
-      - orphan-check
+      - goal-toolchain-check
       - agent-check
       - docs-check
     if: always()
@@ -438,9 +243,6 @@ jobs:
           echo "| Registry | ${{ needs.registry-check.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Rule Drift | ${{ needs.rule-drift-check.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Goal Validator | ${{ needs['goal-validator'].result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| ID Format | ${{ needs.id-format-check.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Matrix Coverage | ${{ needs.matrix-coverage.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Gate Status | ${{ needs.gate-check.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Orphan Check | ${{ needs.orphan-check.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Goal Toolchain Gate | ${{ needs['goal-toolchain-check'].result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Agent Files | ${{ needs.agent-check.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Documentation | ${{ needs.docs-check.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
