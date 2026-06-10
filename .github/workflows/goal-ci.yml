@@ -134,12 +134,69 @@ jobs:
         run: |
           python3 docs/goal/tools/goal-validate.py --root . --mode strict --format text
 
-  # 5. 统一 Goal 工具链检查
+  # 5. Goal ID 格式检查
+  id-format-check:
+    name: Goal ID Format Check
+    runs-on: [self-hosted, Linux, X64]
+    timeout-minutes: 10
+    needs: rule-drift-check
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate registry ID contracts
+        run: |
+          python3 docs/goal/tools/goal-validate.py --root . --mode strict --only registry --format text
+
+  # 6. Matrix 覆盖率与 edge 完整性检查
+  matrix-coverage:
+    name: Matrix Coverage Check
+    runs-on: [self-hosted, Linux, X64]
+    timeout-minutes: 10
+    needs: rule-drift-check
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check Matrix edge coverage and terminal status
+        run: |
+          python3 docs/goal/tools/matrix-gen.py --check-only --matrix .config/goal/matrix/matrix.yaml
+
+  # 7. Gate 可执行性检查
+  gate-check:
+    name: Goal Gate Check
+    runs-on: [self-hosted, Linux, X64]
+    timeout-minutes: 10
+    needs:
+      - id-format-check
+      - matrix-coverage
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run executable Gate checks
+        run: |
+          bash docs/goal/tools/gate-check.sh .
+
+  # 8. Evidence orphan 闭包检查
+  orphan-check:
+    name: Evidence Orphan Check
+    runs-on: [self-hosted, Linux, X64]
+    timeout-minutes: 10
+    needs: rule-drift-check
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check Evidence and Matrix closure
+        run: |
+          python3 docs/goal/tools/rule-drift-check.py --root .
+
+  # 9. 统一 Goal 工具链检查
   goal-toolchain-check:
     name: Unified Goal Toolchain Check
     runs-on: [self-hosted, Linux, X64]
     timeout-minutes: 10
-    needs: goal-validator
+    needs:
+      - goal-validator
+      - gate-check
+      - orphan-check
     steps:
       - uses: actions/checkout@v4
 
@@ -147,7 +204,7 @@ jobs:
         run: |
           bash docs/goal/tools/goal-workflow.sh gate --root . --mode strict --format text
 
-  # 6. Agent 文件检查
+  # 10. Agent 文件检查
   agent-check:
     name: Agent Files Validation
     runs-on: [self-hosted, Linux, X64]
@@ -185,7 +242,7 @@ jobs:
             fi
           done
 
-  # 10. 文档一致性检查
+  # 11. 文档一致性检查
   docs-check:
     name: Documentation Consistency
     runs-on: [self-hosted, Linux, X64]
@@ -218,7 +275,7 @@ jobs:
             exit 1
           fi
 
-  # 8. 完整性汇总
+  # 12. 完整性汇总
   summary:
     name: CI Summary
     runs-on: [self-hosted, Linux, X64]
@@ -228,6 +285,10 @@ jobs:
       - registry-check
       - rule-drift-check
       - goal-validator
+      - id-format-check
+      - matrix-coverage
+      - gate-check
+      - orphan-check
       - goal-toolchain-check
       - agent-check
       - docs-check
@@ -243,6 +304,10 @@ jobs:
           echo "| Registry | ${{ needs.registry-check.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Rule Drift | ${{ needs.rule-drift-check.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Goal Validator | ${{ needs['goal-validator'].result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| ID Format | ${{ needs['id-format-check'].result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Matrix Coverage | ${{ needs['matrix-coverage'].result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Gate Check | ${{ needs['gate-check'].result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Orphan Check | ${{ needs['orphan-check'].result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Goal Toolchain Gate | ${{ needs['goal-toolchain-check'].result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Agent Files | ${{ needs.agent-check.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Documentation | ${{ needs.docs-check.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY

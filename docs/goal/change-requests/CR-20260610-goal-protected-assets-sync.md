@@ -1,8 +1,8 @@
 # CR-20260610 Goal Protected Assets Sync
 
-Status: Proposed
+Status: Partially Implemented
 
-Approval: Human Approval Required
+Approval: User approved CI workflow sync in-thread on 2026-06-11; Constitution, schema, and agent prompt sync still require separate approval.
 
 Owner: workflow owner
 
@@ -56,6 +56,10 @@ Goal Delivery OS 的规范权威、机器投影、CI 调度和 Agent 执行面�
 2. 检查 `.github/workflows/`，确保 workflow 调用统一 validator 和 `docs/goal/tools/` wrapper，不复制第二套 Gate 判定；对齐 `id-format-check`、`matrix-coverage`、`gate-check`、`orphan-check` 的 workflow job 定义或经审批更新 required job 投影，不得为了通过检查删除 Gate。
 3. 检查 `.claude/agents/`、`.codex/agents/` 与 `.copilot/agents/`，确保 agent prompt 包含单任务单 writer、worktree 隔离、多源 reviewer、pipeline-arbiter、Gate 不绕过、Evidence Bundle 和 Change Request 边界；若 Codex `goal-*` agent 缺失，应在审批后补齐或删除相关实现声明。
 4. 针对 `CONSTITUTION.md` §17 与 `docs/goal/` 主流程 / Matrix 横切定位漂移提交单独 Constitution 同步 CR，在批准前不得直接改写 Constitution。
+
+## Implementation Note
+
+2026-06-11: 已执行第 2 项的 CI workflow 同步：在 `.github/workflows/goal-ci.yml` 中补齐 `id-format-check`、`matrix-coverage`、`gate-check`、`orphan-check` job，并让它们调用现有 `docs/goal/tools/` validator / wrapper。未修改 `.config/goal/schema/rules.yaml`、`CONSTITUTION.md` 或 Agent prompt。
 
 ## Validation Command
 
