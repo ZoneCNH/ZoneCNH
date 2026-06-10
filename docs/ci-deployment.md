@@ -5,7 +5,7 @@
 
 ## 1. 概述
 
-本仓库使用 GitHub Actions 作为 CI/CD 平台，所有直接声明 runner 的 job 统一运行在 **self-hosted runner**（`[self-hosted, Linux, X64]`）上。Reusable workflow job 只能调用仓库内 workflow，因此被调用 workflow 继续受同一 runner 规则约束。部署到运行环境或远端机器时，目标机器池统一为 **`sre/`**。
+本仓库使用 GitHub Actions 作为 CI/CD 平台，所有直接声明 runner 的 job 统一运行在 **self-hosted runner**（`[self-hosted, Linux, X64, homepage]`）上。Reusable workflow job 只能调用仓库内 workflow，因此被调用 workflow 继续受同一 runner 规则约束。部署到运行环境或远端机器时，目标机器池统一为 **`sre/`**。
 
 共 **9 个 workflow**、**41 个 top-level job**（其中 **39** 个直接声明 `runs-on`，**2** 个调用仓库内 reusable workflow），覆盖仓库文档、Goal 体系、依赖矩阵、外部评分锚点、发布元数据和 runner 烟雾测试：
 
@@ -28,14 +28,14 @@
 所有直接声明 runner 的 workflow job 必须使用完全一致的标签：
 
 ```yaml
-runs-on: [self-hosted, Linux, X64]
+runs-on: [self-hosted, Linux, X64, homepage]
 ```
 
 禁止项：
 
 - `ubuntu-latest`、`macos-*`、`windows-*` 等 GitHub-hosted runner
 - `Linux` / `X64` 大小写漂移
-- `homepage` 等业务、个人或模块专属额外 label
+- 未批准的业务、个人或模块专属额外 label；当前仓库批准的项目标签仅为 `homepage`
 - 调用外部 reusable workflow 绕过仓库内 runner 策略
 
 job 级 reusable workflow `uses:` 只能指向 `./.github/workflows/*`。该规则由 `.github/ci/workflow-policy-guard.sh` 强制校验，覆盖直接 `runs-on`、仓库内 reusable workflow 调用和部署目标声明。
@@ -386,7 +386,7 @@ git push origin v0.5.0
 | `yamllint: command not found` | job-local Python 工具链未激活     | 运行 `bash docs/goal/tools/setup-ci-toolchain.sh` 后激活 venv          |
 | `pytest: command not found`   | job-local Python 工具链未激活     | 运行 `bash docs/goal/tools/setup-ci-toolchain.sh` 后激活 venv          |
 | `jq: command not found`       | runner 未安装 jq                 | `apt install jq`                                                      |
-| `workflow-policy-guard` 失败  | runner 标签或部署目标违反全局规则 | 改为 `[self-hosted, Linux, X64]`；部署目标统一声明为 `sre/`            |
+| `workflow-policy-guard` 失败  | runner 标签或部署目标违反全局规则 | 改为 `[self-hosted, Linux, X64, homepage]`；部署目标统一声明为 `sre/`  |
 | `timeout-minutes` 超时        | CI 脚本卡死或网络问题            | 检查 runner 网络连接，检查脚本是否有死循环                            |
 | `outer-metrics-guard` 失败    | LLM agent 尝试修改 outer-metrics | 确保 outer-metrics 变更由 CI bot 或人工 `[outer-metrics:manual]` 提交 |
 | `spec-lint` 报 23 节缺失      | SPEC.md 结构不完整               | 按 `module/README.md` 模板补齐 §1-§23                                 |
@@ -447,7 +447,7 @@ git push origin v0.5.0
 | ---------- | ----------------------------------------------------- | -------------------------------- |
 | 2026-06-11 | 全局 workflow 策略由 `workflow-policy-guard.sh` 强制校验 | 防止 runner 与部署规则回退       |
 | 2026-06-11 | 部署到运行环境或远端机器统一落在 `sre/` 机器池       | 避免业务机或个人机承载发布职责   |
-| 2026-06-08 | 全部 workflow 切换到 `[self-hosted, Linux, X64]`      | 降低成本，利用已有 runner 资源   |
+| 2026-06-08 | 全部 workflow 切换到 `[self-hosted, Linux, X64, homepage]` | 降低成本，利用项目 self-hosted runner 资源 |
 | 2026-06-08 | 所有 job 添加 `timeout-minutes`                       | 防止 self-hosted runner 挂起阻塞 |
 | 2026-06-08 | Python 包改为 job-local 工具链                       | 避免 runner 全局 Python 依赖漂移 |
 | 2026-06-08 | release.yml 质量门禁改为 `workflow_call` 复用 docs-ci | 消除重复维护，DRY 原则           |
@@ -466,8 +466,8 @@ git push origin v0.5.0
 
 ### 新增 Workflow 时
 
-- [ ] 每个 job 使用 `[self-hosted, Linux, X64]` runner
-- [ ] 不添加业务、个人或模块专属 runner label
+- [ ] 每个 job 使用 `[self-hosted, Linux, X64, homepage]` runner
+- [ ] 不添加未批准的业务、个人或模块专属 runner label
 - [ ] 每个 job 添加 `timeout-minutes`
 - [ ] 路径过滤避免无关变更触发
 - [ ] 评估是否可通过 `workflow_call` 复用现有 workflow

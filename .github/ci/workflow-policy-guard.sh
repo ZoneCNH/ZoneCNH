@@ -9,7 +9,7 @@ import re
 import sys
 
 WORKFLOW_DIR = Path(".github/workflows")
-EXPECTED_RUNNER = ["self-hosted", "Linux", "X64"]
+EXPECTED_RUNNER = ["self-hosted", "Linux", "X64", "homepage"]
 EXPECTED_REUSABLE_PREFIX = "./.github/workflows/"
 DEPLOY_HINT = re.compile(r"\b(deploy|deployment)\b|部署", re.IGNORECASE)
 SRE_TARGET = "sre/"

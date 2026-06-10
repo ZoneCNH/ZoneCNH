@@ -163,7 +163,7 @@ on:
 
 jobs:
   check:
-    runs-on: [self-hosted, Linux, X64]
+    runs-on: [self-hosted, Linux, X64, homepage]
 
     steps:
       - name: Checkout

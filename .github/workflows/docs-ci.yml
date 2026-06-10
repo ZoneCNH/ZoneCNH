@@ -100,7 +100,7 @@ jobs:
   # ── 4. Workflow 策略守卫 ──────────────────────────────────────
   workflow-policy-guard:
     name: Workflow Policy Guard
-    runs-on: [self-hosted, Linux, X64]
+    runs-on: [self-hosted, Linux, X64, homepage]
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
