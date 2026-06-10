@@ -139,10 +139,10 @@ docs/goal/
   01-methodology.md
   ...
 module/
-  <module>/SPEC.md
-  <module>/TRACEABILITY.md
-  <module>/TASKS.md
-  <module>/PLAN.md
+  {module}/SPEC.md
+  {module}/TRACEABILITY.md
+  {module}/TASKS.md
+  {module}/PLAN.md
 .omc/state/
   pipeline/
   tasks.json

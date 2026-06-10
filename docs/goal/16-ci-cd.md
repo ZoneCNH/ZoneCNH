@@ -45,6 +45,21 @@ tag 发布顺序固定为：docs-ci 质量门禁 → 可复用 Goal CI → `.git
 
 release gate 在以下情况必须非零退出：G10 未 PASS、存在打开的 `release_blocking` 风险、缺失 `.config/goal/evidence/**/*.md`、Goal CI 未定义或未要求 `goal-validator`。
 
+### CI 权威与投影边界
+
+CI MUST 调用统一 validator 或 `docs/goal/tools/` 中的封装脚本，不得在 workflow YAML 中复制第二套 Gate 规则。允许 workflow 只做调度、缓存、上传 artifact 和组合 job 结果。
+
+推荐命令：
+
+```bash
+python3 docs/goal/tools/rule-drift-check.py --root .
+python3 docs/goal/tools/goal-validate.py --root . --mode strict
+python3 docs/goal/tools/matrix-gen.py --check-only --matrix .config/goal/matrix/matrix.yaml
+bash docs/goal/tools/goal-workflow.sh validate
+```
+
+如果 `.github/workflows/` 需要新增或修改强规则，Agent MUST 先生成 `docs/goal/change-requests/` 提案并要求 Human Approval。
+
 ---
 
 ## 2. 执行阶段

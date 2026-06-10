@@ -298,34 +298,40 @@ Goal → Spec → Design → Plan → Tasks → Prompt → Code → Test → Rev
 
 ## 9. Matrix 横切标准
 
-> Matrix 是横切追溯制品，不参与主流程排序，不作为状态机阶段。它在 Spec 审批后可初始化，并随 Design、Plan、Tasks、Prompt、Code、Test、Evidence 更新。
+> Matrix 是横切追溯制品，不参与主流程排序，不作为状态机阶段。它在 Spec 审批后可初始化，并随 Design、Plan、Tasks、Prompt、Code、Test、Evidence、Risk 和 Gate 更新。
+>
+> Canonical Matrix 使用 edge model，不使用旧 row model 作为控制面规则。表格可以作为展示视图存在，但进入 Gate、validator、CI 或 Release 前 MUST 投影为 canonical edge。
 
-### 推荐字段
+### Canonical edge 字段
 
 | 字段 | 说明 |
 |------|------|
-| Goal ID | 目标编号 |
-| Goal Item | 目标中的具体成功项 |
-| Spec ID | 对应需求 |
-| Requirement | 具体需求点 |
-| Acceptance Criteria | 验收标准 |
-| Task ID | 对应任务 |
-| Prompt ID | 对应 Prompt |
-| Code Module | 对应代码模块 |
-| Test Case | 对应测试 |
-| Status | 状态 |
-| Risk | 风险 |
+| edge_id | 唯一边 ID，例如 `EDGE-GOAL-20260610-001-AC01-TEST01` |
+| source_type / source_id | 来源节点类型与 ID，如 Goal、Spec、AC、Task、Prompt、Code、Test、Evidence、Risk、Gate |
+| target_type / target_id | 目标节点类型与 ID |
+| relation | `refines`、`implements`、`verifies`、`blocks`、`releases`、`measures`、`mitigates`、`approves` |
+| priority | P0 / P1 / P2 / P3 |
+| status | Unmapped / Mapped / Linked / Verified / Dropped / Blocked / Drifted / Stale |
+| owner | 负责维护该 edge 的人或 Agent |
+| evidence_id | 证明该 edge 的 Evidence ID；release-critical edge MUST 填写 |
+| risk_id | 关联风险；High/Critical 或 release_blocking 风险 MUST 填写 |
+| gate_id | 关联 Gate；阻断性 Gate MUST 填写 |
+| drop_reason | `Dropped` 时必填 |
+| updated_at | 最近更新日期或时间戳 |
+
+### 展示与导入兼容
+
+旧的 `Goal ID / Spec ID / Task ID / Prompt ID / Code Module / Test Case / Evidence` 表格可以作为人类阅读视图或导入格式存在，但不得作为新的控制面 schema。任何表格视图进入 Gate、validator、CI 或 Release 前，MUST 被投影为 canonical edge；投影失败时不得宣称 Matrix 完整。
 
 ### 合格标准
 
 ```text
-1. 每个 Goal 至少对应一个 Spec。
-2. 每个 Spec 至少对应一个 Task。
-3. 每个 Task 至少对应一个 Prompt 或执行说明。
-4. 每个关键 Task 必须对应 Code Module。
-5. 每个 Acceptance Criteria 必须对应 Test Case。
-6. 不允许出现没有 Goal 来源的 Task。
-7. 不允许出现没有测试覆盖的关键需求。
+1. 每个 Goal 至少有一条到 Spec 或明确 Non-goal / Dropped 决策的 edge。
+2. 每个 Spec Requirement 至少有一条到 Task、Test 或 Decision 的 edge。
+3. 每个 P0/P1 Acceptance Criteria 必须同时有 Test edge 与 Evidence edge。
+4. 每个 release-critical edge 必须有 owner、status、priority、gate_id 和 evidence_id。
+5. 任何 Dropped edge 必须有 drop_reason 和审批记录。
+6. 不允许存在无来源 Task、无来源 Code、无证据 Done 或未解释的 Blocked/Drifted/Stale edge。
 ```
 
 ### Matrix 生命周期
@@ -334,15 +340,15 @@ Goal → Spec → Design → Plan → Tasks → Prompt → Code → Test → Rev
 创建时机：Spec 审批后立即创建
 维护人：Tech Lead（A），Engineer（R）
 更新触发：
-  - Spec 变更 → 同步更新 Matrix
-  - Plan 完成 → 标记执行顺序和依赖
-  - Task 拆分 → 补充 Matrix 行
-  - Task 完成 → 更新 Status
-  - Prompt / Code 变更 → 同步对应列
-  - 测试通过 → 更新 Test Case 列
+  - Spec 变更 → 同步更新相关 edge
+  - Plan 完成 → 标记执行顺序、依赖和 Gate edge
+  - Task 拆分 → 补充 Task / Test / Evidence edge
+  - Task 完成 → 更新 edge Status
+  - Prompt / Code 变更 → 同步 Prompt / Code edge
+  - 测试通过 → 更新 Test / Evidence edge
 完整性检查：
-  - Gate G5（Task Gate）自动检查 Matrix 覆盖率
-  - Release 前必须 100% 行有 Status = Verified，或 Status = Dropped 且有 drop_reason
+  - Gate G5（Task Gate）自动检查 Matrix edge 覆盖率
+  - Release 前必须所有 release-critical edge 为 Status = Verified，或 Status = Dropped 且有 drop_reason
 ```
 
 ### Matrix 状态
@@ -357,7 +363,7 @@ Unmapped → Mapped → Linked → Verified
 ### 风险字段
 
 ```text
-Risk Level: Low / Medium / High
+Risk Level: Low / Medium / High / Critical
 
 Risk Type:
 - Requirement Risk
@@ -366,4 +372,5 @@ Risk Type:
 - Performance Risk
 - Dependency Risk
 - Data Risk
+- Release Risk
 ```

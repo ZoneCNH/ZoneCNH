@@ -148,7 +148,7 @@ Matrix Review 检查项（覆盖检查）:
 - [ ] 是否存在重复任务？
 - [ ] 是否存在范围膨胀？
 
-通过标准: Task 原子化、有 DoD，Matrix 无孤儿行、无范围膨胀。
+通过标准: Task 原子化、有 DoD，Matrix 无孤儿 edge、无范围膨胀；关键 edge 已绑定 owner 与 evidence 计划。
 失败标准: Task 不可独立验证、Matrix 存在覆盖缺口或范围膨胀。
 
 ### G6 Implementation Gate
@@ -201,7 +201,7 @@ Prompt Review 检查项:
 检查项:
 - [ ] 是否实现了对应 Task？
 - [ ] 是否满足 Spec？
-- [ ] 是否覆盖 Matrix 行？
+- [ ] 是否覆盖 Matrix edge？
 - [ ] 是否有测试？
 - [ ] 是否处理异常情况？
 - [ ] 是否满足安全要求？
@@ -217,17 +217,20 @@ Prompt Review 检查项:
 阻塞: true
 
 检查项:
-- [ ] Matrix 全部关键项为 `Verified`，或为 `Dropped` 且有 `drop_reason`
-- [ ] P0/P1 测试全部通过
+- [ ] `goal-validator` strict 通过，且 Matrix `check-only` 无阻断错误
+- [ ] Matrix 全部 release-critical edge 为 `Verified`，或为 `Dropped` 且有 `drop_reason`
+- [ ] P0/P1 测试全部通过，并有 Evidence Bundle 记录命令、环境、commit 和结果
+- [ ] Release Manifest 已创建，包含 `release_id`、`goal_id`、commit/artifact、`validation_summary`、`evidence_manifest`、`risk_register`、`rollback_plan`
+- [ ] Risk Register 无打开的 `release_blocking` 风险；所有 High/Critical residual risk 均有 owner、mitigation、接受记录或阻断结论
 - [ ] 无权限绕过风险
 - [ ] 无数据破坏风险
 - [ ] 有日志和监控
-- [ ] 有 Feature Flag 或回滚方案
+- [ ] 有 Feature Flag 或回滚方案，且回滚路径有验证记录、dry-run 记录或可审查 fallback evidence
 - [ ] 有灰度策略
 - [ ] 有上线后指标观察计划
 
-通过标准: Release 就绪，满足上线前全部检查项。
-失败标准: 存在阻塞性风险或缺少回滚方案。
+通过标准: Release 就绪；strict validator、Matrix、Evidence Bundle、Risk Register、Release Manifest 和 rollback validation 可共同证明 G10 PASS。
+失败标准: G10 未 PASS、存在打开的 `release_blocking` 风险、缺少 Evidence Bundle / Release Manifest / rollback plan / validation summary，或存在未处理的权限、数据、安全、资金、隐私阻断风险。
 
 ### G11 Retrospective Gate
 

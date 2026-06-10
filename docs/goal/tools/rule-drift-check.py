@@ -96,6 +96,11 @@ MODULE_CODE_ROOT_PATTERN = "/home/{module}"
 MODULE_SPEC_ROOT_PATTERN = "module/{module}/"
 MODULE_REPOSITORY_BOUNDARY = "ZoneCNH/ZoneCNH"
 MODULE_REQUIRED_LINT_RULES = {"C-LINT-006", "C-LINT-007"}
+MODULE_STALE_PATH_PLACEHOLDERS = {
+    "/home/<module>",
+    "module/<module>",
+}
+MODULE_STALE_TREE_PLACEHOLDER = re.compile(r"^\s+<module>/", re.MULTILINE)
 MODULE_FORBIDDEN_SOURCE_PATTERNS = {
     "module/{module}/cmd/",
     "module/{module}/internal/",
@@ -367,6 +372,7 @@ def check_module_code_location(
     unexpected_artifacts: list[str] = []
     forbidden_hits: list[str] = []
     source_hits: list[str] = []
+    stale_path_hits: list[str] = []
 
     for module_dir in module_dirs:
         for child in sorted(module_dir.iterdir()):
@@ -386,12 +392,34 @@ def check_module_code_location(
         if path.is_file() and is_module_source_file(path):
             source_hits.append(str(path.relative_to(root)))
 
+    placeholder_targets = [
+        root / "AGENTS.md",
+        root / "ARCHITECTURE.md",
+        root / "CONSTITUTION.md",
+        root / "docs/goal",
+        root / "module",
+    ]
+    for target in placeholder_targets:
+        paths = [target] if target.is_file() else sorted(target.rglob("*.md")) if target.exists() else []
+        for path in paths:
+            text = path.read_text(encoding="utf-8")
+            for number, line in enumerate(text.splitlines(), start=1):
+                if any(marker in line for marker in MODULE_STALE_PATH_PLACEHOLDERS):
+                    stale_path_hits.append(f"{path.relative_to(root)}:{number}")
+                elif MODULE_STALE_TREE_PLACEHOLDER.search(line):
+                    stale_path_hits.append(f"{path.relative_to(root)}:{number}")
+
     if unexpected_artifacts:
         fail("module/ contains paths outside allowed Goal artifacts: " + sample_paths(unexpected_artifacts))
     if forbidden_hits:
         fail("module/ contains forbidden module source paths: " + sample_paths(forbidden_hits))
     if source_hits:
         fail("module/ contains source-like module implementation files: " + sample_paths(source_hits))
+    if stale_path_hits:
+        fail(
+            "module code path placeholders must use {module}, not <module>: "
+            + sample_paths(stale_path_hits)
+        )
 
     if ok:
         report.pass_(

@@ -289,7 +289,7 @@ Codex 使用 `.codex/skills/spec-code-pipeline/SKILL.md`，Claude Code 使用 `.
 ### 1. Spec 审查
 
 ```markdown
-请 review module/<module>/SPEC.md。
+请 review module/{module}/SPEC.md。
 重点检查：模糊需求、冲突要求、缺失边界、缺失验收标准、缺失测试用例。
 输出：Blocking issues / Non-blocking suggestions / Ready or Not ready。
 ```
@@ -297,14 +297,14 @@ Codex 使用 `.codex/skills/spec-code-pipeline/SKILL.md`，Claude Code 使用 `.
 ### 2. 任务拆分
 
 ```markdown
-请根据 Approved 的 module/<module>/SPEC.md 和 module/<module>/TRACEABILITY.md 生成 implementation tasks。
+请根据 Approved 的 module/{module}/SPEC.md 和 module/{module}/TRACEABILITY.md 生成 implementation tasks。
 每个 task 控制在 200 行以内，对应 requirement IDs / acceptance criteria / test cases。
 ```
 
 ### 3. 模块实现
 
 ```markdown
-请根据 module/<module>/TASK-<NNN>-PROMPT.md，在 /home/<module> 对应代码仓库中实现当前 ready task。
+请根据 module/{module}/TASK-<NNN>-PROMPT.md，在 /home/{module} 对应代码仓库中实现当前 ready task。
 上下文：SPEC.md + TRACEABILITY.md + task spec + IMPLEMENTATION-PLAN.md + AGENTS.md。
 限制：只做当前 task 范围内的内容，不引入新依赖。
 ```

@@ -45,10 +45,10 @@ S-LINT-008: 涉及外部服务必须包含失败处理
 
 ```text
 M-LINT-001: 每个 Goal 至少对应一个 Spec
-M-LINT-002: 每个 Spec Requirement 至少对应一个 Matrix Row
-M-LINT-003: 每个 Matrix Row 必须有 Task
-M-LINT-004: 每个 P0/P1 Matrix Row 必须有 Test Case
-M-LINT-005: 每个 Task 必须能追溯到 Matrix Row
+M-LINT-002: 每个 Spec Requirement 至少对应一个 Matrix edge
+M-LINT-003: 每个 release-critical Matrix edge 必须连接到 Task、Test 或明确的非实现决策
+M-LINT-004: 每个 P0/P1 Matrix edge 必须有 Test edge 与 Evidence edge
+M-LINT-005: 每个 Task 必须能追溯到 Matrix edge
 M-LINT-006: 不允许存在 Orphan Task
 M-LINT-007: 不允许存在 Orphan Code
 M-LINT-008: Done 状态必须同时满足 Code + Test
@@ -90,7 +90,7 @@ PR 描述中必须包含来源信息：
 
 ```text
 C-LINT-001: PR 必须引用至少一个 Task
-C-LINT-002: PR 必须引用至少一个 Matrix Row
+C-LINT-002: PR 必须引用至少一个 Matrix edge
 C-LINT-003: PR 必须包含测试说明
 C-LINT-004: P0/P1 Task 不允许无测试合并
 C-LINT-005: PR 不能包含未关联 Task 的大规模代码改动

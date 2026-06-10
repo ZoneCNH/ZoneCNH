@@ -4,6 +4,18 @@
 
 ---
 
+## 0. 执行不变量
+
+- Agent MUST 遵守单任务单 writer：一个 Task 同一时间只能有一个 writer 修改可交付文件；其他 Agent 只能 review、verify 或补证据。
+- Agent MUST 使用 worktree 或等价隔离机制处理并行任务，并在 Context Package 中记录分支、commit、allowed files 和禁止范围。
+- Reviewer MUST 多源化：至少区分 writer、reviewer、verifier；高风险变更还需要 pipeline-arbiter 或 workflow owner 汇总裁决。
+- Agent MUST NOT 绕过 G0-G11；Gate FAIL/BLOCKED 时只能修复、补证据、重计划或发起 CR。
+- Agent MUST 把不可确认内容标记为 Hypothesis，不得写成事实或放入 Release Manifest。
+- Agent MUST 把 Matrix 当作横切 edge graph 更新，不得把 Matrix 当作主流程阶段。
+- 当 `.claude/agents/`、`.codex/agents/`、CI、schema 投影或 Constitution 与 `docs/goal/` 发生漂移时，Agent MUST 在 `docs/goal/change-requests/` 生成 Change Request，并标记 Human Approval；不得在未审批时放宽 Gate、Release、Rollback、Incident、P0/P1 或安全约束。
+
+---
+
 ## 1. Agent Team 协议
 
 将任务分配给以下虚拟 Agent 团队。
