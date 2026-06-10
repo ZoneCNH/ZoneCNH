@@ -11,6 +11,7 @@
 - `README.md` 展示公开简介、技术栈、分层架构摘要和核心项目链接。
 - `ARCHITECTURE.md` 是架构图、依赖拓扑、模块状态表和建议实现顺序的权威文档。
 - `kernel`、`market-data`、`factor-engine`、`x.go` 等模块位于独立 GitHub 仓库；不要把它们的源码树加入本仓库。
+- 模块代码的本地工作目录统一为 `/home/{module}`，其中 `{module}` 与 GitHub 仓库名一致；本仓库只引用这些路径，不复制或收纳模块源码。
 
 ## 构建、测试与开发命令
 

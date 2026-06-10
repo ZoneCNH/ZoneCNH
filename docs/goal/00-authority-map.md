@@ -21,6 +21,7 @@
 | Registry 边界 | [`15-registry.md`](15-registry.md)、[`.config/goal/README.md`](../../.config/goal/README.md) | `.config/goal/registry/` | 把 Matrix、Gate、Pipeline、Evidence、Prompt 目录并入 Registry 子系统 |
 | Evidence 协议 | [`13-runtime-engine.md`](13-runtime-engine.md#4-evidence-收集) | `.config/goal/evidence/`、Release 记录 | 无测试、日志或审查证据时宣称 Done |
 | 模块级 Goal 文档路径 | [`README.md`](README.md#与-docsspecmodule-和-docsgovernance-的同步边界)、[`module/README.md`](../../module/README.md#goal-文档索引) | `.config/goal/schema/rules.yaml`、`AGENTS.md`、模块索引 | 使用 `module/{module}/goal/`、`module/{module}/goal/1.md` 或 `goal/*.md` 作为模块 Goal 槽位 |
+| 模块代码本地路径 | [`CONSTITUTION.md`](../../CONSTITUTION.md#24-本地代码目录)、[`ARCHITECTURE.md`](../../ARCHITECTURE.md#本地开发路径)、[`module/README.md`](../../module/README.md#同步口径) | `AGENTS.md`、Prompt、Task、Evidence、执行记录 | 在本仓库 `module/{module}/` 下放置实现源码树，或把模块代码复制进 `ZoneCNH/ZoneCNH` |
 | 变更级别与执行模式 | [`13-runtime-engine.md`](13-runtime-engine.md) | Runtime 配置、SOP 执行记录 | 把 Lite/Standard/Full 或 RCA 动作当成 Pipeline 阶段 |
 | CI 与 x.go 适配器 | [`16-ci-cd.md`](16-ci-cd.md) | `.github/workflows/`、x.go 检查报告 | 用 CI 阶段覆盖 Goal 管线状态 |
 | 标准对齐分析 | [`24-standard-unification-analysis.md`](24-standard-unification-analysis.md)、`docs/report/goal/` | 修复计划、变更日志、审查记录 | 让分析报告覆盖正式规范 |
@@ -60,4 +61,5 @@
 2. 修改 Gate、ID、Registry 或 Evidence 规则后，同步 schema、CI 校验和 README 索引。
 3. 修改 SOP、Runtime 或 CI 阶段名时，只能新增或调整 `workflow_step`，不得新增 `pipeline_state`，且不得复用 `pipeline_state` 枚举名。
 4. 修改模块级 Goal 文档命名规则时，同步 `module/README.md`、`.config/goal/schema/rules.yaml`、`AGENTS.md` 和变更日志。
-5. 每次权威边界变更都必须记录到 `CHANGELOG.md`，并在 `todo.md` 或报告中保留验证证据。
+5. 修改模块代码本地路径规则时，同步 `CONSTITUTION.md`、`ARCHITECTURE.md`、`AGENTS.md`、`module/README.md`、Code DoR/DoD、Code Lint 和变更日志。
+6. 每次权威边界变更都必须记录到 `CHANGELOG.md`，并在 `todo.md` 或报告中保留验证证据。

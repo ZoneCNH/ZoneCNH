@@ -181,17 +181,20 @@ Matrix Coverage 横切主流程维护，通常在 Spec 后初始化，在 Plan�
 - Prompt 已清晰
 - 依赖已准备
 - 测试要求已明确
+- 实现目标仓库已定位为 /home/{module}
 ```
 
 ### DoD（Code 完成时必须满足）
 
 ```text
 - 代码实现对应 Task
+- 实现变更位于 /home/{module} 对应代码仓库
 - 测试覆盖验收标准
 - Matrix 状态已更新
 - PR 描述能追溯到 Goal
 - 不包含无关功能
 - 没有破坏已有能力
+- module/{module}/ 未新增模块实现源码树
 ```
 
 ---

@@ -129,6 +129,10 @@ FoundationX 由基座层（16 个模块）、L2.5 领域共享层（4 个模块�
 3. `ARCHITECTURE.md` 中的依赖拓扑
 4. `module/foundation-modules.md` 中的能力需求
 
+### 2.4 本地代码目录
+
+模块代码仓库的本地工作目录统一为 `/home/{module}`，其中 `{module}` 必须与 GitHub 仓库名一致，例如 `/home/kernel`、`/home/x.go`。本仓库 `ZoneCNH/ZoneCNH` 只保存公开架构说明、规格和索引，不得内嵌模块源码树、vendor 源码或从 `/home/{module}` 复制出的实现文件。
+
 ---
 
 ## 第三条：依赖方向

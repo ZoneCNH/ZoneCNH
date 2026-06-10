@@ -257,6 +257,14 @@ Code Deliverable:
 - Matrix 状态更新
 ```
 
+实现位置：
+
+```text
+- 模块实现代码统一在 /home/{module} 对应仓库中修改
+- module/{module}/ 只保存 Goal、Spec、Traceability、Task、Plan、Prompt 和 Evidence 引用
+- 不得把模块源码树、vendor 源码或从 /home/{module} 复制出的实现文件提交到本仓库
+```
+
 ### 反向验证
 
 代码写完后，不是问"代码能不能跑？"，而是问"它是否完成了 Goal？"

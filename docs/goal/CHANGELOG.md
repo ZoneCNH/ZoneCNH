@@ -2,6 +2,14 @@
 
 > 记录 docs/goal/ 体系的重大结构性变更。
 
+## 2026-06-10 — 模块代码本地路径规则固化
+
+### 本地代码边界
+
+- 统一模块代码仓库本地路径为 `/home/{module}`，其中 `{module}` 与 GitHub 仓库名一致。
+- 明确 `module/{module}/` 只保存 Goal、Spec、Traceability、Task、Plan、Prompt、Evidence 等交付制品，不承载实现源码树。
+- 同步 Code 标准、Code DoR/DoD、Code Lint、`module/README.md`、`AGENTS.md`、`CONSTITUTION.md` 和 `ARCHITECTURE.md` 的路径口径。
+
 ## 2026-06-09 — 模块级 Goal 文档路径固化
 
 ### 命名规则

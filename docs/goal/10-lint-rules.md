@@ -94,6 +94,8 @@ C-LINT-002: PR 必须引用至少一个 Matrix Row
 C-LINT-003: PR 必须包含测试说明
 C-LINT-004: P0/P1 Task 不允许无测试合并
 C-LINT-005: PR 不能包含未关联 Task 的大规模代码改动
+C-LINT-006: 模块代码实现必须位于 /home/{module} 对应仓库
+C-LINT-007: 本仓库 module/{module}/ 下不得新增实现源码树或复制出的模块代码
 ```
 
 ---

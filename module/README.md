@@ -10,6 +10,7 @@
 
 - `module/` 是当前仓库的模块规格制品 SSOT：承载 `module/*/SPEC.md`、`module/*/TRACEABILITY.md`、`module/*/tasks/` 和模块实现计划；`docs/governance/` 是 Spec → Code 治理、模板、门禁和评分规则 SSOT。
 - 模块级 Goal 文档固定为 `module/{module}/goal.md`；禁止使用 `module/{module}/goal/` 目录、`module/{module}/goal/1.md` 或 `goal/*.md` 多文件槽位。
+- `module/{module}/` 只保存 Goal、Spec、Traceability、Task、Plan、Prompt、Evidence 等交付制品；对应模块代码仓库的本地工作目录统一为 `/home/{module}`。
 - `docs/goal/` 是 Goal 驱动交付规则 SSOT；`.config/goal/` 是 Goal 运行状态、Registry、Gate、Evidence 和 Prompt 版本的 SSOT。
 - Goal 制品通过 ID 和路径引用 `module/`，不复制完整模块规格；根目录 `README.md`、`ARCHITECTURE.md`、`STATUS.md` 与三平台 agent 配置只做索引和执行入口同步。
 - 同步验证以旧路径扫描、`git diff --check`、`.github/ci/spec-lint.sh`、`.github/ci/status-consistency-check.sh`、`.github/ci/spec-drift-guard.sh`、`.github/ci/traceability-check.sh` 和 `.github/ci/task-spec-validate.sh` 为准；不得重新引入 `specs/`。
@@ -303,7 +304,7 @@ Codex 使用 `.codex/skills/spec-code-pipeline/SKILL.md`，Claude Code 使用 `.
 ### 3. 模块实现
 
 ```markdown
-请根据 module/<module>/TASK-<NNN>-PROMPT.md 实现当前 ready task。
+请根据 module/<module>/TASK-<NNN>-PROMPT.md，在 /home/<module> 对应代码仓库中实现当前 ready task。
 上下文：SPEC.md + TRACEABILITY.md + task spec + IMPLEMENTATION-PLAN.md + AGENTS.md。
 限制：只做当前 task 范围内的内容，不引入新依赖。
 ```
