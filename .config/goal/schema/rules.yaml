@@ -457,6 +457,12 @@ ci:
       - RUNNER_TOOL_CACHE
       - AGENT_TOOLSDIRECTORY
     toolchain_setup: "docs/goal/tools/setup-ci-toolchain.sh"
+    python_dependency_isolation:
+      primary: job-local-venv
+      fallback: workspace-local-pip-target
+      fallback_env:
+        - GOAL_CI_PYTHON_TARGET
+        - GOAL_CI_BIN_DIR
   required_jobs:
     - yaml-lint
     - registry-check

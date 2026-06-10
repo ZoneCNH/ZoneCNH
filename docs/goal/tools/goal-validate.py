@@ -90,6 +90,9 @@ REQUIRED_CI_JOBS = {"goal-validator", "goal-toolchain-check"}
 REQUIRED_GOAL_CI_RUNNER_LABELS = ("self-hosted", "Linux", "X64")
 REQUIRED_GOAL_CI_ENV = ("RUNNER_TOOL_CACHE", "AGENT_TOOLSDIRECTORY")
 REQUIRED_GOAL_CI_TOOLCHAIN = "docs/goal/tools/setup-ci-toolchain.sh"
+REQUIRED_GOAL_CI_ISOLATION_PRIMARY = "job-local-venv"
+REQUIRED_GOAL_CI_ISOLATION_FALLBACK = "workspace-local-pip-target"
+REQUIRED_GOAL_CI_ISOLATION_FALLBACK_ENV = ("GOAL_CI_PYTHON_TARGET", "GOAL_CI_BIN_DIR")
 DELEGATED_RULE_JOBS = {"id-format-check", "matrix-coverage", "gate-check", "orphan-check"}
 REGISTRY_FILES = ("goals.yaml", "tasks.yaml", "issues.yaml", "releases.yaml", "risks.yaml", "decisions.yaml")
 REGISTRY_SECTIONS = {
@@ -1136,7 +1139,7 @@ def check_workflow_stale_contract(root: Path, report: Report) -> None:
             "GV-CONSISTENCY-CI-TOOLCHAIN",
             "consistency",
             workflow,
-            "Goal CI must install job-local Python/YAML tools through the approved setup script",
+            "Goal CI must install workspace-local Python/YAML tools through the approved setup script",
             REQUIRED_GOAL_CI_TOOLCHAIN,
             "<missing>",
         )
@@ -1219,6 +1222,29 @@ def check_workflow_stale_contract(root: Path, report: Report) -> None:
                 "rules.yaml must record the approved Goal CI toolchain setup script",
                 REQUIRED_GOAL_CI_TOOLCHAIN,
                 "<missing>",
+            )
+
+        missing_isolation = [
+            value
+            for value in (
+                REQUIRED_GOAL_CI_ISOLATION_PRIMARY,
+                REQUIRED_GOAL_CI_ISOLATION_FALLBACK,
+                *REQUIRED_GOAL_CI_ISOLATION_FALLBACK_ENV,
+            )
+            if value not in rules_text
+        ]
+        if missing_isolation:
+            report.error(
+                "GV-CONSISTENCY-CI-TOOLCHAIN",
+                "consistency",
+                rules,
+                "rules.yaml must record the approved Goal CI Python dependency isolation contract",
+                {
+                    "primary": REQUIRED_GOAL_CI_ISOLATION_PRIMARY,
+                    "fallback": REQUIRED_GOAL_CI_ISOLATION_FALLBACK,
+                    "fallback_env": list(REQUIRED_GOAL_CI_ISOLATION_FALLBACK_ENV),
+                },
+                missing_isolation,
             )
 
 

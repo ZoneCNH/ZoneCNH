@@ -58,6 +58,9 @@ release/manifest/*.json.sha256
 # Generated local scan reports
 reports/
 
+# Generated local test/tool output
+tmp/
+
 # env file
 .env
 

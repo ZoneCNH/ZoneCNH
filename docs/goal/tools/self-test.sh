@@ -83,6 +83,29 @@ run_failure_contains() {
   fi
 }
 
+toolchain_fallback="$TMP_ROOT/toolchain-fallback"
+mkdir -p "$toolchain_fallback"
+run_success "setup-ci-toolchain supports pip target fallback without venv" \
+  env \
+    RUNNER_TOOL_CACHE="$toolchain_fallback/tool-cache" \
+    AGENT_TOOLSDIRECTORY="$toolchain_fallback/tool-cache" \
+    GOAL_CI_FORCE_TARGET_INSTALL=1 \
+    GOAL_CI_PYTHON_TARGET="$toolchain_fallback/python" \
+    GOAL_CI_BIN_DIR="$toolchain_fallback/bin" \
+    GITHUB_PATH="$toolchain_fallback/github_path" \
+    GITHUB_ENV="$toolchain_fallback/github_env" \
+    bash "$SCRIPT_DIR/setup-ci-toolchain.sh"
+run_success "setup-ci-toolchain fallback imports Python deps" \
+  env \
+    PYTHONPATH="$toolchain_fallback/python" \
+    PATH="$toolchain_fallback/bin:$PATH" \
+    python3 -c "import yaml, yamllint"
+run_success "setup-ci-toolchain fallback exposes yamllint wrapper" \
+  env \
+    PYTHONPATH="$toolchain_fallback/python" \
+    PATH="$toolchain_fallback/bin:$PATH" \
+    yamllint --version
+
 write_validator_gates() {
   local root="$1"
   local with_risk="$2"
@@ -314,6 +337,12 @@ ci:
       - RUNNER_TOOL_CACHE
       - AGENT_TOOLSDIRECTORY
     toolchain_setup: "docs/goal/tools/setup-ci-toolchain.sh"
+    python_dependency_isolation:
+      primary: job-local-venv
+      fallback: workspace-local-pip-target
+      fallback_env:
+        - GOAL_CI_PYTHON_TARGET
+        - GOAL_CI_BIN_DIR
   required_jobs:
     - goal-validator
     - goal-toolchain-check
@@ -566,6 +595,12 @@ ci:
       - RUNNER_TOOL_CACHE
       - AGENT_TOOLSDIRECTORY
     toolchain_setup: "docs/goal/tools/setup-ci-toolchain.sh"
+    python_dependency_isolation:
+      primary: job-local-venv
+      fallback: workspace-local-pip-target
+      fallback_env:
+        - GOAL_CI_PYTHON_TARGET
+        - GOAL_CI_BIN_DIR
   required_jobs:
     - summary
 YAML

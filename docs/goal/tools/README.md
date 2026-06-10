@@ -305,6 +305,8 @@ jobs:
 
 Goal 相关 workflow MUST 使用 `[self-hosted, Linux, X64]` runner class。`ubuntu-latest` 等 hosted runner alias 只能出现在负例测试 fixture 中，不得进入实际 workflow 或推荐示例。自托管 runner 必须提供可写的 `RUNNER_TOOL_CACHE` 与 `AGENT_TOOLSDIRECTORY`；若 job 在首个 step 前因 `/opt/hostedtoolcache` 权限失败而中止，应登记为 runner 基础设施阻断，不得通过切换 hosted runner、跳过 Gate 或放宽 validator 规避。
 
+`setup-ci-toolchain.sh` MUST 管理 Python/YAML 工具隔离。它优先创建 job-local virtualenv；当自托管 runner 缺少 `python3-venv` / `ensurepip` 时，MUST fallback 到 workspace-local `pip --target`，并通过 `PYTHONPATH` 与 `yamllint` wrapper 暴露给后续 step。该 fallback 只解决 runner Python 打包差异，不允许依赖全局 `PyYAML` 或全局 `yamllint` 作为完成证据。
+
 ## 依赖
 
 - `goal-delivery.sh`: bash, grep, find, git, awk（v2：自动状态推进、Gate 委托、auto/change 命令）
@@ -316,4 +318,4 @@ Goal 相关 workflow MUST 使用 `[self-hosted, Linux, X64]` runner class。`ubu
 - `lint-goal.sh`: bash, grep, find
 - `rule-drift-check.py`: Python 3.10+
 - `self-test.sh`: bash, Python 3.10+, grep, find, git
-- `setup-ci-toolchain.sh`: bash, Python 3.10+, venv/pip, 可写 `RUNNER_TOOL_CACHE` 与 `AGENT_TOOLSDIRECTORY`
+- `setup-ci-toolchain.sh`: bash, Python 3.10+, `venv` 或 `pip --target` fallback, 可写 `RUNNER_TOOL_CACHE` 与 `AGENT_TOOLSDIRECTORY`
