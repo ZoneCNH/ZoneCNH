@@ -16,7 +16,7 @@ from pathlib import Path
 from typing import Any
 
 
-AREAS = ("runtime", "matrix", "gate", "risk", "consistency")
+AREAS = ("runtime", "registry", "matrix", "gate", "risk", "consistency")
 
 EDGE_REQUIRED_FIELDS = [
     "source_id",
@@ -78,8 +78,17 @@ PASS_WITH_RISK_OWNER_FIELDS = {"risk_owner", "owner"}
 OPEN_RISK_STATUSES = {"OPEN", "ESCALATED"}
 RELEASED_STATUSES = {"RELEASED"}
 DONE_PIPELINE_STATES = {"DONE"}
-RISK_ID_PATTERN = re.compile(r"^RISK-GOAL-\d{8}-\d{3}-\d{3}$")
-RISK_ID_EXPECTED = "RISK-GOAL-YYYYMMDD-NNN-NNN"
+NAMESPACE_FRAGMENT = r"(?:[0-9]{8}|[A-Z0-9]+(?:-[A-Z0-9]+)*)"
+TASK_REF_FRAGMENT = r"(?:GOAL-[0-9]{8}-[0-9]{3}-[0-9]{3}|[A-Z0-9]+(?:-[A-Z0-9]+)*-[0-9]{3}[A-Z]?)"
+GOAL_ID_PATTERN = re.compile(rf"^GOAL-{NAMESPACE_FRAGMENT}-[0-9]{{3}}$")
+TASK_ID_PATTERN = re.compile(rf"^TASK-{TASK_REF_FRAGMENT}$")
+RELEASE_ID_PATTERN = re.compile(r"^REL-[0-9]{8}-[a-z0-9][a-z0-9-]*$")
+DECISION_ID_PATTERN = re.compile(r"^DEC-[0-9]{8}-[0-9]{3}$")
+RISK_ID_PATTERN = re.compile(rf"^RISK-GOAL-{NAMESPACE_FRAGMENT}-[0-9]{{3}}-[0-9]{{3}}$")
+RISK_ID_EXPECTED = "RISK-GOAL-<DATE|MODULE-NAMESPACE>-NNN-NNN"
+REQUIRED_CI_JOBS = {"goal-validator", "goal-toolchain-check"}
+DELEGATED_RULE_JOBS = {"id-format-check", "matrix-coverage", "gate-check", "orphan-check"}
+REGISTRY_FILES = ("goals.yaml", "tasks.yaml", "issues.yaml", "releases.yaml", "risks.yaml", "decisions.yaml")
 GATE_ID_EXTRACTORS = (
     re.compile(r"^\s*-\s+gate_id:\s*(GK-\d+|G\d+)\s*$"),
     re.compile(r"^  (GK-\d+|G\d+):\s*$"),
@@ -193,6 +202,14 @@ def is_truthy(value: Any) -> bool:
     return normalize_status(value) in {"TRUE", "YES", "Y", "1"}
 
 
+def as_list(value: Any) -> list[str]:
+    if isinstance(value, list):
+        return [str(item) for item in value]
+    if isinstance(value, str):
+        return parse_inline_list(value)
+    return []
+
+
 def read_lines(path: Path) -> list[str]:
     return path.read_text(encoding="utf-8").splitlines()
 
@@ -256,6 +273,64 @@ def parse_ci_required_jobs(path: Path) -> set[str]:
                 required_jobs.add(clean_value(item.group(1)))
 
     return required_jobs
+
+
+def parse_registry_items(path: Path, section_name: str) -> list[dict[str, Any]]:
+    if not path.exists():
+        return []
+
+    items: list[dict[str, Any]] = []
+    current: dict[str, Any] | None = None
+    current_key: str | None = None
+    in_section = False
+
+    for line_number, raw_line in enumerate(read_lines(path), start=1):
+        if not raw_line.strip() or raw_line.lstrip().startswith("#"):
+            continue
+
+        section = re.match(rf"^{re.escape(section_name)}:\s*(.*)$", raw_line)
+        if section:
+            in_section = True
+            current = None
+            current_key = None
+            if clean_value(section.group(1)) == "[]":
+                return []
+            continue
+
+        if not in_section:
+            continue
+
+        if re.match(r"^[A-Za-z_][A-Za-z0-9_]*:\s*", raw_line):
+            break
+
+        start = re.match(r"^\s*-\s+([A-Za-z_][A-Za-z0-9_]*):\s*(.*)$", raw_line)
+        if start:
+            if current:
+                items.append(current)
+            key, value = start.group(1), parse_scalar(start.group(2))
+            current = {"_line": line_number, key: value}
+            current_key = key
+            continue
+
+        if current is None:
+            continue
+
+        field = re.match(r"^\s+([A-Za-z_][A-Za-z0-9_]*):\s*(.*)$", raw_line)
+        if field:
+            key, value = field.group(1), parse_scalar(field.group(2))
+            current[key] = value
+            current_key = key
+            continue
+
+        item = re.match(r"^\s+-\s*(.+?)\s*$", raw_line)
+        if item and current_key:
+            if not isinstance(current.get(current_key), list):
+                current[current_key] = []
+            current[current_key].append(clean_value(item.group(1)))
+
+    if current:
+        items.append(current)
+    return items
 
 
 def parse_matrix(path: Path) -> list[dict[str, Any]]:
