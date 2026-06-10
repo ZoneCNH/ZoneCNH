@@ -4,6 +4,6 @@ on:
 
 jobs:
   test:
-    runs-on: [self-hosted, Linux, X64, homepage]
+    runs-on: [self-hosted, Linux, X64]
     steps:
       - run: echo "runner works" && hostname && whoami && date

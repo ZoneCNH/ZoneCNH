@@ -1,50 +1,69 @@
 # CI 部署文档
 
 > FoundationX 文档枢纽 CI/CD 完整部署指南。
-> 最后更新：2026-06-08
+> 最后更新：2026-06-11
 
 ## 1. 概述
 
-本仓库使用 GitHub Actions 作为 CI/CD 平台，运行在 **self-hosted runner**（`[self-hosted, linux, x64]`）上。
+本仓库使用 GitHub Actions 作为 CI/CD 平台，所有直接声明 runner 的 job 统一运行在 **self-hosted runner**（`[self-hosted, Linux, X64]`）上。Reusable workflow job 只能调用仓库内 workflow，因此被调用 workflow 继续受同一 runner 规则约束。部署到运行环境或远端机器时，目标机器池统一为 **`sre/`**。
 
-共 **5 个 workflow**、**28 个 job**，覆盖五个维度：
+共 **9 个 workflow**、**41 个 top-level job**（其中 **39** 个直接声明 `runs-on`，**2** 个调用仓库内 reusable workflow），覆盖仓库文档、Goal 体系、依赖矩阵、外部评分锚点、发布元数据和 runner 烟雾测试：
 
-| Workflow          | 文件                | 职责                                                      | Job 数 |
-| ----------------- | ------------------- | --------------------------------------------------------- | ------ |
-| **Docs CI**       | `docs-ci.yml`       | 文档质量守卫（Markdown 格式、链接、敏感内容、Spec 结构）  | 12     |
-| **Goal CI**       | `goal-ci.yml`       | Goal 驱动交付体系门禁（YAML、Registry、ID、Matrix、Gate） | 10     |
-| **Outer Metrics** | `outer-metrics.yml` | 评分体系外部锚点采集与 Goodhart 检测                      | 2      |
-| **Release**       | `release.yml`       | 版本发布（质量门禁 → manifest → GitHub Release）          | 3      |
-| **Scripts Tests** | `scripts-tests.yml` | rule-scorer 单元测试与 shell 脚本烟雾测试                 | 2      |
+| Workflow             | 文件                   | 职责                                                      | Job 数 |
+| -------------------- | ---------------------- | --------------------------------------------------------- | ------ |
+| **Docs CI**          | `docs-ci.yml`          | 文档质量守卫、workflow 策略守卫、Spec 结构检查            | 13     |
+| **Goal CI**          | `goal-ci.yml`          | Goal 驱动交付体系门禁（YAML、Registry、ID、Matrix、Gate） | 12     |
+| **Deps Matrix**      | `deps-matrix.yml`      | Foundation 依赖矩阵检查和 PR 汇总                        | 4      |
+| **Outer Metrics**    | `outer-metrics.yml`    | 评分体系外部锚点采集与 Goodhart 检测                      | 2      |
+| **Release**          | `release.yml`          | 版本发布元数据（质量门禁 → manifest → GitHub Release）    | 5      |
+| **Scripts Tests**    | `scripts-tests.yml`    | rule-scorer 单元测试与 shell 脚本烟雾测试                 | 2      |
+| **Runner Test**      | `runner-test.yml`      | self-hosted runner 手动探测                               | 1      |
+| **Self-Hosted Test** | `self-hosted-test.yml` | self-hosted runner 基线烟雾测试                           | 1      |
+| **Minimal Test**     | `minimal-test.yml`     | 最小 workflow 连通性测试                                  | 1      |
 
-## 2. Self-Hosted Runner 要求
+## 2. Self-Hosted Runner 与部署目标要求
 
 ### 2.1 Runner 标签
 
-所有 workflow 使用以下标签：
+所有直接声明 runner 的 workflow job 必须使用完全一致的标签：
 
 ```yaml
-runs-on: [self-hosted, linux, x64]
+runs-on: [self-hosted, Linux, X64]
 ```
 
-### 2.2 预装依赖
+禁止项：
 
-self-hosted runner **必须预装**以下依赖，CI 不会自动安装：
+- `ubuntu-latest`、`macos-*`、`windows-*` 等 GitHub-hosted runner
+- `Linux` / `X64` 大小写漂移
+- `homepage` 等业务、个人或模块专属额外 label
+- 调用外部 reusable workflow 绕过仓库内 runner 策略
+
+job 级 reusable workflow `uses:` 只能指向 `./.github/workflows/*`。该规则由 `.github/ci/workflow-policy-guard.sh` 强制校验，覆盖直接 `runs-on`、仓库内 reusable workflow 调用和部署目标声明。
+
+### 2.2 部署目标
+
+- 部署到运行环境或远端机器的 job 必须统一落在 `sre/` 机器池。
+- workflow 不得通过业务机、个人机或模块专属 runner label 表达部署目标；目标选择应由 SRE 入口、环境变量或部署清单完成。
+- `release.yml` 当前只创建 GitHub Release 元数据，不等同机器部署；若未来加入真实部署步骤，必须显式声明 `sre/` 目标并通过 workflow 策略守卫。
+
+### 2.3 基础依赖
+
+self-hosted runner **必须预装**以下基础依赖。Python 包依赖由 job-local 工具链安装，不要求 runner 全局预装：
 
 | 依赖           | 最低版本  | 用途                                  | 安装命令（参考）                   |
 | -------------- | --------- | ------------------------------------- | ---------------------------------- |
 | `git`          | ≥ 2.30    | 所有 workflow                         | `apt install git`                  |
 | `python3`      | ≥ 3.11    | Goal CI、Outer Metrics、Scripts Tests | `apt install python3`              |
-| `pip`          | 随 Python | 安装 Python 包                        | `apt install python3-pip`          |
-| `yamllint`     | latest    | Goal CI YAML 语法检查                 | `pip install yamllint`             |
-| `pytest`       | latest    | Scripts Tests 单元测试                | `pip install pytest`               |
-| `pyyaml`       | latest    | Goal CI Python 脚本解析 YAML          | `pip install pyyaml`               |
+| `python3-venv` | 随 Python | job-local Python 工具链               | `apt install python3-venv`         |
+| `pip`          | 随 Python | job-local Python 工具链 bootstrap     | `apt install python3-pip`          |
 | `jq`           | ≥ 1.6     | Release manifest 解析                 | `apt install jq`                   |
-| `node` / `npx` | ≥ 18      | Docs CI markdownlint-cli2             | 见 [Node.js 安装](#23-nodejs-安装) |
-| `lychee`       | ≥ 0.15    | Docs CI / Release 链接检查            | 见 [lychee 安装](#24-lychee-安装)  |
+| `node` / `npx` | ≥ 18      | Docs CI markdownlint-cli2             | 见 [Node.js 安装](#24-nodejs-安装) |
+| `lychee`       | ≥ 0.15    | Docs CI / Release 链接检查            | 见 [lychee 安装](#25-lychee-安装)  |
 | `bash`         | ≥ 4.0     | 所有 CI 脚本                          | 系统自带                           |
 
-### 2.3 Node.js 安装
+`yamllint`、`pytest`、`pyyaml` 等 Python 依赖由 CI job 通过 `docs/goal/tools/setup-ci-toolchain.sh` 写入 job-local `.cache/ci-python/`，不得要求 runner 全局预装。
+
+### 2.4 Node.js 安装
 
 markdownlint-cli2 通过 `npx` 运行，需要 Node.js：
 
@@ -60,7 +79,7 @@ curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
 sudo apt-get install -y nodejs
 ```
 
-### 2.4 lychee 安装
+### 2.5 lychee 安装
 
 ```bash
 # 方法 1：cargo
@@ -75,7 +94,7 @@ sudo mv lychee /usr/local/bin/
 sudo apt install lychee
 ```
 
-### 2.5 一键安装脚本
+### 2.6 一键安装脚本
 
 ```bash
 #!/usr/bin/env bash
@@ -84,10 +103,7 @@ set -euo pipefail
 
 echo "=== 安装系统包 ==="
 sudo apt-get update
-sudo apt-get install -y git python3 python3-pip jq
-
-echo "=== 安装 Python 包 ==="
-pip3 install --user yamllint pytest pyyaml
+sudo apt-get install -y git python3 python3-venv python3-pip jq
 
 echo "=== 安装 Node.js ==="
 if ! command -v node &>/dev/null; then
@@ -103,14 +119,20 @@ if ! command -v lychee &>/dev/null; then
   rm -f lychee-x86_64-unknown-linux-gnu.tar.gz
 fi
 
-echo "=== 验证 ==="
+echo "=== 验证基础工具 ==="
 git --version
 python3 --version
 node --version
 jq --version
 lychee --version
+
+echo "=== 验证 job-local Python 工具链 ==="
+bash docs/goal/tools/setup-ci-toolchain.sh
+. .cache/ci-python/bin/activate
+python -c "import yaml, pytest; print('python deps ok')"
 yamllint --version
 pytest --version
+deactivate
 
 echo "✅ 全部依赖安装完成"
 ```
@@ -140,15 +162,16 @@ echo "✅ 全部依赖安装完成"
 | 1   | `markdownlint`          | 10min | Markdown 格式规范                                 | `DavidAnson/markdownlint-cli2-action@v19` |
 | 2   | `link-check`            | 15min | 链接有效性检查                                    | `lycheeverse/lychee-action@v2`            |
 | 3   | `grep-guard`            | 10min | 敏感内容守卫（凭据/本地路径/运行时目录/本地地址） | `.github/ci/grep-guard.sh`                |
-| 4   | `status-consistency`    | 10min | 状态表与文档一致性                                | `.github/ci/status-consistency-check.sh`  |
-| 5   | `spec-lint`             | 15min | Spec 23节结构校验、FR 连续性、模糊词检测          | `.github/ci/spec-lint.sh`                 |
-| 6   | `spec-drift-guard`      | 10min | SPEC.md 篡改检测                                  | `.github/ci/spec-drift-guard.sh`          |
-| 7   | `traceability-check`    | 10min | 追踪矩阵完整性                                    | `.github/ci/traceability-check.sh`        |
-| 8   | `task-spec-validate`    | 10min | Task Spec 结构和一致性                            | `.github/ci/task-spec-validate.sh`        |
-| 9   | `spec-status-report`    | 10min | Spec 状态报告生成                                 | `.github/ci/spec-status-report.sh`        |
-| 10  | `glossary-consistency`  | 10min | 术语与 GLOSSARY.md 一致性                         | `.github/ci/glossary-consistency.sh`      |
-| 11  | `anti-requirement-scan` | 10min | 反需求扫描                                        | `.github/ci/anti-requirement-scan.sh`     |
-| 12  | `outer-metrics-guard`   | 10min | 宪法 §14.2 — 拒绝 LLM agent 写入 outer-metrics    | `scripts/outer-metrics-validate.sh`       |
+| 4   | `workflow-policy-guard` | 10min | 全局 runner 与部署目标策略守卫                    | `.github/ci/workflow-policy-guard.sh`     |
+| 5   | `status-consistency`    | 10min | 状态表与文档一致性                                | `.github/ci/status-consistency-check.sh`  |
+| 6   | `spec-lint`             | 15min | Spec 23节结构校验、FR 连续性、模糊词检测          | `.github/ci/spec-lint.sh`                 |
+| 7   | `spec-drift-guard`      | 10min | SPEC.md 篡改检测                                  | `.github/ci/spec-drift-guard.sh`          |
+| 8   | `traceability-check`    | 10min | 追踪矩阵完整性                                    | `.github/ci/traceability-check.sh`        |
+| 9   | `task-spec-validate`    | 10min | Task Spec 结构和一致性                            | `.github/ci/task-spec-validate.sh`        |
+| 10  | `spec-status-report`    | 10min | Spec 状态报告生成                                 | `.github/ci/spec-status-report.sh`        |
+| 11  | `glossary-consistency`  | 10min | 术语与 GLOSSARY.md 一致性                         | `.github/ci/glossary-consistency.sh`      |
+| 12  | `anti-requirement-scan` | 10min | 反需求扫描                                        | `.github/ci/anti-requirement-scan.sh`     |
+| 13  | `outer-metrics-guard`   | 10min | 宪法 §14.2 — 拒绝 LLM agent 写入 outer-metrics    | `scripts/outer-metrics-validate.sh`       |
 
 **配置文件**：
 
@@ -246,20 +269,27 @@ module/*/SPEC.md → outer-metrics-from-git.sh → outer-metrics-eval.sh
 ```
 tag push (v*)
     ↓
-quality-gate (复用 docs-ci.yml 全部 12 个检查)
+quality-gate (复用 docs-ci.yml 全部 13 个检查)
+    + goal-control-plane (复用 goal-ci.yml 全部 12 个检查)
+    ↓
+release-gate (执行 Goal 发布硬阻断)
     ↓
 build-manifest (生成 release-manifest.json + upload artifact)
     ↓
 publish-release (下载 artifact → 生成 changelog → 创建 GitHub Release)
 ```
 
+当前 Release workflow 只创建 GitHub Release 元数据，不执行机器部署。若后续增加真实部署步骤，部署目标必须统一为 `sre/` 机器池。
+
 **Job 列表**：
 
-| Job               | 超时            | 依赖           | 职责                                                            |
-| ----------------- | --------------- | -------------- | --------------------------------------------------------------- |
-| `quality-gate`    | 由 docs-ci 定义 | —              | 调用 `docs-ci.yml`（`workflow_call`）                           |
-| `build-manifest`  | 15min           | quality-gate   | 生成 release manifest JSON                                      |
-| `publish-release` | 10min           | build-manifest | 按 conventional commits 分类生成 changelog，创建 GitHub Release |
+| Job                  | 超时             | 依赖                              | 职责                                                            |
+| -------------------- | ---------------- | --------------------------------- | --------------------------------------------------------------- |
+| `quality-gate`       | 由 docs-ci 定义  | —                                 | 调用 `docs-ci.yml`（`workflow_call`）                           |
+| `goal-control-plane` | 由 goal-ci 定义  | —                                 | 调用 `goal-ci.yml`（`workflow_call`）                           |
+| `release-gate`       | 10min            | quality-gate, goal-control-plane | 执行 Goal release gate 并上传产物                               |
+| `build-manifest`     | 15min            | release-gate                      | 生成 release manifest JSON                                      |
+| `publish-release`    | 10min            | build-manifest                    | 按 conventional commits 分类生成 changelog，创建 GitHub Release |
 
 **发布流程**：
 
@@ -269,6 +299,7 @@ git checkout main && git pull
 
 # 2. 运行本地质量检查（可选）
 bash .github/ci/grep-guard.sh
+bash .github/ci/workflow-policy-guard.sh
 bash .github/ci/spec-lint.sh
 
 # 3. 创建 tag
@@ -317,6 +348,7 @@ git push origin v0.5.0
 | `task-spec-validate.sh`        | ~280 | Task Spec 结构和引用一致性                                                   | docs-ci          |
 | `traceability-check.sh`        | ~190 | 追踪矩阵 FR↔证据映射                                                         | docs-ci, release |
 | `grep-guard.sh`                | 132  | 4 类敏感内容扫描（凭据/运行时目录/本地地址/本地路径）                        | docs-ci, release |
+| `workflow-policy-guard.sh`     | 131  | 全局 runner 与 `sre/` 部署目标策略守卫                                       | docs-ci          |
 | `glossary-consistency.sh`      | ~100 | 术语表一致性                                                                 | docs-ci          |
 | `anti-requirement-scan.sh`     | ~110 | 反需求扫描                                                                   | docs-ci          |
 | `spec-drift-guard.sh`          | ~70  | SPEC.md 篡改检测                                                             | docs-ci, release |
@@ -349,11 +381,12 @@ git push origin v0.5.0
 
 | 症状                          | 原因                             | 解决                                                                  |
 | ----------------------------- | -------------------------------- | --------------------------------------------------------------------- |
-| `lychee: command not found`   | runner 未安装 lychee             | 见 [2.4 lychee 安装](#24-lychee-安装)                                 |
-| `npx: command not found`      | runner 未安装 Node.js            | 见 [2.3 Node.js 安装](#23-nodejs-安装)                                |
-| `yamllint: command not found` | runner 未安装 yamllint           | `pip install yamllint`                                                |
-| `pytest: command not found`   | runner 未安装 pytest             | `pip install pytest`                                                  |
+| `lychee: command not found`   | runner 未安装 lychee             | 见 [2.5 lychee 安装](#25-lychee-安装)                                 |
+| `npx: command not found`      | runner 未安装 Node.js            | 见 [2.4 Node.js 安装](#24-nodejs-安装)                                |
+| `yamllint: command not found` | job-local Python 工具链未激活     | 运行 `bash docs/goal/tools/setup-ci-toolchain.sh` 后激活 venv          |
+| `pytest: command not found`   | job-local Python 工具链未激活     | 运行 `bash docs/goal/tools/setup-ci-toolchain.sh` 后激活 venv          |
 | `jq: command not found`       | runner 未安装 jq                 | `apt install jq`                                                      |
+| `workflow-policy-guard` 失败  | runner 标签或部署目标违反全局规则 | 改为 `[self-hosted, Linux, X64]`；部署目标统一声明为 `sre/`            |
 | `timeout-minutes` 超时        | CI 脚本卡死或网络问题            | 检查 runner 网络连接，检查脚本是否有死循环                            |
 | `outer-metrics-guard` 失败    | LLM agent 尝试修改 outer-metrics | 确保 outer-metrics 变更由 CI bot 或人工 `[outer-metrics:manual]` 提交 |
 | `spec-lint` 报 23 节缺失      | SPEC.md 结构不完整               | 按 `module/README.md` 模板补齐 §1-§23                                 |
@@ -364,8 +397,13 @@ git push origin v0.5.0
 ```bash
 # 本地运行单个 CI 脚本
 bash .github/ci/grep-guard.sh
+bash .github/ci/workflow-policy-guard.sh
 bash .github/ci/spec-lint.sh
 bash .github/ci/status-consistency-check.sh
+
+# 本地准备 job-local Python 工具链
+bash docs/goal/tools/setup-ci-toolchain.sh
+. .cache/ci-python/bin/activate
 
 # 本地运行 markdownlint
 npx markdownlint-cli2 "*.md" "docs/**/*.md" "module/**/*.md"
@@ -391,8 +429,12 @@ python3 scripts/rule-scorer.py spec <module-name>
 # 使用 GitHub CLI
 gh workflow run docs-ci.yml
 gh workflow run goal-ci.yml
+gh workflow run deps-matrix.yml
 gh workflow run outer-metrics.yml
 gh workflow run scripts-tests.yml
+gh workflow run runner-test.yml
+gh workflow run self-hosted-test.yml
+gh workflow run minimal-test.yml
 
 # 触发 Release（需要先创建 tag）
 git tag v0.5.0
@@ -403,9 +445,11 @@ git push origin v0.5.0
 
 | 日期       | 决策                                                  | 理由                             |
 | ---------- | ----------------------------------------------------- | -------------------------------- |
-| 2026-06-08 | 全部 workflow 切换到 `[self-hosted, linux, x64]`      | 降低成本，利用已有 runner 资源   |
+| 2026-06-11 | 全局 workflow 策略由 `workflow-policy-guard.sh` 强制校验 | 防止 runner 与部署规则回退       |
+| 2026-06-11 | 部署到运行环境或远端机器统一落在 `sre/` 机器池       | 避免业务机或个人机承载发布职责   |
+| 2026-06-08 | 全部 workflow 切换到 `[self-hosted, Linux, X64]`      | 降低成本，利用已有 runner 资源   |
 | 2026-06-08 | 所有 job 添加 `timeout-minutes`                       | 防止 self-hosted runner 挂起阻塞 |
-| 2026-06-08 | 移除 `apt-get install` 和 `pip install` 步骤          | self-hosted runner 应预装依赖    |
+| 2026-06-08 | Python 包改为 job-local 工具链                       | 避免 runner 全局 Python 依赖漂移 |
 | 2026-06-08 | release.yml 质量门禁改为 `workflow_call` 复用 docs-ci | 消除重复维护，DRY 原则           |
 | 2026-06-08 | outer-metrics-guard 移除 PR-only 条件                 | workflow_call 复用时需全场景覆盖 |
 | 2026-06-08 | scripts-tests smoke 去掉 `\|\| true`                  | CI 失败应真正阻断，不容忍错误    |
@@ -422,11 +466,20 @@ git push origin v0.5.0
 
 ### 新增 Workflow 时
 
-- [ ] 使用 `[self-hosted, linux, x64]` runner
+- [ ] 每个 job 使用 `[self-hosted, Linux, X64]` runner
+- [ ] 不添加业务、个人或模块专属 runner label
 - [ ] 每个 job 添加 `timeout-minutes`
 - [ ] 路径过滤避免无关变更触发
 - [ ] 评估是否可通过 `workflow_call` 复用现有 workflow
+- [ ] 本地运行 `bash .github/ci/workflow-policy-guard.sh`
 - [ ] 更新本文档的 Workflow 概述
+
+### 新增部署 Job 时
+
+- [ ] 部署目标统一声明为 `sre/` 机器池
+- [ ] 不通过业务机、个人机或模块专属 runner label 表达部署目标
+- [ ] 本地运行 `bash .github/ci/workflow-policy-guard.sh`
+- [ ] 在 PR 描述中说明部署入口、目标目录和回滚方式
 
 ### Runner 环境变更时
 

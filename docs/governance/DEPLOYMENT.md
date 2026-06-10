@@ -163,7 +163,7 @@ on:
 
 jobs:
   check:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64]
 
     steps:
       - name: Checkout
@@ -183,6 +183,8 @@ jobs:
       - name: Lint
         uses: golangci/golangci-lint-action@v4
 ```text
+
+仓库全局 CI/CD 禁止 GitHub-hosted runner。部署到运行环境或远端机器时，执行目标必须是 `sre/` 机器池。
 
 ### CI 的作用
 
