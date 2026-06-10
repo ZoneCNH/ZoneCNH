@@ -45,6 +45,23 @@ Controlled RSI 的价值来自重复问题的系统性消除，而不是生成�
 
 改进必须先证明“为什么现在的工作流漏掉了问题”，再提出补丁。
 
+## 迭代预算与停止条件
+
+每次 Controlled RSI 运行在第一次修改前 MUST 写明：
+
+- `max_iterations`：默认最多 3 轮；超过 3 轮必须有新的任务授权或 Human Approval。
+- `scope`：本轮允许优化的文档、模板、Prompt、Checklist、Gate 描述、Matrix 字段或评估集。
+- `protected_asset_policy`：是否可能触碰 Constitution、schema、CI、agent prompt、Release Gate、Rollback、Incident、P0/P1 AC 或安全相关约束；触碰时只能生成 Change Request。
+- `validation_command`：本轮用来证明改进有效的 validator、CI、replay 或样例任务命令。
+- `stop_condition`：PASS、被受保护资产阻断、没有新的已验证 P0/P1、或继续迭代不能增加验证价值。
+
+Controlled RSI MUST 在以下任一条件出现时停止：
+
+- R0-R9 全部通过且验证命令已记录。
+- 改进需要 Human Approval 或受保护资产同步。
+- 剩余问题只能标记为 Hypothesis，缺少仓库证据。
+- 新一轮只会扩大范围、增加文本或改变产品目标，而不能提高可执行性、可验证性、可阻断性或可审计性。
+
 ## R0-R9 控制 Gate
 
 Controlled RSI 的每次改进都必须通过 R0-R9。任一 Gate 无法证明时，改进进入 Backlog 或 Change Request，MUST NOT 直接应用。

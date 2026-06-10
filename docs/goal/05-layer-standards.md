@@ -73,8 +73,10 @@ REQ-SPEC-export-v1-007: 系统记录导出日志。
 ### Spec 状态
 
 ```text
-Draft → Reviewed → Approved → Changed → Deprecated
+Draft → Review → Approved → Superseded / Deprecated
 ```
+
+`Changed` 不是 Spec 的稳定终态。Approved Spec 如需语义变更，MUST 进入新的 Draft / Review 周期，或由新版本 Supersede 旧版本；历史 prompt 或投影中出现的 `Reviewed` / `Changed` 只能作为兼容显示，不能作为新的控制面状态。
 
 ---
 
@@ -311,7 +313,7 @@ Goal → Spec → Design → Plan → Tasks → Prompt → Code → Test → Rev
 | target_type / target_id | 目标节点类型与 ID |
 | relation | canonical relation vocabulary 中的一个值，见下表 |
 | priority | P0 / P1 / P2 / P3 |
-| status | Unmapped / Mapped / Linked / Verified / Dropped / Blocked / Drifted / Stale |
+| status | Unmapped / Mapped / Linked / Verified / Dropped / Blocked / Changed / Drifted / Stale |
 | owner | 负责维护该 edge 的人或 Agent |
 | evidence_id | 证明该 edge 的 Evidence ID；release-critical edge MUST 填写 |
 | risk_id | 关联风险；High/Critical 或 release_blocking 风险 MUST 填写 |
