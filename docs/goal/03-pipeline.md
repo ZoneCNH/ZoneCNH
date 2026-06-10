@@ -135,6 +135,8 @@ Recommended Next Action: [建议下一步]
 
 `WAIVED` 是豁免策略，不是 Gate 结果值。豁免记录必须保留 `approver`、`reason`、`expires_at`，并在最终 Gate 结果中映射为 `PASS_WITH_RISK` 或 `BLOCKED`。
 
+Gate 的 `result.verdict` 与 Pipeline 的 `phase_status` 是两条独立状态轴。`NOT_STARTED`、`IN_PROGRESS` 等生命周期状态只能出现在 Pipeline、运行态或补充性快照中，不能作为 Gate `result.verdict`；canonical Gate（`G0`-`G11`）进入控制面时必须给出终态裁决。
+
 回退规则：
 
 | From | To | 条件 |

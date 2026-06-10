@@ -250,3 +250,9 @@ PASS_WITH_RISK — 通过但有风险，需进入 Risk Register
 FAIL           — 不通过，需修复
 BLOCKED        — 被阻塞，需解决依赖
 ```
+
+`result.verdict` 只能使用以上四个裁决值。`NOT_STARTED` 和 `IN_PROGRESS` 只属于生命周期或运行态快照，不是 Gate 结果裁决。
+
+提交到控制面的 canonical Gate（`G0`-`G11`）必须处于终态裁决，且 `status` 必须与 `result.verdict` 一致。补充性模块快照或临时运行态可以记录生命周期状态，但不能把生命周期状态写入 `result.verdict`。
+
+当 Gate 记录同时包含数值型 `result.score` 和 `result.threshold` 时，`PASS` 必须满足 `score >= threshold`。低于阈值的记录只能裁决为 `PASS_WITH_RISK`、`FAIL` 或 `BLOCKED`，并保留对应风险或阻塞说明。

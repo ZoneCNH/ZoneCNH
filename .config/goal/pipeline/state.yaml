@@ -2,6 +2,7 @@
 # 权威来源：docs/goal/03-pipeline.md 与 docs/goal/00-authority-map.md
 # 路径：.config/goal/pipeline/state.yaml
 # 规则：本文件保存状态快照，不定义状态枚举；枚举以 .config/goal/schema/rules.yaml 为机器校验投影。
+# 运行时临时状态进入 .config/goal/runtime/ 或 .omx/state/，不得回写为枚举权威。
 
 schema_version: "2026-06-09"
 
@@ -249,8 +250,8 @@ pipeline:
       - G7
       - G8
       - G9
-    gates_pending:
       - G10
+    gates_pending:
       - G11
     blockers:
       - blocker_id: RISK-GOAL-20260608-001-001

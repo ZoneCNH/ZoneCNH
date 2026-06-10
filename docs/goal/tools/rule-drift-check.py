@@ -49,6 +49,10 @@ def as_list(value: Any) -> list[str]:
     return []
 
 
+def is_true(value: Any) -> bool:
+    return value is True or str(value).strip().lower() in {"true", "yes", "1"}
+
+
 EDGE_REQUIRED_FIELDS = {
     "source_id",
     "target_id",
@@ -82,6 +86,11 @@ EDGE_STATUSES = {
     "Changed",
 }
 EDGE_TERMINAL_STATUSES = {"Verified", "Dropped"}
+GATE_DECISION_STATUSES = {"PASS", "PASS_WITH_RISK", "FAIL", "BLOCKED"}
+GATE_LIFECYCLE_STATUSES = GATE_DECISION_STATUSES | {"NOT_STARTED", "IN_PROGRESS"}
+MATRIX_TERMINAL_COVERAGE_THRESHOLD = 95
+MATRIX_WARNING_COVERAGE_THRESHOLD = 60
+LEGACY_NAMESPACE_MODE = "grandfathered_import_only"
 
 
 def load_rules(path: Path) -> dict[str, dict[str, Any]]:
@@ -143,6 +152,84 @@ class Report:
         self.failures.append(message)
         if not self.quiet:
             print(f"[FAIL] {message}")
+
+
+def check_schema_rules(rules: dict[str, dict[str, Any]], report: Report) -> None:
+    ok = True
+
+    def fail(message: str) -> None:
+        nonlocal ok
+        ok = False
+        report.fail(message)
+
+    matrix = rules.get("matrix", {})
+    if matrix.get("coverage_threshold") != MATRIX_TERMINAL_COVERAGE_THRESHOLD:
+        fail(
+            "rules.yaml matrix.coverage_threshold drift: "
+            f"expected {MATRIX_TERMINAL_COVERAGE_THRESHOLD}, actual {matrix.get('coverage_threshold')}"
+        )
+    if matrix.get("terminal_coverage_threshold") != MATRIX_TERMINAL_COVERAGE_THRESHOLD:
+        fail(
+            "rules.yaml matrix.terminal_coverage_threshold drift: "
+            f"expected {MATRIX_TERMINAL_COVERAGE_THRESHOLD}, "
+            f"actual {matrix.get('terminal_coverage_threshold')}"
+        )
+    if matrix.get("warning_coverage_threshold") != MATRIX_WARNING_COVERAGE_THRESHOLD:
+        fail(
+            "rules.yaml matrix.warning_coverage_threshold drift: "
+            f"expected {MATRIX_WARNING_COVERAGE_THRESHOLD}, "
+            f"actual {matrix.get('warning_coverage_threshold')}"
+        )
+
+    gate = rules.get("gate", {})
+    status_values = set(as_list(gate.get("status_values", [])))
+    lifecycle_status_values = set(as_list(gate.get("lifecycle_status_values", [])))
+    result_verdicts = set(as_list(gate.get("result_verdicts", [])))
+    if status_values != GATE_LIFECYCLE_STATUSES:
+        fail(
+            "rules.yaml gate.status_values drift: "
+            f"expected {sorted(GATE_LIFECYCLE_STATUSES)}, actual {sorted(status_values)}"
+        )
+    if lifecycle_status_values != GATE_LIFECYCLE_STATUSES:
+        fail(
+            "rules.yaml gate.lifecycle_status_values drift: "
+            f"expected {sorted(GATE_LIFECYCLE_STATUSES)}, actual {sorted(lifecycle_status_values)}"
+        )
+    if result_verdicts != GATE_DECISION_STATUSES:
+        fail(
+            "rules.yaml gate.result_verdicts drift: "
+            f"expected {sorted(GATE_DECISION_STATUSES)}, actual {sorted(result_verdicts)}"
+        )
+    if "PENDING" in status_values or "PENDING" in lifecycle_status_values or "PENDING" in result_verdicts:
+        fail("rules.yaml gate vocabularies must not contain PENDING")
+    if {"NOT_STARTED", "IN_PROGRESS"} & result_verdicts:
+        fail("rules.yaml gate.result_verdicts must not contain lifecycle-only statuses")
+
+    ids = rules.get("ids", {})
+    if str(ids.get("legacy_namespace_mode")) != LEGACY_NAMESPACE_MODE:
+        fail(
+            "rules.yaml ids.legacy_namespace_mode drift: "
+            f"expected {LEGACY_NAMESPACE_MODE}, actual {ids.get('legacy_namespace_mode')}"
+        )
+    if str(ids.get("legacy_namespace_allowed")) != "XLIB":
+        fail(
+            "rules.yaml ids.legacy_namespace_allowed drift: "
+            f"expected XLIB, actual {ids.get('legacy_namespace_allowed')}"
+        )
+    if not is_true(ids.get("legacy_parse_only")):
+        fail("rules.yaml ids.legacy_parse_only must be true")
+    if not is_true(ids.get("canonical_output_required")):
+        fail("rules.yaml ids.canonical_output_required must be true")
+
+    evidence = rules.get("evidence", {})
+    if str(evidence.get("legacy_namespace_mode")) != LEGACY_NAMESPACE_MODE:
+        fail(
+            "rules.yaml evidence.legacy_namespace_mode drift: "
+            f"expected {LEGACY_NAMESPACE_MODE}, actual {evidence.get('legacy_namespace_mode')}"
+        )
+
+    if ok:
+        report.pass_("Schema rule invariants match executable Goal policy")
 
 
 def parse_matrix(path: Path) -> list[dict[str, Any]]:
@@ -207,7 +294,12 @@ def check_matrix(root: Path, rules: dict[str, dict[str, Any]], report: Report) -
         set(as_list(rules["matrix"].get("terminal_statuses", []))) or EDGE_TERMINAL_STATUSES
     )
     allowed_relations = set(as_list(rules["matrix"].get("relations", []))) or EDGE_RELATIONS
-    threshold = int(rules["matrix"].get("coverage_threshold", 95))
+    threshold = int(
+        rules["matrix"].get(
+            "terminal_coverage_threshold",
+            rules["matrix"].get("coverage_threshold", MATRIX_TERMINAL_COVERAGE_THRESHOLD),
+        )
+    )
 
     if configured_required and configured_required != EDGE_REQUIRED_FIELDS:
         report.fail(
@@ -330,17 +422,19 @@ def parse_gates(path: Path) -> dict[str, dict[str, str]]:
     gates: dict[str, dict[str, str]] = {}
     current: str | None = None
     for raw_line in path.read_text(encoding="utf-8").splitlines():
-        start = re.match(r"^\s*-\s+gate_id:\s*(G[0-9]+)\s*$", raw_line)
+        start = re.match(r"^\s*-\s+gate_id:\s*([A-Z][A-Z0-9-]*)\s*$", raw_line)
         if start:
-            current = start.group(1)
-            gates[current] = {}
+            gate_id = start.group(1)
+            current = gate_id if re.fullmatch(r"G[0-9]+", gate_id) else None
+            if current:
+                gates[current] = {}
             continue
         if not current:
             continue
         status = re.match(r"^    status:\s*([A-Z_]+)\s*$", raw_line)
         if status:
             gates[current]["status"] = status.group(1)
-        verdict = re.match(r"^\s+verdict:\s*([A-Z_]+)\s*$", raw_line)
+        verdict = re.match(r"^      verdict:\s*([A-Z_]+)\s*$", raw_line)
         if verdict:
             gates[current]["verdict"] = verdict.group(1)
     return gates
@@ -354,7 +448,9 @@ def check_gates(root: Path, rules: dict[str, dict[str, Any]], report: Report) ->
 
     gates = parse_gates(gate_file)
     required_ids = set(as_list(rules["gate"]["ids"]))
-    allowed_status = set(as_list(rules["gate"]["status_values"]))
+    allowed_status = set(as_list(rules["gate"].get("lifecycle_status_values", []))) or set(
+        as_list(rules["gate"]["status_values"])
+    )
     allowed_verdict = set(as_list(rules["gate"]["result_verdicts"]))
 
     missing = sorted(required_ids - set(gates))
@@ -362,10 +458,18 @@ def check_gates(root: Path, rules: dict[str, dict[str, Any]], report: Report) ->
         report.fail(f"Gate IDs missing: {', '.join(missing)}")
 
     for gate_id, values in gates.items():
-        if values.get("status") not in allowed_status:
-            report.fail(f"{gate_id} status invalid: {values.get('status')}")
-        if values.get("verdict") and values.get("verdict") not in allowed_verdict:
-            report.fail(f"{gate_id} verdict invalid: {values.get('verdict')}")
+        status = values.get("status")
+        verdict = values.get("verdict")
+        if status not in allowed_status:
+            report.fail(f"{gate_id} status invalid: {status}")
+        if status not in allowed_verdict:
+            report.fail(f"{gate_id} canonical status is not a decision status: {status}")
+        if not verdict:
+            report.fail(f"{gate_id} result.verdict missing")
+        elif verdict not in allowed_verdict:
+            report.fail(f"{gate_id} verdict invalid: {verdict}")
+        elif status in allowed_verdict and status != verdict:
+            report.fail(f"{gate_id} status/verdict mismatch: status={status}, verdict={verdict}")
 
     if not missing:
         report.pass_("Gate IDs and status vocabularies match rules.yaml")
@@ -491,11 +595,12 @@ def main() -> int:
         return 1
 
     rules = load_rules(rules_file)
-    for section in ["registry", "matrix", "evidence", "gate", "pipeline", "ci"]:
+    for section in ["ids", "registry", "matrix", "evidence", "gate", "pipeline", "ci"]:
         if section not in rules:
             report.fail(f"rules.yaml missing section: {section}")
 
     if not report.failures:
+        check_schema_rules(rules, report)
         check_registry(root, rules, report)
         evidence_refs = check_matrix(root, rules, report)
         check_evidence(root, rules, evidence_refs, report)

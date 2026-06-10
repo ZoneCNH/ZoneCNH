@@ -58,6 +58,11 @@ ids:
   risk_id_pattern: "^RISK-GOAL-[0-9]{8}-[0-9]{3}-[0-9]{3}$"
   decision_id_pattern: "^DEC-[0-9]{8}-[0-9]{3}$"
   release_id_pattern: "^REL-[0-9]{8}-[a-z0-9-]+$"
+  legacy_namespace_allowed: XLIB
+  legacy_namespace_mode: grandfathered_import_only
+  legacy_parse_only: true
+  canonical_output_required: true
+  require_id_format_marker: true
 
 registry:
   directory: ".config/goal/registry"
@@ -160,13 +165,20 @@ matrix:
     - Low
     - Medium
     - High
-  coverage_threshold: 60
+  coverage_threshold: 95
+  terminal_coverage_threshold: 95
+  warning_coverage_threshold: 60
 
 evidence:
   directory: ".config/goal/evidence"
   path_pattern: ".config/goal/evidence/YYYY-MM-DD/TASK_ID/EVID_ID.md"
   id_pattern: "^EVID-TEST-TASK-(GOAL|XLIB)-[0-9]{3,8}[A-Z]?-[0-9]{3}(-[0-9]{3}){0,4}$"
   task_id_pattern: "^TASK-(GOAL-[0-9]{8}-[0-9]{3}-[0-9]{3}|XLIB-[0-9]{3}[A-Z]?)$"
+  canonical_id_pattern: "^EVID-TEST-TASK-GOAL-[0-9]{8}-[0-9]{3}-[0-9]{3}-[0-9]{3}-[0-9]{3}$"
+  canonical_task_id_pattern: "^TASK-GOAL-[0-9]{8}-[0-9]{3}-[0-9]{3}$"
+  legacy_id_pattern: "^EVID-TEST-TASK-XLIB-[0-9]{3,8}[A-Z]?-[0-9]{3}(-[0-9]{3}){0,4}$"
+  legacy_task_id_pattern: "^TASK-XLIB-[0-9]{3}[A-Z]?$"
+  legacy_namespace_mode: grandfathered_import_only
   required_fields:
     - Evidence ID
     - Acceptance Criteria ID
@@ -199,17 +211,24 @@ gate:
     - G10
     - G11
   status_values:
+    - NOT_STARTED
+    - IN_PROGRESS
     - PASS
     - PASS_WITH_RISK
     - FAIL
     - BLOCKED
+  lifecycle_status_values:
     - NOT_STARTED
+    - IN_PROGRESS
+    - PASS
+    - PASS_WITH_RISK
+    - FAIL
+    - BLOCKED
   result_verdicts:
     - PASS
     - PASS_WITH_RISK
     - FAIL
     - BLOCKED
-    - NOT_STARTED
 
 pipeline:
   file: ".config/goal/pipeline/state.yaml"

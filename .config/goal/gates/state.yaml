@@ -2,8 +2,9 @@
 # 权威来源：docs/goal/04-gates.md
 # 路径：.config/goal/gates/state.yaml
 # 命名空间：
-# - gate_id 只能使用 G0-G11。
-# - CI 自动化、人审审批和模块专用差异记录为 check/profile 证据，不作为新增 gate_id。
+# - Canonical gate_id 固定为 G0-G11。
+# - GK-* 为模块级补充快照/检查证据，不扩展 canonical Gate 枚举。
+# - CI 自动化、人审审批和模块专用差异记录为 check/profile/GK-* 证据，不作为新增 canonical gate_id。
 
 authority_source:
   - docs/goal/00-authority-map.md
@@ -96,7 +97,7 @@ gates:
     gate_name: Spec Gate
     type: Semantic
     blocking: true
-    status: PASS
+    status: PASS_WITH_RISK
     checked_at: "2026-06-09T08:10:00Z"
     checked_by: goal-reviewer
     goal_id: GOAL-20260608-001
@@ -118,7 +119,7 @@ gates:
       status: CLOSED
       closed_reason: "xlib-standard 制品已验证通过，Matrix edge 格式已标准化；工具链对齐延至 Phase 4"
     result:
-      verdict: PASS
+      verdict: PASS_WITH_RISK
       score: 88
       threshold: 90
       details:
@@ -158,7 +159,7 @@ gates:
     gate_name: Plan Gate
     type: Semantic
     blocking: true
-    status: PASS
+    status: PASS_WITH_RISK
     checked_at: "2026-06-09T08:20:00Z"
     checked_by: goal-reviewer
     goal_id: GOAL-20260608-001
@@ -180,7 +181,7 @@ gates:
       status: CLOSED
       closed_reason: "G10 阻塞条件已在 state.yaml 声明，制品验证通过；自动化 precheck 延至 Phase 4"
     result:
-      verdict: PASS
+      verdict: PASS_WITH_RISK
       score: 85
       threshold: 90
       details:
@@ -245,7 +246,7 @@ gates:
     gate_name: Test Gate
     type: Executable
     blocking: true
-    status: PASS
+    status: PASS_WITH_RISK
     checked_at: "2026-06-09T08:35:00Z"
     checked_by: goal-reviewer
     goal_id: GOAL-20260608-001
@@ -267,7 +268,7 @@ gates:
       status: CLOSED
       closed_reason: "Evidence 格式已通过 rule-drift-check.py 验证；collector 对齐延至 Phase 4"
     result:
-      verdict: PASS
+      verdict: PASS_WITH_RISK
       score: 88
       threshold: 90
       details:
@@ -357,7 +358,7 @@ gates:
     gate_name: Retrospective Gate
     type: Semantic
     blocking: false
-    status: PASS
+    status: BLOCKED
     checked_at: "2026-06-09T08:55:00Z"
     checked_by: goal-reviewer
     goal_id: GOAL-20260608-001
@@ -367,13 +368,13 @@ gates:
       pass_with_risk_max: 79
     allow_pass_with_risk: true
     result:
-      verdict: PASS
+      verdict: BLOCKED
       score: 0
       threshold: 80
       details:
         - check: "复盘完成"
-          status: PASS
-          evidence: "xlib-standard 制品优化完成，G0-G11 全部 PASS"
+          status: BLOCKED
+          evidence: "Retrospective Gate 尚未形成可验证复盘证据，不能记为 PASS"
         - check: "改进点记录"
           status: PASS
           evidence: "Phase 4 工具链对齐已记录为后续任务"

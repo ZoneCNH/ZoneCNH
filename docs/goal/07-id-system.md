@@ -66,3 +66,7 @@
 2. 新产物（Goal、Spec、Task 等）必须使用新格式
 3. 引用历史产物时，可在新格式后标注旧 ID，例如在备注字段写明历史来源
 4. 工具链应同时支持新旧格式的解析，但输出统一使用新格式
+5. `XLIB-*` 只作为 grandfathered/import namespace，用于导入历史 xlib 资料或解析既有引用
+6. 校验器可以解析 legacy ID 以完成历史追溯，但生成器和新文档必须输出 canonical Goal ID
+7. 导入的历史记录必须标注 `id_format: legacy` 或等价字段，避免被误判为新规范产物
+8. legacy ID 不能作为新 artifact 的主键、文件名或 Registry 新条目 ID

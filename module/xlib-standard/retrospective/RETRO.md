@@ -8,15 +8,15 @@
 
 ## 1. 目标达成
 
-| 指标 | 目标 | 实际 | 达成 |
-|------|------|------|------|
-| Spec 评分 | ≥98 | 98 | ✅ |
-| Matrix 评分 | ≥98 | 98 | ✅ |
-| Plan 评分 | ≥98 | 98 | ✅ |
-| Tasks 评分 | ≥98 | 98 | ✅ |
-| Prompt 评分 | ≥98 | 98 | ✅ |
-| Gate 通过 | G0-G11 全 PASS | G0-G11 全 PASS | ✅ |
-| Evidence 格式 | rule-drift-check 通过 | 通过 | ✅ |
+| 指标          | 目标                  | 实际           | 达成 |
+| ------------- | --------------------- | -------------- | ---- |
+| Spec 评分     | ≥98                   | 98             | ✅   |
+| Matrix 评分   | ≥98                   | 98             | ✅   |
+| Plan 评分     | ≥98                   | 98             | ✅   |
+| Tasks 评分    | ≥98                   | 98             | ✅   |
+| Prompt 评分   | ≥98                   | 98             | ✅   |
+| Gate 通过     | G0-G11 全 PASS        | G0-G11 全 PASS | ✅   |
+| Evidence 格式 | rule-drift-check 通过 | 通过           | ✅   |
 
 ## 2. 做得好的
 
@@ -35,22 +35,22 @@
 
 ## 4. 经验教训
 
-| 编号 | 教训 | 行动 |
-|------|------|------|
-| L-001 | 工具链和制品格式必须同步设计 | 先定义 schema，再生成模板 |
-| L-002 | Agent 评分需有手动回退路径 | 保留 rubric 直接评分能力 |
-| L-003 | Task 拆分粒度需在 Plan 阶段确定 | Plan 审批前检查 ≤3 FR 红线 |
+| 编号  | 教训                              | 行动                                    |
+| ----- | --------------------------------- | --------------------------------------- |
+| L-001 | 工具链和制品格式必须同步设计      | 先定义 schema，再生成模板               |
+| L-002 | Agent 评分需有手动回退路径        | 保留 rubric 直接评分能力                |
+| L-003 | Task 拆分粒度需在 Plan 阶段确定   | Plan 审批前检查 ≤3 FR 红线              |
 | L-004 | Schema pattern 需支持模块特定前缀 | 默认 pattern 用 `[A-Z]+-[0-9]{3}[A-Z]?` |
 
 ## 5. 后续任务
 
-| 编号 | 任务 | 优先级 | 负责 |
-|------|------|--------|------|
-| F-001 | 更新 rule-drift-check.py 支持新 Evidence 格式 | P1 | goal-evidence |
-| F-002 | 更新 goal-delivery.sh 生成 `- **Field**: value` 格式 | P1 | goal-evidence |
-| F-003 | 更新 Matrix checker 支持 canonical edge 格式 | P1 | goal-matrix |
-| F-004 | 更新 Release precheck 脚本读取 state.yaml 风险 | P1 | goal-evidence |
-| F-005 | Agent scoring 超时回退到手动评分 | P2 | goal-reviewer |
+| 编号  | 任务                                                 | 优先级 | 负责          |
+| ----- | ---------------------------------------------------- | ------ | ------------- |
+| F-001 | 更新 rule-drift-check.py 支持新 Evidence 格式        | P1     | goal-evidence |
+| F-002 | 更新 goal-delivery.sh 生成 `- **Field**: value` 格式 | P1     | goal-evidence |
+| F-003 | 更新 Matrix checker 支持 canonical edge 格式         | P1     | goal-matrix   |
+| F-004 | 更新 Release precheck 脚本读取 state.yaml 风险       | P1     | goal-evidence |
+| F-005 | Agent scoring 超时回退到手动评分                     | P2     | goal-reviewer |
 
 ---
 

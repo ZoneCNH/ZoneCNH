@@ -112,7 +112,8 @@ python3 docs/goal/tools/goal-validate.py --root . --only gate,risk,consistency
 
 - runtime/cache 输出根必须是 `.config/cache/`，不得继续使用 `.config/goal/runtime|cache|logs`。
 - Matrix 行必须使用 canonical edge 字段：`source_id`、`target_id`、`relation`、`status`、`evidence_id`、`gate_id`、`owner`、`updated_at`。
-- Gate 必须覆盖 `G0`-`G11`，每个 `gate_id` 只能出现一次；状态/裁决枚举必须是 `PASS|PASS_WITH_RISK|FAIL|BLOCKED`，不得再出现 `PENDING`。
+- Gate 必须覆盖 `G0`-`G11`，每个 `gate_id` 只能出现一次；canonical Gate 必须使用终态裁决 `PASS|PASS_WITH_RISK|FAIL|BLOCKED`，且 `status` 与 `result.verdict` 一致；`NOT_STARTED`、`IN_PROGRESS` 只允许作为生命周期/运行态/补充性快照状态，不能写入 `result.verdict`；不得再出现 `PENDING`。
+- 当 Gate 同时记录数值型 `result.score` 和 `result.threshold` 时，`PASS` 必须满足 `score >= threshold`。
 - `PASS_WITH_RISK` 必须有结构化风险元数据，且 `G6`、`G10` 不允许风险通过。
 - Risk Registry 的 `risk_id` 必须唯一，并使用 `RISK-GOAL-YYYYMMDD-NNN-NNN` 格式。
 - 打开的 `release_blocking` 风险必须进入 Risk Registry；存在这类风险时，`G10`、`G11`、Pipeline、Release 状态不得伪装为完成/发布。
@@ -131,7 +132,7 @@ bash .github/ci/goal-release-gate.sh
 - 必须存在至少一个 `.config/goal/evidence/**/*.md` Evidence 包。
 - Goal CI 必须定义 `goal-validator` job，并且 `.config/goal/schema/rules.yaml` 的 `ci.required_jobs` 必须要求 `goal-validator`。
 
-只有全部通过时，脚本才会写出 `release/manifest/goal-release-gate.json`。当前控制面如果仍处于 `G10 BLOCKED`、有打开的发布阻断风险或缺失 Evidence，脚本应非零退出；这是正确的发布阻断结果。
+只有全部通过时，脚本才会写出 `release/manifest/goal-release-gate.json`。当前控制面如果 `G10` 非 `PASS`、有打开的发布阻断风险或缺失 Evidence，脚本应非零退出；这是正确的发布阻断结果。
 
 ### Gate 制品就绪检查
 

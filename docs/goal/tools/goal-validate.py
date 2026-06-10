@@ -54,7 +54,9 @@ EDGE_STATUSES = {
 }
 
 GATE_IDS = [f"G{index}" for index in range(12)]
-GATE_TERMINAL_STATUSES = {"PASS", "PASS_WITH_RISK", "FAIL", "BLOCKED", "NOT_STARTED"}
+GATE_DECISION_STATUSES = {"PASS", "PASS_WITH_RISK", "FAIL", "BLOCKED"}
+GATE_LIFECYCLE_STATUSES = GATE_DECISION_STATUSES | {"NOT_STARTED", "IN_PROGRESS"}
+GATE_NON_TERMINAL_STATUSES = GATE_LIFECYCLE_STATUSES - GATE_DECISION_STATUSES
 PASS_WITH_RISK_DISALLOWED = {"G6", "G10"}
 PASS_WITH_RISK_REQUIRED = {
     "risk_id",
@@ -161,6 +163,18 @@ def parse_scalar(raw_value: str) -> str | list[str]:
     if value.startswith("[") and value.endswith("]"):
         return parse_inline_list(value)
     return value
+
+
+def parse_int_value(value: Any) -> int | None:
+    if isinstance(value, bool):
+        return None
+    if isinstance(value, int):
+        return value
+    if isinstance(value, str):
+        stripped = value.strip()
+        if stripped.isdigit():
+            return int(stripped)
+    return None
 
 
 def normalize_status(value: Any) -> str:
@@ -674,9 +688,11 @@ def check_gate(root: Path, report: Report) -> None:
     for gate_id, gate in gates.items():
         gate_path = path_at(gates_path, gate.get("_line"))
         status = normalize_status(gate.get("status"))
-        verdict = normalize_status(gate.get("result", {}).get("verdict"))
+        result = gate.get("result") if isinstance(gate.get("result"), dict) else {}
+        verdict = normalize_status(result.get("verdict"))
         risk = gate.get("risk") if isinstance(gate.get("risk"), dict) else {}
         risk_id = str(risk.get("risk_id", "")).strip()
+        is_canonical_gate = gate_id in GATE_IDS
 
         if risk_id and not RISK_ID_PATTERN.fullmatch(risk_id):
             report.error(
@@ -694,16 +710,25 @@ def check_gate(root: Path, report: Report) -> None:
                 "gate",
                 gate_path,
                 "PENDING is not a valid persisted gate status",
-                ", ".join(sorted(GATE_TERMINAL_STATUSES)),
+                ", ".join(sorted(GATE_LIFECYCLE_STATUSES)),
                 status,
             )
-        elif status and status not in GATE_TERMINAL_STATUSES:
+        elif status and status not in GATE_LIFECYCLE_STATUSES:
             report.error(
                 "GV-GATE-BAD-STATUS",
                 "gate",
                 gate_path,
                 "Gate has invalid status",
-                ", ".join(sorted(GATE_TERMINAL_STATUSES)),
+                ", ".join(sorted(GATE_LIFECYCLE_STATUSES)),
+                status,
+            )
+        elif is_canonical_gate and status not in GATE_DECISION_STATUSES:
+            report.error(
+                "GV-GATE-CANONICAL-NONTERMINAL-STATUS",
+                "gate",
+                gate_path,
+                "Canonical gates G0-G11 must persist a terminal decision status",
+                ", ".join(sorted(GATE_DECISION_STATUSES)),
                 status,
             )
 
@@ -713,20 +738,39 @@ def check_gate(root: Path, report: Report) -> None:
                 "gate",
                 gate_path,
                 "PENDING is not a valid persisted result verdict",
-                ", ".join(sorted(GATE_TERMINAL_STATUSES)),
+                ", ".join(sorted(GATE_DECISION_STATUSES)),
                 verdict,
             )
-        elif verdict and verdict not in GATE_TERMINAL_STATUSES:
+        elif verdict and verdict not in GATE_DECISION_STATUSES:
             report.error(
                 "GV-GATE-BAD-VERDICT",
                 "gate",
                 gate_path,
                 "Gate result verdict is invalid",
-                ", ".join(sorted(GATE_TERMINAL_STATUSES)),
+                ", ".join(sorted(GATE_DECISION_STATUSES)),
+                verdict,
+            )
+        elif is_canonical_gate and not verdict:
+            report.error(
+                "GV-GATE-RESULT-MISSING",
+                "gate",
+                gate_path,
+                "Canonical gates G0-G11 must persist result.verdict",
+                ", ".join(sorted(GATE_DECISION_STATUSES)),
                 verdict,
             )
 
-        if status and verdict and status != verdict:
+        if status in GATE_NON_TERMINAL_STATUSES and verdict:
+            report.error(
+                "GV-GATE-NONTERMINAL-VERDICT",
+                "gate",
+                gate_path,
+                "Non-terminal lifecycle status must not carry a result verdict",
+                "no result.verdict until a terminal decision exists",
+                {"status": status, "result.verdict": verdict},
+            )
+
+        if status in GATE_DECISION_STATUSES and verdict and status != verdict:
             report.error(
                 "GV-GATE-STATUS-VERDICT-MISMATCH",
                 "gate",
@@ -735,6 +779,19 @@ def check_gate(root: Path, report: Report) -> None:
                 "status == result.verdict",
                 {"status": status, "result.verdict": verdict},
             )
+
+        if verdict == "PASS":
+            score = parse_int_value(result.get("score"))
+            threshold = parse_int_value(result.get("threshold"))
+            if score is not None and threshold is not None and score < threshold:
+                report.error(
+                    "GV-GATE-SCORE-CONTRADICTION",
+                    "gate",
+                    gate_path,
+                    "PASS verdict requires result.score to meet or exceed result.threshold",
+                    "score >= threshold",
+                    {"score": score, "threshold": threshold},
+                )
 
         if gate_id in PASS_WITH_RISK_DISALLOWED and (
             status == "PASS_WITH_RISK" or verdict == "PASS_WITH_RISK"
@@ -759,7 +816,11 @@ def check_gate(root: Path, report: Report) -> None:
                     gate.get("allow_pass_with_risk"),
                 )
 
-            missing_risk = sorted(field for field in PASS_WITH_RISK_REQUIRED if not risk.get(field))
+            missing_risk = sorted(
+                field
+                for field in PASS_WITH_RISK_REQUIRED
+                if field not in risk or risk.get(field) in (None, "")
+            )
             if not any(risk.get(field) for field in PASS_WITH_RISK_OWNER_FIELDS):
                 missing_risk.append("risk_owner|owner")
             if missing_risk:
