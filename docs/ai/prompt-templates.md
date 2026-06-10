@@ -160,7 +160,7 @@ Status: Approved
 执行以下命令：
 1. go build ./...
 2. go test ./... -race -count=1
-3. go test ./... -coverprofile=cover.out && go tool cover -func=cover.out
+3. mkdir -p .coverage && go test ./... -coverprofile=.coverage/cover.out && go tool cover -func=.coverage/cover.out
 4. go vet ./...
 5. golangci-lint run
 6. go mod tidy && git diff --exit-code go.mod go.sum

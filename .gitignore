@@ -61,6 +61,11 @@ reports/
 # Generated local test/tool output
 tmp/
 
+# Go coverage artifacts
+/.coverage/
+/cover.out
+*.coverprofile
+
 # env file
 .env
 

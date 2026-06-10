@@ -112,6 +112,15 @@ func TestApp_Run_TC001(t *testing.T) {
 
 ## 5. CI 集成
 
+### 5.1 生成物规则
+
+- 测试、覆盖率、临时运行产物不得写入项目根目录。
+- Go 覆盖率文件统一写入 `.coverage/cover.out`。
+- 需要长期保留的测试结果应进入 `docs/`、`reports/` 或明确的 Evidence 目录。
+- 本地临时结果必须被 `.gitignore` 覆盖；不要使用过宽的 `*.out` 忽略规则。
+
+### 5.2 CI 命令
+
 每个模块的 CI 必须执行：
 
 ```bash
@@ -122,8 +131,9 @@ go build ./...
 go test ./... -race -count=1
 
 # 3. 覆盖率
-go test ./... -coverprofile=cover.out
-go tool cover -func=cover.out
+mkdir -p .coverage
+go test ./... -coverprofile=.coverage/cover.out
+go tool cover -func=.coverage/cover.out
 
 # 4. vet
 go vet ./...

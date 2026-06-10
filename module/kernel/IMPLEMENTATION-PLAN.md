@@ -37,7 +37,7 @@ TASK-KERNEL-000 (骨架)
 | 6     | TASK-KERNEL-006 | health.go, health_test.go              | 001, 003 | —                   | 1.5h   | `go test -race -run TestHealth -count=1 ./...`                                          |
 | 7     | TASK-KERNEL-007 | lifecycle.go, shutdown.go (修改)       | 004, 005 | —                   | 2h     | `go test -race -run TestPanic -count=1 ./...`                                           |
 | 8     | TASK-KERNEL-009 | integration_test.go, benchmark_test.go | 004-008  | —                   | 3h     | 集成：`go test -tags=integration -race ./...` + 性能：`go test -bench=. -benchmem -count=3 ./...` |
-| 9     | TASK-KERNEL-010 | README.md, example_test.go             | 009      | —                   | 2h     | `go test -race ./... && go test -coverprofile=c.out ./... && go tool cover -func=c.out` |
+| 9     | TASK-KERNEL-010 | README.md, example_test.go             | 009      | —                   | 2h     | `go test -race ./... && mkdir -p .coverage && go test -coverprofile=.coverage/cover.out ./... && go tool cover -func=.coverage/cover.out` |
 
 ---
 
