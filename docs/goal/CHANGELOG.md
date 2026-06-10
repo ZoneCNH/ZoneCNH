@@ -2,6 +2,14 @@
 
 > 记录 docs/goal/ 体系的重大结构性变更。
 
+## 2026-06-10 — Goal Delivery OS 执行口径收敛
+
+### 执行性与可验证性
+
+- 在入口、执行指南、Evidence 与 Matrix 模板中收敛 `release` 命令、canonical edge vocabulary 和 No Evidence, No Done 的最小证明包。
+- 将 Constitution 与 Codex Agent 投影漂移记录到受保护资产 Change Request，避免文档优化绕过审批。
+- 明确未批准 Change Request 只是提案，不能作为当前强规则源。
+
 ## 2026-06-10 — 模块代码本地路径规则固化
 
 ### 本地代码边界

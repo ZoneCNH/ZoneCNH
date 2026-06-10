@@ -37,13 +37,22 @@ Matrix 是横切追溯制品，不是主流程阶段。它必须在各阶段持�
 | Design | Spec | 设计方案、边界、ADR、风险缓解 | G2 | 设计评审、风险记录 |
 | Plan | Design | 执行顺序、依赖、验证点 | G3 | 计划评审、资源与阻塞 |
 | Tasks | Plan | 原子任务、允许文件、完成标准 | G4 | Task DoR、owner、依赖 |
-| Matrix | Goal/Spec/Tasks/Test/Evidence/Risk | Traceability edge graph | G5 | 无 orphan release-critical edge |
 | Prompt | Task + Context Package | 可执行 Prompt | G6 | 边界、禁止事项、验证命令 |
 | Code | Prompt + Task | 代码与测试变更 | G7 | commit、diff、测试输出 |
 | Test | Code | 测试报告和失败/通过记录 | G8 | Evidence Bundle、失败证据保留 |
 | Review | Code + Evidence | 评审结论和问题闭环 | G9 | reviewer、finding、处理状态 |
 | Release | Review PASS | Release Manifest | G10 | strict validator、Matrix、Risk Register、rollback validation |
 | Retrospective | Release + Metrics | 复盘和改进 Backlog | G11 | Metrics Review、Gap Report、RSI 记录 |
+
+### Matrix 横切控制点
+
+Matrix 不占用主流程阶段号，但 G5 是全流程追溯完整性门禁。执行者 MUST 在以下控制点更新或校验 Matrix：
+
+| 控制点 | 更新时机 | 关联 Gate | 证据要求 |
+|--------|----------|-----------|----------|
+| 初始化 | Spec 审批后 | G1 / G5 | Goal、Spec、Acceptance Criteria edge 可追溯 |
+| 执行更新 | Design、Plan、Tasks、Prompt、Code、Test、Evidence 或 Risk 变化后 | G2-G9 | release-critical edge 无 orphan，变更来源可追溯 |
+| 发布校验 | Release 前 | G10 | Matrix check-only 通过；release-critical edge 为 `Verified` 或 `Dropped` with reason |
 
 ## 4. 停止条件
 
@@ -67,7 +76,10 @@ python3 docs/goal/tools/rule-drift-check.py --root .
 python3 docs/goal/tools/goal-validate.py --root . --mode strict
 python3 docs/goal/tools/matrix-gen.py --check-only --matrix .config/goal/matrix/matrix.yaml
 bash docs/goal/tools/goal-workflow.sh validate
+bash docs/goal/tools/goal-workflow.sh release
 ```
+
+`release` 命令仅在准备 tag、部署或发布时作为硬门禁；普通文档 PR 可以记录未运行原因，但不得宣称 Release 通过。
 
 如果某个命令不可用或失败，执行者 MUST 记录失败命令、失败原因、替代检查和未验证风险，不能把未验证结果声明为通过。
 

@@ -44,6 +44,13 @@ validator:
 matrix:
   command:
   result:
+validation_summary:
+  command:
+  result:
+release_gate:
+  gate_id: G10
+  command:
+  result:
 tests:
   - command:
     result:
@@ -64,7 +71,7 @@ owner:
 执行规则：
 
 - P0 / P1 Acceptance Criteria MUST 同时具备测试证据和评审或验证证据。
-- Release Evidence Bundle MUST 包含 strict validator、Matrix check-only、Risk Register、Release Manifest 和 rollback validation 的结果。
+- Release Evidence Bundle MUST 包含 strict validator、Matrix check-only、validation summary、Risk Register、Release Manifest、G10 Release Gate result 和 rollback validation 的结果。
 - 失败证据 MUST 保留；后续通过证据可以 supersede，但 MUST NOT 删除失败记录。
 - 用于 G10 的证据 MUST 可复现：记录命令、环境、commit 或 artifact、执行结果和负责人。
 - 没有 owner、来源或可复现命令的证据只能作为参考信息，MUST NOT 关闭 Gate。
@@ -160,7 +167,7 @@ Evidence Graph 用图结构记录“为什么可以相信这次交付”：
 |------|------|
 | Goal | 目标、边界、成功指标 |
 | Spec | 需求、AC、NFR、风险 |
-| Matrix | FR/BR/AC/Task/Test/Evidence 映射 |
+| Matrix | Goal/Spec/AC/Task/Test/Evidence/Risk/Gate edge graph |
 | Task | 具体实现单元 |
 | Code Change | commit、PR、文件范围 |
 | Test Evidence | 测试报告、截图、日志 |
@@ -169,7 +176,9 @@ Evidence Graph 用图结构记录“为什么可以相信这次交付”：
 | Metric | 运行指标、业务结果 |
 | Improvement | 后续工作流或产品改进 |
 
-关键边包括 `implements`、`verifies`、`blocks`、`releases`、`measures`、`improves`。每条边应保留来源、时间和版本快照。
+关键边 MUST 使用 [05-layer-standards.md](05-layer-standards.md) 定义的 Matrix canonical relation vocabulary：`decomposes_to`、`contains`、`accepted_by`、`planned_by`、`implemented_by`、`prompted_by`、`verified_by`、`evidenced_by`。每条边应保留来源、时间和版本快照。
+
+Release、Risk、Gate、Metric 和 Improvement 的关联 SHOULD 通过 `gate_id`、`risk_id`、Evidence Bundle、Release Manifest、Metrics Review 或 Retrospective 记录字段表达。`implements`、`verifies`、`blocks`、`releases`、`measures`、`improves` 等展示性或叙述性关系值 MUST NOT 进入 Matrix 控制面、Gate 判定、validator、CI 或 Release 记录，除非先通过受保护资产 Change Request 扩展 canonical relation vocabulary。
 
 ## 学习闭环
 
