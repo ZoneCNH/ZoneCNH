@@ -2,7 +2,7 @@
 
 > Feature 做完后、PR 前的 RC 检查，以及部署后的 Smoke Test。
 
-最后更新：2026-06-08
+最后更新：2026-06-11
 
 ---
 
@@ -101,6 +101,39 @@ Feature 做完后，进入 PR 前，做一次 RC 检查。
 
 ---
 
+## 统一 CI/CD 与部署控制面
+
+全局规则：
+
+- CI/CD job 必须运行在 self-hosted runner，基础标签为 `[self-hosted, Linux, X64]`。
+- 普通文档、测试、治理类 job 使用业务仓库 profile 标签，例如 `homepage`。
+- 部署 job 统一使用 SRE profile 标签 `[self-hosted, Linux, X64, deploy]`。
+- 部署控制面权威仓库为 `ZoneCNH/sre`；本仓库只引用，不复制、不收纳 `sre/` 源码。
+- `.gitignore` 必须保留 `sre/`，并由 `.github/ci/deploy-policy-guard.sh` 防止误提交。
+
+业务仓库新增部署时，只允许调用 SRE reusable workflow：
+
+```yaml
+jobs:
+  deploy:
+    uses: ZoneCNH/sre/.github/workflows/deploy-contract.yml@main
+    with:
+      target: homepage
+      environment: staging
+      action: deploy
+      ref: ${{ github.sha }}
+```
+
+部署 workflow 规则：
+
+- 禁止 `pull_request` 触发部署。
+- 必须配置 GitHub Environment；生产部署只能走 `production` 环境审批。
+- 必须配置 `concurrency`，避免同一 target/environment 并发发布。
+- 禁止在业务仓库 workflow 中内联 `ssh`、`scp`、`rsync`、`kubectl`、`helm`、`systemctl` 或 `docker compose`。
+- smoke 和 rollback 必须通过 SRE 仓库的 `deploy/smoke.sh`、`deploy/rollback.sh` 入口承接。
+
+---
+
 ## Smoke Test Spec
 
 部署后快速确认核心功能没有坏。
@@ -163,7 +196,7 @@ on:
 
 jobs:
   check:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64, homepage]
 
     steps:
       - name: Checkout

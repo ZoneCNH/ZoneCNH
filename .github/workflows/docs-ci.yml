@@ -199,3 +199,16 @@ jobs:
 
       - name: 校验 outer-metrics 写入源合法性
         run: bash scripts/outer-metrics-validate.sh
+
+  # ── 12. 部署控制面守卫 ──────────────────────────────────────
+  # 业务仓库只能引用 ZoneCNH/sre 的发布入口；不得收纳 sre/ 源码
+  # 或在 workflow 内写 inline 远程部署命令。
+  deployment-policy:
+    name: Deployment Policy
+    runs-on: [self-hosted, Linux, X64, homepage]
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 校验部署控制面边界
+        run: bash .github/ci/deploy-policy-guard.sh
