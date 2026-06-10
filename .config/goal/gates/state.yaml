@@ -379,27 +379,27 @@ gates:
           status: PASS
           evidence: "Phase 4 工具链对齐已记录为后续任务 F-001~F-005"
 
-# Gate 编号和类型：
-# G0: Context Gate (Hybrid)
-# G1: Goal Gate (Semantic)
-# G2: Spec Gate (Semantic)
-# G3: Design Gate (Semantic)
-# G4: Plan Gate (Semantic)
-# G5: Task Gate (Executable)
-# G6: Implementation Gate (Executable)
-# G7: Test Gate (Executable)
-# G8: Evidence Gate (Executable)
-# G9: Review Gate (Semantic)
-# G10: Release Gate (Hybrid)
-# G11: Retrospective Gate (Semantic)
+  # Gate 编号和类型：
+  # G0: Context Gate (Hybrid)
+  # G1: Goal Gate (Semantic)
+  # G2: Spec Gate (Semantic)
+  # G3: Design Gate (Semantic)
+  # G4: Plan Gate (Semantic)
+  # G5: Task Gate (Executable)
+  # G6: Implementation Gate (Executable)
+  # G7: Test Gate (Executable)
+  # G8: Evidence Gate (Executable)
+  # G9: Review Gate (Semantic)
+  # G10: Release Gate (Hybrid)
+  # G11: Retrospective Gate (Semantic)
 
-# Gate 结果：
-# PASS: 达到对应 Gate PASS 阈值，且无阻塞风险
-# PASS_WITH_RISK: 达到风险区间，风险字段完整，且不属于 G6/G10
-# FAIL: 未达阈值、关键检查失败或风险字段缺失
-# BLOCKED: 外部依赖、过期风险或 release_blocking 风险阻止判断
+  # Gate 结果：
+  # PASS: 达到对应 Gate PASS 阈值，且无阻塞风险
+  # PASS_WITH_RISK: 达到风险区间，风险字段完整，且不属于 G6/G10
+  # FAIL: 未达阈值、关键检查失败或风险字段缺失
+  # BLOCKED: 外部依赖、过期风险或 release_blocking 风险阻止判断
 
-# === kernel module gates ===
+  # === kernel module gates ===
   - gate_id: GK-0
     gate_name: Context Gate
     type: Hybrid

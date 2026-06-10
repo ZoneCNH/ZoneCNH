@@ -250,16 +250,16 @@ matrix:
     owner: goal-matrix
     updated_at: "2026-06-09"
 
-# 状态枚举（权威来源：docs/goal/03-pipeline.md §2.5）：
-# Unmapped → Mapped → Linked → Verified / Dropped
-# 完成态：Verified；带理由例外终态：Dropped；终态覆盖率按 Verified + Dropped 计算
-# 异常状态：Blocked / Changed
+  # 状态枚举（权威来源：docs/goal/03-pipeline.md §2.5）：
+  # Unmapped → Mapped → Linked → Verified / Dropped
+  # 完成态：Verified；带理由例外终态：Dropped；终态覆盖率按 Verified + Dropped 计算
+  # 异常状态：Blocked / Changed
 
-# 覆盖率目标：
-# Goal Coverage: ≥ 95%
-# Spec Coverage: ≥ 95%
-# AC Coverage: ≥ 95%
-# Task Traceability: ≥ 95%
+  # 覆盖率目标：
+  # Goal Coverage: ≥ 95%
+  # Spec Coverage: ≥ 95%
+  # AC Coverage: ≥ 95%
+  # Task Traceability: ≥ 95%
 
   # === xlib-standard edges ===
   - source_id: GOAL-XLIB-STD-001

@@ -25,8 +25,8 @@ goals:
       - 更新 AGENTS.md 文档
       - 验证 Agent 协作流程
 
-# 状态枚举（权威来源：docs/goal/03-pipeline.md §2.5）：
-# Draft → Active → Paused → Achieved / Abandoned
+  # 状态枚举（权威来源：docs/goal/03-pipeline.md §2.5）：
+  # Draft → Active → Paused → Achieved / Abandoned
   - goal_id: GOAL-20260609-001
     title: "订单 CSV 导出"
     status: Draft

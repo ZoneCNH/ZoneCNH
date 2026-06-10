@@ -1,472 +1,472 @@
 tasks:
-- task_id: TASK-GOAL-20260608-001-001
-  document_version: '2026-06-09'
-  goal_id: GOAL-20260608-001
-  spec_id: SPEC-goal-system-v1
-  title: 创建 Goal Agent 生态系统
-  status: Done
-  owner: zone
-  priority: P0
-  change_level: CL3
-  execution_mode: Standard
-  created_at: '2026-06-08'
-  updated_at: '2026-06-08'
-  dod:
-  - 创建 goal-spec Agent
-  - 创建 goal-reviewer Agent
-  - 创建 goal-matrix Agent
-  - 创建 goal-prompt-builder Agent
-  - 创建 goal-evidence Agent
-  evidence:
-  - .claude/agents/goal-spec.md
-  - .claude/agents/goal-reviewer.md
-  - .claude/agents/goal-matrix.md
-  - .claude/agents/goal-prompt-builder.md
-  - .claude/agents/goal-evidence.md
-- task_id: TASK-GOAL-20260608-001-002
-  document_version: '2026-06-09'
-  goal_id: GOAL-20260608-001
-  spec_id: SPEC-goal-system-v1
-  title: 建立统一配置中心
-  status: Done
-  owner: zone
-  priority: P0
-  change_level: CL2
-  execution_mode: Standard
-  created_at: '2026-06-08'
-  updated_at: '2026-06-08'
-  dod:
-  - 创建 .config/goal/ 目录结构
-  - 创建 6 个 Registry 文件
-  - 创建 Matrix/Gate/Pipeline 状态文件
-  - 更新 Agent 文件路径引用
-  evidence:
-  - .config/goal/README.md
-  - .config/goal/registry/goals.yaml
-  - .config/goal/registry/tasks.yaml
-  - .config/goal/registry/issues.yaml
-  - .config/goal/registry/releases.yaml
-  - .config/goal/registry/risks.yaml
-  - .config/goal/registry/decisions.yaml
-  - .config/goal/matrix/matrix.yaml
-  - .config/goal/gates/state.yaml
-  - .config/goal/pipeline/state.yaml
-- task_id: TASK-GOAL-20260608-001-003
-  document_version: '2026-06-09'
-  goal_id: GOAL-20260608-001
-  spec_id: SPEC-goal-system-v1
-  title: 更新文档引用
-  status: Done
-  owner: zone
-  priority: P0
-  change_level: CL1
-  execution_mode: Lite
-  created_at: '2026-06-08'
-  updated_at: '2026-06-08'
-  dod:
-  - 更新 docs/goal/README.md
-  - 更新 docs/goal/15-registry.md
-  - 更新 AGENTS.md
-  evidence:
-  - docs/goal/README.md
-  - docs/goal/15-registry.md
-  - AGENTS.md
-- task_id: TASK-GOAL-20260609-001-001
-  goal_id: GOAL-20260609-001
-  status: Unmapped
-  created_at: 2026-06-09
-  updated_at: 2026-06-09
-- task_id: TASK-XLIB-000
-  document_version: '2026-06-09'
-  goal_id: GOAL-XLIB-STD-001
-  spec_id: SPEC-XLIB-STD-001
-  title: 'PR-1: 删除治理运行时与冗余目录'
-  status: Pending
-  owner: zone
-  priority: P0
-  change_level: CL0
-  execution_mode: Lite
-  created_at: '2026-06-09'
-  updated_at: '2026-06-09'
-  dod:
-  - 删除 .agent/ .codex/ .devcontainer/ .githooks/ .omx/ .worktree/ .xlib/
-  - 删除 cmd/ mk/ release/debt/ templates/l2/
-  - 删除 .dockerignore Dockerfile docker-compose.yml
-  - 删除 AGENTS.md CLAUDE.md CONSTITUTION.md releasemanifest renovate.json
-  - 保留 pkg/ contracts/ examples/ testkit/ Makefile
-  evidence:
-  - module/xlib-standard/tasks/TASK-XLIB-000.md
-- task_id: TASK-XLIB-001
-  document_version: '2026-06-09'
-  goal_id: GOAL-XLIB-STD-001
-  spec_id: SPEC-XLIB-STD-001
-  title: 'PR-2: 文档对齐'
-  status: Pending
-  owner: zone
-  priority: P0
-  change_level: CL0
-  execution_mode: Lite
-  depends_on:
-  - TASK-XLIB-000
-  created_at: '2026-06-09'
-  updated_at: '2026-06-09'
-  dod:
-  - README.md 不超过 200 行
-  - docs/standard.md 覆盖目录结构/命名规则/go.mod/错误处理/契约/测试
-  - docs/INDEX.md 仅 9 个文件
-  evidence:
-  - module/xlib-standard/tasks/TASK-XLIB-001.md
-- task_id: TASK-XLIB-002
-  document_version: '2026-06-09'
-  goal_id: GOAL-XLIB-STD-001
-  spec_id: SPEC-XLIB-STD-001
-  title: 'PR-3: 骨架代码 — Makefile/脚本/CI'
-  status: Pending
-  owner: zone
-  priority: P0
-  change_level: CL2
-  execution_mode: Standard
-  depends_on:
-  - TASK-XLIB-000
-  created_at: '2026-06-09'
-  updated_at: '2026-06-09'
-  dod:
-  - Makefile 最小目标集
-  - scripts/spec-lint.sh 可执行
-  - scripts/task-lint.sh 可执行
-  - scripts/trace-lint.sh 可执行
-  - scripts/selfcheck-100.sh 可执行
-  - .github/workflows/ci.yml 存在
-  evidence:
-  - module/xlib-standard/tasks/TASK-XLIB-002.md
-- task_id: TASK-XLIB-004
-  document_version: '2026-06-09'
-  goal_id: GOAL-XLIB-STD-001
-  spec_id: SPEC-XLIB-STD-001
-  title: 'PR-5: release 标准 — release manifest + compat matrix'
-  status: Pending
-  owner: zone
-  priority: P0
-  change_level: CL2
-  execution_mode: Standard
-  depends_on:
-  - TASK-XLIB-002
-  - TASK-XLIB-003
-  created_at: '2026-06-09'
-  updated_at: '2026-06-09'
-  dod:
-  - pkg/templatex/release.go 可编译
-  - pkg/templatex/compat.go 可编译
-  - GOWORK=off go test ./... -race 通过
-  evidence:
-  - module/xlib-standard/tasks/TASK-XLIB-004.md
-- task_id: TASK-XLIB-005
-  document_version: '2026-06-09'
-  goal_id: GOAL-XLIB-STD-001
-  spec_id: SPEC-XLIB-STD-001
-  title: 集成验证 — 生成库无残留 + release final check
-  status: Pending
-  owner: zone
-  priority: P0
-  change_level: CL2
-  execution_mode: Standard
-  depends_on:
-  - TASK-XLIB-003
-  - TASK-XLIB-004
-  created_at: '2026-06-09'
-  updated_at: '2026-06-09'
-  dod:
-  - 生成库无 templatex/xlib-standard 残留
-  - release manifest 生成且 checksum 校验通过
-  evidence:
-  - module/xlib-standard/tasks/TASK-XLIB-005.md
-- task_id: TASK-XLIB-003A
-  goal_id: GOAL-XLIB-STD-001
-  spec_id: SPEC-XLIB-STD-001
-  title: 'PR-4a: Config 标准 — pkg/templatex/config.go'
-  status: pending
-  owner: zone
-  priority: P0
-  dod: AC-001~AC-003, AC-019 通过，config_test.go 通过
-  evidence: .config/goal/evidence/2026-06-09/TASK-XLIB-003A/
-  created: '2026-06-09'
-- task_id: TASK-XLIB-003B
-  goal_id: GOAL-XLIB-STD-001
-  spec_id: SPEC-XLIB-STD-001
-  title: 'PR-4b: Error + Client 标准 — errors.go + client.go'
-  status: pending
-  owner: zone
-  priority: P0
-  dod: AC-004~AC-008, AC-014~AC-018 通过，errors_test.go + client_test.go 通过
-  evidence: .config/goal/evidence/2026-06-09/TASK-XLIB-003B/
-  created: '2026-06-09'
-- task_id: TASK-XLIB-003C
-  goal_id: GOAL-XLIB-STD-001
-  spec_id: SPEC-XLIB-STD-001
-  title: 'PR-4c: Health + Metrics + API 模板'
-  status: pending
-  owner: zone
-  priority: P0
-  dod: AC-009~AC-013, AC-020~AC-021 通过，health_test.go + metrics_test.go 通过
-  evidence: .config/goal/evidence/2026-06-09/TASK-XLIB-003C/
-  created: '2026-06-09'
+  - task_id: TASK-GOAL-20260608-001-001
+    document_version: '2026-06-09'
+    goal_id: GOAL-20260608-001
+    spec_id: SPEC-goal-system-v1
+    title: 创建 Goal Agent 生态系统
+    status: Done
+    owner: zone
+    priority: P0
+    change_level: CL3
+    execution_mode: Standard
+    created_at: '2026-06-08'
+    updated_at: '2026-06-08'
+    dod:
+      - 创建 goal-spec Agent
+      - 创建 goal-reviewer Agent
+      - 创建 goal-matrix Agent
+      - 创建 goal-prompt-builder Agent
+      - 创建 goal-evidence Agent
+    evidence:
+      - .claude/agents/goal-spec.md
+      - .claude/agents/goal-reviewer.md
+      - .claude/agents/goal-matrix.md
+      - .claude/agents/goal-prompt-builder.md
+      - .claude/agents/goal-evidence.md
+  - task_id: TASK-GOAL-20260608-001-002
+    document_version: '2026-06-09'
+    goal_id: GOAL-20260608-001
+    spec_id: SPEC-goal-system-v1
+    title: 建立统一配置中心
+    status: Done
+    owner: zone
+    priority: P0
+    change_level: CL2
+    execution_mode: Standard
+    created_at: '2026-06-08'
+    updated_at: '2026-06-08'
+    dod:
+      - 创建 .config/goal/ 目录结构
+      - 创建 6 个 Registry 文件
+      - 创建 Matrix/Gate/Pipeline 状态文件
+      - 更新 Agent 文件路径引用
+    evidence:
+      - .config/goal/README.md
+      - .config/goal/registry/goals.yaml
+      - .config/goal/registry/tasks.yaml
+      - .config/goal/registry/issues.yaml
+      - .config/goal/registry/releases.yaml
+      - .config/goal/registry/risks.yaml
+      - .config/goal/registry/decisions.yaml
+      - .config/goal/matrix/matrix.yaml
+      - .config/goal/gates/state.yaml
+      - .config/goal/pipeline/state.yaml
+  - task_id: TASK-GOAL-20260608-001-003
+    document_version: '2026-06-09'
+    goal_id: GOAL-20260608-001
+    spec_id: SPEC-goal-system-v1
+    title: 更新文档引用
+    status: Done
+    owner: zone
+    priority: P0
+    change_level: CL1
+    execution_mode: Lite
+    created_at: '2026-06-08'
+    updated_at: '2026-06-08'
+    dod:
+      - 更新 docs/goal/README.md
+      - 更新 docs/goal/15-registry.md
+      - 更新 AGENTS.md
+    evidence:
+      - docs/goal/README.md
+      - docs/goal/15-registry.md
+      - AGENTS.md
+  - task_id: TASK-GOAL-20260609-001-001
+    goal_id: GOAL-20260609-001
+    status: Unmapped
+    created_at: 2026-06-09
+    updated_at: 2026-06-09
+  - task_id: TASK-XLIB-000
+    document_version: '2026-06-09'
+    goal_id: GOAL-XLIB-STD-001
+    spec_id: SPEC-XLIB-STD-001
+    title: 'PR-1: 删除治理运行时与冗余目录'
+    status: Pending
+    owner: zone
+    priority: P0
+    change_level: CL0
+    execution_mode: Lite
+    created_at: '2026-06-09'
+    updated_at: '2026-06-09'
+    dod:
+      - 删除 .agent/ .codex/ .devcontainer/ .githooks/ .omx/ .worktree/ .xlib/
+      - 删除 cmd/ mk/ release/debt/ templates/l2/
+      - 删除 .dockerignore Dockerfile docker-compose.yml
+      - 删除 AGENTS.md CLAUDE.md CONSTITUTION.md releasemanifest renovate.json
+      - 保留 pkg/ contracts/ examples/ testkit/ Makefile
+    evidence:
+      - module/xlib-standard/tasks/TASK-XLIB-000.md
+  - task_id: TASK-XLIB-001
+    document_version: '2026-06-09'
+    goal_id: GOAL-XLIB-STD-001
+    spec_id: SPEC-XLIB-STD-001
+    title: 'PR-2: 文档对齐'
+    status: Pending
+    owner: zone
+    priority: P0
+    change_level: CL0
+    execution_mode: Lite
+    depends_on:
+      - TASK-XLIB-000
+    created_at: '2026-06-09'
+    updated_at: '2026-06-09'
+    dod:
+      - README.md 不超过 200 行
+      - docs/standard.md 覆盖目录结构/命名规则/go.mod/错误处理/契约/测试
+      - docs/INDEX.md 仅 9 个文件
+    evidence:
+      - module/xlib-standard/tasks/TASK-XLIB-001.md
+  - task_id: TASK-XLIB-002
+    document_version: '2026-06-09'
+    goal_id: GOAL-XLIB-STD-001
+    spec_id: SPEC-XLIB-STD-001
+    title: 'PR-3: 骨架代码 — Makefile/脚本/CI'
+    status: Pending
+    owner: zone
+    priority: P0
+    change_level: CL2
+    execution_mode: Standard
+    depends_on:
+      - TASK-XLIB-000
+    created_at: '2026-06-09'
+    updated_at: '2026-06-09'
+    dod:
+      - Makefile 最小目标集
+      - scripts/spec-lint.sh 可执行
+      - scripts/task-lint.sh 可执行
+      - scripts/trace-lint.sh 可执行
+      - scripts/selfcheck-100.sh 可执行
+      - .github/workflows/ci.yml 存在
+    evidence:
+      - module/xlib-standard/tasks/TASK-XLIB-002.md
+  - task_id: TASK-XLIB-004
+    document_version: '2026-06-09'
+    goal_id: GOAL-XLIB-STD-001
+    spec_id: SPEC-XLIB-STD-001
+    title: 'PR-5: release 标准 — release manifest + compat matrix'
+    status: Pending
+    owner: zone
+    priority: P0
+    change_level: CL2
+    execution_mode: Standard
+    depends_on:
+      - TASK-XLIB-002
+      - TASK-XLIB-003
+    created_at: '2026-06-09'
+    updated_at: '2026-06-09'
+    dod:
+      - pkg/templatex/release.go 可编译
+      - pkg/templatex/compat.go 可编译
+      - GOWORK=off go test ./... -race 通过
+    evidence:
+      - module/xlib-standard/tasks/TASK-XLIB-004.md
+  - task_id: TASK-XLIB-005
+    document_version: '2026-06-09'
+    goal_id: GOAL-XLIB-STD-001
+    spec_id: SPEC-XLIB-STD-001
+    title: 集成验证 — 生成库无残留 + release final check
+    status: Pending
+    owner: zone
+    priority: P0
+    change_level: CL2
+    execution_mode: Standard
+    depends_on:
+      - TASK-XLIB-003
+      - TASK-XLIB-004
+    created_at: '2026-06-09'
+    updated_at: '2026-06-09'
+    dod:
+      - 生成库无 templatex/xlib-standard 残留
+      - release manifest 生成且 checksum 校验通过
+    evidence:
+      - module/xlib-standard/tasks/TASK-XLIB-005.md
+  - task_id: TASK-XLIB-003A
+    goal_id: GOAL-XLIB-STD-001
+    spec_id: SPEC-XLIB-STD-001
+    title: 'PR-4a: Config 标准 — pkg/templatex/config.go'
+    status: pending
+    owner: zone
+    priority: P0
+    dod: AC-001~AC-003, AC-019 通过，config_test.go 通过
+    evidence: .config/goal/evidence/2026-06-09/TASK-XLIB-003A/
+    created: '2026-06-09'
+  - task_id: TASK-XLIB-003B
+    goal_id: GOAL-XLIB-STD-001
+    spec_id: SPEC-XLIB-STD-001
+    title: 'PR-4b: Error + Client 标准 — errors.go + client.go'
+    status: pending
+    owner: zone
+    priority: P0
+    dod: AC-004~AC-008, AC-014~AC-018 通过，errors_test.go + client_test.go 通过
+    evidence: .config/goal/evidence/2026-06-09/TASK-XLIB-003B/
+    created: '2026-06-09'
+  - task_id: TASK-XLIB-003C
+    goal_id: GOAL-XLIB-STD-001
+    spec_id: SPEC-XLIB-STD-001
+    title: 'PR-4c: Health + Metrics + API 模板'
+    status: pending
+    owner: zone
+    priority: P0
+    dod: AC-009~AC-013, AC-020~AC-021 通过，health_test.go + metrics_test.go 通过
+    evidence: .config/goal/evidence/2026-06-09/TASK-XLIB-003C/
+    created: '2026-06-09'
 
-# === kernel tasks ===
-- task_id: TASK-KERNEL-000
-  document_version: "2026-06-09"
-  goal_id: GOAL-KERNEL-20260609-001
-  spec_id: SPEC-kernel-v1
-  title: "项目骨架：go.mod、doc.go、errors.go"
-  status: Pending
-  owner: zone
-  priority: P0
-  change_level: CL1
-  execution_mode: Lite
-  created_at: "2026-06-09"
-  updated_at: "2026-06-09"
-  dod:
-  - 创建 go.mod（stdlib-only）
-  - 创建 doc.go（包级文档）
-  - 创建 errors.go（10 个公共错误变量）
-  - go build 通过、go vet 无警告
-  evidence:
-  - module/kernel/tasks/TASK-KERNEL-000.md
+  # === kernel tasks ===
+  - task_id: TASK-KERNEL-000
+    document_version: "2026-06-09"
+    goal_id: GOAL-KERNEL-20260609-001
+    spec_id: SPEC-kernel-v1
+    title: "项目骨架：go.mod、doc.go、errors.go"
+    status: Pending
+    owner: zone
+    priority: P0
+    change_level: CL1
+    execution_mode: Lite
+    created_at: "2026-06-09"
+    updated_at: "2026-06-09"
+    dod:
+      - 创建 go.mod（stdlib-only）
+      - 创建 doc.go（包级文档）
+      - 创建 errors.go（10 个公共错误变量）
+      - go build 通过、go vet 无警告
+    evidence:
+      - module/kernel/tasks/TASK-KERNEL-000.md
 
-- task_id: TASK-KERNEL-001
-  document_version: "2026-06-09"
-  goal_id: GOAL-KERNEL-20260609-001
-  spec_id: SPEC-kernel-v1
-  title: "接口定义：Module、Deps、HealthStatus、GraphView、App"
-  status: Pending
-  owner: zone
-  priority: P0
-  change_level: CL2
-  execution_mode: Standard
-  depends_on:
-  - TASK-KERNEL-000
-  created_at: "2026-06-09"
-  updated_at: "2026-06-09"
-  dod:
-  - Module 接口 5 个方法
-  - Deps 结构体 6 个字段
-  - GraphView 接口 3 个方法
-  - App 接口 5 个方法
-  - kernel 内最小接口（Logger、Meter 等）
-  - go build 通过
-  evidence:
-  - module/kernel/tasks/TASK-KERNEL-001.md
+  - task_id: TASK-KERNEL-001
+    document_version: "2026-06-09"
+    goal_id: GOAL-KERNEL-20260609-001
+    spec_id: SPEC-kernel-v1
+    title: "接口定义：Module、Deps、HealthStatus、GraphView、App"
+    status: Pending
+    owner: zone
+    priority: P0
+    change_level: CL2
+    execution_mode: Standard
+    depends_on:
+      - TASK-KERNEL-000
+    created_at: "2026-06-09"
+    updated_at: "2026-06-09"
+    dod:
+      - Module 接口 5 个方法
+      - Deps 结构体 6 个字段
+      - GraphView 接口 3 个方法
+      - App 接口 5 个方法
+      - kernel 内最小接口（Logger、Meter 等）
+      - go build 通过
+    evidence:
+      - module/kernel/tasks/TASK-KERNEL-001.md
 
-- task_id: TASK-KERNEL-002
-  document_version: "2026-06-09"
-  goal_id: GOAL-KERNEL-20260609-001
-  spec_id: SPEC-kernel-v1
-  title: "依赖图：DAG、环检测、拓扑排序"
-  status: Pending
-  owner: zone
-  priority: P0
-  change_level: CL2
-  execution_mode: Standard
-  depends_on:
-  - TASK-KERNEL-001
-  created_at: "2026-06-09"
-  updated_at: "2026-06-09"
-  dod:
-  - GraphView 实现（Nodes、Edges、TopologicalOrder）
-  - 环检测返回 ErrCycleDetected
-  - 拓扑排序正确
-  - 深依赖链 50+ 层测试通过
-  - graph_test.go 通过
-  evidence:
-  - module/kernel/tasks/TASK-KERNEL-002.md
+  - task_id: TASK-KERNEL-002
+    document_version: "2026-06-09"
+    goal_id: GOAL-KERNEL-20260609-001
+    spec_id: SPEC-kernel-v1
+    title: "依赖图：DAG、环检测、拓扑排序"
+    status: Pending
+    owner: zone
+    priority: P0
+    change_level: CL2
+    execution_mode: Standard
+    depends_on:
+      - TASK-KERNEL-001
+    created_at: "2026-06-09"
+    updated_at: "2026-06-09"
+    dod:
+      - GraphView 实现（Nodes、Edges、TopologicalOrder）
+      - 环检测返回 ErrCycleDetected
+      - 拓扑排序正确
+      - 深依赖链 50+ 层测试通过
+      - graph_test.go 通过
+    evidence:
+      - module/kernel/tasks/TASK-KERNEL-002.md
 
-- task_id: TASK-KERNEL-003
-  document_version: "2026-06-09"
-  goal_id: GOAL-KERNEL-20260609-001
-  spec_id: SPEC-kernel-v1
-  title: "注册表：并发安全模块注册"
-  status: Pending
-  owner: zone
-  priority: P0
-  change_level: CL2
-  execution_mode: Standard
-  depends_on:
-  - TASK-KERNEL-001
-  created_at: "2026-06-09"
-  updated_at: "2026-06-09"
-  dod:
-  - Register nil 返回 ErrNilModule
-  - Register 重复返回 ErrAlreadyRegistered
-  - Register 新模块返回 nil
-  - 并发 Register 安全（-race 通过）
-  - registry_test.go 通过
-  evidence:
-  - module/kernel/tasks/TASK-KERNEL-003.md
+  - task_id: TASK-KERNEL-003
+    document_version: "2026-06-09"
+    goal_id: GOAL-KERNEL-20260609-001
+    spec_id: SPEC-kernel-v1
+    title: "注册表：并发安全模块注册"
+    status: Pending
+    owner: zone
+    priority: P0
+    change_level: CL2
+    execution_mode: Standard
+    depends_on:
+      - TASK-KERNEL-001
+    created_at: "2026-06-09"
+    updated_at: "2026-06-09"
+    dod:
+      - Register nil 返回 ErrNilModule
+      - Register 重复返回 ErrAlreadyRegistered
+      - Register 新模块返回 nil
+      - 并发 Register 安全（-race 通过）
+      - registry_test.go 通过
+    evidence:
+      - module/kernel/tasks/TASK-KERNEL-003.md
 
-- task_id: TASK-KERNEL-004
-  document_version: "2026-06-09"
-  goal_id: GOAL-KERNEL-20260609-001
-  spec_id: SPEC-kernel-v1
-  title: "启动：拓扑序启动、fail-fast、ctx 取消"
-  status: Pending
-  owner: zone
-  priority: P0
-  change_level: CL2
-  execution_mode: Standard
-  depends_on:
-  - TASK-KERNEL-002
-  - TASK-KERNEL-003
-  created_at: "2026-06-09"
-  updated_at: "2026-06-09"
-  dod:
-  - Run 按拓扑序调用 Init→Start
-  - Init 失败不进入 Start
-  - Start 失败已 Start 模块被 Stop
-  - ctx 取消中断启动
-  - lifecycle_test.go 通过
-  evidence:
-  - module/kernel/tasks/TASK-KERNEL-004.md
+  - task_id: TASK-KERNEL-004
+    document_version: "2026-06-09"
+    goal_id: GOAL-KERNEL-20260609-001
+    spec_id: SPEC-kernel-v1
+    title: "启动：拓扑序启动、fail-fast、ctx 取消"
+    status: Pending
+    owner: zone
+    priority: P0
+    change_level: CL2
+    execution_mode: Standard
+    depends_on:
+      - TASK-KERNEL-002
+      - TASK-KERNEL-003
+    created_at: "2026-06-09"
+    updated_at: "2026-06-09"
+    dod:
+      - Run 按拓扑序调用 Init→Start
+      - Init 失败不进入 Start
+      - Start 失败已 Start 模块被 Stop
+      - ctx 取消中断启动
+      - lifecycle_test.go 通过
+    evidence:
+      - module/kernel/tasks/TASK-KERNEL-004.md
 
-- task_id: TASK-KERNEL-005
-  document_version: "2026-06-09"
-  goal_id: GOAL-KERNEL-20260609-001
-  spec_id: SPEC-kernel-v1
-  title: "停机：反序停止、超时 force、幂等"
-  status: Pending
-  owner: zone
-  priority: P0
-  change_level: CL2
-  execution_mode: Standard
-  depends_on:
-  - TASK-KERNEL-004
-  created_at: "2026-06-09"
-  updated_at: "2026-06-09"
-  dod:
-  - Shutdown 按反序调用 Stop
-  - 超时返回 ErrShutdownTimeout
-  - 幂等返回 nil
-  - shutdown_test.go 通过
-  evidence:
-  - module/kernel/tasks/TASK-KERNEL-005.md
+  - task_id: TASK-KERNEL-005
+    document_version: "2026-06-09"
+    goal_id: GOAL-KERNEL-20260609-001
+    spec_id: SPEC-kernel-v1
+    title: "停机：反序停止、超时 force、幂等"
+    status: Pending
+    owner: zone
+    priority: P0
+    change_level: CL2
+    execution_mode: Standard
+    depends_on:
+      - TASK-KERNEL-004
+    created_at: "2026-06-09"
+    updated_at: "2026-06-09"
+    dod:
+      - Shutdown 按反序调用 Stop
+      - 超时返回 ErrShutdownTimeout
+      - 幂等返回 nil
+      - shutdown_test.go 通过
+    evidence:
+      - module/kernel/tasks/TASK-KERNEL-005.md
 
-- task_id: TASK-KERNEL-006
-  document_version: "2026-06-09"
-  goal_id: GOAL-KERNEL-20260609-001
-  spec_id: SPEC-kernel-v1
-  title: "健康检查：ModuleHealth 查询"
-  status: Pending
-  owner: zone
-  priority: P0
-  change_level: CL2
-  execution_mode: Standard
-  depends_on:
-  - TASK-KERNEL-001
-  - TASK-KERNEL-003
-  created_at: "2026-06-09"
-  updated_at: "2026-06-09"
-  dod:
-  - ModuleHealth 返回 HealthStatus
-  - 未注册模块返回 ErrModuleNotFound
-  - 幂等无副作用
-  - health_test.go 通过
-  evidence:
-  - module/kernel/tasks/TASK-KERNEL-006.md
+  - task_id: TASK-KERNEL-006
+    document_version: "2026-06-09"
+    goal_id: GOAL-KERNEL-20260609-001
+    spec_id: SPEC-kernel-v1
+    title: "健康检查：ModuleHealth 查询"
+    status: Pending
+    owner: zone
+    priority: P0
+    change_level: CL2
+    execution_mode: Standard
+    depends_on:
+      - TASK-KERNEL-001
+      - TASK-KERNEL-003
+    created_at: "2026-06-09"
+    updated_at: "2026-06-09"
+    dod:
+      - ModuleHealth 返回 HealthStatus
+      - 未注册模块返回 ErrModuleNotFound
+      - 幂等无副作用
+      - health_test.go 通过
+    evidence:
+      - module/kernel/tasks/TASK-KERNEL-006.md
 
-- task_id: TASK-KERNEL-007
-  document_version: "2026-06-09"
-  goal_id: GOAL-KERNEL-20260609-001
-  spec_id: SPEC-kernel-v1
-  title: "panic 隔离：Init/Start/Stop panic 捕获"
-  status: Pending
-  owner: zone
-  priority: P0
-  change_level: CL2
-  execution_mode: Standard
-  depends_on:
-  - TASK-KERNEL-004
-  - TASK-KERNEL-005
-  created_at: "2026-06-09"
-  updated_at: "2026-06-09"
-  dod:
-  - Start panic 捕获转换为 ErrStartupFailed
-  - Stop panic 捕获记录日志继续
-  - Init panic 捕获返回 ErrStartupFailed
-  - panic 隔离测试通过
-  evidence:
-  - module/kernel/tasks/TASK-KERNEL-007.md
+  - task_id: TASK-KERNEL-007
+    document_version: "2026-06-09"
+    goal_id: GOAL-KERNEL-20260609-001
+    spec_id: SPEC-kernel-v1
+    title: "panic 隔离：Init/Start/Stop panic 捕获"
+    status: Pending
+    owner: zone
+    priority: P0
+    change_level: CL2
+    execution_mode: Standard
+    depends_on:
+      - TASK-KERNEL-004
+      - TASK-KERNEL-005
+    created_at: "2026-06-09"
+    updated_at: "2026-06-09"
+    dod:
+      - Start panic 捕获转换为 ErrStartupFailed
+      - Stop panic 捕获记录日志继续
+      - Init panic 捕获返回 ErrStartupFailed
+      - panic 隔离测试通过
+    evidence:
+      - module/kernel/tasks/TASK-KERNEL-007.md
 
-- task_id: TASK-KERNEL-008
-  document_version: "2026-06-09"
-  goal_id: GOAL-KERNEL-20260609-001
-  spec_id: SPEC-kernel-v1
-  title: "配置选项：Option 模式配置"
-  status: Pending
-  owner: zone
-  priority: P1
-  change_level: CL2
-  execution_mode: Standard
-  depends_on:
-  - TASK-KERNEL-001
-  created_at: "2026-06-09"
-  updated_at: "2026-06-09"
-  dod:
-  - WithStartupTimeout、WithShutdownTimeout 等 Option
-  - options_test.go 通过
-  evidence:
-  - module/kernel/tasks/TASK-KERNEL-008.md
+  - task_id: TASK-KERNEL-008
+    document_version: "2026-06-09"
+    goal_id: GOAL-KERNEL-20260609-001
+    spec_id: SPEC-kernel-v1
+    title: "配置选项：Option 模式配置"
+    status: Pending
+    owner: zone
+    priority: P1
+    change_level: CL2
+    execution_mode: Standard
+    depends_on:
+      - TASK-KERNEL-001
+    created_at: "2026-06-09"
+    updated_at: "2026-06-09"
+    dod:
+      - WithStartupTimeout、WithShutdownTimeout 等 Option
+      - options_test.go 通过
+    evidence:
+      - module/kernel/tasks/TASK-KERNEL-008.md
 
-- task_id: TASK-KERNEL-009
-  document_version: "2026-06-09"
-  goal_id: GOAL-KERNEL-20260609-001
-  spec_id: SPEC-kernel-v1
-  title: "集成测试 + Benchmark"
-  status: Pending
-  owner: zone
-  priority: P0
-  change_level: CL2
-  execution_mode: Standard
-  depends_on:
-  - TASK-KERNEL-004
-  - TASK-KERNEL-005
-  - TASK-KERNEL-006
-  - TASK-KERNEL-007
-  - TASK-KERNEL-008
-  created_at: "2026-06-09"
-  updated_at: "2026-06-09"
-  dod:
-  - 完整启动-运行-停止集成测试
-  - 启动失败回滚集成测试
-  - Benchmark 50 模块 < 10ms
-  - 覆盖率 >= 90%
-  evidence:
-  - module/kernel/tasks/TASK-KERNEL-009.md
+  - task_id: TASK-KERNEL-009
+    document_version: "2026-06-09"
+    goal_id: GOAL-KERNEL-20260609-001
+    spec_id: SPEC-kernel-v1
+    title: "集成测试 + Benchmark"
+    status: Pending
+    owner: zone
+    priority: P0
+    change_level: CL2
+    execution_mode: Standard
+    depends_on:
+      - TASK-KERNEL-004
+      - TASK-KERNEL-005
+      - TASK-KERNEL-006
+      - TASK-KERNEL-007
+      - TASK-KERNEL-008
+    created_at: "2026-06-09"
+    updated_at: "2026-06-09"
+    dod:
+      - 完整启动-运行-停止集成测试
+      - 启动失败回滚集成测试
+      - Benchmark 50 模块 < 10ms
+      - 覆盖率 >= 90%
+    evidence:
+      - module/kernel/tasks/TASK-KERNEL-009.md
 
-- task_id: TASK-KERNEL-010
-  document_version: "2026-06-09"
-  goal_id: GOAL-KERNEL-20260609-001
-  spec_id: SPEC-kernel-v1
-  title: "文档 + 示例"
-  status: Pending
-  owner: zone
-  priority: P1
-  change_level: CL1
-  execution_mode: Lite
-  depends_on:
-  - TASK-KERNEL-009
-  created_at: "2026-06-09"
-  updated_at: "2026-06-09"
-  dod:
-  - README.md 完成
-  - example_test.go 通过
-  - godoc 注释完整
-  evidence:
-  - module/kernel/tasks/TASK-KERNEL-010.md
-- task_id: TASK-XLIB-003D
-  goal_id: GOAL-XLIB-STD-001
-  spec_id: SPEC-XLIB-STD-001
-  title: 'PR-4d: API 模板 + examples + testkit'
-  status: pending
-  owner: zone
-  priority: P1
-  dod: AC-020~AC-021 通过，go vet 零警告，go test 全通过
-  evidence: .config/goal/evidence/2026-06-09/TASK-XLIB-003D/
-  created: '2026-06-09'
+  - task_id: TASK-KERNEL-010
+    document_version: "2026-06-09"
+    goal_id: GOAL-KERNEL-20260609-001
+    spec_id: SPEC-kernel-v1
+    title: "文档 + 示例"
+    status: Pending
+    owner: zone
+    priority: P1
+    change_level: CL1
+    execution_mode: Lite
+    depends_on:
+      - TASK-KERNEL-009
+    created_at: "2026-06-09"
+    updated_at: "2026-06-09"
+    dod:
+      - README.md 完成
+      - example_test.go 通过
+      - godoc 注释完整
+    evidence:
+      - module/kernel/tasks/TASK-KERNEL-010.md
+  - task_id: TASK-XLIB-003D
+    goal_id: GOAL-XLIB-STD-001
+    spec_id: SPEC-XLIB-STD-001
+    title: 'PR-4d: API 模板 + examples + testkit'
+    status: pending
+    owner: zone
+    priority: P1
+    dod: AC-020~AC-021 通过，go vet 零警告，go test 全通过
+    evidence: .config/goal/evidence/2026-06-09/TASK-XLIB-003D/
+    created: '2026-06-09'
