@@ -6,6 +6,18 @@
 
 权威边界入口见 [00-authority-map.md](00-authority-map.md)。本文档是索引和概览；状态枚举、Gate、ID、Registry、Matrix、Evidence、配置与运行态边界均以权威映射指向的 SSOT 为准。
 
+## 新 Agent 执行入口
+
+首次执行 Goal Delivery OS 的 Agent MUST 按以下顺序建立上下文：
+
+1. 先读 [00-authority-map.md](00-authority-map.md)，确认 SSOT、投影和运行态边界。
+2. 再读本 README 的“工作流全景”和“可执行入口”，确认主流程与本地命令。
+3. 需要实际推进任务时读 [25-execution-guide.md](25-execution-guide.md)，按执行检查单进入 `preflight`、`validate`、`gate` 或 `ci`。
+4. 需要修改工作流资产时读 [21-controlled-rsi.md](21-controlled-rsi.md)，确认是否属于自动允许、提案、审批或禁止范围。
+5. 触碰 Constitution、CI、agent 配置、schema 投影、Release Gate、Rollback、Incident 或 P0/P1 验收语义时，MUST 生成 Change Request，不得直接放宽规则。
+
+Agent 执行时 MUST 保持 Matrix 为横切追溯制品；MUST 使用 Evidence 证明 Done；MUST 通过 Gate 决定是否阻断；MUST 将无法验证的判断标记为 Hypothesis。
+
 ## 核心公式
 
 > **Goal = 目标动作 + 结果对象 + 衡量指标 + 目标值 + 截止时间**
@@ -137,6 +149,8 @@ Goal 体系定义目标交付规则、状态机、Gate、Registry 和证据闭�
 | [22-delivery-os.md](22-delivery-os.md)                 | Delivery OS：五个运行时、Workflow-as-Code、Compiler、控制平面               |
 | [23-workflow-governance-checks.md](23-workflow-governance-checks.md) | 工作流治理检查：Drift Checks、Test Deletion Guard、Workflow Test Pyramid、Release Simulation |
 | [24-standard-unification-analysis.md](24-standard-unification-analysis.md) | 标准统一深度分析：ID、schema、状态、Matrix、Evidence、Gate 与工具一致性 |
+| [25-execution-guide.md](25-execution-guide.md)       | 执行指南：Agent 读序、命令入口、阻断规则、Change Request 与停止条件 |
+| [change-requests/](change-requests/)                 | 受保护资产或跨控制面漂移的提案记录；不是当前强规则源 |
 
 ## 复杂度分级
 

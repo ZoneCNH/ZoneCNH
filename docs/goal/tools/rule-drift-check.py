@@ -8,6 +8,7 @@ inside CI before any project dependencies are installed.
 from __future__ import annotations
 
 import argparse
+import fnmatch
 import re
 import sys
 from pathlib import Path
@@ -91,6 +92,49 @@ GATE_LIFECYCLE_STATUSES = GATE_DECISION_STATUSES | {"NOT_STARTED", "IN_PROGRESS"
 MATRIX_TERMINAL_COVERAGE_THRESHOLD = 95
 MATRIX_WARNING_COVERAGE_THRESHOLD = 60
 LEGACY_NAMESPACE_MODE = "grandfathered_import_only"
+MODULE_CODE_ROOT_PATTERN = "/home/{module}"
+MODULE_SPEC_ROOT_PATTERN = "module/{module}/"
+MODULE_REPOSITORY_BOUNDARY = "ZoneCNH/ZoneCNH"
+MODULE_REQUIRED_LINT_RULES = {"C-LINT-006", "C-LINT-007"}
+MODULE_FORBIDDEN_SOURCE_PATTERNS = {
+    "module/{module}/cmd/",
+    "module/{module}/internal/",
+    "module/{module}/pkg/",
+    "module/{module}/vendor/",
+    "module/{module}/go.mod",
+    "module/{module}/go.sum",
+}
+MODULE_SOURCE_FILE_SUFFIXES = {
+    ".c",
+    ".cc",
+    ".cpp",
+    ".cs",
+    ".go",
+    ".h",
+    ".hpp",
+    ".java",
+    ".js",
+    ".jsx",
+    ".kt",
+    ".php",
+    ".py",
+    ".rb",
+    ".rs",
+    ".swift",
+    ".ts",
+    ".tsx",
+}
+MODULE_SOURCE_CONFIG_FILES = {
+    "Cargo.toml",
+    "Dockerfile",
+    "Makefile",
+    "build.gradle",
+    "go.mod",
+    "go.sum",
+    "package.json",
+    "pom.xml",
+    "pyproject.toml",
+}
 
 
 def load_rules(path: Path) -> dict[str, dict[str, Any]]:
@@ -230,6 +274,129 @@ def check_schema_rules(rules: dict[str, dict[str, Any]], report: Report) -> None
 
     if ok:
         report.pass_("Schema rule invariants match executable Goal policy")
+
+
+def matches_module_artifact(path: Path, allowed_patterns: list[str]) -> bool:
+    name = f"{path.name}/" if path.is_dir() else path.name
+    return any(fnmatch.fnmatchcase(name, pattern) for pattern in allowed_patterns)
+
+
+def is_module_source_file(path: Path) -> bool:
+    return path.name in MODULE_SOURCE_CONFIG_FILES or path.suffix in MODULE_SOURCE_FILE_SUFFIXES
+
+
+def sample_paths(paths: list[str], limit: int = 10) -> str:
+    if len(paths) <= limit:
+        return ", ".join(paths)
+    return ", ".join(paths[:limit]) + f", ... (+{len(paths) - limit} more)"
+
+
+def check_module_code_location(
+    root: Path,
+    rules: dict[str, dict[str, Any]],
+    report: Report,
+) -> None:
+    ok = True
+
+    def fail(message: str) -> None:
+        nonlocal ok
+        ok = False
+        report.fail(message)
+
+    policy = rules.get("module_code_location", {})
+    canonical_path = str(policy.get("canonical_path_pattern", ""))
+    spec_root = str(policy.get("specification_artifact_root_pattern", ""))
+    if canonical_path != MODULE_CODE_ROOT_PATTERN:
+        fail(
+            "module_code_location.canonical_path_pattern drift: "
+            f"expected {MODULE_CODE_ROOT_PATTERN}, actual {canonical_path}"
+        )
+    if spec_root != MODULE_SPEC_ROOT_PATTERN:
+        fail(
+            "module_code_location.specification_artifact_root_pattern drift: "
+            f"expected {MODULE_SPEC_ROOT_PATTERN}, actual {spec_root}"
+        )
+    if str(policy.get("repository_boundary", "")) != MODULE_REPOSITORY_BOUNDARY:
+        fail(
+            "module_code_location.repository_boundary drift: "
+            f"expected {MODULE_REPOSITORY_BOUNDARY}, actual {policy.get('repository_boundary')}"
+        )
+    if str(policy.get("prompt_required_code_root", "")) != MODULE_CODE_ROOT_PATTERN:
+        fail("module_code_location.prompt_required_code_root must be /home/{module}")
+    if str(policy.get("evidence_allowed_changed_file_prefix", "")) != f"{MODULE_CODE_ROOT_PATTERN}/":
+        fail("module_code_location.evidence_allowed_changed_file_prefix must be /home/{module}/")
+    if str(policy.get("forbidden_copy_source_pattern", "")) != f"{MODULE_CODE_ROOT_PATTERN}/**":
+        fail("module_code_location.forbidden_copy_source_pattern must be /home/{module}/**")
+
+    forbidden_patterns = set(as_list(policy.get("forbidden_repository_patterns", [])))
+    missing_forbidden = sorted(MODULE_FORBIDDEN_SOURCE_PATTERNS - forbidden_patterns)
+    if missing_forbidden:
+        fail("module_code_location missing forbidden source patterns: " + ", ".join(missing_forbidden))
+
+    lint_rules = set(as_list(policy.get("lint_rules", [])))
+    missing_lint_rules = sorted(MODULE_REQUIRED_LINT_RULES - lint_rules)
+    if missing_lint_rules:
+        fail("module_code_location missing lint rules: " + ", ".join(missing_lint_rules))
+
+    lint_doc = root / "docs/goal/10-lint-rules.md"
+    if lint_doc.exists():
+        lint_text = lint_doc.read_text(encoding="utf-8")
+        missing_lint_doc = sorted(rule for rule in MODULE_REQUIRED_LINT_RULES if rule not in lint_text)
+        if missing_lint_doc:
+            fail("docs/goal/10-lint-rules.md missing lint rules: " + ", ".join(missing_lint_doc))
+    else:
+        fail(f"Lint rule document missing: {lint_doc}")
+
+    allowed_artifacts = as_list(policy.get("allowed_module_artifacts", []))
+    if not allowed_artifacts:
+        fail("module_code_location.allowed_module_artifacts is empty")
+
+    module_root = root / "module"
+    if not module_root.exists():
+        fail(f"Module artifact root missing: {module_root}")
+        return
+
+    module_dirs = sorted(path for path in module_root.iterdir() if path.is_dir())
+    expected_count = rules.get("module_goal_document", {}).get("module_count")
+    if isinstance(expected_count, int) and len(module_dirs) != expected_count:
+        fail(
+            "module_goal_document.module_count drift: "
+            f"expected {expected_count}, actual {len(module_dirs)}"
+        )
+
+    unexpected_artifacts: list[str] = []
+    forbidden_hits: list[str] = []
+    source_hits: list[str] = []
+
+    for module_dir in module_dirs:
+        for child in sorted(module_dir.iterdir()):
+            if not matches_module_artifact(child, allowed_artifacts):
+                unexpected_artifacts.append(str(child.relative_to(root)))
+
+        for pattern in forbidden_patterns:
+            candidate = root / pattern.replace("{module}", module_dir.name)
+            if candidate.exists():
+                forbidden_hits.append(str(candidate.relative_to(root)))
+
+        for path in sorted(module_dir.rglob("*")):
+            if path.is_file() and is_module_source_file(path):
+                source_hits.append(str(path.relative_to(root)))
+
+    for path in sorted(module_root.iterdir()):
+        if path.is_file() and is_module_source_file(path):
+            source_hits.append(str(path.relative_to(root)))
+
+    if unexpected_artifacts:
+        fail("module/ contains paths outside allowed Goal artifacts: " + sample_paths(unexpected_artifacts))
+    if forbidden_hits:
+        fail("module/ contains forbidden module source paths: " + sample_paths(forbidden_hits))
+    if source_hits:
+        fail("module/ contains source-like module implementation files: " + sample_paths(source_hits))
+
+    if ok:
+        report.pass_(
+            f"Module code location policy keeps {len(module_dirs)} module specs outside /home/{{module}} code roots"
+        )
 
 
 def parse_matrix(path: Path) -> list[dict[str, Any]]:
@@ -595,12 +762,23 @@ def main() -> int:
         return 1
 
     rules = load_rules(rules_file)
-    for section in ["ids", "registry", "matrix", "evidence", "gate", "pipeline", "ci"]:
+    for section in [
+        "module_goal_document",
+        "module_code_location",
+        "ids",
+        "registry",
+        "matrix",
+        "evidence",
+        "gate",
+        "pipeline",
+        "ci",
+    ]:
         if section not in rules:
             report.fail(f"rules.yaml missing section: {section}")
 
     if not report.failures:
         check_schema_rules(rules, report)
+        check_module_code_location(root, rules, report)
         check_registry(root, rules, report)
         evidence_refs = check_matrix(root, rules, report)
         check_evidence(root, rules, evidence_refs, report)

@@ -2,7 +2,7 @@
 # 权威来源：docs/goal/00-authority-map.md 与 authority_source 所列 docs/goal 文档
 # 路径：.config/goal/schema/rules.yaml
 
-document_version: "2026-06-09"
+document_version: "2026-06-10"
 
 authority_source:
   - docs/goal/00-authority-map.md
@@ -42,6 +42,49 @@ module_goal_document:
     - "goal/1.md"
     - "goal/*.md"
   module_count: 16
+
+module_code_location:
+  canonical_path_pattern: "/home/{module}"
+  module_name_source: "GitHub repository name"
+  specification_artifact_root_pattern: "module/{module}/"
+  repository_boundary: "ZoneCNH/ZoneCNH"
+  authority_views:
+    - "CONSTITUTION.md#24-本地代码目录"
+    - "ARCHITECTURE.md#本地开发路径"
+    - "module/README.md#同步口径"
+    - "docs/goal/05-layer-standards.md#6-code-标准"
+    - "docs/goal/06-dod.md#8-code-dor--dod"
+    - "docs/goal/10-lint-rules.md#5-code-lint"
+  allowed_module_artifacts:
+    - "goal.md"
+    - "SPEC.md"
+    - "DESIGN.md"
+    - "TRACEABILITY.md"
+    - "IMPLEMENTATION-PLAN.md"
+    - "PLAN.md"
+    - "INDEX.md"
+    - "README.md"
+    - "TASK-*-PROMPT.md"
+    - "tasks/"
+    - "plan/"
+    - "plans/"
+    - "prompt/"
+    - "prompts/"
+    - "evidence/"
+    - "retrospective/"
+  forbidden_repository_patterns:
+    - "module/{module}/cmd/"
+    - "module/{module}/internal/"
+    - "module/{module}/pkg/"
+    - "module/{module}/vendor/"
+    - "module/{module}/go.mod"
+    - "module/{module}/go.sum"
+  forbidden_copy_source_pattern: "/home/{module}/**"
+  prompt_required_code_root: "/home/{module}"
+  evidence_allowed_changed_file_prefix: "/home/{module}/"
+  lint_rules:
+    - C-LINT-006
+    - C-LINT-007
 
 ids:
   goal_id_pattern: "^GOAL-[0-9]{8}-[0-9]{3}$"

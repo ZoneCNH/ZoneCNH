@@ -8,6 +8,7 @@
 - README、SOP、Runtime、CI、schema 和示例状态文件只能引用、校验或投影 SSOT，不得定义新的枚举。
 - 对齐账本和分析报告只记录发现、差异和建议，不覆盖 SSOT。
 - `.config/goal/` 是控制面配置、schema 与可审查快照目录；临时运行态和恢复缓存不得混入权威定义。
+- `change-requests/` 只记录待审批提案，不是当前强规则源；Human Approval 前不得把提案内容写入受保护资产。
 
 ## 2. 权威表
 
@@ -20,8 +21,12 @@
 | ID 格式 | [`07-id-system.md`](07-id-system.md) | Registry、Matrix、Evidence、Prompt 包 | 在局部文档中定义新的 ID 前缀或格式 |
 | Registry 边界 | [`15-registry.md`](15-registry.md)、[`.config/goal/README.md`](../../.config/goal/README.md) | `.config/goal/registry/` | 把 Matrix、Gate、Pipeline、Evidence、Prompt 目录并入 Registry 子系统 |
 | Evidence 协议 | [`13-runtime-engine.md`](13-runtime-engine.md#4-evidence-收集) | `.config/goal/evidence/`、Release 记录 | 无测试、日志或审查证据时宣称 Done |
+| Evidence Bundle 与指标闭环 | [`20-metrics-evidence.md`](20-metrics-evidence.md) | Release Manifest、Gate 报告、Metrics Review | 缺少 evidence bundle 时宣称 Review、Release 或 Done |
+| Risk / Decision / Release 记录 | [`17-risk-and-decisions.md`](17-risk-and-decisions.md) | `.config/goal/registry/risks.yaml`、`.config/goal/registry/releases.yaml`、Release Manifest | 绕过 release-blocking risk、rollback plan 或 validation summary |
+| Agent 协作协议 | [`14-agent-protocols.md`](14-agent-protocols.md)、[`25-execution-guide.md`](25-execution-guide.md) | `.claude/agents/`、`.codex/agents/`、`.copilot/agents/` | Agent 自批、自改 Gate、绕过 worktree 隔离或跳过 arbiter |
+| Controlled RSI | [`21-controlled-rsi.md`](21-controlled-rsi.md) | `change-requests/`、Improvement Backlog、Scorecard | 自动放宽安全、隐私、资金、权限、数据保留、P0/P1 AC 或 Release Gate |
 | 模块级 Goal 文档路径 | [`README.md`](README.md#与-docsspecmodule-和-docsgovernance-的同步边界)、[`module/README.md`](../../module/README.md#goal-文档索引) | `.config/goal/schema/rules.yaml`、`AGENTS.md`、模块索引 | 使用 `module/{module}/goal/`、`module/{module}/goal/1.md` 或 `goal/*.md` 作为模块 Goal 槽位 |
-| 模块代码本地路径 | [`CONSTITUTION.md`](../../CONSTITUTION.md#24-本地代码目录)、[`ARCHITECTURE.md`](../../ARCHITECTURE.md#本地开发路径)、[`module/README.md`](../../module/README.md#同步口径) | `AGENTS.md`、Prompt、Task、Evidence、执行记录 | 在本仓库 `module/{module}/` 下放置实现源码树，或把模块代码复制进 `ZoneCNH/ZoneCNH` |
+| 模块代码本地路径 | [`CONSTITUTION.md`](../../CONSTITUTION.md#24-本地代码目录)、[`ARCHITECTURE.md`](../../ARCHITECTURE.md#本地开发路径)、[`module/README.md`](../../module/README.md#同步口径) | `.config/goal/schema/rules.yaml`、`AGENTS.md`、Prompt、Task、Evidence、执行记录 | 在本仓库 `module/{module}/` 下放置实现源码树，或把模块代码复制进 `ZoneCNH/ZoneCNH` |
 | 变更级别与执行模式 | [`13-runtime-engine.md`](13-runtime-engine.md) | Runtime 配置、SOP 执行记录 | 把 Lite/Standard/Full 或 RCA 动作当成 Pipeline 阶段 |
 | CI 与 x.go 适配器 | [`16-ci-cd.md`](16-ci-cd.md) | `.github/workflows/`、x.go 检查报告 | 用 CI 阶段覆盖 Goal 管线状态 |
 | 标准对齐分析 | [`24-standard-unification-analysis.md`](24-standard-unification-analysis.md)、`docs/report/goal/` | 修复计划、变更日志、审查记录 | 让分析报告覆盖正式规范 |
@@ -54,6 +59,7 @@
 | `.config/goal/prompts/` | Prompt 包快照 | Context Package 与 Prompt 版本 |
 | `.config/goal/runtime/` | 本地运行态 | 不提交临时锁、恢复缓存、进程状态 |
 | `.omx/state/` / `.omx/logs/` | OMX 运行态 | 不作为 Goal 规范权威 |
+| `docs/goal/change-requests/` | 待审批变更提案 | 可提交提案、证据、验证命令和回滚计划；批准前不改变当前规则 |
 
 ## 5. 同步要求
 
@@ -61,5 +67,6 @@
 2. 修改 Gate、ID、Registry 或 Evidence 规则后，同步 schema、CI 校验和 README 索引。
 3. 修改 SOP、Runtime 或 CI 阶段名时，只能新增或调整 `workflow_step`，不得新增 `pipeline_state`，且不得复用 `pipeline_state` 枚举名。
 4. 修改模块级 Goal 文档命名规则时，同步 `module/README.md`、`.config/goal/schema/rules.yaml`、`AGENTS.md` 和变更日志。
-5. 修改模块代码本地路径规则时，同步 `CONSTITUTION.md`、`ARCHITECTURE.md`、`AGENTS.md`、`module/README.md`、Code DoR/DoD、Code Lint 和变更日志。
-6. 每次权威边界变更都必须记录到 `CHANGELOG.md`，并在 `todo.md` 或报告中保留验证证据。
+5. 修改模块代码本地路径规则时，同步 `CONSTITUTION.md`、`ARCHITECTURE.md`、`AGENTS.md`、`module/README.md`、`.config/goal/schema/rules.yaml`、Code DoR/DoD、Code Lint 和变更日志。
+6. 修改受保护资产时，先在 `docs/goal/change-requests/` 记录 evidence、impact、proposed patch、validation command、rollback plan 和 owner / approval requirement。
+7. 每次权威边界变更都必须记录到 `CHANGELOG.md`，并在 `todo.md` 或报告中保留验证证据。

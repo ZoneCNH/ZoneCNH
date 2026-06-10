@@ -9,6 +9,7 @@
 - 统一模块代码仓库本地路径为 `/home/{module}`，其中 `{module}` 与 GitHub 仓库名一致。
 - 明确 `module/{module}/` 只保存 Goal、Spec、Traceability、Task、Plan、Prompt、Evidence 等交付制品，不承载实现源码树。
 - 同步 Code 标准、Code DoR/DoD、Code Lint、`module/README.md`、`AGENTS.md`、`CONSTITUTION.md` 和 `ARCHITECTURE.md` 的路径口径。
+- 将本地代码边界投影到 `.config/goal/schema/rules.yaml` 的 `module_code_location`，并接入 `docs/goal/tools/rule-drift-check.py`，校验 `module/{module}/` 不承载源码树。
 
 ## 2026-06-09 — 模块级 Goal 文档路径固化
 
