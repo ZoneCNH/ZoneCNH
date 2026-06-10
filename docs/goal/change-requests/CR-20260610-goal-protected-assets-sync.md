@@ -26,6 +26,7 @@ Owner: workflow owner
 - [04-gates.md](../04-gates.md)、[17-risk-and-decisions.md](../17-risk-and-decisions.md)、[20-metrics-evidence.md](../20-metrics-evidence.md) 已将 G10 Release Gate 绑定到 strict validator、Matrix check-only、Risk Register、Release Manifest、Evidence Bundle 和 rollback validation。
 - [CONSTITUTION.md](../../CONSTITUTION.md) §17 当前描述 `Goal → Spec → Matrix → Tasks → Plan → Prompt → Code → Test → Release → Metrics`，而 [03-pipeline.md](../03-pipeline.md) 定义 11 层主流程并将 Matrix 定位为横切追溯制品。由于 Constitution 是最高治理源，该漂移必须单独审批后同步。
 - `.codex/agents/` 当前缺少 `goal-*` Agent 定义，而仓库级说明包含 Codex Goal Agent 角色。Codex 投影同步前，不得宣称这些 Codex Goal Agent 已实现。
+- `python3 docs/goal/tools/rule-drift-check.py --root .` 当前阻断在 CI job 漂移：`.config/goal/schema/rules.yaml` 要求 `id-format-check`、`matrix-coverage`、`gate-check`、`orphan-check`，但 `.github/workflows/goal-ci.yml` 未定义这些 job。
 
 Hypothesis:
 
@@ -41,6 +42,7 @@ Hypothesis:
 - `rules.yaml` 被误当成新规则源，而不是 `docs/goal/` 的机器投影。
 - Constitution 与 `docs/goal/` 对主流程阶段顺序给出不同口径，可能导致 Agent 在 Matrix 定位和 Release 前置条件上执行不一致。
 - 缺失 Codex Goal Agent 投影会让执行者假设不存在的 agent 能力，从而破坏协作和审计预期。
+- `goal-workflow validate` 即使在 strict validator 与 Matrix check-only 通过时仍会被 CI job 漂移阻断；该阻断不能通过删除 required jobs 或跳过 rule-drift-check 解决。
 
 ## Root Cause
 
@@ -51,7 +53,7 @@ Goal Delivery OS 的规范权威、机器投影、CI 调度和 Agent 执行面�
 人工批准后执行以下同步，且不得放宽任何 Gate：
 
 1. 重新生成或手工对齐 `.config/goal/schema/rules.yaml`，确保它只投影 `docs/goal/` 的现行规则。
-2. 检查 `.github/workflows/`，确保 workflow 调用统一 validator 和 `docs/goal/tools/` wrapper，不复制第二套 Gate 判定。
+2. 检查 `.github/workflows/`，确保 workflow 调用统一 validator 和 `docs/goal/tools/` wrapper，不复制第二套 Gate 判定；对齐 `id-format-check`、`matrix-coverage`、`gate-check`、`orphan-check` 的 workflow job 定义或经审批更新 required job 投影，不得为了通过检查删除 Gate。
 3. 检查 `.claude/agents/`、`.codex/agents/` 与 `.copilot/agents/`，确保 agent prompt 包含单任务单 writer、worktree 隔离、多源 reviewer、pipeline-arbiter、Gate 不绕过、Evidence Bundle 和 Change Request 边界；若 Codex `goal-*` agent 缺失，应在审批后补齐或删除相关实现声明。
 4. 针对 `CONSTITUTION.md` §17 与 `docs/goal/` 主流程 / Matrix 横切定位漂移提交单独 Constitution 同步 CR，在批准前不得直接改写 Constitution。
 
