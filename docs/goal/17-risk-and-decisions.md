@@ -21,7 +21,21 @@ Trigger:       [触发条件]
 Mitigation:    [缓解方案]
 Owner:         [负责人]
 Status:        Open / Mitigated / Closed / Accepted
+Linked Gates:  [G0-G11]
+Linked Evidence:[EVID-xxx]
+Release Blocking: true / false
+Residual Risk: Low / Medium / High / Critical
+Acceptance:    [accepted_by/date/reason，或 N/A]
+Review Cadence: [per PR / before G10 / post-release]
 ```
+
+### Risk Register 合格条件
+
+- High/Critical 或 `release_blocking=true` 的风险 MUST 有 owner、mitigation、linked gate、linked evidence 和 residual risk。
+- `release_blocking=true` 且 Status 不是 `Mitigated`、`Closed` 或明确 `Accepted` 的风险 MUST 阻断 G10。
+- `Accepted` 风险 MUST 记录接受人、日期、原因和到期复查条件；不得用 `Accepted` 掩盖缺失的缓解方案。
+- Release 前 MUST 生成 Risk Register 摘要，并被 Release Manifest 引用。
+- 风险关闭 MUST 引用 Evidence；没有 Evidence 的风险只能从 `Open` 进入 `Mitigated` 待验证，不能直接 `Closed`。
 
 ### 风险类型
 
@@ -107,16 +121,21 @@ Design Review:
 ## 6. Verification
 Commands: [验证命令]
 Results: [测试摘要]
+Validation Summary: [通过/失败/跳过项、环境、commit、阻断项]
 
 ## 7. Evidence
 Evidence Manifest: [证据路径]
 
 ## 8. Risks
 Known risks: [已知风险]
+Risk Register: [路径]
 Mitigation: [缓解方案]
+Residual risk: [Low / Medium / High / Critical]
+Release blocking risks: none | [列表]
 
 ## 9. Rollback
 Rollback plan: [回滚方案路径]
+Rollback validation: [dry-run / 演练 / fallback evidence 路径]
 
 ## 10. Checklist
 - [ ] Goal linked
@@ -128,6 +147,11 @@ Rollback plan: [回滚方案路径]
 - [ ] CHANGELOG updated
 - [ ] Evidence attached
 - [ ] Rollback plan exists
+- [ ] Goal strict validation passed
+- [ ] Matrix check-only passed
+- [ ] Risk Register has no open release_blocking risk
+- [ ] Validation summary exists
+- [ ] Rollback validation evidence exists
 ```
 
 ### Release Manifest 字段
@@ -145,6 +169,13 @@ changelog:
 rollback_plan:
 evidence_manifest:
 known_risks:
+risk_register:
+validation_summary:
+release_gate:
+  gate_id: G10
+  verdict: PASS | FAIL | BLOCKED
+  checked_at:
+rollback_validation:
 ```
 
 ---

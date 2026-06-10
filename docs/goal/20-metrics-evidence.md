@@ -25,6 +25,50 @@ Goal 工作流的核心判断不是“代码是否完成”，而是“目标是
 
 证据可以来自自动化测试、日志、监控、人工评审或用户反馈，但必须进入统一记录，不能散落在聊天上下文里。
 
+## Evidence Bundle
+
+Evidence Bundle 是 G8 / G10 的最小可审查证明包。任何 `Done`、`Verified` 或 Release `PASS` 声明 MUST 引用 Evidence Bundle，而不是只引用聊天记录或口头确认。
+
+最低字段：
+
+```yaml
+evidence_bundle_id:
+goal_id:
+task_id:
+release_id:
+commit:
+environment:
+validator:
+  command:
+  result:
+matrix:
+  command:
+  result:
+tests:
+  - command:
+    result:
+    log:
+review:
+  reviewer:
+  verdict:
+risk_register:
+release_manifest:
+rollback_validation:
+artifacts:
+  - path:
+    sha256:
+created_at:
+owner:
+```
+
+执行规则：
+
+- P0 / P1 Acceptance Criteria MUST 同时具备测试证据和评审或验证证据。
+- Release Evidence Bundle MUST 包含 strict validator、Matrix check-only、Risk Register、Release Manifest 和 rollback validation 的结果。
+- 失败证据 MUST 保留；后续通过证据可以 supersede，但 MUST NOT 删除失败记录。
+- 用于 G10 的证据 MUST 可复现：记录命令、环境、commit 或 artifact、执行结果和负责人。
+- 没有 owner、来源或可复现命令的证据只能作为参考信息，MUST NOT 关闭 Gate。
+
 ## Metrics Review 模板
 
 ```yaml

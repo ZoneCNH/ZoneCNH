@@ -45,6 +45,45 @@ Controlled RSI 的价值来自重复问题的系统性消除，而不是生成�
 
 改进必须先证明“为什么现在的工作流漏掉了问题”，再提出补丁。
 
+## R0-R9 控制 Gate
+
+Controlled RSI 的每次改进都必须通过 R0-R9。任一 Gate 无法证明时，改进进入 Backlog 或 Change Request，MUST NOT 直接应用。
+
+| Gate | 证明对象 | 阻断条件 |
+|------|----------|----------|
+| R0 Evidence Intake | 改进有事实来源 | 没有失败证据、评审发现、指标偏差或事故记录；Hypothesis 未标记 |
+| R1 Scope Classification | 改进对象分类正确 | 把 Goal 语义、P0/P1 AC、安全/隐私/资金/权限/数据保留约束伪装成模板优化 |
+| R2 Protected Asset Check | 是否触碰受保护资产 | 需要改 Constitution、CI、agent 配置、schema 投影、Release Gate、Rollback 或 Incident 规则但没有 CR |
+| R3 Safety Preservation | 不降低现有约束 | 删除失败测试、降低 Gate、放宽证据要求、改变责任归属或减少审查源 |
+| R4 Evaluation Replay | 历史案例可回放 | Prompt、Template、Gate、Matrix、Checklist 改动无法用历史样例或当前任务验证 |
+| R5 Projection Consistency | 投影与 SSOT 一致 | `.config/goal/schema/rules.yaml`、CI 或 Agent 配置与 `docs/goal/` 新规则漂移且未登记 |
+| R6 Approval | 审批状态明确 | Propose-only / Approval-required 项没有 workflow owner 或 Human Approval |
+| R7 Rollout Scope | 灰度范围可控 | 无适用范围、无回退边界、无版本记录 |
+| R8 Rollback | 可回滚 | 没有 rollback plan、无法恢复旧模板/Prompt/Gate/字段 |
+| R9 Retrospective | 改进效果可衡量 | 无后续指标、无复盘窗口、无法判断改进是否减少缺陷或返工 |
+
+## RSI Scorecard
+
+每个改进提案必须按 0-5 分记录以下维度：
+
+| 维度 | 说明 |
+|------|------|
+| Impact | 能减少多少真实缺陷、返工或发布风险 |
+| Risk | 是否可能改变语义、责任、审批或安全边界 |
+| Verifiability | 是否能通过 replay、validator、CI 或样例任务证明 |
+| Maintenance Cost | 是否增加持续维护负担或规则复杂度 |
+| Safety Preservation | 是否保持或增强安全、隐私、资金、权限、数据保留和证据要求 |
+
+Auto-allowed 只适用于低风险、可回滚、不触碰受保护资产、且 R0-R9 均通过的澄清性改进。任何会改变执行行为、Gate 强度、Release 条件或投影规则的改进 MUST 至少进入 Propose-only，并由 workflow owner 审批。
+
+## Rollback 与 Replay
+
+- 每个 Workflow Asset Patch MUST 记录 rollback plan，说明如何恢复旧模板、Prompt、Gate、Checklist 或 Matrix 字段。
+- 触碰 Prompt、Template、Gate、Matrix、Checklist 的改进 MUST 在应用前执行 Evaluation Replay；没有可用历史样例时，必须记录验证缺口。
+- `.config/goal/schema/rules.yaml`、`.github/workflows/`、`.claude/agents/`、`.codex/agents/` 是投影或执行面，MUST NOT 由 RSI 自动改写为新权威源。
+- 投影不一致时，先在 `docs/goal/change-requests/` 记录 CR；Human Approval 后再同步受保护资产。
+- Rollback、Release Gate、Incident 处理、P0/P1 AC、安全、隐私、资金、权限和数据保留约束 MUST NOT 被 RSI 自动放宽。
+
 ## 触发信号
 
 | 信号 | 可能含义 |
