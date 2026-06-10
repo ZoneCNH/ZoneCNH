@@ -272,23 +272,38 @@ on:
   workflow_call:
   push:
   pull_request:
+env:
+  GOAL_CI_RUNNER_CLASS: self-hosted
+  RUNNER_TOOL_CACHE: ${{ github.workspace }}/.goal-runner-tool-cache
+  AGENT_TOOLSDIRECTORY: ${{ github.workspace }}/.goal-runner-tool-cache
+  PIP_DISABLE_PIP_VERSION_CHECK: "1"
 jobs:
   goal-validator:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64]
     steps:
+      - name: Prepare self-hosted runner tool cache
+        run: mkdir -p "$RUNNER_TOOL_CACHE" "$AGENT_TOOLSDIRECTORY"
       - uses: actions/checkout@v4
+      - name: Set up Goal CI Python toolchain
+        run: bash docs/goal/tools/setup-ci-toolchain.sh
       - name: Goal Workflow Validate
         run: bash docs/goal/tools/goal-workflow.sh validate
   lint:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64]
     needs: goal-validator
     steps:
+      - name: Prepare self-hosted runner tool cache
+        run: mkdir -p "$RUNNER_TOOL_CACHE" "$AGENT_TOOLSDIRECTORY"
       - uses: actions/checkout@v4
+      - name: Set up Goal CI Python toolchain
+        run: bash docs/goal/tools/setup-ci-toolchain.sh
       - name: Goal Workflow CI
         run: bash docs/goal/tools/goal-workflow.sh ci
 ```
 
 发布 workflow 必须先复用 `.github/workflows/goal-ci.yml`，再执行 `bash .github/ci/goal-release-gate.sh`；只有 gate 产出 `release/manifest/goal-release-gate.json` 后，才允许生成 release manifest 和创建 GitHub Release。
+
+Goal 相关 workflow MUST 使用 `[self-hosted, Linux, X64]` runner class。`ubuntu-latest` 等 hosted runner alias 只能出现在负例测试 fixture 中，不得进入实际 workflow 或推荐示例。自托管 runner 必须提供可写的 `RUNNER_TOOL_CACHE` 与 `AGENT_TOOLSDIRECTORY`；若 job 在首个 step 前因 `/opt/hostedtoolcache` 权限失败而中止，应登记为 runner 基础设施阻断，不得通过切换 hosted runner、跳过 Gate 或放宽 validator 规避。
 
 ## 依赖
 
@@ -301,3 +316,4 @@ jobs:
 - `lint-goal.sh`: bash, grep, find
 - `rule-drift-check.py`: Python 3.10+
 - `self-test.sh`: bash, Python 3.10+, grep, find, git
+- `setup-ci-toolchain.sh`: bash, Python 3.10+, venv/pip, 可写 `RUNNER_TOOL_CACHE` 与 `AGENT_TOOLSDIRECTORY`

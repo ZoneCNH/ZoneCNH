@@ -49,6 +49,10 @@ release gate 在以下情况必须非零退出：G10 未 PASS、存在未解除�
 
 CI MUST 调用统一 validator 或 `docs/goal/tools/` 中的封装脚本，不得在 workflow YAML 中复制第二套 Gate 规则。允许 workflow 只做调度、缓存、上传 artifact 和组合 job 结果。
 
+Goal CI 的 runner class 是执行环境约束，不是 Gate 判定来源。`.github/workflows/goal-ci.yml` 中所有 Goal job MUST 使用 `[self-hosted, Linux, X64]`，以保持项目内一致的自托管执行面。自托管 runner MUST 提供可写 workspace、tool cache 和临时目录；workflow MUST 将 `RUNNER_TOOL_CACHE` / `AGENT_TOOLSDIRECTORY` 指向仓库工作区内的可写路径，并在 checkout 前创建目录。Python/YAML 工具 MUST 通过 job-local virtualenv 安装并加入 `PATH`，MUST NOT 依赖系统级 `pip`、全局 `PyYAML`、全局 `yamllint` 或 runner 预装状态。
+
+如果自托管 runner 在首个 step 前因宿主机权限失败（例如无法访问 `/opt/hostedtoolcache`），该失败 MUST 记录为 CI 基础设施阻断；Agent MUST NOT 通过切换到 hosted runner、跳过 job、放宽 validator、跳过 Gate 或删除失败证据来绕过。
+
 推荐命令：
 
 ```bash

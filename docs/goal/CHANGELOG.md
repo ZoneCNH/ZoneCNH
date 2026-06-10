@@ -2,6 +2,14 @@
 
 > 记录 docs/goal/ 体系的重大结构性变更。
 
+## 2026-06-11 — Goal CI self-hosted runner 合同固化
+
+### CI 可执行性
+
+- 统一 Goal workflow、工具文档示例与 validator fixture 到 `[self-hosted, Linux, X64]`。
+- 将 self-hosted runner、workspace-local tool cache 与 toolchain setup 写入 schema、validator 和 self-test，防止回退 hosted runner 或依赖全局 Python/pip 状态。
+- 明确 `/opt/hostedtoolcache` 首步前失败是 self-hosted runner 基础设施阻断，不得通过切换 hosted runner、跳过 Gate 或放宽 validator 规避。
+
 ## 2026-06-10 — Goal Delivery OS 执行口径收敛
 
 ### 执行性与可验证性

@@ -448,6 +448,15 @@ task:
 
 ci:
   workflow: ".github/workflows/goal-ci.yml"
+  runner:
+    required_labels:
+      - self-hosted
+      - Linux
+      - X64
+    required_env:
+      - RUNNER_TOOL_CACHE
+      - AGENT_TOOLSDIRECTORY
+    toolchain_setup: "docs/goal/tools/setup-ci-toolchain.sh"
   required_jobs:
     - yaml-lint
     - registry-check
@@ -457,6 +466,7 @@ ci:
     - matrix-coverage
     - gate-check
     - orphan-check
+    - goal-toolchain-check
     - agent-check
     - docs-check
     - summary

@@ -87,6 +87,9 @@ DECISION_ID_PATTERN = re.compile(r"^DEC-[0-9]{8}-[0-9]{3}$")
 RISK_ID_PATTERN = re.compile(rf"^RISK-GOAL-{NAMESPACE_FRAGMENT}-[0-9]{{3}}-[0-9]{{3}}$")
 RISK_ID_EXPECTED = "RISK-GOAL-<DATE|MODULE-NAMESPACE>-NNN-NNN"
 REQUIRED_CI_JOBS = {"goal-validator", "goal-toolchain-check"}
+REQUIRED_GOAL_CI_RUNNER_LABELS = ("self-hosted", "Linux", "X64")
+REQUIRED_GOAL_CI_ENV = ("RUNNER_TOOL_CACHE", "AGENT_TOOLSDIRECTORY")
+REQUIRED_GOAL_CI_TOOLCHAIN = "docs/goal/tools/setup-ci-toolchain.sh"
 DELEGATED_RULE_JOBS = {"id-format-check", "matrix-coverage", "gate-check", "orphan-check"}
 REGISTRY_FILES = ("goals.yaml", "tasks.yaml", "issues.yaml", "releases.yaml", "risks.yaml", "decisions.yaml")
 REGISTRY_SECTIONS = {
@@ -1090,15 +1093,70 @@ def check_workflow_stale_contract(root: Path, report: Report) -> None:
             )
 
     active_text = "\n".join(active_lines)
-    job_ids = set(re.findall(r"^  ([A-Za-z0-9_-]+):\s*$", workflow.read_text(encoding="utf-8"), re.MULTILINE))
-    if "goal-validator" not in job_ids:
+    runs_on_lines = [
+        (line_number, raw_line)
+        for line_number, raw_line in enumerate(read_lines(workflow), start=1)
+        if raw_line.strip().startswith("runs-on:")
+    ]
+    for line_number, raw_line in runs_on_lines:
+        missing_labels = [label for label in REQUIRED_GOAL_CI_RUNNER_LABELS if label not in raw_line]
+        if missing_labels:
+            report.error(
+                "GV-CONSISTENCY-CI-RUNNER-CLASS",
+                "consistency",
+                path_at(workflow, line_number),
+                "Goal CI jobs must run on the approved self-hosted runner class",
+                list(REQUIRED_GOAL_CI_RUNNER_LABELS),
+                raw_line.strip(),
+            )
+
+    if "ubuntu-latest" in active_text or "GOAL_CI_RUNNER_CLASS: self-hosted" not in active_text:
         report.error(
-            "GV-CONSISTENCY-CI-MISSING-GOAL-VALIDATOR",
+            "GV-CONSISTENCY-CI-RUNNER-CLASS",
             "consistency",
             workflow,
-            "GitHub workflow must define goal-validator as the independent strict validator job",
-            "jobs.goal-validator",
-            sorted(job_ids),
+            "Goal CI must not fall back to hosted runners",
+            "GOAL_CI_RUNNER_CLASS: self-hosted and no hosted runner aliases",
+            "hosted runner alias or missing runner class",
+        )
+
+    missing_env = [name for name in REQUIRED_GOAL_CI_ENV if name not in active_text]
+    if missing_env:
+        report.error(
+            "GV-CONSISTENCY-CI-TOOLCACHE",
+            "consistency",
+            workflow,
+            "Goal CI must declare writable self-hosted tool cache env",
+            list(REQUIRED_GOAL_CI_ENV),
+            missing_env,
+        )
+
+    if REQUIRED_GOAL_CI_TOOLCHAIN not in active_text:
+        report.error(
+            "GV-CONSISTENCY-CI-TOOLCHAIN",
+            "consistency",
+            workflow,
+            "Goal CI must install job-local Python/YAML tools through the approved setup script",
+            REQUIRED_GOAL_CI_TOOLCHAIN,
+            "<missing>",
+        )
+
+    workflow_text = workflow.read_text(encoding="utf-8")
+    job_ids = set(re.findall(r"^  ([A-Za-z0-9_-]+):\s*$", workflow_text, re.MULTILINE))
+    missing_workflow_jobs = sorted(REQUIRED_CI_JOBS - job_ids)
+    if missing_workflow_jobs:
+        violation_id = (
+            "GV-CONSISTENCY-CI-MISSING-GOAL-VALIDATOR"
+            if "goal-validator" in missing_workflow_jobs
+            else "GV-CONSISTENCY-CI-MISSING-REQUIRED-JOB"
+        )
+        report.error(
+            violation_id,
+            "consistency",
+            workflow,
+            "GitHub workflow must define required Goal CI jobs",
+            sorted(REQUIRED_CI_JOBS),
+            missing_workflow_jobs,
         )
 
     if "docs/goal/tools/goal-validate.py" not in active_text or "--mode strict" not in active_text:
@@ -1113,15 +1171,55 @@ def check_workflow_stale_contract(root: Path, report: Report) -> None:
 
     rules = root / ".config/goal/schema/rules.yaml"
     required_jobs = parse_ci_required_jobs(rules)
-    if rules.exists() and "goal-validator" not in required_jobs:
-        report.error(
-            "GV-CONSISTENCY-CI-MISSING-GOAL-VALIDATOR",
-            "consistency",
-            rules,
-            "rules.yaml ci.required_jobs must require the strict Goal validator job",
-            "ci.required_jobs includes goal-validator",
-            sorted(required_jobs),
-        )
+    if rules.exists():
+        rules_text = rules.read_text(encoding="utf-8")
+        missing_required_jobs = sorted(REQUIRED_CI_JOBS - required_jobs)
+        if missing_required_jobs:
+            violation_id = (
+                "GV-CONSISTENCY-CI-MISSING-GOAL-VALIDATOR"
+                if "goal-validator" in missing_required_jobs
+                else "GV-CONSISTENCY-CI-MISSING-REQUIRED-JOB"
+            )
+            report.error(
+                violation_id,
+                "consistency",
+                rules,
+                "rules.yaml ci.required_jobs must require the Goal CI validator/toolchain jobs",
+                sorted(REQUIRED_CI_JOBS),
+                missing_required_jobs,
+            )
+
+        missing_rule_labels = [label for label in REQUIRED_GOAL_CI_RUNNER_LABELS if label not in rules_text]
+        if missing_rule_labels:
+            report.error(
+                "GV-CONSISTENCY-CI-RUNNER-CLASS",
+                "consistency",
+                rules,
+                "rules.yaml must record the required self-hosted Goal CI runner labels",
+                list(REQUIRED_GOAL_CI_RUNNER_LABELS),
+                missing_rule_labels,
+            )
+
+        missing_rule_env = [name for name in REQUIRED_GOAL_CI_ENV if name not in rules_text]
+        if missing_rule_env:
+            report.error(
+                "GV-CONSISTENCY-CI-TOOLCACHE",
+                "consistency",
+                rules,
+                "rules.yaml must record the writable self-hosted tool cache environment",
+                list(REQUIRED_GOAL_CI_ENV),
+                missing_rule_env,
+            )
+
+        if REQUIRED_GOAL_CI_TOOLCHAIN not in rules_text:
+            report.error(
+                "GV-CONSISTENCY-CI-TOOLCHAIN",
+                "consistency",
+                rules,
+                "rules.yaml must record the approved Goal CI toolchain setup script",
+                REQUIRED_GOAL_CI_TOOLCHAIN,
+                "<missing>",
+            )
 
 
 def check_consistency(root: Path, report: Report) -> None:

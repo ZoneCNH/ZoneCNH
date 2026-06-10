@@ -189,6 +189,19 @@ GITIGNORE
       ;;
   esac
 
+  cat >"$root/.config/goal/registry/goals.yaml" <<'YAML'
+goals: []
+YAML
+  cat >"$root/.config/goal/registry/tasks.yaml" <<'YAML'
+tasks: []
+YAML
+  cat >"$root/.config/goal/registry/issues.yaml" <<'YAML'
+issues: []
+YAML
+  cat >"$root/.config/goal/registry/decisions.yaml" <<'YAML'
+decisions: []
+YAML
+
   if [[ "$matrix_legacy" == "true" ]]; then
     cat >"$root/.config/goal/matrix/matrix.yaml" <<'YAML'
 matrix:
@@ -245,33 +258,65 @@ YAML
     cat >"$root/.github/workflows/goal-ci.yml" <<'YAML'
 name: Goal fixture
 on: [push]
+env:
+  GOAL_CI_RUNNER_CLASS: self-hosted
+  RUNNER_TOOL_CACHE: ${{ github.workspace }}/.goal-runner-tool-cache
+  AGENT_TOOLSDIRECTORY: ${{ github.workspace }}/.goal-runner-tool-cache
 jobs:
-  stale:
-    runs-on: ubuntu-latest
+  goal-validator:
+    runs-on: [self-hosted, Linux, X64]
     steps:
+      - run: mkdir -p "$RUNNER_TOOL_CACHE" "$AGENT_TOOLSDIRECTORY"
+      - run: bash docs/goal/tools/setup-ci-toolchain.sh
       - run: |
           required = ['requirement_id', 'evidence_ids']
           valid_gate_statuses = ['PASS', 'PASS_WITH_RISK', 'FAIL', 'BLOCKED', 'PENDING']
           valid_result_verdicts = ['PASS', 'PASS_WITH_RISK', 'FAIL']
+  goal-toolchain-check:
+    runs-on: [self-hosted, Linux, X64]
+    steps:
+      - run: mkdir -p "$RUNNER_TOOL_CACHE" "$AGENT_TOOLSDIRECTORY"
+      - run: bash docs/goal/tools/setup-ci-toolchain.sh
 YAML
   else
     cat >"$root/.github/workflows/goal-ci.yml" <<'YAML'
 name: Goal fixture
 on: [push]
+env:
+  GOAL_CI_RUNNER_CLASS: self-hosted
+  RUNNER_TOOL_CACHE: ${{ github.workspace }}/.goal-runner-tool-cache
+  AGENT_TOOLSDIRECTORY: ${{ github.workspace }}/.goal-runner-tool-cache
 jobs:
   goal-validator:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64]
     steps:
+      - run: mkdir -p "$RUNNER_TOOL_CACHE" "$AGENT_TOOLSDIRECTORY"
+      - run: bash docs/goal/tools/setup-ci-toolchain.sh
       - run: python3 docs/goal/tools/goal-validate.py --root . --mode strict --format text
       - run: echo "source_id target_id evidence_id BLOCKED"
+  goal-toolchain-check:
+    runs-on: [self-hosted, Linux, X64]
+    steps:
+      - run: mkdir -p "$RUNNER_TOOL_CACHE" "$AGENT_TOOLSDIRECTORY"
+      - run: bash docs/goal/tools/setup-ci-toolchain.sh
 YAML
   fi
 
   cat >"$root/.config/goal/schema/rules.yaml" <<'YAML'
 ci:
   workflow: ".github/workflows/goal-ci.yml"
+  runner:
+    required_labels:
+      - self-hosted
+      - Linux
+      - X64
+    required_env:
+      - RUNNER_TOOL_CACHE
+      - AGENT_TOOLSDIRECTORY
+    toolchain_setup: "docs/goal/tools/setup-ci-toolchain.sh"
   required_jobs:
     - goal-validator
+    - goal-toolchain-check
 YAML
 }
 
@@ -459,16 +504,50 @@ write_validator_fixture "$validator_stale_ci" false false PASS PASS DONE release
 run_failure_contains "goal validator rejects stale CI validation vocabulary" "GV-CONSISTENCY-CI-STALE-CONTRACT" \
   python3 "$SCRIPT_DIR/goal-validate.py" --root "$validator_stale_ci" --mode strict --format text
 
+validator_hosted_ci="$TMP_ROOT/validator-hosted-ci"
+write_validator_fixture "$validator_hosted_ci" false false PASS PASS DONE released false false "" good
+cat >"$validator_hosted_ci/.github/workflows/goal-ci.yml" <<'YAML'
+name: Goal fixture
+on: [push]
+env:
+  GOAL_CI_RUNNER_CLASS: hosted
+  RUNNER_TOOL_CACHE: ${{ github.workspace }}/.goal-runner-tool-cache
+  AGENT_TOOLSDIRECTORY: ${{ github.workspace }}/.goal-runner-tool-cache
+jobs:
+  goal-validator:
+    runs-on: ubuntu-latest
+    steps:
+      - run: bash docs/goal/tools/setup-ci-toolchain.sh
+      - run: python3 docs/goal/tools/goal-validate.py --root . --mode strict --format text
+  goal-toolchain-check:
+    runs-on: ubuntu-latest
+    steps:
+      - run: bash docs/goal/tools/setup-ci-toolchain.sh
+YAML
+run_failure_contains "goal validator rejects hosted Goal CI runner" "GV-CONSISTENCY-CI-RUNNER-CLASS" \
+  python3 "$SCRIPT_DIR/goal-validate.py" --root "$validator_hosted_ci" --mode strict --format text
+
 validator_missing_ci_validator="$TMP_ROOT/validator-missing-ci-validator"
 write_validator_fixture "$validator_missing_ci_validator" false false PASS PASS DONE released false false "" good
 cat >"$validator_missing_ci_validator/.github/workflows/goal-ci.yml" <<'YAML'
 name: Goal fixture
 on: [push]
+env:
+  GOAL_CI_RUNNER_CLASS: self-hosted
+  RUNNER_TOOL_CACHE: ${{ github.workspace }}/.goal-runner-tool-cache
+  AGENT_TOOLSDIRECTORY: ${{ github.workspace }}/.goal-runner-tool-cache
 jobs:
   current:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64]
     steps:
+      - run: mkdir -p "$RUNNER_TOOL_CACHE" "$AGENT_TOOLSDIRECTORY"
+      - run: bash docs/goal/tools/setup-ci-toolchain.sh
       - run: echo "source_id target_id evidence_id BLOCKED"
+  goal-toolchain-check:
+    runs-on: [self-hosted, Linux, X64]
+    steps:
+      - run: mkdir -p "$RUNNER_TOOL_CACHE" "$AGENT_TOOLSDIRECTORY"
+      - run: bash docs/goal/tools/setup-ci-toolchain.sh
 YAML
 run_failure_contains "goal validator rejects missing CI strict validator" "GV-CONSISTENCY-CI-MISSING-GOAL-VALIDATOR" \
   python3 "$SCRIPT_DIR/goal-validate.py" --root "$validator_missing_ci_validator" --mode strict --format text
@@ -478,6 +557,15 @@ write_validator_fixture "$validator_missing_required_job" false false PASS PASS 
 cat >"$validator_missing_required_job/.config/goal/schema/rules.yaml" <<'YAML'
 ci:
   workflow: ".github/workflows/goal-ci.yml"
+  runner:
+    required_labels:
+      - self-hosted
+      - Linux
+      - X64
+    required_env:
+      - RUNNER_TOOL_CACHE
+      - AGENT_TOOLSDIRECTORY
+    toolchain_setup: "docs/goal/tools/setup-ci-toolchain.sh"
   required_jobs:
     - summary
 YAML
@@ -504,10 +592,16 @@ write_release_gate_fixture "$release_gate_missing_ci" false false PASS BLOCKED p
 cat >"$release_gate_missing_ci/.github/workflows/goal-ci.yml" <<'YAML'
 name: Goal fixture
 on: [push]
+env:
+  GOAL_CI_RUNNER_CLASS: self-hosted
+  RUNNER_TOOL_CACHE: ${{ github.workspace }}/.goal-runner-tool-cache
+  AGENT_TOOLSDIRECTORY: ${{ github.workspace }}/.goal-runner-tool-cache
 jobs:
   summary:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64]
     steps:
+      - run: mkdir -p "$RUNNER_TOOL_CACHE" "$AGENT_TOOLSDIRECTORY"
+      - run: bash docs/goal/tools/setup-ci-toolchain.sh
       - run: echo "source_id target_id evidence_id BLOCKED"
 YAML
 run_failure_contains "goal release gate requires goal-validator job" "GV-CONSISTENCY-CI-MISSING-GOAL-VALIDATOR" \
