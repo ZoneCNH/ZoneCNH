@@ -89,6 +89,14 @@ RISK_ID_EXPECTED = "RISK-GOAL-<DATE|MODULE-NAMESPACE>-NNN-NNN"
 REQUIRED_CI_JOBS = {"goal-validator", "goal-toolchain-check"}
 DELEGATED_RULE_JOBS = {"id-format-check", "matrix-coverage", "gate-check", "orphan-check"}
 REGISTRY_FILES = ("goals.yaml", "tasks.yaml", "issues.yaml", "releases.yaml", "risks.yaml", "decisions.yaml")
+REGISTRY_SECTIONS = {
+    "goals.yaml": "goals",
+    "tasks.yaml": "tasks",
+    "issues.yaml": "issues",
+    "releases.yaml": "releases",
+    "risks.yaml": "risks",
+    "decisions.yaml": "decisions",
+}
 GATE_ID_EXTRACTORS = (
     re.compile(r"^\s*-\s+gate_id:\s*(GK-\d+|G\d+)\s*$"),
     re.compile(r"^  (GK-\d+|G\d+):\s*$"),
@@ -236,6 +244,20 @@ def find_duplicate_ids(path: Path, extractors: tuple[re.Pattern[str], ...]) -> d
                 break
 
     return {value: lines for value, lines in seen.items() if len(lines) > 1}
+
+
+def parse_top_level_keys(path: Path) -> dict[str, int]:
+    if not path.exists():
+        return {}
+
+    keys: dict[str, int] = {}
+    for line_number, raw_line in enumerate(read_lines(path), start=1):
+        if not raw_line.strip() or raw_line.lstrip().startswith("#"):
+            continue
+        match = re.match(r"^([A-Za-z_][A-Za-z0-9_]*):\s*", raw_line)
+        if match:
+            keys.setdefault(match.group(1), line_number)
+    return keys
 
 
 def parse_ci_required_jobs(path: Path) -> set[str]:
@@ -580,6 +602,64 @@ def check_runtime(root: Path, report: Report) -> None:
                 ".config/cache/ is the only runtime/cache root",
                 normalized_line,
             )
+
+
+def check_registry(root: Path, report: Report) -> None:
+    registry_dir = root / ".config/goal/registry"
+    if not registry_dir.exists():
+        report.error(
+            "GV-REGISTRY-DIR-MISSING",
+            "registry",
+            registry_dir,
+            "Goal registry directory is missing",
+            ".config/goal/registry with canonical registry files",
+            None,
+        )
+        return
+
+    expected_files = set(REGISTRY_FILES)
+    actual_files = {path.name for path in registry_dir.glob("*.yaml")}
+
+    missing = sorted(expected_files - actual_files)
+    if missing:
+        report.error(
+            "GV-REGISTRY-FILE-MISSING",
+            "registry",
+            registry_dir,
+            "Goal registry is missing canonical files",
+            ", ".join(REGISTRY_FILES),
+            missing,
+        )
+
+    extra = sorted(actual_files - expected_files)
+    if extra:
+        report.error(
+            "GV-REGISTRY-FILE-EXTRA",
+            "registry",
+            registry_dir,
+            "Goal registry contains non-canonical yaml files",
+            ", ".join(REGISTRY_FILES),
+            extra,
+        )
+
+    for file_name, section_name in REGISTRY_SECTIONS.items():
+        path = registry_dir / file_name
+        if not path.exists():
+            continue
+
+        top_level_keys = parse_top_level_keys(path)
+        if section_name not in top_level_keys:
+            report.error(
+                "GV-REGISTRY-SECTION-MISSING",
+                "registry",
+                path,
+                f"{file_name} must expose its canonical top-level registry section",
+                f"{section_name}:",
+                sorted(top_level_keys),
+            )
+            continue
+
+        parse_registry_items(path, section_name)
 
 
 def check_matrix(root: Path, report: Report) -> None:
@@ -1109,6 +1189,7 @@ def check_consistency(root: Path, report: Report) -> None:
 
 CHECKS = {
     "runtime": check_runtime,
+    "registry": check_registry,
     "matrix": check_matrix,
     "gate": check_gate,
     "risk": check_risk,
@@ -1158,7 +1239,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--format", choices=("text", "json"), default="text")
     parser.add_argument(
         "--only",
-        help="comma-separated validation areas: runtime,matrix,gate,risk,consistency",
+        help="comma-separated validation areas: runtime,registry,matrix,gate,risk,consistency",
     )
     return parser
 
