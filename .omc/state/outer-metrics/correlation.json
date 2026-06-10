@@ -1,18 +1,22 @@
 {
-  "computed_at": "2026-06-08T01:17:18Z",
-  "window": "last_0_modules",
-  "by_platform": {
+  "computed_at": "2026-06-10T22:15:34Z",
+  "window": "last_16_modules",
+  "by_source": {
     "claude": {
       "correlation": null,
-      "modules_evaluated": 0
+      "modules_evaluated": 16
     },
     "codex": {
       "correlation": null,
-      "modules_evaluated": 0
+      "modules_evaluated": 16
     },
     "copilot": {
       "correlation": null,
-      "modules_evaluated": 0
+      "modules_evaluated": 16
+    },
+    "rules": {
+      "correlation": null,
+      "modules_evaluated": 16
     }
   },
   "by_stage": {
