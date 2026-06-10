@@ -23,6 +23,7 @@
 !.config/goal/evidence/**
 !.config/goal/prompts/
 !.config/goal/prompts/**
+# Goal 运行态（不进入仓库）
 .config/goal/locks/
 .config/goal/local/
 .config/goal/**/locks/
@@ -30,7 +31,12 @@
 .config/goal/**/*.lock
 .config/goal/**/*.tmp
 .config/goal/**/*.log
+
+# Worktree isolation
 .worktree/
+
+# OMC runtime temp files
+.omc/**/*.tmp
 
 # Claude Code / Codex — 开放目录结构，屏蔽敏感文件
 .claude/settings.local.json
@@ -76,11 +82,10 @@ __pycache__/
 node_modules/
 docs/report/node_modules/
 
-# Separate k8s project (not part of this repo)
-k8s/
+# Separate sre project (not part of this repo)
+sre/
 
 # Report tooling npm artifacts
 docs/report/package.json
 docs/report/package-lock.json
 
-# Goal 运行态（不进入仓库）
