@@ -6,7 +6,8 @@
 
 ### CI 可执行性
 
-- 统一 Goal workflow、工具文档示例与 validator fixture 到 `[self-hosted, Linux, X64]`。
+- 统一 Goal workflow、工具文档示例与 validator fixture 到 `[self-hosted, Linux, X64, homepage]`，固定使用当前仓库已登记的项目 self-hosted runner。
+- 将缺少 `homepage` 标签的通用 self-hosted runner 选择登记为 validator 阻断条件，防止 workflow 在首个 step 前落到不合格 runner。
 - 将 self-hosted runner、workspace-local tool cache 与 toolchain setup 写入 schema、validator 和 self-test，防止回退 hosted runner 或依赖全局 Python/pip 状态。
 - 明确 `/opt/hostedtoolcache` 首步前失败是 self-hosted runner 基础设施阻断，不得通过切换 hosted runner、跳过 Gate 或放宽 validator 规避。
 - 为缺少 `python3-venv` / `ensurepip` 的 self-hosted runner 固化 workspace-local `pip --target` fallback；fallback 仍由 `setup-ci-toolchain.sh` 管理，不放宽 Gate 或依赖全局包。

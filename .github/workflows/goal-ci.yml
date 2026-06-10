@@ -45,7 +45,7 @@ jobs:
   # 1. YAML 语法检查
   yaml-lint:
     name: YAML Syntax Check
-    runs-on: [self-hosted, Linux, X64]
+    runs-on: [self-hosted, Linux, X64, homepage]
     timeout-minutes: 10
     steps:
       - name: Prepare self-hosted runner tool cache
@@ -65,7 +65,7 @@ jobs:
   # 2. Registry 完整性检查
   registry-check:
     name: Registry Integrity
-    runs-on: [self-hosted, Linux, X64]
+    runs-on: [self-hosted, Linux, X64, homepage]
     timeout-minutes: 10
     needs: yaml-lint
     steps:
@@ -130,7 +130,7 @@ jobs:
   # 3. 规则漂移检查
   rule-drift-check:
     name: Rule Drift Check
-    runs-on: [self-hosted, Linux, X64]
+    runs-on: [self-hosted, Linux, X64, homepage]
     timeout-minutes: 10
     needs: registry-check
     steps:
@@ -151,7 +151,7 @@ jobs:
   # 4. Goal 控制面一致性验证
   goal-validator:
     name: Goal Control-Plane Validation
-    runs-on: [self-hosted, Linux, X64]
+    runs-on: [self-hosted, Linux, X64, homepage]
     timeout-minutes: 10
     needs: rule-drift-check
     steps:
@@ -172,7 +172,7 @@ jobs:
   # 5. Goal ID 格式检查
   id-format-check:
     name: Goal ID Format Check
-    runs-on: [self-hosted, Linux, X64]
+    runs-on: [self-hosted, Linux, X64, homepage]
     timeout-minutes: 10
     needs: rule-drift-check
     steps:
@@ -193,7 +193,7 @@ jobs:
   # 6. Matrix 覆盖率与 edge 完整性检查
   matrix-coverage:
     name: Matrix Coverage Check
-    runs-on: [self-hosted, Linux, X64]
+    runs-on: [self-hosted, Linux, X64, homepage]
     timeout-minutes: 10
     needs: rule-drift-check
     steps:
@@ -214,7 +214,7 @@ jobs:
   # 7. Gate 可执行性检查
   gate-check:
     name: Goal Gate Check
-    runs-on: [self-hosted, Linux, X64]
+    runs-on: [self-hosted, Linux, X64, homepage]
     timeout-minutes: 10
     needs:
       - id-format-check
@@ -237,7 +237,7 @@ jobs:
   # 8. Evidence orphan 闭包检查
   orphan-check:
     name: Evidence Orphan Check
-    runs-on: [self-hosted, Linux, X64]
+    runs-on: [self-hosted, Linux, X64, homepage]
     timeout-minutes: 10
     needs: rule-drift-check
     steps:
@@ -258,7 +258,7 @@ jobs:
   # 9. 统一 Goal 工具链检查
   goal-toolchain-check:
     name: Unified Goal Toolchain Check
-    runs-on: [self-hosted, Linux, X64]
+    runs-on: [self-hosted, Linux, X64, homepage]
     timeout-minutes: 10
     needs:
       - goal-validator
@@ -282,7 +282,7 @@ jobs:
   # 10. Agent 文件检查
   agent-check:
     name: Agent Files Validation
-    runs-on: [self-hosted, Linux, X64]
+    runs-on: [self-hosted, Linux, X64, homepage]
     timeout-minutes: 10
     needs: yaml-lint
     steps:
@@ -324,7 +324,7 @@ jobs:
   # 11. 文档一致性检查
   docs-check:
     name: Documentation Consistency
-    runs-on: [self-hosted, Linux, X64]
+    runs-on: [self-hosted, Linux, X64, homepage]
     timeout-minutes: 10
     needs: yaml-lint
     steps:
@@ -361,7 +361,7 @@ jobs:
   # 12. 完整性汇总
   summary:
     name: CI Summary
-    runs-on: [self-hosted, Linux, X64]
+    runs-on: [self-hosted, Linux, X64, homepage]
     timeout-minutes: 10
     needs:
       - yaml-lint

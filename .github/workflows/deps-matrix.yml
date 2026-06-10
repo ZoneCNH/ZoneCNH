@@ -20,7 +20,7 @@ on:
 jobs:
   yaml-lint:
     name: Validate YAML
-    runs-on: [self-hosted, Linux, X64]
+    runs-on: [self-hosted, Linux, X64, homepage]
     steps:
       - uses: actions/checkout@v4
       - name: Validate FOUNDATION-DEPS.yaml
@@ -39,7 +39,7 @@ jobs:
 
   deps-check:
     name: Check Dependencies
-    runs-on: [self-hosted, Linux, X64]
+    runs-on: [self-hosted, Linux, X64, homepage]
     needs: yaml-lint
     outputs:
       violations: ${{ steps.check.outputs.violations }}
@@ -176,7 +176,7 @@ jobs:
 
   pr-comment:
     name: PR Comment
-    runs-on: [self-hosted, Linux, X64]
+    runs-on: [self-hosted, Linux, X64, homepage]
     needs: deps-check
     if: github.event_name == 'pull_request' && needs.deps-check.outputs.has_violations == 'true'
     steps:
@@ -215,7 +215,7 @@ jobs:
 
   summary:
     name: Summary
-    runs-on: [self-hosted, Linux, X64]
+    runs-on: [self-hosted, Linux, X64, homepage]
     needs: [deps-check]
     if: always()
     steps:

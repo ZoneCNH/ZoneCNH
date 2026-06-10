@@ -25,7 +25,7 @@ jobs:
   # ── 3. Goal 发布硬阻断：未满足 G10/风险/证据合同不得发布 ─────────
   release-gate:
     name: Goal Release Gate
-    runs-on: [self-hosted, Linux, X64]
+    runs-on: [self-hosted, Linux, X64, homepage]
     timeout-minutes: 10
     needs:
       - quality-gate
@@ -47,7 +47,7 @@ jobs:
   # ── 4. 生成 Release Manifest ──────────────────────────────────
   build-manifest:
     name: Build Release Manifest
-    runs-on: [self-hosted, Linux, X64]
+    runs-on: [self-hosted, Linux, X64, homepage]
     timeout-minutes: 15
     needs: release-gate
     steps:
@@ -67,7 +67,7 @@ jobs:
   # ── 5. 创建 GitHub Release ────────────────────────────────────
   publish-release:
     name: Publish Release
-    runs-on: [self-hosted, Linux, X64]
+    runs-on: [self-hosted, Linux, X64, homepage]
     timeout-minutes: 10
     needs: build-manifest
     steps:

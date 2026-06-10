@@ -453,6 +453,7 @@ ci:
       - self-hosted
       - Linux
       - X64
+      - homepage
     required_env:
       - RUNNER_TOOL_CACHE
       - AGENT_TOOLSDIRECTORY

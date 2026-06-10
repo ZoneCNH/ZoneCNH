@@ -27,7 +27,7 @@ permissions:
 jobs:
   collect-and-evaluate:
     name: Collect & Evaluate
-    runs-on: [self-hosted, Linux, X64]
+    runs-on: [self-hosted, Linux, X64, homepage]
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
@@ -106,7 +106,7 @@ jobs:
 
   validate-write-source:
     name: Validate write source (LLM block)
-    runs-on: [self-hosted, Linux, X64]
+    runs-on: [self-hosted, Linux, X64, homepage]
     timeout-minutes: 10
     if: github.event_name == 'pull_request'
     steps:

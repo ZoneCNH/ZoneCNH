@@ -287,7 +287,7 @@ env:
   AGENT_TOOLSDIRECTORY: ${{ github.workspace }}/.goal-runner-tool-cache
 jobs:
   goal-validator:
-    runs-on: [self-hosted, Linux, X64]
+    runs-on: [self-hosted, Linux, X64, homepage]
     steps:
       - run: mkdir -p "$RUNNER_TOOL_CACHE" "$AGENT_TOOLSDIRECTORY"
       - run: bash docs/goal/tools/setup-ci-toolchain.sh
@@ -296,7 +296,7 @@ jobs:
           valid_gate_statuses = ['PASS', 'PASS_WITH_RISK', 'FAIL', 'BLOCKED', 'PENDING']
           valid_result_verdicts = ['PASS', 'PASS_WITH_RISK', 'FAIL']
   goal-toolchain-check:
-    runs-on: [self-hosted, Linux, X64]
+    runs-on: [self-hosted, Linux, X64, homepage]
     steps:
       - run: mkdir -p "$RUNNER_TOOL_CACHE" "$AGENT_TOOLSDIRECTORY"
       - run: bash docs/goal/tools/setup-ci-toolchain.sh
@@ -311,14 +311,14 @@ env:
   AGENT_TOOLSDIRECTORY: ${{ github.workspace }}/.goal-runner-tool-cache
 jobs:
   goal-validator:
-    runs-on: [self-hosted, Linux, X64]
+    runs-on: [self-hosted, Linux, X64, homepage]
     steps:
       - run: mkdir -p "$RUNNER_TOOL_CACHE" "$AGENT_TOOLSDIRECTORY"
       - run: bash docs/goal/tools/setup-ci-toolchain.sh
       - run: python3 docs/goal/tools/goal-validate.py --root . --mode strict --format text
       - run: echo "source_id target_id evidence_id BLOCKED"
   goal-toolchain-check:
-    runs-on: [self-hosted, Linux, X64]
+    runs-on: [self-hosted, Linux, X64, homepage]
     steps:
       - run: mkdir -p "$RUNNER_TOOL_CACHE" "$AGENT_TOOLSDIRECTORY"
       - run: bash docs/goal/tools/setup-ci-toolchain.sh
@@ -333,6 +333,7 @@ ci:
       - self-hosted
       - Linux
       - X64
+      - homepage
     required_env:
       - RUNNER_TOOL_CACHE
       - AGENT_TOOLSDIRECTORY
@@ -556,6 +557,31 @@ YAML
 run_failure_contains "goal validator rejects hosted Goal CI runner" "GV-CONSISTENCY-CI-RUNNER-CLASS" \
   python3 "$SCRIPT_DIR/goal-validate.py" --root "$validator_hosted_ci" --mode strict --format text
 
+validator_unpinned_self_hosted_ci="$TMP_ROOT/validator-unpinned-self-hosted-ci"
+write_validator_fixture "$validator_unpinned_self_hosted_ci" false false PASS PASS DONE released false false "" good
+cat >"$validator_unpinned_self_hosted_ci/.github/workflows/goal-ci.yml" <<'YAML'
+name: Goal fixture
+on: [push]
+env:
+  GOAL_CI_RUNNER_CLASS: self-hosted
+  RUNNER_TOOL_CACHE: ${{ github.workspace }}/.goal-runner-tool-cache
+  AGENT_TOOLSDIRECTORY: ${{ github.workspace }}/.goal-runner-tool-cache
+jobs:
+  goal-validator:
+    runs-on: [self-hosted, Linux, X64]
+    steps:
+      - run: mkdir -p "$RUNNER_TOOL_CACHE" "$AGENT_TOOLSDIRECTORY"
+      - run: bash docs/goal/tools/setup-ci-toolchain.sh
+      - run: python3 docs/goal/tools/goal-validate.py --root . --mode strict --format text
+  goal-toolchain-check:
+    runs-on: [self-hosted, Linux, X64]
+    steps:
+      - run: mkdir -p "$RUNNER_TOOL_CACHE" "$AGENT_TOOLSDIRECTORY"
+      - run: bash docs/goal/tools/setup-ci-toolchain.sh
+YAML
+run_failure_contains "goal validator rejects unpinned self-hosted Goal CI runner" "GV-CONSISTENCY-CI-RUNNER-CLASS" \
+  python3 "$SCRIPT_DIR/goal-validate.py" --root "$validator_unpinned_self_hosted_ci" --mode strict --format text
+
 validator_missing_ci_validator="$TMP_ROOT/validator-missing-ci-validator"
 write_validator_fixture "$validator_missing_ci_validator" false false PASS PASS DONE released false false "" good
 cat >"$validator_missing_ci_validator/.github/workflows/goal-ci.yml" <<'YAML'
@@ -567,13 +593,13 @@ env:
   AGENT_TOOLSDIRECTORY: ${{ github.workspace }}/.goal-runner-tool-cache
 jobs:
   current:
-    runs-on: [self-hosted, Linux, X64]
+    runs-on: [self-hosted, Linux, X64, homepage]
     steps:
       - run: mkdir -p "$RUNNER_TOOL_CACHE" "$AGENT_TOOLSDIRECTORY"
       - run: bash docs/goal/tools/setup-ci-toolchain.sh
       - run: echo "source_id target_id evidence_id BLOCKED"
   goal-toolchain-check:
-    runs-on: [self-hosted, Linux, X64]
+    runs-on: [self-hosted, Linux, X64, homepage]
     steps:
       - run: mkdir -p "$RUNNER_TOOL_CACHE" "$AGENT_TOOLSDIRECTORY"
       - run: bash docs/goal/tools/setup-ci-toolchain.sh
@@ -591,6 +617,7 @@ ci:
       - self-hosted
       - Linux
       - X64
+      - homepage
     required_env:
       - RUNNER_TOOL_CACHE
       - AGENT_TOOLSDIRECTORY
@@ -633,7 +660,7 @@ env:
   AGENT_TOOLSDIRECTORY: ${{ github.workspace }}/.goal-runner-tool-cache
 jobs:
   summary:
-    runs-on: [self-hosted, Linux, X64]
+    runs-on: [self-hosted, Linux, X64, homepage]
     steps:
       - run: mkdir -p "$RUNNER_TOOL_CACHE" "$AGENT_TOOLSDIRECTORY"
       - run: bash docs/goal/tools/setup-ci-toolchain.sh
