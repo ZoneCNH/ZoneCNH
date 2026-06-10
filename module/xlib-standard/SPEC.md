@@ -5,7 +5,7 @@
 Status: Approved
 Owner: ZoneCNH
 Version: v1.0.0
-Updated: 2026-06-09
+Updated: 2026-06-10
 
 本规格定义 `xlib-standard` 作为 Go 基础库标准模板的最小可交付范围。它约束公共 API、模板生成、验证 gate、release manifest 与最终验收，不承载业务域实现。
 
@@ -29,9 +29,9 @@ Updated: 2026-06-09
 | Plan | Approved | 6 子任务依赖拓扑已确认 |
 | Tasks | Ready | 9 个 task spec 已拆分 |
 | Prompt | Ready | 9 个 context packet 已生成 |
-| Code | Pending | 待执行 |
-| Test | Pending | 待执行 |
-| Release | Pending | 待 v1.0.0 发布 |
+| Code | Completed | G6 PASS, 14 FR/27 AC/24 TC verified |
+| Test | Completed | G7 PASS, Evidence 6 文件 |
+| Release | Released | v1.0.0 标签已打，manifest 已更新，2026-06-10 |
 
 
 ## Summary

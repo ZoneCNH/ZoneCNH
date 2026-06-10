@@ -358,8 +358,8 @@ gates:
     gate_name: Retrospective Gate
     type: Semantic
     blocking: false
-    status: BLOCKED
-    checked_at: "2026-06-09T08:55:00Z"
+    status: PASS
+    checked_at: "2026-06-10T11:04:00Z"
     checked_by: goal-reviewer
     goal_id: GOAL-20260608-001
     threshold:
@@ -368,16 +368,16 @@ gates:
       pass_with_risk_max: 79
     allow_pass_with_risk: true
     result:
-      verdict: BLOCKED
-      score: 0
+      verdict: PASS
+      score: 90
       threshold: 80
       details:
         - check: "复盘完成"
-          status: BLOCKED
-          evidence: "Retrospective Gate 尚未形成可验证复盘证据，不能记为 PASS"
+          status: PASS
+          evidence: "module/xlib-standard/retrospective/RETRO.md 已完成，5 类制品 98 分，G0-G10 全 PASS，v1.0.0 已发布"
         - check: "改进点记录"
           status: PASS
-          evidence: "Phase 4 工具链对齐已记录为后续任务"
+          evidence: "Phase 4 工具链对齐已记录为后续任务 F-001~F-005"
 
 # Gate 编号和类型：
 # G0: Context Gate (Hybrid)
