@@ -46,7 +46,7 @@ gate_id:
 | G7 Test | Code diff、Test Plan、环境、命令 | PASS / FAIL 测试结果 | P0/P1 测试缺失或失败；失败证据被删除；环境不可复现 | 命令、环境、测试输出、失败证据 |
 | G8 Evidence | 测试、review、Matrix、Risk、commit/artifact | Evidence Bundle verdict | 缺 command、environment、commit/artifact、owner、AC 映射或失败记录 | Evidence Bundle ID / path、结果摘要、保留策略 |
 | G9 Review | Code diff、Evidence Bundle、Matrix、Risk | Review PASS / FAIL verdict | 未解决 P0/P1 finding；scope creep；安全、性能或边界问题未闭环 | reviewer、finding、resolution、risk acceptance 记录 |
-| G10 Release | strict validator、Matrix check-only、Evidence Bundle、Release Manifest、Risk Register、rollback validation | Release PASS / FAIL verdict | 缺 Release Manifest、Risk Register、Evidence Bundle、validation summary 或 rollback validation；存在 open release_blocking risk | G10 verdict、Release Manifest、Risk Register、validation summary、rollback validation |
+| G10 Release | strict validator、Matrix check-only、Evidence Bundle、validation summary、Release Manifest、Risk Register、rollback validation | Release PASS / FAIL verdict | 缺 Release Manifest、Risk Register、Evidence Bundle、validation summary 或 rollback validation；存在 open release_blocking risk | G10 verdict、Release Manifest、Risk Register、validation summary、rollback validation |
 | G11 Retrospective | Release 结果、metrics、incident / rollback 记录、review findings | Retrospective report 和改进 backlog | 复盘事实缺失；改进项无 owner 或无验证方式 | Metrics Review、Gap Report、RSI backlog、后续 owner |
 
 ## 3. 必备 Gates

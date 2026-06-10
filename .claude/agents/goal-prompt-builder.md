@@ -152,7 +152,7 @@ Prompt 前缀：
 
 **文件结构**：
 ```text
-prompts/
+.config/goal/prompts/
 ├── TASK-<goal-id>-001/
 │   ├── v1.md          # 初始版本
 │   ├── v2.md          # 修订版本
@@ -211,18 +211,21 @@ CL5: 架构变更 → Full
 
 ```text
 Lite Mode:
+  - 只需要 Goal + Task
   - 不需要完整 Agent Team
-  - 不需要完整 Gate
+  - 需要适用 Gate checklist
+  - 不得跳过 G7/G8 后宣称 Done
   - 直接执行，快速验证
 
 Standard Mode:
   - 需要 Agent Team 中的子集
-  - 需要 G0~G6 Gate
+  - 需要完整 Context Package + Matrix / Risk / Evidence
+  - 按阶段执行适用 G0~G11 Gate
   - 常规开发流程
 
 Full Mode:
   - 需要完整 Agent Team
-  - 需要 G0~G11 Gate
+  - 需要 G0~G11 Gate + Registry / State / Human Approval / Rollback
   - 大型变更、架构调整
 ```
 

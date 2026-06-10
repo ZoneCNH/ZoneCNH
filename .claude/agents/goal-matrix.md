@@ -35,7 +35,7 @@ tools: [Read, Write, Grep, Glob]
 
 | 文档 | 用途 |
 |------|------|
-| `docs/goal/05-layer-standards.md §3` | Matrix 标准（权威来源） |
+| `docs/goal/05-layer-standards.md §9` | Matrix 标准（权威来源） |
 | `docs/goal/06-dod.md §6` | Matrix Coverage DoR/DoD |
 | `docs/goal/10-lint-rules.md §3` | Matrix Lint 规则 |
 | `docs/goal/07-id-system.md` | ID 格式规则 |
@@ -49,9 +49,11 @@ tools: [Read, Write, Grep, Glob]
   - Spec 变更 → 同步更新 Matrix
   - Plan 完成 → 标记执行顺序和依赖
   - Task 拆分 → 补充 Matrix edge
-  - Task 完成 → 更新 Status
+  - Task 完成 → 关联 Code / Test / Evidence edge，Status 保持或推进为 Linked
   - Prompt / Code 变更 → 同步对应 edge
-  - 测试通过 → 更新 Test edge
+  - 测试通过 → 更新 Test edge；Evidence / Gate 验证后才能推进 Verified
+  - Evidence 生成 → 关联 Evidence edge；通过 Gate 后才能推进 Verified
+  - Gate / Release 变更 → 同步 release-required edge 和阻断原因
 完整性检查：
   - Gate G5（Task Gate）自动检查 Matrix 覆盖率
   - Release 前必须 100% edge 有 Status = Verified 或 Dropped（有理由）
@@ -78,7 +80,9 @@ tools: [Read, Write, Grep, Glob]
 
 **覆盖率统计口径**：仅 `Verified` + 有 `drop_reason` 的 `Dropped` 计入终态覆盖率。
 
-## 推荐字段
+## 展示字段（派生视图）
+
+权威 Matrix 存储是 `.config/goal/matrix/matrix.yaml` 的 edge graph。Markdown 表格只作为派生展示，不得替代权威写入源。
 
 | 字段 | 说明 |
 |------|------|
@@ -106,15 +110,15 @@ tools: [Read, Write, Grep, Glob]
 - Goal 文件（提取 Goal ID 和 Success Metrics）
 
 **输出**：
-- 完整的 Traceability Matrix（Markdown 表格格式）
+- 完整的 Traceability Matrix edge graph（YAML）。必要时可附派生 Markdown 表格。
 
 **生成流程**：
 1. 解析 Spec 中的所有 Requirement（REQ-SPEC-xxx-NNN）
 2. 解析每个 Requirement 的 Acceptance Criteria（AC-REQ-xxx-NNN）
 3. 解析 Tasks 中的 Requirement 覆盖关系
-4. 建立 Goal→Spec→REQ→AC→Task 映射
-5. 标注未覆盖的 Requirement 和 AC
-6. 输出 Matrix 表格
+4. 建立 Goal / Spec / REQ / AC / Task / Code / Test / Evidence / Risk / Gate / Release edge
+5. 标注未覆盖的 Requirement、AC 和 release-critical edge
+6. 输出 canonical YAML；无法确认的 edge 标记为 Unmapped 或 blocker，不得伪造 Verified
 
 ### 2. Matrix 更新
 
@@ -124,9 +128,9 @@ tools: [Read, Write, Grep, Glob]
 |----------|----------|
 | Spec 变更 | 新增/删除/修改 Matrix edge |
 | Task 拆分 | 补充新 Task 对应的 Matrix edge |
-| Task 完成 | 更新 Status 为 Implemented |
-| 测试通过 | 更新 Test edge 和 Status |
-| Evidence 生成 | 关联 Evidence ID |
+| Task 完成 | 关联 Code / Test / Evidence；Status 保持或推进为 Linked |
+| 测试通过 | 更新 Test edge；Evidence / Gate 验证后才能推进 Verified |
+| Evidence 生成 | 关联 Evidence edge；通过 Gate 后才能推进 Verified |
 
 ### 3. 孤儿检查
 
@@ -173,18 +177,20 @@ Task Traceability: 有 Spec 的 Task / 总 Task × 100%
 python3 docs/goal/tools/matrix-gen.py \
   --spec-dir module \
   --task-dir docs/goal/tasks \
-  --output .config/goal/matrix.yaml \
+  --output .config/goal/matrix/matrix.yaml \
   --goal-id GOAL-20260608-001
 
 # 仅检查现有 Matrix
 python3 docs/goal/tools/matrix-gen.py \
   --check-only \
-  --matrix .config/goal/matrix.yaml
+  --matrix .config/goal/matrix/matrix.yaml
 ```
 
 ## 输出格式
 
 ### Matrix 表格
+
+以下 Markdown 表格是派生展示格式；权威写入源仍是 `.config/goal/matrix/matrix.yaml`。
 
 ```markdown
 ## Traceability Matrix

@@ -33,8 +33,10 @@
 | Research Agent | 未知项、外部资料、API 行为、版本变更的 AutoResearch |
 
 > 已实现的 Claude Code Agent 定义文件见 [.claude/agents/goal-*.md](../../.claude/agents/)：`goal-spec`、`goal-matrix`、`goal-reviewer`、`goal-prompt-builder`、`goal-evidence`。
+>
+> 已实现的 Codex Agent 定义文件见 [.codex/agents/goal-*.toml](../../.codex/agents/)：`goal-spec`、`goal-matrix`、`goal-reviewer`、`goal-prompt-builder`、`goal-evidence`。
 
-Codex / Copilot Agent 投影必须单独验证：如果 `.codex/agents/` 或 `.copilot/agents/` 缺少对应 `goal-*` 定义，执行者 MUST 在 Change Request 中记录 drift，不得宣称这些 Agent 已实现。
+Copilot Agent 投影必须单独验证：如果 `.copilot/agents/` 缺少对应 `goal-*` 定义，执行者 MUST 在 Change Request 中记录 drift，不得宣称这些 Copilot Goal Agent 已实现。
 
 ---
 

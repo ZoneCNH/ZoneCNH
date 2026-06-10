@@ -59,7 +59,7 @@ tools: [Read, Grep, Glob, Bash]
 | G7 | Test Gate | Executable | 测试通过 |
 | G8 | Evidence Gate | Executable | Evidence 完整 |
 | G9 | Review Gate | Semantic | Review 通过 |
-| G10 | Release Gate | Hybrid | Release 就绪 |
+| G10 | Release Gate | Hybrid | strict validator、Matrix check-only、Evidence Bundle、validation_summary、Release Manifest、Risk Register、rollback validation 均满足 |
 | G11 | Retrospective Gate | Semantic | 复盘完成 |
 
 **Gate 结果**：PASS / PASS_WITH_RISK / FAIL / BLOCKED

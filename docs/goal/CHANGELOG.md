@@ -2,6 +2,14 @@
 
 > 记录 docs/goal/ 体系的重大结构性变更。
 
+## 2026-06-11 — Goal 权威与 Agent 投影同步
+
+- G10 / Release Gate 的必备输入显式补齐 `validation summary`，并与 schema 中的 release blocking condition 保持一致。
+- `00-authority-map.md` 移除不存在的 `todo.md` 证据落点，改为 Change Request、Evidence Bundle 或交付报告。
+- 新增 `.codex/agents/goal-*.toml`，使 Codex Goal Agent 投影与 Claude Goal Agent、`docs/goal/14-agent-protocols.md` 和 `.config/goal/schema/rules.yaml` 对齐。
+- 修正 Claude `goal-matrix` 与 `goal-prompt-builder` 的旧 row model、旧路径、旧状态推进和 Gate 可跳过表述。
+- 更新 `CR-20260610-goal-protected-assets-sync.md`；Copilot Goal Agent 投影仍作为 P2 drift 记录，不得宣称已实现。
+
 ## 2026-06-11 — Goal CI self-hosted runner 合同固化
 
 ### CI 可执行性

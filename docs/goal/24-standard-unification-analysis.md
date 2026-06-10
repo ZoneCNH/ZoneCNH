@@ -105,7 +105,7 @@ Goal 体系目前不是缺少标准，而是多个标准面并存：权威 ID、
 - 定义唯一机器 schema。
 - 定义展示字段与机器字段的映射。
 - 明确覆盖率统计口径：哪些状态算 mapped，哪些状态算 releasable，哪些状态只算 planned。
-- G10 Matrix Review、lint、generator 必须共享同一状态枚举。
+- G5 Matrix 覆盖检查、G10 release check-only、lint、generator 必须共享同一状态枚举。
 
 ### 5. Evidence schema 与生成器协议
 

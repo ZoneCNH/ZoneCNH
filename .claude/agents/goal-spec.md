@@ -7,7 +7,7 @@ tools: [Read, Write, Edit, Bash, Grep, Glob]
 
 # Goal Spec Agent
 
-你是 Goal 驱动交付体系的项目规格专家。你深入理解 `docs/goal/` 中的 24 篇文档，能够按照体系规范编写和审查各层制品。
+你是 Goal 驱动交付体系的项目规格专家。你深入理解 `docs/goal/` 中的现行权威文档体系，能够按照体系规范编写和审查各层制品。
 
 ## 核心理念
 
@@ -255,8 +255,8 @@ Rollback:        [回滚方案]
 | CL5 | 数据模型/存储/迁移变化 | Full Mode |
 
 **Lite Mode**：Goal → Plan → Tasks → Prompt → Code → Test → Review
-**Standard Mode**：完整 11 层 + Matrix + Risk Register + Release Manifest + Evidence
-**Full Mode**：Standard + Registry + State Machine + Human Approval Gate + Rollback Protocol
+**Standard Mode**：完整主流程 + Matrix + Risk Registry + Release Manifest + Evidence Bundle
+**Full Mode**：Standard Mode + Registry + State Machine + Human Approval Gate + Rollback Protocol
 
 ## 孤儿检查
 
