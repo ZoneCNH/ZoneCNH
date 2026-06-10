@@ -2,6 +2,12 @@
 
 本文档只定义“哪里是权威、哪里是投影”。它不新增 Pipeline 状态、Gate 编号、ID 格式、Registry 子系统或业务对象状态。
 
+## 0. 最高治理边界
+
+- `CONSTITUTION.md` 是本仓库最高治理文件；当它与 `docs/goal/` 冲突时，执行者 MUST 服从 `CONSTITUTION.md`，并把差异记录为 Change Request。
+- `docs/goal/` 是 Goal Delivery OS 方法论、流程、Gate、Evidence、Matrix 和 Agent 协作规则的 SSOT；它不得直接覆盖 Constitution、CI、agent 配置或 schema 投影等受保护资产。
+- 未批准的 `change-requests/` 内容是 Hypothesis / 提案，MUST NOT 当成当前强规则。
+
 ## 1. 使用规则
 
 - 修改状态、Gate、ID、Registry、Evidence 或 Matrix 口径时，先改权威文档，再同步投影。
@@ -14,6 +20,7 @@
 
 | 主题 | 权威定义 | 可引用或投影位置 | 禁止事项 |
 |------|----------|------------------|----------|
+| 最高治理与受保护资产边界 | [`CONSTITUTION.md`](../../CONSTITUTION.md)、本文件 | `docs/goal/change-requests/`、[`21-controlled-rsi.md`](21-controlled-rsi.md) | 用 `docs/goal/` 直接覆盖 Constitution、CI、agent 或 schema 投影 |
 | 完整交付管线 | [`03-pipeline.md`](03-pipeline.md) | `README.md`、`12-operations.md`、`13-runtime-engine.md`、`16-ci-cd.md` | 在 SOP、Runtime、CI 或 schema 中新增主流程阶段 |
 | Pipeline 状态与四轴状态模型 | [`03-pipeline.md`](03-pipeline.md#2-四轴状态模型) | `.config/goal/schema/rules.yaml`、`.config/goal/pipeline/state.yaml` | 把历史执行步骤令牌或控制令牌当成 `pipeline_state` |
 | Matrix 横切口径 | [`05-layer-standards.md`](05-layer-standards.md#9-matrix-横切标准) | `.config/goal/matrix/`、校验脚本、报告 | 把 Matrix 放回主流程阶段 |

@@ -309,7 +309,7 @@ Goal → Spec → Design → Plan → Tasks → Prompt → Code → Test → Rev
 | edge_id | 唯一边 ID，例如 `EDGE-GOAL-20260610-001-AC01-TEST01` |
 | source_type / source_id | 来源节点类型与 ID，如 Goal、Spec、AC、Task、Prompt、Code、Test、Evidence、Risk、Gate |
 | target_type / target_id | 目标节点类型与 ID |
-| relation | `refines`、`implements`、`verifies`、`blocks`、`releases`、`measures`、`mitigates`、`approves` |
+| relation | canonical relation vocabulary 中的一个值，见下表 |
 | priority | P0 / P1 / P2 / P3 |
 | status | Unmapped / Mapped / Linked / Verified / Dropped / Blocked / Drifted / Stale |
 | owner | 负责维护该 edge 的人或 Agent |
@@ -318,6 +318,23 @@ Goal → Spec → Design → Plan → Tasks → Prompt → Code → Test → Rev
 | gate_id | 关联 Gate；阻断性 Gate MUST 填写 |
 | drop_reason | `Dropped` 时必填 |
 | updated_at | 最近更新日期或时间戳 |
+
+### Canonical relation vocabulary
+
+进入 `.config/goal/matrix/matrix.yaml`、Gate、validator、CI 或 Release 控制面的 Matrix edge，`relation` 字段 MUST 使用以下枚举：
+
+| relation | 含义 |
+|----------|------|
+| `decomposes_to` | 上游目标或需求分解为下游制品 |
+| `contains` | 上游制品包含下游制品 |
+| `accepted_by` | 需求或结果由验收标准确认 |
+| `planned_by` | 需求或任务由计划安排 |
+| `implemented_by` | 需求、任务或 Prompt 由代码实现 |
+| `prompted_by` | 执行由 Prompt 或 Context Package 驱动 |
+| `verified_by` | 需求、任务、代码或发布由测试、审查或验证证明 |
+| `evidenced_by` | Gate、Release、Risk 或 Matrix edge 由 Evidence Bundle 证明 |
+
+`implements`、`verifies`、`blocks`、`releases`、`measures`、`mitigates`、`approves` 等词可以在叙述、图例或人类展示视图中作为语义别名出现，但 MUST NOT 写入 Matrix 控制面、Gate、validator、CI 或 Release 记录。若需要新增控制面 relation，必须先提交受保护资产 Change Request，并同步 schema、validator 和 CI。
 
 ### 展示与导入兼容
 

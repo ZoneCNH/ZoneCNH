@@ -138,11 +138,13 @@ Goal: GOAL-YYYYMMDD-NNN / Spec: SPEC-<domain>-v1 / Plan: PLAN-GOAL-YYYYMMDD-NNN-
 
 ---
 
-## 6. Matrix（横切追溯表）
+## 6. Matrix（横切追溯 edge）
 
-| Goal ID | Spec ID | Requirement | Acceptance Criteria | Task ID | Prompt ID | Code Module | Test Case | Status |
-|---|---|---|---|---|---|---|---|---|
-| GOAL-YYYYMMDD-NNN | SPEC-<domain>-v1 | REQ-SPEC-<domain>-v1-001 | AC-REQ-SPEC-<domain>-v1-001-001 | TASK-GOAL-YYYYMMDD-NNN-NNN | PROMPT-TASK-GOAL-YYYYMMDD-NNN-NNN-NNN |  | TEST-TASK-GOAL-YYYYMMDD-NNN-NNN-NNN | Unmapped |
+Matrix 是横切追溯制品，不是主流程阶段。进入 `.config/goal/matrix/`、Gate、validator、CI 或 Release 控制面的 Matrix MUST 使用 canonical edge model；旧宽表只能作为展示或导入视图，进入控制面前必须转换为 canonical edge。
+
+| edge_id | source_type | source_id | relation | target_type | target_id | status | evidence_id | gate_id | owner | updated_at |
+|---|---|---|---|---|---|---|---|---|---|---|
+| EDGE-GOAL-YYYYMMDD-NNN-AC01-TEST01 | AcceptanceCriteria | AC-REQ-SPEC-<domain>-v1-001-001 | verified_by | Test | TEST-TASK-GOAL-YYYYMMDD-NNN-NNN-NNN | Unmapped | EVID-GOAL-YYYYMMDD-NNN-TEST-001 | G8 | goal-matrix | YYYY-MM-DD |
 
 ---
 
@@ -248,16 +250,31 @@ acceptance_criteria:
 
 ```yaml
 matrix:
-  - goal: GOAL-20260608-002
-    spec: SPEC-export-v1
-    requirement: REQ-SPEC-export-v1-001
-    acceptance_criteria: AC-REQ-SPEC-export-v1-001-001
-    task: TASK-GOAL-20260608-002-001
-    prompt: PROMPT-TASK-GOAL-20260608-002-001-001
-    code_module: ExportController.createExportTask
-    test_case: TEST-TASK-GOAL-20260608-002-001-001
-    status: Unmapped
+  - edge_id: EDGE-GOAL-20260608-002-001
+    source_id: GOAL-20260608-002
+    source_type: Goal
+    target_id: SPEC-export-v1
+    target_type: Spec
+    relation: decomposes_to
+    status: Linked
+    evidence_id: EVID-GOAL-20260608-002-001
+    gate_id: G1
+    owner: goal-matrix
+    updated_at: 2026-06-08T00:00:00Z
+  - edge_id: EDGE-GOAL-20260608-002-002
+    source_id: AC-REQ-SPEC-export-v1-001-001
+    source_type: AcceptanceCriteria
+    target_id: TEST-TASK-GOAL-20260608-002-001-001
+    target_type: Test
+    relation: verified_by
+    status: Verified
+    evidence_id: EVID-GOAL-20260608-002-TEST-001
+    gate_id: G8
+    owner: goal-matrix
+    updated_at: 2026-06-08T00:00:00Z
 ```
+
+旧 row 字段（例如 `goalId`、`specId`、`taskId`、`code_module`、`test_case`）MUST NOT 直接写入 Matrix 控制面。需要导入旧表格时，先转换为上面的 canonical edge，并记录转换命令或人工复核证据。
 
 ### Task YAML
 
@@ -289,11 +306,38 @@ priority: P0
     "id": "GOAL-20260608-002",
     "name": "Order CSV Export",
     "objective": "Provide CSV export capability for order reports.",
-    "successMetrics": [{"metric": "report_preparation_time", "target": "<= 5 minutes"}],
+    "success_metrics": [{"metric": "report_preparation_time", "target": "<= 5 minutes"}],
     "scope": {"in": ["CSV export", "permission check"], "out": ["Excel export"]}
   },
-  "specs": [{"id": "SPEC-export-v1", "goalId": "GOAL-20260608-002", "requirements": [{"id": "REQ-SPEC-export-v1-001", "description": "User can create an export task."}]}],
-  "matrix": [{"goalId": "GOAL-20260608-002", "specId": "SPEC-export-v1", "taskId": "TASK-GOAL-20260608-002-001", "status": "Unmapped"}]
+  "specs": [{"id": "SPEC-export-v1", "goal_id": "GOAL-20260608-002", "requirements": [{"id": "REQ-SPEC-export-v1-001", "description": "User can create an export task."}]}],
+  "matrix": [
+    {
+      "edge_id": "EDGE-GOAL-20260608-002-001",
+      "source_id": "GOAL-20260608-002",
+      "source_type": "Goal",
+      "target_id": "SPEC-export-v1",
+      "target_type": "Spec",
+      "relation": "decomposes_to",
+      "status": "Linked",
+      "evidence_id": "EVID-GOAL-20260608-002-001",
+      "gate_id": "G1",
+      "owner": "goal-matrix",
+      "updated_at": "2026-06-08T00:00:00Z"
+    },
+    {
+      "edge_id": "EDGE-GOAL-20260608-002-002",
+      "source_id": "AC-REQ-SPEC-export-v1-001-001",
+      "source_type": "AcceptanceCriteria",
+      "target_id": "TEST-TASK-GOAL-20260608-002-001-001",
+      "target_type": "Test",
+      "relation": "verified_by",
+      "status": "Verified",
+      "evidence_id": "EVID-GOAL-20260608-002-TEST-001",
+      "gate_id": "G8",
+      "owner": "goal-matrix",
+      "updated_at": "2026-06-08T00:00:00Z"
+    }
+  ]
 }
 ```
 

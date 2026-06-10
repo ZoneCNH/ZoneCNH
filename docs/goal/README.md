@@ -12,7 +12,7 @@
 
 1. 先读 [00-authority-map.md](00-authority-map.md)，确认 SSOT、投影和运行态边界。
 2. 再读本 README 的“工作流全景”和“可执行入口”，确认主流程与本地命令。
-3. 需要实际推进任务时读 [25-execution-guide.md](25-execution-guide.md)，按执行检查单进入 `preflight`、`validate`、`gate` 或 `ci`。
+3. 需要实际推进任务时读 [25-execution-guide.md](25-execution-guide.md)，按执行检查单进入 `preflight`、`validate`、`gate`、`release` 或 `ci`。
 4. 需要修改工作流资产时读 [21-controlled-rsi.md](21-controlled-rsi.md)，确认是否属于自动允许、提案、审批或禁止范围。
 5. 触碰 Constitution、CI、agent 配置、schema 投影、Release Gate、Rollback、Incident 或 P0/P1 验收语义时，MUST 生成 Change Request，不得直接放宽规则。
 
@@ -46,6 +46,7 @@ Matrix（追溯矩阵）是横切追溯制品，贯穿主流程但不作为主�
 bash docs/goal/tools/goal-workflow.sh preflight
 bash docs/goal/tools/goal-workflow.sh validate
 bash docs/goal/tools/goal-workflow.sh gate
+bash docs/goal/tools/goal-workflow.sh release
 bash docs/goal/tools/goal-workflow.sh ci
 ```
 
@@ -54,6 +55,7 @@ bash docs/goal/tools/goal-workflow.sh ci
 - `preflight`：工具编译、Shell 语法、规则漂移和文档 lint。
 - `validate`：`preflight` + strict 控制面验证 + Matrix check-only，是 PR 前默认检查。
 - `gate`：`validate` + Gate 制品就绪检查，适用于已有 `.config/goal` 运行制品的仓库。
+- `release`：发布前硬门禁，串联 Gate 检查与 Goal Release Gate；失败时不得 tag、部署或宣称 Release 通过。
 - `ci`：CI 聚合入口，运行 `validate`、工具链自测，并在运行制品完整时自动执行 Gate 检查。
 
 底层脚本仍保留为调试入口；日常执行优先使用 `goal-workflow.sh`，避免不同文档、CI 与人工命令产生漂移。
