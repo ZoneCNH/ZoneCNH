@@ -118,4 +118,5 @@ risks:
 #
 # 状态枚举：
 # Open → Mitigated → Closed
+# Open → Accepted（必须记录接受人、日期、原因和到期复查条件）
 # 异常状态：Escalated

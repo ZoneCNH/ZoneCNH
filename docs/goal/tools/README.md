@@ -111,7 +111,7 @@ python3 docs/goal/tools/goal-validate.py --root . --only gate,risk,consistency
 `goal-validate.py` 是单文件、标准库实现。它不修复制品，只把当前控制面是否可发布说清楚：
 
 - runtime/cache 输出根必须是 `.config/cache/`，不得继续使用 `.config/goal/runtime|cache|logs`。
-- Matrix 行必须使用 canonical edge 字段：`source_id`、`target_id`、`relation`、`status`、`evidence_id`、`gate_id`、`owner`、`updated_at`。
+- Matrix edge 必须使用 canonical edge 字段：`source_id`、`target_id`、`relation`、`status`、`evidence_id`、`gate_id`、`owner`、`updated_at`。
 - Gate 必须覆盖 `G0`-`G11`，每个 `gate_id` 只能出现一次；canonical Gate 必须使用终态裁决 `PASS|PASS_WITH_RISK|FAIL|BLOCKED`，且 `status` 与 `result.verdict` 一致；`NOT_STARTED`、`IN_PROGRESS` 只允许作为生命周期/运行态/补充性快照状态，不能写入 `result.verdict`；不得再出现 `PENDING`。
 - 当 Gate 同时记录数值型 `result.score` 和 `result.threshold` 时，`PASS` 必须满足 `score >= threshold`。
 - `PASS_WITH_RISK` 必须有结构化风险元数据，且 `G6`、`G10` 不允许风险通过。

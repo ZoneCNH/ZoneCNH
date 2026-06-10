@@ -16,13 +16,13 @@ Type:          [风险类型]
 Description:   [描述]
 Probability:   High / Medium / Low
 Impact:        High / Medium / Low
-Severity:      High / Medium / Low
+Severity:      Critical / High / Medium / Low
 Trigger:       [触发条件]
 Mitigation:    [缓解方案]
 Owner:         [负责人]
-Status:        Open / Mitigated / Closed / Accepted
+Status:        Open / Mitigated / Closed / Accepted / Escalated
 Linked Gates:  [G0-G11]
-Linked Evidence:[EVID-xxx]
+Linked Evidence: [EVID-xxx]
 Release Blocking: true / false
 Residual Risk: Low / Medium / High / Critical
 Acceptance:    [accepted_by/date/reason，或 N/A]

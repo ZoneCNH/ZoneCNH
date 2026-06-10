@@ -147,7 +147,20 @@ severity: High
 trigger: WS 连接中断超过 5 秒
 mitigation: 增加消息缓存和重放机制
 owner: agent-market-data
-status: open
+status: Open
+linked_gates:
+  - G8
+  - G10
+linked_evidence:
+  - EVID-GOAL-20260608-001-RISK-001
+release_blocking: true
+residual_risk: High
+acceptance:
+  accepted_by: N/A
+  accepted_at: N/A
+  reason: N/A
+  review_due_at: N/A
+review_cadence: before G10
 ```
 
 路径：`.config/goal/registry/risks.yaml`

@@ -151,6 +151,7 @@ registry:
     - Open
     - Mitigated
     - Closed
+    - Accepted
     - Escalated
   decision_statuses:
     - Proposed

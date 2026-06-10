@@ -67,7 +67,7 @@ PASS_WITH_RISK_REQUIRED = {
 }
 PASS_WITH_RISK_OWNER_FIELDS = {"risk_owner", "owner"}
 
-OPEN_STATUSES = {"OPEN"}
+OPEN_RISK_STATUSES = {"OPEN", "ESCALATED"}
 RELEASED_STATUSES = {"RELEASED"}
 DONE_PIPELINE_STATES = {"DONE"}
 RISK_ID_PATTERN = re.compile(r"^RISK-GOAL-\d{8}-\d{3}-\d{3}$")
@@ -629,7 +629,7 @@ def gate_open_release_blocking_risks(gates: dict[str, dict[str, Any]]) -> dict[s
         if (
             risk_id
             and is_truthy(risk.get("release_blocking"))
-            and normalize_status(risk.get("status")) in OPEN_STATUSES
+            and normalize_status(risk.get("status")) in OPEN_RISK_STATUSES
         ):
             risks[risk_id] = {
                 "risk_id": risk_id,
@@ -643,7 +643,7 @@ def gate_open_release_blocking_risks(gates: dict[str, dict[str, Any]]) -> dict[s
 def registry_open_release_blocking_risks(risks: dict[str, dict[str, Any]]) -> dict[str, dict[str, Any]]:
     open_risks: dict[str, dict[str, Any]] = {}
     for risk_id, risk in risks.items():
-        if is_truthy(risk.get("release_blocking")) and normalize_status(risk.get("status")) in OPEN_STATUSES:
+        if is_truthy(risk.get("release_blocking")) and normalize_status(risk.get("status")) in OPEN_RISK_STATUSES:
             open_risks[risk_id] = risk
     return open_risks
 

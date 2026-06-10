@@ -21,7 +21,7 @@
 - 一次只让 AI 处理一个 Task
 - 不让 AI 自行扩展范围
 - 要求 AI 输出变更清单
-- 要求 AI 说明对应 Matrix 行
+- 要求 AI 说明对应 Matrix edge
 ```
 
 ### 生成后控制
@@ -46,7 +46,7 @@
 Context Package:
 1. Goal 摘要
 2. Spec 摘要
-3. Matrix 行
+3. Matrix edge
 4. 当前 Task
 5. 相关代码结构
 6. 相关接口约定
@@ -67,7 +67,7 @@ GOAL-20260601-001 订单 CSV 导出，目标是让运营用户在 5 分钟内完
 Spec:
 SPEC-order-export-v1 订单导出功能。
 
-Matrix Rows:
+Matrix Edges:
 - REQ-SPEC-order-export-v1-003: 生成 CSV 文件
 - REQ-SPEC-order-export-v1-004: CSV 字段顺序正确
 - REQ-SPEC-order-export-v1-005: 空数据时仍生成表头
@@ -163,7 +163,7 @@ You are implementing a task in a traceable delivery workflow.
 Source:
 - Goal: {goal_id} {goal_name}
 - Spec: {spec_id} {spec_name}
-- Matrix Rows: {matrix_rows}
+- Matrix Edges: {matrix_rows}
 - Task: {task_id} {task_name}
 
 Context:
@@ -201,7 +201,7 @@ After implementation, output:
 1. Files changed
 2. Requirement coverage
 3. Tests added
-4. Matrix rows satisfied
+4. Matrix edges satisfied
 5. Known risks
 ```
 
@@ -226,9 +226,9 @@ Tests:
 {tests}
 
 Check:
-1. Which Matrix rows are fully covered?
-2. Which Matrix rows are partially covered?
-3. Which Matrix rows are missing?
+1. Which Matrix edges are fully covered?
+2. Which Matrix edges are partially covered?
+3. Which Matrix edges are missing?
 4. Are there any orphan code changes?
 5. Are there any acceptance criteria without tests?
 6. Are there any security or performance risks?

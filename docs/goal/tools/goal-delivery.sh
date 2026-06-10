@@ -807,8 +807,8 @@ v1.0
 <!-- 从 Spec 制品复制相关 Requirement -->
 待填写
 
-### 3. Matrix 行
-<!-- 从 Matrix 复制相关映射行 -->
+### 3. Matrix edge
+<!-- 从 Matrix 复制相关追溯 edge -->
 待填写
 
 ### 4. 当前 Task
@@ -837,7 +837,7 @@ Task ID: ${task_id}
 <!-- 期望的交付物 -->
 1. 代码变更清单
 2. 测试用例
-3. Matrix 行覆盖情况
+3. Matrix edge 覆盖情况
 4. 已知风险
 YAML
 
@@ -944,7 +944,7 @@ cmd_matrix() {
         if [[ -f "$matrix_file" ]]; then
           local rows
           rows=$(grep -c "source_id:" "$matrix_file" 2>/dev/null || echo 0)
-          info "Matrix 行数: $rows"
+          info "Matrix edge 数: $rows"
         fi
       fi
       ;;

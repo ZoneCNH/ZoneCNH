@@ -503,7 +503,7 @@ def check_matrix(root: Path, rules: dict[str, dict[str, Any]], report: Report) -
         )
 
     if not rows:
-        report.fail("Matrix has no edge rows")
+        report.fail("Matrix has no edges")
         return set()
 
     evidence_refs: set[str] = set()
@@ -511,7 +511,7 @@ def check_matrix(root: Path, rules: dict[str, dict[str, Any]], report: Report) -
     for index, row in enumerate(rows, start=1):
         missing = sorted(field for field in EDGE_REQUIRED_FIELDS if field not in row)
         if missing:
-            report.fail(f"Matrix row {index} missing fields: {', '.join(missing)}")
+            report.fail(f"Matrix edge {index} missing fields: {', '.join(missing)}")
 
         empty = sorted(
             field
@@ -519,22 +519,22 @@ def check_matrix(root: Path, rules: dict[str, dict[str, Any]], report: Report) -
             if field in row and not str(row.get(field, "")).strip()
         )
         if empty:
-            report.fail(f"Matrix row {index} has empty edge fields: {', '.join(empty)}")
+            report.fail(f"Matrix edge {index} has empty fields: {', '.join(empty)}")
 
         status = str(row.get("status", ""))
         relation = str(row.get("relation", ""))
         if relation not in allowed_relations:
-            report.fail(f"Matrix row {index} has invalid relation: {relation}")
+            report.fail(f"Matrix edge {index} has invalid relation: {relation}")
         if status not in allowed_statuses:
-            report.fail(f"Matrix row {index} has invalid status: {status}")
+            report.fail(f"Matrix edge {index} has invalid status: {status}")
         if status in terminal_statuses:
             terminal += 1
 
         evidence_ids = [ref for ref in as_list(row.get("evidence_id", "")) if ref]
         if status == "Verified" and not evidence_ids:
-            report.fail(f"Matrix row {index} is Verified but has no evidence_id")
+            report.fail(f"Matrix edge {index} is Verified but has no evidence_id")
         if status == "Dropped" and not row.get("drop_reason"):
-            report.fail(f"Matrix row {index} is Dropped but has no drop_reason")
+            report.fail(f"Matrix edge {index} is Dropped but has no drop_reason")
         evidence_refs.update(evidence_ids)
 
     coverage = terminal * 100 // len(rows)
