@@ -1,7 +1,7 @@
 # 文档 CI — 纯 Markdown 仓库的质量守卫
 #
 # 触发条件：PR、push to main、每周一定时巡检
-# 四项检查：markdownlint / link-check / grep-guard / status-consistency
+# 检查项：markdownlint / link-check / grep-guard / workflow-policy / status-consistency / spec guards
 
 name: Docs CI
 
@@ -97,7 +97,18 @@ jobs:
       - name: 运行 grep 守卫脚本
         run: bash .github/ci/grep-guard.sh
 
-  # ── 4. 状态一致性校验 ────────────────────────────────────────
+  # ── 4. Workflow 策略守卫 ──────────────────────────────────────
+  workflow-policy-guard:
+    name: Workflow Policy Guard
+    runs-on: [self-hosted, Linux, X64]
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 校验全局 CI/CD workflow 策略
+        run: bash .github/ci/workflow-policy-guard.sh
+
+  # ── 5. 状态一致性校验 ────────────────────────────────────────
   status-consistency:
     name: Status Consistency
     runs-on: [self-hosted, Linux, X64]
@@ -108,7 +119,7 @@ jobs:
       - name: 运行状态一致性检查
         run: bash .github/ci/status-consistency-check.sh
 
-  # ── 5. Spec 结构校验 ────────────────────────────────────────
+  # ── 6. Spec 结构校验 ────────────────────────────────────────
   spec-lint:
     name: Spec Lint
     runs-on: [self-hosted, Linux, X64]
@@ -119,7 +130,7 @@ jobs:
       - name: 校验 spec 结构完整性
         run: bash .github/ci/spec-lint.sh
 
-  # ── 5b. Spec 漂移防护 ──────────────────────────────────────
+  # ── 6b. Spec 漂移防护 ──────────────────────────────────────
   spec-drift-guard:
     name: Spec Drift Guard
     runs-on: [self-hosted, Linux, X64]
@@ -130,7 +141,7 @@ jobs:
       - name: 检测 SPEC.md 被外部篡改
         run: bash .github/ci/spec-drift-guard.sh
 
-  # ── 6. 追踪矩阵校验 ────────────────────────────────────────
+  # ── 7. 追踪矩阵校验 ────────────────────────────────────────
   traceability-check:
     name: Traceability Check
     runs-on: [self-hosted, Linux, X64]
@@ -141,7 +152,7 @@ jobs:
       - name: 校验追踪矩阵完整性
         run: bash .github/ci/traceability-check.sh
 
-  # ── 7. Task Spec 校验 ────────────────────────────────────────
+  # ── 8. Task Spec 校验 ────────────────────────────────────────
   task-spec-validate:
     name: Task Spec Validate
     runs-on: [self-hosted, Linux, X64]
@@ -152,7 +163,7 @@ jobs:
       - name: 校验 Task Spec 结构和一致性
         run: bash .github/ci/task-spec-validate.sh
 
-  # ── 8. Spec 状态报告 ────────────────────────────────────────
+  # ── 9. Spec 状态报告 ────────────────────────────────────────
   spec-status-report:
     name: Spec Status Report
     runs-on: [self-hosted, Linux, X64]
@@ -163,7 +174,7 @@ jobs:
       - name: 生成 spec 状态报告
         run: bash .github/ci/spec-status-report.sh
 
-  # ── 9. 术语一致性检查 ──────────────────────────────────────
+  # ── 10. 术语一致性检查 ──────────────────────────────────────
   glossary-consistency:
     name: Glossary Consistency
     runs-on: [self-hosted, Linux, X64]
@@ -174,7 +185,7 @@ jobs:
       - name: 检查术语与 GLOSSARY.md 一致性
         run: bash .github/ci/glossary-consistency.sh
 
-  # ── 10. 反需求扫描 ─────────────────────────────────────────
+  # ── 11. 反需求扫描 ─────────────────────────────────────────
   anti-requirement-scan:
     name: Anti-Requirement Scan
     runs-on: [self-hosted, Linux, X64]
@@ -185,7 +196,7 @@ jobs:
       - name: 扫描 spec 代码片段违反反需求
         run: bash .github/ci/anti-requirement-scan.sh
 
-  # ── 11. Outer Metrics 写入源守卫（宪法 §14.2） ──────────────
+  # ── 12. Outer Metrics 写入源守卫（宪法 §14.2） ──────────────
   # 禁止 LLM agent 修改 .omc/state/outer-metrics/；只允许 github-actions[bot]
   # 或带 [outer-metrics] 标记的提交。
   outer-metrics-guard:
