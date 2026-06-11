@@ -1602,6 +1602,43 @@ cmd_improve() {
     echo "4. 需要 Human Approval 的改进项 → 生成 Change Request"
   } > "$scorecard_file"
 
+  if [[ "$COMPILE" == "true" ]]; then
+    step "生成 Change Request 提案..."
+    local cr_count=0
+    for sig in "${signals[@]}"; do
+      cr_count=$((cr_count + 1))
+      local cr_file="$ROOT/docs/goal/change-requests/CR-auto-$(date +%Y%m%d)-$(printf '%03d' $cr_count).md"
+      {
+        echo "# Change Request: Auto-detected"
+        echo "- **Date**: $(date '+%Y-%m-%d')"
+        echo "- **Signal**: $sig"
+        echo "- **Source**: goal-delivery.sh improve --apply"
+        echo "- **Status**: Proposal (待 Human Approval)"
+        echo ""
+        echo "## Evidence"
+        echo "- Matrix 覆盖率: ${coverage}%"
+        echo "- Gate 通过率: $gates_pass/$gates_total"
+        echo "- Evidence 文件数: $evid_count"
+        echo ""
+        echo "## Proposed Patch"
+        echo "（待填写——基于以上信号描述修复方案）"
+        echo ""
+        echo "## Validation"
+        echo '```bash'
+        echo "bash docs/goal/tools/goal-workflow.sh validate"
+        echo '```'
+        echo ""
+        echo "## Rollback"
+        echo "（待填写——如何回滚此变更）"
+        echo ""
+        echo "## Approval"
+        echo "- **Owner**: （待指定）"
+        echo "- **Approval**: Human Approval Required"
+      } > "$cr_file"
+    done
+    ok "已生成 $cr_count 个 Change Request 提案"
+  fi
+
   ok "Scorecard 已生成: $scorecard_file"
   echo "$scorecard_file"
 }
