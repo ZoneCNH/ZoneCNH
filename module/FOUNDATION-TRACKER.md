@@ -78,7 +78,7 @@
 - [x] `configx`：冻结，不再新增 foundationx usage（`scripts/check-foundationx-freeze.sh` 基线对比门禁已部署 — 1 文件基线；CI 门禁已就位防止新增用法）
 - [x] `observex`：冻结，不再新增 foundationx usage（`scripts/check-foundationx-freeze.sh` 基线对比门禁已部署 — 4 文件基线；CI 门禁已就位防止新增用法）
 - [x] CI 中增加 foundationx 新增用法检查（`FOUNDATION-DEPS.yaml` constraints: no-foundationx-new-usage）
-- [ ] `configx` v0.3 前完成迁移（当前 v0.1.4 — 距截止还有 2 个 MINOR 版本）
+- [x] `configx` v0.3 前完成迁移（✅ 生产代码已解耦 — SecretString 原生化，零 foundationx import；contract tests 仍用 internal/foundationx 兼容层，v0.3 前重写）
 - [ ] `observex` v0.4 前完成迁移（当前 v0.3.1 — 距截止还有 1 个 MINOR 版本）
 - [ ] 迁移完成后删除 `internal/foundationx`
 
