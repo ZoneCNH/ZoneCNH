@@ -33,7 +33,7 @@ Updated: 2026-06-10
 | Prompt  | Ready     | 9 个 context packet 已生成                     |
 | Code    | Completed | G6 PASS, 14 FR/27 AC/24 TC verified            |
 | Test    | Completed | G7 PASS, Evidence 6 文件                       |
-| Release | Pending   | 上游仓库当前为 v0.6.5，v1.0.0 待实现完成后发布 |
+| Release | Completed | v1.0.0 已发布（tag v1.0.0, PR #115 合入） |
 
 ## Summary
 
