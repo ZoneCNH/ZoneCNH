@@ -5,7 +5,7 @@
 > 本文件是 AI 代理和人类贡献者在实现、审查或修改任何模块或交付流程时的最高权威参考。
 > 当本文件与 `module/*/SPEC.md`、`module/FOUNDATION-SPEC.md`、`docs/governance/DEVELOPMENT-WORKFLOW.md` 或其他文档冲突时，以本文件为准。
 
-最后更新：2026-06-09
+最后更新：2026-06-12
 
 ---
 
@@ -551,6 +551,7 @@ AI 代理在生成或审查代码时：
 | 2026-06-07 | 全文 | 初始版本（§1-§14） | 建立基座模块治理框架 |
 | 2026-06-08 | §15-§19 | 新增交付管线治理条款 | 将交付方法论提升为宪法约束 |
 | 2026-06-09 | §0 | 新增第零条：分支纪律（最高优先级） | 禁止 main 开发，强制 worktree 隔离 |
+| 2026-06-12 | §15.1, §15.2, §16.1, §15.4, §16.5, §18.4, §19.4 | P0 更新：管线补入 Evidence 阶段；ID 系统对齐 18 种格式；§15-§19 增加 `docs/goal/` 体系统一入口引用；D1-D7 映射 G0-G11 | 消除宪法与实际运行的 Goal 体系之间的 SSOT 断裂 |
 
 ---
 
@@ -669,30 +670,40 @@ scorer 的 `min ≥ 98` 仲裁结果**不构成**修改上述文件的授权。
 ### 15.1 管线模型
 
 ```text
-Goal → Spec → Design → Plan → Tasks → Prompt → Code → Test → Review → Release → Retrospective
+Goal → Spec → Design → Plan → Tasks → Prompt → Code → Test → Evidence → Review → Release → Retrospective
+  │                                                          │
+  └────────────────── Matrix (横切追溯) ─────────────────────┘
+                                                             │
+                                      Gate G0─G11 (每层门禁) ┘
 ```
 
-主流程每层必须产出一个具体制品，作为下一层的输入契约。Matrix 是横切追溯制品，必须在 Spec、Design、Plan、Tasks、Code、Test、Review、Release 之间持续更新，不作为主流程阶段。
+主流程每层必须产出一个具体制品，作为下一层的输入契约。
+
+- **Matrix** 是横切追溯制品（Goal→Spec→AC→Task→Test→Evidence 全链路），在 Spec、Design、Plan、Tasks、Code、Test、Evidence、Review、Release 之间持续更新，不作为主流程阶段。
+- **Evidence** 是独立阶段：每条 Acceptance Criteria 必须绑定结构化测试证据（Evidence ID / 文件变更 / 命令输出 / 通过状态），Evidence 聚合产物（Bundle）由 Gate G9 校验。
+- **Gate 系统**（G0-G11，共 12 个）位于每层边界，可渐进增强（Shadow → Advisory → Enforced），不可绕过。Gate 定义详见 `docs/goal/04-gates.md`。
 
 ### 15.2 管线七律
 
-| 编号 | 原则 | 含义 |
-|------|------|------|
-| D1 | 无 Goal 不开始 | 任何代码变更必须追溯到已批准的 Goal |
-| D2 | 无 Spec 不拆解 | Goal 必须转化为可测试的 Spec 才能进入 Tasks |
-| D3 | 无 Matrix 不开工 | 追溯矩阵必须建立才能开始编码 |
-| D4 | 无 Task 不生成 | Prompt 必须引用具体 Task，不得开放式生成 |
-| D5 | 无 Prompt 不交给 AI | AI 编码必须有结构化上下文和约束 |
-| D6 | 无 Test 不完成 | 每条验收标准必须有对应测试 |
-| D7 | 无 Metrics 不算成功 | 上线后必须验证 Goal 达成 |
+| 编号 | 原则 | 含义 | 对应 Gate |
+|------|------|------|-----------|
+| D1 | 无 Goal 不开始 | 任何代码变更必须追溯到已批准的 Goal | G1 Goal Gate |
+| D2 | 无 Spec 不拆解 | Goal 必须转化为可测试的 Spec 才能进入 Tasks | G2 Spec Gate |
+| D3 | 无 Matrix 不开工 | 追溯矩阵必须建立才能开始编码 | G3 Matrix Gate |
+| D4 | 无 Task 不生成 | Prompt 必须引用具体 Task，不得开放式生成 | G4 Task Gate |
+| D5 | 无 Prompt 不交给 AI | AI 编码必须有结构化上下文和约束 | G5 Prompt Gate |
+| D6 | 无 Test 不完成 | 每条验收标准必须有对应测试 | G6 Test Gate |
+| D7 | 无 Metrics 不算成功 | 上线后必须验证 Goal 达成 | G7 Metrics Gate |
+
+> Gate 系统的完整定义（G0-G11）见 `docs/goal/04-gates.md`。D1-D7 映射到 G1-G7 核心门禁；G0（Pre-flight）、G8-G11（Evidence/Release/Review/Retro）为补充门禁。
 
 ### 15.3 变更传播
 
-需求变更必须流经完整链条（Goal/Spec → Design → Plan → Tasks → Prompt → Code → Test → Review → Release），并同步更新 Matrix 和 Evidence，禁止直接跳到代码修改。
+需求变更必须流经完整链条（Goal/Spec → Design → Plan → Tasks → Prompt → Code → Test → Evidence → Review → Release），并同步更新 Matrix 和 Evidence，禁止直接跳到代码修改。
 
 ### 15.4 实现细节
 
-本条款的详细流程、制品模板和 Agent 编排规则见 `docs/governance/DEVELOPMENT-WORKFLOW.md`。
+本条款的详细流程、制品模板和 Agent 编排规则见 `docs/governance/DEVELOPMENT-WORKFLOW.md`。Goal 驱动交付体系的权威入口和运行时规范见 `docs/goal/00-authority-map.md`（含 35 个文档的权威顺序索引）。
 
 ---
 
@@ -700,15 +711,30 @@ Goal → Spec → Design → Plan → Tasks → Prompt → Code → Test → Rev
 
 ### 16.1 统一制品 ID
 
-| 前缀 | 制品 | 示例 |
-|------|------|------|
-| G- | Goal | G-001 |
-| S- | Spec | S-001 |
-| M- | Matrix edge | M-001 |
-| T- | Task | TASK-REDISX-000 |
-| P- | Prompt | P-001 |
-| C- | Code Module | CsvExportService |
-| TC- | Test Case | TC-001 |
+> ID 格式的权威定义见 `docs/goal/07-id-system.md`。以下为宪法层面的强制性摘要。
+
+| 前缀 | 制品 | 格式 | 示例 |
+|------|------|------|------|
+| GOAL | Goal | `GOAL-YYYYMMDD-NNN` | GOAL-20260608-001 |
+| SPEC | Spec | `SPEC-<domain>-vN` | SPEC-market-data-v1 |
+| REQ | Requirement | `REQ-<spec-id>-NNN` | REQ-SPEC-market-data-v1-001 |
+| AC | Acceptance Criteria | `AC-<req-id>-NNN` | AC-REQ-SPEC-market-data-v1-001-001 |
+| DESIGN | Design | `DESIGN-<domain>-vN` | DESIGN-market-data-v1 |
+| ADR | Architecture Decision Record | `ADR-YYYYMMDD-NNN` | ADR-20260608-001 |
+| PLAN | Plan | `PLAN-<goal-id>-vN` | PLAN-GOAL-20260608-001-v1 |
+| MILE | Milestone | `MILE-<plan-id>-NNN` | MILE-PLAN-GOAL-20260608-001-v1-001 |
+| TASK | Task | `TASK-<goal-id>-NNN` | TASK-GOAL-20260608-001-001 |
+| PROMPT | Prompt | `PROMPT-<task-id>-NNN` | PROMPT-TASK-GOAL-20260608-001-001-001 |
+| TEST | Test | `TEST-<task-id>-NNN` | TEST-TASK-GOAL-20260608-001-001-001 |
+| EVID | Evidence | `EVID-<test-id>-NNN` | EVID-TEST-TASK-GOAL-20260608-001-001-001-001 |
+| RISK | Risk | `RISK-<goal-id>-NNN` | RISK-GOAL-20260608-001-001 |
+| DEC | Decision | `DEC-YYYYMMDD-NNN` | DEC-20260608-001 |
+| REV | Review | `REV-<task-or-pr-id>-YYYYMMDD-NNN` | REV-TASK-GOAL-20260608-001-001-20260608-001 |
+| REL | Release | `REL-YYYYMMDD-<domain>` | REL-20260608-market-data |
+| RETRO | Retrospective | `RETRO-YYYYMMDD-NNN` | RETRO-20260608-001 |
+| PATCH | Prompt Patch | `PATCH-PROMPT-YYYYMMDD-NNN` | PATCH-PROMPT-20260608-001 |
+
+所有工具脚本（`matrix-gen.py`、`goal-validate.py`、`lint-goal.sh`）和 schema 文件（`docs/goal/schema/`）必须使用上述 ID grammar。Matrix edge 的 `from`/`to` 字段引用上述制品 ID。
 
 ### 16.2 追溯覆盖要求
 
@@ -729,7 +755,7 @@ Goal → Spec → Design → Plan → Tasks → Prompt → Code → Test → Rev
 
 ### 16.5 实现细节
 
-本条款的详细追溯矩阵和门禁规则见 `docs/governance/TRACEABILITY.md`、`docs/governance/DEFINITION-OF-READY.md`、`docs/governance/DEFINITION-OF-DONE.md`、`docs/governance/LIFECYCLE.md`。
+本条款的详细追溯矩阵和门禁规则见 `docs/governance/TRACEABILITY.md`、`docs/governance/DEFINITION-OF-READY.md`、`docs/governance/DEFINITION-OF-DONE.md`、`docs/governance/LIFECYCLE.md`。Gate 系统（G0-G11）的完整定义、执行条件和阻断规则见 `docs/goal/04-gates.md`。ID 格式的权威定义见 `docs/goal/07-id-system.md`。
 
 ---
 
@@ -766,6 +792,10 @@ AI 生成的代码必须经过：
 
 §11.3 规定 AI 代理的审查规则（读 SPEC、检查设计原则、验证依赖方向）。本条款规定 AI 编码的输入质量标准。两者共同约束 AI 辅助交付的全链路。
 
+### 17.5 AI 协作规范
+
+Goal 体系的 AI Agent 协作协议（Agent Team 角色、Worktree 隔离、Prompt Chain 编排、跨平台 Agent 兼容性）详见 `docs/goal/11-ai-collaboration.md`（核心规范）和 `docs/goal/14-agent-protocols.md`（运行时协议）。
+
 ---
 
 ## 第十八条：制品完成层级
@@ -792,7 +822,7 @@ AI 生成的代码必须经过：
 
 ### 18.4 实现细节
 
-本条款的详细 DoD 清单见 `docs/governance/DEFINITION-OF-DONE.md`。
+本条款的详细 DoD 清单见 `docs/governance/DEFINITION-OF-DONE.md`。Goal 体系的 DoD 标准见 `docs/goal/06-dod.md`。成熟度模型（L0-L5）见 `docs/goal/18-maturity.md`——注意该模型的 L0-L5 与本条款的 L1-L4（制品完成层级）是两套独立编号系统。
 
 ---
 
@@ -836,7 +866,7 @@ AI 生成的代码必须经过：
 
 ### 19.4 改进记录
 
-所有 CRI 改进必须作为 `docs/governance/improvements/{YYYYMMDD}-{slug}/SPEC.md` 通过同一条 Spec → Matrix → Tasks → Plan → Prompt → Code 管线，确保改进本身可追溯、可验证、可回滚。
+所有 CRI 改进必须作为 `docs/governance/improvements/{YYYYMMDD}-{slug}/SPEC.md` 通过同一条 Spec → Matrix → Tasks → Plan → Prompt → Code 管线，确保改进本身可追溯、可验证、可回滚。CRI 运行时的 RSI 完整标准见 `docs/goal/21-controlled-rsi.md`（受控递归改进）和 `docs/goal/rsi-standard/`（30 章节分级标准）。
 
 ---
 
