@@ -32,9 +32,10 @@ Owner: workflow owner
 - `.codex/agents/goal-*.toml` 已补齐并与 [14-agent-protocols.md](../14-agent-protocols.md) 对齐；2026-06-11 已补齐 `.copilot/agents/goal-*.md`，并在 `.copilot/AGENTS.md` 中声明这些文件只是 `docs/goal/` 的 prompt 投影，不是独立规则源。
 - `python3 docs/goal/tools/rule-drift-check.py --root .` 已在 2026-06-11 验证通过；此前 CI job 漂移已作为本 CR 的第 2 项部分实现完成，后续作为回归检查保留。
 
-Hypothesis:
+Remaining Hypothesis:
 
-- `.config/goal/schema/rules.yaml`、`.github/workflows/`、`.claude/agents/`、`.codex/agents/` 可能需要同步上述更强的 G10 / Evidence Bundle / Matrix edge / Agent 协作规则。该项必须由 validator 输出、配置 diff 或 workflow owner 复核确认后才能改动。
+- Copilot CLI runtime smoke 尚未在本地验证；prompt 投影已存在，但平台运行行为仍需要人工或平台 smoke 后才能声明。
+- 未来若再次怀疑 schema / workflow / agent / Constitution 漂移，MUST 先通过 validator 输出、配置 diff 或 workflow owner 复核重新建立证据，不能沿用本 CR 的旧 Hypothesis。
 
 ## Impact
 

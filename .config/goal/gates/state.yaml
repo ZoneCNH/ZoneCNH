@@ -110,14 +110,14 @@ gates:
       risk_id: RISK-GOAL-20260608-001-001
       risk_owner: goal-matrix
       risk_level: medium
-      risk_reason: "Spec/Matrix 语义已统一为追溯边，旧 Matrix 检查器仍需在 Phase 4 对齐新字段契约"
-      mitigation: "Matrix 已采用 canonical edge 格式，Phase 4 更新检查器时同步"
+      risk_reason: "Matrix canonical edge 字段契约已由 schema、matrix-gen 与 strict validator 校验，历史检查器漂移不再构成当前 G10 阻断"
+      mitigation: "保留 Matrix canonical edge 字段契约回归检查，发布前运行 matrix check-only 与 strict validator"
       due_at: "2026-06-10T23:59:59Z"
       review_gate: G8
       release_blocking: false
       evidence_id: EVID-TEST-TASK-GOAL-20260608-001-002-001-001
       status: CLOSED
-      closed_reason: "xlib-standard 制品已验证通过，Matrix edge 格式已标准化；工具链对齐延至 Phase 4"
+      closed_reason: "Matrix canonical edge 格式与检查器契约已对齐，历史漂移关闭"
     result:
       verdict: PASS_WITH_RISK
       score: 88
@@ -128,7 +128,7 @@ gates:
           evidence: "docs/goal/ 文档体系完整"
         - check: "需求可追溯"
           status: PASS_WITH_RISK
-          evidence: "Matrix 已改为 Canonical 追溯边；旧检查器契约漂移登记为 release_blocking 风险"
+          evidence: "Matrix canonical edge 契约由 schema、matrix-gen 和 goal-validate 共同校验"
 
   - gate_id: G3
     gate_name: Design Gate
@@ -172,14 +172,14 @@ gates:
       risk_id: RISK-GOAL-20260608-001-002
       risk_owner: goal-evidence
       risk_level: medium
-      risk_reason: "Plan/Gate 状态已声明 G10 阻塞条件，但自动化 Release precheck 尚需在 Phase 4 对齐脚本"
-      mitigation: "state.yaml 已固化 G10 禁止条件，Phase 4 更新 precheck 脚本"
+      risk_reason: "Release precheck 已通过 goal-workflow release 与 strict validator 对齐 G10 必备输入和阻断条件，历史自动化缺口已关闭"
+      mitigation: "保留 Release Gate wrapper 与 strict validator 回归检查，发布前同步 Risk/Gate/Pipeline/Release 快照"
       due_at: "2026-06-10T23:59:59Z"
       review_gate: G10
       release_blocking: false
       evidence_id: EVID-TEST-TASK-GOAL-20260608-001-003-001-001
       status: CLOSED
-      closed_reason: "G10 阻塞条件已在 state.yaml 声明，制品验证通过；自动化 precheck 延至 Phase 4"
+      closed_reason: "Release precheck 已与 G10 阻断条件对齐，历史漂移关闭"
     result:
       verdict: PASS_WITH_RISK
       score: 85
@@ -190,7 +190,7 @@ gates:
           evidence: "Task 依赖关系正确"
         - check: "执行顺序合理"
           status: PASS_WITH_RISK
-          evidence: "Release precheck 自动化尚未改造，已登记 release_blocking 风险"
+          evidence: "Release precheck wrapper 与 strict validator 校验通过"
 
   - gate_id: G5
     gate_name: Task Gate
@@ -259,14 +259,14 @@ gates:
       risk_id: RISK-GOAL-20260608-001-003
       risk_owner: goal-evidence
       risk_level: medium
-      risk_reason: "Test Evidence 已拆分 metadata/proof body，旧 lint/evidence collector 仍需在 Phase 4 对齐新字段"
-      mitigation: "Evidence 格式已标准化为 `- **Field**: value`，Phase 4 更新 collector"
+      risk_reason: "Evidence metadata/proof body 字段契约已由 goal-validate 和 self-test 校验，历史 lint/collector 漂移已关闭"
+      mitigation: "保留 Evidence Bundle 必备字段校验与 self-test 回归检查"
       due_at: "2026-06-10T23:59:59Z"
       review_gate: G10
       release_blocking: false
       evidence_id: EVID-TEST-TASK-GOAL-20260608-001-003-002-001
       status: CLOSED
-      closed_reason: "Evidence 格式已通过 rule-drift-check.py 验证；collector 对齐延至 Phase 4"
+      closed_reason: "Evidence 字段契约已由 validator/self-test 覆盖，历史漂移关闭"
     result:
       verdict: PASS_WITH_RISK
       score: 88
@@ -277,7 +277,7 @@ gates:
           evidence: "Agent 文件创建成功"
         - check: "覆盖率达标"
           status: PASS_WITH_RISK
-          evidence: "Evidence 字段已升级；旧 lint/evidence collector 契约漂移登记为 release_blocking 风险"
+          evidence: "Evidence 字段契约由 strict validator 和 self-test 校验通过"
 
   - gate_id: G8
     gate_name: Evidence Gate

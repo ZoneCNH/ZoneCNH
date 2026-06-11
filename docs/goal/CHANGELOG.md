@@ -2,6 +2,12 @@
 
 > 记录 docs/goal/ 体系的重大结构性变更。
 
+## 2026-06-11 — Release 快照调和与反向阻断校验
+
+- 调和 Risk Registry、Gate risk metadata、Pipeline state 和 Release Registry，使 G10 / G11 PASS 与已关闭 release_blocking 风险保持一致。
+- `goal-validate.py` 新增反向一致性检查：无 `Open` / `Escalated` release_blocking 风险且 G10 / G11 PASS 时，Pipeline 不得继续 `BLOCKED`，Release 不得停留在 `in_review` / `rejected`。
+- `self-test.sh` 增加 stale release snapshot 回归用例，`25-execution-guide.md` 与 `17-risk-and-decisions.md` 增加状态快照调和规则。
+
 ## 2026-06-11 — Goal 权威与 Agent 投影同步
 
 - G10 / Release Gate 的必备输入显式补齐 `validation summary`，并与 schema 中的 release blocking condition 保持一致。
