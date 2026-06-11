@@ -62,7 +62,7 @@ check_spec_semantic() {
     # S-LINT-004: 权限相关功能必须包含 Security Requirements
     mark_rule "S" "S-LINT-004"
     if file_has_ext "auth|permission|权限|认证|授权|角色|登录"; then
-        if ! file_has_ext "(?i)security[[:space:]]*requirement|安全要求|权限检查|access[[:space:]]*control"; then
+        if ! file_has_ext "[Ss]ecurity[[:space:]]*[Rr]equirement|安全要求|权限检查|[Aa]ccess[[:space:]]*[Cc]ontrol"; then
             warn "[$bn] S-LINT-004 [需人工确认]: Spec 涉及权限/认证但缺少 Security Requirements 段"
             finding "S"
         fi
