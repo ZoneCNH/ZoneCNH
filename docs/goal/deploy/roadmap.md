@@ -11,7 +11,7 @@
 
 ```text
 Phase 1 ──→ Phase 2 ──→ Phase 3 ──→ Phase 4 ──→ Phase 5
-  ✅ 已完成    🟡 近期      ⬜ 中期      🟡 进行中      🟡 MVP 已落地
+  ✅ 已完成    🟡 近期      ⬜ 中期      ✅ 已完成      🟡 MVP 已落地
   基础管线    Compiler    Contract    Runtimes    自优化
   L3           MVP         Layer       完整版       L5
 ```
@@ -128,7 +128,7 @@ bash docs/goal/tools/goal-delivery.sh prompt --task-id TASK-xxx --compile
 
 ---
 
-## Phase 4 — 完整 Five Runtimes + Release Drills 🟡 进行中
+## Phase 4 — 完整 Five Runtimes + Release Drills ✅ 已完成
 
 **目标**：`22-delivery-os.md` 中五个 Runtime 全部有对应可执行工具。发布演练可自动化。
 
@@ -150,9 +150,9 @@ bash docs/goal/tools/goal-delivery.sh prompt --task-id TASK-xxx --compile
 | --------------------------- | ----------------------------------------------------------- |
 | Release Simulation          | `goal-delivery.sh release --simulate`（dry-run 发布路径）   |
 | Rollback Drill              | `goal-delivery.sh release --rollback-drill`（验证回滚路径） |
-| Progressive Delivery Matrix | 在 Release Manifest 中增加 `progressive_delivery` 段        |
-| Metrics Window Check        | `goal-delivery.sh release --metrics-window`                 |
-| Incident Handoff            | 模板 + CI 检查                                              |
+| Progressive Delivery Matrix | `goal-delivery.sh release --compile` 自动聚合 | ✅ |
+| Metrics Window Check        | `goal-delivery.sh metrics-window` (≥24h 观察窗口) | ✅ |
+| Incident Handoff            | `goal-delivery.sh incident` 自动生成模板 | ✅ |
 
 ### 4.3 验收
 
