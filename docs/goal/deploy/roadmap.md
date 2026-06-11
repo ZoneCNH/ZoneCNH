@@ -122,7 +122,7 @@ bash docs/goal/tools/goal-delivery.sh prompt --task-id TASK-xxx --compile
 
 ### 3.3 验收
 
-- [ ] 6 个契约各有一个 `.schema.yaml` + 对应校验脚本
+- [x] 6 个契约各有一个 `.schema.yaml`（state-machine-contract + api-data-contract + security-contract + ops-contract，含 performance/reliability/observability 三段）+ `goal-validate.py` 集成
 - [ ] `goal-delivery.sh release --bundle` 自动生成 Evidence Bundle
 - [ ] `matrix-gen.py --graph` 输出追溯 DAG
 
