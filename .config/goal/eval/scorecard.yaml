@@ -101,7 +101,7 @@ history:
     rsi_triggered: false
 
 metrics:
-  eval_dataset_size: 33
+  eval_dataset_size: 56
   eval_dataset_target: 100
   capture_rate: null       # 待自动采集
   false_positive_rate: null

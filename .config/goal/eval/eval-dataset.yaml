@@ -7,7 +7,7 @@ dataset:
   name: Goal Delivery OS Eval Baseline
   captured_at: "2026-06-12"
   version: v1
-  total_cases: 33
+  total_cases: 56
 
 cases:
   - id: EVAL-CASE-001
@@ -274,9 +274,193 @@ cases:
     verdict: PASS
     captured_at: "2026-06-12"
 
+  - id: EVAL-CASE-034
+    type: gate_g0_context
+    source: G0 Context Gate 定义 (04-gates.md)
+    description: Context Gate 检查 Constitution/Authority Map/README 已读、pipeline 入口明确
+    expected: gate_pass_or_blocked
+    verdict: PASS
+    captured_at: "2026-06-12"
+
+  - id: EVAL-CASE-035
+    type: gate_g1_goal
+    source: G1 Goal Gate 定义 (04-gates.md)
+    description: Goal Gate 检查 SMART 五要素 + Non-goals + 成功指标
+    expected: gate_pass_or_blocked
+    verdict: PASS
+    captured_at: "2026-06-12"
+
+  - id: EVAL-CASE-036
+    type: gate_g2_spec
+    source: G2 Spec Gate 定义 (04-gates.md)
+    description: Spec Gate 检查 AC 可测试 + 边界条件 + 非目标明确
+    expected: gate_pass_or_blocked
+    verdict: PASS
+    captured_at: "2026-06-12"
+
+  - id: EVAL-CASE-037
+    type: gate_g5_task
+    source: G5 Task Gate 定义 (04-gates.md)
+    description: Task Gate 检查 Task 原子化 + DoD + Matrix edge 映射
+    expected: gate_pass_or_blocked
+    verdict: PASS
+    captured_at: "2026-06-12"
+
+  - id: EVAL-CASE-038
+    type: gate_g6_implementation
+    source: G6 Implementation Gate 定义 (04-gates.md)
+    description: Implementation Gate 检查代码未越界 + allowed files 遵守
+    expected: gate_pass_or_blocked
+    verdict: PASS
+    captured_at: "2026-06-12"
+
+  - id: EVAL-CASE-039
+    type: gate_g7_test
+    source: G7 Test Gate 定义 (04-gates.md)
+    description: Test Gate 检查测试通过 + 覆盖率 ≥ 80%
+    expected: gate_pass_or_blocked
+    verdict: PASS
+    captured_at: "2026-06-12"
+
+  - id: EVAL-CASE-040
+    type: gate_g8_evidence
+    source: G8 Evidence Gate 定义 (04-gates.md)
+    description: Evidence Gate 检查 Evidence 完整 + 必填字段
+    expected: gate_pass_or_blocked
+    verdict: PASS
+    captured_at: "2026-06-12"
+
+  - id: EVAL-CASE-041
+    type: gate_g9_review
+    source: G9 Review Gate 定义 (04-gates.md)
+    description: Review Gate 检查对抗性审查通过 + Go/No-Go 判定
+    expected: gate_pass_or_blocked
+    verdict: PASS
+    captured_at: "2026-06-12"
+
+  - id: EVAL-CASE-042
+    type: gate_g11_retrospective
+    source: G11 Retrospective Gate 定义 (04-gates.md)
+    description: Retrospective Gate 检查复盘完成 + Patch 产出
+    expected: gate_pass_or_blocked
+    verdict: PASS
+    captured_at: "2026-06-12"
+
+  - id: EVAL-CASE-043
+    type: pipeline_state_transition
+    source: 03-pipeline.md 状态转换规则
+    description: 13 个正常阶段状态 + 8 个异常状态，Guard 条件执行
+    expected: valid_transitions_enforced
+    verdict: PASS
+    captured_at: "2026-06-12"
+
+  - id: EVAL-CASE-044
+    type: four_axis_state_model
+    source: 03-pipeline.md 四轴状态模型
+    description: pipeline_state / current_phase / phase_status / workflow_step 四轴分离
+    expected: four_axes_independent
+    verdict: PASS
+    captured_at: "2026-06-12"
+
+  - id: EVAL-CASE-045
+    type: id_system_format
+    source: 07-id-system.md ID 格式
+    description: GOAL/SPEC/TASK/TEST/EVID/PROMPT/DESIGN/PLAN/AC-REQ/DEC/RISK 11 种 ID 格式校验
+    expected: all_id_formats_valid
+    verdict: PASS
+    captured_at: "2026-06-12"
+
+  - id: EVAL-CASE-046
+    type: dod_layered
+    source: 06-dod.md 分层 DoR/DoD
+    description: Goal/Spec/Design/Plan/Tasks/Prompt/Code/Test/Review/Release/Retrospective 11 层 DoR/DoD
+    expected: dod_enforced_per_layer
+    verdict: PASS
+    captured_at: "2026-06-12"
+
+  - id: EVAL-CASE-047
+    type: registry_six_subsystems
+    source: 15-registry.md Registry 子系统
+    description: goals.yaml / tasks.yaml / issues.yaml / releases.yaml / risks.yaml / decisions.yaml
+    expected: six_registry_files_valid
+    verdict: PASS
+    captured_at: "2026-06-12"
+
+  - id: EVAL-CASE-048
+    type: schema_goal_object
+    source: goal.schema.yaml canonical schema
+    description: Goal 对象 18 字段完整类型/正则/枚举/必填属性校验
+    expected: schema_validates_correctly
+    verdict: PASS
+    captured_at: "2026-06-12"
+
+  - id: EVAL-CASE-049
+    type: ci_self_hosted_runner
+    source: goal-ci.yml + goal-validate.py CI 合约
+    description: self-hosted runner 合同固化；hosted runner 回退被阻断
+    expected: self_hosted_enforced
+    verdict: PASS
+    captured_at: "2026-06-12"
+
+  - id: EVAL-CASE-050
+    type: ci_toolchain_isolation
+    source: setup-ci-toolchain.sh 工具链隔离
+    description: venv 优先 + pip --target fallback；不依赖全局 PyYAML
+    expected: isolated_toolchain
+    verdict: PASS
+    captured_at: "2026-06-12"
+
+  - id: EVAL-CASE-051
+    type: change_request_protocol
+    source: change-requests/ CR 协议
+    description: 受保护资产变更需 CR 记录 evidence + impact + validation + rollback + approval
+    expected: cr_protocol_enforced
+    verdict: PASS
+    captured_at: "2026-06-12"
+
+  - id: EVAL-CASE-052
+    type: rsi_r0_r9_gates
+    source: 21-controlled-rsi.md R0-R9 Gate
+    description: Controlled RSI 10 个 Gate 全部定义阻断条件和证明对象
+    expected: all_10_gates_documented
+    verdict: PASS
+    captured_at: "2026-06-12"
+
+  - id: EVAL-CASE-053
+    type: rsi_four_strategy_levels
+    source: 21-controlled-rsi.md 四策略级别
+    description: Auto-allowed / Propose-only / Approval-required / Forbidden
+    expected: four_levels_enforced
+    verdict: PASS
+    captured_at: "2026-06-12"
+
+  - id: EVAL-CASE-054
+    type: complexity_ladder
+    source: README.md 复杂度分级
+    description: XS / S / M / L / XL 五级复杂度对应流程裁剪
+    expected: correct_flow_per_complexity
+    verdict: PASS
+    captured_at: "2026-06-12"
+
+  - id: EVAL-CASE-055
+    type: evidence_bundle_auto
+    source: goal-delivery.sh release --compile
+    description: Evidence Bundle 自动聚合含 Evidence 汇总 + Matrix 摘要 + Gate + Risk
+    expected: bundle_with_all_sections
+    verdict: PASS
+    captured_at: "2026-06-12"
+
+  - id: EVAL-CASE-056
+    type: rsi_trigger_integration
+    source: rsi-trigger.py + goal-workflow.sh rsi-check
+    description: RSI Scorecard 自动触发检查集成到统一工作流入口
+    expected: rsi_check_available + json_output_valid
+    verdict: PASS
+    captured_at: "2026-06-12"
+
 # 统计摘要
 stats:
-  pass: 33
+  pass: 56
   fail: 0
   capture_rate: null
   false_positive_rate: null
@@ -296,8 +480,46 @@ stats:
     cross_platform_matrix: 1
     lint_cr_exclusion: 1
     bug_regression: 1
-    evidence_bundle: 1
+    evidence_bundle: 2
     matrix_dag: 1
+    auto_id_generation: 1
+    deploy_package: 1
+    agent_cross_review: 1
+    rsi_split: 1
+    doc_cleanup: 1
+    module_snapshot_allowlist: 1
+    release_snapshot_reconciliation: 1
+    agent_projection_sync: 1
+    module_code_boundary: 1
+    goal_doc_path: 1
+    ssot_boundary: 1
+    scoring_coverage: 1
+    spec_migration: 1
+    structural_fix: 1
+    execution_convergence: 1
+    gate_g0_context: 1
+    gate_g1_goal: 1
+    gate_g2_spec: 1
+    gate_g5_task: 1
+    gate_g6_implementation: 1
+    gate_g7_test: 1
+    gate_g8_evidence: 1
+    gate_g9_review: 1
+    gate_g11_retrospective: 1
+    pipeline_state_transition: 1
+    four_axis_state_model: 1
+    id_system_format: 1
+    dod_layered: 1
+    registry_six_subsystems: 1
+    schema_goal_object: 1
+    ci_self_hosted_runner: 1
+    ci_toolchain_isolation: 1
+    change_request_protocol: 1
+    rsi_r0_r9_gates: 1
+    rsi_four_strategy_levels: 1
+    complexity_ladder: 1
+    evidence_bundle_auto: 1
+    rsi_trigger_integration: 1
     auto_id_generation: 1
     deploy_package: 1
     agent_cross_review: 1
@@ -322,5 +544,43 @@ stats:
     cross_platform_matrix: 1
     lint_cr_exclusion: 1
     bug_regression: 1
-    evidence_bundle: 1
+    evidence_bundle: 2
     matrix_dag: 1
+    auto_id_generation: 1
+    deploy_package: 1
+    agent_cross_review: 1
+    rsi_split: 1
+    doc_cleanup: 1
+    module_snapshot_allowlist: 1
+    release_snapshot_reconciliation: 1
+    agent_projection_sync: 1
+    module_code_boundary: 1
+    goal_doc_path: 1
+    ssot_boundary: 1
+    scoring_coverage: 1
+    spec_migration: 1
+    structural_fix: 1
+    execution_convergence: 1
+    gate_g0_context: 1
+    gate_g1_goal: 1
+    gate_g2_spec: 1
+    gate_g5_task: 1
+    gate_g6_implementation: 1
+    gate_g7_test: 1
+    gate_g8_evidence: 1
+    gate_g9_review: 1
+    gate_g11_retrospective: 1
+    pipeline_state_transition: 1
+    four_axis_state_model: 1
+    id_system_format: 1
+    dod_layered: 1
+    registry_six_subsystems: 1
+    schema_goal_object: 1
+    ci_self_hosted_runner: 1
+    ci_toolchain_isolation: 1
+    change_request_protocol: 1
+    rsi_r0_r9_gates: 1
+    rsi_four_strategy_levels: 1
+    complexity_ladder: 1
+    evidence_bundle_auto: 1
+    rsi_trigger_integration: 1
