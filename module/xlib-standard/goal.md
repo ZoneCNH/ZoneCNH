@@ -40,7 +40,7 @@
 | Standard Source | 定义 xlib 体系的文档规范、工程规则和验收口径 | docs/standard/ 下 8 大标准域 |
 | Go Reference Template | 提供可编译、可测试的 Go 基础库参考模板 | pkg/templatex/ 下 Config/Error/Health/Metrics/Client/Version API |
 | Generator | 从标准模板渲染生成独立 Go module | render_template.sh + 生成库结构 |
-| Harness Gate | 定义最小 CI 门禁和边界检查 | make ci（9 gate）+ boundary/contracts check |
+| Harness Gate | 定义最小 CI 门禁和边界检查 | make ci（17 gate）+ boundary/contracts check |
 | Evidence Runtime | 生成 release manifest 和发布证据 | release_check.sh → latest.json + .sha256 |
 
 ### 1.3 1.0 要解决的问题
@@ -50,7 +50,7 @@
 - 定义错误码、异常、Result、配置项、日志字段、指标名、Trace 标签的统一规则。
 - 提供可编译的 Go Reference Template，让新模块从统一骨架起步。
 - 提供 Generator，从模板确定性渲染出独立 Go module，无模板残留。
-- 定义 9 个最小 CI Gate，可串联执行并在任一失败时非零退出。
+- 定义 17 个 CI Gate，可串联执行并在任一失败时非零退出。
 - 生成可复现的 Release Evidence（manifest + checksum + gate 结果）。
 - 定义扩展模块如何接入标准源、如何证明符合标准。
 
@@ -69,7 +69,7 @@
 - MUST 覆盖模块设计、API 设计、错误模型、配置模型、观测模型、测试证据、发布流程、兼容性管理。
 - MUST 提供可编译、可测试、可 vet 的 Go Reference Template（Config / Error / Health / Metrics / Client / Version 公共 API）。
 - MUST 提供 Generator（render_template.sh），可从模板确定性渲染出独立 Go module。
-- MUST 定义 9 个最小 CI Gate（fmt / vet / lint / test / race / contracts / boundary / render-smoke / security），串联执行，任一失败非零退出。
+- MUST 定义 17 个 CI Gate（doctor-hooks-local / fmt / vet / lint / test / race / boundary / architecture / domain / secret-check / security / security-debt / contracts / governance-check / debt / score / rules-verify），串联执行，任一失败非零退出。
 - MUST 生成可复现的 Release Evidence（manifest + checksum + gate 结果）。
 - MUST 为每类模块提供文档模板：L0 原语、L1 横切能力、测试工具、存储扩展、消息扩展、契约模块。
 - MUST 产出检查清单，使新模块可以按清单完成 1.0 发布评审。
@@ -100,7 +100,7 @@
 | 发布标准 | 版本号、变更日志、兼容性声明、回滚说明、废弃策略 | 发布门禁清单全部关闭 |
 | 模板标准 | Go Reference Template 可编译、可测试、可 vet，公共 API 稳定 | `go vet ./...` 零警告，`go test ./...` 全部通过 |
 | 生成器标准 | Generator 确定性渲染，生成库无模板残留，可脱离模板仓库独立构建 | 渲染 smoke test 通过，边界检查无非法引用 |
-| 门禁标准 | 9 个最小 CI gate 串联执行，任一失败则 CI 非零退出 | `make ci` 全部通过 |
+| 门禁标准 | 17 个 CI gate 串联执行，任一失败则 CI 非零退出 | `make ci` 全部通过 |
 | 证据标准 | Release manifest 字段完整，checksum 可校验，gate 结果可追溯 | `make release-final-check` 通过 |
 
 ## 5. 职责边界
@@ -110,7 +110,7 @@
 - 维护 xlib 统一规范、模板和检查清单。
 - 维护 Go Reference Template 源码，保证其可编译、可测试、可 vet。
 - 维护 Generator（render_template.sh），保证确定性渲染和生成库独立性。
-- 维护 9 个最小 CI Gate 定义和 make ci 串联逻辑。
+- 维护 17 个 CI Gate 定义和 make ci 串联逻辑。
 - 维护 Release Evidence 格式、manifest 生成和 checksum 校验。
 - 定义模块文档结构和发布文档结构。
 - 维护公共错误码段和模块错误码分配规则。
