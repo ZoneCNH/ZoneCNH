@@ -156,9 +156,9 @@ bash docs/goal/tools/goal-delivery.sh prompt --task-id TASK-xxx --compile
 
 ### 4.3 验收
 
-- [ ] 五个 Runtime 各有至少一个可执行入口
-- [ ] `goal-delivery.sh release --simulate` 可演练完整发布路径
-- [ ] Release Simulation 失败时 G10 阻断
+- [x] 五个 Runtime 各有至少一个可执行入口
+- [x] `goal-delivery.sh release --simulate` 可演练完整发布路径
+- [x] Release Simulation 失败时 G10 阻断
 
 ---
 
