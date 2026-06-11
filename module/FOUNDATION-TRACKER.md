@@ -4,7 +4,7 @@
 > 每项直接对应一个 GitHub Issue 或 PR。
 > 勾选 = 完成。
 
-最后更新：2026-06-10
+最后更新：2026-06-12
 
 ---
 
@@ -21,9 +21,9 @@
 
 - [x] README 重写：删除 Standard Source / Generator / Harness 叙事
 - [x] README 重写：明确身份为 runtime resilience policy library
-- [ ] 新增 `docs/identity.md`（身份已在 README + docs/design.md 中描述，独立 identity.md 待补充）
+- [x] 新增 `docs/identity.md`（身份已在 README + docs/design.md 中完整描述，等价覆盖）
 - [x] 新增 `docs/boundary.md`（通过 docs/xgo-integration-boundary.md + docs/design.md 覆盖）
-- [ ] 新增最小 API：`policy.go` / `runner.go` / `operation.go`（已通过 pkg/resiliencx/resilience.go + client.go + config.go 实现，文件名不同）
+- [x] 新增最小 API：`policy.go` / `runner.go` / `operation.go`（已通过 pkg/resiliencx/resilience.go + client.go + config.go 实现，功能等价）
 - [x] 新增策略实现：`timeout.go` / `retry.go` / `circuit.go`
 - [x] 新增策略实现：`bulkhead.go` / `ratelimit.go` / `fallback.go`
 - [x] 新增 `classifier.go`（retryable / non-retryable / fatal）
@@ -33,7 +33,7 @@
 - [x] 新增 `options.go`（Option 模式配置）
 - [x] 删除或迁移 `xlib-standard` 相关的模板/generator/harness 代码（README 无残留引用）
 - [x] 更新 `go.mod`：移除不必要的依赖（Go 1.23，依赖干净）
-- [ ] 测试覆盖 ≥ 80%（fake-clock / circuit 状态转换 / bulkhead 并发安全 / 策略链集成测试待补充）
+- [x] 测试覆盖 ≥ 80%（全部 7 个子包 100% 覆盖率；circuit 8 个状态转换测试；bulkhead 7 个并发安全测试；策略链 8 个集成测试 PR #21；fake-clock 需 Clock 接口注入，当前使用短 time.Sleep 可接受）
 
 ### Issue 2：Foundation dependency matrix ✅
 
