@@ -166,6 +166,7 @@ L2.5: decimalx / domain-market / domain-exchange / domain-macro
 - [stdlib.rs](https://github.com/ZoneCNH/stdlib.rs) — Rust 标准库 `公开`
 - [module](./module/README.md) — 项目技术规范、接口定义与 Goal 适配模块索引
 - [docs/governance](./docs/governance/README.md) — Spec → Code 交付治理、模板、门禁与评分规则
+- [docs/RSI_SG_001_complete_standard_v1.1_zh.md](./docs/RSI_SG_001_complete_standard_v1.1_zh.md) — RSI 递归自我改进完整标准中文版 v1.1
 
 ## 📊 GitHub 统计
 

@@ -16,11 +16,10 @@
 - `ARCHITECTURE.md`：依赖拓扑、领域职责、设计原则和状态表的权威文档。
 - `CONSTITUTION.md`：模块宪法 — §0-§19 治理条款（含分支纪律、十三条设计原则、交付管线、CRI），AI 代理和人类贡献者的最高权威参考。
 - `AGENTS.md` / `CLAUDE.md`：面向自动化代理和贡献者的工作指南。
-- `docs/goal/`：Goal 驱动交付体系规范文档，含 schema 权威层、工具链、Gate 策略和 `.config/goal/` 控制面配置。权威入口为 `docs/goal/00-quickstart.md` 和 `docs/goal/README.md`。
 
 实际实现位于 `github.com/ZoneCNH` 下约 70 个独立仓库，例如 `kernel`、`binance`、`factor-engine`、`risk-engine`、`x.go`。本仓库只描述和链接这些模块，不承载它们的源码。
 
-这里没有传统构建系统（npm/maven/cargo 等）；主要工作是编辑 Markdown。Goal 体系的 lint 与验证脚本位于 `docs/goal/tools/`，详见下文约定。
+这里没有构建、lint 或测试步骤；主要工作是编辑 Markdown。
 
 ## 保持文档同步
 
@@ -63,5 +62,4 @@
 - **提交**：使用 Conventional Commits 前缀和中文描述，例如 `docs:`、`feat:`、`refactor:`、`fix:`。
 - **链接**：引用组件时，使用既有表格风格的 `https://github.com/ZoneCNH/<repo>` 链接。
 - **规格标准**：模块规格遵循 `CONSTITUTION.md` 第四条，采用 23 节结构（行为规格 WHEN/THEN、接口契约、业务规则、错误处理、边界场景、验收标准等）。模板见 `module/README.md`。追溯矩阵规范见 `docs/governance/TRACEABILITY.md`，具体矩阵位于 `module/{module}/TRACEABILITY.md`。
-- **Goal 文档维护**：修改 `docs/goal/` 下的文件需同步更新 `CHANGELOG.md` 和 `24-standard-unification-analysis.md` 评分账本（如涉及状态变化）。提交前运行 `lint-goal.sh && lint-goal.sh --spec`；Gate 级变更需通过 `goal-workflow.sh preflight` 验证。详情见 `docs/goal/00-authority-map.md` 和 `10-lint-rules.md`。
 - **安全**：不要提交凭证、API key、账户 ID、私有端点或实盘交易配置。
