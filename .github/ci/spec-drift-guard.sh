@@ -68,10 +68,6 @@ check_drift() {
 for spec_file in "$SPEC_DIR"/*/SPEC.md; do
   if [[ -f "$spec_file" ]]; then
     module="$(basename "$(dirname "$spec_file")")"
-    if [[ "$module" == "xlib-standard" && -f "$SPEC_DIR/xlib-standard/ANALYSIS.md" ]]; then
-      echo "  ✅ xlib-standard: analysis snapshot uses dedicated lint gate"
-      continue
-    fi
     check_drift "$spec_file"
   fi
 done
