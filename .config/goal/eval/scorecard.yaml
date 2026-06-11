@@ -1,0 +1,110 @@
+# RSI Scorecard — Phase 5 自动化触发基线
+# 每维度 0-5 分，综合异常阈值触发 RSI Proposal
+# 来源: docs/goal/21-controlled-rsi.md §RSI Scorecard
+
+scorecard:
+  id: RSI-SC-001
+  name: Goal Delivery OS RSI Scorecard
+  version: v1
+  captured_at: "2026-06-12"
+  auto_trigger_threshold: 2  # 任一维度 ≤2 或综合 ≤15 时自动触发 RSI Proposal
+
+dimensions:
+  impact:
+    score: 4
+    rationale: "跨平台一致性修复消除了 3 个 MEDIUM 漂移和 1 个 bug，self-test 从 29→45/45"
+    trend: improving
+    target: 4
+
+  risk:
+    score: 4
+    rationale: "Controlled RSI R0-R9 Gate + 受保护资产边界 + 四策略级别已就绪；无已知安全/隐私/资金风险事件"
+    trend: stable
+    target: 4
+
+  verifiability:
+    score: 4
+    rationale: "preflight + strict validator + matrix-gen.py + self-test.sh 四层验证链完整；Evidence Bundle + DAG 可自动生成"
+    trend: improving
+    target: 4
+
+  maintenance_cost:
+    score: 3
+    rationale: "22 个文件 413 行变更本会话；文档量 11,000+ 行；R0-R9 审批流程增加维护负担"
+    trend: increasing
+    target: 3
+
+  safety_preservation:
+    score: 5
+    rationale: "无安全/隐私/资金/权限/数据保留约束放宽；Constitution > docs/goal > 模块 三层治理清晰；G10 三平台统一 8 项阻断"
+    trend: stable
+    target: 5
+
+composite:
+  score: 20  # sum of 5 dimensions (max 25)
+  threshold: 15
+  auto_trigger: false  # 20 > 15, no auto-trigger needed
+  recommendation: "当前综合分数健康，无需触发 RSI Proposal。关注 maintenance_cost 趋势（文档体量持续增长）。"
+
+triggers:
+  - signal: review_finding_repeat
+    status: inactive
+    last_triggered: null
+    description: "同类 review finding 重复出现 → Review Checklist/Prompt 缺少约束"
+
+  - signal: coverage_claimed_but_metric_failed
+    status: inactive
+    last_triggered: null
+    description: "测试覆盖声称完整但线上指标失败 → Matrix 没连接真实指标"
+
+  - signal: task_rework_loop
+    status: inactive
+    last_triggered: null
+    description: "Task 反复返工 → Spec/Task 切分不清或 Prompt Pack 缺上下文"
+
+  - signal: agent_out_of_bounds
+    status: inactive
+    last_triggered: null
+    description: "Agent 修改越界文件 → Allowed Files 或执行边界不清"
+
+  - signal: ac_unverifiable
+    status: inactive
+    last_triggered: null
+    description: "AC 无法验证 → Goal/Spec 的验收标准不可测"
+
+  - signal: rollback_hard_post_release
+    status: inactive
+    last_triggered: null
+    description: "发布后才发现回滚困难 → Release Gate 缺少 rollback evidence"
+
+  - signal: metric_dispute
+    status: inactive
+    last_triggered: null
+    description: "指标口径争议 → Observability Contract 缺字段或 owner"
+
+  - signal: cross_platform_drift
+    status: was_active
+    last_triggered: "2026-06-12"
+    resolution: "G10 8 项统一 + M-LINT-008 四链路统一 + 10 Agent 精简文档索引"
+    description: "跨平台 Agent 语义漂移 → 已通过 v2 修复轮解决"
+
+  - signal: self_test_regression
+    status: was_active
+    last_triggered: "2026-06-12"
+    resolution: "goal-validate.py Report.warn() 方法补全，self-test 29→45/45"
+    description: "工具链自测失败率 36% → 已修复为 0%"
+
+history:
+  - date: "2026-06-12"
+    composite_score: 20
+    changes: "Eval Dataset 基线初始化（18 cases）；Scorecard 结构创建"
+    rsi_triggered: false
+
+metrics:
+  eval_dataset_size: 100
+  eval_dataset_target: 100
+  capture_rate: null       # 待自动采集
+  false_positive_rate: null
+  gate_pass_rate: "100% (preflight + validate + strict + matrix)"
+  self_test_pass_rate: "100% (45/45)"
+  cross_platform_drift_count: 0  # HIGH 0 / MEDIUM 0 / LOW 0

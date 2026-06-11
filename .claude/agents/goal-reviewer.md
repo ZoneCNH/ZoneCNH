@@ -60,7 +60,7 @@ tools: [Read, Grep, Glob, Bash]
 | G7 | Test Gate | Executable | 测试通过 |
 | G8 | Evidence Gate | Executable | Evidence 完整 |
 | G9 | Review Gate | Semantic | Review 通过 |
-| G10 | Release Gate | Hybrid | strict validator、Matrix check-only、Evidence Bundle、validation_summary、Release Manifest、Risk Register、rollback validation 均满足 |
+| G10 | Release Gate | Hybrid | strict validator、Matrix check-only、Evidence Bundle、validation_summary、Release Manifest、Risk Register、rollback validation 均满足；Agent 不得绕过 pipeline-arbiter、单任务单 writer 或 worktree 隔离 |
 | G11 | Retrospective Gate | Semantic | 复盘完成 |
 
 **Gate 结果**：PASS / PASS_WITH_RISK / FAIL / BLOCKED
@@ -139,7 +139,7 @@ tools: [Read, Grep, Glob, Bash]
 **Lint 规则**（M-LINT-001~008）：
 - M-LINT-006: 不允许存在 Orphan Task
 - M-LINT-007: 不允许存在 Orphan Code
-- M-LINT-008: Verified 状态必须同时满足 Code + Test
+- M-LINT-008: Verified 状态必须同时满足 Code + Test + Evidence + Gate（四链路）
 
 ### 7. 孤儿检查
 

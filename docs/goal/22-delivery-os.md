@@ -1,6 +1,8 @@
 # Delivery OS 架构
 
 > **状态：愿景架构（Vision）** — 本文档描述目标形态，尚未完整实现。部分能力已通过 Goal Agent（`.claude/agents/goal-*.md`）和 `.config/goal/` 目录落地。
+>
+> **当前能力 vs 愿景差距**：Workflow Compiler（✅ 已落地 via `goal-delivery.sh --compile`）、Prompt Compiler（🟡 半自动，Context Package 手工组装）、Evidence Bundle 自动聚合（🟡 roadmap Phase 3）、Release Simulation（🔴 roadmap Phase 4，`--simulate`/`--rollback-drill` 已提供 MVP 入口）、Eval Dataset 积累（🔴 未启动）。详见 [`deploy/roadmap.md`](deploy/roadmap.md)。
 
 Delivery OS 是把 Goal 工作流从文档方法升级为可执行工程系统的架构。它的公式是：
 

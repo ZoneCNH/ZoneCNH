@@ -8,6 +8,7 @@
 .config/cache/
 !.config/goal/
 .config/goal/*
+!.config/goal/.gitignore
 !.config/goal/README.md
 !.config/goal/schema/
 !.config/goal/schema/**
@@ -23,6 +24,8 @@
 !.config/goal/evidence/**
 !.config/goal/prompts/
 !.config/goal/prompts/**
+!.config/goal/eval/
+!.config/goal/eval/**
 # Goal 运行态（不进入仓库）
 .config/goal/locks/
 .config/goal/local/

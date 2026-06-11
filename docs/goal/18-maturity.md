@@ -141,6 +141,21 @@ L0 ──1天──→ L1 ──1周──→ L2 ──2周──→ L3 ──1�
 | Patch Effectiveness | Patch 被验证有效的比例 | ≥ 70% |
 | Process Improvement Trend | 门禁通过率的趋势 | 持续上升 |
 
+### 下游采纳指标
+
+> 本体系服务于 ~70 个 ZoneCNH 独立仓库。以下指标用于量化下游仓库的实际采纳程度。
+
+| 指标 | 说明 | 目标 |
+|------|------|------|
+| `.config/goal/` 初始化率 | 已初始化 Goal 配置中心的仓库占比 | ≥ 30%（短期）/ ≥ 70%（长期） |
+| Gate 通过率 | 下游仓库 CI 中 Gate 检查通过的比例 | ≥ 80% |
+| Goal 制品覆盖率 | 有至少一个 Goal 定义的仓库占比 | ≥ 50% |
+| Matrix 覆盖率 | 有 Matrix 且覆盖率 ≥ 95% 的仓库占比 | ≥ 30% |
+| Evidence Bundle 完整率 | Release 时有完整 Evidence Bundle 的仓库占比 | ≥ 20% |
+| 工具链同步率 | 核心脚本版本与主仓库一致的仓库占比 | ≥ 60% |
+
+**采集方式**：通过 `deploy/README.md` 中定义的 3 级采纳指南（Lint Only / Standard / Full），在各仓库 CI 中上报采纳级别和 Gate 结果到统一 Scorecard 面板（Phase 5）。
+
 ---
 
 ## 3. 故障排查指南

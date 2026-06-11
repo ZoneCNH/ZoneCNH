@@ -2,7 +2,37 @@
 
 > 记录 docs/goal/ 体系的重大结构性变更。
 
-## 2026-06-12 — 深度分析报告修复落地（P0-P2）
+## 2026-06-12 — v2 深度分析修复：跨平台一致性 + 愿景准确性 + 下游采纳
+
+基于 `docs/report/goal-deep-analysis-20260612-v2.md` 的 P1/P2 修复全部落地：
+
+### P1（一致性）
+- **M-LINT-008 四链路统一**：`10-lint-rules.md` 将 Matrix Verified 定义从 `Code + Test` 扩展为 `Code + Test + Evidence + Gate`（四链路），与 Codex/Copilot 对齐
+- **G10 阻断条件统一为 8 项**：`.claude/agents/goal-reviewer.md` 补入第 8 项 "Agent 不得绕过 pipeline-arbiter、单任务单 writer 或 worktree 隔离"，与 Codex/Copilot 对齐
+- **lint-goal.sh 排除 CR 目录**：`lint-goal.sh` 排除 `change-requests/` 和 `CHANGELOG.md`，防止 CR 文件被误扫为 Goal 文件
+- **roadmap Phase 标签修正**：`deploy/roadmap.md` Phase 4 从 "✅ 已完成" 改为 "🟡 MVP 已落地"，Phase 5 改为 "🟡 MVP 已落地，完整版进行中"，里程碑时间线更新为实际进度
+
+### P2（清晰度）
+- **愿景文档差距标注**：`22-delivery-os.md` 和 `23-workflow-governance-checks.md` 在 Vision 标签后增加当前能力 vs 愿景的具体差距表
+- **RSI 标准读者明确**：`rsi-standard/README.md` 增加目标读者说明（AI 研发组织/模型实验室/治理团队）和与 `21-controlled-rsi.md` 的定位区分
+- **下游采纳指标体系**：`18-maturity.md` 新增 6 项下游仓库采纳率指标（`.config/goal/` 初始化率、Gate 通过率、Goal 制品覆盖率等）
+
+### 验证
+- `goal-workflow.sh preflight` — PASS（0 ERRORS, 0 WARNINGS）
+- `lint-goal.sh docs/goal/` — PASS（0 ERRORS, 0 WARNINGS, CR 文件不再误报）
+- `matrix-gen.py --check-only` — PASS（64 edges, 100% 覆盖率）
+- `goal-validate.py --mode strict` — PASS
+- `self-test.sh` — PASS（**45/45**，修复 `goal-validate.py` `Report.warn()` 方法缺失 bug，此前导致 16 个负例测试级联失败）
+
+### 评分
+- `agent-cross-platform-compatibility.md`：跨平台 MEDIUM 漂移 3→1→0（G10、M-LINT-008 统一；Claude 独有功能通过精简文档索引缓解）。LOW 1→0（Copilot/Codex 10 个 Agent 均已添加 8 文档精简索引）
+- `24-standard-unification-analysis.md`：综合评分 85→**87/100**，统一顺序 9 项全部完成，新增"愿景标注"和"下游采纳"维度
+
+## 2026-06-12 — Agent 精简文档索引
+
+- **10 个 Copilot/Codex Agent 统一添加精简文档索引**：每个 Agent 在"权威顺序"段落后增加 8 个核心文档的角色描述表（CONSTITUTION.md → 00-authority-map → README → 03-pipeline → 04-gates → 05-layer-standards → 09-templates → 25-execution-guide），降低跨平台 Agent 的文档发现成本
+
+## 2026-06-12 — v2 深度分析修复：跨平台一致性 + 愿景准确性 + 下游采纳
 
 基于 `docs/report/goal-deep-analysis-20260612.md` 的 6 项修复全部落地：
 

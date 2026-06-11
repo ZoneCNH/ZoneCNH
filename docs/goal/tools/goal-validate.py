@@ -146,6 +146,27 @@ class Report:
             )
         )
 
+    def warn(
+        self,
+        id_: str,
+        area: str,
+        path: Path | str,
+        message: str,
+        expected: str,
+        actual: Any = None,
+    ) -> None:
+        self.violations.append(
+            Violation(
+                id=id_,
+                severity="WARN",
+                area=area,
+                path=str(path),
+                message=message,
+                expected=expected,
+                actual=format_actual(actual),
+            )
+        )
+
     @property
     def error_count(self) -> int:
         return sum(1 for item in self.violations if item.severity == "ERROR")

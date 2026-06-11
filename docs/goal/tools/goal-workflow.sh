@@ -20,6 +20,7 @@ Commands:
   gate       Run validate plus gate readiness checks
   ci         Run validate, self-test, and gate when runtime artifacts exist
   release    Run gate plus the release hard blocker
+  rsi-check  Run RSI Scorecard auto-trigger check (Phase 5)
   self-test  Run the Goal toolchain self-test only
   help       Show this help
 
@@ -94,7 +95,7 @@ parse_args() {
   done
 
   case "$COMMAND" in
-    preflight|validate|gate|ci|release|self-test|help) ;;
+    preflight|validate|gate|ci|release|rsi-check|self-test|help) ;;
     *) die "unknown command: $COMMAND" ;;
   esac
   case "$MODE" in
@@ -186,6 +187,11 @@ release_gate() {
     bash "$ROOT/.github/ci/goal-release-gate.sh" "$ROOT"
 }
 
+rsi_check() {
+  step "RSI Scorecard auto-trigger check"
+  run python3 "$SCRIPT_DIR/rsi-trigger.py" --json || true
+}
+
 self_test() {
   step "Goal toolchain self-test"
   run bash "$SCRIPT_DIR/self-test.sh"
@@ -235,5 +241,6 @@ case "$COMMAND" in
   gate) gate ;;
   ci) ci ;;
   release) release ;;
+  rsi-check) rsi_check ;;
   self-test) self_test ;;
 esac

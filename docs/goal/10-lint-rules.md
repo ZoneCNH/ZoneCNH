@@ -51,7 +51,7 @@ M-LINT-004: 每个 P0/P1 Matrix edge 必须有 Test edge 与 Evidence edge
 M-LINT-005: 每个 Task 必须能追溯到 Matrix edge
 M-LINT-006: 不允许存在 Orphan Task
 M-LINT-007: 不允许存在 Orphan Code
-M-LINT-008: Done 状态必须同时满足 Code + Test
+M-LINT-008: Done 状态必须同时满足 Code + Test + Evidence + Gate（四链路）
 ```
 
 ---
@@ -136,7 +136,7 @@ C-LINT-007: 本仓库 module/{module}/ 下不得新增实现源码树或复制�
 | M-LINT-005 | implemented | matrix-gen.py | 每个 Task 必须能追溯到 Matrix edge |
 | M-LINT-006 | implemented | matrix-gen.py | 不允许存在 Orphan Task |
 | M-LINT-007 | implemented | goal-validate.py | 不允许存在 Orphan Code |
-| M-LINT-008 | implemented | goal-validate.py | Done 状态必须同时满足 Code + Test |
+| M-LINT-008 | implemented | goal-validate.py | Done 状态必须同时满足 Code + Test + Evidence + Gate（四链路） |
 | P-LINT-001 | implemented | lint-goal.sh | Prompt 必须包含 Source |
 | P-LINT-002 | implemented | lint-goal.sh | Prompt 必须包含 Task Objective |
 | P-LINT-003 | implemented | lint-goal.sh | Prompt 必须包含 Requirements |
