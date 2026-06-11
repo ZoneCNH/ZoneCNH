@@ -16,7 +16,7 @@ from pathlib import Path
 from typing import Any
 
 
-AREAS = ("runtime", "registry", "matrix", "gate", "risk", "consistency")
+AREAS = ("runtime", "registry", "matrix", "gate", "risk", "consistency", "contracts")
 
 EDGE_REQUIRED_FIELDS = [
     "source_id",
@@ -1338,6 +1338,80 @@ def check_consistency(root: Path, report: Report) -> None:
     check_workflow_stale_contract(root, report)
 
 
+def check_contracts(root: Path, report: Report) -> None:
+    """检查 State Machine Contract 是否被遵守（Phase 3 Contract Layer MVP）。"""
+    import yaml as _yaml
+
+    contract_path = root / "docs/goal/schema/state-machine-contract.yaml"
+    if not contract_path.exists():
+        report.warn(
+            "GV-CONTRACT-MISSING",
+            "contracts",
+            str(contract_path),
+            "state-machine-contract.yaml 不存在，跳过契约检查",
+            "放置文件于 docs/goal/schema/",
+        )
+        return
+
+    try:
+        with open(contract_path, encoding="utf-8") as fh:
+            contract = _yaml.safe_load(fh)
+    except Exception as exc:
+        report.error("GV-CONTRACT-PARSE", "contracts", str(contract_path), f"契约文件解析失败: {exc}")
+        return
+
+    # SC-003: Gate verdict 检查
+    gates_path = root / ".config/goal/gates/state.yaml"
+    if gates_path.exists():
+        gates = parse_gates(gates_path)
+        for gate_id, gate_data in gates.items():
+            verdict = normalize_status(gate_data.get("result", {}).get("verdict", ""))
+            if verdict in ("NOT_STARTED", "IN_PROGRESS", "PENDING"):
+                report.error(
+                    "SC-003",
+                    "contracts",
+                    path_at(gates_path, gate_data.get("_line")),
+                    f"Gate {gate_id} result.verdict 包含生命周期状态 '{verdict}'",
+                    "PASS / PASS_WITH_RISK / FAIL / BLOCKED",
+                )
+
+    # SC-006: G6/G10 PASS_WITH_RISK 检查
+    for gate_id in ("G6", "G10"):
+        gdata = gates.get(gate_id, {})
+        verdict = normalize_status(gdata.get("result", {}).get("verdict", ""))
+        if verdict == "PASS_WITH_RISK":
+            report.error(
+                "SC-006",
+                "contracts",
+                path_at(gates_path, gdata.get("_line")),
+                f"Gate {gate_id} 不允许 PASS_WITH_RISK",
+                "PASS / FAIL / BLOCKED",
+            )
+
+    # SC-007: release_blocking risk + G10 检查
+    risks_path = root / ".config/goal/registry/risks.yaml"
+    if risks_path.exists() and gates_path.exists():
+        risks = parse_risks(risks_path)
+        has_open_blocking = any(
+            normalize_status(r.get("status")) in ("Open", "Escalated")
+            and is_truthy(r.get("release_blocking"))
+            for r in risks.values()
+        )
+        if has_open_blocking:
+            g10 = gates.get("G10", {})
+            g10_verdict = normalize_status(g10.get("result", {}).get("verdict", ""))
+            if g10_verdict == "PASS":
+                report.error(
+                    "SC-007",
+                    "contracts",
+                    path_at(gates_path, g10.get("_line")),
+                    "存在 Open/Escalated release_blocking 风险时 G10 不得 PASS",
+                    "FAIL 或 BLOCKED",
+                )
+
+    # 契约检查完成（静默通过）
+
+
 CHECKS = {
     "runtime": check_runtime,
     "registry": check_registry,
@@ -1345,6 +1419,7 @@ CHECKS = {
     "gate": check_gate,
     "risk": check_risk,
     "consistency": check_consistency,
+    "contracts": check_contracts,
 }
 
 
@@ -1390,7 +1465,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--format", choices=("text", "json"), default="text")
     parser.add_argument(
         "--only",
-        help="comma-separated validation areas: runtime,registry,matrix,gate,risk,consistency",
+        help="comma-separated validation areas: runtime,registry,matrix,gate,risk,consistency,contracts",
     )
     return parser
 
