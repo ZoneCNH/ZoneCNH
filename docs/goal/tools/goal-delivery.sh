@@ -136,6 +136,7 @@ Goal 驱动交付体系 — 端到端工作流编排 (v2)
 状态与看板:
   status    显示当前管线状态
   dashboard 显示交付看板
+  improve   生成 RSI Improvement Scorecard + Backlog
   auto      根据复杂度模式自动推进管线
 
 编译器（Phase 2 MVP）:
@@ -1497,6 +1498,114 @@ cmd_dashboard() {
   printf "Done\n"
 }
 
+# ─── improve：RSI 改进分析 ──────────────────────────────
+cmd_improve() {
+  title "RSI Improvement Analysis — 基于证据的改进候选"
+  require_config
+
+  local today=$(date +%Y-%m-%d)
+  local scorecard_file="$CONFIG_DIR/evidence/scorecard-$(date +%Y%m%d).md"
+
+  # 1. 收集当前指标
+  step "1/5 收集交付指标..."
+  local total_edges=0 terminal_edges=0 coverage=0
+  if [[ -f "$CONFIG_DIR/matrix/matrix.yaml" ]]; then
+    total_edges=$(grep -c "source_id:" "$CONFIG_DIR/matrix/matrix.yaml" 2>/dev/null || echo 0)
+    terminal_edges=$(grep -cE "status: (Verified|Dropped)" "$CONFIG_DIR/matrix/matrix.yaml" 2>/dev/null || echo 0)
+    [[ "$total_edges" -gt 0 ]] && coverage=$((terminal_edges * 100 / total_edges))
+  fi
+
+  local gates_pass=0 gates_total=0
+  for gate in G0 G1 G2 G3 G4 G5 G6 G7 G8 G9 G10 G11; do
+    gates_total=$((gates_total + 1))
+    local gs=$(gate_status "$gate")
+    [[ "$gs" == "PASS" ]] && gates_pass=$((gates_pass + 1))
+  done
+
+  local evid_count=0
+  [[ -d "$CONFIG_DIR/evidence" ]] && evid_count=$(find "$CONFIG_DIR/evidence" -name "*.md" -type f 2>/dev/null | wc -l)
+
+  # 2. 检测 RSI 触发信号
+  step "2/5 检测 RSI 触发信号..."
+  local signals=()
+
+  # Signal: 测试覆盖率声称完整但 Gate 未全过
+  [[ "$coverage" -ge 90 && "$gates_pass" -lt 10 ]] && \
+    signals+=("测试覆盖声称完整但 Gate 通过率低 ($gates_pass/12) → 检查 Matrix 是否连接真实指标")
+
+  # Signal: Evidence 不足
+  [[ "$evid_count" -lt 3 ]] && \
+    signals+=("Evidence 文件不足 ($evid_count 个) → 检查 evidence-collect.sh 是否 CI 触发")
+
+  # Signal: 有 Dropped edge
+  local dropped=$(grep -c "Dropped" "$CONFIG_DIR/matrix/matrix.yaml" 2>/dev/null || echo 0)
+  [[ "$dropped" -gt 0 ]] && \
+    signals+=("存在 $dropped 个 Dropped edge → 检查是否有未说明的 drop_reason")
+
+  # Signal: Gate 失败
+  for gate in G0 G1 G2 G3 G4 G5 G6 G7 G8 G9 G10 G11; do
+    local gs=$(gate_status "$gate")
+    [[ "$gs" == "FAIL" || "$gs" == "BLOCKED" ]] && \
+      signals+=("Gate $gate: $gs → 检查阻断原因和修复路径")
+  done
+
+  # 3. 生成 Improvement Backlog
+  step "3/5 生成 Improvement Backlog..."
+
+  # 4. 计算 Scorecard
+  step "4/5 计算 Scorecard..."
+  local capture_rate="N/A"
+  local gate_escape="N/A"
+
+  # 5. 写出报告
+  step "5/5 写出 Scorecard Report..."
+  {
+    echo "# RSI Improvement Scorecard"
+    echo "> 自动生成: $(date '+%Y-%m-%d %H:%M:%S')"
+    echo ""
+    echo "## Metrics"
+    echo ""
+    echo "| 指标 | 值 | 目标 | 状态 |"
+    echo "|------|-----|------|------|"
+    echo "| Matrix 覆盖率 | ${coverage}% | ≥ 95% | $([[ $coverage -ge 95 ]] && echo '✅' || echo '⚠️') |"
+    echo "| Gate 通过率 | $gates_pass/$gates_total | ≥ 10/12 | $([[ $gates_pass -ge 10 ]] && echo '✅' || echo '⚠️') |"
+    echo "| Evidence 文件数 | $evid_count | ≥ 5 | $([[ $evid_count -ge 5 ]] && echo '✅' || echo '⚠️') |"
+    echo "| Dropped edges | $dropped | 全部有原因 | $([[ $dropped -eq 0 ]] && echo '✅' || echo '⚠️') |"
+    echo "| Capture Rate | $capture_rate | ≥ 80% | — |"
+    echo "| Gate Escape Rate | $gate_escape | 0 | — |"
+    echo ""
+
+    if [[ ${#signals[@]} -gt 0 ]]; then
+      echo "## RSI Trigger Signals"
+      echo ""
+      for sig in "${signals[@]}"; do
+        echo "- $sig"
+      done
+      echo ""
+    fi
+
+    echo "## Improvement Backlog"
+    echo ""
+    if [[ ${#signals[@]} -gt 0 ]]; then
+      for sig in "${signals[@]}"; do
+        echo "- [ ] $(echo "$sig" | cut -c1-120)..."
+      done
+    else
+      echo "- （当前无改进信号）"
+    fi
+    echo ""
+    echo "## Next Steps"
+    echo ""
+    echo "1. 审查 Improvement Backlog 中的候选改进项"
+    echo "2. 对每个改进项执行 R0-R9 Gate 检查（见 21-controlled-rsi.md）"
+    echo "3. 通过 R0-R9 的改进项 → 提交 Improvement Proposal"
+    echo "4. 需要 Human Approval 的改进项 → 生成 Change Request"
+  } > "$scorecard_file"
+
+  ok "Scorecard 已生成: $scorecard_file"
+  echo "$scorecard_file"
+}
+
 # ─── auto：自动推进 ─────────────────────────────────────
 cmd_auto() {
   title "自动推进管线"
@@ -1916,6 +2025,7 @@ main() {
     validate)  cmd_validate ;;
     release)   if [[ "$SIMULATE" == "true" ]]; then cmd_release_simulate; elif [[ "$ROLLBACK_DRILL" == "true" ]]; then cmd_rollback_drill; else cmd_release; fi ;;
     dashboard) cmd_dashboard ;;
+    improve)   cmd_improve ;;
     auto)      cmd_auto ;;
     compile)   cmd_compile "$ARG1" ;;
     help|"")   usage ;;
