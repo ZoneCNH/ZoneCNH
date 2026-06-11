@@ -2,6 +2,15 @@
 
 > 记录 docs/goal/ 体系的重大结构性变更。
 
+## 2026-06-12 — 文档清理与 RSI 标准归档
+
+- 删除 `docs/raw/1.md`（外部审计反馈，核心建议已通过 Schema 权威化工作落地）
+- 归档 `docs/RSI_complete_standard_zh.md` → `docs/goal/26-rsi-full-standard.md`（RSI-SG-001，完整 RSI 分级标准）
+- `00-authority-map.md`：新增 `26-rsi-full-standard.md` 权威行
+- `21-controlled-rsi.md`：末尾增加完整 RSI 标准的交叉引用
+
+---
+
 ## 2026-06-12 — P2 跨平台验证
 
 ### 跨平台 Agent 审计
