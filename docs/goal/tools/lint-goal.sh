@@ -150,14 +150,34 @@ for f in $FILES; do
             fi
         done
 
-        # G-LINT-003: Goal 不应包含实现细节
+        # G-LINT-003: Goal 不应包含实现细节（semi：grep 匹配实现词 + [需人工确认]）
         mark_rule "G" "G-LINT-003"
         IMPL_WORDS=("数据库" "Redis" "PostgreSQL" "API" "接口" "前端" "后端" "微服务" "SDK")
         for word in "${IMPL_WORDS[@]}"; do
             if file_has_literal "$word"; then
                 WORD_CONTEXT=$(grep -B2 -- "$word" "$f" || true)
                 if grep -qi "goal" <<< "$WORD_CONTEXT"; then
-                    warn "[$BASENAME] G-LINT-003: Goal 包含实现细节「$word」，应改为结果描述"
+                    warn "[$BASENAME] G-LINT-003 [需人工确认]: Goal 包含实现细节「$word」，应改为结果描述"
+                    finding "G"
+                fi
+            fi
+        done
+
+        # G-LINT-005: Goal 必须包含 target_user 或 target_actor（semi：grep 检测）
+        mark_rule "G" "G-LINT-005"
+        if ! file_has_ext "(用户|user|角色|actor|target_user|target_actor|运营|管理员|开发者|客户)"; then
+            warn "[$BASENAME] G-LINT-005 [需人工确认]: Goal 可能缺少目标用户/角色说明"
+            finding "G"
+        fi
+
+        # G-LINT-007: 模糊词必须有量化定义（semi：与 G-LINT-002 互补，检测弱程度词）
+        mark_rule "G" "G-LINT-007"
+        WEAK_WORDS=("体验更佳" "高可用" "易用" "智能化" "更稳定" "更快" "更好")
+        for word in "${WEAK_WORDS[@]}"; do
+            if file_has_literal "$word"; then
+                WORD_CONTEXT=$(grep -A1 -- "$word" "$f" || true)
+                if ! grep -qE "[0-9]+(%|[秒时分]|ms|\\.)" <<< "$WORD_CONTEXT"; then
+                    warn "[$BASENAME] G-LINT-007 [需人工确认]: 发现无量化定义的形容词「$word」"
                     finding "G"
                 fi
             fi
@@ -400,6 +420,22 @@ PY
         if ! file_has "source_id\|goal_id\|matrix\|trace"; then
             warn "[$BASENAME] C-LINT-002: 缺少 Matrix edge 引用"
             finding "C"
+        fi
+
+        # C-LINT-003: PR 必须包含测试说明（semi：grep 检测 test/测试/验证）
+        mark_rule "C" "C-LINT-003"
+        if ! file_has_ext "(test|测试|验证|Test|TEST)"; then
+            warn "[$BASENAME] C-LINT-003 [需人工确认]: PR 可能缺少测试说明"
+            finding "C"
+        fi
+
+        # C-LINT-004: P0/P1 Task 不允许无测试合并（semi：检测 P0/P1 + 无测试引用）
+        mark_rule "C" "C-LINT-004"
+        if file_has "P0\|P1\|Priority.*[01]"; then
+            if ! file_has_ext "(test|测试|Test|TEST-[A-Z]+-[0-9])"; then
+                warn "[$BASENAME] C-LINT-004 [需人工确认]: P0/P1 Task 可能缺少测试"
+                finding "C"
+            fi
         fi
 
     fi

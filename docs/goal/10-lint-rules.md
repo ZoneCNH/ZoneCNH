@@ -116,11 +116,11 @@ C-LINT-007: 本仓库 module/{module}/ 下不得新增实现源码树或复制�
 |---------|------|---------|------|
 | G-LINT-001 | implemented | lint-goal.sh | Goal 必须包含 objective |
 | G-LINT-002 | implemented | lint-goal.sh | Goal 必须包含 success_metrics 或 acceptance_criteria |
-| G-LINT-003 | manual | — | Goal 不能只描述实现方案（需人工语义判断） |
+| G-LINT-003 | semi-automated | lint-goal.sh | Goal 不能只描述实现方案（grep 实现词 + [需人工确认]） |
 | G-LINT-004 | implemented | lint-goal.sh | Goal 必须包含 scope_out |
-| G-LINT-005 | manual | — | Goal 必须包含 target_user 或 target_actor（需上下文判断） |
+| G-LINT-005 | semi-automated | lint-goal.sh | Goal 必须包含 target_user 或 target_actor（grep 检测 + [需人工确认]） |
 | G-LINT-006 | implemented | lint-goal.sh | Goal 必须至少有一个可验证指标 |
-| G-LINT-007 | manual | — | Goal 不应使用模糊词而没有定义（需人工判断） |
+| G-LINT-007 | semi-automated | lint-goal.sh | Goal 不应使用模糊词而没有定义（grep 弱程度词 + [需人工确认]） |
 | S-LINT-001 | implemented | lint-goal.sh | 每条 Functional Requirement 必须有唯一 ID |
 | S-LINT-002 | implemented | lint-goal.sh | 每条 Requirement 必须能被测试 |
 | S-LINT-003 | implemented | lint-goal.sh | 每条 Acceptance Criteria 必须有明确结果 |
@@ -149,8 +149,8 @@ C-LINT-007: 本仓库 module/{module}/ 下不得新增实现源码树或复制�
 | P-LINT-010 | implemented | lint-goal.sh | Prompt 不能允许自行扩大范围 |
 | C-LINT-001 | implemented | lint-goal.sh, goal-validate.py | PR 必须引用至少一个 Task |
 | C-LINT-002 | implemented | lint-goal.sh, goal-validate.py | PR 必须引用至少一个 Matrix edge |
-| C-LINT-003 | manual | — | PR 必须包含测试说明（需上下文判断） |
-| C-LINT-004 | manual | — | P0/P1 Task 不允许无测试合并（需上下文判断） |
+| C-LINT-003 | semi-automated | lint-goal.sh | PR 必须包含测试说明（grep test/测试 + [需人工确认]） |
+| C-LINT-004 | semi-automated | lint-goal.sh | P0/P1 Task 不允许无测试合并（grep P0/P1 + test + [需人工确认]） |
 | C-LINT-005 | implemented | goal-validate.py | PR 不能包含未关联 Task 的大规模代码改动 |
 | C-LINT-006 | implemented | rule-drift-check.py | 模块代码实现必须位于 /home/{module} |
 | C-LINT-007 | implemented | rule-drift-check.py | module/{module}/ 下不得新增实现源码树 |
@@ -159,11 +159,11 @@ C-LINT-007: 本仓库 module/{module}/ 下不得新增实现源码树或复制�
 
 - 总规则数: 40
 - implemented: 30 (75%)
-- semi-automated: 5 (12.5%) — S-LINT-004~008，grep 检测 + [需人工确认] 标记
-- manual: 5 (12.5%)
+- semi-automated: 10 (25%) — S-LINT-004~008, G-LINT-003/005/007, C-LINT-003/004，grep 检测 + [需人工确认] 标记
+- manual: 0 (0%)
 - planned: 0 (0%)
 
-> 注：P-LINT 关键字覆盖已增强 — P-LINT-005 (Output) 新增 "output format" 检测，P-LINT-007 (Test Requirements) 新增 "test command" 检测，P-LINT-008 (Do Not) 新增 "停止/stop" 检测。C-LINT-001/002 现由 lint-goal.sh 与 goal-validate.py 双重覆盖。
+> 自动化率：30/40 全自动 + 10/40 半自动 = 40/40 (100%)。所有规则均有机器检查，manual 规则已全部消除。
 
 Schema 引用：
 - Goal 字段完整性校验见 [schema/goal.schema.yaml](schema/goal.schema.yaml)
