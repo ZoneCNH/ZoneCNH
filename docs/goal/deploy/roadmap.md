@@ -24,19 +24,19 @@ Phase 1 ──→ Phase 2 ──→ Phase 3 ──→ Phase 4 ──→ Phase 5
 
 ### 已实现
 
-| 组件 | 实现 |
-|------|------|
-| 11 层主流程管线 | `03-pipeline.md` + 四轴状态模型 |
-| G0-G11 Gate 体系 | `04-gates.md` + `goal-validate.py` strict 模式 |
-| Matrix Edge Model | canonical edge + 8 relation + `matrix-gen.py` |
-| 4 个 YAML Schema | goal / matrix / evidence / state-dictionary |
-| 核心 5 Agent（三平台） | goal-spec / matrix / reviewer / prompt-builder / evidence |
-| 统一工作流入口 | `goal-workflow.sh`（preflight/validate/gate/ci/release） |
-| 端到端编排 | `goal-delivery.sh` v2（11 层制品创建 + Gate 委托） |
-| 工具链自举 | `self-test.sh`（7 类正负例 fixture） |
-| Controlled RSI | `21-controlled-rsi.md`（R0-R9 Gate + 四策略级别） |
-| 最小部署包 | `docs/goal/deploy/README.md`（3 级采纳指南） |
-| CI 集成 | `goal-ci.yml` + `goal-release-gate.sh` + self-hosted runner |
+| 组件                   | 实现                                                        |
+| ---------------------- | ----------------------------------------------------------- |
+| 11 层主流程管线        | `03-pipeline.md` + 四轴状态模型                             |
+| G0-G11 Gate 体系       | `04-gates.md` + `goal-validate.py` strict 模式              |
+| Matrix Edge Model      | canonical edge + 8 relation + `matrix-gen.py`               |
+| 4 个 YAML Schema       | goal / matrix / evidence / state-dictionary                 |
+| 核心 5 Agent（三平台） | goal-spec / matrix / reviewer / prompt-builder / evidence   |
+| 统一工作流入口         | `goal-workflow.sh`（preflight/validate/gate/ci/release）    |
+| 端到端编排             | `goal-delivery.sh` v2（11 层制品创建 + Gate 委托）          |
+| 工具链自举             | `self-test.sh`（7 类正负例 fixture）                        |
+| Controlled RSI         | `21-controlled-rsi.md`（R0-R9 Gate + 四策略级别）           |
+| 最小部署包             | `docs/goal/deploy/README.md`（3 级采纳指南）                |
+| CI 集成                | `goal-ci.yml` + `goal-release-gate.sh` + self-hosted runner |
 
 ### 验证命令
 
@@ -56,11 +56,11 @@ python3 docs/goal/tools/matrix-gen.py --check-only
 
 ### 2.1 Workflow Compiler（最小可用版）
 
-| 功能 | 输入 | 输出 | 优先级 |
-|------|------|------|--------|
-| `workflow compile` | Goal + Spec + Matrix | 任务列表 + Gate 要求 | P0 |
-| `workflow lint` | 控制面目录 | 结构化错误报告（JSON） | P0 |
-| `workflow prompt build` | Task + Matrix + 代码上下文 | Context Package markdown | P1 |
+| 功能                    | 输入                       | 输出                     | 优先级 |
+| ----------------------- | -------------------------- | ------------------------ | ------ |
+| `workflow compile`      | Goal + Spec + Matrix       | 任务列表 + Gate 要求     | P0     |
+| `workflow lint`         | 控制面目录                 | 结构化错误报告（JSON）   | P0     |
+| `workflow prompt build` | Task + Matrix + 代码上下文 | Context Package markdown | P1     |
 
 **实现方式**：扩展 `goal-delivery.sh auto` 命令，增加 `--compile` 模式。
 
@@ -74,13 +74,13 @@ bash docs/goal/tools/goal-delivery.sh prompt --task-id TASK-xxx --compile
 
 ### 2.2 Lint 规则 100%
 
-| 规则 | 当前 | 目标 |
-|------|------|------|
-| G-LINT | 3/7 automated | 7/7 |
-| S-LINT | 8/8（3 automated + 5 semi） | 8/8 |
-| M-LINT | 8/8 | 8/8 |
-| P-LINT | 10/10 | 10/10 |
-| C-LINT | 2/7 | 5/7 |
+| 规则   | 当前                        | 目标  |
+| ------ | --------------------------- | ----- |
+| G-LINT | 3/7 automated               | 7/7   |
+| S-LINT | 8/8（3 automated + 5 semi） | 8/8   |
+| M-LINT | 8/8                         | 8/8   |
+| P-LINT | 10/10                       | 10/10 |
+| C-LINT | 2/7                         | 5/7   |
 
 剩余 5 条 manual 规则（G-LINT-003/004/005/007 + C-LINT 部分）→ semi-automated。
 
@@ -103,22 +103,22 @@ bash docs/goal/tools/goal-delivery.sh prompt --task-id TASK-xxx --compile
 
 为以下契约建立 YAML schema + 自动校验：
 
-| 契约 | Schema | 校验工具 |
-|------|--------|----------|
-| State Machine Contract | 从 `03-pipeline.md` 提取转换规则 | `goal-validate.py --check-contracts` |
-| API/Data Contract | 字段、兼容性、迁移规则 | 新增 `contract-check.py` |
-| Privacy/Security Contract | 权限、密钥、数据保留 | 新增（复用 rule-drift-check 模式） |
-| Performance Contract | 延迟、吞吐、资源 | 新增 |
-| Reliability Contract | 回滚、降级、重试 | 与 Release Manifest 联动 |
-| Observability Contract | 指标、日志、追踪 | 与 Metrics Validation Check 联动 |
+| 契约                      | Schema                           | 校验工具                             |
+| ------------------------- | -------------------------------- | ------------------------------------ |
+| State Machine Contract    | 从 `03-pipeline.md` 提取转换规则 | `goal-validate.py --check-contracts` |
+| API/Data Contract         | 字段、兼容性、迁移规则           | 新增 `contract-check.py`             |
+| Privacy/Security Contract | 权限、密钥、数据保留             | 新增（复用 rule-drift-check 模式）   |
+| Performance Contract      | 延迟、吞吐、资源                 | 新增                                 |
+| Reliability Contract      | 回滚、降级、重试                 | 与 Release Manifest 联动             |
+| Observability Contract    | 指标、日志、追踪                 | 与 Metrics Validation Check 联动     |
 
 ### 3.2 Evidence Runtime 增强
 
-| 功能 | 当前 | 目标 |
-|------|------|------|
-| Evidence 收集 | `evidence-collect.sh`（手工调用） | CI 自动触发，关联 Task ID |
-| Evidence Graph | 概念存在 | DAG 可视化（`matrix-gen.py --graph`） |
-| Evidence Bundle | 手工组装 | `goal-delivery.sh release --bundle` 自动聚合 |
+| 功能            | 当前                              | 目标                                         |
+| --------------- | --------------------------------- | -------------------------------------------- |
+| Evidence 收集   | `evidence-collect.sh`（手工调用） | CI 自动触发，关联 Task ID                    |
+| Evidence Graph  | 概念存在                          | DAG 可视化（`matrix-gen.py --graph`）        |
+| Evidence Bundle | 手工组装                          | `goal-delivery.sh release --bundle` 自动聚合 |
 
 ### 3.3 验收
 
@@ -136,23 +136,23 @@ bash docs/goal/tools/goal-delivery.sh prompt --task-id TASK-xxx --compile
 
 ### 4.1 五个 Runtime 落地
 
-| Runtime | 核心工具 | 新增/增强 |
-|---------|----------|-----------|
-| Intent Runtime | goal-spec Agent + `goal-delivery.sh goal/spec/design` | ✅ 已有 |
-| Control Runtime | goal-matrix + goal-reviewer + `goal-validate.py` | ✅ 已有 |
-| Execution Runtime | goal-prompt-builder + `goal-delivery.sh plan/tasks/prompt` | 🟡 Phase 2 |
-| Evidence Runtime | goal-evidence + `evidence-collect.sh` + `gate-check.sh` | 🟡 Phase 3 |
-| Improvement Runtime | RSI R0-R9 + `21-controlled-rsi.md` | 🟡 增强自动化 |
+| Runtime             | 核心工具                                                   | 新增/增强     |
+| ------------------- | ---------------------------------------------------------- | ------------- |
+| Intent Runtime      | goal-spec Agent + `goal-delivery.sh goal/spec/design`      | ✅ 已有       |
+| Control Runtime     | goal-matrix + goal-reviewer + `goal-validate.py`           | ✅ 已有       |
+| Execution Runtime   | goal-prompt-builder + `goal-delivery.sh plan/tasks/prompt` | 🟡 Phase 2    |
+| Evidence Runtime    | goal-evidence + `evidence-collect.sh` + `gate-check.sh`    | 🟡 Phase 3    |
+| Improvement Runtime | RSI R0-R9 + `21-controlled-rsi.md`                         | 🟡 增强自动化 |
 
 ### 4.2 Release Drills
 
-| 演练 | 实现方式 |
-|------|----------|
-| Release Simulation | `goal-delivery.sh release --simulate`（dry-run 发布路径） |
-| Rollback Drill | `goal-delivery.sh release --rollback-drill`（验证回滚路径） |
-| Progressive Delivery Matrix | 在 Release Manifest 中增加 `progressive_delivery` 段 |
-| Metrics Window Check | `goal-delivery.sh release --metrics-window` |
-| Incident Handoff | 模板 + CI 检查 |
+| 演练                        | 实现方式                                                    |
+| --------------------------- | ----------------------------------------------------------- |
+| Release Simulation          | `goal-delivery.sh release --simulate`（dry-run 发布路径）   |
+| Rollback Drill              | `goal-delivery.sh release --rollback-drill`（验证回滚路径） |
+| Progressive Delivery Matrix | 在 Release Manifest 中增加 `progressive_delivery` 段        |
+| Metrics Window Check        | `goal-delivery.sh release --metrics-window`                 |
+| Incident Handoff            | 模板 + CI 检查                                              |
 
 ### 4.3 验收
 
