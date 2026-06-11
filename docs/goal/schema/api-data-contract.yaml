@@ -1,0 +1,73 @@
+# API / Data Contract — 接口、字段、兼容性与迁移规则
+# SSOT: docs/goal/05-layer-standards.md, docs/goal/13-runtime-engine.md
+# 路径: docs/goal/schema/api-data-contract.yaml
+
+schema_name: api_data_contract
+schema_version: "1.0.0"
+authority_sources:
+  - docs/goal/05-layer-standards.md
+  - docs/goal/13-runtime-engine.md
+  - docs/goal/04-gates.md
+
+# ============================================================
+# 公共接口变更规则
+# ============================================================
+api_change_rules:
+  - id: "API-001"
+    rule: "Public API 变更 MUST 升为 CL3+ 并触发 H-CHK3"
+    trigger: "修改公共函数签名、API 路由、响应格式、序列化契约"
+    gate: G3 (Design Gate)
+    severity: error
+
+  - id: "API-002"
+    rule: "Schema 变更 MUST 有 migration 脚本和 rollback 计划"
+    trigger: "数据库表结构、字段类型、索引变更"
+    gate: G10 (Release Gate)
+    severity: error
+
+  - id: "API-003"
+    rule: "字段废弃 MUST 先标记 deprecated，至少一个版本后再删除"
+    trigger: "移除已发布的字段或接口"
+    gate: G2 (Spec Gate)
+    severity: warn
+
+  - id: "API-004"
+    rule: "向后兼容性破坏 MUST 记录在 CHANGELOG 和 Release Manifest"
+    trigger: "响应字段重命名、类型变更、枚举值删除"
+    gate: G10
+    severity: error
+
+# ============================================================
+# 数据契约规则
+# ============================================================
+data_contract_rules:
+  - id: "DATA-001"
+    rule: "存储迁移 MUST 经过 dry-run 验证并记录 Evidence"
+    trigger: "数据库 migration、Redis key 结构调整"
+    gate: G10
+    severity: error
+
+  - id: "DATA-002"
+    rule: "数据保留策略 MUST 在 Spec 中声明并在 Release Manifest 中记录"
+    trigger: "新增持久化数据、日志、缓存"
+    gate: G2 (Spec Gate)
+    severity: warn
+
+  - id: "DATA-003"
+    rule: "数据量预估 MUST 在 Spec 中声明（行数/大小/增长速率）"
+    trigger: "新增数据导入/导出功能"
+    gate: G2
+    severity: warn
+
+# ============================================================
+# 契约校验指令（供 goal-validate.py 集成）
+# ============================================================
+check_instructions:
+  api:
+    - "扫描 Spec/Design 中的 API 变更声明，检查是否标注 CL3+ 和 H-CHK3"
+    - "检查 Release Manifest 中的 breaking_changes 字段"
+    - "检查是否存在 migration 文件（针对 database schema 变更）"
+  data:
+    - "检查 Spec 中是否有数据保留声明（针对持久化数据）"
+    - "检查 Spec 中是否有数据量预估（针对导入/导出功能）"
+    - "检查 Evidence Bundle 中的 migration dry-run 记录"

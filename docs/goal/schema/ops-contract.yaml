@@ -1,0 +1,102 @@
+# Performance + Reliability + Observability Contract
+# SSOT: docs/goal/05-layer-standards.md, docs/goal/20-metrics-evidence.md, docs/goal/04-gates.md
+# 路径: docs/goal/schema/ops-contract.yaml
+
+schema_name: operations_contract
+schema_version: "1.0.0"
+authority_sources:
+  - docs/goal/05-layer-standards.md
+  - docs/goal/20-metrics-evidence.md
+  - docs/goal/04-gates.md
+  - docs/goal/22-delivery-os.md
+
+# ============================================================
+# 性能契约
+# ============================================================
+performance_rules:
+  - id: "PERF-001"
+    rule: "P0/P1 功能 MUST 在 Spec 中声明性能指标（延迟/吞吐/资源）"
+    trigger: "核心用户路径"
+    gate: G2 (Spec Gate)
+    severity: error
+
+  - id: "PERF-002"
+    rule: "N+1 查询、无界查询、缺失分页 MUST 在 Review 中检出"
+    trigger: "数据库查询代码"
+    gate: G9 (Review Gate)
+    severity: error
+
+  - id: "PERF-003"
+    rule: "批量操作 MUST 有数据量上限（如 10000 行/500MB）"
+    trigger: "导入/导出/批量处理"
+    gate: G6
+    severity: error
+
+  - id: "PERF-004"
+    rule: "Release 前 MUST 有性能回归测试结果（如适用）"
+    trigger: "CL4+ 架构变更"
+    gate: G10
+    severity: warn
+
+# ============================================================
+# 可靠性契约
+# ============================================================
+reliability_rules:
+  - id: "REL-001"
+    rule: "涉及外部服务的代码 MUST 有超时、重试、熔断和降级"
+    trigger: "HTTP client、消息队列、外部 API 调用"
+    gate: G6
+    severity: error
+
+  - id: "REL-002"
+    rule: "异步任务 MUST 有状态流转、重试策略和死信队列"
+    trigger: "消息队列、定时任务、后台处理"
+    gate: G6
+    severity: error
+
+  - id: "REL-003"
+    rule: "Release MUST 有 rollback plan 和 dry-run 验证"
+    trigger: "任何 Release"
+    gate: G10
+    severity: error
+
+  - id: "REL-004"
+    rule: "幂等性 MUST 在涉及资金或重复操作的接口中实现"
+    trigger: "支付、扣款、订单创建"
+    gate: G3 (Design Gate)
+    severity: error
+
+# ============================================================
+# 可观测性契约
+# ============================================================
+observability_rules:
+  - id: "OBS-001"
+    rule: "关键业务指标 (KBI) MUST 在 Spec 中声明并在 Release 后采集"
+    trigger: "Goal success_criteria"
+    gate: G11 (Retrospective Gate)
+    severity: warn
+
+  - id: "OBS-002"
+    rule: "错误路径 MUST 有结构化日志（含 trace_id / user_id / operation）"
+    trigger: "所有 error handling 代码"
+    gate: G7
+    severity: warn
+
+  - id: "OBS-003"
+    rule: "Release Manifest MUST 包含上线后指标观察窗口 (≥ 24h)"
+    trigger: "任何 Release"
+    gate: G10
+    severity: error
+
+  - id: "OBS-004"
+    rule: "告警规则 MUST 在 Release 前配置并 dry-run 验证"
+    trigger: "P0 功能上线"
+    gate: G10
+    severity: warn
+
+# ============================================================
+# 契约校验优先级
+# ============================================================
+check_priority:
+  error_level: [PERF-001, PERF-002, REL-001, REL-002, REL-003, REL-004, OBS-003]
+  warn_level:  [PERF-003, PERF-004, OBS-001, OBS-002, OBS-004]
