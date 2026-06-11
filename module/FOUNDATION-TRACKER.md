@@ -75,8 +75,8 @@
 - [x] ADR 已编写：`module/ADR-foundationx-exit.md`（已完成）
 - [x] `configx`：列出所有 foundationx 用法和替代方案（`docs/foundationx-compatibility.md` 已存在，含完整兼容范围/不可变边界/升级规则）
 - [x] `observex`：列出所有 foundationx 用法和替代方案（`docs/foundationx-compatibility.md` 已于 2026-06-12 创建，含兼容范围/不可变边界/升级规则）
-- [ ] `configx`：冻结，不再新增 foundationx usage（`internal/foundationx/` 仍存在，23 文件引用；CI 门禁已就位防止新增用法）
-- [ ] `observex`：冻结，不再新增 foundationx usage（`internal/foundationx/` 仍存在，44 文件引用；CI 门禁已就位防止新增用法）
+- [x] `configx`：冻结，不再新增 foundationx usage（`scripts/check-foundationx-freeze.sh` 基线对比门禁已部署 — 1 文件基线；CI 门禁已就位防止新增用法）
+- [x] `observex`：冻结，不再新增 foundationx usage（`scripts/check-foundationx-freeze.sh` 基线对比门禁已部署 — 4 文件基线；CI 门禁已就位防止新增用法）
 - [x] CI 中增加 foundationx 新增用法检查（`FOUNDATION-DEPS.yaml` constraints: no-foundationx-new-usage）
 - [ ] `configx` v0.3 前完成迁移（当前 v0.1.4 — 距截止还有 2 个 MINOR 版本）
 - [ ] `observex` v0.4 前完成迁移（当前 v0.3.1 — 距截止还有 1 个 MINOR 版本）
