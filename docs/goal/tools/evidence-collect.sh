@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # evidence-collect.sh — Evidence 自动收集脚本
-# 从 Git diff 和测试结果自动生成 Evidence 文件
+# 必填字段对齐 docs/goal/schema/evidence.schema.yaml (§Part A: evidence_file.required_fields)
+# 输出 Evidence ID 格式: EVID-<test_id>-NNN
 # 用法: ./docs/goal/tools/evidence-collect.sh <task-id> <spec-id> <acceptance-criteria-id> <test-id> [goal-id]
 
 set -euo pipefail
