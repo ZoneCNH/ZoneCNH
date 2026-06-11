@@ -152,6 +152,12 @@ Goal 体系定义目标交付规则、状态机、Gate、Registry 和证据闭�
 | [23-workflow-governance-checks.md](23-workflow-governance-checks.md) | 工作流治理检查：Drift Checks、Test Deletion Guard、Workflow Test Pyramid、Release Simulation |
 | [24-standard-unification-analysis.md](24-standard-unification-analysis.md) | 标准统一深度分析：ID、schema、状态、Matrix、Evidence、Gate 与工具一致性 |
 | [25-execution-guide.md](25-execution-guide.md)       | 执行指南：Agent 读序、命令入口、阻断规则、Change Request 与停止条件 |
+| [26-rsi-full-standard.md](26-rsi-full-standard.md)   | RSI 完整标准索引（拆分版见 rsi-standard/ 子目录，30 章节） |
+| [agent-cross-platform-compatibility.md](agent-cross-platform-compatibility.md) | 三平台 Agent 兼容性报告 |
+| [deploy/README.md](deploy/README.md)                 | 单仓库最小部署包：5 分钟采纳、3 级指南、CI 模板 |
+| [deploy/roadmap.md](deploy/roadmap.md)               | Delivery OS 5 Phase 落地路线图 |
+| [rsi-standard/](rsi-standard/)                       | RSI 完整标准（30 章节，RSI-SG-001） |
+| [schema/](schema/)                                   | 8 个 YAML Schema（4 数据 + 4 契约） |
 | [change-requests/](change-requests/)                 | 受保护资产或跨控制面漂移的提案记录；不是当前强规则源 |
 
 ## 复杂度分级
