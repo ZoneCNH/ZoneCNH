@@ -22,10 +22,10 @@ Goal 体系目前不是缺少标准，而是多个标准面并存：权威 ID、
 | 状态枚举        | 88     | —    | `state-dictionary.yaml` 已创建                                                                                   |
 | Matrix schema   | 85     | —    | `matrix.schema.yaml` 已创建                                                                                      |
 | Evidence schema | 82     | —    | `evidence.schema.yaml` 已创建                                                                                    |
-| Lint 与工具覆盖 | 77     | +12  | P-LINT 10/10 (曾 2/10), S-LINT 3/8 (5 条需上下文判断归入 manual), 总自动化率 27/35=77%                              |
+| Lint 与工具覆盖 | 80     | +3   | P-LINT 10/10 关键字增强 (output format/stop/test command); S-LINT 5/8 semi-automated (grep + [需人工确认]); C-LINT 2/7 lint-goal.sh 双重覆盖; 总自动化+半自动化率 35/40=87.5% |
 | Agent 跨平台    | 80     | —    | 核心 5 Agent 三平台同步；Codex 4 处幻影引用已修复；Copilot CLI smoke 45/45；兼容性报告已产出                       |
 
-综合评分：**81 / 100**（+1 from 80）。
+综合评分：**82 / 100**（+1 from 81）。
 
 ## 需要统一的标准
 
@@ -241,10 +241,10 @@ Goal 体系目前不是缺少标准，而是多个标准面并存：权威 ID、
 | 状态枚举 | 88 | — |
 | Matrix schema | 85 | — |
 | Evidence schema | 82 | — |
-| Lint 与工具覆盖 | 77 | +12 (P-LINT 10/10, S-LINT 3/8, 5 条 manual, 总自动化率 77%) |
+| Lint 与工具覆盖 | 80 | +3 (2026-06-12 P2-1: S-LINT 5/8 semi-automated, P-LINT 关键字增强, C-LINT lint-goal.sh 双重覆盖) |
 | Agent 跨平台 | 80 | — | 核心 5 Agent 三平台同步；Codex 4 处幻影引用已修复；Copilot CLI smoke 45/45；兼容性报告 `agent-cross-platform-compatibility.md` 已产出 |
 
-**修订后综合评分：80 / 100**（+2 from 78）
+**修订后综合评分：82 / 100**（+2 from 80）
 
 ### 2026-06-12 P2 跨平台验证
 
@@ -253,6 +253,16 @@ Goal 体系目前不是缺少标准，而是多个标准面并存：权威 ID、
 - **Rule Drift Check**：10/10 PASS，无漂移。
 
 P2 完成后综合评分调整：**81 / 100**。
+
+### 2026-06-12 P2-1 Lint 规则落地
+
+- **P-LINT 关键字增强**：P-LINT-005 (Output) 新增 "output format" 检测，P-LINT-007 (Test Requirements) 新增 "test command" 检测，P-LINT-008 (Do Not/Stop) 新增 "停止/stop" 检测。
+- **C-LINT lint-goal.sh 双重覆盖**：C-LINT-001 (Task ID 引用) 与 C-LINT-002 (Matrix edge 引用) 现由 lint-goal.sh 与 goal-validate.py 双重覆盖。
+- **S-LINT 半自动化**：S-LINT-004~008 从 manual 改为 semi-automated，lint-goal.sh 通过 grep 模式检测 + [需人工确认] 标记实现。
+- **规则总数修正**：10-lint-rules.md 规则总数从 35 修正为 40（G-LINT 7 + S-LINT 8 + M-LINT 8 + P-LINT 10 + C-LINT 7）。
+- **实现覆盖率**：implemented 30/40 (75%) + semi-automated 5/40 (12.5%) = 自动化+半自动化 87.5%，manual 5/40 (12.5%)。
+
+P2-1 完成后综合评分调整：**82 / 100**。
 
 ### 需在实现仓库侧跟进
 

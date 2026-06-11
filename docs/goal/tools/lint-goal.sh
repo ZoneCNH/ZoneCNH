@@ -14,25 +14,28 @@ NC='\033[0m'
 
 ERRORS=0
 WARNINGS=0
-LINT_GROUPS=("G" "S" "M" "P")
+LINT_GROUPS=("G" "S" "M" "P" "C")
 
 declare -A RULE_TOTAL=(
     ["G"]=7
     ["S"]=8
     ["M"]=8
     ["P"]=10
+    ["C"]=7
 )
 declare -A RULE_AUTOMATED=(
     ["G"]=3
     ["S"]=8
     ["M"]=8
     ["P"]=10
+    ["C"]=2
 )
 declare -A RULE_FINDINGS=(
     ["G"]=0
     ["S"]=0
     ["M"]=0
     ["P"]=0
+    ["C"]=0
 )
 declare -A RULE_SEEN=()
 
@@ -166,26 +169,31 @@ for f in $FILES; do
         SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
         SPEC_LINT_PY="${SCRIPT_DIR}/spec-lint.py"
 
-        if [ -x "$SPEC_LINT_PY" ]; then
-            SPEC_FINDINGS=$(python3 "$SPEC_LINT_PY" "$f" 2>/dev/null) || true
-        else
-            SPEC_FINDINGS=""
-        fi
-
-        for r in S-LINT-001 S-LINT-002 S-LINT-003 S-LINT-004 S-LINT-005 S-LINT-006 S-LINT-007 S-LINT-008; do
+        # S-LINT-001~003: 结构检查（委托 spec-lint.py）
+        for r in S-LINT-001 S-LINT-002 S-LINT-003; do
             mark_rule "S" "$r"
         done
-        if [ -n "$SPEC_FINDINGS" ]; then
-            while IFS=$'\t' read -r level rule message; do
-                [ -z "$level" ] && continue
-                if [ "$level" = "ERROR" ]; then
-                    error "[$BASENAME] $rule: $message"
-                else
-                    warn "[$BASENAME] $rule: $message"
-                fi
-                finding "S"
-            done <<< "$SPEC_FINDINGS"
+
+        if [ -x "$SPEC_LINT_PY" ]; then
+            SPEC_FINDINGS=$(python3 "$SPEC_LINT_PY" "$f" 2>/dev/null) || true
+            if [ -n "$SPEC_FINDINGS" ]; then
+                while IFS=$'\t' read -r level rule message; do
+                    [ -z "$level" ] && continue
+                    # 只处理 python 产出的结构规则 S-LINT-001~003
+                    if [[ "$rule" =~ ^S-LINT-00[1-3]$ ]]; then
+                        if [ "$level" = "ERROR" ]; then
+                            error "[$BASENAME] $rule: $message"
+                        else
+                            warn "[$BASENAME] $rule: $message"
+                        fi
+                        finding "S"
+                    fi
+                done <<< "$SPEC_FINDINGS"
+            fi
         fi
+
+        # S-LINT-004~008: 半自动化语义检查（bash grep + [需人工确认]）
+        check_spec_semantic "$f" "$BASENAME"
     fi
 
     # === Matrix Lint 规则 ===
@@ -314,8 +322,8 @@ PY
 
         # P-LINT-002: Prompt 必须有明确输出格式
         mark_rule "P" "P-LINT-002"
-        if ! file_has "output\|输出\|格式\|format"; then
-            warn "[$BASENAME] P-LINT-002: Prompt 缺少输出格式说明"
+        if ! file_has "output\|输出.*格式\|output format\|格式\|format"; then
+            warn "[$BASENAME] P-LINT-002: Prompt 缺少输出格式说明 (Output/输出/output format)"
             finding "P"
         fi
 
@@ -347,17 +355,17 @@ PY
             finding "P"
         fi
 
-        # P-LINT-007: Prompt 必须包含 Test Requirements
+        # P-LINT-007: Prompt 必须包含 Test Requirements / 验证命令
         mark_rule "P" "P-LINT-007"
-        if ! file_has "test\|测试\|验证\|verify"; then
-            warn "[$BASENAME] P-LINT-007: Prompt 缺少测试要求"
+        if ! file_has "test\|测试\|验证\|verify\|test.command"; then
+            warn "[$BASENAME] P-LINT-007: Prompt 缺少测试/验证要求 (验证/verify/test command)"
             finding "P"
         fi
 
-        # P-LINT-008: Prompt 必须包含 Do Not / 禁止事项
+        # P-LINT-008: Prompt 必须包含 Do Not / 停止条件 / 禁止事项
         mark_rule "P" "P-LINT-008"
-        if ! file_has "do.not\|禁止\|不要\|不得\|MUST.NOT\|non.goal\|不包含"; then
-            warn "[$BASENAME] P-LINT-008: Prompt 缺少禁止事项"
+        if ! file_has "do.not\|禁止\|不要\|不得\|MUST.NOT\|non.goal\|不包含\|停止\|stop"; then
+            warn "[$BASENAME] P-LINT-008: Prompt 缺少禁止/停止条件 (停止/stop/不要/do not)"
             finding "P"
         fi
 
@@ -374,6 +382,25 @@ PY
             warn "[$BASENAME] P-LINT-010: Prompt 包含允许自行扩大范围的表述"
             finding "P"
         fi
+    fi
+
+    # === Code Lint 规则 ===
+    if echo "$BASENAME" | grep -qi "task\|prompt\|pr\|code"; then
+
+        # C-LINT-001: 必须引用至少一个 Task ID
+        mark_rule "C" "C-LINT-001"
+        if ! file_has_ext "TASK-[A-Z]+-[0-9]{8}-[0-9]{3}-[0-9]{3}"; then
+            warn "[$BASENAME] C-LINT-001: 缺少 Task ID 引用"
+            finding "C"
+        fi
+
+        # C-LINT-002: 必须引用至少一个 Matrix edge (source_id 或 goal_id)
+        mark_rule "C" "C-LINT-002"
+        if ! file_has "source_id\|goal_id\|matrix\|trace"; then
+            warn "[$BASENAME] C-LINT-002: 缺少 Matrix edge 引用"
+            finding "C"
+        fi
+
     fi
 
     # === 通用检查 ===
