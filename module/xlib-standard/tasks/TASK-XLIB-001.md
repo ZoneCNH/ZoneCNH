@@ -7,7 +7,7 @@
 ```yaml
 task_id: TASK-XLIB-001
 module: xlib-standard
-scope: "重写 README.md 和 docs/ 目录，确保只描述 4 项职责，docs 只保留 9 个文件"
+scope: "重写 README.md 和 docs/ 目录，确保只描述 5 项职责（标准事实源、Go Reference Template、Generator、Harness Gate、Evidence Runtime），docs 只保留 9 个文件"
 spec_ref:
   - "module/xlib-standard/SPEC.md#2"
   - "module/xlib-standard/SPEC.md#4"
@@ -36,8 +36,8 @@ files_change:
   - "docs/generation.md"
   - "docs/release.md"
 acceptance_criteria:
-  - "AC-001: README.md 只描述 4 项职责（定义标准、提供模板、生成库、最小 gate）"
-  - "AC-002: README.md 不出现 Goal Runtime / Evidence Runtime / Agent Runtime / Debt Governance"
+  - "AC-001: README.md 描述 5 项职责（标准事实源、Go Reference Template、Generator、Harness Gate、Evidence Runtime）"
+  - "AC-002: README.md 不出现 Goal Runtime / Agent Runtime / Debt Governance。Evidence Runtime 允许出现（5 项职责之一）"
   - "AC-003: docs/ 目录只有 9 个 .md 文件"
   - "AC-004: docs/standard.md 包含 12 章（目的/非目标/仓库结构/公共API/Config/Error/Health/Metrics/Testing/Generator/Gate/Release）"
   - "AC-005: docs/generation.md 只出现 4 个参数（--module-path/--package-name/--out/--module-name）"
@@ -52,19 +52,19 @@ status: pending
 
 ## Scope
 
-- 重写 `README.md`、`INDEX.md` 和 `docs/*.md`，只保留 xlib-standard 的标准定义、模板、生成库和最小 gate 说明。
+- 重写 `README.md`、`INDEX.md` 和 `docs/*.md`，描述 xlib-standard 的五类职责（标准事实源、Go Reference Template、Generator、Harness Gate、Evidence Runtime）。
 - 将 `docs/standard.md` 对齐为 12 章结构。
 - 将 `docs/generation.md` 限定为 4 个生成参数。
 
 ## Non-scope
 
-- 不恢复 Goal Runtime、Evidence Runtime、Agent Runtime 或 Debt Governance 文档。
+- 不恢复 Goal Runtime、Agent Runtime 或 Debt Governance 文档。Evidence Runtime 已纳入 5 项职责标准范围，其文档在本次重写中保留。
 - 不新增 docs 目录外的产品说明页。
 - 不改变标准库实现代码。
 
 ## Acceptance
 
-- `README.md` 只描述 4 项职责，且不出现运行时治理词汇。
+- `README.md` 描述 5 项职责（标准事实源、Go Reference Template、Generator、Harness Gate、Evidence Runtime）。
 - `docs/` 目录只有 9 个 Markdown 文件。
 - `docs/generation.md` 不出现 `enable-governance`。
 
@@ -72,7 +72,7 @@ status: pending
 
 | Requirement | Description | Acceptance Criteria |
 |---|---|---|
-| §2 Summary | 模块定位描述 | README 只描述 4 项职责 |
+| §2 Summary | 模块定位描述 | README 描述 5 项职责 |
 | §5 Non-goals | 不做运行时 | README 不出现运行时引用 |
 | goal.md §5 | PR-2 文档要求 | docs 只保留 9 个文件 |
 
@@ -81,7 +81,7 @@ status: pending
 ```bash
 # 验收命令
 grep -c "Goal Runtime" README.md  # 应为 0
-grep -c "Evidence Runtime" README.md  # 应为 0
+grep -c "Evidence Runtime" README.md  # 5 项职责中应包含 Evidence Runtime
 ls docs/*.md | wc -l  # 应为 9
 grep -c "module-path" docs/generation.md  # 应 > 0
 grep -c "enable-governance" docs/generation.md  # 应为 0

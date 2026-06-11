@@ -1,8 +1,13 @@
 # xlib-standard Implementation Plan
 
+> 本 Plan 覆盖 xlib-standard 五类职责中后四类的实现任务：Go Reference Template、Generator、Harness Gate、Evidence Runtime。
+> 标准事实源（文档规范）的完整定义见 `goal.md`，其验证通过分析管线（`ANALYSIS.md` / `FR-DETAIL.md` / `TRACEABILITY.md`）完成，不在此 Plan 中重复。
+>
 > Root-level plan for the Spec -> Code scorer. Detailed historical planning remains in `module/xlib-standard/plan/PLAN.md`.
 
 ## Steps
+
+> 以下任务覆盖 G-1 至 G-5（Go Reference Template / Generator / Gate / Evidence Runtime）。G-0（标准事实源）由 `goal.md`、`ANALYSIS.md` 和分析管线覆盖，不属于本 Plan 的实现任务。
 
 - TASK-XLIB-000: prune governance runtime and unrelated runtime directories from the target xlib template repository.
 - TASK-XLIB-001: align `README.md`, `docs/standard.md`, and `docs/INDEX.md` with the v1 public standard.

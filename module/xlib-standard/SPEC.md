@@ -9,7 +9,7 @@ Owner: ZoneCNH
 Version: v1.0.0
 Updated: 2026-06-10
 
-本规格定义 `xlib-standard` 作为 Go 基础库标准模板的最小可交付范围。它约束公共 API、模板生成、验证 gate、release manifest 与最终验收，不承载业务域实现。
+本规格是 `xlib-standard` 五类职责（标准事实源、Go Reference Template、Generator、Harness Gate、Evidence Runtime）中后四类的可执行交付规格。标准事实源（文档规范层）的完整定义见 `goal.md`。本文件约束模板公共 API、模板生成、验证 gate、release manifest 与最终验收，不承载业务运行。
 
 ## Constitution Compliance
 
@@ -37,7 +37,7 @@ Updated: 2026-06-10
 
 ## Summary
 
-`xlib-standard` 提供一个可编译、可渲染、可验证的 Go library 标准源，用于生成 `kernel`、`market-data`、`factor-engine` 等模块的基础库骨架。交付物包括模板源码、渲染脚本、边界检查、合约检查、安全检查、CI gate、release manifest 和最终发布检查。
+`xlib-standard` 提供 xlib 体系的唯一标准源：标准文档（`docs/standard/`）、可编译可渲染可验证的 Go Reference Template、Generator（`render_template.sh`）、9 个 CI Gate 和 Evidence Runtime（release manifest + checksum）。本 SPEC 聚焦后四类的可执行交付细节。交付物包括模板源码、渲染脚本、边界检查、合约检查、安全检查、CI gate、release manifest 和最终发布检查。
 
 ## Problem
 
@@ -47,15 +47,16 @@ Updated: 2026-06-10
 
 | Goal | Description                                                           | Trace              |
 | ---- | --------------------------------------------------------------------- | ------------------ |
+| G-0  | 定义 xlib 体系标准事实源（文档规范）。见 `goal.md`。                   | Standard Source    |
 | G-1  | 定义 Config、Error、Health、Metrics、Client、Version 的最小公共 API。 | API standard       |
 | G-2  | 提供 Go 参考模板，并保证模板本身可编译、可测试、可 vet。              | Reference template |
 | G-3  | 提供渲染脚本，从标准模板创建独立 Go module。                          | Generator          |
 | G-4  | 定义最小 CI gate 与边界检查。                                         | Gates              |
-| G-5  | 生成 release manifest，并用最终检查锁定发布证据。                     | Release            |
+| G-5  | 生成 release manifest，并用最终检查锁定发布证据。                     | Evidence Runtime   |
 
 ## Non-goals
 
-- 不实现任何业务域逻辑、交易逻辑、行情逻辑或风控逻辑。
+- 不承载业务运行（不实现任何业务域逻辑、交易逻辑、行情逻辑或风控逻辑）。标准事实源的文档规范定义见 `goal.md`。
 - 不替代下游模块的业务测试、集成测试或生产配置。
 - 不引入数据库、消息队列、外部网络调用或运行时平台依赖。
 - 不提供跨语言模板；本版本仅覆盖 Go module。

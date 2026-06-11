@@ -284,7 +284,11 @@ $spec-code-pipeline <module>
 Spec → Matrix → Tasks → Plan → Prompt → Code
 ```
 
-Codex 使用 `.codex/skills/spec-code-pipeline/SKILL.md`，Claude Code 使用 `.claude/commands/spec-code-pipeline.md`，Copilot 使用 `.copilot/commands/spec-code-pipeline.md`。每个阶段进入下一阶段前都必须由 Claude / Copilot / Codex team scoring 和 `pipeline-arbiter` 通过：`composite_score = min(四源评分) >= 98`，且无红线、低置信度或异常分差；Spec 通过后由 arbiter 自动翻转 `Status: Approved`，`spec-review` 仅作为参考证据。
+Codex 使用 `.codex/skills/spec-code-pipeline/SKILL.md`，
+Claude Code 使用 `.claude/commands/spec-code-pipeline.md`，
+Copilot 使用 `.copilot/commands/spec-code-pipeline.md`。
+每个阶段进入下一阶段前都必须由 Claude / Copilot / Codex team scoring 和 `pipeline-arbiter` 
+通过：`composite_score = min(四源评分) >= 98`，且无红线、低置信度或异常分差；Spec 通过后由 arbiter 自动翻转 `Status: Approved`，`spec-review` 仅作为参考证据。
 
 ### 1. Spec 审查
 

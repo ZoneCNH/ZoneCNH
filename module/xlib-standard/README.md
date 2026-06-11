@@ -2,6 +2,8 @@
 
 本目录是 `github.com/ZoneCNH/xlib-standard` 上游仓库在本仓库的 **本地分析快照**。汇总自 `.worktree/*.md`、`docs/**` 与外部规划文档的整理结果，作为本仓库（`ZoneCNH/ZoneCNH`）架构索引的一部分；它不是上游 SSOT，也不是可执行规格。
 
+模块级文档 `goal.md` 和 `SPEC.md` 位于本目录根，定义 xlib-standard 的五类职责（标准事实源、Go Reference Template、Generator、Harness Gate、Evidence Runtime，引自 CONSTITUTION.md P2 / ARCHITECTURE.md）。分析快照文件（`ANALYSIS.md`、`FR-DETAIL.md` 等）是对上游仓库标准的本地整理，不替代模块级文档。
+
 ## 上游引用
 
 | 字段 | 值 |
@@ -14,6 +16,8 @@
 
 ## 当前权威工件
 
+- `goal.md`：模块级 Goal 定位与实现标准，定义 xlib-standard 五类职责的完整定位、能力范围、职责边界和发布验收标准。
+- `SPEC.md`：模块级可执行交付规格，覆盖五类职责中 Go Reference Template、Generator、Harness Gate 和 Evidence Runtime 的可执行细节（FR / AC / TC）；标准事实源的完整定义见 `goal.md`。
 - `ANALYSIS.md`：本地结构分析入口；只保留事实层级、关键数字、职责拆分和冲突总览，不声明可执行生命周期状态。
 - `FR-DETAIL.md`：52 条 FR 的完整 WHEN/THEN 细节；行为细节以此文件为准，不声明可执行生命周期状态。
 - `INDEX.md`：上游 SSOT 索引；列出 `docs/standard/` 27 个文件、9 个 Accepted ADR 与 `harness.yaml` gate section。
@@ -31,13 +35,15 @@
 
 原 `archive/` 目录的历史文件已迁移至 `docs/report/`，旧 `SPEC.md` 23 节整理稿只保留归档说明；这些历史内容不再作为当前分析、lint 或 independent review verdict 的入口：
 
-- `SPEC.md`：旧 23 节整理稿；当前权威入口是 `ANALYSIS.md` / `FR-DETAIL.md` / `TRACEABILITY.md`，旧稿不再作为可执行规格入口。
+- `SPEC.md`（已更新）：模块级可执行交付规格，覆盖五类职责中后四类的 FR / AC / TC；其旧 23 节整理稿版本已归档，当前版本与 `goal.md` 和 CONSTITUTION.md 对齐。
 - `docs/report/xlib-standard-module-spec-archived.md`：历史 20 节整理工件。
 - `docs/report/xlib-standard-deep-analysis-archived.md`：181 文件旧口径深度分析。
 - 历史工件 **不得** 作为当前分析、追溯、冲突取舍或门禁事实引用，仅供溯源比对。
 
 ## 阅读规则
 
+- `goal.md` 是本目录模块级权威定位文档，定义 xlib-standard 五类职责（引自 CONSTITUTION.md P2 / ARCHITECTURE.md）。
+- `SPEC.md` 是本目录模块级可执行交付规格，覆盖后四类职责的 FR / AC / TC。
 - `ANALYSIS.md` 是本仓库分析入口；真正可执行标准位于上游 `docs/standard/**`、`docs/*.md`、`.agent/harness/harness.yaml` 与相关 runtime artifact。
 - `INDEX.md` 只索引上游裁决标准位置，不在本仓库声明 gate / No-Go / DoD 已通过。
 - `TRACEABILITY.md` 是条款级来源矩阵，不是逐规则证明账本；需要内容级复现时必须提供 source pack、digest/tree sha 或重新生成覆盖清单。
