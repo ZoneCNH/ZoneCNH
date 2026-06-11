@@ -11,7 +11,7 @@
 
 ```text
 Phase 1 ──→ Phase 2 ──→ Phase 3 ──→ Phase 4 ──→ Phase 5
-  ✅ 已完成    🟡 近期      ⬜ 中期      ⬜ 远期      ⬜ 愿景
+  ✅ 已完成    🟡 近期      ⬜ 中期      🟡 进行中      🟡 MVP 已落地
   基础管线    Compiler    Contract    Runtimes    自优化
   L3           MVP         Layer       完整版       L5
 ```
@@ -128,7 +128,7 @@ bash docs/goal/tools/goal-delivery.sh prompt --task-id TASK-xxx --compile
 
 ---
 
-## Phase 4 — 完整 Five Runtimes + Release Drills ⬜ 远期
+## Phase 4 — 完整 Five Runtimes + Release Drills 🟡 进行中
 
 **目标**：`22-delivery-os.md` 中五个 Runtime 全部有对应可执行工具。发布演练可自动化。
 
@@ -142,9 +142,9 @@ bash docs/goal/tools/goal-delivery.sh prompt --task-id TASK-xxx --compile
 | Control Runtime     | goal-matrix + goal-reviewer + `goal-validate.py`           | ✅ 已有       |
 | Execution Runtime   | goal-prompt-builder + `goal-delivery.sh plan/tasks/prompt` | 🟡 Phase 2    |
 | Evidence Runtime    | goal-evidence + `evidence-collect.sh` + `gate-check.sh`    | 🟡 Phase 3    |
-| Improvement Runtime | RSI R0-R9 + `21-controlled-rsi.md`                         | 🟡 增强自动化 |
+| Improvement Runtime | RSI R0-R9 + `21-controlled-rsi.md` + `goal-delivery.sh improve` | ✅ Phase 5 MVP |
 
-### 4.2 Release Drills
+### 4.2 Release Drills ✅
 
 | 演练                        | 实现方式                                                    |
 | --------------------------- | ----------------------------------------------------------- |
@@ -162,7 +162,7 @@ bash docs/goal/tools/goal-delivery.sh prompt --task-id TASK-xxx --compile
 
 ---
 
-## Phase 5 — Self-optimizing（L5 成熟度）⬜ 愿景
+## Phase 5 — Self-optimizing（L5 成熟度）🟡 MVP 已落地
 
 **目标**：RSI 闭环从"人工触发"升级为"基于 Scorecard 自动触发提案"。
 
@@ -196,7 +196,7 @@ Scorecard 指标异常 → 自动生成 Improvement Proposal → R0-R9 Gate → 
 ## 里程碑时间线
 
 ```text
-2026-06  ✅ Phase 1 完成（当前）
+2026-06  ✅ Phase 1-3 完成，Phase 4-5 MVP 落地
 2026-07  🟡 Phase 2 启动：Workflow Compiler MVP + Lint 100%
 2026-08  🟡 Phase 2 完成
 2026-09  ⬜ Phase 3 启动：Contract Layer + Evidence Runtime
