@@ -2,7 +2,7 @@
 # 权威来源：docs/goal/00-authority-map.md 与 authority_source 所列 docs/goal 文档
 # 路径：.config/goal/schema/rules.yaml
 
-document_version: "2026-06-10"
+document_version: "2026-06-11"
 
 authority_source:
   - docs/goal/00-authority-map.md
@@ -71,7 +71,15 @@ module_code_location:
     - "PLAN.md"
     - "INDEX.md"
     - "README.md"
+    - "ANALYSIS.md"
+    - "FR-DETAIL.md"
+    - "CONFLICT-LEDGER.md"
+    - "SNAPSHOT-BOUNDARY.md"
+    - "COVERAGE-MANIFEST.md"
+    - "REMOTE-EVIDENCE.md"
+    - "REVIEW-VERDICT.md"
     - "TASK-*-PROMPT.md"
+    - "analysis/"
     - "tasks/"
     - "plan/"
     - "plans/"

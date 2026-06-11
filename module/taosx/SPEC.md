@@ -234,7 +234,7 @@ client, err := taosx.NewClient(taosx.Config{
     PoolSize: 20,
 })
 if err != nil {
-    log.Fatal(err)
+    return err
 }
 defer client.Close()
 

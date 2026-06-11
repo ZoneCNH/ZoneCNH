@@ -304,7 +304,7 @@ app.Register(&strategyModule{})
 
 // 启动（自动拓扑序）
 if err := app.Run(ctx); err != nil {
-    log.Fatal(err)
+    return err
 }
 
 // 停机（自动反序）

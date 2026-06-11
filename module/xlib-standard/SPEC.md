@@ -1,5 +1,7 @@
 # xlib-standard SPEC
 
+归档说明：本文件为旧 23 节整理稿，不再作为当前可执行规格入口。
+
 ## Metadata
 
 Status: Approved
