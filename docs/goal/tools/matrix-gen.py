@@ -424,6 +424,60 @@ def print_auto_id_preview(ids: dict) -> None:
     print(f"\n[DRY-RUN] 以上 ID 将被生成，未写入文件。去掉 --dry-run 以写入。")
 
 
+def print_matrix_graph(matrix_file: str) -> None:
+    """输出 Matrix 追溯 DAG (DOT 格式)。可用 Graphviz 渲染: dot -Tpng graph.dot -o graph.png"""
+    path = Path(matrix_file)
+    if not path.exists():
+        print(f"[ERROR] Matrix 文件不存在: {matrix_file}", file=sys.stderr)
+        sys.exit(1)
+
+    rows = parse_matrix(path)
+    edges: dict[str, list[str]] = {}
+    labels: dict[str, str] = {}
+    status_colors = {
+        "Verified": "#2ecc71",
+        "Dropped": "#e74c3c",
+        "Linked": "#3498db",
+        "Mapped": "#f39c12",
+        "Unmapped": "#95a5a6",
+    }
+
+    for row in rows:
+        src = str(row.get("source_id", "?"))
+        tgt = str(row.get("target_id", "?"))
+        rel = str(row.get("relation", ""))
+        status = str(row.get("status", "Unmapped"))
+        color = status_colors.get(status, "#95a5a6")
+
+        edges.setdefault(src, [])
+        if tgt not in edges[src]:
+            edges[src].append(tgt)
+        labels[(src, tgt)] = f"{rel}\\n[{status}]"
+        labels.setdefault("_attrs", {})[(src, tgt)] = color
+
+    print("// Matrix Traceability DAG")
+    print(f"// Source: {matrix_file}")
+    print("digraph Matrix {")
+    print("  rankdir=LR;")
+    print('  node [shape=box, style=filled, fillcolor="#ecf0f1", fontname="monospace"];')
+    print('  edge [fontname="monospace", fontsize=9];')
+
+    seen_nodes: set[str] = set()
+    for src, tgts in edges.items():
+        if src not in seen_nodes:
+            seen_nodes.add(src)
+            print(f'  "{src}";')
+        for tgt in tgts:
+            if tgt not in seen_nodes:
+                seen_nodes.add(tgt)
+                print(f'  "{tgt}";')
+            color = labels.get("_attrs", {}).get((src, tgt), "#95a5a6")
+            lbl = labels.get((src, tgt), "")
+            print(f'  "{src}" -> "{tgt}" [label="{lbl}", color="{color}", fontcolor="{color}"];')
+
+    print("}")
+
+
 def main():
     parser = argparse.ArgumentParser(description="Matrix 生成与检查工具")
     parser.add_argument("--spec-dir", help="Spec 文件目录")
@@ -434,9 +488,19 @@ def main():
     parser.add_argument("--matrix", help="Matrix 文件路径（配合 --check-only）")
     parser.add_argument("--auto-id", action="store_true", help="自动生成缺失的实体 ID")
     parser.add_argument("--dry-run", action="store_true", help="预览模式：显示将生成的 ID，不写入文件")
+    parser.add_argument("--graph", action="store_true", help="输出 Matrix 追溯 DAG (DOT 格式)")
     parser.add_argument("--date", help="用于 ID 的日期 (YYYYMMDD)，默认今天")
     parser.add_argument("--version", action="store_true", help="显示工具版本")
     args = parser.parse_args()
+
+    if args.graph:
+        if args.matrix:
+            print_matrix_graph(args.matrix)
+        elif args.check_only:
+            print_matrix_graph(args.matrix or DEFAULT_MATRIX_FILE)
+        else:
+            print("[ERROR] --graph 需要 --matrix <file>", file=sys.stderr)
+        sys.exit(0)
 
     if args.version:
         print("matrix-gen.py v1.1.0")

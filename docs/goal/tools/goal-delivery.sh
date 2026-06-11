@@ -1200,10 +1200,81 @@ cmd_validate() {
   fi
 }
 
-# ─── release：发布前检查 ─────────────────────────────────
+# ─── release：发布前检查 + Evidence Bundle ────────────────
 cmd_release() {
   title "发布前检查"
   require_config
+
+  if [[ "$COMPILE" == "true" ]]; then
+    step "生成 Release Evidence Bundle..."
+
+    local bundle_dir="$CONFIG_DIR/evidence/bundle-$(date +%Y%m%d-%H%M%S)"
+    mkdir -p "$bundle_dir"
+
+    local bundle_file="$bundle_dir/RELEASE-BUNDLE.md"
+    {
+      echo "# Release Evidence Bundle"
+      echo "> 自动生成: $(date '+%Y-%m-%d %H:%M:%S')"
+      echo "> Release ID: REL-$(date +%Y%m%d-%H%M%S)"
+      echo ""
+      echo "## Evidence Summary"
+      echo ""
+
+      # 聚合所有 Evidence 文件
+      local evid_count=0
+      if [[ -d "$CONFIG_DIR/evidence" ]]; then
+        for ev in "$CONFIG_DIR/evidence"/*.md; do
+          [[ -f "$ev" ]] || continue
+          evid_count=$((evid_count + 1))
+          local ev_name=$(basename "$ev")
+          echo "### $ev_name"
+          echo ""
+          head -30 "$ev" 2>/dev/null
+          echo ""
+          echo "---"
+          echo ""
+        done
+      fi
+
+      echo "## Matrix Summary"
+      echo ""
+      if [[ -f "$CONFIG_DIR/matrix/matrix.yaml" ]]; then
+        local total edges_term
+        total=$(grep -c "source_id:" "$CONFIG_DIR/matrix/matrix.yaml" 2>/dev/null || echo 0)
+        echo "- **Total Edges**: $total"
+        echo "- **File**: \`.config/goal/matrix/matrix.yaml\`"
+      fi
+
+      echo ""
+      echo "## Gate Status"
+      echo ""
+      if [[ -f "$CONFIG_DIR/gates/state.yaml" ]]; then
+        for gate in G0 G1 G2 G3 G4 G5 G6 G7 G8 G9 G10 G11; do
+          local gs
+          gs=$(gate_status "$gate")
+          printf -- "- **%s**: %s\n" "$gate" "${gs:-UNKNOWN}"
+        done
+      fi
+
+      echo ""
+      echo "## Risk Register"
+      echo ""
+      if [[ -f "$CONFIG_DIR/registry/risks.yaml" ]]; then
+        grep -E "risk_id:|status:|release_blocking:" "$CONFIG_DIR/registry/risks.yaml" | head -20
+      fi
+
+      echo ""
+      echo "## Validation Summary"
+      echo ""
+      echo "- **Validator**: goal-validate.py --mode strict"
+      echo "- **Preflight**: goal-workflow.sh preflight"
+      echo "- **Generated**: $(date '+%Y-%m-%d %H:%M:%S')"
+    } > "$bundle_file"
+
+    ok "Evidence Bundle 已生成: $bundle_file"
+    echo "$bundle_file"
+    return 0
+  fi
 
   if [[ -f "$SCRIPT_DIR/goal-workflow.sh" ]]; then
     step "委托 goal-workflow.sh release"
