@@ -20,6 +20,10 @@ authority_source:
   - docs/goal/20-metrics-evidence.md
   - docs/goal/21-controlled-rsi.md
   - docs/goal/25-execution-guide.md
+  - docs/goal/schema/goal.schema.yaml
+  - docs/goal/schema/matrix.schema.yaml
+  - docs/goal/schema/evidence.schema.yaml
+  - docs/goal/schema/state-dictionary.yaml
 
 canonical_goal_object:
   schema_name: "canonical Goal object"
@@ -36,6 +40,8 @@ canonical_goal_object:
     - owner
     - priority
     - success_criteria
+
+  canonical_schema: "docs/goal/schema/goal.schema.yaml"
 
 module_goal_document:
   canonical_path_pattern: "module/{module}/goal.md"
@@ -223,6 +229,7 @@ matrix:
     - gate_id
     - owner
     - updated_at
+  canonical_schema: "docs/goal/schema/matrix.schema.yaml"
   optional_fields:
     - edge_id
     - source_type
@@ -270,6 +277,7 @@ evidence:
     - Status
     - Files Changed
     - Commands Run
+  canonical_schema: "docs/goal/schema/evidence.schema.yaml"
   statuses:
     - PASS
     - PARTIAL
@@ -489,3 +497,7 @@ ci:
     - agent-check
     - docs-check
     - summary
+
+state_dictionary:
+  canonical_schema: "docs/goal/schema/state-dictionary.yaml"
+  note: "状态枚举的权威源。所有状态值和大小写规则以此 schema 为准。"

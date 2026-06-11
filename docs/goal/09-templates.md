@@ -93,6 +93,9 @@ GOAL-YYYYMMDD-NNN
 ### Design ID
 DESIGN-<domain>-v1
 
+### Source Goal
+GOAL-YYYYMMDD-NNN
+
 ### Source Spec
 SPEC-<domain>-v1
 
@@ -115,6 +118,9 @@ PLAN-GOAL-YYYYMMDD-NNN-v1
 
 ### Source Goal
 GOAL-YYYYMMDD-NNN
+
+### Source Design
+DESIGN-<domain>-v1
 
 ### Execution Strategy / Phases / Risks / Rollback / Final Validation
 
@@ -219,6 +225,9 @@ Tasks: TASK-GOAL-20260608-001-001, TASK-GOAL-20260608-001-002, TASK-GOAL-2026060
 ### Goal YAML
 
 ```yaml
+# 字段来源：canonical goal object schema (docs/goal/schema/goal.schema.yaml)
+# 使用字段映射：template → canonical
+#   goal_id → goal_id, title → title, objective → north_star, success_metrics → success_criteria
 id: GOAL-20260608-002
 name: Order CSV Export
 context: >
@@ -249,6 +258,8 @@ acceptance_criteria:
 ### Matrix YAML
 
 ```yaml
+# 字段来源：canonical matrix edge schema (docs/goal/schema/matrix.schema.yaml)
+# 使用 canonical edge model，relation 限于 8 个控制面值
 matrix:
   - edge_id: EDGE-GOAL-20260608-002-001
     source_id: GOAL-20260608-002
@@ -258,7 +269,6 @@ matrix:
     relation: decomposes_to
     status: Linked
     evidence_id: EVID-GOAL-20260608-002-001
-    gate_id: G1
     owner: goal-matrix
     updated_at: 2026-06-08T00:00:00Z
   - edge_id: EDGE-GOAL-20260608-002-002
@@ -269,12 +279,74 @@ matrix:
     relation: verified_by
     status: Verified
     evidence_id: EVID-GOAL-20260608-002-TEST-001
-    gate_id: G8
     owner: goal-matrix
     updated_at: 2026-06-08T00:00:00Z
 ```
 
 旧 row 字段（例如 `goalId`、`specId`、`taskId`、`code_module`、`test_case`）MUST NOT 直接写入 Matrix 控制面。需要导入旧表格时，先转换为上面的 canonical edge，并记录转换命令或人工复核证据。
+
+### Design YAML
+
+```yaml
+# 字段来源：canonical design object schema (docs/goal/schema/design.schema.yaml)
+id: DESIGN-export-v1
+name: Order Export Design
+source:
+  goal: GOAL-20260608-002
+  spec: SPEC-export-v1
+modules:
+  - ExportController
+  - CsvExportService
+  - OrderRepository
+interfaces:
+  - exportOrders() -> ExportTask
+  - generateOrderCsv() -> CsvFile
+  - findByFilterPaged() -> List<Order>
+data_flow: >
+  HTTP Request → ExportController → CsvExportService → OrderRepository → DB
+dependencies: []
+adrs: [DEC-20260608-001]
+risks:
+  - Large datasets may cause memory pressure
+  - CSV format changes may break downstream consumers
+```
+
+### Plan YAML
+
+```yaml
+# 字段来源：canonical plan object schema (docs/goal/schema/plan.schema.yaml)
+id: PLAN-GOAL-20260608-002-v1
+name: Order CSV Export Plan
+source:
+  goal: GOAL-20260608-002
+  design: DESIGN-export-v1
+execution_strategy: >
+  Phase 1: core service and repository; Phase 2: API layer + validation;
+  Phase 3: test and acceptance.
+phases:
+  - phase: 1
+    tasks: [TASK-GOAL-20260608-002-001]
+    goal: OrderRepository.findByFilterPaged() implemented
+    validation: task test suite passes
+  - phase: 2
+    tasks: [TASK-GOAL-20260608-002-002, TASK-GOAL-20260608-002-003]
+    goal: API and CSV generation working end-to-end
+    validation: integration test suite passes
+  - phase: 3
+    tasks: [TASK-GOAL-20260608-002-004]
+    goal: Full acceptance criteria verified
+    validation: all AC tests pass
+risks:
+  - Performance risk with >100,000 rows
+checkpoints:
+  - After Phase 1: verify query performance
+  - After Phase 2: verify end-to-end flow
+  - After Phase 3: verify all ACs
+rollback_plan: >
+  Revert to manual report workflow. Feature flag allows disabling export.
+final_validation: >
+  All ACs Verified in Matrix. Release Gate passed.
+```
 
 ### Task YAML
 
@@ -293,7 +365,51 @@ acceptance_criteria:
   - CSV file contains filtered orders
   - empty result exports headers only
 tests: [TEST-TASK-GOAL-20260608-002-003-001, TEST-TASK-GOAL-20260608-002-003-002]
+matrix:
+  - edge_id: EDGE-GOAL-20260608-002-004
+    source_type: AcceptanceCriteria
+    source_id: AC-REQ-SPEC-export-v1-003-001
+    relation: verified_by
+    target_type: Test
+    target_id: TEST-TASK-GOAL-20260608-002-003-001
+    status: Verified
+    evidence_id: EVID-GOAL-20260608-002-TEST-001
+    owner: goal-matrix
+    updated_at: 2026-06-08T00:00:00Z
 priority: P0
+```
+
+### Evidence YAML
+
+```yaml
+# 字段来源：canonical evidence schema (docs/goal/schema/evidence.schema.yaml)
+# 必填字段：evidence_id, test_id, task_id, goal_id, spec_id, acceptance_criteria_id, date, status, files_changed, commands_run
+evidence_id: EVID-GOAL-20260608-002-TEST-001
+test_id: TEST-TASK-GOAL-20260608-002-001-001
+task_id: TASK-GOAL-20260608-002-001
+goal_id: GOAL-20260608-002
+spec_id: SPEC-export-v1
+acceptance_criteria_id: AC-REQ-SPEC-export-v1-001-001
+date: 2026-06-12T00:00:00Z
+status: Passed
+files_changed:
+  - src/export/csv_generator.go
+  - src/export/export_handler.go
+commands_run:
+  - go test ./tests/export/ -run TestCsvExport
+evidence_notes: >
+  All CSV export test cases passed. File size and row count verified.
+matrix:
+  - edge_id: EDGE-GOAL-20260608-002-002
+    source_type: AcceptanceCriteria
+    source_id: AC-REQ-SPEC-export-v1-001-001
+    relation: verified_by
+    target_type: Test
+    target_id: TEST-TASK-GOAL-20260608-002-001-001
+    status: Verified
+    evidence_id: EVID-GOAL-20260608-002-TEST-001
+    owner: goal-matrix
+    updated_at: 2026-06-08T00:00:00Z
 ```
 
 ---
@@ -320,7 +436,6 @@ priority: P0
       "relation": "decomposes_to",
       "status": "Linked",
       "evidence_id": "EVID-GOAL-20260608-002-001",
-      "gate_id": "G1",
       "owner": "goal-matrix",
       "updated_at": "2026-06-08T00:00:00Z"
     },
@@ -333,7 +448,6 @@ priority: P0
       "relation": "verified_by",
       "status": "Verified",
       "evidence_id": "EVID-GOAL-20260608-002-TEST-001",
-      "gate_id": "G8",
       "owner": "goal-matrix",
       "updated_at": "2026-06-08T00:00:00Z"
     }

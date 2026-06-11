@@ -1,0 +1,263 @@
+# Canonical Evidence Schema
+# SSOT: docs/goal/20-metrics-evidence.md, docs/goal/04-gates.md (G8/G10)
+# 路径: docs/goal/schema/evidence.schema.yaml
+#
+# 本文档统一 Evidence 文件（单个证据）和 Evidence Bundle（发布证据包）的字段定义。
+# evidence-collect.sh 生成物和 gate-check.sh 检查逻辑 MUST 对齐本文档的必填字段。
+
+schema_name: canonical_evidence
+schema_version: "1.0.0"
+authority_sources:
+  - docs/goal/20-metrics-evidence.md
+  - docs/goal/04-gates.md
+  - docs/goal/13-runtime-engine.md
+  - .config/goal/schema/rules.yaml
+
+# ============================================================
+# Part A: 单个 Evidence 文件
+# ============================================================
+evidence_file:
+  description: "单个测试/验证证据文件"
+
+  id:
+    canonical_pattern: "^EVID-TEST-TASK-GOAL-[0-9]{8}-[0-9]{3}-[0-9]{3}-[0-9]{3}-[0-9]{3}$"
+    legacy_pattern: "^EVID-TEST-TASK-XLIB-[0-9]{3,8}[A-Z]?-[0-9]{3}(-[0-9]{3}){0,4}$"
+    legacy_mode: grandfathered_import_only
+    example: "EVID-TEST-TASK-GOAL-20260608-001-002-001-001"
+
+  required_fields:
+    - field: evidence_id
+      key: "Evidence ID"
+      type: string
+      pattern: "see id.canonical_pattern"
+      description: "Evidence 唯一标识符"
+    - field: test_id
+      key: "Test ID"
+      type: string
+      pattern: "^TEST-TASK-GOAL-[0-9]{8}-[0-9]{3}-[0-9]{3}-[0-9]{3}$"
+      description: "关联的 Test ID"
+    - field: task_id
+      key: "Task ID"
+      type: string
+      pattern: "^TASK-GOAL-[0-9]{8}-[0-9]{3}-[0-9]{3}$"
+      description: "关联的 Task ID"
+    - field: goal_id
+      key: "Goal ID"
+      type: string
+      pattern: "^GOAL-[0-9]{8}-[0-9]{3}$"
+      description: "关联的 Goal ID"
+    - field: spec_id
+      key: "Spec ID"
+      type: string
+      pattern: "^SPEC-[a-z0-9-]+-v[0-9]+$"
+      description: "关联的 Spec ID"
+    - field: acceptance_criteria_id
+      key: "Acceptance Criteria ID"
+      type: string
+      pattern: "^AC-REQ-SPEC-[a-z0-9-]+-v[0-9]+-[0-9]{3}-[0-9]{3}$"
+      description: "关联的 AC ID"
+    - field: date
+      key: "Date"
+      type: string
+      format: date
+      description: "证据生成日期"
+    - field: status
+      key: "Status"
+      type: string
+      enum: [PASS, PARTIAL, FAIL]
+      description: "证据状态"
+    - field: files_changed
+      key: "Files Changed"
+      type: list
+      item_type: string
+      description: "变更文件清单"
+    - field: commands_run
+      key: "Commands Run"
+      type: list
+      item_type: string
+      description: "执行的命令"
+    - field: results
+      key: "Results"
+      type: string
+      description: "执行结果摘要"
+
+  recommended_fields:
+    - field: requirement_proof
+      key: "Requirement Proof"
+      description: "对应需求证明"
+    - field: known_limitations
+      key: "Known Limitations"
+      description: "已知限制"
+    - field: risks
+      key: "Risks"
+      description: "关联风险"
+    - field: rollback
+      key: "Rollback"
+      description: "回滚方案"
+    - field: logs
+      key: "Logs"
+      description: "关键日志"
+    - field: diff_summary
+      key: "Diff Summary"
+      description: "变更摘要"
+
+  path_layout:
+    canonical: ".config/goal/evidence/YYYY-MM-DD/TASK_ID/EVID_ID.md"
+    example: ".config/goal/evidence/2026-06-08/TASK-GOAL-20260608-001-001/EVID-TEST-TASK-GOAL-20260608-001-001-001-001.md"
+
+  prohibitions:
+    - "无日志不得声称完成"
+    - "无测试不得声称完成"
+    - "无文件清单不得声称完成"
+    - "无风险说明不得声称完成"
+    - "失败证据 MUST 保留，后续通过证据可以 supersede 但 MUST NOT 删除"
+
+# ============================================================
+# Part B: Evidence Bundle（G8/G10 最小可审查证明包）
+# ============================================================
+evidence_bundle:
+  description: "G8 Evidence Gate 和 G10 Release Gate 的最小可审查证明包"
+
+  required_fields:
+    - field: evidence_bundle_id
+      type: string
+      required: true
+    - field: goal_id
+      type: string
+      required: true
+      pattern: "^GOAL-[0-9]{8}-[0-9]{3}$"
+    - field: task_id
+      type: string
+      required: true
+    - field: release_id
+      type: string
+      required: true
+      pattern: "^REL-[0-9]{8}-[a-z0-9-]+$"
+    - field: commit
+      type: string
+      required: true
+      description: "Git commit SHA"
+    - field: environment
+      type: string
+      required: true
+      description: "执行环境描述"
+    - field: validator
+      type: object
+      required: true
+      properties:
+        command: { type: string, required: true }
+        result: { type: string, required: true }
+    - field: matrix
+      type: object
+      required: true
+      properties:
+        command: { type: string, required: true }
+        result: { type: string, required: true }
+    - field: validation_summary
+      type: object
+      required: true
+      properties:
+        command: { type: string, required: true }
+        result: { type: string, required: true }
+      description: "通过/失败/跳过项、环境、commit、阻断项"
+    - field: tests
+      type: list
+      required: true
+      item_properties:
+        command: { type: string }
+        result: { type: string }
+        log: { type: string }
+    - field: review
+      type: object
+      required: true
+      properties:
+        reviewer: { type: string }
+        verdict: { type: string }
+    - field: risk_register
+      type: string
+      required: true
+      description: "Risk Register 路径或内联摘要"
+    - field: release_manifest
+      type: string
+      required: true
+      description: "Release Manifest 路径或内联摘要"
+    - field: release_gate
+      type: object
+      required: true
+      properties:
+        gate_id: { type: string, const: "G10" }
+        command: { type: string }
+        result: { type: string }
+    - field: rollback_validation
+      type: object
+      required: true
+      description: "回滚方案验证记录（dry-run/演练/fallback evidence）"
+    - field: artifacts
+      type: list
+      required: true
+      item_properties:
+        path: { type: string }
+        sha256: { type: string }
+    - field: created_at
+      type: string
+      required: true
+      format: datetime
+    - field: owner
+      type: string
+      required: true
+
+  release_gate_requirements:
+    gate_id: G10
+    description: "G10 Release Gate 的 Evidence 最低要求"
+    must_include:
+      - strict_validator_result
+      - matrix_check_only_result
+      - validation_summary
+      - risk_register
+      - release_manifest
+      - rollback_validation
+    blocking_conditions:
+      - "P0/P1 AC 缺少测试证据和评审/验证证据"
+      - "Evidence Bundle 缺少 command/environment/commit/artifact/result/owner"
+      - "缺少 validation_summary"
+      - "缺少 release_manifest"
+      - "缺少 risk_register 或存在 Open/Escalated release_blocking 风险"
+      - "缺少 rollback_validation"
+
+# ============================================================
+# Part C: 工具对齐说明
+# ============================================================
+tool_alignment:
+  evidence_collect_sh:
+    file: docs/goal/tools/evidence-collect.sh
+    expected_id_format: "EVID-<test_id>-NNN"
+    output_fields_required:
+      - "Evidence ID"
+      - "Goal ID"
+      - "Task ID"
+      - "Test ID"
+      - "Spec ID"
+      - "Acceptance Criteria ID"
+      - "Date"
+      - "Status"
+      - "Files Changed"
+      - "Commands Run"
+    note: "生成物 MUST 默认通过 gate-check.sh 的必填字段检查"
+
+  gate_check_sh:
+    file: docs/goal/tools/gate-check.sh
+    checks:
+      - "Evidence 文件完整性"
+      - "必须字段存在性（evidence_id, test_id, task_id, goal_id, spec_id, ac_id, date, status, files_changed, commands_run）"
+      - "Evidence Bundle 字段完整性（G8/G10）"
+
+# ============================================================
+# Part D: 字段漂移消解
+# ============================================================
+field_drift_resolution:
+  issue: "evidence-collect.sh 和 gate-check.sh 对 Evidence 必填字段的检查口径不一致"
+  resolution: "两脚本 MUST 对齐本文档 evidence_file.required_fields 的 11 个字段"
+  historical_note: |
+    07-id-system.md 规定 Evidence ID = EVID-<test-id>-NNN（绑定到 Test ID）。
+    evidence-collect.sh 曾生成 EVID-${TASK_ID}-${TIMESTAMP}-001（绑定到 Task ID）。
+    本文档的 canonical ID 格式绑定到 Test ID 的同时要求包含 Task ID 字段。

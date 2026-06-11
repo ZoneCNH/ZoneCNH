@@ -1,0 +1,268 @@
+# State Dictionary — Goal 体系统一状态枚举
+# SSOT: docs/goal/03-pipeline.md §2, docs/goal/04-gates.md §4, docs/goal/13-runtime-engine.md
+# 路径: docs/goal/schema/state-dictionary.yaml
+#
+# 本文档定义 Goal 体系中所有状态字段的唯一大小写、允许值、终态和异常态。
+# 其他文档和工具 MUST 引用本文档，不得定义新的状态枚举。
+
+schema_name: state_dictionary
+schema_version: "1.0.0"
+authority_sources:
+  - docs/goal/03-pipeline.md
+  - docs/goal/04-gates.md
+  - docs/goal/13-runtime-engine.md
+  - docs/goal/15-registry.md
+  - docs/goal/20-metrics-evidence.md
+  - .config/goal/schema/rules.yaml
+
+# ============================================================
+# Category 1: lifecycle_status（对象生命周期状态）
+# ============================================================
+lifecycle_status:
+  description: "对象在自身生命周期中的位置。使用 Title Case。"
+  naming_convention: Title Case
+  case_example: "Draft, Active"
+
+  goal:
+    description: "Goal 生命周期。SSOT: docs/goal/15-registry.md §1, docs/goal/03-pipeline.md §2.5"
+    values:
+      - Draft      # 初稿
+      - Active     # 活跃中
+      - Paused     # 暂停
+      - Achieved   # 已完成
+      - Abandoned  # 废弃
+    terminal: [Achieved, Abandoned]
+    note: >
+      docs/goal/02-goal-standard.md §10 的 Draft→Reviewed→Approved→In Progress→Validated/Partially Validated/Failed→Deprecated
+      是展示性描述，不是控制面状态枚举。控制面使用本文档的值。
+
+  task:
+    description: "Task 生命周期。SSOT: docs/goal/05-layer-standards.md §4"
+    values:
+      - Unmapped
+      - Mapped
+      - In Progress
+      - Blocked
+      - In Review
+      - Done
+      - Dropped
+    terminal: [Done, Dropped]
+
+  issue:
+    description: "Issue 生命周期。SSOT: docs/goal/15-registry.md §4, docs/goal/03-pipeline.md §2.2"
+    values:
+      - OPEN
+      - TRIAGED
+      - SPEC_READY
+      - DESIGN_READY
+      - TASKS_READY
+      - IN_PROGRESS
+      - IN_REVIEW
+      - READY_FOR_RELEASE
+      - DONE
+    terminal: [DONE]
+    exceptions:
+      - BLOCKED
+      - FAILED
+      - NEEDS_RESEARCH
+      - NEEDS_DECISION
+      - NEEDS_REPLAN
+      - NEEDS_ROLLBACK
+      - NEEDS_HUMAN_APPROVAL
+      - INCONSISTENT_STATE
+    exception_source: docs/goal/03-pipeline.md §2.2
+
+  risk:
+    description: "Risk 生命周期。SSOT: docs/goal/15-registry.md §6, docs/goal/17-risk-and-decisions.md §1"
+    values:
+      - Open
+      - Mitigated
+      - Closed
+      - Accepted
+      - Escalated
+    terminal: [Closed]
+    release_blocking_rule: "Open 或 Escalated 且 release_blocking=true 的 Risk MUST 阻断 G10"
+
+  decision:
+    description: "Decision (ADR) 生命周期。SSOT: docs/goal/15-registry.md §7"
+    values:
+      - Proposed
+      - Accepted
+      - Rejected
+      - Superseded
+    terminal: [Accepted, Rejected, Superseded]
+
+  release:
+    description: "Release 生命周期。SSOT: docs/goal/15-registry.md §5"
+    values:
+      - draft
+      - ready_for_pr
+      - in_review
+      - approved
+      - released
+      - rejected
+    terminal: [released, rejected]
+
+# ============================================================
+# Category 2: runtime_phase（运行时阶段状态）
+# ============================================================
+runtime_phase:
+  description: "管线或流程在运行时的阶段位置。使用 UPPER_SNAKE。"
+  naming_convention: UPPER_SNAKE
+  case_example: "INIT, GOAL_READY"
+
+  pipeline_state:
+    description: "全局管线状态机位置。SSOT: docs/goal/03-pipeline.md §2.1, §2.2"
+    normal:
+      - INIT
+      - CONTEXT_READY
+      - GOAL_READY
+      - SPEC_READY
+      - DESIGN_READY
+      - PLAN_READY
+      - TASKS_READY
+      - EXECUTING
+      - VERIFYING
+      - REVIEWING
+      - RELEASING
+      - RETROSPECTING
+      - DONE
+    exception:
+      - BLOCKED
+      - FAILED
+      - NEEDS_RESEARCH
+      - NEEDS_DECISION
+      - NEEDS_REPLAN
+      - NEEDS_ROLLBACK
+      - NEEDS_HUMAN_APPROVAL
+      - INCONSISTENT_STATE
+    terminal: [DONE]
+
+  current_phase:
+    description: "当前主流程层级。SSOT: docs/goal/03-pipeline.md §1"
+    values:
+      - GOAL
+      - SPEC
+      - DESIGN
+      - PLAN
+      - TASKS
+      - PROMPT
+      - CODE
+      - TEST
+      - REVIEW
+      - RELEASE
+      - RETROSPECTIVE
+
+  phase_status:
+    description: "当前层局部进度。SSOT: docs/goal/03-pipeline.md §2.0"
+    values:
+      - NOT_STARTED
+      - READY
+      - IN_PROGRESS
+      - IN_REVIEW
+      - DONE
+      - BLOCKED
+      - SKIPPED
+      - STALE
+    terminal: [DONE, SKIPPED]
+
+  workflow_step:
+    description: "SOP/Runtime/CI 执行步骤投影。不得复用 pipeline_state 枚举名。"
+    naming_rule: "使用 UPPER_SNAKE，后缀 _EXECUTION/_AUTHORING/_REVIEW/_APPROVAL"
+    examples:
+      - CONTEXT_PREPARATION
+      - GOAL_AUTHORING
+      - GOAL_REVIEW
+      - CODE_IMPLEMENTATION
+      - REVIEW_EXECUTION
+      - RELEASE_EXECUTION
+      - RETROSPECTIVE_EXECUTION
+
+# ============================================================
+# Category 3: gate_result（Gate 裁决结果）
+# ============================================================
+gate_result:
+  description: "Gate 的终态裁决。使用 UPPER。不得将生命周期状态写入此处。"
+  naming_convention: UPPER
+  case_example: "PASS, FAIL"
+
+  result_verdict:
+    description: "Gate 裁决值。SSOT: docs/goal/04-gates.md §4"
+    values:
+      - PASS            # 通过
+      - PASS_WITH_RISK  # 通过但有风险（G6/G10 不允许）
+      - FAIL            # 不通过
+      - BLOCKED         # 被阻塞
+    note: >
+      NOT_STARTED 和 IN_PROGRESS 是生命周期/运行态快照状态，
+      MUST NOT 写入 result.verdict。
+      WAIVED 是豁免策略记录，不是 Gate 结果值。
+
+  lifecycle_status:
+    description: "Gate 的生命周期状态（补充性快照用，不是裁决值）"
+    values:
+      - NOT_STARTED
+      - IN_PROGRESS
+      - PASS
+      - PASS_WITH_RISK
+      - FAIL
+      - BLOCKED
+
+  pass_with_risk_policy:
+    allowed_gates: [G0, G1, G2, G3, G4, G5, G7, G8, G9, G11]
+    disallowed_gates: [G6, G10]
+    required_risk_fields: [risk_id, risk_owner, risk_level, risk_reason, mitigation, due_at, review_gate, release_blocking, evidence_id]
+
+  score_threshold_rule:
+    description: "当 Gate 同时有 score 和 threshold 时，PASS 必须 score >= threshold"
+    applies_to: "所有 canonical Gate (G0-G11)"
+
+# ============================================================
+# Category 4: metric_conclusion（指标验证结论）
+# ============================================================
+metric_conclusion:
+  description: "Metrics Validation Check 的结论。使用 snake_case。"
+  naming_convention: snake_case
+  case_example: "achieved, partially_achieved"
+  source: docs/goal/20-metrics-evidence.md
+
+  values:
+    - pending              # 数据窗口未到
+    - achieved             # 指标达到目标
+    - partially_achieved   # 部分达标
+    - not_achieved         # 核心指标未达标
+    - invalid_metric       # 指标无法代表原目标（需 CR 修正）
+
+  terminal: [achieved, not_achieved, invalid_metric]
+
+# ============================================================
+# Category 5: matrix_status（Matrix Edge 状态）
+# ============================================================
+matrix_status:
+  description: "Matrix edge 状态。Title Case。SSOT: docs/goal/05-layer-standards.md §9"
+  naming_convention: Title Case
+
+  values:
+    terminal:
+      - Verified   # 已证明，关联 evidence_id
+      - Dropped    # 已丢弃，必须有 drop_reason
+    drift_meta:
+      - Drifted    # 漂移中
+      - Stale      # 过期
+      - Blocked    # 阻塞
+      - Changed    # 已变更
+    active:
+      - Unmapped   # 未映射
+      - Mapped     # 已映射
+      - Linked     # 已链接（有关联节点）
+  flow: "Unmapped → Mapped → Linked → Verified / Dropped"
+  drift_flow: "Drifted/Stale/Blocked/Changed → Linked → Verified / Dropped"
+
+# ============================================================
+# 全局禁止事项
+# ============================================================
+global_prohibitions:
+  - "不同对象不得共用同名 status 字段却表达不同语义"
+  - "展示性文档可以使用旧命名，但进入控制面 MUST 映射到本文档的值"
+  - "工具脚本 MUST 使用本文档的枚举值做检查"
+  - "新增状态值 MUST 通过 Change Request 并同步本文档"

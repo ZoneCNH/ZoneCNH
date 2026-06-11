@@ -109,3 +109,61 @@ C-LINT-007: 本仓库 module/{module}/ 下不得新增实现源码树或复制�
 | Matrix Lint | G5 Task Gate 前的 Matrix 覆盖检查 | 可全自动（覆盖关系检查） |
 | Prompt Lint | Prompt 生成后 | 可全自动（字段完整性） |
 | Code Lint | PR 提交时 | 可全自动（CI 集成） |
+
+## 7. 规则实现状态
+
+| 规则 ID | 状态 | 检查工具 | 说明 |
+|---------|------|---------|------|
+| G-LINT-001 | implemented | lint-goal.sh | Goal 必须包含 objective |
+| G-LINT-002 | implemented | lint-goal.sh | Goal 必须包含 success_metrics 或 acceptance_criteria |
+| G-LINT-003 | manual | — | Goal 不能只描述实现方案（需人工语义判断） |
+| G-LINT-004 | implemented | lint-goal.sh | Goal 必须包含 scope_out |
+| G-LINT-005 | planned | — | Goal 必须包含 target_user 或 target_actor |
+| G-LINT-006 | implemented | lint-goal.sh | Goal 必须至少有一个可验证指标 |
+| G-LINT-007 | manual | — | Goal 不应使用模糊词而没有定义（需人工判断） |
+| S-LINT-001 | implemented | lint-goal.sh | 每条 Functional Requirement 必须有唯一 ID |
+| S-LINT-002 | implemented | lint-goal.sh | 每条 Requirement 必须能被测试 |
+| S-LINT-003 | implemented | lint-goal.sh | 每条 Acceptance Criteria 必须有明确结果 |
+| S-LINT-004 | implemented | lint-goal.sh | 权限相关功能必须包含 Security Requirements |
+| S-LINT-005 | implemented | lint-goal.sh | 数据导入/导出功能必须包含数据量限制 |
+| S-LINT-006 | implemented | lint-goal.sh | 异步任务必须包含状态流转规则 |
+| S-LINT-007 | implemented | lint-goal.sh | 用户可见错误必须包含 Error Handling |
+| S-LINT-008 | implemented | lint-goal.sh | 涉及外部服务必须包含失败处理 |
+| M-LINT-001 | implemented | matrix-gen.py | 每个 Goal 至少对应一个 Spec |
+| M-LINT-002 | implemented | matrix-gen.py | 每个 Spec Requirement 至少对应一个 Matrix edge |
+| M-LINT-003 | implemented | gate-check.sh | release-critical edge 必须连接到 Task/Test |
+| M-LINT-004 | implemented | gate-check.sh | P0/P1 edge 必须有 Test edge + Evidence edge |
+| M-LINT-005 | implemented | matrix-gen.py | 每个 Task 必须能追溯到 Matrix edge |
+| M-LINT-006 | implemented | matrix-gen.py | 不允许存在 Orphan Task |
+| M-LINT-007 | implemented | goal-validate.py | 不允许存在 Orphan Code |
+| M-LINT-008 | implemented | goal-validate.py | Done 状态必须同时满足 Code + Test |
+| P-LINT-001 | planned | — | Prompt 必须包含 Source |
+| P-LINT-002 | planned | — | Prompt 必须包含 Task Objective |
+| P-LINT-003 | planned | — | Prompt 必须包含 Requirements |
+| P-LINT-004 | planned | — | Prompt 必须包含 Constraints |
+| P-LINT-005 | planned | — | Prompt 必须包含 Output |
+| P-LINT-006 | planned | — | Prompt 必须包含 Acceptance Criteria |
+| P-LINT-007 | planned | — | Prompt 必须包含 Test Requirements |
+| P-LINT-008 | planned | — | Prompt 必须包含 Do Not |
+| P-LINT-009 | manual | — | Prompt 不能要求一次性实现多个无关任务 |
+| P-LINT-010 | manual | — | Prompt 不能允许自行扩大范围 |
+| C-LINT-001 | implemented | goal-validate.py | PR 必须引用至少一个 Task |
+| C-LINT-002 | implemented | goal-validate.py | PR 必须引用至少一个 Matrix edge |
+| C-LINT-003 | planned | — | PR 必须包含测试说明 |
+| C-LINT-004 | planned | — | P0/P1 Task 不允许无测试合并 |
+| C-LINT-005 | implemented | goal-validate.py | PR 不能包含未关联 Task 的大规模代码改动 |
+| C-LINT-006 | implemented | rule-drift-check.py | 模块代码实现必须位于 /home/{module} |
+| C-LINT-007 | implemented | rule-drift-check.py | module/{module}/ 下不得新增实现源码树 |
+
+### 规则覆盖率
+
+- 总规则数: 35
+- implemented: 24 (69%)
+- manual: 6 (17%)
+- planned: 5 (14%)
+
+Schema 引用：
+- Goal 字段完整性校验见 [schema/goal.schema.yaml](schema/goal.schema.yaml)
+- Matrix 字段完整性校验见 [schema/matrix.schema.yaml](schema/matrix.schema.yaml)
+- Evidence 字段完整性校验见 [schema/evidence.schema.yaml](schema/evidence.schema.yaml)
+- 状态枚举校验见 [schema/state-dictionary.yaml](schema/state-dictionary.yaml)

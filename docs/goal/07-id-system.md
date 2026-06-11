@@ -70,3 +70,29 @@
 6. 校验器可以解析 legacy ID 以完成历史追溯，但生成器和新文档必须输出 canonical Goal ID
 7. 导入的历史记录必须标注 `id_format: legacy` 或等价字段，避免被误判为新规范产物
 8. legacy ID 不能作为新 artifact 的主键、文件名或 Registry 新条目 ID
+
+## 4. ID 版本 vs 制品版本
+
+### 区分原则
+
+ID 中的版本后缀与文档级语义版本是两个独立概念：
+
+| 维度 | ID 版本后缀 | 制品版本字段 |
+|------|-----------|------------|
+| 位置 | ID 字符串末尾 | 文档或 Registry 的 `version` 字段 |
+| 格式 | `vN`（整数递增） | `vN.N.N`（语义版本） |
+| 示例 | `SPEC-market-data-v2` | `version: "v2.1.0"` |
+| 语义 | 标识第几次重写/替换 | 标识当前版本的兼容性 |
+| 递增规则 | 每次 Supersede 或重写时 +1 | 每次语义变更/新增/修复时按 semver 递增 |
+
+### 版本冲突消解
+
+- ID 后缀 `vN` 只表示"这是该对象的第 N 版"，不传达兼容性信息。
+- 需要表达兼容性（breaking/minor/patch）时，使用 `version` 字段，格式 `vN.N.N`。
+- `docs/goal/12-operations.md` 中的 `v0.1`、`v1.0` 等是制品 version 字段值，不是 ID 后缀。
+- 工具链 regex 使用 `v\d+` 匹配 ID 后缀，与 `version` 字段的值格式无关。
+
+### Schema 引用
+
+- ID 格式的权威 schema 定义见 `.config/goal/schema/rules.yaml` 的 `ids` 段。
+- 新增 ID 对象类型 MUST 先更新 `docs/goal/schema/` 中对应的对象 schema，再同步 rules.yaml、templates 和工具 regex。

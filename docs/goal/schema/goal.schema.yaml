@@ -1,0 +1,190 @@
+# Canonical Goal Object Schema
+# SSOT: docs/goal/02-goal-standard.md
+# 路径: docs/goal/schema/goal.schema.yaml
+#
+# 本文档是 Goal 对象结构的单一机器事实源。
+# docs/goal/02-goal-standard.md（人类标准）、docs/goal/09-templates.md（模板）、
+# .config/goal/registry/goals.yaml（运行制品）均应引用本文档。
+# 如有冲突，以本文档字段定义为准。
+
+schema_name: canonical_goal_object
+schema_version: "1.0.0"
+authority_sources:
+  - docs/goal/02-goal-standard.md
+  - docs/goal/03-pipeline.md
+  - docs/goal/15-registry.md
+  - .config/goal/schema/rules.yaml
+
+fields:
+  goal_id:
+    type: string
+    required: true
+    pattern: "^GOAL-[0-9]{8}-[0-9]{3}$"
+    description: "Goal 唯一标识符"
+    example: "GOAL-20260608-001"
+
+  title:
+    type: string
+    required: true
+    description: "目标名称，简洁描述要达成的结果"
+    max_length: 200
+
+  document_version:
+    type: string
+    required: true
+    pattern: "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+    description: "文档版本日期，用于追踪文档时效"
+
+  status:
+    type: string
+    required: true
+    enum:
+      - Draft
+      - Active
+      - Paused
+      - Achieved
+      - Abandoned
+    description: "Goal 生命周期状态。SSOT: docs/goal/15-registry.md §1, docs/goal/03-pipeline.md §2.5"
+
+  owner:
+    type: string
+    required: true
+    description: "Goal 负责人，对最终结果负责"
+
+  priority:
+    type: string
+    required: true
+    enum: [P0, P1, P2, P3]
+    description: "优先级"
+
+  north_star:
+    type: string
+    required: true
+    description: "一句话概括 Goal 的核心追求"
+
+  success_criteria:
+    type: list
+    item_type: string
+    required: true
+    min_items: 1
+    description: "成功标准列表，每条必须可验证"
+
+  scope_in:
+    type: list
+    item_type: string
+    required: false
+    description: "范围内包含的内容"
+
+  scope_out:
+    type: list
+    item_type: string
+    required: false
+    description: "明确不包含的内容（Non-goals）"
+
+  constraints:
+    type: list
+    item_type: string
+    required: false
+    description: "技术/时间/成本/安全/合规约束"
+
+  acceptance_criteria:
+    type: list
+    item_type: object
+    required: false
+    description: "验收标准列表。SSOT 结构见 docs/goal/05-layer-standards.md §1"
+    item_schema:
+      ac_id: { type: string, required: true, pattern: "^AC-REQ-.*$" }
+      given: { type: string, required: true }
+      when: { type: string, required: true }
+      then: { type: string, required: true }
+
+  pipeline_state:
+    type: string
+    required: false
+    enum:
+      - INIT
+      - CONTEXT_READY
+      - GOAL_READY
+      - SPEC_READY
+      - DESIGN_READY
+      - PLAN_READY
+      - TASKS_READY
+      - EXECUTING
+      - VERIFYING
+      - REVIEWING
+      - RELEASING
+      - RETROSPECTING
+      - DONE
+      - BLOCKED
+      - FAILED
+      - NEEDS_RESEARCH
+      - NEEDS_DECISION
+      - NEEDS_REPLAN
+      - NEEDS_ROLLBACK
+      - NEEDS_HUMAN_APPROVAL
+      - INCONSISTENT_STATE
+    description: "全局管线状态机位置。SSOT: docs/goal/03-pipeline.md §2.1, §2.2"
+
+  current_phase:
+    type: string
+    required: false
+    enum: [GOAL, SPEC, DESIGN, PLAN, TASKS, PROMPT, CODE, TEST, REVIEW, RELEASE, RETROSPECTIVE]
+    description: "当前主流程层级。SSOT: docs/goal/03-pipeline.md §1"
+
+  phase_status:
+    type: string
+    required: false
+    enum: [NOT_STARTED, READY, IN_PROGRESS, IN_REVIEW, DONE, BLOCKED, SKIPPED, STALE]
+    description: "当前层局部进度。SSOT: docs/goal/03-pipeline.md §2.0"
+
+  created_at:
+    type: string
+    required: false
+    format: date
+    description: "创建日期"
+
+  updated_at:
+    type: string
+    required: false
+    format: date
+    description: "最近更新日期"
+
+  related_issues:
+    type: list
+    item_type: string
+    required: false
+    description: "关联 Issue"
+
+  related_specs:
+    type: list
+    item_type: string
+    required: false
+    description: "关联 Spec 路径或 ID"
+
+# 字段映射表 — 消除 02-goal-standard / 09-templates / 15-registry 三处不一致
+field_mapping:
+  canonical:
+    goal_id: { standard: "id", template: "goal_id", registry: "goal_id" }
+    title: { standard: "name", template: "goal.title | name", registry: "title" }
+    north_star: { standard: "objective", template: "goal.objective | objective", registry: "north_star" }
+    success_criteria: { standard: "success_metrics", template: "goal.success_metrics", registry: "success_criteria" }
+    scope_in: { standard: "scope_in", template: "scope.in", registry: "scope_in" }
+    scope_out: { standard: "scope_out | non_goals", template: "scope.out", registry: "scope_out" }
+    constraints: { standard: "constraints", template: "constraints", registry: "constraints" }
+    acceptance_criteria: { standard: "acceptance_criteria", template: "acceptance_criteria", registry: "acceptance_criteria" }
+    status: { standard: "status (Draft/Reviewed/Approved/In Progress/Validated...)", template: "status", registry: "status (Draft/Active/Paused/Achieved/Abandoned)" }
+  note: >
+    standard 列指 docs/goal/02-goal-standard.md 中的字段名；
+    template 列指 docs/goal/09-templates.md 中的 YAML/JSON 模板字段名；
+    registry 列指 .config/goal/registry/goals.yaml 中的字段名。
+    所有消费者 SHOULD 向 canonical 字段名迁移；现有制品至少 SHOULD 标注使用的字段来源。
+
+# 状态映射澄清
+status_clarification:
+  goal_lifecycle: { canonical: "status", values: [Draft, Active, Paused, Achieved, Abandoned], source: "docs/goal/15-registry.md §1 + docs/goal/03-pipeline.md §2.5" }
+  pipeline_position: { canonical: "pipeline_state", values: "see pipeline_state enum above", source: "docs/goal/03-pipeline.md §2.1" }
+  phase_location: { canonical: "current_phase", values: "see current_phase enum above", source: "docs/goal/03-pipeline.md §1" }
+  phase_progress: { canonical: "phase_status", values: "see phase_status enum above", source: "docs/goal/03-pipeline.md §2.0" }
+  note: >
+    docs/goal/02-goal-standard.md §10 的 Goal 状态机 (Draft→Reviewed→Approved→In Progress→Validated/Partially Validated/Failed→Deprecated)
+    是展示性描述，不是控制面状态枚举。进入控制面时 MUST 映射为本 schema 的 status 字段枚举。

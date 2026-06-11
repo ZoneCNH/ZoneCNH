@@ -184,3 +184,23 @@ id, name, context, objective, success_metrics,
 scope_in, scope_out, constraints, acceptance_criteria,
 owner, priority, status
 ```
+
+## 12. Schema 权威引用
+
+> Goal 对象的完整字段定义、状态枚举和字段映射见 [schema/goal.schema.yaml](schema/goal.schema.yaml)。
+> 本文档的 §5 模板和 §11 最小字段是展示性描述；进入 Registry、Matrix、Gate、validator 或 CI 控制面时，MUST 以 schema/goal.schema.yaml 的字段定义为准。
+
+### 字段来源标注
+
+本文档中使用的 Goal 字段名与 canonical schema 的映射关系：
+
+| 本文档字段 | canonical schema 字段 | 说明 |
+|-----------|----------------------|------|
+| id | goal_id | 本文档简写为 id，控制面使用 goal_id |
+| name | title | 本文档用 name，控制面用 title |
+| objective | north_star | 本文档用 objective，控制面用 north_star |
+| success_metrics | success_criteria | 本文档用 success_metrics，控制面用 success_criteria |
+
+### 模板字段对齐
+
+[09-templates.md](09-templates.md) 的 YAML/JSON Goal 模板 SHOULD 声明使用的字段来源（standard/template/registry），详见 [schema/goal.schema.yaml §field_mapping](schema/goal.schema.yaml)。

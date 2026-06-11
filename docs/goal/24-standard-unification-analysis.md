@@ -212,6 +212,46 @@ Goal 体系目前不是缺少标准，而是多个标准面并存：权威 ID、
 8. 建立 rule registry，把 lint 文档规则和脚本实现绑定。
 9. 决定 Goal agent 是否需要三平台同构。
 
+## 2026-06-12 修复进展
+
+以下 gap 已通过 Phase 1 schema 权威化关闭：
+
+| 维度 | 修复前 | 修复后 | 状态 |
+|------|--------|--------|------|
+| Goal schema | 62 → 标准/模板/Registry 字段命名不一致 | 85 → goal.schema.yaml 定义了 canonical 字段 + 三源映射表 | ✅ Closed |
+| Matrix schema | 55 → 展示字段/YAML/脚本字段不一致 | 85 → matrix.schema.yaml 统一 canonical edge 字段 + relation vocabulary | ✅ Closed |
+| Evidence schema | 50 → ID/路径/必填字段漂移 | 82 → evidence.schema.yaml 统一 Evidence 文件 + Bundle 必填字段 | ✅ Closed |
+| 状态枚举 | 58 → 5 种命名风格混用 | 88 → state-dictionary.yaml 归并为 4 类状态字段 | ✅ Closed |
+
+修订后统一度评分：
+
+| 维度 | 统一度 | 变化 |
+|------|--------|------|
+| 运行时目录 | 82 | — |
+| Gate 编号与权威 | 78 | — |
+| ID 与版本 | 65 | +5 (07-id-system.md 明确 vN vs version 字段) |
+| Goal schema | 85 | +23 ⬆ |
+| 状态枚举 | 88 | +30 ⬆ |
+| Matrix schema | 85 | +30 ⬆ |
+| Evidence schema | 82 | +32 ⬆ |
+| Lint 与工具覆盖 | 65 | +8 (10-lint-rules.md 标注规则实现状态) |
+
+**修订后综合评分：78 / 100**（+12）
+
+### 仍需统一
+
+- ID 版本格式：vN vs vN.N 在模板和操作文档中仍有混合使用（65/100 → 目标 85）
+- Gate 结果与流转语义：PASS_WITH_RISK 与 advisory score / hard gate 的区分需要各 Gate 文档逐一标注
+- Lint 实现覆盖率：46% (16/35)，Prompt Lint 和 Spec Lint 的自动化覆盖率较低
+- 三平台 Agent 同构：Codex/Copilot 侧 Goal agent 的运行时 smoke 仍需验证
+
+### 下一批修复建议
+
+1. 将所有模板中的 ID 示例统一为 `vN` 格式
+2. 为每个 Gate (G0-G11) 标注允许 PASS_WITH_RISK 的阈值和条件
+3. 实现 S-LINT 和 P-LINT 的自动化检查脚本
+4. 完成 Copilot CLI runtime smoke 验证
+
 ## 最小可执行修复包
 
 如果只做一轮高收益修复，建议范围如下：
