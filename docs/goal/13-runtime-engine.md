@@ -243,6 +243,35 @@ CL3 / CL4 / CL5 必须人工确认
 Release 到生产环境必须人工确认
 ```
 
+### CL2 Agent 交叉审查路径
+
+CL2 变更允许两个独立 Agent 实例（writer + reviewer）通过交叉审查替代人工审批，适用于 H-CHK6（Risk Acceptance）和 H-CHK7（Release Approval）。
+
+**适用条件**：
+- 变更级别为 CL2
+- Writer 和 Reviewer 来自不同会话或不同 worktree
+- Reviewer 独立获取完整上下文（Goal、Spec、Matrix、Code diff）
+
+**互审记录（写入 Evidence Bundle）**：
+```yaml
+cross_review:
+  writer_agent: "<agent-session-id>"
+  reviewer_agent: "<agent-session-id>"
+  review_date: "YYYY-MM-DD"
+  verdict: "APPROVE | REJECT"
+  risk_accepted: ["RISK-xxx"]  # 或 []
+  evidence_id: "EVID-xxx"
+```
+
+**否决升级规则**：
+- Reviewer 否决（REJECT）→ 自动升级为 Human Approval
+- Writer 不同意 Reviewer 结论 → 升级为 Human Approval
+- Cross review evidence 缺失或不完整 → Gate FAIL
+
+**不适用范围**：
+- CL3+ 变更 MUST 走 Human Approval
+- G10 Release Gate 仍要求 Release Manifest 含完整 cross review 或 Human Approval 记录
+
 ---
 
 ## 8. 变更传播矩阵
@@ -261,6 +290,7 @@ Release 到生产环境必须人工确认
 | Storage 变更     | Migration / Rollback / Tests / Release Manifest   |
 | Config 变更      | Example / Docs / Tests / Release Manifest         |
 | CI 变更          | Harness / Docs / Release Manifest                 |
+| Agent Review 变更 | Evidence / Release Manifest / Gate 状态              |
 | Risk 变更        | Review / Release / Retrospective                  |
 | Release 变更     | CHANGELOG / Manifest / Rollback / Registry        |
 
