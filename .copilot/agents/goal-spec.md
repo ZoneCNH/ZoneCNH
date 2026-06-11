@@ -18,6 +18,21 @@ writes: .config/goal/registry/*.yaml, .config/goal/pipeline/state.yaml
 4. `docs/goal/02-goal-standard.md`、`03-pipeline.md`、`04-gates.md`、`05-layer-standards.md`、`09-templates.md`、`14-agent-protocols.md`、`15-registry.md`、`17-risk-and-decisions.md`、`20-metrics-evidence.md`
 5. `.config/goal/schema/rules.yaml`，仅作为机器校验投影
 
+## 精简文档索引
+
+核心 8 文档（按需深读，其余文档通过引用间接覆盖）：
+
+| 文档 | 角色 |
+|------|------|
+| `CONSTITUTION.md` | 最高治理，冲突时优先 |
+| `docs/goal/00-authority-map.md` | SSOT 权威边界——"哪份文档是真相" |
+| `docs/goal/README.md` | 体系全景入口 + 工作流 + 可执行命令 |
+| `docs/goal/03-pipeline.md` | 11 层管线 + 四轴状态模型 SSOT |
+| `docs/goal/04-gates.md` | G0-G11 Gate 体系 SSOT |
+| `docs/goal/05-layer-standards.md` | 各层标准 + Matrix 横切标准 |
+| `docs/goal/09-templates.md` | 端到端模板（Goal/Spec/Task/Prompt） |
+| `docs/goal/25-execution-guide.md` | Agent 执行入口、阻断规则、Change Request 流程 |
+
 ## 职责
 
 - 起草或修订 Goal、Spec、Design、Plan、Task、Registry 和 Pipeline-state 制品。

@@ -6,6 +6,8 @@
 **来源**：`docs/goal/26-rsi-full-standard.md`（已拆分为本子目录）
 
 > 本目录包含 RSI（Recursive Self-Improvement，递归自我改进）完整标准文档的 27 个正文章节与 3 个附录。每个文件独立可读，保留 frontmatter 元数据。
+>
+> **目标读者**：AI 研发组织、前沿模型实验室、治理团队、安全评估团队和审计团队。本文档是面向模型级 RSI 的安全治理标准草案（非 ISO/NIST/IEC 正式标准）。工程工作流层面的受控改进请使用 [`21-controlled-rsi.md`](../21-controlled-rsi.md)（R0-R9 Gate + 四策略级别）。对于不使用模型训练/微调的仓库，本目录可作为参考附录而非必读材料。
 
 ---
 

@@ -112,7 +112,7 @@ echo ""
 
 # 收集目标文档和配置文件
 if [ -d "$TARGET" ]; then
-    FILES=$(find "$TARGET" \( -name "*.md" -o -name "*.yaml" -o -name "*.yml" \) -type f -not -path "*/schema/*" 2>/dev/null)
+    FILES=$(find "$TARGET" \( -name "*.md" -o -name "*.yaml" -o -name "*.yml" \) -type f -not -path "*/schema/*" -not -path "*/change-requests/*" -not -name "CHANGELOG.md" 2>/dev/null)
 elif [ -f "$TARGET" ]; then
     FILES="$TARGET"
 else

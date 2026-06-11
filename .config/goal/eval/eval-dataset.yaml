@@ -1,0 +1,326 @@
+# Eval Dataset — Phase 5 基线
+# 格式：每个 case 记录 id / type / source / prompt / expected / actual / captured_at
+# Capture Rate 目标 ≥ 80%，False Positive Rate ≤ 10%
+
+dataset:
+  id: EVAL-DS-001
+  name: Goal Delivery OS Eval Baseline
+  captured_at: "2026-06-12"
+  version: v1
+  total_cases: 33
+
+cases:
+  - id: EVAL-CASE-001
+    type: gate_consistency
+    source: self-test fixture (rule-drift negative)
+    description: 旧工作流状态字面量被 rule-drift-check.py 拒绝
+    expected: non_zero_exit
+    verdict: PASS
+    captured_at: "2026-06-12"
+
+  - id: EVAL-CASE-002
+    type: matrix_coverage
+    source: self-test fixture (matrix negative)
+    description: 非法 relation 和缺失 evidence 被 matrix-gen.py --check-only 拒绝
+    expected: non_zero_exit
+    verdict: PASS
+    captured_at: "2026-06-12"
+
+  - id: EVAL-CASE-003
+    type: evidence_completeness
+    source: self-test fixture (gate negative)
+    description: 有 Task 与 Matrix 但缺少 Evidence 文件被 gate-check.sh 拒绝
+    expected: non_zero_exit
+    verdict: PASS
+    captured_at: "2026-06-12"
+
+  - id: EVAL-CASE-004
+    type: gate_consistency
+    source: self-test fixture (validator negative)
+    description: 控制面 PENDING Gate 不允许出现，必须使用终态裁决
+    expected: non_zero_exit
+    verdict: PASS
+    captured_at: "2026-06-12"
+
+  - id: EVAL-CASE-005
+    type: release_safety
+    source: self-test fixture (release negative)
+    description: 存在 Open release_blocking 风险时 Release Gate 阻断
+    expected: non_zero_exit
+    verdict: PASS
+    captured_at: "2026-06-12"
+
+  - id: EVAL-CASE-006
+    type: cross_platform_phantom_ref
+    source: CHANGELOG 2026-06-12 (P2 跨平台验证)
+    description: Codex Agent 引用不存在的文档（幻影引用）被 CI 检测
+    expected: detected_and_fixed
+    verdict: PASS (4 处幻影引用已修复)
+    captured_at: "2026-06-12"
+
+  - id: EVAL-CASE-007
+    type: schema_authority
+    source: CHANGELOG 2026-06-12 (Schema 权威化 Phase 1)
+    description: Goal/Matrix/Evidence 三对象 schema 创建，消除字段漂移
+    expected: schema_created + tools_lint_pass
+    verdict: PASS (4 schemas + 4 contracts)
+    captured_at: "2026-06-12"
+
+  - id: EVAL-CASE-008
+    type: state_enum_unification
+    source: CHANGELOG 2026-06-12 (Schema 权威化)
+    description: 5 种状态命名风格归并为 4 类状态字段（state-dictionary.yaml）
+    expected: one_style_per_field_type
+    verdict: PASS
+    captured_at: "2026-06-12"
+
+  - id: EVAL-CASE-009
+    type: lint_coverage
+    source: CHANGELOG 2026-06-12 (P2-1 Lint 规则落地)
+    description: Lint 规则从 35→40，全部 40 条有机器检查（30 automated + 10 semi）
+    expected: 100_percent_coverage
+    verdict: PASS
+    captured_at: "2026-06-12"
+
+  - id: EVAL-CASE-010
+    type: ci_contract
+    source: CHANGELOG 2026-06-11 (CI self-hosted runner)
+    description: self-hosted runner 合同固化，hosted runner 回退被 validator 阻断
+    expected: non_zero_exit_on_hosted_runner
+    verdict: PASS
+    captured_at: "2026-06-12"
+
+  - id: EVAL-CASE-011
+    type: ssot_drift
+    source: CHANGELOG 2026-06-09 (断链 + SSOT 消除)
+    description: GLOSSARY 断链修复 + 11-ai-collaboration.md 消除 SSOT 重复定义
+    expected: no_broken_links + no_duplicate_ssot
+    verdict: PASS
+    captured_at: "2026-06-12"
+
+  - id: EVAL-CASE-012
+    type: module_boundary
+    source: CHANGELOG 2026-06-10 (模块代码路径固化)
+    description: module/{module}/ 不得承载实现源码树，rule-drift-check.py 强制执行
+    expected: detected_and_blocked
+    verdict: PASS
+    captured_at: "2026-06-12"
+
+  - id: EVAL-CASE-013
+    type: cross_platform_g10
+    source: CHANGELOG 2026-06-12 (v2 P1: G10 8 项统一)
+    description: Claude G10 阻断条件从 7→8 项，补入 Agent 隔离检查
+    expected: three_platform_unified_8_items
+    verdict: PASS
+    captured_at: "2026-06-12"
+
+  - id: EVAL-CASE-014
+    type: cross_platform_matrix
+    source: CHANGELOG 2026-06-12 (v2 P1: M-LINT-008 四链路)
+    description: M-LINT-008 Matrix Verified 从 Code+Test→Code+Test+Evidence+Gate 四链路
+    expected: three_platform_unified_four_linkage
+    verdict: PASS
+    captured_at: "2026-06-12"
+
+  - id: EVAL-CASE-015
+    type: lint_cr_exclusion
+    source: CHANGELOG 2026-06-12 (v2 P1: CR 误报)
+    description: lint-goal.sh 排除 change-requests/ 和 CHANGELOG.md，0 WARN
+    expected: zero_warnings_on_cr_files
+    verdict: PASS
+    captured_at: "2026-06-12"
+
+  - id: EVAL-CASE-016
+    type: bug_regression
+    source: CHANGELOG 2026-06-12 (self-test bug fix)
+    description: goal-validate.py Report.warn() 方法缺失导致 16 个自测负例级联失败
+    expected: 45_out_of_45_pass
+    verdict: PASS (29→45)
+    captured_at: "2026-06-12"
+
+  - id: EVAL-CASE-017
+    type: evidence_bundle
+    source: Phase 4 验收
+    description: goal-delivery.sh release --compile 自动生成 Evidence Bundle
+    expected: bundle_generated_with_required_fields
+    verdict: PASS
+    captured_at: "2026-06-12"
+
+  - id: EVAL-CASE-018
+    type: matrix_dag
+    source: Phase 4 验收
+    description: matrix-gen.py --graph 输出 DOT 格式追溯 DAG（5 色状态标注）
+    expected: valid_dot_output
+    verdict: PASS
+    captured_at: "2026-06-12"
+
+  - id: EVAL-CASE-019
+    type: auto_id_generation
+    source: CHANGELOG 2026-06-12 (P1 matrix-gen.py --auto-id)
+    description: matrix-gen.py --auto-id 从 Spec/Tasks 自动推导 GOAL/TASK/TEST/EVID/AC-REQ ID
+    expected: valid_ids_generated
+    verdict: PASS
+    captured_at: "2026-06-12"
+
+  - id: EVAL-CASE-020
+    type: deploy_package
+    source: CHANGELOG 2026-06-12 (P0 最小部署包)
+    description: deploy/README.md 3 级采纳指南 + 一条命令初始化 + 最小 CI workflow
+    expected: deploy_docs_complete
+    verdict: PASS
+    captured_at: "2026-06-12"
+
+  - id: EVAL-CASE-021
+    type: agent_cross_review
+    source: CHANGELOG 2026-06-12 (P1 CL2 Agent 互审)
+    description: 13-runtime-engine.md CL2 Agent 交叉审查路径，替代 H-CHK6/H-CHK7 人工审批
+    expected: cross_review_path_documented
+    verdict: PASS
+    captured_at: "2026-06-12"
+
+  - id: EVAL-CASE-022
+    type: rsi_split
+    source: CHANGELOG 2026-06-12 (P1 RSI 标准拆分)
+    description: 26-rsi-full-standard.md 43KB 单文件拆为 rsi-standard/ 30 章节 + 索引
+    expected: 30_chapters_indexed
+    verdict: PASS
+    captured_at: "2026-06-12"
+
+  - id: EVAL-CASE-023
+    type: doc_cleanup
+    source: CHANGELOG 2026-06-12 (文档清理)
+    description: 删除 docs/raw/1.md；RSI 标准归档；00-authority-map 新增 RSI 权威行
+    expected: no_stale_files + authority_map_updated
+    verdict: PASS
+    captured_at: "2026-06-12"
+
+  - id: EVAL-CASE-024
+    type: module_snapshot_allowlist
+    source: CHANGELOG 2026-06-11 (模块只读分析快照)
+    description: 7 个分析文件类型 allowlist 投影到 rules.yaml，不放宽 Code 交付边界
+    expected: allowlist_enforced
+    verdict: PASS
+    captured_at: "2026-06-12"
+
+  - id: EVAL-CASE-025
+    type: release_snapshot_reconciliation
+    source: CHANGELOG 2026-06-11 (Release 快照调和)
+    description: G10/G11 PASS 与已关闭 release_blocking 风险保持一致，反向阻断校验
+    expected: consistent_release_state
+    verdict: PASS
+    captured_at: "2026-06-12"
+
+  - id: EVAL-CASE-026
+    type: agent_projection_sync
+    source: CHANGELOG 2026-06-11 (Goal 权威与 Agent 投影同步)
+    description: 三平台 Goal Agent 投影对齐；Codex/Copilot goal-*.toml/md 创建
+    expected: three_platform_projections_aligned
+    verdict: PASS
+    captured_at: "2026-06-12"
+
+  - id: EVAL-CASE-027
+    type: module_code_boundary
+    source: CHANGELOG 2026-06-10 (模块代码本地路径规则固化)
+    description: /home/{module} 源码 + module/{module}/ 制品分离，rule-drift-check.py 接入
+    expected: code_boundary_enforced
+    verdict: PASS
+    captured_at: "2026-06-12"
+
+  - id: EVAL-CASE-028
+    type: goal_doc_path
+    source: CHANGELOG 2026-06-09 (模块级 Goal 文档路径固化)
+    description: 固定 module/{module}/goal.md，禁止 goal/ 目录或 goal/1.md 多文件槽位
+    expected: single_goal_md_per_module
+    verdict: PASS
+    captured_at: "2026-06-12"
+
+  - id: EVAL-CASE-029
+    type: ssot_boundary
+    source: CHANGELOG 2026-06-09 (Phase 1 权威边界固化)
+    description: 00-authority-map.md 纳入入口；authority_source 只指向 docs/goal/
+    expected: ssot_boundaries_enforced
+    verdict: PASS
+    captured_at: "2026-06-12"
+
+  - id: EVAL-CASE-030
+    type: scoring_coverage
+    source: CHANGELOG 2026-06-09 (评分体系全覆盖 11/11)
+    description: 5 个新 RUBRIC（Design/Test/Review/Release/Retrospective），stage 枚举 6→11
+    expected: 11_stage_covered
+    verdict: PASS
+    captured_at: "2026-06-12"
+
+  - id: EVAL-CASE-031
+    type: spec_migration
+    source: CHANGELOG 2026-06-09 (module 规格库迁移)
+    description: 模块 SPEC/TRACEABILITY/tasks 统一到 module/；禁止恢复旧 specs/ 目录
+    expected: module_dir_as_fact_source
+    verdict: PASS
+    captured_at: "2026-06-12"
+
+  - id: EVAL-CASE-032
+    type: structural_fix
+    source: CHANGELOG 2026-06-08 (结构性修正)
+    description: SSOT 消除（重复定义）、对象状态总表、愿景状态标签、状态枚举对齐
+    expected: no_duplicate_ssot + consistent_status_enums
+    verdict: PASS
+    captured_at: "2026-06-12"
+
+  - id: EVAL-CASE-033
+    type: execution_convergence
+    source: CHANGELOG 2026-06-10 (执行口径收敛)
+    description: release/validate/ci 命令收敛到 goal-workflow.sh；canonical edge vocabulary 统一
+    expected: single_execution_entry_point
+    verdict: PASS
+    captured_at: "2026-06-12"
+
+# 统计摘要
+stats:
+  pass: 33
+  fail: 0
+  capture_rate: null
+  false_positive_rate: null
+  categories:
+    gate_consistency: 2
+    matrix_coverage: 1
+    evidence_completeness: 1
+    release_safety: 1
+    cross_platform_phantom_ref: 1
+    schema_authority: 1
+    state_enum_unification: 1
+    lint_coverage: 1
+    ci_contract: 1
+    ssot_drift: 1
+    module_boundary: 1
+    cross_platform_g10: 1
+    cross_platform_matrix: 1
+    lint_cr_exclusion: 1
+    bug_regression: 1
+    evidence_bundle: 1
+    matrix_dag: 1
+    auto_id_generation: 1
+    deploy_package: 1
+    agent_cross_review: 1
+    rsi_split: 1
+    doc_cleanup: 1
+    module_snapshot_allowlist: 1
+    release_snapshot_reconciliation: 1
+    agent_projection_sync: 1
+    module_code_boundary: 1
+    goal_doc_path: 1
+    ssot_boundary: 1
+    scoring_coverage: 1
+    spec_migration: 1
+    structural_fix: 1
+    execution_convergence: 1
+    state_enum_unification: 1
+    lint_coverage: 1
+    ci_contract: 1
+    ssot_drift: 1
+    module_boundary: 1
+    cross_platform_g10: 1
+    cross_platform_matrix: 1
+    lint_cr_exclusion: 1
+    bug_regression: 1
+    evidence_bundle: 1
+    matrix_dag: 1

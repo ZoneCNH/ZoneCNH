@@ -117,18 +117,18 @@ bash docs/goal/tools/goal-delivery.sh prompt --task-id TASK-xxx --compile
 | 功能            | 当前                              | 目标                                         |
 | --------------- | --------------------------------- | -------------------------------------------- |
 | Evidence 收集   | `evidence-collect.sh`（手工调用） | CI 自动触发，关联 Task ID                    |
-| Evidence Graph  | 概念存在                          | DAG 可视化（`matrix-gen.py --graph`）        |
-| Evidence Bundle | 手工组装                          | `goal-delivery.sh release --bundle` 自动聚合 |
+| Evidence Graph  | ✅ DAG 可视化（`matrix-gen.py --graph`） | DOT 格式，5 色状态标注 |
+| Evidence Bundle | ✅ `goal-delivery.sh release --compile` 自动聚合 | 含 Evidence 汇总 + Matrix 摘要 + Gate + Risk |
 
 ### 3.3 验收
 
 - [x] 6 个契约各有一个 `.schema.yaml`（state-machine-contract + api-data-contract + security-contract + ops-contract，含 performance/reliability/observability 三段）+ `goal-validate.py` 集成
-- [ ] `goal-delivery.sh release --bundle` 自动生成 Evidence Bundle
-- [ ] `matrix-gen.py --graph` 输出追溯 DAG
+- [x] `goal-delivery.sh release --compile` 自动生成 Evidence Bundle
+- [x] `matrix-gen.py --graph` 输出追溯 DAG
 
 ---
 
-## Phase 4 — 完整 Five Runtimes + Release Drills ✅ 已完成
+## Phase 4 — 完整 Five Runtimes + Release Drills 🟡 MVP 已落地（Evidence Bundle + DAG 完成）
 
 **目标**：`22-delivery-os.md` 中五个 Runtime 全部有对应可执行工具。发布演练可自动化。
 
@@ -141,7 +141,7 @@ bash docs/goal/tools/goal-delivery.sh prompt --task-id TASK-xxx --compile
 | Intent Runtime      | goal-spec Agent + `goal-delivery.sh goal/spec/design`      | ✅ 已有       |
 | Control Runtime     | goal-matrix + goal-reviewer + `goal-validate.py`           | ✅ 已有       |
 | Execution Runtime   | goal-prompt-builder + `goal-delivery.sh plan/tasks/prompt` | 🟡 Phase 2    |
-| Evidence Runtime    | goal-evidence + `evidence-collect.sh` + `gate-check.sh`    | 🟡 Phase 3    |
+| Evidence Runtime    | goal-evidence + `evidence-collect.sh` + `gate-check.sh` | ✅ Phase 3 完整版 |
 | Improvement Runtime | RSI R0-R9 + `21-controlled-rsi.md` + `goal-delivery.sh improve` | ✅ Phase 5 MVP |
 
 ### 4.2 Release Drills ✅
@@ -162,7 +162,7 @@ bash docs/goal/tools/goal-delivery.sh prompt --task-id TASK-xxx --compile
 
 ---
 
-## Phase 5 — Self-optimizing（L5 成熟度）🟡 MVP 已落地
+## Phase 5 — Self-optimizing（L5 成熟度）🟡 MVP 已落地，完整版进行中
 
 **目标**：RSI 闭环从"人工触发"升级为"基于 Scorecard 自动触发提案"。
 
@@ -196,14 +196,11 @@ Scorecard 指标异常 → 自动生成 Improvement Proposal → R0-R9 Gate → 
 ## 里程碑时间线
 
 ```text
-2026-06  ✅ Phase 1-3 完成，Phase 4-5 MVP 落地
-2026-06 ✅ Phase 2 完成: Compiler MVP + Lint 100%
-
-2026-06 ✅ Phase 3 完成: Contract Layer + Evidence Bundle + DAG
-
-2027-Q1  ⬜ Phase 4 启动：Five Runtimes + Release Drills
-2027-Q2  ⬜ Phase 4 完成
-2027-Q3+ ⬜ Phase 5 持续迭代
+2026-06  ✅ Phase 1-3 完成
+2026-06  ✅ Phase 4 Evidence Bundle + DAG 完成（`release --compile` + `matrix-gen.py --graph`）
+2026-06  🟡 Phase 5 MVP 落地（`goal-delivery.sh improve` + CR 自动生成已就绪）
+2026-Q3  ⬜ Phase 4 完整版：Release Drills 全自动化（simulate / rollback-drill / incident 端到端）
+2026-Q4  ⬜ Phase 5 完整版：Eval Dataset 积累 + Scorecard 自动触发 RSI
 ```
 
 ---
