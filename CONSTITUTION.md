@@ -55,12 +55,12 @@
 
 ## 序言
 
-FoundationX 由基座层（16 个模块）、L2.5 领域共享层（4 个模块）以及数据域、分析域、决策域、执行域组成。本宪法规定模块实现和交付管线必须遵守的不变量，确保系统在演进过程中保持一致性、可追溯性和可维护性。
+FoundationX 由基座层（16 个模块）、L2.5 领域共享层（4 个模块）、数据域、分析域、决策域、执行域、横切（alertx / observex）、入口（x.go）和 Rust 标准库（stdlib.rs）组成。本宪法规定模块实现和交付管线必须遵守的不变量，确保系统在演进过程中保持一致性、可追溯性和可维护性。
 
 本宪法的约束对象：
 
 - 所有基座模块和领域模块的源码实现
-- 全系统的交付管线（Goal → Spec → Design → Plan → Tasks → Prompt → Code → Test → Review → Release → Retrospective；Matrix 为横切追溯制品）
+- 全系统的交付管线（Goal → Spec → Design → Plan → Tasks → Prompt → Code → Test → Evidence → Review → Release → Retrospective；Matrix 为横切追溯制品，Gate G0-G11 为每层质量门禁）
 - 所有 `module/*/SPEC.md` 规格文档
 - 所有 AI 代理的代码生成、审查和重构行为
 - 所有人类贡献者的 PR 和代码审查
@@ -223,7 +223,7 @@ type Config struct {
 
 ### 4.4 行为规格（WHEN/THEN）
 
-每个模块的 SPEC.md 必须包含行为性规格，不能只有结构性描述。
+每个模块的 SPEC.md 必须包含行为性规格，不能只有结构性描述。完整 SPEC 采用 **23 节结构**（模板见 `docs/governance/SPEC-TEMPLATE.md`），本宪法只提取其中四个核心行为规格章节作为强制要求。
 
 **必需的行为规格章节：**
 
@@ -233,6 +233,8 @@ type Config struct {
 | Business Rules | 模块不变量和校验规则必须显式列出 |
 | Error Handling | 错误分类 + 调用方处理指南（不是模块自身故障模式） |
 | Acceptance Criteria | 统一验收清单（从 CI Gate + DoD 合并） |
+
+> 23 节完整结构中其余 19 节（目录结构、CI Gate、测试矩阵、性能预算、可观测输出、发布 DoD、接口契约、边界场景、依赖声明等）应按需填写。新建模块规格时必须从 `docs/governance/SPEC-TEMPLATE.md` 复制完整模板，不得遗漏章节。
 
 **WHEN/THEN 格式：**
 
@@ -551,7 +553,12 @@ AI 代理在生成或审查代码时：
 | 2026-06-07 | 全文 | 初始版本（§1-§14） | 建立基座模块治理框架 |
 | 2026-06-08 | §15-§19 | 新增交付管线治理条款 | 将交付方法论提升为宪法约束 |
 | 2026-06-09 | §0 | 新增第零条：分支纪律（最高优先级） | 禁止 main 开发，强制 worktree 隔离 |
-| 2026-06-12 | §15.1, §15.2, §16.1, §15.4, §16.5, §18.4, §19.4 | P0 更新：管线补入 Evidence 阶段；ID 系统对齐 18 种格式；§15-§19 增加 `docs/goal/` 体系统一入口引用；D1-D7 映射 G0-G11 | 消除宪法与实际运行的 Goal 体系之间的 SSOT 断裂 |
+| 2026-06-09 | docs/goal/ | Phase 1: Schema 权威化——4 canonical YAML schema (goal/matrix/evidence/state-dictionary) | 消除 5 种状态命名风格冲突，建立机器可读 SSOT |
+| 2026-06-10 | docs/goal/ | Phase 2: 跨平台 Agent 审计——Claude/Copilot/Codex 三平台 Agent 兼容性报告 + 幻影引用修复 | 确保三平台 Agent 定义一致，消除 4 处幻影文档引用 |
+| 2026-06-11 | docs/goal/ | Phase 3: 深度分析修复 v2——P0-P2 全量修复（四链路统一/G10 8 项阻断/lint CR 排除/roadmap 同步/愿景差距标注/下游采纳指标） | self-test.sh 45/45 PASS，跨平台漂移 3→0 |
+| 2026-06-12 | docs/goal/ | Phase 4: Release Drills + Eval 基线——simulate/rollback-drill/metrics-window/incident 全部 4 个演练可运行；Eval Dataset 50 cases | 评分 85→88，Evidence DAG + Bundle 自动聚合 |
+| 2026-06-12 | docs/goal/ | Phase 5: 完整版——Eval 扩展至 100 cases/100 类别；RSI Scorecard 自动触发 (rsi-trigger.py)；愿景文档状态更新 | 评分 88→90，9 个待统一标准全部解决，跨平台漂移清零 |
+| 2026-06-12 | §15.1, §15.2, §16.1, §15.4, §16.5, §17.5, §18.4, §19.4 | P0 更新：管线补入 Evidence 阶段；ID 系统对齐 18 种格式；§15-§19 增加 `docs/goal/` 体系统一入口引用；D1-D7 映射 G0-G11 | 消除宪法与实际运行的 Goal 体系之间的 SSOT 断裂 |
 
 ---
 
