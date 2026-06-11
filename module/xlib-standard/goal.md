@@ -4,7 +4,7 @@
 | --- | --- |
 | 模块名 | `xlib-standard` |
 | 发布版本 | 1.0.0 |
-| 所属层级 | 门禁（标准源） / 规范基线 |
+| 所属层级 | 标准源层 / 规范基线 |
 | 稳定级别 | 标准文档 Stable；模板 API Stable；Generator Stable；Gate 定义 Stable；Evidence 格式 Stable |
 | 文档状态 | 1.0 发布基线文档 |
 | 发布日期基准 | 2026-06-09 |
@@ -23,17 +23,7 @@
 
 ## 1. Goal 定位
 
-`xlib-standard` 的 Goal 是成为 xlib 体系的唯一标准源。它不承载业务运行，而是以 1.0 发布标准定义所有模块必须遵循的工程规则、接口规则、配置规则、错误规则、观测规则、测试规则、版本规则和扩展规则，并通过 Go 参考模板、代码生成器、Harness Gate 和 Evidence Runtime 让这些标准可编译、可执行、可验证。它的价值在于让后续所有模块具备一致的设计语言、验收口径和演进边界，避免每个模块各自发明标准。
-
-xlib-standard 承担五类职责（引自 CONSTITUTION.md P2 / ARCHITECTURE.md §Foundation 第一阶段闭环）：
-
-| 职责 | 说明 | 交付物 |
-| --- | --- | --- |
-| 标准事实源 | xlib 体系工程规则的唯一真源 | `docs/standard/` 下 27 个标准文档 |
-| Go Reference Template | 可编译、可测试的 Go library 骨架 | Config / Error / Health / Metrics / Client / Version 公共 API 源码 |
-| Generator | 从模板确定性渲染出独立 Go module | `render_template.sh`，输出完整 go.mod / 源码 / tests / scripts / Makefile / README |
-| Harness Gate | 9 个最小 CI 门禁串联执行 | `make ci`：fmt / vet / lint / test / race / contracts / boundary / render-smoke / security |
-| Evidence Runtime | 可复现的发布证据 | release manifest（latest.json + .sha256），记录 module path / version / commit / tree sha / go version / contracts hash / gate results / generated_at |
+`xlib-standard` 的 Goal 是成为 xlib 体系的唯一标准源。它承担五类职责：标准事实源（文档规范）、Go Reference Template（可编译参考模板）、Generator（模板渲染与代码生成）、Harness Gate（CI 门禁与边界检查）和 Evidence Runtime（release manifest 与发布证据生成）。它不承载业务运行，但通过 Go 参考模板、代码生成器、Harness Gate 和 Evidence Runtime 让这些标准可编译、可执行、可验证。它以 1.0 发布标准定义所有模块必须遵循的工程规则、接口规则、配置规则、错误规则、观测规则、测试规则、版本规则和扩展规则。它的价值在于让后续所有模块具备一致的设计语言、验收口径和演进边界，避免每个模块各自发明标准。
 
 ### 1.1 为什么需要这个模块
 
@@ -43,9 +33,19 @@ xlib-standard 承担五类职责（引自 CONSTITUTION.md P2 / ARCHITECTURE.md �
 - 架构评审需要可执行的评审依据，而不是依赖个人经验判断。
 - 新模块需要一致的代码骨架和 CI 门禁，而不是每次从零搭建。
 
-### 1.2 1.0 要解决的问题
+### 1.2 五角色定义
 
-- 定义 xlib 模块的命名、分层、依赖方向和版本语义。
+| 角色 | 职责 | 交付物 |
+| --- | --- | --- |
+| Standard Source | 定义 xlib 体系的文档规范、工程规则和验收口径 | docs/standard/ 下 8 大标准域 |
+| Go Reference Template | 提供可编译、可测试的 Go 基础库参考模板 | pkg/templatex/ 下 Config/Error/Health/Metrics/Client/Version API |
+| Generator | 从标准模板渲染生成独立 Go module | render_template.sh + 生成库结构 |
+| Harness Gate | 定义最小 CI 门禁和边界检查 | make ci（9 gate）+ boundary/contracts check |
+| Evidence Runtime | 生成 release manifest 和发布证据 | release_check.sh → latest.json + .sha256 |
+
+### 1.3 1.0 要解决的问题
+
+- 定义 xlib 模块的命名、分层、依赖方向和版本语义，并维护标准事实源文档。
 - 定义 Public API、SPI、Internal API 的稳定性等级。
 - 定义错误码、异常、Result、配置项、日志字段、指标名、Trace 标签的统一规则。
 - 提供可编译的 Go Reference Template，让新模块从统一骨架起步。
@@ -54,7 +54,7 @@ xlib-standard 承担五类职责（引自 CONSTITUTION.md P2 / ARCHITECTURE.md �
 - 生成可复现的 Release Evidence（manifest + checksum + gate 结果）。
 - 定义扩展模块如何接入标准源、如何证明符合标准。
 
-### 1.3 目标用户
+### 1.4 目标用户
 
 - 基座架构负责人
 - 各模块 Owner
@@ -119,8 +119,8 @@ xlib-standard 承担五类职责（引自 CONSTITUTION.md P2 / ARCHITECTURE.md �
 
 ### 5.2 明确非目标
 
-- 不承载业务运行（模板、Generator、Gate 脚本、Evidence 工具不属于业务运行时）。
-- 不作为其他模块的运行时 import 依赖。
+- 不承载任何业务域运行逻辑（交易、行情、风控）。
+- 标准源的可执行交付物（模板、生成器、gate、evidence）不属于业务运行时。
 - 不替代 kernel、observex、testkitx 等模块。
 - 不替代公司级安全、合规或发布平台，只定义 xlib 接入要求。
 - 不收纳与 xlib 无关的通用知识库内容。

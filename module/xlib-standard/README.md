@@ -9,15 +9,30 @@
 | 字段 | 值 |
 |------|----|
 | Upstream | `github.com/ZoneCNH/xlib-standard` |
-| Snapshot Date | 2026-06-08 |
+| Snapshot Date | 2026-06-08（原始快照）/ 2026-06-12（文档对齐更新） |
 | Upstream Commit | `93753b30e6d01fb4a9b096acaa0d7d53a2fb231c`（= remote tag `v0.6.5`，tree `296e3b91…`，pinned 2026-06-08 04:59 +08:00） |
-| 本目录角色 | 上游规格的本地结构分析快照，**不是**上游 SSOT；任何冲突以上游 `docs/standard/**` 为准 |
-| 本仓库角色 | 文档枢纽，仅承载分析结果，不承载实现源码 |
+| Upstream HEAD | `09c9ec2`（tag `v1.0.0`，2026-06-12 文档-代码对齐基准） |
+| 本目录角色 | 上游规格的本地结构分析快照 + 可执行规格（goal.md + SPEC.md），**不是**上游 SSOT；任何冲突以上游 `docs/standard/**` 为准 |
+| 本仓库角色 | 文档枢纽，承载分析结果与可执行规格，不承载实现源码 |
+
+## 模块定位
+
+`xlib-standard` 是本仓库的本地分析快照目录，同步自上游 `github.com/ZoneCNH/xlib-standard`。模块承担五类职责：
+
+| 角色 | 职责 | 权威工件 |
+| --- | --- | --- |
+| Standard Source | xlib 体系的文档规范与工程标准 | `goal.md`（标准定义） |
+| Go Reference Template | 可编译、可测试的 Go 基础库参考模板 | `SPEC.md`（可执行规格） |
+| Generator | 模板渲染与独立 Go module 生成 | 上游 `render_template.sh` |
+| Harness Gate | CI 门禁与边界检查 | 上游 `make ci`（9 gate） |
+| Evidence Runtime | release manifest 与发布证据生成 | 上游 `release_check.sh` |
+
+本目录分析快照的真实源是上游仓库的 `docs/standard/**`。当快照与上游冲突时，以上游当前标准为准。
 
 ## 当前权威工件
 
-- `goal.md`：模块级 Goal 定位与实现标准，定义 xlib-standard 五类职责的完整定位、能力范围、职责边界和发布验收标准。
-- `SPEC.md`：模块级可执行交付规格，覆盖五类职责中 Go Reference Template、Generator、Harness Gate 和 Evidence Runtime 的可执行细节（FR / AC / TC）；标准事实源的完整定义见 `goal.md`。
+- `goal.md`：模块 1.0 Goal 定位与五角色定义。**模块级权威入口**。
+- `SPEC.md`：后四类职责（Template / Generator / Gate / Evidence Runtime）的可执行规格。**代码级权威入口**。
 - `ANALYSIS.md`：本地结构分析入口；只保留事实层级、关键数字、职责拆分和冲突总览，不声明可执行生命周期状态。
 - `FR-DETAIL.md`：52 条 FR 的完整 WHEN/THEN 细节；行为细节以此文件为准，不声明可执行生命周期状态。
 - `INDEX.md`：上游 SSOT 索引；列出 `docs/standard/` 27 个文件、9 个 Accepted ADR 与 `harness.yaml` gate section。
@@ -35,7 +50,7 @@
 
 原 `archive/` 目录的历史文件已迁移至 `docs/report/`，旧 `SPEC.md` 23 节整理稿只保留归档说明；这些历史内容不再作为当前分析、lint 或 independent review verdict 的入口：
 
-- `SPEC.md`（已更新）：模块级可执行交付规格，覆盖五类职责中后四类的 FR / AC / TC；其旧 23 节整理稿版本已归档，当前版本与 `goal.md` 和 CONSTITUTION.md 对齐。
+- `SPEC.md`（旧 23 节整理稿）：已于 2026-06-12 去归档化恢复为可执行规格，当前权威入口见 `SPEC.md`（后四角色）和 `goal.md`（第一角色）。此条仅保留供溯源比对。
 - `docs/report/xlib-standard-module-spec-archived.md`：历史 20 节整理工件。
 - `docs/report/xlib-standard-deep-analysis-archived.md`：181 文件旧口径深度分析。
 - 历史工件 **不得** 作为当前分析、追溯、冲突取舍或门禁事实引用，仅供溯源比对。
@@ -50,10 +65,14 @@
 - 下游采用、release-ready、远端 ruleset/CI 状态必须由下游仓库或远端证据证明；本目录只记录本地分析、要求和风险。
 - `1000-pass` 只表示输入文件集合和清单稳定性检查，不表示每条语义经过 1000 次独立审查。
 - 本目录所有结论都是分析快照，不能替代上游真源。当上游 `docs/standard/**` 与本快照冲突时，以上游为准并同步更新本目录。
+- **三级阅读规则**：
+  1. 需要理解模块身份与标准定义 → 先读 `goal.md`
+  2. 需要实现/验证可执行交付物 → 读 `SPEC.md`
+  3. 需要了解分析快照结构 → 读 `ANALYSIS.md` 和 `INDEX.md`
 
 ## 事实边界
 
-- 本目录可作为本地分析整理包；只有 `git status`、commit、tag 或 release artifact 能证明它已经进入版本控制或发布边界。
+- 本目录是可执行规格与分析快照的混合体。`goal.md` 和 `SPEC.md` 是当前模块的权威规格定义，其余分析文件是本地快照。只有 `git status`、commit、tag 或 release artifact 能证明它已经进入版本控制或发布边界。
 - 未运行远端 API、CI artifact、ruleset export 或下游仓库验证前，不得声明 branch protection/ruleset enabled、release-ready 或 downstream adopted。
 - 覆盖清单使用相对上游仓库根的路径；跨机器复现仍需要 source pack、digest 或重新生成覆盖清单。
 - 快照边界条目统一见 `SNAPSHOT-BOUNDARY.md`；不要把边界条目误读为同一 SSOT 内部硬冲突。

@@ -1,24 +1,21 @@
 # xlib-standard SPEC
-
-归档说明：本文件为旧 23 节整理稿，不再作为当前可执行规格入口。
-
 ## Metadata
 
 Status: Approved
 Owner: ZoneCNH
 Version: v1.0.0
-Updated: 2026-06-10
+Updated: 2026-06-12
 
-本规格是 `xlib-standard` 五类职责（标准事实源、Go Reference Template、Generator、Harness Gate、Evidence Runtime）中后四类的可执行交付规格。标准事实源（文档规范层）的完整定义见 `goal.md`。本文件约束模板公共 API、模板生成、验证 gate、release manifest 与最终验收，不承载业务运行。
+本规格定义 `xlib-standard` 五类职责中后四类的可执行交付规格——Go Reference Template、Generator、Harness Gate 和 Evidence Runtime。第一类职责（Standard Source / 标准事实源）的文档规范定义见 goal.md。本规格约束公共 API、模板生成、验证 gate、release manifest 与最终验收，不承载业务域实现。
 
 ## Constitution Compliance
 
 | 条款            | 要求                               | 遵循方式                                             |
 | --------------- | ---------------------------------- | ---------------------------------------------------- |
 | §1 分层领域模型 | 模板不承载业务域，只生成基座库骨架 | 模板仅含 Config/Error/Health/Metrics/Client/Version  |
-| §3 接口契约优先 | `contracts/` 定义跨域接口          | errors.schema.json、health.schema.json、metrics.json |
+| §3 接口契约优先 | `contracts/` 定义跨域接口          | errors.schema.json、health.schema.json、config.schema.json 等 18 schema 文件 + metrics.md |
 | §5 配置外部化   | 配置由调用方显式传入               | Config 结构体必填字段校验                            |
-| §7 错误处理规范 | 8 种 ErrorKind 稳定                | errors.go 实现 NewError/WrapError/IsKind             |
+| §7 错误处理规范 | 9 种 ErrorKind 稳定                | errors.go 实现 NewError/WrapError/IsKind             |
 | §9 可观测性     | P0 指标名稳定、label 低基数        | NoopMetrics + 5 个 P0 指标                           |
 | §11 发布流程    | release manifest + checksum        | release_check.sh 生成 latest.json + .sha256          |
 | §13 安全红线    | 不提交 secret/API key              | Sanitize 脱敏 + security gate 扫描                   |
@@ -33,7 +30,7 @@ Updated: 2026-06-10
 | Prompt  | Ready     | 9 个 context packet 已生成                     |
 | Code    | Completed | G6 PASS, 14 FR/27 AC/24 TC verified            |
 | Test    | Completed | G7 PASS, Evidence 6 文件                       |
-| Release | Completed | v1.0.0 已发布（tag v1.0.0, PR #115 合入） |
+| Release | Released  | 上游 v1.0.0 已发布（tag v1.0.0，PR #115 已合入；version.go 仍为 v0.6.6 待上游同步） |
 
 ## Summary
 
@@ -47,7 +44,7 @@ Updated: 2026-06-10
 
 | Goal | Description                                                           | Trace              |
 | ---- | --------------------------------------------------------------------- | ------------------ |
-| G-0  | 定义 xlib 体系标准事实源（文档规范）。见 `goal.md`。                   | Standard Source    |
+| G-0  | 定义 xlib 体系标准事实源（文档规范）。见 goal.md。                  | Standard Source     |
 | G-1  | 定义 Config、Error、Health、Metrics、Client、Version 的最小公共 API。 | API standard       |
 | G-2  | 提供 Go 参考模板，并保证模板本身可编译、可测试、可 vet。              | Reference template |
 | G-3  | 提供渲染脚本，从标准模板创建独立 Go module。                          | Generator          |
@@ -60,6 +57,7 @@ Updated: 2026-06-10
 - 不替代下游模块的业务测试、集成测试或生产配置。
 - 不引入数据库、消息队列、外部网络调用或运行时平台依赖。
 - 不提供跨语言模板；本版本仅覆盖 Go module。
+- 不承载业务域运行时逻辑（交易、行情、风控）。标准源自身的可执行交付物（模板代码、渲染脚本、CI 门禁、发布证据生成）属于标准源职责，不属于业务运行时。
 
 ## Consumers
 
@@ -83,13 +81,15 @@ Updated: 2026-06-10
 - WHEN 调用 `NewError` THEN 返回的错误包含 kind、message 和可选 cause。
 - WHEN 调用 `WrapError` THEN `errors.Is` 和 `errors.Unwrap` 必须保持可穿透。
 - WHEN 使用 `IsKind` 匹配错误类型 THEN 匹配成功时返回 true。
-- WHEN cause 为 deadline 或 closed 类错误 THEN kind 必须归一到 timeout 或 closed。
+- WHEN cause 为 deadline 类错误 THEN kind 必须归一为 timeout。
+- WHEN cause 为 canceled 类错误 THEN kind 必须归一为 unavailable。
 
 ### FR-003: Health 标准
 
-- WHEN `HealthCheck` 收到 nil context THEN 返回 unhealthy 状态和错误。
+- WHEN `HealthCheck` 收到 nil context THEN 返回 unhealthy 状态。
 - WHEN 客户端处于可用状态 THEN 返回 healthy 状态。
-- WHEN 客户端已关闭或依赖不可用 THEN 返回 unhealthy 状态。
+- WHEN 客户端已关闭或未初始化 THEN 返回 unhealthy 状态。
+- WHEN context deadline 短于客户端 timeout THEN 返回 degraded 状态。
 
 ### FR-004: Metrics 标准
 
@@ -99,15 +99,16 @@ Updated: 2026-06-10
 
 ### FR-005: Client 标准
 
-- WHEN `New` 收到 nil context THEN 返回错误。
-- WHEN `New` 收到已取消 context THEN 返回错误。
-- WHEN `New` 收到无效 config THEN 返回 validation kind 错误。
+- WHEN `New` 收到 nil config 且无法校验 THEN 返回错误。
+- WHEN `New` 收到 nil context THEN 返回 validation kind 错误。
+- WHEN `New` 收到已取消 context THEN 返回 unavailable kind 错误。
 - WHEN 参数有效 THEN 返回可关闭的 `*Client`。
 - WHEN 多次调用 `Close` THEN 必须幂等且不 panic。
+- WHEN `Close` 收到 nil context THEN 返回 validation kind 错误。
 
 ### FR-006: Version 标准
 
-- WHEN 查询版本信息 THEN 返回 module path、version、commit、build time。
+- WHEN 查询版本信息 THEN 返回 module name 和 version。
 - WHEN build metadata 不存在 THEN 返回稳定默认值而不是 panic。
 
 ### FR-007: 公共 API 模板
@@ -130,9 +131,9 @@ Updated: 2026-06-10
 - WHEN 检查生成库 THEN 不得出现 `templatex`、`xlib-standard`、`foundationx` 或 `baselib-template` 残留。
 - WHEN 检查 go.mod 和包名 THEN 必须使用目标 module path 与 package name。
 
-### FR-011: 9 个最小 gate
+### FR-011: 17 个 CI gate
 
-- WHEN 执行 `make ci` THEN 必须串联 fmt、vet、lint、test、race、contracts、boundary、render-smoke、security。
+- WHEN 执行 `make ci` THEN 必须串联 doctor-hooks-local、fmt、vet、lint、test、race、boundary、architecture、domain、secret-check、security、security-debt、contracts、governance-check、debt、score、rules-verify。
 - WHEN 任一 gate 失败 THEN `make ci` 必须非零退出。
 
 ### FR-012: boundary gate 检查
@@ -145,6 +146,7 @@ Updated: 2026-06-10
 - WHEN 执行 release check THEN 生成 `release/manifest/latest.json` 和 sha256 文件。
 - WHEN 读取 manifest THEN 必须包含 module path、package name、version、commit、tree sha、go version、contracts hash、gates、generated at。
 - WHEN 写入 manifest THEN 不得包含 goal runtime、score、debt、branch governance、agent review、downstream matrix 或 docker runtime 字段。
+- WHEN 执行 `make release-check` THEN 串联 ci、integration、dependency-check、standard-impact-check、docs-check、score-check、governance-check、p1-governance-check、p2-runtime-check、debt-evidence、fact-audit、evidence、release-evidence-hash、release-evidence-check、release-evidence-checksum-check。
 
 ### FR-014: release final check
 
@@ -193,7 +195,7 @@ Updated: 2026-06-10
 | AC-005 | `WrapError` 包装后 `errors.Is` 可穿透。                  |
 | AC-006 | `IsKind` 匹配目标 kind 返回 true。                       |
 | AC-007 | deadline cause 归一为 timeout kind。                     |
-| AC-008 | closed cause 归一为 closed kind。                        |
+| AC-008 | canceled cause 归一为 unavailable kind。                 |
 | AC-009 | nil context 健康检查返回 unhealthy。                     |
 | AC-010 | 健康客户端返回 healthy。                                 |
 | AC-011 | `NoopMetrics` 调用不 panic。                             |
@@ -204,12 +206,12 @@ Updated: 2026-06-10
 | AC-016 | 无效 config 创建客户端返回错误。                         |
 | AC-017 | 有效参数创建 `*Client`。                                 |
 | AC-018 | `Close` 多次调用幂等且不 panic。                         |
-| AC-019 | 版本信息包含 module path、version、commit、build time。  |
+| AC-019 | 版本信息包含 module name 和 version。                    |
 | AC-020 | 模板 `go vet` 零警告。                                   |
 | AC-021 | 模板 `go test` 全部通过。                                |
 | AC-022 | 渲染输出目录结构完整。                                   |
 | AC-023 | 生成库无模板名和标准库名残留。                           |
-| AC-024 | `make ci` 的 9 个 gate 全部通过。                        |
+| AC-024 | `make ci` 的 17 个 gate 全部通过。                       |
 | AC-025 | boundary gate 检查 6 类非法引用。                        |
 | AC-026 | release manifest 生成且字段完整。                        |
 | AC-027 | release final check 校验 manifest checksum。             |
@@ -225,7 +227,7 @@ Updated: 2026-06-10
 | TC-005 | Unit        | WrapError 包装          | `errors.Is` 可穿透         |
 | TC-006 | Unit        | IsKind 匹配             | 返回 true                  |
 | TC-007 | Unit        | deadline cause          | kind 为 timeout            |
-| TC-008 | Unit        | closed cause            | kind 为 closed             |
+| TC-008 | Unit        | canceled cause          | kind 为 unavailable        |
 | TC-009 | Unit        | HealthCheck nil context | 返回 unhealthy             |
 | TC-010 | Unit        | HealthCheck 健康客户端  | 返回 healthy               |
 | TC-011 | Unit        | NoopMetrics 调用        | 无 panic                   |
@@ -240,21 +242,21 @@ Updated: 2026-06-10
 | TC-020 | Integration | 模板 go test            | 全部通过                   |
 | TC-021 | Integration | 渲染模板                | 输出结构完整               |
 | TC-022 | Integration | 检查生成库残留          | 无非法残留                 |
-| TC-023 | Integration | make ci                 | 9 个 gate 全通过           |
+| TC-023 | Integration | make ci                 | 17 个 gate 全通过          |
 | TC-024 | Integration | release manifest        | 字段完整且 checksum 可校验 |
 
 ## Interfaces
 
-公共接口包括 `Config.Validate`、`Config.Sanitize`、`New`、`Client.Close`、`HealthCheck`、`Metrics`、`NoopMetrics`、`NewError`、`WrapError`、`IsKind`、`VersionInfo`。接口必须保持小表面积，测试应优先断言 kind、状态和结构字段。
+公共接口包括 `Config.Validate`、`Config.Sanitize`、`New(ctx, cfg, ...opts)`、`Client.Close(ctx)`、`HealthCheck(ctx)`、`Metrics`、`NoopMetrics`、`WithMetrics(metrics)`、`Option`、`NewError`、`WrapError`、`IsKind`、`VersionInfo`。接口必须保持小表面积，测试应优先断言 kind、状态和结构字段。
 
 ## Data Model
 
 | Model           | Fields                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------- |
-| Config          | module path、package name、timeout、retry、endpoint、secret fields                                      |
+| Config          | Name、Timeout、Secret                                                                                  |
 | Error           | kind、message、cause                                                                                    |
-| HealthStatus    | status、message、checked_at                                                                             |
-| VersionInfo     | module_path、version、commit、build_time                                                                |
+| HealthStatus    | status、message、checked_at、LatencyMs、Metadata                                                       |
+| VersionInfo     | ModuleName、Version                                                                                    |
 | ReleaseManifest | module_path、package_name、version、commit、tree_sha、go_version、contracts_sha256、gates、generated_at |
 
 ## Configuration
@@ -267,7 +269,7 @@ Updated: 2026-06-10
 
 ## Error Handling
 
-所有公共错误必须返回给调用方，不得直接退出进程。validation、timeout、closed、internal 等 kind 必须稳定。包装错误必须保留 cause，便于 `errors.Is`、`errors.As` 和 kind 匹配。
+所有公共错误必须返回给调用方，不得直接退出进程。validation、timeout、unavailable、internal 等 kind 必须稳定。包装错误必须保留 cause，便于 `errors.Is`、`errors.As` 和 kind 匹配。
 
 ## Edge Cases
 
@@ -297,7 +299,7 @@ Updated: 2026-06-10
 
 ## CI Gate
 
-CI 必须运行 `GOWORK=off make ci` 和 `GOWORK=off make release-check`。`make ci` 的最小 gate 为 fmt、vet、lint、test、race、contracts、boundary、render-smoke、security。任何 gate 失败时 CI 必须失败。
+CI 必须运行 `GOWORK=off make ci` 和 `GOWORK=off make release-check`。`make ci` 的最小 gate 为 doctor-hooks-local、fmt、vet、lint、test、race、boundary、architecture、domain、secret-check、security、security-debt、contracts、governance-check、debt、score、rules-verify。任何 gate 失败时 CI 必须失败。
 
 ## Release DoD
 
