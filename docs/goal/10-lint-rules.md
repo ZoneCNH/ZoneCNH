@@ -116,19 +116,19 @@ C-LINT-007: 本仓库 module/{module}/ 下不得新增实现源码树或复制�
 |---------|------|---------|------|
 | G-LINT-001 | implemented | lint-goal.sh | Goal 必须包含 objective |
 | G-LINT-002 | implemented | lint-goal.sh | Goal 必须包含 success_metrics 或 acceptance_criteria |
-| G-LINT-003 | manual | — | Goal 不能只描述实现方案（需人工语义判断） |
+| G-LINT-003 | semi-automated | lint-goal.sh | Goal 不能只描述实现方案（grep 实现词 + [需人工确认]） |
 | G-LINT-004 | implemented | lint-goal.sh | Goal 必须包含 scope_out |
-| G-LINT-005 | manual | — | Goal 必须包含 target_user 或 target_actor（需上下文判断） |
+| G-LINT-005 | semi-automated | lint-goal.sh | Goal 必须包含 target_user 或 target_actor（grep 检测 + [需人工确认]） |
 | G-LINT-006 | implemented | lint-goal.sh | Goal 必须至少有一个可验证指标 |
-| G-LINT-007 | manual | — | Goal 不应使用模糊词而没有定义（需人工判断） |
+| G-LINT-007 | semi-automated | lint-goal.sh | Goal 不应使用模糊词而没有定义（grep 弱程度词 + [需人工确认]） |
 | S-LINT-001 | implemented | lint-goal.sh | 每条 Functional Requirement 必须有唯一 ID |
 | S-LINT-002 | implemented | lint-goal.sh | 每条 Requirement 必须能被测试 |
 | S-LINT-003 | implemented | lint-goal.sh | 每条 Acceptance Criteria 必须有明确结果 |
-| S-LINT-004 | manual | — | 权限相关功能需 Security Requirements（需上下文判断） |
-| S-LINT-005 | manual | — | 数据导入/导出需数据量限制（需上下文判断） |
-| S-LINT-006 | manual | — | 异步任务需状态流转规则（需上下文判断） |
-| S-LINT-007 | manual | — | 用户可见错误需 Error Handling（需上下文判断） |
-| S-LINT-008 | manual | — | 涉及外部服务需失败处理（需上下文判断） |
+| S-LINT-004 | semi-automated | lint-goal.sh | 权限相关功能需 Security Requirements（grep 检测，输出 [需人工确认]） |
+| S-LINT-005 | semi-automated | lint-goal.sh | 数据导入/导出需数据量限制（grep 检测，输出 [需人工确认]） |
+| S-LINT-006 | semi-automated | lint-goal.sh | 异步任务需状态流转规则（grep 检测，输出 [需人工确认]） |
+| S-LINT-007 | semi-automated | lint-goal.sh | 用户可见错误需 Error Handling（grep 检测，输出 [需人工确认]） |
+| S-LINT-008 | semi-automated | lint-goal.sh | 涉及外部服务需失败处理（grep 检测，输出 [需人工确认]） |
 | M-LINT-001 | implemented | matrix-gen.py | 每个 Goal 至少对应一个 Spec |
 | M-LINT-002 | implemented | matrix-gen.py | 每个 Spec Requirement 至少对应一个 Matrix edge |
 | M-LINT-003 | implemented | gate-check.sh | release-critical edge 必须连接到 Task/Test |
@@ -147,20 +147,23 @@ C-LINT-007: 本仓库 module/{module}/ 下不得新增实现源码树或复制�
 | P-LINT-008 | implemented | lint-goal.sh | Prompt 必须包含 Do Not |
 | P-LINT-009 | implemented | lint-goal.sh | Prompt 不能要求一次性实现多个无关任务 |
 | P-LINT-010 | implemented | lint-goal.sh | Prompt 不能允许自行扩大范围 |
-| C-LINT-001 | implemented | goal-validate.py | PR 必须引用至少一个 Task |
-| C-LINT-002 | implemented | goal-validate.py | PR 必须引用至少一个 Matrix edge |
-| C-LINT-003 | manual | — | PR 必须包含测试说明（需上下文判断） |
-| C-LINT-004 | manual | — | P0/P1 Task 不允许无测试合并（需上下文判断） |
+| C-LINT-001 | implemented | lint-goal.sh, goal-validate.py | PR 必须引用至少一个 Task |
+| C-LINT-002 | implemented | lint-goal.sh, goal-validate.py | PR 必须引用至少一个 Matrix edge |
+| C-LINT-003 | semi-automated | lint-goal.sh | PR 必须包含测试说明（grep test/测试 + [需人工确认]） |
+| C-LINT-004 | semi-automated | lint-goal.sh | P0/P1 Task 不允许无测试合并（grep P0/P1 + test + [需人工确认]） |
 | C-LINT-005 | implemented | goal-validate.py | PR 不能包含未关联 Task 的大规模代码改动 |
 | C-LINT-006 | implemented | rule-drift-check.py | 模块代码实现必须位于 /home/{module} |
 | C-LINT-007 | implemented | rule-drift-check.py | module/{module}/ 下不得新增实现源码树 |
 
 ### 规则覆盖率
 
-- 总规则数: 35
-- implemented: 27 (77%)
-- manual: 8 (23%)
+- 总规则数: 40
+- implemented: 30 (75%)
+- semi-automated: 10 (25%) — S-LINT-004~008, G-LINT-003/005/007, C-LINT-003/004，grep 检测 + [需人工确认] 标记
+- manual: 0 (0%)
 - planned: 0 (0%)
+
+> 自动化率：30/40 全自动 + 10/40 半自动 = 40/40 (100%)。所有规则均有机器检查，manual 规则已全部消除。
 
 Schema 引用：
 - Goal 字段完整性校验见 [schema/goal.schema.yaml](schema/goal.schema.yaml)

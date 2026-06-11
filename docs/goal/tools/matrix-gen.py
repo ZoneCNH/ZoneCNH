@@ -6,6 +6,7 @@
 用法:
   python3 docs/goal/tools/matrix-gen.py --spec-dir <spec目录> --task-dir <task目录> --output <输出文件>
   python3 docs/goal/tools/matrix-gen.py --check-only --matrix <matrix文件>
+  python3 docs/goal/tools/matrix-gen.py --auto-id --spec-dir <spec> --task-dir <task> --output <输出> [--dry-run] [--date YYYYMMDD]
 
 功能:
   --spec-dir    Spec 文件目录（扫描 *.md 中的 REQ-SPEC-*，兼容旧 Requirement 标记）
@@ -13,6 +14,10 @@
   --output      输出 Matrix edge YAML 文件路径
   --check-only  仅检查现有 Matrix 的完整性
   --matrix      指定 Matrix 文件（配合 --check-only）
+  --auto-id     自动生成缺失的实体 ID（GOAL / TASK / TEST / EVID / AC-REQ）
+  --dry-run     预览模式：显示将会生成的 ID，不写入文件（配合 --auto-id）
+  --date        指定日期 YYYYMMDD，用于 ID 中的日期部分（默认今天）
+  --version     显示工具版本
 """
 
 import argparse
@@ -320,6 +325,159 @@ def check_matrix(matrix_file: str) -> dict:
     return result
 
 
+def auto_generate_ids(
+    goal_id: str,
+    target_date: str,
+    spec_dir: str = "",
+    task_dir: str = "",
+    spec_files: list[Path] | None = None,
+    task_files: list[Path] | None = None,
+) -> dict:
+    """扫描输入文件并自动生成符合 ID 规范的实体 ID。
+
+    返回 dict: goal_id / task_ids / test_ids / evid_ids / ac_ids
+    """
+    ids: dict[str, Any] = {
+        "goal_id": goal_id,
+        "task_ids": [],
+        "test_ids": [],
+        "evid_ids": [],
+        "ac_ids": {},
+    }
+
+    tasks_seen: set[str] = set()
+    task_counter = 1
+
+    # 扫描 Task 文件
+    paths = task_files or []
+    if not paths and task_dir:
+        paths = list(Path(task_dir).rglob("*.md"))
+    for md_file in paths:
+        content = md_file.read_text(encoding="utf-8")
+        existing_tasks = TASK_ID_RE.findall(content)
+        for tid in existing_tasks:
+            tasks_seen.add(tid)
+        # 检测占位 Task（TASK-XXX 或无 ID 标记）
+        placeholder = re.findall(r"(?:TASK|任务)[- ](?:XXX|TODO|待定)", content, re.IGNORECASE)
+        for _ in placeholder:
+            new_tid = f"TASK-{goal_id}-{task_counter:03d}"
+            if new_tid not in tasks_seen:
+                tasks_seen.add(new_tid)
+                ids["task_ids"].append(new_tid)
+                ids["test_ids"].append(f"TEST-{new_tid}-001")
+                ids["evid_ids"].append(f"EVID-TEST-{new_tid}-001-001")
+                task_counter += 1
+
+    # 从已有 TASK ID 推导 TEST 和 EVID
+    for tid in sorted(tasks_seen):
+        if not any(t == tid for t in ids["task_ids"]):
+            ids["task_ids"].append(tid)
+        test_id = f"TEST-{tid}-001"
+        evid_id = f"EVID-{test_id}-001"
+        if test_id not in ids["test_ids"]:
+            ids["test_ids"].append(test_id)
+        if evid_id not in ids["evid_ids"]:
+            ids["evid_ids"].append(evid_id)
+
+    # 扫描 Spec 文件生成 AC-REQ ID
+    paths = spec_files or []
+    if not paths and spec_dir:
+        paths = list(Path(spec_dir).rglob("*.md"))
+    for md_file in paths:
+        content = md_file.read_text(encoding="utf-8")
+        reqs = REQ_ID_RE.findall(content)
+        for req_id in reqs:
+            if req_id not in ids["ac_ids"]:
+                ids["ac_ids"][req_id] = []
+            ac_counter = 1
+            existing_acs = set(re.findall(rf"AC-{re.escape(req_id)}-\d{{3}}", content))
+            if existing_acs:
+                ids["ac_ids"][req_id].extend(sorted(existing_acs))
+            else:
+                ids["ac_ids"][req_id].append(f"AC-{req_id}-{ac_counter:03d}")
+
+    # 去重
+    ids["task_ids"] = sorted(set(ids["task_ids"]))
+    ids["test_ids"] = sorted(set(ids["test_ids"]))
+    ids["evid_ids"] = sorted(set(ids["evid_ids"]))
+
+    return ids
+
+
+def print_auto_id_preview(ids: dict) -> None:
+    """Dry-run 预览：打印将要生成的 ID。"""
+    print(f"Goal ID:       {ids['goal_id']}")
+    print(f"Task IDs:      {len(ids['task_ids'])} 个")
+    for tid in ids["task_ids"]:
+        print(f"  - {tid}")
+    print(f"Test IDs:      {len(ids['test_ids'])} 个")
+    for tid in ids["test_ids"]:
+        print(f"  - {tid}")
+    print(f"Evidence IDs:  {len(ids['evid_ids'])} 个")
+    for eid in ids["evid_ids"]:
+        print(f"  - {eid}")
+    if ids["ac_ids"]:
+        print(f"AC-REQ IDs:    {sum(len(v) for v in ids['ac_ids'].values())} 个")
+        for req_id, acs in sorted(ids["ac_ids"].items()):
+            for ac in acs:
+                print(f"  - {ac}  (from {req_id})")
+    print(f"\n[DRY-RUN] 以上 ID 将被生成，未写入文件。去掉 --dry-run 以写入。")
+
+
+def print_matrix_graph(matrix_file: str) -> None:
+    """输出 Matrix 追溯 DAG (DOT 格式)。可用 Graphviz 渲染: dot -Tpng graph.dot -o graph.png"""
+    path = Path(matrix_file)
+    if not path.exists():
+        print(f"[ERROR] Matrix 文件不存在: {matrix_file}", file=sys.stderr)
+        sys.exit(1)
+
+    rows = parse_matrix(path)
+    edges: dict[str, list[str]] = {}
+    labels: dict[str, str] = {}
+    status_colors = {
+        "Verified": "#2ecc71",
+        "Dropped": "#e74c3c",
+        "Linked": "#3498db",
+        "Mapped": "#f39c12",
+        "Unmapped": "#95a5a6",
+    }
+
+    for row in rows:
+        src = str(row.get("source_id", "?"))
+        tgt = str(row.get("target_id", "?"))
+        rel = str(row.get("relation", ""))
+        status = str(row.get("status", "Unmapped"))
+        color = status_colors.get(status, "#95a5a6")
+
+        edges.setdefault(src, [])
+        if tgt not in edges[src]:
+            edges[src].append(tgt)
+        labels[(src, tgt)] = f"{rel}\\n[{status}]"
+        labels.setdefault("_attrs", {})[(src, tgt)] = color
+
+    print("// Matrix Traceability DAG")
+    print(f"// Source: {matrix_file}")
+    print("digraph Matrix {")
+    print("  rankdir=LR;")
+    print('  node [shape=box, style=filled, fillcolor="#ecf0f1", fontname="monospace"];')
+    print('  edge [fontname="monospace", fontsize=9];')
+
+    seen_nodes: set[str] = set()
+    for src, tgts in edges.items():
+        if src not in seen_nodes:
+            seen_nodes.add(src)
+            print(f'  "{src}";')
+        for tgt in tgts:
+            if tgt not in seen_nodes:
+                seen_nodes.add(tgt)
+                print(f'  "{tgt}";')
+            color = labels.get("_attrs", {}).get((src, tgt), "#95a5a6")
+            lbl = labels.get((src, tgt), "")
+            print(f'  "{src}" -> "{tgt}" [label="{lbl}", color="{color}", fontcolor="{color}"];')
+
+    print("}")
+
+
 def main():
     parser = argparse.ArgumentParser(description="Matrix 生成与检查工具")
     parser.add_argument("--spec-dir", help="Spec 文件目录")
@@ -328,7 +486,78 @@ def main():
     parser.add_argument("--goal-id", default=DEFAULT_GOAL_ID, help="Goal ID")
     parser.add_argument("--check-only", action="store_true", help="仅检查现有 Matrix")
     parser.add_argument("--matrix", help="Matrix 文件路径（配合 --check-only）")
+    parser.add_argument("--auto-id", action="store_true", help="自动生成缺失的实体 ID")
+    parser.add_argument("--dry-run", action="store_true", help="预览模式：显示将生成的 ID，不写入文件")
+    parser.add_argument("--graph", action="store_true", help="输出 Matrix 追溯 DAG (DOT 格式)")
+    parser.add_argument("--date", help="用于 ID 的日期 (YYYYMMDD)，默认今天")
+    parser.add_argument("--version", action="store_true", help="显示工具版本")
     args = parser.parse_args()
+
+    if args.graph:
+        if args.matrix:
+            print_matrix_graph(args.matrix)
+        elif args.check_only:
+            print_matrix_graph(args.matrix or DEFAULT_MATRIX_FILE)
+        else:
+            print("[ERROR] --graph 需要 --matrix <file>", file=sys.stderr)
+        sys.exit(0)
+
+    if args.version:
+        print("matrix-gen.py v1.1.0")
+        sys.exit(0)
+
+    target_date = args.date or datetime.now().strftime("%Y%m%d")
+    if args.goal_id == DEFAULT_GOAL_ID and args.auto_id:
+        args.goal_id = f"GOAL-{target_date}-001"
+
+    if args.auto_id:
+        if not args.spec_dir and not args.task_dir:
+            print("[ERROR] --auto-id 需要 --spec-dir 或 --task-dir", file=sys.stderr)
+            sys.exit(1)
+        print(f"[AUTO-ID] 扫描输入文件，使用日期 {target_date}...")
+        spec_files = list(Path(args.spec_dir).rglob("*.md")) if args.spec_dir else []
+        task_files = list(Path(args.task_dir).rglob("*.md")) if args.task_dir else []
+        ids = auto_generate_ids(
+            args.goal_id, target_date,
+            spec_dir=args.spec_dir or "",
+            task_dir=args.task_dir or "",
+            spec_files=spec_files,
+            task_files=task_files,
+        )
+        if args.dry_run:
+            print_auto_id_preview(ids)
+            sys.exit(0)
+        print(f"[AUTO-ID] Goal ID:     {ids['goal_id']}")
+        print(f"[AUTO-ID] Task IDs:    {len(ids['task_ids'])} 个")
+        print(f"[AUTO-ID] Test IDs:    {len(ids['test_ids'])} 个")
+        print(f"[AUTO-ID] Evidence IDs:{len(ids['evid_ids'])} 个")
+        print("[AUTO-ID] ID 生成完成。使用 --dry-run 可预览。")
+        if args.output:
+            # 写 ID 清单文件
+            output_path = Path(args.output)
+            output_path.parent.mkdir(parents=True, exist_ok=True)
+            lines = [
+                "# Auto-generated ID manifest",
+                f"# Date: {target_date}",
+                f"goal_id: {ids['goal_id']}",
+                "task_ids:",
+            ]
+            for t in ids["task_ids"]:
+                lines.append(f"  - {t}")
+            lines.append("test_ids:")
+            for t in ids["test_ids"]:
+                lines.append(f"  - {t}")
+            lines.append("evidence_ids:")
+            for e in ids["evid_ids"]:
+                lines.append(f"  - {e}")
+            if ids["ac_ids"]:
+                lines.append("ac_ids:")
+                for req_id, acs in sorted(ids["ac_ids"].items()):
+                    for ac in acs:
+                        lines.append(f"  - {{req: {req_id}, ac: {ac}}}")
+            output_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+            print(f"[AUTO-ID] ID 清单已写入: {args.output}")
+        sys.exit(0)
 
     if args.check_only:
         matrix_file = args.matrix or DEFAULT_MATRIX_FILE

@@ -1,0 +1,82 @@
+# Privacy / Security Contract — 权限、密钥、数据保留与审计规则
+# SSOT: docs/goal/04-gates.md, docs/goal/13-runtime-engine.md, CONSTITUTION.md
+# 路径: docs/goal/schema/security-contract.yaml
+
+schema_name: security_contract
+schema_version: "1.0.0"
+authority_sources:
+  - CONSTITUTION.md
+  - docs/goal/04-gates.md
+  - docs/goal/13-runtime-engine.md
+  - docs/goal/21-controlled-rsi.md
+
+# ============================================================
+# 安全契约规则
+# ============================================================
+security_rules:
+  - id: "SEC-001"
+    rule: "不得硬编码 API key、密码、token、私钥"
+    check: "代码扫描 (grep 匹配已知 secret 模式)"
+    gate: G6 (Implementation Gate)
+    severity: error
+
+  - id: "SEC-002"
+    rule: "涉及 auth/permission/认证/授权的功能 MUST 有 Security Requirements 段"
+    trigger: "Spec 中包含权限相关关键词"
+    gate: G2 (Spec Gate)
+    severity: error
+
+  - id: "SEC-003"
+    rule: "用户输入 MUST 经验证和清洗（XSS/SQL注入/路径遍历）"
+    trigger: "任何接受外部输入的接口"
+    gate: G6
+    severity: error
+
+  - id: "SEC-004"
+    rule: "第三方依赖变更 MUST 经过安全审计"
+    trigger: "新增/升级外部包"
+    gate: G4 (Plan Gate)
+    severity: warn
+
+  - id: "SEC-005"
+    rule: "涉及资金/支付的代码 MUST 有独立的安全审查 (Red Team Review)"
+    trigger: "支付、转账、计费相关代码"
+    gate: G9 (Review Gate)
+    severity: error
+
+# ============================================================
+# 隐私契约规则
+# ============================================================
+privacy_rules:
+  - id: "PRIV-001"
+    rule: "个人身份信息 (PII) MUST 在 Spec 中声明处理方式"
+    trigger: "姓名、邮箱、手机号、身份证号、地址"
+    gate: G2
+    severity: error
+
+  - id: "PRIV-002"
+    rule: "数据保留期限 MUST 在 Spec 中声明"
+    trigger: "任何持久化存储的用户数据"
+    gate: G2
+    severity: warn
+
+  - id: "PRIV-003"
+    rule: "数据导出功能 MUST 有权限校验和审计日志"
+    trigger: "CSV/Excel/API 批量导出"
+    gate: G6
+    severity: error
+
+  - id: "PRIV-004"
+    rule: "生产数据不得用于测试环境（除非脱敏并审批）"
+    trigger: "数据库 dump 导入测试环境"
+    gate: G10
+    severity: error
+
+# ============================================================
+# 禁止放宽项 (Controlled RSI 不变量)
+# ============================================================
+never_relax:
+  - "安全、隐私、资金、权限、数据保留约束不得被 RSI 自动放宽"
+  - "失败测试不得被删除或降级"
+  - "Release Gate 强度不得降低"
+  - "P0/P1 AC 不得修改（除非 CR + Human Approval）"

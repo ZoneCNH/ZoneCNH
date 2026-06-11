@@ -129,16 +129,26 @@ Goal 驱动交付体系 — 端到端工作流编排 (v2)
 验证与门禁:
   check [--gate G0-G11]  运行 Gate 检查（委托 gate-check.sh / goal-validate.py）
   validate               运行完整验证（委托 goal-workflow.sh）
-  release                运行发布前硬阻断检查
+  release                发布前硬阻断检查
+  release --simulate     dry-run 发布路径演练
+  release --rollback-drill  回滚路径验证演练
+  release --metrics-window  上线后指标观察窗口检查
+  incident                  生成事故响应模板
 
 状态与看板:
   status    显示当前管线状态
   dashboard 显示交付看板
+  improve   生成 RSI Improvement Scorecard + Backlog
   auto      根据复杂度模式自动推进管线
+
+编译器（Phase 2 MVP）:
+  compile --goal-id ID   从 Goal+Spec 编译完整 Task 清单
+  prompt --compile --task-id ID  为 Task 生成完整 Context Package
 
 选项:
   --root DIR      仓库根目录（默认自动检测）
   --mode MODE     复杂度模式：lite / standard / full
+  --compile       编译器模式：自动生成 Task 清单或 Context Package
   -h, --help      显示帮助
 EOF
 }
@@ -1195,10 +1205,81 @@ cmd_validate() {
   fi
 }
 
-# ─── release：发布前检查 ─────────────────────────────────
+# ─── release：发布前检查 + Evidence Bundle ────────────────
 cmd_release() {
   title "发布前检查"
   require_config
+
+  if [[ "$COMPILE" == "true" ]]; then
+    step "生成 Release Evidence Bundle..."
+
+    local bundle_dir="$CONFIG_DIR/evidence/bundle-$(date +%Y%m%d-%H%M%S)"
+    mkdir -p "$bundle_dir"
+
+    local bundle_file="$bundle_dir/RELEASE-BUNDLE.md"
+    {
+      echo "# Release Evidence Bundle"
+      echo "> 自动生成: $(date '+%Y-%m-%d %H:%M:%S')"
+      echo "> Release ID: REL-$(date +%Y%m%d-%H%M%S)"
+      echo ""
+      echo "## Evidence Summary"
+      echo ""
+
+      # 聚合所有 Evidence 文件
+      local evid_count=0
+      if [[ -d "$CONFIG_DIR/evidence" ]]; then
+        for ev in "$CONFIG_DIR/evidence"/*.md; do
+          [[ -f "$ev" ]] || continue
+          evid_count=$((evid_count + 1))
+          local ev_name=$(basename "$ev")
+          echo "### $ev_name"
+          echo ""
+          head -30 "$ev" 2>/dev/null
+          echo ""
+          echo "---"
+          echo ""
+        done
+      fi
+
+      echo "## Matrix Summary"
+      echo ""
+      if [[ -f "$CONFIG_DIR/matrix/matrix.yaml" ]]; then
+        local total edges_term
+        total=$(grep -c "source_id:" "$CONFIG_DIR/matrix/matrix.yaml" 2>/dev/null || echo 0)
+        echo "- **Total Edges**: $total"
+        echo "- **File**: \`.config/goal/matrix/matrix.yaml\`"
+      fi
+
+      echo ""
+      echo "## Gate Status"
+      echo ""
+      if [[ -f "$CONFIG_DIR/gates/state.yaml" ]]; then
+        for gate in G0 G1 G2 G3 G4 G5 G6 G7 G8 G9 G10 G11; do
+          local gs
+          gs=$(gate_status "$gate")
+          printf -- "- **%s**: %s\n" "$gate" "${gs:-UNKNOWN}"
+        done
+      fi
+
+      echo ""
+      echo "## Risk Register"
+      echo ""
+      if [[ -f "$CONFIG_DIR/registry/risks.yaml" ]]; then
+        grep -E "risk_id:|status:|release_blocking:" "$CONFIG_DIR/registry/risks.yaml" | head -20
+      fi
+
+      echo ""
+      echo "## Validation Summary"
+      echo ""
+      echo "- **Validator**: goal-validate.py --mode strict"
+      echo "- **Preflight**: goal-workflow.sh preflight"
+      echo "- **Generated**: $(date '+%Y-%m-%d %H:%M:%S')"
+    } > "$bundle_file"
+
+    ok "Evidence Bundle 已生成: $bundle_file"
+    echo "$bundle_file"
+    return 0
+  fi
 
   if [[ -f "$SCRIPT_DIR/goal-workflow.sh" ]]; then
     step "委托 goal-workflow.sh release"
@@ -1206,6 +1287,203 @@ cmd_release() {
   else
     warn "goal-workflow.sh 不可用"
   fi
+}
+
+# ─── release --simulate：发布演练 ──────────────────────────
+cmd_release_simulate() {
+  title "Release Simulation — 发布路径 dry-run 演练"
+  require_config
+
+  local sim_id="SIM-$(date +%Y%m%d-%H%M%S)"
+  local sim_dir="$CONFIG_DIR/evidence/sim-${sim_id}"
+  mkdir -p "$sim_dir"
+
+  step "1/5 检查 Gate 状态..."
+  local gates_pass=0 gates_total=0
+  for gate in G0 G1 G2 G3 G4 G5 G6 G7 G8 G9 G10; do
+    gates_total=$((gates_total + 1))
+    local gs=$(gate_status "$gate")
+    [[ "$gs" == "PASS" || "$gs" == "PASS_WITH_RISK" ]] && gates_pass=$((gates_pass + 1))
+  done
+  info "Gate: $gates_pass/$gates_total 通过"
+
+  step "2/5 检查 Matrix 覆盖率..."
+  if [[ -f "$SCRIPT_DIR/matrix-gen.py" ]]; then
+    python3 "$SCRIPT_DIR/matrix-gen.py" --check-only --matrix "$CONFIG_DIR/matrix/matrix.yaml" 2>&1 | head -5
+  fi
+
+  step "3/5 检查 Evidence..."
+  local evid_count=0
+  [[ -d "$CONFIG_DIR/evidence" ]] && evid_count=$(find "$CONFIG_DIR/evidence" -name "*.md" -type f | wc -l)
+  info "Evidence 文件: ${evid_count:-0} 个"
+
+  step "4/5 检查 Risk Register..."
+  local open_blocking=0
+  if [[ -f "$CONFIG_DIR/registry/risks.yaml" ]]; then
+    open_blocking=$(grep -c "release_blocking.*true" "$CONFIG_DIR/registry/risks.yaml" 2>/dev/null | head -1)
+    open_blocking=${open_blocking:-0}
+  fi
+  if [[ "$open_blocking" -gt 0 ]]; then
+    warn "发现 $open_blocking 个 release_blocking 风险"
+  else
+    ok "无 release_blocking 风险"
+  fi
+
+  step "5/5 生成 Simulation Report..."
+  {
+    echo "# Release Simulation Report"
+    echo "- **Sim ID**: $sim_id"
+    echo "- **Date**: $(date '+%Y-%m-%d %H:%M:%S')"
+    echo "- **Gate Status**: $gates_pass/$gates_total"
+    echo "- **Evidence Files**: ${evid_count:-0}"
+    echo "- **Release Blocking Risks**: $open_blocking"
+    echo "- **Decision**: $([ "$open_blocking" -eq 0 ] && [ "$gates_pass" -ge 10 ] && echo "PASS" || echo "FAIL — 请修复后重新演练")"
+  } > "$sim_dir/report.md"
+
+  ok "Simulation 完成: $sim_dir/report.md"
+  echo "$sim_dir/report.md"
+}
+
+# ─── release --rollback-drill：回滚演练 ────────────────────
+cmd_rollback_drill() {
+  title "Rollback Drill — 回滚路径验证"
+  require_config
+
+  local drill_id="RBD-$(date +%Y%m%d-%H%M%S)"
+  local drill_dir="$CONFIG_DIR/evidence/drill-${drill_id}"
+  mkdir -p "$drill_dir"
+
+  step "1/4 查找 Release Manifest..."
+  local manifest=""
+  for f in "$CONFIG_DIR/evidence"/bundle-*/RELEASE-BUNDLE.md; do
+    [[ -f "$f" ]] && manifest="$f" && break
+  done
+  if [[ -z "$manifest" ]]; then
+    warn "未找到 Release Bundle，回滚演练无法完全验证"
+  else
+    info "Manifest: $manifest"
+  fi
+
+  step "2/4 检查回滚方案..."
+  local has_rollback=false
+  if [[ -n "$manifest" ]] && grep -qi "rollback\|回滚" "$manifest" 2>/dev/null; then
+    has_rollback=true
+    ok "Release Manifest 包含回滚方案"
+  else
+    warn "Release Manifest 可能缺少回滚方案"
+  fi
+
+  step "3/4 验证 git 回滚路径..."
+  local current_branch=$(git branch --show-current 2>/dev/null || echo "unknown")
+  local main_exists
+  if git rev-parse --verify main >/dev/null 2>&1; then main_exists="true"; else main_exists="false"; fi
+  info "当前分支: $current_branch"
+  info "main 分支存在: $main_exists"
+
+  step "4/4 生成 Rollback Drill Report..."
+  {
+    echo "# Rollback Drill Report"
+    echo "- **Drill ID**: $drill_id"
+    echo "- **Date**: $(date '+%Y-%m-%d %H:%M:%S')"
+    echo "- **Current Branch**: $current_branch"
+    echo "- **Rollback Plan Found**: $has_rollback"
+    echo "- **Rollback Target**: main ($main_exists)"
+    echo "- **Verification**: 回滚后需重新运行 \`goal-workflow.sh validate\`"
+    if ! $has_rollback; then
+      echo "- **Gap**: 缺少回滚方案 — 请在 Release Manifest 中补充 rollback plan"
+    fi
+    echo "- **Decision**: $($has_rollback && echo "READY" || echo "GAP — 补充回滚方案后重新演练")"
+  } > "$drill_dir/report.md"
+
+  ok "Rollback Drill 完成: $drill_dir/report.md"
+  echo "$drill_dir/report.md"
+}
+
+# ─── release --metrics-window：指标观察窗口检查 ──────────
+cmd_metrics_window() {
+  title "Metrics Window Check — 上线后指标观察窗口验证"
+  require_config
+
+  local window_hours=24
+  step "检查指标观察窗口 (≥ ${window_hours}h)..."
+
+  local manifest=""
+  for f in "$CONFIG_DIR/evidence"/bundle-*/RELEASE-BUNDLE.md; do
+    [[ -f "$f" ]] && manifest="$f" && break
+  done
+
+  if [[ -n "$manifest" ]]; then
+    if grep -qi "metric\|指标\|观察窗口\|observation" "$manifest" 2>/dev/null; then
+      ok "Release Manifest 包含指标观察声明"
+    else
+      warn "Release Manifest 缺少指标观察窗口 — G10 要求"
+    fi
+  else
+    warn "未找到 Release Bundle — 无法验证指标窗口"
+  fi
+
+  # 检查 Goal success_criteria 是否可测量
+  if [[ -f "$CONFIG_DIR/registry/goals.yaml" ]]; then
+    local measurable=$(grep -c "success_criteria\|north_star" "$CONFIG_DIR/registry/goals.yaml" 2>/dev/null || echo 0)
+    info "Goals 含 success_criteria: $measurable 个"
+  fi
+
+  local mw_file="$CONFIG_DIR/evidence/metrics-window-$(date +%Y%m%d-%H%M%S).md"
+  {
+    echo "# Metrics Window Check"
+    echo "- **Date**: $(date '+%Y-%m-%d %H:%M:%S')"
+    echo "- **Window**: ≥ ${window_hours}h post-release"
+    echo "- **Manifest Found**: ${manifest:-NONE}"
+    echo "- **Decision**: $([ -n "$manifest" ] && echo "READY" || echo "GAP")"
+  } > "$mw_file"
+  ok "Metrics Window Check: $mw_file"
+}
+
+# ─── incident：事故响应模板生成 ────────────────────────────
+cmd_incident() {
+  title "Incident Handoff — 事故响应模板"
+  require_config
+
+  local inc_file="$CONFIG_DIR/evidence/incident-template-$(date +%Y%m%d-%H%M%S).md"
+  {
+    echo "# Incident Response Template"
+    echo "> 生成: $(date '+%Y-%m-%d %H:%M:%S')"
+    echo ""
+    echo "## Severity"
+    echo "- [ ] P0 — 全站不可用"
+    echo "- [ ] P1 — 核心功能受损"
+    echo "- [ ] P2 — 非核心功能异常"
+    echo ""
+    echo "## Detection"
+    echo "- **Time**: $(date '+%Y-%m-%d %H:%M:%S')"
+    echo "- **Alert**: （填写告警来源）"
+    echo "- **Detected by**: （填写发现人/系统）"
+    echo ""
+    echo "## Impact"
+    echo "- **Users affected**: （估计数）"
+    echo "- **Duration**: （持续时长）"
+    echo "- **Data impact**: （有无数据损失）"
+    echo ""
+    echo "## Response"
+    echo '```bash'
+    echo "# 1. 确认事故范围"
+    echo "# 2. 执行回滚: git revert <commit> && git push"
+    echo "# 3. 验证回滚: bash docs/goal/tools/goal-workflow.sh validate"
+    echo "# 4. 通知值班: （填写 on-call 联系方式）"
+    echo '```'
+    echo ""
+    echo "## Escalation"
+    echo "- **Primary**: （填写主负责人）"
+    echo "- **Secondary**: （填写备份负责人）"
+    echo "- **Management**: （填写管理层联系人）"
+    echo ""
+    echo "## Postmortem"
+    echo "- [ ] Root Cause Analysis"
+    echo "- [ ] Improvement Backlog entry"
+    echo "- [ ] Scorecard update"
+  } > "$inc_file"
+  ok "Incident Template: $inc_file"
+  echo "$inc_file"
 }
 
 # ─── status：显示管线状态 ────────────────────────────────
@@ -1309,6 +1587,151 @@ cmd_dashboard() {
   printf "Done\n"
 }
 
+# ─── improve：RSI 改进分析 ──────────────────────────────
+cmd_improve() {
+  title "RSI Improvement Analysis — 基于证据的改进候选"
+  require_config
+
+  local today=$(date +%Y-%m-%d)
+  local scorecard_file="$CONFIG_DIR/evidence/scorecard-$(date +%Y%m%d).md"
+
+  # 1. 收集当前指标
+  step "1/5 收集交付指标..."
+  local total_edges=0 terminal_edges=0 coverage=0
+  if [[ -f "$CONFIG_DIR/matrix/matrix.yaml" ]]; then
+    total_edges=$(grep -c "source_id:" "$CONFIG_DIR/matrix/matrix.yaml" 2>/dev/null || echo 0)
+    terminal_edges=$(grep -cE "status: (Verified|Dropped)" "$CONFIG_DIR/matrix/matrix.yaml" 2>/dev/null || echo 0)
+    [[ "$total_edges" -gt 0 ]] && coverage=$((terminal_edges * 100 / total_edges))
+  fi
+
+  local gates_pass=0 gates_total=0
+  for gate in G0 G1 G2 G3 G4 G5 G6 G7 G8 G9 G10 G11; do
+    gates_total=$((gates_total + 1))
+    local gs=$(gate_status "$gate")
+    [[ "$gs" == "PASS" ]] && gates_pass=$((gates_pass + 1))
+  done
+
+  local evid_count=0
+  [[ -d "$CONFIG_DIR/evidence" ]] && evid_count=$(find "$CONFIG_DIR/evidence" -name "*.md" -type f 2>/dev/null | wc -l)
+
+  # 2. 检测 RSI 触发信号
+  step "2/5 检测 RSI 触发信号..."
+  local signals=()
+
+  # Signal: 测试覆盖率声称完整但 Gate 未全过
+  [[ "$coverage" -ge 90 && "$gates_pass" -lt 10 ]] && \
+    signals+=("测试覆盖声称完整但 Gate 通过率低 ($gates_pass/12) → 检查 Matrix 是否连接真实指标")
+
+  # Signal: Evidence 不足
+  [[ "$evid_count" -lt 3 ]] && \
+    signals+=("Evidence 文件不足 ($evid_count 个) → 检查 evidence-collect.sh 是否 CI 触发")
+
+  # Signal: 有 Dropped edge
+  local dropped=$(grep -c "Dropped" "$CONFIG_DIR/matrix/matrix.yaml" 2>/dev/null || echo 0)
+  [[ "$dropped" -gt 0 ]] && \
+    signals+=("存在 $dropped 个 Dropped edge → 检查是否有未说明的 drop_reason")
+
+  # Signal: Gate 失败
+  for gate in G0 G1 G2 G3 G4 G5 G6 G7 G8 G9 G10 G11; do
+    local gs=$(gate_status "$gate")
+    [[ "$gs" == "FAIL" || "$gs" == "BLOCKED" ]] && \
+      signals+=("Gate $gate: $gs → 检查阻断原因和修复路径")
+  done
+
+  # 3. 生成 Improvement Backlog
+  step "3/5 生成 Improvement Backlog..."
+
+  # 4. 计算 Scorecard
+  step "4/5 计算 Scorecard..."
+  local capture_rate="N/A"
+  local gate_escape="N/A"
+
+  # 5. 写出报告
+  step "5/5 写出 Scorecard Report..."
+  {
+    echo "# RSI Improvement Scorecard"
+    echo "> 自动生成: $(date '+%Y-%m-%d %H:%M:%S')"
+    echo ""
+    echo "## Metrics"
+    echo ""
+    echo "| 指标 | 值 | 目标 | 状态 |"
+    echo "|------|-----|------|------|"
+    echo "| Matrix 覆盖率 | ${coverage}% | ≥ 95% | $([[ $coverage -ge 95 ]] && echo '✅' || echo '⚠️') |"
+    echo "| Gate 通过率 | $gates_pass/$gates_total | ≥ 10/12 | $([[ $gates_pass -ge 10 ]] && echo '✅' || echo '⚠️') |"
+    echo "| Evidence 文件数 | $evid_count | ≥ 5 | $([[ $evid_count -ge 5 ]] && echo '✅' || echo '⚠️') |"
+    echo "| Dropped edges | $dropped | 全部有原因 | $([[ $dropped -eq 0 ]] && echo '✅' || echo '⚠️') |"
+    echo "| Capture Rate | $capture_rate | ≥ 80% | — |"
+    echo "| Gate Escape Rate | $gate_escape | 0 | — |"
+    echo ""
+
+    if [[ ${#signals[@]} -gt 0 ]]; then
+      echo "## RSI Trigger Signals"
+      echo ""
+      for sig in "${signals[@]}"; do
+        echo "- $sig"
+      done
+      echo ""
+    fi
+
+    echo "## Improvement Backlog"
+    echo ""
+    if [[ ${#signals[@]} -gt 0 ]]; then
+      for sig in "${signals[@]}"; do
+        echo "- [ ] $(echo "$sig" | cut -c1-120)..."
+      done
+    else
+      echo "- （当前无改进信号）"
+    fi
+    echo ""
+    echo "## Next Steps"
+    echo ""
+    echo "1. 审查 Improvement Backlog 中的候选改进项"
+    echo "2. 对每个改进项执行 R0-R9 Gate 检查（见 21-controlled-rsi.md）"
+    echo "3. 通过 R0-R9 的改进项 → 提交 Improvement Proposal"
+    echo "4. 需要 Human Approval 的改进项 → 生成 Change Request"
+  } > "$scorecard_file"
+
+  if [[ "$COMPILE" == "true" ]]; then
+    step "生成 Change Request 提案..."
+    local cr_count=0
+    for sig in "${signals[@]}"; do
+      cr_count=$((cr_count + 1))
+      local cr_file="$ROOT/docs/goal/change-requests/CR-auto-$(date +%Y%m%d)-$(printf '%03d' $cr_count).md"
+      {
+        echo "# Change Request: Auto-detected"
+        echo "- **Date**: $(date '+%Y-%m-%d')"
+        echo "- **Signal**: $sig"
+        echo "- **Source**: goal-delivery.sh improve --apply"
+        echo "- **Status**: Proposal (待 Human Approval)"
+        echo ""
+        echo "## Evidence"
+        echo "- Matrix 覆盖率: ${coverage}%"
+        echo "- Gate 通过率: $gates_pass/$gates_total"
+        echo "- Evidence 文件数: $evid_count"
+        echo ""
+        echo "## Proposed Patch"
+        echo "（待填写——基于以上信号描述修复方案）"
+        echo ""
+        echo "## Validation"
+        echo '```bash'
+        echo "bash docs/goal/tools/goal-workflow.sh validate"
+        echo '```'
+        echo ""
+        echo "## Rollback"
+        echo "（待填写——如何回滚此变更）"
+        echo ""
+        echo "## Approval"
+        echo "- **Owner**: （待指定）"
+        echo "- **Approval**: Human Approval Required"
+      } > "$cr_file"
+    done
+    ok "已生成 $cr_count 个 Change Request 提案"
+  fi
+
+  ok "Scorecard 已生成: $scorecard_file"
+  echo "$scorecard_file"
+}
+
 # ─── auto：自动推进 ─────────────────────────────────────
 cmd_auto() {
   title "自动推进管线"
@@ -1373,6 +1796,241 @@ cmd_auto() {
       warn "未知阶段: $phase"
       ;;
   esac
+}
+
+# ─── compile：Workflow Compiler MVP ──────────────────────
+cmd_compile() {
+  local goal_id="$1"
+  title "Workflow Compiler — 从 Goal 编译任务清单"
+
+  require_config
+  [[ -z "$goal_id" ]] && { warn "用法: goal-delivery.sh compile --goal-id GOAL-xxx"; return 1; }
+
+  # 1. 读取 Goal
+  local goal_file="$CONFIG_DIR/registry/goals.yaml"
+  [[ -f "$goal_file" ]] || { warn "Goal Registry 不存在: $goal_file"; return 1; }
+  local title north_star
+  title=$(awk -v gid="$goal_id" '$0~gid{f=1} f&&/title:/{print $2; exit}' "$goal_file" 2>/dev/null)
+  north_star=$(awk -v gid="$goal_id" '$0~gid{f=1} f&&/north_star:/{print $2; exit}' "$goal_file" 2>/dev/null)
+  [[ -z "$title" ]] && { warn "未找到 Goal: $goal_id"; return 1; }
+
+  step "Goal: $goal_id — $title"
+
+  # 2. 查找关联 Spec
+  local spec_file=""
+  local spec_id=""
+  for f in "$ROOT/module"/*/SPEC.md; do
+    [[ -f "$f" ]] || continue
+    if grep -q "$goal_id" "$f" 2>/dev/null; then
+      spec_file="$f"
+      spec_id=$(grep -oP 'SPEC-[A-Za-z0-9][-A-Za-z0-9]*-v\d+' "$f" | head -1)
+      break
+    fi
+  done
+
+  if [[ -n "$spec_file" ]]; then
+    step "关联 Spec: $spec_id ($spec_file)"
+  else
+    info "未找到关联 Spec，将基于 Goal 直接生成"
+  fi
+
+  # 3. 从 Spec 提取 Requirements → 生成 Tasks
+  local output_file="$CONFIG_DIR/prompts/compiled-tasks-${goal_id}.md"
+  mkdir -p "$(dirname "$output_file")"
+
+  local task_counter=1
+
+  {
+    echo "# Compiled Task List"
+    echo "# Goal: $goal_id — $title"
+    echo "# 生成时间: $(date '+%Y-%m-%d %H:%M:%S')"
+    echo "# Compiler: goal-delivery.sh v2 --compile"
+    echo ""
+    echo "## Goal Context"
+    echo ""
+    echo "- **Goal ID**: $goal_id"
+    echo "- **Title**: $title"
+    echo "- **North Star**: ${north_star:-未定义}"
+    echo ""
+
+    if [[ -n "$spec_file" ]]; then
+      echo "## Requirements (from $spec_id)"
+      echo ""
+
+      # 提取 Requirements
+      local req_count=0
+      while IFS= read -r line; do
+        local rid=$(echo "$line" | grep -oP 'REQ-SPEC-[A-Za-z0-9][-A-Za-z0-9]*-v\d+-\d{3}')
+        [[ -z "$rid" ]] && continue
+        req_count=$((req_count + 1))
+        local desc=$(echo "$line" | sed "s/.*$rid[ :：-]*//" | head -c 120)
+        [[ -z "$(echo "$desc" | tr -d ' ')" ]] && desc="Requirement from $spec_id"
+
+        local tid=$(printf "TASK-%s-%03d" "$goal_id" "$task_counter")
+        echo "### $tid"
+        echo ""
+        echo "- **Source**: $rid"
+        echo "- **Description**: $desc"
+        echo "- **Input**: 待定义（请填写此 Task 的输入）"
+        echo "- **Output**: 待定义（请填写此 Task 的交付物）"
+        echo "- **DoD**: 实现通过测试，验收标准可验证"
+        echo "- **Priority**: P1"
+        echo "- **Dependencies**: 无"
+        echo ""
+        task_counter=$((task_counter + 1))
+      done < <(grep -n "REQ-SPEC-" "$spec_file" 2>/dev/null)
+
+      echo "## Summary"
+      echo ""
+      echo "- **Total Requirements**: $req_count"
+      echo "- **Generated Tasks**: $((task_counter - 1))"
+      echo "- **Goal**: $goal_id"
+    else
+      echo "## Tasks (manual — 无 Spec 关联)"
+      echo ""
+      echo "> 未找到关联 Spec，请手动拆分 Task 或先运行: goal-delivery.sh spec --goal-id $goal_id"
+      echo ""
+      echo "### TASK-${goal_id}-001"
+      echo ""
+      echo "- **Source**: $goal_id (直接拆分)"
+      echo "- **Description**: 待定义"
+      echo "- **Input**: 待定义"
+      echo "- **Output**: 待定义"
+      echo "- **DoD**: 实现通过测试"
+      echo ""
+    fi
+
+    echo "## Prompt Compilation Notes"
+    echo ""
+    echo "运行以下命令为每个 Task 生成 Context Package："
+    echo ""
+    for ((i=1; i<task_counter; i++)); do
+      local tid=$(printf "TASK-%s-%03d" "$goal_id" "$i")
+      echo "  bash docs/goal/tools/goal-delivery.sh prompt --compile --task-id $tid"
+    done
+    echo ""
+    echo "## Gate Requirements"
+    echo ""
+    echo "| Gate | 检查 | 状态 |"
+    echo "|------|------|------|"
+    echo "| G1 Goal Gate | Goal 符合 SMART | 待检查 |"
+    echo "| G2 Spec Gate | Spec 完整可测试 | 待检查 |"
+    echo "| G5 Task Gate | Tasks 原子化且有 DoD | 待检查 |"
+    echo "| G6 Impl Gate | 实现未越界 | 待检查 |"
+    echo "| G7 Test Gate | 测试通过 | 待检查 |"
+  } > "$output_file"
+
+  ok "编译完成: $output_file"
+  info "Tasks 已生成: $((task_counter - 1)) 个"
+  info "下一步: 审查生成的任务清单，补充 Input/Output/DoD"
+  echo "$output_file"
+}
+
+# ─── prompt 增强：--compile 生成完整 Context Package ──────
+compile_prompt_pack() {
+  local task_id="$1"
+  [[ -z "$task_id" ]] && { warn "用法: goal-delivery.sh prompt --compile --task-id TASK-xxx"; return 1; }
+
+  require_config
+
+  # 从 Task ID 推导 Goal ID
+  local goal_id
+  goal_id=$(echo "$task_id" | grep -oP 'GOAL-\d{8}-\d{3}') || goal_id="UNKNOWN"
+
+  local goal_file="$CONFIG_DIR/registry/goals.yaml"
+  local goal_title="" goal_north=""
+  if [[ -f "$goal_file" ]]; then
+    goal_title=$(awk -v gid="$goal_id" '$0~gid{f=1} f&&/title:/{print $2; exit}' "$goal_file" 2>/dev/null)
+    goal_north=$(awk -v gid="$goal_id" '$0~gid{f=1} f&&/north_star:/{print $2; exit}' "$goal_file" 2>/dev/null)
+  fi
+
+  # 查找 Spec
+  local spec_file="" spec_id=""
+  for f in "$ROOT/module"/*/SPEC.md; do
+    [[ -f "$f" ]] || continue
+    if grep -q "$goal_id" "$f" 2>/dev/null; then
+      spec_file="$f"
+      spec_id=$(grep -oP 'SPEC-[A-Za-z0-9][-A-Za-z0-9]*-v\d+' "$f" | head -1)
+      break
+    fi
+  done
+
+  local output_file="$CONFIG_DIR/prompts/${task_id}/v1.md"
+  mkdir -p "$(dirname "$output_file")"
+
+  {
+    echo "# Context Package: $task_id"
+    echo ""
+    echo "> 自动生成: $(date '+%Y-%m-%d %H:%M:%S')"
+    echo "> Compiler: goal-delivery.sh v2 --compile"
+    echo ""
+    echo "## Goal"
+    echo ""
+    echo "- **Goal ID**: $goal_id"
+    echo "- **Title**: ${goal_title:-未定义}"
+    echo "- **North Star**: ${goal_north:-未定义}"
+    echo ""
+
+    if [[ -n "$spec_id" ]]; then
+      echo "## Spec"
+      echo ""
+      echo "- **Spec ID**: $spec_id"
+      echo "- **File**: $spec_file"
+      echo ""
+
+      # 提取关联的 Requirements
+      echo "### Related Requirements"
+      echo ""
+      grep "REQ-SPEC-" "$spec_file" 2>/dev/null | head -10 | while IFS= read -r line; do
+        echo "- $line"
+      done
+      echo ""
+    fi
+
+    echo "## Task"
+    echo ""
+    echo "- **Task ID**: $task_id"
+    echo "- **Goal**: $goal_id"
+    echo ""
+
+    echo "## Constraints"
+    echo ""
+    echo "### Allowed Files"
+    echo ""
+    echo "> 待定义 — 请指定此 Task 允许修改的文件范围"
+    echo ""
+    echo "### Prohibited"
+    echo ""
+    echo "- 不得修改公共 API 签名（需单独审批）"
+    echo "- 不得修改数据库 Schema（需 Migration + CR）"
+    echo "- 不得引入新的外部依赖（需评估）"
+    echo "- 不得删除或放宽现有测试"
+    echo ""
+
+    echo "## Verification"
+    echo ""
+    echo "### Test Commands"
+    echo ""
+    echo '```bash'
+    echo "# 待定义 — 请补充验证命令"
+    echo '```'
+    echo ""
+    echo "### Evidence"
+    echo ""
+    echo "- **Evidence ID**: EVID-${task_id}-001"
+    echo "- **Status**: 待收集"
+    echo ""
+
+    echo "## Stop Conditions"
+    echo ""
+    echo "- Gate G6 (Implementation Gate) 返回 FAIL — 实现越界"
+    echo "- Gate G7 (Test Gate) 测试未通过"
+    echo "- 发现需要修改公共接口 → 升级为 CL3，需要 Human Approval"
+    echo ""
+  } > "$output_file"
+
+  ok "Context Package 已生成: $output_file"
+  echo "$output_file"
 }
 
 # ─── 参数解析 ────────────────────────────────────────────
@@ -1442,6 +2100,18 @@ parse_args() {
       --format)
         shift 2
         ;;
+      --compile)
+        COMPILE=true
+        shift
+        ;;
+	      --simulate)
+	        SIMULATE=true
+	        shift
+	        ;;
+	      --rollback-drill)
+	        ROLLBACK_DRILL=true
+	        shift
+	        ;;
       -h|--help)
         COMMAND="help"
         shift
@@ -1460,6 +2130,9 @@ parse_args() {
 
 # ─── 主入口 ──────────────────────────────────────────────
 main() {
+  COMPILE="${COMPILE:-false}"
+  SIMULATE="${SIMULATE:-false}"
+  ROLLBACK_DRILL="${ROLLBACK_DRILL:-false}"
   parse_args "$@"
 
   case "$COMMAND" in
@@ -1469,16 +2142,20 @@ main() {
     design)    cmd_design "$ARG1" ;;
     plan)      cmd_plan "$ARG1" ;;
     tasks)     cmd_tasks "$ARG1" ;;
-    prompt)    cmd_prompt "$ARG1" ;;
+    prompt)    if [[ "$COMPILE" == "true" ]]; then compile_prompt_pack "$ARG1"; else cmd_prompt "$ARG1"; fi ;;
     evidence)  cmd_evidence "$ARG1" "$ARG2" ;;
     matrix)    cmd_matrix "$ARG1" ;;
     change)    cmd_change "$ARG1" "$ARG2" ;;
     status)    cmd_status ;;
     check)     cmd_check "$ARG1" ;;
     validate)  cmd_validate ;;
-    release)   cmd_release ;;
+    release)   if [[ "$SIMULATE" == "true" ]]; then cmd_release_simulate; elif [[ "$ROLLBACK_DRILL" == "true" ]]; then cmd_rollback_drill; else cmd_release; fi ;;
     dashboard) cmd_dashboard ;;
+    improve)   cmd_improve ;;
+    metrics-window) cmd_metrics_window ;;
+    incident)  cmd_incident ;;
     auto)      cmd_auto ;;
+    compile)   cmd_compile "$ARG1" ;;
     help|"")   usage ;;
     *)         die "未知命令: $COMMAND" ;;
   esac

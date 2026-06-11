@@ -39,6 +39,13 @@
 | 模板库（YAML/JSON 格式） | [`09-templates.md`](09-templates.md) | Goal/Spec/Task/Prompt 实际示例、`07-id-system.md` | 在模板外定义新的 ID 前缀、结构格式或 Matrix edge 字段 |
 | 自动化 Lint 规则（S-LINT/P-LINT） | [`10-lint-rules.md`](10-lint-rules.md) | `.config/goal/schema/rules.yaml`、`lint-goal.sh`、CI checks | 绕过 lint 规则或在本地覆盖 SSOT Lint 规则 |
 | AI 协作（PromptOps、Context Package） | [`11-ai-collaboration.md`](11-ai-collaboration.md) | `14-agent-protocols.md`、Prompt 包、`.claude/agents/` | 绕过 Context Package 格式或跳过 Prompt 审查 Gate |
+| 工作流编译器（Workflow Compiler） | [`goal-delivery.sh --compile`](tools/goal-delivery.sh)、[`deploy/roadmap.md`](deploy/roadmap.md) | `.config/goal/prompts/`、Prompt Pack | 绕过 Compiler 直接手工编写无约束 Prompt |
+| 状态机契约（State Machine Contract） | [`schema/state-machine-contract.yaml`](schema/state-machine-contract.yaml) | `goal-validate.py --only contracts` | 在控制面使用 NOT_STARTED 作为 Gate 裁决；G6/G10 放行 PASS_WITH_RISK |
+| API/Data 契约 | [`schema/api-data-contract.yaml`](schema/api-data-contract.yaml) | Spec、Design、Release Manifest | 公共 API 变更不触发 CL3+；存储迁移无 dry-run |
+| 安全/隐私契约 | [`schema/security-contract.yaml`](schema/security-contract.yaml) | Spec、Review、RSI | RSI 自动放宽安全/隐私约束；生产数据入测试环境 |
+| 运维契约（Perf/Reliability/Observability） | [`schema/ops-contract.yaml`](schema/ops-contract.yaml) | Spec、Release Manifest、Metrics Review | 发布无 rollback plan；外部调用无超时/retry；无指标观察窗口 |
+| RSI 完整标准（拆分版） | [`rsi-standard/README.md`](rsi-standard/README.md)（30 章节） | `26-rsi-full-standard.md`（索引） | 绕过 R0-R9 Gate 自动应用 RSI 补丁 |
+| 最小部署包 | [`deploy/README.md`](deploy/README.md) | 各仓库 `.config/goal/` | 将部署包当作 SSOT 替代品 |
 
 ## 3. 四轴状态模型
 

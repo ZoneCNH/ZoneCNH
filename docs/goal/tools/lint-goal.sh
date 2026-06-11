@@ -14,25 +14,28 @@ NC='\033[0m'
 
 ERRORS=0
 WARNINGS=0
-LINT_GROUPS=("G" "S" "M" "P")
+LINT_GROUPS=("G" "S" "M" "P" "C")
 
 declare -A RULE_TOTAL=(
     ["G"]=7
     ["S"]=8
     ["M"]=8
     ["P"]=10
+    ["C"]=7
 )
 declare -A RULE_AUTOMATED=(
     ["G"]=3
     ["S"]=8
     ["M"]=8
     ["P"]=10
+    ["C"]=2
 )
 declare -A RULE_FINDINGS=(
     ["G"]=0
     ["S"]=0
     ["M"]=0
     ["P"]=0
+    ["C"]=0
 )
 declare -A RULE_SEEN=()
 
@@ -48,6 +51,58 @@ file_count_ext() {
     local count
     count=$(grep -cE -- "$1" "$f" || true)
     printf '%s\n' "${count:-0}"
+}
+
+# ── check_spec_semantic: S-LINT-004~008 半自动化语义检查 ──────────────
+# 使用 grep 做模式匹配，检测触发条件并输出 [需人工确认] 标记
+check_spec_semantic() {
+    local f="$1"
+    local bn="$2"
+
+    # S-LINT-004: 权限相关功能必须包含 Security Requirements
+    mark_rule "S" "S-LINT-004"
+    if file_has_ext "auth|permission|权限|认证|授权|角色|登录"; then
+        if ! file_has_ext "[Ss]ecurity[[:space:]]*[Rr]equirement|安全要求|权限检查|[Aa]ccess[[:space:]]*[Cc]ontrol"; then
+            warn "[$bn] S-LINT-004 [需人工确认]: Spec 涉及权限/认证但缺少 Security Requirements 段"
+            finding "S"
+        fi
+    fi
+
+    # S-LINT-005: 数据导入/导出功能必须包含数据量限制
+    mark_rule "S" "S-LINT-005"
+    if file_has_ext "import|export|导入|导出|CSV|上传|下载|upload|download"; then
+        if ! file_has_ext "[0-9]+[[:space:]]*(行|条|MB|GB|记录|record)|limit|max|上限|限制|数据量"; then
+            warn "[$bn] S-LINT-005 [需人工确认]: Spec 涉及导入/导出但缺少数据量限制（如 1000 行、500MB 上限）"
+            finding "S"
+        fi
+    fi
+
+    # S-LINT-006: 异步任务必须包含状态流转规则
+    mark_rule "S" "S-LINT-006"
+    if file_has_ext "async|异步|queue|队列|task|job|callback|回调|定时|schedule"; then
+        if ! file_has_ext "状态流转|status|state[[:space:]]*machine|重试|retry|状态机"; then
+            warn "[$bn] S-LINT-006 [需人工确认]: Spec 涉及异步任务但缺少状态流转规则（状态/重试/回调）"
+            finding "S"
+        fi
+    fi
+
+    # S-LINT-007: 用户可见错误必须包含 Error Handling
+    mark_rule "S" "S-LINT-007"
+    if file_has_ext "error|错误|异常|exception|失败|fail"; then
+        if ! file_has "error[[:space:]]*handling|错误处理|Error Handling"; then
+            warn "[$bn] S-LINT-007 [需人工确认]: Spec 涉及错误场景但缺少 Error Handling 段"
+            finding "S"
+        fi
+    fi
+
+    # S-LINT-008: 涉及外部服务必须包含失败处理
+    mark_rule "S" "S-LINT-008"
+    if file_has_ext "external|外部|API|http|client|upstream|第三方|third[[:space:]]*party|请求|调用"; then
+        if ! file_has_ext "timeout|超时|retry|重试|熔断|circuit[[:space:]]*break|降级|fallback|失败处理"; then
+            warn "[$bn] S-LINT-008 [需人工确认]: Spec 涉及外部服务但缺少失败处理（超时/retry/熔断/降级）"
+            finding "S"
+        fi
+    fi
 }
 
 echo "=========================================="
@@ -95,14 +150,34 @@ for f in $FILES; do
             fi
         done
 
-        # G-LINT-003: Goal 不应包含实现细节
+        # G-LINT-003: Goal 不应包含实现细节（semi：grep 匹配实现词 + [需人工确认]）
         mark_rule "G" "G-LINT-003"
         IMPL_WORDS=("数据库" "Redis" "PostgreSQL" "API" "接口" "前端" "后端" "微服务" "SDK")
         for word in "${IMPL_WORDS[@]}"; do
             if file_has_literal "$word"; then
                 WORD_CONTEXT=$(grep -B2 -- "$word" "$f" || true)
                 if grep -qi "goal" <<< "$WORD_CONTEXT"; then
-                    warn "[$BASENAME] G-LINT-003: Goal 包含实现细节「$word」，应改为结果描述"
+                    warn "[$BASENAME] G-LINT-003 [需人工确认]: Goal 包含实现细节「$word」，应改为结果描述"
+                    finding "G"
+                fi
+            fi
+        done
+
+        # G-LINT-005: Goal 必须包含 target_user 或 target_actor（semi：grep 检测）
+        mark_rule "G" "G-LINT-005"
+        if ! file_has_ext "(用户|user|角色|actor|target_user|target_actor|运营|管理员|开发者|客户)"; then
+            warn "[$BASENAME] G-LINT-005 [需人工确认]: Goal 可能缺少目标用户/角色说明"
+            finding "G"
+        fi
+
+        # G-LINT-007: 模糊词必须有量化定义（semi：与 G-LINT-002 互补，检测弱程度词）
+        mark_rule "G" "G-LINT-007"
+        WEAK_WORDS=("体验更佳" "高可用" "易用" "智能化" "更稳定" "更快" "更好")
+        for word in "${WEAK_WORDS[@]}"; do
+            if file_has_literal "$word"; then
+                WORD_CONTEXT=$(grep -A1 -- "$word" "$f" || true)
+                if ! grep -qE "[0-9]+(%|[秒时分]|ms|\\.)" <<< "$WORD_CONTEXT"; then
+                    warn "[$BASENAME] G-LINT-007 [需人工确认]: 发现无量化定义的形容词「$word」"
                     finding "G"
                 fi
             fi
@@ -114,26 +189,31 @@ for f in $FILES; do
         SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
         SPEC_LINT_PY="${SCRIPT_DIR}/spec-lint.py"
 
-        if [ -x "$SPEC_LINT_PY" ]; then
-            SPEC_FINDINGS=$(python3 "$SPEC_LINT_PY" "$f" 2>/dev/null) || true
-        else
-            SPEC_FINDINGS=""
-        fi
-
-        for r in S-LINT-001 S-LINT-002 S-LINT-003 S-LINT-004 S-LINT-005 S-LINT-006 S-LINT-007 S-LINT-008; do
+        # S-LINT-001~003: 结构检查（委托 spec-lint.py）
+        for r in S-LINT-001 S-LINT-002 S-LINT-003; do
             mark_rule "S" "$r"
         done
-        if [ -n "$SPEC_FINDINGS" ]; then
-            while IFS=$'\t' read -r level rule message; do
-                [ -z "$level" ] && continue
-                if [ "$level" = "ERROR" ]; then
-                    error "[$BASENAME] $rule: $message"
-                else
-                    warn "[$BASENAME] $rule: $message"
-                fi
-                finding "S"
-            done <<< "$SPEC_FINDINGS"
+
+        if [ -x "$SPEC_LINT_PY" ]; then
+            SPEC_FINDINGS=$(python3 "$SPEC_LINT_PY" "$f" 2>/dev/null) || true
+            if [ -n "$SPEC_FINDINGS" ]; then
+                while IFS=$'\t' read -r level rule message; do
+                    [ -z "$level" ] && continue
+                    # 只处理 python 产出的结构规则 S-LINT-001~003
+                    if [[ "$rule" =~ ^S-LINT-00[1-3]$ ]]; then
+                        if [ "$level" = "ERROR" ]; then
+                            error "[$BASENAME] $rule: $message"
+                        else
+                            warn "[$BASENAME] $rule: $message"
+                        fi
+                        finding "S"
+                    fi
+                done <<< "$SPEC_FINDINGS"
+            fi
         fi
+
+        # S-LINT-004~008: 半自动化语义检查（bash grep + [需人工确认]）
+        check_spec_semantic "$f" "$BASENAME"
     fi
 
     # === Matrix Lint 规则 ===
@@ -262,8 +342,8 @@ PY
 
         # P-LINT-002: Prompt 必须有明确输出格式
         mark_rule "P" "P-LINT-002"
-        if ! file_has "output\|输出\|格式\|format"; then
-            warn "[$BASENAME] P-LINT-002: Prompt 缺少输出格式说明"
+        if ! file_has "output\|输出.*格式\|output format\|格式\|format"; then
+            warn "[$BASENAME] P-LINT-002: Prompt 缺少输出格式说明 (Output/输出/output format)"
             finding "P"
         fi
 
@@ -295,17 +375,17 @@ PY
             finding "P"
         fi
 
-        # P-LINT-007: Prompt 必须包含 Test Requirements
+        # P-LINT-007: Prompt 必须包含 Test Requirements / 验证命令
         mark_rule "P" "P-LINT-007"
-        if ! file_has "test\|测试\|验证\|verify"; then
-            warn "[$BASENAME] P-LINT-007: Prompt 缺少测试要求"
+        if ! file_has "test\|测试\|验证\|verify\|test.command"; then
+            warn "[$BASENAME] P-LINT-007: Prompt 缺少测试/验证要求 (验证/verify/test command)"
             finding "P"
         fi
 
-        # P-LINT-008: Prompt 必须包含 Do Not / 禁止事项
+        # P-LINT-008: Prompt 必须包含 Do Not / 停止条件 / 禁止事项
         mark_rule "P" "P-LINT-008"
-        if ! file_has "do.not\|禁止\|不要\|不得\|MUST.NOT\|non.goal\|不包含"; then
-            warn "[$BASENAME] P-LINT-008: Prompt 缺少禁止事项"
+        if ! file_has "do.not\|禁止\|不要\|不得\|MUST.NOT\|non.goal\|不包含\|停止\|stop"; then
+            warn "[$BASENAME] P-LINT-008: Prompt 缺少禁止/停止条件 (停止/stop/不要/do not)"
             finding "P"
         fi
 
@@ -322,6 +402,42 @@ PY
             warn "[$BASENAME] P-LINT-010: Prompt 包含允许自行扩大范围的表述"
             finding "P"
         fi
+    fi
+
+    # === Code Lint 规则 ===
+    # 仅对任务/Prompt/PR/代码文件执行 C-LINT；排除含 "protected/protocol/improve/process" 的文件
+    if echo "$BASENAME" | grep -qiE "(^|[_-])(task|prompt|pr|code)([_-]|\.)"; then
+
+        # C-LINT-001: 必须引用至少一个 Task ID
+        mark_rule "C" "C-LINT-001"
+        if ! file_has_ext "TASK-[A-Z]+-[0-9]{8}-[0-9]{3}-[0-9]{3}"; then
+            warn "[$BASENAME] C-LINT-001: 缺少 Task ID 引用"
+            finding "C"
+        fi
+
+        # C-LINT-002: 必须引用至少一个 Matrix edge (source_id 或 goal_id)
+        mark_rule "C" "C-LINT-002"
+        if ! file_has "source_id\|goal_id\|matrix\|trace"; then
+            warn "[$BASENAME] C-LINT-002: 缺少 Matrix edge 引用"
+            finding "C"
+        fi
+
+        # C-LINT-003: PR 必须包含测试说明（semi：grep 检测 test/测试/验证）
+        mark_rule "C" "C-LINT-003"
+        if ! file_has_ext "(test|测试|验证|Test|TEST)"; then
+            warn "[$BASENAME] C-LINT-003 [需人工确认]: PR 可能缺少测试说明"
+            finding "C"
+        fi
+
+        # C-LINT-004: P0/P1 Task 不允许无测试合并（semi：检测 P0/P1 + 无测试引用）
+        mark_rule "C" "C-LINT-004"
+        if file_has "P0\|P1\|Priority.*[01]"; then
+            if ! file_has_ext "(test|测试|Test|TEST-[A-Z]+-[0-9])"; then
+                warn "[$BASENAME] C-LINT-004 [需人工确认]: P0/P1 Task 可能缺少测试"
+                finding "C"
+            fi
+        fi
+
     fi
 
     # === 通用检查 ===

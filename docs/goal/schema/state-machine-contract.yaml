@@ -1,0 +1,108 @@
+# State Machine Contract — Goal 管线状态转换规则
+# SSOT: docs/goal/03-pipeline.md §2.1, §2.2, §2.4
+# 路径: docs/goal/schema/state-machine-contract.yaml
+#
+# 本文档从 03-pipeline.md 提取状态转换规则为机器可读格式。
+# 所有工具和 CI 检查 MUST 引用本文档，不得重新定义转换规则。
+
+schema_name: state_machine_contract
+schema_version: "1.0.0"
+authority_sources:
+  - docs/goal/03-pipeline.md
+  - docs/goal/04-gates.md
+  - docs/goal/schema/state-dictionary.yaml
+
+# ============================================================
+# Pipeline 状态转换（03-pipeline.md §2.4）
+# ============================================================
+pipeline_transitions:
+  normal:
+    - { from: INIT,             to: CONTEXT_READY,   guard: "G0 上下文恢复完整性检查通过" }
+    - { from: CONTEXT_READY,    to: GOAL_READY,      guard: "G1 Goal 符合 SMART 标准" }
+    - { from: GOAL_READY,       to: SPEC_READY,      guard: "G2 Spec 完整且可测试" }
+    - { from: SPEC_READY,       to: DESIGN_READY,    guard: "G3 Design 可映射到模块" }
+    - { from: DESIGN_READY,     to: PLAN_READY,      guard: "G4 Plan 体现依赖顺序" }
+    - { from: PLAN_READY,       to: TASKS_READY,     guard: "G5 Tasks 原子化且有 DoD" }
+    - { from: TASKS_READY,      to: EXECUTING,       guard: "Task 已选定 / Owner 已分配" }
+    - { from: EXECUTING,        to: VERIFYING,       guard: "实现完成" }
+    - { from: VERIFYING,        to: REVIEWING,       guard: "G7 Test + G8 Evidence PASS" }
+    - { from: REVIEWING,        to: RELEASING,       guard: "G9 Review PASS" }
+    - { from: RELEASING,        to: RETROSPECTING,   guard: "G10 Release Gate PASS" }
+    - { from: RETROSPECTING,    to: DONE,            guard: "G11 Retrospective Gate PASS" }
+
+  # 异常/控制状态（03-pipeline.md §2.2）
+  exception_states:
+    - BLOCKED
+    - FAILED
+    - NEEDS_RESEARCH
+    - NEEDS_DECISION
+    - NEEDS_REPLAN
+    - NEEDS_ROLLBACK
+    - NEEDS_HUMAN_APPROVAL
+    - INCONSISTENT_STATE
+
+  # 回退规则（03-pipeline.md §回退规则）
+  rollback:
+    - { from: VERIFYING,            to: EXECUTING,      reason: "G7 Test Gate FAIL" }
+    - { from: REVIEWING,            to: EXECUTING,      reason: "G9 Review FAIL: 实现缺陷" }
+    - { from: REVIEWING,            to: DESIGN_READY,   reason: "G9 Review FAIL: 设计缺陷" }
+    - { from: RELEASING,            to: NEEDS_ROLLBACK, reason: "G10 Release Gate FAIL" }
+    - { from: ANY,                  to: BLOCKED,        reason: "依赖缺失 / 权限缺失" }
+    - { from: ANY,                  to: NEEDS_RESEARCH, reason: "未知项阻塞决策" }
+    - { from: ANY,                  to: NEEDS_DECISION, reason: "多方案且影响 CL3+" }
+    - { from: ANY,                  to: NEEDS_REPLAN,   reason: "Spec/Design 变更影响 Plan" }
+    - { from: ANY,                  to: INCONSISTENT_STATE, reason: "Registry/Artifact/CI 冲突" }
+
+# ============================================================
+# 对象状态流（03-pipeline.md §2.5）
+# ============================================================
+object_state_flows:
+  goal:      { flow: "Draft → Active → Paused → Achieved / Abandoned", terminal: [Achieved, Abandoned] }
+  spec:      { flow: "Draft → Review → Approved → Superseded / Deprecated", terminal: [Superseded, Deprecated] }
+  design:    { flow: "Draft → Review → Approved → Superseded", terminal: [Superseded] }
+  plan:      { flow: "Draft → Approved → Superseded", terminal: [Superseded] }
+  task:      { flow: "Unmapped → Mapped → In Progress → Blocked → In Review → Done / Dropped", terminal: [Done, Dropped] }
+  matrix:    { flow: "Unmapped → Mapped → Linked → Verified / Dropped", terminal: [Verified, Dropped], drift_meta: [Drifted, Stale, Blocked, Changed] }
+  issue:     { flow: "OPEN → TRIAGED → SPEC_READY → DESIGN_READY → TASKS_READY → IN_PROGRESS → IN_REVIEW → READY_FOR_RELEASE → DONE", terminal: [DONE] }
+  gate:      { values: [PASS, PASS_WITH_RISK, FAIL, BLOCKED], not_values: [NOT_STARTED, IN_PROGRESS, PENDING] }
+  maturity:  { levels: [L0, L1, L2, L3, L4, L5] }
+  change:    { levels: [CL0, CL1, CL2, CL3, CL4, CL5] }
+
+# ============================================================
+# 契约规则（可在 goal-validate.py 中检查）
+# ============================================================
+contract_rules:
+  - id: "SC-001"
+    rule: "pipeline_state 只能使用 normal 或 exception_states 中的值"
+    check: "enum validation"
+    severity: error
+
+  - id: "SC-002"
+    rule: "phase_status MUST NOT 直接设置为 pipeline_state 的枚举值"
+    check: "cross-axis validation"
+    severity: error
+
+  - id: "SC-003"
+    rule: "Gate result.verdict MUST NOT 包含 NOT_STARTED 或 IN_PROGRESS"
+    check: "gate validation"
+    severity: error
+
+  - id: "SC-004"
+    rule: "对象状态必须遵循其定义的状态流（object_state_flows）"
+    check: "flow validation"
+    severity: error
+
+  - id: "SC-005"
+    rule: "WAIVED 是豁免策略，不是 Gate 结果值"
+    check: "gate policy"
+    severity: warn
+
+  - id: "SC-006"
+    rule: "G6 和 G10 不允许 PASS_WITH_RISK"
+    check: "gate policy"
+    severity: error
+
+  - id: "SC-007"
+    rule: "存在 Open/Escalated release_blocking 风险时，G10 必须 FAIL 或 BLOCKED"
+    check: "risk-gate consistency"
+    severity: error

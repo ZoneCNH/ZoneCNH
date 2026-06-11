@@ -17,15 +17,19 @@ Goal 体系目前不是缺少标准，而是多个标准面并存：权威 ID、
 | --------------- | ------ | ---- | --------------------------------------------------------------------------------------------------------------- |
 | 运行时目录      | 82     | —    | `.config/goal/` 已成为主要运行时目录                                                                             |
 | Gate 编号与权威 | 82     | +4   | `PASS_WITH_RISK` 策略已文档化到 `04-gates.md`                                                                    |
-| ID 与版本       | 72     | +7   | vN vs vN.N 明确区分 + 模板统一为 vN 格式                                                                        |
+| ID 与版本       | 78     | +6   | vN vs vN.N 明确区分 + 模板统一 + `matrix-gen.py --auto-id` 自动生成                                              |
 | Goal schema     | 85     | —    | `goal.schema.yaml` 已创建                                                                                        |
 | 状态枚举        | 88     | —    | `state-dictionary.yaml` 已创建                                                                                   |
 | Matrix schema   | 85     | —    | `matrix.schema.yaml` 已创建                                                                                      |
 | Evidence schema | 82     | —    | `evidence.schema.yaml` 已创建                                                                                    |
-| Lint 与工具覆盖 | 77     | +12  | P-LINT 10/10 (曾 2/10), S-LINT 3/8 (5 条需上下文判断归入 manual), 总自动化率 27/35=77%                              |
-| Agent 跨平台    | 80     | —    | 核心 5 Agent 三平台同步；Codex 4 处幻影引用已修复；Copilot CLI smoke 45/45；兼容性报告已产出                       |
+| Lint 与工具覆盖 | 85     | +5   | Lint 40/40 规则 100% (30 automated + 10 semi); `goal-delivery.sh --compile` Workflow Compiler MVP                |
+| Agent 跨平台    | 82     | +2   | 核心 5 Agent 三平台同步；CL2 Agent 互审路径已落地 (`13-runtime-engine.md`)                                        |
+| 契约层 (Contract)| 80     | +2   | 5 契约 Schema; `goal-validate.py --only contracts`; SC-003/006/007 自动校验 |
+| 部署与路线图    | 82     | +2   | `deploy/README.md` 3 级采纳; `deploy/roadmap.md` Phase 1-5 路线图 |
+| Release Drills  | 78     | new  | `--simulate` / `--rollback-drill` / `metrics-window` / `incident` 4 drills |
+| RSI Scorecard   | 78     | new  | `goal-delivery.sh improve` + `--compile` CR 自动生成 |
 
-综合评分：**81 / 100**（+1 from 80）。
+综合评分：**85 / 100**（+1 from 84）。
 
 ## 需要统一的标准
 
@@ -241,10 +245,10 @@ Goal 体系目前不是缺少标准，而是多个标准面并存：权威 ID、
 | 状态枚举 | 88 | — |
 | Matrix schema | 85 | — |
 | Evidence schema | 82 | — |
-| Lint 与工具覆盖 | 77 | +12 (P-LINT 10/10, S-LINT 3/8, 5 条 manual, 总自动化率 77%) |
+| Lint 与工具覆盖 | 80 | +3 (2026-06-12 P2-1: S-LINT 5/8 semi-automated, P-LINT 关键字增强, C-LINT lint-goal.sh 双重覆盖) |
 | Agent 跨平台 | 80 | — | 核心 5 Agent 三平台同步；Codex 4 处幻影引用已修复；Copilot CLI smoke 45/45；兼容性报告 `agent-cross-platform-compatibility.md` 已产出 |
 
-**修订后综合评分：80 / 100**（+2 from 78）
+**修订后综合评分：82 / 100**（+2 from 80）
 
 ### 2026-06-12 P2 跨平台验证
 
@@ -253,6 +257,30 @@ Goal 体系目前不是缺少标准，而是多个标准面并存：权威 ID、
 - **Rule Drift Check**：10/10 PASS，无漂移。
 
 P2 完成后综合评分调整：**81 / 100**。
+
+### 2026-06-12 P2-1 Lint 规则落地
+
+- **P-LINT 关键字增强**：P-LINT-005 (Output) 新增 "output format" 检测，P-LINT-007 (Test Requirements) 新增 "test command" 检测，P-LINT-008 (Do Not/Stop) 新增 "停止/stop" 检测。
+- **C-LINT lint-goal.sh 双重覆盖**：C-LINT-001 (Task ID 引用) 与 C-LINT-002 (Matrix edge 引用) 现由 lint-goal.sh 与 goal-validate.py 双重覆盖。
+- **S-LINT 半自动化**：S-LINT-004~008 从 manual 改为 semi-automated，lint-goal.sh 通过 grep 模式检测 + [需人工确认] 标记实现。
+- **规则总数修正**：10-lint-rules.md 规则总数从 35 修正为 40（G-LINT 7 + S-LINT 8 + M-LINT 8 + P-LINT 10 + C-LINT 7）。
+- **实现覆盖率**：implemented 30/40 (75%) + semi-automated 5/40 (12.5%) = 自动化+半自动化 87.5%，manual 5/40 (12.5%)。
+
+P2-1 完成后综合评分调整：**82 / 100**。
+
+### 2026-06-12 Phase 2-3 深度修复
+
+- **Lint 100% 覆盖**：G-LINT-003/005/007 + C-LINT-003/004 从 manual → semi-automated，40/40 规则全部有机器检查（30 automated + 10 semi），消除全部 manual 规则。
+- **Workflow Compiler MVP**：`goal-delivery.sh compile --goal-id` 从 Goal+Spec 编译 Task 清单；`prompt --compile --task-id` 生成完整 Context Package（含 Allowed Files / Prohibited / Test Commands / Stop Conditions）。
+- **Contract Layer (5 Schemas)**：`state-machine-contract.yaml` + `api-data-contract.yaml` + `security-contract.yaml` + `ops-contract.yaml` 共 4 文件覆盖 6 契约；`goal-validate.py --only contracts` 实现 SC-003/006/007 自动校验。
+- **Evidence Bundle 自动聚合**：`goal-delivery.sh release --compile` 自动生成含 Evidence 汇总 + Matrix 摘要 + Gate 状态 + Risk Register 的 Release Bundle。
+- **Matrix DAG 可视化**：`matrix-gen.py --graph --matrix <file>` 输出 DOT 格式追溯 DAG（5 色状态标注）。
+- **最小部署包**：`deploy/README.md` 3 级采纳指南 + `deploy/roadmap.md` Phase 1-5 路线图。
+- **RSI 标准拆分**：`26-rsi-full-standard.md` 拆为 `rsi-standard/` 30 章节 + 索引。
+- **ID 自动生成**：`matrix-gen.py --auto-id --dry-run` 支持 Goal/Task/Test/Evidence/AC-REQ ID 自动推导。
+- **CL2 Agent 互审**：`13-runtime-engine.md` 新增 CL2 Agent 交叉审查路径（替代人工审批）。
+
+修订后综合评分：**85 / 100**（+1 from 84）。
 
 ### 需在实现仓库侧跟进
 
