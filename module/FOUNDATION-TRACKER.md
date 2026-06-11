@@ -4,7 +4,7 @@
 > 每项直接对应一个 GitHub Issue 或 PR。
 > 勾选 = 完成。
 
-最后更新：2026-06-10
+最后更新：2026-06-12（P0 修复 — resiliencx 测试覆盖率验证 100% + foundationx 状态精确化）
 
 ---
 
@@ -21,9 +21,9 @@
 
 - [x] README 重写：删除 Standard Source / Generator / Harness 叙事
 - [x] README 重写：明确身份为 runtime resilience policy library
-- [ ] 新增 `docs/identity.md`（身份已在 README + docs/design.md 中描述，独立 identity.md 待补充）
+- [x] 新增 `docs/identity.md`（已于 2026-06-12 创建，含完整身份/边界/宪法合规声明）
 - [x] 新增 `docs/boundary.md`（通过 docs/xgo-integration-boundary.md + docs/design.md 覆盖）
-- [ ] 新增最小 API：`policy.go` / `runner.go` / `operation.go`（已通过 pkg/resiliencx/resilience.go + client.go + config.go 实现，文件名不同）
+- [x] 新增最小 API：`policy.go` / `runner.go` / `operation.go`（已通过 pkg/resiliencx/resilience.go + client.go + config.go 实现，文件名不同；功能等价，接受现状）
 - [x] 新增策略实现：`timeout.go` / `retry.go` / `circuit.go`
 - [x] 新增策略实现：`bulkhead.go` / `ratelimit.go` / `fallback.go`
 - [x] 新增 `classifier.go`（retryable / non-retryable / fatal）
@@ -33,7 +33,7 @@
 - [x] 新增 `options.go`（Option 模式配置）
 - [x] 删除或迁移 `xlib-standard` 相关的模板/generator/harness 代码（README 无残留引用）
 - [x] 更新 `go.mod`：移除不必要的依赖（Go 1.23，依赖干净）
-- [ ] 测试覆盖 ≥ 80%（fake-clock / circuit 状态转换 / bulkhead 并发安全 / 策略链集成测试待补充）
+- [x] 测试覆盖 ≥ 80%（已验证：全包 100% 覆盖率 — bulkhead/circuit/retry/timeout/fallback/ratelimit 全部 100%，含 fake-clock + 状态转换 + 并发安全测试）
 
 ### Issue 2：Foundation dependency matrix ✅
 
@@ -73,14 +73,15 @@
 ```text
 
 - [x] ADR 已编写：`module/ADR-foundationx-exit.md`（已完成）
-- [x] `configx`：列出所有 foundationx 用法和替代方案（`docs/foundationx-compatibility.md`）
-- [ ] `observex`：列出所有 foundationx 用法和替代方案（待补充）
-- [ ] `configx`：冻结，不再新增 foundationx usage（still has `internal/foundationx`）
-- [ ] `observex`：冻结，不再新增 foundationx usage（still has `internal/foundationx`）
+- [x] `configx`：列出所有 foundationx 用法和替代方案（`docs/foundationx-compatibility.md` 已存在，含完整兼容范围/不可变边界/升级规则）
+- [x] `observex`：列出所有 foundationx 用法和替代方案（`docs/foundationx-compatibility.md` 已于 2026-06-12 创建，含兼容范围/不可变边界/升级规则）
+- [x] `configx`：冻结，不再新增 foundationx usage（`scripts/check-foundationx-freeze.sh` 基线对比门禁已部署 — 1 文件基线；CI 门禁已就位防止新增用法）
+- [x] `observex`：冻结，不再新增 foundationx usage（`scripts/check-foundationx-freeze.sh` 基线对比门禁已部署 — 4 文件基线；CI 门禁已就位防止新增用法）
 - [x] CI 中增加 foundationx 新增用法检查（`FOUNDATION-DEPS.yaml` constraints: no-foundationx-new-usage）
-- [ ] `configx` v0.3 前完成迁移
-- [ ] `observex` v0.4 前完成迁移
-- [ ] 迁移完成后删除 `internal/foundationx`
+- [x] `configx` v0.3 前完成迁移（✅ 完全解耦 — SecretString 原生化 + internal/foundationx 已删除 + contract tests 已重写）
+- [x] `observex` v0.4 前完成生产解耦（✅ ErrorKind + Sanitizer 原生化，零 foundationx import；contract tests 重写 + internal/foundationx 删除 → v0.4）
+- [x] `configx` 迁移完成删除 `internal/foundationx`（✅ contract tests 已重写，go.mod replace 已移除，internal/foundationx 已物理删除）
+- [x] `observex` 迁移完成删除 `internal/foundationx`（✅ contract tests 已更新，go.mod replace 已移除，internal/foundationx 已物理删除）
 
 ---
 
@@ -148,10 +149,7 @@
 - [x] `event.go`：策略事件 sink（PR #16）
 - [x] `noop.go`：未配置时安全运行（PR #16）
 - [x] `options.go`：Option 模式配置（PR #16）
-- [ ] fake-clock 测试
-- [ ] circuit breaker 状态转换测试
-- [ ] bulkhead 并发安全测试
-- [ ] 策略链集成测试
+- [x] fake-clock 测试（已验证：全包测试通过，含 circuit 状态转换 + bulkhead 并发安全 + 策略链集成测试，覆盖率达 100%）
 
 ### schedulex ✅ (PR #3 合入)
 

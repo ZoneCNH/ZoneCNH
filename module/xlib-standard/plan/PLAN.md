@@ -1,5 +1,9 @@
-# xlib-standard v1.0.0 执行计划
+# xlib-standard v1.0.0 执行计划（历史归档）
 
+> ⚠️ 本文件为上游仓库 Path A 历史执行计划（2026-06-09）。
+> 当前 xlib-standard 五类职责（标准事实源、Go Reference Template、Generator、Harness Gate、Evidence Runtime）的完整定位见 `../goal.md`、`../SPEC.md` 和 CONSTITUTION.md P2。
+> 本文件描述的 4 项职责是该历史时期的执行范围划分，不代表当前模块定位。
+>
 > 路径 A：极简方案
 > 基于 goal.md 制定
 

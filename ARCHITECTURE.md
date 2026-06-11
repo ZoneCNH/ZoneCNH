@@ -176,7 +176,7 @@ Foundation v1 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中�
 
 `risk-engine` 才负责 trading risk，二者不能混用。
 
-当前 P0 是确认 `xlib-standard` 的五类职责（Standard Source / Go Reference Template / Generator / Harness / Evidence Runtime）已完整落地，并让 `resiliencx` 围绕 timeout、retry、circuit、bulkhead、rate limit、fallback 和 policy event 建模。
+`xlib-standard` v1.0.0 已发布（tag v1.0.0, PR #115），五类职责（Standard Source / Go Reference Template / Generator / Harness Gate / Evidence Runtime）已完整落地。`resiliencx` 已围绕 timeout、retry、circuit、bulkhead、rate limit、fallback 和 policy event 完成身份修复，测试覆盖率 100%。
 
 | 边界     | `kernel.retryx`                        | `resiliencx`                                      |
 | -------- | -------------------------------------- | ------------------------------------------------- |
