@@ -146,7 +146,7 @@
 | 检查清单 | 发布、测试、兼容性、安全、观测检查清单 | 1.0 检查项语义稳定 |
 | 错误码分配表 | 模块错误码段和分类规则 | 错误码段一经分配不得复用 |
 | 文档模板 | 模块 RFC、设计文档、配置参考、测试证据模板 | 模板字段稳定，允许追加可选字段 |
-| CI Gate 定义 | 9 个 gate 的 make ci 串联逻辑 | gate 名称和执行顺序稳定 |
+| CI Gate 定义 | 17 个 gate 的 make ci 串联逻辑 | gate 名称和执行顺序稳定 |
 | Release Evidence | manifest latest.json + .sha256 格式 | 字段集合稳定，允许追加可选字段 |
 
 ### 7.2 1.0 逻辑接口基线
@@ -178,7 +178,7 @@ template/                          # Go Reference Template（可编译源码）
 
 scripts/
   render_template.sh               # Generator
-  Makefile                          # make ci（9 个 gate）
+  Makefile                          # make ci（17 个 gate）
   release_check.sh                  # Evidence Runtime
 ```
 
@@ -249,7 +249,7 @@ scripts/
 | 标准一致性检查 | 模板字段完整、错误码段无冲突、指标命名合法 | MUST 通过 |
 | 模板可编译 | Go Reference Template 通过 `go vet ./...`、`go test ./...` 和 `go test -race ./...` | MUST 通过 |
 | 生成器冒烟测试 | Generator 渲染成功，生成库 go.mod / 包名无模板残留 | MUST 通过 |
-| CI Gate 集成 | `make ci` 的 9 个 gate 全部通过 | MUST 通过 |
+| CI Gate 集成 | `make ci` 的 17 个 gate 全部通过 | MUST 通过 |
 | Evidence 复现 | `make release-final-check` 通过，manifest checksum 校验一致 | MUST 通过 |
 | 模块合规抽检 | 至少选择 kernel、observex、redisx、contracts 验证标准可执行 | MUST 通过 |
 | 文档链接检查 | 标准文档内部引用有效 | MUST 通过 |

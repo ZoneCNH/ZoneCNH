@@ -58,7 +58,7 @@ status: pending
 ## Non-scope
 
 - 不实现 Health、Metrics、render template 或 release manifest。
-- 不新增超出 8 类 ErrorKind 的错误分类。
+- 不新增超出 9 类 ErrorKind 的错误分类。
 - 不引入具体业务客户端、网络连接或后台 goroutine。
 
 ## Acceptance
@@ -71,7 +71,7 @@ status: pending
 
 | Requirement | Description | Acceptance Criteria |
 |---|---|---|
-| FR-002 | Error 标准 | 8 种 ErrorKind |
+| FR-002 | Error 标准 | 9 种 ErrorKind |
 | FR-005 | Client 标准 | New/Close 存在 |
 | §9 | Interface Contract | 接口定义正确 |
 | §10 | Data Model | ErrorKind 正确 |
