@@ -108,7 +108,7 @@ cases:
 
   - id: EVAL-CASE-013
     type: cross_platform_g10
-    source: CHANGELOG 2026-06-12 (v2 P1: G10 8 项统一)
+    source: "CHANGELOG 2026-06-12 (v2 P1: G10 8 项统一)"
     description: Claude G10 阻断条件从 7→8 项，补入 Agent 隔离检查
     expected: three_platform_unified_8_items
     verdict: PASS
@@ -116,7 +116,7 @@ cases:
 
   - id: EVAL-CASE-014
     type: cross_platform_matrix
-    source: CHANGELOG 2026-06-12 (v2 P1: M-LINT-008 四链路)
+    source: "CHANGELOG 2026-06-12 (v2 P1: M-LINT-008 四链路)"
     description: M-LINT-008 Matrix Verified 从 Code+Test→Code+Test+Evidence+Gate 四链路
     expected: three_platform_unified_four_linkage
     verdict: PASS
@@ -124,7 +124,7 @@ cases:
 
   - id: EVAL-CASE-015
     type: lint_cr_exclusion
-    source: CHANGELOG 2026-06-12 (v2 P1: CR 误报)
+    source: "CHANGELOG 2026-06-12 (v2 P1: CR 误报)"
     description: lint-goal.sh 排除 change-requests/ 和 CHANGELOG.md，0 WARN
     expected: zero_warnings_on_cr_files
     verdict: PASS
