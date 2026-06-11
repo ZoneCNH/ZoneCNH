@@ -23,7 +23,7 @@
 
 ## 1. Goal 定位
 
-`kernel` 的 Goal 是提供 xlib 所有模块共享的最小稳定原语。它只承载无业务语义、低依赖、可长期稳定的基础模型和工具，包括结果模型、错误模型、上下文、时间、ID、分页、校验、生命周期和少量基础集合/并发辅助能力。它是其他模块共同依赖的核心，但不能演变成“大工具箱”。
+`kernel` 的 Goal 是提供 xlib 所有模块共享的最小稳定原语。它采用轻量工具包子集设计，包含 12 个独立子包：`lifecycx`（组件生命周期管理）、`errx`（结构化错误模型）、`healthx`（健康检查）、`obsx`（可观测抽象——Logger/Metrics/Tracer 接口）、`retryx`（重试策略配置原语）、`shutdownx`（优雅停机 Hook 管理）、`syncx`（并发控制——SemaphoreLimiter/WorkerGroup）、`timex`（Clock 抽象——RealClock/FixedClock/FakeClock）、`validx`（前置条件校验）、`versionx`（版本信息）、`contextx`（类型安全上下文——Key[T]/DeadlineRemaining）、`contracttest`（契约测试辅助）。各子包独立按需引用，stdlib-only，零外部依赖。它是其他模块共同依赖的核心，但不能演变成”大工具箱”。
 
 ### 1.1 为什么需要这个模块
 
@@ -34,11 +34,18 @@
 
 ### 1.2 1.0 要解决的问题
 
-- 统一成功/失败返回模型和错误分类。
-- 统一上下文传播载体，但不绑定具体日志或 Trace 实现。
-- 统一时间、ID、分页、排序、校验结果等基础模型。
-- 提供可测试的 Clock、IdGenerator 等基础抽象。
-- 约束依赖方向，避免 L0 依赖 L1 或扩展模块。
+- 通过 `lifecycx` 统一组件有序启动/逆序停止，失败自动回滚。
+- 通过 `errx` 统一结构化错误模型（ErrorKind/NewError/WrapError/IsKind）。
+- 通过 `healthx` 统一健康检查与聚合（HealthStatus/Probe/Aggregate）。
+- 通过 `obsx` 提供无供应商绑定的 Logger/Metrics/Tracer/Span 接口 + Noop 实现。
+- 通过 `retryx` 提供重试策略配置原语（RetryPolicy/Delay/DelayWithJitter），运行时弹性执行属于 `resiliencx`。
+- 通过 `timex` 提供可测试的 Clock 抽象（RealClock/FixedClock/FakeClock）。
+- 通过 `validx` 统一前置条件/不变式校验（Precondition/Invariant/RequireNonEmpty）。
+- 通过 `contextx` 提供类型安全的 context 工具（Key[T]/WithValue/Value/DeadlineRemaining）。
+- 通过 `shutdownx` 管理优雅停机 Hook 和 OS signal 处理。
+- 通过 `syncx` 提供轻量并发控制原语（SemaphoreLimiter/WorkerGroup）。
+- 通过 `versionx` 和 `contracttest` 支持版本信息与契约测试。
+- 约束依赖方向：stdlib-only，零外部依赖。`obsx` 定义的可观测接口由 L1 模块实现。
 
 ### 1.3 目标用户
 
@@ -102,7 +109,7 @@
 - 不提供日志、指标、Trace 的具体实现。
 - 不实现配置中心、数据库、缓存、消息队列能力。
 - 不包含业务身份、订单、设备、用户等领域模型。
-- 不提供重试、熔断、限流等弹性策略实现，这些属于 resiliencx。
+- `retryx` 提供重试策略配置原语（参数校验、延迟计算），不提供重试执行引擎、熔断、限流等运行时弹性机制，这些属于 `resiliencx`。
 
 ## 6. 依赖关系与分层约束
 
