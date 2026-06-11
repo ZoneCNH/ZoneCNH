@@ -4,7 +4,7 @@
 Status: Approved
 Owner: ZoneCNH
 Version: v1.0.0
-Updated: 2026-06-10
+Updated: 2026-06-12
 
 本规格定义 `xlib-standard` 五类职责中后四类的可执行交付规格——Go Reference Template、Generator、Harness Gate 和 Evidence Runtime。第一类职责（Standard Source / 标准事实源）的文档规范定义见 goal.md。本规格约束公共 API、模板生成、验证 gate、release manifest 与最终验收，不承载业务域实现。
 
@@ -30,7 +30,7 @@ Updated: 2026-06-10
 | Prompt  | Ready     | 9 个 context packet 已生成                     |
 | Code    | Completed | G6 PASS, 14 FR/27 AC/24 TC verified            |
 | Test    | Completed | G7 PASS, Evidence 6 文件                       |
-| Release | Completed | v1.0.0 已发布（tag v1.0.0, PR #115 合入） |
+| Release | Released  | 上游 v1.0.0 已发布（tag v1.0.0，PR #115 已合入；version.go 仍为 v0.6.6 待上游同步） |
 
 ## Summary
 
