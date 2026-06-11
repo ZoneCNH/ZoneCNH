@@ -129,7 +129,9 @@ Goal 驱动交付体系 — 端到端工作流编排 (v2)
 验证与门禁:
   check [--gate G0-G11]  运行 Gate 检查（委托 gate-check.sh / goal-validate.py）
   validate               运行完整验证（委托 goal-workflow.sh）
-  release                运行发布前硬阻断检查
+  release                发布前硬阻断检查
+  release --simulate     dry-run 发布路径演练
+  release --rollback-drill  回滚路径验证演练
 
 状态与看板:
   status    显示当前管线状态
@@ -1284,6 +1286,116 @@ cmd_release() {
   fi
 }
 
+# ─── release --simulate：发布演练 ──────────────────────────
+cmd_release_simulate() {
+  title "Release Simulation — 发布路径 dry-run 演练"
+  require_config
+
+  local sim_id="SIM-$(date +%Y%m%d-%H%M%S)"
+  local sim_dir="$CONFIG_DIR/evidence/sim-${sim_id}"
+  mkdir -p "$sim_dir"
+
+  step "1/5 检查 Gate 状态..."
+  local gates_pass=0 gates_total=0
+  for gate in G0 G1 G2 G3 G4 G5 G6 G7 G8 G9 G10; do
+    gates_total=$((gates_total + 1))
+    local gs=$(gate_status "$gate")
+    [[ "$gs" == "PASS" || "$gs" == "PASS_WITH_RISK" ]] && gates_pass=$((gates_pass + 1))
+  done
+  info "Gate: $gates_pass/$gates_total 通过"
+
+  step "2/5 检查 Matrix 覆盖率..."
+  if [[ -f "$SCRIPT_DIR/matrix-gen.py" ]]; then
+    python3 "$SCRIPT_DIR/matrix-gen.py" --check-only --matrix "$CONFIG_DIR/matrix/matrix.yaml" 2>&1 | head -5
+  fi
+
+  step "3/5 检查 Evidence..."
+  local evid_count=0
+  [[ -d "$CONFIG_DIR/evidence" ]] && evid_count=$(find "$CONFIG_DIR/evidence" -name "*.md" -type f | wc -l)
+  info "Evidence 文件: ${evid_count:-0} 个"
+
+  step "4/5 检查 Risk Register..."
+  local open_blocking=0
+  if [[ -f "$CONFIG_DIR/registry/risks.yaml" ]]; then
+    open_blocking=$(grep -c "release_blocking.*true" "$CONFIG_DIR/registry/risks.yaml" 2>/dev/null | head -1)
+    open_blocking=${open_blocking:-0}
+  fi
+  if [[ "$open_blocking" -gt 0 ]]; then
+    warn "发现 $open_blocking 个 release_blocking 风险"
+  else
+    ok "无 release_blocking 风险"
+  fi
+
+  step "5/5 生成 Simulation Report..."
+  {
+    echo "# Release Simulation Report"
+    echo "- **Sim ID**: $sim_id"
+    echo "- **Date**: $(date '+%Y-%m-%d %H:%M:%S')"
+    echo "- **Gate Status**: $gates_pass/$gates_total"
+    echo "- **Evidence Files**: ${evid_count:-0}"
+    echo "- **Release Blocking Risks**: $open_blocking"
+    echo "- **Decision**: $([ "$open_blocking" -eq 0 ] && [ "$gates_pass" -ge 10 ] && echo "PASS" || echo "FAIL — 请修复后重新演练")"
+  } > "$sim_dir/report.md"
+
+  ok "Simulation 完成: $sim_dir/report.md"
+  echo "$sim_dir/report.md"
+}
+
+# ─── release --rollback-drill：回滚演练 ────────────────────
+cmd_rollback_drill() {
+  title "Rollback Drill — 回滚路径验证"
+  require_config
+
+  local drill_id="RBD-$(date +%Y%m%d-%H%M%S)"
+  local drill_dir="$CONFIG_DIR/evidence/drill-${drill_id}"
+  mkdir -p "$drill_dir"
+
+  step "1/4 查找 Release Manifest..."
+  local manifest=""
+  for f in "$CONFIG_DIR/evidence"/bundle-*/RELEASE-BUNDLE.md; do
+    [[ -f "$f" ]] && manifest="$f" && break
+  done
+  if [[ -z "$manifest" ]]; then
+    warn "未找到 Release Bundle，回滚演练无法完全验证"
+  else
+    info "Manifest: $manifest"
+  fi
+
+  step "2/4 检查回滚方案..."
+  local has_rollback=false
+  if [[ -n "$manifest" ]] && grep -qi "rollback\|回滚" "$manifest" 2>/dev/null; then
+    has_rollback=true
+    ok "Release Manifest 包含回滚方案"
+  else
+    warn "Release Manifest 可能缺少回滚方案"
+  fi
+
+  step "3/4 验证 git 回滚路径..."
+  local current_branch=$(git branch --show-current 2>/dev/null || echo "unknown")
+  local main_exists
+  if git rev-parse --verify main >/dev/null 2>&1; then main_exists="true"; else main_exists="false"; fi
+  info "当前分支: $current_branch"
+  info "main 分支存在: $main_exists"
+
+  step "4/4 生成 Rollback Drill Report..."
+  {
+    echo "# Rollback Drill Report"
+    echo "- **Drill ID**: $drill_id"
+    echo "- **Date**: $(date '+%Y-%m-%d %H:%M:%S')"
+    echo "- **Current Branch**: $current_branch"
+    echo "- **Rollback Plan Found**: $has_rollback"
+    echo "- **Rollback Target**: main ($main_exists)"
+    echo "- **Verification**: 回滚后需重新运行 \`goal-workflow.sh validate\`"
+    if ! $has_rollback; then
+      echo "- **Gap**: 缺少回滚方案 — 请在 Release Manifest 中补充 rollback plan"
+    fi
+    echo "- **Decision**: $($has_rollback && echo "READY" || echo "GAP — 补充回滚方案后重新演练")"
+  } > "$drill_dir/report.md"
+
+  ok "Rollback Drill 完成: $drill_dir/report.md"
+  echo "$drill_dir/report.md"
+}
+
 # ─── status：显示管线状态 ────────────────────────────────
 cmd_status() {
   title "管线状态"
@@ -1757,6 +1869,14 @@ parse_args() {
         COMPILE=true
         shift
         ;;
+	      --simulate)
+	        SIMULATE=true
+	        shift
+	        ;;
+	      --rollback-drill)
+	        ROLLBACK_DRILL=true
+	        shift
+	        ;;
       -h|--help)
         COMMAND="help"
         shift
@@ -1775,6 +1895,9 @@ parse_args() {
 
 # ─── 主入口 ──────────────────────────────────────────────
 main() {
+  COMPILE="${COMPILE:-false}"
+  SIMULATE="${SIMULATE:-false}"
+  ROLLBACK_DRILL="${ROLLBACK_DRILL:-false}"
   parse_args "$@"
 
   case "$COMMAND" in
@@ -1791,7 +1914,7 @@ main() {
     status)    cmd_status ;;
     check)     cmd_check "$ARG1" ;;
     validate)  cmd_validate ;;
-    release)   cmd_release ;;
+    release)   if [[ "$SIMULATE" == "true" ]]; then cmd_release_simulate; elif [[ "$ROLLBACK_DRILL" == "true" ]]; then cmd_rollback_drill; else cmd_release; fi ;;
     dashboard) cmd_dashboard ;;
     auto)      cmd_auto ;;
     compile)   cmd_compile "$ARG1" ;;
