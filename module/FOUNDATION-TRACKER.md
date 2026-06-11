@@ -81,7 +81,7 @@
 - [x] `configx` v0.3 前完成迁移（✅ 完全解耦 — SecretString 原生化 + internal/foundationx 已删除 + contract tests 已重写）
 - [x] `observex` v0.4 前完成生产解耦（✅ ErrorKind + Sanitizer 原生化，零 foundationx import；contract tests 重写 + internal/foundationx 删除 → v0.4）
 - [x] `configx` 迁移完成删除 `internal/foundationx`（✅ contract tests 已重写，go.mod replace 已移除，internal/foundationx 已物理删除）
-- [ ] `observex` 迁移完成删除 `internal/foundationx`（待 v0.4 contract tests 重写）
+- [x] `observex` 迁移完成删除 `internal/foundationx`（✅ contract tests 已更新，go.mod replace 已移除，internal/foundationx 已物理删除）
 
 ---
 
