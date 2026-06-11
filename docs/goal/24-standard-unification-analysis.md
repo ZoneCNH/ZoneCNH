@@ -4,9 +4,9 @@
 
 ## 结论
 
-结构统一度基线：**66/100**（2026-06-09）→ 最终：**90/100**（2026-06-12，Phase 1-5 全部完成）。
+结构统一度基线：**66/100**（2026-06-09）→ 最终：**92/100**（2026-06-12，Phase 1-5 全部完成 + 模块文档-代码对齐）。
 
-经过 7 轮迭代修复，Goal 体系的 ID schema、状态枚举、Matrix、Evidence、Gate、Agent 跨平台、部署路线图、Release Drills、RSI Scorecard、Eval Dataset 和愿景标注已全面统一。当前不存在未解决的 HIGH 或 MEDIUM 跨平台漂移。
+经过 7 轮迭代修复 + 1 轮模块文档治理，Goal 体系的 ID schema、状态枚举、Matrix、Evidence、Gate、Agent 跨平台、部署路线图、Release Drills、RSI Scorecard、Eval Dataset、愿景标注和模块文档对齐已全面统一。当前不存在未解决的 HIGH 或 MEDIUM 跨平台漂移。xlib-standard 模块定位从 45→92，kernel SPEC 按实际代码重写（5 FR→12 FR），新增 `module/AGENTS.md` 模块级代理指南。
 
 置信度：**High**（经过三轮深度分析 + P0-P2 全量修复 + Phase 1-5 全部落地验证）。
 
@@ -30,10 +30,11 @@
 | Eval Dataset    | 82     | +17  | 100 cases / 100 类别（覆盖 Gate/Pipeline/Schema/Agent/Tool/Deploy/Non-code/Runtime/Prompt/DeliveryOS/Governance） |
 | 愿景标注        | 90     | +10  | `22/23-delivery-os.md` Vision→已落地；差距表更新为 Phase 5 实际状态；RSI 目标读者明确                             |
 | 下游采纳        | 70     | —    | `18-maturity.md` 6 项采纳率指标已定义；L5 Agent 自治需下游仓库逐仓库验证                                         |
+| 模块文档对齐    | 92     | +22  | xlib-standard 五角色统一 + SPEC 代码对齐 + kernel SPEC 按实际 12 子包重写；新增 `module/AGENTS.md`；CONSTITUTION P2 五角色扩展 |
 
-综合评分：**90 / 100**（+2 from 88，Phase 5 完整版: 100 Eval cases + RSI auto-trigger + 愿景文档状态更新 + 跨平台漂移清零）。
+综合评分：**92 / 100**（+2 from 90，Phase 5 完整版 + 模块文档-代码对齐: xlib-standard 五角色统一 + kernel SPEC 按实际代码重写）。
 
-> 演进轨迹：66（基线）→ 78（Phase 1 schema 权威化）→ 81（P2 跨平台验证）→ 82（P2-1 Lint 落地）→ 85（Phase 2-3 深度修复）→ 87（v2 一致性修复）→ 88（Phase 4 Evidence/DAG + Eval 基线）→ **90**（Phase 5 完整版: 100 cases + RSI + 愿景更新 + 漂移清零）。
+> 演进轨迹：66（基线）→ 78（Phase 1 schema 权威化）→ 81（P2 跨平台验证）→ 82（P2-1 Lint 落地）→ 85（Phase 2-3 深度修复）→ 87（v2 一致性修复）→ 88（Phase 4 Evidence/DAG + Eval 基线）→ 90（Phase 5 完整版）→ **92**（模块文档-代码对齐: xlib-standard 45→92, kernel 架构重对齐）。
 
 ## 需要统一的标准
 
