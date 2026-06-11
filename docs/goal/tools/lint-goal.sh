@@ -50,6 +50,58 @@ file_count_ext() {
     printf '%s\n' "${count:-0}"
 }
 
+# ── check_spec_semantic: S-LINT-004~008 半自动化语义检查 ──────────────
+# 使用 grep 做模式匹配，检测触发条件并输出 [需人工确认] 标记
+check_spec_semantic() {
+    local f="$1"
+    local bn="$2"
+
+    # S-LINT-004: 权限相关功能必须包含 Security Requirements
+    mark_rule "S" "S-LINT-004"
+    if file_has_ext "auth|permission|权限|认证|授权|角色|登录"; then
+        if ! file_has_ext "(?i)security[[:space:]]*requirement|安全要求|权限检查|access[[:space:]]*control"; then
+            warn "[$bn] S-LINT-004 [需人工确认]: Spec 涉及权限/认证但缺少 Security Requirements 段"
+            finding "S"
+        fi
+    fi
+
+    # S-LINT-005: 数据导入/导出功能必须包含数据量限制
+    mark_rule "S" "S-LINT-005"
+    if file_has_ext "import|export|导入|导出|CSV|上传|下载|upload|download"; then
+        if ! file_has_ext "[0-9]+[[:space:]]*(行|条|MB|GB|记录|record)|limit|max|上限|限制|数据量"; then
+            warn "[$bn] S-LINT-005 [需人工确认]: Spec 涉及导入/导出但缺少数据量限制（如 1000 行、500MB 上限）"
+            finding "S"
+        fi
+    fi
+
+    # S-LINT-006: 异步任务必须包含状态流转规则
+    mark_rule "S" "S-LINT-006"
+    if file_has_ext "async|异步|queue|队列|task|job|callback|回调|定时|schedule"; then
+        if ! file_has_ext "状态流转|status|state[[:space:]]*machine|重试|retry|状态机"; then
+            warn "[$bn] S-LINT-006 [需人工确认]: Spec 涉及异步任务但缺少状态流转规则（状态/重试/回调）"
+            finding "S"
+        fi
+    fi
+
+    # S-LINT-007: 用户可见错误必须包含 Error Handling
+    mark_rule "S" "S-LINT-007"
+    if file_has_ext "error|错误|异常|exception|失败|fail"; then
+        if ! file_has "(?i)error[[:space:]]*handling|错误处理|Error Handling"; then
+            warn "[$bn] S-LINT-007 [需人工确认]: Spec 涉及错误场景但缺少 Error Handling 段"
+            finding "S"
+        fi
+    fi
+
+    # S-LINT-008: 涉及外部服务必须包含失败处理
+    mark_rule "S" "S-LINT-008"
+    if file_has_ext "external|外部|API|http|client|upstream|第三方|third[[:space:]]*party|请求|调用"; then
+        if ! file_has_ext "timeout|超时|retry|重试|熔断|circuit[[:space:]]*break|降级|fallback|失败处理"; then
+            warn "[$bn] S-LINT-008 [需人工确认]: Spec 涉及外部服务但缺少失败处理（超时/retry/熔断/降级）"
+            finding "S"
+        fi
+    fi
+}
+
 echo "=========================================="
 echo "  Goal 体系 Lint 检查"
 echo "=========================================="
