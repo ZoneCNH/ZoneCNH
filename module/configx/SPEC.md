@@ -184,7 +184,7 @@ cfg := configx.New(
 
 // 加载文件
 if err := cfg.Load("config.yaml"); err != nil {
-    log.Fatal(err)
+    return err
 }
 
 // 环境变量覆盖
@@ -192,7 +192,7 @@ cfg = cfg.WithEnvOverride("APP")
 
 // 启动校验
 if err := cfg.Validate(); err != nil {
-    log.Fatal(err)
+    return err
 }
 
 // 读取配置

@@ -69,8 +69,9 @@ check_module() {
   local trace_fr_count
   trace_fr_count=$(awk -F'|' '
     function trim(s) { gsub(/^[ \t]+|[ \t]+$/, "", s); return s }
+    function req_id(s) { s=trim(s); gsub(/`/, "", s); return s }
     /^\|/ {
-      req=trim($2)
+      req=req_id($2)
       if (req ~ /^FR-[0-9]+$/) count++
     }
     END { print count+0 }
@@ -92,8 +93,9 @@ check_module() {
   local empty_ac
   empty_ac=$(awk -F'|' '
     function trim(s) { gsub(/^[ \t]+|[ \t]+$/, "", s); return s }
+    function req_id(s) { s=trim(s); gsub(/`/, "", s); return s }
     /^\|/ {
-      req=trim($2)
+      req=req_id($2)
       ac=trim($4)
       if (req ~ /^FR-[0-9]+$/ && (ac == "-" || ac == "")) count++
     }
@@ -109,8 +111,9 @@ check_module() {
   local empty_tc
   empty_tc=$(awk -F'|' '
     function trim(s) { gsub(/^[ \t]+|[ \t]+$/, "", s); return s }
+    function req_id(s) { s=trim(s); gsub(/`/, "", s); return s }
     /^\|/ {
-      req=trim($2)
+      req=req_id($2)
       tc=trim($5)
       if (req ~ /^(FR|BR)-[0-9]+$/ && (tc == "-" || tc == "")) count++
     }
@@ -127,8 +130,9 @@ check_module() {
   local invalid_tc_tokens
   invalid_tc_tokens=$(awk -F'|' '
     function trim(s) { gsub(/^[ \t]+|[ \t]+$/, "", s); return s }
+    function req_id(s) { s=trim(s); gsub(/`/, "", s); return s }
     /^\|/ {
-      req=trim($2)
+      req=req_id($2)
       tc=$5
       if (req !~ /^(FR|BR)-[0-9]+$/) next
       while (match(tc, /TC-[^, \t|]+/)) {
@@ -152,8 +156,9 @@ check_module() {
     local referenced_tcs
     referenced_tcs=$(awk -F'|' '
       function trim(s) { gsub(/^[ \t]+|[ \t]+$/, "", s); return s }
+      function req_id(s) { s=trim(s); gsub(/`/, "", s); return s }
       /^\|/ {
-        req=trim($2)
+        req=req_id($2)
         tc=$5
         if (req !~ /^(FR|BR)-[0-9]+$/) next
         while (match(tc, /TC-[0-9][0-9][0-9]/)) {
@@ -180,8 +185,9 @@ check_module() {
   local invalid_status
   invalid_status=$(awk -F'|' '
     function trim(s) { gsub(/^[ \t]+|[ \t]+$/, "", s); return s }
+    function req_id(s) { s=trim(s); gsub(/`/, "", s); return s }
     /^\|/ {
-      req=trim($2)
+      req=req_id($2)
       if (req !~ /^(FR|BR)-[0-9]+$/) next
       status=""
       for (i=NF; i>=1; i--) {

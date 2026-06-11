@@ -49,7 +49,7 @@ go 1.24
 //	)
 //	app.Register(&myModule{})
 //	if err := app.Run(ctx); err != nil {
-//	    log.Fatal(err)
+//	    return err
 //	}
 package kernel
 ```

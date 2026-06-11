@@ -263,7 +263,7 @@ Code Deliverable:
 
 ```text
 - 模块实现代码统一在 /home/{module} 对应仓库中修改
-- module/{module}/ 只保存 Goal、Spec、Traceability、Task、Plan、Prompt 和 Evidence 引用
+- module/{module}/ 只保存 Goal、Spec、Traceability、Task、Plan、Prompt、Evidence 引用，以及受规则 allowlist 约束的只读分析快照
 - 不得把模块源码树、vendor 源码或从 /home/{module} 复制出的实现文件提交到本仓库
 ```
 

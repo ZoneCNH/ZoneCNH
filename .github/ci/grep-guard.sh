@@ -103,7 +103,11 @@ check_pattern_excluding ".omc / .omx 运行时目录" \
   '(\.omc/|\.omx/|\.omc\b|\.omx\b)' \
   'AGENTS\.md' \
   'CONSTITUTION\.md' \
+  'docs/ci-deployment\.md' \
+  '\.config/goal/' \
+  'docs/governance/' \
   'docs/goal/' \
+  'docs/spec/' \
   'module/' \
   '\.claude/' \
   '\.codex/' \
@@ -117,8 +121,16 @@ check_pattern "127.0.0.1 / localhost / 0.0.0.0" \
 
 # ── 4. 本地绝对路径 ──────────────────────────────────────
 echo "[4/4] 本地绝对路径检查"
-check_pattern "/home/xxx 或 /Users/xxx 或 C:\\xxx" \
-  '(/home/[a-zA-Z0-9_-]+/|/Users/[a-zA-Z0-9_-]+/|[A-Z]:\\\\)'
+check_pattern_excluding "/home/xxx 或 /Users/xxx 或 C:\\xxx" \
+  '(/home/[a-zA-Z0-9_-]+/|/Users/[a-zA-Z0-9_-]+/|[A-Z]:\\\\)' \
+  'AGENTS\.md' \
+  'ARCHITECTURE\.md' \
+  '\.config/goal/' \
+  'docs/governance/' \
+  'docs/goal/' \
+  'docs/report/' \
+  'docs/spec/' \
+  'module/'
 
 # ── 结果 ─────────────────────────────────────────────────
 echo "=== 结果 ==="

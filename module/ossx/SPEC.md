@@ -270,7 +270,7 @@ client, err := ossx.NewClient(ossx.Config{
     Region:   "ap-northeast-1",
 })
 if err != nil {
-    log.Fatal(err)
+    return err
 }
 defer client.Close()
 

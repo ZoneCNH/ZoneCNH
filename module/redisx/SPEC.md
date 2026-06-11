@@ -344,7 +344,7 @@ type Codec interface {
 ```yaml
 redisx:
   addr: "${FOUNDATIONX_REDIS_ADDR}" # Redis 地址
-  password: ""                 # 密码（推荐通过环境变量注入）
+  password_env: REDIS_PASSWORD # 密码通过环境变量注入
   db: 0                        # 数据库编号
   pool_size: 10                # 连接池大小
   min_idle_conns: 2            # 最小空闲连接数

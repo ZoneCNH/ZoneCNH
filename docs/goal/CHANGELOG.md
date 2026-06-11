@@ -2,6 +2,12 @@
 
 > 记录 docs/goal/ 体系的重大结构性变更。
 
+## 2026-06-11 — 模块只读分析快照 allowlist 对齐
+
+- 明确 `module/{module}/` 可保存受规则 allowlist 约束的只读分析快照，但仍禁止实现源码树、vendor 源码或从 `/home/{module}` 复制出的模块代码。
+- 将 `ANALYSIS.md`、`FR-DETAIL.md`、`CONFLICT-LEDGER.md`、`COVERAGE-MANIFEST.md`、`REMOTE-EVIDENCE.md`、`REVIEW-VERDICT.md`、`SNAPSHOT-BOUNDARY.md` 和 `analysis/` 投影到 `.config/goal/schema/rules.yaml`。
+- 用于承载 `xlib-standard` 上游标准快照与追溯证据，不放宽 Code 交付边界。
+
 ## 2026-06-11 — Release 快照调和与反向阻断校验
 
 - 调和 Risk Registry、Gate risk metadata、Pipeline state 和 Release Registry，使 G10 / G11 PASS 与已关闭 release_blocking 风险保持一致。
