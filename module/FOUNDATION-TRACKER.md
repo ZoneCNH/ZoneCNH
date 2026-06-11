@@ -21,7 +21,7 @@
 
 - [x] README 重写：删除 Standard Source / Generator / Harness 叙事
 - [x] README 重写：明确身份为 runtime resilience policy library
-- [ ] 新增 `docs/identity.md`（身份已在 README + docs/design.md 中描述，独立 identity.md 待补充；非阻断项，P2 跟进）
+- [x] 新增 `docs/identity.md`（已于 2026-06-12 创建，含完整身份/边界/宪法合规声明）
 - [x] 新增 `docs/boundary.md`（通过 docs/xgo-integration-boundary.md + docs/design.md 覆盖）
 - [x] 新增最小 API：`policy.go` / `runner.go` / `operation.go`（已通过 pkg/resiliencx/resilience.go + client.go + config.go 实现，文件名不同；功能等价，接受现状）
 - [x] 新增策略实现：`timeout.go` / `retry.go` / `circuit.go`
