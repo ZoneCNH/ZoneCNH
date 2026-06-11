@@ -385,7 +385,8 @@ PY
     fi
 
     # === Code Lint 规则 ===
-    if echo "$BASENAME" | grep -qi "task\|prompt\|pr\|code"; then
+    # 仅对任务/Prompt/PR/代码文件执行 C-LINT；排除含 "protected/protocol/improve/process" 的文件
+    if echo "$BASENAME" | grep -qiE "(^|[_-])(task|prompt|pr|code)([_-]|\.)"; then
 
         # C-LINT-001: 必须引用至少一个 Task ID
         mark_rule "C" "C-LINT-001"

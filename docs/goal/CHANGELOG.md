@@ -2,6 +2,27 @@
 
 > 记录 docs/goal/ 体系的重大结构性变更。
 
+## 2026-06-12 — 深度分析报告修复落地（P0-P2）
+
+基于 `docs/report/goal-deep-analysis-20260612.md` 的 6 项修复全部落地：
+
+### P0
+- **S-LINT 半自动化**：`lint-goal.sh` 新增 `check_spec_semantic()` 函数，S-LINT-004~008 从 manual → semi-automated（grep + [需人工确认]），自动化率 77%→87.5%
+- **最小部署包**：新增 `docs/goal/deploy/README.md`，含 3 级采纳指南（Lint Only / Standard / Full）+ 一条命令初始化 + 最小 CI workflow
+
+### P1
+- **CL2 Agent 互审路径**：`13-runtime-engine.md` 新增 §CL2 Agent 交叉审查路径，允许两个独立 Agent 交叉审查替代 H-CHK6/H-CHK7 人工审批，含否决升级规则
+- **matrix-gen.py ID 自动生成**：新增 `--auto-id` / `--dry-run` / `--date` / `--version`，支持从 Spec/Tasks 自动推导 GOAL/TASK/TEST/EVID/AC-REQ ID
+- **RSI 标准拆分**：`26-rsi-full-standard.md` 拆分为 `docs/goal/rsi-standard/` 子目录（30 章节 + README 索引），原文件改为 65 行索引入口
+
+### P2
+- **Lint 规则落地**：P-LINT 10/10 关键字增强（output format/stop/test command），C-LINT 2/7 lint-goal.sh 双重覆盖，`10-lint-rules.md` 规则总数修正为 40
+
+### 评分更新
+- `24-standard-unification-analysis.md`：Lint 77→80，综合 81→82
+
+---
+
 ## 2026-06-12 — 文档清理与 RSI 标准归档
 
 - 删除 `docs/raw/1.md`（外部审计反馈，核心建议已通过 Schema 权威化工作落地）
