@@ -21,8 +21,7 @@
 | 主题 | 权威定义 | 可引用或投影位置 | 禁止事项 |
 |------|----------|------------------|----------|
 | 最高治理与受保护资产边界 | [`CONSTITUTION.md`](../../CONSTITUTION.md)、本文件 | `docs/goal/change-requests/`、[`21-controlled-rsi.md`](21-controlled-rsi.md) | 用 `docs/goal/` 直接覆盖 Constitution、CI、agent 或 schema 投影 |
-| 完整交付管线 | [`03-pipeline.md`](03-pipeline.md) | `README.md`、`12-operations.md`、`13-runtime-engine.md`、`16-ci-cd.md` | 在 SOP、Runtime、CI 或 schema 中新增主流程阶段 |
-| Pipeline 状态与四轴状态模型 | [`03-pipeline.md`](03-pipeline.md#2-四轴状态模型) | `.config/goal/schema/rules.yaml`、`.config/goal/pipeline/state.yaml` | 把历史执行步骤令牌或控制令牌当成 `pipeline_state` |
+| 交付管线与四轴状态模型 | [`03-pipeline.md`](03-pipeline.md)（完整管线见 §1、四轴状态模型见 §2） | `README.md`、`.config/goal/schema/rules.yaml`、`.config/goal/pipeline/state.yaml` | 在 SOP、Runtime、CI 或 schema 中新增主流程阶段；把历史执行步骤令牌当成 `pipeline_state` |
 | Matrix 横切口径 | [`05-layer-standards.md`](05-layer-standards.md#9-matrix-横切标准) | `.config/goal/matrix/`、校验脚本、报告 | 把 Matrix 放回主流程阶段 |
 | Gate 编号与结果 | [`04-gates.md`](04-gates.md) | `.config/goal/gates/state.yaml`、CI 报告 | 把 `XG-CHK-*`、`H-CHK-*` 或适配器检查注册成 Goal Gate |
 | ID 格式 | [`07-id-system.md`](07-id-system.md) | Registry、Matrix、Evidence、Prompt 包 | 在局部文档中定义新的 ID 前缀或格式 |
@@ -32,17 +31,13 @@
 | Risk / Decision / Release 记录 | [`17-risk-and-decisions.md`](17-risk-and-decisions.md) | `.config/goal/registry/risks.yaml`、`.config/goal/registry/releases.yaml`、Release Manifest | 绕过 release-blocking risk、rollback plan 或 validation summary |
 | Agent 协作协议 | [`14-agent-protocols.md`](14-agent-protocols.md)、[`25-execution-guide.md`](25-execution-guide.md) | `.claude/agents/`、`.codex/agents/`、`.copilot/agents/` | Agent 自批、自改 Gate、绕过 worktree 隔离或跳过 arbiter |
 | Controlled RSI | [`21-controlled-rsi.md`](21-controlled-rsi.md) | `change-requests/`、Improvement Backlog、Scorecard | 自动放宽安全、隐私、资金、权限、数据保留、P0/P1 AC 或 Release Gate |
-| 模块级 Goal 文档路径 | [`README.md`](README.md#与-docsspecmodule-和-docsgovernance-的同步边界)、[`module/README.md`](../../module/README.md#goal-文档索引) | `.config/goal/schema/rules.yaml`、`AGENTS.md`、模块索引 | 使用 `module/{module}/goal/`、`module/{module}/goal/1.md` 或 `goal/*.md` 作为模块 Goal 槽位 |
-| 模块代码本地路径 | [`CONSTITUTION.md`](../../CONSTITUTION.md#24-本地代码目录)、[`ARCHITECTURE.md`](../../ARCHITECTURE.md#本地开发路径)、[`module/README.md`](../../module/README.md#同步口径) | `.config/goal/schema/rules.yaml`、`AGENTS.md`、Prompt、Task、Evidence、执行记录 | 在本仓库 `module/{module}/` 下放置实现源码树，或把模块代码复制进 `ZoneCNH/ZoneCNH` |
 | CI 与 x.go 适配器 | [`16-ci-cd.md`](16-ci-cd.md) | `.github/workflows/`、x.go 检查报告 | 用 CI 阶段覆盖 Goal 管线状态 |
-| 标准对齐分析 | [`24-standard-unification-analysis.md`](24-standard-unification-analysis.md)、`docs/report/goal/` | 修复计划、变更日志、审查记录 | 让分析报告覆盖正式规范 |
 | Goal 标准（SMART、结构、模板） | [`02-goal-standard.md`](02-goal-standard.md) | `09-templates.md`、`.config/goal/schema/rules.yaml`、Goal Lint | 在模板或 Registry 中重新定义 Goal 结构要素或 SMART 原则 |
 | DoR/DoD 分层完成标准 | [`06-dod.md`](06-dod.md) | `04-gates.md`、`08-quality-gates.md`、`05-layer-standards.md` | 在各层 Gate 中独立定义完成标准或绕过 DoD 退出 Gate |
 | 分层质量标准 | [`08-quality-gates.md`](08-quality-gates.md) | `06-dod.md`、`04-gates.md`、`.config/goal/schema/rules.yaml` | 独立定义新的质量门禁枚举或绕过 DoR/DoD 评分 |
 | 模板库（YAML/JSON 格式） | [`09-templates.md`](09-templates.md) | Goal/Spec/Task/Prompt 实际示例、`07-id-system.md` | 在模板外定义新的 ID 前缀、结构格式或 Matrix edge 字段 |
 | 自动化 Lint 规则（S-LINT/P-LINT） | [`10-lint-rules.md`](10-lint-rules.md) | `.config/goal/schema/rules.yaml`、`lint-goal.sh`、CI checks | 绕过 lint 规则或在本地覆盖 SSOT Lint 规则 |
 | AI 协作（PromptOps、Context Package） | [`11-ai-collaboration.md`](11-ai-collaboration.md) | `14-agent-protocols.md`、Prompt 包、`.claude/agents/` | 绕过 Context Package 格式或跳过 Prompt 审查 Gate |
-| 配置与运行态边界 | [`.config/goal/README.md`](../../.config/goal/README.md) | `.config/goal/schema/`、`.config/goal/runtime/`、`.omx/state/` | 把本地临时运行缓存提交为权威状态 |
 
 ## 3. 四轴状态模型
 
