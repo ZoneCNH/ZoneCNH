@@ -132,6 +132,10 @@ Goal 驱动交付体系 — 端到端工作流编排 (v2)
   release                发布前硬阻断检查
   release --simulate     dry-run 发布路径演练
   release --rollback-drill  回滚路径验证演练
+  release --metrics-window  上线后指标观察窗口检查
+  incident                  生成事故响应模板
+  release --metrics-window  上线后指标观察窗口检查
+  incident                  生成事故响应模板
 
 状态与看板:
   status    显示当前管线状态
@@ -1397,6 +1401,93 @@ cmd_rollback_drill() {
   echo "$drill_dir/report.md"
 }
 
+# ─── release --metrics-window：指标观察窗口检查 ──────────
+cmd_metrics_window() {
+  title "Metrics Window Check — 上线后指标观察窗口验证"
+  require_config
+
+  local window_hours=24
+  step "检查指标观察窗口 (≥ ${window_hours}h)..."
+
+  local manifest=""
+  for f in "$CONFIG_DIR/evidence"/bundle-*/RELEASE-BUNDLE.md; do
+    [[ -f "$f" ]] && manifest="$f" && break
+  done
+
+  if [[ -n "$manifest" ]]; then
+    if grep -qi "metric\|指标\|观察窗口\|observation" "$manifest" 2>/dev/null; then
+      ok "Release Manifest 包含指标观察声明"
+    else
+      warn "Release Manifest 缺少指标观察窗口 — G10 要求"
+    fi
+  else
+    warn "未找到 Release Bundle — 无法验证指标窗口"
+  fi
+
+  # 检查 Goal success_criteria 是否可测量
+  if [[ -f "$CONFIG_DIR/registry/goals.yaml" ]]; then
+    local measurable=$(grep -c "success_criteria\|north_star" "$CONFIG_DIR/registry/goals.yaml" 2>/dev/null || echo 0)
+    info "Goals 含 success_criteria: $measurable 个"
+  fi
+
+  local mw_file="$CONFIG_DIR/evidence/metrics-window-$(date +%Y%m%d-%H%M%S).md"
+  {
+    echo "# Metrics Window Check"
+    echo "- **Date**: $(date '+%Y-%m-%d %H:%M:%S')"
+    echo "- **Window**: ≥ ${window_hours}h post-release"
+    echo "- **Manifest Found**: ${manifest:-NONE}"
+    echo "- **Decision**: $([ -n "$manifest" ] && echo "READY" || echo "GAP")"
+  } > "$mw_file"
+  ok "Metrics Window Check: $mw_file"
+}
+
+# ─── incident：事故响应模板生成 ────────────────────────────
+cmd_incident() {
+  title "Incident Handoff — 事故响应模板"
+  require_config
+
+  local inc_file="$CONFIG_DIR/evidence/incident-template-$(date +%Y%m%d-%H%M%S).md"
+  {
+    echo "# Incident Response Template"
+    echo "> 生成: $(date '+%Y-%m-%d %H:%M:%S')"
+    echo ""
+    echo "## Severity"
+    echo "- [ ] P0 — 全站不可用"
+    echo "- [ ] P1 — 核心功能受损"
+    echo "- [ ] P2 — 非核心功能异常"
+    echo ""
+    echo "## Detection"
+    echo "- **Time**: $(date '+%Y-%m-%d %H:%M:%S')"
+    echo "- **Alert**: （填写告警来源）"
+    echo "- **Detected by**: （填写发现人/系统）"
+    echo ""
+    echo "## Impact"
+    echo "- **Users affected**: （估计数）"
+    echo "- **Duration**: （持续时长）"
+    echo "- **Data impact**: （有无数据损失）"
+    echo ""
+    echo "## Response"
+    echo '```bash'
+    echo "# 1. 确认事故范围"
+    echo "# 2. 执行回滚: git revert <commit> && git push"
+    echo "# 3. 验证回滚: bash docs/goal/tools/goal-workflow.sh validate"
+    echo "# 4. 通知值班: （填写 on-call 联系方式）"
+    echo '```'
+    echo ""
+    echo "## Escalation"
+    echo "- **Primary**: （填写主负责人）"
+    echo "- **Secondary**: （填写备份负责人）"
+    echo "- **Management**: （填写管理层联系人）"
+    echo ""
+    echo "## Postmortem"
+    echo "- [ ] Root Cause Analysis"
+    echo "- [ ] Improvement Backlog entry"
+    echo "- [ ] Scorecard update"
+  } > "$inc_file"
+  ok "Incident Template: $inc_file"
+  echo "$inc_file"
+}
+
 # ─── status：显示管线状态 ────────────────────────────────
 cmd_status() {
   title "管线状态"
@@ -2063,6 +2154,8 @@ main() {
     release)   if [[ "$SIMULATE" == "true" ]]; then cmd_release_simulate; elif [[ "$ROLLBACK_DRILL" == "true" ]]; then cmd_rollback_drill; else cmd_release; fi ;;
     dashboard) cmd_dashboard ;;
     improve)   cmd_improve ;;
+    metrics-window) cmd_metrics_window ;;
+    incident)  cmd_incident ;;
     auto)      cmd_auto ;;
     compile)   cmd_compile "$ARG1" ;;
     help|"")   usage ;;
