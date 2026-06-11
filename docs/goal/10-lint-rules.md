@@ -118,17 +118,17 @@ C-LINT-007: 本仓库 module/{module}/ 下不得新增实现源码树或复制�
 | G-LINT-002 | implemented | lint-goal.sh | Goal 必须包含 success_metrics 或 acceptance_criteria |
 | G-LINT-003 | manual | — | Goal 不能只描述实现方案（需人工语义判断） |
 | G-LINT-004 | implemented | lint-goal.sh | Goal 必须包含 scope_out |
-| G-LINT-005 | planned | — | Goal 必须包含 target_user 或 target_actor |
+| G-LINT-005 | manual | — | Goal 必须包含 target_user 或 target_actor（需上下文判断） |
 | G-LINT-006 | implemented | lint-goal.sh | Goal 必须至少有一个可验证指标 |
 | G-LINT-007 | manual | — | Goal 不应使用模糊词而没有定义（需人工判断） |
 | S-LINT-001 | implemented | lint-goal.sh | 每条 Functional Requirement 必须有唯一 ID |
 | S-LINT-002 | implemented | lint-goal.sh | 每条 Requirement 必须能被测试 |
 | S-LINT-003 | implemented | lint-goal.sh | 每条 Acceptance Criteria 必须有明确结果 |
-| S-LINT-004 | planned | — | 权限相关功能需 Security Requirements（需上下文判断） |
-| S-LINT-005 | planned | — | 数据导入/导出需数据量限制（需上下文判断） |
-| S-LINT-006 | planned | — | 异步任务需状态流转规则（需上下文判断） |
-| S-LINT-007 | planned | — | 用户可见错误需 Error Handling（需上下文判断） |
-| S-LINT-008 | planned | — | 涉及外部服务需失败处理（需上下文判断） |
+| S-LINT-004 | manual | — | 权限相关功能需 Security Requirements（需上下文判断） |
+| S-LINT-005 | manual | — | 数据导入/导出需数据量限制（需上下文判断） |
+| S-LINT-006 | manual | — | 异步任务需状态流转规则（需上下文判断） |
+| S-LINT-007 | manual | — | 用户可见错误需 Error Handling（需上下文判断） |
+| S-LINT-008 | manual | — | 涉及外部服务需失败处理（需上下文判断） |
 | M-LINT-001 | implemented | matrix-gen.py | 每个 Goal 至少对应一个 Spec |
 | M-LINT-002 | implemented | matrix-gen.py | 每个 Spec Requirement 至少对应一个 Matrix edge |
 | M-LINT-003 | implemented | gate-check.sh | release-critical edge 必须连接到 Task/Test |
@@ -149,8 +149,8 @@ C-LINT-007: 本仓库 module/{module}/ 下不得新增实现源码树或复制�
 | P-LINT-010 | implemented | lint-goal.sh | Prompt 不能允许自行扩大范围 |
 | C-LINT-001 | implemented | goal-validate.py | PR 必须引用至少一个 Task |
 | C-LINT-002 | implemented | goal-validate.py | PR 必须引用至少一个 Matrix edge |
-| C-LINT-003 | planned | — | PR 必须包含测试说明 |
-| C-LINT-004 | planned | — | P0/P1 Task 不允许无测试合并 |
+| C-LINT-003 | manual | — | PR 必须包含测试说明（需上下文判断） |
+| C-LINT-004 | manual | — | P0/P1 Task 不允许无测试合并（需上下文判断） |
 | C-LINT-005 | implemented | goal-validate.py | PR 不能包含未关联 Task 的大规模代码改动 |
 | C-LINT-006 | implemented | rule-drift-check.py | 模块代码实现必须位于 /home/{module} |
 | C-LINT-007 | implemented | rule-drift-check.py | module/{module}/ 下不得新增实现源码树 |
@@ -159,8 +159,8 @@ C-LINT-007: 本仓库 module/{module}/ 下不得新增实现源码树或复制�
 
 - 总规则数: 35
 - implemented: 27 (77%)
-- manual: 2 (6%)
-- planned: 6 (17%)
+- manual: 8 (23%)
+- planned: 0 (0%)
 
 Schema 引用：
 - Goal 字段完整性校验见 [schema/goal.schema.yaml](schema/goal.schema.yaml)
