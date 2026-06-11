@@ -136,9 +136,14 @@ Goal 驱动交付体系 — 端到端工作流编排 (v2)
   dashboard 显示交付看板
   auto      根据复杂度模式自动推进管线
 
+编译器（Phase 2 MVP）:
+  compile --goal-id ID   从 Goal+Spec 编译完整 Task 清单
+  prompt --compile --task-id ID  为 Task 生成完整 Context Package
+
 选项:
   --root DIR      仓库根目录（默认自动检测）
   --mode MODE     复杂度模式：lite / standard / full
+  --compile       编译器模式：自动生成 Task 清单或 Context Package
   -h, --help      显示帮助
 EOF
 }
@@ -1375,6 +1380,241 @@ cmd_auto() {
   esac
 }
 
+# ─── compile：Workflow Compiler MVP ──────────────────────
+cmd_compile() {
+  local goal_id="$1"
+  title "Workflow Compiler — 从 Goal 编译任务清单"
+
+  require_config
+  [[ -z "$goal_id" ]] && { warn "用法: goal-delivery.sh compile --goal-id GOAL-xxx"; return 1; }
+
+  # 1. 读取 Goal
+  local goal_file="$CONFIG_DIR/registry/goals.yaml"
+  [[ -f "$goal_file" ]] || { warn "Goal Registry 不存在: $goal_file"; return 1; }
+  local title north_star
+  title=$(awk -v gid="$goal_id" '$0~gid{f=1} f&&/title:/{print $2; exit}' "$goal_file" 2>/dev/null)
+  north_star=$(awk -v gid="$goal_id" '$0~gid{f=1} f&&/north_star:/{print $2; exit}' "$goal_file" 2>/dev/null)
+  [[ -z "$title" ]] && { warn "未找到 Goal: $goal_id"; return 1; }
+
+  step "Goal: $goal_id — $title"
+
+  # 2. 查找关联 Spec
+  local spec_file=""
+  local spec_id=""
+  for f in "$ROOT/module"/*/SPEC.md; do
+    [[ -f "$f" ]] || continue
+    if grep -q "$goal_id" "$f" 2>/dev/null; then
+      spec_file="$f"
+      spec_id=$(grep -oP 'SPEC-[A-Za-z0-9][-A-Za-z0-9]*-v\d+' "$f" | head -1)
+      break
+    fi
+  done
+
+  if [[ -n "$spec_file" ]]; then
+    step "关联 Spec: $spec_id ($spec_file)"
+  else
+    info "未找到关联 Spec，将基于 Goal 直接生成"
+  fi
+
+  # 3. 从 Spec 提取 Requirements → 生成 Tasks
+  local output_file="$CONFIG_DIR/prompts/compiled-tasks-${goal_id}.md"
+  mkdir -p "$(dirname "$output_file")"
+
+  local task_counter=1
+
+  {
+    echo "# Compiled Task List"
+    echo "# Goal: $goal_id — $title"
+    echo "# 生成时间: $(date '+%Y-%m-%d %H:%M:%S')"
+    echo "# Compiler: goal-delivery.sh v2 --compile"
+    echo ""
+    echo "## Goal Context"
+    echo ""
+    echo "- **Goal ID**: $goal_id"
+    echo "- **Title**: $title"
+    echo "- **North Star**: ${north_star:-未定义}"
+    echo ""
+
+    if [[ -n "$spec_file" ]]; then
+      echo "## Requirements (from $spec_id)"
+      echo ""
+
+      # 提取 Requirements
+      local req_count=0
+      while IFS= read -r line; do
+        local rid=$(echo "$line" | grep -oP 'REQ-SPEC-[A-Za-z0-9][-A-Za-z0-9]*-v\d+-\d{3}')
+        [[ -z "$rid" ]] && continue
+        req_count=$((req_count + 1))
+        local desc=$(echo "$line" | sed "s/.*$rid[ :：-]*//" | head -c 120)
+        [[ -z "$(echo "$desc" | tr -d ' ')" ]] && desc="Requirement from $spec_id"
+
+        local tid=$(printf "TASK-%s-%03d" "$goal_id" "$task_counter")
+        echo "### $tid"
+        echo ""
+        echo "- **Source**: $rid"
+        echo "- **Description**: $desc"
+        echo "- **Input**: 待定义（请填写此 Task 的输入）"
+        echo "- **Output**: 待定义（请填写此 Task 的交付物）"
+        echo "- **DoD**: 实现通过测试，验收标准可验证"
+        echo "- **Priority**: P1"
+        echo "- **Dependencies**: 无"
+        echo ""
+        task_counter=$((task_counter + 1))
+      done < <(grep -n "REQ-SPEC-" "$spec_file" 2>/dev/null)
+
+      echo "## Summary"
+      echo ""
+      echo "- **Total Requirements**: $req_count"
+      echo "- **Generated Tasks**: $((task_counter - 1))"
+      echo "- **Goal**: $goal_id"
+    else
+      echo "## Tasks (manual — 无 Spec 关联)"
+      echo ""
+      echo "> 未找到关联 Spec，请手动拆分 Task 或先运行: goal-delivery.sh spec --goal-id $goal_id"
+      echo ""
+      echo "### TASK-${goal_id}-001"
+      echo ""
+      echo "- **Source**: $goal_id (直接拆分)"
+      echo "- **Description**: 待定义"
+      echo "- **Input**: 待定义"
+      echo "- **Output**: 待定义"
+      echo "- **DoD**: 实现通过测试"
+      echo ""
+    fi
+
+    echo "## Prompt Compilation Notes"
+    echo ""
+    echo "运行以下命令为每个 Task 生成 Context Package："
+    echo ""
+    for ((i=1; i<task_counter; i++)); do
+      local tid=$(printf "TASK-%s-%03d" "$goal_id" "$i")
+      echo "  bash docs/goal/tools/goal-delivery.sh prompt --compile --task-id $tid"
+    done
+    echo ""
+    echo "## Gate Requirements"
+    echo ""
+    echo "| Gate | 检查 | 状态 |"
+    echo "|------|------|------|"
+    echo "| G1 Goal Gate | Goal 符合 SMART | 待检查 |"
+    echo "| G2 Spec Gate | Spec 完整可测试 | 待检查 |"
+    echo "| G5 Task Gate | Tasks 原子化且有 DoD | 待检查 |"
+    echo "| G6 Impl Gate | 实现未越界 | 待检查 |"
+    echo "| G7 Test Gate | 测试通过 | 待检查 |"
+  } > "$output_file"
+
+  ok "编译完成: $output_file"
+  info "Tasks 已生成: $((task_counter - 1)) 个"
+  info "下一步: 审查生成的任务清单，补充 Input/Output/DoD"
+  echo "$output_file"
+}
+
+# ─── prompt 增强：--compile 生成完整 Context Package ──────
+compile_prompt_pack() {
+  local task_id="$1"
+  [[ -z "$task_id" ]] && { warn "用法: goal-delivery.sh prompt --compile --task-id TASK-xxx"; return 1; }
+
+  require_config
+
+  # 从 Task ID 推导 Goal ID
+  local goal_id
+  goal_id=$(echo "$task_id" | grep -oP 'GOAL-\d{8}-\d{3}') || goal_id="UNKNOWN"
+
+  local goal_file="$CONFIG_DIR/registry/goals.yaml"
+  local goal_title="" goal_north=""
+  if [[ -f "$goal_file" ]]; then
+    goal_title=$(awk -v gid="$goal_id" '$0~gid{f=1} f&&/title:/{print $2; exit}' "$goal_file" 2>/dev/null)
+    goal_north=$(awk -v gid="$goal_id" '$0~gid{f=1} f&&/north_star:/{print $2; exit}' "$goal_file" 2>/dev/null)
+  fi
+
+  # 查找 Spec
+  local spec_file="" spec_id=""
+  for f in "$ROOT/module"/*/SPEC.md; do
+    [[ -f "$f" ]] || continue
+    if grep -q "$goal_id" "$f" 2>/dev/null; then
+      spec_file="$f"
+      spec_id=$(grep -oP 'SPEC-[A-Za-z0-9][-A-Za-z0-9]*-v\d+' "$f" | head -1)
+      break
+    fi
+  done
+
+  local output_file="$CONFIG_DIR/prompts/${task_id}/v1.md"
+  mkdir -p "$(dirname "$output_file")"
+
+  {
+    echo "# Context Package: $task_id"
+    echo ""
+    echo "> 自动生成: $(date '+%Y-%m-%d %H:%M:%S')"
+    echo "> Compiler: goal-delivery.sh v2 --compile"
+    echo ""
+    echo "## Goal"
+    echo ""
+    echo "- **Goal ID**: $goal_id"
+    echo "- **Title**: ${goal_title:-未定义}"
+    echo "- **North Star**: ${goal_north:-未定义}"
+    echo ""
+
+    if [[ -n "$spec_id" ]]; then
+      echo "## Spec"
+      echo ""
+      echo "- **Spec ID**: $spec_id"
+      echo "- **File**: $spec_file"
+      echo ""
+
+      # 提取关联的 Requirements
+      echo "### Related Requirements"
+      echo ""
+      grep "REQ-SPEC-" "$spec_file" 2>/dev/null | head -10 | while IFS= read -r line; do
+        echo "- $line"
+      done
+      echo ""
+    fi
+
+    echo "## Task"
+    echo ""
+    echo "- **Task ID**: $task_id"
+    echo "- **Goal**: $goal_id"
+    echo ""
+
+    echo "## Constraints"
+    echo ""
+    echo "### Allowed Files"
+    echo ""
+    echo "> 待定义 — 请指定此 Task 允许修改的文件范围"
+    echo ""
+    echo "### Prohibited"
+    echo ""
+    echo "- 不得修改公共 API 签名（需单独审批）"
+    echo "- 不得修改数据库 Schema（需 Migration + CR）"
+    echo "- 不得引入新的外部依赖（需评估）"
+    echo "- 不得删除或放宽现有测试"
+    echo ""
+
+    echo "## Verification"
+    echo ""
+    echo "### Test Commands"
+    echo ""
+    echo '```bash'
+    echo "# 待定义 — 请补充验证命令"
+    echo '```'
+    echo ""
+    echo "### Evidence"
+    echo ""
+    echo "- **Evidence ID**: EVID-${task_id}-001"
+    echo "- **Status**: 待收集"
+    echo ""
+
+    echo "## Stop Conditions"
+    echo ""
+    echo "- Gate G6 (Implementation Gate) 返回 FAIL — 实现越界"
+    echo "- Gate G7 (Test Gate) 测试未通过"
+    echo "- 发现需要修改公共接口 → 升级为 CL3，需要 Human Approval"
+    echo ""
+  } > "$output_file"
+
+  ok "Context Package 已生成: $output_file"
+  echo "$output_file"
+}
+
 # ─── 参数解析 ────────────────────────────────────────────
 COMMAND=""
 ARG1=""
@@ -1442,6 +1682,10 @@ parse_args() {
       --format)
         shift 2
         ;;
+      --compile)
+        COMPILE=true
+        shift
+        ;;
       -h|--help)
         COMMAND="help"
         shift
@@ -1469,7 +1713,7 @@ main() {
     design)    cmd_design "$ARG1" ;;
     plan)      cmd_plan "$ARG1" ;;
     tasks)     cmd_tasks "$ARG1" ;;
-    prompt)    cmd_prompt "$ARG1" ;;
+    prompt)    if [[ "$COMPILE" == "true" ]]; then compile_prompt_pack "$ARG1"; else cmd_prompt "$ARG1"; fi ;;
     evidence)  cmd_evidence "$ARG1" "$ARG2" ;;
     matrix)    cmd_matrix "$ARG1" ;;
     change)    cmd_change "$ARG1" "$ARG2" ;;
@@ -1479,6 +1723,7 @@ main() {
     release)   cmd_release ;;
     dashboard) cmd_dashboard ;;
     auto)      cmd_auto ;;
+    compile)   cmd_compile "$ARG1" ;;
     help|"")   usage ;;
     *)         die "未知命令: $COMMAND" ;;
   esac
