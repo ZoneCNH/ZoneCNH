@@ -1,5 +1,9 @@
 # Goal Registry
-# 权威来源：docs/goal/15-registry.md §1
+# 权威来源：docs/goal/15-registry.md §1 + docs/goal/schema/goal.schema.yaml
+# 字段映射（registry → canonical schema）：
+#   goal_id → goal_id, title → title, north_star → north_star
+#   success_criteria → success_criteria, status → status
+#   pipeline_state → pipeline_state, current_phase → current_phase, phase_status → phase_status
 # 路径：.config/goal/registry/goals.yaml
 
 goals:

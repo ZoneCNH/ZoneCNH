@@ -1,0 +1,167 @@
+# Canonical Matrix Edge Schema
+# SSOT: docs/goal/05-layer-standards.md §9
+# 路径: docs/goal/schema/matrix.schema.yaml
+#
+# Matrix 是横切追溯制品，连接 Goal/Spec/AC/Task/Prompt/Code/Test/Evidence/Risk/Gate。
+# 使用 edge model（不是旧 row model）。
+# 进入 .config/goal/matrix/matrix.yaml、Gate、validator、CI 或 Release 控制面时，
+# 必须使用本文档定义的 canonical fields 和 relation vocabulary。
+
+schema_name: canonical_matrix_edge
+schema_version: "1.0.0"
+authority_sources:
+  - docs/goal/05-layer-standards.md
+  - docs/goal/04-gates.md
+  - .config/goal/schema/rules.yaml
+
+fields:
+  edge_id:
+    type: string
+    required: false  # 可选，但推荐填写
+    pattern: "^EDGE-GOAL-[0-9]{8}-[0-9]{3}-[A-Z0-9]+-[A-Z0-9]+$"
+    description: "唯一 edge ID"
+    example: "EDGE-GOAL-20260610-001-AC01-TEST01"
+
+  source_type:
+    type: string
+    required: false
+    enum: [Goal, Spec, AcceptanceCriteria, Task, Prompt, Code, Test, Evidence, Risk, Gate, Design, Plan, Release, Retrospective]
+    description: "来源节点类型"
+
+  source_id:
+    type: string
+    required: true
+    description: "来源节点 ID（如 GOAL-20260608-001）"
+
+  target_type:
+    type: string
+    required: false
+    enum: [Goal, Spec, AcceptanceCriteria, Task, Prompt, Code, Test, Evidence, Risk, Gate, Design, Plan, Release, Retrospective]
+    description: "目标节点类型"
+
+  target_id:
+    type: string
+    required: true
+    description: "目标节点 ID"
+
+  relation:
+    type: string
+    required: true
+    enum:
+      - decomposes_to   # 上游分解为下游
+      - contains        # 上游包含下游
+      - accepted_by     # 需求由验收标准确认
+      - planned_by      # 由计划安排
+      - implemented_by  # 由代码实现
+      - prompted_by     # 由 Prompt 驱动
+      - verified_by     # 由测试/审查证明
+      - evidenced_by    # 由 Evidence Bundle 证明
+    description: >
+      Canonical relation vocabulary。进入控制面 MUST 使用此 8 个值。
+      implements/verifies/blocks/releases/measures/mitigates/approves 等词
+      只能在叙述或展示中作为语义别名出现，不得写入 Matrix 控制面、Gate、validator、
+      CI 或 Release 记录。
+
+  priority:
+    type: string
+    required: false
+    enum: [P0, P1, P2, P3]
+
+  status:
+    type: string
+    required: true
+    enum:
+      - Unmapped
+      - Mapped
+      - Linked
+      - Verified
+      - Dropped
+      - Drifted
+      - Stale
+      - Blocked
+      - Changed
+    description: >
+      Edge 状态。终态: Verified / Dropped。
+      Drifted/Stale/Blocked/Changed 是漂移或阻塞元状态，
+      必须回到 Linked 后重新验证，或转为带原因的 Dropped。
+    terminal_statuses: [Verified, Dropped]
+
+  owner:
+    type: string
+    required: true
+    description: "负责维护此 edge 的人或 Agent"
+
+  evidence_id:
+    type: string
+    required: true
+    pattern: "^EVID-TEST-TASK-GOAL-[0-9]{8}-[0-9]{3}-[0-9]{3}-[0-9]{3}-[0-9]{3}$"
+    description: "关联 Evidence ID。release-critical edge MUST 填写"
+
+  risk_id:
+    type: string
+    required: false
+    pattern: "^RISK-GOAL-[0-9]{8}-[0-9]{3}-[0-9]{3}$"
+    description: "关联风险 ID。High/Critical 或 release_blocking 风险 MUST 填写"
+
+  gate_id:
+    type: string
+    required: true
+    pattern: "^G[0-9]{1,2}$"
+    description: "关联 Gate ID。阻断性 Gate MUST 填写"
+
+  drop_reason:
+    type: string
+    required: false
+    description: "Dropped 状态时必填，解释丢弃原因"
+
+  updated_at:
+    type: string
+    required: true
+    format: date
+    description: "最近更新日期"
+
+# 状态约束
+status_constraints:
+  Verified:
+    requires: [evidence_id]
+  Dropped:
+    requires: [drop_reason]
+  terminal:
+    - Verified
+    - Dropped
+  drift_meta:
+    - Drifted
+    - Stale
+    - Blocked
+    - Changed
+    note: "漂移元状态不是完成终态，必须回到 Linked 后重新验证或转为 Dropped"
+
+# 风险等级
+risk_levels: [Low, Medium, High, Critical]
+
+# 覆盖率阈值
+coverage:
+  terminal_threshold: 95   # Verified + Dropped 终态占比
+  warning_threshold: 60    # 低于此值发出警告
+  release_critical_rule: "所有 release-critical edge MUST 为 Verified 或带 drop_reason 的 Dropped"
+
+# 合格标准（来自 05-layer-standards.md §9）
+quality_criteria:
+  - "每个 Goal 至少有一条到 Spec 或 Non-goal/Dropped decision 的 edge"
+  - "每个 Spec Requirement 至少有一条到 Task/Test/Decision 的 edge"
+  - "每个 P0/P1 AC MUST 同时有 Test edge 与 Evidence edge"
+  - "每个 release-critical edge MUST 有 owner/status/priority/gate_id/evidence_id"
+  - "每个 Dropped edge MUST 有 drop_reason 和审批记录"
+  - "不允许存在无来源 Task、无来源 Code、无证据 Done 或未解释的 Blocked/Drifted/Stale edge"
+
+# 展示兼容
+display_compatibility:
+  legacy_row_model: "旧表格 (Goal ID/Spec ID/Task ID/...) 只能作为人类阅读视图，进入控制面前 MUST 投影为 canonical edge"
+  projection_required: true
+  old_relation_aliases:
+    implements: "display alias for implemented_by"
+    verifies: "display alias for verified_by"
+    blocks: "narrative only, not a canonical relation"
+    releases: "narrative only, not a canonical relation"
+    measures: "narrative only, not a canonical relation"
+  rule: "任何旧 row/table 视图进入 Gate/validator/CI/Release 前 MUST 投影为 canonical edge；投影失败不得宣称 Matrix 完整"

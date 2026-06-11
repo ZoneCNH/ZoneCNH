@@ -2,6 +2,39 @@
 
 > 记录 docs/goal/ 体系的重大结构性变更。
 
+## 2026-06-12 — Schema 权威化 Phase 1
+
+### 新增 Schema 文件
+
+- 新增 `docs/goal/schema/goal.schema.yaml`：canonical Goal 对象 schema，定义 18 个字段的完整类型/正则/枚举/必填属性，包含标准→模板→Registry 三源字段映射表
+- 新增 `docs/goal/schema/matrix.schema.yaml`：canonical Matrix edge schema，定义 14 个 canonical 字段、8 个控制面 relation、9 个状态枚举、覆盖率阈值和合格标准
+- 新增 `docs/goal/schema/evidence.schema.yaml`：canonical Evidence schema，统一 Evidence 文件（11 个必填字段）和 Evidence Bundle（17 个必填字段），消除 evidence-collect.sh 与 gate-check.sh 的字段漂移
+- 新增 `docs/goal/schema/state-dictionary.yaml`：统一状态字典，将 5 种状态命名风格归并为 4 类（lifecycle_status / runtime_phase / gate_result / metric_conclusion），定义唯一大小写和允许值
+
+### 文档对齐
+
+- `07-id-system.md` 新增 §4：明确 ID 后缀 `vN` 与文档 `version` 字段的区分
+- `02-goal-standard.md` 新增 §12：Schema 权威引用 + 字段来源标注表
+- `09-templates.md`：Goal/Matrix/Evidence 模板增加 schema 引用注释
+- `10-lint-rules.md` 新增 §7：35 条规则的实现状态表（16 implemented / 7 manual / 12 planned）+ 规则→工具映射
+- `24-standard-unification-analysis.md`：新增 2026-06-12 修复进展，修订统一度评分从 66→78/100
+
+### 控制面与工具
+
+- `.config/goal/schema/rules.yaml`：增加 4 个 schema 文件引用 + 各段 canonical_schema 指针 + state_dictionary 段
+- `.config/goal/registry/goals.yaml`：增加字段映射注释
+- `evidence-collect.sh`：增加 evidence.schema.yaml 引用
+- `gate-check.sh`：增加 evidence.schema.yaml + matrix.schema.yaml 引用
+- `lint-goal.sh`：排除 `docs/goal/schema/` 目录，防止 schema 定义文件被误判为数据文件
+
+### 验证
+
+- `goal-workflow.sh preflight` — PASS（0 errors）
+- `goal-workflow.sh validate` — PASS（0 errors）
+- `goal-validate.py --mode strict` — PASS
+- `matrix-gen.py --check-only` — PASS（64 edges, 100% 覆盖率）
+- `self-test.sh` — PASS（45/45）
+
 ## 2026-06-11 — 模块只读分析快照 allowlist 对齐
 
 - 明确 `module/{module}/` 可保存受规则 allowlist 约束的只读分析快照，但仍禁止实现源码树、vendor 源码或从 `/home/{module}` 复制出的模块代码。

@@ -278,3 +278,54 @@ BLOCKED        — 被阻塞，需解决依赖
 提交到控制面的 canonical Gate（`G0`-`G11`）必须处于终态裁决，且 `status` 必须与 `result.verdict` 一致。补充性模块快照或临时运行态可以记录生命周期状态，但不能把生命周期状态写入 `result.verdict`。
 
 当 Gate 记录同时包含数值型 `result.score` 和 `result.threshold` 时，`PASS` 必须满足 `score >= threshold`。低于阈值的记录只能裁决为 `PASS_WITH_RISK`、`FAIL` 或 `BLOCKED`，并保留对应风险或阻塞说明。
+
+## 5. PASS_WITH_RISK 策略
+
+### 阈值规则
+
+Gate 同时记录 `score` 和 `threshold` 时：
+- `score >= threshold` → `PASS`
+- `pass_with_risk_min <= score < threshold` → `PASS_WITH_RISK`（仅允许的 Gate）
+- `score < pass_with_risk_min` → `FAIL`
+
+### 允许 PASS_WITH_RISK 的 Gate
+
+| Gate | 允许 | PASS 阈值 | PASS_WITH_RISK 最低 | 风险必须字段 | 备注 |
+|------|------|-----------|---------------------|-------------|------|
+| G0 | 是 | 90 | 80 | risk_id, risk_owner, risk_level, risk_reason, mitigation, due_at, review_gate, release_blocking, evidence_id | 上下文恢复 |
+| G1 | 是 | 90 | 80 | 同上 | Goal 语义审查 |
+| G2 | 是 | 90 | 85 | 同上 | Spec 完整性审查 |
+| G3 | 是 | 90 | 85 | 同上 | Design 架构审查 |
+| G4 | 是 | 90 | 85 | 同上 | Plan 执行策略审查 |
+| G5 | 是 | 90 | 85 | 同上 | Task/Matrix 覆盖 |
+| G6 | **否** | 90 | — | — | 实现 Gate 不允许风险通过 |
+| G7 | 是 | 90 | 85 | 同上 | 测试 Gate |
+| G8 | 是 | 90 | 85 | 同上 | 证据 Gate |
+| G9 | 是 | 90 | 85 | 同上 | 审查 Gate |
+| G10 | **否** | 90 | — | — | Release Gate 不允许风险通过 |
+| G11 | 是 | 80 | 70 | 同上 | 复盘 Gate（非阻断） |
+
+### PASS_WITH_RISK 必须包含的风险元数据
+
+当 Gate 以 PASS_WITH_RISK 通过时，必须记录：
+
+```yaml
+risk:
+  risk_id: "RISK-GOAL-YYYYMMDD-NNN-NNN"
+  risk_owner: "负责此风险的 Agent 或人"
+  risk_level: "Low | Medium | High | Critical"
+  risk_reason: "为什么此风险不能在此 Gate 完全解决"
+  mitigation: "缓解措施"
+  due_at: "YYYY-MM-DD"
+  review_gate: "G8 | G10"  # 哪个 Gate 会重新审查
+  release_blocking: true | false
+  evidence_id: "EVID-..."
+  status: "Open | Mitigated | Closed | Accepted"
+```
+
+### 禁止项
+
+- G6 和 G10 不允许 PASS_WITH_RISK — 实现边界和发布就绪必须完全确认
+- PASS_WITH_RISK 不得用于绕过 P0/P1 验收标准、权限、数据、回滚或观测性要求
+- 存在 Open/Escalated release_blocking 风险时 G10 必须 FAIL 或 BLOCKED
+- 豁免（WAIVED）是策略记录不是 Gate 结果值；豁免的 Gate 最终映射为 PASS_WITH_RISK 或 BLOCKED

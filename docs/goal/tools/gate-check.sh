@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 # gate-check.sh — Gate 制品就绪检查脚本
+# Evidence 必填字段检查对齐 docs/goal/schema/evidence.schema.yaml (§Part A: evidence_file.required_fields)
+# Matrix 终态覆盖率对齐 docs/goal/schema/matrix.schema.yaml (§coverage)
 # 检查 Matrix 覆盖率、Evidence 字段完整性、测试覆盖率；不替代四源 Gate arbiter。
 # 用法: ./docs/goal/tools/gate-check.sh [项目根目录]
 

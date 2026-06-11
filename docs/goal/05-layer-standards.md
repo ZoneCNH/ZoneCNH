@@ -88,6 +88,7 @@ Design 在 Spec 之后、Plan 之前，回答"怎么拆、怎么隔离"。
 
 ```text
 Design ID:    DESIGN-<domain>-vN
+Source Goal:  对应 Goal
 Source Spec:  对应 Spec
 Modules:      模块拆分
 Interfaces:   接口定义
@@ -118,6 +119,7 @@ Plan 在 Design 之后、Tasks 之前产出，先定义执行策略、阶段顺�
 ```text
 Plan ID:            PLAN-<goal-id>-vN
 Source Goal:        对应 Goal
+Source Design:      对应 Design
 Execution Strategy: 整体执行策略
 Phases:             阶段列表（每阶段含 Task、Goal、Output、Validation）
 Risks:              风险清单 → 应对方式
