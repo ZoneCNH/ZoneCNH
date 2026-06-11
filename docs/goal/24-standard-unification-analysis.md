@@ -24,10 +24,12 @@ Goal 体系目前不是缺少标准，而是多个标准面并存：权威 ID、
 | Evidence schema | 82     | —    | `evidence.schema.yaml` 已创建                                                                                    |
 | Lint 与工具覆盖 | 85     | +5   | Lint 40/40 规则 100% (30 automated + 10 semi); `goal-delivery.sh --compile` Workflow Compiler MVP                |
 | Agent 跨平台    | 82     | +2   | 核心 5 Agent 三平台同步；CL2 Agent 互审路径已落地 (`13-runtime-engine.md`)                                        |
-| 契约层 (Contract)| 78     | new  | 5 契约 Schema (state-machine/api-data/security/ops); `goal-validate.py --only contracts`; SC-003/006/007 自动校验 |
-| 部署与路线图    | 80     | new  | `deploy/README.md` 3 级采纳指南; `deploy/roadmap.md` Phase 1-5 路线图                                            |
+| 契约层 (Contract)| 80     | +2   | 5 契约 Schema; `goal-validate.py --only contracts`; SC-003/006/007 自动校验 |
+| 部署与路线图    | 82     | +2   | `deploy/README.md` 3 级采纳; `deploy/roadmap.md` Phase 1-5 路线图 |
+| Release Drills  | 78     | new  | `--simulate` / `--rollback-drill` / `metrics-window` / `incident` 4 drills |
+| RSI Scorecard   | 78     | new  | `goal-delivery.sh improve` + `--compile` CR 自动生成 |
 
-综合评分：**84 / 100**（+2 from 82）。
+综合评分：**85 / 100**（+1 from 84）。
 
 ## 需要统一的标准
 
@@ -278,7 +280,7 @@ P2-1 完成后综合评分调整：**82 / 100**。
 - **ID 自动生成**：`matrix-gen.py --auto-id --dry-run` 支持 Goal/Task/Test/Evidence/AC-REQ ID 自动推导。
 - **CL2 Agent 互审**：`13-runtime-engine.md` 新增 CL2 Agent 交叉审查路径（替代人工审批）。
 
-修订后综合评分：**84 / 100**（+2 from 82）。
+修订后综合评分：**85 / 100**（+1 from 84）。
 
 ### 需在实现仓库侧跟进
 
