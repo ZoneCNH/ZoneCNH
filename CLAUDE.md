@@ -20,7 +20,7 @@
 
 实际实现位于 `github.com/ZoneCNH` 下约 70 个独立仓库，例如 `kernel`、`binance`、`factor-engine`、`risk-engine`、`x.go`。本仓库只描述和链接这些模块，不承载它们的源码。
 
-这里没有构建、lint 或测试步骤；主要工作是编辑 Markdown。
+这里没有传统构建系统（npm/maven/cargo 等）；主要工作是编辑 Markdown。Goal 体系的 lint 与验证脚本位于 `docs/goal/tools/`，详见下文约定。
 
 ## 保持文档同步
 
