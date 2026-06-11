@@ -139,6 +139,79 @@ Claude M-LINT-008 显式声明仅要求 Code + Test。Codex/Copilot 要求四链
 
 ---
 
+
+### 3.6 逐 Agent 字段级比较
+
+#### 3.6.1 goal-spec
+
+| 字段 | Claude | Codex | Copilot |
+|------|--------|-------|--------|
+| name | goal-spec | goal-spec | goal-spec |
+| description | "Goal 驱动交付体系的项目规格专家。基于 docs/goal/ 体系，编写 Goal、Spec、Matrix..." | "Goal Delivery OS 的 Goal/Spec/Design/Plan/Task 编写代理，负责在不绕过 Gate 的前提下..." | "Goal Delivery OS 的 Goal/Spec/Design/Plan/Task 编写代理（Copilot 平台投影）..." |
+| model | opus | gpt-5.5 | (平台默认) |
+| tools | [Read,Write,Edit,Bash,Grep,Glob] | (平台默认) | (平台默认) |
+| system prompt | 完整内联 (348行) | 投影 developer_instructions (39行) | 投影 Markdown (48行) |
+| 权威文档数 | 19 个 docs/goal/*.md | 10 个 (含 CONSTITUTION) | 9 个 (含 CONSTITUTION) |
+| 独有内容 | 评分体系表, Lint规则清单, 管线全景, 工具链, 孤儿检查, 变更级别CL0-CL5, 审查流程 | MUST/MUST NOT 散文, 4处已修正的幽灵引用 | platform/goal_role/writes 元数据, 追加 "仅作为机器校验投影" 限定语 |
+
+> 漂移项 D-01/D-02(已修复): Codex 引用了不存在的 `02-goal-schema.md` 和 `09-tasks-and-prompt.md`。Claude 原缺 `CONSTITUTION.md` (已修复)。
+
+#### 3.6.2 goal-matrix
+
+| 字段 | Claude | Codex | Copilot |
+|------|--------|-------|--------|
+| name | goal-matrix | goal-matrix | goal-matrix |
+| description | "追溯矩阵管理器 — 从 Spec/Tasks 生成 Traceability Matrix..." | "Goal Delivery OS 的横向追溯矩阵代理，维护 canonical edge graph 并执行 Matrix 覆盖、孤儿和 release-critical edge 检查。" | "Goal Delivery OS 的横向追溯矩阵代理（Copilot 平台投影）..." |
+| model | sonnet | gpt-5.5 | (平台默认) |
+| tools | [Read,Write,Grep,Glob] | (平台默认) | (平台默认) |
+| 权威文档数 | 5 个 (含 CONSTITUTION) | 6 个 (含 CONSTITUTION+rules.yaml) | 6 个 (含 CONSTITUTION+rules.yaml) |
+| Verified 定义 | M-LINT-008: "Code + Test" | "Code/Test/Evidence/Gate 四链路" | 同 Codex |
+| 独有内容 | Matrix 生命周期, 派生展示字段表, 风险字段定义, 孤儿检查报告模板, 覆盖率报告模板 | MUST NOT "使用旧 row/table model" | platform/goal_role/writes 元数据 |
+
+> 漂移项 D-05(MEDIUM): Verified 条件 Claude=2链 vs Codex/Copilot=4链。Claude 矩阵 Agent 无 Bash 工具（无法执行 matrix-gen.py）。
+
+#### 3.6.3 goal-reviewer
+
+| 字段 | Claude | Codex | Copilot |
+|------|--------|-------|--------|
+| name | goal-reviewer | goal-reviewer | goal-reviewer |
+| description | "审查者 — 以对抗性视角审查 Goal/Spec/Matrix/Design/Plan 等制品..." | "Goal Delivery OS 的 Gate / Review / Release 对抗性审查代理，负责阻断缺证据、缺风险闭环或绕过 Gate 的交付。" | "Goal Delivery OS 的 Gate / Review / Release 对抗性审查代理（Copilot 平台投影）..." |
+| model | opus | gpt-5.5 | (平台默认) |
+| tools | [Read,Grep,Glob,Bash] — 无 Write/Edit (强制只读) | (平台默认) | (平台默认) |
+| G0-G11 Gate | 全部覆盖, 含具体检查重点和对抗性准则表 | 全部覆盖, 含 G10 阻断8项 | 同 Codex |
+| G10 阻断条件 | 7 项 | 8 项 (多 "Agent 隔离违规") | 同 Codex |
+| 独有内容 | 对抗性审查准则表(假设/质疑模式), Go/No-Go 判定规则, DoR/DoD 审查表, 7层评分标准 | MUST NOT "审批自己刚修改的受保护制品", "把 Hypothesis 当作事实" | platform/goal_role/writes 元数据 |
+
+> 漂移项 D-04(MEDIUM): G10 阻断条件 Claud=7 vs Codex/Copilot=8。Claude Reviewer 无 Write 权限(硬约束)—Codex/Copilot 无等价机制。
+
+#### 3.6.4 goal-prompt-builder
+
+| 字段 | Claude | Codex | Copilot |
+|------|--------|-------|--------|
+| name | goal-prompt-builder | goal-prompt-builder | goal-prompt-builder |
+| description | "Context Package 构建器 — 从 Task spec 和关联制品生成结构化 Prompt..." | "Goal Delivery OS 的 Context Package / Prompt 构建代理，为单个 Task 生成可执行、可验证、可审计的编码输入。" | "Goal Delivery OS 的 Context Package / Prompt 构建代理（Copilot 平台投影）..." |
+| model | sonnet | gpt-5.5 (reasoning=medium) | (平台默认) |
+| tools | [Read,Write,Grep,Glob] | (平台默认) | (平台默认) |
+| 权威文档数 | 6 个 (含 CONSTITUTION) | 6 个 (含 CONSTITUTION+rules.yaml) | 6 个 (含 CONSTITUTION+rules.yaml) |
+| 独有内容 | Context Package 10组件, Prompt Chain 7步, PromptOps 版本管理(文件树+prompt-meta.yaml), CL0-CL5变更检测表, 执行模式详细定义(Lite/Standard/Full), P-LINT-001~010 | 执行模式(Lite/Standard/Full 简述), MUST NOT 约束 | platform/goal_role/writes 元数据 |
+
+> 漂移项 D-02(已修复): Codex 引用了不存在的 `09-tasks-and-prompt.md`。Claude prompt-builder 无 Bash 工具。
+
+#### 3.6.5 goal-evidence
+
+| 字段 | Claude | Codex | Copilot |
+|------|--------|-------|--------|
+| name | goal-evidence | goal-evidence | goal-evidence |
+| description | "证据收集与验证器 — 收集、验证和管理 Evidence Protocol..." | "Goal Delivery OS 的 Evidence 收集与验证代理，维护 Evidence Bundle、No Evidence No Done 和 Release 证据闭环。" | "Goal Delivery OS 的 Evidence 收集与验证代理（Copilot 平台投影）..." |
+| model | sonnet | gpt-5.5 | (平台默认) |
+| tools | [Read,Write,Bash,Grep,Glob] | (平台默认) | (平台默认) |
+| 权威文档数 | 5 个 (含 CONSTITUTION) | 7 个 (含 CONSTITUTION+rules.yaml) | 7 个 (含 CONSTITUTION+rules.yaml) |
+| Evidence 分类 | 4类型(TEST/REVIEW/EXECUTION/MEASUREMENT) + 禁止字段(conclusion/recommendation/approval) | 未分类 | 未分类 |
+| 独有内容 | Failure Budget 配置(max_retry/backoff/types), AutoResearch 4步协议, Evidence 必需字段(9字面+15Bundle), Evidence 收集/验证/一致性检查流程, 覆盖率/完整性/趋势报告模板 | Evidence Bundle 10字段 + Release Bundle 8字段(更结构化的字段定义) | 同 Codex |
+
+> 漂移项(Hypothesis LOW): Claude 的 Failure Budget、AutoResearch、Evidence 类型分类未在 Codex/Copilot 中出现——可能是通过引用文档间接覆盖，也可能是有意省略。
+
+
 ## 4. 详细度不对称
 
 | 维度 | Claude | Copilot | Codex |
