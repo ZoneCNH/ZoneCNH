@@ -5,7 +5,7 @@
 
 ## Current Task
 
-TASK-XLIB-006: ErrorKind 8 种、Error 结构体、Client New/Close
+TASK-XLIB-006: ErrorKind 9 种、Error 结构体、Client New/Close
 
 ## Related Spec
 
@@ -13,7 +13,7 @@ TASK-XLIB-006: ErrorKind 8 种、Error 结构体、Client New/Close
 
 ## Related Requirements
 
-- FR-002: Error 标准 — 8 种 ErrorKind
+- FR-002: Error 标准 — 9 种 ErrorKind
 - FR-005: Client 标准 — New/Close 存在
 - AC-004~AC-008, AC-014~AC-018
 
@@ -28,7 +28,7 @@ TASK-XLIB-006: ErrorKind 8 种、Error 结构体、Client New/Close
 ## Out of Scope
 
 - 不实现 Health、Metrics、render template 或 release manifest
-- 不新增超出 8 类 ErrorKind 的错误分类
+- 不新增超出 9 类 ErrorKind 的错误分类
 - 不引入具体业务客户端、网络连接或后台 goroutine
 
 ## Allowed Files
@@ -43,7 +43,7 @@ TASK-XLIB-006: ErrorKind 8 种、Error 结构体、Client New/Close
 
 - 禁止引入新依赖
 - 禁止修改 health.go / metrics.go / config.go
-- 禁止新增超过 8 种 ErrorKind
+- 禁止新增超过 9 种 ErrorKind
 
 ## Acceptance Criteria
 

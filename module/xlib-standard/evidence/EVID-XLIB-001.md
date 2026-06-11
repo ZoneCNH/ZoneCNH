@@ -28,4 +28,4 @@ commands_run:
 
 ## 说明
 
-文档对齐在本仓库完成。SPEC.md 从 52 FR 收敛至 14 FR，goal.md 定义 1.0 发布标准，PLAN.md 定义 5-PR 执行顺序。
+文档对齐在本仓库完成。SPEC.md 从 52 FR 收敛至 15 FR，goal.md 定义 1.0 发布标准，PLAN.md 定义 5-PR 执行顺序。

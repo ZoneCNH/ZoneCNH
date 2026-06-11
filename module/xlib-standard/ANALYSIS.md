@@ -2,9 +2,9 @@
 
 本分析是本仓库对上游标准的本地整理，不是可执行规格，也不声明可执行规格状态。
 
-- Snapshot-Date: 2026-06-08
-- Upstream-Commit: `93753b30e6d01fb4a9b096acaa0d7d53a2fb231c`
-- Analysis-Version: v3.1.0
+- Snapshot-Date: 2026-06-08（原始快照）/ 2026-06-12（文档-代码重对齐）
+- Upstream-Commit: `93753b30e6d01fb4a9b096acaa0d7d53a2fb231c`（原始）/ `09c9ec2`（重对齐基准，tag v1.0.0）
+- Analysis-Version: v3.2.0
 
 ## 1. 快照定位
 

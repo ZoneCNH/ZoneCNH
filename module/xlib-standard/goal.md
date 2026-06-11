@@ -146,40 +146,34 @@
 | 检查清单 | 发布、测试、兼容性、安全、观测检查清单 | 1.0 检查项语义稳定 |
 | 错误码分配表 | 模块错误码段和分类规则 | 错误码段一经分配不得复用 |
 | 文档模板 | 模块 RFC、设计文档、配置参考、测试证据模板 | 模板字段稳定，允许追加可选字段 |
-| CI Gate 定义 | 9 个 gate 的 make ci 串联逻辑 | gate 名称和执行顺序稳定 |
+| CI Gate 定义 | 17 个 gate 的 make ci 串联逻辑 | gate 名称和执行顺序稳定 |
 | Release Evidence | manifest latest.json + .sha256 格式 | 字段集合稳定，允许追加可选字段 |
 
 ### 7.2 1.0 逻辑接口基线
 
+> 以下为 1.0 标准定义的逻辑接口分类。实际文件位于上游仓库的各子目录中（`docs/standard/`、`docs/`、`pkg/templatex/` 等），文件命名和路径以上游 SSOT 为准。
+
+**标准文档域（Standard Source）**：
+
 ```text
-standard/
-  module-model.md
-  api-standard.md
-  error-standard.md
-  config-standard.md
-  observability-standard.md
-  testing-standard.md
-  release-standard.md
-  compatibility-standard.md
-  templates/
-    module-design-template.md
-    release-checklist.md
-    test-evidence-template.md
+docs/standard/          # 8 大标准域（上游权威位置）
+docs/                   # 补充文档（api/config/errors/observability/testing/release/identity/design/quickstart）
+docs/adr/               # 架构决策记录（9 个 Accepted ADR）
+```
 
-template/                          # Go Reference Template（可编译源码）
-  go.mod
-  config.go
-  errors.go
-  health.go
-  metrics.go
-  client.go
-  version.go
-  ...
+**可执行交付物（后四角色）**：
 
+```text
+pkg/templatex/          # Go Reference Template（Config/Error/Health/Metrics/Client/Version/Option）
 scripts/
-  render_template.sh               # Generator
-  Makefile                          # make ci（9 个 gate）
-  release_check.sh                  # Evidence Runtime
+  render_template.sh    # Generator
+  check_*.sh            # Harness Gate（boundary/contracts/secrets/rendered/release）
+  generate_manifest.sh  # Evidence Runtime
+templates/l2/           # L2 下游仓库模板（.agent/、.github/workflows/、test/、Makefile）
+cmd/goalcli/            # Evidence Runtime CLI（12 文件）
+contracts/              # 跨域契约（4 件）+ 内部治理（12 件）
+Makefile                # ci（17 gate）/ release-check（16 步）/ release-final-check
+Dockerfile              # 容器化标准环境
 ```
 
 ## 8. 配置契约
@@ -249,7 +243,7 @@ scripts/
 | 标准一致性检查 | 模板字段完整、错误码段无冲突、指标命名合法 | MUST 通过 |
 | 模板可编译 | Go Reference Template 通过 `go vet ./...`、`go test ./...` 和 `go test -race ./...` | MUST 通过 |
 | 生成器冒烟测试 | Generator 渲染成功，生成库 go.mod / 包名无模板残留 | MUST 通过 |
-| CI Gate 集成 | `make ci` 的 9 个 gate 全部通过 | MUST 通过 |
+| CI Gate 集成 | `make ci` 的 17 个 gate 全部通过 | MUST 通过 |
 | Evidence 复现 | `make release-final-check` 通过，manifest checksum 校验一致 | MUST 通过 |
 | 模块合规抽检 | 至少选择 kernel、observex、redisx、contracts 验证标准可执行 | MUST 通过 |
 | 文档链接检查 | 标准文档内部引用有效 | MUST 通过 |
