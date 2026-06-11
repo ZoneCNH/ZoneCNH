@@ -87,7 +87,6 @@ tools: [Read, Write, Grep, Glob]
 
 | 字段 | 说明 |
 |------|------|
-| `CONSTITUTION.md` | 项目根本原则与最高权威 |
 | Goal ID | 目标编号 |
 | Goal Item | 目标中的具体成功项 |
 | Spec ID | 对应需求 |

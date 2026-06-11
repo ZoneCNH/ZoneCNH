@@ -271,7 +271,6 @@ tools: [Read, Grep, Glob, Bash]
 
 | 情况 | 追问 |
 |------|------|
-| `CONSTITUTION.md` | 项目根本原则与最高权威 |
 | Goal 写"提升系统稳定性" | "具体指标是什么？当前值？目标值？" |
 | Spec Requirement 只有 1 条 AC | "错误路径呢？空输入呢？并发呢？" |
 | Task 没有 DoD | "怎么判断完成？谁验证？" |
