@@ -2,6 +2,18 @@
 
 > 记录 docs/goal/ 体系的重大结构性变更。
 
+## 2026-06-12 — P2 跨平台验证
+
+### 跨平台 Agent 审计
+
+- 新增 `docs/goal/agent-cross-platform-compatibility.md`：Claude / Copilot / Codex 三平台 Agent 兼容性报告（Agent 存在性矩阵、文档引用一致性、MUST 语义等价、详细度差异）
+- 修复 `.codex/agents/goal-spec.toml`：4 处幻影文档引用 → 对齐真实文件（`02-goal-schema.md`→`02-goal-standard.md`, `07-human-approval.md`→`06-dod.md`, `09-tasks-and-prompt.md`→`09-templates.md`）
+- 修复 `.codex/agents/goal-prompt-builder.toml`：1 处幻影引用 → `09-templates.md`
+- Copilot CLI 全量 Smoke：lint-goal.sh / goal-validate.py / matrix-gen.py / self-test.sh 45/45 PASS，跨路径兼容 OK
+- `24-standard-unification-analysis.md`：新增 Agent 跨平台维度（80），综合评分 80→81/100
+
+---
+
 ## 2026-06-12 — Schema 权威化 Phase 1
 
 ### 新增 Schema 文件

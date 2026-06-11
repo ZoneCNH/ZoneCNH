@@ -23,8 +23,9 @@ Goal 体系目前不是缺少标准，而是多个标准面并存：权威 ID、
 | Matrix schema   | 85     | —    | `matrix.schema.yaml` 已创建                                                                                      |
 | Evidence schema | 82     | —    | `evidence.schema.yaml` 已创建                                                                                    |
 | Lint 与工具覆盖 | 77     | +12  | P-LINT 10/10 (曾 2/10), S-LINT 3/8 (5 条需上下文判断归入 manual), 总自动化率 27/35=77%                              |
+| Agent 跨平台    | 80     | —    | 核心 5 Agent 三平台同步；Codex 4 处幻影引用已修复；Copilot CLI smoke 45/45；兼容性报告已产出                       |
 
-综合评分：**80 / 100**（+2 from 78）。
+综合评分：**81 / 100**（+1 from 80）。
 
 ## 需要统一的标准
 
@@ -241,12 +242,21 @@ Goal 体系目前不是缺少标准，而是多个标准面并存：权威 ID、
 | Matrix schema | 85 | — |
 | Evidence schema | 82 | — |
 | Lint 与工具覆盖 | 77 | +12 (P-LINT 10/10, S-LINT 3/8, 5 条 manual, 总自动化率 77%) |
+| Agent 跨平台 | 80 | — | 核心 5 Agent 三平台同步；Codex 4 处幻影引用已修复；Copilot CLI smoke 45/45；兼容性报告 `agent-cross-platform-compatibility.md` 已产出 |
 
 **修订后综合评分：80 / 100**（+2 from 78）
 
+### 2026-06-12 P2 跨平台验证
+
+- **Copilot CLI Smoke**：lint-goal.sh / goal-validate.py / matrix-gen.py / self-test.sh 在 Copilot CLI 环境全 PASS（45/45），路径兼容性和 Python 3.14 环境确认无问题。
+- **Agent 跨平台审计**：对比 3 平台 15 个 Agent 定义文件，发现 Codex 端 4 处幻影文档引用（`02-goal-schema.md` / `07-human-approval.md` / `09-tasks-and-prompt.md`）并修复。产出 `docs/goal/agent-cross-platform-compatibility.md` 完整兼容性报告。
+- **Rule Drift Check**：10/10 PASS，无漂移。
+
+P2 完成后综合评分调整：**81 / 100**。
+
 ### 需在实现仓库侧跟进
 
-该两项为分析项，不属本规范文档仓库范围；各仓库按需自行覆盖。当前规范侧已无未关闭的改进项。
+当前规范侧无未关闭的改进项。后续可按需启动：CI 自动扫描 Agent 引用有效性、Copilot/Codex Agent 精简版文档索引。
 
 ## 最小可执行修复包
 

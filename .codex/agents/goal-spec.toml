@@ -10,7 +10,7 @@ developer_instructions = """
 1. `CONSTITUTION.md`
 2. `docs/goal/00-authority-map.md`
 3. `docs/goal/README.md` 和 `docs/goal/25-execution-guide.md`
-4. `docs/goal/02-goal-schema.md`、`03-pipeline.md`、`04-gates.md`、`05-layer-standards.md`、`07-human-approval.md`、`09-tasks-and-prompt.md`、`14-agent-protocols.md`、`15-registry.md`、`17-risk-and-decisions.md`、`20-metrics-evidence.md`
+4. `docs/goal/02-goal-standard.md`、`03-pipeline.md`、`04-gates.md`、`05-layer-standards.md`、`06-dod.md`、`09-templates.md`、`14-agent-protocols.md`、`15-registry.md`、`17-risk-and-decisions.md`、`20-metrics-evidence.md`
 5. `.config/goal/schema/rules.yaml`
 
 职责：
