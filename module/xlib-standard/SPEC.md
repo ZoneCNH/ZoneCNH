@@ -13,7 +13,7 @@ Updated: 2026-06-12
 | 条款            | 要求                               | 遵循方式                                             |
 | --------------- | ---------------------------------- | ---------------------------------------------------- |
 | §1 分层领域模型 | 模板不承载业务域，只生成基座库骨架 | 模板仅含 Config/Error/Health/Metrics/Client/Version  |
-| §3 接口契约优先 | `contracts/` 定义跨域接口          | errors.schema.json、health.schema.json、config.schema.json 等 18 schema 文件 + metrics.md |
+| §3 接口契约优先 | `contracts/` 定义跨域接口 + 内部治理 schema | 跨域契约：errors/health/config/metrics（4 件）；内部治理：agent-policy/goalcli/execution-context 等（12 件） |
 | §5 配置外部化   | 配置由调用方显式传入               | Config 结构体必填字段校验                            |
 | §7 错误处理规范 | 9 种 ErrorKind 稳定                | errors.go 实现 NewError/WrapError/IsKind             |
 | §9 可观测性     | P0 指标名稳定、label 低基数        | NoopMetrics + 5 个 P0 指标                           |
@@ -34,7 +34,7 @@ Updated: 2026-06-12
 
 ## Summary
 
-`xlib-standard` 提供 xlib 体系的唯一标准源：标准文档（`docs/standard/`）、可编译可渲染可验证的 Go Reference Template、Generator（`render_template.sh`）、9 个 CI Gate 和 Evidence Runtime（release manifest + checksum）。本 SPEC 聚焦后四类的可执行交付细节。交付物包括模板源码、渲染脚本、边界检查、合约检查、安全检查、CI gate、release manifest 和最终发布检查。
+`xlib-standard` 提供 xlib 体系的唯一标准源：标准文档（`docs/standard/`）、可编译可渲染可验证的 Go Reference Template、Generator（`render_template.sh`）、17 个 CI Gate 和 Evidence Runtime（release manifest + checksum + goalcli 证据 CLI）。本 SPEC 聚焦后四类的可执行交付细节。交付物包括模板源码、渲染脚本、边界检查、合约检查、安全检查、CI gate、release manifest、goalcli 证据工具和最终发布检查。
 
 ## Problem
 
@@ -152,6 +152,18 @@ Updated: 2026-06-12
 
 - WHEN 执行最终检查 THEN manifest checksum 必须校验通过。
 - WHEN 执行最终检查 THEN `make ci` 与 release check 必须均已通过。
+
+### FR-015: Evidence Runtime CLI（goalcli）
+
+- WHEN 运行 `goalcli audit` THEN 输出目标审计报告（G0-G11 gate 状态）。
+- WHEN 运行 `goalcli dashboard` THEN 生成治理仪表盘 JSON（goalcli-dashboard schema）。
+- WHEN 运行 `goalcli fact` THEN 执行事实检查并输出 fact-audit 证据。
+- WHEN 运行 `goalcli schema-check` THEN 校验 contracts/ 中所有 schema 文件的有效性。
+- WHEN 运行 `goalcli traceability` THEN 生成 FR→Code 追溯矩阵。
+- WHEN 运行 `goalcli governance` THEN 输出分支保护、ruleset、CI 状态等远端治理检查结果。
+- WHEN 运行 `goalcli debt` THEN 扫描技术债务（debtcheck）并输出债务报告。
+- WHEN 运行 `goalcli adoption` THEN 检查下游模块对 xlib-standard 的采纳状态。
+- WHEN 运行 `goalcli selfimproving` THEN 触发受控递归自改进流程。
 
 ## Business Rules
 

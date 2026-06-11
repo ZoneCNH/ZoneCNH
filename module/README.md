@@ -100,7 +100,7 @@ test-only，不参与生产运行时。
 
 | 模块          | 规格                               | 核心职责                                                           |
 | ------------- | ---------------------------------- | ------------------------------------------------------------------ |
-| xlib-standard | [SPEC.md](./xlib-standard/SPEC.md) · [tasks/](./xlib-standard/tasks/) | 标准事实源、Go Reference Template、Generator、Harness Gate、Evidence Runtime（52 FR，12 tasks） |
+| xlib-standard | [SPEC.md](./xlib-standard/SPEC.md) · [tasks/](./xlib-standard/tasks/) | 标准事实源、Go Reference Template、Generator、Harness Gate、Evidence Runtime（15 FR + goalcli，12 tasks） |
 | xlibgate      | [SPEC.md](./xlibgate/SPEC.md) · [tasks/](./xlibgate/tasks/) | check imports/gomod/baseline/release/all、输出格式（6 FR，9 tasks） |
 
 ---
