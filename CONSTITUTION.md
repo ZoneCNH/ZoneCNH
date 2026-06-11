@@ -76,7 +76,7 @@ FoundationX 由基座层（16 个模块）、L2.5 领域共享层（4 个模块�
 | 编号 | 原则                           | 含义                                                                            |
 | ---- | ------------------------------ | ------------------------------------------------------------------------------- |
 | P1   | Foundation 先边界后功能        | 先固化 `xlib-standard`、依赖矩阵、Go baseline 和 release gate，再扩大 L1 能力面 |
-| P2   | `xlib-standard` 不是运行时依赖 | 它是标准事实源、模板、Gate 和 Evidence 输入，不承载业务运行                     |
+| P2   | `xlib-standard` 不是运行时依赖 | 它是标准事实源、Go Reference Template、Generator、Harness Gate 和 Evidence Runtime 五类职责，不承载业务运行 |
 | P3   | `resiliencx` 只做运行时弹性    | timeout/retry/circuit/bulkhead/rate/fallback 属于它，交易风控属于 `risk-engine` |
 | P4   | `testkitx` 只能 test-only      | 生产 import graph 不允许出现测试工具包                                          |
 
