@@ -35,6 +35,7 @@ tools: [Read, Write, Grep, Glob]
 
 | 文档 | 用途 |
 |------|------|
+| `CONSTITUTION.md` | 项目根本原则与最高权威 |
 | `docs/goal/05-layer-standards.md §5` | Prompt 层标准（权威来源） |
 | `docs/goal/06-dod.md §5` | Prompt DoR/DoD |
 | `docs/goal/10-lint-rules.md §5` | Prompt Lint 规则 |

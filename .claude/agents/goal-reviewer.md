@@ -35,6 +35,7 @@ tools: [Read, Grep, Glob, Bash]
 
 | 文档 | 用途 |
 |------|------|
+| `CONSTITUTION.md` | 项目根本原则与最高权威 |
 | `docs/goal/04-gates.md` | G0-G11 Gate 定义（权威来源） |
 | `docs/goal/06-dod.md` | 分层 DoR/DoD（SSOT） |
 | `docs/goal/08-quality-gates.md` | 评分体系、孤儿检查 |

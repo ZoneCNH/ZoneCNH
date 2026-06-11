@@ -31,6 +31,7 @@
 | Risk / Decision / Release 记录 | [`17-risk-and-decisions.md`](17-risk-and-decisions.md) | `.config/goal/registry/risks.yaml`、`.config/goal/registry/releases.yaml`、Release Manifest | 绕过 release-blocking risk、rollback plan 或 validation summary |
 | Agent 协作协议 | [`14-agent-protocols.md`](14-agent-protocols.md)、[`25-execution-guide.md`](25-execution-guide.md) | `.claude/agents/`、`.codex/agents/`、`.copilot/agents/` | Agent 自批、自改 Gate、绕过 worktree 隔离或跳过 arbiter |
 | Controlled RSI | [`21-controlled-rsi.md`](21-controlled-rsi.md) | `change-requests/`、Improvement Backlog、Scorecard | 自动放宽安全、隐私、资金、权限、数据保留、P0/P1 AC 或 Release Gate |
+| 完整 RSI 标准（RSI-SG-001） | [`26-rsi-full-standard.md`](26-rsi-full-standard.md) | `21-controlled-rsi.md` | 超出工程工作流边界的 RSI 扩展——模型/系统/组织/生态四层 |
 | CI 与 x.go 适配器 | [`16-ci-cd.md`](16-ci-cd.md) | `.github/workflows/`、x.go 检查报告 | 用 CI 阶段覆盖 Goal 管线状态 |
 | Goal 标准（SMART、结构、模板） | [`02-goal-standard.md`](02-goal-standard.md) | `09-templates.md`、`.config/goal/schema/rules.yaml`、Goal Lint | 在模板或 Registry 中重新定义 Goal 结构要素或 SMART 原则 |
 | DoR/DoD 分层完成标准 | [`06-dod.md`](06-dod.md) | `04-gates.md`、`08-quality-gates.md`、`05-layer-standards.md` | 在各层 Gate 中独立定义完成标准或绕过 DoD 退出 Gate |
