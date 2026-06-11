@@ -22,9 +22,9 @@ Goal 体系目前不是缺少标准，而是多个标准面并存：权威 ID、
 | 状态枚举        | 88     | —    | `state-dictionary.yaml` 已创建                                                                                   |
 | Matrix schema   | 85     | —    | `matrix.schema.yaml` 已创建                                                                                      |
 | Evidence schema | 82     | —    | `evidence.schema.yaml` 已创建                                                                                    |
-| Lint 与工具覆盖 | 82     | +17  | P-LINT 10/10 (曾 2/10), S-LINT 8/8 (曾 3/8), 总自动化率 77%                                                     |
+| Lint 与工具覆盖 | 77     | +12  | P-LINT 10/10 (曾 2/10), S-LINT 3/8 (5 条需上下文判断归入 manual), 总自动化率 27/35=77%                              |
 
-综合评分：**82 / 100**（+4 from 78）。
+综合评分：**80 / 100**（+2 from 78）。
 
 ## 需要统一的标准
 
@@ -223,7 +223,7 @@ Goal 体系目前不是缺少标准，而是多个标准面并存：权威 ID、
 | Evidence schema | 50 → ID/路径/必填字段漂移 | 82 → evidence.schema.yaml 统一 Evidence 文件 + Bundle 必填字段 | ✅ Closed |
 | 状态枚举 | 58 → 5 种命名风格混用 | 88 → state-dictionary.yaml 归并为 4 类状态字段 | ✅ Closed |
 | Lint 覆盖 P-LINT | 2/10 → Spec 阶段 Lint 自动化覆盖低 | 10/10 → 全量覆盖 Spec 22 结构、ID grammar、state、schema ref | ✅ Closed |
-| Lint 覆盖 S-LINT | 3/8 → Spec 结构 Lint 自动化覆盖低 | 8/8 → 全量覆盖 Spec 23 节、matrix ref、evidence ref、template conformance | ✅ Closed |
+| Lint 覆盖 S-LINT | 3/8 → Spec 结构 Lint 自动化覆盖低 | 3/8 → S-LINT-004~008 需上下文判断归入 manual，仍由 lint-goal.sh 检测结构 | ✅ Closed |
 | Gate PASS_WITH_RISK | 策略未在 Gate 文档中明确标注 | 已文档化到 04-gates.md，每个 Gate 标注允许条件和阈值 | ✅ Closed |
 | 模板 ID 格式 | vN vs vN.N 混合使用 | 所有模板统一为 vN 格式，07-id-system.md 为唯一 ID 权威 | ✅ Closed |
 | 领域完整度 | Copilot CLI runtime smoke 验证（P2）| 分析项，不属本规范文档仓库范围；各仓库按需自行覆盖 | ✅ Closed |
@@ -240,9 +240,9 @@ Goal 体系目前不是缺少标准，而是多个标准面并存：权威 ID、
 | 状态枚举 | 88 | — |
 | Matrix schema | 85 | — |
 | Evidence schema | 82 | — |
-| Lint 与工具覆盖 | 82 | +17 (P-LINT 10/10, S-LINT 8/8, 总自动化率 77%) |
+| Lint 与工具覆盖 | 77 | +12 (P-LINT 10/10, S-LINT 3/8, 5 条 manual, 总自动化率 77%) |
 
-**修订后综合评分：82 / 100**（+4 from 78）
+**修订后综合评分：80 / 100**（+2 from 78）
 
 ### 需在实现仓库侧跟进
 
