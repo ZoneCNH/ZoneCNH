@@ -78,9 +78,10 @@
 - [x] `configx`：冻结，不再新增 foundationx usage（`scripts/check-foundationx-freeze.sh` 基线对比门禁已部署 — 1 文件基线；CI 门禁已就位防止新增用法）
 - [x] `observex`：冻结，不再新增 foundationx usage（`scripts/check-foundationx-freeze.sh` 基线对比门禁已部署 — 4 文件基线；CI 门禁已就位防止新增用法）
 - [x] CI 中增加 foundationx 新增用法检查（`FOUNDATION-DEPS.yaml` constraints: no-foundationx-new-usage）
-- [x] `configx` v0.3 前完成迁移（✅ 生产代码已解耦 — SecretString 原生化，零 foundationx import；contract tests 仍用 internal/foundationx 兼容层，v0.3 前重写）
-- [x] `observex` v0.4 前完成迁移（✅ 生产代码已解耦 — ErrorKind + Sanitizer 原生化，零 foundationx import；contract tests 仍用 internal/foundationx 兼容层，v0.4 前重写）
-- [ ] 迁移完成后删除 `internal/foundationx`
+- [x] `configx` v0.3 前完成迁移（✅ 完全解耦 — SecretString 原生化 + internal/foundationx 已删除 + contract tests 已重写）
+- [x] `observex` v0.4 前完成生产解耦（✅ ErrorKind + Sanitizer 原生化，零 foundationx import；contract tests 重写 + internal/foundationx 删除 → v0.4）
+- [x] `configx` 迁移完成删除 `internal/foundationx`（✅ contract tests 已重写，go.mod replace 已移除，internal/foundationx 已物理删除）
+- [ ] `observex` 迁移完成删除 `internal/foundationx`（待 v0.4 contract tests 重写）
 
 ---
 
