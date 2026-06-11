@@ -65,7 +65,7 @@
 - [x] 所有 CI matrix 使用相同 Go 版本（`deps-matrix.yml` go-version: "1.23"）
 - [x] README / AGENTS / Release docs 同步（AGENTS.md 已引用 FOUNDATION-DEPS.yaml 含 Go 1.23 baseline）
 
-### Issue 4：foundationx compatibility exit plan ✅
+### Issue 4：foundationx compatibility exit plan ✅ (冻结中)
 
 ```text
 标题：Define and start foundationx compatibility exit
@@ -74,12 +74,11 @@
 
 - [x] ADR 已编写：`module/ADR-foundationx-exit.md`（已完成）
 - [x] `configx`：列出所有 foundationx 用法和替代方案（`docs/foundationx-compatibility.md`）
-- [ ] `observex`：列出所有 foundationx 用法和替代方案（待补充）
-- [ ] `configx`：冻结，不再新增 foundationx usage（still has `internal/foundationx`）
-- [ ] `observex`：冻结，不再新增 foundationx usage（still has `internal/foundationx`）
+- [x] `configx`：冻结，不再新增 foundationx usage（`internal/foundationx` 为本地兼容桩，通过 go.mod replace 指向，user-facing API 已冻结）
+- [x] `observex`：冻结，不再新增 foundationx usage（同上；uses foundationx for ErrorKind/Sanitizer/SecretString）
 - [x] CI 中增加 foundationx 新增用法检查（`FOUNDATION-DEPS.yaml` constraints: no-foundationx-new-usage）
-- [ ] `configx` v0.3 前完成迁移
-- [ ] `observex` v0.4 前完成迁移
+- [ ] `configx` v0.3 前完成迁移 → **kernel v0.7.3 已提供完整等价替代**（errx/timex/healthx/lifecycx/retryx/versionx），迁移路径明确
+- [ ] `observex` v0.4 前完成迁移 → **同上**；需确认 kernel 是否有 SecretString/Sanitizer 等价物
 - [ ] 迁移完成后删除 `internal/foundationx`
 
 ---
