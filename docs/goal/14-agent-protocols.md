@@ -36,7 +36,9 @@
 >
 > 已实现的 Codex Agent 定义文件见 [.codex/agents/goal-*.toml](../../.codex/agents/)：`goal-spec`、`goal-matrix`、`goal-reviewer`、`goal-prompt-builder`、`goal-evidence`。
 
-Copilot Agent 投影必须单独验证：如果 `.copilot/agents/` 缺少对应 `goal-*` 定义，执行者 MUST 在 Change Request 中记录 drift，不得宣称这些 Copilot Goal Agent 已实现。
+> 已实现的 Copilot Agent prompt 投影见 [.copilot/agents/goal-*.md](../../.copilot/agents/)：`goal-spec`、`goal-matrix`、`goal-reviewer`、`goal-prompt-builder`、`goal-evidence`。
+
+Claude、Codex 和 Copilot 的 `goal-*` Agent 定义都是 `docs/goal/` 的平台投影，不是独立规则源。任一平台投影与本文件、[00-authority-map.md](00-authority-map.md)、[04-gates.md](04-gates.md)、[20-metrics-evidence.md](20-metrics-evidence.md) 或 `.config/goal/schema/rules.yaml` 漂移时，执行者 MUST 生成 Change Request 并运行 drift / validator 检查；不得宣称漂移平台已经实现当前 Goal Delivery OS 规则。
 
 ---
 
