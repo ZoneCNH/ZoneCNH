@@ -13,28 +13,27 @@ Updated: 2026-06-10
 
 ## Constitution Compliance
 
-| 条款 | 要求 | 遵循方式 |
-|------|------|----------|
-| §1 分层领域模型 | 模板不承载业务域，只生成基座库骨架 | 模板仅含 Config/Error/Health/Metrics/Client/Version |
-| §3 接口契约优先 | `contracts/` 定义跨域接口 | errors.schema.json、health.schema.json、metrics.json |
-| §5 配置外部化 | 配置由调用方显式传入 | Config 结构体必填字段校验 |
-| §7 错误处理规范 | 8 种 ErrorKind 稳定 | errors.go 实现 NewError/WrapError/IsKind |
-| §9 可观测性 | P0 指标名稳定、label 低基数 | NoopMetrics + 5 个 P0 指标 |
-| §11 发布流程 | release manifest + checksum | release_check.sh 生成 latest.json + .sha256 |
-| §13 安全红线 | 不提交 secret/API key | Sanitize 脱敏 + security gate 扫描 |
+| 条款            | 要求                               | 遵循方式                                             |
+| --------------- | ---------------------------------- | ---------------------------------------------------- |
+| §1 分层领域模型 | 模板不承载业务域，只生成基座库骨架 | 模板仅含 Config/Error/Health/Metrics/Client/Version  |
+| §3 接口契约优先 | `contracts/` 定义跨域接口          | errors.schema.json、health.schema.json、metrics.json |
+| §5 配置外部化   | 配置由调用方显式传入               | Config 结构体必填字段校验                            |
+| §7 错误处理规范 | 8 种 ErrorKind 稳定                | errors.go 实现 NewError/WrapError/IsKind             |
+| §9 可观测性     | P0 指标名稳定、label 低基数        | NoopMetrics + 5 个 P0 指标                           |
+| §11 发布流程    | release manifest + checksum        | release_check.sh 生成 latest.json + .sha256          |
+| §13 安全红线    | 不提交 secret/API key              | Sanitize 脱敏 + security gate 扫描                   |
 
 ## Lifecycle State
 
-| 阶段 | 状态 | 说明 |
-|------|------|------|
-| Spec | Approved | 2026-06-09 批准 |
-| Plan | Approved | 6 子任务依赖拓扑已确认 |
-| Tasks | Ready | 9 个 task spec 已拆分 |
-| Prompt | Ready | 9 个 context packet 已生成 |
-| Code | Completed | G6 PASS, 14 FR/27 AC/24 TC verified |
-| Test | Completed | G7 PASS, Evidence 6 文件 |
-| Release | Released | v1.0.0 标签已打，manifest 已更新，2026-06-10 |
-
+| 阶段    | 状态      | 说明                                           |
+| ------- | --------- | ---------------------------------------------- |
+| Spec    | Approved  | 2026-06-09 批准                                |
+| Plan    | Approved  | 6 子任务依赖拓扑已确认                         |
+| Tasks   | Ready     | 9 个 task spec 已拆分                          |
+| Prompt  | Ready     | 9 个 context packet 已生成                     |
+| Code    | Completed | G6 PASS, 14 FR/27 AC/24 TC verified            |
+| Test    | Completed | G7 PASS, Evidence 6 文件                       |
+| Release | Pending   | 上游仓库当前为 v0.6.5，v1.0.0 待实现完成后发布 |
 
 ## Summary
 
@@ -46,13 +45,13 @@ Updated: 2026-06-10
 
 ## Goals
 
-| Goal | Description | Trace |
-| --- | --- | --- |
-| G-1 | 定义 Config、Error、Health、Metrics、Client、Version 的最小公共 API。 | API standard |
-| G-2 | 提供 Go 参考模板，并保证模板本身可编译、可测试、可 vet。 | Reference template |
-| G-3 | 提供渲染脚本，从标准模板创建独立 Go module。 | Generator |
-| G-4 | 定义最小 CI gate 与边界检查。 | Gates |
-| G-5 | 生成 release manifest，并用最终检查锁定发布证据。 | Release |
+| Goal | Description                                                           | Trace              |
+| ---- | --------------------------------------------------------------------- | ------------------ |
+| G-1  | 定义 Config、Error、Health、Metrics、Client、Version 的最小公共 API。 | API standard       |
+| G-2  | 提供 Go 参考模板，并保证模板本身可编译、可测试、可 vet。              | Reference template |
+| G-3  | 提供渲染脚本，从标准模板创建独立 Go module。                          | Generator          |
+| G-4  | 定义最小 CI gate 与边界检查。                                         | Gates              |
+| G-5  | 生成 release manifest，并用最终检查锁定发布证据。                     | Release            |
 
 ## Non-goals
 
@@ -63,12 +62,12 @@ Updated: 2026-06-10
 
 ## Consumers
 
-| Consumer | Need |
-| --- | --- |
-| 新基础库模块 | 使用统一模板快速生成可测试仓库骨架。 |
-| 模块维护者 | 通过固定 gate 复用边界、合约、安全和 release 检查。 |
-| 评分管线 | 从规格、矩阵、任务、计划、提示词到代码阶段闭合追溯。 |
-| CI 系统 | 执行确定性命令，输出可审查证据。 |
+| Consumer     | Need                                                 |
+| ------------ | ---------------------------------------------------- |
+| 新基础库模块 | 使用统一模板快速生成可测试仓库骨架。                 |
+| 模块维护者   | 通过固定 gate 复用边界、合约、安全和 release 检查。  |
+| 评分管线     | 从规格、矩阵、任务、计划、提示词到代码阶段闭合追溯。 |
+| CI 系统      | 执行确定性命令，输出可审查证据。                     |
 
 ## Functional Requirements
 
@@ -183,65 +182,65 @@ Updated: 2026-06-10
 
 ## Acceptance Criteria
 
-| AC | Acceptance |
-| --- | --- |
+| AC     | Acceptance                                               |
+| ------ | -------------------------------------------------------- |
 | AC-000 | 管线基线清理完成，模块文档和任务入口可被规则评分器发现。 |
-| AC-001 | 必填字段缺失时配置校验返回 validation kind 错误。 |
-| AC-002 | 负数 timeout 配置返回 validation kind 错误。 |
-| AC-003 | 配置脱敏后 secret 类字段显示为 `***`。 |
-| AC-004 | `NewError` 创建的错误字段完整。 |
-| AC-005 | `WrapError` 包装后 `errors.Is` 可穿透。 |
-| AC-006 | `IsKind` 匹配目标 kind 返回 true。 |
-| AC-007 | deadline cause 归一为 timeout kind。 |
-| AC-008 | closed cause 归一为 closed kind。 |
-| AC-009 | nil context 健康检查返回 unhealthy。 |
-| AC-010 | 健康客户端返回 healthy。 |
-| AC-011 | `NoopMetrics` 调用不 panic。 |
-| AC-012 | P0 指标名与 contract 一致。 |
-| AC-013 | metrics label 仅使用低基数键。 |
-| AC-014 | nil context 创建客户端返回错误。 |
-| AC-015 | canceled context 创建客户端返回错误。 |
-| AC-016 | 无效 config 创建客户端返回错误。 |
-| AC-017 | 有效参数创建 `*Client`。 |
-| AC-018 | `Close` 多次调用幂等且不 panic。 |
-| AC-019 | 版本信息包含 module path、version、commit、build time。 |
-| AC-020 | 模板 `go vet` 零警告。 |
-| AC-021 | 模板 `go test` 全部通过。 |
-| AC-022 | 渲染输出目录结构完整。 |
-| AC-023 | 生成库无模板名和标准库名残留。 |
-| AC-024 | `make ci` 的 9 个 gate 全部通过。 |
-| AC-025 | boundary gate 检查 6 类非法引用。 |
-| AC-026 | release manifest 生成且字段完整。 |
-| AC-027 | release final check 校验 manifest checksum。 |
+| AC-001 | 必填字段缺失时配置校验返回 validation kind 错误。        |
+| AC-002 | 负数 timeout 配置返回 validation kind 错误。             |
+| AC-003 | 配置脱敏后 secret 类字段显示为 `***`。                   |
+| AC-004 | `NewError` 创建的错误字段完整。                          |
+| AC-005 | `WrapError` 包装后 `errors.Is` 可穿透。                  |
+| AC-006 | `IsKind` 匹配目标 kind 返回 true。                       |
+| AC-007 | deadline cause 归一为 timeout kind。                     |
+| AC-008 | closed cause 归一为 closed kind。                        |
+| AC-009 | nil context 健康检查返回 unhealthy。                     |
+| AC-010 | 健康客户端返回 healthy。                                 |
+| AC-011 | `NoopMetrics` 调用不 panic。                             |
+| AC-012 | P0 指标名与 contract 一致。                              |
+| AC-013 | metrics label 仅使用低基数键。                           |
+| AC-014 | nil context 创建客户端返回错误。                         |
+| AC-015 | canceled context 创建客户端返回错误。                    |
+| AC-016 | 无效 config 创建客户端返回错误。                         |
+| AC-017 | 有效参数创建 `*Client`。                                 |
+| AC-018 | `Close` 多次调用幂等且不 panic。                         |
+| AC-019 | 版本信息包含 module path、version、commit、build time。  |
+| AC-020 | 模板 `go vet` 零警告。                                   |
+| AC-021 | 模板 `go test` 全部通过。                                |
+| AC-022 | 渲染输出目录结构完整。                                   |
+| AC-023 | 生成库无模板名和标准库名残留。                           |
+| AC-024 | `make ci` 的 9 个 gate 全部通过。                        |
+| AC-025 | boundary gate 检查 6 类非法引用。                        |
+| AC-026 | release manifest 生成且字段完整。                        |
+| AC-027 | release final check 校验 manifest checksum。             |
 
 ## Test Cases
 
-| TC | Type | Scenario | Expected |
-| --- | --- | --- | --- |
-| TC-001 | Unit | Config 必填字段缺失 | 返回 validation kind |
-| TC-002 | Unit | Config 负数 timeout | 返回 validation kind |
-| TC-003 | Unit | Config 脱敏 | secret 替换为 `***` |
-| TC-004 | Unit | NewError 创建 | 字段正确 |
-| TC-005 | Unit | WrapError 包装 | `errors.Is` 可穿透 |
-| TC-006 | Unit | IsKind 匹配 | 返回 true |
-| TC-007 | Unit | deadline cause | kind 为 timeout |
-| TC-008 | Unit | closed cause | kind 为 closed |
-| TC-009 | Unit | HealthCheck nil context | 返回 unhealthy |
-| TC-010 | Unit | HealthCheck 健康客户端 | 返回 healthy |
-| TC-011 | Unit | NoopMetrics 调用 | 无 panic |
-| TC-012 | Unit | 指标名匹配 contract | P0 名称一致 |
-| TC-013 | Unit | label 低基数 | 只有允许键 |
-| TC-014 | Unit | New nil context | 返回错误 |
-| TC-015 | Unit | New canceled context | 返回错误 |
-| TC-016 | Unit | New 无效 config | 返回错误 |
-| TC-017 | Unit | New 正常创建 | 返回客户端 |
-| TC-018 | Unit | Close 幂等 | 多次调用不 panic |
-| TC-019 | Integration | 模板 go vet | 零警告 |
-| TC-020 | Integration | 模板 go test | 全部通过 |
-| TC-021 | Integration | 渲染模板 | 输出结构完整 |
-| TC-022 | Integration | 检查生成库残留 | 无非法残留 |
-| TC-023 | Integration | make ci | 9 个 gate 全通过 |
-| TC-024 | Integration | release manifest | 字段完整且 checksum 可校验 |
+| TC     | Type        | Scenario                | Expected                   |
+| ------ | ----------- | ----------------------- | -------------------------- |
+| TC-001 | Unit        | Config 必填字段缺失     | 返回 validation kind       |
+| TC-002 | Unit        | Config 负数 timeout     | 返回 validation kind       |
+| TC-003 | Unit        | Config 脱敏             | secret 替换为 `***`        |
+| TC-004 | Unit        | NewError 创建           | 字段正确                   |
+| TC-005 | Unit        | WrapError 包装          | `errors.Is` 可穿透         |
+| TC-006 | Unit        | IsKind 匹配             | 返回 true                  |
+| TC-007 | Unit        | deadline cause          | kind 为 timeout            |
+| TC-008 | Unit        | closed cause            | kind 为 closed             |
+| TC-009 | Unit        | HealthCheck nil context | 返回 unhealthy             |
+| TC-010 | Unit        | HealthCheck 健康客户端  | 返回 healthy               |
+| TC-011 | Unit        | NoopMetrics 调用        | 无 panic                   |
+| TC-012 | Unit        | 指标名匹配 contract     | P0 名称一致                |
+| TC-013 | Unit        | label 低基数            | 只有允许键                 |
+| TC-014 | Unit        | New nil context         | 返回错误                   |
+| TC-015 | Unit        | New canceled context    | 返回错误                   |
+| TC-016 | Unit        | New 无效 config         | 返回错误                   |
+| TC-017 | Unit        | New 正常创建            | 返回客户端                 |
+| TC-018 | Unit        | Close 幂等              | 多次调用不 panic           |
+| TC-019 | Integration | 模板 go vet             | 零警告                     |
+| TC-020 | Integration | 模板 go test            | 全部通过                   |
+| TC-021 | Integration | 渲染模板                | 输出结构完整               |
+| TC-022 | Integration | 检查生成库残留          | 无非法残留                 |
+| TC-023 | Integration | make ci                 | 9 个 gate 全通过           |
+| TC-024 | Integration | release manifest        | 字段完整且 checksum 可校验 |
 
 ## Interfaces
 
@@ -249,12 +248,12 @@ Updated: 2026-06-10
 
 ## Data Model
 
-| Model | Fields |
-| --- | --- |
-| Config | module path、package name、timeout、retry、endpoint、secret fields |
-| Error | kind、message、cause |
-| HealthStatus | status、message、checked_at |
-| VersionInfo | module_path、version、commit、build_time |
+| Model           | Fields                                                                                                  |
+| --------------- | ------------------------------------------------------------------------------------------------------- |
+| Config          | module path、package name、timeout、retry、endpoint、secret fields                                      |
+| Error           | kind、message、cause                                                                                    |
+| HealthStatus    | status、message、checked_at                                                                             |
+| VersionInfo     | module_path、version、commit、build_time                                                                |
 | ReleaseManifest | module_path、package_name、version、commit、tree_sha、go_version、contracts_sha256、gates、generated_at |
 
 ## Configuration
@@ -310,7 +309,8 @@ CI 必须运行 `GOWORK=off make ci` 和 `GOWORK=off make release-check`。`make
 ## Breaking Change Policy
 
 破坏性接口变更（ErrorKind 增删、Config 字段类型变更、Metrics label 变更）必须：
-1. 在  兼容矩阵中记录。
+
+1. 在 兼容矩阵中记录。
 2. 在 release manifest 中体现版本 bump。
 3. 提供迁移脚本或回滚说明。
 4. 经下游消费者确认后方可合入。

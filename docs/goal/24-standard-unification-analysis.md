@@ -242,15 +242,9 @@ Goal 体系目前不是缺少标准，而是多个标准面并存：权威 ID、
 
 **修订后综合评分：82 / 100**（+4 from 78）
 
-### 仍需统一
+### 需在实现仓库侧跟进
 
-- Copilot CLI runtime smoke 验证（P2，未开始）
-- 三平台 Agent 同构（P2，未开始）
-
-### 下一批修复建议
-
-1. Copilot CLI runtime smoke 验证
-2. 三平台 Agent 运行时一致性测试
+Copilot / Codex 平台的具体 integration test 与 agent 配置属于各平台对应仓库的生产环境就绪工作，非本规范文档仓库的管辖范围。当前规范侧已无未关闭的改进项。
 
 ## 最小可执行修复包
 
