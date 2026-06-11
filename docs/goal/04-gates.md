@@ -30,6 +30,25 @@ gate_id:
   owner:
 ```
 
+### 2.1 Gate 执行矩阵
+
+下表是 G0-G11 的最小可执行口径。单个 Gate 的详细检查项以后文为准；执行者不得只凭阶段名称跳过输入、输出、阻断条件或证据。
+
+| Gate | 必备输入 | 必备输出 | 硬阻断条件 | 证据要求 |
+|------|----------|----------|------------|----------|
+| G0 Context | Goal / Spec / Design / Plan / Task 上下文、branch、commit、运行态快照 | 可继续执行的上下文状态 | 关键上下文缺失；环境或分支状态无法解释 | 恢复记录、branch / commit、已加载文档清单 |
+| G1 Goal | Draft Goal、owner、成功指标、non-goals、约束 | Approved / Rejected Goal verdict | 缺 owner、成功指标、验收标准、边界或 non-goals | Goal review 记录、指标和边界说明 |
+| G2 Spec | Approved Goal、Spec、AC、NFR、风险和约束 | Approved / Rejected Spec verdict | 需求不可测试；P0/P1 AC 缺失；安全、异常或边界路径缺失 | Spec review 记录、AC / NFR 清单、风险记录 |
+| G3 Design | Approved Spec、架构边界、模块映射、风险 | Approved / Rejected Design verdict | 需求无模块映射；接口不可测试；循环依赖；关键决策无记录 | Design review、ADR 或等价决策记录、风险缓解记录 |
+| G4 Plan | Approved Design、依赖关系、验证目标、rollback 约束 | Approved / Rejected Plan verdict | 执行顺序不满足依赖；无验证点；无 rollback 或 checkpoint | Plan review、依赖顺序、验证命令、rollback/checkpoint 说明 |
+| G5 Task / Matrix | Approved Plan、Task specs、Matrix edges | 原子任务和 Matrix coverage verdict | Task 不可独立完成；release-critical edge 无 owner / gate / evidence；orphan edge 未解释 | Task DoR、Matrix check-only、coverage / orphan 检查 |
+| G6 Implementation | Approved Task、Prompt / Context Package、allowed files、禁止范围 | 有界 diff 或阻断 verdict | Prompt 缺上下文或验证命令；实现越界；共享 writer 冲突 | Prompt review、allowed files、diff、越界检查记录 |
+| G7 Test | Code diff、Test Plan、环境、命令 | PASS / FAIL 测试结果 | P0/P1 测试缺失或失败；失败证据被删除；环境不可复现 | 命令、环境、测试输出、失败证据 |
+| G8 Evidence | 测试、review、Matrix、Risk、commit/artifact | Evidence Bundle verdict | 缺 command、environment、commit/artifact、owner、AC 映射或失败记录 | Evidence Bundle ID / path、结果摘要、保留策略 |
+| G9 Review | Code diff、Evidence Bundle、Matrix、Risk | Review PASS / FAIL verdict | 未解决 P0/P1 finding；scope creep；安全、性能或边界问题未闭环 | reviewer、finding、resolution、risk acceptance 记录 |
+| G10 Release | strict validator、Matrix check-only、Evidence Bundle、validation summary、Release Manifest、Risk Register、rollback validation | Release PASS / FAIL verdict | 缺 Release Manifest、Risk Register、Evidence Bundle、validation summary 或 rollback validation；存在 open release_blocking risk | G10 verdict、Release Manifest、Risk Register、validation summary、rollback validation |
+| G11 Retrospective | Release 结果、metrics、incident / rollback 记录、review findings | Retrospective report 和改进 backlog | 复盘事实缺失；改进项无 owner 或无验证方式 | Metrics Review、Gap Report、RSI backlog、后续 owner |
+
 ## 3. 必备 Gates
 
 | Gate | 名称 | 类型 | 检查内容 |

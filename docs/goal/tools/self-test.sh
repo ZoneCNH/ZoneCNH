@@ -357,9 +357,16 @@ write_release_gate_fixture() {
   local g10_status="$4"
   local g11_status="$5"
   local evidence_mode="${6:-present}"
+  local pipeline_state="DONE"
+  local release_status="released"
+
+  if [[ "$with_risk" == "true" || "$registry_has_risk" == "true" || "$g10_status" != "PASS" || "$g11_status" != "PASS" ]]; then
+    pipeline_state="BLOCKED"
+    release_status="in_review"
+  fi
 
   write_validator_fixture "$root" "$with_risk" "$registry_has_risk" \
-    "$g10_status" "$g11_status" BLOCKED in_review false false "" good
+    "$g10_status" "$g11_status" "$pipeline_state" "$release_status" false false "" good
 
   if [[ "$evidence_mode" == "present" ]]; then
     mkdir -p "$root/.config/goal/evidence/2026-06-09/TASK-GOAL-20260608-001-001"
@@ -518,6 +525,16 @@ validator_g11_after_g10="$TMP_ROOT/validator-g11-after-g10"
 write_validator_fixture "$validator_g11_after_g10" true true BLOCKED PASS BLOCKED in_review false false "" good
 run_failure "goal validator rejects G11 pass before G10 pass" \
   python3 "$SCRIPT_DIR/goal-validate.py" --root "$validator_g11_after_g10" --mode strict --format text
+
+validator_stale_release_snapshot="$TMP_ROOT/validator-stale-release-snapshot"
+write_validator_fixture "$validator_stale_release_snapshot" false false PASS PASS BLOCKED in_review false false "" good
+run_failure_contains "goal validator rejects stale blocked release snapshot after G11 pass" "GV-CONSISTENCY-PIPELINE-STALE-BLOCKED" \
+  python3 "$SCRIPT_DIR/goal-validate.py" --root "$validator_stale_release_snapshot" --mode strict --format text
+
+validator_stale_release_status="$TMP_ROOT/validator-stale-release-status"
+write_validator_fixture "$validator_stale_release_status" false false PASS PASS DONE in_review false false "" good
+run_failure_contains "goal validator rejects stale release registry status after G11 pass" "GV-CONSISTENCY-RELEASE-STALE-STATUS" \
+  python3 "$SCRIPT_DIR/goal-validate.py" --root "$validator_stale_release_status" --mode strict --format text
 
 validator_pipeline_done="$TMP_ROOT/validator-pipeline-done"
 write_validator_fixture "$validator_pipeline_done" true true BLOCKED BLOCKED DONE in_review false false "" good

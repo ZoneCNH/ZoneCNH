@@ -76,4 +76,4 @@
 4. 修改模块级 Goal 文档命名规则时，同步 `module/README.md`、`.config/goal/schema/rules.yaml`、`AGENTS.md` 和变更日志。
 5. 修改模块代码本地路径规则时，同步 `CONSTITUTION.md`、`ARCHITECTURE.md`、`AGENTS.md`、`module/README.md`、`.config/goal/schema/rules.yaml`、Code DoR/DoD、Code Lint 和变更日志。
 6. 修改受保护资产时，先在 `docs/goal/change-requests/` 记录 evidence、impact、proposed patch、validation command、rollback plan 和 owner / approval requirement。
-7. 每次权威边界变更都必须记录到 `CHANGELOG.md`，并在 `todo.md` 或报告中保留验证证据。
+7. 每次权威边界变更都必须记录到 `CHANGELOG.md`，并在 Change Request、Evidence Bundle 或交付报告中保留验证证据。

@@ -4,7 +4,7 @@
 # 规则：本文件保存状态快照，不定义状态枚举；枚举以 .config/goal/schema/rules.yaml 为机器校验投影。
 # 运行时临时状态进入 .config/goal/runtime/ 或 .omx/state/，不得回写为枚举权威。
 
-schema_version: "2026-06-09"
+schema_version: "2026-06-11"
 
 authority_source:
   - docs/goal/00-authority-map.md
@@ -12,11 +12,11 @@ authority_source:
 
 pipeline:
   - goal_id: GOAL-20260608-001
-    pipeline_state: BLOCKED
-    previous_pipeline_state: RELEASING
-    current_phase: RELEASE
-    phase_status: BLOCKED
-    workflow_step: RELEASE_EXECUTION
+    pipeline_state: DONE
+    previous_pipeline_state: RETROSPECTING
+    current_phase: RETROSPECTIVE
+    phase_status: DONE
+    workflow_step: RETROSPECTIVE_EXECUTION
     state_model: four_axis
     state_axes:
       pipeline_state: docs/goal/03-pipeline.md#20-状态轴边界
@@ -29,6 +29,8 @@ pipeline:
       - code
       - test
       - review
+      - release
+      - retrospective
     state_history:
       - event: INIT
         pipeline_state: INIT
@@ -233,12 +235,34 @@ pipeline:
         phase_status: BLOCKED
         workflow_step: RELEASE_EXECUTION
         entered_at: "2026-06-08T09:15:00Z"
-        exited_at: null
-        duration: null
+        exited_at: "2026-06-09T08:55:00Z"
+        duration: "23h40m"
         blockers:
           - RISK-GOAL-20260608-001-001
           - RISK-GOAL-20260608-001-002
           - RISK-GOAL-20260608-001-003
+      - event: RELEASE_UNBLOCKED
+        pipeline_state: RELEASING
+        current_phase: RELEASE
+        phase_status: DONE
+        workflow_step: RELEASE_EXECUTION
+        entered_at: "2026-06-09T08:55:00Z"
+        exited_at: "2026-06-09T08:56:00Z"
+        duration: "1m"
+        evidence:
+          - .config/goal/registry/risks.yaml
+          - .config/goal/gates/state.yaml
+      - event: RETROSPECTIVE_DONE
+        pipeline_state: DONE
+        current_phase: RETROSPECTIVE
+        phase_status: DONE
+        workflow_step: RETROSPECTIVE_EXECUTION
+        entered_at: "2026-06-09T08:56:00Z"
+        exited_at: "2026-06-11T00:10:00Z"
+        duration: "1d15h14m"
+        evidence:
+          - docs/goal/CHANGELOG.md
+          - docs/goal/tools/self-test.sh
     gates_passed:
       - G0
       - G1
@@ -251,18 +275,9 @@ pipeline:
       - G8
       - G9
       - G10
-    gates_pending:
       - G11
-    blockers:
-      - blocker_id: RISK-GOAL-20260608-001-001
-        gate_id: G2
-        reason: "旧 Matrix 检查器仍需对齐 canonical edge 字段契约"
-      - blocker_id: RISK-GOAL-20260608-001-002
-        gate_id: G4
-        reason: "Release precheck 自动化尚未对齐 G10 阻塞条件"
-      - blocker_id: RISK-GOAL-20260608-001-003
-        gate_id: G7
-        reason: "Evidence lint/evidence collector 尚未对齐 metadata/proof body 字段契约"
-    updated_at: "2026-06-09T08:55:00Z"
+    gates_pending: []
+    blockers: []
+    updated_at: "2026-06-11T00:10:00Z"
 
 # 阻塞与异常条件记录到 blockers[]、gate_failures[]、Decision 或 Evidence。

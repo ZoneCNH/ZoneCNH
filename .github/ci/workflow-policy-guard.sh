@@ -11,6 +11,7 @@ import sys
 WORKFLOW_DIR = Path(".github/workflows")
 EXPECTED_RUNNER = ["self-hosted", "Linux", "X64", "homepage"]
 EXPECTED_REUSABLE_PREFIX = "./.github/workflows/"
+EXPECTED_DEPLOY_CONTRACT = "ZoneCNH/sre/.github/workflows/deploy-contract.yml@main"
 DEPLOY_HINT = re.compile(r"\b(deploy|deployment)\b|部署", re.IGNORECASE)
 SRE_TARGET = "sre/"
 
@@ -105,10 +106,13 @@ for path in workflow_files:
 
         reusable_count += 1
         target = match.group(1).strip().strip("'\"")
-        if not target.startswith(EXPECTED_REUSABLE_PREFIX):
+        if not (
+            target.startswith(EXPECTED_REUSABLE_PREFIX)
+            or target == EXPECTED_DEPLOY_CONTRACT
+        ):
             failures.append(
                 f"{path}:{line_no}: reusable workflow jobs must call "
-                f"{EXPECTED_REUSABLE_PREFIX}* so runner policy remains repo-local; found {target}"
+                f"{EXPECTED_REUSABLE_PREFIX}* or {EXPECTED_DEPLOY_CONTRACT}; found {target}"
             )
 
     if DEPLOY_HINT.search(text) and SRE_TARGET not in text:
@@ -125,7 +129,7 @@ if failures:
 expected = f"[{', '.join(EXPECTED_RUNNER)}]"
 print(
     f"Workflow Policy Guard passed: {runs_on_count} runs-on entries use {expected}; "
-    f"{reusable_count} reusable workflow jobs stay repo-local; "
+    f"{reusable_count} reusable workflow jobs use repo-local or approved deploy-contract targets; "
     f"deployment workflows declare {SRE_TARGET} when applicable."
 )
 PY

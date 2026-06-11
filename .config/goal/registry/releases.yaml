@@ -4,12 +4,12 @@
 
 releases:
   - release_id: REL-20260608-goal-system
-    document_version: "2026-06-09"
+    document_version: "2026-06-11"
     goal_id: GOAL-20260608-001
     release_version: v1.0.0
-    status: in_review
+    status: released
     created_at: "2026-06-08"
-    updated_at: "2026-06-09"
+    updated_at: "2026-06-11"
     linked_issues: []
     linked_tasks:
       - TASK-GOAL-20260608-001-001
@@ -21,7 +21,19 @@ releases:
       - .claude/agents/goal-matrix.md
       - .claude/agents/goal-prompt-builder.md
       - .claude/agents/goal-evidence.md
+      - .codex/agents/goal-spec.toml
+      - .codex/agents/goal-reviewer.toml
+      - .codex/agents/goal-matrix.toml
+      - .codex/agents/goal-prompt-builder.toml
+      - .codex/agents/goal-evidence.toml
+      - .copilot/agents/goal-spec.md
+      - .copilot/agents/goal-reviewer.md
+      - .copilot/agents/goal-matrix.md
+      - .copilot/agents/goal-prompt-builder.md
+      - .copilot/agents/goal-evidence.md
+      - .github/workflows/goal-ci.yml
       - .config/goal/README.md
+      - .config/goal/schema/rules.yaml
       - .config/goal/registry/goals.yaml
       - .config/goal/registry/tasks.yaml
       - .config/goal/registry/issues.yaml
@@ -31,23 +43,32 @@ releases:
       - .config/goal/matrix/matrix.yaml
       - .config/goal/gates/state.yaml
       - .config/goal/pipeline/state.yaml
+      - docs/goal/00-authority-map.md
       - docs/goal/README.md
+      - docs/goal/04-gates.md
       - docs/goal/15-registry.md
+      - docs/goal/17-risk-and-decisions.md
+      - docs/goal/20-metrics-evidence.md
+      - docs/goal/25-execution-guide.md
+      - docs/goal/tools/goal-validate.py
+      - docs/goal/tools/goal-workflow.sh
+      - docs/goal/tools/self-test.sh
       - AGENTS.md
     release_notes: |
-      Goal 驱动交付体系 v1.0.0 发布候选进入审核，当前受 G2/G4/G7 release_blocking 风险阻塞，尚未正式发布。
+      Goal 驱动交付体系 v1.0.0 已发布。G10/G11 当前为 PASS，Risk Registry 中三个历史 release_blocking 风险均已 Closed 且 release_blocking=false；Pipeline state 已进入 DONE/RETROSPECTIVE。
 
-      候选成果：
-      - 创建 5 个 Goal Agent（goal-spec, goal-reviewer, goal-matrix, goal-prompt-builder, goal-evidence）
-      - 建立统一配置中心 .config/goal/（10 个状态文件）
-      - 更新 3 个文档文件（docs/goal/README.md, docs/goal/15-registry.md, AGENTS.md）
-      - 验证完整工作流（Goal → Spec → Design → Plan → Tasks → Code → Test → Review → Release）
+      发布成果：
+      - 创建 Claude/Codex/Copilot 三端 Goal Agent 配置与执行协议。
+      - 建立 .config/goal/ 控制面配置、registry、matrix、gate、pipeline、evidence、prompt 快照。
+      - 建立 docs/goal/ 权威入口、执行指南、Gate/Evidence/Risk/Release/RSI 规则和本地验证工具。
+      - 验证 Goal → Spec → Design → Plan → Tasks → Prompt → Code → Test → Review → Release → Retrospective 主流程。
 
-      技术亮点：
-      - 统一状态路径：所有 Goal 相关状态存放在 .config/goal/
-      - Agent 职责分工：5 个 Agent 各司其职，协作完成 Goal 管线
-      - 追溯矩阵：Goal→Spec→AC→Task→Test→Evidence 全链路可追溯
-      - Gate 体系：G0-G11 共 12 个质量门禁，确保交付质量
+      验证摘要：
+      - strict validator、rule-drift-check、matrix check-only、goal workflow validate 与 self-test 已通过。
+      - Copilot prompt 投影已补齐；Copilot CLI runtime smoke 尚未在本地执行，保留为后续人工/平台复核项。
+
+      发布边界：
+      - 未修改已批准 Goal 核心目标、Non-goals、P0/P1 验收标准、安全/隐私/权限/资金/数据保留约束、生产代码或生产配置。
 
 # 状态枚举：
 # draft → ready_for_pr → in_review → approved → released

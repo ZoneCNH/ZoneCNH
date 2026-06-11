@@ -60,7 +60,7 @@ FoundationX 由基座层（16 个模块）、L2.5 领域共享层（4 个模块�
 本宪法的约束对象：
 
 - 所有基座模块和领域模块的源码实现
-- 全系统的交付管线（Goal → Spec → Matrix → Tasks → Plan → Prompt → Code → Test → Release → Metrics）
+- 全系统的交付管线（Goal → Spec → Design → Plan → Tasks → Prompt → Code → Test → Review → Release → Retrospective；Matrix 为横切追溯制品）
 - 所有 `module/*/SPEC.md` 规格文档
 - 所有 AI 代理的代码生成、审查和重构行为
 - 所有人类贡献者的 PR 和代码审查
@@ -669,10 +669,10 @@ scorer 的 `min ≥ 98` 仲裁结果**不构成**修改上述文件的授权。
 ### 15.1 管线模型
 
 ```text
-Goal → Spec → Matrix → Tasks → Plan → Prompt → Code → Test → Release → Metrics
+Goal → Spec → Design → Plan → Tasks → Prompt → Code → Test → Review → Release → Retrospective
 ```
 
-每层必须产出一个具体制品，作为下一层的输入契约。
+主流程每层必须产出一个具体制品，作为下一层的输入契约。Matrix 是横切追溯制品，必须在 Spec、Design、Plan、Tasks、Code、Test、Review、Release 之间持续更新，不作为主流程阶段。
 
 ### 15.2 管线七律
 
@@ -688,7 +688,7 @@ Goal → Spec → Matrix → Tasks → Plan → Prompt → Code → Test → Rel
 
 ### 15.3 变更传播
 
-需求变更必须流经完整链条（Goal/Spec → Matrix → Tasks → Plan → Prompt → Code → Test），禁止直接跳到代码修改。
+需求变更必须流经完整链条（Goal/Spec → Design → Plan → Tasks → Prompt → Code → Test → Review → Release），并同步更新 Matrix 和 Evidence，禁止直接跳到代码修改。
 
 ### 15.4 实现细节
 

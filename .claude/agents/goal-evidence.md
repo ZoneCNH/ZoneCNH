@@ -69,18 +69,62 @@ tools: [Read, Write, Bash, Grep, Glob]
 
 ### Evidence 必需字段
 
+Evidence 有两种形态，不得混用：
+
+1. Evidence Markdown 写入 `.config/goal/evidence/YYYY-MM-DD/TASK_ID/EVID_ID.md`，必须包含下列字面字段：
+
 ```yaml
-# 必需字段（8 个）
-evidence_id: "EVID-AC-{SPEC}-{NUM}-{NNN}"
-ac_id: "AC-{TYPE}-{SPEC}-{NUM}-{NNN}"
+required_fields:
+  - Evidence ID
+  - Acceptance Criteria ID
+  - Test ID
+  - Task ID
+  - Spec ID
+  - Goal ID
+  - Date
+  - Status
+  - Files Changed
+  - Commands Run
+statuses:
+  - PASS
+  - PARTIAL
+  - FAIL
+```
+
+2. Release Evidence Bundle 是 G10 输入，必须包含下列机器字段：
+
+```yaml
+bundle_required_fields:
+  - evidence_bundle_id
+  - goal_id
+  - task_id
+  - release_id
+  - commit
+  - environment
+  - validator
+  - matrix
+  - tests
+  - review
+  - validation_summary
+  - risk_register
+  - release_manifest
+  - rollback_validation
+  - artifacts
+  - created_at
+  - owner
+```
+
+结构化采集器 MAY 保留下列内部元数据，但不得用它们替代上述 Evidence Markdown 字面字段或 Release Evidence Bundle 字段：
+
+```yaml
+evidence_id: "EVID-..."
+ac_id: "AC-..."
 type: "TEST_EVIDENCE|REVIEW_EVIDENCE|EXECUTION_EVIDENCE|MEASUREMENT_EVIDENCE"
 source: "来源（工具、人、系统）"
 collected_at: "YYYY-MM-DD"
 verdict: "PASS|FAIL|PARTIAL"
 description: "证据描述"
 attachments: ["附件路径列表"]
-
-# 可选字段
 confidence: "HIGH|MEDIUM|LOW"
 reproducible: true|false
 notes: "备注"

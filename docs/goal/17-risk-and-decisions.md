@@ -37,6 +37,17 @@ Review Cadence: [per PR / before G10 / post-release]
 - Release 前 MUST 生成 Risk Register 摘要，并被 Release Manifest 引用。
 - 风险关闭 MUST 引用 Evidence；没有 Evidence 的风险只能从 `Open` 进入 `Mitigated` 待验证，不能直接 `Closed`。
 
+### Release 快照调和规则
+
+当 `release_blocking` 风险从 `Open` / `Escalated` / `Mitigated` 关闭为 `Closed` 且 `release_blocking: false` 时，执行者 MUST 在同一变更中调和以下快照：
+
+1. `.config/goal/registry/risks.yaml`：风险状态、owner、mitigation、residual / contingency 与 `updated_at`。
+2. `.config/goal/gates/state.yaml`：关联 Gate 的 risk metadata、阻断说明与 evidence。
+3. `.config/goal/pipeline/state.yaml`：`pipeline_state`、`current_phase`、`phase_status`、`workflow_step`、`gates_pending` 与 `blockers`。
+4. `.config/goal/registry/releases.yaml`：Release status、release notes、validation summary 与 evidence list。
+
+MUST NOT 保留与当前事实冲突的历史阻断语句。若 G10 / G11 已 PASS 且不存在 `Open` / `Escalated` 的 `release_blocking` 风险，Pipeline 不得继续停留在 `BLOCKED`，Release 不得继续停留在 `in_review` 或 `rejected`；否则 validator MUST 阻断。
+
 ### 风险类型
 
 | 类型 | 说明 |

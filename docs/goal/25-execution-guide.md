@@ -32,17 +32,19 @@ Matrix 是横切追溯制品，不是主流程阶段。它必须在各阶段持�
 
 | 阶段 | 最低输入 | 最低输出 | 关联 Gate | 证据要求 |
 |------|----------|----------|-----------|----------|
-| Goal | 业务目标、owner、成功指标、non-goals | 可验证 Goal | G0 | owner、指标、边界、优先级 |
-| Spec | Approved Goal | 需求、AC、NFR、约束、风险 | G1 | AC 可测、P0/P1 明确 |
-| Design | Spec | 设计方案、边界、ADR、风险缓解 | G2 | 设计评审、风险记录 |
-| Plan | Design | 执行顺序、依赖、验证点 | G3 | 计划评审、资源与阻塞 |
-| Tasks | Plan | 原子任务、允许文件、完成标准 | G4 | Task DoR、owner、依赖 |
+| Goal | 业务目标、owner、成功指标、non-goals | 可验证 Goal | G0 / G1 | G0 上下文恢复；G1 owner、指标、边界、优先级 |
+| Spec | Approved Goal | 需求、AC、NFR、约束、风险 | G2 | AC 可测、P0/P1 明确 |
+| Design | Approved Spec | 设计方案、边界、ADR、风险缓解 | G3 | 设计评审、风险记录 |
+| Plan | Approved Design | 执行顺序、依赖、验证点 | G4 | 计划评审、资源与阻塞 |
+| Tasks | Approved Plan + Matrix draft | 原子任务、允许文件、完成标准 | G5 | Task DoR、owner、依赖、Matrix coverage |
 | Prompt | Task + Context Package | 可执行 Prompt | G6 | 边界、禁止事项、验证命令 |
-| Code | Prompt + Task | 代码与测试变更 | G7 | commit、diff、测试输出 |
-| Test | Code | 测试报告和失败/通过记录 | G8 | Evidence Bundle、失败证据保留 |
+| Code | Prompt + Task | 代码与测试变更 | G6 / G7 | G6 实现边界；G7 测试输出 |
+| Test | Code + Test Plan | 测试报告和失败/通过记录 | G7 / G8 | Evidence Bundle、失败证据保留 |
 | Review | Code + Evidence | 评审结论和问题闭环 | G9 | reviewer、finding、处理状态 |
 | Release | Review PASS | Release Manifest | G10 | strict validator、Matrix、Risk Register、rollback validation |
 | Retrospective | Release + Metrics | 复盘和改进 Backlog | G11 | Metrics Review、Gap Report、RSI 记录 |
+
+Gate 编号 MUST 以 [04-gates.md](04-gates.md) 为权威，不得按阶段顺序自行重排。Matrix 不是主流程阶段；G5 是 Task 和 Matrix 追溯完整性的执行门禁。
 
 ### Matrix 横切控制点
 
@@ -50,7 +52,7 @@ Matrix 不占用主流程阶段号，但 G5 是全流程追溯完整性门禁。
 
 | 控制点 | 更新时机 | 关联 Gate | 证据要求 |
 |--------|----------|-----------|----------|
-| 初始化 | Spec 审批后 | G1 / G5 | Goal、Spec、Acceptance Criteria edge 可追溯 |
+| 初始化 | Spec 审批后 | G2 / G5 | Goal、Spec、Acceptance Criteria edge 可追溯 |
 | 执行更新 | Design、Plan、Tasks、Prompt、Code、Test、Evidence 或 Risk 变化后 | G2-G9 | release-critical edge 无 orphan，变更来源可追溯 |
 | 发布校验 | Release 前 | G10 | Matrix check-only 通过；release-critical edge 为 `Verified` 或 `Dropped` with reason |
 
@@ -67,7 +69,20 @@ Matrix 不占用主流程阶段号，但 G5 是全流程追溯完整性门禁。
 - 需要修改 Constitution、CI、agent 配置、schema 投影、Release Gate、Rollback、Incident 规则、P0/P1 语义或安全相关约束，但没有 Change Request 和 Human Approval。
 - 发现 `docs/goal/` 与 `.config/goal/`、CI、Constitution 或 Agent 配置漂移，且漂移会影响 Gate、Evidence、Release 或安全边界。
 
-## 5. 验证命令
+## 5. Release 快照调和
+
+Release 前后必须调和 Risk / Gate / Pipeline / Release 四类状态快照：
+
+| 快照 | 必查字段 | 阻断条件 |
+|------|----------|----------|
+| `.config/goal/registry/risks.yaml` | `status`, `release_blocking`, `mitigation`, `contingency`, `updated_at` | Closed 风险仍声明“保持 G10 阻塞” |
+| `.config/goal/gates/state.yaml` | G2 / G4 / G7 / G10 / G11 的 `status`, `risk`, `evidence_requirements` | Gate 已 PASS 但 risk metadata 仍指向当前 release_blocking |
+| `.config/goal/pipeline/state.yaml` | `pipeline_state`, `current_phase`, `phase_status`, `workflow_step`, `gates_pending`, `blockers` | G10 / G11 已 PASS 且无开放 release_blocking 风险，但 pipeline 仍 BLOCKED |
+| `.config/goal/registry/releases.yaml` | `status`, `release_notes`, `evidence`, validation summary | Release 已满足 G10 / G11 但 status 仍 `in_review` / `rejected` |
+
+执行者 MUST 在关闭 release_blocking 风险的同一变更中更新上述快照。若无法确认发布事实，MUST 保持风险 `Open` / `Escalated` 或写 Change Request，不得把 Release Gate 静默放行。
+
+## 6. 验证命令
 
 优先使用仓库现有统一 validator，不在 workflow 或人工步骤里复制第二套规则。
 
@@ -83,7 +98,7 @@ bash docs/goal/tools/goal-workflow.sh release
 
 如果某个命令不可用或失败，执行者 MUST 记录失败命令、失败原因、替代检查和未验证风险，不能把未验证结果声明为通过。
 
-## 6. Agent 协作规则
+## 7. Agent 协作规则
 
 - 单个 Task 同一时间只能有一个 writer。
 - 并行工作 MUST 使用 worktree 或等效隔离，并记录 branch、commit、allowed files 和 prohibited scope。
@@ -91,7 +106,7 @@ bash docs/goal/tools/goal-workflow.sh release
 - Agent MUST NOT 绕过 G0-G11、删除失败证据、放宽 Release Gate、或把 projection 当成新权威源。
 - Agent 发现跨 `docs/goal/`、`.config/goal/`、CI、Constitution、agent 配置的漂移时，MUST 记录 evidence 和影响范围。
 
-## 7. Change Request 规则
+## 8. Change Request 规则
 
 以下资产属于受保护或跨控制面资产，修改前 MUST 生成 Change Request 并标记 Human Approval：
 
@@ -104,7 +119,7 @@ bash docs/goal/tools/goal-workflow.sh release
 
 Change Request 至少包含 evidence、impact、root cause、proposed patch、validation command、rollback plan、owner / approval requirement。未批准的 Change Request 是提案，不是当前强规则。
 
-## 8. 完成声明
+## 9. 完成声明
 
 完成声明必须同时回答：
 

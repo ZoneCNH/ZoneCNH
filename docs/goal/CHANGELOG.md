@@ -2,6 +2,21 @@
 
 > 记录 docs/goal/ 体系的重大结构性变更。
 
+## 2026-06-11 — Release 快照调和与反向阻断校验
+
+- 调和 Risk Registry、Gate risk metadata、Pipeline state 和 Release Registry，使 G10 / G11 PASS 与已关闭 release_blocking 风险保持一致。
+- `goal-validate.py` 新增反向一致性检查：无 `Open` / `Escalated` release_blocking 风险且 G10 / G11 PASS 时，Pipeline 不得继续 `BLOCKED`，Release 不得停留在 `in_review` / `rejected`。
+- `self-test.sh` 增加 stale release snapshot 回归用例，`25-execution-guide.md` 与 `17-risk-and-decisions.md` 增加状态快照调和规则。
+
+## 2026-06-11 — Goal 权威与 Agent 投影同步
+
+- G10 / Release Gate 的必备输入显式补齐 `validation summary`，并与 schema 中的 release blocking condition 保持一致。
+- `00-authority-map.md` 移除不存在的 `todo.md` 证据落点，改为 Change Request、Evidence Bundle 或交付报告。
+- 新增 `.codex/agents/goal-*.toml`，使 Codex Goal Agent 投影与 Claude Goal Agent、`docs/goal/14-agent-protocols.md` 和 `.config/goal/schema/rules.yaml` 对齐。
+- 新增 `.copilot/agents/goal-*.md`，使 Copilot Goal prompt 投影覆盖 `goal-spec`、`goal-reviewer`、`goal-matrix`、`goal-prompt-builder` 和 `goal-evidence`；`.copilot/AGENTS.md` 明确这些文件只是 `docs/goal/` 的平台投影。
+- 修正 Claude `goal-matrix` 与 `goal-prompt-builder` 的旧 row model、旧路径、旧状态推进和 Gate 可跳过表述。
+- 更新 `CR-20260610-goal-protected-assets-sync.md`；Copilot Goal Agent 投影缺口已关闭，但 Copilot CLI 运行时 smoke 仍需单独验证。
+
 ## 2026-06-11 — Goal CI self-hosted runner 合同固化
 
 ### CI 可执行性

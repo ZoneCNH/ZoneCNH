@@ -1262,6 +1262,10 @@ def check_consistency(root: Path, report: Report) -> None:
 
     g10_status = normalize_status(gates.get("G10", {}).get("status"))
     g11_status = normalize_status(gates.get("G11", {}).get("status"))
+    pipeline = parse_pipeline(pipeline_path)
+    pipeline_state = normalize_status(pipeline.get("pipeline_state"))
+    pipeline_goal_id = str(pipeline.get("goal_id") or "")
+    releases = parse_releases(releases_path)
 
     if open_release_blocking_risks and g10_status != "BLOCKED":
         report.error(
@@ -1284,8 +1288,6 @@ def check_consistency(root: Path, report: Report) -> None:
         )
 
     if open_release_blocking_risks:
-        pipeline = parse_pipeline(pipeline_path)
-        pipeline_state = normalize_status(pipeline.get("pipeline_state"))
         if pipeline_state in DONE_PIPELINE_STATES:
             report.error(
                 "GV-CONSISTENCY-PIPELINE-DONE-WITH-RISK",
@@ -1296,7 +1298,7 @@ def check_consistency(root: Path, report: Report) -> None:
                 pipeline_state,
             )
 
-        for release in parse_releases(releases_path):
+        for release in releases:
             release_status = normalize_status(release.get("status"))
             if release_status in RELEASED_STATUSES:
                 report.error(
@@ -1305,6 +1307,31 @@ def check_consistency(root: Path, report: Report) -> None:
                     path_at(releases_path, release.get("_line")),
                     "release cannot be marked released with unresolved Open/Escalated release_blocking risks",
                     "status: in_review, rejected, or draft until risks are closed",
+                    {"release_id": release.get("release_id"), "status": release.get("status")},
+                )
+
+    elif g10_status == "PASS" and g11_status == "PASS":
+        if pipeline_state == "BLOCKED":
+            report.error(
+                "GV-CONSISTENCY-PIPELINE-STALE-BLOCKED",
+                "consistency",
+                path_at(pipeline_path, pipeline.get("_line")),
+                "pipeline remains blocked after G10/G11 PASS and no unresolved release-blocking risks",
+                "pipeline_state: DONE, RETROSPECTING, or a current non-blocked state consistent with Gate facts",
+                pipeline_state,
+            )
+
+        for release in releases:
+            if pipeline_goal_id and release.get("goal_id") and str(release.get("goal_id")) != pipeline_goal_id:
+                continue
+            release_status = normalize_status(release.get("status"))
+            if release_status and release_status not in RELEASED_STATUSES:
+                report.error(
+                    "GV-CONSISTENCY-RELEASE-STALE-STATUS",
+                    "consistency",
+                    path_at(releases_path, release.get("_line")),
+                    "release snapshot is not released after G10/G11 PASS and no unresolved release-blocking risks",
+                    "status: released, or reopen a blocking risk/Gate",
                     {"release_id": release.get("release_id"), "status": release.get("status")},
                 )
 

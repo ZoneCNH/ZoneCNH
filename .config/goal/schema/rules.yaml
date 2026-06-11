@@ -277,6 +277,7 @@ evidence:
     - matrix
     - tests
     - review
+    - validation_summary
     - risk_register
     - release_manifest
     - rollback_validation
@@ -290,13 +291,16 @@ release_gate:
     - strict_validator_result
     - matrix_check_only_result
     - evidence_bundle
+    - validation_summary
     - release_manifest
     - risk_register
     - rollback_validation
   blocking_conditions:
     - open_release_blocking_risk
     - missing_evidence_bundle
+    - missing_validation_summary
     - missing_release_manifest
+    - missing_risk_register
     - missing_rollback_validation
     - g10_pass_with_risk
 
