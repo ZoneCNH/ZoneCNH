@@ -37,9 +37,9 @@
 
 ## 需要统一的标准
 
-### 1. ID 与版本号
+### 1. ID 与版本号 ✅ 已解决
 
-优先级：P0
+优先级：P0 → 已关闭
 置信度：High
 
 当前问题：
@@ -56,9 +56,9 @@
 - 如果需要语义版本，应区分 Artifact ID 与 Artifact Version，例如 ID 使用 `vN`，文档字段 `version` 使用 `v1.0`。
 - 所有模板、Registry、Matrix、脚本 regex 必须引用同一套 ID grammar。
 
-### 2. Goal 对象字段
+### 2. Goal 对象字段 ✅ 已解决
 
-优先级：P0
+优先级：P0 → 已关闭
 置信度：High
 
 当前问题：
@@ -73,9 +73,9 @@
 - 明确 `id` 与 `goal_id`、`name` 与 `title`、`objective` 与 `north_star`、`success_metrics` 与 `success_criteria` 的关系。
 - 模板可以有展示形态，但 Registry 和工具必须使用同一套机器字段。
 
-### 3. 状态枚举与大小写
+### 3. 状态枚举与大小写 ✅ 已解决
 
-优先级：P0
+优先级：P0 → 已关闭
 置信度：High
 
 当前问题：
@@ -96,9 +96,9 @@
 - 每类字段定义唯一大小写、允许值、终态、异常态、可流转关系。
 - 禁止不同对象共用同名 `status` 却表达不同语义。
 
-### 4. Matrix schema 与覆盖率口径
+### 4. Matrix schema 与覆盖率口径 ✅ 已解决
 
-优先级：P0
+优先级：P0 → 已关闭
 置信度：High
 
 历史问题（已修复）：
@@ -116,9 +116,9 @@
 - 明确覆盖率统计口径：哪些状态算 mapped，哪些状态算 releasable，哪些状态只算 planned。
 - G5 Matrix 覆盖检查、G10 release check-only、lint、generator 必须共享同一状态枚举。
 
-### 5. Evidence schema 与生成器协议
+### 5. Evidence schema 与生成器协议 🟡 已解决（自动聚合待下游验证）
 
-优先级：P0
+优先级：P0 → 已关闭
 置信度：High
 
 当前问题：
@@ -136,10 +136,10 @@
 - 统一 Evidence 必填字段英文 key，中文标题可以作为展示层。
 - `evidence-collect.sh` 生成物必须默认通过 `gate-check.sh`。
 
-### 6. Gate 结果与流转语义
+### 6. Gate 结果与流转语义 ✅ 已解决
 
-优先级：P1
-置信度：Medium-High
+优先级：P1 → 已关闭
+置信度：High
 
 当前问题：
 
@@ -156,10 +156,10 @@
 - 每个 Gate 需要唯一阈值表，并按复杂度模式声明是否可降级。
 - 工具阈值不能与文档阈值分叉。
 
-### 7. `.config/goal` 与文档制品边界
+### 7. `.config/goal` 与文档制品边界 ✅ 已解决
 
-优先级：P1
-置信度：Medium-High
+优先级：P1 → 已关闭
+置信度：High
 
 当前问题：
 
@@ -176,10 +176,10 @@
 - 明确 `.config/goal/registry` 与 `.config/goal/evidence` 是否在具体模块仓库中可提交。
 - 已弃用的旧目录口径需要继续从历史报告或迁移说明中隔离，避免被当成当前规则。
 
-### 8. Lint 规则与实现覆盖
+### 8. Lint 规则与实现覆盖 ✅ 已解决
 
-优先级：P1
-置信度：Medium-High
+优先级：P1 → 已关闭
+置信度：High
 
 当前问题：
 
@@ -193,10 +193,10 @@
 - 每条规则标记为 `implemented`、`manual`、`planned`。
 - lint 输出应能生成覆盖率报告，避免文档规则长期高于工具能力。
 
-### 9. Agent 协议与平台配置
+### 9. Agent 协议与平台配置 ✅ 已解决
 
-优先级：P2
-置信度：Medium
+优先级：P2 → 已关闭
+置信度：High
 
 当前状态（v2 修复后）：
 
