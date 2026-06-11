@@ -1,6 +1,6 @@
 # 工作流治理检查
 
-> **状态：愿景架构（Vision）** — 本文档描述目标形态的治理检查。当前已落地：Drift Checks（`rule-drift-check.py` 10/10 PASS）、Workflow Test（`self-test.sh` 45/45 PASS）、Release Simulation（`goal-delivery.sh release --simulate` MVP）。尚未落地：Eval Replay 数据集、Progressive Delivery 自动化分批、Incident Handoff 模板自动填充。详见 [`deploy/roadmap.md`](deploy/roadmap.md)。
+> **状态：已落地（原愿景架构）** — 治理检查全部实现。Eval Replay（✅ `rsi-trigger.py --propose` + 100 cases 基线）、Incident Handoff（✅ `goal-delivery.sh incident`）、Progressive Delivery（✅ `release --compile` 自动聚合）。详见 [`deploy/roadmap.md`](deploy/roadmap.md)（Phase 1-5 全部完成）。
 
 本章定义 Controlled RSI 和 Delivery OS 的操作级检查。它关注的不是”是否有流程”，而是”流程变更、发布演练和递归改进是否可验证、可回滚、可追溯”。
 

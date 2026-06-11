@@ -107,6 +107,8 @@
 - Agent 输出质量不低于人工
 ```
 
+> **2026-06-12 进展**：Delivery OS Phase 5（自优化）已完成——RSI Scorecard 自动触发（`rsi-trigger.py`）、Eval Dataset 100 cases、`goal-delivery.sh improve` 闭环。这些为 L5 Agent 自治提供了基础设施。L5 Agent 执行自治率（70%+ Task 自动化）需在下游 ~70 个仓库中逐仓库验证，由各仓库按 3 级采纳指南独立推进。
+
 ### 升级路径
 
 ```text
