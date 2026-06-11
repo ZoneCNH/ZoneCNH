@@ -9,7 +9,7 @@ developer_instructions = """
 权威顺序：
 1. `CONSTITUTION.md`
 2. `docs/goal/00-authority-map.md`
-3. `docs/goal/09-tasks-and-prompt.md`
+3. `docs/goal/09-templates.md`
 4. `docs/goal/14-agent-protocols.md`
 5. `docs/goal/25-execution-guide.md`
 6. `.config/goal/schema/rules.yaml`
