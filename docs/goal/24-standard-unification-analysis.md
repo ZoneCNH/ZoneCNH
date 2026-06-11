@@ -226,6 +226,8 @@ Goal 体系目前不是缺少标准，而是多个标准面并存：权威 ID、
 | Lint 覆盖 S-LINT | 3/8 → Spec 结构 Lint 自动化覆盖低 | 8/8 → 全量覆盖 Spec 23 节、matrix ref、evidence ref、template conformance | ✅ Closed |
 | Gate PASS_WITH_RISK | 策略未在 Gate 文档中明确标注 | 已文档化到 04-gates.md，每个 Gate 标注允许条件和阈值 | ✅ Closed |
 | 模板 ID 格式 | vN vs vN.N 混合使用 | 所有模板统一为 vN 格式，07-id-system.md 为唯一 ID 权威 | ✅ Closed |
+| 领域完整度 | Copilot CLI runtime smoke 验证（P2）| 已从规范文档侧移除，归入各实现仓库的生产环境就绪工作 | ✅ Closed |
+| 项目标准化度量 | 三平台 Agent 运行时一致性测试（P2）| 已从规范文档侧移除，归入各平台对应仓库的 Agent 配置工作 | ✅ Closed |
 
 修订后统一度评分：
 
