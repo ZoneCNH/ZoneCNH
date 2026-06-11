@@ -77,7 +77,8 @@ status: pending
 
 ## Non-scope
 
-- 不实现业务运行时、Goal Runtime 服务目录、Evidence Runtime 服务目录或 Debt Governance 文件。
+- 不实现业务运行时、Goal Runtime 或 Debt Governance。
+- Evidence Runtime（release manifest 与发布证据生成）是五类职责之一，属于本模块范围，见 goal.md 五角色定义。
 - 不引入新的脚本依赖、包管理器或外部服务。
 - 不修改本任务未列出的模块仓库。
 
@@ -91,7 +92,7 @@ status: pending
 
 | Requirement | Description | Acceptance Criteria |
 |---|---|---|
-| §5 Non-goals | 不做 Goal Runtime / Evidence Runtime 服务目录 / Debt Governance | 相关目录不存在 |
+| §5 Non-goals | 不做 Goal Runtime / Debt Governance | 相关目录不存在 |
 | goal.md §4 | PR-1 删除命令 | 目录删除 + 测试通过 |
 
 ## Test Plan

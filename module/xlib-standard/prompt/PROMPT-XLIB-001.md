@@ -17,14 +17,14 @@ TASK-XLIB-001: 文档对齐 — 重写 README、standard.md、INDEX.md
 - FR-001: 定义基座库标准规范
 - FR-006: 文档与示例管理
 - AC-001: standard.md 包含全部规则
-- AC-016: README 描述 5 项职责（标准事实源、Go Reference Template、Generator、Harness Gate、Evidence Runtime）
+- AC-016: README 描述五类职责（Standard Source / Go Reference Template / Generator / Harness Gate / Evidence Runtime）
 - AC-017: examples 提供最小可运行示例
 
 ## Current Scope
 
 重写 3 个文档文件：
 
-1. **README.md** — 描述 5 项职责（标准事实源、Go Reference Template、Generator、Harness Gate、Evidence Runtime），不超过 200 行
+1. **README.md** — 描述五类职责（Standard Source / Go Reference Template / Generator / Harness Gate / Evidence Runtime），不超过 200 行
 2. **docs/standard.md** — 完整标准规范，包含目录结构、命名规则、go.mod 规则、错误处理规则、契约规则、测试规则
 3. **docs/INDEX.md** — 文档索引，仅列出 9 个保留文件
 

@@ -1,4 +1,10 @@
-# xlib-standard v1.0.0 执行计划（历史归档）
+> **⚠️ 归档警告**：本文件是 2026-06-09 的历史执行计划，仅保留供溯源比对。
+> 其中"4 项职责"描述基于旧模型，当前权威定义为 CONSTITUTION.md §1.1 P2 和 ARCHITECTURE.md §161 中的**五类职责**：
+> Standard Source / Go Reference Template / Generator / Harness Gate / Evidence Runtime。
+> 当前执行入口见 `module/xlib-standard/PLAN.md`（根级 PLAN），规格定义见 `module/xlib-standard/goal.md` 和 `module/xlib-standard/SPEC.md`。
+> 本文件不得作为当前分析、任务拆分或门禁事实引用。
+
+# xlib-standard v1.0.0 执行计划
 
 > ⚠️ 本文件为上游仓库 Path A 历史执行计划（2026-06-09）。
 > 当前 xlib-standard 五类职责（标准事实源、Go Reference Template、Generator、Harness Gate、Evidence Runtime）的完整定位见 `../goal.md`、`../SPEC.md` 和 CONSTITUTION.md P2。

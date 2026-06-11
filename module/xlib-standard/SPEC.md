@@ -1,7 +1,4 @@
 # xlib-standard SPEC
-
-归档说明：本文件为旧 23 节整理稿，不再作为当前可执行规格入口。
-
 ## Metadata
 
 Status: Approved
@@ -9,7 +6,7 @@ Owner: ZoneCNH
 Version: v1.0.0
 Updated: 2026-06-10
 
-本规格是 `xlib-standard` 五类职责（标准事实源、Go Reference Template、Generator、Harness Gate、Evidence Runtime）中后四类的可执行交付规格。标准事实源（文档规范层）的完整定义见 `goal.md`。本文件约束模板公共 API、模板生成、验证 gate、release manifest 与最终验收，不承载业务运行。
+本规格定义 `xlib-standard` 五类职责中后四类的可执行交付规格——Go Reference Template、Generator、Harness Gate 和 Evidence Runtime。第一类职责（Standard Source / 标准事实源）的文档规范定义见 goal.md。本规格约束公共 API、模板生成、验证 gate、release manifest 与最终验收，不承载业务域实现。
 
 ## Constitution Compliance
 
@@ -47,7 +44,7 @@ Updated: 2026-06-10
 
 | Goal | Description                                                           | Trace              |
 | ---- | --------------------------------------------------------------------- | ------------------ |
-| G-0  | 定义 xlib 体系标准事实源（文档规范）。见 `goal.md`。                   | Standard Source    |
+| G-0  | 定义 xlib 体系标准事实源（文档规范）。见 goal.md。                  | Standard Source     |
 | G-1  | 定义 Config、Error、Health、Metrics、Client、Version 的最小公共 API。 | API standard       |
 | G-2  | 提供 Go 参考模板，并保证模板本身可编译、可测试、可 vet。              | Reference template |
 | G-3  | 提供渲染脚本，从标准模板创建独立 Go module。                          | Generator          |
@@ -60,6 +57,7 @@ Updated: 2026-06-10
 - 不替代下游模块的业务测试、集成测试或生产配置。
 - 不引入数据库、消息队列、外部网络调用或运行时平台依赖。
 - 不提供跨语言模板；本版本仅覆盖 Go module。
+- 不承载业务域运行时逻辑（交易、行情、风控）。标准源自身的可执行交付物（模板代码、渲染脚本、CI 门禁、发布证据生成）属于标准源职责，不属于业务运行时。
 
 ## Consumers
 
