@@ -11,7 +11,7 @@
 
 ```text
 Phase 1 ──→ Phase 2 ──→ Phase 3 ──→ Phase 4 ──→ Phase 5
-  ✅ 已完成    🟡 近期      ⬜ 中期      ✅ 已完成      🟡 MVP 已落地
+  ✅ 已完成    ✅ 已完成    ✅ 已完成    ✅ 已完成    ✅ MVP 已落地
   基础管线    Compiler    Contract    Runtimes    自优化
   L3           MVP         Layer       完整版       L5
 ```
@@ -48,7 +48,7 @@ python3 docs/goal/tools/matrix-gen.py --check-only
 
 ---
 
-## Phase 2 — Workflow Compiler MVP 🟡 近期
+## Phase 2 — Workflow Compiler MVP ✅ 已完成
 
 **目标**：从手工编写 Prompt → 半自动生成 Context Package。Lint 规则 100% 自动化。
 
@@ -93,7 +93,7 @@ bash docs/goal/tools/goal-delivery.sh prompt --task-id TASK-xxx --compile
 
 ---
 
-## Phase 3 — Contract Layer + Evidence Runtime ⬜ 中期
+## Phase 3 — Contract Layer + Evidence Runtime ✅ 已完成
 
 **目标**：关键边界写成可检查契约。Evidence 收集从手工 → 自动关联。
 
@@ -197,10 +197,10 @@ Scorecard 指标异常 → 自动生成 Improvement Proposal → R0-R9 Gate → 
 
 ```text
 2026-06  ✅ Phase 1-3 完成，Phase 4-5 MVP 落地
-2026-07  🟡 Phase 2 启动：Workflow Compiler MVP + Lint 100%
-2026-08  🟡 Phase 2 完成
-2026-09  ⬜ Phase 3 启动：Contract Layer + Evidence Runtime
-2026-11  ⬜ Phase 3 完成
+2026-06 ✅ Phase 2 完成: Compiler MVP + Lint 100%
+
+2026-06 ✅ Phase 3 完成: Contract Layer + Evidence Bundle + DAG
+
 2027-Q1  ⬜ Phase 4 启动：Five Runtimes + Release Drills
 2027-Q2  ⬜ Phase 4 完成
 2027-Q3+ ⬜ Phase 5 持续迭代
