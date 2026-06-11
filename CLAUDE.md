@@ -21,6 +21,18 @@
 
 这里没有构建、lint 或测试步骤；主要工作是编辑 Markdown。
 
+## Goal 驱动交付体系
+
+本仓库维护了一套完整的 Goal 驱动交付体系，位于 `docs/goal/`：
+
+- **Schema 权威层**（`docs/goal/schema/`）：`goal.schema.yaml`、`matrix.schema.yaml`、`evidence.schema.yaml`、`state-dictionary.yaml` 定义了 Goal/Matrix/Evidence 对象的 canonical schema 和统一状态枚举。
+- **标准统一度**：当前综合评分 **82/100**（`docs/goal/24-standard-unification-analysis.md`），P-LINT 覆盖率 10/10、S-LINT 覆盖率 8/8。
+- **工具链**（`docs/goal/tools/`）：`lint-goal.sh`（P-LINT + S-LINT）、`spec-lint.py`（Spec 22 节结构校验）、`gate-check.sh`（Gate 覆盖检查）、`evidence-collect.sh`（证据收集）、`goal-workflow.sh`（工作流入口）、`goal-validate.py`、`matrix-gen.py`、`self-test.sh`。
+- **控制面**（`.config/goal/`）：运行时 registry、pipeline state、gate state、schema rules，已纳入 `.gitignore` 白名单可提交。
+- **Gate 策略**：`04-gates.md` 定义了 G0-G11 Gate 及 `PASS_WITH_RISK` 流转语义和阈值条件。
+- 修改 Goal 相关文档时，必须同步更新 `CHANGELOG.md`、评分账本和 schema 文件（如涉及字段变更）。
+- 新增 Lint 规则需要在 `10-lint-rules.md` 注册并实现到对应工具脚本。
+
 ## 保持文档同步
 
 `README.md` 和 `ARCHITECTURE.md` 从不同角度描述同一套系统，因此一个文件的架构变化通常需要同步到另一个文件：
@@ -62,4 +74,5 @@
 - **提交**：使用 Conventional Commits 前缀和中文描述，例如 `docs:`、`feat:`、`refactor:`、`fix:`。
 - **链接**：引用组件时，使用既有表格风格的 `https://github.com/ZoneCNH/<repo>` 链接。
 - **规格标准**：模块规格遵循 `CONSTITUTION.md` 第四条，采用 23 节结构（行为规格 WHEN/THEN、接口契约、业务规则、错误处理、边界场景、验收标准等）。模板见 `module/README.md`。追溯矩阵规范见 `docs/governance/TRACEABILITY.md`，具体矩阵位于 `module/{module}/TRACEABILITY.md`。
+- **Goal schema 合规**：Goal/Matrix/Evidence 对象需通过 `goal-validate.py --mode strict` 校验。Spec 阶段需通过 `spec-lint.py` 全量检查。提交前运行 `lint-goal.sh`（P-LINT）和 `lint-goal.sh --spec`（S-LINT）。Gate 检查通过 `goal-workflow.sh preflight && goal-workflow.sh validate` 验证。
 - **安全**：不要提交凭证、API key、账户 ID、私有端点或实盘交易配置。
