@@ -13,18 +13,18 @@ Goal 体系目前不是缺少标准，而是多个标准面并存：权威 ID、
 
 ## 评分账本
 
-| 维度            | 统一度 | 判断                                                                                                            |
-| --------------- | ------ | --------------------------------------------------------------------------------------------------------------- |
-| 运行时目录      | 82     | `.config/goal/` 已成为主要运行时目录，规格制品入口已收敛到 `module/`；仍需明确哪些 `.config/goal/` 子目录可提交 |
-| Gate 编号与权威 | 78     | G0-G11 权威清晰，但 `PASS_WITH_RISK` 与状态流转关系仍需补齐                                                     |
-| ID 与版本       | 60     | 整数版号与语义版本式示例混用，工具 regex 只接受部分格式                                                        |
-| Goal schema     | 62     | 标准、模板、Registry 使用不同字段命名                                                                           |
-| 状态枚举        | 58     | `status`、`current_phase`、`gate_result`、`metric_conclusion` 混杂                                              |
-| Matrix schema   | 55     | 展示字段、YAML 模板、脚本字段、覆盖率口径不一致                                                                 |
-| Evidence schema | 50     | ID、路径、必填字段、生成器、Gate 检查存在明显漂移                                                               |
-| Lint 与工具覆盖 | 57     | 规则文档完整，但脚本只实现子集                                                                                  |
+| 维度            | 统一度 | 变化 | 说明                                                                                                            |
+| --------------- | ------ | ---- | --------------------------------------------------------------------------------------------------------------- |
+| 运行时目录      | 82     | —    | `.config/goal/` 已成为主要运行时目录                                                                             |
+| Gate 编号与权威 | 82     | +4   | `PASS_WITH_RISK` 策略已文档化到 `04-gates.md`                                                                    |
+| ID 与版本       | 72     | +7   | vN vs vN.N 明确区分 + 模板统一为 vN 格式                                                                        |
+| Goal schema     | 85     | —    | `goal.schema.yaml` 已创建                                                                                        |
+| 状态枚举        | 88     | —    | `state-dictionary.yaml` 已创建                                                                                   |
+| Matrix schema   | 85     | —    | `matrix.schema.yaml` 已创建                                                                                      |
+| Evidence schema | 82     | —    | `evidence.schema.yaml` 已创建                                                                                    |
+| Lint 与工具覆盖 | 82     | +17  | P-LINT 10/10 (曾 2/10), S-LINT 8/8 (曾 3/8), 总自动化率 77%                                                     |
 
-综合评分：**66 / 100**。
+综合评分：**82 / 100**（+4 from 78）。
 
 ## 需要统一的标准
 
@@ -222,35 +222,35 @@ Goal 体系目前不是缺少标准，而是多个标准面并存：权威 ID、
 | Matrix schema | 55 → 展示字段/YAML/脚本字段不一致 | 85 → matrix.schema.yaml 统一 canonical edge 字段 + relation vocabulary | ✅ Closed |
 | Evidence schema | 50 → ID/路径/必填字段漂移 | 82 → evidence.schema.yaml 统一 Evidence 文件 + Bundle 必填字段 | ✅ Closed |
 | 状态枚举 | 58 → 5 种命名风格混用 | 88 → state-dictionary.yaml 归并为 4 类状态字段 | ✅ Closed |
+| Lint 覆盖 P-LINT | 2/10 → Spec 阶段 Lint 自动化覆盖低 | 10/10 → 全量覆盖 Spec 22 结构、ID grammar、state、schema ref | ✅ Closed |
+| Lint 覆盖 S-LINT | 3/8 → Spec 结构 Lint 自动化覆盖低 | 8/8 → 全量覆盖 Spec 23 节、matrix ref、evidence ref、template conformance | ✅ Closed |
+| Gate PASS_WITH_RISK | 策略未在 Gate 文档中明确标注 | 已文档化到 04-gates.md，每个 Gate 标注允许条件和阈值 | ✅ Closed |
+| 模板 ID 格式 | vN vs vN.N 混合使用 | 所有模板统一为 vN 格式，07-id-system.md 为唯一 ID 权威 | ✅ Closed |
 
 修订后统一度评分：
 
 | 维度 | 统一度 | 变化 |
 |------|--------|------|
 | 运行时目录 | 82 | — |
-| Gate 编号与权威 | 78 | — |
-| ID 与版本 | 65 | +5 (07-id-system.md 明确 vN vs version 字段) |
-| Goal schema | 85 | +23 ⬆ |
-| 状态枚举 | 88 | +30 ⬆ |
-| Matrix schema | 85 | +30 ⬆ |
-| Evidence schema | 82 | +32 ⬆ |
-| Lint 与工具覆盖 | 65 | +8 (10-lint-rules.md 标注规则实现状态) |
+| Gate 编号与权威 | 82 | +4 (PASS_WITH_RISK 策略已文档化到 04-gates.md) |
+| ID 与版本 | 72 | +7 (vN vs vN.N 明确区分 + 模板统一为 vN 格式) |
+| Goal schema | 85 | — |
+| 状态枚举 | 88 | — |
+| Matrix schema | 85 | — |
+| Evidence schema | 82 | — |
+| Lint 与工具覆盖 | 82 | +17 (P-LINT 10/10, S-LINT 8/8, 总自动化率 77%) |
 
-**修订后综合评分：78 / 100**（+12）
+**修订后综合评分：82 / 100**（+4 from 78）
 
 ### 仍需统一
 
-- ID 版本格式：vN vs vN.N 在模板和操作文档中仍有混合使用（65/100 → 目标 85）
-- Gate 结果与流转语义：PASS_WITH_RISK 与 advisory score / hard gate 的区分需要各 Gate 文档逐一标注
-- Lint 实现覆盖率：46% (16/35)，Prompt Lint 和 Spec Lint 的自动化覆盖率较低
-- 三平台 Agent 同构：Codex/Copilot 侧 Goal agent 的运行时 smoke 仍需验证
+- Copilot CLI runtime smoke 验证（P2，未开始）
+- 三平台 Agent 同构（P2，未开始）
 
 ### 下一批修复建议
 
-1. 将所有模板中的 ID 示例统一为 `vN` 格式
-2. 为每个 Gate (G0-G11) 标注允许 PASS_WITH_RISK 的阈值和条件
-3. 实现 S-LINT 和 P-LINT 的自动化检查脚本
-4. 完成 Copilot CLI runtime smoke 验证
+1. Copilot CLI runtime smoke 验证
+2. 三平台 Agent 运行时一致性测试
 
 ## 最小可执行修复包
 

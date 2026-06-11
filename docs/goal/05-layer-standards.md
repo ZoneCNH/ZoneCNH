@@ -314,12 +314,9 @@ Goal → Spec → Design → Plan → Tasks → Prompt → Code → Test → Rev
 | source_type / source_id | 来源节点类型与 ID，如 Goal、Spec、AC、Task、Prompt、Code、Test、Evidence、Risk、Gate |
 | target_type / target_id | 目标节点类型与 ID |
 | relation | canonical relation vocabulary 中的一个值，见下表 |
-| priority | P0 / P1 / P2 / P3 |
 | status | Unmapped / Mapped / Linked / Verified / Dropped / Blocked / Changed / Drifted / Stale |
-| owner | 负责维护该 edge 的人或 Agent |
 | evidence_id | 证明该 edge 的 Evidence ID；release-critical edge MUST 填写 |
 | risk_id | 关联风险；High/Critical 或 release_blocking 风险 MUST 填写 |
-| gate_id | 关联 Gate；阻断性 Gate MUST 填写 |
 | drop_reason | `Dropped` 时必填 |
 | updated_at | 最近更新日期或时间戳 |
 
@@ -350,7 +347,7 @@ Goal → Spec → Design → Plan → Tasks → Prompt → Code → Test → Rev
 1. 每个 Goal 至少有一条到 Spec 或明确 Non-goal / Dropped 决策的 edge。
 2. 每个 Spec Requirement 至少有一条到 Task、Test 或 Decision 的 edge。
 3. 每个 P0/P1 Acceptance Criteria 必须同时有 Test edge 与 Evidence edge。
-4. 每个 release-critical edge 必须有 owner、status、priority、gate_id 和 evidence_id。
+4. 每个 release-critical edge 必须有 status 和 evidence_id。
 5. 任何 Dropped edge 必须有 drop_reason 和审批记录。
 6. 不允许存在无来源 Task、无来源 Code、无证据 Done 或未解释的 Blocked/Drifted/Stale edge。
 ```
