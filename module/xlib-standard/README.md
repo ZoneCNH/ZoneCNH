@@ -7,10 +7,11 @@
 | 字段 | 值 |
 |------|----|
 | Upstream | `github.com/ZoneCNH/xlib-standard` |
-| Snapshot Date | 2026-06-08 |
+| Snapshot Date | 2026-06-08（原始快照）/ 2026-06-12（文档对齐更新） |
 | Upstream Commit | `93753b30e6d01fb4a9b096acaa0d7d53a2fb231c`（= remote tag `v0.6.5`，tree `296e3b91…`，pinned 2026-06-08 04:59 +08:00） |
-| 本目录角色 | 上游规格的本地结构分析快照，**不是**上游 SSOT；任何冲突以上游 `docs/standard/**` 为准 |
-| 本仓库角色 | 文档枢纽，仅承载分析结果，不承载实现源码 |
+| Upstream HEAD | `09c9ec2`（tag `v1.0.0`，2026-06-12 文档-代码对齐基准） |
+| 本目录角色 | 上游规格的本地结构分析快照 + 可执行规格（goal.md + SPEC.md），**不是**上游 SSOT；任何冲突以上游 `docs/standard/**` 为准 |
+| 本仓库角色 | 文档枢纽，承载分析结果与可执行规格，不承载实现源码 |
 
 ## 模块定位
 
