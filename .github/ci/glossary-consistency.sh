@@ -29,7 +29,7 @@ DEFINED_TERMS=$(grep -oP '(?<=### )\S+' "$GLOSSARY" | sort -u || true)
 DEFINED_MODULES=$(grep -oP '`([a-z][-a-z0-9]*)`' "$GLOSSARY" | tr -d '`' | sort -u || true)
 
 # 已知的合法缩写（不需要在 GLOSSARY 中定义）
-KNOWN_ABBREVS="API|HTTP|HTTPS|URL|URI|JSON|YAML|CSV|SQL|TLS|TCP|UDP|IP|DNS|SSH|SSL|JWT|OAuth|SDK|CLI|GUI|ORM|P2P|IoT|CI|CD|PR|MR|FR|NFR|QA|UI|UX|DB|KV|LRU|FIFO|LIFO|TTL|QPS|TPS|P99|P95|P50|CPU|GPU|RAM|SSD|HDD|UTC|GMT|TWAP|VWAP|IC|IR|WHEN|THEN|AND|OR|IF|SPEC|README|LICENSE|CHANGELOG|CONSTITUTION|ARCHITECTURE|GATEWAY|CONFIG|METRICS|LOGGING|TRACING|HEALTH|BR|DOT|WSL|AI|TC"
+KNOWN_ABBREVS="API|HTTP|HTTPS|URL|URI|JSON|YAML|CSV|SQL|TLS|TCP|UDP|IP|DNS|SSH|SSL|JWT|OAuth|SDK|CLI|GUI|ORM|P2P|IoT|CI|CD|PR|MR|FR|NFR|QA|UI|UX|DB|KV|LRU|FIFO|LIFO|TTL|QPS|TPS|P99|P95|P50|CPU|GPU|RAM|SSD|HDD|UTC|GMT|TWAP|VWAP|IC|IR|WHEN|THEN|AND|OR|IF|SPEC|README|LICENSE|CHANGELOG|CONSTITUTION|ARCHITECTURE|GATEWAY|CONFIG|METRICS|LOGGING|TRACING|HEALTH|BR|DOT|WSL|AI|TC|GOWORK|AC"
 
 check_spec() {
   local spec_file="$1"
@@ -49,6 +49,10 @@ check_spec() {
     fi
     # 跳过 Go 类型风格（小写开头）
     if echo "$term" | grep -qP '^[a-z]'; then
+      continue
+    fi
+    # Skip Go exported identifiers used in xlib-standard and other module SPECs
+    if echo "$term" | grep -qP '^(Close|HealthCheck|IsKind|Metrics|New|NewError|NoopMetrics|Sanitize|VersionInfo|WrapError|GetBool|GetInt|GetString|Advance)$'; then
       continue
     fi
     # 检查是否在 GLOSSARY 中

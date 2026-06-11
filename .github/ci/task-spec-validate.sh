@@ -15,7 +15,7 @@ FAIL=0
 WARN=0
 REPO_ROOT="$(git rev-parse --show-toplevel)"
 SPEC_DIR="$REPO_ROOT/module"
-TASK_DATA_DIR="$SPEC_DIR/TASKS"
+TASK_DATA_DIR="$SPEC_DIR"
 
 echo "=== Task Spec Validate ==="
 echo ""
@@ -23,11 +23,16 @@ echo ""
 # ── 前置检查：是否存在 task 数据 ────────────────────────────────
 
 shopt -s nullglob
-TASK_FILES=("$TASK_DATA_DIR"/*.md "$TASK_DATA_DIR"/*.yml "$TASK_DATA_DIR"/*.yaml)
-shopt -u nullglob
+TASK_FILES=()
+for td in "$TASK_DATA_DIR"/*/tasks; do
+    [[ -d "$td" ]] || continue
+    for f in "$td"/*.md "$td"/*.yml "$td"/*.yaml; do
+        [[ -f "$f" ]] && TASK_FILES+=("$f")
+    done
+done
 
 if [[ ${#TASK_FILES[@]} -eq 0 ]]; then
-  echo "  ℹ️  无 task 数据（$TASK_DATA_DIR 为空或不存在），跳过校验"
+  echo "  ℹ️  无 task 数据（$TASK_DATA_DIR/*/tasks/ 为空或不存在），跳过校验"
   echo ""
   echo "=== 结果 ==="
   echo "✅ Task Spec Validate 跳过（无数据）"
@@ -64,10 +69,25 @@ add_warning() { WARNINGS+=("$1"); WARN=1; }
 parse_tasks() {
   local task_file="$1"
   local current_id=""
+  local in_yaml=0
+  local in_ac=0
 
   while IFS= read -r line || [[ -n "$line" ]]; do
-    # 匹配 task ID 行：TASK-{MODULE}-{NNN}:
-    if [[ "$line" =~ ^(TASK-[A-Z]+-[0-9]+): ]]; then
+    # Detect YAML code-fence boundaries (skip everything outside fences)
+    if [[ "$line" =~ ^\`\`\` ]]; then
+      if [[ $in_yaml -eq 0 ]]; then
+        in_yaml=1
+      else
+        in_yaml=0
+        current_id=""  # end of current task YAML block
+        in_ac=0
+      fi
+      continue
+    fi
+    [[ $in_yaml -eq 0 ]] && continue
+
+    # Match task ID as YAML field value or top-level key
+    if [[ "$line" =~ ^[[:space:]]*(TASK-[A-Z]+-[0-9]+[A-Z]?): ]] || [[ "$line" =~ ^[[:space:]]*task_id:[[:space:]]*(TASK-[A-Z]+-[0-9]+[A-Z]?) ]]; then
       current_id="${BASH_REMATCH[1]}"
       ALL_IDS+=("$current_id")
       TASK_AC_COUNT["$current_id"]=0
@@ -77,33 +97,50 @@ parse_tasks() {
       TASK_SPECREFS["$current_id"]=""
       TASK_FILES_LIST["$current_id"]=""
       TASK_DEPENDS["$current_id"]=""
+      in_ac=0
       continue
     fi
 
     [[ -z "$current_id" ]] && continue
 
-    # 解析字段
-    if [[ "$line" =~ ^[[:space:]]+module:[[:space:]]*(.+) ]]; then
+    # Track acceptance_criteria section
+    if [[ "$line" =~ ^[[:space:]]*acceptance_criteria: ]]; then
+      in_ac=1
+      continue
+    fi
+
+    # Exit acceptance_criteria section on next top-level key
+    if [[ $in_ac -eq 1 ]] && [[ "$line" =~ ^[[:space:]]*[a-z_]+: ]] && ! [[ "$line" =~ ^[[:space:]]*- ]]; then
+      in_ac=0
+    fi
+
+    # Count list items under acceptance_criteria
+    if [[ $in_ac -eq 1 ]] && [[ "$line" =~ ^[[:space:]]*-[[:space:]] ]]; then
+      TASK_AC_COUNT["$current_id"]=$(( ${TASK_AC_COUNT["$current_id"]} + 1 ))
+      continue
+    fi
+
+    # Parse fields - accept both indented and flush YAML-block styles
+    if [[ "$line" =~ ^[[:space:]]*module:[[:space:]]*(.+) ]]; then
       TASK_MODULE["$current_id"]="${BASH_REMATCH[1]// /}"
-    elif [[ "$line" =~ ^[[:space:]]+scope:[[:space:]]*\"(.+)\" ]]; then
+    elif [[ "$line" =~ ^[[:space:]]*scope:[[:space:]]*"(.+)" ]]; then
       local scope="${BASH_REMATCH[1]}"
       TASK_SCOPE["$current_id"]="$scope"
       TASK_SCOPE_LEN["$current_id"]=${#scope}
-    elif [[ "$line" =~ ^[[:space:]]+priority:[[:space:]]*(.+) ]]; then
+    elif [[ "$line" =~ ^[[:space:]]*priority:[[:space:]]*(.+) ]]; then
       TASK_PRIORITY["$current_id"]="${BASH_REMATCH[1]// /}"
-    elif [[ "$line" =~ ^[[:space:]]+status:[[:space:]]*(.+) ]]; then
+    elif [[ "$line" =~ ^[[:space:]]*status:[[:space:]]*(.+) ]]; then
       TASK_STATUS["$current_id"]="${BASH_REMATCH[1]// /}"
-    elif [[ "$line" =~ ^[[:space:]]+-[[:space:]]+\"?(module/.+)\"?$ ]]; then
+    elif [[ "$line" =~ ^[[:space:]]*-[[:space:]]+"?(module/[^/]+/(?:SPEC|goal)\.md(#.*)?)"?$ ]]; then
       local ref="${BASH_REMATCH[1]//\"/}"
+      ref="${ref%% }"
       TASK_SPECREFS["$current_id"]+="$ref"$'\n'
       TASK_FR_COUNT["$current_id"]=$(( ${TASK_FR_COUNT["$current_id"]} + 1 ))
-    elif [[ "$line" =~ ^[[:space:]]+-[[:space:]]+\"?(.+\.(go|ts|py|rs|md|yml|yaml|json|toml|test\.go|_test\.go))\"?$ ]]; then
+    elif [[ "$line" =~ ^[[:space:]]*-[[:space:]]+"?(.+\.(go|ts|py|rs|md|yml|yaml|json|toml|test\.go|_test\.go))"?$ ]]; then
       local file="${BASH_REMATCH[1]//\"/}"
       TASK_FILES_LIST["$current_id"]+="$file"$'\n'
       TASK_FILE_COUNT["$current_id"]=$(( ${TASK_FILE_COUNT["$current_id"]} + 1 ))
-    elif [[ "$line" =~ ^[[:space:]]+-[[:space:]]+\"?(AC-|BR-) ]]; then
-      TASK_AC_COUNT["$current_id"]=$(( ${TASK_AC_COUNT["$current_id"]} + 1 ))
-    elif [[ "$line" =~ ^[[:space:]]+-[[:space:]]+\"?(TASK-[A-Z]+-[0-9]+)\"?$ ]]; then
+    elif [[ "$line" =~ ^[[:space:]]*-[[:space:]]+"?(TASK-[A-Z]+-[0-9]+[A-Z]?)"?$ ]]; then
       TASK_DEPENDS["$current_id"]+="${BASH_REMATCH[1]}"$'\n'
     fi
   done < "$task_file"
@@ -136,7 +173,7 @@ for id in "${ALL_IDS[@]}"; do
     ID_SEEN["$id"]=1
   fi
   # 检查 ID 格式
-  if [[ ! "$id" =~ ^TASK-[A-Z]+-[0-9]{3}$ ]]; then
+  if [[ ! "$id" =~ ^TASK-[A-Z]+-[0-9]{3}[A-Z]?$ ]]; then
     add_warning "ID 格式不规范: $id（期望 TASK-{MODULE}-{NNN}，NNN 为三位数字）"
   fi
 done
@@ -150,7 +187,7 @@ for id in "${ALL_IDS[@]}"; do
   while IFS= read -r ref; do
     [[ -z "$ref" ]] && continue
     # 解析 spec_ref 格式: module/{module}/SPEC.md#FR-NNN
-    if [[ "$ref" =~ ^(module/[^/]+/SPEC\.md)(#.*)?$ ]]; then
+    if [[ "$ref" =~ ^(module/[^/]+/(?:SPEC|goal)\.md)(#.*)?$ ]]; then
       spec_path="${REPO_ROOT}/${BASH_REMATCH[1]}"
       if [[ ! -f "$spec_path" ]]; then
         add_error "spec_ref 文件不存在: $ref ($id)"
