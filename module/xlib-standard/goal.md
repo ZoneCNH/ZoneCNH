@@ -151,35 +151,29 @@
 
 ### 7.2 1.0 逻辑接口基线
 
+> 以下为 1.0 标准定义的逻辑接口分类。实际文件位于上游仓库的各子目录中（`docs/standard/`、`docs/`、`pkg/templatex/` 等），文件命名和路径以上游 SSOT 为准。
+
+**标准文档域（Standard Source）**：
+
 ```text
-standard/
-  module-model.md
-  api-standard.md
-  error-standard.md
-  config-standard.md
-  observability-standard.md
-  testing-standard.md
-  release-standard.md
-  compatibility-standard.md
-  templates/
-    module-design-template.md
-    release-checklist.md
-    test-evidence-template.md
+docs/standard/          # 8 大标准域（上游权威位置）
+docs/                   # 补充文档（api/config/errors/observability/testing/release/identity/design/quickstart）
+docs/adr/               # 架构决策记录（9 个 Accepted ADR）
+```
 
-template/                          # Go Reference Template（可编译源码）
-  go.mod
-  config.go
-  errors.go
-  health.go
-  metrics.go
-  client.go
-  version.go
-  ...
+**可执行交付物（后四角色）**：
 
+```text
+pkg/templatex/          # Go Reference Template（Config/Error/Health/Metrics/Client/Version/Option）
 scripts/
-  render_template.sh               # Generator
-  Makefile                          # make ci（17 个 gate）
-  release_check.sh                  # Evidence Runtime
+  render_template.sh    # Generator
+  check_*.sh            # Harness Gate（boundary/contracts/secrets/rendered/release）
+  generate_manifest.sh  # Evidence Runtime
+templates/l2/           # L2 下游仓库模板（.agent/、.github/workflows/、test/、Makefile）
+cmd/goalcli/            # Evidence Runtime CLI（12 文件）
+contracts/              # 跨域契约（4 件）+ 内部治理（12 件）
+Makefile                # ci（17 gate）/ release-check（16 步）/ release-final-check
+Dockerfile              # 容器化标准环境
 ```
 
 ## 8. 配置契约

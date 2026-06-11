@@ -337,7 +337,30 @@ CI 必须运行 `GOWORK=off make ci` 和 `GOWORK=off make release-check`。`make
 
 ## Dependencies
 
+### 外部依赖
+
 模板优先使用 Go 标准库。允许使用本仓库已有脚本、Makefile 和 GitHub Actions。不得为模板生成、边界检查或 release manifest 引入新的外部运行时依赖，除非后续规格显式批准。
+
+### 内部实现包（`internal/`）
+
+| 包 | 用途 | 被引用方 |
+|----|------|---------|
+| `internal/sanitize/` | 敏感字段脱敏（`sanitize.Secret()`） | `pkg/templatex/config.go` |
+| `internal/validation/` | 前置条件校验（`validation.RequireNonEmpty()`） | `pkg/templatex/config.go` |
+| `internal/xlibfacts/` | 事实检查引擎 | `cmd/goalcli/fact.go` |
+| `internal/goalruntime/` | Goal 运行时状态管理 | `cmd/goalcli/goalruntime.go` |
+| `internal/debtcheck/` | 技术债务扫描 | `cmd/goalcli/debt.go` |
+| `internal/releasequality/` | 发布质量评分（`score.go`） | `cmd/goalcli/`、release gate |
+| `internal/tools/releasemanifest/` | 发布清单生成工具 | `Makefile` release-check 目标 |
+
+### 模板系统（`templates/l2/`）
+
+`templates/l2/` 包含 12 个 L2 标准模板文件，用于 Generator 角色生成下游仓库骨架：
+- `.agent/` — 代理配置（evidence gates, capabilities）
+- `.github/workflows/` — CI 流水线模板
+- `test/` — 契约测试、集成测试、benchmark、chaos 测试模板
+- `docker-compose.test.yml` — 容器化测试环境
+- `Makefile` — 下游仓库构建入口
 
 ## Breaking Change Policy
 
