@@ -148,9 +148,9 @@ Goal: GOAL-YYYYMMDD-NNN / Spec: SPEC-<domain>-v1 / Plan: PLAN-GOAL-YYYYMMDD-NNN-
 
 Matrix 是横切追溯制品，不是主流程阶段。进入 `.config/goal/matrix/`、Gate、validator、CI 或 Release 控制面的 Matrix MUST 使用 canonical edge model；旧宽表只能作为展示或导入视图，进入控制面前必须转换为 canonical edge。
 
-| edge_id | source_type | source_id | relation | target_type | target_id | status | evidence_id | gate_id | owner | updated_at |
+| edge_id | source_type | source_id | relation | target_type | target_id | status | evidence_id | updated_at |
 |---|---|---|---|---|---|---|---|---|---|---|
-| EDGE-GOAL-YYYYMMDD-NNN-AC01-TEST01 | AcceptanceCriteria | AC-REQ-SPEC-<domain>-v1-001-001 | verified_by | Test | TEST-TASK-GOAL-YYYYMMDD-NNN-NNN-NNN | Unmapped | EVID-GOAL-YYYYMMDD-NNN-TEST-001 | G8 | goal-matrix | YYYY-MM-DD |
+| EDGE-GOAL-YYYYMMDD-NNN-AC01-TEST01 | AcceptanceCriteria | AC-REQ-SPEC-<domain>-v1-001-001 | verified_by | Test | TEST-TASK-GOAL-YYYYMMDD-NNN-NNN-NNN | Unmapped | EVID-GOAL-YYYYMMDD-NNN-TEST-001 | YYYY-MM-DD |
 
 ---
 
@@ -269,7 +269,8 @@ matrix:
     relation: decomposes_to
     status: Linked
     evidence_id: EVID-GOAL-20260608-002-001
-    owner: goal-matrix
+    risk_id: ~
+    drop_reason: ~
     updated_at: 2026-06-08T00:00:00Z
   - edge_id: EDGE-GOAL-20260608-002-002
     source_id: AC-REQ-SPEC-export-v1-001-001
@@ -279,7 +280,8 @@ matrix:
     relation: verified_by
     status: Verified
     evidence_id: EVID-GOAL-20260608-002-TEST-001
-    owner: goal-matrix
+    risk_id: ~
+    drop_reason: ~
     updated_at: 2026-06-08T00:00:00Z
 ```
 
@@ -374,7 +376,6 @@ matrix:
     target_id: TEST-TASK-GOAL-20260608-002-003-001
     status: Verified
     evidence_id: EVID-GOAL-20260608-002-TEST-001
-    owner: goal-matrix
     updated_at: 2026-06-08T00:00:00Z
 priority: P0
 ```
@@ -408,7 +409,6 @@ matrix:
     target_id: TEST-TASK-GOAL-20260608-002-001-001
     status: Verified
     evidence_id: EVID-GOAL-20260608-002-TEST-001
-    owner: goal-matrix
     updated_at: 2026-06-08T00:00:00Z
 ```
 
@@ -426,9 +426,10 @@ matrix:
     "scope": {"in": ["CSV export", "permission check"], "out": ["Excel export"]}
   },
   "specs": [{"id": "SPEC-export-v1", "goal_id": "GOAL-20260608-002", "requirements": [{"id": "REQ-SPEC-export-v1-001", "description": "User can create an export task."}]}],
-  "matrix": [
-    {
-      "edge_id": "EDGE-GOAL-20260608-002-001",
+  "matrix": {
+    "edge": [
+      {
+        "edge_id": "EDGE-GOAL-20260608-002-001",
       "source_id": "GOAL-20260608-002",
       "source_type": "Goal",
       "target_id": "SPEC-export-v1",
@@ -436,7 +437,6 @@ matrix:
       "relation": "decomposes_to",
       "status": "Linked",
       "evidence_id": "EVID-GOAL-20260608-002-001",
-      "owner": "goal-matrix",
       "updated_at": "2026-06-08T00:00:00Z"
     },
     {
@@ -448,10 +448,10 @@ matrix:
       "relation": "verified_by",
       "status": "Verified",
       "evidence_id": "EVID-GOAL-20260608-002-TEST-001",
-      "owner": "goal-matrix",
       "updated_at": "2026-06-08T00:00:00Z"
-    }
-  ]
+      }
+    ]
+  }
 }
 ```
 
