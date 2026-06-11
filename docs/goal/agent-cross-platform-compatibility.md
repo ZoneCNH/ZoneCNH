@@ -72,7 +72,7 @@ Claude 端 `goal-spec.md` 引用 19 个真实文档，可作为权威引用基�
 3. docs/goal/ (核心文档集)
 4. .config/goal/schema/rules.yaml
 
-**结论**：权威顺序一致 ✅
+**结论**：Codex/Copilot 一致（CONSTITUTION.md 于首位），Claude 此前缺失（已于 2026-06-12 补入 5 个 Agent）✅
 
 ### 3.3 MUST / MUST NOT 约束
 
@@ -87,6 +87,55 @@ Claude 端 `goal-spec.md` 引用 19 个真实文档，可作为权威引用基�
 | 以本角色修改生产代码 | ✅ 禁止 | ✅ 禁止 | ✅ 禁止 |
 
 **结论**：MUST/MUST NOT 语义等价 ✅
+
+### 3.4 工具集逐 Agent 比较
+
+仅 Claude 端通过 frontmatter `tools:` 字段声明 Agent 可用工具集（硬约束，平台执行）。Codex/Copilot 不声明工具，等效约束通过 `MUST NOT` 散文实现（软约束）。
+
+| Agent | Claude tools | 关键限制 | Codex/Copilot 等效 |
+|-------|-------------|---------|-------------------|
+| goal-spec | Read, Write, Edit, Bash, Grep, Glob | 全能力（起草 + 验证） | MUST NOT 修改生产代码 |
+| goal-matrix | Read, Write, Grep, Glob | 无 Bash（无法运行 matrix-gen.py） | MUST NOT 伪造 Verified |
+| goal-reviewer | Read, Grep, Glob, Bash | **无 Write/Edit（强制只读）** | MUST NOT 审批自身修改物 |
+| goal-prompt-builder | Read, Write, Grep, Glob | 无 Bash（无法运行验证） | MUST NOT 写生产代码 |
+| goal-evidence | Read, Write, Bash, Grep, Glob | 全能力（收集 + 验证） | MUST NOT 删除失败证据 |
+
+**漂移风险**：`goal-reviewer` 无 Write 权限是 Claude 端最关键的硬约束——Codex/Copilot 无等价机制层保护。`goal-matrix` 和 `goal-prompt-builder` 缺少 Bash 意味着无法执行 `matrix-gen.py --check-only` 或验证命令——Claude 端同样存在此缺口。
+
+### 3.5 语义差异详情
+
+以下差异已记录 MEDIUM 严重度，但正文尚未展开。
+
+**3.5.1 G10 Release Gate 阻断条件 (7 vs 8)**
+
+| 平台 | 阻断条件数 | 额外条件 |
+|------|:----------:|---------|
+| Claude | 7 | — |
+| Copilot | 8 | Agent 绕过 pipeline-arbiter、单任务单 writer 或 worktree 隔离 |
+| Codex | 8 | 同 Copilot |
+
+Claude `goal-reviewer.md` G10 清单缺少 "Agent 隔离违规" 阻断条件。Codex/Copilot 将此作为显式阻断。影响：Claude Reviewer 可能对 Agent 隔离违规放行。
+
+**3.5.2 Matrix Verified 状态定义 (2 链路 vs 4 链路)**
+
+| 平台 | Verified 条件 |
+|------|------|
+| Claude | Code + Test（M-LINT-008: "必须同时满足 Code + Test"） |
+| Copilot | Code + Test + Evidence + Gate 四链路 |
+| Codex | Code + Test + Evidence + Gate 四链路 |
+
+Claude M-LINT-008 显式声明仅要求 Code + Test。Codex/Copilot 要求四链路。Claude 散文描述中提到了 Evidence/Gate，但 Lint 规则的字面声明存在歧义。
+
+**3.5.3 Claude 独有功能组件未投影**
+
+以下仅在 Claude Agent 内联 prose 中定义，Codex/Copilot 未覆盖：
+- Prompt Chain 7 步编排、PromptOps 版本管理（goal-prompt-builder）
+- Failure Budget 管理、AutoResearch 协议（goal-evidence）
+- Evidence 类型分类（TEST/REVIEW/EXECUTION/MEASUREMENT）及禁止字段（goal-evidence）
+- 评分体系（Goal/Spec 满分 100）、Lint 规则完整清单（goal-spec/reviewer）
+
+> [Hypothesis: LOW] 可能在 Codex/Copilot 引用的外部文档中间接覆盖。当前无法确认。
+
 
 ---
 
@@ -134,8 +183,8 @@ Claude 端 `goal-spec.md` 引用 19 个真实文档，可作为权威引用基�
 
 | Severity | 数量 | 描述 |
 |----------|------|------|
-| HIGH | 4 | Codex 幻影文档引用（已修复） |
-| MEDIUM | 0 | — |
+| HIGH | 5 | 4 处 Codex 幻影文档引用 + 1 处 Claude 端 CONSTITUTION.md 缺失（均已修复） |
+| MEDIUM | 3 | G10 阻断条件 7 vs 8 项；Matrix Verified 定义 Code+Test vs 四链路；Claude 独有功能组件未投影 |
 | LOW | 1 | Copilot/Codex 缺少完整文档索引表（设计如此，低风险） |
 
 ---
@@ -143,9 +192,12 @@ Claude 端 `goal-spec.md` 引用 19 个真实文档，可作为权威引用基�
 ## 7. 建议
 
 1. **已执行**：修复 Codex 端 4 处幻影文档引用
-2. **建议（P3）**：为 Copilot/Codex Agent 添加精简版文档索引（5-8 个核心文档），降低 Agent 在跨平台执行时的文档发现成本
-3. **建议（P3）**：建立 CI 检查——扫描所有 Agent 定义中的 `docs/goal/*.md` 引用，验证目标文件存在
-4. **无需操作**：辅助 Agent（architect / context-recovery / governance / lint / planner）仅在 Claude Code 端存在，符合设计
+2. **已执行**：补入 `CONSTITUTION.md` 引用到 5 个 Claude Agent 的权威文档表
+3. **建议（P2）**：统一 G10 Release Gate 阻断条件为 8 项（Claude 端缺 Agent 隔离检查）
+4. **建议（P2）**：统一 Matrix Verified 定义为 Code+Test+Evidence+Gate 四链路
+5. **建议（P3）**：为 Copilot/Codex Agent 添加精简版文档索引（5-8 个核心文档），降低 Agent 在跨平台执行时的文档发现成本
+6. **建议（P3）**：建立 CI 检查——扫描所有 Agent 定义中的 `docs/goal/*.md` 引用，验证目标文件存在
+7. **无需操作**：辅助 Agent（architect / context-recovery / governance / lint / planner）仅在 Claude Code 端存在，符合设计
 
 ---
 

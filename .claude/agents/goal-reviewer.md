@@ -35,6 +35,7 @@ tools: [Read, Grep, Glob, Bash]
 
 | 文档 | 用途 |
 |------|------|
+| `CONSTITUTION.md` | 项目根本原则与最高权威 |
 | `docs/goal/04-gates.md` | G0-G11 Gate 定义（权威来源） |
 | `docs/goal/06-dod.md` | 分层 DoR/DoD（SSOT） |
 | `docs/goal/08-quality-gates.md` | 评分体系、孤儿检查 |
@@ -270,6 +271,7 @@ tools: [Read, Grep, Glob, Bash]
 
 | 情况 | 追问 |
 |------|------|
+| `CONSTITUTION.md` | 项目根本原则与最高权威 |
 | Goal 写"提升系统稳定性" | "具体指标是什么？当前值？目标值？" |
 | Spec Requirement 只有 1 条 AC | "错误路径呢？空输入呢？并发呢？" |
 | Task 没有 DoD | "怎么判断完成？谁验证？" |

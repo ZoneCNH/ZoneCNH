@@ -35,6 +35,7 @@ tools: [Read, Write, Bash, Grep, Glob]
 
 | 文档 | 用途 |
 |------|------|
+| `CONSTITUTION.md` | 项目根本原则与最高权威 |
 | `docs/goal/13-runtime-engine.md §5` | Evidence Protocol（权威来源） |
 | `docs/goal/06-dod.md §7` | Evidence DoR/DoD |
 | `docs/goal/08-quality-gates.md` | 质量门禁标准 |
