@@ -134,8 +134,6 @@ Goal 驱动交付体系 — 端到端工作流编排 (v2)
   release --rollback-drill  回滚路径验证演练
   release --metrics-window  上线后指标观察窗口检查
   incident                  生成事故响应模板
-  release --metrics-window  上线后指标观察窗口检查
-  incident                  生成事故响应模板
 
 状态与看板:
   status    显示当前管线状态
