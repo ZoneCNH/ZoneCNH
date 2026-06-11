@@ -24,7 +24,7 @@
 | Standard Source | xlib 体系的文档规范与工程标准 | `goal.md`（标准定义） |
 | Go Reference Template | 可编译、可测试的 Go 基础库参考模板 | `SPEC.md`（可执行规格） |
 | Generator | 模板渲染与独立 Go module 生成 | 上游 `render_template.sh` |
-| Harness Gate | CI 门禁与边界检查 | 上游 `make ci`（9 gate） |
+| Harness Gate | CI 门禁与边界检查 | 上游 `make ci`（17 gate） |
 | Evidence Runtime | release manifest 与发布证据生成 | 上游 `release_check.sh` |
 
 本目录分析快照的真实源是上游仓库的 `docs/standard/**`。当快照与上游冲突时，以上游当前标准为准。
@@ -34,7 +34,7 @@
 - `goal.md`：模块 1.0 Goal 定位与五角色定义。**模块级权威入口**。
 - `SPEC.md`：后四类职责（Template / Generator / Gate / Evidence Runtime）的可执行规格。**代码级权威入口**。
 - `ANALYSIS.md`：本地结构分析入口；只保留事实层级、关键数字、职责拆分和冲突总览，不声明可执行生命周期状态。
-- `FR-DETAIL.md`：52 条 FR 的完整 WHEN/THEN 细节；行为细节以此文件为准，不声明可执行生命周期状态。
+- `FR-DETAIL.md`：14 条 FR 的 SPEC.md 索引（2026-06-12 收缩自原 52 条占位 FR）。完整 WHEN/THEN 行为细节见 `SPEC.md` §7。
 - `INDEX.md`：上游 SSOT 索引；列出 `docs/standard/` 27 个文件、9 个 Accepted ADR 与 `harness.yaml` gate section。
 - `analysis/rules.md`：规则源、`BR-NNN` / `RULE-CORE-NNN`、Debt Governance 分析。
 - `analysis/template.md`：Go 参考模板、公共 API、Generator 与边界场景分析。
