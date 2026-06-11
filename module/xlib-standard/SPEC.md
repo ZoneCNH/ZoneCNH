@@ -227,6 +227,15 @@ Updated: 2026-06-12
 | AC-025 | boundary gate 检查 6 类非法引用。                        |
 | AC-026 | release manifest 生成且字段完整。                        |
 | AC-027 | release final check 校验 manifest checksum。             |
+| AC-028 | goalcli audit 输出 G0-G11 gate 状态审计报告。            |
+| AC-029 | goalcli dashboard 生成符合 goalcli-dashboard schema 的仪表盘 JSON。 |
+| AC-030 | goalcli fact 执行事实检查并输出 fact-audit 证据。         |
+| AC-031 | goalcli schema-check 校验 contracts/ 中所有 schema 有效性。 |
+| AC-032 | goalcli traceability 生成 FR→Code 追溯矩阵。              |
+| AC-033 | goalcli governance 输出远端治理检查结果。                 |
+| AC-034 | goalcli debt 扫描技术债务并输出债务报告。                 |
+| AC-035 | goalcli adoption 检查下游采纳状态。                       |
+| AC-036 | goalcli selfimproving 触发受控递归自改进流程。            |
 
 ## Test Cases
 
@@ -256,6 +265,15 @@ Updated: 2026-06-12
 | TC-022 | Integration | 检查生成库残留          | 无非法残留                 |
 | TC-023 | Integration | make ci                 | 17 个 gate 全通过          |
 | TC-024 | Integration | release manifest        | 字段完整且 checksum 可校验 |
+| TC-025 | Integration | goalcli audit           | 输出 G0-G11 审计报告      |
+| TC-026 | Integration | goalcli dashboard       | 输出合规仪表盘 JSON       |
+| TC-027 | Integration | goalcli fact            | 输出 fact-audit 证据      |
+| TC-028 | Integration | goalcli schema-check    | 全 schema 校验通过        |
+| TC-029 | Integration | goalcli traceability    | 生成 FR→Code 追溯矩阵     |
+| TC-030 | Integration | goalcli governance      | 输出远端治理状态          |
+| TC-031 | Integration | goalcli debt            | 输出技术债务报告          |
+| TC-032 | Integration | goalcli adoption        | 输出下游采纳状态          |
+| TC-033 | Integration | goalcli selfimproving   | 自改进流程正常执行        |
 
 ## Interfaces
 
