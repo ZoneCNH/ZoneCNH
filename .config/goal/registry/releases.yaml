@@ -55,7 +55,8 @@ releases:
       - docs/goal/tools/self-test.sh
       - AGENTS.md
     release_notes: |
-      Goal 驱动交付体系 v1.0.0 已发布。G10/G11 当前为 PASS，Risk Registry 中三个历史 release_blocking 风险均已 Closed 且 release_blocking=false；Pipeline state 已进入 DONE/RETROSPECTIVE。
+      Goal 驱动交付体系 v1.0.0 已发布。G10/G11 当前为 PASS，Risk Registry 中三个历史 release_blocking
+      风险均已 Closed 且 release_blocking=false；Pipeline state 已进入 DONE/RETROSPECTIVE。
 
       发布成果：
       - 创建 Claude/Codex/Copilot 三端 Goal Agent 配置与执行协议。
