@@ -1,5 +1,5 @@
 # RSI Improvement Scorecard
-> 自动生成: 2026-06-12 04:54:04
+> 自动生成: 2026-06-12 04:55:45
 
 ## Metrics
 
@@ -7,7 +7,7 @@
 |------|-----|------|------|
 | Matrix 覆盖率 | 100% | ≥ 95% | ✅ |
 | Gate 通过率 | 9/12 | ≥ 10/12 | ⚠️ |
-| Evidence 文件数 | 19 | ≥ 5 | ✅ |
+| Evidence 文件数 | 20 | ≥ 5 | ✅ |
 | Dropped edges | 27 | 全部有原因 | ⚠️ |
 | Capture Rate | N/A | ≥ 80% | — |
 | Gate Escape Rate | N/A | 0 | — |
