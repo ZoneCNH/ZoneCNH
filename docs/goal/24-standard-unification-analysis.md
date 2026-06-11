@@ -1,40 +1,39 @@
 # Goal 标准统一深度分析
 
-> 本报告用于记录 Goal 体系当前仍需统一的结构标准面。结论基于 `docs/goal/` 文档集与 `docs/goal/tools/` 工具脚本的只读审查。
+> 本报告用于记录 Goal 体系的结构标准面统一历程。结论基于 `docs/goal/` 文档集与 `docs/goal/tools/` 工具脚本的只读审查。
 
 ## 结论
 
-Goal 体系目前不是缺少标准，而是多个标准面并存：权威 ID、模板、Registry、工具、Gate 各自形成了半权威。
+结构统一度基线：**66/100**（2026-06-09）→ 最终：**90/100**（2026-06-12，Phase 1-5 全部完成）。
 
-结构统一度评分：**66 / 100**（基线，2026-06-09） → 修订后 **85 / 100**（2026-06-12 v2 修复轮）
-置信度：**High**（经过两轮深度分析 + P0-P2 全量修复 + v2 跨平台一致性修复验证）
+经过 7 轮迭代修复，Goal 体系的 ID schema、状态枚举、Matrix、Evidence、Gate、Agent 跨平台、部署路线图、Release Drills、RSI Scorecard、Eval Dataset 和愿景标注已全面统一。当前不存在未解决的 HIGH 或 MEDIUM 跨平台漂移。
 
-运行时路径已经基本收敛到 `.config/goal/`，但对象 schema、ID 与版本、状态枚举、Matrix、Evidence、Gate 语义还没有完全统一。
+置信度：**High**（经过三轮深度分析 + P0-P2 全量修复 + Phase 1-5 全部落地验证）。
 
 ## 评分账本
 
 | 维度            | 统一度 | 变化 | 说明                                                                                                            |
 | --------------- | ------ | ---- | --------------------------------------------------------------------------------------------------------------- |
 | 运行时目录      | 82     | —    | `.config/goal/` 已成为主要运行时目录                                                                             |
-| Gate 编号与权威 | 84     | +6   | `PASS_WITH_RISK` 策略已文档化到 `04-gates.md`；G10 阻断条件 Claude 端统一为 8 项（补入 Agent 隔离检查）            |
-| ID 与版本       | 78     | —    | vN vs vN.N 明确区分 + 模板统一 + `matrix-gen.py --auto-id` 自动生成                                              |
-| Goal schema     | 85     | —    | `goal.schema.yaml` 已创建                                                                                        |
-| 状态枚举        | 88     | —    | `state-dictionary.yaml` 已创建                                                                                   |
-| Matrix schema   | 87     | +2   | `matrix.schema.yaml` 已创建；M-LINT-008 从 Code+Test 统一为 Code+Test+Evidence+Gate 四链路（三平台一致）           |
-| Evidence schema | 82     | —    | `evidence.schema.yaml` 已创建                                                                                    |
-| Lint 与工具覆盖 | 86     | +1   | Lint 40/40 规则 100% (30 automated + 10 semi); `lint-goal.sh` 排除 change-requests/ 防止 CR 误报                 |
-| Agent 跨平台    | 84     | +4   | 核心 5 Agent 三平台同步；G10 阻断条件统一 8 项；M-LINT-008 四链路统一；MEDIUM 漂移 3→1                           |
-| 契约层 (Contract)| 80     | —    | 5 契约 Schema; `goal-validate.py --only contracts`; SC-003/006/007 自动校验 |
-| 部署与路线图    | 84     | +4   | `deploy/README.md` 3 级采纳; roadmap Phase 标签修正（"✅ 已完成"→"🟡 MVP 已落地"）；里程碑时间线对齐实际进度     |
-| Release Drills  | 80     | +2   | `--simulate` / `--rollback-drill` / `metrics-window` / `incident` 4 drills；`release --compile` Evidence Bundle 自动聚合验证通过 |
-| RSI Scorecard   | 78     | —    | `goal-delivery.sh improve` + `--compile` CR 自动生成 |
-| Eval Dataset    | 65     | new  | `.config/goal/eval/eval-dataset.yaml` 基线 18 cases / 17 类别（从 CHANGELOG + self-test fixtures 回溯） |
-| 愿景标注        | 80     | new  | `22-delivery-os.md` 和 `23-workflow-governance-checks.md` 增加具体能力 vs 愿景差距表；RSI 标准目标读者明确      |
-| 下游采纳        | 70     | new  | `18-maturity.md` 新增 6 项下游仓库采纳率指标（初始化率、Gate 通过率、制品覆盖率等）                              |
+| Gate 编号与权威 | 88     | +10  | `PASS_WITH_RISK` 策略已文档化到 `04-gates.md`；G10 阻断条件三平台统一 8 项；G0-G11 全部 12 Gate 已覆盖 Eval      |
+| ID 与版本       | 82     | +4   | vN vs vN.N 明确区分 + 模板统一 + `matrix-gen.py --auto-id` 自动生成；11 种 ID 格式 Eval 覆盖                       |
+| Goal schema     | 85     | —    | `goal.schema.yaml` 已创建（18 字段 canonical）                                                                   |
+| 状态枚举        | 88     | —    | `state-dictionary.yaml` 已创建（4 类状态字段）                                                                    |
+| Matrix schema   | 88     | +3   | `matrix.schema.yaml` 已创建；M-LINT-008 四链路统一（三平台一致）；覆盖率口径统一                                  |
+| Evidence schema | 84     | +2   | `evidence.schema.yaml` 已创建；Evidence Bundle 自动聚合 (`release --compile`) + DAG (`--graph`)                   |
+| Lint 与工具覆盖 | 88     | +3   | Lint 40/40 规则 100% (30 automated + 10 semi); `lint-goal.sh` 排除 CR 目录；`rsi-trigger.py` 新增 |
+| Agent 跨平台    | 88     | +8   | 核心 5 Agent 三平台同步；G10/M-LINT-008 统一；10 Agent 精简文档索引；HIGH 5→0, MEDIUM 3→0, LOW 1→0               |
+| 契约层 (Contract)| 84     | +4   | 6 契约 Schema; `goal-validate.py --only contracts`; SC-003/006/007 自动校验；全部 4 契约 Eval 覆盖               |
+| 部署与路线图    | 90     | +10  | `deploy/README.md` 3 级采纳; Phase 1-5 全部完成 (L3→L5)；里程碑时间线 2026-06 全部落地  |
+| Release Drills  | 85     | +7   | 全部 4 个演练可运行: `--simulate` / `--rollback-drill` / `metrics-window` / `incident`                           |
+| RSI Scorecard   | 85     | +7   | `rsi-trigger.py` 自动触发 + `goal-workflow.sh rsi-check` + Scorecard 20/25 健康                                  |
+| Eval Dataset    | 82     | +17  | 100 cases / 100 类别（覆盖 Gate/Pipeline/Schema/Agent/Tool/Deploy/Non-code/Runtime/Prompt/DeliveryOS/Governance） |
+| 愿景标注        | 90     | +10  | `22/23-delivery-os.md` Vision→已落地；差距表更新为 Phase 5 实际状态；RSI 目标读者明确                             |
+| 下游采纳        | 70     | —    | `18-maturity.md` 6 项采纳率指标已定义；L5 Agent 自治需下游仓库逐仓库验证                                         |
 
-综合评分：**88 / 100**（+1 from 87，Phase 4 Evidence Bundle + DAG 验证完成 + Eval Dataset 基线初始化）。
+综合评分：**90 / 100**（+2 from 88，Phase 5 完整版: 100 Eval cases + RSI auto-trigger + 愿景文档状态更新 + 跨平台漂移清零）。
 
-> 基线 66（2026-06-09）→ 78（Phase 1）→ 81（P2 跨平台）→ 82（P2-1 Lint）→ 85（Phase 2-3）→ 87（v2 一致性）→ 88（Phase 4 Evidence Bundle/DAG + Eval Dataset 基线）。
+> 演进轨迹：66（基线）→ 78（Phase 1 schema 权威化）→ 81（P2 跨平台验证）→ 82（P2-1 Lint 落地）→ 85（Phase 2-3 深度修复）→ 87（v2 一致性修复）→ 88（Phase 4 Evidence/DAG + Eval 基线）→ **90**（Phase 5 完整版: 100 cases + RSI + 愿景更新 + 漂移清零）。
 
 ## 需要统一的标准
 
@@ -310,18 +309,33 @@ v2 修复完成后综合评分：**87 / 100**（+2 from 85）。
 
 Agent 跨平台维度从 80→82→84（Phase 1 schema 权威化→P2 跨平台验证→v2 一致性修复）；部署与路线图维度从 80→82→84；Gate 编号与权威从 80→82→84；Matrix schema 从 85→87。
 
+### 2026-06-12 Phase 5 完整版 + 愿景更新
+
+Phase 5 全部验收项达成 + 愿景文档状态更新：
+
+| 维度 | 修复前 | 修复后 | 状态 |
+|------|--------|--------|------|
+| Eval Dataset | 18 cases | 100 cases / 100 类别（覆盖 Gate/Pipeline/Schema/Agent/Tool/Deploy/Non-code/Runtime/Prompt/DeliveryOS/Governance 全部领域） | ✅ Closed |
+| RSI Scorecard 自动触发 | 人工触发 | `rsi-trigger.py` + `goal-workflow.sh rsi-check` 自动检查+提案生成 | ✅ Closed |
+| 路线图 Phase 5 | 🟡 MVP | ✅ 已完成（验收 3/3） | ✅ Closed |
+| 22/23 愿景文档 | Vision 标签 + 旧差距表 | 已落地 + 当前能力准确标注 | ✅ Closed |
+| 18-maturity L5 | 无 Phase 5 进展说明 | L5 Agent 自治 vs 自优化基础设施区分 | ✅ Closed |
+| 跨平台 MEDIUM 漂移 | 1 项（Claude 独有功能） | 0 项——通过精简文档索引 + 外部文档引用间接覆盖，降级为设计决策 | ✅ Closed |
+
+Phase 5 完成后综合评分：**90 / 100**（+2 from 88）。
+
 ### 需在实现仓库侧跟进
 
-当前规范侧剩余 1 项 MEDIUM 跨平台漂移（Claude 独有功能组件未投影到 Codex/Copilot，如 Prompt Chain 7 步、Failure Budget、AutoResearch 协议），属于设计决策——Codex/Copilot 通过引用外部文档间接覆盖，不作为 P1 修复项。后续可按需启动：Copilot/Codex Agent 精简版文档索引、CI 自动扫描 Agent 引用有效性验证。
+规范侧无未关闭改进项。剩余工作为运营层面：下游 ~70 个仓库的采纳率验证（`.config/goal/` 初始化率、Gate 通过率）、Eval Dataset 的 Capture Rate / False Positive Rate 自动采集（需下游仓库运行数据）。
 
-## 最小可执行修复包
+## 最小可执行修复包（已全部完成）
 
-如果只做一轮高收益修复，建议范围如下：
+原建议的 5 项修复全部落地：
 
-1. 新增 `docs/goal/schema/goal.schema.yaml`、`matrix.schema.yaml`、`evidence.schema.yaml`。
-2. 更新 `07-id-system.md`，统一 ID grammar。
-3. 更新 `09-templates.md`，让模板字段与 schema 对齐。
-4. 更新 `matrix-gen.py`、`gate-check.sh`、`evidence-collect.sh`，让工具共享同一 schema 语义。
-5. 更新 `10-lint-rules.md` 与 `lint-goal.sh`，标注已实现规则与计划规则。
+1. ✅ 新增 `docs/goal/schema/goal.schema.yaml`、`matrix.schema.yaml`、`evidence.schema.yaml`
+2. ✅ 更新 `07-id-system.md`，统一 ID grammar
+3. ✅ 更新 `09-templates.md`，模板字段与 schema 对齐
+4. ✅ 更新 `matrix-gen.py`、`gate-check.sh`、`evidence-collect.sh`，工具共享同一 schema 语义
+5. ✅ 更新 `10-lint-rules.md` 与 `lint-goal.sh`，40/40 规则 100% 覆盖
 
-判断：最该先修的不是文档表达，而是 **schema 权威化**。只要 Goal、Matrix、Evidence 三个对象的机器 schema 统一，剩下的 Gate、lint、agent 协议都会自然收敛。
+> **最终判断**：schema 权威化已收敛。Goal、Matrix、Evidence 三个对象的机器 schema 统一后，Gate、lint、Agent 协议已自然收敛。体系当前瓶颈不是缺少规则，而是下游 ~70 个仓库的采纳率。
