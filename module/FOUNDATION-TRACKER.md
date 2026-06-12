@@ -168,6 +168,23 @@
 - [x] trigger determinism test（100 次一致性 + DST golden）
 - [x] resiliencx 集成示例（`examples/resilient_job/main.go`）
 
+### Issue 5：xlibgate CI Gate CLI 实现
+
+```text
+标题：Implement xlibgate as Foundation CI Gate CLI
+仓库：ZoneCNH/xlibgate
+```text
+
+- [ ] TASK-XLIBGATE-000: 项目骨架
+- [ ] TASK-XLIBGATE-001: CLI 框架
+- [ ] TASK-XLIBGATE-002: check imports
+- [ ] TASK-XLIBGATE-003: check gomod
+- [ ] TASK-XLIBGATE-004: check baseline
+- [ ] TASK-XLIBGATE-005: check release
+- [ ] TASK-XLIBGATE-006: check all + 输出格式
+- [ ] TASK-XLIBGATE-007: 集成测试
+- [ ] TASK-XLIBGATE-008: 文档 + Release DoD
+
 ---
 
 ## P2：Foundation example 闭环
