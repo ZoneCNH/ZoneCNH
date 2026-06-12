@@ -1,5 +1,6 @@
 # TASK-KERNEL-003 开发 Prompt
 
+> 上游 Task：[TASK-KERNEL-003.md](./tasks/TASK-KERNEL-003.md)
 > obsx 子包：可观测抽象接口 + Noop 零值实现 + SecretString 脱敏
 
 ---
@@ -51,6 +52,14 @@
 1. `go test -race -count=1 ./obsx/...` 输出
 2. `go vet ./obsx/...` 输出
 3. SecretString 脱敏验证（String/JSON/gob/GoString 四路径）
+
+## 验证命令
+
+| 命令 | 判定标准 |
+|------|----------|
+| `go build ./obsx/...` | 编译通过，零错误 |
+| `go test -race -count=1 ./obsx/...` | 全部测试通过，无 race |
+| `go vet ./obsx/...` | 无警告 |
 
 ## 完成后
 

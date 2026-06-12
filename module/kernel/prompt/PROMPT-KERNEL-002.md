@@ -1,5 +1,6 @@
 # TASK-KERNEL-002 开发 Prompt
 
+> 上游 Task：[TASK-KERNEL-002.md](./tasks/TASK-KERNEL-002.md)
 > timex 子包：时钟抽象 — Clock 接口 + RealClock / FixedClock / FakeClock
 
 ---
@@ -46,6 +47,14 @@
 1. `go test -race -count=1 ./timex/...` 输出
 2. `go vet ./timex/...` 输出
 3. Benchmark 结果
+
+## 验证命令
+
+| 命令 | 判定标准 |
+|------|----------|
+| `go build ./timex/...` | 编译通过，零错误 |
+| `go test -race -count=1 ./timex/...` | 全部测试通过，无 race |
+| `go vet ./timex/...` | 无警告 |
 
 ## 完成后
 

@@ -1,5 +1,6 @@
 # TASK-KERNEL-012 开发 Prompt
 
+> 上游 Task：[TASK-KERNEL-012.md](./tasks/TASK-KERNEL-012.md)
 > contracttest 子包：契约测试辅助断言
 
 ---
@@ -28,7 +29,9 @@
 
 | AC | 关联 | 验证命令 | 预期结果 |
 |----|------|----------|----------|
-| AC-017 | FR-012 | 断言匹配/不匹配测试 | Fatalf 正确触发 |
+| AC-017a | FR-012 | `go test -run TestAssertJSONFields -count=1 ./contracttest/...` | JSON 字段存在通过，缺失 Fatalf |
+| AC-017b | FR-012 | `go test -run TestAssertErrorKind -count=1 ./contracttest/...` | ErrorKind 匹配通过，不匹配 Fatalf |
+| AC-017c | FR-012 | `go test -run TestAssertHealthStatus -count=1 ./contracttest/...` | HealthStatus 匹配通过，不匹配 Fatalf |
 
 ## 禁止事项
 
@@ -41,6 +44,14 @@
 完成后提交到 `docs/evidence/2026-06-12/TASK-KERNEL-012/`：
 1. `go test -race -count=1 ./contracttest/...` 输出
 2. 断言失败场景截图（Fatalf 输出）
+
+## 验证命令
+
+| 命令 | 判定标准 |
+|------|----------|
+| `go build ./contracttest/...` | 编译通过，零错误 |
+| `go test -race -count=1 ./contracttest/...` | 全部测试通过，无 race |
+| `go vet ./contracttest/...` | 无警告 |
 
 ## 完成后
 

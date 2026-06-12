@@ -1,5 +1,6 @@
 # TASK-KERNEL-011 开发 Prompt
 
+> 上游 Task：[TASK-KERNEL-011.md](./tasks/TASK-KERNEL-011.md)
 > healthx 子包：健康检查状态与聚合
 
 ---
@@ -48,6 +49,14 @@
 1. `go test -race -count=1 ./healthx/...` 输出
 2. Aggregate 各组合覆盖证据
 3. JSON 序列化验证
+
+## 验证命令
+
+| 命令 | 判定标准 |
+|------|----------|
+| `go build ./healthx/...` | 编译通过，零错误 |
+| `go test -race -count=1 ./healthx/...` | 全部测试通过，无 race |
+| `go vet ./healthx/...` | 无警告 |
 
 ## 完成后
 

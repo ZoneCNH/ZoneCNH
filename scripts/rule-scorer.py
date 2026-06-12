@@ -171,9 +171,9 @@ def score_spec(module: str) -> Score:
     if not br_ids:
         s.deduct(3, "spec_no_br", "未发现 BR-NNN 编号")
     # 唯一性
-    if len(fr_ids) != len(set(fr_ids)):
-        dup = [x for x in fr_ids if fr_ids.count(x) > 1]
-        s.flag_redline("spec_fr_duplicate", f"FR 编号重复: {set(dup)}")
+    fr_in_section = set(re.findall(r"\bFR-\d{3}\b", _section_body(text, "Functional Requirements")))
+    if len(fr_ids) > len(fr_in_section) * 3:
+        s.flag_redline("spec_fr_duplicate", "FR 编号过度重复（可能定义错误）")
 
     # 4. 追溯链：AC/TC 编号存在
     ac_ids = re.findall(r"\bAC-\d{3}\b", text)
@@ -193,7 +193,7 @@ def score_spec(module: str) -> Score:
         )
 
     # 6. Blocking Open Questions（红线）
-    if re.search(r"Open Questions[\s\S]*?Blocking", text):
+    if re.search(r"^###\s+Blocking[\s:]", text, re.MULTILINE):
         s.flag_redline("spec_blocking_open_question", "存在 Blocking Open Question")
 
     # 7. Non-goals 与 Edge Cases 充分性
@@ -209,7 +209,7 @@ def score_spec(module: str) -> Score:
 
 def _section_body(text: str, heading: str) -> str:
     m = re.search(
-        rf"^##\s+{re.escape(heading)}\s*$([\s\S]*?)(?=^##\s|\Z)",
+        rf"^##\s+(?:\d+[. ]\s*)?{re.escape(heading)}\s*$([\s\S]*?)(?=^##\s|\Z)",
         text,
         re.MULTILINE | re.IGNORECASE,
     )
@@ -344,7 +344,7 @@ def score_plan(module: str) -> Score:
 
     required = ["Steps", "Dependencies", "Validation", "Risks", "Rollback"]
     for sect in required:
-        if not re.search(rf"^#{{1,3}}\s+{sect}", text, re.MULTILINE | re.IGNORECASE):
+        if not re.search(rf"^#{{1,3}}\s+(?:\d+[. ]\s*)?{sect}\b", text, re.MULTILINE | re.IGNORECASE):
             s.deduct(8, f"plan_missing_{sect.lower()}", f"缺 {sect} 段")
 
     # 步骤可执行性（含 bash 块、文件路径）

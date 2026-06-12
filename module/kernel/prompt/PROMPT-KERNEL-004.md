@@ -1,5 +1,6 @@
 # TASK-KERNEL-004 开发 Prompt
 
+> 上游 Task：[TASK-KERNEL-004.md](./tasks/TASK-KERNEL-004.md)
 > syncx 子包：并发控制原语 — SemaphoreLimiter + WorkerGroup
 
 ---
@@ -45,6 +46,14 @@
 1. `go test -race -count=1 ./syncx/...` 输出
 2. `go vet ./syncx/...` 输出
 3. Race detector 通过证明
+
+## 验证命令
+
+| 命令 | 判定标准 |
+|------|----------|
+| `go build ./syncx/...` | 编译通过，零错误 |
+| `go test -race -count=1 ./syncx/...` | 全部测试通过，无 race |
+| `go vet ./syncx/...` | 无警告 |
 
 ## 完成后
 

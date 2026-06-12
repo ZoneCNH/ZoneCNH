@@ -1,5 +1,6 @@
 # TASK-KERNEL-015 开发 Prompt
 
+> 上游 Task：[TASK-KERNEL-015.md](./tasks/TASK-KERNEL-015.md)
 > examples/：12 子包可运行示例程序
 
 ---
@@ -45,6 +46,13 @@
 完成后提交到 `docs/evidence/2026-06-12/TASK-KERNEL-015/`：
 1. 12 个示例 `go run` 输出
 2. 输出稳定性验证
+
+## 验证命令
+
+| 命令 | 判定标准 |
+|------|----------|
+| `go vet ./...` | 无警告 |
+| `for d in examples/*/; do go run ./$d; done` | 全部 12 个示例通过 |
 
 ## 完成后
 

@@ -1,5 +1,6 @@
 # TASK-KERNEL-006 开发 Prompt
 
+> 上游 Task：[TASK-KERNEL-006.md](./tasks/TASK-KERNEL-006.md)
 > shutdownx 子包：优雅停机 — Hook LIFO 管理 + OS 信号处理
 
 ---
@@ -49,6 +50,14 @@
 1. `go test -race -count=1 ./shutdownx/...` 输出
 2. LIFO 顺序验证日志
 3. 并发安全测试证据
+
+## 验证命令
+
+| 命令 | 判定标准 |
+|------|----------|
+| `go build ./shutdownx/...` | 编译通过，零错误 |
+| `go test -race -count=1 ./shutdownx/...` | 全部测试通过，无 race |
+| `go vet ./shutdownx/...` | 无警告 |
 
 ## 完成后
 
