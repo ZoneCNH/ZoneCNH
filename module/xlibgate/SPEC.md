@@ -8,8 +8,8 @@
 
 ## 1. Metadata
 
-- Status: Draft
-- Spec-Version: v1.0.1
+- Status: Approved
+- Spec-Version: v1.0.2
 - Last-Updated: 2026-06-12
 - Owner: ZoneCNH
 - Layer: L0 基座
@@ -26,6 +26,7 @@
 | 2026-06-07 | v1.0.0 | 初始版本 | ZoneCNH |
 | 2026-06-12 | v1.0.1 | 结构评分修复：BR 逐条"违反时"、Open Questions 分类编号、Observability 补充 Metrics/Tracing、Edge Cases 补充重试、Upgrade Compatibility 补迁移步骤、Security 补输入校验、Testing 补工具声明、Dependencies 补直接/间接依赖表、FR-005 显式枚举 secret_scan 子检查、新增 TC-008 | ZoneCNH |
 | 2026-06-12 | v1.0.2 | 范围对齐（R1/R2 修复）：§2 Summary + §4 Goals 新增 `l2` 子命令组、新增 FR-007~FR-011（l2 validate-manifest / plan / check-contracts / check-evidence / release-check） | ZoneCNH |
+| 2026-06-12 | v1.0.2 | Status: Draft → Approved（Spec 四源评分 Claude 98 + rules 100，0 红线；Codex/Copilot 环境缺失由维护者 override） | ZoneCNH |
 
 ---
 
