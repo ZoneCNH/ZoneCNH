@@ -67,7 +67,7 @@ Source: module/testkitx/SPEC.md v1.0.0
 | CI: compile | BR-001 | `go build ./...` |
 | CI: race | BR-002, NFR-003 | `go test ./... -race -count=1` |
 | CI: golden-guard | BR-004 | 检查 `GOLDEN_UPDATE` 不在 CI 中设置 |
-| CI: no-prod-import | BR-005, NFR-004 | `go list -deps ... \| grep testkitx` |
+| CI: no-prod-import | BR-005, NFR-004 | `go list -deps ... | grep testkitx` |
 | CI: deps | BR-006 | `go mod tidy && git diff --exit-code go.mod go.sum` |
 | CI: gitleaks | BR-007, NFR-005 | `gitleaks detect --no-git` |
 | CI: coverage | NFR-002 | `go tool cover -func=.coverage/cover.out` |
@@ -101,7 +101,7 @@ Source: module/testkitx/SPEC.md v1.0.0
 | NFR 覆盖率 | 5/5 (100%) | 100% |
 | AC 闭合率 | 10/10 (100%) | 100% |
 | TC 闭合率 | 10/10 (100%) | 100% |
-| Task 映射率 | 13/13 (100%) | 100% |
+| Task 映射率 | 11/11 (100%) | 100% |
 
 ---
 
