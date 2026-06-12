@@ -1,0 +1,27 @@
+# Prompt for TASK-OSSX-001: Object identity metadata checksum and policy model
+
+You are implementing `TASK-OSSX-001` for `module/ossx`.
+
+## Scope
+
+Implement key, metadata, checksum, lifecycle, and permission policy value types.
+
+## Required references
+
+- `module/ossx/goal.md`
+- `module/ossx/SPEC.md`
+- `module/ossx/TRACEABILITY.md`
+- `module/ossx/tasks/TASK-OSSX-001.md`
+
+## Constraints
+
+- Keep changes inside `module/ossx` unless the task is explicitly widened by maintainers.
+- Do not import `configx` from ossx packages.
+- Do not expose provider SDK types in public ossx APIs.
+- Prefer small tests that prove the acceptance criteria before broad implementation.
+
+## Done when
+
+- Acceptance criteria in `tasks/TASK-OSSX-001.md` pass.
+- Traceability rows linked to TASK-OSSX-001 remain current.
+- Validation output is appended under `module/ossx/evidence/`.
