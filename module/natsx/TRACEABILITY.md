@@ -68,19 +68,32 @@ Source: `goal.md` 1.0 发布基线 + `SPEC.md` Draft v1.0.0
 | TASK-NATSX-011 | NFR-001, NFR-002 | Pending security tests |
 | TASK-NATSX-012 | NFR-003 | Pending benchmarks |
 | TASK-NATSX-013 | NFR-004 | Pending dependency boundary check |
-| TASK-NATSX-014 | NFR-005 | `SPEC.md` / `TRACEABILITY.md` / matrix evidence refreshed on 2026-06-12 |
+| TASK-NATSX-014 | NFR-005 | `SPEC.md` / `TRACEABILITY.md` / matrix evidence refreshed on 2026-06-12; `/home/natsx/README.md` and `/home/natsx/examples/README.md` now state intended-vs-implemented status |
+
+## Documentation Evidence Inventory
+
+| Artifact | Evidence state | Release meaning |
+| --- | --- | --- |
+| `/home/natsx/README.md` | Repaired to identify `github.com/ZoneCNH/natsx/pkg/natsx` as the 1.0 target and legacy `pkg/templatex` as non-release residue. | Documentation identity evidence only. |
+| `/home/natsx/examples/README.md` | Lists required `basic`, `config`, `health`, and `jetstream` examples plus current legacy/blocking status. | Example-plan evidence only until Go examples import `pkg/natsx`. |
+| `/home/ZoneCNH/module/natsx/SPEC.md` | Adds repair review status and keeps Draft / not approved semantics explicit. | Target contract, not release approval. |
+| `/home/ZoneCNH/module/natsx/TRACEABILITY.md` | Keeps TC-001 through TC-013 pending and separates documentation evidence from executable evidence. | Prevents documentation-only 100/100 claims. |
 
 ## Matrix Score Evidence
 
 - Structural traceability coverage: **21 / 21 rows mapped** to requirements, test-case IDs, and task IDs.
+- Documentation identity coverage: **4 / 4 tracked docs refreshed** for the Worker C slice (`README.md`, `examples/README.md`, `SPEC.md`, `TRACEABILITY.md`).
 - Executable implementation coverage: **0 / 14 task groups complete** in `/home/ZoneCNH/module/natsx`; this directory contains documentation only.
 - Approval status: **Not Approved**. Status remains Draft / Pending Evidence until implementation and integration tests exist.
 - Verification commands for this refresh:
-  - `python3` Markdown fence sanity check for `SPEC.md`
-  - `/home/ZoneCNH$ git diff --check`
+  - `python3` Markdown fence sanity check for `SPEC.md` and `TRACEABILITY.md`
+  - `/home/ZoneCNH$ git diff --check -- module/natsx`
   - `/home/natsx$ GOWORK=off go test ./...`
+  - `/home/natsx$ git diff --check`
 
 ## Known Risks / Blockers
 
 - `/home/ZoneCNH/module/natsx` has no Go source or executable tests, so TC-001 through TC-013 remain pending.
 - `/home/natsx` repository identity repair is a separate code slice from module-level API approval; passing Go tests there does not prove NATS functional behavior.
+- Existing `/home/natsx/examples/basic`, `/home/natsx/examples/config`, and `/home/natsx/examples/health` Go files still import `pkg/templatex`; they are compile-smoke evidence only, not NATS 1.0 behavior evidence.
+- `/home/natsx/examples/jetstream` does not exist yet, so JetStream example evidence is blocked until the API and embedded NATS test slice land.

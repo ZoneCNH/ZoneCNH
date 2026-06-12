@@ -18,6 +18,12 @@
 - Target Repository Identity: `github.com/ZoneCNH/natsx`
 - Related: [CONSTITUTION.md](../../CONSTITUTION.md), [ARCHITECTURE.md](../../ARCHITECTURE.md)
 
+### 1.0 Repair Review Status
+
+- Approved for implementation: **No**. This specification remains the target contract while `/home/natsx` is repaired from legacy `pkg/templatex` scaffolding to `pkg/natsx`.
+- Documentation evidence refreshed on 2026-06-12: `/home/natsx/README.md`, `/home/natsx/examples/README.md`, and `TRACEABILITY.md`.
+- Release promotion is blocked until executable Core NATS and JetStream evidence is linked from `TRACEABILITY.md`.
+
 ---
 
 ### 1.1 变更历史
