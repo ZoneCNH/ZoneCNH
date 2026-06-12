@@ -16,7 +16,7 @@ Source: docs/governance/TRACEABILITY.md（迁移前全局矩阵）
 | FR-007      | Health           | AC-007 | TC-006, TC-006a  | TASK-OBSERVEX-007 | ⬜     |
 | BR-001      | Logger 并发安全  | AC-008                      | CI Gate (`-race`) | TASK-OBSERVEX-002 | ⬜     |
 | BR-002      | label 基数控制   | AC-009 | TC-002           | TASK-OBSERVEX-003 | ⬜     |
-| BR-003      | context 传播     | AC-010 | TC-003           | TASK-OBSERVEX-004 | ⬜     |
+| BR-003      | context 传播     | AC-010 | TC-003, TC-003a           | TASK-OBSERVEX-004 | ⬜     |
 | BR-004      | Shutdown flush   | AC-011 | TC-004           | TASK-OBSERVEX-005 | ⬜     |
 | BR-005      | With 不变性      | AC-012 | TC-001, CI Gate (`-race`) | TASK-OBSERVEX-002 | ⬜     |
 | BR-006      | 指标命名规范     | AC-013 | TC-007, CI Gate (metrics-contract-check) | TASK-OBSERVEX-003 | ⬜     |
