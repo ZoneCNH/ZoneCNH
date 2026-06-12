@@ -2,7 +2,7 @@
 
 > Design ID: DESIGN-configx-v1
 > Source Spec: [SPEC.md](./SPEC.md) v1.0.0
-> Version Mapping: 本文档描述 v0.1.4 已实现能力；[goal.md](./goal.md) 定义 v1.0 完整目标。详见 §1.2。
+> Version Mapping: 本文档描述 v1.0.0 已实现能力；[goal.md](./goal.md) 定义 v1.0 完整目标。详见 §1.2。
 > 生成日期：2026-06-12
 
 ## 1. 架构概述
@@ -34,7 +34,7 @@ configx 是 Foundation L1 配置管理模块，提供统一的多源配置加载
 
 ### 1.2 与 goal.md 的版本映射
 
-| 能力 | v0.1.4 (DESIGN.md 覆盖) | v1.0 (goal.md 目标) | 状态 |
+| 能力 | v1.0.0 (DESIGN.md 覆盖) | v1.0 (goal.md 目标) | 状态 |
 |------|:---:|:---:|:--:|
 | FileSource / EnvSource / ArgsSource | ✅ | ✅ | 已实现 |
 | ConfigSource SPI（远程配置源扩展点） | ❌ | ✅ | v1.0 计划 |
@@ -46,9 +46,9 @@ configx 是 Foundation L1 配置管理模块，提供统一的多源配置加载
 | 审计日志（变更来源/操作者/脱敏 diff） | ❌ | ✅ | v1.0 计划 |
 | 配置文档自动生成 | ❌ | ✅ | v1.0 计划 |
 | 敏感字段脱敏（自动 + Reveal()） | ⚠️ TASK-010 实现中 | ✅ | v0.3 过渡 |
-| Watch 文件监控 | ⚠️ 可选特性 (FR-005) | ✅ | v0.1.4 可用 |
+| Watch 文件监控 | ⚠️ 可选特性 (FR-005) | ✅ | v1.0.0 可用 |
 
-> **说明**：本 DESIGN.md 聚焦 v0.1.4 已实现的架构决策。v1.0 新增能力（ConfigSource SPI、热更新回滚、审计日志等）的具体设计将在 v1.0 开发阶段补充，goal.md 作为需求基线。
+> **说明**：本 DESIGN.md 聚焦 v1.0.0 已实现的架构决策。v1.0 新增能力（ConfigSource SPI、热更新回滚、审计日志等）的具体设计将在 v1.0 开发阶段补充，goal.md 作为需求基线。
 
 ## 2. 核心设计
 
@@ -148,7 +148,7 @@ func WithStrictMode(bool) Option
 - **考虑的替代方案**：
   - *方案 B: atomic.Value 包装整个配置* — 支持替换但增加内存开销和 GC 压力
   - *方案 C: 细粒度锁 + 可变配置* — 灵活但引入锁竞争和死锁风险
-- **选择理由**：v0.1.4 以启动时一次性加载为核心场景，不可变设计最简单安全
+- **选择理由**：v1.0.0 以显式加载为核心场景，不可变设计最简单安全
 - **后果**：Watch 为可选特性（FR-005），非核心路径；v1.0 将引入 ConfigSnapshot 支持安全热更新
 
 ### ADR-004: 敏感字段脱敏
