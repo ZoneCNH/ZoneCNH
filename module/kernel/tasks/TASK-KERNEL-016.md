@@ -50,6 +50,12 @@ status: pending
 | §20 | CI Gate |
 | §22 | Release DoD |
 
+## Non-scope
+
+- 不在 CHANGELOG 中包含未实现功能
+- 不在 release/manifest 中包含绝对路径
+- 不包含测试密钥或个人环境路径
+
 ## Implementation Notes
 
 - CHANGELOG.md 按 SemVer 记录变更

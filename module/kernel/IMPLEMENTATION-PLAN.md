@@ -87,12 +87,14 @@ TASK-KERNEL-000 (项目骨架: go.mod, README, Makefile)
 |------|------|------|--------|
 | TASK-KERNEL-014 | contracts/：API 快照、golden 行为、消费者导入测试 | 001~012 | 3h |
 
-### Phase 7: 示例和文档（2 tasks，可并行）
+### Phase 7: 示例和文档（4 tasks，可并行）
 
 | Task | 内容 | 依赖 | Effort |
 |------|------|------|--------|
-| TASK-KERNEL-015 | examples/：12 子包可运行示例 | 001~012 | 2h |
-| TASK-KERNEL-016 | CHANGELOG.md, docs/, CI gates, release preflight | 014, 015 | 2h |
+| TASK-KERNEL-015a | examples/ Group A：lifecycx/errx/healthx/obsx | 001,003,005,011 | 0.75h |
+| TASK-KERNEL-015b | examples/ Group B：retryx/shutdownx/syncx/timex | 002,004,006,009 | 0.75h |
+| TASK-KERNEL-015c | examples/ Group C：validx/versionx/contextx/contracttest | 007,008,010,012 | 0.75h |
+| TASK-KERNEL-016 | CHANGELOG.md, docs/, CI gates, release preflight | 014, 015a, 015b, 015c | 2h |
 
 ---
 
@@ -118,9 +120,9 @@ errx / timex / obsx / syncx / lifecycx / shutdownx / versionx 七个子包全部
 
 validx / retryx / contextx / healthx 互相无依赖，可同时开发。仅需各自依赖的 Phase 2 子包先行完成。
 
-### Phase 7（并行度 2）
+### Phase 7（并行度 3）
 
-examples 和 docs/CI 可同时进行。
+015a/015b/015c 互相无依赖，可同时开发。016 依赖 015a/b/c 全部完成。
 
 ---
 
@@ -166,20 +168,100 @@ examples 和 docs/CI 可同时进行。
 
 ---
 
-## 7. 风险与缓解
+## 7. 风险与缓解（量化）
 
-| 风险 | 影响 | 缓解 |
-|------|------|------|
-| errx.IsKind 多错误链性能不达标 | P1 | Phase 2 即编写 benchmark，早期发现 |
-| FakeClock 并发安全问题 | P1 | `-race` 测试，sync.Mutex 保护 |
-| SecretString 反射绕过 | P1 | 覆盖 String()/GoString()/JSON/gob 四路径 |
-| WorkerGroup cancel 传播竞争 | P2 | 充分并发测试 |
-| stdlib-only 被破坏 | P0 | CI gate + `go list -deps` |
-| 接口设计不满足下游需求 | P1 | Phase 6 的消费者导入测试提前验证 |
+| 风险 | 概率 | 影响 | 风险值 | 缓解 | 检测方式 | 触发修复 |
+|------|:----:|:----:|:------:|------|----------|----------|
+| errx.IsKind 多链性能不达标 | 15% | High | 0.45 | Phase 2 benchmark < 1μs | CI benchmark regression | 优化 walkErrors 算法 |
+| FakeClock 并发安全问题 | 20% | High | 0.60 | sync.Mutex + -race 测试 | `-race` CI gate | 修复 mutex 粒度 |
+| SecretString 反射绕过 | 10% | Critical | 0.30 | 四路径覆盖测试 | Golden behavior test | 增加保护层 |
+| WorkerGroup cancel 传播竞争 | 25% | Medium | 0.50 | 充分并发测试 + timeout | 3× -race 验证 | 修复 errgroup 同步 |
+| stdlib-only 被破坏 | 5% | Critical | 0.15 | CI gate `go list -deps` | Blocking CI gate | 移除违规 import |
+| 接口设计不满足下游 | 30% | Medium | 0.60 | Phase 6 consumer import test | Consumer test 失败 | 接口调整 → minor bump |
+| 跨子包循环依赖 | 10% | Critical | 0.30 | Phase 2 即验证内部依赖图 | `go build ./...` 编译失败 | 重构依赖方向 |
+| SemaphoreLimiter 死锁 | 15% | High | 0.45 | ctx 感知 Acquire + timeout 测试 | Deadlock detector | 增加 ctx 取消路径 |
 
----
+## 8. 回滚策略（全子包覆盖）
 
-## 8. 总工时估算
+### lifecycx (TASK-005)
+| 场景 | 回滚步骤 |
+|------|----------|
+| Start 第 k 个失败 | 逆序 Stop 前 k-1 个 → errors.Join 聚合 |
+| Stop 某 Component 超时 | 继续 Stop 后续 → 记录超时 Component 名 |
+| Stop panic | recover → 记录 → 继续 Stop 后续 |
+
+### errx (TASK-001)
+| 场景 | 回滚步骤 |
+|------|----------|
+| walkErrors 死循环 | 最大深度限制 100 → 返回 false |
+| IsKind nil 参数 | 安全返回 false |
+| errors.Join 空列表 | AsError 返回 (nil, false) |
+
+### timex (TASK-002)
+| 场景 | 回滚步骤 |
+|------|----------|
+| FakeClock.Advance 负值 | 静默忽略 |
+| nil *FakeClock.Now() | 返回 time.Time{} |
+| FakeClock 并发 Advance | mutex 保护，无数据竞争 |
+
+### obsx (TASK-003)
+| 场景 | 回滚步骤 |
+|------|----------|
+| NoopLogger 被 nil 调用 | 空结构体接收者，不 panic |
+| SecretString 空值 Reveal | 返回 "" |
+
+### syncx (TASK-004)
+| 场景 | 回滚步骤 |
+|------|----------|
+| SemaphoreLimiter double-release | 静默忽略 |
+| WorkerGroup closed 后 TryGo | 返回 false |
+| Acquire ctx 取消 | 返回 ctx.Err() |
+
+### shutdownx (TASK-006)
+| 场景 | 回滚步骤 |
+|------|----------|
+| Hook Shutdown 超时 | context 超时 → 继续下一个 Hook |
+| Hook panic | recover → 记录 → 继续下一个 |
+| 并发 Register+Shutdown | mutex 快照 → 后续 Register 不执行 |
+
+### healthx (TASK-011)
+| 场景 | 回滚步骤 |
+|------|----------|
+| Aggregate 空 statuses | 返回 {Status:"healthy", Message:"ok"} |
+| AggregateWithClock clock=nil | 回退到 RealClock |
+| Metadata nil JSON | 序列化为 {} 而非 null |
+
+### retryx (TASK-009)
+| 场景 | 回滚步骤 |
+|------|----------|
+| Delay attempt <= 0 | 返回 0 |
+| Delay 溢出 | maxDuration 保护 |
+| Jitter 结果 < 0 | 返回 0 |
+
+### validx (TASK-008)
+| 场景 | 回滚步骤 |
+|------|----------|
+| Precondition/Invariant 在任何输入下 | 始终返回 error 或 nil，不 panic |
+
+### contextx (TASK-010)
+| 场景 | 回滚步骤 |
+|------|----------|
+| 零值 Key contextKey() | panic（设计意图：fail-fast） |
+| Value 类型不匹配 | 返回 (zero, false) |
+
+### versionx (TASK-007)
+| 场景 | 回滚步骤 |
+|------|----------|
+| Compatibility.Major 为空 | 仅校验 Module |
+| 空 BuildInfo | CompatibleWith 返回 false |
+
+### contracttest (TASK-012)
+| 场景 | 回滚步骤 |
+|------|----------|
+| AssertJSONFields nil value | Fatalf 报告 |
+| AssertErrorKind nil err | 视为不匹配 → Fatalf |
+
+## 9. 总工时估算
 
 | Phase | Tasks | 串行 Effort | 并行 Effort |
 |-------|-------|-------------|-------------|
