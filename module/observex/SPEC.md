@@ -585,6 +585,16 @@ Given exporter 后端可用
 When 调用 `ExportLogs(ctx, entries)`
 Then 返回 nil，日志条目成功发送
 
+**TC-004b: Exporter 正常导出指标**
+Given exporter 后端可用
+When 调用 `ExportMetrics(ctx, metrics)`
+Then 返回 nil，指标数据点成功发送
+
+**TC-004c: Exporter 正常导出 Span**
+Given exporter 后端可用
+When 调用 `ExportSpans(ctx, spans)`
+Then 返回 nil，span 数据成功发送
+
 **TC-005: Redaction 脱敏**
 Given 日志字段包含 secret、token 或 password
 When 写入结构化日志
