@@ -1,25 +1,31 @@
 # TASK-REDISX-003
 
-> Client 实现：HGet/HSet/LPush/LRange
+> Hash operations
 
 ---
 
 ```yaml
 task_id: TASK-REDISX-003
 module: redisx
-scope: "实现 Client 接口的 Hash 和 List 操作（FR-006、FR-007）"
+scope: "Implement HGet and HSet for Redis hashes with missing-field behavior matching the specification."
 spec_ref:
   - "module/redisx/SPEC.md#FR-006"
-  - "module/redisx/SPEC.md#FR-007"
 files:
-  - "client_impl.go"
-  - "client_impl_test.go"
+  - "hash.go"
+  - "hash_test.go"
+  - "testutil_test.go"
 acceptance_criteria:
-  - "HGet/HSet 操作 Hash 字段正确"
-  - "LPush/LRange 操作 List 正确"
+  - "AC-003-1: HSet stores one or more field values and HGet returns existing field values."
+  - "AC-003-2: HGet returns redis.Nil for missing fields without wrapping it into an unrelated error."
+non_scope:
+  - "Do not edit module/redisx/SPEC.md, TRACEABILITY.md, or goal.md as part of this implementation task."
+  - "Do not add direct runtime dependencies on configx, observex, resiliencx, contracts, or any business-domain module."
+  - "Do not implement unrelated Redis commands beyond the FR IDs listed for this task."
+test_plan:
+  - "TC-006: HSet followed by HGet returns the stored field value and missing fields return redis.Nil."
 depends_on:
-  - "TASK-REDISX-002"
-estimated_effort: "2h"
+  - "TASK-REDISX-001"
+estimated_effort: "1d"
 priority: P0
 status: pending
 ```
@@ -28,31 +34,31 @@ status: pending
 
 ## Requirements Covered
 
-| Requirement | Description             | Acceptance Criteria |
-| ----------- | ----------------------- | ------------------- |
-| FR-006      | HGet/HSet：Hash 操作    | 字段读写正确        |
-| FR-007      | LPush/LRange：List 操作 | 列表读写正确        |
+| Requirement | Description | Acceptance Criteria |
+| ----------- | ----------- | ------------------- |
+| FR-006 | HGet / HSet | AC-003-1 |
+
+## Acceptance Criteria
+
+| AC ID | Criteria |
+| ----- | -------- |
+| AC-003-1 | HSet stores one or more field values and HGet returns existing field values. |
+| AC-003-2 | HGet returns redis.Nil for missing fields without wrapping it into an unrelated error. |
+
+## Non-Scope
+
+- Do not edit module/redisx/SPEC.md, TRACEABILITY.md, or goal.md as part of this implementation task.
+- Do not add direct runtime dependencies on configx, observex, resiliencx, contracts, or any business-domain module.
+- Do not implement unrelated Redis commands beyond the FR IDs listed for this task.
 
 ## Test Plan
 
-| Test Case | Type | Description                  |
-| --------- | ---- | ---------------------------- |
-| —         | Unit | HSet 后 HGet 返回正确值      |
-| —         | Unit | LPush 后 LRange 返回正确列表 |
+| Test Case | Type | Description | Same-task test file |
+| --------- | ---- | ----------- | ------------------- |
+| TC-006 | Unit/Integration | HSet followed by HGet returns the stored field value and missing fields return redis.Nil. | `hash_test.go` |
 
 ## Implementation Notes
 
-- Hash 和 List 操作直接包装 redis 命令
-
-## Implementation Plan
-
-| Step | Description           | Deliverables     | Verification  |
-| ---- | --------------------- | ---------------- | ------------- |
-| 1    | 实现 `HGet`/`HSet`    | `client_impl.go` | Hash 测试通过 |
-| 2    | 实现 `LPush`/`LRange` | `client_impl.go` | List 测试通过 |
-
-### Risk Assessment
-
-| Risk | Probability | Impact | Mitigation |
-| ---- | ----------- | ------ | ---------- |
-| 无   | Low         | Low    | —          |
+- Direct production imports are limited to stdlib, kernel, and the Redis client library; configx/observex/resiliencx/contracts remain integration boundaries expressed through local options, interfaces, docs, or adapters outside this task.
+- Every listed test case must be implemented in a same-task `*_test.go` or `example_test.go` file listed in this task.
+- Preserve context cancellation and timeout behavior for all Redis calls touched by this task.
