@@ -202,48 +202,6 @@ Updated: 2026-06-12
 
 ## Acceptance Criteria
 
-<<<<<<< HEAD
-| AC     | Acceptance                                               | 验证命令 |
-| ------ | -------------------------------------------------------- |
-| AC-000 | 管线基线清理完成，模块文档和任务入口可被规则评分器发现。 | `python3 scripts/rule-scorer.py spec xlib-standard --check` |
-| AC-001 | 必填字段缺失时配置校验返回 validation kind 错误。        | `GOWORK=off go test ./pkg/templatex/ -run TestConfigValidate/Required -count=1` |
-| AC-002 | 负数 timeout 配置返回 validation kind 错误。             | `GOWORK=off go test ./pkg/templatex/ -run TestConfigValidate/Negative -count=1` |
-| AC-003 | 配置脱敏后 secret 类字段显示为 `***`。                   | `GOWORK=off go test ./pkg/templatex/ -run TestConfigSanitize -count=1` |
-| AC-004 | `NewError` 创建的错误字段完整。                          | `GOWORK=off go test ./pkg/templatex/ -run TestNewError -count=1` |
-| AC-005 | `WrapError` 包装后 `errors.Is` 可穿透。                  | `GOWORK=off go test ./pkg/templatex/ -run TestWrapError -count=1` |
-| AC-006 | `IsKind` 匹配目标 kind 返回 true。                       | `GOWORK=off go test ./pkg/templatex/ -run TestIsKind -count=1` |
-| AC-007 | deadline cause 归一为 timeout kind。                     | `GOWORK=off go test ./pkg/templatex/ -run TestContextError/Deadline -count=1` |
-| AC-008 | canceled cause 归一为 unavailable kind。                 | `GOWORK=off go test ./pkg/templatex/ -run TestContextError/Canceled -count=1` |
-| AC-009 | nil context 健康检查返回 unhealthy。                     | `GOWORK=off go test ./pkg/templatex/ -run TestHealthCheck/NilContext -count=1` |
-| AC-010 | 健康客户端返回 healthy。                                 | `GOWORK=off go test ./pkg/templatex/ -run TestHealthCheck/Healthy -count=1` |
-| AC-011 | `NoopMetrics` 调用不 panic。                             | `GOWORK=off go test ./pkg/templatex/ -run TestNoopMetrics -count=1` |
-| AC-012 | P0 指标名与 contract 一致。                              | `GOWORK=off go test ./pkg/templatex/ -run TestMetricsNames -count=1` |
-| AC-013 | metrics label 仅使用低基数键。                           | `GOWORK=off go test ./pkg/templatex/ -run TestMetricsLabels -count=1` |
-| AC-014 | nil context 创建客户端返回错误。                         | `GOWORK=off go test ./pkg/templatex/ -run TestNew/NilContext -count=1` |
-| AC-015 | canceled context 创建客户端返回错误。                    | `GOWORK=off go test ./pkg/templatex/ -run TestNew/CanceledContext -count=1` |
-| AC-016 | 无效 config 创建客户端返回错误。                         | `GOWORK=off go test ./pkg/templatex/ -run TestNew/InvalidConfig -count=1` |
-| AC-017 | 有效参数创建 `*Client`。                                 | `GOWORK=off go test ./pkg/templatex/ -run TestNew/Valid -count=1` |
-| AC-018 | `Close` 多次调用幂等且不 panic。                         | `GOWORK=off go test ./pkg/templatex/ -run TestClose/Idempotent -count=1` |
-| AC-019 | 版本信息包含 module name 和 version。                    | `GOWORK=off go test ./pkg/templatex/ -run TestVersion -count=1` |
-| AC-020 | 模板 `go vet` 零警告。                                   | `GOWORK=off go vet ./pkg/templatex/` |
-| AC-021 | 模板 `go test` 全部通过。                                | `GOWORK=off go test ./pkg/templatex/ -count=1` |
-| AC-022 | 渲染输出目录结构完整。                                   | `bash scripts/render_template.sh --module-path example/test --package-name test --out /tmp/test-out && test -f /tmp/test-out/go.mod` |
-| AC-023 | 生成库无模板名和标准库名残留。                           | `bash scripts/check_rendered_template.sh /tmp/test-out` |
-| AC-024 | `make ci` 的 17 个 gate 全部通过。                       | `GOWORK=off make ci` |
-| AC-025 | boundary gate 检查 6 类非法引用。                        | `bash scripts/check_boundary.sh` |
-| AC-026 | release manifest 生成且字段完整。                        | `GOWORK=off make release-check` |
-| AC-027 | release final check 校验 manifest checksum。             | `GOWORK=off make release-final-check` |
-| AC-028 | goalcli audit 输出 G0-G11 gate 状态审计报告。            | `GOWORK=off go run ./cmd/goalcli audit` |
-| AC-029 | goalcli dashboard 生成符合 goalcli-dashboard schema 的仪表盘 JSON。 | `GOWORK=off go run ./cmd/goalcli dashboard --out /tmp/dashboard.json` |
-| AC-030 | goalcli fact 执行事实检查并输出 fact-audit 证据。         | `GOWORK=off go run ./cmd/goalcli fact` |
-| AC-031 | goalcli schema-check 校验 contracts/ 中所有 schema 有效性。 | `GOWORK=off go run ./cmd/goalcli schema-check` |
-| AC-032 | goalcli traceability 生成 FR→Code 追溯矩阵。              | `GOWORK=off go run ./cmd/goalcli traceability` |
-| AC-033 | goalcli governance 输出远端治理检查结果。                 | `GOWORK=off go run ./cmd/goalcli governance` |
-| AC-034 | goalcli debt 扫描技术债务并输出债务报告。                 | `GOWORK=off go run ./cmd/goalcli debt` |
-| AC-035 | goalcli adoption 检查下游采纳状态。                       | `GOWORK=off go run ./cmd/goalcli adoption` |
-| AC-036 | goalcli selfimproving 触发受控递归自改进流程。            | `GOWORK=off go run ./cmd/goalcli selfimproving` |
-| AC-037 | templates/l2/ 12 个模板文件全部存在且可渲染。          | `bash scripts/check_l2_templates.sh` |
-=======
 | AC     | Acceptance                                               | 验证命令 | 代码位置 |
 | ------ | -------------------------------------------------------- |
 | AC-000 | 管线基线清理完成，模块文档和任务入口可被规则评分器发现。 | `python3 scripts/rule-scorer.py spec xlib-standard --check` | `module/xlib-standard/SPEC.md` |
@@ -283,7 +241,7 @@ Updated: 2026-06-12
 | AC-034 | goalcli debt 扫描技术债务并输出债务报告。                 | `GOWORK=off go run ./cmd/goalcli debt` | `cmd/goalcli/debt.go` |
 | AC-035 | goalcli adoption 检查下游采纳状态。                       | `GOWORK=off go run ./cmd/goalcli adoption` | `cmd/goalcli/adoption_check.go` |
 | AC-036 | goalcli selfimproving 触发受控递归自改进流程。            | `GOWORK=off go run ./cmd/goalcli selfimproving` | `cmd/goalcli/selfimproving.go` |
->>>>>>> 196e80a (docs: xlib-standard AC 表新增验证命令 + 代码位置 — 98 分)
+| AC-037 | templates/l2/ 12 个模板文件全部存在且可渲染。          | `bash scripts/check_l2_templates.sh` | `templates/l2/` |
 
 ## Test Cases
 
