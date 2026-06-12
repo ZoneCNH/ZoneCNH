@@ -9,9 +9,9 @@ task_id: TASK-CONFIGX-005
 module: configx
 scope: "实现 Validate() 方法，根据 schema 校验配置，返回所有违规字段"
 spec_ref:
-  - "module/configx/SPEC.md#SPEC.md#FR-003"
-  - "module/configx/SPEC.md#SPEC.md#BR-002"
-  - "module/configx/SPEC.md#SPEC.md#BR-006"
+  - "module/configx/SPEC.md#FR-003"
+  - "module/configx/SPEC.md#BR-002"
+  - "module/configx/SPEC.md#BR-006"
 files:
   - "schema.go"
   - "schema_test.go"
@@ -33,9 +33,9 @@ status: pending
 
 | Requirement | Description | Acceptance Criteria |
 |---|---|---|
-| SPEC.md#FR-003 | Validate：符合→nil，不符合→错误列表 | 2 个 WHEN/THEN 场景 |
-| SPEC.md#BR-002 | 启动时必须通过 schema 校验（fail-fast） | Validate 在启动流程中调用 |
-| SPEC.md#BR-006 | 配置值类型必须与 schema 定义一致 | 类型不匹配报错 |
+| FR-003 | Validate：符合→nil，不符合→错误列表 | 2 个 WHEN/THEN 场景 |
+| BR-002 | 启动时必须通过 schema 校验（fail-fast） | Validate 在启动流程中调用 |
+| BR-006 | 配置值类型必须与 schema 定义一致 | 类型不匹配报错 |
 
 ## Test Plan
 

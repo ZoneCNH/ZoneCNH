@@ -9,8 +9,8 @@ task_id: TASK-CONFIGX-004
 module: configx
 scope: "实现 WithEnvOverride(prefix)，将环境变量映射为配置键并覆盖"
 spec_ref:
-  - "module/configx/SPEC.md#SPEC.md#FR-002"
-  - "module/configx/SPEC.md#SPEC.md#BR-004"
+  - "module/configx/SPEC.md#FR-002"
+  - "module/configx/SPEC.md#BR-004"
 files:
   - "env.go"
   - "env_test.go"
@@ -31,8 +31,8 @@ status: pending
 
 | Requirement | Description | Acceptance Criteria |
 |---|---|---|
-| SPEC.md#FR-002 | WithEnvOverride：前缀匹配覆盖，类型不匹配返回错误 | 2 个 WHEN/THEN 场景 |
-| SPEC.md#BR-004 | 环境变量覆盖使用前缀 + 下划线 | `APP_DATA_MARKET_SYMBOL` → `data.market.symbol` |
+| FR-002 | WithEnvOverride：前缀匹配覆盖，类型不匹配返回错误 | 2 个 WHEN/THEN 场景 |
+| BR-004 | 环境变量覆盖使用前缀 + 下划线 | `APP_DATA_MARKET_SYMBOL` → `data.market.symbol` |
 
 ## Test Plan
 

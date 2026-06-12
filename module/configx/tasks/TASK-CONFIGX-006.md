@@ -9,8 +9,8 @@ task_id: TASK-CONFIGX-006
 module: configx
 scope: "实现 Reader 接口的所有方法，支持类型安全读取和并发安全"
 spec_ref:
-  - "module/configx/SPEC.md#SPEC.md#FR-004"
-  - "module/configx/SPEC.md#SPEC.md#BR-005"
+  - "module/configx/SPEC.md#FR-004"
+  - "module/configx/SPEC.md#BR-005"
 files:
   - "reader.go"
   - "reader_test.go"
@@ -33,8 +33,8 @@ status: pending
 
 | Requirement | Description | Acceptance Criteria |
 |---|---|---|
-| SPEC.md#FR-004 | Get：存在→值，不存在→nil，并发安全 | 3 个 WHEN/THEN 场景 |
-| SPEC.md#BR-005 | Reader 接口只能读，不能写 | 只暴露读方法 |
+| FR-004 | Get：存在→值，不存在→nil，并发安全 | 3 个 WHEN/THEN 场景 |
+| BR-005 | Reader 接口只能读，不能写 | 只暴露读方法 |
 
 ## Test Plan
 

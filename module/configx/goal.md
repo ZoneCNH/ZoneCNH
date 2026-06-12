@@ -97,7 +97,7 @@
 
 | 依赖类型 | 约束 |
 | --- | --- |
-| 上游依赖 | 依赖 kernel；可选接入 observex 输出日志和指标。 |
+| 上游依赖 | 无外部依赖（foundationx exit 已完成，kernel 不再被依赖）；可选接入 observex 输出日志和指标。 |
 | 下游依赖 | observex、resiliencx、schedulex、redisx、kafkax 等模块通过 configx 获取配置。 |
 | 分层约束 | configx 不能依赖具体存储扩展模块；远程源通过 SPI 接入。 |
 | 契约依赖 | MUST 向 contracts 登记 Public API 契约和错误码契约。 |

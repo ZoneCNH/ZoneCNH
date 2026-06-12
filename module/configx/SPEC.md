@@ -530,18 +530,6 @@ Then 所有测试通过，零 data race，零 secret 泄露，覆盖率 ≥ 80%
 
 ---
 
-## 24. Lifecycle
-
-| 阶段 | 状态 | 说明 |
-|------|------|------|
-| 初始化 | `configx.New(opts...)` | 创建 Config 实例，应用 Option |
-| 加载 | `Load(path)` | 解析配置文件，填充 data |
-| 覆盖 | `WithEnvOverride(prefix)` | 环境变量覆盖配置键 |
-| 校验 | `Validate()` | schema 校验，fail-fast |
-| 运行 | `Reader.Get(key)` | 并发安全只读访问 |
-| 关闭 | 进程退出 | 无资源需清理（无连接池/文件句柄） |
-
----
 ## 23. Open Questions
 
 ### Blocking（阻塞开发）
@@ -560,3 +548,16 @@ Then 所有测试通过，零 data race，零 secret 泄露，覆盖率 ≥ 80%
 | OQ-002 | 是否需要支持配置版本管理（记录每次配置变更）？ | 待评估 | ZoneCNH |
 | OQ-003 | 敏感配置（密码、token）是否需要内置加密支持？ | 待评估 | ZoneCNH |
 | OQ-004 | 是否需要支持配置模板（引用其他 key 的值）？ | 待评估 | ZoneCNH |
+
+---
+
+## 24. Lifecycle
+
+| 阶段 | 状态 | 说明 |
+|------|------|------|
+| 初始化 | `configx.New(opts...)` | 创建 Config 实例，应用 Option |
+| 加载 | `Load(path)` | 解析配置文件，填充 data |
+| 覆盖 | `WithEnvOverride(prefix)` | 环境变量覆盖配置键 |
+| 校验 | `Validate()` | schema 校验，fail-fast |
+| 运行 | `Reader.Get(key)` | 并发安全只读访问 |
+| 关闭 | 进程退出 | 无资源需清理（无连接池/文件句柄） |

@@ -9,7 +9,7 @@ task_id: TASK-CONFIGX-007
 module: configx
 scope: "实现 Watch(key, callback) 方法，监控配置文件变更并触发回调"
 spec_ref:
-  - "module/configx/SPEC.md#SPEC.md#FR-005"
+  - "module/configx/SPEC.md#FR-005"
 files:
   - "watch.go"
   - "watch_test.go"
@@ -31,7 +31,7 @@ status: pending
 
 | Requirement | Description | Acceptance Criteria |
 |---|---|---|
-| SPEC.md#FR-005 | Watch：配置变更→callback，key 不存在→错误 | 2 个 WHEN/THEN 场景 |
+| FR-005 | Watch：配置变更→callback，key 不存在→错误 | 2 个 WHEN/THEN 场景 |
 
 ## Test Plan
 
