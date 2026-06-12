@@ -109,6 +109,7 @@ Source: `goal.md` 1.0 发布基线 + `SPEC.md` Draft v1.0.0 + `/home/natsx` comm
   - `/home/natsx$ GOWORK=off go test ./pkg/natsx -count=1`
   - `/home/natsx$ GOWORK=off go test -race ./pkg/natsx -count=1`
   - `/home/natsx$ GOWORK=off go vet ./pkg/natsx`
+  - `/home/natsx$ GOWORK=off go vet ./...`
   - `/home/natsx$ GOWORK=off go test ./... -count=1`
   - `/home/natsx$ GOWORK=off go list -deps ./pkg/natsx` plus forbidden dependency filter => `dependency boundary clean`
   - `/home/natsx$ git diff --check`

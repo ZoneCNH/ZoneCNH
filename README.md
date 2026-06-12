@@ -76,7 +76,7 @@ L2.5: decimalx / domain-market / domain-exchange / domain-macro
 - [clickhousex](https://github.com/ZoneCNH/clickhousex) — ClickHouse 模块 `公开`
 - [taosx](https://github.com/ZoneCNH/taosx) — TDengine 模块 `公开`
 - [kafkax](https://github.com/ZoneCNH/kafkax) — Kafka 模块 `公开`
-- [natsx](https://github.com/ZoneCNH/natsx) — NATS 内部通信模块 `公开`
+- [natsx](https://github.com/ZoneCNH/natsx) — NATS 内部通信模块（修复基线已验证；发布门禁未闭合） `公开`
 - [ossx](https://github.com/ZoneCNH/ossx) — 对象存储 (OSS) 模块 `公开`
 
 ### 基座 · 契约层

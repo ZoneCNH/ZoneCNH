@@ -21,8 +21,8 @@
 ### 1.0 Repair Review Status
 
 - Approved for release: **No**. This specification remains the 1.0 target contract; `/home/natsx/pkg/natsx` now has an executable repair baseline, but it is not release-complete.
-- Evidence refreshed on 2026-06-12: `/home/natsx/README.md`, `/home/natsx/examples/README.md`, `/home/natsx` commits `733ba9a`, `6942cbe`, `a837b94`, and `5800c70`, embedded Core NATS / JetStream tests in `/home/natsx/pkg/natsx`, and `TRACEABILITY.md`.
-- Release promotion remains blocked until `TRACEABILITY.md` closes the remaining dead-letter advisory, reconnect/backoff, migrated examples, benchmark/SLO, missing-stream negative, formal arbiter, and full health/observability lifecycle gaps.
+- Evidence refreshed on 2026-06-12: `/home/natsx/README.md`, `/home/natsx/examples/README.md`, `/home/natsx` commits `733ba9a`, `6942cbe`, `a837b94`, `5800c70`, and `29b0821`, embedded Core NATS / JetStream tests in `/home/natsx/pkg/natsx`, and `TRACEABILITY.md`.
+- Release promotion remains blocked until `TRACEABILITY.md` closes the remaining dead-letter advisory, reconnect/backoff, migrated examples, benchmark/SLO, formal arbiter, and full health/observability lifecycle gaps.
 
 ---
 
@@ -165,6 +165,9 @@ THEN 创建 consumer，返回 nil
 WHEN 调用 `AddConsumer(ctx, stream, cfg)` 且 consumer 已存在且配置兼容
 THEN 返回 nil（幂等）
 
+WHEN 调用 `AddConsumer(ctx, stream, cfg)` 且 consumer 已存在且配置冲突
+THEN 返回错误
+
 ### FR-008: Health
 
 WHEN 调用 `Health()` 且 NATS 连接正常
@@ -182,14 +185,14 @@ THEN 返回 HealthStatus{Ready: false, Live: true, Message: "jetstream unavailab
 
 | AC-ID | 功能 | 验收标准 | 验证方式 | 判定结果 |
 |-------|---------|----------|----------|----------|
-| AC-001 | Publish（Core NATS） | Publish 成功返回 nil；连接不可用时返回错误；空 subject 返回错误 | TC-001, unit test | Yes/No |
-| AC-002 | Subscribe（Core NATS） | Subscribe 注册返回 Subscription；收到消息时调用 handler；Unsubscribe/Drain 后不再接收 | TC-001, unit test | Yes/No |
-| AC-003 | Request（Core NATS） | Request 有 responder 时返回响应；无 responder 时超时返回错误；ctx 取消时返回 ctx.Err() | TC-002, unit test | Yes/No |
-| AC-004 | JetStreamClientX.Publish | JetStreamClientX Publish 返回 PublishAck；stream 未创建时返回错误 | TC-003, unit test | Yes/No |
-| AC-005 | JetStreamClientX.Subscribe | JetStreamClientX Subscribe 注册返回 Subscription；ack 后 offset 推进；超 max_deliver 进入 Dead Letter | TC-003, unit test | Yes/No |
-| AC-006 | JetStream.AddStream | AddStream 幂等创建；配置兼容时返回 nil；配置冲突时返回错误 | TC-003, unit test | Yes/No |
-| AC-007 | JetStream.AddConsumer | AddConsumer 幂等创建；配置兼容时返回 nil；配置冲突时返回错误 | TC-003, unit test | Yes/No |
-| AC-008 | Health | NATS 可用时 Health() 返回 Ready=true/Live=true；不可达时 Ready=false/Live=false；JetStream 不可用时 Ready=false/Live=true | TC-005, unit test | Yes/No |
+| AC-001 | Publish（Core NATS） | Publish 成功返回 nil；连接不可用时返回错误；空 subject 返回错误 | TC-001, unit test | ✅ Covered |
+| AC-002 | Subscribe（Core NATS） | Subscribe 注册返回 Subscription；收到消息时调用 handler；Unsubscribe/Drain 后不再接收 | TC-001, unit test | ◐ Subscribe/queue/unsubscribe and client close covered; subscription Drain pending |
+| AC-003 | Request（Core NATS） | Request 有 responder 时返回响应；无 responder 时超时返回错误；ctx 取消时返回 ctx.Err() | TC-002, unit test | ✅ Responder/no-responder/timeout/cancel covered |
+| AC-004 | JetStreamClientX.Publish | JetStreamClientX Publish 返回 PublishAck；stream 未创建时返回错误 | TC-003, unit test | ✅ Stream-present and missing-stream publish covered |
+| AC-005 | JetStreamClientX.Subscribe | JetStreamClientX Subscribe 注册返回 Subscription；ack 后 offset 推进；超 max_deliver 进入 Dead Letter | TC-003, unit test | ◐ Ack/nack redelivery covered; dead-letter pending |
+| AC-006 | JetStream.AddStream | AddStream 幂等创建；配置兼容时返回 nil；配置冲突时返回错误 | TC-003, unit test | ✅ AddStream create/idempotency/conflict covered |
+| AC-007 | JetStream.AddConsumer | AddConsumer 幂等创建；配置兼容时返回 nil；配置冲突时返回错误 | TC-003, unit test | ✅ AddConsumer create/idempotency/conflict covered |
+| AC-008 | Health | NATS 可用时 Health() 返回 Ready=true/Live=true；不可达时 Ready=false/Live=false；JetStream 不可用时 Ready=false/Live=true | TC-005, unit test | ◐ Healthy, disconnected, nil, canceled, and closed paths covered; degraded lifecycle pending |
 
 
 ## 8. Business Rules
@@ -390,6 +393,8 @@ foundationx:
 | Drain 超时 | 返回 ErrDrainTimeout |
 | AddStream 重复调用且配置兼容 | 返回 nil（幂等） |
 | AddStream 重复调用且配置冲突 | 返回 ErrStreamExists |
+| AddConsumer 重复调用且配置兼容 | 返回 nil（幂等） |
+| AddConsumer 重复调用且配置冲突 | 返回 ErrConsumerExists |
 | JetStream disabled 时调用 JetStream 方法 | 返回 ErrJetStreamDisabled |
 | Publish 空 subject | 返回 ErrInvalidSubject |
 
@@ -466,6 +471,8 @@ go 1.23
 | AddStream 幂等 | 重复调用且配置兼容返回 nil |
 | AddStream 冲突 | 返回 ErrStreamExists |
 | AddConsumer 成功 | 创建 consumer |
+| AddConsumer 幂等 | 重复调用且配置兼容返回 nil |
+| AddConsumer 冲突 | 返回 ErrConsumerExists |
 | Health 检查 | NATS 可用/不可用正确反映 |
 | 自动重连 | 断开后自动重连 |
 | Codec 序列化/反序列化 | JSON / msgpack 正确 |
