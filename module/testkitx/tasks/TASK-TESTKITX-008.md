@@ -7,7 +7,7 @@
 ```yaml
 task_id: TASK-TESTKITX-008
 module: testkitx
-scope: "实现 BoundaryCheck，验证数值边界条件"
+scope: "实现 BoundaryCheck，生产包 import 边界扫描（go list 验证生产依赖图不含 testkitx）"
 spec_ref:
   - "module/testkitx/SPEC.md#FR-009"
 files:

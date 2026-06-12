@@ -8,9 +8,9 @@
 task_id: TASK-SCHEDULEX-000
 module: schedulex
 scope: "创建 go.mod、doc.go、errors.go，定义公共错误变量"
+non_scope: "不定义接口，不实现调度逻辑"
 spec_ref:
-  - "module/schedulex/SPEC.md#10"
-  - "module/schedulex/SPEC.md#15"
+  - "module/schedulex/SPEC.md#FR-001"
 files:
   - "go.mod"
   - "doc.go"
@@ -30,8 +30,8 @@ status: pending
 
 | Requirement | Description | Acceptance Criteria |
 |---|---|---|
-| §10 | 公共错误变量定义 | 错误变量均为 `errors.New` 创建 |
-| §15 | go.mod 依赖声明 | 仅必要依赖 |
+| §9.6 | 公共错误变量定义 | 错误变量均为 `errors.New` 创建 |
+| §15.1 | go.mod 依赖声明 | 仅必要依赖 |
 
 ## Test Plan
 

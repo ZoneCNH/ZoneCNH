@@ -93,6 +93,8 @@ THEN 返回 `ErrInvalidTrigger`
 WHEN 调用 `Schedule(job Job)` 且 JobID 已存在
 THEN 返回 `ErrDuplicateJob`
 
+> AC: AC-001, AC-002, AC-003, AC-004
+
 ### FR-002: Trigger
 
 WHEN job 使用 cron 触发且到达调度时间
@@ -103,6 +105,8 @@ THEN 调用 JobHandler
 
 WHEN job 设置 Delay 首次延迟
 THEN 等待 Delay 后首次触发
+
+> AC: AC-005, AC-006, AC-007
 
 ### FR-003: Overlap Policy
 
@@ -115,6 +119,8 @@ THEN 排队等待上次完成后执行
 WHEN OverlapPolicy = Replace 且上次执行未完成
 THEN 取消旧的执行，启动新的
 
+> AC: AC-008, AC-009, AC-010
+
 ### FR-004: Misfire Policy
 
 WHEN MisfirePolicy = Skip 且触发被错过
@@ -126,6 +132,8 @@ THEN 补执行一次
 WHEN MisfirePolicy = CatchUp 且触发被错过
 THEN 补执行所有错过的次数
 
+> AC: AC-011, AC-012, AC-013
+
 ### FR-005: Cancel
 
 WHEN 调用 `Cancel(id)` 且 job 存在
@@ -133,6 +141,8 @@ THEN 取消 job，返回 nil
 
 WHEN 调用 `Cancel(id)` 且 job 不存在
 THEN 返回 `ErrJobNotFound`
+
+> AC: AC-014, AC-015
 
 ### FR-006: Stop
 
@@ -142,10 +152,14 @@ THEN 等待正在执行的 job 完成或超时
 WHEN Stop 期间 job 超过 deadline
 THEN 强制取消，返回 `ErrShutdownTimeout`
 
+> AC: AC-016, AC-017
+
 ### FR-007: EventSink
 
 WHEN job 触发、开始、完成、失败或 misfire
 THEN 调用注册的 JobEvent 回调
+
+> AC: AC-018
 
 ### FR-008: Locker
 
@@ -158,25 +172,29 @@ THEN 跳过本次执行，等待下一个调度周期
 WHEN lock TTL < job 最大执行时间
 THEN 返回配置错误
 
+> AC: AC-019, AC-020, AC-021
+
 ### FR-009: Clock
 
 WHEN 注入 FakeClock
 THEN 所有调度基于 FakeClock，不调用 time.Now（测试确定性）
 
+> AC: AC-022
+
 ---
 
 ## 8. Business Rules
 
-| 编号 | 规则 |
-|------|------|
-| BR-001 | Schedule 必须校验 trigger 合法性（cron 语法 / interval > 0） |
-| BR-002 | 同一 JobID 重复注册返回 ErrDuplicateJob |
-| BR-003 | Stop 必须等待正在执行的 job 完成或超时 |
-| BR-004 | overlap 行为由 OverlapPolicy 决定，不内置隐式策略 |
-| BR-005 | job panic 被 catch，不影响其他 job |
-| BR-006 | lock TTL > job 最大执行时间，防止锁提前释放导致重复执行 |
-| BR-007 | DST 切换时触发时间必须正确（不能跳过或重复触发） |
-| BR-008 | job handler 必须接受 context.Context，支持取消传播 |
+| 编号 | 规则 | 违反后果 |
+|------|------|----------|
+| BR-001 | Schedule 必须校验 trigger 合法性（cron 语法 / interval > 0） | 非法 trigger 被接受，运行时 panic 或行为不确定 |
+| BR-002 | 同一 JobID 重复注册返回 ErrDuplicateJob | 同名 job 被覆盖，旧任务丢失，调度混乱 |
+| BR-003 | Stop 必须等待正在执行的 job 完成或超时 | job 被强杀，数据不一致或资源泄漏 |
+| BR-004 | overlap 行为由 OverlapPolicy 决定，不内置隐式策略 | 行为不可预测，不同部署表现不一致 |
+| BR-005 | job panic 被 catch，不影响其他 job | panic 传播导致调度器崩溃，所有 job 停止 |
+| BR-006 | lock TTL > job 最大执行时间，防止锁提前释放导致重复执行 | 锁提前释放，多实例重复执行 |
+| BR-007 | DST 切换时触发时间必须正确（不能跳过或重复触发） | 触发时间偏移，任务提前/延迟/重复触发 |
+| BR-008 | job handler 必须接受 context.Context，支持取消传播 | 无法取消，goroutine 泄漏，停机超时 |
 
 ---
 
@@ -430,11 +448,41 @@ go 1.23
 | resiliencx（可选，job wrapper） | 所有业务域实现 |
 | stdlib | |
 
+
 ---
 
-## 16. Testing
+## 16. Acceptance Criteria Registry
 
-### 16.1 单元测试
+| 编号 | 描述 | 关联 FR | 验证方式 |
+|------|------|---------|----------|
+| AC-001 | Schedule 注册合法 job 返回 JobID | FR-001 | TC-001 |
+| AC-002 | cron 语法错误返回 ErrInvalidTrigger | FR-001 | Unit |
+| AC-003 | interval <= 0 返回 ErrInvalidTrigger | FR-001 | Unit |
+| AC-004 | 重复 JobID 返回 ErrDuplicateJob | FR-001 | TC-009 |
+| AC-005 | cron 触发时调用 JobHandler | FR-002 | TC-001 |
+| AC-006 | interval 触发时调用 JobHandler | FR-002 | Unit |
+| AC-007 | Delay 首次延迟后触发 | FR-002 | Unit |
+| AC-008 | Overlap Skip 跳过本次触发 | FR-003 | TC-002 |
+| AC-009 | Overlap Queue 排队等待 | FR-003 | Unit |
+| AC-010 | Overlap Replace 取消旧的执行新的 | FR-003 | Unit |
+| AC-011 | Misfire Skip 跳过本次 | FR-004 | Unit |
+| AC-012 | Misfire RunOnce 补执行一次 | FR-004 | TC-003 |
+| AC-013 | Misfire CatchUp 补执行所有 | FR-004 | Unit |
+| AC-014 | Cancel 已存在 job 返回 nil | FR-005 | TC-005 |
+| AC-015 | Cancel 不存在 job 返回 ErrJobNotFound | FR-005 | Unit |
+| AC-016 | Stop 等待正在执行的 job 完成或超时 | FR-006 | TC-006 |
+| AC-017 | Stop 超时返回 ErrShutdownTimeout | FR-006 | Unit |
+| AC-018 | EventSink 收到生命周期事件 | FR-007 | TC-007 |
+| AC-019 | 锁获取成功执行 job | FR-008 | Unit |
+| AC-020 | 锁获取失败跳过本次 | FR-008 | TC-004 |
+| AC-021 | lock TTL < job 最大执行时间返回配置错误 | FR-008 | Unit |
+| AC-022 | FakeClock 注入后调度基于 FakeClock | FR-009 | TC-008 |
+
+---
+
+## 17. Testing
+
+### 18.1 单元测试
 
 | 测试场景 | 验证点 |
 |----------|--------|
@@ -456,7 +504,7 @@ go 1.23
 | 触发确定性 | 相同 FakeClock → 相同 next time |
 | event hook | 事件正确输出到 hook |
 
-### 16.2 Given/When/Then 用例
+### 17.2 Given/When/Then 用例
 
 **TC-001: 正常 cron 触发**
 Given 注册 cron job `*/1 * * * *`
@@ -503,14 +551,14 @@ Given JobID `daily` 已注册
 When 再次注册同名 job
 Then 返回 ErrDuplicateJob
 
-### 16.3 Benchmark
+### 17.3 Benchmark
 
 | 场景 | 目标 |
 |------|------|
 | 1000 个 job 内存 | < 10MB |
 | job 触发延迟 | < 10ms |
 
-### 16.4 集成测试
+### 17.4 集成测试
 
 | 场景 | 验证点 |
 |------|--------|
@@ -520,7 +568,7 @@ Then 返回 ErrDuplicateJob
 
 ---
 
-## 17. Performance Budget
+## 18. Performance Budget
 
 | 操作 | 目标 | 测量方式 |
 |------|------|----------|
@@ -530,7 +578,7 @@ Then 返回 ErrDuplicateJob
 
 ---
 
-## 18. Observability
+## 19. Observability
 
 | 类型 | 名称 | 说明 |
 |------|------|------|
@@ -552,7 +600,7 @@ Then 返回 ErrDuplicateJob
 
 ---
 
-## 19. Security
+## 20. Security
 
 | 要求 | 实现方式 |
 |------|----------|
@@ -561,9 +609,9 @@ Then 返回 ErrDuplicateJob
 
 ---
 
-## 20. CI Gate
+## 21. CI Gate
 
-### 20.1 通用 Gate
+### 21.1 通用 Gate
 
 | Gate | 命令 | 阻塞条件 |
 |------|------|----------|
@@ -576,7 +624,7 @@ Then 返回 ErrDuplicateJob
 | Secret 扫描 | `gitleaks detect --no-git` | 泄露 secret |
 | Benchmark | `go test -bench=. -benchmem -count=3 ./...` | 结果附在 PR comment |
 
-### 20.2 schedulex 专属 Gate
+### 21.2 schedulex 专属 Gate
 
 | Gate | 命令 | 阻塞条件 |
 |------|------|----------|
@@ -588,7 +636,7 @@ Then 返回 ErrDuplicateJob
 
 ---
 
-## 21. Upgrade Compatibility
+## 22. Upgrade Compatibility
 
 | 变更类型 | 版本升级 |
 |----------|----------|
@@ -600,7 +648,7 @@ Then 返回 ErrDuplicateJob
 
 ---
 
-## 22. Release DoD
+## 23. Release DoD
 
 - [ ] 所有公共接口有 godoc 注释
 - [ ] 所有公共类型有示例代码
@@ -623,7 +671,7 @@ Then 返回 ErrDuplicateJob
 
 ---
 
-## 23. Open Questions
+## 24. Open Questions
 
 - 是否需要支持动态添加/移除 job（运行时 Schedule/Cancel）的并发安全保证级别？
 - 是否需要支持 job 优先级（高优先级 job 可抢占低优先级的执行槽）？

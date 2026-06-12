@@ -8,6 +8,7 @@
 task_id: TASK-SCHEDULEX-005
 module: schedulex
 scope: "实现 Stop 方法，支持 graceful shutdown 和 deadline 超时"
+non_scope: "不实现 Start 主循环逻辑，不处理 Overlap/Misfire 策略"
 spec_ref:
   - "module/schedulex/SPEC.md#FR-006"
 files:
@@ -35,8 +36,8 @@ status: pending
 
 | Test Case | Type | Description |
 |---|---|---|
-| §7.6-1 | Unit | Stop 正常：等待 job 完成 |
-| §7.6-2 | Unit | Stop 超时：强制取消，ErrShutdownTimeout |
+| TC-006 | Unit | Stop 正常：等待 job 完成 |
+| TC-006 | Unit | Stop 超时：强制取消，ErrShutdownTimeout |
 
 ## Implementation Notes
 

@@ -8,6 +8,7 @@
 task_id: TASK-SCHEDULEX-003
 module: schedulex
 scope: "实现 OverlapPolicy（Skip/Queue/Replace）策略"
+non_scope: "不实现 Misfire 策略，不修改 Trigger 逻辑"
 spec_ref:
   - "module/schedulex/SPEC.md#FR-003"
 files:
@@ -19,6 +20,7 @@ acceptance_criteria:
   - "Replace：上次未完成时取消旧的启动新的"
 depends_on:
   - "TASK-SCHEDULEX-002"
+  - "TASK-SCHEDULEX-011"
 estimated_effort: "2h"
 priority: P0
 status: pending
@@ -36,9 +38,9 @@ status: pending
 
 | Test Case | Type | Description |
 |---|---|---|
-| §7.3-1 | Unit | Skip：上次未完成时跳过 |
-| §7.3-2 | Unit | Queue：排队等待 |
-| §7.3-3 | Unit | Replace：取消旧的启动新的 |
+| TC-002 | Unit | Skip：上次未完成时跳过 |
+| TC-002 | Unit | Queue：排队等待 |
+| TC-002 | Unit | Replace：取消旧的启动新的 |
 
 ## Implementation Notes
 

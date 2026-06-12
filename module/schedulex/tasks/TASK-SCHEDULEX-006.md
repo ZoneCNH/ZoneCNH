@@ -8,6 +8,7 @@
 task_id: TASK-SCHEDULEX-006
 module: schedulex
 scope: "实现 EventSink，支持 job 生命周期事件回调"
+non_scope: "不实现调度逻辑，不处理锁或时钟"
 spec_ref:
   - "module/schedulex/SPEC.md#FR-007"
 files:
@@ -17,7 +18,7 @@ acceptance_criteria:
   - "job 触发/开始/完成/失败/misfire 时调用注册的回调"
   - "多个 EventSink 可同时注册"
 depends_on:
-  - "TASK-SCHEDULEX-001"
+  - "TASK-SCHEDULEX-011"
 estimated_effort: "1h"
 priority: P1
 status: pending
@@ -35,7 +36,7 @@ status: pending
 
 | Test Case | Type | Description |
 |---|---|---|
-| §7.7-1 | Unit | 事件触发时回调被调用 |
+| TC-007 | Unit | 事件触发时回调被调用 |
 | — | Unit | 多个 sink 同时收到事件 |
 
 ## Implementation Notes

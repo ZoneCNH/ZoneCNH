@@ -8,6 +8,7 @@
 task_id: TASK-SCHEDULEX-007
 module: schedulex
 scope: "实现 Locker 接口，支持分布式锁获取和 TTL 校验"
+non_scope: "不实现 Redis/Postgres 存储后端，不引入外部依赖"
 spec_ref:
   - "module/schedulex/SPEC.md#FR-008"
 files:
@@ -18,7 +19,7 @@ acceptance_criteria:
   - "锁获取失败时跳过本次"
   - "lock TTL < job 最大执行时间时返回配置错误"
 depends_on:
-  - "TASK-SCHEDULEX-001"
+  - "TASK-SCHEDULEX-011"
 estimated_effort: "2h"
 priority: P1
 status: pending
@@ -36,9 +37,9 @@ status: pending
 
 | Test Case | Type | Description |
 |---|---|---|
-| §7.8-1 | Unit | 锁获取成功：执行 job |
-| §7.8-2 | Unit | 锁获取失败：跳过 |
-| §7.8-3 | Unit | TTL 过短：配置错误 |
+| TC-004 | Unit | 锁获取成功：执行 job |
+| TC-004 | Unit | 锁获取失败：跳过 |
+| TC-004 | Unit | TTL 过短：配置错误 |
 
 ## Implementation Notes
 
