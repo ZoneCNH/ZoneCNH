@@ -13,7 +13,7 @@
 - Last-Updated: 2026-06-07
 - Owner: ZoneCNH
 - Layer: L1 基础能力
-- Version: v0.7.3
+- Version: v0.1.4
 - Repository: [github.com/ZoneCNH/configx](https://github.com/ZoneCNH/configx)
 - Related: [CONSTITUTION.md](../../CONSTITUTION.md), [ARCHITECTURE.md](../../ARCHITECTURE.md)
 
@@ -23,6 +23,7 @@
 
 | 日期 | 版本 | 变更内容 | 作者 |
 |------|------|----------|------|
+| 2026-06-12 | v1.0.2 | 版本号对齐：v0.7.3→v0.1.4 与 ARCHITECTURE.md 一致；Non-goals §5 澄清 RemoteSource SPI 扩展点；§15.2 移除已过时的 kernel 依赖声明 | ZoneCNH |
 | 2026-06-12 | v1.0.1 | 对齐修复：移除过时 kernel.Deps 引用；Status Draft→Approved；依赖方向修正 kernel 为允许依赖；TRACEABILITY 完整重写 | ZoneCNH |
 | 2026-06-07 | v1.0.0 | 初始版本 | ZoneCNH |
 
@@ -56,9 +57,10 @@
 ## 5. Non-goals
 
 - 不做运行时配置热更新（考虑作为后续特性）
-- 不做远程配置中心（K8s ConfigMap 可以通过文件挂载实现）
+- 不做远程配置中心产品（K8s ConfigMap 可通过文件挂载）；RemoteSource SPI 扩展点属于 v1.0 目标范围，由 goal.md 定义
 - 不做敏感信息加密（→ 环境变量或 secret manager）
 - 不做跨服务配置同步
+- v1.0 目标（见 goal.md）：RemoteSource SPI、配置热更新回滚、敏感字段自动脱敏、配置文档生成
 
 ---
 
@@ -337,10 +339,9 @@ go 1.23
 | 可以依赖 | 禁止依赖 |
 |----------|----------|
 | stdlib | observex, resiliencx, schedulex, testkitx |
-| `kernel` (L0 原语) | 所有业务域实现 |
-| `gopkg.in/yaml.v3`（可选） | 所有存储/中间件扩展 |
-| `github.com/pelletier/go-toml/v2`（可选） | |
-| `github.com/santhosh-tekuri/jsonschema/v5`（可选） | |
+| `gopkg.in/yaml.v3`（可选） | 所有业务域实现 |
+| `github.com/pelletier/go-toml/v2`（可选） | `kernel`（foundationx exit 已完成，不再依赖） |
+| `github.com/santhosh-tekuri/jsonschema/v5`（可选） | 所有存储/中间件扩展 |
 
 ---
 
