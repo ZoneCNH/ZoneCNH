@@ -8,7 +8,7 @@
 
 ## 1. Metadata
 
-- Status: Draft
+- Status: Review
 - Spec-Version: v1.0.0
 - Last-Updated: 2026-06-12
 - Owner: ZoneCNH
@@ -25,6 +25,7 @@
 |------|------|----------|------|
 | 2026-06-07 | v1.0.0 | 初始版本 | ZoneCNH |
 | 2026-06-12 | v1.0.1 | 结构修复：BR违反时列、Data Model补充、FR异常路径、Open Questions分类、配置表格化 | ZoneCNH |
+| 2026-06-12 | v1.0.1 | 状态 Draft → Review（Claude 99 + Rules 100，两源评分通过，待 Codex/Copilot 凑齐四源） | ZoneCNH |
 
 ## 2. Summary
 
