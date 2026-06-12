@@ -68,11 +68,13 @@
 
 ## 5. Non-goals
 
-- 不做 Redis 集群管理（Sentinel / Cluster 由运维配置）
-- 不做 Redis 数据结构抽象（直接暴露 Redis 命令）
-- 不做缓存策略（业务层决定 TTL、淘汰策略）
-- 不做 Redis 模块加载或脚本管理
-- 不做配置解析；调用方可传入已解析选项，redisx 不直接 import `configx`。
+- 不封装 Redis 的全部命令集合，只稳定 1.0 明确列出的能力。
+- 不管理 Redis Cluster、Sentinel、备份、扩缩容、认证轮换或运维拓扑。
+- 不承诺跨 Redis 集群的强一致锁。
+- 不解析配置文件，不直接 import `configx`。
+- 不直接 import `observex`、`resiliencx` 或 `contracts`；观测和弹性只通过本地接口或上层 adapter 接入。
+- 不鼓励业务绕过 KeyBuilder 直接拼接 Key。
+- 不把缓存一致性事件系统内建到 `redisx`；与 `kafkax`、`natsx` 等联动由上层实现。
 
 ---
 
@@ -348,19 +350,7 @@ func NewRateLimitHelper(counter Counter) RateLimitHelper
 | RateLimitHelper | p95 < 10ms，并发下计数正确 | `BenchmarkRateLimit` |
 | Hook 开销 | 空 hook p95 < 1us | `BenchmarkHook` |
 
-```text
-module github.com/ZoneCNH/redisx
-
-go 1.23
-```text
-
-### 15.2 依赖方向
-
-| 直接 Go 依赖类型 | 允许项 | 禁止项 |
-| ---------------- | ------ | ------ |
-| Foundation 依赖 | `kernel` | `configx`、`observex`、`resiliencx`、`contracts` |
-| 实现依赖 | Redis 客户端库 `github.com/redis/go-redis/v9` | 业务域实现、所有 L2.5 领域共享层、其他存储扩展模块 |
-| 治理集成 | 通过 redisx 本地 option/callback/SPI 注入已解析配置、观测 sink 或重试策略 | 为治理能力直接 import `configx`、`observex`、`resiliencx` 或 `contracts` |
+性能预算作为发布证据。不同机器或 Redis 环境下超预算时，必须记录环境和原因，不得静默忽略。
 
 ---
 

@@ -1,32 +1,38 @@
 # TASK-REDISX-007
 
-> Distributed lock acquire and release
+> Counter 与 fixed-window RateLimitHelper
 
 ---
 
 ```yaml
 task_id: TASK-REDISX-007
 module: redisx
-scope: "Implement Locker Acquire/Release with holder token, TTL, and atomic release protection."
+scope: "实现 Counter 与 fixed-window RateLimitHelper，保证原子计数、窗口 TTL 和剩余额度返回。"
 spec_ref:
   - "module/redisx/SPEC.md#FR-010"
-  - "module/redisx/SPEC.md#FR-011"
+  - "module/redisx/SPEC.md#BR-004"
+  - "module/redisx/SPEC.md#BR-003"
 files:
-  - "locker.go"
-  - "lock_script.go"
-  - "locker_test.go"
+  - "counter.go"
+  - "ratelimit.go"
+  - "counter_test.go"
+  - "ratelimit_test.go"
   - "testutil_test.go"
 acceptance_criteria:
-  - "AC-007-1: Acquire succeeds only for an unheld lock, returns false for a competing holder, and always sets a TTL."
-  - "AC-007-2: Release succeeds only for the current holder token and does not delete another holder's lock."
+  - "AC-010-1: Counter 与 RateLimitHelper 覆盖原子计数、窗口过期、并发和剩余额度。"
+  - "AC-BR-004: 默认 TTL、显式 no-expire 和 jitter 语义被区分。"
+  - "AC-BR-003: 关键操作覆盖 context cancel/deadline 测试。"
 non_scope:
-  - "Do not edit module/redisx/SPEC.md, TRACEABILITY.md, or goal.md as part of this implementation task."
-  - "Do not add direct runtime dependencies on configx, observex, resiliencx, contracts, or any business-domain module."
-  - "Do not implement unrelated Redis commands beyond the FR IDs listed for this task."
+  - "不编辑 module/redisx/SPEC.md、TRACEABILITY.md 或 goal.md。"
+  - "不新增 configx、observex、resiliencx、contracts 或业务域模块的直接运行时依赖。"
+  - "不实现滑动窗口、令牌桶、分布式配额管理或业务限流策略。"
 test_plan:
-  - "TC-002: Two clients contend for one lock; only the holder can release it and TTL expiry allows reacquire."
+  - "TC-010-1: Counter、RateLimit、并发、窗口 TTL。"
+  - "TC-BR-004: TTL 默认、显式无过期和 jitter。"
+  - "TC-BR-003: 网络操作 context cancel/deadline。"
 depends_on:
-  - "TASK-REDISX-001"
+  - "TASK-REDISX-000"
+  - "TASK-REDISX-002"
 estimated_effort: "1d"
 priority: P0
 status: pending
@@ -41,32 +47,50 @@ status: pending
 ## Requirements Covered
 
 | Requirement | Description | Acceptance Criteria |
-| ----------- | ----------- | ------------------- |
-| FR-010 | Locker.Acquire | AC-007-1 |
-| FR-011 | Locker.Release | AC-007-2 |
+| --- | --- | --- |
+| FR-010 | Counter 与 fixed-window RateLimitHelper | AC-010-1 |
+| BR-004 | TTL 默认策略、jitter 与无意永不过期防护 | AC-BR-004 |
+| BR-003 | 所有网络操作尊重 context | AC-BR-003 |
 
-## Acceptance Criteria
+## Scope
 
-| AC ID | Criteria |
-| ----- | -------- |
-| AC-007-1 | Acquire succeeds only for an unheld lock, returns false for a competing holder, and always sets a TTL. |
-| AC-007-2 | Release succeeds only for the current holder token and does not delete another holder's lock. |
+- 实现 Counter 的 incr/add/get/reset 最小 API。
+- 实现 fixed-window `Allow`，返回 allowed、remaining、resetAt。
+- 首次计数必须设置窗口 TTL，避免无意永久 Key。
+- 覆盖并发、过期、context cancel/deadline 和 TTL 策略。
 
 ## Non-Scope
 
-- Do not edit module/redisx/SPEC.md, TRACEABILITY.md, or goal.md as part of this implementation task.
-- Do not add direct runtime dependencies on configx, observex, resiliencx, contracts, or any business-domain module.
-- Do not implement unrelated Redis commands beyond the FR IDs listed for this task.
+- 不实现滑动窗口、令牌桶或漏桶。
+- 不提供业务主体识别、租户配额或外部分布式协调。
+- 不接入外部 metrics/retry/circuit 模块。
+
+## Files
+
+| File | Purpose |
+| --- | --- |
+| `counter.go` | Counter API 与原子计数 |
+| `ratelimit.go` | fixed-window RateLimitHelper |
+| `counter_test.go` | 计数、reset、过期测试 |
+| `ratelimit_test.go` | Allow、remaining、resetAt 和并发测试 |
+| `testutil_test.go` | Redis 测试夹具 |
 
 ## Test Plan
 
 | Test Case | Type | Description | Same-task test file |
-| --------- | ---- | ----------- | ------------------- |
-| TC-002 | Unit/Integration | Two clients contend for one lock; only the holder can release it and TTL expiry allows reacquire. | `locker_test.go` |
+| --- | --- | --- | --- |
+| TC-010-1 | Concurrency/Integration | Counter、RateLimit、并发、窗口 TTL。 | `counter_test.go`, `ratelimit_test.go` |
+| TC-BR-004 | Unit/Integration | TTL 默认、显式无过期和 jitter。 | `ratelimit_test.go` |
+| TC-BR-003 | Unit/Integration | 网络操作尊重 context cancel/deadline。 | `counter_test.go`, `ratelimit_test.go` |
 
 ## Implementation Notes
 
-- Direct production imports are limited to stdlib, kernel, and the Redis client library; configx/observex/resiliencx/contracts remain integration boundaries expressed through local options, interfaces, docs, or adapters outside this task.
-- Every listed test case must be implemented in a same-task `*_test.go` or `example_test.go` file listed in this task.
-- Preserve context cancellation and timeout behavior for all Redis calls touched by this task.
-- Use an atomic holder-token check for Release so one client cannot release another client's lock.
+- 原子计数优先使用 Redis 原生命令或 Lua，不能以客户端 read-modify-write 实现。
+- resetAt 必须来自窗口 TTL/时间计算，避免返回零值掩盖过期语义。
+- 错误文本和 hook payload 必须使用 Key pattern，不使用完整 Key。
+
+## Done Evidence
+
+- `go test ./...` 通过。
+- TC-010-1、TC-BR-004、TC-BR-003 均有同任务测试证据。
+- 并发测试证明窗口内计数和剩余额度稳定。
