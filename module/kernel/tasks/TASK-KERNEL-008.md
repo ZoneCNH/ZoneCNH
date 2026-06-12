@@ -31,7 +31,15 @@ status: pending
 
 ---
 
+## Files Likely to Change
+
+- `validx/validx.go` — 新建（Precondition/Invariant/RequireNonEmpty）
+- `validx/validx_test.go` — 新建
+- `validx/example_test.go` — 新建
+
 ## Requirements Covered
+
+> Spec TC: TC-011
 
 | Requirement | Description |
 |---|---|
@@ -45,6 +53,12 @@ status: pending
 
 - 不引入断言宏/panic 行为（始终返回 error）
 - 不校验复杂业务规则（仅做前置条件检查）
+
+## Test Plan
+
+| TC | Type | Description |
+|----|------|-------------|
+| TC-011 | Unit | RequireNonEmpty 空值返回 validation 错误 |
 
 ## Implementation Notes
 

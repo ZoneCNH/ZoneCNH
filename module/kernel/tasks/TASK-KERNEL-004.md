@@ -33,7 +33,15 @@ status: pending
 
 ---
 
+## Files Likely to Change
+
+- `syncx/syncx.go` — 新建（Limiter/SemaphoreLimiter/WorkerGroup）
+- `syncx/syncx_test.go` — 新建
+- `syncx/example_test.go` — 新建
+
 ## Requirements Covered
+
+> Spec TC: TC-013, TC-014
 
 | Requirement | Description |
 |---|---|
@@ -44,6 +52,13 @@ status: pending
 
 - 不实现连接池或资源池
 - 不实现分布式锁
+
+## Test Plan
+
+| TC | Type | Description |
+|----|------|-------------|
+| TC-013 | Unit | SemaphoreLimiter Acquire/Release 并发安全 |
+| TC-014 | Unit | WorkerGroup 错误收集 + cancel 传播 |
 
 ## Implementation Notes
 

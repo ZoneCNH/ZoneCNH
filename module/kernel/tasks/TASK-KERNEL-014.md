@@ -9,17 +9,19 @@ task_id: TASK-KERNEL-014
 module: kernel
 scope: "实现 contracts/ 契约验证层：API 快照、golden 行为测试、消费者导入测试、public_api 声明"
 spec_ref:
-  - "module/kernel/SPEC.md#14"
+  - "module/kernel/SPEC.md#FR-001~FR-012"
   - "module/kernel/SPEC.md#20.2"
+  - "module/kernel/SPEC.md#BR-009"
   - "module/kernel/SPEC.md#22"
 files:
   - "contracts/contracts_test.go"
   - "contracts/api_docs_test.go"
   - "contracts/golden_behavior_test.go"
   - "contracts/release_docs_ci_test.go"
-  - "contracts/public_api/"
-  - "contracts/golden/"
-  - "contracts/examples/"
+  - "contracts/public_api/api.snapshot"
+  - "contracts/golden/errx.golden"
+  - "contracts/golden/healthx.golden"
+  - "contracts/examples/README.md"
   - "contracts/consumers/xgo/minimal_import_test.go"
 acceptance_criteria:
   - "AC-CONTRACTS-01: public-api-snapshot gate 通过"

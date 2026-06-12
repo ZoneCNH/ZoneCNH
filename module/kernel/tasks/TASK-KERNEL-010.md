@@ -34,7 +34,15 @@ status: pending
 
 ---
 
+## Files Likely to Change
+
+- `contextx/contextx.go` — 新建（Key[T]/WithValue/Value/DeadlineRemaining）
+- `contextx/contextx_test.go` — 新建
+- `contextx/example_test.go` — 新建
+
 ## Requirements Covered
+
+> Spec TC: TC-010
 
 | Requirement | Description |
 |---|---|
@@ -49,6 +57,12 @@ status: pending
 
 - 不使用 context.WithValue 裸 API（必须通过 Key[T]）
 - 不实现 context 替代方案（仅做类型安全包装）
+
+## Test Plan
+
+| TC | Type | Description |
+|----|------|-------------|
+| TC-010 | Unit | Key 唯一性：同名字不同 NewKey 不冲突 |
 
 ## Implementation Notes
 

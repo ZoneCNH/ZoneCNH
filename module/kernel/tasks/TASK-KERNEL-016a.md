@@ -11,6 +11,7 @@ scope: "创建 docs/ 项目文档：ADR、设计、治理、Spec、标准、证�
 parent: TASK-KERNEL-016
 spec_ref:
   - "module/kernel/SPEC.md#22"
+  - "module/kernel/SPEC.md#BR-009"
 files:
   - "docs/adr/ADR-001.md"
   - "docs/design/architecture.md"

@@ -33,7 +33,15 @@ status: pending
 
 ---
 
+## Files Likely to Change
+
+- `shutdownx/shutdownx.go` — 新建（Hook/HookFunc/Manager/NotifyContext）
+- `shutdownx/shutdownx_test.go` — 新建
+- `shutdownx/example_test.go` — 新建
+
 ## Requirements Covered
+
+> Spec TC: TC-008, TC-016
 
 | Requirement | Description |
 |---|---|
@@ -44,6 +52,13 @@ status: pending
 
 - 不包含强制 kill / 超时逻辑（由调用方通过 context 控制）
 - 不包含 HTTP shutdown endpoint
+
+## Test Plan
+
+| TC | Type | Description |
+|----|------|-------------|
+| TC-008 | Unit | LIFO 顺序：后注册 Hook 先执行 |
+| TC-016 | Unit | NotifyContext：SIGTERM→cancel 传播 |
 
 ## Implementation Notes
 

@@ -12,6 +12,7 @@ parent: TASK-KERNEL-016
 spec_ref:
   - "module/kernel/SPEC.md#20"
   - "module/kernel/SPEC.md#22"
+  - "module/kernel/SPEC.md#BR-009"
 files:
   - "scripts/ci/check-stdlib.sh"
   - "scripts/ci/internal/apisnapshot/main.go"

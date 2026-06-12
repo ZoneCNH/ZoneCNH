@@ -35,7 +35,15 @@ status: pending
 
 ---
 
+## Files Likely to Change
+
+- `retryx/retryx.go` — 新建（RetryPolicy/Validate/Delay/DelayWithJitter/ShouldRetry）
+- `retryx/retryx_test.go` — 新建
+- `retryx/example_test.go` — 新建
+
 ## Requirements Covered
+
+> Spec TC: TC-006
 
 | Requirement | Description |
 |---|---|
@@ -49,6 +57,12 @@ status: pending
 
 - 不实现重试执行循环（→ resiliencx）
 - 不实现熔断/限流/退避状态机
+
+## Test Plan
+
+| TC | Type | Description |
+|----|------|-------------|
+| TC-006 | Unit | 指数退避：Delay(3)≈BaseDelay×2² |
 
 ## Implementation Notes
 

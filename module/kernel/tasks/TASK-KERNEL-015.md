@@ -10,7 +10,8 @@ module: kernel
 scope: "创建 examples/ 目录下 12 个子包的可运行示例（已拆分为 3 个子任务）"
 type: meta
 spec_ref:
-  - "module/kernel/SPEC.md#FR-001~FR-012"
+  - "module/kernel/SPEC.md#7"
+  - "FR: FR-001, FR-002, FR-003, FR-004, FR-005, FR-006, FR-007, FR-008, FR-009, FR-010, FR-011, FR-012 (全部由子任务覆盖)"
 sub_tasks:
   - "module/kernel/tasks/TASK-KERNEL-015a.md"
   - "module/kernel/tasks/TASK-KERNEL-015b.md"
