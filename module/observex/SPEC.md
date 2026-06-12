@@ -9,7 +9,7 @@
 ## 1. Metadata
 
 - Status: Review
-- Spec-Version: v1.0.0
+- Spec-Version: v1.0.1
 - Last-Updated: 2026-06-12
 - Owner: ZoneCNH
 - Layer: L1 基础能力
@@ -26,6 +26,7 @@
 | 2026-06-07 | v1.0.0 | 初始版本 | ZoneCNH |
 | 2026-06-12 | v1.0.1 | 结构修复：BR违反时列、Data Model补充、FR异常路径、Open Questions分类、配置表格化 | ZoneCNH |
 | 2026-06-12 | v1.0.1 | 状态 Draft → Review（Claude 99 + Rules 100，两源评分通过，待 Codex/Copilot 凑齐四源） | ZoneCNH |
+| 2026-06-12 | v1.0.1 | 结构修复续：Spec-Version对齐、Non-goals补全、config prefix与BR-006对齐、新增EC-010/TC-003a、FR-005嵌套脱敏 | ZoneCNH |
 
 ## 2. Summary
 
@@ -81,6 +82,7 @@
 - 不做业务判断或风控放行
 - 不做 Prometheus/Otel/Zap 直接绑定（通过 Exporter 接口抽象）
 - 不把业务状态写死为 metrics 或 log 的强制枚举
+- 不在 kernel 中创建强依赖（observex 作为可选注入）
 
 ---
 
@@ -161,6 +163,9 @@ THEN flush 缓冲区，释放资源
 
 WHEN 日志字段名匹配 secret 模式（password、token、api_key 等）
 THEN 字段值被替换为 `***`
+
+WHEN 字段值为嵌套 map 且内层 key 匹配 secret 模式
+THEN 递归脱敏内层敏感字段值，替换为 `***`
 
 WHEN 调用 `redact.Check(input)` 扫描文本
 THEN 检测并报告泄露的 secret 值
@@ -390,7 +395,7 @@ observex:
     exporter: otlp            # otlp / prometheus / noop
     endpoint: otel-collector:4317
     interval: 15s
-    prefix: fx
+    prefix: foundationx_
   tracing:
     enabled: true
     exporter: otlp
@@ -417,7 +422,7 @@ observex:
 | `observex.metrics.exporter` | `string` | `otlp` | 否 | 指标 exporter：otlp / prometheus / noop |
 | `observex.metrics.endpoint` | `string` | `otel-collector:4317` | 否（exporter!=noop时是） | exporter 端点地址 |
 | `observex.metrics.interval` | `string` | `15s` | 否 | 指标采集间隔 |
-| `observex.metrics.prefix` | `string` | `fx` | 否 | 指标名前缀 |
+| `observex.metrics.prefix` | `string` | `foundationx_` | 否 | 指标名前缀（与 BR-006 命名规范一致） |
 | `observex.tracing.enabled` | `bool` | `true` | 否 | 是否启用链路追踪 |
 | `observex.tracing.exporter` | `string` | `otlp` | 否 | 追踪 exporter：otlp / noop |
 | `observex.tracing.endpoint` | `string` | `otel-collector:4317` | 否（exporter!=noop时是） | exporter 端点地址 |
@@ -468,6 +473,7 @@ func (c *Config) Validate() error {
 - 并发调用 Logger + Exporter（EC-007）：无 data race（`-race` 测试通过）
 - tracing context 跨 goroutine（EC-008）：保持同一 trace_id
 - 采样率 = 0（EC-009）：不采样任何 span，但不报错；`observex.span.dropped` counter 递增
+- Shutdown 期间并发 Export（EC-010）：进行中的 Export 完成后关闭，新 Export 请求返回 `ErrShutdownFailed`
 
 ---
 
@@ -594,6 +600,11 @@ Then 返回 `ErrLabelForbidden`，计数器值不变
 Given 在 goroutine A 中创建 span
 When goroutine B 从 ctx 中读取 trace_id
 Then trace_id 与 A 中创建的一致
+
+**TC-003a: Tracer 上下文丢失**
+Given goroutine A 中创建 span 后 context 未传播到 goroutine B
+When goroutine B 调用 `Tracer.Start(ctx, "sub-op")`
+Then 生成新的 trace_id（不等于 A 的 trace_id），并记录 warn 级别日志
 
 **TC-004: Exporter 不可达降级**
 Given exporter 后端不可用

@@ -24,7 +24,7 @@
 
 ## 依赖
 
-- 上游 Task：TASK-000
+- 上游 Task：TASK-OBSERVEX-000
 - 优先级：P0
 
 ## 文件清单
