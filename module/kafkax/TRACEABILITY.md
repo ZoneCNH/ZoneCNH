@@ -3,50 +3,42 @@
 > 模块级追溯矩阵。治理规范见 [docs/governance/TRACEABILITY.md](../../docs/governance/TRACEABILITY.md)。
 
 Last-Updated: 2026-06-12
-Source: module/kafkax/SPEC.md（v1.0.0-baseline-candidate, Draft）
-Status: Draft; rows define expected 1.0 baseline coverage and must be backed by implementation tests before approval.
-
-## Coverage Summary
-
-- Functional requirements covered: FR-001..FR-006.
-- Business rules covered: BR-001..BR-009.
-- Task IDs are delivery anchors for implementation and test work; this document does not claim those tasks are complete.
+Source: module/kafkax/SPEC.md（1.0 候选规格）
 
 | Requirement | Description | Acceptance Criteria | Test Case | Task | Status |
-| --- | --- | --- | --- | --- | --- |
-| FR-001 | Producer.Send 同步发送单条消息 | `Send(ctx, topic, key, value)` validates topic/value, honors context cancellation/timeout, maps Kafka failures to typed/redacted errors, and requires configured retry/ack policy. | TC-001 single-message send success; TC-004 retry timeout/failure; TC-008 error redaction | TASK-KAFKAX-001 Producer API + retry/error tests | ⬜ |
-| FR-002 | Producer.SendBatch 批量发送消息 | `SendBatch(ctx, msgs)` validates every message before send, treats empty batch as caller error, preserves per-message diagnostics where possible, and returns redacted typed errors. | TC-002 batch send success/failure; TC-004 retry exhaustion; TC-008 redaction | TASK-KAFKAX-002 Batch producer validation + diagnostics | ⬜ |
-| FR-003 | Consumer.Subscribe 订阅主题 | `Subscribe(ctx, topics)` rejects empty/invalid topic lists, honors context cancellation, and configures manual offset management without enabling auto commit. | TC-003 subscribe validation; TC-006 context cancellation; TC-009 auto-commit guard | TASK-KAFKAX-003 Consumer subscribe/config guard | ⬜ |
-| FR-004 | Consumer.Poll 拉取消息 | `Poll(ctx)` returns a `Message` with topic/partition/offset/key/value/headers, returns `ctx.Err()` on cancellation/timeout, and does not commit offsets implicitly. | TC-003 poll message mapping; TC-006 poll cancellation; TC-009 no implicit commit | TASK-KAFKAX-004 Consumer poll/message mapping | ⬜ |
-| FR-005 | Consumer.Commit 手动提交 offset | `Commit(ctx, msg)` validates message topic/partition/offset, honors context, returns typed commit errors, and is the only baseline offset-commit path. | TC-003 manual commit success/failure; TC-006 commit cancellation; TC-009 commit-only offset movement | TASK-KAFKAX-005 Consumer commit policy | ⬜ |
-| FR-006 | Health 健康检查 | `Health(ctx)` reports producer/consumer/client readiness without exposing payload data and distinguishes healthy/degraded/unhealthy states with redacted diagnostics. | TC-005 health state mapping; TC-006 health timeout; TC-008 diagnostic redaction | TASK-KAFKAX-006 Health contract + diagnostics | ⬜ |
-| BR-001 | Producer 必须使用 `acks=all` | Default and generated config set producer acknowledgements to all replicas; weaker acknowledgement settings are rejected unless an explicitly documented future escape hatch is approved. | TC-001 config defaults; TC-007 invalid acks rejection | TASK-KAFKAX-007 Producer safety config validation | ⬜ |
-| BR-002 | Consumer 必须手动提交 offset | Consumer config disables auto commit; offsets move only through `Commit(ctx, msg)`. | TC-003 manual commit; TC-009 auto-commit disabled | TASK-KAFKAX-005 Consumer commit policy | ⬜ |
-| BR-003 | 所有外部操作必须接收 `context.Context` | Public producer, consumer, health, and close operations accept `context.Context`; cancellation/timeout surfaces as typed context-aware errors. | TC-006 context propagation across public operations | TASK-KAFKAX-008 Context contract audit | ⬜ |
-| BR-004 | Topic 不能为空 | Producer send, batch send, subscribe, poll-derived commit validation, and DLQ publishing reject empty topic values before Kafka I/O. | TC-007 empty topic validation | TASK-KAFKAX-009 Input validation matrix | ⬜ |
-| BR-005 | Producer 重试必须可配置 | Retry attempts/backoff/timeouts are config-driven, bounded, observable, and disabled only by explicit config. | TC-004 retry configuration; TC-010 retry metrics | TASK-KAFKAX-010 Retry policy implementation | ⬜ |
-| BR-006 | 失败消息必须支持 DLQ 策略 | Exhausted send/consume failures can be routed to a configured DLQ publisher with original metadata, redacted failure reason, and explicit handling for DLQ publish failure. | TC-011 DLQ publish success/failure; TC-008 redacted DLQ error | TASK-KAFKAX-011 DLQ strategy boundary | ⬜ |
-| BR-007 | Metrics 命名必须以 `kafkax_` 开头 | All exported counters/histograms/gauges use `kafkax_` prefix and stable labels; non-prefixed metric names fail validation/review. | TC-010 metrics name audit | TASK-KAFKAX-012 Metrics contract audit | ⬜ |
-| BR-008 | 错误消息不得包含消息内容 | Returned errors, logs, health diagnostics, DLQ failure records, and metrics labels redact message key/value/payload bytes and include only safe metadata. | TC-008 payload redaction across errors/logs/DLQ/health | TASK-KAFKAX-013 Redaction test suite | ⬜ |
-| BR-009 | Consumer 不得默认启用 auto commit | Default consumer config and constructor validation reject `enable_auto_commit=true` for the baseline contract. | TC-009 default config and invalid override rejection | TASK-KAFKAX-014 Auto-commit default guard | ⬜ |
+| ----------- | ----------- | ------------------- | --------- | ---- | ------ |
+| FR-001 | Producer.Send | 可用时发送成功；Kafka 不可用或 value nil 时返回错误 | TC-001, TC-004 | KAFKAX-T01 Producer send contract | ⬜ |
+| FR-002 | Producer.SendBatch | 有效批次全部发送；部分失败返回第一个错误；空列表返回 nil | TC-002, TC-004 | KAFKAX-T02 Batch send contract | ⬜ |
+| FR-003 | Consumer.Subscribe | 正常连接加入消费组；空 topics 或重复订阅返回错误 | TC-001, TC-006 | KAFKAX-T03 Subscribe contract | ⬜ |
+| FR-004 | Consumer.Poll | 有消息返回消息；无消息阻塞至新消息或 ctx 超时；ctx 取消返回 ctx.Err() | TC-001, TC-007 | KAFKAX-T04 Poll contract | ⬜ |
+| FR-005 | Consumer.Commit | 有效消息提交 offset；nil 或非法 offset 返回错误 | TC-003, TC-008 | KAFKAX-T05 Commit contract | ⬜ |
+| FR-006 | Health | Kafka metadata 成功返回 ready/live；不可达返回 unhealthy 和错误上下文 | TC-005 | KAFKAX-T06 Health contract | ⬜ |
+| BR-001 | Producer 默认同步发送且 acks=all | 默认配置必须是同步确认；非法 acks 在构造或发送前返回错误 | TC-001, TC-009 | KAFKAX-T07 Producer defaults | ⬜ |
+| BR-002 | Consumer 默认手动 offset 提交 | 默认禁用自动提交；成功处理后由调用方显式 Commit | TC-003, TC-010 | KAFKAX-T08 Manual commit defaults | ⬜ |
+| BR-003 | 所有运行时操作接受 context.Context | Send、SendBatch、Subscribe、Poll、Commit、Close、Health 均支持取消/超时 | TC-007, TC-011 | KAFKAX-T09 Context propagation | ⬜ |
+| BR-004 | Consumer Close 时处理最终 offset 边界 | Close(ctx) 尝试完成已确认的提交/释放；失败返回错误且不吞错 | TC-008, TC-012 | KAFKAX-T10 Close semantics | ⬜ |
+| BR-005 | Producer 重试策略可配置且默认 3 次 | retries 默认 3；负值配置被拒绝；最终失败返回包装错误 | TC-004, TC-009 | KAFKAX-T11 Retry config | ⬜ |
+| BR-006 | Consumer 轮询间隔和批量参数可配置 | max_poll_records、session_timeout、heartbeat_interval 合法性校验 | TC-006, TC-009 | KAFKAX-T12 Consumer config validation | ⬜ |
+| BR-007 | Health() 幂等且无副作用 | 多次调用不改变订阅、offset、连接生命周期；错误可重复观察 | TC-005 | KAFKAX-T13 Health idempotency | ⬜ |
+| BR-008 | 错误消息不包含消息内容 | 错误和日志不得输出 value/payload 或敏感配置 | TC-013 | KAFKAX-T14 Sanitized errors | ⬜ |
+| BR-009 | Consumer 不自动提交 offset | enable_auto_commit 默认 false；自动提交配置不得覆盖默认安全语义 | TC-003, TC-010 | KAFKAX-T15 No auto commit | ⬜ |
 
-## Test Case Index
+## Task Catalog
 
-| Test Case | Purpose | Scope |
-| --- | --- | --- |
-| TC-001 | Single-message producer send, `acks=all`, and baseline error mapping | FR-001, BR-001 |
-| TC-002 | Batch send validation and partial/aggregate failure behavior | FR-002 |
-| TC-003 | Subscribe, poll, and manual commit happy/error paths | FR-003, FR-004, FR-005, BR-002 |
-| TC-004 | Retry attempts, backoff, timeout, and exhausted-send behavior | FR-001, FR-002, BR-005 |
-| TC-005 | Health state and diagnostic mapping | FR-006 |
-| TC-006 | Context cancellation/timeout propagation for every public operation | FR-003, FR-004, FR-005, FR-006, BR-003 |
-| TC-007 | Input/config validation, including empty topics and invalid `acks` | BR-001, BR-004 |
-| TC-008 | Redaction across returned errors, logs, DLQ records, metrics labels, and health diagnostics | FR-001, FR-002, FR-006, BR-006, BR-008 |
-| TC-009 | Manual offset policy and `enable_auto_commit=false` defaults/validation | FR-003, FR-004, FR-005, BR-002, BR-009 |
-| TC-010 | Metrics naming and retry/latency/error observation | BR-005, BR-007 |
-| TC-011 | DLQ strategy success/failure boundaries | BR-006 |
-
-## Notes
-
-- `TASK-KAFKAX-*` rows are planned delivery anchors; they should map to concrete tickets or implementation commits when development starts.
-- Async producer, transactions, schema registry, exactly-once semantics, and business-event envelopes remain post-baseline/future scope unless SPEC.md is deliberately re-opened.
+| Task | Scope | Evidence |
+| ---- | ----- | -------- |
+| KAFKAX-T01 | Producer.Send API、错误包装、nil value 校验 | unit + integration |
+| KAFKAX-T02 | Producer.SendBatch 空批次、部分失败、批量成功 | unit + integration |
+| KAFKAX-T03 | Consumer.Subscribe topic 校验和重复订阅 | unit |
+| KAFKAX-T04 | Consumer.Poll 阻塞、ctx 取消和消息返回 | unit + integration |
+| KAFKAX-T05 | Consumer.Commit 有效/无效消息和 offset | unit + integration |
+| KAFKAX-T06 | Health metadata 成功/失败映射 | unit |
+| KAFKAX-T07 | Producer 默认值和 acks 校验 | unit |
+| KAFKAX-T08 | 手动提交默认行为 | unit + integration |
+| KAFKAX-T09 | context 传播、取消和超时 | unit |
+| KAFKAX-T10 | Close(ctx) 提交/释放/重复关闭语义 | unit |
+| KAFKAX-T11 | Producer retries 配置和失败语义 | unit |
+| KAFKAX-T12 | Consumer 配置合法性 | unit |
+| KAFKAX-T13 | Health 幂等性 | unit |
+| KAFKAX-T14 | 错误和日志脱敏 | unit |
+| KAFKAX-T15 | 禁用自动提交默认值 | unit + integration |
