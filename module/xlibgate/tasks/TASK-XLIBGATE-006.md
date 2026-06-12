@@ -63,4 +63,4 @@ status: pending
 
 | Risk | Probability | Impact | Mitigation |
 |---|---|---|---|
-| 子检查执行顺序 | Low | Low | 顺序执行，任一失败即停 |
+| 子检查执行顺序 | Low | Low | 顺序执行，继续执行所有子检查（BR-006） |

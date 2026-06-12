@@ -38,10 +38,10 @@ status: pending
 
 | Test Case | Type | Description |
 |---|---|---|
-| §7.1-1 | Unit | 合规 import：exit 0 |
-| §7.1-2 | Unit | 禁止 import：exit 1 |
-| §7.1-3 | Unit | 无 --config：exit 2 |
-| §7.1-4 | Unit | testkitx 边界规则 |
+| TC-001 | Unit | 合规 import：exit 0 |
+| TC-002 | Unit | 禁止 import：exit 1 |
+| TC-003 | Unit | 无 --config：exit 2 |
+| TC-004 | Unit | testkitx 边界规则 |
 
 ## Implementation Notes
 
@@ -54,9 +54,9 @@ status: pending
 | Step | Description | Deliverables | Verification |
 |---|---|---|---|
 | 1 | 实现 `config.go`：解析 deps.yaml 配置 | `config.go` | `go build ./...` 通过 |
-| 2 | 实现 `check_imports.go`：遍历文件 → 解析 import → 检查合规 | `check_imports.go` | §7.1-1, §7.1-2 通过 |
-| 3 | 实现 testkitx 边界规则检查 | `check_imports.go` | §7.1-4 通过 |
-| 4 | 参数校验和错误处理 | `check_imports.go` | §7.1-3 通过 |
+| 2 | 实现 `check_imports.go`：遍历文件 → 解析 import → 检查合规 | `check_imports.go` | TC-001, TC-002 通过 |
+| 3 | 实现 testkitx 边界规则检查 | `check_imports.go` | TC-004 通过 |
+| 4 | 参数校验和错误处理 | `check_imports.go` | TC-003 通过 |
 
 ### Risk Assessment
 
