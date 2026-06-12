@@ -121,7 +121,7 @@
 | [observex](https://github.com/ZoneCNH/observex)           | v1.0.0 | █████ 100% | 220KB/18 项 | 可观测性                   |
 | [testkitx](https://github.com/ZoneCNH/testkitx)           | v0.4.0 | ███░ 80% | 254KB/27 项 | 测试工具包                 |
 | [resiliencx](https://github.com/ZoneCNH/resiliencx)       | v1.0.1 | █████ 100% | SPEC Approved (6 FR, 8 BR, 10 tasks) | 弹性策略（timeout/retry/circuit/bulkhead/rate/fallback） |
-| [schedulex](https://github.com/ZoneCNH/schedulex)         | v0.1.2 | ███░ 80% | 398KB/25 项 | 调度任务                   |
+| [schedulex](https://github.com/ZoneCNH/schedulex)         | v0.1.2 | ███░ 80% | 398KB/25 项 | cron/interval/delay 调度、Overlap/Misfire 策略、分布式锁                   |
 | [redisx](https://github.com/ZoneCNH/redisx)               | -      | █░░░ 15% | -           | Redis，仅骨架              |
 | [kafkax](https://github.com/ZoneCNH/kafkax)               | -      | █░░░ 15% | -           | Kafka，仅骨架              |
 | [natsx](https://github.com/ZoneCNH/natsx)                 | -      | ███░ 80% | 349KB/27 项 | NATS                       |

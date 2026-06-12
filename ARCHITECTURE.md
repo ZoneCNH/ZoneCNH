@@ -167,7 +167,7 @@ Foundation v1 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中�
 | `configx`       | L1 运行时     | explicit source、merge、decode、validate、sanitize、provenance、config hash                                 | secret backend、全局配置中心、自动发现、业务配置结构体     |
 | `observex`      | L1 运行时契约 | logger、metrics、tracer、field、redactor、label policy、health schema、noop、memory recorder                | Prometheus/Otel/Zap 直接绑定、alert routing、业务监控规则  |
 | `resiliencx`    | L1 运行时策略 | timeout、retry、circuit breaker、bulkhead、rate limiter、fallback、Policies 组合（budget/classifier/idempotency hint 为 v1.2+ 演进） | 交易风控、订单风险、交易所 SDK、调度、存储后端             |
-| `schedulex`     | L1 运行时调度 | trigger、clock、misfire、overlap、jitter、EventSink、Locker interface、snapshot                             | 分布式锁实现、队列、exactly-once、业务任务语义             |
+| `schedulex`     | L1 运行时调度 | cron/interval/delay trigger、OverlapPolicy（Skip/Queue/Replace）、MisfirePolicy（Skip/RunOnce/CatchUp）、jitter、EventSink、Locker interface、Clock 注入 | 分布式锁实现、exactly-once、业务任务语义             |
 | `testkitx`      | L1 test-only  | assert、golden、contract、fixture、harness、fake clock、recorder、leak、boundary、manifest                  | production import、真实外部系统、L2/L3/chaos/soak 测试替代 |
 
 ### `resiliencx` 身份修复
@@ -280,7 +280,7 @@ Foundation v1 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中�
 | 基座                  | [observex](https://github.com/ZoneCNH/observex)                 | v0.3.1 | ✅ 已有   | ███░ 80% | vendor-neutral 日志、指标、追踪、健康、字段和 label policy 契约                            |
 | 基座                  | [testkitx](https://github.com/ZoneCNH/testkitx)                 | v0.4.0 | ✅ 已有   | ███░ 80% | 测试专用 evidence/golden/fixture/harness/boundary 工具包，禁止生产导入                    |
 | 基座                  | [resiliencx](https://github.com/ZoneCNH/resiliencx)             | v0.4.8 | ⚠️ P0     | ██░░ 50% | 身份需从标准模板库修正为运行时弹性策略库：timeout/retry/circuit/bulkhead/rate/fallback    |
-| 基座                  | [schedulex](https://github.com/ZoneCNH/schedulex)               | v0.1.2 | ✅ 已有   | ███░ 80% | 确定性任务调度：trigger/clock/misfire/overlap/jitter/EventSink/Locker interface           |
+| 基座                  | [schedulex](https://github.com/ZoneCNH/schedulex)               | v0.1.2 | ✅ 已有   | ███░ 80% | cron/interval/delay 调度、OverlapPolicy（Skip/Queue/Replace）、MisfirePolicy（Skip/RunOnce/CatchUp）、EventSink、Locker、Clock 注入           |
 | 基座                  | [xlibgate](https://github.com/ZoneCNH/xlibgate)                 | -      | ✅ 已有   | -        | import 边界、go.mod、Go baseline、release evidence 机器门禁                               |
 | 基座                  | [xlib-standard](https://github.com/ZoneCNH/xlib-standard)       | -      | ✅ 已有   | -        | 标准事实源、Go Reference Template、Generator、Harness Gate、Evidence Runtime；不参与运行时 import |
 | 基座                  | [redisx](https://github.com/ZoneCNH/redisx)                     | -      | ✅ 已有   | █░░░ 15% | Redis，仅骨架                                                                             |
