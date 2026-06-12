@@ -1013,20 +1013,49 @@ import (
 
 | AC 编号 | 对应 FR | 验收条件 |
 |---------|---------|----------|
-| AC-001 | FR-001 | lifecycx Manager Start 按序启动，失败回滚，Stop 幂等 |
-| AC-002 | FR-002 | errx Error 构造/Unwrap/IsKind/AsError 全链路正确 |
-| AC-003 | FR-003 | healthx HealthStatus 构造、IsHealthy、Aggregate 逻辑正确 |
-| AC-004 | FR-004 | obsx 所有 Noop 实现静默成功，SecretString 脱敏完全 |
-| AC-005 | FR-005 | retryx Delay 指数退避 + Jitter + 溢出保护 |
-| AC-006 | FR-006 | shutdownx Hook LIFO 顺序，并发安全 |
-| AC-007 | FR-007 | timex FakeClock Advance 后 Now 返回正确时间 |
-| AC-008 | FR-008 | validx Precondition/Invariant/RequireNonEmpty 返回正确 *Error |
-| AC-009 | FR-009 | versionx Compatibility.CompatibleWith 模块/版本匹配正确 |
-| AC-010 | FR-010 | contextx Key 唯一性，类型安全存取，零值 Key panic |
-| AC-011 | FR-011 | syncx SemaphoreLimiter Acquire/Release，WorkerGroup 错误收集 |
-| AC-012 | FR-012 | contracttest 断言函数在匹配/不匹配时行为正确 |
+| AC-001 | FR-001 | lifecycx Manager.Start 按序启动，失败回滚，Manager.Stop 幂等 |
+| AC-002 | FR-001 | lifecycx 启动失败时 errors.Join 包含所有已启动 Component 的 Stop 错误 |
+| AC-003 | FR-002 | errx NewError/WrapError 字段完整，Error() 格式正确 |
+| AC-004 | FR-002 | errx Unwrap/IsKind/AsError 全链路正确，errors.Join 多错误链通过 IsKind |
+| AC-005 | FR-003 | healthx HealthStatus 构造、IsHealthy、Aggregate 逻辑正确 |
+| AC-006 | FR-004 | obsx NoopLogger/NoopMetrics/NoopTracer/NoopSpan 所有方法静默成功不 panic |
+| AC-007 | FR-004 | obsx SecretString 所有公开方法返回 "***"，仅 Reveal() 可访问原始值 |
+| AC-008 | FR-005 | retryx Delay 指数退避 + Jitter + 溢出保护 |
+| AC-009 | FR-006 | shutdownx Manager.Shutdown Hook LIFO 顺序，并发安全 |
+| AC-010 | FR-006 | shutdownx NotifyContext 正确捕获 OS signal 并传播 cancel |
+| AC-011 | FR-007 | timex FakeClock Advance 后 Now 返回正确时间，RealClock 使用 time.Now |
+| AC-012 | FR-008 | validx Precondition/Invariant/RequireNonEmpty 返回正确的 *Error（kind/op/message） |
+| AC-013 | FR-009 | versionx Compatibility.CompatibleWith 模块/版本匹配正确 |
+| AC-014 | FR-010 | contextx Key 唯一性，类型安全存取，零值 Key panic |
+| AC-015 | FR-011 | syncx SemaphoreLimiter Acquire/Release 并发安全 |
+| AC-016 | FR-011 | syncx WorkerGroup 错误收集 + context 取消传播 |
+| AC-017 | FR-012 | contracttest 断言函数在匹配/不匹配时行为正确 |
+| AC-018 | BR-008 | stdlib-only gate：`go list -deps` 无非 stdlib 依赖 |
 
 ### 16.3 Given/When/Then 用例
+
+| TC | Type | Scenario | Expected |
+|-----|------|----------|----------|
+| TC-001 | Unit | lifecycx 正常启动停止 | A.Start → B.Start → B.Stop → A.Stop |
+| TC-002 | Unit | lifecycx 启动失败回滚 | B.Start 失败 → A.Stop 回滚 → errors.Join |
+| TC-003 | Unit | lifecycx 未启动时 Stop | 返回 nil |
+| TC-004 | Unit | errx 错误链遍历 | IsKind(KindTimeout) 穿透 wrap 链返回 true |
+| TC-005 | Unit | errx errors.Join 多链 | IsKind 匹配 Join 中任一条错误链 |
+| TC-006 | Unit | retryx 指数退避 | Delay(3) ≈ 400ms（BaseDelay×2³⁻¹） |
+| TC-007 | Unit | healthx Aggregate | 多 HealthStatus Aggregate 后 Status 正确 |
+| TC-008 | Unit | shutdownx LIFO 顺序 | 最后注册的 Hook 先执行 |
+| TC-009 | Unit | obsx SecretString 脱敏 | String()/JSON() 返回 "***" |
+| TC-010 | Unit | contextx Key 唯一性 | 不同 Key[T] 的 contextKey 不冲突 |
+| TC-011 | Unit | validx 前置条件 | Precondition 失败返回 *Error（kind=validation） |
+| TC-012 | CI | stdlib-only gate | go list -deps 无 kernel 外依赖 |
+| TC-013 | Unit | syncx SemaphoreLimiter | Acquire 获取许可，Release 释放 |
+| TC-014 | Unit | syncx WorkerGroup | 任一 worker 出错 → 收集错误 + cancel 传播 |
+| TC-015 | Unit | timex FakeClock | Advance(d) 后 Now() 前进 d |
+| TC-016 | Unit | shutdownx NotifyContext | SIGTERM → cancel 传播 |
+| TC-017 | Unit | versionx Compatibility | CompatibleWith 模块/版本匹配正确 |
+| TC-018 | Unit | contracttest | 断言匹配通过，不匹配时 Fatalf |
+
+### 16.4 详细 Given/When/Then（代表性用例）
 
 **TC-001: lifecycx 正常启动停止**
 Given 注册 Component A、B（按 A, B 顺序）
@@ -1040,12 +1069,7 @@ Given 注册 Component A、B，B.Start 返回错误
 When 调用 Manager.Start(ctx)
 Then A.Start 被调用，B.Start 被调用并返回错误
 Then A.Stop 被调用（回滚）
-Then Manager.Start 返回 errors.Join(B 错误, 可能含 A.Stop 错误)
-
-**TC-003: lifecycx 未启动时 Stop**
-Given Manager 创建但未调用 Start
-When 调用 Manager.Stop(ctx)
-Then 返回 nil，无 Component.Stop 被调用
+Then Manager.Start 返回 errors.Join
 
 **TC-004: errx 错误链遍历**
 Given err1 = WrapError(KindTimeout, "op1", "msg1", stdErr)
@@ -1053,65 +1077,12 @@ And err2 = WrapError(KindConnection, "op2", "msg2", err1)
 When 调用 IsKind(err2, ErrorKindTimeout)
 Then 返回 true
 
-**TC-005: errx errors.Join 多链**
-Given errA = NewError(KindTimeout, "A", "timeout")
-And errB = NewError(KindConnection, "B", "conn")
-When 调用 IsKind(errors.Join(errA, errB), ErrorKindConnection)
-Then 返回 true
-
-**TC-006: retryx 指数退避**
-Given DefaultRetryPolicy
-When 调用 Delay(1)
-Then 返回 100ms（BaseDelay）
-When 调用 Delay(3)
-Then 返回 400ms（100ms × 2²）
-
-**TC-007: healthx Aggregate**
-Given statuses = [healthy, degraded, unhealthy]
-When 调用 Aggregate("agg", statuses...)
-Then 返回 status="unhealthy"，message="unhealthy"
-
-**TC-008: shutdownx LIFO 顺序**
-Given hooks = [h1, h2, h3]，按此顺序 Register
-When 调用 Manager.Shutdown(ctx)
-Then 执行顺序为 h3→h2→h1
-
 **TC-009: obsx SecretString 脱敏**
 Given s = NewSecretString("sk-abc123")
-When 调用 s.String()
-Then 返回 "***"
+When 调用 s.String() 或 json.Marshal(s)
+Then 返回 "***"（非原始值）
 When 调用 s.Reveal()
 Then 返回 "sk-abc123"
-When 调用 json.Marshal(s)
-Then 返回 `"***"`
-
-**TC-010: contextx Key 唯一性**
-Given k1 = NewKey["test"]("name")
-And k2 = NewKey["test"]("name")
-When 分别 WithValue + Value
-Then k1 和 k2 的 value 互不干扰
-
-**TC-011: validx 前置条件**
-Given name = ""
-When 调用 RequireNonEmpty("ValidateInput", "name", name)
-Then 返回非 nil error，IsKind 为 ErrorKindValidation
-
-**TC-012: stdlib-only gate**
-Given kernel 包已编译
-When 运行 `go list -deps ./... | grep -v "^std" | grep -v "^github.com/ZoneCNH/kernel"`
-Then 无输出
-
-### 16.4 Benchmark
-
-| 场景 | 目标 |
-|------|------|
-| errx IsKind 链遍历（5 层深度） | < 1μs |
-| healthx Aggregate（10 个 statuses） | < 10μs |
-| retryx Delay 计算（100 次） | < 1μs |
-| shutdownx Shutdown（100 hooks） | 线性时间，无锁竞争 |
-
----
-
 ## 17. Performance Budget
 
 | 操作 | 目标 | 测量方式 |
