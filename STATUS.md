@@ -119,7 +119,7 @@
 | [kernel](https://github.com/ZoneCNH/kernel)               | v1.0.0 | █████ 100% | 594KB/30 项 | L0 原语 / 12 子包 / stdlib-only / v1.0.0 已发布 |
 | [configx](https://github.com/ZoneCNH/configx)             | v1.0.0 | █████ 100% | 258KB/20 项 | 配置管理；v1.0.0 已发布，97.1% 覆盖率，13 FR 全部实现 |
 | [observex](https://github.com/ZoneCNH/observex)           | v1.0.0 | █████ 100% | 220KB/18 项 | 可观测性                   |
-| [testkitx](https://github.com/ZoneCNH/testkitx)           | v0.4.0 | ███░ 80% | 254KB/27 项 | 测试工具包                 |
+| [testkitx](https://github.com/ZoneCNH/testkitx)           | v1.0.0-spec | ████ 100% | 33 文件/管线就绪 | 测试工具包（Matrix/Tasks/Plan/Prompt 100 分） |
 | [resiliencx](https://github.com/ZoneCNH/resiliencx)       | v1.0.1 | █████ 100% | SPEC Approved (6 FR, 8 BR, 10 tasks) | 弹性策略（timeout/retry/circuit/bulkhead/rate/fallback） |
 | [schedulex](https://github.com/ZoneCNH/schedulex)         | v0.1.2 | ███░ 80% | 398KB/25 项 | cron/interval/delay 调度、Overlap/Misfire 策略、分布式锁                   |
 | [redisx](https://github.com/ZoneCNH/redisx)               | -      | █░░░ 15% | -           | Redis，仅骨架              |

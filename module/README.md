@@ -90,7 +90,7 @@ test-only，不参与生产运行时。
 
 | 模块     | 规格                          | 核心职责                                                                   |
 | -------- | ----------------------------- | -------------------------------------------------------------------------- |
-| testkitx | [SPEC.md](./testkitx/SPEC.md) · [tasks/](./testkitx/tasks/) | FakeConfig/FakeLogger/FakeMeter/FakeTracer/Eventually/GoldenUpdate/BoundaryCheck（10 FR，11 tasks） |
+| testkitx | [SPEC.md](./testkitx/SPEC.md) · [TRACEABILITY.md](./testkitx/TRACEABILITY.md) · [tasks/](./testkitx/tasks/) · [plan/](./testkitx/plan/) · [prompt/](./testkitx/prompt/) | FakeConfig/FakeLogger/FakeMeter/FakeTracer/FakeClock/FakeBreaker/Eventually/GoldenUpdate/BoundaryCheck/GoroutineLeakCheck（10 FR，11 tasks，管线 100 分） |
 
 ---
 
