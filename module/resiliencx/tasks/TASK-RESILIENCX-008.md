@@ -8,6 +8,7 @@
 task_id: TASK-RESILIENCX-008
 module: resiliencx
 scope: "实现策略组合功能，支持装饰器模式嵌套执行（timeout+retry+circuit 等）"
+non_scope: "不引入新的策略抽象层（ResilienceExecutor/PolicyChain 等为 v1.2+ 目标），仅提供组合辅助函数"
 spec_ref:
   - "module/resiliencx/SPEC.md#BR-003"
 files:
@@ -56,7 +57,7 @@ status: pending
 | Step | Description | Deliverables | Verification |
 |---|---|---|---|
 | 1 | 创建 `compose.go`，提供 `Chain` 辅助函数 | `compose.go` | `go build ./...` 通过 |
-| 2 | 编写组合测试：timeout+retry, retry+circuit | `compose_test.go` | 所有组合场景通过 |
+| 2 | 编写组合测试：timeout+retry, retry+circuit | `compose_test.go` | TC-008 通过 |
 | 3 | 编写三层嵌套测试 | `compose_test.go` | 多层嵌套正确 |
 
 ### Risk Assessment

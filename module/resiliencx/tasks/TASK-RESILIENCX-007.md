@@ -8,6 +8,7 @@
 task_id: TASK-RESILIENCX-007
 module: resiliencx
 scope: "实现 Fallback 策略函数"
+non_scope: "不包含 retry/circuit breaker 等复杂策略；不负责业务 fallback 内容"
 spec_ref:
   - "module/resiliencx/SPEC.md#FR-006"
 files:
@@ -29,14 +30,14 @@ status: pending
 
 | Requirement | Description | Acceptance Criteria |
 |---|---|---|
-| FR-006 | Fallback：primary 失败时执行 secondary | 2 个 WHEN/THEN 场景 |
+| FR-006 | Fallback：primary 失败时执行 secondary | AC-007: primary成功 / 失败降级 |
 
 ## Test Plan
 
 | Test Case | Type | Description |
 |---|---|---|
-| §7.6-1 | Unit | primary 成功：返回 primary 结果 |
-| §7.6-2 | Unit | primary 失败：执行 secondary |
+| TC-006 | Unit | primary 成功：返回 primary 结果 |
+| TC-006 | Unit | primary 失败：执行 secondary |
 
 ## Implementation Notes
 
@@ -48,7 +49,7 @@ status: pending
 | Step | Description | Deliverables | Verification |
 |---|---|---|---|
 | 1 | 实现 `Fallback` 函数 | `fallback.go` | `go build ./...` 通过 |
-| 2 | 编写 2 个场景测试 | `fallback_test.go` | §7.6 全部通过 |
+| 2 | 编写 2 个场景测试 | `fallback_test.go` | TC-006 全部通过 |
 
 ### Risk Assessment
 
