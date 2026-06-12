@@ -72,9 +72,9 @@
 | 结构化日志 | 标准字段、日志等级、脱敏、错误上下文 | 日志字段快照测试通过 |
 | 指标 | Counter、Gauge、Timer、Histogram、标签约束 | 指标注册和采集测试通过 |
 | 链路追踪 | span 创建、上下文传播、异步上下文恢复 | 跨线程 Trace 测试通过 |
-| 审计事件 | actor、action、resource、result、reason、timestamp | 审计事件 schema 测试通过 |
-| 诊断事件 | 模块启动、配置刷新、熔断打开、任务失败等事件 | 事件枚举测试通过 |
-| 后端适配 | Noop、Console、平台适配 SPI | 无后端降级测试通过 |
+| 审计事件 | actor、action、resource、result、reason、timestamp | 审计事件 schema 测试通过（v1.1 推迟） |
+| 诊断事件 | 模块启动、配置刷新、熔断打开、任务失败等事件 | 事件枚举测试通过（v1.1 推迟） |
+| 后端适配 | Noop、Console、平台适配 SPI | 无后端降级测试通过（SPI 推迟到 v1.1） |
 | 采样与限流 | 日志采样、Trace 采样、事件限流 | 高压测试通过 |
 
 ## 5. 职责边界
@@ -92,6 +92,7 @@
 - 不强制单一日志框架或指标后端。
 - 不负责业务指标口径设计，只提供承载规范。
 - 不在 kernel 中创建强依赖。
+- **Audit / Diagnostic / ObservationAdapter SPI 推迟到 v1.1**：1.0 聚焦 Logger/Meter/Tracer/Exporter/Health 五类基础抽象，审计事件、诊断事件和平台适配 SPI 作为 1.0 后演进方向（见 §15）。
 
 ## 6. 依赖关系与分层约束
 
@@ -118,32 +119,49 @@
 
 ### 7.2 1.0 逻辑接口基线
 
-```text
-XLogger
-  info(eventName, fields)
-  warn(eventName, fields)
-  error(eventName, error, fields)
+> 接口权威定义见 [SPEC.md §9](./SPEC.md#9-interface-contract)。若与本文档其他部分冲突，以 SPEC.md 为准。
 
-MetricRegistry
-  counter(name, tags).increment(delta)
-  timer(name, tags).record(duration)
-  gauge(name, tags, supplier)
+```text
+Logger
+  Debug(msg, fields)
+  Info(msg, fields)
+  Warn(msg, fields)
+  Error(msg, fields)
+  With(fields) Logger
+  Named(name) Logger
+
+Meter
+  Counter(name) Counter
+  Histogram(name) Histogram
+  Gauge(name) Gauge
+
+Counter.Add(ctx, value, attrs)
+Histogram.Record(ctx, value, attrs)
+Gauge.Set(ctx, value, attrs)
 
 Tracer
-  currentContext(): TraceContext
-  startSpan(name, attributes): Span
-  inject(context, carrier)
-  extract(carrier): TraceContext
+  Start(ctx, name, opts): (ctx, Span)
 
-AuditPublisher.publish(AuditEvent)
-DiagnosticPublisher.publish(DiagnosticEvent)
+Span
+  End()
+  SetAttributes(attrs)
+  RecordError(err)
+  SpanID(): string
+  TraceID(): string
 
-HealthIndicator
-  check(): HealthState
+Exporter
+  ExportLogs(ctx, entries) error
+  ExportMetrics(ctx, metrics) error
+  ExportSpans(ctx, spans) error
+  Shutdown(ctx) error
 
-HealthState
-  status: UP | DEGRADED | DOWN
-  details: map<string,string>
+Health
+  JSON(): []byte  // 符合 SPEC FR-007 health JSON schema
+
+// --- v1.1 规划（非 1.0 范围）---
+// AuditPublisher.publish(AuditEvent)
+// DiagnosticPublisher.publish(DiagnosticEvent)
+// ObservationAdapter SPI
 ```
 
 ## 8. 配置契约

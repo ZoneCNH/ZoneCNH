@@ -19,12 +19,15 @@ files:
   - "meter/names.go"
   - "meter/meter_test.go"
   - "label_policy.go"
+  - "label_policy_test.go"
 acceptance_criteria:
   - "Counter.Add 累加正确"
   - "Histogram.Record 记录样本"
   - "Gauge.Set 设置值"
-  - "ForbiddenLabels 中的 label 被拒绝"
+  - "AllowedLabels 中的 label 允许通过"
+  - "ForbiddenLabels 中的 label 返回 ErrLabelForbidden"
   - "指标命名符合 foundationx_<module>_<op>_<measure> 规范"
+  - "label policy 并发调用安全"
 depends_on:
   - "TASK-OBSERVEX-001"
 estimated_effort: "3h"

@@ -10,7 +10,7 @@
 
 - Status: Draft
 - Spec-Version: v1.0.0
-- Last-Updated: 2026-06-07
+- Last-Updated: 2026-06-12
 - Owner: ZoneCNH
 - Layer: L1 基础能力
 - Version: v0.7.3
@@ -409,8 +409,9 @@ go 1.23
 
 ### 15.3 foundationx 兼容
 
-- 当前状态：v0.1.0 remote（见 `ADR-foundationx-exit.md`）
-- 计划：v0.4 前迁移到 kernel 原语（`errx.Kind` 替代 `foundationx.ErrorKind`，`healthx.Status` 替代 `foundationx.HealthStatus`）
+- v0.4 已完成 foundationx 解耦：`internal/foundationx` 已物理删除，contract tests 已重写
+- 所有 foundationx 类型已迁移到 kernel 原语（`errx.Kind`、`healthx.Status`）
+- 详情见 `docs/foundationx-compatibility.md` 和 `FOUNDATION-TRACKER.md`
 
 ---
 
