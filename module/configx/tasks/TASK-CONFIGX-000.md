@@ -38,6 +38,7 @@ status: pending
 
 | Test Case | Type | Description |
 |---|---|---|
+| TC-009 | CI Gate | Release DoD: `go test -race -count=1 ./...` + `gitleaks detect --no-git` 全部通过 |
 | — | CI Gate | `go build ./...` 编译通过 |
 | — | CI Gate | `go vet ./...` 无错误 |
 
