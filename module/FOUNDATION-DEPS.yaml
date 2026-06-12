@@ -2,8 +2,8 @@
 # CI 可直接消费此文件执行依赖守卫检查
 # 与 FOUNDATION-V1.md Issue 2 对应
 
-version: "1.0"
-updated: "2026-06-07"
+version: "1.1"
+updated: "2026-06-12"
 
 # ============================================================
 # Go baseline
@@ -54,6 +54,71 @@ modules:
     stdlib_only: false
     description: "测试专用能力库，生产禁止 import"
 
+  # 标准源 / 门禁（不参与运行时依赖）
+  xlib-standard:
+    path: github.com/ZoneCNH/xlib-standard
+    layer: standard-source
+    stdlib_only: false
+    runtime_dependency: false
+    description: "标准事实源 / Go Reference Template / Generator / Harness Gate / Evidence Runtime"
+
+  xlibgate:
+    path: github.com/ZoneCNH/xlibgate
+    layer: gate
+    stdlib_only: false
+    runtime_dependency: false
+    description: "import/gomod/baseline/release 机器门禁"
+
+  # 存储扩展（按需引入）
+  redisx:
+    path: github.com/ZoneCNH/redisx
+    layer: storage
+    stdlib_only: false
+    description: "Redis 客户端封装"
+
+  kafkax:
+    path: github.com/ZoneCNH/kafkax
+    layer: storage
+    stdlib_only: false
+    description: "Kafka 消息队列"
+
+  natsx:
+    path: github.com/ZoneCNH/natsx
+    layer: storage
+    stdlib_only: false
+    description: "NATS 内部通信"
+
+  postgresx:
+    path: github.com/ZoneCNH/postgresx
+    layer: storage
+    stdlib_only: false
+    description: "PostgreSQL 关系型存储"
+
+  taosx:
+    path: github.com/ZoneCNH/taosx
+    layer: storage
+    stdlib_only: false
+    description: "TDengine 时序存储"
+
+  ossx:
+    path: github.com/ZoneCNH/ossx
+    layer: storage
+    stdlib_only: false
+    description: "对象存储 S3/MinIO"
+
+  clickhousex:
+    path: github.com/ZoneCNH/clickhousex
+    layer: storage
+    stdlib_only: false
+    description: "ClickHouse OLAP"
+
+  # 契约
+  contracts:
+    path: github.com/ZoneCNH/contracts
+    layer: contracts
+    stdlib_only: false
+    description: "跨域稳定端口、事件协议、DTO"
+
 # ============================================================
 # 允许的依赖关系（单向箭头 = 调用方可以依赖被调方）
 # ============================================================
@@ -64,6 +129,16 @@ allowed_deps:
   resiliencx:    [kernel]                              # 观测通过本地接口或 adapter 接入
   schedulex:     [kernel]                              # 不直接依赖 resiliencx/observex
   testkitx:      [kernel, configx, observex, resiliencx, schedulex]  # 测试所有
+  xlib-standard: []                                    # 标准源，无运行时依赖
+  xlibgate:      []                                    # 机器门禁，无运行时依赖
+  redisx:        [kernel]                              # 只依赖 kernel 原语
+  kafkax:        [kernel]                              # 只依赖 kernel 原语
+  natsx:         [kernel]                              # 只依赖 kernel 原语
+  postgresx:     [kernel]                              # 只依赖 kernel 原语
+  taosx:         [kernel]                              # 只依赖 kernel 原语
+  ossx:          [kernel]                              # 只依赖 kernel 原语
+  clickhousex:   [kernel]                              # 只依赖 kernel 原语
+  contracts:     []                                    # 契约独立，依赖 L2.5 领域共享层
 
 # ============================================================
 # 禁止的依赖（任何基础模块都不得导入）
@@ -222,6 +297,49 @@ forbidden_foundation_edges:
   - from: production
     to: [testkitx]
     rule: "testkitx 只能 test-only 使用，不得进入生产 import graph。"
+
+  # 标准源 / 门禁
+  - from: xlib-standard
+    to: [kernel, configx, observex, resiliencx, schedulex, testkitx, redisx, kafkax, natsx, postgresx, taosx, ossx, clickhousex, contracts, x.go, business]
+    rule: "xlib-standard 是标准源，不 import 任何运行时模块。只通过脚本扫描/检查下游仓库。"
+
+  - from: xlibgate
+    to: [kernel, configx, observex, resiliencx, schedulex, testkitx, redisx, kafkax, natsx, postgresx, taosx, ossx, clickhousex, contracts, x.go, business]
+    rule: "xlibgate 是机器门禁，不 import 任何运行时模块。只通过脚本扫描/检查下游仓库。"
+
+  # 存储扩展
+  - from: redisx
+    to: [configx, observex, resiliencx, schedulex, kafkax, natsx, postgresx, taosx, ossx, clickhousex, contracts, testkitx, x.go, business]
+    rule: "redisx 只封装 Redis 客户端，不跨越存储引擎边界。"
+
+  - from: kafkax
+    to: [configx, observex, resiliencx, schedulex, redisx, natsx, postgresx, taosx, ossx, clickhousex, contracts, testkitx, x.go, business]
+    rule: "kafkax 只封装 Kafka 客户端，不跨越存储引擎边界。"
+
+  - from: natsx
+    to: [configx, observex, resiliencx, schedulex, redisx, kafkax, postgresx, taosx, ossx, clickhousex, contracts, testkitx, x.go, business]
+    rule: "natsx 只封装 NATS 客户端，不跨越存储引擎边界。"
+
+  - from: postgresx
+    to: [configx, observex, resiliencx, schedulex, redisx, kafkax, natsx, taosx, ossx, clickhousex, contracts, testkitx, x.go, business]
+    rule: "postgresx 只封装 PostgreSQL 客户端，不跨越存储引擎边界。"
+
+  - from: taosx
+    to: [configx, observex, resiliencx, schedulex, redisx, kafkax, natsx, postgresx, ossx, clickhousex, contracts, testkitx, x.go, business]
+    rule: "taosx 只封装 TDengine 客户端，不跨越存储引擎边界。"
+
+  - from: ossx
+    to: [configx, observex, resiliencx, schedulex, redisx, kafkax, natsx, postgresx, taosx, clickhousex, contracts, testkitx, x.go, business]
+    rule: "ossx 只封装对象存储客户端，不跨越存储引擎边界。"
+
+  - from: clickhousex
+    to: [configx, observex, resiliencx, schedulex, redisx, kafkax, natsx, postgresx, taosx, ossx, contracts, testkitx, x.go, business]
+    rule: "clickhousex 只封装 ClickHouse 客户端，不跨越存储引擎边界。"
+
+  # 契约
+  - from: contracts
+    to: [kernel, configx, observex, resiliencx, schedulex, testkitx, redisx, kafkax, natsx, postgresx, taosx, ossx, clickhousex, x.go, business]
+    rule: "contracts 只定义跨域稳定接口，不依赖任何模块实现。"
 
 # ============================================================
 # foundationx compatibility（待退出）
