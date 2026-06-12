@@ -605,7 +605,7 @@ Then gitleaks 检测到泄露，输出文件路径、行号和匹配规则，exi
 
 ## 18. Observability
 
-> xlibgate 是短生命周期 CLI 工具，不集成运行时 metrics exporter 或 tracing exporter。以下日志事件作为可观测性的主要载体，覆盖 Constitution §6.2 的"操作耗时"和"错误计数"需求（通过结构化日志中的 `duration_ms` 和 `status` 字段由 CI 日志系统聚合）。
+> xlibgate 是短生命周期 CLI 工具，不集成运行时 metrics exporter 或 tracing exporter。以下日志事件作为可观测性的主要载体，覆盖 Constitution §6.2 的"操作耗时"和"错误计数"需求（通过结构化日志中的 `duration_ms` 和 `status` 字段由 CI 日志系统聚合）。CLI 短生命周期工具无需健康检查端点（exit code 0/1/2 即为健康信号）。
 
 ### 18.1 Logging（主要可观测载体）
 
@@ -623,9 +623,9 @@ CLI 工具不启动 HTTP metrics 端点。以下指标通过 CI 系统对结构�
 
 | 指标名 | 类型 | 说明 | 来源日志 |
 |--------|------|------|----------|
-| `xlibgate_check_duration_seconds` | histogram | 各子检查耗时分布，label: `check_name`, `status` | `xlibgate.check.completed` 的 `duration_ms` 字段 |
-| `xlibgate_check_total` | counter | 检查执行总次数，label: `check_name`, `status` | `xlibgate.check.completed` 的事件计数 |
-| `xlibgate_check_errors_total` | counter | 检查错误次数，label: `check_name` | `xlibgate.check.error` 的事件计数 |
+| `foundationx_xlibgate_check_duration_seconds` | histogram | 各子检查耗时分布，label: `check_name`, `status` | `xlibgate.check.completed` 的 `duration_ms` 字段 |
+| `foundationx_xlibgate_check_total` | counter | 检查执行总次数，label: `check_name`, `status` | `xlibgate.check.completed` 的事件计数 |
+| `foundationx_xlibgate_check_errors_total` | counter | 检查错误次数，label: `check_name` | `xlibgate.check.error` 的事件计数 |
 
 ### 18.3 Tracing
 
@@ -713,6 +713,10 @@ CLI 短生命周期工具不启动 tracing exporter。执行流程通过父子�
 ---
 
 ## 23. Open Questions
+
+### Blocking（阻塞开发）
+
+无。
 
 ### Non-blocking（不阻塞开发）
 
