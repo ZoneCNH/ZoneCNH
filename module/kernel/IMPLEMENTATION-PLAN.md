@@ -87,14 +87,16 @@ TASK-KERNEL-000 (项目骨架: go.mod, README, Makefile)
 |------|------|------|--------|
 | TASK-KERNEL-014 | contracts/：API 快照、golden 行为、消费者导入测试 | 001~012 | 3h |
 
-### Phase 7: 示例和文档（4 tasks，可并行）
+### Phase 7: 示例和文档（6 tasks，可并行）
 
 | Task | 内容 | 依赖 | Effort |
 |------|------|------|--------|
 | TASK-KERNEL-015a | examples/ Group A：lifecycx/errx/healthx/obsx | 001,003,005,011 | 0.75h |
 | TASK-KERNEL-015b | examples/ Group B：retryx/shutdownx/syncx/timex | 002,004,006,009 | 0.75h |
 | TASK-KERNEL-015c | examples/ Group C：validx/versionx/contextx/contracttest | 007,008,010,012 | 0.75h |
-| TASK-KERNEL-016 | CHANGELOG.md, docs/, CI gates, release preflight | 014, 015a, 015b, 015c | 2h |
+| TASK-KERNEL-016a | docs/：ADR/design/governance/spec/standard | 014 | 0.75h |
+| TASK-KERNEL-016b | scripts/ + release/：CI 脚本 + manifest | 014 | 0.75h |
+| TASK-KERNEL-016c | CHANGELOG.md + Makefile + final gate | 016a, 016b | 0.75h |
 
 ---
 

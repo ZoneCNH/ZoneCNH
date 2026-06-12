@@ -93,8 +93,8 @@
 | AC-003 | FR-002 | 001 | NewError/WrapError字段完整，Error()格式正确 |
 | AC-004 | FR-002 | 001 | Unwrap/IsKind/AsError全链路+errors.Join |
 | AC-005 | FR-003 | 011 | HealthStatus构造/IsHealthy/Aggregate逻辑 |
-| AC-006 | FR-004 | 003 | Noop*所有方法静默成功不panic |
-| AC-007 | FR-004 | 003 | SecretString公开方法返回"***" |
+| AC-006 | FR-004 | 003 | Noop*所有方法静默成功不panic | TC-009 (AC-006/007 合并验证) |
+| AC-007 | FR-004 | 003 | SecretString公开方法返回"***" | TC-009 |
 | AC-008 | FR-005 | 009 | Delay指数退避+Jitter+溢出保护 |
 | AC-009 | FR-006 | 006 | Shutdown Hook LIFO顺序+并发安全 |
 | AC-010 | FR-006 | 006 | NotifyContext OS signal→cancel |
