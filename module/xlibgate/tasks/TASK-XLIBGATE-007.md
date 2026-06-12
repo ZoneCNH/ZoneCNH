@@ -9,14 +9,12 @@ task_id: TASK-XLIBGATE-007
 module: xlibgate
 scope: "实现集成测试，端到端验证所有子命令"
 spec_ref:
-  - "module/xlibgate/SPEC.md#TC-001"
-  - "module/xlibgate/SPEC.md#TC-002"
-  - "module/xlibgate/SPEC.md#TC-003"
-  - "module/xlibgate/SPEC.md#TC-004"
-  - "module/xlibgate/SPEC.md#TC-005"
-  - "module/xlibgate/SPEC.md#TC-006"
-  - "module/xlibgate/SPEC.md#TC-007"
-  - "module/xlibgate/SPEC.md#TC-008"
+  - "module/xlibgate/SPEC.md#FR-001"
+  - "module/xlibgate/SPEC.md#FR-002"
+  - "module/xlibgate/SPEC.md#FR-003"
+  - "module/xlibgate/SPEC.md#FR-004"
+  - "module/xlibgate/SPEC.md#FR-005"
+  - "module/xlibgate/SPEC.md#FR-006"
 files:
   - "integration_test.go"
 acceptance_criteria:

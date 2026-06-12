@@ -10,9 +10,9 @@ module: xlibgate
 scope: "创建 README、CHANGELOG，验证 Release DoD"
 spec_ref:
   - "module/xlibgate/SPEC.md#BR-001"
-  - "module/xlibgate/SPEC.md#NFR-007"
-  - "module/xlibgate/SPEC.md#NFR-008"
-  - "module/xlibgate/SPEC.md#NFR-010"
+  - "module/xlibgate/SPEC.md#FR-005"
+  - "module/xlibgate/SPEC.md#BR-005"
+  - "module/xlibgate/SPEC.md#AC-008"
 files:
   - "README.md"
   - "CHANGELOG.md"

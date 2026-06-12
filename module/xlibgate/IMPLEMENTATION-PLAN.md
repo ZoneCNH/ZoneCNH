@@ -1,8 +1,10 @@
 # xlibgate 实现计划
 
-> 来源：[SPEC.md](./SPEC.md) v1.0.0
+> 来源：[SPEC.md](./SPEC.md) v1.0.2
+> 范围说明：本计划覆盖 FR-001~FR-006（check 子命令组）。FR-007~FR-011（l2 子命令组）推迟至未来实现阶段（参见 TASK-XLIBGATE-009 TBD）。
 > 生成日期：2026-06-12
 > 环境：本仓库仅含文档；实现计划描述 xlibgate Go 项目的开发阶段。
+> 范围说明：本计划覆盖 FR-001~FR-006（check 子命令组）。FR-007~FR-011（l2 子命令组）推迟至未来实现阶段（参见 TASK-XLIBGATE-009 TBD）。
 
 ---
 

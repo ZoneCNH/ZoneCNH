@@ -39,7 +39,7 @@
 | BR-006 | check all 必须执行所有子检查，即使前面检查已失败 | 部分检查被跳过，门禁不完整 | TC-004（部分失败后继续）, TC-005（error 后继续） | TASK-XLIBGATE-006 | ✅ |
 | BR-007 | JSON 输出必须包含 machine-readable 的 status 字段 | CI 解析失败 | TC-007（JSON 字段完整性） | TASK-XLIBGATE-006 | ✅ |
 | BR-008 | human-readable 输出必须包含文件路径和行号 | 开发者无法定位违规位置 | TC-001（违规含文件路径行号）, TC-002（diff 位置信息）, TC-008（secret 命中含文件路径行号） | TASK-XLIBGATE-002 | ✅ |
-| BR-009 | 依赖矩阵文件 `FOUNDATION-DEPS.yaml` schema 与 xlib-standard 定义一致 | deps.yaml 解析失败 | FR-001 config 加载（YAML 解析 + schema 校验） | TASK-XLIBGATE-002 | ⚠️ |
+| BR-009 | 依赖矩阵文件 `FOUNDATION-DEPS.yaml` schema 与 xlib-standard 定义一致 | deps.yaml 解析失败 | FR-001 config 加载（YAML 解析 + schema 校验）+ Config.Validate() | TASK-XLIBGATE-002 | ✅ |
 
 > Status 说明：✅=已完成, ⚠️=部分完成/需修复, 🔴=未按 SPEC 实现
 
