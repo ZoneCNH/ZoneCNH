@@ -115,13 +115,13 @@
 | 组件                                                      | 版本   | 进度     | 仓库大小    | 说明                       |
 | --------------------------------------------------------- | ------ | -------- | ----------- | -------------------------- |
 | [xlib-standard](https://github.com/ZoneCNH/xlib-standard) | v1.0.0 | ████ 100% | 标准源 + Template + Generator + Gate + Evidence（16 FR，38 AC，34 TC，AC/TC→Code 闭合） | 标准事实源 / Go Reference Template / Generator / Harness Gate / Evidence Runtime |
-| [xlibgate](https://github.com/ZoneCNH/xlibgate)           | v1.0.2-spec | ████ 100% | SPEC Approved (11 FR, 10 tasks) | check imports/gomod/baseline/release/all + l2 validate/plan/contracts/evidence/release |
+| [xlibgate](https://github.com/ZoneCNH/xlibgate)           | v1.0.2 | ████ 100% | SPEC Approved (11 FR, 10 tasks) | check imports/gomod/baseline/release/all + l2 validate/plan/contracts/evidence/release |
 | [kernel](https://github.com/ZoneCNH/kernel)               | v1.0.0 | █████ 100% | 594KB/30 项 | L0 原语 / 12 子包 / stdlib-only / v1.0.0 已发布 |
 | [configx](https://github.com/ZoneCNH/configx)             | v1.0.0 | █████ 100% | 258KB/20 项 | 配置管理；v1.0.0 已发布，97.1% 覆盖率，13 FR 全部实现 |
 | [observex](https://github.com/ZoneCNH/observex)           | v1.0.0 | █████ 100% | 220KB/18 项 | 可观测性                   |
-| [testkitx](https://github.com/ZoneCNH/testkitx)           | v1.0.0-spec | ████ 100% | SPEC v0.7.3（10 FR/11 tasks），Matrix/Tasks/Plan/Prompt 100 分 | Fake/Fixture/Golden/Contract/Leak/Boundary/Manifest 测试工具包 |
+| [testkitx](https://github.com/ZoneCNH/testkitx)           | v1.0.0 | ████ 100% | SPEC v0.7.3（10 FR/11 tasks），Matrix/Tasks/Plan/Prompt 100 分 | Fake/Fixture/Golden/Contract/Leak/Boundary/Manifest 测试工具包 |
 | [resiliencx](https://github.com/ZoneCNH/resiliencx)       | v1.0.1 | █████ 100% | SPEC Approved (6 FR, 8 BR, 10 tasks) | 弹性策略（timeout/retry/circuit/bulkhead/rate/fallback） |
-| [schedulex](https://github.com/ZoneCNH/schedulex)         | v0.1.2 | ███░ 80% | 398KB/25 项，SPEC v1.0.1（9 FR/8 BR/12 tasks，管线 100 分） | cron/interval/delay 调度、Overlap/Misfire 策略、分布式锁、Clock 注入 |
+| [schedulex](https://github.com/ZoneCNH/schedulex)         | v0.1.2 | █████ 100% | 398KB/25 项，98.8% 覆盖，race/bench/vet 通过，SPEC v1.0.1（9 FR/8 BR/12 tasks） | cron/interval/delay 调度、Overlap/Misfire 策略、分布式锁、Clock 注入、8 个示例 |
 | [redisx](https://github.com/ZoneCNH/redisx)               | -      | █░░░ 15% | -           | Redis，仅骨架              |
 | [kafkax](https://github.com/ZoneCNH/kafkax)               | -      | █░░░ 15% | -           | Kafka，仅骨架              |
 | [natsx](https://github.com/ZoneCNH/natsx)                 | -      | ███░ 80% | 349KB/27 项 | NATS                       |
