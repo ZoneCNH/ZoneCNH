@@ -1,7 +1,7 @@
 # configx 需求追溯矩阵
 
-> 更新：2026-06-12（v2.0 — 完整 7 列矩阵）
-> 来源：module/configx/SPEC.md v1.0.0
+> 更新：2026-06-12（v2.1 — 新增安全 NFR + v1.0 Roadmap）
+> 来源：module/configx/SPEC.md v1.0.1
 > 规范：docs/governance/TRACEABILITY.md
 
 ---
@@ -40,7 +40,9 @@
 | NFR-002 | Get 单次调用 | < 100ns | Benchmark | TASK-CONFIGX-009 | ⬜ |
 | NFR-003 | 常驻内存 | < 5MB | Profiling | TASK-CONFIGX-009 | ⬜ |
 | NFR-004 | 测试覆盖率 | ≥ 80% | go tool cover | TASK-CONFIGX-009 | ⬜ |
-| NFR-005 | 不依赖 kernel（L1→L0 允许） | 编译通过 | go build | TASK-CONFIGX-009 | ⬜ |
+| NFR-005 | 不依赖 kernel（foundationx exit 已完成） | 编译通过 | go build | TASK-CONFIGX-009 | ⬜ |
+| NFR-006 | 敏感字段脱敏覆盖（password/token/secret/key） | 100% 敏感字段不可明文输出 | 安全测试 | TASK-CONFIGX-010 | ⬜ |
+| NFR-007 | 日志无凭据泄露 | 0 条泄露 | gitleaks + grep 扫描 | TASK-CONFIGX-010 | ⬜ |
 
 ---
 
@@ -79,10 +81,10 @@
 | BR 总数 | 7 | BR-001 ~ BR-007 |
 | BR 有 TC 覆盖 | 7/7 (100%) | |
 | BR 有 Task 分配 | 7/7 (100%) | |
-| NFR 总数 | 5 | NFR-001 ~ NFR-005 |
+| NFR 总数 | 7 | NFR-001 ~ NFR-007 |
 | AC 总数 | 5 | AC-001 ~ AC-005 |
 | TC 总数 | 5 | TC-001 ~ TC-005 |
-| Task 总数 | 10 | TASK-CONFIGX-000 ~ 009 |
+| Task 总数 | 11 | TASK-CONFIGX-000 ~ 010 |
 
 ---
 
@@ -90,5 +92,27 @@
 
 | 日期 | 版本 | 变更 |
 |------|------|------|
+| 2026-06-12 | v2.1 | 新增 NFR-006/007（安全脱敏+日志泄露扫描）；新增 §8 v1.0 Roadmap Coverage；Task 总数 10→11 |
 | 2026-06-12 | v2.0 | 完整重写：7列矩阵 + BR行 + NFR行 + TC反向追溯 + AC注册表 + 覆盖率仪表盘 |
 | 2026-06-09 | v1.0 | 初始版本（骨架） |
+
+---
+
+## 8. v1.0 Roadmap Coverage
+
+以下能力由 [goal.md](../goal.md) 的 1.0 目标定义，当前 SPEC.md 尚未纳入，待 v1.0 开发阶段补充对应的 FR/BR/TC/AC：
+
+| goal.md 能力 | 当前 SPEC 覆盖 | 计划纳入版本 |
+|-------------|:---:|:---:|
+| ConfigSource SPI（远程配置源扩展点） | ❌ | v1.0 |
+| ConfigSnapshot（不可变配置快照） | ❌ | v1.0 |
+| ConfigChangeEvent（热更新事件） | ❌ | v1.0 |
+| bind(prefix, class) 强类型绑定 | ❌ | v1.0 |
+| ConfigValidator SPI（自定义校验扩展） | ❌ | v1.0 |
+| 热更新失败回滚 | ❌ | v1.0 |
+| 审计日志（变更来源/操作者/脱敏 diff） | ❌ | v1.0 |
+| 配置文档自动生成 | ❌ | v1.0 |
+| 远程配置源 TLS 要求 | ❌ | v1.0 |
+| 敏感字段脱敏（自动 + Reveal()） | ⚠️ 仅 SPEC §19 简要提及 | v0.3 (TASK-010) |
+
+> **说明**：SPEC.md 描述当前 v0.1.4 已实现和即将实现的能力；goal.md 描述 v1.0 完整目标。gap 项不在当前阶段交付范围。
