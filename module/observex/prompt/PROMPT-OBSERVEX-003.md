@@ -14,14 +14,11 @@
 实现 Meter 接口（Counter/Histogram/Gauge），集成 label policy 检查
 
 ## 关联需求
-
-| 类型 | 编号 | 出处 | 说明 |
-|------|------|------|------|
-| FR | FR-002 | SPEC.md $ | 
-| FR | FR-006 | SPEC.md $ | 
-| BR | BR-002 | SPEC.md $ | 
-| BR | BR-006 | SPEC.md $ | 
-
+| 类型 | 编号 | AC | TC | 出处 | 说明 |
+|------|------|----|----|------|------|
+| FR | FR-002 | AC-002 | TC-002 | SPEC.md §7 | Meter 接口实现 |
+| BR | BR-002 | AC-009 | TC-002 | SPEC.md §8 | label 基数控制 |
+| BR | BR-006 | AC-013 | TC-007 | SPEC.md §8 | 指标命名规范 |
 ## 依赖
 
 - 上游 Task：TASK-OBSERVEX-001
@@ -29,11 +26,19 @@
 
 ## 文件清单
 
-见 [TASK-OBSERVEX-003.md](../tasks/TASK-OBSERVEX-003.md) 的 `files` 字段。
+以下文件允许修改：
+- `meter/meter.go`
+- `meter/impl.go`
+- `meter/names.go`
+- `meter/meter_test.go`
 
 ## 验收标准
 
-见 [TASK-OBSERVEX-003.md](../tasks/TASK-OBSERVEX-003.md) 的 `acceptance_criteria` 字段。
+以下验收标准必须全部满足：
+- Counter.Add 累加正确
+- Histogram.Record 记录样本
+- Gauge.Set 设置值
+- 指标命名符合规范
 
 ## 实现要点
 
@@ -54,6 +59,14 @@
 - 不要跳过 redaction（Logger 输出相关 Task）
 - 不要跨子包直接访问内部状态
 - 不要硬编码 exporter 端点或凭证
+
+## 证据回填
+
+完成后提交以下产物：
+- 测试输出：`go test -v -race ./...` 完整输出
+- 覆盖率报告：`go test -coverprofile=.coverage/cover.out ./... && go tool cover -func=.coverage/cover.out`
+- 文件变更清单：`git diff --stat HEAD`
+- 如有 Benchmark：`go test -bench=. -benchmem ./...` 结果
 
 ## 完成后
 

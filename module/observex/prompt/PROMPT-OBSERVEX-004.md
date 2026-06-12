@@ -14,12 +14,10 @@
 实现 Tracer 接口，支持 span 创建/结束、context 传播、RecordError
 
 ## 关联需求
-
-| 类型 | 编号 | 出处 | 说明 |
-|------|------|------|------|
-| FR | FR-003 | SPEC.md $ | 
-| BR | BR-003 | SPEC.md $ | 
-
+| 类型 | 编号 | AC | TC | 出处 | 说明 |
+|------|------|----|----|------|------|
+| FR | FR-003 | AC-003, AC-010 | TC-003, TC-003a | SPEC.md $ | — |
+| BR | BR-003 | AC-003, AC-010 | TC-003, TC-003a | SPEC.md $ | — |
 ## 依赖
 
 - 上游 Task：TASK-OBSERVEX-001
@@ -27,11 +25,20 @@
 
 ## 文件清单
 
-见 [TASK-OBSERVEX-004.md](../tasks/TASK-OBSERVEX-004.md) 的 `files` 字段。
+以下文件允许修改：
+- `tracer/tracer.go`
+- `tracer/impl.go`
+- `tracer/propagation.go`
+- `tracer/tracer_test.go`
 
 ## 验收标准
 
-见 [TASK-OBSERVEX-004.md](../tasks/TASK-OBSERVEX-004.md) 的 `acceptance_criteria` 字段。
+以下验收标准必须全部满足：
+- Start 创建 span + ctx
+- End 结束 span
+- RecordError 记录错误
+- 子 span 继承 trace_id
+- 跨 goroutine 传播
 
 ## 实现要点
 
@@ -52,6 +59,14 @@
 - 不要跳过 redaction（Logger 输出相关 Task）
 - 不要跨子包直接访问内部状态
 - 不要硬编码 exporter 端点或凭证
+
+## 证据回填
+
+完成后提交以下产物：
+- 测试输出：`go test -v -race ./...` 完整输出
+- 覆盖率报告：`go test -coverprofile=.coverage/cover.out ./... && go tool cover -func=.coverage/cover.out`
+- 文件变更清单：`git diff --stat HEAD`
+- 如有 Benchmark：`go test -bench=. -benchmem ./...` 结果
 
 ## 完成后
 
