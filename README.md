@@ -68,7 +68,7 @@ L2.5: decimalx / domain-market / domain-exchange / domain-macro
 - [xlib-standard](https://github.com/ZoneCNH/xlib-standard) — 标准事实源、Go Reference Template、Generator、Harness Gate 与 Evidence Runtime；不作为运行时 import 依赖 `公开`
 - [xlibgate](https://github.com/ZoneCNH/xlibgate) — import 边界、go.mod、Go baseline、release evidence 门禁 `公开`
 
-> 当前 P0：先修正 `resiliencx` 的标准模板叙事，避免与 `xlib-standard` 的身份重叠。
+> `resiliencx` v1.0.1：SPEC Approved，身份修复已完成（P3 宪法原则 + goal.md v1.2+ 演进路线图）。
 
 ### 基座 · 存储与中间件
 
