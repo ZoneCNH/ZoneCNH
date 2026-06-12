@@ -60,7 +60,7 @@ L2.5: decimalx / domain-market / domain-exchange / domain-macro
 ### 基座 · 基础设施
 
 - [kernel](https://github.com/ZoneCNH/kernel) — L0 标准库扩展原语（error/time/context/lifecycle/health/sync） `公开`
-- [configx](https://github.com/ZoneCNH/configx) — 显式配置加载、合并、校验、脱敏与 provenance `公开`
+- [configx](https://github.com/ZoneCNH/configx) — 显式配置加载、多源合并、StrictDecode、SecretString 脱敏、Provenance 追踪与 EffectiveConfigHash `公开`
 - [observex](https://github.com/ZoneCNH/observex) — vendor-neutral 日志、指标、追踪、健康与脱敏契约 `公开`
 - [resiliencx](https://github.com/ZoneCNH/resiliencx) — 运行时弹性策略（timeout/retry/circuit/bulkhead/rate/fallback） `公开`
 - [schedulex](https://github.com/ZoneCNH/schedulex) — 确定性任务调度（trigger/clock/misfire/overlap/jitter） `公开`

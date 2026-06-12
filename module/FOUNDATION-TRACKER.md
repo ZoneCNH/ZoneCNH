@@ -104,7 +104,7 @@
 - [x] SPEC.md v2.0.0 重写：集中式 App/Module/Deps → 12 子包轻量工具集
 - [x] v1.0.0 GitHub Release：https://github.com/ZoneCNH/kernel/releases/tag/v1.0.0
 
-### configx ✅ (PR #1 + #2 合入) + 文档完善 (PR #103 + #104 + #105)
+### configx ✅ (PR #1 + #2 合入) + 文档完善 (PR #103 + #104 + #105 + SPEC v1.1.0 重写)
 
 - [x] `Provenance`：每个 key 记录 source、priority、override 链路
 - [x] `EffectiveConfigHash`：配置指纹，可复现

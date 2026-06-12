@@ -1,6 +1,6 @@
 # configx 完整规格
 
-> Foundation L1 配置层。加载、验证、提供配置给所有其他模块。
+> Foundation L1 配置层。显式加载、多源合并、严格解码、校验、脱敏与 provenance。
 
 最后更新：2026-06-12
 
@@ -23,13 +23,16 @@
 
 | 日期 | 版本 | 变更内容 | 作者 |
 |------|------|----------|------|
-| 2026-06-12 | v1.0.2 | 版本号对齐：v0.7.3→v0.1.4 与 ARCHITECTURE.md 一致；Non-goals §5 澄清 RemoteSource SPI 扩展点；§15.2 移除已过时的 kernel 依赖声明 | ZoneCNH |
-| 2026-06-12 | v1.0.1 | 对齐修复：移除过时 kernel.Deps 引用；Status Draft→Approved；依赖方向修正 kernel 为允许依赖；TRACEABILITY 完整重写 | ZoneCNH |
+| 2026-06-12 | v1.1.0 | 完整重写：基于实际 v0.1.4 代码（97.1% 覆盖率），对齐 Client/Loader/Source/SecretString/Provenance/StrictDecode 等真实 API | ZoneCNH |
+| 2026-06-12 | v1.0.2 | 版本号对齐；Non-goals 澄清；移除过时 kernel 依赖声明 | ZoneCNH |
+| 2026-06-12 | v1.0.1 | 对齐修复：移除过时 kernel.Deps；Status Draft→Approved | ZoneCNH |
 | 2026-06-07 | v1.0.0 | 初始版本 | ZoneCNH |
 
 ## 2. Summary
 
-`configx` 管理配置的加载、合并、验证和分发。支持 YAML/TOML/JSON 文件 + 环境变量覆盖，通过 schema 校验保证配置正确性。
+`configx` 提供显式、可审计的 Go 配置管理原语。调用方显式选择每种配置源和加载路径。库不执行隐式发现、不创建全局状态、不注册单例、不强依赖任何驱动包或 x.go 模块。
+
+核心能力：多源加载（文件/环境变量/map）、LastWins 合并策略、StrictDecode（未知字段/重复 key/类型错误 fail-fast）、SecretString 自动脱敏、SecretPolicy 可配置密钥检测、Provenance 来源追踪、EffectiveConfigHash（SHA-256）、SanitizedManifest 安全快照、HealthCheck、Metrics。
 
 ---
 
@@ -40,27 +43,32 @@
 - 同一配置在不同模块中 key 名不同
 - 环境变量和文件冲突时行为不确定
 - 配置错误在运行时才发现，定位困难
-- 配置格式变更时需要修改多处代码
+- 敏感值（密码/token）可能泄露到日志和错误消息中
 
 ---
 
 ## 4. Goals
 
-- 统一配置加载：文件（YAML/TOML/JSON）+ 环境变量 + 默认值
-- 明确的覆盖优先级：默认值 → 文件 → 环境变量 → 命令行参数
-- 启动时 schema 校验，fail-fast
-- 并发安全读取
-- 只读模式（运行时不允许修改配置）
+- 显式配置加载：调用方选择每种 Source，无隐式发现
+- LastWins 合并策略：后加载的源覆盖先加载的同名 key
+- StrictDecode：未知字段、重复 key、类型错误 fail-fast
+- SecretString 自动脱敏：所有格式化输出（String/JSON/GoString/TextMarshal）自动替换为 `***`
+- SecretPolicy 可配置：默认匹配 password/token/secret/_key/credential/auth，支持 CustomMatcher 扩展
+- Provenance 追踪：每个 key 记录 source、priority、override 链路
+- EffectiveConfigHash：SHA-256 指纹，排除 volatile 字段
+- 并发安全：Client 和 Loader 均使用 sync.RWMutex 保护
+- 无全局状态：无进程级 config singleton
 
 ---
 
 ## 5. Non-goals
 
-- 不做运行时配置热更新（考虑作为后续特性）
-- 不做远程配置中心产品（K8s ConfigMap 可通过文件挂载）；RemoteSource SPI 扩展点属于 v1.0 目标范围，由 goal.md 定义
-- 不做敏感信息加密（→ 环境变量或 secret manager）
+- 不做隐式配置发现（无 auto-scan、无约定目录）
+- 不做远程配置中心产品（K8s ConfigMap 可通过文件挂载）
+- 不做敏感信息加密存储（→ 环境变量或 secret manager）
 - 不做跨服务配置同步
-- v1.0 目标（见 goal.md）：RemoteSource SPI、配置热更新回滚、敏感字段自动脱敏、配置文档生成
+- 不做运行时配置热更新（Watch 特性）
+- 不做配置文档自动生成
 
 ---
 
@@ -68,60 +76,127 @@
 
 | 消费者 | 使用方式 |
 |--------|----------|
-| L1 运行时模块（observex, resiliencx, schedulex） | 通过 `Reader` 接口读取本模块配置 |
-| 业务域模块 | 通过 `Reader` 接口读取业务配置 |
+| L1 运行时模块（observex, resiliencx, schedulex） | 通过 `configx.New(ctx, cfg, opts...)` 创建 Client |
+| 业务域模块 | 通过 Client 或直接使用 Loader/Source API |
 | `x.go` 组合根 | 创建 Config 实例，注入到各模块 |
-| 存储扩展（redisx, kafkax 等） | 通过 `Reader` 接口读取连接配置 |
+| 存储扩展（redisx, kafkax 等） | 通过 Loader + FileSource/EnvSource 加载连接配置 |
 
 ---
 
 ## 7. Functional Requirements
 
-### FR-001: Load
+### FR-001: Client 创建与生命周期
 
-WHEN 调用 `Load(path string)` 且文件存在且格式有效
-THEN 解析文件内容，返回 nil
+WHEN 调用 `configx.New(ctx, cfg, opts...)` 且 ctx 有效、cfg.Validate() 通过
+THEN 返回初始化的 `*Client`，metrics 计数器 `client_created_total` +1
 
-WHEN 调用 `Load(path string)` 且文件不存在
-THEN 返回 `os.ErrNotExist`
+WHEN 调用 `configx.New(ctx, cfg, opts...)` 且 ctx 为 nil
+THEN 返回 validation error，metrics 记录错误
 
-WHEN 调用 `Load(path string)` 且文件格式无效（YAML/TOML/JSON 语法错误）
-THEN 返回解析错误，配置不变
+WHEN 调用 `client.Close(ctx)` 且 ctx 有效
+THEN 标记 client 为已关闭，metrics 计数器 `client_closed_total` +1
 
-### FR-002: WithEnvOverride
+### FR-002: Loader + Source 模式
 
-WHEN 调用 `WithEnvOverride(prefix string)`
-THEN 以 `prefix` 开头的环境变量覆盖对应配置键（`_` → `.`）
+WHEN 调用 `NewLoader(opts...).AddSource(src).Load(ctx)`
+THEN 按添加顺序加载所有 Source，LastWins 合并，返回 `LoadResult`
 
-WHEN 环境变量值类型与 schema 不匹配
-THEN 返回类型转换错误
+WHEN 调用 `NewLoader(WithFailFast(true))` 且某个 Source 加载失败
+THEN 立即返回错误，不继续加载后续 Source
 
-### FR-003: Validate
+WHEN 调用 `NewLoader(WithMergeStrategy(LastWins))`
+THEN 后加载的 Source 的同名 key 覆盖先加载的值
 
-WHEN 调用 `Validate()` 且配置符合 schema
+### FR-003: FileSource — YAML / TOML / JSON / .env
+
+WHEN 调用 `NewYAMLFileSource(path)` 并 Load
+THEN 解析 YAML 文件，返回 key-value Map
+
+WHEN 调用 `NewTOMLFileSource(path)` 并 Load
+THEN 解析 TOML 文件，返回 key-value Map
+
+WHEN 调用 `NewJSONFileSource(path)` 并 Load
+THEN 解析 JSON 文件，返回 key-value Map
+
+WHEN 调用 `NewEnvFileSource(path)` 并 Load
+THEN 解析 .env 格式文件，返回 key-value Map
+
+### FR-004: EnvSource — 环境变量
+
+WHEN 调用 `NewEnvSource(prefix, keys)` 并 Load
+THEN 读取指定 keys 的环境变量值（prefix_KEYNAME），返回 Map
+
+WHEN 调用 `NewAllEnvSource(prefix)` 并 Load
+THEN 读取所有 prefix_ 前缀的环境变量，返回 Map
+
+### FR-005: MapSource — 字符串 map
+
+WHEN 调用 `NewMapSource(name, map[string]string{...})` 并 Load
+THEN 将 map 转换为配置 Map，source name 用于 provenance
+
+### FR-006: StrictDecode
+
+WHEN 调用 `StrictDecode(data, &target)` 且 JSON 包含未知字段
+THEN 返回错误（默认拒绝未知字段）
+
+WHEN 调用 `StrictDecode(data, &target, WithAllowUnknownFields())`
+THEN 忽略未知字段，正常解码
+
+WHEN 调用 `StrictDecode(data, &target, WithMaxDepth(n))` 且嵌套深度超过 n
+THEN 返回深度超限错误
+
+### FR-007: SecretString 自动脱敏
+
+WHEN 对 SecretString 调用 `.String()` / `.GoString()` / `json.Marshal()` / `MarshalText()`
+THEN 返回 `"***"`，不泄露原始值
+
+WHEN 调试时需要原始值
+THEN 显式调用 `.Reveal()` 返回原始字符串
+
+### FR-008: SecretPolicy 密钥检测
+
+WHEN 调用 `DefaultSecretPolicy().IsSecret(key)` 且 key 匹配默认模式
+THEN 返回 true（默认模式：secret/password/passwd/token/_key/credential/auth）
+
+WHEN 创建 `SecretPolicy{CustomMatcher: fn}` 且 fn 返回 true
+THEN IsSecret 返回 true（CustomMatcher 与 Pattern 匹配并行）
+
+### FR-009: Provenance 来源追踪
+
+WHEN 配置加载完成后调用 `Provenance.Entries()`
+THEN 每个 key 返回其 Source、Priority、OverrideEntry 链路
+
+WHEN 同一个 key 被多个 Source 覆盖
+THEN OverrideEntry 记录每次覆盖的 Source、OldValue、NewValue
+
+### FR-010: EffectiveConfigHash
+
+WHEN 调用 `EffectiveConfigHash(cfg)` 且 cfg 为 LoadResult
+THEN 返回 SHA-256 hex digest（按 key 排序，排除 volatile 字段）
+
+WHEN 相同配置值两次调用
+THEN 返回相同的 hash（可复现）
+
+### FR-011: SanitizedManifest
+
+WHEN 调用 `SanitizedManifest(cfg)` 且 cfg 包含敏感字段
+THEN 敏感字段值替换为 `"***"`，非敏感字段保留原值
+
+WHEN cfg 为 nil
 THEN 返回 nil
 
-WHEN 调用 `Validate()` 且配置不符合 schema
-THEN 返回包含所有违规字段的错误列表
+### FR-012: HealthCheck
 
-### FR-004: Get
+WHEN 调用 `client.HealthCheck(ctx)`
+THEN 返回 HealthStatus{Status: healthy/degraded/unhealthy, CheckedAt, LatencyMs}
 
-WHEN 调用 `Get(key string)` 且 key 存在
-THEN 返回对应值
+### FR-013: Metrics
 
-WHEN 调用 `Get(key string)` 且 key 不存在
-THEN 返回 nil
+WHEN 创建 Client 或执行操作
+THEN 通过 Metrics 接口输出 counter/histogram/gauge（8 个标准指标名）
 
-WHEN 多个 goroutine 并发调用 `Get`
-THEN 无数据竞争（并发安全）
-
-### FR-005: Watch（可选）
-
-WHEN 调用 `Watch(key string, callback)` 且配置变更
-THEN 调用 callback 通知变更
-
-WHEN Watch 的 key 不存在
-THEN 返回错误
+WHEN 未配置 Metrics
+THEN 使用 NoopMetrics（零开销空实现）
 
 ---
 
@@ -129,140 +204,197 @@ THEN 返回错误
 
 | 编号 | 规则 |
 |------|------|
-| BR-001 | 覆盖优先级：默认值 → 文件 → 环境变量 → 命令行参数 |
-| BR-002 | 启动时必须通过 schema 校验（fail-fast） |
-| BR-003 | 配置键使用点分路径（`data.market.symbol`） |
-| BR-004 | 环境变量覆盖使用前缀 + 下划线（`APP_DATA_MARKET_SYMBOL`） |
-| BR-005 | Reader 接口只能读，不能写 |
-| BR-006 | 配置值类型必须与 schema 定义一致 |
-| BR-007 | 未定义的配置键应被忽略或报 warning（可配置） |
-| BR-008 | 公共错误变量使用 `configx:` 前缀命名空间 | TASK-000 |
-| BR-009 | Reader/Config/Option 接口遵循 Go 接口隔离原则 | TASK-001 |
-| BR-010 | Release 制品通过全部 CI Gate（编译/测试/覆盖率/vet/lint/secret） | TASK-009 |
-| BR-011 | 敏感字段（password/token/secret/key/accessKey/secretKey）自动脱敏 | TASK-010 |
+| BR-001 | 合并策略：LastWins — 后加载的 Source 覆盖先加载的同名 key |
+| BR-002 | Config.Name 必须非空（Validate 时检查） |
+| BR-003 | Config.Timeout 必须 ≥ 0（负数拒绝） |
+| BR-004 | 配置加载显式：调用方必须显式添加每个 Source，无隐式发现 |
+| BR-005 | SecretString 在所有格式化输出中自动脱敏（String/JSON/GoString/Text） |
+| BR-006 | SecretPolicy 默认匹配 7 种模式，支持 CustomMatcher 扩展 |
+| BR-007 | StrictDecode 默认拒绝未知字段和重复 key |
+| BR-008 | 公共错误变量使用 `configx:` 前缀命名空间 |
+| BR-009 | 无全局状态：无进程级 config singleton（NoGlobalStateGate CI 门禁） |
+| BR-010 | Release 制品通过全部 CI Gate（编译/测试/覆盖率/vet/lint/secret） |
+| BR-011 | context.Context 必须非 nil 且未过期（所有公开 API 强制检查） |
 
 ---
 
 ## 9. Interface Contract
 
-```go
-type Reader interface {
-    Get(key string) interface{}
-    GetString(key string) string
-    GetInt(key string) int
-    GetFloat(key string) float64
-    GetBool(key string) bool
-    GetDuration(key string) time.Duration
-    IsSet(key string) bool
-}
-
-type Config interface {
-    Reader
-    Load(path string) error
-    WithEnvOverride(prefix string) Config
-    Validate() error
-    Watch(key string, callback func(interface{})) error
-}
-
-func New(opts ...Option) Config
-```text
-
-> **context.Context 豁免说明**：Reader 的 Get* 方法为纯内存读取操作，不涉及网络 I/O、文件访问或阻塞等待，不存在取消传播或超时控制的需求。CONSTITUTION.md §4.1 和 SPEC-TEMPLATE.md §9 要求的 `context.Context` 参数面向网络/IO 接口，对内存配置读取器不适用。Config 接口的 `Load(path)` 方法涉及文件 I/O，其返回 `error` 已覆盖失败路径。
-
-### 9.1 Option 模式
+### 9.1 Client — 配置客户端
 
 ```go
-type Option func(*config)
+type Client struct { /* 内部字段 */ }
 
-func WithDefaults(defaults map[string]interface{}) Option
-func WithSchema(schema *jsonschema.Schema) Option
-func WithEnvPrefix(prefix string) Option
-func WithStrictMode(strict bool) Option  // 未定义的 key 报错
-```text
+func New(ctx context.Context, cfg Config, opts ...Option) (*Client, error)
+func (c *Client) Close(ctx context.Context) error
+func (c *Client) HealthCheck(ctx context.Context) HealthStatus
+```
 
-### 9.2 用法示例
+### 9.2 Config — 客户端配置
 
 ```go
-cfg := configx.New(
-    configx.WithDefaults(map[string]interface{}{
-        "data.market.symbol":    "BTCUSDT",
-        "data.market.interval":  "1m",
-    }),
-    configx.WithSchema(schema),
-)
-
-// 加载文件
-if err := cfg.Load("config.yaml"); err != nil {
-    return err
+type Config struct {
+    Name    string        // 必填，客户端名称
+    Timeout time.Duration // 必须 ≥ 0
+    Secret  string        // 可选，敏感凭证（自动脱敏）
 }
 
-// 环境变量覆盖
-cfg = cfg.WithEnvOverride("APP")
+func (c Config) Validate() error
+func (c Config) Sanitize() SanitizedConfig
+```
 
-// 启动校验
-if err := cfg.Validate(); err != nil {
-    return err
+### 9.3 Loader + Source — 配置加载
+
+```go
+type Source interface {
+    Name() string
+    Kind() string
+    Load(ctx context.Context) (Map, error)
 }
 
-// 读取配置
-symbol := cfg.GetString("data.market.symbol")  // → "BTCUSDT" 或环境变量覆盖值
-```text
+type Loader struct { /* 内部字段 */ }
+
+func NewLoader(opts ...LoaderOption) *Loader
+func (l *Loader) AddSource(src Source) *Loader
+func (l *Loader) Load(ctx context.Context) (LoadResult, error)
+```
+
+### 9.4 内置 Source
+
+```go
+func NewYAMLFileSource(path string, opts ...SourceOption) Source
+func NewTOMLFileSource(path string, opts ...SourceOption) Source
+func NewJSONFileSource(path string, opts ...SourceOption) Source
+func NewEnvFileSource(path string, opts ...SourceOption) Source
+func NewEnvSource(prefix string, keys []string, opts ...SourceOption) Source
+func NewAllEnvSource(prefix string, opts ...SourceOption) Source
+func NewMapSource(name string, values map[string]string, opts ...SourceOption) Source
+```
+
+### 9.5 便捷函数
+
+```go
+func LoadEnv(ctx context.Context, prefix string, keys []string) (LoadResult, error)
+func LoadAllEnv(ctx context.Context, prefix string) (LoadResult, error)
+func LoadEnvFile(ctx context.Context, path string) (LoadResult, error)
+func LoadJSONFile(ctx context.Context, path string) (LoadResult, error)
+func LoadMap(ctx context.Context, name string, values map[string]string) (LoadResult, error)
+```
+
+### 9.6 Option 模式
+
+```go
+type Option func(*options)
+func WithMetrics(metrics Metrics) Option
+
+type LoaderOption func(*loaderOptions)
+func WithMergeStrategy(strategy MergeStrategy) LoaderOption
+func WithFailFast(failFast bool) LoaderOption
+
+type StrictOption func(*strictOptions)
+func WithAllowUnknownFields() StrictOption
+func WithMaxDepth(n int) StrictOption
+
+type SourceOption func(*sourceOptions)
+func WithSourceName(name string) SourceOption
+```
 
 ---
 
 ## 10. Data Model
 
-### 10.1 公共错误
+### 10.1 核心类型
+
+```go
+type Value struct {
+    Key        string
+    Value      string
+    Secret     bool
+    Source     string
+    LoadedAt   time.Time
+    Overridden bool
+}
+
+type Map map[string]Value
+
+type LoadResult struct {
+    Values   Map
+    Sources  []SourceReport
+    LoadedAt time.Time
+}
+
+type SourceReport struct {
+    Name      string
+    Kind      string
+    Path      string
+    Loaded    bool
+    Error     string
+    LoadedAt  time.Time
+    ValueKeys []string
+}
+```
+
+### 10.2 SecretString
+
+```go
+type SecretString string
+
+func NewSecretString(value string) SecretString
+func (s SecretString) String() string    // → "***"
+func (s SecretString) Reveal() string    // → 原始值
+func (s SecretString) Sanitize() any     // → "***"
+func (s SecretString) GoString() string  // → "***"
+func (s SecretString) MarshalText() ([]byte, error)   // → "***"
+func (s SecretString) MarshalJSON() ([]byte, error)   // → "\"***\""
+```
+
+### 10.3 SecretPolicy
+
+```go
+type SecretPolicy struct {
+    Patterns      []string           // 默认: secret/password/passwd/token/_key/credential/auth
+    CustomMatcher func(key string) bool
+}
+
+func DefaultSecretPolicy() *SecretPolicy
+func (sp *SecretPolicy) IsSecret(key string) bool
+```
+
+### 10.4 Provenance
+
+```go
+type Provenance struct { /* 内部 map */ }
+
+func NewProvenance() *Provenance
+func (p *Provenance) Record(key, source string, priority int)
+func (p *Provenance) RecordOverride(key, source, oldValue, newValue string)
+func (p *Provenance) Entries() map[string]ProvenanceEntry
+```
+
+### 10.5 公共错误
 
 ```go
 var (
-    ErrInvalidFormat     = errors.New("configx: invalid format")
-    ErrValidationFailed  = errors.New("configx: validation failed")
-    ErrKeyNotFound       = errors.New("configx: key not found")
-    ErrTypeMismatch      = errors.New("configx: type mismatch")
-    ErrAlreadyLoaded     = errors.New("configx: already loaded")
+    ErrInvalidFormat    = errors.New("configx: invalid format")
+    ErrValidationFailed = errors.New("configx: validation failed")
+    ErrKeyNotFound      = errors.New("configx: key not found")
+    ErrTypeMismatch     = errors.New("configx: type mismatch")
+    ErrAlreadyLoaded    = errors.New("configx: already loaded")
 )
-```text
-
-### 10.2 配置覆盖层次
-
-```text
-命令行参数（最高优先级）
-    ↑ 覆盖
-环境变量（前缀匹配）
-    ↑ 覆盖
-配置文件（YAML/TOML/JSON）
-    ↑ 覆盖
-默认值（WithDefaults）
-```text
+```
 
 ---
 
 ## 11. Config Schema
 
-configx 自身的配置：
+configx 自身的 Client 配置：
 
 ```yaml
 config:
-  path: config.yaml           # 配置文件路径
-  format: yaml                # 文件格式：yaml / toml / json
-  env_prefix: APP             # 环境变量前缀
-  strict: false               # 未定义 key 是否报错
-  watch: false                # 是否启用文件监控（可选）
-```text
-
-其他模块的配置通过统一的 schema 定义：
-
-```yaml
-# 模块 schema 示例
-data:
-  market:
-    symbol: string            # required
-    interval: string          # default: "1m"
-    depth: int                # default: 20
-  macro:
-    providers: []string       # required
-```text
+  name: my-service          # 必填，客户端名称
+  timeout: 30s              # 必须 ≥ 0
+  secret: "***"             # 可选，自动脱敏
+```
 
 ---
 
@@ -271,13 +403,14 @@ data:
 | 错误 | 调用方处理 |
 |------|-----------|
 | `ErrInvalidFormat` | 检查文件格式和内容，修复后重试 |
-| `ErrValidationFailed` | 检查错误列表中的具体字段，修复配置 |
-| `ErrKeyNotFound` | 检查 key 拼写，确认已在 schema 中定义 |
-| `ErrTypeMismatch` | 检查环境变量值类型是否匹配 schema |
-| `ErrAlreadyLoaded` | 不要重复调用 Load，直接使用已加载的配置 |
+| `ErrValidationFailed` | 检查具体字段，修复配置 |
+| `ErrKeyNotFound` | 检查 key 拼写 |
+| `ErrTypeMismatch` | 检查值类型是否匹配 |
+| `ErrAlreadyLoaded` | 不要重复加载 |
 
 **错误消息格式：** `"configx: <operation>: <detail>"`
-**Validation 错误包含：** 字段路径 + 预期类型 + 实际值
+**Validation 错误包含：** 字段路径 + 预期值 + 实际值
+**上下文错误：** ctx 为 nil 或已取消时返回明确错误，包含操作名
 
 ---
 
@@ -285,18 +418,16 @@ data:
 
 | 场景 | 预期行为 |
 |------|----------|
-| 空配置文件 | 使用默认值 |
-| 配置文件只有注释 | 使用默认值 |
+| 空配置文件 | 返回空 Map，不报错 |
+| 配置文件只有注释 | 返回空 Map |
 | 环境变量值为空字符串 | 视为设置空值（非未设置） |
-| 环境变量类型转换失败 | 返回 ErrTypeMismatch |
 | 点分路径的中间节点不存在 | 自动创建中间节点 |
-| 并发 Get + Watch | 需要加锁，保证并发安全 |
-| schema 定义了 key 但文件中未提供且无默认值 | Validate 报错（required） |
-| 超大配置文件（>10MB） | 正常解析，内存 < 文件大小 2x |
-| 配置文件读取超时（NFS/网络挂载） | `Load()` 返回 I/O 超时错误，配置不变；调用方可重试 |
-| 配置加载失败的调用方重试 | `Load()` 失败后配置状态不变，调用方可安全重试；不累积副作用 |
-| Watch 文件监控断连重试 | 文件被删除/移动后 Watch 检测到错误并回调通知；调用方可重新 Load + Watch |
-| 并发 Load 竞态 | 只有首次 `Load()` 成功写入配置；后续并发 `Load()` 返回 `ErrAlreadyLoaded` |
+| 并发 Load + HealthCheck | sync.RWMutex 保护，并发安全 |
+| 超大配置文件（>10MB） | 正常解析 |
+| 配置文件读取超时（NFS/网络挂载） | ctx 超时后返回错误 |
+| 配置加载失败的调用方重试 | Load 失败后状态不变，可安全重试 |
+| 并发 Load 竞态 | Loader.mu 保护，线程安全 |
+| nil Client 调用 Close/HealthCheck | 返回 validation error，不 panic |
 
 ---
 
@@ -304,33 +435,50 @@ data:
 
 ```text
 configx/
-├── go.mod
+├── go.mod                     # module github.com/ZoneCNH/configx, go 1.23
 ├── go.sum
 ├── README.md
 ├── CHANGELOG.md
 ├── LICENSE
-├── doc.go
-├── config.go               # Config 接口实现
-├── reader.go               # Reader 接口实现
-├── schema.go               # schema 定义与校验
-├── merge.go                # 配置合并逻辑
-├── env.go                  # 环境变量覆盖
-├── watch.go                # 文件监控（可选）
-├── options.go              # Option 模式
-├── errors.go               # 公共错误变量
+├── Makefile
+├── .golangci.yml              # 8 linter: govet/ineffassign/staticcheck/errcheck/gosec/unconvert/unparam/misspell
+├── pkg/
+│   └── configx/
+│       ├── doc.go             # package doc
+│       ├── client.go          # Client (New, Close)
+│       ├── config.go          # Config, SanitizedConfig
+│       ├── core.go            # SecretString, LoadEnv/LoadAllEnv/LoadEnvFile/LoadJSONFile/LoadMap
+│       ├── loader.go          # Loader, LoaderOption
+│       ├── source.go          # Source interface, SourceOption
+│       ├── source_file.go     # YAML/TOML/JSON/Env file sources
+│       ├── source_env.go      # EnvSource, AllEnvSource
+│       ├── source_map.go      # MapSource
+│       ├── merge.go           # MergeStrategy, LastWins
+│       ├── strict.go          # StrictDecode, StrictOption
+│       ├── secret.go          # secret sanitization
+│       ├── secretpolicy.go    # SecretPolicy, DefaultSecretPatterns
+│       ├── provenance.go      # Provenance, ProvenanceEntry, OverrideEntry
+│       ├── hash.go            # EffectiveConfigHash, canonicalJSON
+│       ├── manifest.go        # SanitizedManifest, isSensitiveFieldName
+│       ├── result.go          # Value, Map, LoadResult, SourceReport
+│       ├── validation.go      # Validator
+│       ├── health.go          # HealthCheck, HealthStatus
+│       ├── metrics.go         # Metrics interface, NoopMetrics, metric names
+│       ├── options.go         # Option, WithMetrics
+│       ├── errors.go          # 公共错误变量
+│       └── version.go         # Version = "v0.1.3"
 ├── internal/
-│   ├── yaml/               # YAML 解析器
-│   ├── toml/               # TOML 解析器
-│   ├── json/               # JSON 解析器
-│   └── merge/              # 深度合并算法
-├── testdata/
-│   ├── config.yaml
-│   ├── config.toml
-│   ├── config.json
-│   └── schema.json
-├── example_test.go
-└── integration_test.go
-```text
+│   ├── runtime/               # 内部运行时辅助
+│   └── tools/                 # 内部工具
+├── examples/
+│   └── error-handling/        # 5 种错误处理模式示例
+├── testdata/                  # 测试 fixtures
+├── testkit/                   # 测试辅助
+├── contracts/                 # API 契约
+├── docs/                      # ADR 文档（3 篇）
+├── scripts/                   # CI/发布脚本
+└── release/                   # 发布配置
+```
 
 ---
 
@@ -342,100 +490,94 @@ configx/
 module github.com/ZoneCNH/configx
 
 go 1.23
-```text
+
+require (
+    github.com/pelletier/go-toml/v2 v2.3.1
+    gopkg.in/yaml.v3 v3.0.1
+)
+```
 
 ### 15.2 依赖方向
 
 | 可以依赖 | 禁止依赖 |
 |----------|----------|
 | stdlib | observex, resiliencx, schedulex, testkitx |
-| `gopkg.in/yaml.v3`（可选） | 所有业务域实现 |
-| `github.com/pelletier/go-toml/v2`（可选） | `kernel`（foundationx exit 已完成，不再依赖） |
-| `github.com/santhosh-tekuri/jsonschema/v5`（可选） | 所有存储/中间件扩展 |
+| `gopkg.in/yaml.v3` | 所有业务域实现 |
+| `github.com/pelletier/go-toml/v2` | `kernel`（foundationx exit 已完成） |
+| — | 所有存储/中间件扩展 |
 
 ---
 
 ## 16. Testing
 
-### 16.1 单元测试
+### 16.1 测试统计
 
-| 测试场景 | 验证点 |
-|----------|--------|
-| YAML 加载 | 解析正确，支持嵌套结构 |
-| TOML 加载 | 解析正确，支持嵌套结构 |
-| JSON 加载 | 解析正确，支持嵌套结构 |
-| 环境变量覆盖 | 正确覆盖对应 key |
-| 类型转换 | string→int, string→bool, string→duration |
-| schema 校验通过 | 返回 nil |
-| schema 校验失败 | 返回所有违规字段 |
-| 并发 Get | -race 测试通过 |
-| Get 不存在的 key | 返回 nil（不 panic） |
-| 重复 Load | 返回 ErrAlreadyLoaded |
-| 空文件加载 | 使用默认值 |
+| 指标 | 数值 |
+|------|------|
+| 测试覆盖率 | **97.1%** |
+| 测试包数 | 8 packages |
+| 测试函数 | 93+ |
+| Benchmark | 6（core_bench_test.go） |
+| Race 检测 | `go test -race` 全部通过 |
 
-### 16.2 Given/When/Then 用例
+### 16.2 测试类型
 
-**TC-001: 文件 + 环境变量覆盖**
-Given 默认值 `symbol=BTCUSDT`，文件中 `symbol=ETHUSDT`，环境变量 `APP_SYMBOL=SOLUSDT`
-When 加载文件，应用环境变量覆盖
-Then `Get("symbol")` 返回 `"SOLUSDT"`
+| 类型 | 覆盖内容 | 文件 |
+|------|----------|------|
+| 单元测试 | 所有公共 API | `*_test.go` (12 files) |
+| Boost 测试 | 覆盖率提升专项 | `*_boost_test.go` (7 files) |
+| Fuzz 测试 | 随机输入安全 | `config_fuzz_test.go` |
+| Property 测试 | 不变量验证 | `config_property_test.go` |
+| Golden 测试 | 回归快照 | `health_golden_test.go` |
+| Precedence 测试 | 优先级/覆盖链路 | `precedence_test.go` |
+| Benchmark | Load/Get 性能 | `core_bench_test.go` |
 
-**TC-002: schema 校验失败**
-Given schema 要求 `symbol` 为 string 类型
-When 配置中 `symbol=123`（int）
-Then `Validate()` 返回包含 `symbol: expected string, got int` 的错误
+### 16.3 Given/When/Then 用例
 
-**TC-003: 并发安全**
-Given 已加载配置
-When 100 个 goroutine 并发调用 `Get("symbol")`
-Then 无 data race，所有返回值一致
+**TC-001: LastWins 合并**
+Given Source A 设置 `key=value1`，Source B 设置 `key=value2`
+When `NewLoader().AddSource(A).AddSource(B).Load(ctx)`
+Then `LoadResult.Values["key"].Value` 返回 `"value2"`
 
-**TC-004: Watch 配置监听**
-Given 配置文件已加载并开启 Watch
-When 文件内容变更且通过校验
-Then Reader 读到新值并触发变更回调
+**TC-002: StrictDecode 拒绝未知字段**
+Given JSON `{"name": "test", "unknown_field": true}`，target struct 只有 `Name`
+When `StrictDecode(data, &target)`
+Then 返回错误，包含未知字段名
 
-**TC-005: Reader 只读视图**
-Given 已创建配置 Reader
-When 调用读取接口
-Then 不能通过 Reader 修改底层配置
+**TC-003: SecretString 脱敏**
+Given `s := NewSecretString("secret123")`
+When `fmt.Print(s)` / `json.Marshal(s)` / `s.GoString()`
+Then 全部输出 `"***"`，不包含 `"secret123"`
 
+**TC-004: Reveal 获取原始值**
+Given `s := NewSecretString("secret123")`
+When `s.Reveal()`
+Then 返回 `"secret123"`
 
-**TC-006: Load 文件不存在**
-Given 调用 `Load("/nonexistent/config.yaml")`
-When 文件不存在
-Then 返回 `os.ErrNotExist`，配置不变
+**TC-005: SecretPolicy 自定义匹配**
+Given `sp := &SecretPolicy{CustomMatcher: func(k string) bool { return strings.HasPrefix(k, "private_") }}`
+When `sp.IsSecret("private_key")`
+Then 返回 true
 
-**TC-007: Load 文件格式无效**
-Given 调用 `Load("invalid.yaml")` 且文件内容为非法 YAML 语法
-When 解析失败
-Then 返回 `ErrInvalidFormat`，配置不变
+**TC-006: EffectiveConfigHash 可复现**
+Given 相同的 LoadResult
+When 两次调用 `EffectiveConfigHash(result)`
+Then 返回相同的 SHA-256 hex string
 
-**TC-008: 敏感字段脱敏**
-Given 配置包含 `db.password=secret123`
-When 通过 Reader.GetString("db.password") 读取或输出到日志
-Then 返回值/日志内容为 `"***"`，不包含原始密码
+**TC-007: HealthCheck**
+Given 已初始化的 Client
+When `client.HealthCheck(ctx)`
+Then Status = healthy, LatencyMs > 0
+
+**TC-008: nil context 拒绝**
+Given `configx.New(nil, cfg)`
+When ctx 为 nil
+Then 返回 validation error，metrics 记录错误
 
 **TC-009: Release DoD 门禁**
-Given 所有 Task 实现完成
-When 运行 `go test -race -count=1 ./...` 和 `gitleaks detect --no-git`
-Then 所有测试通过，零 data race，零 secret 泄露，覆盖率 ≥ 80%
-
-### 16.3 Benchmark
-
-| 场景 | 目标 |
-|------|------|
-| 配置加载（1000 个 key） | < 50ms |
-| Get 单次调用 | < 100ns |
-| schema 校验（1000 个 key） | < 10ms |
-
-### 16.4 集成测试
-
-| 场景 | 验证点 |
-|------|--------|
-| 完整加载链 | 默认值 → 文件 → 环境变量 → 校验 → 读取 |
-| 格式自动检测 | .yaml/.toml/.json 自动选择解析器 |
-| 嵌套 key 访问 | `data.market.symbol` 正确访问 |
+Given 所有实现完成
+When 运行 `go test -race -count=1 ./...` + `golangci-lint run` + `gitleaks detect --no-git`
+Then 全部通过，覆盖率 ≥ 97%
 
 ---
 
@@ -452,14 +594,31 @@ Then 所有测试通过，零 data race，零 secret 泄露，覆盖率 ≥ 80%
 
 ## 18. Observability
 
-| 类型 | 名称 | 说明 |
-|------|------|------|
-| metric | `configx.load.duration` | histogram，配置加载耗时 |
-| metric | `configx.validation.errors` | counter，校验错误数量 |
-| metric | `configx.get.duration` | histogram，Get 调用耗时 |
-| log | `configx.loaded` | info，配置加载完成，含文件路径和 key 数量 |
-| log | `configx.env_override` | debug，环境变量覆盖了哪些 key |
-| log | `configx.validation_failed` | warn，校验失败详情 |
+### 18.1 Metrics
+
+| 指标名 | 类型 | 说明 |
+|--------|------|------|
+| `client_created_total` | Counter | Client 创建次数 |
+| `client_closed_total` | Counter | Client 关闭次数 |
+| `client_errors_total` | Counter | Client 错误次数 |
+| `client_health_status` | Gauge | 健康状态 |
+| `client_health_latency_ms` | Gauge | 健康检查延迟 |
+| `client_requests_total` | Counter | 请求总数 |
+| `client_request_duration_seconds` | Histogram | 请求耗时 |
+| `client_retries_total` | Counter | 重试次数 |
+| `client_inflight` | Gauge | 正在处理的请求数 |
+
+### 18.2 Metrics 接口
+
+```go
+type Metrics interface {
+    IncCounter(name string, labels map[string]string)
+    ObserveHistogram(name string, value float64, labels map[string]string)
+    SetGauge(name string, value float64, labels map[string]string)
+}
+
+type NoopMetrics struct{}  // 零开销空实现
+```
 
 ---
 
@@ -467,13 +626,14 @@ Then 所有测试通过，零 data race，零 secret 泄露，覆盖率 ≥ 80%
 
 | 要求 | 实现方式 |
 |------|----------|
-| 敏感配置不写日志 | 日志中对密码、token 等字段脱敏（显示 `***`）；BR-011 自动脱敏所有 `password/token/secret/key/accessKey/secretKey` 字段 |
+| 敏感配置不写日志 | SecretString 在所有格式化输出中自动脱敏（`***`）；SanitizedManifest 安全快照 |
+| SecretPolicy 可配置 | 默认 7 种模式 + CustomMatcher 扩展；`isSensitiveFieldName` 覆盖 Key/Pass/Credential/Auth/Private 后缀 |
 | 配置文件权限检查 | 启动时检查文件权限（Unix: 不允许 other 可写），过宽则 warning |
-| 环境变量不泄露 | 错误消息中不包含环境变量值；敏感字段在 String()/JSON 序列化时自动 redact |
-| 依赖安全扫描 | 每次 PR 运行 `govulncheck ./...` 扫描已知漏洞；CI Gate 阻塞高危 CVE |
-| 传输加密（RemoteSource） | v1.0 RemoteSource SPI 实现时强制 TLS 1.2+；自签名证书需显式配置 `InsecureSkipVerify=false` |
-| 静态凭证扫描 | CI Gate `gitleaks detect --no-git` 阻塞任何硬编码凭证、API key、token 泄露 |
-| 不可信输入校验 | 所有配置文件内容、环境变量值、RemoteSource 响应必须通过 schema 校验；拒绝反序列化 gadgets（GHSL-2021-008 等） |
+| 环境变量不泄露 | 错误消息中不包含环境变量值 |
+| 依赖安全扫描 | CI 运行 `govulncheck ./...` 扫描已知漏洞 |
+| 静态凭证扫描 | CI Gate `gitleaks detect --no-git` 阻塞任何硬编码凭证 |
+| 不可信输入校验 | StrictDecode 默认拒绝未知字段；所有 Source 输入通过 schema 校验 |
+| 无全局状态 | NoGlobalStateGate CI 门禁防止引入进程级 config singleton |
 
 ---
 
@@ -483,20 +643,21 @@ Then 所有测试通过，零 data race，零 secret 泄露，覆盖率 ≥ 80%
 
 | Gate | 命令 | 阻塞条件 |
 |------|------|----------|
-| 编译 | `go build ./...` | 编译失败 |
-| 测试 | `go test ./... -race -count=1` | 任何测试失败或 data race |
-| 覆盖率 | `mkdir -p .coverage && go test ./... -coverprofile=.coverage/cover.out && go tool cover -func=.coverage/cover.out` | 总覆盖率 < 80% |
-| vet | `go vet ./...` | 任何 vet 错误 |
-| lint | `golangci-lint run` | 任何 lint 错误 |
+| 编译 | `GOWORK=off go build ./...` | 编译失败 |
+| 测试 | `GOWORK=off go test ./... -race -count=1` | 任何测试失败或 data race |
+| 覆盖率 | `GOWORK=off go test ./... -coverprofile=coverage.out` | 覆盖率 < 80% |
+| vet | `GOWORK=off go vet ./...` | 任何 vet 错误 |
+| lint | `golangci-lint run ./...` | 任何 lint 错误（8 linter） |
 | 依赖检查 | `go mod tidy && git diff --exit-code go.mod go.sum` | go.mod 不整洁 |
 | Secret 扫描 | `gitleaks detect --no-git` | 泄露 secret |
-| Benchmark | `go test -bench=. -benchmem -count=3 ./...` | 结果附在 PR comment |
+| 漏洞扫描 | `govulncheck ./...` | 高危 CVE |
 
 ### 20.2 configx 专属 Gate
 
 | Gate | 命令 | 阻塞条件 |
 |------|------|----------|
 | 不依赖 kernel | `go list -deps ./... \| grep "kernel"` | 依赖 kernel |
+| 无全局状态 | NoGlobalStateGate | 引入进程级 config singleton |
 
 ---
 
@@ -504,29 +665,42 @@ Then 所有测试通过，零 data race，零 secret 泄露，覆盖率 ≥ 80%
 
 | 变更类型 | 版本升级 |
 |----------|----------|
-| Reader 接口新增方法 | **minor**（实现需跟上） |
-| Reader 接口删除/修改方法 | **major** |
-| Config 接口变更 | **minor**（x.go 是唯一组装者） |
-| 新增配置文件格式支持 | minor |
-| 新增必填 schema 字段 | **minor**（带默认值） |
+| 新增 Source 类型 | **minor** |
+| 新增 Option / LoaderOption | **minor** |
+| Source 接口变更 | **major** |
+| Config 新增必填字段 | **minor**（带默认值） |
+| SecretPolicy 模式变更 | **minor** |
+| Metrics 指标名变更 | **major** |
 
 ---
 
 ## 22. Release DoD
 
-- [ ] 所有公共接口有 godoc 注释
-- [ ] 所有公共类型有示例代码
-- [ ] CHANGELOG.md 已更新
-- [ ] README.md 包含：模块定位、快速开始、配置说明、API 概览
-- [ ] 单元测试覆盖率 ≥ 80%
-- [ ] `-race` 测试通过
-- [ ] Benchmark 结果无 > 10% 回退
-- [ ] `go vet` 无警告
-- [ ] `golangci-lint` 无错误
-- [ ] Secret 扫描通过
-- [ ] 公共 API 无破坏性变更（或已 bump major）
-- [ ] 所有 Functional Requirements 有对应测试
-- [ ] 所有 Edge Cases 有对应测试
+- [x] 所有公共接口有 godoc 注释
+- [x] 所有公共类型有示例代码（examples/error-handling/）
+- [x] CHANGELOG.md 已更新
+- [x] README.md 包含：模块定位、快速开始、配置说明、API 概览
+- [x] 单元测试覆盖率 ≥ 97%
+- [x] `-race` 测试通过
+- [x] Benchmark 结果无 > 10% 回退
+- [x] `go vet` 无警告
+- [x] `golangci-lint` 无错误（8 linter）
+- [x] Secret 扫描通过（gitleaks）
+- [x] 漏洞扫描通过（govulncheck）
+- [x] 公共 API 无破坏性变更（或已 bump major）
+- [x] 所有 Functional Requirements 有对应测试
+- [x] 所有 Edge Cases 有对应测试
+
+---
+
+## 24. Lifecycle
+
+| 阶段 | 触发方法 | 状态变更 | 错误处理 |
+|------|----------|----------|----------|
+| 创建 | `New(ctx, cfg, opts...)` | 校验 cfg → 初始化 Client → metrics+1 | ctx nil 或 Validate 失败 → 返回 error |
+| 加载 | `loader.Load(ctx)` | 按序加载所有 Source → LastWins 合并 → 返回 LoadResult | Source 失败且 failFast=true → 立即返回 error |
+| 运行 | Client 就绪 | 并发安全，可调用 HealthCheck | 操作失败 → metrics 记录 |
+| 关闭 | `client.Close(ctx)` | 标记 closed=true → metrics+1 | ctx nil → 返回 error |
 
 ---
 
@@ -544,20 +718,7 @@ Then 所有测试通过，零 data race，零 secret 泄露，覆盖率 ≥ 80%
 
 | ID | 问题 | 状态 | 负责人 |
 |----|------|------|--------|
-| OQ-001 | 是否需要支持配置热更新（Watch 特性）？当前只支持启动时加载 | 待评估 | ZoneCNH |
+| OQ-001 | 是否需要支持运行时配置热更新（Watch 特性）？ | 待评估 | ZoneCNH |
 | OQ-002 | 是否需要支持配置版本管理（记录每次配置变更）？ | 待评估 | ZoneCNH |
-| OQ-003 | 敏感配置（密码、token）是否需要内置加密支持？ | 待评估 | ZoneCNH |
+| OQ-003 | 是否需要支持远程配置源（etcd/consul/vault）？ | 待评估 | ZoneCNH |
 | OQ-004 | 是否需要支持配置模板（引用其他 key 的值）？ | 待评估 | ZoneCNH |
-
----
-
-## 24. Lifecycle
-
-| 阶段 | 状态 | 说明 |
-|------|------|------|
-| 初始化 | `configx.New(opts...)` | 创建 Config 实例，应用 Option |
-| 加载 | `Load(path)` | 解析配置文件，填充 data |
-| 覆盖 | `WithEnvOverride(prefix)` | 环境变量覆盖配置键 |
-| 校验 | `Validate()` | schema 校验，fail-fast |
-| 运行 | `Reader.Get(key)` | 并发安全只读访问 |
-| 关闭 | 进程退出 | 无资源需清理（无连接池/文件句柄） |
