@@ -109,15 +109,15 @@ test-only，不参与生产运行时。
 
 基础设施客户端封装。均为可选，按需引入。
 
-| 模块        | 规格                             | 封装目标                            |
-| ----------- | -------------------------------- | ----------------------------------- |
-| redisx      | [SPEC.md](./redisx/SPEC.md) · [tasks/](./redisx/tasks/) | Get/Set/Del/Exists/Expire/HGet/HSet/LPush/LRange/Subscribe/Pipeline/Locker/Health（12 FR，10 tasks） |
-| kafkax      | [SPEC.md](./kafkax/SPEC.md)      | Kafka — 消息队列、事件流            |
-| natsx       | [SPEC.md](./natsx/SPEC.md)       | NATS — 内部通信、JetStream          |
-| postgresx   | [SPEC.md](./postgresx/SPEC.md)   | PostgreSQL — 关系型存储、事务、迁移 |
-| taosx       | [SPEC.md](./taosx/SPEC.md)       | TDengine L2 adapter contract（Driver 注入、批量与 schemaless 契约） |
-| ossx        | [SPEC.md](./ossx/SPEC.md)        | 对象存储 — S3/MinIO/local 多后端    |
-| clickhousex | [SPEC.md](./clickhousex/SPEC.md) | ClickHouse — OLAP 查询、批量写入    |
+| 模块        | 规格                                                    | 封装目标                                                                                             |
+| ----------- | ------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| redisx      | [SPEC.md](./redisx/SPEC.md) · [goal.md](./redisx/goal.md) · [TRACEABILITY.md](./redisx/TRACEABILITY.md) · [tasks/](./redisx/tasks/) | Redis KeyBuilder/Options/KV/TTL/Cache/Hash/List/PubSub/Pipeline/Locker/Counter/RateLimit/Codec/Health；直接生产依赖限定为 kernel + Redis 客户端库，configx/observex/resiliencx/contracts 仅作为外部投影或 adapter 边界（12 FR，10 BR，4 NFR，10 tasks） |
+| kafkax      | [SPEC.md](./kafkax/SPEC.md)                             | Kafka — 消息队列、事件流                                                                             |
+| natsx       | [SPEC.md](./natsx/SPEC.md)                              | NATS — 内部通信、JetStream                                                                           |
+| postgresx   | [SPEC.md](./postgresx/SPEC.md)                          | PostgreSQL — 关系型存储、事务、迁移                                                                  |
+| taosx       | [SPEC.md](./taosx/SPEC.md)                              | TDengine — 时序数据写入与查询                                                                        |
+| ossx        | [SPEC.md](./ossx/SPEC.md)                               | 对象存储 — S3/MinIO/local 多后端                                                                     |
+| clickhousex | [SPEC.md](./clickhousex/SPEC.md)                        | ClickHouse — OLAP 查询、批量写入                                                                     |
 
 ---
 
