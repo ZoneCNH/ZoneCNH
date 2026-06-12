@@ -1,18 +1,17 @@
 # TASK-REDISX-002
 
-> KV operations, Exists, Expire, TTL, context, and default TTL policy.
+> Client 实现：Get/Set/Del
 
 ---
 
 ```yaml
 task_id: TASK-REDISX-002
 module: redisx
-scope: "Implement Get/Set/Del/Exists/Expire/TTL with context-aware Redis calls, Codec use, ErrNotFound mapping, idempotent delete, and default TTL/jitter behavior."
+scope: "实现 Client 接口的基础 KV 操作（FR-001 至 FR-003）"
 spec_ref:
   - "module/redisx/SPEC.md#FR-003"
-  - "module/redisx/SPEC.md#FR-004"
-  - "module/redisx/SPEC.md#BR-003"
-  - "module/redisx/SPEC.md#BR-004"
+test_cases:
+  - "TC-001"
 files:
   - "client.go"
   - "kv.go"
@@ -20,19 +19,10 @@ files:
   - "kv_test.go"
   - "ttl_test.go"
 acceptance_criteria:
-  - "AC-003-1: Get/Set/Del cover existing keys, missing keys, Codec failures, context cancellation, and idempotent delete."
-  - "AC-004-1: Exists/Expire/TTL/default TTL/jitter are implemented and tested without accidental no-expire cache writes."
-  - "AC-BR-003: All Redis network operations in this task accept and honor context."
-  - "AC-BR-004: TTL semantics distinguish explicit no-expire from default cache TTL."
-non_scope:
-  - "Do not implement CacheClient, Hash/List, Pub/Sub, Pipeline, Locker, Counter, RateLimitHelper, or Health."
-  - "Do not introduce retry, circuit breaker, config, or observability dependencies."
-  - "Do not accept raw string keys where a validated Key is required."
-test_plan:
-  - "TC-003-1: Unit/integration tests cover Set/Get/Del, ErrNotFound, Codec errors, and context cancellation."
-  - "TC-004-1: Unit/integration tests cover Exists, Expire, TTL, default TTL, explicit no-expire, and jitter."
-  - "TC-BR-003: Cancellation/deadline tests cover every network method touched by this task."
-  - "TC-BR-004: TTL policy tests prove cache writes do not silently persist forever."
+  - "Get 返回已设置的值"
+  - "Get 不存在的 key 透传 go-redis 的 redis.Nil 语义"
+  - "Set 存储值，可设置 TTL"
+  - "Del 删除 key"
 depends_on:
   - "TASK-REDISX-000"
   - "TASK-REDISX-001"
@@ -49,44 +39,25 @@ Implement the core Redis KV and TTL surface used by later cache, counter, and he
 
 ## Requirements Covered
 
-| Requirement | Description | Acceptance Criteria |
-| --- | --- | --- |
-| FR-003 | KV Get/Set/Del | AC-003-1 |
-| FR-004 | Exists/Expire 与默认 TTL 策略 | AC-004-1 |
-| BR-003 | 所有网络操作尊重 context | AC-BR-003 |
-| BR-004 | TTL 默认策略、jitter 与无意永不过期防护 | AC-BR-004 |
-
-## Scope
-
-- Implement context-aware `Get`, `Set`, `Del`, `Exists`, `Expire`, and `TTL`.
-- Map Redis nil to `ErrNotFound`.
-- Apply Codec and TTL policy consistently.
-- Add focused unit and integration tests.
-
-## Non-Scope
-
-- Do not implement cache-aside orchestration or singleflight behavior.
-- Do not implement Redis data structures beyond KV and TTL commands.
-- Do not add high-level resilience or observability integrations.
-
-## Files
-
-| File | Responsibility |
-| --- | --- |
-| `client.go` | Redis client wrapper and shared command execution |
-| `kv.go` | Get/Set/Del/Exists implementation |
-| `ttl.go` | Expire/TTL/default TTL/jitter policy |
-| `kv_test.go` | KV behavior and errors |
-| `ttl_test.go` | TTL policy behavior |
+| Requirement | Description      | Acceptance Criteria         |
+| ----------- | ---------------- | --------------------------- |
+| FR-001      | Get：获取值      | 返回正确值或 `redis.Nil` |
+| FR-002      | Set：设置值      | 存储成功，TTL 生效          |
+| FR-003      | Del：删除 key    | 删除成功                    |
 
 ## Test Plan
 
-| Test Case | Type | Same-task test file |
-| --- | --- | --- |
-| TC-003-1 | Unit/Integration | `kv_test.go` |
-| TC-004-1 | Unit/Integration | `ttl_test.go` |
-| TC-BR-003 | Unit/Integration | `kv_test.go`, `ttl_test.go` |
-| TC-BR-004 | Unit/Integration | `ttl_test.go` |
+| Test Case | Type | Description                          |
+| --------- | ---- | ------------------------------------ |
+| TC-001    | Unit | Set 后 Get 返回正确值                |
+| TC-001    | Unit | Get 不存在的 key 返回 `redis.Nil` |
+| TC-001    | Unit | Del 后 Get 返回 `redis.Nil`       |
+
+## Non-Scope
+
+- 不直接 import `configx`、`observex`、`resiliencx` 或 `contracts`。
+- 不实现业务缓存模型、业务领域 DTO 或跨模块注册逻辑。
+- 直接依赖边界保持为 `kernel` + Redis client library `github.com/redis/go-redis/v9`。
 
 ## Implementation Notes
 
@@ -96,6 +67,13 @@ Implement the core Redis KV and TTL surface used by later cache, counter, and he
 
 ## Done Evidence
 
-- `go test ./...`
-- context cancellation test output
-- `git diff --check`
+| Step | Description                          | Deliverables     | Verification     |
+| ---- | ------------------------------------ | ---------------- | ---------------- |
+| 1    | 实现 `Get`/`Set`/`Del`               | `client_impl.go` | 基础 KV 测试通过 |
+| 2    | 错误处理：Get/HGet miss 保持 `redis.Nil` 语义 | `client_impl.go` | 错误类型正确     |
+
+### Risk Assessment
+
+| Risk           | Probability | Impact | Mitigation    |
+| -------------- | ----------- | ------ | ------------- |
+| redis 连接失败 | Low         | High   | 连接池 + 模块内 timeout/retry/fast-fail 策略 |

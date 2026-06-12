@@ -9,9 +9,11 @@ task_id: TASK-REDISX-001
 module: redisx
 scope: "Implement KeyBuilder, Key, key pattern redaction, namespace/env/service/version/entity/id validation, and Options-only key configuration."
 spec_ref:
-  - "module/redisx/SPEC.md#FR-001"
-  - "module/redisx/SPEC.md#BR-001"
-  - "module/redisx/SPEC.md#BR-002"
+  - "module/redisx/SPEC.md#9"
+test_cases:
+  - "TC-001"
+  - "TC-002"
+  - "TC-003"
 files:
   - "key.go"
   - "key_test.go"
@@ -73,11 +75,17 @@ Make Key construction governable before any Redis command implementation accepts
 
 ## Test Plan
 
-| Test Case | Type | Same-task test file |
-| --- | --- | --- |
-| TC-001-1 | Unit | `key_test.go` |
-| TC-BR-001 | Unit | `key_test.go` |
-| TC-BR-002 | Unit | `key_test.go` |
+| Test Case | Type    | Description        |
+| --------- | ------- | ------------------ |
+| TC-001    | Compile | KV 接口签名完整性编译验证 |
+| TC-002    | Compile | Locker 接口签名完整性编译验证 |
+| TC-003    | Compile | Pipeline 接口签名完整性编译验证 |
+
+## Non-Scope
+
+- 不直接 import `configx`、`observex`、`resiliencx` 或 `contracts`。
+- 不实现业务缓存模型、业务领域 DTO 或跨模块注册逻辑。
+- 直接依赖边界保持为 `kernel` + Redis client library `github.com/redis/go-redis/v9`。
 
 ## Implementation Notes
 

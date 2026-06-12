@@ -111,7 +111,7 @@ test-only，不参与生产运行时。
 
 | 模块        | 规格                                                    | 封装目标                                                                                             |
 | ----------- | ------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| redisx      | [SPEC.md](./redisx/SPEC.md) · [goal.md](./redisx/goal.md) · [TRACEABILITY.md](./redisx/TRACEABILITY.md) · [tasks/](./redisx/tasks/) | Redis KeyBuilder/Options/KV/TTL/Cache/Hash/List/PubSub/Pipeline/Locker/Counter/RateLimit/Codec/Health；直接生产依赖限定为 kernel + Redis 客户端库，configx/observex/resiliencx/contracts 仅作为外部投影或 adapter 边界（12 FR，10 BR，4 NFR，10 tasks） |
+| redisx      | [SPEC.md](./redisx/SPEC.md) · [TRACEABILITY.md](./redisx/TRACEABILITY.md) · [tasks/](./redisx/tasks/) | Redis client wrapper: 12 FR / 10 tasks; direct deps limited to `kernel` + `github.com/redis/go-redis/v9` |
 | kafkax      | [SPEC.md](./kafkax/SPEC.md)                             | Kafka — 消息队列、事件流                                                                             |
 | natsx       | [SPEC.md](./natsx/SPEC.md)                              | NATS — 内部通信、JetStream                                                                           |
 | postgresx   | [SPEC.md](./postgresx/SPEC.md)                          | PostgreSQL — 关系型存储、事务、迁移                                                                  |

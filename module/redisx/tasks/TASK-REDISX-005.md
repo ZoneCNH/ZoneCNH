@@ -9,9 +9,9 @@ task_id: TASK-REDISX-005
 module: redisx
 scope: "实现 Pipeline 命令队列、单次批量提交、有序结果和部分错误诊断。"
 spec_ref:
-  - "module/redisx/SPEC.md#FR-008"
-  - "module/redisx/SPEC.md#BR-006"
-  - "module/redisx/SPEC.md#BR-003"
+  - "module/redisx/SPEC.md#FR-009"
+test_cases:
+  - "TC-003"
 files:
   - "pipeline.go"
   - "pipeline_result.go"
@@ -77,11 +77,15 @@ status: pending
 
 ## Test Plan
 
-| Test Case | Type | Description | Same-task test file |
-| --- | --- | --- | --- |
-| TC-008-1 | Integration | Pipeline 有序结果、部分错误、非原子语义。 | `pipeline_test.go` |
-| TC-BR-006 | Integration | 部分失败返回有序结果和第一个错误。 | `pipeline_test.go` |
-| TC-BR-003 | Unit/Integration | Exec 尊重 context cancel/deadline。 | `pipeline_context_test.go` |
+| Test Case | Type | Description                  |
+| --------- | ---- | ---------------------------- |
+| TC-003    | Unit | Pipeline 批量 Set + 批量 Get |
+
+## Non-Scope
+
+- 不直接 import `configx`、`observex`、`resiliencx` 或 `contracts`。
+- 不实现业务缓存模型、业务领域 DTO 或跨模块注册逻辑。
+- 直接依赖边界保持为 `kernel` + Redis client library `github.com/redis/go-redis/v9`。
 
 ## Implementation Notes
 

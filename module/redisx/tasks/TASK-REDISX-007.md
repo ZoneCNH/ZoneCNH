@@ -9,9 +9,9 @@ task_id: TASK-REDISX-007
 module: redisx
 scope: "实现 Counter 与 fixed-window RateLimitHelper，保证原子计数、窗口 TTL 和剩余额度返回。"
 spec_ref:
-  - "module/redisx/SPEC.md#FR-010"
-  - "module/redisx/SPEC.md#BR-004"
-  - "module/redisx/SPEC.md#BR-003"
+  - "module/redisx/SPEC.md#FR-012"
+test_cases:
+  - "TC-009"
 files:
   - "counter.go"
   - "ratelimit.go"
@@ -77,11 +77,15 @@ status: pending
 
 ## Test Plan
 
-| Test Case | Type | Description | Same-task test file |
-| --- | --- | --- | --- |
-| TC-010-1 | Concurrency/Integration | Counter、RateLimit、并发、窗口 TTL。 | `counter_test.go`, `ratelimit_test.go` |
-| TC-BR-004 | Unit/Integration | TTL 默认、显式无过期和 jitter。 | `ratelimit_test.go` |
-| TC-BR-003 | Unit/Integration | 网络操作尊重 context cancel/deadline。 | `counter_test.go`, `ratelimit_test.go` |
+| Test Case | Type | Description           |
+| --------- | ---- | --------------------- |
+| TC-009    | Unit | PING 成功返回 healthy |
+
+## Non-Scope
+
+- 不直接 import `configx`、`observex`、`resiliencx` 或 `contracts`。
+- 不实现业务缓存模型、业务领域 DTO 或跨模块注册逻辑。
+- 直接依赖边界保持为 `kernel` + Redis client library `github.com/redis/go-redis/v9`。
 
 ## Implementation Notes
 

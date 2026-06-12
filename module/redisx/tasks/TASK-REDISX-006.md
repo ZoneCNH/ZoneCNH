@@ -9,9 +9,10 @@ task_id: TASK-REDISX-006
 module: redisx
 scope: "实现 Locker Acquire/Renew/Release，保证 holder token、TTL、续期和原子释放校验。"
 spec_ref:
-  - "module/redisx/SPEC.md#FR-009"
-  - "module/redisx/SPEC.md#BR-005"
-  - "module/redisx/SPEC.md#BR-007"
+  - "module/redisx/SPEC.md#FR-010"
+  - "module/redisx/SPEC.md#FR-011"
+test_cases:
+  - "TC-002"
 files:
   - "locker.go"
   - "lock_script.go"
@@ -19,17 +20,10 @@ files:
   - "lock_concurrency_test.go"
   - "testutil_test.go"
 acceptance_criteria:
-  - "AC-009-1: 锁竞争、TTL 到期、续期、误释放防护和 holder token 校验均通过。"
-  - "AC-BR-005: token mismatch 时 Release 不删除锁。"
-  - "AC-BR-007: 错误包装和 hook payload 不包含敏感值。"
-non_scope:
-  - "不编辑 module/redisx/SPEC.md、TRACEABILITY.md 或 goal.md。"
-  - "不新增 configx、observex、resiliencx、contracts 或业务域模块的直接运行时依赖。"
-  - "不实现 Redlock、多 Redis 节点仲裁或业务幂等协议。"
-test_plan:
-  - "TC-009-1: Lock acquire/renew/release、token mismatch、TTL。"
-  - "TC-BR-005: Lock token owner 和 release guard。"
-  - "TC-BR-007: 错误脱敏与分类。"
+  - "Acquire 获取锁成功返回 true"
+  - "Acquire 获取锁失败返回 false 或 ErrLockAcquireFailed"
+  - "Release 释放锁"
+  - "锁 TTL 过期自动释放"
 depends_on:
   - "TASK-REDISX-000"
   - "TASK-REDISX-001"
@@ -47,51 +41,39 @@ status: pending
 
 ## Requirements Covered
 
-| Requirement | Description | Acceptance Criteria |
-| --- | --- | --- |
-| FR-009 | token owner 分布式锁 | AC-009-1 |
-| BR-005 | Lock token owner、TTL、续期与释放校验 | AC-BR-005 |
-| BR-007 | 错误分类与敏感信息脱敏 | AC-BR-007 |
-
-## Scope
-
-- 实现 `Locker.Acquire(ctx, key, token, ttl)`。
-- 实现 `Locker.Renew(ctx, key, token, ttl)`。
-- 实现 Lua guarded `Release(ctx, key, token)`，token mismatch 时不得删除锁。
-- 覆盖竞争、TTL 到期、续期、context 取消和错误脱敏。
-
-## Non-Scope
-
-- 不实现 Redlock 或多 Redis quorum。
-- 不保证业务操作幂等；业务幂等由调用方负责。
-- 不引入 resiliencx 重试或熔断依赖。
-
-## Files
-
-| File | Purpose |
-| --- | --- |
-| `locker.go` | Locker API、Acquire/Renew/Release |
-| `lock_script.go` | Lua guarded release/renew 脚本 |
-| `locker_test.go` | TTL、续期和释放语义测试 |
-| `lock_concurrency_test.go` | 竞争和 token mismatch 并发测试 |
-| `testutil_test.go` | Redis 测试夹具 |
+| Requirement | Description           | Acceptance Criteria           |
+| ----------- | --------------------- | ----------------------------- |
+| FR-010      | Acquire：获取分布式锁 | 成功返回 true，已被持有返回 false 或 ErrLockAcquireFailed |
+| FR-011      | Release：释放锁       | 持有者释放成功；非持有者返回 ErrLockNotHeld |
 
 ## Test Plan
 
-| Test Case | Type | Description | Same-task test file |
-| --- | --- | --- | --- |
-| TC-009-1 | Concurrency/Integration | Lock acquire/renew/release、token mismatch、TTL。 | `locker_test.go`, `lock_concurrency_test.go` |
-| TC-BR-005 | Concurrency | token mismatch 时 Release 不删除锁。 | `lock_concurrency_test.go` |
-| TC-BR-007 | Unit/Static | 错误分类与脱敏不泄露完整 Key。 | `locker_test.go` |
+| Test Case | Type | Description                          |
+| --------- | ---- | ------------------------------------ |
+| TC-002    | Unit | Acquire 成功后 Release 释放          |
+| TC-002    | Unit | 重复 Acquire 返回 false 或 ErrLockAcquireFailed |
+| TC-002    | Unit | TTL 过期后可重新 Acquire             |
+
+## Non-Scope
+
+- 不直接 import `configx`、`observex`、`resiliencx` 或 `contracts`。
+- 不实现业务缓存模型、业务领域 DTO 或跨模块注册逻辑。
+- 直接依赖边界保持为 `kernel` + Redis client library `github.com/redis/go-redis/v9`。
 
 ## Implementation Notes
 
-- Release 必须使用 Redis 端原子校验，不能用非原子 get-then-del。
-- token 和 Key 不得写入日志、metrics label 或未脱敏错误。
-- 续期只允许当前 holder token 成功。
+- 使用 Redis SET NX EX 实现分布式锁
+- `Release(ctx, key)` 使用 Lua 脚本保证仅持有者可释放，非持有者返回 ErrLockNotHeld
 
 ## Done Evidence
 
-- `go test ./...` 通过。
-- TC-009-1、TC-BR-005、TC-BR-007 均有同任务测试证据。
-- Lua release guard 有并发/误释放回归测试。
+| Step | Description                                  | Deliverables     | Verification |
+| ---- | -------------------------------------------- | ---------------- | ------------ |
+| 1    | 实现 `Acquire`：SET NX EX + 返回 bool/error | `locker_impl.go` | TC-002 通过 |
+| 2    | 实现 `Release` Lua 脚本保证仅持有者释放      | `locker_impl.go` | TC-002 通过 |
+
+### Risk Assessment
+
+| Risk       | Probability | Impact | Mitigation                |
+| ---------- | ----------- | ------ | ------------------------- |
+| 锁超时竞态 | Medium      | High   | fencing token 或 Lua 脚本 |

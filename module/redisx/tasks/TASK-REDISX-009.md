@@ -9,10 +9,17 @@ task_id: TASK-REDISX-009
 module: redisx
 scope: "补齐真实 Redis 集成、benchmark、README、CHANGELOG 和发布 DoD 证据。"
 spec_ref:
-  - "module/redisx/SPEC.md#FR-012"
-  - "module/redisx/SPEC.md#NFR-002"
-  - "module/redisx/SPEC.md#NFR-003"
-  - "module/redisx/SPEC.md#NFR-004"
+  - "module/redisx/SPEC.md#22"
+test_cases:
+  - "TC-001"
+  - "TC-002"
+  - "TC-003"
+  - "TC-004"
+  - "TC-005"
+  - "TC-006"
+  - "TC-007"
+  - "TC-008"
+  - "TC-009"
 files:
   - "integration_test.go"
   - "benchmark_test.go"
@@ -88,12 +95,16 @@ status: pending
 
 ## Test Plan
 
-| Test Case | Type | Description | Same-task test file |
-| --- | --- | --- | --- |
-| TC-012-1 | Unit/Integration | Health、PoolStats、HookEvent、指标名。 | `integration_test.go` |
-| TC-NFR-002 | Integration | 真实 Redis 集成、失败路径、并发路径。 | `integration_test.go` |
-| TC-NFR-003 | Benchmark | KV、Pipeline、Locker、RateLimit benchmark。 | `benchmark_test.go` |
-| TC-NFR-004 | Documentation | README、CHANGELOG、发布 DoD 证据。 | `README.md`, `CHANGELOG.md`, `example_test.go` |
+| Test Case | Type    | Description          |
+| --------- | ------- | -------------------- |
+| TC-001 至 TC-009 | CI Gate | 覆盖率 >= 80%        |
+| TC-001 至 TC-009 | CI Gate | `-race` 无 data race |
+
+## Non-Scope
+
+- 不直接 import `configx`、`observex`、`resiliencx` 或 `contracts`。
+- 不实现业务缓存模型、业务领域 DTO 或跨模块注册逻辑。
+- 直接依赖边界保持为 `kernel` + Redis client library `github.com/redis/go-redis/v9`。
 
 ## Implementation Notes
 

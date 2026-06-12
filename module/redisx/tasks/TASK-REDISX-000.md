@@ -9,11 +9,10 @@ task_id: TASK-REDISX-000
 module: redisx
 scope: "Define package skeleton, typed Options, New/Close contract surface, Codec SPI, shared error model, and dependency guard without implementing Redis command breadth."
 spec_ref:
-  - "module/redisx/SPEC.md#FR-002"
-  - "module/redisx/SPEC.md#FR-011"
-  - "module/redisx/SPEC.md#BR-007"
-  - "module/redisx/SPEC.md#BR-010"
-  - "module/redisx/SPEC.md#NFR-001"
+  - "module/redisx/SPEC.md#10"
+  - "module/redisx/SPEC.md#15"
+test_cases:
+  - "TC-004"
 files:
   - "go.mod"
   - "doc.go"
@@ -80,19 +79,20 @@ Establish the package contract so later tasks can implement Redis behavior again
 
 ## Test Plan
 
-| Test Case | Type | Same-task test file |
-| --- | --- | --- |
-| TC-002-1 | Unit/Contract | `errors_test.go` |
-| TC-011-1 | Unit | `errors_test.go` |
-| TC-BR-007 | Unit/Static | `errors_test.go` |
-| TC-BR-010 | Static | `errors_test.go` |
-| TC-NFR-001 | Compile/Unit | `errors_test.go` |
+| Test Case | Type    | Description               |
+| --------- | ------- | ------------------------- |
+| TC-004    | CI Gate | `go build ./...` 编译通过；连接配置可支持重连用例 |
+
+## Non-Scope
+
+- 不直接 import `configx`、`observex`、`resiliencx` 或 `contracts`。
+- 不实现业务缓存模型、业务领域 DTO 或跨模块注册逻辑。
+- 直接依赖边界保持为 `kernel` + Redis client library `github.com/redis/go-redis/v9`。
 
 ## Implementation Notes
 
-- Public errors must support `errors.Is` or stable error codes.
-- Keep all forbidden integration modules outside production imports.
-- Every key-like value in errors must use pattern or redacted representation.
+- 错误变量：`ErrConnectionFailed`、`ErrLockNotHeld`、`ErrLockAcquireFailed`、`ErrPipelineEmpty`、`ErrSubscribeFailed`、`ErrCodecNotSet`
+- `go.mod` 依赖 `github.com/redis/go-redis/v9`
 
 ## Done Evidence
 

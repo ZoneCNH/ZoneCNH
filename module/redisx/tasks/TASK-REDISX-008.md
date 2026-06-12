@@ -9,10 +9,18 @@ task_id: TASK-REDISX-008
 module: redisx
 scope: "实现 Health、pool stats、低基数 hook 事件和禁止依赖静态守卫。"
 spec_ref:
-  - "module/redisx/SPEC.md#FR-012"
-  - "module/redisx/SPEC.md#BR-008"
-  - "module/redisx/SPEC.md#BR-009"
-  - "module/redisx/SPEC.md#BR-010"
+  - "module/redisx/SPEC.md#16"
+  - "module/redisx/SPEC.md#17"
+test_cases:
+  - "TC-001"
+  - "TC-002"
+  - "TC-003"
+  - "TC-004"
+  - "TC-005"
+  - "TC-006"
+  - "TC-007"
+  - "TC-008"
+  - "TC-009"
 files:
   - "health.go"
   - "hooks.go"
@@ -84,12 +92,16 @@ status: pending
 
 ## Test Plan
 
-| Test Case | Type | Description | Same-task test file |
-| --- | --- | --- | --- |
-| TC-012-1 | Unit/Integration | Health、PoolStats、HookEvent、指标名。 | `health_test.go`, `observability_test.go` |
-| TC-BR-008 | Unit | retry/reconnect/circuit 事件通过本地 hook 表达。 | `observability_test.go` |
-| TC-BR-009 | Unit/Static | 指标低基数标签约束，拒绝完整 Key 标签。 | `observability_test.go` |
-| TC-BR-010 | Static | 禁止直接依赖 configx/observex/resiliencx/contracts。 | `observability_test.go` |
+| Test Case | Type        | Description    |
+| --------- | ----------- | -------------- |
+| TC-001 至 TC-009 | Integration | 全部操作端到端 |
+| TC-001    | Benchmark   | Get/Set 延迟   |
+
+## Non-Scope
+
+- 不直接 import `configx`、`observex`、`resiliencx` 或 `contracts`。
+- 不实现业务缓存模型、业务领域 DTO 或跨模块注册逻辑。
+- 直接依赖边界保持为 `kernel` + Redis client library `github.com/redis/go-redis/v9`。
 
 ## Implementation Notes
 

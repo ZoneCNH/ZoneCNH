@@ -15,7 +15,7 @@
 
 ## 1. Goal 定位
 
-`redisx` 的 Goal 是提供 Redis 的标准化访问和治理封装，使缓存、分布式锁、计数器、限流辅助、轻量 Pub/Sub 和基础队列辅助能力具备统一接口、统一 Key 规范、统一序列化、统一 TTL 策略、统一错误模型和统一观测语义。它屏蔽客户端差异，但不隐藏 Redis 的核心语义和限制。
+`redisx` 的 Goal 是提供 Redis 的标准化访问和治理封装，使缓存、分布式锁、计数器、限流辅助、会话和轻量队列辅助能力具备统一接口、统一 Key 规范、统一序列化、统一配置、模块内弹性策略和统一观测语义。它屏蔽客户端差异，但不隐藏 Redis 的核心语义和限制。
 
 `redisx` 是存储扩展模块，不是通用治理运行时。按 `module/FOUNDATION-DEPS.yaml`，它的直接 Go 依赖边界是 `kernel` 与 Redis 客户端库；`configx`、`observex`、`resiliencx`、`contracts` 只能作为外部配置投影、指标命名约定或适配器约束，不能成为 `redisx` 代码中的直接 import。
 
@@ -52,24 +52,41 @@
 
 ## 5. 能力范围
 
-| 能力域 | 1.0 必须具备的能力 | 验收方式 |
-| --- | --- | --- |
-| Key 规范 | namespace、env、service、entity、id、purpose、version | KeyBuilder 单元测试和非法输入测试通过 |
-| KV 操作 | get/set/delete/exists/expire/default TTL/TTL jitter | 真实 Redis 集成测试通过 |
-| 缓存模式 | cache-aside、null-cache、防击穿 singleflight、Codec | 缓存场景和序列化测试通过 |
-| 基础结构 | hash、list、publish、subscribe、pipeline | 集成测试和取消清理测试通过 |
-| 分布式锁 | tryLock、lease、renew、unlock token check | 并发锁测试和误释放防护测试通过 |
-| 计数器 | incr/add/get/reset、fixed-window rate limit | 原子性和 TTL 测试通过 |
-| 治理观测 | typed options、错误码、超时、指标/日志 hooks | 契约测试和静态依赖守卫通过 |
+- MUST 提供 KV、Cache、Lock、Counter、RateLimitHelper 基础能力。
+- MUST 强制 Key 命名规范和命名空间隔离。
+- MUST 支持 TTL 默认策略，缓存写入必须明确 TTL 或声明永不过期理由。
+- MUST 提供安全的分布式锁：唯一 token、过期时间、续期、释放校验。
+- MUST 直接依赖 `kernel`，并允许 `github.com/redis/go-redis/v9` 作为 Redis 客户端实现依赖；MUST NOT 直接 import `configx`、`observex`、`resiliencx` 或 `contracts`。
 
 ## 6. 职责边界
 
-### 6.1 模块内职责
+| 场景     | 说明                   | 1.0 期望结果                                     |
+| -------- | ---------------------- | ------------------------------------------------ |
+| 缓存查询 | 业务读取热点对象       | cache-aside 模式统一封装，miss/load/set 可观测   |
+| 分布式锁 | 多实例处理同一资源     | 基于 token 的锁避免误释放，超时自动过期          |
+| 计数限流 | 短信发送或接口访问计数 | 原子自增和 TTL 统一处理                          |
+| 故障降级 | Redis 短暂不可用       | 按 redisx 本模块配置的 timeout/retry/fast-fail 策略快速失败或降级，避免拖垮主流程 |
+
+## 4. 能力范围
+
+| 能力域   | 1.0 必须具备的能力                                | 验收方式                |
+| -------- | ------------------------------------------------- | ----------------------- |
+| Key 规范 | namespace、domain、resource、id、purpose、version | KeyBuilder 测试通过     |
+| KV 操作  | get/set/delete/exists/expire/batch                | 真实 Redis 集成测试通过 |
+| 缓存模式 | cache-aside、null-cache、防击穿锁、TTL jitter     | 缓存场景测试通过        |
+| 分布式锁 | tryLock、lease、renew、unlock token check         | 并发锁测试通过          |
+| 计数器   | incr/decr、窗口计数、TTL 原子设置                 | 原子性测试通过          |
+| 序列化   | JSON/Binary SPI、类型信息、兼容版本               | 序列化兼容测试通过      |
+| 治理观测 | 超时、慢操作、错误、重试、熔断                    | 观测测试通过            |
+
+## 5. 职责边界
+
+### 5.1 模块内职责
 
 - 提供 Redis 标准客户端封装和常见能力组件。
-- 提供 Key 规范、序列化、TTL、连接池和 TLS 配置结构。
-- 提供 Redis 错误模型、敏感信息脱敏和低基数观测 hook。
-- 提供 Redis 集成测试、并发测试、失败路径测试和最小样例。
+- 提供 Key 规范、序列化、TTL、连接池配置。
+- 提供 Redis 错误模型、超时、重试、快速失败和观测语义，不形成对 configx/observex/resiliencx/contracts 的直接 Go import。
+- 提供测试工具和本地集成测试样例。
 
 ### 6.2 明确非目标
 
@@ -82,13 +99,12 @@
 
 ## 7. 依赖关系与分层约束
 
-| 依赖类型 | 约束 |
-| --- | --- |
-| 允许直接依赖 | Go 标准库、`github.com/ZoneCNH/kernel`、Redis 客户端库（默认 `github.com/redis/go-redis/v9`） |
-| 禁止直接依赖 | 业务域模块、`configx`、`observex`、`resiliencx`、`contracts` |
-| 配置关系 | `foundationx.redis.*` 是外部配置投影；`redisx` 只接受 typed `Options` |
-| 观测关系 | `foundationx_redis_*` 是指标命名约定；指标/日志通过本地 hooks 输出 |
-| 下游关系 | 业务缓存、`schedulex` LockProvider、限流辅助可依赖 `redisx` |
+| 依赖类型 | 约束                                                       |
+| -------- | ---------------------------------------------------------- |
+| 上游依赖 | 直接依赖仅限 `kernel`；Redis 客户端实现依赖允许 `github.com/redis/go-redis/v9`。 |
+| 下游依赖 | 业务缓存、schedulex LockProvider、限流辅助可使用 redisx。  |
+| 分层约束 | redisx 不应依赖业务模型；序列化通过类型和 codec SPI 完成；不得直接 import `configx`、`observex`、`resiliencx` 或 `contracts`。 |
+| 契约依赖 | Public API 契约和错误码契约在规格文档中登记；不得通过直接 import `contracts` 完成。 |
 
 ## 8. 对外契约
 
@@ -122,16 +138,13 @@
 
 ## 10. 错误模型与失败策略
 
-| 错误类别 | 典型原因 | 1.0 处理策略 |
-| --- | --- | --- |
-| `ErrInvalidKey` | Key segment 为空、过长或字符非法 | 不访问 Redis，返回参数错误 |
-| `ErrKeyNotFound` | Redis nil / key 不存在 | 作为可处理状态返回 |
-| `ErrConnectionFailed` | 连接失败、认证失败、网络不可达 | 返回可识别连接错误，由上层策略决定重试/降级 |
-| `ErrTimeout` | context deadline 或 Redis 超时 | 返回可识别超时错误 |
-| `ErrSerializationFailed` | 编码或解码失败 | 不重试，返回数据格式错误 |
-| `ErrLockNotAcquired` | 锁竞争失败 | 返回业务可处理状态 |
-| `ErrLockOwnershipLost` | 续期或释放时 token 不匹配 | 不释放其他 owner 的锁，记录脱敏诊断 |
-| `ErrPipelineFailed` | Pipeline 部分命令失败 | 返回有序结果和第一个错误 |
+| 错误类别                   | 典型原因                       | 1.0 处理策略                       |
+| -------------------------- | ------------------------------ | ---------------------------------- |
+| REDIS_CONNECTION_FAILED    | 连接失败、认证失败、网络不可达 | 按 redisx 本模块 timeout/retry/fast-fail 策略快速失败或重试 |
+| REDIS_TIMEOUT              | 命令超时                       | 返回可识别超时错误                 |
+| REDIS_SERIALIZATION_FAILED | 编码或解码失败                 | 不重试，返回数据格式错误           |
+| REDIS_LOCK_NOT_ACQUIRED    | 锁竞争失败                     | 返回业务可处理状态，不作为系统异常 |
+| REDIS_LOCK_RELEASE_FAILED  | 锁释放 token 不匹配或连接失败  | 记录告警，避免误释放               |
 
 ## 11. 发布验收原则
 
