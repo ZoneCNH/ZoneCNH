@@ -172,7 +172,7 @@ x.go ──→ 基座运行时 / L2.5 / 数据域 / 分析域 / 决策域 / 执�
 | L0 | kernel | stdlib only |
 | L1 | configx, observex, resiliencx, schedulex | kernel |
 | L1 test-only | testkitx | kernel, observex (interface-only) |
-| 门禁 | xlibgate, xlib-standard | 无运行时依赖 |
+| 标准源 / 门禁 | xlib-standard, xlibgate | 无运行时依赖 |
 | 存储扩展 | redisx, kafkax, natsx, postgresx, taosx, ossx, clickhousex | kernel, observex (interface-only) |
 | 契约 | contracts | L2.5 领域共享层 |
 
@@ -854,7 +854,7 @@ AI 生成的代码必须经过：
 | L1 | resiliencx | [SPEC](./module/resiliencx/SPEC.md) | [resiliencx](https://github.com/ZoneCNH/resiliencx) |
 | L1 | schedulex | [SPEC](./module/schedulex/SPEC.md) | [schedulex](https://github.com/ZoneCNH/schedulex) |
 | L1 test-only | testkitx | [SPEC](./module/testkitx/SPEC.md) | [testkitx](https://github.com/ZoneCNH/testkitx) |
-| 门禁 | xlib-standard | [SPEC](./module/xlib-standard/SPEC.md) | [xlib-standard](https://github.com/ZoneCNH/xlib-standard) |
+| 标准源 | xlib-standard | [SPEC](./module/xlib-standard/SPEC.md) | [xlib-standard](https://github.com/ZoneCNH/xlib-standard) |
 | 门禁 | xlibgate | [SPEC](./module/xlibgate/SPEC.md) | [xlibgate](https://github.com/ZoneCNH/xlibgate) |
 | 存储扩展 | redisx | [SPEC](./module/redisx/SPEC.md) | [redisx](https://github.com/ZoneCNH/redisx) |
 | 存储扩展 | kafkax | [SPEC](./module/kafkax/SPEC.md) | [kafkax](https://github.com/ZoneCNH/kafkax) |
