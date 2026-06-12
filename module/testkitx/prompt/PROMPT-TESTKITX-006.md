@@ -10,6 +10,8 @@ spec_ref:
   - "module/testkitx/SPEC.md#9.7 (辅助函数)"
   - "module/testkitx/SPEC.md#BR-003 (使用 testing.T 而非 panic)"
   - "module/testkitx/SPEC.md#TC-007 (Eventually 收敛)"
+matrix_ref:
+  - "module/testkitx/TRACEABILITY.md"
 task_files:
   - "eventually.go"
   - "eventually_test.go"

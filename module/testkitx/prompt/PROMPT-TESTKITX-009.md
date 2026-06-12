@@ -9,6 +9,8 @@ spec_ref:
   - "module/testkitx/SPEC.md#FR-010 (GoroutineLeakCheck)"
   - "module/testkitx/SPEC.md#9.8 (边界扫描)"
   - "module/testkitx/SPEC.md#TC-010 (GoroutineLeakCheck)"
+matrix_ref:
+  - "module/testkitx/TRACEABILITY.md"
 task_files:
   - "leakcheck.go"
   - "leakcheck_test.go"

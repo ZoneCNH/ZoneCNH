@@ -11,6 +11,8 @@ spec_ref:
   - "module/testkitx/SPEC.md#BR-001 (编译期接口检查)"
   - "module/testkitx/SPEC.md#BR-002 (确定性行为)"
   - "module/testkitx/SPEC.md#TC-004 (FakeTracer 编译期检查)"
+matrix_ref:
+  - "module/testkitx/TRACEABILITY.md"
 task_files:
   - "fake_tracer.go"
   - "fake_tracer_test.go"

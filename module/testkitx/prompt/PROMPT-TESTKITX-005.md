@@ -13,6 +13,8 @@ spec_ref:
   - "module/testkitx/SPEC.md#BR-002 (确定性行为)"
   - "module/testkitx/SPEC.md#TC-005 (FakeClock 确定性)"
   - "module/testkitx/SPEC.md#TC-006 (FakeBreaker 编译期检查)"
+matrix_ref:
+  - "module/testkitx/TRACEABILITY.md"
 task_files:
   - "fake_clock.go"
   - "fake_breaker.go"

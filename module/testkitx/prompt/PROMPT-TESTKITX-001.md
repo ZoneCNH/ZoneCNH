@@ -11,6 +11,8 @@ spec_ref:
   - "module/testkitx/SPEC.md#BR-001 (编译期接口检查)"
   - "module/testkitx/SPEC.md#BR-002 (确定性行为)"
   - "module/testkitx/SPEC.md#TC-001 (FakeConfig 类型安全)"
+matrix_ref:
+  - "module/testkitx/TRACEABILITY.md"
 task_files:
   - "fake_config.go"
   - "fake_config_test.go"

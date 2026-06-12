@@ -11,6 +11,8 @@ spec_ref:
   - "module/testkitx/SPEC.md#BR-005 (生产 import graph 不含 testkitx)"
   - "module/testkitx/SPEC.md#TC-009 (BoundaryCheck)"
   - "module/testkitx/SPEC.md#20.2 (testkitx 专属 CI Gate)"
+matrix_ref:
+  - "module/testkitx/TRACEABILITY.md"
 task_files:
   - "boundary.go"
   - "boundary_test.go"

@@ -11,6 +11,8 @@ spec_ref:
   - "module/testkitx/SPEC.md#BR-004 (GOLDEN_UPDATE=1 环境变量控制)"
   - "module/testkitx/SPEC.md#BR-007 (golden 文件不泄露 secret)"
   - "module/testkitx/SPEC.md#TC-008 (GoldenUpdate)"
+matrix_ref:
+  - "module/testkitx/TRACEABILITY.md"
 task_files:
   - "golden.go"
   - "golden_test.go"
