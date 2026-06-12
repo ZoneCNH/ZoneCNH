@@ -14,15 +14,15 @@
 
 ## 关联需求
 
-| 类型 | 编号 | 出处 | 说明 |
-|------|------|------|------|
-| FR | FR-002 | SPEC.md §7 | 结构化错误模型 |
-| BR | BR-004 | SPEC.md §8 | Error 必须实现 error + Unwrap |
-| BR | BR-005 | SPEC.md §8 | IsKind 支持 errors.Join 多链 |
-| TC | TC-004 | SPEC.md §16.4 | 错误链遍历 GWT |
-| TC | TC-005 | SPEC.md §16.4 | errors.Join 多链 GWT |
-| 接口 | §9.2 | SPEC.md | errx 接口契约 |
-| 数据模型 | §10.1 | SPEC.md | errx.Error 结构体定义 |
+| 类型     | 编号   | 出处          | 说明                          |
+| -------- | ------ | ------------- | ----------------------------- |
+| FR       | FR-002 | SPEC.md §7    | 结构化错误模型                |
+| BR       | BR-004 | SPEC.md §8    | Error 必须实现 error + Unwrap |
+| BR       | BR-005 | SPEC.md §8    | IsKind 支持 errors.Join 多链  |
+| TC       | TC-004 | SPEC.md §16.4 | 错误链遍历 GWT                |
+| TC       | TC-005 | SPEC.md §16.4 | errors.Join 多链 GWT          |
+| 接口     | §9.2   | SPEC.md       | errx 接口契约                 |
+| 数据模型 | §10.1  | SPEC.md       | errx.Error 结构体定义         |
 
 ## 文件清单
 
@@ -50,24 +50,24 @@
 
 ## 验收标准
 
-| AC | 关联 | 验证命令 | 预期结果 |
-|----|------|----------|----------|
-| AC-003 | FR-002 | `go test -run TestError -count=1 ./errx/...` | 全部通过 |
-| AC-004 | FR-002 | `go test -run TestWalkErrors -count=1 ./errx/...` | 多错误链遍历正确 |
-| AC-ERRX-01 | FR-002 | `go vet ./errx/...` | 12 ErrorKind 全可用 |
-| AC-ERRX-02 | FR-002 | `go vet ./errx/...` | 4 Severity 全可用 |
-| AC-ERRX-03 | FR-002 | `go test -run TestWith ./errx/...` | With* 链式调用正确 |
-| AC-ERRX-04 | BR-004 | `go test -run TestNil ./errx/...` | nil *Error 零值安全 |
-| AC-ERRX-05 | BR-005 | `go test -run TestJoin ./errx/...` | errors.Join 多链遍历 |
-| AC-ERRX-06 | BR-005 | `go test -race -count=1 ./errx/...` | -race 通过 |
+| AC         | 关联   | 验证命令                                          | 预期结果             |
+| ---------- | ------ | ------------------------------------------------- | -------------------- |
+| AC-003     | FR-002 | `go test -run TestError -count=1 ./errx/...`      | 全部通过             |
+| AC-004     | FR-002 | `go test -run TestWalkErrors -count=1 ./errx/...` | 多错误链遍历正确     |
+| AC-ERRX-01 | FR-002 | `go vet ./errx/...`                               | 12 ErrorKind 全可用  |
+| AC-ERRX-02 | FR-002 | `go vet ./errx/...`                               | 4 Severity 全可用    |
+| AC-ERRX-03 | FR-002 | `go test -run TestWith ./errx/...`                | With* 链式调用正确   |
+| AC-ERRX-04 | BR-004 | `go test -run TestNil ./errx/...`                 | nil *Error 零值安全  |
+| AC-ERRX-05 | BR-005 | `go test -run TestJoin ./errx/...`                | errors.Join 多链遍历 |
+| AC-ERRX-06 | BR-005 | `go test -race -count=1 ./errx/...`               | -race 通过           |
 
 ## 验证命令
 
-| 命令 | 判定标准 |
-|------|----------|
-| `go build ./errx/...` | 编译通过，零错误 |
-| `go test -race -count=1 ./errx/...` | 全部测试通过，无 race |
-| `go vet ./errx/...` | 无警告 |
+| 命令                                    | 判定标准                       |
+| --------------------------------------- | ------------------------------ |
+| `go build ./errx/...`                   | 编译通过，零错误               |
+| `go test -race -count=1 ./errx/...`     | 全部测试通过，无 race          |
+| `go vet ./errx/...`                     | 无警告                         |
 | `go test -bench=. -benchmem ./errx/...` | NewError < 100ns, IsKind < 1μs |
 
 ## 禁止事项

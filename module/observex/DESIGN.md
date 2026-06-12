@@ -80,13 +80,13 @@ type Field struct {
 
 **设计决策**：
 
-| 决策 | 理由 |
-|------|------|
-| 6 方法接口（含 Debug/Named） | 覆盖日志级别全谱 + 子 logger 创建，与 SPEC FR-001 对齐 |
-| `With()` 返回新 Logger，不修改原实例 | 满足 BR-005 不变性要求；goroutine 安全共享基础 logger |
-| `Named()` 创建子 logger | 支持按模块分层命名，如 `observex.otlp.exporter` |
-| 输出格式 JSON/text 可配置 | JSON 适合生产采集，text 适合开发调试 |
-| 内部使用 `sync.RWMutex` | 平衡读多写少场景下的并发性能 |
+| 决策                                 | 理由                                                   |
+| ------------------------------------ | ------------------------------------------------------ |
+| 6 方法接口（含 Debug/Named）         | 覆盖日志级别全谱 + 子 logger 创建，与 SPEC FR-001 对齐 |
+| `With()` 返回新 Logger，不修改原实例 | 满足 BR-005 不变性要求；goroutine 安全共享基础 logger  |
+| `Named()` 创建子 logger              | 支持按模块分层命名，如 `observex.otlp.exporter`        |
+| 输出格式 JSON/text 可配置            | JSON 适合生产采集，text 适合开发调试                   |
+| 内部使用 `sync.RWMutex`              | 平衡读多写少场景下的并发性能                           |
 
 **With 不变性实现**：
 
@@ -124,12 +124,12 @@ type Gauge interface{ Set(ctx context.Context, value float64, attrs ...Attr) }
 
 **设计决策**：
 
-| 决策 | 理由 |
-|------|------|
+| 决策                                                      | 理由                                                         |
+| --------------------------------------------------------- | ------------------------------------------------------------ |
 | 方法名 `Add/Record/Set`（非 `increment/record/supplier`） | 与 SPEC §9.2 对齐；Go 社区惯例（OTel API 使用 `Add/Record`） |
-| 每次 Add/Record/Set 前检查 label policy | 在入口处拦截不合规 label，而非事后扫描 |
-| 指标名正则校验：`^[a-z][a-z0-9_]*_[a-z0-9_]+$` | 防止非标准命名导致 exporter 拒绝或采集端解析错误 |
-| 命名前缀 `foundationx_` | 在 Prometheus 等后端中统一过滤 FoundationX 系列指标 |
+| 每次 Add/Record/Set 前检查 label policy                   | 在入口处拦截不合规 label，而非事后扫描                       |
+| 指标名正则校验：`^[a-z][a-z0-9_]*_[a-z0-9_]+$`            | 防止非标准命名导致 exporter 拒绝或采集端解析错误             |
+| 命名前缀 `foundationx_`                                   | 在 Prometheus 等后端中统一过滤 FoundationX 系列指标          |
 
 **Label Policy 两阶段检查**：
 
@@ -172,12 +172,12 @@ type Span interface {
 
 **设计决策**：
 
-| 决策 | 理由 |
-|------|------|
-| trace_id/span_id 通过 `context.Context` 传播 | Go 标准惯例；跨 goroutine 自动继承 |
-| context key 使用 unexported 类型 | 防止外部包意外覆盖 context value |
-| 子 span 继承父 trace_id | 满足 BR-003 上下文传播要求 |
-| span 创建时使用原子递增的 span ID | 并发安全，无锁竞争 |
+| 决策                                                        | 理由                                               |
+| ----------------------------------------------------------- | -------------------------------------------------- |
+| trace_id/span_id 通过 `context.Context` 传播                | Go 标准惯例；跨 goroutine 自动继承                 |
+| context key 使用 unexported 类型                            | 防止外部包意外覆盖 context value                   |
+| 子 span 继承父 trace_id                                     | 满足 BR-003 上下文传播要求                         |
+| span 创建时使用原子递增的 span ID                           | 并发安全，无锁竞争                                 |
 | `SpanKind` 枚举（client/server/internal/producer/consumer） | 与 OpenTelemetry SpanKind 对齐，方便 exporter 映射 |
 
 **Context 传播机制**：
@@ -213,33 +213,33 @@ type Exporter interface {
 
 **设计决策**：
 
-| 决策 | 理由 |
-|------|------|
+| 决策                                  | 理由                                            |
+| ------------------------------------- | ----------------------------------------------- |
 | 三个独立 Export 方法（非统一 Export） | 日志/指标/span 的数据模型不同，分开便于类型安全 |
-| `Shutdown()` 必须 flush 缓冲区 | 满足 BR-004；优雅停机不丢数据 |
-| Noop exporter 所有方法返回 nil | 测试和无观测后端的默认行为 |
-| Test exporter 记录到内存 slice | 供测试断言，验证导出数据的正确性 |
-| OTLP exporter 使用 build tag 控制 | 避免核心包引入 OTel SDK 重依赖 |
+| `Shutdown()` 必须 flush 缓冲区        | 满足 BR-004；优雅停机不丢数据                   |
+| Noop exporter 所有方法返回 nil        | 测试和无观测后端的默认行为                      |
+| Test exporter 记录到内存 slice        | 供测试断言，验证导出数据的正确性                |
+| OTLP exporter 使用 build tag 控制     | 避免核心包引入 OTel SDK 重依赖                  |
 
 **三种 Exporter 实现**：
 
-| Exporter | 行为 | 用途 |
-|----------|------|------|
-| `noop` | 所有方法返回 nil | 默认，无观测后端时静默运行 |
-| `test` | 记录所有 entries/metrics/spans 到 slice | 单元测试断言 |
-| `otlp` | gRPC/HTTP 发送到 OTel Collector | 生产环境 |
+| Exporter   | 行为                                    | 用途                       |
+| ---------- | --------------------------------------- | -------------------------- |
+| `noop`     | 所有方法返回 nil                        | 默认，无观测后端时静默运行 |
+| `test`     | 记录所有 entries/metrics/spans 到 slice | 单元测试断言               |
+| `otlp`     | gRPC/HTTP 发送到 OTel Collector         | 生产环境                   |
 
 ### 2.5 Redaction — 脱敏引擎
 
 **设计决策**：
 
-| 决策 | 理由 |
-|------|------|
-| 正则匹配字段名（非字段值） | 性能优先；字段值匹配假阳性高且不可控 |
-| 脱敏在 Logger 输出前自动执行 | 不依赖调用方显式调用 |
-| 仅替换 value 为 `***`，保留 key | 方便排查（知道哪个字段被脱敏） |
-| 支持嵌套 map 递归脱敏 | 覆盖复杂日志结构 |
-| 正则预编译 | 每次输出不重复编译 |
+| 决策                            | 理由                                 |
+| ------------------------------- | ------------------------------------ |
+| 正则匹配字段名（非字段值）      | 性能优先；字段值匹配假阳性高且不可控 |
+| 脱敏在 Logger 输出前自动执行    | 不依赖调用方显式调用                 |
+| 仅替换 value 为 `***`，保留 key | 方便排查（知道哪个字段被脱敏）       |
+| 支持嵌套 map 递归脱敏           | 覆盖复杂日志结构                     |
+| 正则预编译                      | 每次输出不重复编译                   |
 
 **Secret 识别模式**：
 
@@ -251,11 +251,11 @@ type Exporter interface {
 
 **设计决策**：
 
-| 决策 | 理由 |
-|------|------|
-| JSON schema 输出（`ready/live/message/components`） | 与 Kubernetes health probe 兼容 |
-| 不实现 checker 接口，仅定义 schema | checker 由各模块（redisx/kafkax/postgresx）自行实现 |
-| `HealthStatus` 结构体独立于 kernel | 避免循环依赖；observex 是 L1，kernel 是 L0 |
+| 决策                                                | 理由                                                |
+| --------------------------------------------------- | --------------------------------------------------- |
+| JSON schema 输出（`ready/live/message/components`） | 与 Kubernetes health probe 兼容                     |
+| 不实现 checker 接口，仅定义 schema                  | checker 由各模块（redisx/kafkax/postgresx）自行实现 |
+| `HealthStatus` 结构体独立于 kernel                  | 避免循环依赖；observex 是 L1，kernel 是 L0          |
 
 ---
 
@@ -263,11 +263,11 @@ type Exporter interface {
 
 ### 3.1 性能预算
 
-| 操作 | 目标 | 设计保证 |
-|------|------|----------|
-| 单条结构化日志写入 | < 5μs（不含 I/O flush） | 内存 buffer + 批量 flush |
-| metrics 记录 | < 1μs | 原子操作计数器，无锁 histogram |
-| span 创建 + 结束 | < 2μs | 原子 ID 生成，内存 span 存储 |
+| 操作               | 目标                    | 设计保证                       |
+| ------------------ | ----------------------- | ------------------------------ |
+| 单条结构化日志写入 | < 5μs（不含 I/O flush） | 内存 buffer + 批量 flush       |
+| metrics 记录       | < 1μs                   | 原子操作计数器，无锁 histogram |
+| span 创建 + 结束   | < 2μs                   | 原子 ID 生成，内存 span 存储   |
 
 ### 3.2 性能优化策略
 
@@ -304,19 +304,19 @@ type Exporter interface {
 
 ### 5.1 当前 1.0 扩展点
 
-| 扩展点 | 方式 | 说明 |
-|--------|------|------|
-| Exporter | 实现 `Exporter` 接口 | 可添加任意后端适配（如 Jaeger、Datadog） |
-| Logger 输出 | 实现 `io.Writer` | 可自定义输出目标（文件、网络、syslog） |
-| Redaction 模式 | 通过 `observex.redact_fields` 配置 | 可扩展脱敏字段列表 |
+| 扩展点         | 方式                               | 说明                                     |
+| -------------- | ---------------------------------- | ---------------------------------------- |
+| Exporter       | 实现 `Exporter` 接口               | 可添加任意后端适配（如 Jaeger、Datadog） |
+| Logger 输出    | 实现 `io.Writer`                   | 可自定义输出目标（文件、网络、syslog）   |
+| Redaction 模式 | 通过 `observex.redact_fields` 配置 | 可扩展脱敏字段列表                       |
 
 ### 5.2 v1.1 规划扩展点
 
-| 扩展点 | 方式 | 说明 |
-|--------|------|------|
-| AuditPublisher | 实现 `AuditPublisher` 接口 | 安全审计事件独立通道 |
-| DiagnosticPublisher | 实现 `DiagnosticPublisher` 接口 | 模块诊断事件 |
-| ObservationAdapter SPI | 实现 `ObservationAdapter` 接口 | 统一的后端适配抽象（替代当前 Exporter） |
+| 扩展点                 | 方式                            | 说明                                    |
+| ---------------------- | ------------------------------- | --------------------------------------- |
+| AuditPublisher         | 实现 `AuditPublisher` 接口      | 安全审计事件独立通道                    |
+| DiagnosticPublisher    | 实现 `DiagnosticPublisher` 接口 | 模块诊断事件                            |
+| ObservationAdapter SPI | 实现 `ObservationAdapter` 接口  | 统一的后端适配抽象（替代当前 Exporter） |
 
 ---
 
@@ -359,6 +359,6 @@ configx       resiliencx      schedulex (L1)
 
 ## 8. 变更历史
 
-| 日期 | 版本 | 变更 |
-|------|------|------|
-| 2026-06-12 | v1 | 初始版本：架构概述、6 个核心组件设计、性能/安全设计、扩展点、依赖关系 |
+| 日期       | 版本   | 变更                                                                  |
+| ---------- | ------ | --------------------------------------------------------------------- |
+| 2026-06-12 | v1     | 初始版本：架构概述、6 个核心组件设计、性能/安全设计、扩展点、依赖关系 |

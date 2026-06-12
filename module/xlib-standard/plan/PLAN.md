@@ -67,12 +67,12 @@ PR-5 (Release)
 
 ## PR-1: 删除治理运行时与冗余目录
 
-| 项 | 值 |
-|---|---|
-| 分支 | `feat/xlib-v1-prune` |
+| 项       | 值                        |
+| -------- | ------------------------- |
+| 分支     | `feat/xlib-v1-prune`      |
 | worktree | `worktree/xlib-v1-prune/` |
-| 任务 | TASK-XLIB-000 |
-| 预估 | 0.5h |
+| 任务     | TASK-XLIB-000             |
+| 预估     | 0.5h                      |
 
 ### 变更文件
 
@@ -98,13 +98,13 @@ test -f Makefile
 
 ## PR-2: 文档对齐
 
-| 项 | 值 |
-|---|---|
-| 分支 | `feat/xlib-v1-docs` |
+| 项       | 值                       |
+| -------- | ------------------------ |
+| 分支     | `feat/xlib-v1-docs`      |
 | worktree | `worktree/xlib-v1-docs/` |
-| 任务 | TASK-XLIB-001 |
-| 依赖 | PR-1 |
-| 预估 | 2h |
+| 任务     | TASK-XLIB-001            |
+| 依赖     | PR-1                     |
+| 预估     | 2h                       |
 
 ### 变更文件
 
@@ -130,13 +130,13 @@ grep -q "## 测试规则" docs/standard.md
 
 ## PR-3: 骨架代码
 
-| 项 | 值 |
-|---|---|
-| 分支 | `feat/xlib-v1-build` |
+| 项       | 值                        |
+| -------- | ------------------------- |
+| 分支     | `feat/xlib-v1-build`      |
 | worktree | `worktree/xlib-v1-build/` |
-| 任务 | TASK-XLIB-002 |
-| 依赖 | PR-1 |
-| 预估 | 2h |
+| 任务     | TASK-XLIB-002             |
+| 依赖     | PR-1                      |
+| 预估     | 2h                        |
 
 ### 变更文件
 
@@ -164,13 +164,13 @@ test -f .github/workflows/ci.yml
 
 ## PR-4: 核心包
 
-| 项 | 值 |
-|---|---|
-| 分支 | `feat/xlib-v1-packages` |
+| 项       | 值                           |
+| -------- | ---------------------------- |
+| 分支     | `feat/xlib-v1-packages`      |
 | worktree | `worktree/xlib-v1-packages/` |
-| 任务 | TASK-XLIB-003 |
-| 依赖 | PR-1 + PR-2 |
-| 预估 | 4h |
+| 任务     | TASK-XLIB-003                |
+| 依赖     | PR-1 + PR-2                  |
+| 预估     | 4h                           |
 
 ### 变更文件
 
@@ -196,13 +196,13 @@ cd examples && go run main.go
 
 ## PR-5: release 标准
 
-| 项 | 值 |
-|---|---|
-| 分支 | `feat/xlib-v1-release` |
+| 项       | 值                          |
+| -------- | --------------------------- |
+| 分支     | `feat/xlib-v1-release`      |
 | worktree | `worktree/xlib-v1-release/` |
-| 任务 | TASK-XLIB-004 |
-| 依赖 | PR-3 + PR-4 |
-| 预估 | 1h |
+| 任务     | TASK-XLIB-004               |
+| 依赖     | PR-3 + PR-4                 |
+| 预估     | 1h                          |
 
 ### 变更文件
 

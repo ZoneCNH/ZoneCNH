@@ -103,18 +103,18 @@ Goal → Spec → Design → Plan → Tasks → Prompt → Code → Test → Rev
 
 | Gate | 名称                | 类型       | 阻断 | 关键检查                                   |
 | ---- | ------------------- | ---------- | ---- | ------------------------------------------ |
-| G0   | Context Gate        | Hybrid     | ✅   | 上下文恢复完整性、branch/commit/文档已加载 |
-| G1   | Goal Gate           | Semantic   | ✅   | SMART 标准、owner、指标、non-goals         |
-| G2   | Spec Gate           | Semantic   | ✅   | 需求可测试性、正常/异常/边界覆盖           |
-| G3   | Design Gate         | Semantic   | ✅   | 模块映射、接口清晰、无循环依赖             |
-| G4   | Plan Gate           | Semantic   | ✅   | 依赖顺序、验证点、回滚方案                 |
-| G5   | Task / Matrix Gate  | Executable | ✅   | 原子性 + DoD + Matrix 覆盖无孤儿           |
-| G6   | Implementation Gate | Executable | ✅   | **不允许 PASS_WITH_RISK**                  |
-| G7   | Test Gate           | Executable | ✅   | 全部通过 + ≥80% 覆盖率                     |
-| G8   | Evidence Gate       | Executable | ✅   | 证据完整、每项 AC 有对应证据               |
-| G9   | Review Gate         | Semantic   | ✅   | 满足 Task/Spec/安全/性能要求               |
-| G10  | Release Gate        | Hybrid     | ✅   | **不允许 PASS_WITH_RISK**                  |
-| G11  | Retrospective Gate  | Semantic   | ❌   | 复盘完成、改进项已记录（非阻断）           |
+| G0   | Context Gate        | Hybrid     | ✅    | 上下文恢复完整性、branch/commit/文档已加载 |
+| G1   | Goal Gate           | Semantic   | ✅    | SMART 标准、owner、指标、non-goals         |
+| G2   | Spec Gate           | Semantic   | ✅    | 需求可测试性、正常/异常/边界覆盖           |
+| G3   | Design Gate         | Semantic   | ✅    | 模块映射、接口清晰、无循环依赖             |
+| G4   | Plan Gate           | Semantic   | ✅    | 依赖顺序、验证点、回滚方案                 |
+| G5   | Task / Matrix Gate  | Executable | ✅    | 原子性 + DoD + Matrix 覆盖无孤儿           |
+| G6   | Implementation Gate | Executable | ✅    | **不允许 PASS_WITH_RISK**                  |
+| G7   | Test Gate           | Executable | ✅    | 全部通过 + ≥80% 覆盖率                     |
+| G8   | Evidence Gate       | Executable | ✅    | 证据完整、每项 AC 有对应证据               |
+| G9   | Review Gate         | Semantic   | ✅    | 满足 Task/Spec/安全/性能要求               |
+| G10  | Release Gate        | Hybrid     | ✅    | **不允许 PASS_WITH_RISK**                  |
+| G11  | Retrospective Gate  | Semantic   | ❌    | 复盘完成、改进项已记录（非阻断）           |
 
 ### Gate 执行矩阵（最小可执行口径）
 
@@ -145,11 +145,11 @@ gate_id:
 
 | Gate  | 允许   | PASS 阈值 | 最低分 | 备注                        |
 | ----- | ------ | --------- | ------ | --------------------------- |
-| G0-G5 | ✅     | 90        | 80-85  | 需记录风险元数据            |
-| G6    | **❌** | 90        | —      | 实现 Gate 不允许风险通过    |
-| G7-G9 | ✅     | 90        | 85     | 需记录风险元数据            |
-| G10   | **❌** | 90        | —      | Release Gate 不允许风险通过 |
-| G11   | ✅     | 80        | 70     | 复盘 Gate（非阻断）         |
+| G0-G5 | ✅      | 90        | 80-85  | 需记录风险元数据            |
+| G6    | **❌**  | 90        | —      | 实现 Gate 不允许风险通过    |
+| G7-G9 | ✅      | 90        | 85     | 需记录风险元数据            |
+| G10   | **❌**  | 90        | —      | Release Gate 不允许风险通过 |
+| G11   | ✅      | 80        | 70     | 复盘 Gate（非阻断）         |
 
 ---
 
@@ -258,11 +258,11 @@ Blocked/Changed/Drifted/Stale → Linked → Verified/Dropped
 
 | Agent               | 职责                    | Claude (.md) | Copilot (.md) | Codex (.toml) |
 | ------------------- | ----------------------- | ------------ | ------------- | ------------- |
-| goal-spec           | Goal/Spec/Registry 管理 | ✅ 348行     | ✅ 48行       | ✅ 39行       |
-| goal-matrix         | 追溯矩阵生成维护        | ✅ 253行     | ✅ 49行       | ✅ 41行       |
-| goal-reviewer       | Gate 状态审查           | ✅ 284行     | ✅ 55行       | ✅ 47行       |
-| goal-prompt-builder | Context Package 构建    | ✅ 451行     | ✅ 48行       | ✅ 40行       |
-| goal-evidence       | 证据收集验证            | ✅ 430行     | ✅ 66行       | ✅ 57行       |
+| goal-spec           | Goal/Spec/Registry 管理 | ✅ 348行      | ✅ 48行        | ✅ 39行        |
+| goal-matrix         | 追溯矩阵生成维护        | ✅ 253行      | ✅ 49行        | ✅ 41行        |
+| goal-reviewer       | Gate 状态审查           | ✅ 284行      | ✅ 55行        | ✅ 47行        |
+| goal-prompt-builder | Context Package 构建    | ✅ 451行      | ✅ 48行        | ✅ 40行        |
+| goal-evidence       | 证据收集验证            | ✅ 430行      | ✅ 66行        | ✅ 57行        |
 
 ### 辅助 5 Agent（仅 Claude Code）
 
@@ -530,13 +530,13 @@ workflow improve analyze — 从失败证据生成改进候选
 
 | 维度            | 评分 / 100 | 状态                                      |
 | --------------- | ---------- | ----------------------------------------- |
-| 状态枚举        | 88         | ✅ — state-dictionary.yaml 已归并 5→4 类  |
-| Goal Schema     | 85         | ✅ — goal.schema.yaml + 三源映射表        |
-| Matrix Schema   | 85         | ✅ — canonical edge + relation vocabulary |
-| 运行时目录      | 82         | ✅ — .config/goal/ 已收敛                 |
-| Gate 编号与权威 | 82         | ✅ — PASS_WITH_RISK 策略已文档化          |
-| Evidence Schema | 82         | ✅ — evidence.schema.yaml                 |
-| Agent 跨平台    | 80         | ✅ — 核心 5 Agent 三平台同步              |
+| 状态枚举        | 88         | ✅ — state-dictionary.yaml 已归并 5→4 类   |
+| Goal Schema     | 85         | ✅ — goal.schema.yaml + 三源映射表         |
+| Matrix Schema   | 85         | ✅ — canonical edge + relation vocabulary  |
+| 运行时目录      | 82         | ✅ — .config/goal/ 已收敛                  |
+| Gate 编号与权威 | 82         | ✅ — PASS_WITH_RISK 策略已文档化           |
+| Evidence Schema | 82         | ✅ — evidence.schema.yaml                  |
+| Agent 跨平台    | 80         | ✅ — 核心 5 Agent 三平台同步               |
 | Lint 与工具覆盖 | 77         | ⚠️ — 27/35 自动化（77%）                  |
 | ID 与版本       | 72         | ⚠️ — vN/vN.N 已分离，但仍复杂             |
 | **综合**        | **81**     |                                           |

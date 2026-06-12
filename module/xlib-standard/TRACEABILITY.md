@@ -6,24 +6,24 @@
 
 ## 当前 FR→Code 追溯
 
-| FR | 主题 | 代码文件 | 状态 |
-|----|------|---------|------|
-| FR-001 | Config 标准 | `pkg/templatex/config.go` | ✅ 已对齐 |
-| FR-002 | Error 标准 | `pkg/templatex/errors.go` | ✅ 已对齐 |
-| FR-003 | Health 标准 | `pkg/templatex/health.go` | ✅ 已对齐 |
-| FR-004 | Metrics 标准 | `pkg/templatex/metrics.go` | ✅ 已对齐 |
-| FR-005 | Client 标准 | `pkg/templatex/client.go` + `options.go` | ✅ 已对齐 |
-| FR-006 | Version 标准 | `pkg/templatex/version.go` | ✅ 已对齐 |
-| FR-007 | 公共 API 模板 | `pkg/templatex/*.go` | ✅ 已对齐 |
-| FR-008 | 模板可编译 | `pkg/templatex/*_test.go` | ✅ 已对齐 |
-| FR-009 | 模板渲染 | `scripts/render_template.sh` | ✅ 已对齐 |
-| FR-010 | 模板残留检查 | `scripts/check_rendered_template.sh` | ✅ 已对齐 |
-| FR-011 | CI gate (17 项) | `Makefile` ci: 目标 | ✅ 已对齐 |
-| FR-012 | boundary gate | `scripts/check_boundary.sh` | ✅ 已对齐 |
-| FR-013 | release manifest | `Makefile` release-check + `scripts/generate_manifest.sh` | ✅ 已对齐 |
-| FR-014 | release final check | `Makefile` release-final-check | ✅ 已对齐 |
-| FR-015 | Evidence Runtime CLI（goalcli） | `cmd/goalcli/*.go`（12 文件） | ✅ 已对齐 |
-| FR-016 | L2 下游仓库模板 | `templates/l2/`（12 文件） | ✅ 已对齐 |
+| FR     | 主题                            | 代码文件                                                  | 状态     |
+| ------ | ------------------------------- | --------------------------------------------------------- | -------- |
+| FR-001 | Config 标准                     | `pkg/templatex/config.go`                                 | ✅ 已对齐 |
+| FR-002 | Error 标准                      | `pkg/templatex/errors.go`                                 | ✅ 已对齐 |
+| FR-003 | Health 标准                     | `pkg/templatex/health.go`                                 | ✅ 已对齐 |
+| FR-004 | Metrics 标准                    | `pkg/templatex/metrics.go`                                | ✅ 已对齐 |
+| FR-005 | Client 标准                     | `pkg/templatex/client.go` + `options.go`                  | ✅ 已对齐 |
+| FR-006 | Version 标准                    | `pkg/templatex/version.go`                                | ✅ 已对齐 |
+| FR-007 | 公共 API 模板                   | `pkg/templatex/*.go`                                      | ✅ 已对齐 |
+| FR-008 | 模板可编译                      | `pkg/templatex/*_test.go`                                 | ✅ 已对齐 |
+| FR-009 | 模板渲染                        | `scripts/render_template.sh`                              | ✅ 已对齐 |
+| FR-010 | 模板残留检查                    | `scripts/check_rendered_template.sh`                      | ✅ 已对齐 |
+| FR-011 | CI gate (17 项)                 | `Makefile` ci: 目标                                       | ✅ 已对齐 |
+| FR-012 | boundary gate                   | `scripts/check_boundary.sh`                               | ✅ 已对齐 |
+| FR-013 | release manifest                | `Makefile` release-check + `scripts/generate_manifest.sh` | ✅ 已对齐 |
+| FR-014 | release final check             | `Makefile` release-final-check                            | ✅ 已对齐 |
+| FR-015 | Evidence Runtime CLI（goalcli） | `cmd/goalcli/*.go`（12 文件）                             | ✅ 已对齐 |
+| FR-016 | L2 下游仓库模板                 | `templates/l2/`（12 文件）                                | ✅ 已对齐 |
 
 ## 快照历史
 

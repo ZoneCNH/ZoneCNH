@@ -17,28 +17,28 @@ Status: Approved
 
 ## 2. 场景总览
 
-| 编号 | 场景 | 涉及模块 | 优先级 |
-|------|------|----------|--------|
-| AT-001 | 正常启动（完整链路） | x.go, kernel, configx, observex | P0 |
-| AT-002 | 配置加载 → 模块初始化 | configx, kernel, 所有 L1 模块 | P0 |
-| AT-003 | 模块启动失败回滚 | kernel, configx, observex | P0 |
-| AT-004 | 优雅停机 | kernel, 所有已注册模块 | P0 |
-| AT-005 | 健康检查全链路 | kernel, observex, 所有模块 | P1 |
-| AT-006 | 弹性策略生效 | resiliencx, kernel | P1 |
-| AT-007 | 横切模块贯穿 | alertx, observex, 业务域模块 | P1 |
-| AT-008 | 配置热更新 | configx, 业务域模块 | P2 |
-| AT-009 | Redis 缓存与分布式锁链路 | redisx | P1 |
-| AT-010 | Kafka 生产-消费链路 | kafkax | P1 |
-| AT-011 | NATS 请求-响应模式 | natsx | P1 |
-| AT-012 | Postgres 事务与迁移 | postgresx | P1 |
-| AT-013 | ClickHouse 批量写入与查询 | clickhousex | P2 |
-| AT-014 | TDengine 时序数据写入与查询 | taosx | P2 |
-| AT-015 | OSS 对象存储操作 | ossx | P2 |
-| AT-016 | Contracts 契约 Breaking Change 检测 | contracts, xlibgate | P0 |
-| AT-017 | 采集器 → Kafka → 消费者链路 | market-data, kafkax, contracts | P1 |
-| AT-018 | schedulex 定时任务触发 | schedulex, kernel, observex | P1 |
-| AT-019 | testkitx 边界守卫 | testkitx, kernel, observex | P1 |
-| AT-020 | xlib-standard 门禁一致性 | xlib-standard, xlibgate | P1 |
+| 编号   | 场景                                | 涉及模块                        | 优先级   |
+| ------ | ----------------------------------- | ------------------------------- | -------- |
+| AT-001 | 正常启动（完整链路）                | x.go, kernel, configx, observex | P0       |
+| AT-002 | 配置加载 → 模块初始化               | configx, kernel, 所有 L1 模块   | P0       |
+| AT-003 | 模块启动失败回滚                    | kernel, configx, observex       | P0       |
+| AT-004 | 优雅停机                            | kernel, 所有已注册模块          | P0       |
+| AT-005 | 健康检查全链路                      | kernel, observex, 所有模块      | P1       |
+| AT-006 | 弹性策略生效                        | resiliencx, kernel              | P1       |
+| AT-007 | 横切模块贯穿                        | alertx, observex, 业务域模块    | P1       |
+| AT-008 | 配置热更新                          | configx, 业务域模块             | P2       |
+| AT-009 | Redis 缓存与分布式锁链路            | redisx                          | P1       |
+| AT-010 | Kafka 生产-消费链路                 | kafkax                          | P1       |
+| AT-011 | NATS 请求-响应模式                  | natsx                           | P1       |
+| AT-012 | Postgres 事务与迁移                 | postgresx                       | P1       |
+| AT-013 | ClickHouse 批量写入与查询           | clickhousex                     | P2       |
+| AT-014 | TDengine 时序数据写入与查询         | taosx                           | P2       |
+| AT-015 | OSS 对象存储操作                    | ossx                            | P2       |
+| AT-016 | Contracts 契约 Breaking Change 检测 | contracts, xlibgate             | P0       |
+| AT-017 | 采集器 → Kafka → 消费者链路         | market-data, kafkax, contracts  | P1       |
+| AT-018 | schedulex 定时任务触发              | schedulex, kernel, observex     | P1       |
+| AT-019 | testkitx 边界守卫                   | testkitx, kernel, observex      | P1       |
+| AT-020 | xlib-standard 门禁一致性            | xlib-standard, xlibgate         | P1       |
 
 ---
 
@@ -365,12 +365,12 @@ Status: Approved
 
 ## 4. 测试环境要求
 
-| 要求 | 说明 |
-|------|------|
+| 要求   | 说明                                       |
+| ------ | ------------------------------------------ |
 | 隔离性 | 测试不依赖真实外部服务（交易所、消息队列） |
-| 可重复 | 每次运行结果一致，无随机失败 |
-| 快速 | 完整验收套件 < 60s |
-| 标记 | 使用 `//go:build acceptance` 构建标签 |
+| 可重复 | 每次运行结果一致，无随机失败               |
+| 快速   | 完整验收套件 < 60s                         |
+| 标记   | 使用 `//go:build acceptance` 构建标签      |
 
 ---
 

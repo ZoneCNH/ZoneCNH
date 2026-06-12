@@ -11,16 +11,16 @@
 
 | Agent                 | Claude Code | Copilot CLI | Codex CLI |
 | --------------------- | ----------- | ----------- | --------- |
-| goal-spec             | ✅ 348 行   | ✅ 63 行    | ✅ 51 行  |
-| goal-matrix           | ✅ 253 行   | ✅ 64 行    | ✅ 53 行  |
-| goal-reviewer         | ✅ 284 行   | ✅ 70 行    | ✅ 59 行  |
-| goal-prompt-builder   | ✅ 451 行   | ✅ 63 行    | ✅ 52 行  |
-| goal-evidence         | ✅ 430 行   | ✅ 81 行    | ✅ 69 行  |
-| goal-architect        | ✅          | ❌          | ❌        |
-| goal-context-recovery | ✅          | ❌          | ❌        |
-| goal-governance       | ✅          | ❌          | ❌        |
-| goal-lint             | ✅          | ❌          | ❌        |
-| goal-planner          | ✅          | ❌          | ❌        |
+| goal-spec             | ✅ 348 行    | ✅ 63 行     | ✅ 51 行   |
+| goal-matrix           | ✅ 253 行    | ✅ 64 行     | ✅ 53 行   |
+| goal-reviewer         | ✅ 284 行    | ✅ 70 行     | ✅ 59 行   |
+| goal-prompt-builder   | ✅ 451 行    | ✅ 63 行     | ✅ 52 行   |
+| goal-evidence         | ✅ 430 行    | ✅ 81 行     | ✅ 69 行   |
+| goal-architect        | ✅           | ❌           | ❌         |
+| goal-context-recovery | ✅           | ❌           | ❌         |
+| goal-governance       | ✅           | ❌           | ❌         |
+| goal-lint             | ✅           | ❌           | ❌         |
+| goal-planner          | ✅           | ❌           | ❌         |
 
 **关键发现**：5 个核心 Agent 三平台同步，5 个辅助 Agent 仅 Claude Code 实现。按 `14-agent-protocols.md` 设计，Copilot/Codex 只需覆盖核心 5 个（spec / matrix / reviewer / prompt-builder / evidence），其余为可选的 Claude 专属能力——此差异符合设计，非漂移。
 
@@ -32,10 +32,10 @@
 
 | 平台  | Agent               | 幻影引用                 | 实际文件              | 修复      |
 | ----- | ------------------- | ------------------------ | --------------------- | --------- |
-| Codex | goal-spec           | `02-goal-schema.md`      | `02-goal-standard.md` | ✅ 已修复 |
-| Codex | goal-spec           | `07-human-approval.md`   | → `06-dod.md`         | ✅ 已修复 |
-| Codex | goal-spec           | `09-tasks-and-prompt.md` | `09-templates.md`     | ✅ 已修复 |
-| Codex | goal-prompt-builder | `09-tasks-and-prompt.md` | `09-templates.md`     | ✅ 已修复 |
+| Codex | goal-spec           | `02-goal-schema.md`      | `02-goal-standard.md` | ✅ 已修复  |
+| Codex | goal-spec           | `07-human-approval.md`   | → `06-dod.md`         | ✅ 已修复  |
+| Codex | goal-spec           | `09-tasks-and-prompt.md` | `09-templates.md`     | ✅ 已修复  |
+| Codex | goal-prompt-builder | `09-tasks-and-prompt.md` | `09-templates.md`     | ✅ 已修复  |
 
 ### Copilot 引用验证
 
@@ -53,12 +53,12 @@ Claude 端 `goal-spec.md` 引用 19 个真实文档，可作为权威引用基�
 
 | 字段              | Claude (.md)        | Copilot (.md)       | Codex (.toml) |
 | ----------------- | ------------------- | ------------------- | ------------- |
-| name              | ✅ YAML frontmatter | ✅ YAML frontmatter | ✅ TOML key   |
-| description       | ✅                  | ✅                  | ✅            |
-| model             | ✅ opus             | ❌                  | ✅ gpt-5.5    |
-| tools             | ✅ list             | ❌ (平台默认)       | ❌ (平台默认) |
-| platform metadata | ❌                  | ✅                  | ❌            |
-| system prompt     | ✅ 完整             | ✅ 投影             | ✅ 投影       |
+| name              | ✅ YAML frontmatter  | ✅ YAML frontmatter  | ✅ TOML key    |
+| description       | ✅                   | ✅                   | ✅             |
+| model             | ✅ opus              | ❌                   | ✅ gpt-5.5     |
+| tools             | ✅ list              | ❌ (平台默认)        | ❌ (平台默认)  |
+| platform metadata | ❌                   | ✅                   | ❌             |
+| system prompt     | ✅ 完整              | ✅ 投影              | ✅ 投影        |
 
 **发现**：
 
@@ -80,13 +80,13 @@ Claude 端 `goal-spec.md` 引用 19 个真实文档，可作为权威引用基�
 
 | 约束                                | Claude  | Copilot | Codex   |
 | ----------------------------------- | ------- | ------- | ------- |
-| 不可确认内容标为 Hypothesis/BLOCKED | ✅      | ✅      | ✅      |
-| 保留已批准 Goal 核心约束            | ✅      | ✅      | ✅      |
-| 明确 Gate 输入/输出/阻断/证据       | ✅      | ✅      | ✅      |
-| 自行批准 G0-G11                     | ✅ 禁止 | ✅ 禁止 | ✅ 禁止 |
-| 放宽 Gate 或删除失败证据            | ✅ 禁止 | ✅ 禁止 | ✅ 禁止 |
-| 把 vision 转成已批准规则            | ✅ 禁止 | ✅ 禁止 | ✅ 禁止 |
-| 以本角色修改生产代码                | ✅ 禁止 | ✅ 禁止 | ✅ 禁止 |
+| 不可确认内容标为 Hypothesis/BLOCKED | ✅       | ✅       | ✅       |
+| 保留已批准 Goal 核心约束            | ✅       | ✅       | ✅       |
+| 明确 Gate 输入/输出/阻断/证据       | ✅       | ✅       | ✅       |
+| 自行批准 G0-G11                     | ✅ 禁止  | ✅ 禁止  | ✅ 禁止  |
+| 放宽 Gate 或删除失败证据            | ✅ 禁止  | ✅ 禁止  | ✅ 禁止  |
+| 把 vision 转成已批准规则            | ✅ 禁止  | ✅ 禁止  | ✅ 禁止  |
+| 以本角色修改生产代码                | ✅ 禁止  | ✅ 禁止  | ✅ 禁止  |
 
 **结论**：MUST/MUST NOT 语义等价 ✅
 
@@ -112,9 +112,9 @@ Claude 端 `goal-spec.md` 引用 19 个真实文档，可作为权威引用基�
 
 | 平台    | 阻断条件数 | 额外条件                                                      |
 | ------- | :--------: | ------------------------------------------------------------- |
-| Claude  |     7      | —                                                             |
-| Copilot |     8      | Agent 绕过 pipeline-arbiter、单任务单 writer 或 worktree 隔离 |
-| Codex   |     8      | 同 Copilot                                                    |
+| Claude  | 7          | —                                                             |
+| Copilot | 8          | Agent 绕过 pipeline-arbiter、单任务单 writer 或 worktree 隔离 |
+| Codex   | 8          | 同 Copilot                                                    |
 
 Claude `goal-reviewer.md` G10 清单曾经缺少 "Agent 隔离违规" 阻断条件。**已于 2026-06-12 修复**：Claude 端补入第 8 项 "Agent 不得绕过 pipeline-arbiter、单任务单 writer 或 worktree 隔离"，三平台 G10 阻断条件统一为 8 项。
 
@@ -217,11 +217,11 @@ Claude `goal-reviewer.md` G10 清单曾经缺少 "Agent 隔离违规" 阻断条�
 | 维度                          | Claude      | Copilot | Codex                  |
 | ----------------------------- | ----------- | ------- | ---------------------- |
 | 平均行数/Agent                | 353         | 68      | 57                     |
-| 状态文件路径表                | ✅ 11 行    | ❌      | ❌                     |
-| 权威文档索引表                | ✅ 20+ 文档 | ❌      | ❌                     |
-| 管线全景图                    | ✅          | ❌      | ❌                     |
-| 工作流步骤                    | ✅ 详细     | ✅ 简述 | ✅ 简述                |
-| 执行模式 (Lite/Standard/Full) | ✅          | ❌      | ✅ (仅 prompt-builder) |
+| 状态文件路径表                | ✅ 11 行     | ❌       | ❌                      |
+| 权威文档索引表                | ✅ 20+ 文档  | ❌       | ❌                      |
+| 管线全景图                    | ✅           | ❌       | ❌                      |
+| 工作流步骤                    | ✅ 详细      | ✅ 简述  | ✅ 简述                 |
+| 执行模式 (Lite/Standard/Full) | ✅           | ❌       | ✅ (仅 prompt-builder)  |
 
 **评估**：详细度不对称是设计结果——Claude Code 端为"完整定义"，Copilot/Codex 端为"平台投影"。此模式符合 `14-agent-protocols.md` 设计，但存在风险：
 
@@ -236,12 +236,12 @@ Claude `goal-reviewer.md` G10 清单曾经缺少 "Agent 隔离违规" 阻断条�
 
 | 测试项                       | 结果                    |
 | ---------------------------- | ----------------------- |
-| lint-goal.sh (docs/goal/)    | 0 ERRORS, 0 WARNINGS ✅ |
-| goal-validate.py (strict)    | PASS ✅                 |
-| matrix-gen.py (--check-only) | 100% coverage ✅        |
-| self-test.sh                 | 45/45 PASS ✅           |
-| 跨路径执行 (/tmp → lint)     | 0 ERRORS ✅             |
-| Python 3.14 + yaml           | OK ✅                   |
+| lint-goal.sh (docs/goal/)    | 0 ERRORS, 0 WARNINGS ✅  |
+| goal-validate.py (strict)    | PASS ✅                  |
+| matrix-gen.py (--check-only) | 100% coverage ✅         |
+| self-test.sh                 | 45/45 PASS ✅            |
+| 跨路径执行 (/tmp → lint)     | 0 ERRORS ✅              |
+| Python 3.14 + yaml           | OK ✅                    |
 
 ### 5.2 Rule Drift Check
 
@@ -258,8 +258,8 @@ Claude `goal-reviewer.md` G10 清单曾经缺少 "Agent 隔离违规" 阻断条�
 | Severity | 数量  | 描述                                                                                                                                                                             |
 | -------- | ----- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | HIGH     | 5     | 4 处 Codex 幻影文档引用 + 1 处 Claude 端 CONSTITUTION.md 缺失（均已修复）                                                                                                        |
-| MEDIUM   | 3→1→0 | G10 阻断条件 7 vs 8 项（✅ 已修复）；Matrix Verified 定义 Code+Test vs 四链路（✅ 已修复）；Claude 独有功能组件未投影（✅ 迁移为 LOW——已通过精简文档索引缓解跨平台文档发现成本） |
-| LOW      | 1     | Copilot/Codex 缺少完整文档索引表（✅ 已修复，10 个 Agent 均已添加 8 文档精简索引）                                                                                               |
+| MEDIUM   | 3→1→0 | G10 阻断条件 7 vs 8 项（✅ 已修复）；Matrix Verified 定义 Code+Test vs 四链路（✅ 已修复）；Claude 独有功能组件未投影（✅ 迁移为 LOW——已通过精简文档索引缓解跨平台文档发现成本）    |
+| LOW      | 1     | Copilot/Codex 缺少完整文档索引表（✅ 已修复，10 个 Agent 均已添加 8 文档精简索引）                                                                                                |
 
 ---
 

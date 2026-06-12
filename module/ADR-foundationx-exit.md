@@ -11,10 +11,10 @@ Foundation 模块早期以 `foundationx` 作为共享基础包，包含 `SecretS
 
 当前依赖状态：
 
-| 模块 | foundationx 版本 | 依赖方式 | 说明 |
-|---|---|---|---|
-| `configx` | v0.0.0 | 本地 replace `./internal/foundationx` | 用于 SecretString 等类型 |
-| `observex` | v0.1.0 | 远程依赖 | 用于 ErrorKind / HealthStatus |
+| 模块       | foundationx 版本 | 依赖方式                              | 说明                          |
+| ---------- | ---------------- | ------------------------------------- | ----------------------------- |
+| `configx`  | v0.0.0           | 本地 replace `./internal/foundationx` | 用于 SecretString 等类型      |
+| `observex` | v0.1.0           | 远程依赖                              | 用于 ErrorKind / HealthStatus |
 
 ## 决策
 
@@ -27,28 +27,28 @@ Foundation 模块早期以 `foundationx` 作为共享基础包，包含 `SecretS
 
 ### configx
 
-| 当前使用 | 迁移目标 | 说明 |
-|---|---|---|
-| `foundationx.SecretString` | `kernel/errx.RedactedString` 或 configx 本地 `RedactedValue` | 脱敏字符串类型 |
-| `foundationx.ValidationError` | `configx.ValidationError`（已有） | 配置校验错误 |
-| 其他 foundationx 类型 | kernel 对应原语或 configx 本地定义 | 逐个评估 |
+| 当前使用                      | 迁移目标                                                     | 说明           |
+| ----------------------------- | ------------------------------------------------------------ | -------------- |
+| `foundationx.SecretString`    | `kernel/errx.RedactedString` 或 configx 本地 `RedactedValue` | 脱敏字符串类型 |
+| `foundationx.ValidationError` | `configx.ValidationError`（已有）                            | 配置校验错误   |
+| 其他 foundationx 类型         | kernel 对应原语或 configx 本地定义                           | 逐个评估       |
 
 ### observex
 
-| 当前使用 | 迁移目标 | 说明 |
-|---|---|---|
-| `foundationx.ErrorKind` | `kernel/errx.Kind` | 错误分类枚举 |
+| 当前使用                   | 迁移目标                | 说明         |
+| -------------------------- | ----------------------- | ------------ |
+| `foundationx.ErrorKind`    | `kernel/errx.Kind`      | 错误分类枚举 |
 | `foundationx.HealthStatus` | `kernel/healthx.Status` | 健康状态枚举 |
-| 其他 foundationx 类型 | kernel 对应原语 | 逐个评估 |
+| 其他 foundationx 类型      | kernel 对应原语         | 逐个评估     |
 
 ## 时间线
 
-| 里程碑 | 目标 | 验收 |
-|---|---|---|
-| 冻结 | 立即 | 不再新增 `foundationx` usage |
-| configx 迁移 | configx v0.3 之前 | go.mod 中无 foundationx 依赖 |
-| observex 迁移 | observex v0.4 之前 | go.mod 中无 foundationx 依赖 |
-| 清理 | 迁移完成后 | 删除 `internal/foundationx` 目录 |
+| 里程碑        | 目标               | 验收                             |
+| ------------- | ------------------ | -------------------------------- |
+| 冻结          | 立即               | 不再新增 `foundationx` usage     |
+| configx 迁移  | configx v0.3 之前  | go.mod 中无 foundationx 依赖     |
+| observex 迁移 | observex v0.4 之前 | go.mod 中无 foundationx 依赖     |
+| 清理          | 迁移完成后         | 删除 `internal/foundationx` 目录 |
 
 ## 约束
 
@@ -59,10 +59,10 @@ Foundation 模块早期以 `foundationx` 作为共享基础包，包含 `SecretS
 
 ## 风险
 
-| 风险 | 缓解 |
-|---|---|
-| 迁移过程中 API 不兼容 | 使用 type alias 过渡，逐步弃用 |
-| kernel 对应原语尚未就绪 | 先用本地定义，kernel 就绪后替换 |
+| 风险                          | 缓解                                        |
+| ----------------------------- | ------------------------------------------- |
+| 迁移过程中 API 不兼容         | 使用 type alias 过渡，逐步弃用              |
+| kernel 对应原语尚未就绪       | 先用本地定义，kernel 就绪后替换             |
 | 下游模块依赖 foundationx 类型 | 通过 contracts 包重新导出，避免下游直接依赖 |
 
 ## 后续

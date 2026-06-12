@@ -28,12 +28,12 @@ depends_on:
 
 ## 关联需求
 
-| 类型 | 编号 | 出处 | 说明 |
-|------|------|------|------|
-| FR | FR-001 | SPEC.md §7 | FakeConfig：内存配置源，Get(key) 返回值 |
-| BR | BR-001 | SPEC.md §8 | 编译期接口检查：`var _ configx.Reader = (*FakeConfigImpl)(nil)` |
-| BR | BR-002 | SPEC.md §8 | 行为确定性，不引入 `time.Now()` 或 `math.Rand()` |
-| TC | TC-001 | SPEC.md §16.4 | FakeConfig 类型安全 |
+| 类型   | 编号   | 出处          | 说明                                                            |
+| ------ | ------ | ------------- | --------------------------------------------------------------- |
+| FR     | FR-001 | SPEC.md §7    | FakeConfig：内存配置源，Get(key) 返回值                         |
+| BR     | BR-001 | SPEC.md §8    | 编译期接口检查：`var _ configx.Reader = (*FakeConfigImpl)(nil)` |
+| BR     | BR-002 | SPEC.md §8    | 行为确定性，不引入 `time.Now()` 或 `math.Rand()`                |
+| TC     | TC-001 | SPEC.md §16.4 | FakeConfig 类型安全                                             |
 
 ## 接口契约
 
@@ -88,35 +88,35 @@ THEN 返回 nil（或对应类型的零值）
 
 测试场景：
 
-| 测试用例 | 说明 |
-|----------|------|
-| `TestFakeConfig_Get` | Set 后 Get 返回正确值 |
-| `TestFakeConfig_GetString` | GetString 返回字符串值，非字符串返回空 |
-| `TestFakeConfig_GetInt` | GetInt 返回整数值 |
-| `TestFakeConfig_GetBool` | GetBool 返回布尔值 |
-| `TestFakeConfig_GetFloat64` | GetFloat64 返回浮点值 |
-| `TestFakeConfig_GetDuration` | GetDuration 返回 Duration 值 |
-| `TestFakeConfig_KeyNotFound` | 未设置的 key 返回零值 |
-| `TestFakeConfig_NilValues` | values 为 nil 时所有 Get 返回零值 |
-| `TestFakeConfig_Concurrent` | 并发读写安全 |
+| 测试用例                     | 说明                                   |
+| ---------------------------- | -------------------------------------- |
+| `TestFakeConfig_Get`         | Set 后 Get 返回正确值                  |
+| `TestFakeConfig_GetString`   | GetString 返回字符串值，非字符串返回空 |
+| `TestFakeConfig_GetInt`      | GetInt 返回整数值                      |
+| `TestFakeConfig_GetBool`     | GetBool 返回布尔值                     |
+| `TestFakeConfig_GetFloat64`  | GetFloat64 返回浮点值                  |
+| `TestFakeConfig_GetDuration` | GetDuration 返回 Duration 值           |
+| `TestFakeConfig_KeyNotFound` | 未设置的 key 返回零值                  |
+| `TestFakeConfig_NilValues`   | values 为 nil 时所有 Get 返回零值      |
+| `TestFakeConfig_Concurrent`  | 并发读写安全                           |
 
 ## 验收标准
 
-| AC | 关联 | 验证命令 | 预期结果 |
-|----|------|----------|----------|
-| AC-FC-01 | FR-001 | `go test -run TestFakeConfig -v ./...` | 全部通过 |
-| AC-FC-02 | BR-001 | `go build ./...` | 编译通过（接口断言检查） |
-| AC-FC-03 | BR-002 | 代码审查 | 无 `time.Now()` / `math.Rand()` 调用 |
-| AC-FC-04 | TC-001 | `go test -race -run TestFakeConfig_Concurrent ./...` | 无 data race |
+| AC       | 关联   | 验证命令                                             | 预期结果                             |
+| -------- | ------ | ---------------------------------------------------- | ------------------------------------ |
+| AC-FC-01 | FR-001 | `go test -run TestFakeConfig -v ./...`               | 全部通过                             |
+| AC-FC-02 | BR-001 | `go build ./...`                                     | 编译通过（接口断言检查）             |
+| AC-FC-03 | BR-002 | 代码审查                                             | 无 `time.Now()` / `math.Rand()` 调用 |
+| AC-FC-04 | TC-001 | `go test -race -run TestFakeConfig_Concurrent ./...` | 无 data race                         |
 
 ## 验证命令
 
-| 命令 | 判定标准 |
-|------|----------|
-| `go build ./...` | 编译通过 |
-| `go test -race -count=1 ./...` | 全部通过，无 data race |
-| `go vet ./...` | 无警告 |
-| `grep "var _ configx.Reader" fake_config.go` | 找到编译期断言 |
+| 命令                                         | 判定标准               |
+| -------------------------------------------- | ---------------------- |
+| `go build ./...`                             | 编译通过               |
+| `go test -race -count=1 ./...`               | 全部通过，无 data race |
+| `go vet ./...`                               | 无警告                 |
+| `grep "var _ configx.Reader" fake_config.go` | 找到编译期断言         |
 
 ## 禁止事项
 

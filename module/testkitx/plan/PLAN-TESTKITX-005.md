@@ -22,14 +22,14 @@ blocks: [TASK-TESTKITX-010]
 
 ## 2. 覆盖需求
 
-| 需求 | 描述 | AC |
-|------|------|-----|
-| FR-005 | FakeClock：可控制时间 | AC-005: Now() 返回可控时间，Advance 推进 |
-| FR-006 | FakeBreaker：可控制熔断状态 | AC-006: SetState 控制状态，Execute 受状态控制 |
-| BR-001 | 接口编译期检查 | `var _ resiliencx.Breaker = (*FakeBreakerImpl)(nil)` |
-| BR-002 | 确定性行为 | FakeClock 不调用 `time.Now()`，不使用 `math.Rand()` |
-| NFR-001 | fake 初始化 < 1ms | benchmark 验证 |
-| SPEC §13 | Edge Case: 未 Advance | Now() 始终返回初始时间 |
+| 需求     | 描述                        | AC                                                   |
+| -------- | --------------------------- | ---------------------------------------------------- |
+| FR-005   | FakeClock：可控制时间       | AC-005: Now() 返回可控时间，Advance 推进             |
+| FR-006   | FakeBreaker：可控制熔断状态 | AC-006: SetState 控制状态，Execute 受状态控制        |
+| BR-001   | 接口编译期检查              | `var _ resiliencx.Breaker = (*FakeBreakerImpl)(nil)` |
+| BR-002   | 确定性行为                  | FakeClock 不调用 `time.Now()`，不使用 `math.Rand()`  |
+| NFR-001  | fake 初始化 < 1ms           | benchmark 验证                                       |
+| SPEC §13 | Edge Case: 未 Advance       | Now() 始终返回初始时间                               |
 
 ---
 
@@ -98,23 +98,23 @@ FakeBreaker 必须实现 `resiliencx.Breaker` 接口。FakeClock 不需要实现
 
 **FakeClock 测试用例**：
 
-| 用例 | 描述 | 验证点 |
-|------|------|--------|
-| TestFakeClock_Now | 初始时间 | Now() 返回构造时的时间 |
-| TestFakeClock_Advance | 时间推进 | Advance(1s) 后 Now() 增加 1s |
-| TestFakeClock_Set | 设置时间 | Set(t) 后 Now() 返回 t |
-| TestFakeClock_Deterministic | 确定性 | 不调用 time.Now()（编译期 + -race 验证） |
-| TestFakeClock_NoAdvance | 未 Advance | Now() 始终返回初始时间 |
-| TestFakeClock_Concurrent | 并发安全 | `-race` 通过 |
+| 用例                        | 描述       | 验证点                                   |
+| --------------------------- | ---------- | ---------------------------------------- |
+| TestFakeClock_Now           | 初始时间   | Now() 返回构造时的时间                   |
+| TestFakeClock_Advance       | 时间推进   | Advance(1s) 后 Now() 增加 1s             |
+| TestFakeClock_Set           | 设置时间   | Set(t) 后 Now() 返回 t                   |
+| TestFakeClock_Deterministic | 确定性     | 不调用 time.Now()（编译期 + -race 验证） |
+| TestFakeClock_NoAdvance     | 未 Advance | Now() 始终返回初始时间                   |
+| TestFakeClock_Concurrent    | 并发安全   | `-race` 通过                             |
 
 **FakeBreaker 测试用例**：
 
-| 用例 | 描述 | 验证点 |
-|------|------|--------|
-| TestFakeBreaker_Closed | Closed 状态 | Execute 执行 fn |
-| TestFakeBreaker_Open | Open 状态 | Execute 返回 ErrCircuitOpen |
-| TestFakeBreaker_SetState | 切换状态 | SetState(HalfOpen) 后 State() 返回 HalfOpen |
-| TestFakeBreaker_Interface | 接口实现 | 编译期检查 |
+| 用例                      | 描述        | 验证点                                      |
+| ------------------------- | ----------- | ------------------------------------------- |
+| TestFakeBreaker_Closed    | Closed 状态 | Execute 执行 fn                             |
+| TestFakeBreaker_Open      | Open 状态   | Execute 返回 ErrCircuitOpen                 |
+| TestFakeBreaker_SetState  | 切换状态    | SetState(HalfOpen) 后 State() 返回 HalfOpen |
+| TestFakeBreaker_Interface | 接口实现    | 编译期检查                                  |
 
 ---
 
@@ -133,10 +133,10 @@ go test -run TestFakeExporter -race -count=1 -v ./...
 
 ## 6. 风险与回滚
 
-| 风险 | 概率 | 影响 | 缓解 | 回滚 |
-|------|------|------|------|------|
-| FakeClock 隐式调用 time.Now() | Low | High | 代码审查 + 确定性测试验证 | 替换为内部时间 |
-| resiliencx.Breaker 接口不确定 | Medium | High | 先读 resiliencx 接口定义 | 补全缺失方法 |
-| FakeClock After channel 实现复杂 | Low | Low | 可选实现，P1 优先级 | 移除 After 方法 |
+| 风险                             | 概率   | 影响   | 缓解                      | 回滚            |
+| -------------------------------- | ------ | ------ | ------------------------- | --------------- |
+| FakeClock 隐式调用 time.Now()    | Low    | High   | 代码审查 + 确定性测试验证 | 替换为内部时间  |
+| resiliencx.Breaker 接口不确定    | Medium | High   | 先读 resiliencx 接口定义  | 补全缺失方法    |
+| FakeClock After channel 实现复杂 | Low    | Low    | 可选实现，P1 优先级       | 移除 After 方法 |
 
 **回滚路径**：本 task 仅新增文件，回滚 = `rm fake_clock.go fake_breaker.go fake_exporter.go fake_clock_test.go fake_breaker_test.go`。

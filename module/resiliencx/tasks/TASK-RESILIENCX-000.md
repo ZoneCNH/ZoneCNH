@@ -29,10 +29,10 @@ status: pending
 
 ## Requirements Covered
 
-| Requirement | Description | Acceptance Criteria |
-|---|---|---|
-| §10 | 公共错误变量定义 | 错误变量均为 `errors.New` 创建 |
-| §15 | go.mod 依赖声明 | 仅必要依赖 |
+| Requirement | Description      | Acceptance Criteria            |
+| ----------- | ---------------- | ------------------------------ |
+| §10         | 公共错误变量定义 | 错误变量均为 `errors.New` 创建 |
+| §15         | go.mod 依赖声明  | 仅必要依赖                     |
 
 | BR-002 | configx.Reader 参数化 | go.mod 仅含声明依赖 |
 
@@ -40,10 +40,10 @@ status: pending
 
 ## Test Plan
 
-| Test Case | Type | Description |
-|---|---|---|
-| — | CI Gate | `go build ./...` 编译通过 |
-| — | CI Gate | `go vet ./...` 无错误 |
+| Test Case | Type    | Description               |
+| --------- | ------- | ------------------------- |
+| —         | CI Gate | `go build ./...` 编译通过 |
+| —         | CI Gate | `go vet ./...` 无错误     |
 
 | — | CI Gate | go mod tidy 依赖整洁 |
 
@@ -55,14 +55,14 @@ status: pending
 
 ## Implementation Plan
 
-| Step | Description | Deliverables | Verification |
-|---|---|---|---|
-| 1 | 创建 `go.mod` | `go.mod` | `go mod tidy` 无变化 |
-| 2 | 创建 `doc.go` 和 `errors.go` | `doc.go`, `errors.go` | `go build ./...` 通过 |
-| 3 | 运行 go vet 验证 | — | `go vet ./...` 无警告 |
+| Step | Description                  | Deliverables          | Verification          |
+| ---- | ---------------------------- | --------------------- | --------------------- |
+| 1    | 创建 `go.mod`                | `go.mod`              | `go mod tidy` 无变化  |
+| 2    | 创建 `doc.go` 和 `errors.go` | `doc.go`, `errors.go` | `go build ./...` 通过 |
+| 3    | 运行 go vet 验证             | —                     | `go vet ./...` 无警告 |
 
 ### Risk Assessment
 
-| Risk | Probability | Impact | Mitigation |
-|---|---|---|---|
-| 错误变量遗漏 | Low | Low | 对照 §10 列表核对 |
+| Risk         | Probability | Impact | Mitigation        |
+| ------------ | ----------- | ------ | ----------------- |
+| 错误变量遗漏 | Low         | Low    | 对照 §10 列表核对 |

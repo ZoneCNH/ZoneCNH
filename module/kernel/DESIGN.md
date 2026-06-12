@@ -332,14 +332,14 @@ kernel (L0)
 
 ## 6. 技术风险
 
-| 风险 | 概率 | 影响 | 缓解 |
-|------|------|------|------|
-| errx.IsKind 多错误链性能 | Low | Medium | Benchmark 覆盖 5 层链遍历 < 1μs |
-| FakeClock 并发安全 | Medium | High | `-race` 测试 + mutex 保护内部状态 |
-| SecretString 反射绕过 | Low | High | 覆盖 String()/GoString()/JSON/gob 四条路径 |
-| WorkerGroup cancel 传播竞争 | Medium | High | 充分测试并发 cancel 场景 |
-| stdlib-only 被破坏 | Low | Critical | CI gate + `go list -deps` |
-| 接口变更影响下游 | Medium | Major | SemVer 管理，接口变更 bump major |
+| 风险                        | 概率   | 影响     | 缓解                                       |
+| --------------------------- | ------ | -------- | ------------------------------------------ |
+| errx.IsKind 多错误链性能    | Low    | Medium   | Benchmark 覆盖 5 层链遍历 < 1μs            |
+| FakeClock 并发安全          | Medium | High     | `-race` 测试 + mutex 保护内部状态          |
+| SecretString 反射绕过       | Low    | High     | 覆盖 String()/GoString()/JSON/gob 四条路径 |
+| WorkerGroup cancel 传播竞争 | Medium | High     | 充分测试并发 cancel 场景                   |
+| stdlib-only 被破坏          | Low    | Critical | CI gate + `go list -deps`                  |
+| 接口变更影响下游            | Medium | Major    | SemVer 管理，接口变更 bump major           |
 
 ---
 
@@ -375,12 +375,12 @@ kernel (L0)
 
 ### 9.1 已知扩展路径
 
-| 扩展方向 | 当前设计支撑 | 演进方式 |
-|----------|-------------|----------|
-| 新增 ErrorKind 值 | ErrorKind 是 string 类型，消费者用 switch 匹配 | minor version 追加新值 |
-| obsx 接口扩展 | 接口方法最小化 | 新增独立接口（如 `LoggerWithContext`），不改现有接口 |
-| 新增子包 | 子包间无强制耦合 | 直接在 kernel 仓库新增子目录 |
-| retryx 新增退避策略 | RetryPolicy 为纯数据 | 新增策略函数，不改结构体 |
+| 扩展方向            | 当前设计支撑                                   | 演进方式                                             |
+| ------------------- | ---------------------------------------------- | ---------------------------------------------------- |
+| 新增 ErrorKind 值   | ErrorKind 是 string 类型，消费者用 switch 匹配 | minor version 追加新值                               |
+| obsx 接口扩展       | 接口方法最小化                                 | 新增独立接口（如 `LoggerWithContext`），不改现有接口 |
+| 新增子包            | 子包间无强制耦合                               | 直接在 kernel 仓库新增子目录                         |
+| retryx 新增退避策略 | RetryPolicy 为纯数据                           | 新增策略函数，不改结构体                             |
 
 ### 9.2 设计不阻塞的演进方向
 

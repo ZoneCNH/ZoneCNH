@@ -29,10 +29,10 @@ status: pending
 
 ## Requirements Covered
 
-| Requirement | Description | Acceptance Criteria |
-|---|---|---|
-| FR-003 | check baseline：Go 版本一致性 | 3 个 WHEN/THEN 场景 |
-| BR-003 | baseline 从配置或 --expected 参数获取，不硬编码 | 参数和配置 fallback |
+| Requirement | Description                                     | Acceptance Criteria |
+| ----------- | ----------------------------------------------- | ------------------- |
+| FR-003      | check baseline：Go 版本一致性                   | 3 个 WHEN/THEN 场景 |
+| BR-003      | baseline 从配置或 --expected 参数获取，不硬编码 | 参数和配置 fallback |
 
 ## Non-scope
 
@@ -43,12 +43,12 @@ status: pending
 
 ## Test Plan
 
-| Test Case | Type | Description |
-|---|---|---|
-| TC-003 | Unit | 版本一致：exit 0 |
-| TC-003 | Unit | 版本不匹配：exit 1，输出模块列表 |
-| TC-003 | Unit | 无 --expected：exit 2 |
-| NFR-004 | Benchmark | `BenchmarkCheckBaseline` — 50 模块 < 5s |
+| Test Case | Type      | Description                             |
+| --------- | --------- | --------------------------------------- |
+| TC-003    | Unit      | 版本一致：exit 0                        |
+| TC-003    | Unit      | 版本不匹配：exit 1，输出模块列表        |
+| TC-003    | Unit      | 无 --expected：exit 2                   |
+| NFR-004   | Benchmark | `BenchmarkCheckBaseline` — 50 模块 < 5s |
 
 ## Implementation Notes
 
@@ -58,12 +58,12 @@ status: pending
 
 ## Implementation Plan
 
-| Step | Description | Deliverables | Verification |
-|---|---|---|---|
-| 1 | 实现 `check_baseline.go`：遍历 go.mod → 提取版本 → 比较 | `check_baseline.go` | TC-003 全部通过 |
+| Step | Description                                             | Deliverables        | Verification    |
+| ---- | ------------------------------------------------------- | ------------------- | --------------- |
+| 1    | 实现 `check_baseline.go`：遍历 go.mod → 提取版本 → 比较 | `check_baseline.go` | TC-003 全部通过 |
 
 ### Risk Assessment
 
-| Risk | Probability | Impact | Mitigation |
-|---|---|---|---|
-| go.mod 解析错误 | Low | Low | 标准库解析 |
+| Risk            | Probability | Impact | Mitigation |
+| --------------- | ----------- | ------ | ---------- |
+| go.mod 解析错误 | Low         | Low    | 标准库解析 |

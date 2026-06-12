@@ -30,18 +30,18 @@ status: pending
 
 ## Requirements Covered
 
-| Requirement | Description | Acceptance Criteria |
-|---|---|---|
-| FR-010 | Acquire：获取分布式锁 | 成功返回 unlock，失败返回错误 |
-| FR-011 | Release：释放锁 | 释放成功 |
+| Requirement | Description           | Acceptance Criteria           |
+| ----------- | --------------------- | ----------------------------- |
+| FR-010      | Acquire：获取分布式锁 | 成功返回 unlock，失败返回错误 |
+| FR-011      | Release：释放锁       | 释放成功                      |
 
 ## Test Plan
 
-| Test Case | Type | Description |
-|---|---|---|
-| — | Unit | Acquire 成功后 Release 释放 |
-| — | Unit | 重复 Acquire 返回 ErrLockNotAcquired |
-| — | Unit | TTL 过期后可重新 Acquire |
+| Test Case | Type | Description                          |
+| --------- | ---- | ------------------------------------ |
+| —         | Unit | Acquire 成功后 Release 释放          |
+| —         | Unit | 重复 Acquire 返回 ErrLockNotAcquired |
+| —         | Unit | TTL 过期后可重新 Acquire             |
 
 ## Implementation Notes
 
@@ -50,13 +50,13 @@ status: pending
 
 ## Implementation Plan
 
-| Step | Description | Deliverables | Verification |
-|---|---|---|---|
-| 1 | 实现 `Acquire`：SET NX EX + 返回 unlock func | `locker_impl.go` | 测试通过 |
-| 2 | 实现 Lua 脚本保证 Release 原子性 | `locker_impl.go` | 并发测试通过 |
+| Step | Description                                  | Deliverables     | Verification |
+| ---- | -------------------------------------------- | ---------------- | ------------ |
+| 1    | 实现 `Acquire`：SET NX EX + 返回 unlock func | `locker_impl.go` | 测试通过     |
+| 2    | 实现 Lua 脚本保证 Release 原子性             | `locker_impl.go` | 并发测试通过 |
 
 ### Risk Assessment
 
-| Risk | Probability | Impact | Mitigation |
-|---|---|---|---|
-| 锁超时竞态 | Medium | High | fencing token 或 Lua 脚本 |
+| Risk       | Probability | Impact | Mitigation                |
+| ---------- | ----------- | ------ | ------------------------- |
+| 锁超时竞态 | Medium      | High   | fencing token 或 Lua 脚本 |

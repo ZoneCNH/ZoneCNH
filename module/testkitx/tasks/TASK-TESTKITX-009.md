@@ -28,16 +28,16 @@ status: pending
 
 ## Requirements Covered
 
-| Requirement | Description | Acceptance Criteria |
-|---|---|---|
-| FR-010 | GoroutineLeakCheck：goroutine 泄漏检测 | AC-010 |
+| Requirement | Description                            | Acceptance Criteria |
+| ----------- | -------------------------------------- | ------------------- |
+| FR-010      | GoroutineLeakCheck：goroutine 泄漏检测 | AC-010              |
 
 ## Test Plan
 
-| Test Case | Type | Description |
-|---|---|---|
-| TC-010 | Unit | 无泄漏：通过 |
-| TC-010 | Unit | 有泄漏：fail 并输出堆栈 |
+| Test Case | Type | Description             |
+| --------- | ---- | ----------------------- |
+| TC-010    | Unit | 无泄漏：通过            |
+| TC-010    | Unit | 有泄漏：fail 并输出堆栈 |
 
 ## Implementation Notes
 
@@ -47,12 +47,12 @@ status: pending
 
 ## Implementation Plan
 
-| Step | Description | Deliverables | Verification |
-|---|---|---|---|
-| 1 | 实现 `GoroutineLeakCheck` 函数 | `leakcheck.go` | 全部测试通过 |
+| Step | Description                    | Deliverables   | Verification |
+| ---- | ------------------------------ | -------------- | ------------ |
+| 1    | 实现 `GoroutineLeakCheck` 函数 | `leakcheck.go` | 全部测试通过 |
 
 ### Risk Assessment
 
-| Risk | Probability | Impact | Mitigation |
-|---|---|---|---|
-| 误报（runtime goroutine） | Low | Low | 允许少量差异 |
+| Risk                      | Probability | Impact | Mitigation   |
+| ------------------------- | ----------- | ------ | ------------ |
+| 误报（runtime goroutine） | Low         | Low    | 允许少量差异 |

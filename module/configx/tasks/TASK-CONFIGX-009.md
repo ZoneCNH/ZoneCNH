@@ -41,19 +41,19 @@ status: pending
 
 ## Requirements Covered
 
-| Requirement | Description | Acceptance Criteria |
-|---|---|---|
-| §22 | Release DoD | 所有 Release DoD 条目通过 |
-| §9.2 | 用法示例 | README 和 example_test.go 包含用法示例 |
+| Requirement | Description | Acceptance Criteria                    |
+| ----------- | ----------- | -------------------------------------- |
+| §22         | Release DoD | 所有 Release DoD 条目通过              |
+| §9.2        | 用法示例    | README 和 example_test.go 包含用法示例 |
 
 ## Test Plan
 
-| Test Case | Type | Description |
-|---|---|---|
-| — | CI Gate | 覆盖率 ≥ 80%: `go test -coverprofile=coverage.out ./... && go tool cover -func=coverage.out` |
-| — | CI Gate | `-race` 无 data race: `go test -race -count=1 ./...` |
-| — | CI Gate | `go vet ./...` 无警告 |
-| — | CI Gate | NFR-005: kernel 依赖检查: `go list -deps ./... | grep -c kernel` 返回 0 |
+| Test Case | Type    | Description                                                                                  |                        |
+| --------- | ------- | -------------------------------------------------------------------------------------------- |                        |
+| —         | CI Gate | 覆盖率 ≥ 80%: `go test -coverprofile=coverage.out ./... && go tool cover -func=coverage.out` |                        |
+| —         | CI Gate | `-race` 无 data race: `go test -race -count=1 ./...`                                         |                        |
+| —         | CI Gate | `go vet ./...` 无警告                                                                        |                        |
+| —         | CI Gate | NFR-005: kernel 依赖检查: `go list -deps ./...                                               | grep -c kernel` 返回 0 |
 
 ## Non-scope
 
@@ -69,15 +69,15 @@ status: pending
 
 ## Implementation Plan
 
-| Step | Description | Deliverables | Verification |
-|---|---|---|---|
-| 1 | 创建 README.md：模块定位、快速开始、配置说明、API 概览 | `README.md` | 人工 review |
-| 2 | 创建 CHANGELOG.md：记录 v0.7.3 变更 | `CHANGELOG.md` | 格式正确 |
-| 3 | 创建 example_test.go：Config、Reader 的 Example 函数 | `example_test.go` | `go test -run Example` 通过 |
-| 4 | 补全 godoc 注释，运行 Release DoD 全量验证 | — | 所有 CI gate 通过 |
+| Step | Description                                            | Deliverables      | Verification                |
+| ---- | ------------------------------------------------------ | ----------------- | --------------------------- |
+| 1    | 创建 README.md：模块定位、快速开始、配置说明、API 概览 | `README.md`       | 人工 review                 |
+| 2    | 创建 CHANGELOG.md：记录 v0.7.3 变更                    | `CHANGELOG.md`    | 格式正确                    |
+| 3    | 创建 example_test.go：Config、Reader 的 Example 函数   | `example_test.go` | `go test -run Example` 通过 |
+| 4    | 补全 godoc 注释，运行 Release DoD 全量验证             | —                 | 所有 CI gate 通过           |
 
 ### Risk Assessment
 
-| Risk | Probability | Impact | Mitigation |
-|---|---|---|---|
-| 覆盖率未达 80% | Medium | Medium | 补充边界场景测试用例 |
+| Risk           | Probability | Impact | Mitigation           |
+| -------------- | ----------- | ------ | -------------------- |
+| 覆盖率未达 80% | Medium      | Medium | 补充边界场景测试用例 |

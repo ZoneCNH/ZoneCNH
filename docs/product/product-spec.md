@@ -16,12 +16,12 @@ FoundationX 是一套模块化的量化交易基础设施，为策略开发者�
 
 ## 2. Target Users
 
-| 用户角色 | 需求 |
-|----------|------|
-| 策略开发者 | 专注因子和信号，不想搭基础设施 |
-| 量化研究员 | 需要回测框架和历史数据 |
-| 运维工程师 | 需要可观测、可部署、可监控的系统 |
-| AI 代理 | 需要清晰的模块边界和接口契约来自动开发 |
+| 用户角色   | 需求                                   |
+| ---------- | -------------------------------------- |
+| 策略开发者 | 专注因子和信号，不想搭基础设施         |
+| 量化研究员 | 需要回测框架和历史数据                 |
+| 运维工程师 | 需要可观测、可部署、可监控的系统       |
+| AI 代理    | 需要清晰的模块边界和接口契约来自动开发 |
 
 ---
 
@@ -91,17 +91,17 @@ AI 代理被要求实现一个新的存储扩展模块。
 
 ### Included
 
-| 能力 | 模块 |
-|------|------|
-| 生命周期管理 | kernel |
-| 配置管理 | configx |
-| 可观测性 | observex |
-| 弹性策略 | resiliencx |
-| 任务调度 | schedulex |
-| 测试工具 | testkitx |
-| Import 门禁 | xlibgate, xlib-standard |
-| 跨域契约 | contracts |
-| 存储扩展 | redisx, kafkax, natsx, postgresx, taosx, ossx, clickhousex |
+| 能力         | 模块                                                       |
+| ------------ | ---------------------------------------------------------- |
+| 生命周期管理 | kernel                                                     |
+| 配置管理     | configx                                                    |
+| 可观测性     | observex                                                   |
+| 弹性策略     | resiliencx                                                 |
+| 任务调度     | schedulex                                                  |
+| 测试工具     | testkitx                                                   |
+| Import 门禁  | xlibgate, xlib-standard                                    |
+| 跨域契约     | contracts                                                  |
+| 存储扩展     | redisx, kafkax, natsx, postgresx, taosx, ossx, clickhousex |
 
 ### Excluded (Future)
 
@@ -116,24 +116,24 @@ AI 代理被要求实现一个新的存储扩展模块。
 
 ## 8. Success Metrics
 
-| 指标 | 目标 | 度量方法 |
-|------|------|----------|
-| 模块独立可测试 | 每个模块可以 `go test ./...` 独立运行 | CI 每个模块独立 job，覆盖率 ≥ 80% |
-| 接口契约完整 | 所有跨域交互通过 `contracts` 接口 | xlibgate import check 零违规 |
-| Spec 覆盖率 | Foundation 16/16 模块 spec 完整 | module/README.md 索引计数：Foundation=16，每个 spec 23/23 节 |
-| CI Gate 通过 | 所有模块 CI 绿灯 | xlibgate check-all exit code = 0 |
-| WHEN/THEN 覆盖 | 每个 FR 至少 1 条 WHEN/THEN | TRACEABILITY.md 无空 AC 列 |
-| 验收测试通过 | AT-001 至 AT-017 全部通过 | acceptance-tests.md 验收清单全勾 |
-| 术语统一 | 核心术语有权威定义 | GLOSSARY.md 覆盖 ≥ 20 个术语 |
-| 反需求明确 | 每个模块有不做清单 | anti-requirements.md + 各 spec Non-goals 节 |
-| AI 可施工性 | AI 代理可以按 spec 独立实现模块 | Task Spec 必含 spec_ref、文件范围、验收标准和依赖关系 |
+| 指标           | 目标                                  | 度量方法                                                     |
+| -------------- | ------------------------------------- | ------------------------------------------------------------ |
+| 模块独立可测试 | 每个模块可以 `go test ./...` 独立运行 | CI 每个模块独立 job，覆盖率 ≥ 80%                            |
+| 接口契约完整   | 所有跨域交互通过 `contracts` 接口     | xlibgate import check 零违规                                 |
+| Spec 覆盖率    | Foundation 16/16 模块 spec 完整       | module/README.md 索引计数：Foundation=16，每个 spec 23/23 节 |
+| CI Gate 通过   | 所有模块 CI 绿灯                      | xlibgate check-all exit code = 0                             |
+| WHEN/THEN 覆盖 | 每个 FR 至少 1 条 WHEN/THEN           | TRACEABILITY.md 无空 AC 列                                   |
+| 验收测试通过   | AT-001 至 AT-017 全部通过             | acceptance-tests.md 验收清单全勾                             |
+| 术语统一       | 核心术语有权威定义                    | GLOSSARY.md 覆盖 ≥ 20 个术语                                 |
+| 反需求明确     | 每个模块有不做清单                    | anti-requirements.md + 各 spec Non-goals 节                  |
+| AI 可施工性    | AI 代理可以按 spec 独立实现模块       | Task Spec 必含 spec_ref、文件范围、验收标准和依赖关系        |
 
 ---
 
 ## 9. Stakeholders
 
-| 角色 | 职责 |
-|------|------|
-| ZoneCNH | 产品负责人、架构师、唯一人类开发者 |
-| AI 代理 | 按 spec 实现模块、写测试、review 代码 |
-| GitHub CI | 自动化门禁、测试、构建 |
+| 角色      | 职责                                  |
+| --------- | ------------------------------------- |
+| ZoneCNH   | 产品负责人、架构师、唯一人类开发者    |
+| AI 代理   | 按 spec 实现模块、写测试、review 代码 |
+| GitHub CI | 自动化门禁、测试、构建                |

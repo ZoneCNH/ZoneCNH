@@ -28,11 +28,11 @@
 
 ## 验收标准
 
-| AC | 关联 | 验证命令 | 预期结果 |
-|----|------|----------|----------|
-| AC-015 | FR-011 | `go test -race -run TestSemaphore ./syncx/...` | 并发安全 |
-| AC-016 | FR-011 | `go test -race -run TestWorkerGroup ./syncx/...` | 错误收集 + cancel |
-| AC-SYNCX-02 | BR-011 | double-release | 静默忽略 |
+| AC          | 关联   | 验证命令                                         | 预期结果          |
+| ----------- | ------ | ------------------------------------------------ | ----------------- |
+| AC-015      | FR-011 | `go test -race -run TestSemaphore ./syncx/...`   | 并发安全          |
+| AC-016      | FR-011 | `go test -race -run TestWorkerGroup ./syncx/...` | 错误收集 + cancel |
+| AC-SYNCX-02 | BR-011 | double-release                                   | 静默忽略          |
 
 ## 禁止事项
 
@@ -49,11 +49,11 @@
 
 ## 验证命令
 
-| 命令 | 判定标准 |
-|------|----------|
-| `go build ./syncx/...` | 编译通过，零错误 |
+| 命令                                 | 判定标准              |
+| ------------------------------------ | --------------------- |
+| `go build ./syncx/...`               | 编译通过，零错误      |
 | `go test -race -count=1 ./syncx/...` | 全部测试通过，无 race |
-| `go vet ./syncx/...` | 无警告 |
+| `go vet ./syncx/...`                 | 无警告                |
 
 ## 完成后
 

@@ -28,10 +28,10 @@ status: pending
 
 ## Requirements Covered
 
-| Requirement | Description | Acceptance Criteria |
-|---|---|---|
-| NFR-010 | 无 Foundation 运行时依赖 | go list -deps 零命中 ZoneCNH 模块 |
-| BR-009 | FOUNDATION-DEPS.yaml schema 与 xlib-standard 一致 | go.mod 仅声明授权依赖 |
+| Requirement | Description                                       | Acceptance Criteria               |
+| ----------- | ------------------------------------------------- | --------------------------------- |
+| NFR-010     | 无 Foundation 运行时依赖                          | go list -deps 零命中 ZoneCNH 模块 |
+| BR-009      | FOUNDATION-DEPS.yaml schema 与 xlib-standard 一致 | go.mod 仅声明授权依赖             |
 
 ## Non-scope
 
@@ -42,10 +42,10 @@ status: pending
 
 ## Test Plan
 
-| Test Case | Type | Description |
-|---|---|---|
-| NFR-010 | CI Gate | `go build ./...` 编译通过 |
-| BR-009 | CI Gate | `go list -deps ./...` 无 ZoneCNH 模块 |
+| Test Case | Type    | Description                           |
+| --------- | ------- | ------------------------------------- |
+| NFR-010   | CI Gate | `go build ./...` 编译通过             |
+| BR-009    | CI Gate | `go list -deps ./...` 无 ZoneCNH 模块 |
 
 ## Implementation Notes
 
@@ -54,14 +54,14 @@ status: pending
 
 ## Implementation Plan
 
-| Step | Description | Deliverables | Verification |
-|---|---|---|---|
-| 1 | 创建 `go.mod` | `go.mod` | `go mod tidy` 无变化 |
-| 2 | 创建 `cmd/xlibgate/main.go` 入口 | `cmd/xlibgate/main.go` | `go build ./...` 通过 |
-| 3 | 创建 `errors.go` | `errors.go` | `go build ./...` 通过 |
+| Step | Description                      | Deliverables           | Verification          |
+| ---- | -------------------------------- | ---------------------- | --------------------- |
+| 1    | 创建 `go.mod`                    | `go.mod`               | `go mod tidy` 无变化  |
+| 2    | 创建 `cmd/xlibgate/main.go` 入口 | `cmd/xlibgate/main.go` | `go build ./...` 通过 |
+| 3    | 创建 `errors.go`                 | `errors.go`            | `go build ./...` 通过 |
 
 ### Risk Assessment
 
-| Risk | Probability | Impact | Mitigation |
-|---|---|---|---|
-| CLI 框架选择 | Low | Low | 使用 stdlib flag |
+| Risk         | Probability | Impact | Mitigation       |
+| ------------ | ----------- | ------ | ---------------- |
+| CLI 框架选择 | Low         | Low    | 使用 stdlib flag |

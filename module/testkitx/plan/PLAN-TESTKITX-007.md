@@ -22,12 +22,12 @@ blocks: [TASK-TESTKITX-010]
 
 ## 2. 覆盖需求
 
-| 需求 | 描述 | AC |
-|------|------|-----|
-| FR-008 | GoldenUpdate golden file 管理 | AC-008: 环境变量控制更新 |
-| BR-004 | GOLDEN_UPDATE=1 时返回 true | GoldenUpdate() 环境变量检查 |
-| BR-007 | golden 文件不泄露 secret | gitleaks 扫描通过 |
-| SPEC §13 | Edge Case: CI 中 GOLDEN_UPDATE 设置 | CI Gate 阻止 |
+| 需求     | 描述                                | AC                          |
+| -------- | ----------------------------------- | --------------------------- |
+| FR-008   | GoldenUpdate golden file 管理       | AC-008: 环境变量控制更新    |
+| BR-004   | GOLDEN_UPDATE=1 时返回 true         | GoldenUpdate() 环境变量检查 |
+| BR-007   | golden 文件不泄露 secret            | gitleaks 扫描通过           |
+| SPEC §13 | Edge Case: CI 中 GOLDEN_UPDATE 设置 | CI Gate 阻止                |
 
 ---
 
@@ -96,16 +96,16 @@ func LoadGolden(t testing.TB, name string) []byte
 
 **测试用例**：
 
-| 用例 | 描述 | 验证点 |
-|------|------|--------|
-| TestGoldenUpdate_EnvSet | GOLDEN_UPDATE=1 | GoldenUpdate() 返回 true |
-| TestGoldenUpdate_EnvUnset | GOLDEN_UPDATE 未设置 | GoldenUpdate() 返回 false |
-| TestGoldenAssert_Match | 内容匹配 | 无错误 |
-| TestGoldenAssert_Mismatch | 内容不匹配 | t.Errorf 被调用 |
-| TestGoldenAssert_UpdateMode | 更新模式 | 文件被更新 |
-| TestGoldenAssert_NewFile | 文件不存在 + 更新模式 | 文件被创建 |
-| TestLoadFixture_ValidJSON | 有效 JSON | 正确解析到结构体 |
-| TestLoadFixture_FileNotFound | 文件不存在 | t.Fatal |
+| 用例                         | 描述                  | 验证点                    |
+| ---------------------------- | --------------------- | ------------------------- |
+| TestGoldenUpdate_EnvSet      | GOLDEN_UPDATE=1       | GoldenUpdate() 返回 true  |
+| TestGoldenUpdate_EnvUnset    | GOLDEN_UPDATE 未设置  | GoldenUpdate() 返回 false |
+| TestGoldenAssert_Match       | 内容匹配              | 无错误                    |
+| TestGoldenAssert_Mismatch    | 内容不匹配            | t.Errorf 被调用           |
+| TestGoldenAssert_UpdateMode  | 更新模式              | 文件被更新                |
+| TestGoldenAssert_NewFile     | 文件不存在 + 更新模式 | 文件被创建                |
+| TestLoadFixture_ValidJSON    | 有效 JSON             | 正确解析到结构体          |
+| TestLoadFixture_FileNotFound | 文件不存在            | t.Fatal                   |
 
 **测试数据**：在 `testdata/` 下创建 `.golden` 和 `.json` fixture 文件。
 
@@ -127,10 +127,10 @@ gitleaks detect --no-git  # 验证 golden 文件无 secret
 
 ## 6. 风险与回滚
 
-| 风险 | 概率 | 影响 | 缓解 | 回滚 |
-|------|------|------|------|------|
-| golden file 路径错误 | Low | Low | 使用 `t.Name()` 生成确定性路径 | 修正路径 |
-| GOLDEN_UPDATE 在 CI 中意外设置 | Low | High | CI Gate 检查环境变量 | 在 CI 配置中显式 unset |
-| golden 文件泄露 secret | Low | High | 更新时自动检查 + gitleaks CI gate | 删除泄露文件并轮换 secret |
+| 风险                           | 概率   | 影响   | 缓解                              | 回滚                      |
+| ------------------------------ | ------ | ------ | --------------------------------- | ------------------------- |
+| golden file 路径错误           | Low    | Low    | 使用 `t.Name()` 生成确定性路径    | 修正路径                  |
+| GOLDEN_UPDATE 在 CI 中意外设置 | Low    | High   | CI Gate 检查环境变量              | 在 CI 配置中显式 unset    |
+| golden 文件泄露 secret         | Low    | High   | 更新时自动检查 + gitleaks CI gate | 删除泄露文件并轮换 secret |
 
 **回滚路径**：本 task 仅新增文件，回滚 = `rm golden.go golden_test.go fixture.go hash.go testdata/*.golden testdata/*.json`。

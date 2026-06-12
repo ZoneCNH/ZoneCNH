@@ -23,10 +23,10 @@
 
 ### Lite Mode（CL0/CL1）
 
-| 级别 | 适用场景 | 最小流程 | 强制 Gate | 裁剪说明 |
-|------|----------|----------|-----------|----------|
-| CL0 | 仅文档、注释或元数据修正，不改变行为、接口、Gate、状态模型或可执行规则 | Goal → Plan → Docs Change → Evidence → Review | Evidence Gate (G8)、Review Gate (G9) | Spec / Design / Matrix 可省略；如修改治理规则、状态、模板、脚本或追溯协议，必须升为 CL1+ |
-| CL1 | 局部实现、规则或文档体系修正，不改变公共接口和跨模块契约 | Goal → Plan → Tasks → Prompt → Code → Test → Evidence → Review | Task Gate (G5)、Test Gate (G7)、Evidence Gate (G8)、Review Gate (G9) | Spec / Design 可合并进 Goal 或 Plan；当 AC / Test / Evidence 追溯发生变化时，Matrix 必须维护 |
+| 级别   | 适用场景                                                               | 最小流程                                                       | 强制 Gate                                                            | 裁剪说明                                                                                     |
+| ------ | ---------------------------------------------------------------------- | -------------------------------------------------------------- | -------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| CL0    | 仅文档、注释或元数据修正，不改变行为、接口、Gate、状态模型或可执行规则 | Goal → Plan → Docs Change → Evidence → Review                  | Evidence Gate (G8)、Review Gate (G9)                                 | Spec / Design / Matrix 可省略；如修改治理规则、状态、模板、脚本或追溯协议，必须升为 CL1+     |
+| CL1    | 局部实现、规则或文档体系修正，不改变公共接口和跨模块契约               | Goal → Plan → Tasks → Prompt → Code → Test → Evidence → Review | Task Gate (G5)、Test Gate (G7)、Evidence Gate (G8)、Review Gate (G9) | Spec / Design 可合并进 Goal 或 Plan；当 AC / Test / Evidence 追溯发生变化时，Matrix 必须维护 |
 
 ### Standard Mode（CL2）
 
@@ -224,7 +224,7 @@ Rollback Execution（回滚执行）
 H-CHK* 是人工审批检查项，不是独立 Gate 编号；阻塞和通过结论归属对应的 G9 Review Gate 或 G10 Release Gate 证据。
 
 | 检查项 | 名称                                  |
-| ---- | ------------------------------------- |
+| ------ | ------------------------------------- |
 | H-CHK1 | Spec Freeze Approval                  |
 | H-CHK2 | Design Review Approval                |
 | H-CHK3 | Public API Change Approval            |
@@ -278,21 +278,21 @@ cross_review:
 
 上游变更必须向下游传播。
 
-| 变更对象         | 必须同步                                          |
-| ---------------- | ------------------------------------------------- |
-| Goal 变更        | Spec / Design / Plan / Tasks / Registry / Issue   |
-| Spec 变更        | Design / Plan / Tasks / Test / Traceability       |
-| Requirement 变更 | Acceptance Criteria / Tasks / Tests / Evidence    |
-| Design 变更      | ADR / Plan / Tasks / Risk / Docs                  |
-| Plan 变更        | Tasks / Dependency Graph / Registry               |
-| Task 变更        | Prompt / Code / Test / Evidence / Registry / Issue / PR |
-| Public API 变更  | Docs / Tests / CHANGELOG / ADR / Release Manifest |
-| Storage 变更     | Migration / Rollback / Tests / Release Manifest   |
-| Config 变更      | Example / Docs / Tests / Release Manifest         |
-| CI 变更          | Harness / Docs / Release Manifest                 |
-| Agent Review 变更 | Evidence / Release Manifest / Gate 状态              |
-| Risk 变更        | Review / Release / Retrospective                  |
-| Release 变更     | CHANGELOG / Manifest / Rollback / Registry        |
+| 变更对象          | 必须同步                                                |
+| ----------------- | ------------------------------------------------------- |
+| Goal 变更         | Spec / Design / Plan / Tasks / Registry / Issue         |
+| Spec 变更         | Design / Plan / Tasks / Test / Traceability             |
+| Requirement 变更  | Acceptance Criteria / Tasks / Tests / Evidence          |
+| Design 变更       | ADR / Plan / Tasks / Risk / Docs                        |
+| Plan 变更         | Tasks / Dependency Graph / Registry                     |
+| Task 变更         | Prompt / Code / Test / Evidence / Registry / Issue / PR |
+| Public API 变更   | Docs / Tests / CHANGELOG / ADR / Release Manifest       |
+| Storage 变更      | Migration / Rollback / Tests / Release Manifest         |
+| Config 变更       | Example / Docs / Tests / Release Manifest               |
+| CI 变更           | Harness / Docs / Release Manifest                       |
+| Agent Review 变更 | Evidence / Release Manifest / Gate 状态                 |
+| Risk 变更         | Review / Release / Retrospective                        |
+| Release 变更      | CHANGELOG / Manifest / Rollback / Registry              |
 
 ### 传播规则
 

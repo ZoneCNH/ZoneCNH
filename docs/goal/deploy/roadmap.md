@@ -114,10 +114,10 @@ bash docs/goal/tools/goal-delivery.sh prompt --task-id TASK-xxx --compile
 
 ### 3.2 Evidence Runtime 增强
 
-| 功能            | 当前                              | 目标                                         |
-| --------------- | --------------------------------- | -------------------------------------------- |
-| Evidence 收集   | `evidence-collect.sh`（手工调用） | CI 自动触发，关联 Task ID                    |
-| Evidence Graph  | ✅ DAG 可视化（`matrix-gen.py --graph`） | DOT 格式，5 色状态标注 |
+| 功能            | 当前                                            | 目标                                         |
+| --------------- | ----------------------------------------------- | -------------------------------------------- |
+| Evidence 收集   | `evidence-collect.sh`（手工调用）               | CI 自动触发，关联 Task ID                    |
+| Evidence Graph  | ✅ DAG 可视化（`matrix-gen.py --graph`）         | DOT 格式，5 色状态标注                       |
 | Evidence Bundle | ✅ `goal-delivery.sh release --compile` 自动聚合 | 含 Evidence 汇总 + Matrix 摘要 + Gate + Risk |
 
 ### 3.3 验收
@@ -136,23 +136,23 @@ bash docs/goal/tools/goal-delivery.sh prompt --task-id TASK-xxx --compile
 
 ### 4.1 五个 Runtime 落地
 
-| Runtime             | 核心工具                                                   | 新增/增强     |
-| ------------------- | ---------------------------------------------------------- | ------------- |
-| Intent Runtime      | goal-spec Agent + `goal-delivery.sh goal/spec/design`      | ✅ 已有       |
-| Control Runtime     | goal-matrix + goal-reviewer + `goal-validate.py`           | ✅ 已有       |
-| Execution Runtime   | goal-prompt-builder + `goal-delivery.sh plan/tasks/prompt` | 🟡 Phase 2    |
-| Evidence Runtime    | goal-evidence + `evidence-collect.sh` + `gate-check.sh` | ✅ Phase 3 完整版 |
-| Improvement Runtime | RSI R0-R9 + `21-controlled-rsi.md` + `goal-delivery.sh improve` | ✅ Phase 5 MVP |
+| Runtime             | 核心工具                                                        | 新增/增强        |
+| ------------------- | --------------------------------------------------------------- | ---------------- |
+| Intent Runtime      | goal-spec Agent + `goal-delivery.sh goal/spec/design`           | ✅ 已有           |
+| Control Runtime     | goal-matrix + goal-reviewer + `goal-validate.py`                | ✅ 已有           |
+| Execution Runtime   | goal-prompt-builder + `goal-delivery.sh plan/tasks/prompt`      | 🟡 Phase 2        |
+| Evidence Runtime    | goal-evidence + `evidence-collect.sh` + `gate-check.sh`         | ✅ Phase 3 完整版 |
+| Improvement Runtime | RSI R0-R9 + `21-controlled-rsi.md` + `goal-delivery.sh improve` | ✅ Phase 5 MVP    |
 
 ### 4.2 Release Drills ✅
 
-| 演练                        | 实现方式                                                    |
-| --------------------------- | ----------------------------------------------------------- |
-| Release Simulation          | `goal-delivery.sh release --simulate`（dry-run 发布路径）   |
-| Rollback Drill              | `goal-delivery.sh release --rollback-drill`（验证回滚路径） |
-| Progressive Delivery Matrix | `goal-delivery.sh release --compile` 自动聚合 | ✅ |
-| Metrics Window Check        | `goal-delivery.sh metrics-window` (≥24h 观察窗口) | ✅ |
-| Incident Handoff            | `goal-delivery.sh incident` 自动生成模板 | ✅ |
+| 演练                        | 实现方式                                                    |   |
+| --------------------------- | ----------------------------------------------------------- |   |
+| Release Simulation          | `goal-delivery.sh release --simulate`（dry-run 发布路径）   |   |
+| Rollback Drill              | `goal-delivery.sh release --rollback-drill`（验证回滚路径） |   |
+| Progressive Delivery Matrix | `goal-delivery.sh release --compile` 自动聚合               | ✅ |
+| Metrics Window Check        | `goal-delivery.sh metrics-window` (≥24h 观察窗口)           | ✅ |
+| Incident Handoff            | `goal-delivery.sh incident` 自动生成模板                    | ✅ |
 
 ### 4.3 验收
 

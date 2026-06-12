@@ -55,10 +55,10 @@ status: pending
 
 ## Requirements Covered
 
-| Requirement | Description | Acceptance Criteria |
-|---|---|---|
-| FR-001 | Config 标准 | Config/Validate/Sanitize 存在 |
-| FR-006 | Version 标准 | 版本信息返回正确 |
+| Requirement | Description  | Acceptance Criteria           |
+| ----------- | ------------ | ----------------------------- |
+| FR-001      | Config 标准  | Config/Validate/Sanitize 存在 |
+| FR-006      | Version 标准 | 版本信息返回正确              |
 
 ## Test Plan
 

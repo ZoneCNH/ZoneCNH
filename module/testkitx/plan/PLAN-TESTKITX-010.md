@@ -22,13 +22,13 @@ blocks: []
 
 ## 2. 覆盖需求
 
-| 需求 | 描述 | AC |
-|------|------|-----|
-| SPEC §22 | Release DoD | 全部条目通过 |
+| 需求     | 描述               | AC                |
+| -------- | ------------------ | ----------------- |
+| SPEC §22 | Release DoD        | 全部条目通过      |
 | SPEC §17 | Performance Budget | fake 初始化 < 1ms |
-| SPEC §18 | Observability | FakeExporter 可用 |
-| NFR-002 | 覆盖率 >= 80% | CI gate |
-| NFR-003 | 并发安全 | `-race` 通过 |
+| SPEC §18 | Observability      | FakeExporter 可用 |
+| NFR-002  | 覆盖率 >= 80%      | CI gate           |
+| NFR-003  | 并发安全           | `-race` 通过      |
 
 ---
 
@@ -95,14 +95,14 @@ blocks: []
 
 **Benchmark 场景**：
 
-| Benchmark | 描述 | 目标 |
-|-----------|------|------|
-| BenchmarkFakeConfig_Init | FakeConfig 初始化 | < 1ms |
-| BenchmarkFakeLogger_Init | FakeLogger 初始化 | < 1ms |
-| BenchmarkFakeMeter_Init | FakeMeter 初始化 | < 1ms |
-| BenchmarkFakeTracer_Init | FakeTracer 初始化 | < 1ms |
-| BenchmarkFakeClock_Init | FakeClock 初始化 | < 1ms |
-| BenchmarkEventually_Immediate | Eventually 立即满足 | < 1ms |
+| Benchmark                     | 描述                | 目标   |
+| ----------------------------- | ------------------- | ------ |
+| BenchmarkFakeConfig_Init      | FakeConfig 初始化   | < 1ms  |
+| BenchmarkFakeLogger_Init      | FakeLogger 初始化   | < 1ms  |
+| BenchmarkFakeMeter_Init       | FakeMeter 初始化    | < 1ms  |
+| BenchmarkFakeTracer_Init      | FakeTracer 初始化   | < 1ms  |
+| BenchmarkFakeClock_Init       | FakeClock 初始化    | < 1ms  |
+| BenchmarkEventually_Immediate | Eventually 立即满足 | < 1ms  |
 
 **注意**：所有 benchmark 使用 `-benchmem` 报告内存分配。
 
@@ -178,11 +178,11 @@ go test -bench=. -benchmem -count=3 ./...
 
 ## 6. 风险与回滚
 
-| 风险 | 概率 | 影响 | 缓解 | 回滚 |
-|------|------|------|------|------|
-| 覆盖率不达标 (< 80%) | Medium | Medium | Step 6 补救流程 | 补充边界场景测试 |
-| golangci-lint 新增规则导致失败 | Low | Medium | 锁定 golangci-lint 版本 | 修复 lint 问题或配置排除 |
-| Benchmark 回退 | Low | Low | 与基线对比 | 优化热点路径 |
-| example_test.go 命名不规范 | Low | Low | 遵循 Go example 命名约定 | 修正函数名 |
+| 风险                           | 概率   | 影响   | 缓解                     | 回滚                     |
+| ------------------------------ | ------ | ------ | ------------------------ | ------------------------ |
+| 覆盖率不达标 (< 80%)           | Medium | Medium | Step 6 补救流程          | 补充边界场景测试         |
+| golangci-lint 新增规则导致失败 | Low    | Medium | 锁定 golangci-lint 版本  | 修复 lint 问题或配置排除 |
+| Benchmark 回退                 | Low    | Low    | 与基线对比               | 优化热点路径             |
+| example_test.go 命名不规范     | Low    | Low    | 遵循 Go example 命名约定 | 修正函数名               |
 
 **回滚路径**：本 task 修改多个文件，回滚建议逐文件处理。核心代码文件（fake_*.go 等）不在本 task 范围内，仅 `README.md`、`CHANGELOG.md`、`example_test.go`、`benchmark_test.go` 属于本 task。

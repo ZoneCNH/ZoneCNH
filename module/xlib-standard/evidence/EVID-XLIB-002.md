@@ -19,11 +19,11 @@ commands_run:
 
 ## 验收结果
 
-| AC | 描述 | 结果 |
-|----|------|------|
-| AC-002-1 | Makefile 最小目标集 | PENDING |
+| AC       | 描述                    | 结果    |
+| -------- | ----------------------- | ------- |
+| AC-002-1 | Makefile 最小目标集     | PENDING |
 | AC-002-2 | scripts/ 检查脚本可执行 | PENDING |
-| AC-002-3 | CI 配置存在 | PENDING |
+| AC-002-3 | CI 配置存在             | PENDING |
 
 ## 说明
 

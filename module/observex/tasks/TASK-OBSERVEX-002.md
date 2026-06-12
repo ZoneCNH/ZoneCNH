@@ -32,20 +32,20 @@ status: pending
 
 ## Requirements Covered
 
-| Requirement | Description | Acceptance Criteria |
-|---|---|---|
-| FR-001 | Logger：level 过滤、With 不变性、并发安全 | 4 个 WHEN/THEN 场景 |
-| BR-001 | Logger 实现必须并发安全 | `-race` 测试通过 |
-| BR-005 | With 返回新实例，不修改原 Logger | 不变性验证 |
+| Requirement | Description                               | Acceptance Criteria |
+| ----------- | ----------------------------------------- | ------------------- |
+| FR-001      | Logger：level 过滤、With 不变性、并发安全 | 4 个 WHEN/THEN 场景 |
+| BR-001      | Logger 实现必须并发安全                   | `-race` 测试通过    |
+| BR-005      | With 返回新实例，不修改原 Logger          | 不变性验证          |
 
 ## Test Plan
 
-| Test Case | Type | Description |
-|---|---|---|
-| TC-001 | Unit | Logger.With 不变性：l1.With 不影响 l1 |
-| — | Unit | level 过滤：level=info → debug 不输出 |
-| — | Unit | 结构化输出：包含 msg 和所有 fields |
-| — | Unit | 并发安全：多 goroutine 同时写日志无 race |
+| Test Case | Type | Description                              |
+| --------- | ---- | ---------------------------------------- |
+| TC-001    | Unit | Logger.With 不变性：l1.With 不影响 l1    |
+| —         | Unit | level 过滤：level=info → debug 不输出    |
+| —         | Unit | 结构化输出：包含 msg 和所有 fields       |
+| —         | Unit | 并发安全：多 goroutine 同时写日志无 race |
 
 ## Implementation Notes
 
@@ -56,16 +56,16 @@ status: pending
 
 ## Implementation Plan
 
-| Step | Description | Deliverables | Verification |
-|---|---|---|---|
-| 1 | 定义 `loggerImpl` 结构体（level, fields, writer, mu） | `logger/impl.go` | `go build ./...` 通过 |
-| 2 | 实现 Debug/Info/Warn/Error：level 检查 → 格式化 → 写入 | `logger/impl.go` | `go test ./logger/...` 通过 |
-| 3 | 实现 `With`：创建新实例，复制 fields | `logger/impl.go` | TC-001 通过 |
-| 4 | 并发安全验证 | `logger/logger_test.go` | `go test -race ./logger/...` 通过 |
+| Step | Description                                            | Deliverables            | Verification                      |
+| ---- | ------------------------------------------------------ | ----------------------- | --------------------------------- |
+| 1    | 定义 `loggerImpl` 结构体（level, fields, writer, mu）  | `logger/impl.go`        | `go build ./...` 通过             |
+| 2    | 实现 Debug/Info/Warn/Error：level 检查 → 格式化 → 写入 | `logger/impl.go`        | `go test ./logger/...` 通过       |
+| 3    | 实现 `With`：创建新实例，复制 fields                   | `logger/impl.go`        | TC-001 通过                       |
+| 4    | 并发安全验证                                           | `logger/logger_test.go` | `go test -race ./logger/...` 通过 |
 
 ### Risk Assessment
 
-| Risk | Probability | Impact | Mitigation |
-|---|---|---|---|
-| With 共享底层 slice | Medium | High | 深拷贝 fields slice |
-| 输出格式不一致 | Low | Medium | 统一 JSON 编码器 |
+| Risk                | Probability | Impact | Mitigation          |
+| ------------------- | ----------- | ------ | ------------------- |
+| With 共享底层 slice | Medium      | High   | 深拷贝 fields slice |
+| 输出格式不一致      | Low         | Medium | 统一 JSON 编码器    |

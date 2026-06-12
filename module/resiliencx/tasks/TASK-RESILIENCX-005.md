@@ -32,18 +32,18 @@ status: pending
 
 ## Requirements Covered
 
-| Requirement | Description | Acceptance Criteria |
-|---|---|---|
-| FR-004 | Bulkhead：并发限制 + 等待 + 超时 | AC-005: 并发控制 / 等待 / 超时 |
+| Requirement | Description                      | Acceptance Criteria            |
+| ----------- | -------------------------------- | ------------------------------ |
+| FR-004      | Bulkhead：并发限制 + 等待 + 超时 | AC-005: 并发控制 / 等待 / 超时 |
 
 ## Test Plan
 
-| Test Case | Type | Description |
-|---|---|---|
-| TC-004 | Unit | 并发数 < max：执行成功 |
-| TC-004 | Unit | 并发数满：等待空位 |
-| TC-004 | Unit | 超时：返回 ErrBulkheadFull |
-| — | Unit | Available() 返回正确值 |
+| Test Case | Type | Description                |
+| --------- | ---- | -------------------------- |
+| TC-004    | Unit | 并发数 < max：执行成功     |
+| TC-004    | Unit | 并发数满：等待空位         |
+| TC-004    | Unit | 超时：返回 ErrBulkheadFull |
+| —         | Unit | Available() 返回正确值     |
 
 ## Implementation Notes
 
@@ -53,15 +53,15 @@ status: pending
 
 ## Implementation Plan
 
-| Step | Description | Deliverables | Verification |
-|---|---|---|---|
-| 1 | 实现 `bulkheadImpl`（sem chan struct{}, max int） | `bulkhead_impl.go` | `go build ./...` 通过 |
-| 2 | 实现 `Execute`：select 获取信号量 → fn → 释放 | `bulkhead_impl.go` | TC-004, TC-004 通过 |
-| 3 | 实现 `Available` 和超时逻辑 | `bulkhead_impl.go` | TC-004 通过 |
-| 4 | 并发安全验证 | `bulkhead_test.go` | `go test -race ./... -run TestBulkhead` 通过 |
+| Step | Description                                       | Deliverables       | Verification                                 |
+| ---- | ------------------------------------------------- | ------------------ | -------------------------------------------- |
+| 1    | 实现 `bulkheadImpl`（sem chan struct{}, max int） | `bulkhead_impl.go` | `go build ./...` 通过                        |
+| 2    | 实现 `Execute`：select 获取信号量 → fn → 释放     | `bulkhead_impl.go` | TC-004, TC-004 通过                          |
+| 3    | 实现 `Available` 和超时逻辑                       | `bulkhead_impl.go` | TC-004 通过                                  |
+| 4    | 并发安全验证                                      | `bulkhead_test.go` | `go test -race ./... -run TestBulkhead` 通过 |
 
 ### Risk Assessment
 
-| Risk | Probability | Impact | Mitigation |
-|---|---|---|---|
-| 信号量泄漏 | Low | High | defer 释放 |
+| Risk       | Probability | Impact | Mitigation |
+| ---------- | ----------- | ------ | ---------- |
+| 信号量泄漏 | Low         | High   | defer 释放 |

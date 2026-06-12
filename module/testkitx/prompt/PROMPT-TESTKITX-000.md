@@ -34,15 +34,15 @@ task_files:
 
 ## 关联需求
 
-| 类型 | 编号 | 出处 | 说明 |
-|------|------|------|------|
-| FR | FR-001~010 | SPEC.md §7 | 全部 FR 的包级声明 |
-| BR | BR-006 | SPEC.md §8 | testkitx 允许依赖所有 Foundation L1 模块 |
-| BR | BR-005 | SPEC.md §8 | 生产 import graph 不能出现 testkitx |
-| § | 14 | SPEC.md | 目录结构 |
-| § | 15 | SPEC.md | 依赖声明 |
-| § | 18 | SPEC.md | 不 emit 生产可观测数据 |
-| § | 19 | SPEC.md | 不进入生产二进制 |
+| 类型   | 编号       | 出处       | 说明                                     |
+| ------ | ---------- | ---------- | ---------------------------------------- |
+| FR     | FR-001~010 | SPEC.md §7 | 全部 FR 的包级声明                       |
+| BR     | BR-006     | SPEC.md §8 | testkitx 允许依赖所有 Foundation L1 模块 |
+| BR     | BR-005     | SPEC.md §8 | 生产 import graph 不能出现 testkitx      |
+| §      | 14         | SPEC.md    | 目录结构                                 |
+| §      | 15         | SPEC.md    | 依赖声明                                 |
+| §      | 18         | SPEC.md    | 不 emit 生产可观测数据                   |
+| §      | 19         | SPEC.md    | 不进入生产二进制                         |
 
 ## 文件清单
 
@@ -95,18 +95,18 @@ var (
 
 包含以下目标：
 
-| 目标 | 命令 |
-|------|------|
-| `build` | `go build ./...` |
-| `test` | `go test -race -count=1 ./...` |
-| `cover` | `mkdir -p .coverage && go test -race -coverprofile=.coverage/cover.out ./... && go tool cover -func=.coverage/cover.out` |
-| `bench` | `go test -bench=. -benchmem -count=3 ./...` |
-| `lint` | `golangci-lint run` |
-| `vet` | `go vet ./...` |
-| `tidy` | `go mod tidy && git diff --exit-code go.mod go.sum` |
-| `contract-test` | `go test ./contract/... -race -count=1` |
-| `no-prod-import` | `go list -deps github.com/ZoneCNH/x.go/... 2>/dev/null \| grep testkitx \|\| echo "PASS: no production import"` |
-| `release-preflight` | build + test + cover + bench + lint + vet + tidy + contract-test + no-prod-import |
+| 目标                | 命令                                                                                                                     |                 |   |                                    |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------ |                 |   |                                    |
+| `build`             | `go build ./...`                                                                                                         |                 |   |                                    |
+| `test`              | `go test -race -count=1 ./...`                                                                                           |                 |   |                                    |
+| `cover`             | `mkdir -p .coverage && go test -race -coverprofile=.coverage/cover.out ./... && go tool cover -func=.coverage/cover.out` |                 |   |                                    |
+| `bench`             | `go test -bench=. -benchmem -count=3 ./...`                                                                              |                 |   |                                    |
+| `lint`              | `golangci-lint run`                                                                                                      |                 |   |                                    |
+| `vet`               | `go vet ./...`                                                                                                           |                 |   |                                    |
+| `tidy`              | `go mod tidy && git diff --exit-code go.mod go.sum`                                                                      |                 |   |                                    |
+| `contract-test`     | `go test ./contract/... -race -count=1`                                                                                  |                 |   |                                    |
+| `no-prod-import`    | `go list -deps github.com/ZoneCNH/x.go/... 2>/dev/null \                                                                 | grep testkitx \ | \ | echo "PASS: no production import"` |
+| `release-preflight` | build + test + cover + bench + lint + vet + tidy + contract-test + no-prod-import                                        |                 |   |                                    |
 
 ### 6. `LICENSE`
 
@@ -114,23 +114,23 @@ MIT License，版权归属 ZoneCNH。
 
 ## 验收标准
 
-| AC | 关联 | 验证命令 | 预期结果 |
-|----|------|----------|----------|
-| AC-SKEL-01 | §15 | `cat go.mod` | `module github.com/ZoneCNH/testkitx`，`go 1.23` |
-| AC-SKEL-02 | §14 | `ls *.go` | doc.go、testkitx.go、errors.go 存在 |
-| AC-SKEL-03 | §10 | `grep -c "ErrBoundaryViolation\|ErrGoroutineLeak\|ErrGoldenMismatch" errors.go` | = 3 |
-| AC-SKEL-04 | — | `go build ./...` | 编译通过 |
-| AC-SKEL-05 | §19 | `go list -m` | 无生产依赖 |
-| AC-SKEL-06 | — | `cat Makefile` | build/test/cover/bench/lint/vet/tidy/contract-test/no-prod-import/release-preflight 目标存在 |
+| AC         | 关联   | 验证命令                        | 预期结果                                                                                     |                               |     |
+| ---------- | ------ | ------------------------------- | -------------------------------------------------------------------------------------------- |                               |     |
+| AC-SKEL-01 | §15    | `cat go.mod`                    | `module github.com/ZoneCNH/testkitx`，`go 1.23`                                              |                               |     |
+| AC-SKEL-02 | §14    | `ls *.go`                       | doc.go、testkitx.go、errors.go 存在                                                          |                               |     |
+| AC-SKEL-03 | §10    | `grep -c "ErrBoundaryViolation\ | ErrGoroutineLeak\                                                                            | ErrGoldenMismatch" errors.go` | = 3 |
+| AC-SKEL-04 | —      | `go build ./...`                | 编译通过                                                                                     |                               |     |
+| AC-SKEL-05 | §19    | `go list -m`                    | 无生产依赖                                                                                   |                               |     |
+| AC-SKEL-06 | —      | `cat Makefile`                  | build/test/cover/bench/lint/vet/tidy/contract-test/no-prod-import/release-preflight 目标存在 |                               |     |
 
 ## 验证命令
 
-| 命令 | 判定标准 |
-|------|----------|
-| `go build ./...` | 编译通过 |
-| `go mod tidy` | 无变更（go.mod 和 go.sum 已最新） |
-| `ls doc.go testkitx.go errors.go go.mod Makefile LICENSE` | 全部存在 |
-| `grep -c "package testkitx" doc.go` | = 1 |
+| 命令                                                      | 判定标准                          |
+| --------------------------------------------------------- | --------------------------------- |
+| `go build ./...`                                          | 编译通过                          |
+| `go mod tidy`                                             | 无变更（go.mod 和 go.sum 已最新） |
+| `ls doc.go testkitx.go errors.go go.mod Makefile LICENSE` | 全部存在                          |
+| `grep -c "package testkitx" doc.go`                       | = 1                               |
 
 ## 禁止事项
 

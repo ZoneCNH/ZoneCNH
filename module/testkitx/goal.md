@@ -1,13 +1,13 @@
 # testkitx 发布版本 1.0 Goal 定位与实现标准
 
-| 字段 | 内容 |
-| --- | --- |
-| 模块名 | `testkitx` |
-| 发布版本 | 1.0.0 |
-| 所属层级 | 测试期证据层 / 质量闭环 |
-| 稳定级别 | Public API Stable；SPI Stable；Internal 可演进 |
-| 文档状态 | 1.0 发布基线文档 |
-| 发布日期基准 | 2026-06-09 |
+| 字段         | 内容                                           |
+| ------------ | ---------------------------------------------- |
+| 模块名       | `testkitx`                                     |
+| 发布版本     | 1.0.0                                          |
+| 所属层级     | 测试期证据层 / 质量闭环                        |
+| 稳定级别     | Public API Stable；SPI Stable；Internal 可演进 |
+| 文档状态     | 1.0 发布基线文档                               |
+| 发布日期基准 | 2026-06-09                                     |
 
 ## 术语约定
 
@@ -58,26 +58,26 @@
 
 ## 3. 核心场景
 
-| 场景 | 说明 | 1.0 期望结果 |
-| --- | --- | --- |
-| 模块发布 | redisx 准备发布 1.0 | 运行 testkitx 集成测试并生成证据包 |
-| 契约变更 | kafkax 事件 Envelope 新增字段 | 通过契约测试确认旧消费者兼容 |
-| 故障验证 | postgresx 查询超时或连接池耗尽 | 注入故障并验证错误码、重试、观测数据 |
-| 业务接入 | 业务团队接入 ossx | 使用标准 Fixture 和 Fake 对象编写稳定测试 |
+| 场景         | 说明                                         | 1.0 期望结果                                  |
+| ------------ | -------------------------------------------- | --------------------------------------------- |
+| 模块发布     | redisx 准备发布 1.0                          | 运行 testkitx 集成测试并生成证据包            |
+| 契约变更     | kafkax 事件 Envelope 新增字段                | 通过契约测试确认旧消费者兼容                  |
+| 故障验证     | postgresx 查询超时或连接池耗尽               | 注入故障并验证错误码、重试、观测数据          |
+| 业务接入     | 业务团队接入 ossx                            | 使用标准 Fixture 和 Fake 对象编写稳定测试     |
 | 分布式锁竞争 | schedulex 或 redisx 在多实例下执行分布式任务 | 通过 FaultInjector 模拟锁竞争、过期和续期失败 |
-| 故障恢复 | postgresx 或 kafkax 连接中断后恢复 | 注入连接断开故障，验证重连、重试和状态恢复 |
-| 消息顺序性 | kafkax 顺序消费场景 | 注入乱序消息，验证消费者处理顺序和幂等性 |
+| 故障恢复     | postgresx 或 kafkax 连接中断后恢复           | 注入连接断开故障，验证重连、重试和状态恢复    |
+| 消息顺序性   | kafkax 顺序消费场景                          | 注入乱序消息，验证消费者处理顺序和幂等性      |
 
 ## 4. 能力范围
 
-| 能力域 | 1.0 必须具备的能力 | 验收方式 |
-| --- | --- | --- |
-| 测试基础设施 | TestContext、TestResource、Fixture、Scenario、EvidenceCollector | 单测和自测通过 |
-| Fake/Stub | FakeClock、FakeIdGenerator、FakeConfig、FakeLogger、FakeTracer | 确定性测试通过 |
-| 集成环境 | 容器化依赖或外部依赖描述符、生命周期管理 | CI 集成测试通过 |
-| 契约测试 | API schema、event schema、error code、config schema 兼容性断言 | 契约破坏测试通过 |
-| 故障注入 | 延迟、超时、断连、错误响应、重复消费、慢查询 | 故障场景测试通过 |
-| 证据包 | 测试结果、环境、依赖版本、覆盖能力、报告归档 | 证据包 schema 测试通过 |
+| 能力域       | 1.0 必须具备的能力                                              | 验收方式               |
+| ------------ | --------------------------------------------------------------- | ---------------------- |
+| 测试基础设施 | TestContext、TestResource、Fixture、Scenario、EvidenceCollector | 单测和自测通过         |
+| Fake/Stub    | FakeClock、FakeIdGenerator、FakeConfig、FakeLogger、FakeTracer  | 确定性测试通过         |
+| 集成环境     | 容器化依赖或外部依赖描述符、生命周期管理                        | CI 集成测试通过        |
+| 契约测试     | API schema、event schema、error code、config schema 兼容性断言  | 契约破坏测试通过       |
+| 故障注入     | 延迟、超时、断连、错误响应、重复消费、慢查询                    | 故障场景测试通过       |
+| 证据包       | 测试结果、环境、依赖版本、覆盖能力、报告归档                    | 证据包 schema 测试通过 |
 
 ## 5. 职责边界
 
@@ -97,10 +97,10 @@
 
 ## 6. 依赖关系与分层约束
 
-| 依赖类型 | 约束 |
-| --- | --- |
-| 上游依赖 | 依赖 kernel；可选依赖 configx/observex 的测试替身。 |
-| 下游依赖 | 所有 xlib 模块的测试工程可以依赖 testkitx。 |
+| 依赖类型 | 约束                                                       |
+| -------- | ---------------------------------------------------------- |
+| 上游依赖 | 依赖 kernel；可选依赖 configx/observex 的测试替身。        |
+| 下游依赖 | 所有 xlib 模块的测试工程可以依赖 testkitx。                |
 | 分层约束 | testkitx 不得进入生产 artifact；必须有依赖隔离和打包检查。 |
 
 | 契约依赖 | MUST 向 contracts 登记测试工具契约、测试证据格式契约和错误码契约。 |
@@ -108,13 +108,13 @@
 
 ### 7.1 公开能力面
 
-| 契约 | 定位 | 1.0 稳定承诺 |
-| --- | --- | --- |
-| TestContext | 测试上下文和资源注册 | 1.x 内稳定 |
-| TestResource | 外部依赖生命周期抽象 | 启动、健康检查、关闭语义稳定 |
-| ContractAssert | 契约兼容性断言 | 断言结果模型稳定 |
-| FaultInjector | 故障注入扩展点 | 故障类型枚举稳定，可追加 |
-| EvidenceReport | 测试证据包模型 | 核心字段稳定 |
+| 契约           | 定位                 | 1.0 稳定承诺                 |
+| -------------- | -------------------- | ---------------------------- |
+| TestContext    | 测试上下文和资源注册 | 1.x 内稳定                   |
+| TestResource   | 外部依赖生命周期抽象 | 启动、健康检查、关闭语义稳定 |
+| ContractAssert | 契约兼容性断言       | 断言结果模型稳定             |
+| FaultInjector  | 故障注入扩展点       | 故障类型枚举稳定，可追加     |
+| EvidenceReport | 测试证据包模型       | 核心字段稳定                 |
 
 ### 7.2 1.0 逻辑接口基线
 
@@ -141,13 +141,13 @@ FaultInjector
 
 ## 8. 配置契约
 
-| 配置项 | 含义 | 默认值 / 要求 | 稳定性 |
-| --- | --- | --- | --- |
-| foundationx.test.enabled | 测试工具开关 | 仅测试环境 true | Stable |
-| foundationx.test.resources.mode | 集成资源模式 | container / external / disabled | Stable |
-| foundationx.test.evidence.dir | 证据包输出目录 | build/xlib-evidence | Stable |
-| foundationx.test.timeout | 测试资源启动超时 | 60s | Stable |
-| foundationx.test.keep-resources | 失败后是否保留资源 | false | Stable |
+| 配置项                          | 含义               | 默认值 / 要求                   | 稳定性 |
+| ------------------------------- | ------------------ | ------------------------------- | ------ |
+| foundationx.test.enabled        | 测试工具开关       | 仅测试环境 true                 | Stable |
+| foundationx.test.resources.mode | 集成资源模式       | container / external / disabled | Stable |
+| foundationx.test.evidence.dir   | 证据包输出目录     | build/xlib-evidence             | Stable |
+| foundationx.test.timeout        | 测试资源启动超时   | 60s                             | Stable |
+| foundationx.test.keep-resources | 失败后是否保留资源 | false                           | Stable |
 
 ## 9. 可观测契约
 
@@ -159,12 +159,12 @@ FaultInjector
 
 ### 9.2 指标
 
-| 指标名 | 类型 | 标签 | 说明 |
-| --- | --- | --- | --- |
-| foundationx_test_resource_start_total | Counter | resource,status | 测试资源启动次数 |
-| foundationx_test_resource_start_duration_ms | Timer | resource,status | 测试资源启动耗时 |
-| foundationx_test_contract_assert_total | Counter | contractType,status | 契约断言次数 |
-| foundationx_test_fault_injection_total | Counter | faultType,target,status | 故障注入次数 |
+| 指标名                                      | 类型    | 标签                    | 说明             |
+| ------------------------------------------- | ------- | ----------------------- | ---------------- |
+| foundationx_test_resource_start_total       | Counter | resource,status         | 测试资源启动次数 |
+| foundationx_test_resource_start_duration_ms | Timer   | resource,status         | 测试资源启动耗时 |
+| foundationx_test_contract_assert_total      | Counter | contractType,status     | 契约断言次数     |
+| foundationx_test_fault_injection_total      | Counter | faultType,target,status | 故障注入次数     |
 
 ### 9.3 Trace / 诊断事件
 
@@ -173,12 +173,12 @@ FaultInjector
 
 ## 10. 错误模型与失败策略
 
-| 错误类别 | 典型原因 | 1.0 处理策略 |
-| --- | --- | --- |
-| TEST_RESOURCE_START_FAILED | 容器镜像缺失、端口冲突、外部依赖不可达 | 测试失败并输出资源诊断 |
-| TEST_CONTRACT_BROKEN | 新旧契约不兼容 | 发布门禁阻断 |
-| TEST_EVIDENCE_WRITE_FAILED | 证据目录不可写 | 测试失败，不允许无证据通过 |
-| TEST_FAULT_INJECTION_UNSUPPORTED | 目标资源不支持指定故障 | 跳过或失败由用例声明决定 |
+| 错误类别                         | 典型原因                               | 1.0 处理策略               |
+| -------------------------------- | -------------------------------------- | -------------------------- |
+| TEST_RESOURCE_START_FAILED       | 容器镜像缺失、端口冲突、外部依赖不可达 | 测试失败并输出资源诊断     |
+| TEST_CONTRACT_BROKEN             | 新旧契约不兼容                         | 发布门禁阻断               |
+| TEST_EVIDENCE_WRITE_FAILED       | 证据目录不可写                         | 测试失败，不允许无证据通过 |
+| TEST_FAULT_INJECTION_UNSUPPORTED | 目标资源不支持指定故障                 | 跳过或失败由用例声明决定   |
 
 ## 11. 安全、稳定性与兼容性要求
 
@@ -188,13 +188,13 @@ FaultInjector
 
 ## 12. 测试证据要求
 
-| 测试类型 | 必须覆盖内容 | 发布门禁 |
-| --- | --- | --- |
-| 自举测试 | testkitx 自身 Fixture、Fake、Evidence、ContractAssert | MUST 通过 |
-| 资源测试 | 所有已发布扩展模块的外部依赖生命周期：Redis、PostgreSQL、Kafka、NATS、ClickHouse、TAOS、OSS/MinIO | MUST 通过 |
-| 故障注入测试 | 延迟、超时、断连、重复消息 | MUST 通过 |
-| 打包隔离测试 | 生产包不包含 testkitx | MUST 通过 |
-| 报告测试 | 证据包 schema 和归档结构 | MUST 通过 |
+| 测试类型     | 必须覆盖内容                                                                                      | 发布门禁  |
+| ------------ | ------------------------------------------------------------------------------------------------- | --------- |
+| 自举测试     | testkitx 自身 Fixture、Fake、Evidence、ContractAssert                                             | MUST 通过 |
+| 资源测试     | 所有已发布扩展模块的外部依赖生命周期：Redis、PostgreSQL、Kafka、NATS、ClickHouse、TAOS、OSS/MinIO | MUST 通过 |
+| 故障注入测试 | 延迟、超时、断连、重复消息                                                                        | MUST 通过 |
+| 打包隔离测试 | 生产包不包含 testkitx                                                                             | MUST 通过 |
+| 报告测试     | 证据包 schema 和归档结构                                                                          | MUST 通过 |
 
 ## 13. 1.0 发布验收清单
 

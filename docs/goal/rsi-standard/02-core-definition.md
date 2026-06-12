@@ -16,14 +16,14 @@
 
 ## 2.2 RSI 与相近概念的区别
 
-| 概念 | 定义 | 是否等于 RSI |
-|---|---|---|
-| Self-modification，自修改 | 系统修改自己的代码、prompt、配置、权重或记忆 | 不一定 |
-| Self-improvement，自我改进 | 系统在某些任务上变好 | 不一定 |
-| AI-assisted AI development | AI 辅助人类做 AI 研发 | RSI 前兆 |
-| AutoML | 自动搜索模型、超参数、数据配方 | 局部 RSI-like |
-| Recursive self-improvement | 改进能力本身被改进 | 是 |
-| Intelligence explosion | RSI 可能导致的快速能力增长 | 不是 RSI 本身 |
+| 概念                       | 定义                                         | 是否等于 RSI  |
+| -------------------------- | -------------------------------------------- | ------------- |
+| Self-modification，自修改  | 系统修改自己的代码、prompt、配置、权重或记忆 | 不一定        |
+| Self-improvement，自我改进 | 系统在某些任务上变好                         | 不一定        |
+| AI-assisted AI development | AI 辅助人类做 AI 研发                        | RSI 前兆      |
+| AutoML                     | 自动搜索模型、超参数、数据配方               | 局部 RSI-like |
+| Recursive self-improvement | 改进能力本身被改进                           | 是            |
+| Intelligence explosion     | RSI 可能导致的快速能力增长                   | 不是 RSI 本身 |
 
 关键区别：
 

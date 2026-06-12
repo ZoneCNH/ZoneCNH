@@ -31,17 +31,17 @@ status: pending
 
 ## Requirements Covered
 
-| Requirement | Description | Acceptance Criteria |
-|---|---|---|
-| FR-003 | Event 接口 | Type/Payload/Timestamp |
-| FR-004 | Topic 常量 | 所有事件类型 |
-| FR-005 | DTO 契约 | 结构体定义完整 |
+| Requirement | Description | Acceptance Criteria    |
+| ----------- | ----------- | ---------------------- |
+| FR-003      | Event 接口  | Type/Payload/Timestamp |
+| FR-004      | Topic 常量  | 所有事件类型           |
+| FR-005      | DTO 契约    | 结构体定义完整         |
 
 ## Test Plan
 
-| Test Case | Type | Description |
-|---|---|---|
-| — | Compile | 类型完整性编译验证 |
+| Test Case | Type    | Description        |
+| --------- | ------- | ------------------ |
+| —         | Compile | 类型完整性编译验证 |
 
 ## Implementation Notes
 
@@ -50,14 +50,14 @@ status: pending
 
 ## Implementation Plan
 
-| Step | Description | Deliverables | Verification |
-|---|---|---|---|
-| 1 | 定义 `Event` 接口 | `event.go` | `go build ./...` 通过 |
-| 2 | 定义 Topic 常量 | `topic.go` | `go build ./...` 通过 |
-| 3 | 定义 DTO 结构体 | `dto.go` | `go build ./...` 通过 |
+| Step | Description       | Deliverables | Verification          |
+| ---- | ----------------- | ------------ | --------------------- |
+| 1    | 定义 `Event` 接口 | `event.go`   | `go build ./...` 通过 |
+| 2    | 定义 Topic 常量   | `topic.go`   | `go build ./...` 通过 |
+| 3    | 定义 DTO 结构体   | `dto.go`     | `go build ./...` 通过 |
 
 ### Risk Assessment
 
-| Risk | Probability | Impact | Mitigation |
-|---|---|---|---|
-| Topic 遗漏 | Low | Low | 对照 SPEC §9 |
+| Risk       | Probability | Impact | Mitigation   |
+| ---------- | ----------- | ------ | ------------ |
+| Topic 遗漏 | Low         | Low    | 对照 SPEC §9 |

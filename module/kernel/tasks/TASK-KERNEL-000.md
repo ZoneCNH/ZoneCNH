@@ -40,11 +40,11 @@ status: pending
 
 ## Requirements Covered
 
-| Requirement | Description | Acceptance Criteria |
-|---|---|---|
-| §15.1 | go.mod stdlib-only | `go list -deps` 无非 stdlib 依赖 |
-| BR-009 | kernel 不 import 任何非 stdlib 包 | CI stdlib-only gate 通过 |
-| §14 | 目录结构 | 12 子包目录已创建 |
+| Requirement | Description                       | Acceptance Criteria              |
+| ----------- | --------------------------------- | -------------------------------- |
+| §15.1       | go.mod stdlib-only                | `go list -deps` 无非 stdlib 依赖 |
+| BR-009      | kernel 不 import 任何非 stdlib 包 | CI stdlib-only gate 通过         |
+| §14         | 目录结构                          | 12 子包目录已创建                |
 
 ## Non-scope
 
@@ -54,11 +54,11 @@ status: pending
 
 ## Test Plan
 
-| Test Case | Type | Description |
-|---|---|---|
-| — | CI Gate | `go build ./...` 编译通过 |
-| — | CI Gate | `go list -deps ./...` 无非 stdlib 依赖 |
-| — | CI Gate | `make check-stdlib` 通过 |
+| Test Case | Type    | Description                            |
+| --------- | ------- | -------------------------------------- |
+| —         | CI Gate | `go build ./...` 编译通过              |
+| —         | CI Gate | `go list -deps ./...` 无非 stdlib 依赖 |
+| —         | CI Gate | `make check-stdlib` 通过               |
 
 ## Implementation Notes
 

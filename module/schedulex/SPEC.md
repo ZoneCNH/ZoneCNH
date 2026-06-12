@@ -21,9 +21,9 @@
 
 ### 1.1 变更历史
 
-| 日期 | 版本 | 变更内容 | 作者 |
-|------|------|----------|------|
-| 2026-06-07 | v1.0.0 | 初始版本 | ZoneCNH |
+| 日期       | 版本   | 变更内容   | 作者    |
+| ---------- | ------ | ---------- | ------- |
+| 2026-06-07 | v1.0.0 | 初始版本   | ZoneCNH |
 
 ## 2. Summary
 
@@ -66,14 +66,14 @@
 
 ## 6. Consumers
 
-| 消费者 | 使用方式 |
-|--------|----------|
+| 消费者           | 使用方式                             |
+| ---------------- | ------------------------------------ |
 | `x.go`（组合根） | 创建 Scheduler，注册 job，调用 Start |
-| `market-data` | 定时拉取行情数据 |
-| `factor-engine` | 定时计算因子 |
-| `risk-engine` | 定时执行风控检查 |
-| `report-engine` | 定时生成报表 |
-| 业务域模块 | 通过 Scheduler.Schedule 注册定时任务 |
+| `market-data`    | 定时拉取行情数据                     |
+| `factor-engine`  | 定时计算因子                         |
+| `risk-engine`    | 定时执行风控检查                     |
+| `report-engine`  | 定时生成报表                         |
+| 业务域模块       | 通过 Scheduler.Schedule 注册定时任务 |
 
 ---
 
@@ -185,16 +185,16 @@ THEN 所有调度基于 FakeClock，不调用 time.Now（测试确定性）
 
 ## 8. Business Rules
 
-| 编号 | 规则 | 违反后果 |
-|------|------|----------|
+| 编号   | 规则                                                         | 违反后果                                       |
+| ------ | ------------------------------------------------------------ | ---------------------------------------------- |
 | BR-001 | Schedule 必须校验 trigger 合法性（cron 语法 / interval > 0） | 非法 trigger 被接受，运行时 panic 或行为不确定 |
-| BR-002 | 同一 JobID 重复注册返回 ErrDuplicateJob | 同名 job 被覆盖，旧任务丢失，调度混乱 |
-| BR-003 | Stop 必须等待正在执行的 job 完成或超时 | job 被强杀，数据不一致或资源泄漏 |
-| BR-004 | overlap 行为由 OverlapPolicy 决定，不内置隐式策略 | 行为不可预测，不同部署表现不一致 |
-| BR-005 | job panic 被 catch，不影响其他 job | panic 传播导致调度器崩溃，所有 job 停止 |
-| BR-006 | lock TTL > job 最大执行时间，防止锁提前释放导致重复执行 | 锁提前释放，多实例重复执行 |
-| BR-007 | DST 切换时触发时间必须正确（不能跳过或重复触发） | 触发时间偏移，任务提前/延迟/重复触发 |
-| BR-008 | job handler 必须接受 context.Context，支持取消传播 | 无法取消，goroutine 泄漏，停机超时 |
+| BR-002 | 同一 JobID 重复注册返回 ErrDuplicateJob                      | 同名 job 被覆盖，旧任务丢失，调度混乱          |
+| BR-003 | Stop 必须等待正在执行的 job 完成或超时                       | job 被强杀，数据不一致或资源泄漏               |
+| BR-004 | overlap 行为由 OverlapPolicy 决定，不内置隐式策略            | 行为不可预测，不同部署表现不一致               |
+| BR-005 | job panic 被 catch，不影响其他 job                           | panic 传播导致调度器崩溃，所有 job 停止        |
+| BR-006 | lock TTL > job 最大执行时间，防止锁提前释放导致重复执行      | 锁提前释放，多实例重复执行                     |
+| BR-007 | DST 切换时触发时间必须正确（不能跳过或重复触发）             | 触发时间偏移，任务提前/延迟/重复触发           |
+| BR-008 | job handler 必须接受 context.Context，支持取消传播           | 无法取消，goroutine 泄漏，停机超时             |
 
 ---
 
@@ -362,13 +362,13 @@ schedulex:
 
 ## 12. Error Handling
 
-| 错误 | 调用方处理 |
-|------|-----------|
-| `ErrDuplicateJob` | 检查 JobID 是否重复，使用不同 ID |
-| `ErrInvalidTrigger` | 检查 cron 语法或 interval 值 |
-| `ErrJobNotFound` | 检查 JobID 拼写，确认 job 已注册 |
+| 错误                 | 调用方处理                                |
+| -------------------- | ----------------------------------------- |
+| `ErrDuplicateJob`    | 检查 JobID 是否重复，使用不同 ID          |
+| `ErrInvalidTrigger`  | 检查 cron 语法或 interval 值              |
+| `ErrJobNotFound`     | 检查 JobID 拼写，确认 job 已注册          |
 | `ErrShutdownTimeout` | 增加 shutdown_timeout 或检查 job 是否阻塞 |
-| `ErrLockAcquire` | 检查锁后端连通性，等待下一个调度周期 |
+| `ErrLockAcquire`     | 检查锁后端连通性，等待下一个调度周期      |
 
 **错误消息格式：** `"schedulex: <operation>: <detail>"`
 **错误包装：** 使用 `%w` 保留底层错误链
@@ -377,18 +377,18 @@ schedulex:
 
 ## 13. Edge Cases
 
-| 场景 | 预期行为 |
-|------|----------|
-| cron 表达式语法错误 | 返回 ErrInvalidTrigger，不注册 job |
-| interval = 0 | 返回 ErrInvalidTrigger |
-| DST 切换（春/秋） | 触发时间正确，不跳过或重复 |
-| job panic | catch panic，记录日志，不影响其他 job |
-| 停机时 job 正在执行 | 等待完成或超时后 force cancel |
-| 分布式锁获取失败 | 跳过本次，等待下一个调度周期 |
-| lock TTL < job 执行时间 | 返回配置错误 |
-| 0 个 job 注册后 Start | 正常启动，等待 Stop |
-| 时区为 UTC+0 与本地时区差异 | 按配置时区计算触发时间 |
-| 并发 Schedule + Cancel | 需要加锁，保证并发安全 |
+| 场景                        | 预期行为                              |
+| --------------------------- | ------------------------------------- |
+| cron 表达式语法错误         | 返回 ErrInvalidTrigger，不注册 job    |
+| interval = 0                | 返回 ErrInvalidTrigger                |
+| DST 切换（春/秋）           | 触发时间正确，不跳过或重复            |
+| job panic                   | catch panic，记录日志，不影响其他 job |
+| 停机时 job 正在执行         | 等待完成或超时后 force cancel         |
+| 分布式锁获取失败            | 跳过本次，等待下一个调度周期          |
+| lock TTL < job 执行时间     | 返回配置错误                          |
+| 0 个 job 注册后 Start       | 正常启动，等待 Stop                   |
+| 时区为 UTC+0 与本地时区差异 | 按配置时区计算触发时间                |
+| 并发 Schedule + Cancel      | 需要加锁，保证并发安全                |
 
 ---
 
@@ -441,42 +441,42 @@ go 1.23
 
 ### 15.2 依赖方向
 
-| 可以依赖 | 禁止依赖 |
-|----------|----------|
-| kernel（L0 原语） | configx |
-| observex（interface-only） | testkitx（仅 test） |
-| resiliencx（可选，job wrapper） | 所有业务域实现 |
-| stdlib | |
+| 可以依赖                        | 禁止依赖            |
+| ------------------------------- | ------------------- |
+| kernel（L0 原语）               | configx             |
+| observex（interface-only）      | testkitx（仅 test） |
+| resiliencx（可选，job wrapper） | 所有业务域实现      |
+| stdlib                          |                     |
 
 
 ---
 
 ## 16. Acceptance Criteria Registry
 
-| 编号 | 描述 | 关联 FR | 验证方式 |
-|------|------|---------|----------|
-| AC-001 | Schedule 注册合法 job 返回 JobID | FR-001 | TC-001 |
-| AC-002 | cron 语法错误返回 ErrInvalidTrigger | FR-001 | Unit |
-| AC-003 | interval <= 0 返回 ErrInvalidTrigger | FR-001 | Unit |
-| AC-004 | 重复 JobID 返回 ErrDuplicateJob | FR-001 | TC-009 |
-| AC-005 | cron 触发时调用 JobHandler | FR-002 | TC-001 |
-| AC-006 | interval 触发时调用 JobHandler | FR-002 | Unit |
-| AC-007 | Delay 首次延迟后触发 | FR-002 | Unit |
-| AC-008 | Overlap Skip 跳过本次触发 | FR-003 | TC-002 |
-| AC-009 | Overlap Queue 排队等待 | FR-003 | Unit |
-| AC-010 | Overlap Replace 取消旧的执行新的 | FR-003 | Unit |
-| AC-011 | Misfire Skip 跳过本次 | FR-004 | Unit |
-| AC-012 | Misfire RunOnce 补执行一次 | FR-004 | TC-003 |
-| AC-013 | Misfire CatchUp 补执行所有 | FR-004 | Unit |
-| AC-014 | Cancel 已存在 job 返回 nil | FR-005 | TC-005 |
-| AC-015 | Cancel 不存在 job 返回 ErrJobNotFound | FR-005 | Unit |
-| AC-016 | Stop 等待正在执行的 job 完成或超时 | FR-006 | TC-006 |
-| AC-017 | Stop 超时返回 ErrShutdownTimeout | FR-006 | Unit |
-| AC-018 | EventSink 收到生命周期事件 | FR-007 | TC-007 |
-| AC-019 | 锁获取成功执行 job | FR-008 | Unit |
-| AC-020 | 锁获取失败跳过本次 | FR-008 | TC-004 |
-| AC-021 | lock TTL < job 最大执行时间返回配置错误 | FR-008 | Unit |
-| AC-022 | FakeClock 注入后调度基于 FakeClock | FR-009 | TC-008 |
+| 编号   | 描述                                    | 关联 FR   | 验证方式   |
+| ------ | --------------------------------------- | --------- | ---------- |
+| AC-001 | Schedule 注册合法 job 返回 JobID        | FR-001    | TC-001     |
+| AC-002 | cron 语法错误返回 ErrInvalidTrigger     | FR-001    | Unit       |
+| AC-003 | interval <= 0 返回 ErrInvalidTrigger    | FR-001    | Unit       |
+| AC-004 | 重复 JobID 返回 ErrDuplicateJob         | FR-001    | TC-009     |
+| AC-005 | cron 触发时调用 JobHandler              | FR-002    | TC-001     |
+| AC-006 | interval 触发时调用 JobHandler          | FR-002    | Unit       |
+| AC-007 | Delay 首次延迟后触发                    | FR-002    | Unit       |
+| AC-008 | Overlap Skip 跳过本次触发               | FR-003    | TC-002     |
+| AC-009 | Overlap Queue 排队等待                  | FR-003    | Unit       |
+| AC-010 | Overlap Replace 取消旧的执行新的        | FR-003    | Unit       |
+| AC-011 | Misfire Skip 跳过本次                   | FR-004    | Unit       |
+| AC-012 | Misfire RunOnce 补执行一次              | FR-004    | TC-003     |
+| AC-013 | Misfire CatchUp 补执行所有              | FR-004    | Unit       |
+| AC-014 | Cancel 已存在 job 返回 nil              | FR-005    | TC-005     |
+| AC-015 | Cancel 不存在 job 返回 ErrJobNotFound   | FR-005    | Unit       |
+| AC-016 | Stop 等待正在执行的 job 完成或超时      | FR-006    | TC-006     |
+| AC-017 | Stop 超时返回 ErrShutdownTimeout        | FR-006    | Unit       |
+| AC-018 | EventSink 收到生命周期事件              | FR-007    | TC-007     |
+| AC-019 | 锁获取成功执行 job                      | FR-008    | Unit       |
+| AC-020 | 锁获取失败跳过本次                      | FR-008    | TC-004     |
+| AC-021 | lock TTL < job 最大执行时间返回配置错误 | FR-008    | Unit       |
+| AC-022 | FakeClock 注入后调度基于 FakeClock      | FR-009    | TC-008     |
 
 ---
 
@@ -484,25 +484,25 @@ go 1.23
 
 ### 18.1 单元测试
 
-| 测试场景 | 验证点 |
-|----------|--------|
-| cron 触发 | `*/1 * * * *` → 每分钟触发 |
-| interval 触发 | `Interval: 1s` → 每秒触发 |
-| overlap skip | 上次未完成 → 跳过本次 |
-| overlap queue | 上次未完成 → 排队等待 |
-| overlap replace | 上次未完成 → 取消旧的，执行新的 |
-| misfire skip | 错过触发 → 跳过 |
-| misfire run_once | 错过触发 → 补执行一次 |
-| misfire catch_up | 错过触发 → 补执行所有 |
-| 并发限制 | 超过 max_concurrency → 等待 |
-| 停机等待 | `Stop` 等待正在执行的 job |
-| 停机超时 | job 超时 → force cancel |
-| job panic 隔离 | panic 被 catch → 不影响其他 job |
-| trigger 验证 | cron 语法错误 → `ErrInvalidTrigger` |
-| 重复注册 | 同一 JobID → `ErrDuplicateJob` |
-| DST 切换 | 夏令时切换时触发时间正确 |
-| 触发确定性 | 相同 FakeClock → 相同 next time |
-| event hook | 事件正确输出到 hook |
+| 测试场景         | 验证点                              |
+| ---------------- | ----------------------------------- |
+| cron 触发        | `*/1 * * * *` → 每分钟触发          |
+| interval 触发    | `Interval: 1s` → 每秒触发           |
+| overlap skip     | 上次未完成 → 跳过本次               |
+| overlap queue    | 上次未完成 → 排队等待               |
+| overlap replace  | 上次未完成 → 取消旧的，执行新的     |
+| misfire skip     | 错过触发 → 跳过                     |
+| misfire run_once | 错过触发 → 补执行一次               |
+| misfire catch_up | 错过触发 → 补执行所有               |
+| 并发限制         | 超过 max_concurrency → 等待         |
+| 停机等待         | `Stop` 等待正在执行的 job           |
+| 停机超时         | job 超时 → force cancel             |
+| job panic 隔离   | panic 被 catch → 不影响其他 job     |
+| trigger 验证     | cron 语法错误 → `ErrInvalidTrigger` |
+| 重复注册         | 同一 JobID → `ErrDuplicateJob`      |
+| DST 切换         | 夏令时切换时触发时间正确            |
+| 触发确定性       | 相同 FakeClock → 相同 next time     |
+| event hook       | 事件正确输出到 hook                 |
 
 ### 17.2 Given/When/Then 用例
 
@@ -553,59 +553,59 @@ Then 返回 ErrDuplicateJob
 
 ### 17.3 Benchmark
 
-| 场景 | 目标 |
-|------|------|
+| 场景             | 目标   |
+| ---------------- | ------ |
 | 1000 个 job 内存 | < 10MB |
-| job 触发延迟 | < 10ms |
+| job 触发延迟     | < 10ms |
 
 ### 17.4 集成测试
 
-| 场景 | 验证点 |
-|------|--------|
-| 分布式锁 | 锁获取失败 → skip |
-| job 触发延迟 | < 10ms |
+| 场景                   | 验证点                                           |
+| ---------------------- | ------------------------------------------------ |
+| 分布式锁               | 锁获取失败 → skip                                |
+| job 触发延迟           | < 10ms                                           |
 | schedulex + resiliencx | job 失败 → retry → breaker open → 后续 fail-fast |
 
 ---
 
 ## 18. Performance Budget
 
-| 操作 | 目标 | 测量方式 |
-|------|------|----------|
-| job 触发延迟 | < 10ms（单节点） | integration test |
-| 1000 个 job 的内存占用 | < 10MB | profiling |
-| 常驻内存 | < 5MB | profiling |
+| 操作                   | 目标             | 测量方式         |
+| ---------------------- | ---------------- | ---------------- |
+| job 触发延迟           | < 10ms（单节点） | integration test |
+| 1000 个 job 的内存占用 | < 10MB           | profiling        |
+| 常驻内存               | < 5MB            | profiling        |
 
 ---
 
 ## 19. Observability
 
-| 类型 | 名称 | 说明 |
-|------|------|------|
-| metric | `schedulex.job.triggered` | counter，job 触发次数，label: job_id |
-| metric | `schedulex.job.duration` | histogram，job 执行耗时，label: job_id |
-| metric | `schedulex.job.errors` | counter，job 执行失败次数，label: job_id, error_type |
-| metric | `schedulex.job.misfired` | counter，misfire 次数，label: job_id, policy |
-| metric | `schedulex.job.running` | gauge，当前正在执行的 job 数 |
-| metric | `schedulex.queue.size` | gauge，等待执行的 job 数 |
-| log | `schedulex.job.scheduled` | info，job 被注册，含 job_id + cron/interval + next_run |
-| log | `schedulex.job.started` | info，job 开始执行 |
-| log | `schedulex.job.completed` | info，job 执行完成，含 duration |
-| log | `schedulex.job.failed` | error，job 执行失败，含 error + job_id |
-| log | `schedulex.job.misfired` | warn，job 发生 misfire，含 policy applied |
-| log | `schedulex.job.skipped` | info，job 因 overlap 被跳过 |
-| log | `schedulex.lock.acquired` | debug，分布式锁获取成功 |
-| log | `schedulex.lock.released` | debug，分布式锁释放 |
-| span | `schedulex.job` | job 执行 span，attribute: job_id, trigger_type |
+| 类型   | 名称                      | 说明                                                   |
+| ------ | ------------------------- | ------------------------------------------------------ |
+| metric | `schedulex.job.triggered` | counter，job 触发次数，label: job_id                   |
+| metric | `schedulex.job.duration`  | histogram，job 执行耗时，label: job_id                 |
+| metric | `schedulex.job.errors`    | counter，job 执行失败次数，label: job_id, error_type   |
+| metric | `schedulex.job.misfired`  | counter，misfire 次数，label: job_id, policy           |
+| metric | `schedulex.job.running`   | gauge，当前正在执行的 job 数                           |
+| metric | `schedulex.queue.size`    | gauge，等待执行的 job 数                               |
+| log    | `schedulex.job.scheduled` | info，job 被注册，含 job_id + cron/interval + next_run |
+| log    | `schedulex.job.started`   | info，job 开始执行                                     |
+| log    | `schedulex.job.completed` | info，job 执行完成，含 duration                        |
+| log    | `schedulex.job.failed`    | error，job 执行失败，含 error + job_id                 |
+| log    | `schedulex.job.misfired`  | warn，job 发生 misfire，含 policy applied              |
+| log    | `schedulex.job.skipped`   | info，job 因 overlap 被跳过                            |
+| log    | `schedulex.lock.acquired` | debug，分布式锁获取成功                                |
+| log    | `schedulex.lock.released` | debug，分布式锁释放                                    |
+| span   | `schedulex.job`           | job 执行 span，attribute: job_id, trigger_type         |
 
 ---
 
 ## 20. Security
 
-| 要求 | 实现方式 |
-|------|----------|
+| 要求                  | 实现方式                                                |
+| --------------------- | ------------------------------------------------------- |
 | distributed lock 安全 | lock TTL > job 最大执行时间，防止锁提前释放导致重复执行 |
-| job 回调隔离 | job panic 不传播到调度器，不泄露内部堆栈到业务层 |
+| job 回调隔离          | job panic 不传播到调度器，不泄露内部堆栈到业务层        |
 
 ---
 
@@ -613,38 +613,38 @@ Then 返回 ErrDuplicateJob
 
 ### 21.1 通用 Gate
 
-| Gate | 命令 | 阻塞条件 |
-|------|------|----------|
-| 编译 | `go build ./...` | 编译失败 |
-| 测试 | `go test ./... -race -count=1` | 任何测试失败或 data race |
-| 覆盖率 | `mkdir -p .coverage && go test ./... -coverprofile=.coverage/cover.out && go tool cover -func=.coverage/cover.out` | 总覆盖率 < 80% |
-| vet | `go vet ./...` | 任何 vet 错误 |
-| lint | `golangci-lint run` | 任何 lint 错误 |
-| 依赖检查 | `go mod tidy && git diff --exit-code go.mod go.sum` | go.mod 不整洁 |
-| Secret 扫描 | `gitleaks detect --no-git` | 泄露 secret |
-| Benchmark | `go test -bench=. -benchmem -count=3 ./...` | 结果附在 PR comment |
+| Gate        | 命令                                                                                                               | 阻塞条件                 |
+| ----------- | ------------------------------------------------------------------------------------------------------------------ | ------------------------ |
+| 编译        | `go build ./...`                                                                                                   | 编译失败                 |
+| 测试        | `go test ./... -race -count=1`                                                                                     | 任何测试失败或 data race |
+| 覆盖率      | `mkdir -p .coverage && go test ./... -coverprofile=.coverage/cover.out && go tool cover -func=.coverage/cover.out` | 总覆盖率 < 80%           |
+| vet         | `go vet ./...`                                                                                                     | 任何 vet 错误            |
+| lint        | `golangci-lint run`                                                                                                | 任何 lint 错误           |
+| 依赖检查    | `go mod tidy && git diff --exit-code go.mod go.sum`                                                                | go.mod 不整洁            |
+| Secret 扫描 | `gitleaks detect --no-git`                                                                                         | 泄露 secret              |
+| Benchmark   | `go test -bench=. -benchmem -count=3 ./...`                                                                        | 结果附在 PR comment      |
 
 ### 21.2 schedulex 专属 Gate
 
-| Gate | 命令 | 阻塞条件 |
-|------|------|----------|
-| DST/timezone golden | `go test -run TestDST ./...` | 时区切换行为不正确 |
-| misfire contract | `go test -run TestMisfireContract ./...` | misfire 策略行为不符合规范 |
-| overlap contract | `go test -run TestOverlapContract ./...` | overlap 策略行为不符合规范 |
-| shutdown leak | `go test -run TestShutdownLeak ./...` | 停机后有 goroutine 泄漏 |
-| shutdown race | `go test -race -run TestShutdownRace ./...` | 停机过程有 data race |
+| Gate                | 命令                                        | 阻塞条件                   |
+| ------------------- | ------------------------------------------- | -------------------------- |
+| DST/timezone golden | `go test -run TestDST ./...`                | 时区切换行为不正确         |
+| misfire contract    | `go test -run TestMisfireContract ./...`    | misfire 策略行为不符合规范 |
+| overlap contract    | `go test -run TestOverlapContract ./...`    | overlap 策略行为不符合规范 |
+| shutdown leak       | `go test -run TestShutdownLeak ./...`       | 停机后有 goroutine 泄漏    |
+| shutdown race       | `go test -race -run TestShutdownRace ./...` | 停机过程有 data race       |
 
 ---
 
 ## 22. Upgrade Compatibility
 
-| 变更类型 | 版本升级 |
-|----------|----------|
-| Scheduler / Job interface 变更 | **major** |
-| OverlapPolicy / MisfirePolicy 变更 | **major** |
-| 新增可选配置字段 | patch / minor |
-| 新增必填配置字段 | **minor**（带默认值） |
-| 修复 bug | **patch** |
+| 变更类型                           | 版本升级              |
+| ---------------------------------- | --------------------- |
+| Scheduler / Job interface 变更     | **major**             |
+| OverlapPolicy / MisfirePolicy 变更 | **major**             |
+| 新增可选配置字段                   | patch / minor         |
+| 新增必填配置字段                   | **minor**（带默认值） |
+| 修复 bug                           | **patch**             |
 
 ---
 

@@ -39,11 +39,11 @@ status: pending
 
 ## 拆分方案（符合 ≤ 5 文件约束）
 
-| Sub-task | 文件数 | 覆盖子包 |
-|----------|:------:|----------|
-| TASK-KERNEL-015a | 4 | lifecycx / errx / healthx / obsx |
-| TASK-KERNEL-015b | 4 | retryx / shutdownx / syncx / timex |
-| TASK-KERNEL-015c | 4 | validx / versionx / contextx / contracttest |
+| Sub-task         | 文件数   | 覆盖子包                                    |
+| ---------------- | :------: | ------------------------------------------- |
+| TASK-KERNEL-015a | 4        | lifecycx / errx / healthx / obsx            |
+| TASK-KERNEL-015b | 4        | retryx / shutdownx / syncx / timex          |
+| TASK-KERNEL-015c | 4        | validx / versionx / contextx / contracttest |
 
 ## Non-scope
 

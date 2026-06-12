@@ -23,16 +23,16 @@
 - Related: [CONSTITUTION.md](../../CONSTITUTION.md), [ARCHITECTURE.md](../../ARCHITECTURE.md), {依赖模块}
 ```text
 
-| 字段 | 说明 |
-|------|------|
-| `Status` | 规格生命周期状态：Draft / Review / Approved / Implemented / Changed / Deprecated |
-| `Spec-Version` | 规格文档版本号（与代码 Version 解耦） |
-| `Last-Updated` | 规格最后修改日期 |
-| `Owner` | 规格负责人 |
-| `Layer` | 架构层级（基座 / 数据域 / 分析域 / 决策域 / 执行域） |
-| `Version` | 模块代码版本号 |
-| `Repository` | 模块仓库链接 |
-| `Related` | 相关文档链接 |
+| 字段           | 说明                                                                             |
+| -------------- | -------------------------------------------------------------------------------- |
+| `Status`       | 规格生命周期状态：Draft / Review / Approved / Implemented / Changed / Deprecated |
+| `Spec-Version` | 规格文档版本号（与代码 Version 解耦）                                            |
+| `Last-Updated` | 规格最后修改日期                                                                 |
+| `Owner`        | 规格负责人                                                                       |
+| `Layer`        | 架构层级（基座 / 数据域 / 分析域 / 决策域 / 执行域）                             |
+| `Version`      | 模块代码版本号                                                                   |
+| `Repository`   | 模块仓库链接                                                                     |
+| `Related`      | 相关文档链接                                                                     |
 
 ---
 
@@ -555,11 +555,11 @@ type {InterfaceName} interface {
 
 ## 相关文档
 
-| 文档 | 用途 |
-|------|------|
-| [`docs/governance/LIFECYCLE.md`](./LIFECYCLE.md) | 规格生命周期状态机 |
-| [`docs/governance/TASK-TEMPLATE.md`](./TASK-TEMPLATE.md) | Task Spec 模板 |
-| [`docs/governance/AGENT-SPEC-TEMPLATE.md`](./AGENT-SPEC-TEMPLATE.md) | Agent Spec 模板 |
-| [`docs/governance/TRACEABILITY.md`](./TRACEABILITY.md) | 追溯矩阵 |
-| [`docs/governance/anti-requirements.md`](./anti-requirements.md) | 反需求 |
-| [`.github/ci/spec-lint.sh`](../../.github/ci/spec-lint.sh) | 结构校验脚本 |
+| 文档                                                                 | 用途               |
+| -------------------------------------------------------------------- | ------------------ |
+| [`docs/governance/LIFECYCLE.md`](./LIFECYCLE.md)                     | 规格生命周期状态机 |
+| [`docs/governance/TASK-TEMPLATE.md`](./TASK-TEMPLATE.md)             | Task Spec 模板     |
+| [`docs/governance/AGENT-SPEC-TEMPLATE.md`](./AGENT-SPEC-TEMPLATE.md) | Agent Spec 模板    |
+| [`docs/governance/TRACEABILITY.md`](./TRACEABILITY.md)               | 追溯矩阵           |
+| [`docs/governance/anti-requirements.md`](./anti-requirements.md)     | 反需求             |
+| [`.github/ci/spec-lint.sh`](../../.github/ci/spec-lint.sh)           | 结构校验脚本       |

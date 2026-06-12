@@ -1,13 +1,13 @@
 # clickhousex 发布版本 1.0 Goal 定位与实现标准
 
-| 字段 | 内容 |
-| --- | --- |
-| 模块名 | `clickhousex` |
-| 发布版本 | 1.0.0 |
-| 所属层级 | 存储扩展层 / ClickHouse OLAP 分析存储 |
-| 稳定级别 | Public API Stable；SPI Stable；Internal 可演进 |
-| 文档状态 | 1.0 发布基线文档 |
-| 发布日期基准 | 2026-06-09 |
+| 字段         | 内容                                           |
+| ------------ | ---------------------------------------------- |
+| 模块名       | `clickhousex`                                  |
+| 发布版本     | 1.0.0                                          |
+| 所属层级     | 存储扩展层 / ClickHouse OLAP 分析存储          |
+| 稳定级别     | Public API Stable；SPI Stable；Internal 可演进 |
+| 文档状态     | 1.0 发布基线文档                               |
+| 发布日期基准 | 2026-06-09                                     |
 
 ## 术语约定
 
@@ -57,23 +57,23 @@
 
 ## 3. 核心场景
 
-| 场景 | 说明 | 1.0 期望结果 |
-| --- | --- | --- |
-| 日志导入 | 批量写入应用日志或事件 | 按批次写入并记录吞吐和失败 |
-| 报表查询 | 按天统计用户行为 | 时间范围和聚合查询可控 |
-| TopN 分析 | 查询访问量最高接口 | 提供 TopN 查询辅助和扫描限制 |
-| 物化视图 | 高频报表需要预聚合 | 建模规范指导分区、排序键和视图设计 |
+| 场景      | 说明                   | 1.0 期望结果                       |
+| --------- | ---------------------- | ---------------------------------- |
+| 日志导入  | 批量写入应用日志或事件 | 按批次写入并记录吞吐和失败         |
+| 报表查询  | 按天统计用户行为       | 时间范围和聚合查询可控             |
+| TopN 分析 | 查询访问量最高接口     | 提供 TopN 查询辅助和扫描限制       |
+| 物化视图  | 高频报表需要预聚合     | 建模规范指导分区、排序键和视图设计 |
 
 ## 4. 能力范围
 
-| 能力域 | 1.0 必须具备的能力 | 验收方式 |
-| --- | --- | --- |
-| 批量写入 | buffer、batch、flush、异步写入、失败处理 | 写入集成测试通过 |
-| 查询执行 | 参数绑定、sqlId、超时、结果映射、行数限制 | 查询测试通过 |
-| 建模规范 | 分区键、排序键、物化视图、TTL | 建模检查测试通过 |
-| 聚合辅助 | 时间窗口、group by、TopN、percentile | 查询模板测试通过 |
-| 冷热策略 | TTL、分区清理、归档接口 | 策略测试通过 |
-| 观测 | 慢查询、扫描行数、写入吞吐、错误 | 观测测试通过 |
+| 能力域   | 1.0 必须具备的能力                        | 验收方式         |
+| -------- | ----------------------------------------- | ---------------- |
+| 批量写入 | buffer、batch、flush、异步写入、失败处理  | 写入集成测试通过 |
+| 查询执行 | 参数绑定、sqlId、超时、结果映射、行数限制 | 查询测试通过     |
+| 建模规范 | 分区键、排序键、物化视图、TTL             | 建模检查测试通过 |
+| 聚合辅助 | 时间窗口、group by、TopN、percentile      | 查询模板测试通过 |
+| 冷热策略 | TTL、分区清理、归档接口                   | 策略测试通过     |
+| 观测     | 慢查询、扫描行数、写入吞吐、错误          | 观测测试通过     |
 
 ## 5. 职责边界
 
@@ -93,24 +93,24 @@
 
 ## 6. 依赖关系与分层约束
 
-| 依赖类型 | 约束 |
-| --- | --- |
-| 上游依赖 | 依赖 kernel、configx、observex、resiliencx。 |
+| 依赖类型 | 约束                                                       |
+| -------- | ---------------------------------------------------------- |
+| 上游依赖 | 依赖 kernel、configx、observex、resiliencx。               |
 | 下游依赖 | 日志分析、指标分析、报表、行为分析服务可使用 clickhousex。 |
-| 分层约束 | clickhousex 不依赖业务报表模型；只提供通用 OLAP 能力。 |
-| 契约依赖 | MUST 向 contracts 登记 Public API 契约和错误码契约。 |
+| 分层约束 | clickhousex 不依赖业务报表模型；只提供通用 OLAP 能力。     |
+| 契约依赖 | MUST 向 contracts 登记 Public API 契约和错误码契约。       |
 
 ## 7. 对外契约
 
 ### 7.1 公开能力面
 
-| 契约 | 定位 | 1.0 稳定承诺 |
-| --- | --- | --- |
-| ClickHouseWriter | 批量写入入口 | writeBatch/flush 语义稳定 |
-| ClickHouseQuery | 查询入口 | query/queryPage/stream 语义稳定 |
-| OlapQueryOptions | 查询约束 | timeout/maxRows/sqlId 语义稳定 |
-| TableModelSpec | 表建模声明 | 分区/排序/TTL 字段稳定 |
-| ClickHouseSerializer SPI | 写入编码扩展点 | 编码语义稳定 |
+| 契约                     | 定位           | 1.0 稳定承诺                    |
+| ------------------------ | -------------- | ------------------------------- |
+| ClickHouseWriter         | 批量写入入口   | writeBatch/flush 语义稳定       |
+| ClickHouseQuery          | 查询入口       | query/queryPage/stream 语义稳定 |
+| OlapQueryOptions         | 查询约束       | timeout/maxRows/sqlId 语义稳定  |
+| TableModelSpec           | 表建模声明     | 分区/排序/TTL 字段稳定          |
+| ClickHouseSerializer SPI | 写入编码扩展点 | 编码语义稳定                    |
 
 ### 7.2 1.0 逻辑接口基线
 
@@ -144,16 +144,16 @@ ClickHouseSerializer SPI
 
 ## 8. 配置契约
 
-| 配置项 | 含义 | 默认值 / 要求 | 稳定性 |
-| --- | --- | --- | --- |
-| foundationx.clickhouse.enabled | 是否启用 clickhousex | false，由业务显式启用 | Stable |
-| foundationx.clickhouse.url | 连接地址 | 必须配置 | Stable |
-| foundationx.clickhouse.database | 数据库名 | 必须配置 | Stable |
-| foundationx.clickhouse.batch.size | 批量写入大小 | 5000 | Stable |
-| foundationx.clickhouse.flush.interval | flush 间隔 | 1s | Stable |
-| foundationx.clickhouse.query.timeout | 查询超时 | 10s | Stable |
-| foundationx.clickhouse.query.max-rows | 最大返回行数 | 10000 | Stable |
-| foundationx.clickhouse.slow-query-threshold | 慢查询阈值 | 1s | Stable |
+| 配置项                                      | 含义                 | 默认值 / 要求         | 稳定性 |
+| ------------------------------------------- | -------------------- | --------------------- | ------ |
+| foundationx.clickhouse.enabled              | 是否启用 clickhousex | false，由业务显式启用 | Stable |
+| foundationx.clickhouse.url                  | 连接地址             | 必须配置              | Stable |
+| foundationx.clickhouse.database             | 数据库名             | 必须配置              | Stable |
+| foundationx.clickhouse.batch.size           | 批量写入大小         | 5000                  | Stable |
+| foundationx.clickhouse.flush.interval       | flush 间隔           | 1s                    | Stable |
+| foundationx.clickhouse.query.timeout        | 查询超时             | 10s                   | Stable |
+| foundationx.clickhouse.query.max-rows       | 最大返回行数         | 10000                 | Stable |
+| foundationx.clickhouse.slow-query-threshold | 慢查询阈值           | 1s                    | Stable |
 
 ## 9. 可观测契约
 
@@ -167,15 +167,15 @@ ClickHouseSerializer SPI
 
 ### 9.2 指标
 
-| 指标名 | 类型 | 标签 | 说明 |
-| --- | --- | --- | --- |
-| foundationx_clickhouse_write_rows_total | Counter | table,status | 写入行数 |
-| foundationx_clickhouse_write_batches_total | Counter | table,status | 写入批次数 |
-| foundationx_clickhouse_write_duration_ms | Timer | table,status | 写入耗时 |
-| foundationx_clickhouse_query_total | Counter | sqlId,status | 查询次数 |
-| foundationx_clickhouse_query_duration_ms | Timer | sqlId,status | 查询耗时 |
-| foundationx_clickhouse_query_rows_read | Counter | sqlId | 扫描行数 |
-| foundationx_clickhouse_errors_total | Counter | operation,errorCode | 错误数 |
+| 指标名                                     | 类型    | 标签                | 说明       |
+| ------------------------------------------ | ------- | ------------------- | ---------- |
+| foundationx_clickhouse_write_rows_total    | Counter | table,status        | 写入行数   |
+| foundationx_clickhouse_write_batches_total | Counter | table,status        | 写入批次数 |
+| foundationx_clickhouse_write_duration_ms   | Timer   | table,status        | 写入耗时   |
+| foundationx_clickhouse_query_total         | Counter | sqlId,status        | 查询次数   |
+| foundationx_clickhouse_query_duration_ms   | Timer   | sqlId,status        | 查询耗时   |
+| foundationx_clickhouse_query_rows_read     | Counter | sqlId               | 扫描行数   |
+| foundationx_clickhouse_errors_total        | Counter | operation,errorCode | 错误数     |
 
 ### 9.3 Trace / 诊断事件
 
@@ -187,13 +187,13 @@ ClickHouseSerializer SPI
 
 ## 10. 错误模型与失败策略
 
-| 错误类别 | 典型原因 | 1.0 处理策略 |
-| --- | --- | --- |
-| CLICKHOUSE_CONNECTION_FAILED | 连接失败、认证失败 | 启动/健康检查失败或按策略处理 |
-| CLICKHOUSE_WRITE_FAILED | 批量写入失败 | 返回批次失败并支持重试 |
-| CLICKHOUSE_QUERY_TIMEOUT | 查询超时 | 取消查询并返回超时错误 |
-| CLICKHOUSE_QUERY_TOO_LARGE | 无时间范围或扫描过大 | 拒绝执行或要求显式 override |
-| CLICKHOUSE_SCHEMA_MISMATCH | 写入字段与表结构不匹配 | 拒绝写入并输出表模型错误 |
+| 错误类别                     | 典型原因               | 1.0 处理策略                  |
+| ---------------------------- | ---------------------- | ----------------------------- |
+| CLICKHOUSE_CONNECTION_FAILED | 连接失败、认证失败     | 启动/健康检查失败或按策略处理 |
+| CLICKHOUSE_WRITE_FAILED      | 批量写入失败           | 返回批次失败并支持重试        |
+| CLICKHOUSE_QUERY_TIMEOUT     | 查询超时               | 取消查询并返回超时错误        |
+| CLICKHOUSE_QUERY_TOO_LARGE   | 无时间范围或扫描过大   | 拒绝执行或要求显式 override   |
+| CLICKHOUSE_SCHEMA_MISMATCH   | 写入字段与表结构不匹配 | 拒绝写入并输出表模型错误      |
 
 ## 11. 安全、稳定性与兼容性要求
 
@@ -208,13 +208,13 @@ ClickHouseSerializer SPI
 
 ## 12. 测试证据要求
 
-| 测试类型 | 必须覆盖内容 | 发布门禁 |
-| --- | --- | --- |
-| 单元测试 | 查询 options、建模 spec、错误映射、批量切分 | MUST 通过 |
-| 集成测试 | 真实 ClickHouse 写入、查询、聚合 | MUST 通过 |
-| 性能基准 | 批量写入吞吐和查询超时回归 | MUST 建立基线 |
-| 故障测试 | 连接失败、写入失败、查询过大、超时 | MUST 通过 |
-| 观测测试 | 慢查询日志、扫描行数、写入指标 | MUST 通过 |
+| 测试类型 | 必须覆盖内容                                | 发布门禁      |
+| -------- | ------------------------------------------- | ------------- |
+| 单元测试 | 查询 options、建模 spec、错误映射、批量切分 | MUST 通过     |
+| 集成测试 | 真实 ClickHouse 写入、查询、聚合            | MUST 通过     |
+| 性能基准 | 批量写入吞吐和查询超时回归                  | MUST 建立基线 |
+| 故障测试 | 连接失败、写入失败、查询过大、超时          | MUST 通过     |
+| 观测测试 | 慢查询日志、扫描行数、写入指标              | MUST 通过     |
 
 ## 13. 1.0 发布验收清单
 

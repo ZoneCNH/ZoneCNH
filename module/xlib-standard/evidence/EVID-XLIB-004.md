@@ -19,10 +19,10 @@ commands_run:
 
 ## 验收结果
 
-| AC | 描述 | 结果 |
-|----|------|------|
+| AC       | 描述              | 结果    |
+| -------- | ----------------- | ------- |
 | AC-004-1 | release.go 可编译 | PENDING |
-| AC-004-2 | compat.go 可编译 | PENDING |
+| AC-004-2 | compat.go 可编译  | PENDING |
 
 ## 说明
 

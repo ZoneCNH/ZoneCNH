@@ -21,12 +21,12 @@
 
 ### 1.1 变更历史
 
-| 日期 | 版本 | 变更内容 | 作者 |
-|------|------|----------|------|
-| 2026-06-12 | v2.0.1 | 深度分析修复：§20 CI Gate 覆盖 80%→100%（对齐 CONSTITUTION §16 L0 层）；§16.4 TC-003 顺序修正；删除冗余 TASK-001-PROMPT.md；补全 PROMPT-KERNEL-000 | ZoneCNH |
-| 2026-06-12 | v2.0.0 | 全部重写：基于实际代码，从集中式 App/Module/Deps 框架改为 12 子包轻量工具集 | ZoneCNH |
+| 日期       | 版本   | 变更内容                                                                                                                                                                                                                                                                      | 作者    |
+| ---------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
+| 2026-06-12 | v2.0.1 | 深度分析修复：§20 CI Gate 覆盖 80%→100%（对齐 CONSTITUTION §16 L0 层）；§16.4 TC-003 顺序修正；删除冗余 TASK-001-PROMPT.md；补全 PROMPT-KERNEL-000                                                                                                                            | ZoneCNH |
+| 2026-06-12 | v2.0.0 | 全部重写：基于实际代码，从集中式 App/Module/Deps 框架改为 12 子包轻量工具集                                                                                                                                                                                                   | ZoneCNH |
 | 2026-06-08 | v1.1.0 | 对抗性审查修复：重写 §9.1 Deps 为 kernel 内接口；修正 §18 metric 命名；§22 覆盖率提至 90%；补充 FR-001/FR-002/FR-003 WHEN/THEN；BR-004~BR-009 补充违反处理；§16 补充 AC/TC 追溯链；§13 扩充至 18 条；§19 增加安全要求；§23 分类整理；FR-005 返回 GraphView；Health() 增加 ctx | ZoneCNH |
-| 2026-06-07 | v1.0.0 | 初始版本 | ZoneCNH |
+| 2026-06-07 | v1.0.0 | 初始版本                                                                                                                                                                                                                                                                      | ZoneCNH |
 
 ## 2. Summary
 
@@ -73,13 +73,13 @@ Foundation 各模块需要统一的生命周期管理、错误分类、健康检
 
 ## 6. Consumers
 
-| 消费者 | 使用方式 |
-|--------|----------|
-| L1 运行时模块（configx, observex, resiliencx 等） | 按需 import 单个子包，如 `errx`、`obsx`、`retryx` |
-| 业务域模块 | 按需 import `validx`、`contextx`、`syncx` 等 |
-| 组合根（x.go） | 使用 `lifecycx.Manager` 编排组件生命周期，使用 `shutdownx.Manager` 管理停机 |
-| 运维/监控 | 通过 `healthx.HealthChecker` 查询健康状态 |
-| 测试代码 | 使用 `timex.FakeClock`、`contracttest` 等测试工具 |
+| 消费者                                            | 使用方式                                                                    |
+| ------------------------------------------------- | --------------------------------------------------------------------------- |
+| L1 运行时模块（configx, observex, resiliencx 等） | 按需 import 单个子包，如 `errx`、`obsx`、`retryx`                           |
+| 业务域模块                                        | 按需 import `validx`、`contextx`、`syncx` 等                                |
+| 组合根（x.go）                                    | 使用 `lifecycx.Manager` 编排组件生命周期，使用 `shutdownx.Manager` 管理停机 |
+| 运维/监控                                         | 通过 `healthx.HealthChecker` 查询健康状态                                   |
+| 测试代码                                          | 使用 `timex.FakeClock`、`contracttest` 等测试工具                           |
 
 ---
 
@@ -366,20 +366,20 @@ THEN 测试通过
 
 ## 8. Business Rules
 
-| 编号 | 规则 | 违反时 |
-|------|------|--------|
-| BR-001 | lifecycx: 启动顺序为注册顺序，停止顺序为启动逆序 | 代码逻辑保证，违反即为 bug |
-| BR-002 | lifecycx: 启动失败必须回滚已启动的 Component | 未回滚导致资源泄漏 |
-| BR-003 | lifecycx: 未 started 时 Stop 必须幂等返回 nil | 非幂等导致调用方需额外状态判断 |
-| BR-004 | errx: Error 必须实现 error、Unwrap 接口 | 否则 errors.Is/As 不可用 |
-| BR-005 | errx: IsKind/ShouldRetry 必须支持 errors.Join 多错误链 | 否则组合错误丢失分类能力 |
-| BR-006 | obsx: 所有接口必须有 Noop 零值实现 | 否则消费者被迫依赖具体 SDK |
-| BR-007 | healthx: Metadata nil 时必须序列化为 {} 而非 null | 否则 JSON 契约不一致 |
-| BR-008 | shutdownx: Hook 按 LIFO 顺序执行（后注册先执行） | 否则资源释放顺序错误 |
-| BR-009 | kernel 不 import 任何非 stdlib 包 | CI stdlib-only gate 阻断（healthx→timex、errx→stdlib 等 kernel 内部交叉引用除外） |
-| BR-010 | contextx: Key 必须通过 NewKey 创建，零值 Key 使用 panic | 防止因忘记初始化导致的键冲突 |
-| BR-011 | syncx: SemaphoreLimiter double-release 静默忽略 | 设计选择，简化调用方清理路径 |
-| BR-012 | timex: FakeClock 零值接收者安全（返回零时间） | 防止测试中的 nil panic |
+| 编号   | 规则                                                    | 违反时                                                                            |
+| ------ | ------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| BR-001 | lifecycx: 启动顺序为注册顺序，停止顺序为启动逆序        | 代码逻辑保证，违反即为 bug                                                        |
+| BR-002 | lifecycx: 启动失败必须回滚已启动的 Component            | 未回滚导致资源泄漏                                                                |
+| BR-003 | lifecycx: 未 started 时 Stop 必须幂等返回 nil           | 非幂等导致调用方需额外状态判断                                                    |
+| BR-004 | errx: Error 必须实现 error、Unwrap 接口                 | 否则 errors.Is/As 不可用                                                          |
+| BR-005 | errx: IsKind/ShouldRetry 必须支持 errors.Join 多错误链  | 否则组合错误丢失分类能力                                                          |
+| BR-006 | obsx: 所有接口必须有 Noop 零值实现                      | 否则消费者被迫依赖具体 SDK                                                        |
+| BR-007 | healthx: Metadata nil 时必须序列化为 {} 而非 null       | 否则 JSON 契约不一致                                                              |
+| BR-008 | shutdownx: Hook 按 LIFO 顺序执行（后注册先执行）        | 否则资源释放顺序错误                                                              |
+| BR-009 | kernel 不 import 任何非 stdlib 包                       | CI stdlib-only gate 阻断（healthx→timex、errx→stdlib 等 kernel 内部交叉引用除外） |
+| BR-010 | contextx: Key 必须通过 NewKey 创建，零值 Key 使用 panic | 防止因忘记初始化导致的键冲突                                                      |
+| BR-011 | syncx: SemaphoreLimiter double-release 静默忽略         | 设计选择，简化调用方清理路径                                                      |
+| BR-012 | timex: FakeClock 零值接收者安全（返回零时间）           | 防止测试中的 nil panic                                                            |
 
 ---
 
@@ -748,31 +748,31 @@ type Compatibility struct {
 
 kernel 本身不需要配置。各子包通过构造函数参数或 Option 模式接收配置：
 
-| 子包 | 配置方式 |
-|------|----------|
-| lifecycx | `NewManager(components...)` 构造函数参数 |
-| retryx | `RetryPolicy{MaxAttempts, BaseDelay, MaxDelay}` 结构体字段 |
-| shutdownx | `NewManager(hooks...)` 构造函数参数 |
-| syncx | `NewSemaphoreLimiter(n)` 构造函数参数 |
-| versionx | `NewBuildInfo(...)` 构造函数参数 |
+| 子包      | 配置方式                                                   |
+| --------- | ---------------------------------------------------------- |
+| lifecycx  | `NewManager(components...)` 构造函数参数                   |
+| retryx    | `RetryPolicy{MaxAttempts, BaseDelay, MaxDelay}` 结构体字段 |
+| shutdownx | `NewManager(hooks...)` 构造函数参数                        |
+| syncx     | `NewSemaphoreLimiter(n)` 构造函数参数                      |
+| versionx  | `NewBuildInfo(...)` 构造函数参数                           |
 
 ---
 
 ## 12. Error Handling
 
-| 错误来源 | 调用方处理 |
-|----------|-----------|
-| lifecycx: Start 失败 | 检查 `errors.Join` 返回的组合错误，已启动组件已自动回滚 |
-| lifecycx: Stop 失败 | 检查 `errors.Join` 返回的组合错误，后续组件已继续停止 |
-| errx: NewError/WrapError | 返回构造的 *Error，调用方使用 IsKind/AsError 分类处理 |
-| errx: IsKind | 遍历错误链，返回 bool，用于路由决策 |
-| retryx: ShouldRetry | 遍历错误链检查 Retryable 标记，用于重试循环条件 |
-| retryx: Validate 失败 | 返回 ErrorKindValidation 错误，配置阶段发现 |
-| validx: Precondition 失败 | 返回 ErrorKindValidation + SeverityWarning，调用方检查返回值 |
-| validx: Invariant 失败 | 返回 ErrorKindInternal + SeverityError，调用方检查返回值 |
-| syncx: Acquire 超时 | 返回 ctx.Err()，调用方处理 context 取消 |
-| syncx: WorkerGroup 首个错误 | 触发 cancel，Wait() 收集所有错误 |
-| shutdownx: Shutdown 失败 | 返回 `errors.Join` 聚合错误，含 hook 名称 |
+| 错误来源                    | 调用方处理                                                   |
+| --------------------------- | ------------------------------------------------------------ |
+| lifecycx: Start 失败        | 检查 `errors.Join` 返回的组合错误，已启动组件已自动回滚      |
+| lifecycx: Stop 失败         | 检查 `errors.Join` 返回的组合错误，后续组件已继续停止        |
+| errx: NewError/WrapError    | 返回构造的 *Error，调用方使用 IsKind/AsError 分类处理        |
+| errx: IsKind                | 遍历错误链，返回 bool，用于路由决策                          |
+| retryx: ShouldRetry         | 遍历错误链检查 Retryable 标记，用于重试循环条件              |
+| retryx: Validate 失败       | 返回 ErrorKindValidation 错误，配置阶段发现                  |
+| validx: Precondition 失败   | 返回 ErrorKindValidation + SeverityWarning，调用方检查返回值 |
+| validx: Invariant 失败      | 返回 ErrorKindInternal + SeverityError，调用方检查返回值     |
+| syncx: Acquire 超时         | 返回 ctx.Err()，调用方处理 context 取消                      |
+| syncx: WorkerGroup 首个错误 | 触发 cancel，Wait() 收集所有错误                             |
+| shutdownx: Shutdown 失败    | 返回 `errors.Join` 聚合错误，含 hook 名称                    |
 
 **错误消息格式：** `"<kind>: <op>: <message>"` 或 `"<kind>/<code>: <op>: <message>"`
 **错误包装：** errx.Error 实现 Unwrap 接口，支持 `errors.Is`/`errors.As` 和 `errors.Join` 多错误链
@@ -781,40 +781,40 @@ kernel 本身不需要配置。各子包通过构造函数参数或 Option 模�
 
 ## 13. Edge Cases
 
-| 场景 | 预期行为 |
-|------|----------|
-| lifecycx: Manager 无 Component | Start 立即返回 nil，Stop 返回 nil |
-| lifecycx: 单 Component 无依赖 | 正常启动和停止 |
-| lifecycx: 启动失败回滚中 Stop 也失败 | errors.Join 聚合所有错误（原错误 + 回滚错误） |
-| lifecycx: Stop 在 Start 之前调用 | 返回 nil（幂等） |
-| errx: nil *Error 调用 Error() | 返回 "" |
-| errx: nil *Error 调用 WithRetryable/WithCode/WithSeverity | 返回 nil |
-| errx: IsKind/ShouldRetry 参数为 nil | 返回 false |
-| errx: errors.Join 多个 errx.Error | walkErrors 遍历所有分支 |
-| healthx: Aggregate 无 statuses | 返回 name="", status="healthy", message="ok" |
-| healthx: Metadata nil 时 MarshalJSON | 序列化为 {} |
-| healthx: AggregateWithClock clock 为 nil | 回退到 RealClock |
-| obsx: NoopLogger/NoopMetrics/NoopTracer | 所有方法静默成功 |
-| obsx: SecretString 空值 | String() 返回 "" |
-| retryx: Delay attempt <= 0 | 返回 0 |
-| retryx: Delay BaseDelay <= 0 | 返回 0 |
-| retryx: Delay 溢出保护 | 在达到 maxDuration 一半时停止加倍，设 maxDuration |
-| retryx: DelayWithJitter fraction < -1 或 > 1 | 钳位到 [-1, 1] |
-| retryx: DelayWithJitter 结果 < 0 | 返回 0 |
-| shutdownx: Shutdown 时无 Hook | 返回 nil |
-| shutdownx: 并发 Register + Shutdown | Manager 加锁保护，Register 在 Shutdown 快照后追加的 hook 不执行 |
-| syncx: SemaphoreLimiter n<=0 | 默认容量为 1 |
-| syncx: SemaphoreLimiter double-release | 静默忽略 |
-| syncx: WorkerGroup closed 后 TryGo | 返回 false |
-| syncx: WorkerGroup 无错误 | Wait() 返回 nil |
-| timex: nil *FakeClock 调用 Now() | 返回 time.Time{}（零值安全） |
-| timex: nil *FakeClock 调用 Advance() | 静默忽略 |
-| versionx: Compatibility.Major 为空 | CompatibleWith 仅校验 Module |
-| versionx: NewKey 同名同类型两次调用 | 获得不同 Key（sentinel 指针唯一） |
-| contextx: 零值 Key 调用 contextKey() | panic |
-| contextx: Value 类型不匹配 | 返回 (zero, false) |
-| contextx: DeadlineRemaining 已过期 | 返回 (0, true) |
-| validx: RequireNonEmpty 空值 | 返回 Precondition 错误 |
+| 场景                                                      | 预期行为                                                        |
+| --------------------------------------------------------- | --------------------------------------------------------------- |
+| lifecycx: Manager 无 Component                            | Start 立即返回 nil，Stop 返回 nil                               |
+| lifecycx: 单 Component 无依赖                             | 正常启动和停止                                                  |
+| lifecycx: 启动失败回滚中 Stop 也失败                      | errors.Join 聚合所有错误（原错误 + 回滚错误）                   |
+| lifecycx: Stop 在 Start 之前调用                          | 返回 nil（幂等）                                                |
+| errx: nil *Error 调用 Error()                             | 返回 ""                                                         |
+| errx: nil *Error 调用 WithRetryable/WithCode/WithSeverity | 返回 nil                                                        |
+| errx: IsKind/ShouldRetry 参数为 nil                       | 返回 false                                                      |
+| errx: errors.Join 多个 errx.Error                         | walkErrors 遍历所有分支                                         |
+| healthx: Aggregate 无 statuses                            | 返回 name="", status="healthy", message="ok"                    |
+| healthx: Metadata nil 时 MarshalJSON                      | 序列化为 {}                                                     |
+| healthx: AggregateWithClock clock 为 nil                  | 回退到 RealClock                                                |
+| obsx: NoopLogger/NoopMetrics/NoopTracer                   | 所有方法静默成功                                                |
+| obsx: SecretString 空值                                   | String() 返回 ""                                                |
+| retryx: Delay attempt <= 0                                | 返回 0                                                          |
+| retryx: Delay BaseDelay <= 0                              | 返回 0                                                          |
+| retryx: Delay 溢出保护                                    | 在达到 maxDuration 一半时停止加倍，设 maxDuration               |
+| retryx: DelayWithJitter fraction < -1 或 > 1              | 钳位到 [-1, 1]                                                  |
+| retryx: DelayWithJitter 结果 < 0                          | 返回 0                                                          |
+| shutdownx: Shutdown 时无 Hook                             | 返回 nil                                                        |
+| shutdownx: 并发 Register + Shutdown                       | Manager 加锁保护，Register 在 Shutdown 快照后追加的 hook 不执行 |
+| syncx: SemaphoreLimiter n<=0                              | 默认容量为 1                                                    |
+| syncx: SemaphoreLimiter double-release                    | 静默忽略                                                        |
+| syncx: WorkerGroup closed 后 TryGo                        | 返回 false                                                      |
+| syncx: WorkerGroup 无错误                                 | Wait() 返回 nil                                                 |
+| timex: nil *FakeClock 调用 Now()                          | 返回 time.Time{}（零值安全）                                    |
+| timex: nil *FakeClock 调用 Advance()                      | 静默忽略                                                        |
+| versionx: Compatibility.Major 为空                        | CompatibleWith 仅校验 Module                                    |
+| versionx: NewKey 同名同类型两次调用                       | 获得不同 Key（sentinel 指针唯一）                               |
+| contextx: 零值 Key 调用 contextKey()                      | panic                                                           |
+| contextx: Value 类型不匹配                                | 返回 (zero, false)                                              |
+| contextx: DeadlineRemaining 已过期                        | 返回 (0, true)                                                  |
+| validx: RequireNonEmpty 空值                              | 返回 Precondition 错误                                          |
 
 ---
 
@@ -953,12 +953,12 @@ go 1.23
 
 ### 15.2 依赖方向
 
-| 可以依赖 | 禁止依赖 |
-|----------|----------|
-| stdlib only | 所有 Foundation L1 模块（configx, observex, resiliencx, schedulex, testkitx 等） |
-| kernel 内部子包间交叉引用（如 healthx→timex, retryx→errx, validx→errx, contextx→timex, contracttest→errx+healthx） | 所有业务域实现 |
-| | 所有 L2.5 领域共享层 |
-| | 所有存储/中间件扩展 |
+| 可以依赖                                                                                                           | 禁止依赖                                                                         |
+| ------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------- |
+| stdlib only                                                                                                        | 所有 Foundation L1 模块（configx, observex, resiliencx, schedulex, testkitx 等） |
+| kernel 内部子包间交叉引用（如 healthx→timex, retryx→errx, validx→errx, contextx→timex, contracttest→errx+healthx） | 所有业务域实现                                                                   |
+|                                                                                                                    | 所有 L2.5 领域共享层                                                             |
+|                                                                                                                    | 所有存储/中间件扩展                                                              |
 
 ### 15.3 内部依赖图
 
@@ -994,67 +994,67 @@ import (
 
 ### 16.1 单元测试覆盖
 
-| 子包 | 测试文件 | 覆盖重点 |
-|------|----------|----------|
-| lifecycx | lifecycx_test.go | Start 顺序、Stop 逆序、失败回滚、幂等性 |
-| errx | errx_test.go | Error 构造、Unwrap、IsKind 遍历、AsError、链式 With* |
-| healthx | healthx_test.go | Status 判断、Aggregate 聚合、Metadata 不可变性 |
-| obsx | obsx_test.go | Noop 实现、SecretString 脱敏、JSON 序列化 |
-| retryx | retryx_test.go | Delay 指数退避、Jitter 范围、Validate 校验 |
-| shutdownx | shutdownx_test.go | LIFO 顺序、并发安全、NotifyContext |
-| syncx | syncx_test.go | Acquire/Release、WorkerGroup 错误收集 |
-| timex | timex_test.go | FakeClock Advance、FixedClock 不可变 |
-| validx | validx_test.go | Precondition/Invariant 返回值、RequireNonEmpty |
-| versionx | versionx_test.go | CompatibleWith 匹配逻辑 |
-| contextx | contextx_test.go | Key 唯一性、类型安全 Value、deadline 查询 |
-| contracttest | contracttest_test.go | JSON 字段断言、ErrorKind 断言 |
-| internal/testutil | testutil_test.go | RequireEqual 泛型断言 |
+| 子包              | 测试文件             | 覆盖重点                                             |
+| ----------------- | -------------------- | ---------------------------------------------------- |
+| lifecycx          | lifecycx_test.go     | Start 顺序、Stop 逆序、失败回滚、幂等性              |
+| errx              | errx_test.go         | Error 构造、Unwrap、IsKind 遍历、AsError、链式 With* |
+| healthx           | healthx_test.go      | Status 判断、Aggregate 聚合、Metadata 不可变性       |
+| obsx              | obsx_test.go         | Noop 实现、SecretString 脱敏、JSON 序列化            |
+| retryx            | retryx_test.go       | Delay 指数退避、Jitter 范围、Validate 校验           |
+| shutdownx         | shutdownx_test.go    | LIFO 顺序、并发安全、NotifyContext                   |
+| syncx             | syncx_test.go        | Acquire/Release、WorkerGroup 错误收集                |
+| timex             | timex_test.go        | FakeClock Advance、FixedClock 不可变                 |
+| validx            | validx_test.go       | Precondition/Invariant 返回值、RequireNonEmpty       |
+| versionx          | versionx_test.go     | CompatibleWith 匹配逻辑                              |
+| contextx          | contextx_test.go     | Key 唯一性、类型安全 Value、deadline 查询            |
+| contracttest      | contracttest_test.go | JSON 字段断言、ErrorKind 断言                        |
+| internal/testutil | testutil_test.go     | RequireEqual 泛型断言                                |
 
 ### 16.2 验收标准（AC）
 
-| AC 编号 | 对应 FR | 验收条件 |
-|---------|---------|----------|
-| AC-001 | FR-001 | lifecycx Manager.Start 按序启动，失败回滚，Manager.Stop 幂等 |
-| AC-002 | FR-001 | lifecycx 启动失败时 errors.Join 包含所有已启动 Component 的 Stop 错误 |
-| AC-003 | FR-002 | errx NewError/WrapError 字段完整，Error() 格式正确 |
-| AC-004 | FR-002 | errx Unwrap/IsKind/AsError 全链路正确，errors.Join 多错误链通过 IsKind |
-| AC-005 | FR-003 | healthx HealthStatus 构造、IsHealthy、Aggregate 逻辑正确 |
-| AC-006 | FR-004 | obsx NoopLogger/NoopMetrics/NoopTracer/NoopSpan 所有方法静默成功不 panic |
-| AC-007 | FR-004 | obsx SecretString 所有公开方法返回 "***"，仅 Reveal() 可访问原始值 |
-| AC-008 | FR-005 | retryx Delay 指数退避 + Jitter + 溢出保护 |
-| AC-009 | FR-006 | shutdownx Manager.Shutdown Hook LIFO 顺序，并发安全 |
-| AC-010 | FR-006 | shutdownx NotifyContext 正确捕获 OS signal 并传播 cancel |
-| AC-011 | FR-007 | timex FakeClock Advance 后 Now 返回正确时间，RealClock 使用 time.Now |
-| AC-012 | FR-008 | validx Precondition/Invariant/RequireNonEmpty 返回正确的 *Error（kind/op/message） |
-| AC-013 | FR-009 | versionx Compatibility.CompatibleWith 模块/版本匹配正确 |
-| AC-014 | FR-010 | contextx Key 唯一性，类型安全存取，零值 Key panic |
-| AC-015 | FR-011 | syncx SemaphoreLimiter Acquire/Release 并发安全 |
-| AC-016 | FR-011 | syncx WorkerGroup 错误收集 + context 取消传播 |
-| AC-017 | FR-012 | contracttest 断言函数在匹配/不匹配时行为正确 |
-| AC-018 | BR-009 | stdlib-only gate：`go list -deps` 无非 stdlib 依赖 |
+| AC 编号   | 对应 FR   | 验收条件                                                                           |
+| --------- | --------- | ---------------------------------------------------------------------------------- |
+| AC-001    | FR-001    | lifecycx Manager.Start 按序启动，失败回滚，Manager.Stop 幂等                       |
+| AC-002    | FR-001    | lifecycx 启动失败时 errors.Join 包含所有已启动 Component 的 Stop 错误              |
+| AC-003    | FR-002    | errx NewError/WrapError 字段完整，Error() 格式正确                                 |
+| AC-004    | FR-002    | errx Unwrap/IsKind/AsError 全链路正确，errors.Join 多错误链通过 IsKind             |
+| AC-005    | FR-003    | healthx HealthStatus 构造、IsHealthy、Aggregate 逻辑正确                           |
+| AC-006    | FR-004    | obsx NoopLogger/NoopMetrics/NoopTracer/NoopSpan 所有方法静默成功不 panic           |
+| AC-007    | FR-004    | obsx SecretString 所有公开方法返回 "***"，仅 Reveal() 可访问原始值                 |
+| AC-008    | FR-005    | retryx Delay 指数退避 + Jitter + 溢出保护                                          |
+| AC-009    | FR-006    | shutdownx Manager.Shutdown Hook LIFO 顺序，并发安全                                |
+| AC-010    | FR-006    | shutdownx NotifyContext 正确捕获 OS signal 并传播 cancel                           |
+| AC-011    | FR-007    | timex FakeClock Advance 后 Now 返回正确时间，RealClock 使用 time.Now               |
+| AC-012    | FR-008    | validx Precondition/Invariant/RequireNonEmpty 返回正确的 *Error（kind/op/message） |
+| AC-013    | FR-009    | versionx Compatibility.CompatibleWith 模块/版本匹配正确                            |
+| AC-014    | FR-010    | contextx Key 唯一性，类型安全存取，零值 Key panic                                  |
+| AC-015    | FR-011    | syncx SemaphoreLimiter Acquire/Release 并发安全                                    |
+| AC-016    | FR-011    | syncx WorkerGroup 错误收集 + context 取消传播                                      |
+| AC-017    | FR-012    | contracttest 断言函数在匹配/不匹配时行为正确                                       |
+| AC-018    | BR-009    | stdlib-only gate：`go list -deps` 无非 stdlib 依赖                                 |
 
 ### 16.3 Given/When/Then 用例
 
-| TC | Type | Scenario | Expected |
-|-----|------|----------|----------|
-| TC-001 | Unit | lifecycx 正常启动停止 | A.Start → B.Start → B.Stop → A.Stop |
-| TC-002 | Unit | lifecycx 启动失败回滚 | B.Start 失败 → A.Stop 回滚 → errors.Join |
-| TC-003 | Unit | lifecycx 未启动时 Stop | 返回 nil |
-| TC-004 | Unit | errx 错误链遍历 | IsKind(KindTimeout) 穿透 wrap 链返回 true |
-| TC-005 | Unit | errx errors.Join 多链 | IsKind 匹配 Join 中任一条错误链 |
-| TC-006 | Unit | retryx 指数退避 | Delay(3) ≈ 400ms（BaseDelay×2³⁻¹） |
-| TC-007 | Unit | healthx Aggregate | 多 HealthStatus Aggregate 后 Status 正确 |
-| TC-008 | Unit | shutdownx LIFO 顺序 | 最后注册的 Hook 先执行 |
-| TC-009 | Unit | obsx SecretString 脱敏 | String()/JSON() 返回 "***" |
-| TC-010 | Unit | contextx Key 唯一性 | 不同 Key[T] 的 contextKey 不冲突 |
-| TC-011 | Unit | validx 前置条件 | Precondition 失败返回 *Error（kind=validation） |
-| TC-012 | CI | stdlib-only gate | go list -deps 无 kernel 外依赖 |
-| TC-013 | Unit | syncx SemaphoreLimiter | Acquire 获取许可，Release 释放 |
-| TC-014 | Unit | syncx WorkerGroup | 任一 worker 出错 → 收集错误 + cancel 传播 |
-| TC-015 | Unit | timex FakeClock | Advance(d) 后 Now() 前进 d |
-| TC-016 | Unit | shutdownx NotifyContext | SIGTERM → cancel 传播 |
-| TC-017 | Unit | versionx Compatibility | CompatibleWith 模块/版本匹配正确 |
-| TC-018 | Unit | contracttest | 断言匹配通过，不匹配时 Fatalf |
+| TC     | Type   | Scenario                | Expected                                        |
+| ------ | ------ | ----------------------- | ----------------------------------------------- |
+| TC-001 | Unit   | lifecycx 正常启动停止   | A.Start → B.Start → B.Stop → A.Stop             |
+| TC-002 | Unit   | lifecycx 启动失败回滚   | B.Start 失败 → A.Stop 回滚 → errors.Join        |
+| TC-003 | Unit   | lifecycx 未启动时 Stop  | 返回 nil                                        |
+| TC-004 | Unit   | errx 错误链遍历         | IsKind(KindTimeout) 穿透 wrap 链返回 true       |
+| TC-005 | Unit   | errx errors.Join 多链   | IsKind 匹配 Join 中任一条错误链                 |
+| TC-006 | Unit   | retryx 指数退避         | Delay(3) ≈ 400ms（BaseDelay×2³⁻¹）              |
+| TC-007 | Unit   | healthx Aggregate       | 多 HealthStatus Aggregate 后 Status 正确        |
+| TC-008 | Unit   | shutdownx LIFO 顺序     | 最后注册的 Hook 先执行                          |
+| TC-009 | Unit   | obsx SecretString 脱敏  | String()/JSON() 返回 "***"                      |
+| TC-010 | Unit   | contextx Key 唯一性     | 不同 Key[T] 的 contextKey 不冲突                |
+| TC-011 | Unit   | validx 前置条件         | Precondition 失败返回 *Error（kind=validation） |
+| TC-012 | CI     | stdlib-only gate        | go list -deps 无 kernel 外依赖                  |
+| TC-013 | Unit   | syncx SemaphoreLimiter  | Acquire 获取许可，Release 释放                  |
+| TC-014 | Unit   | syncx WorkerGroup       | 任一 worker 出错 → 收集错误 + cancel 传播       |
+| TC-015 | Unit   | timex FakeClock         | Advance(d) 后 Now() 前进 d                      |
+| TC-016 | Unit   | shutdownx NotifyContext | SIGTERM → cancel 传播                           |
+| TC-017 | Unit   | versionx Compatibility  | CompatibleWith 模块/版本匹配正确                |
+| TC-018 | Unit   | contracttest            | 断言匹配通过，不匹配时 Fatalf                   |
 
 ### 16.4 详细 Given/When/Then（全 18 用例）
 
@@ -1169,13 +1169,13 @@ When 调用 AssertErrorKind(t, err, ErrorKindConnection)
 Then 测试失败（Fatalf）
 ## 17. Performance Budget
 
-| 操作 | 目标 | 测量方式 |
-|------|------|----------|
-| errx.NewError 构造 | < 100ns | benchmark test |
-| errx.IsKind 5 层链遍历 | < 1μs | benchmark test |
-| healthx.Aggregate 10 元素 | < 10μs | benchmark test |
-| retryx.Delay 计算 | < 100ns | benchmark test |
-| 常驻内存（全子包导入） | < 5MB | profiling |
+| 操作                      | 目标    | 测量方式       |
+| ------------------------- | ------- | -------------- |
+| errx.NewError 构造        | < 100ns | benchmark test |
+| errx.IsKind 5 层链遍历    | < 1μs   | benchmark test |
+| healthx.Aggregate 10 元素 | < 10μs  | benchmark test |
+| retryx.Delay 计算         | < 100ns | benchmark test |
+| 常驻内存（全子包导入）    | < 5MB   | profiling      |
 
 ---
 
@@ -1183,25 +1183,25 @@ Then 测试失败（Fatalf）
 
 kernel 本身通过 `obsx` 子包定义可观测接口，不触发具体观测行为。上层模块使用 `obsx` 接口消费日志/指标/追踪能力，kernel 子包在关键路径可接受 `obsx.Logger` 等接口用于内部日志。
 
-| 类型 | 说明 |
-|------|------|
-| obsx.Logger | 日志接口（Debug/Info/Warn/Error），含 context 和 Field 键值对 |
-| obsx.Metrics | 指标接口（Count/Observe），含 context 和 Field 标签 |
-| obsx.Tracer | 追踪接口（Start 返回 context + Span） |
-| obsx.Span | 跨度接口（End/RecordError/SetFields） |
-| obsx.Sanitizer | 脱敏接口，实现 Sanitize() 返回安全表示 |
-| obsx.SecretString | 敏感字符串，所有公开方法返回 `"***"`，仅 Reveal() 可访问 |
+| 类型              | 说明                                                          |
+| ----------------- | ------------------------------------------------------------- |
+| obsx.Logger       | 日志接口（Debug/Info/Warn/Error），含 context 和 Field 键值对 |
+| obsx.Metrics      | 指标接口（Count/Observe），含 context 和 Field 标签           |
+| obsx.Tracer       | 追踪接口（Start 返回 context + Span）                         |
+| obsx.Span         | 跨度接口（End/RecordError/SetFields）                         |
+| obsx.Sanitizer    | 脱敏接口，实现 Sanitize() 返回安全表示                        |
+| obsx.SecretString | 敏感字符串，所有公开方法返回 `"***"`，仅 Reveal() 可访问      |
 
 ---
 
 ## 19. Security
 
-| 要求 | 实现方式 |
-|------|----------|
+| 要求                 | 实现方式                                                            |
+| -------------------- | ------------------------------------------------------------------- |
 | 敏感数据不泄露到日志 | `obsx.SecretString` 自动脱敏，String()/GoString()/JSON 均返回 "***" |
-| 错误消息不含原始凭证 | `errx.Error` 只含 kind/op/message，不泄露原始配置 |
-| 无硬编码密钥 | 全仓搜索通过，所有 SecretString 由调用方通过 `NewSecretString` 构造 |
-| Sanitizer 接口约束 | 实现者必须保证 `Sanitize()` 不泄露原始值 |
+| 错误消息不含原始凭证 | `errx.Error` 只含 kind/op/message，不泄露原始配置                   |
+| 无硬编码密钥         | 全仓搜索通过，所有 SecretString 由调用方通过 `NewSecretString` 构造 |
+| Sanitizer 接口约束   | 实现者必须保证 `Sanitize()` 不泄露原始值                            |
 
 ---
 
@@ -1209,36 +1209,36 @@ kernel 本身通过 `obsx` 子包定义可观测接口，不触发具体观测�
 
 ### 20.1 通用 Gate
 
-| Gate | 命令 | 阻塞条件 |
-|------|------|----------|
-| 编译 | `go build ./...` | 编译失败 |
-| 测试 | `go test ./... -race -count=1` | 任何测试失败或 data race |
-| 覆盖率 | `go test ./... -coverprofile=coverage.out && go tool cover -func=coverage.out` | 总覆盖率 < 100% |
-| vet | `go vet ./...` | 任何 vet 错误 |
-| lint | `golangci-lint run` | 任何 lint 错误 |
-| 依赖检查 | `go mod tidy && git diff --exit-code go.mod go.sum` | go.mod 不整洁 |
-| Secret 扫描 | `gitleaks detect --no-git` | 泄露 secret |
-| Benchmark | `go test -bench=. -benchmem -count=3 ./...` | 结果附在 PR comment |
+| Gate        | 命令                                                                           | 阻塞条件                 |
+| ----------- | ------------------------------------------------------------------------------ | ------------------------ |
+| 编译        | `go build ./...`                                                               | 编译失败                 |
+| 测试        | `go test ./... -race -count=1`                                                 | 任何测试失败或 data race |
+| 覆盖率      | `go test ./... -coverprofile=coverage.out && go tool cover -func=coverage.out` | 总覆盖率 < 100%          |
+| vet         | `go vet ./...`                                                                 | 任何 vet 错误            |
+| lint        | `golangci-lint run`                                                            | 任何 lint 错误           |
+| 依赖检查    | `go mod tidy && git diff --exit-code go.mod go.sum`                            | go.mod 不整洁            |
+| Secret 扫描 | `gitleaks detect --no-git`                                                     | 泄露 secret              |
+| Benchmark   | `go test -bench=. -benchmem -count=3 ./...`                                    | 结果附在 PR comment      |
 
 ### 20.2 kernel 专属 Gate
 
-| Gate | 命令 | 阻塞条件 |
-|------|------|----------|
-| stdlib-only | `go list -deps ./... \| grep -v "^std" \| grep -v "^github.com/ZoneCNH/kernel$"` | 任何非 stdlib 依赖 |
-| public-api-snapshot | contracts 中的 API 快照对比 | 公共 API 签名变更未更新快照 |
-| golden-behavior | contracts/golden_behavior_test.go | 契约行为发生变化 |
+| Gate                | 命令                              | 阻塞条件                    |                                        |                    |
+| ------------------- | --------------------------------- | --------------------------- |                                        |                    |
+| stdlib-only         | `go list -deps ./... \            | grep -v "^std" \            | grep -v "^github.com/ZoneCNH/kernel$"` | 任何非 stdlib 依赖 |
+| public-api-snapshot | contracts 中的 API 快照对比       | 公共 API 签名变更未更新快照 |                                        |                    |
+| golden-behavior     | contracts/golden_behavior_test.go | 契约行为发生变化            |                                        |                    |
 
 ---
 
 ## 21. Upgrade Compatibility
 
-| 变更类型 | 版本升级 |
-|----------|----------|
-| 任何子包公开接口删除/签名变更 | **major** |
-| 新增子包公开类型/函数 | patch / minor |
-| ErrorKind 新增值 | minor |
-| 修复 bug | **patch** |
-| 内部实现重构（公开接口不变） | patch |
+| 变更类型                      | 版本升级      |
+| ----------------------------- | ------------- |
+| 任何子包公开接口删除/签名变更 | **major**     |
+| 新增子包公开类型/函数         | patch / minor |
+| ErrorKind 新增值              | minor         |
+| 修复 bug                      | **patch**     |
+| 内部实现重构（公开接口不变）  | patch         |
 
 ---
 

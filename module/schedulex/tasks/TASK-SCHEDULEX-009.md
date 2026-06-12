@@ -38,17 +38,17 @@ status: pending
 
 ## Requirements Covered
 
-| Requirement | Description | Acceptance Criteria |
-|---|---|---|
-| FR-001~009 | 集成测试 | 全流程端到端测试通过 |
-| §17 | Performance Budget | Schedule 注册 < 1μs，内存 < 10MB |
+| Requirement | Description        | Acceptance Criteria              |
+| ----------- | ------------------ | -------------------------------- |
+| FR-001~009  | 集成测试           | 全流程端到端测试通过             |
+| §17         | Performance Budget | Schedule 注册 < 1μs，内存 < 10MB |
 
 ## Test Plan
 
-| Test Case | Type | Description |
-|---|---|---|
-| — | Integration | 完整调度流程 |
-| — | Benchmark | Schedule 注册开销 |
+| Test Case | Type        | Description       |
+| --------- | ----------- | ----------------- |
+| —         | Integration | 完整调度流程      |
+| —         | Benchmark   | Schedule 注册开销 |
 
 ## Implementation Notes
 
@@ -57,14 +57,14 @@ status: pending
 
 ## Implementation Plan
 
-| Step | Description | Deliverables | Verification |
-|---|---|---|---|
-| 1 | 实现集成测试：全流程 | `integration_test.go` | 全部通过 |
-| 2 | 实现 Benchmark | `benchmark_test.go` | < 1μs |
-| 3 | `-race` 全量测试 | — | 无 data race |
+| Step | Description          | Deliverables          | Verification |
+| ---- | -------------------- | --------------------- | ------------ |
+| 1    | 实现集成测试：全流程 | `integration_test.go` | 全部通过     |
+| 2    | 实现 Benchmark       | `benchmark_test.go`   | < 1μs        |
+| 3    | `-race` 全量测试     | —                     | 无 data race |
 
 ### Risk Assessment
 
-| Risk | Probability | Impact | Mitigation |
-|---|---|---|---|
-| 时间相关测试不稳定 | Medium | Low | MockClock 消除时间依赖 |
+| Risk               | Probability | Impact | Mitigation             |
+| ------------------ | ----------- | ------ | ---------------------- |
+| 时间相关测试不稳定 | Medium      | Low    | MockClock 消除时间依赖 |

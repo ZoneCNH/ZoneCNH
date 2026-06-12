@@ -26,10 +26,10 @@ depends_on:
 
 ## 关联需求
 
-| 类型 | 编号 | 出处 | 说明 |
-|------|------|------|------|
-| FR | FR-010 | SPEC.md §7 | GoroutineLeakCheck：goroutine 泄漏检测 |
-| TC | TC-010 | SPEC.md §16.4 | 测试后无新增 goroutine → pass；有泄漏 → fail + 堆栈 |
+| 类型   | 编号   | 出处          | 说明                                                |
+| ------ | ------ | ------------- | --------------------------------------------------- |
+| FR     | FR-010 | SPEC.md §7    | GoroutineLeakCheck：goroutine 泄漏检测              |
+| TC     | TC-010 | SPEC.md §16.4 | 测试后无新增 goroutine → pass；有泄漏 → fail + 堆栈 |
 
 ## 接口契约
 
@@ -74,27 +74,27 @@ THEN 测试通过
 
 ### 2. `leakcheck_test.go`
 
-| 测试用例 | 说明 |
-|----------|------|
-| `TestGoroutineLeakCheck_NoLeak` | 无泄漏 → 通过 |
-| `TestGoroutineLeakCheck_WithLeak` | 有泄漏 → fail + 堆栈 |
-| `TestGoroutineLeakCheck_Threshold` | 阈值内差异 → 通过 |
-| `TestGoroutineLeakCheck_Subtest` | 子测试中正确检测 |
+| 测试用例                           | 说明                 |
+| ---------------------------------- | -------------------- |
+| `TestGoroutineLeakCheck_NoLeak`    | 无泄漏 → 通过        |
+| `TestGoroutineLeakCheck_WithLeak`  | 有泄漏 → fail + 堆栈 |
+| `TestGoroutineLeakCheck_Threshold` | 阈值内差异 → 通过    |
+| `TestGoroutineLeakCheck_Subtest`   | 子测试中正确检测     |
 
 ## 验收标准
 
-| AC | 关联 | 验证命令 | 预期结果 |
-|----|------|----------|----------|
-| AC-GL-01 | FR-010 | `go test -run TestGoroutineLeakCheck -v -race ./...` | 全部通过 |
+| AC       | 关联   | 验证命令                                                | 预期结果             |
+| -------- | ------ | ------------------------------------------------------- | -------------------- |
+| AC-GL-01 | FR-010 | `go test -run TestGoroutineLeakCheck -v -race ./...`    | 全部通过             |
 | AC-GL-02 | FR-010 | `go test -run TestGoroutineLeakCheck_WithLeak -v ./...` | 检测到泄漏，输出堆栈 |
 
 ## 验证命令
 
-| 命令 | 判定标准 |
-|------|----------|
-| `go build ./...` | 编译通过 |
-| `go test -race -count=1 ./...` | 全部通过 |
-| `go vet ./...` | 无警告 |
+| 命令                           | 判定标准   |
+| ------------------------------ | ---------- |
+| `go build ./...`               | 编译通过   |
+| `go test -race -count=1 ./...` | 全部通过   |
+| `go vet ./...`                 | 无警告     |
 
 ## 禁止事项
 

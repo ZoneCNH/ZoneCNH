@@ -22,10 +22,10 @@ blocks: [TASK-TESTKITX-010]
 
 ## 2. 覆盖需求
 
-| 需求 | 描述 | AC |
-|------|------|-----|
-| FR-010 | GoroutineLeakCheck goroutine 泄漏检测 | AC-010: 无泄漏 → pass；有泄漏 → fail + 堆栈 |
-| SPEC §13 | Edge Case: 测试后无新增 goroutine | 通过 |
+| 需求     | 描述                                  | AC                                          |
+| -------- | ------------------------------------- | ------------------------------------------- |
+| FR-010   | GoroutineLeakCheck goroutine 泄漏检测 | AC-010: 无泄漏 → pass；有泄漏 → fail + 堆栈 |
+| SPEC §13 | Edge Case: 测试后无新增 goroutine     | 通过                                        |
 
 ---
 
@@ -89,11 +89,11 @@ func GoroutineLeakCheck(t testing.TB) {
 
 **测试用例**：
 
-| 用例 | 描述 | 验证点 |
-|------|------|--------|
-| TestGoroutineLeakCheck_NoLeak | 无泄漏 | Cleanup 不报错 |
-| TestGoroutineLeakCheck_LeakDetected | 有泄漏 | Cleanup 报错 + 输出堆栈 |
-| TestGoroutineLeakCheck_ThresholdRespected | 阈值内差异 | 不报错 |
+| 用例                                      | 描述       | 验证点                  |
+| ----------------------------------------- | ---------- | ----------------------- |
+| TestGoroutineLeakCheck_NoLeak             | 无泄漏     | Cleanup 不报错          |
+| TestGoroutineLeakCheck_LeakDetected       | 有泄漏     | Cleanup 报错 + 输出堆栈 |
+| TestGoroutineLeakCheck_ThresholdRespected | 阈值内差异 | 不报错                  |
 
 **注意**：泄漏场景测试需要启动一个不结束的 goroutine。需要在子测试中验证，避免影响其他测试。
 
@@ -112,10 +112,10 @@ go test -run TestGoroutineLeakCheck -race -count=1 -v ./...
 
 ## 6. 风险与回滚
 
-| 风险 | 概率 | 影响 | 缓解 | 回滚 |
-|------|------|------|------|------|
-| 误报（runtime goroutine 波动） | Medium | Medium | 阈值 5 + 可配置 | 调整阈值 |
-| 漏报（缓慢泄漏） | Low | Medium | 100ms 等待 + 可配置等待时间 | 增加等待时间 |
-| Cleanup 中 panic | Low | Medium | 使用 recover 保护 | 添加 recover |
+| 风险                           | 概率   | 影响   | 缓解                        | 回滚         |
+| ------------------------------ | ------ | ------ | --------------------------- | ------------ |
+| 误报（runtime goroutine 波动） | Medium | Medium | 阈值 5 + 可配置             | 调整阈值     |
+| 漏报（缓慢泄漏）               | Low    | Medium | 100ms 等待 + 可配置等待时间 | 增加等待时间 |
+| Cleanup 中 panic               | Low    | Medium | 使用 recover 保护           | 添加 recover |
 
 **回滚路径**：本 task 仅新增文件，回滚 = `rm leak.go leak_test.go`。

@@ -32,11 +32,11 @@ Retrospective
 
 ### Patch 类型
 
-| 类型 | 说明 | 示例 |
-|------|------|------|
-| Prompt Patch | 改进 Prompt 模板 | 增加"不允许一次性加载全部数据"约束 |
-| Harness Patch | 改进 Gate 或 CI | 增加"CSV 文件必须 UTF-8 编码"自动检查 |
-| Rule Patch | 改进工作流规则 | 增加"大数据量导出必须异步"规则 |
+| 类型          | 说明             | 示例                                  |
+| ------------- | ---------------- | ------------------------------------- |
+| Prompt Patch  | 改进 Prompt 模板 | 增加"不允许一次性加载全部数据"约束    |
+| Harness Patch | 改进 Gate 或 CI  | 增加"CSV 文件必须 UTF-8 编码"自动检查 |
+| Rule Patch    | 改进工作流规则   | 增加"大数据量导出必须异步"规则        |
 
 ### Retrospective 标准输出
 

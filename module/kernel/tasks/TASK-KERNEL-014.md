@@ -50,10 +50,10 @@ status: pending
 
 ## Requirements Covered
 
-| Requirement | Description |
-|---|---|
-| §20.2 | kernel 专属 CI Gate |
-| §22 | Release DoD |
+| Requirement | Description         |
+| ----------- | ------------------- |
+| §20.2       | kernel 专属 CI Gate |
+| §22         | Release DoD         |
 
 ## Non-scope
 

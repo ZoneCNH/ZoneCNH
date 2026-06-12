@@ -33,20 +33,20 @@ status: pending
 
 ## Requirements Covered
 
-| Requirement | Description | Acceptance Criteria |
-|---|---|---|
-| FR-003 | Tracer：Start/End/RecordError/上下文传播 | 4 个 WHEN/THEN 场景 |
-| BR-003 | Tracer 必须从 context 传播 trace_id/span_id | 跨 goroutine 一致 |
+| Requirement | Description                                 | Acceptance Criteria |
+| ----------- | ------------------------------------------- | ------------------- |
+| FR-003      | Tracer：Start/End/RecordError/上下文传播    | 4 个 WHEN/THEN 场景 |
+| BR-003      | Tracer 必须从 context 传播 trace_id/span_id | 跨 goroutine 一致   |
 
 ## Test Plan
 
-| Test Case | Type | Description |
-|---|---|---|
-| TC-003 | Unit | Tracer 上下文传播：goroutine A 创建 span，B 读取同一 trace_id |
-| — | Unit | 子 span 继承父 trace_id |
-| — | Unit | RecordError 记录到 span |
-| — | Unit | span.End() 后 SpanID/TraceID 可读 |
-| — | Unit | 采样率=0：不采样但不报错 |
+| Test Case | Type | Description                                                   |
+| --------- | ---- | ------------------------------------------------------------- |
+| TC-003    | Unit | Tracer 上下文传播：goroutine A 创建 span，B 读取同一 trace_id |
+| —         | Unit | 子 span 继承父 trace_id                                       |
+| —         | Unit | RecordError 记录到 span                                       |
+| —         | Unit | span.End() 后 SpanID/TraceID 可读                             |
+| —         | Unit | 采样率=0：不采样但不报错                                      |
 
 ## Implementation Notes
 
@@ -57,16 +57,16 @@ status: pending
 
 ## Implementation Plan
 
-| Step | Description | Deliverables | Verification |
-|---|---|---|---|
-| 1 | 实现 `spanImpl` 结构体（traceID, spanID, attrs, events, ended） | `tracer/impl.go` | `go build ./...` 通过 |
-| 2 | 实现 `TracerImpl.Start`：生成/继承 trace_id → 创建 span → 注入 ctx | `tracer/impl.go` | `go test ./tracer/...` 通过 |
-| 3 | 实现 context 传播：`Inject`/`Extract` 方法 | `tracer/propagation.go` | TC-003 通过 |
-| 4 | 实现 RecordError 和采样逻辑 | `tracer/impl.go` | 所有测试用例通过 |
+| Step | Description                                                        | Deliverables            | Verification                |
+| ---- | ------------------------------------------------------------------ | ----------------------- | --------------------------- |
+| 1    | 实现 `spanImpl` 结构体（traceID, spanID, attrs, events, ended）    | `tracer/impl.go`        | `go build ./...` 通过       |
+| 2    | 实现 `TracerImpl.Start`：生成/继承 trace_id → 创建 span → 注入 ctx | `tracer/impl.go`        | `go test ./tracer/...` 通过 |
+| 3    | 实现 context 传播：`Inject`/`Extract` 方法                         | `tracer/propagation.go` | TC-003 通过                 |
+| 4    | 实现 RecordError 和采样逻辑                                        | `tracer/impl.go`        | 所有测试用例通过            |
 
 ### Risk Assessment
 
-| Risk | Probability | Impact | Mitigation |
-|---|---|---|---|
-| context key 冲突 | Low | High | 使用 unexported 类型作为 context key |
-| 并发 span 创建竞态 | Low | Medium | atomic 生成 span ID |
+| Risk               | Probability | Impact | Mitigation                           |
+| ------------------ | ----------- | ------ | ------------------------------------ |
+| context key 冲突   | Low         | High   | 使用 unexported 类型作为 context key |
+| 并发 span 创建竞态 | Low         | Medium | atomic 生成 span ID                  |

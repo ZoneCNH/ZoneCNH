@@ -18,26 +18,26 @@
 
 ## 0. 工件清单与角色
 
-| 文件 | 行数 | 自我声明 | 实际角色 | 备注 |
-|------|---:|----------|----------|------|
-| `README.md` | 56 | — | 目录索引 + 阅读规则 + 上游引用 | **Status 描述滞后于 SPEC**（见 S1） |
-| `SPEC.md` | 2013 | `Status: Approved, v2.0.1` | 主规格 · 52 FR · 104 WHEN/THEN · 23 节 + 6 附录 | 节框架达标，治理一致性存疑 |
-| `TRACEABILITY.md` | 148 | `Aligned-With v2.0.1` | 章节级 + FR 行级矩阵 | 73% FR 仍为块级（自报） |
-| `CONFLICT-LEDGER.md` | 180 | `Aligned-With v2.0.1` | 22 条历史取舍 | 引用稳定 |
-| `COVERAGE-MANIFEST.md` | 201 | `Aligned-With v2.0.1` | 154 输入文件清单（占位符路径） | **commit/tree sha 未固定**（自报 OQ-008） |
-| `archive/MODULE-SPEC.md` | 450 | 已归档 | 历史 20 节稿 | 不再随主规格更新 ✅ |
-| `archive/DEEP-ANALYSIS.md` | 538 | 已归档 | 181 文件旧口径 | 不再随主规格更新 ✅ |
+| 文件                       | 行数 | 自我声明                   | 实际角色                                        | 备注                                      |
+| -------------------------- | ---: | -------------------------- | ----------------------------------------------- | ----------------------------------------- |
+| `README.md`                | 56   | —                          | 目录索引 + 阅读规则 + 上游引用                  | **Status 描述滞后于 SPEC**（见 S1）       |
+| `SPEC.md`                  | 2013 | `Status: Approved, v2.0.1` | 主规格 · 52 FR · 104 WHEN/THEN · 23 节 + 6 附录 | 节框架达标，治理一致性存疑                |
+| `TRACEABILITY.md`          | 148  | `Aligned-With v2.0.1`      | 章节级 + FR 行级矩阵                            | 73% FR 仍为块级（自报）                   |
+| `CONFLICT-LEDGER.md`       | 180  | `Aligned-With v2.0.1`      | 22 条历史取舍                                   | 引用稳定                                  |
+| `COVERAGE-MANIFEST.md`     | 201  | `Aligned-With v2.0.1`      | 154 输入文件清单（占位符路径）                  | **commit/tree sha 未固定**（自报 OQ-008） |
+| `archive/MODULE-SPEC.md`   | 450  | 已归档                     | 历史 20 节稿                                    | 不再随主规格更新 ✅                        |
+| `archive/DEEP-ANALYSIS.md` | 538  | 已归档                     | 181 文件旧口径                                  | 不再随主规格更新 ✅                        |
 
 ---
 
 ## 1. CI 自动化证据（baseline）
 
-| 检查 | 结果 | 关键告警 |
-|------|------|----------|
-| `spec-lint.sh` | ⚠️ 通过有警告 | `xlib-standard` 存在 fuzzy word `可能`；脚本报 `Section 4 Non-goals is empty`（实际系前置 `## 使用边界` 节扰乱脚本节计数 — 仍是结构缺陷） |
-| `spec-drift-guard.sh` | ✅ 通过 | — |
-| `traceability-check.sh` | ⚠️ `xlib-standard: 5 requirements with empty TC` | 52/52 FR 已追溯到来源，但 5 条 FR 无对应 TC，与 §16.5 自述"P0 TC 只是样板，其余由 harness 间接证明"互证 |
-| `status-consistency-check.sh` | ✅ 静默 | — |
+| 检查                          | 结果                                             | 关键告警                                                                                                                                  |
+| ----------------------------- | ------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `spec-lint.sh`                | ⚠️ 通过有警告                                    | `xlib-standard` 存在 fuzzy word `可能`；脚本报 `Section 4 Non-goals is empty`（实际系前置 `## 使用边界` 节扰乱脚本节计数 — 仍是结构缺陷） |
+| `spec-drift-guard.sh`         | ✅ 通过                                           | —                                                                                                                                         |
+| `traceability-check.sh`       | ⚠️ `xlib-standard: 5 requirements with empty TC` | 52/52 FR 已追溯到来源，但 5 条 FR 无对应 TC，与 §16.5 自述"P0 TC 只是样板，其余由 harness 间接证明"互证                                   |
+| `status-consistency-check.sh` | ✅ 静默                                           | —                                                                                                                                         |
 
 这是 v3 报告与 v2 最大差异：v2 凭目视判断，v3 用脚本得出**两条硬性 CI 告警**，可在 PR 中直接复现。
 
@@ -49,13 +49,13 @@
 
 **事实**：
 
-| 来源 | 字段 | 值 |
-|------|------|-----|
-| `SPEC.md:5` | `Status` | `Approved` |
-| `SPEC.md:8` | `Approved-By` | `spec-review agent（第三轮终审，独立评分 9.66/10）` |
-| `SPEC.md:10` | `Approved-Commit` | `d7a60ef（后续补 N-1 修复 commit）` |
-| `README.md:17` | 自述 | `v2.0.1, Status: Review` |
-| `TRACEABILITY.md:3` / `CONFLICT-LEDGER.md:3` / `COVERAGE-MANIFEST.md:3` | `Aligned-With` | `SPEC.md v2.0.1` |
+| 来源                                                                    | 字段              | 值                                                  |
+| ----------------------------------------------------------------------- | ----------------- | --------------------------------------------------- |
+| `SPEC.md:5`                                                             | `Status`          | `Approved`                                          |
+| `SPEC.md:8`                                                             | `Approved-By`     | `spec-review agent（第三轮终审，独立评分 9.66/10）` |
+| `SPEC.md:10`                                                            | `Approved-Commit` | `d7a60ef（后续补 N-1 修复 commit）`                 |
+| `README.md:17`                                                          | 自述              | `v2.0.1, Status: Review`                            |
+| `TRACEABILITY.md:3` / `CONFLICT-LEDGER.md:3` / `COVERAGE-MANIFEST.md:3` | `Aligned-With`    | `SPEC.md v2.0.1`                                    |
 
 **问题维度**：
 
@@ -73,13 +73,13 @@
 
 SPEC.md 自身记录的发布阻断项（OQ + R + NG）与 `Status: Approved` 不兼容：
 
-| 编号 | 自述状态 | 触达 Approved 的合理性 |
-|------|----------|------------------------|
-| OQ-008 / R-011 | `COVERAGE-MANIFEST.md` commit/tree sha **未固定**，存在漂移风险 | 不可接受：Approved 必须可复现 |
-| OQ-007 | P1 活跃覆盖 81.3% < 90%，需再索引 26 条 P1 规则 | 不可接受：覆盖率低于自定义阈值 |
-| NG-33 | TRACEABILITY 行级缺口超阈值即阻断发布；当前 **73% FR 为块级** | 自相矛盾：当前状态本应触发 NG-33 |
-| NG-34 | COVERAGE-MANIFEST commit/tree 未固定即阻断发布 | 自相矛盾：同上 |
-| `traceability-check.sh` | 5 个 FR 无 TC | 与 §16.5 / FR-026 / FR-032 evidence-binding 要求冲突 |
+| 编号                    | 自述状态                                                        | 触达 Approved 的合理性                               |
+| ----------------------- | --------------------------------------------------------------- | ---------------------------------------------------- |
+| OQ-008 / R-011          | `COVERAGE-MANIFEST.md` commit/tree sha **未固定**，存在漂移风险 | 不可接受：Approved 必须可复现                        |
+| OQ-007                  | P1 活跃覆盖 81.3% < 90%，需再索引 26 条 P1 规则                 | 不可接受：覆盖率低于自定义阈值                       |
+| NG-33                   | TRACEABILITY 行级缺口超阈值即阻断发布；当前 **73% FR 为块级**   | 自相矛盾：当前状态本应触发 NG-33                     |
+| NG-34                   | COVERAGE-MANIFEST commit/tree 未固定即阻断发布                  | 自相矛盾：同上                                       |
+| `traceability-check.sh` | 5 个 FR 无 TC                                                   | 与 §16.5 / FR-026 / FR-032 evidence-binding 要求冲突 |
 
 **结论**：SPEC 同时声明"已 Approved"和"若进入 release 则 NG-33/NG-34/NG-35 都会失败"，是治理上的逻辑冲突。
 
@@ -123,17 +123,17 @@ SPEC.md 的 H2 层级实际结构：
 
 通过实测：
 
-| 编号体系 | 数量 | 出现位置 |
-|----------|---:|----------|
-| `FR-NNN` | 52 | §7.1..§7.8 平铺 |
-| `WHEN/THEN` | 104 行 | 每 FR ≥ 2 条 ✅ |
-| `BR-NNN` | **0** | §8 用 `IR-001..007` + `TRUTH-001..015` + `RULE-CORE-001..` 三套同义编号代替 |
-| `AC-NNN` | **0** | §22 DoD 用四级表代替，无可被 traceability matrix 引用的 AC 标识 |
-| `TC-NNN` | 17 (TC-001..TC-017) | §16.5 仅覆盖 P0 样板 |
-| `EC-NNN` | 10 | §13.1 OK ✅ |
-| `NG-NN` | 37 | §22.4 ✅ |
-| `OQ-NNN` | 8 | §23 ✅ |
-| `R-NNN` | 11 | §A ✅ |
+| 编号体系    | 数量                | 出现位置                                                                    |
+| ----------- | ------------------: | --------------------------------------------------------------------------- |
+| `FR-NNN`    | 52                  | §7.1..§7.8 平铺                                                             |
+| `WHEN/THEN` | 104 行              | 每 FR ≥ 2 条 ✅                                                              |
+| `BR-NNN`    | **0**               | §8 用 `IR-001..007` + `TRUTH-001..015` + `RULE-CORE-001..` 三套同义编号代替 |
+| `AC-NNN`    | **0**               | §22 DoD 用四级表代替，无可被 traceability matrix 引用的 AC 标识             |
+| `TC-NNN`    | 17 (TC-001..TC-017) | §16.5 仅覆盖 P0 样板                                                        |
+| `EC-NNN`    | 10                  | §13.1 OK ✅                                                                  |
+| `NG-NN`     | 37                  | §22.4 ✅                                                                     |
+| `OQ-NNN`    | 8                   | §23 ✅                                                                       |
+| `R-NNN`     | 11                  | §A ✅                                                                        |
 
 **结构性后果**：
 
@@ -206,16 +206,16 @@ SPEC §2 反复声明"419 条 RULE-* 规则"是整个标准的事实总量，但
 
 ## 3. 与前两版报告的差异（演进检视）
 
-| 维度 | v1 (03:41) | v2 (晚些时候) | v3 (本报告) | 走向 |
-|------|------------|---------------|-------------|------|
-| 23 节框架 | ❌ 模板严重错位 | ⚠️ 部分对齐 | ✅ spec-lint 23/23 | ↑ |
-| Archive 治理 | ❌ 历史稿混入主线 | ✅ 已归档 | ✅ 保持 | ↑ |
-| FR 行级追溯 | 0% | 块级 100% | 27% 行级 + 73% 块级（已显式缺口声明）| ↑ |
-| Status 一致性 | n/a | Draft | **Approved 但 README/COVERAGE 不一致** | ↓ |
-| BR/AC 编号 | 缺 | 缺 | 仍缺 | → |
-| Coverage commit sha | 未提 | 自报缺口 | 自报 OQ-008 + R-011 但仍未固定 | → |
-| spec-lint 告警 | 未测 | 未测 | 2 项（fuzzy + 节计数错位） | 首次量化 |
-| Traceability TC 覆盖 | 未测 | 未测 | 5 条 FR 无 TC | 首次量化 |
+| 维度                 | v1 (03:41)       | v2 (晚些时候)   | v3 (本报告)                            | 走向     |
+| -------------------- | ---------------- | --------------- | -------------------------------------- | -------- |
+| 23 节框架            | ❌ 模板严重错位   | ⚠️ 部分对齐     | ✅ spec-lint 23/23                      | ↑        |
+| Archive 治理         | ❌ 历史稿混入主线 | ✅ 已归档        | ✅ 保持                                 | ↑        |
+| FR 行级追溯          | 0%               | 块级 100%       | 27% 行级 + 73% 块级（已显式缺口声明）  | ↑        |
+| Status 一致性        | n/a              | Draft           | **Approved 但 README/COVERAGE 不一致** | ↓        |
+| BR/AC 编号           | 缺               | 缺              | 仍缺                                   | →        |
+| Coverage commit sha  | 未提             | 自报缺口        | 自报 OQ-008 + R-011 但仍未固定         | →        |
+| spec-lint 告警       | 未测             | 未测            | 2 项（fuzzy + 节计数错位）             | 首次量化 |
+| Traceability TC 覆盖 | 未测             | 未测            | 5 条 FR 无 TC                          | 首次量化 |
 
 **评分曲线**：5.1 → 6.1 → **6.8**（结构骨架收敛，但治理一致性变成新的瓶颈）。
 
@@ -223,33 +223,33 @@ SPEC §2 反复声明"419 条 RULE-* 规则"是整个标准的事实总量，但
 
 ## 4. 评分明细
 
-| 维度 (权重) | 满分 | 得分 | 扣点理由 |
-|-------------|---:|---:|----------|
-| 23 节模板对齐 (20%) | 2.0 | 1.5 | S3 外挂节扰乱 lint |
-| 编号体系闭环 FR/BR/AC/TC (15%) | 1.5 | 0.7 | S4 缺 BR/AC，5 FR 无 TC |
-| Traceability 链完整性 (15%) | 1.5 | 1.0 | 行级 27%；S7 RULE↔FR 未映射 |
-| 跨文档一致性 (15%) | 1.5 | 0.4 | S1 README↔SPEC 漂移 |
-| 生命周期治理 (15%) | 1.5 | 0.5 | S2 Approved 与 NG 互斥 |
-| CI 自动化通过率 (10%) | 1.0 | 0.7 | spec-lint 2 警告，traceability 1 警告 |
-| 架构归位 (5%) | 0.5 | 0.3 | S5 自创 "门禁" 层 |
-| 可复现性 (5%) | 0.5 | 0.2 | S6 commit/tree sha 缺 |
-| **合计** | **10.0** | **6.8** | — |
+| 维度 (权重)                    | 满分     | 得分    | 扣点理由                              |
+| ------------------------------ | -------: | ------: | ------------------------------------- |
+| 23 节模板对齐 (20%)            | 2.0      | 1.5     | S3 外挂节扰乱 lint                    |
+| 编号体系闭环 FR/BR/AC/TC (15%) | 1.5      | 0.7     | S4 缺 BR/AC，5 FR 无 TC               |
+| Traceability 链完整性 (15%)    | 1.5      | 1.0     | 行级 27%；S7 RULE↔FR 未映射           |
+| 跨文档一致性 (15%)             | 1.5      | 0.4     | S1 README↔SPEC 漂移                   |
+| 生命周期治理 (15%)             | 1.5      | 0.5     | S2 Approved 与 NG 互斥                |
+| CI 自动化通过率 (10%)          | 1.0      | 0.7     | spec-lint 2 警告，traceability 1 警告 |
+| 架构归位 (5%)                  | 0.5      | 0.3     | S5 自创 "门禁" 层                     |
+| 可复现性 (5%)                  | 0.5      | 0.2     | S6 commit/tree sha 缺                 |
+| **合计**                       | **10.0** | **6.8** | —                                     |
 
 ---
 
 ## 5. 改进建议（按 ROI 排序）
 
-| 优先级 | 动作 | 预期收益 | 工作量 |
-|--------|------|---------|--------|
-| P0 | 把 `Status` 暂时回退到 `Review`（或同步刷新 README/TRACEABILITY/COVERAGE 三处 + 补独立 reviewer 签字 + 固定 `Approved-Commit`），消除 S1/S2 | 治理一致性恢复，发布门禁链可信 | 0.5 day |
-| P0 | 把 "使用边界" 并入 §2，把 §附录 D 合入 §22，§附录 A 合入 §23，§附录 F 移至 PR description，消除 S3 | spec-lint 节计数恢复正确 | 0.5 day |
-| P0 | 引入 `BR-NNN` / `AC-NNN` 编号（最简：把 §8.1 IR-001..007 重命名为 BR；把 §22.1 DoD 四级各拆 1 个 AC），消除 S4 一半 | 闭合 FR↔BR↔AC↔TC 四向矩阵 | 0.5 day |
-| P1 | 补齐 5 条无 TC FR 的 TC 行；或在 §16.5 显式注明这 5 条由 harness gate 覆盖并指明 gate ID | `traceability-check.sh` 转 ✅ | 1 day |
-| P1 | 运行 `goalcli coverage-pin-check`，把 154 个文件的 sha256 + 上游 commit/tree sha 写入 COVERAGE-MANIFEST | 关闭 OQ-008 / R-011 / NG-34，使可复现 | 0.5 day |
-| P1 | 把 §1 / §15.1 的 "门禁" 改写为 "横切层（Foundation Gate），位于基座之上"或在 ARCHITECTURE.md 正式增列 | 与全仓 17 个 SPEC 用语统一 | 0.3 day |
-| P2 | 新增 §8.x 或附录 G：`RULE-* ↔ FR ↔ TC` 三向汇总表（先按前缀块级，逐步细化） | 解释 419/52/17 三个数量级的关系 | 1 day |
-| P2 | 在 §16.5 注明 TC 编号下游必须加前缀（`<module>-TC-NNN`） | 防止下游汇总冲突 | 5 min |
-| P3 | 用 `必须 / 应当 / 可` 替换全文 `可能 / 通常 / 一般` | spec-lint fuzzy 0 | 10 min |
+| 优先级   | 动作                                                                                                                                        | 预期收益                              | 工作量   |
+| -------- | ------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------- | -------- |
+| P0       | 把 `Status` 暂时回退到 `Review`（或同步刷新 README/TRACEABILITY/COVERAGE 三处 + 补独立 reviewer 签字 + 固定 `Approved-Commit`），消除 S1/S2 | 治理一致性恢复，发布门禁链可信        | 0.5 day  |
+| P0       | 把 "使用边界" 并入 §2，把 §附录 D 合入 §22，§附录 A 合入 §23，§附录 F 移至 PR description，消除 S3                                          | spec-lint 节计数恢复正确              | 0.5 day  |
+| P0       | 引入 `BR-NNN` / `AC-NNN` 编号（最简：把 §8.1 IR-001..007 重命名为 BR；把 §22.1 DoD 四级各拆 1 个 AC），消除 S4 一半                         | 闭合 FR↔BR↔AC↔TC 四向矩阵             | 0.5 day  |
+| P1       | 补齐 5 条无 TC FR 的 TC 行；或在 §16.5 显式注明这 5 条由 harness gate 覆盖并指明 gate ID                                                    | `traceability-check.sh` 转 ✅          | 1 day    |
+| P1       | 运行 `goalcli coverage-pin-check`，把 154 个文件的 sha256 + 上游 commit/tree sha 写入 COVERAGE-MANIFEST                                     | 关闭 OQ-008 / R-011 / NG-34，使可复现 | 0.5 day  |
+| P1       | 把 §1 / §15.1 的 "门禁" 改写为 "横切层（Foundation Gate），位于基座之上"或在 ARCHITECTURE.md 正式增列                                       | 与全仓 17 个 SPEC 用语统一            | 0.3 day  |
+| P2       | 新增 §8.x 或附录 G：`RULE-* ↔ FR ↔ TC` 三向汇总表（先按前缀块级，逐步细化）                                                                 | 解释 419/52/17 三个数量级的关系       | 1 day    |
+| P2       | 在 §16.5 注明 TC 编号下游必须加前缀（`<module>-TC-NNN`）                                                                                    | 防止下游汇总冲突                      | 5 min    |
+| P3       | 用 `必须 / 应当 / 可` 替换全文 `可能 / 通常 / 一般`                                                                                         | spec-lint fuzzy 0                     | 10 min   |
 
 ---
 

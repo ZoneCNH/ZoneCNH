@@ -10,11 +10,11 @@
 v<MAJOR>.<MINOR>.<PATCH>
 ```
 
-| 类型 | 触发条件 | 示例 |
-|------|----------|------|
-| MAJOR | 宪法条款新增/删除/重写、架构重组、破坏性变更 | §0 全面重写 → v2.0.0 |
-| MINOR | 新增模块规格、Agent、治理文档、重要补充 | 新增 goal-architect → v1.1.0 |
-| PATCH | 措辞修正、格式调整、typo、非实质变更 | §0.2 措辞简化 → v1.0.1 |
+| 类型   | 触发条件                                     | 示例                         |
+| ------ | -------------------------------------------- | ---------------------------- |
+| MAJOR  | 宪法条款新增/删除/重写、架构重组、破坏性变更 | §0 全面重写 → v2.0.0         |
+| MINOR  | 新增模块规格、Agent、治理文档、重要补充      | 新增 goal-architect → v1.1.0 |
+| PATCH  | 措辞修正、格式调整、typo、非实质变更         | §0.2 措辞简化 → v1.0.1       |
 
 ### 1.1 版本号分配原则
 
@@ -25,17 +25,17 @@ v<MAJOR>.<MINOR>.<PATCH>
 
 ### 1.2 版本号决策矩阵
 
-| 变更涉及 | 版本类型 |
-|----------|----------|
-| CONSTITUTION.md 任何条款 | MINOR 起步，重写为 MAJOR |
-| docs/governance/ 新增文件 | MINOR |
-| docs/governance/ 内容修改 | PATCH |
-| module/*/SPEC.md 新增 | MINOR |
-| module/*/SPEC.md 修改 | PATCH |
-| .claude/agents/ 新增 | MINOR |
-| .claude/agents/ 修改 | PATCH |
-| README.md / ARCHITECTURE.md | PATCH |
-| CLAUDE.md / AGENTS.md | PATCH |
+| 变更涉及                    | 版本类型                 |
+| --------------------------- | ------------------------ |
+| CONSTITUTION.md 任何条款    | MINOR 起步，重写为 MAJOR |
+| docs/governance/ 新增文件   | MINOR                    |
+| docs/governance/ 内容修改   | PATCH                    |
+| module/*/SPEC.md 新增       | MINOR                    |
+| module/*/SPEC.md 修改       | PATCH                    |
+| .claude/agents/ 新增        | MINOR                    |
+| .claude/agents/ 修改        | PATCH                    |
+| README.md / ARCHITECTURE.md | PATCH                    |
+| CLAUDE.md / AGENTS.md       | PATCH                    |
 
 ## 2. 变更记录
 
@@ -60,14 +60,14 @@ v<MAJOR>.<MINOR>.<PATCH>
 
 ### 2.2 变更分类
 
-| 类别 | 含义 |
-|------|------|
-| Added | 新增功能、文档、Agent、规格 |
-| Changed | 修改现有内容 |
-| Deprecated | 即将移除的内容 |
-| Removed | 已移除的内容 |
-| Fixed | 修复错误、typo、格式 |
-| Security | 安全相关变更 |
+| 类别       | 含义                        |
+| ---------- | --------------------------- |
+| Added      | 新增功能、文档、Agent、规格 |
+| Changed    | 修改现有内容                |
+| Deprecated | 即将移除的内容              |
+| Removed    | 已移除的内容                |
+| Fixed      | 修复错误、typo、格式        |
+| Security   | 安全相关变更                |
 
 ### 2.3 CONSTITUTION.md §12.3
 
@@ -142,13 +142,13 @@ git tag -a vX.Y.Z -m "Release vX.Y.Z
 
 ## 5. 与其他系统的关联
 
-| 系统 | 关联方式 |
-|------|----------|
-| Git tags | 全局版本锚点 |
-| CHANGELOG.md | 全局变更日志 |
+| 系统                                | 关联方式              |
+| ----------------------------------- | --------------------- |
+| Git tags                            | 全局版本锚点          |
+| CHANGELOG.md                        | 全局变更日志          |
 | .config/goal/registry/releases.yaml | Goal 体系内部发布记录 |
-| CONSTITUTION.md §12.3 | 宪法修正审计追踪 |
-| GitHub Releases | 基于 git tag 自动生成 |
+| CONSTITUTION.md §12.3               | 宪法修正审计追踪      |
+| GitHub Releases                     | 基于 git tag 自动生成 |
 
 ### 5.1 Goal 体系版本
 

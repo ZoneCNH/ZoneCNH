@@ -23,12 +23,12 @@
 
 ## 现有报告关系
 
-| 报告 | 角色 | 当前分数 | 用途 |
-| --- | --- | --- | --- |
-| `goal-docs-structural-analysis-20260609.md` | 主报告 | `66/100` | 作为 canonical 修复队列的主来源，覆盖 P1/P2/P3 结构问题。 |
-| `goal-docs-deep-structural-audit-20260609.md` | 补充深审 | `66/100` | 补强主报告中的 SSOT、状态机、ID、配置、证据和工具风险。 |
-| `goal-docs-deep-analysis-20260609.md` | 补充深析 | `63/100` | 补充跨文档矛盾、schema 投影、Matrix 策略和信息架构证据。 |
-| `goal-docs-fix-verification-20260609.md` | 关闭验证 | `96/100` | 记录 agent team 修复结果、验收命令、输出摘要和残余风险。 |
+| 报告                                          | 角色     | 当前分数 | 用途                                                      |
+| --------------------------------------------- | -------- | -------- | --------------------------------------------------------- |
+| `goal-docs-structural-analysis-20260609.md`   | 主报告   | `66/100` | 作为 canonical 修复队列的主来源，覆盖 P1/P2/P3 结构问题。 |
+| `goal-docs-deep-structural-audit-20260609.md` | 补充深审 | `66/100` | 补强主报告中的 SSOT、状态机、ID、配置、证据和工具风险。   |
+| `goal-docs-deep-analysis-20260609.md`         | 补充深析 | `63/100` | 补充跨文档矛盾、schema 投影、Matrix 策略和信息架构证据。  |
+| `goal-docs-fix-verification-20260609.md`      | 关闭验证 | `96/100` | 记录 agent team 修复结果、验收命令、输出摘要和残余风险。  |
 
 ## 当前基线分数
 
@@ -60,24 +60,24 @@
 
 以下状态来自 2026-06-09 worker-1 复核与主工作树收尾复核。复核前目标 worker worktree 的 `git status --short --untracked-files=all` 无输出；主工作树存在 3 个分支纪律文档变更，它们不属于本轮 Goal GDR 修复范围，已单独标记为外部治理变更并保持原样。本次 Goal 收尾只声明本节列出的报告/工具说明/自测文件修改。新增 Goal 控制面、权威文档和报告制品已经进入 Git 跟踪面。`.worktree/` 是父级工作区的本地执行目录，不是目标 worker worktree 内的仓内目录。
 
-| 状态 | 路径 | 注意事项 |
-| --- | --- | --- |
-| clean baseline | worker repo root | worker-1 复核开始时 `git status --short --untracked-files=all` 无输出。 |
-| scoped edit | `docs/report/goal/README.md` | 本次补录报告入口的当前 Git/ignore 边界。 |
-| scoped edit | `docs/report/goal/ISSUE-LEDGER.md` | 本次补录 residual 项的复核结论。 |
-| scoped edit | `docs/report/goal/goal-docs-fix-verification-20260609.md` | 本次补录修复验收证据。 |
-| scoped edit | `docs/goal/tools/README.md` | 为 `GDR-FIXTURE-01` 增加负例 fixture 覆盖契约，未新增依赖。 |
-| scoped edit | `docs/goal/tools/self-test.sh` | 为 `GDR-FIXTURE-01` 提供正向基线与负向 fixture 自测入口，未新增依赖。 |
-| external governance edit | `CLAUDE.md` | 当前主工作树存在分支创建纪律补充；不纳入本轮 Goal GDR 验收面。 |
-| external governance edit | `CONSTITUTION.md` | 当前主工作树存在分支创建纪律补充；不纳入本轮 Goal GDR 验收面。 |
-| external governance edit | `docs/governance/DEVELOPMENT-WORKFLOW.md` | 当前主工作树存在分支创建纪律补充；不纳入本轮 Goal GDR 验收面。 |
-| tracked | `.config/goal/schema/rules.yaml` | `git ls-files --error-unmatch .config/goal/schema/rules.yaml` 通过，控制面 schema 已在跟踪面内。 |
-| tracked | `docs/goal/00-authority-map.md` | `git ls-files --error-unmatch docs/goal/00-authority-map.md` 通过，权威映射已在跟踪面内。 |
-| tracked | `docs/report/goal/README.md` | 报告目录入口已在跟踪面内。 |
-| tracked | `docs/report/goal/goal-docs-fix-verification-20260609.md` | 修复验收报告已在跟踪面内。 |
-| not ignored | `.config/goal/schema/rules.yaml` | `git check-ignore -v .config/goal/schema/rules.yaml` 无输出，符合控制面可审查边界。 |
-| ignored | `.config/goal/runtime/cache.json` | 被 `.gitignore:30:.config/goal/**/runtime/` 忽略；runtime 缓存保持忽略符合预期。 |
-| ignored local | `/home/ZoneCNH/.worktree/todo.md` | `git -C /home/ZoneCNH check-ignore -v .worktree/todo.md` 命中 `.gitignore:38:.worktree/`；本地执行 TODO 保持不入库。 |
+| 状态                     | 路径                                                      | 注意事项                                                                                                             |
+| ------------------------ | --------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| clean baseline           | worker repo root                                          | worker-1 复核开始时 `git status --short --untracked-files=all` 无输出。                                              |
+| scoped edit              | `docs/report/goal/README.md`                              | 本次补录报告入口的当前 Git/ignore 边界。                                                                             |
+| scoped edit              | `docs/report/goal/ISSUE-LEDGER.md`                        | 本次补录 residual 项的复核结论。                                                                                     |
+| scoped edit              | `docs/report/goal/goal-docs-fix-verification-20260609.md` | 本次补录修复验收证据。                                                                                               |
+| scoped edit              | `docs/goal/tools/README.md`                               | 为 `GDR-FIXTURE-01` 增加负例 fixture 覆盖契约，未新增依赖。                                                          |
+| scoped edit              | `docs/goal/tools/self-test.sh`                            | 为 `GDR-FIXTURE-01` 提供正向基线与负向 fixture 自测入口，未新增依赖。                                                |
+| external governance edit | `CLAUDE.md`                                               | 当前主工作树存在分支创建纪律补充；不纳入本轮 Goal GDR 验收面。                                                       |
+| external governance edit | `CONSTITUTION.md`                                         | 当前主工作树存在分支创建纪律补充；不纳入本轮 Goal GDR 验收面。                                                       |
+| external governance edit | `docs/governance/DEVELOPMENT-WORKFLOW.md`                 | 当前主工作树存在分支创建纪律补充；不纳入本轮 Goal GDR 验收面。                                                       |
+| tracked                  | `.config/goal/schema/rules.yaml`                          | `git ls-files --error-unmatch .config/goal/schema/rules.yaml` 通过，控制面 schema 已在跟踪面内。                     |
+| tracked                  | `docs/goal/00-authority-map.md`                           | `git ls-files --error-unmatch docs/goal/00-authority-map.md` 通过，权威映射已在跟踪面内。                            |
+| tracked                  | `docs/report/goal/README.md`                              | 报告目录入口已在跟踪面内。                                                                                           |
+| tracked                  | `docs/report/goal/goal-docs-fix-verification-20260609.md` | 修复验收报告已在跟踪面内。                                                                                           |
+| not ignored              | `.config/goal/schema/rules.yaml`                          | `git check-ignore -v .config/goal/schema/rules.yaml` 无输出，符合控制面可审查边界。                                  |
+| ignored                  | `.config/goal/runtime/cache.json`                         | 被 `.gitignore:30:.config/goal/**/runtime/` 忽略；runtime 缓存保持忽略符合预期。                                     |
+| ignored local            | `/home/ZoneCNH/.worktree/todo.md`                         | `git -C /home/ZoneCNH check-ignore -v .worktree/todo.md` 命中 `.gitignore:38:.worktree/`；本地执行 TODO 保持不入库。 |
 
 ## 文件生命周期
 

@@ -1,13 +1,13 @@
 # ossx 发布版本 1.0 Goal 定位与实现标准
 
-| 字段 | 内容 |
-| --- | --- |
-| 模块名 | `ossx` |
-| 发布版本 | 1.0.0 |
-| 所属层级 | 存储扩展层 / 对象存储统一访问 |
-| 稳定级别 | Public API Stable；SPI Stable；Internal 可演进 |
-| 文档状态 | 1.0 发布基线文档 |
-| 发布日期基准 | 2026-06-09 |
+| 字段         | 内容                                           |
+| ------------ | ---------------------------------------------- |
+| 模块名       | `ossx`                                         |
+| 发布版本     | 1.0.0                                          |
+| 所属层级     | 存储扩展层 / 对象存储统一访问                  |
+| 稳定级别     | Public API Stable；SPI Stable；Internal 可演进 |
+| 文档状态     | 1.0 发布基线文档                               |
+| 发布日期基准 | 2026-06-09                                     |
 
 ## 术语约定
 
@@ -57,24 +57,24 @@
 
 ## 3. 核心场景
 
-| 场景 | 说明 | 1.0 期望结果 |
-| --- | --- | --- |
-| 文件上传 | 用户上传图片或报告 | 生成规范 ObjectKey，上传后返回对象引用 |
-| 大文件分片 | 上传大型日志包或视频 | 分片上传、校验、完成或中止 |
-| 临时下载 | 业务生成短期下载链接 | 预签名 URL 有过期时间和权限约束 |
-| 多云适配 | 从 MinIO 切换到云 OSS | 业务代码不变，只切换后端配置 |
+| 场景       | 说明                  | 1.0 期望结果                           |
+| ---------- | --------------------- | -------------------------------------- |
+| 文件上传   | 用户上传图片或报告    | 生成规范 ObjectKey，上传后返回对象引用 |
+| 大文件分片 | 上传大型日志包或视频  | 分片上传、校验、完成或中止             |
+| 临时下载   | 业务生成短期下载链接  | 预签名 URL 有过期时间和权限约束        |
+| 多云适配   | 从 MinIO 切换到云 OSS | 业务代码不变，只切换后端配置           |
 
 ## 4. 能力范围
 
-| 能力域 | 1.0 必须具备的能力 | 验收方式 |
-| --- | --- | --- |
-| 对象模型 | BucketName、ObjectKey、ObjectRef、ObjectMetadata | 模型测试通过 |
-| 基础操作 | put/get/delete/copy/head/exists/list | 后端集成测试通过 |
-| 流式传输 | InputStream/OutputStream 或等效流式接口 | 大文件测试通过 |
-| 分片上传 | init/uploadPart/complete/abort、part checksum | 分片故障测试通过 |
-| 预签名 URL | GET/PUT、过期时间、contentType、权限范围 | 签名测试通过 |
-| 生命周期权限 | 对象标签、存储类型、生命周期策略接口 | 策略校验测试通过 |
-| 观测审计 | 上传下载耗时、字节数、失败、签名审计 | 观测测试通过 |
+| 能力域       | 1.0 必须具备的能力                               | 验收方式         |
+| ------------ | ------------------------------------------------ | ---------------- |
+| 对象模型     | BucketName、ObjectKey、ObjectRef、ObjectMetadata | 模型测试通过     |
+| 基础操作     | put/get/delete/copy/head/exists/list             | 后端集成测试通过 |
+| 流式传输     | InputStream/OutputStream 或等效流式接口          | 大文件测试通过   |
+| 分片上传     | init/uploadPart/complete/abort、part checksum    | 分片故障测试通过 |
+| 预签名 URL   | GET/PUT、过期时间、contentType、权限范围         | 签名测试通过     |
+| 生命周期权限 | 对象标签、存储类型、生命周期策略接口             | 策略校验测试通过 |
+| 观测审计     | 上传下载耗时、字节数、失败、签名审计             | 观测测试通过     |
 
 ## 5. 职责边界
 
@@ -94,24 +94,24 @@
 
 ## 6. 依赖关系与分层约束
 
-| 依赖类型 | 约束 |
-| --- | --- |
-| 上游依赖 | 依赖 kernel、configx、observex、resiliencx。 |
-| 下游依赖 | 文件服务、报表服务、日志归档、数据导入导出可使用 ossx。 |
+| 依赖类型 | 约束                                                        |
+| -------- | ----------------------------------------------------------- |
+| 上游依赖 | 依赖 kernel、configx、observex、resiliencx。                |
+| 下游依赖 | 文件服务、报表服务、日志归档、数据导入导出可使用 ossx。     |
 | 分层约束 | ossx 不依赖具体云厂商核心逻辑；厂商 SDK 在 adapter 中隔离。 |
-| 契约依赖 | MUST 向 contracts 登记 Public API 契约和错误码契约。 |
+| 契约依赖 | MUST 向 contracts 登记 Public API 契约和错误码契约。        |
 
 ## 7. 对外契约
 
 ### 7.1 公开能力面
 
-| 契约 | 定位 | 1.0 稳定承诺 |
-| --- | --- | --- |
-| BlobStore | 对象存储入口 | 基础操作语义稳定 |
-| ObjectKeyBuilder | 对象路径构造 | 命名规则稳定 |
-| MultipartUpload | 分片上传接口 | init/part/complete/abort 语义稳定 |
-| PresignedUrlService | 预签名 URL | 权限和过期语义稳定 |
-| ObjectStorageAdapter SPI | 后端适配扩展点 | 适配器契约稳定 |
+| 契约                     | 定位           | 1.0 稳定承诺                      |
+| ------------------------ | -------------- | --------------------------------- |
+| BlobStore                | 对象存储入口   | 基础操作语义稳定                  |
+| ObjectKeyBuilder         | 对象路径构造   | 命名规则稳定                      |
+| MultipartUpload          | 分片上传接口   | init/part/complete/abort 语义稳定 |
+| PresignedUrlService      | 预签名 URL     | 权限和过期语义稳定                |
+| ObjectStorageAdapter SPI | 后端适配扩展点 | 适配器契约稳定                    |
 
 ### 7.2 1.0 逻辑接口基线
 
@@ -151,17 +151,17 @@ ObjectStorageAdapter SPI
 
 ## 8. 配置契约
 
-| 配置项 | 含义 | 默认值 / 要求 | 稳定性 |
-| --- | --- | --- | --- |
-| foundationx.oss.enabled | 是否启用 ossx | false，由业务显式启用 | Stable |
-| foundationx.oss.backend | 后端类型 | s3-compatible / minio / aliyun-oss 等 | Stable |
-| foundationx.oss.endpoint | 对象存储 endpoint | 必须配置 | Stable |
-| foundationx.oss.bucket | 默认 bucket | 必须配置 | Stable |
-| foundationx.oss.access-key | 访问密钥 | 必须配置且脱敏 | Stable |
-| foundationx.oss.secret-key | 密钥 | 必须配置且脱敏 | Stable |
-| foundationx.oss.presign.max-ttl | 预签名最大有效期 | 15m | Stable |
-| foundationx.oss.multipart.part-size | 分片大小 | 8MB | Stable |
-| foundationx.oss.timeout | 操作超时 | 10s | Stable |
+| 配置项                              | 含义              | 默认值 / 要求                         | 稳定性 |
+| ----------------------------------- | ----------------- | ------------------------------------- | ------ |
+| foundationx.oss.enabled             | 是否启用 ossx     | false，由业务显式启用                 | Stable |
+| foundationx.oss.backend             | 后端类型          | s3-compatible / minio / aliyun-oss 等 | Stable |
+| foundationx.oss.endpoint            | 对象存储 endpoint | 必须配置                              | Stable |
+| foundationx.oss.bucket              | 默认 bucket       | 必须配置                              | Stable |
+| foundationx.oss.access-key          | 访问密钥          | 必须配置且脱敏                        | Stable |
+| foundationx.oss.secret-key          | 密钥              | 必须配置且脱敏                        | Stable |
+| foundationx.oss.presign.max-ttl     | 预签名最大有效期  | 15m                                   | Stable |
+| foundationx.oss.multipart.part-size | 分片大小          | 8MB                                   | Stable |
+| foundationx.oss.timeout             | 操作超时          | 10s                                   | Stable |
 
 ## 9. 可观测契约
 
@@ -175,14 +175,14 @@ ObjectStorageAdapter SPI
 
 ### 9.2 指标
 
-| 指标名 | 类型 | 标签 | 说明 |
-| --- | --- | --- | --- |
-| foundationx_oss_operations_total | Counter | operation,bucket,status | 对象操作次数 |
-| foundationx_oss_operation_duration_ms | Timer | operation,bucket,status | 对象操作耗时 |
-| foundationx_oss_bytes_total | Counter | operation,bucket | 上传/下载字节数 |
-| foundationx_oss_multipart_total | Counter | operation,status | 分片上传操作次数 |
-| foundationx_oss_presign_total | Counter | method,bucket,status | 预签名 URL 生成次数 |
-| foundationx_oss_errors_total | Counter | operation,errorCode | 对象存储错误数 |
+| 指标名                                | 类型    | 标签                    | 说明                |
+| ------------------------------------- | ------- | ----------------------- | ------------------- |
+| foundationx_oss_operations_total      | Counter | operation,bucket,status | 对象操作次数        |
+| foundationx_oss_operation_duration_ms | Timer   | operation,bucket,status | 对象操作耗时        |
+| foundationx_oss_bytes_total           | Counter | operation,bucket        | 上传/下载字节数     |
+| foundationx_oss_multipart_total       | Counter | operation,status        | 分片上传操作次数    |
+| foundationx_oss_presign_total         | Counter | method,bucket,status    | 预签名 URL 生成次数 |
+| foundationx_oss_errors_total          | Counter | operation,errorCode     | 对象存储错误数      |
 
 ### 9.3 Trace / 诊断事件
 
@@ -194,14 +194,14 @@ ObjectStorageAdapter SPI
 
 ## 10. 错误模型与失败策略
 
-| 错误类别 | 典型原因 | 1.0 处理策略 |
-| --- | --- | --- |
-| OSS_OBJECT_NOT_FOUND | 对象不存在 | 返回 NotFound，不作为系统异常 |
-| OSS_UPLOAD_FAILED | 上传失败、网络中断 | 可重试场景按策略处理 |
-| OSS_DOWNLOAD_FAILED | 下载失败或流读取中断 | 返回失败并关闭流资源 |
-| OSS_MULTIPART_FAILED | 分片上传部分失败或 complete 失败 | 支持 abort 清理 |
-| OSS_PRESIGN_DENIED | 签名权限或过期时间不合法 | 拒绝生成并记录审计 |
-| OSS_CHECKSUM_MISMATCH | 校验和不一致 | 删除或隔离对象并返回数据损坏错误 |
+| 错误类别              | 典型原因                         | 1.0 处理策略                     |
+| --------------------- | -------------------------------- | -------------------------------- |
+| OSS_OBJECT_NOT_FOUND  | 对象不存在                       | 返回 NotFound，不作为系统异常    |
+| OSS_UPLOAD_FAILED     | 上传失败、网络中断               | 可重试场景按策略处理             |
+| OSS_DOWNLOAD_FAILED   | 下载失败或流读取中断             | 返回失败并关闭流资源             |
+| OSS_MULTIPART_FAILED  | 分片上传部分失败或 complete 失败 | 支持 abort 清理                  |
+| OSS_PRESIGN_DENIED    | 签名权限或过期时间不合法         | 拒绝生成并记录审计               |
+| OSS_CHECKSUM_MISMATCH | 校验和不一致                     | 删除或隔离对象并返回数据损坏错误 |
 
 ## 11. 安全、稳定性与兼容性要求
 
@@ -217,13 +217,13 @@ ObjectStorageAdapter SPI
 
 ## 12. 测试证据要求
 
-| 测试类型 | 必须覆盖内容 | 发布门禁 |
-| --- | --- | --- |
+| 测试类型 | 必须覆盖内容                                     | 发布门禁  |
+| -------- | ------------------------------------------------ | --------- |
 | 单元测试 | ObjectKeyBuilder、metadata、预签名约束、错误映射 | MUST 通过 |
-| 集成测试 | S3-compatible 后端 put/get/delete/head/list | MUST 通过 |
-| 分片测试 | 分片上传、complete、abort、部分失败 | MUST 通过 |
-| 安全测试 | 签名 TTL、URL 脱敏、路径穿越防护 | MUST 通过 |
-| 观测测试 | 字节数、耗时、审计事件、Trace 属性 | MUST 通过 |
+| 集成测试 | S3-compatible 后端 put/get/delete/head/list      | MUST 通过 |
+| 分片测试 | 分片上传、complete、abort、部分失败              | MUST 通过 |
+| 安全测试 | 签名 TTL、URL 脱敏、路径穿越防护                 | MUST 通过 |
+| 观测测试 | 字节数、耗时、审计事件、Trace 属性               | MUST 通过 |
 
 ## 13. 1.0 发布验收清单
 

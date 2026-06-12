@@ -28,17 +28,17 @@ status: pending
 
 ## Requirements Covered
 
-| Requirement | Description | Acceptance Criteria |
-|---|---|---|
-| FR-006 | Label Policy：Allowed 允许，Forbidden 拒绝 | 2 个 WHEN/THEN 场景 |
+| Requirement | Description                                | Acceptance Criteria |
+| ----------- | ------------------------------------------ | ------------------- |
+| FR-006      | Label Policy：Allowed 允许，Forbidden 拒绝 | 2 个 WHEN/THEN 场景 |
 
 ## Test Plan
 
-| Test Case | Type | Description |
-|---|---|---|
-| TC-002 | Unit | Label Policy 拒绝高基数：ForbiddenLabels 中的 label 返回错误 |
-| — | Unit | AllowedLabels 中的 label 允许通过 |
-| — | Unit | 并发调用安全（`-race` 通过） |
+| Test Case | Type | Description                                                  |
+| --------- | ---- | ------------------------------------------------------------ |
+| TC-002    | Unit | Label Policy 拒绝高基数：ForbiddenLabels 中的 label 返回错误 |
+| —         | Unit | AllowedLabels 中的 label 允许通过                            |
+| —         | Unit | 并发调用安全（`-race` 通过）                                 |
 
 ## Implementation Notes
 
@@ -48,13 +48,13 @@ status: pending
 
 ## Implementation Plan
 
-| Step | Description | Deliverables | Verification |
-|---|---|---|---|
-| 1 | 实现 `label_policy.go`：AllowedLabels/ForbiddenLabels 检查 | `label_policy.go` | `go test ./... -run TestLabelPolicy` 通过 |
-| 2 | 实现并发安全：RWMutex 保护策略读写 | `label_policy.go` | `go test ./... -race` 通过 |
+| Step | Description                                                | Deliverables      | Verification                              |
+| ---- | ---------------------------------------------------------- | ----------------- | ----------------------------------------- |
+| 1    | 实现 `label_policy.go`：AllowedLabels/ForbiddenLabels 检查 | `label_policy.go` | `go test ./... -run TestLabelPolicy` 通过 |
+| 2    | 实现并发安全：RWMutex 保护策略读写                         | `label_policy.go` | `go test ./... -race` 通过                |
 
 ### Risk Assessment
 
-| Risk | Probability | Impact | Mitigation |
-|---|---|---|---|
-| label policy 过于严格 | Low | Medium | 提供配置项放宽限制 |
+| Risk                  | Probability | Impact | Mitigation         |
+| --------------------- | ----------- | ------ | ------------------ |
+| label policy 过于严格 | Low         | Medium | 提供配置项放宽限制 |

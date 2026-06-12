@@ -8,19 +8,19 @@ Registry 保存长期状态，所有 Agent 共享。
 
 所有 Goal 相关状态统一存放在 `.config/goal/`，由 5 个 Goal Agent 共同维护：
 
-| 目录 | 文件 | 维护 Agent |
-|------|------|------------|
-| `.config/goal/registry/` | `goals.yaml` | goal-spec |
-| `.config/goal/registry/` | `tasks.yaml` | goal-spec |
-| `.config/goal/registry/` | `issues.yaml` | goal-spec |
-| `.config/goal/registry/` | `releases.yaml` | goal-spec |
-| `.config/goal/registry/` | `risks.yaml` | goal-spec |
-| `.config/goal/registry/` | `decisions.yaml` | goal-spec |
-| `.config/goal/matrix/` | `matrix.yaml` | goal-matrix |
-| `.config/goal/gates/` | `state.yaml` | goal-reviewer |
-| `.config/goal/pipeline/` | `state.yaml` | goal-spec |
-| `.config/goal/evidence/` | `EVID-*.md` | goal-evidence |
-| `.config/goal/prompts/` | `TASK-*/v*.md` | goal-prompt-builder |
+| 目录                     | 文件             | 维护 Agent          |
+| ------------------------ | ---------------- | ------------------- |
+| `.config/goal/registry/` | `goals.yaml`     | goal-spec           |
+| `.config/goal/registry/` | `tasks.yaml`     | goal-spec           |
+| `.config/goal/registry/` | `issues.yaml`    | goal-spec           |
+| `.config/goal/registry/` | `releases.yaml`  | goal-spec           |
+| `.config/goal/registry/` | `risks.yaml`     | goal-spec           |
+| `.config/goal/registry/` | `decisions.yaml` | goal-spec           |
+| `.config/goal/matrix/`   | `matrix.yaml`    | goal-matrix         |
+| `.config/goal/gates/`    | `state.yaml`     | goal-reviewer       |
+| `.config/goal/pipeline/` | `state.yaml`     | goal-spec           |
+| `.config/goal/evidence/` | `EVID-*.md`      | goal-evidence       |
+| `.config/goal/prompts/`  | `TASK-*/v*.md`   | goal-prompt-builder |
 
 ---
 

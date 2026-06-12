@@ -32,17 +32,17 @@ status: pending
 
 ## Requirements Covered
 
-| Requirement | Description | Acceptance Criteria |
-|---|---|---|
-| §9.3 | CircuitBreaker 接口 | Execute/State + CircuitState 枚举 |
-| §9.4 | Bulkhead 接口 | Execute/Available |
-| §9.5 | RateLimiter 接口 | Allow/Wait |
+| Requirement | Description         | Acceptance Criteria               |
+| ----------- | ------------------- | --------------------------------- |
+| §9.3        | CircuitBreaker 接口 | Execute/State + CircuitState 枚举 |
+| §9.4        | Bulkhead 接口       | Execute/Available                 |
+| §9.5        | RateLimiter 接口    | Allow/Wait                        |
 
 ## Test Plan
 
-| Test Case | Type | Description |
-|---|---|---|
-| — | Compile | 接口完整性编译验证 |
+| Test Case | Type    | Description        |
+| --------- | ------- | ------------------ |
+| —         | Compile | 接口完整性编译验证 |
 
 ## Implementation Notes
 
@@ -52,15 +52,15 @@ status: pending
 
 ## Implementation Plan
 
-| Step | Description | Deliverables | Verification |
-|---|---|---|---|
-| 1 | 定义 `CircuitBreaker` 接口、`CircuitState` 枚举、`CircuitOption` 类型 | `circuit.go` | `go build ./...` 通过 |
-| 2 | 定义 `Bulkhead` 接口和 `BulkheadOption` 类型 | `bulkhead.go` | `go build ./...` 通过 |
-| 3 | 定义 `RateLimiter` 接口和 `RateLimiterOption` 类型 | `ratelimiter.go` | `go build ./...` 通过 |
-| 4 | 定义通用 Option 类型和配置结构 | `options.go` | `go build ./...` 通过 |
+| Step | Description                                                           | Deliverables     | Verification          |
+| ---- | --------------------------------------------------------------------- | ---------------- | --------------------- |
+| 1    | 定义 `CircuitBreaker` 接口、`CircuitState` 枚举、`CircuitOption` 类型 | `circuit.go`     | `go build ./...` 通过 |
+| 2    | 定义 `Bulkhead` 接口和 `BulkheadOption` 类型                          | `bulkhead.go`    | `go build ./...` 通过 |
+| 3    | 定义 `RateLimiter` 接口和 `RateLimiterOption` 类型                    | `ratelimiter.go` | `go build ./...` 通过 |
+| 4    | 定义通用 Option 类型和配置结构                                        | `options.go`     | `go build ./...` 通过 |
 
 ### Risk Assessment
 
-| Risk | Probability | Impact | Mitigation |
-|---|---|---|---|
-| 接口签名与下游不匹配 | Medium | High | 对照 SPEC §9 确认 |
+| Risk                 | Probability | Impact | Mitigation        |
+| -------------------- | ----------- | ------ | ----------------- |
+| 接口签名与下游不匹配 | Medium      | High   | 对照 SPEC §9 确认 |

@@ -57,12 +57,12 @@ status: pending
 
 ## Requirements Covered
 
-| Requirement | Description | Acceptance Criteria |
-|---|---|---|
-| FR-013 | release manifest | manifest 生成且字段完整 |
-| FR-014 | release final check | checksum 校验通过 |
-| §21 | Upgrade Compatibility | 兼容性矩阵文档 |
-| §22 | Release DoD | 发布完成定义 |
+| Requirement | Description           | Acceptance Criteria     |
+| ----------- | --------------------- | ----------------------- |
+| FR-013      | release manifest      | manifest 生成且字段完整 |
+| FR-014      | release final check   | checksum 校验通过       |
+| §21         | Upgrade Compatibility | 兼容性矩阵文档          |
+| §22         | Release DoD           | 发布完成定义            |
 
 ## Test Plan
 

@@ -10,16 +10,16 @@
 
 ### 1.1 规模统计
 
-| 维度 | 数据 |
-|------|------|
-| 总行数 | **~11,047 行**（纯文档），含工具 ~18,000+ 行 |
-| 核心文档 | **30 个** (00-authority-map 至 26-rsi-full-standard) |
-| RSI 子标准 | **30 章**（rsi-standard/ 子目录） |
-| YAML Schema | **8 个** (4 数据 + 4 契约) |
-| 可执行工具 | **9 个脚本**（4 Bash + 5 Python） |
-| 变更请求 | **1 个已记录** (CR-20260610) |
-| 术语定义 | **53 条** (GLOSSARY.md) |
-| 单文件最大 | `goal-delivery.sh` (2,164 行 Shell) |
+| 维度        | 数据                                                 |
+| ----------- | ---------------------------------------------------- |
+| 总行数      | **~11,047 行**（纯文档），含工具 ~18,000+ 行         |
+| 核心文档    | **30 个** (00-authority-map 至 26-rsi-full-standard) |
+| RSI 子标准  | **30 章**（rsi-standard/ 子目录）                    |
+| YAML Schema | **8 个** (4 数据 + 4 契约)                           |
+| 可执行工具  | **9 个脚本**（4 Bash + 5 Python）                    |
+| 变更请求    | **1 个已记录** (CR-20260610)                         |
+| 术语定义    | **53 条** (GLOSSARY.md)                              |
+| 单文件最大  | `goal-delivery.sh` (2,164 行 Shell)                  |
 
 ### 1.2 文件分层
 
@@ -92,13 +92,13 @@ R0-R9 Gate 体系对自改进做了精细的分级控制：从 R0 证据摄入�
 
 **具体差距**：
 
-| 愿景能力 | 当前状态 | 差距 |
-|----------|----------|------|
-| Workflow Compiler（编译 Goal→Task 清单） | `goal-delivery.sh --compile` 已落地 | ✅ 已闭合 |
-| Prompt Compiler（控制面→执行约束） | 手工 Context Package | 🟡 半自动 |
-| Evidence Bundle 自动聚合 | 手工组装 | 🟡 roadmap Phase 3 |
-| Release Simulation | 未自动化 | 🔴 roadmap Phase 4 |
-| Eval Dataset 积累 | 未启动 | 🔴 roadmap Phase 5 |
+| 愿景能力                                 | 当前状态                            | 差距              |
+| ---------------------------------------- | ----------------------------------- | ----------------- |
+| Workflow Compiler（编译 Goal→Task 清单） | `goal-delivery.sh --compile` 已落地 | ✅ 已闭合          |
+| Prompt Compiler（控制面→执行约束）       | 手工 Context Package                | 🟡 半自动          |
+| Evidence Bundle 自动聚合                 | 手工组装                            | 🟡 roadmap Phase 3 |
+| Release Simulation                       | 未自动化                            | 🔴 roadmap Phase 4 |
+| Eval Dataset 积累                        | 未启动                              | 🔴 roadmap Phase 5 |
 
 **建议**：要么加速 Phase 4/5 落地，要么将愿景文档降级为"附录：未来方向"，避免新读者将愿景当成当前能力。
 
@@ -159,14 +159,14 @@ WARN: CR-20260610-goal-protected-assets-sync.md G-LINT-005 [需人工确认]: Go
 
 体系自评 L3（标准化），综合统一度 85/100。我的独立评估：
 
-| 维度 | 自评 | 独立评估 | 说明 |
-|------|------|----------|------|
-| 方法论完整性 | — | 92/100 | 30 文档覆盖从 Goal 到 Retrospective 全链路 |
-| 工具链执行力 | — | 85/100 | 9 脚本 + CI 集成 + 自测体系，扎实 |
-| 跨平台一致性 | 82 | 78/100 | 存在 3 个 MEDIUM 漂移未修复 |
-| 下游可采纳性 | — | 65/100 | 部署包完善，但缺乏采纳率数据 |
-| 治理闭环 | — | 88/100 | Authority map + SSOT + Gate + CR 体系完整 |
-| 自改进机制 | — | 80/100 | R0-R9 设计优秀，但 Eval Dataset 为空 |
+| 维度         | 自评   | 独立评估   | 说明                                       |
+| ------------ | ------ | ---------- | ------------------------------------------ |
+| 方法论完整性 | —      | 92/100     | 30 文档覆盖从 Goal 到 Retrospective 全链路 |
+| 工具链执行力 | —      | 85/100     | 9 脚本 + CI 集成 + 自测体系，扎实          |
+| 跨平台一致性 | 82     | 78/100     | 存在 3 个 MEDIUM 漂移未修复                |
+| 下游可采纳性 | —      | 65/100     | 部署包完善，但缺乏采纳率数据               |
+| 治理闭环     | —      | 88/100     | Authority map + SSOT + Gate + CR 体系完整  |
+| 自改进机制   | —      | 80/100     | R0-R9 设计优秀，但 Eval Dataset 为空       |
 
 **综合独立评估：82/100**（略低于自评 85，主要扣分在下游采纳率和跨平台语义一致性）
 
@@ -192,21 +192,21 @@ Phase 5 🟡 Self-optimizing     → L5，MVP 已落地但 Eval Dataset 为空
 
 ### 5.2 P1（影响一致性）
 
-| # | 问题 | 位置 |
-|---|------|------|
-| 1 | Matrix Verified 定义跨平台不一致（2 链路 vs 4 链路） | `agent-cross-platform-compatibility.md` §3.5.2 |
-| 2 | G10 阻断条件 Claude=7 vs Codex/Copilot=8 | 同上 §3.5.1 |
-| 3 | CR 文件被 lint-goal.sh 扫描并报告 WARN | `lint-goal.sh` 缺少 change-requests/ 排除 |
-| 4 | Phase 4/5 标记为 "✅ 已完成" 但核心验收项未达成 | `deploy/roadmap.md` |
+| #   | 问题                                                 | 位置                                           |
+| --- | ---------------------------------------------------- | ---------------------------------------------- |
+| 1   | Matrix Verified 定义跨平台不一致（2 链路 vs 4 链路） | `agent-cross-platform-compatibility.md` §3.5.2 |
+| 2   | G10 阻断条件 Claude=7 vs Codex/Copilot=8             | 同上 §3.5.1                                    |
+| 3   | CR 文件被 lint-goal.sh 扫描并报告 WARN               | `lint-goal.sh` 缺少 change-requests/ 排除      |
+| 4   | Phase 4/5 标记为 "✅ 已完成" 但核心验收项未达成       | `deploy/roadmap.md`                            |
 
 ### 5.3 P2（影响清晰度）
 
-| # | 问题 | 位置 |
-|---|------|------|
-| 5 | 愿景文档（22、23）与当前能力的差距未在文档内标注 | `22-delivery-os.md`, `23-workflow-governance-checks.md`（虽有 Vision 标签，但未列具体差距） |
-| 6 | 30 章 RSI 标准的实用性和目标读者不清晰 | `rsi-standard/` |
-| 7 | 缺少下游仓库采纳率的量化跟踪指标 | `18-maturity.md`, `deploy/roadmap.md` |
-| 8 | Copilot/Codex Agent 缺少精简文档索引（已记录为 P3 建议，建议升级为 P2） | `agent-cross-platform-compatibility.md` §7.5 |
+| #   | 问题                                                                    | 位置                                                                                        |
+| --- | ----------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| 5   | 愿景文档（22、23）与当前能力的差距未在文档内标注                        | `22-delivery-os.md`, `23-workflow-governance-checks.md`（虽有 Vision 标签，但未列具体差距） |
+| 6   | 30 章 RSI 标准的实用性和目标读者不清晰                                  | `rsi-standard/`                                                                             |
+| 7   | 缺少下游仓库采纳率的量化跟踪指标                                        | `18-maturity.md`, `deploy/roadmap.md`                                                       |
+| 8   | Copilot/Codex Agent 缺少精简文档索引（已记录为 P3 建议，建议升级为 P2） | `agent-cross-platform-compatibility.md` §7.5                                                |
 
 ---
 
@@ -214,14 +214,14 @@ Phase 5 🟡 Self-optimizing     → L5，MVP 已落地但 Eval Dataset 为空
 
 本次分析期间识别到的关键架构决策：
 
-| 决策 | 判断 | 理由 |
-|------|------|------|
-| Matrix 作为横切制品而非管线阶段 | ✅ 正确 | 避免管线膨胀，Matrix 本质是跨阶段索引 |
-| 四轴状态模型 | ✅ 正确 | 清晰分离全局状态/层级/进度/执行，防止状态语义混淆 |
-| SSOT + 投影模式 | ✅ 正确 | 每个概念一个权威源，其余位置只引用，这是防止文档腐烂的最有效机制 |
-| Controlled RSI 的分级 Gate (R0-R9) | ✅ 正确 | 既允许自动化改进，又设置了硬性安全边界 |
-| docs/goal/ 不覆盖 Constitution | ✅ 正确 | 治理层级清晰：Constitution > docs/goal > 模块文档 |
-| 模块代码路径 `/home/{module}` 与制品路径 `module/{module}/` 分离 | ✅ 正确 | 源码和制品物理隔离，防止规格仓库承载实现代码 |
+| 决策                                                             | 判断   | 理由                                                             |
+| ---------------------------------------------------------------- | ------ | ---------------------------------------------------------------- |
+| Matrix 作为横切制品而非管线阶段                                  | ✅ 正确 | 避免管线膨胀，Matrix 本质是跨阶段索引                            |
+| 四轴状态模型                                                     | ✅ 正确 | 清晰分离全局状态/层级/进度/执行，防止状态语义混淆                |
+| SSOT + 投影模式                                                  | ✅ 正确 | 每个概念一个权威源，其余位置只引用，这是防止文档腐烂的最有效机制 |
+| Controlled RSI 的分级 Gate (R0-R9)                               | ✅ 正确 | 既允许自动化改进，又设置了硬性安全边界                           |
+| docs/goal/ 不覆盖 Constitution                                   | ✅ 正确 | 治理层级清晰：Constitution > docs/goal > 模块文档                |
+| 模块代码路径 `/home/{module}` 与制品路径 `module/{module}/` 分离 | ✅ 正确 | 源码和制品物理隔离，防止规格仓库承载实现代码                     |
 
 ---
 

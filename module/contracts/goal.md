@@ -1,13 +1,13 @@
 # contracts 发布版本 1.0 Goal 定位与实现标准
 
-| 字段 | 内容 |
-| --- | --- |
-| 模块名 | `contracts` |
-| 发布版本 | 1.0.0 |
-| 所属层级 | 稳定契约层 / 跨模块跨服务兼容性 |
-| 稳定级别 | Public API Stable；SPI Stable；Internal 可演进 |
-| 文档状态 | 1.0 发布基线文档 |
-| 发布日期基准 | 2026-06-09 |
+| 字段         | 内容                                           |
+| ------------ | ---------------------------------------------- |
+| 模块名       | `contracts`                                    |
+| 发布版本     | 1.0.0                                          |
+| 所属层级     | 稳定契约层 / 跨模块跨服务兼容性                |
+| 稳定级别     | Public API Stable；SPI Stable；Internal 可演进 |
+| 文档状态     | 1.0 发布基线文档                               |
+| 发布日期基准 | 2026-06-09                                     |
 
 ## 术语约定
 
@@ -58,24 +58,24 @@
 
 ## 3. 核心场景
 
-| 场景 | 说明 | 1.0 期望结果 |
-| --- | --- | --- |
-| API 升级 | 服务接口新增响应字段 | 判断为兼容变更，契约版本 minor 增加 |
-| 事件演进 | Kafka 事件 payload 新增可选字段 | 旧消费者可继续消费，契约测试通过 |
-| 错误码治理 | redisx 新增错误码 | 检查错误码段和分类不冲突 |
-| 配置变更 | configx 废弃旧配置项 | 标记 deprecated，给出替代项和移除版本 |
+| 场景       | 说明                            | 1.0 期望结果                          |
+| ---------- | ------------------------------- | ------------------------------------- |
+| API 升级   | 服务接口新增响应字段            | 判断为兼容变更，契约版本 minor 增加   |
+| 事件演进   | Kafka 事件 payload 新增可选字段 | 旧消费者可继续消费，契约测试通过      |
+| 错误码治理 | redisx 新增错误码               | 检查错误码段和分类不冲突              |
+| 配置变更   | configx 废弃旧配置项            | 标记 deprecated，给出替代项和移除版本 |
 
 ## 4. 能力范围
 
-| 能力域 | 1.0 必须具备的能力 | 验收方式 |
-| --- | --- | --- |
-| 契约模型 | ContractDescriptor、version、owner、status、compatibility | 模型测试通过 |
-| API 契约 | 请求/响应、状态码、错误码、认证、分页 | API diff 测试通过 |
-| 事件契约 | topic/subject、Envelope、payload schema、headers | 事件兼容测试通过 |
-| 错误契约 | 错误码段、分类、可重试、用户消息 | 错误码冲突测试通过 |
-| 配置契约 | 配置项、默认值、动态性、敏感性、废弃信息 | 配置契约测试通过 |
-| 兼容性检查 | diff、破坏性判定、迁移建议 | 兼容性测试通过 |
-| 契约发布 | 契约包、版本、变更日志、签名/校验和 | 发布测试通过 |
+| 能力域     | 1.0 必须具备的能力                                        | 验收方式           |
+| ---------- | --------------------------------------------------------- | ------------------ |
+| 契约模型   | ContractDescriptor、version、owner、status、compatibility | 模型测试通过       |
+| API 契约   | 请求/响应、状态码、错误码、认证、分页                     | API diff 测试通过  |
+| 事件契约   | topic/subject、Envelope、payload schema、headers          | 事件兼容测试通过   |
+| 错误契约   | 错误码段、分类、可重试、用户消息                          | 错误码冲突测试通过 |
+| 配置契约   | 配置项、默认值、动态性、敏感性、废弃信息                  | 配置契约测试通过   |
+| 兼容性检查 | diff、破坏性判定、迁移建议                                | 兼容性测试通过     |
+| 契约发布   | 契约包、版本、变更日志、签名/校验和                       | 发布测试通过       |
 
 ## 5. 职责边界
 
@@ -95,24 +95,24 @@
 
 ## 6. 依赖关系与分层约束
 
-| 依赖类型 | 约束 |
-| --- | --- |
-| 上游依赖 | 依赖 xlib-standard 的规则；依赖 kernel 的基础模型（Result/XError 等）。 |
+| 依赖类型 | 约束                                                                                                                                                                                          |
+| -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 上游依赖 | 依赖 xlib-standard 的规则；依赖 kernel 的基础模型（Result/XError 等）。                                                                                                                       |
 | 下游依赖 | 所有运行时模块 MUST 向 contracts 登记契约：configx、observex、resiliencx、schedulex、xlibgate、redisx、kafkax、natsx、postgresx、taosx、ossx、clickhousex；testkitx SHOULD 登记测试工具契约。 |
-| 分层约束 | contracts 管契约，不管实现；实现模块必须反向证明符合契约。 |
+| 分层约束 | contracts 管契约，不管实现；实现模块必须反向证明符合契约。                                                                                                                                    |
 
 ## 7. 对外契约
 
 ### 7.1 公开能力面
 
-| 契约 | 定位 | 1.0 稳定承诺 |
-| --- | --- | --- |
-| ContractDescriptor | 契约元数据 | 核心字段稳定 |
-| CompatibilityReport | 兼容性检查结果 | 结果分类稳定 |
-| ContractDiff | 契约差异模型 | diff 类型稳定 |
-| ContractRegistry | 契约登记接口 | 登记和查询语义稳定 |
-| ContractTestSpec | 契约测试输入 | 测试字段稳定 |
-| MessageEnvelope | 消息信封基线 | 共享字段稳定，模块可扩展 |
+| 契约                | 定位           | 1.0 稳定承诺             |
+| ------------------- | -------------- | ------------------------ |
+| ContractDescriptor  | 契约元数据     | 核心字段稳定             |
+| CompatibilityReport | 兼容性检查结果 | 结果分类稳定             |
+| ContractDiff        | 契约差异模型   | diff 类型稳定            |
+| ContractRegistry    | 契约登记接口   | 登记和查询语义稳定       |
+| ContractTestSpec    | 契约测试输入   | 测试字段稳定             |
+| MessageEnvelope     | 消息信封基线   | 共享字段稳定，模块可扩展 |
 
 ### 7.2 1.0 逻辑接口基线
 
@@ -161,13 +161,13 @@ Compatibility rules:
 
 ## 8. 配置契约
 
-| 配置项 | 含义 | 默认值 / 要求 | 稳定性 |
-| --- | --- | --- | --- |
-| foundationx.contracts.enabled | 是否启用契约检查 | true | Stable |
-| foundationx.contracts.registry | 契约目录位置 | contracts/ | Stable |
-| foundationx.contracts.fail-on-breaking | 破坏性变更是否阻断 | true | Stable |
-| foundationx.contracts.allow-draft | 是否允许 draft 契约发布 | false for stable release | Stable |
-| foundationx.contracts.report.dir | 契约报告输出目录 | build/contract-report | Stable |
+| 配置项                                 | 含义                    | 默认值 / 要求            | 稳定性 |
+| -------------------------------------- | ----------------------- | ------------------------ | ------ |
+| foundationx.contracts.enabled          | 是否启用契约检查        | true                     | Stable |
+| foundationx.contracts.registry         | 契约目录位置            | contracts/               | Stable |
+| foundationx.contracts.fail-on-breaking | 破坏性变更是否阻断      | true                     | Stable |
+| foundationx.contracts.allow-draft      | 是否允许 draft 契约发布 | false for stable release | Stable |
+| foundationx.contracts.report.dir       | 契约报告输出目录        | build/contract-report    | Stable |
 
 ## 9. 可观测契约
 
@@ -179,13 +179,13 @@ Compatibility rules:
 
 ### 9.2 指标
 
-| 指标名 | 类型 | 标签 | 说明 |
-| --- | --- | --- | --- |
-| foundationx_contracts_total | Gauge | type,status | 契约数量 |
-| foundationx_contracts_check_total | Counter | type,status | 契约检查次数 |
-| foundationx_contracts_breaking_total | Counter | type,changeType | 破坏性变更数量 |
-| foundationx_contracts_deprecated_total | Gauge | type | 废弃契约数量 |
-| foundationx_contracts_report_duration_ms | Timer | status | 契约报告生成耗时 |
+| 指标名                                   | 类型    | 标签            | 说明             |
+| ---------------------------------------- | ------- | --------------- | ---------------- |
+| foundationx_contracts_total              | Gauge   | type,status     | 契约数量         |
+| foundationx_contracts_check_total        | Counter | type,status     | 契约检查次数     |
+| foundationx_contracts_breaking_total     | Counter | type,changeType | 破坏性变更数量   |
+| foundationx_contracts_deprecated_total   | Gauge   | type            | 废弃契约数量     |
+| foundationx_contracts_report_duration_ms | Timer   | status          | 契约报告生成耗时 |
 
 ### 9.3 Trace / 诊断事件
 
@@ -194,13 +194,13 @@ Compatibility rules:
 
 ## 10. 错误模型与失败策略
 
-| 错误类别 | 典型原因 | 1.0 处理策略 |
-| --- | --- | --- |
-| CONTRACT_NOT_FOUND | 引用的契约不存在 | 发布阻断 |
-| CONTRACT_SCHEMA_INVALID | 契约 schema 格式非法 | 发布阻断 |
-| CONTRACT_BREAKING_CHANGE | 检测到破坏性变更 | 发布阻断或要求 major 版本 |
-| CONTRACT_VERSION_CONFLICT | 同一契约版本重复发布但内容不同 | 发布阻断 |
-| CONTRACT_DEPRECATED_USAGE | 仍在使用废弃契约 | 告警或按门禁策略处理 |
+| 错误类别                  | 典型原因                       | 1.0 处理策略              |
+| ------------------------- | ------------------------------ | ------------------------- |
+| CONTRACT_NOT_FOUND        | 引用的契约不存在               | 发布阻断                  |
+| CONTRACT_SCHEMA_INVALID   | 契约 schema 格式非法           | 发布阻断                  |
+| CONTRACT_BREAKING_CHANGE  | 检测到破坏性变更               | 发布阻断或要求 major 版本 |
+| CONTRACT_VERSION_CONFLICT | 同一契约版本重复发布但内容不同 | 发布阻断                  |
+| CONTRACT_DEPRECATED_USAGE | 仍在使用废弃契约               | 告警或按门禁策略处理      |
 
 ## 11. 安全、稳定性与兼容性要求
 
@@ -210,14 +210,14 @@ Compatibility rules:
 
 ## 12. 测试证据要求
 
-| 测试类型 | 必须覆盖内容 | 发布门禁 |
-| --- | --- | --- |
-| 单元测试 | ContractDescriptor、version、status、diff 类型 | MUST 通过 |
-| 兼容性测试 | 新增/删除/重命名/类型变化/枚举变化 | MUST 通过 |
-| 集成测试 | 与 testkitx 证据包和 kafkax 事件契约集成 | MUST 通过 |
+| 测试类型     | 必须覆盖内容                                                                          | 发布门禁  |
+| ------------ | ------------------------------------------------------------------------------------- | --------- |
+| 单元测试     | ContractDescriptor、version、status、diff 类型                                        | MUST 通过 |
+| 兼容性测试   | 新增/删除/重命名/类型变化/枚举变化                                                    | MUST 通过 |
+| 集成测试     | 与 testkitx 证据包和 kafkax 事件契约集成                                              | MUST 通过 |
 | 消息信封测试 | kafkax EventEnvelope 和 natsx NatsMessageEnvelope 均包含 MessageEnvelope 5 个基线字段 | MUST 通过 |
-| 发布测试 | 契约包生成、报告生成、版本冲突检测 | MUST 通过 |
-| 安全测试 | 契约示例数据敏感信息扫描 | MUST 通过 |
+| 发布测试     | 契约包生成、报告生成、版本冲突检测                                                    | MUST 通过 |
+| 安全测试     | 契约示例数据敏感信息扫描                                                              | MUST 通过 |
 
 ## 13. 1.0 发布验收清单
 

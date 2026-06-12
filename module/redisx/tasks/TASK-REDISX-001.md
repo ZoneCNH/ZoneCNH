@@ -30,15 +30,15 @@ status: pending
 
 ## Requirements Covered
 
-| Requirement | Description | Acceptance Criteria |
-|---|---|---|
-| §9 | 接口契约 | 所有接口签名与 SPEC 一致 |
+| Requirement | Description | Acceptance Criteria      |
+| ----------- | ----------- | ------------------------ |
+| §9          | 接口契约    | 所有接口签名与 SPEC 一致 |
 
 ## Test Plan
 
-| Test Case | Type | Description |
-|---|---|---|
-| — | Compile | 接口完整性编译验证 |
+| Test Case | Type    | Description        |
+| --------- | ------- | ------------------ |
+| —         | Compile | 接口完整性编译验证 |
 
 ## Implementation Notes
 
@@ -48,14 +48,14 @@ status: pending
 
 ## Implementation Plan
 
-| Step | Description | Deliverables | Verification |
-|---|---|---|---|
-| 1 | 定义 `Client` 接口 | `client.go` | `go build ./...` 通过 |
-| 2 | 定义 `Locker` 接口 | `locker.go` | `go build ./...` 通过 |
-| 3 | 定义 `Pipeline` 接口 | `pipeline.go` | `go build ./...` 通过 |
+| Step | Description          | Deliverables  | Verification          |
+| ---- | -------------------- | ------------- | --------------------- |
+| 1    | 定义 `Client` 接口   | `client.go`   | `go build ./...` 通过 |
+| 2    | 定义 `Locker` 接口   | `locker.go`   | `go build ./...` 通过 |
+| 3    | 定义 `Pipeline` 接口 | `pipeline.go` | `go build ./...` 通过 |
 
 ### Risk Assessment
 
-| Risk | Probability | Impact | Mitigation |
-|---|---|---|---|
-| 接口方法遗漏 | Low | Medium | 对照 SPEC §9 |
+| Risk         | Probability | Impact | Mitigation   |
+| ------------ | ----------- | ------ | ------------ |
+| 接口方法遗漏 | Low         | Medium | 对照 SPEC §9 |

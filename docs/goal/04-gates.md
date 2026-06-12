@@ -8,11 +8,11 @@
 
 ## 1. Gate 类型
 
-| 类型 | 说明 |
-|------|------|
-| Semantic Gate | 需要 Agent/Reviewer 语义判断 |
-| Executable Gate | 可以通过命令、脚本、CI 自动判断 |
-| Hybrid Gate | 先脚本检查，再人工或 Agent 解释风险 |
+| 类型            | 说明                                |
+| --------------- | ----------------------------------- |
+| Semantic Gate   | 需要 Agent/Reviewer 语义判断        |
+| Executable Gate | 可以通过命令、脚本、CI 自动判断     |
+| Hybrid Gate     | 先脚本检查，再人工或 Agent 解释风险 |
 
 ## 2. Gate 结构
 
@@ -34,37 +34,37 @@ gate_id:
 
 下表是 G0-G11 的最小可执行口径。单个 Gate 的详细检查项以后文为准；执行者不得只凭阶段名称跳过输入、输出、阻断条件或证据。
 
-| Gate | 必备输入 | 必备输出 | 硬阻断条件 | 证据要求 |
-|------|----------|----------|------------|----------|
-| G0 Context | Goal / Spec / Design / Plan / Task 上下文、branch、commit、运行态快照 | 可继续执行的上下文状态 | 关键上下文缺失；环境或分支状态无法解释 | 恢复记录、branch / commit、已加载文档清单 |
-| G1 Goal | Draft Goal、owner、成功指标、non-goals、约束 | Approved / Rejected Goal verdict | 缺 owner、成功指标、验收标准、边界或 non-goals | Goal review 记录、指标和边界说明 |
-| G2 Spec | Approved Goal、Spec、AC、NFR、风险和约束 | Approved / Rejected Spec verdict | 需求不可测试；P0/P1 AC 缺失；安全、异常或边界路径缺失 | Spec review 记录、AC / NFR 清单、风险记录 |
-| G3 Design | Approved Spec、架构边界、模块映射、风险 | Approved / Rejected Design verdict | 需求无模块映射；接口不可测试；循环依赖；关键决策无记录 | Design review、ADR 或等价决策记录、风险缓解记录 |
-| G4 Plan | Approved Design、依赖关系、验证目标、rollback 约束 | Approved / Rejected Plan verdict | 执行顺序不满足依赖；无验证点；无 rollback 或 checkpoint | Plan review、依赖顺序、验证命令、rollback/checkpoint 说明 |
-| G5 Task / Matrix | Approved Plan、Task specs、Matrix edges | 原子任务和 Matrix coverage verdict | Task 不可独立完成；release-critical edge 无 owner / gate / evidence；orphan edge 未解释 | Task DoR、Matrix check-only、coverage / orphan 检查 |
-| G6 Implementation | Approved Task、Prompt / Context Package、allowed files、禁止范围 | 有界 diff 或阻断 verdict | Prompt 缺上下文或验证命令；实现越界；共享 writer 冲突 | Prompt review、allowed files、diff、越界检查记录 |
-| G7 Test | Code diff、Test Plan、环境、命令 | PASS / FAIL 测试结果 | P0/P1 测试缺失或失败；失败证据被删除；环境不可复现 | 命令、环境、测试输出、失败证据 |
-| G8 Evidence | 测试、review、Matrix、Risk、commit/artifact | Evidence Bundle verdict | 缺 command、environment、commit/artifact、owner、AC 映射或失败记录 | Evidence Bundle ID / path、结果摘要、保留策略 |
-| G9 Review | Code diff、Evidence Bundle、Matrix、Risk | Review PASS / FAIL verdict | 未解决 P0/P1 finding；scope creep；安全、性能或边界问题未闭环 | reviewer、finding、resolution、risk acceptance 记录 |
-| G10 Release | strict validator、Matrix check-only、Evidence Bundle、validation summary、Release Manifest、Risk Register、rollback validation | Release PASS / FAIL verdict | 缺 Release Manifest、Risk Register、Evidence Bundle、validation summary 或 rollback validation；存在 open release_blocking risk | G10 verdict、Release Manifest、Risk Register、validation summary、rollback validation |
-| G11 Retrospective | Release 结果、metrics、incident / rollback 记录、review findings | Retrospective report 和改进 backlog | 复盘事实缺失；改进项无 owner 或无验证方式 | Metrics Review、Gap Report、RSI backlog、后续 owner |
+| Gate              | 必备输入                                                                                                                       | 必备输出                            | 硬阻断条件                                                                                                                      | 证据要求                                                                              |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| G0 Context        | Goal / Spec / Design / Plan / Task 上下文、branch、commit、运行态快照                                                          | 可继续执行的上下文状态              | 关键上下文缺失；环境或分支状态无法解释                                                                                          | 恢复记录、branch / commit、已加载文档清单                                             |
+| G1 Goal           | Draft Goal、owner、成功指标、non-goals、约束                                                                                   | Approved / Rejected Goal verdict    | 缺 owner、成功指标、验收标准、边界或 non-goals                                                                                  | Goal review 记录、指标和边界说明                                                      |
+| G2 Spec           | Approved Goal、Spec、AC、NFR、风险和约束                                                                                       | Approved / Rejected Spec verdict    | 需求不可测试；P0/P1 AC 缺失；安全、异常或边界路径缺失                                                                           | Spec review 记录、AC / NFR 清单、风险记录                                             |
+| G3 Design         | Approved Spec、架构边界、模块映射、风险                                                                                        | Approved / Rejected Design verdict  | 需求无模块映射；接口不可测试；循环依赖；关键决策无记录                                                                          | Design review、ADR 或等价决策记录、风险缓解记录                                       |
+| G4 Plan           | Approved Design、依赖关系、验证目标、rollback 约束                                                                             | Approved / Rejected Plan verdict    | 执行顺序不满足依赖；无验证点；无 rollback 或 checkpoint                                                                         | Plan review、依赖顺序、验证命令、rollback/checkpoint 说明                             |
+| G5 Task / Matrix  | Approved Plan、Task specs、Matrix edges                                                                                        | 原子任务和 Matrix coverage verdict  | Task 不可独立完成；release-critical edge 无 owner / gate / evidence；orphan edge 未解释                                         | Task DoR、Matrix check-only、coverage / orphan 检查                                   |
+| G6 Implementation | Approved Task、Prompt / Context Package、allowed files、禁止范围                                                               | 有界 diff 或阻断 verdict            | Prompt 缺上下文或验证命令；实现越界；共享 writer 冲突                                                                           | Prompt review、allowed files、diff、越界检查记录                                      |
+| G7 Test           | Code diff、Test Plan、环境、命令                                                                                               | PASS / FAIL 测试结果                | P0/P1 测试缺失或失败；失败证据被删除；环境不可复现                                                                              | 命令、环境、测试输出、失败证据                                                        |
+| G8 Evidence       | 测试、review、Matrix、Risk、commit/artifact                                                                                    | Evidence Bundle verdict             | 缺 command、environment、commit/artifact、owner、AC 映射或失败记录                                                              | Evidence Bundle ID / path、结果摘要、保留策略                                         |
+| G9 Review         | Code diff、Evidence Bundle、Matrix、Risk                                                                                       | Review PASS / FAIL verdict          | 未解决 P0/P1 finding；scope creep；安全、性能或边界问题未闭环                                                                   | reviewer、finding、resolution、risk acceptance 记录                                   |
+| G10 Release       | strict validator、Matrix check-only、Evidence Bundle、validation summary、Release Manifest、Risk Register、rollback validation | Release PASS / FAIL verdict         | 缺 Release Manifest、Risk Register、Evidence Bundle、validation summary 或 rollback validation；存在 open release_blocking risk | G10 verdict、Release Manifest、Risk Register、validation summary、rollback validation |
+| G11 Retrospective | Release 结果、metrics、incident / rollback 记录、review findings                                                               | Retrospective report 和改进 backlog | 复盘事实缺失；改进项无 owner 或无验证方式                                                                                       | Metrics Review、Gap Report、RSI backlog、后续 owner                                   |
 
 ## 3. 必备 Gates
 
-| Gate | 名称 | 类型 | 检查内容 |
-|------|------|------|----------|
-| G0 | Context Gate | Hybrid | 上下文恢复完整 |
-| G1 | Goal Gate | Semantic | Goal 符合 SMART 标准 |
-| G2 | Spec Gate | Semantic | Spec 完整且可测试 |
-| G3 | Design Gate | Semantic | Design 可映射到模块 |
-| G4 | Plan Gate | Semantic | Plan 体现依赖顺序 |
-| G5 | Task Gate | Executable | Task 原子化且有 DoD |
-| G6 | Implementation Gate | Executable | 实现未越界 |
-| G7 | Test Gate | Executable | 测试通过 |
-| G8 | Evidence Gate | Executable | Evidence 完整 |
-| G9 | Review Gate | Semantic | Review 通过 |
-| G10 | Release Gate | Hybrid | Release 就绪 |
-| G11 | Retrospective Gate | Semantic | 复盘完成 |
+| Gate   | 名称                | 类型       | 检查内容             |
+| ------ | ------------------- | ---------- | -------------------- |
+| G0     | Context Gate        | Hybrid     | 上下文恢复完整       |
+| G1     | Goal Gate           | Semantic   | Goal 符合 SMART 标准 |
+| G2     | Spec Gate           | Semantic   | Spec 完整且可测试    |
+| G3     | Design Gate         | Semantic   | Design 可映射到模块  |
+| G4     | Plan Gate           | Semantic   | Plan 体现依赖顺序    |
+| G5     | Task Gate           | Executable | Task 原子化且有 DoD  |
+| G6     | Implementation Gate | Executable | 实现未越界           |
+| G7     | Test Gate           | Executable | 测试通过             |
+| G8     | Evidence Gate       | Executable | Evidence 完整        |
+| G9     | Review Gate         | Semantic   | Review 通过          |
+| G10    | Release Gate        | Hybrid     | Release 就绪         |
+| G11    | Retrospective Gate  | Semantic   | 复盘完成             |
 
 ### G0 Context Gate
 
@@ -290,20 +290,20 @@ Gate 同时记录 `score` 和 `threshold` 时：
 
 ### 允许 PASS_WITH_RISK 的 Gate
 
-| Gate | 允许 | PASS 阈值 | PASS_WITH_RISK 最低 | 风险必须字段 | 备注 |
-|------|------|-----------|---------------------|-------------|------|
-| G0 | 是 | 90 | 80 | risk_id, risk_owner, risk_level, risk_reason, mitigation, due_at, review_gate, release_blocking, evidence_id | 上下文恢复 |
-| G1 | 是 | 90 | 80 | 同上 | Goal 语义审查 |
-| G2 | 是 | 90 | 85 | 同上 | Spec 完整性审查 |
-| G3 | 是 | 90 | 85 | 同上 | Design 架构审查 |
-| G4 | 是 | 90 | 85 | 同上 | Plan 执行策略审查 |
-| G5 | 是 | 90 | 85 | 同上 | Task/Matrix 覆盖 |
-| G6 | **否** | 90 | — | — | 实现 Gate 不允许风险通过 |
-| G7 | 是 | 90 | 85 | 同上 | 测试 Gate |
-| G8 | 是 | 90 | 85 | 同上 | 证据 Gate |
-| G9 | 是 | 90 | 85 | 同上 | 审查 Gate |
-| G10 | **否** | 90 | — | — | Release Gate 不允许风险通过 |
-| G11 | 是 | 80 | 70 | 同上 | 复盘 Gate（非阻断） |
+| Gate   | 允许   | PASS 阈值   | PASS_WITH_RISK 最低   | 风险必须字段                                                                                                 | 备注                        |
+| ------ | ------ | ----------- | --------------------- | ------------------------------------------------------------------------------------------------------------ | --------------------------- |
+| G0     | 是     | 90          | 80                    | risk_id, risk_owner, risk_level, risk_reason, mitigation, due_at, review_gate, release_blocking, evidence_id | 上下文恢复                  |
+| G1     | 是     | 90          | 80                    | 同上                                                                                                         | Goal 语义审查               |
+| G2     | 是     | 90          | 85                    | 同上                                                                                                         | Spec 完整性审查             |
+| G3     | 是     | 90          | 85                    | 同上                                                                                                         | Design 架构审查             |
+| G4     | 是     | 90          | 85                    | 同上                                                                                                         | Plan 执行策略审查           |
+| G5     | 是     | 90          | 85                    | 同上                                                                                                         | Task/Matrix 覆盖            |
+| G6     | **否** | 90          | —                     | —                                                                                                            | 实现 Gate 不允许风险通过    |
+| G7     | 是     | 90          | 85                    | 同上                                                                                                         | 测试 Gate                   |
+| G8     | 是     | 90          | 85                    | 同上                                                                                                         | 证据 Gate                   |
+| G9     | 是     | 90          | 85                    | 同上                                                                                                         | 审查 Gate                   |
+| G10    | **否** | 90          | —                     | —                                                                                                            | Release Gate 不允许风险通过 |
+| G11    | 是     | 80          | 70                    | 同上                                                                                                         | 复盘 Gate（非阻断）         |
 
 ### PASS_WITH_RISK 必须包含的风险元数据
 

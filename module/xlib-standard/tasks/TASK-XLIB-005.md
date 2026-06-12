@@ -58,13 +58,13 @@ status: pending
 
 ## Requirements Covered
 
-| Requirement | Description | Acceptance Criteria |
-|---|---|---|
-| FR-010 | 生成库无模板残留 | 生成库不包含 templatex、xlib-standard、foundationx 或 baselib-template 残留 |
-| FR-014 | release final check | release-final-check 通过 |
-| §22 | Release DoD | 所有 AC 通过 |
-| goal.md §12 | 生成库验收 | 临时目录测试通过 |
-| goal.md §13 | 最终验收命令 | 100 次自检通过 |
+| Requirement | Description         | Acceptance Criteria                                                         |
+| ----------- | ------------------- | --------------------------------------------------------------------------- |
+| FR-010      | 生成库无模板残留    | 生成库不包含 templatex、xlib-standard、foundationx 或 baselib-template 残留 |
+| FR-014      | release final check | release-final-check 通过                                                    |
+| §22         | Release DoD         | 所有 AC 通过                                                                |
+| goal.md §12 | 生成库验收          | 临时目录测试通过                                                            |
+| goal.md §13 | 最终验收命令        | 100 次自检通过                                                              |
 
 ## Test Plan
 

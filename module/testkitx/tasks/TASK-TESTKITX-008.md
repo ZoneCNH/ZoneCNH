@@ -30,18 +30,18 @@ status: pending
 
 ## Requirements Covered
 
-| Requirement | Description | Acceptance Criteria |
-|---|---|---|
-| FR-009 | BoundaryCheck：生产 import 边界扫描 | AC-009 |
-| BR-005 | 生产 import graph 无 testkitx | CI Gate: no-production-import |
+| Requirement | Description                         | Acceptance Criteria           |
+| ----------- | ----------------------------------- | ----------------------------- |
+| FR-009      | BoundaryCheck：生产 import 边界扫描 | AC-009                        |
+| BR-005      | 生产 import graph 无 testkitx       | CI Gate: no-production-import |
 
 ## Test Plan
 
-| Test Case | Type | Description |
-|---|---|---|
-| TC-009 | Unit | 模拟生产包依赖 testkitx → fail + 依赖路径 |
-| TC-009 | Unit | 模拟生产包不依赖 testkitx → pass |
-| TC-009 | Unit | BoundaryCheck 自检通过 |
+| Test Case | Type | Description                               |
+| --------- | ---- | ----------------------------------------- |
+| TC-009    | Unit | 模拟生产包依赖 testkitx → fail + 依赖路径 |
+| TC-009    | Unit | 模拟生产包不依赖 testkitx → pass          |
+| TC-009    | Unit | BoundaryCheck 自检通过                    |
 
 ## Implementation Notes
 
@@ -51,13 +51,13 @@ status: pending
 
 ## Implementation Plan
 
-| Step | Description | Deliverables | Verification |
-|---|---|---|---|
-| 1 | 实现 `BoundaryCheck` 函数 | `boundary.go` | 全部测试通过 |
+| Step | Description               | Deliverables  | Verification |
+| ---- | ------------------------- | ------------- | ------------ |
+| 1    | 实现 `BoundaryCheck` 函数 | `boundary.go` | 全部测试通过 |
 
 ### Risk Assessment
 
-| Risk | Probability | Impact | Mitigation |
-|---|---|---|---|
-| `go list` 在 CI 中不可用 | Low | High | 降级为 skip 而非 fail |
-| 误报（白名单不完整） | Medium | Medium | 日志输出完整依赖路径 |
+| Risk                     | Probability | Impact | Mitigation            |
+| ------------------------ | ----------- | ------ | --------------------- |
+| `go list` 在 CI 中不可用 | Low         | High   | 降级为 skip 而非 fail |
+| 误报（白名单不完整）     | Medium      | Medium | 日志输出完整依赖路径  |

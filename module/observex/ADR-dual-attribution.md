@@ -26,11 +26,11 @@ STATUS.md 将此标记为风险 R7：
 
 ### 三层归属模型
 
-| 维度 | observex 角色 | 说明 |
-|------|-------------|------|
+| 维度         | observex 角色             | 说明                                                 |
+| ------------ | ------------------------- | ---------------------------------------------------- |
 | **层级归属** | L1 基座（运行时横切能力） | 与 configx/resiliencx/schedulex 同级，依赖 L0 kernel |
-| **横切属性** | 可被所有层消费 | Logger/Meter/Tracer 是通用能力，消费方不限于特定层 |
-| **物理部署** | 按模块独立仓库 | `github.com/ZoneCNH/observex`，独立 go.mod |
+| **横切属性** | 可被所有层消费            | Logger/Meter/Tracer 是通用能力，消费方不限于特定层   |
+| **物理部署** | 按模块独立仓库            | `github.com/ZoneCNH/observex`，独立 go.mod           |
 
 ### 具体界定
 
@@ -85,10 +85,10 @@ STATUS.md 将此标记为风险 R7：
 
 ### 需要同步的文档
 
-| 文档 | 变更 |
-|------|------|
-| ARCHITECTURE.md | 横切表移除 observex，保留 alertx；添加注释 |
-| STATUS.md | R7 更新为 "已记录 ADR" |
+| 文档             | 变更                                               |
+| ---------------- | -------------------------------------------------- |
+| ARCHITECTURE.md  | 横切表移除 observex，保留 alertx；添加注释         |
+| STATUS.md        | R7 更新为 "已记录 ADR"                             |
 | module/README.md | 无需变更（分层总览中 observex 本就只在 L1 运行时） |
 
 ---

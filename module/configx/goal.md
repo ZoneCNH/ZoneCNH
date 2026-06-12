@@ -1,13 +1,13 @@
 # configx 发布版本 1.0 Goal 定位与实现标准
 
-| 字段 | 内容 |
-| --- | --- |
-| 模块名 | `configx` |
-| 发布版本 | 1.0.0 |
-| 所属层级 | L1 运行时横切能力 / 配置管理 |
-| 稳定级别 | Public API Stable；SPI Stable；Internal 可演进 |
-| 文档状态 | 1.0 发布基线文档（✅ v1.0.0 已发布） |
-| 发布日期基准 | 2026-06-09 |
+| 字段         | 内容                                           |
+| ------------ | ---------------------------------------------- |
+| 模块名       | `configx`                                      |
+| 发布版本     | 1.0.0                                          |
+| 所属层级     | L1 运行时横切能力 / 配置管理                   |
+| 稳定级别     | Public API Stable；SPI Stable；Internal 可演进 |
+| 文档状态     | 1.0 发布基线文档（✅ v1.0.0 已发布）            |
+| 发布日期基准 | 2026-06-09                                     |
 
 ## 术语约定
 
@@ -57,25 +57,25 @@
 
 ## 3. 核心场景
 
-| 场景 | 说明 | 1.0 期望结果 |
-| --- | --- | --- |
-| 应用启动 | 服务需要加载 xlib 和业务配置 | 生成 ConfigSnapshot，校验通过后应用启动 |
-| 环境隔离 | dev/test/prod 使用不同配置 | Profile 合并明确，最终生效配置可解释 |
-| 配置热更新 | 限流阈值或日志级别需要动态调整 | 校验通过后发布变更事件；失败则保留旧快照 |
-| 故障排查 | 线上行为与预期不一致 | 可以查看配置来源、覆盖链路和脱敏后的最终值 |
-| 配置回滚 | 热更新后业务指标异常，需要快速回退 | 触发回滚后恢复上一快照并发布回滚事件 |
+| 场景       | 说明                               | 1.0 期望结果                               |
+| ---------- | ---------------------------------- | ------------------------------------------ |
+| 应用启动   | 服务需要加载 xlib 和业务配置       | 生成 ConfigSnapshot，校验通过后应用启动    |
+| 环境隔离   | dev/test/prod 使用不同配置         | Profile 合并明确，最终生效配置可解释       |
+| 配置热更新 | 限流阈值或日志级别需要动态调整     | 校验通过后发布变更事件；失败则保留旧快照   |
+| 故障排查   | 线上行为与预期不一致               | 可以查看配置来源、覆盖链路和脱敏后的最终值 |
+| 配置回滚   | 热更新后业务指标异常，需要快速回退 | 触发回滚后恢复上一快照并发布回滚事件       |
 
 ## 4. 能力范围
 
-| 能力域 | 1.0 必须具备的能力 | 验收方式 |
-| --- | --- | --- |
-| 配置源 | FileSource、EnvSource、ArgsSource、RemoteSource SPI | 加载优先级测试通过 |
-| 配置合并 | 命名空间、profile、优先级、覆盖链路 | 快照差异测试通过 |
-| 强类型绑定 | prefix 绑定对象、类型转换、默认值、枚举 | 绑定异常测试通过 |
-| 配置校验 | 必填、范围、正则、跨字段依赖、自定义 Validator | 启动门禁测试通过 |
-| 热更新 | watch、diff、validate、publish、rollback | 热更新集成测试通过 |
-| 脱敏展示 | password、secret、token、key 等字段自动脱敏 | 安全快照测试通过 |
-| 配置文档 | 从配置模型生成配置参考 | 文档生成测试通过 |
+| 能力域     | 1.0 必须具备的能力                                  | 验收方式           |
+| ---------- | --------------------------------------------------- | ------------------ |
+| 配置源     | FileSource、EnvSource、ArgsSource、RemoteSource SPI | 加载优先级测试通过 |
+| 配置合并   | 命名空间、profile、优先级、覆盖链路                 | 快照差异测试通过   |
+| 强类型绑定 | prefix 绑定对象、类型转换、默认值、枚举             | 绑定异常测试通过   |
+| 配置校验   | 必填、范围、正则、跨字段依赖、自定义 Validator      | 启动门禁测试通过   |
+| 热更新     | watch、diff、validate、publish、rollback            | 热更新集成测试通过 |
+| 脱敏展示   | password、secret、token、key 等字段自动脱敏         | 安全快照测试通过   |
+| 配置文档   | 从配置模型生成配置参考                              | 文档生成测试通过   |
 
 ## 5. 职责边界
 
@@ -95,24 +95,24 @@
 
 ## 6. 依赖关系与分层约束
 
-| 依赖类型 | 约束 |
-| --- | --- |
+| 依赖类型 | 约束                                                                                         |
+| -------- | -------------------------------------------------------------------------------------------- |
 | 上游依赖 | 无外部依赖（foundationx exit 已完成，kernel 不再被依赖）；可选接入 observex 输出日志和指标。 |
-| 下游依赖 | observex、resiliencx、schedulex、redisx、kafkax 等模块通过 configx 获取配置。 |
-| 分层约束 | configx 不能依赖具体存储扩展模块；远程源通过 SPI 接入。 |
-| 契约依赖 | MUST 向 contracts 登记 Public API 契约和错误码契约。 |
+| 下游依赖 | observex、resiliencx、schedulex、redisx、kafkax 等模块通过 configx 获取配置。                |
+| 分层约束 | configx 不能依赖具体存储扩展模块；远程源通过 SPI 接入。                                      |
+| 契约依赖 | MUST 向 contracts 登记 Public API 契约和错误码契约。                                         |
 
 ## 7. 对外契约
 
 ### 7.1 公开能力面
 
-| 契约 | 定位 | 1.0 稳定承诺 |
-| --- | --- | --- |
-| ConfigProvider | 统一配置读取入口 | get/bind/snapshot 语义稳定 |
-| ConfigSource SPI | 配置源扩展点 | 加载结果、优先级、版本字段稳定 |
-| ConfigSnapshot | 不可变配置快照 | 字段可追加，不得改变来源链路语义 |
-| ConfigChangeEvent | 热更新事件 | 事件类型、diff、version 稳定 |
-| ConfigValidator | 校验扩展点 | Violation 结构稳定 |
+| 契约              | 定位             | 1.0 稳定承诺                     |
+| ----------------- | ---------------- | -------------------------------- |
+| ConfigProvider    | 统一配置读取入口 | get/bind/snapshot 语义稳定       |
+| ConfigSource SPI  | 配置源扩展点     | 加载结果、优先级、版本字段稳定   |
+| ConfigSnapshot    | 不可变配置快照   | 字段可追加，不得改变来源链路语义 |
+| ConfigChangeEvent | 热更新事件       | 事件类型、diff、version 稳定     |
+| ConfigValidator   | 校验扩展点       | Violation 结构稳定               |
 
 ### 7.2 1.0 逻辑接口基线
 
@@ -140,15 +140,15 @@ ConfigSnapshot
 
 ## 8. 配置契约
 
-| 配置项 | 含义 | 默认值 / 要求 | 稳定性 |
-| --- | --- | --- | --- |
-| foundationx.config.enabled | 是否启用 configx | true | Stable |
-| foundationx.config.profile | 当前环境 profile | default；生产必须显式设置 | Stable |
-| foundationx.config.locations | 本地配置文件位置 | 按平台默认 | Stable |
-| foundationx.config.fail-fast | 启动校验失败是否阻断 | true | Stable |
-| foundationx.config.mask-patterns | 敏感字段匹配规则 | password,secret,token,key | Stable |
-| foundationx.config.watch.enabled | 是否启用热更新 | false | Stable |
-| foundationx.config.refresh.timeout | 配置刷新超时 | 5s | Stable |
+| 配置项                             | 含义                 | 默认值 / 要求             | 稳定性 |
+| ---------------------------------- | -------------------- | ------------------------- | ------ |
+| foundationx.config.enabled         | 是否启用 configx     | true                      | Stable |
+| foundationx.config.profile         | 当前环境 profile     | default；生产必须显式设置 | Stable |
+| foundationx.config.locations       | 本地配置文件位置     | 按平台默认                | Stable |
+| foundationx.config.fail-fast       | 启动校验失败是否阻断 | true                      | Stable |
+| foundationx.config.mask-patterns   | 敏感字段匹配规则     | password,secret,token,key | Stable |
+| foundationx.config.watch.enabled   | 是否启用热更新       | false                     | Stable |
+| foundationx.config.refresh.timeout | 配置刷新超时         | 5s                        | Stable |
 
 ## 9. 可观测契约
 
@@ -163,13 +163,13 @@ ConfigSnapshot
 
 ### 9.2 指标
 
-| 指标名 | 类型 | 标签 | 说明 |
-| --- | --- | --- | --- |
-| foundationx_config_load_total | Counter | source,status,profile | 配置加载次数 |
-| foundationx_config_load_duration_ms | Timer | source,status | 配置加载耗时 |
-| foundationx_config_refresh_total | Counter | status,reason | 配置刷新次数 |
-| foundationx_config_validation_errors_total | Counter | field,rule | 配置校验失败数 |
-| foundationx_config_active_snapshot | Gauge | profile,version | 当前配置快照版本标记 |
+| 指标名                                     | 类型    | 标签                  | 说明                 |
+| ------------------------------------------ | ------- | --------------------- | -------------------- |
+| foundationx_config_load_total              | Counter | source,status,profile | 配置加载次数         |
+| foundationx_config_load_duration_ms        | Timer   | source,status         | 配置加载耗时         |
+| foundationx_config_refresh_total           | Counter | status,reason         | 配置刷新次数         |
+| foundationx_config_validation_errors_total | Counter | field,rule            | 配置校验失败数       |
+| foundationx_config_active_snapshot         | Gauge   | profile,version       | 当前配置快照版本标记 |
 
 ### 9.3 Trace / 诊断事件
 
@@ -180,13 +180,13 @@ ConfigSnapshot
 
 ## 10. 错误模型与失败策略
 
-| 错误类别 | 典型原因 | 1.0 处理策略 |
-| --- | --- | --- |
-| CONFIG_SOURCE_UNAVAILABLE | 配置文件不存在、远程源不可达 | 启动阶段按 fail-fast 决定是否阻断；刷新阶段保留旧快照 |
-| CONFIG_BIND_FAILED | 类型转换失败、枚举不合法 | 返回明确字段路径，启动阻断 |
-| CONFIG_VALIDATION_FAILED | 必填缺失、范围非法、跨字段冲突 | 启动或刷新阻断 |
-| CONFIG_REFRESH_REJECTED | 新配置校验失败 | 不生效，发布失败事件 |
-| CONFIG_SECRET_EXPOSED | 检测到敏感值尝试明文输出 | 阻断输出并记录安全告警 |
+| 错误类别                  | 典型原因                       | 1.0 处理策略                                          |
+| ------------------------- | ------------------------------ | ----------------------------------------------------- |
+| CONFIG_SOURCE_UNAVAILABLE | 配置文件不存在、远程源不可达   | 启动阶段按 fail-fast 决定是否阻断；刷新阶段保留旧快照 |
+| CONFIG_BIND_FAILED        | 类型转换失败、枚举不合法       | 返回明确字段路径，启动阻断                            |
+| CONFIG_VALIDATION_FAILED  | 必填缺失、范围非法、跨字段冲突 | 启动或刷新阻断                                        |
+| CONFIG_REFRESH_REJECTED   | 新配置校验失败                 | 不生效，发布失败事件                                  |
+| CONFIG_SECRET_EXPOSED     | 检测到敏感值尝试明文输出       | 阻断输出并记录安全告警                                |
 
 ## 11. 安全、稳定性与兼容性要求
 
@@ -201,13 +201,13 @@ ConfigSnapshot
 
 ## 12. 测试证据要求
 
-| 测试类型 | 必须覆盖内容 | 发布门禁 |
-| --- | --- | --- |
-| 单元测试 | 多源合并、优先级、类型绑定、默认值、校验规则 | MUST 通过 |
-| 集成测试 | 文件 + 环境变量 + 启动参数组合加载 | MUST 通过 |
-| 热更新测试 | watch、diff、校验失败回滚、监听器异常隔离 | MUST 通过 |
-| 安全测试 | 敏感字段脱敏、日志泄漏扫描 | MUST 通过 |
-| 兼容性测试 | 配置项废弃和新增不破坏旧配置 | MUST 通过 |
+| 测试类型   | 必须覆盖内容                                 | 发布门禁  |
+| ---------- | -------------------------------------------- | --------- |
+| 单元测试   | 多源合并、优先级、类型绑定、默认值、校验规则 | MUST 通过 |
+| 集成测试   | 文件 + 环境变量 + 启动参数组合加载           | MUST 通过 |
+| 热更新测试 | watch、diff、校验失败回滚、监听器异常隔离    | MUST 通过 |
+| 安全测试   | 敏感字段脱敏、日志泄漏扫描                   | MUST 通过 |
+| 兼容性测试 | 配置项废弃和新增不破坏旧配置                 | MUST 通过 |
 
 ## 13. 1.0 发布验收清单
 

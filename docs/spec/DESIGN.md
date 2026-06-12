@@ -1,14 +1,14 @@
 # goalctl v1 设计文档
 
-| 字段 | 值 |
-| --- | --- |
-| Design ID | `DESIGN-goalctl-v1` |
-| Source Spec | `docs/spec/goalctl-spec.md`（`SPEC-goalctl-v1` v1.2.1） |
-| 状态 | Draft |
-| Readiness | Design Ready Candidate；Task Binding Pending；Implementation Blocked |
-| 日期 | 2026-06-09 |
-| 权威来源 | `docs/goal/` 与 `.config/goal/schema/rules.yaml` |
-| 输出位置 | `docs/spec/DESIGN.md` |
+| 字段        | 值                                                                   |
+| ----------- | -------------------------------------------------------------------- |
+| Design ID   | `DESIGN-goalctl-v1`                                                  |
+| Source Spec | `docs/spec/goalctl-spec.md`（`SPEC-goalctl-v1` v1.2.1）              |
+| 状态        | Draft                                                                |
+| Readiness   | Design Ready Candidate；Task Binding Pending；Implementation Blocked |
+| 日期        | 2026-06-09                                                           |
+| 权威来源    | `docs/goal/` 与 `.config/goal/schema/rules.yaml`                     |
+| 输出位置    | `docs/spec/DESIGN.md`                                                |
 
 ## 0. 文档边界与权威
 
@@ -72,23 +72,23 @@ write-enabled command
 
 ## 3. 模块边界
 
-| 模块 | 职责 | 主要输入 | 主要输出 |
-| --- | --- | --- | --- |
-| `cmd/goalctl` | 进程入口 | argv、环境变量 | exit code |
-| `internal/goalctl/cli` | 全局参数、命令路由、strict/audit/write 选项 | argv | `CommandSpec` |
-| `internal/goalctl/context` | 根目录定位、路径解析、权威来源加载 | `--root`、`--config` | `RootContext`、`AuthorityCatalog` |
-| `internal/goalctl/rules` | schema 规则读取与投影校验 | `rules.yaml`、文档锚点 | `SchemaRules`、诊断 |
-| `internal/goalctl/registry` | 六文件 registry 读取与字段校验 | `.config/goal/registry/*.yaml` | `RegistryStore`、诊断 |
-| `internal/goalctl/matrix` | Matrix edge 校验、覆盖率计算 | `.config/goal/matrix/matrix.yaml` | `MatrixGraph`、覆盖率 |
-| `internal/goalctl/gate` | G0-G11、Gate result、H-CHK 校验 | `.config/goal/gates/state.yaml` | `GateState`、诊断 |
-| `internal/goalctl/pipeline` | 四轴状态与 canonical phase 判定 | `.config/goal/pipeline/state.yaml` | `PipelineState`、状态结论 |
-| `internal/goalctl/evidence` | Evidence 字段、状态、证据链校验 | `.config/goal/evidence/*.md` | `EvidenceIndex` |
-| `internal/goalctl/lint` | 38 条规则与 CI parity 校验入口 | 文档与配置路径 | lint 结果 |
-| `internal/goalctl/propagation` | stale、upstream/downstream 影响分析 | registry、matrix、evidence | stale 诊断 |
-| `internal/goalctl/report` | release-readiness 汇总 | gates、matrix、evidence、review | report |
-| `internal/goalctl/write` | dry-run、备份、原子替换、恢复 | `ChangeSet` | `WriteResult` |
-| `internal/goalctl/output` | JSON/text envelope 与 exit code 映射 | `Result`、诊断 | stdout/stderr、exit code |
-| `internal/goalctl/testdata` | 固定输入与 golden 输出 | fixtures | 测试数据 |
+| 模块                           | 职责                                        | 主要输入                           | 主要输出                          |
+| ------------------------------ | ------------------------------------------- | ---------------------------------- | --------------------------------- |
+| `cmd/goalctl`                  | 进程入口                                    | argv、环境变量                     | exit code                         |
+| `internal/goalctl/cli`         | 全局参数、命令路由、strict/audit/write 选项 | argv                               | `CommandSpec`                     |
+| `internal/goalctl/context`     | 根目录定位、路径解析、权威来源加载          | `--root`、`--config`               | `RootContext`、`AuthorityCatalog` |
+| `internal/goalctl/rules`       | schema 规则读取与投影校验                   | `rules.yaml`、文档锚点             | `SchemaRules`、诊断               |
+| `internal/goalctl/registry`    | 六文件 registry 读取与字段校验              | `.config/goal/registry/*.yaml`     | `RegistryStore`、诊断             |
+| `internal/goalctl/matrix`      | Matrix edge 校验、覆盖率计算                | `.config/goal/matrix/matrix.yaml`  | `MatrixGraph`、覆盖率             |
+| `internal/goalctl/gate`        | G0-G11、Gate result、H-CHK 校验             | `.config/goal/gates/state.yaml`    | `GateState`、诊断                 |
+| `internal/goalctl/pipeline`    | 四轴状态与 canonical phase 判定             | `.config/goal/pipeline/state.yaml` | `PipelineState`、状态结论         |
+| `internal/goalctl/evidence`    | Evidence 字段、状态、证据链校验             | `.config/goal/evidence/*.md`       | `EvidenceIndex`                   |
+| `internal/goalctl/lint`        | 38 条规则与 CI parity 校验入口              | 文档与配置路径                     | lint 结果                         |
+| `internal/goalctl/propagation` | stale、upstream/downstream 影响分析         | registry、matrix、evidence         | stale 诊断                        |
+| `internal/goalctl/report`      | release-readiness 汇总                      | gates、matrix、evidence、review    | report                            |
+| `internal/goalctl/write`       | dry-run、备份、原子替换、恢复               | `ChangeSet`                        | `WriteResult`                     |
+| `internal/goalctl/output`      | JSON/text envelope 与 exit code 映射        | `Result`、诊断                     | stdout/stderr、exit code          |
+| `internal/goalctl/testdata`    | 固定输入与 golden 输出                      | fixtures                           | 测试数据                          |
 
 模块之间只通过 typed model 和 diagnostic 交互，不共享可变全局状态。
 
@@ -122,56 +122,56 @@ type TransactionRunner interface {
 
 核心模型：
 
-| 模型 | 字段要点 | 来源 |
-| --- | --- | --- |
-| `RootContext` | `Root`、`ConfigRoot`、`Strict`、`Audit`、`WriteEnabled`、`Format` | CLI |
-| `AuthorityCatalog` | 文档锚点、schema path、loaded version | `docs/goal/`、`rules.yaml` |
-| `SchemaRules` | ID regex、阶段枚举、Gate 枚举、registry 文件清单 | `.config/goal/schema/rules.yaml` |
-| `PipelineState` | `pipeline_state`、`current_phase`、`phase_status`、`workflow_step` | `.config/goal/pipeline/state.yaml` |
-| `RegistryStore` | goals、tasks、issues、releases、risks、decisions | `.config/goal/registry/` |
-| `MatrixEdge` | `source_id`、`target_id`、`relation`、`status`、`evidence_id`、`gate_id`、`owner`、`updated_at` | matrix |
-| `GateState` | `gate_id`、`result`、`requirements`、`evidence`、`h_check` | gates |
-| `EvidenceRecord` | `evidence_id`、`test_id`、`status`、`artifact`、`validator`、`timestamp` | evidence |
-| `TraceGraph` | Goal -> Spec -> Requirement -> AC -> Task -> Prompt -> Code -> Test -> Evidence | registry + matrix |
-| `Envelope` | `command`、`status`、`exit_code`、`root`、`summary`、`results`、`warnings`、`errors`、`next_actions` | output |
-| `Diagnostic` | `code`、`severity`、`message`、`path`、`source`、`blocked_by`、`next_actions` | validators |
-| `WritePlan` | target files、backup files、temporary files、expected hash、revalidation commands | write |
+| 模型               | 字段要点                                                                                             | 来源                               |
+| ------------------ | ---------------------------------------------------------------------------------------------------- | ---------------------------------- |
+| `RootContext`      | `Root`、`ConfigRoot`、`Strict`、`Audit`、`WriteEnabled`、`Format`                                    | CLI                                |
+| `AuthorityCatalog` | 文档锚点、schema path、loaded version                                                                | `docs/goal/`、`rules.yaml`         |
+| `SchemaRules`      | ID regex、阶段枚举、Gate 枚举、registry 文件清单                                                     | `.config/goal/schema/rules.yaml`   |
+| `PipelineState`    | `pipeline_state`、`current_phase`、`phase_status`、`workflow_step`                                   | `.config/goal/pipeline/state.yaml` |
+| `RegistryStore`    | goals、tasks、issues、releases、risks、decisions                                                     | `.config/goal/registry/`           |
+| `MatrixEdge`       | `source_id`、`target_id`、`relation`、`status`、`evidence_id`、`gate_id`、`owner`、`updated_at`      | matrix                             |
+| `GateState`        | `gate_id`、`result`、`requirements`、`evidence`、`h_check`                                           | gates                              |
+| `EvidenceRecord`   | `evidence_id`、`test_id`、`status`、`artifact`、`validator`、`timestamp`                             | evidence                           |
+| `TraceGraph`       | Goal -> Spec -> Requirement -> AC -> Task -> Prompt -> Code -> Test -> Evidence                      | registry + matrix                  |
+| `Envelope`         | `command`、`status`、`exit_code`、`root`、`summary`、`results`、`warnings`、`errors`、`next_actions` | output                             |
+| `Diagnostic`       | `code`、`severity`、`message`、`path`、`source`、`blocked_by`、`next_actions`                        | validators                         |
+| `WritePlan`        | target files、backup files、temporary files、expected hash、revalidation commands                    | write                              |
 
 ## 5. 命令映射
 
-| 命令 | 组件 | 关键职责 | 只读 |
-| --- | --- | --- | --- |
-| `status` | `pipeline`、`gate`、`output` | 输出当前状态、下一状态、允许动作、阻塞项、证据缺口 | 是 |
-| `validate` | `registry`、`matrix`、`gate`、`evidence`、`pipeline` | 聚合 audit/strict 校验 | 是 |
-| `registry` | `registry`、`rules` | 校验六文件与 required fields | 默认是 |
-| `matrix` | `matrix`、`evidence` | 校验关系、终态、覆盖率 | 默认是 |
-| `gate` | `gate`、`evidence` | 校验 G0-G11、PASS 证据、H-CHK | 默认是 |
-| `pipeline` | `pipeline` | 校验四轴状态和 phase 枚举 | 默认是 |
-| `evidence` | `evidence` | 校验证据字段、状态、artifact 引用 | 默认是 |
-| `lint` | `lint` | 执行 38 条规则与 CI parity 检查 | 是 |
-| `propagation` | `propagation`、`matrix` | 检测 stale 与影响链 | 默认是 |
-| `report` | `report` | 输出 release-readiness 报告 | 是 |
-| `doctor` | `context`、`rules` | 检查本地环境和权威文件可读性 | 是 |
-| `schema` | `rules` | 输出 schema 规则摘要和 regex | 是 |
-| `version` | `cli` | 输出版本与构建信息 | 是 |
+| 命令          | 组件                                                 | 关键职责                                           | 只读   |
+| ------------- | ---------------------------------------------------- | -------------------------------------------------- | ------ |
+| `status`      | `pipeline`、`gate`、`output`                         | 输出当前状态、下一状态、允许动作、阻塞项、证据缺口 | 是     |
+| `validate`    | `registry`、`matrix`、`gate`、`evidence`、`pipeline` | 聚合 audit/strict 校验                             | 是     |
+| `registry`    | `registry`、`rules`                                  | 校验六文件与 required fields                       | 默认是 |
+| `matrix`      | `matrix`、`evidence`                                 | 校验关系、终态、覆盖率                             | 默认是 |
+| `gate`        | `gate`、`evidence`                                   | 校验 G0-G11、PASS 证据、H-CHK                      | 默认是 |
+| `pipeline`    | `pipeline`                                           | 校验四轴状态和 phase 枚举                          | 默认是 |
+| `evidence`    | `evidence`                                           | 校验证据字段、状态、artifact 引用                  | 默认是 |
+| `lint`        | `lint`                                               | 执行 38 条规则与 CI parity 检查                    | 是     |
+| `propagation` | `propagation`、`matrix`                              | 检测 stale 与影响链                                | 默认是 |
+| `report`      | `report`                                             | 输出 release-readiness 报告                        | 是     |
+| `doctor`      | `context`、`rules`                                   | 检查本地环境和权威文件可读性                       | 是     |
+| `schema`      | `rules`                                              | 输出 schema 规则摘要和 regex                       | 是     |
+| `version`     | `cli`                                                | 输出版本与构建信息                                 | 是     |
 
 命令面完整性按 spec 第 13 节闭合：
 
-| Command family | Required subcommands | Design owner |
-| --- | --- | --- |
-| `status` | root status | `pipeline`、`output` |
-| `validate` | aggregate validate | `registry`、`matrix`、`gate`、`evidence`、`pipeline` |
-| `registry` | `validate`、`list`、`show` | `registry`、`rules` |
-| `matrix` | `check`、`coverage`、`trace`、`render` | `matrix`、`report` |
-| `gate` | `check`、`report`、`explain` | `gate`、`evidence` |
-| `pipeline` | `status`、`next`、`transition` | `pipeline`、`write` |
-| `evidence` | `check`、`report`、`list`、`link` | `evidence` |
-| `lint` | all rule runner | `lint`、`rules` |
-| `propagation` | `check`、`mark-stale` | `propagation`、`write` |
-| `report` | `acceptance`、`release-readiness` | `report` |
-| `doctor` | environment/root/schema diagnostics | `context`、`rules` |
-| `schema` | schema summary、regex、enum | `rules` |
-| `version` | version/build metadata | `cli` |
+| Command family | Required subcommands                   | Design owner                                         |
+| -------------- | -------------------------------------- | ---------------------------------------------------- |
+| `status`       | root status                            | `pipeline`、`output`                                 |
+| `validate`     | aggregate validate                     | `registry`、`matrix`、`gate`、`evidence`、`pipeline` |
+| `registry`     | `validate`、`list`、`show`             | `registry`、`rules`                                  |
+| `matrix`       | `check`、`coverage`、`trace`、`render` | `matrix`、`report`                                   |
+| `gate`         | `check`、`report`、`explain`           | `gate`、`evidence`                                   |
+| `pipeline`     | `status`、`next`、`transition`         | `pipeline`、`write`                                  |
+| `evidence`     | `check`、`report`、`list`、`link`      | `evidence`                                           |
+| `lint`         | all rule runner                        | `lint`、`rules`                                      |
+| `propagation`  | `check`、`mark-stale`                  | `propagation`、`write`                               |
+| `report`       | `acceptance`、`release-readiness`      | `report`                                             |
+| `doctor`       | environment/root/schema diagnostics    | `context`、`rules`                                   |
+| `schema`       | schema summary、regex、enum            | `rules`                                              |
+| `version`      | version/build metadata                 | `cli`                                                |
 
 默认只读命令在缺少 `--write` 时不得修改任何文件；有写入能力的子命令必须先产出 dry-run 计划。
 
@@ -263,24 +263,24 @@ type TransactionRunner interface {
 
 ## 8. 错误与输出映射
 
-| 场景 | Diagnostic code | Exit code | Envelope status |
-| --- | --- | --- | --- |
-| schema rules 缺失 | `GOALCTL_SCHEMA_MISSING` | 3 | `error` |
-| schema rules 无法解析 | `GOALCTL_SCHEMA_INVALID` | 4 | `error` |
-| 权威冲突 | `GOALCTL_AUTHORITY_VIOLATION` | 5 | `error` |
-| Registry 六文件之一缺失 | `GOALCTL_REGISTRY_MISSING` | 3 | `error` |
-| Registry 字段或状态非法 | `GOALCTL_REGISTRY_INVALID` | 1 | `error` |
-| ID 非法 | `GOALCTL_ID_INVALID` | 1 | `error` |
-| 四轴状态冲突 | `GOALCTL_STATE_INCONSISTENT` | 9 | `error` |
-| Gate 阻塞 | `GOALCTL_GATE_BLOCKED` | 6 | `blocked` |
-| Gate 检查失败或 H-CHK 缺失 | `GOALCTL_GATE_FAIL` | 6 | `blocked` |
-| Gate 结果值非法 | `GOALCTL_GATE_INVALID_RESULT` | 6 | `error` |
-| Matrix 关键链路未映射 | `GOALCTL_MATRIX_UNMAPPED` | 7 | `blocked` |
-| Matrix coverage 不足 | `GOALCTL_MATRIX_COVERAGE_LOW` | 7 | `blocked` |
-| Evidence 缺失 | `GOALCTL_EVIDENCE_MISSING` | 8 | `blocked` |
-| Evidence 字段或状态非法 | `GOALCTL_EVIDENCE_INVALID` | 8 | `error` |
-| 写入缺少 `--write` | `GOALCTL_WRITE_REQUIRES_FLAG` | 2 | `blocked` |
-| 写入失败 | `GOALCTL_WRITE_FAILED` | 10 | `error` |
+| 场景                       | Diagnostic code               | Exit code | Envelope status |
+| -------------------------- | ----------------------------- | --------- | --------------- |
+| schema rules 缺失          | `GOALCTL_SCHEMA_MISSING`      | 3         | `error`         |
+| schema rules 无法解析      | `GOALCTL_SCHEMA_INVALID`      | 4         | `error`         |
+| 权威冲突                   | `GOALCTL_AUTHORITY_VIOLATION` | 5         | `error`         |
+| Registry 六文件之一缺失    | `GOALCTL_REGISTRY_MISSING`    | 3         | `error`         |
+| Registry 字段或状态非法    | `GOALCTL_REGISTRY_INVALID`    | 1         | `error`         |
+| ID 非法                    | `GOALCTL_ID_INVALID`          | 1         | `error`         |
+| 四轴状态冲突               | `GOALCTL_STATE_INCONSISTENT`  | 9         | `error`         |
+| Gate 阻塞                  | `GOALCTL_GATE_BLOCKED`        | 6         | `blocked`       |
+| Gate 检查失败或 H-CHK 缺失 | `GOALCTL_GATE_FAIL`           | 6         | `blocked`       |
+| Gate 结果值非法            | `GOALCTL_GATE_INVALID_RESULT` | 6         | `error`         |
+| Matrix 关键链路未映射      | `GOALCTL_MATRIX_UNMAPPED`     | 7         | `blocked`       |
+| Matrix coverage 不足       | `GOALCTL_MATRIX_COVERAGE_LOW` | 7         | `blocked`       |
+| Evidence 缺失              | `GOALCTL_EVIDENCE_MISSING`    | 8         | `blocked`       |
+| Evidence 字段或状态非法    | `GOALCTL_EVIDENCE_INVALID`    | 8         | `error`         |
+| 写入缺少 `--write`         | `GOALCTL_WRITE_REQUIRES_FLAG` | 2         | `blocked`       |
+| 写入失败                   | `GOALCTL_WRITE_FAILED`        | 10        | `error`         |
 
 不得引入 spec 第 15.2 节之外的新 Diagnostic code；Matrix 结构错误应归入 `GOALCTL_MATRIX_UNMAPPED`、`GOALCTL_MATRIX_COVERAGE_LOW` 或 envelope `details`，不得新增单独的 Matrix-invalid 类错误码。
 
@@ -293,31 +293,31 @@ type TransactionRunner interface {
 
 ## 9. 需求到组件追溯
 
-| Requirement | 主组件 | 辅助组件 | 设计判定 |
-| --- | --- | --- | --- |
-| `REQ-SPEC-goalctl-v1-001` | `context` | `rules`、`output` | 权威源声明与冲突错误 |
-| `REQ-SPEC-goalctl-v1-002` | `pipeline` | `output` | Matrix 不进入 `current_phase` |
-| `REQ-SPEC-goalctl-v1-003` | `pipeline` | `output` | 四轴冲突进入 `INCONSISTENT_STATE` |
-| `REQ-SPEC-goalctl-v1-004` | `pipeline` | `rules` | 只接受 11 个 canonical phase |
-| `REQ-SPEC-goalctl-v1-005` | `rules` | `registry`、`matrix` | ID regex 与重复检测 |
-| `REQ-SPEC-goalctl-v1-006` | `rules` | `matrix` | AC ID 格式校验 |
-| `REQ-SPEC-goalctl-v1-007` | `registry` | `rules` | 六文件 registry 限定 |
-| `REQ-SPEC-goalctl-v1-008` | `registry` | `output` | Goal required fields |
-| `REQ-SPEC-goalctl-v1-009` | `matrix` | `evidence` | edge 字段、状态、终态证据 |
-| `REQ-SPEC-goalctl-v1-010` | `matrix` | `report` | coverage 大于等于 95% |
-| `REQ-SPEC-goalctl-v1-011` | `gate` | `rules` | G0-G11 与 `WAIVED` 禁止 |
-| `REQ-SPEC-goalctl-v1-012` | `evidence` | `rules` | Evidence required fields |
-| `REQ-SPEC-goalctl-v1-013` | `gate` | `evidence` | PASS 必须有 Evidence |
-| `REQ-SPEC-goalctl-v1-014` | `output` | `cli` | JSON envelope 固定字段 |
-| `REQ-SPEC-goalctl-v1-015` | `write` | `cli`、`output` | 默认只读与 `--write` 门禁 |
-| `REQ-SPEC-goalctl-v1-016` | `write` | `registry`、`matrix` | 备份、原子替换、复验、恢复 |
-| `REQ-SPEC-goalctl-v1-017` | `gate` | `rules` | CL0-CL5 与人工审批 |
-| `REQ-SPEC-goalctl-v1-018` | `output` | all validators | 可执行 blocker 与 next action |
-| `REQ-SPEC-goalctl-v1-019` | `lint` | `rules`、`commands` | CI parity 命令映射 |
-| `REQ-SPEC-goalctl-v1-020` | `report` | `matrix`、`gate`、`evidence` | Release-readiness 报告 |
-| `REQ-SPEC-goalctl-v1-021` | `gate` | `evidence` | G9/G10 H-CHK |
-| `REQ-SPEC-goalctl-v1-022` | `lint` | `rules` | 38 条 lint 规则 |
-| `REQ-SPEC-goalctl-v1-023` | `propagation` | `matrix`、`registry` | stale 传播检测 |
+| Requirement               | 主组件        | 辅助组件                     | 设计判定                          |
+| ------------------------- | ------------- | ---------------------------- | --------------------------------- |
+| `REQ-SPEC-goalctl-v1-001` | `context`     | `rules`、`output`            | 权威源声明与冲突错误              |
+| `REQ-SPEC-goalctl-v1-002` | `pipeline`    | `output`                     | Matrix 不进入 `current_phase`     |
+| `REQ-SPEC-goalctl-v1-003` | `pipeline`    | `output`                     | 四轴冲突进入 `INCONSISTENT_STATE` |
+| `REQ-SPEC-goalctl-v1-004` | `pipeline`    | `rules`                      | 只接受 11 个 canonical phase      |
+| `REQ-SPEC-goalctl-v1-005` | `rules`       | `registry`、`matrix`         | ID regex 与重复检测               |
+| `REQ-SPEC-goalctl-v1-006` | `rules`       | `matrix`                     | AC ID 格式校验                    |
+| `REQ-SPEC-goalctl-v1-007` | `registry`    | `rules`                      | 六文件 registry 限定              |
+| `REQ-SPEC-goalctl-v1-008` | `registry`    | `output`                     | Goal required fields              |
+| `REQ-SPEC-goalctl-v1-009` | `matrix`      | `evidence`                   | edge 字段、状态、终态证据         |
+| `REQ-SPEC-goalctl-v1-010` | `matrix`      | `report`                     | coverage 大于等于 95%             |
+| `REQ-SPEC-goalctl-v1-011` | `gate`        | `rules`                      | G0-G11 与 `WAIVED` 禁止           |
+| `REQ-SPEC-goalctl-v1-012` | `evidence`    | `rules`                      | Evidence required fields          |
+| `REQ-SPEC-goalctl-v1-013` | `gate`        | `evidence`                   | PASS 必须有 Evidence              |
+| `REQ-SPEC-goalctl-v1-014` | `output`      | `cli`                        | JSON envelope 固定字段            |
+| `REQ-SPEC-goalctl-v1-015` | `write`       | `cli`、`output`              | 默认只读与 `--write` 门禁         |
+| `REQ-SPEC-goalctl-v1-016` | `write`       | `registry`、`matrix`         | 备份、原子替换、复验、恢复        |
+| `REQ-SPEC-goalctl-v1-017` | `gate`        | `rules`                      | CL0-CL5 与人工审批                |
+| `REQ-SPEC-goalctl-v1-018` | `output`      | all validators               | 可执行 blocker 与 next action     |
+| `REQ-SPEC-goalctl-v1-019` | `lint`        | `rules`、`commands`          | CI parity 命令映射                |
+| `REQ-SPEC-goalctl-v1-020` | `report`      | `matrix`、`gate`、`evidence` | Release-readiness 报告            |
+| `REQ-SPEC-goalctl-v1-021` | `gate`        | `evidence`                   | G9/G10 H-CHK                      |
+| `REQ-SPEC-goalctl-v1-022` | `lint`        | `rules`                      | 38 条 lint 规则                   |
+| `REQ-SPEC-goalctl-v1-023` | `propagation` | `matrix`、`registry`         | stale 传播检测                    |
 
 ## 10. 测试策略
 
@@ -358,12 +358,12 @@ goalctl --root . --strict --format json matrix coverage
 
 拒绝方案：report 自动修正状态。原因是会绕过 Gate 与人工审批。
 
-| 风险 | 影响 | 缓解 |
-| --- | --- | --- |
-| schema 与文档 drift | 规则判定不一致 | `rule-drift-check.py` 与 `goalctl schema` 双向检查 |
-| 与现有 shell/python 脚本 parity 不一致 | CI 与 CLI 结论冲突 | 使用 golden fixture 记录脚本输出 |
-| 写入恢复失败 | `.config/goal/` 快照受损 | hash 校验、backup、atomic replace、恢复测试 |
-| registry/matrix 尚未绑定 goalctl task | 实现不可进入 | 任务阶段先更新 registry 与 matrix 并通过 Gate |
+| 风险                                   | 影响                     | 缓解                                               |
+| -------------------------------------- | ------------------------ | -------------------------------------------------- |
+| schema 与文档 drift                    | 规则判定不一致           | `rule-drift-check.py` 与 `goalctl schema` 双向检查 |
+| 与现有 shell/python 脚本 parity 不一致 | CI 与 CLI 结论冲突       | 使用 golden fixture 记录脚本输出                   |
+| 写入恢复失败                           | `.config/goal/` 快照受损 | hash 校验、backup、atomic replace、恢复测试        |
+| registry/matrix 尚未绑定 goalctl task  | 实现不可进入             | 任务阶段先更新 registry 与 matrix 并通过 Gate      |
 
 ## 12. Readiness 判定
 

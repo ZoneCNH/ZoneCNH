@@ -32,19 +32,19 @@ status: pending
 
 ## Requirements Covered
 
-| Requirement | Description | Acceptance Criteria |
-|---|---|---|
-| FR-008 | GoldenUpdate：golden file 自动更新 | AC-008 |
-| BR-004 | GOLDEN_UPDATE=1 环境变量控制 | golden update guard |
-| BR-007 | golden 文件不泄露 secret | gitleaks CI Gate |
+| Requirement | Description                        | Acceptance Criteria |
+| ----------- | ---------------------------------- | ------------------- |
+| FR-008      | GoldenUpdate：golden file 自动更新 | AC-008              |
+| BR-004      | GOLDEN_UPDATE=1 环境变量控制       | golden update guard |
+| BR-007      | golden 文件不泄露 secret           | gitleaks CI Gate    |
 
 ## Test Plan
 
-| Test Case | Type | Description |
-|---|---|---|
-| TC-008 | Unit | 默认模式：比较 golden file 一致 → pass |
-| TC-008 | Unit | GOLDEN_UPDATE=1：更新 golden file |
-| TC-008 | Unit | 内容不一致且未设 GOLDEN_UPDATE → fail |
+| Test Case | Type | Description                            |
+| --------- | ---- | -------------------------------------- |
+| TC-008    | Unit | 默认模式：比较 golden file 一致 → pass |
+| TC-008    | Unit | GOLDEN_UPDATE=1：更新 golden file      |
+| TC-008    | Unit | 内容不一致且未设 GOLDEN_UPDATE → fail  |
 
 ## Implementation Notes
 
@@ -54,12 +54,12 @@ status: pending
 
 ## Implementation Plan
 
-| Step | Description | Deliverables | Verification |
-|---|---|---|---|
-| 1 | 实现 `GoldenUpdate` 函数 | `golden.go` | 全部测试通过 |
+| Step | Description              | Deliverables | Verification |
+| ---- | ------------------------ | ------------ | ------------ |
+| 1    | 实现 `GoldenUpdate` 函数 | `golden.go`  | 全部测试通过 |
 
 ### Risk Assessment
 
-| Risk | Probability | Impact | Mitigation |
-|---|---|---|---|
-| golden file 路径错误 | Low | Low | 使用 t.Name() 生成路径 |
+| Risk                 | Probability | Impact | Mitigation             |
+| -------------------- | ----------- | ------ | ---------------------- |
+| golden file 路径错误 | Low         | Low    | 使用 t.Name() 生成路径 |

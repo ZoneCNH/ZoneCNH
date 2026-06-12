@@ -28,11 +28,11 @@
 
 ## 验收标准
 
-| AC | 关联 | 验证命令 | 预期结果 |
-|----|------|----------|----------|
-| AC-CONTRACTS-01 | §20.2 | public-api-snapshot gate | 通过 |
-| AC-CONTRACTS-02 | §20.2 | golden-behavior gate | 通过 |
-| AC-CONTRACTS-03 | §22 | 消费者导入测试 | 通过 |
+| AC              | 关联   | 验证命令                 | 预期结果   |
+| --------------- | ------ | ------------------------ | ---------- |
+| AC-CONTRACTS-01 | §20.2  | public-api-snapshot gate | 通过       |
+| AC-CONTRACTS-02 | §20.2  | golden-behavior gate     | 通过       |
+| AC-CONTRACTS-03 | §22    | 消费者导入测试           | 通过       |
 
 ## 禁止事项
 
@@ -49,11 +49,11 @@
 
 ## 验证命令
 
-| 命令 | 判定标准 |
-|------|----------|
-| `go build ./contracts/...` | 编译通过，零错误 |
+| 命令                                     | 判定标准              |
+| ---------------------------------------- | --------------------- |
+| `go build ./contracts/...`               | 编译通过，零错误      |
 | `go test -race -count=1 ./contracts/...` | 全部测试通过，无 race |
-| `go vet ./contracts/...` | 无警告 |
+| `go vet ./contracts/...`                 | 无警告                |
 
 ## 完成后
 

@@ -232,20 +232,20 @@
 
 ### 覆盖矩阵
 
-| 阶段 | 之前 | 现在 |
-|------|------|------|
-| Goal | 引用 02-goal-standard | 引用 02-goal-standard |
-| Spec | ✅ schema + RUBRIC + 内联 | ✅ |
-| Design | ❌ | ✅ schema + RUBRIC + 内联 |
-| Plan | ✅ schema + RUBRIC | ✅ + 内联 |
-| Tasks | ✅ schema + RUBRIC | ✅ + 内联 |
-| Prompt | ✅ schema + RUBRIC + 内联 | ✅ |
-| Code | ✅ schema + RUBRIC | ✅ + 内联 |
-| Test | ❌ | ✅ schema + RUBRIC + 内联 |
-| Review | ❌ | ✅ schema + RUBRIC + 内联 |
-| Release | ❌ | ✅ schema + RUBRIC + 内联 |
-| Retrospective | ❌ | ✅ schema + RUBRIC + 内联 |
-| Matrix | ✅ schema + RUBRIC | ✅ + 内联 |
+| 阶段          | 之前                     | 现在                     |
+| ------------- | ------------------------ | ------------------------ |
+| Goal          | 引用 02-goal-standard    | 引用 02-goal-standard    |
+| Spec          | ✅ schema + RUBRIC + 内联 | ✅                        |
+| Design        | ❌                        | ✅ schema + RUBRIC + 内联 |
+| Plan          | ✅ schema + RUBRIC        | ✅ + 内联                 |
+| Tasks         | ✅ schema + RUBRIC        | ✅ + 内联                 |
+| Prompt        | ✅ schema + RUBRIC + 内联 | ✅                        |
+| Code          | ✅ schema + RUBRIC        | ✅ + 内联                 |
+| Test          | ❌                        | ✅ schema + RUBRIC + 内联 |
+| Review        | ❌                        | ✅ schema + RUBRIC + 内联 |
+| Release       | ❌                        | ✅ schema + RUBRIC + 内联 |
+| Retrospective | ❌                        | ✅ schema + RUBRIC + 内联 |
+| Matrix        | ✅ schema + RUBRIC        | ✅ + 内联                 |
 
 ## 2026-06-09 — module 规格库迁移与同步基线
 

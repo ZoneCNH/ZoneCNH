@@ -19,26 +19,26 @@ Status: **archived**（2026-06-08 归档；非当前权威）
 
 | 维度   | 评级    | 关键发现                                                                   |
 | ------ | ------- | -------------------------------------------------------------------------- |
-| 结构债 | ✅ 低   | 分层清晰，boundary gate 强制执行，零外部依赖                               |
+| 结构债 | ✅ 低    | 分层清晰，boundary gate 强制执行，零外部依赖                               |
 | 实现债 | ⚠️ 中   | cmd/goalcli 两个文件过大，正则解析 YAML，常量硬编码                        |
 | 测试债 | ⚠️ 中   | pkg/templatex 测试完备（含 fuzz/property/golden），但 governance.go 无测试 |
-| 文档债 | ⚠️ 中   | ADR 已存在（9 个 Accepted），但下游矩阵全 `not_adopted`，SPEC 膨胀风险      |
-| 依赖债 | ✅ 极低 | go.mod 零外部依赖，仅标准库                                                |
+| 文档债 | ⚠️ 中   | ADR 已存在（9 个 Accepted），但下游矩阵全 `not_adopted`，SPEC 膨胀风险     |
+| 依赖债 | ✅ 极低  | go.mod 零外部依赖，仅标准库                                                |
 | 领域债 | ⚠️ 中   | 6 类职责边界清晰但 Harness/Evidence 有交叉                                 |
 
 ---
 
 ## 1. 事实校验（v1 错误修正）
 
-| v1 结论                                  | 实际状态                                                         | 修正     |
-| ---------------------------------------- | ---------------------------------------------------------------- | -------- |
-| D-001: 无独立 ADR 目录                   | ✅ `docs/adr/` 存在，13 个文件（9 个 Accepted ADR + template + 3 个历史方案文档） | **撤回** |
-| D-002: SPEC.md 版本号 v0.3.7 滞后        | ✅ SPEC.md 已升级为 v2.0.0                                       | **撤回** |
+| v1 结论                                  | 实际状态                                                                                                                            | 修正     |
+| ---------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| D-001: 无独立 ADR 目录                   | ✅ `docs/adr/` 存在，13 个文件（9 个 Accepted ADR + template + 3 个历史方案文档）                                                    | **撤回** |
+| D-002: SPEC.md 版本号 v0.3.7 滞后        | ✅ SPEC.md 已升级为 v2.0.0                                                                                                           | **撤回** |
 | harness.yaml 有 20+ gates                | 实际 66 个 gate 条目（44 required_gates + 10 extended_gates + 6 final_gates + 6 goalcli_mva_gates），另有 9 级 proof_depth taxonomy | **修正** |
-| .agent/registries/ 有 4 个 SSOT registry | 实际 14 个文件（含 downstream-registry、command-registry 等）    | **修正** |
-| ci.yml 只有一个 job                      | 确认：ci.yml 确实是单 job（`make release-check`）                | **确认** |
-| governance.go 过大                       | 确认：仍是最大文件，无对应测试                                   | **确认** |
-| 零外部依赖                               | 确认：go.mod 只有 `go 1.23`                                      | **确认** |
+| .agent/registries/ 有 4 个 SSOT registry | 实际 14 个文件（含 downstream-registry、command-registry 等）                                                                       | **修正** |
+| ci.yml 只有一个 job                      | 确认：ci.yml 确实是单 job（`make release-check`）                                                                                   | **确认** |
+| governance.go 过大                       | 确认：仍是最大文件，无对应测试                                                                                                      | **确认** |
+| 零外部依赖                               | 确认：go.mod 只有 `go 1.23`                                                                                                         | **确认** |
 
 ---
 
@@ -46,27 +46,27 @@ Status: **archived**（2026-06-08 归档；非当前权威）
 
 ### 2.1 Goal Runtime v3.1.1 完整性
 
-| 组件                          | 状态                  | 实际数据                                                                                                            |
-| ----------------------------- | --------------------- | ------------------------------------------------------------------------------------------------------------------- |
-| `cmd/goalcli` CLI             | ✅ 19 个 Go 文件      | governance/traceability/debt/adoption/selfimproving/audit/dashboard/downstream-sync/schema-check                    |
-| `.agent/harness/harness.yaml` | ✅ schema_version 3.1 | **66 个 gate 条目**（44 required_gates + 10 extended_gates + 6 final_gates + 6 goalcli_mva_gates），proof_depth taxonomy 9 级 |
-| `.agent/registries/`          | ✅ **14 个文件**      | command-registry、issue-registry、makefile-baseline、downstream-registry、downstream-adoption-status 等             |
-| `.agent/policies/debt/`       | ✅ 完整               | rules.yaml、exceptions.yaml、profile.yaml、dependency-purpose.yaml                                                  |
-| Makefile                      | ✅ 50+ targets        | required/extended/governance/release/docker 分层                                                                    |
-| CI workflows                  | ✅ 9 个               | ci、release、security、adoption-check、docker-contract、goal-gates、integration、release-auto-patch、worktree-guard |
-| Evidence Protocol             | ✅ 完整               | `DONE with evidence:` + manifest lifecycle + SHA256                                                                 |
-| Docker Toolchain              | ✅ 完整               | Dockerfile + docker-compose.yml + devcontainer                                                                      |
-| `pkg/templatex/`              | ✅ 17 个文件          | client/config/errors/health/metrics/version/options/doc + 8 个测试文件（含 fuzz/property/golden）                   |
-| `docs/adr/`                   | ✅ 13 个文件          | 9 个 Accepted ADR（20260602-001 ~ 20260604-001）+ template + 3 个历史方案文档                                      |
+| 组件                          | 状态                  | 实际数据                                                                                                                      |
+| ----------------------------- | --------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `cmd/goalcli` CLI             | ✅ 19 个 Go 文件       | governance/traceability/debt/adoption/selfimproving/audit/dashboard/downstream-sync/schema-check                              |
+| `.agent/harness/harness.yaml` | ✅ schema_version 3.1  | **66 个 gate 条目**（44 required_gates + 10 extended_gates + 6 final_gates + 6 goalcli_mva_gates），proof_depth taxonomy 9 级 |
+| `.agent/registries/`          | ✅ **14 个文件**       | command-registry、issue-registry、makefile-baseline、downstream-registry、downstream-adoption-status 等                       |
+| `.agent/policies/debt/`       | ✅ 完整                | rules.yaml、exceptions.yaml、profile.yaml、dependency-purpose.yaml                                                            |
+| Makefile                      | ✅ 50+ targets         | required/extended/governance/release/docker 分层                                                                              |
+| CI workflows                  | ✅ 9 个                | ci、release、security、adoption-check、docker-contract、goal-gates、integration、release-auto-patch、worktree-guard           |
+| Evidence Protocol             | ✅ 完整                | `DONE with evidence:` + manifest lifecycle + SHA256                                                                           |
+| Docker Toolchain              | ✅ 完整                | Dockerfile + docker-compose.yml + devcontainer                                                                                |
+| `pkg/templatex/`              | ✅ 17 个文件           | client/config/errors/health/metrics/version/options/doc + 8 个测试文件（含 fuzz/property/golden）                             |
+| `docs/adr/`                   | ✅ 13 个文件           | 9 个 Accepted ADR（20260602-001 ~ 20260604-001）+ template + 3 个历史方案文档                                                 |
 
 ### 2.2 Harness Gates 分类（66 个）
 
-| harness.yaml section | 数量 | 代表 gates |
-| -------------------- | ---- | ---------- |
+| harness.yaml section | 数量 | 代表 gates                                                                                                                 |
+| -------------------- | ---- | -------------------------------------------------------------------------------------------------------------------------- |
 | required_gates       | 44   | fmt, vet, lint, test, race, docs_check, debt, governance_check, docker_*、release_evidence_check、governance_release_scope |
-| extended_gates       | 10   | property, golden, fuzz_smoke, ci_extended, release_check_extended, goalcli_g12_acceptance ~ goalcli_g15b_certify |
-| final_gates          | 6    | release_score_final, release_final_check, release_preflight, score, kernel_downstream, goalcli_g16_runtime_final |
-| goalcli_mva_gates    | 6    | G12_ACCEPTANCE ~ G12_G16_FINAL；按 alias 处理，不生成第二套权威 gate |
+| extended_gates       | 10   | property, golden, fuzz_smoke, ci_extended, release_check_extended, goalcli_g12_acceptance ~ goalcli_g15b_certify           |
+| final_gates          | 6    | release_score_final, release_final_check, release_preflight, score, kernel_downstream, goalcli_g16_runtime_final           |
+| goalcli_mva_gates    | 6    | G12_ACCEPTANCE ~ G12_G16_FINAL；按 alias 处理，不生成第二套权威 gate                                                       |
 
 ### 2.3 14 个 Registry 文件
 
@@ -95,9 +95,9 @@ Status: **archived**（2026-06-08 归档；非当前权威）
 
 | 检查项             | 结果    | 说明                                                                  |
 | ------------------ | ------- | --------------------------------------------------------------------- |
-| `x.go` import 禁令 | ✅ 强制 | `make boundary` + `main-guard` + `worktree-guard`                     |
-| L2 互相耦合        | ✅ 无   | go.mod 零外部依赖，L2 库不在此仓库                                    |
-| 循环依赖           | ✅ 无   | `internal/` → `pkg/templatex` 单向，`cmd/goalcli` → `internal/` 单向  |
+| `x.go` import 禁令 | ✅ 强制  | `make boundary` + `main-guard` + `worktree-guard`                     |
+| L2 互相耦合        | ✅ 无    | go.mod 零外部依赖，L2 库不在此仓库                                    |
+| 循环依赖           | ✅ 无    | `internal/` → `pkg/templatex` 单向，`cmd/goalcli` → `internal/` 单向  |
 | 上帝模块           | ⚠️ 存在 | `cmd/goalcli/governance.go` 和 `cmd/goalcli/traceability.go` 文件过大 |
 
 ### 3.2 发现的结构问题
@@ -282,11 +282,11 @@ go 1.23
 | -------------- | ------------------------------------ |
 | 直接依赖       | 0 个                                 |
 | 间接依赖       | 0 个                                 |
-| CVE 风险       | ✅ 无（无外部依赖）                  |
-| 废弃依赖       | ✅ 无                                |
-| renovate.json  | ✅ 存在                              |
-| dependabot.yml | ✅ 存在                              |
-| govulncheck    | ✅ 支持（`XLIB_ENABLE_VULNCHECK=1`） |
+| CVE 风险       | ✅ 无（无外部依赖）                   |
+| 废弃依赖       | ✅ 无                                 |
+| renovate.json  | ✅ 存在                               |
+| dependabot.yml | ✅ 存在                               |
+| govulncheck    | ✅ 支持（`XLIB_ENABLE_VULNCHECK=1`）  |
 
 ### 7.2 依赖治理
 
@@ -305,12 +305,12 @@ go 1.23
 
 | 上下文                | 包含                                           | 边界清晰度         |
 | --------------------- | ---------------------------------------------- | ------------------ |
-| Standard Source       | `docs/standard/`（27 个）、`contracts/`        | ✅ 清晰            |
-| Go Reference Template | `pkg/templatex/`（17 个文件）                  | ✅ 清晰            |
-| Generator             | `scripts/render_template.sh`、`templates/`     | ✅ 清晰            |
+| Standard Source       | `docs/standard/`（27 个）、`contracts/`        | ✅ 清晰             |
+| Go Reference Template | `pkg/templatex/`（17 个文件）                  | ✅ 清晰             |
+| Generator             | `scripts/render_template.sh`、`templates/`     | ✅ 清晰             |
 | Harness Gate          | `Makefile`、`cmd/goalcli/`、`.agent/harness/`  | ⚠️ 模糊            |
 | Evidence Runtime      | `release/`、`.agent/evidence/`                 | ⚠️ 模糊            |
-| Debt Governance       | `.agent/policies/debt/`、`internal/debtcheck/` | ✅ 清晰            |
+| Debt Governance       | `.agent/policies/debt/`、`internal/debtcheck/` | ✅ 清晰             |
 | Goal Runtime          | `cmd/goalcli/`、`.agent/registries/`           | ⚠️ 与 Harness 重叠 |
 
 ### 8.2 领域问题
@@ -419,11 +419,11 @@ gate 失败 → retrospective → patches (harness/prompt/rule) → gate 收紧 
 
 | 组件                                   | 状态    | 说明                                        |
 | -------------------------------------- | ------- | ------------------------------------------- |
-| Dockerfile                             | ✅ 存在 | 多阶段构建，基于 `golang:1.23-bookworm`     |
-| docker-compose.yml                     | ✅ 存在 | toolchain service + build/mod cache volumes |
-| .devcontainer/                         | ✅ 存在 | VS Code devcontainer 配置                   |
-| scripts/docker/                        | ✅ 存在 | check_toolchain.sh + docker_gate.sh         |
-| contracts/docker-toolchain.schema.json | ✅ 存在 | Docker 工具链 schema                        |
+| Dockerfile                             | ✅ 存在  | 多阶段构建，基于 `golang:1.23-bookworm`     |
+| docker-compose.yml                     | ✅ 存在  | toolchain service + build/mod cache volumes |
+| .devcontainer/                         | ✅ 存在  | VS Code devcontainer 配置                   |
+| scripts/docker/                        | ✅ 存在  | check_toolchain.sh + docker_gate.sh         |
+| contracts/docker-toolchain.schema.json | ✅ 存在  | Docker 工具链 schema                        |
 
 ### 11.2 Docker 问题
 
@@ -527,12 +527,12 @@ gate 失败 → retrospective → patches (harness/prompt/rule) → gate 收紧 
 
 ## 14. SPEC.md v2.0.0 质量评估
 
-| 维度         | 评分 | 说明                                                |
-| ------------ | ---- | --------------------------------------------------- |
+| 维度         | 评分 | 说明                                                               |
+| ------------ | ---- | ------------------------------------------------------------------ |
 | 完整性       | 9/10 | 23 节全覆盖，419 条规则、9 formal ADR + template/history、28 PR 包 |
-| 准确性       | 9/10 | gates 数量已统一为 66，文档列表仍待补全（18 vs 27） |
-| 可执行性     | 9/10 | 每个 FR 有来源、每个 gate 有 proof_depth            |
-| 膨胀度       | 6/10 | ~800 行，含大量实现细节（PR 包清单、命令列表）      |
-| 与仓库一致性 | 8/10 | 核心一致，细节有滞后                                |
+| 准确性       | 9/10 | gates 数量已统一为 66，文档列表仍待补全（18 vs 27）                |
+| 可执行性     | 9/10 | 每个 FR 有来源、每个 gate 有 proof_depth                           |
+| 膨胀度       | 6/10 | ~800 行，含大量实现细节（PR 包清单、命令列表）                     |
+| 与仓库一致性 | 8/10 | 核心一致，细节有滞后                                               |
 
 **总结**：SPEC.md v2.0.0 是高质量的架构规格文档，主要风险是膨胀（实现细节过多）和少量数字不同步。建议将实现清单拆分到子文档，保持 SPEC.md 聚焦于架构决策和验收标准。

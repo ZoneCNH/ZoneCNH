@@ -15,12 +15,12 @@
 
 ## 2. 评分方法论
 
-| 要素 | 来源 |
-|------|------|
-| Rubric | `docs/governance/scoring/RUBRIC-tasks.md` |
-| 模板 | `docs/governance/TASK-TEMPLATE.md` |
-| 上游Spec | `module/kernel/SPEC.md` v2.0.0 (1278行) |
-| 追溯矩阵 | `module/kernel/TRACEABILITY.md` v2.2 |
+| 要素     | 来源                                       |
+| -------- | ------------------------------------------ |
+| Rubric   | `docs/governance/scoring/RUBRIC-tasks.md`  |
+| 模板     | `docs/governance/TASK-TEMPLATE.md`         |
+| 上游Spec | `module/kernel/SPEC.md` v2.0.0 (1278行)    |
+| 追溯矩阵 | `module/kernel/TRACEABILITY.md` v2.2       |
 | 评分体系 | `docs/governance/STRUCTURAL-SCORING.md` §3 |
 
 8维度：模板符合度(12) + 粒度合规(15) + spec_ref闭合(15) + Scope/Non-scope(12) + 覆盖完整性(15) + 依赖声明(10) + 测试计划(10) + 优先级文件清单(11) = 100
@@ -31,20 +31,20 @@
 
 ### 3.1 Claude 评分演进
 
-| 轮次 | 时间 | 分数 | 红线 | 关键变化 |
-|------|------|:--:|:--:|------|
-| 初评 | T1 | 91 | 1 | TASK-015 12文件超限 |
-| 严格复评 | T2 | 80 | 4→1 | RL-2/3/4降级，RL-1(TASK-016文件数)确认 |
-| 016拆分后 | T3 | **84** | **0** | TASK-016→016a/b/c，红线清零 |
+| 轮次      | 时间   | 分数   | 红线  | 关键变化                               |
+| --------- | ------ | :--:   | :--:  | -------------------------------------- |
+| 初评      | T1     | 91     | 1     | TASK-015 12文件超限                    |
+| 严格复评  | T2     | 80     | 4→1   | RL-2/3/4降级，RL-1(TASK-016文件数)确认 |
+| 016拆分后 | T3     | **84** | **0** | TASK-016→016a/b/c，红线清零            |
 
 ### 3.2 Rules 引擎修复
 
-| 轮次 | 阶段 | 修复前 | 修复后 | 修复项 |
-|------|------|:--:|:--:|------|
-| 初始 | spec | 77/红线 | **96**/0红线 | Fix1-4 |
-| 初始 | tasks | 0/红线 | **100**/0红线 | Fix5+FR恢复 |
-| 初始 | plan | 50 | **100** | Fix6+8 |
-| 初始 | matrix | 100 | 100 | 不变 |
+| 轮次   | 阶段   | 修复前  | 修复后        | 修复项      |
+| ------ | ------ | :--:    | :--:          | ----------- |
+| 初始   | spec   | 77/红线 | **96**/0红线  | Fix1-4      |
+| 初始   | tasks  | 0/红线  | **100**/0红线 | Fix5+FR恢复 |
+| 初始   | plan   | 50      | **100**       | Fix6+8      |
+| 初始   | matrix | 100     | 100           | 不变        |
 
 9项修复：6解析Bug + 2硬编码数据 + 1代码恢复。40行新增/29行删除。
 
@@ -56,23 +56,23 @@
 `docs/governance/scoring/RUBRIC-*.md`, `STRUCTURAL-SCORING.md`, `ARBITER-PROTOCOL.md`, `CONSTITUTION.md`
 
 ### 4.2 评分输出(新写入)
-| 文件 | 说明 |
-|------|------|
-| `.omc/state/pipeline/kernel/tasks/scores/claude.json` | 最终: 84/0红线/11扣分(全部含SPEC追溯) |
-| `.omc/state/pipeline/kernel/tasks/scores/claude.md` | 155行详细报告 |
-| `.omc/state/pipeline/kernel/{spec,matrix,tasks,plan}/scores/rules.json` | 修复后4阶段评分 |
+| 文件                                                                    | 说明                                  |
+| ----------------------------------------------------------------------- | ------------------------------------- |
+| `.omc/state/pipeline/kernel/tasks/scores/claude.json`                   | 最终: 84/0红线/11扣分(全部含SPEC追溯) |
+| `.omc/state/pipeline/kernel/tasks/scores/claude.md`                     | 155行详细报告                         |
+| `.omc/state/pipeline/kernel/{spec,matrix,tasks,plan}/scores/rules.json` | 修复后4阶段评分                       |
 
 ### 4.3 分析报告(新写入)
-| 文件 | 行数 | 说明 |
-|------|:--:|------|
-| `.omc/state/pipeline/kernel/scores/meta-analysis.md` | ~300 | Spec→Tasks三阶段融合分析 + 附录A(9项修复清单) |
+| 文件                                                          | 行数 | 说明                                          |
+| ------------------------------------------------------------- | :--: | --------------------------------------------- |
+| `.omc/state/pipeline/kernel/scores/meta-analysis.md`          | ~300 | Spec→Tasks三阶段融合分析 + 附录A(9项修复清单) |
 | `.omc/state/pipeline/kernel/scores/cross-stage-assessment.md` | ~330 | Spec→Code六阶段跨阶段综合评估(含修复前后对比) |
 
 ### 4.4 源产物(修复)
-| 文件 | 修改 | 
-|------|------|
+| 文件                            | 修改                                                   |
+| ------------------------------- | ------------------------------------------------------ |
 | `module/kernel/TRACEABILITY.md` | 5处: Task总数17→23, BR-009+NFR-005/006/008标注016c执行 |
-| `scripts/rule-scorer.py` | 9项修复: +40/-29行 |
+| `scripts/rule-scorer.py`        | 9项修复: +40/-29行                                     |
 
 ### 4.5 全管线评分文件清单
 

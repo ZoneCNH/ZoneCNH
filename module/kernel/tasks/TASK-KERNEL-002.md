@@ -42,10 +42,10 @@ status: pending
 
 > Spec TC: TC-015
 
-| Requirement | Description | Acceptance Criteria | TC |
-|---|---|---|
-| FR-007 | 时钟抽象 | 全部 WHEN/THEN 覆盖 |
-| BR-012 | FakeClock 零值接收者安全 | 防止测试中的 nil panic |
+| Requirement | Description              | Acceptance Criteria    | TC |
+| ----------- | ------------------------ | ---------------------- |    |
+| FR-007      | 时钟抽象                 | 全部 WHEN/THEN 覆盖    |    |
+| BR-012      | FakeClock 零值接收者安全 | 防止测试中的 nil panic |    |
 
 ## Non-scope
 
@@ -54,9 +54,9 @@ status: pending
 
 ## Test Plan
 
-| TC | Type | Description |
-|----|------|-------------|
-| TC-015 | Unit | FakeClock Advance(d) 后 Now() 前进 d |
+| TC     | Type   | Description                          |
+| ------ | ------ | ------------------------------------ |
+| TC-015 | Unit   | FakeClock Advance(d) 后 Now() 前进 d |
 
 ## Implementation Notes
 

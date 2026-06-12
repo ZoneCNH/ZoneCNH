@@ -25,15 +25,15 @@ status: pending
 
 ## Requirements Covered
 
-| Requirement | Description | Acceptance Criteria |
-|---|---|---|
-| §15 | go.mod 依赖声明 | 仅必要依赖 |
+| Requirement | Description     | Acceptance Criteria |
+| ----------- | --------------- | ------------------- |
+| §15         | go.mod 依赖声明 | 仅必要依赖          |
 
 ## Test Plan
 
-| Test Case | Type | Description |
-|---|---|---|
-| — | CI Gate | `go build ./...` 编译通过 |
+| Test Case | Type    | Description               |
+| --------- | ------- | ------------------------- |
+| —         | CI Gate | `go build ./...` 编译通过 |
 
 ## Implementation Notes
 
@@ -42,13 +42,13 @@ status: pending
 
 ## Implementation Plan
 
-| Step | Description | Deliverables | Verification |
-|---|---|---|---|
-| 1 | 创建 `go.mod` | `go.mod` | `go mod tidy` 无变化 |
-| 2 | 创建 `doc.go` | `doc.go` | `go build ./...` 通过 |
+| Step | Description   | Deliverables | Verification          |
+| ---- | ------------- | ------------ | --------------------- |
+| 1    | 创建 `go.mod` | `go.mod`     | `go mod tidy` 无变化  |
+| 2    | 创建 `doc.go` | `doc.go`     | `go build ./...` 通过 |
 
 ### Risk Assessment
 
 | Risk | Probability | Impact | Mitigation |
-|---|---|---|---|
-| 无 | Low | Low | — |
+| ---- | ----------- | ------ | ---------- |
+| 无   | Low         | Low    | —          |

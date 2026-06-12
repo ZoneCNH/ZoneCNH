@@ -8,14 +8,14 @@
 
 ## 1. 状态定义
 
-| 状态 | 含义 | 进入条件 | 退出条件 |
-|------|------|----------|----------|
-| `Draft` | 草稿，正在编写 | 新建 `SPEC.md` | 内容完整后进入 Spec 四源评分 |
-| `Review` | 结构评分或修复中 | `Draft` 或 `Changed` 提交 Spec gate | `pipeline-arbiter` pass 自动转 `Approved`；fail 回修复 |
-| `Approved` | 已批准，可进入开发 | Spec 四源评分和 arbiter 均通过 | 开发者开始实现 |
-| `Implemented` | 已实现 | 模块追溯矩阵所有 FR 标记 `Done` / `✅`，且 DoD 证据齐全 | - |
-| `Changed` | 已批准或已实现的规格被修改 | 修改 `Approved` / `Implemented` 状态的 `SPEC.md` | 重新进入 `Review` 并跑四源评分 |
-| `Deprecated` | 已废弃 | 模块被移除或替代 | - |
+| 状态          | 含义                       | 进入条件                                               | 退出条件                                               |
+| ------------- | -------------------------- | ------------------------------------------------------ | ------------------------------------------------------ |
+| `Draft`       | 草稿，正在编写             | 新建 `SPEC.md`                                         | 内容完整后进入 Spec 四源评分                           |
+| `Review`      | 结构评分或修复中           | `Draft` 或 `Changed` 提交 Spec gate                    | `pipeline-arbiter` pass 自动转 `Approved`；fail 回修复 |
+| `Approved`    | 已批准，可进入开发         | Spec 四源评分和 arbiter 均通过                         | 开发者开始实现                                         |
+| `Implemented` | 已实现                     | 模块追溯矩阵所有 FR 标记 `Done` / `✅`，且 DoD 证据齐全 | -                                                      |
+| `Changed`     | 已批准或已实现的规格被修改 | 修改 `Approved` / `Implemented` 状态的 `SPEC.md`       | 重新进入 `Review` 并跑四源评分                         |
+| `Deprecated`  | 已废弃                     | 模块被移除或替代                                       | -                                                      |
 
 ---
 
@@ -32,17 +32,17 @@ Deprecated is terminal.
 
 **合法流转**：
 
-| 当前状态 | 允许流转到 | 触发条件 |
-|----------|-----------|----------|
-| Draft | Review | Spec 内容完整，进入 Spec 结构评分 |
-| Review | Approved | 四源评分齐全，`pipeline-arbiter` gate=pass |
-| Review | Draft | gate=fail 且需要重写基础需求 |
-| Approved | Implemented | `module/{module}/TRACEABILITY.md` 所有 FR 标记 `Done` / `✅`，且 DoD 证据齐全 |
-| Approved | Changed | 修改 spec 行为语义 |
-| Implemented | Changed | 修改 spec 内容（需求变更） |
-| Changed | Review | 变更提交四源评分 |
-| Changed | Approved | 仅 PATCH 格式或元数据修正且不改变 FR/BR/AC/TC 语义 |
-| Any | Deprecated | 模块被正式废弃 |
+| 当前状态    | 允许流转到  | 触发条件                                                                     |
+| ----------- | ----------- | ---------------------------------------------------------------------------- |
+| Draft       | Review      | Spec 内容完整，进入 Spec 结构评分                                            |
+| Review      | Approved    | 四源评分齐全，`pipeline-arbiter` gate=pass                                   |
+| Review      | Draft       | gate=fail 且需要重写基础需求                                                 |
+| Approved    | Implemented | `module/{module}/TRACEABILITY.md` 所有 FR 标记 `Done` / `✅`，且 DoD 证据齐全 |
+| Approved    | Changed     | 修改 spec 行为语义                                                           |
+| Implemented | Changed     | 修改 spec 内容（需求变更）                                                   |
+| Changed     | Review      | 变更提交四源评分                                                             |
+| Changed     | Approved    | 仅 PATCH 格式或元数据修正且不改变 FR/BR/AC/TC 语义                           |
+| Any         | Deprecated  | 模块被正式废弃                                                               |
 
 **禁止流转**：
 
@@ -70,15 +70,15 @@ Deprecated is terminal.
 - Repository: [github.com/ZoneCNH/xxx](https://github.com/ZoneCNH/xxx)
 ```
 
-| 字段 | 说明 |
-|------|------|
-| `Status` | 规格生命周期状态（本文件定义的六态之一） |
+| 字段           | 说明                                      |
+| -------------- | ----------------------------------------- |
+| `Status`       | 规格生命周期状态（本文件定义的六态之一）  |
 | `Spec-Version` | 规格文档自身版本号，与代码 `Version` 解耦 |
-| `Last-Updated` | 规格最后一次修改日期 |
-| `Owner` | 规格负责人 |
-| `Layer` | 架构层级或模块域 |
-| `Version` | 模块代码版本号 |
-| `Repository` | 模块仓库链接 |
+| `Last-Updated` | 规格最后一次修改日期                      |
+| `Owner`        | 规格负责人                                |
+| `Layer`        | 架构层级或模块域                          |
+| `Version`      | 模块代码版本号                            |
+| `Repository`   | 模块仓库链接                              |
 
 ---
 
@@ -86,11 +86,11 @@ Deprecated is terminal.
 
 沿用 `CONSTITUTION.md` 第十条的变更分类：
 
-| 分类 | 影响 | 示例 | 生命周期要求 |
-|------|------|------|--------------|
-| PATCH | 格式修正、错别字、非语义元数据 | 修复表格格式、更新时间 | 不重置状态；若触及受保护治理文件，仍按第十四条执行 |
-| MINOR | 新增 FR/BR、修改 AC/TC、补充 NFR | 新增 `FR-010` | `Approved` / `Implemented` 必须转 `Changed` 并重新跑 Spec gate |
-| MAJOR | 删除 FR、修改接口签名、改变设计原则 | 删除 `FR-003`、修改公共 API | 必须转 `Changed`，重新跑四源评分，并重新同步 Matrix/Tasks |
+| 分类   | 影响                                | 示例                        | 生命周期要求                                                   |
+| ------ | ----------------------------------- | --------------------------- | -------------------------------------------------------------- |
+| PATCH  | 格式修正、错别字、非语义元数据      | 修复表格格式、更新时间      | 不重置状态；若触及受保护治理文件，仍按第十四条执行             |
+| MINOR  | 新增 FR/BR、修改 AC/TC、补充 NFR    | 新增 `FR-010`               | `Approved` / `Implemented` 必须转 `Changed` 并重新跑 Spec gate |
+| MAJOR  | 删除 FR、修改接口签名、改变设计原则 | 删除 `FR-003`、修改公共 API | 必须转 `Changed`，重新跑四源评分，并重新同步 Matrix/Tasks      |
 
 **状态重置规则**：
 
@@ -179,11 +179,11 @@ Spec lint 和 rule scorer 至少校验：
 
 ## 相关文档
 
-| 文档 | 用途 |
-|------|------|
-| [`module/README.md`](../../module/README.md) | 模块规格体系总览 |
-| [`docs/governance/TRACEABILITY.md`](./TRACEABILITY.md) | 追溯矩阵规范；具体矩阵位于 `module/{module}/TRACEABILITY.md` |
-| [`docs/governance/DEVELOPMENT-WORKFLOW.md`](./DEVELOPMENT-WORKFLOW.md) | Spec -> Code 管线 |
-| [`docs/governance/DEFINITION-OF-READY.md`](./DEFINITION-OF-READY.md) | 进入开发的前置条件 |
-| [`docs/governance/DEFINITION-OF-DONE.md`](./DEFINITION-OF-DONE.md) | 实现完成的验收条件 |
-| [`CONSTITUTION.md`](../../CONSTITUTION.md) | 变更管理与受保护文件规则 |
+| 文档                                                                   | 用途                                                         |
+| ---------------------------------------------------------------------- | ------------------------------------------------------------ |
+| [`module/README.md`](../../module/README.md)                           | 模块规格体系总览                                             |
+| [`docs/governance/TRACEABILITY.md`](./TRACEABILITY.md)                 | 追溯矩阵规范；具体矩阵位于 `module/{module}/TRACEABILITY.md` |
+| [`docs/governance/DEVELOPMENT-WORKFLOW.md`](./DEVELOPMENT-WORKFLOW.md) | Spec -> Code 管线                                            |
+| [`docs/governance/DEFINITION-OF-READY.md`](./DEFINITION-OF-READY.md)   | 进入开发的前置条件                                           |
+| [`docs/governance/DEFINITION-OF-DONE.md`](./DEFINITION-OF-DONE.md)     | 实现完成的验收条件                                           |
+| [`CONSTITUTION.md`](../../CONSTITUTION.md)                             | 变更管理与受保护文件规则                                     |

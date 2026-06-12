@@ -28,12 +28,12 @@ depends_on:
 
 ## 关联需求
 
-| 类型 | 编号 | 出处 | 说明 |
-|------|------|------|------|
-| FR | FR-004 | SPEC.md §7 | FakeTracer：记录 spans 到内存供断言 |
-| BR | BR-001 | SPEC.md §8 | 编译期接口检查：`var _ observex.Tracer = (*FakeTracerImpl)(nil)` |
-| BR | BR-002 | SPEC.md §8 | 行为确定性 |
-| TC | TC-004 | SPEC.md §16.4 | FakeTracer 编译期检查 |
+| 类型   | 编号   | 出处          | 说明                                                             |
+| ------ | ------ | ------------- | ---------------------------------------------------------------- |
+| FR     | FR-004 | SPEC.md §7    | FakeTracer：记录 spans 到内存供断言                              |
+| BR     | BR-001 | SPEC.md §8    | 编译期接口检查：`var _ observex.Tracer = (*FakeTracerImpl)(nil)` |
+| BR     | BR-002 | SPEC.md §8    | 行为确定性                                                       |
+| TC     | TC-004 | SPEC.md §16.4 | FakeTracer 编译期检查                                            |
 
 ## 接口契约
 
@@ -97,30 +97,30 @@ THEN 断言 trace_id 已传播
 
 测试场景：
 
-| 测试用例 | 说明 |
-|----------|------|
-| `TestFakeTracer_StartSpan` | Start 后 Spans() 包含该 span |
-| `TestFakeTracer_ChildSpan` | 子 span 继承 trace_id |
-| `TestFakeTracer_AssertSpanCount` | 正确数量 → 不 fail |
-| `TestFakeTracer_AssertTraceID` | trace_id 已传播 → 不 fail |
-| `TestFakeTracer_Concurrent` | 并发安全 |
+| 测试用例                         | 说明                         |
+| -------------------------------- | ---------------------------- |
+| `TestFakeTracer_StartSpan`       | Start 后 Spans() 包含该 span |
+| `TestFakeTracer_ChildSpan`       | 子 span 继承 trace_id        |
+| `TestFakeTracer_AssertSpanCount` | 正确数量 → 不 fail           |
+| `TestFakeTracer_AssertTraceID`   | trace_id 已传播 → 不 fail    |
+| `TestFakeTracer_Concurrent`      | 并发安全                     |
 
 ## 验收标准
 
-| AC | 关联 | 验证命令 | 预期结果 |
-|----|------|----------|----------|
-| AC-FT-01 | FR-004 | `go test -run TestFakeTracer -v -race ./...` | 全部通过 |
-| AC-FT-02 | BR-001 | `go build ./...` | 编译通过 |
+| AC       | 关联   | 验证命令                                             | 预期结果     |
+| -------- | ------ | ---------------------------------------------------- | ------------ |
+| AC-FT-01 | FR-004 | `go test -run TestFakeTracer -v -race ./...`         | 全部通过     |
+| AC-FT-02 | BR-001 | `go build ./...`                                     | 编译通过     |
 | AC-FT-03 | TC-004 | `go test -run TestContract_Tracer -v ./contract/...` | 接口检查通过 |
 
 ## 验证命令
 
-| 命令 | 判定标准 |
-|------|----------|
-| `go build ./...` | 编译通过 |
-| `go test -race -count=1 ./...` | 全部通过，无 data race |
-| `go vet ./...` | 无警告 |
-| `grep "var _ observex.Tracer" fake_tracer.go` | 找到编译期断言 |
+| 命令                                          | 判定标准               |
+| --------------------------------------------- | ---------------------- |
+| `go build ./...`                              | 编译通过               |
+| `go test -race -count=1 ./...`                | 全部通过，无 data race |
+| `go vet ./...`                                | 无警告                 |
+| `grep "var _ observex.Tracer" fake_tracer.go` | 找到编译期断言         |
 
 ## 禁止事项
 

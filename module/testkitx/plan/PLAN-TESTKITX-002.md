@@ -22,12 +22,12 @@ blocks: [TASK-TESTKITX-010]
 
 ## 2. 覆盖需求
 
-| 需求 | 描述 | AC |
-|------|------|-----|
-| FR-002 | FakeLogger 记录日志到内存 | AC-002: AssertLogged/AssertNoErrors/Entries 可用 |
-| BR-001 | 接口编译期检查 | `var _ observex.Logger = (*FakeLoggerImpl)(nil)` |
-| NFR-001 | fake 初始化 < 1ms | benchmark 验证 |
-| SPEC §13 | Edge Case: 并发写入 | 无 data race（`-race` 测试通过） |
+| 需求     | 描述                      | AC                                               |
+| -------- | ------------------------- | ------------------------------------------------ |
+| FR-002   | FakeLogger 记录日志到内存 | AC-002: AssertLogged/AssertNoErrors/Entries 可用 |
+| BR-001   | 接口编译期检查            | `var _ observex.Logger = (*FakeLoggerImpl)(nil)` |
+| NFR-001  | fake 初始化 < 1ms         | benchmark 验证                                   |
+| SPEC §13 | Edge Case: 并发写入       | 无 data race（`-race` 测试通过）                 |
 
 ---
 
@@ -118,14 +118,14 @@ func (l *FakeLoggerImpl) AssertNoErrors(t testing.TB)
 
 **测试用例**：
 
-| 用例 | 描述 | 验证点 |
-|------|------|--------|
-| TestFakeLogger_Info | Info 记录日志 | Entries() 包含该条目 |
-| TestFakeLogger_AllLevels | Debug/Info/Warn/Error 全部记录 | Entries() 包含所有 level |
-| TestFakeLogger_AssertLogged | 断言匹配 | 包含指定 level 和文本 → 通过 |
-| TestFakeLogger_AssertNoErrors | 无错误断言 | 无 Error → 通过 |
-| TestFakeLogger_With | With 不变性 | 原实例不受影响，新实例有额外 fields |
-| TestFakeLogger_Concurrent | 并发安全 | `-race` 通过 |
+| 用例                          | 描述                           | 验证点                              |
+| ----------------------------- | ------------------------------ | ----------------------------------- |
+| TestFakeLogger_Info           | Info 记录日志                  | Entries() 包含该条目                |
+| TestFakeLogger_AllLevels      | Debug/Info/Warn/Error 全部记录 | Entries() 包含所有 level            |
+| TestFakeLogger_AssertLogged   | 断言匹配                       | 包含指定 level 和文本 → 通过        |
+| TestFakeLogger_AssertNoErrors | 无错误断言                     | 无 Error → 通过                     |
+| TestFakeLogger_With           | With 不变性                    | 原实例不受影响，新实例有额外 fields |
+| TestFakeLogger_Concurrent     | 并发安全                       | `-race` 通过                        |
 
 ---
 
@@ -142,10 +142,10 @@ go test -run TestFakeLogger -race -count=1 -v ./...
 
 ## 6. 风险与回滚
 
-| 风险 | 概率 | 影响 | 缓解 | 回滚 |
-|------|------|------|------|------|
-| observex.Logger 接口方法不确定 | Medium | High | 先读 observex 接口定义 | 补全缺失方法 |
-| With 实现导致数据竞争 | Low | Medium | 返回新实例，不共享切片 | 使用 copy 或深拷贝 |
-| Entries() 外部修改内部状态 | Low | Low | 返回副本 | 返回副本 |
+| 风险                           | 概率   | 影响   | 缓解                   | 回滚               |
+| ------------------------------ | ------ | ------ | ---------------------- | ------------------ |
+| observex.Logger 接口方法不确定 | Medium | High   | 先读 observex 接口定义 | 补全缺失方法       |
+| With 实现导致数据竞争          | Low    | Medium | 返回新实例，不共享切片 | 使用 copy 或深拷贝 |
+| Entries() 外部修改内部状态     | Low    | Low    | 返回副本               | 返回副本           |
 
 **回滚路径**：本 task 仅新增文件，回滚 = `rm fake_logger.go fake_logger_test.go`。

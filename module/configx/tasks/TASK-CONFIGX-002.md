@@ -33,23 +33,23 @@ status: pending
 
 ## Requirements Covered
 
-| Requirement | Description | Acceptance Criteria |
-|---|---|---|
-| FR-001 | Load：文件存在有效→nil，不存在→ErrNotExist，格式无效→解析错误 | 3 个 WHEN/THEN 场景 |
-| §13 | 空配置文件→使用默认值，只有注释→使用默认值 | 边界场景覆盖 |
+| Requirement | Description                                                   | Acceptance Criteria |
+| ----------- | ------------------------------------------------------------- | ------------------- |
+| FR-001      | Load：文件存在有效→nil，不存在→ErrNotExist，格式无效→解析错误 | 3 个 WHEN/THEN 场景 |
+| §13         | 空配置文件→使用默认值，只有注释→使用默认值                    | 边界场景覆盖        |
 
 ## Test Plan
 
-| Test Case | Type | Description |
-|---|---|---|
-| TC-001 | Unit | YAML 加载：解析正确，支持嵌套结构 |
-| TC-006 | Unit | 文件不存在：返回 `os.ErrNotExist` |
-| TC-007 | Unit | 格式无效：返回 `ErrInvalidFormat` |
-| — | Unit | TOML 加载：解析正确 |
-| — | Unit | JSON 加载：解析正确 |
-| — | Unit | 空文件：使用默认值 |
-| — | Unit | 格式自动检测：.yaml/.toml/.json 正确选择解析器 |
-| — | Integration | 完整加载链子集：Load → 结果存入 data |
+| Test Case | Type        | Description                                    |
+| --------- | ----------- | ---------------------------------------------- |
+| TC-001    | Unit        | YAML 加载：解析正确，支持嵌套结构              |
+| TC-006    | Unit        | 文件不存在：返回 `os.ErrNotExist`              |
+| TC-007    | Unit        | 格式无效：返回 `ErrInvalidFormat`              |
+| —         | Unit        | TOML 加载：解析正确                            |
+| —         | Unit        | JSON 加载：解析正确                            |
+| —         | Unit        | 空文件：使用默认值                             |
+| —         | Unit        | 格式自动检测：.yaml/.toml/.json 正确选择解析器 |
+| —         | Integration | 完整加载链子集：Load → 结果存入 data           |
 
 ## Non-scope
 
@@ -66,16 +66,16 @@ status: pending
 
 ## Implementation Plan
 
-| Step | Description | Deliverables | Verification |
-|---|---|---|---|
-| 1 | 实现 `internal/yaml` 解析器：读取文件 → 解析为 map | `internal/yaml/parser.go` | `go test ./internal/yaml/...` 通过 |
-| 2 | 实现 `internal/toml` 和 `internal/json` 解析器 | `internal/toml/`, `internal/json/` | `go test ./internal/...` 通过 |
-| 3 | 实现 `Load(path)` 方法：格式检测 → 选择解析器 → 存储结果 | `config.go` | `go test ./... -run TestLoad` 通过 |
-| 4 | 编写边界测试：空文件、只有注释、格式无效、文件不存在 | `config_test.go` | 所有边界用例通过 |
+| Step | Description                                              | Deliverables                       | Verification                       |
+| ---- | -------------------------------------------------------- | ---------------------------------- | ---------------------------------- |
+| 1    | 实现 `internal/yaml` 解析器：读取文件 → 解析为 map       | `internal/yaml/parser.go`          | `go test ./internal/yaml/...` 通过 |
+| 2    | 实现 `internal/toml` 和 `internal/json` 解析器           | `internal/toml/`, `internal/json/` | `go test ./internal/...` 通过      |
+| 3    | 实现 `Load(path)` 方法：格式检测 → 选择解析器 → 存储结果 | `config.go`                        | `go test ./... -run TestLoad` 通过 |
+| 4    | 编写边界测试：空文件、只有注释、格式无效、文件不存在     | `config_test.go`                   | 所有边界用例通过                   |
 
 ### Risk Assessment
 
-| Risk | Probability | Impact | Mitigation |
-|---|---|---|---|
-| TOML/JSON 解析器依赖引入冲突 | Medium | Medium | 检查 go.mod 依赖兼容性 |
-| 嵌套 key 解析不一致 | Low | Medium | 三种格式统一输出 map[string]interface{} |
+| Risk                         | Probability | Impact | Mitigation                              |
+| ---------------------------- | ----------- | ------ | --------------------------------------- |
+| TOML/JSON 解析器依赖引入冲突 | Medium      | Medium | 检查 go.mod 依赖兼容性                  |
+| 嵌套 key 解析不一致          | Low         | Medium | 三种格式统一输出 map[string]interface{} |

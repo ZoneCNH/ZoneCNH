@@ -28,11 +28,11 @@ depends_on:
 
 ## 关联需求
 
-| 类型 | 编号 | 出处 | 说明 |
-|------|------|------|------|
-| FR | FR-009 | SPEC.md §7 | BoundaryCheck：生产包 import 边界扫描 |
-| BR | BR-005 | SPEC.md §8 | 生产 import graph 中不能出现 testkitx |
-| TC | TC-009 | SPEC.md §16.4 | 生产包依赖 testkitx → fail + 路径 |
+| 类型   | 编号   | 出处          | 说明                                  |
+| ------ | ------ | ------------- | ------------------------------------- |
+| FR     | FR-009 | SPEC.md §7    | BoundaryCheck：生产包 import 边界扫描 |
+| BR     | BR-005 | SPEC.md §8    | 生产 import graph 中不能出现 testkitx |
+| TC     | TC-009 | SPEC.md §16.4 | 生产包依赖 testkitx → fail + 路径     |
 
 ## 接口契约
 
@@ -76,26 +76,26 @@ THEN 测试通过（testkitx 依赖自己不算违规）
 
 ### 2. `boundary_test.go`
 
-| 测试用例 | 说明 |
-|----------|------|
-| `TestBoundaryCheck_Self` | 检查 testkitx 自身 → 通过 |
-| `TestBoundaryCheck_NoViolation` | 模拟不含 testkitx 的模块 → 通过 |
-| `TestBoundaryCheck_DetectViolation` | 验证违规检测逻辑正确 |
+| 测试用例                            | 说明                            |
+| ----------------------------------- | ------------------------------- |
+| `TestBoundaryCheck_Self`            | 检查 testkitx 自身 → 通过       |
+| `TestBoundaryCheck_NoViolation`     | 模拟不含 testkitx 的模块 → 通过 |
+| `TestBoundaryCheck_DetectViolation` | 验证违规检测逻辑正确            |
 
 ## 验收标准
 
-| AC | 关联 | 验证命令 | 预期结果 |
-|----|------|----------|----------|
-| AC-BC-01 | FR-009 | `go test -run TestBoundaryCheck -v ./...` | 全部通过 |
-| AC-BC-02 | BR-005 | `go list -deps github.com/ZoneCNH/x.go/... 2>/dev/null \| grep testkitx` | 无输出 |
+| AC       | 关联   | 验证命令                                                 | 预期结果       |        |
+| -------- | ------ | -------------------------------------------------------- | -------------- |        |
+| AC-BC-01 | FR-009 | `go test -run TestBoundaryCheck -v ./...`                | 全部通过       |        |
+| AC-BC-02 | BR-005 | `go list -deps github.com/ZoneCNH/x.go/... 2>/dev/null \ | grep testkitx` | 无输出 |
 
 ## 验证命令
 
-| 命令 | 判定标准 |
-|------|----------|
-| `go build ./...` | 编译通过 |
-| `go test -run TestBoundaryCheck -v ./...` | 全部通过 |
-| `go vet ./...` | 无警告 |
+| 命令                                      | 判定标准   |
+| ----------------------------------------- | ---------- |
+| `go build ./...`                          | 编译通过   |
+| `go test -run TestBoundaryCheck -v ./...` | 全部通过   |
+| `go vet ./...`                            | 无警告     |
 
 ## 禁止事项
 

@@ -43,10 +43,10 @@ status: pending
 
 > Spec TC: TC-008, TC-016
 
-| Requirement | Description |
-|---|---|
-| FR-006 | 优雅停机 |
-| BR-008 | Hook 按 LIFO 顺序执行 |
+| Requirement | Description           |
+| ----------- | --------------------- |
+| FR-006      | 优雅停机              |
+| BR-008      | Hook 按 LIFO 顺序执行 |
 
 ## Non-scope
 
@@ -55,10 +55,10 @@ status: pending
 
 ## Test Plan
 
-| TC | Type | Description |
-|----|------|-------------|
-| TC-008 | Unit | LIFO 顺序：后注册 Hook 先执行 |
-| TC-016 | Unit | NotifyContext：SIGTERM→cancel 传播 |
+| TC     | Type   | Description                        |
+| ------ | ------ | ---------------------------------- |
+| TC-008 | Unit   | LIFO 顺序：后注册 Hook 先执行      |
+| TC-016 | Unit   | NotifyContext：SIGTERM→cancel 传播 |
 
 ## Implementation Notes
 

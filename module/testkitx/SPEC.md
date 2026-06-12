@@ -21,9 +21,9 @@
 
 ### 1.1 变更历史
 
-| 日期 | 版本 | 变更内容 | 作者 |
-|------|------|----------|------|
-| 2026-06-07 | v1.0.0 | 初始版本 | ZoneCNH |
+| 日期       | 版本   | 变更内容   | 作者    |
+| ---------- | ------ | ---------- | ------- |
+| 2026-06-07 | v1.0.0 | 初始版本   | ZoneCNH |
 
 ## 2. Summary
 
@@ -67,14 +67,14 @@
 
 ## 6. Consumers
 
-| 消费者 | 使用方式 |
-|--------|----------|
-| `kernel` 测试 | 使用 FakeLogger / FakeMeter 验证模块生命周期 |
-| `configx` 测试 | 使用 FakeConfig 提供测试配置 |
-| `observex` 测试 | 使用 FakeExporter 验证遥测输出 |
+| 消费者            | 使用方式                                      |
+| ----------------- | --------------------------------------------- |
+| `kernel` 测试     | 使用 FakeLogger / FakeMeter 验证模块生命周期  |
+| `configx` 测试    | 使用 FakeConfig 提供测试配置                  |
+| `observex` 测试   | 使用 FakeExporter 验证遥测输出                |
 | `resiliencx` 测试 | 使用 FakeClock 控制时间、FakeBreaker 模拟熔断 |
-| `schedulex` 测试 | 使用 FakeClock 控制调度时间 |
-| 业务域模块测试 | 使用 fake + fixture + golden 验证业务逻辑 |
+| `schedulex` 测试  | 使用 FakeClock 控制调度时间                   |
+| 业务域模块测试    | 使用 fake + fixture + golden 验证业务逻辑     |
 
 ---
 
@@ -176,15 +176,15 @@ THEN 测试通过
 
 ## 8. Business Rules
 
-| 编号 | 规则 |
-|------|------|
+| 编号   | 规则                                                                                     |
+| ------ | ---------------------------------------------------------------------------------------- |
 | BR-001 | 所有 fake 必须实现对应接口，编译期检查：`var _ observex.Logger = (*FakeLoggerImpl)(nil)` |
-| BR-002 | fake 行为必须确定性，不引入 `time.Now()` 或 `math.Rand()` |
-| BR-003 | Eventually 使用 `testing.T` 而非 `panic`，失败时输出清晰诊断 |
-| BR-004 | GoldenUpdate() 只在 `GOLDEN_UPDATE=1` 环境变量下返回 true |
-| BR-005 | 生产 import graph 中不能出现 testkitx（go list 验证） |
-| BR-006 | testkitx 是唯一允许依赖所有 Foundation L1 模块的包（仅 go test） |
-| BR-007 | golden 文件不泄露 secret（更新时自动检查） |
+| BR-002 | fake 行为必须确定性，不引入 `time.Now()` 或 `math.Rand()`                                |
+| BR-003 | Eventually 使用 `testing.T` 而非 `panic`，失败时输出清晰诊断                             |
+| BR-004 | GoldenUpdate() 只在 `GOLDEN_UPDATE=1` 环境变量下返回 true                                |
+| BR-005 | 生产 import graph 中不能出现 testkitx（go list 验证）                                    |
+| BR-006 | testkitx 是唯一允许依赖所有 Foundation L1 模块的包（仅 go test）                         |
+| BR-007 | golden 文件不泄露 secret（更新时自动检查）                                               |
 
 ---
 
@@ -295,11 +295,11 @@ GOLDEN_UPDATE=1    # 更新 golden 文件
 
 ## 12. Error Handling
 
-| 错误 | 调用方处理 |
-|------|-----------|
-| `ErrBoundaryViolation` | 移除生产代码对 testkitx 的依赖 |
-| `ErrGoroutineLeak` | 检查测试中的 goroutine 清理逻辑 |
-| `ErrGoldenMismatch` | 更新 golden 文件或修复代码输出 |
+| 错误                   | 调用方处理                      |
+| ---------------------- | ------------------------------- |
+| `ErrBoundaryViolation` | 移除生产代码对 testkitx 的依赖  |
+| `ErrGoroutineLeak`     | 检查测试中的 goroutine 清理逻辑 |
+| `ErrGoldenMismatch`    | 更新 golden 文件或修复代码输出  |
 
 **错误消息格式：** `"testkitx: <operation>: <detail>"`
 
@@ -307,14 +307,14 @@ GOLDEN_UPDATE=1    # 更新 golden 文件
 
 ## 13. Edge Cases
 
-| 场景 | 预期行为 |
-|------|----------|
-| FakeConfig 的 values 为 nil | 所有 Get 返回 nil |
-| FakeLogger 并发写入 | 无 data race（-race 测试通过） |
-| FakeClock 未 Advance | Now() 始终返回初始时间 |
-| Eventually timeout = 0 | 立即检查一次，不等待 |
-| BoundaryCheck 检查自身 | 通过（testkitx 自身依赖自己不算违规） |
-| GoldenUpdate 在 CI 中设置 | CI Gate 阻止（golden update guard） |
+| 场景                        | 预期行为                              |
+| --------------------------- | ------------------------------------- |
+| FakeConfig 的 values 为 nil | 所有 Get 返回 nil                     |
+| FakeLogger 并发写入         | 无 data race（-race 测试通过）        |
+| FakeClock 未 Advance        | Now() 始终返回初始时间                |
+| Eventually timeout = 0      | 立即检查一次，不等待                  |
+| BoundaryCheck 检查自身      | 通过（testkitx 自身依赖自己不算违规） |
+| GoldenUpdate 在 CI 中设置   | CI Gate 阻止（golden update guard）   |
 
 ---
 
@@ -376,14 +376,14 @@ go 1.23
 
 ### 15.2 依赖方向
 
-| 可以依赖 | 禁止依赖 |
-|----------|----------|
-| kernel（L0 原语） | 所有业务域实现 |
-| configx（test） | |
-| observex（test） | |
-| resiliencx（test） | |
-| schedulex（test） | |
-| stdlib | |
+| 可以依赖           | 禁止依赖       |
+| ------------------ | -------------- |
+| kernel（L0 原语）  | 所有业务域实现 |
+| configx（test）    |                |
+| observex（test）   |                |
+| resiliencx（test） |                |
+| schedulex（test）  |                |
+| stdlib             |                |
 
 ### 15.3 特殊说明
 
@@ -395,41 +395,41 @@ testkitx 是唯一允许依赖所有 Foundation L1 模块的包，但仅在 `go 
 
 ### 16.1 单元测试
 
-| 测试场景 | 验证点 |
-|----------|--------|
-| FakeLogger 断言 | `AssertLogged` / `AssertNoErrors` |
-| FakeMeter 断言 | `AssertCounterValue` / `AssertHistogramRecorded` |
-| FakeTracer 断言 | span count / trace_id 传播 |
-| FakeClock 确定性 | `Advance` 不调用 `time.Now` |
-| FakeConfig 类型安全 | `GetString` / `GetInt` / `GetBool` |
-| Eventually 收敛 | 条件满足 → 不超时 |
-| Eventually 超时 | 条件不满足 → 测试失败 |
-| Golden 文件更新 | `GOLDEN_UPDATE=1` → 更新文件 |
-| BoundaryCheck | 生产包不依赖 testkitx |
-| GoroutineLeakCheck | 测试结束后无 goroutine 泄漏 |
+| 测试场景            | 验证点                                           |
+| ------------------- | ------------------------------------------------ |
+| FakeLogger 断言     | `AssertLogged` / `AssertNoErrors`                |
+| FakeMeter 断言      | `AssertCounterValue` / `AssertHistogramRecorded` |
+| FakeTracer 断言     | span count / trace_id 传播                       |
+| FakeClock 确定性    | `Advance` 不调用 `time.Now`                      |
+| FakeConfig 类型安全 | `GetString` / `GetInt` / `GetBool`               |
+| Eventually 收敛     | 条件满足 → 不超时                                |
+| Eventually 超时     | 条件不满足 → 测试失败                            |
+| Golden 文件更新     | `GOLDEN_UPDATE=1` → 更新文件                     |
+| BoundaryCheck       | 生产包不依赖 testkitx                            |
+| GoroutineLeakCheck  | 测试结束后无 goroutine 泄漏                      |
 
 ### 16.2 编译期检查
 
-| 场景 | 验证点 |
-|------|--------|
-| FakeLogger 接口实现 | `var _ observex.Logger = (*FakeLoggerImpl)(nil)` |
-| FakeMeter 接口实现 | `var _ observex.Meter = (*FakeMeterImpl)(nil)` |
-| FakeTracer 接口实现 | `var _ observex.Tracer = (*FakeTracerImpl)(nil)` |
-| FakeConfig 接口实现 | `var _ configx.Reader = (*FakeConfigImpl)(nil)` |
+| 场景                 | 验证点                                               |
+| -------------------- | ---------------------------------------------------- |
+| FakeLogger 接口实现  | `var _ observex.Logger = (*FakeLoggerImpl)(nil)`     |
+| FakeMeter 接口实现   | `var _ observex.Meter = (*FakeMeterImpl)(nil)`       |
+| FakeTracer 接口实现  | `var _ observex.Tracer = (*FakeTracerImpl)(nil)`     |
+| FakeConfig 接口实现  | `var _ configx.Reader = (*FakeConfigImpl)(nil)`      |
 | FakeBreaker 接口实现 | `var _ resiliencx.Breaker = (*FakeBreakerImpl)(nil)` |
 
 ### 16.3 Contract 测试
 
-| Contract | 验证内容 |
-|----------|----------|
-| `TestContract_Logger_Interface` | FakeLogger 实现 observex.Logger 所有方法 |
-| `TestContract_Meter_Interface` | FakeMeter 实现 observex.Meter 所有方法 |
-| `TestContract_Tracer_Interface` | FakeTracer 实现 observex.Tracer 所有方法 |
-| `TestContract_Config_Reader` | FakeConfig 实现 configx.Reader 所有方法 |
-| `TestContract_Breaker_Interface` | FakeBreaker 实现 resiliencx.Breaker 所有方法 |
-| `TestContract_Logger_Concurrent` | FakeLogger 并发安全（-race 通过） |
-| `TestContract_Meter_LabelCardinality` | FakeMeter 拒绝高基数 label |
-| `TestContract_Config_Fingerprint` | FakeConfig fingerprint 稳定性 |
+| Contract                              | 验证内容                                     |
+| ------------------------------------- | -------------------------------------------- |
+| `TestContract_Logger_Interface`       | FakeLogger 实现 observex.Logger 所有方法     |
+| `TestContract_Meter_Interface`        | FakeMeter 实现 observex.Meter 所有方法       |
+| `TestContract_Tracer_Interface`       | FakeTracer 实现 observex.Tracer 所有方法     |
+| `TestContract_Config_Reader`          | FakeConfig 实现 configx.Reader 所有方法      |
+| `TestContract_Breaker_Interface`      | FakeBreaker 实现 resiliencx.Breaker 所有方法 |
+| `TestContract_Logger_Concurrent`      | FakeLogger 并发安全（-race 通过）            |
+| `TestContract_Meter_LabelCardinality` | FakeMeter 拒绝高基数 label                   |
+| `TestContract_Config_Fingerprint`     | FakeConfig fingerprint 稳定性                |
 
 ### 16.4 Given/When/Then 用例
 
@@ -485,18 +485,18 @@ Then 报告泄漏并失败
 
 ### 16.5 Benchmark
 
-| 场景 | 目标 |
-|------|------|
-| fake 初始化 | < 1ms |
+| 场景        | 目标   |
+| ----------- | ------ |
+| fake 初始化 | < 1ms  |
 
 ---
 
 ## 17. Performance Budget
 
-| 操作 | 目标 | 测量方式 |
-|------|------|----------|
-| fake 初始化 | < 1ms | benchmark test |
-| 常驻内存 | 不限 | 仅测试环境，不计入生产预算 |
+| 操作        | 目标   | 测量方式                   |
+| ----------- | ------ | -------------------------- |
+| fake 初始化 | < 1ms  | benchmark test             |
+| 常驻内存    | 不限   | 仅测试环境，不计入生产预算 |
 
 ---
 
@@ -516,10 +516,10 @@ exporter.AssertSpanCount(3)
 
 ## 19. Security
 
-| 要求 | 实现方式 |
-|------|----------|
-| 不进入生产二进制 | `go list` 验证生产依赖图不包含 testkitx |
-| golden 文件不泄露 secret | golden 更新时自动检查 secret 模式 |
+| 要求                     | 实现方式                                |
+| ------------------------ | --------------------------------------- |
+| 不进入生产二进制         | `go list` 验证生产依赖图不包含 testkitx |
+| golden 文件不泄露 secret | golden 更新时自动检查 secret 模式       |
 
 ---
 
@@ -527,35 +527,35 @@ exporter.AssertSpanCount(3)
 
 ### 20.1 通用 Gate
 
-| Gate | 命令 | 阻塞条件 |
-|------|------|----------|
-| 编译 | `go build ./...` | 编译失败 |
-| 测试 | `go test ./... -race -count=1` | 任何测试失败或 data race |
-| 覆盖率 | `mkdir -p .coverage && go test ./... -coverprofile=.coverage/cover.out && go tool cover -func=.coverage/cover.out` | 总覆盖率 < 80% |
-| vet | `go vet ./...` | 任何 vet 错误 |
-| lint | `golangci-lint run` | 任何 lint 错误 |
-| 依赖检查 | `go mod tidy && git diff --exit-code go.mod go.sum` | go.mod 不整洁 |
-| Secret 扫描 | `gitleaks detect --no-git` | 泄露 secret |
-| Benchmark | `go test -bench=. -benchmem -count=3 ./...` | 结果附在 PR comment |
+| Gate        | 命令                                                                                                               | 阻塞条件                 |
+| ----------- | ------------------------------------------------------------------------------------------------------------------ | ------------------------ |
+| 编译        | `go build ./...`                                                                                                   | 编译失败                 |
+| 测试        | `go test ./... -race -count=1`                                                                                     | 任何测试失败或 data race |
+| 覆盖率      | `mkdir -p .coverage && go test ./... -coverprofile=.coverage/cover.out && go tool cover -func=.coverage/cover.out` | 总覆盖率 < 80%           |
+| vet         | `go vet ./...`                                                                                                     | 任何 vet 错误            |
+| lint        | `golangci-lint run`                                                                                                | 任何 lint 错误           |
+| 依赖检查    | `go mod tidy && git diff --exit-code go.mod go.sum`                                                                | go.mod 不整洁            |
+| Secret 扫描 | `gitleaks detect --no-git`                                                                                         | 泄露 secret              |
+| Benchmark   | `go test -bench=. -benchmem -count=3 ./...`                                                                        | 结果附在 PR comment      |
 
 ### 20.2 testkitx 专属 Gate
 
-| Gate | 命令 | 阻塞条件 |
-|------|------|----------|
-| no-production-import | `go list -deps github.com/ZoneCNH/x.go/... 2>/dev/null \| grep testkitx` | 生产包依赖 testkitx |
-| contract tests | `go test ./contract/... -race -count=1` | 任何 contract test 失败 |
-| golden update guard | 检查 `GOLDEN_UPDATE` 不在 CI 中设置 | CI 中误更新 golden 文件 |
+| Gate                 | 命令                                                     | 阻塞条件                |                     |
+| -------------------- | -------------------------------------------------------- | ----------------------- |                     |
+| no-production-import | `go list -deps github.com/ZoneCNH/x.go/... 2>/dev/null \ | grep testkitx`          | 生产包依赖 testkitx |
+| contract tests       | `go test ./contract/... -race -count=1`                  | 任何 contract test 失败 |                     |
+| golden update guard  | 检查 `GOLDEN_UPDATE` 不在 CI 中设置                      | CI 中误更新 golden 文件 |                     |
 
 ---
 
 ## 21. Upgrade Compatibility
 
-| 变更类型 | 版本升级 |
-|----------|----------|
+| 变更类型          | 版本升级                                    |
+| ----------------- | ------------------------------------------- |
 | Fake 接口行为变更 | **major**（所有使用 fake 的测试需同步更新） |
-| 新增 fake 类型 | minor |
-| 新增 helper 函数 | patch / minor |
-| 修复 bug | **patch** |
+| 新增 fake 类型    | minor                                       |
+| 新增 helper 函数  | patch / minor                               |
+| 修复 bug          | **patch**                                   |
 
 ---
 

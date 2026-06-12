@@ -27,11 +27,11 @@
 
 ## 验收标准
 
-| AC | 关联 | 验证命令 | 预期结果 |
-|----|------|----------|----------|
-| AC-012 | FR-008 | Precondition/Invariant 测试 | kind/op/message 正确 |
-| AC-VALIDX-01 | FR-008 | Precondition(false) | ErrorKindValidation + Warning |
-| AC-VALIDX-02 | FR-008 | Invariant(false) | ErrorKindInternal + Error |
+| AC           | 关联   | 验证命令                    | 预期结果                      |
+| ------------ | ------ | --------------------------- | ----------------------------- |
+| AC-012       | FR-008 | Precondition/Invariant 测试 | kind/op/message 正确          |
+| AC-VALIDX-01 | FR-008 | Precondition(false)         | ErrorKindValidation + Warning |
+| AC-VALIDX-02 | FR-008 | Invariant(false)            | ErrorKindInternal + Error     |
 
 ## 禁止事项
 
@@ -47,11 +47,11 @@
 
 ## 验证命令
 
-| 命令 | 判定标准 |
-|------|----------|
-| `go build ./validx/...` | 编译通过，零错误 |
+| 命令                                  | 判定标准              |
+| ------------------------------------- | --------------------- |
+| `go build ./validx/...`               | 编译通过，零错误      |
 | `go test -race -count=1 ./validx/...` | 全部测试通过，无 race |
-| `go vet ./validx/...` | 无警告 |
+| `go vet ./validx/...`                 | 无警告                |
 
 ## 完成后
 

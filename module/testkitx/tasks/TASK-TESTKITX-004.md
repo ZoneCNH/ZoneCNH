@@ -29,17 +29,17 @@ status: pending
 
 ## Requirements Covered
 
-| Requirement | Description | Acceptance Criteria |
-|---|---|---|
-| FR-004 | FakeTracer：记录 spans 到内存 | AC-004 |
+| Requirement | Description                   | Acceptance Criteria |
+| ----------- | ----------------------------- | ------------------- |
+| FR-004      | FakeTracer：记录 spans 到内存 | AC-004              |
 
 ## Test Plan
 
-| Test Case | Type | Description |
-|---|---|---|
-| TC-004 | Unit | Start 后 Spans() 包含该 span |
-| TC-004 | Unit | AssertSpanCount 验证数量 |
-| TC-004 | Unit | 子 span 继承 trace_id |
+| Test Case | Type | Description                  |
+| --------- | ---- | ---------------------------- |
+| TC-004    | Unit | Start 后 Spans() 包含该 span |
+| TC-004    | Unit | AssertSpanCount 验证数量     |
+| TC-004    | Unit | 子 span 继承 trace_id        |
 
 ## Implementation Notes
 
@@ -48,13 +48,13 @@ status: pending
 
 ## Implementation Plan
 
-| Step | Description | Deliverables | Verification |
-|---|---|---|---|
-| 1 | 实现 `FakeTracer` 和 `FakeSpan` | `fake_tracer.go` | `go build ./...` 通过 |
-| 2 | 实现 `Spans()` 断言方法 | `fake_tracer.go` | 全部测试通过 |
+| Step | Description                     | Deliverables     | Verification          |
+| ---- | ------------------------------- | ---------------- | --------------------- |
+| 1    | 实现 `FakeTracer` 和 `FakeSpan` | `fake_tracer.go` | `go build ./...` 通过 |
+| 2    | 实现 `Spans()` 断言方法         | `fake_tracer.go` | 全部测试通过          |
 
 ### Risk Assessment
 
-| Risk | Probability | Impact | Mitigation |
-|---|---|---|---|
-| Tracer 接口不完整 | Low | Medium | 对照 observex.Tracer 定义 |
+| Risk              | Probability | Impact | Mitigation                |
+| ----------------- | ----------- | ------ | ------------------------- |
+| Tracer 接口不完整 | Low         | Medium | 对照 observex.Tracer 定义 |

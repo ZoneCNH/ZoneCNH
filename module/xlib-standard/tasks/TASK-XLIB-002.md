@@ -67,13 +67,13 @@ status: pending
 
 ## Requirements Covered
 
-| Requirement | Description | Acceptance Criteria |
-|---|---|---|
-| §20.1 | 17 个 CI gate | Makefile 包含全部 gate targets |
-| §20.2 | CI 配置 | workflow 执行 make ci |
-| FR-009 | render_template.sh | 只接受 4 个参数 |
-| FR-011 | 17 个 gate | make ci 全通过 |
-| FR-012 | boundary gate | 检查 6 项非法引用 |
+| Requirement | Description        | Acceptance Criteria            |
+| ----------- | ------------------ | ------------------------------ |
+| §20.1       | 17 个 CI gate      | Makefile 包含全部 gate targets |
+| §20.2       | CI 配置            | workflow 执行 make ci          |
+| FR-009      | render_template.sh | 只接受 4 个参数                |
+| FR-011      | 17 个 gate         | make ci 全通过                 |
+| FR-012      | boundary gate      | 检查 6 项非法引用              |
 
 ## Test Plan
 

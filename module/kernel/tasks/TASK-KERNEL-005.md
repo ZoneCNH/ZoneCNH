@@ -44,12 +44,12 @@ status: pending
 
 > Spec TC: TC-001, TC-002, TC-003
 
-| Requirement | Description |
-|---|---|
-| FR-001 | 组件生命周期管理 |
-| BR-001 | 启动顺序为注册顺序，停止顺序为启动逆序 |
-| BR-002 | 启动失败必须回滚已启动的 Component |
-| BR-003 | 未 started 时 Stop 必须幂等返回 nil |
+| Requirement | Description                            |
+| ----------- | -------------------------------------- |
+| FR-001      | 组件生命周期管理                       |
+| BR-001      | 启动顺序为注册顺序，停止顺序为启动逆序 |
+| BR-002      | 启动失败必须回滚已启动的 Component     |
+| BR-003      | 未 started 时 Stop 必须幂等返回 nil    |
 
 ## Non-scope
 
@@ -59,11 +59,11 @@ status: pending
 
 ## Test Plan
 
-| TC | Type | Description |
-|----|------|-------------|
-| TC-001 | Unit | 正常启停：A.Start→B.Start→B.Stop→A.Stop |
-| TC-002 | Unit | 启动失败回滚：B.Start 失败→A.Stop→errors.Join |
-| TC-003 | Unit | 未启动时 Stop：返回 nil |
+| TC     | Type   | Description                                   |
+| ------ | ------ | --------------------------------------------- |
+| TC-001 | Unit   | 正常启停：A.Start→B.Start→B.Stop→A.Stop       |
+| TC-002 | Unit   | 启动失败回滚：B.Start 失败→A.Stop→errors.Join |
+| TC-003 | Unit   | 未启动时 Stop：返回 nil                       |
 
 ## Implementation Notes
 

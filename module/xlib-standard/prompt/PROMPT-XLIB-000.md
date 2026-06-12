@@ -21,13 +21,13 @@ TASK-XLIB-000: 删除治理运行时与冗余目录
 
 删除以下文件和目录：
 
-| 类型 | 目标 |
-|------|------|
-| 目录 | `.agent/`, `.codex/`, `.devcontainer/`, `.githooks/`, `.omx/`, `.worktree/`, `.xlib/` |
-| 目录 | `cmd/`, `mk/`, `release/debt/`, `templates/l2/` |
-| 文件 | `.dockerignore`, `Dockerfile`, `docker-compose.yml` |
-| 文件 | `AGENTS.md`, `CLAUDE.md`, `CONSTITUTION.md`, `releasemanifest`, `renovate.json` |
-| 目录 | `docs/goal/`, `docs/adr/` |
+| 类型   | 目标                                                                                  |
+| ------ | ------------------------------------------------------------------------------------- |
+| 目录   | `.agent/`, `.codex/`, `.devcontainer/`, `.githooks/`, `.omx/`, `.worktree/`, `.xlib/` |
+| 目录   | `cmd/`, `mk/`, `release/debt/`, `templates/l2/`                                       |
+| 文件   | `.dockerignore`, `Dockerfile`, `docker-compose.yml`                                   |
+| 文件   | `AGENTS.md`, `CLAUDE.md`, `CONSTITUTION.md`, `releasemanifest`, `renovate.json`       |
+| 目录   | `docs/goal/`, `docs/adr/`                                                             |
 
 ## Out of Scope
 

@@ -46,11 +46,11 @@ status: pending
 
 > Spec TC: TC-004, TC-005
 
-| Requirement | Description | Acceptance Criteria | TC |
-|---|---|---|
-| FR-002 | 结构化错误 | 全部 WHEN/THEN 覆盖 |
-| BR-004 | Error 必须实现 error、Unwrap 接口 | errors.Is/As 可用 |
-| BR-005 | IsKind/ShouldRetry 必须支持 errors.Join 多错误链 | 组合错误不丢失分类能力 |
+| Requirement | Description                                      | Acceptance Criteria    | TC |
+| ----------- | ------------------------------------------------ | ---------------------- |    |
+| FR-002      | 结构化错误                                       | 全部 WHEN/THEN 覆盖    |    |
+| BR-004      | Error 必须实现 error、Unwrap 接口                | errors.Is/As 可用      |    |
+| BR-005      | IsKind/ShouldRetry 必须支持 errors.Join 多错误链 | 组合错误不丢失分类能力 |    |
 
 ## Non-scope
 
@@ -59,10 +59,10 @@ status: pending
 
 ## Test Plan
 
-| TC | Type | Description |
-|----|------|-------------|
-| TC-004 | Unit | 错误链遍历：IsKind 穿透双层 wrap |
-| TC-005 | Unit | errors.Join 多链：IsKind 匹配任一条 |
+| TC     | Type   | Description                         |
+| ------ | ------ | ----------------------------------- |
+| TC-004 | Unit   | 错误链遍历：IsKind 穿透双层 wrap    |
+| TC-005 | Unit   | errors.Join 多链：IsKind 匹配任一条 |
 
 ## Implementation Notes
 

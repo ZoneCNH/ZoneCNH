@@ -22,9 +22,9 @@
 
 ### 1.1 变更历史
 
-| 日期 | 版本 | 变更内容 | 作者 |
-|------|------|----------|------|
-| 2026-06-07 | v1.0.0 | 初始版本 | ZoneCNH |
+| 日期       | 版本   | 变更内容   | 作者    |
+| ---------- | ------ | ---------- | ------- |
+| 2026-06-07 | v1.0.0 | 初始版本   | ZoneCNH |
 
 ## 2. Summary
 
@@ -71,14 +71,14 @@ Scope note: 本规格描述 `/home/ZoneCNH/module/natsx` 的 1.0 目标，不单
 
 ## 6. Consumers
 
-| 消费者 | 使用方式 |
-|--------|----------|
-| `market-data` | 通过 Core NATS 实时发布行情数据（at-most-once） |
-| `signal-engine` | 通过 Core NATS 订阅因子信号 |
-| `order-engine` | 通过 JetStream 发布订单事件（at-least-once） |
-| `risk-engine` | 通过 JetStream 消费风控事件（持久化） |
-| `schedulerx` | 通过 Request-Reply 实现分布式协调 |
-| 业务域模块 | 按需选择 Core NATS（实时）或 JetStream（持久化） |
+| 消费者          | 使用方式                                         |
+| --------------- | ------------------------------------------------ |
+| `market-data`   | 通过 Core NATS 实时发布行情数据（at-most-once）  |
+| `signal-engine` | 通过 Core NATS 订阅因子信号                      |
+| `order-engine`  | 通过 JetStream 发布订单事件（at-least-once）     |
+| `risk-engine`   | 通过 JetStream 消费风控事件（持久化）            |
+| `schedulerx`    | 通过 Request-Reply 实现分布式协调                |
+| 业务域模块      | 按需选择 Core NATS（实时）或 JetStream（持久化） |
 
 ---
 
@@ -173,31 +173,31 @@ THEN 返回 HealthStatus{Ready: false, Live: true, Message: "jetstream unavailab
 
 ### 7.1 Acceptance Criteria Registry
 
-| AC-ID | 功能 | 验收标准 | 验证方式 | 判定结果 |
-|-------|---------|----------|----------|----------|
-| AC-001 | Publish（Core NATS） | Publish 成功返回 nil；连接不可用时返回错误；空 subject 返回错误 | TC-001, unit test | Yes/No |
-| AC-002 | Subscribe（Core NATS） | Subscribe 注册返回 Subscription；收到消息时调用 handler；Unsubscribe/Drain 后不再接收 | TC-001, unit test | Yes/No |
-| AC-003 | Request（Core NATS） | Request 有 responder 时返回响应；无 responder 时超时返回错误；ctx 取消时返回 ctx.Err() | TC-002, unit test | Yes/No |
-| AC-004 | JetStreamClientX.Publish | JetStreamClientX Publish 返回 PublishAck；stream 未创建时返回错误 | TC-003, unit test | Yes/No |
-| AC-005 | JetStreamClientX.Subscribe | JetStreamClientX Subscribe 注册返回 Subscription；ack 后 offset 推进；超 max_deliver 进入 Dead Letter | TC-003, unit test | Yes/No |
-| AC-006 | JetStream.AddStream | AddStream 幂等创建；配置兼容时返回 nil；配置冲突时返回错误 | TC-003, unit test | Yes/No |
-| AC-007 | JetStream.AddConsumer | AddConsumer 幂等创建；配置兼容时返回 nil；配置冲突时返回错误 | TC-003, unit test | Yes/No |
-| AC-008 | Health | NATS 可用时 Health() 返回 Ready=true/Live=true；不可达时 Ready=false/Live=false；JetStream 不可用时 Ready=false/Live=true | TC-005, unit test | Yes/No |
+| AC-ID   | 功能                       | 验收标准                                                                                                                  | 验证方式          | 判定结果   |
+| ------- | -------------------------- | ------------------------------------------------------------------------------------------------------------------------- | ----------------- | ---------- |
+| AC-001  | Publish（Core NATS）       | Publish 成功返回 nil；连接不可用时返回错误；空 subject 返回错误                                                           | TC-001, unit test | Yes/No     |
+| AC-002  | Subscribe（Core NATS）     | Subscribe 注册返回 Subscription；收到消息时调用 handler；Unsubscribe/Drain 后不再接收                                     | TC-001, unit test | Yes/No     |
+| AC-003  | Request（Core NATS）       | Request 有 responder 时返回响应；无 responder 时超时返回错误；ctx 取消时返回 ctx.Err()                                    | TC-002, unit test | Yes/No     |
+| AC-004  | JetStreamClientX.Publish   | JetStreamClientX Publish 返回 PublishAck；stream 未创建时返回错误                                                         | TC-003, unit test | Yes/No     |
+| AC-005  | JetStreamClientX.Subscribe | JetStreamClientX Subscribe 注册返回 Subscription；ack 后 offset 推进；超 max_deliver 进入 Dead Letter                     | TC-003, unit test | Yes/No     |
+| AC-006  | JetStream.AddStream        | AddStream 幂等创建；配置兼容时返回 nil；配置冲突时返回错误                                                                | TC-003, unit test | Yes/No     |
+| AC-007  | JetStream.AddConsumer      | AddConsumer 幂等创建；配置兼容时返回 nil；配置冲突时返回错误                                                              | TC-003, unit test | Yes/No     |
+| AC-008  | Health                     | NATS 可用时 Health() 返回 Ready=true/Live=true；不可达时 Ready=false/Live=false；JetStream 不可用时 Ready=false/Live=true | TC-005, unit test | Yes/No     |
 
 
 ## 8. Business Rules
 
-| 编号 | 规则 |
-|------|------|
-| BR-001 | Core NATS 用于实时低延迟场景（at-most-once） |
+| 编号   | 规则                                                |
+| ------ | --------------------------------------------------- |
+| BR-001 | Core NATS 用于实时低延迟场景（at-most-once）        |
 | BR-002 | JetStream 用于需要持久化保证的场景（at-least-once） |
-| BR-003 | 所有操作必须接受 `context.Context`，支持超时和取消 |
-| BR-004 | 订阅 handler 必须快速返回，长时间处理应异步化 |
-| BR-005 | 自动重连策略可配置，默认指数退避 |
-| BR-006 | Health() 必须是幂等的、无副作用的 |
+| BR-003 | 所有操作必须接受 `context.Context`，支持超时和取消  |
+| BR-004 | 订阅 handler 必须快速返回，长时间处理应异步化       |
+| BR-005 | 自动重连策略可配置，默认指数退避                    |
+| BR-006 | Health() 必须是幂等的、无副作用的                   |
 | BR-007 | JetStream stream 和 consumer 创建应在应用启动时完成 |
-| BR-008 | 错误消息不包含消息内容（防泄露敏感数据） |
-| BR-009 | Subscription 必须在 Close/Drain 时正确释放资源 |
+| BR-008 | 错误消息不包含消息内容（防泄露敏感数据）            |
+| BR-009 | Subscription 必须在 Close/Drain 时正确释放资源      |
 
 ---
 
@@ -351,17 +351,17 @@ foundationx:
 
 ## 12. Error Handling
 
-| 错误 | 调用方处理 |
-|------|-----------|
-| `ErrConnectionFailed` | 检查 NATS 地址和网络，确认 NATS 服务运行中 |
-| `ErrTimeout` | 检查 subject 是否有 responder，考虑增加 timeout |
-| `ErrNoResponders` | 确认 responder 服务已启动并订阅了对应 subject |
-| `ErrStreamExists` | 使用兼容配置或删除后重建 |
-| `ErrConsumerExists` | 使用兼容配置或删除后重建 |
-| `ErrStreamNotFound` | 先调用 AddStream 创建 stream |
-| `ErrJetStreamDisabled` | 在配置中启用 JetStream |
-| `ErrInvalidSubject` | 检查 subject 格式（NATS subject 语法规则） |
-| `ErrDrainTimeout` | 增加 drain_timeout 或检查 handler 是否阻塞 |
+| 错误                   | 调用方处理                                      |
+| ---------------------- | ----------------------------------------------- |
+| `ErrConnectionFailed`  | 检查 NATS 地址和网络，确认 NATS 服务运行中      |
+| `ErrTimeout`           | 检查 subject 是否有 responder，考虑增加 timeout |
+| `ErrNoResponders`      | 确认 responder 服务已启动并订阅了对应 subject   |
+| `ErrStreamExists`      | 使用兼容配置或删除后重建                        |
+| `ErrConsumerExists`    | 使用兼容配置或删除后重建                        |
+| `ErrStreamNotFound`    | 先调用 AddStream 创建 stream                    |
+| `ErrJetStreamDisabled` | 在配置中启用 JetStream                          |
+| `ErrInvalidSubject`    | 检查 subject 格式（NATS subject 语法规则）      |
+| `ErrDrainTimeout`      | 增加 drain_timeout 或检查 handler 是否阻塞      |
 
 **错误消息格式：** `"natsx: <operation>: <detail>"`
 **错误包装：** 使用 `%w` 保留底层错误链
@@ -370,19 +370,19 @@ foundationx:
 
 ## 13. Edge Cases
 
-| 场景 | 预期行为 |
-|------|----------|
-| NATS 不可达时 Publish | 返回 ErrConnectionFailed |
-| 连接断开后自动重连 | 按 reconnect_wait 策略重连，重连期间消息丢失（Core NATS） |
-| JetStream 连接断开后重连 | 重连后自动恢复消费，不丢失消息 |
-| Subscribe 后连接断开 | 重连后自动恢复订阅（Core NATS） |
-| Request 无 responder | 超时后返回 ErrNoResponders |
-| handler panic | 被 catch，记录日志，不影响其他订阅 |
-| Drain 超时 | 返回 ErrDrainTimeout |
-| AddStream 重复调用且配置兼容 | 返回 nil（幂等） |
-| AddStream 重复调用且配置冲突 | 返回 ErrStreamExists |
-| JetStream disabled 时调用 JetStream 方法 | 返回 ErrJetStreamDisabled |
-| Publish 空 subject | 返回 ErrInvalidSubject |
+| 场景                                     | 预期行为                                                  |
+| ---------------------------------------- | --------------------------------------------------------- |
+| NATS 不可达时 Publish                    | 返回 ErrConnectionFailed                                  |
+| 连接断开后自动重连                       | 按 reconnect_wait 策略重连，重连期间消息丢失（Core NATS） |
+| JetStream 连接断开后重连                 | 重连后自动恢复消费，不丢失消息                            |
+| Subscribe 后连接断开                     | 重连后自动恢复订阅（Core NATS）                           |
+| Request 无 responder                     | 超时后返回 ErrNoResponders                                |
+| handler panic                            | 被 catch，记录日志，不影响其他订阅                        |
+| Drain 超时                               | 返回 ErrDrainTimeout                                      |
+| AddStream 重复调用且配置兼容             | 返回 nil（幂等）                                          |
+| AddStream 重复调用且配置冲突             | 返回 ErrStreamExists                                      |
+| JetStream disabled 时调用 JetStream 方法 | 返回 ErrJetStreamDisabled                                 |
+| Publish 空 subject                       | 返回 ErrInvalidSubject                                    |
 
 ---
 
@@ -429,14 +429,14 @@ go 1.23
 
 ### 15.2 依赖方向
 
-| 可以依赖 | 禁止依赖 |
-|----------|----------|
-| stdlib | 所有业务域实现 |
-| kernel（L0 原语） | 所有 L2.5 领域共享层 |
+| 可以依赖                                         | 禁止依赖                                                                |
+| ------------------------------------------------ | ----------------------------------------------------------------------- |
+| stdlib                                           | 所有业务域实现                                                          |
+| kernel（L0 原语）                                | 所有 L2.5 领域共享层                                                    |
 | configx（配置结构/绑定，natsx 不直接解析配置源） | kafkax / redisx / postgresx / taosx / ossx / clickhousex 等同层 L2 模块 |
-| observex（interface-only） | x.go 应用层、策略层和运行时 |
-| resiliencx（重试/退避策略，可选） | 隐式全局客户端和隐藏配置源 |
-| NATS 客户端库（nats.go） | |
+| observex（interface-only）                       | x.go 应用层、策略层和运行时                                             |
+| resiliencx（重试/退避策略，可选）                | 隐式全局客户端和隐藏配置源                                              |
+| NATS 客户端库（nats.go）                         |                                                                         |
 
 ---
 
@@ -444,23 +444,23 @@ go 1.23
 
 ### 16.1 单元测试
 
-| 测试场景 | 验证点 |
-|----------|--------|
-| Publish 成功 | 消息正确发布 |
-| Subscribe 成功 | 注册订阅并收到消息 |
-| Subscribe Unsubscribe | 取消后不再接收消息 |
-| Subscribe Drain | 处理完已接收消息后关闭 |
-| Request 成功 | 收到响应 |
-| Request 超时 | 返回 ErrTimeout |
-| JetStream Publish | 消息持久化 |
-| JetStream Subscribe | 消费持久化消息 |
-| AddStream 幂等 | 重复调用且配置兼容返回 nil |
-| AddStream 冲突 | 返回 ErrStreamExists |
-| AddConsumer 成功 | 创建 consumer |
-| Health 检查 | NATS 可用/不可用正确反映 |
-| 自动重连 | 断开后自动重连 |
-| Codec 序列化/反序列化 | JSON / msgpack 正确 |
-| 并发安全 | -race 测试通过 |
+| 测试场景              | 验证点                     |
+| --------------------- | -------------------------- |
+| Publish 成功          | 消息正确发布               |
+| Subscribe 成功        | 注册订阅并收到消息         |
+| Subscribe Unsubscribe | 取消后不再接收消息         |
+| Subscribe Drain       | 处理完已接收消息后关闭     |
+| Request 成功          | 收到响应                   |
+| Request 超时          | 返回 ErrTimeout            |
+| JetStream Publish     | 消息持久化                 |
+| JetStream Subscribe   | 消费持久化消息             |
+| AddStream 幂等        | 重复调用且配置兼容返回 nil |
+| AddStream 冲突        | 返回 ErrStreamExists       |
+| AddConsumer 成功      | 创建 consumer              |
+| Health 检查           | NATS 可用/不可用正确反映   |
+| 自动重连              | 断开后自动重连             |
+| Codec 序列化/反序列化 | JSON / msgpack 正确        |
+| 并发安全              | -race 测试通过             |
 
 ### 16.2 Given/When/Then 用例
 
@@ -492,65 +492,65 @@ Then 返回 healthy；连接断开时返回 unhealthy
 
 ### 16.3 Benchmark
 
-| 场景 | 目标 |
-|------|------|
-| 单条 Core NATS 发布 | < 1ms |
-| Request-Reply | < 5ms |
-| JetStream 单条发布 | < 2ms |
-| JetStream 单条消费 | < 2ms |
+| 场景                        | 目标   |
+| --------------------------- | ------ |
+| 单条 Core NATS 发布         | < 1ms  |
+| Request-Reply               | < 5ms  |
+| JetStream 单条发布          | < 2ms  |
+| JetStream 单条消费          | < 2ms  |
 | 序列化/反序列化（1KB JSON） | < 10μs |
 
 ### 16.4 集成测试
 
-| 场景 | 验证点 |
-|------|--------|
-| 完整 Pub/Sub 链 | Publish → Subscribe handler 收到 |
-| Request-Reply 链 | Request → Responder → 响应 |
+| 场景               | 验证点                                     |
+| ------------------ | ------------------------------------------ |
+| 完整 Pub/Sub 链    | Publish → Subscribe handler 收到           |
+| Request-Reply 链   | Request → Responder → 响应                 |
 | JetStream 持久化链 | AddStream → Publish → Subscribe → 消费成功 |
-| 自动重连 | 断开后重连并恢复订阅 |
-| Drain 订阅 | Drain 后正确释放资源 |
+| 自动重连           | 断开后重连并恢复订阅                       |
+| Drain 订阅         | Drain 后正确释放资源                       |
 
 ---
 
 ## 17. Performance Budget
 
-| 操作 | 目标 | 测量方式 |
-|------|------|----------|
-| 单条 Core NATS 发布 | < 1ms | benchmark test |
-| Request-Reply | < 5ms | benchmark test |
-| JetStream 单条发布 | < 2ms | benchmark test |
-| JetStream 单条消费 | < 2ms | benchmark test |
-| 常驻内存 | < 5MB | profiling |
+| 操作                  | 目标    | 测量方式       |
+| --------------------- | ------- | -------------- |
+| 单条 Core NATS 发布   | < 1ms   | benchmark test |
+| Request-Reply         | < 5ms   | benchmark test |
+| JetStream 单条发布    | < 2ms   | benchmark test |
+| JetStream 单条消费    | < 2ms   | benchmark test |
+| 常驻内存              | < 5MB   | profiling      |
 | 订阅 handler 调度延迟 | < 100μs | benchmark test |
 
 ---
 
 ## 18. Observability
 
-| 类型 | 名称 | 说明 |
-|------|------|------|
-| metric | `foundationx_nats_publish_total` | counter，按 subject/status 统计发布次数 |
-| metric | `foundationx_nats_publish_duration_ms` | timer，发布耗时 |
-| metric | `foundationx_nats_request_total` | counter，按 subject/status 统计请求次数 |
-| metric | `foundationx_nats_request_duration_ms` | timer，Request-Reply 耗时 |
-| metric | `foundationx_nats_consume_total` | counter，按 subject/consumer/status 统计消费次数 |
-| metric | `foundationx_nats_redelivery_total` | counter，按 stream/consumer 统计重投递次数 |
-| metric | `foundationx_nats_connection_state` | gauge，按 server/state 暴露连接状态 |
-| log | `natsx.connected` | info，连接成功 |
-| log | `natsx.disconnected` | warn，连接断开 |
-| log | `natsx.reconnecting` | info，正在重连 |
-| log | `natsx.reconnected` | info，重连成功 |
-| log | `natsx.handler.panic` | error，handler panic 详情 |
+| 类型   | 名称                                   | 说明                                             |
+| ------ | -------------------------------------- | ------------------------------------------------ |
+| metric | `foundationx_nats_publish_total`       | counter，按 subject/status 统计发布次数          |
+| metric | `foundationx_nats_publish_duration_ms` | timer，发布耗时                                  |
+| metric | `foundationx_nats_request_total`       | counter，按 subject/status 统计请求次数          |
+| metric | `foundationx_nats_request_duration_ms` | timer，Request-Reply 耗时                        |
+| metric | `foundationx_nats_consume_total`       | counter，按 subject/consumer/status 统计消费次数 |
+| metric | `foundationx_nats_redelivery_total`    | counter，按 stream/consumer 统计重投递次数       |
+| metric | `foundationx_nats_connection_state`    | gauge，按 server/state 暴露连接状态              |
+| log    | `natsx.connected`                      | info，连接成功                                   |
+| log    | `natsx.disconnected`                   | warn，连接断开                                   |
+| log    | `natsx.reconnecting`                   | info，正在重连                                   |
+| log    | `natsx.reconnected`                    | info，重连成功                                   |
+| log    | `natsx.handler.panic`                  | error，handler panic 详情                        |
 
 ---
 
 ## 19. Security
 
-| 要求 | 实现方式 |
-|------|----------|
-| 凭证不硬编码 | 通过凭证文件或环境变量注入 |
-| TLS 加密传输 | 通过配置启用 TLS |
-| 凭证不写日志 | 日志中对凭证路径脱敏 |
+| 要求                   | 实现方式                            |
+| ---------------------- | ----------------------------------- |
+| 凭证不硬编码           | 通过凭证文件或环境变量注入          |
+| TLS 加密传输           | 通过配置启用 TLS                    |
+| 凭证不写日志           | 日志中对凭证路径脱敏                |
 | 错误消息不泄露消息内容 | 错误消息只包含 subject，不包含 data |
 
 ---
@@ -559,37 +559,37 @@ Then 返回 healthy；连接断开时返回 unhealthy
 
 ### 20.1 通用 Gate
 
-| Gate | 命令 | 阻塞条件 |
-|------|------|----------|
-| 编译 | `go build ./...` | 编译失败 |
-| 测试 | `go test ./... -race -count=1` | 任何测试失败或 data race |
-| 覆盖率 | `mkdir -p .coverage && go test ./... -coverprofile=.coverage/cover.out && go tool cover -func=.coverage/cover.out` | 总覆盖率 < 80% |
-| vet | `go vet ./...` | 任何 vet 错误 |
-| lint | `golangci-lint run` | 任何 lint 错误 |
-| 依赖检查 | `go mod tidy && git diff --exit-code go.mod go.sum` | go.mod 不整洁 |
-| Secret 扫描 | `gitleaks detect --no-git` | 泄露 secret |
-| Benchmark | `go test -bench=. -benchmem -count=3 ./...` | 结果附在 PR comment |
+| Gate        | 命令                                                                                                               | 阻塞条件                 |
+| ----------- | ------------------------------------------------------------------------------------------------------------------ | ------------------------ |
+| 编译        | `go build ./...`                                                                                                   | 编译失败                 |
+| 测试        | `go test ./... -race -count=1`                                                                                     | 任何测试失败或 data race |
+| 覆盖率      | `mkdir -p .coverage && go test ./... -coverprofile=.coverage/cover.out && go tool cover -func=.coverage/cover.out` | 总覆盖率 < 80%           |
+| vet         | `go vet ./...`                                                                                                     | 任何 vet 错误            |
+| lint        | `golangci-lint run`                                                                                                | 任何 lint 错误           |
+| 依赖检查    | `go mod tidy && git diff --exit-code go.mod go.sum`                                                                | go.mod 不整洁            |
+| Secret 扫描 | `gitleaks detect --no-git`                                                                                         | 泄露 secret              |
+| Benchmark   | `go test -bench=. -benchmem -count=3 ./...`                                                                        | 结果附在 PR comment      |
 
 ### 20.2 natsx 专属 Gate
 
-| Gate | 命令 | 阻塞条件 |
-|------|------|----------|
+| Gate     | 命令                              | 阻塞条件                   |
+| -------- | --------------------------------- | -------------------------- |
 | 集成测试 | `go test -tags=integration ./...` | NATS 不可达时 skip，不阻塞 |
 
 ---
 
 ## 21. Upgrade Compatibility
 
-| 变更类型 | 版本升级 |
-|----------|----------|
-| NatsPubSubClient / NatsRequestClient 接口新增方法 | **minor**（实现需跟上） |
-| NatsPubSubClient / NatsRequestClient 接口删除/修改方法 | **major** |
-| JetStreamClientX 接口新增方法 | **minor**（实现需跟上） |
-| JetStreamClientX 接口删除/修改方法 | **major** |
-| Subscription 接口变更 | **major** |
-| NatsMessageEnvelope 结构体变更 | **major** |
-| StreamConfig / ConsumerConfig 变更 | **minor**（新增字段带默认值） |
-| Option 新增字段 | minor（带默认值） |
+| 变更类型                                               | 版本升级                      |
+| ------------------------------------------------------ | ----------------------------- |
+| NatsPubSubClient / NatsRequestClient 接口新增方法      | **minor**（实现需跟上）       |
+| NatsPubSubClient / NatsRequestClient 接口删除/修改方法 | **major**                     |
+| JetStreamClientX 接口新增方法                          | **minor**（实现需跟上）       |
+| JetStreamClientX 接口删除/修改方法                     | **major**                     |
+| Subscription 接口变更                                  | **major**                     |
+| NatsMessageEnvelope 结构体变更                         | **major**                     |
+| StreamConfig / ConsumerConfig 变更                     | **minor**（新增字段带默认值） |
+| Option 新增字段                                        | minor（带默认值）             |
 
 ---
 

@@ -27,15 +27,15 @@ status: pending
 
 ## Requirements Covered
 
-| Requirement | Description | Acceptance Criteria |
-|---|---|---|
-| FR-008 | Subscribe：Pub/Sub 订阅 | 消息接收正确 |
+| Requirement | Description             | Acceptance Criteria |
+| ----------- | ----------------------- | ------------------- |
+| FR-008      | Subscribe：Pub/Sub 订阅 | 消息接收正确        |
 
 ## Test Plan
 
-| Test Case | Type | Description |
-|---|---|---|
-| — | Unit | Subscribe 后发布消息可接收 |
+| Test Case | Type | Description                |
+| --------- | ---- | -------------------------- |
+| —         | Unit | Subscribe 后发布消息可接收 |
 
 ## Implementation Notes
 
@@ -44,12 +44,12 @@ status: pending
 
 ## Implementation Plan
 
-| Step | Description | Deliverables | Verification |
-|---|---|---|---|
-| 1 | 实现 `Subscribe`：创建订阅 → 返回消息 channel | `client_impl.go` | 测试通过 |
+| Step | Description                                   | Deliverables     | Verification |
+| ---- | --------------------------------------------- | ---------------- | ------------ |
+| 1    | 实现 `Subscribe`：创建订阅 → 返回消息 channel | `client_impl.go` | 测试通过     |
 
 ### Risk Assessment
 
-| Risk | Probability | Impact | Mitigation |
-|---|---|---|---|
-| 连接断开未重连 | Medium | Medium | go-redis 内置重连 |
+| Risk           | Probability | Impact | Mitigation        |
+| -------------- | ----------- | ------ | ----------------- |
+| 连接断开未重连 | Medium      | Medium | go-redis 内置重连 |

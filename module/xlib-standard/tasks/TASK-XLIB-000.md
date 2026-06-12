@@ -90,10 +90,10 @@ status: pending
 
 ## Requirements Covered
 
-| Requirement | Description | Acceptance Criteria |
-|---|---|---|
-| §5 Non-goals | 不做 Goal Runtime / Debt Governance | 相关目录不存在 |
-| goal.md §4 | PR-1 删除命令 | 目录删除 + 测试通过 |
+| Requirement  | Description                         | Acceptance Criteria |
+| ------------ | ----------------------------------- | ------------------- |
+| §5 Non-goals | 不做 Goal Runtime / Debt Governance | 相关目录不存在      |
+| goal.md §4   | PR-1 删除命令                       | 目录删除 + 测试通过 |
 
 ## Test Plan
 

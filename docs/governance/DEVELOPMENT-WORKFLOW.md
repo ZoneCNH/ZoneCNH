@@ -55,20 +55,20 @@ git log --oneline main..HEAD | tail -1
 
 ### 冲突处理
 
-| 场景 | 处理 |
-|------|------|
-| `git rebase origin/main` 冲突 | 解决冲突后 `git rebase --continue`；无法解决则 `git rebase --abort` 并人工介入 |
-| main 有未推送的本地提交 | 先 `git push` 确保远程 main 为最新，再 rebase |
-| worktree 创建失败（路径已存在） | 清理旧 worktree：`git worktree remove .worktree/<name>`，或使用不同名称 |
+| 场景                            | 处理                                                                           |
+| ------------------------------- | ------------------------------------------------------------------------------ |
+| `git rebase origin/main` 冲突   | 解决冲突后 `git rebase --continue`；无法解决则 `git rebase --abort` 并人工介入 |
+| main 有未推送的本地提交         | 先 `git push` 确保远程 main 为最新，再 rebase                                  |
+| worktree 创建失败（路径已存在） | 清理旧 worktree：`git worktree remove .worktree/<name>`，或使用不同名称        |
 
 ### 禁止行为
 
-| 行为 | 原因 |
-|------|------|
+| 行为                             | 原因                         |
+| -------------------------------- | ---------------------------- |
 | 从其他 feature branch 创建新分支 | 污染依赖链，引入未合入的变更 |
-| 从旧 commit 创建分支 | 缺少最新修复和变更 |
-| 从 detached HEAD 创建分支 | 无法追溯来源 |
-| 跳过 `git fetch && git rebase` | 本地 main 可能落后于远程 |
+| 从旧 commit 创建分支             | 缺少最新修复和变更           |
+| 从 detached HEAD 创建分支        | 无法追溯来源                 |
+| 跳过 `git fetch && git rebase`   | 本地 main 可能落后于远程     |
 
 ### Agent 检查清单
 
@@ -125,23 +125,23 @@ Workflow Retrospective / RSI Review（可选，受宪法 §14 约束）
 
 每个阶段产物由三个独立 LLM 平台评分，并额外运行 rules scorer 做机械结构校验。LLM 之间互不可见对方结果，rules 不替代 LLM 判断：
 
-| 评分源 | Scorer 配置目录 | 模型 / 类型 |
-|--------|-----------------|-----------|
-| Claude Code | `.claude/agents/{stage}-structural-score.md` | Opus |
-| Codex | `.codex/agents/{stage}-structural-score.toml` | gpt-5.5 high |
+| 评分源      | Scorer 配置目录                               | 模型 / 类型     |
+| ----------- | --------------------------------------------- | --------------- |
+| Claude Code | `.claude/agents/{stage}-structural-score.md`  | Opus            |
+| Codex       | `.codex/agents/{stage}-structural-score.toml` | gpt-5.5 high    |
 | Copilot CLI | `.copilot/agents/{stage}-structural-score.md` | Claude Opus 4.7 |
-| Rules | `.github/ci/*` / `scripts/rule-scorer.py` | deterministic |
+| Rules       | `.github/ci/*` / `scripts/rule-scorer.py`     | deterministic   |
 
 ### 评分对象与 Rubric
 
-| 阶段 | 评分对象 | Rubric |
-|------|----------|--------|
-| Spec | `module/{module}/SPEC.md` | `docs/governance/scoring/RUBRIC-spec.md` |
-| Matrix | `module/{module}/TRACEABILITY.md` | `docs/governance/scoring/RUBRIC-matrix.md` |
-| Tasks | `module/{module}/tasks/TASK-*.md` | `docs/governance/scoring/RUBRIC-tasks.md` |
-| Plan | `module/{module}/IMPLEMENTATION-PLAN.md` | `docs/governance/scoring/RUBRIC-plan.md` |
-| Prompt | `module/{module}/TASK-*-PROMPT.md` | `docs/governance/scoring/RUBRIC-prompt.md` |
-| Code | 本次 Task diff + 测试 + 验证证据 | `docs/governance/scoring/RUBRIC-code.md` |
+| 阶段   | 评分对象                                 | Rubric                                     |
+| ------ | ---------------------------------------- | ------------------------------------------ |
+| Spec   | `module/{module}/SPEC.md`                | `docs/governance/scoring/RUBRIC-spec.md`   |
+| Matrix | `module/{module}/TRACEABILITY.md`        | `docs/governance/scoring/RUBRIC-matrix.md` |
+| Tasks  | `module/{module}/tasks/TASK-*.md`        | `docs/governance/scoring/RUBRIC-tasks.md`  |
+| Plan   | `module/{module}/IMPLEMENTATION-PLAN.md` | `docs/governance/scoring/RUBRIC-plan.md`   |
+| Prompt | `module/{module}/TASK-*-PROMPT.md`       | `docs/governance/scoring/RUBRIC-prompt.md` |
+| Code   | 本次 Task diff + 测试 + 验证证据         | `docs/governance/scoring/RUBRIC-code.md`   |
 
 ### 仲裁门禁
 
@@ -171,10 +171,10 @@ Confidence、LLM 分差与 rules 异构一致性是 gate 条件，不能用作�
 
 ### 失败循环（有界自动）
 
-| 尝试次数 | 处理 |
-|----------|------|
-| 1-2 | 路由回当前阶段 executor 修复 |
-| 3 | 路由回上一阶段 executor，重置当前阶段 attempt，记录 `escalation_chain` |
+| 尝试次数   | 处理                                                                   |
+| ---------- | ---------------------------------------------------------------------- |
+| 1-2        | 路由回当前阶段 executor 修复                                           |
+| 3          | 路由回上一阶段 executor，重置当前阶段 attempt，记录 `escalation_chain` |
 
 升级链：`code → prompt → plan → tasks → matrix → spec`
 
@@ -190,14 +190,14 @@ Confidence、LLM 分差与 rules 异构一致性是 gate 条件，不能用作�
 
 每个阶段的 executor 只能修复当前阶段授权产物：
 
-| 阶段 | 可自动修复对象 |
-|------|----------------|
-| Spec | `module/{module}/SPEC.md` |
-| Matrix | `module/{module}/TRACEABILITY.md` |
-| Tasks | `module/{module}/tasks/TASK-*.md` |
-| Plan | `module/{module}/IMPLEMENTATION-PLAN.md` |
-| Prompt | `module/{module}/TASK-*-PROMPT.md` |
-| Code | 当前 task 指定源码、测试与证据回填 |
+| 阶段   | 可自动修复对象                           |
+| ------ | ---------------------------------------- |
+| Spec   | `module/{module}/SPEC.md`                |
+| Matrix | `module/{module}/TRACEABILITY.md`        |
+| Tasks  | `module/{module}/tasks/TASK-*.md`        |
+| Plan   | `module/{module}/IMPLEMENTATION-PLAN.md` |
+| Prompt | `module/{module}/TASK-*-PROMPT.md`       |
+| Code   | 当前 task 指定源码、测试与证据回填       |
 
 每次 `gate=fail` 后，arbiter 必须合并四源扣分账本，生成当前阶段 repair prompt，交回 executor。修复后必须重跑四源评分和仲裁。
 
@@ -268,11 +268,11 @@ RSI 相关状态必须落盘，供下一轮代理恢复：
 Spec → Matrix → Tasks → Plan → Prompt → Code
 ```
 
-| 平台 | 触发方式 | 定义文件 |
-|------|----------|----------|
-| Codex | `$spec-code-pipeline {module}` | `.codex/skills/spec-code-pipeline/SKILL.md` |
-| Claude Code | `/project:spec-code-pipeline {module}` | `.claude/commands/spec-code-pipeline.md` |
-| Copilot CLI | `/project:spec-code-pipeline {module}` | `.copilot/commands/spec-code-pipeline.md` |
+| 平台        | 触发方式                               | 定义文件                                    |
+| ----------- | -------------------------------------- | ------------------------------------------- |
+| Codex       | `$spec-code-pipeline {module}`         | `.codex/skills/spec-code-pipeline/SKILL.md` |
+| Claude Code | `/project:spec-code-pipeline {module}` | `.claude/commands/spec-code-pipeline.md`    |
+| Copilot CLI | `/project:spec-code-pipeline {module}` | `.copilot/commands/spec-code-pipeline.md`   |
 
 ### 恢复与单阶段执行
 
@@ -285,14 +285,14 @@ $spec-code-pipeline {module} --stage prompt
 
 ### 阶段产物与门禁
 
-| 阶段 | Executor | 团队 Scorer（三 LLM + rules） | Gate（唯一） |
-|------|----------|-----------------------|--------------|
-| Spec | `spec` | `spec-structural-score` × claude/codex/copilot + `rules` | `composite_score >= 98` 且无红线、无 LLM 低置信度、无异常 LLM 分差或 rules 异构分歧 |
-| Matrix | `matrix` | `matrix-structural-score` × claude/codex/copilot + `rules` | `composite_score >= 98` 且无红线、无 LLM 低置信度、无异常 LLM 分差或 rules 异构分歧 |
-| Tasks | `task-split` | `tasks-structural-score` × claude/codex/copilot + `rules` | `composite_score >= 98` 且无红线、无 LLM 低置信度、无异常 LLM 分差或 rules 异构分歧 |
-| Plan | `task-planner` | `plan-structural-score` × claude/codex/copilot + `rules` | `composite_score >= 98` 且无红线、无 LLM 低置信度、无异常 LLM 分差或 rules 异构分歧 |
+| 阶段   | Executor         | 团队 Scorer（三 LLM + rules）                              | Gate（唯一）                                                                        |
+| ------ | ---------------- | ---------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| Spec   | `spec`           | `spec-structural-score` × claude/codex/copilot + `rules`   | `composite_score >= 98` 且无红线、无 LLM 低置信度、无异常 LLM 分差或 rules 异构分歧 |
+| Matrix | `matrix`         | `matrix-structural-score` × claude/codex/copilot + `rules` | `composite_score >= 98` 且无红线、无 LLM 低置信度、无异常 LLM 分差或 rules 异构分歧 |
+| Tasks  | `task-split`     | `tasks-structural-score` × claude/codex/copilot + `rules`  | `composite_score >= 98` 且无红线、无 LLM 低置信度、无异常 LLM 分差或 rules 异构分歧 |
+| Plan   | `task-planner`   | `plan-structural-score` × claude/codex/copilot + `rules`   | `composite_score >= 98` 且无红线、无 LLM 低置信度、无异常 LLM 分差或 rules 异构分歧 |
 | Prompt | `prompt-builder` | `prompt-structural-score` × claude/codex/copilot + `rules` | `composite_score >= 98` 且无红线、无 LLM 低置信度、无异常 LLM 分差或 rules 异构分歧 |
-| Code | `task-executor` | `code-structural-score` × claude/codex/copilot + `rules` | `composite_score >= 98` 且无红线、无 LLM 低置信度、无异常 LLM 分差或 rules 异构分歧 |
+| Code   | `task-executor`  | `code-structural-score` × claude/codex/copilot + `rules`   | `composite_score >= 98` 且无红线、无 LLM 低置信度、无异常 LLM 分差或 rules 异构分歧 |
 
 仲裁 agent：`pipeline-arbiter`。门禁纯机器判定，无人工分支。Code 阶段的"测试/lint/race 通过"由 `code-structural-score` 在 rubric 中作为评分维度纳入，不再额外设独立门禁。
 
@@ -464,13 +464,13 @@ Spec 是功能合同，Task 是 AI 能执行的小任务。
 
 ### 拆分规则（详见 TASK-TEMPLATE.md）
 
-| 规则 | 说明 |
-|------|------|
-| 上限 | 一个 task 最多 5 个文件、3 个 FR |
-| 下限 | 一个 task 至少 1 个 FR + 1 个 AC |
-| 测试同体 | 实现文件和测试文件必须在同一个 task |
-| 不跨模块 | 一个 task 只涉及一个模块 |
-| 必须有 spec_ref | 不允许无规格的自由发挥 |
+| 规则            | 说明                                |
+| --------------- | ----------------------------------- |
+| 上限            | 一个 task 最多 5 个文件、3 个 FR    |
+| 下限            | 一个 task 至少 1 个 FR + 1 个 AC    |
+| 测试同体        | 实现文件和测试文件必须在同一个 task |
+| 不跨模块        | 一个 task 只涉及一个模块            |
+| 必须有 spec_ref | 不允许无规格的自由发挥              |
 
 ### 拆分顺序
 
@@ -754,31 +754,31 @@ PR 描述应引用 Spec：
 
 ### 执行类（每阶段一个 executor）
 
-| Agent | 步骤 | 用途 | 模型 | 可写代码 |
-|-------|------|------|------|----------|
-| `spec` | Spec | 编写或修订项目 spec，补齐 23 节结构与追溯链 | opus / gpt-5.5 | 否 |
-| `spec-review` | Review | 对抗性审查 spec，作为结构评分证据与参考 | opus / gpt-5.5 | 否 |
-| `matrix` | Matrix | 生成或校验需求追溯矩阵 | sonnet / gpt-5.5 | 否 |
-| `task-split` | Tasks | 将 Approved Spec 拆成可执行 Task | sonnet / gpt-5.5 | 否 |
-| `task-planner` | Plan | 生成实现顺序、依赖、验证命令和风险计划 | opus / gpt-5.5 | 否 |
-| `prompt-builder` | Prompt | 为单个 Task 生成 Context Packet | sonnet / gpt-5.5 | 否 |
-| `task-executor` | Code | 按单个 Task 编写代码与测试 | sonnet / gpt-5.5 | 是 |
+| Agent            | 步骤   | 用途                                        | 模型             | 可写代码   |
+| ---------------- | ------ | ------------------------------------------- | ---------------- | ---------- |
+| `spec`           | Spec   | 编写或修订项目 spec，补齐 23 节结构与追溯链 | opus / gpt-5.5   | 否         |
+| `spec-review`    | Review | 对抗性审查 spec，作为结构评分证据与参考     | opus / gpt-5.5   | 否         |
+| `matrix`         | Matrix | 生成或校验需求追溯矩阵                      | sonnet / gpt-5.5 | 否         |
+| `task-split`     | Tasks  | 将 Approved Spec 拆成可执行 Task            | sonnet / gpt-5.5 | 否         |
+| `task-planner`   | Plan   | 生成实现顺序、依赖、验证命令和风险计划      | opus / gpt-5.5   | 否         |
+| `prompt-builder` | Prompt | 为单个 Task 生成 Context Packet             | sonnet / gpt-5.5 | 否         |
+| `task-executor`  | Code   | 按单个 Task 编写代码与测试                  | sonnet / gpt-5.5 | 是         |
 
 ### 评分类（每阶段三平台并行）
 
-| Agent | 阶段 | 平台 |
-|-------|------|------|
-| `spec-structural-score` | Spec | claude / codex / copilot |
+| Agent                     | 阶段   | 平台                     |
+| ------------------------- | ------ | ------------------------ |
+| `spec-structural-score`   | Spec   | claude / codex / copilot |
 | `matrix-structural-score` | Matrix | claude / codex / copilot |
-| `tasks-structural-score` | Tasks | claude / codex / copilot |
-| `plan-structural-score` | Plan | claude / codex / copilot |
+| `tasks-structural-score`  | Tasks  | claude / codex / copilot |
+| `plan-structural-score`   | Plan   | claude / codex / copilot |
 | `prompt-structural-score` | Prompt | claude / codex / copilot |
-| `code-structural-score` | Code | claude / codex / copilot |
+| `code-structural-score`   | Code   | claude / codex / copilot |
 
 ### 仲裁类
 
-| Agent | 用途 |
-|-------|------|
+| Agent              | 用途                                                  |
+| ------------------ | ----------------------------------------------------- |
 | `pipeline-arbiter` | 汇总四源评分，按 `ARBITER-PROTOCOL.md` 输出 gate 判定 |
 
 ---
@@ -787,27 +787,27 @@ PR 描述应引用 Spec：
 
 ### 流水线文档
 
-| 文档 | 用途 |
-|------|------|
-| `docs/governance/PRE-DEVELOPMENT.md` | 开发前准备 — 实现策略、Task 拆分、追溯矩阵 |
+| 文档                                         | 用途                                                    |
+| -------------------------------------------- | ------------------------------------------------------- |
+| `docs/governance/PRE-DEVELOPMENT.md`         | 开发前准备 — 实现策略、Task 拆分、追溯矩阵              |
 | `docs/governance/CODING-SESSION-PROTOCOL.md` | 编码会话协议 — Context Packet、Plan-first、自查、Review |
-| `docs/governance/SPEC-DRIFT-PROTOCOL.md` | Spec Drift 处理 — 代码与 Spec 不一致时的协议 |
-| `docs/governance/TESTING-STRATEGY.md` | 测试策略 — 从 Spec 生成测试、优先级、验收 |
-| `docs/governance/PR-TEMPLATE.md` | PR/Issue/Branch/Commit 模板和命名规则 |
-| `docs/governance/DEPLOYMENT.md` | 部署清单 — RC 检查、Smoke Test、CI 配置、Changelog |
-| `docs/governance/REVIEW-STRATEGY.md` | 审查策略 — 每层轻审查、转换点强审查、高风险点反审查 |
+| `docs/governance/SPEC-DRIFT-PROTOCOL.md`     | Spec Drift 处理 — 代码与 Spec 不一致时的协议            |
+| `docs/governance/TESTING-STRATEGY.md`        | 测试策略 — 从 Spec 生成测试、优先级、验收               |
+| `docs/governance/PR-TEMPLATE.md`             | PR/Issue/Branch/Commit 模板和命名规则                   |
+| `docs/governance/DEPLOYMENT.md`              | 部署清单 — RC 检查、Smoke Test、CI 配置、Changelog      |
+| `docs/governance/REVIEW-STRATEGY.md`         | 审查策略 — 每层轻审查、转换点强审查、高风险点反审查     |
 
 ### 治理文档
 
-| 文档 | 用途 |
-|------|------|
-| `docs/governance/SPEC-TEMPLATE.md` | 23 节 spec 模板 |
-| `docs/governance/TASK-TEMPLATE.md` | Task spec 模板 |
-| `docs/governance/LIFECYCLE.md` | Spec 状态流转规则 |
-| `docs/governance/TRACEABILITY.md` | 需求追踪矩阵规范 |
-| `docs/governance/DEFINITION-OF-READY.md` | 进入开发的前置条件 |
-| `docs/governance/DEFINITION-OF-DONE.md` | 完成验收条件 |
-| `docs/governance/STRUCTURAL-SCORING.md` | 四源评分体系与统一红线 |
+| 文档                                          | 用途                   |
+| --------------------------------------------- | ---------------------- |
+| `docs/governance/SPEC-TEMPLATE.md`            | 23 节 spec 模板        |
+| `docs/governance/TASK-TEMPLATE.md`            | Task spec 模板         |
+| `docs/governance/LIFECYCLE.md`                | Spec 状态流转规则      |
+| `docs/governance/TRACEABILITY.md`             | 需求追踪矩阵规范       |
+| `docs/governance/DEFINITION-OF-READY.md`      | 进入开发的前置条件     |
+| `docs/governance/DEFINITION-OF-DONE.md`       | 完成验收条件           |
+| `docs/governance/STRUCTURAL-SCORING.md`       | 四源评分体系与统一红线 |
 | `docs/governance/scoring/ARBITER-PROTOCOL.md` | 仲裁算法、门禁、升级链 |
-| `docs/governance/scoring/RUBRIC-*.md` | 各阶段评分维度与红线 |
-| `CONSTITUTION.md` | 最高治理权威 |
+| `docs/governance/scoring/RUBRIC-*.md`         | 各阶段评分维度与红线   |
+| `CONSTITUTION.md`                             | 最高治理权威           |

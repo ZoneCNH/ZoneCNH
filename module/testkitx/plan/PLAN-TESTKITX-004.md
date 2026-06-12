@@ -22,12 +22,12 @@ blocks: [TASK-TESTKITX-010]
 
 ## 2. 覆盖需求
 
-| 需求 | 描述 | AC |
-|------|------|-----|
-| FR-004 | FakeTracer 记录 spans 到内存 | AC-004: AssertSpanCount/AssertTraceID 可用 |
-| BR-001 | 接口编译期检查 | `var _ observex.Tracer = (*FakeTracerImpl)(nil)` |
-| NFR-001 | fake 初始化 < 1ms | benchmark 验证 |
-| SPEC §16.3 | Contract 测试 | 8 个 contract test 全部通过 |
+| 需求       | 描述                         | AC                                               |
+| ---------- | ---------------------------- | ------------------------------------------------ |
+| FR-004     | FakeTracer 记录 spans 到内存 | AC-004: AssertSpanCount/AssertTraceID 可用       |
+| BR-001     | 接口编译期检查               | `var _ observex.Tracer = (*FakeTracerImpl)(nil)` |
+| NFR-001    | fake 初始化 < 1ms            | benchmark 验证                                   |
+| SPEC §16.3 | Contract 测试                | 8 个 contract test 全部通过                      |
 
 ---
 
@@ -101,16 +101,16 @@ type SpanData struct {
 
 **测试用例**：
 
-| Contract | 验证内容 |
-|----------|----------|
-| TestContract_Logger_Interface | FakeLogger 实现 observex.Logger 所有方法 |
-| TestContract_Meter_Interface | FakeMeter 实现 observex.Meter 所有方法 |
-| TestContract_Tracer_Interface | FakeTracer 实现 observex.Tracer 所有方法 |
-| TestContract_Config_Reader | FakeConfig 实现 configx.Reader 所有方法 |
-| TestContract_Breaker_Interface | FakeBreaker 实现 resiliencx.Breaker 所有方法 |
-| TestContract_Logger_Concurrent | FakeLogger 并发安全 |
-| TestContract_Meter_LabelCardinality | FakeMeter 拒绝高基数 label |
-| TestContract_Config_Fingerprint | FakeConfig fingerprint 稳定性 |
+| Contract                            | 验证内容                                     |
+| ----------------------------------- | -------------------------------------------- |
+| TestContract_Logger_Interface       | FakeLogger 实现 observex.Logger 所有方法     |
+| TestContract_Meter_Interface        | FakeMeter 实现 observex.Meter 所有方法       |
+| TestContract_Tracer_Interface       | FakeTracer 实现 observex.Tracer 所有方法     |
+| TestContract_Config_Reader          | FakeConfig 实现 configx.Reader 所有方法      |
+| TestContract_Breaker_Interface      | FakeBreaker 实现 resiliencx.Breaker 所有方法 |
+| TestContract_Logger_Concurrent      | FakeLogger 并发安全                          |
+| TestContract_Meter_LabelCardinality | FakeMeter 拒绝高基数 label                   |
+| TestContract_Config_Fingerprint     | FakeConfig fingerprint 稳定性                |
 
 ### Step 6: 编写单元测试
 
@@ -118,13 +118,13 @@ type SpanData struct {
 
 **测试用例**：
 
-| 用例 | 描述 | 验证点 |
-|------|------|--------|
-| TestFakeTracer_Start | Start 创建 span | Spans() 包含该 span |
-| TestFakeTracer_ChildSpan | 子 span 继承 trace_id | 父子 trace_id 相同 |
-| TestFakeTracer_AssertSpanCount | 断言 span 数 | 数量匹配 → 通过 |
-| TestFakeTracer_AssertTraceID | 断言 trace_id 传播 | trace_id 非空 → 通过 |
-| TestFakeTracer_Concurrent | 并发安全 | `-race` 通过 |
+| 用例                           | 描述                  | 验证点               |
+| ------------------------------ | --------------------- | -------------------- |
+| TestFakeTracer_Start           | Start 创建 span       | Spans() 包含该 span  |
+| TestFakeTracer_ChildSpan       | 子 span 继承 trace_id | 父子 trace_id 相同   |
+| TestFakeTracer_AssertSpanCount | 断言 span 数          | 数量匹配 → 通过      |
+| TestFakeTracer_AssertTraceID   | 断言 trace_id 传播    | trace_id 非空 → 通过 |
+| TestFakeTracer_Concurrent      | 并发安全              | `-race` 通过         |
 
 ---
 
@@ -142,10 +142,10 @@ go test ./contract/... -race -count=1 -v
 
 ## 6. 风险与回滚
 
-| 风险 | 概率 | 影响 | 缓解 | 回滚 |
-|------|------|------|------|------|
-| observex.Tracer/Span 接口不确定 | Medium | High | 先读 observex 接口定义 | 补全缺失方法 |
-| Contract 测试依赖其他 fake | High | Medium | contract 测试仅验证接口完整性，不依赖其他 fake 的实现细节 | 调整 import |
-| trace_id 生成非确定性 | Low | Low | 使用固定或可控的 trace_id 生成器 | 使用 `FakeClock` 的时间戳 |
+| 风险                            | 概率   | 影响   | 缓解                                                      | 回滚                      |
+| ------------------------------- | ------ | ------ | --------------------------------------------------------- | ------------------------- |
+| observex.Tracer/Span 接口不确定 | Medium | High   | 先读 observex 接口定义                                    | 补全缺失方法              |
+| Contract 测试依赖其他 fake      | High   | Medium | contract 测试仅验证接口完整性，不依赖其他 fake 的实现细节 | 调整 import               |
+| trace_id 生成非确定性           | Low    | Low    | 使用固定或可控的 trace_id 生成器                          | 使用 `FakeClock` 的时间戳 |
 
 **回滚路径**：本 task 仅新增文件，回滚 = `rm fake_tracer.go fake_tracer_test.go contract.go contract/*_test.go`。

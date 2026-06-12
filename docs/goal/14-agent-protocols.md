@@ -20,17 +20,17 @@
 
 将任务分配给以下虚拟 Agent 团队。
 
-| Agent | 职责 |
-|-------|------|
-| Architect Agent | 架构边界、模块关系、设计取舍、技术债识别 |
-| Spec Agent | 需求规格、验收标准、输入输出契约 |
-| Planner Agent | 里程碑、依赖关系、优先级、任务切片 |
-| Implementer Agent | 代码、配置、文档、脚本实现 |
-| Test Agent | 测试、验证、失败复现、回归检查 |
-| Reviewer Agent | 审查是否满足 Goal / Spec / Design / DoD |
-| Release Agent | PR、CHANGELOG、Release Manifest、Rollback |
-| Governance Agent | 风险、决策、复盘、Prompt / Harness / Rule Patch |
-| Research Agent | 未知项、外部资料、API 行为、版本变更的 AutoResearch |
+| Agent             | 职责                                                |
+| ----------------- | --------------------------------------------------- |
+| Architect Agent   | 架构边界、模块关系、设计取舍、技术债识别            |
+| Spec Agent        | 需求规格、验收标准、输入输出契约                    |
+| Planner Agent     | 里程碑、依赖关系、优先级、任务切片                  |
+| Implementer Agent | 代码、配置、文档、脚本实现                          |
+| Test Agent        | 测试、验证、失败复现、回归检查                      |
+| Reviewer Agent    | 审查是否满足 Goal / Spec / Design / DoD             |
+| Release Agent     | PR、CHANGELOG、Release Manifest、Rollback           |
+| Governance Agent  | 风险、决策、复盘、Prompt / Harness / Rule Patch     |
+| Research Agent    | 未知项、外部资料、API 行为、版本变更的 AutoResearch |
 
 > 已实现的 Claude Code Agent 定义文件见 [.claude/agents/goal-*.md](../../.claude/agents/)：`goal-spec`、`goal-matrix`、`goal-reviewer`、`goal-prompt-builder`、`goal-evidence`。
 >

@@ -28,12 +28,12 @@ depends_on:
 
 ## 关联需求
 
-| 类型 | 编号 | 出处 | 说明 |
-|------|------|------|------|
-| FR | FR-002 | SPEC.md §7 | FakeLogger：记录日志到内存供断言 |
-| BR | BR-001 | SPEC.md §8 | 编译期接口检查：`var _ observex.Logger = (*FakeLoggerImpl)(nil)` |
-| BR | BR-002 | SPEC.md §8 | 行为确定性，不引入 `time.Now()` 或 `math.Rand()` |
-| TC | TC-002 | SPEC.md §16.4 | FakeLogger 编译期检查 |
+| 类型   | 编号   | 出处          | 说明                                                             |
+| ------ | ------ | ------------- | ---------------------------------------------------------------- |
+| FR     | FR-002 | SPEC.md §7    | FakeLogger：记录日志到内存供断言                                 |
+| BR     | BR-001 | SPEC.md §8    | 编译期接口检查：`var _ observex.Logger = (*FakeLoggerImpl)(nil)` |
+| BR     | BR-002 | SPEC.md §8    | 行为确定性，不引入 `time.Now()` 或 `math.Rand()`                 |
+| TC     | TC-002 | SPEC.md §16.4 | FakeLogger 编译期检查                                            |
 
 ## 接口契约
 
@@ -101,35 +101,35 @@ THEN 返回所有日志条目
 
 测试场景：
 
-| 测试用例 | 说明 |
-|----------|------|
-| `TestFakeLogger_Info` | Info 后 Entries() 包含该条目 |
-| `TestFakeLogger_Error` | Error 后 Entries() 包含该条目 |
-| `TestFakeLogger_With` | With 返回新实例，原实例不变 |
-| `TestFakeLogger_AssertLogged` | 正确匹配 → 不 fail |
-| `TestFakeLogger_AssertLogged_NotFound` | 不匹配 → fail |
-| `TestFakeLogger_AssertNoErrors` | 无 Error 日志 → 不 fail |
-| `TestFakeLogger_AssertNoErrors_Fail` | 有 Error 日志 → fail |
-| `TestFakeLogger_Concurrent` | 并发写入安全 |
-| `TestFakeLogger_Deterministic` | 不使用 time.Now() |
+| 测试用例                               | 说明                          |
+| -------------------------------------- | ----------------------------- |
+| `TestFakeLogger_Info`                  | Info 后 Entries() 包含该条目  |
+| `TestFakeLogger_Error`                 | Error 后 Entries() 包含该条目 |
+| `TestFakeLogger_With`                  | With 返回新实例，原实例不变   |
+| `TestFakeLogger_AssertLogged`          | 正确匹配 → 不 fail            |
+| `TestFakeLogger_AssertLogged_NotFound` | 不匹配 → fail                 |
+| `TestFakeLogger_AssertNoErrors`        | 无 Error 日志 → 不 fail       |
+| `TestFakeLogger_AssertNoErrors_Fail`   | 有 Error 日志 → fail          |
+| `TestFakeLogger_Concurrent`            | 并发写入安全                  |
+| `TestFakeLogger_Deterministic`         | 不使用 time.Now()             |
 
 ## 验收标准
 
-| AC | 关联 | 验证命令 | 预期结果 |
-|----|------|----------|----------|
-| AC-FL-01 | FR-002 | `go test -run TestFakeLogger -v -race ./...` | 全部通过 |
-| AC-FL-02 | BR-001 | `go build ./...` | 编译通过（接口断言检查） |
-| AC-FL-03 | BR-002 | `grep -E "time\.Now|math\.Rand" fake_logger.go` | 无匹配 |
-| AC-FL-04 | TC-002 | `go test -run TestContract_Logger -v ./contract/...` | 接口检查通过 |
+| AC       | 关联   | 验证命令                                             | 预期结果                    |        |
+| -------- | ------ | ---------------------------------------------------- | --------------------------- |        |
+| AC-FL-01 | FR-002 | `go test -run TestFakeLogger -v -race ./...`         | 全部通过                    |        |
+| AC-FL-02 | BR-001 | `go build ./...`                                     | 编译通过（接口断言检查）    |        |
+| AC-FL-03 | BR-002 | `grep -E "time\.Now                                  | math\.Rand" fake_logger.go` | 无匹配 |
+| AC-FL-04 | TC-002 | `go test -run TestContract_Logger -v ./contract/...` | 接口检查通过                |        |
 
 ## 验证命令
 
-| 命令 | 判定标准 |
-|------|----------|
-| `go build ./...` | 编译通过 |
-| `go test -race -count=1 ./...` | 全部通过，无 data race |
-| `go vet ./...` | 无警告 |
-| `grep "var _ observex.Logger" fake_logger.go` | 找到编译期断言 |
+| 命令                                          | 判定标准               |
+| --------------------------------------------- | ---------------------- |
+| `go build ./...`                              | 编译通过               |
+| `go test -race -count=1 ./...`                | 全部通过，无 data race |
+| `go vet ./...`                                | 无警告                 |
+| `grep "var _ observex.Logger" fake_logger.go` | 找到编译期断言         |
 
 ## 禁止事项
 

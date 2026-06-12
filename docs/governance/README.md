@@ -4,38 +4,38 @@
 
 ## 核心文档
 
-| 文档 | 用途 |
-|------|------|
-| [DEVELOPMENT-WORKFLOW.md](DEVELOPMENT-WORKFLOW.md) | Spec -> Code 管线总流程 |
-| [PRE-DEVELOPMENT.md](PRE-DEVELOPMENT.md) | 开发前置检查 |
-| [LIFECYCLE.md](LIFECYCLE.md) | Spec 状态流转与版本规则 |
-| [TRACEABILITY.md](TRACEABILITY.md) | 需求追溯矩阵规范 |
-| [DEFINITION-OF-READY.md](DEFINITION-OF-READY.md) | 进入开发的前置条件 |
-| [DEFINITION-OF-DONE.md](DEFINITION-OF-DONE.md) | 完成验收条件 |
-| [CODING-SESSION-PROTOCOL.md](CODING-SESSION-PROTOCOL.md) | 编码会话协议 |
-| [SPEC-DRIFT-PROTOCOL.md](SPEC-DRIFT-PROTOCOL.md) | Spec 漂移处理协议 |
+| 文档                                                             | 用途                                         |
+| ---------------------------------------------------------------- | -------------------------------------------- |
+| [DEVELOPMENT-WORKFLOW.md](DEVELOPMENT-WORKFLOW.md)               | Spec -> Code 管线总流程                      |
+| [PRE-DEVELOPMENT.md](PRE-DEVELOPMENT.md)                         | 开发前置检查                                 |
+| [LIFECYCLE.md](LIFECYCLE.md)                                     | Spec 状态流转与版本规则                      |
+| [TRACEABILITY.md](TRACEABILITY.md)                               | 需求追溯矩阵规范                             |
+| [DEFINITION-OF-READY.md](DEFINITION-OF-READY.md)                 | 进入开发的前置条件                           |
+| [DEFINITION-OF-DONE.md](DEFINITION-OF-DONE.md)                   | 完成验收条件                                 |
+| [CODING-SESSION-PROTOCOL.md](CODING-SESSION-PROTOCOL.md)         | 编码会话协议                                 |
+| [SPEC-DRIFT-PROTOCOL.md](SPEC-DRIFT-PROTOCOL.md)                 | Spec 漂移处理协议                            |
 | [AUTOMATED-DELIVERY-WORKFLOW.md](AUTOMATED-DELIVERY-WORKFLOW.md) | 任务完成后的自动提交、合并、同步与清理工作流 |
 
 ## 模板
 
-| 模板 | 用途 |
-|------|------|
-| [SPEC-TEMPLATE.md](SPEC-TEMPLATE.md) | 模块 Spec 模板 |
-| [TASK-TEMPLATE.md](TASK-TEMPLATE.md) | Task Spec 模板 |
+| 模板                                             | 用途            |
+| ------------------------------------------------ | --------------- |
+| [SPEC-TEMPLATE.md](SPEC-TEMPLATE.md)             | 模块 Spec 模板  |
+| [TASK-TEMPLATE.md](TASK-TEMPLATE.md)             | Task Spec 模板  |
 | [AGENT-SPEC-TEMPLATE.md](AGENT-SPEC-TEMPLATE.md) | Agent Spec 模板 |
-| [ANALYSIS-TEMPLATE.md](ANALYSIS-TEMPLATE.md) | 分析报告模板 |
-| [PR-TEMPLATE.md](PR-TEMPLATE.md) | PR 描述模板 |
+| [ANALYSIS-TEMPLATE.md](ANALYSIS-TEMPLATE.md)     | 分析报告模板    |
+| [PR-TEMPLATE.md](PR-TEMPLATE.md)                 | PR 描述模板     |
 
 ## 质量与评分
 
-| 文档 | 用途 |
-|------|------|
+| 文档                                           | 用途                   |
+| ---------------------------------------------- | ---------------------- |
 | [STRUCTURAL-SCORING.md](STRUCTURAL-SCORING.md) | 四源结构评分方法与门禁 |
-| [scoring/README.md](scoring/README.md) | Rubric 与仲裁协议索引 |
-| [TESTING-STRATEGY.md](TESTING-STRATEGY.md) | 测试策略 |
-| [REVIEW-STRATEGY.md](REVIEW-STRATEGY.md) | 审查策略 |
-| [DEPLOYMENT.md](DEPLOYMENT.md) | 发布与部署规则 |
-| [anti-requirements.md](anti-requirements.md) | 反需求与范围约束 |
+| [scoring/README.md](scoring/README.md)         | Rubric 与仲裁协议索引  |
+| [TESTING-STRATEGY.md](TESTING-STRATEGY.md)     | 测试策略               |
+| [REVIEW-STRATEGY.md](REVIEW-STRATEGY.md)       | 审查策略               |
+| [DEPLOYMENT.md](DEPLOYMENT.md)                 | 发布与部署规则         |
+| [anti-requirements.md](anti-requirements.md)   | 反需求与范围约束       |
 
 ## 路径边界
 

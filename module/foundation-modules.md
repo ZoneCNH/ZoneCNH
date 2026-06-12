@@ -20,25 +20,25 @@ x.go：组合根，负责显式装配和生命周期 wiring
 
 基础模块只提供工程能力，不承载交易语义。
 
-| 原则 | 说明 |
-| --- | --- |
-| 单向依赖 | L1 基础模块最多依赖 `kernel`；基础模块不得反向依赖入口层或业务域 |
+| 原则           | 说明                                                                         |
+| -------------- | ---------------------------------------------------------------------------- |
+| 单向依赖       | L1 基础模块最多依赖 `kernel`；基础模块不得反向依赖入口层或业务域             |
 | 能力与业务分离 | 基础模块提供配置、观测、弹性、调度、测试和原语，不判断行情、信号、风控或订单 |
-| 显式装配 | `x.go` 负责把基础能力和业务模块组合起来；基础模块不创建隐藏全局客户端 |
-| 接口集成 | 跨 L1 能力通过本地接口、事件或 adapter 集成，不形成核心 go.mod 硬依赖 |
-| 测试证据 | 每个模块都要有 contract、golden、boundary 和 failure case |
-| 低基数与脱敏 | 观测、配置 manifest 和测试证据默认不得泄露 secret 或高基数字段 |
+| 显式装配       | `x.go` 负责把基础能力和业务模块组合起来；基础模块不创建隐藏全局客户端        |
+| 接口集成       | 跨 L1 能力通过本地接口、事件或 adapter 集成，不形成核心 go.mod 硬依赖        |
+| 测试证据       | 每个模块都要有 contract、golden、boundary 和 failure case                    |
+| 低基数与脱敏   | 观测、配置 manifest 和测试证据默认不得泄露 secret 或高基数字段               |
 
 ## 模块总表
 
-| 模块 | 一句话定位 | 拥有 | 不拥有 |
-| --- | --- | --- | --- |
-| `kernel` | L0 标准库扩展 | error、time、context、lifecycle、shutdown、health、validation、sync、version、retry primitive | 配置解析、观测供应商、存储、网络、App runtime、业务模型 |
-| `configx` | 显式配置加载与脱敏 | source、merge、decode、validate、redaction、provenance、manifest、hash | secret backend、全局配置中心、自动发现、核心 watch/reload、业务配置结构体 |
-| `observex` | vendor-neutral 可观测性契约 | logger、metrics、tracer、field、redactor、label policy、health schema、noop、recorder | 具体监控 SDK 硬依赖、告警策略、业务监控规则、配置读取、全局客户端 |
-| `testkitx` | 测试专用证据库 | assert、golden、contract、fixture、harness、fake clock、recorder、leak、boundary | 生产依赖、真实外部系统、业务 integration/chaos/soak 总入口 |
-| `resiliencx` | operational resilience runtime | timeout、retry、circuit、bulkhead、rate limit、fallback、budget、classifier、idempotency、event | 交易风控、订单风险、交易所 SDK、调度、存储后端、业务补偿 |
-| `schedulex` | deterministic scheduler | trigger、clock、misfire、overlap、jitter、EventSink、Locker interface、snapshot | 分布式锁实现、队列、exactly-once、retry/circuit、业务任务语义 |
+| 模块         | 一句话定位                     | 拥有                                                                                            | 不拥有                                                                    |
+| ------------ | ------------------------------ | ----------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| `kernel`     | L0 标准库扩展                  | error、time、context、lifecycle、shutdown、health、validation、sync、version、retry primitive   | 配置解析、观测供应商、存储、网络、App runtime、业务模型                   |
+| `configx`    | 显式配置加载与脱敏             | source、merge、decode、validate、redaction、provenance、manifest、hash                          | secret backend、全局配置中心、自动发现、核心 watch/reload、业务配置结构体 |
+| `observex`   | vendor-neutral 可观测性契约    | logger、metrics、tracer、field、redactor、label policy、health schema、noop、recorder           | 具体监控 SDK 硬依赖、告警策略、业务监控规则、配置读取、全局客户端         |
+| `testkitx`   | 测试专用证据库                 | assert、golden、contract、fixture、harness、fake clock、recorder、leak、boundary                | 生产依赖、真实外部系统、业务 integration/chaos/soak 总入口                |
+| `resiliencx` | operational resilience runtime | timeout、retry、circuit、bulkhead、rate limit、fallback、budget、classifier、idempotency、event | 交易风控、订单风险、交易所 SDK、调度、存储后端、业务补偿                  |
+| `schedulex`  | deterministic scheduler        | trigger、clock、misfire、overlap、jitter、EventSink、Locker interface、snapshot                 | 分布式锁实现、队列、exactly-once、retry/circuit、业务任务语义             |
 
 ## `kernel`
 
@@ -213,14 +213,14 @@ risk-engine = trading risk
 
 和 `kernel.retryx` 的边界：
 
-| 项目 | `kernel.retryx` | `resiliencx` |
-| --- | --- | --- |
-| 层级 | L0 primitive | L1 runtime policy |
+| 项目     | `kernel.retryx`                        | `resiliencx`                                      |
+| -------- | -------------------------------------- | ------------------------------------------------- |
+| 层级     | L0 primitive                           | L1 runtime policy                                 |
 | 主要职责 | backoff、retry marker、简单 retry loop | timeout、retry、circuit、bulkhead、rate、fallback |
-| 观测 | 不负责完整 metrics | 输出 policy events |
-| 状态 | 尽量无状态 | breaker、limiter、bulkhead 可有状态 |
-| 依赖 | stdlib only | 可依赖 `kernel`，观测通过接口注入 |
-| 使用场景 | 基础库内部轻量重试 | 外部 API、交易所、数据源、消息、任务执行 |
+| 观测     | 不负责完整 metrics                     | 输出 policy events                                |
+| 状态     | 尽量无状态                             | breaker、limiter、bulkhead 可有状态               |
+| 依赖     | stdlib only                            | 可依赖 `kernel`，观测通过接口注入                 |
+| 使用场景 | 基础库内部轻量重试                     | 外部 API、交易所、数据源、消息、任务执行          |
 
 P0 修复：
 
@@ -282,15 +282,15 @@ type JobRunEvent struct {
 
 ## 依赖与集成矩阵
 
-| From \ To | kernel | configx | observex | testkitx | resiliencx | schedulex | x.go | business |
-| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| kernel | - | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
-| configx | ✅ | - | ❌ | test-only | ❌ | ❌ | ❌ | ❌ |
-| observex | ✅ | ❌ | - | test-only | ❌ | ❌ | ❌ | ❌ |
-| resiliencx | ✅ | ❌ | interface-only | test-only | - | ❌ | ❌ | ❌ |
-| schedulex | ✅ | ❌ | interface-only | test-only | ❌ | - | ❌ | ❌ |
-| testkitx | ✅ test | ✅ test | ✅ test | - | ✅ test | ✅ test | ❌ prod | ❌ prod |
-| x.go | ✅ | ✅ | ✅ | ❌ prod | ✅ | ✅ | - | ✅ |
+| From \ To  | kernel | configx | observex       | testkitx  | resiliencx | schedulex | x.go   | business |
+| ---------- | -----: | ------: | -------------: | --------: | ---------: | --------: | -----: | -------: |
+| kernel     | -      | ❌       | ❌              | ❌         | ❌          | ❌         | ❌      | ❌        |
+| configx    | ✅      | -       | ❌              | test-only | ❌          | ❌         | ❌      | ❌        |
+| observex   | ✅      | ❌       | -              | test-only | ❌          | ❌         | ❌      | ❌        |
+| resiliencx | ✅      | ❌       | interface-only | test-only | -          | ❌         | ❌      | ❌        |
+| schedulex  | ✅      | ❌       | interface-only | test-only | ❌          | -         | ❌      | ❌        |
+| testkitx   | ✅ test | ✅ test  | ✅ test         | -         | ✅ test     | ✅ test    | ❌ prod | ❌ prod   |
+| x.go       | ✅      | ✅       | ✅              | ❌ prod    | ✅          | ✅         | -      | ✅        |
 
 最小组合形态：
 
@@ -336,36 +336,36 @@ foundation:
 
 `observex` 拥有语义标准，其他模块只输出事件或调用本地接口。
 
-| 来源模块 | 输出 | 进入观测的方式 |
-| --- | --- | --- |
-| `configx` | sanitized manifest、config hash、load/validate event | `x.go` 或 adapter 记录 |
-| `resiliencx` | policy event、attempt、state transition、reject、fallback | 本地 `Observer` 转接到 `observex` |
-| `schedulex` | `JobRunEvent`、misfire、overlap、lock event | 本地 `EventSink` 转接到 `observex` |
-| `kernel` | error meta、health report、lifecycle state | 上层显式记录 |
+| 来源模块     | 输出                                                      | 进入观测的方式                     |
+| ------------ | --------------------------------------------------------- | ---------------------------------- |
+| `configx`    | sanitized manifest、config hash、load/validate event      | `x.go` 或 adapter 记录             |
+| `resiliencx` | policy event、attempt、state transition、reject、fallback | 本地 `Observer` 转接到 `observex`  |
+| `schedulex`  | `JobRunEvent`、misfire、overlap、lock event               | 本地 `EventSink` 转接到 `observex` |
+| `kernel`     | error meta、health report、lifecycle state                | 上层显式记录                       |
 
 默认指标 label 仅允许 `module`、`component`、`operation`、`status`、`error_kind`。高基数和敏感字段必须进入日志 body 或 trace attribute 前先通过 redaction 和白名单治理，不得直接进入 metrics label。
 
 ## 故障模式与防线
 
-| 模块 | 典型故障模式 | 防线 |
-| --- | --- | --- |
-| `kernel` | 隐藏 goroutine、全局可变状态、反向依赖 | stdlib-only gate、goroutine scan、API snapshot |
-| `configx` | source precedence 不稳定、secret 泄露、缺 provenance | precedence golden、redaction leak test、manifest hash |
-| `observex` | 高基数 label、敏感字段入 metrics、供应商锁定 | label checker、redaction test、no-hard-vendor gate |
-| `testkitx` | 进入生产 import graph、fixture 泄露环境 | boundary scanner、env isolation、production import gate |
-| `resiliencx` | 非幂等请求被重试、breaker 抖动、bulkhead 饥饿 | idempotency guard、fake-clock tests、state transition golden |
-| `schedulex` | DST 漂移、misfire 语义不稳定、overlap 失控、lock lease 歧义 | timezone/DST golden、misfire/overlap golden、lock contract |
+| 模块         | 典型故障模式                                                | 防线                                                         |
+| ------------ | ----------------------------------------------------------- | ------------------------------------------------------------ |
+| `kernel`     | 隐藏 goroutine、全局可变状态、反向依赖                      | stdlib-only gate、goroutine scan、API snapshot               |
+| `configx`    | source precedence 不稳定、secret 泄露、缺 provenance        | precedence golden、redaction leak test、manifest hash        |
+| `observex`   | 高基数 label、敏感字段入 metrics、供应商锁定                | label checker、redaction test、no-hard-vendor gate           |
+| `testkitx`   | 进入生产 import graph、fixture 泄露环境                     | boundary scanner、env isolation、production import gate      |
+| `resiliencx` | 非幂等请求被重试、breaker 抖动、bulkhead 饥饿               | idempotency guard、fake-clock tests、state transition golden |
+| `schedulex`  | DST 漂移、misfire 语义不稳定、overlap 失控、lock lease 歧义 | timezone/DST golden、misfire/overlap golden、lock contract   |
 
 ## 性能预算
 
-| 模块 | 预算方向 |
-| --- | --- |
-| `kernel` | primitive 尽量零分配；不得因全局锁影响上层热路径 |
-| `configx` | 启动期加载可做完整校验；运行期 snapshot 读取应稳定且无隐藏 IO |
-| `observex` | noop 路径近似零成本；label 校验和 redaction 可在边界执行 |
-| `testkitx` | 测试路径可更重，但必须 deterministic 且避免 flake |
-| `resiliencx` | 每次 policy execution 额外开销有界；fake clock 测试状态机 |
-| `schedulex` | trigger 计算确定且可预测；大 job 集合需要 snapshot 和选择策略测试 |
+| 模块         | 预算方向                                                          |
+| ------------ | ----------------------------------------------------------------- |
+| `kernel`     | primitive 尽量零分配；不得因全局锁影响上层热路径                  |
+| `configx`    | 启动期加载可做完整校验；运行期 snapshot 读取应稳定且无隐藏 IO     |
+| `observex`   | noop 路径近似零成本；label 校验和 redaction 可在边界执行          |
+| `testkitx`   | 测试路径可更重，但必须 deterministic 且避免 flake                 |
+| `resiliencx` | 每次 policy execution 额外开销有界；fake clock 测试状态机         |
+| `schedulex`  | trigger 计算确定且可预测；大 job 集合需要 snapshot 和选择策略测试 |
 
 ## 建设顺序
 

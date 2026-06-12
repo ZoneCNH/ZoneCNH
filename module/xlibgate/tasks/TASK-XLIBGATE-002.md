@@ -36,12 +36,12 @@ status: pending
 
 ## Requirements Covered
 
-| Requirement | Description | Acceptance Criteria |
-|---|---|---|
-| FR-001 | check imports：依赖矩阵校验 | 4 个 WHEN/THEN 场景 |
-| BR-002 | import 规则从 deps.yaml 读取，不硬编码 | --config 参数覆盖 |
-| BR-008 | human-readable 输出含文件路径和行号 | 违规输出含位置信息 |
-| BR-009 | FOUNDATION-DEPS.yaml schema 与 xlib-standard 一致 | YAML 解析 + schema 校验 |
+| Requirement | Description                                       | Acceptance Criteria     |
+| ----------- | ------------------------------------------------- | ----------------------- |
+| FR-001      | check imports：依赖矩阵校验                       | 4 个 WHEN/THEN 场景     |
+| BR-002      | import 规则从 deps.yaml 读取，不硬编码            | --config 参数覆盖       |
+| BR-008      | human-readable 输出含文件路径和行号               | 违规输出含位置信息      |
+| BR-009      | FOUNDATION-DEPS.yaml schema 与 xlib-standard 一致 | YAML 解析 + schema 校验 |
 
 ## Non-scope
 
@@ -52,13 +52,13 @@ status: pending
 
 ## Test Plan
 
-| Test Case | Type | Description |
-|---|---|---|
-| TC-001 | Unit | 合规 import：exit 0 |
-| TC-001 | Unit | 禁止 import：exit 1（含文件路径、行号） |
-| TC-001 | Unit | 无 --config：exit 2 |
-| TC-001 | Unit | testkitx 边界规则：生产包 import testkitx → fail |
-| NFR-002 | Benchmark | `BenchmarkCheckImports` — 50 模块 < 10s |
+| Test Case | Type      | Description                                      |
+| --------- | --------- | ------------------------------------------------ |
+| TC-001    | Unit      | 合规 import：exit 0                              |
+| TC-001    | Unit      | 禁止 import：exit 1（含文件路径、行号）          |
+| TC-001    | Unit      | 无 --config：exit 2                              |
+| TC-001    | Unit      | testkitx 边界规则：生产包 import testkitx → fail |
+| NFR-002   | Benchmark | `BenchmarkCheckImports` — 50 模块 < 10s          |
 
 ## Implementation Notes
 
@@ -69,16 +69,16 @@ status: pending
 
 ## Implementation Plan
 
-| Step | Description | Deliverables | Verification |
-|---|---|---|---|
-| 1 | 实现 `config.go`：解析 deps.yaml 配置 | `config.go` | `go build ./...` 通过 |
-| 2 | 实现 `check_imports.go`：遍历文件 → 解析 import → 检查合规 | `check_imports.go` | TC-001 通过 |
-| 3 | 实现 testkitx 边界规则检查 | `check_imports.go` | TC-001 通过 |
-| 4 | 参数校验和错误处理 | `check_imports.go` | TC-001 通过 |
-| 5 | 实现 internal/scan/imports/*.go 和 internal/ast/*.go | `internal/scan/imports/imports.go`, `internal/ast/parser.go` | `go build ./...` 通过 |
+| Step | Description                                                | Deliverables                                                 | Verification          |
+| ---- | ---------------------------------------------------------- | ------------------------------------------------------------ | --------------------- |
+| 1    | 实现 `config.go`：解析 deps.yaml 配置                      | `config.go`                                                  | `go build ./...` 通过 |
+| 2    | 实现 `check_imports.go`：遍历文件 → 解析 import → 检查合规 | `check_imports.go`                                           | TC-001 通过           |
+| 3    | 实现 testkitx 边界规则检查                                 | `check_imports.go`                                           | TC-001 通过           |
+| 4    | 参数校验和错误处理                                         | `check_imports.go`                                           | TC-001 通过           |
+| 5    | 实现 internal/scan/imports/*.go 和 internal/ast/*.go       | `internal/scan/imports/imports.go`, `internal/ast/parser.go` | `go build ./...` 通过 |
 
 ### Risk Assessment
 
-| Risk | Probability | Impact | Mitigation |
-|---|---|---|---|
-| AST 解析性能 | Low | Medium | 仅解析 import 声明 |
+| Risk         | Probability | Impact | Mitigation         |
+| ------------ | ----------- | ------ | ------------------ |
+| AST 解析性能 | Low         | Medium | 仅解析 import 声明 |

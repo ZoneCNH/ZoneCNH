@@ -34,17 +34,17 @@ status: pending
 
 ## Requirements Covered
 
-| Requirement | Description | Acceptance Criteria |
-|---|---|---|
-| BR-003 | 策略组合时外层包装内层（装饰器模式） | 嵌套执行正确 |
+| Requirement | Description                          | Acceptance Criteria |
+| ----------- | ------------------------------------ | ------------------- |
+| BR-003      | 策略组合时外层包装内层（装饰器模式） | 嵌套执行正确        |
 
 ## Test Plan
 
-| Test Case | Type | Description |
-|---|---|---|
-| — | Unit | timeout(retry(fn))：重试在超时内执行 |
-| — | Unit | retry(circuit(fn))：熔断时重试停止 |
-| — | Unit | 多层嵌套：timeout(retry(circuit(fn))) |
+| Test Case | Type | Description                           |
+| --------- | ---- | ------------------------------------- |
+| —         | Unit | timeout(retry(fn))：重试在超时内执行  |
+| —         | Unit | retry(circuit(fn))：熔断时重试停止    |
+| —         | Unit | 多层嵌套：timeout(retry(circuit(fn))) |
 
 ## Implementation Notes
 
@@ -54,14 +54,14 @@ status: pending
 
 ## Implementation Plan
 
-| Step | Description | Deliverables | Verification |
-|---|---|---|---|
-| 1 | 创建 `compose.go`，提供 `Chain` 辅助函数 | `compose.go` | `go build ./...` 通过 |
-| 2 | 编写组合测试：timeout+retry, retry+circuit | `compose_test.go` | TC-008 通过 |
-| 3 | 编写三层嵌套测试 | `compose_test.go` | 多层嵌套正确 |
+| Step | Description                                | Deliverables      | Verification          |
+| ---- | ------------------------------------------ | ----------------- | --------------------- |
+| 1    | 创建 `compose.go`，提供 `Chain` 辅助函数   | `compose.go`      | `go build ./...` 通过 |
+| 2    | 编写组合测试：timeout+retry, retry+circuit | `compose_test.go` | TC-008 通过           |
+| 3    | 编写三层嵌套测试                           | `compose_test.go` | 多层嵌套正确          |
 
 ### Risk Assessment
 
-| Risk | Probability | Impact | Mitigation |
-|---|---|---|---|
-| 组合顺序影响行为 | Medium | Medium | 文档说明推荐顺序 |
+| Risk             | Probability | Impact | Mitigation       |
+| ---------------- | ----------- | ------ | ---------------- |
+| 组合顺序影响行为 | Medium      | Medium | 文档说明推荐顺序 |

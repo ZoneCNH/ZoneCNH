@@ -5,12 +5,12 @@ Status: Draft evidence refreshed; not Approved.
 
 ## Score Snapshot
 
-| Dimension | Score | Evidence |
-| --- | ---: | --- |
-| Goal/SPEC naming alignment | 4/5 | SPEC now uses goal.md API/config/metric names. |
-| Traceability structure | 5/5 | Forward, reverse, task coverage, and risks are present. |
-| Executable test evidence | 1/5 | `/home/ZoneCNH/module/natsx` has no Go tests; implementation tests remain pending. |
-| Release approval readiness | 2/5 | Documentation evidence is current, but implementation and integration gates are not complete. |
+| Dimension                  | Score | Evidence                                                                                      |
+| -------------------------- | ----: | --------------------------------------------------------------------------------------------- |
+| Goal/SPEC naming alignment | 4/5   | SPEC now uses goal.md API/config/metric names.                                                |
+| Traceability structure     | 5/5   | Forward, reverse, task coverage, and risks are present.                                       |
+| Executable test evidence   | 1/5   | `/home/ZoneCNH/module/natsx` has no Go tests; implementation tests remain pending.            |
+| Release approval readiness | 2/5   | Documentation evidence is current, but implementation and integration gates are not complete. |
 
 Overall matrix evidence score: **12/20**.
 

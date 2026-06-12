@@ -44,10 +44,10 @@ status: pending
 
 > Spec TC: TC-010
 
-| Requirement | Description |
-|---|---|
-| FR-010 | 类型安全上下文 |
-| BR-010 | Key 必须通过 NewKey 创建，零值使用 panic |
+| Requirement | Description                              |
+| ----------- | ---------------------------------------- |
+| FR-010      | 类型安全上下文                           |
+| BR-010      | Key 必须通过 NewKey 创建，零值使用 panic |
 
 ## Internal Dependencies
 
@@ -60,9 +60,9 @@ status: pending
 
 ## Test Plan
 
-| TC | Type | Description |
-|----|------|-------------|
-| TC-010 | Unit | Key 唯一性：同名字不同 NewKey 不冲突 |
+| TC     | Type   | Description                          |
+| ------ | ------ | ------------------------------------ |
+| TC-010 | Unit   | Key 唯一性：同名字不同 NewKey 不冲突 |
 
 ## Implementation Notes
 

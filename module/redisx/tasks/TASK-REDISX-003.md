@@ -28,17 +28,17 @@ status: pending
 
 ## Requirements Covered
 
-| Requirement | Description | Acceptance Criteria |
-|---|---|---|
-| FR-006 | HGet/HSet：Hash 操作 | 字段读写正确 |
-| FR-007 | LPush/LRange：List 操作 | 列表读写正确 |
+| Requirement | Description             | Acceptance Criteria |
+| ----------- | ----------------------- | ------------------- |
+| FR-006      | HGet/HSet：Hash 操作    | 字段读写正确        |
+| FR-007      | LPush/LRange：List 操作 | 列表读写正确        |
 
 ## Test Plan
 
-| Test Case | Type | Description |
-|---|---|---|
-| — | Unit | HSet 后 HGet 返回正确值 |
-| — | Unit | LPush 后 LRange 返回正确列表 |
+| Test Case | Type | Description                  |
+| --------- | ---- | ---------------------------- |
+| —         | Unit | HSet 后 HGet 返回正确值      |
+| —         | Unit | LPush 后 LRange 返回正确列表 |
 
 ## Implementation Notes
 
@@ -46,13 +46,13 @@ status: pending
 
 ## Implementation Plan
 
-| Step | Description | Deliverables | Verification |
-|---|---|---|---|
-| 1 | 实现 `HGet`/`HSet` | `client_impl.go` | Hash 测试通过 |
-| 2 | 实现 `LPush`/`LRange` | `client_impl.go` | List 测试通过 |
+| Step | Description           | Deliverables     | Verification  |
+| ---- | --------------------- | ---------------- | ------------- |
+| 1    | 实现 `HGet`/`HSet`    | `client_impl.go` | Hash 测试通过 |
+| 2    | 实现 `LPush`/`LRange` | `client_impl.go` | List 测试通过 |
 
 ### Risk Assessment
 
 | Risk | Probability | Impact | Mitigation |
-|---|---|---|---|
-| 无 | Low | Low | — |
+| ---- | ----------- | ------ | ---------- |
+| 无   | Low         | Low    | —          |

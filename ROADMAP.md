@@ -308,15 +308,15 @@ Blocked By:
 
 ## Risks & Dependencies
 
-| 风险 | 级别 | Status | 缓解措施 |
-|------|------|--------|----------|
-| 分析域/决策域/执行域完成度极低（5-8%） | Critical | Active | 聚焦 v0.2.0，先固化契约再实现 |
-| resiliencx 身份未修复 | Critical | Active | v0.1.0 最高优先级 |
-| x.go 2.8MB 体量异常 | High | Active | v0.1.0 体检与瘦身 |
-| 14 个交易所 SDK 无版本号 | High | Monitoring | Backlog 中跟进 |
-| 宏观数据源同质化 | Medium | Monitoring | Backlog 中评估合并 |
-| 单人开发 + AI 代理，资源有限 | Medium | Active | 严格优先级，先闭环后扩展 |
-| 回测与实盘共享代码验证不足 | Medium | Monitoring | v0.3.0 回测引擎必须验证共享代码路径 |
+| 风险                                   | 级别     | Status     | 缓解措施                            |
+| -------------------------------------- | -------- | ---------- | ----------------------------------- |
+| 分析域/决策域/执行域完成度极低（5-8%） | Critical | Active     | 聚焦 v0.2.0，先固化契约再实现       |
+| resiliencx 身份未修复                  | Critical | Active     | v0.1.0 最高优先级                   |
+| x.go 2.8MB 体量异常                    | High     | Active     | v0.1.0 体检与瘦身                   |
+| 14 个交易所 SDK 无版本号               | High     | Monitoring | Backlog 中跟进                      |
+| 宏观数据源同质化                       | Medium   | Monitoring | Backlog 中评估合并                  |
+| 单人开发 + AI 代理，资源有限           | Medium   | Active     | 严格优先级，先闭环后扩展            |
+| 回测与实盘共享代码验证不足             | Medium   | Monitoring | v0.3.0 回测引擎必须验证共享代码路径 |
 
 ---
 
@@ -371,12 +371,12 @@ Blocked By:
 
 > Roadmap 应定期评审，避免变成过期文档（§27）。
 
-| 项目阶段 | 建议频率 |
-|---------|---------|
-| 早期探索阶段 | 每 1-2 周 |
-| 快速开发阶段 | 每 2-4 周 |
+| 项目阶段     | 建议频率       |
+| ------------ | -------------- |
+| 早期探索阶段 | 每 1-2 周      |
+| 快速开发阶段 | 每 2-4 周      |
 | 稳定维护阶段 | 每个版本结束后 |
-| 长期维护项目 | 每 1-2 个月 |
+| 长期维护项目 | 每 1-2 个月    |
 
 长期未更新的条目应重新评估：30 天无变化检查状态，60 天评估版本归属，90 天考虑移入 Deferred 或 Backlog。
 
@@ -384,16 +384,16 @@ Blocked By:
 
 ## Related Documents
 
-| 文档 | 用途 |
-|------|------|
-| [STATUS.md](./STATUS.md) | 实时组件状态、健康度、风险追踪 |
-| [DATAFLOW.md](./DATAFLOW.md) | 三引擎数据流全景、M×S 矩阵、契约清单 |
-| [module/FOUNDATION-TRACKER.md](./module/FOUNDATION-TRACKER.md) | Foundation v1 执行跟踪 — P0/P1/P2 Issue 检查清单 |
-| [module/](./module/) | 16 个基座模块 + x.go 的 23 节规格 |
-| [docs/governance/](./docs/governance/) | Spec 治理模板、生命周期、追溯与评分规则 |
+| 文档                                                                   | 用途                                                               |
+| ---------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| [STATUS.md](./STATUS.md)                                               | 实时组件状态、健康度、风险追踪                                     |
+| [DATAFLOW.md](./DATAFLOW.md)                                           | 三引擎数据流全景、M×S 矩阵、契约清单                               |
+| [module/FOUNDATION-TRACKER.md](./module/FOUNDATION-TRACKER.md)         | Foundation v1 执行跟踪 — P0/P1/P2 Issue 检查清单                   |
+| [module/](./module/)                                                   | 16 个基座模块 + x.go 的 23 节规格                                  |
+| [docs/governance/](./docs/governance/)                                 | Spec 治理模板、生命周期、追溯与评分规则                            |
 | [docs/governance/ROADMAP-RULES.md](./docs/governance/ROADMAP-RULES.md) | ROADMAP 编写规范 — 状态流转、决策规则、评审频率、标签规范（§1-54） |
-| [CONSTITUTION.md](./CONSTITUTION.md) | 系统宪法 — AI 代理最高治理文件 |
-| [ARCHITECTURE.md](./ARCHITECTURE.md) | 完整依赖拓扑、域间关系、运行时组装 |
+| [CONSTITUTION.md](./CONSTITUTION.md)                                   | 系统宪法 — AI 代理最高治理文件                                     |
+| [ARCHITECTURE.md](./ARCHITECTURE.md)                                   | 完整依赖拓扑、域间关系、运行时组装                                 |
 
 ---
 

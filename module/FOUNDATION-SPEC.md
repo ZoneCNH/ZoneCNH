@@ -635,14 +635,14 @@ pkg/testkitx/
 
 Go baseline：`1.23`。
 
-| 模块 | 允许依赖 | 禁止依赖 |
-| --- | --- | --- |
-| `kernel` | Go 标准库 | 任何第三方、任何 Foundation L1、`x.go`、业务模块 |
-| `configx` | `kernel`、必要解析库 | `observex`、`resiliencx`、`schedulex`、`x.go`、业务模块 |
-| `observex` | `kernel` | 供应商 SDK、`configx`、`resiliencx`、`schedulex`、`x.go`、业务模块 |
-| `resiliencx` | `kernel` | `configx`、`observex`、`schedulex`、`x.go`、业务模块 |
-| `schedulex` | `kernel` | `configx`、`observex`、`resiliencx`、`x.go`、业务模块 |
-| `testkitx` | 测试期可依赖 5 个基础模块 | 被生产包依赖 |
+| 模块         | 允许依赖                  | 禁止依赖                                                           |
+| ------------ | ------------------------- | ------------------------------------------------------------------ |
+| `kernel`     | Go 标准库                 | 任何第三方、任何 Foundation L1、`x.go`、业务模块                   |
+| `configx`    | `kernel`、必要解析库      | `observex`、`resiliencx`、`schedulex`、`x.go`、业务模块            |
+| `observex`   | `kernel`                  | 供应商 SDK、`configx`、`resiliencx`、`schedulex`、`x.go`、业务模块 |
+| `resiliencx` | `kernel`                  | `configx`、`observex`、`schedulex`、`x.go`、业务模块               |
+| `schedulex`  | `kernel`                  | `configx`、`observex`、`resiliencx`、`x.go`、业务模块              |
+| `testkitx`   | 测试期可依赖 5 个基础模块 | 被生产包依赖                                                       |
 
 `foundationx` 旧依赖只允许作为过渡兼容垫片存在；新增代码不得引入新的 `foundationx` import。
 

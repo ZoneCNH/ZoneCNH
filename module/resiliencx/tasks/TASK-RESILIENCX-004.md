@@ -34,20 +34,20 @@ status: pending
 
 ## Requirements Covered
 
-| Requirement | Description | Acceptance Criteria |
-|---|---|---|
-| FR-003 | CircuitBreaker：三态转换 + 试探调用 | AC-003: 三态转换正确; AC-004: 并发安全 |
-| BR-004 | 熔断器状态必须并发安全 | `-race` 测试通过 |
+| Requirement | Description                         | Acceptance Criteria                    |
+| ----------- | ----------------------------------- | -------------------------------------- |
+| FR-003      | CircuitBreaker：三态转换 + 试探调用 | AC-003: 三态转换正确; AC-004: 并发安全 |
+| BR-004      | 熔断器状态必须并发安全              | `-race` 测试通过                       |
 
 ## Test Plan
 
-| Test Case | Type | Description |
-|---|---|---|
-| TC-002 | Unit | Closed→Open：失败率超阈值 |
-| TC-003 | Unit | Open→Half-Open：recovery_timeout 后 |
-| TC-003 | Unit | Half-Open→Closed：试探成功 |
-| TC-003 | Unit | Half-Open→Open：试探失败 |
-| — | Unit | 并发安全：多 goroutine 同时 Execute |
+| Test Case | Type | Description                         |
+| --------- | ---- | ----------------------------------- |
+| TC-002    | Unit | Closed→Open：失败率超阈值           |
+| TC-003    | Unit | Open→Half-Open：recovery_timeout 后 |
+| TC-003    | Unit | Half-Open→Closed：试探成功          |
+| TC-003    | Unit | Half-Open→Open：试探失败            |
+| —         | Unit | 并发安全：多 goroutine 同时 Execute |
 
 ## Implementation Notes
 
@@ -57,15 +57,15 @@ status: pending
 
 ## Implementation Plan
 
-| Step | Description | Deliverables | Verification |
-|---|---|---|---|
-| 1 | 实现 `circuitBreakerImpl` 结构体（state, failures, threshold, mu） | `circuit_impl.go` | `go build ./...` 通过 |
-| 2 | 实现 `Execute`：Closed→执行→计数；Open→ErrCircuitOpen | `circuit_impl.go` | TC-002, TC-003 通过 |
-| 3 | 实现 Half-Open 试探逻辑和状态转换 | `circuit_impl.go` | TC-003, TC-003 通过 |
-| 4 | 并发安全验证 | `circuit_test.go` | `go test -race ./... -run TestCircuit` 通过 |
+| Step | Description                                                        | Deliverables      | Verification                                |
+| ---- | ------------------------------------------------------------------ | ----------------- | ------------------------------------------- |
+| 1    | 实现 `circuitBreakerImpl` 结构体（state, failures, threshold, mu） | `circuit_impl.go` | `go build ./...` 通过                       |
+| 2    | 实现 `Execute`：Closed→执行→计数；Open→ErrCircuitOpen              | `circuit_impl.go` | TC-002, TC-003 通过                         |
+| 3    | 实现 Half-Open 试探逻辑和状态转换                                  | `circuit_impl.go` | TC-003, TC-003 通过                         |
+| 4    | 并发安全验证                                                       | `circuit_test.go` | `go test -race ./... -run TestCircuit` 通过 |
 
 ### Risk Assessment
 
-| Risk | Probability | Impact | Mitigation |
-|---|---|---|---|
-| 状态转换竞态 | Medium | High | atomic CAS + mutex |
+| Risk         | Probability | Impact | Mitigation         |
+| ------------ | ----------- | ------ | ------------------ |
+| 状态转换竞态 | Medium      | High   | atomic CAS + mutex |

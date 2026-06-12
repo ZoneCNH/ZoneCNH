@@ -1,13 +1,13 @@
 # resiliencx 发布版本 1.0 Goal 定位与实现标准
 
-| 字段 | 内容 |
-| --- | --- |
-| 模块名 | `resiliencx` |
-| 发布版本 | 1.0.1 |
-| 所属层级 | L1 运行时横切能力 / 弹性治理 |
-| 稳定级别 | Public API Stable；SPI Stable；Internal 可演进 |
-| 文档状态 | 与 SPEC.md v1.0.1 对齐 |
-| 发布日期基准 | 2026-06-12 |
+| 字段         | 内容                                           |
+| ------------ | ---------------------------------------------- |
+| 模块名       | `resiliencx`                                   |
+| 发布版本     | 1.0.1                                          |
+| 所属层级     | L1 运行时横切能力 / 弹性治理                   |
+| 稳定级别     | Public API Stable；SPI Stable；Internal 可演进 |
+| 文档状态     | 与 SPEC.md v1.0.1 对齐                         |
+| 发布日期基准 | 2026-06-12                                     |
 
 ## 术语约定
 
@@ -57,24 +57,24 @@
 
 ## 3. 核心场景
 
-| 场景 | 说明 | 1.0 期望结果 |
-| --- | --- | --- |
-| 数据库慢查询 | PostgreSQL 查询超过阈值 | 超时中断，记录错误和指标，避免线程堆积 |
-| 缓存抖动 | Redis 短暂不可用 | 可重试读操作；写操作按幂等规则处理 |
-| 下游故障 | 依赖连续失败 | 熔断打开并走 fallback，定期半开探测 |
-| 流量突增 | 某接口请求暴增 | 按 key 限流或舱壁隔离，保护核心资源 |
-| 重试风暴 | 下游持续不可用但上层持续重试 | 超过总耗时上限后快速失败，熔断器打开 |
+| 场景         | 说明                         | 1.0 期望结果                           |
+| ------------ | ---------------------------- | -------------------------------------- |
+| 数据库慢查询 | PostgreSQL 查询超过阈值      | 超时中断，记录错误和指标，避免线程堆积 |
+| 缓存抖动     | Redis 短暂不可用             | 可重试读操作；写操作按幂等规则处理     |
+| 下游故障     | 依赖连续失败                 | 熔断打开并走 fallback，定期半开探测    |
+| 流量突增     | 某接口请求暴增               | 按 key 限流或舱壁隔离，保护核心资源    |
+| 重试风暴     | 下游持续不可用但上层持续重试 | 超过总耗时上限后快速失败，熔断器打开   |
 
 ## 4. 能力范围
 
-| 能力域 | 1.0 必须具备的能力 | 验收方式 |
-| --- | --- | --- |
-| 超时 | 同步/异步调用超时、deadline 继承、取消传播 | 超时测试通过 |
-| 重试 | 固定间隔、指数退避、jitter、最大次数、错误分类 | 重试安全测试通过 |
-| 熔断 | 关闭/打开/半开状态、滑动窗口、失败率阈值 | 状态转换测试通过 |
-| 限流 | 令牌桶、漏桶或固定窗口抽象、按 key 限流 | 高并发测试通过 |
-| 隔离 | 并发舱壁、队列长度、拒绝策略 | 资源隔离测试通过 |
-| 降级 | fallback、默认值、缓存兜底、快速失败 | 降级路径测试通过 |
+| 能力域   | 1.0 必须具备的能力                                             | 验收方式         |
+| -------- | -------------------------------------------------------------- | ---------------- |
+| 超时     | 同步/异步调用超时、deadline 继承、取消传播                     | 超时测试通过     |
+| 重试     | 固定间隔、指数退避、jitter、最大次数、错误分类                 | 重试安全测试通过 |
+| 熔断     | 关闭/打开/半开状态、滑动窗口、失败率阈值                       | 状态转换测试通过 |
+| 限流     | 令牌桶、漏桶或固定窗口抽象、按 key 限流                        | 高并发测试通过   |
+| 隔离     | 并发舱壁、队列长度、拒绝策略                                   | 资源隔离测试通过 |
+| 降级     | fallback、默认值、缓存兜底、快速失败                           | 降级路径测试通过 |
 | 策略编排 | 函数嵌套组合（装饰器模式）；v1.2+ 目标：PolicyChain 统一执行链 | 组合策略测试通过 |
 
 ## 5. 职责边界
@@ -95,12 +95,12 @@
 
 ## 6. 依赖关系与分层约束
 
-| 依赖类型 | 约束 |
-| --- | --- |
+| 依赖类型 | 约束                                                                                       |
+| -------- | ------------------------------------------------------------------------------------------ |
 | 上游依赖 | 依赖 kernel（生命周期）；依赖 configx 获取策略配置。不依赖 observex、schedulex、testkitx。 |
-| 下游依赖 | schedulex、redisx、kafkax、natsx、postgresx、taosx、ossx、clickhousex 可复用策略。 |
-| 分层约束 | resiliencx 不依赖具体中间件客户端；通过通用执行器包装外部调用。 |
-| 契约依赖 | MUST 向 contracts 登记 Public API 契约和错误码契约。 |
+| 下游依赖 | schedulex、redisx、kafkax、natsx、postgresx、taosx、ossx、clickhousex 可复用策略。         |
+| 分层约束 | resiliencx 不依赖具体中间件客户端；通过通用执行器包装外部调用。                            |
+| 契约依赖 | MUST 向 contracts 登记 Public API 契约和错误码契约。                                       |
 
 ## 7. 对外契约
 
@@ -108,15 +108,15 @@
 
 ### 7.1 公开能力面
 
-| 契约 | 定位 | 1.0 现状 |
-| --- | --- | --- |
-| ResilienceExecutor | 统一策略执行入口 | v1.2+（v1.0: 各策略函数独立调用，通过函数嵌套组合） |
-| PolicyRegistry | 策略注册和选择 | v1.2+（v1.0: 直接实例化策略对象） |
-| RetryPolicy | 重试策略 | v1.0 已实现（RetryPolicy struct + Retry 函数） |
-| CircuitBreaker | 熔断器状态机 | v1.0 已实现（CircuitBreaker interface） |
-| RateLimiter | 限流抽象 | v1.0 已实现（RateLimiter interface） |
-| Bulkhead | 并发舱壁 | v1.0 已实现（Bulkhead interface） |
-| FallbackHandler | 降级处理器 | v1.2+（v1.0: Fallback 函数，primary + secondary 简单链） |
+| 契约               | 定位             | 1.0 现状                                                 |
+| ------------------ | ---------------- | -------------------------------------------------------- |
+| ResilienceExecutor | 统一策略执行入口 | v1.2+（v1.0: 各策略函数独立调用，通过函数嵌套组合）      |
+| PolicyRegistry     | 策略注册和选择   | v1.2+（v1.0: 直接实例化策略对象）                        |
+| RetryPolicy        | 重试策略         | v1.0 已实现（RetryPolicy struct + Retry 函数）           |
+| CircuitBreaker     | 熔断器状态机     | v1.0 已实现（CircuitBreaker interface）                  |
+| RateLimiter        | 限流抽象         | v1.0 已实现（RateLimiter interface）                     |
+| Bulkhead           | 并发舱壁         | v1.0 已实现（Bulkhead interface）                        |
+| FallbackHandler    | 降级处理器       | v1.2+（v1.0: Fallback 函数，primary + secondary 简单链） |
 
 ### 7.2 1.2+ 逻辑接口基线（演进目标）
 
@@ -166,16 +166,16 @@ RejectPolicy
 
 ## 8. 配置契约
 
-| 配置项 | 含义 | 默认值 / 要求 | 稳定性 |
-| --- | --- | --- | --- |
-| resiliencx.enabled | 是否启用弹性治理 | true | Stable |
-| resiliencx.default_timeout | 默认超时 | 5s | Stable |
-| resiliencx.default_retry.max_retries | 默认重试次数 | 0，默认不重试 | Stable |
-| resiliencx.default_retry.initial_wait | 默认退避 | 100ms | Stable |
-| resiliencx.circuit_breaker.failure_threshold | 熔断失败率阈值 | 5 | Stable |
-| resiliencx.circuit_breaker.recovery_timeout | 熔断恢复超时 | 30s | Stable |
-| resiliencx.bulkhead.max_concurrent | 默认并发隔离数 | 10 | Stable |
-| resiliencx.rate_limiter.rate | 每秒请求数限额 | disabled | Stable |
+| 配置项                                       | 含义             | 默认值 / 要求 | 稳定性 |
+| -------------------------------------------- | ---------------- | ------------- | ------ |
+| resiliencx.enabled                           | 是否启用弹性治理 | true          | Stable |
+| resiliencx.default_timeout                   | 默认超时         | 5s            | Stable |
+| resiliencx.default_retry.max_retries         | 默认重试次数     | 0，默认不重试 | Stable |
+| resiliencx.default_retry.initial_wait        | 默认退避         | 100ms         | Stable |
+| resiliencx.circuit_breaker.failure_threshold | 熔断失败率阈值   | 5             | Stable |
+| resiliencx.circuit_breaker.recovery_timeout  | 熔断恢复超时     | 30s           | Stable |
+| resiliencx.bulkhead.max_concurrent           | 默认并发隔离数   | 10            | Stable |
+| resiliencx.rate_limiter.rate                 | 每秒请求数限额   | disabled      | Stable |
 
 ## 9. 可观测契约
 
@@ -187,14 +187,14 @@ RejectPolicy
 
 ### 9.2 指标
 
-| 指标名 | 类型 | 标签 | 说明 |
-| --- | --- | --- | --- |
-| resiliencx.calls.total | Counter | operation,status,policy | 受治理调用总数 |
-| resiliencx.duration.ms | Timer | operation,status | 治理调用耗时 |
-| resiliencx.retry.total | Counter | operation,result | 重试次数 |
-| resiliencx.circuit.state | Gauge | operation,state | 熔断状态 |
-| resiliencx.rejected.total | Counter | operation,reason | 限流/舱壁拒绝次数 |
-| resiliencx.fallback.total | Counter | operation,status | 降级执行次数 |
+| 指标名                    | 类型    | 标签                    | 说明              |
+| ------------------------- | ------- | ----------------------- | ----------------- |
+| resiliencx.calls.total    | Counter | operation,status,policy | 受治理调用总数    |
+| resiliencx.duration.ms    | Timer   | operation,status        | 治理调用耗时      |
+| resiliencx.retry.total    | Counter | operation,result        | 重试次数          |
+| resiliencx.circuit.state  | Gauge   | operation,state         | 熔断状态          |
+| resiliencx.rejected.total | Counter | operation,reason        | 限流/舱壁拒绝次数 |
+| resiliencx.fallback.total | Counter | operation,status        | 降级执行次数      |
 
 ### 9.3 Trace / 诊断事件
 
@@ -206,13 +206,13 @@ RejectPolicy
 
 > **版本分层**：v1.0 使用 SPEC.md §10 定义的 sentinel error 变量。以下统一错误分类体系为 v1.2+ 演进方向。
 
-| 错误类别 | 典型原因 | 目标处理策略 |
-| --- | --- | --- |
-| RESILIENCE_TIMEOUT | 调用超过 timeout 或 deadline | 取消调用并返回可识别超时错误 |
-| RESILIENCE_REJECTED | 限流或舱壁拒绝 | 快速失败，不进入下游调用 |
-| RESILIENCE_CIRCUIT_OPEN | 熔断器打开 | 执行 fallback 或快速失败 |
-| RESILIENCE_RETRY_EXHAUSTED | 重试次数耗尽 | 返回最后一次错误并记录尝试次数 |
-| RESILIENCE_FALLBACK_FAILED | 降级逻辑自身失败 | 返回降级失败并保留原始错误 |
+| 错误类别                   | 典型原因                     | 目标处理策略                   |
+| -------------------------- | ---------------------------- | ------------------------------ |
+| RESILIENCE_TIMEOUT         | 调用超过 timeout 或 deadline | 取消调用并返回可识别超时错误   |
+| RESILIENCE_REJECTED        | 限流或舱壁拒绝               | 快速失败，不进入下游调用       |
+| RESILIENCE_CIRCUIT_OPEN    | 熔断器打开                   | 执行 fallback 或快速失败       |
+| RESILIENCE_RETRY_EXHAUSTED | 重试次数耗尽                 | 返回最后一次错误并记录尝试次数 |
+| RESILIENCE_FALLBACK_FAILED | 降级逻辑自身失败             | 返回降级失败并保留原始错误     |
 
 ## 11. 安全、稳定性与兼容性要求
 
@@ -225,13 +225,13 @@ RejectPolicy
 
 ## 12. 测试证据要求
 
-| 测试类型 | 必须覆盖内容 | 发布门禁 |
-| --- | --- | --- |
-| 单元测试 | 所有策略状态机、错误分类、幂等判断 | MUST 通过 |
-| 组合测试 | 限流+熔断+超时+重试+fallback 的顺序 | MUST 通过 |
-| 并发测试 | 舱壁、限流器、熔断状态并发安全 | MUST 通过 |
+| 测试类型     | 必须覆盖内容                         | 发布门禁  |
+| ------------ | ------------------------------------ | --------- |
+| 单元测试     | 所有策略状态机、错误分类、幂等判断   | MUST 通过 |
+| 组合测试     | 限流+熔断+超时+重试+fallback 的顺序  | MUST 通过 |
+| 并发测试     | 舱壁、限流器、熔断状态并发安全       | MUST 通过 |
 | 故障注入测试 | 使用 testkitx 注入超时、失败、慢响应 | MUST 通过 |
-| 观测测试 | 指标、日志、Trace 属性完整 | MUST 通过 |
+| 观测测试     | 指标、日志、Trace 属性完整           | MUST 通过 |
 
 ## 13. 1.0 发布验收清单
 

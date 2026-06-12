@@ -29,9 +29,9 @@ status: pending
 
 ## Requirements Covered
 
-| Requirement | Description |
-|---|---|
-| §9.13 | 内部测试工具接口 |
+| Requirement | Description      |
+| ----------- | ---------------- |
+| §9.13       | 内部测试工具接口 |
 
 ## Non-scope
 

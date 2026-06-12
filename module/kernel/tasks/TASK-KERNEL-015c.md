@@ -36,12 +36,12 @@ status: pending
 
 ## Requirements Covered
 
-| FR | 子包 | 示例内容 |
-|----|------|----------|
-| FR-008 | validx | Precondition/Invariant 使用 |
-| FR-009 | versionx | BuildInfo + Compatibility |
-| FR-010 | contextx | Key 创建 + 类型安全存取 |
-| FR-012 | contracttest | 断言函数使用 |
+| FR     | 子包         | 示例内容                    |
+| ------ | ------------ | --------------------------- |
+| FR-008 | validx       | Precondition/Invariant 使用 |
+| FR-009 | versionx     | BuildInfo + Compatibility   |
+| FR-010 | contextx     | Key 创建 + 类型安全存取     |
+| FR-012 | contracttest | 断言函数使用                |
 
 ## Non-scope
 
@@ -51,6 +51,6 @@ status: pending
 
 ## Test Plan
 
-| TC | Type | Description |
-|----|------|-------------|
-| — | CI | `for d in examples/{validation,version_info,context,contract_helper}/; do go run ./$d; done` 全部通过 |
+| TC   | Type   | Description                                                                                           |
+| ---- | ------ | ----------------------------------------------------------------------------------------------------- |
+| —    | CI     | `for d in examples/{validation,version_info,context,contract_helper}/; do go run ./$d; done` 全部通过 |

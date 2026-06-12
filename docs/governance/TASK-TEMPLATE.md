@@ -46,18 +46,18 @@ TASK-{MODULE}-{NNN}:           # 唯一 ID，如 TASK-KERNEL-001
 
 ## 字段说明
 
-| 字段 | 必填 | 说明 |
-|------|------|------|
-| `TASK-{MODULE}-{NNN}` | ✅ | 唯一 ID，MODULE 为模块名大写，NNN 为三位序号 |
-| `module` | ✅ | 所属模块名，与 `module/{module}/SPEC.md` 对应 |
-| `scope` | ✅ | 一句话描述本 task 做什么，不超过 100 字 |
-| `spec_ref` | ✅ | 至少一条引用，格式为 `module/{module}/SPEC.md#{FR/BR/AC-ID}` |
-| `files` | ✅ | 涉及的文件列表（含测试文件），使用相对于模块根目录的路径 |
-| `acceptance_criteria` | ✅ | 至少一条 AC，格式为 `{AC-ID}: {描述}` |
-| `depends_on` | ⬜ | 前置 task ID 列表，可为空 |
-| `estimated_effort` | ⬜ | 预估工作量，格式为 `{N}h` 或 `{N}d` |
-| `priority` | ✅ | P0（阻塞其他 task）/ P1（本迭代必须）/ P2（可推迟） |
-| `status` | ✅ | pending → in_progress → done / blocked |
+| 字段                  | 必填   | 说明                                                         |
+| --------------------- | ------ | ------------------------------------------------------------ |
+| `TASK-{MODULE}-{NNN}` | ✅      | 唯一 ID，MODULE 为模块名大写，NNN 为三位序号                 |
+| `module`              | ✅      | 所属模块名，与 `module/{module}/SPEC.md` 对应                |
+| `scope`               | ✅      | 一句话描述本 task 做什么，不超过 100 字                      |
+| `spec_ref`            | ✅      | 至少一条引用，格式为 `module/{module}/SPEC.md#{FR/BR/AC-ID}` |
+| `files`               | ✅      | 涉及的文件列表（含测试文件），使用相对于模块根目录的路径     |
+| `acceptance_criteria` | ✅      | 至少一条 AC，格式为 `{AC-ID}: {描述}`                        |
+| `depends_on`          | ⬜      | 前置 task ID 列表，可为空                                    |
+| `estimated_effort`    | ⬜      | 预估工作量，格式为 `{N}h` 或 `{N}d`                          |
+| `priority`            | ✅      | P0（阻塞其他 task）/ P1（本迭代必须）/ P2（可推迟）          |
+| `status`              | ✅      | pending → in_progress → done / blocked                       |
 
 ---
 
@@ -201,10 +201,10 @@ CI 或 AI 代理可以使用以下规则校验 Task Spec：
 
 ## 与现有文档的关系
 
-| 文档 | 关系 |
-|------|------|
-| `module/*/SPEC.md` | Task Spec 的来源，每个 task 必须引用 spec 中的 FR/BR/AC |
+| 文档                                    | 关系                                                        |
+| --------------------------------------- | ----------------------------------------------------------- |
+| `module/*/SPEC.md`                      | Task Spec 的来源，每个 task 必须引用 spec 中的 FR/BR/AC     |
 | `docs/ai/prompt-templates.md` Section 2 | 任务拆分 prompt 的详细版本，本模板定义结构，prompt 定义流程 |
-| `docs/governance/TRACEABILITY.md` | Task 完成后更新 Status 列 |
-| `docs/governance/DEFINITION-OF-DONE.md` | Task 完成的验收条件 |
-| `docs/ai/agent-rules.md` Section 9 | AI 代理实现 task 时必须遵循的规则 |
+| `docs/governance/TRACEABILITY.md`       | Task 完成后更新 Status 列                                   |
+| `docs/governance/DEFINITION-OF-DONE.md` | Task 完成的验收条件                                         |
+| `docs/ai/agent-rules.md` Section 9      | AI 代理实现 task 时必须遵循的规则                           |

@@ -923,11 +923,11 @@ Phase 1-2 的 Python 封装方案替换为 Go 实现：
 
 原设计五层 (Schema → Data → Engine → Integration → Orchestration) 存在过度分层：
 
-| 层 | 问题 | 优化 |
-|----|------|------|
-| L1 Schema 与 L2 Data | 界限模糊，schema 本身就是 data 的一部分 | 合并为 **types** 层 |
-| L4 Integration | 只是 L3 Engine 的薄 CLI 包装 | 合并到 **cmd** 层 |
-| L5 Orchestration | Agent 层，不写 Go | 移出 Go 范围，保持 Claude Agent |
+| 层                   | 问题                                    | 优化                            |
+| -------------------- | --------------------------------------- | ------------------------------- |
+| L1 Schema 与 L2 Data | 界限模糊，schema 本身就是 data 的一部分 | 合并为 **types** 层             |
+| L4 Integration       | 只是 L3 Engine 的薄 CLI 包装            | 合并到 **cmd** 层               |
+| L5 Orchestration     | Agent 层，不写 Go                       | 移出 Go 范围，保持 Claude Agent |
 
 **优化后三层架构**:
 
@@ -957,12 +957,12 @@ Phase 1-2 的 Python 封装方案替换为 Go 实现：
 
 原 ADR-001 决策是"封装复用 Python/Bash 工具"。Go 实现后应改为直接重写：
 
-| 封装方案的问题 | 直接重写的优势 |
-|---------------|---------------|
-| Go 调 Python 需 os/exec + 解析 stdout，脆弱 | 统一错误处理 (Go error) |
-| Go 调 Bash 同理 | 类型安全，编译期校验 |
-| 部署依赖 Python 运行时 | 单二进制部署 |
-| 类型信息丢失 (dict → struct 重映射) | struct tag + validator 声明式校验 |
+| 封装方案的问题                              | 直接重写的优势                    |
+| ------------------------------------------- | --------------------------------- |
+| Go 调 Python 需 os/exec + 解析 stdout，脆弱 | 统一错误处理 (Go error)           |
+| Go 调 Bash 同理                             | 类型安全，编译期校验              |
+| 部署依赖 Python 运行时                      | 单二进制部署                      |
+| 类型信息丢失 (dict → struct 重映射)         | struct tag + validator 声明式校验 |
 
 **采用增量重写策略**: 每完成一个模块就用 self-test.sh 验证，不需要等全部重写完。
 
@@ -1146,12 +1146,12 @@ func EvaluateGate(gateID string, goalID string, config Config) (GateResult, erro
 
 原报告 Phase 1-4 全部功能需要 8-12 天。但 MVP 只需：
 
-| MVP 功能 | 对应 CLI 命令 | 价值 |
-|----------|--------------|------|
-| 状态查看 | `goalctl pipeline status GOAL-xxx` | 一眼看到当前阶段 |
-| 状态推进 | `goalctl pipeline advance GOAL-xxx --to SPEC` | 自动校验 + 写入 |
-| 合法性验证 | `goalctl validate --mode strict` | 替代 goal-validate.py |
-| Gate 查看 | `goalctl gate status --goal GOAL-xxx` | 一眼看到 Gate 状态 |
+| MVP 功能   | 对应 CLI 命令                                 | 价值                  |
+| ---------- | --------------------------------------------- | --------------------- |
+| 状态查看   | `goalctl pipeline status GOAL-xxx`            | 一眼看到当前阶段      |
+| 状态推进   | `goalctl pipeline advance GOAL-xxx --to SPEC` | 自动校验 + 写入       |
+| 合法性验证 | `goalctl validate --mode strict`              | 替代 goal-validate.py |
+| Gate 查看  | `goalctl gate status --goal GOAL-xxx`         | 一眼看到 Gate 状态    |
 
 **MVP 不需要的**:
 - Registry CRUD（手动编辑 YAML 够用）
@@ -1176,41 +1176,41 @@ MVP 代码量估算:
 
 **MVP 后按价值排序迭代**:
 
-| 优先级 | 功能 | 工期 | 价值 |
-|--------|------|------|------|
-| P0 | Gate checker runner (声明式) | +1 天 | 自动化 Gate 判定 |
-| P1 | Matrix 生成 + 校验 | +1 天 | 追溯覆盖率自动检查 |
-| P2 | Registry CRUD (泛型 Collection) | +0.5 天 | 结构化写入 |
-| P3 | Evidence 收集 | +0.5 天 | 自动化 Evidence |
-| P4 | Lint + Drift (声明式) | +0.5 天 | 规则自动化 |
-| P5 | Report + Dashboard | +1 天 | 可观测性 |
-| **总计** | | **+4.5 天** | |
+| 优先级   | 功能                            | 工期        | 价值               |
+| -------- | ------------------------------- | ----------- | ------------------ |
+| P0       | Gate checker runner (声明式)    | +1 天       | 自动化 Gate 判定   |
+| P1       | Matrix 生成 + 校验              | +1 天       | 追溯覆盖率自动检查 |
+| P2       | Registry CRUD (泛型 Collection) | +0.5 天     | 结构化写入         |
+| P3       | Evidence 收集                   | +0.5 天     | 自动化 Evidence    |
+| P4       | Lint + Drift (声明式)           | +0.5 天     | 规则自动化         |
+| P5       | Report + Dashboard              | +1 天       | 可观测性           |
+| **总计** |                                 | **+4.5 天** |                    |
 
 ### 9.8 渐进集成 xlib-standard / xlibgate
 
 goalctl 先独立实现，再渐进集成 FoundationX 生态：
 
-| 阶段 | 集成点 | 方式 |
-|------|--------|------|
-| Phase 1 (独立) | 无 | goalctl 自包含 |
-| Phase 2 (引用) | xlibgate 门禁模式 | 复用 checker output protocol |
-| Phase 3 (引用) | xlib-standard Evidence Runtime | 调用其 API 替代自实现 |
-| Phase 4 (嵌入) | x.go 组合根 | goalctl 作为 x.go 的子命令 |
+| 阶段           | 集成点                         | 方式                         |
+| -------------- | ------------------------------ | ---------------------------- |
+| Phase 1 (独立) | 无                             | goalctl 自包含               |
+| Phase 2 (引用) | xlibgate 门禁模式              | 复用 checker output protocol |
+| Phase 3 (引用) | xlib-standard Evidence Runtime | 调用其 API 替代自实现        |
+| Phase 4 (嵌入) | x.go 组合根                    | goalctl 作为 x.go 的子命令   |
 
 ### 9.9 优化前后对比
 
-| 维度 | 优化前 | 优化后 | 改善 |
-|------|--------|--------|------|
-| 架构层数 | 5 层 | 3 层 | -40% |
-| 总代码量 | ~4,950 行 | ~2,500 行 (含测试) | -49% |
-| MVP 代码量 | — | ~1,180 行 | 新增 |
-| 总工期 | 8-12 天 | 5-7 天 | -40% |
-| MVP 工期 | — | 2-3 天 | 新增 |
-| 重写策略 | 封装复用 | 直接重写 (增量) | 类型安全 |
-| 规则管理 | 硬编码在 Go | 声明式 YAML | 新增规则不改代码 |
-| Registry | 6 个独立实现 | 泛型 Collection | -83% 代码 |
-| Pipeline | 独立状态机引擎 | Validator 的一个 check | 消除独立模块 |
-| Gate Arbiter | 复杂仲裁框架 | Checker runner | -50% 代码 |
+| 维度         | 优化前         | 优化后                 | 改善             |
+| ------------ | -------------- | ---------------------- | ---------------- |
+| 架构层数     | 5 层           | 3 层                   | -40%             |
+| 总代码量     | ~4,950 行      | ~2,500 行 (含测试)     | -49%             |
+| MVP 代码量   | —              | ~1,180 行              | 新增             |
+| 总工期       | 8-12 天        | 5-7 天                 | -40%             |
+| MVP 工期     | —              | 2-3 天                 | 新增             |
+| 重写策略     | 封装复用       | 直接重写 (增量)        | 类型安全         |
+| 规则管理     | 硬编码在 Go    | 声明式 YAML            | 新增规则不改代码 |
+| Registry     | 6 个独立实现   | 泛型 Collection        | -83% 代码        |
+| Pipeline     | 独立状态机引擎 | Validator 的一个 check | 消除独立模块     |
+| Gate Arbiter | 复杂仲裁框架   | Checker runner         | -50% 代码        |
 
 ---
 

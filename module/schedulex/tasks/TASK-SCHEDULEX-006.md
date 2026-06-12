@@ -28,16 +28,16 @@ status: pending
 
 ## Requirements Covered
 
-| Requirement | Description | Acceptance Criteria |
-|---|---|---|
-| FR-007 | EventSink：job 事件回调 | 触发/开始/完成/失败/misfire |
+| Requirement | Description             | Acceptance Criteria         |
+| ----------- | ----------------------- | --------------------------- |
+| FR-007      | EventSink：job 事件回调 | 触发/开始/完成/失败/misfire |
 
 ## Test Plan
 
-| Test Case | Type | Description |
-|---|---|---|
-| TC-007 | Unit | 事件触发时回调被调用 |
-| — | Unit | 多个 sink 同时收到事件 |
+| Test Case | Type | Description            |
+| --------- | ---- | ---------------------- |
+| TC-007    | Unit | 事件触发时回调被调用   |
+| —         | Unit | 多个 sink 同时收到事件 |
 
 ## Implementation Notes
 
@@ -46,13 +46,13 @@ status: pending
 
 ## Implementation Plan
 
-| Step | Description | Deliverables | Verification |
-|---|---|---|---|
-| 1 | 实现 `eventBus`：注册 handler + emit | `event_impl.go` | `go build ./...` 通过 |
-| 2 | 集成到 scheduler：job 生命周期 emit 事件 | `scheduler_impl.go` | §7.7-1 通过 |
+| Step | Description                              | Deliverables        | Verification          |
+| ---- | ---------------------------------------- | ------------------- | --------------------- |
+| 1    | 实现 `eventBus`：注册 handler + emit     | `event_impl.go`     | `go build ./...` 通过 |
+| 2    | 集成到 scheduler：job 生命周期 emit 事件 | `scheduler_impl.go` | §7.7-1 通过           |
 
 ### Risk Assessment
 
-| Risk | Probability | Impact | Mitigation |
-|---|---|---|---|
-| handler panic 影响调度 | Low | High | recover handler panic |
+| Risk                   | Probability | Impact | Mitigation            |
+| ---------------------- | ----------- | ------ | --------------------- |
+| handler panic 影响调度 | Low         | High   | recover handler panic |

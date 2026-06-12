@@ -36,12 +36,12 @@ status: pending
 
 ## Requirements Covered
 
-| FR | 子包 | 示例内容 |
-|----|------|----------|
-| FR-005 | retryx | RetryPolicy 配置 + Delay 计算 |
-| FR-006 | shutdownx | Hook 注册 + OS signal 处理 |
-| FR-011 | syncx | SemaphoreLimiter + WorkerGroup |
-| FR-007 | timex | FakeClock 注入测试 |
+| FR     | 子包      | 示例内容                       |
+| ------ | --------- | ------------------------------ |
+| FR-005 | retryx    | RetryPolicy 配置 + Delay 计算  |
+| FR-006 | shutdownx | Hook 注册 + OS signal 处理     |
+| FR-011 | syncx     | SemaphoreLimiter + WorkerGroup |
+| FR-007 | timex     | FakeClock 注入测试             |
 
 ## Non-scope
 
@@ -51,6 +51,6 @@ status: pending
 
 ## Test Plan
 
-| TC | Type | Description |
-|----|------|-------------|
-| — | CI | `for d in examples/{retry_policy,shutdown,sync_group,clock}/; do go run ./$d; done` 全部通过 |
+| TC   | Type   | Description                                                                                  |
+| ---- | ------ | -------------------------------------------------------------------------------------------- |
+| —    | CI     | `for d in examples/{retry_policy,shutdown,sync_group,clock}/; do go run ./$d; done` 全部通过 |

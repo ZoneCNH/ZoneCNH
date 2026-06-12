@@ -11,25 +11,25 @@ Status: Approved
 
 以下场景**必须**进行 code review：
 
-| 场景 | 说明 |
-|------|------|
-| 新增模块 | 完整审查：接口设计、依赖方向、测试覆盖 |
-| 修改公共接口 | 重点审查：API 兼容性、调用方影响 |
-| 修改内部实现 | 标准审查：逻辑正确性、性能、测试更新 |
-| 修复 bug | 重点审查：回归测试、根因分析 |
-| 安全相关代码 | 强制使用 `security-reviewer` 代理 |
-| 更新文档 | 轻量审查：准确性、一致性 |
+| 场景         | 说明                                   |
+| ------------ | -------------------------------------- |
+| 新增模块     | 完整审查：接口设计、依赖方向、测试覆盖 |
+| 修改公共接口 | 重点审查：API 兼容性、调用方影响       |
+| 修改内部实现 | 标准审查：逻辑正确性、性能、测试更新   |
+| 修复 bug     | 重点审查：回归测试、根因分析           |
+| 安全相关代码 | 强制使用 `security-reviewer` 代理      |
+| 更新文档     | 轻量审查：准确性、一致性               |
 
 ---
 
 ## 2. 严重级别定义
 
-| 级别 | 含义 | 行动 |
-|------|------|------|
-| **CRITICAL** | 安全漏洞、数据丢失风险、生产事故 | **阻塞** — 必须修复后才能合并 |
-| **HIGH** | Bug、重大质量问题、违反 CONSTITUTION.md | **警告** — 应修复后合并 |
-| **MEDIUM** | 可维护性问题、命名不规范、缺少注释 | **建议** — 考虑修复 |
-| **LOW** | 风格偏好、微小优化 | **可选** — 按团队判断 |
+| 级别         | 含义                                    | 行动                          |
+| ------------ | --------------------------------------- | ----------------------------- |
+| **CRITICAL** | 安全漏洞、数据丢失风险、生产事故        | **阻塞** — 必须修复后才能合并 |
+| **HIGH**     | Bug、重大质量问题、违反 CONSTITUTION.md | **警告** — 应修复后合并       |
+| **MEDIUM**   | 可维护性问题、命名不规范、缺少注释      | **建议** — 考虑修复           |
+| **LOW**      | 风格偏好、微小优化                      | **可选** — 按团队判断         |
 
 ---
 
@@ -129,12 +129,12 @@ Status: Approved
 
 ## 9. 批准标准
 
-| 条件 | 结果 |
-|------|------|
-| 无 CRITICAL 和 HIGH 问题 | **Approve** |
-| 仅有 HIGH 问题（≤ 2 个） | **Approve with Warning** — 合并后跟踪 |
-| 有 CRITICAL 问题 | **Block** — 必须修复后重新审查 |
-| 未经 security-reviewer 审查的安全相关代码 | **Block** — 必须先完成安全审查 |
+| 条件                                      | 结果                                  |
+| ----------------------------------------- | ------------------------------------- |
+| 无 CRITICAL 和 HIGH 问题                  | **Approve**                           |
+| 仅有 HIGH 问题（≤ 2 个）                  | **Approve with Warning** — 合并后跟踪 |
+| 有 CRITICAL 问题                          | **Block** — 必须修复后重新审查        |
+| 未经 security-reviewer 审查的安全相关代码 | **Block** — 必须先完成安全审查        |
 
 ---
 
@@ -142,15 +142,15 @@ Status: Approved
 
 根据变更内容选择合适的审查代理：
 
-| 变更类型 | 推荐代理 |
-|----------|----------|
-| 通用代码质量 | `code-reviewer` |
-| 安全相关代码 | `security-reviewer` |
-| TypeScript / JavaScript | `typescript-reviewer` |
-| Python | `python-reviewer` |
-| Go | `go-reviewer` / `ecc:go-reviewer` |
-| Rust | `rust-reviewer` |
-| 架构变更 | `architect` |
-| 性能敏感代码 | `performance-optimizer` |
+| 变更类型                | 推荐代理                          |
+| ----------------------- | --------------------------------- |
+| 通用代码质量            | `code-reviewer`                   |
+| 安全相关代码            | `security-reviewer`               |
+| TypeScript / JavaScript | `typescript-reviewer`             |
+| Python                  | `python-reviewer`                 |
+| Go                      | `go-reviewer` / `ecc:go-reviewer` |
+| Rust                    | `rust-reviewer`                   |
+| 架构变更                | `architect`                       |
+| 性能敏感代码            | `performance-optimizer`           |
 
 多个代理可并行使用，各自负责不同维度。

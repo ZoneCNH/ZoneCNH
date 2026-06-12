@@ -31,23 +31,23 @@ status: pending
 
 ## Requirements Covered
 
-| Requirement | Description | Acceptance Criteria |
-|---|---|---|
-| §19 | 敏感配置不写日志、文件权限检查、环境变量不泄露 | 3 项安全要求 |
-| goal §11 | 密码/token/accessKey/secretKey 脱敏，日志不泄露 | 安全快照 + 日志扫描 |
+| Requirement | Description                                     | Acceptance Criteria |
+| ----------- | ----------------------------------------------- | ------------------- |
+| §19         | 敏感配置不写日志、文件权限检查、环境变量不泄露  | 3 项安全要求        |
+| goal §11    | 密码/token/accessKey/secretKey 脱敏，日志不泄露 | 安全快照 + 日志扫描 |
 
 ## Test Plan
 
-| Test Case | Type | Description |
-|---|---|---|
-| — | Unit | password 字段脱敏：`Get("db.password")` 返回 `"***"` |
-| — | Unit | token 字段脱敏：`Get("api.token")` 返回 `"***"` |
-| — | Unit | 普通字段不受影响：`Get("db.host")` 返回原始值 |
-| — | Unit | 配置文件权限检查：0o777 文件输出 warning |
-| — | Unit | 错误消息不包含环境变量原始值 |
-| — | Unit | 嵌套敏感字段：`connections.db.password` 正确脱敏 |
-| — | Security | gitleaks 扫描无泄露: `gitleaks detect --no-git`（NFR-006） |
-| — | Security | 日志无凭据泄露: `grep -rE` 扫描（NFR-007） |
+| Test Case | Type     | Description                                                |
+| --------- | -------- | ---------------------------------------------------------- |
+| —         | Unit     | password 字段脱敏：`Get("db.password")` 返回 `"***"`       |
+| —         | Unit     | token 字段脱敏：`Get("api.token")` 返回 `"***"`            |
+| —         | Unit     | 普通字段不受影响：`Get("db.host")` 返回原始值              |
+| —         | Unit     | 配置文件权限检查：0o777 文件输出 warning                   |
+| —         | Unit     | 错误消息不包含环境变量原始值                               |
+| —         | Unit     | 嵌套敏感字段：`connections.db.password` 正确脱敏           |
+| —         | Security | gitleaks 扫描无泄露: `gitleaks detect --no-git`（NFR-006） |
+| —         | Security | 日志无凭据泄露: `grep -rE` 扫描（NFR-007）                 |
 
 ## Non-scope
 
@@ -66,19 +66,19 @@ status: pending
 
 ## Implementation Plan
 
-| Step | Description | Deliverables | Verification |
-|---|---|---|---|
-| 1 | 实现 `isSensitive(key string) bool`：匹配敏感字段名规则 | `sanitize.go` | `go test ./... -run TestIsSensitive` 通过 |
-| 2 | 实现 `sanitize(data map[string]interface{}) map[string]interface{}`：递归脱敏 | `sanitize.go` | `go test ./... -run TestSanitize` 通过 |
-| 3 | 实现 `checkFilePerm(path string) error`：权限检查和 warning | `sanitize.go` | `go test ./... -run TestFilePerm` 通过 |
-| 4 | 实现 `Reveal(key string) string`：调试用原始值查看 | `sanitize.go` | `go test ./... -run TestReveal` 通过 |
-| 5 | 集成到 Reader：Get 方法自动调用 sanitize | `reader.go` | 现有 Reader 测试仍通过 |
-| 6 | 运行 gitleaks 扫描确认零泄露 | — | `gitleaks detect --no-git` 零泄露 |
+| Step | Description                                                                   | Deliverables  | Verification                              |
+| ---- | ----------------------------------------------------------------------------- | ------------- | ----------------------------------------- |
+| 1    | 实现 `isSensitive(key string) bool`：匹配敏感字段名规则                       | `sanitize.go` | `go test ./... -run TestIsSensitive` 通过 |
+| 2    | 实现 `sanitize(data map[string]interface{}) map[string]interface{}`：递归脱敏 | `sanitize.go` | `go test ./... -run TestSanitize` 通过    |
+| 3    | 实现 `checkFilePerm(path string) error`：权限检查和 warning                   | `sanitize.go` | `go test ./... -run TestFilePerm` 通过    |
+| 4    | 实现 `Reveal(key string) string`：调试用原始值查看                            | `sanitize.go` | `go test ./... -run TestReveal` 通过      |
+| 5    | 集成到 Reader：Get 方法自动调用 sanitize                                      | `reader.go`   | 现有 Reader 测试仍通过                    |
+| 6    | 运行 gitleaks 扫描确认零泄露                                                  | —             | `gitleaks detect --no-git` 零泄露         |
 
 ### Risk Assessment
 
-| Risk | Probability | Impact | Mitigation |
-|---|---|---|---|
-| 脱敏影响性能（递归遍历） | Medium | Medium | 只脱敏最终值，路径匹配 O(n) |
-| 敏感字段名遗漏（自定义命名） | Medium | High | 提供 `WithMaskPatterns(...)` Option 扩展 |
-| Reveal() 被滥用 | Low | High | 文档标注仅用于调试，CI 扫描 Reveal 调用 |
+| Risk                         | Probability | Impact | Mitigation                               |
+| ---------------------------- | ----------- | ------ | ---------------------------------------- |
+| 脱敏影响性能（递归遍历）     | Medium      | Medium | 只脱敏最终值，路径匹配 O(n)              |
+| 敏感字段名遗漏（自定义命名） | Medium      | High   | 提供 `WithMaskPatterns(...)` Option 扩展 |
+| Reveal() 被滥用              | Low         | High   | 文档标注仅用于调试，CI 扫描 Reveal 调用  |

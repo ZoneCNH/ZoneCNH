@@ -35,19 +35,19 @@ status: pending
 
 ## Requirements Covered
 
-| Requirement | Description | Acceptance Criteria |
-|---|---|---|
-| §9.1 | Logger 接口（6 方法 + Field 结构体） | 签名与 SPEC 一致 |
-| §9.2 | Meter 接口（Counter/Histogram/Gauge + Attr） | 签名与 SPEC 一致 |
-| §9.3 | Tracer/Span 接口（Start/End/SetAttributes/RecordError） | 签名与 SPEC 一致 |
-| §9.4 | Exporter 接口（ExportLogs/Metrics/Spans + Shutdown） | 签名与 SPEC 一致 |
+| Requirement | Description                                             | Acceptance Criteria |
+| ----------- | ------------------------------------------------------- | ------------------- |
+| §9.1        | Logger 接口（6 方法 + Field 结构体）                    | 签名与 SPEC 一致    |
+| §9.2        | Meter 接口（Counter/Histogram/Gauge + Attr）            | 签名与 SPEC 一致    |
+| §9.3        | Tracer/Span 接口（Start/End/SetAttributes/RecordError） | 签名与 SPEC 一致    |
+| §9.4        | Exporter 接口（ExportLogs/Metrics/Spans + Shutdown）    | 签名与 SPEC 一致    |
 
 ## Test Plan
 
-| Test Case | Type | Description |
-|---|---|---|
-| — | Compile | 接口完整性编译验证 |
-| — | Compile | Field/Attr/SpanConfig 类型可用 |
+| Test Case | Type    | Description                    |
+| --------- | ------- | ------------------------------ |
+| —         | Compile | 接口完整性编译验证             |
+| —         | Compile | Field/Attr/SpanConfig 类型可用 |
 
 ## Implementation Notes
 
@@ -58,16 +58,16 @@ status: pending
 
 ## Implementation Plan
 
-| Step | Description | Deliverables | Verification |
-|---|---|---|---|
-| 1 | 定义 `Logger` 接口和 `Field` 结构体 | `logger/logger.go` | `go build ./...` 通过 |
-| 2 | 定义 `Meter` 接口（Counter/Histogram/Gauge）和 `Attr` 结构体 | `meter/meter.go` | `go build ./...` 通过 |
-| 3 | 定义 `Tracer`/`Span` 接口和 `SpanKind`/`SpanOption` 类型 | `tracer/tracer.go` | `go build ./...` 通过 |
-| 4 | 定义 `Exporter` 接口和 `LogEntry`/`MetricPoint`/`SpanData` 数据类型 | `exporter/exporter.go` | `go build ./...` 通过 |
+| Step | Description                                                         | Deliverables           | Verification          |
+| ---- | ------------------------------------------------------------------- | ---------------------- | --------------------- |
+| 1    | 定义 `Logger` 接口和 `Field` 结构体                                 | `logger/logger.go`     | `go build ./...` 通过 |
+| 2    | 定义 `Meter` 接口（Counter/Histogram/Gauge）和 `Attr` 结构体        | `meter/meter.go`       | `go build ./...` 通过 |
+| 3    | 定义 `Tracer`/`Span` 接口和 `SpanKind`/`SpanOption` 类型            | `tracer/tracer.go`     | `go build ./...` 通过 |
+| 4    | 定义 `Exporter` 接口和 `LogEntry`/`MetricPoint`/`SpanData` 数据类型 | `exporter/exporter.go` | `go build ./...` 通过 |
 
 ### Risk Assessment
 
-| Risk | Probability | Impact | Mitigation |
-|---|---|---|---|
-| 接口方法签名与下游不匹配 | Medium | High | 对照 SPEC §9 和上游 observex 确认 |
-| 子包间循环依赖 | Low | High | 各接口独立子包，不互相引用 |
+| Risk                     | Probability | Impact | Mitigation                        |
+| ------------------------ | ----------- | ------ | --------------------------------- |
+| 接口方法签名与下游不匹配 | Medium      | High   | 对照 SPEC §9 和上游 observex 确认 |
+| 子包间循环依赖           | Low         | High   | 各接口独立子包，不互相引用        |

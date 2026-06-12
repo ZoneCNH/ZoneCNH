@@ -40,12 +40,12 @@ status: pending
 
 ## Requirements Covered
 
-| Requirement | Description | Acceptance Criteria |
-|---|---|---|
-| BR-001 | 标准化 exit code | README 含 exit code 文档 |
-| NFR-007 | 测试覆盖率 >= 80% | `go tool cover -func` ≥ 80% |
-| NFR-008 | 无硬编码密钥 | `gitleaks detect --no-git` 零命中 |
-| NFR-010 | 无 Foundation 运行时依赖 | `go list -deps` 零命中 ZoneCNH 模块 |
+| Requirement | Description              | Acceptance Criteria                 |
+| ----------- | ------------------------ | ----------------------------------- |
+| BR-001      | 标准化 exit code         | README 含 exit code 文档            |
+| NFR-007     | 测试覆盖率 >= 80%        | `go tool cover -func` ≥ 80%         |
+| NFR-008     | 无硬编码密钥             | `gitleaks detect --no-git` 零命中   |
+| NFR-010     | 无 Foundation 运行时依赖 | `go list -deps` 零命中 ZoneCNH 模块 |
 
 ## Non-scope
 
@@ -56,12 +56,12 @@ status: pending
 
 ## Test Plan
 
-| Test Case | Type | Description |
-|---|---|---|
-| NFR-007 | CI Gate | `go tool cover -func=.coverage/cover.out \| grep total \| awk '{print $3}' \| tr -d '%'` ≥ 80 |
-| NFR-008 | CI Gate | `gitleaks detect --no-git` 零命中 |
-| NFR-010 | CI Gate | `go list -deps ./... \| grep ZoneCNH` 零命中 |
-| BR-001 | CI Gate | `xlibgate check all --config xlibgate.yaml` self-check 通过 |
+| Test Case | Type    | Description                                                 |                      |                    |                 |
+| --------- | ------- | ----------------------------------------------------------- |                      |                    |                 |
+| NFR-007   | CI Gate | `go tool cover -func=.coverage/cover.out \                  | grep total \         | awk '{print $3}' \ | tr -d '%'` ≥ 80 |
+| NFR-008   | CI Gate | `gitleaks detect --no-git` 零命中                           |                      |                    |                 |
+| NFR-010   | CI Gate | `go list -deps ./... \                                      | grep ZoneCNH` 零命中 |                    |                 |
+| BR-001    | CI Gate | `xlibgate check all --config xlibgate.yaml` self-check 通过 |                      |                    |                 |
 
 ## Implementation Notes
 
@@ -70,14 +70,14 @@ status: pending
 
 ## Implementation Plan
 
-| Step | Description | Deliverables | Verification |
-|---|---|---|---|
-| 1 | 创建 README.md | `README.md` | 人工 review |
-| 2 | 创建 CHANGELOG.md | `CHANGELOG.md` | 格式正确 |
-| 3 | 验证 Release DoD 全部条目 | — | NFR-007, NFR-008, NFR-010, BR-001 全部通过 |
+| Step | Description               | Deliverables   | Verification                               |
+| ---- | ------------------------- | -------------- | ------------------------------------------ |
+| 1    | 创建 README.md            | `README.md`    | 人工 review                                |
+| 2    | 创建 CHANGELOG.md         | `CHANGELOG.md` | 格式正确                                   |
+| 3    | 验证 Release DoD 全部条目 | —              | NFR-007, NFR-008, NFR-010, BR-001 全部通过 |
 
 ### Risk Assessment
 
-| Risk | Probability | Impact | Mitigation |
-|---|---|---|---|
-| 覆盖率未达 80% | Medium | Medium | 补充测试 |
+| Risk           | Probability | Impact | Mitigation |
+| -------------- | ----------- | ------ | ---------- |
+| 覆盖率未达 80% | Medium      | Medium | 补充测试   |

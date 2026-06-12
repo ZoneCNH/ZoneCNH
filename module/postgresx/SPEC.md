@@ -21,9 +21,9 @@
 
 ### 1.1 变更历史
 
-| 日期 | 版本 | 变更内容 | 作者 |
-|------|------|----------|------|
-| 2026-06-07 | v1.0.0 | 初始版本 | ZoneCNH |
+| 日期       | 版本   | 变更内容   | 作者    |
+| ---------- | ------ | ---------- | ------- |
+| 2026-06-07 | v1.0.0 | 初始版本   | ZoneCNH |
 
 ## 2. Summary
 
@@ -69,14 +69,14 @@
 
 ## 6. Consumers
 
-| 消费者 | 使用方式 |
-|--------|----------|
-| `market-data` | 持久化行情历史数据 |
-| `signal-engine` | 存储因子计算结果和信号历史 |
-| `order-engine` | 存储订单历史和成交记录 |
-| `risk-engine` | 存储风控日志和阈值配置 |
-| `backtest-engine` | 存储回测结果和参数 |
-| 业务域模块 | 通过 `Client` 接口进行 SQL 查询和事务操作 |
+| 消费者            | 使用方式                                  |
+| ----------------- | ----------------------------------------- |
+| `market-data`     | 持久化行情历史数据                        |
+| `signal-engine`   | 存储因子计算结果和信号历史                |
+| `order-engine`    | 存储订单历史和成交记录                    |
+| `risk-engine`     | 存储风控日志和阈值配置                    |
+| `backtest-engine` | 存储回测结果和参数                        |
+| 业务域模块        | 通过 `Client` 接口进行 SQL 查询和事务操作 |
 
 ---
 
@@ -155,18 +155,18 @@ THEN 停止迁移，返回错误（不自动回滚，需手动修复）
 
 ## 8. Business Rules
 
-| 编号 | 规则 |
-|------|------|
+| 编号   | 规则                                                        |
+| ------ | ----------------------------------------------------------- |
 | BR-001 | 所有查询必须使用参数化查询（`$1, $2, ...`），禁止字符串拼接 |
-| BR-002 | 所有操作必须接受 `context.Context`，支持超时和取消 |
-| BR-003 | 事务必须在 fn 返回后自动 commit 或 rollback |
-| BR-004 | 事务内 panic 必须被 catch，自动 rollback |
-| BR-005 | Rows 使用完毕后必须 Close（调用方负责） |
-| BR-006 | Health() 必须是幂等的、无副作用的 |
-| BR-007 | 迁移脚本必须是幂等的（可重复执行） |
-| BR-008 | 迁移版本号必须单调递增 |
-| BR-009 | 错误消息不包含 SQL 参数值（防泄露敏感数据） |
-| BR-010 | 连接池大小通过配置控制，默认 10 |
+| BR-002 | 所有操作必须接受 `context.Context`，支持超时和取消          |
+| BR-003 | 事务必须在 fn 返回后自动 commit 或 rollback                 |
+| BR-004 | 事务内 panic 必须被 catch，自动 rollback                    |
+| BR-005 | Rows 使用完毕后必须 Close（调用方负责）                     |
+| BR-006 | Health() 必须是幂等的、无副作用的                           |
+| BR-007 | 迁移脚本必须是幂等的（可重复执行）                          |
+| BR-008 | 迁移版本号必须单调递增                                      |
+| BR-009 | 错误消息不包含 SQL 参数值（防泄露敏感数据）                 |
+| BR-010 | 连接池大小通过配置控制，默认 10                             |
 
 ---
 
@@ -325,16 +325,16 @@ postgresx:
 
 ## 12. Error Handling
 
-| 错误 | 调用方处理 |
-|------|-----------|
+| 错误                  | 调用方处理                                  |
+| --------------------- | ------------------------------------------- |
 | `ErrConnectionFailed` | 检查 DSN 和网络，确认 PostgreSQL 服务运行中 |
-| `ErrNoRows` | 查询无结果，调用方应处理空值（不是异常） |
-| `ErrPoolExhausted` | 增加 max_conns 或优化查询减少连接占用时间 |
-| `ErrMigrationFailed` | 检查迁移 SQL 和数据库状态，手动修复后重试 |
-| `ErrInvalidDSN` | 检查 DSN 格式 |
-| `ErrTxPanic` | 检查事务 fn 中的 panic 原因 |
-| 约束违反错误 | 检查数据是否违反 UNIQUE / FK / CHECK 约束 |
-| SQL 语法错误 | 检查 SQL 语句 |
+| `ErrNoRows`           | 查询无结果，调用方应处理空值（不是异常）    |
+| `ErrPoolExhausted`    | 增加 max_conns 或优化查询减少连接占用时间   |
+| `ErrMigrationFailed`  | 检查迁移 SQL 和数据库状态，手动修复后重试   |
+| `ErrInvalidDSN`       | 检查 DSN 格式                               |
+| `ErrTxPanic`          | 检查事务 fn 中的 panic 原因                 |
+| 约束违反错误          | 检查数据是否违反 UNIQUE / FK / CHECK 约束   |
+| SQL 语法错误          | 检查 SQL 语句                               |
 
 **错误消息格式：** `"postgresx: <operation>: <detail>"`
 **错误包装：** 使用 `%w` 保留底层错误链
@@ -344,20 +344,20 @@ postgresx:
 
 ## 13. Edge Cases
 
-| 场景 | 预期行为 |
-|------|----------|
-| PostgreSQL 不可达时 Query | 返回 ErrConnectionFailed |
-| 连接池耗尽 | 等待直到有空闲连接或超时，超时返回 ErrPoolExhausted |
-| QueryRow 无结果 | Scan 返回 ErrNoRows |
-| Tx fn panic | 自动 rollback，返回 ErrTxPanic |
-| Tx ctx 超时 | 自动 rollback，返回 ctx.Err() |
-| Rows 未 Close | 连接泄漏（应在 vet/lint 中检测） |
-| Exec 影响 0 行 | 返回 Result{RowsAffected: 0}，不报错 |
-| 并发 Tx 操作同一行 | 遵循 PostgreSQL 锁机制（行锁或死锁检测） |
-| 迁移脚本幂等性 | CREATE TABLE IF NOT EXISTS，ALTER TABLE 先检查列是否存在 |
-| 空 SQL 字符串 | 返回 SQL 语法错误 |
-| 参数数量不匹配 | 返回参数绑定错误 |
-| 大结果集（>100 万行） | 通过 Rows 迭代器逐行处理，不一次性加载 |
+| 场景                      | 预期行为                                                 |
+| ------------------------- | -------------------------------------------------------- |
+| PostgreSQL 不可达时 Query | 返回 ErrConnectionFailed                                 |
+| 连接池耗尽                | 等待直到有空闲连接或超时，超时返回 ErrPoolExhausted      |
+| QueryRow 无结果           | Scan 返回 ErrNoRows                                      |
+| Tx fn panic               | 自动 rollback，返回 ErrTxPanic                           |
+| Tx ctx 超时               | 自动 rollback，返回 ctx.Err()                            |
+| Rows 未 Close             | 连接泄漏（应在 vet/lint 中检测）                         |
+| Exec 影响 0 行            | 返回 Result{RowsAffected: 0}，不报错                     |
+| 并发 Tx 操作同一行        | 遵循 PostgreSQL 锁机制（行锁或死锁检测）                 |
+| 迁移脚本幂等性            | CREATE TABLE IF NOT EXISTS，ALTER TABLE 先检查列是否存在 |
+| 空 SQL 字符串             | 返回 SQL 语法错误                                        |
+| 参数数量不匹配            | 返回参数绑定错误                                         |
+| 大结果集（>100 万行）     | 通过 Rows 迭代器逐行处理，不一次性加载                   |
 
 ---
 
@@ -408,12 +408,12 @@ go 1.23
 
 ### 15.2 依赖方向
 
-| 可以依赖 | 禁止依赖 |
-|----------|----------|
-| stdlib | configx |
-| kernel（L0 原语） | 所有业务域实现 |
+| 可以依赖                   | 禁止依赖             |
+| -------------------------- | -------------------- |
+| stdlib                     | configx              |
+| kernel（L0 原语）          | 所有业务域实现       |
 | observex（interface-only） | 所有 L2.5 领域共享层 |
-| PostgreSQL 驱动（pgx） | |
+| PostgreSQL 驱动（pgx）     |                      |
 
 ---
 
@@ -421,23 +421,23 @@ go 1.23
 
 ### 16.1 单元测试
 
-| 测试场景 | 验证点 |
-|----------|--------|
-| Query 成功 | 返回正确结果集 |
-| Query SQL 错误 | 返回数据库错误 |
-| QueryRow 有结果 | Scan 正确获取数据 |
-| QueryRow 无结果 | Scan 返回 ErrNoRows |
-| Exec 成功 | RowsAffected 正确 |
-| Exec 约束违反 | 返回约束错误 |
-| Tx commit | fn 返回 nil → commit |
-| Tx rollback | fn 返回 error → rollback |
-| Tx panic rollback | fn panic → rollback |
-| Health PING 成功 | 返回 Ready: true |
-| Health PING 失败 | 返回 Ready: false |
-| Migration 执行 | 迁移正确应用 |
-| Migration 幂等 | 重复执行无副作用 |
-| 连接池配置 | max/min conns 正确设置 |
-| 并发安全 | -race 测试通过 |
+| 测试场景          | 验证点                   |
+| ----------------- | ------------------------ |
+| Query 成功        | 返回正确结果集           |
+| Query SQL 错误    | 返回数据库错误           |
+| QueryRow 有结果   | Scan 正确获取数据        |
+| QueryRow 无结果   | Scan 返回 ErrNoRows      |
+| Exec 成功         | RowsAffected 正确        |
+| Exec 约束违反     | 返回约束错误             |
+| Tx commit         | fn 返回 nil → commit     |
+| Tx rollback       | fn 返回 error → rollback |
+| Tx panic rollback | fn panic → rollback      |
+| Health PING 成功  | 返回 Ready: true         |
+| Health PING 失败  | 返回 Ready: false        |
+| Migration 执行    | 迁移正确应用             |
+| Migration 幂等    | 重复执行无副作用         |
+| 连接池配置        | max/min conns 正确设置   |
+| 并发安全          | -race 测试通过           |
 
 ### 16.2 Given/When/Then 用例
 
@@ -468,72 +468,72 @@ Then 返回 healthy；连接失败时返回 unhealthy
 
 ### 16.3 Benchmark
 
-| 场景 | 目标 |
-|------|------|
-| 单次 Query（本地 PostgreSQL） | < 5ms |
-| 事务（5 条 SQL） | < 10ms |
-| QueryRow + Scan | < 5ms |
-| 连接池获取连接 | < 1ms |
+| 场景                          | 目标   |
+| ----------------------------- | ------ |
+| 单次 Query（本地 PostgreSQL） | < 5ms  |
+| 事务（5 条 SQL）              | < 10ms |
+| QueryRow + Scan               | < 5ms  |
+| 连接池获取连接                | < 1ms  |
 
 ### 16.4 集成测试
 
-| 场景 | 验证点 |
-|------|--------|
-| 完整 CRUD 链 | INSERT → SELECT → UPDATE → DELETE |
-| 事务提交和回滚 | commit 和 rollback 正确执行 |
-| 迁移执行 | 多版本迁移正确应用 |
-| 并发事务 | 多个并发 Tx 不冲突 |
-| 连接池压力 | 高并发下连接池正确管理 |
+| 场景           | 验证点                            |
+| -------------- | --------------------------------- |
+| 完整 CRUD 链   | INSERT → SELECT → UPDATE → DELETE |
+| 事务提交和回滚 | commit 和 rollback 正确执行       |
+| 迁移执行       | 多版本迁移正确应用                |
+| 并发事务       | 多个并发 Tx 不冲突                |
+| 连接池压力     | 高并发下连接池正确管理            |
 
 ---
 
 ## 17. Performance Budget
 
-| 操作 | 目标 | 测量方式 |
-|------|------|----------|
-| 单次 Query（本地 PostgreSQL） | < 5ms | benchmark test |
-| 事务（5 条 SQL） | < 10ms | benchmark test |
-| 连接池获取连接 | < 1ms | benchmark test |
-| 常驻内存 | < 10MB | profiling |
-| 连接池空闲连接 | ≤ max_conns | 配置约束 |
+| 操作                          | 目标        | 测量方式       |
+| ----------------------------- | ----------- | -------------- |
+| 单次 Query（本地 PostgreSQL） | < 5ms       | benchmark test |
+| 事务（5 条 SQL）              | < 10ms      | benchmark test |
+| 连接池获取连接                | < 1ms       | benchmark test |
+| 常驻内存                      | < 10MB      | profiling      |
+| 连接池空闲连接                | ≤ max_conns | 配置约束       |
 
 ---
 
 ## 18. Observability
 
-| 类型 | 名称 | 说明 |
-|------|------|------|
-| metric | `postgresx.query.duration` | histogram，查询耗时 |
-| metric | `postgresx.query.errors` | counter，查询失败次数 |
-| metric | `postgresx.query.rows` | histogram，查询返回行数 |
-| metric | `postgresx.exec.duration` | histogram，执行耗时 |
-| metric | `postgresx.exec.rows_affected` | histogram，影响行数 |
-| metric | `postgresx.tx.duration` | histogram，事务耗时 |
-| metric | `postgresx.tx.committed` | counter，事务提交次数 |
-| metric | `postgresx.tx.rollbacked` | counter，事务回滚次数 |
-| metric | `postgresx.pool.size` | gauge，连接池大小 |
-| metric | `postgresx.pool.idle` | gauge，空闲连接数 |
-| metric | `postgresx.pool.in_use` | gauge，使用中连接数 |
-| metric | `postgresx.migration.applied` | counter，已应用迁移数 |
-| log | `postgresx.connected` | info，连接成功 |
-| log | `postgresx.disconnected` | warn，连接断开 |
-| log | `postgresx.slow_query` | warn，慢查询（超过阈值） |
-| log | `postgresx.migration.applied` | info，迁移已应用，含版本号 |
-| log | `postgresx.tx.rollbacked` | warn，事务回滚，含错误原因 |
-| span | `postgresx.query` | 查询 span，含 SQL 和参数（脱敏） |
+| 类型   | 名称                           | 说明                             |
+| ------ | ------------------------------ | -------------------------------- |
+| metric | `postgresx.query.duration`     | histogram，查询耗时              |
+| metric | `postgresx.query.errors`       | counter，查询失败次数            |
+| metric | `postgresx.query.rows`         | histogram，查询返回行数          |
+| metric | `postgresx.exec.duration`      | histogram，执行耗时              |
+| metric | `postgresx.exec.rows_affected` | histogram，影响行数              |
+| metric | `postgresx.tx.duration`        | histogram，事务耗时              |
+| metric | `postgresx.tx.committed`       | counter，事务提交次数            |
+| metric | `postgresx.tx.rollbacked`      | counter，事务回滚次数            |
+| metric | `postgresx.pool.size`          | gauge，连接池大小                |
+| metric | `postgresx.pool.idle`          | gauge，空闲连接数                |
+| metric | `postgresx.pool.in_use`        | gauge，使用中连接数              |
+| metric | `postgresx.migration.applied`  | counter，已应用迁移数            |
+| log    | `postgresx.connected`          | info，连接成功                   |
+| log    | `postgresx.disconnected`       | warn，连接断开                   |
+| log    | `postgresx.slow_query`         | warn，慢查询（超过阈值）         |
+| log    | `postgresx.migration.applied`  | info，迁移已应用，含版本号       |
+| log    | `postgresx.tx.rollbacked`      | warn，事务回滚，含错误原因       |
+| span   | `postgresx.query`              | 查询 span，含 SQL 和参数（脱敏） |
 
 ---
 
 ## 19. Security
 
-| 要求 | 实现方式 |
-|------|----------|
-| 参数化查询 | 所有查询使用 `$1, $2, ...` 占位符，禁止字符串拼接 |
-| DSN 不硬编码 | 通过环境变量或 secret manager 注入 |
-| DSN 不写日志 | 日志中对密码字段脱敏 |
-| SQL 参数不写日志 | 日志中不包含查询参数值（防泄露敏感数据） |
-| 慢查询日志 | 只记录 SQL 模板，不记录参数值 |
-| 连接加密 | 支持 SSL/TLS 连接（通过 DSN 参数） |
+| 要求             | 实现方式                                          |
+| ---------------- | ------------------------------------------------- |
+| 参数化查询       | 所有查询使用 `$1, $2, ...` 占位符，禁止字符串拼接 |
+| DSN 不硬编码     | 通过环境变量或 secret manager 注入                |
+| DSN 不写日志     | 日志中对密码字段脱敏                              |
+| SQL 参数不写日志 | 日志中不包含查询参数值（防泄露敏感数据）          |
+| 慢查询日志       | 只记录 SQL 模板，不记录参数值                     |
+| 连接加密         | 支持 SSL/TLS 连接（通过 DSN 参数）                |
 
 ---
 
@@ -541,37 +541,37 @@ Then 返回 healthy；连接失败时返回 unhealthy
 
 ### 20.1 通用 Gate
 
-| Gate | 命令 | 阻塞条件 |
-|------|------|----------|
-| 编译 | `go build ./...` | 编译失败 |
-| 测试 | `go test ./... -race -count=1` | 任何测试失败或 data race |
-| 覆盖率 | `mkdir -p .coverage && go test ./... -coverprofile=.coverage/cover.out && go tool cover -func=.coverage/cover.out` | 总覆盖率 < 80% |
-| vet | `go vet ./...` | 任何 vet 错误 |
-| lint | `golangci-lint run` | 任何 lint 错误 |
-| 依赖检查 | `go mod tidy && git diff --exit-code go.mod go.sum` | go.mod 不整洁 |
-| Secret 扫描 | `gitleaks detect --no-git` | 泄露 secret |
-| Benchmark | `go test -bench=. -benchmem -count=3 ./...` | 结果附在 PR comment |
+| Gate        | 命令                                                                                                               | 阻塞条件                 |
+| ----------- | ------------------------------------------------------------------------------------------------------------------ | ------------------------ |
+| 编译        | `go build ./...`                                                                                                   | 编译失败                 |
+| 测试        | `go test ./... -race -count=1`                                                                                     | 任何测试失败或 data race |
+| 覆盖率      | `mkdir -p .coverage && go test ./... -coverprofile=.coverage/cover.out && go tool cover -func=.coverage/cover.out` | 总覆盖率 < 80%           |
+| vet         | `go vet ./...`                                                                                                     | 任何 vet 错误            |
+| lint        | `golangci-lint run`                                                                                                | 任何 lint 错误           |
+| 依赖检查    | `go mod tidy && git diff --exit-code go.mod go.sum`                                                                | go.mod 不整洁            |
+| Secret 扫描 | `gitleaks detect --no-git`                                                                                         | 泄露 secret              |
+| Benchmark   | `go test -bench=. -benchmem -count=3 ./...`                                                                        | 结果附在 PR comment      |
 
 ### 20.2 postgresx 专属 Gate
 
-| Gate | 命令 | 阻塞条件 |
-|------|------|----------|
-| 集成测试 | `go test -tags=integration ./...` | PostgreSQL 不可达时 skip，不阻塞 |
-| SQL 注入检查 | `grep -rn 'fmt.Sprintf.*SQL\|Sprintf.*SELECT\|Sprintf.*INSERT' --include="*.go" . \| grep -v _test.go` | 发现字符串拼接 SQL |
+| Gate         | 命令                              | 阻塞条件                         |                                       |                   |                    |
+| ------------ | --------------------------------- | -------------------------------- |                                       |                   |                    |
+| 集成测试     | `go test -tags=integration ./...` | PostgreSQL 不可达时 skip，不阻塞 |                                       |                   |                    |
+| SQL 注入检查 | `grep -rn 'fmt.Sprintf.*SQL\      | Sprintf.*SELECT\                 | Sprintf.*INSERT' --include="*.go" . \ | grep -v _test.go` | 发现字符串拼接 SQL |
 
 ---
 
 ## 21. Upgrade Compatibility
 
-| 变更类型 | 版本升级 |
-|----------|----------|
-| Client 接口新增方法 | **minor**（实现需跟上） |
-| Client 接口删除/修改方法 | **major** |
-| Tx 接口变更 | **major** |
-| Rows / Row / Result 接口变更 | **major** |
-| Migration 结构体变更 | **minor**（新增字段带默认值） |
-| Option 新增字段 | minor（带默认值） |
-| 默认连接池参数变更 | **minor**（注意行为变化） |
+| 变更类型                     | 版本升级                      |
+| ---------------------------- | ----------------------------- |
+| Client 接口新增方法          | **minor**（实现需跟上）       |
+| Client 接口删除/修改方法     | **major**                     |
+| Tx 接口变更                  | **major**                     |
+| Rows / Row / Result 接口变更 | **major**                     |
+| Migration 结构体变更         | **minor**（新增字段带默认值） |
+| Option 新增字段              | minor（带默认值）             |
+| 默认连接池参数变更           | **minor**（注意行为变化）     |
 
 ---
 

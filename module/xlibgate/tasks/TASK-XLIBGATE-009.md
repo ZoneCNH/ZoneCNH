@@ -43,13 +43,13 @@ status: pending
 
 ## Requirements Covered
 
-| Requirement | Description | Acceptance Criteria |
-|---|---|---|
-| FR-007 | l2 validate-manifest：校验 .agent/l2-capabilities.yaml | AC-010 |
-| FR-008 | l2 plan：从能力清单和 registry 生成 test-plan.json | AC-011 |
-| FR-009 | l2 check-contracts：验证契约测试覆盖 | AC-012 |
-| FR-010 | l2 check-evidence：验证 L2 evidence 文件存在 | AC-013 |
-| FR-011 | l2 release-check：完整 L2 发布就绪判定 | AC-014 |
+| Requirement | Description                                            | Acceptance Criteria |
+| ----------- | ------------------------------------------------------ | ------------------- |
+| FR-007      | l2 validate-manifest：校验 .agent/l2-capabilities.yaml | AC-010              |
+| FR-008      | l2 plan：从能力清单和 registry 生成 test-plan.json     | AC-011              |
+| FR-009      | l2 check-contracts：验证契约测试覆盖                   | AC-012              |
+| FR-010      | l2 check-evidence：验证 L2 evidence 文件存在           | AC-013              |
+| FR-011      | l2 release-check：完整 L2 发布就绪判定                 | AC-014              |
 
 ## Non-scope
 
@@ -61,13 +61,13 @@ status: pending
 
 ## Test Plan
 
-| Test Case | Type | Description |
-|---|---|---|
-| TC-009 | Unit | manifest 有效→输出摘要 exit 0；Missing/YAML 解析失败→exit 1 |
-| TC-010 | Unit | registry 全覆盖→生成 test-plan.json exit 0；缺失能力→exit 1 |
-| TC-011 | Unit | 全部契约测试通过→输出计数 exit 0；缺失/失败→exit 1 |
-| TC-012 | Unit | 全部 evidence 存在→输出计数 exit 0；缺失→exit 1 |
-| TC-013 | Unit | 全部门禁通过且评分≥80→status=pass exit 0；硬失败>0→fail exit 1 |
+| Test Case | Type | Description                                                    |
+| --------- | ---- | -------------------------------------------------------------- |
+| TC-009    | Unit | manifest 有效→输出摘要 exit 0；Missing/YAML 解析失败→exit 1    |
+| TC-010    | Unit | registry 全覆盖→生成 test-plan.json exit 0；缺失能力→exit 1    |
+| TC-011    | Unit | 全部契约测试通过→输出计数 exit 0；缺失/失败→exit 1             |
+| TC-012    | Unit | 全部 evidence 存在→输出计数 exit 0；缺失→exit 1                |
+| TC-013    | Unit | 全部门禁通过且评分≥80→status=pass exit 0；硬失败>0→fail exit 1 |
 
 ## Implementation Notes
 

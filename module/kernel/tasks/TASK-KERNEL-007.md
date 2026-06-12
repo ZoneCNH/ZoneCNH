@@ -42,8 +42,8 @@ status: pending
 > Spec TC: TC-017
 
 | Requirement | Description |
-|---|---|
-| FR-009 | 版本信息 |
+| ----------- | ----------- |
+| FR-009      | 版本信息    |
 
 ## Non-scope
 
@@ -52,9 +52,9 @@ status: pending
 
 ## Test Plan
 
-| TC | Type | Description |
-|----|------|-------------|
-| TC-017 | Unit | Compatibility：模块/版本匹配正确 |
+| TC     | Type   | Description                      |
+| ------ | ------ | -------------------------------- |
+| TC-017 | Unit   | Compatibility：模块/版本匹配正确 |
 
 ## Implementation Notes
 

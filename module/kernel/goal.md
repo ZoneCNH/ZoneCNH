@@ -1,14 +1,14 @@
 # kernel 发布版本 1.0 Goal 定位与实现标准
 
-| 字段 | 内容 |
-| --- | --- |
-| 模块名 | `kernel` |
-| 发布版本 | 1.0.0 |
-| 所属层级 | L0 原语层 / 最小稳定核心 |
-| 稳定级别 | Public API Stable；SPI Stable；Internal 可演进 |
-| 文档状态 | 1.0 发布基线文档 |
-| 发布日期基准 | 2026-06-09 |
-| 对齐 SPEC | [SPEC.md](./SPEC.md) v2.0.0 |
+| 字段         | 内容                                           |
+| ------------ | ---------------------------------------------- |
+| 模块名       | `kernel`                                       |
+| 发布版本     | 1.0.0                                          |
+| 所属层级     | L0 原语层 / 最小稳定核心                       |
+| 稳定级别     | Public API Stable；SPI Stable；Internal 可演进 |
+| 文档状态     | 1.0 发布基线文档                               |
+| 发布日期基准 | 2026-06-09                                     |
+| 对齐 SPEC    | [SPEC.md](./SPEC.md) v2.0.0                    |
 
 ## 术语约定
 
@@ -68,44 +68,44 @@
 
 ### 量化目标
 
-| 指标 | 基线 | 目标值 | 验证方式 |
-|------|------|--------|----------|
-| 单元测试覆盖率 | 0% | ≥ 100% | `go tool cover` |
-| errx.NewError 构造 | — | < 100ns | Benchmark |
-| errx.IsKind 5 层链遍历 | — | < 1μs | Benchmark |
-| healthx.Aggregate 10 元素 | — | < 10μs | Benchmark |
-| retryx.Delay 计算 | — | < 100ns | Benchmark |
-| 常驻内存（全子包导入） | — | < 5MB | Profiling |
-| stdlib-only | — | 0 外部依赖 | `go list -deps` CI gate |
-| Public API 兼容性 | — | 1.x 内零 breaking change | API snapshot CI gate |
+| 指标                      | 基线   | 目标值                   | 验证方式                |
+| ------------------------- | ------ | ------------------------ | ----------------------- |
+| 单元测试覆盖率            | 0%     | ≥ 100%                   | `go tool cover`         |
+| errx.NewError 构造        | —      | < 100ns                  | Benchmark               |
+| errx.IsKind 5 层链遍历    | —      | < 1μs                    | Benchmark               |
+| healthx.Aggregate 10 元素 | —      | < 10μs                   | Benchmark               |
+| retryx.Delay 计算         | —      | < 100ns                  | Benchmark               |
+| 常驻内存（全子包导入）    | —      | < 5MB                    | Profiling               |
+| stdlib-only               | —      | 0 外部依赖               | `go list -deps` CI gate |
+| Public API 兼容性         | —      | 1.x 内零 breaking change | API snapshot CI gate    |
 
 ## 3. 核心场景
 
-| 场景 | 说明 | 1.0 期望结果 |
-| --- | --- | --- |
-| 模块统一错误处理 | configx、redisx、kafkax 使用一致的 errx 错误模型 | 调用方可统一用 IsKind/AsError 分类处理错误 |
-| 测试可控时间 | testkitx 或业务测试需要固定时间 | 通过 timex.Clock 注入 FakeClock 得到可重复测试 |
-| 类型安全上下文传递 | 调用链需要传递 typed key/value | 通过 contextx.Key[T] 零分配、类型安全存取 |
-| 健康检查聚合 | x.go 需要聚合多个子模块健康状态 | 通过 healthx.Aggregate 得到 healthy/degraded/unhealthy |
-| 优雅停机 | x.go 需要管理多层资源的 LIFO 释放 | 通过 shutdownx.Manager 管理 Hook 注册和逆序执行 |
-| 并发控制 | 业务模块需要限制外部 API 并发调用 | 通过 syncx.SemaphoreLimiter 上下文感知限流 |
+| 场景               | 说明                                             | 1.0 期望结果                                           |
+| ------------------ | ------------------------------------------------ | ------------------------------------------------------ |
+| 模块统一错误处理   | configx、redisx、kafkax 使用一致的 errx 错误模型 | 调用方可统一用 IsKind/AsError 分类处理错误             |
+| 测试可控时间       | testkitx 或业务测试需要固定时间                  | 通过 timex.Clock 注入 FakeClock 得到可重复测试         |
+| 类型安全上下文传递 | 调用链需要传递 typed key/value                   | 通过 contextx.Key[T] 零分配、类型安全存取              |
+| 健康检查聚合       | x.go 需要聚合多个子模块健康状态                  | 通过 healthx.Aggregate 得到 healthy/degraded/unhealthy |
+| 优雅停机           | x.go 需要管理多层资源的 LIFO 释放                | 通过 shutdownx.Manager 管理 Hook 注册和逆序执行        |
+| 并发控制           | 业务模块需要限制外部 API 并发调用                | 通过 syncx.SemaphoreLimiter 上下文感知限流             |
 
 ## 4. 能力范围
 
-| 能力域 | 子包 | 1.0 必须具备的能力 | 验收方式 |
-| --- | --- | --- | --- |
-| 组件生命周期 | lifecycx | Component 接口、Manager 有序启动/逆序停止、失败回滚、幂等 Stop | 单元测试覆盖所有状态转换 |
-| 结构化错误 | errx | ErrorKind 12 分类、NewError/WrapError、IsKind 链遍历、AsError、With* 链式调用 | 错误链遍历测试通过 |
-| 健康检查 | healthx | HealthStatus 构造、IsHealthy 判断、Aggregate 聚合、Metadata 不可变 | 聚合逻辑测试通过 |
-| 可观测抽象 | obsx | Logger/Metrics/Tracer/Span 接口、Noop 实现、SecretString 脱敏、Sanitizer 接口 | Noop 无副作用测试通过 |
-| 重试策略原语 | retryx | RetryPolicy 校验、指数退避 Delay、Jitter、ShouldRetry 判断 | 退避计算测试通过 |
-| 优雅停机 | shutdownx | Hook 接口、Manager LIFO 顺序、HookFunc 适配器、NotifyContext | LIFO 顺序测试通过 |
-| 时钟抽象 | timex | Clock 接口、RealClock/FixedClock/FakeClock、FakeClock.Advance | 确定性测试通过 |
-| 前置条件校验 | validx | Precondition/Invariant/RequireNonEmpty | 返回值分类测试通过 |
-| 版本信息 | versionx | BuildInfo 构造、Compatibility 匹配逻辑 | 兼容性判断测试通过 |
-| 类型安全上下文 | contextx | Key[T] 唯一性、WithValue/Value 类型安全存取、DeadlineRemaining | Key 唯一性测试通过 |
-| 并发控制 | syncx | SemaphoreLimiter Acquire/Release、WorkerGroup 错误收集 | 并发安全测试通过 |
-| 契约测试辅助 | contracttest | AssertJSONFields、AssertErrorKind、AssertHealthStatus | 断言行为测试通过 |
+| 能力域         | 子包         | 1.0 必须具备的能力                                                            | 验收方式                 |
+| -------------- | ------------ | ----------------------------------------------------------------------------- | ------------------------ |
+| 组件生命周期   | lifecycx     | Component 接口、Manager 有序启动/逆序停止、失败回滚、幂等 Stop                | 单元测试覆盖所有状态转换 |
+| 结构化错误     | errx         | ErrorKind 12 分类、NewError/WrapError、IsKind 链遍历、AsError、With* 链式调用 | 错误链遍历测试通过       |
+| 健康检查       | healthx      | HealthStatus 构造、IsHealthy 判断、Aggregate 聚合、Metadata 不可变            | 聚合逻辑测试通过         |
+| 可观测抽象     | obsx         | Logger/Metrics/Tracer/Span 接口、Noop 实现、SecretString 脱敏、Sanitizer 接口 | Noop 无副作用测试通过    |
+| 重试策略原语   | retryx       | RetryPolicy 校验、指数退避 Delay、Jitter、ShouldRetry 判断                    | 退避计算测试通过         |
+| 优雅停机       | shutdownx    | Hook 接口、Manager LIFO 顺序、HookFunc 适配器、NotifyContext                  | LIFO 顺序测试通过        |
+| 时钟抽象       | timex        | Clock 接口、RealClock/FixedClock/FakeClock、FakeClock.Advance                 | 确定性测试通过           |
+| 前置条件校验   | validx       | Precondition/Invariant/RequireNonEmpty                                        | 返回值分类测试通过       |
+| 版本信息       | versionx     | BuildInfo 构造、Compatibility 匹配逻辑                                        | 兼容性判断测试通过       |
+| 类型安全上下文 | contextx     | Key[T] 唯一性、WithValue/Value 类型安全存取、DeadlineRemaining                | Key 唯一性测试通过       |
+| 并发控制       | syncx        | SemaphoreLimiter Acquire/Release、WorkerGroup 错误收集                        | 并发安全测试通过         |
+| 契约测试辅助   | contracttest | AssertJSONFields、AssertErrorKind、AssertHealthStatus                         | 断言行为测试通过         |
 
 ## 5. 职责边界
 
@@ -130,31 +130,31 @@
 
 ## 6. 依赖关系与分层约束
 
-| 依赖类型 | 约束 |
-| --- | --- |
-| 上游依赖 | 只允许依赖 Go 标准库（stdlib-only）。 |
-| 下游依赖 | configx、observex、resiliencx、schedulex、testkitx、各类存储扩展、业务模块均可按需 import kernel 单个子包。 |
-| 分层约束 | kernel 不得依赖任何 L1 模块或存储/消息扩展模块。 |
+| 依赖类型     | 约束                                                                                                                                          |
+| ------------ | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| 上游依赖     | 只允许依赖 Go 标准库（stdlib-only）。                                                                                                         |
+| 下游依赖     | configx、observex、resiliencx、schedulex、testkitx、各类存储扩展、业务模块均可按需 import kernel 单个子包。                                   |
+| 分层约束     | kernel 不得依赖任何 L1 模块或存储/消息扩展模块。                                                                                              |
 | 内部交叉引用 | 允许 kernel 内部子包间引用（如 healthx→timex、retryx→errx、validx→errx、contextx→timex、contracttest→errx+healthx），仅限于 kernel 仓库内部。 |
-| 契约依赖 | kernel 作为最底层原语层，豁免 contracts 登记要求；其公开 API 由 contracts 模块主动引用。 |
+| 契约依赖     | kernel 作为最底层原语层，豁免 contracts 登记要求；其公开 API 由 contracts 模块主动引用。                                                      |
 
 ## 7. 对外契约
 
 ### 7.1 公开能力面
 
-| 契约 | 定位 | 1.0 稳定承诺 |
-| --- | --- | --- |
-| errx.Error / ErrorKind | 统一错误模型 | 错误分类字段稳定，可追加 ErrorKind 值但不得改变既有含义 |
-| healthx.HealthStatus | 健康检查状态 | 字段语义稳定，可追加 Metadata key |
-| obsx.Logger / Metrics / Tracer / Span | 可观测接口 | 接口方法签名稳定 |
-| obsx.SecretString | 敏感数据脱敏 | String()/JSON() 始终返回 "***" |
-| timex.Clock | 可替换时钟抽象 | 接口稳定，默认实现可优化 |
-| retryx.RetryPolicy | 重试策略配置 | 字段语义稳定 |
-| contextx.Key[T] | 类型安全 context key | 接口稳定 |
-| lifecycx.Component / Manager | 组件生命周期 | 接口稳定 |
-| shutdownx.Hook / Manager | 优雅停机 | 接口稳定 |
-| syncx.Limiter / WorkerGroup | 并发控制 | 接口稳定 |
-| versionx.BuildInfo / Compatibility | 版本信息 | 字段语义稳定 |
+| 契约                                  | 定位                 | 1.0 稳定承诺                                            |
+| ------------------------------------- | -------------------- | ------------------------------------------------------- |
+| errx.Error / ErrorKind                | 统一错误模型         | 错误分类字段稳定，可追加 ErrorKind 值但不得改变既有含义 |
+| healthx.HealthStatus                  | 健康检查状态         | 字段语义稳定，可追加 Metadata key                       |
+| obsx.Logger / Metrics / Tracer / Span | 可观测接口           | 接口方法签名稳定                                        |
+| obsx.SecretString                     | 敏感数据脱敏         | String()/JSON() 始终返回 "***"                          |
+| timex.Clock                           | 可替换时钟抽象       | 接口稳定，默认实现可优化                                |
+| retryx.RetryPolicy                    | 重试策略配置         | 字段语义稳定                                            |
+| contextx.Key[T]                       | 类型安全 context key | 接口稳定                                                |
+| lifecycx.Component / Manager          | 组件生命周期         | 接口稳定                                                |
+| shutdownx.Hook / Manager              | 优雅停机             | 接口稳定                                                |
+| syncx.Limiter / WorkerGroup           | 并发控制             | 接口稳定                                                |
+| versionx.BuildInfo / Compatibility    | 版本信息             | 字段语义稳定                                            |
 
 ### 7.2 1.0 核心接口基线
 
@@ -216,13 +216,13 @@ shutdownx.Hook
 
 kernel 本身不需要配置。各子包通过构造函数参数或结构体字段接收配置：
 
-| 子包 | 配置方式 |
-|------|----------|
-| lifecycx | `NewManager(components...)` 构造函数参数 |
-| retryx | `RetryPolicy{MaxAttempts, BaseDelay, MaxDelay}` 结构体字段 |
-| shutdownx | `NewManager(hooks...)` 构造函数参数 |
-| syncx | `NewSemaphoreLimiter(n)` 构造函数参数 |
-| versionx | `NewBuildInfo(...)` 构造函数参数 |
+| 子包      | 配置方式                                                   |
+| --------- | ---------------------------------------------------------- |
+| lifecycx  | `NewManager(components...)` 构造函数参数                   |
+| retryx    | `RetryPolicy{MaxAttempts, BaseDelay, MaxDelay}` 结构体字段 |
+| shutdownx | `NewManager(hooks...)` 构造函数参数                        |
+| syncx     | `NewSemaphoreLimiter(n)` 构造函数参数                      |
+| versionx  | `NewBuildInfo(...)` 构造函数参数                           |
 
 ## 9. 可观测契约
 
@@ -243,20 +243,20 @@ kernel 本身不需要配置。各子包通过构造函数参数或结构体字�
 
 ## 10. 错误模型与失败策略
 
-| 错误分类 | ErrorKind | 典型原因 | 1.0 处理策略 |
-| --- | --- | --- | --- |
-| 参数非法 | validation | 参数为空、格式错误、范围非法 | 返回 `*Error{Kind: validation}` |
-| 配置错误 | config | 配置缺失或非法 | 返回 `*Error{Kind: config}` |
-| 连接失败 | connection | 网络不可达 | 返回 `*Error{Kind: connection, Retryable: true}` |
-| 服务不可用 | unavailable | 上游服务不可用 | 返回 `*Error{Kind: unavailable, Retryable: true}` |
-| 超时 | timeout | 操作超时 | 返回 `*Error{Kind: timeout}` |
-| 认证失败 | auth | 凭证无效 | 返回 `*Error{Kind: auth}` |
-| 并发冲突 | conflict | 乐观锁冲突 | 返回 `*Error{Kind: conflict, Retryable: true}` |
-| 限流 | rate_limit | 请求频率超限 | 返回 `*Error{Kind: rate_limit, Retryable: true}` |
-| 已取消 | canceled | context 取消 | 返回 `*Error{Kind: canceled}` |
-| 未找到 | not_found | 资源不存在 | 返回 `*Error{Kind: not_found}` |
-| 已存在 | already_exists | 资源重复创建 | 返回 `*Error{Kind: already_exists}` |
-| 内部错误 | internal | 不变量违反 | 返回 `*Error{Kind: internal, Severity: error}` |
+| 错误分类   | ErrorKind      | 典型原因                     | 1.0 处理策略                                      |
+| ---------- | -------------- | ---------------------------- | ------------------------------------------------- |
+| 参数非法   | validation     | 参数为空、格式错误、范围非法 | 返回 `*Error{Kind: validation}`                   |
+| 配置错误   | config         | 配置缺失或非法               | 返回 `*Error{Kind: config}`                       |
+| 连接失败   | connection     | 网络不可达                   | 返回 `*Error{Kind: connection, Retryable: true}`  |
+| 服务不可用 | unavailable    | 上游服务不可用               | 返回 `*Error{Kind: unavailable, Retryable: true}` |
+| 超时       | timeout        | 操作超时                     | 返回 `*Error{Kind: timeout}`                      |
+| 认证失败   | auth           | 凭证无效                     | 返回 `*Error{Kind: auth}`                         |
+| 并发冲突   | conflict       | 乐观锁冲突                   | 返回 `*Error{Kind: conflict, Retryable: true}`    |
+| 限流       | rate_limit     | 请求频率超限                 | 返回 `*Error{Kind: rate_limit, Retryable: true}`  |
+| 已取消     | canceled       | context 取消                 | 返回 `*Error{Kind: canceled}`                     |
+| 未找到     | not_found      | 资源不存在                   | 返回 `*Error{Kind: not_found}`                    |
+| 已存在     | already_exists | 资源重复创建                 | 返回 `*Error{Kind: already_exists}`               |
+| 内部错误   | internal       | 不变量违反                   | 返回 `*Error{Kind: internal, Severity: error}`    |
 
 ## 11. 安全、稳定性与兼容性要求
 
@@ -266,14 +266,14 @@ kernel 本身不需要配置。各子包通过构造函数参数或结构体字�
 
 ## 12. 测试证据要求
 
-| 测试类型 | 必须覆盖内容 | 发布门禁 |
-| --- | --- | --- |
-| 单元测试 | 每个子包的核心逻辑（构造、状态转换、边界场景） | MUST 通过，覆盖率 ≥ 100% |
-| Example 测试 | 每个子包有 example_test.go | MUST 通过，输出稳定 |
-| 并发测试 | syncx.SemaphoreLimiter、syncx.WorkerGroup 并发安全 | MUST 通过 `-race` |
-| 依赖检查 | stdlib-only gate | MUST 通过 `go list -deps` |
-| API 快照 | contracts/public_api/ 对比 | MUST 通过 |
-| Golden 行为 | contracts/golden_behavior_test.go | MUST 通过 |
+| 测试类型     | 必须覆盖内容                                       | 发布门禁                  |
+| ------------ | -------------------------------------------------- | ------------------------- |
+| 单元测试     | 每个子包的核心逻辑（构造、状态转换、边界场景）     | MUST 通过，覆盖率 ≥ 100%  |
+| Example 测试 | 每个子包有 example_test.go                         | MUST 通过，输出稳定       |
+| 并发测试     | syncx.SemaphoreLimiter、syncx.WorkerGroup 并发安全 | MUST 通过 `-race`         |
+| 依赖检查     | stdlib-only gate                                   | MUST 通过 `go list -deps` |
+| API 快照     | contracts/public_api/ 对比                         | MUST 通过                 |
+| Golden 行为  | contracts/golden_behavior_test.go                  | MUST 通过                 |
 
 ## 13. 1.0 发布验收清单
 

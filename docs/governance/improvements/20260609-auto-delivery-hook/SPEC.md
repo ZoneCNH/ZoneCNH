@@ -41,49 +41,49 @@ Status: Draft
 
 ## 7. 功能需求
 
-| 编号 | 需求 |
-|------|------|
-| FR-1 | Stop hook 能调用仓库内交付脚本 |
-| FR-2 | 脚本能识别 `task_complete` 或通过显式环境变量强制触发 |
-| FR-3 | 脚本能阻止 `main` 分支自动提交 |
-| FR-4 | 脚本能 stage、扫描、验证并生成 Lore 提交 |
-| FR-5 | 脚本能在 `main` 干净且同步时 fast-forward 合并 |
-| FR-6 | 脚本能在合并成功后清理 worktree 和分支 |
-| FR-7 | 脚本能把状态和日志写入非版本控制路径 |
-| FR-8 | 脚本能在 feature 分支工作区干净时重试合并已提交变更 |
+| 编号   | 需求                                                  |
+| ------ | ----------------------------------------------------- |
+| FR-1   | Stop hook 能调用仓库内交付脚本                        |
+| FR-2   | 脚本能识别 `task_complete` 或通过显式环境变量强制触发 |
+| FR-3   | 脚本能阻止 `main` 分支自动提交                        |
+| FR-4   | 脚本能 stage、扫描、验证并生成 Lore 提交              |
+| FR-5   | 脚本能在 `main` 干净且同步时 fast-forward 合并        |
+| FR-6   | 脚本能在合并成功后清理 worktree 和分支                |
+| FR-7   | 脚本能把状态和日志写入非版本控制路径                  |
+| FR-8   | 脚本能在 feature 分支工作区干净时重试合并已提交变更   |
 
 ## 8. 行为需求
 
-| 编号 | 行为 |
-|------|------|
-| BR-1 | 未检测到完成事件时跳过 |
-| BR-2 | 任何门禁失败时停止后续提交或合并 |
-| BR-3 | Hook 模式下所有结果都返回 `continue: true` |
-| BR-4 | dry-run 模式不得修改 index、提交或合并 |
-| BR-5 | clean feature 分支的重试合并仍必须执行 `main` 干净、同步和 fast-forward 门禁 |
+| 编号   | 行为                                                                         |
+| ------ | ---------------------------------------------------------------------------- |
+| BR-1   | 未检测到完成事件时跳过                                                       |
+| BR-2   | 任何门禁失败时停止后续提交或合并                                             |
+| BR-3   | Hook 模式下所有结果都返回 `continue: true`                                   |
+| BR-4   | dry-run 模式不得修改 index、提交或合并                                       |
+| BR-5   | clean feature 分支的重试合并仍必须执行 `main` 干净、同步和 fast-forward 门禁 |
 
 ## 9. 验收标准
 
-| 编号 | 验收标准 |
-|------|----------|
-| AC-1 | `AUTO_DELIVERY_FORCE=1 AUTO_DELIVERY_DRY_RUN=1 ... --hook` 能完成 dry-run |
-| AC-2 | `git diff --check` 通过 |
-| AC-3 | `python3 -m pytest scripts/tests` 通过 |
-| AC-4 | 当前 `main` 不干净或不同步时自动合并被阻断 |
-| AC-5 | 新文档明确说明第零条和第十四条约束 |
-| AC-6 | 工作区干净时可进入重试合并路径，dry-run 不执行真实合并 |
+| 编号   | 验收标准                                                                  |
+| ------ | ------------------------------------------------------------------------- |
+| AC-1   | `AUTO_DELIVERY_FORCE=1 AUTO_DELIVERY_DRY_RUN=1 ... --hook` 能完成 dry-run |
+| AC-2   | `git diff --check` 通过                                                   |
+| AC-3   | `python3 -m pytest scripts/tests` 通过                                    |
+| AC-4   | 当前 `main` 不干净或不同步时自动合并被阻断                                |
+| AC-5   | 新文档明确说明第零条和第十四条约束                                        |
+| AC-6   | 工作区干净时可进入重试合并路径，dry-run 不执行真实合并                    |
 
 ## 10. 追溯矩阵
 
-| FR | BR | AC |
-|----|----|----|
-| FR-1 | BR-1, BR-3 | AC-1 |
-| FR-2 | BR-1 | AC-1 |
-| FR-3 | BR-2 | AC-4 |
-| FR-4 | BR-2, BR-4 | AC-1, AC-2 |
-| FR-5 | BR-2 | AC-4 |
-| FR-6 | BR-2 | AC-4 |
-| FR-7 | BR-3 | AC-1 |
+| FR   | BR               | AC         |
+| ---- | ---------------- | ---------- |
+| FR-1 | BR-1, BR-3       | AC-1       |
+| FR-2 | BR-1             | AC-1       |
+| FR-3 | BR-2             | AC-4       |
+| FR-4 | BR-2, BR-4       | AC-1, AC-2 |
+| FR-5 | BR-2             | AC-4       |
+| FR-6 | BR-2             | AC-4       |
+| FR-7 | BR-3             | AC-1       |
 | FR-8 | BR-2, BR-4, BR-5 | AC-4, AC-6 |
 
 ## 11. 设计
@@ -125,16 +125,16 @@ Status: Draft
 
 ## 18. 失败模式
 
-| 失败 | 处理 |
-|------|------|
-| 未完成事件 | skip |
-| 当前为 `main` | block |
-| 敏感内容 | block |
-| 验证失败 | block |
-| `main` 不干净 | block |
-| `main` 未同步 | block |
-| 非 fast-forward | block |
-| clean feature 分支重试合并但 `main` 未就绪 | block |
+| 失败                                       | 处理   |
+| ------------------------------------------ | ------ |
+| 未完成事件                                 | skip   |
+| 当前为 `main`                              | block  |
+| 敏感内容                                   | block  |
+| 验证失败                                   | block  |
+| `main` 不干净                              | block  |
+| `main` 未同步                              | block  |
+| 非 fast-forward                            | block  |
+| clean feature 分支重试合并但 `main` 未就绪 | block  |
 
 ## 19. 测试计划
 

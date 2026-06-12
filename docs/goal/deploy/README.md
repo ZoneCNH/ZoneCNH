@@ -98,25 +98,25 @@ jobs:
 
 以下文件属于 ZoneCNH 主仓库专属，**不需要**复制到其他仓库：
 
-| 文件 | 原因 |
-|------|------|
-| `docs/goal/00-authority-map.md` | 权威边界定义，仅主仓库需要 |
-| `docs/goal/03-pipeline.md` | 管线 SSOT，其他仓库引用即可 |
-| `docs/goal/04-gates.md` | Gate SSOT，其他仓库引用即可 |
-| `schema/goal.schema.yaml` | Canonical schema，仅主仓库维护 |
-| `schema/state-dictionary.yaml` | 状态字典，仅主仓库维护 |
-| `tools/self-test.sh` | 工具链自测，仅主仓库需要 |
-| `tools/goal-validate.py` | 全量控制面验证，按需复制 |
-| `tools/matrix-gen.py` | 按需复制（有 Spec/Tasks 时） |
-| 全部 `docs/goal/1*.md ~ 2*.md` | 方法论规范，引用主仓库文档即可 |
+| 文件                            | 原因                           |
+| ------------------------------- | ------------------------------ |
+| `docs/goal/00-authority-map.md` | 权威边界定义，仅主仓库需要     |
+| `docs/goal/03-pipeline.md`      | 管线 SSOT，其他仓库引用即可    |
+| `docs/goal/04-gates.md`         | Gate SSOT，其他仓库引用即可    |
+| `schema/goal.schema.yaml`       | Canonical schema，仅主仓库维护 |
+| `schema/state-dictionary.yaml`  | 状态字典，仅主仓库维护         |
+| `tools/self-test.sh`            | 工具链自测，仅主仓库需要       |
+| `tools/goal-validate.py`        | 全量控制面验证，按需复制       |
+| `tools/matrix-gen.py`           | 按需复制（有 Spec/Tasks 时）   |
+| 全部 `docs/goal/1*.md ~ 2*.md`  | 方法论规范，引用主仓库文档即可 |
 
 ## 5. 三种采纳级别
 
-| 级别 | 适用场景 | 复制内容 | CI 强度 |
-|------|----------|----------|---------|
-| **Lint Only** | 想用 Goal 风格但不需要全流程 | `lint-goal.sh` + `rule-drift-check.py` | `preflight` only |
-| **Standard** | 有 Goal/Spec/Tasks 制品 | 上述 + `goal-workflow.sh` + `.config/goal/` 目录 | `validate`（PR 阻断） |
-| **Full** | 需要 Gate + Evidence + Release | 上述 + `goal-validate.py` + `matrix-gen.py` + `gate-check.sh` | `gate`（Release 前阻断） |
+| 级别          | 适用场景                       | 复制内容                                                      | CI 强度                  |
+| ------------- | ------------------------------ | ------------------------------------------------------------- | ------------------------ |
+| **Lint Only** | 想用 Goal 风格但不需要全流程   | `lint-goal.sh` + `rule-drift-check.py`                        | `preflight` only         |
+| **Standard**  | 有 Goal/Spec/Tasks 制品        | 上述 + `goal-workflow.sh` + `.config/goal/` 目录              | `validate`（PR 阻断）    |
+| **Full**      | 需要 Gate + Evidence + Release | 上述 + `goal-validate.py` + `matrix-gen.py` + `gate-check.sh` | `gate`（Release 前阻断） |
 
 ### 升级路径
 

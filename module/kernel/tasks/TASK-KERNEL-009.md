@@ -46,8 +46,8 @@ status: pending
 > Spec TC: TC-006
 
 | Requirement | Description |
-|---|---|
-| FR-005 | 重试策略 |
+| ----------- | ----------- |
+| FR-005      | 重试策略    |
 
 ## Internal Dependencies
 
@@ -60,9 +60,9 @@ status: pending
 
 ## Test Plan
 
-| TC | Type | Description |
-|----|------|-------------|
-| TC-006 | Unit | 指数退避：Delay(3)≈BaseDelay×2² |
+| TC     | Type   | Description                     |
+| ------ | ------ | ------------------------------- |
+| TC-006 | Unit   | 指数退避：Delay(3)≈BaseDelay×2² |
 
 ## Implementation Notes
 

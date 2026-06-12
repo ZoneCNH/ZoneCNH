@@ -58,18 +58,18 @@ release manifest
 
 #### 应冻结的核心契约
 
-| 契约 | 最小要求 |
-|---|---|
-| `errx` | `Kind`、`Severity`、`Retryable`、`Temporary`、`Operation`、`Cause`、JSON 输出 |
-| `timex` | `Clock` interface、real clock、fixed clock、manual/advance clock |
-| `contextx` | typed key，禁止 string key 污染 |
-| `lifecycx` | component start/stop 顺序、失败回滚、状态机 |
-| `shutdownx` | LIFO hooks、signal handling、timeout shutdown |
-| `healthx` | `Healthy/Degraded/Unhealthy/Starting/ShuttingDown` 状态 |
-| `retryx` | backoff、jitter、retry marker，但不做完整 resilience runtime |
-| `validx` | precondition、invariant、struct validation helper |
-| `syncx` | worker group、limiter、safe goroutine primitive |
-| `versionx` | module/build/version compatibility |
+| 契约        | 最小要求                                                                      |
+| ----------- | ----------------------------------------------------------------------------- |
+| `errx`      | `Kind`、`Severity`、`Retryable`、`Temporary`、`Operation`、`Cause`、JSON 输出 |
+| `timex`     | `Clock` interface、real clock、fixed clock、manual/advance clock              |
+| `contextx`  | typed key，禁止 string key 污染                                               |
+| `lifecycx`  | component start/stop 顺序、失败回滚、状态机                                   |
+| `shutdownx` | LIFO hooks、signal handling、timeout shutdown                                 |
+| `healthx`   | `Healthy/Degraded/Unhealthy/Starting/ShuttingDown` 状态                       |
+| `retryx`    | backoff、jitter、retry marker，但不做完整 resilience runtime                  |
+| `validx`    | precondition、invariant、struct validation helper                             |
+| `syncx`     | worker group、limiter、safe goroutine primitive                               |
+| `versionx`  | module/build/version compatibility                                            |
 
 #### 关键边界 — 拒绝这些 PR
 
@@ -131,16 +131,16 @@ release manifest
 
 #### 应补的核心能力
 
-| 能力 | 为什么重要 |
-|---|---|
-| `Provenance` | 每个 key 记录 source、priority、override 链路 |
-| `EffectiveConfigHash` | release/runtime evidence 可复现 |
-| `SanitizedManifest` | 安全进入日志、health、CI artifact |
-| `Schema` | 机器可读配置契约，便于 review 和 drift check |
-| `StrictDecode` | 未识别字段、重复字段、类型错误可 fail-fast |
-| `SecretPolicy` | 统一 secret key 识别规则 |
-| `ValidationReport` | 不只返回 error，也返回字段级证据 |
-| `NoGlobalStateGate` | 防止后续引入进程级 config singleton |
+| 能力                  | 为什么重要                                    |
+| --------------------- | --------------------------------------------- |
+| `Provenance`          | 每个 key 记录 source、priority、override 链路 |
+| `EffectiveConfigHash` | release/runtime evidence 可复现               |
+| `SanitizedManifest`   | 安全进入日志、health、CI artifact             |
+| `Schema`              | 机器可读配置契约，便于 review 和 drift check  |
+| `StrictDecode`        | 未识别字段、重复字段、类型错误可 fail-fast    |
+| `SecretPolicy`        | 统一 secret key 识别规则                      |
+| `ValidationReport`    | 不只返回 error，也返回字段级证据              |
+| `NoGlobalStateGate`   | 防止后续引入进程级 config singleton           |
 
 #### 建议 API 形态
 
@@ -186,18 +186,18 @@ func SchemaOf[T any]() Schema
 
 不是某个 logger 实现，而是**观测语义标准**：
 
-| 契约 | 说明 |
-|---|---|
-| `Logger` | structured log interface |
-| `Metrics` | counter/gauge/histogram/timer |
-| `Tracer` | span lifecycle |
-| `Field` | 统一字段模型 |
-| `Redactor` | secret/PII 脱敏 |
-| `LabelPolicy` | metrics label 白名单、低基数、非敏感 |
-| `ContextFields` | trace id、request id、correlation id |
-| `HealthJSON` | health 输出 schema |
-| `MemoryRecorder` | 测试与 smoke 的 canonical recorder |
-| `Noop*` | 未注入时安全运行 |
+| 契约             | 说明                                 |
+| ---------------- | ------------------------------------ |
+| `Logger`         | structured log interface             |
+| `Metrics`        | counter/gauge/histogram/timer        |
+| `Tracer`         | span lifecycle                       |
+| `Field`          | 统一字段模型                         |
+| `Redactor`       | secret/PII 脱敏                      |
+| `LabelPolicy`    | metrics label 白名单、低基数、非敏感 |
+| `ContextFields`  | trace id、request id、correlation id |
+| `HealthJSON`     | health 输出 schema                   |
+| `MemoryRecorder` | 测试与 smoke 的 canonical recorder   |
+| `Noop*`          | 未注入时安全运行                     |
 
 #### 必须补的 gate
 
@@ -388,17 +388,17 @@ type Event struct {
 
 #### 必备策略
 
-| 策略 | 最小行为 |
-|---|---|
-| Timeout | 单次操作 deadline |
-| Retry | max attempts、max elapsed、backoff、jitter |
-| Circuit breaker | closed/open/half-open |
-| Bulkhead | 并发隔离、队列上限、快速拒绝 |
-| Rate limit | QPS、burst、按 key 限流 |
-| Fallback | 显式降级函数 |
-| Budget | 剩余 deadline 传播 |
-| Classifier | 错误分类：retryable / non-retryable / fatal |
-| Idempotency guard | 非幂等操作默认禁止自动 retry |
+| 策略              | 最小行为                                    |
+| ----------------- | ------------------------------------------- |
+| Timeout           | 单次操作 deadline                           |
+| Retry             | max attempts、max elapsed、backoff、jitter  |
+| Circuit breaker   | closed/open/half-open                       |
+| Bulkhead          | 并发隔离、队列上限、快速拒绝                |
+| Rate limit        | QPS、burst、按 key 限流                     |
+| Fallback          | 显式降级函数                                |
+| Budget            | 剩余 deadline 传播                          |
+| Classifier        | 错误分类：retryable / non-retryable / fatal |
+| Idempotency guard | 非幂等操作默认禁止自动 retry                |
 
 #### 和交易风控严格分开
 
@@ -530,15 +530,15 @@ type EventSink interface {
 
 #### 必须补齐的测试
 
-| 测试 | 为什么 |
-|---|---|
-| trigger determinism | 相同 clock、相同 trigger 必须得到相同 next time |
-| timezone/DST golden | DailyAt/Cron 避免时区、夏令时漂移 |
-| misfire contract | skip/run_once/catch_up 行为固定 |
-| overlap contract | skip/queue_one/allow 行为固定 |
-| lock contract | Redis/Postgres adapter 未来必须满足同一个 lease 语义 |
-| leak test | Scheduler shutdown 后不能泄漏 goroutine |
-| race test | AddJob/Start/Shutdown/Snapshot 并发安全 |
+| 测试                | 为什么                                               |
+| ------------------- | ---------------------------------------------------- |
+| trigger determinism | 相同 clock、相同 trigger 必须得到相同 next time      |
+| timezone/DST golden | DailyAt/Cron 避免时区、夏令时漂移                    |
+| misfire contract    | skip/run_once/catch_up 行为固定                      |
+| overlap contract    | skip/queue_one/allow 行为固定                        |
+| lock contract       | Redis/Postgres adapter 未来必须满足同一个 lease 语义 |
+| leak test           | Scheduler shutdown 后不能泄漏 goroutine              |
+| race test           | AddJob/Start/Shutdown/Snapshot 并发安全              |
 
 #### 和 resiliencx 的关系
 
@@ -686,15 +686,15 @@ release manifest 生成
 
 ## 5. 不建议现在补的模块
 
-| 模块 | 当前建议 | 原因 |
-|---|---|---|
-| `appx/runx` | 暂不建 | 容易和 `x.go` composition root 重叠 |
-| `ratelimitx` | 不单独建 | 先放进 `resiliencx` |
-| `lockx` | 暂不建 | `schedulex` 只要 `Locker` interface，Redis/Postgres 实现放 adapter |
-| `eventx` | 暂缓 | 先修真正的 `contracts`，不要重复定义 event envelope |
-| `httpx` | 后期 | 外部 API SDK 需要，但不是 Foundation v1 必需 |
-| `cachex` | 后期 | 容易和 redisx/memcachex 重叠 |
-| `secrectx` | 中期 | 重要，但不要先污染 `configx` |
+| 模块         | 当前建议 | 原因                                                               |
+| ------------ | -------- | ------------------------------------------------------------------ |
+| `appx/runx`  | 暂不建   | 容易和 `x.go` composition root 重叠                                |
+| `ratelimitx` | 不单独建 | 先放进 `resiliencx`                                                |
+| `lockx`      | 暂不建   | `schedulex` 只要 `Locker` interface，Redis/Postgres 实现放 adapter |
+| `eventx`     | 暂缓     | 先修真正的 `contracts`，不要重复定义 event envelope                |
+| `httpx`      | 后期     | 外部 API SDK 需要，但不是 Foundation v1 必需                       |
+| `cachex`     | 后期     | 容易和 redisx/memcachex 重叠                                       |
+| `secrectx`   | 中期     | 重要，但不要先污染 `configx`                                       |
 
 ---
 
@@ -972,8 +972,8 @@ xlib-standard/xlibgate 负责标准和机器执法
 
 ## 附录：文件清单
 
-| 文件 | 用途 |
-|---|---|
-| `module/foundation-modules.md` | 定位、边界、故障模式、性能预算、配置依赖、可观测输出、安全、升级兼容 |
-| `module/FOUNDATION-SPEC.md` | 契约签名、目录形态、CI gate、测试矩阵、发布 DoD、Issue/PR 模板 |
-| `module/FOUNDATION-V1.md`（本文） | v1 验收目标、模块身份、一致性修复、路线图、issue 拆分、最小闭环 |
+| 文件                              | 用途                                                                 |
+| --------------------------------- | -------------------------------------------------------------------- |
+| `module/foundation-modules.md`    | 定位、边界、故障模式、性能预算、配置依赖、可观测输出、安全、升级兼容 |
+| `module/FOUNDATION-SPEC.md`       | 契约签名、目录形态、CI gate、测试矩阵、发布 DoD、Issue/PR 模板       |
+| `module/FOUNDATION-V1.md`（本文） | v1 验收目标、模块身份、一致性修复、路线图、issue 拆分、最小闭环      |

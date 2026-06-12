@@ -21,9 +21,9 @@
 
 ### 1.1 变更历史
 
-| 日期 | 版本 | 变更内容 | 作者 |
-|------|------|----------|------|
-| 2026-06-07 | v1.0.0 | 初始版本 | ZoneCNH |
+| 日期       | 版本   | 变更内容   | 作者    |
+| ---------- | ------ | ---------- | ------- |
+| 2026-06-07 | v1.0.0 | 初始版本   | ZoneCNH |
 
 ## 2. Summary
 
@@ -68,13 +68,13 @@
 
 ## 6. Consumers
 
-| 消费者 | 使用方式 |
-|--------|----------|
-| `market-data` | 写入行情快照、K 线数据 |
-| `factor-engine` | 写入因子值、查询历史因子 |
-| `signal-engine` | 写入信号日志 |
-| `x.go`（组合根） | 创建 Client 实例，注入到数据域模块 |
-| 运维/监控 | 通过 Health() 检查 TDengine 连接状态 |
+| 消费者           | 使用方式                             |
+| ---------------- | ------------------------------------ |
+| `market-data`    | 写入行情快照、K 线数据               |
+| `factor-engine`  | 写入因子值、查询历史因子             |
+| `signal-engine`  | 写入信号日志                         |
+| `x.go`（组合根） | 创建 Client 实例，注入到数据域模块   |
+| 运维/监控        | 通过 Health() 检查 TDengine 连接状态 |
 
 ---
 
@@ -170,18 +170,18 @@ THEN 释放底层资源，返回 nil
 
 ## 8. Business Rules
 
-| 编号 | 规则 |
-|------|------|
-| BR-001 | 连接池大小默认 10，最大 100，通过 Config 配置 |
-| BR-002 | 批量写入使用 STMT 模式，不使用拼接 SQL |
-| BR-003 | Exec / Query 的 args 使用参数化绑定，禁止 SQL 拼接 |
+| 编号   | 规则                                                                |
+| ------ | ------------------------------------------------------------------- |
+| BR-001 | 连接池大小默认 10，最大 100，通过 Config 配置                       |
+| BR-002 | 批量写入使用 STMT 模式，不使用拼接 SQL                              |
+| BR-003 | Exec / Query 的 args 使用参数化绑定，禁止 SQL 拼接                  |
 | BR-004 | 连接断开后自动重试 3 次（指数退避），超过后返回 `ErrConnectionLost` |
-| BR-005 | Health() 必须是幂等的、无副作用的 |
-| BR-006 | 所有操作必须接受 `context.Context`，支持取消和超时 |
-| BR-007 | 错误消息格式：`"taosx: <operation>: <detail>"` |
-| BR-008 | 可观测指标必须包含 table 标签（写入操作）或 sql 标签（查询操作） |
-| BR-009 | Close() 必须是幂等的，多次调用不 panic |
-| BR-010 | InsertBatch 不自动建表，表不存在时返回明确错误 |
+| BR-005 | Health() 必须是幂等的、无副作用的                                   |
+| BR-006 | 所有操作必须接受 `context.Context`，支持取消和超时                  |
+| BR-007 | 错误消息格式：`"taosx: <operation>: <detail>"`                      |
+| BR-008 | 可观测指标必须包含 table 标签（写入操作）或 sql 标签（查询操作）    |
+| BR-009 | Close() 必须是幂等的，多次调用不 panic                              |
+| BR-010 | InsertBatch 不自动建表，表不存在时返回明确错误                      |
 
 ---
 
@@ -305,15 +305,15 @@ taosx:
 
 ## 12. Error Handling
 
-| 错误 | 调用方处理 |
-|------|-----------|
-| `ErrInvalidConfig` | 检查 DSN 和配置参数，修复后重试 |
-| `ErrConnectionLost` | 检查 TDengine 服务状态，等待后重试 |
-| `ErrTableNotFound` | 先建表再写入，不能重试 |
-| `ErrColumnCountMismatch` | 检查 Row 字段数与表列数是否匹配 |
-| `ErrPoolExhausted` | 增大 max_pool_size 或减少并发 |
-| `ErrBatchPartialFail` | 检查错误详情，重试失败的行 |
-| TDengine 原生错误 | 包装为 `taosx: <op>: <native_err>`，保留错误链 |
+| 错误                     | 调用方处理                                     |
+| ------------------------ | ---------------------------------------------- |
+| `ErrInvalidConfig`       | 检查 DSN 和配置参数，修复后重试                |
+| `ErrConnectionLost`      | 检查 TDengine 服务状态，等待后重试             |
+| `ErrTableNotFound`       | 先建表再写入，不能重试                         |
+| `ErrColumnCountMismatch` | 检查 Row 字段数与表列数是否匹配                |
+| `ErrPoolExhausted`       | 增大 max_pool_size 或减少并发                  |
+| `ErrBatchPartialFail`    | 检查错误详情，重试失败的行                     |
+| TDengine 原生错误        | 包装为 `taosx: <op>: <native_err>`，保留错误链 |
 
 **错误消息格式：** `"taosx: <operation>: <detail>"`
 **错误包装：** 使用 `%w` 保留底层错误链
@@ -322,18 +322,18 @@ taosx:
 
 ## 13. Edge Cases
 
-| 场景 | 预期行为 |
-|------|----------|
-| DSN 格式错误 | NewClient 返回 `ErrInvalidConfig` |
-| TDengine 不可达 | NewClient 返回连接错误，不 panic |
-| 批量写入空 rows | InsertBatch 返回 nil（空操作） |
-| 查询结果为空 | 返回空 Rows，`Next()` 返回 false，无错误 |
-| 并发调用 Close | 幂等，不 panic |
-| 连接池耗尽 | 阻塞等待空闲连接，超时后返回 `ErrPoolExhausted` |
-| ctx 超时 | 当前操作中断，返回 `ctx.Err()` |
-| 大结果集查询 | Rows 逐行迭代，不一次性加载到内存 |
-| STMT 绑定类型不匹配 | 返回类型转换错误，包含字段名和期望类型 |
-| TDengine 自动建表冲突 | 返回原生错误，不重试 |
+| 场景                  | 预期行为                                        |
+| --------------------- | ----------------------------------------------- |
+| DSN 格式错误          | NewClient 返回 `ErrInvalidConfig`               |
+| TDengine 不可达       | NewClient 返回连接错误，不 panic                |
+| 批量写入空 rows       | InsertBatch 返回 nil（空操作）                  |
+| 查询结果为空          | 返回空 Rows，`Next()` 返回 false，无错误        |
+| 并发调用 Close        | 幂等，不 panic                                  |
+| 连接池耗尽            | 阻塞等待空闲连接，超时后返回 `ErrPoolExhausted` |
+| ctx 超时              | 当前操作中断，返回 `ctx.Err()`                  |
+| 大结果集查询          | Rows 逐行迭代，不一次性加载到内存               |
+| STMT 绑定类型不匹配   | 返回类型转换错误，包含字段名和期望类型          |
+| TDengine 自动建表冲突 | 返回原生错误，不重试                            |
 
 ---
 
@@ -378,12 +378,12 @@ go 1.23
 
 ### 15.2 依赖方向
 
-| 可以依赖 | 禁止依赖 |
-|----------|----------|
-| kernel（L0 原语） | configx |
-| observex（interface-only） | 所有业务域 |
-| TDengine 客户端库 | 所有 L2.5 领域共享层 |
-| stdlib | 其他存储扩展（redisx, clickhousex 等） |
+| 可以依赖                   | 禁止依赖                               |
+| -------------------------- | -------------------------------------- |
+| kernel（L0 原语）          | configx                                |
+| observex（interface-only） | 所有业务域                             |
+| TDengine 客户端库          | 所有 L2.5 领域共享层                   |
+| stdlib                     | 其他存储扩展（redisx, clickhousex 等） |
 
 ### 15.3 特殊说明
 
@@ -395,21 +395,21 @@ taosx 通过接口接收 `observex.Logger` / `observex.Meter` / `observex.Tracer
 
 ### 16.1 单元测试
 
-| 测试场景 | 验证点 |
-|----------|--------|
-| NewClient 合法配置 | 返回 Client，nil 错误 |
-| NewClient 空 DSN | 返回 `ErrInvalidConfig` |
-| Exec 正常 SQL | 返回 nil |
-| Exec 语法错误 | 返回包装错误 |
-| Query 有结果 | Rows 可迭代 |
-| Query 无结果 | 空 Rows，无错误 |
-| InsertBatch 正常写入 | 返回 nil |
-| InsertBatch 空 rows | 返回 nil |
-| InsertBatch 表不存在 | 返回 `ErrTableNotFound` |
-| Scan 列数不匹配 | 返回 `ErrColumnCountMismatch` |
-| Close 幂等 | 多次调用不 panic |
-| Health 连接正常 | Ready=true, Live=true |
-| Health 连接异常 | Ready=false, Live=false |
+| 测试场景             | 验证点                        |
+| -------------------- | ----------------------------- |
+| NewClient 合法配置   | 返回 Client，nil 错误         |
+| NewClient 空 DSN     | 返回 `ErrInvalidConfig`       |
+| Exec 正常 SQL        | 返回 nil                      |
+| Exec 语法错误        | 返回包装错误                  |
+| Query 有结果         | Rows 可迭代                   |
+| Query 无结果         | 空 Rows，无错误               |
+| InsertBatch 正常写入 | 返回 nil                      |
+| InsertBatch 空 rows  | 返回 nil                      |
+| InsertBatch 表不存在 | 返回 `ErrTableNotFound`       |
+| Scan 列数不匹配      | 返回 `ErrColumnCountMismatch` |
+| Close 幂等           | 多次调用不 panic              |
+| Health 连接正常      | Ready=true, Live=true         |
+| Health 连接异常      | Ready=false, Live=false       |
 
 ### 16.2 Given/When/Then 用例
 
@@ -449,65 +449,65 @@ Then 返回 nil 且不 panic
 
 ### 16.3 Benchmark
 
-| 场景 | 目标 |
-|------|------|
-| 单次 Exec | < 5ms |
-| InsertBatch 1000 行 | < 50ms |
-| Query 返回 1000 行 | < 100ms |
-| 连接池获取连接 | < 1ms |
+| 场景                | 目标    |
+| ------------------- | ------- |
+| 单次 Exec           | < 5ms   |
+| InsertBatch 1000 行 | < 50ms  |
+| Query 返回 1000 行  | < 100ms |
+| 连接池获取连接      | < 1ms   |
 
 ### 16.4 集成测试
 
-| 场景 | 验证点 |
-|------|--------|
-| 完整写入-查询流程 | InsertBatch → Query → 数据一致 |
-| 连接池压力测试 | 100 并发写入，无连接泄漏 |
-| 健康检查 | TDengine 停止后 Health() 反映状态 |
-| 大文件写入 | 100 万行写入不 OOM |
+| 场景              | 验证点                            |
+| ----------------- | --------------------------------- |
+| 完整写入-查询流程 | InsertBatch → Query → 数据一致    |
+| 连接池压力测试    | 100 并发写入，无连接泄漏          |
+| 健康检查          | TDengine 停止后 Health() 反映状态 |
+| 大文件写入        | 100 万行写入不 OOM                |
 
 ---
 
 ## 17. Performance Budget
 
-| 操作 | 目标 | 测量方式 |
-|------|------|----------|
-| 单次 Exec | < 5ms | benchmark test |
-| InsertBatch 1000 行 | < 50ms | benchmark test |
+| 操作                 | 目标    | 测量方式       |
+| -------------------- | ------- | -------------- |
+| 单次 Exec            | < 5ms   | benchmark test |
+| InsertBatch 1000 行  | < 50ms  | benchmark test |
 | InsertBatch 10000 行 | < 500ms | benchmark test |
-| Query 返回 1000 行 | < 100ms | benchmark test |
-| 连接池获取连接 | < 1ms | benchmark test |
-| 常驻内存（空闲） | < 5MB | profiling |
+| Query 返回 1000 行   | < 100ms | benchmark test |
+| 连接池获取连接       | < 1ms   | benchmark test |
+| 常驻内存（空闲）     | < 5MB   | profiling      |
 
 ---
 
 ## 18. Observability
 
-| 类型 | 名称 | 说明 |
-|------|------|------|
-| metric | `taosx.query.duration` | histogram，查询耗时，标签：table |
-| metric | `taosx.write.duration` | histogram，写入耗时，标签：table |
-| metric | `taosx.write.rows` | counter，写入行数，标签：table |
-| metric | `taosx.pool.active` | gauge，活跃连接数 |
-| metric | `taosx.pool.idle` | gauge，空闲连接数 |
-| metric | `taosx.pool.exhausted` | counter，连接池耗尽次数 |
-| log | `taosx.connected` | info，连接成功 |
-| log | `taosx.disconnected` | warn，连接断开 |
-| log | `taosx.batch.insert` | info，批量写入完成，含 rows + duration |
-| log | `taosx.query.error` | error，查询失败，含 sql + error |
-| span | `taosx.exec` | 单次 Exec 的 tracing span |
-| span | `taosx.query` | 单次 Query 的 tracing span |
-| span | `taosx.insert_batch` | 批量写入的 tracing span |
+| 类型   | 名称                   | 说明                                   |
+| ------ | ---------------------- | -------------------------------------- |
+| metric | `taosx.query.duration` | histogram，查询耗时，标签：table       |
+| metric | `taosx.write.duration` | histogram，写入耗时，标签：table       |
+| metric | `taosx.write.rows`     | counter，写入行数，标签：table         |
+| metric | `taosx.pool.active`    | gauge，活跃连接数                      |
+| metric | `taosx.pool.idle`      | gauge，空闲连接数                      |
+| metric | `taosx.pool.exhausted` | counter，连接池耗尽次数                |
+| log    | `taosx.connected`      | info，连接成功                         |
+| log    | `taosx.disconnected`   | warn，连接断开                         |
+| log    | `taosx.batch.insert`   | info，批量写入完成，含 rows + duration |
+| log    | `taosx.query.error`    | error，查询失败，含 sql + error        |
+| span   | `taosx.exec`           | 单次 Exec 的 tracing span              |
+| span   | `taosx.query`          | 单次 Query 的 tracing span             |
+| span   | `taosx.insert_batch`   | 批量写入的 tracing span                |
 
 ---
 
 ## 19. Security
 
-| 要求 | 实现方式 |
-|------|----------|
-| DSN 不泄露到日志 | 日志中 DSN 脱敏，密码部分用 `***` 替代 |
-| SQL 注入防护 | 参数化绑定，禁止 SQL 拼接 |
+| 要求                   | 实现方式                                 |
+| ---------------------- | ---------------------------------------- |
+| DSN 不泄露到日志       | 日志中 DSN 脱敏，密码部分用 `***` 替代   |
+| SQL 注入防护           | 参数化绑定，禁止 SQL 拼接                |
 | 错误消息不泄露连接详情 | 错误消息包含操作名和错误类型，不包含 DSN |
-| 连接凭据不硬编码 | 通过 Config 或环境变量注入 |
+| 连接凭据不硬编码       | 通过 Config 或环境变量注入               |
 
 ---
 
@@ -515,36 +515,36 @@ Then 返回 nil 且不 panic
 
 ### 20.1 通用 Gate
 
-| Gate | 命令 | 阻塞条件 |
-|------|------|----------|
-| 编译 | `go build ./...` | 编译失败 |
-| 测试 | `go test ./... -race -count=1` | 任何测试失败或 data race |
-| 覆盖率 | `mkdir -p .coverage && go test ./... -coverprofile=.coverage/cover.out && go tool cover -func=.coverage/cover.out` | 总覆盖率 < 80% |
-| vet | `go vet ./...` | 任何 vet 错误 |
-| lint | `golangci-lint run` | 任何 lint 错误 |
-| 依赖检查 | `go mod tidy && git diff --exit-code go.mod go.sum` | go.mod 不整洁 |
-| Secret 扫描 | `gitleaks detect --no-git` | 泄露 secret |
-| Benchmark | `go test -bench=. -benchmem -count=3 ./...` | 结果附在 PR comment |
+| Gate        | 命令                                                                                                               | 阻塞条件                 |
+| ----------- | ------------------------------------------------------------------------------------------------------------------ | ------------------------ |
+| 编译        | `go build ./...`                                                                                                   | 编译失败                 |
+| 测试        | `go test ./... -race -count=1`                                                                                     | 任何测试失败或 data race |
+| 覆盖率      | `mkdir -p .coverage && go test ./... -coverprofile=.coverage/cover.out && go tool cover -func=.coverage/cover.out` | 总覆盖率 < 80%           |
+| vet         | `go vet ./...`                                                                                                     | 任何 vet 错误            |
+| lint        | `golangci-lint run`                                                                                                | 任何 lint 错误           |
+| 依赖检查    | `go mod tidy && git diff --exit-code go.mod go.sum`                                                                | go.mod 不整洁            |
+| Secret 扫描 | `gitleaks detect --no-git`                                                                                         | 泄露 secret              |
+| Benchmark   | `go test -bench=. -benchmem -count=3 ./...`                                                                        | 结果附在 PR comment      |
 
 ### 20.2 taosx 专属 Gate
 
-| Gate | 命令 | 阻塞条件 |
-|------|------|----------|
-| 集成测试 | `go test -tags=integration ./...` | TDengine 不可达时 skip，可达时必须通过 |
-| 无直接依赖 configx | `go list -deps ./... \| grep configx` | 不应依赖 configx |
+| Gate               | 命令                              | 阻塞条件                               |                  |
+| ------------------ | --------------------------------- | -------------------------------------- |                  |
+| 集成测试           | `go test -tags=integration ./...` | TDengine 不可达时 skip，可达时必须通过 |                  |
+| 无直接依赖 configx | `go list -deps ./... \            | grep configx`                          | 不应依赖 configx |
 
 ---
 
 ## 21. Upgrade Compatibility
 
-| 变更类型 | 版本升级 |
-|----------|----------|
-| Client interface 变更 | **major**（所有消费方需同步更新） |
-| Config 新增可选字段 | patch / minor |
-| Config 新增必填字段 | **minor**（带默认值） |
-| 新增 Client 方法 | **minor**（不影响现有实现） |
-| 错误变量变更 | **minor**（新增错误为 minor，删除为 major） |
-| 修复 bug | **patch** |
+| 变更类型              | 版本升级                                    |
+| --------------------- | ------------------------------------------- |
+| Client interface 变更 | **major**（所有消费方需同步更新）           |
+| Config 新增可选字段   | patch / minor                               |
+| Config 新增必填字段   | **minor**（带默认值）                       |
+| 新增 Client 方法      | **minor**（不影响现有实现）                 |
+| 错误变量变更          | **minor**（新增错误为 minor，删除为 major） |
+| 修复 bug              | **patch**                                   |
 
 ---
 

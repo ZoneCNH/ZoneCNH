@@ -4,18 +4,18 @@
 
 ## 工具列表
 
-| 工具                                       | 语言     | 功能                                                              |
-| ------------------------------------------ | -------- | ----------------------------------------------------------------- |
-| [goal-delivery.sh](goal-delivery.sh)       | Bash     | 端到端交付编排：init、goal、spec、design、plan、tasks、prompt、matrix、evidence、status、check、dashboard |
-| [goal-workflow.sh](goal-workflow.sh)       | Bash     | 统一工作流入口：preflight、validate、gate、ci、release             |
-| [gate-check.sh](gate-check.sh)             | Bash     | Gate 制品就绪检查：Matrix 终态覆盖率、Evidence 字段、测试覆盖、孤儿检查 |
-| [goal-validate.py](goal-validate.py)       | Python 3 | Goal 控制面一致性验证：runtime root、Matrix、Gate、Risk、CI 合约 |
-| [matrix-gen.py](matrix-gen.py)             | Python 3 | Matrix 生成与更新：从 Spec/Tasks 自动生成 Traceability Matrix     |
-| [evidence-collect.sh](evidence-collect.sh) | Bash     | Evidence 收集：从 Git diff 和测试结果自动生成 Evidence 文件       |
-| [lint-goal.sh](lint-goal.sh)               | Bash     | Lint 规则检查：Goal/Spec/Matrix/Prompt 的自动化规则验证           |
-| [rule-drift-check.py](rule-drift-check.py) | Python 3 | 规则漂移检查：扫描旧路径、旧状态、旧 Gate/CI 命名和旧 ID 示例     |
-| [self-test.sh](self-test.sh)               | Bash     | 工具链自测：执行正向基线与负向 fixture，验证工具不会静默放行错误  |
-| [.github/ci/goal-release-gate.sh](../../../.github/ci/goal-release-gate.sh) | Bash/Python | 发布硬阻断：strict validator、G10、release-blocking 风险、Evidence、Goal CI 合约 |
+| 工具                                                                        | 语言        | 功能                                                                                                      |
+| --------------------------------------------------------------------------- | ----------- | --------------------------------------------------------------------------------------------------------- |
+| [goal-delivery.sh](goal-delivery.sh)                                        | Bash        | 端到端交付编排：init、goal、spec、design、plan、tasks、prompt、matrix、evidence、status、check、dashboard |
+| [goal-workflow.sh](goal-workflow.sh)                                        | Bash        | 统一工作流入口：preflight、validate、gate、ci、release                                                    |
+| [gate-check.sh](gate-check.sh)                                              | Bash        | Gate 制品就绪检查：Matrix 终态覆盖率、Evidence 字段、测试覆盖、孤儿检查                                   |
+| [goal-validate.py](goal-validate.py)                                        | Python 3    | Goal 控制面一致性验证：runtime root、Matrix、Gate、Risk、CI 合约                                          |
+| [matrix-gen.py](matrix-gen.py)                                              | Python 3    | Matrix 生成与更新：从 Spec/Tasks 自动生成 Traceability Matrix                                             |
+| [evidence-collect.sh](evidence-collect.sh)                                  | Bash        | Evidence 收集：从 Git diff 和测试结果自动生成 Evidence 文件                                               |
+| [lint-goal.sh](lint-goal.sh)                                                | Bash        | Lint 规则检查：Goal/Spec/Matrix/Prompt 的自动化规则验证                                                   |
+| [rule-drift-check.py](rule-drift-check.py)                                  | Python 3    | 规则漂移检查：扫描旧路径、旧状态、旧 Gate/CI 命名和旧 ID 示例                                             |
+| [self-test.sh](self-test.sh)                                                | Bash        | 工具链自测：执行正向基线与负向 fixture，验证工具不会静默放行错误                                          |
+| [.github/ci/goal-release-gate.sh](../../../.github/ci/goal-release-gate.sh) | Bash/Python | 发布硬阻断：strict validator、G10、release-blocking 风险、Evidence、Goal CI 合约                          |
 
 ## 使用方式
 
@@ -74,20 +74,20 @@ bash docs/goal/tools/goal-delivery.sh change --goal-id GOAL-20260609-001 --level
 
 支持三种复杂度模式（通过 `--mode` 参数）：
 
-| 模式 | 适用场景 | 流程 |
-| ---- | -------- | ---- |
-| `lite` | CL0/CL1 文档/配置变更 | Goal→Plan→Tasks→Code→Test→Evidence→Review |
-| `standard` | CL2 功能开发 | 全流程 + Matrix + Risk + Evidence |
-| `full` | CL3+ 架构变更 | 全流程 + ADR + Human Approval + Rollback |
+| 模式       | 适用场景              | 流程                                      |
+| ---------- | --------------------- | ----------------------------------------- |
+| `lite`     | CL0/CL1 文档/配置变更 | Goal→Plan→Tasks→Code→Test→Evidence→Review |
+| `standard` | CL2 功能开发          | 全流程 + Matrix + Risk + Evidence         |
+| `full`     | CL3+ 架构变更         | 全流程 + ADR + Human Approval + Rollback  |
 
-| 命令 | 执行内容 | 使用场景 |
-| ---- | -------- | -------- |
-| `preflight` | Python 编译、Shell 语法、规则漂移、Goal 文档 lint | 修改 `docs/goal` 或工具脚本后的最快反馈 |
-| `validate` | `preflight` + strict 控制面验证 + Matrix check-only | PR 前的默认本地验证 |
-| `gate` | `validate` + Gate 制品就绪检查 | 已有 `.config/goal` 运行制品时的合入前门禁 |
-| `ci` | `validate` + 工具链自测 + 有运行制品时自动 Gate 检查 | CI workflow 的聚合入口 |
-| `release` | `gate` + `.github/ci/goal-release-gate.sh` | tag/release 前硬阻断；通过时会写 `release/manifest/goal-release-gate.json` |
-| `self-test` | 仅运行工具链 fixture 自测 | 调试工具链自身 |
+| 命令        | 执行内容                                             | 使用场景                                                                   |
+| ----------- | ---------------------------------------------------- | -------------------------------------------------------------------------- |
+| `preflight` | Python 编译、Shell 语法、规则漂移、Goal 文档 lint    | 修改 `docs/goal` 或工具脚本后的最快反馈                                    |
+| `validate`  | `preflight` + strict 控制面验证 + Matrix check-only  | PR 前的默认本地验证                                                        |
+| `gate`      | `validate` + Gate 制品就绪检查                       | 已有 `.config/goal` 运行制品时的合入前门禁                                 |
+| `ci`        | `validate` + 工具链自测 + 有运行制品时自动 Gate 检查 | CI workflow 的聚合入口                                                     |
+| `release`   | `gate` + `.github/ci/goal-release-gate.sh`           | tag/release 前硬阻断；通过时会写 `release/manifest/goal-release-gate.json` |
+| `self-test` | 仅运行工具链 fixture 自测                            | 调试工具链自身                                                             |
 
 可选参数：
 
@@ -241,15 +241,15 @@ python3 docs/goal/tools/rule-drift-check.py --root . --quiet
 
 当前工具链以真实 Goal 控制面、脚本自检和临时负例 fixture 作为基线。新增 fixture 必须保持以下覆盖契约，不引入非标准库依赖：
 
-| Fixture 类别 | 目标工具 | 期望结果 | 验收点 |
-| --- | --- | --- | --- |
-| 旧工作流状态或旧路径字面量 | `rule-drift-check.py --root <fixture-root>` | 非零退出 | 报出 stale literal / path drift，不能静默通过 |
-| 占位或格式错误的追溯 ID | `lint-goal.sh <fixture-docs>` 与 `matrix-gen.py --check-only --matrix <fixture-matrix>` | 非零退出 | 指向具体文件或 Matrix edge |
-| Evidence 缺失或字段不完整 | `gate-check.sh <fixture-root>` 与 `rule-drift-check.py --root <fixture-root>` | 非零退出 | 报出缺失 Evidence 或必填字段 |
-| Matrix orphan / 非终态 / 非法 relation | `matrix-gen.py --check-only --matrix <fixture-matrix>` | 非零退出 | 覆盖率、relation/status 或 orphan 类错误可定位 |
-| Gate 结果与规则不一致 | `gate-check.sh <fixture-root>` | 非零退出 | `FAIL>0`，且不把风险降级为通过 |
-| 控制面发布状态不一致 | `goal-validate.py --root <fixture-root> --mode strict` | 非零退出 | runtime root、Matrix 字段、Gate 枚举、Risk Registry、G10/G11、Pipeline/Release、CI 合约错误可定位 |
-| Release gate 硬阻断 | `.github/ci/goal-release-gate.sh <fixture-root>` | 非零退出 | G10 未 PASS、存在 Open/Escalated release_blocking 风险、Evidence 缺失、Goal CI 合约漂移都不能发布 |
+| Fixture 类别                           | 目标工具                                                                                | 期望结果 | 验收点                                                                                            |
+| -------------------------------------- | --------------------------------------------------------------------------------------- | -------- | ------------------------------------------------------------------------------------------------- |
+| 旧工作流状态或旧路径字面量             | `rule-drift-check.py --root <fixture-root>`                                             | 非零退出 | 报出 stale literal / path drift，不能静默通过                                                     |
+| 占位或格式错误的追溯 ID                | `lint-goal.sh <fixture-docs>` 与 `matrix-gen.py --check-only --matrix <fixture-matrix>` | 非零退出 | 指向具体文件或 Matrix edge                                                                        |
+| Evidence 缺失或字段不完整              | `gate-check.sh <fixture-root>` 与 `rule-drift-check.py --root <fixture-root>`           | 非零退出 | 报出缺失 Evidence 或必填字段                                                                      |
+| Matrix orphan / 非终态 / 非法 relation | `matrix-gen.py --check-only --matrix <fixture-matrix>`                                  | 非零退出 | 覆盖率、relation/status 或 orphan 类错误可定位                                                    |
+| Gate 结果与规则不一致                  | `gate-check.sh <fixture-root>`                                                          | 非零退出 | `FAIL>0`，且不把风险降级为通过                                                                    |
+| 控制面发布状态不一致                   | `goal-validate.py --root <fixture-root> --mode strict`                                  | 非零退出 | runtime root、Matrix 字段、Gate 枚举、Risk Registry、G10/G11、Pipeline/Release、CI 合约错误可定位 |
+| Release gate 硬阻断                    | `.github/ci/goal-release-gate.sh <fixture-root>`                                        | 非零退出 | G10 未 PASS、存在 Open/Escalated release_blocking 风险、Evidence 缺失、Goal CI 合约漂移都不能发布 |
 
 本轮已落地的自测覆盖：
 

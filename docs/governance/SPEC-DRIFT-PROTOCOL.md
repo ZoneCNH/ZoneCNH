@@ -135,8 +135,8 @@ Spec 写的是 A
 
 ## 相关文档
 
-| 文档 | 用途 |
-|------|------|
-| `docs/governance/LIFECYCLE.md` | Spec 状态流转规则 |
-| `docs/governance/DEVELOPMENT-WORKFLOW.md` | 完整管线总览 |
-| `docs/governance/CODING-SESSION-PROTOCOL.md` | 编码会话协议 |
+| 文档                                         | 用途              |
+| -------------------------------------------- | ----------------- |
+| `docs/governance/LIFECYCLE.md`               | Spec 状态流转规则 |
+| `docs/governance/DEVELOPMENT-WORKFLOW.md`    | 完整管线总览      |
+| `docs/governance/CODING-SESSION-PROTOCOL.md` | 编码会话协议      |

@@ -1,13 +1,13 @@
 # xlibgate 发布版本 1.0 Goal 定位与实现标准
 
-| 字段 | 内容 |
-| --- | --- |
-| 模块名 | `xlibgate` |
-| 发布版本 | 1.0.0 |
-| 所属层级 | L0 基座 — 门禁 |
-| 稳定级别 | CLI 接口 Stable；JSON 输出 Stable；Exit Code Stable；配置 Schema Stable |
-| 文档状态 | 1.0 发布基线文档 |
-| 发布日期基准 | 2026-06-09 |
+| 字段         | 内容                                                                    |
+| ------------ | ----------------------------------------------------------------------- |
+| 模块名       | `xlibgate`                                                              |
+| 发布版本     | 1.0.0                                                                   |
+| 所属层级     | L0 基座 — 门禁                                                          |
+| 稳定级别     | CLI 接口 Stable；JSON 输出 Stable；Exit Code Stable；配置 Schema Stable |
+| 文档状态     | 1.0 发布基线文档                                                        |
+| 发布日期基准 | 2026-06-09                                                              |
 
 ## 术语约定
 
@@ -68,30 +68,30 @@
 
 ## 3. 核心场景
 
-| 场景 | 说明 | 1.0 期望结果 |
-| --- | --- | --- |
-| import 边界检查 | CI 检测到业务域模块 import 了基座层 | 输出违规详情（文件路径、行号），exit code 1 |
-| import 边界合规 | 所有 import 路径符合依赖矩阵 | 输出 pass，exit code 0 |
-| go.mod 整洁 | `go mod tidy` 无 diff | 输出 pass，exit code 0 |
-| go.mod 不整洁 | `go mod tidy` 产生 diff | 输出 diff 详情，exit code 1 |
-| baseline 不匹配 | 某模块 go.mod 中 Go 版本 != 期望版本 | 输出不匹配模块列表，exit code 1 |
-| release evidence 缺失 | 必需 evidence 项缺失 | 输出缺失项列表，exit code 1 |
-| 全量门禁 | CI 执行 `check all` | 所有子检查执行，汇总结果，任一失败则 exit code 1 |
-| 配置缺失 | 未提供 `--config` 参数或无配置文件 | 输出错误提示，exit code 2 |
-| Secret 泄露 | gitleaks 检测到硬编码密钥 | 输出泄露位置，exit code 1 |
+| 场景                  | 说明                                 | 1.0 期望结果                                     |
+| --------------------- | ------------------------------------ | ------------------------------------------------ |
+| import 边界检查       | CI 检测到业务域模块 import 了基座层  | 输出违规详情（文件路径、行号），exit code 1      |
+| import 边界合规       | 所有 import 路径符合依赖矩阵         | 输出 pass，exit code 0                           |
+| go.mod 整洁           | `go mod tidy` 无 diff                | 输出 pass，exit code 0                           |
+| go.mod 不整洁         | `go mod tidy` 产生 diff              | 输出 diff 详情，exit code 1                      |
+| baseline 不匹配       | 某模块 go.mod 中 Go 版本 != 期望版本 | 输出不匹配模块列表，exit code 1                  |
+| release evidence 缺失 | 必需 evidence 项缺失                 | 输出缺失项列表，exit code 1                      |
+| 全量门禁              | CI 执行 `check all`                  | 所有子检查执行，汇总结果，任一失败则 exit code 1 |
+| 配置缺失              | 未提供 `--config` 参数或无配置文件   | 输出错误提示，exit code 2                        |
+| Secret 泄露           | gitleaks 检测到硬编码密钥            | 输出泄露位置，exit code 1                        |
 
 ## 4. 能力范围
 
-| 能力域 | 1.0 必须具备的能力 | 验收方式 |
-| --- | --- | --- |
-| check imports | 扫描 import 路径，匹配依赖矩阵规则，输出违规文件路径和行号 | 违规检测测试通过；合规测试通过 |
-| check gomod | 对指定路径执行 `go mod tidy` 并检测 diff | tidy 测试通过；dirty 测试通过 |
-| check baseline | 读取 go.mod 中 `go` 指令，与期望版本比对 | 匹配测试通过；不匹配测试通过 |
-| check release | 解析 evidence JSON，校验必需项存在且通过 | 完整测试通过；缺失测试通过 |
-| check all | 串联所有子检查，即使前置检查失败也继续执行 | 部分失败测试通过；error 跳过测试通过 |
-| 输出格式 | human-readable（默认，含颜色）和 JSON（`--output json`）两种输出 | JSON schema 校验通过；终端输出含路径和行号 |
-| 配置加载 | 从 `xlibgate.yaml` 或 `--config` 指定文件加载规则 | 有效配置测试通过；无效配置报错测试通过 |
-| secret 扫描 | 调用 `gitleaks` 检测源文件中的密钥泄露 | 泄露检测测试通过 |
+| 能力域         | 1.0 必须具备的能力                                               | 验收方式                                   |
+| -------------- | ---------------------------------------------------------------- | ------------------------------------------ |
+| check imports  | 扫描 import 路径，匹配依赖矩阵规则，输出违规文件路径和行号       | 违规检测测试通过；合规测试通过             |
+| check gomod    | 对指定路径执行 `go mod tidy` 并检测 diff                         | tidy 测试通过；dirty 测试通过              |
+| check baseline | 读取 go.mod 中 `go` 指令，与期望版本比对                         | 匹配测试通过；不匹配测试通过               |
+| check release  | 解析 evidence JSON，校验必需项存在且通过                         | 完整测试通过；缺失测试通过                 |
+| check all      | 串联所有子检查，即使前置检查失败也继续执行                       | 部分失败测试通过；error 跳过测试通过       |
+| 输出格式       | human-readable（默认，含颜色）和 JSON（`--output json`）两种输出 | JSON schema 校验通过；终端输出含路径和行号 |
+| 配置加载       | 从 `xlibgate.yaml` 或 `--config` 指定文件加载规则                | 有效配置测试通过；无效配置报错测试通过     |
+| secret 扫描    | 调用 `gitleaks` 检测源文件中的密钥泄露                           | 泄露检测测试通过                           |
 
 ## 5. 职责边界
 
@@ -118,24 +118,24 @@
 
 ## 6. 依赖关系与分层约束
 
-| 依赖类型 | 约束 |
-| --- | --- |
+| 依赖类型 | 约束                                                                                                                                                                                                                                |
+| -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 上游依赖 | 仅依赖 stdlib + `gopkg.in/yaml.v3`（配置解析）+ Go AST 标准库（`go/parser`、`go/ast`）+ `gitleaks`（作为外部命令调用）。禁止依赖所有 Foundation 运行时模块（kernel、configx、observex、resiliencx、schedulex 等）和所有业务域实现。 |
-| 下游依赖 | 不被任何模块 import。xlibgate 是纯 CLI 工具，只扫描其他模块的代码，不产生运行时依赖。 |
-| 分层约束 | L0 基座 — 门禁。xlibgate 只读取和检查其他模块，不向任何模块提供 API 或库函数。 |
-| 契约依赖 | 消费 `xlib-standard` 定义的 Gate 定义、Evidence schema 和 `FOUNDATION-DEPS.yaml` 格式。不向 `contracts` 登记运行时 API（因为无运行时 API）。 |
+| 下游依赖 | 不被任何模块 import。xlibgate 是纯 CLI 工具，只扫描其他模块的代码，不产生运行时依赖。                                                                                                                                               |
+| 分层约束 | L0 基座 — 门禁。xlibgate 只读取和检查其他模块，不向任何模块提供 API 或库函数。                                                                                                                                                      |
+| 契约依赖 | 消费 `xlib-standard` 定义的 Gate 定义、Evidence schema 和 `FOUNDATION-DEPS.yaml` 格式。不向 `contracts` 登记运行时 API（因为无运行时 API）。                                                                                        |
 
 ## 7. 对外契约
 
 ### 7.1 公开能力面
 
-| 契约 | 定位 | 1.0 稳定承诺 |
-| --- | --- | --- |
-| CLI 命令结构 | `xlibgate check <imports\|gomod\|baseline\|release\|all>` | 子命令名称和参数集合稳定 |
-| exit code 语义 | 0=pass, 1=fail, 2=error | 语义稳定，不可变更 |
-| JSON 输出格式 | `status`、`timestamp`、`checks[]`、`summary` 字段 | 字段集合稳定，允许追加可选字段 |
-| 配置文件 schema | `xlibgate.yaml`（baseline / imports / release / secret_scan） | 字段集合稳定，允许追加可选字段 |
-| 版本命令 | `xlibgate version` | 输出格式稳定 |
+| 契约            | 定位                                                          | 1.0 稳定承诺                   |           |          |       |                          |
+| --------------- | ------------------------------------------------------------- | ------------------------------ |           |          |       |                          |
+| CLI 命令结构    | `xlibgate check <imports\                                     | gomod\                         | baseline\ | release\ | all>` | 子命令名称和参数集合稳定 |
+| exit code 语义  | 0=pass, 1=fail, 2=error                                       | 语义稳定，不可变更             |           |          |       |                          |
+| JSON 输出格式   | `status`、`timestamp`、`checks[]`、`summary` 字段             | 字段集合稳定，允许追加可选字段 |           |          |       |                          |
+| 配置文件 schema | `xlibgate.yaml`（baseline / imports / release / secret_scan） | 字段集合稳定，允许追加可选字段 |           |          |       |                          |
+| 版本命令        | `xlibgate version`                                            | 输出格式稳定                   |           |          |       |                          |
 
 ### 7.2 1.0 CLI 接口基线
 
@@ -182,13 +182,13 @@ xlibgate
 
 ## 8. 配置契约
 
-| 配置项 | 含义 | 默认值 / 要求 | 稳定性 |
-| --- | --- | --- | --- |
-| baseline.go_version | 期望的 Go 版本 | 必填，无默认值 | Stable |
-| imports.forbidden | 禁止的 import 规则列表（source + targets） | 可选，空列表表示不检查 | Stable |
-| release.require | 必需的 release evidence 条件列表 | 可选，空列表表示不检查 | Stable |
-| secret_scan.enabled | 是否启用 gitleaks 扫描 | true | Stable |
-| secret_scan.config_path | gitleaks 配置文件路径 | 可选 | Stable |
+| 配置项                  | 含义                                       | 默认值 / 要求          | 稳定性 |
+| ----------------------- | ------------------------------------------ | ---------------------- | ------ |
+| baseline.go_version     | 期望的 Go 版本                             | 必填，无默认值         | Stable |
+| imports.forbidden       | 禁止的 import 规则列表（source + targets） | 可选，空列表表示不检查 | Stable |
+| release.require         | 必需的 release evidence 条件列表           | 可选，空列表表示不检查 | Stable |
+| secret_scan.enabled     | 是否启用 gitleaks 扫描                     | true                   | Stable |
+| secret_scan.config_path | gitleaks 配置文件路径                      | 可选                   | Stable |
 
 配置从 `xlibgate.yaml` 或 `--config` 指定的文件加载。配置文件只包含规则定义，不含密钥。
 
@@ -198,13 +198,13 @@ xlibgate
 
 xlibgate 是 CLI 工具，不产生运行时日志。执行过程中输出以下事件到 stderr：
 
-| 事件 | 级别 | 说明 |
-| --- | --- | --- |
-| xlibgate.check.started | info | 检查开始，含 check name |
-| xlibgate.check.completed | info | 检查完成，含 status 和 duration |
-| xlibgate.check.failed | warn | 检查失败，含 violation 详情 |
-| xlibgate.check.error | error | 检查出错，含 error message |
-| xlibgate.config.loaded | info | 配置加载完成，含文件路径 |
+| 事件                     | 级别  | 说明                            |
+| ------------------------ | ----- | ------------------------------- |
+| xlibgate.check.started   | info  | 检查开始，含 check name         |
+| xlibgate.check.completed | info  | 检查完成，含 status 和 duration |
+| xlibgate.check.failed    | warn  | 检查失败，含 violation 详情     |
+| xlibgate.check.error     | error | 检查出错，含 error message      |
+| xlibgate.config.loaded   | info  | 配置加载完成，含文件路径        |
 
 ### 9.2 指标
 
@@ -218,15 +218,15 @@ xlibgate 是纯 CLI 工具，不承载业务运行，不产生运行时指标。
 
 ## 10. 错误模型与失败策略
 
-| 错误 | 错误类别 | 典型原因 | 1.0 处理策略 |
-| --- | --- | --- | --- |
-| ErrConfigInvalid | 配置无效 | YAML 语法错误或 schema 不匹配 | exit code 2，输出解析错误详情 |
-| ErrConfigMissing | 配置缺失 | `--config` 路径不存在或无配置文件 | exit code 2，输出文件路径提示 |
-| ErrEvidenceInvalid | evidence 格式无效 | JSON 格式错误或 schema 不匹配 | exit code 2，输出解析错误详情 |
-| ErrEvidenceMissing | evidence 缺失 | 必需 evidence 项缺失或不通过 | exit code 1，输出缺失项列表 |
-| ErrBaselineMismatch | baseline 不匹配 | go.mod 中 go 版本 != 期望版本 | exit code 1，输出不匹配模块列表 |
-| ErrImportViolation | import 违规 | 检测到禁止的 import 路径 | exit code 1，输出文件路径和行号 |
-| ErrGomodDirty | go.mod 不整洁 | `go mod tidy` 产生 diff | exit code 1，输出 diff 详情 |
+| 错误                | 错误类别          | 典型原因                          | 1.0 处理策略                    |
+| ------------------- | ----------------- | --------------------------------- | ------------------------------- |
+| ErrConfigInvalid    | 配置无效          | YAML 语法错误或 schema 不匹配     | exit code 2，输出解析错误详情   |
+| ErrConfigMissing    | 配置缺失          | `--config` 路径不存在或无配置文件 | exit code 2，输出文件路径提示   |
+| ErrEvidenceInvalid  | evidence 格式无效 | JSON 格式错误或 schema 不匹配     | exit code 2，输出解析错误详情   |
+| ErrEvidenceMissing  | evidence 缺失     | 必需 evidence 项缺失或不通过      | exit code 1，输出缺失项列表     |
+| ErrBaselineMismatch | baseline 不匹配   | go.mod 中 go 版本 != 期望版本     | exit code 1，输出不匹配模块列表 |
+| ErrImportViolation  | import 违规       | 检测到禁止的 import 路径          | exit code 1，输出文件路径和行号 |
+| ErrGomodDirty       | go.mod 不整洁     | `go mod tidy` 产生 diff           | exit code 1，输出 diff 详情     |
 
 **错误消息格式**：`"xlibgate: <check>: <detail>"`
 **错误包装**：使用 `%w` 保留底层错误链
@@ -242,12 +242,12 @@ xlibgate 是纯 CLI 工具，不承载业务运行，不产生运行时指标。
 
 ## 12. 测试证据要求
 
-| 测试类型 | 必须覆盖内容 | 发布门禁 |
-| --- | --- | --- |
-| 单元测试 | import 违规检测 / testkitx 边界 / go.mod tidy 检测 / baseline 匹配与不匹配 / release evidence 校验 / 配置解析 / exit code 验证 | MUST 通过 |
-| 集成测试 | 完整 CI 流程 `check all` / 自检 `xlibgate check all --config xlibgate.yaml` / CI artifact 输出 | MUST 通过 |
-| 失败测试 | 配置无效 / 配置缺失 / evidence 格式无效 / go.mod 缺失 / 子检查超时 | MUST 通过 |
-| Benchmark | 全量门禁（50 模块）< 30s / import 扫描 < 10s / go.mod 检查 < 5s / baseline 检查 < 5s / JSON 报告 < 100ms | SHOULD 通过 |
+| 测试类型  | 必须覆盖内容                                                                                                                   | 发布门禁    |
+| --------- | ------------------------------------------------------------------------------------------------------------------------------ | ----------- |
+| 单元测试  | import 违规检测 / testkitx 边界 / go.mod tidy 检测 / baseline 匹配与不匹配 / release evidence 校验 / 配置解析 / exit code 验证 | MUST 通过   |
+| 集成测试  | 完整 CI 流程 `check all` / 自检 `xlibgate check all --config xlibgate.yaml` / CI artifact 输出                                 | MUST 通过   |
+| 失败测试  | 配置无效 / 配置缺失 / evidence 格式无效 / go.mod 缺失 / 子检查超时                                                             | MUST 通过   |
+| Benchmark | 全量门禁（50 模块）< 30s / import 扫描 < 10s / go.mod 检查 < 5s / baseline 检查 < 5s / JSON 报告 < 100ms                       | SHOULD 通过 |
 
 ### 关键 Given/When/Then 用例
 

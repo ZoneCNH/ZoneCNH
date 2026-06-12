@@ -30,17 +30,17 @@ status: pending
 
 ## Requirements Covered
 
-| Requirement | Description | Acceptance Criteria |
-|---|---|---|
-| FR-002 | FakeLogger：记录日志到内存 | AC-002 |
+| Requirement | Description                | Acceptance Criteria |
+| ----------- | -------------------------- | ------------------- |
+| FR-002      | FakeLogger：记录日志到内存 | AC-002              |
 
 ## Test Plan
 
-| Test Case | Type | Description |
-|---|---|---|
-| TC-002 | Unit | Info 后 Entries() 包含该条目 |
-| TC-002 | Unit | AssertLogged 匹配正确 |
-| TC-002 | Unit | With 不变性 |
+| Test Case | Type | Description                  |
+| --------- | ---- | ---------------------------- |
+| TC-002    | Unit | Info 后 Entries() 包含该条目 |
+| TC-002    | Unit | AssertLogged 匹配正确        |
+| TC-002    | Unit | With 不变性                  |
 
 ## Implementation Notes
 
@@ -50,13 +50,13 @@ status: pending
 
 ## Implementation Plan
 
-| Step | Description | Deliverables | Verification |
-|---|---|---|---|
-| 1 | 实现 `FakeLogger` 结构体和日志记录方法 | `fake_logger.go` | `go build ./...` 通过 |
-| 2 | 实现 `Entries()` 断言方法 | `fake_logger.go` | 全部测试通过 |
+| Step | Description                            | Deliverables     | Verification          |
+| ---- | -------------------------------------- | ---------------- | --------------------- |
+| 1    | 实现 `FakeLogger` 结构体和日志记录方法 | `fake_logger.go` | `go build ./...` 通过 |
+| 2    | 实现 `Entries()` 断言方法              | `fake_logger.go` | 全部测试通过          |
 
 ### Risk Assessment
 
-| Risk | Probability | Impact | Mitigation |
-|---|---|---|---|
-| Logger 接口不完整 | Low | Medium | 对照 observex.Logger 定义 |
+| Risk              | Probability | Impact | Mitigation                |
+| ----------------- | ----------- | ------ | ------------------------- |
+| Logger 接口不完整 | Low         | Medium | 对照 observex.Logger 定义 |

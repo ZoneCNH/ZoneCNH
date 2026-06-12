@@ -64,10 +64,10 @@ status: pending
 
 ## Requirements Covered
 
-| Requirement | Description | Acceptance Criteria |
-|---|---|---|
-| FR-003 | Health 标准 | HealthCheck 返回格式正确 |
-| FR-004 | Metrics 标准 | 5 个 P0 指标 |
+| Requirement | Description  | Acceptance Criteria      |
+| ----------- | ------------ | ------------------------ |
+| FR-003      | Health 标准  | HealthCheck 返回格式正确 |
+| FR-004      | Metrics 标准 | 5 个 P0 指标             |
 
 ## Test Plan
 

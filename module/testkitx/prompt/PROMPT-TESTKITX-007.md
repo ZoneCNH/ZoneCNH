@@ -28,12 +28,12 @@ depends_on:
 
 ## 关联需求
 
-| 类型 | 编号 | 出处 | 说明 |
-|------|------|------|------|
-| FR | FR-008 | SPEC.md §7 | GoldenUpdate：环境变量控制的 golden file 更新 |
-| BR | BR-004 | SPEC.md §8 | GoldenUpdate() 只在 GOLDEN_UPDATE=1 下返回 true |
-| BR | BR-007 | SPEC.md §8 | golden 文件不泄露 secret |
-| TC | TC-008 | SPEC.md §16.4 | GOLDEN_UPDATE=1 → 更新 golden file |
+| 类型   | 编号   | 出处          | 说明                                            |
+| ------ | ------ | ------------- | ----------------------------------------------- |
+| FR     | FR-008 | SPEC.md §7    | GoldenUpdate：环境变量控制的 golden file 更新   |
+| BR     | BR-004 | SPEC.md §8    | GoldenUpdate() 只在 GOLDEN_UPDATE=1 下返回 true |
+| BR     | BR-007 | SPEC.md §8    | golden 文件不泄露 secret                        |
+| TC     | TC-008 | SPEC.md §16.4 | GOLDEN_UPDATE=1 → 更新 golden file              |
 
 ## 接口契约
 
@@ -79,31 +79,31 @@ THEN GoldenUpdate() 返回 false
 
 ### 2. `golden_test.go`
 
-| 测试用例 | 说明 |
-|----------|------|
-| `TestGoldenUpdate_Default` | 未设置环境变量 → false |
-| `TestGoldenUpdate_Enabled` | `GOLDEN_UPDATE=1` → true |
-| `TestGoldenCheck_Match` | 内容匹配 → 通过 |
-| `TestGoldenCheck_Mismatch` | 内容不匹配 → fail |
-| `TestGoldenCheck_Update` | `GOLDEN_UPDATE=1` 时更新文件 |
-| `TestGoldenCheck_NewFile` | golden file 不存在 + `GOLDEN_UPDATE=1` → 创建 |
+| 测试用例                   | 说明                                          |
+| -------------------------- | --------------------------------------------- |
+| `TestGoldenUpdate_Default` | 未设置环境变量 → false                        |
+| `TestGoldenUpdate_Enabled` | `GOLDEN_UPDATE=1` → true                      |
+| `TestGoldenCheck_Match`    | 内容匹配 → 通过                               |
+| `TestGoldenCheck_Mismatch` | 内容不匹配 → fail                             |
+| `TestGoldenCheck_Update`   | `GOLDEN_UPDATE=1` 时更新文件                  |
+| `TestGoldenCheck_NewFile`  | golden file 不存在 + `GOLDEN_UPDATE=1` → 创建 |
 
 ## 验收标准
 
-| AC | 关联 | 验证命令 | 预期结果 |
-|----|------|----------|----------|
-| AC-GU-01 | FR-008 | `go test -run TestGolden -v ./...` | 全部通过 |
-| AC-GU-02 | BR-004 | `GOLDEN_UPDATE=1 go test -run TestGoldenUpdate_Enabled -v ./...` | GoldenUpdate() = true |
-| AC-GU-03 | BR-007 | `GOLDEN_UPDATE=1 go test -run TestGoldenCheck_Update -v ./... && gitleaks detect --no-git` | golden 文件无 secret |
+| AC       | 关联   | 验证命令                                                                                   | 预期结果              |
+| -------- | ------ | ------------------------------------------------------------------------------------------ | --------------------- |
+| AC-GU-01 | FR-008 | `go test -run TestGolden -v ./...`                                                         | 全部通过              |
+| AC-GU-02 | BR-004 | `GOLDEN_UPDATE=1 go test -run TestGoldenUpdate_Enabled -v ./...`                           | GoldenUpdate() = true |
+| AC-GU-03 | BR-007 | `GOLDEN_UPDATE=1 go test -run TestGoldenCheck_Update -v ./... && gitleaks detect --no-git` | golden 文件无 secret  |
 
 ## 验证命令
 
-| 命令 | 判定标准 |
-|------|----------|
-| `go build ./...` | 编译通过 |
-| `go test -run TestGolden -v ./...` | 全部通过 |
+| 命令                                                             | 判定标准               |
+| ---------------------------------------------------------------- | ---------------------- |
+| `go build ./...`                                                 | 编译通过               |
+| `go test -run TestGolden -v ./...`                               | 全部通过               |
 | `GOLDEN_UPDATE=0 go test -run TestGoldenUpdate_Default -v ./...` | GoldenUpdate() = false |
-| `gitleaks detect --no-git` | 无 secret 泄露 |
+| `gitleaks detect --no-git`                                       | 无 secret 泄露         |
 
 ## 禁止事项
 

@@ -6,13 +6,13 @@
 
 ### 变更类型
 
-| 类型 | 说明 |
-|------|------|
-| Goal Change | 目标结果变化，例如指标从 30 秒改成 10 秒 |
-| Scope Change | 范围变化，例如从 CSV 导出增加 Excel 导出 |
-| Spec Change | 业务规则变化，例如导出时间范围从 31 天改成 90 天 |
-| Task Change | 实现方式变化，例如同步导出改成异步导出 |
-| Code Change | 代码实现变化，但需求不变 |
+| 类型         | 说明                                             |
+| ------------ | ------------------------------------------------ |
+| Goal Change  | 目标结果变化，例如指标从 30 秒改成 10 秒         |
+| Scope Change | 范围变化，例如从 CSV 导出增加 Excel 导出         |
+| Spec Change  | 业务规则变化，例如导出时间范围从 31 天改成 90 天 |
+| Task Change  | 实现方式变化，例如同步导出改成异步导出           |
+| Code Change  | 代码实现变化，但需求不变                         |
 
 ### 变更影响分析模板
 
@@ -73,15 +73,15 @@ v2.0  Major Change（重大变更）
 
 ## 3. 角色分工
 
-| 角色 | 主要负责 |
-|------|----------|
-| Product / Owner | Goal、Scope、Success Metrics |
-| Analyst / PM | Spec、Acceptance Criteria |
-| Tech Lead | Design、Plan、架构边界、Matrix 追溯完整性 |
-| Engineer | Tasks、Prompt、Code、Tests |
-| QA | Test、Evidence、验收验证、Matrix 覆盖校验 |
-| Reviewer | Code Review、Release Readiness、Matrix Review |
-| Ops / SRE | Release、Monitoring、Rollback、Retrospective 输入 |
+| 角色            | 主要负责                                          |
+| --------------- | ------------------------------------------------- |
+| Product / Owner | Goal、Scope、Success Metrics                      |
+| Analyst / PM    | Spec、Acceptance Criteria                         |
+| Tech Lead       | Design、Plan、架构边界、Matrix 追溯完整性         |
+| Engineer        | Tasks、Prompt、Code、Tests                        |
+| QA              | Test、Evidence、验收验证、Matrix 覆盖校验         |
+| Reviewer        | Code Review、Release Readiness、Matrix Review     |
+| Ops / SRE       | Release、Monitoring、Rollback、Retrospective 输入 |
 
 ---
 
@@ -94,19 +94,19 @@ C = Consulted，被咨询者
 I = Informed，被通知者
 ```
 
-| 阶段 | Product | Analyst/PM | Tech Lead | Engineer | QA | Ops/SRE |
-|------|---------|------------|-----------|----------|----|---------|
-| Goal | A/R | C | C | I | I | I |
-| Spec | A | R | C | C | C | I |
-| Design | C | C | A/R | C | C | I |
-| Plan | C | C | A/R | R | C | C |
-| Tasks | I | C | A | R | C | I |
-| Prompt | I | C | C | A/R | C | I |
-| Code | I | I | C | A/R | C | I |
-| Test | C | C | C | R | A/R | I |
-| Review | A | C | C | R | C | I |
-| Release | A | I | C | C | C | A/R |
-| Retrospective | A/R | C | C | C | C | R |
+| 阶段          | Product   | Analyst/PM   | Tech Lead   | Engineer   | QA   | Ops/SRE   |
+| ------------- | --------- | ------------ | ----------- | ---------- | ---- | --------- |
+| Goal          | A/R       | C            | C           | I          | I    | I         |
+| Spec          | A         | R            | C           | C          | C    | I         |
+| Design        | C         | C            | A/R         | C          | C    | I         |
+| Plan          | C         | C            | A/R         | R          | C    | C         |
+| Tasks         | I         | C            | A           | R          | C    | I         |
+| Prompt        | I         | C            | C           | A/R        | C    | I         |
+| Code          | I         | I            | C           | A/R        | C    | I         |
+| Test          | C         | C            | C           | R          | A/R  | I         |
+| Review        | A         | C            | C           | R          | C    | I         |
+| Release       | A         | I            | C           | C          | C    | A/R       |
+| Retrospective | A/R       | C            | C           | C          | C    | R         |
 
 ---
 

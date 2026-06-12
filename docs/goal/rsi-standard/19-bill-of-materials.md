@@ -71,16 +71,16 @@ Hash:
 
 数据状态：
 
-| 状态 | 含义 |
-|---|---|
-| raw | 原始数据 |
-| staged | 待审核 |
-| approved_train | 可训练 |
-| approved_eval | 可评测 |
-| red_team_only | 仅红队 |
-| prohibited | 禁用 |
-| contaminated | 污染 |
-| retired | 退役 |
+| 状态           | 含义     |
+| -------------- | -------- |
+| raw            | 原始数据 |
+| staged         | 待审核   |
+| approved_train | 可训练   |
+| approved_eval  | 可评测   |
+| red_team_only  | 仅红队   |
+| prohibited     | 禁用     |
+| contaminated   | 污染     |
+| retired        | 退役     |
 
 禁止：
 

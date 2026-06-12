@@ -10,15 +10,15 @@
 
 ## 17.1 评测器分层
 
-| 层级 | 说明 |
-|---|---|
-| E0 Public tests | 公开回归测试 |
-| E1 Internal tests | 内部常规测试 |
-| E2 Hidden tests | 被测系统不可见 |
-| E3 Adaptive tests | 根据行为动态生成 |
-| E4 Adversarial tests | 专门寻找失败模式 |
-| E5 External tests | 独立机构维护 |
-| E6 Live audits | 在线审计和随机抽查 |
+| 层级                 | 说明               |
+| -------------------- | ------------------ |
+| E0 Public tests      | 公开回归测试       |
+| E1 Internal tests    | 内部常规测试       |
+| E2 Hidden tests      | 被测系统不可见     |
+| E3 Adaptive tests    | 根据行为动态生成   |
+| E4 Adversarial tests | 专门寻找失败模式   |
+| E5 External tests    | 独立机构维护       |
+| E6 Live audits       | 在线审计和随机抽查 |
 
 R3+ 不得只使用 E0/E1。  
 R4+ 必须使用 E2-E5 组合。  

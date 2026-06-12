@@ -32,16 +32,16 @@ status: pending
 
 ## Requirements Covered
 
-| Requirement | Description | Acceptance Criteria |
-|---|---|---|
-| FR-001 | Schedule：Job 注册结构定义 | Job 结构体字段与 SPEC §9.2 一致 |
-| FR-002 | Trigger：cron/interval/delay 类型定义 | Trigger 类型支持三种触发方式 |
+| Requirement | Description                           | Acceptance Criteria             |
+| ----------- | ------------------------------------- | ------------------------------- |
+| FR-001      | Schedule：Job 注册结构定义            | Job 结构体字段与 SPEC §9.2 一致 |
+| FR-002      | Trigger：cron/interval/delay 类型定义 | Trigger 类型支持三种触发方式    |
 
 ## Test Plan
 
-| Test Case | Type | Description |
-|---|---|---|
-| — | Compile | 接口完整性编译验证 |
+| Test Case | Type    | Description        |
+| --------- | ------- | ------------------ |
+| —         | Compile | 接口完整性编译验证 |
 
 ## Implementation Notes
 
@@ -51,14 +51,14 @@ status: pending
 
 ## Implementation Plan
 
-| Step | Description | Deliverables | Verification |
-|---|---|---|---|
-| 1 | 定义 `Scheduler` 接口 | `scheduler.go` | `go build ./...` 通过 |
-| 2 | 定义 `Job` 结构体 | `job.go` | `go build ./...` 通过 |
-| 3 | 定义 `Trigger` 类型和验证逻辑 | `trigger.go` | `go build ./...` 通过 |
+| Step | Description                   | Deliverables   | Verification          |
+| ---- | ----------------------------- | -------------- | --------------------- |
+| 1    | 定义 `Scheduler` 接口         | `scheduler.go` | `go build ./...` 通过 |
+| 2    | 定义 `Job` 结构体             | `job.go`       | `go build ./...` 通过 |
+| 3    | 定义 `Trigger` 类型和验证逻辑 | `trigger.go`   | `go build ./...` 通过 |
 
 ### Risk Assessment
 
-| Risk | Probability | Impact | Mitigation |
-|---|---|---|---|
-| Trigger 类型设计不合理 | Low | Medium | 支持 cron 和 interval 两种，互斥校验 |
+| Risk                   | Probability | Impact | Mitigation                           |
+| ---------------------- | ----------- | ------ | ------------------------------------ |
+| Trigger 类型设计不合理 | Low         | Medium | 支持 cron 和 interval 两种，互斥校验 |

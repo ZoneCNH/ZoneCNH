@@ -45,10 +45,10 @@ status: pending
 
 > Spec TC: TC-009
 
-| Requirement | Description |
-|---|---|
-| FR-004 | 可观测抽象 |
-| BR-006 | 所有接口必须有 Noop 零值实现 |
+| Requirement | Description                  |
+| ----------- | ---------------------------- |
+| FR-004      | 可观测抽象                   |
+| BR-006      | 所有接口必须有 Noop 零值实现 |
 
 ## Non-scope
 
@@ -57,9 +57,9 @@ status: pending
 
 ## Test Plan
 
-| TC | Type | Description |
-|----|------|-------------|
-| TC-009 | Unit | SecretString String()/JSON() 返回 "***" |
+| TC     | Type   | Description                             |
+| ------ | ------ | --------------------------------------- |
+| TC-009 | Unit   | SecretString String()/JSON() 返回 "***" |
 
 ## Implementation Notes
 

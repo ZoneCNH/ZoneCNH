@@ -34,14 +34,14 @@ pipeline_gate: composite_score >= 98 且无红线、无 LLM 低置信度、LLM �
 
 ## 路由
 
-| 情况 | next_action |
-|------|-------------|
-| pass | advance_to_next_stage |
-| 红线 / 分数 fail | route_to_executor_for_repair |
-| LLM 低置信度 | route_to_scorer_rerun |
-| 分差过大 | route_to_score_reconciliation |
-| 异构分歧过大 | route_to_score_reconciliation |
-| attempt ≥ 3 | route_to_upstream_stage（重置 attempt） |
+| 情况             | next_action                             |
+| ---------------- | --------------------------------------- |
+| pass             | advance_to_next_stage                   |
+| 红线 / 分数 fail | route_to_executor_for_repair            |
+| LLM 低置信度     | route_to_scorer_rerun                   |
+| 分差过大         | route_to_score_reconciliation           |
+| 异构分歧过大     | route_to_score_reconciliation           |
+| attempt ≥ 3      | route_to_upstream_stage（重置 attempt） |
 
 - 上游再失败继续向上路由直到 Spec；Spec 失败由 spec executor 修订后继续计入总预算。
 - `total_gate_failures >= 18` → `pipeline_blocked_for_retrospective`，写入 `.copilot/state/pipeline/{module}/pipeline_blocked.json` 与 `module/{module}/PIPELINE-RETROSPECTIVE.md`，停止进入下一阶段。

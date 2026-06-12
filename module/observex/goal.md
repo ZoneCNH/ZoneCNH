@@ -1,13 +1,13 @@
 # observex 发布版本 1.0 Goal 定位与实现标准
 
-| 字段 | 内容 |
-| --- | --- |
-| 模块名 | `observex` |
-| 发布版本 | 1.0.0 |
-| 所属层级 | L1 运行时横切能力 / 可观测性 |
-| 稳定级别 | Public API Stable；SPI Stable；Internal 可演进 |
-| 文档状态 | 1.0 发布基线文档 |
-| 发布日期基准 | 2026-06-09 |
+| 字段         | 内容                                           |
+| ------------ | ---------------------------------------------- |
+| 模块名       | `observex`                                     |
+| 发布版本     | 1.0.0                                          |
+| 所属层级     | L1 运行时横切能力 / 可观测性                   |
+| 稳定级别     | Public API Stable；SPI Stable；Internal 可演进 |
+| 文档状态     | 1.0 发布基线文档                               |
+| 发布日期基准 | 2026-06-09                                     |
 
 ## 术语约定
 
@@ -57,25 +57,25 @@
 
 ## 3. 核心场景
 
-| 场景 | 说明 | 1.0 期望结果 |
-| --- | --- | --- |
-| 请求排障 | 用户请求经过缓存、数据库、消息发送 | 通过 traceId 串联全部模块调用 |
-| 性能分析 | 线上出现慢查询或慢消费 | 通过 duration 指标和慢操作日志定位瓶颈 |
-| 容量观测 | Kafka 积压、Redis 慢操作、PostgreSQL 连接池紧张 | 统一指标可被监控系统采集和告警 |
-| 安全审计 | 配置变更、对象存储签名 URL 创建 | 审计事件独立输出并保留必要字段 |
-| 观测后端降级 | 生产环境 Jaeger/OTLP Collector 临时不可达 | 业务不中断，Trace 数据降级到本地缓冲或丢弃 |
+| 场景         | 说明                                            | 1.0 期望结果                               |
+| ------------ | ----------------------------------------------- | ------------------------------------------ |
+| 请求排障     | 用户请求经过缓存、数据库、消息发送              | 通过 traceId 串联全部模块调用              |
+| 性能分析     | 线上出现慢查询或慢消费                          | 通过 duration 指标和慢操作日志定位瓶颈     |
+| 容量观测     | Kafka 积压、Redis 慢操作、PostgreSQL 连接池紧张 | 统一指标可被监控系统采集和告警             |
+| 安全审计     | 配置变更、对象存储签名 URL 创建                 | 审计事件独立输出并保留必要字段             |
+| 观测后端降级 | 生产环境 Jaeger/OTLP Collector 临时不可达       | 业务不中断，Trace 数据降级到本地缓冲或丢弃 |
 
 ## 4. 能力范围
 
-| 能力域 | 要求 | 验收方式 |
-| --- | --- | --- |
-| 结构化日志 | 标准字段、日志等级、脱敏、错误上下文 | 日志字段快照测试通过 |
-| 指标 | Counter、Gauge、Timer、Histogram、标签约束 | 指标注册和采集测试通过 |
-| 链路追踪 | span 创建、上下文传播、异步上下文恢复 | 跨线程 Trace 测试通过 |
-| 审计事件 | actor、action、resource、result、reason、timestamp | v1.1 规划（非 1.0）；schema 测试 |
-| 诊断事件 | 模块启动、配置刷新、熔断打开、任务失败等事件 | v1.1 规划（非 1.0）；事件枚举测试 |
-| 后端适配 | Noop、Console、平台适配 SPI | 无后端降级测试通过；ObservationAdapter SPI 推迟到 v1.1 |
-| 采样与限流 | 日志采样、Trace 采样、事件限流 | 高压测试通过 |
+| 能力域     | 要求                                               | 验收方式                                               |
+| ---------- | -------------------------------------------------- | ------------------------------------------------------ |
+| 结构化日志 | 标准字段、日志等级、脱敏、错误上下文               | 日志字段快照测试通过                                   |
+| 指标       | Counter、Gauge、Timer、Histogram、标签约束         | 指标注册和采集测试通过                                 |
+| 链路追踪   | span 创建、上下文传播、异步上下文恢复              | 跨线程 Trace 测试通过                                  |
+| 审计事件   | actor、action、resource、result、reason、timestamp | v1.1 规划（非 1.0）；schema 测试                       |
+| 诊断事件   | 模块启动、配置刷新、熔断打开、任务失败等事件       | v1.1 规划（非 1.0）；事件枚举测试                      |
+| 后端适配   | Noop、Console、平台适配 SPI                        | 无后端降级测试通过；ObservationAdapter SPI 推迟到 v1.1 |
+| 采样与限流 | 日志采样、Trace 采样、事件限流                     | 高压测试通过                                           |
 
 ## 5. 职责边界
 
@@ -96,26 +96,26 @@
 
 ## 6. 依赖关系与分层约束
 
-| 依赖类型 | 约束 |
-| --- | --- |
+| 依赖类型 | 约束                                                                                          |
+| -------- | --------------------------------------------------------------------------------------------- |
 | 上游依赖 | 依赖 kernel。observex 通过自身 Config 结构体（SPEC §11）管理观测配置，不依赖 configx 运行时。 |
-| 下游依赖 | 所有运行时模块应该接入 observex。 |
-| 分层约束 | observex 不得依赖 redisx、kafkax 等具体扩展；具体 exporter 通过 adapter/SPI 引入。 |
-| 契约依赖 | MUST 向 contracts 登记 Public API 契约和错误码契约。 |
+| 下游依赖 | 所有运行时模块应该接入 observex。                                                             |
+| 分层约束 | observex 不得依赖 redisx、kafkax 等具体扩展；具体 exporter 通过 adapter/SPI 引入。            |
+| 契约依赖 | MUST 向 contracts 登记 Public API 契约和错误码契约。                                          |
 
 ## 7. 对外契约
 
 ### 7.1 公开能力面
 
-| 契约 | 定位 | 1.0 稳定承诺 |
-| --- | --- | --- |
-| XLogger | 结构化日志入口 | 字段语义稳定 |
-| MetricRegistry（SPEC.md 用名: Meter） | 指标注册和记录入口 | 指标类型稳定 |
-| Tracer | span 生命周期和上下文传播 | Trace 语义稳定 |
-| AuditEvent | 审计事件模型 | v1.1 规划（非 1.0） |
-| DiagnosticEvent | 诊断事件模型 | v1.1 规划（非 1.0） |
-| HealthIndicator | 健康检查抽象 | 状态字段稳定；各扩展模块（redisx、kafkax、postgresx 等）实现此接口上报组件健康 |
-| ObservationAdapter SPI | 后端适配扩展点 | v1.1 规划（非 1.0） |
+| 契约                                  | 定位                      | 1.0 稳定承诺                                                                   |
+| ------------------------------------- | ------------------------- | ------------------------------------------------------------------------------ |
+| XLogger                               | 结构化日志入口            | 字段语义稳定                                                                   |
+| MetricRegistry（SPEC.md 用名: Meter） | 指标注册和记录入口        | 指标类型稳定                                                                   |
+| Tracer                                | span 生命周期和上下文传播 | Trace 语义稳定                                                                 |
+| AuditEvent                            | 审计事件模型              | v1.1 规划（非 1.0）                                                            |
+| DiagnosticEvent                       | 诊断事件模型              | v1.1 规划（非 1.0）                                                            |
+| HealthIndicator                       | 健康检查抽象              | 状态字段稳定；各扩展模块（redisx、kafkax、postgresx 等）实现此接口上报组件健康 |
+| ObservationAdapter SPI                | 后端适配扩展点            | v1.1 规划（非 1.0）                                                            |
 
 ### 7.2 1.0 逻辑接口基线
 
@@ -166,15 +166,15 @@ Health
 
 ## 8. 配置契约
 
-| 配置项 | 含义 | 默认值 / 要求 | 稳定性 |
-| --- | --- | --- | --- |
-| foundationx.observe.enabled | 是否启用观测 | true | Stable |
-| foundationx.observe.backend | 观测后端 | noop | Stable |
-| foundationx.observe.log.level | 默认日志级别 | info | Stable |
-| foundationx.observe.trace.sample-rate | Trace 采样率 | 1.0 for dev；生产由配置决定 | Stable |
-| foundationx.observe.metric.prefix | 指标前缀 | xlib | Stable |
-| foundationx.observe.slow-threshold | 慢操作阈值 | 按模块默认 | Stable |
-| foundationx.observe.audit.enabled | 是否启用审计事件 | true | Stable |
+| 配置项                                | 含义             | 默认值 / 要求               | 稳定性 |
+| ------------------------------------- | ---------------- | --------------------------- | ------ |
+| foundationx.observe.enabled           | 是否启用观测     | true                        | Stable |
+| foundationx.observe.backend           | 观测后端         | noop                        | Stable |
+| foundationx.observe.log.level         | 默认日志级别     | info                        | Stable |
+| foundationx.observe.trace.sample-rate | Trace 采样率     | 1.0 for dev；生产由配置决定 | Stable |
+| foundationx.observe.metric.prefix     | 指标前缀         | xlib                        | Stable |
+| foundationx.observe.slow-threshold    | 慢操作阈值       | 按模块默认                  | Stable |
+| foundationx.observe.audit.enabled     | 是否启用审计事件 | true                        | Stable |
 
 ## 9. 可观测契约
 
@@ -187,13 +187,13 @@ Health
 
 ### 9.2 指标
 
-| 指标名 | 类型 | 标签 | 说明 |
-| --- | --- | --- | --- |
-| foundationx_observe_events_total | Counter | module,eventType,status | 诊断/审计事件输出次数 |
-| foundationx_observe_export_errors_total | Counter | backend,signal | 观测数据导出失败次数 |
-| foundationx_observe_log_dropped_total | Counter | reason | 日志被采样或限流丢弃次数 |
-| foundationx_observe_trace_spans_total | Counter | module,status | span 创建数量 |
-| foundationx_observe_metric_registry_size | Gauge | backend | 已注册指标数量 |
+| 指标名                                   | 类型    | 标签                    | 说明                     |
+| ---------------------------------------- | ------- | ----------------------- | ------------------------ |
+| foundationx_observe_events_total         | Counter | module,eventType,status | 诊断/审计事件输出次数    |
+| foundationx_observe_export_errors_total  | Counter | backend,signal          | 观测数据导出失败次数     |
+| foundationx_observe_log_dropped_total    | Counter | reason                  | 日志被采样或限流丢弃次数 |
+| foundationx_observe_trace_spans_total    | Counter | module,status           | span 创建数量            |
+| foundationx_observe_metric_registry_size | Gauge   | backend                 | 已注册指标数量           |
 
 ### 9.3 Trace / 诊断事件
 
@@ -203,12 +203,12 @@ Health
 
 ## 10. 错误模型与失败策略
 
-| 错误类别 | 典型原因 | 1.0 处理策略 |
-| --- | --- | --- |
-| OBSERVE_BACKEND_UNAVAILABLE | 观测后端不可用 | 降级到 Noop 或本地缓冲，不阻断业务主流程 |
-| OBSERVE_CONTEXT_LOST | 异步边界未恢复上下文 | 记录诊断事件，业务继续 |
-| OBSERVE_EXPORT_FAILED | 指标/Trace/日志导出失败 | 按限流策略记录并重试或丢弃 |
-| OBSERVE_INVALID_METRIC | 指标名或标签不合法 | 开发期阻断，生产期拒绝注册并告警 |
+| 错误类别                    | 典型原因                | 1.0 处理策略                             |
+| --------------------------- | ----------------------- | ---------------------------------------- |
+| OBSERVE_BACKEND_UNAVAILABLE | 观测后端不可用          | 降级到 Noop 或本地缓冲，不阻断业务主流程 |
+| OBSERVE_CONTEXT_LOST        | 异步边界未恢复上下文    | 记录诊断事件，业务继续                   |
+| OBSERVE_EXPORT_FAILED       | 指标/Trace/日志导出失败 | 按限流策略记录并重试或丢弃               |
+| OBSERVE_INVALID_METRIC      | 指标名或标签不合法      | 开发期阻断，生产期拒绝注册并告警         |
 
 ## 11. 安全、稳定性与兼容性要求
 
@@ -222,13 +222,13 @@ Health
 
 ## 12. 测试证据要求
 
-| 测试类型 | 必须覆盖内容 | 发布门禁 |
-| --- | --- | --- |
-| 单元测试 | 日志字段、指标注册、Trace context、审计事件 schema | MUST 通过 |
-| 并发测试 | 异步上下文传播、span 生命周期、指标并发记录 | MUST 通过 |
-| 后端适配测试 | Noop/Console/SPI fallback | MUST 通过 |
-| 集成测试 | 与 configx、resiliencx、redisx 至少三个模块集成 | MUST 通过 |
-| 安全测试 | 敏感字段脱敏、指标高基数限制 | MUST 通过 |
+| 测试类型     | 必须覆盖内容                                       | 发布门禁  |
+| ------------ | -------------------------------------------------- | --------- |
+| 单元测试     | 日志字段、指标注册、Trace context、审计事件 schema | MUST 通过 |
+| 并发测试     | 异步上下文传播、span 生命周期、指标并发记录        | MUST 通过 |
+| 后端适配测试 | Noop/Console/SPI fallback                          | MUST 通过 |
+| 集成测试     | 与 configx、resiliencx、redisx 至少三个模块集成    | MUST 通过 |
+| 安全测试     | 敏感字段脱敏、指标高基数限制                       | MUST 通过 |
 
 ## 13. 1.0 发布验收清单
 

@@ -1,13 +1,13 @@
 # schedulex 发布版本 1.0 Goal 定位与实现标准
 
-| 字段 | 内容 |
-| --- | --- |
-| 模块名 | `schedulex` |
-| 发布版本 | 1.0.0 |
-| 所属层级 | L1 运行时横切能力 / 调度与异步任务 |
-| 稳定级别 | Public API Stable；SPI Stable；Internal 可演进 |
-| 文档状态 | 1.0 发布基线文档（v1.0.1 对齐 SPEC.md v1.0.1） |
-| 发布日期基准 | 2026-06-09 |
+| 字段         | 内容                                           |
+| ------------ | ---------------------------------------------- |
+| 模块名       | `schedulex`                                    |
+| 发布版本     | 1.0.0                                          |
+| 所属层级     | L1 运行时横切能力 / 调度与异步任务             |
+| 稳定级别     | Public API Stable；SPI Stable；Internal 可演进 |
+| 文档状态     | 1.0 发布基线文档（v1.0.1 对齐 SPEC.md v1.0.1） |
+| 发布日期基准 | 2026-06-09                                     |
 
 ## 术语约定
 
@@ -57,26 +57,26 @@
 
 ## 3. 核心场景
 
-| 场景 | 说明 | 1.0 期望结果 |
-| --- | --- | --- |
-| 周期任务 | 每天凌晨清理过期对象 | 按 cron 触发并记录执行历史 |
-| 延迟任务 | 订单超时关闭或消息延迟补偿 | 到期触发，通过 EventSink 记录 |
-| 分布式任务 | 服务多副本部署但任务只允许一个实例执行 | 通过 Locker 避免并发执行 |
-| 失败排查 | 后台任务失败但无用户请求上下文 | 任务执行日志、状态和 EventSink 可追踪 |
-| 集群 Failover | 调度节点宕机，任务需转移到其他节点 | 通过 Locker TTL 到期自动释放，其他节点接管任务 |
+| 场景          | 说明                                   | 1.0 期望结果                                   |
+| ------------- | -------------------------------------- | ---------------------------------------------- |
+| 周期任务      | 每天凌晨清理过期对象                   | 按 cron 触发并记录执行历史                     |
+| 延迟任务      | 订单超时关闭或消息延迟补偿             | 到期触发，通过 EventSink 记录                  |
+| 分布式任务    | 服务多副本部署但任务只允许一个实例执行 | 通过 Locker 避免并发执行                       |
+| 失败排查      | 后台任务失败但无用户请求上下文         | 任务执行日志、状态和 EventSink 可追踪          |
+| 集群 Failover | 调度节点宕机，任务需转移到其他节点     | 通过 Locker TTL 到期自动释放，其他节点接管任务 |
 
 ## 4. 能力范围
 
-| 能力域 | 1.0 必须具备的能力 | 验收方式 |
-| --- | --- | --- |
-| 任务定义 | Job：ID、Name、Trigger、Handler、Timeout、MaxRetries、Overlap、Misfire | 定义校验测试通过 |
-| 触发器 | cron、interval、delay | 触发计算测试通过 |
-| 执行器 | JobHandler(ctx) error，并发控制（MaxConcurrency），取消传播 | 执行生命周期测试通过 |
-| Overlap 策略 | Skip / Queue / Replace | Overlap contract 测试通过 |
-| Misfire 策略 | Skip / RunOnce / CatchUp | Misfire contract 测试通过 |
-| 分布式锁 | Locker：Acquire / Release，TTL 约束 | 多实例测试通过 |
-| 时钟注入 | FakeClock 实现确定性测试 | 时钟注入测试通过 |
-| 调度观测 | 日志、指标、EventSink、Span | 观测测试通过 |
+| 能力域       | 1.0 必须具备的能力                                                     | 验收方式                  |
+| ------------ | ---------------------------------------------------------------------- | ------------------------- |
+| 任务定义     | Job：ID、Name、Trigger、Handler、Timeout、MaxRetries、Overlap、Misfire | 定义校验测试通过          |
+| 触发器       | cron、interval、delay                                                  | 触发计算测试通过          |
+| 执行器       | JobHandler(ctx) error，并发控制（MaxConcurrency），取消传播            | 执行生命周期测试通过      |
+| Overlap 策略 | Skip / Queue / Replace                                                 | Overlap contract 测试通过 |
+| Misfire 策略 | Skip / RunOnce / CatchUp                                               | Misfire contract 测试通过 |
+| 分布式锁     | Locker：Acquire / Release，TTL 约束                                    | 多实例测试通过            |
+| 时钟注入     | FakeClock 实现确定性测试                                               | 时钟注入测试通过          |
+| 调度观测     | 日志、指标、EventSink、Span                                            | 观测测试通过              |
 
 ## 5. 职责边界
 
@@ -99,25 +99,25 @@
 
 ## 6. 依赖关系与分层约束
 
-| 依赖类型 | 约束 |
-| --- | --- |
-| 上游依赖 | 依赖 kernel（L0 原语）、stdlib。 |
-| 下游依赖 | 业务任务和部分模块维护任务可以使用 schedulex。 |
+| 依赖类型 | 约束                                                                                                                            |
+| -------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| 上游依赖 | 依赖 kernel（L0 原语）、stdlib。                                                                                                |
+| 下游依赖 | 业务任务和部分模块维护任务可以使用 schedulex。                                                                                  |
 | 可选依赖 | Locker 可由 redisx 或 postgresx 适配，但核心模块只依赖 Locker SPI。observex（interface-only）、resiliencx（可选 job wrapper）。 |
-| 契约依赖 | MUST 向 contracts 登记 Public API 契约和错误码契约。 |
+| 契约依赖 | MUST 向 contracts 登记 Public API 契约和错误码契约。                                                                            |
 
 ## 7. 对外契约
 
 ### 7.1 公开能力面
 
-| 契约 | 定位 | 1.0 稳定承诺 |
-| --- | --- | --- |
-| Scheduler | 任务注册、取消、列表、启停 | 核心生命周期稳定 |
-| Job | 任务元数据和执行策略 | 字段语义稳定 |
-| Trigger | 触发时间计算（cron / interval / delay） | cron 和延迟语义稳定 |
+| 契约       | 定位                                           | 1.0 稳定承诺           |
+| ---------- | ---------------------------------------------- | ---------------------- |
+| Scheduler  | 任务注册、取消、列表、启停                     | 核心生命周期稳定       |
+| Job        | 任务元数据和执行策略                           | 字段语义稳定           |
+| Trigger    | 触发时间计算（cron / interval / delay）        | cron 和延迟语义稳定    |
 | JobHandler | 业务执行接口 `func(ctx context.Context) error` | 输入输出和错误语义稳定 |
-| EventSink | 生命周期事件回调 | 事件类型稳定 |
-| Locker | 分布式锁扩展点（Acquire / Release） | TTL 语义稳定 |
+| EventSink  | 生命周期事件回调                               | 事件类型稳定           |
+| Locker     | 分布式锁扩展点（Acquire / Release）            | TTL 语义稳定           |
 
 ### 7.2 1.0 逻辑接口基线
 
@@ -152,19 +152,19 @@ Locker
 
 ## 8. 配置契约
 
-| 配置项 | 含义 | 默认值 / 要求 | 稳定性 |
-| --- | --- | --- | --- |
-| schedulex.timezone | 调度时区 | UTC | Stable |
-| schedulex.overlap_policy | 重叠执行策略 | skip / queue / replace | Stable |
-| schedulex.misfire_policy | 错过触发策略 | skip / run_once / catch_up | Stable |
-| schedulex.max_concurrency | 最大并发 job 数 | 10 | Stable |
-| schedulex.default_timeout | 默认 job 超时 | 5m | Stable |
-| schedulex.shutdown_timeout | 停机等待超时 | 30s | Stable |
-| schedulex.distributed_lock.enabled | 是否启用分布式锁 | false | Stable |
-| schedulex.distributed_lock.backend | 锁后端 | redis / postgres | Stable |
-| schedulex.distributed_lock.ttl | 锁租约 | 30s | Stable |
-| schedulex.jitter.enabled | 是否启用抖动 | true | Stable |
-| schedulex.jitter.max | 最大抖动时间 | 5s | Stable |
+| 配置项                             | 含义             | 默认值 / 要求              | 稳定性 |
+| ---------------------------------- | ---------------- | -------------------------- | ------ |
+| schedulex.timezone                 | 调度时区         | UTC                        | Stable |
+| schedulex.overlap_policy           | 重叠执行策略     | skip / queue / replace     | Stable |
+| schedulex.misfire_policy           | 错过触发策略     | skip / run_once / catch_up | Stable |
+| schedulex.max_concurrency          | 最大并发 job 数  | 10                         | Stable |
+| schedulex.default_timeout          | 默认 job 超时    | 5m                         | Stable |
+| schedulex.shutdown_timeout         | 停机等待超时     | 30s                        | Stable |
+| schedulex.distributed_lock.enabled | 是否启用分布式锁 | false                      | Stable |
+| schedulex.distributed_lock.backend | 锁后端           | redis / postgres           | Stable |
+| schedulex.distributed_lock.ttl     | 锁租约           | 30s                        | Stable |
+| schedulex.jitter.enabled           | 是否启用抖动     | true                       | Stable |
+| schedulex.jitter.max               | 最大抖动时间     | 5s                         | Stable |
 
 ## 9. 可观测契约
 
@@ -176,14 +176,14 @@ Locker
 
 ### 9.2 指标
 
-| 指标名 | 类型 | 标签 | 说明 |
-| --- | --- | --- | --- |
-| schedulex_job_triggered | Counter | job_id | job 触发次数 |
-| schedulex_job_duration | Histogram | job_id | job 执行耗时 |
-| schedulex_job_errors | Counter | job_id, error_type | job 执行失败次数 |
-| schedulex_job_misfired | Counter | job_id, policy | misfire 次数 |
-| schedulex_job_running | Gauge | | 当前正在执行的 job 数 |
-| schedulex_queue_size | Gauge | | 等待执行的 job 数 |
+| 指标名                  | 类型      | 标签               | 说明                  |
+| ----------------------- | --------- | ------------------ | --------------------- |
+| schedulex_job_triggered | Counter   | job_id             | job 触发次数          |
+| schedulex_job_duration  | Histogram | job_id             | job 执行耗时          |
+| schedulex_job_errors    | Counter   | job_id, error_type | job 执行失败次数      |
+| schedulex_job_misfired  | Counter   | job_id, policy     | misfire 次数          |
+| schedulex_job_running   | Gauge     |                    | 当前正在执行的 job 数 |
+| schedulex_queue_size    | Gauge     |                    | 等待执行的 job 数     |
 
 ### 9.3 Trace / 诊断事件
 
@@ -193,14 +193,14 @@ Locker
 
 ## 10. 错误模型与失败策略
 
-| 错误类别 | 典型原因 | 1.0 处理策略 |
-| --- | --- | --- |
-| ErrInvalidTrigger | cron 语法错误或 interval <= 0 | 返回不可重试错误 |
-| ErrDuplicateJob | 重复 JobID 注册 | 返回不可重试错误 |
-| ErrJobNotFound | Cancel 不存在的 job | 返回不可重试错误 |
-| ErrShutdownTimeout | job 执行超过 shutdown_timeout | 强制取消并返回超时错误 |
-| ErrLockAcquire | 分布式锁获取失败 | 跳过本次执行，等待下一个调度周期 |
-| Job Panic | handler 内部 panic | catch panic，记录日志，不影响其他 job |
+| 错误类别           | 典型原因                      | 1.0 处理策略                          |
+| ------------------ | ----------------------------- | ------------------------------------- |
+| ErrInvalidTrigger  | cron 语法错误或 interval <= 0 | 返回不可重试错误                      |
+| ErrDuplicateJob    | 重复 JobID 注册               | 返回不可重试错误                      |
+| ErrJobNotFound     | Cancel 不存在的 job           | 返回不可重试错误                      |
+| ErrShutdownTimeout | job 执行超过 shutdown_timeout | 强制取消并返回超时错误                |
+| ErrLockAcquire     | 分布式锁获取失败              | 跳过本次执行，等待下一个调度周期      |
+| Job Panic          | handler 内部 panic            | catch panic，记录日志，不影响其他 job |
 
 ## 11. 安全、稳定性与兼容性要求
 
@@ -211,13 +211,13 @@ Locker
 
 ## 12. 测试证据要求
 
-| 测试类型 | 必须覆盖内容 | 发布门禁 |
-| --- | --- | --- |
+| 测试类型 | 必须覆盖内容                                                     | 发布门禁  |
+| -------- | ---------------------------------------------------------------- | --------- |
 | 单元测试 | 触发时间计算、overlap 策略、misfire 策略、DST 切换、trigger 验证 | MUST 通过 |
-| 集成测试 | 分布式锁、job 生命周期、EventSink | MUST 通过 |
-| 并发测试 | 多实例抢锁、Schedule + Cancel 并发安全 | MUST 通过 |
-| 故障测试 | 锁获取失败、handler 超时、handler panic | MUST 通过 |
-| 观测测试 | 日志、指标、EventSink | MUST 通过 |
+| 集成测试 | 分布式锁、job 生命周期、EventSink                                | MUST 通过 |
+| 并发测试 | 多实例抢锁、Schedule + Cancel 并发安全                           | MUST 通过 |
+| 故障测试 | 锁获取失败、handler 超时、handler panic                          | MUST 通过 |
+| 观测测试 | 日志、指标、EventSink                                            | MUST 通过 |
 
 ## 13. 1.0 发布验收清单
 
