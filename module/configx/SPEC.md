@@ -167,6 +167,8 @@ type Config interface {
 func New(opts ...Option) Config
 ```text
 
+> **context.Context 豁免说明**：Reader 的 Get* 方法为纯内存读取操作，不涉及网络 I/O、文件访问或阻塞等待，不存在取消传播或超时控制的需求。CONSTITUTION.md §4.1 和 SPEC-TEMPLATE.md §9 要求的 `context.Context` 参数面向网络/IO 接口，对内存配置读取器不适用。Config 接口的 `Load(path)` 方法涉及文件 I/O，其返回 `error` 已覆盖失败路径。
+
 ### 9.1 Option 模式
 
 ```go
@@ -464,9 +466,13 @@ Then 不能通过 Reader 修改底层配置
 
 | 要求 | 实现方式 |
 |------|----------|
-| 敏感配置不写日志 | 日志中对密码、token 等字段脱敏（显示 `***`） |
-| 配置文件权限检查 | 启动时检查文件权限，过宽则 warning |
-| 环境变量不泄露 | 错误消息中不包含环境变量值 |
+| 敏感配置不写日志 | 日志中对密码、token 等字段脱敏（显示 `***`）；BR-011 自动脱敏所有 `password/token/secret/key/accessKey/secretKey` 字段 |
+| 配置文件权限检查 | 启动时检查文件权限（Unix: 不允许 other 可写），过宽则 warning |
+| 环境变量不泄露 | 错误消息中不包含环境变量值；敏感字段在 String()/JSON 序列化时自动 redact |
+| 依赖安全扫描 | 每次 PR 运行 `govulncheck ./...` 扫描已知漏洞；CI Gate 阻塞高危 CVE |
+| 传输加密（RemoteSource） | v1.0 RemoteSource SPI 实现时强制 TLS 1.2+；自签名证书需显式配置 `InsecureSkipVerify=false` |
+| 静态凭证扫描 | CI Gate `gitleaks detect --no-git` 阻塞任何硬编码凭证、API key、token 泄露 |
+| 不可信输入校验 | 所有配置文件内容、环境变量值、RemoteSource 响应必须通过 schema 校验；拒绝反序列化 gadgets（GHSL-2021-008 等） |
 
 ---
 
