@@ -10,7 +10,7 @@ module: configx
 scope: "实现 Load(path) 方法，支持 YAML/TOML/JSON 格式自动检测和解析"
 spec_ref:
   - "module/configx/SPEC.md#FR-001"
-  - "module/configx/SPEC.md#13"
+  - "module/configx/SPEC.md#§13"
 files:
   - "config.go"
   - "internal/yaml/parser.go"
@@ -43,12 +43,19 @@ status: pending
 | Test Case | Type | Description |
 |---|---|---|
 | TC-001 | Unit | YAML 加载：解析正确，支持嵌套结构 |
+| TC-006 | Unit | 文件不存在：返回 `os.ErrNotExist` |
+| TC-007 | Unit | 格式无效：返回 `ErrInvalidFormat` |
 | — | Unit | TOML 加载：解析正确 |
 | — | Unit | JSON 加载：解析正确 |
-| — | Unit | 文件不存在：返回 os.ErrNotExist |
-| — | Unit | 格式无效：返回 ErrInvalidFormat |
 | — | Unit | 空文件：使用默认值 |
 | — | Unit | 格式自动检测：.yaml/.toml/.json 正确选择解析器 |
+| — | Integration | 完整加载链子集：Load → 结果存入 data |
+
+## Non-scope
+
+- 不做配置合并（→ TASK-003）
+- 不做环境变量处理（→ TASK-004）
+- 不做 schema 校验（→ TASK-005）
 
 ## Implementation Notes
 

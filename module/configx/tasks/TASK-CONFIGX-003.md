@@ -11,7 +11,7 @@ scope: "实现配置合并逻辑（默认值 → 文件 → 环境变量），�
 spec_ref:
   - "module/configx/SPEC.md#BR-001"
   - "module/configx/SPEC.md#BR-003"
-  - "module/configx/SPEC.md#10.2"
+  - "module/configx/SPEC.md#§10.2"
 files:
   - "merge.go"
   - "internal/merge/deep.go"
@@ -42,11 +42,18 @@ status: pending
 
 | Test Case | Type | Description |
 |---|---|---|
-| — | Unit | 默认值 + 文件覆盖：文件值优先 |
-| — | Unit | 文件 + 环境变量覆盖：环境变量优先 |
+| TC-001 | Unit | 覆盖优先级：默认值+文件覆盖，文件值优先 |
+| — | Unit | 文件+环境变量覆盖：环境变量优先 |
 | — | Unit | 点分路径中间节点：`a.b.c` 自动创建 `a` 和 `a.b` |
 | — | Unit | 深度合并：嵌套 map 不丢失已有键 |
 | — | Unit | 空值合并：某层为空不影响其他层 |
+| — | Integration | 合并结果→供后续 Task 使用 |
+
+## Non-scope
+
+- 不做文件解析（→ TASK-002）
+- 不做环境变量转换（→ TASK-004）
+- 不做 schema 校验（→ TASK-005）
 
 ## Implementation Notes
 

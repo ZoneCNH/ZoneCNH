@@ -9,8 +9,8 @@ task_id: TASK-CONFIGX-006
 module: configx
 scope: "实现 Reader 接口的所有方法，支持类型安全读取和并发安全"
 spec_ref:
-  - "module/configx/SPEC.md#FR-004"
-  - "module/configx/SPEC.md#BR-005"
+  - "module/configx/SPEC.md#SPEC.md#FR-004"
+  - "module/configx/SPEC.md#SPEC.md#BR-005"
 files:
   - "reader.go"
   - "reader_test.go"
@@ -33,18 +33,27 @@ status: pending
 
 | Requirement | Description | Acceptance Criteria |
 |---|---|---|
-| FR-004 | Get：存在→值，不存在→nil，并发安全 | 3 个 WHEN/THEN 场景 |
-| BR-005 | Reader 接口只能读，不能写 | 只暴露读方法 |
+| SPEC.md#FR-004 | Get：存在→值，不存在→nil，并发安全 | 3 个 WHEN/THEN 场景 |
+| SPEC.md#BR-005 | Reader 接口只能读，不能写 | 只暴露读方法 |
 
 ## Test Plan
 
 | Test Case | Type | Description |
 |---|---|---|
-| TC-003 | Unit | 并发安全：100 goroutine 并发 Get 无 data race |
+| TC-003 | Unit | 并发安全：100 goroutine 并发 Get 无 data race（-race 通过） |
 | TC-005 | Unit | Reader 只读：不能通过 Reader 修改底层配置 |
 | — | Unit | Get 存在 key：返回正确值 |
 | — | Unit | Get 不存在 key：返回 nil |
-| — | Unit | 类型方法转换正确 |
+| — | Unit | 类型方法转换正确（GetString/GetInt/GetFloat/GetBool/GetDuration） |
+| — | Benchmark | Load 1000 key < 50ms |
+| — | Benchmark | Get 单次 < 100ns |
+
+## Non-scope
+
+- 不做配置文件解析（→ TASK-002）
+- 不做环境变量处理（→ TASK-004）
+- 不做 schema 校验（→ TASK-005）
+- 不做文件监控（→ TASK-007）
 
 ## Implementation Notes
 
