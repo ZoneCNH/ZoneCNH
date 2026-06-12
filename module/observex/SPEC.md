@@ -13,7 +13,7 @@
 - Last-Updated: 2026-06-12
 - Owner: ZoneCNH
 - Layer: L1 基础能力
-- Version: v0.7.3
+- Version: v0.7.3 <!-- 模块发布版本；Spec-Version 为本文档自身版本 -->
 - Repository: [github.com/ZoneCNH/observex](https://github.com/ZoneCNH/observex)
 - Related: [CONSTITUTION.md](../../CONSTITUTION.md), [ARCHITECTURE.md](../../ARCHITECTURE.md)
 
@@ -27,6 +27,7 @@
 | 2026-06-12 | v1.0.1 | 结构修复：BR违反时列、Data Model补充、FR异常路径、Open Questions分类、配置表格化 | ZoneCNH |
 | 2026-06-12 | v1.0.1 | 状态 Draft → Review（Claude 99 + Rules 100，两源评分通过，待 Codex/Copilot 凑齐四源） | ZoneCNH |
 | 2026-06-12 | v1.0.1 | 结构修复续：Spec-Version对齐、Non-goals补全、config prefix与BR-006对齐、新增EC-010/TC-003a、FR-005嵌套脱敏 | ZoneCNH |
+| 2026-06-12 | v1.0.1 | 结构修复续：FR-003/FR-004 异常路径补充、版本号语义说明 | ZoneCNH |
 
 ## 2. Summary
 
@@ -142,6 +143,9 @@ THEN 记录错误事件到 span
 WHEN ctx 中已有 trace_id
 THEN 子 span 继承同一 trace_id（上下文传播）
 
+WHEN ctx 中无 trace_id
+THEN 创建新 trace（独立 trace），不报错
+
 ### FR-004: Exporter
 
 WHEN 调用 `ExportLogs(ctx, entries)` 且 exporter 正常连接
@@ -158,6 +162,9 @@ THEN 返回错误，不影响业务调用方
 
 WHEN 调用 `Shutdown(ctx)`
 THEN flush 缓冲区，释放资源
+
+WHEN 调用 `Shutdown(ctx)` 且在超时前未完成 flush
+THEN 返回 `ErrShutdownFailed`，未发送数据写入本地退避文件
 
 ### FR-005: Redaction
 

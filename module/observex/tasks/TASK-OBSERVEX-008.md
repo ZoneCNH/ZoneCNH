@@ -23,6 +23,7 @@ acceptance_criteria:
 depends_on:
   - "TASK-OBSERVEX-002"
   - "TASK-OBSERVEX-003"
+  - "TASK-OBSERVEX-003b"
   - "TASK-OBSERVEX-004"
   - "TASK-OBSERVEX-005"
   - "TASK-OBSERVEX-006"

@@ -14,6 +14,7 @@ spec_ref:
 files:
   - "sanitize.go"
   - "sanitize_test.go"
+  - "reader.go"
 acceptance_criteria:
   - "password/token/secret/key/accessKey/secretKey 字段自动脱敏为 ***"
   - "配置文件权限过宽（> 0o644）时输出 warning"
