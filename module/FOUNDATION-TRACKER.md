@@ -128,6 +128,15 @@
 - [x] 指标命名前缀 helper（`pkg/observex/metric_name.go`）
 - [x] label 允许/禁止列表实现（`pkg/observex/label_policy.go`）
 
+### testkitx ✅ (管线就绪, 5 PRs 合入)
+
+- [x] Matrix v1.1 重写: Task列+BR7/7+NFR5+AC注册表+TC→FR追溯 (#125)
+- [x] Tasks v2 重写: AC/TC前缀+non_scope+BR引用+红线修复 (#128)
+- [x] Plan 阶段初始化: OVERVIEW+11个Task计划 (#127)
+- [x] Prompt 阶段初始化: 11个开发Prompt (#127)
+- [x] Plan+Prompt 7项扣分修复→全线100分 (#133)
+- [ ] code/ 阶段: 在 testkitx 仓库实现 Go 代码
+
 ### testkitx ✅ (PR #1 合入)
 
 - [x] production import boundary scanner 稳定 API（`pkg/testkitx/boundarytest/`）
