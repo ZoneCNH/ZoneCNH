@@ -9,6 +9,8 @@ task_id: TASK-KERNEL-013
 module: kernel
 scope: "实现 internal/testutil 子包：RequireEqual 泛型断言"
 spec_ref:
+  - "module/kernel/SPEC.md#FR-011"
+  - "module/kernel/SPEC.md#BR-011"
   - "module/kernel/SPEC.md#9.13"
 files:
   - "internal/testutil/testutil.go"

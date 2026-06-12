@@ -34,7 +34,15 @@ status: pending
 
 ---
 
+## Files Likely to Change
+
+- `lifecycx/lifecycx.go` — 新建（Component/Starter/Stopper/Manager）
+- `lifecycx/lifecycx_test.go` — 新建
+- `lifecycx/example_test.go` — 新建
+
 ## Requirements Covered
+
+> Spec TC: TC-001, TC-002, TC-003
 
 | Requirement | Description |
 |---|---|
@@ -48,6 +56,14 @@ status: pending
 - 不包含依赖图/拓扑排序
 - 不包含 DI 容器
 - 不包含热注册/动态添加
+
+## Test Plan
+
+| TC | Type | Description |
+|----|------|-------------|
+| TC-001 | Unit | 正常启停：A.Start→B.Start→B.Stop→A.Stop |
+| TC-002 | Unit | 启动失败回滚：B.Start 失败→A.Stop→errors.Join |
+| TC-003 | Unit | 未启动时 Stop：返回 nil |
 
 ## Implementation Notes
 

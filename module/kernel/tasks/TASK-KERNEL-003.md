@@ -35,7 +35,15 @@ status: pending
 
 ---
 
+## Files Likely to Change
+
+- `obsx/obsx.go` — 新建（Logger/Metrics/Tracer/Span/Noop*/SecretString）
+- `obsx/obsx_test.go` — 新建
+- `obsx/example_test.go` — 新建
+
 ## Requirements Covered
+
+> Spec TC: TC-009
 
 | Requirement | Description |
 |---|---|
@@ -46,6 +54,12 @@ status: pending
 
 - 不实现具体的日志/指标/追踪后端（→ observex）
 - 不包含 OpenTelemetry 适配
+
+## Test Plan
+
+| TC | Type | Description |
+|----|------|-------------|
+| TC-009 | Unit | SecretString String()/JSON() 返回 "***" |
 
 ## Implementation Notes
 

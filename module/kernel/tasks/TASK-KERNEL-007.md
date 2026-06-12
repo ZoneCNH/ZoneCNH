@@ -31,7 +31,15 @@ status: pending
 
 ---
 
+## Files Likely to Change
+
+- `versionx/versionx.go` — 新建（BuildInfo/Compatibility/VersionInfo）
+- `versionx/versionx_test.go` — 新建
+- `versionx/example_test.go` — 新建
+
 ## Requirements Covered
+
+> Spec TC: TC-017
 
 | Requirement | Description |
 |---|---|
@@ -41,6 +49,12 @@ status: pending
 
 - 不包含 semver 解析库
 - 不包含运行时版本检查
+
+## Test Plan
+
+| TC | Type | Description |
+|----|------|-------------|
+| TC-017 | Unit | Compatibility：模块/版本匹配正确 |
 
 ## Implementation Notes
 

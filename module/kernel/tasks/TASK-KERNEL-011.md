@@ -37,7 +37,15 @@ status: pending
 
 ---
 
+## Files Likely to Change
+
+- `healthx/healthx.go` — 新建（HealthStatusValue/HealthStatus/HealthChecker/Aggregate）
+- `healthx/healthx_test.go` — 新建
+- `healthx/example_test.go` — 新建
+
 ## Requirements Covered
+
+> Spec TC: TC-007
 
 | Requirement | Description |
 |---|---|
@@ -52,6 +60,12 @@ status: pending
 
 - 不在 HealthChecker.Check 中产生副作用
 - 不实现健康检查调度器（由调用方控制检查频率）
+
+## Test Plan
+
+| TC | Type | Description |
+|----|------|-------------|
+| TC-007 | Unit | Aggregate 优先级：unhealthy>degraded>healthy |
 
 ## Implementation Notes
 

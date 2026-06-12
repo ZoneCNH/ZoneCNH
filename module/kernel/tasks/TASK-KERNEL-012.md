@@ -31,7 +31,15 @@ status: pending
 
 ---
 
+## Files Likely to Change
+
+- `contracttest/contracttest.go` — 新建（AssertJSONFields/AssertErrorKind/AssertHealthStatus）
+- `contracttest/contracttest_test.go` — 新建
+- `contracttest/example_test.go` — 新建
+
 ## Requirements Covered
+
+> Spec TC: TC-018
 
 | Requirement | Description |
 |---|---|
@@ -46,6 +54,12 @@ status: pending
 
 - 不依赖 testify 等第三方断言库
 - 不在断言通过时产生任何输出
+
+## Test Plan
+
+| TC | Type | Description |
+|----|------|-------------|
+| TC-018 | Unit | 断言匹配通过，不匹配 Fatalf |
 
 ## Implementation Notes
 

@@ -44,7 +44,9 @@ status: pending
 
 ## Requirements Covered
 
-| Requirement | Description | Acceptance Criteria |
+> Spec TC: TC-004, TC-005
+
+| Requirement | Description | Acceptance Criteria | TC |
 |---|---|---|
 | FR-002 | 结构化错误 | 全部 WHEN/THEN 覆盖 |
 | BR-004 | Error 必须实现 error、Unwrap 接口 | errors.Is/As 可用 |
@@ -54,6 +56,13 @@ status: pending
 
 - 不依赖其他 kernel 子包（errx 是纯 stdlib）
 - 不实现错误序列化/反序列化（由调用方决定）
+
+## Test Plan
+
+| TC | Type | Description |
+|----|------|-------------|
+| TC-004 | Unit | 错误链遍历：IsKind 穿透双层 wrap |
+| TC-005 | Unit | errors.Join 多链：IsKind 匹配任一条 |
 
 ## Implementation Notes
 
