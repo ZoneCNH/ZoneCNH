@@ -62,7 +62,6 @@ Foundation 由 70+ 个 Go 模块组成，模块间的依赖关系、import 边�
 - 输出格式支持 JSON 和 human-readable，适配 CI artifact
 - secret 扫描门禁：集成 `gitleaks` 检测泄露（由 FR-005 `check all` 统一执行，配置见 §11 Config Schema `secret_scan` 节）
 - L2 发布就绪门禁：校验 `.agent/l2-capabilities.yaml` 能力清单，从 registry 解析契约测试要求，验证契约测试证据和文件级证据完整性，生成发布就绪评分 artifact
-- L2 发布就绪门禁：校验 `.agent/l2-capabilities.yaml` 能力清单，从 registry 解析契约测试要求，验证契约测试证据和文件级证据完整性，生成发布就绪评分 artifact
 
 ---
 
@@ -86,6 +85,8 @@ Foundation 由 70+ 个 Go 模块组成，模块间的依赖关系、import 边�
 | 开发者本地 | 在提交前本地运行 `xlibgate check imports` 验证合规 |
 | `x.go` release 流程 | 调用 `xlibgate check release` 收集 release evidence |
 | Foundation 治理 | 通过门禁结果监控架构合规性 |
+| L2 发布管线 | 调用 `xlibgate l2 release-check` 判定发布就绪 |
+| 模块维护者 | 调用 `xlibgate l2 validate-manifest` 校验能力清单 |
 
 ---
 
@@ -216,7 +217,7 @@ THEN 输出缺失列表，exit code 1
 
 执行完整的 L2 发布就绪判定：能力清单校验 → 测试计划生成 → 契约测试验证 → 证据完整性 → import 扫描 → secret 扫描 → 综合评分，输出 release-readiness.json artifact。
 
-WHEN 调用 `xlibgate l2 release-check` 所有门禁通过且评分 ≥ 阈值
+WHEN 调用 `xlibgate l2 release-check` 所有门禁通过且综合评分 ≥ 配置项 `l2.release_score_threshold`（默认 80）
 THEN 输出 status=pass、score、hard_failures=0，exit code 0
 
 WHEN 任一硬性门禁失败（硬失败 > 0）
@@ -319,6 +320,21 @@ xlibgate check release --evidence evidence.json [--output json]
 
 # 全量门禁
 xlibgate check all --config deps.yaml --evidence evidence.json [--output json] [--artifact result.json]
+
+# L2 能力清单校验
+xlibgate l2 validate-manifest --manifest .agent/l2-capabilities.yaml
+
+# L2 测试计划生成
+xlibgate l2 plan --manifest .agent/l2-capabilities.yaml --registry contracts/registry.yaml --output test-plan.json
+
+# L2 契约测试验证
+xlibgate l2 check-contracts --plan test-plan.json --contracts contract-test.json
+
+# L2 证据完整性
+xlibgate l2 check-evidence --plan test-plan.json --evidence-root .agent/evidence
+
+# L2 发布就绪判定
+xlibgate l2 release-check --manifest .agent/l2-capabilities.yaml --registry contracts/registry.yaml --evidence-root .agent/evidence [--output json] [--artifact release-readiness.json]
 
 # 版本
 xlibgate version
@@ -658,6 +674,31 @@ Then 输出包含 status、checks[]、summary 字段
 Given 项目源码包含硬编码密钥（如 AWS_SECRET_ACCESS_KEY=...）
 When 配置 `secret_scan.enabled=true` 且运行 `check all`
 Then gitleaks 检测到泄露，输出文件路径、行号和匹配规则，exit code 1
+
+**TC-009: l2 validate-manifest**
+Given .agent/l2-capabilities.yaml 格式正确且必填字段完整
+When 运行 `xlibgate l2 validate-manifest`
+Then 输出 repo、layer、release_level、required_capabilities 摘要，exit code 0
+
+**TC-010: l2 plan 覆盖完整**
+Given registry 覆盖所有 required_capabilities 的契约测试
+When 运行 `xlibgate l2 plan`
+Then 生成 test-plan.json，含 required_contract_tests 列表，exit code 0
+
+**TC-011: l2 check-contracts 全通过**
+Given test-plan.json 含 3 项必需契约测试且 contract-test.json 全部通过
+When 运行 `xlibgate l2 check-contracts`
+Then 输出 passed=3, missing=0, failed=0，exit code 0
+
+**TC-012: l2 check-evidence 完整**
+Given .agent/evidence/ 下所有必需证据文件存在
+When 运行 `xlibgate l2 check-evidence`
+Then 输出 present 计数 > 0, missing=0，exit code 0
+
+**TC-013: l2 release-check pass**
+Given 所有硬性门禁通过且综合评分 ≥ 80
+When 运行 `xlibgate l2 release-check`
+Then 输出 status=pass, score ≥ 80, hard_failures=0，exit code 0
 
 ### 16.4 Benchmark
 

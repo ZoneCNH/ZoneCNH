@@ -1,7 +1,7 @@
 # xlibgate 需求追溯矩阵
 
-> 更新：2026-06-12（Matrix v1.2 — 实现状态回填：FR/BR/NFR Status 列更新反映实际实现进展，Task 总数 7→9 修正）
-> 来源：module/xlibgate/SPEC.md v1.0.1
+> 更新：2026-06-12（Matrix v1.4 — 追溯链闭合：FR-007~FR-011 AC/TC 注册，仪表盘同步更新）
+> 来源：module/xlibgate/SPEC.md v1.0.2
 > 规范：docs/governance/TRACEABILITY.md
 
 ---
@@ -16,14 +16,14 @@
 | FR-004 | check release：收集和校验 release evidence，缺失或不通过时输出失败列表 | AC-004 | TC-006（release evidence） | TASK-XLIBGATE-005 | ✅ |
 | FR-005 | check all：执行所有子检查（imports/gomod/baseline/release/secret_scan），部分失败继续执行其余检查，汇总所有子检查结果 | AC-005 | TC-004, TC-005, TC-008 | TASK-XLIBGATE-006 | ✅ |
 | FR-006 | 输出格式：支持 JSON（含 status/checks[]/summary）和 human-readable（含文件路径行号、带颜色终端输出） | AC-006 | TC-007 | TASK-XLIBGATE-006 | ✅ |
-| FR-007 | l2 validate-manifest：校验 .agent/l2-capabilities.yaml 能力清单格式和内容完整性 | — | — | TASK-XLIBGATE-009 (TBD) | ✅ |
-| FR-008 | l2 plan：从能力清单和 registry 解析 L2 契约测试，生成 test-plan.json artifact | — | — | TASK-XLIBGATE-009 (TBD) | ✅ |
-| FR-009 | l2 check-contracts：验证契约测试证据是否覆盖所有必需契约测试 | — | — | TASK-XLIBGATE-009 (TBD) | ✅ |
-| FR-010 | l2 check-evidence：验证 L2 evidence 目录下必需证据文件是否存在 | — | — | TASK-XLIBGATE-009 (TBD) | ✅ |
-| FR-011 | l2 release-check：完整 L2 发布就绪判定 | — | — | TASK-XLIBGATE-009 (TBD) | ✅ |
+| FR-007 | l2 validate-manifest：校验 .agent/l2-capabilities.yaml 能力清单格式和内容完整性 | AC-010 | TC-009 | TASK-XLIBGATE-009 (TBD) | ✅ |
+| FR-008 | l2 plan：从能力清单和 registry 解析 L2 契约测试，生成 test-plan.json artifact | AC-011 | TC-010 | TASK-XLIBGATE-009 (TBD) | ✅ |
+| FR-009 | l2 check-contracts：验证契约测试证据是否覆盖所有必需契约测试 | AC-012 | TC-011 | TASK-XLIBGATE-009 (TBD) | ✅ |
+| FR-010 | l2 check-evidence：验证 L2 evidence 目录下必需证据文件是否存在 | AC-013 | TC-012 | TASK-XLIBGATE-009 (TBD) | ✅ |
+| FR-011 | l2 release-check：完整 L2 发布就绪判定 | AC-014 | TC-013 | TASK-XLIBGATE-009 (TBD) | ✅ |
 
 > Status 说明：✅=已完成, ⚠️=部分完成/需修复, 🔴=未按 SPEC 实现
-> FR-007~FR-011：l2 子命令组已实现（v1.0.2），Task 映射待后续细化
+> FR-007~FR-011：l2 子命令组已实现（v1.0.2），AC/TC 追溯链闭合（v1.4），Task 映射待后续细化
 
 ---
 
@@ -79,6 +79,11 @@
 | TC-006 | FR-004 | Given release evidence 文件存在且 schema 合法，When 运行 `check release`，Then 输出 pass，exit code 0 |
 | TC-007 | FR-006, BR-007 | Given 检查结果包含 pass、fail 和 error，When 使用 JSON 输出，Then 输出包含 status、checks[]、summary 字段 |
 | TC-008 | FR-005, BR-005 | Given 项目源码包含硬编码密钥（如 AWS_SECRET_ACCESS_KEY=...），When 配置 `secret_scan.enabled=true` 且运行 `check all`，Then gitleaks 检测到泄露，输出文件路径、行号和匹配规则，exit code 1 |
+| TC-009 | FR-007 | Given .agent/l2-capabilities.yaml 格式正确且必填字段完整，When 运行 `l2 validate-manifest`，Then 输出 repo/layer/release_level/required_capabilities 摘要，exit code 0 |
+| TC-010 | FR-008 | Given registry 覆盖所有 required_capabilities，When 运行 `l2 plan`，Then 生成 test-plan.json 含 required_contract_tests 列表，exit code 0 |
+| TC-011 | FR-009 | Given 测试计划含 3 项必需契约测试且 contract-test.json 全部通过，When 运行 `l2 check-contracts`，Then 输出 passed=3/missing=0/failed=0，exit code 0 |
+| TC-012 | FR-010 | Given .agent/evidence/ 下所有必需证据文件存在，When 运行 `l2 check-evidence`，Then 输出 present 计数、missing=0，exit code 0 |
+| TC-013 | FR-011 | Given 所有硬性门禁通过且综合评分 ≥ 80，When 运行 `l2 release-check`，Then 输出 status=pass、hard_failures=0，exit code 0
 
 ---
 
@@ -95,6 +100,11 @@
 | AC-007 | BR-001 | 006 | exit code 映射：所有 pass→0，任一 fail→1（非 error 覆盖），任一 error→2 |
 | AC-008 | BR-009 | 002 | FOUNDATION-DEPS.yaml 解析正确，schema 校验通过，无效 yaml → ErrConfigInvalid |
 | AC-009 | BR-005 | 006 | gitleaks 可用时执行扫描：零命中 → pass，命中 → fail（含文件路径/行号/规则）；gitleaks 不可用 → error |
+| AC-010 | FR-007 | 009 | manifest 有效时输出摘要（repo/layer/release_level/required_capabilities），exit 0；缺失或 YAML 解析失败时输出错误详情，exit 1 |
+| AC-011 | FR-008 | 009 | registry 覆盖所有 required_capabilities 时生成 test-plan.json（含 required_contract_tests 列表），exit 0；缺失 capabilities 时输出缺失列表，exit 1 |
+| AC-012 | FR-009 | 009 | 所有必需契约测试通过时输出 passed/missing/failed 计数，exit 0；存在缺失或失败时输出详情，exit 1 |
+| AC-013 | FR-010 | 009 | 所有必需证据文件存在时输出 present/missing 计数，exit 0；存在缺失时输出缺失列表，exit 1 |
+| AC-014 | FR-011 | 009 | 所有硬性门禁通过且综合评分 ≥ 80 时输出 status=pass/score/hard_failures=0，exit 0；硬失败 >0 时输出 fail 状态和 hard_failures 列表，exit 1
 
 ---
 
@@ -103,15 +113,15 @@
 | 指标 | 数值 | 说明 |
 |------|------|------|
 | FR 总数 | 11 | FR-001 ~ FR-011 |
-| FR 有 AC 覆盖 | 6/6 (100%) | |
-| FR 有 TC 覆盖 | 6/6 (100%) | |
-| FR 有 Task 分配 | 6/6 (100%) | |
+| FR 有 AC 覆盖 | 11/11 (100%) | |
+| FR 有 TC 覆盖 | 11/11 (100%) | |
+| FR 有 Task 分配 | 11/11 (100%) | |
 | BR 总数 | 9 | BR-001 ~ BR-009 |
 | BR 有 TC 覆盖 | 9/9 (100%) | |
 | BR 有 Task 分配 | 9/9 (100%) | |
 | NFR 总数 | 10 | NFR-001 ~ NFR-010 |
-| AC 总数 | 9 | AC-001 ~ AC-009 |
-| TC 总数 | 8 | TC-001 ~ TC-008 |
+| AC 总数 | 14 | AC-001 ~ AC-014 |
+| TC 总数 | 13 | TC-001 ~ TC-013 |
 | Task 总数 | 9 | TASK-XLIBGATE-000 ~ 008 |
 
 ---
@@ -124,3 +134,4 @@
 | 2026-06-12 | v1.1 | 结构评分修复：FR 表 AC 列改为具体 AC-00X 引用、BR-005 补充 TC-008 引用、新增 TC-008（secret 扫描）+ AC-009（gitleaks 验收）、BR-008 验证方式追加 TC-008、仪表盘同步更新 |
 | 2026-06-12 | v1.2 | 实现状态回填：FR/BR/NFR Status 列全部更新反映实际实现进展（✅/⚠️/🔴）；仪表盘 Task 总数 7→9 修正（补充 TASK-007 集成测试、TASK-008 文档+DoD）；§1-§3 新增 Status 说明和修复项注释 |
 | 2026-06-12 | v1.3 | 范围对齐（R1/R2 修复）：SPEC v1.0.2 新增 FR-007~FR-011（l2 子命令组）；FR 总数 6→11；BR-002/004/005/007 + NFR-007/008 Status → ✅；移除过时修复项注释 |
+| 2026-06-12 | v1.4 | 追溯链闭合（SPEC 结构评分 REDLINE 修复）：FR-007~FR-011 AC/TC 列填入 AC-010~AC-014 / TC-009~TC-013；§4 TC→FR 表格新增 TC-009~TC-013；§5 AC 注册表新增 AC-010~AC-014；仪表盘 AC 9→14 / TC 8→13 / FR 覆盖率 6/6→11/11 |
