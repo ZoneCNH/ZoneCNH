@@ -9,13 +9,13 @@ Status: Draft evidence refreshed; not Approved.
 | --- | ---: | --- |
 | Goal/SPEC naming alignment | 4/5 | SPEC now uses goal.md API/config/metric names. |
 | Traceability structure | 5/5 | Forward, reverse, task coverage, and risks are present. |
-| Executable test evidence | 3/5 | `/home/natsx/pkg/natsx` embedded tests cover Core publish/request/queue, JetStream publish/pull, AddStream/AddConsumer idempotency/conflict, missing-stream publish, nack redelivery, executable example smoke coverage, and a Core publish benchmark; dead-letter, reconnect/backoff, request/JetStream benchmark/SLO, and full health/observability lifecycle remain pending. |
-| Release approval readiness | 2/5 | Documentation evidence is current, but implementation and integration gates are not complete. |
+| Executable test evidence | 4/5 | `/home/natsx/pkg/natsx` embedded tests cover Core publish/request/queue/unsubscribe/drain, reconnect/degraded health, JetStream publish/pull, AddStream/AddConsumer idempotency/conflict, missing-stream publish, nack redelivery, max-deliveries advisory, executable examples, and publish/request/JetStream publish benchmarks; formal SLO assertions, live TLS/auth, config-alias breadth, and higher-level consumer/API/observability remain partial. |
+| Release approval readiness | 3/5 | Documentation and executable gates are current, but formal four-source arbiter, live TLS/auth/config-alias breadth, production SLO thresholds, and consumer lifecycle/API/observability remain open. |
 
-Overall matrix evidence score: **14/20**.
+Overall matrix evidence score: **16/20**.
 
 ## Verification Notes
 
 - `TRACEABILITY.md` explicitly separates complete, partial, and pending FR/BR/NFR rows.
-- Executable evidence is pinned to `/home/natsx` commit `d4072fe` and remains outside this documentation repo.
+- Executable evidence is pinned to `/home/natsx` commit `3053e80` and remains outside this documentation repo.
 - This score refresh does not mark `SPEC.md` Approved or satisfy the formal four-source 98+ arbiter.
