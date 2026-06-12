@@ -29,8 +29,21 @@ Source: `goal.md` 1.0 发布基线 + `SPEC.md` Draft v1.0.0 + `/home/natsx` comm
 | NFR-001 | Security redaction | credentials/token/连接串敏感片段脱敏 | TC-011 | TASK-NATSX-011 | ◐ Config sanitize coverage exists; broader credential surfaces pending |
 | NFR-002 | TLS/auth | TLS 与认证配置可表达且不泄漏凭据 | TC-011 | TASK-NATSX-011 | ◐ Config expression/sanitize coverage exists; live TLS/auth integration pending |
 | NFR-003 | Performance budget | publish/request/JetStream 延迟预算有 benchmark | TC-012 | TASK-NATSX-012 | ⬜ Pending benchmark |
-| NFR-004 | Layer boundary | 不依赖 kafkax，不替代 RPC/治理框架 | TC-013 | TASK-NATSX-013 | ⬜ Pending dependency check |
+| NFR-004 | Layer boundary | 不依赖 kafkax，不替代 RPC/治理框架 | TC-013 | TASK-NATSX-013 | ✅ Dependency boundary clean |
 | NFR-005 | Release evidence | SPEC、goal、traceability、matrix evidence 一致 | TC-014 | TASK-NATSX-014 | ✅ Documentation and executable evidence reconciled |
+
+## Acceptance Criteria Linkage
+
+| Acceptance Criterion | Requirement | Test Case | Current Evidence |
+| -------------------- | ----------- | --------- | ---------------- |
+| AC-001 | FR-001 | TC-001 | Embedded broker publish plus invalid-precondition coverage |
+| AC-002 | FR-002 | TC-001 | Embedded broker subscribe/queue baseline; explicit unsubscribe/drain evidence pending |
+| AC-003 | FR-003 | TC-002 | Embedded responder and no-responder coverage; timeout/cancel matrix pending |
+| AC-004 | FR-004 | TC-003 | Embedded JetStream publish/pull baseline; missing-stream scenario pending |
+| AC-005 | FR-005 | TC-003 | Pull and ack baseline covered; redelivery/dead-letter evidence pending |
+| AC-006 | FR-006 | TC-003 | AddStream happy path covered; idempotency/conflict evidence pending |
+| AC-007 | FR-007 | TC-003 | AddConsumer idempotency/conflict evidence pending |
+| AC-008 | FR-008 | TC-005 | Disconnected/nil/canceled health paths covered; healthy/degraded mapping pending |
 
 ## Reverse Coverage
 
@@ -48,7 +61,7 @@ Source: `goal.md` 1.0 发布基线 + `SPEC.md` Draft v1.0.0 + `/home/natsx` comm
 | TC-010 | BR-004 | Handler dispatch exercised by embedded request/queue tests; latency or documented benchmark pending |
 | TC-011 | NFR-001, NFR-002 | `/home/natsx/pkg/natsx/config_test.go::TestConfigValidateDefaultsAndSanitize`; live TLS/auth integration pending |
 | TC-012 | NFR-003 | Pending benchmark evidence |
-| TC-013 | NFR-004 | Pending dependency boundary check |
+| TC-013 | NFR-004 | `/home/natsx$ GOWORK=off go list -deps ./pkg/natsx` plus forbidden-domain filter returned `dependency boundary clean` |
 | TC-014 | NFR-005 | `/home/natsx` commit `a837b94`; this matrix refresh; formal four-source arbiter still pending |
 
 ## Task Coverage
@@ -67,7 +80,7 @@ Source: `goal.md` 1.0 发布基线 + `SPEC.md` Draft v1.0.0 + `/home/natsx` comm
 | TASK-NATSX-010 | BR-004 | Partial handler dispatch evidence; latency/async constraint evidence pending |
 | TASK-NATSX-011 | NFR-001, NFR-002 | Partial sanitize/config evidence; live TLS/auth integration pending |
 | TASK-NATSX-012 | NFR-003 | Pending benchmarks |
-| TASK-NATSX-013 | NFR-004 | Pending dependency boundary check |
+| TASK-NATSX-013 | NFR-004 | Dependency boundary check passed for forbidden ZoneCNH messaging/storage modules |
 | TASK-NATSX-014 | NFR-005 | `SPEC.md` / `TRACEABILITY.md` / matrix evidence refreshed on 2026-06-12; `/home/natsx` code evidence pinned to commit `a837b94` |
 
 ## Documentation Evidence Inventory
@@ -88,14 +101,15 @@ Source: `goal.md` 1.0 发布基线 + `SPEC.md` Draft v1.0.0 + `/home/natsx` comm
 
 - Structural traceability coverage: **21 / 21 rows mapped** to requirements, test-case IDs, and task IDs.
 - Documentation identity coverage: **4 / 4 tracked docs refreshed** for the repair slice (`README.md`, `examples/README.md`, `SPEC.md`, `TRACEABILITY.md`).
-- Executable implementation coverage in `/home/natsx/pkg/natsx`: **4 / 14 task groups complete**, **7 / 14 partial**, **3 / 14 pending**.
+- Executable implementation coverage in `/home/natsx/pkg/natsx`: **5 / 14 task groups complete**, **7 / 14 partial**, **2 / 14 pending**.
 - Module directory coverage in `/home/ZoneCNH/module/natsx`: documentation only; no local Go source or executable tests.
-- Approval status: **Not Approved**. Status remains Draft / Pending Evidence until remaining implementation, integration, performance, dependency-boundary, and formal gate evidence exists.
+- Approval status: **Not Approved**. Status remains Draft / Pending Evidence until remaining implementation, integration, performance, and formal gate evidence exists.
 - Code evidence commit: `/home/natsx` `a837b94` (`Close natsx message contract gaps`).
 - Verification commands for this refresh:
   - `/home/natsx$ GOWORK=off go test ./pkg/natsx -count=1`
   - `/home/natsx$ GOWORK=off go test -race ./pkg/natsx -count=1`
   - `/home/natsx$ GOWORK=off go vet ./pkg/natsx`
+  - `/home/natsx$ GOWORK=off go list -deps ./pkg/natsx` plus forbidden dependency filter => `dependency boundary clean`
   - `/home/natsx$ git diff --check`
   - `/home/natsx$ GOWORK=off go test ./...`
   - `/home/ZoneCNH$ git diff --check -- module/natsx/TRACEABILITY.md`
@@ -106,4 +120,4 @@ Source: `goal.md` 1.0 发布基线 + `SPEC.md` Draft v1.0.0 + `/home/natsx` comm
 - `/home/natsx` now has embedded NATS core/JetStream subset coverage, but this repair slice is not full release approval.
 - Existing `/home/natsx/examples/basic`, `/home/natsx/examples/config`, and `/home/natsx/examples/health` Go files still import `pkg/templatex`; they are compile-smoke evidence only, not NATS 1.0 behavior evidence.
 - `/home/natsx/examples/jetstream` does not exist yet, so JetStream example evidence is blocked until the example slice lands.
-- Redelivery/dead-letter, reconnect/backoff, benchmarks, AddConsumer conflict/idempotency, dependency-boundary checks, and the formal four-source 98+ arbiter remain pending.
+- Redelivery/dead-letter, reconnect/backoff, benchmarks, AddConsumer conflict/idempotency, and the formal four-source 98+ arbiter remain pending.

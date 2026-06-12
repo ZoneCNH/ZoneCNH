@@ -21,8 +21,8 @@
 ### 1.0 Repair Review Status
 
 - Approved for release: **No**. This specification remains the 1.0 target contract; `/home/natsx/pkg/natsx` now has an executable repair baseline, but it is not release-complete.
-- Evidence refreshed on 2026-06-12: `/home/natsx/README.md`, `/home/natsx/examples/README.md`, embedded Core NATS / JetStream tests in `/home/natsx/pkg/natsx`, and `TRACEABILITY.md`.
-- Release promotion remains blocked until `TRACEABILITY.md` closes the remaining redelivery/DLQ, reconnect/backoff, AddConsumer parity, migrated examples, benchmark, and dependency-boundary gaps.
+- Evidence refreshed on 2026-06-12: `/home/natsx/README.md`, `/home/natsx/examples/README.md`, `/home/natsx` commits `733ba9a`, `6942cbe`, and `a837b94`, embedded Core NATS / JetStream tests in `/home/natsx/pkg/natsx`, and `TRACEABILITY.md`.
+- Release promotion remains blocked until `TRACEABILITY.md` closes the remaining redelivery/DLQ, reconnect/backoff, AddConsumer parity, migrated examples, benchmark/SLO, and full health/observability lifecycle gaps.
 
 ---
 
@@ -30,6 +30,7 @@
 
 | 日期 | 版本 | 变更内容 | 作者 |
 |------|------|----------|------|
+| 2026-06-12 | v1.0.0-draft | 记录 natsx 可执行修复基线与剩余发布阻塞项 | Codex |
 | 2026-06-07 | v1.0.0 | 初始版本 | ZoneCNH |
 
 ## 2. Summary
