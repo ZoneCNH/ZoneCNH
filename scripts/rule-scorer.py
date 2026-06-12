@@ -150,6 +150,10 @@ def score_spec(module: str) -> Score:
         s.confidence = "low"
         return s
 
+    # FoundationX 双文档架构：AC/TC 注册在 TRACEABILITY.md
+    trace_path = ROOT / "module" / module / "TRACEABILITY.md"
+    trace_text = read(trace_path) or ""
+
     # 1. 23 节结构（15 分）
     found_sections = {h.lower() for h in count_sections(text, 2)}
     missing = [
@@ -181,13 +185,17 @@ def score_spec(module: str) -> Score:
     if len(fr_ids) > len(fr_in_section) * 3:
         s.flag_redline("spec_fr_duplicate", "FR 编号过度重复（可能定义错误）")
 
-    # 4. 追溯链：AC/TC 编号存在
-    ac_ids = re.findall(r"\bAC-\d{3}\b", text)
-    tc_ids = re.findall(r"\bTC-\d{3}\b", text)
+    # 4. 追溯链：AC/TC 编号存在（双文档架构：SPEC.md + TRACEABILITY.md）
+    ac_ids_spec = re.findall(r"\bAC-\d{3}\b", text)
+    tc_ids_spec = re.findall(r"\bTC-\d{3}\b", text)
+    ac_ids_trace = re.findall(r"\bAC-\d{3}\b", trace_text)
+    tc_ids_trace = re.findall(r"\bTC-\d{3}\b", trace_text)
+    ac_ids = ac_ids_spec + ac_ids_trace
+    tc_ids = tc_ids_spec + tc_ids_trace
     if fr_ids and not ac_ids:
-        s.deduct(8, "spec_no_ac", "FR 存在但无 AC-NNN")
+        s.deduct(8, "spec_no_ac", f"SPEC.md + TRACEABILITY.md 均无 AC-NNN（FR {len(fr_ids)} 个）")
     if fr_ids and not tc_ids:
-        s.deduct(7, "spec_no_tc", "FR 存在但无 TC-NNN")
+        s.deduct(7, "spec_no_tc", f"SPEC.md + TRACEABILITY.md 均无 TC-NNN（FR {len(fr_ids)} 个）")
 
     # 5. 行为规格 WHEN/THEN（10 分）
     when_then = len(re.findall(r"\bWHEN\b.*?\bTHEN\b", text, re.IGNORECASE | re.DOTALL))
@@ -206,9 +214,21 @@ def score_spec(module: str) -> Score:
     non_goals = re.findall(r"(?m)^- ", _section_body(text, "Non-goals"))
     if len(non_goals) < 3:
         s.deduct(4, "spec_non_goals_thin", f"Non-goals 仅 {len(non_goals)} 条 (< 3)")
-    edge_cases = re.findall(r"(?m)^- ", _section_body(text, "Edge Cases"))
-    if len(edge_cases) < 5:
-        s.deduct(4, "spec_edge_cases_thin", f"Edge Cases 仅 {len(edge_cases)} 条 (< 5)")
+    edge_section = _section_body(text, "Edge Cases")
+    # 列表格式: "- 场景"
+    edge_list = re.findall(r"(?m)^- ", edge_section)
+    # 表格格式: Markdown table with 2+ columns
+    edge_table_rows = re.findall(r"^\|.*\|.*\|", edge_section, re.MULTILINE)
+    header_kw = ["场景", "输入", "预期", "行为", "Scenario", "Input", "Expected"]
+    edge_table_data = [
+        r for r in edge_table_rows
+        if not re.match(r"^\|[\s:\-]+\|[\s:\-]+\|", r)
+        and not any(kw in r for kw in header_kw)
+    ]
+    edge_cases = max(len(edge_list), len(edge_table_data))
+    if edge_cases < 5:
+        s.deduct(4, "spec_edge_cases_thin",
+                 f"Edge Cases 仅 {edge_cases} 条 (< 5)，列表 {len(edge_list)} / 表格 {len(edge_table_data)}")
 
     return s
 
@@ -272,7 +292,8 @@ def score_matrix(module: str) -> Score:
         s.deduct(5, "matrix_table_sparse", f"表格行数 {table_rows} < 10")
 
     # 4. 孤立 AC/TC（10 分）
-    ac_in_spec = set(re.findall(r"\bAC-\d{3}\b", spec_text))
+    # 双文档架构：AC 可能出现在 SPEC.md 或 TRACEABILITY.md（或两者）
+    ac_in_spec = set(re.findall(r"\bAC-\d{3}\b", spec_text)) | set(re.findall(r"\bAC-\d{3}\b", text))
     orphan_ac = ac_in_matrix - ac_in_spec
     if orphan_ac:
         s.deduct(
