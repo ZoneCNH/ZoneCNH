@@ -85,6 +85,108 @@
 - 批量并行读取：`for f in a b c; do read $f & done`
 - 会话中期检查成本：超过 $30 时主动与用户确认是否继续
 
+## 模块工作流规则（自动分支 + 对齐同步 + PR 闭环）
+
+> 处理 `module/{模块名}/` 下任何文件时，自动执行端到端工作流闭环。
+> 本条规则将现有的"分支纪律""文档同步""PR 聚合"三条独立规则合并为一条可执行管线。
+
+### 1. 自动分支创建
+
+**触发条件**：需要编辑 `module/{module-name}/` 下的任何文件时。
+
+**操作**：
+
+1. `git fetch origin && git branch -f main origin/main` — 确保本地 main 指针最新
+2. 从 `main` HEAD 创建分支，命名规则：
+   - `docs/{module-name}-{描述}` — 文档/规格/linter 变更（最常用）
+   - `feat/{module-name}-{描述}` — 功能/新模块
+   - `fix/{module-name}-{描述}` — 修复
+3. 如已存在同名分支且未合并，直接切换到该分支继续工作
+
+**示例**：
+
+```text
+编辑 module/kernel/SPEC.md      → docs/kernel-spec-update
+编辑 module/redisx/tasks/       → docs/redisx-tasks-add
+编辑 module/xlib-standard/      → docs/xlib-standard-ac-fix
+```
+
+**检查点**：创建分支后验证 `git merge-base --is-ancestor main HEAD` 返回 0。
+
+### 2. 编辑纪律
+
+- **列出该模块所有需要变更的文件清单后再动手** — 禁止边读边改
+- **同一文件只编辑一次** — 所有修改一次性完成
+- **同模块文档修复 → 1 个 commit → 1 个 PR** — 不拆碎
+
+### 3. 自动对齐文档同步（commit 前必检）
+
+**强制检查清单**。模块文档变更完成后，逐项检查以下对齐文档是否需要同步更新：
+
+| 对齐文档 | 何时需要更新 |
+|----------|-------------|
+| `ARCHITECTURE.md` | 模块状态、依赖关系、设计原则描述变更 |
+| `module/README.md` | 模块列表、层级归属、职责描述变更 |
+| `module/FOUNDATION-TRACKER.md` | Issue/PR 进度状态变更 |
+| `README.md` | 组件数量、架构图、索引链接变更 |
+| `STATUS.md` | 模块版本/状态变更 |
+
+**检查命令**：
+
+```bash
+# 快速扫描本次变更是否涉及关键字段
+git diff HEAD -- module/ | grep -E '(Status|依赖|依赖图|状态|count|数量|Responsible|Core)' || echo "无需对齐"
+```
+
+**操作**：如上述任何文档需要更新，在同一分支上同步修改，作为同一 PR 的一部分提交。
+
+### 4. 自动 PR 创建 + 合并 + 清理
+
+**触发条件**：commit 完成且对齐文档检查通过后。
+
+**完整管线**：
+
+```bash
+# 1. 推送分支
+git push -u origin HEAD
+
+# 2. 创建 PR（使用 gh CLI）
+gh pr create \
+  --title "docs: {module-name} — {变更摘要}" \
+  --body "{详细说明}" \
+  --base main
+
+# 3. 等待 CI 通过后合并（squash merge）
+gh pr merge --squash --delete-branch
+
+# 4. 切回 main 并同步
+git checkout main && git pull origin main
+```
+
+**PR 标题格式**：遵循 Conventional Commits，格式为 `docs: {module-name} — {描述}`。
+
+**合并策略**：squash merge，PR 标题作为 squash commit 的提交信息。
+
+**清理**：merge 时自动删除远程分支；确认合并后删除本地分支 `git branch -d <branch-name>`。
+
+### 5. 完整会话示例
+
+```text
+用户：修改 module/kernel/SPEC.md，更新 FR-003 的描述
+
+Claude 执行：
+1. git fetch origin && git branch -f main origin/main
+2. git checkout -b docs/kernel-fr003-update
+3. 修改 module/kernel/SPEC.md
+4. 检查对齐文档：ARCHITECTURE.md（无变更）、module/README.md（无变更）、README.md（无变更）
+5. git add + git commit
+6. git push -u origin HEAD
+7. gh pr create --title "docs: kernel — FR-003 描述更新"
+8. gh pr merge --squash --delete-branch
+9. git checkout main && git pull origin main
+10. 报告：PR #N created → merged → branch deleted ✓
+```
+
 ## 约定
 
 - **语言**：Claude 的所有回复、文档和提交信息默认使用中文，英文保留给仓库名、模块名、命令和标准技术术语。
