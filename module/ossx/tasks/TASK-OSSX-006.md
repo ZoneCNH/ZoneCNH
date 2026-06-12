@@ -28,6 +28,12 @@ validation:
   - go test ./module/ossx/... -run "TestObservability|TestHealth|TestContract"
 ```
 
+## Non-scope
+
+- Do not implement core BlobStore IO, metadata models, multipart upload, presign policy, or concrete provider adapters.
+- Do not mark SPEC Approved, alter arbiter verdicts, or claim release readiness without the required pipeline gates.
+- Do not emit secrets, raw presigned URLs, or provider credentials through metrics, traces, logs, examples, or evidence.
+
 ## Prompt
 
 Use `module/ossx/prompt/PROMPT-OSSX-006.md` for the implementation handoff.

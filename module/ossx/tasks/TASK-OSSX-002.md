@@ -27,6 +27,12 @@ validation:
   - go test ./module/ossx/... -run "TestBlobStore|TestStream|TestList"
 ```
 
+## Non-scope
+
+- Do not implement multipart lifecycle, presign policy, concrete S3-compatible adapters, or observability release gates.
+- Do not add provider SDK types to public BlobStore interfaces or bypass adapter error translation.
+- Do not expand the task to production credentials, external buckets, or implementation tasks outside the listed files.
+
 ## Prompt
 
 Use `module/ossx/prompt/PROMPT-OSSX-002.md` for the implementation handoff.

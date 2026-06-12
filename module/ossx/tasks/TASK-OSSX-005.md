@@ -26,6 +26,12 @@ validation:
   - go test ./module/ossx/... -run "TestAdapter|TestS3"
 ```
 
+## Non-scope
+
+- Do not redesign public BlobStore contracts, multipart lifecycle semantics, presign policy, or observability hooks.
+- Do not expose provider SDK types or provider-specific errors beyond the adapter boundary.
+- Do not require live cloud credentials; external compatibility checks must remain fake-backed or explicitly gated.
+
 ## Prompt
 
 Use `module/ossx/prompt/PROMPT-OSSX-005.md` for the implementation handoff.

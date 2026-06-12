@@ -28,6 +28,12 @@ validation:
   - go list -deps ./module/ossx/... | grep -v configx
 ```
 
+## Non-scope
+
+- Do not implement BlobStore behavior, adapter logic, multipart operations, presign policy, or observability hooks.
+- Do not introduce provider SDK types, global config loading, or direct configx dependencies into public ossx APIs.
+- Do not mark `module/ossx/SPEC.md` as Approved or write arbiter approval evidence.
+
 ## Prompt
 
 Use `module/ossx/prompt/PROMPT-OSSX-000.md` for the implementation handoff.

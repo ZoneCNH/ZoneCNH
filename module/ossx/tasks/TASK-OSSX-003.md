@@ -24,6 +24,12 @@ validation:
   - go test ./module/ossx/... -run TestMultipart
 ```
 
+## Non-scope
+
+- Do not implement baseline BlobStore operations, presign URL policy, concrete storage adapters, or observability hooks.
+- Do not change configured multipart limits outside the spec-approved `foundationx.oss` to `ossx.Config` boundary.
+- Do not introduce external bucket dependencies or run non-gated integration tests.
+
 ## Prompt
 
 Use `module/ossx/prompt/PROMPT-OSSX-003.md` for the implementation handoff.

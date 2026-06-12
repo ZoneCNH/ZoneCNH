@@ -7,7 +7,7 @@
 - Spec-Version: v1.0.0
 - Last-Updated: 2026-06-12
 - Version: v1.0.0
-- Owners: platform storage maintainers
+- Owner: platform storage maintainers
 - Related:
   - `CONSTITUTION.md`
   - `ARCHITECTURE.md`

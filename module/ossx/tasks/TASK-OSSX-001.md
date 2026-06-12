@@ -27,6 +27,12 @@ validation:
   - go test ./module/ossx/... -run "Test(Key|Metadata|Checksum|Policy)"
 ```
 
+## Non-scope
+
+- Do not implement BlobStore IO methods, streaming, multipart upload, presign URLs, or concrete storage adapters.
+- Do not expose provider-specific headers, SDK structs, or credential material in object metadata and policy APIs.
+- Do not change dependency guard, release evidence, or module approval status.
+
 ## Prompt
 
 Use `module/ossx/prompt/PROMPT-OSSX-001.md` for the implementation handoff.

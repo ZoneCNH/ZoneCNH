@@ -26,6 +26,12 @@ validation:
   - go test ./module/ossx/... -run "TestPresign|TestAuditMasking"
 ```
 
+## Non-scope
+
+- Do not implement BlobStore core IO, multipart upload, concrete S3-compatible adapters, or release evidence closure.
+- Do not log, persist, or expose raw signatures, tokens, credentials, or provider SDK request objects.
+- Do not widen presign operations or TTL limits beyond the spec and traceability matrix.
+
 ## Prompt
 
 Use `module/ossx/prompt/PROMPT-OSSX-004.md` for the implementation handoff.
