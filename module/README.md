@@ -115,7 +115,7 @@ test-only，不参与生产运行时。
 | kafkax      | [SPEC.md](./kafkax/SPEC.md)      | Kafka — 消息队列、事件流            |
 | natsx       | [SPEC.md](./natsx/SPEC.md)       | NATS — 内部通信、JetStream          |
 | postgresx   | [SPEC.md](./postgresx/SPEC.md)   | PostgreSQL — 关系型存储、事务、迁移 |
-| taosx       | [SPEC.md](./taosx/SPEC.md)       | TDengine — 时序数据写入与查询       |
+| taosx       | [SPEC.md](./taosx/SPEC.md)       | TDengine L2 adapter contract（Driver 注入、批量与 schemaless 契约） |
 | ossx        | [SPEC.md](./ossx/SPEC.md)        | 对象存储 — S3/MinIO/local 多后端    |
 | clickhousex | [SPEC.md](./clickhousex/SPEC.md) | ClickHouse — OLAP 查询、批量写入    |
 
@@ -287,7 +287,7 @@ Spec → Matrix → Tasks → Plan → Prompt → Code
 Codex 使用 `.codex/skills/spec-code-pipeline/SKILL.md`，
 Claude Code 使用 `.claude/commands/spec-code-pipeline.md`，
 Copilot 使用 `.copilot/commands/spec-code-pipeline.md`。
-每个阶段进入下一阶段前都必须由 Claude / Copilot / Codex team scoring 和 `pipeline-arbiter` 
+每个阶段进入下一阶段前都必须由 Claude / Copilot / Codex team scoring 和 `pipeline-arbiter`
 通过：`composite_score = min(四源评分) >= 98`，且无红线、低置信度或异常分差；Spec 通过后由 arbiter 自动翻转 `Status: Approved`，`spec-review` 仅作为参考证据。
 
 ### 1. Spec 审查
