@@ -12,7 +12,7 @@ Source: docs/governance/TRACEABILITY.md（迁移前全局矩阵）
 | FR-003      | Tracer           | AC-003 | TC-003           | TASK-OBSERVEX-004 | ⬜     |
 | FR-004      | Exporter         | AC-004 | TC-004, TC-004a, TC-004b, TC-004c  | TASK-OBSERVEX-005 | ⬜     |
 | FR-005      | Redaction        | AC-005 | TC-005, TC-005a  | TASK-OBSERVEX-006 | ⬜     |
-| FR-006      | Label Policy     | AC-006 | TC-002, TC-007a  | TASK-OBSERVEX-003 | ⬜     |
+| FR-006      | Label Policy     | AC-006 | TC-002, TC-007a  | TASK-OBSERVEX-003b | ⬜     |
 | FR-007      | Health           | AC-007 | TC-006, TC-006a  | TASK-OBSERVEX-007 | ⬜     |
 | BR-001      | Logger 并发安全  | AC-008                      | CI Gate (`-race`) | TASK-OBSERVEX-002 | ⬜     |
 | BR-002      | label 基数控制   | AC-009 | TC-002           | TASK-OBSERVEX-003 | ⬜     |

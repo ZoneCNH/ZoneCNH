@@ -390,6 +390,30 @@ Given 已创建配置 Reader
 When 调用读取接口
 Then 不能通过 Reader 修改底层配置
 
+
+**TC-006: Load 文件不存在**
+Given 调用 `Load("/nonexistent/config.yaml")`
+When 文件不存在
+Then 返回 `os.ErrNotExist`，配置不变
+
+**TC-007: Load 文件格式无效**
+Given 调用 `Load("invalid.yaml")` 且文件内容为非法 YAML 语法
+When 解析失败
+Then 返回 `ErrInvalidFormat`，配置不变
+
+**TC-008: 敏感字段脱敏**
+Given 配置包含 `db.password=secret123`
+When 通过 Reader.GetString("db.password") 读取或输出到日志
+Then 返回值/日志内容为 `"***"`，不包含原始密码
+
+**TC-009: Release DoD 门禁**
+Given 所有 Task 实现完成
+When 运行 `go test -race -count=1 ./...` 和 `gitleaks detect --no-git`
+Then 所有测试通过，零 data race，零 secret 泄露，覆盖率 ≥ 80%
+Given 已创建配置 Reader
+When 调用读取接口
+Then 不能通过 Reader 修改底层配置
+
 ### 16.3 Benchmark
 
 | 场景 | 目标 |

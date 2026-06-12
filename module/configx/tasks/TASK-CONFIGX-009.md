@@ -31,7 +31,7 @@ depends_on:
   - "TASK-CONFIGX-005"
   - "TASK-CONFIGX-006"
   - "TASK-CONFIGX-007"
-  - "TASK-CONFIGX-008"
+
 estimated_effort: "2h"
 priority: P1
 status: pending
