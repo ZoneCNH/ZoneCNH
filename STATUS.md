@@ -51,7 +51,7 @@
 ### 🟢 基座（健康）
 
 - 组件：16 个，平均进度 54%
-- 核心模块（kernel/configx/observex/resiliencx）已成熟（80%），有版本号
+- 核心模块（kernel/configx/observex/resiliencx）已成熟，有版本号；kernel 文档 Ready for Code（100%），代码 v0.7.3
 - 存储层 6/7 仅骨架（15%）：redisx/kafkax/postgresx/taosx/ossx/clickhousex
 - **阻塞项**：存储层实现滞后，但不影响上层开发（可通过 contracts 稳定端口 mock）
 
@@ -114,7 +114,7 @@
 
 | 组件                                                      | 版本   | 进度     | 仓库大小    | 说明                       |
 | --------------------------------------------------------- | ------ | -------- | ----------- | -------------------------- |
-| [kernel](https://github.com/ZoneCNH/kernel)               | v0.7.3 | ███░ 80% | 594KB/30 项 | L0 原语 / 12 子包轻量工具集 |
+| [kernel](https://github.com/ZoneCNH/kernel)               | v0.7.3 | ████ 95% | 594KB/30 项 | L0 原语 / 12 子包 / SPEC v2.0.1 Ready for Code |
 | [configx](https://github.com/ZoneCNH/configx)             | v0.1.4 | ███░ 80% | 258KB/20 项 | 配置管理                   |
 | [observex](https://github.com/ZoneCNH/observex)           | v0.3.1 | ███░ 80% | 220KB/18 项 | 可观测性                   |
 | [testkitx](https://github.com/ZoneCNH/testkitx)           | v0.4.0 | ███░ 80% | 254KB/27 项 | 测试工具包                 |
