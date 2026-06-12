@@ -65,7 +65,7 @@
 
 ## 4. Goals
 
-- 统一 Logger / Meter / Tracer 接口，vendor-neutral，通过 Exporter 适配任意后端
+- 统一 Logger / Meter / Tracer 抽象，vendor-neutral，通过 Exporter 适配任意观测平台
 - 标准字段规范：trace_id、span_id、component、module、operation、error_code
 - 指标命名规范：`foundationx_<module>_<operation>_<measure>`
 - label policy 控制（白名单 + 高基数禁止列表 + 运行时检查）
