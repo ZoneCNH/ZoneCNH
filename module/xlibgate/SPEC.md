@@ -25,6 +25,7 @@
 |------|------|----------|------|
 | 2026-06-07 | v1.0.0 | 初始版本 | ZoneCNH |
 | 2026-06-12 | v1.0.1 | 结构评分修复：BR 逐条"违反时"、Open Questions 分类编号、Observability 补充 Metrics/Tracing、Edge Cases 补充重试、Upgrade Compatibility 补迁移步骤、Security 补输入校验、Testing 补工具声明、Dependencies 补直接/间接依赖表、FR-005 显式枚举 secret_scan 子检查、新增 TC-008 | ZoneCNH |
+| 2026-06-12 | v1.0.2 | 范围对齐（R1/R2 修复）：§2 Summary + §4 Goals 新增 `l2` 子命令组、新增 FR-007~FR-011（l2 validate-manifest / plan / check-contracts / check-evidence / release-check） | ZoneCNH |
 
 ---
 
@@ -60,6 +61,7 @@ Foundation 由 70+ 个 Go 模块组成，模块间的依赖关系、import 边�
 - 依赖矩阵验证：消费 `FOUNDATION-DEPS.yaml` 校验完整依赖关系
 - 输出格式支持 JSON 和 human-readable，适配 CI artifact
 - secret 扫描门禁：集成 `gitleaks` 检测泄露（由 FR-005 `check all` 统一执行，配置见 §11 Config Schema `secret_scan` 节）
+- L2 发布就绪门禁：校验 `.agent/l2-capabilities.yaml` 能力清单，从 registry 解析契约测试要求，验证契约测试证据和文件级证据完整性，生成发布就绪评分 artifact
 - L2 发布就绪门禁：校验 `.agent/l2-capabilities.yaml` 能力清单，从 registry 解析契约测试要求，验证契约测试证据和文件级证据完整性，生成发布就绪评分 artifact
 
 ---
@@ -169,6 +171,56 @@ THEN 输出 JSON 格式，包含 `status`、`checks[]`、`summary` 字段
 
 WHEN 指定 `--output json --artifact path.json`
 THEN 将 JSON 结果写入指定文件路径
+
+### FR-007: l2 validate-manifest
+
+验证 `.agent/l2-capabilities.yaml` 能力清单的格式和内容完整性。
+
+WHEN 调用 `xlibgate l2 validate-manifest --manifest .agent/l2-capabilities.yaml` 且 manifest 有效
+THEN 输出 repo、layer、release_level、required_capabilities 摘要，exit code 0
+
+WHEN manifest 文件缺失或 YAML 解析失败
+THEN 输出错误详情，exit code 1
+
+### FR-008: l2 plan
+
+从能力清单和 registry 解析所需的 L2 契约测试，生成测试计划 artifact。
+
+WHEN 调用 `xlibgate l2 plan --manifest ... --registry ... --output test-plan.json` 且 registry 覆盖所有 required capabilities
+THEN 生成 test-plan.json（含 required_contract_tests 列表），exit code 0
+
+WHEN registry 缺少某些 required capabilities 的契约测试
+THEN 输出缺失列表，exit code 1
+
+### FR-009: l2 check-contracts
+
+验证原始契约测试证据（contract-test.json）是否覆盖测试计划中所有必需的契约测试。
+
+WHEN 调用 `xlibgate l2 check-contracts --plan test-plan.json --contracts contract-test.json` 且所有必需契约测试通过
+THEN 输出 passed/missing/failed 计数，exit code 0
+
+WHEN 存在缺失或失败的必需契约测试
+THEN 输出缺失/失败详情，exit code 1
+
+### FR-010: l2 check-evidence
+
+验证 L2 evidence 目录下必需证据文件是否存在。
+
+WHEN 调用 `xlibgate l2 check-evidence --plan test-plan.json --evidence-root .agent/evidence` 且所有必需证据文件存在
+THEN 输出 present/missing 计数，exit code 0
+
+WHEN 存在缺失的必需证据文件
+THEN 输出缺失列表，exit code 1
+
+### FR-011: l2 release-check
+
+执行完整的 L2 发布就绪判定：能力清单校验 → 测试计划生成 → 契约测试验证 → 证据完整性 → import 扫描 → secret 扫描 → 综合评分，输出 release-readiness.json artifact。
+
+WHEN 调用 `xlibgate l2 release-check` 所有门禁通过且评分 ≥ 阈值
+THEN 输出 status=pass、score、hard_failures=0，exit code 0
+
+WHEN 任一硬性门禁失败（硬失败 > 0）
+THEN 输出 status=fail、hard_failures 列表，exit code 1
 
 ---
 
