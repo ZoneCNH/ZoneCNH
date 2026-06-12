@@ -36,7 +36,7 @@ x.go ───────────────► 基座运行时 / L2.5 / �
 
 标准与门禁：
   xlib-standard ─── 标准事实源 / Go Reference Template / Generator / Harness Gate / Evidence Runtime，不参与业务运行
-  xlibgate      ─── import 边界、go.mod、Go baseline、release evidence 机器门禁
+  xlibgate      ─── import 边界、go.mod、Go baseline、release evidence、L2 发布就绪 机器门禁
 
 横切关注点：
   alertx   ─── 策略异常、风控触发告警
@@ -281,7 +281,7 @@ Foundation v1 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中�
 | 基座                  | [testkitx](https://github.com/ZoneCNH/testkitx)                 | v0.4.0 | ✅ 已有   | ███░ 80% | 测试专用 evidence/golden/fixture/harness/boundary 工具包，禁止生产导入                    |
 | 基座                  | [resiliencx](https://github.com/ZoneCNH/resiliencx)             | v0.4.8 | ⚠️ P0     | ██░░ 50% | 身份需从标准模板库修正为运行时弹性策略库：timeout/retry/circuit/bulkhead/rate/fallback    |
 | 基座                  | [schedulex](https://github.com/ZoneCNH/schedulex)               | v0.1.2 | ✅ 已有   | ███░ 80% | cron/interval/delay 调度、OverlapPolicy（Skip/Queue/Replace）、MisfirePolicy（Skip/RunOnce/CatchUp）、EventSink、Locker、Clock 注入           |
-| 基座                  | [xlibgate](https://github.com/ZoneCNH/xlibgate)                 | -      | ✅ 已有   | -        | import 边界、go.mod、Go baseline、release evidence 机器门禁                               |
+| 基座                  | [xlibgate](https://github.com/ZoneCNH/xlibgate)                 | -      | ✅ 已有   | -        | import 边界、go.mod、Go baseline、release evidence、L2 发布就绪 机器门禁                               |
 | 基座                  | [xlib-standard](https://github.com/ZoneCNH/xlib-standard)       | -      | ✅ 已有   | -        | 标准事实源、Go Reference Template、Generator、Harness Gate、Evidence Runtime；不参与运行时 import |
 | 基座                  | [redisx](https://github.com/ZoneCNH/redisx)                     | -      | ✅ 已有   | █░░░ 15% | Redis，仅骨架                                                                             |
 | 基座                  | [kafkax](https://github.com/ZoneCNH/kafkax)                     | -      | ✅ 已有   | █░░░ 15% | Kafka，仅骨架                                                                             |
