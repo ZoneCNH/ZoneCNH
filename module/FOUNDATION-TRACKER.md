@@ -4,7 +4,7 @@
 > 每项直接对应一个 GitHub Issue 或 PR。
 > 勾选 = 完成。
 
-最后更新：2026-06-12（P0 修复 — resiliencx 测试覆盖率验证 100% + foundationx 状态精确化）
+最后更新：2026-06-12（P0 修复 — resiliencx SPEC v1.0.1 Approved + 全模块对齐文档同步 #118/#121/#122）
 
 ---
 
@@ -141,7 +141,7 @@
 
 ### resiliencx ✅ (PR #15 + #16 合入)
 
-> Issue 1（身份修复）已完成
+> Issue 1（身份修复）已完成。**2026-06-12 追加**：SPEC v1.0.1 Approved（PR #118）+ 对齐文档同步（PR #121/#122）
 
 - [x] `timeout.go`：PerAttemptTimeout + TotalTimeout
 - [x] `retry.go`：max attempts、max elapsed、backoff、jitter
@@ -155,6 +155,8 @@
 - [x] `noop.go`：未配置时安全运行（PR #16）
 - [x] `options.go`：Option 模式配置（PR #16）
 - [x] fake-clock 测试（已验证：全包测试通过，含 circuit 状态转换 + bulkhead 并发安全 + 策略链集成测试，覆盖率达 100%）
+- [x] **SPEC v1.0.1 文档管线完整**（SPEC.md: kernel 依赖修正 + BR 违反后果 + AC 标签 + Security 补强; goal.md: 对齐 SPEC + v1.2+ 版本分层; TRACEABILITY.md: Task 列 + 8 BR + 4 NFR 全覆盖; tasks/: non_scope + BR-002/006 覆盖 + TC-### 引用统一）
+- [x] **对齐文档同步**（STATUS.md v0.4.8→v1.0.1; ARCHITECTURE.md 依赖矩阵 configx 禁止→允许; module/README.md + README.md 更新）
 
 ### schedulex ✅ (PR #3 合入)
 
