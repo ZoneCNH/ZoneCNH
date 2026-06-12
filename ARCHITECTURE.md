@@ -275,7 +275,7 @@ Foundation v1 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中�
 | 域                    | 组件                                                            | 版本   | 状态      | 进度     | 说明                                                                                      |
 | --------------------- | --------------------------------------------------------------- | ------ | --------- | -------- | ----------------------------------------------------------------------------------------- |
 | **基座**              |                                                                 |        |           |          |                                                                                           |
-| 基座                  | [kernel](https://github.com/ZoneCNH/kernel)                     | v0.7.3 | ✅ 已有   | ███░ 80% | L0 标准库扩展原语：error/time/context/lifecycle/health/sync，保持 stdlib-only             |
+| 基座                  | [kernel](https://github.com/ZoneCNH/kernel)                     | v0.7.3 | ✅ 已有   | ████ 95% | L0 原语 / 12 子包轻量工具集：lifecycx/errx/healthx/obsx/retryx/shutdownx/syncx/timex/validx/versionx/contextx/contracttest，stdlib-only，SPEC v2.0.1 Ready for Code |
 | 基座                  | [configx](https://github.com/ZoneCNH/configx)                   | v0.1.4 | ✅ 已有   | ███░ 80% | 显式配置加载、合并、校验、脱敏、provenance 与 config hash                                  |
 | 基座                  | [observex](https://github.com/ZoneCNH/observex)                 | v0.3.1 | ✅ 已有   | ███░ 80% | vendor-neutral 日志、指标、追踪、健康、字段和 label policy 契约                            |
 | 基座                  | [testkitx](https://github.com/ZoneCNH/testkitx)                 | v0.4.0 | ✅ 已有   | ███░ 80% | 测试专用 evidence/golden/fixture/harness/boundary 工具包，禁止生产导入                    |

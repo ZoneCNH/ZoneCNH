@@ -37,7 +37,7 @@
 | BR-006 | obsx: 所有接口必须有 Noop 零值实现 | 消费者被迫依赖具体 SDK | AC-006 Noop 免 panic | TASK-KERNEL-003 | ✅ |
 | BR-007 | healthx: Metadata nil 时 JSON 序列化为 {} | JSON 契约不一致 | TC-007 MarshalJSON 验证 | TASK-KERNEL-011 | ✅ |
 | BR-008 | shutdownx: Hook 按 LIFO 顺序执行 | 资源释放顺序错误 | TC-008 LIFO 断言 | TASK-KERNEL-006 | ✅ |
-| BR-009 | kernel 不 import 任何非 stdlib 包 | 破坏 L0 定位 | TC-012 CI gate `go list -deps` | TASK-KERNEL-016 | ✅ |
+| BR-009 | kernel 不 import 任何非 stdlib 包 | 破坏 L0 定位 | TC-012 CI gate `go list -deps` | TASK-KERNEL-016（执行: 016c） | ✅ |
 | BR-010 | contextx: Key 必须通过 NewKey 创建，零值 panic | 键冲突导致值覆盖 | TC-010 Key 唯一性测试 | TASK-KERNEL-010 | ✅ |
 | BR-011 | syncx: SemaphoreLimiter double-release 静默忽略 | 设计选择，简化调用方 | TC-013 双重 Release 测试 | TASK-KERNEL-004 | ✅ |
 | BR-012 | timex: FakeClock 零值接收者安全 | nil panic 污染测试 | TC-015 nil 调用测试 | TASK-KERNEL-002 | ✅ |
@@ -52,10 +52,10 @@
 | NFR-002 | errx.IsKind 5层链遍历性能 | < 1μs | Benchmark `BenchmarkIsKind` | TASK-KERNEL-001 | ✅ |
 | NFR-003 | healthx.Aggregate 10元素 | < 10μs | Benchmark `BenchmarkAggregate` | TASK-KERNEL-011 | ✅ |
 | NFR-004 | retryx.Delay 计算性能 | < 100ns | Benchmark `BenchmarkDelay` | TASK-KERNEL-009 | ✅ |
-| NFR-005 | 常驻内存（全子包导入） | < 5MB | Profiling `go test -memprofile` | TASK-KERNEL-016 | ✅ |
-| NFR-006 | 测试覆盖率 | ≥ 100% | `go tool cover -func` | TASK-KERNEL-016 | ✅ |
+| NFR-005 | 常驻内存（全子包导入） | < 5MB | Profiling `go test -memprofile` | TASK-KERNEL-016（执行: 016c） | ✅ |
+| NFR-006 | 测试覆盖率 | ≥ 100% | `go tool cover -func` | TASK-KERNEL-016（执行: 016c） | ✅ |
 | NFR-007 | 敏感数据不泄露到日志 | SecretString 三层保护 | TC-009 String/JSON/gob 脱敏 | TASK-KERNEL-003 | ✅ |
-| NFR-008 | 无硬编码密钥 | 全仓扫描零命中 | `gitleaks detect --no-git` | TASK-KERNEL-016 | ✅ |
+| NFR-008 | 无硬编码密钥 | 全仓扫描零命中 | `gitleaks detect --no-git` | TASK-KERNEL-016（执行: 016c） | ✅ |
 
 ---
 
