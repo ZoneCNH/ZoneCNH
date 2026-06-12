@@ -58,14 +58,13 @@ L2.5: decimalx / domain-market / domain-exchange / domain-macro
 ## 📦 核心项目
 
 ### 基座 · 基础设施
-
+- [xlib-standard](https://github.com/ZoneCNH/xlib-standard) — 标准事实源、Go Reference Template、Generator、Harness Gate 与 Evidence Runtime；不作为运行时 import 依赖 `公开`
 - [kernel](https://github.com/ZoneCNH/kernel) — L0 标准库扩展原语（error/time/context/lifecycle/health/sync） `公开`
 - [configx](https://github.com/ZoneCNH/configx) — 显式配置加载、多源合并、StrictDecode、SecretString 脱敏、Provenance 追踪与 EffectiveConfigHash `公开`
 - [observex](https://github.com/ZoneCNH/observex) — vendor-neutral 日志、指标、追踪、健康与脱敏契约 `公开`
 - [resiliencx](https://github.com/ZoneCNH/resiliencx) — 运行时弹性策略（timeout/retry/circuit/bulkhead/rate/fallback） `公开`
 - [schedulex](https://github.com/ZoneCNH/schedulex) — 任务调度运行时（cron/interval/delay、Overlap/Misfire 策略、分布式锁、Clock 注入、98.8% 覆盖） `公开`
 - [testkitx](https://github.com/ZoneCNH/testkitx) — 测试专用 evidence/golden/fixture/boundary 工具包 `公开`
-- [xlib-standard](https://github.com/ZoneCNH/xlib-standard) — 标准事实源、Go Reference Template、Generator、Harness Gate 与 Evidence Runtime；不作为运行时 import 依赖 `公开`
 - [xlibgate](https://github.com/ZoneCNH/xlibgate) — import 边界、go.mod、Go baseline、release evidence 门禁 `公开`
 
 > `resiliencx` v1.0.1：SPEC Approved，身份修复已完成（P3 宪法原则 + goal.md v1.2+ 演进路线图）。
