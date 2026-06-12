@@ -1071,6 +1071,11 @@ Then A.Start 被调用，B.Start 被调用并返回错误
 Then A.Stop 被调用（回滚）
 Then Manager.Start 返回 errors.Join
 
+**TC-003: lifecycx 未启动时 Stop 幂等**
+Given Manager 已创建但未 Start
+When 调用 Manager.Stop(ctx)
+Then 返回 nil（幂等）
+
 **TC-004: errx 错误链遍历**
 Given err1 = WrapError(KindTimeout, "op1", "msg1", stdErr)
 And err2 = WrapError(KindConnection, "op2", "msg2", err1)
@@ -1083,11 +1088,6 @@ When 调用 s.String() 或 json.Marshal(s)
 Then 返回 "***"（非原始值）
 When 调用 s.Reveal()
 Then 返回 "sk-abc123"
-
-**TC-003: lifecycx 未启动时 Stop 幂等**
-Given Manager 已创建但未 Start
-When 调用 Manager.Stop(ctx)
-Then 返回 nil（幂等）
 
 **TC-005: errx errors.Join 多错误链**
 Given e1 = NewError(KindTimeout, "op1", "timeout")
