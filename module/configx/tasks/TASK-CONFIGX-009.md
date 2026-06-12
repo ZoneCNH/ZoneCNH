@@ -9,7 +9,7 @@ task_id: TASK-CONFIGX-009
 module: configx
 scope: "创建 README、CHANGELOG、example_test.go，确保 godoc 完整，验证 Release DoD"
 spec_ref:
-  - "module/configx/SPEC.md#§22"
+  - "module/configx/SPEC.md#BR-010"
   - "module/configx/SPEC.md#§9.2"
 files:
   - "README.md"

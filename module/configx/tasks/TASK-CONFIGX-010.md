@@ -9,8 +9,8 @@ task_id: TASK-CONFIGX-010
 module: configx
 scope: "实现敏感字段自动脱敏、配置文件权限检查、环境变量防泄露、CI secret 扫描"
 spec_ref:
-  - "module/configx/SPEC.md#§19"
-  - "module/configx/SPEC.md#§19"
+  - "module/configx/SPEC.md#BR-011"
+  - "module/configx/SPEC.md#BR-011"
 files:
   - "sanitize.go"
   - "sanitize_test.go"

@@ -136,6 +136,10 @@ THEN 返回错误
 | BR-005 | Reader 接口只能读，不能写 |
 | BR-006 | 配置值类型必须与 schema 定义一致 |
 | BR-007 | 未定义的配置键应被忽略或报 warning（可配置） |
+| BR-008 | 公共错误变量使用 `configx:` 前缀命名空间 |
+| BR-009 | Reader/Config/Option 接口遵循 Go 接口隔离原则 |
+| BR-010 | Release 制品通过全部 CI Gate（编译/测试/覆盖率/vet/lint/secret） |
+| BR-011 | 敏感字段（password/token/secret/key/accessKey/secretKey）自动脱敏 |
 
 ---
 
@@ -518,6 +522,17 @@ Then 不能通过 Reader 修改底层配置
 - [ ] 所有 Edge Cases 有对应测试
 
 ---
+---
+## 24. Lifecycle
+
+| 阶段 | 状态 | 说明 |
+|------|------|------|
+| 初始化 | `configx.New(opts...)` | 创建 Config 实例，应用 Option |
+| 加载 | `Load(path)` | 解析配置文件，填充 data |
+| 覆盖 | `WithEnvOverride(prefix)` | 环境变量覆盖配置键 |
+| 校验 | `Validate()` | schema 校验，fail-fast |
+| 运行 | `Reader.Get(key)` | 并发安全只读访问 |
+| 关闭 | 进程退出 | 无资源需清理（无连接池/文件句柄） |
 
 ## 23. Open Questions
 
