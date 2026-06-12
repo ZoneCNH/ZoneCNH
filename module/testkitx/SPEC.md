@@ -9,7 +9,7 @@
 ## 1. Metadata
 
 - Status: Draft
-- Spec-Version: v1.0.0
+- Spec-Version: v0.7.3
 - Last-Updated: 2026-06-07
 - Owner: ZoneCNH
 - Layer: L1 test-only
