@@ -98,7 +98,7 @@
 
 | 依赖类型 | 约束 |
 | --- | --- |
-| 上游依赖 | 依赖 kernel；可选依赖 configx 获取观测配置。 |
+| 上游依赖 | 依赖 kernel。observex 通过自身 Config 结构体（SPEC §11）管理观测配置，不依赖 configx 运行时。 |
 | 下游依赖 | 所有运行时模块应该接入 observex。 |
 | 分层约束 | observex 不得依赖 redisx、kafkax 等具体扩展；具体 exporter 通过 adapter/SPI 引入。 |
 | 契约依赖 | MUST 向 contracts 登记 Public API 契约和错误码契约。 |
