@@ -77,7 +77,7 @@ stdlib-only 基础原语。所有上层模块的根依赖。
 
 | 模块       | 规格                            | 核心职责                                                                        |
 | ---------- | ------------------------------- | ------------------------------------------------------------------------------- |
-| configx    | [SPEC.md](./configx/SPEC.md) · [tasks/](./configx/tasks/) | Reader/Config/Option、多源合并、schema 校验、环境变量覆盖、Watch（5 FR，10 tasks） |
+| configx    | [SPEC.md](./configx/SPEC.md) · [DESIGN.md](./configx/DESIGN.md) · [TRACEABILITY.md](./configx/TRACEABILITY.md) · [tasks/](./configx/tasks/) | Reader/Config/Option、多源合并、schema 校验、环境变量覆盖、Watch、敏感脱敏（5 FR，11 BR，10 tasks） |
 | observex   | [SPEC.md](./observex/SPEC.md) · [tasks/](./observex/tasks/) | Logger/Meter/Tracer/Exporter、Redaction、Label Policy、Health（7 FR，11 tasks） |
 | resiliencx | [SPEC.md](./resiliencx/SPEC.md) · [tasks/](./resiliencx/tasks/) | Timeout/Retry/CircuitBreaker/Bulkhead/RateLimiter/Fallback、策略组合（6 FR，11 tasks） |
 | schedulex  | [SPEC.md](./schedulex/SPEC.md) · [tasks/](./schedulex/tasks/) | Scheduler/Trigger/OverlapPolicy/MisfirePolicy/EventSink/Locker/Clock（9 FR，11 tasks） |
