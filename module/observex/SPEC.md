@@ -689,13 +689,15 @@ Then 返回 false
 
 ---
 
-## 19. Security 安全要求
+## 19. Security
 
 | 要求 | 实现方式 |
 |------|----------|
 | 日志中 secret 过滤 | 自动匹配 API key / token / password 模式并脱敏 |
 | metrics label 不含 PII | label value 白名单或正则过滤 |
 | tracing 采样策略 | 生产环境默认 parentbased_traceidratio，避免全量采集泄露敏感操作序列 |
+
+本模块的安全要求涵盖：日志 secret 脱敏、metrics label PII 过滤、tracing 采样避免全量泄露。
 
 ### secret 识别模式
 
