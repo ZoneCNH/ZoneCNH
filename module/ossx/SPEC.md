@@ -186,25 +186,27 @@ Core models:
 ## 11. Config Schema
 
 ```yaml
-endpoint: "https://storage.example.internal"
-region: "us-east-1"
-bucket: "hai-artifacts"
-path_style: false
-timeouts:
-  connect: "5s"
-  operation: "30s"
-checksum:
-  required: true
-  algorithms: ["sha256"]
-multipart:
-  min_part_size: "5MiB"
-  max_parts: 10000
-presign:
-  max_ttl: "15m"
-  allowed_operations: ["GET", "PUT"]
+foundationx:
+  oss:
+    endpoint: "https://storage.example.internal"
+    region: "us-east-1"
+    bucket: "hai-artifacts"
+    path_style: false
+    timeouts:
+      connect: "5s"
+      operation: "30s"
+    checksum:
+      required: true
+      algorithms: ["sha256"]
+    multipart:
+      min_part_size: "8MiB"
+      max_parts: 10000
+    presign:
+      max_ttl: "15m"
+      allowed_operations: ["GET", "PUT"]
 ```
 
-Only the composition root outside `module/ossx` may use an external configuration loader such as `configx`; it must pass the resulting values into `ossx.Config`. The ossx module itself must not import `configx`.
+The external namespace is `foundationx.oss` only at the composition-root configuration boundary. Only the composition root outside `module/ossx` may use an external configuration loader such as `configx`; it must project those values into `ossx.Config` or constructor options before calling ossx. The ossx module itself must not import `configx`, configuration-loader packages, or repository-global config registries.
 
 ## 12. Error Handling
 
