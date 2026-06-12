@@ -67,7 +67,7 @@ stdlib-only 基础原语。所有上层模块的根依赖。
 
 | 模块   | 规格                        | 核心职责                                                                                     |
 | ------ | --------------------------- | -------------------------------------------------------------------------------------------- |
-| kernel | [SPEC.md](./kernel/SPEC.md) | Module/App/Lifecycle、依赖图校验、拓扑序启动、优雅停机、error/time/context/health/validation |
+| kernel | [SPEC.md](./kernel/SPEC.md) | 12 子包轻量工具集：lifecycx/errx/healthx/obsx/retryx/shutdownx/syncx/timex/validx/versionx/contextx/contracttest（12 FR，12 tasks） |
 
 ---
 
