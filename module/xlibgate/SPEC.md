@@ -2,15 +2,15 @@
 
 > 基座 · 机器门禁。import 边界、go.mod、Go baseline、release evidence 机器检查。
 
-最后更新：2026-06-07
+最后更新：2026-06-12
 
 ---
 
 ## 1. Metadata
 
 - Status: Draft
-- Spec-Version: v1.0.0
-- Last-Updated: 2026-06-07
+- Spec-Version: v1.0.1
+- Last-Updated: 2026-06-12
 - Owner: ZoneCNH
 - Layer: L0 基座
 - Version: v0.1.0
@@ -24,6 +24,9 @@
 | 日期 | 版本 | 变更内容 | 作者 |
 |------|------|----------|------|
 | 2026-06-07 | v1.0.0 | 初始版本 | ZoneCNH |
+| 2026-06-12 | v1.0.1 | 结构评分修复：BR 逐条"违反时"、Open Questions 分类编号、Observability 补充 Metrics/Tracing、Edge Cases 补充重试、Upgrade Compatibility 补迁移步骤、Security 补输入校验、Testing 补工具声明、Dependencies 补直接/间接依赖表、FR-005 显式枚举 secret_scan 子检查、新增 TC-008 | ZoneCNH |
+
+---
 
 ## 2. Summary
 
@@ -52,7 +55,7 @@ Foundation 由 70+ 个 Go 模块组成，模块间的依赖关系、import 边�
 - release evidence 校验：收集和验证发布必需的质量证据
 - 依赖矩阵验证：消费 `FOUNDATION-DEPS.yaml` 校验完整依赖关系
 - 输出格式支持 JSON 和 human-readable，适配 CI artifact
-- secret 扫描门禁：集成 `gitleaks` 检测泄露
+- secret 扫描门禁：集成 `gitleaks` 检测泄露（由 FR-005 `check all` 统一执行，配置见 §11 Config Schema `secret_scan` 节）
 
 ---
 
@@ -130,14 +133,17 @@ THEN 输出解析错误，exit code 2
 
 ### FR-005: check all
 
-WHEN 调用 `xlibgate check all --config deps.yaml` 且所有子检查均通过
+WHEN 调用 `xlibgate check all --config deps.yaml` 且所有子检查（imports / gomod / baseline / release / secret_scan）均通过
 THEN 输出汇总结果（每项子检查的 pass 状态），exit code 0
 
 WHEN 调用 `xlibgate check all --config deps.yaml` 且任一子检查失败
 THEN 输出所有失败子检查的详情，exit code 1
 
-WHEN `check all` 执行过程中某子检查发生内部错误
+WHEN `check all` 执行过程中某子检查发生内部错误（含 secret_scan 调用 gitleaks 失败）
 THEN 跳过该子检查标记为 error，继续执行其余检查，最终 exit code 2
+
+WHEN 配置中 `secret_scan.enabled=true`（默认）且执行 `check all`
+THEN 调用 `gitleaks detect --no-git` 扫描源码，泄露时输出文件路径和行号，exit code 1
 
 ### FR-006: 输出格式
 
@@ -154,17 +160,77 @@ THEN 将 JSON 结果写入指定文件路径
 
 ## 8. Business Rules
 
-| 编号 | 规则 |
-|------|------|
-| BR-001 | 所有检查命令返回标准化 exit code：0=pass, 1=fail, 2=error |
-| BR-002 | import 边界规则从 `deps.yaml` 配置文件读取，不硬编码 |
-| BR-003 | Go baseline 版本从配置或 `--expected` 参数获取，不硬编码 |
-| BR-004 | release evidence 清单与 `xlib-standard` 定义的 Evidence schema 保持一致 |
-| BR-005 | secret 扫描使用 `gitleaks` 作为底层工具，不自行实现扫描逻辑 |
-| BR-006 | `check all` 必须执行所有子检查，即使前面的检查已失败 |
-| BR-007 | JSON 输出必须包含 machine-readable 的 status 字段（pass/fail/error） |
-| BR-008 | 检查结果的 human-readable 输出必须包含文件路径和行号（如有） |
-| BR-009 | 依赖矩阵文件 `FOUNDATION-DEPS.yaml` 的 schema 与 `xlib-standard` 定义一致 |
+### BR-001: 标准化 exit code
+
+所有检查命令返回标准化 exit code：0=pass, 1=fail, 2=error。
+
+**约束**：每个子命令的 exit code 语义不可互换。`exit 1` 仅表示检查未通过（业务失败），`exit 2` 仅表示内部错误（配置无效、文件缺失等）。
+
+**违反时**：CI 无法正确判断门禁结果（将内部错误与业务失败混淆），导致错误地阻塞或放行。处理：检查自身在启动阶段校验配置完整性，子检查内部 error 时通过 FR-005 的汇总机制统一降级为 exit 2。
+
+### BR-002: import 规则从配置文件读取
+
+import 边界规则从 `deps.yaml` 配置文件读取，不硬编码。
+
+**约束**：规则的新增、删除、修改只需更新配置文件，无需修改 xlibgate 源码或重新编译。
+
+**违反时**：规则变更需改代码重新编译发布，CI 门禁无法灵活适应新的依赖约束。处理：拒绝接受命令行直接传入的 import 规则字符串；`--config` 缺失时仅报错，不回退到硬编码规则。
+
+### BR-003: Go baseline 从配置或参数获取
+
+Go baseline 版本从配置或 `--expected` 参数获取，不硬编码。
+
+**约束**：版本升级时只需修改配置文件或 CI 脚本中的 `--expected` 参数值。
+
+**违反时**：Go 版本升级需改动 xlibgate 源码重新编译，增加 CI 基础设施维护成本。处理：未提供 `--expected` 且配置无 `baseline.go_version` 时，输出明确错误提示（exit 2），不使用编译时硬编码的默认版本号。
+
+### BR-004: evidence schema 与 xlib-standard 一致
+
+release evidence 清单与 `xlib-standard` 定义的 Evidence schema 保持一致。
+
+**约束**：evidence JSON 的字段名、类型、必需项、枚举值必须与 xlib-standard 的 Evidence Runtime 定义完全相同。
+
+**违反时**：跨工具 evidence 不可互操作——xlibgate 生成的 evidence 无法被其他 xlib-standard 兼容工具校验，反之亦然。处理：evidence schema 校验阶段检测到不匹配时，返回 `ErrEvidenceInvalid`（exit 2），不静默接受。
+
+### BR-005: secret 扫描使用 gitleaks
+
+secret 扫描使用 `gitleaks` 作为底层工具，不自行实现扫描逻辑。
+
+**约束**：gitleaks 作为外部命令调用；xlibgate 只负责调用、解析输出、集成到汇总报告中。
+
+**违反时**：自研扫描器的规则覆盖面和准确性远不如经过社区长期验证的 gitleaks，存在漏报风险。处理：当 gitleaks 二进制不可用时，输出明确错误信息（"gitleaks not found, install from https://github.com/gitleaks/gitleaks"），exit 2。
+
+### BR-006: check all 必须执行所有子检查
+
+`check all` 必须执行所有子检查，即使前面的检查已失败。
+
+**约束**：子检查的执行顺序不影响汇总结果；任一子检查失败或出错不影响其余子检查的独立执行。
+
+**违反时**：部分检查被跳过，门禁不完整——例如 imports 失败导致 gomod/baseline/release/secret_scan 全部跳过，遗漏其他合规问题。处理：`check all` 实现中每个子检查在独立 goroutine 中运行，通过 errgroup 或 WaitGroup 等待全部完成后统一汇总。
+
+### BR-007: JSON 输出含 machine-readable status
+
+JSON 输出必须包含 machine-readable 的 status 字段（pass/fail/error）。
+
+**约束**：顶层 `status` 字段和每项 `checks[].status` 字段均使用枚举值 `"pass" | "fail" | "error"`，不允许空字符串或其他值。
+
+**违反时**：CI 解析失败，无法自动化判断门禁结果。处理：JSON 序列化前在 `CheckResult.Status` 的 `MarshalJSON` 中校验枚举值，非法值时 panic（编程错误，不应到达生产）。
+
+### BR-008: human-readable 输出含文件路径和行号
+
+检查结果的 human-readable 输出必须包含文件路径和行号（如有）。
+
+**约束**：适用于所有可定位到源码位置的检查（imports 违规、gomod diff、secret_scan 命中）；不适用于 pure semantic 检查（如 baseline 版本不匹配只需模块名）。
+
+**违反时**：开发者无法快速定位违规位置，需手动搜索全仓库。处理：`Violation` 结构体的 `File` 字段为必填，`Line` 可选；human-readable formatter 在 File 为空时输出 `"<unknown location>"` 提示信息不完整。
+
+### BR-009: FOUNDATION-DEPS.yaml schema 与 xlib-standard 一致
+
+依赖矩阵文件 `FOUNDATION-DEPS.yaml` 的 schema 与 `xlib-standard` 定义一致。
+
+**约束**：YAML 结构、字段名、数据类型、必填/可选字段完全对齐 xlib-standard 的 Gate 模块中的 deps schema。
+
+**违反时**：deps.yaml 解析失败或行为与预期不符，其他依赖 xlib-standard 的工具也无法读取同一份 deps 文件。处理：解析 deps.yaml 时执行 schema 校验，不匹配时返回 `ErrConfigInvalid` 并附详细错误路径（如 `imports.forbidden[0].source: field required`）。
 
 ---
 
@@ -190,7 +256,7 @@ xlibgate check all --config deps.yaml [--output json] [--artifact result.json]
 
 # 版本
 xlibgate version
-```text
+```
 
 ### 9.2 Exit Code 定义
 
@@ -198,7 +264,7 @@ xlibgate version
 0 — pass：所有检查通过
 1 — fail：至少一项检查未通过
 2 — error：发生内部错误（配置无效、文件缺失等）
-```text
+```
 
 ### 9.3 JSON 输出格式
 
@@ -221,7 +287,7 @@ xlibgate version
     "errors": 0
   }
 }
-```text
+```
 
 ### 9.4 配置格式
 
@@ -244,7 +310,7 @@ release:
     - secret_scan_pass
     - gomod_tidy
     - vet_clean
-```text
+```
 
 ---
 
@@ -262,7 +328,7 @@ var (
     ErrImportViolation  = errors.New("xlibgate: import boundary violation")
     ErrGomodDirty       = errors.New("xlibgate: go.mod not tidy")
 )
-```text
+```
 
 ### 10.2 检查结果结构
 
@@ -287,7 +353,7 @@ type Violation struct {
     Line    int    `json:"line,omitempty"`
     Message string `json:"message"`
 }
-```text
+```
 
 ---
 
@@ -309,7 +375,7 @@ release:
 secret_scan:
   enabled: bool               # default: true
   config_path: string         # gitleaks 配置文件路径（可选）
-```text
+```
 
 ---
 
@@ -344,6 +410,7 @@ secret_scan:
 | 并发运行多个 `xlibgate` 实例 | 各实例独立，无状态冲突 |
 | `check all` 中某子检查超时 | 标记为 error，继续执行其余检查 |
 | CI 环境无 color 支持 | 自动检测终端，无 color 时输出纯文本 |
+| 子检查失败后自动重试 | 默认不重试（单次执行）；可通过配置 `retry: {max_attempts: N, backoff: "constant"}` 启用有限重试，N 次后仍失败标记为 error |
 
 ---
 
@@ -386,7 +453,7 @@ xlibgate/
 ├── example_test.go
 ├── benchmark_test.go
 └── integration_test.go         # //go:build integration
-```text
+```
 
 ---
 
@@ -398,9 +465,21 @@ xlibgate/
 module github.com/ZoneCNH/xlibgate
 
 go 1.23
-```text
+```
 
-### 15.2 依赖方向
+### 15.2 直接依赖
+
+| 依赖 | 版本 | 用途 | 来源 |
+|------|------|------|------|
+| stdlib (`go/parser`, `go/ast`, `go/token`, `os/exec`, `encoding/json`, `flag` 等) | Go 1.23 | Go 源码 AST 解析、外部命令调用、JSON 序列化、CLI flag 解析 | 标准库 |
+| `gopkg.in/yaml.v3` | v3 | YAML 配置文件解析（`xlibgate.yaml`、`deps.yaml`） | 第三方 |
+| `gitleaks` | latest stable | secret 扫描引擎（作为外部命令调用，非 Go import） | 外部二进制 |
+
+### 15.3 间接依赖
+
+xlibgate 是纯 CLI 工具，不被任何模块 import。仅通过 `go/parser` 标准库间接引入 Go 工具链的标准依赖，无第三方传递依赖。
+
+### 15.4 依赖方向
 
 | 可以依赖 | 禁止依赖 |
 |----------|----------|
@@ -409,7 +488,7 @@ go 1.23
 | Go AST 解析库（`go/parser`, `go/ast`） | 所有 L2.5 领域共享层 |
 | `gitleaks`（secret 扫描，作为外部命令调用） | |
 
-### 15.3 特殊说明
+### 15.5 特殊说明
 
 xlibgate 是纯 CLI 工具，不被任何模块 import。它只扫描其他模块的代码，不产生运行时依赖。
 
@@ -417,7 +496,17 @@ xlibgate 是纯 CLI 工具，不被任何模块 import。它只扫描其他模�
 
 ## 16. Testing
 
-### 16.1 单元测试
+### 16.1 测试工具
+
+| 工具 | 用途 |
+|------|------|
+| `testing` | Go 标准测试框架 |
+| `testify` | 断言库（`assert` / `require`） |
+| `go tool cover` | 覆盖率报告 |
+| `go test -race` | 竞态检测 |
+| `go test -bench` / `-benchmem` | 性能基准测试 |
+
+### 16.2 单元测试
 
 | 测试场景 | 验证点 |
 |----------|--------|
@@ -436,8 +525,10 @@ xlibgate 是纯 CLI 工具，不被任何模块 import。它只扫描其他模�
 | exit code | pass=0, fail=1, error=2 |
 | JSON 输出 | 格式正确，包含所有必需字段 |
 | human-readable 输出 | 包含文件路径和行号 |
+| secret 扫描通过 | gitleaks 零命中 → pass |
+| secret 扫描命中 | gitleaks 检测到泄露 → 报错，含文件路径和行号 |
 
-### 16.2 Given/When/Then 用例
+### 16.3 Given/When/Then 用例
 
 **TC-001: import 边界违规**
 Given 配置禁止业务域 import 基座层
@@ -472,9 +563,14 @@ Then 输出 pass，exit code 0
 **TC-007: 输出格式**
 Given 检查结果包含 pass、fail 和 error
 When 使用 JSON 输出
-Then 输出包含 check、status、message 和 evidence 字段
+Then 输出包含 status、checks[]、summary 字段
 
-### 16.3 Benchmark
+**TC-008: secret 扫描**
+Given 项目源码包含硬编码密钥（如 AWS_SECRET_ACCESS_KEY=...）
+When 配置 `secret_scan.enabled=true` 且运行 `check all`
+Then gitleaks 检测到泄露，输出文件路径、行号和匹配规则，exit code 1
+
+### 16.4 Benchmark
 
 | 场景 | 目标 |
 |------|------|
@@ -484,7 +580,7 @@ Then 输出包含 check、status、message 和 evidence 字段
 | baseline 检查（50 模块） | < 5s |
 | JSON 报告生成 | < 100ms |
 
-### 16.4 集成测试
+### 16.5 集成测试
 
 | 场景 | 验证点 |
 |------|--------|
@@ -509,13 +605,40 @@ Then 输出包含 check、status、message 和 evidence 字段
 
 ## 18. Observability
 
+> xlibgate 是短生命周期 CLI 工具，不集成运行时 metrics exporter 或 tracing exporter。以下日志事件作为可观测性的主要载体，覆盖 Constitution §6.2 的"操作耗时"和"错误计数"需求（通过结构化日志中的 `duration_ms` 和 `status` 字段由 CI 日志系统聚合）。
+
+### 18.1 Logging（主要可观测载体）
+
 | 类型 | 名称 | 说明 |
 |------|------|------|
 | log | `xlibgate.check.started` | info，检查开始，含 check name |
-| log | `xlibgate.check.completed` | info，检查完成，含 status 和 duration |
+| log | `xlibgate.check.completed` | info，检查完成，含 status 和 duration_ms |
 | log | `xlibgate.check.failed` | warn，检查失败，含 violation 详情 |
 | log | `xlibgate.check.error` | error，检查出错，含 error message |
 | log | `xlibgate.config.loaded` | info，配置加载完成，含文件路径 |
+
+### 18.2 Metrics（CI 日志聚合等效）
+
+CLI 工具不启动 HTTP metrics 端点。以下指标通过 CI 系统对结构化日志的解析实现等效聚合：
+
+| 指标名 | 类型 | 说明 | 来源日志 |
+|--------|------|------|----------|
+| `xlibgate_check_duration_seconds` | histogram | 各子检查耗时分布，label: `check_name`, `status` | `xlibgate.check.completed` 的 `duration_ms` 字段 |
+| `xlibgate_check_total` | counter | 检查执行总次数，label: `check_name`, `status` | `xlibgate.check.completed` 的事件计数 |
+| `xlibgate_check_errors_total` | counter | 检查错误次数，label: `check_name` | `xlibgate.check.error` 的事件计数 |
+
+### 18.3 Tracing
+
+CLI 短生命周期工具不启动 tracing exporter。执行流程通过父子日志事件的关联字段（`check_name`、`timestamp`）重建调用链，等效于 span 语义：
+
+| 逻辑 Span | 对应日志 | 说明 |
+|-----------|----------|------|
+| `xlibgate.check_all` | `check.started` + `check.completed` (name=all) | 全量门禁根 span |
+| `xlibgate.check_imports` | `check.started` + `check.completed` (name=imports) | import 扫描子 span |
+| `xlibgate.check_gomod` | `check.started` + `check.completed` (name=gomod) | gomod 检查子 span |
+| `xlibgate.check_baseline` | `check.started` + `check.completed` (name=baseline) | baseline 检查子 span |
+| `xlibgate.check_release` | `check.started` + `check.completed` (name=release) | release evidence 子 span |
+| `xlibgate.check_secret_scan` | `check.started` + `check.completed` (name=secret_scan) | secret 扫描子 span |
 
 ---
 
@@ -526,6 +649,7 @@ Then 输出包含 check、status、message 和 evidence 字段
 | secret 扫描 | 集成 `gitleaks`，扫描所有源文件 |
 | 配置文件不泄露敏感数据 | 配置文件只包含规则定义，不含密钥 |
 | 错误消息不泄露文件内容 | 错误消息只包含文件路径和行号，不包含源代码 |
+| CLI 参数和配置文件输入校验 | 使用 Go `flag` 库类型校验 + YAML schema 校验；配置加载时对 `baseline.go_version`（semver）、`imports.forbidden[].source`（非空字符串）、`release.require`（已知条件枚举）进行合法性检查 |
 
 ---
 
@@ -555,16 +679,16 @@ Then 输出包含 check、status、message 和 evidence 字段
 
 ## 21. Upgrade Compatibility
 
-| 变更类型 | 版本升级 |
-|----------|----------|
-| CLI 命令结构变更（子命令增删） | **minor** |
-| exit code 语义变更 | **major** |
-| JSON 输出格式变更（字段增删） | **minor** |
-| JSON 输出格式变更（字段重命名/删除） | **major** |
-| 配置 schema 变更（新增可选字段） | **minor** |
-| 配置 schema 变更（新增必填字段） | **minor**（带默认值） |
-| 配置 schema 变更（字段删除/重命名） | **major** |
-| 新增检查子命令 | **minor** |
+| 变更类型 | 版本升级 | 迁移方式 |
+|----------|----------|----------|
+| CLI 命令结构变更（子命令增删） | **minor** | 更新 CI 脚本中的命令引用；新增子命令向后兼容，删除子命令在发布说明中标注替代方案 |
+| exit code 语义变更 | **major** | 更新所有 CI 脚本中依赖 exit code 的条件判断；在发布说明中提供新旧 exit code 对照表和升级检查清单 |
+| JSON 输出格式变更（字段增删） | **minor** | 新增字段向后兼容（旧解析器忽略未知字段）；删除字段在 MINOR 版本中标记 deprecated，MAJOR 版本中移除 |
+| JSON 输出格式变更（字段重命名/删除） | **major** | 更新 CI artifact 解析脚本中的字段名；提供过渡期兼容映射（保留旧字段名作为 alias 至少一个 MAJOR 周期） |
+| 配置 schema 变更（新增可选字段） | **minor** | 无需迁移；旧配置文件继续有效，新增字段使用默认值 |
+| 配置 schema 变更（新增必填字段） | **minor**（带默认值） | 提供字段默认值避免旧配置文件报错；如无合理默认值，在 CHANGELOG 中标注为"soft required"并给出配置示例 |
+| 配置 schema 变更（字段删除/重命名） | **major** | 在至少一个 MINOR 版本中同时支持新旧字段名；旧字段标记 deprecated；MAJOR 版本移除旧字段并提供自动迁移脚本 |
+| 新增检查子命令 | **minor** | `check all` 默认不自动包含新增子命令（避免破坏现有 CI 预期）；在发布说明中引导用户更新 CI 配置以启用新检查 |
 
 ---
 
@@ -576,7 +700,7 @@ Then 输出包含 check、status、message 和 evidence 字段
 - [ ] JSON 输出格式文档化（含示例）
 - [ ] CHANGELOG.md 已更新
 - [ ] README.md 包含：模块定位、快速开始、配置说明、CLI 参考
-- [ ] 单元测试覆盖率 ≥ 80%
+- [ ] 单元测试覆盖率 >= 80%
 - [ ] `-race` 测试通过
 - [ ] Benchmark 结果无 > 10% 回退
 - [ ] `go vet` 无警告
@@ -590,8 +714,17 @@ Then 输出包含 check、status、message 和 evidence 字段
 
 ## 23. Open Questions
 
-- 是否需要支持增量扫描（只扫描变更文件）？当前为全量扫描。
-- 是否需要支持自定义检查插件（用户定义的门禁规则）？
-- import 边界规则是否需要支持正则表达式匹配？
-- 是否需要支持多配置文件合并（如项目级 + 组织级配置）？
-- release evidence 是否需要支持从远程 URL 获取？
+### Non-blocking（不阻塞开发）
+
+| ID | 问题 | 状态 | 负责人 |
+|----|------|------|--------|
+| OQ-001 | 是否需要支持增量扫描（只扫描变更文件）？当前为全量扫描。 | 待评估 | - |
+| OQ-002 | 是否需要支持多配置文件合并（如项目级 + 组织级配置）？ | 待评估 | - |
+
+### Future（未来考虑）
+
+| ID | 问题 | 状态 | 负责人 |
+|----|------|------|--------|
+| OQ-003 | 是否需要支持自定义检查插件（用户定义的门禁规则）？ | 待评估 | - |
+| OQ-004 | import 边界规则是否需要支持正则表达式匹配？ | 待评估 | - |
+| OQ-005 | release evidence 是否需要支持从远程 URL 获取？ | 待评估 | - |
