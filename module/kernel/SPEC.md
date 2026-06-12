@@ -716,7 +716,7 @@ type HealthStatus struct {
 type RetryPolicy struct {
     MaxAttempts int           // 最大尝试次数（必须 > 0）
     BaseDelay   time.Duration // 初始退避延迟
-    MaxDelay    time.Duration // 退避上限（0 表示无上限）
+    MaxDelay    time.Duration // 退避上限（0 表示无显式上限，但 Delay 仍有溢出保护）
 }
 ```
 
@@ -1030,7 +1030,7 @@ import (
 | AC-015 | FR-011 | syncx SemaphoreLimiter Acquire/Release 并发安全 |
 | AC-016 | FR-011 | syncx WorkerGroup 错误收集 + context 取消传播 |
 | AC-017 | FR-012 | contracttest 断言函数在匹配/不匹配时行为正确 |
-| AC-018 | BR-008 | stdlib-only gate：`go list -deps` 无非 stdlib 依赖 |
+| AC-018 | BR-009 | stdlib-only gate：`go list -deps` 无非 stdlib 依赖 |
 
 ### 16.3 Given/When/Then 用例
 

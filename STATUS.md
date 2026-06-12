@@ -121,7 +121,7 @@
 | [resiliencx](https://github.com/ZoneCNH/resiliencx)       | v0.4.8 | ███░ 80% | 707KB/27 项 | 弹性与容错                 |
 | [schedulex](https://github.com/ZoneCNH/schedulex)         | v0.1.2 | ███░ 80% | 398KB/25 项 | 调度任务                   |
 | [xlibgate](https://github.com/ZoneCNH/xlibgate)           | -      | -        | -           | 门禁与验证运行时           |
-| [xlib-standard](https://github.com/ZoneCNH/xlib-standard) | v1.0.0 | ████ 92% | 标准源 + Go Template + Generator + Gate + Evidence（15 FR，37 AC） | 标准事实源 / Go Reference Template / Generator / Harness Gate / Evidence Runtime |
+| [xlib-standard](https://github.com/ZoneCNH/xlib-standard) | v1.0.0 | ████ 98% | 标准源 + Template + Generator + Gate + Evidence（16 FR，38 AC，34 TC） | 标准事实源 / Go Reference Template / Generator / Harness Gate / Evidence Runtime |
 | [redisx](https://github.com/ZoneCNH/redisx)               | -      | █░░░ 15% | -           | Redis，仅骨架              |
 | [kafkax](https://github.com/ZoneCNH/kafkax)               | -      | █░░░ 15% | -           | Kafka，仅骨架              |
 | [natsx](https://github.com/ZoneCNH/natsx)                 | -      | ███░ 80% | 349KB/27 项 | NATS                       |
