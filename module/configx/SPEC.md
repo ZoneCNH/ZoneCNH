@@ -2,15 +2,15 @@
 
 > Foundation L1 配置层。加载、验证、提供配置给所有其他模块。
 
-最后更新：2026-06-07
+最后更新：2026-06-12
 
 ---
 
 ## 1. Metadata
 
-- Status: Approved
+- Status: Changed
 - Spec-Version: v1.0.0
-- Last-Updated: 2026-06-07
+- Last-Updated: 2026-06-12
 - Owner: ZoneCNH
 - Layer: L1 基础能力
 - Version: v0.1.4
@@ -136,10 +136,10 @@ THEN 返回错误
 | BR-005 | Reader 接口只能读，不能写 |
 | BR-006 | 配置值类型必须与 schema 定义一致 |
 | BR-007 | 未定义的配置键应被忽略或报 warning（可配置） |
-| BR-008 | 公共错误变量使用 `configx:` 前缀命名空间 |
-| BR-009 | Reader/Config/Option 接口遵循 Go 接口隔离原则 |
-| BR-010 | Release 制品通过全部 CI Gate（编译/测试/覆盖率/vet/lint/secret） |
-| BR-011 | 敏感字段（password/token/secret/key/accessKey/secretKey）自动脱敏 |
+| BR-008 | 公共错误变量使用 `configx:` 前缀命名空间 | TASK-000 |
+| BR-009 | Reader/Config/Option 接口遵循 Go 接口隔离原则 | TASK-001 |
+| BR-010 | Release 制品通过全部 CI Gate（编译/测试/覆盖率/vet/lint/secret） | TASK-009 |
+| BR-011 | 敏感字段（password/token/secret/key/accessKey/secretKey）自动脱敏 | TASK-010 |
 
 ---
 
@@ -522,7 +522,7 @@ Then 不能通过 Reader 修改底层配置
 - [ ] 所有 Edge Cases 有对应测试
 
 ---
----
+
 ## 24. Lifecycle
 
 | 阶段 | 状态 | 说明 |
@@ -534,6 +534,7 @@ Then 不能通过 Reader 修改底层配置
 | 运行 | `Reader.Get(key)` | 并发安全只读访问 |
 | 关闭 | 进程退出 | 无资源需清理（无连接池/文件句柄） |
 
+---
 ## 23. Open Questions
 
 - 是否需要支持配置热更新（Watch 特性）？当前只支持启动时加载。
