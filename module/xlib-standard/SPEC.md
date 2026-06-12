@@ -28,7 +28,7 @@ Updated: 2026-06-12
 | Plan    | Approved  | 6 子任务依赖拓扑已确认                         |
 | Tasks   | Ready     | 9 个 task spec 已拆分                          |
 | Prompt  | Ready     | 9 个 context packet 已生成                     |
-| Code    | Completed | G6 PASS, 15 FR/27 AC/24 TC verified            |
+| Code    | Completed | G6 PASS, 16 FR/27 AC/24 TC verified            |
 | Test    | Completed | G7 PASS, Evidence 6 文件                       |
 | Release | Released  | 上游 v1.0.0 已发布（tag v1.0.0，PR #115 已合入；version.go 仍为 v0.6.6 待上游同步） |
 
@@ -165,6 +165,11 @@ Updated: 2026-06-12
 - WHEN 运行 `goalcli adoption` THEN 检查下游模块对 xlib-standard 的采纳状态。
 - WHEN 运行 `goalcli selfimproving` THEN 触发受控递归自改进流程。
 
+### FR-016: L2 下游仓库模板（`templates/l2/`）
+
+- WHEN Generator 渲染 L2 仓库骨架 THEN 必须包含 `.agent/`（证据 gates + capabilities）、`.github/workflows/`（CI 模板）、`test/`（契约/集成/benchmark/chaos）、`docker-compose.test.yml`、`Makefile`。
+- WHEN 检查 L2 模板完整性 THEN 12 个模板文件必须全部存在且可渲染。
+
 ## Business Rules
 
 ### BR-001: 配置显式传入
@@ -236,6 +241,7 @@ Updated: 2026-06-12
 | AC-034 | goalcli debt 扫描技术债务并输出债务报告。                 |
 | AC-035 | goalcli adoption 检查下游采纳状态。                       |
 | AC-036 | goalcli selfimproving 触发受控递归自改进流程。            |
+| AC-037 | templates/l2/ 12 个模板文件全部存在且可渲染。          |
 
 ## Test Cases
 
@@ -274,6 +280,7 @@ Updated: 2026-06-12
 | TC-031 | Integration | goalcli debt            | 输出技术债务报告          |
 | TC-032 | Integration | goalcli adoption        | 输出下游采纳状态          |
 | TC-033 | Integration | goalcli selfimproving   | 自改进流程正常执行        |
+| TC-034 | Integration | templates/l2 完整性检查 | 12 模板文件在位          |
 
 ## Interfaces
 
