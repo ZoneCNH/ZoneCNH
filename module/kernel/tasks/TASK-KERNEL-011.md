@@ -48,6 +48,11 @@ status: pending
 
 - `timex` — AggregateWithClock 接受 timex.Clock
 
+## Non-scope
+
+- 不在 HealthChecker.Check 中产生副作用
+- 不实现健康检查调度器（由调用方控制检查频率）
+
 ## Implementation Notes
 
 - HealthStatus 是值类型，WithMetadata 不可变模式

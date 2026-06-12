@@ -1,31 +1,23 @@
 # TASK-KERNEL-015
 
-> examples/：12 子包可运行示例
+> examples/ 示例程序组（拆分为 015a/015b/015c，每组 ≤ 4 文件）
 
 ---
 
 ```yaml
 task_id: TASK-KERNEL-015
 module: kernel
-scope: "创建 examples/ 目录下 12 个子包对应的可运行示例程序"
+scope: "创建 examples/ 目录下 12 个子包的可运行示例（已拆分为 3 个子任务）"
+type: meta
 spec_ref:
-  - "module/kernel/SPEC.md#14"
-files:
-  - "examples/lifecycle/main.go"
-  - "examples/error_kind/main.go"
-  - "examples/health_checker/main.go"
-  - "examples/observability/main.go"
-  - "examples/retry_policy/main.go"
-  - "examples/shutdown/main.go"
-  - "examples/sync_group/main.go"
-  - "examples/clock/main.go"
-  - "examples/validation/main.go"
-  - "examples/version_info/main.go"
-  - "examples/context/main.go"
-  - "examples/contract_helper/main.go"
+  - "module/kernel/SPEC.md#FR-001~FR-012"
+sub_tasks:
+  - "module/kernel/tasks/TASK-KERNEL-015a.md"
+  - "module/kernel/tasks/TASK-KERNEL-015b.md"
+  - "module/kernel/tasks/TASK-KERNEL-015c.md"
 acceptance_criteria:
   - "AC-EXAMPLES-01: 12 个示例程序均可 go run 运行"
-  - "AC-EXAMPLES-02: 示例输出稳定（无随机值）"
+  - "AC-EXAMPLES-02: 输出稳定无随机值"
 depends_on:
   - "TASK-KERNEL-001"
   - "TASK-KERNEL-002"
@@ -44,10 +36,15 @@ priority: P2
 status: pending
 ```
 
----
+## 拆分方案（符合 ≤ 5 文件约束）
 
-## Implementation Notes
+| Sub-task | 文件数 | 覆盖子包 |
+|----------|:------:|----------|
+| TASK-KERNEL-015a | 4 | lifecycx / errx / healthx / obsx |
+| TASK-KERNEL-015b | 4 | retryx / shutdownx / syncx / timex |
+| TASK-KERNEL-015c | 4 | validx / versionx / contextx / contracttest |
 
-- 每个示例放在独立目录（examples/<name>/main.go）
-- 示例应可独立运行：`go run ./examples/lifecycle/`
-- 输出稳定，用于 CI golden 对比
+## Non-scope
+
+- 不依赖 L1 模块
+- 不使用真实 API key

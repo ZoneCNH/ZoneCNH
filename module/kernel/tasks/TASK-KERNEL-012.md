@@ -42,6 +42,11 @@ status: pending
 - `errx` — AssertErrorKind 依赖 ErrorKind 类型
 - `healthx` — AssertHealthStatus 依赖 HealthStatusValue 类型
 
+## Non-scope
+
+- 不依赖 testify 等第三方断言库
+- 不在断言通过时产生任何输出
+
 ## Implementation Notes
 
 - 所有函数接受 `testing.TB` 接口（兼容 *testing.T 和 *testing.B）

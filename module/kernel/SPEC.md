@@ -1055,7 +1055,7 @@ import (
 | TC-017 | Unit | versionx Compatibility | CompatibleWith 模块/版本匹配正确 |
 | TC-018 | Unit | contracttest | 断言匹配通过，不匹配时 Fatalf |
 
-### 16.4 详细 Given/When/Then（代表性用例）
+### 16.4 详细 Given/When/Then（全 18 用例）
 
 **TC-001: lifecycx 正常启动停止**
 Given 注册 Component A、B（按 A, B 顺序）
@@ -1083,6 +1083,89 @@ When 调用 s.String() 或 json.Marshal(s)
 Then 返回 "***"（非原始值）
 When 调用 s.Reveal()
 Then 返回 "sk-abc123"
+
+**TC-003: lifecycx 未启动时 Stop 幂等**
+Given Manager 已创建但未 Start
+When 调用 Manager.Stop(ctx)
+Then 返回 nil（幂等）
+
+**TC-005: errx errors.Join 多错误链**
+Given e1 = NewError(KindTimeout, "op1", "timeout")
+And e2 = NewError(KindConnection, "op2", "conn refused")
+And joined = errors.Join(e1, e2)
+When 调用 IsKind(joined, ErrorKindTimeout)
+Then 返回 true
+When 调用 IsKind(joined, ErrorKindConnection)
+Then 返回 true
+
+**TC-006: retryx 指数退避**
+Given policy = RetryPolicy{MaxAttempts: 3, BaseDelay: 100ms, MaxDelay: 2s}
+When 调用 policy.Delay(1)
+Then 返回 100ms
+When 调用 policy.Delay(3)
+Then 返回 ≈ 400ms（BaseDelay × 2²）
+
+**TC-007: healthx Aggregate 聚合**
+Given h1 = HealthStatus{Status: "healthy"}, h2 = HealthStatus{Status: "degraded"}, h3 = HealthStatus{Status: "unhealthy"}
+When 调用 Aggregate("all", h1, h2)
+Then 返回 Status="degraded"
+When 调用 Aggregate("all", h1, h2, h3)
+Then 返回 Status="unhealthy"
+
+**TC-008: shutdownx LIFO 顺序**
+Given Hook A (先注册), Hook B (后注册)
+When 调用 Manager.Shutdown(ctx)
+Then B.Shutdown 先于 A.Shutdown 被调用
+
+**TC-010: contextx Key 唯一性**
+Given k1 = NewKey[string]("id"), k2 = NewKey[string]("id")
+Then k1 != k2（不同 sentinel 指针）
+When ctx = WithValue(bg, k1, "v1"); ctx = WithValue(ctx, k2, "v2")
+Then Value[string](ctx, k1) 返回 ("v1", true)
+Then Value[string](ctx, k2) 返回 ("v2", true)
+
+**TC-011: validx 前置条件**
+Given op = "GetUser", name = "id", value = ""
+When 调用 RequireNonEmpty(op, name, value)
+Then 返回 *Error{Kind: validation, Severity: warning, Message: "id must not be empty"}
+
+**TC-012: stdlib-only gate (CI)**
+Given kernel 仓库已构建
+When 运行 `go list -deps ./... | grep -v "^std" | grep -v "kernel$"`
+Then 无输出（零外部依赖）
+
+**TC-013: syncx SemaphoreLimiter**
+Given lim = NewSemaphoreLimiter(2)
+When lim.Acquire(ctx) 调用 3 次（前两次立即返回）
+Then 第三次阻塞，直到 Release() 释放一个许可
+
+**TC-014: syncx WorkerGroup 错误收集**
+Given wg = NewWorkerGroup(ctx)
+When wg.Go(fn1), wg.Go(fn2) 且 fn2 返回错误
+Then wg.Wait() 收集 fn2 错误，ctx 被 cancel
+
+**TC-015: timex FakeClock**
+Given clock = NewFakeClock(time.Unix(0, 0))
+When clock.Advance(10 * time.Second)
+Then clock.Now() 返回 time.Unix(10, 0)
+
+**TC-016: shutdownx NotifyContext**
+Given ctx = NotifyContext(parent, syscall.SIGTERM)
+When 进程收到 SIGTERM
+Then ctx.Done() 被关闭
+
+**TC-017: versionx Compatibility**
+Given info = BuildInfo{Module: "github.com/ZoneCNH/kernel", Version: "1.2.3"}
+And compat = Compatibility{Module: "github.com/ZoneCNH/kernel", Major: "1"}
+When 调用 compat.CompatibleWith(info)
+Then 返回 true
+
+**TC-018: contracttest 断言**
+Given err = NewError(ErrorKindTimeout, "op", "timeout")
+When 调用 AssertErrorKind(t, err, ErrorKindTimeout)
+Then 测试通过（不调用 Fatalf）
+When 调用 AssertErrorKind(t, err, ErrorKindConnection)
+Then 测试失败（Fatalf）
 ## 17. Performance Budget
 
 | 操作 | 目标 | 测量方式 |

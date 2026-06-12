@@ -45,6 +45,11 @@ status: pending
 
 - `timex` — DeadlineRemaining 接受 timex.Clock 实现可测试性
 
+## Non-scope
+
+- 不使用 context.WithValue 裸 API（必须通过 Key[T]）
+- 不实现 context 替代方案（仅做类型安全包装）
+
 ## Implementation Notes
 
 - Key[T] 基于 sentinel 指针实现唯一性

@@ -53,6 +53,12 @@ status: pending
 | §20.2 | kernel 专属 CI Gate |
 | §22 | Release DoD |
 
+## Non-scope
+
+- 不在 contracts 中实现业务逻辑
+- golden 文件不包含随机值/时间戳
+- 消费者导入测试不依赖 testkitx
+
 ## Implementation Notes
 
 - contracts_test.go：公共 API 快照对比

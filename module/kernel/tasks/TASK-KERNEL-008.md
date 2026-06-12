@@ -41,6 +41,11 @@ status: pending
 
 - `errx` — 返回 `*errx.Error` 类型错误
 
+## Non-scope
+
+- 不引入断言宏/panic 行为（始终返回 error）
+- 不校验复杂业务规则（仅做前置条件检查）
+
 ## Implementation Notes
 
 - Precondition 失败返回 `ErrorKindValidation + SeverityWarning`
