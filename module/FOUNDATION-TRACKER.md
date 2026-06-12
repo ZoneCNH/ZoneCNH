@@ -186,6 +186,7 @@
 - [ ] TASK-XLIBGATE-006: check all + 输出格式
 - [ ] TASK-XLIBGATE-007: 集成测试
 - [ ] TASK-XLIBGATE-008: 文档 + Release DoD
+- [ ] TASK-XLIBGATE-009: 评分修复（Matrix RL-001 + Plan D1 + Tasks D1-D3）
 
 ---
 
