@@ -16,9 +16,9 @@
 ## 关联需求
 | 类型 | 编号 | AC | TC | 出处 | 说明 |
 |------|------|----|----|------|------|
-| FR | FR-001 | AC-001, AC-008, AC-012 | TC-001 | SPEC.md $ | — |
-| BR | BR-001 | AC-001, AC-008, AC-012 | TC-001 | SPEC.md $ | — |
-| BR | BR-005 | AC-001, AC-008, AC-012 | TC-001 | SPEC.md $ | — |
+| FR | FR-001 | AC-001, AC-008, AC-012 | TC-001 | SPEC.md §7 | — |
+| BR | BR-001 | AC-001, AC-008, AC-012 | TC-001 | SPEC.md §8 | — |
+| BR | BR-005 | AC-001, AC-008, AC-012 | TC-001 | SPEC.md §8 | — |
 ## 依赖
 
 - 上游 Task：TASK-OBSERVEX-001

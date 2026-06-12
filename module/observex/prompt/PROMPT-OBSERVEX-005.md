@@ -16,9 +16,9 @@
 ## 关联需求
 | 类型 | 编号 | AC | TC | 出处 | 说明 |
 |------|------|----|----|------|------|
-| FR | FR-004 | AC-004, AC-011, AC-015 | TC-004, TC-004a, TC-004b, TC-004c | SPEC.md $ | — |
-| BR | BR-004 | AC-004, AC-011, AC-015 | TC-004, TC-004a, TC-004b, TC-004c | SPEC.md $ | — |
-| BR | BR-008 | AC-004, AC-011, AC-015 | TC-004, TC-004a, TC-004b, TC-004c | SPEC.md $ | — |
+| FR | FR-004 | AC-004, AC-011, AC-015 | TC-004, TC-004a, TC-004b, TC-004c | SPEC.md §7 | — |
+| BR | BR-004 | AC-004, AC-011, AC-015 | TC-004, TC-004a, TC-004b, TC-004c | SPEC.md §8 | — |
+| BR | BR-008 | AC-004, AC-011, AC-015 | TC-004, TC-004a, TC-004b, TC-004c | SPEC.md §8 | — |
 ## 依赖
 
 - 上游 Task：TASK-OBSERVEX-001

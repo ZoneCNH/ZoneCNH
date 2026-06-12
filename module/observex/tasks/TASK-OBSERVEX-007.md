@@ -10,6 +10,7 @@ module: observex
 scope: "实现 health JSON schema 输出，包含 ready/live/message/components"
 spec_ref:
   - "module/observex/SPEC.md#FR-007"
+  - "module/observex/SPEC.md#10.6"
 files:
   - "health.go"
   - "health_test.go"

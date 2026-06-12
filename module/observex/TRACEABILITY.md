@@ -14,7 +14,7 @@ Source: docs/governance/TRACEABILITY.md（迁移前全局矩阵）
 | FR-004      | Exporter（指标导出）          | AC-004 | TC-004b  | TASK-OBSERVEX-005 | ⬜ (2026-06-12) |
 | FR-004      | Exporter（Span 导出）         | AC-004 | TC-004c  | TASK-OBSERVEX-005 | ⬜ (2026-06-12) |
 | FR-004      | Exporter（不可达降级）        | AC-004 | TC-004   | TASK-OBSERVEX-005 | ⬜ (2026-06-12) |
-| FR-004      | Exporter（Shutdown 超时）     | AC-011 | CI Gate (timeout check) | TASK-OBSERVEX-005 | ⬜ (2026-06-12) |
+| FR-004      | Exporter（Shutdown 超时）     | AC-011 | TC-004d           | TASK-OBSERVEX-005 | ⬜ (2026-06-12) |
 | FR-005      | Redaction        | AC-005 | TC-005, TC-005a  | TASK-OBSERVEX-006 | ⬜ (2026-06-12) |
 | FR-006      | Label Policy     | AC-006 | TC-002, TC-007a  | TASK-OBSERVEX-003b | ⬜ (2026-06-12) |
 | FR-007      | Health           | AC-007 | TC-006, TC-006a  | TASK-OBSERVEX-007 | ⬜ (2026-06-12) |

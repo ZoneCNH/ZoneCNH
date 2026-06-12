@@ -13,10 +13,11 @@ spec_ref:
 files:
   - "check_gomod.go"
   - "check_gomod_test.go"
+  - "internal/gomod/parser.go"
 acceptance_criteria:
-  - "go mod tidy 无 diff：exit 0"
-  - "go mod tidy 有 diff：输出详情，exit 1"
-  - "无 go.mod：exit 2"
+  - "AC-002: go mod tidy 无 diff → pass，exit 0"
+  - "AC-002: go mod tidy 有 diff → 输出 diff 详情，exit 1"
+  - "AC-002: 无 go.mod → error，exit 2"
 depends_on:
   - "TASK-XLIBGATE-001"
 estimated_effort: "2h"
@@ -32,13 +33,21 @@ status: pending
 |---|---|---|
 | FR-002 | check gomod：go mod tidy diff 检查 | 3 个 WHEN/THEN 场景 |
 
+## Non-scope
+
+- 不实现 go.sum 手动校验（由 go mod tidy 自动处理）
+- 不修改 go.mod 内容（只读检查，不自动修复）
+- 不实现跨模块 go.mod 版本比较（由 TASK-004 check baseline 负责）
+- 不检查 go.mod 中的 replace 指令合法性
+
 ## Test Plan
 
 | Test Case | Type | Description |
 |---|---|---|
-| §7.2-1 | Unit | 无 diff：exit 0 |
-| §7.2-2 | Unit | 有 diff：exit 1 |
-| §7.2-3 | Unit | 无 go.mod：exit 2 |
+| TC-002 | Unit | go mod tidy 无 diff：exit 0 |
+| TC-002 | Unit | go mod tidy 有 diff：exit 1，输出 diff 详情 |
+| TC-002 | Unit | 无 go.mod：exit 2 |
+| NFR-003 | Benchmark | `BenchmarkCheckGomod` — 50 模块 < 5s |
 
 ## Implementation Notes
 
@@ -49,7 +58,8 @@ status: pending
 
 | Step | Description | Deliverables | Verification |
 |---|---|---|---|
-| 1 | 实现 `check_gomod.go`：执行 go mod tidy → 检查 diff | `check_gomod.go` | §7.2 全部通过 |
+| 1 | 实现 `check_gomod.go`：执行 go mod tidy → 检查 diff | `check_gomod.go` | TC-002 全部通过 |
+| 2 | 实现 `internal/gomod/parser.go`：go.mod 解析封装 | `internal/gomod/parser.go` | `go build ./...` 通过 |
 
 ### Risk Assessment
 
