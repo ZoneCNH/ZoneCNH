@@ -293,6 +293,10 @@ data:
 | 并发 Get + Watch | 需要加锁，保证并发安全 |
 | schema 定义了 key 但文件中未提供且无默认值 | Validate 报错（required） |
 | 超大配置文件（>10MB） | 正常解析，内存 < 文件大小 2x |
+| 配置文件读取超时（NFS/网络挂载） | `Load()` 返回 I/O 超时错误，配置不变；调用方可重试 |
+| 配置加载失败的调用方重试 | `Load()` 失败后配置状态不变，调用方可安全重试；不累积副作用 |
+| Watch 文件监控断连重试 | 文件被删除/移动后 Watch 检测到错误并回调通知；调用方可重新 Load + Watch |
+| 并发 Load 竞态 | 只有首次 `Load()` 成功写入配置；后续并发 `Load()` 返回 `ErrAlreadyLoaded` |
 
 ---
 
@@ -416,9 +420,6 @@ Then 返回值/日志内容为 `"***"`，不包含原始密码
 Given 所有 Task 实现完成
 When 运行 `go test -race -count=1 ./...` 和 `gitleaks detect --no-git`
 Then 所有测试通过，零 data race，零 secret 泄露，覆盖率 ≥ 80%
-Given 已创建配置 Reader
-When 调用读取接口
-Then 不能通过 Reader 修改底层配置
 
 ### 16.3 Benchmark
 
@@ -543,7 +544,19 @@ Then 不能通过 Reader 修改底层配置
 ---
 ## 23. Open Questions
 
-- 是否需要支持配置热更新（Watch 特性）？当前只支持启动时加载。
-- 是否需要支持配置版本管理（记录每次配置变更）？
-- 敏感配置（密码、token）是否需要内置加密支持？
-- 是否需要支持配置模板（引用其他 key 的值）？
+### Blocking（阻塞开发）
+
+无。当前无阻塞性问题。
+
+### Non-blocking（不阻塞开发）
+
+无。
+
+### Future（未来考虑）
+
+| ID | 问题 | 状态 | 负责人 |
+|----|------|------|--------|
+| OQ-001 | 是否需要支持配置热更新（Watch 特性）？当前只支持启动时加载 | 待评估 | ZoneCNH |
+| OQ-002 | 是否需要支持配置版本管理（记录每次配置变更）？ | 待评估 | ZoneCNH |
+| OQ-003 | 敏感配置（密码、token）是否需要内置加密支持？ | 待评估 | ZoneCNH |
+| OQ-004 | 是否需要支持配置模板（引用其他 key 的值）？ | 待评估 | ZoneCNH |
