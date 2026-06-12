@@ -18,13 +18,26 @@
 - Target Repository Identity: `github.com/ZoneCNH/natsx`
 - Related: [CONSTITUTION.md](../../CONSTITUTION.md), [ARCHITECTURE.md](../../ARCHITECTURE.md)
 
+### 1.0 Repair Review Status
+
+- Approved for release: **No**. This specification remains the 1.0 target contract.
+  `/home/natsx/pkg/natsx` now has an executable repair baseline, but it is not release-complete.
+- Evidence refreshed on 2026-06-12: `/home/natsx/README.md`, `/home/natsx/examples/README.md`,
+  `/home/natsx` commits `733ba9a`, `6942cbe`, `a837b94`, `5800c70`, `29b0821`, and `d4072fe`.
+  Embedded Core NATS / JetStream tests, runnable `pkg/natsx` examples, Core publish benchmark evidence,
+  and `TRACEABILITY.md` support this repair review.
+- Release promotion remains blocked until `TRACEABILITY.md` closes the remaining dead-letter advisory,
+  reconnect/backoff, request/JetStream benchmark/SLO, formal arbiter, live TLS/auth/config-alias breadth,
+  and full health/observability lifecycle gaps.
+
 ---
 
 ### 1.1 变更历史
 
-| 日期       | 版本   | 变更内容   | 作者    |
-| ---------- | ------ | ---------- | ------- |
-| 2026-06-07 | v1.0.0 | 初始版本   | ZoneCNH |
+| 日期 | 版本 | 变更内容 | 作者 |
+| --- | --- | --- | --- |
+| 2026-06-12 | v1.0.0-draft | 记录 natsx 可执行修复基线与剩余发布阻塞项 | Codex |
+| 2026-06-07 | v1.0.0 | 初始版本 | ZoneCNH |
 
 ## 2. Summary
 
@@ -184,7 +197,6 @@ THEN 返回 HealthStatus{Ready: false, Live: true, Message: "jetstream unavailab
 | AC-007  | JetStream.AddConsumer      | AddConsumer 幂等创建；配置兼容时返回 nil；配置冲突时返回错误                                                              | TC-003, unit test | Yes/No     |
 | AC-008  | Health                     | NATS 可用时 Health() 返回 Ready=true/Live=true；不可达时 Ready=false/Live=false；JetStream 不可用时 Ready=false/Live=true | TC-005, unit test | Yes/No     |
 
-
 ## 8. Business Rules
 
 | 编号   | 规则                                                |
@@ -204,6 +216,13 @@ THEN 返回 HealthStatus{Ready: false, Live: true, Message: "jetstream unavailab
 ## 9. Interface Contract
 
 公开 API 命名以 `goal.md` 的 1.0 逻辑接口基线为准：`NatsPubSubClient`、`NatsRequestClient`、`JetStreamClientX`、`NatsMessageEnvelope` 和 `SubjectBuilder`。实现可以保留内部适配器，但 Public API 不再暴露泛化的 `Client`/`JetStream` 命名作为 1.0 稳定契约。
+
+Implementation repair note (2026-06-12): `/home/natsx/pkg/natsx` currently exposes concrete repair APIs:
+`Client`, `Envelope`, `SubjectBuilder`, `JetStreamClient`, `New`, `Publish`, `Request`, `Subscribe`,
+`QueueSubscribe`, and `JetStream`.
+
+These names let the embedded NATS tests verify executable behavior; they are repair-baseline evidence,
+not final 1.0 API approval.
 
 ```go
 type NatsPubSubClient interface {
