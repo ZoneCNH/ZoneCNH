@@ -458,17 +458,15 @@ func (c *Config) Validate() error {
 
 ## 13. Edge Cases
 
-| 编号 | 场景 | 预期行为 |
-|------|------|----------|
-| EC-001 | exporter 不可达 | 静默降级，丢弃遥测数据，不影响业务；递增 `observex.exporter.errors` counter |
-| EC-002 | 日志写入失败 | 降级到 stderr |
-| EC-003 | metrics buffer 满 | 丢弃最旧数据，递增 `observex.buffer.dropped` counter |
-| EC-004 | 高基数 label 爆炸 | label policy checker 拒绝（返回 `ErrLabelForbidden`）或截断 |
-| EC-005 | secret 值传入日志字段 | 自动脱敏为 `***` |
-| EC-006 | With(nil fields) | 返回原实例（不变性） |
-| EC-007 | 并发调用 Logger + Exporter | 无 data race（`-race` 测试通过） |
-| EC-008 | tracing context 跨 goroutine | 保持同一 trace_id |
-| EC-009 | 采样率 = 0 | 不采样任何 span，但不报错；`observex.span.dropped` counter 递增 |
+- exporter 不可达（EC-001）：静默降级，丢弃遥测数据，不影响业务；递增 `observex.exporter.errors` counter
+- 日志写入失败（EC-002）：降级到 stderr
+- metrics buffer 满（EC-003）：丢弃最旧数据，递增 `observex.buffer.dropped` counter
+- 高基数 label 爆炸（EC-004）：label policy checker 拒绝（返回 `ErrLabelForbidden`）或截断
+- secret 值传入日志字段（EC-005）：自动脱敏为 `***`
+- With(nil fields)（EC-006）：返回原实例（不变性）
+- 并发调用 Logger + Exporter（EC-007）：无 data race（`-race` 测试通过）
+- tracing context 跨 goroutine（EC-008）：保持同一 trace_id
+- 采样率 = 0（EC-009）：不采样任何 span，但不报错；`observex.span.dropped` counter 递增
 
 ---
 
@@ -558,7 +556,28 @@ go 1.23
 | label policy | forbidden label 被拒绝，allowed label 通过 |
 | health schema | 输出符合 JSON schema；未初始化时输出默认状态 |
 
-### 16.2 Given/When/Then 用例
+### 16.2 验收标准（AC）
+
+| AC 编号 | 对应 FR | 验收条件 |
+|---------|---------|----------|
+| AC-001 | FR-001 | Logger 所有等级输出符合结构化 JSON；level 过滤正确；With 返回新实例且原实例不变；并发调用无 data race |
+| AC-002 | FR-002 | Counter/Histogram/Gauge 记录数值正确；ForbiddenLabels 被拒绝并返回 ErrLabelForbidden |
+| AC-003 | FR-003 | span 创建/结束正确；RecordError 记录错误事件；子 span 继承父 trace_id；跨 goroutine context 传播 |
+| AC-004 | FR-004 | ExportLogs/Metrics/Spans 正常导出返回 nil；exporter 不可达时返回错误但不 panic；Shutdown 后 buffer 已 flush |
+| AC-005 | FR-005 | secret 字段值被替换为 ***；redact.Check 检测文本中泄露的 secret |
+| AC-006 | FR-006 | AllowedLabels 通过、ForbiddenLabels 拒绝；独立 checker 返回正确判定 |
+| AC-007 | FR-007 | 已初始化时输出符合 schema 的 JSON；未初始化时 ready=false；exporter 不可达时对应 component live=false |
+| AC-008 | BR-001 | -race 测试零 data race |
+| AC-009 | BR-002 | ForbiddenLabels 被拒绝并返回 ErrLabelForbidden；observex.label.forbidden counter 递增 |
+| AC-010 | BR-003 | 跨 goroutine 保持同一 trace_id；丢失上下文时创建新 trace 并记录 warn |
+| AC-011 | BR-004 | Shutdown 后数据已发送；超时返回 ErrShutdownFailed |
+| AC-012 | BR-005 | 并发 With 调用后原实例不变；-race 测试零 data race |
+| AC-013 | BR-006 | 不合规命名返回 ErrLabelForbidden；CI Gate metrics contract check 通过 |
+| AC-014 | BR-007 | secret 值不出现在日志输出中；CI Gate redaction leak check 通过 |
+| AC-015 | BR-008 | import graph 中无直接 Prometheus/Otel/Zap 绑定；CI Gate import check 通过 |
+
+
+### 16.3 Given/When/Then 用例
 
 **TC-001: Logger.With 不变性**
 Given 原始 logger `l1`
@@ -625,7 +644,7 @@ Given label 名在 ForbiddenLabels 中
 When 调用 `labelpolicy.Check("order_id")`
 Then 返回 false
 
-### 16.3 Benchmark
+### 16.4 Benchmark
 
 | 场景 | 目标 |
 |------|------|
@@ -633,7 +652,7 @@ Then 返回 false
 | metrics 记录（counter/histogram） | < 1μs |
 | span 创建 + 结束 | < 2μs |
 
-### 16.4 集成测试
+### 16.5 集成测试
 
 | 场景 | 验证点 |
 |------|--------|
