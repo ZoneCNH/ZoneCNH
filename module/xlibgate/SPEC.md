@@ -128,22 +128,31 @@ THEN 输出 pass 结果，exit code 0
 WHEN 调用 `xlibgate check release --evidence evidence.json` 且某些必需 evidence 项缺失或不通过
 THEN 输出缺失/失败的 evidence 列表，exit code 1
 
+WHEN 未提供 `--evidence` 参数
+THEN 输出错误提示，exit code 2
+
 WHEN evidence 文件格式无效（非 JSON 或 schema 不匹配）
 THEN 输出解析错误，exit code 2
 
 ### FR-005: check all
 
-WHEN 调用 `xlibgate check all --config deps.yaml` 且所有子检查（imports / gomod / baseline / release / secret_scan）均通过
+WHEN 调用 `xlibgate check all --config deps.yaml --evidence evidence.json` 且所有子检查（imports / gomod / baseline / release / secret_scan）均通过
 THEN 输出汇总结果（每项子检查的 pass 状态），exit code 0
 
-WHEN 调用 `xlibgate check all --config deps.yaml` 且任一子检查失败
+WHEN 调用 `xlibgate check all --config deps.yaml --evidence evidence.json` 且任一子检查失败
 THEN 输出所有失败子检查的详情，exit code 1
 
 WHEN `check all` 执行过程中某子检查发生内部错误（含 secret_scan 调用 gitleaks 失败）
 THEN 跳过该子检查标记为 error，继续执行其余检查，最终 exit code 2
 
+WHEN 未提供 `--evidence` 参数且配置文件中未定义 `release.evidence_path`
+THEN release 子检查标记为 error（exit code 2），其余子检查继续执行。优先使用 `--evidence` 参数，其次使用配置 `release.evidence_path`
+
 WHEN 配置中 `secret_scan.enabled=true`（默认）且执行 `check all`
 THEN 调用 `gitleaks detect --no-git` 扫描源码，泄露时输出文件路径和行号，exit code 1
+
+WHEN `check all` 执行完成且同时存在 fail 和 error 的子检查
+THEN error 优先级高于 fail，最终 exit code 2
 
 ### FR-006: 输出格式
 
@@ -252,7 +261,7 @@ xlibgate check baseline --expected 1.23 [--output json]
 xlibgate check release --evidence evidence.json [--output json]
 
 # 全量门禁
-xlibgate check all --config deps.yaml [--output json] [--artifact result.json]
+xlibgate check all --config deps.yaml --evidence evidence.json [--output json] [--artifact result.json]
 
 # 版本
 xlibgate version
@@ -285,6 +294,28 @@ xlibgate version
     "passed": 5,
     "failed": 0,
     "errors": 0
+  }
+}
+```
+
+`check all` 多子检查混合结果示例（imports=fail, gomod=pass, baseline=error, release=pass, secret_scan=pass）：
+
+```json
+{
+  "status": "fail",
+  "timestamp": "2026-06-12T14:30:00Z",
+  "checks": [
+    {"name": "imports",     "status": "fail",  "details": [{"file": "pkg/strategy.go", "line": 5, "message": "forbidden import: github.com/ZoneCNH/kernel"}], "duration_ms": 2340},
+    {"name": "gomod",       "status": "pass",  "details": [], "duration_ms": 1200},
+    {"name": "baseline",    "status": "error", "details": [{"file": "", "line": 0, "message": "baseline.go_version not configured"}], "duration_ms": 10},
+    {"name": "release",     "status": "pass",  "details": [], "duration_ms": 450},
+    {"name": "secret_scan", "status": "pass",  "details": [], "duration_ms": 3200}
+  ],
+  "summary": {
+    "total": 5,
+    "passed": 3,
+    "failed": 1,
+    "errors": 1
   }
 }
 ```
@@ -370,7 +401,8 @@ imports:
       targets: [string]       # 禁止 import 的目标包（["*"] 表示所有）
 
 release:
-  require: [string]           # 必需的 release evidence 条件列表
+  evidence_path: string        # optional，evidence 文件路径（check all 时若未传 --evidence 则使用此值）
+  require: [string]            # 必需的 release evidence 条件列表
 
 secret_scan:
   enabled: bool               # default: true

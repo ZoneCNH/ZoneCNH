@@ -75,7 +75,7 @@
 | AC-002 | FR-002 | 003 | go.mod tidy 无 diff → pass（exit 0），有 diff → 输出 diff 详情（exit 1），无 go.mod → error（exit 2） |
 | AC-003 | FR-003 | 004 | baseline 匹配 → pass（exit 0），不匹配 → 输出模块列表（exit 1），无 expected → error（exit 2） |
 | AC-004 | FR-004 | 005 | evidence 完整且通过 → pass（exit 0），缺失 → 输出缺失列表（exit 1），格式无效 → error（exit 2） |
-| AC-005 | FR-005 | 006 | 全部 pass → exit 0，任一 fail → exit 1，任一 error → exit 2（所有子检查均执行，含 secret_scan） |
+| AC-005 | FR-005 | 006 | 全部 pass → exit 0，任一 fail 且无 error → exit 1，任一 error → exit 2（error 优先于 fail）；checks[] 含全部 5 个子检查条目（含 pass 项，非仅失败项）；未提供 --evidence 且无配置 → release 标记 error |
 | AC-006 | FR-006 | 006 | 默认 human-readable（含颜色），`--output json` 输出含 status/checks[]/summary，`--artifact` 写入文件 |
 | AC-007 | BR-001 | 006 | exit code 映射：所有 pass→0，任一 fail→1（非 error 覆盖），任一 error→2 |
 | AC-008 | BR-009 | 002 | FOUNDATION-DEPS.yaml 解析正确，schema 校验通过，无效 yaml → ErrConfigInvalid |
