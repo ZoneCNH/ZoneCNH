@@ -3,27 +3,27 @@
 > 模块级追溯矩阵。治理规范见 [docs/governance/TRACEABILITY.md](../../docs/governance/TRACEABILITY.md)。本矩阵保持 Draft / Pending Evidence 状态；不得替代发布批准。
 
 Last-Updated: 2026-06-12
-Source: `goal.md` 1.0 发布基线 + `SPEC.md` Draft v1.0.0 + `/home/natsx` commit `5800c70`
+Source: `goal.md` 1.0 发布基线 + `SPEC.md` Draft v1.0.0 + `/home/natsx` commit `29b0821`
 
 ## Forward Coverage
 
 | Requirement | Description | Acceptance Criteria | Test Case | Task | Status |
 | ----------- | ----------- | ------------------- | --------- | ---- | ------ |
 | FR-001 | Publish（Core NATS） | 发布成功、连接错误、空 subject 错误均有测试 | TC-001 | TASK-NATSX-001 | ✅ Embedded broker publish and precondition tests |
-| FR-002 | Subscribe（Core NATS） | subscribe/handler/unsubscribe/drain 均有测试 | TC-001 | TASK-NATSX-001 | ◐ Subscribe and queue subscribe covered; explicit unsubscribe/drain evidence pending |
-| FR-003 | Request（Core NATS） | responder、timeout、ctx cancel 均有测试 | TC-002 | TASK-NATSX-002 | ◐ Responder and no-responder covered; timeout/cancel matrix pending |
-| FR-004 | JetStream.Publish | stream 存在/缺失场景均有测试 | TC-003 | TASK-NATSX-003 | ◐ Stream-present publish covered; missing-stream scenario pending |
+| FR-002 | Subscribe（Core NATS） | subscribe/handler/unsubscribe/drain 均有测试 | TC-001 | TASK-NATSX-001 | ◐ Subscribe, queue subscribe, unsubscribe, and client close covered; subscription Drain evidence pending |
+| FR-003 | Request（Core NATS） | responder、timeout、ctx cancel 均有测试 | TC-002 | TASK-NATSX-002 | ✅ Responder, no-responder, timeout, and cancel covered |
+| FR-004 | JetStream.Publish | stream 存在/缺失场景均有测试 | TC-003 | TASK-NATSX-003 | ✅ Stream-present and missing-stream publish covered |
 | FR-005 | JetStream.Subscribe | ack、redelivery、dead-letter 行为均有测试 | TC-003 | TASK-NATSX-003 | ◐ Pull, ack, and nack redelivery covered; dead-letter pending |
 | FR-006 | JetStream.AddStream | 创建、幂等、冲突配置均有测试 | TC-003 | TASK-NATSX-003 | ✅ Embedded AddStream create/idempotency/conflict covered |
 | FR-007 | JetStream.AddConsumer | 创建、幂等、冲突配置均有测试 | TC-003 | TASK-NATSX-003 | ✅ Embedded AddConsumer create/idempotency/conflict covered |
-| FR-008 | Health | ready/live/message 与连接状态映射有测试 | TC-005 | TASK-NATSX-005 | ◐ Disconnected/nil/canceled paths covered; healthy/degraded mapping pending |
+| FR-008 | Health | ready/live/message 与连接状态映射有测试 | TC-005 | TASK-NATSX-005 | ◐ Healthy, disconnected, nil, canceled, and closed paths covered; degraded mapping pending |
 | FR-009 | SubjectBuilder | `domain.resource.action.v{version}` 构造和解析有测试 | TC-006 | TASK-NATSX-006 | ✅ Build/parse/validation tests |
 | FR-010 | NatsMessageEnvelope | traceId/messageId/schemaVersion/header 双向映射有测试 | TC-007 | TASK-NATSX-007 | ✅ Header metadata round-trip and embedded propagation tests |
 | FR-011 | Config contract | `foundationx.nats.*` 配置、默认值和旧别名兼容有测试 | TC-008 | TASK-NATSX-008 | ◐ Defaults/sanitize/validation covered; old-alias compatibility pending |
 | FR-012 | Observability contract | `foundationx_nats_*` 指标和结构化日志字段有测试 | TC-009 | TASK-NATSX-009 | ◐ Noop and selected error metrics covered; full metric/log contract pending |
 | BR-001 | Core NATS at-most-once | 不承诺持久化，低延迟发布订阅场景有说明和测试 | TC-001 | TASK-NATSX-001 | ✅ Core publish/subscribe/request/queue baseline covered |
 | BR-002 | JetStream at-least-once | ack/nack/redelivery 语义有测试 | TC-003 | TASK-NATSX-003 | ◐ Ack/nack/redelivery covered; dead-letter advisory pending |
-| BR-003 | Context boundary | 所有网络操作接受 context 并尊重取消/超时 | TC-002 | TASK-NATSX-002 | ◐ Context-aware APIs and selected canceled contexts covered; full timeout/cancel matrix pending |
+| BR-003 | Context boundary | 所有网络操作接受 context 并尊重取消/超时 | TC-002 | TASK-NATSX-002 | ◐ Request timeout/cancel and close context covered; broader network-operation matrix pending |
 | BR-004 | Handler latency | 订阅 handler 快速返回/异步化约束有测试或示例 | TC-010 | TASK-NATSX-010 | ◐ Handler path covered; async/latency constraint evidence pending |
 | BR-005 | 自动重连指数退避 | 断线重连、max-attempts、状态事件有测试 | TC-004 | TASK-NATSX-004 | ⬜ Pending reconnect/backoff tests |
 | NFR-001 | Security redaction | credentials/token/连接串敏感片段脱敏 | TC-011 | TASK-NATSX-011 | ◐ Config sanitize coverage exists; broader credential surfaces pending |
@@ -37,23 +37,23 @@ Source: `goal.md` 1.0 发布基线 + `SPEC.md` Draft v1.0.0 + `/home/natsx` comm
 | Acceptance Criterion | Requirement | Test Case | Current Evidence |
 | -------------------- | ----------- | --------- | ---------------- |
 | AC-001 | FR-001 | TC-001 | Embedded broker publish plus invalid-precondition coverage |
-| AC-002 | FR-002 | TC-001 | Embedded broker subscribe/queue baseline; explicit unsubscribe/drain evidence pending |
-| AC-003 | FR-003 | TC-002 | Embedded responder and no-responder coverage; timeout/cancel matrix pending |
-| AC-004 | FR-004 | TC-003 | Embedded JetStream publish/pull baseline; missing-stream scenario pending |
+| AC-002 | FR-002 | TC-001 | Embedded broker subscribe/queue/unsubscribe plus client close evidence; subscription Drain evidence pending |
+| AC-003 | FR-003 | TC-002 | Embedded responder, no-responder, timeout, and cancel coverage |
+| AC-004 | FR-004 | TC-003 | Embedded JetStream publish/pull plus missing-stream publish coverage |
 | AC-005 | FR-005 | TC-003 | Pull, ack, and nack redelivery covered; dead-letter evidence pending |
 | AC-006 | FR-006 | TC-003 | Embedded AddStream create/idempotency/conflict covered |
 | AC-007 | FR-007 | TC-003 | Embedded AddConsumer create/idempotency/conflict covered |
-| AC-008 | FR-008 | TC-005 | Disconnected/nil/canceled health paths covered; healthy/degraded mapping pending |
+| AC-008 | FR-008 | TC-005 | Healthy, disconnected, nil, canceled, and closed health paths covered; degraded mapping pending |
 
 ## Reverse Coverage
 
 | Test Case | Covers | Current Evidence |
 | --------- | ------ | ---------------- |
-| TC-001 | FR-001, FR-002, BR-001 | `/home/natsx/pkg/natsx/embedded_nats_test.go::TestEmbeddedNATSCorePublishRequestAndQueue`; `/home/natsx/pkg/natsx/regression_test.go::TestCoreOperationsRejectInvalidPreconditions` |
-| TC-002 | FR-003, BR-003 | `/home/natsx/pkg/natsx/embedded_nats_test.go::TestEmbeddedNATSCorePublishRequestAndQueue`; `/home/natsx/pkg/natsx/embedded_nats_test.go::TestEmbeddedNATSRequestNoResponder`; timeout/cancel matrix pending |
-| TC-003 | FR-004, FR-005, FR-006, FR-007, BR-002 | `/home/natsx/pkg/natsx/embedded_nats_test.go::TestEmbeddedNATSJetStreamPublishAndPull`; covers JetStream publish/pull, AddStream/AddConsumer idempotency/conflict, and nack redelivery; dead-letter advisory path remains |
+| TC-001 | FR-001, FR-002, BR-001 | `/home/natsx/pkg/natsx/embedded_nats_test.go::TestEmbeddedNATSCorePublishRequestAndQueue`; `/home/natsx/pkg/natsx/embedded_nats_test.go::TestEmbeddedNATSCoreTimeoutUnsubscribeDrainAndHealth`; `/home/natsx/pkg/natsx/regression_test.go::TestCoreOperationsRejectInvalidPreconditions` |
+| TC-002 | FR-003, BR-003 | `/home/natsx/pkg/natsx/embedded_nats_test.go::TestEmbeddedNATSCorePublishRequestAndQueue`; `/home/natsx/pkg/natsx/embedded_nats_test.go::TestEmbeddedNATSRequestNoResponder`; `/home/natsx/pkg/natsx/embedded_nats_test.go::TestEmbeddedNATSCoreTimeoutUnsubscribeDrainAndHealth` |
+| TC-003 | FR-004, FR-005, FR-006, FR-007, BR-002 | `/home/natsx/pkg/natsx/embedded_nats_test.go::TestEmbeddedNATSJetStreamPublishAndPull`; covers JetStream publish/pull, missing-stream publish, AddStream/AddConsumer idempotency/conflict, management edge failures, and nack redelivery; dead-letter advisory path remains |
 | TC-004 | BR-005 | Pending reconnect/backoff tests |
-| TC-005 | FR-008 | `/home/natsx/pkg/natsx/health_test.go::TestHealthCheckDisconnectedRecordsMetrics`; `/home/natsx/pkg/natsx/regression_test.go::TestHealthCheckNilAndCanceledContext`; healthy/degraded mapping pending |
+| TC-005 | FR-008 | `/home/natsx/pkg/natsx/embedded_nats_test.go::TestEmbeddedNATSCoreTimeoutUnsubscribeDrainAndHealth`; `/home/natsx/pkg/natsx/health_test.go::TestHealthCheckDisconnectedRecordsMetrics`; `/home/natsx/pkg/natsx/regression_test.go::TestHealthCheckNilAndCanceledContext`; degraded mapping pending |
 | TC-006 | FR-009 | `/home/natsx/pkg/natsx/subject_test.go` |
 | TC-007 | FR-010 | `/home/natsx/pkg/natsx/envelope_test.go`; embedded request/reply metadata propagation in `/home/natsx/pkg/natsx/embedded_nats_test.go` |
 | TC-008 | FR-011 | `/home/natsx/pkg/natsx/config_test.go`; old-alias compatibility pending |
@@ -62,17 +62,17 @@ Source: `goal.md` 1.0 发布基线 + `SPEC.md` Draft v1.0.0 + `/home/natsx` comm
 | TC-011 | NFR-001, NFR-002 | `/home/natsx/pkg/natsx/config_test.go::TestConfigValidateDefaultsAndSanitize`; live TLS/auth integration pending |
 | TC-012 | NFR-003 | Pending benchmark evidence |
 | TC-013 | NFR-004 | `/home/natsx$ GOWORK=off go list -deps ./pkg/natsx` plus forbidden-domain filter returned `dependency boundary clean` |
-| TC-014 | NFR-005 | `/home/natsx` commit `5800c70`; this matrix refresh; formal four-source arbiter still pending |
+| TC-014 | NFR-005 | `/home/natsx` commit `29b0821`; this matrix refresh; formal four-source arbiter still pending |
 
 ## Task Coverage
 
 | Task | Requirement Coverage | Current Evidence |
 | ---- | -------------------- | ---------------- |
-| TASK-NATSX-001 | FR-001, FR-002, BR-001 | Complete baseline embedded publish/subscribe/request/queue coverage; unsubscribe/drain evidence pending |
-| TASK-NATSX-002 | FR-003, BR-003 | Partial responder/no-responder coverage; timeout/cancel matrix pending |
-| TASK-NATSX-003 | FR-004, FR-005, FR-006, FR-007, BR-002 | JetStream publish/pull, AddStream/AddConsumer idempotency/conflict, and nack redelivery covered; dead-letter advisory and missing-stream evidence pending |
+| TASK-NATSX-001 | FR-001, FR-002, BR-001 | Partial publish/subscribe/request/queue baseline with unsubscribe and client close evidence; subscription Drain evidence pending |
+| TASK-NATSX-002 | FR-003, BR-003 | Complete responder/no-responder/timeout/cancel coverage |
+| TASK-NATSX-003 | FR-004, FR-005, FR-006, FR-007, BR-002 | JetStream publish/pull, missing-stream publish, AddStream/AddConsumer idempotency/conflict, management edge failures, and nack redelivery covered; dead-letter advisory pending |
 | TASK-NATSX-004 | BR-005 | Pending reconnect/backoff tests |
-| TASK-NATSX-005 | FR-008 | Partial health failure-path coverage; healthy/degraded state mapping pending |
+| TASK-NATSX-005 | FR-008 | Partial health healthy/closed/failure-path coverage; degraded state mapping pending |
 | TASK-NATSX-006 | FR-009 | Complete SubjectBuilder construction/parsing/validation coverage |
 | TASK-NATSX-007 | FR-010 | Complete envelope/header metadata round-trip coverage |
 | TASK-NATSX-008 | FR-011 | Partial config default/sanitize/validation coverage; old-alias compatibility pending |
@@ -81,7 +81,7 @@ Source: `goal.md` 1.0 发布基线 + `SPEC.md` Draft v1.0.0 + `/home/natsx` comm
 | TASK-NATSX-011 | NFR-001, NFR-002 | Partial sanitize/config evidence; live TLS/auth integration pending |
 | TASK-NATSX-012 | NFR-003 | Pending benchmarks |
 | TASK-NATSX-013 | NFR-004 | Dependency boundary check passed for forbidden ZoneCNH messaging/storage modules |
-| TASK-NATSX-014 | NFR-005 | `SPEC.md` / `TRACEABILITY.md` / matrix evidence refreshed on 2026-06-12; `/home/natsx` code evidence pinned to commit `5800c70` |
+| TASK-NATSX-014 | NFR-005 | `SPEC.md` / `TRACEABILITY.md` / matrix evidence refreshed on 2026-06-12; `/home/natsx` code evidence pinned to commit `29b0821` |
 
 ## Documentation Evidence Inventory
 
@@ -89,11 +89,11 @@ Source: `goal.md` 1.0 发布基线 + `SPEC.md` Draft v1.0.0 + `/home/natsx` comm
 | --- | --- | --- |
 | `/home/natsx/README.md` | Identifies `github.com/ZoneCNH/natsx/pkg/natsx` as the 1.0 target and legacy `pkg/templatex` as non-release residue. | Documentation identity evidence only. |
 | `/home/natsx/examples/README.md` | Lists required `basic`, `config`, `health`, and `jetstream` examples plus current legacy/blocking status. | Example-plan evidence only until Go examples import `pkg/natsx`. |
-| `/home/natsx/pkg/natsx/embedded_nats_test.go` | Adds embedded broker coverage for core publish/request/queue plus JetStream publish/pull, management idempotency/conflict, and nack redelivery. | Executable behavior evidence for the repaired subset, not full release approval. |
+| `/home/natsx/pkg/natsx/embedded_nats_test.go` | Adds embedded broker coverage for core publish/request/queue, request timeout/cancel, unsubscribe/client close health, JetStream publish/pull, missing-stream publish, management idempotency/conflict, edge failures, and nack redelivery. | Executable behavior evidence for the repaired subset, not full release approval. |
 | `/home/natsx/pkg/natsx/subject_test.go` | Covers subject build/parse/validation and canonical token rejection. | Complete evidence for SubjectBuilder baseline. |
 | `/home/natsx/pkg/natsx/envelope_test.go` | Covers data/header copy and trace/message/schema metadata round-trip. | Complete evidence for envelope baseline. |
 | `/home/natsx/pkg/natsx/config_test.go` | Covers defaults, endpoint validation, and secret sanitization. | Partial config/security evidence; alias and live TLS/auth evidence pending. |
-| `/home/natsx/pkg/natsx/health_test.go` and `/home/natsx/pkg/natsx/regression_test.go` | Cover disconnected health, nil/canceled context, invalid preconditions, and noop metrics safety. | Regression evidence for failure paths and guardrails. |
+| `/home/natsx/pkg/natsx/health_test.go` and `/home/natsx/pkg/natsx/regression_test.go` | Cover disconnected health, nil/canceled context, invalid preconditions, and noop metrics safety; embedded broker tests cover healthy and closed-client health. | Regression evidence for failure paths and guardrails. |
 | `/home/ZoneCNH/module/natsx/SPEC.md` | Keeps Draft / not approved semantics explicit. | Target contract, not release approval. |
 | `/home/ZoneCNH/module/natsx/TRACEABILITY.md` | Separates complete, partial, and pending executable evidence. | Prevents documentation-only 100/100 claims. |
 
@@ -101,15 +101,14 @@ Source: `goal.md` 1.0 发布基线 + `SPEC.md` Draft v1.0.0 + `/home/natsx` comm
 
 - Structural traceability coverage: **21 / 21 rows mapped** to requirements, test-case IDs, and task IDs.
 - Documentation identity coverage: **4 / 4 tracked docs refreshed** for the repair slice (`README.md`, `examples/README.md`, `SPEC.md`, `TRACEABILITY.md`).
-- Executable implementation coverage in `/home/natsx/pkg/natsx`: **5 / 14 task groups complete**, **7 / 14 partial**, **2 / 14 pending**; TASK-NATSX-003 now covers AddStream/AddConsumer and redelivery subclaims but remains partial for dead-letter/missing-stream evidence.
+- Executable implementation coverage in `/home/natsx/pkg/natsx`: **6 / 14 task groups complete**, **6 / 14 partial**, **2 / 14 pending**; TASK-NATSX-002 is complete and TASK-NATSX-003 now covers missing-stream, AddStream/AddConsumer, edge-failure, and redelivery subclaims but remains partial for dead-letter evidence.
 - Module directory coverage in `/home/ZoneCNH/module/natsx`: documentation only; no local Go source or executable tests.
 - Approval status: **Not Approved**. Status remains Draft / Pending Evidence until remaining implementation, integration, performance, and formal gate evidence exists.
-- Code evidence commit: `/home/natsx` `5800c70` (`Close natsx JetStream delivery semantics gaps`).
+- Code evidence commit: `/home/natsx` `29b0821` (`Classify natsx JetStream edge failures`).
 - Verification commands for this refresh:
   - `/home/natsx$ GOWORK=off go test ./pkg/natsx -count=1`
   - `/home/natsx$ GOWORK=off go test -race ./pkg/natsx -count=1`
   - `/home/natsx$ GOWORK=off go vet ./pkg/natsx`
-  - `/home/natsx$ GOWORK=off go vet ./...`
   - `/home/natsx$ GOWORK=off go test ./... -count=1`
   - `/home/natsx$ GOWORK=off go list -deps ./pkg/natsx` plus forbidden dependency filter => `dependency boundary clean`
   - `/home/natsx$ git diff --check`
@@ -121,4 +120,4 @@ Source: `goal.md` 1.0 发布基线 + `SPEC.md` Draft v1.0.0 + `/home/natsx` comm
 - `/home/natsx` now has embedded NATS core/JetStream subset coverage, but this repair slice is not full release approval.
 - Existing `/home/natsx/examples/basic`, `/home/natsx/examples/config`, and `/home/natsx/examples/health` Go files still import `pkg/templatex`; they are compile-smoke evidence only, not NATS 1.0 behavior evidence.
 - `/home/natsx/examples/jetstream` does not exist yet, so JetStream example evidence is blocked until the example slice lands.
-- Dead-letter advisory path, reconnect/backoff, benchmarks, migrated examples, missing-stream JetStream negative case, and the formal four-source 98+ arbiter remain pending.
+- Dead-letter advisory path, reconnect/backoff, benchmarks, migrated examples, degraded/full health-observability lifecycle, and the formal four-source 98+ arbiter remain pending.
