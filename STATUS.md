@@ -4,7 +4,7 @@
 >
 > 数据来源：各 GitHub 仓库实际状态，定期更新
 >
-> 最后更新：2026-06-09
+> 最后更新：2026-06-12
 >
 > 同步基线：`module/` 为模块规格库 SSOT，`docs/governance/` 为 Spec 治理 SSOT，`docs/goal/` 为 Goal 规则 SSOT，`specs/` 已移除。
 
@@ -114,7 +114,7 @@
 
 | 组件                                                      | 版本   | 进度     | 仓库大小    | 说明                       |
 | --------------------------------------------------------- | ------ | -------- | ----------- | -------------------------- |
-| [kernel](https://github.com/ZoneCNH/kernel)               | v0.7.3 | ████ 95% | 594KB/30 项 | L0 原语 / 12 子包 / SPEC v2.0.1 Ready for Code |
+| [kernel](https://github.com/ZoneCNH/kernel)               | v1.0.0 | █████ 100% | 594KB/30 项 | L0 原语 / 12 子包 / stdlib-only / v1.0.0 已发布 |
 | [configx](https://github.com/ZoneCNH/configx)             | v0.1.4 | ███░ 80% | 258KB/20 项 | 配置管理                   |
 | [observex](https://github.com/ZoneCNH/observex)           | v0.3.1 | ███░ 80% | 220KB/18 项 | 可观测性                   |
 | [testkitx](https://github.com/ZoneCNH/testkitx)           | v0.4.0 | ███░ 80% | 254KB/27 项 | 测试工具包                 |
