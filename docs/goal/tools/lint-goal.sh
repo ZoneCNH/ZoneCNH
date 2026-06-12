@@ -89,7 +89,7 @@ check_spec_semantic() {
     # S-LINT-007: 用户可见错误必须包含 Error Handling
     mark_rule "S" "S-LINT-007"
     if file_has_ext "error|错误|异常|exception|失败|fail"; then
-        if ! file_has "error[[:space:]]*handling|错误处理|Error Handling"; then
+        if ! grep -qiE "error[[:space:]]*handling|错误处理|Error Handling" -- "$f"; then
             warn "[$bn] S-LINT-007 [需人工确认]: Spec 涉及错误场景但缺少 Error Handling 段"
             finding "S"
         fi
