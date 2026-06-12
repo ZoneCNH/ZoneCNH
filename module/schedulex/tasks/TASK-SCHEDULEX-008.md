@@ -8,6 +8,7 @@
 task_id: TASK-SCHEDULEX-008
 module: schedulex
 scope: "实现 Clock 接口，支持真实时钟和 mock 时钟"
+non_scope: "不实现调度逻辑，不处理时区转换"
 spec_ref:
   - "module/schedulex/SPEC.md#FR-009"
 files:
@@ -18,7 +19,7 @@ acceptance_criteria:
   - "MockClock 可控制时间推进"
   - "所有调度逻辑使用 Clock 接口"
 depends_on:
-  - "TASK-SCHEDULEX-001"
+  - "TASK-SCHEDULEX-011"
 estimated_effort: "1h"
 priority: P1
 status: pending

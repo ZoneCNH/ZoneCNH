@@ -8,8 +8,9 @@
 task_id: TASK-SCHEDULEX-010
 module: schedulex
 scope: "创建 README、CHANGELOG、example_test.go，验证 Release DoD"
+non_scope: "不实现代码逻辑，不补充单元测试"
 spec_ref:
-  - "module/schedulex/SPEC.md#22"
+  - "module/schedulex/SPEC.md#FR-001"
 files:
   - "README.md"
   - "CHANGELOG.md"
@@ -22,6 +23,7 @@ acceptance_criteria:
 depends_on:
   - "TASK-SCHEDULEX-000"
   - "TASK-SCHEDULEX-001"
+  - "TASK-SCHEDULEX-011"
   - "TASK-SCHEDULEX-002"
   - "TASK-SCHEDULEX-003"
   - "TASK-SCHEDULEX-004"
@@ -41,7 +43,7 @@ status: pending
 
 | Requirement | Description | Acceptance Criteria |
 |---|---|---|
-| §22 | Release DoD | 所有 Release DoD 条目通过 |
+| §22 | Release DoD | 所有 Release DoD 条目通过（覆盖全部 FR） |
 
 ## Test Plan
 

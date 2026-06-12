@@ -8,6 +8,7 @@
 task_id: TASK-SCHEDULEX-002
 module: schedulex
 scope: "实现 Scheduler 接口的 Schedule、Cancel、Start 方法"
+non_scope: "不实现 Overlap/Misfire 策略，不处理 Stop 停机逻辑"
 spec_ref:
   - "module/schedulex/SPEC.md#FR-001"
   - "module/schedulex/SPEC.md#FR-002"
@@ -25,6 +26,7 @@ acceptance_criteria:
   - "Start 启动调度循环"
 depends_on:
   - "TASK-SCHEDULEX-001"
+  - "TASK-SCHEDULEX-011"
 estimated_effort: "4h"
 priority: P0
 status: pending
@@ -44,11 +46,11 @@ status: pending
 
 | Test Case | Type | Description |
 |---|---|---|
-| §7.1-1 | Unit | Schedule 合法 job：返回 JobID |
-| §7.1-2 | Unit | Schedule cron 错误：ErrInvalidTrigger |
-| §7.1-3 | Unit | Schedule 重复 ID：ErrDuplicateJob |
-| §7.5-1 | Unit | Cancel 存在的 job：返回 nil |
-| §7.5-2 | Unit | Cancel 不存在的 job：ErrJobNotFound |
+| TC-001 | Unit | Schedule 合法 cron job：返回 JobID |
+| TC-009 | Unit | Schedule 重复 ID：ErrDuplicateJob |
+| TC-001 | Unit | Schedule 合法 interval job：返回 JobID |
+| TC-005 | Unit | Cancel 存在的 job：返回 nil |
+| TC-005 | Unit | Cancel 不存在的 job：ErrJobNotFound |
 | — | Unit | Start 后 job 按时触发 |
 
 ## Implementation Notes

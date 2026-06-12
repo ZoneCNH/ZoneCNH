@@ -8,9 +8,12 @@
 task_id: TASK-SCHEDULEX-009
 module: schedulex
 scope: "实现集成测试和性能基准"
+non_scope: "不实现新的调度功能，仅验证已有功能的端到端正确性"
 spec_ref:
-  - "module/schedulex/SPEC.md#16"
-  - "module/schedulex/SPEC.md#17"
+  - "module/schedulex/SPEC.md#FR-001"
+  - "module/schedulex/SPEC.md#FR-003"
+  - "module/schedulex/SPEC.md#FR-004"
+  - "module/schedulex/SPEC.md#FR-006"
 files:
   - "integration_test.go"
   - "benchmark_test.go"
@@ -37,8 +40,8 @@ status: pending
 
 | Requirement | Description | Acceptance Criteria |
 |---|---|---|
-| §16 | 集成测试 | 端到端测试通过 |
-| §17 | Performance Budget | Schedule < 1μs |
+| FR-001~009 | 集成测试 | 全流程端到端测试通过 |
+| §17 | Performance Budget | Schedule 注册 < 1μs，内存 < 10MB |
 
 ## Test Plan
 

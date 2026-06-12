@@ -8,6 +8,7 @@
 task_id: TASK-SCHEDULEX-004
 module: schedulex
 scope: "实现 MisfirePolicy（Skip/RunOnce/CatchUp）策略"
+non_scope: "不实现 Overlap 策略，不修改 Trigger 逻辑"
 spec_ref:
   - "module/schedulex/SPEC.md#FR-004"
 files:
@@ -19,6 +20,7 @@ acceptance_criteria:
   - "CatchUp：补执行所有错过的次数"
 depends_on:
   - "TASK-SCHEDULEX-002"
+  - "TASK-SCHEDULEX-011"
 estimated_effort: "2h"
 priority: P0
 status: pending
@@ -36,9 +38,9 @@ status: pending
 
 | Test Case | Type | Description |
 |---|---|---|
-| §7.4-1 | Unit | Skip：跳过错过触发 |
-| §7.4-2 | Unit | RunOnce：补执行一次 |
-| §7.4-3 | Unit | CatchUp：补执行所有 |
+| TC-003 | Unit | Skip：跳过错过触发 |
+| TC-003 | Unit | RunOnce：补执行一次 |
+| TC-003 | Unit | CatchUp：补执行所有 |
 
 ## Implementation Notes
 
