@@ -120,7 +120,7 @@
 | [configx](https://github.com/ZoneCNH/configx)             | v1.0.0 | █████ 100% | 258KB/20 项 | 配置管理；v1.0.0 已发布，97.1% 覆盖率，13 FR 全部实现 |
 | [observex](https://github.com/ZoneCNH/observex)           | v1.0.0 | █████ 100% | 220KB/18 项 | 可观测性                   |
 | [testkitx](https://github.com/ZoneCNH/testkitx)           | v0.4.0 | ███░ 80% | 254KB/27 项 | 测试工具包                 |
-| [resiliencx](https://github.com/ZoneCNH/resiliencx)       | v0.4.8 | ███░ 80% | 707KB/27 项 | 弹性与容错                 |
+| [resiliencx](https://github.com/ZoneCNH/resiliencx)       | v1.0.1 | █████ 100% | SPEC Approved (6 FR, 8 BR, 10 tasks) | 弹性策略（timeout/retry/circuit/bulkhead/rate/fallback） |
 | [schedulex](https://github.com/ZoneCNH/schedulex)         | v0.1.2 | ███░ 80% | 398KB/25 项 | 调度任务                   |
 | [redisx](https://github.com/ZoneCNH/redisx)               | -      | █░░░ 15% | -           | Redis，仅骨架              |
 | [kafkax](https://github.com/ZoneCNH/kafkax)               | -      | █░░░ 15% | -           | Kafka，仅骨架              |

@@ -166,7 +166,7 @@ Foundation v1 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中�
 | `kernel`        | L0 原语       | 12 子包轻量工具集：lifecycx/errx/healthx/obsx/retryx/shutdownx/syncx/timex/validx/versionx/contextx/contracttest（stdlib-only） | 配置解析、观测后端、存储、网络、业务 DTO、全局可变单例     |
 | `configx`       | L1 运行时     | explicit source、merge、decode、validate、sanitize、provenance、config hash                                 | secret backend、全局配置中心、自动发现、业务配置结构体     |
 | `observex`      | L1 运行时契约 | logger、metrics、tracer、field、redactor、label policy、health schema、noop、memory recorder                | Prometheus/Otel/Zap 直接绑定、alert routing、业务监控规则  |
-| `resiliencx`    | L1 运行时策略 | timeout、retry、circuit、bulkhead、rate limit、fallback、budget、classifier、idempotency hint、policy event | 交易风控、订单风险、交易所 SDK、调度、存储后端             |
+| `resiliencx`    | L1 运行时策略 | timeout、retry、circuit breaker、bulkhead、rate limiter、fallback、Policies 组合（budget/classifier/idempotency hint 为 v1.2+ 演进） | 交易风控、订单风险、交易所 SDK、调度、存储后端             |
 | `schedulex`     | L1 运行时调度 | trigger、clock、misfire、overlap、jitter、EventSink、Locker interface、snapshot                             | 分布式锁实现、队列、exactly-once、业务任务语义             |
 | `testkitx`      | L1 test-only  | assert、golden、contract、fixture、harness、fake clock、recorder、leak、boundary、manifest                  | production import、真实外部系统、L2/L3/chaos/soak 测试替代 |
 
@@ -194,7 +194,7 @@ Foundation v1 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中�
 | kernel     | -         | 禁止    | 禁止           | 禁止       | 禁止       | 禁止      | 禁止 | 禁止     |
 | configx    | 允许      | -       | 禁止           | test-only  | 禁止       | 禁止      | 禁止 | 禁止     |
 | observex   | 允许      | 禁止    | -              | test-only  | 禁止       | 禁止      | 禁止 | 禁止     |
-| resiliencx | 允许      | 禁止    | interface-only | test-only  | -          | 禁止      | 禁止 | 禁止     |
+| resiliencx | 允许      | 允许    | interface-only | test-only  | -          | 禁止      | 禁止 | 禁止     |
 | schedulex  | 允许/可选 | 禁止    | interface-only | test-only  | 禁止       | -         | 禁止 | 禁止     |
 | testkitx   | 允许      | test    | test           | -          | test       | test      | 禁止 | 禁止     |
 | x.go       | 允许      | 允许    | 允许           | 禁止(prod) | 允许       | 允许      | -    | 允许     |
