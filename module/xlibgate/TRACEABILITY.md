@@ -8,19 +8,19 @@
 
 ## 1. 功能需求追溯（FR）
 
-| FR     | Description                                                                                                              | Acceptance Criteria   | Test Case                  | Task                    | Status   |
-| ------ | ------------------------------------------------------------------------------------------------------------------------ | --------------------- | -------------------------- | ----------------------- | -------- |
-| FR-001 | check imports：扫描 import 语句，检测禁止的依赖方向（业务域反向依赖基座、生产包依赖 testkitx），违规时输出文件路径和行号 | AC-001                | TC-001（import 边界违规）  | TASK-XLIBGATE-002       | ✅        |
-| FR-002 | check gomod：执行 `go mod tidy` 检查 go.mod 整洁度，有 diff 时输出 diff 详情                                             | AC-002                | TC-002（go.mod 整洁）      | TASK-XLIBGATE-003       | ✅        |
-| FR-003 | check baseline：验证所有模块 go.mod 中 `go` 指令版本与 expected 一致，不匹配时输出模块列表和版本差异                     | AC-003                | TC-003（baseline 不匹配）  | TASK-XLIBGATE-004       | ✅        |
-| FR-004 | check release：收集和校验 release evidence，缺失或不通过时输出失败列表                                                   | AC-004                | TC-006（release evidence） | TASK-XLIBGATE-005       | ✅        |
-| FR-005 | check all：执行所有子检查（imports/gomod/baseline/release/secret_scan），部分失败继续执行其余检查，汇总所有子检查结果    | AC-005                | TC-004, TC-005, TC-008     | TASK-XLIBGATE-006       | ✅        |
-| FR-006 | 输出格式：支持 JSON（含 status/checks[]/summary）和 human-readable（含文件路径行号、带颜色终端输出）                     | AC-006                | TC-007                     | TASK-XLIBGATE-006       | ✅        |
-| FR-007 | l2 validate-manifest：校验 .agent/l2-capabilities.yaml 能力清单格式和内容完整性                                          | AC-010                | TC-009                     | TASK-XLIBGATE-009 (TBD) | ✅        |
-| FR-008 | l2 plan：从能力清单和 registry 解析 L2 契约测试，生成 test-plan.json artifact                                            | AC-011                | TC-010                     | TASK-XLIBGATE-009 (TBD) | ✅        |
-| FR-009 | l2 check-contracts：验证契约测试证据是否覆盖所有必需契约测试                                                             | AC-012                | TC-011                     | TASK-XLIBGATE-009 (TBD) | ✅        |
-| FR-010 | l2 check-evidence：验证 L2 evidence 目录下必需证据文件是否存在                                                           | AC-013                | TC-012                     | TASK-XLIBGATE-009 (TBD) | ✅        |
-| FR-011 | l2 release-check：完整 L2 发布就绪判定                                                                                   | AC-014                | TC-013                     | TASK-XLIBGATE-009 (TBD) | ✅        |
+| FR | Description | Acceptance Criteria | Test Case | Task | Status |
+|----|-------------|---------------------|-----------|------|--------|
+| FR-001 | check imports：扫描 import 语句，检测禁止的依赖方向（业务域反向依赖基座、生产包依赖 testkitx），违规时输出文件路径和行号 | AC-001 | TC-001 | TASK-XLIBGATE-002 | ✅ |
+| FR-002 | check gomod：执行 `go mod tidy` 检查 go.mod 整洁度，有 diff 时输出 diff 详情 | AC-002 | TC-002 | TASK-XLIBGATE-003 | ✅ |
+| FR-003 | check baseline：验证所有模块 go.mod 中 `go` 指令版本与 expected 一致，不匹配时输出模块列表和版本差异 | AC-003 | TC-003 | TASK-XLIBGATE-004 | ✅ |
+| FR-004 | check release：收集和校验 release evidence，缺失或不通过时输出失败列表 | AC-004 | TC-006 | TASK-XLIBGATE-005 | ✅ |
+| FR-005 | check all：执行所有子检查（imports/gomod/baseline/release/secret_scan），部分失败继续执行其余检查，汇总所有子检查结果 | AC-005 | TC-004, TC-005, TC-008 | TASK-XLIBGATE-006 | ✅ |
+| FR-006 | 输出格式：支持 JSON（含 status/checks[]/summary）和 human-readable（含文件路径行号、带颜色终端输出） | AC-006 | TC-007 | TASK-XLIBGATE-006 | ✅ |
+| FR-007 | l2 validate-manifest：校验 .agent/l2-capabilities.yaml 能力清单格式和内容完整性 | AC-010 | TC-009 | TASK-XLIBGATE-009 (TBD) | ✅ |
+| FR-008 | l2 plan：从能力清单和 registry 解析 L2 契约测试，生成 test-plan.json artifact | AC-011 | TC-010 | TASK-XLIBGATE-009 (TBD) | ✅ |
+| FR-009 | l2 check-contracts：验证契约测试证据是否覆盖所有必需契约测试 | AC-012 | TC-011 | TASK-XLIBGATE-009 (TBD) | ✅ |
+| FR-010 | l2 check-evidence：验证 L2 evidence 目录下必需证据文件是否存在 | AC-013 | TC-012 | TASK-XLIBGATE-009 (TBD) | ✅ |
+| FR-011 | l2 release-check：完整 L2 发布就绪判定 | AC-014 | TC-013 | TASK-XLIBGATE-009 (TBD) | ✅ |
 
 > Status 说明：✅=已完成, ⚠️=部分完成/需修复, 🔴=未按 SPEC 实现
 > FR-007~FR-011：l2 子命令组已实现（v1.0.2），AC/TC 追溯链闭合（v1.4），Task 映射待后续细化
@@ -29,17 +29,17 @@
 
 ## 2. 业务规则追溯（BR）
 
-| BR     | Description                                                          | 违反后果                   | 验证方式                                                                                   | Task              | Status   |
-| ------ | -------------------------------------------------------------------- | -------------------------- | ------------------------------------------------------------------------------------------ | ----------------- | -------- |
-| BR-001 | 标准化 exit code：0=pass, 1=fail, 2=error                            | CI 无法正确判断门禁结果    | TC-004（部分失败→exit 1）, TC-005（错误→exit 2）                                           | TASK-XLIBGATE-006 | ✅        |
-| BR-002 | import 规则从 deps.yaml 读取，不硬编码                               | 规则变更需改代码重新编译   | FR-001 WHEN/THEN `--config` 参数覆盖                                                       | TASK-XLIBGATE-002 | ✅        |
-| BR-003 | baseline 从配置或 `--expected` 参数获取，不硬编码                    | 版本升级需改代码           | FR-003 WHEN/THEN 参数和配置 fallback                                                       | TASK-XLIBGATE-004 | ✅        |
-| BR-004 | evidence schema 与 xlib-standard 定义的 Evidence 标准一致            | 跨工具 evidence 不可互操作 | FR-004 schema 验证（JSON 格式 + 必需字段）                                                 | TASK-XLIBGATE-005 | ✅        |
-| BR-005 | secret 扫描使用 gitleaks 作为底层工具                                | 自研扫描器漏报             | TC-008（secret 扫描命中检测）、`check all` 中 gitleaks 集成调用                            | TASK-XLIBGATE-006 | ✅        |
-| BR-006 | check all 必须执行所有子检查，即使前面检查已失败                     | 部分检查被跳过，门禁不完整 | TC-004（部分失败后继续）, TC-005（error 后继续）                                           | TASK-XLIBGATE-006 | ✅        |
-| BR-007 | JSON 输出必须包含 machine-readable 的 status 字段                    | CI 解析失败                | TC-007（JSON 字段完整性）                                                                  | TASK-XLIBGATE-006 | ✅        |
-| BR-008 | human-readable 输出必须包含文件路径和行号                            | 开发者无法定位违规位置     | TC-001（违规含文件路径行号）, TC-002（diff 位置信息）, TC-008（secret 命中含文件路径行号） | TASK-XLIBGATE-002 | ✅        |
-| BR-009 | 依赖矩阵文件 `FOUNDATION-DEPS.yaml` schema 与 xlib-standard 定义一致 | deps.yaml 解析失败         | FR-001 config 加载（YAML 解析 + schema 校验）+ Config.Validate()                           | TASK-XLIBGATE-002 | ✅        |
+| BR | Description | 违反后果 | 验证方式 | Task | Status |
+|----|-------------|----------|----------|------|--------|
+| BR-001 | 标准化 exit code：0=pass, 1=fail, 2=error | CI 无法正确判断门禁结果 | TC-004, TC-005 | TASK-XLIBGATE-006 | ✅ |
+| BR-002 | import 规则从 deps.yaml 读取，不硬编码 | 规则变更需改代码重新编译 | FR-001 WHEN/THEN `--config` 参数覆盖 | TASK-XLIBGATE-002 | ✅ |
+| BR-003 | baseline 从配置或 `--expected` 参数获取，不硬编码 | 版本升级需改代码 | FR-003 WHEN/THEN 参数和配置 fallback | TASK-XLIBGATE-004 | ✅ |
+| BR-004 | evidence schema 与 xlib-standard 定义的 Evidence 标准一致 | 跨工具 evidence 不可互操作 | FR-004 schema 验证（JSON 格式 + 必需字段） | TASK-XLIBGATE-005 | ✅ |
+| BR-005 | secret 扫描使用 gitleaks 作为底层工具 | 自研扫描器漏报 | TC-008, check all 中 gitleaks 集成调用 | TASK-XLIBGATE-006 | ✅ |
+| BR-006 | check all 必须执行所有子检查，即使前面检查已失败 | 部分检查被跳过，门禁不完整 | TC-004, TC-005 | TASK-XLIBGATE-006 | ✅ |
+| BR-007 | JSON 输出必须包含 machine-readable 的 status 字段 | CI 解析失败 | TC-007 | TASK-XLIBGATE-006 | ✅ |
+| BR-008 | human-readable 输出必须包含文件路径和行号 | 开发者无法定位违规位置 | TC-001, TC-002, TC-008 | TASK-XLIBGATE-002 | ✅ |
+| BR-009 | 依赖矩阵文件 `FOUNDATION-DEPS.yaml` schema 与 xlib-standard 定义一致 | deps.yaml 解析失败 | FR-001 config 加载（YAML 解析 + schema 校验）+ Config.Validate() | TASK-XLIBGATE-002 | ✅ |
 
 > Status 说明：✅=已完成, ⚠️=部分完成/需修复, 🔴=未按 SPEC 实现
 
@@ -128,10 +128,10 @@
 
 ## 7. 变更历史
 
-| 日期       | 版本   | 变更                                                                                                                                                                                                                |
-| ---------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 2026-06-12 | v1.0   | 初始版本：完整 7 列矩阵 + BR 行 + NFR 行 + TC 反向追溯 + AC 注册表 + 覆盖率仪表盘                                                                                                                                   |
-| 2026-06-12 | v1.1   | 结构评分修复：FR 表 AC 列改为具体 AC-00X 引用、BR-005 补充 TC-008 引用、新增 TC-008（secret 扫描）+ AC-009（gitleaks 验收）、BR-008 验证方式追加 TC-008、仪表盘同步更新                                             |
-| 2026-06-12 | v1.2   | 实现状态回填：FR/BR/NFR Status 列全部更新反映实际实现进展（✅/⚠️/🔴）；仪表盘 Task 总数 7→9 修正（补充 TASK-007 集成测试、TASK-008 文档+DoD）；§1-§3 新增 Status 说明和修复项注释                                     |
-| 2026-06-12 | v1.3   | 范围对齐（R1/R2 修复）：SPEC v1.0.2 新增 FR-007~FR-011（l2 子命令组）；FR 总数 6→11；BR-002/004/005/007 + NFR-007/008 Status → ✅；移除过时修复项注释                                                                |
-| 2026-06-12 | v1.4   | 追溯链闭合（SPEC 结构评分 REDLINE 修复）：FR-007~FR-011 AC/TC 列填入 AC-010~AC-014 / TC-009~TC-013；§4 TC→FR 表格新增 TC-009~TC-013；§5 AC 注册表新增 AC-010~AC-014；仪表盘 AC 9→14 / TC 8→13 / FR 覆盖率 6/6→11/11 |
+| 日期 | 版本 | 变更 |
+|------|------|------|
+| 2026-06-12 | v1.0 | 初始版本：完整 7 列矩阵 + BR 行 + NFR 行 + TC 反向追溯 + AC 注册表 + 覆盖率仪表盘 |
+| 2026-06-12 | v1.1 | 结构评分修复：FR 表 AC 列改为具体 AC-00X 引用、BR-005 补充 TC-008 引用、新增 secret 扫描测试用例 + AC-009（gitleaks 验收）、BR-008 验证方式追加 TC-008、仪表盘同步更新 |
+| 2026-06-12 | v1.2 | 实现状态回填：FR/BR/NFR Status 列全部更新反映实际实现进展（✅/⚠️/🔴）；仪表盘 Task 总数 7→9 修正（补充 TASK-007 集成测试、TASK-008 文档+DoD）；§1-§3 新增 Status 说明和修复项注释 |
+| 2026-06-12 | v1.3 | 范围对齐（R1/R2 修复）：SPEC v1.0.2 新增 FR-007~FR-011（l2 子命令组）；FR 总数 6→11；BR-002/004/005/007 + NFR-007/008 Status → ✅；移除过时修复项注释 |
+| 2026-06-12 | v1.4 | 追溯链闭合（SPEC 结构评分 REDLINE 修复）：FR-007~FR-011 AC/TC 列填入 AC-010~AC-014 / TC-009~TC-013；§4 TC→FR 表格新增 TC-009~TC-013；§5 AC 注册表新增 AC-010~AC-014；仪表盘 AC 9→14 / TC 8→13 / FR 覆盖率 6/6→11/11 |

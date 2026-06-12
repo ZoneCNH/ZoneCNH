@@ -14,11 +14,11 @@
 实现 Exporter 接口：OTLP/noop/test exporter，支持 Shutdown flush
 
 ## 关联需求
-| 类型   | 编号   | AC                     | TC                                | 出处       | 说明   |
-| ------ | ------ | ---------------------- | --------------------------------- | ---------- | ------ |
-| FR     | FR-004 | AC-004, AC-011, AC-015 | TC-004, TC-004a, TC-004b, TC-004c | SPEC.md §7 | —      |
-| BR     | BR-004 | AC-004, AC-011, AC-015 | TC-004, TC-004a, TC-004b, TC-004c | SPEC.md §8 | —      |
-| BR     | BR-008 | AC-004, AC-011, AC-015 | TC-004, TC-004a, TC-004b, TC-004c | SPEC.md §8 | —      |
+| 类型 | 编号 | AC | TC | 出处 | 说明 |
+|------|------|----|----|------|------|
+| FR | FR-004 | AC-004, AC-011, AC-015 | TC-004, TC-009, TC-010, TC-011 | SPEC.md §7 | — |
+| BR | BR-004 | AC-004, AC-011, AC-015 | TC-004, TC-009, TC-010, TC-011 | SPEC.md §8 | — |
+| BR | BR-008 | AC-004, AC-011, AC-015 | TC-004, TC-009, TC-010, TC-011 | SPEC.md §8 | — |
 ## 依赖
 
 - 上游 Task：TASK-OBSERVEX-001

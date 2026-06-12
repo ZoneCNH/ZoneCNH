@@ -21,14 +21,14 @@
 
 ### 1.1 变更历史
 
-| 日期       | 版本   | 变更内容                                                                                                   | 作者    |
-| ---------- | ------ | ---------------------------------------------------------------------------------------------------------- | ------- |
-| 2026-06-07 | v1.0.0 | 初始版本                                                                                                   | ZoneCNH |
-| 2026-06-12 | v1.0.1 | 结构修复：BR违反时列、Data Model补充、FR异常路径、Open Questions分类、配置表格化                           | ZoneCNH |
-| 2026-06-12 | v1.0.1 | 状态 Draft → Review（Claude 99 + Rules 100，两源评分通过，待 Codex/Copilot 凑齐四源）                      | ZoneCNH |
-| 2026-06-12 | v1.0.1 | 结构修复续：Spec-Version对齐、Non-goals补全、config prefix与BR-006对齐、新增EC-010/TC-003a、FR-005嵌套脱敏 | ZoneCNH |
-| 2026-06-12 | v1.0.1 | 结构修复续：FR-003/FR-004 异常路径补充、版本号语义说明                                                     | ZoneCNH |
-| 2026-06-12 | v1.0.1 | TC-004d 补充：Exporter Shutdown 超时测试用例                                                               | ZoneCNH |
+| 日期 | 版本 | 变更内容 | 作者 |
+|------|------|----------|------|
+| 2026-06-07 | v1.0.0 | 初始版本 | ZoneCNH |
+| 2026-06-12 | v1.0.1 | 结构修复：BR违反时列、Data Model补充、FR异常路径、Open Questions分类、配置表格化 | ZoneCNH |
+| 2026-06-12 | v1.0.1 | 状态 Draft → Review（Claude 99 + Rules 100，两源评分通过，待 Codex/Copilot 凑齐四源） | ZoneCNH |
+| 2026-06-12 | v1.0.1 | 结构修复续：Spec-Version对齐、Non-goals补全、config prefix与BR-006对齐、新增EC-010/TC-008、FR-005嵌套脱敏 | ZoneCNH |
+| 2026-06-12 | v1.0.1 | 结构修复续：FR-003/FR-004 异常路径补充、版本号语义说明 | ZoneCNH |
+| 2026-06-12 | v1.0.1 | TC-014 补充：Exporter Shutdown 超时测试用例 | ZoneCNH |
 
 ## 2. Summary
 
@@ -609,7 +609,7 @@ Given 在 goroutine A 中创建 span
 When goroutine B 从 ctx 中读取 trace_id
 Then trace_id 与 A 中创建的一致
 
-**TC-003a: Tracer 上下文丢失**
+**TC-008: Tracer 上下文丢失**
 Given goroutine A 中创建 span 后 context 未传播到 goroutine B
 When goroutine B 调用 `Tracer.Start(ctx, "sub-op")`
 Then 生成新的 trace_id（不等于 A 的 trace_id），并记录 warn 级别日志
@@ -619,17 +619,17 @@ Given exporter 后端不可用
 When 写入日志、指标或 span
 Then 调用方不 panic，返回 `ErrExporterFailed` 或静默降级
 
-**TC-004a: Exporter 正常导出**
+**TC-009: Exporter 正常导出**
 Given exporter 后端可用
 When 调用 `ExportLogs(ctx, entries)`
 Then 返回 nil，日志条目成功发送
 
-**TC-004b: Exporter 正常导出指标**
+**TC-010: Exporter 正常导出指标**
 Given exporter 后端可用
 When 调用 `ExportMetrics(ctx, metrics)`
 Then 返回 nil，指标数据点成功发送
 
-**TC-004c: Exporter 正常导出 Span**
+**TC-011: Exporter 正常导出 Span**
 Given exporter 后端可用
 When 调用 `ExportSpans(ctx, spans)`
 Then 返回 nil，span 数据成功发送
@@ -639,7 +639,7 @@ Given 日志字段包含 secret、token 或 password
 When 写入结构化日志
 Then 输出中敏感值被替换为 `***`
 
-**TC-005a: redact.Check 扫描文本**
+**TC-012: redact.Check 扫描文本**
 Given 包含 `api_key=sk-abc123` 的文本
 When 调用 `redact.Check(text)`
 Then 返回检测到的泄露 secret 位置
@@ -649,12 +649,12 @@ Given observex 已初始化
 When 调用 Health
 Then 返回符合约定 JSON schema 的健康状态
 
-**TC-006a: Health 未初始化**
+**TC-013: Health 未初始化**
 Given observex 尚未初始化
 When 调用 Health
 Then 返回 ready=false, live=false, message="not initialized"
 
-**TC-004d: Exporter Shutdown 超时**
+**TC-014: Exporter Shutdown 超时**
 Given exporter Shutdown 在超时时间内未完成 flush
 When 调用 `Shutdown(ctx)` 在 deadline 已过的 ctx 上
 Then 返回 `ErrShutdownFailed`，未发送数据写入本地退避文件
@@ -664,7 +664,7 @@ Given 指标名不符合命名规范
 When 注册 counter 或 histogram
 Then 返回命名错误并拒绝注册
 
-**TC-007a: 独立 label policy checker**
+**TC-015: 独立 label policy checker**
 Given label 名在 ForbiddenLabels 中
 When 调用 `labelpolicy.Check("order_id")`
 Then 返回 false

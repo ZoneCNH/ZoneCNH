@@ -40,7 +40,7 @@
 - 序列化方式不统一。
 - 消费组管理混乱，offset 提交策略不一致。
 - 健康检查缺失，Kafka 不可用时无法及时发现。
-- 可观测集成缺失，生产/消费延迟、错误、重试、DLQ 和积压无法被统一采集。
+- 可观测集成缺失，生产/消费延迟、错误、重试和积压无法被统一采集。
 - 错误和日志如果包含完整 payload 或敏感连接信息，会造成数据泄露风险。
 
 ---
@@ -50,7 +50,7 @@
 - 提供统一的 `Producer` 封装，支持同步单条发送和批量发送。
 - 提供统一的 `Consumer` 封装，支持消费组、轮询和手动 offset 管理。
 - 提供稳定的 `Message` 数据模型与 `Codec` SPI。
-- 提供生产重试、消费失败分类、DLQ 发布边界和 poison message 处理规则。
+- 提供生产重试、消费失败分类和调用方处理边界。
 - 所有公开阻塞/外部依赖操作必须接受 `context.Context` 并返回 `error` 或可诊断状态。
 - 健康检查集成到 kernel 健康体系。
 - 可观测集成覆盖 metrics、tracing、logging。
@@ -66,9 +66,8 @@
 - 不做 Schema Registry 集成
 - 不做 Kafka Connect 集成
 - 不做异步 Producer 回调 API
-- 不做 Kafka Transactions / exactly-once 封装
 - 不做业务事件信封或业务 schema 规范
-- 不做深度死信队列编排；消费失败重试/转储策略留作后续候选
+- 不做消费失败转储编排；消费失败重试、转储和告警策略留作后续候选
 - 不做幂等存储 SPI；业务幂等由调用方实现
 - 不做配置解析（→ `configx`）
 
@@ -139,7 +138,7 @@ WHEN Consumer 未订阅就调用 `Poll(ctx)`
 THEN 返回 `ErrNotSubscribed` 或等价状态错误。
 
 WHEN 反序列化失败或消息非法  
-THEN 返回可分类错误；不可重试消息必须可进入 DLQ 处理路径。
+THEN 返回可分类错误；模块不得自动提交 offset，不得输出 payload，调用方决定重试、跳过、转储或关闭 consumer。
 
 ### FR-005: Consumer.Commit
 
@@ -249,7 +248,7 @@ func WithConsumerCodec(codec Codec) ConsumerOption
 ```go
 // 创建 Producer
 producer, err := kafkax.NewProducer(
-    kafkax.WithBrokers([]string{os.Getenv("FOUNDATIONX_KAFKA_BROKER")}),
+    kafkax.WithBrokers([]string{os.Getenv("KAFKAX_BROKER")}),
     kafkax.WithProducerAcks("all"),
 )
 if err != nil {
@@ -267,7 +266,7 @@ err = producer.SendBatch(ctx, msgs)
 
 // 创建 Consumer
 consumer, err := kafkax.NewConsumer(
-    kafkax.WithConsumerBrokers([]string{os.Getenv("FOUNDATIONX_KAFKA_BROKER")}),
+    kafkax.WithConsumerBrokers([]string{os.Getenv("KAFKAX_BROKER")}),
     kafkax.WithGroupID("signal-engine"),
 )
 if err != nil {
@@ -285,18 +284,6 @@ for {
         return err
     }
     if err := processMessage(ctx, msg); err != nil {
-        return err
-    }
-    if err := consumer.Commit(ctx, msg); err != nil {
-        return err
-    }
-    if err := processMessage(msg); err != nil {
-        return err
-    }
-    if err := consumer.Commit(ctx, msg); err != nil {
-        return err
-    }
-    if err := processMessage(msg); err != nil {
         return err
     }
     if err := consumer.Commit(ctx, msg); err != nil {
@@ -334,7 +321,6 @@ var (
     ErrSendFailed        = errors.New("kafkax: send failed")
     ErrCommitFailed      = errors.New("kafkax: commit failed")
     ErrConfigInvalid     = errors.New("kafkax: invalid config")
-    ErrDLQPublishFailed  = errors.New("kafkax: dlq publish failed")
 )
 ```
 
@@ -354,7 +340,7 @@ type Codec interface {
 ```yaml
 kafkax:
   brokers:                        # Kafka broker 地址列表
-    - "${FOUNDATIONX_KAFKA_BROKER}"
+    - "${KAFKAX_BROKER}"
   producer:
     acks: all                     # 确认模式：0, 1, all
     retries: 3                    # 重试次数
@@ -372,10 +358,7 @@ kafkax:
     session_timeout: 45s          # 会话超时
     heartbeat_interval: 15s       # 心跳间隔
   retry:
-    max_attempts: 3               # 生产重试和可重试消费失败上限
-  dlq:
-    enabled: true                 # 是否启用 DLQ 发布边界
-    suffix: .DLQ                  # 死信 Topic 后缀
+    max_attempts: 3               # 生产发送重试上限
   codec: json                     # 序列化方式：json / msgpack / protobuf
   health_check_interval: 10s      # 健康检查周期
 ```
@@ -393,13 +376,12 @@ kafkax:
 | `ErrEmptyTopics` | 传入至少一个 topic | 拒绝订阅 |
 | `ErrEmptyBrokers` | 传入至少一个 broker 地址 | 初始化失败 |
 | `ErrSendFailed` | 检查底层错误，优先排查网络连通性和 Kafka 服务状态 | 达到 retry 上限后返回包装错误 |
-| `ErrCommitFailed` | 检查消息是否有效，必要时重试 Commit 或关闭 Consumer | 记录 commit 失败日志和指标 |
+| `ErrCommitFailed` | 错误为临时提交失败时重试 Commit；不可恢复时关闭 Consumer | 记录 commit 失败日志和指标 |
 | `ErrConfigInvalid` | 修复配置后重启 | 初始化失败，禁止使用隐式危险默认值 |
-| `ErrDLQPublishFailed` | 检查 DLQ topic、权限和网络 | 返回包装错误并增加 DLQ 失败指标 |
 
 **错误消息格式：** `"kafkax: <operation>: <detail>"`，不得包含 message key/value 或业务 payload。
 **错误包装：** 使用 `%w` 保留底层错误链；由 ctx 取消/超时导致的失败必须保留并返回 `ctx.Err()`。
-**Retry / DLQ 边界：** v1.0 Producer 只提供可配置发送重试（默认 3 次）。Consumer handler 重试、DLQ 转储和 poison-message 策略属于调用方或后续增强，不在本客户端 baseline 内自动执行。
+**Retry / failure 边界：** v1.0 Producer 只提供可配置发送重试（默认 3 次）。Consumer handler 重试、转储和 poison-message 策略属于调用方或后续增强，不在本客户端 baseline 内自动执行。
 
 ---
 
@@ -476,7 +458,7 @@ go 1.23
 |----------|----------|
 | stdlib | 所有业务域实现 |
 | kernel（L0 原语） | 所有 L2.5 领域共享层 |
-| observex（interface-only） | 业务 schema / 业务 EventEnvelope |
+| observex（interface-only） | 业务 schema / 业务事件模型 |
 | Kafka 客户端库（sarama / confluent-kafka-go） | 配置解析实现 |
 
 ---
@@ -535,6 +517,46 @@ Given Kafka broker 可达
 When 调用 Health(ctx)
 Then 返回 healthy；broker 不可达时返回 unhealthy
 
+**TC-006: Subscribe 参数校验**
+Given Consumer 尚未订阅
+When Subscribe(ctx, nil) 或重复 Subscribe(ctx, topics)
+Then 返回 ErrEmptyTopics 或 ErrAlreadySubscribed，原订阅状态不被破坏。
+
+**TC-007: Poll 超时和取消**
+Given Consumer 已订阅但暂无新消息
+When Poll(ctx) 的 ctx 超时或取消
+Then 返回 context 错误，不提交 offset。
+
+**TC-008: Commit 失败处理**
+Given Consumer 已 Poll 到消息
+When Commit(ctx, msg) 遇到 rebalance 或 broker 提交失败
+Then 返回 ErrCommitFailed 包装错误，由调用方决定重试或关闭。
+
+**TC-009: 配置校验**
+Given brokers、group_id、重试或轮询参数非法
+When NewProducer 或 NewConsumer 初始化
+Then 返回 ErrConfigInvalid、ErrEmptyBrokers 或等价错误。
+
+**TC-010: 自动提交默认关闭**
+Given 未显式配置自动提交
+When NewConsumer 创建 Consumer
+Then enable_auto_commit 默认 false，未调用 Commit 不提交 offset。
+
+**TC-011: context 传播**
+Given 外部传入带超时和 trace 的 ctx
+When Send、SendBatch、Subscribe、Poll、Commit、Close 或 Health 执行
+Then 操作尊重取消/超时，并传播 trace context。
+
+**TC-012: Close 语义**
+Given Producer 或 Consumer 已创建
+When Close(ctx) 被调用一次或多次
+Then 资源释放结果稳定，失败返回可包装错误，不 panic。
+
+**TC-013: 日志和错误脱敏**
+Given message value、broker 连接串或凭据包含敏感内容
+When Send、Poll、Commit 或 Health 失败
+Then 错误、日志和 trace 标签不包含完整 payload 或敏感片段。
+
 ### 16.3 Benchmark
 
 | 场景                        | 目标   |
@@ -552,7 +574,7 @@ Then 返回 healthy；broker 不可达时返回 unhealthy
 | 批量发送-消费 | SendBatch 100 条 → Poll 收到 100 条 |
 | 消费组 rebalance | 多 Consumer 实例正确分配 partition |
 | 连接断开恢复 | 断开后自动重连并恢复消费 |
-| DLQ 发布 | 不可重试失败进入 DLQ 且元数据完整 |
+| 消费失败边界 | 不可重试失败返回可分类错误；调用方可基于错误决定重试、转储或关闭 Consumer；未成功处理前不自动 commit |
 
 ---
 
@@ -572,21 +594,21 @@ Then 返回 healthy；broker 不可达时返回 unhealthy
 
 | 类型 | 名称 | 说明 |
 |------|------|------|
-| metric | `kafkax_produce_total` | counter，发送次数，标签：topic,status |
-| metric | `kafkax_produce_duration_ms` | histogram/timer，发送耗时，标签：topic,status |
-| metric | `kafkax_produce_batch_size` | histogram，批量发送消息数 |
-| metric | `kafkax_consume_total` | counter，消费次数，标签：topic,group,status |
-| metric | `kafkax_consume_duration_ms` | histogram/timer，消费耗时 |
-| metric | `kafkax_consumer_lag` | gauge，消费延迟（partition offset 差值） |
-| metric | `kafkax_commit_total` | counter，commit 次数，标签：topic,group,status |
-| metric | `kafkax_retry_total` | counter，重试次数，标签：operation,reason |
-| metric | `kafkax_dlq_total` | counter，DLQ 发布次数，标签：topic,status,reason |
+| metric | `kafkax.produce.duration` | histogram/timer，发送耗时，标签：topic,status |
+| metric | `kafkax.produce.errors` | counter，发送失败次数，标签：topic,error |
+| metric | `kafkax.produce.batch.size` | histogram，批量发送消息数 |
+| metric | `kafkax.consume.duration` | histogram/timer，消费耗时，标签：topic,group,status |
+| metric | `kafkax.consume.lag` | gauge，消费延迟（partition offset 差值） |
+| metric | `kafkax.consume.messages` | counter，消费次数，标签：topic,group,status |
+| metric | `kafkax.consume.errors` | counter，消费失败次数，标签：topic,group,error |
+| metric | `kafkax.commit.errors` | counter，commit 失败次数，标签：topic,group,error |
+| metric | `kafkax.retry.attempts` | counter，生产重试次数，标签：operation,reason |
 | log | `kafkax.connected` | info，连接成功 |
 | log | `kafkax.disconnected` | warn，连接断开 |
 | log | `kafkax.rebalancing` | info，消费组 rebalance |
 | log | `kafkax.send_failed` | error，发送失败详情（脱敏） |
 | log | `kafkax.commit_failed` | error，commit 失败详情 |
-| log | `kafkax.dlq_failed` | error，DLQ 发布失败详情 |
+| log | `kafkax.poll_failed` | error，轮询失败详情 |
 
 ### 18.1 Trace
 
