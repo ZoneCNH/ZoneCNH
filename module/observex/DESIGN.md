@@ -325,8 +325,8 @@ type Exporter interface {
 ```text
 observex（L1 运行时横切）
   ├── 允许依赖: kernel（L0 原语）、stdlib
-  ├── 可选依赖: configx（观测配置）
-  ├── 禁止依赖: resiliencx、schedulex、redisx、kafkax、业务域实现
+  ├── 自管配置: 通过 §11 Config struct + mapstructure 自管理，不依赖 configx 运行时
+  ├── 禁止依赖: configx、resiliencx、schedulex、redisx、kafkax、业务域实现
   └── v1.1: contracts（登记 API 契约和错误码契约）
 ```
 
