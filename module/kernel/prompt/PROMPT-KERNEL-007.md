@@ -1,5 +1,6 @@
 # TASK-KERNEL-007 开发 Prompt
 
+> 上游 Task：[TASK-KERNEL-007.md](./tasks/TASK-KERNEL-007.md)
 > versionx 子包：版本信息 — BuildInfo + Compatibility
 
 ---
@@ -44,6 +45,14 @@
 完成后提交到 `docs/evidence/2026-06-12/TASK-KERNEL-007/`：
 1. `go test -race -count=1 ./versionx/...` 输出
 2. CompatibleWith 各场景覆盖证据
+
+## 验证命令
+
+| 命令 | 判定标准 |
+|------|----------|
+| `go build ./versionx/...` | 编译通过，零错误 |
+| `go test -race -count=1 ./versionx/...` | 全部测试通过，无 race |
+| `go vet ./versionx/...` | 无警告 |
 
 ## 完成后
 

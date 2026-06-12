@@ -1,5 +1,6 @@
 # TASK-KERNEL-008 开发 Prompt
 
+> 上游 Task：[TASK-KERNEL-008.md](./tasks/TASK-KERNEL-008.md)
 > validx 子包：前置条件与不变量校验
 
 ---
@@ -43,6 +44,14 @@
 完成后提交到 `docs/evidence/2026-06-12/TASK-KERNEL-008/`：
 1. `go test -race -count=1 ./validx/...` 输出
 2. Benchmark 结果（内联验证）
+
+## 验证命令
+
+| 命令 | 判定标准 |
+|------|----------|
+| `go build ./validx/...` | 编译通过，零错误 |
+| `go test -race -count=1 ./validx/...` | 全部测试通过，无 race |
+| `go vet ./validx/...` | 无警告 |
 
 ## 完成后
 

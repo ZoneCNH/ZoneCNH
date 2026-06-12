@@ -1,5 +1,6 @@
 # TASK-KERNEL-014 开发 Prompt
 
+> 上游 Task：[TASK-KERNEL-014.md](./tasks/TASK-KERNEL-014.md)
 > contracts/：契约验证层 — API 快照 + Golden 行为 + 消费者导入测试
 
 ---
@@ -45,6 +46,14 @@
 1. `go test -race -count=1 ./contracts/...` 输出
 2. API 快照对比 diff（如有变更）
 3. Golden 行为测试结果
+
+## 验证命令
+
+| 命令 | 判定标准 |
+|------|----------|
+| `go build ./contracts/...` | 编译通过，零错误 |
+| `go test -race -count=1 ./contracts/...` | 全部测试通过，无 race |
+| `go vet ./contracts/...` | 无警告 |
 
 ## 完成后
 

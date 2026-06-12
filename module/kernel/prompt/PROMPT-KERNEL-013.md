@@ -1,5 +1,6 @@
 # TASK-KERNEL-013 开发 Prompt
 
+> 上游 Task：[TASK-KERNEL-013.md](./tasks/TASK-KERNEL-013.md)
 > internal/testutil：内部测试工具 — RequireEqual 泛型断言
 
 ---
@@ -36,6 +37,14 @@
 完成后提交到 `docs/evidence/2026-06-12/TASK-KERNEL-013/`：
 1. `go test -race -count=1 ./internal/testutil/...` 输出
 2. Fatalf 输出验证
+
+## 验证命令
+
+| 命令 | 判定标准 |
+|------|----------|
+| `go build ./internal/testutil/...` | 编译通过，零错误 |
+| `go test -race -count=1 ./internal/testutil/...` | 全部测试通过，无 race |
+| `go vet ./internal/testutil/...` | 无警告 |
 
 ## 完成后
 

@@ -1,5 +1,6 @@
 # TASK-KERNEL-005 开发 Prompt
 
+> 上游 Task：[TASK-KERNEL-005.md](./tasks/TASK-KERNEL-005.md)
 > lifecycx 子包：组件生命周期管理 — 有序启动/逆序停止/失败回滚
 
 ---
@@ -49,6 +50,14 @@
 1. `go test -race -count=1 ./lifecycx/...` 输出
 2. `go vet ./lifecycx/...` 输出
 3. 回滚场景日志证据
+
+## 验证命令
+
+| 命令 | 判定标准 |
+|------|----------|
+| `go build ./lifecycx/...` | 编译通过，零错误 |
+| `go test -race -count=1 ./lifecycx/...` | 全部测试通过，无 race |
+| `go vet ./lifecycx/...` | 无警告 |
 
 ## 完成后
 

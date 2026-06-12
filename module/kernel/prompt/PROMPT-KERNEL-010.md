@@ -1,5 +1,6 @@
 # TASK-KERNEL-010 开发 Prompt
 
+> 上游 Task：[TASK-KERNEL-010.md](./tasks/TASK-KERNEL-010.md)
 > contextx 子包：类型安全上下文工具
 
 ---
@@ -47,6 +48,14 @@
 完成后提交到 `docs/evidence/2026-06-12/TASK-KERNEL-010/`：
 1. `go test -race -count=1 ./contextx/...` 输出
 2. Key 唯一性验证（多 goroutine 并发 NewKey 不冲突）
+
+## 验证命令
+
+| 命令 | 判定标准 |
+|------|----------|
+| `go build ./contextx/...` | 编译通过，零错误 |
+| `go test -race -count=1 ./contextx/...` | 全部测试通过，无 race |
+| `go vet ./contextx/...` | 无警告 |
 
 ## 完成后
 

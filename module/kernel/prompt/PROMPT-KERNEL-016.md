@@ -1,5 +1,6 @@
 # TASK-KERNEL-016 开发 Prompt
 
+> 上游 Task：[TASK-KERNEL-016.md](./tasks/TASK-KERNEL-016.md)
 > docs/ + CHANGELOG + CI gates + Release preflight
 
 ---
@@ -71,6 +72,17 @@
 3. Benchmark 结果
 4. stdlib-only 检查输出
 5. gitleaks 扫描结果
+
+## 验证命令
+
+| 命令 | 判定标准 |
+|------|----------|
+| `go build ./...` | 编译通过，零错误 |
+| `go test -race -count=1 ./...` | 全部测试通过，无 race |
+| `go vet ./...` | 无警告 |
+| `make release-preflight VERSION=v1.0.0` | 全部通过 |
+| `golangci-lint run` | 无错误 |
+| `gitleaks detect --no-git` | 无泄露 |
 
 ## 完成后
 
