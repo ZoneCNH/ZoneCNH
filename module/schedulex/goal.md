@@ -51,7 +51,7 @@
 
 - MUST 提供 Scheduler、Job、Trigger、JobHandler、EventSink、Locker 抽象。
 - MUST 支持单节点调度 + 可选分布式锁（Locker）。
-- MUST 明确执行语义：默认 at-least-once，不承诺 exactly-once，业务必须通过幂等保证安全。
+- MUST 明确执行语义：默认 at-least-once，不承诺 exactly-once。业务侧如需 exactly-once 需自行实现幂等。
 - MUST 支持任务状态：pending、running、completed、failed、cancelled。
 - MAY 可选集成 observex、resiliencx（job wrapper）。
 
