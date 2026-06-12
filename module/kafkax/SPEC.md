@@ -8,12 +8,14 @@
 
 ## 1. Metadata
 
-- Status: Draft（结构修复完成，等待四源评分与 arbiter；不得伪造 Approved）
+- Status: Draft
+- Governance-Status: 未仲裁；等待四源评分 / arbiter 判定
 - Spec-Version: v1.0.0
+- Spec-Baseline: v1.0.0-spec-baseline
 - Last-Updated: 2026-06-12
 - Owner: ZoneCNH
 - Layer: 基座 · 存储扩展
-- Version: v1.0.0-baseline-candidate
+- Implementation-Version: pending（不在本规格资产中断言）
 - Repository: [github.com/ZoneCNH/kafkax](https://github.com/ZoneCNH/kafkax)
 - Related: [CONSTITUTION.md](../../CONSTITUTION.md), [ARCHITECTURE.md](../../ARCHITECTURE.md), [goal.md](./goal.md), [TRACEABILITY.md](./TRACEABILITY.md)
 
@@ -21,12 +23,12 @@
 
 | 日期 | 版本 | 变更内容 | 作者 |
 |------|------|----------|------|
-| 2026-06-07 | v1.0.0-draft | 初始版本 | ZoneCNH |
-| 2026-06-12 | v1.0.0-baseline-candidate | 对齐 goal/traceability，修复范围、接口、BR 违反处理和 Open Questions 分类 | OMX worker-1 |
+| 2026-06-07 | v1.0.0 | 初始版本 | ZoneCNH |
+| 2026-06-12 | v1.0.0-spec-baseline | 对齐 goal / SPEC / TRACEABILITY；修正状态、范围、接口治理与追溯覆盖 | Codex |
 
 ## 2. Summary
 
-`kafkax` 封装 Kafka 客户端，提供统一的 `Producer`、`Consumer`、`Message`、`Codec`、健康检查、重试/DLQ 边界和可观测集成。1.0 基线以现实可交付的同步发送、批量发送、消费组轮询、手动 offset 提交和错误/指标规范为准；异步 Producer、Kafka Transactions、Schema Registry 和业务事件信封属于未来演进或外部业务/contract 层能力。
+`kafkax` 封装 Kafka 客户端，提供统一的同步生产者、批量发送、消费组消费者、手动 offset 管理、序列化/反序列化、健康检查和可观测集成。v1.0 baseline 只定义通用客户端边界，不定义业务事件模型、异步回调生产者、事务/outbox、Schema Registry 或业务侧 DLQ 编排。
 
 ---
 
@@ -58,14 +60,14 @@
 
 ## 5. Non-goals
 
-- 不做 Kafka 集群管理（由运维配置）。
-- 不做业务消息路由或业务事件语义设计（业务层决定 topic、key、payload）。
-- 不提供 1.0 稳定的 `EventEnvelope`/业务事件信封；如需业务信封，由业务或 contracts 层定义。
-- 不做 exactly-once 默认承诺、Kafka Transactions 或 transactional outbox。
-- 不做 Schema Registry 深度集成。
-- 不做 Kafka Connect 集成。
-- 不做配置解析实现（配置值由 `configx` 或应用注入）。
-- 不隐藏 Kafka 的 topic、partition、consumer group 和 offset 语义。
+- 不做 Kafka 集群管理（由运维配置）
+- 不做消息路由（业务层决定 topic）
+- 不做 exactly-once / Kafka Transactions / outbox 编排（业务层按需实现）
+- 不做 Schema Registry 集成
+- 不做 Kafka Connect 集成
+- 不定义业务 `EventEnvelope` 或领域事件语义
+- 不提供 Consumer handler 重试 / Dead Letter Queue 编排；v1.0 只暴露错误和 offset 控制，调用方决定后续动作
+- 不做配置解析（→ `configx`）
 
 ---
 
@@ -113,17 +115,14 @@ THEN 停止批量发送等待，返回 `ctx.Err()` 或包装后的 context 错�
 
 ### FR-003: Consumer.Subscribe
 
-WHEN 调用 `Subscribe(ctx, topics)` 且连接正常  
-THEN 加入消费组，开始接收消息，返回 `nil`。
+WHEN 调用 `Subscribe(ctx, topics)` 且连接正常
+THEN 加入消费组，开始接收消息，返回 nil
 
-WHEN 调用 `Subscribe(ctx, topics)` 且 topics 为空  
-THEN 返回 `ErrEmptyTopics` 或等价输入错误。
+WHEN 调用 `Subscribe(ctx, topics)` 且 topics 为空
+THEN 返回错误
 
-WHEN 调用 `Subscribe(ctx, topics)` 且已订阅  
-THEN 返回 `ErrAlreadySubscribed` 或等价状态错误。
-
-WHEN `ctx` 被取消或超时  
-THEN 返回 `ctx.Err()` 或包装后的 context 错误。
+WHEN 调用 `Subscribe(ctx, topics)` 且已订阅
+THEN 返回错误（不允许重复订阅）
 
 ### FR-004: Consumer.Poll
 
@@ -155,14 +154,11 @@ THEN 返回 `ctx.Err()` 或包装后的 context 错误。
 
 ### FR-006: Health
 
-WHEN 调用 `Health(ctx)` 且 Kafka metadata 请求成功  
-THEN 返回 `HealthStatus{Ready: true, Live: true}` 和 `nil` error。
+WHEN 调用 `Health(ctx)` 且 Kafka metadata 请求成功
+THEN 返回 HealthStatus{Ready: true, Live: true}
 
-WHEN 调用 `Health(ctx)` 且 Kafka 不可达  
-THEN 返回 `HealthStatus{Ready: false, Live: false, Message: "..."}` 和可诊断 error。
-
-WHEN `ctx` 被取消或超时  
-THEN 返回 non-ready HealthStatus 和 `ctx.Err()` 或包装后的 context 错误。
+WHEN 调用 `Health(ctx)` 且 Kafka 不可达
+THEN 返回 HealthStatus{Ready: false, Live: false, Message: "..."}
 
 ---
 
@@ -170,15 +166,15 @@ THEN 返回 non-ready HealthStatus 和 `ctx.Err()` 或包装后的 context 错�
 
 | 编号 | 规则 | 违反时处理 |
 |------|------|------------|
-| BR-001 | Producer 默认使用同步发送（acks=all），可通过配置切换 | 初始化时校验配置；非法 acks 返回配置错误；运行时不得静默降级为低确认级别 |
-| BR-002 | Consumer 默认使用手动 offset 提交（at-least-once） | 配置出现自动提交时必须显式拒绝或记录阻断错误，不得默认开启 auto commit |
-| BR-003 | 所有公开阻塞/外部依赖操作必须接受 `context.Context`，支持超时和取消 | 接口或实现缺失 ctx 视为发布阻断；ctx 取消必须返回 ctx 错误或包装错误 |
-| BR-004 | Consumer 必须在 `Close(ctx)` 时执行可控关闭流程并尽力提交已处理 offset | 关闭提交失败必须返回错误并记录 `kafkax.commit_failed`，不得吞错 |
-| BR-005 | Producer 重试策略可配置，默认 3 次 | 配置非法时初始化失败；超过次数后返回最终错误并增加失败指标 |
-| BR-006 | Consumer 轮询间隔、会话超时和心跳间隔可配置 | 配置非法时初始化失败；运行时不得使用未记录的隐式默认值 |
-| BR-007 | `Health(ctx)` 必须是幂等的、无副作用的 | Health 不得发送/提交业务消息；副作用实现视为发布阻断 |
-| BR-008 | 错误消息、日志和指标标签不得包含完整消息内容或敏感配置 | 发现泄漏时必须脱敏并补充测试；泄漏风险为发布阻断 |
-| BR-009 | Consumer 不自动提交 offset（避免数据丢失） | 自动提交必须保持 disabled；检测到开启时拒绝启动或返回配置错误 |
+| BR-001 | Producer 默认使用同步发送（acks=all），可通过配置切换 | 默认配置缺失时回退到 acks=all；非法 acks 配置返回配置错误并阻止启动 |
+| BR-002 | Consumer 默认使用手动 offset 提交（at-least-once） | 检测到自动提交启用时返回配置错误；测试/CI 必须阻断发布 |
+| BR-003 | 所有可能阻塞或外部 I/O 操作必须接受 `context.Context`，支持超时和取消 | 缺少 ctx 的公共接口不得进入 release；运行时 ctx 取消必须返回 `ctx.Err()` |
+| BR-004 | Consumer 必须在 Close 时提交最终 offset | 最终提交失败时 `Close(ctx)` 返回错误并记录不含 payload 的日志，由调用方决定重试或退出 |
+| BR-005 | Producer 重试策略可配置，默认 3 次 | 非法重试配置返回配置错误；发送耗尽重试后返回包装后的最终错误 |
+| BR-006 | Consumer 轮询间隔可配置 | 非法轮询配置返回配置错误；默认值必须可在单元测试中证明 |
+| BR-007 | Health(ctx) 必须是幂等的、无副作用的 | Health 不得改变订阅、offset 或连接生命周期；违反时测试/审查阻断发布 |
+| BR-008 | 错误消息不包含消息内容（防泄露敏感数据） | 错误和日志只允许 topic/partition/offset/operation；发现 key/value 泄露时阻断发布 |
+| BR-009 | Consumer 不自动提交 offset（避免数据丢失） | 发现自动提交路径时测试/CI 阻断；调用方未 `Commit` 时不得推进 offset |
 
 ---
 
@@ -198,6 +194,10 @@ type Consumer interface {
     Close(ctx context.Context) error
 }
 
+type HealthChecker interface {
+    Health(ctx context.Context) (HealthStatus, error)
+}
+
 type Message struct {
     Topic     string
     Partition int32
@@ -214,20 +214,8 @@ type HealthStatus struct {
     Message string
 }
 
-type DeadLetterFailure struct {
-    ErrorCode string
-    Reason    string
-    RetryCount int
-    Cause     error
-}
-
-type DeadLetterPublisher interface {
-    Publish(ctx context.Context, original *Message, failure DeadLetterFailure) error
-}
-
-func NewProducer(ctx context.Context, opts ...ProducerOption) (Producer, error)
-func NewConsumer(ctx context.Context, opts ...ConsumerOption) (Consumer, error)
-func Health(ctx context.Context) (HealthStatus, error)
+func NewProducer(opts ...ProducerOption) (Producer, error)
+func NewConsumer(opts ...ConsumerOption) (Consumer, error)
 ```
 
 ### 9.1 Option 模式
@@ -251,14 +239,13 @@ func WithConsumerBrokers(brokers []string) ConsumerOption
 func WithGroupID(groupID string) ConsumerOption
 func WithAutoOffsetReset(reset string) ConsumerOption
 func WithConsumerCodec(codec Codec) ConsumerOption
-func WithConsumerPollInterval(interval time.Duration) ConsumerOption
-func WithConsumerDLQPublisher(publisher DeadLetterPublisher) ConsumerOption
 ```
 
 ### 9.2 用法示例
 
 ```go
-producer, err := kafkax.NewProducer(ctx,
+// 创建 Producer
+producer, err := kafkax.NewProducer(
     kafkax.WithBrokers([]string{os.Getenv("FOUNDATIONX_KAFKA_BROKER")}),
     kafkax.WithProducerAcks("all"),
 )
@@ -267,6 +254,7 @@ if err != nil {
 }
 defer producer.Close(ctx)
 
+// 发送消息
 err = producer.Send(ctx, "orders", []byte("order-123"), orderJSON)
 
 msgs := []kafkax.Message{
@@ -275,7 +263,8 @@ msgs := []kafkax.Message{
 }
 err = producer.SendBatch(ctx, msgs)
 
-consumer, err := kafkax.NewConsumer(ctx,
+// 创建 Consumer
+consumer, err := kafkax.NewConsumer(
     kafkax.WithConsumerBrokers([]string{os.Getenv("FOUNDATIONX_KAFKA_BROKER")}),
     kafkax.WithGroupID("signal-engine"),
 )
@@ -284,6 +273,7 @@ if err != nil {
 }
 defer consumer.Close(ctx)
 
+// 订阅
 if err := consumer.Subscribe(ctx, []string{"orders", "events"}); err != nil {
     return err
 }
@@ -296,6 +286,10 @@ for {
     if err := processMessage(ctx, msg); err != nil {
         return err
     }
+    if err := consumer.Commit(ctx, msg); err != nil {
+        return err
+    }
+    processMessage(msg)
     if err := consumer.Commit(ctx, msg); err != nil {
         return err
     }
@@ -394,9 +388,9 @@ kafkax:
 | `ErrConfigInvalid` | 修复配置后重启 | 初始化失败，禁止使用隐式危险默认值 |
 | `ErrDLQPublishFailed` | 检查 DLQ topic、权限和网络 | 返回包装错误并增加 DLQ 失败指标 |
 
-**错误消息格式：** `"kafkax: <operation>: <detail>"`  
-**错误包装：** 使用 `%w` 保留底层错误链。  
-**敏感信息：** 错误、日志和指标标签不得包含完整 payload、密码、token、accessKey、secretKey 或完整连接串。
+**错误消息格式：** `"kafkax: <operation>: <detail>"`，不得包含 message key/value 或业务 payload。
+**错误包装：** 使用 `%w` 保留底层错误链；由 ctx 取消/超时导致的失败必须保留并返回 `ctx.Err()`。
+**Retry / DLQ 边界：** v1.0 Producer 只提供可配置发送重试（默认 3 次）。Consumer handler 重试、DLQ 转储和 poison-message 策略属于调用方或后续增强，不在本客户端 baseline 内自动执行。
 
 ---
 
@@ -496,10 +490,10 @@ go 1.23
 
 ### 16.2 Given/When/Then 用例
 
-**TC-001: 基本发送和消费**  
-Given Kafka 连接正常  
-When Producer.Send("topic", key, value)  
-Then Consumer.Poll 收到该消息。
+**TC-001: 基本发送和消费**
+Given Kafka 连接正常
+When Producer.Send(ctx, "topic", key, value)
+Then Consumer.Poll 收到该消息
 
 **TC-002: 批量发送**  
 Given Kafka 连接正常  
@@ -516,15 +510,10 @@ Given Kafka 短暂不可用或消息非法
 When Send 重试 3 次或输入校验失败  
 Then 第 3 次成功或返回最终错误，错误不包含完整 payload。
 
-**TC-005: Health 检查**  
-Given Kafka broker 可达  
-When 调用 Health(ctx)  
-Then 返回 healthy；broker 不可达时返回 unhealthy 和可诊断错误。
-
-**TC-006: DLQ 路径**  
-Given Consumer 收到不可反序列化消息或不可重试业务失败  
-When 失败策略判定为 dead letter  
-Then DLQ 发布保留原始 topic、partition、offset、key、headers、timestamp、errorCode、retryCount 和失败原因摘要。
+**TC-005: Health 检查**
+Given Kafka broker 可达
+When 调用 Health(ctx)
+Then 返回 healthy；broker 不可达时返回 unhealthy
 
 ### 16.3 Benchmark
 
@@ -661,16 +650,20 @@ Then DLQ 发布保留原始 topic、partition、offset、key、headers、timesta
 
 ## 23. Open Questions
 
-### 23.1 非阻塞未来项（不影响 1.0 baseline candidate）
+无阻塞性 Open Questions；以下项已按 v1.0 baseline 分类，不影响当前规格仲裁。
 
-- 是否在 1.1+ 支持异步 Producer（回调通知发送结果）？
-- 是否在未来支持 Kafka Transactions 或 transactional outbox？
-- Consumer 是否需要支持 Assign 模式（手动指定 partition）？
-- 是否在未来支持 Schema Registry 集成（Avro/Protobuf schema 管理）？
-- 是否需要定义业务 `EventEnvelope` 适配层，或保持在 contracts/业务层？
+### 23.1 Resolved for v1.0 baseline（非阻塞）
 
-### 23.2 1.0 待仲裁项
+| 问题 | v1.0 处理 |
+|------|-----------|
+| 是否支持异步 Producer（回调通知发送结果）？ | 不纳入 v1.0；baseline 仅承诺同步发送和批量发送。 |
+| 是否支持 Kafka Transactions（跨 topic 原子写入）？ | 不纳入 v1.0；事务/outbox 由业务层或后续规格定义。 |
+| 是否支持 Schema Registry 集成（Avro/Protobuf schema 管理）？ | 不纳入 v1.0；Codec 接口保留扩展点。 |
+| 是否支持 Dead Letter Queue（消费失败消息的重试和转储）？ | 不纳入 v1.0 自动编排；调用方基于返回错误和手动 offset 决策。 |
 
-- 选择 `sarama` 还是 `confluent-kafka-go` 作为首个实现依赖。
-- DLQ 发布失败时是否阻断 Consumer 关闭，还是记录并交给调用方重试。
-- 指标标签基线是否需要加入 `client_id`，以及其基数上限。
+### 23.2 Future / Deferred（未来）
+
+| 问题 | 后续处理 |
+|------|----------|
+| Consumer 是否需要支持 Assign 模式（手动指定 partition）？ | 作为 future enhancement 评估；不阻塞当前消费组 baseline。 |
+| 是否提供内建 handler retry / poison-message 策略？ | 需结合业务语义另行设计，避免客户端层隐式推进 offset。 |
