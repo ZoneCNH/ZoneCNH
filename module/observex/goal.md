@@ -49,7 +49,7 @@
 
 ## 2. 1.0 发布目标
 
-- MUST 提供 Logger、MetricRegistry、Tracer、AuditPublisher、DiagnosticEventPublisher 五类抽象。
+- MUST 提供 Logger、Meter（SPEC.md 用名，本文档部分位置记为 MetricRegistry）、Tracer、Exporter、Health 五类基础抽象（1.0 范围）；AuditPublisher、DiagnosticEventPublisher、ObservationAdapter SPI 推迟到 v1.1。
 - MUST 定义标准字段：traceId、spanId、requestId、tenantId、module、operation、errorCode、durationMs。
 - MUST 支持无观测后端时的 Noop 实现，保证业务不因观测系统缺失而不可启动。
 - MUST 支持上下文传播和跨线程/异步场景的上下文绑定。
@@ -67,14 +67,14 @@
 
 ## 4. 能力范围
 
-| 能力域 | 1.0 必须具备的能力 | 验收方式 |
+| 能力域 | 要求 | 验收方式 |
 | --- | --- | --- |
 | 结构化日志 | 标准字段、日志等级、脱敏、错误上下文 | 日志字段快照测试通过 |
 | 指标 | Counter、Gauge、Timer、Histogram、标签约束 | 指标注册和采集测试通过 |
 | 链路追踪 | span 创建、上下文传播、异步上下文恢复 | 跨线程 Trace 测试通过 |
-| 审计事件 | actor、action、resource、result、reason、timestamp | 审计事件 schema 测试通过（v1.1 推迟） |
-| 诊断事件 | 模块启动、配置刷新、熔断打开、任务失败等事件 | 事件枚举测试通过（v1.1 推迟） |
-| 后端适配 | Noop、Console、平台适配 SPI | 无后端降级测试通过（SPI 推迟到 v1.1） |
+| 审计事件 | actor、action、resource、result、reason、timestamp | v1.1 规划（非 1.0）；schema 测试 |
+| 诊断事件 | 模块启动、配置刷新、熔断打开、任务失败等事件 | v1.1 规划（非 1.0）；事件枚举测试 |
+| 后端适配 | Noop、Console、平台适配 SPI | 无后端降级测试通过；ObservationAdapter SPI 推迟到 v1.1 |
 | 采样与限流 | 日志采样、Trace 采样、事件限流 | 高压测试通过 |
 
 ## 5. 职责边界
@@ -112,10 +112,10 @@
 | XLogger | 结构化日志入口 | 字段语义稳定 |
 | MetricRegistry | 指标注册和记录入口 | 指标类型稳定 |
 | Tracer | span 生命周期和上下文传播 | Trace 语义稳定 |
-| AuditEvent | 审计事件模型 | 核心字段稳定 |
-| DiagnosticEvent | 诊断事件模型 | 事件分类稳定 |
+| AuditEvent | 审计事件模型 | v1.1 规划（非 1.0） |
+| DiagnosticEvent | 诊断事件模型 | v1.1 规划（非 1.0） |
 | HealthIndicator | 健康检查抽象 | 状态字段稳定；各扩展模块（redisx、kafkax、postgresx 等）实现此接口上报组件健康 |
-| ObservationAdapter SPI | 后端适配扩展点 | SPI 稳定，适配器独立发布 |
+| ObservationAdapter SPI | 后端适配扩展点 | v1.1 规划（非 1.0） |
 
 ### 7.2 1.0 逻辑接口基线
 
