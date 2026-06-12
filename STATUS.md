@@ -16,8 +16,8 @@
 组件总数: 70    已有: 54    已创建: 16    平均进度: 47%
 
 进度分布:
-  ███░ 80%  ████████████████████████░░░░░░░░░░░░░░░░  26 个 (38%)
-  ██░░ 60%  ██░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   1 个 ( 1%)
+  ███░ 80%  ████████████████████████░░░░░░░░░░░░░░░░  27 个 (39%)
+  ██░░ 60%  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   0 个 ( 0%)
   █░░░ 15%  ██████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   6 个 ( 9%)
   ░░░░  5%  ██████████████░░░░░░░░░░░░░░░░░░░░░░░░░░  17 个 (25%)
   未标注    ████████████████████░░░░░░░░░░░░░░░░░░░░░░  20 个 (29%)
@@ -29,7 +29,7 @@
 
 | 域                     | 总数 | 已有 | 已创建 | 平均进度 | 有版本号                                                    |
 | ---------------------- | ---- | ---- | ------ | -------- | ----------------------------------------------------------- |
-| 基座                   | 16   | 16   | 0      | 54%      | 6 (kernel / configx / observex / testkitx / resiliencx / schedulex) |
+| 基座                   | 16   | 16   | 0      | 55%      | 6 (kernel / configx / observex / testkitx / resiliencx / schedulex) |
 | L2.5 领域共享层        | 4    | 4    | 0      | 80%      | 4 (全部)                                                    |
 | 数据域 · 行情 SDK      | 14   | 14   | 0      | 80%      | 0                                                           |
 | 数据域 · 行情 Provider | 5    | 5    | 0      | 80%      | 5 (全部)                                                    |
@@ -50,7 +50,7 @@
 
 ### 🟢 基座（健康）
 
-- 组件：16 个，平均进度 54%
+- 组件：16 个，平均进度 55%
 - 核心模块（kernel / configx / observex / resiliencx）已成熟，有版本号；kernel v1.0.0、configx v1.0.0、observex v1.0.0 已发布（100% 覆盖）
 - 存储层 6/7 仅骨架（15%）：redisx / kafkax / postgresx / taosx / ossx / clickhousex
 - **阻塞项**：存储层实现滞后，但不影响上层开发（可通过 contracts 稳定端口 mock）
@@ -124,7 +124,7 @@
 | [schedulex](https://github.com/ZoneCNH/schedulex) | v0.1.2 | █████ 100% | 398KB/25 项 | cron/interval/delay 调度、Overlap/Misfire 策略、分布式锁、Clock 注入、8 示例（98.8% 覆盖，race/bench/vet 通过，SPEC v1.0.1） |
 | [redisx](https://github.com/ZoneCNH/redisx) | - | █░░░ 15% | - | Redis，仅骨架 |
 | [kafkax](https://github.com/ZoneCNH/kafkax) | - | █░░░ 15% | - | Kafka，仅骨架 |
-| [natsx](https://github.com/ZoneCNH/natsx) | - | ███░ 60% | 349KB/27 项 | NATS 修复基线已验证（`/home/natsx` `d4072fe`）；6/14 complete、7/14 partial、1/14 pending；未批准发布 |
+| [natsx](https://github.com/ZoneCNH/natsx) | - | ████░ 80% | 349KB/27 项 | NATS 生命周期/投递证据已验证（`/home/natsx` `3053e80`）；8/14 complete、6/14 partial、0/14 pending；未批准发布 |
 | [postgresx](https://github.com/ZoneCNH/postgresx) | - | █░░░ 15% | - | PostgreSQL，仅骨架 |
 | [taosx](https://github.com/ZoneCNH/taosx) | - | █░░░ 15% | - | TDengine，仅骨架 |
 | [ossx](https://github.com/ZoneCNH/ossx) | - | █░░░ 15% | - | 对象存储，仅骨架 |

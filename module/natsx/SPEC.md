@@ -20,9 +20,9 @@
 
 ### 1.0 Repair Review Status
 
-- Approved for release: **No**. This specification remains the 1.0 target contract; `/home/natsx/pkg/natsx` now has an executable repair baseline, but it is not release-complete.
-- Evidence refreshed on 2026-06-12: `/home/natsx/README.md`, `/home/natsx/examples/README.md`, `/home/natsx` commits `733ba9a`, `6942cbe`, `a837b94`, `5800c70`, `29b0821`, and `d4072fe`, embedded Core NATS / JetStream tests in `/home/natsx/pkg/natsx`, runnable `pkg/natsx` examples, Core publish benchmark evidence, and `TRACEABILITY.md`.
-- Release promotion remains blocked until `TRACEABILITY.md` closes the remaining dead-letter advisory, reconnect/backoff, request/JetStream benchmark/SLO, formal arbiter, live TLS/auth/config-alias breadth, and full health/observability lifecycle gaps.
+- Approved for release: **No**. This specification remains the 1.0 target contract; `/home/natsx/pkg/natsx` now has an executable lifecycle/delivery repair baseline, but it is not release-complete.
+- Evidence refreshed on 2026-06-12: `/home/natsx/README.md`, `/home/natsx/examples/README.md`, `/home/natsx` commit `3053e80`, embedded Core NATS / JetStream tests in `/home/natsx/pkg/natsx`, subscription Drain, reconnect/degraded health, JetStream max-deliveries advisory, runnable `pkg/natsx` examples, publish/request/JetStream publish benchmark evidence, and `TRACEABILITY.md`.
+- Release promotion remains blocked until `TRACEABILITY.md` closes the remaining formal arbiter, live TLS/auth/config-alias breadth, production SLO thresholds, and higher-level consumer lifecycle/API/observability gaps.
 
 ---
 
@@ -30,7 +30,7 @@
 
 | 日期 | 版本 | 变更内容 | 作者 |
 |------|------|----------|------|
-| 2026-06-12 | v1.0.0-draft | 记录 natsx 可执行修复基线与剩余发布阻塞项 | Codex |
+| 2026-06-12 | v1.0.0-draft | 记录 natsx 生命周期/投递修复基线与剩余发布阻塞项 | Codex |
 | 2026-06-07 | v1.0.0 | 初始版本 | ZoneCNH |
 
 ## 2. Summary
@@ -186,13 +186,13 @@ THEN 返回 HealthStatus{Ready: false, Live: true, Message: "jetstream unavailab
 | AC-ID | 功能 | 验收标准 | 验证方式 | 判定结果 |
 |-------|---------|----------|----------|----------|
 | AC-001 | Publish（Core NATS） | Publish 成功返回 nil；连接不可用时返回错误；空 subject 返回错误 | TC-001, unit test | ✅ Covered |
-| AC-002 | Subscribe（Core NATS） | Subscribe 注册返回 Subscription；收到消息时调用 handler；Unsubscribe/Drain 后不再接收 | TC-001, unit test | ◐ Subscribe/queue/unsubscribe and client close covered; subscription Drain pending |
+| AC-002 | Subscribe（Core NATS） | Subscribe 注册返回 Subscription；收到消息时调用 handler；Unsubscribe/Drain 后不再接收 | TC-001, unit test | ✅ Subscribe/queue/unsubscribe, subscription Drain, and client close covered |
 | AC-003 | Request（Core NATS） | Request 有 responder 时返回响应；无 responder 时超时返回错误；ctx 取消时返回 ctx.Err() | TC-002, unit test | ✅ Responder/no-responder/timeout/cancel covered |
 | AC-004 | JetStreamClientX.Publish | JetStreamClientX Publish 返回 PublishAck；stream 未创建时返回错误 | TC-003, unit test | ✅ Stream-present and missing-stream publish covered |
-| AC-005 | JetStreamClientX.Subscribe | JetStreamClientX Subscribe 注册返回 Subscription；ack 后 offset 推进；超 max_deliver 进入 Dead Letter | TC-003, unit test | ◐ Ack/nack redelivery covered; dead-letter pending |
+| AC-005 | JetStreamClientX.Subscribe | JetStreamClientX Subscribe 注册返回 Subscription；ack 后 offset 推进；超 max_deliver 进入 Dead Letter | TC-003, unit test | ✅ Pull, ack, nack redelivery, and max-deliveries advisory covered |
 | AC-006 | JetStream.AddStream | AddStream 幂等创建；配置兼容时返回 nil；配置冲突时返回错误 | TC-003, unit test | ✅ AddStream create/idempotency/conflict covered |
 | AC-007 | JetStream.AddConsumer | AddConsumer 幂等创建；配置兼容时返回 nil；配置冲突时返回错误 | TC-003, unit test | ✅ AddConsumer create/idempotency/conflict covered |
-| AC-008 | Health | NATS 可用时 Health() 返回 Ready=true/Live=true；不可达时 Ready=false/Live=false；JetStream 不可用时 Ready=false/Live=true | TC-005, unit test | ◐ Healthy, disconnected, nil, canceled, and closed paths covered; degraded lifecycle pending |
+| AC-008 | Health | NATS 可用时 Health() 返回 Ready=true/Live=true；不可达时 Ready=false/Live=false；JetStream 不可用时 Ready=false/Live=true | TC-005, unit test | ✅ Healthy, disconnected, nil, canceled, closed, reconnect, and degraded health paths covered |
 
 
 ## 8. Business Rules
