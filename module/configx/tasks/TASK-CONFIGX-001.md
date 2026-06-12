@@ -10,7 +10,7 @@ module: configx
 scope: "定义 Reader、Config 接口及 Option 函数模式"
 spec_ref:
   - "module/configx/SPEC.md#BR-009"
-  - "module/configx/SPEC.md#BR-009.1"
+  - "module/configx/SPEC.md#§9.1"
 files:
   - "reader.go"
   - "config.go"

@@ -1,6 +1,6 @@
 # configx 需求追溯矩阵
 
-> 更新：2026-06-12（v2.2 — 修复 Matrix 扣分：表头规范 + TC-006/007 + NFR 验证命令化）
+> 更新：2026-06-12（v2.3 — 覆盖缺口修复 I-02/03/04：追加 BR-008~011 + TC-008/009 + 仪表盘数值对齐）
 > 来源：module/configx/SPEC.md v1.0.1
 > 规范：docs/governance/TRACEABILITY.md
 
@@ -29,6 +29,10 @@
 | BR-005 | Reader 接口只读 | 不能通过 Reader 修改底层配置 | TC-005 | TASK-CONFIGX-006 | ⬜ |
 | BR-006 | 配置值类型与 schema 一致 | 类型不匹配时报错 | TC-002 | TASK-CONFIGX-005 | ⬜ |
 | BR-007 | 未定义配置键：忽略或 warning（strict 模式） | strict=true 时报错，strict=false 时忽略 | TC-002 | TASK-CONFIGX-005, TASK-CONFIGX-006 | ⬜ |
+| BR-008 | 公共错误变量使用 `configx:` 前缀命名空间 | 错误变量均使用 `configx:` 前缀 | CI Gate: `go vet ./...` | TASK-CONFIGX-000 | ⬜ |
+| BR-009 | Reader/Config/Option 接口遵循 Go 接口隔离原则 | 接口定义符合 ISP（小接口、单一职责） | CI Gate: `golangci-lint run` | TASK-CONFIGX-001 | ⬜ |
+| BR-010 | Release 制品通过全部 CI Gate（编译/测试/覆盖率/vet/lint/secret） | 全部 CI Gate 通过 | TC-009 | TASK-CONFIGX-009 | ⬜ |
+| BR-011 | 敏感字段（password/token/secret/key）自动脱敏 | 敏感字段读取/日志输出返回 `***` | TC-008 | TASK-CONFIGX-010 | ⬜ |
 
 ---
 
@@ -57,6 +61,8 @@
 | TC-005 | BR-005 | Given 已创建配置 Reader；When 调用读取接口；Then 不能通过 Reader 修改底层配置 |
 | TC-006 | FR-001 | Given 调用 `Load("/nonexistent/config.yaml")`；When 文件不存在；Then 返回 `os.ErrNotExist`，配置不变 |
 | TC-007 | FR-001 | Given 调用 `Load("invalid.yaml")` 文件内容为非法 YAML；When 解析失败；Then 返回 `ErrInvalidFormat`，配置不变 |
+| TC-008 | BR-011 | Given 配置包含 `db.password=secret123`；When 通过 Reader.GetString("db.password") 读取或输出到日志；Then 返回值/日志内容为 `"***"`，不包含原始密码 |
+| TC-009 | BR-010 | Given 所有 Task 实现完成；When 运行 `go test -race -count=1 ./...` 和 `gitleaks detect --no-git`；Then 所有测试通过，零 data race，零 secret 泄露，覆盖率 ≥ 80% |
 
 ---
 
@@ -80,12 +86,12 @@
 | FR 有 AC 覆盖 | 5/5 (100%) | |
 | FR 有 TC 覆盖 | 5/5 (100%) | |
 | FR 有 Task 分配 | 5/5 (100%) | |
-| BR 总数 | 7 | BR-001 ~ BR-007 |
-| BR 有 TC 覆盖 | 7/7 (100%) | |
-| BR 有 Task 分配 | 7/7 (100%) | |
+| BR 总数 | 11 | BR-001 ~ BR-011 |
+| BR 有 TC 覆盖 | 11/11 (100%) | BR-008/009 通过 CI Gate，BR-010 通过 TC-009，BR-011 通过 TC-008 |
+| BR 有 Task 分配 | 11/11 (100%) | |
 | NFR 总数 | 7 | NFR-001 ~ NFR-007 |
 | AC 总数 | 5 | AC-001 ~ AC-005 |
-| TC 总数 | 7 | TC-001 ~ TC-007 |
+| TC 总数 | 9 | TC-001 ~ TC-009 |
 | Task 总数 | 10 | TASK-CONFIGX-000 ~ 010（008 已合并删除） |
 
 ---
