@@ -9,12 +9,13 @@ task_id: TASK-CONFIGX-001
 module: configx
 scope: "定义 Reader、Config 接口及 Option 函数模式"
 spec_ref:
-  - "module/configx/SPEC.md#9"
-  - "module/configx/SPEC.md#9.1"
+  - "module/configx/SPEC.md#§9"
+  - "module/configx/SPEC.md#§9.1"
 files:
   - "reader.go"
   - "config.go"
   - "options.go"
+  - "config_test.go"
 acceptance_criteria:
   - "Reader 接口包含 Get、GetString、GetInt、GetFloat、GetBool、GetDuration、IsSet 7 个方法"
   - "Config 接口嵌入 Reader 并扩展 Load、WithEnvOverride、Validate、Watch"
@@ -40,9 +41,15 @@ status: pending
 
 | Test Case | Type | Description |
 |---|---|---|
-| — | Compile | 接口完整性编译验证 |
+| — | Compile | 接口完整性编译验证: `go build ./...` |
 | — | Unit | New() 无参数返回可用 Config |
 | — | Unit | Option 组合叠加生效 |
+
+## Non-scope
+
+- 不实现 Load/Merge/Validate 具体逻辑
+- 不包含文件解析代码
+- 不处理环境变量
 
 ## Implementation Notes
 

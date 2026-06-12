@@ -9,8 +9,8 @@ task_id: TASK-CONFIGX-000
 module: configx
 scope: "创建 go.mod、doc.go、errors.go，定义公共错误变量"
 spec_ref:
-  - "module/configx/SPEC.md#10.1"
-  - "module/configx/SPEC.md#15.1"
+  - "module/configx/SPEC.md#§10.1"
+  - "module/configx/SPEC.md#§15.1"
 files:
   - "go.mod"
   - "doc.go"
@@ -40,6 +40,12 @@ status: pending
 |---|---|---|
 | — | CI Gate | `go build ./...` 编译通过 |
 | — | CI Gate | `go vet ./...` 无错误 |
+
+## Non-scope
+
+- 不实现任何 Go 接口或逻辑代码
+- 不包含测试文件（编译验证即可）
+- 不处理配置文件内容
 
 ## Implementation Notes
 

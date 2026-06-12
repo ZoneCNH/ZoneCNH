@@ -9,8 +9,8 @@ task_id: TASK-CONFIGX-010
 module: configx
 scope: "实现敏感字段自动脱敏、配置文件权限检查、环境变量防泄露、CI secret 扫描"
 spec_ref:
-  - "module/configx/SPEC.md#19"
-  - "module/configx/goal.md#11"
+  - "module/configx/SPEC.md#§19"
+  - "module/configx/SPEC.md#§19"
 files:
   - "sanitize.go"
   - "sanitize_test.go"
@@ -46,7 +46,14 @@ status: pending
 | — | Unit | 配置文件权限检查：0o777 文件输出 warning |
 | — | Unit | 错误消息不包含环境变量原始值 |
 | — | Unit | 嵌套敏感字段：`connections.db.password` 正确脱敏 |
-| — | Security | gitleaks 扫描无泄露 |
+| — | Security | gitleaks 扫描无泄露: `gitleaks detect --no-git`（NFR-006） |
+| — | Security | 日志无凭据泄露: `grep -rE` 扫描（NFR-007） |
+
+## Non-scope
+
+- 不做配置加密（→ v1.0 goal）
+- 不管理密钥生命周期
+- 不做网络传输安全（远程配置源 → v1.0）
 
 ## Implementation Notes
 

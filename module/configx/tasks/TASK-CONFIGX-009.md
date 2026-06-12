@@ -9,8 +9,8 @@ task_id: TASK-CONFIGX-009
 module: configx
 scope: "创建 README、CHANGELOG、example_test.go，确保 godoc 完整，验证 Release DoD"
 spec_ref:
-  - "module/configx/SPEC.md#22"
-  - "module/configx/SPEC.md#9.2"
+  - "module/configx/SPEC.md#§22"
+  - "module/configx/SPEC.md#§9.2"
 files:
   - "README.md"
   - "CHANGELOG.md"
@@ -50,9 +50,16 @@ status: pending
 
 | Test Case | Type | Description |
 |---|---|---|
-| — | CI Gate | 覆盖率 >= 80% |
-| — | CI Gate | `-race` 无 data race |
-| — | CI Gate | `go vet` 无警告 |
+| — | CI Gate | 覆盖率 ≥ 80%: `go test -coverprofile=coverage.out ./... && go tool cover -func=coverage.out` |
+| — | CI Gate | `-race` 无 data race: `go test -race -count=1 ./...` |
+| — | CI Gate | `go vet ./...` 无警告 |
+| — | CI Gate | NFR-005: kernel 依赖检查: `go list -deps ./... | grep -c kernel` 返回 0 |
+
+## Non-scope
+
+- 不实现任何 Go 代码
+- 不做自动化测试（仅文档产出）
+- 不修改公共 API 签名
 
 ## Implementation Notes
 
