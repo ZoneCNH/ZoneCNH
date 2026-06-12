@@ -1,7 +1,7 @@
 # observex 设计方案
 
 > Design ID: DESIGN-observex-v1
-> Source Spec: [SPEC.md](./SPEC.md) v1.0.0
+> Source Spec: [SPEC.md](./SPEC.md) v1.0.1
 > Source Goal: [goal.md](./goal.md) 1.0 发布基线
 > 生成日期：2026-06-12
 

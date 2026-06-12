@@ -110,7 +110,7 @@
 | 契约 | 定位 | 1.0 稳定承诺 |
 | --- | --- | --- |
 | XLogger | 结构化日志入口 | 字段语义稳定 |
-| MetricRegistry | 指标注册和记录入口 | 指标类型稳定 |
+| MetricRegistry（SPEC.md 用名: Meter） | 指标注册和记录入口 | 指标类型稳定 |
 | Tracer | span 生命周期和上下文传播 | Trace 语义稳定 |
 | AuditEvent | 审计事件模型 | v1.1 规划（非 1.0） |
 | DiagnosticEvent | 诊断事件模型 | v1.1 规划（非 1.0） |
