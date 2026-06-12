@@ -117,7 +117,7 @@
 | [xlib-standard](https://github.com/ZoneCNH/xlib-standard) | v1.0.0 | ████ 100% | 标准源 + Template + Generator + Gate + Evidence（16 FR，38 AC，34 TC，AC/TC→Code 闭合） | 标准事实源 / Go Reference Template / Generator / Harness Gate / Evidence Runtime |
 | [xlibgate](https://github.com/ZoneCNH/xlibgate)           | -      | -        | -           | 门禁与验证运行时           |
 | [kernel](https://github.com/ZoneCNH/kernel)               | v1.0.0 | █████ 100% | 594KB/30 项 | L0 原语 / 12 子包 / stdlib-only / v1.0.0 已发布 |
-| [configx](https://github.com/ZoneCNH/configx)             | v0.1.4 | ███░ 80% | 258KB/20 项 | 配置管理                   |
+| [configx](https://github.com/ZoneCNH/configx)             | v0.1.4 | ███░ 85% | 258KB/20 项 | 配置管理；SPEC Approved，5 阶段文档全部通过门禁 |
 | [observex](https://github.com/ZoneCNH/observex)           | v1.0.0 | █████ 100% | 220KB/18 项 | 可观测性                   |
 | [testkitx](https://github.com/ZoneCNH/testkitx)           | v0.4.0 | ███░ 80% | 254KB/27 项 | 测试工具包                 |
 | [resiliencx](https://github.com/ZoneCNH/resiliencx)       | v0.4.8 | ███░ 80% | 707KB/27 项 | 弹性与容错                 |
