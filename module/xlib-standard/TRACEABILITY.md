@@ -23,6 +23,7 @@
 | FR-013 | release manifest | `Makefile` release-check + `scripts/generate_manifest.sh` | ✅ 已对齐 |
 | FR-014 | release final check | `Makefile` release-final-check | ✅ 已对齐 |
 | FR-015 | Evidence Runtime CLI（goalcli） | `cmd/goalcli/*.go`（12 文件） | ✅ 已对齐 |
+| FR-016 | L2 下游仓库模板 | `templates/l2/`（12 文件） | ✅ 已对齐 |
 
 ## 快照历史
 
