@@ -10,7 +10,7 @@ Source: docs/governance/TRACEABILITY.md（迁移前全局矩阵）
 | FR-001      | Logger           | 所有日志等级输出符合结构化格式（JSON）；level 过滤正确；With 返回新实例且原实例不变 | TC-001           | TASK-OBSERVEX-002 | ⬜     |
 | FR-002      | Meter            | Counter/Histogram/Gauge 记录正确；label policy 检查集成并拒绝 ForbiddenLabels | TC-002           | TASK-OBSERVEX-003 | ⬜     |
 | FR-003      | Tracer           | span 创建/结束正确；RecordError 记录错误；子 span 继承父 trace_id | TC-003           | TASK-OBSERVEX-004 | ⬜     |
-| FR-004      | Exporter         | ExportLogs/Metrics/Spans 正常导出返回 nil；exporter 不可达时返回错误但不 panic；Shutdown 后 buffer 已 flush | TC-004, TC-004a  | TASK-OBSERVEX-005 | ⬜     |
+| FR-004      | Exporter         | ExportLogs/Metrics/Spans 正常导出返回 nil；exporter 不可达时返回错误但不 panic；Shutdown 后 buffer 已 flush | TC-004, TC-004a, TC-004b, TC-004c  | TASK-OBSERVEX-005 | ⬜     |
 | FR-005      | Redaction        | secret 字段值被替换为 `***`；redact.Check 检测文本中泄露的 secret 值 | TC-005, TC-005a  | TASK-OBSERVEX-006 | ⬜     |
 | FR-006      | Label Policy     | AllowedLabels 通过；ForbiddenLabels 返回 ErrLabelForbidden；独立 checker 返回正确判定 | TC-002, TC-007a  | TASK-OBSERVEX-003 | ⬜     |
 | FR-007      | Health           | 已初始化时输出符合 schema 的四字段 JSON；未初始化时输出默认健康状态；exporter 不可达时 ready=false | TC-006, TC-006a  | TASK-OBSERVEX-007 | ⬜     |
