@@ -1,276 +1,390 @@
 # kernel 设计方案
 
-> Design ID: DESIGN-kernel-v1
-> Source Spec: SPEC-kernel-v1 (v1.1.0)
-> 生成日期：2026-06-09
+> Design ID: DESIGN-kernel-v2
+> Source Spec: [SPEC.md](./SPEC.md) v2.0.0
+> 生成日期：2026-06-12
+> 替换：DESIGN-kernel-v1（基于已废弃的 SPEC v1.1.0 集中式 App/Module/Deps 架构）
 
 ---
 
 ## 1. 架构概述
 
-kernel 是 FoundationX L0 原语层，提供应用运行时骨架。采用 stdlib-only 设计，零外部依赖，通过 `Deps` 结构体注入 L1 能力。
+kernel 是 Foundation L0 原语层，采用 **12 子包轻量工具集** 设计。每个子包独立可用、互不强制绑定，消费者按需 import 单个子包。全仓 stdlib-only，零外部依赖。
 
 ```text
-┌─────────────────────────────────────────────┐
-│                    App                       │
-│  ┌──────────┐ ┌──────────┐ ┌──────────┐    │
-│  │ Module A │ │ Module B │ │ Module C │    │
-│  └────┬─────┘ └────┬─────┘ └────┬─────┘    │
-│       │             │             │          │
-│  ┌────▼─────────────▼─────────────▼────┐    │
-│  │         Lifecycle Manager            │    │
-│  │  (Registry + Graph + Runner)         │    │
-│  └──────────────────────────────────────┘    │
-│                                              │
-│  ┌──────────┐ ┌──────────┐ ┌──────────┐    │
-│  │  Graph   │ │ Registry │ │ Shutdown │    │
-│  │ (DAG)    │ │ (Map)    │ │ (Signal) │    │
-│  └──────────┘ └──────────┘ └──────────┘    │
-└─────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────┐
+│                        调用方（按需 import）                    │
+│  configx   observex   resiliencx   schedulex   redisx  ...   │
+└────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┬────────┘
+     │     │     │     │     │     │     │     │     │
+     ▼     ▼     ▼     ▼     ▼     ▼     ▼     ▼     ▼
+┌──────────────────────────────────────────────────────────────┐
+│                     kernel (L0 原语层)                        │
+│                                                              │
+│  lifecycx   errx    healthx    obsx    retryx   shutdownx    │
+│  ─────────  ──────  ────────   ────    ──────   ─────────    │
+│  生命周期    结构化   健康检查   可观测   重试策略   优雅停机     │
+│            错误              抽象接口  原语                  │
+│                                                              │
+│  syncx      timex    validx   versionx  contextx contracttest│
+│  ─────      ─────    ──────   ────────  ──────── ─────────── │
+│  并发控制    时钟     前置条件   版本信息   类型安全   契约测试   │
+│            抽象     校验               上下文    辅助         │
+│                                                              │
+│  internal/testutil/        contracts/ (API 快照 + golden)     │
+└──────────────────────────────────────────────────────────────┘
+     │     │     │     │     │     │
+     └─────┴─────┴─────┴─────┴─────┴──→ stdlib only
 ```
+
+### 1.1 设计原则
+
+1. **子包独立**：每个子包只解决一个明确定义的横切关注点，无强制耦合。
+2. **stdlib-only**：kernel 整体不 import 任何非标准库包（内部交叉引用除外）。
+3. **接口先行**：obsx 定义可观测接口，不绑定任何供应商实现。
+4. **零值安全**：所有公开类型零值可用或无副作用（NoopLogger、nil *FakeClock 等）。
+5. **不可变优先**：healthx.HealthStatus 使用 WithMetadata 返回新值；lifecycx/shutdownx 返回防御性拷贝。
 
 ---
 
-## 2. 模块拆分
+## 2. 子包设计
 
-| 文件 | 职责 | 对应 Spec |
-|------|------|-----------|
-| `kernel.go` | App/Module/Deps/HealthStatus/GraphView 顶层导出 | §9.1 |
-| `errors.go` | 公共错误变量（10 个） | §10.1 |
-| `registry.go` | 模块注册表（并发安全） | FR-001 |
-| `graph.go` | 依赖图（DAG、环检测、拓扑排序） | FR-005, BR-001, BR-002 |
-| `lifecycle.go` | 启动/停止编排（拓扑序启动、反序停止） | FR-002, FR-003 |
-| `shutdown.go` | 优雅停机（signal handling、deadline、force） | FR-003, BR-006 |
-| `health.go` | HealthStatus 查询 | FR-004, BR-005 |
-| `options.go` | Option 模式配置 | §11 |
-| `doc.go` | 包级文档 | — |
-| `internal/dag/` | DAG 算法实现 | BR-001, BR-002 |
-| `internal/signal/` | OS signal 处理 | FR-003 |
+### 2.1 lifecycx — 组件生命周期管理
+
+**职责**：管理一组 Component 的有序启动和逆序停止。
+
+**核心类型**：
+- `Component` 接口：Name() + Start(ctx) + Stop(ctx)
+- `Manager`：持有 components 切片，Start 按序启动、失败自动回滚，Stop 逆序幂等
+
+**设计决策**：
+- 启动顺序 = 注册顺序（`NewManager(components...)` 的顺序），不引入拓扑排序。
+- 启动失败时对已启动组件逆序回滚，回滚错误通过 `errors.Join` 聚合。
+- 未 started 时 Stop 幂等返回 nil — 调用方无需额外状态判断。
+- 所有返回值是防御性拷贝，防止外部修改内部状态。
+
+### 2.2 errx — 结构化错误
+
+**职责**：提供带分类/严重级别/操作名/可重试标记的结构化错误类型。
+
+**核心类型**：
+- `ErrorKind`（12 个预定义值：config, validation, connection, unavailable, timeout, auth, conflict, rate_limit, canceled, not_found, already_exists, internal）
+- `Severity`（4 级：info, warning, error, critical）
+- `Error` 结构体：Kind + Code + Severity + Op + Message + Cause + Retryable
+- `NewError` / `WrapError` 构造函数
+- `IsKind` / `AsError` / `ShouldRetry` 遍历函数
+
+**设计决策**：
+- Error 实现 `Unwrap() error` 接口，Cause 通过 Unwrap 暴露。
+- `WithRetryable`/`WithCode`/`WithSeverity` 返回同一指针（构造期链式调用）。
+- `IsKind` 支持 `errors.Join` 多错误链遍历（`Unwrap() []error`）。
+- nil *Error 的所有方法安全返回零值。
+
+### 2.3 healthx — 健康检查
+
+**职责**：定义健康检查状态值类型和聚合规则。
+
+**核心类型**：
+- `HealthStatusValue`（healthy / degraded / unhealthy）
+- `HealthStatus` 结构体：Name + Status + Message + CheckedAt + LatencyMs + Metadata
+- `HealthChecker` 接口
+- `Aggregate` / `AggregateWithClock` 聚合函数
+
+**设计决策**：
+- HealthStatus 是值类型（不可变模式：`WithMetadata` 返回新值）。
+- Aggregate 优先级：unhealthy > degraded > healthy。
+- Metadata nil 时 JSON 序列化为 `{}` 而非 `null`。
+- AggregateWithClock 接受 timex.Clock，nil 时回退到 RealClock。
+
+### 2.4 obsx — 可观测抽象
+
+**职责**：定义无供应商绑定的可观测接口 + Noop 零值实现 + SecretString 脱敏。
+
+**核心类型**：
+- `Logger` 接口：Debug/Info/Warn/Error(ctx, msg, ...Field)
+- `Metrics` 接口：Count(ctx, name, delta, ...Field) / Observe(ctx, name, value, ...Field)
+- `Tracer` 接口：Start(ctx, name, ...Field) → (context.Context, Span)
+- `Span` 接口：End() / RecordError(error) / SetFields(...Field)
+- `NoopLogger` / `NoopMetrics` / `NoopTracer` / `NoopSpan` 零值实现
+- `SecretString`：String()/GoString()/JSON 均返回 "***"，仅 Reveal() 可访问原始值
+- `Sanitizer` 接口：Sanitize() string
+
+**设计决策**：
+- 所有接口最小化（Logger 只有 4 个方法，Metrics 只有 2 个）。
+- Noop 实现是零值结构体，所有方法静默成功 — 消费者无需 nil 检查。
+- SecretString 通过 fmt.Stringer + json.Marshaler + gob.GobEncoder 三层保护。
+- Field 使用 `[]Field` 而非 `...any`，保证编译期键值对配对。
+
+### 2.5 retryx — 重试策略原语
+
+**职责**：提供重试策略配置的校验和延迟计算，不包含重试执行引擎。
+
+**核心类型**：
+- `RetryPolicy`：MaxAttempts + BaseDelay + MaxDelay
+- `Validate()` 方法
+- `Delay(attempt)` / `DelayWithJitter(attempt, ratio, fraction)` 方法
+- `ShouldRetry(err)` 函数
+
+**设计决策**：
+- 重试策略是纯配置原语，运行时重试循环由 `resiliencx` 实现。
+- Delay 使用指数退避：`BaseDelay * 2^(attempt-1)`，受 MaxDelay 约束。
+- 溢出保护：达到 maxDuration/2 时停止加倍。
+- Jitter fraction 自动钳位到 [-1, 1]。
+- ShouldRetry 遍历 errx 错误链检查 Retryable 标记。
+
+### 2.6 shutdownx — 优雅停机
+
+**职责**：管理 LIFO 顺序的关闭钩子和 OS 信号处理。
+
+**核心类型**：
+- `Hook` 接口：Name() + Shutdown(ctx)
+- `HookFunc` 适配器
+- `Manager`：Register(hook) + Shutdown(ctx) + Hooks()
+- `NotifyContext(parent, signals...)` 函数
+
+**设计决策**：
+- LIFO 顺序：后注册的 Hook 先执行（符合资源释放惯例）。
+- Manager 内部加锁保护并发 Register。
+- Shutdown 时对 hooks 做快照，快照后 Register 的 hook 不执行。
+- NotifyContext 封装 signal.NotifyContext。
+
+### 2.7 timex — 时钟抽象
+
+**职责**：提供可注入的 Clock 接口及三种实现。
+
+**核心类型**：
+- `Clock` 接口：Now() time.Time
+- `RealClock`：系统时钟（`time.Now()`）
+- `FixedClock`：固定时间（不可变）
+- `FakeClock`：可控时间（Advance(d) 推进）
+
+**设计决策**：
+- 接口极简（单一方法），降低实现成本。
+- FixedClock 是值类型，不可变。
+- FakeClock 是指针类型，零值安全（nil *FakeClock.Now() 返回零时间）。
+- FakeClock.Advance 只前进不后退。
+
+### 2.8 validx — 前置条件校验
+
+**职责**：提供前置条件和不变量校验助手。
+
+**核心函数**：
+- `Precondition(ok, op, message)` → 失败返回 ErrorKindValidation + Warning
+- `Invariant(ok, op, message)` → 失败返回 ErrorKindInternal + Error
+- `RequireNonEmpty(op, name, value)` → 封装 Precondition
+
+**设计决策**：
+- 返回 `*errx.Error` 而非裸 error，便于调用方分类处理。
+- Precondition 表示调用方输入非法（SeverityWarning），Invariant 表示内部状态异常（SeverityError）。
+- 不引入断言宏/panic 行为 — Go 惯例是返回 error。
+
+### 2.9 versionx — 版本信息
+
+**职责**：提供构建版本元数据和兼容性判断。
+
+**核心类型**：
+- `BuildInfo`：Module + Version + Commit + BuildTime + GoVersion
+- `Compatibility`：Module + Major
+- `VersionInfo = BuildInfo`（Deprecated 类型别名）
+
+**设计决策**：
+- BuildInfo 通过 ldflags 在构建时注入。
+- Compatibility.Major 为空时仅校验 Module 匹配。
+- CompatibleWith 返回 bool，不返回 error。
+
+### 2.10 contextx — 类型安全上下文
+
+**职责**：提供泛型类型安全的 context key/value 存取。
+
+**核心类型**：
+- `Key[T]`：基于 sentinel 指针的唯一 key
+- `WithValue[T](ctx, key, value)` → context.Context
+- `Value[T](ctx, key)` → (T, bool)
+
+**工具函数**：
+- `HasDeadline(ctx)` / `DeadlineRemaining(ctx, clock)` / `IsDone(ctx)` / `CancelCause(ctx)`
+
+**设计决策**：
+- Key 通过 sentinel 指针实现唯一性（同名字不同 NewKey 调用不冲突）。
+- Value 返回 `(T, bool)` 而非 `(T, error)`，零分配。
+- 零值 Key 使用 panic（防止未初始化错误）。
+- DeadlineRemaining 依赖 timex.Clock 实现可测试性。
+
+### 2.11 syncx — 并发控制
+
+**职责**：提供上下文感知的并发限制器和 WorkerGroup。
+
+**核心类型**：
+- `Limiter` 接口：Acquire(ctx) + Release()
+- `SemaphoreLimiter`：信号量实现
+- `WorkerGroup`：goroutine 组管理，首个错误触发 cancel
+
+**设计决策**：
+- SemaphoreLimiter n<=0 时默认容量为 1。
+- double-release 静默忽略 — 简化调用方清理路径。
+- WorkerGroup 通过 context 派生，任一 worker 出错 → cancel 传播。
+- WorkerGroup 已 closed 后 TryGo 返回 false（静默忽略）。
+
+### 2.12 contracttest — 契约测试辅助
+
+**职责**：为 L1 包提供可复用的契约测试断言。
+
+**核心函数**：
+- `AssertJSONFields(t, value, fields...)`
+- `AssertErrorKind(t, err, wantKind)`
+- `AssertHealthStatus(t, got, wantStatus)`
+
+**设计决策**：
+- 依赖 `testing.TB` 接口（兼容 *testing.T 和 *testing.B）。
+- 断言失败调用 `t.Fatalf`（不继续执行）。
+- 依赖 errx + healthx（kernel 内部交叉引用）。
 
 ---
 
-## 3. 接口设计
-
-### 3.1 Module 接口
-
-```go
-type Module interface {
-    Name() string
-    Init(ctx context.Context, deps Deps) error
-    Start(ctx context.Context) error
-    Stop(ctx context.Context) error
-    Health(ctx context.Context) HealthStatus
-}
-```
-
-**设计决策**：Module 不持有 Deps 引用，Init 时接收，由模块自行保存。这避免了 kernel 管理模块内部状态。
-
-### 3.2 Deps 结构体
-
-```go
-type Deps struct {
-    Config    ConfigReader
-    Logger    Logger
-    Meter     Meter
-    Tracer    Tracer
-    Resilient ResilientPolicy
-    Scheduler Scheduler
-}
-```
-
-**ADR-001**：Deps 字段类型全部为 kernel 内定义的最小接口（BR-009）。L1 包提供实现，组合根注入。这保证 kernel import graph 只含 stdlib。
-
-### 3.3 App 接口
-
-```go
-type App interface {
-    Register(m Module) error
-    Run(ctx context.Context) error
-    Shutdown(ctx context.Context) error
-    ModuleHealth(name string) HealthStatus
-    DependencyGraph() GraphView
-}
-```
-
----
-
-## 4. 数据流
+## 3. 内部依赖图
 
 ```text
-Register(A) → Register(B) → Register(C)
-    ↓
-Run(ctx)
-    ↓
-DependencyGraph() → 拓扑排序 → [A, B, C]
-    ↓
-A.Init(deps) → A.Start(ctx)
-B.Init(deps) → B.Start(ctx)  // B 依赖 A
-C.Init(deps) → C.Start(ctx)  // C 依赖 A
-    ↓
-（运行中）
-    ↓
-Shutdown(ctx)
-    ↓
-C.Stop(ctx) → B.Stop(ctx) → A.Stop(ctx)  // 反序
+stdlib
+  ├── errx      (纯 stdlib)
+  ├── timex     (纯 stdlib)
+  ├── obsx      (纯 stdlib)
+  ├── syncx     (纯 stdlib)
+  ├── lifecycx  (纯 stdlib)
+  ├── shutdownx (纯 stdlib)
+  ├── versionx  (纯 stdlib)
+  ├── validx    → errx
+  ├── retryx    → errx
+  ├── contextx  → stdlib, timex
+  ├── healthx   → stdlib, timex
+  └── contracttest → stdlib, errx, healthx
 ```
 
-### 5.1 ModuleHealth 查询流
-
-`ModuleHealth(name)` 的内部查询路径：
-
-1. `app.ModuleHealth(name)` 被调用
-2. 从 `registry` 查询模块是否存在 → 不存在则返回 `ErrModuleNotFound`
-3. 检查 App 是否已 Run → 未 Run 则返回 `HealthStatus{Ready: false, Live: false}`
-4. 调用 `module.Health(ctx)` 获取模块自报告状态
-5. 如果模块 Health 方法 panic，catch 并返回 `HealthStatus{Ready: false, Live: false, Message: "health check panic"}`
-6. 返回 HealthStatus 给调用方
-
-**设计约束**：Health 必须是幂等且无副作用的（BR-005），调用 Health 不应改变模块状态。
+**依赖方向规则**：
+- 所有子包最终收敛到 stdlib。
+- 交叉引用仅限于 kernel 仓库内部。
+- 任何子包不得 import 第三方依赖。
 
 ---
 
-## 5.2 关键架构决策
+## 4. 关键架构决策（ADR）
 
-### ADR-001: Deps 接口内聚
+### ADR-001: 12 子包 vs 单包
 
-- **决策**：Deps 中所有字段类型定义在 kernel 包内
-- **理由**：BR-009 要求 kernel 不 import L1 包；接口定义在 kernel 内，L1 提供实现
-- **后果**：L1 包需实现 kernel 定义的接口，接口变更需 major version
+- **决策**：拆分为 12 个独立子包，每个子包只解决一个横切关注点。
+- **理由**：消费者按需 import，避免单包强制耦合。Go 的包级粒度天然适合此模式。
+- **后果**：跨子包引用需要显式 import（如 contracttest → errx + healthx），但 kernel 内部交叉引用是允许的。
 
-### ADR-002: panic 隔离
+### ADR-002: obsx 接口最小化
 
-- **决策**：Init/Start/Stop 调用点全部 `defer recover()`
-- **理由**：BR-007 要求模块 panic 不传播到调用方
-- **后果**：panic 被转换为 `ErrStartupFailed` 或记录日志
+- **决策**：Logger 只有 4 个方法，Metrics 只有 2 个方法，Tracer 只有 1 个方法。
+- **理由**：接口越小，实现成本越低，越容易由 L1 模块适配到具体 SDK。
+- **后果**：未来可扩展方法（通过新增接口，不破坏现有接口）。
 
-### ADR-003: 拓扑排序算法
+### ADR-003: retryx 与 resiliencx 边界
 
-- **决策**：使用 Kahn 算法（BFS-based），同时检测环
-- **理由**：O(V+E) 复杂度，天然支持环检测，实现简单
-- **后果**：100+ 模块拓扑排序 < 1ms
+- **决策**：retryx 只提供策略配置原语（校验、延迟计算、ShouldRetry），不提供重试执行引擎。
+- **理由**：重试执行涉及熔断、限流、退避状态机等运行时弹性机制，属于 resiliencx 的职责。
+- **后果**：调用方需自行实现重试循环（或使用 resiliencx 提供的执行器）。
 
-### ADR-004: Shutdown 幂等
+### ADR-004: SecretString 脱敏
 
-- **决策**：Shutdown 多次调用返回 nil，不重复 Stop
-- **理由**：FR-003 要求幂等；signal handler 可能触发多次
-- **后果**：需要状态机跟踪 shutdown 进度
+- **决策**：SecretString 实现 fmt.Stringer、json.Marshaler、gob.GobEncoder，所有公开方法返回 "***"。
+- **理由**：防止 API key、密码等敏感数据意外泄露到日志/JSON 输出。
+- **后果**：调用方需显式调用 Reveal() 才能访问原始值，强迫安全意识。
 
-### ADR-005: Run 后禁止 Register
+### ADR-005: 零值安全
 
-- **决策**：Run 完成后 Register 返回 `ErrAlreadyStarted`
-- **理由**：动态注册会破坏拓扑排序的确定性
-- **后果**：所有模块必须在 Run 前注册
+- **决策**：所有公开类型的零值必须可用或无副作用。
+- **理由**：Go 的零值初始化是语言惯例，违反会导致意外的 nil panic。
+- **后果**：NoopLogger 等使用空结构体；nil *FakeClock 返回零时间；nil *Error 方法返回 nil/零值。
+
+### ADR-006: 不可变数据模式
+
+- **决策**：healthx.HealthStatus.WithMetadata 返回新值；lifecycx.Manager.Components()、shutdownx.Manager.Hooks() 返回防御性拷贝。
+- **理由**：防止外部修改内部状态，符合 Go 的值语义惯例。
+- **后果**：每次调用产生一次拷贝，但数据量极小（Components/Hooks 通常 < 10 个）。
 
 ---
 
-## 6. 依赖关系
+## 5. 依赖关系
 
 ```text
 kernel (L0)
 ├── stdlib only
 ├── 无外部依赖
-└── 被以下模块依赖：
-    ├── configx (L1)
-    ├── observex (L1)
-    ├── resiliencx (L1)
-    ├── schedulex (L1)
-    ├── testkitx (L1)
-    └── 所有业务域模块
+├── 内部交叉引用（kernel 仓库内）：
+│   ├── validx → errx
+│   ├── retryx → errx
+│   ├── healthx → timex
+│   ├── contextx → timex
+│   └── contracttest → errx, healthx
+└── 被以下模块按需 import：
+    ├── configx (L1) — errx, timex, obsx, validx
+    ├── observex (L1) — errx, obsx, healthx
+    ├── resiliencx (L1) — errx, retryx, timex
+    ├── schedulex (L1) — errx, timex, syncx
+    ├── testkitx (L1) — 全子包
+    ├── 存储扩展 — errx, timex, obsx, contextx
+    └── 业务域模块 — errx, validx, contextx, syncx
 ```
 
 ---
 
-## 7. 技术风险
+## 6. 技术风险
 
 | 风险 | 概率 | 影响 | 缓解 |
 |------|------|------|------|
-| 拓扑排序算法 bug | Low | High | 充分测试：自引用、互引用、深层链、100+ 节点 |
-| panic recovery 遗漏 | Low | High | 逐一检查 Init/Start/Stop 调用点 |
-| 并发安全问题 | Medium | High | `-race` 测试 + `sync.Mutex` 保护 |
+| errx.IsKind 多错误链性能 | Low | Medium | Benchmark 覆盖 5 层链遍历 < 1μs |
+| FakeClock 并发安全 | Medium | High | `-race` 测试 + mutex 保护内部状态 |
+| SecretString 反射绕过 | Low | High | 覆盖 String()/GoString()/JSON/gob 四条路径 |
+| WorkerGroup cancel 传播竞争 | Medium | High | 充分测试并发 cancel 场景 |
 | stdlib-only 被破坏 | Low | Critical | CI gate + `go list -deps` |
 | 接口变更影响下游 | Medium | Major | SemVer 管理，接口变更 bump major |
 
 ---
 
-## 8. 设计约束
+## 7. 设计约束
 
-- stdlib-only，零外部依赖（BR-008）
-- Deps 接口类型在 kernel 内定义（BR-009）
-- 不包含业务语义（Non-goal）
-- 不实现日志/指标/追踪的具体实现（Non-goal）
-- 公开 API 1.x 内向后兼容
-
-## 10. 核心数据结构
-
-### 10.1 app struct
-
-```go
-type app struct {
-    modules        map[string]Module      // 已注册模块（name → Module）
-    graph          *graph                  // 依赖图
-    order          []string                // 拓扑排序后的启动顺序
-    startupTimeout time.Duration           // 单模块启动超时
-    shutdownTimeout time.Duration          // 优雅停机超时
-    mu             sync.RWMutex            // 保护 running/shutdown 状态
-    running        bool                    // App 是否正在运行
-    shutdown       bool                    // App 是否已停机
-    logger         Logger                  // 日志接口
-    meter          Meter                   // 指标接口
-}
-```
-
-### 10.2 registry（内部 map）
-
-```go
-type registry struct {
-    mu      sync.RWMutex
-    modules map[string]Module  // name → Module，注册时写入，Run 后只读
-    order   []string           // 注册顺序（用于确定性遍历）
-}
-```
-
-### 10.3 graph（邻接表）
-
-```go
-type graph struct {
-    mu       sync.RWMutex
-    adj      map[string][]string  // 邻接表：node → [依赖者列表]
-    inDegree map[string]int       // 入度表：用于 Kahn 算法
-    nodes    []string             // 所有节点名
-}
-```
+- stdlib-only，零外部依赖（BR-009）。
+- 各子包独立可用，互不强制绑定。
+- obsx 接口类型定义在 kernel 内，L1 提供具体实现。
+- 不包含业务语义（Non-goal）。
+- 不实现日志/指标/追踪的具体实现（Non-goal）。
+- 公开 API 1.x 内向后兼容。
 
 ---
 
-## 11. Mock 策略
+## 8. Mock 策略
 
-### 11.1 单元测试
+### 8.1 单元测试
 
-- **Module 接口**：测试中使用 stub 实现（如 `stubModule`），可控返回值和 panic 行为
-- **Deps 字段**：注入 mock Logger（记录日志调用）、mock Meter（验证指标上报）
-- **CI gate**：`go list -deps` 验证无非 stdlib 依赖，无需 mock
+- **timex**：使用 FakeClock 替代真实时钟。
+- **obsx**：使用 NoopLogger/NoopMetrics/NoopTracer 替代真实实现。
+- **lifecycx**：使用 stub Component 实现（可控返回值）。
+- **errx**：构造各类 Error 组合验证 IsKind/AsError 遍历逻辑。
+- **syncx**：`-race` 测试验证并发安全性。
 
-### 11.2 集成测试
+### 8.2 契约测试
 
-- 使用真实 `app` 实例 + stub Module，验证完整启动-运行-停止流程
-- signal handler 使用 `internal/signal` 包的可注入 hook（避免真实 OS 信号）
+- contracts/ 目录提供独立于实现的 API 快照和 golden 行为测试。
+- consumers/xgo/ 验证最小导入路径可用。
 
 ---
 
-## 12. 可扩展性与演进
+## 9. 可扩展性与演进
 
-### 12.1 已知扩展路径
+### 9.1 已知扩展路径
 
 | 扩展方向 | 当前设计支撑 | 演进方式 |
 |----------|-------------|----------|
-| 多 App 实例 | App 通过 `New()` 创建，无全局单例 | 直接创建多个独立 App 实例 |
-| 自定义 GraphView 策略 | GraphView 为接口，内部实现可替换 | 未来可注入自定义拓扑排序算法 |
-| 模块热注册 | 当前 Run 后禁止 Register（BR-004） | 未来可增加 `RegisterLazy()` 支持延迟注册 |
-| 停机钩子 | Shutdown 仅调用 Stop | 未来可增加 `OnShutdown(ctx)` 回调链 |
-| 健康检查策略 | HealthStatus 为固定结构 | 未来可扩展为 `HealthChecker` 接口支持自定义检查 |
+| 新增 ErrorKind 值 | ErrorKind 是 string 类型，消费者用 switch 匹配 | minor version 追加新值 |
+| obsx 接口扩展 | 接口方法最小化 | 新增独立接口（如 `LoggerWithContext`），不改现有接口 |
+| 新增子包 | 子包间无强制耦合 | 直接在 kernel 仓库新增子目录 |
+| retryx 新增退避策略 | RetryPolicy 为纯数据 | 新增策略函数，不改结构体 |
 
-### 12.2 设计不阻塞的演进方向
+### 9.2 设计不阻塞的演进方向
 
-- Deps 结构体通过接口注入，新增能力只需扩展 Deps 字段，不改 Module 接口
-- errors.go 使用 `errors.New` 裸变量，未来可升级为结构化错误码体系
-- Option 模式配置（TASK-KERNEL-008）天然支持向后兼容扩展
+- obsx 接口可以通过适配器模式适配任何第三方 SDK。
+- timex.Clock 可以扩展 Timer/Ticker 抽象（通过新增接口）。
+- contextx.Key[T] 的泛型设计天然支持任意类型。
+- SemaphoreLimiter 和 WorkerGroup 可以通过实现 Limiter 接口替换。

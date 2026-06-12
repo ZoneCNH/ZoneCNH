@@ -114,7 +114,7 @@
 
 | 组件                                                      | 版本   | 进度     | 仓库大小    | 说明                       |
 | --------------------------------------------------------- | ------ | -------- | ----------- | -------------------------- |
-| [kernel](https://github.com/ZoneCNH/kernel)               | v0.7.3 | ███░ 80% | 594KB/30 项 | 核心基础框架               |
+| [kernel](https://github.com/ZoneCNH/kernel)               | v0.7.3 | ███░ 80% | 594KB/30 项 | L0 原语 / 12 子包轻量工具集 |
 | [configx](https://github.com/ZoneCNH/configx)             | v0.1.4 | ███░ 80% | 258KB/20 项 | 配置管理                   |
 | [observex](https://github.com/ZoneCNH/observex)           | v0.3.1 | ███░ 80% | 220KB/18 项 | 可观测性                   |
 | [testkitx](https://github.com/ZoneCNH/testkitx)           | v0.4.0 | ███░ 80% | 254KB/27 项 | 测试工具包                 |

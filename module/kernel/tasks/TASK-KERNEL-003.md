@@ -1,27 +1,33 @@
 # TASK-KERNEL-003
 
-> 注册表：模块注册、重复检测、nil 检查、并发安全
+> obsx 子包：可观测抽象接口 + Noop 实现 + SecretString 脱敏
 
 ---
 
 ```yaml
 task_id: TASK-KERNEL-003
 module: kernel
-scope: "实现模块注册表，支持注册、重复检测、nil 检查、并发安全"
+scope: "实现 obsx 子包：Logger/Metrics/Tracer/Span 接口、Noop* 零值实现、SecretString、Sanitizer 接口、Field 类型"
 spec_ref:
-  - "module/kernel/SPEC.md#FR-001"
-  - "module/kernel/SPEC.md#BR-009"
+  - "module/kernel/SPEC.md#FR-004"
+  - "module/kernel/SPEC.md#BR-006"
+  - "module/kernel/SPEC.md#9.4"
 files:
-  - "registry.go"
-  - "registry_test.go"
+  - "obsx/obsx.go"
+  - "obsx/obsx_test.go"
+  - "obsx/example_test.go"
 acceptance_criteria:
-  - "AC-NEW-16: Register(nil) 返回 ErrNilModule"
-  - "AC-NEW-17: Register(同名模块) 返回 ErrAlreadyRegistered"
-  - "AC-NEW-18: Register(新模块) 返回 nil，模块加入注册表"
-  - "AC-NEW-19: App 已启动后 Register 返回 ErrAlreadyStarted"
-  - "AC-NEW-20: 并发 Register 无 data race"
+  - "AC-006: NoopLogger/NoopMetrics/NoopTracer/NoopSpan 所有方法静默成功不 panic"
+  - "AC-007: SecretString 所有公开方法返回 \"***\"，仅 Reveal() 可访问原始值"
+  - "AC-OBSX-01: Logger 接口包含 Debug/Info/Warn/Error 四方法"
+  - "AC-OBSX-02: Metrics 接口包含 Count/Observe 两方法"
+  - "AC-OBSX-03: Tracer.Start 返回 (context.Context, Span)"
+  - "AC-OBSX-04: Span 接口包含 End/RecordError/SetFields 三方法"
+  - "AC-OBSX-05: SecretString 的 String()/GoString()/MarshalJSON() 均返回 \"***\""
+  - "AC-OBSX-06: SecretString 空值 String() 返回 \"\""
+  - "AC-OBSX-07: go test -race -count=1 ./obsx/... 通过"
 depends_on:
-  - "TASK-KERNEL-001"
+  - "TASK-KERNEL-000"
 estimated_effort: "2h"
 priority: P0
 status: pending
@@ -29,54 +35,20 @@ status: pending
 
 ---
 
-## Files Likely to Change
-
-- `registry.go` — 新建
-- `registry_test.go` — 新建
-
 ## Requirements Covered
 
-| Requirement | Description | Acceptance Criteria |
-|---|---|---|
-| FR-001 | Register：注册、重复检测、nil 检查、已启动拒绝 | 4 个 WHEN/THEN 场景全部覆盖 |
-| BR-009 | Deps 接口由消费方注入 | Register 只接受 Module 接口，不关心 Deps 具体实现 |
+| Requirement | Description |
+|---|---|
+| FR-004 | 可观测抽象 |
+| BR-006 | 所有接口必须有 Noop 零值实现 |
 
 ## Non-scope
 
-- 不实现拓扑排序（→ TASK-KERNEL-002）
-- 不实现启动逻辑（→ TASK-KERNEL-004）
-- 不实现健康检查（→ TASK-KERNEL-006）
-
-## Test Plan
-
-| Test Case | Type | Description |
-|---|---|---|
-| TC-008 | Unit | 重复注册：同名模块注册两次返回 ErrAlreadyRegistered |
-| TC-015 | Unit | 并发 Register：多个 goroutine 同时注册不同模块，无 data race |
-| — | Unit | nil 模块：Register(nil) 返回 ErrNilModule |
-| — | Unit | 正常注册：Register 后可通过 name 查询到模块 |
-| — | Unit | 已启动后注册：app started 后 Register 返回 ErrAlreadyStarted |
+- 不实现具体的日志/指标/追踪后端（→ observex）
+- 不包含 OpenTelemetry 适配
 
 ## Implementation Notes
 
-- 注册表内部使用 `map[string]Module` 存储
-- 读写操作均需加锁（`sync.RWMutex`）
-- 模块名通过 `m.Name()` 获取，不存储额外的 name 字段
-- 需要一个 `started` 标志位，由 lifecycle 层在 Run 完成后设置
-- 注册表应提供 `get(name)` 和 `all()` 内部方法供 lifecycle 使用
-
-## Implementation Plan
-
-| Step | Description | Deliverables | Verification |
-|---|---|---|---|
-| 1 | 定义 `registry` 结构体（map[string]Module + RWMutex + started 标志）和内部方法（get, all, setStarted） | `registry.go` | `go build ./...` 通过 |
-| 2 | 实现 `Register` 方法：nil 检查 → 重复检测 → 已启动拒绝 → 写入 map | `registry.go` | `go test ./... -run TestRegister` 通过 |
-| 3 | 实现 `App.Register` 委托到内部 registry | `kernel.go` | 接口方法调用链正确 |
-| 4 | 编写并发测试：多 goroutine 同时注册，用 `-race` 验证无 data race | `registry_test.go` | `go test -race ./... -run TestConcurrentRegister` 通过 |
-
-### Risk Assessment
-
-| Risk | Probability | Impact | Mitigation |
-|---|---|---|---|
-| 锁粒度不当导致死锁 | Low | High | 只在 map 读写时加锁，不持锁调用外部方法 |
-| 并发测试不充分 | Medium | Medium | 使用 sync.WaitGroup 确保所有 goroutine 同时触发 |
+- Noop* 类型是空结构体，所有方法静默成功
+- SecretString 实现 fmt.Stringer、json.Marshaler、gob.GobEncoder
+- Field 使用 `[]Field` 而非 `...any`

@@ -1,80 +1,53 @@
 # TASK-KERNEL-006
 
-> 健康检查：HealthStatus、ModuleHealth、幂等无副作用
+> shutdownx 子包：优雅停机 Hook 管理 + OS 信号处理
 
 ---
 
 ```yaml
 task_id: TASK-KERNEL-006
 module: kernel
-scope: "实现 ModuleHealth 方法，查询已注册模块的 HealthStatus，幂等无副作用"
+scope: "实现 shutdownx 子包：Hook 接口、HookFunc 适配器、Manager LIFO、NotifyContext"
 spec_ref:
-  - "module/kernel/SPEC.md#FR-004"
-  - "module/kernel/SPEC.md#BR-005"
+  - "module/kernel/SPEC.md#FR-006"
+  - "module/kernel/SPEC.md#BR-008"
+  - "module/kernel/SPEC.md#9.6"
 files:
-  - "health.go"
-  - "health_test.go"
+  - "shutdownx/shutdownx.go"
+  - "shutdownx/shutdownx_test.go"
+  - "shutdownx/example_test.go"
 acceptance_criteria:
-  - "AC-005: ModuleHealth 多次调用返回相同结果，不触发副作用"
-  - "AC-NEW-34: ModuleHealth(\"unknown\") 返回 ErrModuleNotFound"
-  - "AC-NEW-35: Running 模块返回正确 HealthStatus"
-  - "AC-NEW-36: 未 Run 时 ModuleHealth 返回 HealthStatus{Ready: false, Live: false}"
+  - "AC-009: Manager.Shutdown Hook LIFO 顺序，并发安全"
+  - "AC-010: NotifyContext 正确捕获 OS signal 并传播 cancel"
+  - "AC-SHUTDOWNX-01: Shutdown 时无 Hook 返回 nil"
+  - "AC-SHUTDOWNX-02: 并发 Register + Shutdown 安全（快照后追加不执行）"
+  - "AC-SHUTDOWNX-03: Manager.Hooks() 返回防御性拷贝"
+  - "AC-SHUTDOWNX-04: HookFunc 适配器 Name()/Shutdown() 正确"
+  - "AC-SHUTDOWNX-05: go test -race -count=1 ./shutdownx/... 通过"
 depends_on:
-  - "TASK-KERNEL-001"
-  - "TASK-KERNEL-003"
-estimated_effort: "1.5h"
+  - "TASK-KERNEL-000"
+estimated_effort: "2h"
 priority: P0
 status: pending
 ```
 
 ---
 
-## Files Likely to Change
-
-- `health.go` — 新建
-- `health_test.go` — 新建
-
 ## Requirements Covered
 
-| Requirement | Description | Acceptance Criteria |
-|---|---|---|
-| FR-004 | ModuleHealth：查询已注册/未注册模块健康状态 | 2 个 WHEN/THEN 场景 |
-| BR-005 | Health(ctx) 必须幂等、无副作用 | 多次调用返回相同结果 |
+| Requirement | Description |
+|---|---|
+| FR-006 | 优雅停机 |
+| BR-008 | Hook 按 LIFO 顺序执行 |
 
 ## Non-scope
 
-- 不实现启动/停止逻辑（→ TASK-KERNEL-004, 005）
-- 不实现依赖图（→ TASK-KERNEL-002）
-- 不实现注册表（→ TASK-KERNEL-003）
-
-## Test Plan
-
-| Test Case | Type | Description |
-|---|---|---|
-| TC-007 | Unit | 模块未找到：ModuleHealth("unknown") 返回 ErrModuleNotFound |
-| TC-009 | Unit | 模块健康查询：Running 模块返回正确 HealthStatus 且无副作用 |
-| TC-013 | Unit | Health before Run：返回 HealthStatus{Ready: false, Live: false} |
-| — | Unit | 幂等性：连续调用 3 次 ModuleHealth 返回相同结果 |
+- 不包含强制 kill / 超时逻辑（由调用方通过 context 控制）
+- 不包含 HTTP shutdown endpoint
 
 ## Implementation Notes
 
-- ModuleHealth 内部从 registry 获取模块，调用其 `Health(ctx)` 方法
-- 未运行状态下不调用模块的 Health 方法，直接返回默认值
-- 使用 `errors.Is` 判断 ErrModuleNotFound
-- HealthStatus 是值类型，返回副本
-
-## Implementation Plan
-
-| Step | Description | Deliverables | Verification |
-|---|---|---|---|
-| 1 | 实现 ModuleHealth 方法：从 registry 获取模块，未运行返回默认 HealthStatus | `health.go` | TC-013 通过 |
-| 2 | 实现运行中查询：调用模块的 Health(ctx) 方法，返回结果副本 | `health.go` | TC-009 通过 |
-| 3 | 实现 ErrModuleNotFound：模块名不在 registry 中返回错误 | `health.go` | TC-007 通过 |
-| 4 | 编写幂等性测试：连续调用 3 次返回相同结果 | `health_test.go` | `go test ./... -run TestHealthIdempotent` 通过 |
-
-### Risk Assessment
-
-| Risk | Probability | Impact | Mitigation |
-|---|---|---|---|
-| Health 方法有副作用 | Low | High | SPEC BR-005 要求幂等无副作用，用测试验证 |
-| 未运行时调用模块 Health | Low | Medium | 先检查 app 状态再决定是否调用 |
+- Manager 使用 mutex 保护 hooks 切片
+- Shutdown 时对 hooks 做快照，LIFO 顺序执行
+- errors.Join 聚合所有 Hook 的 Shutdown 错误
+- NotifyContext 封装 signal.NotifyContext
