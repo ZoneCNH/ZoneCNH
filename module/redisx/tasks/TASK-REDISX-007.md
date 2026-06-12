@@ -1,25 +1,34 @@
 # TASK-REDISX-007
 
-> Health 实现
+> Distributed lock acquire and release
 
 ---
 
 ```yaml
 task_id: TASK-REDISX-007
 module: redisx
-scope: "实现 Health 检查（FR-012）"
+scope: "Implement Locker Acquire/Release with holder token, TTL, and atomic release protection."
 spec_ref:
-  - "module/redisx/SPEC.md#FR-012"
+  - "module/redisx/SPEC.md#FR-010"
+  - "module/redisx/SPEC.md#FR-011"
 files:
-  - "health.go"
-  - "health_test.go"
+  - "locker.go"
+  - "lock_script.go"
+  - "locker_test.go"
+  - "testutil_test.go"
 acceptance_criteria:
-  - "PING 成功返回 healthy"
-  - "PING 失败返回 unhealthy"
+  - "AC-007-1: Acquire succeeds only for an unheld lock, returns false for a competing holder, and always sets a TTL."
+  - "AC-007-2: Release succeeds only for the current holder token and does not delete another holder's lock."
+non_scope:
+  - "Do not edit module/redisx/SPEC.md, TRACEABILITY.md, or goal.md as part of this implementation task."
+  - "Do not add direct runtime dependencies on configx, observex, resiliencx, contracts, or any business-domain module."
+  - "Do not implement unrelated Redis commands beyond the FR IDs listed for this task."
+test_plan:
+  - "TC-002: Two clients contend for one lock; only the holder can release it and TTL expiry allows reacquire."
 depends_on:
-  - "TASK-REDISX-002"
-estimated_effort: "1h"
-priority: P1
+  - "TASK-REDISX-001"
+estimated_effort: "1d"
+priority: P0
 status: pending
 ```
 
@@ -27,28 +36,33 @@ status: pending
 
 ## Requirements Covered
 
-| Requirement | Description          | Acceptance Criteria |
-| ----------- | -------------------- | ------------------- |
-| FR-012      | Health：连接健康检查 | PING 成功/失败      |
+| Requirement | Description | Acceptance Criteria |
+| ----------- | ----------- | ------------------- |
+| FR-010 | Locker.Acquire | AC-007-1 |
+| FR-011 | Locker.Release | AC-007-2 |
+
+## Acceptance Criteria
+
+| AC ID | Criteria |
+| ----- | -------- |
+| AC-007-1 | Acquire succeeds only for an unheld lock, returns false for a competing holder, and always sets a TTL. |
+| AC-007-2 | Release succeeds only for the current holder token and does not delete another holder's lock. |
+
+## Non-Scope
+
+- Do not edit module/redisx/SPEC.md, TRACEABILITY.md, or goal.md as part of this implementation task.
+- Do not add direct runtime dependencies on configx, observex, resiliencx, contracts, or any business-domain module.
+- Do not implement unrelated Redis commands beyond the FR IDs listed for this task.
 
 ## Test Plan
 
-| Test Case | Type | Description           |
-| --------- | ---- | --------------------- |
-| —         | Unit | PING 成功返回 healthy |
+| Test Case | Type | Description | Same-task test file |
+| --------- | ---- | ----------- | ------------------- |
+| TC-002 | Unit/Integration | Two clients contend for one lock; only the holder can release it and TTL expiry allows reacquire. | `locker_test.go` |
 
 ## Implementation Notes
 
-- 使用 `PING` 命令检查连接
-
-## Implementation Plan
-
-| Step | Description      | Deliverables | Verification |
-| ---- | ---------------- | ------------ | ------------ |
-| 1    | 实现 Health 方法 | `health.go`  | 测试通过     |
-
-### Risk Assessment
-
-| Risk | Probability | Impact | Mitigation |
-| ---- | ----------- | ------ | ---------- |
-| 无   | Low         | Low    | —          |
+- Direct production imports are limited to stdlib, kernel, and the Redis client library; configx/observex/resiliencx/contracts remain integration boundaries expressed through local options, interfaces, docs, or adapters outside this task.
+- Every listed test case must be implemented in a same-task `*_test.go` or `example_test.go` file listed in this task.
+- Preserve context cancellation and timeout behavior for all Redis calls touched by this task.
+- Use an atomic holder-token check for Release so one client cannot release another client's lock.

@@ -1,24 +1,32 @@
 # TASK-REDISX-005
 
-> Pipeline 实现
+> Pub/Sub subscription lifecycle
 
 ---
 
 ```yaml
 task_id: TASK-REDISX-005
 module: redisx
-scope: "实现 Pipeline 接口（FR-009）"
+scope: "Implement Subscribe, message mapping, cancellation handling, and reconnect error surfacing."
 spec_ref:
-  - "module/redisx/SPEC.md#FR-009"
+  - "module/redisx/SPEC.md#FR-008"
 files:
-  - "pipeline_impl.go"
-  - "pipeline_impl_test.go"
+  - "pubsub.go"
+  - "message.go"
+  - "pubsub_test.go"
+  - "testutil_test.go"
 acceptance_criteria:
-  - "Pipeline 批量命令一次发送"
-  - "结果按顺序返回"
+  - "AC-005-1: Subscribe returns a receive-only message channel for requested channels when Redis is available."
+  - "AC-005-2: Context cancellation closes the subscription and releases resources; reconnect failure is surfaced through the channel path."
+non_scope:
+  - "Do not edit module/redisx/SPEC.md, TRACEABILITY.md, or goal.md as part of this implementation task."
+  - "Do not add direct runtime dependencies on configx, observex, resiliencx, contracts, or any business-domain module."
+  - "Do not implement unrelated Redis commands beyond the FR IDs listed for this task."
+test_plan:
+  - "TC-008: A publisher sends a message and the subscriber receives matching channel and payload."
 depends_on:
   - "TASK-REDISX-001"
-estimated_effort: "2h"
+estimated_effort: "1d"
 priority: P0
 status: pending
 ```
@@ -27,29 +35,31 @@ status: pending
 
 ## Requirements Covered
 
-| Requirement | Description        | Acceptance Criteria |
-| ----------- | ------------------ | ------------------- |
-| FR-009      | Pipeline：批量命令 | 一次发送，顺序返回  |
+| Requirement | Description | Acceptance Criteria |
+| ----------- | ----------- | ------------------- |
+| FR-008 | Subscribe | AC-005-1 |
+
+## Acceptance Criteria
+
+| AC ID | Criteria |
+| ----- | -------- |
+| AC-005-1 | Subscribe returns a receive-only message channel for requested channels when Redis is available. |
+| AC-005-2 | Context cancellation closes the subscription and releases resources; reconnect failure is surfaced through the channel path. |
+
+## Non-Scope
+
+- Do not edit module/redisx/SPEC.md, TRACEABILITY.md, or goal.md as part of this implementation task.
+- Do not add direct runtime dependencies on configx, observex, resiliencx, contracts, or any business-domain module.
+- Do not implement unrelated Redis commands beyond the FR IDs listed for this task.
 
 ## Test Plan
 
-| Test Case | Type | Description                  |
-| --------- | ---- | ---------------------------- |
-| —         | Unit | Pipeline 批量 Set + 批量 Get |
+| Test Case | Type | Description | Same-task test file |
+| --------- | ---- | ----------- | ------------------- |
+| TC-008 | Integration | A publisher sends a message and the subscriber receives matching channel and payload. | `pubsub_test.go` |
 
 ## Implementation Notes
 
-- 使用 go-redis Pipeline
-- 支持 Set/Get/Del 等命令的批量版本
-
-## Implementation Plan
-
-| Step | Description        | Deliverables       | Verification |
-| ---- | ------------------ | ------------------ | ------------ |
-| 1    | 实现 Pipeline 方法 | `pipeline_impl.go` | 测试通过     |
-
-### Risk Assessment
-
-| Risk | Probability | Impact | Mitigation |
-| ---- | ----------- | ------ | ---------- |
-| 无   | Low         | Low    | —          |
+- Direct production imports are limited to stdlib, kernel, and the Redis client library; configx/observex/resiliencx/contracts remain integration boundaries expressed through local options, interfaces, docs, or adapters outside this task.
+- Every listed test case must be implemented in a same-task `*_test.go` or `example_test.go` file listed in this task.
+- Preserve context cancellation and timeout behavior for all Redis calls touched by this task.

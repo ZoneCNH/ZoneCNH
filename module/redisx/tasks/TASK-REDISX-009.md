@@ -1,24 +1,31 @@
 # TASK-REDISX-009
 
-> 文档 + Release DoD
+> Health, examples, and release documentation
 
 ---
 
 ```yaml
 task_id: TASK-REDISX-009
 module: redisx
-scope: "创建 README、CHANGELOG、example_test.go，验证 Release DoD"
+scope: "Implement Health status checks and package documentation/examples needed for release readiness."
 spec_ref:
-  - "module/redisx/SPEC.md#22"
+  - "module/redisx/SPEC.md#FR-012"
 files:
+  - "health.go"
+  - "health_test.go"
   - "README.md"
   - "CHANGELOG.md"
   - "example_test.go"
 acceptance_criteria:
-  - "README.md 包含模块定位、快速开始、API 概览"
-  - "CHANGELOG.md 已创建"
-  - "覆盖率 >= 80%"
-  - "-race 测试通过"
+  - "AC-009-1: Health reports ready/live true on successful PING and false with a message when Redis is unreachable."
+  - "AC-009-2: README, CHANGELOG, and examples document Client, Pipeline, Locker, and Health usage while preserving release DoD evidence."
+non_scope:
+  - "Do not edit module/redisx/SPEC.md, TRACEABILITY.md, or goal.md as part of this implementation task."
+  - "Do not add direct runtime dependencies on configx, observex, resiliencx, contracts, or any business-domain module."
+  - "Do not implement unrelated Redis commands beyond the FR IDs listed for this task."
+test_plan:
+  - "TC-009: Health reports healthy and unhealthy states correctly."
+  - "TC-001: Example tests demonstrate quick-start Set/Get usage."
 depends_on:
   - "TASK-REDISX-000"
   - "TASK-REDISX-001"
@@ -29,7 +36,7 @@ depends_on:
   - "TASK-REDISX-006"
   - "TASK-REDISX-007"
   - "TASK-REDISX-008"
-estimated_effort: "2h"
+estimated_effort: "1d"
 priority: P1
 status: pending
 ```
@@ -38,32 +45,32 @@ status: pending
 
 ## Requirements Covered
 
-| Requirement | Description | Acceptance Criteria       |
-| ----------- | ----------- | ------------------------- |
-| §22         | Release DoD | 所有 Release DoD 条目通过 |
+| Requirement | Description | Acceptance Criteria |
+| ----------- | ----------- | ------------------- |
+| FR-012 | Health | AC-009-1 |
+
+## Acceptance Criteria
+
+| AC ID | Criteria |
+| ----- | -------- |
+| AC-009-1 | Health reports ready/live true on successful PING and false with a message when Redis is unreachable. |
+| AC-009-2 | README, CHANGELOG, and examples document Client, Pipeline, Locker, and Health usage while preserving release DoD evidence. |
+
+## Non-Scope
+
+- Do not edit module/redisx/SPEC.md, TRACEABILITY.md, or goal.md as part of this implementation task.
+- Do not add direct runtime dependencies on configx, observex, resiliencx, contracts, or any business-domain module.
+- Do not implement unrelated Redis commands beyond the FR IDs listed for this task.
 
 ## Test Plan
 
-| Test Case | Type    | Description          |
-| --------- | ------- | -------------------- |
-| —         | CI Gate | 覆盖率 >= 80%        |
-| —         | CI Gate | `-race` 无 data race |
+| Test Case | Type | Description | Same-task test file |
+| --------- | ---- | ----------- | ------------------- |
+| TC-009 | Unit/Integration | Health reports healthy and unhealthy states correctly. | `health_test.go` |
+| TC-001 | Example | Example tests demonstrate quick-start Set/Get usage. | `example_test.go` |
 
 ## Implementation Notes
 
-- README 展示 Client/Locker/Pipeline 用法
-
-## Implementation Plan
-
-| Step | Description          | Deliverables      | Verification                |
-| ---- | -------------------- | ----------------- | --------------------------- |
-| 1    | 创建 README.md       | `README.md`       | 人工 review                 |
-| 2    | 创建 CHANGELOG.md    | `CHANGELOG.md`    | 格式正确                    |
-| 3    | 创建 example_test.go | `example_test.go` | `go test -run Example` 通过 |
-| 4    | Release DoD 全量验证 | —                 | 所有 CI gate 通过           |
-
-### Risk Assessment
-
-| Risk           | Probability | Impact | Mitigation |
-| -------------- | ----------- | ------ | ---------- |
-| 覆盖率未达 80% | Medium      | Medium | 补充测试   |
+- Direct production imports are limited to stdlib, kernel, and the Redis client library; configx/observex/resiliencx/contracts remain integration boundaries expressed through local options, interfaces, docs, or adapters outside this task.
+- Every listed test case must be implemented in a same-task `*_test.go` or `example_test.go` file listed in this task.
+- Preserve context cancellation and timeout behavior for all Redis calls touched by this task.
