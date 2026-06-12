@@ -163,7 +163,7 @@ Foundation v1 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中�
 | 模块            | 层级          | 拥有                                                                                                        | 不拥有                                                     |
 | --------------- | ------------- | ----------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
 | `xlib-standard` | 标准源        | 标准事实源、Go Reference Template、Generator、Harness Gate、Evidence Runtime                                | 业务运行、运行时 import 依赖、模块实现身份                 |
-| `kernel`        | L0 原语       | error、time、context、lifecycle、shutdown、health、validation、sync、version、minimal retry                 | 配置解析、观测后端、存储、网络、业务 DTO、全局可变单例     |
+| `kernel`        | L0 原语       | 12 子包轻量工具集：lifecycx/errx/healthx/obsx/retryx/shutdownx/syncx/timex/validx/versionx/contextx/contracttest（stdlib-only） | 配置解析、观测后端、存储、网络、业务 DTO、全局可变单例     |
 | `configx`       | L1 运行时     | explicit source、merge、decode、validate、sanitize、provenance、config hash                                 | secret backend、全局配置中心、自动发现、业务配置结构体     |
 | `observex`      | L1 运行时契约 | logger、metrics、tracer、field、redactor、label policy、health schema、noop、memory recorder                | Prometheus/Otel/Zap 直接绑定、alert routing、业务监控规则  |
 | `resiliencx`    | L1 运行时策略 | timeout、retry、circuit、bulkhead、rate limit、fallback、budget、classifier、idempotency hint、policy event | 交易风控、订单风险、交易所 SDK、调度、存储后端             |
