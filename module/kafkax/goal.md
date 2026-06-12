@@ -14,7 +14,7 @@
 
 本文档中的 **MUST / 必须** 表示 1.0 候选基线阻断项；**SHOULD / 应该** 表示 1.0 推荐项，允许带明确理由延期；**MAY / 可以** 表示可选能力，不影响 1.0 候选基线。
 
-## 1.0 判定原则
+## 0. 1.0 判定原则
 
 1. **现实基线优先**：1.0 只承诺当前规格和实现可验证的 Kafka 客户端封装能力。
 2. **公开契约清晰**：Producer、Consumer、Message、Codec、Health、错误模型、配置和观测命名必须一致。
@@ -99,7 +99,7 @@
 - 不承诺 exactly-once、Kafka transactions 或跨 topic 原子写入。
 - 不在 1.0 基线内承诺异步 Producer 回调 API。
 - 不在 1.0 基线内承诺 Schema Registry 或 Kafka Connect 集成。
-- 不在 1.0 基线内承诺深度死信队列编排；消费失败重试/转储策略留作后续候选。
+- 不在 1.0 基线内承诺消费失败转储或补偿编排；消费失败重试策略留作后续候选。
 - 不在 1.0 基线内承诺幂等存储 SPI；业务幂等由调用方自行实现。
 
 ## 6. 依赖关系与分层约束
@@ -180,7 +180,7 @@
 | `ErrInvalidMessage` | nil 消息、非法 topic 或 offset | 返回错误，不发送或提交 |
 | `ErrCommitFailed` | offset 提交失败或 rebalance 冲突 | 返回包装错误，由调用方决定重试 |
 
-## 9. 1.0 发布验收清单
+## 11. 安全与配置验收要求
 
 - MUST 对密码、token、accessKey、secretKey、连接串中的敏感片段做脱敏。
 - MUST 保证公开 API 的错误不会泄露内部凭据、主机隐私或完整 payload。
