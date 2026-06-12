@@ -14,12 +14,10 @@
 实现集成测试（Logger+Meter+Tracer+Exporter 端到端）和性能基准
 
 ## 关联需求
-
-| 类型 | 编号 | 出处 | 说明 |
-|------|------|------|------|
+| 类型 | 编号 | AC | TC | 出处 | 说明 |
+|------|------|----|----|------|------|
 | § | §16 | SPEC.md | 见 SPEC §16
 | § | §17 | SPEC.md | 见 SPEC §17
-
 ## 依赖
 
 - 上游 Task：TASK-OBSERVEX-002～TASK-OBSERVEX-007
@@ -27,11 +25,18 @@
 
 ## 文件清单
 
-见 [TASK-OBSERVEX-008.md](../tasks/TASK-OBSERVEX-008.md) 的 `files` 字段。
+以下文件允许修改：
+- `integration_test.go`
+- `benchmark_test.go`
 
 ## 验收标准
 
-见 [TASK-OBSERVEX-008.md](../tasks/TASK-OBSERVEX-008.md) 的 `acceptance_criteria` 字段。
+以下验收标准必须全部满足：
+- 端到端测试通过
+- Benchmark 日志 <5μs
+- Benchmark metrics <1μs
+- Benchmark span <2μs
+- -race 通过
 
 ## 实现要点
 
@@ -52,6 +57,14 @@
 - 不要跳过 redaction（Logger 输出相关 Task）
 - 不要跨子包直接访问内部状态
 - 不要硬编码 exporter 端点或凭证
+
+## 证据回填
+
+完成后提交以下产物：
+- 测试输出：`go test -v -race ./...` 完整输出
+- 覆盖率报告：`go test -coverprofile=.coverage/cover.out ./... && go tool cover -func=.coverage/cover.out`
+- 文件变更清单：`git diff --stat HEAD`
+- 如有 Benchmark：`go test -bench=. -benchmem ./...` 结果
 
 ## 完成后
 
