@@ -8,6 +8,7 @@
 task_id: TASK-RESILIENCX-002
 module: resiliencx
 scope: "实现 Timeout 策略函数"
+non_scope: "不包含 retry/circuit breaker/bulkhead/rate limiter/fallback 等其他策略"
 spec_ref:
   - "module/resiliencx/SPEC.md#FR-001"
   - "module/resiliencx/SPEC.md#BR-001"
@@ -31,16 +32,16 @@ status: pending
 
 | Requirement | Description | Acceptance Criteria |
 |---|---|---|
-| FR-001 | Timeout：超时返回 ErrTimeout | 3 个 WHEN/THEN 场景 |
+| FR-001 | Timeout：超时返回 ErrTimeout | AC-001: 正常完成 / 超时 / ctx取消 |
 | BR-001 | 所有策略必须接受 context.Context | 函数签名包含 ctx |
 
 ## Test Plan
 
 | Test Case | Type | Description |
 |---|---|---|
-| §7.1-1 | Unit | 正常完成：fn 在 duration 内返回，结果正确 |
-| §7.1-2 | Unit | 超时：fn 超过 duration，返回 ErrTimeout |
-| §7.1-3 | Unit | ctx 取消：返回 ctx.Err() |
+| TC-001 | Unit | 正常完成：fn 在 duration 内返回，结果正确 |
+| TC-001 | Unit | 超时：fn 超过 duration，返回 ErrTimeout |
+| TC-001 | Unit | ctx 取消：返回 ctx.Err() |
 
 ## Implementation Notes
 
@@ -53,7 +54,7 @@ status: pending
 | Step | Description | Deliverables | Verification |
 |---|---|---|---|
 | 1 | 实现 `Timeout` 函数：WithTimeout + goroutine + select | `timeout.go` | `go build ./...` 通过 |
-| 2 | 编写 3 个场景测试 | `timeout_test.go` | §7.1 全部通过 |
+| 2 | 编写 3 个场景测试 | `timeout_test.go` | TC-001 全部通过 |
 | 3 | 并发安全验证 | `timeout_test.go` | `go test -race ./... -run TestTimeout` 通过 |
 
 ### Risk Assessment

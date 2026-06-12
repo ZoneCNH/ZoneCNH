@@ -8,6 +8,7 @@
 task_id: TASK-RESILIENCX-004
 module: resiliencx
 scope: "实现 CircuitBreaker 接口，支持 Closed/Open/Half-Open 三态转换"
+non_scope: "不包含 retry/rate limiter/bulkhead/fallback 等其他策略"
 spec_ref:
   - "module/resiliencx/SPEC.md#FR-003"
   - "module/resiliencx/SPEC.md#BR-004"
@@ -35,17 +36,17 @@ status: pending
 
 | Requirement | Description | Acceptance Criteria |
 |---|---|---|
-| FR-003 | CircuitBreaker：三态转换 + 试探调用 | 5 个 WHEN/THEN 场景 |
+| FR-003 | CircuitBreaker：三态转换 + 试探调用 | AC-003: 三态转换正确; AC-004: 并发安全 |
 | BR-004 | 熔断器状态必须并发安全 | `-race` 测试通过 |
 
 ## Test Plan
 
 | Test Case | Type | Description |
 |---|---|---|
-| §7.3-1 | Unit | Closed→Open：失败率超阈值 |
-| §7.3-2 | Unit | Open→Half-Open：recovery_timeout 后 |
-| §7.3-3 | Unit | Half-Open→Closed：试探成功 |
-| §7.3-4 | Unit | Half-Open→Open：试探失败 |
+| TC-002 | Unit | Closed→Open：失败率超阈值 |
+| TC-003 | Unit | Open→Half-Open：recovery_timeout 后 |
+| TC-003 | Unit | Half-Open→Closed：试探成功 |
+| TC-003 | Unit | Half-Open→Open：试探失败 |
 | — | Unit | 并发安全：多 goroutine 同时 Execute |
 
 ## Implementation Notes
@@ -59,8 +60,8 @@ status: pending
 | Step | Description | Deliverables | Verification |
 |---|---|---|---|
 | 1 | 实现 `circuitBreakerImpl` 结构体（state, failures, threshold, mu） | `circuit_impl.go` | `go build ./...` 通过 |
-| 2 | 实现 `Execute`：Closed→执行→计数；Open→ErrCircuitOpen | `circuit_impl.go` | §7.3-1, §7.3-2 通过 |
-| 3 | 实现 Half-Open 试探逻辑和状态转换 | `circuit_impl.go` | §7.3-3, §7.3-4 通过 |
+| 2 | 实现 `Execute`：Closed→执行→计数；Open→ErrCircuitOpen | `circuit_impl.go` | TC-002, TC-003 通过 |
+| 3 | 实现 Half-Open 试探逻辑和状态转换 | `circuit_impl.go` | TC-003, TC-003 通过 |
 | 4 | 并发安全验证 | `circuit_test.go` | `go test -race ./... -run TestCircuit` 通过 |
 
 ### Risk Assessment

@@ -8,6 +8,7 @@
 task_id: TASK-RESILIENCX-001
 module: resiliencx
 scope: "定义 CircuitBreaker、Bulkhead、RateLimiter 接口及 Option 类型"
+non_scope: "不包含具体实现逻辑，仅定义接口签名和类型枚举"
 spec_ref:
   - "module/resiliencx/SPEC.md#9"
 files:

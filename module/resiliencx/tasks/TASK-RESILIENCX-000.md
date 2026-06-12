@@ -8,6 +8,7 @@
 task_id: TASK-RESILIENCX-000
 module: resiliencx
 scope: "创建 go.mod、doc.go、errors.go，定义公共错误变量"
+non_scope: "不包含具体策略实现和测试文件"
 spec_ref:
   - "module/resiliencx/SPEC.md#10"
   - "module/resiliencx/SPEC.md#15"
@@ -33,12 +34,18 @@ status: pending
 | §10 | 公共错误变量定义 | 错误变量均为 `errors.New` 创建 |
 | §15 | go.mod 依赖声明 | 仅必要依赖 |
 
+| BR-002 | configx.Reader 参数化 | go.mod 仅含声明依赖 |
+
+| BR-007 | stdlib + 最少依赖 | go.mod 无框架依赖 |
+
 ## Test Plan
 
 | Test Case | Type | Description |
 |---|---|---|
 | — | CI Gate | `go build ./...` 编译通过 |
 | — | CI Gate | `go vet ./...` 无错误 |
+
+| — | CI Gate | go mod tidy 依赖整洁 |
 
 ## Implementation Notes
 

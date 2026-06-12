@@ -2,15 +2,15 @@
 
 > Foundation L1 运行时策略库。timeout/retry/circuit/bulkhead/rate limit/fallback。
 
-最后更新：2026-06-07
+最后更新：2026-06-12
 
 ---
 
 ## 1. Metadata
 
-- Status: Draft
-- Spec-Version: v1.0.0
-- Last-Updated: 2026-06-07
+- Status: Approved
+- Spec-Version: v1.0.1
+- Last-Updated: 2026-06-12
 - Owner: ZoneCNH
 - Layer: L1 基础能力
 - Version: v0.7.3
@@ -22,7 +22,8 @@
 ### 1.1 变更历史
 
 | 日期 | 版本 | 变更内容 | 作者 |
-|------|------|----------|------|
+|------|------|----------|----------|------|
+| 2026-06-12 | v1.0.1 | kernel 依赖修正、BR 违反后果补全、AC 标签显式化、Security 补强 | ZoneCNH |
 | 2026-06-07 | v1.0.0 | 初始版本 | ZoneCNH |
 
 ## 2. Summary
@@ -78,6 +79,7 @@
 ## 7. Functional Requirements
 
 ### FR-001: Timeout
+> AC-001: timeout 正常完成 / 超时 / ctx 取消
 
 WHEN 调用 `Timeout(ctx, duration, fn)` 且 fn 在 duration 内完成
 THEN 返回 fn 的结果
@@ -89,6 +91,7 @@ WHEN ctx 在 fn 完成前被取消
 THEN 返回 ctx.Err()
 
 ### FR-002: Retry
+> AC-002: retry 首次成功 / 持续失败 / 达到上限 / ctx 取消
 
 WHEN 调用 `Retry(ctx, policy, fn)` 且 fn 首次成功
 THEN 返回结果，不重试
@@ -103,6 +106,7 @@ WHEN retry 期间 ctx 被取消
 THEN 立即返回 ctx.Err()
 
 ### FR-003: CircuitBreaker
+> AC-003: 三态转换正确 & AC-004: 并发安全
 
 WHEN 调用 `circuit.Execute(fn)` 且 circuit 为 Closed 状态
 THEN 执行 fn，成功计数，失败计数
@@ -120,6 +124,7 @@ WHEN 试探调用失败
 THEN circuit 保持 Open，重置 recovery_timeout
 
 ### FR-004: Bulkhead
+> AC-005: 并发控制 / 等待 / 超时
 
 WHEN 调用 `bulkhead.Execute(fn)` 且并发数 < max_concurrent
 THEN 执行 fn
@@ -128,6 +133,7 @@ WHEN 调用 `bulkhead.Execute(fn)` 且并发数已达 max_concurrent
 THEN 等待直到有空位或 ctx 超时，超时返回 `ErrBulkheadFull`
 
 ### FR-005: RateLimiter
+> AC-006: Allow/Wait 正确 & 并发安全
 
 WHEN 调用 `limiter.Allow()` 且当前速率 < max_rate
 THEN 返回 true
@@ -139,6 +145,7 @@ WHEN 调用 `limiter.Wait(ctx)` 且需要等待
 THEN 阻塞直到允许或 ctx 超时
 
 ### FR-006: Fallback
+> AC-007: primary 成功 / 失败降级
 
 WHEN 调用 `Fallback(primary, secondary)` 且 primary 成功
 THEN 返回 primary 的结果
@@ -150,16 +157,16 @@ THEN 执行 secondary，返回 secondary 的结果
 
 ## 8. Business Rules
 
-| 编号 | 规则 |
-|------|------|
-| BR-001 | 所有策略必须接受 `context.Context` 参数 |
-| BR-002 | 策略参数从 `configx.Reader` 读取，不硬编码 |
-| BR-003 | 策略组合时，外层策略包装内层策略（装饰器模式） |
-| BR-004 | 熔断器状态必须并发安全 |
-| BR-005 | 限流器必须并发安全 |
-| BR-006 | 策略执行的 metrics 通过 `observex.Meter` 采集 |
-| BR-007 | 策略库不引入框架，使用 stdlib + 最少依赖 |
-| BR-008 | 策略必须可独立测试，不依赖外部服务 |
+| 编号 | 规则 | 违反后果 |
+|------|------|----------|
+| BR-001 | 所有策略必须接受 `context.Context` 参数 | 策略无法被 context 取消，可能导致 goroutine 泄漏 |
+| BR-002 | 策略参数从 `configx.Reader` 读取，不硬编码 | 参数散落硬编码，无法统一调优和热更新 |
+| BR-003 | 策略组合时，外层策略包装内层策略（装饰器模式） | 策略执行顺序不可控，行为不确定 |
+| BR-004 | 熔断器状态必须并发安全 | 并发竞争导致状态不一致，熔断误判 |
+| BR-005 | 限流器必须并发安全 | 令牌计数错误，限流失效 |
+| BR-006 | 策略执行的 metrics 通过 `observex.Meter` 采集 | 弹性策略黑盒，故障不可观测、不可追溯 |
+| BR-007 | 策略库不引入框架，使用 stdlib + 最少依赖 | 引入框架依赖增加二进制体积和编译复杂度 |
+| BR-008 | 策略必须可独立测试，不依赖外部服务 | 需要启动外部服务才能测试，CI 不可重复 |
 
 ---
 
@@ -321,6 +328,7 @@ resiliencx:
 | 场景 | 预期行为 |
 |------|----------|
 | retry policy 的 max_retries=0 | 不重试，直接返回错误 |
+| retry policy 的 multiplier=0 | 使用默认 multiplier=2.0 |
 | circuit breaker 的 failure_threshold=0 | 第一次失败就熔断 |
 | bulkhead 的 max_concurrent=0 | 返回配置错误 |
 | rate limiter 的 rate=0 | 永远不允许（所有请求被限流） |
@@ -375,8 +383,9 @@ go 1.23
 
 | 可以依赖 | 禁止依赖 |
 |----------|----------|
-| stdlib | kernel |
-| `configx`（读取策略配置） | observex, schedulex, testkitx |
+| stdlib | observex |
+| `configx`（读取策略配置） | schedulex |
+| `kernel`（生命周期管理） | testkitx |
 | | 所有业务域实现 |
 | | 所有存储/中间件扩展 |
 
@@ -441,7 +450,7 @@ Then 返回 secondary 的结果并记录 primary 错误
 ### 16.3 Benchmark
 
 | 场景 | 目标 |
-|------|------|
+|------|------|----------|
 | 单次 timeout 调用（无超时） | < 100ns 额外开销 |
 | 单次 retry 调用（无重试） | < 200ns 额外开销 |
 | circuit breaker 状态检查 | < 50ns |
@@ -461,7 +470,7 @@ Then 返回 secondary 的结果并记录 primary 错误
 ## 17. Performance Budget
 
 | 操作 | 目标 | 测量方式 |
-|------|------|----------|
+|------|------|----------|----------|
 | 单策略调用开销 | < 200ns | benchmark test |
 | 5 层嵌套策略开销 | < 1μs | benchmark test |
 | circuit breaker 状态检查 | < 50ns | benchmark test |
@@ -472,7 +481,7 @@ Then 返回 secondary 的结果并记录 primary 错误
 ## 18. Observability
 
 | 类型 | 名称 | 说明 |
-|------|------|------|
+|------|------|----------|------|
 | metric | `resiliencx.timeout.count` | counter，超时次数 |
 | metric | `resiliencx.retry.count` | counter，重试次数 |
 | metric | `resiliencx.retry.success` | counter，重试后成功次数 |
@@ -491,6 +500,10 @@ Then 返回 secondary 的结果并记录 primary 错误
 |------|----------|
 | 错误消息不泄露敏感数据 | 错误消息只包含策略名和错误类型，不包含请求内容 |
 | rate limiter 防绕过 | 使用令牌桶算法，不依赖客户端行为 |
+| 输入校验 | fn 参数非 nil 检查；max_retries/burst/max_concurrent 范围校验（≤10000） |
+| 资源防护 | goroutine 创建受 bulkhead 限制，防止无界并发 |
+| 配置脱敏 | 策略配置不含凭证，敏感参数通过环境变量注入 |
+| panic 恢复 | fn 内部 panic 被 recover，记录日志并返回错误 |
 
 ---
 
@@ -499,7 +512,7 @@ Then 返回 secondary 的结果并记录 primary 错误
 ### 20.1 通用 Gate
 
 | Gate | 命令 | 阻塞条件 |
-|------|------|----------|
+|------|------|----------|----------|
 | 编译 | `go build ./...` | 编译失败 |
 | 测试 | `go test ./... -race -count=1` | 任何测试失败或 data race |
 | 覆盖率 | `mkdir -p .coverage && go test ./... -coverprofile=.coverage/cover.out && go tool cover -func=.coverage/cover.out` | 总覆盖率 < 80% |
@@ -512,7 +525,7 @@ Then 返回 secondary 的结果并记录 primary 错误
 ### 20.2 resiliencx 专属 Gate
 
 | Gate | 命令 | 阻塞条件 |
-|------|------|----------|
+|------|------|----------|----------|
 | 不依赖 kernel | `go list -deps ./... \| grep "kernel"` | 依赖 kernel |
 | 不依赖 observex | `go list -deps ./... \| grep "observex"` | 依赖 observex |
 
