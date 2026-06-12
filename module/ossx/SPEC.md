@@ -204,7 +204,7 @@ presign:
   allowed_operations: ["GET", "PUT"]
 ```
 
-The composition root may use any configuration loader, including configx outside this module, then pass the resulting values into `ossx.Config`. The ossx module itself must not import configx.
+Only the composition root outside `module/ossx` may use an external configuration loader such as `configx`; it must pass the resulting values into `ossx.Config`. The ossx module itself must not import `configx`.
 
 ## 12. Error Handling
 
