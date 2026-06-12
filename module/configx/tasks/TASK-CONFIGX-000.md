@@ -9,7 +9,7 @@ task_id: TASK-CONFIGX-000
 module: configx
 scope: "创建 go.mod、doc.go、errors.go，定义公共错误变量"
 spec_ref:
-  - "module/configx/SPEC.md#§10.1"
+  - "module/configx/SPEC.md#BR-008"
   - "module/configx/SPEC.md#§15.1"
 files:
   - "go.mod"
