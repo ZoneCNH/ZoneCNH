@@ -89,15 +89,17 @@
 
 > P0 完成后开始。每个模块独立，可并行。
 
-### kernel ✅ (PR #9 合入)
+### kernel ✅ (PR #9 合入，SPEC v2.0.0 12 子包模型)
 
 - [x] public API snapshot 文件（`contracts/public_api/kernel_v0.schema.json`）
-- [x] primitive admission gate（`scripts/check-admission.sh` + `contracts/admitted_packages.txt`）
 - [x] stdlib-only CI check（`scripts/check-stdlib-only.sh`）
 - [x] no-hidden-goroutine CI check（`scripts/check-no-goroutine.sh`）
-- [x] `retryx` 限界文档（`pkg/retryx/BOUNDARY.md`）
-- [x] `obsx` 限界文档（`pkg/obsx/BOUNDARY.md`）
+- [x] 12 子包核心实现：errx / timex / obsx / syncx / lifecycx / shutdownx / versionx / validx / retryx / contextx / healthx / contracttest
+- [x] `retryx` 限界文档（`retryx/BOUNDARY.md`）
+- [x] `obsx` 限界文档（`obsx/BOUNDARY.md`）
 - [x] API freeze 声明（`contracts/public_api/FREEZE.md`）
+- [x] contracts/ 契约验证层（API snapshot + golden behavior + consumer import test）
+- [x] SPEC.md v2.0.0 重写：集中式 App/Module/Deps → 12 子包轻量工具集
 
 ### configx ✅ (PR #1 + #2 合入)
 

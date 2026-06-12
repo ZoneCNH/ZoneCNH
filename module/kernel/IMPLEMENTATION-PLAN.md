@@ -1,125 +1,193 @@
 # kernel 实现计划
 
-> 来源：module/kernel/SPEC.md v1.1.0 + TASK-KERNEL-000~010
-> 生成日期：2026-06-08
+> 来源：[SPEC.md](./SPEC.md) v2.0.0
+> 生成日期：2026-06-12
+> 替换：旧 IMPLEMENTATION-PLAN.md（基于已废弃的 SPEC v1.1.0 集中式架构）
 
 ---
 
-## 依赖 DAG
+## 1. 依赖 DAG
 
 ```text
-TASK-KERNEL-000 (骨架)
-├── TASK-KERNEL-001 (接口)
-│   ├── TASK-KERNEL-002 (依赖图)
-│   ├── TASK-KERNEL-003 (注册表)
-│   │   └── TASK-KERNEL-004 (启动)
-│   │       └── TASK-KERNEL-005 (停机)
-│   │           └── TASK-KERNEL-007 (panic 隔离)
-│   ├── TASK-KERNEL-006 (健康检查) ← 依赖 001, 003
-│   └── TASK-KERNEL-008 (配置选项) ← 依赖 001
-│       └── TASK-KERNEL-009 (集成测试) ← 依赖 004, 005, 006, 007, 008
-│           └── TASK-KERNEL-010 (文档+示例) ← 依赖 009
+TASK-KERNEL-000 (项目骨架: go.mod, README, Makefile)
+│
+├── TASK-KERNEL-001 (errx) ─────────────────────────────┐
+├── TASK-KERNEL-002 (timex) ────────────────────────────┤
+├── TASK-KERNEL-003 (obsx)                              │
+├── TASK-KERNEL-004 (syncx)                             │
+├── TASK-KERNEL-005 (lifecycx)                          │
+├── TASK-KERNEL-006 (shutdownx)                         │
+├── TASK-KERNEL-007 (versionx)                          │
+│                                                       │
+├── TASK-KERNEL-008 (validx) ──→ errx                   │
+├── TASK-KERNEL-009 (retryx) ──→ errx                   │
+├── TASK-KERNEL-010 (contextx) → timex                  │
+├── TASK-KERNEL-011 (healthx) ──→ timex                 │
+│                                                       │
+├── TASK-KERNEL-012 (contracttest) → errx + healthx     │
+│                                                       │
+├── TASK-KERNEL-013 (internal/testutil)                 │
+│                                                       │
+├── TASK-KERNEL-014 (contracts: API snapshot + golden)  │
+├── TASK-KERNEL-015 (examples: 12 子包可运行示例)        │
+│                                                       │
+└── TASK-KERNEL-016 (CI gates + release preflight)      │
 ```
 
 ---
 
-## 实现顺序
+## 2. 实现顺序
 
-| Phase | Task            | 文件                                   | 依赖     | 可并行              | Effort | 验证命令                                                                                |
-| ----- | --------------- | -------------------------------------- | -------- | ------------------- | ------ | --------------------------------------------------------------------------------------- |
-| 1     | TASK-KERNEL-000 | go.mod, doc.go, errors.go              | —        | —                   | 0.5h   | `go build ./... && go list -deps ./... \| grep -v "^std" && go vet ./...`               |
-| 2     | TASK-KERNEL-001 | kernel.go, interfaces.go               | 000      | —                   | 1h     | `go build ./... && go vet ./...`                                                        |
-| 3a    | TASK-KERNEL-002 | graph.go, graph_test.go                | 001      | ✅ 与 003, 008 并行 | 3h     | `go test -race -run TestGraph -count=1 ./...`                                           |
-| 3b    | TASK-KERNEL-003 | registry.go, registry_test.go          | 001      | ✅ 与 002, 008 并行 | 2h     | `go test -race -run TestRegistry -count=1 ./...`                                        |
-| 3c    | TASK-KERNEL-008 | options.go, kernel.go, options_test.go | 001      | ✅ 与 002, 003 并行 | 1h     | `go test -race -run TestOption -count=1 ./...`                                          |
-| 4     | TASK-KERNEL-004 | lifecycle.go, lifecycle_test.go        | 002, 003 | —                   | 4h     | `go test -race -run TestLifecycle -count=1 ./...`                                       |
-| 5     | TASK-KERNEL-005 | shutdown.go, shutdown_test.go          | 004      | —                   | 3h     | `go test -race -run TestShutdown -count=1 ./...`                                        |
-| 6     | TASK-KERNEL-006 | health.go, health_test.go              | 001, 003 | —                   | 1.5h   | `go test -race -run TestHealth -count=1 ./...`                                          |
-| 7     | TASK-KERNEL-007 | lifecycle.go, shutdown.go (修改)       | 004, 005 | —                   | 2h     | `go test -race -run TestPanic -count=1 ./...`                                           |
-| 8     | TASK-KERNEL-009 | integration_test.go, benchmark_test.go | 004-008  | —                   | 3h     | 集成：`go test -tags=integration -race ./...` + 性能：`go test -bench=. -benchmem -count=3 ./...` |
-| 9     | TASK-KERNEL-010 | README.md, example_test.go             | 009      | —                   | 2h     | `go test -race ./... && mkdir -p .coverage && go test -coverprofile=.coverage/cover.out ./... && go tool cover -func=.coverage/cover.out` |
+### Phase 1: 骨架（1 task，阻塞全部）
+
+| Task | 文件 | 依赖 | Effort |
+|------|------|------|--------|
+| TASK-KERNEL-000 | go.mod, Makefile, README.md, LICENSE | — | 0.5h |
+
+### Phase 2: 无内部依赖子包（7 tasks，全部可并行）
+
+| Task | 子包 | 文件 | 依赖 | Effort |
+|------|------|------|------|--------|
+| TASK-KERNEL-001 | errx | errx/errx.go, errx_test.go, example_test.go | 000 | 2h |
+| TASK-KERNEL-002 | timex | timex/timex.go, timex_test.go, example_test.go | 000 | 1.5h |
+| TASK-KERNEL-003 | obsx | obsx/obsx.go, obsx_test.go, example_test.go | 000 | 2h |
+| TASK-KERNEL-004 | syncx | syncx/syncx.go, syncx_test.go, example_test.go | 000 | 2h |
+| TASK-KERNEL-005 | lifecycx | lifecycx/lifecycx.go, lifecycx_test.go, example_test.go | 000 | 2h |
+| TASK-KERNEL-006 | shutdownx | shutdownx/shutdownx.go, shutdownx_test.go, example_test.go | 000 | 2h |
+| TASK-KERNEL-007 | versionx | versionx/versionx.go, versionx_test.go, example_test.go | 000 | 1h |
+
+**Phase 2 并行度：7**（全部无互相依赖）
+
+### Phase 3: 有内部依赖子包（4 tasks，可部分并行）
+
+| Task | 子包 | 依赖 | 内部依赖 | Effort |
+|------|------|------|----------|--------|
+| TASK-KERNEL-008 | validx | 000 | 001 (errx) | 1h |
+| TASK-KERNEL-009 | retryx | 000 | 001 (errx) | 1.5h |
+| TASK-KERNEL-010 | contextx | 000 | 002 (timex) | 1.5h |
+| TASK-KERNEL-011 | healthx | 000 | 002 (timex) | 1.5h |
+
+**Phase 3 并行度：4**（互相无依赖，仅依赖 Phase 2 中的不同子包）
+
+### Phase 4: 多层依赖子包（1 task）
+
+| Task | 子包 | 依赖 | Effort |
+|------|------|------|--------|
+| TASK-KERNEL-012 | contracttest | 001 (errx), 011 (healthx) | 1h |
+
+### Phase 5: 内部工具（1 task）
+
+| Task | 子包 | 依赖 | Effort |
+|------|------|------|--------|
+| TASK-KERNEL-013 | internal/testutil | 000 | 0.5h |
+
+### Phase 6: 契约验证层（1 task）
+
+| Task | 内容 | 依赖 | Effort |
+|------|------|------|--------|
+| TASK-KERNEL-014 | contracts/：API 快照、golden 行为、消费者导入测试 | 001~012 | 3h |
+
+### Phase 7: 示例和文档（2 tasks，可并行）
+
+| Task | 内容 | 依赖 | Effort |
+|------|------|------|--------|
+| TASK-KERNEL-015 | examples/：12 子包可运行示例 | 001~012 | 2h |
+| TASK-KERNEL-016 | CHANGELOG.md, docs/, CI gates, release preflight | 014, 015 | 2h |
 
 ---
 
-## 关键路径
+## 3. 关键路径
 
 ```text
-000 → 001 → 002/003 → 004 → 005 → 007 → 009 → 010
+000 → 001 (errx) → 008 (validx) ─┐
+                                  ├→ 012 (contracttest) → 014 (contracts) → 016 (release)
+000 → 002 (timex) → 011 (healthx) ┘
 ```
 
-**关键路径工期**：0.5 + 1 + 3 + 4 + 3 + 2 + 3 + 2 = **18.5h**
+**关键路径工期**：0.5 + 2 + 1.5 + 1 + 3 + 2 = **10h**
 
 ---
 
-## 并行策略
+## 4. 并行策略
 
-### Phase 3（最大并行度 3）
+### Phase 2（最大并行度 7）
 
-TASK-KERNEL-002、003、008 互相无依赖，可同时开发：
+errx / timex / obsx / syncx / lifecycx / shutdownx / versionx 七个子包全部无内部依赖，可同时开发。
 
-- 002（graph.go）：DAG 算法、环检测、拓扑排序
-- 003（registry.go）：并发安全注册表
-- 008（options.go）：Option 模式配置
+### Phase 3（并行度 4）
 
-### Phase 6（可选并行）
+validx / retryx / contextx / healthx 互相无依赖，可同时开发。仅需各自依赖的 Phase 2 子包先行完成。
 
-TASK-KERNEL-006（健康检查）与 Phase 4-5（lifecycle/shutdown）无文件冲突，但依赖 003 完成。可在 004 进行中并行开始。
+### Phase 7（并行度 2）
 
----
-
-## 文件冲突分析
-
-| 文件         | 创建 Task | 修改 Task | 冲突风险    |
-| ------------ | --------- | --------- | ----------- |
-| kernel.go    | 001       | 008       | ⚠️ 顺序执行 |
-| lifecycle.go | 004       | 007       | ⚠️ 顺序执行 |
-| shutdown.go  | 005       | 007       | ⚠️ 顺序执行 |
-| graph.go     | 002       | —         | 无          |
-| registry.go  | 003       | —         | 无          |
-| health.go    | 006       | —         | 无          |
-| options.go   | 008       | —         | 无          |
-| errors.go    | 000       | —         | 无          |
+examples 和 docs/CI 可同时进行。
 
 ---
 
-## 测试策略
+## 5. 文件冲突分析
 
-| 测试类型    | 覆盖 Task | 工具                         |
-| ----------- | --------- | ---------------------------- |
-| 单元测试    | 002~008   | `go test -race -count=1`     |
-| 集成测试    | 009       | `go test -tags=integration`  |
-| Benchmark   | 009       | `go test -bench=. -benchmem` |
-| stdlib-only | 000, 001  | CI gate                      |
-| 覆盖率      | ALL       | `go tool cover` ≥ 90%        |
+由于每个子包有独立目录，Phase 2+3+4 的任务之间 **无文件冲突**：
+
+| 文件 | 创建 Task | 冲突风险 |
+|------|-----------|----------|
+| go.mod | 000 | 无 |
+| errx/*.go | 001 | 无 |
+| timex/*.go | 002 | 无 |
+| obsx/*.go | 003 | 无 |
+| syncx/*.go | 004 | 无 |
+| lifecycx/*.go | 005 | 无 |
+| shutdownx/*.go | 006 | 无 |
+| versionx/*.go | 007 | 无 |
+| validx/*.go | 008 | 无 |
+| retryx/*.go | 009 | 无 |
+| contextx/*.go | 010 | 无 |
+| healthx/*.go | 011 | 无 |
+| contracttest/*.go | 012 | 无 |
+| internal/testutil/*.go | 013 | 无 |
+| contracts/* | 014 | 无 |
+| examples/* | 015 | 无 |
+| CHANGELOG.md, docs/* | 016 | 无 |
+| README.md | 000 (创建), 016 (更新) | ⚠️ 顺序执行 |
+| Makefile | 000 (创建), 016 (更新) | ⚠️ 顺序执行 |
 
 ---
 
-## 风险与缓解
+## 6. 测试策略
 
-| 风险                | 影响              | 缓解                                        |
-| ------------------- | ----------------- | ------------------------------------------- |
-| 拓扑排序算法 bug    | 启动顺序错误      | 充分测试：自引用、互引用、深层链、100+ 节点 |
-| panic recovery 遗漏 | 调用方崩溃        | 逐一检查 Init/Start/Stop 调用点             |
-| 并发安全            | race condition    | `-race` 测试 + `sync.Mutex` 保护            |
-| stdlib-only 被破坏  | CONSTITUTION 违反 | CI gate + `go list -deps`                   |
+| 测试类型 | 覆盖 Task | 工具 |
+|----------|-----------|------|
+| 单元测试 | 001~013 | `go test -race -count=1 ./...` |
+| Example 测试 | 001~013 | `go test -run Example ./...` |
+| 契约测试 | 014 | `go test -race ./contracts/...` |
+| Benchmark | 001, 002, 009, 011 | `go test -bench=. -benchmem -count=3 ./...` |
+| stdlib-only | ALL | CI gate |
+| 覆盖率 | ALL | `go tool cover` ≥ 80% |
+| Race 检测 | ALL | `go test -race -count=1 ./...` |
 
 ---
 
-## 回滚策略
+## 7. 风险与缓解
 
-### TASK-KERNEL-004（启动生命周期）
+| 风险 | 影响 | 缓解 |
+|------|------|------|
+| errx.IsKind 多错误链性能不达标 | P1 | Phase 2 即编写 benchmark，早期发现 |
+| FakeClock 并发安全问题 | P1 | `-race` 测试，sync.Mutex 保护 |
+| SecretString 反射绕过 | P1 | 覆盖 String()/GoString()/JSON/gob 四路径 |
+| WorkerGroup cancel 传播竞争 | P2 | 充分并发测试 |
+| stdlib-only 被破坏 | P0 | CI gate + `go list -deps` |
+| 接口设计不满足下游需求 | P1 | Phase 6 的消费者导入测试提前验证 |
 
-| 失败场景          | 回滚步骤                                                       |
-| ----------------- | -------------------------------------------------------------- |
-| 拓扑排序 panic    | 捕获 panic → 返回 ErrStartupFailed → 不调用任何模块 Init/Start |
-| 某模块 Init 失败  | 遍历已 Init 模块反序调用 Stop → 返回原始错误                   |
-| 某模块 Start 失败 | 遍历已 Start 模块反序调用 Stop → 返回原始错误                  |
-| ctx 取消          | 检测 ctx.Done() → 遍历已启动模块反序 Stop → 返回 ctx.Err()     |
+---
 
-### TASK-KERNEL-005（停机生命周期）
+## 8. 总工时估算
 
-| 失败场景          | 回滚步骤                                                             |
-| ----------------- | -------------------------------------------------------------------- |
-| 某模块 Stop 超时  | 记录超时模块名 → 继续 Stop 后续模块 → 返回 ErrShutdownTimeout        |
-| 某模块 Stop panic | 捕获 panic → 记录日志 → 继续 Stop 后续模块                           |
-| 并发 Shutdown     | 互斥锁保护 → 第二次调用返回 ErrShutdownInProgress 或 nil（已完成后） |
+| Phase | Tasks | 串行 Effort | 并行 Effort |
+|-------|-------|-------------|-------------|
+| Phase 1 | 1 | 0.5h | 0.5h |
+| Phase 2 | 7 | 12h | 2h (并行) |
+| Phase 3 | 4 | 5.5h | 1.5h (并行) |
+| Phase 4 | 1 | 1h | 1h |
+| Phase 5 | 1 | 0.5h | 0.5h |
+| Phase 6 | 1 | 3h | 3h |
+| Phase 7 | 2 | 4h | 2h (并行) |
+| **总计** | **17** | **26.5h** | **~10.5h** (充分利用并行) |
