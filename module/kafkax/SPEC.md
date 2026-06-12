@@ -11,11 +11,11 @@
 - Status: Draft
 - Governance-Status: 未仲裁；等待四源评分 / arbiter 判定
 - Spec-Version: v1.0.0
-- Spec-Baseline: v1.0.0-spec-baseline
 - Last-Updated: 2026-06-12
 - Owner: ZoneCNH
 - Layer: 基座 · 存储扩展
-- Implementation-Version: pending（不在本规格资产中断言）
+- Implementation-Version: v0.7.3
+- Baseline: 1.0 候选规格；非发布批准状态
 - Repository: [github.com/ZoneCNH/kafkax](https://github.com/ZoneCNH/kafkax)
 - Related: [CONSTITUTION.md](../../CONSTITUTION.md), [ARCHITECTURE.md](../../ARCHITECTURE.md), [goal.md](./goal.md), [TRACEABILITY.md](./TRACEABILITY.md)
 
@@ -24,11 +24,11 @@
 | 日期 | 版本 | 变更内容 | 作者 |
 |------|------|----------|------|
 | 2026-06-07 | v1.0.0 | 初始版本 | ZoneCNH |
-| 2026-06-12 | v1.0.0-spec-baseline | 对齐 goal / SPEC / TRACEABILITY；修正状态、范围、接口治理与追溯覆盖 | Codex |
+| 2026-06-12 | v1.0.0-candidate | 对齐 1.0 候选基线、BR 处理、接口上下文与追溯要求 | ZoneCNH |
 
 ## 2. Summary
 
-`kafkax` 封装 Kafka 客户端，提供统一的同步生产者、批量发送、消费组消费者、手动 offset 管理、序列化/反序列化、健康检查和可观测集成。v1.0 baseline 只定义通用客户端边界，不定义业务事件模型、异步回调生产者、事务/outbox、Schema Registry 或业务侧 DLQ 编排。
+`kafkax` 封装 Kafka 客户端，提供统一的生产者（同步发送和批量发送）、消费者（消费组、offset 管理）、序列化/反序列化、健康检查和可观测集成。与 kernel 生命周期集成，保证连接随应用启停。异步发送、事务、Schema Registry、手动 partition assign、深度失败重试/转储编排属于后续候选或非目标，不作为 1.0 候选基线。
 
 ---
 
@@ -65,8 +65,11 @@
 - 不做 exactly-once / Kafka Transactions / outbox 编排（业务层按需实现）
 - 不做 Schema Registry 集成
 - 不做 Kafka Connect 集成
-- 不定义业务 `EventEnvelope` 或领域事件语义
-- 不提供 Consumer handler 重试 / Dead Letter Queue 编排；v1.0 只暴露错误和 offset 控制，调用方决定后续动作
+- 不做异步 Producer 回调 API
+- 不做 Kafka Transactions / exactly-once 封装
+- 不做业务事件信封或业务 schema 规范
+- 不做深度死信队列编排；消费失败重试/转储策略留作后续候选
+- 不做幂等存储 SPI；业务幂等由调用方实现
 - 不做配置解析（→ `configx`）
 
 ---
@@ -166,15 +169,15 @@ THEN 返回 HealthStatus{Ready: false, Live: false, Message: "..."}
 
 | 编号 | 规则 | 违反时处理 |
 |------|------|------------|
-| BR-001 | Producer 默认使用同步发送（acks=all），可通过配置切换 | 默认配置缺失时回退到 acks=all；非法 acks 配置返回配置错误并阻止启动 |
-| BR-002 | Consumer 默认使用手动 offset 提交（at-least-once） | 检测到自动提交启用时返回配置错误；测试/CI 必须阻断发布 |
-| BR-003 | 所有可能阻塞或外部 I/O 操作必须接受 `context.Context`，支持超时和取消 | 缺少 ctx 的公共接口不得进入 release；运行时 ctx 取消必须返回 `ctx.Err()` |
-| BR-004 | Consumer 必须在 Close 时提交最终 offset | 最终提交失败时 `Close(ctx)` 返回错误并记录不含 payload 的日志，由调用方决定重试或退出 |
-| BR-005 | Producer 重试策略可配置，默认 3 次 | 非法重试配置返回配置错误；发送耗尽重试后返回包装后的最终错误 |
-| BR-006 | Consumer 轮询间隔可配置 | 非法轮询配置返回配置错误；默认值必须可在单元测试中证明 |
-| BR-007 | Health(ctx) 必须是幂等的、无副作用的 | Health 不得改变订阅、offset 或连接生命周期；违反时测试/审查阻断发布 |
-| BR-008 | 错误消息不包含消息内容（防泄露敏感数据） | 错误和日志只允许 topic/partition/offset/operation；发现 key/value 泄露时阻断发布 |
-| BR-009 | Consumer 不自动提交 offset（避免数据丢失） | 发现自动提交路径时测试/CI 阻断；调用方未 `Commit` 时不得推进 offset |
+| BR-001 | Producer 默认使用同步发送（acks=all），可通过配置切换 | 非法 acks 在构造或首次发送前返回配置错误；默认值不得静默降级 |
+| BR-002 | Consumer 默认使用手动 offset 提交（at-least-once） | 自动提交不得作为默认值；发现默认自动提交视为发布阻断 |
+| BR-003 | 所有运行时操作必须接受 `context.Context`，支持超时和取消 | 缺少 ctx 或忽略 ctx 取消视为接口阻断；ctx 取消必须返回 `ctx.Err()` 或包装错误 |
+| BR-004 | Consumer 必须在 Close 时处理最终 offset/资源释放边界 | `Close(ctx)` 失败必须返回错误，不得吞掉提交或释放失败 |
+| BR-005 | Producer 重试策略可配置，默认 3 次 | 负数或非法重试配置返回配置错误；最终失败返回包装错误并记录指标 |
+| BR-006 | Consumer 轮询间隔可配置 | 非法轮询/心跳/批量参数返回配置错误，不得使用危险默认值 |
+| BR-007 | Health(ctx) 必须是幂等的、无副作用的 | 健康检查不得改变订阅、offset 或连接生命周期；失败返回 unhealthy 和错误 |
+| BR-008 | 错误消息不包含消息内容（防泄露敏感数据） | 错误和日志必须脱敏；发现 payload/凭据泄露视为安全阻断 |
+| BR-009 | Consumer 不自动提交 offset（避免数据丢失） | 自动提交配置不得覆盖默认安全语义；未显式 Commit 不得提交 offset |
 
 ---
 
@@ -252,7 +255,6 @@ producer, err := kafkax.NewProducer(
 if err != nil {
     return err
 }
-defer producer.Close(ctx)
 
 // 发送消息
 err = producer.Send(ctx, "orders", []byte("order-123"), orderJSON)
@@ -271,7 +273,6 @@ consumer, err := kafkax.NewConsumer(
 if err != nil {
     return err
 }
-defer consumer.Close(ctx)
 
 // 订阅
 if err := consumer.Subscribe(ctx, []string{"orders", "events"}); err != nil {
@@ -289,7 +290,9 @@ for {
     if err := consumer.Commit(ctx, msg); err != nil {
         return err
     }
-    processMessage(msg)
+    if err := processMessage(msg); err != nil {
+        return err
+    }
     if err := consumer.Commit(ctx, msg); err != nil {
         return err
     }
@@ -398,25 +401,32 @@ kafkax:
 
 | 场景 | 预期行为 |
 |------|----------|
-| Kafka 不可达时 Send | 按 retry 策略重试，最终返回 ErrConnectionFailed 或 ErrSendFailed |
+| Kafka 不可达时 Send | 返回 `ErrConnectionFailed` 或 `ErrSendFailed`，记录脱敏日志和指标 |
 | SendBatch 空消息列表 | 返回 nil（幂等） |
-| Subscribe 空 topics | 返回 ErrEmptyTopics |
-| Poll 时 ctx 超时 | 返回 ctx.Err() 或包装后的 context 错误 |
-| Consumer 未 Subscribe 就 Poll | 返回 ErrNotSubscribed |
-| Consumer 重复 Subscribe | 返回 ErrAlreadySubscribed |
-| Commit nil 消息 | 返回 ErrInvalidMessage |
-| Producer Close 后 Send | 返回错误 |
-| Consumer Close 后 Poll | 返回错误 |
-| 消息超过 max_message_bytes | 返回 ErrSendFailed 或 ErrInvalidMessage，不输出完整 payload |
-| 消费组 rebalance | 重新分配 partition；已处理消息依赖显式 Commit 保证 at-least-once |
-| 反序列化失败 | 分类为不可重试，进入 DLQ 路径并保留原始元数据和错误摘要 |
-| DLQ 发布失败 | 返回 ErrDLQPublishFailed 并记录指标，不吞错 |
+| SendBatch 部分消息失败 | 返回第一个包装错误；已发送消息不回滚 |
+| Codec Marshal / Unmarshal 失败 | 返回包装错误，不输出原始 payload |
+| topic 为空或非法 | 返回 `ErrInvalidMessage` 或 `ErrEmptyTopics` |
+| brokers 为空 | 构造函数返回 `ErrEmptyBrokers` |
+| group id 为空 | Consumer 构造或 Subscribe 返回配置错误 |
+| Subscribe 空 topics | 返回 `ErrEmptyTopics` |
+| Poll 时 ctx 超时 | 返回 `ctx.Err()` |
+| Consumer 未 Subscribe 就 Poll | 返回 `ErrNotSubscribed` |
+| Consumer 重复 Subscribe | 返回 `ErrAlreadySubscribed` |
+| Commit nil 消息或非法 offset | 返回 `ErrInvalidMessage` |
+| Commit 在 rebalance 期间失败 | 返回 `ErrCommitFailed` 包装错误，由调用方决定重试 |
+| Producer Close 后 Send | 返回 closed 状态错误，不发送消息 |
+| Consumer Close 后 Poll | 返回 closed 状态错误，不拉取消息 |
+| Close 重复调用 | 幂等返回 nil 或已关闭错误，但不得 panic |
+| Close 期间仍有 Send / Poll | 尊重 ctx 取消并返回 closed/ctx 错误 |
+| 消息超过 max_message_bytes | 返回 `ErrSendFailed`，不记录完整消息内容 |
+| 资源耗尽或背压 | 返回包装错误并记录指标，不无限阻塞 |
+| 消费组 rebalance | 重新分配 partition；未成功 Commit 的消息允许重新投递 |
 
 ---
 
 ## 14. Directory Structure
 
-```text
+```
 kafkax/
 ├── go.mod
 ├── go.sum
@@ -448,7 +458,7 @@ kafkax/
 
 ### 15.1 go.mod
 
-```text
+```
 module github.com/ZoneCNH/kafkax
 
 go 1.23
@@ -478,14 +488,18 @@ go 1.23
 | Producer retry | 默认 3 次，超过后返回最终错误 |
 | Consumer.Subscribe 成功 | 正确加入消费组 |
 | Consumer.Subscribe 空 topics | 返回错误 |
+| Consumer.Subscribe 重复调用 | 返回 ErrAlreadySubscribed |
 | Consumer.Poll 有消息 | 返回消息 |
 | Consumer.Poll 无消息 | 阻塞直到超时或新消息 |
 | Consumer.Commit 成功 | offset 正确提交 |
 | Consumer.Commit nil 消息 | 返回错误 |
-| Consumer Close | 尽力提交已处理 offset，失败返回错误 |
+| Consumer.Commit rebalance 失败 | 返回 ErrCommitFailed 包装错误 |
+| Close 重复调用 | 不 panic，返回稳定结果 |
 | Health 检查 | Kafka 可用/不可用正确反映 |
 | Codec 序列化/反序列化 | JSON / msgpack 正确 |
-| DLQ 发布边界 | 保留原始元数据和失败摘要 |
+| Codec 失败 | 返回包装错误且不泄露 payload |
+| 配置校验 | 空 brokers、空 group id、非法重试/轮询参数返回错误 |
+| 错误脱敏 | 错误和日志不包含 payload 或凭据 |
 | 并发安全 | -race 测试通过 |
 
 ### 16.2 Given/When/Then 用例
@@ -650,20 +664,20 @@ Then 返回 healthy；broker 不可达时返回 unhealthy
 
 ## 23. Open Questions
 
-无阻塞性 Open Questions；以下项已按 v1.0 baseline 分类，不影响当前规格仲裁。
+### 23.1 1.0 候选基线非阻断确认
 
-### 23.1 Resolved for v1.0 baseline（非阻塞）
+- `Health(ctx)` 返回错误时是否需要固定错误码枚举？当前候选基线只要求返回 `HealthStatus` 和包装错误。
+- `Close(ctx)` 重复调用时返回 nil 还是已关闭错误？当前候选基线只要求不得 panic，且行为需在实现中固定。
 
-| 问题 | v1.0 处理 |
-|------|-----------|
-| 是否支持异步 Producer（回调通知发送结果）？ | 不纳入 v1.0；baseline 仅承诺同步发送和批量发送。 |
-| 是否支持 Kafka Transactions（跨 topic 原子写入）？ | 不纳入 v1.0；事务/outbox 由业务层或后续规格定义。 |
-| 是否支持 Schema Registry 集成（Avro/Protobuf schema 管理）？ | 不纳入 v1.0；Codec 接口保留扩展点。 |
-| 是否支持 Dead Letter Queue（消费失败消息的重试和转储）？ | 不纳入 v1.0 自动编排；调用方基于返回错误和手动 offset 决策。 |
+### 23.2 后续候选能力（不阻断 1.0）
 
-### 23.2 Future / Deferred（未来）
+- 是否增加异步 Producer 回调 API？需要先定义背压、取消和错误语义。
+- 是否增加 Kafka Transactions 封装？需要先定义跨 topic 原子写入和失败恢复边界。
+- Consumer 是否支持 Assign 模式（手动指定 partition）？需要先定义与消费组模式的互斥规则。
+- 是否支持 Schema Registry 集成（Avro/Protobuf schema 管理）？需要先定义依赖方向和兼容策略。
+- 是否支持消费失败重试/转储编排？需要先定义 topic 命名、脱敏、重试上限和告警策略。
 
-| 问题 | 后续处理 |
-|------|----------|
-| Consumer 是否需要支持 Assign 模式（手动指定 partition）？ | 作为 future enhancement 评估；不阻塞当前消费组 baseline。 |
-| 是否提供内建 handler retry / poison-message 策略？ | 需结合业务语义另行设计，避免客户端层隐式推进 offset。 |
+### 23.3 明确不属于 1.0 基线
+
+- 业务事件模型、业务 schema 治理和业务幂等存储不由 `kafkax` 1.0 定义。
+- Kafka 集群运维、Kafka Connect 和跨系统消息路由不由 `kafkax` 负责。
