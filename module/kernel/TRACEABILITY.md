@@ -124,7 +124,7 @@
 | AC 总数 | 18 | AC-001 ~ AC-018 |
 | TC 总数 | 18 | TC-001 ~ TC-018 |
 | Task 总数 | 23 | TASK-KERNEL-000 ~ 016（含 015a/015b/015c 示例子任务 + 016a/016b/016c 发布子任务） |
-| Prompt 总数 | 16 | PROMPT-KERNEL-001 ~ 016 |
+| Prompt 总数 | 17 | PROMPT-KERNEL-000 ~ 016 |
 
 ---
 
