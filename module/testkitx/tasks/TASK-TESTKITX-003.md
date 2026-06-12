@@ -8,15 +8,16 @@
 task_id: TASK-TESTKITX-003
 module: testkitx
 scope: "实现 FakeMeter，记录 metrics 到内存供断言"
+non_scope: "不导出到外部 metrics 系统，不实现聚合"
 spec_ref:
   - "module/testkitx/SPEC.md#FR-003"
 files:
   - "fake_meter.go"
   - "fake_meter_test.go"
 acceptance_criteria:
-  - "FakeMeter 实现 observex.Meter 接口"
-  - "Counter/Histogram/Gauge 记录到内部 map"
-  - "提供 CounterValue/HistogramValues/GaugeValue 断言方法"
+  - "AC-003: FakeMeter 实现 observex.Meter 接口"
+  - "AC-003: Counter/Histogram/Gauge 记录到内部 map"
+  - "AC-003: AssertCounterValue/AssertHistogramRecorded 可用"
 depends_on:
   - "TASK-TESTKITX-000"
 estimated_effort: "1h"
@@ -30,14 +31,14 @@ status: pending
 
 | Requirement | Description | Acceptance Criteria |
 |---|---|---|
-| FR-003 | FakeMeter：记录 metrics 到内存 | 断言方法可用 |
+| FR-003 | FakeMeter：记录 metrics 到内存 | AC-003 |
 
 ## Test Plan
 
 | Test Case | Type | Description |
 |---|---|---|
-| — | Unit | Counter.Add 后 CounterValue 正确 |
-| — | Unit | Gauge.Set 后 GaugeValue 正确 |
+| TC-003 | Unit | Counter.Add 后 AssertCounterValue 正确 |
+| TC-003 | Unit | Histogram.Record 后 AssertHistogramRecorded 通过 |
 
 ## Implementation Notes
 

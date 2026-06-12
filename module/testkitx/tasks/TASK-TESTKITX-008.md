@@ -7,15 +7,18 @@
 ```yaml
 task_id: TASK-TESTKITX-008
 module: testkitx
-scope: "实现 BoundaryCheck，生产包 import 边界扫描（go list 验证生产依赖图不含 testkitx）"
+scope: "实现 BoundaryCheck，验证生产包 import graph 不包含 testkitx"
+non_scope: "不检查数值边界条件，不修改 go.mod，不扫描外部仓库"
 spec_ref:
   - "module/testkitx/SPEC.md#FR-009"
+  - "module/testkitx/SPEC.md#BR-005"
 files:
   - "boundary.go"
   - "boundary_test.go"
 acceptance_criteria:
-  - "BoundaryCheck 验证 min/max/zero/negative 边界"
-  - "失败时输出清晰的错误信息"
+  - "AC-009: 生产包依赖 testkitx → testing.T fail + 报告完整依赖路径"
+  - "AC-009: 生产包不依赖 testkitx → testing.T pass"
+  - "AC-009: testkitx 自身依赖自身不计为违规"
 depends_on:
   - "TASK-TESTKITX-000"
 estimated_effort: "1h"
@@ -29,18 +32,22 @@ status: pending
 
 | Requirement | Description | Acceptance Criteria |
 |---|---|---|
-| FR-009 | BoundaryCheck：边界条件验证 | min/max/zero/negative |
+| FR-009 | BoundaryCheck：生产 import 边界扫描 | AC-009 |
+| BR-005 | 生产 import graph 无 testkitx | CI Gate: no-production-import |
 
 ## Test Plan
 
 | Test Case | Type | Description |
 |---|---|---|
-| — | Unit | 各边界条件正确检测 |
+| TC-009 | Unit | 模拟生产包依赖 testkitx → fail + 依赖路径 |
+| TC-009 | Unit | 模拟生产包不依赖 testkitx → pass |
+| TC-009 | Unit | BoundaryCheck 自检通过 |
 
 ## Implementation Notes
 
-- `BoundaryCheck(t *testing.T, fn func(v int) error, min, max int)`
-- 自动测试 min-1, min, min+1, 0, max-1, max, max+1
+- 使用 `go list -deps <module>/...` 检查传递依赖
+- 白名单：testkitx 自身目录下的包不触发违规
+- 错误消息格式：`"testkitx: production dependency on testkitx: <import_path>"`
 
 ## Implementation Plan
 
@@ -52,4 +59,5 @@ status: pending
 
 | Risk | Probability | Impact | Mitigation |
 |---|---|---|---|
-| 边界值选择不合理 | Low | Low | 覆盖典型边界 |
+| `go list` 在 CI 中不可用 | Low | High | 降级为 skip 而非 fail |
+| 误报（白名单不完整） | Medium | Medium | 日志输出完整依赖路径 |
