@@ -8,15 +8,17 @@
 task_id: TASK-TESTKITX-006
 module: testkitx
 scope: "实现 Eventually 断言函数，轮询条件直到满足或超时"
+non_scope: "不实现异步断言框架，不替代 testing.T"
 spec_ref:
   - "module/testkitx/SPEC.md#FR-007"
+  - "module/testkitx/SPEC.md#BR-003"
 files:
   - "eventually.go"
   - "eventually_test.go"
 acceptance_criteria:
-  - "Eventually(fn) 在 fn 返回 true 时通过"
-  - "Eventually(fn, timeout) 超时后 fail"
-  - "默认轮询间隔可配置"
+  - "AC-007: fn 在 timeout 内返回 true → 通过"
+  - "AC-007: fn 超时仍 false → fail + 清晰诊断"
+  - "BR-003: 使用 testing.T 而非 panic"
 depends_on:
   - "TASK-TESTKITX-000"
 estimated_effort: "1h"
@@ -30,15 +32,16 @@ status: pending
 
 | Requirement | Description | Acceptance Criteria |
 |---|---|---|
-| FR-007 | Eventually：轮询条件断言 | 超时/成功两种场景 |
+| FR-007 | Eventually：轮询条件断言 | AC-007 |
+| BR-003 | 使用 testing.T 报告失败 | eventually_test.go |
 
 ## Test Plan
 
 | Test Case | Type | Description |
 |---|---|---|
-| — | Unit | 条件立即满足：通过 |
-| — | Unit | 条件延迟满足：通过 |
-| — | Unit | 超时：fail |
+| TC-007 | Unit | 条件立即满足：通过 |
+| TC-007 | Unit | 条件延迟满足：通过 |
+| TC-007 | Unit | 超时：fail + 清晰诊断 |
 
 ## Implementation Notes
 

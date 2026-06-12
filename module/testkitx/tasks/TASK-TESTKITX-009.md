@@ -8,14 +8,15 @@
 task_id: TASK-TESTKITX-009
 module: testkitx
 scope: "实现 GoroutineLeakCheck，检测测试中的 goroutine 泄漏"
+non_scope: "不分析 goroutine 根因，不自动修复泄漏"
 spec_ref:
   - "module/testkitx/SPEC.md#FR-010"
 files:
   - "leakcheck.go"
   - "leakcheck_test.go"
 acceptance_criteria:
-  - "测试前后 goroutine 数量不增加"
-  - "泄漏时输出 goroutine 堆栈"
+  - "AC-010: 测试后无新增 goroutine → pass"
+  - "AC-010: 有泄漏 → fail + 输出 goroutine 堆栈"
 depends_on:
   - "TASK-TESTKITX-000"
 estimated_effort: "1h"
@@ -29,14 +30,14 @@ status: pending
 
 | Requirement | Description | Acceptance Criteria |
 |---|---|---|
-| FR-010 | GoroutineLeakCheck：goroutine 泄漏检测 | 前后数量比较 |
+| FR-010 | GoroutineLeakCheck：goroutine 泄漏检测 | AC-010 |
 
 ## Test Plan
 
 | Test Case | Type | Description |
 |---|---|---|
-| — | Unit | 无泄漏：通过 |
-| — | Unit | 有泄漏：fail 并输出堆栈 |
+| TC-010 | Unit | 无泄漏：通过 |
+| TC-010 | Unit | 有泄漏：fail 并输出堆栈 |
 
 ## Implementation Notes
 

@@ -8,16 +8,17 @@
 task_id: TASK-TESTKITX-001
 module: testkitx
 scope: "实现 FakeConfig，内存配置源，支持测试注入"
+non_scope: "不实现热重载，不读取外部文件"
 spec_ref:
   - "module/testkitx/SPEC.md#FR-001"
 files:
   - "fake_config.go"
   - "fake_config_test.go"
 acceptance_criteria:
-  - "FakeConfig 实现 configx.Reader 接口"
-  - "支持 Set 注入配置值"
-  - "Get/GetString/GetInt 返回注入值"
-  - "并发安全"
+  - "AC-001: FakeConfig 实现 configx.Reader 接口"
+  - "AC-001: Set 注入后 Get/GetString/GetInt 返回注入值"
+  - "AC-001: 未设置的 key 返回 nil"
+  - "AC-001: 并发安全（-race 通过）"
 depends_on:
   - "TASK-TESTKITX-000"
 estimated_effort: "1h"
@@ -31,15 +32,15 @@ status: pending
 
 | Requirement | Description | Acceptance Criteria |
 |---|---|---|
-| FR-001 | FakeConfig：内存配置源 | Set/Get/GetString/GetInt |
+| FR-001 | FakeConfig：内存配置源 | AC-001 |
 
 ## Test Plan
 
 | Test Case | Type | Description |
 |---|---|---|
-| — | Unit | Set 后 Get 返回正确值 |
-| — | Unit | 未设置的 key 返回默认值 |
-| — | Unit | 并发安全 |
+| TC-001 | Unit | Set 后 Get 返回正确值 |
+| TC-001 | Unit | 未设置的 key 返回 nil |
+| TC-001 | Unit | 并发安全（-race） |
 
 ## Implementation Notes
 

@@ -7,14 +7,17 @@
 ```yaml
 task_id: TASK-TESTKITX-000
 module: testkitx
-scope: "创建 go.mod、doc.go，定义包结构"
+scope: "创建 go.mod、doc.go，定义包结构和依赖边界"
+non_scope: "不实现任何业务功能，不引入业务模块依赖"
 spec_ref:
   - "module/testkitx/SPEC.md#15"
+  - "module/testkitx/SPEC.md#BR-006"
 files:
   - "go.mod"
   - "doc.go"
 acceptance_criteria:
-  - "go build ./... 编译通过"
+  - "AC-BR-006: go build ./... 编译通过"
+  - "AC-BR-006: go.mod 仅声明接口包依赖"
 depends_on: []
 estimated_effort: "0.5h"
 priority: P0
@@ -27,13 +30,13 @@ status: pending
 
 | Requirement | Description | Acceptance Criteria |
 |---|---|---|
-| §15 | go.mod 依赖声明 | 仅必要依赖 |
+| BR-006 | testkitx 依赖边界：仅依赖 L1 接口包 | AC-BR-006 |
 
 ## Test Plan
 
 | Test Case | Type | Description |
 |---|---|---|
-| — | CI Gate | `go build ./...` 编译通过 |
+| CI: compile | CI Gate | `go build ./...` 编译通过 |
 
 ## Implementation Notes
 

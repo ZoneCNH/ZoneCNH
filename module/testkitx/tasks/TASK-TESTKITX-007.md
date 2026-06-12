@@ -8,15 +8,19 @@
 task_id: TASK-TESTKITX-007
 module: testkitx
 scope: "实现 GoldenUpdate，自动更新 golden file 测试数据"
+non_scope: "不实现 golden 文件版本管理，不自动提交变更"
 spec_ref:
   - "module/testkitx/SPEC.md#FR-008"
+  - "module/testkitx/SPEC.md#BR-004"
+  - "module/testkitx/SPEC.md#BR-007"
 files:
   - "golden.go"
   - "golden_test.go"
 acceptance_criteria:
-  - "GoldenUpdate 比较实际输出与 golden file"
-  - "不一致时更新 golden file"
-  - "GOLDEN_UPDATE=true 环境变量控制"
+  - "AC-008: 比较实际输出与 golden file"
+  - "AC-008: GOLDEN_UPDATE=1 → 更新 golden file"
+  - "BR-004: GOLDEN_UPDATE 未设置 → 只读比较"
+  - "BR-007: golden 更新时自动检查 secret"
 depends_on:
   - "TASK-TESTKITX-000"
 estimated_effort: "1h"
@@ -30,14 +34,17 @@ status: pending
 
 | Requirement | Description | Acceptance Criteria |
 |---|---|---|
-| FR-008 | GoldenUpdate：golden file 自动更新 | 环境变量控制 |
+| FR-008 | GoldenUpdate：golden file 自动更新 | AC-008 |
+| BR-004 | GOLDEN_UPDATE=1 环境变量控制 | golden update guard |
+| BR-007 | golden 文件不泄露 secret | gitleaks CI Gate |
 
 ## Test Plan
 
 | Test Case | Type | Description |
 |---|---|---|
-| — | Unit | 默认模式：比较 golden file |
-| — | Unit | GOLDEN_UPDATE=true：更新 golden file |
+| TC-008 | Unit | 默认模式：比较 golden file 一致 → pass |
+| TC-008 | Unit | GOLDEN_UPDATE=1：更新 golden file |
+| TC-008 | Unit | 内容不一致且未设 GOLDEN_UPDATE → fail |
 
 ## Implementation Notes
 

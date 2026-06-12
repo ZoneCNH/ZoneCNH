@@ -8,15 +8,16 @@
 task_id: TASK-TESTKITX-004
 module: testkitx
 scope: "实现 FakeTracer，记录 spans 到内存供断言"
+non_scope: "不导出到外部 tracing 系统，不实现采样"
 spec_ref:
   - "module/testkitx/SPEC.md#FR-004"
 files:
   - "fake_tracer.go"
   - "fake_tracer_test.go"
 acceptance_criteria:
-  - "FakeTracer 实现 observex.Tracer 接口"
-  - "Start 创建 span 并记录"
-  - "Spans() 返回所有记录的 span"
+  - "AC-004: FakeTracer 实现 observex.Tracer 接口"
+  - "AC-004: Start 创建 span 并记录"
+  - "AC-004: AssertSpanCount/AssertTraceID 可用"
 depends_on:
   - "TASK-TESTKITX-000"
 estimated_effort: "1h"
@@ -30,14 +31,15 @@ status: pending
 
 | Requirement | Description | Acceptance Criteria |
 |---|---|---|
-| FR-004 | FakeTracer：记录 spans 到内存 | Spans() 可断言 |
+| FR-004 | FakeTracer：记录 spans 到内存 | AC-004 |
 
 ## Test Plan
 
 | Test Case | Type | Description |
 |---|---|---|
-| — | Unit | Start 后 Spans() 包含该 span |
-| — | Unit | 子 span 继承 trace_id |
+| TC-004 | Unit | Start 后 Spans() 包含该 span |
+| TC-004 | Unit | AssertSpanCount 验证数量 |
+| TC-004 | Unit | 子 span 继承 trace_id |
 
 ## Implementation Notes
 
