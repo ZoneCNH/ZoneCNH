@@ -264,8 +264,9 @@ Foundation v1 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中�
 | 等级 | 图形      | 定义                                 |
 | ---- | --------- | ------------------------------------ |
 | 初始 | ░░░░ 5%   | 仅 README + LICENSE，无业务代码      |
-| 骨架 | █░░░ 15%  | 有 go.mod + 接口定义，核心逻辑未实现 |
-| 半成 | ██░░ 50%  | 核心功能可用，缺少边界场景和文档     |
+| 骨架 | █░░░ 15%  | 有 go.mod + 接口定义，核心逻辑未实现                                                    |
+| 规格 | ██░░ 30%  | 完整 SPEC + TRACEABILITY + goal，文档就绪但未实现                                      |
+| 半成 | ███░ 50%  | 核心功能可用或完整文档+任务就绪（tasks/prompts/evidence 齐备），缺少边界场景或代码实现  |
 | 成熟 | ███░ 80%  | 核心功能完整，有测试覆盖，可用于生产 |
 | 发布 | ███░ 90%  | 版本化发布，文档完整，长期维护       |
 | 完备 | ████ 100% | 全功能、全测试、全文档、生产验证     |
@@ -283,13 +284,13 @@ Foundation v1 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中�
 | 基座                  | [schedulex](https://github.com/ZoneCNH/schedulex)               | v0.1.2 | ✅ 已有   | █████ 100% | cron/interval/delay 调度、OverlapPolicy（Skip/Queue/Replace）、MisfirePolicy（Skip/RunOnce/CatchUp）、EventSink、Locker、Clock 注入、98.8% 覆盖           |
 | 基座                  | [xlibgate](https://github.com/ZoneCNH/xlibgate)                 | -      | ✅ 已有   | -        | import 边界、go.mod、Go baseline、release evidence、L2 发布就绪 机器门禁                               |
 | 基座                  | [xlib-standard](https://github.com/ZoneCNH/xlib-standard)       | -      | ✅ 已有   | -        | 标准事实源、Go Reference Template、Generator、Harness Gate、Evidence Runtime；不参与运行时 import |
-| 基座                  | [redisx](https://github.com/ZoneCNH/redisx)                     | -      | ✅ 已有   | █░░░ 15% | Redis，仅骨架                                                                             |
-| 基座                  | [kafkax](https://github.com/ZoneCNH/kafkax)                     | -      | ✅ 已有   | █░░░ 15% | Kafka，仅骨架                                                                             |
-| 基座                  | [natsx](https://github.com/ZoneCNH/natsx)                       | -      | ✅ 已有   | ███░ 80% | NATS，349KB/27 项                                                                         |
-| 基座                  | [postgresx](https://github.com/ZoneCNH/postgresx)               | -      | ✅ 已有   | █░░░ 15% | PostgreSQL，仅骨架                                                                        |
-| 基座                  | [taosx](https://github.com/ZoneCNH/taosx)                       | -      | ✅ 已有   | █░░░ 15% | TDengine L2 adapter contract（Driver 注入），无内置真实驱动                              |
-| 基座                  | [ossx](https://github.com/ZoneCNH/ossx)                         | -      | ✅ 已有   | █░░░ 15% | 对象存储，仅骨架                                                                          |
-| 基座                  | [clickhousex](https://github.com/ZoneCNH/clickhousex)           | -      | ✅ 已有   | █░░░ 15% | ClickHouse，仅骨架                                                                        |
+| 基座                  | [redisx](https://github.com/ZoneCNH/redisx)                     | -      | ✅ 已有   | ███░░ 50% | Redis KeyBuilder/Options/KV/TTL/Cache/Hash/List/PubSub/Pipeline/Locker/Counter/RateLimit/Codec/Health（12 FR，10 BR，4 NFR，10 tasks） |
+| 基座                  | [kafkax](https://github.com/ZoneCNH/kafkax)                     | -      | ✅ 已有   | ██░░░ 30% | Kafka — 消息队列、事件流（完整规格，骨架之上）                                                  |
+| 基座                  | [natsx](https://github.com/ZoneCNH/natsx)                       | -      | ✅ 已有   | ████░ 80% | NATS，349KB/27 项                                                                         |
+| 基座                  | [postgresx](https://github.com/ZoneCNH/postgresx)               | -      | ✅ 已有   | ███░░ 50% | PostgreSQL — 关系型存储、事务、迁移（v0.1.0 candidate）                                     |
+| 基座                  | [taosx](https://github.com/ZoneCNH/taosx)                       | -      | ✅ 已有   | ██░░░ 30% | TDengine — 时序数据写入与查询（完整规格，骨架之上）                                          |
+| 基座                  | [ossx](https://github.com/ZoneCNH/ossx)                         | -      | ✅ 已有   | ███░░ 50% | 对象存储 S3/MinIO/local 多后端（SPEC + plan + tasks + prompts + evidence 全链路文档就绪）   |
+| 基座                  | [clickhousex](https://github.com/ZoneCNH/clickhousex)           | -      | ✅ 已有   | ██░░░ 30% | ClickHouse — OLAP 查询、批量写入（完整规格，骨架之上）                                      |
 | 基座                  | [contracts](https://github.com/ZoneCNH/contracts)               | -      | ✅ 已有   | ███░ 80% | 跨域稳定端口/事件/DTO 契约，191KB/27 项                                                   |
 | **L2.5 · 领域共享层** |                                                                 |        |           |          |                                                                                           |
 | L2.5                  | [decimalx](https://github.com/ZoneCNH/decimalx)                 | v0.1.0 | ✅ P0     | ███░ 80% | 高精度十进制类型（Decimal/Price/Qty/Ratio/Money）                                         |

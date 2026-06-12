@@ -52,8 +52,8 @@
 
 - 组件：16 个，平均进度 55%
 - 核心模块（kernel / configx / observex / resiliencx）已成熟，有版本号；kernel v1.0.0、configx v1.0.0、observex v1.0.0 已发布（100% 覆盖）
-- 存储层 6/7 仅骨架（15%）：redisx / kafkax / postgresx / taosx / ossx / clickhousex
-- **阻塞项**：存储层实现滞后，但不影响上层开发（可通过 contracts 稳定端口 mock）
+- 存储层 3/7 已文档化 50%（redisx / ossx / postgresx）、3/7 已规格化 30%（kafkax / taosx / clickhousex），均已脱离仅骨架阶段
+- **阻塞项**：存储层代码实现仍滞后，但不影响上层开发（全模块 SPEC/TRACEABILITY 已就绪，可通过 contracts 稳定端口 mock）
 
 ### 🟢 L2.5 领域共享层（健康）
 
@@ -122,13 +122,13 @@
 | [testkitx](https://github.com/ZoneCNH/testkitx) | v1.0.0 | ████ 100% | SPEC v0.7.3 (10 FR/11 tasks) | Fake / Fixture / Golden / Contract / Leak / Boundary / Manifest 测试工具包（Matrix/Tasks/Plan/Prompt 100 分） |
 | [resiliencx](https://github.com/ZoneCNH/resiliencx) | v1.0.1 | █████ 100% | SPEC Approved (6 FR, 8 BR, 10 tasks) | 弹性策略（timeout / retry / circuit / bulkhead / rate / fallback） |
 | [schedulex](https://github.com/ZoneCNH/schedulex) | v0.1.2 | █████ 100% | 398KB/25 项 | cron/interval/delay 调度、Overlap/Misfire 策略、分布式锁、Clock 注入、8 示例（98.8% 覆盖，race/bench/vet 通过，SPEC v1.0.1） |
-| [redisx](https://github.com/ZoneCNH/redisx) | - | █░░░ 15% | - | Redis，仅骨架 |
-| [kafkax](https://github.com/ZoneCNH/kafkax) | - | █░░░ 15% | - | Kafka，仅骨架 |
+| [redisx](https://github.com/ZoneCNH/redisx) | - | ███░░ 50% | SPEC v1.0 + TRACEABILITY + goal + 10 tasks | Redis KeyBuilder/Options/KV/TTL/Cache/Hash/List/PubSub/Pipeline/Locker/Counter/RateLimit/Codec/Health（12 FR，10 BR，4 NFR，10 tasks）；直接生产依赖限定为 kernel + Redis 客户端库 |
+| [kafkax](https://github.com/ZoneCNH/kafkax) | - | ██░░░ 30% | SPEC + TRACEABILITY + goal | Kafka — 消息队列、事件流（完整规格，骨架之上） |
 | [natsx](https://github.com/ZoneCNH/natsx) | - | ████░ 80% | 349KB/27 项 | NATS 生命周期/投递证据已验证（`/home/natsx` `3053e80`）；8/14 complete、6/14 partial、0/14 pending；未批准发布 |
-| [postgresx](https://github.com/ZoneCNH/postgresx) | - | █░░░ 15% | - | PostgreSQL，仅骨架 |
-| [taosx](https://github.com/ZoneCNH/taosx) | - | █░░░ 15% | - | TDengine，仅骨架 |
-| [ossx](https://github.com/ZoneCNH/ossx) | - | █░░░ 15% | - | 对象存储，仅骨架 |
-| [clickhousex](https://github.com/ZoneCNH/clickhousex) | - | █░░░ 15% | - | ClickHouse，仅骨架 |
+| [postgresx](https://github.com/ZoneCNH/postgresx) | - | ███░░ 50% | SPEC v0.1.0 + TRACEABILITY + goal + 3 tasks | PostgreSQL — 关系型存储、事务、迁移（已提升为 v0.1.0 candidate） |
+| [taosx](https://github.com/ZoneCNH/taosx) | - | ██░░░ 30% | SPEC + TRACEABILITY + goal | TDengine — 时序数据写入与查询（完整规格，骨架之上） |
+| [ossx](https://github.com/ZoneCNH/ossx) | - | ███░░ 50% | SPEC + TRACEABILITY + goal + IMPLEMENTATION-PLAN + 7 prompts + 7 tasks + evidence | 对象存储 — S3/MinIO/local 多后端（全链路文档就绪：plan/tasks/prompts/evidence 齐备） |
+| [clickhousex](https://github.com/ZoneCNH/clickhousex) | - | ██░░░ 30% | SPEC + TRACEABILITY + goal | ClickHouse — OLAP 查询、批量写入（完整规格，骨架之上） |
 | [contracts](https://github.com/ZoneCNH/contracts) | - | ███░ 80% | 191KB/27 项 | 跨域稳定端口/事件/DTO 契约 |
 
 ### L2.5 · 领域共享层
@@ -253,7 +253,7 @@
 
 | # | 风险 | 影响 | 建议 |
 | -- | ---- | ---- | ---- |
-| R8 | 存储层 6/7 仅骨架（15%） | 不阻塞上层开发 | 按需实现，contracts 稳定端口可 mock |
+| R8 | 存储层全部脱离仅骨架（30-50%），代码实现滞后 | 不阻塞上层开发 | 按需实现，contracts 稳定端口可 mock，各模块 SPEC/TRACEABILITY 已就绪 |
 | R9 | 分析域↔决策域若用实现包互调 | Go 循环导入和边界泄漏 | 只允许通过 contracts 事件/DTO 与 L2.5 模型连接 |
 
 ---
