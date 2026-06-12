@@ -1,0 +1,203 @@
+{
+  "module": "kernel",
+  "stage": "tasks",
+  "platform": "claude",
+  "scored_at": "2026-06-12T14:30:00Z",
+  "score": 84,
+  "redline": false,
+  "verdict": "Ready-candidate",
+  "confidence": "high",
+  "dimensions": [
+    {
+      "name": "Task 模板符合度",
+      "max": 12,
+      "deducted": 3,
+      "score": 9
+    },
+    {
+      "name": "粒度合规",
+      "max": 15,
+      "deducted": 3,
+      "score": 12
+    },
+    {
+      "name": "spec_ref 闭合",
+      "max": 15,
+      "deducted": 4,
+      "score": 11
+    },
+    {
+      "name": "Scope/Non-scope",
+      "max": 12,
+      "deducted": 0,
+      "score": 12
+    },
+    {
+      "name": "覆盖完整性",
+      "max": 15,
+      "deducted": 0,
+      "score": 15
+    },
+    {
+      "name": "依赖声明",
+      "max": 10,
+      "deducted": 0,
+      "score": 10
+    },
+    {
+      "name": "测试计划",
+      "max": 10,
+      "deducted": 5,
+      "score": 5
+    },
+    {
+      "name": "优先级与文件清单",
+      "max": 11,
+      "deducted": 1,
+      "score": 10
+    }
+  ],
+  "deductions": [
+    {
+      "id": "D1",
+      "severity": "LOW",
+      "points": 1,
+      "rule": "Task 模板符合度 — spec_ref 格式规范度",
+      "spec_ref": [
+        "SPEC.md §7 Functional Requirements"
+      ],
+      "spec_note": "FR-001~FR-012 逐个定义为唯一有效锚点；区间标记 FR-001~FR-012 不是 §7 中的任何锚点",
+      "evidence": "TASK-KERNEL-015 的 spec_ref 使用区间标记法 'FR-001~FR-012'，该写法不是 SPEC.md 中的有效锚点。",
+      "fix": "逐一列出已由子任务覆盖的 FR-ID，或改为引用 SPEC.md 的 section 编号并配合文本说明覆盖范围。"
+    },
+    {
+      "id": "D2",
+      "severity": "MEDIUM",
+      "points": 1,
+      "rule": "Task 模板符合度 — 章节缺失（Files Likely to Change）",
+      "spec_ref": [
+        "SPEC.md §14 Directory Structure"
+      ],
+      "spec_note": "§14 定义了 12 子包的文件清单结构；TASK-TEMPLATE 示例据此设立 Files Likely to Change 节",
+      "evidence": "TASK-KERNEL-003~014 及 016a/016b/016c 共 15 个 Task 缺少 ## Files Likely to Change 节。",
+      "fix": "为缺失的 Task 补充 ## Files Likely to Change 节。"
+    },
+    {
+      "id": "D3",
+      "severity": "LOW",
+      "points": 1,
+      "rule": "Task 模板符合度 — 非标准字段",
+      "spec_ref": [
+        "SPEC.md §1 Metadata"
+      ],
+      "spec_note": "§1 元数据节定义 task 审批状态；type: meta / parent / sub_tasks 等扩展字段未经 §1/§23 变更流程批准",
+      "evidence": "TASK-015 和 TASK-016 使用 type: meta、sub_tasks；015a/b/c 和 016a/b/c 使用 parent 字段。均为 TASK-TEMPLATE.md 未定义的字段。",
+      "fix": "若 meta/子任务模式是正式机制，应先在 TASK-TEMPLATE.md 中将其定义为可选字段。"
+    },
+    {
+      "id": "D4",
+      "severity": "MEDIUM",
+      "points": 2,
+      "rule": "粒度合规 — TASK-KERNEL-014 文件数目歧义",
+      "spec_ref": [
+        "SPEC.md §14 Directory Structure",
+        "SPEC.md §20.2 kernel 专属 Gate"
+      ],
+      "spec_note": "TASK-014 的 contracts/ 目录结构在 §14 中定义（5 .go + 3 子目录），§20.2 定义了专属 gate",
+      "evidence": "TASK-KERNEL-014 的 files 字段含 5 个具体 .go 文件 + 3 个目录条目（public_api/、golden/、examples/）。若每目录最少 1 文件则总数 8 > 5。",
+      "fix": "将 3 个目录条目替换为具体占位文件路径（如 contracts/public_api/.gitkeep）。"
+    },
+    {
+      "id": "D5",
+      "severity": "LOW",
+      "points": 1,
+      "rule": "粒度合规 — 015a/b/c FR 引用数超限（不触红线）",
+      "spec_ref": [
+        "SPEC.md §7 Functional Requirements"
+      ],
+      "spec_note": "§7 的 12 个 FR 对 TASK-015a/b/c 而言是覆盖标记而非实现目标",
+      "evidence": "TASK-015a/b/c 各引用 4 个 FR，但它们是 P2 示例任务，创建已有功能的 main.go 演示程序。",
+      "fix": "在 tasks Rubric 中明确示例/演示类 Task 的 FR 引用上限是否与实现类一致。"
+    },
+    {
+      "id": "D6",
+      "severity": "MEDIUM",
+      "points": 2,
+      "rule": "spec_ref 闭合 — TASK-013 无 FR/BR ID",
+      "spec_ref": [
+        "SPEC.md §9.13 internal/testutil",
+        "SPEC.md §7 Functional Requirements"
+      ],
+      "spec_note": "§9.13 定义了 RequireEqual 接口但不在 §7 的 FR 列表中",
+      "evidence": "TASK-KERNEL-013 的 spec_ref 仅包含 'module/kernel/SPEC.md#9.13'，未引用任何 FR/BR ID。",
+      "fix": "同时引用最相关的 section 编号和最相关的 FR/BR。若无直接对应，在 spec_ref 中注明引用依据。"
+    },
+    {
+      "id": "D7",
+      "severity": "LOW",
+      "points": 1,
+      "rule": "spec_ref 闭合 — section 编号替代 FR/BR",
+      "spec_ref": [
+        "SPEC.md §7 FR",
+        "SPEC.md §14 目录",
+        "SPEC.md §15.1 go.mod",
+        "SPEC.md §20 CI",
+        "SPEC.md §22 Release DoD"
+      ],
+      "spec_note": "TASK-000/014/016/016a/016b 使用纯 section 编号作 spec_ref",
+      "evidence": "TASK-000（§14/§15.1）、TASK-014（§14/§20.2/§22）、TASK-016/016a/016b（§20/§22）使用纯 section 编号。016c 含 BR-009 属良好实践。",
+      "fix": "同时标注最相关的 section 编号和最相关的 FR/BR/NFR。"
+    },
+    {
+      "id": "D8",
+      "severity": "LOW",
+      "points": 1,
+      "rule": "spec_ref 闭合 — 区间标记非锚点",
+      "spec_ref": [
+        "SPEC.md §7 Functional Requirements"
+      ],
+      "spec_note": "与 D1 同源——§7 的 FR 列表无区间锚点语法",
+      "evidence": "TASK-KERNEL-015 使用 'FR-001~FR-012' 区间标记法，非 SPEC.md 有效锚点。",
+      "fix": "同 D1——逐一列出 FR-ID 或用 section 引用配合文本描述。"
+    },
+    {
+      "id": "D9",
+      "severity": "MEDIUM",
+      "points": 3,
+      "rule": "测试计划 — 引用 Spec TC ID",
+      "spec_ref": [
+        "SPEC.md §16.3 Given/When/Then 用例"
+      ],
+      "spec_note": "§16.3 定义了 TC-001~TC-018 共 18 个用例；全部 23 个 Task 的 AC 均为自创 ID，无正向引用至本节",
+      "evidence": "全部 23 个 TASK-KERNEL-*.md 中没有任何 Task 引用 SPEC.md §16.3 的 TC-001~TC-018。",
+      "fix": "在每个 Task 的 Requirements Covered 表或 AC 列表中标注对应的 §16.3 TC 编号。"
+    },
+    {
+      "id": "D10",
+      "severity": "MEDIUM",
+      "points": 2,
+      "rule": "测试计划 — Test Plan 节覆盖率",
+      "spec_ref": [
+        "SPEC.md §16 Testing"
+      ],
+      "spec_note": "§16.1~§16.4 定义了测试框架；Test Plan 节应聚合本 Task 涉及的 §16 测试策略",
+      "evidence": "23 个 Task 中仅有 5 个（000/015a/015b/015c/016）含 ## Test Plan 节。016a/016b/016c 新增后亦缺失。",
+      "fix": "为缺失的 18 个 Task 补充 ## Test Plan 节，汇总 AC 测试命令并标注 §16.3 TC 编号。"
+    },
+    {
+      "id": "D11",
+      "severity": "LOW",
+      "points": 1,
+      "rule": "优先级与文件清单 — Files Likely to Change 覆盖率",
+      "spec_ref": [
+        "SPEC.md §14 Directory Structure"
+      ],
+      "spec_note": "§14 为每个子包和 docs/contracts/examples/ 定义了完整文件清单",
+      "evidence": "仅 3/23 的 Task（000/001/002）含 ## Files Likely to Change 节。",
+      "fix": "为缺失的 20 个 Task 补充 ## Files Likely to Change 节。"
+    }
+  ],
+  "redlines": [],
+  "redline_notes": "原 RL-1（TASK-016 文件数超 5 上限）已解决——TASK-016 已拆分为 016a（5 文件）、016b（5 文件）、016c（2 文件），均符合 ≤ 5 文件约束。原 TASK-016 改为 type: meta，无 files 字段。原 RL-2/3/4（015a/b/c FR 数）已由 scorer 降级为 D5 扣分不触发红线。当前无任何红线。",
+  "report_md": ".omc/state/pipeline/kernel/tasks/scores/claude.md"
+}

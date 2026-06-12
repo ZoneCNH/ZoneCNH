@@ -1,0 +1,40 @@
+{
+  "module": "kernel",
+  "stage": "tasks",
+  "platform": "claude",
+  "scored_at": "2026-06-12T13:00:00Z",
+  "score": 80,
+  "redline": true,
+  "verdict": "Redline",
+  "confidence": "high",
+  "note": "严格复评 — 从严解读 Rubric，每项违规按最高严重度扣分",
+  "dimensions": [
+    {"name": "Task 模板符合度", "max": 12, "deducted": 3, "score": 9},
+    {"name": "粒度合规", "max": 15, "deducted": 7, "score": 8},
+    {"name": "spec_ref 闭合", "max": 15, "deducted": 4, "score": 11},
+    {"name": "Scope/Non-scope", "max": 12, "deducted": 0, "score": 12},
+    {"name": "覆盖完整性", "max": 15, "deducted": 0, "score": 15},
+    {"name": "依赖声明", "max": 10, "deducted": 0, "score": 10},
+    {"name": "测试计划", "max": 10, "deducted": 5, "score": 5},
+    {"name": "优先级与文件清单", "max": 11, "deducted": 1, "score": 10}
+  ],
+  "deductions": [
+    {"id": "D1", "severity": "LOW", "points": 1, "rule": "spec_ref 区间标记非法", "evidence": "TASK-015 使用 FR-001~FR-012 区间标记，非 SPEC 有效锚点"},
+    {"id": "D2", "severity": "MEDIUM", "points": 1, "rule": "Files Likely to Change 缺失", "evidence": "TASK-003~014 共 12 个 Task 缺此节"},
+    {"id": "D3", "severity": "LOW", "points": 1, "rule": "非标准 YAML 字段", "evidence": "TASK-015 引入 type:meta/parent/sub_tasks 等模板未定义字段"},
+    {"id": "D4", "severity": "HIGH", "points": 4, "rule": "TASK-016 文件数严重超限", "evidence": "files 字段 11 条目（CHANGELOG + 10 目录），远超 5 上限"},
+    {"id": "D5", "severity": "MEDIUM", "points": 2, "rule": "TASK-014 文件数目歧义", "evidence": "5 个 .go + 3 个目录条目，计数不明确"},
+    {"id": "D6", "severity": "LOW", "points": 1, "rule": "015a/b/c FR 引用数超限", "evidence": "各引用 4 个 FR，超过 3 FR 上限（P2 示例任务）"},
+    {"id": "D7", "severity": "MEDIUM", "points": 2, "rule": "TASK-013 无 FR/BR ID", "evidence": "仅引用 §9.13，是整个 Task 集唯一无 FR/BR/AC 的 Task"},
+    {"id": "D8", "severity": "LOW", "points": 1, "rule": "section 编号替代 FR/BR", "evidence": "TASK-000/014/016 使用纯 section 编号作 spec_ref"},
+    {"id": "D9", "severity": "LOW", "points": 1, "rule": "区间标记非锚点（同 D1）", "evidence": "同上"},
+    {"id": "D10", "severity": "MEDIUM", "points": 3, "rule": "零 Spec TC ID 引用", "evidence": "全部 20 个 Task 无任何 Task 引用 SPEC.md TC-001~018"},
+    {"id": "D11", "severity": "MEDIUM", "points": 2, "rule": "Test Plan 节缺失 76%", "evidence": "仅 5/20 Task 含 Test Plan 节"},
+    {"id": "D12", "severity": "LOW", "points": 1, "rule": "Files Likely to Change 覆盖率 14%", "evidence": "仅 3/20 Task 含此节"}
+  ],
+  "redlines": [
+    {"id": "RL-1", "rule": "任一 Task 超 5 文件上限", "evidence": "TASK-016 的 files 字段含 11 个条目（CHANGELOG + 10 目录），scope 要求在各目录创建文件，实际远超 5", "fix": "拆分为 016a/016b/016c", "severity": "REDLINE"}
+  ],
+  "redline_notes": "原 RL-2/3/4（TASK-015a/b/c 各引 4 FR）经 scorer 裁决降级为 D6 扣分不触发红线。裁决逻辑：015a/b/c 为 P2 示例任务，FR 为覆盖标记非实现目标。若仲裁器持不同解释，红线证据保留在 D6 中。",
+  "report_md": ".omc/state/pipeline/kernel/tasks/scores/claude_80.md"
+}

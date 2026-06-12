@@ -37,7 +37,7 @@
 | BR-006 | obsx: 所有接口必须有 Noop 零值实现 | 消费者被迫依赖具体 SDK | AC-006 Noop 免 panic | TASK-KERNEL-003 | ✅ |
 | BR-007 | healthx: Metadata nil 时 JSON 序列化为 {} | JSON 契约不一致 | TC-007 MarshalJSON 验证 | TASK-KERNEL-011 | ✅ |
 | BR-008 | shutdownx: Hook 按 LIFO 顺序执行 | 资源释放顺序错误 | TC-008 LIFO 断言 | TASK-KERNEL-006 | ✅ |
-| BR-009 | kernel 不 import 任何非 stdlib 包 | 破坏 L0 定位 | TC-012 CI gate `go list -deps` | TASK-KERNEL-016（执行: 016c） | ✅ |
+| BR-009 | kernel 不 import 任何非 stdlib 包 | 破坏 L0 定位 | TC-012 CI gate `go list -deps` | TASK-KERNEL-016 | ✅ |
 | BR-010 | contextx: Key 必须通过 NewKey 创建，零值 panic | 键冲突导致值覆盖 | TC-010 Key 唯一性测试 | TASK-KERNEL-010 | ✅ |
 | BR-011 | syncx: SemaphoreLimiter double-release 静默忽略 | 设计选择，简化调用方 | TC-013 双重 Release 测试 | TASK-KERNEL-004 | ✅ |
 | BR-012 | timex: FakeClock 零值接收者安全 | nil panic 污染测试 | TC-015 nil 调用测试 | TASK-KERNEL-002 | ✅ |
