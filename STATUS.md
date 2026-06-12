@@ -104,7 +104,7 @@
 ### 🟡 横切（注意）
 
 - alertx 仅创建（5%），observex 已有（80%）
-- observex 同属基座和横切，职责边界需明确
+- observex 同属基座和横切，职责边界通过 ADR 明确（见 `module/observex/ADR-dual-attribution.md`，R7 已闭环）
 
 ---
 
@@ -118,7 +118,7 @@
 | [xlibgate](https://github.com/ZoneCNH/xlibgate)           | -      | -        | -           | 门禁与验证运行时           |
 | [kernel](https://github.com/ZoneCNH/kernel)               | v1.0.0 | █████ 100% | 594KB/30 项 | L0 原语 / 12 子包 / stdlib-only / v1.0.0 已发布 |
 | [configx](https://github.com/ZoneCNH/configx)             | v0.1.4 | ███░ 80% | 258KB/20 项 | 配置管理                   |
-| [observex](https://github.com/ZoneCNH/observex)           | v0.3.1 | ███░ 80% | 220KB/18 项 | 可观测性                   |
+| [observex](https://github.com/ZoneCNH/observex)           | v0.7.3 | ████ 90% | 220KB/18 项 | 可观测性                   |
 | [testkitx](https://github.com/ZoneCNH/testkitx)           | v0.4.0 | ███░ 80% | 254KB/27 项 | 测试工具包                 |
 | [resiliencx](https://github.com/ZoneCNH/resiliencx)       | v0.4.8 | ███░ 80% | 707KB/27 项 | 弹性与容错                 |
 | [schedulex](https://github.com/ZoneCNH/schedulex)         | v0.1.2 | ███░ 80% | 398KB/25 项 | 调度任务                   |
@@ -221,7 +221,7 @@
 | ------------------------------------------------- | ---- | ------ | -------- | ------------------------ |
 | [x.go](https://github.com/ZoneCNH/x.go)           | 入口 | v0.0.1 | ███░ 80% | 组合根，2.8MB/33 项      |
 | [alertx](https://github.com/ZoneCNH/alertx)       | 横切 | -      | ░░░░ 5%  | 告警引擎                 |
-| [observex](https://github.com/ZoneCNH/observex)   | 横切 | v0.3.1 | ███░ 80% | 可观测性（同时归属基座） |
+| [observex](https://github.com/ZoneCNH/observex)   | 横切 | v0.7.3 | ████ 90% | 可观测性（同时归属基座） |
 | [stdlib.rs](https://github.com/ZoneCNH/stdlib.rs) | Rust | -      | -        | Rust 标准库              |
 | [module](./module/README.md)                      | 独立 | -      | -        | 项目技术规范与接口定义   |
 
