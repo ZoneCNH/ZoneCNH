@@ -53,7 +53,7 @@ L2.5: decimalx / domain-market / domain-exchange / domain-macro
 
 反馈: backtest → factor-eval；fills / PnL / exposure events → 决策域
 横切: alertx (告警) / observex (可观测)
-```text
+```
 
 ## 📦 核心项目
 
@@ -73,7 +73,7 @@ L2.5: decimalx / domain-market / domain-exchange / domain-macro
 ### 基座 · 存储与中间件
 
 - [postgresx](https://github.com/ZoneCNH/postgresx) — PostgreSQL 模块 `公开`
-- [redisx](https://github.com/ZoneCNH/redisx) — Redis 模块 `公开`
+- [redisx](https://github.com/ZoneCNH/redisx) — Redis KeyBuilder、Options、KV/TTL、Cache、Hash/List、Pub/Sub、Pipeline、Locker、Counter/RateLimit、Codec/Health 规格；生产依赖限定为 kernel + Redis 客户端库，观测/配置/弹性通过外部 adapter 接入 `公开`
 - [clickhousex](https://github.com/ZoneCNH/clickhousex) — ClickHouse 模块 `公开`
 - [taosx](https://github.com/ZoneCNH/taosx) — TDengine 模块 `公开`
 - [kafkax](https://github.com/ZoneCNH/kafkax) — Kafka 模块 `公开`

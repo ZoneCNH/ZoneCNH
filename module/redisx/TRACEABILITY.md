@@ -3,30 +3,33 @@
 > 模块级追溯矩阵。治理规范见 [docs/governance/TRACEABILITY.md](../../docs/governance/TRACEABILITY.md)。
 
 Last-Updated: 2026-06-12
-Source: docs/governance/TRACEABILITY.md（迁移前全局矩阵）
+Source: module/redisx/SPEC.md
 
-| Requirement | Description        | Acceptance Criteria | Test Case | Status |
-| ----------- | ------------------ | ------------------- | --------- | ------ |
-| FR-001      | Get                | key 存在返回字符串值+error=nil；key 不存在返回 redis.Nil；连接不可用返回连接错误 | TC-001    | ⬜     |
-| FR-002      | Set                | TTL>0 设置值+过期时间返回 nil；TTL=0 设值无过期返回 nil；不可序列化返回序列化错误 | TC-001    | ⬜     |
-| FR-003      | Del                | 删除存在的 key 幂等返回 nil；所有 key 不存在返回 nil（幂等） | TC-001    | ⬜     |
-| FR-004      | Exists             | 返回存在的 key 数量（含 0）；连接不可用返回连接错误 | TC-005    | ⬜     |
-| FR-005      | Expire             | key 存在设置 TTL 返回 nil；key 不存在返回 nil（不报错） | TC-005    | ⬜     |
-| FR-006      | HGet / HSet        | HGet 存在 field 返回值；HGet 不存在返回 redis.Nil；HSet 写入 field 返回 nil | TC-006    | ⬜     |
-| FR-007      | LPush / LRange     | LPush 插入列表头返回 nil；LRange 列表存在返回指定范围；列表不存在返回空切片 | TC-007    | ⬜     |
-| FR-008      | Subscribe          | 连接正常返回 channel+nil；断连自动重连失败发错误到 channel；ctx 取消关闭订阅释放资源 | TC-008, TC-004 | ⬜     |
-| FR-009      | Pipeline           | Pipeline() 返回新实例；Exec 成功按序返回全部结果；部分失败返回已成功+首个错误 | TC-003    | ⬜     |
-| FR-010      | Locker.Acquire     | 锁未被持有 Acquire 返回 true；锁被持有返回 false；TTL 到期锁自动释放 | TC-002    | ⬜     |
-| FR-011      | Locker.Release     | 持有者释放锁返回 nil；非持有者释放返回 ErrLockNotHeld 不释放锁 | TC-002    | ⬜     |
-| FR-012      | Health             | PING 成功返回 {Ready:true, Live:true}；PING 失败返回 unhealthy+Message | TC-009    | ⬜     |
-| BR-001      | 连接池大小默认 10     | 配置默认值为 10；CI Gate 编译 + go test 验证默认连接池大小 | CI Gate: 配置校验   | ⬜     |
-| BR-002      | Codec 默认 JSON      | 单元测试：未指定 codec 时序列化/反序列化使用 JSON | TC-006（含 codec 校验） | ⬜     |
-| BR-003      | 所有操作接受 context   | 编译器强制：Client 接口所有方法含 context.Context 参数 | CI Gate: go build    | ⬜     |
-| BR-004      | 分布式锁唯一持有者标识  | Release 非持有者返回 ErrLockNotHeld（Lua 脚本原子校验） | TC-002    | ⬜     |
-| BR-005      | 分布式锁必须设置 TTL   | Acquire(ctx, key, ttl) 签名强制 TTL 参数，不可省略 | TC-002    | ⬜     |
-| BR-006      | Pipeline 原子性       | 单次网络往返发送所有命令；Exec 行为验证 | TC-003    | ⬜     |
-| BR-007      | Health() 幂等无副作用  | 连续两次 Health() 调用返回一致结果，不改变 Redis 状态 | TC-009（含重复调用） | ⬜     |
-| BR-008      | 断开自动重连可配置     | TC-004 验证重连行为；MaxRetries/重连间隔由 Option 控制 | TC-004    | ⬜     |
-| BR-009      | 错误消息不含 key 实际值 | CI Gate gitleaks + 错误消息格式不含值内容 | CI Gate: gitleaks    | ⬜     |
-
----
+| Requirement | Description | Acceptance Criteria | Test Case | Task | Status |
+| --- | --- | --- | --- | --- | --- |
+| FR-001 | KeyBuilder 与命名空间隔离 | AC-001-1 | TC-001 | TASK-REDISX-001 | Pending |
+| FR-002 | typed Options、New/Close 与连接生命周期 | AC-002-1 | TC-002 | TASK-REDISX-000 | Pending |
+| FR-003 | KV Get/Set/Del | AC-003-1 | TC-003 | TASK-REDISX-002 | Pending |
+| FR-004 | Exists/Expire 与默认 TTL 策略 | AC-004-1 | TC-004 | TASK-REDISX-002 | Pending |
+| FR-005 | CacheClient cache-aside、null-cache、防击穿 | AC-005-1 | TC-005 | TASK-REDISX-003 | Pending |
+| FR-006 | Hash/List 最小封装 | AC-006-1 | TC-006 | TASK-REDISX-004 | Pending |
+| FR-007 | Pub/Sub Publish/Subscribe | AC-007-1 | TC-007 | TASK-REDISX-004 | Pending |
+| FR-008 | Pipeline 有序批量执行 | AC-008-1 | TC-008 | TASK-REDISX-005 | Pending |
+| FR-009 | token owner 分布式锁 | AC-009-1 | TC-009 | TASK-REDISX-006 | Pending |
+| FR-010 | Counter 与 fixed-window RateLimitHelper | AC-010-1 | TC-010 | TASK-REDISX-007 | Pending |
+| FR-011 | JSON 默认 Codec 与自定义 Codec SPI | AC-011-1 | TC-011 | TASK-REDISX-000, TASK-REDISX-003 | Pending |
+| FR-012 | Health、pool stats 与观测 hooks | AC-012-1 | TC-012 | TASK-REDISX-008, TASK-REDISX-009 | Pending |
+| BR-001 | Key namespace/env/service/version/entity/id 不变量 | AC-BR-001 | TC-001 | TASK-REDISX-001 | Pending |
+| BR-002 | 配置只通过 typed Options 注入 | AC-BR-002 | TC-002 | TASK-REDISX-001 | Pending |
+| BR-003 | 所有网络操作尊重 context | AC-BR-003 | TC-003, TC-006, TC-008, TC-010 | TASK-REDISX-002, TASK-REDISX-004, TASK-REDISX-005, TASK-REDISX-007 | Pending |
+| BR-004 | TTL 默认策略、jitter 与无意永不过期防护 | AC-BR-004 | TC-004, TC-005, TC-010 | TASK-REDISX-002, TASK-REDISX-003, TASK-REDISX-007 | Pending |
+| BR-005 | Lock token owner、TTL、续期与释放校验 | AC-BR-005 | TC-009 | TASK-REDISX-006 | Pending |
+| BR-006 | Pipeline 有序、非原子、部分错误可诊断 | AC-BR-006 | TC-008 | TASK-REDISX-005 | Pending |
+| BR-007 | 错误分类与敏感信息脱敏 | AC-BR-007 | TC-002, TC-005, TC-009 | TASK-REDISX-000, TASK-REDISX-003, TASK-REDISX-006 | Pending |
+| BR-008 | 重试/重连/熔断只通过本地 hooks 接入 | AC-BR-008 | TC-012 | TASK-REDISX-008 | Pending |
+| BR-009 | 指标命名和低基数标签约束 | AC-BR-009 | TC-012 | TASK-REDISX-008 | Pending |
+| BR-010 | 依赖边界：stdlib/kernel/Redis client only | AC-BR-010 | TC-002, TC-012 | TASK-REDISX-000, TASK-REDISX-008 | Pending |
+| NFR-001 | 单元与契约测试覆盖所有公开能力 | AC-NFR-001 | TC-002, TC-011 | TASK-REDISX-000 | Pending |
+| NFR-002 | 真实 Redis 集成、并发和失败路径测试 | AC-NFR-002 | TC-003, TC-007, TC-009, TC-010 | TASK-REDISX-009 | Pending |
+| NFR-003 | 性能基线与 benchmark 预算 | AC-NFR-003 | BenchmarkKV, BenchmarkPipeline, BenchmarkLocker, BenchmarkRateLimit | TASK-REDISX-009 | Pending |
+| NFR-004 | README、配置参考、发布证据齐全 | AC-NFR-004 | Documentation evidence | TASK-REDISX-009 | Pending |
