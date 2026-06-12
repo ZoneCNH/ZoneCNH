@@ -559,23 +559,23 @@ go 1.23
 
 ### 16.2 验收标准（AC）
 
-| AC 编号 | 对应 FR | 验收条件 |
-|---------|---------|----------|
-| AC-001 | FR-001 | Logger 所有等级输出符合结构化 JSON；level 过滤正确；With 返回新实例且原实例不变；并发调用无 data race |
-| AC-002 | FR-002 | Counter/Histogram/Gauge 记录数值正确；ForbiddenLabels 被拒绝并返回 ErrLabelForbidden |
-| AC-003 | FR-003 | span 创建/结束正确；RecordError 记录错误事件；子 span 继承父 trace_id；跨 goroutine context 传播 |
-| AC-004 | FR-004 | ExportLogs/Metrics/Spans 正常导出返回 nil；exporter 不可达时返回错误但不 panic；Shutdown 后 buffer 已 flush |
-| AC-005 | FR-005 | secret 字段值被替换为 ***；redact.Check 检测文本中泄露的 secret |
-| AC-006 | FR-006 | AllowedLabels 通过、ForbiddenLabels 拒绝；独立 checker 返回正确判定 |
-| AC-007 | FR-007 | 已初始化时输出符合 schema 的 JSON；未初始化时 ready=false；exporter 不可达时对应 component live=false |
-| AC-008 | BR-001 | -race 测试零 data race |
-| AC-009 | BR-002 | ForbiddenLabels 被拒绝并返回 ErrLabelForbidden；observex.label.forbidden counter 递增 |
-| AC-010 | BR-003 | 跨 goroutine 保持同一 trace_id；丢失上下文时创建新 trace 并记录 warn |
-| AC-011 | BR-004 | Shutdown 后数据已发送；超时返回 ErrShutdownFailed |
-| AC-012 | BR-005 | 并发 With 调用后原实例不变；-race 测试零 data race |
-| AC-013 | BR-006 | 不合规命名返回 ErrLabelForbidden；CI Gate metrics contract check 通过 |
-| AC-014 | BR-007 | secret 值不出现在日志输出中；CI Gate redaction leak check 通过 |
-| AC-015 | BR-008 | import graph 中无直接 Prometheus/Otel/Zap 绑定；CI Gate import check 通过 |
+| AC 编号 | 对应需求 | 验收条件 |
+|---------|----------|----------|
+| AC-001 | §7 Logger | 所有等级输出符合结构化 JSON；level 过滤正确；With 返回新实例且原实例不变；并发调用无 data race |
+| AC-002 | §7 Meter | Counter/Histogram/Gauge 记录数值正确；ForbiddenLabels 被拒绝并返回 ErrLabelForbidden |
+| AC-003 | §7 Tracer | span 创建/结束正确；RecordError 记录错误事件；子 span 继承父 trace_id；跨 goroutine context 传播 |
+| AC-004 | §7 Exporter | ExportLogs/Metrics/Spans 正常导出返回 nil；exporter 不可达时返回错误但不 panic；Shutdown 后 buffer 已 flush |
+| AC-005 | §7 Redaction | secret 字段值被替换为 ***；redact.Check 检测文本中泄露的 secret |
+| AC-006 | §7 Label Policy | AllowedLabels 通过、ForbiddenLabels 拒绝；独立 checker 返回正确判定 |
+| AC-007 | §7 Health | 已初始化时输出符合 schema 的 JSON；未初始化时 ready=false；exporter 不可达时对应 component live=false |
+| AC-008 | §8 BR-001 | -race 测试零 data race |
+| AC-009 | §8 BR-002 | ForbiddenLabels 被拒绝并返回 ErrLabelForbidden；observex.label.forbidden counter 递增 |
+| AC-010 | §8 BR-003 | 跨 goroutine 保持同一 trace_id；丢失上下文时创建新 trace 并记录 warn |
+| AC-011 | §8 BR-004 | Shutdown 后数据已发送；超时返回 ErrShutdownFailed |
+| AC-012 | §8 BR-005 | 并发 With 调用后原实例不变；-race 测试零 data race |
+| AC-013 | §8 BR-006 | 不合规命名返回 ErrLabelForbidden；CI Gate metrics contract check 通过 |
+| AC-014 | §8 BR-007 | secret 值不出现在日志输出中；CI Gate redaction leak check 通过 |
+| AC-015 | §8 BR-008 | import graph 中无直接 Prometheus/Otel/Zap 绑定；CI Gate import check 通过 |
 
 
 ### 16.3 Given/When/Then 用例
