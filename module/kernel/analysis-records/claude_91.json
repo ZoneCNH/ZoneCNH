@@ -1,0 +1,32 @@
+{
+  "module": "kernel",
+  "stage": "tasks",
+  "platform": "claude",
+  "scored_at": "2026-06-12T12:00:00Z",
+  "score": 91,
+  "redline": true,
+  "verdict": "Redline",
+  "confidence": "high",
+  "dimensions": [
+    {"name": "Task 模板符合度", "max": 12, "deducted": 1, "score": 11},
+    {"name": "粒度合规", "max": 15, "deducted": 5, "score": 10},
+    {"name": "spec_ref 闭合", "max": 15, "deducted": 1, "score": 14},
+    {"name": "Scope/Non-scope", "max": 12, "deducted": 1, "score": 11},
+    {"name": "覆盖完整性", "max": 15, "deducted": 0, "score": 15},
+    {"name": "依赖声明", "max": 10, "deducted": 0, "score": 10},
+    {"name": "测试计划", "max": 10, "deducted": 2, "score": 8},
+    {"name": "优先级与文件清单", "max": 11, "deducted": 1, "score": 10}
+  ],
+  "deductions": [
+    {"id": "D1", "severity": "LOW", "points": 1, "rule": "Task 模板符合度 — YAML 结构", "evidence": "全部 17 个 TASK 文件使用 task_id 键值对而非模板定义的顶层 YAML key", "fix": "将 YAML 块从 task_id 重构为 TASK-KERNEL-XXX 顶层 key"},
+    {"id": "D2", "severity": "HIGH", "points": 5, "rule": "粒度合规 — TASK-015 文件数超限", "evidence": "TASK-015 的 files 字段列出 12 个示例 main.go 文件，远超 5 文件上限", "fix": "将 TASK-015 拆分为最多 3 个粒度合规的子 task"},
+    {"id": "D3", "severity": "LOW", "points": 1, "rule": "spec_ref 闭合 — section 编号格式", "evidence": "TASK-000/013/014/015/016 使用 section 章节号引用，非标准 FR/BR/AC ID 格式", "fix": "同时标注最相关的节号和 FR/BR"},
+    {"id": "D4", "severity": "LOW", "points": 1, "rule": "Scope/Non-scope — 缺失显式排除声明", "evidence": "TASK-008/010/011/012/014/015/016 共 7 个 task 缺少 Non-scope 节", "fix": "为每个缺失的 task 补充 Non-scope 节"},
+    {"id": "D5", "severity": "MEDIUM", "points": 2, "rule": "测试计划 — 引用 Spec TC ID", "evidence": "全部 17 个 Task 的 AC 均为自创 ID，无任何 Task 引用 SPEC.md TC-001~018", "fix": "在每个 Task 的 AC 或 Requirements Covered 表中标注 SPEC TC 编号"},
+    {"id": "D6", "severity": "LOW", "points": 1, "rule": "优先级与文件清单 — 目录条目歧义", "evidence": "TASK-014/016 的 files 字段含目录条目，文件计数不明确", "fix": "将目录条目替换为具体占位文件路径"}
+  ],
+  "redlines": [
+    {"id": "RL-1", "rule": "任一 Task 超 5 文件上限", "evidence": "TASK-015 files 字段列出 12 个文件（12 个示例 main.go）", "fix": "拆分为最多 3 个子 task", "severity": "REDLINE"}
+  ],
+  "report_md": ".omc/state/pipeline/kernel/tasks/scores/claude_91.md"
+}

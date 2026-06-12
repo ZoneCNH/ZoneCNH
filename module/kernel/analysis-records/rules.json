@@ -1,0 +1,10 @@
+{
+  "source": "rules",
+  "stage": "tasks",
+  "module": "kernel",
+  "score": 100,
+  "redline": false,
+  "confidence": "high",
+  "deductions": [],
+  "rule_engine_version": "1.0"
+}
