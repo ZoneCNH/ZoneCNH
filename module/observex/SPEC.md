@@ -28,6 +28,7 @@
 | 2026-06-12 | v1.0.1 | 状态 Draft → Review（Claude 99 + Rules 100，两源评分通过，待 Codex/Copilot 凑齐四源） | ZoneCNH |
 | 2026-06-12 | v1.0.1 | 结构修复续：Spec-Version对齐、Non-goals补全、config prefix与BR-006对齐、新增EC-010/TC-003a、FR-005嵌套脱敏 | ZoneCNH |
 | 2026-06-12 | v1.0.1 | 结构修复续：FR-003/FR-004 异常路径补充、版本号语义说明 | ZoneCNH |
+| 2026-06-12 | v1.0.1 | TC-004d 补充：Exporter Shutdown 超时测试用例 | ZoneCNH |
 
 ## 2. Summary
 
@@ -652,6 +653,11 @@ Then 返回符合约定 JSON schema 的健康状态
 Given observex 尚未初始化
 When 调用 Health
 Then 返回 ready=false, live=false, message="not initialized"
+
+**TC-004d: Exporter Shutdown 超时**
+Given exporter Shutdown 在超时时间内未完成 flush
+When 调用 `Shutdown(ctx)` 在 deadline 已过的 ctx 上
+Then 返回 `ErrShutdownFailed`，未发送数据写入本地退避文件
 
 **TC-007: Metrics 命名规范**
 Given 指标名不符合命名规范
