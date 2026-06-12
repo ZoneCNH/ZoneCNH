@@ -43,7 +43,7 @@
 - 同一配置在不同模块中 key 名不同
 - 环境变量和文件冲突时行为不确定
 - 配置错误在运行时才发现，定位困难
-- 敏感值（密码/token）可能泄露到日志和错误消息中
+- 敏感值（密码/token）会泄露到日志和错误消息中
 
 ---
 
@@ -693,7 +693,7 @@ type NoopMetrics struct{}  // 零开销空实现
 
 ---
 
-## 24. Lifecycle
+## 23. Lifecycle
 
 | 阶段 | 触发方法 | 状态变更 | 错误处理 |
 |------|----------|----------|----------|
@@ -704,7 +704,7 @@ type NoopMetrics struct{}  // 零开销空实现
 
 ---
 
-## 23. Open Questions
+## Appendix A: Open Questions
 
 ### Blocking（阻塞开发）
 

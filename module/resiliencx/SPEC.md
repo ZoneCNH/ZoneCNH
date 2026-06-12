@@ -159,7 +159,7 @@ THEN 执行 secondary，返回 secondary 的结果
 
 | 编号 | 规则 | 违反后果 |
 |------|------|----------|
-| BR-001 | 所有策略必须接受 `context.Context` 参数 | 策略无法被 context 取消，可能导致 goroutine 泄漏 |
+| BR-001 | 所有策略必须接受 `context.Context` 参数 | 策略无法被 context 取消，会导致 goroutine 泄漏 |
 | BR-002 | 策略参数从 `configx.Reader` 读取，不硬编码 | 参数散落硬编码，无法统一调优和热更新 |
 | BR-003 | 策略组合时，外层策略包装内层策略（装饰器模式） | 策略执行顺序不可控，行为不确定 |
 | BR-004 | 熔断器状态必须并发安全 | 并发竞争导致状态不一致，熔断误判 |
@@ -446,6 +446,11 @@ Then 前 2 次通过，第 3 次被拒绝或等待
 Given primary 返回错误，secondary 可用
 When 调用 Fallback
 Then 返回 secondary 的结果并记录 primary 错误
+
+**TC-008: 策略组合**
+Given timeout、retry 与 fallback 以装饰器方式组合
+When 调用组合后的策略
+Then 外层策略按声明顺序包装内层策略，整体返回最外层结果
 
 ### 16.3 Benchmark
 

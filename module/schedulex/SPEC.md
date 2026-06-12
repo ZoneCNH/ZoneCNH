@@ -671,7 +671,7 @@ Then 返回 ErrDuplicateJob
 
 ---
 
-## 24. Open Questions
+## Appendix A: Open Questions
 
 - 是否需要支持动态添加/移除 job（运行时 Schedule/Cancel）的并发安全保证级别？
 - 是否需要支持 job 优先级（高优先级 job 可抢占低优先级的执行槽）？

@@ -817,7 +817,7 @@ CLI 短生命周期工具不启动 tracing exporter。执行流程通过父子�
 | JSON 输出格式变更（字段增删） | **minor** | 新增字段向后兼容（旧解析器忽略未知字段）；删除字段在 MINOR 版本中标记 deprecated，MAJOR 版本中移除 |
 | JSON 输出格式变更（字段重命名/删除） | **major** | 更新 CI artifact 解析脚本中的字段名；提供过渡期兼容映射（保留旧字段名作为 alias 至少一个 MAJOR 周期） |
 | 配置 schema 变更（新增可选字段） | **minor** | 无需迁移；旧配置文件继续有效，新增字段使用默认值 |
-| 配置 schema 变更（新增必填字段） | **minor**（带默认值） | 提供字段默认值避免旧配置文件报错；如无合理默认值，在 CHANGELOG 中标注为"soft required"并给出配置示例 |
+| 配置 schema 变更（新增必填字段） | **minor**（带默认值） | 提供字段默认值避免旧配置文件报错；如无安全默认值，在 CHANGELOG 中标注为"soft required"并给出配置示例 |
 | 配置 schema 变更（字段删除/重命名） | **major** | 在至少一个 MINOR 版本中同时支持新旧字段名；旧字段标记 deprecated；MAJOR 版本移除旧字段并提供自动迁移脚本 |
 | 新增检查子命令 | **minor** | `check all` 默认不自动包含新增子命令（避免破坏现有 CI 预期）；在发布说明中引导用户更新 CI 配置以启用新检查 |
 

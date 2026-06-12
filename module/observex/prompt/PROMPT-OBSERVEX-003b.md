@@ -17,7 +17,7 @@
 
 | 类型 | 编号 | AC | TC | 出处 | 说明 |
 |------|------|----|----|------|------|
-| FR | FR-006 | AC-006 | TC-002, TC-007a | SPEC.md §7 | Label Policy 合规检查 |
+| FR | FR-006 | AC-006 | TC-002, TC-015 | SPEC.md §7 | Label Policy 合规检查 |
 
 ## 依赖
 

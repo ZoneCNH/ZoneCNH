@@ -10,18 +10,18 @@
 
 | FR | Description | Acceptance Criteria | Test Case | Task | Status |
 |----|-------------|---------------------|-----------|------|--------|
-| FR-001 | lifecycx 组件生命周期管理：有序启动/逆序停止/失败回滚/幂等 Stop | AC-001, AC-002 | TC-001, TC-002, TC-003 | TASK-KERNEL-005 | ✅ 已对齐 |
-| FR-002 | errx 结构化错误：ErrorKind/Severity/Error 构造/IsKind 链遍历/AsError/ShouldRetry | AC-003, AC-004 | TC-004, TC-005 | TASK-KERNEL-001 | ✅ 已对齐 |
-| FR-003 | healthx 健康检查：HealthStatus 构造/IsHealthy/Aggregate 聚合规则 | AC-005 | TC-007 | TASK-KERNEL-011 | ✅ 已对齐 |
-| FR-004 | obsx 可观测抽象：Logger/Metrics/Tracer/Span 接口 + Noop 实现 + SecretString 脱敏 | AC-006, AC-007 | TC-009 | TASK-KERNEL-003 | ✅ 已对齐 |
-| FR-005 | retryx 重试策略：RetryPolicy 校验/指数退避 Delay/Jitter/ShouldRetry | AC-008 | TC-006 | TASK-KERNEL-009 | ✅ 已对齐 |
-| FR-006 | shutdownx 优雅停机：Hook LIFO 管理/NotifyContext OS 信号 | AC-009, AC-010 | TC-008, TC-016 | TASK-KERNEL-006 | ✅ 已对齐 |
-| FR-007 | timex 时钟抽象：Clock 接口/RealClock/FixedClock/FakeClock | AC-011 | TC-015 | TASK-KERNEL-002 | ✅ 已对齐 |
-| FR-008 | validx 前置条件校验：Precondition/Invariant/RequireNonEmpty | AC-012 | TC-011 | TASK-KERNEL-008 | ✅ 已对齐 |
-| FR-009 | versionx 版本信息：BuildInfo/Compatibility 匹配逻辑 | AC-013 | TC-017 | TASK-KERNEL-007 | ✅ 已对齐 |
-| FR-010 | contextx 类型安全上下文：Key[T]/WithValue/Value/DeadlineRemaining | AC-014 | TC-010 | TASK-KERNEL-010 | ✅ 已对齐 |
-| FR-011 | syncx 并发控制：SemaphoreLimiter Acquire/Release + WorkerGroup 错误收集 | AC-015, AC-016 | TC-013, TC-014 | TASK-KERNEL-004 | ✅ 已对齐 |
-| FR-012 | contracttest 契约测试辅助：AssertJSONFields/AssertErrorKind/AssertHealthStatus | AC-017 | TC-018 | TASK-KERNEL-012 | ✅ 已对齐 |
+| FR-001 | lifecycx 组件生命周期管理：有序启动/逆序停止/失败回滚/幂等 Stop | AC-001, AC-002 | TC-001, TC-002, TC-003 | TASK-KERNEL-005 | ✅ |
+| FR-002 | errx 结构化错误：ErrorKind/Severity/Error 构造/IsKind 链遍历/AsError/ShouldRetry | AC-003, AC-004 | TC-004, TC-005 | TASK-KERNEL-001 | ✅ |
+| FR-003 | healthx 健康检查：HealthStatus 构造/IsHealthy/Aggregate 聚合规则 | AC-005 | TC-007 | TASK-KERNEL-011 | ✅ |
+| FR-004 | obsx 可观测抽象：Logger/Metrics/Tracer/Span 接口 + Noop 实现 + SecretString 脱敏 | AC-006, AC-007 | TC-009 | TASK-KERNEL-003 | ✅ |
+| FR-005 | retryx 重试策略：RetryPolicy 校验/指数退避 Delay/Jitter/ShouldRetry | AC-008 | TC-006 | TASK-KERNEL-009 | ✅ |
+| FR-006 | shutdownx 优雅停机：Hook LIFO 管理/NotifyContext OS 信号 | AC-009, AC-010 | TC-008, TC-016 | TASK-KERNEL-006 | ✅ |
+| FR-007 | timex 时钟抽象：Clock 接口/RealClock/FixedClock/FakeClock | AC-011 | TC-015 | TASK-KERNEL-002 | ✅ |
+| FR-008 | validx 前置条件校验：Precondition/Invariant/RequireNonEmpty | AC-012 | TC-011 | TASK-KERNEL-008 | ✅ |
+| FR-009 | versionx 版本信息：BuildInfo/Compatibility 匹配逻辑 | AC-013 | TC-017 | TASK-KERNEL-007 | ✅ |
+| FR-010 | contextx 类型安全上下文：Key[T]/WithValue/Value/DeadlineRemaining | AC-014 | TC-010 | TASK-KERNEL-010 | ✅ |
+| FR-011 | syncx 并发控制：SemaphoreLimiter Acquire/Release + WorkerGroup 错误收集 | AC-015, AC-016 | TC-013, TC-014 | TASK-KERNEL-004 | ✅ |
+| FR-012 | contracttest 契约测试辅助：AssertJSONFields/AssertErrorKind/AssertHealthStatus | AC-017 | TC-018 | TASK-KERNEL-012 | ✅ |
 
 ---
 

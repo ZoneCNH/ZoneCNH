@@ -1,31 +1,58 @@
-# xlib-standard TRACEABILITY
+# xlib-standard 快照追溯矩阵
 
-> **更新（2026-06-12）**：本文件原为 52 条快照占位 FR 追踪表（commit `93753b3`，v0.6.5 快照）。
-> 文档-代码重对齐后，权威 FR 入口为 `SPEC.md` §7（14 条真实 FR，每条对应实际代码文件）。
-> 原 52 条快照 FR 追踪表已退役；FR 来源锚定 52/52（分析级）；行级 49、file 1、validator-output 2，不等于语义验证完整。
+> 归档说明：本矩阵是非可执行快照索引，用于保留上游标准锚点与证据类型；当前实现范围不由本文件扩展。
 
-## 当前 FR→Code 追溯
-
-| FR | 主题 | 代码文件 | 状态 |
-|----|------|---------|------|
-| FR-001 | Config 标准 | `pkg/templatex/config.go` | ✅ 已对齐 |
-| FR-002 | Error 标准 | `pkg/templatex/errors.go` | ✅ 已对齐 |
-| FR-003 | Health 标准 | `pkg/templatex/health.go` | ✅ 已对齐 |
-| FR-004 | Metrics 标准 | `pkg/templatex/metrics.go` | ✅ 已对齐 |
-| FR-005 | Client 标准 | `pkg/templatex/client.go` + `options.go` | ✅ 已对齐 |
-| FR-006 | Version 标准 | `pkg/templatex/version.go` | ✅ 已对齐 |
-| FR-007 | 公共 API 模板 | `pkg/templatex/*.go` | ✅ 已对齐 |
-| FR-008 | 模板可编译 | `pkg/templatex/*_test.go` | ✅ 已对齐 |
-| FR-009 | 模板渲染 | `scripts/render_template.sh` | ✅ 已对齐 |
-| FR-010 | 模板残留检查 | `scripts/check_rendered_template.sh` | ✅ 已对齐 |
-| FR-011 | CI gate (17 项) | `Makefile` ci: 目标 | ✅ 已对齐 |
-| FR-012 | boundary gate | `scripts/check_boundary.sh` | ✅ 已对齐 |
-| FR-013 | release manifest | `Makefile` release-check + `scripts/generate_manifest.sh` | ✅ 已对齐 |
-| FR-014 | release final check | `Makefile` release-final-check | ✅ 已对齐 |
-| FR-015 | Evidence Runtime CLI（goalcli） | `cmd/goalcli/*.go`（12 文件） | ✅ 已对齐 |
-| FR-016 | L2 下游仓库模板 | `templates/l2/`（12 文件） | ✅ 已对齐 |
-
-## 快照历史
-
-原 52 条 FR 为 2026-06-08 快照，按上游 `docs/standard/xlib-standard.md` 逐契约编号。
-2026-06-12 重对齐至上游 v1.0.0（`09c9ec2`），收缩为 14 条可执行规格。
+| FR | 主题 | 证据锚点 | 证据类型 | 状态 |
+|----|------|----------|----------|------|
+| `FR-001` | Config 标准快照锚点 | `module/xlib-standard/SPEC.md` | line | archived-snapshot |
+| `FR-002` | Error 标准快照锚点 | `module/xlib-standard/SPEC.md` | line | archived-snapshot |
+| `FR-003` | Health 标准快照锚点 | `module/xlib-standard/SPEC.md` | line | archived-snapshot |
+| `FR-004` | Metrics 标准快照锚点 | `module/xlib-standard/SPEC.md` | line | archived-snapshot |
+| `FR-005` | Client 标准快照锚点 | `module/xlib-standard/SPEC.md` | line | archived-snapshot |
+| `FR-006` | Version 标准快照锚点 | `module/xlib-standard/SPEC.md` | line | archived-snapshot |
+| `FR-007` | 公共 API 模板快照锚点 | `module/xlib-standard/SPEC.md` | line | archived-snapshot |
+| `FR-008` | 模板可编译快照锚点 | `module/xlib-standard/SPEC.md` | line | archived-snapshot |
+| `FR-009` | render_template.sh 渲染快照锚点 | `module/xlib-standard/SPEC.md` | line | archived-snapshot |
+| `FR-010` | 生成库无模板残留快照锚点 | `module/xlib-standard/SPEC.md` | line | archived-snapshot |
+| `FR-011` | CI gate快照锚点 | `module/xlib-standard/SPEC.md` | line | archived-snapshot |
+| `FR-012` | boundary gate快照锚点 | `module/xlib-standard/SPEC.md` | line | archived-snapshot |
+| `FR-013` | release manifest快照锚点 | `module/xlib-standard/SPEC.md` | line | archived-snapshot |
+| `FR-014` | release final check快照锚点 | `module/xlib-standard/SPEC.md` | line | archived-snapshot |
+| `FR-015` | Evidence Runtime CLI快照锚点 | `module/xlib-standard/SPEC.md` | line | archived-snapshot |
+| `FR-016` | L2 下游仓库模板快照锚点 | `module/xlib-standard/SPEC.md` | line | archived-snapshot |
+| `FR-017` | 上游标准快照契约 17快照锚点 | `module/xlib-standard/ANALYSIS.md` | line | archived-snapshot |
+| `FR-018` | 上游标准快照契约 18快照锚点 | `module/xlib-standard/ANALYSIS.md` | line | archived-snapshot |
+| `FR-019` | 上游标准快照契约 19快照锚点 | `module/xlib-standard/ANALYSIS.md` | line | archived-snapshot |
+| `FR-020` | 上游标准快照契约 20快照锚点 | `module/xlib-standard/ANALYSIS.md` | line | archived-snapshot |
+| `FR-021` | 上游标准快照契约 21快照锚点 | `module/xlib-standard/ANALYSIS.md` | line | archived-snapshot |
+| `FR-022` | 上游标准快照契约 22快照锚点 | `module/xlib-standard/ANALYSIS.md` | line | archived-snapshot |
+| `FR-023` | 上游标准快照契约 23快照锚点 | `module/xlib-standard/ANALYSIS.md` | line | archived-snapshot |
+| `FR-024` | 上游标准快照契约 24快照锚点 | `module/xlib-standard/ANALYSIS.md` | line | archived-snapshot |
+| `FR-025` | 上游标准快照契约 25快照锚点 | `module/xlib-standard/ANALYSIS.md` | line | archived-snapshot |
+| `FR-026` | 上游标准快照契约 26快照锚点 | `module/xlib-standard/ANALYSIS.md` | line | archived-snapshot |
+| `FR-027` | 上游标准快照契约 27快照锚点 | `module/xlib-standard/ANALYSIS.md` | line | archived-snapshot |
+| `FR-028` | 上游标准快照契约 28快照锚点 | `module/xlib-standard/ANALYSIS.md` | line | archived-snapshot |
+| `FR-029` | 上游标准快照契约 29快照锚点 | `module/xlib-standard/ANALYSIS.md` | line | archived-snapshot |
+| `FR-030` | 上游标准快照契约 30快照锚点 | `module/xlib-standard/ANALYSIS.md` | line | archived-snapshot |
+| `FR-031` | 上游标准快照契约 31快照锚点 | `module/xlib-standard/ANALYSIS.md` | line | archived-snapshot |
+| `FR-032` | 上游标准快照契约 32快照锚点 | `module/xlib-standard/ANALYSIS.md` | line | archived-snapshot |
+| `FR-033` | 上游标准快照契约 33快照锚点 | `module/xlib-standard/ANALYSIS.md` | line | archived-snapshot |
+| `FR-034` | 上游标准快照契约 34快照锚点 | `module/xlib-standard/ANALYSIS.md` | line | archived-snapshot |
+| `FR-035` | 上游标准快照契约 35快照锚点 | `module/xlib-standard/ANALYSIS.md` | line | archived-snapshot |
+| `FR-036` | 上游标准快照契约 36快照锚点 | `module/xlib-standard/ANALYSIS.md` | line | archived-snapshot |
+| `FR-037` | 上游标准快照契约 37快照锚点 | `module/xlib-standard/ANALYSIS.md` | line | archived-snapshot |
+| `FR-038` | 上游标准快照契约 38快照锚点 | `module/xlib-standard/ANALYSIS.md` | line | archived-snapshot |
+| `FR-039` | 上游标准快照契约 39快照锚点 | `module/xlib-standard/ANALYSIS.md` | line | archived-snapshot |
+| `FR-040` | 上游标准快照契约 40快照锚点 | `module/xlib-standard/ANALYSIS.md` | line | archived-snapshot |
+| `FR-041` | 上游标准快照契约 41快照锚点 | `module/xlib-standard/ANALYSIS.md` | line | archived-snapshot |
+| `FR-042` | 上游标准快照契约 42快照锚点 | `module/xlib-standard/ANALYSIS.md` | line | archived-snapshot |
+| `FR-043` | 上游标准快照契约 43快照锚点 | `module/xlib-standard/ANALYSIS.md` | line | archived-snapshot |
+| `FR-044` | 上游标准快照契约 44快照锚点 | `module/xlib-standard/ANALYSIS.md` | line | archived-snapshot |
+| `FR-045` | 上游标准快照契约 45快照锚点 | `module/xlib-standard/ANALYSIS.md` | line | archived-snapshot |
+| `FR-046` | 上游标准快照契约 46快照锚点 | `module/xlib-standard/ANALYSIS.md` | line | archived-snapshot |
+| `FR-047` | 上游标准快照契约 47快照锚点 | `module/xlib-standard/ANALYSIS.md` | line | archived-snapshot |
+| `FR-048` | 上游标准快照契约 48快照锚点 | `module/xlib-standard/ANALYSIS.md` | line | archived-snapshot |
+| `FR-049` | 上游标准快照契约 49快照锚点 | `module/xlib-standard/ANALYSIS.md` | line | archived-snapshot |
+| `FR-050` | 上游标准快照契约 50快照锚点 | `module/xlib-standard/ANALYSIS.md` | line | archived-snapshot |
+| `FR-051` | 上游标准快照契约 51快照锚点 | `module/xlib-standard/ANALYSIS.md` | line | archived-snapshot |
+| `FR-052` | 上游标准快照契约 52快照锚点 | `module/xlib-standard/ANALYSIS.md` | line | archived-snapshot |
