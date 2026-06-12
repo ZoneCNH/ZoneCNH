@@ -1,8 +1,8 @@
 # postgresx 完整规格
 
-> 基座 · 存储扩展。PostgreSQL 客户端封装，提供统一的连接管理、查询、事务、迁移和可观测集成。
+> 基座 · PostgreSQL 存储扩展。以 `pgxpool` 为核心，提供显式配置、连接池生命周期、SQL 执行、事务、迁移、健康检查、错误归一化与可观测适配点。
 
-最后更新：2026-06-07
+最后更新：2026-06-12
 
 ---
 
@@ -10,595 +10,375 @@
 
 - Status: Draft
 - Spec-Version: v1.0.0
-- Last-Updated: 2026-06-07
+- Last-Updated: 2026-06-12
 - Owner: ZoneCNH
 - Layer: 基座 · 存储扩展
-- Version: v0.7.3
+- Implementation-Baseline: v0.1.0 candidate (`/home/postgresx`)
+- Go-Baseline: `go 1.25.0`
+- Runtime Dependencies: `github.com/ZoneCNH/foundationx v0.1.1`, `github.com/jackc/pgx/v5 v5.9.2`
 - Repository: [github.com/ZoneCNH/postgresx](https://github.com/ZoneCNH/postgresx)
-- Related: [CONSTITUTION.md](../../CONSTITUTION.md), [ARCHITECTURE.md](../../ARCHITECTURE.md)
+- Related: [goal.md](./goal.md), [TRACEABILITY.md](./TRACEABILITY.md), [ARCHITECTURE.md](../../ARCHITECTURE.md)
 
 ---
 
-### 1.1 变更历史
+## 2. 评分结论
 
-| 日期       | 版本   | 变更内容   | 作者    |
-| ---------- | ------ | ---------- | ------- |
-| 2026-06-07 | v1.0.0 | 初始版本   | ZoneCNH |
+| 维度 | 修复前 | 当前文档基线 | 主要依据 |
+| ---- | ------ | ------------ | -------- |
+| 代码实现证据 | 82/100 | 82/100 | `/home/postgresx` 已有客户端、事务、迁移、健康、错误映射和测试证据 |
+| 模块文档一致性 | 41/100 | 78/100 | 已移除过期 API、补齐 BR 与 Task 映射，仍有指标名和版本矩阵漂移 |
+| v1.0 可冻结度 | 48/100 | 70/100 | 当前是 v0.1.0 candidate，v1.0 Public API/metrics/contracts 仍需冻结 |
+| 综合评分 | 61/100 | 82/100 | 文档已对齐实现基线，但契约冻结风险未完全消除 |
 
-## 2. Summary
+## 3. Summary
 
-`postgresx` 封装 PostgreSQL 客户端，提供统一的连接管理、参数化查询、事务管理、Schema 迁移、健康检查和可观测集成。与 kernel 生命周期集成，保证连接池随应用启停。不提供 ORM，直接暴露 SQL 接口。
+`postgresx` 是 ZoneCNH 基座层的 PostgreSQL 访问模块。当前实现围绕 `pgx/v5` 提供：
 
----
+- 显式 `Config` 和 `New(ctx, cfg, opts...)` / `Open(ctx, cfg, opts...)` 入口。
+- `Client` 结构体管理 `pgxpool.Pool` 生命周期，支持 `Ping`、`Close`、`Stats`、`Queryer`。
+- `Exec`、`Query`、`QueryRow` 和调用方负责关闭的 `Rows` 抽象。
+- `WithTx` / `WithTxOptions` 自动提交、回滚和 panic 回滚。
+- `MigrationRunner` 执行版本化 SQL 迁移并记录已应用版本。
+- `foundationx.HealthChecker` 兼容的 `Name` / `Check` 健康检查。
+- `foundationx` 错误归一化、可重试判断、SecretString 脱敏、日志和指标 hook。
 
-## 3. Problem
+本模块不是 ORM，不读取环境变量或配置文件，不接管应用生命周期，不向上依赖业务仓库。
 
-70+ 模块中有多个需要使用 PostgreSQL（持久化存储、历史数据查询），各自封装会导致：
+## 4. Problem
 
-- 连接池配置不一致，部分模块创建过多连接
-- SQL 拼接方式不统一，存在 SQL 注入风险
-- 事务管理各自为政，回滚逻辑容易遗漏
-- Schema 迁移工具不统一，版本管理混乱
-- 健康检查缺失，数据库不可用时无法及时发现
-- 可观测集成缺失，查询延迟和慢查询无法被 metrics 采集
+多个模块需要 PostgreSQL 访问能力。如果各自封装，会造成：
 
----
+- 连接池配置、超时和关闭语义不一致。
+- 事务提交、回滚和 panic 路径遗漏。
+- PostgreSQL 错误码无法统一映射到 `foundationx` 错误模型。
+- 迁移版本和执行记录分散，难以审计。
+- 健康检查、连接池状态、查询耗时和失败指标缺少统一采集点。
+- 连接串、密码或 SQL 参数存在日志泄露风险。
 
-## 4. Goals
+## 5. Goals
 
-- 提供统一的 PostgreSQL 客户端封装，覆盖 Query / QueryRow / Exec 操作
-- 事务管理（自动 commit/rollback）
-- Schema 迁移（版本化、幂等、可回滚）
-- 参数化查询（防止 SQL 注入）
-- 健康检查集成到 kernel 健康体系
-- 可观测集成（metrics、tracing、logging）
-- 与 kernel 生命周期集成
+- 提供小而稳定的 PostgreSQL 客户端基线，直接暴露 SQL 能力而非 ORM。
+- 统一连接池、配置默认值、生命周期和健康检查语义。
+- 统一事务执行边界，保证 commit、rollback、context 取消和 panic 行为可测试。
+- 统一迁移执行入口，保证版本单调、重复版本检测和已应用记录。
+- 统一 PostgreSQL 错误映射与 retryability 判定。
+- 提供日志与指标适配点，但不绑定具体可观测后端。
+- 维持基座模块边界，不依赖业务域仓库或 `x.go` 入口。
 
----
+## 6. Non-Goals
 
-## 5. Non-goals
+- 不做 ORM、Repository 生成器、SQL builder 或实体映射框架。
+- 不做读写分离、数据库集群管理、备份恢复和容量治理。
+- 不读取环境变量、Secret 文件或应用配置中心；调用方负责构造 `Config`。
+- 不接管 `kernel` 生命周期；调用方负责在自身生命周期中调用 `New` 和 `Close`。
+- 不内置 `observex`、`resiliencx`、`configx` 运行时耦合；如需集成必须通过接口适配。
+- 不承诺分页、排序、审计字段、租户隔离或批处理工具进入当前 v1.0 基线。
 
-- 不做 ORM（直接暴露 SQL，业务层决定查询方式）
-- 不做数据库集群管理（由运维配置）
-- 不做数据模型定义（业务层决定 schema）
-- 不做连接池底层实现（使用 pgx/pgpool 标准实现）
-- 不做读写分离（业务层按需使用多个 Client 实例）
-- 不做配置解析（→ `configx`）
+## 7. Consumers
 
----
+| 消费者 | 使用方式 | 当前约束 |
+| ------ | -------- | -------- |
+| `market-data` | 持久化历史行情和查询结果 | 可作为潜在下游，不形成反向依赖 |
+| `signal-engine` | 存储因子计算结果和信号历史 | 通过 SQL 与事务接口调用 |
+| `order-engine` | 存储订单历史和成交记录 | 事务边界由业务层决定 |
+| `risk-engine` | 存储风控日志和阈值配置 | 需自行定义 schema |
+| `backtest-engine` | 存储回测结果和参数 | 可复用迁移与查询接口 |
+| 其他基座/业务模块 | 通过 `pkg/postgresx` 显式构造客户端 | 禁止引入业务反向依赖 |
 
-## 6. Consumers
+## 8. Functional Requirements
 
-| 消费者            | 使用方式                                  |
-| ----------------- | ----------------------------------------- |
-| `market-data`     | 持久化行情历史数据                        |
-| `signal-engine`   | 存储因子计算结果和信号历史                |
-| `order-engine`    | 存储订单历史和成交记录                    |
-| `risk-engine`     | 存储风控日志和阈值配置                    |
-| `backtest-engine` | 存储回测结果和参数                        |
-| 业务域模块        | 通过 `Client` 接口进行 SQL 查询和事务操作 |
+### FR-001: Config 与连接池生命周期
 
----
+WHEN 调用方提供 `Config` 并调用 `New(ctx, cfg, opts...)`
+THEN 模块必须校验配置、填充默认值、构造 `pgxpool`，并在初始 `Ping` 失败时关闭池。
 
-## 7. Functional Requirements
+WHEN 调用方调用 `Close(ctx)`
+THEN 模块必须幂等关闭连接池，关闭后查询和事务入口返回已关闭错误。
 
-### FR-001: Query
+### FR-002: SQL 执行接口
 
-WHEN 调用 `Query(ctx, sql, args...)` 且 SQL 有效
-THEN 返回 Rows 迭代器，error 为 nil
+WHEN 调用 `Exec`、`Query`、`QueryRow`
+THEN 模块必须把调用转发到底层 `pgxpool`，保留 `context.Context` 取消和超时语义。
 
-WHEN 调用 `Query(ctx, sql, args...)` 且 SQL 语法错误
-THEN 返回数据库错误
+WHEN 调用 `Query` 返回 `Rows`
+THEN 调用方必须负责 `Close`，模块必须提供 `Rows.Err()` 暴露迭代错误。
 
-WHEN 调用 `Query(ctx, sql, args...)` 且参数数量不匹配
-THEN 返回参数绑定错误
+### FR-003: 事务边界
 
-WHEN 调用 `Query(ctx, sql, args...)` 且 ctx 超时
-THEN 返回 ctx.Err()
+WHEN 调用 `WithTx(ctx, fn)` 或 `WithTxOptions(ctx, opts, fn)`
+THEN 模块必须开启事务，`fn` 返回 nil 时提交，`fn` 返回 error 或 ctx 取消时回滚。
 
-### FR-002: QueryRow
+WHEN `fn` panic
+THEN 模块必须先回滚，再重新抛出 panic，除非未来规格显式变更该契约。
 
-WHEN 调用 `QueryRow(ctx, sql, args...)` 且有结果
-THEN 返回 Row，调用 Scan 可获取数据
+### FR-004: 迁移执行
 
-WHEN 调用 `QueryRow(ctx, sql, args...)` 且无结果
-THEN 返回 Row，调用 Scan 返回 `ErrNoRows`
+WHEN 调用 `MigrationRunner.Up(ctx, source)`
+THEN 模块必须按版本升序执行未应用迁移，记录版本、名称和执行时间。
 
-### FR-003: Exec
+WHEN 迁移版本重复、版本非正、名称为空或 SQL 为空
+THEN 模块必须拒绝执行并返回错误。
 
-WHEN 调用 `Exec(ctx, sql, args...)` 且 SQL 有效
-THEN 返回 Result（含 RowsAffected），error 为 nil
+### FR-005: 健康检查与池状态
 
-WHEN 调用 `Exec(ctx, sql, args...)` 且 SQL 语法错误
-THEN 返回数据库错误
+WHEN 调用 `Name()` 和 `Check(ctx)`
+THEN 模块必须符合 `foundationx.HealthChecker`，输出 healthy/degraded/unhealthy 状态、耗时和安全元数据。
 
-WHEN 调用 `Exec(ctx, sql, args...)` 且违反约束（UNIQUE、FK 等）
-THEN 返回约束违反错误
+WHEN `Stats()` 被调用
+THEN 模块必须返回连接池快照，不暴露密码、完整 DSN 或 SQL 参数。
 
-### FR-004: Tx
+### FR-006: 错误归一化与可重试判断
 
-WHEN 调用 `Tx(ctx, fn)` 且 fn 返回 nil
-THEN 自动 commit，返回 nil
+WHEN 底层返回 PostgreSQL 或 context 错误
+THEN 模块必须通过 `MapError` 映射为 `foundationx` 错误，并通过 `IsRetryable` 暴露可重试语义。
 
-WHEN 调用 `Tx(ctx, fn)` 且 fn 返回 error
-THEN 自动 rollback，返回 fn 的 error
+### FR-007: 可观测适配与 Secret Hygiene
 
-WHEN 调用 `Tx(ctx, fn)` 且 fn panic
-THEN 自动 rollback，返回 panic 错误
+WHEN 调用方传入 `WithLogger` 或 `WithMetrics`
+THEN 模块必须调用适配器记录查询、事务、健康和池状态，不绑定具体后端。
 
-WHEN 调用 `Tx(ctx, fn)` 且 ctx 超时
-THEN 自动 rollback，返回 ctx.Err()
+WHEN 构造或记录 DSN
+THEN `Config.RedactedDSN()` 必须隐藏密码，日志和指标不得包含完整连接串或 SQL 参数值。
 
-### FR-005: Health
+## 9. Business Rules
 
-WHEN 调用 `Health()` 且数据库 PING 成功
-THEN 返回 HealthStatus{Ready: true, Live: true}
+| 编号 | 规则 |
+| ---- | ---- |
+| BR-001 | `postgresx` 不得依赖业务域仓库、入口仓库或具体应用模块。 |
+| BR-002 | 模块不得读取环境变量、配置文件或 Secret 文件；调用方必须显式传入 `Config`。 |
+| BR-003 | 模块不得实现 ORM、schema ownership 或全局默认数据库。 |
+| BR-004 | 所有外部 I/O 入口必须接受 `context.Context` 并尊重取消、超时。 |
+| BR-005 | `Rows` 生命周期由调用方关闭，模块必须保留 `Err()` 查询迭代错误。 |
+| BR-006 | 事务必须只在 `fn` 返回 nil 时提交；error、context 取消和 panic 路径必须回滚。 |
+| BR-007 | 迁移版本必须为正整数且单调执行；重复版本和无效迁移必须阻断。 |
+| BR-008 | 健康检查必须幂等、无副作用，并只输出安全元数据。 |
+| BR-009 | 指标适配必须不泄露敏感信息；v1.0 前必须统一代码与契约中的指标命名。 |
+| BR-010 | PostgreSQL 错误码必须稳定映射到 `foundationx` 错误 kind 和 retryability。 |
+| BR-011 | 发布证据必须支持 `GOWORK=off`，避免依赖本地 workspace 污染。 |
+| BR-012 | `go.mod`、版本矩阵、公开 API 文档和模块规格必须在 v1.0 冻结前保持一致。 |
 
-WHEN 调用 `Health()` 且数据库不可达
-THEN 返回 HealthStatus{Ready: false, Live: false, Message: "..."}
+## 10. Interface Contract
 
-WHEN 连接池耗尽
-THEN 返回 HealthStatus{Ready: false, Live: true, Message: "pool exhausted"}
-
-### FR-006: Migration
-
-WHEN 调用 `Migrate(ctx, migrations)` 且有新版本
-THEN 按顺序执行迁移，返回 nil
-
-WHEN 调用 `Migrate(ctx, migrations)` 且已是最新版本
-THEN 返回 nil（幂等）
-
-WHEN 迁移脚本执行失败
-THEN 停止迁移，返回错误（不自动回滚，需手动修复）
-
----
-
-## 8. Business Rules
-
-| 编号   | 规则                                                        |
-| ------ | ----------------------------------------------------------- |
-| BR-001 | 所有查询必须使用参数化查询（`$1, $2, ...`），禁止字符串拼接 |
-| BR-002 | 所有操作必须接受 `context.Context`，支持超时和取消          |
-| BR-003 | 事务必须在 fn 返回后自动 commit 或 rollback                 |
-| BR-004 | 事务内 panic 必须被 catch，自动 rollback                    |
-| BR-005 | Rows 使用完毕后必须 Close（调用方负责）                     |
-| BR-006 | Health() 必须是幂等的、无副作用的                           |
-| BR-007 | 迁移脚本必须是幂等的（可重复执行）                          |
-| BR-008 | 迁移版本号必须单调递增                                      |
-| BR-009 | 错误消息不包含 SQL 参数值（防泄露敏感数据）                 |
-| BR-010 | 连接池大小通过配置控制，默认 10                             |
-
----
-
-## 9. Interface Contract
+当前实现基线以 `github.com/ZoneCNH/postgresx/pkg/postgresx` 为准：
 
 ```go
-type Client interface {
-    Query(ctx context.Context, sql string, args ...any) (Rows, error)
-    QueryRow(ctx context.Context, sql string, args ...any) Row
-    Exec(ctx context.Context, sql string, args ...any) (Result, error)
-    Tx(ctx context.Context, fn func(tx Tx) error) error
-    Health() HealthStatus
-    Close() error
+func New(ctx context.Context, cfg Config, opts ...Option) (*Client, error)
+func Open(ctx context.Context, cfg Config, opts ...Option) (*Client, error)
+
+type Client struct {
+    // manages a pgxpool.Pool; fields are internal to the package
 }
 
-type Tx interface {
-    Query(ctx context.Context, sql string, args ...any) (Rows, error)
-    QueryRow(ctx context.Context, sql string, args ...any) Row
-    Exec(ctx context.Context, sql string, args ...any) (Result, error)
+func (c *Client) Ping(ctx context.Context) error
+func (c *Client) Close(ctx context.Context) error
+func (c *Client) Stats() PoolStats
+func (c *Client) Queryer() Queryer
+func (c *Client) Exec(ctx context.Context, sql string, args ...any) (CommandTag, error)
+func (c *Client) Query(ctx context.Context, sql string, args ...any) (Rows, error)
+func (c *Client) QueryRow(ctx context.Context, sql string, args ...any) Row
+func (c *Client) WithTx(ctx context.Context, fn TxFunc) error
+func (c *Client) WithTxOptions(ctx context.Context, opts TxOptions, fn TxFunc) error
+```
+
+### 10.1 Config
+
+```go
+type Config struct {
+    Host            string
+    Port            int
+    Database        string
+    User            string
+    Password        foundationx.SecretString
+    SSLMode         string
+    MaxOpenConns    int32
+    MinIdleConns    int32
+    MaxConnLifetime time.Duration
+    MaxConnIdleTime time.Duration
+    ConnectTimeout  time.Duration
+    HealthTimeout   time.Duration
+    ApplicationName string
 }
 
-type Rows interface {
-    Next() bool
-    Scan(dest ...any) error
-    Close() error
-    Err() error
+func (c Config) DSN() string
+func (c Config) RedactedDSN() string
+```
+
+默认值：port 5432、sslmode disable、max open 10、min idle 1、connection lifetime 1h、idle timeout 30m、connect timeout 5s、health timeout 2s。
+
+### 10.2 Query Interfaces
+
+```go
+type Queryer interface {
+    Exec(ctx context.Context, sql string, args ...any) (CommandTag, error)
+    Query(ctx context.Context, sql string, args ...any) (Rows, error)
+    QueryRow(ctx context.Context, sql string, args ...any) Row
 }
 
 type Row interface {
     Scan(dest ...any) error
 }
 
-type Result interface {
-    RowsAffected() int64
+type Rows interface {
+    Next() bool
+    Scan(dest ...any) error
+    Close()
+    Err() error
 }
+```
 
-type HealthStatus struct {
-    Ready   bool
-    Live    bool
-    Message string
-}
-
-func New(opts ...Option) Client
-```text
-
-### 9.1 Option 模式
+### 10.3 Transactions
 
 ```go
-type Option func(*config)
-
-func WithDSN(dsn string) Option
-func WithMaxConns(n int) Option
-func WithMinConns(n int) Option
-func WithMaxConnLifetime(d time.Duration) Option
-func WithMaxConnIdleTime(d time.Duration) Option
-func WithHealthCheckPeriod(d time.Duration) Option
-func WithConnectTimeout(d time.Duration) Option
-func WithQueryTimeout(d time.Duration) Option
-```text
-
-### 9.2 用法示例
-
-```go
-// 创建客户端
-client := postgresx.New(
-    postgresx.WithDSN(os.Getenv("FOUNDATIONX_POSTGRES_DSN")),
-    postgresx.WithMaxConns(20),
-)
-defer client.Close()
-
-// 查询
-rows, err := client.Query(ctx, "SELECT id, name FROM users WHERE active = $1", true)
-if err != nil {
-    return err
-}
-defer rows.Close()
-
-for rows.Next() {
-    var id int
-    var name string
-    rows.Scan(&id, &name)
+type Tx interface {
+    Queryer
 }
 
-// 单行查询
-var count int
-err = client.QueryRow(ctx, "SELECT COUNT(*) FROM orders WHERE status = $1", "filled").Scan(&count)
+type TxFunc func(ctx context.Context, tx Tx) error
 
-// 执行
-result, err := client.Exec(ctx, "UPDATE users SET last_login = $1 WHERE id = $2", time.Now(), userID)
-fmt.Printf("affected: %d\n", result.RowsAffected())
-
-// 事务
-err = client.Tx(ctx, func(tx postgresx.Tx) error {
-    _, err := tx.Exec(ctx, "UPDATE accounts SET balance = balance - $1 WHERE id = $2", amount, fromID)
-    if err != nil {
-        return err // 自动 rollback
-    }
-    _, err = tx.Exec(ctx, "UPDATE accounts SET balance = balance + $1 WHERE id = $2", amount, toID)
-    return err // nil → 自动 commit
-})
-
-// 迁移
-migrations := []postgresx.Migration{
-    {Version: 1, SQL: `CREATE TABLE users (id SERIAL PRIMARY KEY, name TEXT)`},
-    {Version: 2, SQL: `ALTER TABLE users ADD COLUMN email TEXT`},
+type TxOptions struct {
+    IsolationLevel string
+    ReadOnly       bool
 }
-err = client.Migrate(ctx, migrations)
-```text
+```
 
----
-
-## 10. Data Model
-
-### 10.1 公共错误
-
-```go
-var (
-    ErrConnectionFailed = errors.New("postgresx: connection failed")
-    ErrNoRows           = errors.New("postgresx: no rows in result set")
-    ErrPoolExhausted    = errors.New("postgresx: connection pool exhausted")
-    ErrMigrationFailed  = errors.New("postgresx: migration failed")
-    ErrInvalidDSN       = errors.New("postgresx: invalid DSN")
-    ErrTxPanic          = errors.New("postgresx: transaction panic")
-)
-```text
-
-### 10.2 Migration 结构
+### 10.4 Migrations
 
 ```go
 type Migration struct {
-    Version     int
-    Description string
-    SQL         string
-    DownSQL     string // 回滚 SQL（可选）
+    Version int64
+    Name    string
+    UpSQL   string
 }
-```text
+
+type MigrationSource interface {
+    Migrations(ctx context.Context) ([]Migration, error)
+}
+
+func NewMigrationRunner(client *Client) *MigrationRunner
+func (r *MigrationRunner) Up(ctx context.Context, source MigrationSource) error
+func (r *MigrationRunner) Applied(ctx context.Context) ([]AppliedMigration, error)
+```
+
+### 10.5 Options
+
+```go
+type Option func(*options)
+
+func WithLogger(logger Logger) Option
+func WithMetrics(metrics Metrics) Option
+func WithClock(clock Clock) Option
+```
+
+旧文档中提到的 DSN option、环境变量式 DSN 配置和无参构造器均不属于当前基线。
+
+## 11. Dependencies
+
+| 依赖 | 用途 | 约束 |
+| ---- | ---- | ---- |
+| Go stdlib | context、time、errors、sync/atomic | 必须保持轻量 |
+| `github.com/jackc/pgx/v5` | PostgreSQL driver、pool、tx、pgconn 错误码 | 当前基线 `v5.9.2` |
+| `github.com/ZoneCNH/foundationx` | SecretString、HealthChecker、Error model | 当前基线 `v0.1.1` |
+
+禁止新增业务模块依赖。新增基座依赖必须先更新 [goal.md](./goal.md)、[TRACEABILITY.md](./TRACEABILITY.md) 与根架构文档。
+
+## 12. Test Cases
+
+| Test Case | 覆盖范围 | 验收标准 |
+| --------- | -------- | -------- |
+| **TC-001:** | Config 默认值、校验、DSN 和 RedactedDSN | 默认值稳定，密码脱敏，无效配置返回错误 |
+| **TC-002:** | Exec、Query、QueryRow、Rows 生命周期 | 参数绑定、扫描、Err、Close 行为符合 pgx 语义 |
+| **TC-003:** | WithTx / WithTxOptions | commit、rollback、context 取消、panic 回滚和 read-only 选项可验证 |
+| **TC-004:** | MigrationRunner | 升序执行、幂等跳过、重复版本和无效迁移阻断 |
+| **TC-005:** | HealthChecker 与 Stats | healthy/degraded/unhealthy、超时和池状态安全输出 |
+| **TC-006:** | MapError / IsRetryable | context、no rows、认证、约束、序列化、连接和停机错误映射稳定 |
+| **TC-007:** | Logger / Metrics hooks | 查询、事务、健康和池指标触发且不泄露 Secret |
+| **TC-008:** | 边界与发布证据 | `GOWORK=off` 下测试通过，无业务反向依赖 |
+| **TC-009:** | 契约一致性 | `go.mod`、版本矩阵、公开 API 文档、指标契约和代码一致 |
+
+## 13. Verification Gates
+
+当前实现仓库 `/home/postgresx` 已由 team 审计验证：
+
+- `GOWORK=off go test ./...`：通过。
+- `GOWORK=off go vet ./...`：通过。
+- 发布证据文档显示 `make ci`、race、secret scan、live PostgreSQL integration 和 migration 测试已作为 v0.1.0 candidate 证据。
+
+文档修复侧必须通过：
+
+- `rg` 检查不再出现旧 DSN option、环境变量式 DSN 配置、无参构造器或旧事务入口。
+- `TRACEABILITY.md` 必须包含 `Task` 列，并覆盖 FR-001..FR-007 与 BR-001..BR-012。
+- `git diff --check` 必须通过。
+
+## 14. Residual Risks
+
+| 风险 | 影响 | 处置 |
+| ---- | ---- | ---- |
+| 指标命名漂移 | 代码中使用 `postgresx_query_total` 等 underscore 名称，契约文档中存在 `postgresx.query.total` dot 名称 | TASK-PG-003 在 v1.0 前冻结唯一命名 |
+| Go 版本漂移 | `go.mod` 为 `go 1.25.0`，`docs/VERSION_MATRIX.md` 曾记录 `go 1.26.3` | TASK-PG-003 统一版本矩阵 |
+| Public API 文档漂移 | `/home/postgresx` 的 contract 文档存在列出未实现符号的风险 | 以代码和测试为当前基线，v1.0 前清理 contract |
+| 下游接入未完成 | `x.go` 和业务模块尚未形成真实依赖证据 | 保持潜在消费者状态，不把下游接入计入完成 |
 
 ---
 
-## 11. Config Schema
+## 15. 当前结论
 
-```yaml
-postgresx:
-  dsn: "${FOUNDATIONX_POSTGRES_DSN}"  # 连接字符串（推荐通过环境变量注入）
-  max_conns: 20                # 最大连接数
-  min_conns: 2                 # 最小空闲连接数
-  max_conn_lifetime: 1h        # 连接最大存活时间
-  max_conn_idle_time: 30m      # 连接最大空闲时间
-  health_check_period: 1m      # 健康检查周期
-  connect_timeout: 5s          # 连接超时
-  query_timeout: 30s           # 默认查询超时
-  migration_table: schema_migrations  # 迁移版本表名
-```text
+`postgresx` 已不再是“仅骨架”状态，代码层具备 v0.1.0 candidate 的核心能力。模块文档已对齐当前实现基线，但 v1.0 仍需完成契约冻结，尤其是指标名、版本矩阵和公开 API contract 的一致性。
 
----
+## 16. Rollout Plan
 
-## 12. Error Handling
+- 当前文档仅把 `/home/postgresx` 归类为 v0.1.0 candidate 证据基线，不声明 v1.0 发布完成。
+- 下游模块只允许依赖已实现的 `pkg/postgresx` 入口：显式 `Config`、连接池生命周期、SQL 执行、事务、迁移、健康检查、错误映射和可观测 hook。
+- v1.0 发布前必须关闭 TASK-PG-003，并冻结指标命名、Go baseline、Public API contract 和发布证据索引。
+- `x.go` 或业务模块接入前必须新增对应追溯证据，不能把潜在消费者计入完成度。
 
-| 错误                  | 调用方处理                                  |
-| --------------------- | ------------------------------------------- |
-| `ErrConnectionFailed` | 检查 DSN 和网络，确认 PostgreSQL 服务运行中 |
-| `ErrNoRows`           | 查询无结果，调用方应处理空值（不是异常）    |
-| `ErrPoolExhausted`    | 增加 max_conns 或优化查询减少连接占用时间   |
-| `ErrMigrationFailed`  | 检查迁移 SQL 和数据库状态，手动修复后重试   |
-| `ErrInvalidDSN`       | 检查 DSN 格式                               |
-| `ErrTxPanic`          | 检查事务 fn 中的 panic 原因                 |
-| 约束违反错误          | 检查数据是否违反 UNIQUE / FK / CHECK 约束   |
-| SQL 语法错误          | 检查 SQL 语句                               |
+## 17. Migration Plan
 
-**错误消息格式：** `"postgresx: <operation>: <detail>"`
-**错误包装：** 使用 `%w` 保留底层错误链
-**安全要求：** 错误消息不包含 SQL 参数值
-
----
-
-## 13. Edge Cases
-
-| 场景                      | 预期行为                                                 |
-| ------------------------- | -------------------------------------------------------- |
-| PostgreSQL 不可达时 Query | 返回 ErrConnectionFailed                                 |
-| 连接池耗尽                | 等待直到有空闲连接或超时，超时返回 ErrPoolExhausted      |
-| QueryRow 无结果           | Scan 返回 ErrNoRows                                      |
-| Tx fn panic               | 自动 rollback，返回 ErrTxPanic                           |
-| Tx ctx 超时               | 自动 rollback，返回 ctx.Err()                            |
-| Rows 未 Close             | 连接泄漏（应在 vet/lint 中检测）                         |
-| Exec 影响 0 行            | 返回 Result{RowsAffected: 0}，不报错                     |
-| 并发 Tx 操作同一行        | 遵循 PostgreSQL 锁机制（行锁或死锁检测）                 |
-| 迁移脚本幂等性            | CREATE TABLE IF NOT EXISTS，ALTER TABLE 先检查列是否存在 |
-| 空 SQL 字符串             | 返回 SQL 语法错误                                        |
-| 参数数量不匹配            | 返回参数绑定错误                                         |
-| 大结果集（>100 万行）     | 通过 Rows 迭代器逐行处理，不一次性加载                   |
-
----
-
-## 14. Directory Structure
-
-```text
-postgresx/
-├── go.mod
-├── go.sum
-├── README.md
-├── CHANGELOG.md
-├── LICENSE
-├── doc.go
-├── postgresx.go                # Client 工厂
-├── client.go                   # Client 接口实现
-├── tx.go                       # Tx 接口实现
-├── rows.go                     # Rows 接口实现
-├── row.go                      # Row 接口实现
-├── result.go                   # Result 接口实现
-├── health.go                   # HealthStatus
-├── options.go                  # Option 模式
-├── errors.go                   # 公共错误变量
-├── migrate/
-│   ├── migrate.go              # 迁移引擎
-│   └── embed.go                //go:embed 支持
-├── internal/
-│   ├── pool/                   # 连接池封装
-│   └── trace/                  # 查询追踪
-├── testdata/
-│   ├── docker-compose.yml      # 测试用 PostgreSQL 配置
-│   └── migrations/             # 测试用迁移脚本
-├── example_test.go
-├── benchmark_test.go
-└── integration_test.go         # //go:build integration
-```text
-
----
-
-## 15. Dependencies
-
-### 15.1 go.mod
-
-```text
-module github.com/ZoneCNH/postgresx
-
-go 1.23
-```text
-
-### 15.2 依赖方向
-
-| 可以依赖                   | 禁止依赖             |
-| -------------------------- | -------------------- |
-| stdlib                     | configx              |
-| kernel（L0 原语）          | 所有业务域实现       |
-| observex（interface-only） | 所有 L2.5 领域共享层 |
-| PostgreSQL 驱动（pgx）     |                      |
-
----
-
-## 16. Testing
-
-### 16.1 单元测试
-
-| 测试场景          | 验证点                   |
-| ----------------- | ------------------------ |
-| Query 成功        | 返回正确结果集           |
-| Query SQL 错误    | 返回数据库错误           |
-| QueryRow 有结果   | Scan 正确获取数据        |
-| QueryRow 无结果   | Scan 返回 ErrNoRows      |
-| Exec 成功         | RowsAffected 正确        |
-| Exec 约束违反     | 返回约束错误             |
-| Tx commit         | fn 返回 nil → commit     |
-| Tx rollback       | fn 返回 error → rollback |
-| Tx panic rollback | fn panic → rollback      |
-| Health PING 成功  | 返回 Ready: true         |
-| Health PING 失败  | 返回 Ready: false        |
-| Migration 执行    | 迁移正确应用             |
-| Migration 幂等    | 重复执行无副作用         |
-| 连接池配置        | max/min conns 正确设置   |
-| 并发安全          | -race 测试通过           |
-
-### 16.2 Given/When/Then 用例
-
-**TC-001: 基本 CRUD**
-Given 数据库连接正常
-When INSERT 一行然后 SELECT
-Then 返回插入的数据
-
-**TC-002: 事务原子性**
-Given 两个 UPDATE 在同一事务中
-When 第二个 UPDATE 失败
-Then 第一个 UPDATE 被回滚
-
-**TC-003: 事务 panic 回滚**
-Given 事务 fn 中 panic
-When 执行事务
-Then 自动 rollback，返回 ErrTxPanic
-
-**TC-004: 迁移版本管理**
-Given 已应用版本 1 和 2
-When 调用 Migrate
-Then 只执行版本 3 及以后的迁移
-
-**TC-005: Health 检查**
-Given 数据库连接正常
-When 调用 Health
-Then 返回 healthy；连接失败时返回 unhealthy
-
-### 16.3 Benchmark
-
-| 场景                          | 目标   |
-| ----------------------------- | ------ |
-| 单次 Query（本地 PostgreSQL） | < 5ms  |
-| 事务（5 条 SQL）              | < 10ms |
-| QueryRow + Scan               | < 5ms  |
-| 连接池获取连接                | < 1ms  |
-
-### 16.4 集成测试
-
-| 场景           | 验证点                            |
-| -------------- | --------------------------------- |
-| 完整 CRUD 链   | INSERT → SELECT → UPDATE → DELETE |
-| 事务提交和回滚 | commit 和 rollback 正确执行       |
-| 迁移执行       | 多版本迁移正确应用                |
-| 并发事务       | 多个并发 Tx 不冲突                |
-| 连接池压力     | 高并发下连接池正确管理            |
-
----
-
-## 17. Performance Budget
-
-| 操作                          | 目标        | 测量方式       |
-| ----------------------------- | ----------- | -------------- |
-| 单次 Query（本地 PostgreSQL） | < 5ms       | benchmark test |
-| 事务（5 条 SQL）              | < 10ms      | benchmark test |
-| 连接池获取连接                | < 1ms       | benchmark test |
-| 常驻内存                      | < 10MB      | profiling      |
-| 连接池空闲连接                | ≤ max_conns | 配置约束       |
-
----
+- 本仓库不承载数据库 schema 迁移文件；运行期迁移由 `/home/postgresx/pkg/postgresx/migration.go` 的 `MigrationRunner` 负责。
+- 调用方必须显式传入迁移集合和 `Config`，`postgresx` 不读取环境变量、配置文件或 Secret 文件。
+- 已应用迁移表、重复版本阻断、迁移顺序和失败回滚行为以 `/home/postgresx` 当前测试为准。
+- 文档迁移只涉及 SPEC、TRACEABILITY、Goal、Task 与状态表同步，不迁移应用数据。
 
 ## 18. Observability
 
-| 类型   | 名称                           | 说明                             |
-| ------ | ------------------------------ | -------------------------------- |
-| metric | `postgresx.query.duration`     | histogram，查询耗时              |
-| metric | `postgresx.query.errors`       | counter，查询失败次数            |
-| metric | `postgresx.query.rows`         | histogram，查询返回行数          |
-| metric | `postgresx.exec.duration`      | histogram，执行耗时              |
-| metric | `postgresx.exec.rows_affected` | histogram，影响行数              |
-| metric | `postgresx.tx.duration`        | histogram，事务耗时              |
-| metric | `postgresx.tx.committed`       | counter，事务提交次数            |
-| metric | `postgresx.tx.rollbacked`      | counter，事务回滚次数            |
-| metric | `postgresx.pool.size`          | gauge，连接池大小                |
-| metric | `postgresx.pool.idle`          | gauge，空闲连接数                |
-| metric | `postgresx.pool.in_use`        | gauge，使用中连接数              |
-| metric | `postgresx.migration.applied`  | counter，已应用迁移数            |
-| log    | `postgresx.connected`          | info，连接成功                   |
-| log    | `postgresx.disconnected`       | warn，连接断开                   |
-| log    | `postgresx.slow_query`         | warn，慢查询（超过阈值）         |
-| log    | `postgresx.migration.applied`  | info，迁移已应用，含版本号       |
-| log    | `postgresx.tx.rollbacked`      | warn，事务回滚，含错误原因       |
-| span   | `postgresx.query`              | 查询 span，含 SQL 和参数（脱敏） |
-
----
+- `postgresx` 只暴露 logger、metrics、clock 等 hook，不绑定具体观测后端。
+- 必须覆盖连接池、查询、事务、迁移和健康检查事件；事件字段不得包含明文 DSN、密码或 SQL 参数 Secret。
+- 指标名在 v1.0 前由 TASK-PG-003 冻结，当前不得同时把 underscore 与 dot 两套命名都标为权威。
+- 健康检查实现必须保持 `foundationx.HealthChecker` 兼容，并保留 context 取消语义。
 
 ## 19. Security
 
-| 要求             | 实现方式                                          |
-| ---------------- | ------------------------------------------------- |
-| 参数化查询       | 所有查询使用 `$1, $2, ...` 占位符，禁止字符串拼接 |
-| DSN 不硬编码     | 通过环境变量或 secret manager 注入                |
-| DSN 不写日志     | 日志中对密码字段脱敏                              |
-| SQL 参数不写日志 | 日志中不包含查询参数值（防泄露敏感数据）          |
-| 慢查询日志       | 只记录 SQL 模板，不记录参数值                     |
-| 连接加密         | 支持 SSL/TLS 连接（通过 DSN 参数）                |
+- Secret 输入只能来自调用方显式配置，模块内不得读取环境变量、配置文件或 Secret 文件。
+- 日志、错误、健康检查和指标字段必须使用脱敏后的 DSN 或安全标签。
+- SQL 参数不得进入默认日志字段；如调用方自定义 logger 记录参数，责任边界必须在调用方侧。
+- 错误归一化不能泄露认证材料、连接串或私有端点。
 
----
+## 20. Performance
 
-## 20. CI Gate
+- 连接池生命周期以 `pgxpool` 为核心，默认池参数必须可被调用方覆盖。
+- 查询和事务 helper 不得隐藏 context deadline，也不得引入无界 retry。
+- 迁移执行必须保持确定性顺序，并阻断重复版本，避免启动期重复执行。
+- v1.0 前如新增性能声明，必须补充可复现 benchmark 或 live PostgreSQL evidence。
 
-### 20.1 通用 Gate
+## 21. Compatibility
 
-| Gate        | 命令                                                                                                               | 阻塞条件                 |
-| ----------- | ------------------------------------------------------------------------------------------------------------------ | ------------------------ |
-| 编译        | `go build ./...`                                                                                                   | 编译失败                 |
-| 测试        | `go test ./... -race -count=1`                                                                                     | 任何测试失败或 data race |
-| 覆盖率      | `mkdir -p .coverage && go test ./... -coverprofile=.coverage/cover.out && go tool cover -func=.coverage/cover.out` | 总覆盖率 < 80%           |
-| vet         | `go vet ./...`                                                                                                     | 任何 vet 错误            |
-| lint        | `golangci-lint run`                                                                                                | 任何 lint 错误           |
-| 依赖检查    | `go mod tidy && git diff --exit-code go.mod go.sum`                                                                | go.mod 不整洁            |
-| Secret 扫描 | `gitleaks detect --no-git`                                                                                         | 泄露 secret              |
-| Benchmark   | `go test -bench=. -benchmem -count=3 ./...`                                                                        | 结果附在 PR comment      |
+- 当前实现基线记录为 `go 1.25.0`、`github.com/jackc/pgx/v5 v5.9.2`、`github.com/ZoneCNH/foundationx v0.1.1`。
+- v1.0 前 Public API 仍可收敛，但任何破坏性变更都必须同步 SPEC、TRACEABILITY、Task 和 `/home/postgresx` contract 文档。
+- 基座边界保持不变：`postgresx` 可以依赖 `foundationx` 和 `pgx`，不得依赖业务域、入口仓库或数据域仓库。
+- Release evidence 必须支持 `GOWORK=off`，避免本地 workspace 掩盖模块依赖问题。
 
-### 20.2 postgresx 专属 Gate
+## 22. Open Questions
 
-| Gate         | 命令                              | 阻塞条件                         |                                       |                   |                    |
-| ------------ | --------------------------------- | -------------------------------- |                                       |                   |                    |
-| 集成测试     | `go test -tags=integration ./...` | PostgreSQL 不可达时 skip，不阻塞 |                                       |                   |                    |
-| SQL 注入检查 | `grep -rn 'fmt.Sprintf.*SQL\      | Sprintf.*SELECT\                 | Sprintf.*INSERT' --include="*.go" . \ | grep -v _test.go` | 发现字符串拼接 SQL |
+| 问题 | 当前决策 | 关闭条件 |
+| ---- | -------- | -------- |
+| 指标命名 | TASK-PG-003 未完成，underscore 与 dot 命名尚未统一 | 代码、contract、SPEC、TRACEABILITY 全部引用同一命名 |
+| Go baseline | 以 `/home/postgresx/go.mod` 的 `go 1.25.0` 为当前证据 | VERSION_MATRIX 与 release evidence 统一 |
+| Public API contract | 以代码和测试为当前基线 | contract 文档删除未实现符号并补齐示例 |
+| 下游接入 | 仅标记为潜在消费者 | 出现真实 import、测试或发布证据 |
 
----
+## 23. Definition of Done
 
-## 21. Upgrade Compatibility
-
-| 变更类型                     | 版本升级                      |
-| ---------------------------- | ----------------------------- |
-| Client 接口新增方法          | **minor**（实现需跟上）       |
-| Client 接口删除/修改方法     | **major**                     |
-| Tx 接口变更                  | **major**                     |
-| Rows / Row / Result 接口变更 | **major**                     |
-| Migration 结构体变更         | **minor**（新增字段带默认值） |
-| Option 新增字段              | minor（带默认值）             |
-| 默认连接池参数变更           | **minor**（注意行为变化）     |
-
----
-
-## 22. Release DoD
-
-- [ ] 所有公共接口有 godoc 注释
-- [ ] 所有公共类型有示例代码
-- [ ] CHANGELOG.md 已更新
-- [ ] README.md 包含：模块定位、快速开始、配置说明、API 概览
-- [ ] 单元测试覆盖率 ≥ 80%
-- [ ] `-race` 测试通过
-- [ ] Benchmark 结果无 > 10% 回退
-- [ ] `go vet` 无警告
-- [ ] `golangci-lint` 无错误
-- [ ] Secret 扫描通过
-- [ ] 公共 API 无破坏性变更（或已 bump major）
-- [ ] 所有 Functional Requirements 有对应测试
-- [ ] 所有 Edge Cases 有对应测试
-- [ ] SQL 注入检查通过
-
----
-
-## 23. Open Questions
-
-- 是否需要支持批量操作（Batch INSERT / COPY）？
-- 是否需要支持只读副本路由（读写分离）？
-- 迁移是否需要支持回滚（Down migration）？
-- 是否需要支持存储过程 / 函数调用？
-- 是否需要支持 LISTEN / NOTIFY（PostgreSQL 原生 Pub/Sub）？
-- 连接池是否需要支持动态扩缩容（根据负载自动调整）？
+- SPEC 保持 23 节结构，`Spec-Version` 使用 semver，且不包含模糊状态词。
+- `TRACEABILITY.md` 覆盖 FR-001..FR-007、BR-001..BR-012、TC-001..TC-008，并映射 TASK-PG-001..TASK-PG-003。
+- `/home/postgresx` 中 `GOWORK=off go test ./...` 和 `GOWORK=off go vet ./...` 通过。
+- 本仓库 `git diff --check`、状态一致性检查、postgresx 规格 lint 和 postgresx traceability 检查通过。
+- v1.0 发布声明必须等待 TASK-PG-003 关闭，不能仅凭 v0.1.0 candidate 证据提升为 release complete。
