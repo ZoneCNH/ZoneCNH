@@ -1,31 +1,29 @@
 # TASK-REDISX-004
 
-> Client 实现：LPush/LRange/Subscribe
+> List operations
 
 ---
 
 ```yaml
 task_id: TASK-REDISX-004
 module: redisx
-scope: "实现 Client 接口的 List 和 Subscribe 方法（FR-007、FR-008）"
+scope: "Implement LPush and LRange list helpers."
 spec_ref:
   - "module/redisx/SPEC.md#FR-007"
-  - "module/redisx/SPEC.md#FR-008"
-test_cases:
-  - "TC-007"
-  - "TC-008"
 files:
-  - "structures.go"
-  - "pubsub.go"
-  - "structures_test.go"
-  - "pubsub_test.go"
+  - "list.go"
+  - "list_test.go"
   - "testutil_test.go"
 acceptance_criteria:
-  - "LPush/LRange 操作 List 正确"
-  - "Subscribe 订阅 channel 并接收消息"
-  - "取消订阅正确清理"
+  - "AC-004-1: LPush inserts all values at the list head and LRange returns the requested range in Redis order."
+  - "AC-004-2: LRange on a missing list returns an empty slice and nil error."
+non_scope:
+  - "Do not edit module/redisx/SPEC.md, TRACEABILITY.md, or goal.md as part of this implementation task."
+  - "Do not add direct runtime dependencies on configx, observex, resiliencx, contracts, or any business-domain module."
+  - "Do not implement unrelated Redis commands beyond the FR IDs listed for this task."
+test_plan:
+  - "TC-007: LPush two elements and LRange verifies order and missing-list behavior."
 depends_on:
-  - "TASK-REDISX-000"
   - "TASK-REDISX-001"
 estimated_effort: "1d"
 priority: P0
@@ -40,39 +38,31 @@ status: pending
 
 ## Requirements Covered
 
-| Requirement | Description             | Acceptance Criteria |
-| ----------- | ----------------------- | ------------------- |
-| FR-007      | LPush/LRange：List 操作 | 列表读写正确        |
-| FR-008      | Subscribe：Pub/Sub 订阅 | 消息接收正确        |
+| Requirement | Description | Acceptance Criteria |
+| ----------- | ----------- | ------------------- |
+| FR-007 | LPush / LRange | AC-004-1 |
 
-## Test Plan
+## Acceptance Criteria
 
-| Test Case | Type | Description                |
-| --------- | ---- | -------------------------- |
-| TC-007    | Unit | LPush 后 LRange 返回正确列表 |
-| TC-008    | Unit | Subscribe 后发布消息可接收   |
+| AC ID | Criteria |
+| ----- | -------- |
+| AC-004-1 | LPush inserts all values at the list head and LRange returns the requested range in Redis order. |
+| AC-004-2 | LRange on a missing list returns an empty slice and nil error. |
 
 ## Non-Scope
 
-- 不直接 import `configx`、`observex`、`resiliencx` 或 `contracts`。
-- 不实现业务缓存模型、业务领域 DTO 或跨模块注册逻辑。
-- 直接依赖边界保持为 `kernel` + Redis client library `github.com/redis/go-redis/v9`。
+- Do not edit module/redisx/SPEC.md, TRACEABILITY.md, or goal.md as part of this implementation task.
+- Do not add direct runtime dependencies on configx, observex, resiliencx, contracts, or any business-domain module.
+- Do not implement unrelated Redis commands beyond the FR IDs listed for this task.
+
+## Test Plan
+
+| Test Case | Type | Description | Same-task test file |
+| --------- | ---- | ----------- | ------------------- |
+| TC-007 | Unit/Integration | LPush two elements and LRange verifies order and missing-list behavior. | `list_test.go` |
 
 ## Implementation Notes
 
-- List 操作直接包装 Redis List 命令
-- 使用 redis Pub/Sub
-- 返回 `Message` channel
-
-## Done Evidence
-
-| Step | Description                                   | Deliverables     | Verification |
-| ---- | --------------------------------------------- | ---------------- | ------------ |
-| 1    | 实现 `LPush`/`LRange`                      | `client_impl.go` | TC-007 通过 |
-| 2    | 实现 `Subscribe`：创建订阅 → 返回消息 channel | `client_impl.go` | TC-008 通过 |
-
-### Risk Assessment
-
-| Risk           | Probability | Impact | Mitigation        |
-| -------------- | ----------- | ------ | ----------------- |
-| 连接断开未重连 | Medium      | Medium | go-redis 内置重连 |
+- Direct production imports are limited to stdlib, kernel, and the Redis client library; configx/observex/resiliencx/contracts remain integration boundaries expressed through local options, interfaces, docs, or adapters outside this task.
+- Every listed test case must be implemented in a same-task `*_test.go` or `example_test.go` file listed in this task.
+- Preserve context cancellation and timeout behavior for all Redis calls touched by this task.

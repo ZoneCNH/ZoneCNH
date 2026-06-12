@@ -1,33 +1,32 @@
 # TASK-REDISX-006
 
-> Locker token owner 与 Lua guarded release
+> Pipeline command execution
 
 ---
 
 ```yaml
 task_id: TASK-REDISX-006
 module: redisx
-scope: "实现 Locker Acquire/Renew/Release，保证 holder token、TTL、续期和原子释放校验。"
+scope: "Implement Pipeline creation, command queuing, ordered Exec results, and partial-error behavior."
 spec_ref:
-  - "module/redisx/SPEC.md#FR-010"
-  - "module/redisx/SPEC.md#FR-011"
-test_cases:
-  - "TC-002"
+  - "module/redisx/SPEC.md#FR-009"
 files:
-  - "locker.go"
-  - "lock_script.go"
-  - "locker_test.go"
-  - "lock_concurrency_test.go"
+  - "pipeline.go"
+  - "commands.go"
+  - "pipeline_test.go"
   - "testutil_test.go"
 acceptance_criteria:
-  - "Acquire 获取锁成功返回 true"
-  - "Acquire 获取锁失败返回 false 或 ErrLockAcquireFailed"
-  - "Release 释放锁"
-  - "锁 TTL 过期自动释放"
+  - "AC-006-1: Pipeline returns a new command queue and Exec returns command results in queue order."
+  - "AC-006-2: Exec returns successful command results plus the first command error when a subset fails."
+non_scope:
+  - "Do not edit module/redisx/SPEC.md, TRACEABILITY.md, or goal.md as part of this implementation task."
+  - "Do not add direct runtime dependencies on configx, observex, resiliencx, contracts, or any business-domain module."
+  - "Do not implement unrelated Redis commands beyond the FR IDs listed for this task."
+test_plan:
+  - "TC-003: Three queued Set commands execute in one pipeline and leave all keys set."
 depends_on:
   - "TASK-REDISX-000"
   - "TASK-REDISX-001"
-  - "TASK-REDISX-002"
 estimated_effort: "1d"
 priority: P0
 status: pending
@@ -41,39 +40,31 @@ status: pending
 
 ## Requirements Covered
 
-| Requirement | Description           | Acceptance Criteria           |
-| ----------- | --------------------- | ----------------------------- |
-| FR-010      | Acquire：获取分布式锁 | 成功返回 true，已被持有返回 false 或 ErrLockAcquireFailed |
-| FR-011      | Release：释放锁       | 持有者释放成功；非持有者返回 ErrLockNotHeld |
+| Requirement | Description | Acceptance Criteria |
+| ----------- | ----------- | ------------------- |
+| FR-009 | Pipeline | AC-006-1 |
 
-## Test Plan
+## Acceptance Criteria
 
-| Test Case | Type | Description                          |
-| --------- | ---- | ------------------------------------ |
-| TC-002    | Unit | Acquire 成功后 Release 释放          |
-| TC-002    | Unit | 重复 Acquire 返回 false 或 ErrLockAcquireFailed |
-| TC-002    | Unit | TTL 过期后可重新 Acquire             |
+| AC ID | Criteria |
+| ----- | -------- |
+| AC-006-1 | Pipeline returns a new command queue and Exec returns command results in queue order. |
+| AC-006-2 | Exec returns successful command results plus the first command error when a subset fails. |
 
 ## Non-Scope
 
-- 不直接 import `configx`、`observex`、`resiliencx` 或 `contracts`。
-- 不实现业务缓存模型、业务领域 DTO 或跨模块注册逻辑。
-- 直接依赖边界保持为 `kernel` + Redis client library `github.com/redis/go-redis/v9`。
+- Do not edit module/redisx/SPEC.md, TRACEABILITY.md, or goal.md as part of this implementation task.
+- Do not add direct runtime dependencies on configx, observex, resiliencx, contracts, or any business-domain module.
+- Do not implement unrelated Redis commands beyond the FR IDs listed for this task.
+
+## Test Plan
+
+| Test Case | Type | Description | Same-task test file |
+| --------- | ---- | ----------- | ------------------- |
+| TC-003 | Unit/Integration | Three queued Set commands execute in one pipeline and leave all keys set. | `pipeline_test.go` |
 
 ## Implementation Notes
 
-- 使用 Redis SET NX EX 实现分布式锁
-- `Release(ctx, key)` 使用 Lua 脚本保证仅持有者可释放，非持有者返回 ErrLockNotHeld
-
-## Done Evidence
-
-| Step | Description                                  | Deliverables     | Verification |
-| ---- | -------------------------------------------- | ---------------- | ------------ |
-| 1    | 实现 `Acquire`：SET NX EX + 返回 bool/error | `locker_impl.go` | TC-002 通过 |
-| 2    | 实现 `Release` Lua 脚本保证仅持有者释放      | `locker_impl.go` | TC-002 通过 |
-
-### Risk Assessment
-
-| Risk       | Probability | Impact | Mitigation                |
-| ---------- | ----------- | ------ | ------------------------- |
-| 锁超时竞态 | Medium      | High   | fencing token 或 Lua 脚本 |
+- Direct production imports are limited to stdlib, kernel, and the Redis client library; configx/observex/resiliencx/contracts remain integration boundaries expressed through local options, interfaces, docs, or adapters outside this task.
+- Every listed test case must be implemented in a same-task `*_test.go` or `example_test.go` file listed in this task.
+- Preserve context cancellation and timeout behavior for all Redis calls touched by this task.

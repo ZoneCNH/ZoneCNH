@@ -1,36 +1,32 @@
 # TASK-REDISX-001
 
-> KeyBuilder and namespace isolation.
+> Client construction and reconnect behavior
 
 ---
 
 ```yaml
 task_id: TASK-REDISX-001
 module: redisx
-scope: "Implement KeyBuilder, Key, key pattern redaction, namespace/env/service/version/entity/id validation, and Options-only key configuration."
+scope: "Implement New/Close/client lifecycle and reconnect-safe command execution for basic KV calls."
 spec_ref:
-  - "module/redisx/SPEC.md#9"
-test_cases:
-  - "TC-001"
-  - "TC-002"
-  - "TC-003"
+  - "module/redisx/SPEC.md#FR-001"
+  - "module/redisx/SPEC.md#FR-002"
 files:
-  - "key.go"
-  - "key_test.go"
-  - "options.go"
-  - "doc.go"
+  - "client.go"
+  - "redis_client.go"
+  - "client_test.go"
+  - "reconnect_test.go"
+  - "testutil_test.go"
 acceptance_criteria:
-  - "AC-001-1: KeyBuilder outputs deterministic raw keys and redacted key patterns while rejecting empty, unsafe, overlong, and naked business keys."
-  - "AC-BR-001: Business code cannot construct accepted keys without namespace/env/service/version/entity/id or purpose structure."
-  - "AC-BR-002: Key defaults and validation are derived from typed Options only."
+  - "AC-001-1: New validates options, creates a Redis client, and Close is idempotent."
+  - "AC-001-2: Get/Set use context-aware commands and recover after a transient connection loss."
 non_scope:
-  - "Do not implement Redis network operations."
-  - "Do not parse environment variables, config files, or config center values."
-  - "Do not add dependencies beyond the package boundary established in TASK-REDISX-000."
+  - "Do not edit module/redisx/SPEC.md, TRACEABILITY.md, or goal.md as part of this implementation task."
+  - "Do not add direct runtime dependencies on configx, observex, resiliencx, contracts, or any business-domain module."
+  - "Do not implement unrelated Redis commands beyond the FR IDs listed for this task."
 test_plan:
-  - "TC-001-1: Unit tests cover legal keys, illegal segments, version changes, pattern redaction, and deterministic output."
-  - "TC-BR-001: Unit tests reject naked keys and unsafe business identifiers."
-  - "TC-BR-002: Unit tests show key configuration comes from typed Options."
+  - "TC-001: Set then Get returns the stored value through a constructed client."
+  - "TC-004: A transient disconnect followed by recovery allows the next operation to succeed."
 depends_on:
   - "TASK-REDISX-000"
 estimated_effort: "1d"
@@ -47,54 +43,32 @@ Make Key construction governable before any Redis command implementation accepts
 ## Requirements Covered
 
 | Requirement | Description | Acceptance Criteria |
-| --- | --- | --- |
-| FR-001 | KeyBuilder 与命名空间隔离 | AC-001-1 |
-| BR-001 | Key namespace/env/service/version/entity/id 不变量 | AC-BR-001 |
-| BR-002 | 配置只通过 typed Options 注入 | AC-BR-002 |
+| ----------- | ----------- | ------------------- |
+| FR-001 | Get | AC-001-1 |
+| FR-002 | Set | AC-001-2 |
 
-## Scope
+## Acceptance Criteria
 
-- Implement `Key`, `KeyParts`, `KeyBuilder`, validation rules, and redacted pattern generation.
-- Wire namespace, environment, service, and key version from `Options`.
-- Cover invalid segment and unsafe key paths.
+| AC ID | Criteria |
+| ----- | -------- |
+| AC-001-1 | New validates options, creates a Redis client, and Close is idempotent. |
+| AC-001-2 | Get/Set use context-aware commands and recover after a transient connection loss. |
 
 ## Non-Scope
 
-- Do not implement KV, Cache, Pipeline, Locker, Counter, RateLimitHelper, Pub/Sub, or Health.
-- Do not read configuration from outside `Options`.
-- Do not allow accepted APIs to use complete raw business keys for observability.
-
-## Files
-
-| File | Responsibility |
-| --- | --- |
-| `key.go` | KeyBuilder implementation and validation |
-| `key_test.go` | KeyBuilder behavior and edge cases |
-| `options.go` | Options fields used by KeyBuilder |
-| `doc.go` | Package documentation for key rules |
+- Do not edit module/redisx/SPEC.md, TRACEABILITY.md, or goal.md as part of this implementation task.
+- Do not add direct runtime dependencies on configx, observex, resiliencx, contracts, or any business-domain module.
+- Do not implement unrelated Redis commands beyond the FR IDs listed for this task.
 
 ## Test Plan
 
-| Test Case | Type    | Description        |
-| --------- | ------- | ------------------ |
-| TC-001    | Compile | KV 接口签名完整性编译验证 |
-| TC-002    | Compile | Locker 接口签名完整性编译验证 |
-| TC-003    | Compile | Pipeline 接口签名完整性编译验证 |
-
-## Non-Scope
-
-- 不直接 import `configx`、`observex`、`resiliencx` 或 `contracts`。
-- 不实现业务缓存模型、业务领域 DTO 或跨模块注册逻辑。
-- 直接依赖边界保持为 `kernel` + Redis client library `github.com/redis/go-redis/v9`。
+| Test Case | Type | Description | Same-task test file |
+| --------- | ---- | ----------- | ------------------- |
+| TC-001 | Integration | Set then Get returns the stored value through a constructed client. | `client_test.go` |
+| TC-004 | Integration | A transient disconnect followed by recovery allows the next operation to succeed. | `reconnect_test.go` |
 
 ## Implementation Notes
 
-- `Key.Raw` is for Redis operations only; `Key.Pattern` is for logs, metrics, and trace tags.
-- Reject empty segment, whitespace-only segment, path traversal markers, control characters, and segments over the configured max length.
-- Key version changes must alter raw key and pattern deterministically.
-
-## Done Evidence
-
-- `go test ./...`
-- KeyBuilder unit test output
-- `git diff --check`
+- Direct production imports are limited to stdlib, kernel, and the Redis client library; configx/observex/resiliencx/contracts remain integration boundaries expressed through local options, interfaces, docs, or adapters outside this task.
+- Every listed test case must be implemented in a same-task `*_test.go` or `example_test.go` file listed in this task.
+- Preserve context cancellation and timeout behavior for all Redis calls touched by this task.

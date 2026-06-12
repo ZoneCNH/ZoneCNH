@@ -1,28 +1,32 @@
 # TASK-REDISX-002
 
-> Client 实现：Get/Set/Del
+> KV deletion, existence, and expiration
 
 ---
 
 ```yaml
 task_id: TASK-REDISX-002
 module: redisx
-scope: "实现 Client 接口的基础 KV 操作（FR-001 至 FR-003）"
+scope: "Implement Del, Exists, and Expire behavior on top of the Redis client."
 spec_ref:
   - "module/redisx/SPEC.md#FR-003"
 test_cases:
   - "TC-001"
 files:
-  - "client.go"
   - "kv.go"
-  - "ttl.go"
   - "kv_test.go"
-  - "ttl_test.go"
+  - "expiration_test.go"
+  - "testutil_test.go"
 acceptance_criteria:
-  - "Get 返回已设置的值"
-  - "Get 不存在的 key 透传 go-redis 的 redis.Nil 语义"
-  - "Set 存储值，可设置 TTL"
-  - "Del 删除 key"
+  - "AC-002-1: Del is idempotent for missing keys and succeeds for mixed existing/missing keys."
+  - "AC-002-2: Exists returns the number of present keys and Expire updates TTL without failing on missing keys."
+non_scope:
+  - "Do not edit module/redisx/SPEC.md, TRACEABILITY.md, or goal.md as part of this implementation task."
+  - "Do not add direct runtime dependencies on configx, observex, resiliencx, contracts, or any business-domain module."
+  - "Do not implement unrelated Redis commands beyond the FR IDs listed for this task."
+test_plan:
+  - "TC-001: KV chain covers Set/Get/Del behavior for existing and missing keys."
+  - "TC-005: Exists and Expire update and report TTL state as specified."
 depends_on:
   - "TASK-REDISX-000"
   - "TASK-REDISX-001"
@@ -39,41 +43,34 @@ Implement the core Redis KV and TTL surface used by later cache, counter, and he
 
 ## Requirements Covered
 
-| Requirement | Description      | Acceptance Criteria         |
-| ----------- | ---------------- | --------------------------- |
-| FR-001      | Get：获取值      | 返回正确值或 `redis.Nil` |
-| FR-002      | Set：设置值      | 存储成功，TTL 生效          |
-| FR-003      | Del：删除 key    | 删除成功                    |
+| Requirement | Description | Acceptance Criteria |
+| ----------- | ----------- | ------------------- |
+| FR-003 | Del | AC-002-1 |
+| FR-004 | Exists | AC-002-2 |
+| FR-005 | Expire | AC-002-2 |
 
-## Test Plan
+## Acceptance Criteria
 
-| Test Case | Type | Description                          |
-| --------- | ---- | ------------------------------------ |
-| TC-001    | Unit | Set 后 Get 返回正确值                |
-| TC-001    | Unit | Get 不存在的 key 返回 `redis.Nil` |
-| TC-001    | Unit | Del 后 Get 返回 `redis.Nil`       |
+| AC ID | Criteria |
+| ----- | -------- |
+| AC-002-1 | Del is idempotent for missing keys and succeeds for mixed existing/missing keys. |
+| AC-002-2 | Exists returns the number of present keys and Expire updates TTL without failing on missing keys. |
 
 ## Non-Scope
 
-- 不直接 import `configx`、`observex`、`resiliencx` 或 `contracts`。
-- 不实现业务缓存模型、业务领域 DTO 或跨模块注册逻辑。
-- 直接依赖边界保持为 `kernel` + Redis client library `github.com/redis/go-redis/v9`。
+- Do not edit module/redisx/SPEC.md, TRACEABILITY.md, or goal.md as part of this implementation task.
+- Do not add direct runtime dependencies on configx, observex, resiliencx, contracts, or any business-domain module.
+- Do not implement unrelated Redis commands beyond the FR IDs listed for this task.
+
+## Test Plan
+
+| Test Case | Type | Description | Same-task test file |
+| --------- | ---- | ----------- | ------------------- |
+| TC-001 | Unit/Integration | KV chain covers Set/Get/Del behavior for existing and missing keys. | `kv_test.go` |
+| TC-005 | Unit/Integration | Exists and Expire update and report TTL state as specified. | `expiration_test.go` |
 
 ## Implementation Notes
 
-- All public methods must accept `context.Context`.
-- Preserve `Key.Pattern` in all diagnostic paths.
-- Treat Redis missing-key responses as `ErrNotFound`, not as dependency failures.
-
-## Done Evidence
-
-| Step | Description                          | Deliverables     | Verification     |
-| ---- | ------------------------------------ | ---------------- | ---------------- |
-| 1    | 实现 `Get`/`Set`/`Del`               | `client_impl.go` | 基础 KV 测试通过 |
-| 2    | 错误处理：Get/HGet miss 保持 `redis.Nil` 语义 | `client_impl.go` | 错误类型正确     |
-
-### Risk Assessment
-
-| Risk           | Probability | Impact | Mitigation    |
-| -------------- | ----------- | ------ | ------------- |
-| redis 连接失败 | Low         | High   | 连接池 + 模块内 timeout/retry/fast-fail 策略 |
+- Direct production imports are limited to stdlib, kernel, and the Redis client library; configx/observex/resiliencx/contracts remain integration boundaries expressed through local options, interfaces, docs, or adapters outside this task.
+- Every listed test case must be implemented in a same-task `*_test.go` or `example_test.go` file listed in this task.
+- Preserve context cancellation and timeout behavior for all Redis calls touched by this task.

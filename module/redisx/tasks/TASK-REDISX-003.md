@@ -1,33 +1,32 @@
 # TASK-REDISX-003
 
-> Client 实现：Exists/Expire/HGet/HSet
+> Hash operations
 
 ---
 
 ```yaml
 task_id: TASK-REDISX-003
 module: redisx
-scope: "实现 Client 接口的 Exists/Expire 与 Hash 操作（FR-004、FR-005、FR-006）"
+scope: "Implement HGet and HSet for Redis hashes with missing-field behavior matching the specification."
 spec_ref:
   - "module/redisx/SPEC.md#FR-004"
   - "module/redisx/SPEC.md#FR-005"
   - "module/redisx/SPEC.md#FR-006"
-test_cases:
-  - "TC-005"
-  - "TC-006"
 files:
-  - "cache.go"
-  - "cache_policy.go"
-  - "cache_test.go"
-  - "cache_concurrency_test.go"
+  - "hash.go"
+  - "hash_test.go"
   - "testutil_test.go"
 acceptance_criteria:
-  - "Exists 返回 true/false"
-  - "Expire 设置 TTL"
-  - "HGet/HSet 操作 Hash 字段正确"
+  - "AC-003-1: HSet stores one or more field values and HGet returns existing field values."
+  - "AC-003-2: HGet returns redis.Nil for missing fields without wrapping it into an unrelated error."
+non_scope:
+  - "Do not edit module/redisx/SPEC.md, TRACEABILITY.md, or goal.md as part of this implementation task."
+  - "Do not add direct runtime dependencies on configx, observex, resiliencx, contracts, or any business-domain module."
+  - "Do not implement unrelated Redis commands beyond the FR IDs listed for this task."
+test_plan:
+  - "TC-006: HSet followed by HGet returns the stored field value and missing fields return redis.Nil."
 depends_on:
-  - "TASK-REDISX-000"
-  - "TASK-REDISX-002"
+  - "TASK-REDISX-001"
 estimated_effort: "1d"
 priority: P0
 status: pending
@@ -41,38 +40,31 @@ status: pending
 
 ## Requirements Covered
 
-| Requirement | Description             | Acceptance Criteria |
-| ----------- | ----------------------- | ------------------- |
-| FR-004      | Exists：检查存在        | 返回 true/false     |
-| FR-005      | Expire：设置 TTL        | TTL 生效            |
-| FR-006      | HGet/HSet：Hash 操作    | 字段读写正确        |
+| Requirement | Description | Acceptance Criteria |
+| ----------- | ----------- | ------------------- |
+| FR-006 | HGet / HSet | AC-003-1 |
 
-## Test Plan
+## Acceptance Criteria
 
-| Test Case | Type | Description                  |
-| --------- | ---- | ---------------------------- |
-| TC-005    | Unit | Exists 返回正确值，Expire 后 TTL 更新 |
-| TC-006    | Unit | HSet 后 HGet 返回正确值              |
+| AC ID | Criteria |
+| ----- | -------- |
+| AC-003-1 | HSet stores one or more field values and HGet returns existing field values. |
+| AC-003-2 | HGet returns redis.Nil for missing fields without wrapping it into an unrelated error. |
 
 ## Non-Scope
 
-- 不直接 import `configx`、`observex`、`resiliencx` 或 `contracts`。
-- 不实现业务缓存模型、业务领域 DTO 或跨模块注册逻辑。
-- 直接依赖边界保持为 `kernel` + Redis client library `github.com/redis/go-redis/v9`。
+- Do not edit module/redisx/SPEC.md, TRACEABILITY.md, or goal.md as part of this implementation task.
+- Do not add direct runtime dependencies on configx, observex, resiliencx, contracts, or any business-domain module.
+- Do not implement unrelated Redis commands beyond the FR IDs listed for this task.
+
+## Test Plan
+
+| Test Case | Type | Description | Same-task test file |
+| --------- | ---- | ----------- | ------------------- |
+| TC-006 | Unit/Integration | HSet followed by HGet returns the stored field value and missing fields return redis.Nil. | `hash_test.go` |
 
 ## Implementation Notes
 
-- Exists/Expire/Hash 操作直接包装 redis 命令并转换错误
-
-## Done Evidence
-
-| Step | Description           | Deliverables     | Verification  |
-| ---- | --------------------- | ---------------- | ------------- |
-| 1    | 实现 `Exists`/`Expire` | `client_impl.go` | TC-005 通过 |
-| 2    | 实现 `HGet`/`HSet`    | `client_impl.go` | TC-006 通过 |
-
-### Risk Assessment
-
-| Risk | Probability | Impact | Mitigation |
-| ---- | ----------- | ------ | ---------- |
-| 无   | Low         | Low    | —          |
+- Direct production imports are limited to stdlib, kernel, and the Redis client library; configx/observex/resiliencx/contracts remain integration boundaries expressed through local options, interfaces, docs, or adapters outside this task.
+- Every listed test case must be implemented in a same-task `*_test.go` or `example_test.go` file listed in this task.
+- Preserve context cancellation and timeout behavior for all Redis calls touched by this task.
