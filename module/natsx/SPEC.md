@@ -21,8 +21,8 @@
 ### 1.0 Repair Review Status
 
 - Approved for release: **No**. This specification remains the 1.0 target contract; `/home/natsx/pkg/natsx` now has an executable repair baseline, but it is not release-complete.
-- Evidence refreshed on 2026-06-12: `/home/natsx/README.md`, `/home/natsx/examples/README.md`, `/home/natsx` commits `733ba9a`, `6942cbe`, `a837b94`, `5800c70`, and `29b0821`, embedded Core NATS / JetStream tests in `/home/natsx/pkg/natsx`, and `TRACEABILITY.md`.
-- Release promotion remains blocked until `TRACEABILITY.md` closes the remaining dead-letter advisory, reconnect/backoff, migrated examples, benchmark/SLO, formal arbiter, and full health/observability lifecycle gaps.
+- Evidence refreshed on 2026-06-12: `/home/natsx/README.md`, `/home/natsx/examples/README.md`, `/home/natsx` commits `733ba9a`, `6942cbe`, `a837b94`, `5800c70`, `29b0821`, and `d4072fe`, embedded Core NATS / JetStream tests in `/home/natsx/pkg/natsx`, runnable `pkg/natsx` examples, Core publish benchmark evidence, and `TRACEABILITY.md`.
+- Release promotion remains blocked until `TRACEABILITY.md` closes the remaining dead-letter advisory, reconnect/backoff, request/JetStream benchmark/SLO, formal arbiter, live TLS/auth/config-alias breadth, and full health/observability lifecycle gaps.
 
 ---
 
