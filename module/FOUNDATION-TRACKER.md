@@ -89,17 +89,20 @@
 
 > P0 完成后开始。每个模块独立，可并行。
 
-### kernel ✅ (PR #9 合入，SPEC v2.0.0 12 子包模型)
+### kernel ✅ v1.0.0 已发布 (2026-06-12)
 
 - [x] public API snapshot 文件（`contracts/public_api/kernel_v0.schema.json`）
 - [x] stdlib-only CI check（`scripts/check-stdlib-only.sh`）
 - [x] no-hidden-goroutine CI check（`scripts/check-no-goroutine.sh`）
 - [x] 12 子包核心实现：errx / timex / obsx / syncx / lifecycx / shutdownx / versionx / validx / retryx / contextx / healthx / contracttest
+- [x] 核心库 100% 测试覆盖率，-race 清零
+- [x] 15 项 CI 门禁全部通过（含 benchmark 回归）
 - [x] `retryx` 限界文档（`retryx/BOUNDARY.md`）
 - [x] `obsx` 限界文档（`obsx/BOUNDARY.md`）
 - [x] API freeze 声明（`contracts/public_api/FREEZE.md`）
 - [x] contracts/ 契约验证层（API snapshot + golden behavior + consumer import test）
 - [x] SPEC.md v2.0.0 重写：集中式 App/Module/Deps → 12 子包轻量工具集
+- [x] v1.0.0 GitHub Release：https://github.com/ZoneCNH/kernel/releases/tag/v1.0.0
 
 ### configx ✅ (PR #1 + #2 合入)
 
