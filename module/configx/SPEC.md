@@ -13,7 +13,7 @@
 - Last-Updated: 2026-06-12
 - Owner: ZoneCNH
 - Layer: L1 基础能力
-- Version: v0.1.4
+- Version: v1.0.0
 - Repository: [github.com/ZoneCNH/configx](https://github.com/ZoneCNH/configx)
 - Related: [CONSTITUTION.md](../../CONSTITUTION.md), [ARCHITECTURE.md](../../ARCHITECTURE.md)
 
@@ -23,7 +23,7 @@
 
 | 日期 | 版本 | 变更内容 | 作者 |
 |------|------|----------|------|
-| 2026-06-12 | v1.1.0 | 完整重写：基于实际 v0.1.4 代码（97.1% 覆盖率），对齐 Client/Loader/Source/SecretString/Provenance/StrictDecode 等真实 API | ZoneCNH |
+| 2026-06-12 | v1.1.0 | 完整重写：基于实际 v1.0.0 代码（97.1% 覆盖率），对齐 Client/Loader/Source/SecretString/Provenance/StrictDecode 等真实 API | ZoneCNH |
 | 2026-06-12 | v1.0.2 | 版本号对齐；Non-goals 澄清；移除过时 kernel 依赖声明 | ZoneCNH |
 | 2026-06-12 | v1.0.1 | 对齐修复：移除过时 kernel.Deps；Status Draft→Approved | ZoneCNH |
 | 2026-06-07 | v1.0.0 | 初始版本 | ZoneCNH |
