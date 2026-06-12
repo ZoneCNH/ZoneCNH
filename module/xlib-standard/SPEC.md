@@ -245,42 +245,42 @@ Updated: 2026-06-12
 
 ## Test Cases
 
-| TC     | Type        | Scenario                | Expected                   |
+| TC     | Type        | Scenario                | Expected                   | 代码位置 |
 | ------ | ----------- | ----------------------- | -------------------------- |
-| TC-001 | Unit        | Config 必填字段缺失     | 返回 validation kind       |
-| TC-002 | Unit        | Config 负数 timeout     | 返回 validation kind       |
-| TC-003 | Unit        | Config 脱敏             | secret 替换为 `***`        |
-| TC-004 | Unit        | NewError 创建           | 字段正确                   |
-| TC-005 | Unit        | WrapError 包装          | `errors.Is` 可穿透         |
-| TC-006 | Unit        | IsKind 匹配             | 返回 true                  |
-| TC-007 | Unit        | deadline cause          | kind 为 timeout            |
-| TC-008 | Unit        | canceled cause          | kind 为 unavailable        |
-| TC-009 | Unit        | HealthCheck nil context | 返回 unhealthy             |
-| TC-010 | Unit        | HealthCheck 健康客户端  | 返回 healthy               |
-| TC-011 | Unit        | NoopMetrics 调用        | 无 panic                   |
-| TC-012 | Unit        | 指标名匹配 contract     | P0 名称一致                |
-| TC-013 | Unit        | label 低基数            | 只有允许键                 |
-| TC-014 | Unit        | New nil context         | 返回错误                   |
-| TC-015 | Unit        | New canceled context    | 返回错误                   |
-| TC-016 | Unit        | New 无效 config         | 返回错误                   |
-| TC-017 | Unit        | New 正常创建            | 返回客户端                 |
-| TC-018 | Unit        | Close 幂等              | 多次调用不 panic           |
-| TC-019 | Integration | 模板 go vet             | 零警告                     |
-| TC-020 | Integration | 模板 go test            | 全部通过                   |
-| TC-021 | Integration | 渲染模板                | 输出结构完整               |
-| TC-022 | Integration | 检查生成库残留          | 无非法残留                 |
-| TC-023 | Integration | make ci                 | 17 个 gate 全通过          |
-| TC-024 | Integration | release manifest        | 字段完整且 checksum 可校验 |
-| TC-025 | Integration | goalcli audit           | 输出 G0-G11 审计报告      |
-| TC-026 | Integration | goalcli dashboard       | 输出合规仪表盘 JSON       |
-| TC-027 | Integration | goalcli fact            | 输出 fact-audit 证据      |
-| TC-028 | Integration | goalcli schema-check    | 全 schema 校验通过        |
-| TC-029 | Integration | goalcli traceability    | 生成 FR→Code 追溯矩阵     |
-| TC-030 | Integration | goalcli governance      | 输出远端治理状态          |
-| TC-031 | Integration | goalcli debt            | 输出技术债务报告          |
-| TC-032 | Integration | goalcli adoption        | 输出下游采纳状态          |
-| TC-033 | Integration | goalcli selfimproving   | 自改进流程正常执行        |
-| TC-034 | Integration | templates/l2 完整性检查 | 12 模板文件在位          |
+| TC-001 | Unit | Config 必填字段缺失     | 返回 validation kind       | `pkg/templatex/config_test.go` |
+| TC-002 | Unit | Config 负数 timeout     | 返回 validation kind       | `pkg/templatex/config_test.go` |
+| TC-003 | Unit | Config 脱敏             | secret 替换为 `***`        | `pkg/templatex/config_test.go` |
+| TC-004 | Unit | NewError 创建           | 字段正确                   | `pkg/templatex/errors_test.go` |
+| TC-005 | Unit | WrapError 包装          | `errors.Is` 可穿透         | `pkg/templatex/errors_test.go` |
+| TC-006 | Unit | IsKind 匹配             | 返回 true                  | `pkg/templatex/errors_test.go` |
+| TC-007 | Unit | deadline cause          | kind 为 timeout            | `pkg/templatex/errors_test.go` |
+| TC-008 | Unit | canceled cause          | kind 为 unavailable        | `pkg/templatex/errors_test.go` |
+| TC-009 | Unit | HealthCheck nil context | 返回 unhealthy             | `pkg/templatex/health_test.go` |
+| TC-010 | Unit | HealthCheck 健康客户端  | 返回 healthy               | `pkg/templatex/health_test.go` |
+| TC-011 | Unit | NoopMetrics 调用        | 无 panic                   | `pkg/templatex/metrics_test.go` |
+| TC-012 | Unit | 指标名匹配 contract     | P0 名称一致                | `pkg/templatex/metrics_test.go` |
+| TC-013 | Unit | label 低基数            | 只有允许键                 | `pkg/templatex/metrics_test.go` |
+| TC-014 | Unit | New nil context         | 返回错误                   | `pkg/templatex/client_test.go` |
+| TC-015 | Unit | New canceled context    | 返回错误                   | `pkg/templatex/client_test.go` |
+| TC-016 | Unit | New 无效 config         | 返回错误                   | `pkg/templatex/client_test.go` |
+| TC-017 | Unit | New 正常创建            | 返回客户端                 | `pkg/templatex/client_test.go` |
+| TC-018 | Unit | Close 幂等              | 多次调用不 panic           | `pkg/templatex/client_test.go` |
+| TC-019 | Integration | 模板 go vet             | 零警告                     | `pkg/templatex/version_test.go` |
+| TC-020 | Integration | 模板 go test            | 全部通过                   | `pkg/templatex/*.go (go vet)` |
+| TC-021 | Integration | 渲染模板                | 输出结构完整               | `pkg/templatex/*_test.go` |
+| TC-022 | Integration | 检查生成库残留          | 无非法残留                 | `scripts/render_template.sh` |
+| TC-023 | Integration | make ci                 | 17 个 gate 全通过          | `scripts/check_rendered_template.sh` |
+| TC-024 | Integration | release manifest        | 字段完整且 checksum 可校验 | `Makefile (release-check) + scripts/generate_manifest.sh` |
+| TC-025 | Integration | goalcli audit           | 输出 G0-G11 审计报告      | `cmd/goalcli/audit_goal_test.go` |
+| TC-026 | Integration | goalcli dashboard       | 输出合规仪表盘 JSON       | `cmd/goalcli/dashboard_generate_test.go` |
+| TC-027 | Integration | goalcli fact            | 输出 fact-audit 证据      | `cmd/goalcli/fact.go + internal/xlibfacts/` |
+| TC-028 | Integration | goalcli schema-check    | 全 schema 校验通过        | `cmd/goalcli/schema_check_test.go` |
+| TC-029 | Integration | goalcli traceability    | 生成 FR→Code 追溯矩阵     | `cmd/goalcli/traceability_test.go` |
+| TC-030 | Integration | goalcli governance      | 输出远端治理状态          | `cmd/goalcli/governance.go` |
+| TC-031 | Integration | goalcli debt            | 输出技术债务报告          | `cmd/goalcli/debt.go + internal/debtcheck/` |
+| TC-032 | Integration | goalcli adoption        | 输出下游采纳状态          | `cmd/goalcli/adoption_check.go` |
+| TC-033 | Integration | goalcli selfimproving   | 自改进流程正常执行        | `cmd/goalcli/selfimproving_test.go` |
+| TC-034 | Integration | templates/l2 完整性检查 | 12 模板文件在位          | `templates/l2/ (12 files)` |
 
 ## Interfaces
 
