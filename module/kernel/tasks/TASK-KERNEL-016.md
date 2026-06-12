@@ -1,63 +1,47 @@
 # TASK-KERNEL-016
 
-> docs/ + CHANGELOG + CI gates + Release preflight
+> docs/ + CHANGELOG + CI gates + Release preflight（拆分为 016a/016b/016c）
 
 ---
 
 ```yaml
 task_id: TASK-KERNEL-016
 module: kernel
-scope: "创建 docs/ 项目文档、CHANGELOG.md、CI 脚本、release preflight"
+scope: "完成 kernel 文档、CI 脚本、CHANGELOG、Release 预检（拆分为 3 个子任务）"
+type: meta
 spec_ref:
   - "module/kernel/SPEC.md#20"
   - "module/kernel/SPEC.md#22"
-files:
-  - "CHANGELOG.md"
-  - "docs/adr/"
-  - "docs/design/"
-  - "docs/governance/"
-  - "docs/spec/"
-  - "docs/standard/"
-  - "docs/evidence/"
-  - "scripts/ci/internal/apisnapshot/"
-  - "release/manifest/"
-  - "release/dependency/"
-  - "release/standard-sync/"
+  - "module/kernel/SPEC.md#BR-009"
+sub_tasks:
+  - "module/kernel/tasks/TASK-KERNEL-016a.md"
+  - "module/kernel/tasks/TASK-KERNEL-016b.md"
+  - "module/kernel/tasks/TASK-KERNEL-016c.md"
 acceptance_criteria:
   - "AC-018: stdlib-only gate 通过"
-  - "AC-RELEASE-01: CHANGELOG.md 记录 v1.0.0 变更"
+  - "AC-RELEASE-01: CHANGELOG.md 记录 v1.0.0"
   - "AC-RELEASE-02: make release-preflight 通过"
-  - "AC-RELEASE-03: 发布 manifest 已生成"
-  - "AC-RELEASE-04: go test -race -count=1 ./... 全部通过"
-  - "AC-RELEASE-05: 覆盖率 >= 80%"
-  - "AC-RELEASE-06: go vet 无警告"
   - "AC-RELEASE-07: golangci-lint 无错误"
   - "AC-RELEASE-08: gitleaks 无泄露"
 depends_on:
   - "TASK-KERNEL-014"
-  - "TASK-KERNEL-015"
+  - "TASK-KERNEL-015a"
+  - "TASK-KERNEL-015b"
+  - "TASK-KERNEL-015c"
 estimated_effort: "2h"
 priority: P1
 status: pending
 ```
 
----
+## 拆分方案（符合 ≤ 5 文件约束）
 
-## Requirements Covered
-
-| Requirement | Description |
-|---|---|
-| §20 | CI Gate |
-| §22 | Release DoD |
+| Sub-task | 文件数 | 覆盖内容 |
+|----------|:------:|----------|
+| TASK-KERNEL-016a | 5 | docs/adr + design + governance + spec + standard |
+| TASK-KERNEL-016b | 5 | scripts/ci + release/manifest + dependency + standard-sync |
+| TASK-KERNEL-016c | 2 | CHANGELOG.md + Makefile release-preflight |
 
 ## Non-scope
 
 - 不在 CHANGELOG 中包含未实现功能
-- 不在 release/manifest 中包含绝对路径
 - 不包含测试密钥或个人环境路径
-
-## Implementation Notes
-
-- CHANGELOG.md 按 SemVer 记录变更
-- scripts/ci/ 包含 stdlib-only 检查等 kernel 专属 gate
-- release/manifest/ 记录发布版本、依赖、签名
