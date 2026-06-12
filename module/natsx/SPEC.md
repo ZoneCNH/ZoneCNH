@@ -1,8 +1,8 @@
 # natsx 完整规格
 
-> 基座 · 存储扩展。NATS 内部通信封装，提供统一的发布/订阅、请求/响应、JetStream 和可观测集成。
+> 消息扩展层 / NATS 轻量消息与服务通信。NATS 内部通信封装，提供统一的发布/订阅、请求/响应、JetStream 和可观测集成。
 
-最后更新：2026-06-07
+最后更新：2026-06-12
 
 ---
 
@@ -10,11 +10,12 @@
 
 - Status: Draft
 - Spec-Version: v1.0.0
-- Last-Updated: 2026-06-07
+- Last-Updated: 2026-06-12
 - Owner: ZoneCNH
-- Layer: 基座 · 存储扩展
-- Version: v0.7.3
-- Repository: [github.com/ZoneCNH/natsx](https://github.com/ZoneCNH/natsx)
+- Layer: 消息扩展层 / NATS 轻量消息与服务通信
+- Version: v1.0.0
+- Module Scope: `/home/ZoneCNH/module/natsx`
+- Target Repository Identity: `github.com/ZoneCNH/natsx`
 - Related: [CONSTITUTION.md](../../CONSTITUTION.md), [ARCHITECTURE.md](../../ARCHITECTURE.md)
 
 ---
@@ -26,6 +27,8 @@
 | 2026-06-07 | v1.0.0 | 初始版本 | ZoneCNH |
 
 ## 2. Summary
+
+Scope note: 本规格描述 `/home/ZoneCNH/module/natsx` 的 1.0 目标，不单独批准或覆盖 `/home/natsx` 仓库的发布身份。
 
 `natsx` 封装 NATS 客户端，提供统一的发布/订阅（Core NATS）、请求/响应、JetStream（持久化消息、消费者组）和可观测集成。NATS 用于模块间的低延迟内部通信，JetStream 提供持久化保证。与 kernel 生命周期集成，保证连接随应用启停。
 
@@ -117,17 +120,17 @@ THEN 超时后返回错误
 WHEN 调用 `Request(ctx, subject, data, timeout)` 且 ctx 被取消
 THEN 返回 ctx.Err()
 
-### FR-004: JetStream.Publish
+### FR-004: JetStreamClientX.Publish
 
-WHEN 调用 `JetStream().Publish(ctx, subject, data, opts...)` 且 stream 已创建
+WHEN 调用 `JetStreamClientX.Publish(ctx, subject, msg, opts...)` 且 stream 已创建
 THEN 消息持久化成功，返回 PublishAck
 
-WHEN 调用 `JetStream().Publish(ctx, subject, data, opts...)` 且 stream 未创建
+WHEN 调用 `JetStreamClientX.Publish(ctx, subject, msg, opts...)` 且 stream 未创建
 THEN 返回错误
 
-### FR-005: JetStream.Subscribe
+### FR-005: JetStreamClientX.Subscribe
 
-WHEN 调用 `JetStream().Subscribe(ctx, subject, handler, opts...)` 且 consumer 已创建
+WHEN 调用 `JetStreamClientX.Subscribe(ctx, subject, handler, opts...)` 且 consumer 已创建
 THEN 注册订阅，返回 Subscription
 
 WHEN 消息被 ack 后
@@ -168,6 +171,20 @@ THEN 返回 HealthStatus{Ready: false, Live: true, Message: "jetstream unavailab
 
 ---
 
+### 7.1 Acceptance Criteria Registry
+
+| AC-ID | 功能 | 验收标准 | 验证方式 | 判定结果 |
+|-------|---------|----------|----------|----------|
+| AC-001 | Publish（Core NATS） | Publish 成功返回 nil；连接不可用时返回错误；空 subject 返回错误 | TC-001, unit test | Yes/No |
+| AC-002 | Subscribe（Core NATS） | Subscribe 注册返回 Subscription；收到消息时调用 handler；Unsubscribe/Drain 后不再接收 | TC-001, unit test | Yes/No |
+| AC-003 | Request（Core NATS） | Request 有 responder 时返回响应；无 responder 时超时返回错误；ctx 取消时返回 ctx.Err() | TC-002, unit test | Yes/No |
+| AC-004 | JetStreamClientX.Publish | JetStreamClientX Publish 返回 PublishAck；stream 未创建时返回错误 | TC-003, unit test | Yes/No |
+| AC-005 | JetStreamClientX.Subscribe | JetStreamClientX Subscribe 注册返回 Subscription；ack 后 offset 推进；超 max_deliver 进入 Dead Letter | TC-003, unit test | Yes/No |
+| AC-006 | JetStream.AddStream | AddStream 幂等创建；配置兼容时返回 nil；配置冲突时返回错误 | TC-003, unit test | Yes/No |
+| AC-007 | JetStream.AddConsumer | AddConsumer 幂等创建；配置兼容时返回 nil；配置冲突时返回错误 | TC-003, unit test | Yes/No |
+| AC-008 | Health | NATS 可用时 Health() 返回 Ready=true/Live=true；不可达时 Ready=false/Live=false；JetStream 不可用时 Ready=false/Live=true | TC-005, unit test | Yes/No |
+
+
 ## 8. Business Rules
 
 | 编号 | 规则 |
@@ -186,123 +203,88 @@ THEN 返回 HealthStatus{Ready: false, Live: true, Message: "jetstream unavailab
 
 ## 9. Interface Contract
 
+公开 API 命名以 `goal.md` 的 1.0 逻辑接口基线为准：`NatsPubSubClient`、`NatsRequestClient`、`JetStreamClientX`、`NatsMessageEnvelope` 和 `SubjectBuilder`。实现可以保留内部适配器，但 Public API 不再暴露泛化的 `Client`/`JetStream` 命名作为 1.0 稳定契约。
+
 ```go
-type Client interface {
-    Publish(ctx context.Context, subject string, data []byte) error
-    Subscribe(ctx context.Context, subject string, handler MsgHandler) (Subscription, error)
-    Request(ctx context.Context, subject string, data []byte, timeout time.Duration) ([]byte, error)
-    JetStream() JetStream
-    Health() HealthStatus
-    Close() error
+type NatsPubSubClient interface {
+    Publish(ctx context.Context, subject string, msg NatsMessageEnvelope) (PublishResult, error)
+    Subscribe(ctx context.Context, subject string, handler NatsMessageHandler, opts ...SubscribeOption) (Subscription, error)
 }
 
-type MsgHandler func(msg *Msg)
-
-type Subscription interface {
-    Unsubscribe() error
-    Drain() error
+type NatsRequestClient interface {
+    Request(ctx context.Context, subject string, msg NatsMessageEnvelope, timeout time.Duration) (NatsMessageEnvelope, error)
+    Reply(ctx context.Context, subject string, handler NatsMessageHandler) (Subscription, error)
 }
 
-type JetStream interface {
-    Publish(ctx context.Context, subject string, data []byte, opts ...PublishOpt) (*PublishAck, error)
-    Subscribe(ctx context.Context, subject string, handler MsgHandler, opts ...SubOpt) (Subscription, error)
+type JetStreamClientX interface {
+    Publish(ctx context.Context, stream string, subject string, msg NatsMessageEnvelope) (*PublishAck, error)
+    Consume(ctx context.Context, stream string, consumer string, handler NatsMessageHandler) (ConsumerHandle, error)
     AddStream(ctx context.Context, cfg *StreamConfig) error
     AddConsumer(ctx context.Context, stream string, cfg *ConsumerConfig) error
 }
 
-type Msg struct {
-    Subject   string
-    Reply     string
-    Data      []byte
-    Headers   map[string][]byte
-    Timestamp time.Time
+type NatsMessageEnvelope struct {
+    EventID       string
+    MessageID     string
+    SchemaVersion string
+    TraceID       string
+    Subject       string
+    Headers       map[string][]string
+    Payload       []byte
 }
 
-type PublishAck struct {
-    Stream   string
-    Sequence uint64
+type SubjectBuilder interface {
+    Build(domain, resource, action string, version int) (string, error)
+    Parse(subject string) (SubjectParts, error)
 }
+```
 
-type StreamConfig struct {
-    Name      string
-    Subjects  []string
-    Retention RetentionPolicy
-    MaxAge    time.Duration
-    MaxMsgs   int64
-    Storage   StorageType
-}
-
-type ConsumerConfig struct {
-    Durable       string
-    AckPolicy     AckPolicy
-    MaxDeliver    int
-    FilterSubject string
-}
-
-type HealthStatus struct {
-    Ready   bool
-    Live    bool
-    Message string
-}
-
-func New(opts ...Option) Client
-```text
+Header / Trace 传播要求：`traceId`、`messageId`、`schemaVersion` 必须在 `NatsMessageEnvelope` 与 NATS Header 间双向映射；已有上游 Header 不得被无故丢弃，冲突字段以 Envelope 显式字段为准并记录诊断事件。
 
 ### 9.1 Option 模式
 
 ```go
 type Option func(*config)
 
-func WithURL(url string) Option
-func WithName(name string) Option
+func WithServers(servers []string) Option
+func WithClientName(name string) Option
 func WithCredentials(path string) Option
 func WithReconnectWait(d time.Duration) Option
 func WithMaxReconnects(n int) Option
 func WithJetStreamEnabled(enabled bool) Option
 func WithCodec(codec Codec) Option
-```text
+```
 
 ### 9.2 用法示例
 
 ```go
-// 创建客户端
-client := natsx.New(
-    natsx.WithURL(os.Getenv("FOUNDATIONX_NATS_URL")),
-    natsx.WithReconnectWait(2*time.Second),
-)
+subjects := natsx.NewSubjectBuilder()
+subject, _ := subjects.Build("market", "ticker", "updated", 1)
 
-// Core NATS 发布
-client.Publish(ctx, "market.btcusdt", tickerJSON)
+pubsub := natsx.NewPubSubClient(cfg)
+msg := natsx.NatsMessageEnvelope{
+    Subject:       subject,
+    MessageID:     uuid.NewString(),
+    TraceID:       traceIDFromContext(ctx),
+    SchemaVersion: "ticker.v1",
+    Headers:       map[string][]string{"source": []string{"market-data"}},
+    Payload:       tickerJSON,
+}
 
-// Core NATS 订阅
-sub, _ := client.Subscribe(ctx, "market.>", func(msg *natsx.Msg) {
-    fmt.Printf("subject: %s, data: %s\n", msg.Subject, msg.Data)
+pubsub.Publish(ctx, subject, msg)
+
+sub, _ := pubsub.Subscribe(ctx, "market.ticker.*.v1", func(ctx context.Context, msg natsx.NatsMessageEnvelope) error {
+    return processTicker(msg.Payload)
 })
 defer sub.Unsubscribe()
 
-// Request-Reply
-resp, err := client.Request(ctx, "config.get", []byte("key"), 5*time.Second)
+requester := natsx.NewRequestClient(cfg)
+resp, err := requester.Request(ctx, "config.service.get.v1", msg, 5*time.Second)
 
-// JetStream
-js := client.JetStream()
-
-// 创建 stream
-js.AddStream(ctx, &natsx.StreamConfig{
-    Name:     "ORDERS",
-    Subjects: []string{"orders.>"},
-    MaxAge:   24 * time.Hour,
-})
-
-// 持久化发布
-ack, _ := js.Publish(ctx, "orders.new", orderJSON)
+js := natsx.NewJetStreamClientX(cfg)
+ack, _ := js.Publish(ctx, "ORDERS", "orders.created.v1", msg)
 fmt.Printf("stored in stream %s, seq %d\n", ack.Stream, ack.Sequence)
-
-// 持久化消费
-js.Subscribe(ctx, "orders.>", func(msg *natsx.Msg) {
-    processOrder(msg.Data)
-    // handler 内部自动 ack
-}, natsx.WithDurable("risk-engine"))
-```text
+```
 
 ---
 
@@ -322,7 +304,7 @@ var (
     ErrInvalidSubject    = errors.New("natsx: invalid subject")
     ErrDrainTimeout      = errors.New("natsx: drain timeout")
 )
-```text
+```
 
 ### 10.2 Codec 接口
 
@@ -331,28 +313,39 @@ type Codec interface {
     Marshal(v any) ([]byte, error)
     Unmarshal(data []byte, v any) error
 }
-```text
+```
 
 ---
 
 ## 11. Config Schema
 
+配置命名以 `foundationx.nats.*` 为稳定前缀，避免与其它消息模块冲突。环境变量使用复数 `FOUNDATIONX_NATS_SERVERS` 表达 server 列表，旧的 `FOUNDATIONX_NATS_URL` 仅可作为兼容别名。
+
 ```yaml
-natsx:
-  url: "${FOUNDATIONX_NATS_URL}" # NATS 服务器地址
-  name: "foundationx"            # 连接名称（用于监控）
-  credentials: ""                # 凭证文件路径（可选）
-  reconnect_wait: 2s             # 重连等待时间
-  max_reconnects: 60             # 最大重连次数（-1 为无限）
-  ping_interval: 30s             # 心跳间隔
-  max_pings_outstanding: 3       # 最大未响应心跳数
-  drain_timeout: 30s             # Drain 超时时间
-  codec: json                    # 序列化方式：json / msgpack / protobuf
-  jetstream:
-    enabled: true                # 是否启用 JetStream
-    domain: ""                   # JetStream domain（可选）
-  health_check_interval: 10s     # 健康检查周期
-```text
+foundationx:
+  nats:
+    enabled: false
+    servers: ["${FOUNDATIONX_NATS_SERVERS}"]
+    client-name: "foundationx"
+    credentials: ""
+    request:
+      timeout: 1s
+    reconnect:
+      wait: 2s
+      max-attempts: -1
+    ping:
+      interval: 30s
+      max-outstanding: 3
+    drain-timeout: 30s
+    serializer: json
+    jetstream:
+      enabled: false
+      domain: ""
+    health-check-interval: 10s
+    tls:
+      enabled: false
+      ca-file: ""
+```
 
 ---
 
@@ -403,15 +396,15 @@ natsx/
 ├── CHANGELOG.md
 ├── LICENSE
 ├── doc.go
-├── natsx.go                    # Client 工厂
-├── client.go                   # Client 接口实现（Core NATS）
-├── jetstream.go                # JetStream 接口实现
+├── natsx.go                    # NatsPubSubClient / NatsRequestClient / JetStreamClientX 工厂
+├── client.go                   # Core NATS 发布订阅与 Request 实现
+├── jetstream.go                # JetStreamClientX 实现
 ├── subscription.go             # Subscription 接口实现
 ├── health.go                   # HealthStatus
 ├── options.go                  # Option 模式
 ├── errors.go                   # 公共错误变量
 ├── codec.go                    # Codec 接口及默认 JSON codec
-├── msg.go                      # Msg 结构体
+├── msg.go                      # NatsMessageEnvelope 结构体
 ├── internal/
 │   ├── codec/                  # 内部序列化工具
 │   └── reconnect/              # 重连策略
@@ -420,7 +413,7 @@ natsx/
 ├── example_test.go
 ├── benchmark_test.go
 └── integration_test.go         # //go:build integration
-```text
+```
 
 ---
 
@@ -432,15 +425,17 @@ natsx/
 module github.com/ZoneCNH/natsx
 
 go 1.23
-```text
+```
 
 ### 15.2 依赖方向
 
 | 可以依赖 | 禁止依赖 |
 |----------|----------|
-| stdlib | configx |
-| kernel（L0 原语） | 所有业务域实现 |
-| observex（interface-only） | 所有 L2.5 领域共享层 |
+| stdlib | 所有业务域实现 |
+| kernel（L0 原语） | 所有 L2.5 领域共享层 |
+| configx（配置结构/绑定，natsx 不直接解析配置源） | kafkax / redisx / postgresx / taosx / ossx / clickhousex 等同层 L2 模块 |
+| observex（interface-only） | x.go 应用层、策略层和运行时 |
+| resiliencx（重试/退避策略，可选） | 隐式全局客户端和隐藏配置源 |
 | NATS 客户端库（nats.go） | |
 
 ---
@@ -481,8 +476,8 @@ Then 收到 responder 的响应
 
 **TC-003: JetStream 持久化**
 Given stream "ORDERS" 已创建
-When JetStream().Publish("orders.new", data)
-Then JetStream().Subscribe 收到该消息
+When JetStreamClientX.Publish("orders.new", msg)
+Then JetStreamClientX.Subscribe 收到该消息
 And 重启后仍能消费该消息
 
 **TC-004: 自动重连**
@@ -534,15 +529,13 @@ Then 返回 healthy；连接断开时返回 unhealthy
 
 | 类型 | 名称 | 说明 |
 |------|------|------|
-| metric | `natsx.publish.duration` | histogram，发布耗时 |
-| metric | `natsx.publish.errors` | counter，发布失败次数 |
-| metric | `natsx.subscribe.messages` | counter，消费消息数 |
-| metric | `natsx.subscribe.errors` | counter，消费失败次数 |
-| metric | `natsx.request.duration` | histogram，Request-Reply 耗时 |
-| metric | `natsx.request.errors` | counter，Request 失败次数 |
-| metric | `natsx.jetstream.publish.duration` | histogram，JetStream 发布耗时 |
-| metric | `natsx.jetstream.subscribe.messages` | counter，JetStream 消费消息数 |
-| metric | `natsx.reconnect.count` | counter，重连次数 |
+| metric | `foundationx_nats_publish_total` | counter，按 subject/status 统计发布次数 |
+| metric | `foundationx_nats_publish_duration_ms` | timer，发布耗时 |
+| metric | `foundationx_nats_request_total` | counter，按 subject/status 统计请求次数 |
+| metric | `foundationx_nats_request_duration_ms` | timer，Request-Reply 耗时 |
+| metric | `foundationx_nats_consume_total` | counter，按 subject/consumer/status 统计消费次数 |
+| metric | `foundationx_nats_redelivery_total` | counter，按 stream/consumer 统计重投递次数 |
+| metric | `foundationx_nats_connection_state` | gauge，按 server/state 暴露连接状态 |
 | log | `natsx.connected` | info，连接成功 |
 | log | `natsx.disconnected` | warn，连接断开 |
 | log | `natsx.reconnecting` | info，正在重连 |
@@ -589,12 +582,12 @@ Then 返回 healthy；连接断开时返回 unhealthy
 
 | 变更类型 | 版本升级 |
 |----------|----------|
-| Client 接口新增方法 | **minor**（实现需跟上） |
-| Client 接口删除/修改方法 | **major** |
-| JetStream 接口新增方法 | **minor**（实现需跟上） |
-| JetStream 接口删除/修改方法 | **major** |
+| NatsPubSubClient / NatsRequestClient 接口新增方法 | **minor**（实现需跟上） |
+| NatsPubSubClient / NatsRequestClient 接口删除/修改方法 | **major** |
+| JetStreamClientX 接口新增方法 | **minor**（实现需跟上） |
+| JetStreamClientX 接口删除/修改方法 | **major** |
 | Subscription 接口变更 | **major** |
-| Msg 结构体变更 | **major** |
+| NatsMessageEnvelope 结构体变更 | **major** |
 | StreamConfig / ConsumerConfig 变更 | **minor**（新增字段带默认值） |
 | Option 新增字段 | minor（带默认值） |
 
