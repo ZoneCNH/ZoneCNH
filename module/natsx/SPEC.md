@@ -20,9 +20,9 @@
 
 ### 1.0 Repair Review Status
 
-- Approved for implementation: **No**. This specification remains the target contract while `/home/natsx` is repaired from legacy `pkg/templatex` scaffolding to `pkg/natsx`.
-- Documentation evidence refreshed on 2026-06-12: `/home/natsx/README.md`, `/home/natsx/examples/README.md`, and `TRACEABILITY.md`.
-- Release promotion is blocked until executable Core NATS and JetStream evidence is linked from `TRACEABILITY.md`.
+- Approved for release: **No**. This specification remains the 1.0 target contract; `/home/natsx/pkg/natsx` now has an executable repair baseline, but it is not release-complete.
+- Evidence refreshed on 2026-06-12: `/home/natsx/README.md`, `/home/natsx/examples/README.md`, embedded Core NATS / JetStream tests in `/home/natsx/pkg/natsx`, and `TRACEABILITY.md`.
+- Release promotion remains blocked until `TRACEABILITY.md` closes the remaining redelivery/DLQ, reconnect/backoff, AddConsumer parity, migrated examples, benchmark, and dependency-boundary gaps.
 
 ---
 
@@ -210,6 +210,8 @@ THEN 返回 HealthStatus{Ready: false, Live: true, Message: "jetstream unavailab
 ## 9. Interface Contract
 
 公开 API 命名以 `goal.md` 的 1.0 逻辑接口基线为准：`NatsPubSubClient`、`NatsRequestClient`、`JetStreamClientX`、`NatsMessageEnvelope` 和 `SubjectBuilder`。实现可以保留内部适配器，但 Public API 不再暴露泛化的 `Client`/`JetStream` 命名作为 1.0 稳定契约。
+
+Implementation repair note (2026-06-12): `/home/natsx/pkg/natsx` currently exposes concrete `Client`, `Envelope`, `SubjectBuilder`, and `JetStreamClient` repair APIs (`New`, `Publish`, `Request`, `Subscribe`, `QueueSubscribe`, `JetStream`) so executable behavior can be verified against embedded NATS. These names are repair-baseline evidence, not final 1.0 API approval.
 
 ```go
 type NatsPubSubClient interface {
