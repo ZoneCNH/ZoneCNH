@@ -60,7 +60,7 @@ TASK-CONFIGX-000 (骨架: go.mod, errors.go)
 | 004 | EnvOverride：环境变量覆盖 | 003 | env.go, env_test.go | `go test ./... -run TestEnv -race` | 2h |
 | 005 | Validate：schema 校验 | 001,003 | schema.go, schema_test.go | `go test ./... -run TestValidate -race` | 2h |
 | 006 | Reader 实现：Get/并发安全 | 003,004 | reader.go, reader_test.go | `go test ./... -run TestReader -race` | 2h |
-| 010 | Security：脱敏/权限检查 | 006 | sanitize.go, sanitize_test.go | `go test ./... -run TestSanitize -race && gitleaks detect --no-git` | 1.5h |
+| 010 | Security：脱敏/权限检查 | 006 | sanitize.go, sanitize_test.go, reader.go(脱敏集成追加→006实现) | `go test ./... -run TestSanitize -race && gitleaks detect --no-git` | 1.5h |
 
 ### Phase 4: 集成 + 文档 (2 tasks)
 
