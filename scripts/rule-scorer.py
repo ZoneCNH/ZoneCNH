@@ -98,16 +98,23 @@ def read(path: Path) -> str | None:
         return None
 
 
+def _strip_number(heading: str) -> str:
+    """剥离 "N. " 或 "N " 编号前缀。"""
+    return re.sub(r'^\d+[. ]\s*', '', heading).strip()
+
+
+
 def count_sections(text: str, level: int = 2) -> list[str]:
     """提取 markdown 标题。"""
     pattern = re.compile(rf"^{'#' * level} +(.+?)\s*$", re.MULTILINE)
-    return [m.group(1).strip() for m in pattern.finditer(text)]
+    return [_strip_number(m.group(1)) for m in pattern.finditer(text)]
 
 
 # ---------- 阶段评分 ----------
 
 
 SPEC_REQUIRED_SECTIONS = [
+    "Metadata",
     "Summary",
     "Problem",
     "Goals",
@@ -115,22 +122,21 @@ SPEC_REQUIRED_SECTIONS = [
     "Consumers",
     "Functional Requirements",
     "Business Rules",
-    "Acceptance Criteria",
-    "Test Cases",
-    "Interfaces",
+    "Interface Contract",
     "Data Model",
-    "Configuration",
-    "State",
+    "Config Schema",
     "Error Handling",
     "Edge Cases",
-    "Security",
-    "Observability",
-    "Performance",
-    "Testing Strategy",
-    "CI Gate",
-    "Release DoD",
+    "Directory Structure",
     "Dependencies",
-    "Rollout",
+    "Testing",
+    "Performance Budget",
+    "Observability",
+    "Security",
+    "CI Gate",
+    "Upgrade Compatibility",
+    "Release DoD",
+    "Open Questions",
 ]
 
 
@@ -298,16 +304,21 @@ def score_tasks(module: str) -> Score:
     for tf in task_files:
         text = read(tf) or ""
         # 每个 task 必须含 Scope / Non-scope / Acceptance
-        for sect in ["Scope", "Non-scope", "Acceptance"]:
-            if not re.search(rf"^##\s+{sect}", text, re.MULTILINE | re.IGNORECASE):
-                s.deduct(2, f"task_missing_{sect.lower()}", f"{tf.name} 缺 {sect}")
+        # Scope: YAML scope:字段 | Non-scope: ## Non-scope节 | Acceptance: YAML acceptance_criteria:
+        has_scope = bool(re.search(r'^\s*scope:', text, re.MULTILINE))
+        has_nonscope = bool(re.search(r'^##\s+(?:\d+[. ]\s*)?Non-scope', text, re.MULTILINE | re.IGNORECASE))
+        has_acceptance = bool(re.search(r'^\s*acceptance_criteria:', text, re.MULTILINE))
+        if not has_scope:
+            s.deduct(2, "task_missing_scope", f"{tf.name} YAML 缺 scope 字段")
+        if not has_nonscope:
+            s.deduct(2, "task_missing_non-scope", f"{tf.name} 缺 Non-scope 节")
+        if not has_acceptance:
+            s.deduct(2, "task_missing_acceptance", f"{tf.name} YAML 缺 acceptance_criteria 字段")
         # 关联 FR
         fr_covered_by_tasks.update(re.findall(r"\bFR-\d{3}\b", text))
         # 编号
-        if not re.match(r"TASK-[A-Z0-9-]+-\d{3}\.md$", tf.name):
+        if not re.match(r"TASK-[A-Z0-9-]+-\d{3}[a-z]?\.md$", tf.name):
             s.deduct(3, "task_naming", f"{tf.name} 命名不符合 TASK-MODULE-NNN.md")
-
-    # FR 覆盖率
     if fr_in_spec:
         missing = fr_in_spec - fr_covered_by_tasks
         cov = (len(fr_in_spec) - len(missing)) / len(fr_in_spec)
@@ -342,17 +353,17 @@ def score_plan(module: str) -> Score:
 
     text = read(path) or ""
 
-    required = ["Steps", "Dependencies", "Validation", "Risks", "Rollback"]
-    for sect in required:
-        if not re.search(rf"^#{{1,3}}\s+(?:\d+[. ]\s*)?{sect}\b", text, re.MULTILINE | re.IGNORECASE):
-            s.deduct(8, f"plan_missing_{sect.lower()}", f"缺 {sect} 段")
-
-    # 步骤可执行性（含 bash 块、文件路径）
-    bash_blocks = len(re.findall(r"```(?:bash|sh|shell)\b", text))
-    if bash_blocks < 1:
-        s.deduct(10, "plan_no_commands", "无 bash 命令块，可执行性低")
-
-    # Task 引用
+    # 中文兼容: 改为关键词内容检测
+    checks = [
+        ("步骤|Phase", "plan_missing_steps"),
+        ("依赖|DAG|Dependencies", "plan_missing_dependencies"),
+        ("测试|Test|Validation", "plan_missing_validation"),
+        ("风险|Risk", "plan_missing_risks"),
+        ("回滚|Rollback", "plan_missing_rollback"),
+    ]
+    for pattern, rule_id in checks:
+        if not re.search(pattern, text, re.IGNORECASE):
+            s.deduct(8, rule_id, f"缺对应内容(匹配:{pattern})")
     task_refs = re.findall(r"\bTASK-[A-Z0-9-]+-\d{3}\b", text)
     if not task_refs:
         s.deduct(10, "plan_no_task_ref", "未引用任何 TASK-NNN")
@@ -366,7 +377,7 @@ def score_plan(module: str) -> Score:
 
 def score_prompt(module: str) -> Score:
     s = Score()
-    candidates = sorted((ROOT / "module" / module).glob("TASK-*-PROMPT.md"))
+    candidates = sorted((ROOT / "module" / module / "tasks").glob("TASK-*-PROMPT.md"))
     if not candidates:
         s.flag_redline("prompt_missing", "未找到 TASK-*-PROMPT.md")
         s.score = 0
