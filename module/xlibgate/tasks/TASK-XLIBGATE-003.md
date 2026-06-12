@@ -29,9 +29,9 @@ status: pending
 
 ## Requirements Covered
 
-| Requirement | Description | Acceptance Criteria |
-|---|---|---|
-| FR-002 | check gomod：go mod tidy diff 检查 | 3 个 WHEN/THEN 场景 |
+| Requirement | Description                        | Acceptance Criteria |
+| ----------- | ---------------------------------- | ------------------- |
+| FR-002      | check gomod：go mod tidy diff 检查 | 3 个 WHEN/THEN 场景 |
 
 ## Non-scope
 
@@ -42,12 +42,12 @@ status: pending
 
 ## Test Plan
 
-| Test Case | Type | Description |
-|---|---|---|
-| TC-002 | Unit | go mod tidy 无 diff：exit 0 |
-| TC-002 | Unit | go mod tidy 有 diff：exit 1，输出 diff 详情 |
-| TC-002 | Unit | 无 go.mod：exit 2 |
-| NFR-003 | Benchmark | `BenchmarkCheckGomod` — 50 模块 < 5s |
+| Test Case | Type      | Description                                 |
+| --------- | --------- | ------------------------------------------- |
+| TC-002    | Unit      | go mod tidy 无 diff：exit 0                 |
+| TC-002    | Unit      | go mod tidy 有 diff：exit 1，输出 diff 详情 |
+| TC-002    | Unit      | 无 go.mod：exit 2                           |
+| NFR-003   | Benchmark | `BenchmarkCheckGomod` — 50 模块 < 5s        |
 
 ## Implementation Notes
 
@@ -56,13 +56,13 @@ status: pending
 
 ## Implementation Plan
 
-| Step | Description | Deliverables | Verification |
-|---|---|---|---|
-| 1 | 实现 `check_gomod.go`：执行 go mod tidy → 检查 diff | `check_gomod.go` | TC-002 全部通过 |
-| 2 | 实现 `internal/gomod/parser.go`：go.mod 解析封装 | `internal/gomod/parser.go` | `go build ./...` 通过 |
+| Step | Description                                         | Deliverables               | Verification          |
+| ---- | --------------------------------------------------- | -------------------------- | --------------------- |
+| 1    | 实现 `check_gomod.go`：执行 go mod tidy → 检查 diff | `check_gomod.go`           | TC-002 全部通过       |
+| 2    | 实现 `internal/gomod/parser.go`：go.mod 解析封装    | `internal/gomod/parser.go` | `go build ./...` 通过 |
 
 ### Risk Assessment
 
-| Risk | Probability | Impact | Mitigation |
-|---|---|---|---|
-| 外部命令依赖 | Low | Low | 检查 go 命令可用性 |
+| Risk         | Probability | Impact | Mitigation         |
+| ------------ | ----------- | ------ | ------------------ |
+| 外部命令依赖 | Low         | Low    | 检查 go 命令可用性 |

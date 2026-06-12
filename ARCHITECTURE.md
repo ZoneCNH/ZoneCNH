@@ -100,58 +100,58 @@ x.go
 
 Foundation v1 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中在 `module/` 目录：
 
-| 文档 | 定位 |
-|------|------|
-| [`module/foundation-modules.md`](./module/foundation-modules.md) | Why & What — 模块定位、边界、能力需求、验证标准 |
-| [`module/FOUNDATION-SPEC.md`](./module/FOUNDATION-SPEC.md) | How & Check — 接口签名、目录结构、CI gate、测试矩阵、Release DoD |
-| [`module/FOUNDATION-V1.md`](./module/FOUNDATION-V1.md) | v1 路线图 — 产品定义、一致性修复、Issue 拆分 |
-| [`module/FOUNDATION-DEPS.yaml`](./module/FOUNDATION-DEPS.yaml) | 机器可读依赖矩阵，CI 可消费 |
-| [`module/ADR-foundationx-exit.md`](./module/ADR-foundationx-exit.md) | ADR：foundationx 兼容退出计划 |
-| [`module/FOUNDATION-TRACKER.md`](./module/FOUNDATION-TRACKER.md) | 执行跟踪器 — P0/P1/P2 Issue 检查清单 |
-| [`ROADMAP.md`](./ROADMAP.md) | 六阶段交付路线图 — 任务编号、依赖链、验收标准 |
-| [`docs/governance/ROADMAP-RULES.md`](./docs/governance/ROADMAP-RULES.md) | ROADMAP 编写规范 — 状态流转、版本规划、任务拆分、维护原则 |
-| [`CONSTITUTION.md`](./CONSTITUTION.md) | 系统宪法 — FoundationX 全系统最高治理文件，覆盖模块实现与交付管线 |
+| 文档                                                                     | 定位                                                              |
+| ------------------------------------------------------------------------ | ----------------------------------------------------------------- |
+| [`module/foundation-modules.md`](./module/foundation-modules.md)         | Why & What — 模块定位、边界、能力需求、验证标准                   |
+| [`module/FOUNDATION-SPEC.md`](./module/FOUNDATION-SPEC.md)               | How & Check — 接口签名、目录结构、CI gate、测试矩阵、Release DoD  |
+| [`module/FOUNDATION-V1.md`](./module/FOUNDATION-V1.md)                   | v1 路线图 — 产品定义、一致性修复、Issue 拆分                      |
+| [`module/FOUNDATION-DEPS.yaml`](./module/FOUNDATION-DEPS.yaml)           | 机器可读依赖矩阵，CI 可消费                                       |
+| [`module/ADR-foundationx-exit.md`](./module/ADR-foundationx-exit.md)     | ADR：foundationx 兼容退出计划                                     |
+| [`module/FOUNDATION-TRACKER.md`](./module/FOUNDATION-TRACKER.md)         | 执行跟踪器 — P0/P1/P2 Issue 检查清单                              |
+| [`ROADMAP.md`](./ROADMAP.md)                                             | 六阶段交付路线图 — 任务编号、依赖链、验收标准                     |
+| [`docs/governance/ROADMAP-RULES.md`](./docs/governance/ROADMAP-RULES.md) | ROADMAP 编写规范 — 状态流转、版本规划、任务拆分、维护原则         |
+| [`CONSTITUTION.md`](./CONSTITUTION.md)                                   | 系统宪法 — FoundationX 全系统最高治理文件，覆盖模块实现与交付管线 |
 
 16 个基座模块的独立完整规格均为 23 节结构：行为规格 WHEN/THEN、接口契约、业务规则、错误处理、边界场景、验收标准、目录结构、CI Gate、测试矩阵、性能预算、可观测输出、发布 DoD。完整索引见 [`module/README.md`](./module/README.md)。`x.go` 组合根仍作为运行时入口维护，但不再作为 `module/` 下的模块规格。
 
-| 层级 | 模块 | 完整规格 |
-|------|------|----------|
-| **L0 原语** | kernel | [`module/kernel/SPEC.md`](./module/kernel/SPEC.md) |
-| **L1 运行时** | configx | [`module/configx/SPEC.md`](./module/configx/SPEC.md) |
-| | observex | [`module/observex/SPEC.md`](./module/observex/SPEC.md) |
-| | resiliencx | [`module/resiliencx/SPEC.md`](./module/resiliencx/SPEC.md) |
-| | schedulex | [`module/schedulex/SPEC.md`](./module/schedulex/SPEC.md) |
-| **L1 测试** | testkitx | [`module/testkitx/SPEC.md`](./module/testkitx/SPEC.md) |
-| **门禁** | xlib-standard | [`module/xlib-standard/SPEC.md`](./module/xlib-standard/SPEC.md) |
-| | xlibgate | [`module/xlibgate/SPEC.md`](./module/xlibgate/SPEC.md) |
-| **存储扩展** | redisx | [`module/redisx/SPEC.md`](./module/redisx/SPEC.md) |
-| | kafkax | [`module/kafkax/SPEC.md`](./module/kafkax/SPEC.md) |
-| | natsx | [`module/natsx/SPEC.md`](./module/natsx/SPEC.md) |
-| | postgresx | [`module/postgresx/SPEC.md`](./module/postgresx/SPEC.md) |
-| | taosx | [`module/taosx/SPEC.md`](./module/taosx/SPEC.md) |
-| | ossx | [`module/ossx/SPEC.md`](./module/ossx/SPEC.md) |
-| | clickhousex | [`module/clickhousex/SPEC.md`](./module/clickhousex/SPEC.md) |
-| **契约** | contracts | [`module/contracts/SPEC.md`](./module/contracts/SPEC.md) |
+| 层级          | 模块          | 完整规格                                                         |
+| ------------- | ------------- | ---------------------------------------------------------------- |
+| **L0 原语**   | kernel        | [`module/kernel/SPEC.md`](./module/kernel/SPEC.md)               |
+| **L1 运行时** | configx       | [`module/configx/SPEC.md`](./module/configx/SPEC.md)             |
+|               | observex      | [`module/observex/SPEC.md`](./module/observex/SPEC.md)           |
+|               | resiliencx    | [`module/resiliencx/SPEC.md`](./module/resiliencx/SPEC.md)       |
+|               | schedulex     | [`module/schedulex/SPEC.md`](./module/schedulex/SPEC.md)         |
+| **L1 测试**   | testkitx      | [`module/testkitx/SPEC.md`](./module/testkitx/SPEC.md)           |
+| **门禁**      | xlib-standard | [`module/xlib-standard/SPEC.md`](./module/xlib-standard/SPEC.md) |
+|               | xlibgate      | [`module/xlibgate/SPEC.md`](./module/xlibgate/SPEC.md)           |
+| **存储扩展**  | redisx        | [`module/redisx/SPEC.md`](./module/redisx/SPEC.md)               |
+|               | kafkax        | [`module/kafkax/SPEC.md`](./module/kafkax/SPEC.md)               |
+|               | natsx         | [`module/natsx/SPEC.md`](./module/natsx/SPEC.md)                 |
+|               | postgresx     | [`module/postgresx/SPEC.md`](./module/postgresx/SPEC.md)         |
+|               | taosx         | [`module/taosx/SPEC.md`](./module/taosx/SPEC.md)                 |
+|               | ossx          | [`module/ossx/SPEC.md`](./module/ossx/SPEC.md)                   |
+|               | clickhousex   | [`module/clickhousex/SPEC.md`](./module/clickhousex/SPEC.md)     |
+| **契约**      | contracts     | [`module/contracts/SPEC.md`](./module/contracts/SPEC.md)         |
 
 ### 规格体系与治理文档
 
-| 文档 | 定位 |
-|------|------|
-| [`docs/product/product-spec.md`](./docs/product/product-spec.md) | 产品规格 — Vision、Users、Goals、MVP Scope |
-| [`docs/testing/test-strategy.md`](./docs/testing/test-strategy.md) | 测试策略 — 覆盖率、格式、工具、CI 集成 |
-| [`docs/testing/acceptance-tests.md`](./docs/testing/acceptance-tests.md) | 验收测试 — 端到端验收场景和检查清单 |
-| [`docs/ai/agent-rules.md`](./docs/ai/agent-rules.md) | AI 代理规则 — 编码、测试、安全、禁止事项 |
-| [`docs/ai/prompt-templates.md`](./docs/ai/prompt-templates.md) | Prompt 模板 — 审查、拆分、实现、自查、修复 |
-| [`docs/ai/code-review-rules.md`](./docs/ai/code-review-rules.md) | 代码审查规则 — AI 代理审查标准和流程 |
-| [`GLOSSARY.md`](./GLOSSARY.md) | 术语表 — 系统核心概念和缩写定义 |
-| [`docs/governance/DEFINITION-OF-READY.md`](./docs/governance/DEFINITION-OF-READY.md) | Spec Ready — spec 可以进入开发的前置条件 |
-| [`docs/governance/DEFINITION-OF-DONE.md`](./docs/governance/DEFINITION-OF-DONE.md) | Spec Done — 模块实现完成的验收条件 |
-| [`docs/governance/TRACEABILITY.md`](./docs/governance/TRACEABILITY.md) | 需求追踪 — FR → AC → TC → 实现全覆盖 |
-| [`docs/governance/anti-requirements.md`](./docs/governance/anti-requirements.md) | 反需求 — 明确不做之事，防止范围蔓延 |
-| [`module/ADR-TEMPLATE.md`](./module/ADR-TEMPLATE.md) | ADR 模板 — 架构决策记录标准格式 |
-| [`docs/governance/TASK-TEMPLATE.md`](./docs/governance/TASK-TEMPLATE.md) | Task 模板 — AI 代理任务拆分标准格式 |
-| [`docs/governance/LIFECYCLE.md`](./docs/governance/LIFECYCLE.md) | 规格生命周期 — 六态状态机、流转规则、CI 集成 |
-| [`docs/governance/SPEC-TEMPLATE.md`](./docs/governance/SPEC-TEMPLATE.md) | 23 节结构模板 — 新建模块规格时复制本文件 |
+| 文档                                                                                 | 定位                                                        |
+| ------------------------------------------------------------------------------------ | ----------------------------------------------------------- |
+| [`docs/product/product-spec.md`](./docs/product/product-spec.md)                     | 产品规格 — Vision、Users、Goals、MVP Scope                  |
+| [`docs/testing/test-strategy.md`](./docs/testing/test-strategy.md)                   | 测试策略 — 覆盖率、格式、工具、CI 集成                      |
+| [`docs/testing/acceptance-tests.md`](./docs/testing/acceptance-tests.md)             | 验收测试 — 端到端验收场景和检查清单                         |
+| [`docs/ai/agent-rules.md`](./docs/ai/agent-rules.md)                                 | AI 代理规则 — 编码、测试、安全、禁止事项                    |
+| [`docs/ai/prompt-templates.md`](./docs/ai/prompt-templates.md)                       | Prompt 模板 — 审查、拆分、实现、自查、修复                  |
+| [`docs/ai/code-review-rules.md`](./docs/ai/code-review-rules.md)                     | 代码审查规则 — AI 代理审查标准和流程                        |
+| [`GLOSSARY.md`](./GLOSSARY.md)                                                       | 术语表 — 系统核心概念和缩写定义                             |
+| [`docs/governance/DEFINITION-OF-READY.md`](./docs/governance/DEFINITION-OF-READY.md) | Spec Ready — spec 可以进入开发的前置条件                    |
+| [`docs/governance/DEFINITION-OF-DONE.md`](./docs/governance/DEFINITION-OF-DONE.md)   | Spec Done — 模块实现完成的验收条件                          |
+| [`docs/governance/TRACEABILITY.md`](./docs/governance/TRACEABILITY.md)               | 需求追踪 — FR → AC → TC → 实现全覆盖                        |
+| [`docs/governance/anti-requirements.md`](./docs/governance/anti-requirements.md)     | 反需求 — 明确不做之事，防止范围蔓延                         |
+| [`module/ADR-TEMPLATE.md`](./module/ADR-TEMPLATE.md)                                 | ADR 模板 — 架构决策记录标准格式                             |
+| [`docs/governance/TASK-TEMPLATE.md`](./docs/governance/TASK-TEMPLATE.md)             | Task 模板 — AI 代理任务拆分标准格式                         |
+| [`docs/governance/LIFECYCLE.md`](./docs/governance/LIFECYCLE.md)                     | 规格生命周期 — 六态状态机、流转规则、CI 集成                |
+| [`docs/governance/SPEC-TEMPLATE.md`](./docs/governance/SPEC-TEMPLATE.md)             | 23 节结构模板 — 新建模块规格时复制本文件                    |
 | [`docs/governance/AGENT-SPEC-TEMPLATE.md`](./docs/governance/AGENT-SPEC-TEMPLATE.md) | Agent Spec 模板 — 五层规格体系第五层，AI 代理角色/约束/协作 |
 
 ## Foundation 第一阶段闭环
@@ -160,15 +160,15 @@ Foundation v1 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中�
 
 `xlib-standard` 是独立 Go module，承担标准事实源、Go Reference Template、Generator、Harness Gate 和 Evidence Runtime 五类职责，不作为其他模块的运行时 import 依赖。
 
-| 模块            | 层级          | 拥有                                                                                                        | 不拥有                                                     |
-| --------------- | ------------- | ----------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
-| `xlib-standard` | 标准源        | 标准事实源、Go Reference Template、Generator、Harness Gate、Evidence Runtime                                | 业务运行、运行时 import 依赖、模块实现身份                 |
-| `kernel`        | L0 原语       | 12 子包轻量工具集：lifecycx/errx/healthx/obsx/retryx/shutdownx/syncx/timex/validx/versionx/contextx/contracttest（stdlib-only） | 配置解析、观测后端、存储、网络、业务 DTO、全局可变单例     |
-| `configx`       | L1 运行时     | explicit source、merge、decode、validate、sanitize、provenance、config hash                                 | secret backend、全局配置中心、自动发现、业务配置结构体     |
-| `observex`      | L1 运行时契约 | logger、metrics、tracer、field、redactor、label policy、health schema、noop、memory recorder                | Prometheus/Otel/Zap 直接绑定、alert routing、业务监控规则  |
-| `resiliencx`    | L1 运行时策略 | timeout、retry、circuit breaker、bulkhead、rate limiter、fallback、Policies 组合（budget/classifier/idempotency hint 为 v1.2+ 演进） | 交易风控、订单风险、交易所 SDK、调度、存储后端             |
-| `schedulex`     | L1 运行时调度 | cron/interval/delay trigger、OverlapPolicy（Skip/Queue/Replace）、MisfirePolicy（Skip/RunOnce/CatchUp）、jitter、EventSink、Locker interface、Clock 注入 | 分布式锁实现、exactly-once、业务任务语义             |
-| `testkitx`      | L1 test-only  | FakeConfig/FakeLogger/FakeMeter/FakeTracer/FakeClock/FakeBreaker、Eventually、GoldenUpdate、BoundaryCheck、GoroutineLeakCheck、contract test | production import、真实外部系统、L2/L3/chaos/soak 测试替代 |
+| 模块            | 层级          | 拥有                                                                                                                                                     | 不拥有                                                     |
+| --------------- | ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
+| `xlib-standard` | 标准源        | 标准事实源、Go Reference Template、Generator、Harness Gate、Evidence Runtime                                                                             | 业务运行、运行时 import 依赖、模块实现身份                 |
+| `kernel`        | L0 原语       | 12 子包轻量工具集：lifecycx/errx/healthx/obsx/retryx/shutdownx/syncx/timex/validx/versionx/contextx/contracttest（stdlib-only）                          | 配置解析、观测后端、存储、网络、业务 DTO、全局可变单例     |
+| `configx`       | L1 运行时     | explicit source、merge、decode、validate、sanitize、provenance、config hash                                                                              | secret backend、全局配置中心、自动发现、业务配置结构体     |
+| `observex`      | L1 运行时契约 | logger、metrics、tracer、field、redactor、label policy、health schema、noop、memory recorder                                                             | Prometheus/Otel/Zap 直接绑定、alert routing、业务监控规则  |
+| `resiliencx`    | L1 运行时策略 | timeout、retry、circuit breaker、bulkhead、rate limiter、fallback、Policies 组合（budget/classifier/idempotency hint 为 v1.2+ 演进）                     | 交易风控、订单风险、交易所 SDK、调度、存储后端             |
+| `schedulex`     | L1 运行时调度 | cron/interval/delay trigger、OverlapPolicy（Skip/Queue/Replace）、MisfirePolicy（Skip/RunOnce/CatchUp）、jitter、EventSink、Locker interface、Clock 注入 | 分布式锁实现、exactly-once、业务任务语义                   |
+| `testkitx`      | L1 test-only  | FakeConfig/FakeLogger/FakeMeter/FakeTracer/FakeClock/FakeBreaker、Eventually、GoldenUpdate、BoundaryCheck、GoroutineLeakCheck、contract test             | production import、真实外部系统、L2/L3/chaos/soak 测试替代 |
 
 ### `resiliencx` 身份修复
 
@@ -201,16 +201,16 @@ Foundation v1 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中�
 
 ## 边界与接口职责
 
-| 边界                                                | 放什么                                                      | 不放什么                                         |
-| --------------------------------------------------- | ----------------------------------------------------------- | ------------------------------------------------ |
+| 边界                                                | 放什么                                                                       | 不放什么                                         |
+| --------------------------------------------------- | ---------------------------------------------------------------------------- | ------------------------------------------------ |
 | `xlib-standard`                                     | 标准事实源、Go Reference Template、Generator、Harness Gate、Evidence Runtime | 运行时业务依赖、具体弹性策略实现                 |
-| `kernel`                                            | 最小稳定原语和 stdlib-only 基础能力                         | 配置解析、观测后端、业务 DTO、存储/网络适配器    |
-| `configx` / `observex` / `resiliencx` / `schedulex` | L1 横切运行时能力，彼此通过窄接口协作                       | 业务模型、组合根职责、对彼此的强耦合反向依赖     |
-| `testkitx`                                          | 测试、golden、contract、fixture、harness、boundary evidence | production import graph、真实外部系统入口        |
-| `L2.5`                                              | 多个业务域共享的领域值对象、枚举、语义模型                  | Provider 实现、策略逻辑、执行策略                |
-| `contracts`                                         | 跨域稳定端口、事件协议、DTO 契约                            | 域内接口、临时适配器、通用工具函数、领域模型全集 |
-| `x.go`                                              | 配置加载、依赖创建、模块 wiring、生命周期管理               | 因子计算、信号判断、风控规则、订单路由           |
-| `observex` / `alertx`                               | 指标、追踪、日志、告警事件                                  | 业务决策和风控放行逻辑                           |
+| `kernel`                                            | 最小稳定原语和 stdlib-only 基础能力                                          | 配置解析、观测后端、业务 DTO、存储/网络适配器    |
+| `configx` / `observex` / `resiliencx` / `schedulex` | L1 横切运行时能力，彼此通过窄接口协作                                        | 业务模型、组合根职责、对彼此的强耦合反向依赖     |
+| `testkitx`                                          | 测试、golden、contract、fixture、harness、boundary evidence                  | production import graph、真实外部系统入口        |
+| `L2.5`                                              | 多个业务域共享的领域值对象、枚举、语义模型                                   | Provider 实现、策略逻辑、执行策略                |
+| `contracts`                                         | 跨域稳定端口、事件协议、DTO 契约                                             | 域内接口、临时适配器、通用工具函数、领域模型全集 |
+| `x.go`                                              | 配置加载、依赖创建、模块 wiring、生命周期管理                                | 因子计算、信号判断、风控规则、订单路由           |
+| `observex` / `alertx`                               | 指标、追踪、日志、告警事件                                                   | 业务决策和风控放行逻辑                           |
 
 ## 域间关系与反馈
 
@@ -222,18 +222,18 @@ Foundation v1 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中�
 
 ## 依赖守卫
 
-| 守卫       | 允许                                                     | 禁止                                                | 验收方式                                  |
-| ---------- | -------------------------------------------------------- | --------------------------------------------------- | ----------------------------------------- |
-| Foundation 矩阵 | L0/L1/runtime/test-only 依赖符合 Foundation 依赖矩阵 | 反向依赖、运行时导入 `testkitx`、L1 模块彼此强耦合 | `xlibgate` 或 import graph 检查 |
-| Go baseline | Foundation 模块共享 Go toolchain baseline | `testkitx` 单独拉高下游测试工具链，或 `configx` / `observex` 长期停留 `foundationx` 兼容垫片 | `go.mod` 扫描与 release evidence |
-| `resiliencx` 身份 | timeout/retry/circuit/bulkhead/rate/fallback/policy event | Standard Source、Generator、Harness 主身份回流到 `resiliencx` | README/docs 一致性 gate + contract tests |
-| `testkitx` 边界 | 仅测试包、测试 fixture、harness、boundary evidence 导入 | production Go 文件导入 `testkitx` | `make boundary-testkit` 或 import scan |
-| 可观测脱敏 | 低基数、非敏感 label；secret redaction 覆盖日志、health、manifest | `order_id`、`account_id`、`api_key`、trace id 等进入普通 metrics label | schema/golden + secret leak test |
-| 业务域依赖 | 数据域/分析域/决策域/执行域导入 L2.5、contracts 和基座   | 业务域互相导入实现包，尤其执行域反向导入决策域      | `go list` 或依赖图中无业务域实现包反向边  |
-| 决策到执行 | signal-factory / optimizer 通过 risk-engine 提交执行意图 | 绕过 risk-engine 直接调用 order-engine 或交易所 SDK | paper trade 链路能证明 risk gate 必经     |
-| 执行反馈   | fills / positions / PnL / exposure 以事件进入决策域      | execution 包同步调用 strategy / backtest 内部实现   | 事件 topic、DTO 和消费方在 contracts 固化 |
-| contracts  | 跨域端口、事件协议、DTO                                  | 领域模型全集、通用工具、域内临时接口                | 新增契约必须说明消费方、生产方和稳定期    |
-| x.go       | 读取配置、创建依赖、连接模块、管理生命周期               | 因子计算、信号生成、风控判断、订单路由              | 入口包只出现 wiring / lifecycle 测试      |
+| 守卫              | 允许                                                              | 禁止                                                                                         | 验收方式                                  |
+| ----------------- | ----------------------------------------------------------------- | -------------------------------------------------------------------------------------------- | ----------------------------------------- |
+| Foundation 矩阵   | L0/L1/runtime/test-only 依赖符合 Foundation 依赖矩阵              | 反向依赖、运行时导入 `testkitx`、L1 模块彼此强耦合                                           | `xlibgate` 或 import graph 检查           |
+| Go baseline       | Foundation 模块共享 Go toolchain baseline                         | `testkitx` 单独拉高下游测试工具链，或 `configx` / `observex` 长期停留 `foundationx` 兼容垫片 | `go.mod` 扫描与 release evidence          |
+| `resiliencx` 身份 | timeout/retry/circuit/bulkhead/rate/fallback/policy event         | Standard Source、Generator、Harness 主身份回流到 `resiliencx`                                | README/docs 一致性 gate + contract tests  |
+| `testkitx` 边界   | 仅测试包、测试 fixture、harness、boundary evidence 导入           | production Go 文件导入 `testkitx`                                                            | `make boundary-testkit` 或 import scan    |
+| 可观测脱敏        | 低基数、非敏感 label；secret redaction 覆盖日志、health、manifest | `order_id`、`account_id`、`api_key`、trace id 等进入普通 metrics label                       | schema/golden + secret leak test          |
+| 业务域依赖        | 数据域/分析域/决策域/执行域导入 L2.5、contracts 和基座            | 业务域互相导入实现包，尤其执行域反向导入决策域                                               | `go list` 或依赖图中无业务域实现包反向边  |
+| 决策到执行        | signal-factory / optimizer 通过 risk-engine 提交执行意图          | 绕过 risk-engine 直接调用 order-engine 或交易所 SDK                                          | paper trade 链路能证明 risk gate 必经     |
+| 执行反馈          | fills / positions / PnL / exposure 以事件进入决策域               | execution 包同步调用 strategy / backtest 内部实现                                            | 事件 topic、DTO 和消费方在 contracts 固化 |
+| contracts         | 跨域端口、事件协议、DTO                                           | 领域模型全集、通用工具、域内临时接口                                                         | 新增契约必须说明消费方、生产方和稳定期    |
+| x.go              | 读取配置、创建依赖、连接模块、管理生命周期                        | 因子计算、信号生成、风控判断、订单路由                                                       | 入口包只出现 wiring / lifecycle 测试      |
 
 ## 契约固化优先级
 
@@ -272,146 +272,146 @@ Foundation v1 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中�
 
 ## 状态总览
 
-| 域                    | 组件                                                            | 版本   | 状态      | 进度     | 说明                                                                                      |
-| --------------------- | --------------------------------------------------------------- | ------ | --------- | -------- | ----------------------------------------------------------------------------------------- |
-| **基座**              |                                                                 |        |           |          |                                                                                           |
-| 基座                  | [kernel](https://github.com/ZoneCNH/kernel)                     | v1.0.0 | ✅ 已发布 | █████ 100% | L0 原语 / 12 子包轻量工具集：lifecycx/errx/healthx/obsx/retryx/shutdownx/syncx/timex/validx/versionx/contextx/contracttest，stdlib-only，v1.0.0 已发布 |
-| 基座                  | [configx](https://github.com/ZoneCNH/configx)                   | v1.0.0 | ✅ 已发布 | █████ 100% | 显式配置加载、多源合并（YAML/TOML/JSON/.env/Env/Map）、StrictDecode、SecretString 脱敏、SecretPolicy、Provenance、EffectiveConfigHash、SanitizedManifest、HealthCheck、Metrics；97.1% 覆盖率，SPEC Approved |
-| 基座                  | [observex](https://github.com/ZoneCNH/observex)                 | v0.3.1 | ✅ 已有   | ███░ 80% | vendor-neutral 日志、指标、追踪、健康、字段和 label policy 契约                            |
-| 基座                  | [testkitx](https://github.com/ZoneCNH/testkitx)                 | v1.0.0-spec | ✅ 已有   | ████ 100% | 测试专用 fake/fixture/golden/contract/boundary/leak 工具包，管线就绪，禁止生产导入 |
-| 基座                  | [resiliencx](https://github.com/ZoneCNH/resiliencx)             | v0.4.8 | ⚠️ P0     | ██░░ 50% | 身份需从标准模板库修正为运行时弹性策略库：timeout/retry/circuit/bulkhead/rate/fallback    |
-| 基座                  | [schedulex](https://github.com/ZoneCNH/schedulex)               | v0.1.2 | ✅ 已有   | █████ 100% | cron/interval/delay 调度、OverlapPolicy（Skip/Queue/Replace）、MisfirePolicy（Skip/RunOnce/CatchUp）、EventSink、Locker、Clock 注入、98.8% 覆盖           |
-| 基座                  | [xlibgate](https://github.com/ZoneCNH/xlibgate)                 | -      | ✅ 已有   | -        | import 边界、go.mod、Go baseline、release evidence、L2 发布就绪 机器门禁                               |
-| 基座                  | [xlib-standard](https://github.com/ZoneCNH/xlib-standard)       | -      | ✅ 已有   | -        | 标准事实源、Go Reference Template、Generator、Harness Gate、Evidence Runtime；不参与运行时 import |
-| 基座                  | [redisx](https://github.com/ZoneCNH/redisx)                     | -      | ✅ 已有   | █░░░ 15% | Redis，仅骨架                                                                             |
-| 基座                  | [kafkax](https://github.com/ZoneCNH/kafkax)                     | -      | ✅ 已有   | █░░░ 15% | Kafka，仅骨架                                                                             |
-| 基座                  | [natsx](https://github.com/ZoneCNH/natsx)                       | -      | ✅ 已有   | ███░ 80% | NATS，349KB/27 项                                                                         |
-| 基座                  | [postgresx](https://github.com/ZoneCNH/postgresx)               | -      | ✅ 已有   | █░░░ 15% | PostgreSQL，仅骨架                                                                        |
-| 基座                  | [taosx](https://github.com/ZoneCNH/taosx)                       | -      | ✅ 已有   | █░░░ 15% | TDengine，仅骨架                                                                          |
-| 基座                  | [ossx](https://github.com/ZoneCNH/ossx)                         | -      | ✅ 已有   | █░░░ 15% | 对象存储，仅骨架                                                                          |
-| 基座                  | [clickhousex](https://github.com/ZoneCNH/clickhousex)           | -      | ✅ 已有   | █░░░ 15% | ClickHouse，仅骨架                                                                        |
-| 基座                  | [contracts](https://github.com/ZoneCNH/contracts)               | -      | ✅ 已有   | ███░ 80% | 跨域稳定端口/事件/DTO 契约，191KB/27 项                                                   |
-| **L2.5 · 领域共享层** |                                                                 |        |           |          |                                                                                           |
-| L2.5                  | [decimalx](https://github.com/ZoneCNH/decimalx)                 | v0.1.0 | ✅ P0     | ███░ 80% | 高精度十进制类型（Decimal/Price/Qty/Ratio/Money）                                         |
-| L2.5                  | [domain-market](https://github.com/ZoneCNH/domain-market)       | v0.1.0 | ✅ P0     | ███░ 80% | 市场数据域模型（Tick/Quote/Bar/OrderBook）                                                |
-| L2.5                  | [domain-exchange](https://github.com/ZoneCNH/domain-exchange)   | v0.1.0 | ✅ P0     | ███░ 80% | 交易域模型（VenueAdapter 13 方法接口）                                                    |
-| L2.5                  | [domain-macro](https://github.com/ZoneCNH/domain-macro)         | v0.1.0 | ✅ P0     | ███░ 80% | 宏观数据域模型（MacroPoint/MacroState）                                                   |
-| **数据域 · 行情**     |                                                                 |        |           |          |                                                                                           |
-| 数据域                | [binance](https://github.com/ZoneCNH/binance)                   | -      | ✅ 已有   | ███░ 80% | Binance CEX SDK                                                                           |
-| 数据域                | [okx](https://github.com/ZoneCNH/okx)                           | -      | ✅ 已有   | ███░ 80% | OKX CEX SDK                                                                               |
-| 数据域                | [bybit](https://github.com/ZoneCNH/bybit)                       | -      | ✅ 已有   | ███░ 80% | Bybit CEX SDK                                                                             |
-| 数据域                | [bitget](https://github.com/ZoneCNH/bitget)                     | -      | ✅ 已有   | ███░ 80% | Bitget CEX SDK                                                                            |
-| 数据域                | [kucoin](https://github.com/ZoneCNH/kucoin)                     | -      | ✅ 已有   | ███░ 80% | KuCoin CEX SDK                                                                            |
-| 数据域                | [gate](https://github.com/ZoneCNH/gate)                         | -      | ✅ 已有   | ███░ 80% | Gate CEX SDK                                                                              |
-| 数据域                | [mexc](https://github.com/ZoneCNH/mexc)                         | -      | ✅ 已有   | ███░ 80% | MEXC CEX SDK                                                                              |
-| 数据域                | [htx](https://github.com/ZoneCNH/htx)                           | -      | ✅ 已有   | ███░ 80% | HTX CEX SDK                                                                               |
-| 数据域                | [coinbase](https://github.com/ZoneCNH/coinbase)                 | -      | ✅ 已有   | ███░ 80% | Coinbase CEX SDK                                                                          |
-| 数据域                | [hyperliquid](https://github.com/ZoneCNH/hyperliquid)           | -      | ✅ 已有   | ███░ 80% | Hyperliquid DEX SDK                                                                       |
-| 数据域                | [lighter](https://github.com/ZoneCNH/lighter)                   | -      | ✅ 已有   | ███░ 80% | Lighter DEX SDK                                                                           |
-| 数据域                | [upbit](https://github.com/ZoneCNH/upbit)                       | -      | ✅ 已有   | ███░ 80% | Upbit CEX SDK                                                                             |
-| 数据域                | [coinglass](https://github.com/ZoneCNH/coinglass)               | -      | ✅ 已有   | ███░ 80% | 衍生品聚合数据                                                                            |
-| 数据域                | [yield-curve](https://github.com/ZoneCNH/yield-curve)           | -      | ✅ 已有   | ███░ 80% | 收益率曲线                                                                                |
-| 数据域                | [binance-market](https://github.com/ZoneCNH/binance-market)     | v0.1.0 | ✅ P0     | ███░ 80% | Binance Kline/Ticker Provider                                                             |
-| 数据域                | [bybit-market](https://github.com/ZoneCNH/bybit-market)         | v0.1.0 | ✅ P0     | ███░ 80% | Bybit Kline/Ticker Provider                                                               |
-| 数据域                | [bitget-market](https://github.com/ZoneCNH/bitget-market)       | v0.1.0 | ✅ P0     | ███░ 80% | Bitget Kline/Ticker Provider                                                              |
-| 数据域                | [okx-market](https://github.com/ZoneCNH/okx-market)             | v0.1.0 | ✅ P0     | ███░ 80% | OKX Kline/Ticker Provider                                                                 |
-| 数据域                | [coinbase-market](https://github.com/ZoneCNH/coinbase-market)   | v0.1.0 | ✅ P0     | ███░ 80% | Coinbase Kline/Ticker Provider                                                            |
-| **数据域 · 宏观**     |                                                                 |        |           |          |                                                                                           |
-| 数据域                | [fred](https://github.com/ZoneCNH/fred)                         | -      | ✅ 已有   | ███░ 80% | 美联储 FRED                                                                               |
-| 数据域                | [treasury](https://github.com/ZoneCNH/treasury)                 | -      | ✅ 已有   | ███░ 80% | 美国财政部                                                                                |
-| 数据域                | [bea](https://github.com/ZoneCNH/bea)                           | -      | ✅ 已有   | ███░ 80% | 美国经济分析局                                                                            |
-| 数据域                | [ecb](https://github.com/ZoneCNH/ecb)                           | -      | ✅ 已有   | ███░ 80% | 欧洲央行                                                                                  |
-| 数据域                | [uk-cb](https://github.com/ZoneCNH/uk-cb)                       | -      | ✅ 已有   | ███░ 80% | 英国央行                                                                                  |
-| 数据域                | [japan-cb](https://github.com/ZoneCNH/japan-cb)                 | -      | ✅ 已有   | ███░ 80% | 日本央行                                                                                  |
-| 数据域                | [eastmoney](https://github.com/ZoneCNH/eastmoney)               | -      | ✅ 已有   | ███░ 80% | 东方财富 A 股                                                                             |
-| 数据域                | [jinshi](https://github.com/ZoneCNH/jinshi)                     | -      | ✅ 已有   | ███░ 80% | 金十快讯                                                                                  |
-| 数据域                | [jin10](https://github.com/ZoneCNH/jin10)                       | -      | ✅ 已有   | ███░ 80% | 金十行情                                                                                  |
-| 数据域                | [yahoo](https://github.com/ZoneCNH/yahoo)                       | -      | ✅ 已有   | ███░ 80% | Yahoo Finance                                                                             |
-| **数据域 · 另类**     |                                                                 |        |           |          |                                                                                           |
-| 数据域                | [alternative-data](https://github.com/ZoneCNH/alternative-data) | -      | 🔨 已创建 | ░░░░ 5%  | 链上、社交情绪、新闻 NLP                                                                  |
-| **分析域**            |                                                                 |        |           |          |                                                                                           |
-| 分析域                | [factor-engine](https://github.com/ZoneCNH/factor-engine)       | -      | 🔨 已创建 | ░░░░ 5%  | 从原始数据计算 alpha 因子                                                                 |
-| 分析域                | [feature-store](https://github.com/ZoneCNH/feature-store)       | -      | 🔨 已创建 | ░░░░ 5%  | 因子版本管理、IC 评估                                                                     |
-| 分析域                | [factor-eval](https://github.com/ZoneCNH/factor-eval)           | -      | 🔨 已创建 | ░░░░ 5%  | IC/IR/换手率评估                                                                          |
-| 分析域                | [market_regime](https://github.com/ZoneCNH/market_regime)       | -      | 🔨 已创建 | ░░░░ 5%  | 市场状态识别（S1-S7：多头趋势/挤空/空头/踩踏/震荡/低波/压缩）                             |
-| 分析域                | [macro_regime](https://github.com/ZoneCNH/macro_regime)         | -      | 🔨 已创建 | ░░░░ 5%  | 宏观经济体制识别（M1-M7：流动牛市/再通复苏/软着繁荣/鹰派通胀/衰退降息/信用去杠/滞胀冲击） |
-| 分析域                | [regime-engine](https://github.com/ZoneCNH/regime-engine)       | -      | 🔨 已创建 | ░░░░ 5%  | M×S 联合决策引擎（M+S → action/risk_tier/position_caps/trade_permission）                 |
-| 分析域                | [ms_brain](https://github.com/ZoneCNH/ms_brain)                 | -      | ✅ 已有   | -        | M×S 系统架构分析体系                                                                      |
-| **决策域**            |                                                                 |        |           |          |                                                                                           |
-| 决策域                | [signal-factory](https://github.com/ZoneCNH/signal-factory)     | -      | 🔨 已创建 | ░░░░ 5%  | 多因子信号生成、过滤、评分                                                                |
-| 决策域                | [backtest-engine](https://github.com/ZoneCNH/backtest-engine)   | -      | 🔨 已创建 | ░░░░ 5%  | 事件驱动回测、Tick 级回放                                                                 |
-| 决策域                | [optimizer](https://github.com/ZoneCNH/optimizer)               | -      | 🔨 已创建 | ░░░░ 5%  | 参数搜索、Walk-forward 验证                                                               |
-| 决策域                | [strategies](https://github.com/ZoneCNH/strategies)             | -      | ✅ 已有   | ██░░ 60% | 策略研究与参考库，3.5MB/746 项                                                            |
-| **执行域**            |                                                                 |        |           |          |                                                                                           |
-| 执行域                | [risk-engine](https://github.com/ZoneCNH/risk-engine)           | -      | 🔨 已创建 | ░░░░ 5%  | VaR、止损、持仓限额、压力测试                                                             |
-| 执行域                | [order-engine](https://github.com/ZoneCNH/order-engine)         | -      | 🔨 已创建 | ░░░░ 5%  | 智能路由、TWAP/VWAP、滑点控制                                                             |
-| 执行域                | [portfolio-engine](https://github.com/ZoneCNH/portfolio-engine) | -      | 🔨 已创建 | ░░░░ 5%  | 多策略资金分配、再平衡                                                                    |
-| 执行域                | [settlement](https://github.com/ZoneCNH/settlement)             | -      | 🔨 已创建 | ░░░░ 5%  | PnL 计算、交易所对账                                                                      |
-| **入口**              |                                                                 |        |           |          |                                                                                           |
-| 入口                  | [x.go](https://github.com/ZoneCNH/x.go)                         | v0.0.1 | ✅ 已有   | ███░ 80% | 组合根，2.8MB/33 项                                                                       |
-| **横切**              |                                                                 |        |           |          |                                                                                           |
-| 横切                  | [alertx](https://github.com/ZoneCNH/alertx)                     | -      | 🔨 已创建 | ░░░░ 5%  | 策略异常、风控触发告警                                                                    |
-| 横切                  | [observex](https://github.com/ZoneCNH/observex)                 | v0.3.1 | ✅ 已有   | ███░ 80% | 可观测性（同时归属基座，提供底层 metrics/tracing/logging）                                |
-| **Rust**              |                                                                 |        |           |          |                                                                                           |
-| Rust                  | [stdlib.rs](https://github.com/ZoneCNH/stdlib.rs)               | -      | ✅ 已有   | -        | Rust 标准库                                                                               |
-| **独立**              |                                                                 |        |           |          |                                                                                           |
-| 独立                  | [module](./module/README.md)                                    | -      | ✅ 已有   | -        | 项目技术规范、接口定义与 Goal 适配模块索引                                                |
-| 独立                  | [docs/governance](./docs/governance/README.md)                  | -      | ✅ 已有   | -        | Spec → Code 交付治理、模板、门禁与评分规则                                                |
+| 域                    | 组件                                                            | 版本        | 状态      | 进度       | 说明                                                                                                                                                                                                        |
+| --------------------- | --------------------------------------------------------------- | ----------- | --------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **基座**              |                                                                 |             |           |            |                                                                                                                                                                                                             |
+| 基座                  | [kernel](https://github.com/ZoneCNH/kernel)                     | v1.0.0      | ✅ 已发布  | █████ 100% | L0 原语 / 12 子包轻量工具集：lifecycx/errx/healthx/obsx/retryx/shutdownx/syncx/timex/validx/versionx/contextx/contracttest，stdlib-only，v1.0.0 已发布                                                      |
+| 基座                  | [configx](https://github.com/ZoneCNH/configx)                   | v1.0.0      | ✅ 已发布  | █████ 100% | 显式配置加载、多源合并（YAML/TOML/JSON/.env/Env/Map）、StrictDecode、SecretString 脱敏、SecretPolicy、Provenance、EffectiveConfigHash、SanitizedManifest、HealthCheck、Metrics；97.1% 覆盖率，SPEC Approved |
+| 基座                  | [observex](https://github.com/ZoneCNH/observex)                 | v0.3.1      | ✅ 已有    | ███░ 80%   | vendor-neutral 日志、指标、追踪、健康、字段和 label policy 契约                                                                                                                                             |
+| 基座                  | [testkitx](https://github.com/ZoneCNH/testkitx)                 | v1.0.0-spec | ✅ 已有    | ████ 100%  | 测试专用 fake/fixture/golden/contract/boundary/leak 工具包，管线就绪，禁止生产导入                                                                                                                          |
+| 基座                  | [resiliencx](https://github.com/ZoneCNH/resiliencx)             | v0.4.8      | ⚠️ P0     | ██░░ 50%   | 身份需从标准模板库修正为运行时弹性策略库：timeout/retry/circuit/bulkhead/rate/fallback                                                                                                                      |
+| 基座                  | [schedulex](https://github.com/ZoneCNH/schedulex)               | v0.1.2      | ✅ 已有    | █████ 100% | cron/interval/delay 调度、OverlapPolicy（Skip/Queue/Replace）、MisfirePolicy（Skip/RunOnce/CatchUp）、EventSink、Locker、Clock 注入、98.8% 覆盖                                                             |
+| 基座                  | [xlibgate](https://github.com/ZoneCNH/xlibgate)                 | -           | ✅ 已有    | -          | import 边界、go.mod、Go baseline、release evidence、L2 发布就绪 机器门禁                                                                                                                                    |
+| 基座                  | [xlib-standard](https://github.com/ZoneCNH/xlib-standard)       | -           | ✅ 已有    | -          | 标准事实源、Go Reference Template、Generator、Harness Gate、Evidence Runtime；不参与运行时 import                                                                                                           |
+| 基座                  | [redisx](https://github.com/ZoneCNH/redisx)                     | -           | ✅ 已有    | █░░░ 15%   | Redis，仅骨架                                                                                                                                                                                               |
+| 基座                  | [kafkax](https://github.com/ZoneCNH/kafkax)                     | -           | ✅ 已有    | █░░░ 15%   | Kafka，仅骨架                                                                                                                                                                                               |
+| 基座                  | [natsx](https://github.com/ZoneCNH/natsx)                       | -           | ✅ 已有    | ███░ 80%   | NATS，349KB/27 项                                                                                                                                                                                           |
+| 基座                  | [postgresx](https://github.com/ZoneCNH/postgresx)               | -           | ✅ 已有    | █░░░ 15%   | PostgreSQL，仅骨架                                                                                                                                                                                          |
+| 基座                  | [taosx](https://github.com/ZoneCNH/taosx)                       | -           | ✅ 已有    | █░░░ 15%   | TDengine，仅骨架                                                                                                                                                                                            |
+| 基座                  | [ossx](https://github.com/ZoneCNH/ossx)                         | -           | ✅ 已有    | █░░░ 15%   | 对象存储，仅骨架                                                                                                                                                                                            |
+| 基座                  | [clickhousex](https://github.com/ZoneCNH/clickhousex)           | -           | ✅ 已有    | █░░░ 15%   | ClickHouse，仅骨架                                                                                                                                                                                          |
+| 基座                  | [contracts](https://github.com/ZoneCNH/contracts)               | -           | ✅ 已有    | ███░ 80%   | 跨域稳定端口/事件/DTO 契约，191KB/27 项                                                                                                                                                                     |
+| **L2.5 · 领域共享层** |                                                                 |             |           |            |                                                                                                                                                                                                             |
+| L2.5                  | [decimalx](https://github.com/ZoneCNH/decimalx)                 | v0.1.0      | ✅ P0      | ███░ 80%   | 高精度十进制类型（Decimal/Price/Qty/Ratio/Money）                                                                                                                                                           |
+| L2.5                  | [domain-market](https://github.com/ZoneCNH/domain-market)       | v0.1.0      | ✅ P0      | ███░ 80%   | 市场数据域模型（Tick/Quote/Bar/OrderBook）                                                                                                                                                                  |
+| L2.5                  | [domain-exchange](https://github.com/ZoneCNH/domain-exchange)   | v0.1.0      | ✅ P0      | ███░ 80%   | 交易域模型（VenueAdapter 13 方法接口）                                                                                                                                                                      |
+| L2.5                  | [domain-macro](https://github.com/ZoneCNH/domain-macro)         | v0.1.0      | ✅ P0      | ███░ 80%   | 宏观数据域模型（MacroPoint/MacroState）                                                                                                                                                                     |
+| **数据域 · 行情**     |                                                                 |             |           |            |                                                                                                                                                                                                             |
+| 数据域                | [binance](https://github.com/ZoneCNH/binance)                   | -           | ✅ 已有    | ███░ 80%   | Binance CEX SDK                                                                                                                                                                                             |
+| 数据域                | [okx](https://github.com/ZoneCNH/okx)                           | -           | ✅ 已有    | ███░ 80%   | OKX CEX SDK                                                                                                                                                                                                 |
+| 数据域                | [bybit](https://github.com/ZoneCNH/bybit)                       | -           | ✅ 已有    | ███░ 80%   | Bybit CEX SDK                                                                                                                                                                                               |
+| 数据域                | [bitget](https://github.com/ZoneCNH/bitget)                     | -           | ✅ 已有    | ███░ 80%   | Bitget CEX SDK                                                                                                                                                                                              |
+| 数据域                | [kucoin](https://github.com/ZoneCNH/kucoin)                     | -           | ✅ 已有    | ███░ 80%   | KuCoin CEX SDK                                                                                                                                                                                              |
+| 数据域                | [gate](https://github.com/ZoneCNH/gate)                         | -           | ✅ 已有    | ███░ 80%   | Gate CEX SDK                                                                                                                                                                                                |
+| 数据域                | [mexc](https://github.com/ZoneCNH/mexc)                         | -           | ✅ 已有    | ███░ 80%   | MEXC CEX SDK                                                                                                                                                                                                |
+| 数据域                | [htx](https://github.com/ZoneCNH/htx)                           | -           | ✅ 已有    | ███░ 80%   | HTX CEX SDK                                                                                                                                                                                                 |
+| 数据域                | [coinbase](https://github.com/ZoneCNH/coinbase)                 | -           | ✅ 已有    | ███░ 80%   | Coinbase CEX SDK                                                                                                                                                                                            |
+| 数据域                | [hyperliquid](https://github.com/ZoneCNH/hyperliquid)           | -           | ✅ 已有    | ███░ 80%   | Hyperliquid DEX SDK                                                                                                                                                                                         |
+| 数据域                | [lighter](https://github.com/ZoneCNH/lighter)                   | -           | ✅ 已有    | ███░ 80%   | Lighter DEX SDK                                                                                                                                                                                             |
+| 数据域                | [upbit](https://github.com/ZoneCNH/upbit)                       | -           | ✅ 已有    | ███░ 80%   | Upbit CEX SDK                                                                                                                                                                                               |
+| 数据域                | [coinglass](https://github.com/ZoneCNH/coinglass)               | -           | ✅ 已有    | ███░ 80%   | 衍生品聚合数据                                                                                                                                                                                              |
+| 数据域                | [yield-curve](https://github.com/ZoneCNH/yield-curve)           | -           | ✅ 已有    | ███░ 80%   | 收益率曲线                                                                                                                                                                                                  |
+| 数据域                | [binance-market](https://github.com/ZoneCNH/binance-market)     | v0.1.0      | ✅ P0      | ███░ 80%   | Binance Kline/Ticker Provider                                                                                                                                                                               |
+| 数据域                | [bybit-market](https://github.com/ZoneCNH/bybit-market)         | v0.1.0      | ✅ P0      | ███░ 80%   | Bybit Kline/Ticker Provider                                                                                                                                                                                 |
+| 数据域                | [bitget-market](https://github.com/ZoneCNH/bitget-market)       | v0.1.0      | ✅ P0      | ███░ 80%   | Bitget Kline/Ticker Provider                                                                                                                                                                                |
+| 数据域                | [okx-market](https://github.com/ZoneCNH/okx-market)             | v0.1.0      | ✅ P0      | ███░ 80%   | OKX Kline/Ticker Provider                                                                                                                                                                                   |
+| 数据域                | [coinbase-market](https://github.com/ZoneCNH/coinbase-market)   | v0.1.0      | ✅ P0      | ███░ 80%   | Coinbase Kline/Ticker Provider                                                                                                                                                                              |
+| **数据域 · 宏观**     |                                                                 |             |           |            |                                                                                                                                                                                                             |
+| 数据域                | [fred](https://github.com/ZoneCNH/fred)                         | -           | ✅ 已有    | ███░ 80%   | 美联储 FRED                                                                                                                                                                                                 |
+| 数据域                | [treasury](https://github.com/ZoneCNH/treasury)                 | -           | ✅ 已有    | ███░ 80%   | 美国财政部                                                                                                                                                                                                  |
+| 数据域                | [bea](https://github.com/ZoneCNH/bea)                           | -           | ✅ 已有    | ███░ 80%   | 美国经济分析局                                                                                                                                                                                              |
+| 数据域                | [ecb](https://github.com/ZoneCNH/ecb)                           | -           | ✅ 已有    | ███░ 80%   | 欧洲央行                                                                                                                                                                                                    |
+| 数据域                | [uk-cb](https://github.com/ZoneCNH/uk-cb)                       | -           | ✅ 已有    | ███░ 80%   | 英国央行                                                                                                                                                                                                    |
+| 数据域                | [japan-cb](https://github.com/ZoneCNH/japan-cb)                 | -           | ✅ 已有    | ███░ 80%   | 日本央行                                                                                                                                                                                                    |
+| 数据域                | [eastmoney](https://github.com/ZoneCNH/eastmoney)               | -           | ✅ 已有    | ███░ 80%   | 东方财富 A 股                                                                                                                                                                                               |
+| 数据域                | [jinshi](https://github.com/ZoneCNH/jinshi)                     | -           | ✅ 已有    | ███░ 80%   | 金十快讯                                                                                                                                                                                                    |
+| 数据域                | [jin10](https://github.com/ZoneCNH/jin10)                       | -           | ✅ 已有    | ███░ 80%   | 金十行情                                                                                                                                                                                                    |
+| 数据域                | [yahoo](https://github.com/ZoneCNH/yahoo)                       | -           | ✅ 已有    | ███░ 80%   | Yahoo Finance                                                                                                                                                                                               |
+| **数据域 · 另类**     |                                                                 |             |           |            |                                                                                                                                                                                                             |
+| 数据域                | [alternative-data](https://github.com/ZoneCNH/alternative-data) | -           | 🔨 已创建  | ░░░░ 5%    | 链上、社交情绪、新闻 NLP                                                                                                                                                                                    |
+| **分析域**            |                                                                 |             |           |            |                                                                                                                                                                                                             |
+| 分析域                | [factor-engine](https://github.com/ZoneCNH/factor-engine)       | -           | 🔨 已创建  | ░░░░ 5%    | 从原始数据计算 alpha 因子                                                                                                                                                                                   |
+| 分析域                | [feature-store](https://github.com/ZoneCNH/feature-store)       | -           | 🔨 已创建  | ░░░░ 5%    | 因子版本管理、IC 评估                                                                                                                                                                                       |
+| 分析域                | [factor-eval](https://github.com/ZoneCNH/factor-eval)           | -           | 🔨 已创建  | ░░░░ 5%    | IC/IR/换手率评估                                                                                                                                                                                            |
+| 分析域                | [market_regime](https://github.com/ZoneCNH/market_regime)       | -           | 🔨 已创建  | ░░░░ 5%    | 市场状态识别（S1-S7：多头趋势/挤空/空头/踩踏/震荡/低波/压缩）                                                                                                                                               |
+| 分析域                | [macro_regime](https://github.com/ZoneCNH/macro_regime)         | -           | 🔨 已创建  | ░░░░ 5%    | 宏观经济体制识别（M1-M7：流动牛市/再通复苏/软着繁荣/鹰派通胀/衰退降息/信用去杠/滞胀冲击）                                                                                                                   |
+| 分析域                | [regime-engine](https://github.com/ZoneCNH/regime-engine)       | -           | 🔨 已创建  | ░░░░ 5%    | M×S 联合决策引擎（M+S → action/risk_tier/position_caps/trade_permission）                                                                                                                                   |
+| 分析域                | [ms_brain](https://github.com/ZoneCNH/ms_brain)                 | -           | ✅ 已有    | -          | M×S 系统架构分析体系                                                                                                                                                                                        |
+| **决策域**            |                                                                 |             |           |            |                                                                                                                                                                                                             |
+| 决策域                | [signal-factory](https://github.com/ZoneCNH/signal-factory)     | -           | 🔨 已创建  | ░░░░ 5%    | 多因子信号生成、过滤、评分                                                                                                                                                                                  |
+| 决策域                | [backtest-engine](https://github.com/ZoneCNH/backtest-engine)   | -           | 🔨 已创建  | ░░░░ 5%    | 事件驱动回测、Tick 级回放                                                                                                                                                                                   |
+| 决策域                | [optimizer](https://github.com/ZoneCNH/optimizer)               | -           | 🔨 已创建  | ░░░░ 5%    | 参数搜索、Walk-forward 验证                                                                                                                                                                                 |
+| 决策域                | [strategies](https://github.com/ZoneCNH/strategies)             | -           | ✅ 已有    | ██░░ 60%   | 策略研究与参考库，3.5MB/746 项                                                                                                                                                                              |
+| **执行域**            |                                                                 |             |           |            |                                                                                                                                                                                                             |
+| 执行域                | [risk-engine](https://github.com/ZoneCNH/risk-engine)           | -           | 🔨 已创建  | ░░░░ 5%    | VaR、止损、持仓限额、压力测试                                                                                                                                                                               |
+| 执行域                | [order-engine](https://github.com/ZoneCNH/order-engine)         | -           | 🔨 已创建  | ░░░░ 5%    | 智能路由、TWAP/VWAP、滑点控制                                                                                                                                                                               |
+| 执行域                | [portfolio-engine](https://github.com/ZoneCNH/portfolio-engine) | -           | 🔨 已创建  | ░░░░ 5%    | 多策略资金分配、再平衡                                                                                                                                                                                      |
+| 执行域                | [settlement](https://github.com/ZoneCNH/settlement)             | -           | 🔨 已创建  | ░░░░ 5%    | PnL 计算、交易所对账                                                                                                                                                                                        |
+| **入口**              |                                                                 |             |           |            |                                                                                                                                                                                                             |
+| 入口                  | [x.go](https://github.com/ZoneCNH/x.go)                         | v0.0.1      | ✅ 已有    | ███░ 80%   | 组合根，2.8MB/33 项                                                                                                                                                                                         |
+| **横切**              |                                                                 |             |           |            |                                                                                                                                                                                                             |
+| 横切                  | [alertx](https://github.com/ZoneCNH/alertx)                     | -           | 🔨 已创建  | ░░░░ 5%    | 策略异常、风控触发告警                                                                                                                                                                                      |
+| 横切                  | [observex](https://github.com/ZoneCNH/observex)                 | v0.3.1      | ✅ 已有    | ███░ 80%   | 可观测性（同时归属基座，提供底层 metrics/tracing/logging）                                                                                                                                                  |
+| **Rust**              |                                                                 |             |           |            |                                                                                                                                                                                                             |
+| Rust                  | [stdlib.rs](https://github.com/ZoneCNH/stdlib.rs)               | -           | ✅ 已有    | -          | Rust 标准库                                                                                                                                                                                                 |
+| **独立**              |                                                                 |             |           |            |                                                                                                                                                                                                             |
+| 独立                  | [module](./module/README.md)                                    | -           | ✅ 已有    | -          | 项目技术规范、接口定义与 Goal 适配模块索引                                                                                                                                                                  |
+| 独立                  | [docs/governance](./docs/governance/README.md)                  | -           | ✅ 已有    | -          | Spec → Code 交付治理、模板、门禁与评分规则                                                                                                                                                                  |
 
 ## 本地开发路径
 
 > 所有模块代码仓库统一位于 `/home/{module}/`，其中 `{module}` 与 GitHub 仓库名一一对应。本地路径仅用于开发时快速定位代码，不参与运行时。
 
-| 域              | 模块                                                                                                      | 本地路径                            |
-| --------------- | --------------------------------------------------------------------------------------------------------- | ----------------------------------- |
-| **基座**        |                                                                                                           |                                     |
-| 基座            | kernel                                                                                                    | `/home/kernel/`                     |
-| 基座            | configx                                                                                                   | `/home/configx/`                    |
-| 基座            | observex                                                                                                  | `/home/observex/`                   |
-| 基座            | testkitx                                                                                                  | `/home/testkitx/`                   |
-| 基座            | resiliencx                                                                                                | `/home/resiliencx/`                 |
-| 基座            | schedulex                                                                                                 | `/home/schedulex/`                  |
-| 基座            | xlibgate                                                                                                  | `/home/xlibgate/`                   |
-| 基座            | xlib-standard                                                                                             | `/home/xlib-standard/`              |
-| 基座            | redisx                                                                                                    | `/home/redisx/`                     |
-| 基座            | kafkax                                                                                                    | `/home/kafkax/`                     |
-| 基座            | natsx                                                                                                     | `/home/natsx/`                      |
-| 基座            | postgresx                                                                                                 | `/home/postgresx/`                  |
-| 基座            | clickhousex                                                                                               | `/home/clickhousex/`                |
-| 基座            | taosx                                                                                                     | `/home/taosx/`                      |
-| 基座            | ossx                                                                                                      | `/home/ossx/`                       |
-| 基座            | decimalx                                                                                                  | `/home/decimalx/`                   |
-| 基座            | domain-market                                                                                             | `/home/domain-market/`              |
-| 基座            | domain-exchange                                                                                           | `/home/domain-exchange/`            |
-| 基座            | domain-macro                                                                                              | `/home/domain-macro/`               |
-| **数据域 · 行情** |                                                                                                         |                                     |
-| 数据域          | binance, binance-market                                                                                   | `/home/binance/`, `/home/binance-market/` |
-| 数据域          | okx, okx-market                                                                                           | `/home/okx/`, `/home/okx-market/`         |
-| 数据域          | bybit, bybit-market                                                                                       | `/home/bybit/`, `/home/bybit-market/`     |
-| 数据域          | bitget, bitget-market                                                                                     | `/home/bitget/`, `/home/bitget-market/`   |
-| 数据域          | coinbase, coinbase-market                                                                                 | `/home/coinbase/`, `/home/coinbase-market/` |
-| 数据域          | gate                                                                                                      | `/home/gate/`                       |
-| 数据域          | kucoin                                                                                                    | `/home/kucoin/`                     |
-| 数据域          | mexc                                                                                                      | `/home/mexc/`                       |
-| 数据域          | htx                                                                                                       | `/home/htx/`                        |
-| 数据域          | upbit                                                                                                     | `/home/upbit/`                      |
-| 数据域          | hyperliquid                                                                                               | `/home/hyperliquid/`                |
-| 数据域          | lighter                                                                                                   | `/home/lighter/`                    |
-| 数据域          | coinglass                                                                                                 | `/home/coinglass/`                  |
-| **数据域 · 宏观** |                                                                                                         |                                     |
-| 数据域          | fred                                                                                                      | `/home/fred/`                       |
-| 数据域          | treasury                                                                                                  | `/home/treasury/`                   |
-| 数据域          | bea                                                                                                       | `/home/bea/`                        |
-| 数据域          | ecb                                                                                                       | `/home/ecb/`                        |
-| 数据域          | uk-cb                                                                                                     | `/home/uk-cb/`                      |
-| 数据域          | japan-cb                                                                                                  | `/home/japan-cb/`                   |
-| 数据域          | eastmoney                                                                                                 | `/home/eastmoney/`                  |
-| 数据域          | jinshi                                                                                                    | `/home/jinshi/`                     |
-| 数据域          | jin10                                                                                                     | `/home/jin10/`                      |
-| 数据域          | yahoo                                                                                                     | `/home/yahoo/`                      |
-| 数据域          | yield-curve                                                                                               | `/home/yield-curve/`                |
-| **入口**        |                                                                                                           |                                     |
-| 入口            | x.go                                                                                                      | `/home/x.go/`                       |
+| 域                | 模块                                                                                                      | 本地路径                                    |
+| ----------------- | --------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
+| **基座**          |                                                                                                           |                                             |
+| 基座              | kernel                                                                                                    | `/home/kernel/`                             |
+| 基座              | configx                                                                                                   | `/home/configx/`                            |
+| 基座              | observex                                                                                                  | `/home/observex/`                           |
+| 基座              | testkitx                                                                                                  | `/home/testkitx/`                           |
+| 基座              | resiliencx                                                                                                | `/home/resiliencx/`                         |
+| 基座              | schedulex                                                                                                 | `/home/schedulex/`                          |
+| 基座              | xlibgate                                                                                                  | `/home/xlibgate/`                           |
+| 基座              | xlib-standard                                                                                             | `/home/xlib-standard/`                      |
+| 基座              | redisx                                                                                                    | `/home/redisx/`                             |
+| 基座              | kafkax                                                                                                    | `/home/kafkax/`                             |
+| 基座              | natsx                                                                                                     | `/home/natsx/`                              |
+| 基座              | postgresx                                                                                                 | `/home/postgresx/`                          |
+| 基座              | clickhousex                                                                                               | `/home/clickhousex/`                        |
+| 基座              | taosx                                                                                                     | `/home/taosx/`                              |
+| 基座              | ossx                                                                                                      | `/home/ossx/`                               |
+| 基座              | decimalx                                                                                                  | `/home/decimalx/`                           |
+| 基座              | domain-market                                                                                             | `/home/domain-market/`                      |
+| 基座              | domain-exchange                                                                                           | `/home/domain-exchange/`                    |
+| 基座              | domain-macro                                                                                              | `/home/domain-macro/`                       |
+| **数据域 · 行情** |                                                                                                           |                                             |
+| 数据域            | binance, binance-market                                                                                   | `/home/binance/`, `/home/binance-market/`   |
+| 数据域            | okx, okx-market                                                                                           | `/home/okx/`, `/home/okx-market/`           |
+| 数据域            | bybit, bybit-market                                                                                       | `/home/bybit/`, `/home/bybit-market/`       |
+| 数据域            | bitget, bitget-market                                                                                     | `/home/bitget/`, `/home/bitget-market/`     |
+| 数据域            | coinbase, coinbase-market                                                                                 | `/home/coinbase/`, `/home/coinbase-market/` |
+| 数据域            | gate                                                                                                      | `/home/gate/`                               |
+| 数据域            | kucoin                                                                                                    | `/home/kucoin/`                             |
+| 数据域            | mexc                                                                                                      | `/home/mexc/`                               |
+| 数据域            | htx                                                                                                       | `/home/htx/`                                |
+| 数据域            | upbit                                                                                                     | `/home/upbit/`                              |
+| 数据域            | hyperliquid                                                                                               | `/home/hyperliquid/`                        |
+| 数据域            | lighter                                                                                                   | `/home/lighter/`                            |
+| 数据域            | coinglass                                                                                                 | `/home/coinglass/`                          |
+| **数据域 · 宏观** |                                                                                                           |                                             |
+| 数据域            | fred                                                                                                      | `/home/fred/`                               |
+| 数据域            | treasury                                                                                                  | `/home/treasury/`                           |
+| 数据域            | bea                                                                                                       | `/home/bea/`                                |
+| 数据域            | ecb                                                                                                       | `/home/ecb/`                                |
+| 数据域            | uk-cb                                                                                                     | `/home/uk-cb/`                              |
+| 数据域            | japan-cb                                                                                                  | `/home/japan-cb/`                           |
+| 数据域            | eastmoney                                                                                                 | `/home/eastmoney/`                          |
+| 数据域            | jinshi                                                                                                    | `/home/jinshi/`                             |
+| 数据域            | jin10                                                                                                     | `/home/jin10/`                              |
+| 数据域            | yahoo                                                                                                     | `/home/yahoo/`                              |
+| 数据域            | yield-curve                                                                                               | `/home/yield-curve/`                        |
+| **入口**          |                                                                                                           |                                             |
+| 入口              | x.go                                                                                                      | `/home/x.go/`                               |
 
 > 完整仓库 URL 映射见上方状态总览表。分析域、决策域、执行域、横切域模块暂无本地检出。
 

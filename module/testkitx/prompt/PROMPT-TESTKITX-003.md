@@ -28,12 +28,12 @@ depends_on:
 
 ## 关联需求
 
-| 类型 | 编号 | 出处 | 说明 |
-|------|------|------|------|
-| FR | FR-003 | SPEC.md §7 | FakeMeter：记录 metrics 到内存供断言 |
-| BR | BR-001 | SPEC.md §8 | 编译期接口检查：`var _ observex.Meter = (*FakeMeterImpl)(nil)` |
-| BR | BR-002 | SPEC.md §8 | 行为确定性 |
-| TC | TC-003 | SPEC.md §16.4 | FakeMeter 编译期检查 |
+| 类型   | 编号   | 出处          | 说明                                                           |
+| ------ | ------ | ------------- | -------------------------------------------------------------- |
+| FR     | FR-003 | SPEC.md §7    | FakeMeter：记录 metrics 到内存供断言                           |
+| BR     | BR-001 | SPEC.md §8    | 编译期接口检查：`var _ observex.Meter = (*FakeMeterImpl)(nil)` |
+| BR     | BR-002 | SPEC.md §8    | 行为确定性                                                     |
+| TC     | TC-003 | SPEC.md §16.4 | FakeMeter 编译期检查                                           |
 
 ## 接口契约
 
@@ -86,34 +86,34 @@ THEN 断言直方图有记录
 
 测试场景：
 
-| 测试用例 | 说明 |
-|----------|------|
-| `TestFakeMeter_Counter` | Counter.Add 后 CounterValue 正确 |
-| `TestFakeMeter_Counter_Accumulate` | 多次 Add 累加正确 |
-| `TestFakeMeter_Gauge` | Gauge.Set 后 GaugeValue 正确 |
-| `TestFakeMeter_Gauge_Overwrite` | 多次 Set 覆盖正确 |
-| `TestFakeMeter_Histogram` | Histogram.Record 后 HistogramValues 正确 |
-| `TestFakeMeter_AssertCounterValue` | 正确值 → 不 fail |
-| `TestFakeMeter_AssertHistogramRecorded` | 有记录 → 不 fail |
-| `TestFakeMeter_Concurrent` | 并发安全 |
+| 测试用例                                | 说明                                     |
+| --------------------------------------- | ---------------------------------------- |
+| `TestFakeMeter_Counter`                 | Counter.Add 后 CounterValue 正确         |
+| `TestFakeMeter_Counter_Accumulate`      | 多次 Add 累加正确                        |
+| `TestFakeMeter_Gauge`                   | Gauge.Set 后 GaugeValue 正确             |
+| `TestFakeMeter_Gauge_Overwrite`         | 多次 Set 覆盖正确                        |
+| `TestFakeMeter_Histogram`               | Histogram.Record 后 HistogramValues 正确 |
+| `TestFakeMeter_AssertCounterValue`      | 正确值 → 不 fail                         |
+| `TestFakeMeter_AssertHistogramRecorded` | 有记录 → 不 fail                         |
+| `TestFakeMeter_Concurrent`              | 并发安全                                 |
 
 ## 验收标准
 
-| AC | 关联 | 验证命令 | 预期结果 |
-|----|------|----------|----------|
-| AC-FM-01 | FR-003 | `go test -run TestFakeMeter -v -race ./...` | 全部通过 |
-| AC-FM-02 | BR-001 | `go build ./...` | 编译通过 |
-| AC-FM-03 | BR-002 | `grep -E "time\.Now|math\.Rand" fake_meter.go` | 无匹配 |
-| AC-FM-04 | TC-003 | `go test -run TestContract_Meter -v ./contract/...` | 接口检查通过 |
+| AC       | 关联   | 验证命令                                            | 预期结果                   |        |
+| -------- | ------ | --------------------------------------------------- | -------------------------- |        |
+| AC-FM-01 | FR-003 | `go test -run TestFakeMeter -v -race ./...`         | 全部通过                   |        |
+| AC-FM-02 | BR-001 | `go build ./...`                                    | 编译通过                   |        |
+| AC-FM-03 | BR-002 | `grep -E "time\.Now                                 | math\.Rand" fake_meter.go` | 无匹配 |
+| AC-FM-04 | TC-003 | `go test -run TestContract_Meter -v ./contract/...` | 接口检查通过               |        |
 
 ## 验证命令
 
-| 命令 | 判定标准 |
-|------|----------|
-| `go build ./...` | 编译通过 |
-| `go test -race -count=1 ./...` | 全部通过，无 data race |
-| `go vet ./...` | 无警告 |
-| `grep "var _ observex.Meter" fake_meter.go` | 找到编译期断言 |
+| 命令                                        | 判定标准               |
+| ------------------------------------------- | ---------------------- |
+| `go build ./...`                            | 编译通过               |
+| `go test -race -count=1 ./...`              | 全部通过，无 data race |
+| `go vet ./...`                              | 无警告                 |
+| `grep "var _ observex.Meter" fake_meter.go` | 找到编译期断言         |
 
 ## 禁止事项
 

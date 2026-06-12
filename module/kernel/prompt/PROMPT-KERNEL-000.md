@@ -14,11 +14,11 @@
 
 ## 关联需求
 
-| 类型 | 编号 | 出处 | 说明 |
-|------|------|------|------|
-| § | 14 | SPEC.md | 目录结构 |
-| § | 15.1 | SPEC.md | go.mod stdlib-only |
-| BR | BR-009 | SPEC.md §8 | 零外部依赖 |
+| 类型   | 编号   | 出处       | 说明               |
+| ------ | ------ | ---------- | ------------------ |
+| §      | 14     | SPEC.md    | 目录结构           |
+| §      | 15.1   | SPEC.md    | go.mod stdlib-only |
+| BR     | BR-009 | SPEC.md §8 | 零外部依赖         |
 
 ## 文件清单
 
@@ -37,17 +37,17 @@ go 1.23
 
 包含以下目标：
 
-| 目标 | 命令 |
-|------|------|
-| `build` | `go build ./...` |
-| `test` | `go test -race -count=1 ./...` |
-| `cover` | `go test -race -coverprofile=coverage.out ./... && go tool cover -func=coverage.out` |
-| `bench` | `go test -bench=. -benchmem -count=3 ./...` |
-| `lint` | `golangci-lint run` |
-| `vet` | `go vet ./...` |
-| `check-stdlib` | `go list -deps ./... \| grep -v "^std" \| grep -v "^github.com/ZoneCNH/kernel$$"` |
-| `tidy` | `go mod tidy && git diff --exit-code go.mod go.sum` |
-| `release-preflight` | `build + test + cover + bench + lint + vet + check-stdlib + tidy` |
+| 目标                | 命令                                                                                 |                  |                                         |
+| ------------------- | ------------------------------------------------------------------------------------ |                  |                                         |
+| `build`             | `go build ./...`                                                                     |                  |                                         |
+| `test`              | `go test -race -count=1 ./...`                                                       |                  |                                         |
+| `cover`             | `go test -race -coverprofile=coverage.out ./... && go tool cover -func=coverage.out` |                  |                                         |
+| `bench`             | `go test -bench=. -benchmem -count=3 ./...`                                          |                  |                                         |
+| `lint`              | `golangci-lint run`                                                                  |                  |                                         |
+| `vet`               | `go vet ./...`                                                                       |                  |                                         |
+| `check-stdlib`      | `go list -deps ./... \                                                               | grep -v "^std" \ | grep -v "^github.com/ZoneCNH/kernel$$"` |
+| `tidy`              | `go mod tidy && git diff --exit-code go.mod go.sum`                                  |                  |                                         |
+| `release-preflight` | `build + test + cover + bench + lint + vet + check-stdlib + tidy`                    |                  |                                         |
 
 ### 3. `README.md`
 
@@ -64,21 +64,21 @@ MIT License，版权归属 ZoneCNH。
 
 ## 验收标准
 
-| AC | 关联 | 验证命令 | 预期结果 |
-|----|------|----------|----------|
-| AC-SKEL-01 | §15.1 | `cat go.mod` | module github.com/ZoneCNH/kernel，go 1.23，无 require |
-| AC-SKEL-02 | §14 | `make help 2>/dev/null \|\| cat Makefile` | build/test/cover/bench/lint/vet/check-stdlib 目标存在 |
-| AC-SKEL-03 | §2 | `cat README.md` | 含模块定位、12 子包清单、快速开始 |
-| AC-SKEL-04 | — | `go build ./...` | 编译通过 |
-| AC-SKEL-05 | BR-009 | `go list -deps ./...` | 无外部依赖 |
+| AC         | 关联   | 验证命令                 | 预期结果                                              |               |                                                       |
+| ---------- | ------ | ------------------------ | ----------------------------------------------------- |               |                                                       |
+| AC-SKEL-01 | §15.1  | `cat go.mod`             | module github.com/ZoneCNH/kernel，go 1.23，无 require |               |                                                       |
+| AC-SKEL-02 | §14    | `make help 2>/dev/null \ | \                                                     | cat Makefile` | build/test/cover/bench/lint/vet/check-stdlib 目标存在 |
+| AC-SKEL-03 | §2     | `cat README.md`          | 含模块定位、12 子包清单、快速开始                     |               |                                                       |
+| AC-SKEL-04 | —      | `go build ./...`         | 编译通过                                              |               |                                                       |
+| AC-SKEL-05 | BR-009 | `go list -deps ./...`    | 无外部依赖                                            |               |                                                       |
 
 ## 验证命令
 
-| 命令 | 判定标准 |
-|------|----------|
-| `go build ./...` | 编译通过 |
-| `go list -deps ./...` | 无 kernel 外部依赖 |
-| `grep -c "module github.com/ZoneCNH/kernel" go.mod` | = 1 |
+| 命令                                                | 判定标准           |
+| --------------------------------------------------- | ------------------ |
+| `go build ./...`                                    | 编译通过           |
+| `go list -deps ./...`                               | 无 kernel 外部依赖 |
+| `grep -c "module github.com/ZoneCNH/kernel" go.mod` | = 1                |
 
 ## 禁止事项
 

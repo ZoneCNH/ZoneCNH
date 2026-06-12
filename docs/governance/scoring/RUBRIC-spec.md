@@ -7,16 +7,16 @@
 
 ## 维度（满分 100）
 
-| 维度 | 满分 | 检查重点 |
-|------|------|----------|
-| 23 节结构与元数据 | 15 | 章节齐全、关键章节非空、Metadata 完整且状态合法 |
-| 清晰性与范围边界 | 12 | Summary、Problem、Goals、Non-goals、Consumers 是否具体 |
-| FR/BR 行为规格 | 15 | FR 的 WHEN/THEN、BR 的违反后果、编号连续唯一 |
-| 追溯链闭合 | 15 | FR → AC → TC 是否闭合，BR/NFR 是否有验证方式 |
-| 接口/数据/配置/错误契约 | 13 | Interface、Data Model、Config、State、Error Handling |
-| 边界场景/安全/可观测/性能 | 12 | Edge Cases、安全边界、观测项、性能预算 |
-| 测试/CI/Release DoD | 10 | Testing Strategy、CI Gate、Release DoD |
-| 治理/生命周期/依赖/变更 | 8 | Constitution、Lifecycle、Dependencies、Compatibility、Rollout |
+| 维度                      | 满分   | 检查重点                                                      |
+| ------------------------- | ------ | ------------------------------------------------------------- |
+| 23 节结构与元数据         | 15     | 章节齐全、关键章节非空、Metadata 完整且状态合法               |
+| 清晰性与范围边界          | 12     | Summary、Problem、Goals、Non-goals、Consumers 是否具体        |
+| FR/BR 行为规格            | 15     | FR 的 WHEN/THEN、BR 的违反后果、编号连续唯一                  |
+| 追溯链闭合                | 15     | FR → AC → TC 是否闭合，BR/NFR 是否有验证方式                  |
+| 接口/数据/配置/错误契约   | 13     | Interface、Data Model、Config、State、Error Handling          |
+| 边界场景/安全/可观测/性能 | 12     | Edge Cases、安全边界、观测项、性能预算                        |
+| 测试/CI/Release DoD       | 10     | Testing Strategy、CI Gate、Release DoD                        |
+| 治理/生命周期/依赖/变更   | 8      | Constitution、Lifecycle、Dependencies、Compatibility、Rollout |
 
 ## 阶段特定红线
 

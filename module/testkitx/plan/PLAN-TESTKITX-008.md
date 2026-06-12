@@ -22,12 +22,12 @@ blocks: [TASK-TESTKITX-010]
 
 ## 2. 覆盖需求
 
-| 需求 | 描述 | AC |
-|------|------|-----|
-| FR-009 | BoundaryCheck 生产边界扫描 | AC-009: 依赖 testkitx → fail + 依赖路径；不依赖 → pass |
-| BR-005 | 生产 import 不含 testkitx | go list 验证 |
-| NFR-004 | 不进入生产二进制 | no-production-import CI gate |
-| SPEC §13 | Edge Case: 检查自身 | testkitx 自身依赖自己不算违规 |
+| 需求     | 描述                       | AC                                                     |
+| -------- | -------------------------- | ------------------------------------------------------ |
+| FR-009   | BoundaryCheck 生产边界扫描 | AC-009: 依赖 testkitx → fail + 依赖路径；不依赖 → pass |
+| BR-005   | 生产 import 不含 testkitx  | go list 验证                                           |
+| NFR-004  | 不进入生产二进制           | no-production-import CI gate                           |
+| SPEC §13 | Edge Case: 检查自身        | testkitx 自身依赖自己不算违规                          |
 
 ---
 
@@ -91,11 +91,11 @@ func BoundaryCheck(t testing.TB, module string) {
 
 **测试用例**：
 
-| 用例 | 描述 | 验证点 |
-|------|------|--------|
-| TestBoundaryCheck_Self | 检查自身 | 通过（豁免） |
-| TestBoundaryCheck_NoViolation | 不依赖 testkitx 的包 | 通过 |
-| TestBoundaryCheck_Violation | 依赖 testkitx 的包 | 失败 + 输出依赖路径 |
+| 用例                          | 描述                 | 验证点              |
+| ----------------------------- | -------------------- | ------------------- |
+| TestBoundaryCheck_Self        | 检查自身             | 通过（豁免）        |
+| TestBoundaryCheck_NoViolation | 不依赖 testkitx 的包 | 通过                |
+| TestBoundaryCheck_Violation   | 依赖 testkitx 的包   | 失败 + 输出依赖路径 |
 
 **注意**：由于测试环境本身就是 testkitx 仓库，违规场景的测试需要构造模拟环境。可以使用 mock `go list` 输出或创建临时 go module 进行集成测试。
 
@@ -121,10 +121,10 @@ go list -deps github.com/ZoneCNH/x.go/... | grep testkitx
 
 ## 6. 风险与回滚
 
-| 风险 | 概率 | 影响 | 缓解 | 回滚 |
-|------|------|------|------|------|
-| go list 命令在测试环境不可用 | Low | Medium | 检查 go 二进制存在 + Skip 降级 | Skip 测试 |
-| 违规场景测试难以构造 | Medium | Low | 使用临时 go module 或 mock | 使用集成测试覆盖 |
-| Edge Case 豁免逻辑遗漏 | Low | Medium | 明确处理自身依赖 | 修正豁免条件 |
+| 风险                         | 概率   | 影响   | 缓解                           | 回滚             |
+| ---------------------------- | ------ | ------ | ------------------------------ | ---------------- |
+| go list 命令在测试环境不可用 | Low    | Medium | 检查 go 二进制存在 + Skip 降级 | Skip 测试        |
+| 违规场景测试难以构造         | Medium | Low    | 使用临时 go module 或 mock     | 使用集成测试覆盖 |
+| Edge Case 豁免逻辑遗漏       | Low    | Medium | 明确处理自身依赖               | 修正豁免条件     |
 
 **回滚路径**：本 task 仅新增文件，回滚 = `rm boundary.go boundary_test.go`。

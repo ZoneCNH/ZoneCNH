@@ -41,9 +41,9 @@ status: pending
 
 > Spec TC: TC-011
 
-| Requirement | Description |
-|---|---|
-| FR-008 | 前置条件校验 |
+| Requirement | Description  |
+| ----------- | ------------ |
+| FR-008      | 前置条件校验 |
 
 ## Internal Dependencies
 
@@ -56,9 +56,9 @@ status: pending
 
 ## Test Plan
 
-| TC | Type | Description |
-|----|------|-------------|
-| TC-011 | Unit | RequireNonEmpty 空值返回 validation 错误 |
+| TC     | Type   | Description                              |
+| ------ | ------ | ---------------------------------------- |
+| TC-011 | Unit   | RequireNonEmpty 空值返回 validation 错误 |
 
 ## Implementation Notes
 

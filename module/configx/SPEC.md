@@ -21,12 +21,12 @@
 
 ### 1.1 变更历史
 
-| 日期 | 版本 | 变更内容 | 作者 |
-|------|------|----------|------|
+| 日期       | 版本   | 变更内容                                                                                                                  | 作者    |
+| ---------- | ------ | ------------------------------------------------------------------------------------------------------------------------- | ------- |
 | 2026-06-12 | v1.1.0 | 完整重写：基于实际 v1.0.0 代码（97.1% 覆盖率），对齐 Client/Loader/Source/SecretString/Provenance/StrictDecode 等真实 API | ZoneCNH |
-| 2026-06-12 | v1.0.2 | 版本号对齐；Non-goals 澄清；移除过时 kernel 依赖声明 | ZoneCNH |
-| 2026-06-12 | v1.0.1 | 对齐修复：移除过时 kernel.Deps；Status Draft→Approved | ZoneCNH |
-| 2026-06-07 | v1.0.0 | 初始版本 | ZoneCNH |
+| 2026-06-12 | v1.0.2 | 版本号对齐；Non-goals 澄清；移除过时 kernel 依赖声明                                                                      | ZoneCNH |
+| 2026-06-12 | v1.0.1 | 对齐修复：移除过时 kernel.Deps；Status Draft→Approved                                                                     | ZoneCNH |
+| 2026-06-07 | v1.0.0 | 初始版本                                                                                                                  | ZoneCNH |
 
 ## 2. Summary
 
@@ -74,12 +74,12 @@
 
 ## 6. Consumers
 
-| 消费者 | 使用方式 |
-|--------|----------|
+| 消费者                                           | 使用方式                                          |
+| ------------------------------------------------ | ------------------------------------------------- |
 | L1 运行时模块（observex, resiliencx, schedulex） | 通过 `configx.New(ctx, cfg, opts...)` 创建 Client |
-| 业务域模块 | 通过 Client 或直接使用 Loader/Source API |
-| `x.go` 组合根 | 创建 Config 实例，注入到各模块 |
-| 存储扩展（redisx, kafkax 等） | 通过 Loader + FileSource/EnvSource 加载连接配置 |
+| 业务域模块                                       | 通过 Client 或直接使用 Loader/Source API          |
+| `x.go` 组合根                                    | 创建 Config 实例，注入到各模块                    |
+| 存储扩展（redisx, kafkax 等）                    | 通过 Loader + FileSource/EnvSource 加载连接配置   |
 
 ---
 
@@ -202,19 +202,19 @@ THEN 使用 NoopMetrics（零开销空实现）
 
 ## 8. Business Rules
 
-| 编号 | 规则 |
-|------|------|
-| BR-001 | 合并策略：LastWins — 后加载的 Source 覆盖先加载的同名 key |
-| BR-002 | Config.Name 必须非空（Validate 时检查） |
-| BR-003 | Config.Timeout 必须 ≥ 0（负数拒绝） |
-| BR-004 | 配置加载显式：调用方必须显式添加每个 Source，无隐式发现 |
+| 编号   | 规则                                                                 |
+| ------ | -------------------------------------------------------------------- |
+| BR-001 | 合并策略：LastWins — 后加载的 Source 覆盖先加载的同名 key            |
+| BR-002 | Config.Name 必须非空（Validate 时检查）                              |
+| BR-003 | Config.Timeout 必须 ≥ 0（负数拒绝）                                  |
+| BR-004 | 配置加载显式：调用方必须显式添加每个 Source，无隐式发现              |
 | BR-005 | SecretString 在所有格式化输出中自动脱敏（String/JSON/GoString/Text） |
-| BR-006 | SecretPolicy 默认匹配 7 种模式，支持 CustomMatcher 扩展 |
-| BR-007 | StrictDecode 默认拒绝未知字段和重复 key |
-| BR-008 | 公共错误变量使用 `configx:` 前缀命名空间 |
-| BR-009 | 无全局状态：无进程级 config singleton（NoGlobalStateGate CI 门禁） |
-| BR-010 | Release 制品通过全部 CI Gate（编译/测试/覆盖率/vet/lint/secret） |
-| BR-011 | context.Context 必须非 nil 且未过期（所有公开 API 强制检查） |
+| BR-006 | SecretPolicy 默认匹配 7 种模式，支持 CustomMatcher 扩展              |
+| BR-007 | StrictDecode 默认拒绝未知字段和重复 key                              |
+| BR-008 | 公共错误变量使用 `configx:` 前缀命名空间                             |
+| BR-009 | 无全局状态：无进程级 config singleton（NoGlobalStateGate CI 门禁）   |
+| BR-010 | Release 制品通过全部 CI Gate（编译/测试/覆盖率/vet/lint/secret）     |
+| BR-011 | context.Context 必须非 nil 且未过期（所有公开 API 强制检查）         |
 
 ---
 
@@ -400,13 +400,13 @@ config:
 
 ## 12. Error Handling
 
-| 错误 | 调用方处理 |
-|------|-----------|
-| `ErrInvalidFormat` | 检查文件格式和内容，修复后重试 |
-| `ErrValidationFailed` | 检查具体字段，修复配置 |
-| `ErrKeyNotFound` | 检查 key 拼写 |
-| `ErrTypeMismatch` | 检查值类型是否匹配 |
-| `ErrAlreadyLoaded` | 不要重复加载 |
+| 错误                  | 调用方处理                     |
+| --------------------- | ------------------------------ |
+| `ErrInvalidFormat`    | 检查文件格式和内容，修复后重试 |
+| `ErrValidationFailed` | 检查具体字段，修复配置         |
+| `ErrKeyNotFound`      | 检查 key 拼写                  |
+| `ErrTypeMismatch`     | 检查值类型是否匹配             |
+| `ErrAlreadyLoaded`    | 不要重复加载                   |
 
 **错误消息格式：** `"configx: <operation>: <detail>"`
 **Validation 错误包含：** 字段路径 + 预期值 + 实际值
@@ -416,17 +416,17 @@ config:
 
 ## 13. Edge Cases
 
-| 场景 | 预期行为 |
-|------|----------|
-| 空配置文件 | 返回空 Map，不报错 |
-| 配置文件只有注释 | 返回空 Map |
-| 环境变量值为空字符串 | 视为设置空值（非未设置） |
-| 点分路径的中间节点不存在 | 自动创建中间节点 |
-| 并发 Load + HealthCheck | sync.RWMutex 保护，并发安全 |
-| 超大配置文件（>10MB） | 正常解析 |
-| 配置文件读取超时（NFS/网络挂载） | ctx 超时后返回错误 |
-| 配置加载失败的调用方重试 | Load 失败后状态不变，可安全重试 |
-| 并发 Load 竞态 | Loader.mu 保护，线程安全 |
+| 场景                              | 预期行为                        |
+| --------------------------------- | ------------------------------- |
+| 空配置文件                        | 返回空 Map，不报错              |
+| 配置文件只有注释                  | 返回空 Map                      |
+| 环境变量值为空字符串              | 视为设置空值（非未设置）        |
+| 点分路径的中间节点不存在          | 自动创建中间节点                |
+| 并发 Load + HealthCheck           | sync.RWMutex 保护，并发安全     |
+| 超大配置文件（>10MB）             | 正常解析                        |
+| 配置文件读取超时（NFS/网络挂载）  | ctx 超时后返回错误              |
+| 配置加载失败的调用方重试          | Load 失败后状态不变，可安全重试 |
+| 并发 Load 竞态                    | Loader.mu 保护，线程安全        |
 | nil Client 调用 Close/HealthCheck | 返回 validation error，不 panic |
 
 ---
@@ -499,12 +499,12 @@ require (
 
 ### 15.2 依赖方向
 
-| 可以依赖 | 禁止依赖 |
-|----------|----------|
-| stdlib | observex, resiliencx, schedulex, testkitx |
-| `gopkg.in/yaml.v3` | 所有业务域实现 |
-| `github.com/pelletier/go-toml/v2` | `kernel`（foundationx exit 已完成） |
-| — | 所有存储/中间件扩展 |
+| 可以依赖                          | 禁止依赖                                  |
+| --------------------------------- | ----------------------------------------- |
+| stdlib                            | observex, resiliencx, schedulex, testkitx |
+| `gopkg.in/yaml.v3`                | 所有业务域实现                            |
+| `github.com/pelletier/go-toml/v2` | `kernel`（foundationx exit 已完成）       |
+| —                                 | 所有存储/中间件扩展                       |
 
 ---
 
@@ -512,25 +512,25 @@ require (
 
 ### 16.1 测试统计
 
-| 指标 | 数值 |
-|------|------|
-| 测试覆盖率 | **97.1%** |
-| 测试包数 | 8 packages |
-| 测试函数 | 93+ |
-| Benchmark | 6（core_bench_test.go） |
-| Race 检测 | `go test -race` 全部通过 |
+| 指标       | 数值                     |
+| ---------- | ------------------------ |
+| 测试覆盖率 | **97.1%**                |
+| 测试包数   | 8 packages               |
+| 测试函数   | 93+                      |
+| Benchmark  | 6（core_bench_test.go）  |
+| Race 检测  | `go test -race` 全部通过 |
 
 ### 16.2 测试类型
 
-| 类型 | 覆盖内容 | 文件 |
-|------|----------|------|
-| 单元测试 | 所有公共 API | `*_test.go` (12 files) |
-| Boost 测试 | 覆盖率提升专项 | `*_boost_test.go` (7 files) |
-| Fuzz 测试 | 随机输入安全 | `config_fuzz_test.go` |
-| Property 测试 | 不变量验证 | `config_property_test.go` |
-| Golden 测试 | 回归快照 | `health_golden_test.go` |
-| Precedence 测试 | 优先级/覆盖链路 | `precedence_test.go` |
-| Benchmark | Load/Get 性能 | `core_bench_test.go` |
+| 类型            | 覆盖内容        | 文件                        |
+| --------------- | --------------- | --------------------------- |
+| 单元测试        | 所有公共 API    | `*_test.go` (12 files)      |
+| Boost 测试      | 覆盖率提升专项  | `*_boost_test.go` (7 files) |
+| Fuzz 测试       | 随机输入安全    | `config_fuzz_test.go`       |
+| Property 测试   | 不变量验证      | `config_property_test.go`   |
+| Golden 测试     | 回归快照        | `health_golden_test.go`     |
+| Precedence 测试 | 优先级/覆盖链路 | `precedence_test.go`        |
+| Benchmark       | Load/Get 性能   | `core_bench_test.go`        |
 
 ### 16.3 Given/When/Then 用例
 
@@ -583,12 +583,12 @@ Then 全部通过，覆盖率 ≥ 97%
 
 ## 17. Performance Budget
 
-| 操作 | 目标 | 测量方式 |
-|------|------|----------|
-| 配置加载（1000 个 key） | < 50ms | benchmark test |
-| Get 单次调用 | < 100ns | benchmark test |
+| 操作                      | 目标       | 测量方式       |
+| ------------------------- | ---------- | -------------- |
+| 配置加载（1000 个 key）   | < 50ms     | benchmark test |
+| Get 单次调用              | < 100ns    | benchmark test |
 | 并发 Get（100 goroutine） | 无显著退化 | benchmark test |
-| 常驻内存 | < 5MB | profiling |
+| 常驻内存                  | < 5MB      | profiling      |
 
 ---
 
@@ -596,17 +596,17 @@ Then 全部通过，覆盖率 ≥ 97%
 
 ### 18.1 Metrics
 
-| 指标名 | 类型 | 说明 |
-|--------|------|------|
-| `client_created_total` | Counter | Client 创建次数 |
-| `client_closed_total` | Counter | Client 关闭次数 |
-| `client_errors_total` | Counter | Client 错误次数 |
-| `client_health_status` | Gauge | 健康状态 |
-| `client_health_latency_ms` | Gauge | 健康检查延迟 |
-| `client_requests_total` | Counter | 请求总数 |
-| `client_request_duration_seconds` | Histogram | 请求耗时 |
-| `client_retries_total` | Counter | 重试次数 |
-| `client_inflight` | Gauge | 正在处理的请求数 |
+| 指标名                            | 类型      | 说明             |
+| --------------------------------- | --------- | ---------------- |
+| `client_created_total`            | Counter   | Client 创建次数  |
+| `client_closed_total`             | Counter   | Client 关闭次数  |
+| `client_errors_total`             | Counter   | Client 错误次数  |
+| `client_health_status`            | Gauge     | 健康状态         |
+| `client_health_latency_ms`        | Gauge     | 健康检查延迟     |
+| `client_requests_total`           | Counter   | 请求总数         |
+| `client_request_duration_seconds` | Histogram | 请求耗时         |
+| `client_retries_total`            | Counter   | 重试次数         |
+| `client_inflight`                 | Gauge     | 正在处理的请求数 |
 
 ### 18.2 Metrics 接口
 
@@ -624,16 +624,16 @@ type NoopMetrics struct{}  // 零开销空实现
 
 ## 19. Security
 
-| 要求 | 实现方式 |
-|------|----------|
-| 敏感配置不写日志 | SecretString 在所有格式化输出中自动脱敏（`***`）；SanitizedManifest 安全快照 |
+| 要求                | 实现方式                                                                                              |
+| ------------------- | ----------------------------------------------------------------------------------------------------- |
+| 敏感配置不写日志    | SecretString 在所有格式化输出中自动脱敏（`***`）；SanitizedManifest 安全快照                          |
 | SecretPolicy 可配置 | 默认 7 种模式 + CustomMatcher 扩展；`isSensitiveFieldName` 覆盖 Key/Pass/Credential/Auth/Private 后缀 |
-| 配置文件权限检查 | 启动时检查文件权限（Unix: 不允许 other 可写），过宽则 warning |
-| 环境变量不泄露 | 错误消息中不包含环境变量值 |
-| 依赖安全扫描 | CI 运行 `govulncheck ./...` 扫描已知漏洞 |
-| 静态凭证扫描 | CI Gate `gitleaks detect --no-git` 阻塞任何硬编码凭证 |
-| 不可信输入校验 | StrictDecode 默认拒绝未知字段；所有 Source 输入通过 schema 校验 |
-| 无全局状态 | NoGlobalStateGate CI 门禁防止引入进程级 config singleton |
+| 配置文件权限检查    | 启动时检查文件权限（Unix: 不允许 other 可写），过宽则 warning                                         |
+| 环境变量不泄露      | 错误消息中不包含环境变量值                                                                            |
+| 依赖安全扫描        | CI 运行 `govulncheck ./...` 扫描已知漏洞                                                              |
+| 静态凭证扫描        | CI Gate `gitleaks detect --no-git` 阻塞任何硬编码凭证                                                 |
+| 不可信输入校验      | StrictDecode 默认拒绝未知字段；所有 Source 输入通过 schema 校验                                       |
+| 无全局状态          | NoGlobalStateGate CI 门禁防止引入进程级 config singleton                                              |
 
 ---
 
@@ -641,36 +641,36 @@ type NoopMetrics struct{}  // 零开销空实现
 
 ### 20.1 通用 Gate
 
-| Gate | 命令 | 阻塞条件 |
-|------|------|----------|
-| 编译 | `GOWORK=off go build ./...` | 编译失败 |
-| 测试 | `GOWORK=off go test ./... -race -count=1` | 任何测试失败或 data race |
-| 覆盖率 | `GOWORK=off go test ./... -coverprofile=coverage.out` | 覆盖率 < 80% |
-| vet | `GOWORK=off go vet ./...` | 任何 vet 错误 |
-| lint | `golangci-lint run ./...` | 任何 lint 错误（8 linter） |
-| 依赖检查 | `go mod tidy && git diff --exit-code go.mod go.sum` | go.mod 不整洁 |
-| Secret 扫描 | `gitleaks detect --no-git` | 泄露 secret |
-| 漏洞扫描 | `govulncheck ./...` | 高危 CVE |
+| Gate        | 命令                                                  | 阻塞条件                   |
+| ----------- | ----------------------------------------------------- | -------------------------- |
+| 编译        | `GOWORK=off go build ./...`                           | 编译失败                   |
+| 测试        | `GOWORK=off go test ./... -race -count=1`             | 任何测试失败或 data race   |
+| 覆盖率      | `GOWORK=off go test ./... -coverprofile=coverage.out` | 覆盖率 < 80%               |
+| vet         | `GOWORK=off go vet ./...`                             | 任何 vet 错误              |
+| lint        | `golangci-lint run ./...`                             | 任何 lint 错误（8 linter） |
+| 依赖检查    | `go mod tidy && git diff --exit-code go.mod go.sum`   | go.mod 不整洁              |
+| Secret 扫描 | `gitleaks detect --no-git`                            | 泄露 secret                |
+| 漏洞扫描    | `govulncheck ./...`                                   | 高危 CVE                   |
 
 ### 20.2 configx 专属 Gate
 
-| Gate | 命令 | 阻塞条件 |
-|------|------|----------|
-| 不依赖 kernel | `go list -deps ./... \| grep "kernel"` | 依赖 kernel |
-| 无全局状态 | NoGlobalStateGate | 引入进程级 config singleton |
+| Gate          | 命令                   | 阻塞条件                    |             |
+| ------------- | ---------------------- | --------------------------- |             |
+| 不依赖 kernel | `go list -deps ./... \ | grep "kernel"`              | 依赖 kernel |
+| 无全局状态    | NoGlobalStateGate      | 引入进程级 config singleton |             |
 
 ---
 
 ## 21. Upgrade Compatibility
 
-| 变更类型 | 版本升级 |
-|----------|----------|
-| 新增 Source 类型 | **minor** |
-| 新增 Option / LoaderOption | **minor** |
-| Source 接口变更 | **major** |
-| Config 新增必填字段 | **minor**（带默认值） |
-| SecretPolicy 模式变更 | **minor** |
-| Metrics 指标名变更 | **major** |
+| 变更类型                   | 版本升级              |
+| -------------------------- | --------------------- |
+| 新增 Source 类型           | **minor**             |
+| 新增 Option / LoaderOption | **minor**             |
+| Source 接口变更            | **major**             |
+| Config 新增必填字段        | **minor**（带默认值） |
+| SecretPolicy 模式变更      | **minor**             |
+| Metrics 指标名变更         | **major**             |
 
 ---
 
@@ -695,12 +695,12 @@ type NoopMetrics struct{}  // 零开销空实现
 
 ## 24. Lifecycle
 
-| 阶段 | 触发方法 | 状态变更 | 错误处理 |
-|------|----------|----------|----------|
-| 创建 | `New(ctx, cfg, opts...)` | 校验 cfg → 初始化 Client → metrics+1 | ctx nil 或 Validate 失败 → 返回 error |
-| 加载 | `loader.Load(ctx)` | 按序加载所有 Source → LastWins 合并 → 返回 LoadResult | Source 失败且 failFast=true → 立即返回 error |
-| 运行 | Client 就绪 | 并发安全，可调用 HealthCheck | 操作失败 → metrics 记录 |
-| 关闭 | `client.Close(ctx)` | 标记 closed=true → metrics+1 | ctx nil → 返回 error |
+| 阶段   | 触发方法                 | 状态变更                                              | 错误处理                                     |
+| ------ | ------------------------ | ----------------------------------------------------- | -------------------------------------------- |
+| 创建   | `New(ctx, cfg, opts...)` | 校验 cfg → 初始化 Client → metrics+1                  | ctx nil 或 Validate 失败 → 返回 error        |
+| 加载   | `loader.Load(ctx)`       | 按序加载所有 Source → LastWins 合并 → 返回 LoadResult | Source 失败且 failFast=true → 立即返回 error |
+| 运行   | Client 就绪              | 并发安全，可调用 HealthCheck                          | 操作失败 → metrics 记录                      |
+| 关闭   | `client.Close(ctx)`      | 标记 closed=true → metrics+1                          | ctx nil → 返回 error                         |
 
 ---
 
@@ -716,9 +716,9 @@ type NoopMetrics struct{}  // 零开销空实现
 
 ### Future（未来考虑）
 
-| ID | 问题 | 状态 | 负责人 |
-|----|------|------|--------|
-| OQ-001 | 是否需要支持运行时配置热更新（Watch 特性）？ | 待评估 | ZoneCNH |
-| OQ-002 | 是否需要支持配置版本管理（记录每次配置变更）？ | 待评估 | ZoneCNH |
-| OQ-003 | 是否需要支持远程配置源（etcd/consul/vault）？ | 待评估 | ZoneCNH |
-| OQ-004 | 是否需要支持配置模板（引用其他 key 的值）？ | 待评估 | ZoneCNH |
+| ID     | 问题                                           | 状态   | 负责人   |
+| ------ | ---------------------------------------------- | ------ | -------- |
+| OQ-001 | 是否需要支持运行时配置热更新（Watch 特性）？   | 待评估 | ZoneCNH  |
+| OQ-002 | 是否需要支持配置版本管理（记录每次配置变更）？ | 待评估 | ZoneCNH  |
+| OQ-003 | 是否需要支持远程配置源（etcd/consul/vault）？  | 待评估 | ZoneCNH  |
+| OQ-004 | 是否需要支持配置模板（引用其他 key 的值）？    | 待评估 | ZoneCNH  |

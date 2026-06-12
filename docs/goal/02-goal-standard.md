@@ -146,13 +146,13 @@ Goal =
 
 | 项目       | 分值 | 判断标准                       |
 | ---------- | ---: | ------------------------------ |
-| 背景清晰   |   10 | 是否说明为什么做               |
-| 目标明确   |   20 | 是否是结果，而不是方案         |
-| 指标可衡量 |   20 | 是否有成功指标                 |
-| 范围清晰   |   15 | 是否有 In Scope / Out of Scope |
-| 验收明确   |   20 | 是否能判断完成                 |
-| 约束完整   |   10 | 是否说明限制条件               |
-| 优先级明确 |    5 | 是否知道重要程度               |
+| 背景清晰   | 10   | 是否说明为什么做               |
+| 目标明确   | 20   | 是否是结果，而不是方案         |
+| 指标可衡量 | 20   | 是否有成功指标                 |
+| 范围清晰   | 15   | 是否有 In Scope / Out of Scope |
+| 验收明确   | 20   | 是否能判断完成                 |
+| 约束完整   | 10   | 是否说明限制条件               |
+| 优先级明确 | 5    | 是否知道重要程度               |
 
 满分 100。合格线：≥ 80 可以进入 Spec，60-79 需要补充，< 60 不建议进入下游。
 
@@ -194,12 +194,12 @@ owner, priority, status
 
 本文档中使用的 Goal 字段名与 canonical schema 的映射关系：
 
-| 本文档字段 | canonical schema 字段 | 说明 |
-|-----------|----------------------|------|
-| id | goal_id | 本文档简写为 id，控制面使用 goal_id |
-| name | title | 本文档用 name，控制面用 title |
-| objective | north_star | 本文档用 objective，控制面用 north_star |
-| success_metrics | success_criteria | 本文档用 success_metrics，控制面用 success_criteria |
+| 本文档字段      | canonical schema 字段  | 说明                                                |
+| --------------- | ---------------------- | --------------------------------------------------- |
+| id              | goal_id                | 本文档简写为 id，控制面使用 goal_id                 |
+| name            | title                  | 本文档用 name，控制面用 title                       |
+| objective       | north_star             | 本文档用 objective，控制面用 north_star             |
+| success_metrics | success_criteria       | 本文档用 success_metrics，控制面用 success_criteria |
 
 ### 模板字段对齐
 

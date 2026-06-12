@@ -6,26 +6,26 @@
 
 ## 上游引用
 
-| 字段 | 值 |
-|------|----|
-| Upstream | `github.com/ZoneCNH/xlib-standard` |
-| Snapshot Date | 2026-06-08（原始快照）/ 2026-06-12（文档对齐更新） |
-| Upstream Commit | `93753b30e6d01fb4a9b096acaa0d7d53a2fb231c`（= remote tag `v0.6.5`，tree `296e3b91…`，pinned 2026-06-08 04:59 +08:00） |
-| Upstream HEAD | `09c9ec2`（tag `v1.0.0`，2026-06-12 文档-代码对齐基准） |
-| 本目录角色 | 上游规格的本地结构分析快照 + 可执行规格（goal.md + SPEC.md），**不是**上游 SSOT；任何冲突以上游 `docs/standard/**` 为准 |
-| 本仓库角色 | 文档枢纽，承载分析结果与可执行规格，不承载实现源码 |
+| 字段            | 值                                                                                                                      |
+| --------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| Upstream        | `github.com/ZoneCNH/xlib-standard`                                                                                      |
+| Snapshot Date   | 2026-06-08（原始快照）/ 2026-06-12（文档对齐更新）                                                                      |
+| Upstream Commit | `93753b30e6d01fb4a9b096acaa0d7d53a2fb231c`（= remote tag `v0.6.5`，tree `296e3b91…`，pinned 2026-06-08 04:59 +08:00）   |
+| Upstream HEAD   | `09c9ec2`（tag `v1.0.0`，2026-06-12 文档-代码对齐基准）                                                                 |
+| 本目录角色      | 上游规格的本地结构分析快照 + 可执行规格（goal.md + SPEC.md），**不是**上游 SSOT；任何冲突以上游 `docs/standard/**` 为准 |
+| 本仓库角色      | 文档枢纽，承载分析结果与可执行规格，不承载实现源码                                                                      |
 
 ## 模块定位
 
 `xlib-standard` 是本仓库的本地分析快照目录，同步自上游 `github.com/ZoneCNH/xlib-standard`。模块承担五类职责：
 
-| 角色 | 职责 | 权威工件 |
-| --- | --- | --- |
-| Standard Source | xlib 体系的文档规范与工程标准 | `goal.md`（标准定义） |
-| Go Reference Template | 可编译、可测试的 Go 基础库参考模板 | `SPEC.md`（可执行规格） |
-| Generator | 模板渲染与独立 Go module 生成 | 上游 `render_template.sh` |
-| Harness Gate | CI 门禁与边界检查 | 上游 `make ci`（17 gate） |
-| Evidence Runtime | release manifest 与发布证据生成 | 上游 `release_check.sh` |
+| 角色                  | 职责                               | 权威工件                  |
+| --------------------- | ---------------------------------- | ------------------------- |
+| Standard Source       | xlib 体系的文档规范与工程标准      | `goal.md`（标准定义）     |
+| Go Reference Template | 可编译、可测试的 Go 基础库参考模板 | `SPEC.md`（可执行规格）   |
+| Generator             | 模板渲染与独立 Go module 生成      | 上游 `render_template.sh` |
+| Harness Gate          | CI 门禁与边界检查                  | 上游 `make ci`（17 gate） |
+| Evidence Runtime      | release manifest 与发布证据生成    | 上游 `release_check.sh`   |
 
 本目录分析快照的真实源是上游仓库的 `docs/standard/**`。当快照与上游冲突时，以上游当前标准为准。
 

@@ -10,11 +10,11 @@
 
 将 30 份文档按可执行性分为三层：
 
-| 层级 | 文档 | 代码映射 |
-|------|------|----------|
-| **可执行层** | 03-pipeline, 04-gates, 07-id-system, 10-lint-rules, 13-runtime-engine, 15-registry | 直接翻译为 Go struct + engine |
-| **规则层** | 01-principles, 05-layer-standards, 06-dod, 11-anti-patterns, 16-ci-cd | 翻译为 checker / validator 规则 |
-| **概念层** | 02-workflow, 08-glossary, 09-collaboration, 12-hyper-parameters, 14-maturity | 提供 context，不直接编码 |
+| 层级         | 文档                                                                               | 代码映射                        |
+| ------------ | ---------------------------------------------------------------------------------- | ------------------------------- |
+| **可执行层** | 03-pipeline, 04-gates, 07-id-system, 10-lint-rules, 13-runtime-engine, 15-registry | 直接翻译为 Go struct + engine   |
+| **规则层**   | 01-principles, 05-layer-standards, 06-dod, 11-anti-patterns, 16-ci-cd              | 翻译为 checker / validator 规则 |
+| **概念层**   | 02-workflow, 08-glossary, 09-collaboration, 12-hyper-parameters, 14-maturity       | 提供 context，不直接编码        |
 
 ---
 
@@ -1493,13 +1493,13 @@ evidence/*.md         →     Evidence 结构体        →    完整性验证
 
 现有 shell 脚本（`docs/goal/tools/`）与 Go 实现的对应关系：
 
-| 现有工具 | 行数 | Go 等价 | 迁移策略 |
-|----------|------|---------|----------|
-| `gate-check.sh` | 278 | `engine/gate_check.go` | 直接替换 |
-| `lint-goal.sh` | 304 | `engine/lint.go` | 直接替换，消除内嵌 Python |
-| `self-test.sh` | 433 | `engine/*_test.go` | 转化为 Go 单元测试 |
-| `evidence-collect.sh` | 156 | `engine/evidence.go` | 直接替换 |
-| `matrix-gen.py` | ~100 | `engine/matrix.go` | 整合进 Go engine |
+| 现有工具              | 行数   | Go 等价                | 迁移策略                  |
+| --------------------- | ------ | ---------------------- | ------------------------- |
+| `gate-check.sh`       | 278    | `engine/gate_check.go` | 直接替换                  |
+| `lint-goal.sh`        | 304    | `engine/lint.go`       | 直接替换，消除内嵌 Python |
+| `self-test.sh`        | 433    | `engine/*_test.go`     | 转化为 Go 单元测试        |
+| `evidence-collect.sh` | 156    | `engine/evidence.go`   | 直接替换                  |
+| `matrix-gen.py`       | ~100   | `engine/matrix.go`     | 整合进 Go engine          |
 
 迁移路径：Go 版本先与 shell 版本并行运行，结果对比一致后切换。
 
@@ -1572,18 +1572,18 @@ func RunXGoChecks() []CICheckResult {
 
 ### 9.2 关键测试用例
 
-| 测试类型 | 覆盖内容 | 数量 |
-|----------|----------|------|
-| ID 格式校验 | 18 种 ID 格式的正例/反例 | ~40 |
-| 状态机转换 | 正常转换 + 异常转换 + Guard 拒绝 | ~30 |
-| Gate 检查器 | 11 个 Gate 的 PASS/FAIL/PASS_WITH_RISK | ~50 |
-| Lint 规则 | 33 条规则的正例/反例 | ~70 |
-| Matrix 操作 | 覆盖率计算、孤立检查、状态转换 | ~20 |
-| Evidence 验证 | 10 个必填字段的完整性 | ~15 |
-| DoR/DoD | 13 个 stage 的检查项 | ~30 |
-| CI 检查 | 10 个 CI-CHK + 8 个 XG-CHK | ~20 |
-| 变更传播 | 12 种变更类型的传播链 | ~15 |
-| **总计** | | **~290** |
+| 测试类型      | 覆盖内容                               | 数量     |
+| ------------- | -------------------------------------- | -------- |
+| ID 格式校验   | 18 种 ID 格式的正例/反例               | ~40      |
+| 状态机转换    | 正常转换 + 异常转换 + Guard 拒绝       | ~30      |
+| Gate 检查器   | 11 个 Gate 的 PASS/FAIL/PASS_WITH_RISK | ~50      |
+| Lint 规则     | 33 条规则的正例/反例                   | ~70      |
+| Matrix 操作   | 覆盖率计算、孤立检查、状态转换         | ~20      |
+| Evidence 验证 | 10 个必填字段的完整性                  | ~15      |
+| DoR/DoD       | 13 个 stage 的检查项                   | ~30      |
+| CI 检查       | 10 个 CI-CHK + 8 个 XG-CHK             | ~20      |
+| 变更传播      | 12 种变更类型的传播链                  | ~15      |
+| **总计**      |                                        | **~290** |
 
 ### 9.3 表驱动测试示例
 
@@ -1646,42 +1646,42 @@ func TestPipelineTransitions(t *testing.T) {
 
 ### Phase 1: 核心骨架（2-3 天）
 
-| 天 | 任务 | 产出 |
-|----|------|------|
-| D1 | types/ 全部结构体 + ID 格式校验 | `types/*.go` |
-| D1 | Pipeline 状态机 + 转换规则 | `engine/pipeline.go` |
-| D2 | Gate 检查器框架 + G0/G5/G8/G9 实现 | `engine/gate_check.go` |
-| D2 | CLI 骨架 + validate/gate/pipeline 命令 | `cmd/goalctl/main.go` |
-| D3 | Lint 引擎 + G-LINT/M-LINT 自动规则 | `engine/lint.go` |
-| D3 | 核心测试（状态机 + Gate + Lint） | `*_test.go` |
+| 天   | 任务                                   | 产出                   |
+| ---- | -------------------------------------- | ---------------------- |
+| D1   | types/ 全部结构体 + ID 格式校验        | `types/*.go`           |
+| D1   | Pipeline 状态机 + 转换规则             | `engine/pipeline.go`   |
+| D2   | Gate 检查器框架 + G0/G5/G8/G9 实现     | `engine/gate_check.go` |
+| D2   | CLI 骨架 + validate/gate/pipeline 命令 | `cmd/goalctl/main.go`  |
+| D3   | Lint 引擎 + G-LINT/M-LINT 自动规则     | `engine/lint.go`       |
+| D3   | 核心测试（状态机 + Gate + Lint）       | `*_test.go`            |
 
 **MVP 交付物**：`goalctl validate`、`goalctl gate check`、`goalctl pipeline status`、`goalctl lint`
 
 ### Phase 2: Registry + Matrix（2 天）
 
-| 天 | 任务 | 产出 |
-|----|------|------|
-| D4 | Collection[T] 泛型容器 + YAML 序列化 | `types/collection.go` |
-| D4 | 6 个 Registry 的 CRUD + CLI 命令 | `engine/registry.go` |
-| D5 | Matrix Edge 操作 + 覆盖率计算 + 孤立检查 | `engine/matrix.go` |
-| D5 | Registry + Matrix 测试 | `*_test.go` |
+| 天   | 任务                                     | 产出                  |
+| ---- | ---------------------------------------- | --------------------- |
+| D4   | Collection[T] 泛型容器 + YAML 序列化     | `types/collection.go` |
+| D4   | 6 个 Registry 的 CRUD + CLI 命令         | `engine/registry.go`  |
+| D5   | Matrix Edge 操作 + 覆盖率计算 + 孤立检查 | `engine/matrix.go`    |
+| D5   | Registry + Matrix 测试                   | `*_test.go`           |
 
 ### Phase 3: Evidence + CI（1-2 天）
 
-| 天 | 任务 | 产出 |
-|----|------|------|
-| D6 | Evidence 收集 + 验证 + CLI 命令 | `engine/evidence.go` |
-| D6 | CI Preflight + x.go 专用检查 | `engine/ci.go` |
-| D7 | 变更传播 + DoR/DoD 检查 | `engine/propagation.go` |
-| D7 | 集成测试 + self-test.sh 迁移 | `*_test.go` |
+| 天   | 任务                            | 产出                    |
+| ---- | ------------------------------- | ----------------------- |
+| D6   | Evidence 收集 + 验证 + CLI 命令 | `engine/evidence.go`    |
+| D6   | CI Preflight + x.go 专用检查    | `engine/ci.go`          |
+| D7   | 变更传播 + DoR/DoD 检查         | `engine/propagation.go` |
+| D7   | 集成测试 + self-test.sh 迁移    | `*_test.go`             |
 
 ### Phase 4: 完善（1 天）
 
-| 天 | 任务 | 产出 |
-|----|------|------|
-| D8 | 优先级评分 + AutoResearch 协议 | `engine/priority.go` |
-| D8 | 文档 + README + 使用示例 | `README.md` |
-| D8 | 与 shell 脚本并行验证 | 对比报告 |
+| 天   | 任务                           | 产出                 |
+| ---- | ------------------------------ | -------------------- |
+| D8   | 优先级评分 + AutoResearch 协议 | `engine/priority.go` |
+| D8   | 文档 + README + 使用示例       | `README.md`          |
+| D8   | 与 shell 脚本并行验证          | 对比报告             |
 
 **总计：5-8 天**
 
@@ -1708,29 +1708,29 @@ require (
 
 ## 12. 风险与缓解
 
-| 风险 | 影响 | 缓解 |
-|------|------|------|
-| 规则翻译遗漏 | 检查不完整 | self-test.sh 全部用例迁移后对比 |
-| YAML 格式兼容 | 现有数据不可读 | 使用相同的 yaml.v3 库 |
-| 性能不足 | CI 变慢 | Go 编译后单二进制，启动 < 10ms |
-| 维护负担 | 规则更新需同步代码 | 规则内嵌为代码，文档是参考而非运行时输入 |
+| 风险          | 影响               | 缓解                                     |
+| ------------- | ------------------ | ---------------------------------------- |
+| 规则翻译遗漏  | 检查不完整         | self-test.sh 全部用例迁移后对比          |
+| YAML 格式兼容 | 现有数据不可读     | 使用相同的 yaml.v3 库                    |
+| 性能不足      | CI 变慢            | Go 编译后单二进制，启动 < 10ms           |
+| 维护负担      | 规则更新需同步代码 | 规则内嵌为代码，文档是参考而非运行时输入 |
 
 ---
 
 ## 13. 总结
 
-| 维度 | 数据 |
-|------|------|
-| 文档总数 | 30 份 |
-| 可执行文档 | 6 份（直接翻译为代码） |
-| 规则文档 | 5 份（翻译为 checker 规则） |
-| 概念文档 | 4 份（提供 context） |
-| Go 结构体 | ~25 个 |
-| Gate 检查器 | 14 个自动 checker |
-| Lint 规则 | 33 条（22 条可自动化） |
-| DoR/DoD 检查项 | ~80 条（~20 条可自动化） |
-| CI 检查项 | 18 个（10 CI + 8 x.go） |
-| 测试用例 | ~290 个 |
-| 外部依赖 | 3 个（cobra, yaml, testify） |
-| 预估工期 | 5-8 天 |
-| 代码量预估 | ~2,500 行 |
+| 维度           | 数据                         |
+| -------------- | ---------------------------- |
+| 文档总数       | 30 份                        |
+| 可执行文档     | 6 份（直接翻译为代码）       |
+| 规则文档       | 5 份（翻译为 checker 规则）  |
+| 概念文档       | 4 份（提供 context）         |
+| Go 结构体      | ~25 个                       |
+| Gate 检查器    | 14 个自动 checker            |
+| Lint 规则      | 33 条（22 条可自动化）       |
+| DoR/DoD 检查项 | ~80 条（~20 条可自动化）     |
+| CI 检查项      | 18 个（10 CI + 8 x.go）      |
+| 测试用例       | ~290 个                      |
+| 外部依赖       | 3 个（cobra, yaml, testify） |
+| 预估工期       | 5-8 天                       |
+| 代码量预估     | ~2,500 行                    |

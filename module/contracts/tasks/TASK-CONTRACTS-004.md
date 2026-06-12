@@ -29,15 +29,15 @@ status: pending
 
 ## Requirements Covered
 
-| Requirement | Description | Acceptance Criteria |
-|---|---|---|
-| §22 | Release DoD | 所有 Release DoD 条目通过 |
+| Requirement | Description | Acceptance Criteria       |
+| ----------- | ----------- | ------------------------- |
+| §22         | Release DoD | 所有 Release DoD 条目通过 |
 
 ## Test Plan
 
-| Test Case | Type | Description |
-|---|---|---|
-| — | CI Gate | `go build ./...` 通过 |
+| Test Case | Type    | Description           |
+| --------- | ------- | --------------------- |
+| —         | CI Gate | `go build ./...` 通过 |
 
 ## Implementation Notes
 
@@ -45,13 +45,13 @@ status: pending
 
 ## Implementation Plan
 
-| Step | Description | Deliverables | Verification |
-|---|---|---|---|
-| 1 | 创建 README.md | `README.md` | 人工 review |
-| 2 | 创建 CHANGELOG.md | `CHANGELOG.md` | 格式正确 |
+| Step | Description       | Deliverables   | Verification |
+| ---- | ----------------- | -------------- | ------------ |
+| 1    | 创建 README.md    | `README.md`    | 人工 review  |
+| 2    | 创建 CHANGELOG.md | `CHANGELOG.md` | 格式正确     |
 
 ### Risk Assessment
 
 | Risk | Probability | Impact | Mitigation |
-|---|---|---|---|
-| 无 | Low | Low | — |
+| ---- | ----------- | ------ | ---------- |
+| 无   | Low         | Low    | —          |

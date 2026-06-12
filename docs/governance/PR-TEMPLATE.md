@@ -166,8 +166,8 @@ docs(task-002): update task implementation notes
 
 ## 相关文档
 
-| 文档 | 用途 |
-|------|------|
-| `docs/governance/DEVELOPMENT-WORKFLOW.md` | 完整管线总览 |
-| `docs/governance/TASK-TEMPLATE.md` | Task spec 模板 |
-| `docs/governance/DEPLOYMENT.md` | 部署清单 |
+| 文档                                      | 用途           |
+| ----------------------------------------- | -------------- |
+| `docs/governance/DEVELOPMENT-WORKFLOW.md` | 完整管线总览   |
+| `docs/governance/TASK-TEMPLATE.md`        | Task spec 模板 |
+| `docs/governance/DEPLOYMENT.md`           | 部署清单       |

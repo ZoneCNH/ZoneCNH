@@ -36,19 +36,19 @@ status: pending
 
 ## Requirements Covered
 
-| Requirement | Description | Acceptance Criteria |
-|---|---|---|
-| FR-005 | FakeClock：可控制时间 | AC-005 |
-| FR-006 | FakeBreaker：可控制熔断状态 | AC-006 |
-| BR-002 | fake 行为确定性 | 不引入 time.Now()/math.Rand() |
+| Requirement | Description                 | Acceptance Criteria           |
+| ----------- | --------------------------- | ----------------------------- |
+| FR-005      | FakeClock：可控制时间       | AC-005                        |
+| FR-006      | FakeBreaker：可控制熔断状态 | AC-006                        |
+| BR-002      | fake 行为确定性             | 不引入 time.Now()/math.Rand() |
 
 ## Test Plan
 
-| Test Case | Type | Description |
-|---|---|---|
-| TC-005 | Unit | Advance 后 Now() 返回新时间 |
-| TC-005 | Unit | Set 后 Now() 返回设置值 |
-| TC-006 | Unit | SetState(Open) 后 Execute 返回 ErrCircuitOpen |
+| Test Case | Type | Description                                   |
+| --------- | ---- | --------------------------------------------- |
+| TC-005    | Unit | Advance 后 Now() 返回新时间                   |
+| TC-005    | Unit | Set 后 Now() 返回设置值                       |
+| TC-006    | Unit | SetState(Open) 后 Execute 返回 ErrCircuitOpen |
 
 ## Implementation Notes
 
@@ -57,13 +57,13 @@ status: pending
 
 ## Implementation Plan
 
-| Step | Description | Deliverables | Verification |
-|---|---|---|---|
-| 1 | 实现 `FakeClock`：Now/After/Advance | `fake_clock.go` | 测试通过 |
-| 2 | 实现 `FakeBreaker`：Execute/State/SetState | `fake_breaker.go` | 测试通过 |
+| Step | Description                                | Deliverables      | Verification |
+| ---- | ------------------------------------------ | ----------------- | ------------ |
+| 1    | 实现 `FakeClock`：Now/After/Advance        | `fake_clock.go`   | 测试通过     |
+| 2    | 实现 `FakeBreaker`：Execute/State/SetState | `fake_breaker.go` | 测试通过     |
 
 ### Risk Assessment
 
-| Risk | Probability | Impact | Mitigation |
-|---|---|---|---|
-| FakeClock 并发安全 | Low | High | sync.Mutex 保护 |
+| Risk               | Probability | Impact | Mitigation      |
+| ------------------ | ----------- | ------ | --------------- |
+| FakeClock 并发安全 | Low         | High   | sync.Mutex 保护 |

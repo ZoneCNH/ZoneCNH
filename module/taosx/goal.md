@@ -1,13 +1,13 @@
 # taosx 发布版本 1.0 Goal 定位与实现标准
 
-| 字段 | 内容 |
-| --- | --- |
-| 模块名 | `taosx` |
-| 发布版本 | 1.0.0 |
-| 所属层级 | 存储扩展层 / TDengine TAOS 时序数据 |
-| 稳定级别 | Public API Stable；SPI Stable；Internal 可演进 |
-| 文档状态 | 1.0 发布基线文档 |
-| 发布日期基准 | 2026-06-09 |
+| 字段         | 内容                                           |
+| ------------ | ---------------------------------------------- |
+| 模块名       | `taosx`                                        |
+| 发布版本     | 1.0.0                                          |
+| 所属层级     | 存储扩展层 / TDengine TAOS 时序数据            |
+| 稳定级别     | Public API Stable；SPI Stable；Internal 可演进 |
+| 文档状态     | 1.0 发布基线文档                               |
+| 发布日期基准 | 2026-06-09                                     |
 
 ## 术语约定
 
@@ -57,24 +57,24 @@
 
 ## 3. 核心场景
 
-| 场景 | 说明 | 1.0 期望结果 |
-| --- | --- | --- |
+| 场景         | 说明                         | 1.0 期望结果                   |
+| ------------ | ---------------------------- | ------------------------------ |
 | 设备数据写入 | 设备每秒上报温度、压力、电量 | 批量写入到对应子表，失败可重试 |
-| 监控指标查询 | 查询过去 1 小时平均温度 | 时间窗口聚合返回统一结果 |
-| 降采样 | 原始秒级数据生成分钟级聚合 | 按规则执行聚合写入或查询降采样 |
-| 设备定位 | 按标签查询某区域设备指标 | 标签查询统一生成安全 SQL |
+| 监控指标查询 | 查询过去 1 小时平均温度      | 时间窗口聚合返回统一结果       |
+| 降采样       | 原始秒级数据生成分钟级聚合   | 按规则执行聚合写入或查询降采样 |
+| 设备定位     | 按标签查询某区域设备指标     | 标签查询统一生成安全 SQL       |
 
 ## 4. 能力范围
 
-| 能力域 | 1.0 必须具备的能力 | 验收方式 |
-| --- | --- | --- |
-| 时序模型 | MetricPoint、DeviceTag、TimeRange、Aggregation | 模型测试通过 |
-| 表模型 | 超级表、子表、标签、列类型、版本 | DDL 生成和校验测试通过 |
-| 批量写入 | buffer、batch、flush、重试、失败记录 | 高频写入测试通过 |
-| 查询 | 时间范围、标签过滤、窗口聚合、limit | 查询集成测试通过 |
-| 降采样 | avg/max/min/sum/count、窗口粒度 | 聚合测试通过 |
-| 生命周期 | 保留策略、冷热策略接口 | 策略校验测试通过 |
-| 观测 | 写入吞吐、flush 延迟、查询耗时、失败 | 观测测试通过 |
+| 能力域   | 1.0 必须具备的能力                             | 验收方式               |
+| -------- | ---------------------------------------------- | ---------------------- |
+| 时序模型 | MetricPoint、DeviceTag、TimeRange、Aggregation | 模型测试通过           |
+| 表模型   | 超级表、子表、标签、列类型、版本               | DDL 生成和校验测试通过 |
+| 批量写入 | buffer、batch、flush、重试、失败记录           | 高频写入测试通过       |
+| 查询     | 时间范围、标签过滤、窗口聚合、limit            | 查询集成测试通过       |
+| 降采样   | avg/max/min/sum/count、窗口粒度                | 聚合测试通过           |
+| 生命周期 | 保留策略、冷热策略接口                         | 策略校验测试通过       |
+| 观测     | 写入吞吐、flush 延迟、查询耗时、失败           | 观测测试通过           |
 
 ## 5. 职责边界
 
@@ -94,24 +94,24 @@
 
 ## 6. 依赖关系与分层约束
 
-| 依赖类型 | 约束 |
-| --- | --- |
-| 上游依赖 | 依赖 kernel、configx、observex、resiliencx。 |
-| 下游依赖 | IoT、监控、设备数据服务可使用 taosx。 |
-| 分层约束 | taosx 只暴露时序语义，不依赖设备业务域对象。 |
+| 依赖类型 | 约束                                                 |
+| -------- | ---------------------------------------------------- |
+| 上游依赖 | 依赖 kernel、configx、observex、resiliencx。         |
+| 下游依赖 | IoT、监控、设备数据服务可使用 taosx。                |
+| 分层约束 | taosx 只暴露时序语义，不依赖设备业务域对象。         |
 | 契约依赖 | MUST 向 contracts 登记 Public API 契约和错误码契约。 |
 
 ## 7. 对外契约
 
 ### 7.1 公开能力面
 
-| 契约 | 定位 | 1.0 稳定承诺 |
-| --- | --- | --- |
-| TimeSeriesWriter | 时序写入入口 | write/writeBatch/flush 语义稳定 |
-| TimeSeriesQuery | 时序查询入口 | 时间范围和聚合语义稳定 |
-| TableModelManager | 表模型管理 | 超级表/子表声明语义稳定 |
-| MetricPoint | 数据点模型 | 核心字段稳定 |
-| TagFilter | 标签过滤模型 | 过滤语义稳定 |
+| 契约              | 定位         | 1.0 稳定承诺                    |
+| ----------------- | ------------ | ------------------------------- |
+| TimeSeriesWriter  | 时序写入入口 | write/writeBatch/flush 语义稳定 |
+| TimeSeriesQuery   | 时序查询入口 | 时间范围和聚合语义稳定          |
+| TableModelManager | 表模型管理   | 超级表/子表声明语义稳定         |
+| MetricPoint       | 数据点模型   | 核心字段稳定                    |
+| TagFilter         | 标签过滤模型 | 过滤语义稳定                    |
 
 ### 7.2 1.0 逻辑接口基线
 
@@ -149,16 +149,16 @@ TagFilter
 
 ## 8. 配置契约
 
-| 配置项 | 含义 | 默认值 / 要求 | 稳定性 |
-| --- | --- | --- | --- |
-| foundationx.taos.enabled | 是否启用 taosx | false，由业务显式启用 | Stable |
-| foundationx.taos.url | TAOS 连接地址 | 必须配置 | Stable |
-| foundationx.taos.database | 数据库名 | 必须配置 | Stable |
-| foundationx.taos.batch.size | 批量写入大小 | 1000 | Stable |
-| foundationx.taos.flush.interval | 自动 flush 间隔 | 1s | Stable |
-| foundationx.taos.write.timeout | 写入超时 | 3s | Stable |
-| foundationx.taos.query.timeout | 查询超时 | 5s | Stable |
-| foundationx.taos.retention.default | 默认数据保留策略 | 业务显式配置 | Stable |
+| 配置项                             | 含义             | 默认值 / 要求         | 稳定性 |
+| ---------------------------------- | ---------------- | --------------------- | ------ |
+| foundationx.taos.enabled           | 是否启用 taosx   | false，由业务显式启用 | Stable |
+| foundationx.taos.url               | TAOS 连接地址    | 必须配置              | Stable |
+| foundationx.taos.database          | 数据库名         | 必须配置              | Stable |
+| foundationx.taos.batch.size        | 批量写入大小     | 1000                  | Stable |
+| foundationx.taos.flush.interval    | 自动 flush 间隔  | 1s                    | Stable |
+| foundationx.taos.write.timeout     | 写入超时         | 3s                    | Stable |
+| foundationx.taos.query.timeout     | 查询超时         | 5s                    | Stable |
+| foundationx.taos.retention.default | 默认数据保留策略 | 业务显式配置          | Stable |
 
 ## 9. 可观测契约
 
@@ -172,15 +172,15 @@ TagFilter
 
 ### 9.2 指标
 
-| 指标名 | 类型 | 标签 | 说明 |
-| --- | --- | --- | --- |
-| foundationx_taos_write_points_total | Counter | metric,status | 写入数据点数量 |
-| foundationx_taos_write_batches_total | Counter | metric,status | 写入批次数 |
-| foundationx_taos_write_duration_ms | Timer | metric,status | 写入耗时 |
-| foundationx_taos_query_total | Counter | metric,operation,status | 查询次数 |
-| foundationx_taos_query_duration_ms | Timer | metric,operation,status | 查询耗时 |
-| foundationx_taos_buffer_size | Gauge | metric | 写入缓冲大小 |
-| foundationx_taos_errors_total | Counter | operation,errorCode | 错误数 |
+| 指标名                               | 类型    | 标签                    | 说明           |
+| ------------------------------------ | ------- | ----------------------- | -------------- |
+| foundationx_taos_write_points_total  | Counter | metric,status           | 写入数据点数量 |
+| foundationx_taos_write_batches_total | Counter | metric,status           | 写入批次数     |
+| foundationx_taos_write_duration_ms   | Timer   | metric,status           | 写入耗时       |
+| foundationx_taos_query_total         | Counter | metric,operation,status | 查询次数       |
+| foundationx_taos_query_duration_ms   | Timer   | metric,operation,status | 查询耗时       |
+| foundationx_taos_buffer_size         | Gauge   | metric                  | 写入缓冲大小   |
+| foundationx_taos_errors_total        | Counter | operation,errorCode     | 错误数         |
 
 ### 9.3 Trace / 诊断事件
 
@@ -192,13 +192,13 @@ TagFilter
 
 ## 10. 错误模型与失败策略
 
-| 错误类别 | 典型原因 | 1.0 处理策略 |
-| --- | --- | --- |
-| TAOS_CONNECTION_FAILED | 连接失败、认证失败 | 启动或健康检查失败 |
-| TAOS_WRITE_FAILED | 批量写入失败、部分失败 | 按批次结果返回并支持重试 |
-| TAOS_QUERY_TIMEOUT | 查询超时 | 取消查询并返回超时错误 |
-| TAOS_SCHEMA_MISMATCH | 数据点字段与表模型不匹配 | 拒绝写入并输出模型错误 |
-| TAOS_BUFFER_OVERFLOW | 写入缓冲超过上限 | 按策略阻塞、丢弃或失败，生产需显式配置 |
+| 错误类别               | 典型原因                 | 1.0 处理策略                           |
+| ---------------------- | ------------------------ | -------------------------------------- |
+| TAOS_CONNECTION_FAILED | 连接失败、认证失败       | 启动或健康检查失败                     |
+| TAOS_WRITE_FAILED      | 批量写入失败、部分失败   | 按批次结果返回并支持重试               |
+| TAOS_QUERY_TIMEOUT     | 查询超时                 | 取消查询并返回超时错误                 |
+| TAOS_SCHEMA_MISMATCH   | 数据点字段与表模型不匹配 | 拒绝写入并输出模型错误                 |
+| TAOS_BUFFER_OVERFLOW   | 写入缓冲超过上限         | 按策略阻塞、丢弃或失败，生产需显式配置 |
 
 ## 11. 安全、稳定性与兼容性要求
 
@@ -212,13 +212,13 @@ TagFilter
 
 ## 12. 测试证据要求
 
-| 测试类型 | 必须覆盖内容 | 发布门禁 |
-| --- | --- | --- |
-| 单元测试 | MetricPoint、TagFilter、窗口聚合参数、DDL 生成 | MUST 通过 |
-| 集成测试 | 真实 TAOS 写入、批量写入、查询、聚合 | MUST 通过 |
-| 高频写入测试 | buffer、flush、失败重试、背压 | MUST 通过 |
-| 故障测试 | 连接失败、部分写入失败、查询超时 | MUST 通过 |
-| 观测测试 | 写入/查询指标和慢查询日志 | MUST 通过 |
+| 测试类型     | 必须覆盖内容                                   | 发布门禁  |
+| ------------ | ---------------------------------------------- | --------- |
+| 单元测试     | MetricPoint、TagFilter、窗口聚合参数、DDL 生成 | MUST 通过 |
+| 集成测试     | 真实 TAOS 写入、批量写入、查询、聚合           | MUST 通过 |
+| 高频写入测试 | buffer、flush、失败重试、背压                  | MUST 通过 |
+| 故障测试     | 连接失败、部分写入失败、查询超时               | MUST 通过 |
+| 观测测试     | 写入/查询指标和慢查询日志                      | MUST 通过 |
 
 ## 13. 1.0 发布验收清单
 

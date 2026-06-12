@@ -22,12 +22,12 @@ blocks: [TASK-TESTKITX-010]
 
 ## 2. 覆盖需求
 
-| 需求 | 描述 | AC |
-|------|------|-----|
-| FR-001 | FakeConfig 内存配置源 | AC-001: Set 后 Get 返回注入值 |
-| BR-001 | 接口编译期检查 | `var _ configx.Reader = (*FakeConfigImpl)(nil)` |
-| NFR-001 | fake 初始化 < 1ms | benchmark 验证 |
-| SPEC §13 | Edge Case: values 为 nil | 所有 Get 返回 nil |
+| 需求     | 描述                     | AC                                              |
+| -------- | ------------------------ | ----------------------------------------------- |
+| FR-001   | FakeConfig 内存配置源    | AC-001: Set 后 Get 返回注入值                   |
+| BR-001   | 接口编译期检查           | `var _ configx.Reader = (*FakeConfigImpl)(nil)` |
+| NFR-001  | fake 初始化 < 1ms        | benchmark 验证                                  |
+| SPEC §13 | Edge Case: values 为 nil | 所有 Get 返回 nil                               |
 
 ---
 
@@ -91,16 +91,16 @@ go build ./...
 
 **测试用例**：
 
-| 用例 | 描述 | 验证点 |
-|------|------|--------|
-| TestFakeConfig_BasicGetSet | Set 后 Get 返回正确值 | `Get("symbol")` 返回 "BTCUSDT" |
-| TestFakeConfig_GetString | GetString 类型转换 | GetString 返回 string，非 string 返回 "" |
-| TestFakeConfig_GetInt | GetInt 类型转换 | GetInt 返回 int，非 int 返回 0 |
-| TestFakeConfig_GetBool | GetBool 类型转换 | GetBool 返回 bool，非 bool 返回 false |
-| TestFakeConfig_MissingKey | 未设置的 key | Get/Methods 返回零值，不 panic |
-| TestFakeConfig_NilValues | values 为 nil | 所有 Get 返回 nil |
-| TestFakeConfig_Concurrent | 并发读写 | `-race` 通过 |
-| TestFakeConfig_InterfaceCheck | 接口实现 | 编译期已检查，测试确认所有方法可用 |
+| 用例                          | 描述                  | 验证点                                   |
+| ----------------------------- | --------------------- | ---------------------------------------- |
+| TestFakeConfig_BasicGetSet    | Set 后 Get 返回正确值 | `Get("symbol")` 返回 "BTCUSDT"           |
+| TestFakeConfig_GetString      | GetString 类型转换    | GetString 返回 string，非 string 返回 "" |
+| TestFakeConfig_GetInt         | GetInt 类型转换       | GetInt 返回 int，非 int 返回 0           |
+| TestFakeConfig_GetBool        | GetBool 类型转换      | GetBool 返回 bool，非 bool 返回 false    |
+| TestFakeConfig_MissingKey     | 未设置的 key          | Get/Methods 返回零值，不 panic           |
+| TestFakeConfig_NilValues      | values 为 nil         | 所有 Get 返回 nil                        |
+| TestFakeConfig_Concurrent     | 并发读写              | `-race` 通过                             |
+| TestFakeConfig_InterfaceCheck | 接口实现              | 编译期已检查，测试确认所有方法可用       |
 
 ---
 
@@ -117,9 +117,9 @@ go test -run TestFakeConfig -race -count=1 -v ./...
 
 ## 6. 风险与回滚
 
-| 风险 | 概率 | 影响 | 缓解 | 回滚 |
-|------|------|------|------|------|
-| configx.Reader 接口方法签名不确定 | Medium | High | 先读 configx 模块接口定义 | 修正方法签名 |
-| 并发 data race | Low | High | RWMutex 保护 + `-race` CI | 加锁粒度调整 |
+| 风险                              | 概率   | 影响   | 缓解                      | 回滚         |
+| --------------------------------- | ------ | ------ | ------------------------- | ------------ |
+| configx.Reader 接口方法签名不确定 | Medium | High   | 先读 configx 模块接口定义 | 修正方法签名 |
+| 并发 data race                    | Low    | High   | RWMutex 保护 + `-race` CI | 加锁粒度调整 |
 
 **回滚路径**：本 task 仅新增文件，回滚 = `rm fake_config.go fake_config_test.go`。

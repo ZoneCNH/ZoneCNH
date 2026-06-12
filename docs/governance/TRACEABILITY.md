@@ -10,23 +10,23 @@ Last-Updated: 2026-06-09
 
 追溯矩阵用于确保每个模块的需求、验收标准、测试用例、任务和实现证据可以闭环追踪。
 
-| 目标 | 说明 |
-|------|------|
-| 防漏功能 | 每个 `FR-*` 必须能追到至少一个验收标准和测试用例 |
-| 防漏业务规则 | 每个 `BR-*` 必须能追到验证方式或明确的门禁检查 |
-| 防伪完成 | Task 完成后必须回填矩阵状态，不能只改实现 |
-| 支撑评分 | Matrix 阶段和 Code 阶段评分以模块矩阵作为证据源 |
+| 目标         | 说明                                             |
+| ------------ | ------------------------------------------------ |
+| 防漏功能     | 每个 `FR-*` 必须能追到至少一个验收标准和测试用例 |
+| 防漏业务规则 | 每个 `BR-*` 必须能追到验证方式或明确的门禁检查   |
+| 防伪完成     | Task 完成后必须回填矩阵状态，不能只改实现        |
+| 支撑评分     | Matrix 阶段和 Code 阶段评分以模块矩阵作为证据源  |
 
 ---
 
 ## 2. 存放位置
 
-| 制品 | 路径 | 职责 |
-|------|------|------|
-| 追溯矩阵规范 | `docs/governance/TRACEABILITY.md` | 定义结构、字段、状态和校验命令 |
-| 模块追溯矩阵 | `module/{module}/TRACEABILITY.md` | 记录该模块的具体 `FR/BR -> AC -> TC -> Task -> Status` |
-| 评分规则 | `docs/governance/scoring/RUBRIC-matrix.md` | 对矩阵结构完整性打分 |
-| 仲裁协议 | `docs/governance/scoring/ARBITER-PROTOCOL.md` | 聚合四源评分并决定 gate |
+| 制品         | 路径                                          | 职责                                                   |
+| ------------ | --------------------------------------------- | ------------------------------------------------------ |
+| 追溯矩阵规范 | `docs/governance/TRACEABILITY.md`             | 定义结构、字段、状态和校验命令                         |
+| 模块追溯矩阵 | `module/{module}/TRACEABILITY.md`             | 记录该模块的具体 `FR/BR -> AC -> TC -> Task -> Status` |
+| 评分规则     | `docs/governance/scoring/RUBRIC-matrix.md`    | 对矩阵结构完整性打分                                   |
+| 仲裁协议     | `docs/governance/scoring/ARBITER-PROTOCOL.md` | 聚合四源评分并决定 gate                                |
 
 `docs/governance/TRACEABILITY.md` 不保存具体模块行；新增模块必须创建自己的 `module/{module}/TRACEABILITY.md`。
 
@@ -36,23 +36,23 @@ Last-Updated: 2026-06-09
 
 推荐所有模块使用以下最小列集。已有模块可以增加 `Evidence`、`Owner`、`Source` 等列，但不得删除核心列。
 
-| Requirement | Description | Acceptance Criteria | Test Case | Task | Status |
-|-------------|-------------|---------------------|-----------|------|--------|
-| FR-001 | 用户可观察的功能需求 | AC-001 | TC-001 | TASK-001 | Pending |
-| BR-001 | 业务约束或工程规则 | AC-010 | CI Gate / TC-010 | TASK-002 | Pending |
+| Requirement   | Description          | Acceptance Criteria   | Test Case        | Task     | Status   |
+| ------------- | -------------------- | --------------------- | ---------------- | -------- | -------- |
+| FR-001        | 用户可观察的功能需求 | AC-001                | TC-001           | TASK-001 | Pending  |
+| BR-001        | 业务约束或工程规则   | AC-010                | CI Gate / TC-010 | TASK-002 | Pending  |
 
 ---
 
 ## 4. 字段规则
 
-| 字段 | 要求 |
-|------|------|
-| `Requirement` | 使用 `FR-###` 或 `BR-###`；编号必须与 `SPEC.md` 或模块级参考文件一致 |
-| `Description` | 简短描述需求含义，避免复制整段 spec |
-| `Acceptance Criteria` | `FR-*` 不得为空；优先引用 `AC-###` |
-| `Test Case` | `FR-*` 和 `BR-*` 均应引用 `TC-###`、CI Gate、lint/race/import check 等可验证机制 |
-| `Task` | 已拆分任务后填写 `TASK-###`；拆分前可暂填 `-` |
-| `Status` | 推荐使用 `Pending`、`In Progress`、`Done`、`Failed`、`Deferred`；兼容历史状态 `⬜`、`🔵`、`✅`、`❌`、`⏭️` |
+| 字段                  | 要求                                                                                                   |
+| --------------------- | ------------------------------------------------------------------------------------------------------ |
+| `Requirement`         | 使用 `FR-###` 或 `BR-###`；编号必须与 `SPEC.md` 或模块级参考文件一致                                   |
+| `Description`         | 简短描述需求含义，避免复制整段 spec                                                                    |
+| `Acceptance Criteria` | `FR-*` 不得为空；优先引用 `AC-###`                                                                     |
+| `Test Case`           | `FR-*` 和 `BR-*` 均应引用 `TC-###`、CI Gate、lint/race/import check 等可验证机制                       |
+| `Task`                | 已拆分任务后填写 `TASK-###`；拆分前可暂填 `-`                                                          |
+| `Status`              | 推荐使用 `Pending`、`In Progress`、`Done`、`Failed`、`Deferred`；兼容历史状态 `⬜`、`🔵`、`✅`、`❌`、`⏭️` |
 
 ---
 
@@ -71,13 +71,13 @@ Last-Updated: 2026-06-09
 
 ## 6. 状态语义
 
-| 状态 | 含义 |
-|------|------|
-| `Pending` / `⬜` | 已登记，尚未开始实现或验证 |
-| `In Progress` / `🔵` | 任务正在实现或验证中 |
-| `Done` / `✅` | 实现、测试和证据已闭环 |
-| `Failed` / `❌` | 验证失败或需求被证伪 |
-| `Deferred` / `⏭️` | 明确延期，需记录原因和上游决策 |
+| 状态                | 含义                           |
+| ------------------- | ------------------------------ |
+| `Pending` / `⬜`     | 已登记，尚未开始实现或验证     |
+| `In Progress` / `🔵` | 任务正在实现或验证中           |
+| `Done` / `✅`        | 实现、测试和证据已闭环         |
+| `Failed` / `❌`      | 验证失败或需求被证伪           |
+| `Deferred` / `⏭️`   | 明确延期，需记录原因和上游决策 |
 
 ---
 

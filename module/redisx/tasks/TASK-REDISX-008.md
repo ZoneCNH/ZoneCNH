@@ -34,17 +34,17 @@ status: pending
 
 ## Requirements Covered
 
-| Requirement | Description | Acceptance Criteria |
-|---|---|---|
-| §16 | 集成测试 | 端到端测试通过 |
-| §17 | Performance Budget | Get/Set < 1ms |
+| Requirement | Description        | Acceptance Criteria |
+| ----------- | ------------------ | ------------------- |
+| §16         | 集成测试           | 端到端测试通过      |
+| §17         | Performance Budget | Get/Set < 1ms       |
 
 ## Test Plan
 
-| Test Case | Type | Description |
-|---|---|---|
-| — | Integration | 全部操作端到端 |
-| — | Benchmark | Get/Set 延迟 |
+| Test Case | Type        | Description    |
+| --------- | ----------- | -------------- |
+| —         | Integration | 全部操作端到端 |
+| —         | Benchmark   | Get/Set 延迟   |
 
 ## Implementation Notes
 
@@ -53,14 +53,14 @@ status: pending
 
 ## Implementation Plan
 
-| Step | Description | Deliverables | Verification |
-|---|---|---|---|
-| 1 | 实现集成测试 | `integration_test.go` | 全部通过 |
-| 2 | 实现 Benchmark | `benchmark_test.go` | < 1ms |
-| 3 | `-race` 全量测试 | — | 无 data race |
+| Step | Description      | Deliverables          | Verification |
+| ---- | ---------------- | --------------------- | ------------ |
+| 1    | 实现集成测试     | `integration_test.go` | 全部通过     |
+| 2    | 实现 Benchmark   | `benchmark_test.go`   | < 1ms        |
+| 3    | `-race` 全量测试 | —                     | 无 data race |
 
 ### Risk Assessment
 
-| Risk | Probability | Impact | Mitigation |
-|---|---|---|---|
-| Redis 实例依赖 | Medium | Low | 使用 miniredis mock |
+| Risk           | Probability | Impact | Mitigation          |
+| -------------- | ----------- | ------ | ------------------- |
+| Redis 实例依赖 | Medium      | Low    | 使用 miniredis mock |

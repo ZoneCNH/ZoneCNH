@@ -21,9 +21,9 @@
 
 ### 1.1 变更历史
 
-| 日期 | 版本 | 变更内容 | 作者 |
-|------|------|----------|------|
-| 2026-06-07 | v1.0.0 | 初始版本 | ZoneCNH |
+| 日期       | 版本   | 变更内容   | 作者    |
+| ---------- | ------ | ---------- | ------- |
+| 2026-06-07 | v1.0.0 | 初始版本   | ZoneCNH |
 
 ## 2. Summary
 
@@ -67,13 +67,13 @@
 
 ## 6. Consumers
 
-| 消费者 | 使用方式 |
-|--------|----------|
-| `schedulex` | 通过 `Locker` 实现分布式任务锁 |
-| `market-data` | 缓存最新行情快照 |
-| `signal-engine` | 缓存因子计算中间结果 |
-| `risk-engine` | 存储风控状态和阈值 |
-| 业务域模块 | 通过 `Client` 接口进行 KV/Hash/List/PubSub 操作 |
+| 消费者          | 使用方式                                        |
+| --------------- | ----------------------------------------------- |
+| `schedulex`     | 通过 `Locker` 实现分布式任务锁                  |
+| `market-data`   | 缓存最新行情快照                                |
+| `signal-engine` | 缓存因子计算中间结果                            |
+| `risk-engine`   | 存储风控状态和阈值                              |
+| 业务域模块      | 通过 `Client` 接口进行 KV/Hash/List/PubSub 操作 |
 
 ---
 
@@ -197,17 +197,17 @@ THEN 返回 HealthStatus{Ready: false, Live: false, Message: "..."}
 
 ## 8. Business Rules
 
-| 编号 | 规则 |
-|------|------|
-| BR-001 | 连接池大小通过配置控制，默认 10 |
-| BR-002 | 序列化/反序列化使用可配置 codec，默认 JSON |
+| 编号   | 规则                                               |
+| ------ | -------------------------------------------------- |
+| BR-001 | 连接池大小通过配置控制，默认 10                    |
+| BR-002 | 序列化/反序列化使用可配置 codec，默认 JSON         |
 | BR-003 | 所有操作必须接受 `context.Context`，支持超时和取消 |
-| BR-004 | 分布式锁必须使用唯一持有者标识（防止误释放） |
-| BR-005 | 分布式锁必须设置 TTL，防止持有者崩溃导致死锁 |
-| BR-006 | Pipeline 原子性：单次网络往返发送所有命令 |
-| BR-007 | Health() 必须是幂等的、无副作用的 |
-| BR-008 | 连接断开时自动重连，重连策略可配置 |
-| BR-009 | 错误消息不包含 key 的实际值（防泄露敏感数据） |
+| BR-004 | 分布式锁必须使用唯一持有者标识（防止误释放）       |
+| BR-005 | 分布式锁必须设置 TTL，防止持有者崩溃导致死锁       |
+| BR-006 | Pipeline 原子性：单次网络往返发送所有命令          |
+| BR-007 | Health() 必须是幂等的、无副作用的                  |
+| BR-008 | 连接断开时自动重连，重连策略可配置                 |
+| BR-009 | 错误消息不包含 key 的实际值（防泄露敏感数据）      |
 
 ---
 
@@ -360,15 +360,15 @@ redisx:
 
 ## 12. Error Handling
 
-| 错误 | 调用方处理 |
-|------|-----------|
-| `ErrConnectionFailed` | 检查 Redis 地址和网络，确认 Redis 服务运行中 |
-| `redis.Nil` | key 不存在，不是错误，调用方应处理空值 |
-| `ErrLockNotHeld` | 确认是否已 Acquire，或锁已过期 |
-| `ErrLockAcquireFailed` | 锁被其他持有者持有，稍后重试或跳过 |
-| `ErrPipelineEmpty` | Pipeline 无命令，检查调用逻辑 |
-| `ErrSubscribeFailed` | 检查 subject 和连接状态 |
-| 序列化错误 | 检查 value 类型是否与 codec 兼容 |
+| 错误                   | 调用方处理                                   |
+| ---------------------- | -------------------------------------------- |
+| `ErrConnectionFailed`  | 检查 Redis 地址和网络，确认 Redis 服务运行中 |
+| `redis.Nil`            | key 不存在，不是错误，调用方应处理空值       |
+| `ErrLockNotHeld`       | 确认是否已 Acquire，或锁已过期               |
+| `ErrLockAcquireFailed` | 锁被其他持有者持有，稍后重试或跳过           |
+| `ErrPipelineEmpty`     | Pipeline 无命令，检查调用逻辑                |
+| `ErrSubscribeFailed`   | 检查 subject 和连接状态                      |
+| 序列化错误             | 检查 value 类型是否与 codec 兼容             |
 
 **错误消息格式：** `"redisx: <operation>: <detail>"`
 **错误包装：** 使用 `%w` 保留底层错误链
@@ -377,18 +377,18 @@ redisx:
 
 ## 13. Edge Cases
 
-| 场景 | 预期行为 |
-|------|----------|
-| Redis 不可达时调用 Get/Set | 返回 ErrConnectionFailed |
-| 连接池耗尽 | 等待直到有空闲连接或超时 |
-| Subscribe 期间连接断开 | 自动重连，重连失败发送错误到 channel |
-| Pipeline.Exec 时连接断开 | 返回错误，已入队命令丢失 |
-| Acquire 后进程崩溃 | TTL 到期后锁自动释放 |
-| Release 非自己持有的锁 | 返回 ErrLockNotHeld，不释放 |
-| Set value 为 nil | 返回序列化错误 |
-| LRange start > stop | 返回空切片 |
-| Del 空 keys 列表 | 返回 nil |
-| 并发调用 Close | 幂等，第二次调用无副作用 |
+| 场景                       | 预期行为                             |
+| -------------------------- | ------------------------------------ |
+| Redis 不可达时调用 Get/Set | 返回 ErrConnectionFailed             |
+| 连接池耗尽                 | 等待直到有空闲连接或超时             |
+| Subscribe 期间连接断开     | 自动重连，重连失败发送错误到 channel |
+| Pipeline.Exec 时连接断开   | 返回错误，已入队命令丢失             |
+| Acquire 后进程崩溃         | TTL 到期后锁自动释放                 |
+| Release 非自己持有的锁     | 返回 ErrLockNotHeld，不释放          |
+| Set value 为 nil           | 返回序列化错误                       |
+| LRange start > stop        | 返回空切片                           |
+| Del 空 keys 列表           | 返回 nil                             |
+| 并发调用 Close             | 幂等，第二次调用无副作用             |
 
 ---
 
@@ -434,12 +434,12 @@ go 1.23
 
 ### 15.2 依赖方向
 
-| 可以依赖 | 禁止依赖 |
-|----------|----------|
-| stdlib | configx |
-| kernel（L0 原语） | 所有业务域实现 |
+| 可以依赖                   | 禁止依赖             |
+| -------------------------- | -------------------- |
+| stdlib                     | configx              |
+| kernel（L0 原语）          | 所有业务域实现       |
 | observex（interface-only） | 所有 L2.5 领域共享层 |
-| redis 客户端库（go-redis） | |
+| redis 客户端库（go-redis） |                      |
 
 ---
 
@@ -447,22 +447,22 @@ go 1.23
 
 ### 16.1 单元测试
 
-| 测试场景 | 验证点 |
-|----------|--------|
-| Get 存在的 key | 返回正确值 |
-| Get 不存在的 key | 返回 redis.Nil |
-| Set 带 TTL | 正确设置值和过期时间 |
-| Set 不带 TTL | 正确设置值，无过期 |
-| Del 存在的 key | 删除成功 |
-| Del 不存在的 key | 幂等，无错误 |
-| HGet/HSet | Hash 字段读写正确 |
-| LPush/LRange | List 操作正确 |
-| Pipeline 批量操作 | 所有命令正确执行 |
-| 分布式锁 Acquire/Release | 获取和释放正确 |
-| 分布式锁防误释放 | 非持有者 Release 返回错误 |
-| 健康检查 | PING 成功/失败正确反映 |
-| Codec 序列化/反序列化 | JSON / msgpack 正确 |
-| 并发安全 | -race 测试通过 |
+| 测试场景                 | 验证点                    |
+| ------------------------ | ------------------------- |
+| Get 存在的 key           | 返回正确值                |
+| Get 不存在的 key         | 返回 redis.Nil            |
+| Set 带 TTL               | 正确设置值和过期时间      |
+| Set 不带 TTL             | 正确设置值，无过期        |
+| Del 存在的 key           | 删除成功                  |
+| Del 不存在的 key         | 幂等，无错误              |
+| HGet/HSet                | Hash 字段读写正确         |
+| LPush/LRange             | List 操作正确             |
+| Pipeline 批量操作        | 所有命令正确执行          |
+| 分布式锁 Acquire/Release | 获取和释放正确            |
+| 分布式锁防误释放         | 非持有者 Release 返回错误 |
+| 健康检查                 | PING 成功/失败正确反映    |
+| Codec 序列化/反序列化    | JSON / msgpack 正确       |
+| 并发安全                 | -race 测试通过            |
 
 ### 16.2 Given/When/Then 用例
 
@@ -513,64 +513,64 @@ Then 返回 healthy；连接失败时返回 unhealthy
 
 ### 16.3 Benchmark
 
-| 场景 | 目标 |
-|------|------|
-| 单次 Get/Set（本地 Redis） | < 1ms |
-| Pipeline 100 命令 | < 5ms |
-| 分布式锁 Acquire/Release | < 2ms |
+| 场景                        | 目标   |
+| --------------------------- | ------ |
+| 单次 Get/Set（本地 Redis）  | < 1ms  |
+| Pipeline 100 命令           | < 5ms  |
+| 分布式锁 Acquire/Release    | < 2ms  |
 | 序列化/反序列化（1KB JSON） | < 10μs |
 
 ### 16.4 集成测试
 
-| 场景 | 验证点 |
-|------|--------|
-| 完整 KV 操作链 | Set → Get → Del → Exists |
-| Pub/Sub 消息投递 | Subscribe → Publish → 收到消息 |
-| Pipeline 批量操作 | 100 命令正确执行 |
-| 分布式锁过期 | TTL 到期后锁自动释放 |
-| 连接断开恢复 | 断开后自动重连 |
+| 场景              | 验证点                         |
+| ----------------- | ------------------------------ |
+| 完整 KV 操作链    | Set → Get → Del → Exists       |
+| Pub/Sub 消息投递  | Subscribe → Publish → 收到消息 |
+| Pipeline 批量操作 | 100 命令正确执行               |
+| 分布式锁过期      | TTL 到期后锁自动释放           |
+| 连接断开恢复      | 断开后自动重连                 |
 
 ---
 
 ## 17. Performance Budget
 
-| 操作 | 目标 | 测量方式 |
-|------|------|----------|
-| 单次 Get/Set（本地 Redis） | < 1ms | benchmark test |
-| Pipeline 100 命令 | < 5ms | benchmark test |
-| 分布式锁 Acquire/Release | < 2ms | benchmark test |
-| 常驻内存 | < 5MB | profiling |
-| 连接池空闲连接 | ≤ pool_size | 配置约束 |
+| 操作                       | 目标        | 测量方式       |
+| -------------------------- | ----------- | -------------- |
+| 单次 Get/Set（本地 Redis） | < 1ms       | benchmark test |
+| Pipeline 100 命令          | < 5ms       | benchmark test |
+| 分布式锁 Acquire/Release   | < 2ms       | benchmark test |
+| 常驻内存                   | < 5MB       | profiling      |
+| 连接池空闲连接             | ≤ pool_size | 配置约束       |
 
 ---
 
 ## 18. Observability
 
-| 类型 | 名称 | 说明 |
-|------|------|------|
-| metric | `redisx.command.duration` | histogram，命令耗时 |
-| metric | `redisx.command.errors` | counter，命令失败次数 |
-| metric | `redisx.pool.size` | gauge，连接池大小 |
-| metric | `redisx.pool.idle` | gauge，空闲连接数 |
-| metric | `redisx.pipeline.commands` | histogram，Pipeline 命令数 |
-| metric | `redisx.lock.acquire.count` | counter，锁获取次数 |
-| metric | `redisx.lock.acquire.failed` | counter，锁获取失败次数 |
-| log | `redisx.connected` | info，连接成功 |
-| log | `redisx.disconnected` | warn，连接断开 |
-| log | `redisx.reconnecting` | info，正在重连 |
-| log | `redisx.lock.acquired` | debug，获取锁成功 |
-| log | `redisx.lock.released` | debug，释放锁成功 |
+| 类型   | 名称                         | 说明                       |
+| ------ | ---------------------------- | -------------------------- |
+| metric | `redisx.command.duration`    | histogram，命令耗时        |
+| metric | `redisx.command.errors`      | counter，命令失败次数      |
+| metric | `redisx.pool.size`           | gauge，连接池大小          |
+| metric | `redisx.pool.idle`           | gauge，空闲连接数          |
+| metric | `redisx.pipeline.commands`   | histogram，Pipeline 命令数 |
+| metric | `redisx.lock.acquire.count`  | counter，锁获取次数        |
+| metric | `redisx.lock.acquire.failed` | counter，锁获取失败次数    |
+| log    | `redisx.connected`           | info，连接成功             |
+| log    | `redisx.disconnected`        | warn，连接断开             |
+| log    | `redisx.reconnecting`        | info，正在重连             |
+| log    | `redisx.lock.acquired`       | debug，获取锁成功          |
+| log    | `redisx.lock.released`       | debug，释放锁成功          |
 
 ---
 
 ## 19. Security
 
-| 要求 | 实现方式 |
-|------|----------|
-| 密码不硬编码 | 通过环境变量或 secret manager 注入 |
-| 密码不写日志 | 日志中对密码字段脱敏 |
-| 错误消息不泄露 key 值 | 错误消息只包含 key 名，不包含实际值 |
-| 锁释放校验 | 只有持有者才能释放锁（Lua 脚本原子校验） |
+| 要求                  | 实现方式                                 |
+| --------------------- | ---------------------------------------- |
+| 密码不硬编码          | 通过环境变量或 secret manager 注入       |
+| 密码不写日志          | 日志中对密码字段脱敏                     |
+| 错误消息不泄露 key 值 | 错误消息只包含 key 名，不包含实际值      |
+| 锁释放校验            | 只有持有者才能释放锁（Lua 脚本原子校验） |
 
 ---
 
@@ -578,35 +578,35 @@ Then 返回 healthy；连接失败时返回 unhealthy
 
 ### 20.1 通用 Gate
 
-| Gate | 命令 | 阻塞条件 |
-|------|------|----------|
-| 编译 | `go build ./...` | 编译失败 |
-| 测试 | `go test ./... -race -count=1` | 任何测试失败或 data race |
-| 覆盖率 | `mkdir -p .coverage && go test ./... -coverprofile=.coverage/cover.out && go tool cover -func=.coverage/cover.out` | 总覆盖率 < 80% |
-| vet | `go vet ./...` | 任何 vet 错误 |
-| lint | `golangci-lint run` | 任何 lint 错误 |
-| 依赖检查 | `go mod tidy && git diff --exit-code go.mod go.sum` | go.mod 不整洁 |
-| Secret 扫描 | `gitleaks detect --no-git` | 泄露 secret |
-| Benchmark | `go test -bench=. -benchmem -count=3 ./...` | 结果附在 PR comment |
+| Gate        | 命令                                                                                                               | 阻塞条件                 |
+| ----------- | ------------------------------------------------------------------------------------------------------------------ | ------------------------ |
+| 编译        | `go build ./...`                                                                                                   | 编译失败                 |
+| 测试        | `go test ./... -race -count=1`                                                                                     | 任何测试失败或 data race |
+| 覆盖率      | `mkdir -p .coverage && go test ./... -coverprofile=.coverage/cover.out && go tool cover -func=.coverage/cover.out` | 总覆盖率 < 80%           |
+| vet         | `go vet ./...`                                                                                                     | 任何 vet 错误            |
+| lint        | `golangci-lint run`                                                                                                | 任何 lint 错误           |
+| 依赖检查    | `go mod tidy && git diff --exit-code go.mod go.sum`                                                                | go.mod 不整洁            |
+| Secret 扫描 | `gitleaks detect --no-git`                                                                                         | 泄露 secret              |
+| Benchmark   | `go test -bench=. -benchmem -count=3 ./...`                                                                        | 结果附在 PR comment      |
 
 ### 20.2 redisx 专属 Gate
 
-| Gate | 命令 | 阻塞条件 |
-|------|------|----------|
+| Gate     | 命令                              | 阻塞条件                    |
+| -------- | --------------------------------- | --------------------------- |
 | 集成测试 | `go test -tags=integration ./...` | Redis 不可达时 skip，不阻塞 |
 
 ---
 
 ## 21. Upgrade Compatibility
 
-| 变更类型 | 版本升级 |
-|----------|----------|
-| Client 接口新增方法 | **minor**（实现需跟上） |
-| Client 接口删除/修改方法 | **major** |
-| Pipeline 接口变更 | **major** |
-| Locker 接口变更 | **major** |
-| Option 新增字段 | minor（带默认值） |
-| 默认 codec 变更 | **minor**（注意序列化兼容性） |
+| 变更类型                 | 版本升级                      |
+| ------------------------ | ----------------------------- |
+| Client 接口新增方法      | **minor**（实现需跟上）       |
+| Client 接口删除/修改方法 | **major**                     |
+| Pipeline 接口变更        | **major**                     |
+| Locker 接口变更          | **major**                     |
+| Option 新增字段          | minor（带默认值）             |
+| 默认 codec 变更          | **minor**（注意序列化兼容性） |
 
 ---
 

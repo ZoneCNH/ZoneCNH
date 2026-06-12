@@ -29,16 +29,16 @@ status: pending
 
 ## Requirements Covered
 
-| Requirement | Description | Acceptance Criteria |
-|---|---|---|
-| FR-006 | Breaking Change 检测 | 签名变更/字段删除检测 |
+| Requirement | Description          | Acceptance Criteria   |
+| ----------- | -------------------- | --------------------- |
+| FR-006      | Breaking Change 检测 | 签名变更/字段删除检测 |
 
 ## Test Plan
 
-| Test Case | Type | Description |
-|---|---|---|
-| — | Unit | 方法签名变更被检测 |
-| — | Unit | 字段删除被检测 |
+| Test Case | Type | Description        |
+| --------- | ---- | ------------------ |
+| —         | Unit | 方法签名变更被检测 |
+| —         | Unit | 字段删除被检测     |
 
 ## Implementation Notes
 
@@ -47,13 +47,13 @@ status: pending
 
 ## Implementation Plan
 
-| Step | Description | Deliverables | Verification |
-|---|---|---|---|
-| 1 | 实现接口比较逻辑 | `compat.go` | `go build ./...` 通过 |
-| 2 | 编写测试 | `compat_test.go` | 全部测试通过 |
+| Step | Description      | Deliverables     | Verification          |
+| ---- | ---------------- | ---------------- | --------------------- |
+| 1    | 实现接口比较逻辑 | `compat.go`      | `go build ./...` 通过 |
+| 2    | 编写测试         | `compat_test.go` | 全部测试通过          |
 
 ### Risk Assessment
 
-| Risk | Probability | Impact | Mitigation |
-|---|---|---|---|
-| AST 比较复杂 | Medium | Medium | 简化为方法列表比较 |
+| Risk         | Probability | Impact | Mitigation         |
+| ------------ | ----------- | ------ | ------------------ |
+| AST 比较复杂 | Medium      | Medium | 简化为方法列表比较 |

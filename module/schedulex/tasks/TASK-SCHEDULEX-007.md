@@ -29,17 +29,17 @@ status: pending
 
 ## Requirements Covered
 
-| Requirement | Description | Acceptance Criteria |
-|---|---|---|
-| FR-008 | Locker：分布式锁 + TTL 校验 | 3 个 WHEN/THEN 场景 |
+| Requirement | Description                 | Acceptance Criteria |
+| ----------- | --------------------------- | ------------------- |
+| FR-008      | Locker：分布式锁 + TTL 校验 | 3 个 WHEN/THEN 场景 |
 
 ## Test Plan
 
-| Test Case | Type | Description |
-|---|---|---|
-| TC-004 | Unit | 锁获取成功：执行 job |
-| TC-004 | Unit | 锁获取失败：跳过 |
-| TC-004 | Unit | TTL 过短：配置错误 |
+| Test Case | Type | Description          |
+| --------- | ---- | -------------------- |
+| TC-004    | Unit | 锁获取成功：执行 job |
+| TC-004    | Unit | 锁获取失败：跳过     |
+| TC-004    | Unit | TTL 过短：配置错误   |
 
 ## Implementation Notes
 
@@ -49,14 +49,14 @@ status: pending
 
 ## Implementation Plan
 
-| Step | Description | Deliverables | Verification |
-|---|---|---|---|
-| 1 | 实现 `NoopLocker`：始终成功 | `locker_impl.go` | `go build ./...` 通过 |
-| 2 | 集成到 scheduler：job 执行前获取锁 | `scheduler_impl.go` | §7.8-1, §7.8-2 通过 |
-| 3 | 实现 TTL 校验 | `locker_impl.go` | §7.8-3 通过 |
+| Step | Description                        | Deliverables        | Verification          |
+| ---- | ---------------------------------- | ------------------- | --------------------- |
+| 1    | 实现 `NoopLocker`：始终成功        | `locker_impl.go`    | `go build ./...` 通过 |
+| 2    | 集成到 scheduler：job 执行前获取锁 | `scheduler_impl.go` | §7.8-1, §7.8-2 通过   |
+| 3    | 实现 TTL 校验                      | `locker_impl.go`    | §7.8-3 通过           |
 
 ### Risk Assessment
 
-| Risk | Probability | Impact | Mitigation |
-|---|---|---|---|
-| Redis 锁实现引入外部依赖 | Medium | Medium | 接口抽象，NoopLocker 默认 |
+| Risk                     | Probability | Impact | Mitigation                |
+| ------------------------ | ----------- | ------ | ------------------------- |
+| Redis 锁实现引入外部依赖 | Medium      | Medium | 接口抽象，NoopLocker 默认 |

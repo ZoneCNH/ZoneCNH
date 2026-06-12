@@ -31,22 +31,22 @@ status: pending
 
 ## Requirements Covered
 
-| Requirement | Description | Acceptance Criteria |
-|---|---|---|
-| FR-004 | Get：存在→值，不存在→nil，并发安全 | 3 个 WHEN/THEN 场景 |
-| BR-005 | Reader 接口只能读，不能写 | 只暴露读方法 |
+| Requirement | Description                        | Acceptance Criteria |
+| ----------- | ---------------------------------- | ------------------- |
+| FR-004      | Get：存在→值，不存在→nil，并发安全 | 3 个 WHEN/THEN 场景 |
+| BR-005      | Reader 接口只能读，不能写          | 只暴露读方法        |
 
 ## Test Plan
 
-| Test Case | Type | Description |
-|---|---|---|
-| TC-003 | Unit | 并发安全：100 goroutine 并发 Get 无 data race（-race 通过） |
-| TC-005 | Unit | Reader 只读：不能通过 Reader 修改底层配置 |
-| — | Unit | Get 存在 key：返回正确值 |
-| — | Unit | Get 不存在 key：返回 nil |
-| — | Unit | 类型方法转换正确（GetString/GetInt/GetFloat/GetBool/GetDuration） |
-| — | Benchmark | Load 1000 key < 50ms |
-| — | Benchmark | Get 单次 < 100ns |
+| Test Case | Type      | Description                                                       |
+| --------- | --------- | ----------------------------------------------------------------- |
+| TC-003    | Unit      | 并发安全：100 goroutine 并发 Get 无 data race（-race 通过）       |
+| TC-005    | Unit      | Reader 只读：不能通过 Reader 修改底层配置                         |
+| —         | Unit      | Get 存在 key：返回正确值                                          |
+| —         | Unit      | Get 不存在 key：返回 nil                                          |
+| —         | Unit      | 类型方法转换正确（GetString/GetInt/GetFloat/GetBool/GetDuration） |
+| —         | Benchmark | Load 1000 key < 50ms                                              |
+| —         | Benchmark | Get 单次 < 100ns                                                  |
 
 ## Non-scope
 
@@ -63,16 +63,16 @@ status: pending
 
 ## Implementation Plan
 
-| Step | Description | Deliverables | Verification |
-|---|---|---|---|
-| 1 | 实现 `Get(key)` 方法：点分路径遍历嵌套 map | `reader.go` | `go test ./... -run TestGet` 通过 |
-| 2 | 实现类型方法：GetString、GetInt、GetFloat、GetBool、GetDuration、IsSet | `reader.go` | `go test ./... -run TestGetType` 通过 |
-| 3 | 添加 `sync.RWMutex` 保证并发安全 | `reader.go` | `go test -race ./...` 通过 |
-| 4 | 编写只读验证测试 | `reader_test.go` | TC-005 通过 |
+| Step | Description                                                            | Deliverables     | Verification                          |
+| ---- | ---------------------------------------------------------------------- | ---------------- | ------------------------------------- |
+| 1    | 实现 `Get(key)` 方法：点分路径遍历嵌套 map                             | `reader.go`      | `go test ./... -run TestGet` 通过     |
+| 2    | 实现类型方法：GetString、GetInt、GetFloat、GetBool、GetDuration、IsSet | `reader.go`      | `go test ./... -run TestGetType` 通过 |
+| 3    | 添加 `sync.RWMutex` 保证并发安全                                       | `reader.go`      | `go test -race ./...` 通过            |
+| 4    | 编写只读验证测试                                                       | `reader_test.go` | TC-005 通过                           |
 
 ### Risk Assessment
 
-| Risk | Probability | Impact | Mitigation |
-|---|---|---|---|
-| 点分路径遍历 panic | Medium | High | 逐层检查 nil，不存在返回 nil |
-| 类型断言 panic | Low | High | 使用 comma-ok 模式 |
+| Risk               | Probability | Impact | Mitigation                   |
+| ------------------ | ----------- | ------ | ---------------------------- |
+| 点分路径遍历 panic | Medium      | High   | 逐层检查 nil，不存在返回 nil |
+| 类型断言 panic     | Low         | High   | 使用 comma-ok 模式           |

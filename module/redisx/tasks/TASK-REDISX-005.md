@@ -27,15 +27,15 @@ status: pending
 
 ## Requirements Covered
 
-| Requirement | Description | Acceptance Criteria |
-|---|---|---|
-| FR-009 | Pipeline：批量命令 | 一次发送，顺序返回 |
+| Requirement | Description        | Acceptance Criteria |
+| ----------- | ------------------ | ------------------- |
+| FR-009      | Pipeline：批量命令 | 一次发送，顺序返回  |
 
 ## Test Plan
 
-| Test Case | Type | Description |
-|---|---|---|
-| — | Unit | Pipeline 批量 Set + 批量 Get |
+| Test Case | Type | Description                  |
+| --------- | ---- | ---------------------------- |
+| —         | Unit | Pipeline 批量 Set + 批量 Get |
 
 ## Implementation Notes
 
@@ -44,12 +44,12 @@ status: pending
 
 ## Implementation Plan
 
-| Step | Description | Deliverables | Verification |
-|---|---|---|---|
-| 1 | 实现 Pipeline 方法 | `pipeline_impl.go` | 测试通过 |
+| Step | Description        | Deliverables       | Verification |
+| ---- | ------------------ | ------------------ | ------------ |
+| 1    | 实现 Pipeline 方法 | `pipeline_impl.go` | 测试通过     |
 
 ### Risk Assessment
 
 | Risk | Probability | Impact | Mitigation |
-|---|---|---|---|
-| 无 | Low | Low | — |
+| ---- | ----------- | ------ | ---------- |
+| 无   | Low         | Low    | —          |

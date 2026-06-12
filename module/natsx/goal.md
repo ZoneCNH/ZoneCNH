@@ -1,13 +1,13 @@
 # natsx 发布版本 1.0 Goal 定位与实现标准
 
-| 字段 | 内容 |
-| --- | --- |
-| 模块名 | `natsx` |
-| 发布版本 | 1.0.0 |
-| 所属层级 | 消息扩展层 / NATS 轻量消息与服务通信 |
-| 稳定级别 | Public API Stable；SPI Stable；Internal 可演进 |
-| 文档状态 | 1.0 发布基线文档 |
-| 发布日期基准 | 2026-06-09 |
+| 字段         | 内容                                           |
+| ------------ | ---------------------------------------------- |
+| 模块名       | `natsx`                                        |
+| 发布版本     | 1.0.0                                          |
+| 所属层级     | 消息扩展层 / NATS 轻量消息与服务通信           |
+| 稳定级别     | Public API Stable；SPI Stable；Internal 可演进 |
+| 文档状态     | 1.0 发布基线文档                               |
+| 发布日期基准 | 2026-06-09                                     |
 
 ## 术语约定
 
@@ -57,24 +57,24 @@
 
 ## 3. 核心场景
 
-| 场景 | 说明 | 1.0 期望结果 |
-| --- | --- | --- |
-| 内部事件通知 | 设备状态变化通知多个内部组件 | 低延迟 publish/subscribe，订阅者快速收到 |
-| 请求响应 | 服务间轻量 RPC 式调用 | request 设置超时，response 带 trace context |
-| 持久事件 | 需要 JetStream 保留短期事件 | 消费 ack 后确认处理，失败重投递 |
-| 边缘通信 | 边缘节点与中心轻量事件同步 | 断线重连和缓冲策略可配置 |
+| 场景         | 说明                         | 1.0 期望结果                                |
+| ------------ | ---------------------------- | ------------------------------------------- |
+| 内部事件通知 | 设备状态变化通知多个内部组件 | 低延迟 publish/subscribe，订阅者快速收到    |
+| 请求响应     | 服务间轻量 RPC 式调用        | request 设置超时，response 带 trace context |
+| 持久事件     | 需要 JetStream 保留短期事件  | 消费 ack 后确认处理，失败重投递             |
+| 边缘通信     | 边缘节点与中心轻量事件同步   | 断线重连和缓冲策略可配置                    |
 
 ## 4. 能力范围
 
-| 能力域 | 1.0 必须具备的能力 | 验收方式 |
-| --- | --- | --- |
-| Subject 规范 | domain.resource.action.v1、通配符约束 | 命名检查测试通过 |
-| 发布订阅 | publish、subscribe、queue group、unsubscribe | 真实 NATS 集成测试通过 |
-| 请求响应 | request、reply、timeout、错误响应 | 超时测试通过 |
-| JetStream | stream、consumer、ack/nack、durable consumer | 持久消费测试通过 |
-| 序列化 | JSON/Binary/Proto SPI、schemaVersion | 兼容性测试通过 |
-| 重连治理 | 断线重连、连接状态事件、退避 | 故障测试通过 |
-| 观测 | 低延迟指标、错误、重投递、ack 耗时 | 观测测试通过 |
+| 能力域       | 1.0 必须具备的能力                           | 验收方式               |
+| ------------ | -------------------------------------------- | ---------------------- |
+| Subject 规范 | domain.resource.action.v1、通配符约束        | 命名检查测试通过       |
+| 发布订阅     | publish、subscribe、queue group、unsubscribe | 真实 NATS 集成测试通过 |
+| 请求响应     | request、reply、timeout、错误响应            | 超时测试通过           |
+| JetStream    | stream、consumer、ack/nack、durable consumer | 持久消费测试通过       |
+| 序列化       | JSON/Binary/Proto SPI、schemaVersion         | 兼容性测试通过         |
+| 重连治理     | 断线重连、连接状态事件、退避                 | 故障测试通过           |
+| 观测         | 低延迟指标、错误、重投递、ack 耗时           | 观测测试通过           |
 
 ## 5. 职责边界
 
@@ -94,23 +94,23 @@
 
 ## 6. 依赖关系与分层约束
 
-| 依赖类型 | 约束 |
-| --- | --- |
+| 依赖类型 | 约束                                                                                     |
+| -------- | ---------------------------------------------------------------------------------------- |
 | 上游依赖 | 依赖 kernel、configx、observex、resiliencx；MUST 向 contracts 登记事件契约和错误码契约。 |
-| 下游依赖 | 实时内部事件、轻量请求响应、边缘消息可使用 natsx。 |
-| 分层约束 | natsx 不依赖 kafkax；两者通过文档明确边界。 |
+| 下游依赖 | 实时内部事件、轻量请求响应、边缘消息可使用 natsx。                                       |
+| 分层约束 | natsx 不依赖 kafkax；两者通过文档明确边界。                                              |
 
 ## 7. 对外契约
 
 ### 7.1 公开能力面
 
-| 契约 | 定位 | 1.0 稳定承诺 |
-| --- | --- | --- |
-| NatsPubSubClient | 发布订阅接口 | publish/subscribe 语义稳定 |
-| NatsRequestClient | 请求响应接口 | timeout 和错误语义稳定 |
-| JetStreamClientX | 持久消息接口 | ack/nack/consumer 语义稳定 |
-| NatsMessageEnvelope | 消息信封 | 核心字段稳定 |
-| SubjectBuilder | subject 构造器 | 命名规则稳定 |
+| 契约                | 定位           | 1.0 稳定承诺               |
+| ------------------- | -------------- | -------------------------- |
+| NatsPubSubClient    | 发布订阅接口   | publish/subscribe 语义稳定 |
+| NatsRequestClient   | 请求响应接口   | timeout 和错误语义稳定     |
+| JetStreamClientX    | 持久消息接口   | ack/nack/consumer 语义稳定 |
+| NatsMessageEnvelope | 消息信封       | 核心字段稳定               |
+| SubjectBuilder      | subject 构造器 | 命名规则稳定               |
 
 ### 7.2 1.0 逻辑接口基线
 
@@ -146,15 +146,15 @@ SubjectBuilder
 
 ## 8. 配置契约
 
-| 配置项 | 含义 | 默认值 / 要求 | 稳定性 |
-| --- | --- | --- | --- |
-| foundationx.nats.enabled | 是否启用 natsx | false，由业务显式启用 | Stable |
-| foundationx.nats.servers | NATS server 列表 | 必须配置 | Stable |
-| foundationx.nats.client-name | 客户端名称 | 应用名 | Stable |
-| foundationx.nats.request.timeout | 请求响应默认超时 | 1s | Stable |
-| foundationx.nats.reconnect.max-attempts | 重连次数 | -1 表示持续重连，生产需明确 | Stable |
-| foundationx.nats.jetstream.enabled | 是否启用 JetStream | false | Stable |
-| foundationx.nats.serializer | 序列化器 | json | Stable |
+| 配置项                                  | 含义               | 默认值 / 要求               | 稳定性 |
+| --------------------------------------- | ------------------ | --------------------------- | ------ |
+| foundationx.nats.enabled                | 是否启用 natsx     | false，由业务显式启用       | Stable |
+| foundationx.nats.servers                | NATS server 列表   | 必须配置                    | Stable |
+| foundationx.nats.client-name            | 客户端名称         | 应用名                      | Stable |
+| foundationx.nats.request.timeout        | 请求响应默认超时   | 1s                          | Stable |
+| foundationx.nats.reconnect.max-attempts | 重连次数           | -1 表示持续重连，生产需明确 | Stable |
+| foundationx.nats.jetstream.enabled      | 是否启用 JetStream | false                       | Stable |
+| foundationx.nats.serializer             | 序列化器           | json                        | Stable |
 
 ## 9. 可观测契约
 
@@ -168,15 +168,15 @@ SubjectBuilder
 
 ### 9.2 指标
 
-| 指标名 | 类型 | 标签 | 说明 |
-| --- | --- | --- | --- |
-| foundationx_nats_publish_total | Counter | subject,status | 发布次数 |
-| foundationx_nats_publish_duration_ms | Timer | subject,status | 发布耗时 |
-| foundationx_nats_request_total | Counter | subject,status | 请求次数 |
-| foundationx_nats_request_duration_ms | Timer | subject,status | 请求耗时 |
-| foundationx_nats_consume_total | Counter | subject,consumer,status | 消费次数 |
-| foundationx_nats_redelivery_total | Counter | stream,consumer | 重投递次数 |
-| foundationx_nats_connection_state | Gauge | server,state | 连接状态 |
+| 指标名                               | 类型    | 标签                    | 说明       |
+| ------------------------------------ | ------- | ----------------------- | ---------- |
+| foundationx_nats_publish_total       | Counter | subject,status          | 发布次数   |
+| foundationx_nats_publish_duration_ms | Timer   | subject,status          | 发布耗时   |
+| foundationx_nats_request_total       | Counter | subject,status          | 请求次数   |
+| foundationx_nats_request_duration_ms | Timer   | subject,status          | 请求耗时   |
+| foundationx_nats_consume_total       | Counter | subject,consumer,status | 消费次数   |
+| foundationx_nats_redelivery_total    | Counter | stream,consumer         | 重投递次数 |
+| foundationx_nats_connection_state    | Gauge   | server,state            | 连接状态   |
 
 ### 9.3 Trace / 诊断事件
 
@@ -188,13 +188,13 @@ SubjectBuilder
 
 ## 10. 错误模型与失败策略
 
-| 错误类别 | 典型原因 | 1.0 处理策略 |
-| --- | --- | --- |
-| NATS_CONNECTION_FAILED | server 不可达、认证失败 | 按重连策略处理并输出状态 |
-| NATS_REQUEST_TIMEOUT | 请求响应超时 | 返回超时错误，不无限等待 |
-| NATS_PUBLISH_FAILED | 发布失败或 JetStream ack 失败 | 按策略重试或返回失败 |
-| NATS_DESERIALIZATION_FAILED | 消息解码失败 | JetStream 场景可 nack 或 term |
-| NATS_ACK_FAILED | ack/nack/term 失败 | 记录错误并按消费语义处理 |
+| 错误类别                    | 典型原因                      | 1.0 处理策略                  |
+| --------------------------- | ----------------------------- | ----------------------------- |
+| NATS_CONNECTION_FAILED      | server 不可达、认证失败       | 按重连策略处理并输出状态      |
+| NATS_REQUEST_TIMEOUT        | 请求响应超时                  | 返回超时错误，不无限等待      |
+| NATS_PUBLISH_FAILED         | 发布失败或 JetStream ack 失败 | 按策略重试或返回失败          |
+| NATS_DESERIALIZATION_FAILED | 消息解码失败                  | JetStream 场景可 nack 或 term |
+| NATS_ACK_FAILED             | ack/nack/term 失败            | 记录错误并按消费语义处理      |
 
 ## 11. 安全、稳定性与兼容性要求
 
@@ -208,13 +208,13 @@ SubjectBuilder
 
 ## 12. 测试证据要求
 
-| 测试类型 | 必须覆盖内容 | 发布门禁 |
-| --- | --- | --- |
-| 单元测试 | SubjectBuilder、Envelope、错误映射、序列化 | MUST 通过 |
-| 集成测试 | 真实 NATS pub/sub、request/reply、queue group | MUST 通过 |
-| JetStream 测试 | publish ack、consume ack/nack、redelivery | MUST 通过 |
-| 故障测试 | 断线重连、请求超时、解码失败 | MUST 通过 |
-| 观测测试 | 日志、指标、Trace Header | MUST 通过 |
+| 测试类型       | 必须覆盖内容                                  | 发布门禁  |
+| -------------- | --------------------------------------------- | --------- |
+| 单元测试       | SubjectBuilder、Envelope、错误映射、序列化    | MUST 通过 |
+| 集成测试       | 真实 NATS pub/sub、request/reply、queue group | MUST 通过 |
+| JetStream 测试 | publish ack、consume ack/nack、redelivery     | MUST 通过 |
+| 故障测试       | 断线重连、请求超时、解码失败                  | MUST 通过 |
+| 观测测试       | 日志、指标、Trace Header                      | MUST 通过 |
 
 ## 13. 1.0 发布验收清单
 

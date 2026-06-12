@@ -30,18 +30,18 @@ status: pending
 
 ## Requirements Covered
 
-| Requirement | Description | Acceptance Criteria |
-|---|---|---|
-| FR-007 | Eventually：轮询条件断言 | AC-007 |
-| BR-003 | 使用 testing.T 报告失败 | eventually_test.go |
+| Requirement | Description              | Acceptance Criteria |
+| ----------- | ------------------------ | ------------------- |
+| FR-007      | Eventually：轮询条件断言 | AC-007              |
+| BR-003      | 使用 testing.T 报告失败  | eventually_test.go  |
 
 ## Test Plan
 
-| Test Case | Type | Description |
-|---|---|---|
-| TC-007 | Unit | 条件立即满足：通过 |
-| TC-007 | Unit | 条件延迟满足：通过 |
-| TC-007 | Unit | 超时：fail + 清晰诊断 |
+| Test Case | Type | Description           |
+| --------- | ---- | --------------------- |
+| TC-007    | Unit | 条件立即满足：通过    |
+| TC-007    | Unit | 条件延迟满足：通过    |
+| TC-007    | Unit | 超时：fail + 清晰诊断 |
 
 ## Implementation Notes
 
@@ -51,13 +51,13 @@ status: pending
 
 ## Implementation Plan
 
-| Step | Description | Deliverables | Verification |
-|---|---|---|---|
-| 1 | 实现 `Eventually` 函数 | `eventually.go` | 全部测试通过 |
-| 2 | 实现 Option：WithTimeout/WithInterval | `eventually.go` | 配置生效 |
+| Step | Description                           | Deliverables    | Verification |
+| ---- | ------------------------------------- | --------------- | ------------ |
+| 1    | 实现 `Eventually` 函数                | `eventually.go` | 全部测试通过 |
+| 2    | 实现 Option：WithTimeout/WithInterval | `eventually.go` | 配置生效     |
 
 ### Risk Assessment
 
-| Risk | Probability | Impact | Mitigation |
-|---|---|---|---|
-| 测试不稳定 | Medium | Low | 合理默认 timeout |
+| Risk       | Probability | Impact | Mitigation       |
+| ---------- | ----------- | ------ | ---------------- |
+| 测试不稳定 | Medium      | Low    | 合理默认 timeout |

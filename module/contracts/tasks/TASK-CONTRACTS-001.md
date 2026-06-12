@@ -29,16 +29,16 @@ status: pending
 
 ## Requirements Covered
 
-| Requirement | Description | Acceptance Criteria |
-|---|---|---|
-| FR-001 | MarketDataProvider 接口 | 方法签名与 SPEC 一致 |
-| FR-002 | MacroDataProvider 接口 | 方法签名与 SPEC 一致 |
+| Requirement | Description             | Acceptance Criteria  |
+| ----------- | ----------------------- | -------------------- |
+| FR-001      | MarketDataProvider 接口 | 方法签名与 SPEC 一致 |
+| FR-002      | MacroDataProvider 接口  | 方法签名与 SPEC 一致 |
 
 ## Test Plan
 
-| Test Case | Type | Description |
-|---|---|---|
-| — | Compile | 接口完整性编译验证 |
+| Test Case | Type    | Description        |
+| --------- | ------- | ------------------ |
+| —         | Compile | 接口完整性编译验证 |
 
 ## Implementation Notes
 
@@ -47,13 +47,13 @@ status: pending
 
 ## Implementation Plan
 
-| Step | Description | Deliverables | Verification |
-|---|---|---|---|
-| 1 | 定义 `MarketDataProvider` 接口和相关 DTO | `market.go` | `go build ./...` 通过 |
-| 2 | 定义 `MacroDataProvider` 接口和相关 DTO | `macro.go` | `go build ./...` 通过 |
+| Step | Description                              | Deliverables | Verification          |
+| ---- | ---------------------------------------- | ------------ | --------------------- |
+| 1    | 定义 `MarketDataProvider` 接口和相关 DTO | `market.go`  | `go build ./...` 通过 |
+| 2    | 定义 `MacroDataProvider` 接口和相关 DTO  | `macro.go`   | `go build ./...` 通过 |
 
 ### Risk Assessment
 
-| Risk | Probability | Impact | Mitigation |
-|---|---|---|---|
-| 接口签名与下游不匹配 | Medium | High | 对照 SPEC §9 |
+| Risk                 | Probability | Impact | Mitigation   |
+| -------------------- | ----------- | ------ | ------------ |
+| 接口签名与下游不匹配 | Medium      | High   | 对照 SPEC §9 |

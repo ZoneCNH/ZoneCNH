@@ -28,11 +28,11 @@
 
 ## 验收标准
 
-| AC | 关联 | 验证命令 | 预期结果 |
-|----|------|----------|----------|
-| AC-011 | FR-007 | `go test -run TestFakeClock -count=1 ./timex/...` | Advance 后 Now 正确 |
-| AC-TIMEX-01 | FR-007 | `go test -run TestFixedClock -count=1 ./timex/...` | 始终返回构造时间 |
-| AC-TIMEX-02 | BR-012 | nil *FakeClock.Now() | 返回 time.Time{} |
+| AC          | 关联   | 验证命令                                           | 预期结果            |
+| ----------- | ------ | -------------------------------------------------- | ------------------- |
+| AC-011      | FR-007 | `go test -run TestFakeClock -count=1 ./timex/...`  | Advance 后 Now 正确 |
+| AC-TIMEX-01 | FR-007 | `go test -run TestFixedClock -count=1 ./timex/...` | 始终返回构造时间    |
+| AC-TIMEX-02 | BR-012 | nil *FakeClock.Now()                               | 返回 time.Time{}    |
 
 ## 禁止事项
 
@@ -50,11 +50,11 @@
 
 ## 验证命令
 
-| 命令 | 判定标准 |
-|------|----------|
-| `go build ./timex/...` | 编译通过，零错误 |
+| 命令                                 | 判定标准              |
+| ------------------------------------ | --------------------- |
+| `go build ./timex/...`               | 编译通过，零错误      |
 | `go test -race -count=1 ./timex/...` | 全部测试通过，无 race |
-| `go vet ./timex/...` | 无警告 |
+| `go vet ./timex/...`                 | 无警告                |
 
 ## 完成后
 

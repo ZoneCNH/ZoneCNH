@@ -94,16 +94,16 @@ python3 scripts/arbiter.py <module> <stage> --runtime <claude|codex|copilot>
 
 ## 4. 路由规则
 
-| `gate` | `next_action` |
-|--------|---------------|
-| pass | `advance_to_next_stage`；若为 spec 阶段，同时自动翻转 SPEC.md 为 `Status: Approved` |
-| fail（红线） | `route_to_executor_for_repair`，附带所有红线证据 |
-| fail（分数 < 98） | `route_to_executor_for_repair`，附带三平台扣分账本合集 |
-| fail（评分源缺失） | `route_to_missing_score_source` |
-| fail（低置信度） | `route_to_low_confidence_scorer_for_rerun` |
-| fail（分差过大） | `route_to_scorers_for_reconciliation` |
-| fail（异构分歧） | `route_to_meta_arbiter_for_diagnosis`，附 LLM vs rules 对照表 |
-| fail（全链路预算耗尽） | `pipeline_blocked_for_retrospective` |
+| `gate`                 | `next_action`                                                                       |
+| ---------------------- | ----------------------------------------------------------------------------------- |
+| pass                   | `advance_to_next_stage`；若为 spec 阶段，同时自动翻转 SPEC.md 为 `Status: Approved` |
+| fail（红线）           | `route_to_executor_for_repair`，附带所有红线证据                                    |
+| fail（分数 < 98）      | `route_to_executor_for_repair`，附带三平台扣分账本合集                              |
+| fail（评分源缺失）     | `route_to_missing_score_source`                                                     |
+| fail（低置信度）       | `route_to_low_confidence_scorer_for_rerun`                                          |
+| fail（分差过大）       | `route_to_scorers_for_reconciliation`                                               |
+| fail（异构分歧）       | `route_to_meta_arbiter_for_diagnosis`，附 LLM vs rules 对照表                       |
+| fail（全链路预算耗尽） | `pipeline_blocked_for_retrospective`                                                |
 
 普通阶段产物全部为自动路由。不存在通过 `request_human_review` 将 fail 改成 pass 的人工分支。若 retrospective 证明需要修改受保护的评分体系或工作流文件，必须另走 `CONSTITUTION.md` §14 的元级 RSI 流程。
 
@@ -117,12 +117,12 @@ python3 scripts/arbiter.py <module> <stage> --runtime <claude|codex|copilot>
 {state_root}/pipeline/{module}/{stage}/attempts.json
 ```
 
-| 尝试次数 | 处理 |
-|----------|------|
-| 1-2 | 路由回当前阶段 executor 修复，重跑四源评分 + 仲裁 |
-| 3 | 自动路由回上一阶段 executor（`escalation=upstream`），重置当前阶段 attempt |
-| 上游再失败 | 继续向上路由，直到 spec |
-| spec 失败 | 由 spec executor 重写 SPEC.md 后继续评分，但仍计入全链路预算 |
+| 尝试次数   | 处理                                                                       |
+| ---------- | -------------------------------------------------------------------------- |
+| 1-2        | 路由回当前阶段 executor 修复，重跑四源评分 + 仲裁                          |
+| 3          | 自动路由回上一阶段 executor（`escalation=upstream`），重置当前阶段 attempt |
+| 上游再失败 | 继续向上路由，直到 spec                                                    |
+| spec 失败  | 由 spec executor 重写 SPEC.md 后继续评分，但仍计入全链路预算               |
 
 升级链：
 

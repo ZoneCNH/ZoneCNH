@@ -10,26 +10,26 @@ Updated: 2026-06-12
 
 ## Constitution Compliance
 
-| 条款            | 要求                               | 遵循方式                                             |
-| --------------- | ---------------------------------- | ---------------------------------------------------- |
-| §1 分层领域模型 | 模板不承载业务域，只生成基座库骨架 | 模板仅含 Config/Error/Health/Metrics/Client/Version  |
+| 条款            | 要求                                        | 遵循方式                                                                                                     |
+| --------------- | ------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| §1 分层领域模型 | 模板不承载业务域，只生成基座库骨架          | 模板仅含 Config/Error/Health/Metrics/Client/Version                                                          |
 | §3 接口契约优先 | `contracts/` 定义跨域接口 + 内部治理 schema | 跨域契约：errors/health/config/metrics（4 件）；内部治理：agent-policy/goalcli/execution-context 等（12 件） |
-| §5 配置外部化   | 配置由调用方显式传入               | Config 结构体必填字段校验                            |
-| §7 错误处理规范 | 9 种 ErrorKind 稳定                | errors.go 实现 NewError/WrapError/IsKind             |
-| §9 可观测性     | P0 指标名稳定、label 低基数        | NoopMetrics + 5 个 P0 指标                           |
-| §11 发布流程    | release manifest + checksum        | release_check.sh 生成 latest.json + .sha256          |
-| §13 安全红线    | 不提交 secret/API key              | Sanitize 脱敏 + security gate 扫描                   |
+| §5 配置外部化   | 配置由调用方显式传入                        | Config 结构体必填字段校验                                                                                    |
+| §7 错误处理规范 | 9 种 ErrorKind 稳定                         | errors.go 实现 NewError/WrapError/IsKind                                                                     |
+| §9 可观测性     | P0 指标名稳定、label 低基数                 | NoopMetrics + 5 个 P0 指标                                                                                   |
+| §11 发布流程    | release manifest + checksum                 | release_check.sh 生成 latest.json + .sha256                                                                  |
+| §13 安全红线    | 不提交 secret/API key                       | Sanitize 脱敏 + security gate 扫描                                                                           |
 
 ## Lifecycle State
 
-| 阶段    | 状态      | 说明                                           |
-| ------- | --------- | ---------------------------------------------- |
-| Spec    | Approved  | 2026-06-09 批准                                |
-| Plan    | Approved  | 6 子任务依赖拓扑已确认                         |
-| Tasks   | Ready     | 9 个 task spec 已拆分                          |
-| Prompt  | Ready     | 9 个 context packet 已生成                     |
-| Code    | Completed | G6 PASS, 16 FR/27 AC/24 TC verified            |
-| Test    | Completed | G7 PASS, Evidence 6 文件                       |
+| 阶段    | 状态      | 说明                                                                                |
+| ------- | --------- | ----------------------------------------------------------------------------------- |
+| Spec    | Approved  | 2026-06-09 批准                                                                     |
+| Plan    | Approved  | 6 子任务依赖拓扑已确认                                                              |
+| Tasks   | Ready     | 9 个 task spec 已拆分                                                               |
+| Prompt  | Ready     | 9 个 context packet 已生成                                                          |
+| Code    | Completed | G6 PASS, 16 FR/27 AC/24 TC verified                                                 |
+| Test    | Completed | G7 PASS, Evidence 6 文件                                                            |
 | Release | Released  | 上游 v1.0.0 已发布（tag v1.0.0，PR #115 已合入；version.go 仍为 v0.6.6 待上游同步） |
 
 ## Summary
@@ -44,7 +44,7 @@ Updated: 2026-06-12
 
 | Goal | Description                                                           | Trace              |
 | ---- | --------------------------------------------------------------------- | ------------------ |
-| G-0  | 定义 xlib 体系标准事实源（文档规范）。见 goal.md。                  | Standard Source     |
+| G-0  | 定义 xlib 体系标准事实源（文档规范）。见 goal.md。                    | Standard Source    |
 | G-1  | 定义 Config、Error、Health、Metrics、Client、Version 的最小公共 API。 | API standard       |
 | G-2  | 提供 Go 参考模板，并保证模板本身可编译、可测试、可 vet。              | Reference template |
 | G-3  | 提供渲染脚本，从标准模板创建独立 Go module。                          | Generator          |
@@ -202,85 +202,85 @@ Updated: 2026-06-12
 
 ## Acceptance Criteria
 
-| AC     | Acceptance                                               | 验证命令 | 代码位置 |
-| ------ | -------------------------------------------------------- |
-| AC-000 | 管线基线清理完成，模块文档和任务入口可被规则评分器发现。 | `python3 scripts/rule-scorer.py spec xlib-standard --check` | `module/xlib-standard/SPEC.md` |
-| AC-001 | 必填字段缺失时配置校验返回 validation kind 错误。        | `GOWORK=off go test ./pkg/templatex/ -run TestConfigValidate/Required -count=1` | `pkg/templatex/config.go:23-32` |
-| AC-002 | 负数 timeout 配置返回 validation kind 错误。             | `GOWORK=off go test ./pkg/templatex/ -run TestConfigValidate/Negative -count=1` | `pkg/templatex/config.go:28-31` |
-| AC-003 | 配置脱敏后 secret 类字段显示为 `***`。                   | `GOWORK=off go test ./pkg/templatex/ -run TestConfigSanitize -count=1` | `pkg/templatex/config.go:34-39` |
-| AC-004 | `NewError` 创建的错误字段完整。                          | `GOWORK=off go test ./pkg/templatex/ -run TestNewError -count=1` | `pkg/templatex/errors.go:28-34` |
-| AC-005 | `WrapError` 包装后 `errors.Is` 可穿透。                  | `GOWORK=off go test ./pkg/templatex/ -run TestWrapError -count=1` | `pkg/templatex/errors.go:34-36,55-59` |
-| AC-006 | `IsKind` 匹配目标 kind 返回 true。                       | `GOWORK=off go test ./pkg/templatex/ -run TestIsKind -count=1` | `pkg/templatex/errors.go:62-67` |
-| AC-007 | deadline cause 归一为 timeout kind。                     | `GOWORK=off go test ./pkg/templatex/ -run TestContextError/Deadline -count=1` | `pkg/templatex/errors.go:87-96` |
-| AC-008 | canceled cause 归一为 unavailable kind。                 | `GOWORK=off go test ./pkg/templatex/ -run TestContextError/Canceled -count=1` | `pkg/templatex/errors.go:87-96` |
-| AC-009 | nil context 健康检查返回 unhealthy。                     | `GOWORK=off go test ./pkg/templatex/ -run TestHealthCheck/NilContext -count=1` | `pkg/templatex/health.go:44-50` |
-| AC-010 | 健康客户端返回 healthy。                                 | `GOWORK=off go test ./pkg/templatex/ -run TestHealthCheck/Healthy -count=1` | `pkg/templatex/health.go:98-103` |
-| AC-011 | `NoopMetrics` 调用不 panic。                             | `GOWORK=off go test ./pkg/templatex/ -run TestNoopMetrics -count=1` | `pkg/templatex/metrics.go:21-27` |
-| AC-012 | P0 指标名与 contract 一致。                              | `GOWORK=off go test ./pkg/templatex/ -run TestMetricsNames -count=1` | `pkg/templatex/metrics.go:15-19` |
-| AC-013 | metrics label 仅使用低基数键。                           | `GOWORK=off go test ./pkg/templatex/ -run TestMetricsLabels -count=1` | `pkg/templatex/metrics.go:15-19` |
-| AC-014 | nil context 创建客户端返回错误。                         | `GOWORK=off go test ./pkg/templatex/ -run TestNew/NilContext -count=1` | `pkg/templatex/client.go:24-28` |
-| AC-015 | canceled context 创建客户端返回错误。                    | `GOWORK=off go test ./pkg/templatex/ -run TestNew/CanceledContext -count=1` | `pkg/templatex/client.go:29-33` |
-| AC-016 | 无效 config 创建客户端返回错误。                         | `GOWORK=off go test ./pkg/templatex/ -run TestNew/InvalidConfig -count=1` | `pkg/templatex/client.go:33-37` |
-| AC-017 | 有效参数创建 `*Client`。                                 | `GOWORK=off go test ./pkg/templatex/ -run TestNew/Valid -count=1` | `pkg/templatex/client.go:38-39` |
-| AC-018 | `Close` 多次调用幂等且不 panic。                         | `GOWORK=off go test ./pkg/templatex/ -run TestClose/Idempotent -count=1` | `pkg/templatex/client.go:45-68` |
-| AC-019 | 版本信息包含 module name 和 version。                    | `GOWORK=off go test ./pkg/templatex/ -run TestVersion -count=1` | `pkg/templatex/version.go:6-7` |
-| AC-020 | 模板 `go vet` 零警告。                                   | `GOWORK=off go vet ./pkg/templatex/` | `pkg/templatex/*.go` |
-| AC-021 | 模板 `go test` 全部通过。                                | `GOWORK=off go test ./pkg/templatex/ -count=1` | `pkg/templatex/*_test.go` |
-| AC-022 | 渲染输出目录结构完整。                                   | `bash scripts/render_template.sh --module-path test --package-name test --out /tmp/out && test -f /tmp/out/go.mod` | `scripts/render_template.sh` |
-| AC-023 | 生成库无模板名和标准库名残留。                           | `bash scripts/check_rendered_template.sh /tmp/out` | `scripts/check_rendered_template.sh` |
-| AC-024 | `make ci` 的 17 个 gate 全部通过。                       | `GOWORK=off make ci` | `Makefile (ci: target)` |
-| AC-025 | boundary gate 检查 6 类非法引用。                        | `bash scripts/check_boundary.sh` | `scripts/check_boundary.sh` |
-| AC-026 | release manifest 生成且字段完整。                        | `GOWORK=off make release-check` | `Makefile (release-check) + scripts/generate_manifest.sh` |
-| AC-027 | release final check 校验 manifest checksum。             | `GOWORK=off make release-final-check` | `Makefile (release-final-check)` |
-| AC-028 | goalcli audit 输出 G0-G11 gate 状态审计报告。            | `GOWORK=off go run ./cmd/goalcli audit` | `cmd/goalcli/audit_goal.go` |
-| AC-029 | goalcli dashboard 生成符合 goalcli-dashboard schema 的仪表盘 JSON。 | `GOWORK=off go run ./cmd/goalcli dashboard --out /tmp/dashboard.json` | `cmd/goalcli/dashboard_generate.go` |
-| AC-030 | goalcli fact 执行事实检查并输出 fact-audit 证据。         | `GOWORK=off go run ./cmd/goalcli fact` | `cmd/goalcli/fact.go` |
-| AC-031 | goalcli schema-check 校验 contracts/ 中所有 schema 有效性。 | `GOWORK=off go run ./cmd/goalcli schema-check` | `cmd/goalcli/schema_check.go` |
-| AC-032 | goalcli traceability 生成 FR→Code 追溯矩阵。              | `GOWORK=off go run ./cmd/goalcli traceability` | `cmd/goalcli/traceability.go` |
-| AC-033 | goalcli governance 输出远端治理检查结果。                 | `GOWORK=off go run ./cmd/goalcli governance` | `cmd/goalcli/governance.go` |
-| AC-034 | goalcli debt 扫描技术债务并输出债务报告。                 | `GOWORK=off go run ./cmd/goalcli debt` | `cmd/goalcli/debt.go` |
-| AC-035 | goalcli adoption 检查下游采纳状态。                       | `GOWORK=off go run ./cmd/goalcli adoption` | `cmd/goalcli/adoption_check.go` |
-| AC-036 | goalcli selfimproving 触发受控递归自改进流程。            | `GOWORK=off go run ./cmd/goalcli selfimproving` | `cmd/goalcli/selfimproving.go` |
-| AC-037 | templates/l2/ 12 个模板文件全部存在且可渲染。          | `bash scripts/check_l2_templates.sh` | `templates/l2/` |
+| AC     | Acceptance                                                          | 验证命令                                                                                                           | 代码位置                                                  |
+| ------ | ------------------------------------------------------------------- |                                                                                                                    |                                                           |
+| AC-000 | 管线基线清理完成，模块文档和任务入口可被规则评分器发现。            | `python3 scripts/rule-scorer.py spec xlib-standard --check`                                                        | `module/xlib-standard/SPEC.md`                            |
+| AC-001 | 必填字段缺失时配置校验返回 validation kind 错误。                   | `GOWORK=off go test ./pkg/templatex/ -run TestConfigValidate/Required -count=1`                                    | `pkg/templatex/config.go:23-32`                           |
+| AC-002 | 负数 timeout 配置返回 validation kind 错误。                        | `GOWORK=off go test ./pkg/templatex/ -run TestConfigValidate/Negative -count=1`                                    | `pkg/templatex/config.go:28-31`                           |
+| AC-003 | 配置脱敏后 secret 类字段显示为 `***`。                              | `GOWORK=off go test ./pkg/templatex/ -run TestConfigSanitize -count=1`                                             | `pkg/templatex/config.go:34-39`                           |
+| AC-004 | `NewError` 创建的错误字段完整。                                     | `GOWORK=off go test ./pkg/templatex/ -run TestNewError -count=1`                                                   | `pkg/templatex/errors.go:28-34`                           |
+| AC-005 | `WrapError` 包装后 `errors.Is` 可穿透。                             | `GOWORK=off go test ./pkg/templatex/ -run TestWrapError -count=1`                                                  | `pkg/templatex/errors.go:34-36,55-59`                     |
+| AC-006 | `IsKind` 匹配目标 kind 返回 true。                                  | `GOWORK=off go test ./pkg/templatex/ -run TestIsKind -count=1`                                                     | `pkg/templatex/errors.go:62-67`                           |
+| AC-007 | deadline cause 归一为 timeout kind。                                | `GOWORK=off go test ./pkg/templatex/ -run TestContextError/Deadline -count=1`                                      | `pkg/templatex/errors.go:87-96`                           |
+| AC-008 | canceled cause 归一为 unavailable kind。                            | `GOWORK=off go test ./pkg/templatex/ -run TestContextError/Canceled -count=1`                                      | `pkg/templatex/errors.go:87-96`                           |
+| AC-009 | nil context 健康检查返回 unhealthy。                                | `GOWORK=off go test ./pkg/templatex/ -run TestHealthCheck/NilContext -count=1`                                     | `pkg/templatex/health.go:44-50`                           |
+| AC-010 | 健康客户端返回 healthy。                                            | `GOWORK=off go test ./pkg/templatex/ -run TestHealthCheck/Healthy -count=1`                                        | `pkg/templatex/health.go:98-103`                          |
+| AC-011 | `NoopMetrics` 调用不 panic。                                        | `GOWORK=off go test ./pkg/templatex/ -run TestNoopMetrics -count=1`                                                | `pkg/templatex/metrics.go:21-27`                          |
+| AC-012 | P0 指标名与 contract 一致。                                         | `GOWORK=off go test ./pkg/templatex/ -run TestMetricsNames -count=1`                                               | `pkg/templatex/metrics.go:15-19`                          |
+| AC-013 | metrics label 仅使用低基数键。                                      | `GOWORK=off go test ./pkg/templatex/ -run TestMetricsLabels -count=1`                                              | `pkg/templatex/metrics.go:15-19`                          |
+| AC-014 | nil context 创建客户端返回错误。                                    | `GOWORK=off go test ./pkg/templatex/ -run TestNew/NilContext -count=1`                                             | `pkg/templatex/client.go:24-28`                           |
+| AC-015 | canceled context 创建客户端返回错误。                               | `GOWORK=off go test ./pkg/templatex/ -run TestNew/CanceledContext -count=1`                                        | `pkg/templatex/client.go:29-33`                           |
+| AC-016 | 无效 config 创建客户端返回错误。                                    | `GOWORK=off go test ./pkg/templatex/ -run TestNew/InvalidConfig -count=1`                                          | `pkg/templatex/client.go:33-37`                           |
+| AC-017 | 有效参数创建 `*Client`。                                            | `GOWORK=off go test ./pkg/templatex/ -run TestNew/Valid -count=1`                                                  | `pkg/templatex/client.go:38-39`                           |
+| AC-018 | `Close` 多次调用幂等且不 panic。                                    | `GOWORK=off go test ./pkg/templatex/ -run TestClose/Idempotent -count=1`                                           | `pkg/templatex/client.go:45-68`                           |
+| AC-019 | 版本信息包含 module name 和 version。                               | `GOWORK=off go test ./pkg/templatex/ -run TestVersion -count=1`                                                    | `pkg/templatex/version.go:6-7`                            |
+| AC-020 | 模板 `go vet` 零警告。                                              | `GOWORK=off go vet ./pkg/templatex/`                                                                               | `pkg/templatex/*.go`                                      |
+| AC-021 | 模板 `go test` 全部通过。                                           | `GOWORK=off go test ./pkg/templatex/ -count=1`                                                                     | `pkg/templatex/*_test.go`                                 |
+| AC-022 | 渲染输出目录结构完整。                                              | `bash scripts/render_template.sh --module-path test --package-name test --out /tmp/out && test -f /tmp/out/go.mod` | `scripts/render_template.sh`                              |
+| AC-023 | 生成库无模板名和标准库名残留。                                      | `bash scripts/check_rendered_template.sh /tmp/out`                                                                 | `scripts/check_rendered_template.sh`                      |
+| AC-024 | `make ci` 的 17 个 gate 全部通过。                                  | `GOWORK=off make ci`                                                                                               | `Makefile (ci: target)`                                   |
+| AC-025 | boundary gate 检查 6 类非法引用。                                   | `bash scripts/check_boundary.sh`                                                                                   | `scripts/check_boundary.sh`                               |
+| AC-026 | release manifest 生成且字段完整。                                   | `GOWORK=off make release-check`                                                                                    | `Makefile (release-check) + scripts/generate_manifest.sh` |
+| AC-027 | release final check 校验 manifest checksum。                        | `GOWORK=off make release-final-check`                                                                              | `Makefile (release-final-check)`                          |
+| AC-028 | goalcli audit 输出 G0-G11 gate 状态审计报告。                       | `GOWORK=off go run ./cmd/goalcli audit`                                                                            | `cmd/goalcli/audit_goal.go`                               |
+| AC-029 | goalcli dashboard 生成符合 goalcli-dashboard schema 的仪表盘 JSON。 | `GOWORK=off go run ./cmd/goalcli dashboard --out /tmp/dashboard.json`                                              | `cmd/goalcli/dashboard_generate.go`                       |
+| AC-030 | goalcli fact 执行事实检查并输出 fact-audit 证据。                   | `GOWORK=off go run ./cmd/goalcli fact`                                                                             | `cmd/goalcli/fact.go`                                     |
+| AC-031 | goalcli schema-check 校验 contracts/ 中所有 schema 有效性。         | `GOWORK=off go run ./cmd/goalcli schema-check`                                                                     | `cmd/goalcli/schema_check.go`                             |
+| AC-032 | goalcli traceability 生成 FR→Code 追溯矩阵。                        | `GOWORK=off go run ./cmd/goalcli traceability`                                                                     | `cmd/goalcli/traceability.go`                             |
+| AC-033 | goalcli governance 输出远端治理检查结果。                           | `GOWORK=off go run ./cmd/goalcli governance`                                                                       | `cmd/goalcli/governance.go`                               |
+| AC-034 | goalcli debt 扫描技术债务并输出债务报告。                           | `GOWORK=off go run ./cmd/goalcli debt`                                                                             | `cmd/goalcli/debt.go`                                     |
+| AC-035 | goalcli adoption 检查下游采纳状态。                                 | `GOWORK=off go run ./cmd/goalcli adoption`                                                                         | `cmd/goalcli/adoption_check.go`                           |
+| AC-036 | goalcli selfimproving 触发受控递归自改进流程。                      | `GOWORK=off go run ./cmd/goalcli selfimproving`                                                                    | `cmd/goalcli/selfimproving.go`                            |
+| AC-037 | templates/l2/ 12 个模板文件全部存在且可渲染。                       | `bash scripts/check_l2_templates.sh`                                                                               | `templates/l2/`                                           |
 
 ## Test Cases
 
-| TC     | Type        | Scenario                | Expected                   | 代码位置 |
-| ------ | ----------- | ----------------------- | -------------------------- |
-| TC-001 | Unit | Config 必填字段缺失     | 返回 validation kind       | `pkg/templatex/config_test.go` |
-| TC-002 | Unit | Config 负数 timeout     | 返回 validation kind       | `pkg/templatex/config_test.go` |
-| TC-003 | Unit | Config 脱敏             | secret 替换为 `***`        | `pkg/templatex/config_test.go` |
-| TC-004 | Unit | NewError 创建           | 字段正确                   | `pkg/templatex/errors_test.go` |
-| TC-005 | Unit | WrapError 包装          | `errors.Is` 可穿透         | `pkg/templatex/errors_test.go` |
-| TC-006 | Unit | IsKind 匹配             | 返回 true                  | `pkg/templatex/errors_test.go` |
-| TC-007 | Unit | deadline cause          | kind 为 timeout            | `pkg/templatex/errors_test.go` |
-| TC-008 | Unit | canceled cause          | kind 为 unavailable        | `pkg/templatex/errors_test.go` |
-| TC-009 | Unit | HealthCheck nil context | 返回 unhealthy             | `pkg/templatex/health_test.go` |
-| TC-010 | Unit | HealthCheck 健康客户端  | 返回 healthy               | `pkg/templatex/health_test.go` |
-| TC-011 | Unit | NoopMetrics 调用        | 无 panic                   | `pkg/templatex/metrics_test.go` |
-| TC-012 | Unit | 指标名匹配 contract     | P0 名称一致                | `pkg/templatex/metrics_test.go` |
-| TC-013 | Unit | label 低基数            | 只有允许键                 | `pkg/templatex/metrics_test.go` |
-| TC-014 | Unit | New nil context         | 返回错误                   | `pkg/templatex/client_test.go` |
-| TC-015 | Unit | New canceled context    | 返回错误                   | `pkg/templatex/client_test.go` |
-| TC-016 | Unit | New 无效 config         | 返回错误                   | `pkg/templatex/client_test.go` |
-| TC-017 | Unit | New 正常创建            | 返回客户端                 | `pkg/templatex/client_test.go` |
-| TC-018 | Unit | Close 幂等              | 多次调用不 panic           | `pkg/templatex/client_test.go` |
-| TC-019 | Integration | 模板 go vet             | 零警告                     | `pkg/templatex/version_test.go` |
-| TC-020 | Integration | 模板 go test            | 全部通过                   | `pkg/templatex/*.go (go vet)` |
-| TC-021 | Integration | 渲染模板                | 输出结构完整               | `pkg/templatex/*_test.go` |
-| TC-022 | Integration | 检查生成库残留          | 无非法残留                 | `scripts/render_template.sh` |
-| TC-023 | Integration | make ci                 | 17 个 gate 全通过          | `scripts/check_rendered_template.sh` |
+| TC     | Type        | Scenario                | Expected                   | 代码位置                                                  |
+| ------ | ----------- | ----------------------- | -------------------------- |                                                           |
+| TC-001 | Unit        | Config 必填字段缺失     | 返回 validation kind       | `pkg/templatex/config_test.go`                            |
+| TC-002 | Unit        | Config 负数 timeout     | 返回 validation kind       | `pkg/templatex/config_test.go`                            |
+| TC-003 | Unit        | Config 脱敏             | secret 替换为 `***`        | `pkg/templatex/config_test.go`                            |
+| TC-004 | Unit        | NewError 创建           | 字段正确                   | `pkg/templatex/errors_test.go`                            |
+| TC-005 | Unit        | WrapError 包装          | `errors.Is` 可穿透         | `pkg/templatex/errors_test.go`                            |
+| TC-006 | Unit        | IsKind 匹配             | 返回 true                  | `pkg/templatex/errors_test.go`                            |
+| TC-007 | Unit        | deadline cause          | kind 为 timeout            | `pkg/templatex/errors_test.go`                            |
+| TC-008 | Unit        | canceled cause          | kind 为 unavailable        | `pkg/templatex/errors_test.go`                            |
+| TC-009 | Unit        | HealthCheck nil context | 返回 unhealthy             | `pkg/templatex/health_test.go`                            |
+| TC-010 | Unit        | HealthCheck 健康客户端  | 返回 healthy               | `pkg/templatex/health_test.go`                            |
+| TC-011 | Unit        | NoopMetrics 调用        | 无 panic                   | `pkg/templatex/metrics_test.go`                           |
+| TC-012 | Unit        | 指标名匹配 contract     | P0 名称一致                | `pkg/templatex/metrics_test.go`                           |
+| TC-013 | Unit        | label 低基数            | 只有允许键                 | `pkg/templatex/metrics_test.go`                           |
+| TC-014 | Unit        | New nil context         | 返回错误                   | `pkg/templatex/client_test.go`                            |
+| TC-015 | Unit        | New canceled context    | 返回错误                   | `pkg/templatex/client_test.go`                            |
+| TC-016 | Unit        | New 无效 config         | 返回错误                   | `pkg/templatex/client_test.go`                            |
+| TC-017 | Unit        | New 正常创建            | 返回客户端                 | `pkg/templatex/client_test.go`                            |
+| TC-018 | Unit        | Close 幂等              | 多次调用不 panic           | `pkg/templatex/client_test.go`                            |
+| TC-019 | Integration | 模板 go vet             | 零警告                     | `pkg/templatex/version_test.go`                           |
+| TC-020 | Integration | 模板 go test            | 全部通过                   | `pkg/templatex/*.go (go vet)`                             |
+| TC-021 | Integration | 渲染模板                | 输出结构完整               | `pkg/templatex/*_test.go`                                 |
+| TC-022 | Integration | 检查生成库残留          | 无非法残留                 | `scripts/render_template.sh`                              |
+| TC-023 | Integration | make ci                 | 17 个 gate 全通过          | `scripts/check_rendered_template.sh`                      |
 | TC-024 | Integration | release manifest        | 字段完整且 checksum 可校验 | `Makefile (release-check) + scripts/generate_manifest.sh` |
-| TC-025 | Integration | goalcli audit           | 输出 G0-G11 审计报告      | `cmd/goalcli/audit_goal_test.go` |
-| TC-026 | Integration | goalcli dashboard       | 输出合规仪表盘 JSON       | `cmd/goalcli/dashboard_generate_test.go` |
-| TC-027 | Integration | goalcli fact            | 输出 fact-audit 证据      | `cmd/goalcli/fact.go + internal/xlibfacts/` |
-| TC-028 | Integration | goalcli schema-check    | 全 schema 校验通过        | `cmd/goalcli/schema_check_test.go` |
-| TC-029 | Integration | goalcli traceability    | 生成 FR→Code 追溯矩阵     | `cmd/goalcli/traceability_test.go` |
-| TC-030 | Integration | goalcli governance      | 输出远端治理状态          | `cmd/goalcli/governance.go` |
-| TC-031 | Integration | goalcli debt            | 输出技术债务报告          | `cmd/goalcli/debt.go + internal/debtcheck/` |
-| TC-032 | Integration | goalcli adoption        | 输出下游采纳状态          | `cmd/goalcli/adoption_check.go` |
-| TC-033 | Integration | goalcli selfimproving   | 自改进流程正常执行        | `cmd/goalcli/selfimproving_test.go` |
-| TC-034 | Integration | templates/l2 完整性检查 | 12 模板文件在位          | `templates/l2/ (12 files)` |
+| TC-025 | Integration | goalcli audit           | 输出 G0-G11 审计报告       | `cmd/goalcli/audit_goal_test.go`                          |
+| TC-026 | Integration | goalcli dashboard       | 输出合规仪表盘 JSON        | `cmd/goalcli/dashboard_generate_test.go`                  |
+| TC-027 | Integration | goalcli fact            | 输出 fact-audit 证据       | `cmd/goalcli/fact.go + internal/xlibfacts/`               |
+| TC-028 | Integration | goalcli schema-check    | 全 schema 校验通过         | `cmd/goalcli/schema_check_test.go`                        |
+| TC-029 | Integration | goalcli traceability    | 生成 FR→Code 追溯矩阵      | `cmd/goalcli/traceability_test.go`                        |
+| TC-030 | Integration | goalcli governance      | 输出远端治理状态           | `cmd/goalcli/governance.go`                               |
+| TC-031 | Integration | goalcli debt            | 输出技术债务报告           | `cmd/goalcli/debt.go + internal/debtcheck/`               |
+| TC-032 | Integration | goalcli adoption        | 输出下游采纳状态           | `cmd/goalcli/adoption_check.go`                           |
+| TC-033 | Integration | goalcli selfimproving   | 自改进流程正常执行         | `cmd/goalcli/selfimproving_test.go`                       |
+| TC-034 | Integration | templates/l2 完整性检查 | 12 模板文件在位            | `templates/l2/ (12 files)`                                |
 
 ## Interfaces
 
@@ -290,10 +290,10 @@ Updated: 2026-06-12
 
 | Model           | Fields                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------- |
-| Config          | Name、Timeout、Secret                                                                                  |
+| Config          | Name、Timeout、Secret                                                                                   |
 | Error           | kind、message、cause                                                                                    |
-| HealthStatus    | status、message、checked_at、LatencyMs、Metadata                                                       |
-| VersionInfo     | ModuleName、Version                                                                                    |
+| HealthStatus    | status、message、checked_at、LatencyMs、Metadata                                                        |
+| VersionInfo     | ModuleName、Version                                                                                     |
 | ReleaseManifest | module_path、package_name、version、commit、tree_sha、go_version、contracts_sha256、gates、generated_at |
 
 ## Configuration
@@ -350,15 +350,15 @@ CI 必须运行 `GOWORK=off make ci` 和 `GOWORK=off make release-check`。`make
 
 ### 内部实现包（`internal/`）
 
-| 包 | 用途 | 被引用方 |
-|----|------|---------|
-| `internal/sanitize/` | 敏感字段脱敏（`sanitize.Secret()`） | `pkg/templatex/config.go` |
-| `internal/validation/` | 前置条件校验（`validation.RequireNonEmpty()`） | `pkg/templatex/config.go` |
-| `internal/xlibfacts/` | 事实检查引擎 | `cmd/goalcli/fact.go` |
-| `internal/goalruntime/` | Goal 运行时状态管理 | `cmd/goalcli/goalruntime.go` |
-| `internal/debtcheck/` | 技术债务扫描 | `cmd/goalcli/debt.go` |
-| `internal/releasequality/` | 发布质量评分（`score.go`） | `cmd/goalcli/`、release gate |
-| `internal/tools/releasemanifest/` | 发布清单生成工具 | `Makefile` release-check 目标 |
+| 包                                | 用途                                           | 被引用方                      |
+| --------------------------------- | ---------------------------------------------- | ----------------------------- |
+| `internal/sanitize/`              | 敏感字段脱敏（`sanitize.Secret()`）            | `pkg/templatex/config.go`     |
+| `internal/validation/`            | 前置条件校验（`validation.RequireNonEmpty()`） | `pkg/templatex/config.go`     |
+| `internal/xlibfacts/`             | 事实检查引擎                                   | `cmd/goalcli/fact.go`         |
+| `internal/goalruntime/`           | Goal 运行时状态管理                            | `cmd/goalcli/goalruntime.go`  |
+| `internal/debtcheck/`             | 技术债务扫描                                   | `cmd/goalcli/debt.go`         |
+| `internal/releasequality/`        | 发布质量评分（`score.go`）                     | `cmd/goalcli/`、release gate  |
+| `internal/tools/releasemanifest/` | 发布清单生成工具                               | `Makefile` release-check 目标 |
 
 ### 模板系统（`templates/l2/`）
 

@@ -33,15 +33,15 @@ Out of Scope:             不包含内容
 
 按 7 个问题拆：
 
-| 问题 | 产出 |
-|------|------|
-| 谁使用？ | Actor / Role |
-| 在哪里使用？ | Scenario |
+| 问题             | 产出                   |
+| ---------------- | ---------------------- |
+| 谁使用？         | Actor / Role           |
+| 在哪里使用？     | Scenario               |
 | 要完成什么动作？ | Functional Requirement |
-| 输入是什么？ | Input Requirement |
-| 输出是什么？ | Output Requirement |
-| 有什么规则？ | Business Rule |
-| 什么情况算成功？ | Acceptance Criteria |
+| 输入是什么？     | Input Requirement      |
+| 输出是什么？     | Output Requirement     |
+| 有什么规则？     | Business Rule          |
+| 什么情况算成功？ | Acceptance Criteria    |
 
 ### 原子化标准
 
@@ -174,13 +174,13 @@ Priority:       P0 / P1 / P2
 
 ### 拆解方式
 
-| 拆解方式 | 适用场景 |
-|----------|----------|
-| 按模块拆 | Controller、Service、Repository、UI |
-| 按流程拆 | 输入、处理、输出 |
-| 按风险拆 | 先做高风险技术验证 |
-| 按验收标准拆 | 每个 AC 对应任务 |
-| 按垂直切片拆 | 从 UI 到 DB 完成一条完整路径 |
+| 拆解方式     | 适用场景                            |
+| ------------ | ----------------------------------- |
+| 按模块拆     | Controller、Service、Repository、UI |
+| 按流程拆     | 输入、处理、输出                    |
+| 按风险拆     | 先做高风险技术验证                  |
+| 按验收标准拆 | 每个 AC 对应任务                    |
+| 按垂直切片拆 | 从 UI 到 DB 完成一条完整路径        |
 
 推荐优先级：**优先垂直切片 → 其次按风险拆 → 最后按模块拆**
 
@@ -222,13 +222,13 @@ Do Not:       禁止事项
 
 ### Prompt 分层
 
-| Prompt 类型 | 作用 |
-|-------------|------|
-| Analysis Prompt | 分析需求和风险 |
-| Design Prompt | 设计方案和接口 |
-| Implementation Prompt | 生成代码 |
-| Test Prompt | 生成测试 |
-| Review Prompt | 检查代码是否满足 Matrix |
+| Prompt 类型           | 作用                    |
+| --------------------- | ----------------------- |
+| Analysis Prompt       | 分析需求和风险          |
+| Design Prompt         | 设计方案和接口          |
+| Implementation Prompt | 生成代码                |
+| Test Prompt           | 生成测试                |
+| Review Prompt         | 检查代码是否满足 Matrix |
 
 ### 质量标准
 
@@ -289,14 +289,14 @@ Goal → Spec → Design → Plan → Tasks → Prompt → Code → Test → Rev
                                        Tests ← Acceptance Criteria
 ```
 
-| 测试类型 | 来源 | 执行阶段 |
-|----------|------|----------|
-| 单元测试 | Task / Function Requirement | EXECUTING → VERIFYING |
-| 集成测试 | Spec / User Flow | VERIFYING |
-| E2E 测试 | Goal / Acceptance Criteria | REVIEWING |
-| 性能测试 | Success Metrics / Performance Requirement | REVIEWING |
-| 安全测试 | Security Requirement | REVIEWING |
-| 回归测试 | Existing Behavior / Constraints | VERIFYING |
+| 测试类型   | 来源                                      | 执行阶段              |
+| ---------- | ----------------------------------------- | --------------------- |
+| 单元测试   | Task / Function Requirement               | EXECUTING → VERIFYING |
+| 集成测试   | Spec / User Flow                          | VERIFYING             |
+| E2E 测试   | Goal / Acceptance Criteria                | REVIEWING             |
+| 性能测试   | Success Metrics / Performance Requirement | REVIEWING             |
+| 安全测试   | Security Requirement                      | REVIEWING             |
+| 回归测试   | Existing Behavior / Constraints           | VERIFYING             |
 
 ---
 
@@ -308,32 +308,32 @@ Goal → Spec → Design → Plan → Tasks → Prompt → Code → Test → Rev
 
 ### Canonical edge 字段
 
-| 字段 | 说明 |
-|------|------|
-| edge_id | 唯一边 ID，例如 `EDGE-GOAL-20260610-001-AC01-TEST01` |
-| source_type / source_id | 来源节点类型与 ID，如 Goal、Spec、AC、Task、Prompt、Code、Test、Evidence、Risk、Gate |
-| target_type / target_id | 目标节点类型与 ID |
-| relation | canonical relation vocabulary 中的一个值，见下表 |
-| status | Unmapped / Mapped / Linked / Verified / Dropped / Blocked / Changed / Drifted / Stale |
-| evidence_id | 证明该 edge 的 Evidence ID；release-critical edge MUST 填写 |
-| risk_id | 关联风险；High/Critical 或 release_blocking 风险 MUST 填写 |
-| drop_reason | `Dropped` 时必填 |
-| updated_at | 最近更新日期或时间戳 |
+| 字段                    | 说明                                                                                  |
+| ----------------------- | ------------------------------------------------------------------------------------- |
+| edge_id                 | 唯一边 ID，例如 `EDGE-GOAL-20260610-001-AC01-TEST01`                                  |
+| source_type / source_id | 来源节点类型与 ID，如 Goal、Spec、AC、Task、Prompt、Code、Test、Evidence、Risk、Gate  |
+| target_type / target_id | 目标节点类型与 ID                                                                     |
+| relation                | canonical relation vocabulary 中的一个值，见下表                                      |
+| status                  | Unmapped / Mapped / Linked / Verified / Dropped / Blocked / Changed / Drifted / Stale |
+| evidence_id             | 证明该 edge 的 Evidence ID；release-critical edge MUST 填写                           |
+| risk_id                 | 关联风险；High/Critical 或 release_blocking 风险 MUST 填写                            |
+| drop_reason             | `Dropped` 时必填                                                                      |
+| updated_at              | 最近更新日期或时间戳                                                                  |
 
 ### Canonical relation vocabulary
 
 进入 `.config/goal/matrix/matrix.yaml`、Gate、validator、CI 或 Release 控制面的 Matrix edge，`relation` 字段 MUST 使用以下枚举：
 
-| relation | 含义 |
-|----------|------|
-| `decomposes_to` | 上游目标或需求分解为下游制品 |
-| `contains` | 上游制品包含下游制品 |
-| `accepted_by` | 需求或结果由验收标准确认 |
-| `planned_by` | 需求或任务由计划安排 |
-| `implemented_by` | 需求、任务或 Prompt 由代码实现 |
-| `prompted_by` | 执行由 Prompt 或 Context Package 驱动 |
-| `verified_by` | 需求、任务、代码或发布由测试、审查或验证证明 |
-| `evidenced_by` | Gate、Release、Risk 或 Matrix edge 由 Evidence Bundle 证明 |
+| relation         | 含义                                                       |
+| ---------------- | ---------------------------------------------------------- |
+| `decomposes_to`  | 上游目标或需求分解为下游制品                               |
+| `contains`       | 上游制品包含下游制品                                       |
+| `accepted_by`    | 需求或结果由验收标准确认                                   |
+| `planned_by`     | 需求或任务由计划安排                                       |
+| `implemented_by` | 需求、任务或 Prompt 由代码实现                             |
+| `prompted_by`    | 执行由 Prompt 或 Context Package 驱动                      |
+| `verified_by`    | 需求、任务、代码或发布由测试、审查或验证证明               |
+| `evidenced_by`   | Gate、Release、Risk 或 Matrix edge 由 Evidence Bundle 证明 |
 
 `implements`、`verifies`、`blocks`、`releases`、`measures`、`mitigates`、`approves` 等词可以在叙述、图例或人类展示视图中作为语义别名出现，但 MUST NOT 写入 Matrix 控制面、Gate、validator、CI 或 Release 记录。若需要新增控制面 relation，必须先提交受保护资产 Change Request，并同步 schema、validator 和 CI。
 

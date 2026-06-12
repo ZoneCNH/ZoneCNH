@@ -348,8 +348,8 @@ CHANGELOG.md
 
 ## 相关文档
 
-| 文档 | 用途 |
-|------|------|
-| `docs/governance/DEVELOPMENT-WORKFLOW.md` | 完整管线总览 |
-| `docs/governance/DEFINITION-OF-DONE.md` | 完成验收条件 |
+| 文档                                         | 用途         |
+| -------------------------------------------- | ------------ |
+| `docs/governance/DEVELOPMENT-WORKFLOW.md`    | 完整管线总览 |
+| `docs/governance/DEFINITION-OF-DONE.md`      | 完成验收条件 |
 | `docs/governance/CODING-SESSION-PROTOCOL.md` | 编码会话协议 |

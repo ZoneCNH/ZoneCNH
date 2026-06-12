@@ -18,16 +18,16 @@
 
 ## 2. 评分明细
 
-| 维度 | 权重 | 得分 | 主要判断 |
-|------|------|------|----------|
-| 覆盖完整度 | 10% | 84 | 主流程、Gate、ID、Matrix、Evidence、CI、Registry 均有文档。 |
-| 权威边界 / SSOT | 20% | 58 | 多个文件同时承担“唯一规则源”角色，规则层级未收敛。 |
-| 流程与状态机一致性 | 15% | 62 | README、03、12、13、rules.yaml 的流程粒度不一致。 |
-| ID / 版本 / 命名一致性 | 15% | 57 | Spec、Design、Prompt、Evidence 格式在文档和工具中存在漂移。 |
-| Matrix / Evidence 契约 | 15% | 66 | 有结构和工具，但字段、状态、覆盖阈值和证明深度不一致。 |
-| Gate / 质量阈值 | 10% | 72 | G0-G11 框架清楚，但阈值来源分散，PASS 语义偏弱。 |
-| 工具与 CI 可执行性 | 10% | 76 | 工具可运行且当前样例通过，但校验面窄于文档承诺。 |
-| 信息架构与维护性 | 5% | 70 | 文档体系丰富，但历史分析、愿景文档和规范正文混放。 |
+| 维度                   | 权重   | 得分   | 主要判断                                                    |
+| ---------------------- | ------ | ------ | ----------------------------------------------------------- |
+| 覆盖完整度             | 10%    | 84     | 主流程、Gate、ID、Matrix、Evidence、CI、Registry 均有文档。 |
+| 权威边界 / SSOT        | 20%    | 58     | 多个文件同时承担“唯一规则源”角色，规则层级未收敛。          |
+| 流程与状态机一致性     | 15%    | 62     | README、03、12、13、rules.yaml 的流程粒度不一致。           |
+| ID / 版本 / 命名一致性 | 15%    | 57     | Spec、Design、Prompt、Evidence 格式在文档和工具中存在漂移。 |
+| Matrix / Evidence 契约 | 15%    | 66     | 有结构和工具，但字段、状态、覆盖阈值和证明深度不一致。      |
+| Gate / 质量阈值        | 10%    | 72     | G0-G11 框架清楚，但阈值来源分散，PASS 语义偏弱。            |
+| 工具与 CI 可执行性     | 10%    | 76     | 工具可运行且当前样例通过，但校验面窄于文档承诺。            |
+| 信息架构与维护性       | 5%     | 70     | 文档体系丰富，但历史分析、愿景文档和规范正文混放。          |
 
 加权得分：**66.05，取整 66 / 100**。
 
@@ -35,15 +35,15 @@
 
 已执行的验证：
 
-| 命令 | 结果 | 解读 |
-|------|------|------|
-| `bash docs/goal/tools/lint-goal.sh docs/goal` | 通过，0 error / 0 warning | 当前 lint 规则未发现问题。 |
-| `python3 docs/goal/tools/rule-drift-check.py --root .` | 通过 | `.config/goal/schema/rules.yaml` 与当前样例、CI、脚本常量一致。 |
-| `python3 docs/goal/tools/matrix-gen.py --check-only --matrix .config/goal/matrix/matrix.yaml` | 通过，Matrix 覆盖率 100% | 当前样例矩阵闭合。 |
-| `bash docs/goal/tools/gate-check.sh .` | 通过，PASS=7 / FAIL=0 / WARN=0 | 当前样例 Gate 检查闭合。 |
-| `bash -n docs/goal/tools/*.sh` 等价分项检查 | 通过 | Shell 脚本语法无错误。 |
-| `python3 -m py_compile docs/goal/tools/matrix-gen.py docs/goal/tools/rule-drift-check.py` | 通过 | Python 脚本可编译。 |
-| `git ls-files .config/goal` | 空输出 | `.config/goal` 当前没有被 Git 跟踪，文档中的“配置中心”边界需要明确。 |
+| 命令                                                                                          | 结果                           | 解读                                                                 |
+| --------------------------------------------------------------------------------------------- | ------------------------------ | -------------------------------------------------------------------- |
+| `bash docs/goal/tools/lint-goal.sh docs/goal`                                                 | 通过，0 error / 0 warning      | 当前 lint 规则未发现问题。                                           |
+| `python3 docs/goal/tools/rule-drift-check.py --root .`                                        | 通过                           | `.config/goal/schema/rules.yaml` 与当前样例、CI、脚本常量一致。      |
+| `python3 docs/goal/tools/matrix-gen.py --check-only --matrix .config/goal/matrix/matrix.yaml` | 通过，Matrix 覆盖率 100%       | 当前样例矩阵闭合。                                                   |
+| `bash docs/goal/tools/gate-check.sh .`                                                        | 通过，PASS=7 / FAIL=0 / WARN=0 | 当前样例 Gate 检查闭合。                                             |
+| `bash -n docs/goal/tools/*.sh` 等价分项检查                                                   | 通过                           | Shell 脚本语法无错误。                                               |
+| `python3 -m py_compile docs/goal/tools/matrix-gen.py docs/goal/tools/rule-drift-check.py`     | 通过                           | Python 脚本可编译。                                                  |
+| `git ls-files .config/goal`                                                                   | 空输出                         | `.config/goal` 当前没有被 Git 跟踪，文档中的“配置中心”边界需要明确。 |
 
 关键限制：以上验证证明“当前样例和脚本一致”，不证明“文档体系自身无冲突”。结构性问题需要通过跨文档比对判断。
 

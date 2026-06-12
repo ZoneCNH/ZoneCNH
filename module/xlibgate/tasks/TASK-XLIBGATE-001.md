@@ -33,11 +33,11 @@ status: pending
 
 ## Requirements Covered
 
-| Requirement | Description | Acceptance Criteria |
-|---|---|---|
-| FR-001 | check imports：CLI 参数绑定 | --config 参数解析正确 |
-| FR-005 | check all：CLI 聚合命令入口 | --config 参数解析正确 |
-| FR-006 | 输出格式：--output/--artifact flag 绑定 | --output, --artifact 参数解析正确 |
+| Requirement | Description                             | Acceptance Criteria               |
+| ----------- | --------------------------------------- | --------------------------------- |
+| FR-001      | check imports：CLI 参数绑定             | --config 参数解析正确             |
+| FR-005      | check all：CLI 聚合命令入口             | --config 参数解析正确             |
+| FR-006      | 输出格式：--output/--artifact flag 绑定 | --output, --artifact 参数解析正确 |
 
 ## Non-scope
 
@@ -48,14 +48,14 @@ status: pending
 
 ## Test Plan
 
-| Test Case | Type | Description |
-|---|---|---|
-| TC-001 | Unit | check imports --config 参数解析正确 |
-| TC-002 | Unit | check gomod --path 参数解析正确 |
-| TC-003 | Unit | check baseline --expected 参数解析正确 |
-| TC-004 | Unit | check release --evidence 参数解析正确 |
-| TC-005 | Unit | check all --config 参数解析正确 |
-| — | Unit | 未知子命令：exit 2 |
+| Test Case | Type | Description                            |
+| --------- | ---- | -------------------------------------- |
+| TC-001    | Unit | check imports --config 参数解析正确    |
+| TC-002    | Unit | check gomod --path 参数解析正确        |
+| TC-003    | Unit | check baseline --expected 参数解析正确 |
+| TC-004    | Unit | check release --evidence 参数解析正确  |
+| TC-005    | Unit | check all --config 参数解析正确        |
+| —         | Unit | 未知子命令：exit 2                     |
 
 ## Implementation Notes
 
@@ -64,13 +64,13 @@ status: pending
 
 ## Implementation Plan
 
-| Step | Description | Deliverables | Verification |
-|---|---|---|---|
-| 1 | 实现 CLI 框架：子命令注册和分发 | `cli.go` | `go build ./...` 通过 |
-| 2 | 实现 flag 绑定和参数校验 | `cli.go`, `cli_test.go` | 参数解析测试通过 |
+| Step | Description                     | Deliverables            | Verification          |
+| ---- | ------------------------------- | ----------------------- | --------------------- |
+| 1    | 实现 CLI 框架：子命令注册和分发 | `cli.go`                | `go build ./...` 通过 |
+| 2    | 实现 flag 绑定和参数校验        | `cli.go`, `cli_test.go` | 参数解析测试通过      |
 
 ### Risk Assessment
 
-| Risk | Probability | Impact | Mitigation |
-|---|---|---|---|
-| 参数解析复杂 | Low | Low | 每个子命令独立 FlagSet |
+| Risk         | Probability | Impact | Mitigation             |
+| ------------ | ----------- | ------ | ---------------------- |
+| 参数解析复杂 | Low         | Low    | 每个子命令独立 FlagSet |

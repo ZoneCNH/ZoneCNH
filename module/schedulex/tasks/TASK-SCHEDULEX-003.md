@@ -30,17 +30,17 @@ status: pending
 
 ## Requirements Covered
 
-| Requirement | Description | Acceptance Criteria |
-|---|---|---|
-| FR-003 | Overlap Policy：Skip/Queue/Replace | 3 个 WHEN/THEN 场景 |
+| Requirement | Description                        | Acceptance Criteria |
+| ----------- | ---------------------------------- | ------------------- |
+| FR-003      | Overlap Policy：Skip/Queue/Replace | 3 个 WHEN/THEN 场景 |
 
 ## Test Plan
 
-| Test Case | Type | Description |
-|---|---|---|
-| TC-002 | Unit | Skip：上次未完成时跳过 |
-| TC-002 | Unit | Queue：排队等待 |
-| TC-002 | Unit | Replace：取消旧的启动新的 |
+| Test Case | Type | Description               |
+| --------- | ---- | ------------------------- |
+| TC-002    | Unit | Skip：上次未完成时跳过    |
+| TC-002    | Unit | Queue：排队等待           |
+| TC-002    | Unit | Replace：取消旧的启动新的 |
 
 ## Implementation Notes
 
@@ -50,14 +50,14 @@ status: pending
 
 ## Implementation Plan
 
-| Step | Description | Deliverables | Verification |
-|---|---|---|---|
-| 1 | 实现 Skip 策略 | `overlap.go` | §7.3-1 通过 |
-| 2 | 实现 Queue 策略 | `overlap.go` | §7.3-2 通过 |
-| 3 | 实现 Replace 策略 | `overlap.go` | §7.3-3 通过 |
+| Step | Description       | Deliverables | Verification |
+| ---- | ----------------- | ------------ | ------------ |
+| 1    | 实现 Skip 策略    | `overlap.go` | §7.3-1 通过  |
+| 2    | 实现 Queue 策略   | `overlap.go` | §7.3-2 通过  |
+| 3    | 实现 Replace 策略 | `overlap.go` | §7.3-3 通过  |
 
 ### Risk Assessment
 
-| Risk | Probability | Impact | Mitigation |
-|---|---|---|---|
-| Replace 取消旧任务竞态 | Medium | Medium | atomic 操作 + ctx |
+| Risk                   | Probability | Impact | Mitigation        |
+| ---------------------- | ----------- | ------ | ----------------- |
+| Replace 取消旧任务竞态 | Medium      | Medium | atomic 操作 + ctx |

@@ -30,18 +30,18 @@ status: pending
 
 ## Requirements Covered
 
-| Requirement | Description | Acceptance Criteria |
-|---|---|---|
-| FR-001 | Timeout：超时返回 ErrTimeout | AC-001: 正常完成 / 超时 / ctx取消 |
-| BR-001 | 所有策略必须接受 context.Context | 函数签名包含 ctx |
+| Requirement | Description                      | Acceptance Criteria               |
+| ----------- | -------------------------------- | --------------------------------- |
+| FR-001      | Timeout：超时返回 ErrTimeout     | AC-001: 正常完成 / 超时 / ctx取消 |
+| BR-001      | 所有策略必须接受 context.Context | 函数签名包含 ctx                  |
 
 ## Test Plan
 
-| Test Case | Type | Description |
-|---|---|---|
-| TC-001 | Unit | 正常完成：fn 在 duration 内返回，结果正确 |
-| TC-001 | Unit | 超时：fn 超过 duration，返回 ErrTimeout |
-| TC-001 | Unit | ctx 取消：返回 ctx.Err() |
+| Test Case | Type | Description                               |
+| --------- | ---- | ----------------------------------------- |
+| TC-001    | Unit | 正常完成：fn 在 duration 内返回，结果正确 |
+| TC-001    | Unit | 超时：fn 超过 duration，返回 ErrTimeout   |
+| TC-001    | Unit | ctx 取消：返回 ctx.Err()                  |
 
 ## Implementation Notes
 
@@ -51,14 +51,14 @@ status: pending
 
 ## Implementation Plan
 
-| Step | Description | Deliverables | Verification |
-|---|---|---|---|
-| 1 | 实现 `Timeout` 函数：WithTimeout + goroutine + select | `timeout.go` | `go build ./...` 通过 |
-| 2 | 编写 3 个场景测试 | `timeout_test.go` | TC-001 全部通过 |
-| 3 | 并发安全验证 | `timeout_test.go` | `go test -race ./... -run TestTimeout` 通过 |
+| Step | Description                                           | Deliverables      | Verification                                |
+| ---- | ----------------------------------------------------- | ----------------- | ------------------------------------------- |
+| 1    | 实现 `Timeout` 函数：WithTimeout + goroutine + select | `timeout.go`      | `go build ./...` 通过                       |
+| 2    | 编写 3 个场景测试                                     | `timeout_test.go` | TC-001 全部通过                             |
+| 3    | 并发安全验证                                          | `timeout_test.go` | `go test -race ./... -run TestTimeout` 通过 |
 
 ### Risk Assessment
 
-| Risk | Probability | Impact | Mitigation |
-|---|---|---|---|
-| goroutine 泄漏 | Low | High | ctx 超时自动取消 |
+| Risk           | Probability | Impact | Mitigation       |
+| -------------- | ----------- | ------ | ---------------- |
+| goroutine 泄漏 | Low         | High   | ctx 超时自动取消 |

@@ -45,11 +45,11 @@
 
 #### P1-1：状态权威边界未映射
 
-| 文件                  | 状态对象             | 实际覆盖                                                         |
-| --------------------- | -------------------- | ---------------------------------------------------------------- |
-| `03-pipeline.md`      | Pipeline state       | 粗粒度阶段就绪态、执行态和异常态                                 |
-| `02-goal-standard.md` | Goal object status   | Goal 生命周期状态                                                |
-| `15-registry.md`      | Issue lifecycle      | Registry Issue 的处理状态                                        |
+| 文件                  | 状态对象              | 实际覆盖                                                         |
+| --------------------- | --------------------- | ---------------------------------------------------------------- |
+| `03-pipeline.md`      | Pipeline state        | 粗粒度阶段就绪态、执行态和异常态                                 |
+| `02-goal-standard.md` | Goal object status    | Goal 生命周期状态                                                |
+| `15-registry.md`      | Issue lifecycle       | Registry Issue 的处理状态                                        |
 | `rules.yaml` 样例     | Runtime/activity enum | 更细的起草、审查、批准、编码、测试、发布等活动态                 |
 
 **问题**：这些状态不一定应该合并成一个枚举；真正缺失的是状态对象边界和映射关系。`03-pipeline.md` 的状态更像阶段摘要，`02-goal-standard.md` 是 Goal 对象生命周期，`15-registry.md` 是 Issue 工作流，`rules.yaml` 样例偏运行态活动枚举。当前报告和工具容易把它们误读为同一层级的互斥 SSOT。
@@ -58,11 +58,11 @@
 
 #### P1-2：运营 SOP 与主流程缺少映射
 
-| 文件                | 声明的阶段数  | 具体阶段                                                                                        |
-| ------------------- | ------------- | ----------------------------------------------------------------------------------------------- |
-| `README.md`         | 11 层         | Goal → Spec → Design → Plan → Tasks → Prompt → Code → Test → Review → Release → Retrospective   |
-| `03-pipeline.md`    | 11 层         | 同上                                                                                            |
-| `01-methodology.md` | 11 层         | 同上                                                                                            |
+| 文件                | 声明的阶段数  | 具体阶段                                                                                                    |
+| ------------------- | ------------- | ----------------------------------------------------------------------------------------------------------- |
+| `README.md`         | 11 层         | Goal → Spec → Design → Plan → Tasks → Prompt → Code → Test → Review → Release → Retrospective               |
+| `03-pipeline.md`    | 11 层         | 同上                                                                                                        |
+| `01-methodology.md` | 11 层         | 同上                                                                                                        |
 | `12-operations.md`  | 12 步 SOP     | Goal → Goal Review → Spec → Matrix → Tasks → Plan → Prompt → Code → Test → Review → Release → Validate Goal |
 
 **问题**：`12-operations.md` 更像操作手册而不是主方法论，但它没有说明与 11 层主流程的映射。差异包括：加入 Goal Review、Matrix、Validate Goal；省略 Design 和 Retrospective；把 Tasks 放在 Plan 之前；把 Matrix 作为步骤，而 `03-pipeline.md` 把 Matrix 定义为横切制品。
@@ -71,10 +71,10 @@
 
 #### P1-3：Goal Schema 投影视图不一致
 
-| 定义位置                   | 对象视图         | 关键差异                                         |
-| -------------------------- | ---------------- | ------------------------------------------------ |
-| `02-goal-standard.md`      | Goal 标准字段    | 包含 `owner`、`priority`、`status` 等最小字段    |
-| `09-templates.md` YAML     | Goal 编写模板    | 包含 `target_users`、`scope`、`constraints`，但缺少部分最小字段 |
+| 定义位置                   | 对象视图          | 关键差异                                                          |
+| -------------------------- | ----------------- | ----------------------------------------------------------------- |
+| `02-goal-standard.md`      | Goal 标准字段     | 包含 `owner`、`priority`、`status` 等最小字段                     |
+| `09-templates.md` YAML     | Goal 编写模板     | 包含 `target_users`、`scope`、`constraints`，但缺少部分最小字段   |
 | `15-registry.md`           | Registry 运行视图 | 包含 `goal_id`、`pipeline_state`、`current_phase`、`phase_status` |
 
 **问题**：Goal 文档对象、模板对象、Registry 行对象可能本来就是三种投影视图，但文档没有说明字段映射和必填性。当前读者无法判断模板缺少 `owner`、`priority`、`status` 是简化视图、遗漏，还是由 Registry 补齐。
@@ -110,13 +110,13 @@
 
 `10-lint-rules.md` 定义了 5 类 Lint 规则（G/S/M/P/C-LINT），总计约 38 条规则。但工具实现面窄于文档承诺：
 
-| Lint 类别       | 规则数 | 对应文档的 Schema 定义                   |
-| --------------- | ------ | ---------------------------------------- |
-| G-LINT (Goal)   | 7      | `02-goal-standard.md`、`09-templates.md` |
-| S-LINT (Spec)   | 8      | `05-layer-standards.md` §3               |
+| Lint 类别       | 规则数 | 对应文档的 Schema 定义                                           |
+| --------------- | ------ | ---------------------------------------------------------------- |
+| G-LINT (Goal)   | 7      | `02-goal-standard.md`、`09-templates.md`                         |
+| S-LINT (Spec)   | 8      | `05-layer-standards.md` §3                                       |
 | M-LINT (Matrix) | 8      | `05-layer-standards.md` §9、`09-templates.md`、`rules.yaml` 样例 |
-| P-LINT (Prompt) | 10     | `11-ai-collaboration.md`                 |
-| C-LINT (Code)   | 5      | `10-lint-rules.md` 内联                  |
+| P-LINT (Prompt) | 10     | `11-ai-collaboration.md`                                         |
+| C-LINT (Code)   | 5      | `10-lint-rules.md` 内联                                          |
 
 **问题**：
 
@@ -271,13 +271,13 @@
 
 ### Phase 1：止血（1-2 天）
 
-| 编号 | 任务                                                     | 影响      |
-| ---- | -------------------------------------------------------- | --------- |
+| 编号 | 任务                                                                 | 影响      |
+| ---- | -------------------------------------------------------------------- | --------- |
 | F-1  | 统一 SSOT 声明：每类对象只保留一个裁决源，其他文件引用或声明投影视图 | 解决 P1-1 |
-| F-2  | 对齐 `12-operations.md` SOP 到 11 层管线                 | 解决 P1-3 |
-| F-3  | 修复 `05-layer-standards.md` §8 缺失                     | 解决 P1-2 |
-| F-4  | 统一 Goal Schema 到 `09-templates.md`                    | 解决 P1-4 |
-| F-5  | 明确 Matrix canonical schema，并让模板、prose 和工具回指同一来源 | 解决 P1-4 |
+| F-2  | 对齐 `12-operations.md` SOP 到 11 层管线                             | 解决 P1-3 |
+| F-3  | 修复 `05-layer-standards.md` §8 缺失                                 | 解决 P1-2 |
+| F-4  | 统一 Goal Schema 到 `09-templates.md`                                | 解决 P1-4 |
+| F-5  | 明确 Matrix canonical schema，并让模板、prose 和工具回指同一来源     | 解决 P1-4 |
 
 ### Phase 2：加固（3-5 天）
 
@@ -303,13 +303,13 @@
 
 `docs/report/goal/goal-docs-structural-analysis-20260609.md` 是本目录主审计报告，给出 66/100；本报告在事实校准后给出 63/100，定位为补充证据和细化建议。两份报告不应被理解为并列权威。
 
-| 维度         | 已有报告           | 本报告                            | 差异原因                      |
-| ------------ | ------------------ | --------------------------------- | ----------------------------- |
-| 发现的问题数 | 7 P1 + 8 P2 + 4 P3 | 5 P1 + 5 P2 + 3 P3                | 本报告更严格定义 P1（阻塞级） |
-| SSOT 问题    | 提及               | 深入分析了 4 处冲突的具体字段差异 | 本报告更细致                  |
-| 管线阶段数   | 已覆盖流程和状态漂移 | 补充 SOP 与主流程的具体映射差异    | 细化已有发现                  |
-| §8 缺失      | 已覆盖             | 保留章节连续性证据                | 细化已有发现                  |
-| 工具契约     | 提及               | 细化到每个脚本的具体缺陷          | 更具体                        |
+| 维度         | 已有报告             | 本报告                            | 差异原因                      |
+| ------------ | -------------------- | --------------------------------- | ----------------------------- |
+| 发现的问题数 | 7 P1 + 8 P2 + 4 P3   | 5 P1 + 5 P2 + 3 P3                | 本报告更严格定义 P1（阻塞级） |
+| SSOT 问题    | 提及                 | 深入分析了 4 处冲突的具体字段差异 | 本报告更细致                  |
+| 管线阶段数   | 已覆盖流程和状态漂移 | 补充 SOP 与主流程的具体映射差异   | 细化已有发现                  |
+| §8 缺失      | 已覆盖               | 保留章节连续性证据                | 细化已有发现                  |
+| 工具契约     | 提及                 | 细化到每个脚本的具体缺陷          | 更具体                        |
 
 ---
 

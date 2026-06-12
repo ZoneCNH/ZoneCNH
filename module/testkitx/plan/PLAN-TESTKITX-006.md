@@ -22,11 +22,11 @@ blocks: [TASK-TESTKITX-010]
 
 ## 2. 覆盖需求
 
-| 需求 | 描述 | AC |
-|------|------|-----|
-| FR-007 | Eventually 轮询条件断言 | AC-007: 成功/超时两种场景 |
-| BR-003 | 使用 testing.T 而非 panic | 失败时输出清晰诊断 |
-| SPEC §13 | Edge Case: timeout=0 | 立即检查一次，不等待 |
+| 需求     | 描述                      | AC                        |
+| -------- | ------------------------- | ------------------------- |
+| FR-007   | Eventually 轮询条件断言   | AC-007: 成功/超时两种场景 |
+| BR-003   | 使用 testing.T 而非 panic | 失败时输出清晰诊断        |
+| SPEC §13 | Edge Case: timeout=0      | 立即检查一次，不等待      |
 
 ---
 
@@ -87,15 +87,15 @@ func WithInterval(d time.Duration) EventuallyOption
 
 **测试用例**：
 
-| 用例 | 描述 | 验证点 |
-|------|------|--------|
-| TestEventually_ImmediateSuccess | 条件立即满足 | 不超时，通过 |
-| TestEventually_DelayedSuccess | 条件延迟满足 | 轮询后通过 |
-| TestEventually_Timeout | 条件永不满足 | 超时失败 |
-| TestEventually_ZeroTimeout | timeout=0 | 立即检查一次 |
-| TestEventually_CustomInterval | 自定义 interval | 按配置轮询 |
-| TestEventually_NilFunc | fn 为 nil | 立即失败 |
-| TestEventually_DiagnosticOutput | 超时诊断 | 输出包含等待时间和轮询次数 |
+| 用例                            | 描述            | 验证点                     |
+| ------------------------------- | --------------- | -------------------------- |
+| TestEventually_ImmediateSuccess | 条件立即满足    | 不超时，通过               |
+| TestEventually_DelayedSuccess   | 条件延迟满足    | 轮询后通过                 |
+| TestEventually_Timeout          | 条件永不满足    | 超时失败                   |
+| TestEventually_ZeroTimeout      | timeout=0       | 立即检查一次               |
+| TestEventually_CustomInterval   | 自定义 interval | 按配置轮询                 |
+| TestEventually_NilFunc          | fn 为 nil       | 立即失败                   |
+| TestEventually_DiagnosticOutput | 超时诊断        | 输出包含等待时间和轮询次数 |
 
 ---
 
@@ -112,9 +112,9 @@ go test -run TestEventually -race -count=1 -v ./...
 
 ## 6. 风险与回滚
 
-| 风险 | 概率 | 影响 | 缓解 | 回滚 |
-|------|------|------|------|------|
-| 测试不稳定（flaky） | Medium | Low | 测试中使用短 timeout(100ms)；CI 中给足够 timeout | 调整测试 timeout |
-| time.Ticker 未正确停止 | Low | Medium | defer ticker.Stop() | 添加 defer |
+| 风险                   | 概率   | 影响   | 缓解                                             | 回滚             |
+| ---------------------- | ------ | ------ | ------------------------------------------------ | ---------------- |
+| 测试不稳定（flaky）    | Medium | Low    | 测试中使用短 timeout(100ms)；CI 中给足够 timeout | 调整测试 timeout |
+| time.Ticker 未正确停止 | Low    | Medium | defer ticker.Stop()                              | 添加 defer       |
 
 **回滚路径**：本 task 仅新增文件，回滚 = `rm assert.go eventually.go eventually_test.go`。

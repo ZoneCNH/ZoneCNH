@@ -29,16 +29,16 @@ status: pending
 
 ## Requirements Covered
 
-| Requirement | Description | Acceptance Criteria |
-|---|---|---|
-| FR-003 | FakeMeter：记录 metrics 到内存 | AC-003 |
+| Requirement | Description                    | Acceptance Criteria |
+| ----------- | ------------------------------ | ------------------- |
+| FR-003      | FakeMeter：记录 metrics 到内存 | AC-003              |
 
 ## Test Plan
 
-| Test Case | Type | Description |
-|---|---|---|
-| TC-003 | Unit | Counter.Add 后 AssertCounterValue 正确 |
-| TC-003 | Unit | Histogram.Record 后 AssertHistogramRecorded 通过 |
+| Test Case | Type | Description                                      |
+| --------- | ---- | ------------------------------------------------ |
+| TC-003    | Unit | Counter.Add 后 AssertCounterValue 正确           |
+| TC-003    | Unit | Histogram.Record 后 AssertHistogramRecorded 通过 |
 
 ## Implementation Notes
 
@@ -47,13 +47,13 @@ status: pending
 
 ## Implementation Plan
 
-| Step | Description | Deliverables | Verification |
-|---|---|---|---|
-| 1 | 实现 `FakeMeter` 和 Counter/Histogram/Gauge 内部类型 | `fake_meter.go` | `go build ./...` 通过 |
-| 2 | 实现断言方法：CounterValue/HistogramValues/GaugeValue | `fake_meter.go` | 全部测试通过 |
+| Step | Description                                           | Deliverables    | Verification          |
+| ---- | ----------------------------------------------------- | --------------- | --------------------- |
+| 1    | 实现 `FakeMeter` 和 Counter/Histogram/Gauge 内部类型  | `fake_meter.go` | `go build ./...` 通过 |
+| 2    | 实现断言方法：CounterValue/HistogramValues/GaugeValue | `fake_meter.go` | 全部测试通过          |
 
 ### Risk Assessment
 
-| Risk | Probability | Impact | Mitigation |
-|---|---|---|---|
-| Meter 接口不完整 | Low | Medium | 对照 observex.Meter 定义 |
+| Risk             | Probability | Impact | Mitigation               |
+| ---------------- | ----------- | ------ | ------------------------ |
+| Meter 接口不完整 | Low         | Medium | 对照 observex.Meter 定义 |

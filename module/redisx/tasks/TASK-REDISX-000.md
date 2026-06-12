@@ -28,16 +28,16 @@ status: pending
 
 ## Requirements Covered
 
-| Requirement | Description | Acceptance Criteria |
-|---|---|---|
-| §10 | 公共错误变量定义 | 错误变量均为 `errors.New` 创建 |
-| §15 | go.mod 依赖声明 | redis 客户端依赖 |
+| Requirement | Description      | Acceptance Criteria            |
+| ----------- | ---------------- | ------------------------------ |
+| §10         | 公共错误变量定义 | 错误变量均为 `errors.New` 创建 |
+| §15         | go.mod 依赖声明  | redis 客户端依赖               |
 
 ## Test Plan
 
-| Test Case | Type | Description |
-|---|---|---|
-| — | CI Gate | `go build ./...` 编译通过 |
+| Test Case | Type    | Description               |
+| --------- | ------- | ------------------------- |
+| —         | CI Gate | `go build ./...` 编译通过 |
 
 ## Implementation Notes
 
@@ -46,13 +46,13 @@ status: pending
 
 ## Implementation Plan
 
-| Step | Description | Deliverables | Verification |
-|---|---|---|---|
-| 1 | 创建 `go.mod` | `go.mod` | `go mod tidy` 无变化 |
-| 2 | 创建 `doc.go` 和 `errors.go` | `doc.go`, `errors.go` | `go build ./...` 通过 |
+| Step | Description                  | Deliverables          | Verification          |
+| ---- | ---------------------------- | --------------------- | --------------------- |
+| 1    | 创建 `go.mod`                | `go.mod`              | `go mod tidy` 无变化  |
+| 2    | 创建 `doc.go` 和 `errors.go` | `doc.go`, `errors.go` | `go build ./...` 通过 |
 
 ### Risk Assessment
 
-| Risk | Probability | Impact | Mitigation |
-|---|---|---|---|
-| redis 客户端版本冲突 | Low | Medium | 使用 v9 稳定版 |
+| Risk                 | Probability | Impact | Mitigation     |
+| -------------------- | ----------- | ------ | -------------- |
+| redis 客户端版本冲突 | Low         | Medium | 使用 v9 稳定版 |

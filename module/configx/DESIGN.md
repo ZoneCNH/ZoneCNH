@@ -34,19 +34,19 @@ configx 是 Foundation L1 配置管理模块，提供统一的多源配置加载
 
 ### 1.2 与 goal.md 的版本映射
 
-| 能力 | v1.0.0 (DESIGN.md 覆盖) | v1.0 (goal.md 目标) | 状态 |
-|------|:---:|:---:|:--:|
-| FileSource / EnvSource / ArgsSource | ✅ | ✅ | 已实现 |
-| ConfigSource SPI（远程配置源扩展点） | ❌ | ✅ | v1.0 计划 |
-| ConfigSnapshot（不可变配置快照） | ❌ | ✅ | v1.0 计划 |
-| ConfigChangeEvent（热更新事件） | ❌ | ✅ | v1.0 计划 |
-| bind(prefix, class) 强类型绑定 | ❌ | ✅ | v1.0 计划 |
-| ConfigValidator SPI（自定义校验扩展） | ❌ | ✅ | v1.0 计划 |
-| 热更新失败回滚 | ❌ | ✅ | v1.0 计划 |
-| 审计日志（变更来源/操作者/脱敏 diff） | ❌ | ✅ | v1.0 计划 |
-| 配置文档自动生成 | ❌ | ✅ | v1.0 计划 |
-| 敏感字段脱敏（自动 + Reveal()） | ⚠️ TASK-010 实现中 | ✅ | v0.3 过渡 |
-| Watch 文件监控 | ⚠️ 可选特性 (FR-005) | ✅ | v1.0.0 可用 |
+| 能力                                  | v1.0.0 (DESIGN.md 覆盖) | v1.0 (goal.md 目标) | 状态        |
+| ------------------------------------- | :---------------------: | :-----------------: | :--:        |
+| FileSource / EnvSource / ArgsSource   | ✅                       | ✅                   | 已实现      |
+| ConfigSource SPI（远程配置源扩展点）  | ❌                       | ✅                   | v1.0 计划   |
+| ConfigSnapshot（不可变配置快照）      | ❌                       | ✅                   | v1.0 计划   |
+| ConfigChangeEvent（热更新事件）       | ❌                       | ✅                   | v1.0 计划   |
+| bind(prefix, class) 强类型绑定        | ❌                       | ✅                   | v1.0 计划   |
+| ConfigValidator SPI（自定义校验扩展） | ❌                       | ✅                   | v1.0 计划   |
+| 热更新失败回滚                        | ❌                       | ✅                   | v1.0 计划   |
+| 审计日志（变更来源/操作者/脱敏 diff） | ❌                       | ✅                   | v1.0 计划   |
+| 配置文档自动生成                      | ❌                       | ✅                   | v1.0 计划   |
+| 敏感字段脱敏（自动 + Reveal()）       | ⚠️ TASK-010 实现中      | ✅                   | v0.3 过渡   |
+| Watch 文件监控                        | ⚠️ 可选特性 (FR-005)    | ✅                   | v1.0.0 可用 |
 
 > **说明**：本 DESIGN.md 聚焦 v1.0.0 已实现的架构决策。v1.0 新增能力（ConfigSource SPI、热更新回滚、审计日志等）的具体设计将在 v1.0 开发阶段补充，goal.md 作为需求基线。
 
@@ -103,24 +103,24 @@ func WithStrictMode(bool) Option
 
 **测试分层**：
 
-| 层级 | 覆盖范围 | Mock 策略 | 对应 Task |
-|------|----------|-----------|-----------|
-| 单元测试 | 解析器、合并算法、类型转换、校验规则 | 纯函数，无需 mock | 002~005 |
-| Reader 测试 | Get/并发安全/类型方法 | `sync.RWMutex` 保护的 `map[string]interface{}` 直接注入 | 006 |
-| 集成测试 | 完整加载链：默认值→文件→环境变量→校验→读取 | 使用 `testdata/` 下的 fixture 文件 | 002~007 |
-| 安全测试 | 脱敏、权限检查、gitleaks | 含敏感字段的 fixture 配置 | 010 |
-| Watch 测试 | 文件变更→回调触发 | 临时文件 + `time.Tick` 轮询（不需要真实 fsnotify） | 007 |
+| 层级        | 覆盖范围                                   | Mock 策略                                               | 对应 Task   |
+| ----------- | ------------------------------------------ | ------------------------------------------------------- | ----------- |
+| 单元测试    | 解析器、合并算法、类型转换、校验规则       | 纯函数，无需 mock                                       | 002~005     |
+| Reader 测试 | Get/并发安全/类型方法                      | `sync.RWMutex` 保护的 `map[string]interface{}` 直接注入 | 006         |
+| 集成测试    | 完整加载链：默认值→文件→环境变量→校验→读取 | 使用 `testdata/` 下的 fixture 文件                      | 002~007     |
+| 安全测试    | 脱敏、权限检查、gitleaks                   | 含敏感字段的 fixture 配置                               | 010         |
+| Watch 测试  | 文件变更→回调触发                          | 临时文件 + `time.Tick` 轮询（不需要真实 fsnotify）      | 007         |
 
 **Mock 注入点**：
 
-| 注入点 | 位置 | 用途 |
-|--------|------|------|
-| `config.data` (内部 map) | `reader.go` | Reader 单元测试直接构造嵌套 map 验证点分路径遍历，无需 Load 完整流程 |
-| `WithDefaults(map)` Option | `options.go` | 集成测试注入预定义默认值，避免依赖外部配置文件 |
-| `WithSchema(*jsonschema.Schema)` Option | `options.go` | 校验测试注入自定义 schema，覆盖边界类型和 required 规则 |
-| `WithStrictMode(bool)` Option | `options.go` | 控制未定义 key 行为，strict=true 用于严格模式测试 |
-| `testdata/` 目录 | 项目根 | fixture 文件（YAML/TOML/JSON/schema），所有集成测试共享 |
-| `Reveal(key) string` | `sanitize.go` | 调试用原始值查看（仅测试环境使用，生产代码需 CI 扫描阻断） |
+| 注入点                                  | 位置          | 用途                                                                 |
+| --------------------------------------- | ------------- | -------------------------------------------------------------------- |
+| `config.data` (内部 map)                | `reader.go`   | Reader 单元测试直接构造嵌套 map 验证点分路径遍历，无需 Load 完整流程 |
+| `WithDefaults(map)` Option              | `options.go`  | 集成测试注入预定义默认值，避免依赖外部配置文件                       |
+| `WithSchema(*jsonschema.Schema)` Option | `options.go`  | 校验测试注入自定义 schema，覆盖边界类型和 required 规则              |
+| `WithStrictMode(bool)` Option           | `options.go`  | 控制未定义 key 行为，strict=true 用于严格模式测试                    |
+| `testdata/` 目录                        | 项目根        | fixture 文件（YAML/TOML/JSON/schema），所有集成测试共享              |
+| `Reveal(key) string`                    | `sanitize.go` | 调试用原始值查看（仅测试环境使用，生产代码需 CI 扫描阻断）           |
 
 ## 3. 关键架构决策 (ADR)
 
@@ -181,14 +181,14 @@ func WithStrictMode(bool) Option
                     └──────────┘              └──────────┘
 ```
 
-| 阶段 | 触发方法 | 状态变更 | 可逆性 | 错误处理 |
-|------|----------|----------|:--:|------|
-| 初始化 | `New(opts...)` | 创建空 Config，应用 Option | ✅ 可重建 | Option 冲突时 panic（设计时约束） |
-| 加载 | `Load(path)` | data 填充，来源标记为 FILE | ❌ 不可逆（ErrAlreadyLoaded） | 文件不存在/格式无效→返回 error，data 不变 |
-| 覆盖 | `WithEnvOverride(prefix)` | env→key 映射写入覆盖层 | ✅ 返回新 Config（原实例不变） | 类型转换失败→返回 ErrTypeMismatch |
-| 校验 | `Validate()` | 校验状态标记为 VALIDATED | ✅ 可重复调用 | 校验失败→返回错误列表，不阻断后续 Get |
-| 运行 | `Reader.Get*(key)` | 只读访问，无状态变更 | — | key 不存在→返回 nil/零值，不 panic |
-| 关闭 | 进程退出 | Config 实例随进程销毁 | — | 无资源需清理（无连接池/文件句柄） |
+| 阶段   | 触发方法                  | 状态变更                   | 可逆性                        | 错误处理                                  |
+| ------ | ------------------------- | -------------------------- | :--:                          | ----------------------------------------- |
+| 初始化 | `New(opts...)`            | 创建空 Config，应用 Option | ✅ 可重建                      | Option 冲突时 panic（设计时约束）         |
+| 加载   | `Load(path)`              | data 填充，来源标记为 FILE | ❌ 不可逆（ErrAlreadyLoaded）  | 文件不存在/格式无效→返回 error，data 不变 |
+| 覆盖   | `WithEnvOverride(prefix)` | env→key 映射写入覆盖层     | ✅ 返回新 Config（原实例不变） | 类型转换失败→返回 ErrTypeMismatch         |
+| 校验   | `Validate()`              | 校验状态标记为 VALIDATED   | ✅ 可重复调用                  | 校验失败→返回错误列表，不阻断后续 Get     |
+| 运行   | `Reader.Get*(key)`        | 只读访问，无状态变更       | —                             | key 不存在→返回 nil/零值，不 panic        |
+| 关闭   | 进程退出                  | Config 实例随进程销毁      | —                             | 无资源需清理（无连接池/文件句柄）         |
 
 > **注**：Watch 阶段（FR-005）为可选特性，在 Load→Validate→Run 之间插入文件监控循环，不在主生命周期路径中。
 
@@ -211,9 +211,9 @@ configx (L1)
 
 ## 6. 技术风险
 
-| 风险 | 概率 | 影响 | 缓解 |
-|------|:--:|:--:|------|
-| YAML/TOML 解析差异 | Low | High | 统一 golden 测试 |
-| 环境变量类型转换错误 | Medium | Medium | 明确的类型转换规则 |
-| Watch 并发安全 | Medium | High | mutex + 快照模式 |
-| 敏感信息泄露 | Low | Critical | 自动脱敏 + CI 扫描（TASK-010） |
+| 风险                 | 概率   | 影响     | 缓解                           |
+| -------------------- | :--:   | :--:     | ------------------------------ |
+| YAML/TOML 解析差异   | Low    | High     | 统一 golden 测试               |
+| 环境变量类型转换错误 | Medium | Medium   | 明确的类型转换规则             |
+| Watch 并发安全       | Medium | High     | mutex + 快照模式               |
+| 敏感信息泄露         | Low    | Critical | 自动脱敏 + CI 扫描（TASK-010） |

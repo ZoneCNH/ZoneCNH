@@ -47,10 +47,10 @@ status: pending
 
 > Spec TC: TC-007
 
-| Requirement | Description |
-|---|---|
-| FR-003 | 健康检查 |
-| BR-007 | Metadata nil 时必须序列化为 {} |
+| Requirement | Description                    |
+| ----------- | ------------------------------ |
+| FR-003      | 健康检查                       |
+| BR-007      | Metadata nil 时必须序列化为 {} |
 
 ## Internal Dependencies
 
@@ -63,9 +63,9 @@ status: pending
 
 ## Test Plan
 
-| TC | Type | Description |
-|----|------|-------------|
-| TC-007 | Unit | Aggregate 优先级：unhealthy>degraded>healthy |
+| TC     | Type   | Description                                  |
+| ------ | ------ | -------------------------------------------- |
+| TC-007 | Unit   | Aggregate 优先级：unhealthy>degraded>healthy |
 
 ## Implementation Notes
 

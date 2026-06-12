@@ -20,28 +20,28 @@ Copilot CLI 在本仓库中承担三类职责：
 
 ## Scorer 代理清单
 
-| Agent | 评分对象 | Rubric |
-|-------|----------|--------|
-| `spec-structural-score` | `module/{module}/SPEC.md` | `docs/governance/scoring/RUBRIC-spec.md` |
-| `matrix-structural-score` | `module/{module}/TRACEABILITY.md` | `docs/governance/scoring/RUBRIC-matrix.md` |
-| `tasks-structural-score` | `module/{module}/tasks/TASK-*.md` | `docs/governance/scoring/RUBRIC-tasks.md` |
-| `plan-structural-score` | `module/{module}/IMPLEMENTATION-PLAN.md` | `docs/governance/scoring/RUBRIC-plan.md` |
-| `prompt-structural-score` | `module/{module}/TASK-*-PROMPT.md` | `docs/governance/scoring/RUBRIC-prompt.md` |
-| `code-structural-score` | 本次 Task diff + 测试输出 | `docs/governance/scoring/RUBRIC-code.md` |
-| `pipeline-arbiter` | 四源评分聚合 | `docs/governance/scoring/ARBITER-PROTOCOL.md` |
-| `meta-arbiter` | 元仲裁，Goodhart 诊断与 RSI 建议 | `CONSTITUTION.md` §14、`.copilot/state/outer-metrics/SCHEMA.md` |
+| Agent                     | 评分对象                                 | Rubric                                                          |
+| ------------------------- | ---------------------------------------- | --------------------------------------------------------------- |
+| `spec-structural-score`   | `module/{module}/SPEC.md`                | `docs/governance/scoring/RUBRIC-spec.md`                        |
+| `matrix-structural-score` | `module/{module}/TRACEABILITY.md`        | `docs/governance/scoring/RUBRIC-matrix.md`                      |
+| `tasks-structural-score`  | `module/{module}/tasks/TASK-*.md`        | `docs/governance/scoring/RUBRIC-tasks.md`                       |
+| `plan-structural-score`   | `module/{module}/IMPLEMENTATION-PLAN.md` | `docs/governance/scoring/RUBRIC-plan.md`                        |
+| `prompt-structural-score` | `module/{module}/TASK-*-PROMPT.md`       | `docs/governance/scoring/RUBRIC-prompt.md`                      |
+| `code-structural-score`   | 本次 Task diff + 测试输出                | `docs/governance/scoring/RUBRIC-code.md`                        |
+| `pipeline-arbiter`        | 四源评分聚合                             | `docs/governance/scoring/ARBITER-PROTOCOL.md`                   |
+| `meta-arbiter`            | 元仲裁，Goodhart 诊断与 RSI 建议         | `CONSTITUTION.md` §14、`.copilot/state/outer-metrics/SCHEMA.md` |
 
 ## Goal Delivery OS Agent 投影清单
 
 以下 Agent 是 `docs/goal/` 的 Copilot prompt 投影，不是独立规则源。权威边界以 `docs/goal/00-authority-map.md` 和 `docs/goal/14-agent-protocols.md` 为准。
 
-| Agent | 职责 | 维护文件 |
-|-------|------|----------|
-| `goal-spec` | Goal / Spec / Design / Plan / Task / Registry 编写 | `.config/goal/registry/*.yaml`, `.config/goal/pipeline/state.yaml` |
-| `goal-reviewer` | G0-G11、Review、Release 对抗性审查 | `.config/goal/gates/state.yaml` |
-| `goal-matrix` | 横向追溯 Matrix edge graph | `.config/goal/matrix/matrix.yaml` |
-| `goal-prompt-builder` | 单 Task Context Package / Prompt | `.config/goal/prompts/TASK-*/v*.md` |
-| `goal-evidence` | Evidence Bundle、No Evidence No Done、Release 证据闭环 | `.config/goal/evidence/**/*.md` |
+| Agent                 | 职责                                                   | 维护文件                                                           |
+| --------------------- | ------------------------------------------------------ | ------------------------------------------------------------------ |
+| `goal-spec`           | Goal / Spec / Design / Plan / Task / Registry 编写     | `.config/goal/registry/*.yaml`, `.config/goal/pipeline/state.yaml` |
+| `goal-reviewer`       | G0-G11、Review、Release 对抗性审查                     | `.config/goal/gates/state.yaml`                                    |
+| `goal-matrix`         | 横向追溯 Matrix edge graph                             | `.config/goal/matrix/matrix.yaml`                                  |
+| `goal-prompt-builder` | 单 Task Context Package / Prompt                       | `.config/goal/prompts/TASK-*/v*.md`                                |
+| `goal-evidence`       | Evidence Bundle、No Evidence No Done、Release 证据闭环 | `.config/goal/evidence/**/*.md`                                    |
 
 Goal Agent 必须遵守以下边界：
 

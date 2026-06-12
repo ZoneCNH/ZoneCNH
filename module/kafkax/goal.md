@@ -1,13 +1,13 @@
 # kafkax 发布版本 1.0 Goal 定位与实现标准
 
-| 字段 | 内容 |
-| --- | --- |
-| 模块名 | `kafkax` |
-| 发布版本 | 1.0.0 |
-| 所属层级 | 消息扩展层 / Kafka 事件流 |
-| 稳定级别 | Public API Stable；SPI Stable；Internal 可演进 |
-| 文档状态 | 1.0 发布基线文档 |
-| 发布日期基准 | 2026-06-09 |
+| 字段         | 内容                                           |
+| ------------ | ---------------------------------------------- |
+| 模块名       | `kafkax`                                       |
+| 发布版本     | 1.0.0                                          |
+| 所属层级     | 消息扩展层 / Kafka 事件流                      |
+| 稳定级别     | Public API Stable；SPI Stable；Internal 可演进 |
+| 文档状态     | 1.0 发布基线文档                               |
+| 发布日期基准 | 2026-06-09                                     |
 
 ## 术语约定
 
@@ -57,24 +57,24 @@
 
 ## 3. 核心场景
 
-| 场景 | 说明 | 1.0 期望结果 |
-| --- | --- | --- |
-| 事件发布 | 订单服务发布订单已创建事件 | 事件信封完整，生产结果可观测 |
-| 消费处理 | 库存服务消费订单事件 | handler 成功后提交位点，失败按策略重试 |
-| 消费失败 | 事件格式错误或业务处理失败 | 不可重试进入死信，可重试进入重试策略 |
-| 链路追踪 | 请求触发事件并被异步消费 | 生产和消费 span 通过 traceId 串联 |
+| 场景     | 说明                       | 1.0 期望结果                           |
+| -------- | -------------------------- | -------------------------------------- |
+| 事件发布 | 订单服务发布订单已创建事件 | 事件信封完整，生产结果可观测           |
+| 消费处理 | 库存服务消费订单事件       | handler 成功后提交位点，失败按策略重试 |
+| 消费失败 | 事件格式错误或业务处理失败 | 不可重试进入死信，可重试进入重试策略   |
+| 链路追踪 | 请求触发事件并被异步消费   | 生产和消费 span 通过 traceId 串联      |
 
 ## 4. 能力范围
 
-| 能力域 | 1.0 必须具备的能力 | 验收方式 |
-| --- | --- | --- |
-| 事件信封 | EventEnvelope、Header、schemaVersion、trace 信息 | 契约测试通过 |
-| 生产者 | send、sendBatch、key 分区、回调、确认级别 | 真实 Kafka 集成测试通过 |
-| 消费者 | ConsumerContainer、并发、位点提交、rebalance 处理 | 消费集成测试通过 |
-| 失败处理 | 错误分类、重试 Topic、DLQ、poison message 处理；DLQ 消息必须保留原始 topic、partition、offset、eventId、errorCode、retryCount 和失败原因；最大重试次数默认 3，超过后转入 DLQ 并触发告警指标 | 失败场景测试通过 |
-| 幂等 | idempotencyKey、去重 SPI、重复消息跳过 | 重复投递测试通过 |
-| 序列化 | JSON/Avro/Proto SPI、schema 版本 | 兼容性测试通过 |
-| 治理观测 | 生产/消费/积压/错误/重试/死信指标 | 观测测试通过 |
+| 能力域   | 1.0 必须具备的能力                                                                                                                                                                          | 验收方式                |
+| -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- |
+| 事件信封 | EventEnvelope、Header、schemaVersion、trace 信息                                                                                                                                            | 契约测试通过            |
+| 生产者   | send、sendBatch、key 分区、回调、确认级别                                                                                                                                                   | 真实 Kafka 集成测试通过 |
+| 消费者   | ConsumerContainer、并发、位点提交、rebalance 处理                                                                                                                                           | 消费集成测试通过        |
+| 失败处理 | 错误分类、重试 Topic、DLQ、poison message 处理；DLQ 消息必须保留原始 topic、partition、offset、eventId、errorCode、retryCount 和失败原因；最大重试次数默认 3，超过后转入 DLQ 并触发告警指标 | 失败场景测试通过        |
+| 幂等     | idempotencyKey、去重 SPI、重复消息跳过                                                                                                                                                      | 重复投递测试通过        |
+| 序列化   | JSON/Avro/Proto SPI、schema 版本                                                                                                                                                            | 兼容性测试通过          |
+| 治理观测 | 生产/消费/积压/错误/重试/死信指标                                                                                                                                                           | 观测测试通过            |
 
 ## 5. 职责边界
 
@@ -94,24 +94,24 @@
 
 ## 6. 依赖关系与分层约束
 
-| 依赖类型 | 约束 |
-| --- | --- |
+| 依赖类型 | 约束                                                                                     |
+| -------- | ---------------------------------------------------------------------------------------- |
 | 上游依赖 | 依赖 kernel、configx、observex、resiliencx；MUST 向 contracts 登记事件契约和错误码契约。 |
-| 下游依赖 | 业务事件流、审计/日志管道、异步集成可使用 kafkax。 |
-| 分层约束 | kafkax 不依赖具体业务 schema；schema 通过 contracts 或 serializer SPI 管理。 |
+| 下游依赖 | 业务事件流、审计/日志管道、异步集成可使用 kafkax。                                       |
+| 分层约束 | kafkax 不依赖具体业务 schema；schema 通过 contracts 或 serializer SPI 管理。             |
 
 ## 7. 对外契约
 
 ### 7.1 公开能力面
 
-| 契约 | 定位 | 1.0 稳定承诺 |
-| --- | --- | --- |
-| KafkaProducerX | 生产接口 | send 结果和错误语义稳定 |
-| KafkaConsumerContainer | 消费容器 | 生命周期和位点提交语义稳定 |
-| MessageHandler | 业务处理接口 | 成功/失败/重试结果语义稳定 |
-| EventEnvelope | 事件信封 | 核心字段稳定，只能追加可选字段 |
-| KafkaSerializer SPI | 序列化扩展点 | encode/decode 语义稳定 |
-| DeadLetterPublisher | 死信发布接口 | 死信字段稳定 |
+| 契约                   | 定位         | 1.0 稳定承诺                   |
+| ---------------------- | ------------ | ------------------------------ |
+| KafkaProducerX         | 生产接口     | send 结果和错误语义稳定        |
+| KafkaConsumerContainer | 消费容器     | 生命周期和位点提交语义稳定     |
+| MessageHandler         | 业务处理接口 | 成功/失败/重试结果语义稳定     |
+| EventEnvelope          | 事件信封     | 核心字段稳定，只能追加可选字段 |
+| KafkaSerializer SPI    | 序列化扩展点 | encode/decode 语义稳定         |
+| DeadLetterPublisher    | 死信发布接口 | 死信字段稳定                   |
 
 ### 7.2 1.0 逻辑接口基线
 
@@ -140,20 +140,20 @@ HandlerResult
 
 ## 8. 配置契约
 
-| 配置项 | 含义 | 默认值 / 要求 | 稳定性 |
-| --- | --- | --- | --- |
-| foundationx.kafka.enabled | 是否启用 kafkax | false，由业务显式启用 | Stable |
-| foundationx.kafka.bootstrap-servers | Kafka 地址 | 必须配置 | Stable |
-| foundationx.kafka.client-id | 客户端标识 | 应用名 | Stable |
-| foundationx.kafka.producer.acks | 生产确认级别 | all | Stable |
-| foundationx.kafka.consumer.group-id | 消费组 | 消费者必须配置 | Stable |
-| foundationx.kafka.consumer.concurrency | 消费并发 | 1 | Stable |
-| foundationx.kafka.retry.max-attempts | 消费最大重试 | 3 | Stable |
-| foundationx.kafka.dlq.suffix | 死信 Topic 后缀 | .DLQ | Stable |
-| foundationx.kafka.serializer | 序列化器 | json | Stable |
-| foundationx.kafka.producer.timeout | 生产者发送超时 | 30s | Stable |
-| foundationx.kafka.consumer.session-timeout | 消费者会话超时 | 45s | Stable |
-| foundationx.kafka.consumer.heartbeat-interval | 心跳间隔 | 15s | Stable |
+| 配置项                                        | 含义            | 默认值 / 要求         | 稳定性 |
+| --------------------------------------------- | --------------- | --------------------- | ------ |
+| foundationx.kafka.enabled                     | 是否启用 kafkax | false，由业务显式启用 | Stable |
+| foundationx.kafka.bootstrap-servers           | Kafka 地址      | 必须配置              | Stable |
+| foundationx.kafka.client-id                   | 客户端标识      | 应用名                | Stable |
+| foundationx.kafka.producer.acks               | 生产确认级别    | all                   | Stable |
+| foundationx.kafka.consumer.group-id           | 消费组          | 消费者必须配置        | Stable |
+| foundationx.kafka.consumer.concurrency        | 消费并发        | 1                     | Stable |
+| foundationx.kafka.retry.max-attempts          | 消费最大重试    | 3                     | Stable |
+| foundationx.kafka.dlq.suffix                  | 死信 Topic 后缀 | .DLQ                  | Stable |
+| foundationx.kafka.serializer                  | 序列化器        | json                  | Stable |
+| foundationx.kafka.producer.timeout            | 生产者发送超时  | 30s                   | Stable |
+| foundationx.kafka.consumer.session-timeout    | 消费者会话超时  | 45s                   | Stable |
+| foundationx.kafka.consumer.heartbeat-interval | 心跳间隔        | 15s                   | Stable |
 
 ## 9. 可观测契约
 
@@ -167,15 +167,15 @@ HandlerResult
 
 ### 9.2 指标
 
-| 指标名 | 类型 | 标签 | 说明 |
-| --- | --- | --- | --- |
-| foundationx_kafka_produce_total | Counter | topic,eventType,status | 消息生产次数 |
-| foundationx_kafka_produce_duration_ms | Timer | topic,status | 生产耗时 |
-| foundationx_kafka_consume_total | Counter | topic,group,eventType,status | 消费次数 |
-| foundationx_kafka_consume_duration_ms | Timer | topic,group,eventType,status | 消费耗时 |
-| foundationx_kafka_retry_total | Counter | topic,eventType,reason | 重试次数 |
-| foundationx_kafka_dlq_total | Counter | topic,eventType,reason | 死信次数 |
-| foundationx_kafka_consumer_lag | Gauge | topic,group,partition | 消费积压 |
+| 指标名                                | 类型    | 标签                         | 说明         |
+| ------------------------------------- | ------- | ---------------------------- | ------------ |
+| foundationx_kafka_produce_total       | Counter | topic,eventType,status       | 消息生产次数 |
+| foundationx_kafka_produce_duration_ms | Timer   | topic,status                 | 生产耗时     |
+| foundationx_kafka_consume_total       | Counter | topic,group,eventType,status | 消费次数     |
+| foundationx_kafka_consume_duration_ms | Timer   | topic,group,eventType,status | 消费耗时     |
+| foundationx_kafka_retry_total         | Counter | topic,eventType,reason       | 重试次数     |
+| foundationx_kafka_dlq_total           | Counter | topic,eventType,reason       | 死信次数     |
+| foundationx_kafka_consumer_lag        | Gauge   | topic,group,partition        | 消费积压     |
 
 ### 9.3 Trace / 诊断事件
 
@@ -187,13 +187,13 @@ HandlerResult
 
 ## 10. 错误模型与失败策略
 
-| 错误类别 | 典型原因 | 1.0 处理策略 |
-| --- | --- | --- |
-| KAFKA_PRODUCE_FAILED | broker 不可用、序列化失败、超时 | 按错误类型决定重试或失败 |
-| KAFKA_CONSUME_FAILED | handler 执行失败 | 按 HandlerResult 和 retryPolicy 处理 |
-| KAFKA_DESERIALIZATION_FAILED | payload 与 schema 不兼容 | 不可重试，进入死信 |
-| KAFKA_COMMIT_FAILED | 位点提交失败 | 记录错误并由容器决定重试或再均衡处理 |
-| KAFKA_IDEMPOTENT_DUPLICATE | 检测到重复消息 | 跳过并记录幂等命中 |
+| 错误类别                     | 典型原因                        | 1.0 处理策略                         |
+| ---------------------------- | ------------------------------- | ------------------------------------ |
+| KAFKA_PRODUCE_FAILED         | broker 不可用、序列化失败、超时 | 按错误类型决定重试或失败             |
+| KAFKA_CONSUME_FAILED         | handler 执行失败                | 按 HandlerResult 和 retryPolicy 处理 |
+| KAFKA_DESERIALIZATION_FAILED | payload 与 schema 不兼容        | 不可重试，进入死信                   |
+| KAFKA_COMMIT_FAILED          | 位点提交失败                    | 记录错误并由容器决定重试或再均衡处理 |
+| KAFKA_IDEMPOTENT_DUPLICATE   | 检测到重复消息                  | 跳过并记录幂等命中                   |
 
 ## 11. 安全、稳定性与兼容性要求
 
@@ -207,13 +207,13 @@ HandlerResult
 
 ## 12. 测试证据要求
 
-| 测试类型 | 必须覆盖内容 | 发布门禁 |
-| --- | --- | --- |
-| 单元测试 | EventEnvelope、Header、错误分类、HandlerResult | MUST 通过 |
+| 测试类型 | 必须覆盖内容                                        | 发布门禁  |
+| -------- | --------------------------------------------------- | --------- |
+| 单元测试 | EventEnvelope、Header、错误分类、HandlerResult      | MUST 通过 |
 | 集成测试 | 真实 Kafka 生产、消费、位点提交、rebalance 基础场景 | MUST 通过 |
-| 失败测试 | 序列化失败、broker 不可用、handler 失败、死信 | MUST 通过 |
-| 幂等测试 | 重复消息、重复 eventId、重复 idempotencyKey | MUST 通过 |
-| 契约测试 | 事件 schema 向后兼容、DLQ schema | MUST 通过 |
+| 失败测试 | 序列化失败、broker 不可用、handler 失败、死信       | MUST 通过 |
+| 幂等测试 | 重复消息、重复 eventId、重复 idempotencyKey         | MUST 通过 |
+| 契约测试 | 事件 schema 向后兼容、DLQ schema                    | MUST 通过 |
 
 ## 13. 1.0 发布验收清单
 

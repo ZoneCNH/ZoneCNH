@@ -70,14 +70,14 @@ Workflow self-improvement is allowed only as bounded RSI: create `docs/governanc
 
 ## Stage Contract
 
-| Stage | Executor | Team Scorers (并行) | Gate（唯一） |
-|-------|----------|--------------------|--------------|
-| Spec | `spec` | claude / codex / copilot `spec-structural-score` + rules | `composite_score >= 98` 且无红线、无 LLM 低置信度、LLM 分差与 rules 异构分歧在阈值内 |
-| Matrix | `matrix` | `matrix-structural-score` × 3 + rules | `composite_score >= 98` 且无红线、无 LLM 低置信度、LLM 分差与 rules 异构分歧在阈值内 |
-| Tasks | `task-split` | `tasks-structural-score` × 3 + rules | `composite_score >= 98` 且无红线、无 LLM 低置信度、LLM 分差与 rules 异构分歧在阈值内 |
-| Plan | `task-planner` | `plan-structural-score` × 3 + rules | `composite_score >= 98` 且无红线、无 LLM 低置信度、LLM 分差与 rules 异构分歧在阈值内 |
-| Prompt | `prompt-builder` | `prompt-structural-score` × 3 + rules | `composite_score >= 98` 且无红线、无 LLM 低置信度、LLM 分差与 rules 异构分歧在阈值内 |
-| Code | `task-executor` | `code-structural-score` × 3 + rules | `composite_score >= 98` 且无红线、无 LLM 低置信度、LLM 分差与 rules 异构分歧在阈值内 |
+| Stage   | Executor         | Team Scorers (并行)                                      | Gate（唯一）                                                                         |
+| ------- | ---------------- | -------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| Spec    | `spec`           | claude / codex / copilot `spec-structural-score` + rules | `composite_score >= 98` 且无红线、无 LLM 低置信度、LLM 分差与 rules 异构分歧在阈值内 |
+| Matrix  | `matrix`         | `matrix-structural-score` × 3 + rules                    | `composite_score >= 98` 且无红线、无 LLM 低置信度、LLM 分差与 rules 异构分歧在阈值内 |
+| Tasks   | `task-split`     | `tasks-structural-score` × 3 + rules                     | `composite_score >= 98` 且无红线、无 LLM 低置信度、LLM 分差与 rules 异构分歧在阈值内 |
+| Plan    | `task-planner`   | `plan-structural-score` × 3 + rules                      | `composite_score >= 98` 且无红线、无 LLM 低置信度、LLM 分差与 rules 异构分歧在阈值内 |
+| Prompt  | `prompt-builder` | `prompt-structural-score` × 3 + rules                    | `composite_score >= 98` 且无红线、无 LLM 低置信度、LLM 分差与 rules 异构分歧在阈值内 |
+| Code    | `task-executor`  | `code-structural-score` × 3 + rules                      | `composite_score >= 98` 且无红线、无 LLM 低置信度、LLM 分差与 rules 异构分歧在阈值内 |
 
 Arbiter agent：`pipeline-arbiter`（三运行时均有等价实现，结果等价）。
 状态目录由运行时决定：

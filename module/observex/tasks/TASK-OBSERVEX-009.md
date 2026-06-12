@@ -42,18 +42,18 @@ status: pending
 
 ## Requirements Covered
 
-| Requirement | Description | Acceptance Criteria |
-|---|---|---|
-| §22 | Release DoD | 所有 Release DoD 条目通过 |
+| Requirement | Description | Acceptance Criteria       |
+| ----------- | ----------- | ------------------------- |
+| §22         | Release DoD | 所有 Release DoD 条目通过 |
 
 ## Test Plan
 
-| Test Case | Type | Description |
-|---|---|---|
-| — | CI Gate | 覆盖率 >= 80% |
-| — | CI Gate | `-race` 无 data race |
-| — | CI Gate | label policy check 通过 |
-| — | CI Gate | redaction leak check 通过 |
+| Test Case | Type    | Description               |
+| --------- | ------- | ------------------------- |
+| —         | CI Gate | 覆盖率 >= 80%             |
+| —         | CI Gate | `-race` 无 data race      |
+| —         | CI Gate | label policy check 通过   |
+| —         | CI Gate | redaction leak check 通过 |
 
 ## Implementation Notes
 
@@ -63,15 +63,15 @@ status: pending
 
 ## Implementation Plan
 
-| Step | Description | Deliverables | Verification |
-|---|---|---|---|
-| 1 | 创建 README.md | `README.md` | 人工 review |
-| 2 | 创建 CHANGELOG.md | `CHANGELOG.md` | 格式正确 |
-| 3 | 创建 example_test.go | `example_test.go` | `go test -run Example` 通过 |
-| 4 | 运行 Release DoD 全量验证 | — | 所有 CI gate 通过 |
+| Step | Description               | Deliverables      | Verification                |
+| ---- | ------------------------- | ----------------- | --------------------------- |
+| 1    | 创建 README.md            | `README.md`       | 人工 review                 |
+| 2    | 创建 CHANGELOG.md         | `CHANGELOG.md`    | 格式正确                    |
+| 3    | 创建 example_test.go      | `example_test.go` | `go test -run Example` 通过 |
+| 4    | 运行 Release DoD 全量验证 | —                 | 所有 CI gate 通过           |
 
 ### Risk Assessment
 
-| Risk | Probability | Impact | Mitigation |
-|---|---|---|---|
-| 覆盖率未达 80% | Medium | Medium | 补充边界场景测试 |
+| Risk           | Probability | Impact | Mitigation       |
+| -------------- | ----------- | ------ | ---------------- |
+| 覆盖率未达 80% | Medium      | Medium | 补充边界场景测试 |

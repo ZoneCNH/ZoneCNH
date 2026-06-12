@@ -71,11 +71,11 @@ status: pending
 
 ## Requirements Covered
 
-| Requirement | Description | Acceptance Criteria |
-|---|---|---|
-| §2 Summary | 模块定位描述 | README 描述五类职责 |
-| §5 Non-goals | 不做运行时 | README 不出现运行时引用 |
-| goal.md §5 | PR-2 文档要求 | docs 只保留 9 个文件 |
+| Requirement  | Description   | Acceptance Criteria     |
+| ------------ | ------------- | ----------------------- |
+| §2 Summary   | 模块定位描述  | README 描述五类职责     |
+| §5 Non-goals | 不做运行时    | README 不出现运行时引用 |
+| goal.md §5   | PR-2 文档要求 | docs 只保留 9 个文件    |
 
 ## Test Plan
 

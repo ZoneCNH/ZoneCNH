@@ -43,10 +43,10 @@ status: pending
 
 > Spec TC: TC-013, TC-014
 
-| Requirement | Description |
-|---|---|
-| FR-011 | 并发控制 |
-| BR-011 | SemaphoreLimiter double-release 静默忽略 |
+| Requirement | Description                              |
+| ----------- | ---------------------------------------- |
+| FR-011      | 并发控制                                 |
+| BR-011      | SemaphoreLimiter double-release 静默忽略 |
 
 ## Non-scope
 
@@ -55,10 +55,10 @@ status: pending
 
 ## Test Plan
 
-| TC | Type | Description |
-|----|------|-------------|
-| TC-013 | Unit | SemaphoreLimiter Acquire/Release 并发安全 |
-| TC-014 | Unit | WorkerGroup 错误收集 + cancel 传播 |
+| TC     | Type   | Description                               |
+| ------ | ------ | ----------------------------------------- |
+| TC-013 | Unit   | SemaphoreLimiter Acquire/Release 并发安全 |
+| TC-014 | Unit   | WorkerGroup 错误收集 + cancel 传播        |
 
 ## Implementation Notes
 

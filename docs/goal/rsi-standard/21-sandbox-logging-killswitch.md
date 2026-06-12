@@ -58,16 +58,16 @@ Incident event
 
 ## 21.3 Kill Switch 层级
 
-| 层级 | 控制对象 |
-|---|---|
-| K1 | Agent process |
-| K2 | Tool gateway |
-| K3 | Network egress |
-| K4 | Credential layer |
-| K5 | Compute scheduler |
-| K6 | Model serving |
-| K7 | Storage isolation |
-| K8 | Organization-wide lock |
+| 层级 | 控制对象               |
+| ---- | ---------------------- |
+| K1   | Agent process          |
+| K2   | Tool gateway           |
+| K3   | Network egress         |
+| K4   | Credential layer       |
+| K5   | Compute scheduler      |
+| K6   | Model serving          |
+| K7   | Storage isolation      |
+| K8   | Organization-wide lock |
 
 要求：
 

@@ -25,15 +25,15 @@ Status: 文档侧饱和；剩 1 项外部人工流程
 
 | ID  | 问题                                 | 起始 | 终态                                                                         | 证据                    |
 | --- | ------------------------------------ | ---- | ---------------------------------------------------------------------------- | ----------------------- |
-| S1  | SPEC 自报 Approved 但门禁未达        | ❌   | ✅ Status: Review；3 段时间戳状态说明（04:51/04:59/05:03/05:11/05:14/05:15） | SPEC.md §1              |
-| S2  | README 与 SPEC 状态不同步            | ❌   | ✅ 同步；行级覆盖、Status、新增工件全部对齐                                  | README.md               |
-| S3  | 附录（A/B/D/F）违反 23 节模板        | ❌   | ✅ A→§23.2/23.3；B→§21.4；D→§22.6；F 删除；C/E 改"参考资料"                  | SPEC.md L1683/1800/1877 |
-| S4  | BR/AC 无独立编号                     | ❌   | ✅ BR-001..007 别名（§8.1）；AC-T01..R06（§22.1）                            | SPEC.md §8.1/§22.1      |
-| S5  | 自创"门禁"第六领域                   | ❌   | ✅ 改为"基座 · Foundation Gate 治理子层"，与 ARCHITECTURE.md 五领域模型一致  | SPEC.md §6              |
-| S6  | COVERAGE-MANIFEST commit/tree 未固定 | ❌   | ✅ `93753b30` / `296e3b91` + 154 文件 sha256-prefix；OQ-008/R-011 已收敛     | COVERAGE-MANIFEST.md    |
-| S7  | RULE 前缀无 ↔ FR 映射                | ❌   | ✅ §8.3 新增 10 类前缀 ↔ FR 区段映射表                                       | SPEC.md §8.3            |
-| S8  | fuzzy word（可能 / 合理）            | ❌   | ✅ §13.1 EC-003 "可能并发" → "允许并发"；后续单次回归亦清除                  | spec-lint ✅            |
-| S9  | TC 命名空间无约束                    | ❌   | ✅ §16.5 新增 `<module>-TC-NNN` 命名空间约束 + 5 条 FR gate 替代覆盖表       | SPEC.md §16.5           |
+| S1  | SPEC 自报 Approved 但门禁未达        | ❌    | ✅ Status: Review；3 段时间戳状态说明（04:51/04:59/05:03/05:11/05:14/05:15）  | SPEC.md §1              |
+| S2  | README 与 SPEC 状态不同步            | ❌    | ✅ 同步；行级覆盖、Status、新增工件全部对齐                                   | README.md               |
+| S3  | 附录（A/B/D/F）违反 23 节模板        | ❌    | ✅ A→§23.2/23.3；B→§21.4；D→§22.6；F 删除；C/E 改"参考资料"                   | SPEC.md L1683/1800/1877 |
+| S4  | BR/AC 无独立编号                     | ❌    | ✅ BR-001..007 别名（§8.1）；AC-T01..R06（§22.1）                             | SPEC.md §8.1/§22.1      |
+| S5  | 自创"门禁"第六领域                   | ❌    | ✅ 改为"基座 · Foundation Gate 治理子层"，与 ARCHITECTURE.md 五领域模型一致   | SPEC.md §6              |
+| S6  | COVERAGE-MANIFEST commit/tree 未固定 | ❌    | ✅ `93753b30` / `296e3b91` + 154 文件 sha256-prefix；OQ-008/R-011 已收敛      | COVERAGE-MANIFEST.md    |
+| S7  | RULE 前缀无 ↔ FR 映射                | ❌    | ✅ §8.3 新增 10 类前缀 ↔ FR 区段映射表                                        | SPEC.md §8.3            |
+| S8  | fuzzy word（可能 / 合理）            | ❌    | ✅ §13.1 EC-003 "可能并发" → "允许并发"；后续单次回归亦清除                   | spec-lint ✅             |
+| S9  | TC 命名空间无约束                    | ❌    | ✅ §16.5 新增 `<module>-TC-NNN` 命名空间约束 + 5 条 FR gate 替代覆盖表        | SPEC.md §16.5           |
 
 **全部 9 条已闭合。**
 
@@ -63,12 +63,12 @@ Status: 文档侧饱和；剩 1 项外部人工流程
 
 | 维度                                 | 值 / 状态                                                                                                    |
 | ------------------------------------ | ------------------------------------------------------------------------------------------------------------ |
-| Tag `v0.6.5` commit                  | `93753b30…` = 本规格 pin ✅ 双向闭合                                                                         |
+| Tag `v0.6.5` commit                  | `93753b30…` = 本规格 pin ✅ 双向闭合                                                                          |
 | Branch protection required checks    | `ci` / `security` / `integration` 全启用                                                                     |
-| enforce_admins                       | ✅                                                                                                           |
-| required_linear_history              | ✅                                                                                                           |
-| allow_force_pushes / allow_deletions | ❌ / ❌                                                                                                      |
-| required_conversation_resolution     | ✅                                                                                                           |
+| enforce_admins                       | ✅                                                                                                            |
+| required_linear_history              | ✅                                                                                                            |
+| allow_force_pushes / allow_deletions | ❌ / ❌                                                                                                        |
+| required_conversation_resolution     | ✅                                                                                                            |
 | Ruleset `protect-main`               | active，rules: pull_request + required_status_checks + required_linear_history + non_fast_forward + deletion |
 | Ruleset `protect-release-tags`       | active，所有 tag 防强推 / 删除                                                                               |
 | pinned commit 上 workflow            | CI / Docker Contract / Worktree Guard / adoption-check / Auto Patch Release **全部 success**                 |
@@ -95,10 +95,10 @@ CI 4/4 通过；唯一警告已在规格内显式解释。
 
 | 检查项                                                   | 结果                                    |
 | -------------------------------------------------------- | --------------------------------------- |
-| CONFLICT-LEDGER 中的 `§D` / `§A.1` / `附录 E` 等过期引用 | ✅ 全部修正（76/100/132/150/166 行）    |
-| SPEC.md 中的"附录 B/D/A 已并入"标记                      | ✅ 保留为历史指针（L1683/1800/1877）    |
-| TRACEABILITY 远端治理状态描述                            | ✅ 从"❌ 不可本地追溯"更新为"✅ 已闭合" |
-| README 工件清单                                          | ✅ 新增 `REMOTE-EVIDENCE.md` 索引       |
+| CONFLICT-LEDGER 中的 `§D` / `§A.1` / `附录 E` 等过期引用 | ✅ 全部修正（76/100/132/150/166 行）     |
+| SPEC.md 中的"附录 B/D/A 已并入"标记                      | ✅ 保留为历史指针（L1683/1800/1877）     |
+| TRACEABILITY 远端治理状态描述                            | ✅ 从"❌ 不可本地追溯"更新为"✅ 已闭合"    |
+| README 工件清单                                          | ✅ 新增 `REMOTE-EVIDENCE.md` 索引        |
 
 ---
 
@@ -106,12 +106,12 @@ CI 4/4 通过；唯一警告已在规格内显式解释。
 
 | 文件                                                                   | 起始         | 终态                 | 性质                                                                               |
 | ---------------------------------------------------------------------- | ------------ | -------------------- | ---------------------------------------------------------------------------------- |
-| `module/xlib-standard/SPEC.md`                                          | 2013 行      | **~2032 行**         | 23 节框架对齐 + 6 段时间戳状态说明 + BR/AC 编号 + RULE 映射 + 5 FR gate 替代覆盖表 |
-| `module/xlib-standard/TRACEABILITY.md`                                  | 块级 27%     | **行级 98% (51/52)** | 全 FR 锚定到源行号；远端治理已闭合                                                 |
-| `module/xlib-standard/COVERAGE-MANIFEST.md`                             | 占位 SHA     | **真 SHA 382 行**    | 154 文件 sha256-prefix 落地                                                        |
-| `module/xlib-standard/CONFLICT-LEDGER.md`                               | 5 处过期引用 | **0 处过期**         | §D → §22.6；§A.1 → §23.3；附录 E → 参考资料 E                                      |
-| `module/xlib-standard/README.md`                                        | Review 简述  | 同步多版本状态       | 加 REMOTE-EVIDENCE 索引                                                            |
-| `module/xlib-standard/REMOTE-EVIDENCE.md`                               | —            | **新增 4.7KB**       | branch protection / rulesets / release / CI 真证据                                 |
+| `module/xlib-standard/SPEC.md`                                         | 2013 行      | **~2032 行**         | 23 节框架对齐 + 6 段时间戳状态说明 + BR/AC 编号 + RULE 映射 + 5 FR gate 替代覆盖表 |
+| `module/xlib-standard/TRACEABILITY.md`                                 | 块级 27%     | **行级 98% (51/52)** | 全 FR 锚定到源行号；远端治理已闭合                                                 |
+| `module/xlib-standard/COVERAGE-MANIFEST.md`                            | 占位 SHA     | **真 SHA 382 行**    | 154 文件 sha256-prefix 落地                                                        |
+| `module/xlib-standard/CONFLICT-LEDGER.md`                              | 5 处过期引用 | **0 处过期**         | §D → §22.6；§A.1 → §23.3；附录 E → 参考资料 E                                      |
+| `module/xlib-standard/README.md`                                       | Review 简述  | 同步多版本状态       | 加 REMOTE-EVIDENCE 索引                                                            |
+| `module/xlib-standard/REMOTE-EVIDENCE.md`                              | —            | **新增 4.7KB**       | branch protection / rulesets / release / CI 真证据                                 |
 | `docs/report/xlib-standard-structural-deep-analysis-20260608-0446.md`  | —            | 新增 v3 基线分析     |                                                                                    |
 | `docs/report/xlib-standard-structural-fix-completion-20260608-0459.md` | —            | 新增 v4 完成报告     |                                                                                    |
 | `docs/report/xlib-standard-structural-fix-final-20260608-0513.md`      | —            | **本报告 v6**        |                                                                                    |
@@ -128,9 +128,9 @@ CI 4/4 通过；唯一警告已在规格内显式解释。
 
 | 前置条件                                 | 起始 | 终态                  |
 | ---------------------------------------- | ---- | --------------------- |
-| (a) 上游文档行级证据补完                 | ❌   | ✅ 100%               |
-| (b) 远端 ruleset / Release object 真证据 | ❌   | ✅ REMOTE-EVIDENCE.md |
-| (c) 独立 reviewer 签字                   | ❌   | ❌ 待人工流程         |
+| (a) 上游文档行级证据补完                 | ❌    | ✅ 100%                |
+| (b) 远端 ruleset / Release object 真证据 | ❌    | ✅ REMOTE-EVIDENCE.md  |
+| (c) 独立 reviewer 签字                   | ❌    | ❌ 待人工流程          |
 
 ---
 

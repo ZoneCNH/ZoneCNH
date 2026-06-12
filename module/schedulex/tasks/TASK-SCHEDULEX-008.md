@@ -29,15 +29,15 @@ status: pending
 
 ## Requirements Covered
 
-| Requirement | Description | Acceptance Criteria |
-|---|---|---|
-| FR-009 | Clock：可测试时间 | MockClock 可控 |
+| Requirement | Description       | Acceptance Criteria |
+| ----------- | ----------------- | ------------------- |
+| FR-009      | Clock：可测试时间 | MockClock 可控      |
 
 ## Test Plan
 
-| Test Case | Type | Description |
-|---|---|---|
-| — | Unit | MockClock：设置时间后调度正确触发 |
+| Test Case | Type | Description                       |
+| --------- | ---- | --------------------------------- |
+| —         | Unit | MockClock：设置时间后调度正确触发 |
 
 ## Implementation Notes
 
@@ -47,14 +47,14 @@ status: pending
 
 ## Implementation Plan
 
-| Step | Description | Deliverables | Verification |
-|---|---|---|---|
-| 1 | 实现 `RealClock` | `clock_impl.go` | `go build ./...` 通过 |
-| 2 | 实现 `MockClock`：Now/After/Advance | `clock_impl.go` | `go test ./... -run TestMockClock` 通过 |
-| 3 | 集成到 scheduler | `scheduler_impl.go` | 调度测试使用 MockClock |
+| Step | Description                         | Deliverables        | Verification                            |
+| ---- | ----------------------------------- | ------------------- | --------------------------------------- |
+| 1    | 实现 `RealClock`                    | `clock_impl.go`     | `go build ./...` 通过                   |
+| 2    | 实现 `MockClock`：Now/After/Advance | `clock_impl.go`     | `go test ./... -run TestMockClock` 通过 |
+| 3    | 集成到 scheduler                    | `scheduler_impl.go` | 调度测试使用 MockClock                  |
 
 ### Risk Assessment
 
-| Risk | Probability | Impact | Mitigation |
-|---|---|---|---|
-| MockClock 并发安全 | Low | High | sync.Mutex 保护状态 |
+| Risk               | Probability | Impact | Mitigation          |
+| ------------------ | ----------- | ------ | ------------------- |
+| MockClock 并发安全 | Low         | High   | sync.Mutex 保护状态 |

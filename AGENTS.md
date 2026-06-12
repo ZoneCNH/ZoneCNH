@@ -153,7 +153,7 @@ Spec → Matrix → Tasks → Plan → Prompt → Code
 | `docs/governance/DEFINITION-OF-READY.md`  | 进入开发的前置条件                                               |
 | `docs/governance/DEFINITION-OF-DONE.md`   | 完成验收条件                                                     |
 | `CONSTITUTION.md`                         | 最高治理权威（§0-§19，含分支纪律、设计原则、交付管线、CRI）      |
-| `module/FOUNDATION-DEPS.yaml`             | Foundation 依赖矩阵（机器可读，规定允许/禁止的依赖边与特殊约束）  |
+| `module/FOUNDATION-DEPS.yaml`             | Foundation 依赖矩阵（机器可读，规定允许/禁止的依赖边与特殊约束） |
 
 ## Goal 驱动交付体系
 

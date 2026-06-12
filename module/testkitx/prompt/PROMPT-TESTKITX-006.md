@@ -27,11 +27,11 @@ depends_on:
 
 ## 关联需求
 
-| 类型 | 编号 | 出处 | 说明 |
-|------|------|------|------|
-| FR | FR-007 | SPEC.md §7 | Eventually：轮询条件直到满足或超时 |
-| BR | BR-003 | SPEC.md §8 | 使用 testing.T 而非 panic，失败时输出清晰诊断 |
-| TC | TC-007 | SPEC.md §16.4 | Eventually 收敛/超时两种场景 |
+| 类型   | 编号   | 出处          | 说明                                          |
+| ------ | ------ | ------------- | --------------------------------------------- |
+| FR     | FR-007 | SPEC.md §7    | Eventually：轮询条件直到满足或超时            |
+| BR     | BR-003 | SPEC.md §8    | 使用 testing.T 而非 panic，失败时输出清晰诊断 |
+| TC     | TC-007 | SPEC.md §16.4 | Eventually 收敛/超时两种场景                  |
 
 ## 接口契约
 
@@ -76,30 +76,30 @@ THEN 测试失败，使用 t.Errorf 输出清晰诊断
 
 ### 2. `eventually_test.go`
 
-| 测试用例 | 说明 |
-|----------|------|
-| `TestEventually_ImmediatePass` | fn 首次调用返回 true → 立即通过 |
-| `TestEventually_DelayedPass` | fn 在 3 次轮询后返回 true → 通过 |
-| `TestEventually_Timeout` | fn 始终返回 false → 超时 fail |
-| `TestEventually_ZeroTimeout` | timeout=0 → 立即检查一次 |
-| `TestEventually_CustomInterval` | WithInterval 自定义间隔生效 |
-| `TestEventually_CustomTimeout` | WithTimeout 自定义超时生效 |
+| 测试用例                        | 说明                             |
+| ------------------------------- | -------------------------------- |
+| `TestEventually_ImmediatePass`  | fn 首次调用返回 true → 立即通过  |
+| `TestEventually_DelayedPass`    | fn 在 3 次轮询后返回 true → 通过 |
+| `TestEventually_Timeout`        | fn 始终返回 false → 超时 fail    |
+| `TestEventually_ZeroTimeout`    | timeout=0 → 立即检查一次         |
+| `TestEventually_CustomInterval` | WithInterval 自定义间隔生效      |
+| `TestEventually_CustomTimeout`  | WithTimeout 自定义超时生效       |
 
 ## 验收标准
 
-| AC | 关联 | 验证命令 | 预期结果 |
-|----|------|----------|----------|
-| AC-EV-01 | FR-007 | `go test -run TestEventually -v -race ./...` | 全部通过 |
-| AC-EV-02 | BR-003 | `grep -c "t\.Errorf" eventually.go` | >= 1（使用 t.Errorf） |
-| AC-EV-03 | BR-003 | `grep -c "panic" eventually.go` | = 0（不使用 panic） |
+| AC       | 关联   | 验证命令                                     | 预期结果              |
+| -------- | ------ | -------------------------------------------- | --------------------- |
+| AC-EV-01 | FR-007 | `go test -run TestEventually -v -race ./...` | 全部通过              |
+| AC-EV-02 | BR-003 | `grep -c "t\.Errorf" eventually.go`          | >= 1（使用 t.Errorf） |
+| AC-EV-03 | BR-003 | `grep -c "panic" eventually.go`              | = 0（不使用 panic）   |
 
 ## 验证命令
 
-| 命令 | 判定标准 |
-|------|----------|
-| `go build ./...` | 编译通过 |
-| `go test -race -count=1 ./...` | 全部通过 |
-| `go vet ./...` | 无警告 |
+| 命令                           | 判定标准   |
+| ------------------------------ | ---------- |
+| `go build ./...`               | 编译通过   |
+| `go test -race -count=1 ./...` | 全部通过   |
+| `go vet ./...`                 | 无警告     |
 
 ## 禁止事项
 

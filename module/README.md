@@ -40,24 +40,24 @@
 
 以下 `goal.md` 来自 `/home/zone/Downloads/xlib-v1.0-module-goals-md/xlib-v1.0-module-goals/` 的 1.0 发布基线，用于定义模块发布定位、边界、契约、测试证据和 DoD；`SPEC.md` 仍是模块功能规格 SSOT。
 
-| 模块 | 1.0 Goal |
-| ---- | -------- |
+| 模块          | 1.0 Goal                           |
+| ------------- | ---------------------------------- |
 | xlib-standard | [goal.md](./xlib-standard/goal.md) |
-| kernel | [goal.md](./kernel/goal.md) |
-| configx | [goal.md](./configx/goal.md) |
-| observex | [goal.md](./observex/goal.md) |
-| testkitx | [goal.md](./testkitx/goal.md) |
-| resiliencx | [goal.md](./resiliencx/goal.md) |
-| schedulex | [goal.md](./schedulex/goal.md) |
-| xlibgate | [goal.md](./xlibgate/goal.md) |
-| redisx | [goal.md](./redisx/goal.md) |
-| kafkax | [goal.md](./kafkax/goal.md) |
-| natsx | [goal.md](./natsx/goal.md) |
-| postgresx | [goal.md](./postgresx/goal.md) |
-| taosx | [goal.md](./taosx/goal.md) |
-| ossx | [goal.md](./ossx/goal.md) |
-| clickhousex | [goal.md](./clickhousex/goal.md) |
-| contracts | [goal.md](./contracts/goal.md) |
+| kernel        | [goal.md](./kernel/goal.md)        |
+| configx       | [goal.md](./configx/goal.md)       |
+| observex      | [goal.md](./observex/goal.md)      |
+| testkitx      | [goal.md](./testkitx/goal.md)      |
+| resiliencx    | [goal.md](./resiliencx/goal.md)    |
+| schedulex     | [goal.md](./schedulex/goal.md)     |
+| xlibgate      | [goal.md](./xlibgate/goal.md)      |
+| redisx        | [goal.md](./redisx/goal.md)        |
+| kafkax        | [goal.md](./kafkax/goal.md)        |
+| natsx         | [goal.md](./natsx/goal.md)         |
+| postgresx     | [goal.md](./postgresx/goal.md)     |
+| taosx         | [goal.md](./taosx/goal.md)         |
+| ossx          | [goal.md](./ossx/goal.md)          |
+| clickhousex   | [goal.md](./clickhousex/goal.md)   |
+| contracts     | [goal.md](./contracts/goal.md)     |
 
 ---
 
@@ -65,8 +65,8 @@
 
 stdlib-only 基础原语。所有上层模块的根依赖。
 
-| 模块   | 规格                        | 核心职责                                                                                     |
-| ------ | --------------------------- | -------------------------------------------------------------------------------------------- |
+| 模块   | 规格                        | 核心职责                                                                                                                            |
+| ------ | --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
 | kernel | [SPEC.md](./kernel/SPEC.md) | 12 子包轻量工具集：lifecycx/errx/healthx/obsx/retryx/shutdownx/syncx/timex/validx/versionx/contextx/contracttest（12 FR，12 tasks） |
 
 ---
@@ -75,12 +75,12 @@ stdlib-only 基础原语。所有上层模块的根依赖。
 
 共享横切能力。可选依赖，按需引入。
 
-| 模块       | 规格                            | 核心职责                                                                        |
-| ---------- | ------------------------------- | ------------------------------------------------------------------------------- |
-| configx    | [SPEC.md](./configx/SPEC.md) · [DESIGN.md](./configx/DESIGN.md) · [TRACEABILITY.md](./configx/TRACEABILITY.md) · [tasks/](./configx/tasks/) | Client/Loader/Source 模式、多源合并（YAML/TOML/JSON/.env/Env/Map）、StrictDecode、SecretString 脱敏、SecretPolicy、Provenance、Hash、HealthCheck、Metrics（13 FR，11 BR，97.1% 覆盖） |
-| observex   | [SPEC.md](./observex/SPEC.md) · [tasks/](./observex/tasks/) | Logger/Meter/Tracer/Exporter、Redaction、Label Policy、Health（7 FR，11 tasks） |
-| resiliencx | [SPEC.md](./resiliencx/SPEC.md) · [goal.md](./resiliencx/goal.md) · [TRACEABILITY.md](./resiliencx/TRACEABILITY.md) · [tasks/](./resiliencx/tasks/) | Timeout/Retry/CircuitBreaker/Bulkhead/RateLimiter/Fallback、策略组合（6 FR，8 BR，10 tasks，v1.0.1 Approved） |
-| schedulex  | [SPEC.md](./schedulex/SPEC.md) · [tasks/](./schedulex/tasks/) | Scheduler/Trigger/OverlapPolicy/MisfirePolicy/EventSink/Locker/Clock（9 FR，12 tasks，v1.0.1） |
+| 模块       | 规格                                                                                                                                                | 核心职责                                                                                                                                                                              |
+| ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| configx    | [SPEC.md](./configx/SPEC.md) · [DESIGN.md](./configx/DESIGN.md) · [TRACEABILITY.md](./configx/TRACEABILITY.md) · [tasks/](./configx/tasks/)         | Client/Loader/Source 模式、多源合并（YAML/TOML/JSON/.env/Env/Map）、StrictDecode、SecretString 脱敏、SecretPolicy、Provenance、Hash、HealthCheck、Metrics（13 FR，11 BR，97.1% 覆盖） |
+| observex   | [SPEC.md](./observex/SPEC.md) · [tasks/](./observex/tasks/)                                                                                         | Logger/Meter/Tracer/Exporter、Redaction、Label Policy、Health（7 FR，11 tasks）                                                                                                       |
+| resiliencx | [SPEC.md](./resiliencx/SPEC.md) · [goal.md](./resiliencx/goal.md) · [TRACEABILITY.md](./resiliencx/TRACEABILITY.md) · [tasks/](./resiliencx/tasks/) | Timeout/Retry/CircuitBreaker/Bulkhead/RateLimiter/Fallback、策略组合（6 FR，8 BR，10 tasks，v1.0.1 Approved）                                                                         |
+| schedulex  | [SPEC.md](./schedulex/SPEC.md) · [tasks/](./schedulex/tasks/)                                                                                       | Scheduler/Trigger/OverlapPolicy/MisfirePolicy/EventSink/Locker/Clock（9 FR，12 tasks，v1.0.1）                                                                                        |
 
 ---
 
@@ -88,8 +88,8 @@ stdlib-only 基础原语。所有上层模块的根依赖。
 
 test-only，不参与生产运行时。
 
-| 模块     | 规格                          | 核心职责                                                                   |
-| -------- | ----------------------------- | -------------------------------------------------------------------------- |
+| 模块     | 规格                                                                                                                                                                    | 核心职责                                                                                                                                                  |
+| -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | testkitx | [SPEC.md](./testkitx/SPEC.md) · [TRACEABILITY.md](./testkitx/TRACEABILITY.md) · [tasks/](./testkitx/tasks/) · [plan/](./testkitx/plan/) · [prompt/](./testkitx/prompt/) | FakeConfig/FakeLogger/FakeMeter/FakeTracer/FakeClock/FakeBreaker/Eventually/GoldenUpdate/BoundaryCheck/GoroutineLeakCheck（10 FR，11 tasks，管线 100 分） |
 
 ---
@@ -98,10 +98,10 @@ test-only，不参与生产运行时。
 
 标准源和机器门禁，不参与运行时。
 
-| 模块          | 规格                               | 核心职责                                                           |
-| ------------- | ---------------------------------- | ------------------------------------------------------------------ |
-| xlib-standard | [SPEC.md](./xlib-standard/SPEC.md) · [tasks/](./xlib-standard/tasks/) | 标准事实源、Go Reference Template、Generator、Harness Gate、Evidence Runtime（15 FR + goalcli，12 tasks） |
-| xlibgate      | [SPEC.md](./xlibgate/SPEC.md) · [tasks/](./xlibgate/tasks/) | check imports/gomod/baseline/release/all、输出格式、l2 validate-manifest/plan/check-contracts/check-evidence/release-check（11 FR，10 tasks） |
+| 模块          | 规格                                                                  | 核心职责                                                                                                                                      |
+| ------------- | --------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| xlib-standard | [SPEC.md](./xlib-standard/SPEC.md) · [tasks/](./xlib-standard/tasks/) | 标准事实源、Go Reference Template、Generator、Harness Gate、Evidence Runtime（15 FR + goalcli，12 tasks）                                     |
+| xlibgate      | [SPEC.md](./xlibgate/SPEC.md) · [tasks/](./xlibgate/tasks/)           | check imports/gomod/baseline/release/all、输出格式、l2 validate-manifest/plan/check-contracts/check-evidence/release-check（11 FR，10 tasks） |
 
 ---
 
@@ -109,15 +109,15 @@ test-only，不参与生产运行时。
 
 基础设施客户端封装。均为可选，按需引入。
 
-| 模块        | 规格                             | 封装目标                            |
-| ----------- | -------------------------------- | ----------------------------------- |
+| 模块        | 规格                                                    | 封装目标                                                                                             |
+| ----------- | ------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
 | redisx      | [SPEC.md](./redisx/SPEC.md) · [tasks/](./redisx/tasks/) | Get/Set/Del/Exists/Expire/HGet/HSet/LPush/LRange/Subscribe/Pipeline/Locker/Health（12 FR，10 tasks） |
-| kafkax      | [SPEC.md](./kafkax/SPEC.md)      | Kafka — 消息队列、事件流            |
-| natsx       | [SPEC.md](./natsx/SPEC.md)       | NATS — 内部通信、JetStream          |
-| postgresx   | [SPEC.md](./postgresx/SPEC.md)   | PostgreSQL — 关系型存储、事务、迁移 |
-| taosx       | [SPEC.md](./taosx/SPEC.md)       | TDengine — 时序数据写入与查询       |
-| ossx        | [SPEC.md](./ossx/SPEC.md)        | 对象存储 — S3/MinIO/local 多后端    |
-| clickhousex | [SPEC.md](./clickhousex/SPEC.md) | ClickHouse — OLAP 查询、批量写入    |
+| kafkax      | [SPEC.md](./kafkax/SPEC.md)                             | Kafka — 消息队列、事件流                                                                             |
+| natsx       | [SPEC.md](./natsx/SPEC.md)                              | NATS — 内部通信、JetStream                                                                           |
+| postgresx   | [SPEC.md](./postgresx/SPEC.md)                          | PostgreSQL — 关系型存储、事务、迁移                                                                  |
+| taosx       | [SPEC.md](./taosx/SPEC.md)                              | TDengine — 时序数据写入与查询                                                                        |
+| ossx        | [SPEC.md](./ossx/SPEC.md)                               | 对象存储 — S3/MinIO/local 多后端                                                                     |
+| clickhousex | [SPEC.md](./clickhousex/SPEC.md)                        | ClickHouse — OLAP 查询、批量写入                                                                     |
 
 ---
 
@@ -125,8 +125,8 @@ test-only，不参与生产运行时。
 
 跨域稳定端口和事件协议。
 
-| 模块      | 规格                           | 核心职责                                                                            |
-| --------- | ------------------------------ | ----------------------------------------------------------------------------------- |
+| 模块      | 规格                                                          | 核心职责                                                                                  |
+| --------- | ------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
 | contracts | [SPEC.md](./contracts/SPEC.md) · [tasks/](./contracts/tasks/) | MarketDataProvider/MacroDataProvider、Event、Topic、DTO、Breaking Change（6 FR，5 tasks） |
 
 ---
@@ -219,32 +219,32 @@ Code → Test → PR
 
 ### 文档结构映射
 
-| 层级           | 文档            | 位置                                                                                                                                                                               |
-| -------------- | --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Product Spec   | 产品规格        | [`docs/product/product-spec.md`](../docs/product/product-spec.md)                                                                                                                  |
-| Feature Spec   | 模块完整规格    | [`module/*/SPEC.md`](#分层索引)（23 节结构）                                                                                                                                        |
-| Technical Spec | 架构 + 宪法     | [`ARCHITECTURE.md`](../ARCHITECTURE.md) + [`CONSTITUTION.md`](../CONSTITUTION.md)                                                                                                  |
-| Test Spec      | 测试策略        | [`docs/testing/test-strategy.md`](../docs/testing/test-strategy.md)                                                                                                                |
+| 层级           | 文档            | 位置                                                                                                                                                                                                          |
+| -------------- | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Product Spec   | 产品规格        | [`docs/product/product-spec.md`](../docs/product/product-spec.md)                                                                                                                                             |
+| Feature Spec   | 模块完整规格    | [`module/*/SPEC.md`](#分层索引)（23 节结构）                                                                                                                                                                  |
+| Technical Spec | 架构 + 宪法     | [`ARCHITECTURE.md`](../ARCHITECTURE.md) + [`CONSTITUTION.md`](../CONSTITUTION.md)                                                                                                                             |
+| Test Spec      | 测试策略        | [`docs/testing/test-strategy.md`](../docs/testing/test-strategy.md)                                                                                                                                           |
 | Agent Spec     | AI 代理规格模板 | [`docs/governance/AGENT-SPEC-TEMPLATE.md`](../docs/governance/AGENT-SPEC-TEMPLATE.md)（规则：[`agent-rules.md`](../docs/ai/agent-rules.md)、Prompt：[`prompt-templates.md`](../docs/ai/prompt-templates.md)） |
 
 ### 交付治理入口（docs/governance）
 
-| 文件                                                         | 用途                                                    |
-| ------------------------------------------------------------ | ------------------------------------------------------- |
-| [`DEFINITION-OF-READY.md`](../docs/governance/DEFINITION-OF-READY.md)         | spec 可以进入开发的前置条件                             |
-| [`DEFINITION-OF-DONE.md`](../docs/governance/DEFINITION-OF-DONE.md)           | 模块实现完成的验收条件                                  |
-| [`SPEC-TEMPLATE.md`](../docs/governance/SPEC-TEMPLATE.md)                     | 23 节结构模板 — 新建模块规格时复制本文件                |
-| [`TRACEABILITY.md`](../docs/governance/TRACEABILITY.md)                       | 需求追踪表：FR → AC → TC → 实现                         |
-| [`DEVELOPMENT-WORKFLOW.md`](../docs/governance/DEVELOPMENT-WORKFLOW.md)       | Spec → Ship 完整管线总览                                |
-| [`STRUCTURAL-SCORING.md`](../docs/governance/STRUCTURAL-SCORING.md)           | 每阶段结构评分、98 分门禁和有界递归自改进               |
-| [`scoring/ARBITER-PROTOCOL.md`](../docs/governance/scoring/ARBITER-PROTOCOL.md) | 四源评分仲裁、repair budget 和 pipeline_blocked 规则   |
-| [`PRE-DEVELOPMENT.md`](../docs/governance/PRE-DEVELOPMENT.md)                 | 开发前准备 — 实现策略、Task 拆分、追溯矩阵              |
-| [`CODING-SESSION-PROTOCOL.md`](../docs/governance/CODING-SESSION-PROTOCOL.md) | 编码会话协议 — Context Packet、Plan-first、自查、Review |
-| [`SPEC-DRIFT-PROTOCOL.md`](../docs/governance/SPEC-DRIFT-PROTOCOL.md)         | Spec Drift 处理 — 代码与 Spec 不一致时的协议            |
-| [`TESTING-STRATEGY.md`](../docs/governance/TESTING-STRATEGY.md)               | 测试策略 — 从 Spec 生成测试、优先级、验收               |
-| [`PR-TEMPLATE.md`](../docs/governance/PR-TEMPLATE.md)                         | PR/Issue/Branch/Commit 模板和命名规则                   |
-| [`DEPLOYMENT.md`](../docs/governance/DEPLOYMENT.md)                           | 部署清单 — RC 检查、Smoke Test、CI 配置                 |
-| [`REVIEW-STRATEGY.md`](../docs/governance/REVIEW-STRATEGY.md)                 | 审查策略 — 每层轻审查、转换点强审查、高风险点反审查    |
+| 文件                                                                            | 用途                                                    |
+| ------------------------------------------------------------------------------- | ------------------------------------------------------- |
+| [`DEFINITION-OF-READY.md`](../docs/governance/DEFINITION-OF-READY.md)           | spec 可以进入开发的前置条件                             |
+| [`DEFINITION-OF-DONE.md`](../docs/governance/DEFINITION-OF-DONE.md)             | 模块实现完成的验收条件                                  |
+| [`SPEC-TEMPLATE.md`](../docs/governance/SPEC-TEMPLATE.md)                       | 23 节结构模板 — 新建模块规格时复制本文件                |
+| [`TRACEABILITY.md`](../docs/governance/TRACEABILITY.md)                         | 需求追踪表：FR → AC → TC → 实现                         |
+| [`DEVELOPMENT-WORKFLOW.md`](../docs/governance/DEVELOPMENT-WORKFLOW.md)         | Spec → Ship 完整管线总览                                |
+| [`STRUCTURAL-SCORING.md`](../docs/governance/STRUCTURAL-SCORING.md)             | 每阶段结构评分、98 分门禁和有界递归自改进               |
+| [`scoring/ARBITER-PROTOCOL.md`](../docs/governance/scoring/ARBITER-PROTOCOL.md) | 四源评分仲裁、repair budget 和 pipeline_blocked 规则    |
+| [`PRE-DEVELOPMENT.md`](../docs/governance/PRE-DEVELOPMENT.md)                   | 开发前准备 — 实现策略、Task 拆分、追溯矩阵              |
+| [`CODING-SESSION-PROTOCOL.md`](../docs/governance/CODING-SESSION-PROTOCOL.md)   | 编码会话协议 — Context Packet、Plan-first、自查、Review |
+| [`SPEC-DRIFT-PROTOCOL.md`](../docs/governance/SPEC-DRIFT-PROTOCOL.md)           | Spec Drift 处理 — 代码与 Spec 不一致时的协议            |
+| [`TESTING-STRATEGY.md`](../docs/governance/TESTING-STRATEGY.md)                 | 测试策略 — 从 Spec 生成测试、优先级、验收               |
+| [`PR-TEMPLATE.md`](../docs/governance/PR-TEMPLATE.md)                           | PR/Issue/Branch/Commit 模板和命名规则                   |
+| [`DEPLOYMENT.md`](../docs/governance/DEPLOYMENT.md)                             | 部署清单 — RC 检查、Smoke Test、CI 配置                 |
+| [`REVIEW-STRATEGY.md`](../docs/governance/REVIEW-STRATEGY.md)                   | 审查策略 — 每层轻审查、转换点强审查、高风险点反审查     |
 
 ### Spec 状态流转
 

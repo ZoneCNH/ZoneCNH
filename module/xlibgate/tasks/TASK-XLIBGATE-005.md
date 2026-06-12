@@ -31,10 +31,10 @@ status: pending
 
 ## Requirements Covered
 
-| Requirement | Description | Acceptance Criteria |
-|---|---|---|
-| FR-004 | check release：evidence 完整性校验 | 3 个 WHEN/THEN 场景 |
-| BR-004 | evidence schema 与 xlib-standard 一致 | JSON 格式 + 必需字段校验 |
+| Requirement | Description                           | Acceptance Criteria      |
+| ----------- | ------------------------------------- | ------------------------ |
+| FR-004      | check release：evidence 完整性校验    | 3 个 WHEN/THEN 场景      |
+| BR-004      | evidence schema 与 xlib-standard 一致 | JSON 格式 + 必需字段校验 |
 
 ## Non-scope
 
@@ -45,12 +45,12 @@ status: pending
 
 ## Test Plan
 
-| Test Case | Type | Description |
-|---|---|---|
-| TC-006 | Unit | evidence 完整且通过：exit 0 |
-| TC-006 | Unit | 缺失项：exit 1，输出缺失列表 |
-| TC-006 | Unit | 格式无效（非 JSON/缺必需字段）：exit 2 |
-| BR-004 | Unit | evidence schema 与 xlib-standard 一致：JSON 格式校验 + 必需字段检查 |
+| Test Case | Type | Description                                                         |
+| --------- | ---- | ------------------------------------------------------------------- |
+| TC-006    | Unit | evidence 完整且通过：exit 0                                         |
+| TC-006    | Unit | 缺失项：exit 1，输出缺失列表                                        |
+| TC-006    | Unit | 格式无效（非 JSON/缺必需字段）：exit 2                              |
+| BR-004    | Unit | evidence schema 与 xlib-standard 一致：JSON 格式校验 + 必需字段检查 |
 
 ## Implementation Notes
 
@@ -61,13 +61,13 @@ status: pending
 
 ## Implementation Plan
 
-| Step | Description | Deliverables | Verification |
-|---|---|---|---|
-| 1 | 实现 `evidence/collector.go` 和 `evidence/validator.go` | `evidence/collector.go`, `evidence/validator.go` | `go build ./...` 通过 |
-| 2 | 实现 `check_release.go`：解析 evidence → 校验必需项 | `check_release.go` | TC-006 全部通过 |
+| Step | Description                                             | Deliverables                                     | Verification          |
+| ---- | ------------------------------------------------------- | ------------------------------------------------ | --------------------- |
+| 1    | 实现 `evidence/collector.go` 和 `evidence/validator.go` | `evidence/collector.go`, `evidence/validator.go` | `go build ./...` 通过 |
+| 2    | 实现 `check_release.go`：解析 evidence → 校验必需项     | `check_release.go`                               | TC-006 全部通过       |
 
 ### Risk Assessment
 
-| Risk | Probability | Impact | Mitigation |
-|---|---|---|---|
-| evidence schema 变更 | Low | Medium | 配置化必需项列表 |
+| Risk                 | Probability | Impact | Mitigation       |
+| -------------------- | ----------- | ------ | ---------------- |
+| evidence schema 变更 | Low         | Medium | 配置化必需项列表 |

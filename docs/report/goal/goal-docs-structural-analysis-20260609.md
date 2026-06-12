@@ -26,14 +26,14 @@
 
 已执行的基础验证：
 
-| 验证项 | 结果 | 说明 |
-|---|---:|---|
-| `bash -n docs/goal/tools/gate-check.sh` | PASS | Shell 语法通过 |
-| `bash -n docs/goal/tools/evidence-collect.sh` | PASS | Shell 语法通过 |
-| `bash -n docs/goal/tools/lint-goal.sh` | PASS | Shell 语法通过 |
-| `python3 docs/goal/tools/rule-drift-check.py --root .` | PASS | 当前运行态样本符合 `rules.yaml` |
-| `python3 docs/goal/tools/matrix-gen.py --check-only` | PASS | 当前 Matrix 样本覆盖率 100% |
-| `bash docs/goal/tools/gate-check.sh` | PASS | 当前 Gate 样本 PASS=7, FAIL=0, WARN=0 |
+| 验证项                                                 | 结果 | 说明                                  |
+| ------------------------------------------------------ | ---: | ------------------------------------- |
+| `bash -n docs/goal/tools/gate-check.sh`                | PASS | Shell 语法通过                        |
+| `bash -n docs/goal/tools/evidence-collect.sh`          | PASS | Shell 语法通过                        |
+| `bash -n docs/goal/tools/lint-goal.sh`                 | PASS | Shell 语法通过                        |
+| `python3 docs/goal/tools/rule-drift-check.py --root .` | PASS | 当前运行态样本符合 `rules.yaml`       |
+| `python3 docs/goal/tools/matrix-gen.py --check-only`   | PASS | 当前 Matrix 样本覆盖率 100%           |
+| `bash docs/goal/tools/gate-check.sh`                   | PASS | 当前 Gate 样本 PASS=7, FAIL=0, WARN=0 |
 
 注意：这些 PASS 只证明当前样本能被当前工具接受，不证明 `docs/goal/` 内部规范一致。原因是核心检查器读取的是 `.config/goal/schema/rules.yaml`，而该规则文件本身与 `docs/goal/03-pipeline.md` 的状态机定义存在冲突。
 
@@ -41,16 +41,16 @@
 
 评分口径：100 分代表可作为自动化 agent/CI 的单一执行规范；80 分以上代表局部漂移但可控；70 分以下代表需要先做结构收敛再扩大使用。
 
-| 维度 | 分数 | 判断 |
-|---|---:|---|
-| 权威边界与 SSOT | 60 | 多个文档声明权威，缺少机器可校验的权威映射 |
-| 主流程与状态机 | 64 | 11 层流程清晰，但 SOP、Lite Mode、CI Phase 与主流程未建立映射 |
-| Gate 与质量门禁 | 78 | G0-G11 结构完整，阈值与 PASS_WITH_RISK 语义仍有漂移 |
-| ID / 版本 / 命名 | 58 | 新旧格式混用，模板与脚本正则不完全一致 |
-| Goal / Registry Schema | 60 | 最小字段、模板字段、registry 字段三套表达 |
-| Matrix / Evidence 追溯 | 66 | 方向正确，字段、阈值、Evidence 协议仍未统一 |
-| 工具 / CI 可执行性 | 66 | 有可运行脚本，但工具校验面窄，规则源与文档源未闭环 |
-| 可读性与维护性 | 76 | 文档覆盖充分，但入口过长、历史分析与现行规范混杂 |
+| 维度                   | 分数 | 判断                                                          |
+| ---------------------- | ---: | ------------------------------------------------------------- |
+| 权威边界与 SSOT        | 60   | 多个文档声明权威，缺少机器可校验的权威映射                    |
+| 主流程与状态机         | 64   | 11 层流程清晰，但 SOP、Lite Mode、CI Phase 与主流程未建立映射 |
+| Gate 与质量门禁        | 78   | G0-G11 结构完整，阈值与 PASS_WITH_RISK 语义仍有漂移           |
+| ID / 版本 / 命名       | 58   | 新旧格式混用，模板与脚本正则不完全一致                        |
+| Goal / Registry Schema | 60   | 最小字段、模板字段、registry 字段三套表达                     |
+| Matrix / Evidence 追溯 | 66   | 方向正确，字段、阈值、Evidence 协议仍未统一                   |
+| 工具 / CI 可执行性     | 66   | 有可运行脚本，但工具校验面窄，规则源与文档源未闭环            |
+| 可读性与维护性         | 76   | 文档覆盖充分，但入口过长、历史分析与现行规范混杂              |
 
 综合评分：`66/100`。
 
@@ -282,11 +282,11 @@
 
 按上述路线修复后，合理目标：
 
-| 阶段 | 预期分数 |
-|---|---:|
-| 修复 P1-01 到 P1-07 | 80-84 |
-| 补齐工具反查与 fixture | 85-89 |
-| 清理入口、适配器、历史文档 | 90+ |
+| 阶段                       | 预期分数 |
+| -------------------------- | -------: |
+| 修复 P1-01 到 P1-07        | 80-84    |
+| 补齐工具反查与 fixture     | 85-89    |
+| 清理入口、适配器、历史文档 | 90+      |
 
 达到 90+ 的判定标准：一个 agent 只读取权威地图、主流程、ID、Gate、Schema 和工具 README，就能稳定执行同一套 Goal 管线，不需要在文档间猜测。
 

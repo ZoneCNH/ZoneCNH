@@ -19,10 +19,10 @@
 
 | 操作             | main                           | worktree / feature branch |
 | ---------------- | ------------------------------ | ------------------------- |
-| 编辑文件         | ❌ 禁止                        | ✅ 必须                   |
-| 提交变更         | ❌ 禁止（仅允许 merge/rebase） | ✅ 必须                   |
-| 运行实验         | ❌ 禁止                        | ✅ 必须                   |
-| 合并已完成的工作 | ✅ 允许（通过 PR 或 merge）    | —                         |
+| 编辑文件         | ❌ 禁止                         | ✅ 必须                    |
+| 提交变更         | ❌ 禁止（仅允许 merge/rebase）  | ✅ 必须                    |
+| 运行实验         | ❌ 禁止                         | ✅ 必须                    |
+| 合并已完成的工作 | ✅ 允许（通过 PR 或 merge）     | —                         |
 
 ### 0.2 强制使用 worktree
 
@@ -73,12 +73,12 @@ FoundationX 由基座层（16 个模块）、L2.5 领域共享层（4 个模块�
 
 ### 1.1 基座原则
 
-| 编号 | 原则                           | 含义                                                                            |
-| ---- | ------------------------------ | ------------------------------------------------------------------------------- |
-| P1   | Foundation 先边界后功能        | 先固化 `xlib-standard`、依赖矩阵、Go baseline 和 release gate，再扩大 L1 能力面 |
+| 编号 | 原则                           | 含义                                                                                                        |
+| ---- | ------------------------------ | ----------------------------------------------------------------------------------------------------------- |
+| P1   | Foundation 先边界后功能        | 先固化 `xlib-standard`、依赖矩阵、Go baseline 和 release gate，再扩大 L1 能力面                             |
 | P2   | `xlib-standard` 不是运行时依赖 | 它是标准事实源、Go Reference Template、Generator、Harness Gate 和 Evidence Runtime 五类职责，不承载业务运行 |
-| P3   | `resiliencx` 只做运行时弹性    | timeout/retry/circuit/bulkhead/rate/fallback 属于它，交易风控属于 `risk-engine` |
-| P4   | `testkitx` 只能 test-only      | 生产 import graph 不允许出现测试工具包                                          |
+| P3   | `resiliencx` 只做运行时弹性    | timeout/retry/circuit/bulkhead/rate/fallback 属于它，交易风控属于 `risk-engine`                             |
+| P4   | `testkitx` 只能 test-only      | 生产 import graph 不允许出现测试工具包                                                                      |
 
 ### 1.2 领域原则
 
@@ -112,13 +112,13 @@ FoundationX 由基座层（16 个模块）、L2.5 领域共享层（4 个模块�
 
 ### 2.2 边界违规判定
 
-| 违规类型 | 严重性 | 示例 |
-|----------|--------|------|
-| 反向依赖 | CRITICAL | 数据域 import 分析域 |
-| 跨域数据职责 | CRITICAL | 数据域包含因子计算逻辑 |
-| 越界职责 | HIGH | `resiliencx` 包含交易风控逻辑 |
-| 重复定义 | HIGH | 业务域自定义 Price 类型而非使用 L2.5 |
-| 过度抽象 | MEDIUM | 为未来可能的需求创建接口 |
+| 违规类型     | 严重性   | 示例                                 |
+| ------------ | -------- | ------------------------------------ |
+| 反向依赖     | CRITICAL | 数据域 import 分析域                 |
+| 跨域数据职责 | CRITICAL | 数据域包含因子计算逻辑               |
+| 越界职责     | HIGH     | `resiliencx` 包含交易风控逻辑        |
+| 重复定义     | HIGH     | 业务域自定义 Price 类型而非使用 L2.5 |
+| 过度抽象     | MEDIUM   | 为未来可能的需求创建接口             |
 
 ### 2.3 边界仲裁
 
@@ -158,33 +158,33 @@ x.go ──→ 基座运行时 / L2.5 / 数据域 / 分析域 / 决策域 / 执�
 
 ### 3.2 依赖规则
 
-| 规则 | 说明 |
-|------|------|
-| 单向下行 | 依赖只能沿箭头方向，不可反向 |
-| 同层平级 | 同域同层模块之间不存在编译期依赖 |
+| 规则     | 说明                                |
+| -------- | ----------------------------------- |
+| 单向下行 | 依赖只能沿箭头方向，不可反向        |
+| 同层平级 | 同域同层模块之间不存在编译期依赖    |
 | 可选引入 | L1 运行时和存储扩展按需引入，非强制 |
-| 禁止循环 | 任何两个模块之间不允许循环依赖 |
+| 禁止循环 | 任何两个模块之间不允许循环依赖      |
 
 ### 3.3 基座内部层级
 
-| 层级 | 模块 | 可以依赖 |
-|------|------|----------|
-| L0 | kernel | stdlib only |
-| L1 | configx, observex, resiliencx, schedulex | kernel |
-| L1 test-only | testkitx | kernel, observex (interface-only) |
-| 标准源 / 门禁 | xlib-standard, xlibgate | 无运行时依赖 |
-| 存储扩展 | redisx, kafkax, natsx, postgresx, taosx, ossx, clickhousex | kernel, observex (interface-only) |
-| 契约 | contracts | L2.5 领域共享层 |
+| 层级          | 模块                                                       | 可以依赖                          |
+| ------------- | ---------------------------------------------------------- | --------------------------------- |
+| L0            | kernel                                                     | stdlib only                       |
+| L1            | configx, observex, resiliencx, schedulex                   | kernel                            |
+| L1 test-only  | testkitx                                                   | kernel, observex (interface-only) |
+| 标准源 / 门禁 | xlib-standard, xlibgate                                    | 无运行时依赖                      |
+| 存储扩展      | redisx, kafkax, natsx, postgresx, taosx, ossx, clickhousex | kernel, observex (interface-only) |
+| 契约          | contracts                                                  | L2.5 领域共享层                   |
 
 ### 3.4 禁止依赖矩阵
 
-| 模块类型 | 禁止依赖 |
-|----------|----------|
-| L0 (kernel) | 任何非 stdlib 包 |
-| L1 运行时 | 其他 L1 模块、业务域、存储扩展 |
-| 存储扩展 | configx、业务域、其他存储扩展（存储间不得互依） |
-| 契约 | L1 运行时、业务域实现（contracts 只定义接口，不依赖实现） |
-| 标准源 / 门禁 | 所有运行时模块（仅扫描，不 import） |
+| 模块类型      | 禁止依赖                                                  |
+| ------------- | --------------------------------------------------------- |
+| L0 (kernel)   | 任何非 stdlib 包                                          |
+| L1 运行时     | 其他 L1 模块、业务域、存储扩展                            |
+| 存储扩展      | configx、业务域、其他存储扩展（存储间不得互依）           |
+| 契约          | L1 运行时、业务域实现（contracts 只定义接口，不依赖实现） |
+| 标准源 / 门禁 | 所有运行时模块（仅扫描，不 import）                       |
 
 ---
 
@@ -192,21 +192,21 @@ x.go ──→ 基座运行时 / L2.5 / 数据域 / 分析域 / 决策域 / 执�
 
 ### 4.1 接口定义规则
 
-| 规则 | 说明 |
-|------|------|
-| 窄接口 | 每个接口 3-5 个方法，不超过 7 个 |
+| 规则       | 说明                                            |
+| ---------- | ----------------------------------------------- |
+| 窄接口     | 每个接口 3-5 个方法，不超过 7 个                |
 | 编译期检查 | 所有接口必须有 `var _ Interface = (*impl)(nil)` |
-| godoc 注释 | 所有公共接口和方法必须有文档注释 |
-| 不可变 DTO | 跨域 DTO 字段只读，不提供 setter |
-| 返回错误 | 方法签名返回 `error` 作为最后一个返回值 |
+| godoc 注释 | 所有公共接口和方法必须有文档注释                |
+| 不可变 DTO | 跨域 DTO 字段只读，不提供 setter                |
+| 返回错误   | 方法签名返回 `error` 作为最后一个返回值         |
 
 ### 4.2 接口位置
 
-| 接口类型 | 定义位置 |
-|----------|----------|
-| 跨域端口 | `contracts/` |
-| 域内接口 | 各域内部模块 |
-| 基座接口 | 各基座模块自身 |
+| 接口类型      | 定义位置                 |
+| ------------- | ------------------------ |
+| 跨域端口      | `contracts/`             |
+| 域内接口      | 各域内部模块             |
+| 基座接口      | 各基座模块自身           |
 | L2.5 领域模型 | `decimalx/`, `domain-*/` |
 
 ### 4.3 配置接口
@@ -227,12 +227,12 @@ type Config struct {
 
 **必需的行为规格章节：**
 
-| 章节 | 要求 |
-|------|------|
-| Functional Requirements | 每个公共方法必须有 WHEN/THEN 描述 |
-| Business Rules | 模块不变量和校验规则必须显式列出 |
-| Error Handling | 错误分类 + 调用方处理指南（不是模块自身故障模式） |
-| Acceptance Criteria | 统一验收清单（从 CI Gate + DoD 合并） |
+| 章节                    | 要求                                              |
+| ----------------------- | ------------------------------------------------- |
+| Functional Requirements | 每个公共方法必须有 WHEN/THEN 描述                 |
+| Business Rules          | 模块不变量和校验规则必须显式列出                  |
+| Error Handling          | 错误分类 + 调用方处理指南（不是模块自身故障模式） |
+| Acceptance Criteria     | 统一验收清单（从 CI Gate + DoD 合并）             |
 
 **WHEN/THEN 格式：**
 
@@ -267,22 +267,22 @@ THEN 返回零值和 ErrTypeMismatch
 
 ### 5.1 覆盖率要求
 
-| 模块类型 | 最低覆盖率 | 说明 |
-|----------|------------|------|
-| L0 (kernel) | 100% | 原语层必须高度可靠，零遗漏 |
-| L1 运行时 | 80% | 标准覆盖率 |
-| 存储扩展 | 80% | 单元测试 + 可选集成测试 |
-| 契约 | 80% | 含 breaking change 检测 |
-| 门禁 | 80% | 自检通过 |
+| 模块类型    | 最低覆盖率   | 说明                       |
+| ----------- | ------------ | -------------------------- |
+| L0 (kernel) | 100%         | 原语层必须高度可靠，零遗漏 |
+| L1 运行时   | 80%          | 标准覆盖率                 |
+| 存储扩展    | 80%          | 单元测试 + 可选集成测试    |
+| 契约        | 80%          | 含 breaking change 检测    |
+| 门禁        | 80%          | 自检通过                   |
 
 ### 5.2 测试分类
 
-| 类型 | 标签 | 运行条件 | 阻塞级别 |
-|------|------|----------|----------|
-| 单元测试 | 无 | 始终运行 | 必须通过 |
+| 类型     | 标签          | 运行条件       | 阻塞级别      |
+| -------- | ------------- | -------------- | ------------- |
+| 单元测试 | 无            | 始终运行       | 必须通过      |
 | 集成测试 | `integration` | 外部服务可达时 | 不可达时 skip |
-| 基准测试 | `benchmark` | PR 附带结果 | 建议 |
-| 竞态测试 | `-race` | 始终运行 | 必须通过 |
+| 基准测试 | `benchmark`   | PR 附带结果    | 建议          |
+| 竞态测试 | `-race`       | 始终运行       | 必须通过      |
 
 ### 5.3 测试命名
 
@@ -311,20 +311,20 @@ func TestFunctionName_Scenario_ExpectedBehavior(t *testing.T) {
 foundationx_<module>_<operation>_<measure>
 ```text
 
-| 部分 | 说明 | 示例 |
-|------|------|------|
-| `foundationx` | 固定前缀 | `foundationx` |
-| `<module>` | 模块名 | `redisx` |
-| `<operation>` | 操作名 | `get`, `set`, `query` |
-| `<measure>` | 度量类型 | `duration`, `errors`, `size` |
+| 部分          | 说明     | 示例                         |
+| ------------- | -------- | ---------------------------- |
+| `foundationx` | 固定前缀 | `foundationx`                |
+| `<module>`    | 模块名   | `redisx`                     |
+| `<operation>` | 操作名   | `get`, `set`, `query`        |
+| `<measure>`   | 度量类型 | `duration`, `errors`, `size` |
 
 ### 6.2 必需的可观测输出
 
-| 类型 | 每个模块必须提供 |
-|------|------------------|
+| 类型   | 每个模块必须提供                           |
+| ------ | ------------------------------------------ |
 | metric | 操作耗时（histogram）、错误计数（counter） |
-| log | 连接成功/失败、关键状态变更 |
-| health | 健康检查接口实现 |
+| log    | 连接成功/失败、关键状态变更                |
+| health | 健康检查接口实现                           |
 
 ### 6.3 Label Policy
 
@@ -344,32 +344,32 @@ foundationx_<module>_<operation>_<measure>
 
 ### 7.1 Go 命名
 
-| 元素 | 规范 | 示例 |
-|------|------|------|
-| 包名 | 小写单词，无下划线 | `redisx`, `configx` |
-| 接口 | 方法名动词或名词 | `Client`, `Locker`, `Provider` |
-| 结构体 | PascalCase | `MarketSnapshot`, `StreamConfig` |
-| 函数/方法 | PascalCase (exported), camelCase (unexported) | `NewClient`, `parseConfig` |
-| 常量 | PascalCase 或 UPPER_SNAKE | `TopicMarketData` |
-| 错误 | `errors.New("module: description")` | `errors.New("redisx: connection refused")` |
+| 元素      | 规范                                          | 示例                                       |
+| --------- | --------------------------------------------- | ------------------------------------------ |
+| 包名      | 小写单词，无下划线                            | `redisx`, `configx`                        |
+| 接口      | 方法名动词或名词                              | `Client`, `Locker`, `Provider`             |
+| 结构体    | PascalCase                                    | `MarketSnapshot`, `StreamConfig`           |
+| 函数/方法 | PascalCase (exported), camelCase (unexported) | `NewClient`, `parseConfig`                 |
+| 常量      | PascalCase 或 UPPER_SNAKE                     | `TopicMarketData`                          |
+| 错误      | `errors.New("module: description")`           | `errors.New("redisx: connection refused")` |
 
 ### 7.2 模块命名
 
-| 模式 | 说明 | 示例 |
-|------|------|------|
-| `<name>x` | 基座扩展模块 | `redisx`, `kafkax`, `configx` |
+| 模式            | 说明          | 示例                               |
+| --------------- | ------------- | ---------------------------------- |
+| `<name>x`       | 基座扩展模块  | `redisx`, `kafkax`, `configx`      |
 | `domain-<name>` | L2.5 领域模型 | `domain-market`, `domain-exchange` |
-| `<name>-engine` | 分析/决策引擎 | `risk-engine`, `factor-engine` |
-| `<exchange>` | 数据域采集器 | `binance`, `okx` |
+| `<name>-engine` | 分析/决策引擎 | `risk-engine`, `factor-engine`     |
+| `<exchange>`    | 数据域采集器  | `binance`, `okx`                   |
 
 ### 7.3 文件命名
 
-| 类型 | 规范 | 示例 |
-|------|------|------|
-| Go 源码 | snake_case | `client.go`, `health_check.go` |
-| 测试文件 | `<source>_test.go` | `client_test.go` |
-| 规格文档 | `SPEC.md` | `module/redisx/SPEC.md` |
-| 变更日志 | `CHANGELOG.md` | 每个模块根目录 |
+| 类型     | 规范               | 示例                           |
+| -------- | ------------------ | ------------------------------ |
+| Go 源码  | snake_case         | `client.go`, `health_check.go` |
+| 测试文件 | `<source>_test.go` | `client_test.go`               |
+| 规格文档 | `SPEC.md`          | `module/redisx/SPEC.md`        |
+| 变更日志 | `CHANGELOG.md`     | 每个模块根目录                 |
 
 ---
 
@@ -390,21 +390,21 @@ if err != nil {
 
 ### 8.2 错误规则
 
-| 规则 | 说明 |
-|------|------|
-| 哨兵错误 | 可编程处理的错误定义为包级变量 |
-| 错误包装 | 使用 `%w` 包装底层错误，保留链 |
-| 错误消息格式 | `"module: operation context"` |
+| 规则         | 说明                           |
+| ------------ | ------------------------------ |
+| 哨兵错误     | 可编程处理的错误定义为包级变量 |
+| 错误包装     | 使用 `%w` 包装底层错误，保留链 |
+| 错误消息格式 | `"module: operation context"`  |
 | 不要静默吞掉 | 所有错误必须显式处理或向上传播 |
-| 不要 panic | 除非不可恢复的初始化失败 |
+| 不要 panic   | 除非不可恢复的初始化失败       |
 
 ### 8.3 错误分类
 
-| 分类 | 处理方式 | 示例 |
-|------|----------|------|
-| 可重试 | 返回错误 + `Retryable()` 方法 | 网络超时 |
-| 不可重试 | 直接返回错误 | 参数校验失败 |
-| 致命 | 返回错误 + 日志 fatal | 配置不可用 |
+| 分类     | 处理方式                      | 示例         |
+| -------- | ----------------------------- | ------------ |
+| 可重试   | 返回错误 + `Retryable()` 方法 | 网络超时     |
+| 不可重试 | 直接返回错误                  | 参数校验失败 |
+| 致命     | 返回错误 + 日志 fatal         | 配置不可用   |
 
 ---
 
@@ -419,12 +419,12 @@ if err != nil {
 
 ### 9.2 输入校验
 
-| 输入源 | 校验要求 |
-|--------|----------|
+| 输入源   | 校验要求               |
+| -------- | ---------------------- |
 | 配置文件 | schema 校验 + 类型检查 |
-| 环境变量 | 类型转换 + 范围检查 |
-| API 参数 | 边界检查 + 注入防护 |
-| 消息队列 | 反序列化校验 |
+| 环境变量 | 类型转换 + 范围检查    |
+| API 参数 | 边界检查 + 注入防护    |
+| 消息队列 | 反序列化校验           |
 
 ### 9.3 数据保护
 
@@ -445,11 +445,11 @@ if err != nil {
 
 ### 10.1 变更分类
 
-| 分类 | 定义 | 审批要求 |
-|------|------|----------|
-| PATCH | Bug 修复、文档更新、测试补充 | 1 人审批 |
-| MINOR | 新增功能、新增接口方法 | 1 人审批 + SPEC 更新 |
-| MAJOR | 接口签名变更、DTO 结构变更 | 2 人审批 + 迁移方案 + 版本 bump |
+| 分类   | 定义                         | 审批要求                        |
+| ------ | ---------------------------- | ------------------------------- |
+| PATCH  | Bug 修复、文档更新、测试补充 | 1 人审批                        |
+| MINOR  | 新增功能、新增接口方法       | 1 人审批 + SPEC 更新            |
+| MAJOR  | 接口签名变更、DTO 结构变更   | 2 人审批 + 迁移方案 + 版本 bump |
 
 ### 10.2 Breaking Change 定义
 
@@ -503,13 +503,13 @@ v1.0.0  — 首个稳定 API 承诺
 
 ### 11.2 审查严重性
 
-| 级别 | 含义 | 处理 |
-|------|------|------|
-| CONSTITUTION | 违背本宪法 | **阻塞** — 必须修复 |
-| CRITICAL | 安全漏洞或数据丢失风险 | **阻塞** — 必须修复 |
-| HIGH | Bug 或重大质量问题 | **警告** — 应修复 |
-| MEDIUM | 可维护性问题 | **建议** — 考虑修复 |
-| LOW | 风格或次要建议 | **可选** |
+| 级别         | 含义                   | 处理                |
+| ------------ | ---------------------- | ------------------- |
+| CONSTITUTION | 违背本宪法             | **阻塞** — 必须修复 |
+| CRITICAL     | 安全漏洞或数据丢失风险 | **阻塞** — 必须修复 |
+| HIGH         | Bug 或重大质量问题     | **警告** — 应修复   |
+| MEDIUM       | 可维护性问题           | **建议** — 考虑修复 |
+| LOW          | 风格或次要建议         | **可选**            |
 
 ### 11.3 AI 代理审查规则
 
@@ -546,15 +546,15 @@ AI 代理在生成或审查代码时：
 
 ### 12.3 修正记录
 
-| 日期 | 条款 | 变更内容 | 理由 |
-|------|------|----------|------|
-| 2026-06-07 | 全文 | 初始版本（§1-§14） | 建立基座模块治理框架 |
-| 2026-06-08 | §15-§19 | 新增交付管线治理条款 | 将交付方法论提升为宪法约束 |
-| 2026-06-09 | §0 | 新增第零条：分支纪律（最高优先级） | 禁止 main 开发，强制 worktree 隔离 |
-| 2026-06-10 | §0.2 | 补充分支创建规则 | 所有分支必须从 main HEAD 创建，禁止从 feature branch 拉新分支 |
-| 2026-06-12 | §2.4 | 新增本地代码目录条款 | 模块代码统一存放于 /home/{module}，禁止内嵌源码树 |
-| 2026-06-12 | §5 | P0 修复 — resiliencx 测试覆盖率验证 100% | 验证全包通过，解除阻断 |
-| 2026-06-12 | §4.4 | xlib-standard SPEC Release 状态同步 | v1.0.0 已发布（tag v1.0.0），更新 Lifecycle State |
+| 日期       | 条款    | 变更内容                                 | 理由                                                          |
+| ---------- | ------- | ---------------------------------------- | ------------------------------------------------------------- |
+| 2026-06-07 | 全文    | 初始版本（§1-§14）                       | 建立基座模块治理框架                                          |
+| 2026-06-08 | §15-§19 | 新增交付管线治理条款                     | 将交付方法论提升为宪法约束                                    |
+| 2026-06-09 | §0      | 新增第零条：分支纪律（最高优先级）       | 禁止 main 开发，强制 worktree 隔离                            |
+| 2026-06-10 | §0.2    | 补充分支创建规则                         | 所有分支必须从 main HEAD 创建，禁止从 feature branch 拉新分支 |
+| 2026-06-12 | §2.4    | 新增本地代码目录条款                     | 模块代码统一存放于 /home/{module}，禁止内嵌源码树             |
+| 2026-06-12 | §5      | P0 修复 — resiliencx 测试覆盖率验证 100% | 验证全包通过，解除阻断                                        |
+| 2026-06-12 | §4.4    | xlib-standard SPEC Release 状态同步      | v1.0.0 已发布（tag v1.0.0），更新 Lifecycle State             |
 
 ---
 
@@ -601,15 +601,15 @@ AI 代理在生成或审查代码时：
 
 以下文件构成**评分系统根权限**。任何 agent（包括 `spec`、`task-executor`、`pipeline-arbiter`、所有 scorer）一律**禁止写入**：
 
-| 类别 | 路径 |
-|------|------|
-| Rubric | `docs/governance/scoring/RUBRIC-*.md` |
-| 评分方法论 | `docs/governance/STRUCTURAL-SCORING.md` |
-| 仲裁协议 | `docs/governance/scoring/ARBITER-PROTOCOL.md` |
-| Agent 配置 | `.claude/agents/`、`.codex/agents/`、`.copilot/agents/` 下所有文件 |
+| 类别       | 路径                                                                                                                     |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------ |
+| Rubric     | `docs/governance/scoring/RUBRIC-*.md`                                                                                    |
+| 评分方法论 | `docs/governance/STRUCTURAL-SCORING.md`                                                                                  |
+| 仲裁协议   | `docs/governance/scoring/ARBITER-PROTOCOL.md`                                                                            |
+| Agent 配置 | `.claude/agents/`、`.codex/agents/`、`.copilot/agents/` 下所有文件                                                       |
 | 工作流入口 | `.claude/commands/spec-code-pipeline.md`、`.codex/skills/spec-code-pipeline/`、`.copilot/commands/spec-code-pipeline.md` |
-| 外部指标 | `.omc/state/outer-metrics/`、`.omx/state/outer-metrics/`、`.copilot/state/outer-metrics/` 下所有文件 |
-| 本宪法 | `CONSTITUTION.md` |
+| 外部指标   | `.omc/state/outer-metrics/`、`.omx/state/outer-metrics/`、`.copilot/state/outer-metrics/` 下所有文件                     |
+| 本宪法     | `CONSTITUTION.md`                                                                                                        |
 
 scorer 的 `min ≥ 98` 仲裁结果**不构成**修改上述文件的授权。
 
@@ -680,15 +680,15 @@ Goal → Spec → Design → Plan → Tasks → Prompt → Code → Test → Rev
 
 ### 15.2 管线七律
 
-| 编号 | 原则 | 含义 |
-|------|------|------|
-| D1 | 无 Goal 不开始 | 任何代码变更必须追溯到已批准的 Goal |
-| D2 | 无 Spec 不拆解 | Goal 必须转化为可测试的 Spec 才能进入 Tasks |
-| D3 | 无 Matrix 不开工 | 追溯矩阵必须建立才能开始编码 |
-| D4 | 无 Task 不生成 | Prompt 必须引用具体 Task，不得开放式生成 |
-| D5 | 无 Prompt 不交给 AI | AI 编码必须有结构化上下文和约束 |
-| D6 | 无 Test 不完成 | 每条验收标准必须有对应测试 |
-| D7 | 无 Metrics 不算成功 | 上线后必须验证 Goal 达成 |
+| 编号   | 原则                | 含义                                        |
+| ------ | ------------------- | ------------------------------------------- |
+| D1     | 无 Goal 不开始      | 任何代码变更必须追溯到已批准的 Goal         |
+| D2     | 无 Spec 不拆解      | Goal 必须转化为可测试的 Spec 才能进入 Tasks |
+| D3     | 无 Matrix 不开工    | 追溯矩阵必须建立才能开始编码                |
+| D4     | 无 Task 不生成      | Prompt 必须引用具体 Task，不得开放式生成    |
+| D5     | 无 Prompt 不交给 AI | AI 编码必须有结构化上下文和约束             |
+| D6     | 无 Test 不完成      | 每条验收标准必须有对应测试                  |
+| D7     | 无 Metrics 不算成功 | 上线后必须验证 Goal 达成                    |
 
 ### 15.3 变更传播
 
@@ -704,15 +704,15 @@ Goal → Spec → Design → Plan → Tasks → Prompt → Code → Test → Rev
 
 ### 16.1 统一制品 ID
 
-| 前缀 | 制品 | 示例 |
-|------|------|------|
-| G- | Goal | G-001 |
-| S- | Spec | S-001 |
-| M- | Matrix edge | M-001 |
-| T- | Task | TASK-REDISX-000 |
-| P- | Prompt | P-001 |
-| C- | Code Module | CsvExportService |
-| TC- | Test Case | TC-001 |
+| 前缀   | 制品        | 示例             |
+| ------ | ----------- | ---------------- |
+| G-     | Goal        | G-001            |
+| S-     | Spec        | S-001            |
+| M-     | Matrix edge | M-001            |
+| T-     | Task        | TASK-REDISX-000  |
+| P-     | Prompt      | P-001            |
+| C-     | Code Module | CsvExportService |
+| TC-    | Test Case   | TC-001           |
 
 ### 16.2 追溯覆盖要求
 
@@ -743,15 +743,15 @@ Goal → Spec → Design → Plan → Tasks → Prompt → Code → Test → Rev
 
 AI 编码 Prompt 必须包含：
 
-| 必需项 | 说明 |
-|--------|------|
-| Task ID | 本次执行的 Task 引用 |
-| Spec 引用 | 相关需求上下文 |
-| Matrix edge | 覆盖的追溯 edge |
-| 输入输出 | 明确的 I/O 契约 |
-| 约束条件 | 不可违反的规则 |
-| 禁止项 | 明确不得做的事情 |
-| 测试要求 | 必须生成的测试 |
+| 必需项      | 说明                 |
+| ----------- | -------------------- |
+| Task ID     | 本次执行的 Task 引用 |
+| Spec 引用   | 相关需求上下文       |
+| Matrix edge | 覆盖的追溯 edge      |
+| 输入输出    | 明确的 I/O 契约      |
+| 约束条件    | 不可违反的规则       |
+| 禁止项      | 明确不得做的事情     |
+| 测试要求    | 必须生成的测试       |
 
 ### 17.2 代码边界
 
@@ -776,12 +776,12 @@ AI 生成的代码必须经过：
 
 ### 18.1 四级 Done
 
-| 层级 | 名称 | 含义 | 验证方式 |
-|------|------|------|---------|
-| L1 | Code Done | 代码写完 | 编译通过 |
-| L2 | Test Done | 测试通过 | 全量测试绿 |
-| L3 | Release Done | 功能上线 | 部署成功 |
-| L4 | Goal Done | 目标达成 | 指标验证 |
+| 层级   | 名称         | 含义     | 验证方式   |
+| ------ | ------------ | -------- | ---------- |
+| L1     | Code Done    | 代码写完 | 编译通过   |
+| L2     | Test Done    | 测试通过 | 全量测试绿 |
+| L3     | Release Done | 功能上线 | 部署成功   |
+| L4     | Goal Done    | 目标达成 | 指标验证   |
 
 ### 18.2 Done 规则
 
@@ -806,37 +806,37 @@ AI 生成的代码必须经过：
 
 ### 19.1 CRI 七原则
 
-| 编号 | 原则 | 含义 |
-|------|------|------|
-| R1 | 证据驱动 | 基于真实缺陷和指标改进，不凭感觉 |
-| R2 | 有界 | 改进交付系统，不改业务目标和成功标准 |
-| R3 | 可追溯 | 每次改进可追溯到问题和根因 |
-| R4 | 可验证 | 每次改进有验证方式 |
-| R5 | 可回滚 | 坏的改进可以撤销 |
-| R6 | 人工审批 | 高风险变更必须人工批准 |
-| R7 | 价值导向 | 改进必须减少真实失败，不是增加仪式 |
+| 编号   | 原则     | 含义                                 |
+| ------ | -------- | ------------------------------------ |
+| R1     | 证据驱动 | 基于真实缺陷和指标改进，不凭感觉     |
+| R2     | 有界     | 改进交付系统，不改业务目标和成功标准 |
+| R3     | 可追溯   | 每次改进可追溯到问题和根因           |
+| R4     | 可验证   | 每次改进有验证方式                   |
+| R5     | 可回滚   | 坏的改进可以撤销                     |
+| R6     | 人工审批 | 高风险变更必须人工批准               |
+| R7     | 价值导向 | 改进必须减少真实失败，不是增加仪式   |
 
 ### 19.2 改进对象边界
 
-| 对象 | CRI 可做 | CRI 不可做 |
-|------|---------|-----------|
-| Goal | 提出澄清建议 | 自动改目标 |
-| Metrics | 建议补充指标 | 自动降低目标值 |
-| Spec | 建议补充边界 | 删除已批准需求 |
-| Matrix | 发现缺口 | 把缺口标记为 Done |
-| Test | 建议新增测试 | 删除失败测试 |
-| Prompt | 优化模板 | 诱导绕过约束 |
-| Code | 生成修复建议 | 自动合并生产代码 |
-| Gate | 建议增强 | 自动削弱 |
+| 对象    | CRI 可做     | CRI 不可做        |
+| ------- | ------------ | ----------------- |
+| Goal    | 提出澄清建议 | 自动改目标        |
+| Metrics | 建议补充指标 | 自动降低目标值    |
+| Spec    | 建议补充边界 | 删除已批准需求    |
+| Matrix  | 发现缺口     | 把缺口标记为 Done |
+| Test    | 建议新增测试 | 删除失败测试      |
+| Prompt  | 优化模板     | 诱导绕过约束      |
+| Code    | 生成修复建议 | 自动合并生产代码  |
+| Gate    | 建议增强     | 自动削弱          |
 
 ### 19.3 审批分级
 
-| 风险 | 示例 | 审批要求 |
-|------|------|---------|
-| R0 高 | 修改 Release Gate、权限规则 | 必须人工审批 |
-| R1 中高 | 修改 CI 阻断规则 | Tech Lead 审批 |
-| R2 中 | 修改 Prompt/Spec 模板 | 工程 Owner 审批 |
-| R3 低 | 增加模板示例 | 可自动或轻审批 |
+| 风险    | 示例                        | 审批要求        |
+| ------- | --------------------------- | --------------- |
+| R0 高   | 修改 Release Gate、权限规则 | 必须人工审批    |
+| R1 中高 | 修改 CI 阻断规则            | Tech Lead 审批  |
+| R2 中   | 修改 Prompt/Spec 模板       | 工程 Owner 审批 |
+| R3 低   | 增加模板示例                | 可自动或轻审批  |
 
 ### 19.4 改进记录
 
@@ -846,25 +846,25 @@ AI 生成的代码必须经过：
 
 ## 附录 A：模块清单
 
-| 层级 | 模块 | 规格 | 仓库 |
-|------|------|------|------|
-| L0 | kernel | [SPEC](./module/kernel/SPEC.md) | [kernel](https://github.com/ZoneCNH/kernel) |
-| L1 | configx | [SPEC](./module/configx/SPEC.md) | [configx](https://github.com/ZoneCNH/configx) |
-| L1 | observex | [SPEC](./module/observex/SPEC.md) | [observex](https://github.com/ZoneCNH/observex) |
-| L1 | resiliencx | [SPEC](./module/resiliencx/SPEC.md) | [resiliencx](https://github.com/ZoneCNH/resiliencx) |
-| L1 | schedulex | [SPEC](./module/schedulex/SPEC.md) | [schedulex](https://github.com/ZoneCNH/schedulex) |
-| L1 test-only | testkitx | [SPEC](./module/testkitx/SPEC.md) | [testkitx](https://github.com/ZoneCNH/testkitx) |
-| 标准源 | xlib-standard | [SPEC](./module/xlib-standard/SPEC.md) | [xlib-standard](https://github.com/ZoneCNH/xlib-standard) |
-| 门禁 | xlibgate | [SPEC](./module/xlibgate/SPEC.md) | [xlibgate](https://github.com/ZoneCNH/xlibgate) |
-| 存储扩展 | redisx | [SPEC](./module/redisx/SPEC.md) | [redisx](https://github.com/ZoneCNH/redisx) |
-| 存储扩展 | kafkax | [SPEC](./module/kafkax/SPEC.md) | [kafkax](https://github.com/ZoneCNH/kafkax) |
-| 存储扩展 | natsx | [SPEC](./module/natsx/SPEC.md) | [natsx](https://github.com/ZoneCNH/natsx) |
-| 存储扩展 | postgresx | [SPEC](./module/postgresx/SPEC.md) | [postgresx](https://github.com/ZoneCNH/postgresx) |
-| 存储扩展 | taosx | [SPEC](./module/taosx/SPEC.md) | [taosx](https://github.com/ZoneCNH/taosx) |
-| 存储扩展 | ossx | [SPEC](./module/ossx/SPEC.md) | [ossx](https://github.com/ZoneCNH/ossx) |
-| 存储扩展 | clickhousex | [SPEC](./module/clickhousex/SPEC.md) | [clickhousex](https://github.com/ZoneCNH/clickhousex) |
-| 契约 | contracts | [SPEC](./module/contracts/SPEC.md) | [contracts](https://github.com/ZoneCNH/contracts) |
-| 组合根 | x.go | [SPEC](./module/xgo/SPEC.md) | [x.go](https://github.com/ZoneCNH/x.go) |
+| 层级         | 模块          | 规格                                   | 仓库                                                      |
+| ------------ | ------------- | -------------------------------------- | --------------------------------------------------------- |
+| L0           | kernel        | [SPEC](./module/kernel/SPEC.md)        | [kernel](https://github.com/ZoneCNH/kernel)               |
+| L1           | configx       | [SPEC](./module/configx/SPEC.md)       | [configx](https://github.com/ZoneCNH/configx)             |
+| L1           | observex      | [SPEC](./module/observex/SPEC.md)      | [observex](https://github.com/ZoneCNH/observex)           |
+| L1           | resiliencx    | [SPEC](./module/resiliencx/SPEC.md)    | [resiliencx](https://github.com/ZoneCNH/resiliencx)       |
+| L1           | schedulex     | [SPEC](./module/schedulex/SPEC.md)     | [schedulex](https://github.com/ZoneCNH/schedulex)         |
+| L1 test-only | testkitx      | [SPEC](./module/testkitx/SPEC.md)      | [testkitx](https://github.com/ZoneCNH/testkitx)           |
+| 标准源       | xlib-standard | [SPEC](./module/xlib-standard/SPEC.md) | [xlib-standard](https://github.com/ZoneCNH/xlib-standard) |
+| 门禁         | xlibgate      | [SPEC](./module/xlibgate/SPEC.md)      | [xlibgate](https://github.com/ZoneCNH/xlibgate)           |
+| 存储扩展     | redisx        | [SPEC](./module/redisx/SPEC.md)        | [redisx](https://github.com/ZoneCNH/redisx)               |
+| 存储扩展     | kafkax        | [SPEC](./module/kafkax/SPEC.md)        | [kafkax](https://github.com/ZoneCNH/kafkax)               |
+| 存储扩展     | natsx         | [SPEC](./module/natsx/SPEC.md)         | [natsx](https://github.com/ZoneCNH/natsx)                 |
+| 存储扩展     | postgresx     | [SPEC](./module/postgresx/SPEC.md)     | [postgresx](https://github.com/ZoneCNH/postgresx)         |
+| 存储扩展     | taosx         | [SPEC](./module/taosx/SPEC.md)         | [taosx](https://github.com/ZoneCNH/taosx)                 |
+| 存储扩展     | ossx          | [SPEC](./module/ossx/SPEC.md)          | [ossx](https://github.com/ZoneCNH/ossx)                   |
+| 存储扩展     | clickhousex   | [SPEC](./module/clickhousex/SPEC.md)   | [clickhousex](https://github.com/ZoneCNH/clickhousex)     |
+| 契约         | contracts     | [SPEC](./module/contracts/SPEC.md)     | [contracts](https://github.com/ZoneCNH/contracts)         |
+| 组合根       | x.go          | [SPEC](./module/xgo/SPEC.md)           | [x.go](https://github.com/ZoneCNH/x.go)                   |
 
 ## 附录 B：与 CLAUDE.md 的关系
 

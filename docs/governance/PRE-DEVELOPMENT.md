@@ -160,13 +160,13 @@ module/{module}/tasks/
 
 状态符号：
 
-| 符号 | 含义 |
-|------|------|
-| ⬜ | 未开始 |
-| 🔵 | 进行中 |
-| ✅ | 已完成 |
-| ❌ | 阻塞 |
-| ⏭️ | 延后 |
+| 符号   | 含义   |
+| ------ | ------ |
+| ⬜      | 未开始 |
+| 🔵      | 进行中 |
+| ✅      | 已完成 |
+| ❌      | 阻塞   |
+| ⏭️     | 延后   |
 
 校验规则：
 
@@ -204,11 +204,11 @@ module/{module}/tasks/
 
 ## 相关文档
 
-| 文档 | 用途 |
-|------|------|
-| `docs/governance/TASK-TEMPLATE.md` | Task spec 模板 |
-| `docs/governance/TRACEABILITY.md` | 追溯矩阵规范 |
-| `docs/governance/DEVELOPMENT-WORKFLOW.md` | 完整管线总览（含 Agent 编排与门禁定义） |
-| `docs/governance/CODING-SESSION-PROTOCOL.md` | 编码会话协议 |
+| 文档                                         | 用途                                    |
+| -------------------------------------------- | --------------------------------------- |
+| `docs/governance/TASK-TEMPLATE.md`           | Task spec 模板                          |
+| `docs/governance/TRACEABILITY.md`            | 追溯矩阵规范                            |
+| `docs/governance/DEVELOPMENT-WORKFLOW.md`    | 完整管线总览（含 Agent 编排与门禁定义） |
+| `docs/governance/CODING-SESSION-PROTOCOL.md` | 编码会话协议                            |
 
 > 完整工作流定义见 `docs/governance/DEVELOPMENT-WORKFLOW.md`，其中包含每个阶段的 Agent 分配、进入/退出门禁、产物定义和状态管理。

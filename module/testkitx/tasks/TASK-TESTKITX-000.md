@@ -28,14 +28,14 @@ status: pending
 
 ## Requirements Covered
 
-| Requirement | Description | Acceptance Criteria |
-|---|---|---|
-| BR-006 | testkitx 依赖边界：仅依赖 L1 接口包 | AC-BR-006 |
+| Requirement | Description                         | Acceptance Criteria |
+| ----------- | ----------------------------------- | ------------------- |
+| BR-006      | testkitx 依赖边界：仅依赖 L1 接口包 | AC-BR-006           |
 
 ## Test Plan
 
-| Test Case | Type | Description |
-|---|---|---|
+| Test Case   | Type    | Description               |
+| ----------- | ------- | ------------------------- |
 | CI: compile | CI Gate | `go build ./...` 编译通过 |
 
 ## Implementation Notes
@@ -45,13 +45,13 @@ status: pending
 
 ## Implementation Plan
 
-| Step | Description | Deliverables | Verification |
-|---|---|---|---|
-| 1 | 创建 `go.mod` | `go.mod` | `go mod tidy` 无变化 |
-| 2 | 创建 `doc.go` | `doc.go` | `go build ./...` 通过 |
+| Step | Description   | Deliverables | Verification          |
+| ---- | ------------- | ------------ | --------------------- |
+| 1    | 创建 `go.mod` | `go.mod`     | `go mod tidy` 无变化  |
+| 2    | 创建 `doc.go` | `doc.go`     | `go build ./...` 通过 |
 
 ### Risk Assessment
 
-| Risk | Probability | Impact | Mitigation |
-|---|---|---|---|
-| 依赖引入循环 | Low | High | 仅依赖接口包 |
+| Risk         | Probability | Impact | Mitigation   |
+| ------------ | ----------- | ------ | ------------ |
+| 依赖引入循环 | Low         | High   | 仅依赖接口包 |

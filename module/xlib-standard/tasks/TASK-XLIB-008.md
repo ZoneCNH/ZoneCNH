@@ -53,10 +53,10 @@ status: pending
 
 ## Requirements Covered
 
-| Requirement | Description | Acceptance Criteria |
-|---|---|---|
-| FR-007 | 公共 API 模板 | 全部 API 存在 |
-| FR-008 | 模板可编译 | go test 通过 |
+| Requirement | Description   | Acceptance Criteria |
+| ----------- | ------------- | ------------------- |
+| FR-007      | 公共 API 模板 | 全部 API 存在       |
+| FR-008      | 模板可编译    | go test 通过        |
 
 ## Test Plan
 

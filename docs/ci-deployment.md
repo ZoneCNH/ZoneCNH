@@ -13,7 +13,7 @@
 | -------------------- | ---------------------- | --------------------------------------------------------- | ------ |
 | **Docs CI**          | `docs-ci.yml`          | 文档质量守卫、workflow 策略守卫、Spec 结构检查            | 13     |
 | **Goal CI**          | `goal-ci.yml`          | Goal 驱动交付体系门禁（YAML、Registry、ID、Matrix、Gate） | 12     |
-| **Deps Matrix**      | `deps-matrix.yml`      | Foundation 依赖矩阵检查和 PR 汇总                        | 4      |
+| **Deps Matrix**      | `deps-matrix.yml`      | Foundation 依赖矩阵检查和 PR 汇总                         | 4      |
 | **Outer Metrics**    | `outer-metrics.yml`    | 评分体系外部锚点采集与 Goodhart 检测                      | 2      |
 | **Release**          | `release.yml`          | 版本发布元数据（质量门禁 → manifest → GitHub Release）    | 5      |
 | **Scripts Tests**    | `scripts-tests.yml`    | rule-scorer 单元测试与 shell 脚本烟雾测试                 | 2      |
@@ -287,7 +287,7 @@ publish-release (下载 artifact → 生成 changelog → 创建 GitHub Release)
 | -------------------- | ---------------- | --------------------------------- | --------------------------------------------------------------- |
 | `quality-gate`       | 由 docs-ci 定义  | —                                 | 调用 `docs-ci.yml`（`workflow_call`）                           |
 | `goal-control-plane` | 由 goal-ci 定义  | —                                 | 调用 `goal-ci.yml`（`workflow_call`）                           |
-| `release-gate`       | 10min            | quality-gate, goal-control-plane | 执行 Goal release gate 并上传产物                               |
+| `release-gate`       | 10min            | quality-gate, goal-control-plane  | 执行 Goal release gate 并上传产物                               |
 | `build-manifest`     | 15min            | release-gate                      | 生成 release manifest JSON                                      |
 | `publish-release`    | 10min            | build-manifest                    | 按 conventional commits 分类生成 changelog，创建 GitHub Release |
 
@@ -313,10 +313,10 @@ git push origin v0.5.0
 
 | Commit 前缀 | 分类      |
 | ----------- | --------- |
-| `feat:`     | ✨ 新功能 |
-| `fix:`      | 🐛 修复   |
-| `docs:`     | 📝 文档   |
-| 其他        | 🔧 其他   |
+| `feat:`     | ✨ 新功能  |
+| `fix:`      | 🐛 修复    |
+| `docs:`     | 📝 文档    |
+| 其他        | 🔧 其他    |
 
 ### 3.5 Scripts Tests（脚本健壮性）
 
@@ -326,7 +326,7 @@ git push origin v0.5.0
 
 | 触发                | 条件                                                      |
 | ------------------- | --------------------------------------------------------- |
-| `pull_request`      | 变更路径匹配 `scripts/**`、`docs/governance/scoring/**` |
+| `pull_request`      | 变更路径匹配 `scripts/**`、`docs/governance/scoring/**`   |
 | `push` (main)       | 同上                                                      |
 | `workflow_dispatch` | 手动触发                                                  |
 
@@ -379,18 +379,18 @@ git push origin v0.5.0
 
 ### 6.1 常见问题
 
-| 症状                          | 原因                             | 解决                                                                  |
-| ----------------------------- | -------------------------------- | --------------------------------------------------------------------- |
-| `lychee: command not found`   | runner 未安装 lychee             | 见 [2.5 lychee 安装](#25-lychee-安装)                                 |
-| `npx: command not found`      | runner 未安装 Node.js            | 见 [2.4 Node.js 安装](#24-nodejs-安装)                                |
-| `yamllint: command not found` | job-local Python 工具链未激活     | 运行 `bash docs/goal/tools/setup-ci-toolchain.sh` 后激活 venv          |
-| `pytest: command not found`   | job-local Python 工具链未激活     | 运行 `bash docs/goal/tools/setup-ci-toolchain.sh` 后激活 venv          |
-| `jq: command not found`       | runner 未安装 jq                 | `apt install jq`                                                      |
-| `workflow-policy-guard` 失败  | runner 标签或部署目标违反全局规则 | 改为 `[self-hosted, Linux, X64, homepage]`；部署目标统一声明为 `sre/`  |
-| `timeout-minutes` 超时        | CI 脚本卡死或网络问题            | 检查 runner 网络连接，检查脚本是否有死循环                            |
-| `outer-metrics-guard` 失败    | LLM agent 尝试修改 outer-metrics | 确保 outer-metrics 变更由 CI bot 或人工 `[outer-metrics:manual]` 提交 |
-| `spec-lint` 报 23 节缺失      | SPEC.md 结构不完整               | 按 `module/README.md` 模板补齐 §1-§23                                 |
-| `grep-guard` 误报             | 文档中讨论安全模式时引用关键词   | 在 `.lycheeignore` 或脚本白名单中排除                                 |
+| 症状                          | 原因                              | 解决                                                                  |
+| ----------------------------- | --------------------------------- | --------------------------------------------------------------------- |
+| `lychee: command not found`   | runner 未安装 lychee              | 见 [2.5 lychee 安装](#25-lychee-安装)                                 |
+| `npx: command not found`      | runner 未安装 Node.js             | 见 [2.4 Node.js 安装](#24-nodejs-安装)                                |
+| `yamllint: command not found` | job-local Python 工具链未激活     | 运行 `bash docs/goal/tools/setup-ci-toolchain.sh` 后激活 venv         |
+| `pytest: command not found`   | job-local Python 工具链未激活     | 运行 `bash docs/goal/tools/setup-ci-toolchain.sh` 后激活 venv         |
+| `jq: command not found`       | runner 未安装 jq                  | `apt install jq`                                                      |
+| `workflow-policy-guard` 失败  | runner 标签或部署目标违反全局规则 | 改为 `[self-hosted, Linux, X64, homepage]`；部署目标统一声明为 `sre/` |
+| `timeout-minutes` 超时        | CI 脚本卡死或网络问题             | 检查 runner 网络连接，检查脚本是否有死循环                            |
+| `outer-metrics-guard` 失败    | LLM agent 尝试修改 outer-metrics  | 确保 outer-metrics 变更由 CI bot 或人工 `[outer-metrics:manual]` 提交 |
+| `spec-lint` 报 23 节缺失      | SPEC.md 结构不完整                | 按 `module/README.md` 模板补齐 §1-§23                                 |
+| `grep-guard` 误报             | 文档中讨论安全模式时引用关键词    | 在 `.lycheeignore` 或脚本白名单中排除                                 |
 
 ### 6.2 调试命令
 
@@ -443,16 +443,16 @@ git push origin v0.5.0
 
 ## 7. 架构决策记录
 
-| 日期       | 决策                                                  | 理由                             |
-| ---------- | ----------------------------------------------------- | -------------------------------- |
-| 2026-06-11 | 全局 workflow 策略由 `workflow-policy-guard.sh` 强制校验 | 防止 runner 与部署规则回退       |
-| 2026-06-11 | 部署到运行环境或远端机器统一落在 `sre/` 机器池       | 避免业务机或个人机承载发布职责   |
-| 2026-06-08 | 全部 workflow 切换到 `[self-hosted, Linux, X64, homepage]` | 降低成本，利用项目 self-hosted runner 资源 |
-| 2026-06-08 | 所有 job 添加 `timeout-minutes`                       | 防止 self-hosted runner 挂起阻塞 |
-| 2026-06-08 | Python 包改为 job-local 工具链                       | 避免 runner 全局 Python 依赖漂移 |
-| 2026-06-08 | release.yml 质量门禁改为 `workflow_call` 复用 docs-ci | 消除重复维护，DRY 原则           |
-| 2026-06-08 | outer-metrics-guard 移除 PR-only 条件                 | workflow_call 复用时需全场景覆盖 |
-| 2026-06-08 | scripts-tests smoke 去掉 `\|\| true`                  | CI 失败应真正阻断，不容忍错误    |
+| 日期       | 决策                                                       | 理由                                       |       |                               |
+| ---------- | ---------------------------------------------------------- | ------------------------------------------ |       |                               |
+| 2026-06-11 | 全局 workflow 策略由 `workflow-policy-guard.sh` 强制校验   | 防止 runner 与部署规则回退                 |       |                               |
+| 2026-06-11 | 部署到运行环境或远端机器统一落在 `sre/` 机器池             | 避免业务机或个人机承载发布职责             |       |                               |
+| 2026-06-08 | 全部 workflow 切换到 `[self-hosted, Linux, X64, homepage]` | 降低成本，利用项目 self-hosted runner 资源 |       |                               |
+| 2026-06-08 | 所有 job 添加 `timeout-minutes`                            | 防止 self-hosted runner 挂起阻塞           |       |                               |
+| 2026-06-08 | Python 包改为 job-local 工具链                             | 避免 runner 全局 Python 依赖漂移           |       |                               |
+| 2026-06-08 | release.yml 质量门禁改为 `workflow_call` 复用 docs-ci      | 消除重复维护，DRY 原则                     |       |                               |
+| 2026-06-08 | outer-metrics-guard 移除 PR-only 条件                      | workflow_call 复用时需全场景覆盖           |       |                               |
+| 2026-06-08 | scripts-tests smoke 去掉 `\                                | \                                          | true` | CI 失败应真正阻断，不容忍错误 |
 
 ## 8. 维护清单
 

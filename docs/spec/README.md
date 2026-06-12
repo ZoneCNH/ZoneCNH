@@ -6,15 +6,15 @@
 
 ## 权威关系
 
-| 事项 | 权威来源 | `docs/spec/` 职责 |
-| --- | --- | --- |
-| Goal 结构、状态与质量要求 | `docs/goal/02-goal-standard.md` | 引用 Goal 目标、成功标准、状态和可验证性要求 |
-| Spec 层结构与需求原子化 | `docs/goal/05-layer-standards.md` | 把上游 Goal 需求拆成可测试的工具需求 |
-| Gate 与阻塞语义 | `docs/goal/04-gates.md` | 描述命令如何检查 G0-G11，不新增 Gate |
-| DoR / DoD | `docs/goal/06-dod.md` | 声明规格进入实现和完成验收的条件 |
-| Lint 规则 | `docs/goal/10-lint-rules.md` | 保证 Requirement、Acceptance Criteria、测试链路可检查 |
-| 权威边界 | `docs/goal/00-authority-map.md` | 明确 SSOT、投影、配置和运行态边界 |
-| 机器可读规则 | `.config/goal/schema/rules.yaml` | 作为可执行校验规则镜像引用，不反向覆盖文档权威 |
+| 事项                      | 权威来源                          | `docs/spec/` 职责                                     |
+| ------------------------- | --------------------------------- | ----------------------------------------------------- |
+| Goal 结构、状态与质量要求 | `docs/goal/02-goal-standard.md`   | 引用 Goal 目标、成功标准、状态和可验证性要求          |
+| Spec 层结构与需求原子化   | `docs/goal/05-layer-standards.md` | 把上游 Goal 需求拆成可测试的工具需求                  |
+| Gate 与阻塞语义           | `docs/goal/04-gates.md`           | 描述命令如何检查 G0-G11，不新增 Gate                  |
+| DoR / DoD                 | `docs/goal/06-dod.md`             | 声明规格进入实现和完成验收的条件                      |
+| Lint 规则                 | `docs/goal/10-lint-rules.md`      | 保证 Requirement、Acceptance Criteria、测试链路可检查 |
+| 权威边界                  | `docs/goal/00-authority-map.md`   | 明确 SSOT、投影、配置和运行态边界                     |
+| 机器可读规则              | `.config/goal/schema/rules.yaml`  | 作为可执行校验规则镜像引用，不反向覆盖文档权威        |
 
 ## 编写要求
 
@@ -45,6 +45,6 @@
 
 ## 当前规格
 
-| Spec | 来源需求 | 状态 | 说明 |
-| --- | --- | --- | --- |
+| Spec                               | 来源需求                                                           | 状态                         | 说明                                  |
+| ---------------------------------- | ------------------------------------------------------------------ | ---------------------------- | ------------------------------------- |
 | [goalctl-spec.md](goalctl-spec.md) | `docs/goal/` 控制面、Gate、Matrix、Evidence、Registry 与 Lint 需求 | Draft / Implementation Ready | Goal 驱动交付体系的本地命令控制面规格 |

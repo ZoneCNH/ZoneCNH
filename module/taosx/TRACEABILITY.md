@@ -7,15 +7,15 @@ Source: docs/governance/TRACEABILITY.md（迁移前全局矩阵）
 
 | Requirement | Description           | Acceptance Criteria | Test Case      | Status |
 | ----------- | --------------------- | ------------------- | -------------- | ------ |
-| FR-001      | NewClient             | DoD: 所有 FR 有测试 | TC-004         | ⬜     |
-| FR-002      | Exec                  | DoD: 所有 FR 有测试 | TC-001         | ⬜     |
-| FR-003      | Query                 | DoD: 所有 FR 有测试 | TC-001         | ⬜     |
-| FR-004      | InsertBatch           | DoD: 所有 FR 有测试 | TC-001, TC-003 | ⬜     |
-| FR-005      | Health                | DoD: 所有 FR 有测试 | TC-005         | ⬜     |
-| FR-006      | Close                 | DoD: 所有 FR 有测试 | TC-006         | ⬜     |
-| FR-007      | Rows.Next/Scan/Close  | DoD: 所有 FR 有测试 | TC-001         | ⬜     |
-| BR-002      | STMT 批量写入         | -                   | TC-003         | ⬜     |
-| BR-003      | 参数化绑定防 SQL 拼接 | -                   | TC-001         | ⬜     |
-| BR-004      | 连接断开自动重试      | -                   | TC-002         | ⬜     |
+| FR-001      | NewClient             | DoD: 所有 FR 有测试 | TC-004         | ⬜      |
+| FR-002      | Exec                  | DoD: 所有 FR 有测试 | TC-001         | ⬜      |
+| FR-003      | Query                 | DoD: 所有 FR 有测试 | TC-001         | ⬜      |
+| FR-004      | InsertBatch           | DoD: 所有 FR 有测试 | TC-001, TC-003 | ⬜      |
+| FR-005      | Health                | DoD: 所有 FR 有测试 | TC-005         | ⬜      |
+| FR-006      | Close                 | DoD: 所有 FR 有测试 | TC-006         | ⬜      |
+| FR-007      | Rows.Next/Scan/Close  | DoD: 所有 FR 有测试 | TC-001         | ⬜      |
+| BR-002      | STMT 批量写入         | -                   | TC-003         | ⬜      |
+| BR-003      | 参数化绑定防 SQL 拼接 | -                   | TC-001         | ⬜      |
+| BR-004      | 连接断开自动重试      | -                   | TC-002         | ⬜      |
 
 ---

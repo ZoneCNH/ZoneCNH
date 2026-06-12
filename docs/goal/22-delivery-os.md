@@ -121,13 +121,13 @@ Delivery OS 需要把关键边界写成契约：
 
 Release 不只是合并和部署。Delivery OS 应在发布前后验证上线、回滚和指标观测路径。
 
-| 演练 | 目标 | 通过条件 |
-|------|------|----------|
-| Release Simulation | 在不影响真实用户的条件下演练发布路径 | 部署步骤、owner、证据和失败处理完整 |
-| Rollback Drill | 证明可以恢复到安全状态 | 回滚目标、数据影响、验证命令和耗时明确 |
-| Progressive Delivery Matrix | 定义分批发布和暂停条件 | 每个阶段都有指标窗口、告警和回退动作 |
-| Metrics Window Check | 验证上线后观察窗口是否足够 | 指标口径、采样周期、owner、阈值明确 |
-| Incident Handoff | 证明异常时有人接手 | 值班、升级路径和沟通模板明确 |
+| 演练                        | 目标                                 | 通过条件                               |
+| --------------------------- | ------------------------------------ | -------------------------------------- |
+| Release Simulation          | 在不影响真实用户的条件下演练发布路径 | 部署步骤、owner、证据和失败处理完整    |
+| Rollback Drill              | 证明可以恢复到安全状态               | 回滚目标、数据影响、验证命令和耗时明确 |
+| Progressive Delivery Matrix | 定义分批发布和暂停条件               | 每个阶段都有指标窗口、告警和回退动作   |
+| Metrics Window Check        | 验证上线后观察窗口是否足够           | 指标口径、采样周期、owner、阈值明确    |
+| Incident Handoff            | 证明异常时有人接手                   | 值班、升级路径和沟通模板明确           |
 
 发布演练失败时，不应通过 Release Gate。演练产生的缺口进入 Metrics Gap Report 或 Improvement Backlog。
 

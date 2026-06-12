@@ -69,13 +69,13 @@ status: pending
 
 ## Requirements Covered
 
-| Requirement | Description | Acceptance Criteria |
-|---|---|---|
-| FR-002 | Error 标准 | 9 种 ErrorKind |
-| FR-005 | Client 标准 | New/Close 存在 |
-| §9 | Interface Contract | 接口定义正确 |
-| §10 | Data Model | ErrorKind 正确 |
-| §12 | Error Handling | 8 个错误变量 |
+| Requirement | Description        | Acceptance Criteria |
+| ----------- | ------------------ | ------------------- |
+| FR-002      | Error 标准         | 9 种 ErrorKind      |
+| FR-005      | Client 标准        | New/Close 存在      |
+| §9          | Interface Contract | 接口定义正确        |
+| §10         | Data Model         | ErrorKind 正确      |
+| §12         | Error Handling     | 8 个错误变量        |
 
 ## Test Plan
 

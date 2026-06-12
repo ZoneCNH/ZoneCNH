@@ -1,30 +1,30 @@
 # goalctl v1 完整规格
 
-| 字段 | 值 |
-| --- | --- |
-| Spec ID | `SPEC-goalctl-v1` |
-| 状态 | Draft |
-| Readiness | Structure Ready；Task Binding Pending；进入实现前必须满足第 22 节验证命令，并按第 23 节完成绑定判定或登记阻塞例外 |
-| 版本 | `v1.2.1` |
-| 日期 | 2026-06-09 |
-| Source Goal | 第 1 节目标 1-5 |
-| Source Requirement | 见第 3.1 节 Source Anchors 与第 20.2 节 Traceability 矩阵 |
-| 权威来源 | `docs/goal/` 与 `.config/goal/schema/rules.yaml` |
-| 输出位置 | `docs/spec/goalctl-spec.md` |
+| 字段               | 值                                                                                                                |
+| ------------------ | ----------------------------------------------------------------------------------------------------------------- |
+| Spec ID            | `SPEC-goalctl-v1`                                                                                                 |
+| 状态               | Draft                                                                                                             |
+| Readiness          | Structure Ready；Task Binding Pending；进入实现前必须满足第 22 节验证命令，并按第 23 节完成绑定判定或登记阻塞例外 |
+| 版本               | `v1.2.1`                                                                                                          |
+| 日期               | 2026-06-09                                                                                                        |
+| Source Goal        | 第 1 节目标 1-5                                                                                                   |
+| Source Requirement | 见第 3.1 节 Source Anchors 与第 20.2 节 Traceability 矩阵                                                         |
+| 权威来源           | `docs/goal/` 与 `.config/goal/schema/rules.yaml`                                                                  |
+| 输出位置           | `docs/spec/goalctl-spec.md`                                                                                       |
 
 ## 0. 文档类型与模板映射
 
 本文件是 `docs/spec/` 下的控制面规格，不是 `module/{module}/SPEC.md` 的模块实现规格。它接受 `docs/governance/SPEC-TEMPLATE.md` 的结构约束，但以等价职责映射而不是标题逐字匹配作为判定标准。
 
-| SPEC-TEMPLATE 结构责任 | 本规格承载位置 |
-| --- | --- |
-| 元数据、状态、来源、版本 | 文件头元数据、第 3.1 节、第 20.2 节 |
-| 摘要、目标、问题边界、非目标 | 第 1-2 节 |
-| 用户/消费者、依赖、权威边界 | 第 3 节、第 6 节 |
-| 领域模型、数据对象、状态模型 | 第 4-12 节 |
-| 功能需求、业务规则、接口与输出 | 第 13-15 节、第 20.1 节 |
-| 写入、安全、失败、性能/可观测约束 | 第 16-19 节 |
-| 验收、追溯、实现顺序、验证命令 | 第 20-23 节 |
+| SPEC-TEMPLATE 结构责任            | 本规格承载位置                      |
+| --------------------------------- | ----------------------------------- |
+| 元数据、状态、来源、版本          | 文件头元数据、第 3.1 节、第 20.2 节 |
+| 摘要、目标、问题边界、非目标      | 第 1-2 节                           |
+| 用户/消费者、依赖、权威边界       | 第 3 节、第 6 节                    |
+| 领域模型、数据对象、状态模型      | 第 4-12 节                          |
+| 功能需求、业务规则、接口与输出    | 第 13-15 节、第 20.1 节             |
+| 写入、安全、失败、性能/可观测约束 | 第 16-19 节                         |
+| 验收、追溯、实现顺序、验证命令    | 第 20-23 节                         |
 
 ## 1. 目标
 
@@ -53,35 +53,35 @@
 
 `goalctl` 必须按下表读取权威。若多个来源冲突，以 `docs/goal/00-authority-map.md` 声明的 SSOT 范围为准。
 
-| 子系统 | 权威来源 | `goalctl` 行为 |
-| --- | --- | --- |
-| 权威范围 | `docs/goal/00-authority-map.md` | 校验输入是否越权，拒绝把投影文件当作规范源 |
-| 主流程 | `docs/goal/03-pipeline.md` | 识别固定 11 个主阶段 |
-| 四轴状态 | `docs/goal/03-pipeline.md` 与 schema rules | 校验全局状态、当前阶段、阶段状态、工作步骤相互不混用 |
-| Gate | `docs/goal/04-gates.md` | 校验 G0-G11、结果值、阻塞语义与证据要求 |
-| 层级产物 | `docs/goal/05-layer-standards.md` | 校验 Goal、Spec、Design、Plan、Task、Prompt、Test、Review、Release、Retro 的结构范围 |
-| ID 体系 | `docs/goal/07-id-system.md` | 校验 canonical ID，读取 legacy alias，写出 canonical ID |
-| 运行原则 | `docs/goal/13-runtime-engine.md` | 校验变更等级、执行模式、证据结构和失败策略 |
-| Registry | `docs/goal/15-registry.md` | 只把六个 registry YAML 文件作为 registry 权威 |
-| Lint 规则 | `docs/goal/10-lint-rules.md` | 执行 G-LINT/S-LINT/M-LINT/P-LINT/C-LINT 共 38 条规则校验 |
-| CI | `docs/goal/16-ci-cd.md` 与 schema rules | 对齐 CI job 名称、检查项和失败语义 |
-| Schema | `.config/goal/schema/rules.yaml` | 作为可执行规则镜像，用于命令校验 |
+| 子系统    | 权威来源                                   | `goalctl` 行为                                                                       |
+| --------- | ------------------------------------------ | ------------------------------------------------------------------------------------ |
+| 权威范围  | `docs/goal/00-authority-map.md`            | 校验输入是否越权，拒绝把投影文件当作规范源                                           |
+| 主流程    | `docs/goal/03-pipeline.md`                 | 识别固定 11 个主阶段                                                                 |
+| 四轴状态  | `docs/goal/03-pipeline.md` 与 schema rules | 校验全局状态、当前阶段、阶段状态、工作步骤相互不混用                                 |
+| Gate      | `docs/goal/04-gates.md`                    | 校验 G0-G11、结果值、阻塞语义与证据要求                                              |
+| 层级产物  | `docs/goal/05-layer-standards.md`          | 校验 Goal、Spec、Design、Plan、Task、Prompt、Test、Review、Release、Retro 的结构范围 |
+| ID 体系   | `docs/goal/07-id-system.md`                | 校验 canonical ID，读取 legacy alias，写出 canonical ID                              |
+| 运行原则  | `docs/goal/13-runtime-engine.md`           | 校验变更等级、执行模式、证据结构和失败策略                                           |
+| Registry  | `docs/goal/15-registry.md`                 | 只把六个 registry YAML 文件作为 registry 权威                                        |
+| Lint 规则 | `docs/goal/10-lint-rules.md`               | 执行 G-LINT/S-LINT/M-LINT/P-LINT/C-LINT 共 38 条规则校验                             |
+| CI        | `docs/goal/16-ci-cd.md` 与 schema rules    | 对齐 CI job 名称、检查项和失败语义                                                   |
+| Schema    | `.config/goal/schema/rules.yaml`           | 作为可执行规则镜像，用于命令校验                                                     |
 
 ### 3.1 Source Anchors / 来源追溯
 
 本表只建立来源追溯，不新增 authority。若下表中的章节名与源文档未来漂移，`goalctl` 仍必须以源文档的当前 SSOT 内容为准。
 
-| 规格责任 | Source Requirement | 本规格承载 |
-| --- | --- | --- |
-| 权威边界 | `docs/goal/00-authority-map.md` 的 SSOT、投影、控制面和运行态边界 | 第 2、3、6 节；`REQ-SPEC-goalctl-v1-001`、`007`、`015` |
-| 主流程与四轴 | `docs/goal/03-pipeline.md` 的主流程和状态模型 | 第 4、7、8 节；`REQ-SPEC-goalctl-v1-002`、`003`、`004` |
-| Gate 语义 | `docs/goal/04-gates.md` 的 G0-G11 定义 | 第 11、13.6 节；`REQ-SPEC-goalctl-v1-011`、`021` |
-| 层级、Matrix、Evidence | `docs/goal/05-layer-standards.md` 的层级产物、矩阵和证据要求 | 第 10、12、20.2 节；`REQ-SPEC-goalctl-v1-009`、`010`、`012`、`013`、`020` |
-| ID 体系 | `docs/goal/07-id-system.md` 的 canonical ID 与 legacy alias 规则 | 第 5 节；`REQ-SPEC-goalctl-v1-005`、`006` |
-| Lint 规则 | `docs/goal/10-lint-rules.md` 的 G-LINT/S-LINT/M-LINT/P-LINT/C-LINT 规则 | 第 13.9 节；`REQ-SPEC-goalctl-v1-022` |
-| 运行、变更、失败 | `docs/goal/13-runtime-engine.md` 的变更等级、执行模式、证据和失败策略 | 第 16、17、18、19 节；`REQ-SPEC-goalctl-v1-015`、`016`、`017`、`018`、`023` |
-| Registry | `docs/goal/15-registry.md` 的六文件 registry 结构 | 第 9、13.4 节；`REQ-SPEC-goalctl-v1-007`、`008` |
-| CI 与本地校验 | `docs/goal/16-ci-cd.md` 的 required jobs 与失败语义 | 第 13.3、14、15、22 节；`REQ-SPEC-goalctl-v1-014`、`019` |
+| 规格责任               | Source Requirement                                                      | 本规格承载                                                                  |
+| ---------------------- | ----------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| 权威边界               | `docs/goal/00-authority-map.md` 的 SSOT、投影、控制面和运行态边界       | 第 2、3、6 节；`REQ-SPEC-goalctl-v1-001`、`007`、`015`                      |
+| 主流程与四轴           | `docs/goal/03-pipeline.md` 的主流程和状态模型                           | 第 4、7、8 节；`REQ-SPEC-goalctl-v1-002`、`003`、`004`                      |
+| Gate 语义              | `docs/goal/04-gates.md` 的 G0-G11 定义                                  | 第 11、13.6 节；`REQ-SPEC-goalctl-v1-011`、`021`                            |
+| 层级、Matrix、Evidence | `docs/goal/05-layer-standards.md` 的层级产物、矩阵和证据要求            | 第 10、12、20.2 节；`REQ-SPEC-goalctl-v1-009`、`010`、`012`、`013`、`020`   |
+| ID 体系                | `docs/goal/07-id-system.md` 的 canonical ID 与 legacy alias 规则        | 第 5 节；`REQ-SPEC-goalctl-v1-005`、`006`                                   |
+| Lint 规则              | `docs/goal/10-lint-rules.md` 的 G-LINT/S-LINT/M-LINT/P-LINT/C-LINT 规则 | 第 13.9 节；`REQ-SPEC-goalctl-v1-022`                                       |
+| 运行、变更、失败       | `docs/goal/13-runtime-engine.md` 的变更等级、执行模式、证据和失败策略   | 第 16、17、18、19 节；`REQ-SPEC-goalctl-v1-015`、`016`、`017`、`018`、`023` |
+| Registry               | `docs/goal/15-registry.md` 的六文件 registry 结构                       | 第 9、13.4 节；`REQ-SPEC-goalctl-v1-007`、`008`                             |
+| CI 与本地校验          | `docs/goal/16-ci-cd.md` 的 required jobs 与失败语义                     | 第 13.3、14、15、22 节；`REQ-SPEC-goalctl-v1-014`、`019`                    |
 
 ## 4. 领域模型
 
@@ -141,28 +141,28 @@ ID 永不复用。废弃对象必须保留原 ID，并通过 `replaced_by` 指�
 
 `goalctl` 至少校验以下模式：
 
-| 对象 | 模式 |
-| --- | --- |
-| Goal | `GOAL-YYYYMMDD-NNN` |
-| Spec | `SPEC-<domain>-vN` |
-| Requirement | `REQ-<spec-id>-NNN` |
-| Design | `DESIGN-<domain>-vN` |
-| ADR | `ADR-YYYYMMDD-NNN` |
-| Plan | `PLAN-<goal-id>-vN` |
-| Milestone | `MILE-<plan-id>-NNN` |
-| Task | `TASK-<goal-id>-NNN` |
-| Prompt | `PROMPT-<task-id>-NNN` |
-| Test | `TEST-<task-id>-NNN` |
-| Evidence | `EVID-<test-id>-NNN` |
-| Risk | `RISK-<goal-id>-NNN` |
-| Decision | `DEC-YYYYMMDD-NNN` |
-| Review | `REV-<task-or-pr-id>-YYYYMMDD-NNN` |
-| Release | `REL-YYYYMMDD-<domain>` |
-| Retrospective | `RETRO-YYYYMMDD-NNN` |
-| Acceptance Criteria | `AC-<req-id>-NNN` |
-| Prompt Patch | `PATCH-PROMPT-YYYYMMDD-NNN` |
-| Harness Patch | `PATCH-HARNESS-YYYYMMDD-NNN` |
-| Rule Patch | `PATCH-RULE-YYYYMMDD-NNN` |
+| 对象                | 模式                               |
+| ------------------- | ---------------------------------- |
+| Goal                | `GOAL-YYYYMMDD-NNN`                |
+| Spec                | `SPEC-<domain>-vN`                 |
+| Requirement         | `REQ-<spec-id>-NNN`                |
+| Design              | `DESIGN-<domain>-vN`               |
+| ADR                 | `ADR-YYYYMMDD-NNN`                 |
+| Plan                | `PLAN-<goal-id>-vN`                |
+| Milestone           | `MILE-<plan-id>-NNN`               |
+| Task                | `TASK-<goal-id>-NNN`               |
+| Prompt              | `PROMPT-<task-id>-NNN`             |
+| Test                | `TEST-<task-id>-NNN`               |
+| Evidence            | `EVID-<test-id>-NNN`               |
+| Risk                | `RISK-<goal-id>-NNN`               |
+| Decision            | `DEC-YYYYMMDD-NNN`                 |
+| Review              | `REV-<task-or-pr-id>-YYYYMMDD-NNN` |
+| Release             | `REL-YYYYMMDD-<domain>`            |
+| Retrospective       | `RETRO-YYYYMMDD-NNN`               |
+| Acceptance Criteria | `AC-<req-id>-NNN`                  |
+| Prompt Patch        | `PATCH-PROMPT-YYYYMMDD-NNN`        |
+| Harness Patch       | `PATCH-HARNESS-YYYYMMDD-NNN`       |
+| Rule Patch          | `PATCH-RULE-YYYYMMDD-NNN`          |
 
 ## 6. 文件范围
 
@@ -174,16 +174,16 @@ ID 永不复用。废弃对象必须保留原 ID，并通过 `replaced_by` 指�
 
 `.config/goal/` 是控制面配置、schema 与可审查快照目录。命令可以读取以下目录：
 
-| 路径 | 用途 |
-| --- | --- |
-| `.config/goal/schema/` | 可执行规则镜像 |
-| `.config/goal/registry/` | Registry 六文件 |
-| `.config/goal/matrix/` | 追溯矩阵 |
-| `.config/goal/gates/` | Gate 状态 |
-| `.config/goal/pipeline/` | 管线状态快照 |
-| `.config/goal/evidence/` | 证据文件 |
-| `.config/goal/prompts/` | Prompt 版本 |
-| `.config/goal/runtime/` | 本地临时运行态与恢复缓存 |
+| 路径                     | 用途                     |
+| ------------------------ | ------------------------ |
+| `.config/goal/schema/`   | 可执行规则镜像           |
+| `.config/goal/registry/` | Registry 六文件          |
+| `.config/goal/matrix/`   | 追溯矩阵                 |
+| `.config/goal/gates/`    | Gate 状态                |
+| `.config/goal/pipeline/` | 管线状态快照             |
+| `.config/goal/evidence/` | 证据文件                 |
+| `.config/goal/prompts/`  | Prompt 版本              |
+| `.config/goal/runtime/`  | 本地临时运行态与恢复缓存 |
 
 ### 6.3 运行缓存
 
@@ -193,12 +193,12 @@ ID 永不复用。废弃对象必须保留原 ID，并通过 `replaced_by` 指�
 
 ### 7.1 轴定义
 
-| 轴 | 含义 | 写入者 |
-| --- | --- | --- |
-| `pipeline_state` | 全局管线状态 | runner 或 Gate arbiter |
-| `current_phase` | 当前主阶段 | runner 或 Gate arbiter |
-| `phase_status` | 当前阶段内部状态 | 阶段 runner、reviewer、arbiter |
-| `workflow_step` | SOP、runtime 或 CI 步骤 | workflow runner 或 CI |
+| 轴               | 含义                    | 写入者                         |
+| ---------------- | ----------------------- | ------------------------------ |
+| `pipeline_state` | 全局管线状态            | runner 或 Gate arbiter         |
+| `current_phase`  | 当前主阶段              | runner 或 Gate arbiter         |
+| `phase_status`   | 当前阶段内部状态        | 阶段 runner、reviewer、arbiter |
+| `workflow_step`  | SOP、runtime 或 CI 步骤 | workflow runner 或 CI          |
 
 `workflow_step` 不得覆盖 `current_phase`，`phase_status` 不得伪装成 `pipeline_state`。
 
@@ -288,15 +288,15 @@ gate_check
 
 所有状态类命令必须输出以下字段：
 
-| 字段 | 说明 |
-| --- | --- |
-| `current_state` | 当前 `pipeline_state` |
-| `next_state` | 推荐的下一全局状态 |
-| `allowed_actions` | 当前允许的动作列表 |
-| `blocked_by` | 阻塞对象；无阻塞时为空数组 |
-| `required_gate` | 下一步必须通过的 Gate |
-| `evidence_required` | 需要补齐的证据类型 |
-| `recommended_next_action` | 下一条可执行动作 |
+| 字段                      | 说明                       |
+| ------------------------- | -------------------------- |
+| `current_state`           | 当前 `pipeline_state`      |
+| `next_state`              | 推荐的下一全局状态         |
+| `allowed_actions`         | 当前允许的动作列表         |
+| `blocked_by`              | 阻塞对象；无阻塞时为空数组 |
+| `required_gate`           | 下一步必须通过的 Gate      |
+| `evidence_required`       | 需要补齐的证据类型         |
+| `recommended_next_action` | 下一条可执行动作           |
 
 若状态文件缺失，命令返回 `INIT` 推断结果，并在 `warnings` 中说明缺失文件。若四轴互相冲突，返回 `INCONSISTENT_STATE`。
 
@@ -494,20 +494,20 @@ owner
 
 ### 11.4 G0-G11
 
-| Gate | 名称 | 阻塞 | 核心检查 |
-| --- | --- | --- | --- |
-| G0 | Context Gate | 是 | 上下文恢复、环境一致、执行模式已定 |
-| G1 | Goal Gate | 是 | SMART、用户、结果、指标、验收项、范围、非目标、约束 |
-| G2 | Spec Gate | 是 | 语义完整、可测试、正常路径、失败路径、范围约束、安全、性能、非目标 |
-| G3 | Design Gate | 是 | 模块映射、范围约束、可测试调用契约、无循环依赖、ADR |
-| G4 | Plan Gate | 是 | 依赖顺序、高风险、检查点、回滚、解阻、增量计划 |
-| G5 | Task Gate | 是 | 原子任务、输入输出、完成定义、依赖、独立验证、Matrix 覆盖 |
-| G6 | Implementation Gate | 是 | Prompt 包含上下文、约束、输出、验收项、测试、禁止项；实现未越界 |
-| G7 | Test Gate | 是 | 测试全部通过，覆盖率不低于 80% |
-| G8 | Evidence Gate | 是 | 证据齐备，每个验收项有证据 |
-| G9 | Review Gate | 是 | 符合 Task、Spec、Matrix、测试、错误、安全、性能，无无关功能 |
-| G10 | Release Gate | 是 | Matrix 终态、P0/P1 测试、无权限绕过、无数据破坏、日志监控、灰度与回滚、上线后指标观察计划 |
-| G11 | Retrospective Gate | 否 | 决策、问题、改进项与规则补丁已记录 |
+| Gate | 名称                | 阻塞 | 核心检查                                                                                  |
+| ---- | ------------------- | ---- | ----------------------------------------------------------------------------------------- |
+| G0   | Context Gate        | 是   | 上下文恢复、环境一致、执行模式已定                                                        |
+| G1   | Goal Gate           | 是   | SMART、用户、结果、指标、验收项、范围、非目标、约束                                       |
+| G2   | Spec Gate           | 是   | 语义完整、可测试、正常路径、失败路径、范围约束、安全、性能、非目标                        |
+| G3   | Design Gate         | 是   | 模块映射、范围约束、可测试调用契约、无循环依赖、ADR                                       |
+| G4   | Plan Gate           | 是   | 依赖顺序、高风险、检查点、回滚、解阻、增量计划                                            |
+| G5   | Task Gate           | 是   | 原子任务、输入输出、完成定义、依赖、独立验证、Matrix 覆盖                                 |
+| G6   | Implementation Gate | 是   | Prompt 包含上下文、约束、输出、验收项、测试、禁止项；实现未越界                           |
+| G7   | Test Gate           | 是   | 测试全部通过，覆盖率不低于 80%                                                            |
+| G8   | Evidence Gate       | 是   | 证据齐备，每个验收项有证据                                                                |
+| G9   | Review Gate         | 是   | 符合 Task、Spec、Matrix、测试、错误、安全、性能，无无关功能                               |
+| G10  | Release Gate        | 是   | Matrix 终态、P0/P1 测试、无权限绕过、无数据破坏、日志监控、灰度与回滚、上线后指标观察计划 |
+| G11  | Retrospective Gate  | 否   | 决策、问题、改进项与规则补丁已记录                                                        |
 
 ## 12. Evidence 契约
 
@@ -554,16 +554,16 @@ goalctl [global-options] <command> [command-options]
 
 全局选项：
 
-| 选项 | 默认值 | 说明 |
-| --- | --- | --- |
-| `--root <path>` | 当前仓库 | 仓库根目录 |
-| `--config <path>` | `.config/goal` | Goal 控制目录 |
-| `--format <text|json|yaml>` | `text` | 输出格式 |
-| `--strict` | false | 启用阻塞级校验 |
-| `--audit` | false | 输出非阻塞风险 |
-| `--write` | false | 允许写入；缺失时所有命令只读（dry-run 语义） |
-| `--no-color` | false | 关闭颜色 |
-| `--trace <id>` | empty | 输出某个对象的追溯链 |
+| 选项              | 默认值         | 说明                                         |        |          |
+| ----------------- | -------------- | -------------------------------------------- |        |          |
+| `--root <path>`   | 当前仓库       | 仓库根目录                                   |        |          |
+| `--config <path>` | `.config/goal` | Goal 控制目录                                |        |          |
+| `--format <text   | json           | yaml>`                                       | `text` | 输出格式 |
+| `--strict`        | false          | 启用阻塞级校验                               |        |          |
+| `--audit`         | false          | 输出非阻塞风险                               |        |          |
+| `--write`         | false          | 允许写入；缺失时所有命令只读（dry-run 语义） |        |          |
+| `--no-color`      | false          | 关闭颜色                                     |        |          |
+| `--trace <id>`    | empty          | 输出某个对象的追溯链                         |        |          |
 
 ### 13.2 `goalctl status`
 
@@ -797,40 +797,40 @@ JSON 输出必须使用统一 envelope：
 
 ### 15.1 退出码
 
-| 退出码 | 含义 |
-| --- | --- |
-| 0 | 通过 |
-| 1 | 校验失败 |
-| 2 | 使用方式错误 |
-| 3 | 文件或路径缺失 |
-| 4 | schema 不合法 |
-| 5 | 权威范围违规 |
-| 6 | Gate 阻塞 |
-| 7 | Matrix 覆盖不足 |
-| 8 | Evidence 不足 |
-| 9 | 状态不一致 |
-| 10 | 写入失败 |
+| 退出码 | 含义            |
+| ------ | --------------- |
+| 0      | 通过            |
+| 1      | 校验失败        |
+| 2      | 使用方式错误    |
+| 3      | 文件或路径缺失  |
+| 4      | schema 不合法   |
+| 5      | 权威范围违规    |
+| 6      | Gate 阻塞       |
+| 7      | Matrix 覆盖不足 |
+| 8      | Evidence 不足   |
+| 9      | 状态不一致      |
+| 10     | 写入失败        |
 
 ### 15.2 错误码
 
-| 错误码 | 含义 |
-| --- | --- |
-| `GOALCTL_SCHEMA_MISSING` | schema rules 缺失 |
-| `GOALCTL_SCHEMA_INVALID` | schema rules 无法解析 |
-| `GOALCTL_AUTHORITY_VIOLATION` | 读取或写入越过权威范围 |
-| `GOALCTL_REGISTRY_MISSING` | Registry 六文件之一缺失 |
-| `GOALCTL_REGISTRY_INVALID` | Registry 字段或状态非法 |
-| `GOALCTL_ID_INVALID` | ID 格式非法 |
-| `GOALCTL_STATE_INCONSISTENT` | 四轴状态冲突 |
-| `GOALCTL_GATE_BLOCKED` | Gate 阻塞 |
-| `GOALCTL_GATE_FAIL` | Gate 检查失败，例如 H-CHK 缺失或 Gate 前置条件未满足 |
-| `GOALCTL_GATE_INVALID_RESULT` | Gate 结果值非法 |
-| `GOALCTL_MATRIX_UNMAPPED` | Matrix 存在未映射关键链路 |
-| `GOALCTL_MATRIX_COVERAGE_LOW` | Matrix 覆盖低于 95% |
-| `GOALCTL_EVIDENCE_MISSING` | Evidence 缺失 |
-| `GOALCTL_EVIDENCE_INVALID` | Evidence 字段或状态非法 |
-| `GOALCTL_WRITE_REQUIRES_FLAG` | 写入缺少 `--write` |
-| `GOALCTL_WRITE_FAILED` | 写入失败 |
+| 错误码                        | 含义                                                 |
+| ----------------------------- | ---------------------------------------------------- |
+| `GOALCTL_SCHEMA_MISSING`      | schema rules 缺失                                    |
+| `GOALCTL_SCHEMA_INVALID`      | schema rules 无法解析                                |
+| `GOALCTL_AUTHORITY_VIOLATION` | 读取或写入越过权威范围                               |
+| `GOALCTL_REGISTRY_MISSING`    | Registry 六文件之一缺失                              |
+| `GOALCTL_REGISTRY_INVALID`    | Registry 字段或状态非法                              |
+| `GOALCTL_ID_INVALID`          | ID 格式非法                                          |
+| `GOALCTL_STATE_INCONSISTENT`  | 四轴状态冲突                                         |
+| `GOALCTL_GATE_BLOCKED`        | Gate 阻塞                                            |
+| `GOALCTL_GATE_FAIL`           | Gate 检查失败，例如 H-CHK 缺失或 Gate 前置条件未满足 |
+| `GOALCTL_GATE_INVALID_RESULT` | Gate 结果值非法                                      |
+| `GOALCTL_MATRIX_UNMAPPED`     | Matrix 存在未映射关键链路                            |
+| `GOALCTL_MATRIX_COVERAGE_LOW` | Matrix 覆盖低于 95%                                  |
+| `GOALCTL_EVIDENCE_MISSING`    | Evidence 缺失                                        |
+| `GOALCTL_EVIDENCE_INVALID`    | Evidence 字段或状态非法                              |
+| `GOALCTL_WRITE_REQUIRES_FLAG` | 写入缺少 `--write`                                   |
+| `GOALCTL_WRITE_FAILED`        | 写入失败                                             |
 
 ## 16. 写入语义
 
@@ -855,22 +855,22 @@ JSON 输出必须使用统一 envelope：
 
 `goalctl` 必须支持 CL0-CL5 变更等级识别：
 
-| 等级 | 含义 | 推荐模式 |
-| --- | --- | --- |
-| CL0 | 文案、注释、无行为变化 | Lite |
-| CL1 | 小型配置或低风险修复 | Lite |
-| CL2 | 单模块行为变化 | Standard |
-| CL3 | 跨模块行为变化 | Full |
-| CL4 | 高风险、权限、数据或发布相关 | Full |
-| CL5 | 架构、治理或递归规则变化 | Full |
+| 等级 | 含义                         | 推荐模式 |
+| ---- | ---------------------------- | -------- |
+| CL0  | 文案、注释、无行为变化       | Lite     |
+| CL1  | 小型配置或低风险修复         | Lite     |
+| CL2  | 单模块行为变化               | Standard |
+| CL3  | 跨模块行为变化               | Full     |
+| CL4  | 高风险、权限、数据或发布相关 | Full     |
+| CL5  | 架构、治理或递归规则变化     | Full     |
 
 模式映射：
 
-| 模式 | 适用等级 | 要求 |
-| --- | --- | --- |
-| Lite | CL0/CL1 | 最小 Gate 与证据 |
-| Standard | CL2 | 标准 Gate、Matrix、测试和 Evidence |
-| Full | CL3-CL5 | 全链路 Gate、审查、发布和回顾 |
+| 模式     | 适用等级 | 要求                               |
+| -------- | -------- | ---------------------------------- |
+| Lite     | CL0/CL1  | 最小 Gate 与证据                   |
+| Standard | CL2      | 标准 Gate、Matrix、测试和 Evidence |
+| Full     | CL3-CL5  | 全链路 Gate、审查、发布和回顾      |
 
 CL4 和 CL5 默认需要人工批准；命令不得自动放行。
 
@@ -899,74 +899,74 @@ CL4 和 CL5 默认需要人工批准；命令不得自动放行。
 
 `goalctl` 的安全、权限、数据、性能/可重复性和可观测性约束不得只散落在命令描述中。下表是进入实现前必须保留的审计索引。
 
-| 约束维度 | Source Requirement | 规格承载 | 验证入口 | 失败记录 |
-| --- | --- | --- | --- | --- |
-| 权威与安全边界 | `docs/goal/00-authority-map.md`、`docs/goal/03-pipeline.md` | 第 2、3、6 节；`REQ-SPEC-goalctl-v1-001`、`007`、`015` | `goalctl validate --strict`、`goalctl doctor --audit` | `GOALCTL_AUTHORITY_VIOLATION`、`blocked_by` |
-| 权限与写入 | `docs/goal/13-runtime-engine.md` 的 CL0-CL5 与执行模式 | 第 16、17 节；`REQ-SPEC-goalctl-v1-015`、`016`、`017`、`021` | 写入命令不带 `--write`；`goalctl gate check G9/G10` | `GOALCTL_WRITE_REQUIRES_FLAG`、`GOALCTL_GATE_FAIL` |
-| 数据完整性 | schema rules、Registry、Matrix、Evidence 契约 | 第 9、10、12 节；`REQ-SPEC-goalctl-v1-008`、`009`、`010`、`012`、`013` | `goalctl registry validate`、`goalctl matrix check --strict`、`goalctl evidence check --strict` | 退出码 7/8/9 或 JSON `errors` |
-| 追溯完整性 | `docs/goal/05-layer-standards.md` 的 Matrix 与 Evidence 要求 | 第 4.3、20.2 节；`REQ-SPEC-goalctl-v1-009`、`010`、`012`、`020` | `goalctl matrix trace`、`goalctl matrix coverage --strict`、`goalctl report acceptance` | `Unmapped`、`Drifted`、`Stale`、coverage low |
-| 性能与可重复性 | CI、本地控制面和确定性输出要求 | 第 13、14、22 节；`REQ-SPEC-goalctl-v1-014`、`019` | 本地无网络、无生产副作用地重复执行 text/json 命令 | 非零退出码必须带 `next_actions`；部分检查不得静默通过 |
-| 可观测性与发布 | Gate、CI、Release readiness 和回滚要求 | 第 11、13.11、20.2、23 节；`REQ-SPEC-goalctl-v1-018`、`020`、`021` | `goalctl report release-readiness`、`goalctl gate report` | `blockers`、`risks`、`rollback` 字段 |
+| 约束维度       | Source Requirement                                           | 规格承载                                                               | 验证入口                                                                                        | 失败记录                                              |
+| -------------- | ------------------------------------------------------------ | ---------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
+| 权威与安全边界 | `docs/goal/00-authority-map.md`、`docs/goal/03-pipeline.md`  | 第 2、3、6 节；`REQ-SPEC-goalctl-v1-001`、`007`、`015`                 | `goalctl validate --strict`、`goalctl doctor --audit`                                           | `GOALCTL_AUTHORITY_VIOLATION`、`blocked_by`           |
+| 权限与写入     | `docs/goal/13-runtime-engine.md` 的 CL0-CL5 与执行模式       | 第 16、17 节；`REQ-SPEC-goalctl-v1-015`、`016`、`017`、`021`           | 写入命令不带 `--write`；`goalctl gate check G9/G10`                                             | `GOALCTL_WRITE_REQUIRES_FLAG`、`GOALCTL_GATE_FAIL`    |
+| 数据完整性     | schema rules、Registry、Matrix、Evidence 契约                | 第 9、10、12 节；`REQ-SPEC-goalctl-v1-008`、`009`、`010`、`012`、`013` | `goalctl registry validate`、`goalctl matrix check --strict`、`goalctl evidence check --strict` | 退出码 7/8/9 或 JSON `errors`                         |
+| 追溯完整性     | `docs/goal/05-layer-standards.md` 的 Matrix 与 Evidence 要求 | 第 4.3、20.2 节；`REQ-SPEC-goalctl-v1-009`、`010`、`012`、`020`        | `goalctl matrix trace`、`goalctl matrix coverage --strict`、`goalctl report acceptance`         | `Unmapped`、`Drifted`、`Stale`、coverage low          |
+| 性能与可重复性 | CI、本地控制面和确定性输出要求                               | 第 13、14、22 节；`REQ-SPEC-goalctl-v1-014`、`019`                     | 本地无网络、无生产副作用地重复执行 text/json 命令                                               | 非零退出码必须带 `next_actions`；部分检查不得静默通过 |
+| 可观测性与发布 | Gate、CI、Release readiness 和回滚要求                       | 第 11、13.11、20.2、23 节；`REQ-SPEC-goalctl-v1-018`、`020`、`021`     | `goalctl report release-readiness`、`goalctl gate report`                                       | `blockers`、`risks`、`rollback` 字段                  |
 
 ## 20. Requirements and Acceptance Criteria / 验收标准
 
 ### 20.1 需求列表
 
-| Requirement ID | 需求 | Acceptance Criteria ID | 验收项 |
-| --- | --- | --- | --- |
-| `REQ-SPEC-goalctl-v1-001` | `goalctl` 必须从 `docs/goal/` 与 schema rules 读取权威语义。 | `AC-REQ-SPEC-goalctl-v1-001-001` | 给定任意命令，输出必须声明使用的 authority source；当输入与 authority map 冲突时返回 `GOALCTL_AUTHORITY_VIOLATION`。 |
-| `REQ-SPEC-goalctl-v1-002` | `goalctl` 必须保持 Matrix 为横切产物。 | `AC-REQ-SPEC-goalctl-v1-002-001` | `goalctl status` 和 `goalctl pipeline status` 不得把 Matrix 输出为 `current_phase`。 |
-| `REQ-SPEC-goalctl-v1-003` | `goalctl` 必须校验四轴状态。 | `AC-REQ-SPEC-goalctl-v1-003-001` | 当 `pipeline_state`、`current_phase`、`phase_status`、`workflow_step` 冲突时，命令返回 `INCONSISTENT_STATE`、`GOALCTL_STATE_INCONSISTENT` 与退出码 9。 |
-| `REQ-SPEC-goalctl-v1-004` | `goalctl` 必须支持固定主流程。 | `AC-REQ-SPEC-goalctl-v1-004-001` | 任意阶段命令只接受 11 个 canonical phase，未知 phase 必须失败。 |
-| `REQ-SPEC-goalctl-v1-005` | `goalctl` 必须校验 canonical ID。 | `AC-REQ-SPEC-goalctl-v1-005-001` | `goalctl validate --strict` 对所有 ID 执行 schema regex 校验，并拒绝重复 ID。 |
-| `REQ-SPEC-goalctl-v1-006` | 验收项 ID 必须使用 `AC-<req-id>-NNN` 格式。 | `AC-REQ-SPEC-goalctl-v1-006-001` | 任意不符合该格式的验收项引用必须返回 `GOALCTL_ID_INVALID`。 |
-| `REQ-SPEC-goalctl-v1-007` | `goalctl` 必须只把六个 YAML 文件视为 Registry 权威。 | `AC-REQ-SPEC-goalctl-v1-007-001` | `goalctl registry validate` 不得读取六文件之外的 registry authority。 |
-| `REQ-SPEC-goalctl-v1-008` | `goalctl` 必须校验 Goal canonical 必填字段。 | `AC-REQ-SPEC-goalctl-v1-008-001` | 缺少 `goal_id`、`document_version`、`title`、`status`、`owner`、`priority`、`success_criteria` 中任一字段时严格模式失败。 |
-| `REQ-SPEC-goalctl-v1-009` | `goalctl` 必须校验 Matrix 必填字段、关系、状态和终态条件。 | `AC-REQ-SPEC-goalctl-v1-009-001` | `Verified` 行无 `evidence_id` 或 `Dropped` 行无 `drop_reason` 时返回退出码 7。 |
-| `REQ-SPEC-goalctl-v1-010` | Matrix 覆盖率门槛必须不低于 95%。 | `AC-REQ-SPEC-goalctl-v1-010-001` | 覆盖率低于 95% 时 `goalctl matrix coverage --strict` 返回 `GOALCTL_MATRIX_COVERAGE_LOW`。 |
-| `REQ-SPEC-goalctl-v1-011` | `goalctl` 必须校验 G0-G11 与 Gate 结果值。 | `AC-REQ-SPEC-goalctl-v1-011-001` | 未知 Gate、未知结果或 `WAIVED` 值必须失败，waiver 语义只能映射为 `PASS_WITH_RISK` 或 `BLOCKED`。 |
-| `REQ-SPEC-goalctl-v1-012` | `goalctl` 必须校验 Evidence 必填字段。 | `AC-REQ-SPEC-goalctl-v1-012-001` | 缺少 Evidence ID、Goal ID、Spec ID、Requirement ID、Acceptance Criteria ID、Task ID、Test ID、Date、Status、Files Changed、Commands Run 任一字段时严格模式失败。 |
-| `REQ-SPEC-goalctl-v1-013` | `goalctl` 必须拒绝无证据的完成声明。 | `AC-REQ-SPEC-goalctl-v1-013-001` | 没有日志、测试结果、文件列表或风险说明时，Evidence 不能被判定为 PASS。 |
-| `REQ-SPEC-goalctl-v1-014` | `goalctl` 必须提供统一 JSON envelope。 | `AC-REQ-SPEC-goalctl-v1-014-001` | 所有 `--format json` 输出都包含 `command`、`status`、`exit_code`、`summary`、`results`、`warnings`、`errors`、`next_actions`。 |
-| `REQ-SPEC-goalctl-v1-015` | `goalctl` 必须默认只读。 | `AC-REQ-SPEC-goalctl-v1-015-001` | 任何写入命令缺少 `--write` 时返回 `GOALCTL_WRITE_REQUIRES_FLAG`，且不得修改文件。 |
-| `REQ-SPEC-goalctl-v1-016` | `goalctl` 写入必须具备恢复能力。 | `AC-REQ-SPEC-goalctl-v1-016-001` | 写入前创建备份，写入后重新校验，失败时恢复原文件并返回 `GOALCTL_WRITE_FAILED`。 |
-| `REQ-SPEC-goalctl-v1-017` | `goalctl` 必须识别 CL0-CL5 与 Lite、Standard、Full 模式。 | `AC-REQ-SPEC-goalctl-v1-017-001` | CL4 或 CL5 不得自动放行，必须输出人工批准需求。 |
-| `REQ-SPEC-goalctl-v1-018` | `goalctl` 必须输出可行动的阻塞信息。 | `AC-REQ-SPEC-goalctl-v1-018-001` | 任意失败输出必须至少包含错误、阻塞对象或下一动作。 |
-| `REQ-SPEC-goalctl-v1-019` | `goalctl` 必须和 CI 检查项对齐。 | `AC-REQ-SPEC-goalctl-v1-019-001` | `goalctl validate --strict` 至少覆盖 yaml-lint、registry-check、rule-drift-check、goal-validator、id-format-check、matrix-coverage、gate-check、orphan-check、agent-check、docs-check 的本地等价检查。 |
-| `REQ-SPEC-goalctl-v1-020` | `goalctl` 必须提供 release readiness 报告。 | `AC-REQ-SPEC-goalctl-v1-020-001` | 报告必须聚合 G7-G10、Matrix 终态、Evidence 状态、阻塞风险和回滚字段。 |
-| `REQ-SPEC-goalctl-v1-021` | `goalctl gate check G9/G10` 必须校验 H-CHK。 | `AC-REQ-SPEC-goalctl-v1-021-001` | `goalctl gate check G9` 和 `check G10` 必须校验对应 CL 级别的 H-CHK1~H-CHK8 是否已标记完成；缺失时返回 `GOALCTL_GATE_FAIL`。 |
-| `REQ-SPEC-goalctl-v1-022` | `goalctl` 必须执行 Lint 规则。 | `AC-REQ-SPEC-goalctl-v1-022-001` | `goalctl lint` 必须执行 `10-lint-rules.md` 定义的 G-LINT/S-LINT/M-LINT/P-LINT/C-LINT 共 38 条规则。 |
-| `REQ-SPEC-goalctl-v1-023` | `goalctl` 必须校验变更传播。 | `AC-REQ-SPEC-goalctl-v1-023-001` | `goalctl propagation check` 必须检测上游变更后下游未标记 STALE 的违规项。 |
+| Requirement ID            | 需求                                                         | Acceptance Criteria ID           | 验收项                                                                                                                                                                                                 |
+| ------------------------- | ------------------------------------------------------------ | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `REQ-SPEC-goalctl-v1-001` | `goalctl` 必须从 `docs/goal/` 与 schema rules 读取权威语义。 | `AC-REQ-SPEC-goalctl-v1-001-001` | 给定任意命令，输出必须声明使用的 authority source；当输入与 authority map 冲突时返回 `GOALCTL_AUTHORITY_VIOLATION`。                                                                                   |
+| `REQ-SPEC-goalctl-v1-002` | `goalctl` 必须保持 Matrix 为横切产物。                       | `AC-REQ-SPEC-goalctl-v1-002-001` | `goalctl status` 和 `goalctl pipeline status` 不得把 Matrix 输出为 `current_phase`。                                                                                                                   |
+| `REQ-SPEC-goalctl-v1-003` | `goalctl` 必须校验四轴状态。                                 | `AC-REQ-SPEC-goalctl-v1-003-001` | 当 `pipeline_state`、`current_phase`、`phase_status`、`workflow_step` 冲突时，命令返回 `INCONSISTENT_STATE`、`GOALCTL_STATE_INCONSISTENT` 与退出码 9。                                                 |
+| `REQ-SPEC-goalctl-v1-004` | `goalctl` 必须支持固定主流程。                               | `AC-REQ-SPEC-goalctl-v1-004-001` | 任意阶段命令只接受 11 个 canonical phase，未知 phase 必须失败。                                                                                                                                        |
+| `REQ-SPEC-goalctl-v1-005` | `goalctl` 必须校验 canonical ID。                            | `AC-REQ-SPEC-goalctl-v1-005-001` | `goalctl validate --strict` 对所有 ID 执行 schema regex 校验，并拒绝重复 ID。                                                                                                                          |
+| `REQ-SPEC-goalctl-v1-006` | 验收项 ID 必须使用 `AC-<req-id>-NNN` 格式。                  | `AC-REQ-SPEC-goalctl-v1-006-001` | 任意不符合该格式的验收项引用必须返回 `GOALCTL_ID_INVALID`。                                                                                                                                            |
+| `REQ-SPEC-goalctl-v1-007` | `goalctl` 必须只把六个 YAML 文件视为 Registry 权威。         | `AC-REQ-SPEC-goalctl-v1-007-001` | `goalctl registry validate` 不得读取六文件之外的 registry authority。                                                                                                                                  |
+| `REQ-SPEC-goalctl-v1-008` | `goalctl` 必须校验 Goal canonical 必填字段。                 | `AC-REQ-SPEC-goalctl-v1-008-001` | 缺少 `goal_id`、`document_version`、`title`、`status`、`owner`、`priority`、`success_criteria` 中任一字段时严格模式失败。                                                                              |
+| `REQ-SPEC-goalctl-v1-009` | `goalctl` 必须校验 Matrix 必填字段、关系、状态和终态条件。   | `AC-REQ-SPEC-goalctl-v1-009-001` | `Verified` 行无 `evidence_id` 或 `Dropped` 行无 `drop_reason` 时返回退出码 7。                                                                                                                         |
+| `REQ-SPEC-goalctl-v1-010` | Matrix 覆盖率门槛必须不低于 95%。                            | `AC-REQ-SPEC-goalctl-v1-010-001` | 覆盖率低于 95% 时 `goalctl matrix coverage --strict` 返回 `GOALCTL_MATRIX_COVERAGE_LOW`。                                                                                                              |
+| `REQ-SPEC-goalctl-v1-011` | `goalctl` 必须校验 G0-G11 与 Gate 结果值。                   | `AC-REQ-SPEC-goalctl-v1-011-001` | 未知 Gate、未知结果或 `WAIVED` 值必须失败，waiver 语义只能映射为 `PASS_WITH_RISK` 或 `BLOCKED`。                                                                                                       |
+| `REQ-SPEC-goalctl-v1-012` | `goalctl` 必须校验 Evidence 必填字段。                       | `AC-REQ-SPEC-goalctl-v1-012-001` | 缺少 Evidence ID、Goal ID、Spec ID、Requirement ID、Acceptance Criteria ID、Task ID、Test ID、Date、Status、Files Changed、Commands Run 任一字段时严格模式失败。                                       |
+| `REQ-SPEC-goalctl-v1-013` | `goalctl` 必须拒绝无证据的完成声明。                         | `AC-REQ-SPEC-goalctl-v1-013-001` | 没有日志、测试结果、文件列表或风险说明时，Evidence 不能被判定为 PASS。                                                                                                                                 |
+| `REQ-SPEC-goalctl-v1-014` | `goalctl` 必须提供统一 JSON envelope。                       | `AC-REQ-SPEC-goalctl-v1-014-001` | 所有 `--format json` 输出都包含 `command`、`status`、`exit_code`、`summary`、`results`、`warnings`、`errors`、`next_actions`。                                                                         |
+| `REQ-SPEC-goalctl-v1-015` | `goalctl` 必须默认只读。                                     | `AC-REQ-SPEC-goalctl-v1-015-001` | 任何写入命令缺少 `--write` 时返回 `GOALCTL_WRITE_REQUIRES_FLAG`，且不得修改文件。                                                                                                                      |
+| `REQ-SPEC-goalctl-v1-016` | `goalctl` 写入必须具备恢复能力。                             | `AC-REQ-SPEC-goalctl-v1-016-001` | 写入前创建备份，写入后重新校验，失败时恢复原文件并返回 `GOALCTL_WRITE_FAILED`。                                                                                                                        |
+| `REQ-SPEC-goalctl-v1-017` | `goalctl` 必须识别 CL0-CL5 与 Lite、Standard、Full 模式。    | `AC-REQ-SPEC-goalctl-v1-017-001` | CL4 或 CL5 不得自动放行，必须输出人工批准需求。                                                                                                                                                        |
+| `REQ-SPEC-goalctl-v1-018` | `goalctl` 必须输出可行动的阻塞信息。                         | `AC-REQ-SPEC-goalctl-v1-018-001` | 任意失败输出必须至少包含错误、阻塞对象或下一动作。                                                                                                                                                     |
+| `REQ-SPEC-goalctl-v1-019` | `goalctl` 必须和 CI 检查项对齐。                             | `AC-REQ-SPEC-goalctl-v1-019-001` | `goalctl validate --strict` 至少覆盖 yaml-lint、registry-check、rule-drift-check、goal-validator、id-format-check、matrix-coverage、gate-check、orphan-check、agent-check、docs-check 的本地等价检查。 |
+| `REQ-SPEC-goalctl-v1-020` | `goalctl` 必须提供 release readiness 报告。                  | `AC-REQ-SPEC-goalctl-v1-020-001` | 报告必须聚合 G7-G10、Matrix 终态、Evidence 状态、阻塞风险和回滚字段。                                                                                                                                  |
+| `REQ-SPEC-goalctl-v1-021` | `goalctl gate check G9/G10` 必须校验 H-CHK。                 | `AC-REQ-SPEC-goalctl-v1-021-001` | `goalctl gate check G9` 和 `check G10` 必须校验对应 CL 级别的 H-CHK1~H-CHK8 是否已标记完成；缺失时返回 `GOALCTL_GATE_FAIL`。                                                                           |
+| `REQ-SPEC-goalctl-v1-022` | `goalctl` 必须执行 Lint 规则。                               | `AC-REQ-SPEC-goalctl-v1-022-001` | `goalctl lint` 必须执行 `10-lint-rules.md` 定义的 G-LINT/S-LINT/M-LINT/P-LINT/C-LINT 共 38 条规则。                                                                                                    |
+| `REQ-SPEC-goalctl-v1-023` | `goalctl` 必须校验变更传播。                                 | `AC-REQ-SPEC-goalctl-v1-023-001` | `goalctl propagation check` 必须检测上游变更后下游未标记 STALE 的违规项。                                                                                                                              |
 
 ### 20.2 Traceability 矩阵
 
 当前 registry 尚无 `goalctl` 专属 Goal。本表是 spec 阶段的绑定候选表，不是 `.config/goal/matrix/matrix.yaml` 的投影，也不构成 registry authority。`Planned Test ID` 与 `Planned Evidence ID` 已与 `docs/spec/task.md` 的 Task-scoped 候选 ID 对齐，但仍不是 Goal 体系事实；Task Binding 阶段必须在 `.config/goal/registry/tasks.yaml` 与 Matrix 中确认这些候选 ID，若发生变更则记录 `replaced_by` 或 `drop_reason`，并补齐 owner、updated_at、gate_id 和 evidence 关系后，才能把本规格标记为 Implementation Ready。
 
-| Goal/Source | Requirement | Acceptance Criteria | 命令或检查 | Planned Test ID | Planned Evidence ID |
-| --- | --- | --- | --- | --- | --- |
-| G1 authority | `REQ-SPEC-goalctl-v1-001` | `AC-REQ-SPEC-goalctl-v1-001-001` | `goalctl validate --strict` | `TEST-TASK-GOAL-20260609-001-001-001` | `EVID-TEST-TASK-GOAL-20260609-001-001-001-001` |
-| G3 matrix boundary | `REQ-SPEC-goalctl-v1-002` | `AC-REQ-SPEC-goalctl-v1-002-001` | `goalctl status`、`goalctl pipeline status` | `TEST-TASK-GOAL-20260609-001-002-001` | `EVID-TEST-TASK-GOAL-20260609-001-002-001-001` |
-| G1 status consistency | `REQ-SPEC-goalctl-v1-003` | `AC-REQ-SPEC-goalctl-v1-003-001` | `goalctl status --strict` | `TEST-TASK-GOAL-20260609-001-002-002` | `EVID-TEST-TASK-GOAL-20260609-001-002-002-001` |
-| G2 pipeline phase | `REQ-SPEC-goalctl-v1-004` | `AC-REQ-SPEC-goalctl-v1-004-001` | `goalctl pipeline next` | `TEST-TASK-GOAL-20260609-001-002-003` | `EVID-TEST-TASK-GOAL-20260609-001-002-003-001` |
-| G1 canonical ID | `REQ-SPEC-goalctl-v1-005` | `AC-REQ-SPEC-goalctl-v1-005-001` | `goalctl validate --strict` | `TEST-TASK-GOAL-20260609-001-003-001` | `EVID-TEST-TASK-GOAL-20260609-001-003-001-001` |
-| G1 AC ID | `REQ-SPEC-goalctl-v1-006` | `AC-REQ-SPEC-goalctl-v1-006-001` | `goalctl report acceptance` | `TEST-TASK-GOAL-20260609-001-003-002` | `EVID-TEST-TASK-GOAL-20260609-001-003-002-001` |
-| G1 registry authority | `REQ-SPEC-goalctl-v1-007` | `AC-REQ-SPEC-goalctl-v1-007-001` | `goalctl registry validate` | `TEST-TASK-GOAL-20260609-001-004-001` | `EVID-TEST-TASK-GOAL-20260609-001-004-001-001` |
-| G1 goal schema | `REQ-SPEC-goalctl-v1-008` | `AC-REQ-SPEC-goalctl-v1-008-001` | `goalctl registry validate` | `TEST-TASK-GOAL-20260609-001-004-002` | `EVID-TEST-TASK-GOAL-20260609-001-004-002-001` |
-| G4 matrix fields | `REQ-SPEC-goalctl-v1-009` | `AC-REQ-SPEC-goalctl-v1-009-001` | `goalctl matrix check --strict` | `TEST-TASK-GOAL-20260609-001-005-001` | `EVID-TEST-TASK-GOAL-20260609-001-005-001-001` |
-| G4 matrix coverage | `REQ-SPEC-goalctl-v1-010` | `AC-REQ-SPEC-goalctl-v1-010-001` | `goalctl matrix coverage --strict` | `TEST-TASK-GOAL-20260609-001-005-002` | `EVID-TEST-TASK-GOAL-20260609-001-005-002-001` |
-| G9/G10 gate semantics | `REQ-SPEC-goalctl-v1-011` | `AC-REQ-SPEC-goalctl-v1-011-001` | `goalctl gate check all` | `TEST-TASK-GOAL-20260609-001-006-001` | `EVID-TEST-TASK-GOAL-20260609-001-006-001-001` |
-| G8 evidence fields | `REQ-SPEC-goalctl-v1-012` | `AC-REQ-SPEC-goalctl-v1-012-001` | `goalctl evidence check --strict` | `TEST-TASK-GOAL-20260609-001-007-001` | `EVID-TEST-TASK-GOAL-20260609-001-007-001-001` |
-| G8 evidence proof | `REQ-SPEC-goalctl-v1-013` | `AC-REQ-SPEC-goalctl-v1-013-001` | `goalctl evidence report <id>` | `TEST-TASK-GOAL-20260609-001-007-002` | `EVID-TEST-TASK-GOAL-20260609-001-007-002-001` |
-| G0/CI JSON | `REQ-SPEC-goalctl-v1-014` | `AC-REQ-SPEC-goalctl-v1-014-001` | `goalctl validate --format json` | `TEST-TASK-GOAL-20260609-001-001-002` | `EVID-TEST-TASK-GOAL-20260609-001-001-002-001` |
-| G0 read-only | `REQ-SPEC-goalctl-v1-015` | `AC-REQ-SPEC-goalctl-v1-015-001` | 任意写入命令不带 `--write` | `TEST-TASK-GOAL-20260609-001-009-001` | `EVID-TEST-TASK-GOAL-20260609-001-009-001-001` |
-| G0 write recovery | `REQ-SPEC-goalctl-v1-016` | `AC-REQ-SPEC-goalctl-v1-016-001` | `goalctl pipeline transition <state> --write` | `TEST-TASK-GOAL-20260609-001-009-002` | `EVID-TEST-TASK-GOAL-20260609-001-009-002-001` |
-| G9/G10 change level | `REQ-SPEC-goalctl-v1-017` | `AC-REQ-SPEC-goalctl-v1-017-001` | `goalctl gate check G9`、`goalctl gate check G10` | `TEST-TASK-GOAL-20260609-001-006-002` | `EVID-TEST-TASK-GOAL-20260609-001-006-002-001` |
-| G0 blocker output | `REQ-SPEC-goalctl-v1-018` | `AC-REQ-SPEC-goalctl-v1-018-001` | 任意失败命令的 text/json 输出 | `TEST-TASK-GOAL-20260609-001-001-003` | `EVID-TEST-TASK-GOAL-20260609-001-001-003-001` |
-| G0/CI parity | `REQ-SPEC-goalctl-v1-019` | `AC-REQ-SPEC-goalctl-v1-019-001` | `goalctl validate --strict` | `TEST-TASK-GOAL-20260609-001-008-001` | `EVID-TEST-TASK-GOAL-20260609-001-008-001-001` |
-| G10 release readiness | `REQ-SPEC-goalctl-v1-020` | `AC-REQ-SPEC-goalctl-v1-020-001` | `goalctl report release-readiness` | `TEST-TASK-GOAL-20260609-001-007-003` | `EVID-TEST-TASK-GOAL-20260609-001-007-003-001` |
-| G9/G10 H-CHK | `REQ-SPEC-goalctl-v1-021` | `AC-REQ-SPEC-goalctl-v1-021-001` | `goalctl gate check G9/G10` | `TEST-TASK-GOAL-20260609-001-006-003` | `EVID-TEST-TASK-GOAL-20260609-001-006-003-001` |
-| G0 lint rules | `REQ-SPEC-goalctl-v1-022` | `AC-REQ-SPEC-goalctl-v1-022-001` | `goalctl lint --layer all --strict` | `TEST-TASK-GOAL-20260609-001-008-002` | `EVID-TEST-TASK-GOAL-20260609-001-008-002-001` |
-| G11 propagation | `REQ-SPEC-goalctl-v1-023` | `AC-REQ-SPEC-goalctl-v1-023-001` | `goalctl propagation check` | `TEST-TASK-GOAL-20260609-001-009-003` | `EVID-TEST-TASK-GOAL-20260609-001-009-003-001` |
+| Goal/Source           | Requirement               | Acceptance Criteria              | 命令或检查                                        | Planned Test ID                       | Planned Evidence ID                            |
+| --------------------- | ------------------------- | -------------------------------- | ------------------------------------------------- | ------------------------------------- | ---------------------------------------------- |
+| G1 authority          | `REQ-SPEC-goalctl-v1-001` | `AC-REQ-SPEC-goalctl-v1-001-001` | `goalctl validate --strict`                       | `TEST-TASK-GOAL-20260609-001-001-001` | `EVID-TEST-TASK-GOAL-20260609-001-001-001-001` |
+| G3 matrix boundary    | `REQ-SPEC-goalctl-v1-002` | `AC-REQ-SPEC-goalctl-v1-002-001` | `goalctl status`、`goalctl pipeline status`       | `TEST-TASK-GOAL-20260609-001-002-001` | `EVID-TEST-TASK-GOAL-20260609-001-002-001-001` |
+| G1 status consistency | `REQ-SPEC-goalctl-v1-003` | `AC-REQ-SPEC-goalctl-v1-003-001` | `goalctl status --strict`                         | `TEST-TASK-GOAL-20260609-001-002-002` | `EVID-TEST-TASK-GOAL-20260609-001-002-002-001` |
+| G2 pipeline phase     | `REQ-SPEC-goalctl-v1-004` | `AC-REQ-SPEC-goalctl-v1-004-001` | `goalctl pipeline next`                           | `TEST-TASK-GOAL-20260609-001-002-003` | `EVID-TEST-TASK-GOAL-20260609-001-002-003-001` |
+| G1 canonical ID       | `REQ-SPEC-goalctl-v1-005` | `AC-REQ-SPEC-goalctl-v1-005-001` | `goalctl validate --strict`                       | `TEST-TASK-GOAL-20260609-001-003-001` | `EVID-TEST-TASK-GOAL-20260609-001-003-001-001` |
+| G1 AC ID              | `REQ-SPEC-goalctl-v1-006` | `AC-REQ-SPEC-goalctl-v1-006-001` | `goalctl report acceptance`                       | `TEST-TASK-GOAL-20260609-001-003-002` | `EVID-TEST-TASK-GOAL-20260609-001-003-002-001` |
+| G1 registry authority | `REQ-SPEC-goalctl-v1-007` | `AC-REQ-SPEC-goalctl-v1-007-001` | `goalctl registry validate`                       | `TEST-TASK-GOAL-20260609-001-004-001` | `EVID-TEST-TASK-GOAL-20260609-001-004-001-001` |
+| G1 goal schema        | `REQ-SPEC-goalctl-v1-008` | `AC-REQ-SPEC-goalctl-v1-008-001` | `goalctl registry validate`                       | `TEST-TASK-GOAL-20260609-001-004-002` | `EVID-TEST-TASK-GOAL-20260609-001-004-002-001` |
+| G4 matrix fields      | `REQ-SPEC-goalctl-v1-009` | `AC-REQ-SPEC-goalctl-v1-009-001` | `goalctl matrix check --strict`                   | `TEST-TASK-GOAL-20260609-001-005-001` | `EVID-TEST-TASK-GOAL-20260609-001-005-001-001` |
+| G4 matrix coverage    | `REQ-SPEC-goalctl-v1-010` | `AC-REQ-SPEC-goalctl-v1-010-001` | `goalctl matrix coverage --strict`                | `TEST-TASK-GOAL-20260609-001-005-002` | `EVID-TEST-TASK-GOAL-20260609-001-005-002-001` |
+| G9/G10 gate semantics | `REQ-SPEC-goalctl-v1-011` | `AC-REQ-SPEC-goalctl-v1-011-001` | `goalctl gate check all`                          | `TEST-TASK-GOAL-20260609-001-006-001` | `EVID-TEST-TASK-GOAL-20260609-001-006-001-001` |
+| G8 evidence fields    | `REQ-SPEC-goalctl-v1-012` | `AC-REQ-SPEC-goalctl-v1-012-001` | `goalctl evidence check --strict`                 | `TEST-TASK-GOAL-20260609-001-007-001` | `EVID-TEST-TASK-GOAL-20260609-001-007-001-001` |
+| G8 evidence proof     | `REQ-SPEC-goalctl-v1-013` | `AC-REQ-SPEC-goalctl-v1-013-001` | `goalctl evidence report <id>`                    | `TEST-TASK-GOAL-20260609-001-007-002` | `EVID-TEST-TASK-GOAL-20260609-001-007-002-001` |
+| G0/CI JSON            | `REQ-SPEC-goalctl-v1-014` | `AC-REQ-SPEC-goalctl-v1-014-001` | `goalctl validate --format json`                  | `TEST-TASK-GOAL-20260609-001-001-002` | `EVID-TEST-TASK-GOAL-20260609-001-001-002-001` |
+| G0 read-only          | `REQ-SPEC-goalctl-v1-015` | `AC-REQ-SPEC-goalctl-v1-015-001` | 任意写入命令不带 `--write`                        | `TEST-TASK-GOAL-20260609-001-009-001` | `EVID-TEST-TASK-GOAL-20260609-001-009-001-001` |
+| G0 write recovery     | `REQ-SPEC-goalctl-v1-016` | `AC-REQ-SPEC-goalctl-v1-016-001` | `goalctl pipeline transition <state> --write`     | `TEST-TASK-GOAL-20260609-001-009-002` | `EVID-TEST-TASK-GOAL-20260609-001-009-002-001` |
+| G9/G10 change level   | `REQ-SPEC-goalctl-v1-017` | `AC-REQ-SPEC-goalctl-v1-017-001` | `goalctl gate check G9`、`goalctl gate check G10` | `TEST-TASK-GOAL-20260609-001-006-002` | `EVID-TEST-TASK-GOAL-20260609-001-006-002-001` |
+| G0 blocker output     | `REQ-SPEC-goalctl-v1-018` | `AC-REQ-SPEC-goalctl-v1-018-001` | 任意失败命令的 text/json 输出                     | `TEST-TASK-GOAL-20260609-001-001-003` | `EVID-TEST-TASK-GOAL-20260609-001-001-003-001` |
+| G0/CI parity          | `REQ-SPEC-goalctl-v1-019` | `AC-REQ-SPEC-goalctl-v1-019-001` | `goalctl validate --strict`                       | `TEST-TASK-GOAL-20260609-001-008-001` | `EVID-TEST-TASK-GOAL-20260609-001-008-001-001` |
+| G10 release readiness | `REQ-SPEC-goalctl-v1-020` | `AC-REQ-SPEC-goalctl-v1-020-001` | `goalctl report release-readiness`                | `TEST-TASK-GOAL-20260609-001-007-003` | `EVID-TEST-TASK-GOAL-20260609-001-007-003-001` |
+| G9/G10 H-CHK          | `REQ-SPEC-goalctl-v1-021` | `AC-REQ-SPEC-goalctl-v1-021-001` | `goalctl gate check G9/G10`                       | `TEST-TASK-GOAL-20260609-001-006-003` | `EVID-TEST-TASK-GOAL-20260609-001-006-003-001` |
+| G0 lint rules         | `REQ-SPEC-goalctl-v1-022` | `AC-REQ-SPEC-goalctl-v1-022-001` | `goalctl lint --layer all --strict`               | `TEST-TASK-GOAL-20260609-001-008-002` | `EVID-TEST-TASK-GOAL-20260609-001-008-002-001` |
+| G11 propagation       | `REQ-SPEC-goalctl-v1-023` | `AC-REQ-SPEC-goalctl-v1-023-001` | `goalctl propagation check`                       | `TEST-TASK-GOAL-20260609-001-009-003` | `EVID-TEST-TASK-GOAL-20260609-001-009-003-001` |
 
 ### 20.3 通过条件
 
@@ -1016,13 +1016,13 @@ git diff --check
 
 本规格当前状态是 Draft / Structure Ready / Task Binding Pending，而不是 Implementation Ready。进入实现前，执行者必须完成以下 readiness 判定：
 
-| 检查 | 当前记录方式 | 进入实现条件 |
-| --- | --- | --- |
-| Spec 自身 lint | 运行第 22 节 `lint-goal.sh` | 必须通过 |
-| 控制面 audit/strict | 运行第 22 节 `goal-validate.py` audit 与 strict | 若失败，记录 blocker 文件/行、owner 和 next action |
-| Matrix 覆盖率 | 运行第 22 节 `matrix-gen.py --check-only` | 必须满足本规格自身 traceability；全局控制面覆盖率低于 95% 时作为外部 blocker |
-| Gate 与 rule drift | 运行第 22 节 `gate-check.sh` 与 `rule-drift-check.py` | 非零退出必须记录失败 Gate、规则或漂移字段 |
-| Traceability 绑定 | 检查第 20.2 节候选 ID 是否已进入 registry/matrix；若 Task Binding 改号，检查 `replaced_by` 或 `drop_reason` | 未绑定前保持 Task Binding Pending |
+| 检查                | 当前记录方式                                                                                                | 进入实现条件                                                                 |
+| ------------------- | ----------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| Spec 自身 lint      | 运行第 22 节 `lint-goal.sh`                                                                                 | 必须通过                                                                     |
+| 控制面 audit/strict | 运行第 22 节 `goal-validate.py` audit 与 strict                                                             | 若失败，记录 blocker 文件/行、owner 和 next action                           |
+| Matrix 覆盖率       | 运行第 22 节 `matrix-gen.py --check-only`                                                                   | 必须满足本规格自身 traceability；全局控制面覆盖率低于 95% 时作为外部 blocker |
+| Gate 与 rule drift  | 运行第 22 节 `gate-check.sh` 与 `rule-drift-check.py`                                                       | 非零退出必须记录失败 Gate、规则或漂移字段                                    |
+| Traceability 绑定   | 检查第 20.2 节候选 ID 是否已进入 registry/matrix；若 Task Binding 改号，检查 `replaced_by` 或 `drop_reason` | 未绑定前保持 Task Binding Pending                                            |
 
 已知外部 readiness blocker 的记录方式：
 

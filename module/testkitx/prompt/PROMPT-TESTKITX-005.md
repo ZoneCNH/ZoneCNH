@@ -32,14 +32,14 @@ depends_on:
 
 ## 关联需求
 
-| 类型 | 编号 | 出处 | 说明 |
-|------|------|------|------|
-| FR | FR-005 | SPEC.md §7 | FakeClock：可控制时间 |
-| FR | FR-006 | SPEC.md §7 | FakeBreaker：可控制熔断状态 |
-| BR | BR-001 | SPEC.md §8 | FakeBreaker 编译期接口检查 |
-| BR | BR-002 | SPEC.md §8 | 行为确定性 |
-| TC | TC-005 | SPEC.md §16.4 | FakeClock 确定性 |
-| TC | TC-006 | SPEC.md §16.4 | FakeBreaker 编译期检查 |
+| 类型   | 编号   | 出处          | 说明                        |
+| ------ | ------ | ------------- | --------------------------- |
+| FR     | FR-005 | SPEC.md §7    | FakeClock：可控制时间       |
+| FR     | FR-006 | SPEC.md §7    | FakeBreaker：可控制熔断状态 |
+| BR     | BR-001 | SPEC.md §8    | FakeBreaker 编译期接口检查  |
+| BR     | BR-002 | SPEC.md §8    | 行为确定性                  |
+| TC     | TC-005 | SPEC.md §16.4 | FakeClock 确定性            |
+| TC     | TC-006 | SPEC.md §16.4 | FakeBreaker 编译期检查      |
 
 ## 接口契约
 
@@ -114,45 +114,45 @@ THEN 返回 *FakeBreaker，状态为 initial
 
 测试场景：
 
-| 测试用例 | 说明 |
-|----------|------|
-| `TestFakeClock_Now` | 初始时间正确 |
-| `TestFakeClock_Advance` | Advance 后 Now() +d |
-| `TestFakeClock_MultipleAdvance` | 多次 Advance 累加 |
-| `TestFakeClock_Set` | Set 绝对时间 |
-| `TestFakeClock_Deterministic` | 不使用 time.Now() |
-| `TestFakeClock_Concurrent` | 并发安全 |
+| 测试用例                        | 说明                |
+| ------------------------------- | ------------------- |
+| `TestFakeClock_Now`             | 初始时间正确        |
+| `TestFakeClock_Advance`         | Advance 后 Now() +d |
+| `TestFakeClock_MultipleAdvance` | 多次 Advance 累加   |
+| `TestFakeClock_Set`             | Set 绝对时间        |
+| `TestFakeClock_Deterministic`   | 不使用 time.Now()   |
+| `TestFakeClock_Concurrent`      | 并发安全            |
 
 ### 4. `fake_breaker_test.go`
 
 测试场景：
 
-| 测试用例 | 说明 |
-|----------|------|
-| `TestFakeBreaker_Initial` | 初始状态正确 |
-| `TestFakeBreaker_Closed_Execute` | Closed 状态 Execute 调用 fn |
-| `TestFakeBreaker_Open_Execute` | Open 状态 Execute 返回 ErrCircuitOpen |
-| `TestFakeBreaker_SetState` | SetState 改变状态 |
-| `TestFakeBreaker_Interface` | 编译期接口断言通过 |
+| 测试用例                         | 说明                                  |
+| -------------------------------- | ------------------------------------- |
+| `TestFakeBreaker_Initial`        | 初始状态正确                          |
+| `TestFakeBreaker_Closed_Execute` | Closed 状态 Execute 调用 fn           |
+| `TestFakeBreaker_Open_Execute`   | Open 状态 Execute 返回 ErrCircuitOpen |
+| `TestFakeBreaker_SetState`       | SetState 改变状态                     |
+| `TestFakeBreaker_Interface`      | 编译期接口断言通过                    |
 
 ## 验收标准
 
-| AC | 关联 | 验证命令 | 预期结果 |
-|----|------|----------|----------|
-| AC-FC-01 | FR-005 | `go test -run TestFakeClock -v -race ./...` | 全部通过 |
-| AC-FB-01 | FR-006 | `go test -run TestFakeBreaker -v -race ./...` | 全部通过 |
-| AC-CK-02 | BR-002 | `grep -E "time\.Now" fake_clock.go` | 无匹配 |
+| AC       | 关联   | 验证命令                                          | 预期结果       |
+| -------- | ------ | ------------------------------------------------- | -------------- |
+| AC-FC-01 | FR-005 | `go test -run TestFakeClock -v -race ./...`       | 全部通过       |
+| AC-FB-01 | FR-006 | `go test -run TestFakeBreaker -v -race ./...`     | 全部通过       |
+| AC-CK-02 | BR-002 | `grep -E "time\.Now" fake_clock.go`               | 无匹配         |
 | AC-FB-02 | BR-001 | `grep "var _ resiliencx.Breaker" fake_breaker.go` | 找到编译期断言 |
 
 ## 验证命令
 
-| 命令 | 判定标准 |
-|------|----------|
-| `go build ./...` | 编译通过 |
-| `go test -race -count=1 ./...` | 全部通过，无 data race |
-| `go vet ./...` | 无警告 |
-| `grep "var _ resiliencx.Breaker" fake_breaker.go` | 找到编译期断言 |
-| `grep -E "time\.Now" fake_clock.go` | 无匹配（确定性） |
+| 命令                                              | 判定标准               |
+| ------------------------------------------------- | ---------------------- |
+| `go build ./...`                                  | 编译通过               |
+| `go test -race -count=1 ./...`                    | 全部通过，无 data race |
+| `go vet ./...`                                    | 无警告                 |
+| `grep "var _ resiliencx.Breaker" fake_breaker.go` | 找到编译期断言         |
+| `grep -E "time\.Now" fake_clock.go`               | 无匹配（确定性）       |
 
 ## 禁止事项
 

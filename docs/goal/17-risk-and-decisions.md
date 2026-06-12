@@ -50,17 +50,17 @@ MUST NOT 保留与当前事实冲突的历史阻断语句。若 G10 / G11 已 PA
 
 ### 风险类型
 
-| 类型 | 说明 |
-|------|------|
-| Architecture Risk | 模块边界、依赖关系 |
-| Implementation Risk | 实现正确性、复杂度 |
-| Test Risk | 测试覆盖、测试质量 |
-| Data Risk | 数据完整性、数据迁移 |
-| Security Risk | 安全漏洞、权限问题 |
-| Performance Risk | 性能瓶颈、资源消耗 |
-| Compatibility Risk | 兼容性、版本冲突 |
-| Release Risk | 发布流程、回滚能力 |
-| Operation Risk | 运维复杂度、监控盲区 |
+| 类型                | 说明                 |
+| ------------------- | -------------------- |
+| Architecture Risk   | 模块边界、依赖关系   |
+| Implementation Risk | 实现正确性、复杂度   |
+| Test Risk           | 测试覆盖、测试质量   |
+| Data Risk           | 数据完整性、数据迁移 |
+| Security Risk       | 安全漏洞、权限问题   |
+| Performance Risk    | 性能瓶颈、资源消耗   |
+| Compatibility Risk  | 兼容性、版本冲突     |
+| Release Risk        | 发布流程、回滚能力   |
+| Operation Risk      | 运维复杂度、监控盲区 |
 
 ---
 

@@ -1,14 +1,14 @@
 # goalctl v1 Task Spec
 
-| 字段 | 值 |
-| --- | --- |
-| Task Set ID | `TASKSET-goalctl-v1` |
-| Source Spec | `docs/spec/goalctl-spec.md`（`SPEC-goalctl-v1` v1.2.1） |
-| Source Design | `docs/spec/DESIGN.md`（`DESIGN-goalctl-v1`） |
-| 状态 | Draft |
-| Readiness | Task Binding Candidate；Registry/Matrix Pending |
-| 日期 | 2026-06-09 |
-| 输出位置 | `docs/spec/task.md` |
+| 字段          | 值                                                      |
+| ------------- | ------------------------------------------------------- |
+| Task Set ID   | `TASKSET-goalctl-v1`                                    |
+| Source Spec   | `docs/spec/goalctl-spec.md`（`SPEC-goalctl-v1` v1.2.1） |
+| Source Design | `docs/spec/DESIGN.md`（`DESIGN-goalctl-v1`）            |
+| 状态          | Draft                                                   |
+| Readiness     | Task Binding Candidate；Registry/Matrix Pending         |
+| 日期          | 2026-06-09                                              |
+| 输出位置      | `docs/spec/task.md`                                     |
 
 ## 0. 绑定声明
 
@@ -372,49 +372,49 @@ validation:
 
 `Gate` 列表示 Task Binding 阶段应写入 Matrix/Gate 的验证门禁，不等同于 `goalctl-spec.md` 第 20.2 节的 `Goal/Source` 来源标签；来源标签仍以 spec 为准。
 
-| Requirement | Task | Test | Gate |
-| --- | --- | --- | --- |
-| `REQ-SPEC-goalctl-v1-001` | `TASK-GOAL-20260609-001-001` | `TEST-TASK-GOAL-20260609-001-001-001` | G3 |
-| `REQ-SPEC-goalctl-v1-002` | `TASK-GOAL-20260609-001-002` | `TEST-TASK-GOAL-20260609-001-002-001` | G3 |
-| `REQ-SPEC-goalctl-v1-003` | `TASK-GOAL-20260609-001-002` | `TEST-TASK-GOAL-20260609-001-002-002` | G3 |
-| `REQ-SPEC-goalctl-v1-004` | `TASK-GOAL-20260609-001-002` | `TEST-TASK-GOAL-20260609-001-002-003` | G3 |
-| `REQ-SPEC-goalctl-v1-005` | `TASK-GOAL-20260609-001-003` | `TEST-TASK-GOAL-20260609-001-003-001` | G3 |
-| `REQ-SPEC-goalctl-v1-006` | `TASK-GOAL-20260609-001-003` | `TEST-TASK-GOAL-20260609-001-003-002` | G3 |
-| `REQ-SPEC-goalctl-v1-007` | `TASK-GOAL-20260609-001-004` | `TEST-TASK-GOAL-20260609-001-004-001` | G4 |
-| `REQ-SPEC-goalctl-v1-008` | `TASK-GOAL-20260609-001-004` | `TEST-TASK-GOAL-20260609-001-004-002` | G4 |
-| `REQ-SPEC-goalctl-v1-009` | `TASK-GOAL-20260609-001-005` | `TEST-TASK-GOAL-20260609-001-005-001` | G4 |
-| `REQ-SPEC-goalctl-v1-010` | `TASK-GOAL-20260609-001-005` | `TEST-TASK-GOAL-20260609-001-005-002` | G4 |
-| `REQ-SPEC-goalctl-v1-011` | `TASK-GOAL-20260609-001-006` | `TEST-TASK-GOAL-20260609-001-006-001` | G5 |
-| `REQ-SPEC-goalctl-v1-012` | `TASK-GOAL-20260609-001-007` | `TEST-TASK-GOAL-20260609-001-007-001` | G7 |
-| `REQ-SPEC-goalctl-v1-013` | `TASK-GOAL-20260609-001-007` | `TEST-TASK-GOAL-20260609-001-007-002` | G7 |
-| `REQ-SPEC-goalctl-v1-014` | `TASK-GOAL-20260609-001-001` | `TEST-TASK-GOAL-20260609-001-001-002` | G6 |
-| `REQ-SPEC-goalctl-v1-015` | `TASK-GOAL-20260609-001-009` | `TEST-TASK-GOAL-20260609-001-009-001` | G8 |
-| `REQ-SPEC-goalctl-v1-016` | `TASK-GOAL-20260609-001-009` | `TEST-TASK-GOAL-20260609-001-009-002` | G8 |
-| `REQ-SPEC-goalctl-v1-017` | `TASK-GOAL-20260609-001-006` | `TEST-TASK-GOAL-20260609-001-006-002` | G5 |
-| `REQ-SPEC-goalctl-v1-018` | `TASK-GOAL-20260609-001-001` | `TEST-TASK-GOAL-20260609-001-001-003` | G6 |
-| `REQ-SPEC-goalctl-v1-019` | `TASK-GOAL-20260609-001-008` | `TEST-TASK-GOAL-20260609-001-008-001` | G7 |
-| `REQ-SPEC-goalctl-v1-020` | `TASK-GOAL-20260609-001-007` | `TEST-TASK-GOAL-20260609-001-007-003` | G10 |
+| Requirement               | Task                         | Test                                  | Gate   |
+| ------------------------- | ---------------------------- | ------------------------------------- | ------ |
+| `REQ-SPEC-goalctl-v1-001` | `TASK-GOAL-20260609-001-001` | `TEST-TASK-GOAL-20260609-001-001-001` | G3     |
+| `REQ-SPEC-goalctl-v1-002` | `TASK-GOAL-20260609-001-002` | `TEST-TASK-GOAL-20260609-001-002-001` | G3     |
+| `REQ-SPEC-goalctl-v1-003` | `TASK-GOAL-20260609-001-002` | `TEST-TASK-GOAL-20260609-001-002-002` | G3     |
+| `REQ-SPEC-goalctl-v1-004` | `TASK-GOAL-20260609-001-002` | `TEST-TASK-GOAL-20260609-001-002-003` | G3     |
+| `REQ-SPEC-goalctl-v1-005` | `TASK-GOAL-20260609-001-003` | `TEST-TASK-GOAL-20260609-001-003-001` | G3     |
+| `REQ-SPEC-goalctl-v1-006` | `TASK-GOAL-20260609-001-003` | `TEST-TASK-GOAL-20260609-001-003-002` | G3     |
+| `REQ-SPEC-goalctl-v1-007` | `TASK-GOAL-20260609-001-004` | `TEST-TASK-GOAL-20260609-001-004-001` | G4     |
+| `REQ-SPEC-goalctl-v1-008` | `TASK-GOAL-20260609-001-004` | `TEST-TASK-GOAL-20260609-001-004-002` | G4     |
+| `REQ-SPEC-goalctl-v1-009` | `TASK-GOAL-20260609-001-005` | `TEST-TASK-GOAL-20260609-001-005-001` | G4     |
+| `REQ-SPEC-goalctl-v1-010` | `TASK-GOAL-20260609-001-005` | `TEST-TASK-GOAL-20260609-001-005-002` | G4     |
+| `REQ-SPEC-goalctl-v1-011` | `TASK-GOAL-20260609-001-006` | `TEST-TASK-GOAL-20260609-001-006-001` | G5     |
+| `REQ-SPEC-goalctl-v1-012` | `TASK-GOAL-20260609-001-007` | `TEST-TASK-GOAL-20260609-001-007-001` | G7     |
+| `REQ-SPEC-goalctl-v1-013` | `TASK-GOAL-20260609-001-007` | `TEST-TASK-GOAL-20260609-001-007-002` | G7     |
+| `REQ-SPEC-goalctl-v1-014` | `TASK-GOAL-20260609-001-001` | `TEST-TASK-GOAL-20260609-001-001-002` | G6     |
+| `REQ-SPEC-goalctl-v1-015` | `TASK-GOAL-20260609-001-009` | `TEST-TASK-GOAL-20260609-001-009-001` | G8     |
+| `REQ-SPEC-goalctl-v1-016` | `TASK-GOAL-20260609-001-009` | `TEST-TASK-GOAL-20260609-001-009-002` | G8     |
+| `REQ-SPEC-goalctl-v1-017` | `TASK-GOAL-20260609-001-006` | `TEST-TASK-GOAL-20260609-001-006-002` | G5     |
+| `REQ-SPEC-goalctl-v1-018` | `TASK-GOAL-20260609-001-001` | `TEST-TASK-GOAL-20260609-001-001-003` | G6     |
+| `REQ-SPEC-goalctl-v1-019` | `TASK-GOAL-20260609-001-008` | `TEST-TASK-GOAL-20260609-001-008-001` | G7     |
+| `REQ-SPEC-goalctl-v1-020` | `TASK-GOAL-20260609-001-007` | `TEST-TASK-GOAL-20260609-001-007-003` | G10    |
 | `REQ-SPEC-goalctl-v1-021` | `TASK-GOAL-20260609-001-006` | `TEST-TASK-GOAL-20260609-001-006-003` | G9/G10 |
-| `REQ-SPEC-goalctl-v1-022` | `TASK-GOAL-20260609-001-008` | `TEST-TASK-GOAL-20260609-001-008-002` | G7 |
-| `REQ-SPEC-goalctl-v1-023` | `TASK-GOAL-20260609-001-009` | `TEST-TASK-GOAL-20260609-001-009-003` | G8 |
+| `REQ-SPEC-goalctl-v1-022` | `TASK-GOAL-20260609-001-008` | `TEST-TASK-GOAL-20260609-001-008-002` | G7     |
+| `REQ-SPEC-goalctl-v1-023` | `TASK-GOAL-20260609-001-009` | `TEST-TASK-GOAL-20260609-001-009-003` | G8     |
 
 ## 3. 命令面覆盖表
 
-| Command family | Owning Task | 覆盖说明 |
-| --- | --- | --- |
-| `status` | `TASK-GOAL-20260609-001-002` | `status` 与 `pipeline status` 输出四轴状态、下一动作、阻塞项 |
-| `validate` | `TASK-GOAL-20260609-001-001`、`TASK-GOAL-20260609-001-004` 至 `TASK-GOAL-20260609-001-008` | 聚合 registry/matrix/gate/evidence/lint/CI parity 校验，复用 envelope |
-| `registry` | `TASK-GOAL-20260609-001-004` | `validate`、`list`、`show` 等只读 registry 入口 |
-| `matrix` | `TASK-GOAL-20260609-001-005` | `check`、`coverage`、`trace`、`render` |
-| `gate` | `TASK-GOAL-20260609-001-006` | `check`、`report`、`explain`，含 G9/G10 H-CHK |
-| `pipeline` | `TASK-GOAL-20260609-001-002`、`TASK-GOAL-20260609-001-009` | `status`、`next` 只读；`transition` 写入路径由事务保护 |
-| `evidence` | `TASK-GOAL-20260609-001-007` | `check`、`report`、`list`、`link` |
-| `lint` | `TASK-GOAL-20260609-001-008` | 执行 38 条规则并与 CI parity 对齐 |
-| `propagation` | `TASK-GOAL-20260609-001-009` | `check`/`mark-stale` 的只读与写入保护 |
-| `report` | `TASK-GOAL-20260609-001-007` | `acceptance` 与 `release-readiness` |
-| `doctor` | `TASK-GOAL-20260609-001-001` | 环境、authority source、schema/root 可读性诊断，只读 |
-| `schema` | `TASK-GOAL-20260609-001-003` | schema summary、regex、allowed enum 输出 |
-| `version` | `TASK-GOAL-20260609-001-001` | 版本和构建信息输出，只读 |
+| Command family | Owning Task                                                                                | 覆盖说明                                                              |
+| -------------- | ------------------------------------------------------------------------------------------ | --------------------------------------------------------------------- |
+| `status`       | `TASK-GOAL-20260609-001-002`                                                               | `status` 与 `pipeline status` 输出四轴状态、下一动作、阻塞项          |
+| `validate`     | `TASK-GOAL-20260609-001-001`、`TASK-GOAL-20260609-001-004` 至 `TASK-GOAL-20260609-001-008` | 聚合 registry/matrix/gate/evidence/lint/CI parity 校验，复用 envelope |
+| `registry`     | `TASK-GOAL-20260609-001-004`                                                               | `validate`、`list`、`show` 等只读 registry 入口                       |
+| `matrix`       | `TASK-GOAL-20260609-001-005`                                                               | `check`、`coverage`、`trace`、`render`                                |
+| `gate`         | `TASK-GOAL-20260609-001-006`                                                               | `check`、`report`、`explain`，含 G9/G10 H-CHK                         |
+| `pipeline`     | `TASK-GOAL-20260609-001-002`、`TASK-GOAL-20260609-001-009`                                 | `status`、`next` 只读；`transition` 写入路径由事务保护                |
+| `evidence`     | `TASK-GOAL-20260609-001-007`                                                               | `check`、`report`、`list`、`link`                                     |
+| `lint`         | `TASK-GOAL-20260609-001-008`                                                               | 执行 38 条规则并与 CI parity 对齐                                     |
+| `propagation`  | `TASK-GOAL-20260609-001-009`                                                               | `check`/`mark-stale` 的只读与写入保护                                 |
+| `report`       | `TASK-GOAL-20260609-001-007`                                                               | `acceptance` 与 `release-readiness`                                   |
+| `doctor`       | `TASK-GOAL-20260609-001-001`                                                               | 环境、authority source、schema/root 可读性诊断，只读                  |
+| `schema`       | `TASK-GOAL-20260609-001-003`                                                               | schema summary、regex、allowed enum 输出                              |
+| `version`      | `TASK-GOAL-20260609-001-001`                                                               | 版本和构建信息输出，只读                                              |
 
 ## 4. Task 依赖图
 

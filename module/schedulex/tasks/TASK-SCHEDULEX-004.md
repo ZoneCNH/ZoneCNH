@@ -30,17 +30,17 @@ status: pending
 
 ## Requirements Covered
 
-| Requirement | Description | Acceptance Criteria |
-|---|---|---|
-| FR-004 | Misfire Policy：Skip/RunOnce/CatchUp | 3 个 WHEN/THEN 场景 |
+| Requirement | Description                          | Acceptance Criteria |
+| ----------- | ------------------------------------ | ------------------- |
+| FR-004      | Misfire Policy：Skip/RunOnce/CatchUp | 3 个 WHEN/THEN 场景 |
 
 ## Test Plan
 
-| Test Case | Type | Description |
-|---|---|---|
-| TC-003 | Unit | Skip：跳过错过触发 |
-| TC-003 | Unit | RunOnce：补执行一次 |
-| TC-003 | Unit | CatchUp：补执行所有 |
+| Test Case | Type | Description         |
+| --------- | ---- | ------------------- |
+| TC-003    | Unit | Skip：跳过错过触发  |
+| TC-003    | Unit | RunOnce：补执行一次 |
+| TC-003    | Unit | CatchUp：补执行所有 |
 
 ## Implementation Notes
 
@@ -50,14 +50,14 @@ status: pending
 
 ## Implementation Plan
 
-| Step | Description | Deliverables | Verification |
-|---|---|---|---|
-| 1 | 实现 Skip 策略 | `misfire.go` | §7.4-1 通过 |
-| 2 | 实现 RunOnce 策略 | `misfire.go` | §7.4-2 通过 |
-| 3 | 实现 CatchUp 策略 | `misfire.go` | §7.4-3 通过 |
+| Step | Description       | Deliverables | Verification |
+| ---- | ----------------- | ------------ | ------------ |
+| 1    | 实现 Skip 策略    | `misfire.go` | §7.4-1 通过  |
+| 2    | 实现 RunOnce 策略 | `misfire.go` | §7.4-2 通过  |
+| 3    | 实现 CatchUp 策略 | `misfire.go` | §7.4-3 通过  |
 
 ### Risk Assessment
 
-| Risk | Probability | Impact | Mitigation |
-|---|---|---|---|
-| CatchUp 执行风暴 | Medium | Medium | 限制最大补执行次数 |
+| Risk             | Probability | Impact | Mitigation         |
+| ---------------- | ----------- | ------ | ------------------ |
+| CatchUp 执行风暴 | Medium      | Medium | 限制最大补执行次数 |

@@ -29,11 +29,11 @@ Foundation 模块是基础设施层，不涉及 UI，因此测试重点在：
 
 ### 2.1 覆盖率
 
-| 指标 | 目标 |
-|------|------|
-| 单元测试覆盖率 | ≥ 80% |
-| 公共接口覆盖率 | 100%（每个公共方法至少 1 个测试） |
-| 错误路径覆盖率 | 100%（每个公共错误至少 1 个测试） |
+| 指标             | 目标                              |
+| ---------------- | --------------------------------- |
+| 单元测试覆盖率   | ≥ 80%                             |
+| 公共接口覆盖率   | 100%（每个公共方法至少 1 个测试） |
+| 错误路径覆盖率   | 100%（每个公共错误至少 1 个测试） |
 | Edge Case 覆盖率 | ≥ 80%（spec 中列出的 Edge Cases） |
 
 ### 2.2 测试格式
@@ -99,14 +99,14 @@ func TestApp_Run_TC001(t *testing.T) {
 
 ## 4. 测试工具
 
-| 工具 | 用途 |
-|------|------|
-| `testing` (stdlib) | 基础测试框架 |
-| `testkitx` | 测试专用工具：golden file、fixture、harness |
-| `github.com/stretchr/testify` | assert/require（可选，不强制） |
-| `go test -race` | 数据竞争检测 |
-| `go test -bench` | 性能基准测试 |
-| `go test -coverprofile` | 覆盖率报告 |
+| 工具                          | 用途                                        |
+| ----------------------------- | ------------------------------------------- |
+| `testing` (stdlib)            | 基础测试框架                                |
+| `testkitx`                    | 测试专用工具：golden file、fixture、harness |
+| `github.com/stretchr/testify` | assert/require（可选，不强制）              |
+| `go test -race`               | 数据竞争检测                                |
+| `go test -bench`              | 性能基准测试                                |
+| `go test -coverprofile`       | 覆盖率报告                                  |
 
 ---
 

@@ -30,17 +30,17 @@ status: pending
 
 ## Requirements Covered
 
-| Requirement | Description | Acceptance Criteria |
-|---|---|---|
-| FR-001 | FakeConfig：内存配置源 | AC-001 |
+| Requirement | Description            | Acceptance Criteria |
+| ----------- | ---------------------- | ------------------- |
+| FR-001      | FakeConfig：内存配置源 | AC-001              |
 
 ## Test Plan
 
-| Test Case | Type | Description |
-|---|---|---|
-| TC-001 | Unit | Set 后 Get 返回正确值 |
-| TC-001 | Unit | 未设置的 key 返回 nil |
-| TC-001 | Unit | 并发安全（-race） |
+| Test Case | Type | Description           |
+| --------- | ---- | --------------------- |
+| TC-001    | Unit | Set 后 Get 返回正确值 |
+| TC-001    | Unit | 未设置的 key 返回 nil |
+| TC-001    | Unit | 并发安全（-race）     |
 
 ## Implementation Notes
 
@@ -50,14 +50,14 @@ status: pending
 
 ## Implementation Plan
 
-| Step | Description | Deliverables | Verification |
-|---|---|---|---|
-| 1 | 实现 `FakeConfig` 结构体和 `Set` 方法 | `fake_config.go` | `go build ./...` 通过 |
-| 2 | 实现 `configx.Reader` 接口方法 | `fake_config.go` | 全部测试通过 |
-| 3 | 并发安全验证 | `fake_config_test.go` | `go test -race` 通过 |
+| Step | Description                           | Deliverables          | Verification          |
+| ---- | ------------------------------------- | --------------------- | --------------------- |
+| 1    | 实现 `FakeConfig` 结构体和 `Set` 方法 | `fake_config.go`      | `go build ./...` 通过 |
+| 2    | 实现 `configx.Reader` 接口方法        | `fake_config.go`      | 全部测试通过          |
+| 3    | 并发安全验证                          | `fake_config_test.go` | `go test -race` 通过  |
 
 ### Risk Assessment
 
-| Risk | Probability | Impact | Mitigation |
-|---|---|---|---|
-| Reader 接口不完整 | Low | Medium | 对照 configx.Reader 定义 |
+| Risk              | Probability | Impact | Mitigation               |
+| ----------------- | ----------- | ------ | ------------------------ |
+| Reader 接口不完整 | Low         | Medium | 对照 configx.Reader 定义 |

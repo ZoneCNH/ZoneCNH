@@ -1,13 +1,13 @@
 # postgresx 发布版本 1.0 Goal 定位与实现标准
 
-| 字段 | 内容 |
-| --- | --- |
-| 模块名 | `postgresx` |
-| 发布版本 | 1.0.0 |
-| 所属层级 | 存储扩展层 / PostgreSQL 关系型核心存储 |
-| 稳定级别 | Public API Stable；SPI Stable；Internal 可演进 |
-| 文档状态 | 1.0 发布基线文档 |
-| 发布日期基准 | 2026-06-09 |
+| 字段         | 内容                                           |
+| ------------ | ---------------------------------------------- |
+| 模块名       | `postgresx`                                    |
+| 发布版本     | 1.0.0                                          |
+| 所属层级     | 存储扩展层 / PostgreSQL 关系型核心存储         |
+| 稳定级别     | Public API Stable；SPI Stable；Internal 可演进 |
+| 文档状态     | 1.0 发布基线文档                               |
+| 发布日期基准 | 2026-06-09                                     |
 
 ## 术语约定
 
@@ -57,25 +57,25 @@
 
 ## 3. 核心场景
 
-| 场景 | 说明 | 1.0 期望结果 |
-| --- | --- | --- |
-| 事务写入 | 创建订单和订单明细 | 在同一事务内提交或回滚 |
-| 分页查询 | 后台列表查询 | 统一 PageRequest/PageResult 和排序白名单 |
-| 数据库迁移 | 服务发布新增表结构 | 启动期或发布期执行迁移并记录版本 |
-| 慢查询排查 | 接口响应变慢 | 通过 sqlId、duration、rows、traceId 定位 |
+| 场景       | 说明               | 1.0 期望结果                                             |
+| ---------- | ------------------ | -------------------------------------------------------- |
+| 事务写入   | 创建订单和订单明细 | 在同一事务内提交或回滚                                   |
+| 分页查询   | 后台列表查询       | 统一 PageRequest/PageResult 和排序白名单                 |
+| 数据库迁移 | 服务发布新增表结构 | 启动期或发布期执行迁移并记录版本                         |
+| 慢查询排查 | 接口响应变慢       | 通过 sqlId、duration、rows、traceId 定位                 |
 | 连接池管理 | 高并发下连接池耗尽 | 通过 pool.active、pool.wait、pool.timeout 指标监控和告警 |
 
 ## 4. 能力范围
 
-| 能力域 | 1.0 必须具备的能力 | 验收方式 |
-| --- | --- | --- |
-| 数据源 | 连接池、超时、认证、健康检查 | 集成测试通过 |
-| 事务 | 传播、隔离级别、只读、超时、回滚规则 | 事务测试通过 |
-| SQL 执行 | 参数绑定、查询、更新、批处理、结果映射 | SQL 测试通过 |
-| 分页排序 | PageRequest、排序白名单、总数策略 | 分页测试通过 |
-| 迁移 | 迁移版本、校验、失败处理、checksum | 迁移测试通过 |
+| 能力域   | 1.0 必须具备的能力                          | 验收方式         |
+| -------- | ------------------------------------------- | ---------------- |
+| 数据源   | 连接池、超时、认证、健康检查                | 集成测试通过     |
+| 事务     | 传播、隔离级别、只读、超时、回滚规则        | 事务测试通过     |
+| SQL 执行 | 参数绑定、查询、更新、批处理、结果映射      | SQL 测试通过     |
+| 分页排序 | PageRequest、排序白名单、总数策略           | 分页测试通过     |
+| 迁移     | 迁移版本、校验、失败处理、checksum          | 迁移测试通过     |
 | 审计租户 | createdAt/updatedAt/createdBy/tenantId 辅助 | 字段填充测试通过 |
-| 观测 | 慢查询、连接池、事务、错误 | 观测测试通过 |
+| 观测     | 慢查询、连接池、事务、错误                  | 观测测试通过     |
 
 ## 5. 职责边界
 
@@ -95,24 +95,24 @@
 
 ## 6. 依赖关系与分层约束
 
-| 依赖类型 | 约束 |
-| --- | --- |
-| 上游依赖 | 依赖 kernel、configx、observex、resiliencx。 |
+| 依赖类型 | 约束                                                                    |
+| -------- | ----------------------------------------------------------------------- |
+| 上游依赖 | 依赖 kernel、configx、observex、resiliencx。                            |
 | 下游依赖 | 业务仓储层、schedulex TaskStore、contracts 元数据存储可使用 postgresx。 |
-| 分层约束 | postgresx 不依赖具体业务 repository；只提供基础访问能力。 |
+| 分层约束 | postgresx 不依赖具体业务 repository；只提供基础访问能力。               |
 
 | 契约依赖 | MUST 向 contracts 登记 Public API 契约和错误码契约。 |
 ## 7. 对外契约
 
 ### 7.1 公开能力面
 
-| 契约 | 定位 | 1.0 稳定承诺 |
-| --- | --- | --- |
-| PostgresDataSource | 数据源入口 | 连接获取和健康检查语义稳定 |
-| TransactionManager | 事务执行入口 | 提交/回滚/传播语义稳定 |
-| SqlExecutor | 参数化 SQL 执行 | query/update/batch 语义稳定 |
-| MigrationRunner | 迁移执行接口 | 版本和 checksum 语义稳定 |
-| TenantContextProvider | 租户上下文扩展点 | tenantId 获取语义稳定 |
+| 契约                  | 定位             | 1.0 稳定承诺                |
+| --------------------- | ---------------- | --------------------------- |
+| PostgresDataSource    | 数据源入口       | 连接获取和健康检查语义稳定  |
+| TransactionManager    | 事务执行入口     | 提交/回滚/传播语义稳定      |
+| SqlExecutor           | 参数化 SQL 执行  | query/update/batch 语义稳定 |
+| MigrationRunner       | 迁移执行接口     | 版本和 checksum 语义稳定    |
+| TenantContextProvider | 租户上下文扩展点 | tenantId 获取语义稳定       |
 
 ### 7.2 1.0 逻辑接口基线
 
@@ -150,16 +150,16 @@ TenantContextProvider
 
 ## 8. 配置契约
 
-| 配置项 | 含义 | 默认值 / 要求 | 稳定性 |
-| --- | --- | --- | --- |
-| foundationx.postgres.enabled | 是否启用 postgresx | false，由业务显式启用 | Stable |
-| foundationx.postgres.url | 数据库连接串 | 必须配置，日志脱敏 | Stable |
-| foundationx.postgres.pool.max-size | 连接池最大连接数 | 按环境配置 | Stable |
-| foundationx.postgres.query.timeout | 查询超时 | 3s | Stable |
-| foundationx.postgres.transaction.timeout | 事务超时 | 30s | Stable |
-| foundationx.postgres.slow-query-threshold | 慢查询阈值 | 500ms | Stable |
-| foundationx.postgres.migration.enabled | 是否启用迁移 | false，生产建议发布期执行 | Stable |
-| foundationx.postgres.tenant.enabled | 是否启用租户辅助 | false | Stable |
+| 配置项                                    | 含义               | 默认值 / 要求             | 稳定性 |
+| ----------------------------------------- | ------------------ | ------------------------- | ------ |
+| foundationx.postgres.enabled              | 是否启用 postgresx | false，由业务显式启用     | Stable |
+| foundationx.postgres.url                  | 数据库连接串       | 必须配置，日志脱敏        | Stable |
+| foundationx.postgres.pool.max-size        | 连接池最大连接数   | 按环境配置                | Stable |
+| foundationx.postgres.query.timeout        | 查询超时           | 3s                        | Stable |
+| foundationx.postgres.transaction.timeout  | 事务超时           | 30s                       | Stable |
+| foundationx.postgres.slow-query-threshold | 慢查询阈值         | 500ms                     | Stable |
+| foundationx.postgres.migration.enabled    | 是否启用迁移       | false，生产建议发布期执行 | Stable |
+| foundationx.postgres.tenant.enabled       | 是否启用租户辅助   | false                     | Stable |
 
 ## 9. 可观测契约
 
@@ -173,15 +173,15 @@ TenantContextProvider
 
 ### 9.2 指标
 
-| 指标名 | 类型 | 标签 | 说明 |
-| --- | --- | --- | --- |
-| foundationx_postgres_query_total | Counter | sqlId,operation,status | SQL 执行次数 |
-| foundationx_postgres_query_duration_ms | Timer | sqlId,operation,status | SQL 执行耗时 |
-| foundationx_postgres_transactions_total | Counter | status,propagation | 事务次数 |
-| foundationx_postgres_pool_active | Gauge | datasource | 活跃连接数 |
-| foundationx_postgres_pool_pending | Gauge | datasource | 等待连接数 |
-| foundationx_postgres_migration_total | Counter | version,status | 迁移执行次数 |
-| foundationx_postgres_errors_total | Counter | sqlState,errorCode | 数据库错误数 |
+| 指标名                                  | 类型    | 标签                   | 说明         |
+| --------------------------------------- | ------- | ---------------------- | ------------ |
+| foundationx_postgres_query_total        | Counter | sqlId,operation,status | SQL 执行次数 |
+| foundationx_postgres_query_duration_ms  | Timer   | sqlId,operation,status | SQL 执行耗时 |
+| foundationx_postgres_transactions_total | Counter | status,propagation     | 事务次数     |
+| foundationx_postgres_pool_active        | Gauge   | datasource             | 活跃连接数   |
+| foundationx_postgres_pool_pending       | Gauge   | datasource             | 等待连接数   |
+| foundationx_postgres_migration_total    | Counter | version,status         | 迁移执行次数 |
+| foundationx_postgres_errors_total       | Counter | sqlState,errorCode     | 数据库错误数 |
 
 ### 9.3 Trace / 诊断事件
 
@@ -193,13 +193,13 @@ TenantContextProvider
 
 ## 10. 错误模型与失败策略
 
-| 错误类别 | 典型原因 | 1.0 处理策略 |
-| --- | --- | --- |
-| POSTGRES_CONNECTION_FAILED | 连接失败、认证失败、网络不可达 | 启动或健康检查失败，按策略处理 |
-| POSTGRES_QUERY_TIMEOUT | 查询超时 | 取消查询并返回超时错误 |
-| POSTGRES_CONSTRAINT_VIOLATION | 唯一键、外键、非空约束失败 | 映射为业务可识别数据冲突 |
-| POSTGRES_TRANSACTION_FAILED | 提交或回滚失败 | 返回事务错误并记录诊断 |
-| POSTGRES_MIGRATION_FAILED | 迁移 checksum 不一致或执行失败 | 发布门禁阻断 |
+| 错误类别                      | 典型原因                       | 1.0 处理策略                   |
+| ----------------------------- | ------------------------------ | ------------------------------ |
+| POSTGRES_CONNECTION_FAILED    | 连接失败、认证失败、网络不可达 | 启动或健康检查失败，按策略处理 |
+| POSTGRES_QUERY_TIMEOUT        | 查询超时                       | 取消查询并返回超时错误         |
+| POSTGRES_CONSTRAINT_VIOLATION | 唯一键、外键、非空约束失败     | 映射为业务可识别数据冲突       |
+| POSTGRES_TRANSACTION_FAILED   | 提交或回滚失败                 | 返回事务错误并记录诊断         |
+| POSTGRES_MIGRATION_FAILED     | 迁移 checksum 不一致或执行失败 | 发布门禁阻断                   |
 
 ## 11. 安全、稳定性与兼容性要求
 
@@ -214,13 +214,13 @@ TenantContextProvider
 
 ## 12. 测试证据要求
 
-| 测试类型 | 必须覆盖内容 | 发布门禁 |
-| --- | --- | --- |
-| 单元测试 | 分页、排序、SQL 参数绑定、错误映射 | MUST 通过 |
+| 测试类型 | 必须覆盖内容                               | 发布门禁  |
+| -------- | ------------------------------------------ | --------- |
+| 单元测试 | 分页、排序、SQL 参数绑定、错误映射         | MUST 通过 |
 | 集成测试 | 真实 PostgreSQL 查询、事务、批处理、连接池 | MUST 通过 |
-| 迁移测试 | 版本迁移、checksum、失败回滚策略 | MUST 通过 |
-| 并发测试 | 连接池耗尽、事务并发、死锁错误映射 | MUST 通过 |
-| 安全测试 | SQL 注入防护、参数脱敏 | MUST 通过 |
+| 迁移测试 | 版本迁移、checksum、失败回滚策略           | MUST 通过 |
+| 并发测试 | 连接池耗尽、事务并发、死锁错误映射         | MUST 通过 |
+| 安全测试 | SQL 注入防护、参数脱敏                     | MUST 通过 |
 
 ## 13. 1.0 发布验收清单
 

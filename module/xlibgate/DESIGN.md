@@ -316,11 +316,11 @@ xlibgate (L0 CLI 工具)
 
 ### 6.1 Exit Code 映射
 
-| 场景 | Exit Code | 对应 sentinel error |
-|------|-----------|-------------------|
-| 所有检查通过 | 0 | — |
-| 检查未通过（违规） | 1 | `ErrImportViolation`, `ErrGomodDirty`, `ErrBaselineMismatch`, `ErrEvidenceMissing` |
-| 内部错误 | 2 | `ErrConfigInvalid`, `ErrConfigMissing`, `ErrEvidenceInvalid` |
+| 场景               | Exit Code   | 对应 sentinel error                                                                |
+| ------------------ | ----------- | ---------------------------------------------------------------------------------- |
+| 所有检查通过       | 0           | —                                                                                  |
+| 检查未通过（违规） | 1           | `ErrImportViolation`, `ErrGomodDirty`, `ErrBaselineMismatch`, `ErrEvidenceMissing` |
+| 内部错误           | 2           | `ErrConfigInvalid`, `ErrConfigMissing`, `ErrEvidenceInvalid`                       |
 
 ### 6.2 错误包装策略
 
@@ -338,12 +338,12 @@ results = append(results, result)
 
 ### 6.3 调用方处理
 
-| 错误 | 调用方处理 |
-|------|-----------|
-| `ErrConfigInvalid` | `errors.Is(err, ErrConfigInvalid)` → 检查 YAML 语法 |
-| `ErrConfigMissing` | `errors.Is(err, ErrConfigMissing)` → 确认 `--config` 路径 |
-| `ErrImportViolation` | 移除违规 import，调整模块依赖 |
-| `ErrGomodDirty` | 运行 `go mod tidy` 并提交变更 |
+| 错误                 | 调用方处理                                                |
+| -------------------- | --------------------------------------------------------- |
+| `ErrConfigInvalid`   | `errors.Is(err, ErrConfigInvalid)` → 检查 YAML 语法       |
+| `ErrConfigMissing`   | `errors.Is(err, ErrConfigMissing)` → 确认 `--config` 路径 |
+| `ErrImportViolation` | 移除违规 import，调整模块依赖                             |
+| `ErrGomodDirty`      | 运行 `go mod tidy` 并提交变更                             |
 
 ---
 
@@ -387,14 +387,14 @@ const (
 
 ## 8. 技术风险
 
-| 风险 | 概率 | 影响 | 缓解 |
-|------|------|------|------|
-| AST 解析大项目耗时超预算 | Low | Medium | Benchmark 验证 50 模块 < 10s，跳过 vendor 目录 |
-| `go mod tidy` 网络依赖导致超时 | Medium | Medium | 设置合理超时（context.WithTimeout），超时标记 error 不阻塞 |
-| gitleaks 未安装导致 secret_scan 跳过 | Medium | Low | 检查 gitleaks 可用性，不可用时标记 error 并提示安装 |
-| xlib-standard evidence schema 升级不兼容 | Low | High | evidence 校验前做 schema 版本检查，不匹配时输出明确错误 |
-| CI 环境无 color 导致输出乱码 | Low | Low | 自动检测 tty，非 tty 时输出纯文本 |
-| 并发多个 xlibgate 实例冲突 | Low | Low | 各实例独立工作（无共享状态），artifact 文件路径由调用方指定 |
+| 风险                                     | 概率   | 影响   | 缓解                                                        |
+| ---------------------------------------- | ------ | ------ | ----------------------------------------------------------- |
+| AST 解析大项目耗时超预算                 | Low    | Medium | Benchmark 验证 50 模块 < 10s，跳过 vendor 目录              |
+| `go mod tidy` 网络依赖导致超时           | Medium | Medium | 设置合理超时（context.WithTimeout），超时标记 error 不阻塞  |
+| gitleaks 未安装导致 secret_scan 跳过     | Medium | Low    | 检查 gitleaks 可用性，不可用时标记 error 并提示安装         |
+| xlib-standard evidence schema 升级不兼容 | Low    | High   | evidence 校验前做 schema 版本检查，不匹配时输出明确错误     |
+| CI 环境无 color 导致输出乱码             | Low    | Low    | 自动检测 tty，非 tty 时输出纯文本                           |
+| 并发多个 xlibgate 实例冲突               | Low    | Low    | 各实例独立工作（无共享状态），artifact 文件路径由调用方指定 |
 
 ---
 

@@ -8,14 +8,14 @@
 
 ## 1. 适用范围
 
-| 阶段 | 评分对象 | Rubric |
-|------|----------|--------|
-| Spec | `module/{module}/SPEC.md` | `scoring/RUBRIC-spec.md` |
-| Matrix | `module/{module}/TRACEABILITY.md` | `scoring/RUBRIC-matrix.md` |
-| Tasks | `module/{module}/tasks/TASK-*.md` | `scoring/RUBRIC-tasks.md` |
-| Plan | `module/{module}/IMPLEMENTATION-PLAN.md` | `scoring/RUBRIC-plan.md` |
-| Prompt | `module/{module}/TASK-*-PROMPT.md` | `scoring/RUBRIC-prompt.md` |
-| Code | 本次 Task diff + 测试 + 验证证据 | `scoring/RUBRIC-code.md` |
+| 阶段   | 评分对象                                 | Rubric                     |
+| ------ | ---------------------------------------- | -------------------------- |
+| Spec   | `module/{module}/SPEC.md`                | `scoring/RUBRIC-spec.md`   |
+| Matrix | `module/{module}/TRACEABILITY.md`        | `scoring/RUBRIC-matrix.md` |
+| Tasks  | `module/{module}/tasks/TASK-*.md`        | `scoring/RUBRIC-tasks.md`  |
+| Plan   | `module/{module}/IMPLEMENTATION-PLAN.md` | `scoring/RUBRIC-plan.md`   |
+| Prompt | `module/{module}/TASK-*-PROMPT.md`       | `scoring/RUBRIC-prompt.md` |
+| Code   | 本次 Task diff + 测试 + 验证证据         | `scoring/RUBRIC-code.md`   |
 
 ---
 
@@ -23,12 +23,12 @@
 
 每个阶段必须由 **三个独立 LLM 平台 + 一个规则引擎** 并行评分：
 
-| 源 | 路径 | 模型/类型 |
-|------|------------|------|
-| Claude Code | `.claude/agents/{stage}-structural-score.md` | Opus |
-| Codex | `.codex/agents/{stage}-structural-score.toml` | gpt-5.5 high |
-| Copilot CLI | `.copilot/agents/{stage}-structural-score.md` | Claude Opus 4.7 |
-| Rules（异构）| `scripts/rule-scorer.py` | 纯 Python 规则引擎，零 LLM |
+| 源            | 路径                                          | 模型/类型                  |
+| ------------- | --------------------------------------------- | -------------------------- |
+| Claude Code   | `.claude/agents/{stage}-structural-score.md`  | Opus                       |
+| Codex         | `.codex/agents/{stage}-structural-score.toml` | gpt-5.5 high               |
+| Copilot CLI   | `.copilot/agents/{stage}-structural-score.md` | Claude Opus 4.7            |
+| Rules（异构） | `scripts/rule-scorer.py`                      | 纯 Python 规则引擎，零 LLM |
 
 三个 LLM 平台必须读取相同 rubric，独立打分，互相不可见对方结果。
 规则引擎不读 rubric 文本，按宪法 §14.4 要求作为**异构信号源**打破同源相关性：
@@ -78,13 +78,13 @@ Schema：
 
 仲裁由 `pipeline-arbiter` agent 完成。规则见 `scoring/ARBITER-PROTOCOL.md`。核心：
 
-| 规则 | 阈值 |
-|------|------|
+| 规则     | 阈值                                                                                                      |
+| -------- | --------------------------------------------------------------------------------------------------------- |
 | 门禁公式 | `composite_score = min(claude.score, codex.score, copilot.score, rules.score)` 且 `composite_score >= 98` |
-| 红线 | 任一评分源 `redline: true` → 阻塞 |
-| 置信度 | 任一 LLM 平台 `confidence: low` → 阻塞并重评 |
-| 分差 | `max(llm_scores) - min(llm_scores) > 5` → 阻塞并进入评分差异调解 |
-| 异构分歧 | `abs(rules.score - median(llm_scores)) > 15` → 阻塞并进入 meta-arbiter 诊断 |
+| 红线     | 任一评分源 `redline: true` → 阻塞                                                                         |
+| 置信度   | 任一 LLM 平台 `confidence: low` → 阻塞并重评                                                              |
+| 分差     | `max(llm_scores) - min(llm_scores) > 5` → 阻塞并进入评分差异调解                                          |
+| 异构分歧 | `abs(rules.score - median(llm_scores)) > 15` → 阻塞并进入 meta-arbiter 诊断                               |
 
 **纯机器门禁，不引入人工**。Confidence 与分差是门禁字段：任一低置信度或平台分差超过阈值，gate 必须 fail 并自动路由重评或修复。
 
@@ -130,13 +130,13 @@ Schema：
 
 ## 6. 严重级别
 
-| 级别 | 含义 | 典型扣分 |
-|------|------|----------|
-| REDLINE | 触发红线 | 无论分数仲裁失败 |
-| CRITICAL | 阻塞下游 | 8-15 |
-| HIGH | 重大返工风险 | 4-7 |
-| MEDIUM | 应在本阶段修复 | 2-3 |
-| LOW | 可读性/格式 | 1 |
+| 级别     | 含义           | 典型扣分         |
+| -------- | -------------- | ---------------- |
+| REDLINE  | 触发红线       | 无论分数仲裁失败 |
+| CRITICAL | 阻塞下游       | 8-15             |
+| HIGH     | 重大返工风险   | 4-7              |
+| MEDIUM   | 应在本阶段修复 | 2-3              |
+| LOW      | 可读性/格式    | 1                |
 
 ---
 

@@ -21,9 +21,9 @@
 
 ### 1.1 变更历史
 
-| 日期 | 版本 | 变更内容 | 作者 |
-|------|------|----------|------|
-| 2026-06-07 | v1.0.0 | 初始版本 | ZoneCNH |
+| 日期       | 版本   | 变更内容   | 作者    |
+| ---------- | ------ | ---------- | ------- |
+| 2026-06-07 | v1.0.0 | 初始版本   | ZoneCNH |
 
 ## 2. Summary
 
@@ -69,13 +69,13 @@
 
 ## 6. Consumers
 
-| 消费者 | 使用方式 |
-|--------|----------|
-| `backtest-engine` | 存储回测报告、结果文件 |
-| `model-engine` | 存储/加载模型文件 |
-| `risk-engine` | 存储风控快照、日志归档 |
-| `x.go`（组合根） | 创建 Client 实例，注入到需要存储的模块 |
-| 运维/监控 | 通过 Health() 检查存储服务连接状态 |
+| 消费者            | 使用方式                               |
+| ----------------- | -------------------------------------- |
+| `backtest-engine` | 存储回测报告、结果文件                 |
+| `model-engine`    | 存储/加载模型文件                      |
+| `risk-engine`     | 存储风控快照、日志归档                 |
+| `x.go`（组合根）  | 创建 Client 实例，注入到需要存储的模块 |
+| 运维/监控         | 通过 Health() 检查存储服务连接状态     |
 
 ---
 
@@ -188,20 +188,20 @@ THEN 幂等，第二次调用返回 nil
 
 ## 8. Business Rules
 
-| 编号 | 规则 |
-|------|------|
-| BR-001 | key 必须非空，且不能以 `/` 开头 |
+| 编号   | 规则                                                |
+| ------ | --------------------------------------------------- |
+| BR-001 | key 必须非空，且不能以 `/` 开头                     |
 | BR-002 | multipart upload 阈值默认 100MB，可通过 Config 配置 |
-| BR-003 | 分片大小默认 5MB，可通过 Config 配置 |
-| BR-004 | List 结果默认最大 1000 条，可通过 opts 覆盖 |
-| BR-005 | Health() 必须是幂等的、无副作用的 |
-| BR-006 | 所有操作必须接受 `context.Context`，支持取消和超时 |
-| BR-007 | 错误消息格式：`"ossx: <operation>: <detail>"` |
-| BR-008 | Delete 对不存在的对象是幂等的（不返回错误） |
-| BR-009 | Close() 必须是幂等的，多次调用不 panic |
-| BR-010 | local 后端的 base path 必须是绝对路径 |
-| BR-011 | 可观测指标必须包含 backend 和 operation 标签 |
-| BR-012 | Put 的 Content-Type 从 opts 获取，不自动检测 |
+| BR-003 | 分片大小默认 5MB，可通过 Config 配置                |
+| BR-004 | List 结果默认最大 1000 条，可通过 opts 覆盖         |
+| BR-005 | Health() 必须是幂等的、无副作用的                   |
+| BR-006 | 所有操作必须接受 `context.Context`，支持取消和超时  |
+| BR-007 | 错误消息格式：`"ossx: <operation>: <detail>"`       |
+| BR-008 | Delete 对不存在的对象是幂等的（不返回错误）         |
+| BR-009 | Close() 必须是幂等的，多次调用不 panic              |
+| BR-010 | local 后端的 base path 必须是绝对路径               |
+| BR-011 | 可观测指标必须包含 backend 和 operation 标签        |
+| BR-012 | Put 的 Content-Type 从 opts 获取，不自动检测        |
 
 ---
 
@@ -344,17 +344,17 @@ ossx:
 
 ## 12. Error Handling
 
-| 错误 | 调用方处理 |
-|------|-----------|
+| 错误                    | 调用方处理                                    |
+| ----------------------- | --------------------------------------------- |
 | `ErrUnsupportedBackend` | 检查 Config.Backend，使用 s3/minio/local 之一 |
-| `ErrInvalidConfig` | 检查缺失字段，修复后重试 |
-| `ErrInvalidKey` | 检查 key 是否非空且不以 `/` 开头 |
-| `ErrObjectNotFound` | 检查 key 是否正确，或先 List 确认 |
-| `ErrObjectTooLarge` | 减小文件大小或检查后端限制 |
-| `ErrInvalidExpiry` | 传入正数 duration |
-| `ErrUploadFailed` | 检查网络和存储服务状态，重试 |
-| `ErrDownloadFailed` | 检查网络和对象是否存在，重试 |
-| 后端 SDK 错误 | 包装为 `ossx: <op>: <native_err>`，保留错误链 |
+| `ErrInvalidConfig`      | 检查缺失字段，修复后重试                      |
+| `ErrInvalidKey`         | 检查 key 是否非空且不以 `/` 开头              |
+| `ErrObjectNotFound`     | 检查 key 是否正确，或先 List 确认             |
+| `ErrObjectTooLarge`     | 减小文件大小或检查后端限制                    |
+| `ErrInvalidExpiry`      | 传入正数 duration                             |
+| `ErrUploadFailed`       | 检查网络和存储服务状态，重试                  |
+| `ErrDownloadFailed`     | 检查网络和对象是否存在，重试                  |
+| 后端 SDK 错误           | 包装为 `ossx: <op>: <native_err>`，保留错误链 |
 
 **错误消息格式：** `"ossx: <operation>: <detail>"`
 **错误包装：** 使用 `%w` 保留底层错误链
@@ -363,21 +363,21 @@ ossx:
 
 ## 13. Edge Cases
 
-| 场景 | 预期行为 |
-|------|----------|
-| key 为空 | 返回 `ErrInvalidKey` |
-| key 以 `/` 开头 | 返回 `ErrInvalidKey` |
-| key 包含 `//` | 正常处理（不规范化） |
-| Put 空文件（0 字节） | 正常上传 |
-| Get 后未读完就关闭 | 资源正确释放 |
-| Delete 不存在的对象 | 返回 nil（幂等） |
-| List 空 prefix | 列举所有对象 |
-| List 结果超大 | 分页返回，IsTruncated=true |
-| 并发 Put 同一 key | 后写覆盖（last-write-wins） |
-| ctx 在上传中途取消 | 清理已上传分片 |
-| local 后端路径不存在 | 自动创建目录 |
-| PresignURL 对不存在对象 | 返回 URL（不过滤存在性） |
-| multipart upload 部分失败 | 自动重试失败分片 |
+| 场景                      | 预期行为                    |
+| ------------------------- | --------------------------- |
+| key 为空                  | 返回 `ErrInvalidKey`        |
+| key 以 `/` 开头           | 返回 `ErrInvalidKey`        |
+| key 包含 `//`             | 正常处理（不规范化）        |
+| Put 空文件（0 字节）      | 正常上传                    |
+| Get 后未读完就关闭        | 资源正确释放                |
+| Delete 不存在的对象       | 返回 nil（幂等）            |
+| List 空 prefix            | 列举所有对象                |
+| List 结果超大             | 分页返回，IsTruncated=true  |
+| 并发 Put 同一 key         | 后写覆盖（last-write-wins） |
+| ctx 在上传中途取消        | 清理已上传分片              |
+| local 后端路径不存在      | 自动创建目录                |
+| PresignURL 对不存在对象   | 返回 URL（不过滤存在性）    |
+| multipart upload 部分失败 | 自动重试失败分片            |
 
 ---
 
@@ -422,12 +422,12 @@ go 1.23
 
 ### 15.2 依赖方向
 
-| 可以依赖 | 禁止依赖 |
-|----------|----------|
-| kernel（L0 原语） | configx |
-| observex（interface-only） | 所有业务域 |
-| S3/MinIO 客户端库 | 所有 L2.5 领域共享层 |
-| stdlib | 其他存储扩展（taosx, clickhousex 等） |
+| 可以依赖                   | 禁止依赖                              |
+| -------------------------- | ------------------------------------- |
+| kernel（L0 原语）          | configx                               |
+| observex（interface-only） | 所有业务域                            |
+| S3/MinIO 客户端库          | 所有 L2.5 领域共享层                  |
+| stdlib                     | 其他存储扩展（taosx, clickhousex 等） |
 
 ### 15.3 特殊说明
 
@@ -439,24 +439,24 @@ ossx 通过接口接收 `observex.Logger` / `observex.Meter` / `observex.Tracer`
 
 ### 16.1 单元测试
 
-| 测试场景 | 验证点 |
-|----------|--------|
-| NewClient s3 配置 | 返回 S3 Client，nil 错误 |
-| NewClient minio 配置 | 返回 MinIO Client，nil 错误 |
-| NewClient local 配置 | 返回 local Client，nil 错误 |
+| 测试场景               | 验证点                       |
+| ---------------------- | ---------------------------- |
+| NewClient s3 配置      | 返回 S3 Client，nil 错误     |
+| NewClient minio 配置   | 返回 MinIO Client，nil 错误  |
+| NewClient local 配置   | 返回 local Client，nil 错误  |
 | NewClient 未知 backend | 返回 `ErrUnsupportedBackend` |
-| NewClient 缺少必填字段 | 返回 `ErrInvalidConfig` |
-| Put 正常上传 | 返回 nil |
-| Put 空 key | 返回 `ErrInvalidKey` |
-| Get 存在的对象 | 返回 ReadCloser |
-| Get 不存在的对象 | 返回 `ErrObjectNotFound` |
-| Delete 存在的对象 | 返回 nil |
-| Delete 不存在的对象 | 返回 nil |
-| List 有匹配 | 返回 ObjectInfo 切片 |
-| List 无匹配 | 返回空切片 |
-| PresignURL 正常 | 返回有效 URL |
-| PresignURL expiry<=0 | 返回 `ErrInvalidExpiry` |
-| Close 幂等 | 多次调用不 panic |
+| NewClient 缺少必填字段 | 返回 `ErrInvalidConfig`      |
+| Put 正常上传           | 返回 nil                     |
+| Put 空 key             | 返回 `ErrInvalidKey`         |
+| Get 存在的对象         | 返回 ReadCloser              |
+| Get 不存在的对象       | 返回 `ErrObjectNotFound`     |
+| Delete 存在的对象      | 返回 nil                     |
+| Delete 不存在的对象    | 返回 nil                     |
+| List 有匹配            | 返回 ObjectInfo 切片         |
+| List 无匹配            | 返回空切片                   |
+| PresignURL 正常        | 返回有效 URL                 |
+| PresignURL expiry<=0   | 返回 `ErrInvalidExpiry`      |
+| Close 幂等             | 多次调用不 panic             |
 
 ### 16.2 Given/When/Then 用例
 
@@ -513,69 +513,69 @@ Then 返回 nil 且不 panic
 
 ### 16.3 Benchmark
 
-| 场景 | 目标 |
-|------|------|
+| 场景               | 目标    |
+| ------------------ | ------- |
 | 小文件上传 (< 1MB) | < 100ms |
 | 小文件下载 (< 1MB) | < 100ms |
-| List 1000 个对象 | < 200ms |
-| PresignURL 生成 | < 10ms |
+| List 1000 个对象   | < 200ms |
+| PresignURL 生成    | < 10ms  |
 
 ### 16.4 集成测试
 
-| 场景 | 验证点 |
-|------|--------|
-| S3 完整流程 | Put/Get/Delete/List/PresignURL |
-| MinIO 完整流程 | Put/Get/Delete/List/PresignURL |
-| local 完整流程 | Put/Get/Delete/List/PresignURL |
-| 大文件分片上传 | 200MB 文件上传下载一致 |
-| 并发压力测试 | 100 并发操作，无资源泄漏 |
-| 健康检查 | 存储服务停止后 Health() 反映状态 |
+| 场景           | 验证点                           |
+| -------------- | -------------------------------- |
+| S3 完整流程    | Put/Get/Delete/List/PresignURL   |
+| MinIO 完整流程 | Put/Get/Delete/List/PresignURL   |
+| local 完整流程 | Put/Get/Delete/List/PresignURL   |
+| 大文件分片上传 | 200MB 文件上传下载一致           |
+| 并发压力测试   | 100 并发操作，无资源泄漏         |
+| 健康检查       | 存储服务停止后 Health() 反映状态 |
 
 ---
 
 ## 17. Performance Budget
 
-| 操作 | 目标 | 测量方式 |
-|------|------|----------|
-| 小文件上传 (< 1MB) | < 100ms | benchmark test |
-| 小文件下载 (< 1MB) | < 100ms | benchmark test |
-| List 1000 个对象 | < 200ms | benchmark test |
-| PresignURL 生成 | < 10ms | benchmark test |
-| 分片上传吞吐 | > 50MB/s | integration test |
-| 常驻内存（空闲） | < 5MB | profiling |
+| 操作               | 目标     | 测量方式         |
+| ------------------ | -------- | ---------------- |
+| 小文件上传 (< 1MB) | < 100ms  | benchmark test   |
+| 小文件下载 (< 1MB) | < 100ms  | benchmark test   |
+| List 1000 个对象   | < 200ms  | benchmark test   |
+| PresignURL 生成    | < 10ms   | benchmark test   |
+| 分片上传吞吐       | > 50MB/s | integration test |
+| 常驻内存（空闲）   | < 5MB    | profiling        |
 
 ---
 
 ## 18. Observability
 
-| 类型 | 名称 | 说明 |
-|------|------|------|
-| metric | `ossx.put.duration` | histogram，上传耗时，标签：backend |
-| metric | `ossx.get.duration` | histogram，下载耗时，标签：backend |
-| metric | `ossx.delete.duration` | histogram，删除耗时，标签：backend |
-| metric | `ossx.list.duration` | histogram，列举耗时，标签：backend |
-| metric | `ossx.put.size` | histogram，上传文件大小，标签：backend |
-| metric | `ossx.multipart.count` | counter，分片上传次数，标签：backend |
-| metric | `ossx.multipart.parts` | histogram，分片数量，标签：backend |
-| log | `ossx.connected` | info，后端连接成功 |
-| log | `ossx.put.completed` | info，上传完成，含 key + size + duration |
-| log | `ossx.get.error` | error，下载失败，含 key + error |
-| log | `ossx.multipart.upload` | info，分片上传开始，含 key + size + parts |
-| span | `ossx.put` | 上传操作的 tracing span |
-| span | `ossx.get` | 下载操作的 tracing span |
-| span | `ossx.list` | 列举操作的 tracing span |
+| 类型   | 名称                    | 说明                                      |
+| ------ | ----------------------- | ----------------------------------------- |
+| metric | `ossx.put.duration`     | histogram，上传耗时，标签：backend        |
+| metric | `ossx.get.duration`     | histogram，下载耗时，标签：backend        |
+| metric | `ossx.delete.duration`  | histogram，删除耗时，标签：backend        |
+| metric | `ossx.list.duration`    | histogram，列举耗时，标签：backend        |
+| metric | `ossx.put.size`         | histogram，上传文件大小，标签：backend    |
+| metric | `ossx.multipart.count`  | counter，分片上传次数，标签：backend      |
+| metric | `ossx.multipart.parts`  | histogram，分片数量，标签：backend        |
+| log    | `ossx.connected`        | info，后端连接成功                        |
+| log    | `ossx.put.completed`    | info，上传完成，含 key + size + duration  |
+| log    | `ossx.get.error`        | error，下载失败，含 key + error           |
+| log    | `ossx.multipart.upload` | info，分片上传开始，含 key + size + parts |
+| span   | `ossx.put`              | 上传操作的 tracing span                   |
+| span   | `ossx.get`              | 下载操作的 tracing span                   |
+| span   | `ossx.list`             | 列举操作的 tracing span                   |
 
 ---
 
 ## 19. Security
 
-| 要求 | 实现方式 |
-|------|----------|
-| 密钥不泄露到日志 | 日志中 AccessKey/SecretKey 脱敏 |
-| 密钥不硬编码 | 通过 Config 或环境变量注入 |
-| 错误消息不泄露凭据 | 错误消息包含操作名和错误类型，不包含 endpoint/key |
-| local 后端路径限制 | base_path 必须是绝对路径，防止路径遍历 |
-| 预签名 URL 有效期限制 | 最大有效期 7 天，超过返回错误 |
+| 要求                  | 实现方式                                          |
+| --------------------- | ------------------------------------------------- |
+| 密钥不泄露到日志      | 日志中 AccessKey/SecretKey 脱敏                   |
+| 密钥不硬编码          | 通过 Config 或环境变量注入                        |
+| 错误消息不泄露凭据    | 错误消息包含操作名和错误类型，不包含 endpoint/key |
+| local 后端路径限制    | base_path 必须是绝对路径，防止路径遍历            |
+| 预签名 URL 有效期限制 | 最大有效期 7 天，超过返回错误                     |
 
 ---
 
@@ -583,37 +583,37 @@ Then 返回 nil 且不 panic
 
 ### 20.1 通用 Gate
 
-| Gate | 命令 | 阻塞条件 |
-|------|------|----------|
-| 编译 | `go build ./...` | 编译失败 |
-| 测试 | `go test ./... -race -count=1` | 任何测试失败或 data race |
-| 覆盖率 | `mkdir -p .coverage && go test ./... -coverprofile=.coverage/cover.out && go tool cover -func=.coverage/cover.out` | 总覆盖率 < 80% |
-| vet | `go vet ./...` | 任何 vet 错误 |
-| lint | `golangci-lint run` | 任何 lint 错误 |
-| 依赖检查 | `go mod tidy && git diff --exit-code go.mod go.sum` | go.mod 不整洁 |
-| Secret 扫描 | `gitleaks detect --no-git` | 泄露 secret |
-| Benchmark | `go test -bench=. -benchmem -count=3 ./...` | 结果附在 PR comment |
+| Gate        | 命令                                                                                                               | 阻塞条件                 |
+| ----------- | ------------------------------------------------------------------------------------------------------------------ | ------------------------ |
+| 编译        | `go build ./...`                                                                                                   | 编译失败                 |
+| 测试        | `go test ./... -race -count=1`                                                                                     | 任何测试失败或 data race |
+| 覆盖率      | `mkdir -p .coverage && go test ./... -coverprofile=.coverage/cover.out && go tool cover -func=.coverage/cover.out` | 总覆盖率 < 80%           |
+| vet         | `go vet ./...`                                                                                                     | 任何 vet 错误            |
+| lint        | `golangci-lint run`                                                                                                | 任何 lint 错误           |
+| 依赖检查    | `go mod tidy && git diff --exit-code go.mod go.sum`                                                                | go.mod 不整洁            |
+| Secret 扫描 | `gitleaks detect --no-git`                                                                                         | 泄露 secret              |
+| Benchmark   | `go test -bench=. -benchmem -count=3 ./...`                                                                        | 结果附在 PR comment      |
 
 ### 20.2 ossx 专属 Gate
 
-| Gate | 命令 | 阻塞条件 |
-|------|------|----------|
-| 集成测试 | `go test -tags=integration ./...` | 存储服务不可达时 skip，可达时必须通过 |
-| 无直接依赖 configx | `go list -deps ./... \| grep configx` | 不应依赖 configx |
+| Gate               | 命令                              | 阻塞条件                              |                  |
+| ------------------ | --------------------------------- | ------------------------------------- |                  |
+| 集成测试           | `go test -tags=integration ./...` | 存储服务不可达时 skip，可达时必须通过 |                  |
+| 无直接依赖 configx | `go list -deps ./... \            | grep configx`                         | 不应依赖 configx |
 
 ---
 
 ## 21. Upgrade Compatibility
 
-| 变更类型 | 版本升级 |
-|----------|----------|
-| Client interface 变更 | **major**（所有消费方需同步更新） |
-| Config 新增可选字段 | patch / minor |
-| Config 新增必填字段 | **minor**（带默认值） |
-| 新增 Client 方法 | **minor**（不影响现有实现） |
-| 新增后端类型 | **minor**（不影响现有后端） |
-| 错误变量变更 | **minor**（新增错误为 minor，删除为 major） |
-| 修复 bug | **patch** |
+| 变更类型              | 版本升级                                    |
+| --------------------- | ------------------------------------------- |
+| Client interface 变更 | **major**（所有消费方需同步更新）           |
+| Config 新增可选字段   | patch / minor                               |
+| Config 新增必填字段   | **minor**（带默认值）                       |
+| 新增 Client 方法      | **minor**（不影响现有实现）                 |
+| 新增后端类型          | **minor**（不影响现有后端）                 |
+| 错误变量变更          | **minor**（新增错误为 minor，删除为 major） |
+| 修复 bug              | **patch**                                   |
 
 ---
 

@@ -36,12 +36,12 @@ status: pending
 
 ## Requirements Covered
 
-| FR | 子包 | 示例内容 |
-|----|------|----------|
-| FR-001 | lifecycx | Component 注册/启动/停止完整流程 |
-| FR-002 | errx | Error 构造 + IsKind 分类判断 |
-| FR-003 | healthx | HealthChecker 实现 + Aggregate 聚合 |
-| FR-004 | obsx | NoopLogger 注入 + SecretString 脱敏 |
+| FR     | 子包     | 示例内容                            |
+| ------ | -------- | ----------------------------------- |
+| FR-001 | lifecycx | Component 注册/启动/停止完整流程    |
+| FR-002 | errx     | Error 构造 + IsKind 分类判断        |
+| FR-003 | healthx  | HealthChecker 实现 + Aggregate 聚合 |
+| FR-004 | obsx     | NoopLogger 注入 + SecretString 脱敏 |
 
 ## Non-scope
 
@@ -51,6 +51,6 @@ status: pending
 
 ## Test Plan
 
-| TC | Type | Description |
-|----|------|-------------|
-| — | CI | `for d in examples/{lifecycle,error_kind,health_checker,observability}/; do go run ./$d; done` 全部通过 |
+| TC   | Type   | Description                                                                                             |
+| ---- | ------ | ------------------------------------------------------------------------------------------------------- |
+| —    | CI     | `for d in examples/{lifecycle,error_kind,health_checker,observability}/; do go run ./$d; done` 全部通过 |

@@ -28,16 +28,16 @@ status: pending
 
 ## Requirements Covered
 
-| Requirement | Description | Acceptance Criteria |
-|---|---|---|
-| FR-006 | Fallback：primary 失败时执行 secondary | AC-007: primary成功 / 失败降级 |
+| Requirement | Description                            | Acceptance Criteria            |
+| ----------- | -------------------------------------- | ------------------------------ |
+| FR-006      | Fallback：primary 失败时执行 secondary | AC-007: primary成功 / 失败降级 |
 
 ## Test Plan
 
-| Test Case | Type | Description |
-|---|---|---|
-| TC-006 | Unit | primary 成功：返回 primary 结果 |
-| TC-006 | Unit | primary 失败：执行 secondary |
+| Test Case | Type | Description                     |
+| --------- | ---- | ------------------------------- |
+| TC-006    | Unit | primary 成功：返回 primary 结果 |
+| TC-006    | Unit | primary 失败：执行 secondary    |
 
 ## Implementation Notes
 
@@ -46,13 +46,13 @@ status: pending
 
 ## Implementation Plan
 
-| Step | Description | Deliverables | Verification |
-|---|---|---|---|
-| 1 | 实现 `Fallback` 函数 | `fallback.go` | `go build ./...` 通过 |
-| 2 | 编写 2 个场景测试 | `fallback_test.go` | TC-006 全部通过 |
+| Step | Description          | Deliverables       | Verification          |
+| ---- | -------------------- | ------------------ | --------------------- |
+| 1    | 实现 `Fallback` 函数 | `fallback.go`      | `go build ./...` 通过 |
+| 2    | 编写 2 个场景测试    | `fallback_test.go` | TC-006 全部通过       |
 
 ### Risk Assessment
 
 | Risk | Probability | Impact | Mitigation |
-|---|---|---|---|
-| 无 | Low | Low | 简单实现 |
+| ---- | ----------- | ------ | ---------- |
+| 无   | Low         | Low    | 简单实现   |

@@ -50,53 +50,53 @@
 
 ### 3.1 Matrix (97 分 / 0 红线)
 
-| ID | Severity | Points | 问题 |
-|:---|:--------:|:-----:|------|
-| D1 | LOW | -1 | Status 列附加非标文本"已对齐" |
-| D2 | LOW | -1 | TC→FR 反向表 BR 映射仅 1/12 |
-| D3 | LOW | -1 | BR-004/BR-006 验证方式引用 AC 而非 TC |
+| ID   | Severity   | Points  | 问题                                  |
+| :--- | :--------: | :-----: | ------------------------------------- |
+| D1   | LOW        | -1      | Status 列附加非标文本"已对齐"         |
+| D2   | LOW        | -1      | TC→FR 反向表 BR 映射仅 1/12           |
+| D3   | LOW        | -1      | BR-004/BR-006 验证方式引用 AC 而非 TC |
 
 **优势**: FR/BR/NFR/AC/TC 五维全覆蓋，Task 映射 100%，编号一致性满分
 
 ### 3.2 Plan (96 分 / 0 红线)
 
-| ID | Severity | Points | 问题 |
-|:---|:--------:|:-----:|------|
-| D1 | LOW | -1 | 文件冲突表将 examples/* 列在 Task 015，未反映 015a/b/c |
-| D2 | MEDIUM | -1 | Phase 表缺逐 Task 验证命令列 |
-| D3 | LOW | -1 | 缺日历里程碑/目标日期 |
-| D4 | LOW | -1 | DAG 与 Phase 表的 015 粒度未对齐 |
+| ID   | Severity   | Points  | 问题                                                   |
+| :--- | :--------: | :-----: | ------------------------------------------------------ |
+| D1   | LOW        | -1      | 文件冲突表将 examples/* 列在 Task 015，未反映 015a/b/c |
+| D2   | MEDIUM     | -1      | Phase 表缺逐 Task 验证命令列                           |
+| D3   | LOW        | -1      | 缺日历里程碑/目标日期                                  |
+| D4   | LOW        | -1      | DAG 与 Phase 表的 015 粒度未对齐                       |
 
 **优势**: 执行顺序满分、依赖关系满分、风险识别满分、回滚策略满分
 
 ### 3.3 Prompt (100 分 / 0 红线)
 
-| ID | Severity | Points | 问题 |
-|:---|:--------:|:-----:|------|
-| D1 | MEDIUM | -2 | 15 个 Prompt 缺上游 Task 文件链接 |
-| D2 | LOW | -1 | AC-TIMEX-02 验证命令不可执行 |
-| D3 | MEDIUM | -2 | 002-016 缺独立验证命令表 |
-| D5 | MEDIUM | -2 | 4 个 Prompt 用章节号代替 FR/BR/TC ID |
-| D6 | MEDIUM | -2 | PROMPT-012 AC 覆盖不足 (1 行 AC 对应 3 函数) |
-| D7 | LOW | -1 | 4 个 Prompt AC ID 与上游 Task 不一致 |
+| ID   | Severity   | Points  | 问题                                         |
+| :--- | :--------: | :-----: | -------------------------------------------- |
+| D1   | MEDIUM     | -2      | 15 个 Prompt 缺上游 Task 文件链接            |
+| D2   | LOW        | -1      | AC-TIMEX-02 验证命令不可执行                 |
+| D3   | MEDIUM     | -2      | 002-016 缺独立验证命令表                     |
+| D5   | MEDIUM     | -2      | 4 个 Prompt 用章节号代替 FR/BR/TC ID         |
+| D6   | MEDIUM     | -2      | PROMPT-012 AC 覆盖不足 (1 行 AC 对应 3 函数) |
+| D7   | LOW        | -1      | 4 个 Prompt AC ID 与上游 Task 不一致         |
 
 **优势**: 单 Task 聚焦满分、文件范围满分、禁止事项满分、证据回填满分
 
 ### 3.4 Tasks (84 分 / 0 红线) — 本 session 评分
 
-| ID | Severity | Points | 问题 | SPEC 节 |
-|:---|:--------:|:-----:|------|:---|
-| D1 | LOW | -1 | 015 spec_ref 区间标记非法 | §7 |
-| D2 | MEDIUM | -1 | 15/23 Task 缺 Files Likely to Change | §14 |
-| D3 | LOW | -1 | meta/sub_tasks/parent 非标准字段 | §1 |
-| D4 | MEDIUM | -2 | 014 文件数目歧义 (目录 vs 文件) | §14+§20.2 |
-| D5 | LOW | -1 | 015a/b/c 各 4 FR (示例任务) | §7 |
-| D6 | MEDIUM | -2 | 013 无 FR/BR ID | §9.13+§7 |
-| D7 | LOW | -1 | 000/014/016 用 section 号代 FR/BR | §7~§22 |
-| D8 | LOW | -1 | 区间标记非锚点 (同 D1) | §7 |
-| D9 | MEDIUM | **-3** | **23 Task 零 SPEC TC ID 引用** | §16.3 |
-| D10 | MEDIUM | -2 | 18/23 Task 缺 Test Plan 节 | §16 |
-| D11 | LOW | -1 | 20/23 Task 缺 Files Likely to Change | §14 |
+| ID   | Severity   | Points  | 问题                                 | SPEC 节   |
+| :--- | :--------: | :-----: | ------------------------------------ | :-------- |
+| D1   | LOW        | -1      | 015 spec_ref 区间标记非法            | §7        |
+| D2   | MEDIUM     | -1      | 15/23 Task 缺 Files Likely to Change | §14       |
+| D3   | LOW        | -1      | meta/sub_tasks/parent 非标准字段     | §1        |
+| D4   | MEDIUM     | -2      | 014 文件数目歧义 (目录 vs 文件)      | §14+§20.2 |
+| D5   | LOW        | -1      | 015a/b/c 各 4 FR (示例任务)          | §7        |
+| D6   | MEDIUM     | -2      | 013 无 FR/BR ID                      | §9.13+§7  |
+| D7   | LOW        | -1      | 000/014/016 用 section 号代 FR/BR    | §7~§22    |
+| D8   | LOW        | -1      | 区间标记非锚点 (同 D1)               | §7        |
+| D9   | MEDIUM     | **-3**  | **23 Task 零 SPEC TC ID 引用**       | §16.3     |
+| D10  | MEDIUM     | -2      | 18/23 Task 缺 Test Plan 节           | §16       |
+| D11  | LOW        | -1      | 20/23 Task 缺 Files Likely to Change | §14       |
 
 **修复迭代**: TASK-015 12 文件→015a/b/c (初评), TASK-016 11 条目→016a/b/c (复评), TRACEABILITY 17→20→23
 
@@ -106,14 +106,14 @@
 
 ### 4.1 各阶段得分
 
-| Stage | Score | Redline | 诊断 |
-|-------|:----:|:-------:|------|
-| spec | 96 | no | 9项修复后: 编号剥离+节名更新，仅剩edge_cases格式差异(-4) |
-| matrix | 100 | no | 正确：Matrix 结构被正则匹配通过 |
-| plan | 100 | no | 9项修复后: 中文关键词检测替代硬编码节名 |
-| prompt | 85 | no | 部分正确: 报告 TASK-001-PROMPT 缺节(路径修复后找到) |
-| code | 80 | no | 正确: 本仓库无代码（kernel 为外部仓库），confidence=low |
-| tasks | 100 | no | 9项修复后: YAML检测+FR跟踪恢复 |
+| Stage   | Score  | Redline   | 诊断                                                     |
+| ------- | :----: | :-------: | -------------------------------------------------------- |
+| spec    | 96     | no        | 9项修复后: 编号剥离+节名更新，仅剩edge_cases格式差异(-4) |
+| matrix  | 100    | no        | 正确：Matrix 结构被正则匹配通过                          |
+| plan    | 100    | no        | 9项修复后: 中文关键词检测替代硬编码节名                  |
+| prompt  | 85     | no        | 部分正确: 报告 TASK-001-PROMPT 缺节(路径修复后找到)      |
+| code    | 80     | no        | 正确: 本仓库无代码（kernel 为外部仓库），confidence=low  |
+| tasks   | 100    | no        | 9项修复后: YAML检测+FR跟踪恢复                           |
 
 ### 4.2 规则引擎根本缺陷
 
@@ -170,12 +170,12 @@ Tasks   015/016 meta+sub_tasks 上下游表述不一致    D3 -1
 
 ### 模式 3: 规则引擎解析器缺陷（已修复）
 
-| 检查 | 修复前 | 修复后 |
-|------|:-----:|:-----:|
-| spec diff | rules=77(红线误报) | rules=96(正常) |
-| plan diff | |96-50|=46 > 15 | |96-100|=4 OK |
-| tasks score | 0(FR跟踪丢失) | 100 |
-| 可用作异构信号源 | 否 | 是 |
+| 检查             | 修复前             | 修复后         |          |  |        |       |
+| ---------------- | :----------------: | :------------: |          |  |        |       |
+| spec diff        | rules=77(红线误报) | rules=96(正常) |          |  |        |       |
+| plan diff        |                    | 96-50          | =46 > 15 |  | 96-100 | =4 OK |
+| tasks score      | 0(FR跟踪丢失)      | 100            |          |  |        |       |
+| 可用作异构信号源 | 否                 | 是             |          |  |        |       |
 
 **结论**: 9项修复后，Rules 引擎恢复为有效异构信号源。修复前差异是解析器缺陷，不是 Goodhart 信号。
 
@@ -183,19 +183,19 @@ Tasks   015/016 meta+sub_tasks 上下游表述不一致    D3 -1
 
 ## 6. Spec->Tasks 全链路质量评级
 
-| 链路环节 | 方向 | 质量 | 证据 |
-|----------|------|:--:|------|
-| SPEC FR -> Matrix TC | 正向 | A | 12/12 (100%) |
-| SPEC BR -> Matrix TC | 正向 | B | 11/12 (92%), BR-011 代码保证 |
-| SPEC NFR -> Matrix | 正向 | A | 8/8 (100%) |
-| Matrix TC -> SPEC FR | 反向 | A | 18/18 (100%) |
-| Matrix TC -> SPEC BR | 反向 | C | 1/12 (8%), D2 扣分 |
-| Matrix Task -> SPEC FR | 正向 | A | 12/12 (100%) |
-| Matrix AC -> Task | 正向 | A | 18/18 (100%) |
-| Matrix Task -> TC | 反向 | D | 0 列 (Matrix 无此列) |
-| **Task AC -> SPEC TC** | **正向** | **F** | **0/23 (0%) D9 -3** |
-| Task files -> 实际文件 | 正向 | B | 20/23 有 files 字段 (meta 除外) |
-| Task depends_on -> DAG | 正向 | A | 无环，全部正确 |
+| 链路环节               | 方向     | 质量  | 证据                            |
+| ---------------------- | -------- | :--:  | ------------------------------- |
+| SPEC FR -> Matrix TC   | 正向     | A     | 12/12 (100%)                    |
+| SPEC BR -> Matrix TC   | 正向     | B     | 11/12 (92%), BR-011 代码保证    |
+| SPEC NFR -> Matrix     | 正向     | A     | 8/8 (100%)                      |
+| Matrix TC -> SPEC FR   | 反向     | A     | 18/18 (100%)                    |
+| Matrix TC -> SPEC BR   | 反向     | C     | 1/12 (8%), D2 扣分              |
+| Matrix Task -> SPEC FR | 正向     | A     | 12/12 (100%)                    |
+| Matrix AC -> Task      | 正向     | A     | 18/18 (100%)                    |
+| Matrix Task -> TC      | 反向     | D     | 0 列 (Matrix 无此列)            |
+| **Task AC -> SPEC TC** | **正向** | **F** | **0/23 (0%) D9 -3**             |
+| Task files -> 实际文件 | 正向     | B     | 20/23 有 files 字段 (meta 除外) |
+| Task depends_on -> DAG | 正向     | A     | 无环，全部正确                  |
 
 **评级**:
 - A 级 (优秀): 4 条链路
@@ -245,24 +245,24 @@ missing: codex, copilot → gate=fail
 
 ### 8.1 当前阻塞
 
-| 阻塞 | 阶段 | 原因 | 解除方案 |
-|------|------|------|----------|
-| 缺评分源 | ALL | codex + copilot 未评分 | 运行 codex 和 copilot scorer |
-| 规则引擎误报 | spec, plan | 解析器缺陷 | 修复规则引擎或为其添加 SPEC.md v2 格式支持 |
-| Tasks 分差 | tasks | rules 已删除 | 重新运行 rules scorer 或接受单源评分 |
+| 阻塞         | 阶段       | 原因                   | 解除方案                                   |
+| ------------ | ---------- | ---------------------- | ------------------------------------------ |
+| 缺评分源     | ALL        | codex + copilot 未评分 | 运行 codex 和 copilot scorer               |
+| 规则引擎误报 | spec, plan | 解析器缺陷             | 修复规则引擎或为其添加 SPEC.md v2 格式支持 |
+| Tasks 分差   | tasks      | rules 已删除           | 重新运行 rules scorer 或接受单源评分       |
 
 ### 8.2 最大收益修复 (按分数影响排序)
 
-| 排名 | 修复 | 预计提升 | 状态 | | 工作量 | 受影响阶段 |
-|:--:|------|:--:|:--:|------|
-| 1 | Task AC 增加 SPEC TC ID 引用 | +3 分 (Tasks D9) | 2h (23 文件) | Tasks → Matrix |
-| 2 | 为 Task 补充 Test Plan 节 | +2 分 (Tasks D10) | 2h (18 文件) | Tasks |
-| 3 | 修复 Plan 验证命令内联 | +1 分 (Plan D2) | 0.5h | Plan |
-| 4 | 修复 Matrix TC→BR 反向表 | +1 分 (Matrix D2) | 0.5h | Matrix |
-| 5 | 同步 Matrix/Plan 的 015/016 子任务 | +2 分 (Plan D1+D4) | 0.5h | Plan → Matrix |
-| 6 | TASK-014 目录条目明确化 | +2 分 (Tasks D4) | 0.25h | Tasks |
-| 7 | TASK-TEMPLATE 正式定义 meta/Test Plan | +2 分 (Tasks D2+D3) | 1h (模板层) | Tasks |
-| 8 | rules 引擎 9项修复 | 消除误报红线 | 4h | spec/plan | ✅ 已完成 |
+| 排名 | 修复                                  | 预计提升            | 状态         |                | 工作量   | 受影响阶段 |
+| :--: | ------------------------------------- | :--:                | :--:         | -------------- |          |            |
+| 1    | Task AC 增加 SPEC TC ID 引用          | +3 分 (Tasks D9)    | 2h (23 文件) | Tasks → Matrix |          |            |
+| 2    | 为 Task 补充 Test Plan 节             | +2 分 (Tasks D10)   | 2h (18 文件) | Tasks          |          |            |
+| 3    | 修复 Plan 验证命令内联                | +1 分 (Plan D2)     | 0.5h         | Plan           |          |            |
+| 4    | 修复 Matrix TC→BR 反向表              | +1 分 (Matrix D2)   | 0.5h         | Matrix         |          |            |
+| 5    | 同步 Matrix/Plan 的 015/016 子任务    | +2 分 (Plan D1+D4)  | 0.5h         | Plan → Matrix  |          |            |
+| 6    | TASK-014 目录条目明确化               | +2 分 (Tasks D4)    | 0.25h        | Tasks          |          |            |
+| 7    | TASK-TEMPLATE 正式定义 meta/Test Plan | +2 分 (Tasks D2+D3) | 1h (模板层)  | Tasks          |          |            |
+| 8    | rules 引擎 9项修复                    | 消除误报红线        | 4h           | spec/plan      | ✅ 已完成 |            |
 
 ### 8.3 建议实施顺序
 
@@ -311,14 +311,14 @@ kernel 管线的质量不是均质分布的——**上游 (Spec/Matrix) 质量�
 
 ### 9.3 可进入 Plan 阶段判定
 
-| 条件 | 状态 |
-|------|:--:|
-| composite >= 98 | **否** — 需 PHASE A 修复后 Tasks 达 89+，Matrix 达 98+ |
-| 0 红线 | **是** — 全部阶段无 Claude 红线 |
-| 四源齐全 | **否** — 缺 codex + copilot |
-| 无低置信度 | **是** — Claude 全部 high |
-| 分差 <= 5 | **否** — Plan rules=50 vs claude=96 (diff=46) |
-| 异构一致性 <= 15 | **否** — Plan diff=46 > 15 |
+| 条件             | 状态                                                   |
+| ---------------- | :--:                                                   |
+| composite >= 98  | **否** — 需 PHASE A 修复后 Tasks 达 89+，Matrix 达 98+ |
+| 0 红线           | **是** — 全部阶段无 Claude 红线                        |
+| 四源齐全         | **否** — 缺 codex + copilot                            |
+| 无低置信度       | **是** — Claude 全部 high                              |
+| 分差 <= 5        | **否** — Plan rules=50 vs claude=96 (diff=46)          |
+| 异构一致性 <= 15 | **否** — Plan diff=46 > 15                             |
 
 **当前无法进入 Plan**。最快路径：Phase A 修复 (3h) + 运行 codex/copilot scorer + 修复 rules 引擎适配。预计 1 个工作日可达 gate=pass。
 

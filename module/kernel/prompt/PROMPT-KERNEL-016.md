@@ -49,13 +49,13 @@
 
 ## 验收标准
 
-| AC | 关联 | 验证命令 | 预期结果 |
-|----|------|----------|----------|
-| AC-018 | BR-009 | `make check-stdlib` | 无外部依赖 |
-| AC-RELEASE-01 | §22 | CHANGELOG 检查 | 含 v1.0.0 |
-| AC-RELEASE-02 | §22 | `make release-preflight VERSION=v1.0.0` | 全部通过 |
-| AC-RELEASE-07 | §20 | `golangci-lint run` | 无错误 |
-| AC-RELEASE-08 | §20 | `gitleaks detect --no-git` | 无泄露 |
+| AC            | 关联   | 验证命令                                | 预期结果   |
+| ------------- | ------ | --------------------------------------- | ---------- |
+| AC-018        | BR-009 | `make check-stdlib`                     | 无外部依赖 |
+| AC-RELEASE-01 | §22    | CHANGELOG 检查                          | 含 v1.0.0  |
+| AC-RELEASE-02 | §22    | `make release-preflight VERSION=v1.0.0` | 全部通过   |
+| AC-RELEASE-07 | §20    | `golangci-lint run`                     | 无错误     |
+| AC-RELEASE-08 | §20    | `gitleaks detect --no-git`              | 无泄露     |
 
 ## 禁止事项
 
@@ -75,14 +75,14 @@
 
 ## 验证命令
 
-| 命令 | 判定标准 |
-|------|----------|
-| `go build ./...` | 编译通过，零错误 |
-| `go test -race -count=1 ./...` | 全部测试通过，无 race |
-| `go vet ./...` | 无警告 |
-| `make release-preflight VERSION=v1.0.0` | 全部通过 |
-| `golangci-lint run` | 无错误 |
-| `gitleaks detect --no-git` | 无泄露 |
+| 命令                                    | 判定标准              |
+| --------------------------------------- | --------------------- |
+| `go build ./...`                        | 编译通过，零错误      |
+| `go test -race -count=1 ./...`          | 全部测试通过，无 race |
+| `go vet ./...`                          | 无警告                |
+| `make release-preflight VERSION=v1.0.0` | 全部通过              |
+| `golangci-lint run`                     | 无错误                |
+| `gitleaks detect --no-git`              | 无泄露                |
 
 ## 完成后
 

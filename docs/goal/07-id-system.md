@@ -8,28 +8,28 @@
 
 ## 1. ID 格式
 
-| 对象 | ID 格式 | 示例 |
-|------|---------|------|
-| Goal | `GOAL-YYYYMMDD-NNN` | GOAL-20260608-001 |
-| Spec | `SPEC-<domain>-vN` | SPEC-market-data-v1 |
-| Requirement | `REQ-<spec-id>-NNN` | REQ-SPEC-market-data-v1-001 |
-| Acceptance Criteria | `AC-<req-id>-NNN` | AC-REQ-SPEC-market-data-v1-001-001 |
-| Design | `DESIGN-<domain>-vN` | DESIGN-market-data-v1 |
-| ADR | `ADR-YYYYMMDD-NNN` | ADR-20260608-001 |
-| Plan | `PLAN-<goal-id>-vN` | PLAN-GOAL-20260608-001-v1 |
-| Milestone | `MILE-<plan-id>-NNN` | MILE-PLAN-GOAL-20260608-001-v1-001 |
-| Task | `TASK-<goal-id>-NNN` | TASK-GOAL-20260608-001-001 |
-| Prompt | `PROMPT-<task-id>-NNN` | PROMPT-TASK-GOAL-20260608-001-001-001 |
-| Test | `TEST-<task-id>-NNN` | TEST-TASK-GOAL-20260608-001-001-001 |
-| Evidence | `EVID-<test-id>-NNN` | EVID-TEST-TASK-GOAL-20260608-001-001-001-001 |
-| Risk | `RISK-<goal-id>-NNN` | RISK-GOAL-20260608-001-001 |
-| Decision | `DEC-YYYYMMDD-NNN` | DEC-20260608-001 |
-| Review | `REV-<task-or-pr-id>-YYYYMMDD-NNN` | REV-TASK-GOAL-20260608-001-001-20260608-001 |
-| Release | `REL-YYYYMMDD-<domain>` | REL-20260608-market-data |
-| Retrospective | `RETRO-YYYYMMDD-NNN` | RETRO-20260608-001 |
-| Prompt Patch | `PATCH-PROMPT-YYYYMMDD-NNN` | PATCH-PROMPT-20260608-001 |
-| Harness Patch | `PATCH-HARNESS-YYYYMMDD-NNN` | PATCH-HARNESS-20260608-001 |
-| Rule Patch | `PATCH-RULE-YYYYMMDD-NNN` | PATCH-RULE-20260608-001 |
+| 对象                | ID 格式                            | 示例                                         |
+| ------------------- | ---------------------------------- | -------------------------------------------- |
+| Goal                | `GOAL-YYYYMMDD-NNN`                | GOAL-20260608-001                            |
+| Spec                | `SPEC-<domain>-vN`                 | SPEC-market-data-v1                          |
+| Requirement         | `REQ-<spec-id>-NNN`                | REQ-SPEC-market-data-v1-001                  |
+| Acceptance Criteria | `AC-<req-id>-NNN`                  | AC-REQ-SPEC-market-data-v1-001-001           |
+| Design              | `DESIGN-<domain>-vN`               | DESIGN-market-data-v1                        |
+| ADR                 | `ADR-YYYYMMDD-NNN`                 | ADR-20260608-001                             |
+| Plan                | `PLAN-<goal-id>-vN`                | PLAN-GOAL-20260608-001-v1                    |
+| Milestone           | `MILE-<plan-id>-NNN`               | MILE-PLAN-GOAL-20260608-001-v1-001           |
+| Task                | `TASK-<goal-id>-NNN`               | TASK-GOAL-20260608-001-001                   |
+| Prompt              | `PROMPT-<task-id>-NNN`             | PROMPT-TASK-GOAL-20260608-001-001-001        |
+| Test                | `TEST-<task-id>-NNN`               | TEST-TASK-GOAL-20260608-001-001-001          |
+| Evidence            | `EVID-<test-id>-NNN`               | EVID-TEST-TASK-GOAL-20260608-001-001-001-001 |
+| Risk                | `RISK-<goal-id>-NNN`               | RISK-GOAL-20260608-001-001                   |
+| Decision            | `DEC-YYYYMMDD-NNN`                 | DEC-20260608-001                             |
+| Review              | `REV-<task-or-pr-id>-YYYYMMDD-NNN` | REV-TASK-GOAL-20260608-001-001-20260608-001  |
+| Release             | `REL-YYYYMMDD-<domain>`            | REL-20260608-market-data                     |
+| Retrospective       | `RETRO-YYYYMMDD-NNN`               | RETRO-20260608-001                           |
+| Prompt Patch        | `PATCH-PROMPT-YYYYMMDD-NNN`        | PATCH-PROMPT-20260608-001                    |
+| Harness Patch       | `PATCH-HARNESS-YYYYMMDD-NNN`       | PATCH-HARNESS-20260608-001                   |
+| Rule Patch          | `PATCH-RULE-YYYYMMDD-NNN`          | PATCH-RULE-20260608-001                      |
 
 ## 2. ID 规则
 
@@ -48,17 +48,17 @@
 
 ### 格式迁移对照
 
-| 旧格式 | 新格式 | 说明 |
-|--------|--------|------|
-| 早期 Goal 简写 | `GOAL-YYYYMMDD-NNN` | Goal ID，如 GOAL-20260608-001 |
-| 早期 Spec 简写 | `SPEC-<domain>-vN` | Spec ID，如 SPEC-market-data-v1 |
-| 早期 Task 简写 | `TASK-<goal-id>-NNN` | Task ID，如 TASK-GOAL-20260608-001-001 |
-| 早期 Milestone 简写 | `MILE-<plan-id>-NNN` | Milestone ID，如 MILE-PLAN-GOAL-20260608-001-v1-001 |
-| 早期 Prompt 简写 | `PROMPT-<task-id>-NNN` | Prompt ID，如 PROMPT-TASK-GOAL-20260608-001-001-001 |
-| 早期 Requirement 简写 | `REQ-<spec-id>-NNN` | Requirement ID，如 REQ-SPEC-market-data-v1-001 |
-| 早期 AC 简写 | `AC-<req-id>-NNN` | Acceptance Criteria ID，如 AC-REQ-SPEC-market-data-v1-001-001 |
-| 早期 Test 简写 | `TEST-<task-id>-NNN` | Test ID，如 TEST-TASK-GOAL-20260608-001-001-001 |
-| `P-TASK-` | `PROMPT-TASK-` | Prompt ID 前缀 |
+| 旧格式                | 新格式                 | 说明                                                          |
+| --------------------- | ---------------------- | ------------------------------------------------------------- |
+| 早期 Goal 简写        | `GOAL-YYYYMMDD-NNN`    | Goal ID，如 GOAL-20260608-001                                 |
+| 早期 Spec 简写        | `SPEC-<domain>-vN`     | Spec ID，如 SPEC-market-data-v1                               |
+| 早期 Task 简写        | `TASK-<goal-id>-NNN`   | Task ID，如 TASK-GOAL-20260608-001-001                        |
+| 早期 Milestone 简写   | `MILE-<plan-id>-NNN`   | Milestone ID，如 MILE-PLAN-GOAL-20260608-001-v1-001           |
+| 早期 Prompt 简写      | `PROMPT-<task-id>-NNN` | Prompt ID，如 PROMPT-TASK-GOAL-20260608-001-001-001           |
+| 早期 Requirement 简写 | `REQ-<spec-id>-NNN`    | Requirement ID，如 REQ-SPEC-market-data-v1-001                |
+| 早期 AC 简写          | `AC-<req-id>-NNN`      | Acceptance Criteria ID，如 AC-REQ-SPEC-market-data-v1-001-001 |
+| 早期 Test 简写        | `TEST-<task-id>-NNN`   | Test ID，如 TEST-TASK-GOAL-20260608-001-001-001               |
+| `P-TASK-`             | `PROMPT-TASK-`         | Prompt ID 前缀                                                |
 
 ### 迁移规则
 
@@ -77,12 +77,12 @@
 
 ID 中的版本后缀与文档级语义版本是两个独立概念：
 
-| 维度 | ID 版本后缀 | 制品版本字段 |
-|------|-----------|------------|
-| 位置 | ID 字符串末尾 | 文档或 Registry 的 `version` 字段 |
-| 格式 | `vN`（整数递增） | `vN.N.N`（语义版本） |
-| 示例 | `SPEC-market-data-v2` | `version: "v2.1.0"` |
-| 语义 | 标识第几次重写/替换 | 标识当前版本的兼容性 |
+| 维度     | ID 版本后缀                | 制品版本字段                           |
+| -------- | -------------------------- | -------------------------------------- |
+| 位置     | ID 字符串末尾              | 文档或 Registry 的 `version` 字段      |
+| 格式     | `vN`（整数递增）           | `vN.N.N`（语义版本）                   |
+| 示例     | `SPEC-market-data-v2`      | `version: "v2.1.0"`                    |
+| 语义     | 标识第几次重写/替换        | 标识当前版本的兼容性                   |
 | 递增规则 | 每次 Supersede 或重写时 +1 | 每次语义变更/新增/修复时按 semver 递增 |
 
 ### 版本冲突消解

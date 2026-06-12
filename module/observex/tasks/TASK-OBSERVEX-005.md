@@ -34,20 +34,20 @@ status: pending
 
 ## Requirements Covered
 
-| Requirement | Description | Acceptance Criteria |
-|---|---|---|
-| FR-004 | Exporter：ExportLogs/Metrics/Spans + Shutdown | 2 个 WHEN/THEN 场景 |
-| BR-004 | Exporter.Shutdown 必须 flush 缓冲区 | Shutdown 后数据不丢失 |
-| BR-008 | 不直接绑定 Prometheus/Otel/Zap | 通过 Exporter 接口抽象 |
+| Requirement | Description                                   | Acceptance Criteria    |
+| ----------- | --------------------------------------------- | ---------------------- |
+| FR-004      | Exporter：ExportLogs/Metrics/Spans + Shutdown | 2 个 WHEN/THEN 场景    |
+| BR-004      | Exporter.Shutdown 必须 flush 缓冲区           | Shutdown 后数据不丢失  |
+| BR-008      | 不直接绑定 Prometheus/Otel/Zap                | 通过 Exporter 接口抽象 |
 
 ## Test Plan
 
-| Test Case | Type | Description |
-|---|---|---|
-| TC-004 | Unit | Exporter 降级：exporter 不可达不影响业务 |
-| — | Unit | noop exporter：所有方法返回 nil |
-| — | Unit | test exporter：记录所有数据 |
-| — | Unit | Shutdown flush：Shutdown 后数据已发送 |
+| Test Case | Type | Description                              |
+| --------- | ---- | ---------------------------------------- |
+| TC-004    | Unit | Exporter 降级：exporter 不可达不影响业务 |
+| —         | Unit | noop exporter：所有方法返回 nil          |
+| —         | Unit | test exporter：记录所有数据              |
+| —         | Unit | Shutdown flush：Shutdown 后数据已发送    |
 
 ## Implementation Notes
 
@@ -58,16 +58,16 @@ status: pending
 
 ## Implementation Plan
 
-| Step | Description | Deliverables | Verification |
-|---|---|---|---|
-| 1 | 实现 `exporter/noop`：所有方法返回 nil | `exporter/noop/noop.go` | `go build ./...` 通过 |
-| 2 | 实现 `exporter/test`：记录数据到 slice，提供 `Entries()`/`Metrics()`/`Spans()` 断言方法 | `exporter/test/test.go` | `go test ./exporter/test/...` 通过 |
-| 3 | 实现 `exporter/otlp`：gRPC/HTTP 发送，带 buffer 和重试 | `exporter/otlp/otlp.go` | `go test ./exporter/otlp/...` 通过 |
-| 4 | 实现 Shutdown flush 逻辑和降级处理 | 各 exporter | TC-004 通过 |
+| Step | Description                                                                             | Deliverables            | Verification                       |
+| ---- | --------------------------------------------------------------------------------------- | ----------------------- | ---------------------------------- |
+| 1    | 实现 `exporter/noop`：所有方法返回 nil                                                  | `exporter/noop/noop.go` | `go build ./...` 通过              |
+| 2    | 实现 `exporter/test`：记录数据到 slice，提供 `Entries()`/`Metrics()`/`Spans()` 断言方法 | `exporter/test/test.go` | `go test ./exporter/test/...` 通过 |
+| 3    | 实现 `exporter/otlp`：gRPC/HTTP 发送，带 buffer 和重试                                  | `exporter/otlp/otlp.go` | `go test ./exporter/otlp/...` 通过 |
+| 4    | 实现 Shutdown flush 逻辑和降级处理                                                      | 各 exporter             | TC-004 通过                        |
 
 ### Risk Assessment
 
-| Risk | Probability | Impact | Mitigation |
-|---|---|---|---|
-| OTLP 依赖引入冲突 | Medium | Medium | 可选依赖，go build tag 控制 |
-| Shutdown 未 flush 完成 | Low | High | WaitGroup 等待所有 pending |
+| Risk                   | Probability | Impact | Mitigation                  |
+| ---------------------- | ----------- | ------ | --------------------------- |
+| OTLP 依赖引入冲突      | Medium      | Medium | 可选依赖，go build tag 控制 |
+| Shutdown 未 flush 完成 | Low         | High   | WaitGroup 等待所有 pending  |

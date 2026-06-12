@@ -21,9 +21,9 @@
 
 ### 1.1 变更历史
 
-| 日期 | 版本 | 变更内容 | 作者 |
-|------|------|----------|------|
-| 2026-06-07 | v1.0.0 | 初始版本 | ZoneCNH |
+| 日期       | 版本   | 变更内容   | 作者    |
+| ---------- | ------ | ---------- | ------- |
+| 2026-06-07 | v1.0.0 | 初始版本   | ZoneCNH |
 
 ## 2. Summary
 
@@ -67,13 +67,13 @@
 
 ## 6. Consumers
 
-| 消费者 | 使用方式 |
-|--------|----------|
-| `market-data` | 通过 Producer 发布行情事件到 Kafka |
-| `signal-engine` | 通过 Consumer 消费因子信号事件 |
-| `order-engine` | 通过 Producer 发布订单事件 |
-| `risk-engine` | 通过 Consumer 消费风控事件 |
-| 业务域模块 | 通过 Producer/Consumer 进行跨域事件通信 |
+| 消费者          | 使用方式                                |
+| --------------- | --------------------------------------- |
+| `market-data`   | 通过 Producer 发布行情事件到 Kafka      |
+| `signal-engine` | 通过 Consumer 消费因子信号事件          |
+| `order-engine`  | 通过 Producer 发布订单事件              |
+| `risk-engine`   | 通过 Consumer 消费风控事件              |
+| 业务域模块      | 通过 Producer/Consumer 进行跨域事件通信 |
 
 ---
 
@@ -143,17 +143,17 @@ THEN 返回 HealthStatus{Ready: false, Live: false, Message: "..."}
 
 ## 8. Business Rules
 
-| 编号 | 规则 |
-|------|------|
+| 编号   | 规则                                                  |
+| ------ | ----------------------------------------------------- |
 | BR-001 | Producer 默认使用同步发送（acks=all），可通过配置切换 |
-| BR-002 | Consumer 默认使用手动 offset 提交（at-least-once） |
-| BR-003 | 所有操作必须接受 `context.Context`，支持超时和取消 |
-| BR-004 | Consumer 必须在 Close 时提交最终 offset |
-| BR-005 | Producer 重试策略可配置，默认 3 次 |
-| BR-006 | Consumer 轮询间隔可配置 |
-| BR-007 | Health() 必须是幂等的、无副作用的 |
-| BR-008 | 错误消息不包含消息内容（防泄露敏感数据） |
-| BR-009 | Consumer 不自动提交 offset（避免数据丢失） |
+| BR-002 | Consumer 默认使用手动 offset 提交（at-least-once）    |
+| BR-003 | 所有操作必须接受 `context.Context`，支持超时和取消    |
+| BR-004 | Consumer 必须在 Close 时提交最终 offset               |
+| BR-005 | Producer 重试策略可配置，默认 3 次                    |
+| BR-006 | Consumer 轮询间隔可配置                               |
+| BR-007 | Health() 必须是幂等的、无副作用的                     |
+| BR-008 | 错误消息不包含消息内容（防泄露敏感数据）              |
+| BR-009 | Consumer 不自动提交 offset（避免数据丢失）            |
 
 ---
 
@@ -312,16 +312,16 @@ kafkax:
 
 ## 12. Error Handling
 
-| 错误 | 调用方处理 |
-|------|-----------|
-| `ErrConnectionFailed` | 检查 Kafka broker 地址和网络，确认 Kafka 服务运行中 |
-| `ErrAlreadySubscribed` | 不要重复调用 Subscribe |
-| `ErrNotSubscribed` | 先调用 Subscribe 再 Poll |
-| `ErrInvalidMessage` | 检查消息 topic、key、value 是否有效 |
-| `ErrEmptyTopics` | 传入至少一个 topic |
-| `ErrEmptyBrokers` | 传入至少一个 broker 地址 |
-| `ErrSendFailed` | 检查底层错误，优先排查网络连通性和 Kafka 服务状态 |
-| `ErrCommitFailed` | 检查消息是否有效，重试 Commit |
+| 错误                   | 调用方处理                                          |
+| ---------------------- | --------------------------------------------------- |
+| `ErrConnectionFailed`  | 检查 Kafka broker 地址和网络，确认 Kafka 服务运行中 |
+| `ErrAlreadySubscribed` | 不要重复调用 Subscribe                              |
+| `ErrNotSubscribed`     | 先调用 Subscribe 再 Poll                            |
+| `ErrInvalidMessage`    | 检查消息 topic、key、value 是否有效                 |
+| `ErrEmptyTopics`       | 传入至少一个 topic                                  |
+| `ErrEmptyBrokers`      | 传入至少一个 broker 地址                            |
+| `ErrSendFailed`        | 检查底层错误，优先排查网络连通性和 Kafka 服务状态   |
+| `ErrCommitFailed`      | 检查消息是否有效，重试 Commit                       |
 
 **错误消息格式：** `"kafkax: <operation>: <detail>"`
 **错误包装：** 使用 `%w` 保留底层错误链
@@ -330,19 +330,19 @@ kafkax:
 
 ## 13. Edge Cases
 
-| 场景 | 预期行为 |
-|------|----------|
-| Kafka 不可达时 Send | 返回 ErrConnectionFailed 或 ErrSendFailed |
-| SendBatch 空消息列表 | 返回 nil（幂等） |
-| Subscribe 空 topics | 返回 ErrEmptyTopics |
-| Poll 时 ctx 超时 | 返回 ctx.Err() |
-| Consumer 未 Subscribe 就 Poll | 返回 ErrNotSubscribed |
-| Consumer 重复 Subscribe | 返回 ErrAlreadySubscribed |
-| Commit nil 消息 | 返回 ErrInvalidMessage |
-| Producer Close 后 Send | 返回错误 |
-| Consumer Close 后 Poll | 返回错误 |
-| 消息超过 max_message_bytes | 返回 ErrSendFailed |
-| 消费组 rebalance | 自动重新分配 partition，不丢失消息 |
+| 场景                          | 预期行为                                  |
+| ----------------------------- | ----------------------------------------- |
+| Kafka 不可达时 Send           | 返回 ErrConnectionFailed 或 ErrSendFailed |
+| SendBatch 空消息列表          | 返回 nil（幂等）                          |
+| Subscribe 空 topics           | 返回 ErrEmptyTopics                       |
+| Poll 时 ctx 超时              | 返回 ctx.Err()                            |
+| Consumer 未 Subscribe 就 Poll | 返回 ErrNotSubscribed                     |
+| Consumer 重复 Subscribe       | 返回 ErrAlreadySubscribed                 |
+| Commit nil 消息               | 返回 ErrInvalidMessage                    |
+| Producer Close 后 Send        | 返回错误                                  |
+| Consumer Close 后 Poll        | 返回错误                                  |
+| 消息超过 max_message_bytes    | 返回 ErrSendFailed                        |
+| 消费组 rebalance              | 自动重新分配 partition，不丢失消息        |
 
 ---
 
@@ -387,12 +387,12 @@ go 1.23
 
 ### 15.2 依赖方向
 
-| 可以依赖 | 禁止依赖 |
-|----------|----------|
-| stdlib | configx |
-| kernel（L0 原语） | 所有业务域实现 |
-| observex（interface-only） | 所有 L2.5 领域共享层 |
-| Kafka 客户端库（sarama / confluent-kafka-go） | |
+| 可以依赖                                      | 禁止依赖             |
+| --------------------------------------------- | -------------------- |
+| stdlib                                        | configx              |
+| kernel（L0 原语）                             | 所有业务域实现       |
+| observex（interface-only）                    | 所有 L2.5 领域共享层 |
+| Kafka 客户端库（sarama / confluent-kafka-go） |                      |
 
 ---
 
@@ -400,21 +400,21 @@ go 1.23
 
 ### 16.1 单元测试
 
-| 测试场景 | 验证点 |
-|----------|--------|
-| Producer.Send 成功 | 消息正确发送 |
-| Producer.Send 失败 | 返回错误 |
-| Producer.SendBatch 批量发送 | 所有消息正确发送 |
-| Producer.SendBatch 空列表 | 返回 nil |
-| Consumer.Subscribe 成功 | 正确加入消费组 |
-| Consumer.Subscribe 空 topics | 返回错误 |
-| Consumer.Poll 有消息 | 返回消息 |
-| Consumer.Poll 无消息 | 阻塞直到超时或新消息 |
-| Consumer.Commit 成功 | offset 正确提交 |
-| Consumer.Commit nil 消息 | 返回错误 |
-| Health 检查 | Kafka 可用/不可用正确反映 |
-| Codec 序列化/反序列化 | JSON / msgpack 正确 |
-| 并发安全 | -race 测试通过 |
+| 测试场景                     | 验证点                    |
+| ---------------------------- | ------------------------- |
+| Producer.Send 成功           | 消息正确发送              |
+| Producer.Send 失败           | 返回错误                  |
+| Producer.SendBatch 批量发送  | 所有消息正确发送          |
+| Producer.SendBatch 空列表    | 返回 nil                  |
+| Consumer.Subscribe 成功      | 正确加入消费组            |
+| Consumer.Subscribe 空 topics | 返回错误                  |
+| Consumer.Poll 有消息         | 返回消息                  |
+| Consumer.Poll 无消息         | 阻塞直到超时或新消息      |
+| Consumer.Commit 成功         | offset 正确提交           |
+| Consumer.Commit nil 消息     | 返回错误                  |
+| Health 检查                  | Kafka 可用/不可用正确反映 |
+| Codec 序列化/反序列化        | JSON / msgpack 正确       |
+| 并发安全                     | -race 测试通过            |
 
 ### 16.2 Given/When/Then 用例
 
@@ -445,62 +445,62 @@ Then 返回 healthy；broker 不可达时返回 unhealthy
 
 ### 16.3 Benchmark
 
-| 场景 | 目标 |
-|------|------|
-| 单条发送（本地 Kafka） | < 5ms |
-| 批量发送 100 条 | < 20ms |
-| 单条消费 | < 5ms |
+| 场景                        | 目标   |
+| --------------------------- | ------ |
+| 单条发送（本地 Kafka）      | < 5ms  |
+| 批量发送 100 条             | < 20ms |
+| 单条消费                    | < 5ms  |
 | 序列化/反序列化（1KB JSON） | < 10μs |
 
 ### 16.4 集成测试
 
-| 场景 | 验证点 |
-|------|--------|
-| 完整发送-消费链 | Send → Poll → Commit |
-| 批量发送-消费 | SendBatch 100 条 → Poll 收到 100 条 |
-| 消费组 rebalance | 多 Consumer 实例正确分配 partition |
-| 连接断开恢复 | 断开后自动重连并恢复消费 |
+| 场景             | 验证点                              |
+| ---------------- | ----------------------------------- |
+| 完整发送-消费链  | Send → Poll → Commit                |
+| 批量发送-消费    | SendBatch 100 条 → Poll 收到 100 条 |
+| 消费组 rebalance | 多 Consumer 实例正确分配 partition  |
+| 连接断开恢复     | 断开后自动重连并恢复消费            |
 
 ---
 
 ## 17. Performance Budget
 
-| 操作 | 目标 | 测量方式 |
-|------|------|----------|
-| 单条发送（本地 Kafka） | < 5ms | benchmark test |
-| 批量发送 100 条 | < 20ms | benchmark test |
-| 单条消费 | < 5ms | benchmark test |
-| 常驻内存 | < 10MB | profiling |
-| Consumer lag | < 1000 条 | integration test |
+| 操作                   | 目标      | 测量方式         |
+| ---------------------- | --------- | ---------------- |
+| 单条发送（本地 Kafka） | < 5ms     | benchmark test   |
+| 批量发送 100 条        | < 20ms    | benchmark test   |
+| 单条消费               | < 5ms     | benchmark test   |
+| 常驻内存               | < 10MB    | profiling        |
+| Consumer lag           | < 1000 条 | integration test |
 
 ---
 
 ## 18. Observability
 
-| 类型 | 名称 | 说明 |
-|------|------|------|
-| metric | `kafkax.produce.duration` | histogram，发送耗时 |
-| metric | `kafkax.produce.errors` | counter，发送失败次数 |
-| metric | `kafkax.produce.batch.size` | histogram，批量发送消息数 |
-| metric | `kafkax.consume.duration` | histogram，消费耗时 |
-| metric | `kafkax.consume.lag` | gauge，消费延迟（partition offset 差值） |
-| metric | `kafkax.consume.messages` | counter，消费消息数 |
-| metric | `kafkax.consume.errors` | counter，消费失败次数 |
-| log | `kafkax.connected` | info，连接成功 |
-| log | `kafkax.disconnected` | warn，连接断开 |
-| log | `kafkax.rebalancing` | info，消费组 rebalance |
-| log | `kafkax.send_failed` | error，发送失败详情 |
-| log | `kafkax.commit_failed` | error，commit 失败详情 |
+| 类型   | 名称                        | 说明                                     |
+| ------ | --------------------------- | ---------------------------------------- |
+| metric | `kafkax.produce.duration`   | histogram，发送耗时                      |
+| metric | `kafkax.produce.errors`     | counter，发送失败次数                    |
+| metric | `kafkax.produce.batch.size` | histogram，批量发送消息数                |
+| metric | `kafkax.consume.duration`   | histogram，消费耗时                      |
+| metric | `kafkax.consume.lag`        | gauge，消费延迟（partition offset 差值） |
+| metric | `kafkax.consume.messages`   | counter，消费消息数                      |
+| metric | `kafkax.consume.errors`     | counter，消费失败次数                    |
+| log    | `kafkax.connected`          | info，连接成功                           |
+| log    | `kafkax.disconnected`       | warn，连接断开                           |
+| log    | `kafkax.rebalancing`        | info，消费组 rebalance                   |
+| log    | `kafkax.send_failed`        | error，发送失败详情                      |
+| log    | `kafkax.commit_failed`      | error，commit 失败详情                   |
 
 ---
 
 ## 19. Security
 
-| 要求 | 实现方式 |
-|------|----------|
-| SASL 认证支持 | 通过配置传入 SASL 凭证 |
-| TLS 加密传输 | 通过配置启用 TLS |
-| 凭证不写日志 | 日志中对 SASL 密码脱敏 |
+| 要求                   | 实现方式                                     |
+| ---------------------- | -------------------------------------------- |
+| SASL 认证支持          | 通过配置传入 SASL 凭证                       |
+| TLS 加密传输           | 通过配置启用 TLS                             |
+| 凭证不写日志           | 日志中对 SASL 密码脱敏                       |
 | 错误消息不泄露消息内容 | 错误消息只包含 topic 和 offset，不包含 value |
 
 ---
@@ -509,36 +509,36 @@ Then 返回 healthy；broker 不可达时返回 unhealthy
 
 ### 20.1 通用 Gate
 
-| Gate | 命令 | 阻塞条件 |
-|------|------|----------|
-| 编译 | `go build ./...` | 编译失败 |
-| 测试 | `go test ./... -race -count=1` | 任何测试失败或 data race |
-| 覆盖率 | `mkdir -p .coverage && go test ./... -coverprofile=.coverage/cover.out && go tool cover -func=.coverage/cover.out` | 总覆盖率 < 80% |
-| vet | `go vet ./...` | 任何 vet 错误 |
-| lint | `golangci-lint run` | 任何 lint 错误 |
-| 依赖检查 | `go mod tidy && git diff --exit-code go.mod go.sum` | go.mod 不整洁 |
-| Secret 扫描 | `gitleaks detect --no-git` | 泄露 secret |
-| Benchmark | `go test -bench=. -benchmem -count=3 ./...` | 结果附在 PR comment |
+| Gate        | 命令                                                                                                               | 阻塞条件                 |
+| ----------- | ------------------------------------------------------------------------------------------------------------------ | ------------------------ |
+| 编译        | `go build ./...`                                                                                                   | 编译失败                 |
+| 测试        | `go test ./... -race -count=1`                                                                                     | 任何测试失败或 data race |
+| 覆盖率      | `mkdir -p .coverage && go test ./... -coverprofile=.coverage/cover.out && go tool cover -func=.coverage/cover.out` | 总覆盖率 < 80%           |
+| vet         | `go vet ./...`                                                                                                     | 任何 vet 错误            |
+| lint        | `golangci-lint run`                                                                                                | 任何 lint 错误           |
+| 依赖检查    | `go mod tidy && git diff --exit-code go.mod go.sum`                                                                | go.mod 不整洁            |
+| Secret 扫描 | `gitleaks detect --no-git`                                                                                         | 泄露 secret              |
+| Benchmark   | `go test -bench=. -benchmem -count=3 ./...`                                                                        | 结果附在 PR comment      |
 
 ### 20.2 kafkax 专属 Gate
 
-| Gate | 命令 | 阻塞条件 |
-|------|------|----------|
+| Gate     | 命令                              | 阻塞条件                    |
+| -------- | --------------------------------- | --------------------------- |
 | 集成测试 | `go test -tags=integration ./...` | Kafka 不可达时 skip，不阻塞 |
 
 ---
 
 ## 21. Upgrade Compatibility
 
-| 变更类型 | 版本升级 |
-|----------|----------|
-| Producer 接口新增方法 | **minor**（实现需跟上） |
-| Producer 接口删除/修改方法 | **major** |
-| Consumer 接口新增方法 | **minor**（实现需跟上） |
-| Consumer 接口删除/修改方法 | **major** |
-| Message 结构体变更 | **major** |
-| Option 新增字段 | minor（带默认值） |
-| 默认 codec 变更 | **minor**（注意序列化兼容性） |
+| 变更类型                   | 版本升级                      |
+| -------------------------- | ----------------------------- |
+| Producer 接口新增方法      | **minor**（实现需跟上）       |
+| Producer 接口删除/修改方法 | **major**                     |
+| Consumer 接口新增方法      | **minor**（实现需跟上）       |
+| Consumer 接口删除/修改方法 | **major**                     |
+| Message 结构体变更         | **major**                     |
+| Option 新增字段            | minor（带默认值）             |
+| 默认 codec 变更            | **minor**（注意序列化兼容性） |
 
 ---
 

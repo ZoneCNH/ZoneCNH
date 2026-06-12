@@ -41,9 +41,9 @@ status: pending
 
 > Spec TC: TC-018
 
-| Requirement | Description |
-|---|---|
-| FR-012 | 契约测试辅助 |
+| Requirement | Description  |
+| ----------- | ------------ |
+| FR-012      | 契约测试辅助 |
 
 ## Internal Dependencies
 
@@ -57,9 +57,9 @@ status: pending
 
 ## Test Plan
 
-| TC | Type | Description |
-|----|------|-------------|
-| TC-018 | Unit | 断言匹配通过，不匹配 Fatalf |
+| TC     | Type   | Description                 |
+| ------ | ------ | --------------------------- |
+| TC-018 | Unit   | 断言匹配通过，不匹配 Fatalf |
 
 ## Implementation Notes
 

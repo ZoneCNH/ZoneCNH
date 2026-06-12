@@ -19,11 +19,11 @@ commands_run:
 
 ## 验收结果
 
-| AC | 描述 | 结果 |
-|----|------|------|
+| AC       | 描述                     | 结果    |
+| -------- | ------------------------ | ------- |
 | AC-003-1 | pkg/templatex/ 11 个文件 | PENDING |
-| AC-003-2 | 公共 API 全部存在 | PENDING |
-| AC-003-3 | go test 通过 | PENDING |
+| AC-003-2 | 公共 API 全部存在        | PENDING |
+| AC-003-3 | go test 通过             | PENDING |
 
 ## 说明
 

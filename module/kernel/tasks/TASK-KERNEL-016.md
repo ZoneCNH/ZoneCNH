@@ -35,11 +35,11 @@ status: pending
 
 ## 拆分方案（符合 ≤ 5 文件约束）
 
-| Sub-task | 文件数 | 覆盖内容 |
-|----------|:------:|----------|
-| TASK-KERNEL-016a | 5 | docs/adr + design + governance + spec + standard |
-| TASK-KERNEL-016b | 5 | scripts/ci + release/manifest + dependency + standard-sync |
-| TASK-KERNEL-016c | 2 | CHANGELOG.md + Makefile release-preflight |
+| Sub-task         | 文件数   | 覆盖内容                                                   |
+| ---------------- | :------: | ---------------------------------------------------------- |
+| TASK-KERNEL-016a | 5        | docs/adr + design + governance + spec + standard           |
+| TASK-KERNEL-016b | 5        | scripts/ci + release/manifest + dependency + standard-sync |
+| TASK-KERNEL-016c | 2        | CHANGELOG.md + Makefile release-preflight                  |
 
 ## Non-scope
 

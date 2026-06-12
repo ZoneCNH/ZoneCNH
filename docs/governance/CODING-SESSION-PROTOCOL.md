@@ -86,12 +86,12 @@ golangci-lint run
 
 ### 为什么需要 Context Packet
 
-| 单句 prompt | Context Packet |
-|------------|----------------|
-| AI 猜上下文 | AI 知道上下文 |
-| 容易做多 | 范围明确 |
-| 容易漏测试 | 测试要求明确 |
-| 无法验证 | 验证命令明确 |
+| 单句 prompt  | Context Packet   |
+| ------------ | ---------------- |
+| AI 猜上下文  | AI 知道上下文    |
+| 容易做多     | 范围明确         |
+| 容易漏测试   | 测试要求明确     |
+| 无法验证     | 验证命令明确     |
 
 ---
 
@@ -507,9 +507,9 @@ Docs   10%
 
 ## 相关文档
 
-| 文档 | 用途 |
-|------|------|
-| `docs/governance/DEVELOPMENT-WORKFLOW.md` | 完整管线总览 |
-| `docs/governance/SPEC-DRIFT-PROTOCOL.md` | Spec 与代码不一致处理 |
-| `docs/governance/TESTING-STRATEGY.md` | 测试策略 |
-| `docs/governance/DEPLOYMENT.md` | 部署清单 |
+| 文档                                      | 用途                  |
+| ----------------------------------------- | --------------------- |
+| `docs/governance/DEVELOPMENT-WORKFLOW.md` | 完整管线总览          |
+| `docs/governance/SPEC-DRIFT-PROTOCOL.md`  | Spec 与代码不一致处理 |
+| `docs/governance/TESTING-STRATEGY.md`     | 测试策略              |
+| `docs/governance/DEPLOYMENT.md`           | 部署清单              |

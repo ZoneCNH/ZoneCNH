@@ -21,14 +21,14 @@
 
 ### 1.1 变更历史
 
-| 日期 | 版本 | 变更内容 | 作者 |
-|------|------|----------|------|
-| 2026-06-07 | v1.0.0 | 初始版本 | ZoneCNH |
-| 2026-06-12 | v1.0.1 | 结构修复：BR违反时列、Data Model补充、FR异常路径、Open Questions分类、配置表格化 | ZoneCNH |
-| 2026-06-12 | v1.0.1 | 状态 Draft → Review（Claude 99 + Rules 100，两源评分通过，待 Codex/Copilot 凑齐四源） | ZoneCNH |
+| 日期       | 版本   | 变更内容                                                                                                   | 作者    |
+| ---------- | ------ | ---------------------------------------------------------------------------------------------------------- | ------- |
+| 2026-06-07 | v1.0.0 | 初始版本                                                                                                   | ZoneCNH |
+| 2026-06-12 | v1.0.1 | 结构修复：BR违反时列、Data Model补充、FR异常路径、Open Questions分类、配置表格化                           | ZoneCNH |
+| 2026-06-12 | v1.0.1 | 状态 Draft → Review（Claude 99 + Rules 100，两源评分通过，待 Codex/Copilot 凑齐四源）                      | ZoneCNH |
 | 2026-06-12 | v1.0.1 | 结构修复续：Spec-Version对齐、Non-goals补全、config prefix与BR-006对齐、新增EC-010/TC-003a、FR-005嵌套脱敏 | ZoneCNH |
-| 2026-06-12 | v1.0.1 | 结构修复续：FR-003/FR-004 异常路径补充、版本号语义说明 | ZoneCNH |
-| 2026-06-12 | v1.0.1 | TC-004d 补充：Exporter Shutdown 超时测试用例 | ZoneCNH |
+| 2026-06-12 | v1.0.1 | 结构修复续：FR-003/FR-004 异常路径补充、版本号语义说明                                                     | ZoneCNH |
+| 2026-06-12 | v1.0.1 | TC-004d 补充：Exporter Shutdown 超时测试用例                                                               | ZoneCNH |
 
 ## 2. Summary
 
@@ -90,13 +90,13 @@
 
 ## 6. Consumers
 
-| 消费者 | 使用方式 |
-|--------|----------|
-| `kernel.Deps` | 接收 `observex.Logger`、`observex.Meter`、`observex.Tracer` |
-| 所有 L1 运行时模块 | 通过 Logger/Meter/Tracer 接口输出可观测数据 |
-| 业务域模块 | 通过 Logger 记录业务日志，通过 Meter 采集业务指标 |
-| `testkitx` | 提供 FakeLogger / FakeMeter / FakeTracer 用于测试 |
-| `x.go` | 创建 Exporter，注入到 kernel.Deps |
+| 消费者             | 使用方式                                                    |
+| ------------------ | ----------------------------------------------------------- |
+| `kernel.Deps`      | 接收 `observex.Logger`、`observex.Meter`、`observex.Tracer` |
+| 所有 L1 运行时模块 | 通过 Logger/Meter/Tracer 接口输出可观测数据                 |
+| 业务域模块         | 通过 Logger 记录业务日志，通过 Meter 采集业务指标           |
+| `testkitx`         | 提供 FakeLogger / FakeMeter / FakeTracer 用于测试           |
+| `x.go`             | 创建 Exporter，注入到 kernel.Deps                           |
 
 ---
 
@@ -204,16 +204,16 @@ THEN 对应 component 的 live 字段为 false，整体 ready 为 false，但不
 
 ## 8. Business Rules
 
-| 编号 | 规则 | 违反时 |
-|------|------|--------|
-| BR-001 | Logger 实现必须并发安全 | 出现 data race 则 `-race` 测试失败，CI gate 阻塞，禁止合并 |
-| BR-002 | Meter 实现必须控制 label 基数，高基数 label 被拒绝或截断 | 返回 `ErrLabelForbidden`，指标记录被丢弃，并递增 `observex.label.forbidden` counter |
-| BR-003 | Tracer 必须从 context.Context 传播 trace_id / span_id | 跨 goroutine 丢失上下文时，创建新的 trace_id（独立 trace），并记录 warn 日志 |
-| BR-004 | Exporter.Shutdown 必须 flush 缓冲区 | 超时未 flush 完成则返回 `ErrShutdownFailed`，未发送数据写入本地退避文件 |
-| BR-005 | With 返回新实例，不修改原 Logger（不变性） | 若实现修改原实例，`-race` 测试失败（并发场景触发 data race），CI gate 阻塞 |
-| BR-006 | 指标命名必须符合 `foundationx_<module>_<op>_<measure>` | 返回 `ErrLabelForbidden`，指标注册被拒绝，CI gate（metrics contract check）阻塞 |
-| BR-007 | 日志中 secret 字段必须自动脱敏 | secret 值出现在日志输出中则 redaction leak check 失败，CI gate 阻塞 |
-| BR-008 | 不直接绑定 Prometheus/Otel/Zap，通过 Exporter 接口抽象 | import graph 中出现直接依赖 Prometheus/Otel/Zap 的编译期绑定则 CI gate（import check）阻塞，代码审查拒绝 |
+| 编号   | 规则                                                     | 违反时                                                                                                   |
+| ------ | -------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| BR-001 | Logger 实现必须并发安全                                  | 出现 data race 则 `-race` 测试失败，CI gate 阻塞，禁止合并                                               |
+| BR-002 | Meter 实现必须控制 label 基数，高基数 label 被拒绝或截断 | 返回 `ErrLabelForbidden`，指标记录被丢弃，并递增 `observex.label.forbidden` counter                      |
+| BR-003 | Tracer 必须从 context.Context 传播 trace_id / span_id    | 跨 goroutine 丢失上下文时，创建新的 trace_id（独立 trace），并记录 warn 日志                             |
+| BR-004 | Exporter.Shutdown 必须 flush 缓冲区                      | 超时未 flush 完成则返回 `ErrShutdownFailed`，未发送数据写入本地退避文件                                  |
+| BR-005 | With 返回新实例，不修改原 Logger（不变性）               | 若实现修改原实例，`-race` 测试失败（并发场景触发 data race），CI gate 阻塞                               |
+| BR-006 | 指标命名必须符合 `foundationx_<module>_<op>_<measure>`   | 返回 `ErrLabelForbidden`，指标注册被拒绝，CI gate（metrics contract check）阻塞                          |
+| BR-007 | 日志中 secret 字段必须自动脱敏                           | secret 值出现在日志输出中则 redaction leak check 失败，CI gate 阻塞                                      |
+| BR-008 | 不直接绑定 Prometheus/Otel/Zap，通过 Exporter 接口抽象   | import graph 中出现直接依赖 Prometheus/Otel/Zap 的编译期绑定则 CI gate（import check）阻塞，代码审查拒绝 |
 
 ---
 
@@ -334,56 +334,56 @@ const (
 
 ### 10.3 LogEntry
 
-| 字段 | 类型 | 必填 | 说明 |
-|------|------|------|------|
-| Timestamp | `time.Time` | 是 | 日志产生时间 |
-| Level | `string` | 是 | 日志等级（debug/info/warn/error） |
-| Message | `string` | 是 | 日志消息正文 |
-| Fields | `[]Field` | 否 | 结构化字段（已执行脱敏后） |
-| TraceID | `string` | 否 | 关联 trace_id |
-| SpanID | `string` | 否 | 关联 span_id |
+| 字段      | 类型        | 必填   | 说明                              |
+| --------- | ----------- | ------ | --------------------------------- |
+| Timestamp | `time.Time` | 是     | 日志产生时间                      |
+| Level     | `string`    | 是     | 日志等级（debug/info/warn/error） |
+| Message   | `string`    | 是     | 日志消息正文                      |
+| Fields    | `[]Field`   | 否     | 结构化字段（已执行脱敏后）        |
+| TraceID   | `string`    | 否     | 关联 trace_id                     |
+| SpanID    | `string`    | 否     | 关联 span_id                      |
 
 ### 10.4 MetricPoint
 
-| 字段 | 类型 | 必填 | 说明 |
-|------|------|------|------|
-| Name | `string` | 是 | 指标名（符合 `foundationx_<module>_<op>_<measure>`） |
-| Kind | `string` | 是 | counter / histogram / gauge |
-| Value | `float64` | 是 | 指标数值 |
-| Attrs | `[]Attr` | 否 | label 属性和值 |
-| Timestamp | `time.Time` | 是 | 采集时间 |
+| 字段      | 类型        | 必填   | 说明                                                 |
+| --------- | ----------- | ------ | ---------------------------------------------------- |
+| Name      | `string`    | 是     | 指标名（符合 `foundationx_<module>_<op>_<measure>`） |
+| Kind      | `string`    | 是     | counter / histogram / gauge                          |
+| Value     | `float64`   | 是     | 指标数值                                             |
+| Attrs     | `[]Attr`    | 否     | label 属性和值                                       |
+| Timestamp | `time.Time` | 是     | 采集时间                                             |
 
 ### 10.5 SpanData
 
-| 字段 | 类型 | 必填 | 说明 |
-|------|------|------|------|
-| TraceID | `string` | 是 | trace 唯一标识 |
-| SpanID | `string` | 是 | span 唯一标识 |
-| ParentSpanID | `string` | 否 | 父 span ID（根 span 时为空） |
-| Name | `string` | 是 | span 名称 |
-| Kind | `SpanKind` | 是 | client / server / internal / producer / consumer |
-| StartTime | `time.Time` | 是 | span 开始时间 |
-| EndTime | `time.Time` | 否 | span 结束时间（未结束时为零值） |
-| Attrs | `[]Attr` | 否 | span 属性 |
-| Status | `string` | 否 | ok / error |
+| 字段         | 类型        | 必填   | 说明                                             |
+| ------------ | ----------- | ------ | ------------------------------------------------ |
+| TraceID      | `string`    | 是     | trace 唯一标识                                   |
+| SpanID       | `string`    | 是     | span 唯一标识                                    |
+| ParentSpanID | `string`    | 否     | 父 span ID（根 span 时为空）                     |
+| Name         | `string`    | 是     | span 名称                                        |
+| Kind         | `SpanKind`  | 是     | client / server / internal / producer / consumer |
+| StartTime    | `time.Time` | 是     | span 开始时间                                    |
+| EndTime      | `time.Time` | 否     | span 结束时间（未结束时为零值）                  |
+| Attrs        | `[]Attr`    | 否     | span 属性                                        |
+| Status       | `string`    | 否     | ok / error                                       |
 
 ### 10.6 HealthStatus
 
-| 字段 | 类型 | 必填 | 说明 |
-|------|------|------|------|
-| Ready | `bool` | 是 | 整体就绪状态（所有 component 的 live 均为 true） |
-| Live | `bool` | 是 | 进程存活状态 |
-| Message | `string` | 否 | 人类可读的状态消息 |
-| Components | `[]ComponentHealth` | 否 | 子组件健康状态列表 |
+| 字段       | 类型                | 必填   | 说明                                             |
+| ---------- | ------------------- | ------ | ------------------------------------------------ |
+| Ready      | `bool`              | 是     | 整体就绪状态（所有 component 的 live 均为 true） |
+| Live       | `bool`              | 是     | 进程存活状态                                     |
+| Message    | `string`            | 否     | 人类可读的状态消息                               |
+| Components | `[]ComponentHealth` | 否     | 子组件健康状态列表                               |
 
 **ComponentHealth**：
 
-| 字段 | 类型 | 必填 | 说明 |
-|------|------|------|------|
-| Name | `string` | 是 | 组件名（如 "otlp-exporter"、"logger"） |
-| Live | `bool` | 是 | 组件存活状态 |
-| Ready | `bool` | 是 | 组件就绪状态 |
-| Message | `string` | 否 | 组件状态消息 |
+| 字段    | 类型     | 必填   | 说明                                   |
+| ------- | -------- | ------ | -------------------------------------- |
+| Name    | `string` | 是     | 组件名（如 "otlp-exporter"、"logger"） |
+| Live    | `bool`   | 是     | 组件存活状态                           |
+| Ready   | `bool`   | 是     | 组件就绪状态                           |
+| Message | `string` | 否     | 组件状态消息                           |
 
 ---
 
@@ -418,26 +418,26 @@ observex:
     - token
 ```
 
-| 配置项 | 类型 | 默认值 | 必填 | 说明 |
-|--------|------|--------|------|------|
-| `observex.logging.level` | `string` | `info` | 否 | 日志等级：debug / info / warn / error |
-| `observex.logging.format` | `string` | `json` | 否 | 输出格式：json / text |
-| `observex.logging.output` | `string` | `stdout` | 否 | 输出目标：stdout / file / both |
-| `observex.logging.file_path` | `string` | `/var/log/app.log` | 否（output=file时是） | 日志文件路径 |
-| `observex.logging.max_size` | `string` | `100MB` | 否 | 日志文件最大大小 |
-| `observex.logging.max_backups` | `int` | `5` | 否 | 最大保留备份文件数 |
-| `observex.metrics.enabled` | `bool` | `true` | 否 | 是否启用指标采集 |
-| `observex.metrics.exporter` | `string` | `otlp` | 否 | 指标 exporter：otlp / prometheus / noop |
-| `observex.metrics.endpoint` | `string` | `otel-collector:4317` | 否（exporter!=noop时是） | exporter 端点地址 |
-| `observex.metrics.interval` | `string` | `15s` | 否 | 指标采集间隔 |
-| `observex.metrics.prefix` | `string` | `foundationx_` | 否 | 指标名前缀（与 BR-006 命名规范一致） |
-| `observex.tracing.enabled` | `bool` | `true` | 否 | 是否启用链路追踪 |
-| `observex.tracing.exporter` | `string` | `otlp` | 否 | 追踪 exporter：otlp / noop |
-| `observex.tracing.endpoint` | `string` | `otel-collector:4317` | 否（exporter!=noop时是） | exporter 端点地址 |
-| `observex.tracing.sampler` | `string` | `parentbased_traceidratio` | 否 | 采样策略 |
-| `observex.tracing.sample_rate` | `float64` | `0.1` | 否 | 采样率（0.0 ~ 1.0） |
-| `observex.tracing.propagation` | `string` | `tracecontext` | 否 | 传播协议：tracecontext / b3 / both |
-| `observex.redact_fields` | `[]string` | `[password, secret, api_key, token]` | 否 | 需脱敏的字段名列表 |
+| 配置项                         | 类型       | 默认值                               | 必填                     | 说明                                    |
+| ------------------------------ | ---------- | ------------------------------------ | ------------------------ | --------------------------------------- |
+| `observex.logging.level`       | `string`   | `info`                               | 否                       | 日志等级：debug / info / warn / error   |
+| `observex.logging.format`      | `string`   | `json`                               | 否                       | 输出格式：json / text                   |
+| `observex.logging.output`      | `string`   | `stdout`                             | 否                       | 输出目标：stdout / file / both          |
+| `observex.logging.file_path`   | `string`   | `/var/log/app.log`                   | 否（output=file时是）    | 日志文件路径                            |
+| `observex.logging.max_size`    | `string`   | `100MB`                              | 否                       | 日志文件最大大小                        |
+| `observex.logging.max_backups` | `int`      | `5`                                  | 否                       | 最大保留备份文件数                      |
+| `observex.metrics.enabled`     | `bool`     | `true`                               | 否                       | 是否启用指标采集                        |
+| `observex.metrics.exporter`    | `string`   | `otlp`                               | 否                       | 指标 exporter：otlp / prometheus / noop |
+| `observex.metrics.endpoint`    | `string`   | `otel-collector:4317`                | 否（exporter!=noop时是） | exporter 端点地址                       |
+| `observex.metrics.interval`    | `string`   | `15s`                                | 否                       | 指标采集间隔                            |
+| `observex.metrics.prefix`      | `string`   | `foundationx_`                       | 否                       | 指标名前缀（与 BR-006 命名规范一致）    |
+| `observex.tracing.enabled`     | `bool`     | `true`                               | 否                       | 是否启用链路追踪                        |
+| `observex.tracing.exporter`    | `string`   | `otlp`                               | 否                       | 追踪 exporter：otlp / noop              |
+| `observex.tracing.endpoint`    | `string`   | `otel-collector:4317`                | 否（exporter!=noop时是） | exporter 端点地址                       |
+| `observex.tracing.sampler`     | `string`   | `parentbased_traceidratio`           | 否                       | 采样策略                                |
+| `observex.tracing.sample_rate` | `float64`  | `0.1`                                | 否                       | 采样率（0.0 ~ 1.0）                     |
+| `observex.tracing.propagation` | `string`   | `tracecontext`                       | 否                       | 传播协议：tracecontext / b3 / both      |
+| `observex.redact_fields`       | `[]string` | `[password, secret, api_key, token]` | 否                       | 需脱敏的字段名列表                      |
 
 ### Config 结构体
 
@@ -458,11 +458,11 @@ func (c *Config) Validate() error {
 
 ## 12. Error Handling
 
-| 错误 | 错误码 | 调用方处理 |
-|------|--------|-----------|
-| `ErrExporterFailed` | `OBSERVE_EXPORTER_FAILED` | 检查 exporter 端点连通性，降级到 noop exporter |
-| `ErrLabelForbidden` | `OBSERVE_LABEL_FORBIDDEN` | 检查 label 名，使用 AllowedLabels 中的替代 |
-| `ErrBufferFull` | `OBSERVE_BUFFER_FULL` | 增大 buffer 或降低采集频率 |
+| 错误                | 错误码                    | 调用方处理                                         |
+| ------------------- | ------------------------- | -------------------------------------------------- |
+| `ErrExporterFailed` | `OBSERVE_EXPORTER_FAILED` | 检查 exporter 端点连通性，降级到 noop exporter     |
+| `ErrLabelForbidden` | `OBSERVE_LABEL_FORBIDDEN` | 检查 label 名，使用 AllowedLabels 中的替代         |
+| `ErrBufferFull`     | `OBSERVE_BUFFER_FULL`     | 增大 buffer 或降低采集频率                         |
 | `ErrShutdownFailed` | `OBSERVE_SHUTDOWN_FAILED` | 检查 exporter 连接状态；若连接未关闭，执行手动清理 |
 
 **错误消息格式：** `"observex: <operation>: <detail>"`
@@ -540,11 +540,11 @@ go 1.23
 
 ### 15.2 依赖方向
 
-| 可以依赖 | 禁止依赖 |
-|----------|----------|
+| 可以依赖          | 禁止依赖                       |
+| ----------------- | ------------------------------ |
 | kernel（L0 原语） | configx, resiliencx, schedulex |
-| stdlib | testkitx（仅 test） |
-| OTel SDK（可选） | 所有业务域实现 |
+| stdlib            | testkitx（仅 test）            |
+| OTel SDK（可选）  | 所有业务域实现                 |
 
 ### 15.3 foundationx 兼容
 
@@ -558,38 +558,38 @@ go 1.23
 
 ### 16.1 单元测试
 
-| 测试场景 | 验证点 |
-|----------|--------|
-| 结构化日志字段 | `Info("msg", Field{...})` 输出 JSON |
-| log level 过滤 | level=info → debug 日志不输出 |
-| logger.With 不变性 | `With` 返回新实例，不修改原 logger |
-| metrics 注册 | counter/histogram/gauge 创建和记录 |
-| label 基数控制 | 高基数 label 被拒绝并返回 `ErrLabelForbidden` |
-| span 创建 + 结束 | trace_id / span_id 正确传播 |
-| context 传播 | 跨 goroutine 保持同一 trace |
-| redaction | secret 字段被替换为 `***` |
-| label policy | forbidden label 被拒绝，allowed label 通过 |
-| health schema | 输出符合 JSON schema；未初始化时输出默认状态 |
+| 测试场景           | 验证点                                        |
+| ------------------ | --------------------------------------------- |
+| 结构化日志字段     | `Info("msg", Field{...})` 输出 JSON           |
+| log level 过滤     | level=info → debug 日志不输出                 |
+| logger.With 不变性 | `With` 返回新实例，不修改原 logger            |
+| metrics 注册       | counter/histogram/gauge 创建和记录            |
+| label 基数控制     | 高基数 label 被拒绝并返回 `ErrLabelForbidden` |
+| span 创建 + 结束   | trace_id / span_id 正确传播                   |
+| context 传播       | 跨 goroutine 保持同一 trace                   |
+| redaction          | secret 字段被替换为 `***`                     |
+| label policy       | forbidden label 被拒绝，allowed label 通过    |
+| health schema      | 输出符合 JSON schema；未初始化时输出默认状态  |
 
 ### 16.2 验收标准（AC）
 
-| AC 编号 | 对应需求 | 验收条件 |
-|---------|----------|----------|
-| AC-001 | §7 Logger | 所有等级输出符合结构化 JSON；level 过滤正确；With 返回新实例且原实例不变；并发调用无 data race |
-| AC-002 | §7 Meter | Counter/Histogram/Gauge 记录数值正确；ForbiddenLabels 被拒绝并返回 ErrLabelForbidden |
-| AC-003 | §7 Tracer | span 创建/结束正确；RecordError 记录错误事件；子 span 继承父 trace_id；跨 goroutine context 传播 |
-| AC-004 | §7 Exporter | ExportLogs/Metrics/Spans 正常导出返回 nil；exporter 不可达时返回错误但不 panic；Shutdown 后 buffer 已 flush |
-| AC-005 | §7 Redaction | secret 字段值被替换为 ***；redact.Check 检测文本中泄露的 secret |
-| AC-006 | §7 Label Policy | AllowedLabels 通过、ForbiddenLabels 拒绝；独立 checker 返回正确判定 |
-| AC-007 | §7 Health | 已初始化时输出符合 schema 的 JSON；未初始化时 ready=false；exporter 不可达时对应 component live=false |
-| AC-008 | §8 BR-001 | -race 测试零 data race |
-| AC-009 | §8 BR-002 | ForbiddenLabels 被拒绝并返回 ErrLabelForbidden；observex.label.forbidden counter 递增 |
-| AC-010 | §8 BR-003 | 跨 goroutine 保持同一 trace_id；丢失上下文时创建新 trace 并记录 warn |
-| AC-011 | §8 BR-004 | Shutdown 后数据已发送；超时返回 ErrShutdownFailed |
-| AC-012 | §8 BR-005 | 并发 With 调用后原实例不变；-race 测试零 data race |
-| AC-013 | §8 BR-006 | 不合规命名返回 ErrLabelForbidden；CI Gate metrics contract check 通过 |
-| AC-014 | §8 BR-007 | secret 值不出现在日志输出中；CI Gate redaction leak check 通过 |
-| AC-015 | §8 BR-008 | import graph 中无直接 Prometheus/Otel/Zap 绑定；CI Gate import check 通过 |
+| AC 编号   | 对应需求        | 验收条件                                                                                                    |
+| --------- | --------------- | ----------------------------------------------------------------------------------------------------------- |
+| AC-001    | §7 Logger       | 所有等级输出符合结构化 JSON；level 过滤正确；With 返回新实例且原实例不变；并发调用无 data race              |
+| AC-002    | §7 Meter        | Counter/Histogram/Gauge 记录数值正确；ForbiddenLabels 被拒绝并返回 ErrLabelForbidden                        |
+| AC-003    | §7 Tracer       | span 创建/结束正确；RecordError 记录错误事件；子 span 继承父 trace_id；跨 goroutine context 传播            |
+| AC-004    | §7 Exporter     | ExportLogs/Metrics/Spans 正常导出返回 nil；exporter 不可达时返回错误但不 panic；Shutdown 后 buffer 已 flush |
+| AC-005    | §7 Redaction    | secret 字段值被替换为 ***；redact.Check 检测文本中泄露的 secret                                             |
+| AC-006    | §7 Label Policy | AllowedLabels 通过、ForbiddenLabels 拒绝；独立 checker 返回正确判定                                         |
+| AC-007    | §7 Health       | 已初始化时输出符合 schema 的 JSON；未初始化时 ready=false；exporter 不可达时对应 component live=false       |
+| AC-008    | §8 BR-001       | -race 测试零 data race                                                                                      |
+| AC-009    | §8 BR-002       | ForbiddenLabels 被拒绝并返回 ErrLabelForbidden；observex.label.forbidden counter 递增                       |
+| AC-010    | §8 BR-003       | 跨 goroutine 保持同一 trace_id；丢失上下文时创建新 trace 并记录 warn                                        |
+| AC-011    | §8 BR-004       | Shutdown 后数据已发送；超时返回 ErrShutdownFailed                                                           |
+| AC-012    | §8 BR-005       | 并发 With 调用后原实例不变；-race 测试零 data race                                                          |
+| AC-013    | §8 BR-006       | 不合规命名返回 ErrLabelForbidden；CI Gate metrics contract check 通过                                       |
+| AC-014    | §8 BR-007       | secret 值不出现在日志输出中；CI Gate redaction leak check 通过                                              |
+| AC-015    | §8 BR-008       | import graph 中无直接 Prometheus/Otel/Zap 绑定；CI Gate import check 通过                                   |
 
 
 ### 16.3 Given/When/Then 用例
@@ -671,55 +671,55 @@ Then 返回 false
 
 ### 16.4 Benchmark
 
-| 场景 | 目标 |
-|------|------|
-| 单条结构化日志写入 | < 5μs（不含 I/O flush） |
-| metrics 记录（counter/histogram） | < 1μs |
-| span 创建 + 结束 | < 2μs |
+| 场景                              | 目标                    |
+| --------------------------------- | ----------------------- |
+| 单条结构化日志写入                | < 5μs（不含 I/O flush） |
+| metrics 记录（counter/histogram） | < 1μs                   |
+| span 创建 + 结束                  | < 2μs                   |
 
 ### 16.5 集成测试
 
-| 场景 | 验证点 |
-|------|--------|
-| exporter 不可达降级 | exporter 返回错误 → 不影响业务 |
-| exporter 正常导出端到端 | Logger + Meter + Tracer + Exporter 完整链路通过 |
-| 并发写入 + exporter 降级 | 100 goroutine 并发写入时无 data race、无 panic |
+| 场景                     | 验证点                                          |
+| ------------------------ | ----------------------------------------------- |
+| exporter 不可达降级      | exporter 返回错误 → 不影响业务                  |
+| exporter 正常导出端到端  | Logger + Meter + Tracer + Exporter 完整链路通过 |
+| 并发写入 + exporter 降级 | 100 goroutine 并发写入时无 data race、无 panic  |
 
 ---
 
 ## 17. Performance Budget
 
-| 操作 | 目标 | 条件 | 测量方式 |
-|------|------|------|----------|
-| 单条结构化日志写入 | < 5μs（不含 I/O flush） | 10 个预置 field，输出到内存 writer | benchmark test |
-| metrics 记录（counter/histogram） | < 1μs | 单 counter + 3 个 attr，label policy 已预编译 | benchmark test |
-| span 创建 + 结束 | < 2μs | 从带 parent trace 的 ctx 创建 span，立即 End | benchmark test |
-| 常驻内存 | < 10MB | 全量 exporter 加载 + 100 goroutine 并发写入 | profiling（`go test -benchmem -memprofile`） |
+| 操作                              | 目标                    | 条件                                          | 测量方式                                     |
+| --------------------------------- | ----------------------- | --------------------------------------------- | -------------------------------------------- |
+| 单条结构化日志写入                | < 5μs（不含 I/O flush） | 10 个预置 field，输出到内存 writer            | benchmark test                               |
+| metrics 记录（counter/histogram） | < 1μs                   | 单 counter + 3 个 attr，label policy 已预编译 | benchmark test                               |
+| span 创建 + 结束                  | < 2μs                   | 从带 parent trace 的 ctx 创建 span，立即 End  | benchmark test                               |
+| 常驻内存                          | < 10MB                  | 全量 exporter 加载 + 100 goroutine 并发写入   | profiling（`go test -benchmem -memprofile`） |
 
 ---
 
 ## 18. Observability
 
-| 类型 | 名称 | 说明 |
-|------|------|------|
-| metric | `observex.exporter.errors` | counter，exporter 发送失败次数 |
-| metric | `observex.exporter.queue.size` | gauge，待发送队列大小 |
-| metric | `observex.span.dropped` | counter，因采样或队列满丢弃的 span 数 |
-| metric | `observex.buffer.dropped` | counter，因 buffer 满丢弃的数据条目 |
-| metric | `observex.label.forbidden` | counter，label policy 拒绝次数 |
-| log | `observex.exporter.connected` | info，exporter 连接成功 |
-| log | `observex.exporter.disconnected` | warn，exporter 连接断开 |
-| log | `observex.exporter.fallback` | warn，降级到备用 exporter |
+| 类型   | 名称                             | 说明                                  |
+| ------ | -------------------------------- | ------------------------------------- |
+| metric | `observex.exporter.errors`       | counter，exporter 发送失败次数        |
+| metric | `observex.exporter.queue.size`   | gauge，待发送队列大小                 |
+| metric | `observex.span.dropped`          | counter，因采样或队列满丢弃的 span 数 |
+| metric | `observex.buffer.dropped`        | counter，因 buffer 满丢弃的数据条目   |
+| metric | `observex.label.forbidden`       | counter，label policy 拒绝次数        |
+| log    | `observex.exporter.connected`    | info，exporter 连接成功               |
+| log    | `observex.exporter.disconnected` | warn，exporter 连接断开               |
+| log    | `observex.exporter.fallback`     | warn，降级到备用 exporter             |
 
 ---
 
 ## 19. Security
 
-| 要求 | 实现方式 |
-|------|----------|
-| 日志中 secret 过滤 | 自动匹配 API key / token / password 模式并脱敏 |
-| metrics label 不含 PII | label value 白名单或正则过滤 |
-| tracing 采样策略 | 生产环境默认 parentbased_traceidratio，避免全量采集泄露敏感操作序列 |
+| 要求                   | 实现方式                                                            |
+| ---------------------- | ------------------------------------------------------------------- |
+| 日志中 secret 过滤     | 自动匹配 API key / token / password 模式并脱敏                      |
+| metrics label 不含 PII | label value 白名单或正则过滤                                        |
+| tracing 采样策略       | 生产环境默认 parentbased_traceidratio，避免全量采集泄露敏感操作序列 |
 
 本模块的安全要求涵盖：日志 secret 脱敏、metrics label PII 过滤、tracing 采样避免全量泄露。
 
@@ -735,37 +735,37 @@ Then 返回 false
 
 ### 20.1 通用 Gate
 
-| Gate | 命令 | 阻塞条件 |
-|------|------|----------|
-| 编译 | `go build ./...` | 编译失败 |
-| 测试 | `go test ./... -race -count=1` | 任何测试失败或 data race |
-| 覆盖率 | `mkdir -p .coverage && go test ./... -coverprofile=.coverage/cover.out && go tool cover -func=.coverage/cover.out` | 总覆盖率 < 80% |
-| vet | `go vet ./...` | 任何 vet 错误 |
-| lint | `golangci-lint run` | 任何 lint 错误 |
-| 依赖检查 | `go mod tidy && git diff --exit-code go.mod go.sum` | go.mod 不整洁 |
-| Secret 扫描 | `gitleaks detect --no-git` | 泄露 secret |
-| Benchmark | `go test -bench=. -benchmem -count=3 ./...` | 结果附在 PR comment |
+| Gate        | 命令                                                                                                               | 阻塞条件                 |
+| ----------- | ------------------------------------------------------------------------------------------------------------------ | ------------------------ |
+| 编译        | `go build ./...`                                                                                                   | 编译失败                 |
+| 测试        | `go test ./... -race -count=1`                                                                                     | 任何测试失败或 data race |
+| 覆盖率      | `mkdir -p .coverage && go test ./... -coverprofile=.coverage/cover.out && go tool cover -func=.coverage/cover.out` | 总覆盖率 < 80%           |
+| vet         | `go vet ./...`                                                                                                     | 任何 vet 错误            |
+| lint        | `golangci-lint run`                                                                                                | 任何 lint 错误           |
+| 依赖检查    | `go mod tidy && git diff --exit-code go.mod go.sum`                                                                | go.mod 不整洁            |
+| Secret 扫描 | `gitleaks detect --no-git`                                                                                         | 泄露 secret              |
+| Benchmark   | `go test -bench=. -benchmem -count=3 ./...`                                                                        | 结果附在 PR comment      |
 
 ### 20.2 observex 专属 Gate
 
-| Gate | 命令 | 阻塞条件 |
-|------|------|----------|
-| label policy check | `make label-policy-check` | 指标 label 不符合规范 |
-| redaction leak check | `make redaction-leak-check` | secret 值出现在日志/metrics/span |
-| metrics contract | `make metrics-contract-check` | 指标命名不符合 `foundationx_<module>_<op>_<measure>` |
-| health JSON schema | `go test -run TestHealthSchema ./...` | health 输出不符合 schema |
+| Gate                 | 命令                                  | 阻塞条件                                             |
+| -------------------- | ------------------------------------- | ---------------------------------------------------- |
+| label policy check   | `make label-policy-check`             | 指标 label 不符合规范                                |
+| redaction leak check | `make redaction-leak-check`           | secret 值出现在日志/metrics/span                     |
+| metrics contract     | `make metrics-contract-check`         | 指标命名不符合 `foundationx_<module>_<op>_<measure>` |
+| health JSON schema   | `go test -run TestHealthSchema ./...` | health 输出不符合 schema                             |
 
 ---
 
 ## 21. Upgrade Compatibility
 
-| 变更类型 | 版本升级 | 迁移方式 |
-|----------|----------|----------|
-| Logger / Meter / Tracer interface 变更 | **major** | 发布迁移指南，提供兼容适配层（旧接口 wrapper 到新接口），所有消费者需在下一个 minor 版本内完成迁移 |
-| 字段规范变更（新增/删除必填字段） | **minor** + changelog | 新字段设为可选（带默认值），旧字段标记 deprecated 保留两个版本后移除；消费者按 changelog 同步更新日志/metrics 输出 |
-| 新增可选配置字段 | patch / minor | 无需迁移，新字段带默认值，旧配置继续工作 |
-| 新增必填配置字段 | **minor**（带默认值） | 提供默认值，旧配置不修改可继续运行；默认值在 changelog 中说明 |
-| 修复 bug | **patch** | 无需迁移 |
+| 变更类型                               | 版本升级              | 迁移方式                                                                                                           |
+| -------------------------------------- | --------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| Logger / Meter / Tracer interface 变更 | **major**             | 发布迁移指南，提供兼容适配层（旧接口 wrapper 到新接口），所有消费者需在下一个 minor 版本内完成迁移                 |
+| 字段规范变更（新增/删除必填字段）      | **minor** + changelog | 新字段设为可选（带默认值），旧字段标记 deprecated 保留两个版本后移除；消费者按 changelog 同步更新日志/metrics 输出 |
+| 新增可选配置字段                       | patch / minor         | 无需迁移，新字段带默认值，旧配置继续工作                                                                           |
+| 新增必填配置字段                       | **minor**（带默认值） | 提供默认值，旧配置不修改可继续运行；默认值在 changelog 中说明                                                      |
+| 修复 bug                               | **patch**             | 无需迁移                                                                                                           |
 
 ---
 
@@ -794,20 +794,20 @@ Then 返回 false
 
 ### Blocking（阻塞开发）
 
-| ID | 问题 | 状态 | 负责人 |
-|----|------|------|--------|
-| — | 无 | — | — |
+| ID   | 问题   | 状态   | 负责人   |
+| ---- | ------ | ------ | -------- |
+| —    | 无     | —      | —        |
 
 ### Non-blocking（不阻塞开发）
 
-| ID | 问题 | 状态 | 负责人 |
-|----|------|------|--------|
-| OQ-001 | 是否需要支持自定义 redaction 模式（用户自定义 secret 正则）？ | 待评估 | ZoneCNH |
-| OQ-002 | tracing 采样率是否需要支持运行时动态调整？ | 待评估 | ZoneCNH |
-| OQ-003 | health JSON schema 是否需要支持自定义字段扩展？ | 待评估 | ZoneCNH |
+| ID     | 问题                                                          | 状态   | 负责人   |
+| ------ | ------------------------------------------------------------- | ------ | -------- |
+| OQ-001 | 是否需要支持自定义 redaction 模式（用户自定义 secret 正则）？ | 待评估 | ZoneCNH  |
+| OQ-002 | tracing 采样率是否需要支持运行时动态调整？                    | 待评估 | ZoneCNH  |
+| OQ-003 | health JSON schema 是否需要支持自定义字段扩展？               | 待评估 | ZoneCNH  |
 
 ### Future（未来考虑）
 
-| ID | 问题 | 状态 | 负责人 |
-|----|------|------|--------|
-| OQ-004 | 是否需要支持 metrics 聚合上报（批量发送减少网络开销）？ | 待评估 | — |
+| ID     | 问题                                                    | 状态   | 负责人   |
+| ------ | ------------------------------------------------------- | ------ | -------- |
+| OQ-004 | 是否需要支持 metrics 聚合上报（批量发送减少网络开销）？ | 待评估 | —        |
