@@ -51,7 +51,7 @@
 ### 🟢 基座（健康）
 
 - 组件：16 个，平均进度 54%
-- 核心模块（kernel/configx/observex/resiliencx）已成熟，有版本号；kernel 文档 Ready for Code（100%），代码 v0.7.3
+- 核心模块（kernel/configx/observex/resiliencx）已成熟，有版本号；kernel 已发布 v1.0.0（100% 覆盖 / 15 项 CI 门禁）
 - 存储层 6/7 仅骨架（15%）：redisx/kafkax/postgresx/taosx/ossx/clickhousex
 - **阻塞项**：存储层实现滞后，但不影响上层开发（可通过 contracts 稳定端口 mock）
 
