@@ -8,7 +8,7 @@
 
 ## 1. Metadata
 
-- Status: Changed
+- Status: Approved
 - Spec-Version: v1.0.0
 - Last-Updated: 2026-06-12
 - Owner: ZoneCNH

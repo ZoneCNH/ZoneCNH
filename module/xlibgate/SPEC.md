@@ -30,7 +30,11 @@
 
 ## 2. Summary
 
-`xlibgate` 是 Foundation 的机器可执行门禁 CLI 工具，负责在 CI 中验证依赖矩阵、import 边界、Go baseline 和 release evidence。它消费 `xlib-standard` 定义的 Gate 和 Evidence 标准，输出标准化的 pass/fail 结果。
+`xlibgate` 是 Foundation 的机器可执行门禁 CLI 工具，提供两组子命令：
+- `check`：在 CI 中验证依赖矩阵、import 边界、Go baseline、secret 扫描和 release evidence，输出标准化 pass/fail。
+- `l2`：L2 发布就绪门禁，包含能力清单校验、契约测试计划生成、契约/证据完整性验证、发布就绪评分。
+
+消费 `xlib-standard` 定义的 Gate 和 Evidence 标准。
 
 ---
 
@@ -56,6 +60,7 @@ Foundation 由 70+ 个 Go 模块组成，模块间的依赖关系、import 边�
 - 依赖矩阵验证：消费 `FOUNDATION-DEPS.yaml` 校验完整依赖关系
 - 输出格式支持 JSON 和 human-readable，适配 CI artifact
 - secret 扫描门禁：集成 `gitleaks` 检测泄露（由 FR-005 `check all` 统一执行，配置见 §11 Config Schema `secret_scan` 节）
+- L2 发布就绪门禁：校验 `.agent/l2-capabilities.yaml` 能力清单，从 registry 解析契约测试要求，验证契约测试证据和文件级证据完整性，生成发布就绪评分 artifact
 
 ---
 
