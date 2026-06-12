@@ -8,7 +8,7 @@
 
 ## 1. Metadata
 
-- Status: Draft
+- Status: Approved
 - Spec-Version: v1.0.0
 - Last-Updated: 2026-06-07
 - Owner: ZoneCNH
@@ -23,6 +23,7 @@
 
 | 日期 | 版本 | 变更内容 | 作者 |
 |------|------|----------|------|
+| 2026-06-12 | v1.0.1 | 对齐修复：移除过时 kernel.Deps 引用；Status Draft→Approved；依赖方向修正 kernel 为允许依赖；TRACEABILITY 完整重写 | ZoneCNH |
 | 2026-06-07 | v1.0.0 | 初始版本 | ZoneCNH |
 
 ## 2. Summary
@@ -65,10 +66,10 @@
 
 | 消费者 | 使用方式 |
 |--------|----------|
-| `kernel.Deps` | 接收 `configx.Reader` 接口 |
-| 所有 L1 运行时模块 | 通过 `Reader.Get()` 读取本模块配置 |
-| 业务域模块 | 通过 `Reader.Get()` 读取业务配置 |
-| `x.go` | 创建 Config，注入到 kernel.Deps |
+| L1 运行时模块（observex, resiliencx, schedulex） | 通过 `Reader` 接口读取本模块配置 |
+| 业务域模块 | 通过 `Reader` 接口读取业务配置 |
+| `x.go` 组合根 | 创建 Config 实例，注入到各模块 |
+| 存储扩展（redisx, kafkax 等） | 通过 `Reader` 接口读取连接配置 |
 
 ---
 
@@ -336,9 +337,10 @@ go 1.23
 | 可以依赖 | 禁止依赖 |
 |----------|----------|
 | stdlib | observex, resiliencx, schedulex, testkitx |
-| `gopkg.in/yaml.v3`（可选） | kernel |
-| `github.com/pelletier/go-toml/v2`（可选） | 所有业务域实现 |
-| `github.com/santhosh-tekuri/jsonschema/v5`（可选） | 所有存储/中间件扩展 |
+| `kernel` (L0 原语) | 所有业务域实现 |
+| `gopkg.in/yaml.v3`（可选） | 所有存储/中间件扩展 |
+| `github.com/pelletier/go-toml/v2`（可选） | |
+| `github.com/santhosh-tekuri/jsonschema/v5`（可选） | |
 
 ---
 
