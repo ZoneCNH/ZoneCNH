@@ -53,7 +53,7 @@
 | NFR-003 | healthx.Aggregate 10元素 | < 10μs | Benchmark `BenchmarkAggregate` | TASK-KERNEL-011 | ✅ |
 | NFR-004 | retryx.Delay 计算性能 | < 100ns | Benchmark `BenchmarkDelay` | TASK-KERNEL-009 | ✅ |
 | NFR-005 | 常驻内存（全子包导入） | < 5MB | Profiling `go test -memprofile` | TASK-KERNEL-016 | ✅ |
-| NFR-006 | 测试覆盖率 | ≥ 80% | `go tool cover -func` | TASK-KERNEL-016 | ✅ |
+| NFR-006 | 测试覆盖率 | ≥ 90% | `go tool cover -func` | TASK-KERNEL-016 | ✅ |
 | NFR-007 | 敏感数据不泄露到日志 | SecretString 三层保护 | TC-009 String/JSON/gob 脱敏 | TASK-KERNEL-003 | ✅ |
 | NFR-008 | 无硬编码密钥 | 全仓扫描零命中 | `gitleaks detect --no-git` | TASK-KERNEL-016 | ✅ |
 

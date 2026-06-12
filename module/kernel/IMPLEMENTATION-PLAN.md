@@ -165,7 +165,7 @@ validx / retryx / contextx / healthx 互相无依赖，可同时开发。仅需�
 | 契约测试 | 014 | `go test -race ./contracts/...` |
 | Benchmark | 001, 002, 009, 011 | `go test -bench=. -benchmem -count=3 ./...` |
 | stdlib-only | ALL | CI gate |
-| 覆盖率 | ALL | `go tool cover` ≥ 80% |
+| 覆盖率 | ALL | `go tool cover` ≥ 90% |
 | Race 检测 | ALL | `go test -race -count=1 ./...` |
 
 ---

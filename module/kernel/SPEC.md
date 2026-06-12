@@ -1212,7 +1212,7 @@ kernel 本身通过 `obsx` 子包定义可观测接口，不触发具体观测�
 |------|------|----------|
 | 编译 | `go build ./...` | 编译失败 |
 | 测试 | `go test ./... -race -count=1` | 任何测试失败或 data race |
-| 覆盖率 | `go test ./... -coverprofile=coverage.out && go tool cover -func=coverage.out` | 总覆盖率 < 80% |
+| 覆盖率 | `go test ./... -coverprofile=coverage.out && go tool cover -func=coverage.out` | 总覆盖率 < 90% |
 | vet | `go vet ./...` | 任何 vet 错误 |
 | lint | `golangci-lint run` | 任何 lint 错误 |
 | 依赖检查 | `go mod tidy && git diff --exit-code go.mod go.sum` | go.mod 不整洁 |
@@ -1247,7 +1247,7 @@ kernel 本身通过 `obsx` 子包定义可观测接口，不触发具体观测�
 - [ ] 每个子包有 example_test.go 示例
 - [ ] CHANGELOG.md 已更新
 - [ ] README.md 包含：模块定位、子包清单、验证命令
-- [ ] 单元测试覆盖率 ≥ 80%
+- [ ] 单元测试覆盖率 ≥ 90%
 - [ ] `-race` 测试通过
 - [ ] Benchmark 结果无 > 10% 回退
 - [ ] `go vet` 无警告
