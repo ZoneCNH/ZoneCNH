@@ -1,637 +1,475 @@
 # redisx 完整规格
 
-> 基座 · 存储扩展。Redis 客户端封装，提供统一的连接管理、序列化、健康检查和可观测集成。
+> 基座 · Redis 基础能力封装。提供统一 Key、连接生命周期、KV/TTL、缓存、基础数据结构、Pub/Sub、Pipeline、分布式锁、计数限流、Codec、Health 和观测 hooks。
 
-最后更新：2026-06-07
+最后更新：2026-06-12
 
 ---
 
 ## 1. Metadata
 
-- Status: Draft
-- Spec-Version: v1.0.0
-- Last-Updated: 2026-06-07
-- Owner: ZoneCNH
-- Layer: 基座 · 存储扩展
-- Version: v0.7.3
-- Repository: [github.com/ZoneCNH/redisx](https://github.com/ZoneCNH/redisx)
-- Related: [CONSTITUTION.md](../../CONSTITUTION.md), [ARCHITECTURE.md](../../ARCHITECTURE.md)
-
----
+| 字段 | 内容 |
+| --- | --- |
+| Status | Draft；等待四源评分与 `pipeline-arbiter` 翻转为 Approved |
+| Spec-Version | v1.0.0 |
+| Last-Updated | 2026-06-12 |
+| Owner | ZoneCNH |
+| Layer | 基座 · 存储扩展 |
+| Repository | [github.com/ZoneCNH/redisx](https://github.com/ZoneCNH/redisx) |
+| Branch | redisx-spec-100 |
+| Goal | [goal.md](./goal.md) |
+| Traceability | [TRACEABILITY.md](./TRACEABILITY.md) |
+| Task Specs | [tasks/](./tasks/) |
+| Governance | [CONSTITUTION.md](../../CONSTITUTION.md), [DEVELOPMENT-WORKFLOW.md](../../docs/governance/DEVELOPMENT-WORKFLOW.md) |
 
 ### 1.1 变更历史
 
-| 日期       | 版本   | 变更内容   | 作者    |
-| ---------- | ------ | ---------- | ------- |
-| 2026-06-07 | v1.0.0 | 初始版本   | ZoneCNH |
+| 日期 | 版本 | 变更内容 | 作者 |
+| --- | --- | --- | --- |
+| 2026-06-12 | v1.0.0 | 对齐 12 FR、10 BR、4 NFR、10 个任务和依赖边界 | Codex |
+
+---
 
 ## 2. Summary
 
-`redisx` 封装 Redis 客户端，提供统一的连接管理、序列化/反序列化、健康检查和可观测集成。支持基本 KV 操作、Hash 操作、List 操作、Pub/Sub、Pipeline 批量操作和分布式锁。与 kernel 生命周期集成，保证连接池随应用启停。
+`redisx` 是 Redis 的标准化访问和治理封装。它提供统一 KeyBuilder、typed Options、连接生命周期、KV/TTL、cache-aside、Hash/List、Pub/Sub、Pipeline、token owner 分布式锁、Counter、fixed-window RateLimitHelper、JSON 默认 Codec、自定义 Codec SPI、Health、pool stats 和低基数观测 hooks。
+
+`redisx` 的直接 Go 依赖边界是 Go 标准库、`github.com/ZoneCNH/kernel` 和 Redis 客户端库。`configx`、`observex`、`resiliencx`、`contracts` 只能作为外部配置投影、指标命名约定、上层 adapter 或文档约束出现，不能成为 `redisx` 生产代码的直接 import。
 
 ---
 
 ## 3. Problem
 
-70+ 模块中有多个需要使用 Redis（缓存、状态存储、分布式锁、Pub/Sub），各自封装会导致：
+多个模块需要 Redis 支撑缓存、锁、计数、限流、Pub/Sub 和状态存储。如果各模块各自封装，会产生以下问题：
 
-- 连接池配置不一致，部分模块创建过多连接
-- 序列化方式不统一（JSON / msgpack / protobuf 混用）
-- 健康检查各自为政，无法统一报告 Redis 可用性
-- 可观测集成缺失，Redis 延迟和错误无法被 metrics 采集
-- 分布式锁实现重复且存在安全隐患
+- Key 命名、环境隔离、版本迁移和敏感信息脱敏不一致。
+- TTL 默认值、jitter、null-cache 和防击穿策略缺失，容易产生缓存穿透、击穿和雪崩。
+- 分布式锁实现容易缺失 token、lease、续期和 guarded release，导致误释放或死锁。
+- Redis 错误、context 超时、连接池状态和慢操作缺少统一分类和可观测证据。
+- 业务模块容易直接绑定 Redis 客户端细节，后续迁移或治理成本升高。
 
 ---
 
 ## 4. Goals
 
-- 提供统一的 Redis 客户端封装，覆盖 KV、Hash、List、Pub/Sub 操作
-- Pipeline 批量操作支持，减少网络往返
-- 分布式锁（供 schedulex 等模块使用）
-- 统一序列化/反序列化（可配置 codec）
-- 健康检查（PING）集成到 kernel 健康体系
-- 可观测集成（metrics、tracing、logging）
-- 与 kernel 生命周期集成（连接池随应用启停）
+| 目标 | 发布要求 | 对应需求 |
+| --- | --- | --- |
+| Key 规范 | 提供可校验、可脱敏、可版本化的 KeyBuilder | FR-001 |
+| 客户端生命周期 | 提供 typed Options、New、Close、连接池、超时、TLS 和 kernel 生命周期集成 | FR-002 |
+| KV 与 TTL | 提供 Get/Set/Del/Exists/Expire/TTL 和默认 TTL 策略 | FR-003, FR-004 |
+| Cache | 提供 cache-aside、null-cache、GetOrLoad、防击穿控制 | FR-005 |
+| Redis 基础结构 | 提供 Hash/List、Pub/Sub、Pipeline 的最小稳定封装 | FR-006, FR-007, FR-008 |
+| 分布式锁 | 提供 token owner、lease、renew、Lua guarded release | FR-009 |
+| 计数限流 | 提供 Counter 和 fixed-window RateLimitHelper | FR-010 |
+| 序列化 | 提供 JSON 默认 Codec 和自定义 Codec SPI | FR-011 |
+| 健康观测 | 提供 Health、pool stats 和低基数 hooks | FR-012 |
 
 ---
 
 ## 5. Non-goals
 
-- 不做 Redis 集群管理（Sentinel / Cluster 由运维配置）
-- 不做 Redis 数据结构抽象（直接暴露 Redis 命令）
-- 不做缓存策略（业务层决定 TTL、淘汰策略）
-- 不做 Redis 模块加载或脚本管理
-- 不做配置解析（→ `configx`）
+- 不封装 Redis 的全部命令集合，只稳定 1.0 明确列出的能力。
+- 不管理 Redis Cluster、Sentinel、备份、扩缩容、认证轮换或运维拓扑。
+- 不承诺跨 Redis 集群的强一致锁。
+- 不解析配置文件，不直接 import `configx`。
+- 不直接 import `observex`、`resiliencx` 或 `contracts`；观测和弹性只通过本地接口或上层 adapter 接入。
+- 不鼓励业务绕过 KeyBuilder 直接拼接 Key。
+- 不把缓存一致性事件系统内建到 `redisx`；与 `kafkax`、`natsx` 等联动由上层实现。
 
 ---
 
 ## 6. Consumers
 
-| 消费者          | 使用方式                                        |
-| --------------- | ----------------------------------------------- |
-| `schedulex`     | 通过 `Locker` 实现分布式任务锁                  |
-| `market-data`   | 缓存最新行情快照                                |
-| `signal-engine` | 缓存因子计算中间结果                            |
-| `risk-engine`   | 存储风控状态和阈值                              |
-| 业务域模块      | 通过 `Client` 接口进行 KV/Hash/List/PubSub 操作 |
+| 消费者 | 使用方式 | 关键约束 |
+| --- | --- | --- |
+| `schedulex` | 通过 `Locker` 实现分布式任务锁 | 必须使用 token owner 和 TTL |
+| `market-data` | 缓存最新行情快照和热点对象 | 必须使用 KeyBuilder、TTL、Codec |
+| `signal-engine` | 缓存因子计算中间结果 | 禁止记录完整业务 Key |
+| `risk-engine` | 存储风控状态、阈值和计数 | context 超时必须可控 |
+| 业务域模块 | 使用 `Client`、`CacheClient`、`Counter`、`RateLimitHelper` | 不直接依赖 Redis 客户端细节 |
+| 平台 adapter | 将外部配置、观测、弹性策略投影为 redisx Options/hooks | adapter 在模块外实现 |
 
 ---
 
 ## 7. Functional Requirements
 
-### FR-001: Get
-
-WHEN 调用 `Get(ctx, key)` 且 key 存在
-THEN 返回对应的字符串值，error 为 nil
-
-WHEN 调用 `Get(ctx, key)` 且 key 不存在
-THEN 返回 `redis.Nil` 错误
-
-WHEN 调用 `Get(ctx, key)` 且连接不可用
-THEN 返回连接错误
-
-### FR-002: Set
-
-WHEN 调用 `Set(ctx, key, value, ttl)` 且 ttl > 0
-THEN 设置 key-value 并设置过期时间，返回 nil
-
-WHEN 调用 `Set(ctx, key, value, ttl)` 且 ttl = 0
-THEN 设置 key-value，不设置过期时间，返回 nil
-
-WHEN 调用 `Set(ctx, key, value, ttl)` 且 value 不可序列化
-THEN 返回序列化错误
-
-### FR-003: Del
-
-WHEN 调用 `Del(ctx, keys...)` 且部分 key 存在
-THEN 删除存在的 key，返回 nil（不报错）
-
-WHEN 调用 `Del(ctx, keys...)` 且所有 key 不存在
-THEN 返回 nil（幂等）
-
-### FR-004: Exists
-
-WHEN 调用 `Exists(ctx, keys...)`
-THEN 返回存在的 key 数量
-
-### FR-005: Expire
-
-WHEN 调用 `Expire(ctx, key, ttl)` 且 key 存在
-THEN 设置过期时间，返回 nil
-
-WHEN 调用 `Expire(ctx, key, ttl)` 且 key 不存在
-THEN 返回 nil（不报错）
-
-### FR-006: HGet / HSet
-
-WHEN 调用 `HGet(ctx, key, field)` 且 field 存在
-THEN 返回字段值
-
-WHEN 调用 `HGet(ctx, key, field)` 且 field 不存在
-THEN 返回 `redis.Nil`
-
-WHEN 调用 `HSet(ctx, key, values...)`
-THEN 设置 hash 字段，返回 nil
-
-### FR-007: LPush / LRange
-
-WHEN 调用 `LPush(ctx, key, values...)`
-THEN 将值插入列表头部，返回 nil
-
-WHEN 调用 `LRange(ctx, key, start, stop)` 且列表存在
-THEN 返回指定范围的元素
-
-WHEN 调用 `LRange(ctx, key, start, stop)` 且列表不存在
-THEN 返回空切片
-
-### FR-008: Subscribe
-
-WHEN 调用 `Subscribe(ctx, channels...)` 且连接正常
-THEN 返回消息 channel，error 为 nil
-
-WHEN 订阅后连接断开
-THEN 自动重连，重连失败时通过 channel 发送错误
-
-WHEN ctx 被取消
-THEN 关闭订阅，释放资源
-
-### FR-009: Pipeline
-
-WHEN 调用 `Pipeline()` 获取 Pipeline 实例
-THEN 返回新的 Pipeline
-
-WHEN 调用 `pipeline.Exec(ctx)` 且所有命令成功
-THEN 按顺序返回所有命令结果
-
-WHEN 调用 `pipeline.Exec(ctx)` 且部分命令失败
-THEN 返回已成功的命令结果和第一个错误
-
-### FR-010: Locker.Acquire
-
-WHEN 调用 `Acquire(ctx, key, ttl)` 且锁未被持有
-THEN 获取锁成功，返回 true
-
-WHEN 调用 `Acquire(ctx, key, ttl)` 且锁已被其他持有者持有
-THEN 返回 false
-
-WHEN 锁持有者崩溃（ttl 到期）
-THEN 锁自动释放
-
-### FR-011: Locker.Release
-
-WHEN 调用 `Release(ctx, key)` 且当前持有者为调用方
-THEN 释放锁，返回 nil
-
-WHEN 调用 `Release(ctx, key)` 且当前持有者不是调用方
-THEN 返回错误，不释放锁（防止误释放）
-
-### FR-012: Health
-
-WHEN 调用 `Health()` 且 Redis PING 成功
-THEN 返回 HealthStatus{Ready: true, Live: true}
-
-WHEN 调用 `Health()` 且 Redis 不可达
-THEN 返回 HealthStatus{Ready: false, Live: false, Message: "..."}
+| ID | Requirement Statement | Acceptance Criteria | Test Case | Task |
+| --- | --- | --- | --- | --- |
+| FR-001 | WHEN 调用 KeyBuilder 基于 namespace/env/service/version/entity/id/purpose 构造 Key；THEN 输出确定性 Key 和脱敏 pattern，并拒绝空 segment、非法字符、超长 segment、直接业务裸 Key。 | AC-001-1: KeyBuilder 覆盖合法 Key、非法 segment、版本化 Key 和脱敏 pattern。 | TC-001-1 | TASK-REDISX-001 |
+| FR-002 | WHEN 调用 `New(ctx, Options)`；THEN 使用 typed Options 创建 Redis client、连接池、timeout、DB、TLS、Codec 和 kernel 生命周期 hook；WHEN 多次 `Close()`；THEN 幂等释放资源。 | AC-002-1: Options 校验、New、Close、pool 参数和生命周期 hook 有单元或契约测试。 | TC-002-1 | TASK-REDISX-000 |
+| FR-003 | WHEN 调用 KV `Get`、`Set`、`Del`；THEN 所有调用尊重 context、Codec 和错误映射；missing key 返回 `ErrNotFound`，`Del` 对不存在 Key 幂等。 | AC-003-1: Get/Set/Del 覆盖存在、不存在、序列化失败、context 取消和删除幂等。 | TC-003-1 | TASK-REDISX-002 |
+| FR-004 | WHEN 调用 `Exists`、`Expire`、`TTL` 或使用默认 TTL 策略；THEN 返回存在数量、更新 TTL、读取 TTL，并对未显式 TTL 的缓存写入应用默认 TTL 与 jitter。 | AC-004-1: Exists/Expire/TTL/default TTL/jitter 均有测试，不允许缓存写入无意永不过期。 | TC-004-1 | TASK-REDISX-002 |
+| FR-005 | WHEN 调用 `CacheClient.GetOrLoad`、`Set`、`Invalidate`；THEN 支持 cache-aside、null-cache、防击穿单进程合并、TTL jitter 和 Codec 解码失败处理。 | AC-005-1: CacheClient 覆盖 hit、miss、loader error、null-cache、防击穿和 Codec 错误。 | TC-005-1 | TASK-REDISX-003 |
+| FR-006 | WHEN 调用 Hash/List 最小封装；THEN `HGet/HSet`、`LPush/LRange` 提供稳定语义，missing field/key 返回可识别状态或空结果。 | AC-006-1: Hash/List 覆盖写入、读取、缺失、范围和 context 取消。 | TC-006-1 | TASK-REDISX-004 |
+| FR-007 | WHEN 调用 `Publish` 或 `Subscribe`；THEN 发布返回订阅者数量，订阅尊重 context cancellation，重连失败通过错误事件返回并释放资源。 | AC-007-1: Pub/Sub 覆盖发布、接收、取消、连接失败和资源释放。 | TC-007-1 | TASK-REDISX-004 |
+| FR-008 | WHEN 调用 Pipeline 添加命令并 `Exec(ctx)`；THEN 以单次网络往返提交非原子批量命令，按排队顺序返回结果，并暴露部分错误。 | AC-008-1: Pipeline 覆盖有序结果、部分错误、context 取消和非原子语义文档。 | TC-008-1 | TASK-REDISX-005 |
+| FR-009 | WHEN 调用 `Locker.Acquire/Renew/Release`；THEN 使用 token owner、TTL、续期和 Lua guarded release，禁止释放其他 owner 的锁。 | AC-009-1: 锁竞争、TTL 到期、续期、误释放防护和 holder token 校验均通过。 | TC-009-1 | TASK-REDISX-006 |
+| FR-010 | WHEN 调用 Counter 或 fixed-window RateLimitHelper；THEN 原子执行 incr/add/get/reset/allow，返回 remaining/resetAt，并保证窗口 TTL。 | AC-010-1: Counter 与 RateLimitHelper 覆盖原子计数、窗口过期、并发和剩余额度。 | TC-010-1 | TASK-REDISX-007 |
+| FR-011 | WHEN 使用默认 Codec 或注入自定义 Codec；THEN 默认 JSON 稳定，Decode 接收目标类型，自定义 Codec 错误被分类且不泄露完整 Key。 | AC-011-1: 默认 JSON、自定义 Codec、Encode/Decode 错误和错误脱敏有测试。 | TC-011-1 | TASK-REDISX-000, TASK-REDISX-003 |
+| FR-012 | WHEN 调用 `Health(ctx)`、读取 pool stats 或执行 Redis 操作；THEN 输出 PING 状态、pool active/idle、低基数指标/log hooks 和脱敏错误。 | AC-012-1: Health、pool stats、hook 事件、指标名和低基数标签约束有测试。 | TC-012-1 | TASK-REDISX-008, TASK-REDISX-009 |
 
 ---
 
 ## 8. Business Rules
 
-| 编号   | 规则                                               |
-| ------ | -------------------------------------------------- |
-| BR-001 | 连接池大小通过配置控制，默认 10                    |
-| BR-002 | 序列化/反序列化使用可配置 codec，默认 JSON         |
-| BR-003 | 所有操作必须接受 `context.Context`，支持超时和取消 |
-| BR-004 | 分布式锁必须使用唯一持有者标识（防止误释放）       |
-| BR-005 | 分布式锁必须设置 TTL，防止持有者崩溃导致死锁       |
-| BR-006 | Pipeline 原子性：单次网络往返发送所有命令          |
-| BR-007 | Health() 必须是幂等的、无副作用的                  |
-| BR-008 | 连接断开时自动重连，重连策略可配置                 |
-| BR-009 | 错误消息不包含 key 的实际值（防泄露敏感数据）      |
+| ID | Rule | Acceptance Criteria | Test Case | Task |
+| --- | --- | --- | --- | --- |
+| BR-001 | Key 必须包含 namespace/env/service/version/entity/id 或 purpose，禁止业务直接传入裸 Key。 | AC-BR-001: 裸 Key 和非法 segment 被拒绝。 | TC-BR-001 | TASK-REDISX-001 |
+| BR-002 | 配置只能通过 typed `Options` 注入；`redisx` 不读取文件、环境变量或配置中心。 | AC-BR-002: Options 默认值和校验路径不依赖配置包。 | TC-BR-002 | TASK-REDISX-001 |
+| BR-003 | 所有网络操作必须接受 `context.Context` 并尊重取消、deadline 和超时。 | AC-BR-003: 关键操作覆盖 context cancel/deadline 测试。 | TC-BR-003 | TASK-REDISX-002, TASK-REDISX-004, TASK-REDISX-005, TASK-REDISX-007 |
+| BR-004 | 缓存写入必须有明确 TTL 策略；默认 TTL 不得为无意永不过期，并应支持 jitter。 | AC-BR-004: 默认 TTL、显式 no-expire 和 jitter 语义被区分。 | TC-BR-004 | TASK-REDISX-002, TASK-REDISX-003, TASK-REDISX-007 |
+| BR-005 | 分布式锁必须使用唯一 holder token、TTL、续期和释放校验。 | AC-BR-005: token mismatch 时 Release 不删除锁。 | TC-BR-005 | TASK-REDISX-006 |
+| BR-006 | Pipeline 是有序、非原子批量执行；部分失败必须返回有序结果和第一个错误。 | AC-BR-006: 文档和测试覆盖非原子与部分错误。 | TC-BR-006 | TASK-REDISX-005 |
+| BR-007 | 错误必须分类并脱敏；日志、metrics 和 trace 不得包含完整 Key、连接串或凭据。 | AC-BR-007: 错误包装和 hook payload 不包含敏感值。 | TC-BR-007 | TASK-REDISX-000, TASK-REDISX-003, TASK-REDISX-006 |
+| BR-008 | 重试、重连和熔断只能通过本地 hooks 或上层 adapter 接入，不直接依赖 `resiliencx`。 | AC-BR-008: hook 接口可表达 retry/reconnect/circuit 事件且无禁止依赖。 | TC-BR-008 | TASK-REDISX-008 |
+| BR-009 | 指标标签必须低基数，只允许 operation、status、error_code、client、key_pattern 等字段。 | AC-BR-009: hook/metric 测试拒绝完整 Key 标签。 | TC-BR-009 | TASK-REDISX-008 |
+| BR-010 | 生产代码直接依赖仅限 stdlib、`kernel` 和 Redis client library。 | AC-BR-010: 静态依赖守卫禁止直接 import `configx/observex/resiliencx/contracts`。 | TC-BR-010 | TASK-REDISX-000, TASK-REDISX-008 |
 
 ---
 
-## 9. Interface Contract
+## 9. Non-Functional Requirements
+
+| ID | Requirement | Acceptance Criteria | Test Case | Task |
+| --- | --- | --- | --- | --- |
+| NFR-001 | 单元与契约测试覆盖所有公开接口、错误分类和依赖边界。 | AC-NFR-001: `go test ./...`、接口编译测试、依赖守卫通过。 | TC-NFR-001 | TASK-REDISX-000 |
+| NFR-002 | 真实 Redis 集成测试覆盖成功路径、失败路径、并发路径和 context 取消。 | AC-NFR-002: 集成测试可用 `REDIS_ADDR` 或 test harness 开启，默认短测不阻塞。 | TC-NFR-002 | TASK-REDISX-009 |
+| NFR-003 | 性能基线必须记录 KV、Pipeline、Locker、RateLimit 的 benchmark 预算。 | AC-NFR-003: benchmark 结果记录在发布证据，超预算需说明。 | TC-NFR-003 | TASK-REDISX-009 |
+| NFR-004 | README、配置投影说明、迁移说明和发布证据齐全。 | AC-NFR-004: README 示例、CHANGELOG、DoD 证据和 task 链接完整。 | TC-NFR-004 | TASK-REDISX-009 |
+
+---
+
+## 10. Interface Contract
 
 ```go
+type Options struct {
+    Addr            string
+    DB              int
+    Username        string
+    Password        string
+    TLSConfig       *tls.Config
+    PoolSize        int
+    MinIdleConns    int
+    DialTimeout     time.Duration
+    ReadTimeout     time.Duration
+    WriteTimeout    time.Duration
+    DefaultTTL      time.Duration
+    TTLJitter       time.Duration
+    Namespace       string
+    Environment     string
+    Service         string
+    KeyVersion      string
+    Codec           Codec
+    Hooks           []Hook
+}
+
+type KeyParts struct {
+    Entity  string
+    ID      string
+    Purpose string
+}
+
+type KeyBuilder interface {
+    Build(parts KeyParts) (Key, error)
+    Pattern(parts KeyParts) (string, error)
+}
+
+type Key struct {
+    Raw     string
+    Pattern string
+}
+
+type Codec interface {
+    Encode(value any) ([]byte, error)
+    Decode(data []byte, out any) error
+    Name() string
+}
+
 type Client interface {
-    Get(ctx context.Context, key string) (string, error)
-    Set(ctx context.Context, key string, value any, ttl time.Duration) error
-    Del(ctx context.Context, keys ...string) error
-    Exists(ctx context.Context, keys ...string) (int64, error)
-    Expire(ctx context.Context, key string, ttl time.Duration) error
-    HGet(ctx context.Context, key, field string) (string, error)
-    HSet(ctx context.Context, key string, values ...any) error
-    LPush(ctx context.Context, key string, values ...any) error
-    LRange(ctx context.Context, key string, start, stop int64) ([]string, error)
-    Subscribe(ctx context.Context, channels ...string) (<-chan Message, error)
+    Get(ctx context.Context, key Key, out any) error
+    Set(ctx context.Context, key Key, value any, ttl time.Duration) error
+    Del(ctx context.Context, keys ...Key) (int64, error)
+    Exists(ctx context.Context, keys ...Key) (int64, error)
+    Expire(ctx context.Context, key Key, ttl time.Duration) error
+    TTL(ctx context.Context, key Key) (time.Duration, error)
+    HGet(ctx context.Context, key Key, field string, out any) error
+    HSet(ctx context.Context, key Key, values map[string]any, ttl time.Duration) error
+    LPush(ctx context.Context, key Key, values ...any) (int64, error)
+    LRange(ctx context.Context, key Key, start, stop int64, out any) error
+    Publish(ctx context.Context, channel string, message any) (int64, error)
+    Subscribe(ctx context.Context, channels ...string) (Subscription, error)
     Pipeline() Pipeline
-    Health() HealthStatus
+    Health(ctx context.Context) HealthStatus
+    PoolStats() PoolStats
     Close() error
 }
 
+type CacheClient interface {
+    GetOrLoad(ctx context.Context, key Key, out any, loader LoaderFunc, ttl time.Duration) error
+    Set(ctx context.Context, key Key, value any, ttl time.Duration) error
+    Invalidate(ctx context.Context, keys ...Key) error
+}
+
 type Pipeline interface {
-    Get(key string) *StringCmd
-    Set(key string, value any, ttl time.Duration) *StatusCmd
-    Exec(ctx context.Context) ([]Cmder, error)
+    Get(key Key, out any)
+    Set(key Key, value any, ttl time.Duration)
+    Del(keys ...Key)
+    Exec(ctx context.Context) ([]PipelineResult, error)
 }
 
 type Locker interface {
-    Acquire(ctx context.Context, key string, ttl time.Duration) (bool, error)
-    Release(ctx context.Context, key string) error
+    Acquire(ctx context.Context, key Key, ttl time.Duration) (Lock, bool, error)
+    Renew(ctx context.Context, lock Lock, ttl time.Duration) error
+    Release(ctx context.Context, lock Lock) error
 }
 
-type Message struct {
-    Channel   string
-    Payload   []byte
-    Pattern   string
-    Timestamp time.Time
+type Counter interface {
+    Incr(ctx context.Context, key Key, ttl time.Duration) (int64, error)
+    Add(ctx context.Context, key Key, delta int64, ttl time.Duration) (int64, error)
+    Get(ctx context.Context, key Key) (int64, error)
+    Reset(ctx context.Context, key Key) error
 }
 
-type HealthStatus struct {
-    Ready   bool
-    Live    bool
-    Message string
+type RateLimitHelper interface {
+    Allow(ctx context.Context, key Key, limit int64, window time.Duration) (RateLimitResult, error)
 }
+```
 
-func New(opts ...Option) Client
-func NewLocker(client Client, opts ...LockerOption) Locker
-```text
-
-### 9.1 Option 模式
+Constructor contract:
 
 ```go
-type Option func(*config)
-
-func WithAddr(addr string) Option
-func WithPassword(password string) Option
-func WithDB(db int) Option
-func WithPoolSize(size int) Option
-func WithCodec(codec Codec) Option
-func WithHealthCheckInterval(d time.Duration) Option
-func WithMaxRetries(n int) Option
-func WithReadTimeout(d time.Duration) Option
-func WithWriteTimeout(d time.Duration) Option
-```text
-
-### 9.2 用法示例
-
-```go
-// 创建客户端
-client := redisx.New(
-    redisx.WithAddr(os.Getenv("FOUNDATIONX_REDIS_ADDR")),
-    redisx.WithPoolSize(20),
-)
-
-// 基本操作
-client.Set(ctx, "user:1:name", "alice", 10*time.Minute)
-name, err := client.Get(ctx, "user:1:name")
-
-// Hash 操作
-client.HSet(ctx, "user:1", "name", "alice", "age", "30")
-name, _ = client.HGet(ctx, "user:1", "name")
-
-// Pipeline 批量操作
-pipe := client.Pipeline()
-pipe.Set("key1", "val1", 0)
-pipe.Set("key2", "val2", 0)
-results, err := pipe.Exec(ctx)
-
-// 分布式锁
-locker := redisx.NewLocker(client)
-if ok, _ := locker.Acquire(ctx, "task:cleanup", 30*time.Second); ok {
-    defer locker.Release(ctx, "task:cleanup")
-    // 执行受保护的操作
-}
-
-// Pub/Sub
-ch, _ := client.Subscribe(ctx, "events:order")
-for msg := range ch {
-    fmt.Printf("received: %s\n", msg.Payload)
-}
-```text
+func New(ctx context.Context, opts Options) (Client, error)
+func NewCache(client Client, opts CacheOptions) CacheClient
+func NewLocker(client Client, opts LockOptions) Locker
+func NewCounter(client Client) Counter
+func NewRateLimitHelper(counter Counter) RateLimitHelper
+```
 
 ---
 
-## 10. Data Model
+## 11. Data Model
 
-### 10.1 公共错误
-
-```go
-var (
-    ErrConnectionFailed  = errors.New("redisx: connection failed")
-    ErrLockNotHeld       = errors.New("redisx: lock not held by caller")
-    ErrLockAcquireFailed = errors.New("redisx: lock acquire failed")
-    ErrPipelineEmpty     = errors.New("redisx: pipeline is empty")
-    ErrSubscribeFailed   = errors.New("redisx: subscribe failed")
-    ErrCodecNotSet       = errors.New("redisx: codec not configured")
-)
-```text
-
-### 10.2 Codec 接口
-
-```go
-type Codec interface {
-    Marshal(v any) ([]byte, error)
-    Unmarshal(data []byte, v any) error
-}
-```text
+| 数据对象 | 字段 | 语义 |
+| --- | --- | --- |
+| `Key` | `Raw`, `Pattern` | `Raw` 仅用于 Redis 操作；`Pattern` 用于日志和指标 |
+| `Options` | 连接、超时、pool、TTL、namespace、Codec、hooks | 唯一配置入口 |
+| `Lock` | `Key`, `Token`, `ExpiresAt` | 锁 owner token 和 lease 状态 |
+| `PipelineResult` | `Index`, `Operation`, `KeyPattern`, `Value`, `Error` | 有序返回结果和部分错误诊断 |
+| `RateLimitResult` | `Allowed`, `Limit`, `Remaining`, `ResetAt` | fixed-window 限流结果 |
+| `HealthStatus` | `Ready`, `Live`, `Message`, `PoolStats` | PING 和连接池健康 |
+| `PoolStats` | `Hits`, `Misses`, `Timeouts`, `TotalConns`, `IdleConns`, `StaleConns` | 连接池快照 |
+| `HookEvent` | `Operation`, `Status`, `ErrorCode`, `Duration`, `KeyPattern` | 低基数观测事件 |
 
 ---
 
-## 11. Config Schema
+## 12. Configuration Contract
 
-```yaml
-redisx:
-  addr: "${FOUNDATIONX_REDIS_ADDR}" # Redis 地址
-  password_env: REDIS_PASSWORD # 密码通过环境变量注入
-  db: 0                        # 数据库编号
-  pool_size: 10                # 连接池大小
-  min_idle_conns: 2            # 最小空闲连接数
-  max_retries: 3               # 最大重试次数
-  read_timeout: 3s             # 读超时
-  write_timeout: 3s            # 写超时
-  dial_timeout: 5s             # 连接超时
-  health_check_interval: 10s   # 健康检查周期
-  codec: json                  # 序列化方式：json / msgpack / protobuf
-```text
+`redisx` 不读取配置源，只接受 typed `Options`。上层可以把以下外部投影解码后传入：
 
----
+| 外部投影 | `Options` 字段 | 默认值 / 要求 |
+| --- | --- | --- |
+| `foundationx.redis.addr` | `Addr` | 必填；日志必须脱敏 |
+| `foundationx.redis.db` | `DB` | 默认 0 |
+| `foundationx.redis.pool.size` | `PoolSize` | 默认 10 |
+| `foundationx.redis.timeout.dial` | `DialTimeout` | 默认 500ms |
+| `foundationx.redis.timeout.read` | `ReadTimeout` | 默认 500ms |
+| `foundationx.redis.timeout.write` | `WriteTimeout` | 默认 500ms |
+| `foundationx.redis.default_ttl` | `DefaultTTL` | 缓存写入必须明确 |
+| `foundationx.redis.ttl_jitter` | `TTLJitter` | 默认 0，推荐开启 |
+| `foundationx.redis.namespace` | `Namespace` | 必填 |
+| `foundationx.redis.environment` | `Environment` | 必填 |
+| `foundationx.redis.service` | `Service` | 必填 |
+| `foundationx.redis.key_version` | `KeyVersion` | 默认 `v1` |
+| `foundationx.redis.codec` | `Codec` | 默认 JSON |
 
-## 12. Error Handling
+约束：
 
-| 错误                   | 调用方处理                                   |
-| ---------------------- | -------------------------------------------- |
-| `ErrConnectionFailed`  | 检查 Redis 地址和网络，确认 Redis 服务运行中 |
-| `redis.Nil`            | key 不存在，不是错误，调用方应处理空值       |
-| `ErrLockNotHeld`       | 确认是否已 Acquire，或锁已过期               |
-| `ErrLockAcquireFailed` | 锁被其他持有者持有，稍后重试或跳过           |
-| `ErrPipelineEmpty`     | Pipeline 无命令，检查调用逻辑                |
-| `ErrSubscribeFailed`   | 检查 subject 和连接状态                      |
-| 序列化错误             | 检查 value 类型是否与 codec 兼容             |
-
-**错误消息格式：** `"redisx: <operation>: <detail>"`
-**错误包装：** 使用 `%w` 保留底层错误链
+- `redisx` 生产代码不得 import `configx`。
+- 连接串、用户名、密码不得出现在日志、错误、metric label 或 trace tag 中。
+- 配置校验失败必须在 `New(ctx, Options)` 返回可分类错误，不访问 Redis。
 
 ---
 
-## 13. Edge Cases
+## 13. Error Model
 
-| 场景                       | 预期行为                             |
-| -------------------------- | ------------------------------------ |
-| Redis 不可达时调用 Get/Set | 返回 ErrConnectionFailed             |
-| 连接池耗尽                 | 等待直到有空闲连接或超时             |
-| Subscribe 期间连接断开     | 自动重连，重连失败发送错误到 channel |
-| Pipeline.Exec 时连接断开   | 返回错误，已入队命令丢失             |
-| Acquire 后进程崩溃         | TTL 到期后锁自动释放                 |
-| Release 非自己持有的锁     | 返回 ErrLockNotHeld，不释放          |
-| Set value 为 nil           | 返回序列化错误                       |
-| LRange start > stop        | 返回空切片                           |
-| Del 空 keys 列表           | 返回 nil                             |
-| 并发调用 Close             | 幂等，第二次调用无副作用             |
+| 错误 | 场景 | 处理要求 |
+| --- | --- | --- |
+| `ErrInvalidOptions` | Options 缺失地址、namespace 或 timeout 非法 | 不访问 Redis，返回参数错误 |
+| `ErrInvalidKey` | Key segment 空、过长、非法字符、裸 Key | 不访问 Redis，返回参数错误 |
+| `ErrNotFound` | Redis nil、key 或 hash field 不存在 | 可处理状态，不记录为系统错误 |
+| `ErrClosed` | Client 已关闭后继续调用 | 返回稳定错误，Close 幂等 |
+| `ErrTimeout` | context deadline 或 Redis 超时 | 返回可识别超时错误 |
+| `ErrSerialization` | Codec Encode/Decode 失败 | 不重试，错误脱敏 |
+| `ErrDependency` | Redis 连接、认证、网络或命令失败 | 包装原始错误类型但不泄露敏感值 |
+| `ErrLockNotHeld` | token mismatch、lease 丢失、释放非 owner 锁 | 不删除 Redis 锁 |
+| `ErrRateLimited` | fixed-window 不允许通过 | 返回业务可处理状态 |
 
----
-
-## 14. Directory Structure
-
-```text
-redisx/
-├── go.mod
-├── go.sum
-├── README.md
-├── CHANGELOG.md
-├── LICENSE
-├── doc.go
-├── redisx.go                   # Client 工厂
-├── client.go                   # Client 接口实现
-├── pipeline.go                 # Pipeline 接口实现
-├── locker.go                   # Locker 接口实现
-├── health.go                   # HealthStatus
-├── options.go                  # Option 模式
-├── errors.go                   # 公共错误变量
-├── codec.go                    # Codec 接口及默认 JSON codec
-├── internal/
-│   ├── pool/                   # 连接池封装
-│   └── codec/                  # 内部序列化工具
-├── testdata/
-│   └── redis.conf              # 测试用 Redis 配置
-├── example_test.go
-├── benchmark_test.go
-└── integration_test.go         # //go:build integration
-```text
+所有错误必须可用 `errors.Is` 或稳定 error code 判断。错误消息和 hook payload 只能使用 key pattern，不得包含完整 Key。
 
 ---
 
-## 15. Dependencies
+## 14. Security & Privacy
 
-### 15.1 go.mod
-
-```text
-module github.com/ZoneCNH/redisx
-
-go 1.23
-```text
-
-### 15.2 依赖方向
-
-| 可以依赖                   | 禁止依赖             |
-| -------------------------- | -------------------- |
-| stdlib                     | configx              |
-| kernel（L0 原语）          | 所有业务域实现       |
-| observex（interface-only） | 所有 L2.5 领域共享层 |
-| redis 客户端库（go-redis） |                      |
+- 连接地址、用户名、密码、完整 Key、payload 内容不得写入日志、metric label 或 trace tag。
+- `KeyBuilder.Pattern` 是观测唯一允许使用的 Key 表示。
+- Lock token 必须使用不可预测随机值，不能由业务 ID 直接派生。
+- Lua guarded release 必须先比较 token，再删除锁。
+- Pub/Sub payload 不在 redisx 内记录，只记录 channel 和 payload size。
+- README 与样例不得包含真实 Redis 凭据、内网地址或个人路径。
 
 ---
 
-## 16. Testing
+## 15. Observability Contract
 
-### 16.1 单元测试
+`redisx` 通过本地 hooks 输出事件，上层 adapter 可以转接到日志、metrics 或 trace 系统。生产代码不得直接 import `observex`。
 
-| 测试场景                 | 验证点                    |
-| ------------------------ | ------------------------- |
-| Get 存在的 key           | 返回正确值                |
-| Get 不存在的 key         | 返回 redis.Nil            |
-| Set 带 TTL               | 正确设置值和过期时间      |
-| Set 不带 TTL             | 正确设置值，无过期        |
-| Del 存在的 key           | 删除成功                  |
-| Del 不存在的 key         | 幂等，无错误              |
-| HGet/HSet                | Hash 字段读写正确         |
-| LPush/LRange             | List 操作正确             |
-| Pipeline 批量操作        | 所有命令正确执行          |
-| 分布式锁 Acquire/Release | 获取和释放正确            |
-| 分布式锁防误释放         | 非持有者 Release 返回错误 |
-| 健康检查                 | PING 成功/失败正确反映    |
-| Codec 序列化/反序列化    | JSON / msgpack 正确       |
-| 并发安全                 | -race 测试通过            |
+指标命名约定：
 
-### 16.2 Given/When/Then 用例
+| 指标 | 类型 | 标签 |
+| --- | --- | --- |
+| `foundationx_redis_operation_seconds` | histogram | `operation`, `status`, `client`, `key_pattern` |
+| `foundationx_redis_operation_total` | counter | `operation`, `status`, `error_code`, `client` |
+| `foundationx_redis_errors_total` | counter | `operation`, `error_code`, `client` |
+| `foundationx_redis_pool_active` | gauge | `client` |
+| `foundationx_redis_pool_idle` | gauge | `client` |
+| `foundationx_redis_lock_acquire_total` | counter | `status`, `client`, `key_pattern` |
+| `foundationx_redis_ratelimit_allowed_total` | counter | `status`, `client`, `key_pattern` |
 
-**TC-001: 基本 KV 操作**
-Given Redis 连接正常
-When Set("key", "value", 1m) 然后 Get("key")
-Then 返回 "value"
-
-**TC-002: 分布式锁互斥**
-Given 两个客户端 A 和 B
-When A.Acquire("lock", 10s) 成功
-Then B.Acquire("lock", 10s) 返回 false
-
-**TC-003: Pipeline 原子性**
-Given 连接正常
-When Pipeline 中 Set 3 个 key 然后 Exec
-Then 所有 3 个 key 都被设置
-
-**TC-004: 连接断开重连**
-Given Redis 连接正常
-When Redis 短暂不可用后恢复
-Then 下一次操作自动重连成功
-
-**TC-005: Exists 与 Expire**
-Given key 已 Set 且设置 TTL
-When 调用 Exists 和 Expire
-Then Exists 返回 true，TTL 更新成功
-
-**TC-006: Hash 读写**
-Given Redis 连接正常
-When HSet("hash", "field", "value") 后 HGet
-Then 返回 "value"
-
-**TC-007: List 操作**
-Given Redis 连接正常
-When LPush 两个元素后 LRange
-Then 按约定顺序返回两个元素
-
-**TC-008: Pub/Sub**
-Given subscriber 已订阅 subject
-When publisher 发布消息
-Then subscriber 收到该消息
-
-**TC-009: Health 检查**
-Given Redis 连接正常
-When 调用 Health
-Then 返回 healthy；连接失败时返回 unhealthy
-
-### 16.3 Benchmark
-
-| 场景                        | 目标   |
-| --------------------------- | ------ |
-| 单次 Get/Set（本地 Redis）  | < 1ms  |
-| Pipeline 100 命令           | < 5ms  |
-| 分布式锁 Acquire/Release    | < 2ms  |
-| 序列化/反序列化（1KB JSON） | < 10μs |
-
-### 16.4 集成测试
-
-| 场景              | 验证点                         |
-| ----------------- | ------------------------------ |
-| 完整 KV 操作链    | Set → Get → Del → Exists       |
-| Pub/Sub 消息投递  | Subscribe → Publish → 收到消息 |
-| Pipeline 批量操作 | 100 命令正确执行               |
-| 分布式锁过期      | TTL 到期后锁自动释放           |
-| 连接断开恢复      | 断开后自动重连                 |
+允许的低基数标签只有 `operation`、`status`、`error_code`、`client`、`key_pattern`。禁止使用完整 Key、Redis addr、用户名、payload、业务用户 ID 作为标签。
 
 ---
 
-## 17. Performance Budget
+## 16. Performance Budgets
 
-| 操作                       | 目标        | 测量方式       |
-| -------------------------- | ----------- | -------------- |
-| 单次 Get/Set（本地 Redis） | < 1ms       | benchmark test |
-| Pipeline 100 命令          | < 5ms       | benchmark test |
-| 分布式锁 Acquire/Release   | < 2ms       | benchmark test |
-| 常驻内存                   | < 5MB       | profiling      |
-| 连接池空闲连接             | ≤ pool_size | 配置约束       |
+| 场景 | 预算 | 验证 |
+| --- | --- | --- |
+| KeyBuilder | p95 < 5us，无堆外资源 | `BenchmarkKeyBuilder` |
+| JSON Codec 小对象 | p95 < 500us，错误可分类 | `BenchmarkJSONCodec` |
+| KV Get/Set 本地 Redis | p95 < 10ms，p99 < 30ms | `BenchmarkKV` |
+| Pipeline 10 命令 | 相比串行至少减少 50% round-trip 时间 | `BenchmarkPipeline` |
+| Locker Acquire/Release | p95 < 20ms，竞争路径无误释放 | `BenchmarkLocker` |
+| RateLimitHelper | p95 < 10ms，并发下计数正确 | `BenchmarkRateLimit` |
+| Hook 开销 | 空 hook p95 < 1us | `BenchmarkHook` |
 
----
-
-## 18. Observability
-
-| 类型   | 名称                         | 说明                       |
-| ------ | ---------------------------- | -------------------------- |
-| metric | `redisx.command.duration`    | histogram，命令耗时        |
-| metric | `redisx.command.errors`      | counter，命令失败次数      |
-| metric | `redisx.pool.size`           | gauge，连接池大小          |
-| metric | `redisx.pool.idle`           | gauge，空闲连接数          |
-| metric | `redisx.pipeline.commands`   | histogram，Pipeline 命令数 |
-| metric | `redisx.lock.acquire.count`  | counter，锁获取次数        |
-| metric | `redisx.lock.acquire.failed` | counter，锁获取失败次数    |
-| log    | `redisx.connected`           | info，连接成功             |
-| log    | `redisx.disconnected`        | warn，连接断开             |
-| log    | `redisx.reconnecting`        | info，正在重连             |
-| log    | `redisx.lock.acquired`       | debug，获取锁成功          |
-| log    | `redisx.lock.released`       | debug，释放锁成功          |
+性能预算作为发布证据。不同机器或 Redis 环境下超预算时，必须记录环境和原因，不得静默忽略。
 
 ---
 
-## 19. Security
+## 17. Test Plan
 
-| 要求                  | 实现方式                                 |
-| --------------------- | ---------------------------------------- |
-| 密码不硬编码          | 通过环境变量或 secret manager 注入       |
-| 密码不写日志          | 日志中对密码字段脱敏                     |
-| 错误消息不泄露 key 值 | 错误消息只包含 key 名，不包含实际值      |
-| 锁释放校验            | 只有持有者才能释放锁（Lua 脚本原子校验） |
-
----
-
-## 20. CI Gate
-
-### 20.1 通用 Gate
-
-| Gate        | 命令                                                                                                               | 阻塞条件                 |
-| ----------- | ------------------------------------------------------------------------------------------------------------------ | ------------------------ |
-| 编译        | `go build ./...`                                                                                                   | 编译失败                 |
-| 测试        | `go test ./... -race -count=1`                                                                                     | 任何测试失败或 data race |
-| 覆盖率      | `mkdir -p .coverage && go test ./... -coverprofile=.coverage/cover.out && go tool cover -func=.coverage/cover.out` | 总覆盖率 < 80%           |
-| vet         | `go vet ./...`                                                                                                     | 任何 vet 错误            |
-| lint        | `golangci-lint run`                                                                                                | 任何 lint 错误           |
-| 依赖检查    | `go mod tidy && git diff --exit-code go.mod go.sum`                                                                | go.mod 不整洁            |
-| Secret 扫描 | `gitleaks detect --no-git`                                                                                         | 泄露 secret              |
-| Benchmark   | `go test -bench=. -benchmem -count=3 ./...`                                                                        | 结果附在 PR comment      |
-
-### 20.2 redisx 专属 Gate
-
-| Gate     | 命令                              | 阻塞条件                    |
-| -------- | --------------------------------- | --------------------------- |
-| 集成测试 | `go test -tags=integration ./...` | Redis 不可达时 skip，不阻塞 |
-
----
-
-## 21. Upgrade Compatibility
-
-| 变更类型                 | 版本升级                      |
-| ------------------------ | ----------------------------- |
-| Client 接口新增方法      | **minor**（实现需跟上）       |
-| Client 接口删除/修改方法 | **major**                     |
-| Pipeline 接口变更        | **major**                     |
-| Locker 接口变更          | **major**                     |
-| Option 新增字段          | minor（带默认值）             |
-| 默认 codec 变更          | **minor**（注意序列化兼容性） |
+| Test Case | 覆盖 | 类型 | 任务 |
+| --- | --- | --- | --- |
+| TC-001-1 | KeyBuilder 合法/非法 segment、版本、pattern | Unit | TASK-REDISX-001 |
+| TC-002-1 | Options、New、Close、pool、lifecycle hook | Unit/Contract | TASK-REDISX-000 |
+| TC-003-1 | Get/Set/Del、ErrNotFound、Codec、context | Unit/Integration | TASK-REDISX-002 |
+| TC-004-1 | Exists/Expire/TTL/default TTL/jitter | Unit/Integration | TASK-REDISX-002 |
+| TC-005-1 | Cache hit/miss/null-cache/GetOrLoad 防击穿 | Unit/Integration | TASK-REDISX-003 |
+| TC-006-1 | Hash/List 写入、读取、缺失和取消 | Integration | TASK-REDISX-004 |
+| TC-007-1 | Publish/Subscribe、取消、失败事件、资源释放 | Integration | TASK-REDISX-004 |
+| TC-008-1 | Pipeline 有序结果、部分错误、非原子语义 | Integration | TASK-REDISX-005 |
+| TC-009-1 | Lock acquire/renew/release、token mismatch、TTL | Concurrency/Integration | TASK-REDISX-006 |
+| TC-010-1 | Counter、RateLimit、并发、窗口 TTL | Concurrency/Integration | TASK-REDISX-007 |
+| TC-011-1 | JSON Codec、自定义 Codec、Encode/Decode 错误 | Unit | TASK-REDISX-000, TASK-REDISX-003 |
+| TC-012-1 | Health、PoolStats、HookEvent、指标名 | Unit/Integration | TASK-REDISX-008, TASK-REDISX-009 |
+| TC-BR-001 | 裸 Key 和非法 segment 拒绝 | Unit | TASK-REDISX-001 |
+| TC-BR-002 | Options-only 配置入口 | Static/Unit | TASK-REDISX-001 |
+| TC-BR-003 | 网络操作 context cancel/deadline | Unit/Integration | TASK-REDISX-002, TASK-REDISX-004, TASK-REDISX-005, TASK-REDISX-007 |
+| TC-BR-004 | TTL 默认、显式无过期和 jitter | Unit/Integration | TASK-REDISX-002, TASK-REDISX-003, TASK-REDISX-007 |
+| TC-BR-005 | Lock token owner 和 release guard | Concurrency | TASK-REDISX-006 |
+| TC-BR-006 | Pipeline 部分失败与非原子语义 | Integration | TASK-REDISX-005 |
+| TC-BR-007 | 错误脱敏与分类 | Unit/Static | TASK-REDISX-000, TASK-REDISX-003, TASK-REDISX-006 |
+| TC-BR-008 | retry/reconnect/circuit 事件通过本地 hook 表达 | Unit | TASK-REDISX-008 |
+| TC-BR-009 | 指标低基数标签约束 | Unit/Static | TASK-REDISX-008 |
+| TC-BR-010 | 禁止直接依赖 configx/observex/resiliencx/contracts | Static | TASK-REDISX-000, TASK-REDISX-008 |
+| TC-NFR-001 | 公开接口、错误、依赖边界编译和静态守卫 | Static/Unit | TASK-REDISX-000 |
+| TC-NFR-002 | 真实 Redis 集成、失败路径、并发路径 | Integration | TASK-REDISX-009 |
+| TC-NFR-003 | KV、Pipeline、Locker、RateLimit benchmark | Benchmark | TASK-REDISX-009 |
+| TC-NFR-004 | README、CHANGELOG、发布 DoD 证据 | Documentation | TASK-REDISX-009 |
 
 ---
 
-## 22. Release DoD
+## 18. CI / Gates
 
-- [ ] 所有公共接口有 godoc 注释
-- [ ] 所有公共类型有示例代码
-- [ ] CHANGELOG.md 已更新
-- [ ] README.md 包含：模块定位、快速开始、配置说明、API 概览
-- [ ] 单元测试覆盖率 ≥ 80%
-- [ ] `-race` 测试通过
-- [ ] Benchmark 结果无 > 10% 回退
-- [ ] `go vet` 无警告
-- [ ] `golangci-lint` 无错误
-- [ ] Secret 扫描通过
-- [ ] 公共 API 无破坏性变更（或已 bump major）
-- [ ] 所有 Functional Requirements 有对应测试
-- [ ] 所有 Edge Cases 有对应测试
+最小门禁：
+
+- `go test ./...`
+- `go test -race ./...`
+- `go test -run Integration ./...`，需要 Redis 时通过 `REDIS_ADDR` 或 test harness 显式开启。
+- `go test -bench . ./... -run '^$'` 生成性能证据。
+- 静态依赖守卫：生产代码不得 import `configx`、`observex`、`resiliencx`、`contracts` 或业务域模块。
+- 文档守卫：`SPEC.md`、`TRACEABILITY.md`、task specs、`module/README.md` 的 FR、BR、NFR、Task ID 必须一致。
+- `git diff --check`
 
 ---
 
-## 23. Open Questions
+## 19. Rollout / Migration
 
-- 是否需要支持 Redis Cluster 模式（自动分片）？
-- 分布式锁是否需要支持可重入（同一持有者多次 Acquire）？
-- 是否需要支持 Lua 脚本执行（EVAL）？
-- Pub/Sub 是否需要支持模式匹配订阅（PSUBSCRIBE）？
-- 是否需要支持 Redis Streams（替代简单 Pub/Sub）？
+1. 先发布 `Options`、`KeyBuilder`、`Codec`、错误模型和只读 Health，冻结公共契约。
+2. 迁移下游缓存调用到 KeyBuilder 和 KV/TTL API，禁止继续裸 Key。
+3. 迁移分布式锁到 token owner Locker，并保留旧锁 key 的 TTL 过渡窗口。
+4. 迁移计数和限流到 Counter/RateLimitHelper，记录窗口 key pattern。
+5. 接入上层配置投影和观测 adapter，但保持 `redisx` 内部无禁止依赖。
+6. 发布前运行集成、race、benchmark 和依赖守卫，归档证据。
+
+Rollback 策略：
+
+- 公共 API 未冻结前允许回滚到旧封装。
+- Key 版本升级必须通过 `KeyVersion` 产生新 Key namespace，不直接覆盖旧 Key。
+- Lock 迁移必须等待旧锁 TTL 自然过期，禁止强删未知 owner 锁。
+
+---
+
+## 20. Compatibility
+
+- Go module 路径为 `github.com/ZoneCNH/redisx`。
+- Go 版本跟随仓库当前治理基线。
+- 默认 Redis client library 为 `github.com/redis/go-redis/v9`；替换 Redis 客户端必须保持公共接口和错误语义兼容。
+- 1.0 后 `Client`、`CacheClient`、`Locker`、`Counter`、`RateLimitHelper`、`KeyBuilder`、`Codec`、`HealthStatus` 为稳定契约。
+- 新增 Redis 命令必须通过新 task spec 和追溯矩阵进入，不得扩大既有 task scope。
+
+---
+
+## 21. Edge Cases
+
+| Edge Case | 预期行为 |
+| --- | --- |
+| Options 地址为空 | `New` 返回 `ErrInvalidOptions`，不访问 Redis |
+| Key segment 为空或含非法字符 | KeyBuilder 返回 `ErrInvalidKey` |
+| Key 超长 | KeyBuilder 拒绝并返回脱敏错误 |
+| `Get` missing key | 返回 `ErrNotFound`，不作为系统错误计数 |
+| Codec Decode 目标类型错误 | 返回 `ErrSerialization`，不泄露完整 Key |
+| context 已取消 | 不发起或尽快停止 Redis 操作，返回 context 错误 |
+| `Close` 多次调用 | 幂等返回 nil 或稳定 closed 状态 |
+| TTL 为 0 | 仅在显式允许 no-expire 的 API 路径中有效 |
+| Pipeline 部分命令失败 | 返回有序结果和第一个错误 |
+| Lock token mismatch | `Release` 不删除锁，返回 `ErrLockNotHeld` |
+| Subscribe ctx 取消 | 关闭 subscription 并释放连接 |
+| RateLimitHelper 并发冲突 | 原子计数，remaining 和 resetAt 一致 |
+| Hook panic | hook 执行不得破坏 Redis 操作结果，应转换为内部诊断 |
+
+---
+
+## 22. Risks / Mitigations
+
+| 风险 | 影响 | 缓解 |
+| --- | --- | --- |
+| Redis 客户端行为泄漏到公共 API | 后续替换困难 | 公共接口只暴露 redisx 类型和稳定错误 |
+| 业务绕过 KeyBuilder | Key 无法治理和脱敏 | Client API 接收 `Key` 而非裸 string |
+| 锁误释放其他 owner 的锁 | 数据竞争或重复执行 | token owner + Lua guarded release |
+| 缓存默认无 TTL | 内存无限增长 | 默认 TTL 策略和静态/单测守卫 |
+| 指标标签高基数 | 观测系统成本失控 | 仅允许 key pattern 和固定标签 |
+| 直接依赖治理模块 | 破坏 foundation deps | 依赖守卫和 task 非目标约束 |
+| 集成测试依赖 Redis 环境 | CI 不稳定 | 短测默认跳过真实 Redis，集成由显式 env 开启 |
+
+---
+
+## 23. Definition of Done
+
+- `goal.md`、`SPEC.md`、`TRACEABILITY.md`、10 个 task spec 和 `module/README.md` 的 12 FR、10 BR、4 NFR、10 task 映射一致。
+- 每个 FR 至少有 AC、TC、Task，且 task 文件存在。
+- 每个 task spec 引用不超过 3 个 FR，文件 scope 不超过 5 个文件，并包含 Scope、Non-Scope、Test Plan、Done Evidence。
+- 生产代码直接依赖仅限 stdlib、`kernel` 和 Redis client library。
+- 所有公开接口、错误模型、配置投影、观测 hooks、性能预算和迁移策略均有测试或发布证据。
+- `git diff --check` 通过。
+- 四源结构评分和 `pipeline-arbiter` 通过后，才可将 Status 翻转为 Approved。
+
+Open Questions: none blocking.
