@@ -70,7 +70,7 @@
 
 | 指标 | 基线 | 目标值 | 验证方式 |
 |------|------|--------|----------|
-| 单元测试覆盖率 | 0% | ≥ 80% | `go tool cover` |
+| 单元测试覆盖率 | 0% | ≥ 90% | `go tool cover` |
 | errx.NewError 构造 | — | < 100ns | Benchmark |
 | errx.IsKind 5 层链遍历 | — | < 1μs | Benchmark |
 | healthx.Aggregate 10 元素 | — | < 10μs | Benchmark |
@@ -268,7 +268,7 @@ kernel 本身不需要配置。各子包通过构造函数参数或结构体字�
 
 | 测试类型 | 必须覆盖内容 | 发布门禁 |
 | --- | --- | --- |
-| 单元测试 | 每个子包的核心逻辑（构造、状态转换、边界场景） | MUST 通过，覆盖率 ≥ 80% |
+| 单元测试 | 每个子包的核心逻辑（构造、状态转换、边界场景） | MUST 通过，覆盖率 ≥ 90% |
 | Example 测试 | 每个子包有 example_test.go | MUST 通过，输出稳定 |
 | 并发测试 | syncx.SemaphoreLimiter、syncx.WorkerGroup 并发安全 | MUST 通过 `-race` |
 | 依赖检查 | stdlib-only gate | MUST 通过 `go list -deps` |

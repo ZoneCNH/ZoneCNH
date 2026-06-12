@@ -7,7 +7,7 @@
 ```yaml
 task_id: TASK-KERNEL-001
 module: kernel
-scope: "实现 errx 子包：ErrorKind/Severity 类型、Error 结构体、NewError/WrapError/IsKind/AsError/ShouldRetry"
+scope: "实现 errx 子包：ErrorKind/Severity 类型、Error 结构体、NewError/WrapError/IsKind/AsError"
 spec_ref:
   - "module/kernel/SPEC.md#FR-002"
   - "module/kernel/SPEC.md#BR-004"
