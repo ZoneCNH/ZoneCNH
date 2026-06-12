@@ -1,6 +1,6 @@
 # xlibgate 需求追溯矩阵
 
-> 更新：2026-06-12（Matrix v1.1 — 结构评分修复：FR 表 AC 列改为具体 AC-00X 引用、BR-005 补充 TC-008、新增 TC-008/AC-009）
+> 更新：2026-06-12（Matrix v1.2 — 实现状态回填：FR/BR/NFR Status 列更新反映实际实现进展，Task 总数 7→9 修正）
 > 来源：module/xlibgate/SPEC.md v1.0.1
 > 规范：docs/governance/TRACEABILITY.md
 
@@ -10,12 +10,18 @@
 
 | FR | Description | Acceptance Criteria | Test Case | Task | Status |
 |----|-------------|---------------------|-----------|------|--------|
-| FR-001 | check imports：扫描 import 语句，检测禁止的依赖方向（业务域反向依赖基座、生产包依赖 testkitx），违规时输出文件路径和行号 | AC-001 | TC-001（import 边界违规） | TASK-XLIBGATE-002 | ⬜ |
-| FR-002 | check gomod：执行 `go mod tidy` 检查 go.mod 整洁度，有 diff 时输出 diff 详情 | AC-002 | TC-002（go.mod 整洁） | TASK-XLIBGATE-003 | ⬜ |
-| FR-003 | check baseline：验证所有模块 go.mod 中 `go` 指令版本与 expected 一致，不匹配时输出模块列表和版本差异 | AC-003 | TC-003（baseline 不匹配） | TASK-XLIBGATE-004 | ⬜ |
-| FR-004 | check release：收集和校验 release evidence，缺失或不通过时输出失败列表 | AC-004 | TC-006（release evidence） | TASK-XLIBGATE-005 | ⬜ |
-| FR-005 | check all：执行所有子检查（imports/gomod/baseline/release/secret_scan），部分失败继续执行其余检查，汇总所有子检查结果 | AC-005 | TC-004, TC-005, TC-008 | TASK-XLIBGATE-006 | ⬜ |
-| FR-006 | 输出格式：支持 JSON（含 status/checks[]/summary）和 human-readable（含文件路径行号、带颜色终端输出） | AC-006 | TC-007 | TASK-XLIBGATE-006 | ⬜ |
+| FR-001 | check imports：扫描 import 语句，检测禁止的依赖方向（业务域反向依赖基座、生产包依赖 testkitx），违规时输出文件路径和行号 | AC-001 | TC-001（import 边界违规） | TASK-XLIBGATE-002 | ⚠️ |
+| FR-002 | check gomod：执行 `go mod tidy` 检查 go.mod 整洁度，有 diff 时输出 diff 详情 | AC-002 | TC-002（go.mod 整洁） | TASK-XLIBGATE-003 | ✅ |
+| FR-003 | check baseline：验证所有模块 go.mod 中 `go` 指令版本与 expected 一致，不匹配时输出模块列表和版本差异 | AC-003 | TC-003（baseline 不匹配） | TASK-XLIBGATE-004 | ✅ |
+| FR-004 | check release：收集和校验 release evidence，缺失或不通过时输出失败列表 | AC-004 | TC-006（release evidence） | TASK-XLIBGATE-005 | 🔴 |
+| FR-005 | check all：执行所有子检查（imports/gomod/baseline/release/secret_scan），部分失败继续执行其余检查，汇总所有子检查结果 | AC-005 | TC-004, TC-005, TC-008 | TASK-XLIBGATE-006 | ⚠️ |
+| FR-006 | 输出格式：支持 JSON（含 status/checks[]/summary）和 human-readable（含文件路径行号、带颜色终端输出） | AC-006 | TC-007 | TASK-XLIBGATE-006 | ⚠️ |
+
+> Status 说明：✅=已完成, ⚠️=部分完成/需修复, 🔴=未按 SPEC 实现
+> FR-001 修复项：移除硬编码 DefaultForbiddenModules，实现 deps.yaml 配置加载
+> FR-004 修复项：实现 evidence.json 加载和 schema 校验（当前仅为 imports+gomod+baseline 组合）
+> FR-005 修复项：--expected 参数改为 --config
+> FR-006 修复项：实现 --output json/text 和 --artifact 参数，添加终端颜色检测
 
 ---
 
@@ -23,15 +29,21 @@
 
 | BR | Description | 违反后果 | 验证方式 | Task | Status |
 |----|-------------|----------|----------|------|--------|
-| BR-001 | 标准化 exit code：0=pass, 1=fail, 2=error | CI 无法正确判断门禁结果 | TC-004（部分失败→exit 1）, TC-005（错误→exit 2） | TASK-XLIBGATE-006 | ⬜ |
-| BR-002 | import 规则从 deps.yaml 读取，不硬编码 | 规则变更需改代码重新编译 | FR-001 WHEN/THEN `--config` 参数覆盖 | TASK-XLIBGATE-002 | ⬜ |
-| BR-003 | baseline 从配置或 `--expected` 参数获取，不硬编码 | 版本升级需改代码 | FR-003 WHEN/THEN 参数和配置 fallback | TASK-XLIBGATE-004 | ⬜ |
-| BR-004 | evidence schema 与 xlib-standard 定义的 Evidence 标准一致 | 跨工具 evidence 不可互操作 | FR-004 schema 验证（JSON 格式 + 必需字段） | TASK-XLIBGATE-005 | ⬜ |
-| BR-005 | secret 扫描使用 gitleaks 作为底层工具 | 自研扫描器漏报 | TC-008（secret 扫描命中检测）、`check all` 中 gitleaks 集成调用 | TASK-XLIBGATE-006 | ⬜ |
-| BR-006 | check all 必须执行所有子检查，即使前面检查已失败 | 部分检查被跳过，门禁不完整 | TC-004（部分失败后继续）, TC-005（error 后继续） | TASK-XLIBGATE-006 | ⬜ |
-| BR-007 | JSON 输出必须包含 machine-readable 的 status 字段 | CI 解析失败 | TC-007（JSON 字段完整性） | TASK-XLIBGATE-006 | ⬜ |
-| BR-008 | human-readable 输出必须包含文件路径和行号 | 开发者无法定位违规位置 | TC-001（违规含文件路径行号）, TC-002（diff 位置信息）, TC-008（secret 命中含文件路径行号） | TASK-XLIBGATE-002 | ⬜ |
-| BR-009 | 依赖矩阵文件 `FOUNDATION-DEPS.yaml` schema 与 xlib-standard 定义一致 | deps.yaml 解析失败 | FR-001 config 加载（YAML 解析 + schema 校验） | TASK-XLIBGATE-002 | ⬜ |
+| BR-001 | 标准化 exit code：0=pass, 1=fail, 2=error | CI 无法正确判断门禁结果 | TC-004（部分失败→exit 1）, TC-005（错误→exit 2） | TASK-XLIBGATE-006 | ✅ |
+| BR-002 | import 规则从 deps.yaml 读取，不硬编码 | 规则变更需改代码重新编译 | FR-001 WHEN/THEN `--config` 参数覆盖 | TASK-XLIBGATE-002 | 🔴 |
+| BR-003 | baseline 从配置或 `--expected` 参数获取，不硬编码 | 版本升级需改代码 | FR-003 WHEN/THEN 参数和配置 fallback | TASK-XLIBGATE-004 | ✅ |
+| BR-004 | evidence schema 与 xlib-standard 定义的 Evidence 标准一致 | 跨工具 evidence 不可互操作 | FR-004 schema 验证（JSON 格式 + 必需字段） | TASK-XLIBGATE-005 | 🔴 |
+| BR-005 | secret 扫描使用 gitleaks 作为底层工具 | 自研扫描器漏报 | TC-008（secret 扫描命中检测）、`check all` 中 gitleaks 集成调用 | TASK-XLIBGATE-006 | 🔴 |
+| BR-006 | check all 必须执行所有子检查，即使前面检查已失败 | 部分检查被跳过，门禁不完整 | TC-004（部分失败后继续）, TC-005（error 后继续） | TASK-XLIBGATE-006 | ✅ |
+| BR-007 | JSON 输出必须包含 machine-readable 的 status 字段 | CI 解析失败 | TC-007（JSON 字段完整性） | TASK-XLIBGATE-006 | ⚠️ |
+| BR-008 | human-readable 输出必须包含文件路径和行号 | 开发者无法定位违规位置 | TC-001（违规含文件路径行号）, TC-002（diff 位置信息）, TC-008（secret 命中含文件路径行号） | TASK-XLIBGATE-002 | ✅ |
+| BR-009 | 依赖矩阵文件 `FOUNDATION-DEPS.yaml` schema 与 xlib-standard 定义一致 | deps.yaml 解析失败 | FR-001 config 加载（YAML 解析 + schema 校验） | TASK-XLIBGATE-002 | ⚠️ |
+
+> Status 说明：✅=已完成, ⚠️=部分完成/需修复, 🔴=未按 SPEC 实现
+> BR-002 修复项：实现 deps.yaml 加载，移除硬编码 DefaultForbiddenModules
+> BR-004 修复项：需 FR-004 先实现 evidence.json 加载
+> BR-005 修复项：集成 gitleaks（exec 调用或 Go SDK）
+> BR-007 修复项：需 FR-006 --artifact/--output 参数实现
 
 ---
 
@@ -39,16 +51,21 @@
 
 | NFR | Description | 目标值 | 验证方式 | Task | Status |
 |-----|-------------|--------|----------|------|--------|
-| NFR-001 | 全量门禁性能（50 模块） | < 30s | Benchmark `BenchmarkCheckAll` | TASK-XLIBGATE-006 | ⬜ |
-| NFR-002 | import 扫描性能（50 模块） | < 10s | Benchmark `BenchmarkCheckImports` | TASK-XLIBGATE-002 | ⬜ |
-| NFR-003 | go.mod 检查性能（50 模块） | < 5s | Benchmark `BenchmarkCheckGomod` | TASK-XLIBGATE-003 | ⬜ |
-| NFR-004 | baseline 检查性能（50 模块） | < 5s | Benchmark `BenchmarkCheckBaseline` | TASK-XLIBGATE-004 | ⬜ |
-| NFR-005 | JSON 报告生成性能 | < 100ms | Benchmark `BenchmarkReportJSON` | TASK-XLIBGATE-006 | ⬜ |
-| NFR-006 | 内存占用 | < 100MB | Profiling `go test -memprofile` | TASK-XLIBGATE-006 | ⬜ |
-| NFR-007 | 测试覆盖率 | >= 80% | `go tool cover -func` | TASK-XLIBGATE-006 | ⬜ |
-| NFR-008 | 无硬编码密钥 | 全仓扫描零命中 | `gitleaks detect --no-git` | TASK-XLIBGATE-006 | ⬜ |
-| NFR-009 | secret 扫描不泄露敏感数据 | 错误消息只含文件路径和行号 | review 错误输出格式 | TASK-XLIBGATE-006 | ⬜ |
-| NFR-010 | 无 Foundation 运行时依赖 | `go list -deps` 零命中 ZoneCNH 模块 | CI gate `go list -deps ./...` | TASK-XLIBGATE-006 | ⬜ |
+| NFR-001 | 全量门禁性能（50 模块） | < 30s | Benchmark `BenchmarkCheckAll` | TASK-XLIBGATE-006 | ⚠️ |
+| NFR-002 | import 扫描性能（50 模块） | < 10s | Benchmark `BenchmarkCheckImports` | TASK-XLIBGATE-002 | ⚠️ |
+| NFR-003 | go.mod 检查性能（50 模块） | < 5s | Benchmark `BenchmarkCheckGomod` | TASK-XLIBGATE-003 | ⚠️ |
+| NFR-004 | baseline 检查性能（50 模块） | < 5s | Benchmark `BenchmarkCheckBaseline` | TASK-XLIBGATE-004 | ⚠️ |
+| NFR-005 | JSON 报告生成性能 | < 100ms | Benchmark `BenchmarkReportJSON` | TASK-XLIBGATE-006 | ⚠️ |
+| NFR-006 | 内存占用 | < 100MB | Profiling `go test -memprofile` | TASK-XLIBGATE-006 | ⚠️ |
+| NFR-007 | 测试覆盖率 | >= 80% | `go tool cover -func` | TASK-XLIBGATE-006 | ⚠️ |
+| NFR-008 | 无硬编码密钥 | 全仓扫描零命中 | `gitleaks detect --no-git` | TASK-XLIBGATE-006 | 🔴 |
+| NFR-009 | secret 扫描不泄露敏感数据 | 错误消息只含文件路径和行号 | review 错误输出格式 | TASK-XLIBGATE-006 | ⚠️ |
+| NFR-010 | 无 Foundation 运行时依赖 | `go list -deps` 零命中 ZoneCNH 模块 | CI gate `go list -deps ./...` | TASK-XLIBGATE-006 | ✅ |
+
+> Status 说明：✅=已完成, ⚠️=需验证/待 benchmark, 🔴=未实现
+> NFR-001~006：核心逻辑已实现但 benchmark 未正式运行，status 标记 ⚠️（待验证）
+> NFR-007：当前 76.9%，低于 80% 要求
+> NFR-008：需 BR-005 gitleaks 集成后验证
 
 ---
 
@@ -97,7 +114,7 @@
 | NFR 总数 | 10 | NFR-001 ~ NFR-010 |
 | AC 总数 | 9 | AC-001 ~ AC-009 |
 | TC 总数 | 8 | TC-001 ~ TC-008 |
-| Task 总数 | 7 | TASK-XLIBGATE-000 ~ 006 |
+| Task 总数 | 9 | TASK-XLIBGATE-000 ~ 008 |
 
 ---
 
@@ -107,3 +124,4 @@
 |------|------|------|
 | 2026-06-12 | v1.0 | 初始版本：完整 7 列矩阵 + BR 行 + NFR 行 + TC 反向追溯 + AC 注册表 + 覆盖率仪表盘 |
 | 2026-06-12 | v1.1 | 结构评分修复：FR 表 AC 列改为具体 AC-00X 引用、BR-005 补充 TC-008 引用、新增 TC-008（secret 扫描）+ AC-009（gitleaks 验收）、BR-008 验证方式追加 TC-008、仪表盘同步更新 |
+| 2026-06-12 | v1.2 | 实现状态回填：FR/BR/NFR Status 列全部更新反映实际实现进展（✅/⚠️/🔴）；仪表盘 Task 总数 7→9 修正（补充 TASK-007 集成测试、TASK-008 文档+DoD）；§1-§3 新增 Status 说明和修复项注释 |
