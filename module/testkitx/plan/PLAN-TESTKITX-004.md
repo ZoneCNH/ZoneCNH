@@ -14,7 +14,7 @@ task_id: TASK-TESTKITX-004
 scope: "实现 FakeTracer，记录 spans 到内存供断言，以及 contract test harness"
 priority: P0
 estimated_effort: "2h"
-depends_on: [TASK-TESTKITX-000]
+depends_on: [TASK-TESTKITX-000, TASK-TESTKITX-001, TASK-TESTKITX-002, TASK-TESTKITX-003, TASK-TESTKITX-005]
 blocks: [TASK-TESTKITX-010]
 ```
 

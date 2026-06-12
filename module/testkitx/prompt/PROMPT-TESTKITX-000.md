@@ -10,6 +10,8 @@ spec_ref:
   - "module/testkitx/SPEC.md#15 (go.mod 依赖声明)"
   - "module/testkitx/SPEC.md#18 (可观测性)"
   - "module/testkitx/SPEC.md#19 (安全)"
+matrix_ref:
+  - "module/testkitx/TRACEABILITY.md"
 task_files:
   - "go.mod"
   - "doc.go"

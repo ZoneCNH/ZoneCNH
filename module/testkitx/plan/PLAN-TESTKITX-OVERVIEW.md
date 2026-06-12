@@ -106,6 +106,7 @@ testkitx/
 | `benchmark_test.go` | TASK-010 | 性能基准 |
 | `README.md` | TASK-010 | 模块文档 |
 | `CHANGELOG.md` | TASK-010 | 变更日志 |
+| `internal/spy/` | — | **v1.0.0 out-of-scope**（无对应 FR） |
 
 **文件无冲突**：所有文件由唯一的 task 负责，不存在两个 task 同时修改同一文件的情况。
 
@@ -247,6 +248,7 @@ Task 之间无依赖，可并行实现。
 | BoundaryCheck 误报（自身依赖） | Low | Low | 008 | 处理自身依赖不报违规（Edge Case） |
 | GoroutineLeakCheck 误报 | Low | Low | 009 | 允许少量 runtime goroutine 差异 |
 | 覆盖率不达标（<80%） | Medium | Medium | 010 | 在 TASK-010 中集中补充边界场景测试 |
+| SPEC §23 Open Questions 范围变更风险 | Low | Medium | 全部 | 标注为 v1.0.0 out-of-scope，后续版本评估 |
 
 ---
 
