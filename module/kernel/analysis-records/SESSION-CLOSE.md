@@ -94,7 +94,7 @@
 │       └── rules.json           100/0红线 (修复后)
 ├── prompt/
 │   └── scores/
-│       ├── claude.json           93/0红线
+│       ├── claude.json           100/0红线
 │       ├── claude.md             评分报告
 │       └── rules.json            85/0红线 (需另修路径)
 ├── code/
@@ -107,10 +107,6 @@
 │   │   └── rules.json           100/0红线 (修复后) ← 本次修复
 │   ├── TASK-TEMPLATE.md          pipeline副本(6.7KB)
 │   └── TRACEABILITY.md           pipeline副本(9.0KB, 已同步)
-└── scores/
-    ├── SESSION-CLOSE.md          117行 本次session终局
-    ├── meta-analysis.md          305行 Spec→Tasks三阶段融合分析
-    └── cross-stage-assessment.md 326行 Spec→Code六阶段跨阶段评估
 ```
 
 **评分源统计**: Claude 4/6(matrix=97, plan=96, prompt=100, tasks=84) | Rules 6/6(spec=96, matrix=100, plan=100, prompt=85, tasks=100, code=80/low) | Codex 0/6 | Copilot 0/6
