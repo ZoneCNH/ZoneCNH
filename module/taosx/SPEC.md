@@ -8,14 +8,14 @@
 | Spec-Version | v0.2.0 |
 | Last-Updated | 2026-06-13 |
 | Layer | L2 存储适配器 |
-| Module-Version | v1.0.0 |
+| Module-Version | v1.0.1 |
 | Related | `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `kernel` |
 
 ## 1. 摘要
 
-`taosx` 是 TDengine 的 L2 存储适配器契约模块。v1.0.0 交付 Go 侧可审计的适配器边界：配置归一化与脱敏、SQL 执行与查询契约、批量写入与 schemaless 写入契约、健康检查、可注入驱动端口和可选指标端口。
+`taosx` 是 TDengine 的 L2 存储适配器契约模块。v1.0.1 在保持 v1.0.0 公共 API 与适配器边界不变的前提下，交付 Go 侧可审计的配置归一化与脱敏、SQL 执行与查询契约、批量写入与 schemaless 写入契约、健康检查、可注入驱动端口和可选指标端口。
 
-v1.0.0 保持 `pkg/taosx` 为公共运行时 API：默认驱动仍显式不可用，真实 TDengine 通过 `WithDriver` 注入或测试适配器接入。发布验证已使用官方 `taosWS` WebSocket driver 在本地 dev 环境执行真实 `SHOW DATABASES` 集成测试；核心包仍不内置连接池、STMT 批量写入实现或自动重试策略。
+v1.0.1 保持 `pkg/taosx` 为公共运行时 API：默认驱动仍显式不可用，真实 TDengine 通过 `WithDriver` 注入或测试适配器接入。发布验证已使用官方 `taosWS` WebSocket driver 在本地 dev 环境执行真实 `SHOW TABLES` 集成测试，并补齐 batch rows / schemaless lines 指标语义与 `pkg/taosx` 100.0% 覆盖证据；核心包仍不内置连接池、STMT 批量写入实现或自动重试策略。
 
 ## 2. 目标
 
@@ -41,7 +41,7 @@ v1.0.0 保持 `pkg/taosx` 为公共运行时 API：默认驱动仍显式不可�
 | ID | 需求 | 验收标准 |
 | --- | --- | --- |
 | FR-001 | `Config.Normalize` 必须补齐默认名称、驱动模式和超时时间。 | 空名称归一化为包名，空驱动模式归一化为 WebSocket，零值超时归一化为 5 秒；负超时由校验拒绝。 |
-| FR-002 | `Config.Validate` 必须拒绝缺失名称、endpoint、database、非法驱动模式、负超时和负重试次数。 | 校验错误使用 `taosx.Config` 操作名，并不泄漏密码。 |
+| FR-002 | `Config.Validate` 必须拒绝缺失 endpoint、database、非法驱动模式、负超时和负重试次数；名称缺失由 `Config.Normalize` 补齐默认包名。 | 校验错误使用 `taosx.Config` 操作名，并不泄漏密码。 |
 | FR-003 | `New` 必须校验 context、配置和 options，并允许默认不可用驱动。 | 无注入驱动时构造成功；运行操作返回可重试的 unavailable 错误。 |
 | FR-004 | `Exec` 必须拒绝空 SQL statement，并把合法 statement 委托给注入驱动。 | 空 SQL 返回 validation error；驱动错误保留错误分类和操作名。 |
 | FR-005 | `Query` 必须拒绝空查询，并返回驱动提供的 `Rows`。 | 查询结果可以读取列、扫描行、关闭；驱动错误时不伪造结果。 |
@@ -128,7 +128,8 @@ defer rows.Close()
 - `go test ./examples/...`
 - `go test ./...`
 - `go test -race ./pkg/taosx ./contracts`
-- `go test ./pkg/taosx ./contracts -cover`（`pkg/taosx` 覆盖率 92.6%）
+- `go test ./pkg/taosx -coverprofile=/tmp/taosx.cover`
+- `go tool cover -func=/tmp/taosx.cover`（`pkg/taosx` 覆盖率 100.0%）
 - `./scripts/check_boundary.sh`
 - `./scripts/check_contracts.sh`
 - `./scripts/check_dependency_diff.sh`
