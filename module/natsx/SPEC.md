@@ -30,7 +30,7 @@
 
 | 日期 | 版本 | 变更内容 | 作者 |
 |------|------|----------|------|
-| 2026-06-13 | v1.0.0-draft | 对齐 natsx 全分修复证据：canonical metrics、metadata-only logs、redacted auth live test 与矩阵 20/20 repair-slice score | Codex |
+| 2026-06-13 | v1.0.0-draft | 对齐 natsx 全分修复证据：canonical metrics、secret-safe error/live evidence、redacted auth live test 与矩阵 20/20 repair-slice score | Codex |
 | 2026-06-12 | v1.0.0-draft | 记录 natsx 生命周期/投递修复基线与剩余发布阻塞项 | Codex |
 | 2026-06-07 | v1.0.0 | 初始版本 | ZoneCNH |
 
@@ -216,7 +216,7 @@ THEN 返回 HealthStatus{Ready: false, Live: true, Message: "jetstream unavailab
 
 公开 API 命名以 `goal.md` 的 1.0 逻辑接口基线为准：`NatsPubSubClient`、`NatsRequestClient`、`JetStreamClientX`、`NatsMessageEnvelope` 和 `SubjectBuilder`。实现可以保留内部适配器，但 Public API 不再暴露泛化的 `Client`/`JetStream` 命名作为 1.0 稳定契约。
 
-Implementation repair note (2026-06-13): `/home/natsx/pkg/natsx` exposes the concrete repair APIs (`Client`, `Envelope`, `SubjectBuilder`, `JetStreamClient`) and compatibility aliases (`NatsPubSubClient`, `NatsRequestClient`, `JetStreamClientX`, `NatsMessageEnvelope`) so executable behavior can be verified while preserving the 1.0 naming surface. The current aliases are evidence for compatibility; final interface factories remain governed by this contract.
+Implementation repair note (2026-06-13): `/home/natsx/pkg/natsx` exposes the concrete repair APIs (`Client`, `Envelope`, `SubjectBuilder`, `JetStreamClient`) and contract-adjacent concrete types used by the repair slice. The historical interface names in this SPEC remain target-contract names; they are not claimed as exported API shims. Final interface factories remain governed by this contract.
 
 ```go
 type NatsPubSubClient interface {
@@ -360,7 +360,7 @@ foundationx:
       ca-file: ""
 ```
 
-Executable repair evidence (2026-06-13): `ConfigFromEnv` / `LoadConfigFromEnv` 支持以下后缀，canonical `FOUNDATIONX_NATS_*` 优先，legacy `NATS_*` fallback：`NAME`、`URL`、`SERVERS`、`TOKEN`、`USERNAME`、`PASSWORD`、`NKEY_SEED`、`CREDENTIALS_FILE`、`TIMEOUT`、`DRAIN_TIMEOUT`、`MAX_RECONNECTS`、`RECONNECT_WAIT`、`ENABLE_JETSTREAM`。配置解析错误不得打印 token、password、nkey seed 或 credentials file 内容。
+Executable repair evidence (2026-06-13): `ConfigFromEnv` / `LoadConfigFromEnv` 支持以下后缀，canonical `FOUNDATIONX_NATS_*` 优先，legacy `NATS_*` fallback：`NAME`、`CLIENT_NAME`、`URL`、`SERVERS`、`TOKEN`、`USERNAME`、`PASSWORD`、`NKEY_SEED`、`CREDENTIALS_FILE`、`TIMEOUT`、`DRAIN_TIMEOUT`、`MAX_RECONNECTS`、`RECONNECT_WAIT`、`ENABLE_JETSTREAM`。配置解析错误不得打印 token、password、nkey seed 或 credentials file 内容。
 
 ---
 
@@ -600,7 +600,7 @@ Executable repair evidence (2026-06-13): `/home/natsx` commit `393d148` records 
 | package tests | `GOWORK=off go test ./pkg/natsx -count=1` | 任何测试失败 |
 | vet | `GOWORK=off go vet ./pkg/natsx` | 任何 vet 错误 |
 | live gate default | `GOWORK=off go test ./pkg/natsx -run TestLiveNATSIntegration -count=1` | gate unset 时应 skip/pass |
-| live local integration | `NATSX_LIVE_INTEGRATION=1 FOUNDATIONX_NATS_URL=<redacted-dev-url> FOUNDATIONX_NATS_USERNAME=<redacted> FOUNDATIONX_NATS_PASSWORD=<redacted> GOWORK=off go test ./pkg/natsx -run TestLiveNATSIntegration -count=1 -v` | 仅允许显式授权的 dev/test 端点；凭据来自 redacted dev config，测试输出不得打印凭据 |
+| live local integration | `NATSX_LIVE_INTEGRATION=1 FOUNDATIONX_NATS_URL=<redacted-local-or-dev-url> FOUNDATIONX_NATS_USERNAME=<redacted> FOUNDATIONX_NATS_PASSWORD=<redacted> GOWORK=off go test ./pkg/natsx -run TestLiveNATSIntegration -count=1 -v` | 仅允许显式授权的 dev/test 端点；凭据来自授权的 local/dev NATS config，测试输出不得打印凭据 |
 
 ---
 
