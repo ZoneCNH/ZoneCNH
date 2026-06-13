@@ -1,8 +1,8 @@
 # TASK-TRANSPORTX-003: ServiceIdentity
 
 - **Module**: transportx
-- **Spec**: `module/transportx/SPEC.md` v1.1.1
-- **FRs**: FR-007
+- **spec_ref**: module/transportx/SPEC.md#FR-007
+
 - **ACs**: AC-007
 - **TCs**: TC-007
 - **Phase**: Foundation Contracts (Phase 1)

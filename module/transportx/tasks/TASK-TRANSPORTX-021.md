@@ -1,8 +1,9 @@
 # TASK-TRANSPORTX-021: Audit Plane
 
 - **Module**: transportx
-- **Spec**: `module/transportx/SPEC.md` v1.1.1
-- **FRs**: FR-023
+- **spec_ref**: module/transportx/SPEC.md#FR-023
+- **BR_ref**: module/transportx/SPEC.md#BR-015
+
 - **ACs**: AC-023
 - **TCs**: TC-023
 - **Phase**: Data Integrity (Phase 5)

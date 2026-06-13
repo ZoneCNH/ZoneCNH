@@ -1,8 +1,8 @@
 # TASK-TRANSPORTX-020: Outbox/Inbox SPI
 
 - **Module**: transportx
-- **Spec**: `module/transportx/SPEC.md` v1.1.1
-- **FRs**: FR-022
+- **spec_ref**: module/transportx/SPEC.md#FR-022
+
 - **ACs**: AC-022
 - **TCs**: TC-022
 - **Phase**: Data Integrity (Phase 5)

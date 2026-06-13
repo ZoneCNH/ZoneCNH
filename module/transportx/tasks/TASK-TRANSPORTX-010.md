@@ -1,8 +1,9 @@
 # TASK-TRANSPORTX-010: MethodRegistry
 
 - **Module**: transportx
-- **Spec**: `module/transportx/SPEC.md` v1.1.1
-- **FRs**: FR-020
+- **spec_ref**: module/transportx/SPEC.md#FR-020
+- **BR_ref**: module/transportx/SPEC.md#BR-017
+
 - **ACs**: AC-020
 - **TCs**: TC-020
 - **Phase**: QoS + Codec + Registry (Phase 2)

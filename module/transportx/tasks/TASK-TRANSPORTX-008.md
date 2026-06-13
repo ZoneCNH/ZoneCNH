@@ -1,8 +1,8 @@
 # TASK-TRANSPORTX-008: Codec Interface + JSON Implementation
 
 - **Module**: transportx
-- **Spec**: `module/transportx/SPEC.md` v1.1.1
-- **FRs**: FR-018
+- **spec_ref**: module/transportx/SPEC.md#FR-018
+
 - **ACs**: AC-018
 - **TCs**: TC-018
 - **Phase**: QoS + Codec + Registry (Phase 2)

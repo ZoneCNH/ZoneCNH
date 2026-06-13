@@ -1,8 +1,8 @@
 # TASK-TRANSPORTX-018: Idempotency
 
 - **Module**: transportx
-- **Spec**: `module/transportx/SPEC.md` v1.1.1
-- **FRs**: FR-010
+- **spec_ref**: module/transportx/SPEC.md#FR-010
+
 - **ACs**: AC-010
 - **TCs**: TC-010
 - **Phase**: Advanced Features (Phase 4)

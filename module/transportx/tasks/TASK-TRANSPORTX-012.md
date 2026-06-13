@@ -1,9 +1,9 @@
 # TASK-TRANSPORTX-012: Middleware Chain + Redaction Order
 
 - **Module**: transportx
-- **Spec**: `module/transportx/SPEC.md` v1.1.1
-- **FRs**: FR-014
-- **BRs**: BR-002, BR-009
+- **spec_ref**: module/transportx/SPEC.md#FR-014
+- **BR_ref**: module/transportx/SPEC.md#BR-001, #BR-002
+
 - **ACs**: AC-014
 - **TCs**: TC-014
 - **Phase**: Middleware + Control (Phase 3)

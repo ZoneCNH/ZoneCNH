@@ -1,8 +1,9 @@
 # TASK-TRANSPORTX-002: Endpoint Model + Registry
 
 - **Module**: transportx
-- **Spec**: `module/transportx/SPEC.md` v1.1.1
-- **FRs**: FR-003
+- **spec_ref**: module/transportx/SPEC.md#FR-003
+- **BR_ref**: module/transportx/SPEC.md#BR-006
+
 - **ACs**: AC-003
 - **TCs**: TC-003
 - **Phase**: Foundation Contracts (Phase 1)

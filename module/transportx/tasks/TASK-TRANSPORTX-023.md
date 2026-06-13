@@ -1,8 +1,9 @@
 # TASK-TRANSPORTX-023: Schema Compatibility
 
 - **Module**: transportx
-- **Spec**: `module/transportx/SPEC.md` v1.1.1
-- **FRs**: FR-015, FR-025
+- **spec_ref**: module/transportx/SPEC.md#FR-015 ,#FR-025
+- **BR_ref**: module/transportx/SPEC.md#BR-011
+
 - **ACs**: AC-015, AC-025
 - **TCs**: TC-015, TC-025
 - **Phase**: CI + Release (Phase 6)

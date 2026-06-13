@@ -1,8 +1,8 @@
 # TASK-TRANSPORTX-011: SchemaRegistry
 
 - **Module**: transportx
-- **Spec**: `module/transportx/SPEC.md` v1.1.1
-- **FRs**: FR-025
+- **spec_ref**: module/transportx/SPEC.md#FR-025
+
 - **BRs**: BR-006, BR-011
 - **ACs**: AC-025
 - **TCs**: TC-025
