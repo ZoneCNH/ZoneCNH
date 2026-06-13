@@ -6,6 +6,8 @@
 
 ---
 
+
+
 ## 1. Metadata
 
 - Status: Draft
@@ -295,7 +297,7 @@ func NewRateLimitHelper(counter Counter) RateLimitHelper
 
 ---
 
-## 12. Configuration Contract
+## 12. Config Schema
 
 `redisx` 不读取配置源，只接受 typed `Options`。上层可以把以下外部投影解码后传入：
 
@@ -372,7 +374,7 @@ func DefaultConfig() Config {
 
 ---
 
-## 13. Error Model
+## 13. Error Handling
 
 | 错误 | 场景 | 处理要求 |
 | --- | --- | --- |
@@ -390,54 +392,63 @@ func DefaultConfig() Config {
 
 ---
 
-## 14. Security & Privacy
+## 14. Edge Cases
 
-- 连接地址、用户名、密码、完整 Key、payload 内容不得写入日志、metric label 或 trace tag。
-- `KeyBuilder.Pattern` 是观测唯一允许使用的 Key 表示。
-- Lock token 必须使用不可预测随机值，不能由业务 ID 直接派生。
-- Lua guarded release 必须先比较 token，再删除锁。
-- Pub/Sub payload 不在 redisx 内记录，只记录 channel 和 payload size。
-- README 与样例不得包含真实 Redis 凭据、内网地址或个人路径。
-
----
-
-## 15. Observability Contract
-
-`redisx` 通过本地 hooks 输出事件，上层 adapter 可以转接到日志、metrics 或 trace 系统。生产代码不得直接 import `observex`。
-
-指标命名约定：
-
-| 指标 | 类型 | 标签 |
-| --- | --- | --- |
-| `foundationx_redis_operation_seconds` | histogram | `operation`, `status`, `client`, `key_pattern` |
-| `foundationx_redis_operation_total` | counter | `operation`, `status`, `error_code`, `client` |
-| `foundationx_redis_errors_total` | counter | `operation`, `error_code`, `client` |
-| `foundationx_redis_pool_active` | gauge | `client` |
-| `foundationx_redis_pool_idle` | gauge | `client` |
-| `foundationx_redis_lock_acquire_total` | counter | `status`, `client`, `key_pattern` |
-| `foundationx_redis_ratelimit_allowed_total` | counter | `status`, `client`, `key_pattern` |
-
-允许的低基数标签只有 `operation`、`status`、`error_code`、`client`、`key_pattern`。禁止使用完整 Key、Redis addr、用户名、payload、业务用户 ID 作为标签。
+| Edge Case | 预期行为 |
+| --- | --- |
+| Options 地址为空 | `New` 返回 `ErrInvalidOptions`，不访问 Redis |
+| Key segment 为空或含非法字符 | KeyBuilder 返回 `ErrInvalidKey` |
+| Key 超长 | KeyBuilder 拒绝并返回脱敏错误 |
+| `Get` missing key | 返回 `ErrNotFound`，不作为系统错误计数 |
+| Codec Decode 目标类型错误 | 返回 `ErrSerialization`，不泄露完整 Key |
+| context 已取消 | 不发起或尽快停止 Redis 操作，返回 context 错误 |
+| `Close` 多次调用 | 幂等返回 nil 或稳定 closed 状态 |
+| TTL 为 0 | 仅在显式允许 no-expire 的 API 路径中有效 |
+| Pipeline 部分命令失败 | 返回有序结果和第一个错误 |
+| Lock token mismatch | `Release` 不删除锁，返回 `ErrLockNotHeld` |
+| Subscribe ctx 取消 | 关闭 subscription 并释放连接 |
+| RateLimitHelper 并发冲突 | 原子计数，remaining 和 resetAt 一致 |
+| Hook panic | hook 执行不得破坏 Redis 操作结果，应转换为内部诊断 |
 
 ---
 
-## 16. Performance Budgets
+## 15. Directory Structure
+```text
+redisx/
+├── go.mod
+├── go.sum
+├── README.md
+├── CHANGELOG.md
+├── LICENSE
+├── doc.go                      # 包级文档
+├── redisx.go                    # New/Client 工厂
+├── options.go                   # Options 结构体与校验
+├── key.go                       # Key/KeyParts/KeyBuilder
+├── key_test.go
+├── client.go                    # Client 实现
+├── client_test.go
+├── cache.go                     # CacheClient 实现
+├── cache_test.go
+├── locker.go                    # Locker 实现（token owner + Lua）
+├── locker_test.go
+├── counter.go                   # Counter + RateLimitHelper 实现
+├── counter_test.go
+├── pipeline.go                  # Pipeline 实现
+├── pipeline_test.go
+├── codec.go                     # Codec 接口 + JSON 默认实现
+├── codec_test.go
+├── errors.go                    # 公共错误变量
+├── health.go                    # Health/PoolStats
+├── hooks.go                     # Hook 接口与事件定义
+├── internal/
+│   └── pubsub/                  # Pub/Sub 内部实现
+├── testdata/
+│   └── redis.conf
+├── example_test.go
+└── benchmark_test.go
+```
 
-| 场景 | 预算 | 验证 |
-| --- | --- | --- |
-| KeyBuilder | p95 < 5us，无堆外资源 | `BenchmarkKeyBuilder` |
-| JSON Codec 小对象 | p95 < 500us，错误可分类 | `BenchmarkJSONCodec` |
-| KV Get/Set 本地 Redis | p95 < 10ms，p99 < 30ms | `BenchmarkKV` |
-| Pipeline 10 命令 | 相比串行至少减少 50% round-trip 时间 | `BenchmarkPipeline` |
-| Locker Acquire/Release | p95 < 20ms，竞争路径无误释放 | `BenchmarkLocker` |
-| RateLimitHelper | p95 < 10ms，并发下计数正确 | `BenchmarkRateLimit` |
-| Hook 开销 | 空 hook p95 < 1us | `BenchmarkHook` |
-
-性能预算作为发布证据。不同机器或 Redis 环境下超预算时，必须记录环境和原因，不得静默忽略。
-
----
-
-## 17. Test Plan
+## 16. Testing
 
 | Test Case | 覆盖 | 类型 | 任务 |
 | --- | --- | --- | --- |
@@ -489,7 +500,54 @@ func DefaultConfig() Config {
 
 ---
 
-## 18. CI / Gates
+## 17. Performance Budget
+
+| 场景 | 预算 | 验证 |
+| --- | --- | --- |
+| KeyBuilder | p95 < 5us，无堆外资源 | `BenchmarkKeyBuilder` |
+| JSON Codec 小对象 | p95 < 500us，错误可分类 | `BenchmarkJSONCodec` |
+| KV Get/Set 本地 Redis | p95 < 10ms，p99 < 30ms | `BenchmarkKV` |
+| Pipeline 10 命令 | 相比串行至少减少 50% round-trip 时间 | `BenchmarkPipeline` |
+| Locker Acquire/Release | p95 < 20ms，竞争路径无误释放 | `BenchmarkLocker` |
+| RateLimitHelper | p95 < 10ms，并发下计数正确 | `BenchmarkRateLimit` |
+| Hook 开销 | 空 hook p95 < 1us | `BenchmarkHook` |
+
+性能预算作为发布证据。不同机器或 Redis 环境下超预算时，必须记录环境和原因，不得静默忽略。
+
+---
+
+## 18. Observability
+
+`redisx` 通过本地 hooks 输出事件，上层 adapter 可以转接到日志、metrics 或 trace 系统。生产代码不得直接 import `observex`。
+
+指标命名约定：
+
+| 指标 | 类型 | 标签 |
+| --- | --- | --- |
+| `foundationx_redis_operation_seconds` | histogram | `operation`, `status`, `client`, `key_pattern` |
+| `foundationx_redis_operation_total` | counter | `operation`, `status`, `error_code`, `client` |
+| `foundationx_redis_errors_total` | counter | `operation`, `error_code`, `client` |
+| `foundationx_redis_pool_active` | gauge | `client` |
+| `foundationx_redis_pool_idle` | gauge | `client` |
+| `foundationx_redis_lock_acquire_total` | counter | `status`, `client`, `key_pattern` |
+| `foundationx_redis_ratelimit_allowed_total` | counter | `status`, `client`, `key_pattern` |
+
+允许的低基数标签只有 `operation`、`status`、`error_code`、`client`、`key_pattern`。禁止使用完整 Key、Redis addr、用户名、payload、业务用户 ID 作为标签。
+
+---
+
+## 19. Security
+
+- 连接地址、用户名、密码、完整 Key、payload 内容不得写入日志、metric label 或 trace tag。
+- `KeyBuilder.Pattern` 是观测唯一允许使用的 Key 表示。
+- Lock token 必须使用不可预测随机值，不能由业务 ID 直接派生。
+- Lua guarded release 必须先比较 token，再删除锁。
+- Pub/Sub payload 不在 redisx 内记录，只记录 channel 和 payload size。
+- README 与样例不得包含真实 Redis 凭据、内网地址或个人路径。
+
+---
+
+## 20. CI Gate
 
 最小门禁：
 
@@ -503,8 +561,7 @@ func DefaultConfig() Config {
 
 ---
 
-## 19. Rollout / Migration
-
+## 21. Upgrade Compatibility
 1. 先发布 `Options`、`KeyBuilder`、`Codec`、错误模型和只读 Health，冻结公共契约。
 2. 迁移下游缓存调用到 KeyBuilder 和 KV/TTL API，禁止继续裸 Key。
 3. 迁移分布式锁到 token owner Locker，并保留旧锁 key 的 TTL 过渡窗口。
@@ -539,8 +596,6 @@ Rollback 策略：
 
 ---
 
-## 20. Compatibility
-
 - Go module 路径为 `github.com/ZoneCNH/redisx`。
 - Go 版本跟随仓库当前治理基线。
 - 默认 Redis client library 为 `github.com/redis/go-redis/v9`；替换 Redis 客户端必须保持公共接口和错误语义兼容。
@@ -549,27 +604,32 @@ Rollback 策略：
 
 ---
 
-## 21. Edge Cases
+## 22. Release DoD
 
-| Edge Case | 预期行为 |
-| --- | --- |
-| Options 地址为空 | `New` 返回 `ErrInvalidOptions`，不访问 Redis |
-| Key segment 为空或含非法字符 | KeyBuilder 返回 `ErrInvalidKey` |
-| Key 超长 | KeyBuilder 拒绝并返回脱敏错误 |
-| `Get` missing key | 返回 `ErrNotFound`，不作为系统错误计数 |
-| Codec Decode 目标类型错误 | 返回 `ErrSerialization`，不泄露完整 Key |
-| context 已取消 | 不发起或尽快停止 Redis 操作，返回 context 错误 |
-| `Close` 多次调用 | 幂等返回 nil 或稳定 closed 状态 |
-| TTL 为 0 | 仅在显式允许 no-expire 的 API 路径中有效 |
-| Pipeline 部分命令失败 | 返回有序结果和第一个错误 |
-| Lock token mismatch | `Release` 不删除锁，返回 `ErrLockNotHeld` |
-| Subscribe ctx 取消 | 关闭 subscription 并释放连接 |
-| RateLimitHelper 并发冲突 | 原子计数，remaining 和 resetAt 一致 |
-| Hook panic | hook 执行不得破坏 Redis 操作结果，应转换为内部诊断 |
+- `goal.md`、`SPEC.md`、`TRACEABILITY.md`、10 个 task spec 和 `module/README.md` 的 12 FR、10 BR、4 NFR、10 task 映射一致。
+- 每个 FR 至少有 AC、TC、Task，且 task 文件存在。
+- 每个 task spec 引用不超过 3 个 FR，文件 scope 不超过 5 个文件，并包含 Scope、Non-Scope、Test Plan、Done Evidence。
+- 生产代码直接依赖仅限 stdlib、`kernel` 和 Redis client library。
+- 所有公开接口、错误模型、配置投影、观测 hooks、性能预算和迁移策略均有测试或发布证据。
+- `git diff --check` 通过。
+- 四源结构评分和 `pipeline-arbiter` 通过后，才可将 Status 翻转为 Approved。
 
----
+Open Questions: none blocking.
 
-## 22. Risks / Mitigations
+## 23. Open Questions
+### Current
+
+无阻塞性问题。
+
+### Future
+
+| ID | 问题 | 状态 |
+|----|------|------|
+| OQ-001 | 是否需要支持 Redis Cluster 模式？ | 待评估 |
+| OQ-002 | Pipeline 是否需要支持原子事务（MULTI/EXEC）？ | 待评估 |
+| OQ-003 | 是否需要 Redis Stream 封装？ | 待评估 |
+
+## Appendix A: Risks & Mitigations
 
 | 风险 | 影响 | 缓解 |
 | --- | --- | --- |
@@ -591,15 +651,3 @@ Rollback 策略：
 | 默认 codec 变更 | 1) MINOR 版本 bump；2) CHANGELOG 中说明序列化兼容性影响；3) 消费者可通过 `WithCodec()` 显式覆盖回旧 codec |
 
 ---
-
-## 23. Definition of Done
-
-- `goal.md`、`SPEC.md`、`TRACEABILITY.md`、10 个 task spec 和 `module/README.md` 的 12 FR、10 BR、4 NFR、10 task 映射一致。
-- 每个 FR 至少有 AC、TC、Task，且 task 文件存在。
-- 每个 task spec 引用不超过 3 个 FR，文件 scope 不超过 5 个文件，并包含 Scope、Non-Scope、Test Plan、Done Evidence。
-- 生产代码直接依赖仅限 stdlib、`kernel` 和 Redis client library。
-- 所有公开接口、错误模型、配置投影、观测 hooks、性能预算和迁移策略均有测试或发布证据。
-- `git diff --check` 通过。
-- 四源结构评分和 `pipeline-arbiter` 通过后，才可将 Status 翻转为 Approved。
-
-Open Questions: none blocking.
