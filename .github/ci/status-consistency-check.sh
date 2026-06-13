@@ -98,7 +98,7 @@ STATUS_VERSIONED=$(grep -oP '版本覆盖:\s*有版本号\s*\K[0-9]+' "$REPO_ROO
 STATUS_UNVERSIONED=$(grep -oP '版本覆盖:.*无版本号\s*\K[0-9]+' "$REPO_ROOT/STATUS.md" | head -1)
 STATUS_DOMAIN_VERSIONED=$(awk -F'|' '/^\| \*\*合计/ {gsub(/[^0-9]/, "", $7); print $7}' "$REPO_ROOT/STATUS.md")
 
-# 从 module/ 提取 Foundation 规格数量；L2.5/domain 规格不计入 Foundation 基座口径。
+# 从 module/ 提取 Foundation 规格数量；domainx 现已归入基座/领域共享（见 module/README.md）。
 FOUNDATION_MODULES=(
   xlib-standard
   kernel
@@ -117,6 +117,7 @@ FOUNDATION_MODULES=(
   clickhousex
   contracts
   transportx
+  domainx
 )
 FOUNDATION_EXPECTED_COUNT=${#FOUNDATION_MODULES[@]}
 SPEC_COUNT=0
