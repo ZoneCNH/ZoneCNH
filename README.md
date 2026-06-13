@@ -18,7 +18,7 @@ Go 🐹 (主要) · Rust 🦀 (底层) · Python 🐍 (脚本/数据) · TypeScr
 >
 > 🧱 Foundation v1 规格、依赖矩阵、执行跟踪与 ADR → **[module/](./module/)**
 >
-> 📋 17 个基座模块规格 → **[module/](./module/)**
+> 📋 20 个基座模块规格 → **[module/](./module/)**
 >
 > 🧭 Spec 治理模板、生命周期、追溯与评分规则 → **[docs/governance/](./docs/governance/)**
 >
@@ -28,7 +28,7 @@ Go 🐹 (主要) · Rust 🦀 (底层) · Python 🐍 (脚本/数据) · TypeScr
 入口: x.go (Composition Root: 启动 / 配置 / 组装)
       │
       ▼
-标准: xlib-standard (标准事实源 / Go Reference Template / Generator / Harness Gate / Evidence Runtime，不参与运行时)
+标准: xlib-standard · xlib-harness · xlib-evidence · xlibgate（标准源、门禁生成/执行、证据收集，不参与运行时）
       │
       ▼
 L0: kernel (stdlib-only primitives)
@@ -38,7 +38,7 @@ L1 运行时: configx / observex / resiliencx / schedulex
 L1 测试: testkitx (test-only)
       │
       ▼
-基座扩展: redisx / kafkax / natsx / postgresx / taosx / ossx / clickhousex / contracts / transportx
+基座扩展: redisx / kafkax / natsx / postgresx / taosx / ossx / clickhousex / contracts / transportx / domainx
       │
       ▼
 L2.5: decimalx / domain-market / domain-exchange / domain-macro
@@ -58,7 +58,9 @@ L2.5: decimalx / domain-market / domain-exchange / domain-macro
 ## 📦 核心项目
 
 ### 基座 · 基础设施
-- [xlib-standard](https://github.com/ZoneCNH/xlib-standard) — 标准事实源、Go Reference Template、Generator、Harness Gate 与 Evidence Runtime；不作为运行时 import 依赖 `公开`
+- [xlib-standard](https://github.com/ZoneCNH/xlib-standard) — 标准事实源、Go Reference Template（Generator/Harness/Evidence 已拆分至 xlib-harness / xlib-evidence）；不作为运行时 import 依赖 `公开`
+- [xlib-harness](https://github.com/ZoneCNH/xlib-harness) — 模块生成器与门禁执行器：generate/scaffold、spec-lint、boundary-check、traceability-gate `公开`
+- [xlib-evidence](https://github.com/ZoneCNH/xlib-evidence) — 证据收集与发布运行时：collect-coverage、generate-manifest、validate-manifest、report `公开`
 - [kernel](https://github.com/ZoneCNH/kernel) — L0 标准库扩展原语（error/time/context/lifecycle/health/sync） `公开`
 - [configx](https://github.com/ZoneCNH/configx) — 显式配置加载、多源合并、StrictDecode、SecretString 脱敏、Provenance 追踪与 EffectiveConfigHash `公开`
 - [observex](https://github.com/ZoneCNH/observex) — vendor-neutral 日志、指标、追踪、健康与脱敏契约 `公开`
@@ -83,6 +85,7 @@ L2.5: decimalx / domain-market / domain-exchange / domain-macro
 
 - [contracts](https://github.com/ZoneCNH/contracts) — 跨域稳定端口、事件协议与 DTO 契约 `公开`
 - [transportx](https://github.com/ZoneCNH/transportx) — 应用通信底座规格基线（Envelope/Endpoint、ServiceIdentity、QoS、Codec、RPC、EventBus、Stream、Outbox/Inbox、Audit Plane、Data Classification、SchemaRegistry 与 conformance gates） `公开`
+- [domainx](https://github.com/ZoneCNH/domainx) — 执行域共享值对象：Order/Position/Trade/Portfolio/ExecutionReport 枚举与类型（归属基座） `公开`
 
 ### L2.5 · 领域共享层
 
@@ -165,7 +168,7 @@ L2.5: decimalx / domain-market / domain-exchange / domain-macro
 - [x.go](https://github.com/ZoneCNH/x.go) — 组合根，负责启动、配置加载与引擎组装 `私有`
 - [module](./module/README.md) — 项目技术规范、接口定义与 Goal 适配模块索引
 - [docs/governance](./docs/governance/README.md) — Spec → Code 交付治理、模板、门禁与评分规则
-- [docs/sre/foundation-cicd-plan.md](./docs/sre/foundation-cicd-plan.md) — 基座层 17 模块 CI/CD 部署执行方案（SRE 机器池 4 阶段）
+- [docs/sre/foundation-cicd-plan.md](./docs/sre/foundation-cicd-plan.md) — 基座层 20 模块 CI/CD 部署执行方案（SRE 机器池 4 阶段）
 - [docs/RSI_SG_001_complete_standard_v1.1_zh.md](./docs/RSI_SG_001_complete_standard_v1.1_zh.md) — RSI 递归自我改进完整标准中文版 v1.1
 
 ## 📊 GitHub 统计
