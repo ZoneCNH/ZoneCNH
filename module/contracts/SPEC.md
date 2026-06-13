@@ -2,18 +2,18 @@
 
 > 基座 · 契约层。跨域稳定端口（MarketDataProvider, MacroDataProvider）、事件协议、DTO 契约、Topic 常量定义。
 
-最后更新：2026-06-07
+最后更新：2026-06-14
 
 ---
 
 ## 1. Metadata
 
-- Status: Draft
-- Spec-Version: v1.0.0
-- Last-Updated: 2026-06-07
+- Status: Approved
+- Spec-Version: v1.0.1
+- Last-Updated: 2026-06-14
 - Owner: ZoneCNH
 - Layer: L1 基础能力
-- Version: v0.7.3
+- Version: v1.0.1-spec
 - Repository: [github.com/ZoneCNH/contracts](https://github.com/ZoneCNH/contracts)
 - Related: [CONSTITUTION.md](../../CONSTITUTION.md), [ARCHITECTURE.md](../../ARCHITECTURE.md)
 
@@ -24,6 +24,7 @@
 | 日期       | 版本   | 变更内容   | 作者    |
 | ---------- | ------ | ---------- | ------- |
 | 2026-06-07 | v1.0.0 | 初始版本   | ZoneCNH |
+| 2026-06-14 | v1.0.1 | TRACEABILITY §1-§7 完整重建（6 FR + 10 BR + 8 NFR + 7 TC + 15 AC），对齐文档同步，版本升至 v1.0.1-spec | ZoneCNH |
 
 ## 2. Summary
 
