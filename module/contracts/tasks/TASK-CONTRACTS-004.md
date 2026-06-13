@@ -9,7 +9,9 @@ task_id: TASK-CONTRACTS-004
 module: contracts
 scope: "创建 README、CHANGELOG，验证 Release DoD"
 spec_ref:
-  - "module/contracts/SPEC.md#22"
+  - "module/contracts/SPEC.md#BR-002"
+  - "module/contracts/SPEC.md#NFR-004"
+  - "module/contracts/SPEC.md#NFR-007"
 files:
   - "README.md"
   - "CHANGELOG.md"
@@ -23,6 +25,9 @@ depends_on:
 estimated_effort: "1h"
 priority: P1
 status: pending
+non_scope:
+  - "不编写Go代码（纯文档）"
+  - "不修改SPEC（已完成）"
 ```
 
 ---
@@ -37,7 +42,9 @@ status: pending
 
 | Test Case | Type    | Description           |
 | --------- | ------- | --------------------- |
-| —         | CI Gate | `go build ./...` 通过 |
+| —         | CI Gate | go build编译通过 |
+| —         | CI Gate | gitleaks Secret扫描 |
+| —         | Review  | README模块定位/端口概览 |
 
 ## Implementation Notes
 

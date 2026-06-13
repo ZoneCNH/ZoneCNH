@@ -12,12 +12,18 @@ spec_ref:
   - "module/contracts/SPEC.md#FR-003"
   - "module/contracts/SPEC.md#FR-004"
   - "module/contracts/SPEC.md#FR-005"
+  - "module/contracts/SPEC.md#BR-001"
+  - "module/contracts/SPEC.md#BR-005"
+  - "module/contracts/SPEC.md#BR-006"
+  - "module/contracts/SPEC.md#BR-009"
 files:
   - "event.go"
+  - "event_test.go"
   - "topic.go"
+  - "topic_test.go"
   - "dto.go"
 acceptance_criteria:
-  - "Event 接口包含 Type/Payload/Timestamp 方法"
+  - "Event 接口包含 EventID/EventType/Timestamp/Source 方法"
   - "Topic 常量覆盖所有事件类型"
   - "DTO 结构体定义完整"
 depends_on:
@@ -25,6 +31,10 @@ depends_on:
 estimated_effort: "1h"
 priority: P0
 status: pending
+non_scope:
+  - "不实现具体Event类型"
+  - "不实现MQ发布逻辑（→kafkax）"
+  - "不定义数据端口（→TASK-001）"
 ```
 
 ---
@@ -33,7 +43,7 @@ status: pending
 
 | Requirement | Description | Acceptance Criteria    |
 | ----------- | ----------- | ---------------------- |
-| FR-003      | Event 接口  | Type/Payload/Timestamp |
+| FR-003      | Event 接口  | EventID/EventType/Timestamp/Source |
 | FR-004      | Topic 常量  | 所有事件类型           |
 | FR-005      | DTO 契约    | 结构体定义完整         |
 
@@ -41,7 +51,10 @@ status: pending
 
 | Test Case | Type    | Description        |
 | --------- | ------- | ------------------ |
-| —         | Compile | 类型完整性编译验证 |
+| TC-002    | Unit | DTO JSON round-trip |
+| TC-004    | Unit | Topic唯一性检查 |
+| TC-005    | Unit | Event接口完整性 |
+| TC-007    | Unit | DTO不可变性检查 |
 
 ## Implementation Notes
 

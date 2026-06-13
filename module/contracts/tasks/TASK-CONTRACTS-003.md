@@ -10,6 +10,8 @@ module: contracts
 scope: "实现 Breaking Change 检测，比较接口版本差异"
 spec_ref:
   - "module/contracts/SPEC.md#FR-006"
+  - "module/contracts/SPEC.md#BR-003"
+  - "module/contracts/SPEC.md#BR-010"
 files:
   - "compat.go"
   - "compat_test.go"
@@ -23,6 +25,9 @@ depends_on:
 estimated_effort: "2h"
 priority: P1
 status: pending
+non_scope:
+  - "不实现运行时版本切换"
+  - "不管理CHANGELOG（→TASK-004）"
 ```
 
 ---
@@ -37,8 +42,9 @@ status: pending
 
 | Test Case | Type | Description        |
 | --------- | ---- | ------------------ |
-| —         | Unit | 方法签名变更被检测 |
-| —         | Unit | 字段删除被检测     |
+| TC-003    | Unit | 接口方法签名变更检测 |
+| TC-003    | Unit | DTO字段删除/类型变更检测 |
+| TC-003    | Unit | 新增可选字段判定 |
 
 ## Implementation Notes
 

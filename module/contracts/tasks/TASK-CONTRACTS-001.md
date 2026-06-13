@@ -11,9 +11,13 @@ scope: "定义 MarketDataProvider 和 MacroDataProvider 接口"
 spec_ref:
   - "module/contracts/SPEC.md#FR-001"
   - "module/contracts/SPEC.md#FR-002"
+  - "module/contracts/SPEC.md#BR-004"
+  - "module/contracts/SPEC.md#BR-007"
 files:
   - "market.go"
+  - "market_test.go"
   - "macro.go"
+  - "macro_test.go"
 acceptance_criteria:
   - "MarketDataProvider 接口方法签名正确"
   - "MacroDataProvider 接口方法签名正确"
@@ -23,6 +27,10 @@ depends_on:
 estimated_effort: "1h"
 priority: P0
 status: pending
+non_scope:
+  - "不实现接口逻辑（仅签名）"
+  - "不实现Event/Topic（→TASK-002）"
+  - "不定义BC检测（→TASK-003）"
 ```
 
 ---
