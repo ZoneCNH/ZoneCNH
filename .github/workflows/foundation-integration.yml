@@ -1,0 +1,93 @@
+name: Foundation Integration
+
+on:
+  schedule:
+    - cron: "0 3 * * *"
+  workflow_dispatch:
+
+jobs:
+  yaml-lint:
+    name: Validate FOUNDATION-DEPS.yaml
+    runs-on: [self-hosted, Linux, X64, homepage]
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate YAML structure
+        run: |
+          python3 -c "
+          import yaml, sys
+          with open('module/FOUNDATION-DEPS.yaml') as f:
+              data = yaml.safe_load(f)
+          required = ['version', 'modules', 'allowed_deps', 'forbidden_deps', 'forbidden_foundation_edges']
+          missing = [k for k in required if k not in data]
+          if missing:
+              print(f'ERROR: Missing required fields: {missing}')
+              sys.exit(1)
+          print(f'OK: version={data[\"version\"]}, modules={len(data[\"modules\"])}, edges={len(data.get(\"forbidden_foundation_edges\",[]))}')
+          "
+
+  deps-matrix-full:
+    name: Full Dependency Matrix Check
+    runs-on: [self-hosted, Linux, X64, homepage]
+    timeout-minutes: 30
+    needs: yaml-lint
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.23"
+      - name: Run full dependency matrix check
+        run: bash .github/ci/foundation-deps-full-check.sh
+
+  boundary-cross-check:
+    name: Cross-Module Boundary Check
+    runs-on: [self-hosted, Linux, X64, homepage]
+    timeout-minutes: 20
+    needs: deps-matrix-full
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check all forbidden_foundation_edges
+        run: bash .github/ci/foundation-boundary-check.sh
+
+  joint-build-test:
+    name: Joint Build and Test (go.work)
+    runs-on: [self-hosted, Linux, X64, homepage]
+    timeout-minutes: 30
+    needs: boundary-cross-check
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.23"
+      - name: Clone all modules, wire with go.work, build and test
+        run: bash .github/ci/foundation-joint-build.sh
+
+  evidence-collect:
+    name: Aggregate Foundation Evidence
+    runs-on: [self-hosted, Linux, X64, homepage]
+    timeout-minutes: 15
+    needs: joint-build-test
+    if: always()
+    steps:
+      - uses: actions/checkout@v4
+      - name: Collect evidence from all modules
+        run: bash .github/ci/foundation-evidence-collect.sh foundation-integration
+
+  summary:
+    name: Integration Summary
+    runs-on: [self-hosted, Linux, X64, homepage]
+    timeout-minutes: 5
+    needs: [yaml-lint, deps-matrix-full, boundary-cross-check, joint-build-test, evidence-collect]
+    if: always()
+    steps:
+      - name: Generate summary
+        run: |
+          echo "## Foundation Integration Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Check | Result |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| YAML Lint | ${{ needs.yaml-lint.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Deps Matrix Full | ${{ needs.deps-matrix-full.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Boundary Cross Check | ${{ needs.boundary-cross-check.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Joint Build & Test | ${{ needs.joint-build-test.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Evidence Collect | ${{ needs.evidence-collect.result }} |" >> $GITHUB_STEP_SUMMARY
