@@ -6,12 +6,18 @@
 - **ACs**: AC-022
 - **TCs**: TC-022
 - **Phase**: Data Integrity (Phase 5)
+- **Priority**: P2
 - **Dependencies**: TASK-001 (Envelope)
 - **Status**: Pending
 
 ## Scope
 
 Define Outbox interface (Save, MarkPublished, Pending) and Inbox interface (Seen, MarkProcessed). Core defines only SPI, not business orchestration. Adapter implementations (postgresoutbox, redisidem) are separate tasks.
+
+
+## Non-Scope
+
+Does NOT implement broker clients, storage drivers, business event semantics, or domain DTOs.
 
 ## Files
 

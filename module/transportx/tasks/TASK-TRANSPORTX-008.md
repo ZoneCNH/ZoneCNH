@@ -6,12 +6,18 @@
 - **ACs**: AC-018
 - **TCs**: TC-018
 - **Phase**: QoS + Codec + Registry (Phase 2)
+- **Priority**: P0
 - **Dependencies**: none
 - **Status**: Pending
 
 ## Scope
 
 Define Codec interface with Marshal/Unmarshal. Provide default JSON codec implementation. Codec must be pluggable per Endpoint or per method.
+
+
+## Non-Scope
+
+Does NOT implement Protobuf codec (deferred to v1.2.0 per SPEC OQ-4).
 
 ## Files
 

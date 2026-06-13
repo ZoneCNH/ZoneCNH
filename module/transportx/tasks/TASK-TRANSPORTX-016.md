@@ -6,12 +6,18 @@
 - **ACs**: AC-008
 - **TCs**: TC-008
 - **Phase**: Advanced Features (Phase 4)
+- **Priority**: P1
 - **Dependencies**: TASK-003 (Identity), TASK-012 (Middleware)
 - **Status**: Pending
 
 ## Scope
 
 Implement authorization middleware. Validate ServiceIdentity scopes against Endpoint requirements. Deny with `TX_AUTHZ_DENIED` + audit event. Must not expose endpoint secrets or payload bytes.
+
+
+## Non-Scope
+
+Does NOT implement broker clients, storage drivers, business event semantics, or domain DTOs.
 
 ## Files
 

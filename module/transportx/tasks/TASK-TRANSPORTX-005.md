@@ -6,12 +6,18 @@
 - **ACs**: AC-011
 - **TCs**: TC-011
 - **Phase**: Foundation Contracts (Phase 1)
+- **Priority**: P0
 - **Dependencies**: TASK-001 (Envelope), TASK-002 (Endpoint)
 - **Status**: Pending
 
 ## Scope
 
 Implement DeliveryReceipt struct with receiptId, envelopeId, endpoint, status, ackId, offset, attempt, latencyMs, retryDecision, errorCode, redactionVersion. Return Receipt for every publish/subscribe/request/bridge completion.
+
+
+## Non-Scope
+
+Does NOT implement broker clients or domain-specific receipt semantics.
 
 ## Files
 

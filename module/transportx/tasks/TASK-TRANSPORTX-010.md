@@ -6,12 +6,18 @@
 - **ACs**: AC-020
 - **TCs**: TC-020
 - **Phase**: QoS + Codec + Registry (Phase 2)
+- **Priority**: P0
 - **Dependencies**: TASK-006 (Errors)
 - **Status**: Pending
 
 ## Scope
 
 Implement MethodRegistry interface with Register, Resolve, RetryClass. Method naming: `{service}.{version}.{Service}/{Method}`. Validate deadline requirement, retry classification (READ_ONLY/IDEMPOTENT/UNSAFE), idempotency requirement.
+
+
+## Non-Scope
+
+Does NOT implement broker clients, storage drivers, or business event semantics.
 
 ## Files
 

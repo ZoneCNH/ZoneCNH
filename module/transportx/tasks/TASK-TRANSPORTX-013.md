@@ -6,12 +6,18 @@
 - **ACs**: AC-006
 - **TCs**: TC-006
 - **Phase**: Middleware + Control (Phase 3)
+- **Priority**: P1
 - **Dependencies**: TASK-004 (Runtime Lifecycle)
 - **Status**: Pending
 
 ## Scope
 
 Implement ControlPlane interface with Apply, Rollback, Snapshot, Audit. Operations: kill switch, pause, resume, mirror, canary, rate-limit. Every command must persist commandId, actor, timestamp, target, previousState, newState, rollbackToken.
+
+
+## Non-Scope
+
+Does NOT implement durable audit store backend (deferred per SPEC OQ-2).
 
 ## Files
 

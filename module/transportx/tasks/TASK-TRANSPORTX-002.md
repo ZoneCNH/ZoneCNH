@@ -6,12 +6,18 @@
 - **ACs**: AC-003
 - **TCs**: TC-003
 - **Phase**: Foundation Contracts (Phase 1)
+- **Priority**: P0
 - **Dependencies**: TASK-001 (Envelope)
 - **Status**: Pending
 
 ## Scope
 
 Implement Endpoint struct and EndpointRegistry interface with validation: scheme, authority, path, topic, partitionKeyPolicy, capabilities, tenantScope, owner, status, version.
+
+
+## Non-Scope
+
+Does NOT implement broker clients, HTTP/RPC servers, or domain-specific endpoint semantics.
 
 ## Files
 

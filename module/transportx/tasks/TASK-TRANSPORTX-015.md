@@ -6,12 +6,18 @@
 - **ACs**: AC-013
 - **TCs**: TC-013
 - **Phase**: Middleware + Control (Phase 3)
+- **Priority**: P1
 - **Dependencies**: TASK-006 (Errors), TASK-012 (Middleware)
 - **Status**: Pending
 
 ## Scope
 
 Implement bounded retry with configurable policy and dead-letter routing. DLQ records must retain trace context, redacted failure metadata, attempt count, original message id. DLQPolicy: enabled, maxAttempts, topicSuffix, includePayload, includeError.
+
+
+## Non-Scope
+
+Does NOT implement broker clients, storage drivers, business event semantics, or domain DTOs.
 
 ## Files
 

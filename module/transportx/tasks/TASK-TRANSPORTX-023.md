@@ -6,12 +6,18 @@
 - **ACs**: AC-015, AC-025
 - **TCs**: TC-015, TC-025
 - **Phase**: CI + Release (Phase 6)
+- **Priority**: P2
 - **Dependencies**: TASK-011 (SchemaRegistry)
 - **Status**: Pending
 
 ## Scope
 
 Schema compatibility checker + breaking change detection. Envelope/Endpoint/Receipt/ControlCommand schema changes classified as compatible or breaking. Breaking change → major version bump (BR-011). Implement rollback procedure per §21.
+
+
+## Non-Scope
+
+Does NOT implement broker clients, storage drivers, business event semantics, or domain DTOs.
 
 ## Files
 

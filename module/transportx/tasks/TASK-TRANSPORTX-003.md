@@ -6,12 +6,18 @@
 - **ACs**: AC-007
 - **TCs**: TC-007
 - **Phase**: Foundation Contracts (Phase 1)
+- **Priority**: P0
 - **Dependencies**: none
 - **Status**: Pending
 
 ## Scope
 
 Implement ServiceIdentity struct with service, environment, tenant, trustDomain, scopes, authnMethod, principal, issuedAt, expiresAt. Validation: reject missing or expired identity before adapter dispatch.
+
+
+## Non-Scope
+
+Does NOT implement auth providers or business-level identity semantics.
 
 ## Files
 

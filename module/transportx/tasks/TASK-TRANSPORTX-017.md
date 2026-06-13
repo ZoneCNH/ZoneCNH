@@ -6,12 +6,18 @@
 - **ACs**: AC-009
 - **TCs**: TC-009
 - **Phase**: Advanced Features (Phase 4)
+- **Priority**: P1
 - **Dependencies**: TASK-001 (Envelope), TASK-012 (Middleware)
 - **Status**: Pending
 
 ## Scope
 
 Implement deadline enforcement and clock skew detection. Use monotonic runtime clock + wall-clock skew guard (`tx.clock_skew.max_ms`). Return `TX_DEADLINE_EXCEEDED` or `TX_CLOCK_SKEW`.
+
+
+## Non-Scope
+
+Does NOT implement broker clients, storage drivers, business event semantics, or domain DTOs.
 
 ## Files
 

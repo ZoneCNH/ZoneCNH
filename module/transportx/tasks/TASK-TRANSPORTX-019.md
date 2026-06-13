@@ -6,12 +6,18 @@
 - **ACs**: AC-021
 - **TCs**: TC-021
 - **Phase**: Advanced Features (Phase 4)
+- **Priority**: P1
 - **Dependencies**: TASK-004 (Runtime), TASK-012 (Middleware)
 - **Status**: Pending
 
 ## Scope
 
 Implement ExecutionMode enum (LIVE, PAPER, REPLAY, DRY_RUN) with gate enforcement. LIVE requires auth+deadline+idempotency+audit. PAPER allows paper order adapter. REPLAY forbids live exchange adapter. DRY_RUN forbids external side effects. Mode transitions require explicit confirmation + audit.
+
+
+## Non-Scope
+
+Does NOT implement broker clients, storage drivers, business event semantics, or domain DTOs.
 
 ## Files
 

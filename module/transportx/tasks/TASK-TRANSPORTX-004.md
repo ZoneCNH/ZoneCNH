@@ -6,12 +6,18 @@
 - **ACs**: AC-004, AC-005
 - **TCs**: TC-004, TC-005
 - **Phase**: Foundation Contracts (Phase 1)
+- **Priority**: P0
 - **Dependencies**: none
 - **Status**: Pending
 
 ## Scope
 
 Implement TransportRuntime interface with state machine (new → starting → running → paused → draining → stopped) and Drain semantics. Enforce forbidden transitions. Drain must stop accepting new work, finish in-flight within deadline, report counts.
+
+
+## Non-Scope
+
+Does NOT implement a scheduler, service mesh, or API gateway.
 
 ## Files
 
