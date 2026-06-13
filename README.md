@@ -82,7 +82,7 @@ L2.5: decimalx / domain-market / domain-exchange / domain-macro
 ### 基座 · 契约与传输
 
 - [contracts](https://github.com/ZoneCNH/contracts) — 跨域稳定端口、事件协议与 DTO 契约 `公开`
-- [transportx](https://github.com/ZoneCNH/transportx) — 跨 runtime / adapter 传输契约（Envelope/Endpoint、运行时生命周期、ServiceIdentity、control plane、DeliveryReceipt 与 conformance gates） `公开`
+- [transportx](https://github.com/ZoneCNH/transportx) — 应用通信底座规格基线（Envelope/Endpoint、ServiceIdentity、QoS、Codec、RPC、EventBus、Stream、Outbox/Inbox、Audit Plane、Data Classification、SchemaRegistry 与 conformance gates） `公开`
 
 ### L2.5 · 领域共享层
 

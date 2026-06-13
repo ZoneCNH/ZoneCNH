@@ -213,7 +213,7 @@ Foundation v1 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中�
 | `testkitx`                                          | 测试、golden、contract、fixture、harness、boundary evidence                  | production import graph、真实外部系统入口        |
 | `L2.5`                                              | 多个业务域共享的领域值对象、枚举、语义模型                                   | Provider 实现、策略逻辑、执行策略                |
 | `contracts`                                         | 跨域稳定端口、事件协议、DTO 契约                                             | 域内接口、临时适配器、通用工具函数、领域模型全集 |
-| `transportx`                                        | 跨 runtime / adapter 传输契约、运行时生命周期、ServiceIdentity、control plane、DeliveryReceipt | 具体 broker/client、协议 SDK、业务语义、领域模型全集 |
+| `transportx`                                        | 应用通信底座契约：Envelope/Endpoint、ServiceIdentity、QoS、Codec、RPC、EventBus、Stream、Outbox/Inbox、Audit Plane、Data Classification、SchemaRegistry、conformance gate | 具体 broker/client、协议 SDK、业务语义、领域模型全集 |
 | `x.go`                                              | 配置加载、依赖创建、模块 wiring、生命周期管理                                | 因子计算、信号判断、风控规则、订单路由           |
 | `observex` / `alertx`                               | 指标、追踪、日志、告警事件                                                   | 业务决策和风控放行逻辑                           |
 
@@ -238,7 +238,7 @@ Foundation v1 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中�
 | 决策到执行        | signal-factory / optimizer 通过 risk-engine 提交执行意图          | 绕过 risk-engine 直接调用 order-engine 或交易所 SDK                                          | paper trade 链路能证明 risk gate 必经     |
 | 执行反馈          | fills / positions / PnL / exposure 以事件进入决策域               | execution 包同步调用 strategy / backtest 内部实现                                            | 事件 topic、DTO 和消费方在 contracts 固化 |
 | contracts         | 跨域端口、事件协议、DTO                                           | 领域模型全集、通用工具、域内临时接口                                                         | 新增契约必须说明消费方、生产方和稳定期    |
-| transportx        | Envelope、Endpoint、运行时生命周期、ServiceIdentity、control plane、DeliveryReceipt、conformance gate | 具体 broker/client、协议 SDK、业务语义、领域模型                                             | 新增传输契约必须说明 runtime / adapter 边界和兼容期 |
+| transportx        | Envelope/Endpoint、ServiceIdentity、QoS、Codec、RPC、EventBus、Stream、Outbox/Inbox、Audit Plane、Data Classification、SchemaRegistry、conformance gate | 具体 broker/client、协议 SDK、业务语义、领域模型                                             | 新增通信契约必须说明 runtime / adapter 边界、QoS/codec/schema 兼容期和审计要求 |
 | x.go              | 读取配置、创建依赖、连接模块、管理生命周期                        | 因子计算、信号生成、风控判断、订单路由                                                       | 入口包只出现 wiring / lifecycle 测试      |
 
 ## 契约固化优先级
@@ -258,7 +258,7 @@ Foundation v1 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中�
 5. **风控是独立引擎** — 策略只能通过 risk-engine 提交订单，不能直接调用 order-engine
 6. **回测与实盘共享代码** — signal-factory / factor-engine / risk-engine 同一套，backtest-engine 只替换数据源和撮合/回放环境
 7. **contracts 只定义跨域稳定契约** — 跨域端口、事件协议、DTO 放在 contracts；域内接口留在域内，领域值对象放在 L2.5
-8. **transportx 只定义传输边界契约** — Envelope、Endpoint、运行时生命周期、ServiceIdentity、control plane、DeliveryReceipt 和 conformance gate 放在 transportx；具体 broker/client、协议 SDK、业务语义和领域模型留在 adapter 或业务域内
+8. **transportx 只定义应用通信底座契约** — Envelope/Endpoint、ServiceIdentity、QoS、Codec、RPC、EventBus、Stream、Outbox/Inbox、Audit Plane、Data Classification、SchemaRegistry 和 conformance gate 放在 transportx；具体 broker/client、协议 SDK、业务语义和领域模型留在 adapter 或业务域内
 9. **领域语义沉到 L2.5** — 多域共享的 Price/Qty/Tick/Quote/MacroPoint 等模型统一来自 decimalx / domain-\*，避免各域重复定义
 10. **数据职责不跨域** — 数据域只负责采集、标准化和存储，因子计算在分析域，策略逻辑在决策域
 11. **执行抽象交易所差异** — order-engine 对上层暴露统一接口，内部适配各交易所
@@ -299,7 +299,7 @@ Foundation v1 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中�
 | 基座                  | [ossx](https://github.com/ZoneCNH/ossx)                         | v1.0.1 | ✅ 已发布 | █████ 100% | Aliyun OSS 对象存储 L2 adapter；真实 Aliyun OSS 集成测试、race、vet、build、release-check 与 100.0% 覆盖已验证；S3/MinIO/Azure/GCS Provider 仅保留扩展位 |
 | 基座                  | [clickhousex](https://github.com/ZoneCNH/clickhousex)           | -      | ✅ 已有   | ██░░░ 30% | ClickHouse — OLAP 查询、批量写入（完整规格，骨架之上）                                      |
 | 基座                  | [contracts](https://github.com/ZoneCNH/contracts)               | -      | ✅ 已有   | ███░ 80% | 跨域稳定端口/事件/DTO 契约，191KB/27 项                                                   |
-| 基座                  | [transportx](https://github.com/ZoneCNH/transportx)             | v1.0.1 | ✅ 已有   | ███░ 80% | 跨 runtime / adapter 传输契约；Envelope/Endpoint、运行时生命周期、ServiceIdentity、control plane、DeliveryReceipt 与 conformance gates |
+| 基座                  | [transportx](https://github.com/ZoneCNH/transportx)             | v1.1.0-spec | ✅ 已有   | ███░ 80% | 应用通信底座规格基线；Envelope/Endpoint、ServiceIdentity、QoS、Codec、RPC、EventBus、Stream、Outbox/Inbox、Audit Plane、Data Classification、SchemaRegistry 与 conformance gates |
 | **L2.5 · 领域共享层** |                                                                 |        |           |          |                                                                                           |
 | L2.5                  | [decimalx](https://github.com/ZoneCNH/decimalx)                 | v0.1.0 | ✅ P0     | ███░ 80% | 高精度十进制类型（Decimal/Price/Qty/Ratio/Money）                                         |
 | L2.5                  | [domain-market](https://github.com/ZoneCNH/domain-market)       | v0.1.0 | ✅ P0     | ███░ 80% | 市场数据域模型（Tick/Quote/Bar/OrderBook）                                                |
