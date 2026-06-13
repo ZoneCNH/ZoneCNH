@@ -482,7 +482,7 @@ go 1.23
 
 ## 17. Testing
 
-### 18.1 单元测试
+### 17.1 单元测试
 
 | 测试场景         | 验证点                              |
 | ---------------- | ----------------------------------- |
@@ -636,19 +636,7 @@ Then 返回 ErrDuplicateJob
 
 ---
 
-## 22. Upgrade Compatibility
-
-| 变更类型                           | 版本升级              |
-| ---------------------------------- | --------------------- |
-| Scheduler / Job interface 变更     | **major**             |
-| OverlapPolicy / MisfirePolicy 变更 | **major**             |
-| 新增可选配置字段                   | patch / minor         |
-| 新增必填配置字段                   | **minor**（带默认值） |
-| 修复 bug                           | **patch**             |
-
----
-
-## 23. Release DoD
+## 22. Release DoD
 
 - [ ] 所有公共接口有 godoc 注释
 - [ ] 所有公共类型有示例代码
@@ -671,9 +659,30 @@ Then 返回 ErrDuplicateJob
 
 ---
 
-## Appendix A: Open Questions
+---
 
-- 是否需要支持动态添加/移除 job（运行时 Schedule/Cancel）的并发安全保证级别？
-- 是否需要支持 job 优先级（高优先级 job 可抢占低优先级的执行槽）？
-- 分布式锁是否需要支持 Redis 以外的后端（PostgreSQL Advisory Lock）？
-- misfire CatchUp 策略是否有上限（最多补执行 N 次）？
+## 23. Open Questions
+
+### Non-blocking
+
+| ID | 问题 | 状态 |
+| --- | --- | --- |
+| OQ-001 | 是否需要支持动态添加/移除 job（运行时 Schedule/Cancel）的并发安全保证级别？ | 待评估 |
+| OQ-002 | 是否需要支持 job 优先级（高优先级 job 可抢占低优先级的执行槽）？ | 待评估 |
+| OQ-003 | 分布式锁是否需要支持 Redis 以外的后端（PostgreSQL Advisory Lock）？ | 待评估 |
+| OQ-004 | misfire CatchUp 策略是否有上限（最多补执行 N 次）？ | 待评估 |
+
+
+---
+
+## Appendix A: Upgrade Compatibility
+
+| 变更类型                           | 版本升级              |
+| ---------------------------------- | --------------------- |
+| Scheduler / Job interface 变更     | **major**             |
+| OverlapPolicy / MisfirePolicy 变更 | **major**             |
+| 新增可选配置字段                   | patch / minor         |
+| 新增必填配置字段                   | **minor**（带默认值） |
+| 修复 bug                           | **patch**             |
+
+---
