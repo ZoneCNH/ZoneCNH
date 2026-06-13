@@ -4,7 +4,7 @@
 > 每项直接对应一个 GitHub Issue 或 PR。
 > 勾选 = 完成。
 
-最后更新：2026-06-12（P0 修复 — resiliencx SPEC v1.0.1 Approved + 全模块对齐文档同步 #118/#121/#122）
+最后更新：2026-06-14（环境扫描：全项目 .env.example 补全 35 个 + 5 项发现登记）
 
 ---
 
@@ -223,6 +223,104 @@
 
 ---
 
+## P3：环境扫描发现项（2026-06-14）
+
+> 全项目 .env / go.mod / 依赖矩阵一致性扫描。非阻塞，按优先级自行排期。
+
+### Issue 6：postgresx foundationx 依赖未纳入退出计划
+
+```text
+标题：postgresx 迁移出 foundationx 依赖
+仓库：ZoneCNH/postgresx
+```text
+
+- [ ] `pkg/postgresx/` 下 9 个非测试 .go 文件 import `github.com/ZoneCNH/foundationx/pkg/foundationx`
+- [ ] SPEC.md §15 Dependencies 写 `github.com/ZoneCNH/foundationx v0.1.1`，与 FOUNDATION-TRACKER Issue 4 退出完成声明矛盾
+- [ ] 同步更新 SPEC.md 依赖声明和 IMPLEMENTATION-PLAN.md Phase 2
+- [ ] 迁移完成后删除 `internal/foundationx` 或更新 contract tests
+
+### Issue 7：postgresx Go baseline 未对齐
+
+```text
+标题：postgresx go.mod 降级到 Go 1.23
+仓库：ZoneCNH/postgresx
+```text
+
+- [ ] `go.mod` 声明 `go 1.25.0`，其余 5 核心模块均为 `go 1.23`
+- [ ] 降级后确认 CI matrix go-version 一致
+- [ ] 更新 IMPLEMENTATION-PLAN.md version matrix
+
+### Issue 8：observex go.sum 残留 foundationx hash
+
+```text
+标题：observex go.sum 清理 foundationx 残留
+仓库：ZoneCNH/observex
+```text
+
+- [ ] `go.sum` 残留 `github.com/ZoneCNH/foundationx v0.1.0` hash（无实际 import，仅注释引用）
+- [ ] 运行 `go mod tidy` 清理
+
+### Issue 9：contracts / transportx / xlib-standard 三仓共享 Go module
+
+```text
+标题：contracts / transportx go.mod 独立身份声明或文档说明
+仓库：ZoneCNH/contracts, ZoneCNH/transportx
+```text
+
+- [ ] `/home/contracts/go.mod` 声明 `module github.com/ZoneCNH/xlib-standard`
+- [ ] `/home/transportx/go.mod` 声明 `module github.com/ZoneCNH/xlib-standard`
+- [ ] ARCHITECTURE.md 将三者列为独立模块，需明确是 monorepo 子目录还是需要独立 go.mod
+- [ ] 若是 monorepo：ARCHITECTURE.md 状态表注明共享 module
+- [ ] 若是独立模块：更新 go.mod module path 为各自的 `github.com/ZoneCNH/contracts` / `github.com/ZoneCNH/transportx`
+
+### Issue 10：ARCHITECTURE.md 依赖矩阵覆盖不全
+
+```text
+标题：ARCHITECTURE.md 依赖矩阵扩展至 17 模块
+仓库：ZoneCNH/ZoneCNH
+```text
+
+- [ ] 当前矩阵仅覆盖 kernel/configx/observex/testkitx/resiliencx/schedulex 6 个
+- [ ] 补充 redisx/kafkax/natsx/postgresx/taosx/ossx/clickhousex（7 存储扩展）
+- [ ] 补充 contracts/transportx（2 契约）
+- [ ] 补充 xlib-standard/xlibgate（2 门禁）
+- [ ] 补充 domainx（L2.5 值对象，仅允许被数据域/分析域/决策域/执行域导入）
+
+### Issue 11：STATUS.md 缺失 domainx 条目
+
+```text
+标题：STATUS.md 补充 domainx v0.1.0 条目
+仓库：ZoneCNH/ZoneCNH
+```text
+
+- [ ] STATUS.md 基座计数写 17 但括号只列 13 模块
+- [ ] domainx 在 ARCHITECTURE.md / module/README.md 有独立条目，STATUS.md 缺失
+
+### Issue 12：x.go.bak .env.example 双文件合并
+
+```text
+标题：x.go.bak 旧 .env.example 合并到 configs/.env.example
+仓库：ZoneCNH/x.go
+```text
+
+- [ ] 旧文件 `/home/x.go.bak/.env.example`（14 变量，旧格式）与 `configs/.env.example`（22 变量，XGO_ 前缀）零交集
+- [ ] 旧文件已脱敏（5 个凭据已清除）
+- [ ] 10+ CI 脚本 / spec 文档引用根路径 `.env.example`，迁移后需同步更新路径
+- [ ] 旧变量（FRED_API_KEY/JINSHI_API_KEY/TDENGINE_ROOT_PASS 等）迁移为 XGO_ 前缀后加入 configs 版本
+
+### Issue 13：全项目 .env.example CI 连线
+
+```text
+标题：新建 35 个 .env.example 接入各仓库 CI secret-scope-check
+仓库：ZoneCNH/*
+```text
+
+- [ ] 各 Foundation 模块（redisx/postgresx/taosx/ossx/natsx）的 .env.example 接入 CI 密钥泄漏检查
+- [ ] 各交易所 SDK .env.example 接入对应 CI pipeline
+- [ ] 统一 `secret-scope-check.sh` 模板或复用 x.go.bak 版本
+
+---
+
 ## 进度汇总
 
 | 优先级   | Issue 数 | 完成          | 进度       |
@@ -230,7 +328,8 @@
 | P0       | 4        | 4             | ████       |
 | P1       | 6 模块   | 6（全部完成） | ██████     |
 | P2       | 1        | 1             | █          |
-| **总计** | **11**   | **11**        | **██████** |
+| P3       | 8        | 0             | ░░░░       |
+| **总计** | **19**   | **11**        | **████░░** |
 
 ---
 
@@ -276,4 +375,10 @@ P1 testkitx
 
 第四批：
   P2 foundation-example
+  Issue 7 (postgresx Go baseline 降级) + Issue 8 (observex go.sum 清理)
+  Issue 6 (postgresx foundationx exit)
+  Issue 11 (STATUS.md 补 domainx) + Issue 10 (依赖矩阵扩展)
+  Issue 9 (contracts/transportx go.mod 身份)
+  Issue 12 (x.go.bak .env.example 合并)
+  Issue 13 (全项目 .env.example CI 连线)
 ```text
