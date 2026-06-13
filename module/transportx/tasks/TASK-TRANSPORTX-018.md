@@ -6,12 +6,18 @@
 - **ACs**: AC-010
 - **TCs**: TC-010
 - **Phase**: Advanced Features (Phase 4)
+- **Priority**: P1
 - **Dependencies**: TASK-001 (Envelope), TASK-012 (Middleware)
 - **Status**: Pending
 
 ## Scope
 
 Implement idempotency middleware. Check idempotency key against stored keys. Collision with incompatible payload digest → `TX_IDEMPOTENCY_CONFLICT`. Must NOT publish duplicate work. Envelope id and idempotency key must be stable across retries (BR-007).
+
+
+## Non-Scope
+
+Does NOT implement broker clients, storage drivers, business event semantics, or domain DTOs.
 
 ## Files
 

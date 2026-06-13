@@ -6,12 +6,18 @@
 - **ACs**: AC-012
 - **TCs**: TC-012
 - **Phase**: Middleware + Control (Phase 3)
+- **Priority**: P1
 - **Dependencies**: TASK-006 (Errors), TASK-012 (Middleware)
 - **Status**: Pending
 
 ## Scope
 
 Implement BackpressurePolicy (BLOCK, DROP_OLDEST, DROP_NEWEST, FAIL_FAST, SPILL_TO_DISK) and Bulkhead concurrency limiter. Enforce queue/concurrency/rate/memory limits. Return `TX_BACKPRESSURE` or `TX_BULKHEAD_REJECTED` on saturation.
+
+
+## Non-Scope
+
+Does NOT implement broker clients, storage drivers, business event semantics, or domain DTOs.
 
 ## Files
 

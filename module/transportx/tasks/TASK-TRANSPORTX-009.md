@@ -6,12 +6,18 @@
 - **ACs**: AC-019
 - **TCs**: TC-019
 - **Phase**: QoS + Codec + Registry (Phase 2)
+- **Priority**: P0
 - **Dependencies**: TASK-007 (QoS)
 - **Status**: Pending
 
 ## Scope
 
 Implement TopicRegistry interface with Register, Resolve, List. Topic naming: `{domain}.{version}.{entity}.{action}`. Validate QoS binding, schema reference, ownership. Reject duplicate registration with `TX_TOPIC_DUPLICATE`.
+
+
+## Non-Scope
+
+Does NOT implement broker clients, storage drivers, or business event semantics.
 
 ## Files
 

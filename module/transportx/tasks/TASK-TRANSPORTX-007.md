@@ -6,12 +6,18 @@
 - **ACs**: AC-017
 - **TCs**: TC-017
 - **Phase**: QoS + Codec + Registry (Phase 2)
+- **Priority**: P0
 - **Dependencies**: TASK-001 (Envelope), TASK-006 (Errors)
 - **Status**: Pending
 
 ## Scope
 
 Implement QoSClass enum (REALTIME_BEST_EFFORT, DURABLE_EVENT, COMMAND_IDEMPOTENT, COMMAND_STRICT, AUDIT). Enforce hard rules: order/fill/risk/settlement ≠ REALTIME; COMMAND_IDEMPOTENT requires key; AUDIT must enter audit sink.
+
+
+## Non-Scope
+
+Does NOT implement broker clients, storage drivers, or business event semantics.
 
 ## Files
 

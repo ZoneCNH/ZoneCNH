@@ -1,7 +1,7 @@
 # transportx Goal
 
 - Status: Approved
-- Goal-Version: v1.1.0
+- Goal-Version: v1.1.1
 - Last-Updated: 2026-06-14
 - Owner: ZoneCNH
 - Layer: 基座 · 传输契约

@@ -6,6 +6,7 @@
 - **ACs**: AC-014
 - **TCs**: TC-014
 - **Phase**: Middleware + Control (Phase 3)
+- **Priority**: P1
 - **Dependencies**: TASK-001 (Envelope), TASK-003 (Identity), TASK-006 (Errors)
 - **Status**: Pending
 
@@ -13,15 +14,18 @@
 
 Implement middleware Chain and 14 individual middleware in enforced order: Recover → ValidateEnvelope → InjectServiceIdentity → TracePropagate → Metrics → Logging → Redaction → Deadline → Auth → Idempotency → RetrySafety → RateLimit → CircuitBreaker → Codec → Adapter. Redaction MUST execute before Logging and Tracing.
 
+
+## Non-Scope
+
+Does NOT implement broker clients, storage drivers, business event semantics, or domain DTOs.
+
 ## Files
 
-- `middleware/chain.go` — Chain() function
-- `middleware/handler.go` — Handler type
-- `middleware/recover.go`, `validate.go`, `identity.go`, `trace.go`
-- `middleware/metrics.go`, `logging.go`, `redaction.go`
-- `middleware/deadline.go`, `auth.go`, `idempotency.go`
-- `middleware/retry_safety.go`, `ratelimit.go`, `circuit.go`
-- `middleware/middleware_test.go` — Redaction order test
+- `middleware/chain.go` — Chain function + Handler type
+- `middleware/pre.go` — Recover + ValidateEnvelope + InjectServiceIdentity + TracePropagate
+- `middleware/processing.go` — Metrics + Logging + Redaction + Deadline
+- `middleware/security.go` — Auth + Idempotency + RetrySafety + RateLimit + CircuitBreaker
+- `middleware/middleware_test.go` — Chain order + redaction order tests
 
 ## Acceptance
 
