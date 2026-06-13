@@ -4,19 +4,21 @@
 | --- | --- |
 | 模块名 | `kafkax` |
 | 目标规格版本 | v1.0.0 |
-| 当前实现版本参考 | 1.0-candidate @ `05cd018ebfa5c853f35efe920cc9dde8134c49b7` |
+| 当前实现版本参考 | v1.0.0 @ `0545db280a405917a18d6f590d1e84166c61bae7` |
 | 所属层级 | 基座 · 存储扩展 / Kafka 客户端封装 |
-| 稳定级别 | Candidate；L2 发布门禁证据已闭合，合入 main 与 tag 前不宣称正式发布 |
-| 文档状态 | 1.0 候选基线 / 实现证据已对齐 |
-| 发布日期基准 | 2026-06-13（证据对齐）；正式发布日期以 tag 为准 |
+| 稳定级别 | Released；L2 发布门禁证据、PR 合入、tag 和 GitHub Release 均已闭合 |
+| 文档状态 | 1.0 发布基线 / 实现证据已对齐 |
+| 发布日期基准 | 2026-06-13（v1.0.0 发布） |
+| 发布链接 | [v1.0.0](https://github.com/ZoneCNH/kafkax/releases/tag/v1.0.0) |
+| 合入 PR | [#5](https://github.com/ZoneCNH/kafkax/pull/5) |
 
 ## 术语约定
 
-本文档中的 **MUST / 必须** 表示 1.0 候选基线阻断项；**SHOULD / 应该** 表示 1.0 推荐项，允许带明确理由延期；**MAY / 可以** 表示可选能力，不影响 1.0 候选基线。
+本文档中的 **MUST / 必须** 表示 1.0 发布基线阻断项；**SHOULD / 应该** 表示 1.0 推荐项，允许带明确理由延期；**MAY / 可以** 表示可选能力，不影响 1.0 发布基线。
 
 ## 当前对齐证据
 
-本文档对齐 `kafkax@05cd018ebfa5c853f35efe920cc9dde8134c49b7`。该证据锚点已通过：
+本文档对齐 `kafkax@v1.0.0`（`0545db280a405917a18d6f590d1e84166c61bae7`）。该证据锚点已通过：
 
 - `GOWORK=off go test ./...`
 - 真实 broker fixture gates：`kafka-integration`、`kafka-fault-injection`、`kafka-metrics-golden`、`kafka-admin-golden`
@@ -26,7 +28,7 @@
 - `XLIB_CONTEXT=release_verify GOWORK=off make release-check`
 - `git diff --check`
 
-真实 broker fixture 保持在仓库外部，文档只记录脱敏后的 gate 结果，不记录 broker 地址、账号、密码或 token。该状态表示 1.0 候选实现证据已闭合；正式发布仍以 PR 合入、tag 和发布仲裁为准。
+真实 broker fixture 保持在仓库外部，文档只记录脱敏后的 gate 结果，不记录 broker 地址、账号、密码或 token。该状态表示 [v1.0.0](https://github.com/ZoneCNH/kafkax/releases/tag/v1.0.0) 实现证据、[PR #5](https://github.com/ZoneCNH/kafkax/pull/5) 合入、tag 和 GitHub Release 均已闭合。
 
 ## 0. 1.0 判定原则
 
@@ -47,7 +49,7 @@
 - 消费位点提交必须显式、可观测，避免自动提交导致数据丢失。
 - Kafka 运行态需要统一 metrics、logging 和 tracing 命名，方便 SRE 排障。
 
-### 1.2 1.0 候选基线要解决的问题
+### 1.2 1.0 发布基线要解决的问题
 
 - 提供 `Producer`：`Send`、`SendBatch`、`Close`。
 - 提供 `Consumer`：`Subscribe`、`Poll`、`Commit`、`Close`。
@@ -127,7 +129,7 @@
 
 ## 7. 对外契约
 
-| 契约 | 定位 | 1.0 候选承诺 |
+| 契约 | 定位 | 1.0 发布承诺 |
 | --- | --- | --- |
 | `Producer` | 生产接口 | `Send`、`SendBatch`、`Close(ctx)` 语义稳定 |
 | `Consumer` | 消费接口 | `Subscribe(ctx)`、`Poll`、`Commit`、`Close(ctx)` 语义稳定 |
@@ -140,19 +142,19 @@
 
 | 配置项 | 含义 | 默认值 / 要求 | 稳定性 |
 | --- | --- | --- | --- |
-| `kafkax.brokers` | Kafka broker 地址列表 | 必须非空 | Candidate |
-| `kafkax.producer.acks` | 生产确认级别 | `all` | Candidate |
-| `kafkax.producer.retries` | 生产重试次数 | `3` | Candidate |
-| `kafkax.producer.batch_size` | 批量大小 | `16384` | Candidate |
-| `kafkax.producer.linger_ms` | 批量等待毫秒 | `5` | Candidate |
-| `kafkax.producer.max_message_bytes` | 单条消息最大字节数 | `1048576` | Candidate |
-| `kafkax.consumer.group_id` | 消费组 ID | Consumer 必须配置 | Candidate |
-| `kafkax.consumer.enable_auto_commit` | 是否自动提交 offset | `false`，不可由默认值开启 | Candidate |
-| `kafkax.consumer.max_poll_records` | 单次 Poll 最大记录数 | `500` | Candidate |
-| `kafkax.consumer.session_timeout` | 会话超时 | `30s` | Candidate |
-| `kafkax.consumer.heartbeat_interval` | 心跳间隔 | `10s` | Candidate |
-| `kafkax.codec` | 序列化方式 | `json` | Candidate |
-| `kafkax.health_check_interval` | 健康检查周期 | `10s` | Candidate |
+| `kafkax.brokers` | Kafka broker 地址列表 | 必须非空 | Stable |
+| `kafkax.producer.acks` | 生产确认级别 | `all` | Stable |
+| `kafkax.producer.retries` | 生产重试次数 | `3` | Stable |
+| `kafkax.producer.batch_size` | 批量大小 | `16384` | Stable |
+| `kafkax.producer.linger_ms` | 批量等待毫秒 | `5` | Stable |
+| `kafkax.producer.max_message_bytes` | 单条消息最大字节数 | `1048576` | Stable |
+| `kafkax.consumer.group_id` | 消费组 ID | Consumer 必须配置 | Stable |
+| `kafkax.consumer.enable_auto_commit` | 是否自动提交 offset | `false`，不可由默认值开启 | Stable |
+| `kafkax.consumer.max_poll_records` | 单次 Poll 最大记录数 | `500` | Stable |
+| `kafkax.consumer.session_timeout` | 会话超时 | `30s` | Stable |
+| `kafkax.consumer.heartbeat_interval` | 心跳间隔 | `10s` | Stable |
+| `kafkax.codec` | 序列化方式 | `json` | Stable |
+| `kafkax.health_check_interval` | 健康检查周期 | `10s` | Stable |
 
 ## 9. 可观测契约
 
@@ -213,9 +215,9 @@
 | 观测测试 | 指标名、日志脱敏、trace 标签 | MUST 通过 |
 | 兼容测试 | 公共接口和配置默认值不发生未声明破坏 | MUST 通过 |
 
-## 13. 1.0 候选发布验收清单
+## 13. 1.0 发布验收清单
 
-- [ ] `Producer` / `Consumer` / `Message` / `Codec` / `HealthStatus` 有 godoc 和示例（tag 前仍需抽样确认）。
+- [ ] `Producer` / `Consumer` / `Message` / `Codec` / `HealthStatus` 有 godoc 和示例（发布后持续补强）。
 - [x] 所有运行时操作接收 `context.Context` 并返回错误。
 - [x] 配置命名空间统一为 `kafkax.*`。
 - [x] 指标命名空间统一为 `kafkax.*`。

@@ -6,7 +6,7 @@
 >
 > 详细执行跟踪见 [module/FOUNDATION-TRACKER.md](./module/FOUNDATION-TRACKER.md)、[STATUS.md](./STATUS.md)、[DATAFLOW.md](./DATAFLOW.md)。
 
-最后更新：2026-06-10
+最后更新：2026-06-13
 
 ---
 
@@ -55,7 +55,7 @@ Scope:
 
 Out of Scope:
 
-- 存储层完整实现（redisx/kafkax/postgresx 等）
+- 存储层完整实现（redisx/postgresx 等；kafkax 已在独立 v1.0.0 发布闭合）
 - 业务域模块开发
 - secrectx / appx / runx 等新增模块
 
@@ -211,7 +211,7 @@ Scope:
 - settlement：PnL 计算 + 交易所对账 + 资金流水
 - alertx：策略异常 + 风控触发 + 系统健康三类告警
 - alternative-data：链上数据 + 社交情绪 + 新闻 NLP
-- 存储层分优先级实现：redisx / kafkax（P1 优先）、postgresx / clickhousex（P2 按数据量增长驱动）
+- 存储层分优先级实现：redisx（P1 优先）；kafkax 已发布 v1.0.0，后续仅保留上层集成/回归；postgresx / clickhousex（P2 按数据量增长驱动）
 
 Out of Scope:
 
@@ -223,7 +223,7 @@ Done when:
 - [ ] 每日 PnL 计算 + 交易所对账可运行
 - [ ] 三类告警可触达
 - [ ] 至少链上数据 + 社交情绪两类另类数据可用
-- [ ] redisx / kafkax 完整实现
+- [ ] redisx 完整实现，kafkax 上层集成回归通过
 
 Blocked By:
 

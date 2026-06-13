@@ -4,7 +4,7 @@
 >
 > 数据来源：各 GitHub 仓库实际状态，定期更新
 >
-> 最后更新：2026-06-12
+> 最后更新：2026-06-13
 >
 > 同步基线：`module/` 为模块规格库 SSOT，`docs/governance/` 为 Spec 治理 SSOT，`docs/goal/` 为 Goal 规则 SSOT，`specs/` 已移除。
 
@@ -13,7 +13,7 @@
 ## 总览仪表盘
 
 ```text
-组件总数: 70    已有: 54    已创建: 16    平均进度: 47%
+组件总数: 70    已有: 54    已创建: 16    平均进度: 48%
 
 进度分布:
   ███░ 80%  ████████████████████████░░░░░░░░░░░░░░░░  27 个 (39%)
@@ -22,14 +22,14 @@
   ░░░░  5%  ██████████████░░░░░░░░░░░░░░░░░░░░░░░░░░  17 个 (25%)
   未标注    ████████████████████░░░░░░░░░░░░░░░░░░░░░░  20 个 (29%)
 
-版本覆盖: 有版本号 18 个 (26%)    无版本号 52 个 (74%)
+版本覆盖: 有版本号 19 个 (27%)    无版本号 51 个 (73%)
 ```
 
 ### 按域统计
 
 | 域                     | 总数 | 已有 | 已创建 | 平均进度 | 有版本号                                                    |
 | ---------------------- | ---- | ---- | ------ | -------- | ----------------------------------------------------------- |
-| 基座                   | 16   | 16   | 0      | 55%      | 6 (kernel / configx / observex / testkitx / resiliencx / schedulex) |
+| 基座                   | 16   | 16   | 0      | 59%      | 7 (kernel / configx / observex / testkitx / resiliencx / schedulex / kafkax) |
 | L2.5 领域共享层        | 4    | 4    | 0      | 80%      | 4 (全部)                                                    |
 | 数据域 · 行情 SDK      | 14   | 14   | 0      | 80%      | 0                                                           |
 | 数据域 · 行情 Provider | 5    | 5    | 0      | 80%      | 5 (全部)                                                    |
@@ -42,7 +42,7 @@
 | 横切                   | 2    | 1    | 1      | 43%      | 1 (observex)                                                |
 | Rust                   | 1    | 1    | 0      | -        | 0                                                           |
 | 独立                   | 1    | 1    | 0      | -        | 0                                                           |
-| **合计**               | **70** | **54** | **16** | **47%**  | **18**                                                      |
+| **合计**               | **70** | **54** | **16** | **48%**  | **19**                                                      |
 
 ---
 
@@ -50,10 +50,10 @@
 
 ### 🟢 基座（健康）
 
-- 组件：16 个，平均进度 55%
-- 核心模块（kernel / configx / observex / resiliencx）已成熟，有版本号；kernel v1.0.0、configx v1.0.0、observex v1.0.0 已发布（100% 覆盖）
-- 存储层 3/7 已文档化 50%（redisx / ossx / postgresx）、3/7 已规格化 30%（kafkax / taosx / clickhousex），均已脱离仅骨架阶段
-- **阻塞项**：存储层代码实现仍滞后，但不影响上层开发（全模块 SPEC/TRACEABILITY 已就绪，可通过 contracts 稳定端口 mock）
+- 组件：16 个，平均进度 59%
+- 核心模块（kernel / configx / observex / resiliencx / schedulex / testkitx / kafkax）已成熟，有版本号；kernel/configx/observex/kafkax v1.0.0 已发布
+- 存储层 1/7 已发布 100%（kafkax）、3/7 已文档化 50%（redisx / ossx / postgresx）、2/7 已规格化 30%（taosx / clickhousex）、1/7 已验证未发布 80%（natsx），均已脱离仅骨架阶段
+- **阻塞项**：redisx/postgresx/taosx/ossx/clickhousex 仍需实现或发布闭环；kafkax 已不再是存储层实现阻塞项
 
 ### 🟢 L2.5 领域共享层（健康）
 
@@ -123,7 +123,7 @@
 | [resiliencx](https://github.com/ZoneCNH/resiliencx) | v1.0.1 | █████ 100% | SPEC Approved (6 FR, 8 BR, 10 tasks) | 弹性策略（timeout / retry / circuit / bulkhead / rate / fallback） |
 | [schedulex](https://github.com/ZoneCNH/schedulex) | v0.1.2 | █████ 100% | 398KB/25 项 | cron/interval/delay 调度、Overlap/Misfire 策略、分布式锁、Clock 注入、8 示例（98.8% 覆盖，race/bench/vet 通过，SPEC v1.0.1） |
 | [redisx](https://github.com/ZoneCNH/redisx) | - | ███░░ 50% | SPEC v1.0 + TRACEABILITY + goal + 10 tasks | Redis KeyBuilder/Options/KV/TTL/Cache/Hash/List/PubSub/Pipeline/Locker/Counter/RateLimit/Codec/Health（12 FR，10 BR，4 NFR，10 tasks）；直接生产依赖限定为 kernel + Redis 客户端库 |
-| [kafkax](https://github.com/ZoneCNH/kafkax) | - | ██░░░ 30% | SPEC + TRACEABILITY + goal | Kafka — 消息队列、事件流（完整规格，骨架之上） |
+| [kafkax](https://github.com/ZoneCNH/kafkax) | [v1.0.0](https://github.com/ZoneCNH/kafkax/releases/tag/v1.0.0) | █████ 100% | [PR #5](https://github.com/ZoneCNH/kafkax/pull/5) + tag/release + release-check | Kafka L2 adapter 已发布；driver-neutral API + 可选 kafka-go 生产驱动；真实 broker gates；merge `0545db2` |
 | [natsx](https://github.com/ZoneCNH/natsx) | - | ████░ 80% | 349KB/27 项 | NATS 生命周期/投递证据已验证（`/home/natsx` `3053e80`）；8/14 complete、6/14 partial、0/14 pending；未批准发布 |
 | [postgresx](https://github.com/ZoneCNH/postgresx) | - | ███░░ 50% | SPEC v0.1.0 + TRACEABILITY + goal + 3 tasks | PostgreSQL — 关系型存储、事务、迁移（已提升为 v0.1.0 candidate） |
 | [taosx](https://github.com/ZoneCNH/taosx) | - | ██░░░ 30% | SPEC + TRACEABILITY + goal | TDengine — 时序数据写入与查询（完整规格，骨架之上） |
@@ -253,7 +253,7 @@
 
 | # | 风险 | 影响 | 建议 |
 | -- | ---- | ---- | ---- |
-| R8 | 存储层全部脱离仅骨架（30-50%），代码实现滞后 | 不阻塞上层开发 | 按需实现，contracts 稳定端口可 mock，各模块 SPEC/TRACEABILITY 已就绪 |
+| R8 | 剩余存储层已脱离仅骨架（30-80%），但 redisx/postgresx/taosx/ossx/clickhousex 仍缺发布闭环 | 不阻塞上层开发；kafkax 已通过 v1.0.0 发布闭环 | 按需推进剩余模块实现，contracts 稳定端口可 mock，各模块 SPEC/TRACEABILITY 已就绪 |
 | R9 | 分析域↔决策域若用实现包互调 | Go 循环导入和边界泄漏 | 只允许通过 contracts 事件/DTO 与 L2.5 模型连接 |
 
 ---

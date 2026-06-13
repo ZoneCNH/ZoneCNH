@@ -8,15 +8,17 @@
 
 ## 1. Metadata
 
-- Status: Candidate
-- Governance-Status: 实现证据已闭合；score 10/10；等待 PR 合入、tag 和正式发布仲裁
+- Status: Released
+- Governance-Status: [v1.0.0](https://github.com/ZoneCNH/kafkax/releases/tag/v1.0.0) 已发布；[PR #5](https://github.com/ZoneCNH/kafkax/pull/5) 已合入，tag `v1.0.0` 指向 `0545db280a405917a18d6f590d1e84166c61bae7`
 - Spec-Version: v1.0.0
 - Last-Updated: 2026-06-13
 - Owner: ZoneCNH
 - Layer: 基座 · 存储扩展
-- Implementation-Version: 1.0-candidate @ 05cd018ebfa5c853f35efe920cc9dde8134c49b7
-- Baseline: 1.0 候选规格；release gate 证据通过，正式发布以合入 main 和 tag 为准
+- Implementation-Version: v1.0.0 @ 0545db280a405917a18d6f590d1e84166c61bae7
+- Baseline: 1.0 发布规格；release gate 证据、main 合入、tag 和 GitHub Release 均已闭合
 - Repository: [github.com/ZoneCNH/kafkax](https://github.com/ZoneCNH/kafkax)
+- Release: [v1.0.0](https://github.com/ZoneCNH/kafkax/releases/tag/v1.0.0)
+- Pull-Request: [#5](https://github.com/ZoneCNH/kafkax/pull/5)
 - Related: [CONSTITUTION.md](../../CONSTITUTION.md), [ARCHITECTURE.md](../../ARCHITECTURE.md), [goal.md](./goal.md), [TRACEABILITY.md](./TRACEABILITY.md)
 
 ### 1.1 变更历史
@@ -26,18 +28,19 @@
 | 2026-06-07 | v1.0.0 | 初始版本 | ZoneCNH |
 | 2026-06-12 | v1.0.0-candidate | 对齐 1.0 候选基线、BR 处理、接口上下文与追溯要求 | ZoneCNH |
 | 2026-06-13 | v1.0.0-candidate+evidence | 对齐 kafkax@05cd018ebfa5c853f35efe920cc9dde8134c49b7 实现证据、真实 broker gates、release-check 与 score 10/10 | ZoneCNH |
+| 2026-06-13 | v1.0.0-release | 对齐 [PR #5](https://github.com/ZoneCNH/kafkax/pull/5)、[tag v1.0.0](https://github.com/ZoneCNH/kafkax/releases/tag/v1.0.0)、GitHub Release 与 main 发布锚点 0545db280a405917a18d6f590d1e84166c61bae7 | ZoneCNH |
 
 ## 2. Summary
 
-`kafkax` 封装 Kafka 客户端，提供统一的生产者（同步发送和批量发送）、消费者（消费组、offset 管理）、序列化/反序列化、健康检查和可观测集成。与 kernel 生命周期集成，保证连接随应用启停。异步发送、事务、Schema Registry、手动 partition assign、深度失败重试/转储编排属于后续候选或非目标，不作为 1.0 候选基线。
+`kafkax` 封装 Kafka 客户端，提供统一的生产者（同步发送和批量发送）、消费者（消费组、offset 管理）、序列化/反序列化、健康检查和可观测集成。与 kernel 生命周期集成，保证连接随应用启停。异步发送、事务、Schema Registry、手动 partition assign、深度失败重试/转储编排属于后续候选或非目标，不作为 1.0 发布基线。
 
 ### 2.1 当前实现证据
 
-本规格当前对齐 `kafkax@05cd018ebfa5c853f35efe920cc9dde8134c49b7`。该实现保持 `pkg/kafkax` driver-neutral 公开 API，并提供可选 `pkg/kafkax/kafkago` kafka-go production driver；公开契约不得暴露 `kafka-go`、`confluent` 或其他 driver 专属类型。
+本规格当前对齐 `kafkax@v1.0.0`（`0545db280a405917a18d6f590d1e84166c61bae7`）。该实现保持 `pkg/kafkax` driver-neutral 公开 API，并提供可选 `pkg/kafkax/kafkago` kafka-go production driver；公开契约不得暴露 `kafka-go`、`confluent` 或其他 driver 专属类型。
 
 已验证门禁包括：`GOWORK=off go test ./...`、真实 broker `kafka-integration` / `kafka-fault-injection` / `kafka-metrics-golden` / `kafka-admin-golden`、`traceability-check`、`boundary`、`kafka-contract`、`GOWORK=off go run ./cmd/goalcli score --min 9.8`（10/10）、`GOWORK=off make integration`、`XLIB_CONTEXT=release_verify GOWORK=off make release-check` 和 `git diff --check`。
 
-发布边界：真实 broker fixture 只存在于仓库外部并在 gate 输出中脱敏；未提供 fixture 时 broker-dependent gates 必须记录 `gap`/`blocked`，不得用 fake 或 mock-only 结果替代。正式发布仍等待 PR 合入、tag 和发布仲裁。
+发布边界：真实 broker fixture 只存在于仓库外部并在 gate 输出中脱敏；未提供 fixture 时 broker-dependent gates 必须记录 `gap`/`blocked`，不得用 fake 或 mock-only 结果替代。[v1.0.0](https://github.com/ZoneCNH/kafkax/releases/tag/v1.0.0) 已通过 [PR #5](https://github.com/ZoneCNH/kafkax/pull/5) 合入 main，并以 tag `v1.0.0` 和 GitHub Release 发布。
 
 ---
 
@@ -689,13 +692,13 @@ Then 错误、日志和 trace 标签不包含完整 payload 或敏感片段。
 
 ## 22. Release DoD
 
-当前证据锚点为 `kafkax@05cd018ebfa5c853f35efe920cc9dde8134c49b7`。已满足 release-check、score、contract 与真实 broker gates；以下清单保留 tag 前人工确认项。
+当前证据锚点为 `kafkax@v1.0.0`（`0545db280a405917a18d6f590d1e84166c61bae7`）。已满足 release-check、score、contract 与真实 broker gates；以下清单保留发布后持续补强项。
 
-- [ ] 所有公共接口有 godoc 注释（tag 前抽样确认）。
-- [ ] 所有公共类型有示例代码（tag 前抽样确认）。
-- [ ] CHANGELOG.md 已更新（tag 前确认）。
-- [ ] README.md 包含：模块定位、快速开始、配置说明、API 概览（tag 前确认）。
-- [ ] 单元测试覆盖率 ≥ 80%（tag 前读取覆盖率输出确认）。
+- [ ] 所有公共接口有 godoc 注释（发布后持续补强）。
+- [ ] 所有公共类型有示例代码（发布后持续补强）。
+- [ ] CHANGELOG.md 已更新（发布后持续补强）。
+- [ ] README.md 包含：模块定位、快速开始、配置说明、API 概览（发布后持续补强）。
+- [ ] 单元测试覆盖率 ≥ 80%（发布后持续补强）。
 - [x] `-race` 测试通过（`release-check` 的 `ci` gate 覆盖）。
 - [ ] Benchmark 结果无 > 10% 回退。
 - [x] `go vet` 无警告（`release-check` 的 `ci` gate 覆盖）。
@@ -710,10 +713,10 @@ Then 错误、日志和 trace 标签不包含完整 payload 或敏感片段。
 
 ## 23. Open Questions
 
-### 23.1 1.0 候选基线非阻断确认
+### 23.1 1.0 发布基线非阻断确认
 
-- `Health(ctx)` 返回错误时是否需要固定错误码枚举？当前候选基线只要求返回 `HealthStatus` 和包装错误。
-- `Close(ctx)` 重复调用时返回 nil 还是已关闭错误？当前候选基线只要求不得 panic，且行为需在实现中固定。
+- `Health(ctx)` 返回错误时是否需要固定错误码枚举？当前发布基线只要求返回 `HealthStatus` 和包装错误。
+- `Close(ctx)` 重复调用时返回 nil 还是已关闭错误？当前发布基线只要求不得 panic，且行为需在实现中固定。
 
 ### 23.2 后续候选能力（不阻断 1.0）
 

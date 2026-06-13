@@ -3,10 +3,12 @@
 > 模块级追溯矩阵。治理规范见 [docs/governance/TRACEABILITY.md](../../docs/governance/TRACEABILITY.md)。
 
 Last-Updated: 2026-06-13
-Source: module/kafkax/SPEC.md（1.0 候选规格） + `kafkax@05cd018ebfa5c853f35efe920cc9dde8134c49b7` 实现证据
-Evidence-Anchor: `05cd018ebfa5c853f35efe920cc9dde8134c49b7`
+Source: module/kafkax/SPEC.md（1.0 发布规格） + `kafkax@v1.0.0` 实现证据
+Evidence-Anchor: `0545db280a405917a18d6f590d1e84166c61bae7`
 Gate-Evidence: `go test ./...`、真实 broker `kafka-integration` / `kafka-fault-injection` / `kafka-metrics-golden` / `kafka-admin-golden`、`traceability-check`、`boundary`、`kafka-contract`、`score --min 9.8` = 10/10、`make integration`、`make release-check`
-Release-Boundary: 真实 broker fixture 外置并脱敏；PR 合入和 tag 前不宣称正式发布。
+Release: [v1.0.0](https://github.com/ZoneCNH/kafkax/releases/tag/v1.0.0)
+Pull-Request: [#5](https://github.com/ZoneCNH/kafkax/pull/5)
+Release-Boundary: 真实 broker fixture 外置并脱敏；[v1.0.0](https://github.com/ZoneCNH/kafkax/releases/tag/v1.0.0) 已通过 [PR #5](https://github.com/ZoneCNH/kafkax/pull/5) 合入 main，并以 tag 与 GitHub Release 发布。
 
 | Requirement | Description | Acceptance Criteria | Test Case | Task | Status |
 | ----------- | ----------- | ------------------- | --------- | ---- | ------ |
