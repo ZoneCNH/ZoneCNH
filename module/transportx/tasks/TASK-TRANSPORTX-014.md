@@ -1,0 +1,27 @@
+# TASK-TRANSPORTX-014: Backpressure + Bulkhead
+
+- **Module**: transportx
+- **Spec**: `module/transportx/SPEC.md` v1.1.1
+- **FRs**: FR-012
+- **ACs**: AC-012
+- **TCs**: TC-012
+- **Phase**: Middleware + Control (Phase 3)
+- **Dependencies**: TASK-006 (Errors), TASK-012 (Middleware)
+- **Status**: Pending
+
+## Scope
+
+Implement BackpressurePolicy (BLOCK, DROP_OLDEST, DROP_NEWEST, FAIL_FAST, SPILL_TO_DISK) and Bulkhead concurrency limiter. Enforce queue/concurrency/rate/memory limits. Return `TX_BACKPRESSURE` or `TX_BULKHEAD_REJECTED` on saturation.
+
+## Files
+
+- `middleware/backpressure.go` — Backpressure middleware
+- `middleware/bulkhead.go` — Bulkhead middleware
+- `middleware/backpressure_test.go` — Saturation tests
+
+## Acceptance
+
+- [ ] Queue saturation → configured backpressure policy applied
+- [ ] Concurrency saturation → `TX_BULKHEAD_REJECTED`
+- [ ] DROP_OLDEST on REALTIME_BEST_EFFORT, SPILL_TO_DISK on AUDIT
+- [ ] `go test ./middleware/... -run TestBackpressure` passes
