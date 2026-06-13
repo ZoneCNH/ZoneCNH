@@ -3,11 +3,12 @@
 - **Module**: transportx
 - **Spec**: `module/transportx/SPEC.md` v1.1.1
 - **FRs**: FR-014
+- **BRs**: BR-002, BR-009
 - **ACs**: AC-014
 - **TCs**: TC-014
 - **Phase**: Middleware + Control (Phase 3)
 - **Priority**: P1
-- **Dependencies**: TASK-001 (Envelope), TASK-003 (Identity), TASK-006 (Errors)
+- **Dependencies**: TASK-TRANSPORTX-001 (Envelope), TASK-TRANSPORTX-003 (Identity), TASK-TRANSPORTX-006 (Errors)
 - **Status**: Pending
 
 ## Scope
