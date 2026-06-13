@@ -4,9 +4,12 @@
 - Spec-Version: v1.1.1
 - Last-Updated: 2026-06-14
 - Owner: ZoneCNH
+- Version: v1.1.1
 - Layer: 基座 · 传输契约
 - Repository: https://github.com/ZoneCNH/transportx
 - Related-Modules: contracts, observex, resiliencx, configx, natsx, kafkax, redisx, postgresx
+
+
 
 ## 1. Metadata
 
@@ -45,18 +48,6 @@ x.go / service adapter 负责"运行时接哪种实现"
 | Admin | HTTP / gRPC health | config、health、ops command | auth、rate limit、audit |
 | Audit | append-only log / Kafka / JetStream | risk reject、fill、settlement | 不可静默丢、可重放、可对账 |
 
-### Consumers
-
-| Consumer | Role | Typical Operations |
-| --- | --- | --- |
-| service adapter (x.go/cmd wire) | 运行时组装 transport + adapter | 注入 Publisher, Subscriber, Runtime |
-| contracts | 引用 transport 类型定义 | 定义 Topic, Event, DTO port |
-| kafkax / natsx adapters | 实现 transportx adapter 契约 | Publish, Subscribe, Ack, Nack |
-| observex | 消费 transportx trace/metric headers | 跨协议 trace/span 传播 |
-| resiliencx | 消费 retry/bulkhead/deadline 策略接口 | 弹性策略执行 |
-| conformance suite | 验证 transportx 实现合规性 | RunLifecycle, RunEnvelope, RunControlPlane |
-| domain modules (间接) | 通过 contracts port 调用，不直接依赖 transportx | 业务操作 |
-
 ## 3. Problem Statement
 
 Foundation 模块已有 `contracts` 用于跨域端口、事件协议和 DTO 契约，但传输层仍缺少独立规格。缺口集中在以下方面：
@@ -75,7 +66,7 @@ Foundation 模块已有 `contracts` 用于跨域端口、事件协议和 DTO 契
 - 中间件顺序没有强制 redaction 先于 logging，存在日志泄漏风险。
 - CI 与发布 DoD 没有把 transport conformance 纳入门禁。
 
-## 4. Scope
+## 4. Goals
 
 - 定义传输 Envelope、Endpoint、PayloadRef、Header 与 DeliveryReceipt。
 - 定义 QoS 五级分类：REALTIME_BEST_EFFORT、DURABLE_EVENT、COMMAND_IDEMPOTENT、COMMAND_STRICT、AUDIT。
@@ -99,26 +90,17 @@ Foundation 模块已有 `contracts` 用于跨域端口、事件协议和 DTO 契
 - 不提供通用 scheduler、service mesh 或 API gateway。
 - 不保存 payload 明文归档；payload storage 由调用方或 adapter 管理。
 
-## 6. Glossary
+## 6. Consumers
 
-| Term | Definition |
-| --- | --- |
-| Envelope | 传输单元的标准外壳，包含元数据、header、payload reference 和 trace fields。 |
-| Endpoint | 传输目的地或来源，包含 scheme、authority、path、topic、partition key 和 capability。 |
-| DeliveryReceipt | publish 或 consume 后的可审计结果，包含 ack、offset、attempt、error 与 latency。 |
-| ServiceIdentity | 代表调用方服务、租户、环境、权限和信任域的身份结构。 |
-| Runtime | 执行 publish、subscribe、request、stream 或 bridge 的传输运行时。 |
-| Control Plane | 对 runtime 施加 kill switch、mirror、canary、backpressure 和 drain 等控制的接口。 |
-| Conformance | 任何实现必须通过的契约一致性测试集合。 |
-| QoS Class | 消息传输质量分级，决定持久化、ack、幂等和可丢弃策略。 |
-| Codec | 将业务对象与 Envelope payload 互转的序列化契约接口，第一版提供 JSON codec。 |
-| TopicRegistry | 注册和校验业务 Topic 的接口，确保 Topic 命名、schema 和 QoS 绑定。 |
-| MethodRegistry | 注册和校验 RPC 方法的接口，确保 method 命名、deadline、retry class 和幂等约束。 |
-| SchemaRegistry | 校验 Envelope/Endpoint/Receipt schema 兼容性并记录版本演进的接口。 |
-| Execution Mode | 运行时执行模式（LIVE / PAPER / REPLAY / DRY_RUN），决定是否允许真实下单、外部副作用和审计要求。 |
-| Outbox/Inbox | 保证业务状态与事件发布一致性的模式：Outbox 在事务中写事件后异步发布；Inbox 去重消费。 |
-| Audit Plane | 独立审计通道，记录风控决策、订单状态变更、成交、结算等不可抵赖事件。 |
-| Data Class | 数据敏感度分级（PUBLIC / INTERNAL / CONFIDENTIAL / SECRET），决定脱敏和日志策略。 |
+| Consumer | Role | Typical Operations |
+| --- | --- | --- |
+| service adapter (x.go/cmd wire) | 运行时组装 transport + adapter | 注入 Publisher, Subscriber, Runtime |
+| contracts | 引用 transport 类型定义 | 定义 Topic, Event, DTO port |
+| kafkax / natsx adapters | 实现 transportx adapter 契约 | Publish, Subscribe, Ack, Nack |
+| observex | 消费 transportx trace/metric headers | 跨协议 trace/span 传播 |
+| resiliencx | 消费 retry/bulkhead/deadline 策略接口 | 弹性策略执行 |
+| conformance suite | 验证 transportx 实现合规性 | RunLifecycle, RunEnvelope, RunControlPlane |
+| domain modules (间接) | 通过 contracts port 调用，不直接依赖 transportx | 业务操作 |
 
 ## 7. Functional Requirements
 
@@ -335,7 +317,7 @@ Interfaces must accept context, ServiceIdentity and immutable request structures
 | Topic | `name`, `domain`, `version`, `entity`, `action`, `qosClass`, `schemaRef`, `owner` |
 | Method | `name`, `service`, `version`, `inputSchema`, `outputSchema`, `requiredDeadline`, `retryClass`, `requiresIdempotency` |
 
-### 10.5 Runtime Configuration Items
+## 11. Config Schema
 
 | Config Key | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -355,7 +337,7 @@ Interfaces must accept context, ServiceIdentity and immutable request structures
 
 All configuration consumed through `configx` immutable config interface.
 
-## 11. Error Handling
+## 12. Error Handling
 
 | Error Code | Trigger | Required Response |
 | --- | --- | --- |
@@ -385,7 +367,7 @@ All configuration consumed through `configx` immutable config interface.
 
 Every error must include stable code, redacted message, retry classification, endpoint reference and trace id.
 
-## 12. Edge Cases
+## 13. Edge Cases
 
 | Case | Required Behavior |
 | --- | --- |
@@ -402,36 +384,6 @@ Every error must include stable code, redacted message, retry classification, en
 | Outbox relay crash before mark | Re-publish must be idempotent via message_id dedup in Inbox. |
 | DLQ poison message loop | After maxAttempts, park in DLQ and stop auto-retry; require manual runbook. |
 | SECRET data in audit path | Fail closed: reject audit append if redaction version is missing. |
-
-## 13. Acceptance Criteria
-
-| AC | Requirement | Criterion | Verification Method |
-| --- | --- | --- | --- |
-| AC-001 | FR-001 | Envelope validation rejects missing identity, endpoint, deadline, trace or payload reference. | `go test ./envelope/... -run TestValidateRequired` |
-| AC-002 | FR-002 | Limit tests cover payload bytes, header count and header bytes. | `go test ./envelope/... -run TestLimits` |
-| AC-003 | FR-003 | Endpoint registration rejects invalid scheme, missing owner and unsupported capability. | `go test ./endpoint/... -run TestRegisterInvalid` |
-| AC-004 | FR-004 | Lifecycle tests cover every allowed transition and every forbidden transition. | `go test ./runtime/... -run TestLifecycleTransitions` |
-| AC-005 | FR-005 | Drain report includes accepted, completed, abandoned and timed-out counts. | `go test ./runtime/... -run TestDrainReport` |
-| AC-006 | FR-006 | Each control command emits audit evidence and rollback token. | `go test ./control/... -run TestCommandAudit` |
-| AC-007 | FR-007 | Missing or expired ServiceIdentity is rejected before adapter dispatch. | `go test ./middleware/... -run TestIdentityValidation` |
-| AC-008 | FR-008 | Scope and tenant violations return `TX_AUTHZ_DENIED` without payload leakage. | `go test ./middleware/... -run TestAuthzDenialNoLeak` |
-| AC-009 | FR-009 | Expired deadline and clock skew branches produce distinct error codes. | `go test ./middleware/... -run TestDeadlineAndSkew` |
-| AC-010 | FR-010 | Idempotency conflict prevents duplicate publish. | `go test ./middleware/... -run TestIdempotencyConflict` |
-| AC-011 | FR-011 | Receipt includes status, ack, offset, attempt, latency and retry decision. | `go test ./receipt/... -run TestReceiptFields` |
-| AC-012 | FR-012 | Saturation tests cover queue, concurrency, memory and rate limits. | `go test ./middleware/... -run TestBackpressure` |
-| AC-013 | FR-013 | Retry exhaustion creates dead-letter evidence with trace context. | `go test ./middleware/... -run TestDLQWithTrace` |
-| AC-014 | FR-014 | Middleware test proves redaction occurs before logging and tracing. | `go test ./middleware/... -run TestRedactionOrder` |
-| AC-015 | FR-015 | Compatibility test detects breaking schema changes. | `go test ./registry/... -run TestSchemaBreakingChange` |
-| AC-016 | FR-016 | CI blocks release when conformance evidence is missing. | CI gate TX-GATE-009 |
-| AC-017 | FR-017 | QoS validation: order/fill/risk events rejected on REALTIME_BEST_EFFORT; COMMAND_IDEMPOTENT without key rejected. | `go test ./middleware/... -run TestQoSHardRules` |
-| AC-018 | FR-018 | Codec round-trip test: Marshal → Unmarshal preserves equality for JSON codec. | `go test ./codec/json/... -run TestRoundTrip` |
-| AC-019 | FR-019 | TopicRegistry rejects duplicate topic name and invalid naming pattern. | `go test ./registry/... -run TestTopicValidation` |
-| AC-020 | FR-020 | MethodRegistry rejects UNSAFE method without explicit retry opt-out annotation. | `go test ./registry/... -run TestMethodRetryClass` |
-| AC-021 | FR-021 | Execution mode test: REPLAY prevents real order; DRY_RUN prevents external side effect; LIVE requires audit sink. | `go test ./runtime/... -run TestExecutionModeGates` |
-| AC-022 | FR-022 | Outbox Save + Pending + MarkPublished cycle passes; Inbox Seen(idempotent) + MarkProcessed cycle passes. | `go test ./conformance/... -run TestOutboxInboxCycle` |
-| AC-023 | FR-023 | AuditSink Append succeeds; Replay replays matching records in order. | `go test ./conformance/... -run TestAuditPlane` |
-| AC-024 | FR-024 | CONFIDENTIAL and SECRET data redacted before logging; SECRET absent from audit and receipt. | `go test ./middleware/... -run TestDataClassRedaction` |
-| AC-025 | FR-025 | SchemaRegistry rejects unknown version; breaking change returns incompatible classification. | `go test ./registry/... -run TestSchemaCompatibility` |
 
 ## 14. Directory Structure
 
@@ -478,47 +430,39 @@ Multi-module layout: root `go.mod` (core), each `adapters/*/go.mod` separate mod
 | domain modules | domain modules may call transportx through ports; transportx must not import domain packages. |
 | adapters/* | each adapter module MAY import transportx/core; transportx/core MUST NOT import any adapter. |
 
-## 16. Security Requirements
+## 16. Testing
 
-| Requirement | Control |
-| --- | --- |
-| Payload secrecy | Payload bytes stay outside logs, metrics, audit and receipt text. |
-| Identity binding | Every operation requires ServiceIdentity and trust-domain validation. |
-| Scope enforcement | Endpoint and control operations validate scopes before dispatch. |
-| Tenant isolation | Endpoint resolution and idempotency stores include tenant scope. |
-| Auditability | Control-plane and authorization failures produce immutable audit events. |
-| Fail-closed redaction | Redaction errors block logging and adapter dispatch. |
-| Data classification | CONFIDENTIAL and SECRET data redacted before telemetry; SECRET blocked from audit/receipt. |
-| Mode gate | REPLAY and DRY_RUN modes prevent real order submission and external side effects. |
-| Secret-free audit | AuditRecord must not contain SECRET-classified fields. |
+### 16.1 Acceptance Criteria
 
-## 17. Observability
+| AC | Requirement | Criterion | Verification Method |
+| --- | --- | --- | --- |
+| AC-001 | FR-001 | Envelope validation rejects missing identity, endpoint, deadline, trace or payload reference. | `go test ./envelope/... -run TestValidateRequired` |
+| AC-002 | FR-002 | Limit tests cover payload bytes, header count and header bytes. | `go test ./envelope/... -run TestLimits` |
+| AC-003 | FR-003 | Endpoint registration rejects invalid scheme, missing owner and unsupported capability. | `go test ./endpoint/... -run TestRegisterInvalid` |
+| AC-004 | FR-004 | Lifecycle tests cover every allowed transition and every forbidden transition. | `go test ./runtime/... -run TestLifecycleTransitions` |
+| AC-005 | FR-005 | Drain report includes accepted, completed, abandoned and timed-out counts. | `go test ./runtime/... -run TestDrainReport` |
+| AC-006 | FR-006 | Each control command emits audit evidence and rollback token. | `go test ./control/... -run TestCommandAudit` |
+| AC-007 | FR-007 | Missing or expired ServiceIdentity is rejected before adapter dispatch. | `go test ./middleware/... -run TestIdentityValidation` |
+| AC-008 | FR-008 | Scope and tenant violations return `TX_AUTHZ_DENIED` without payload leakage. | `go test ./middleware/... -run TestAuthzDenialNoLeak` |
+| AC-009 | FR-009 | Expired deadline and clock skew branches produce distinct error codes. | `go test ./middleware/... -run TestDeadlineAndSkew` |
+| AC-010 | FR-010 | Idempotency conflict prevents duplicate publish. | `go test ./middleware/... -run TestIdempotencyConflict` |
+| AC-011 | FR-011 | Receipt includes status, ack, offset, attempt, latency and retry decision. | `go test ./receipt/... -run TestReceiptFields` |
+| AC-012 | FR-012 | Saturation tests cover queue, concurrency, memory and rate limits. | `go test ./middleware/... -run TestBackpressure` |
+| AC-013 | FR-013 | Retry exhaustion creates dead-letter evidence with trace context. | `go test ./middleware/... -run TestDLQWithTrace` |
+| AC-014 | FR-014 | Middleware test proves redaction occurs before logging and tracing. | `go test ./middleware/... -run TestRedactionOrder` |
+| AC-015 | FR-015 | Compatibility test detects breaking schema changes. | `go test ./registry/... -run TestSchemaBreakingChange` |
+| AC-016 | FR-016 | CI blocks release when conformance evidence is missing. | CI gate TX-GATE-009 |
+| AC-017 | FR-017 | QoS validation: order/fill/risk events rejected on REALTIME_BEST_EFFORT; COMMAND_IDEMPOTENT without key rejected. | `go test ./middleware/... -run TestQoSHardRules` |
+| AC-018 | FR-018 | Codec round-trip test: Marshal → Unmarshal preserves equality for JSON codec. | `go test ./codec/json/... -run TestRoundTrip` |
+| AC-019 | FR-019 | TopicRegistry rejects duplicate topic name and invalid naming pattern. | `go test ./registry/... -run TestTopicValidation` |
+| AC-020 | FR-020 | MethodRegistry rejects UNSAFE method without explicit retry opt-out annotation. | `go test ./registry/... -run TestMethodRetryClass` |
+| AC-021 | FR-021 | Execution mode test: REPLAY prevents real order; DRY_RUN prevents external side effect; LIVE requires audit sink. | `go test ./runtime/... -run TestExecutionModeGates` |
+| AC-022 | FR-022 | Outbox Save + Pending + MarkPublished cycle passes; Inbox Seen(idempotent) + MarkProcessed cycle passes. | `go test ./conformance/... -run TestOutboxInboxCycle` |
+| AC-023 | FR-023 | AuditSink Append succeeds; Replay replays matching records in order. | `go test ./conformance/... -run TestAuditPlane` |
+| AC-024 | FR-024 | CONFIDENTIAL and SECRET data redacted before logging; SECRET absent from audit and receipt. | `go test ./middleware/... -run TestDataClassRedaction` |
+| AC-025 | FR-025 | SchemaRegistry rejects unknown version; breaking change returns incompatible classification. | `go test ./registry/... -run TestSchemaCompatibility` |
 
-| Signal | Required Fields |
-| --- | --- |
-| Metrics | endpoint, operation, status, error code, retry decision, qos class, tenant class, redaction version |
-| Traces | trace id, span id, envelope id, endpoint reference, lifecycle state, control command id, qos class |
-| Logs | redacted envelope id, endpoint reference, error code, receipt id, actor, command id, data class |
-| Audit | ServiceIdentity, control command, authz decision, endpoint, timestamp, reason, execution mode |
-
-Metrics labels must use bounded cardinality fields. Payload/unredacted headers prohibited. SECRET data must never appear in any output.
-
-## 18. Performance Budget
-
-| Budget | Target |
-| --- | --- |
-| Envelope validation overhead | p95 ≤ 1 ms (in-memory) |
-| Middleware overhead | p95 ≤ 2 ms (excluding adapter I/O) |
-| Control command application | p95 ≤ 10 ms (excluding durable store) |
-| Drain bookkeeping | O(in-flight work), bounded memory per receipt |
-| Redaction | p95 ≤ 1 ms (metadata-only Envelope) |
-| JSON codec round-trip | p95 ≤ 5 ms (1 KB payload) |
-| TopicRegistry resolution | p95 ≤ 0.1 ms (in-memory) |
-| Audit append | p95 ≤ 20 ms (excluding sink I/O) |
-
-Implementations must report benchmark hardware, runtime version and adapter type in release evidence.
-
-## 19. Test Matrix
+### 16.2 Test Matrix
 
 | Test | Coverage | Command |
 | --- | --- | --- |
@@ -548,6 +492,46 @@ Implementations must report benchmark hardware, runtime version and adapter type
 | **TC-024:** Data classification redaction | FR-024, AC-024 | `go test ./conformance/... -run TestDataClassRedaction` |
 | **TC-025:** SchemaRegistry compatibility | FR-025, AC-025 | `go test ./conformance/... -run TestSchemaCompatibility` |
 
+## 17. Performance Budget
+
+| Budget | Target |
+| --- | --- |
+| Envelope validation overhead | p95 ≤ 1 ms (in-memory) |
+| Middleware overhead | p95 ≤ 2 ms (excluding adapter I/O) |
+| Control command application | p95 ≤ 10 ms (excluding durable store) |
+| Drain bookkeeping | O(in-flight work), bounded memory per receipt |
+| Redaction | p95 ≤ 1 ms (metadata-only Envelope) |
+| JSON codec round-trip | p95 ≤ 5 ms (1 KB payload) |
+| TopicRegistry resolution | p95 ≤ 0.1 ms (in-memory) |
+| Audit append | p95 ≤ 20 ms (excluding sink I/O) |
+
+Implementations must report benchmark hardware, runtime version and adapter type in release evidence.
+
+## 18. Observability
+
+| Signal | Required Fields |
+| --- | --- |
+| Metrics | endpoint, operation, status, error code, retry decision, qos class, tenant class, redaction version |
+| Traces | trace id, span id, envelope id, endpoint reference, lifecycle state, control command id, qos class |
+| Logs | redacted envelope id, endpoint reference, error code, receipt id, actor, command id, data class |
+| Audit | ServiceIdentity, control command, authz decision, endpoint, timestamp, reason, execution mode |
+
+Metrics labels must use bounded cardinality fields. Payload/unredacted headers prohibited. SECRET data must never appear in any output.
+
+## 19. Security Requirements
+
+| Requirement | Control |
+| --- | --- |
+| Payload secrecy | Payload bytes stay outside logs, metrics, audit and receipt text. |
+| Identity binding | Every operation requires ServiceIdentity and trust-domain validation. |
+| Scope enforcement | Endpoint and control operations validate scopes before dispatch. |
+| Tenant isolation | Endpoint resolution and idempotency stores include tenant scope. |
+| Auditability | Control-plane and authorization failures produce immutable audit events. |
+| Fail-closed redaction | Redaction errors block logging and adapter dispatch. |
+| Data classification | CONFIDENTIAL and SECRET data redacted before telemetry; SECRET blocked from audit/receipt. |
+| Mode gate | REPLAY and DRY_RUN modes prevent real order submission and external side effects. |
+| Secret-free audit | AuditRecord must not contain SECRET-classified fields. |
+
 ## 20. CI Gate
 
 | Gate | Evidence | Blocks Release |
@@ -565,7 +549,7 @@ Implementations must report benchmark hardware, runtime version and adapter type
 | TX-GATE-011 | Conformance: Execution Mode, Outbox/Inbox, Audit Plane tests | Yes |
 | TX-GATE-012 | Conformance: Data Classification, SchemaRegistry tests | Yes |
 
-## 21. Migration Plan
+## 21. Upgrade Compatibility
 
 | Step | Action |
 | --- | --- |
@@ -614,3 +598,24 @@ WHEN a breaking schema change is detected:
 | OQ-2 | What durable store backs control-plane audit records and DLQ? | Deferred to implementation |
 | OQ-3 | Should SchemaRegistry use standalone service or embedded library? | Embedded library for v1.x; standalone deferred |
 | OQ-4 | Protobuf codec: v1.1.1 or v1.2.0? | Defer to v1.2.0 |
+
+## Appendix A: Glossary
+
+| Term | Definition |
+| --- | --- |
+| Envelope | 传输单元的标准外壳，包含元数据、header、payload reference 和 trace fields。 |
+| Endpoint | 传输目的地或来源，包含 scheme、authority、path、topic、partition key 和 capability。 |
+| DeliveryReceipt | publish 或 consume 后的可审计结果，包含 ack、offset、attempt、error 与 latency。 |
+| ServiceIdentity | 代表调用方服务、租户、环境、权限和信任域的身份结构。 |
+| Runtime | 执行 publish、subscribe、request、stream 或 bridge 的传输运行时。 |
+| Control Plane | 对 runtime 施加 kill switch、mirror、canary、backpressure 和 drain 等控制的接口。 |
+| Conformance | 任何实现必须通过的契约一致性测试集合。 |
+| QoS Class | 消息传输质量分级，决定持久化、ack、幂等和可丢弃策略。 |
+| Codec | 将业务对象与 Envelope payload 互转的序列化契约接口，第一版提供 JSON codec。 |
+| TopicRegistry | 注册和校验业务 Topic 的接口，确保 Topic 命名、schema 和 QoS 绑定。 |
+| MethodRegistry | 注册和校验 RPC 方法的接口，确保 method 命名、deadline、retry class 和幂等约束。 |
+| SchemaRegistry | 校验 Envelope/Endpoint/Receipt schema 兼容性并记录版本演进的接口。 |
+| Execution Mode | 运行时执行模式（LIVE / PAPER / REPLAY / DRY_RUN），决定是否允许真实下单、外部副作用和审计要求。 |
+| Outbox/Inbox | 保证业务状态与事件发布一致性的模式：Outbox 在事务中写事件后异步发布；Inbox 去重消费。 |
+| Audit Plane | 独立审计通道，记录风控决策、订单状态变更、成交、结算等不可抵赖事件。 |
+| Data Class | 数据敏感度分级（PUBLIC / INTERNAL / CONFIDENTIAL / SECRET），决定脱敏和日志策略。 |
