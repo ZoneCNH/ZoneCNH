@@ -271,6 +271,8 @@ Status: Approved
 
 **验证方法：** 集成测试，使用 MinIO 或 localstack
 
+**当前发布口径：** v1.0.1 已用真实 Aliyun OSS 验证基础 Put/Get/List/Delete；大文件自动分片、预签名 URL 与 S3/MinIO/localstack Provider gate 仍属于后续扩展验收。
+
 ---
 
 ## 跨域链路验收场景

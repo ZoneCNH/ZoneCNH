@@ -104,7 +104,7 @@ modules:
     path: github.com/ZoneCNH/ossx
     layer: storage
     stdlib_only: false
-    description: "对象存储 S3/MinIO"
+    description: "Aliyun OSS 对象存储"
 
   clickhousex:
     path: github.com/ZoneCNH/clickhousex
