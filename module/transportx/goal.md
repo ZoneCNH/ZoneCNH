@@ -43,14 +43,14 @@ kafkax / natsx / grpc / http / websocket 是"用什么传"
 
 ## 交付边界
 
-- `module/transportx/SPEC.md` 是 v1.1.0 规格基线（25 FRs, 18 BRs, 25 ACs, 25 TCs, 12 CI gates）。
+- `module/transportx/SPEC.md` 是 v1.1.1 规格基线（25 FRs, 18 BRs, 25 ACs, 25 TCs, 12 CI gates）。
 - `module/transportx/TRACEABILITY.md` 是 FR、BR、AC、TC 与门禁映射。
 - 根 `README.md`、`ARCHITECTURE.md`、`STATUS.md` 与 `module/README.md` 必须列出 `transportx`。
 - `.github/ci/spec-lint.sh`、`.github/ci/traceability-check.sh`、`.github/ci/status-consistency-check.sh` 与 `.github/ci/spec-drift-guard.sh` 必须通过。
 
 ## 完成定义
 
-- 规格文档 23 节完整，状态为 `Approved`，版本为 `v1.1.0`。
+- 规格文档 23 节完整，状态为 `Approved`，版本为 `v1.1.1`。
 - 追踪矩阵覆盖全部 25 FRs + 18 BRs，且所有 25 TCs 在规格中存在。
 - CI 必需模块清单包含 `transportx`。
 - 发布前必须补齐实现仓库 release tag、conformance report、changelog 与 drift evidence。
