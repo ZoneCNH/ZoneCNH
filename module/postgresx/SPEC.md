@@ -2,18 +2,18 @@
 
 > 基座 · PostgreSQL 存储扩展。以 `pgxpool` 为核心，提供显式配置、连接池生命周期、SQL 执行、事务、迁移、健康检查、错误归一化与可观测适配点。
 
-最后更新：2026-06-12
+最后更新：2026-06-13
 
 ---
 
 ## 1. Metadata
 
-- Status: Draft
+- Status: Implemented
 - Spec-Version: v1.0.0
-- Last-Updated: 2026-06-12
+- Last-Updated: 2026-06-13
 - Owner: ZoneCNH
 - Layer: 基座 · 存储扩展
-- Implementation-Baseline: v0.1.0 candidate (`/home/postgresx`)
+- Implementation-Baseline: v1.0.0 release (tag `v1.0.0`, commit `310a249e`)
 - Go-Baseline: `go 1.25.0`
 - Runtime Dependencies: `github.com/ZoneCNH/foundationx v0.1.1`, `github.com/jackc/pgx/v5 v5.9.2`
 - Repository: [github.com/ZoneCNH/postgresx](https://github.com/ZoneCNH/postgresx)
@@ -23,12 +23,12 @@
 
 ## 2. 评分结论
 
-| 维度 | 修复前 | 当前文档基线 | 主要依据 |
+| 维度 | 修复前 | 当前发布基线 | 主要依据 |
 | ---- | ------ | ------------ | -------- |
-| 代码实现证据 | 82/100 | 82/100 | `/home/postgresx` 已有客户端、事务、迁移、健康、错误映射和测试证据 |
-| 模块文档一致性 | 41/100 | 78/100 | 已移除过期 API、补齐 BR 与 Task 映射，仍有指标名和版本矩阵漂移 |
-| v1.0 可冻结度 | 48/100 | 70/100 | 当前是 v0.1.0 candidate，v1.0 Public API/metrics/contracts 仍需冻结 |
-| 综合评分 | 61/100 | 82/100 | 文档已对齐实现基线，但契约冻结风险未完全消除 |
+| 代码实现证据 | 82/100 | 98/100 | `/home/postgresx` 已通过 release-evidence-check、release-final-check 与强制真实 PostgreSQL integration 的 release-preflight |
+| 模块文档一致性 | 41/100 | 98/100 | SPEC、TRACEABILITY、goal、TASK-PG-003、Public API、metrics contract 与版本矩阵已对齐 |
+| v1.0 可冻结度 | 48/100 | 98/100 | v1.0.0 tag/GitHub release 已发布，Public API、metrics contract 与 release evidence 已冻结 |
+| 综合评分 | 61/100 | 98/100 | 仅保留下游实际接入和生产 soak 的非阻断风险 |
 
 ## 3. Summary
 
@@ -152,10 +152,10 @@ THEN `Config.RedactedDSN()` 必须隐藏密码，日志和指标不得包含完�
 | BR-006 | 事务必须只在 `fn` 返回 nil 时提交；error、context 取消和 panic 路径必须回滚。 |
 | BR-007 | 迁移版本必须为正整数且单调执行；重复版本和无效迁移必须阻断。 |
 | BR-008 | 健康检查必须幂等、无副作用，并只输出安全元数据。 |
-| BR-009 | 指标适配必须不泄露敏感信息；v1.0 前必须统一代码与契约中的指标命名。 |
+| BR-009 | 指标适配必须不泄露敏感信息；代码与契约中的指标命名必须保持唯一且一致。 |
 | BR-010 | PostgreSQL 错误码必须稳定映射到 `foundationx` 错误 kind 和 retryability。 |
 | BR-011 | 发布证据必须支持 `GOWORK=off`，避免依赖本地 workspace 污染。 |
-| BR-012 | `go.mod`、版本矩阵、公开 API 文档和模块规格必须在 v1.0 冻结前保持一致。 |
+| BR-012 | `go.mod`、版本矩阵、公开 API 文档和模块规格必须在发布后持续保持一致。 |
 
 ## 10. Interface Contract
 
@@ -297,11 +297,12 @@ func WithClock(clock Clock) Option
 
 ## 13. Verification Gates
 
-当前实现仓库 `/home/postgresx` 已由 team 审计验证：
+当前实现仓库 `/home/postgresx` 已作为 v1.0.0 release 验证：
 
-- `GOWORK=off go test ./...`：通过。
-- `GOWORK=off go vet ./...`：通过。
-- 发布证据文档显示 `make ci`、race、secret scan、live PostgreSQL integration 和 migration 测试已作为 v0.1.0 candidate 证据。
+- `GOWORK=off VERSION=v1.0.0 make release-evidence-check`：通过。
+- `GOWORK=off VERSION=v1.0.0 make release-final-check`：通过。
+- `GOWORK=off VERSION=v1.0.0 make release-preflight` 在 `POSTGRESX_REQUIRE_INTEGRATION=1` 和注入的 dev PostgreSQL DSN/凭据下通过，覆盖 `go vet`、`go test`、`go test -race`、边界检查、contract check、secret scan、foundationx API check、template alignment 与真实 PostgreSQL integration。
+- Git tag / GitHub release：`v1.0.0`，对应提交 `310a249e`。
 
 文档修复侧必须通过：
 
@@ -313,22 +314,20 @@ func WithClock(clock Clock) Option
 
 | 风险 | 影响 | 处置 |
 | ---- | ---- | ---- |
-| 指标命名漂移 | 代码中使用 `postgresx_query_total` 等 underscore 名称，契约文档中存在 `postgresx.query.total` dot 名称 | TASK-PG-003 在 v1.0 前冻结唯一命名 |
-| Go 版本漂移 | `go.mod` 为 `go 1.25.0`，`docs/VERSION_MATRIX.md` 曾记录 `go 1.26.3` | TASK-PG-003 统一版本矩阵 |
-| Public API 文档漂移 | `/home/postgresx` 的 contract 文档存在列出未实现符号的风险 | 以代码和测试为当前基线，v1.0 前清理 contract |
-| 下游接入未完成 | `x.go` 和业务模块尚未形成真实依赖证据 | 保持潜在消费者状态，不把下游接入计入完成 |
+| 下游接入证据缺口 | `x.go` 和业务模块尚未形成真实依赖证据 | 作为发布后接入跟踪项；下游接入时补充 import、测试或发布证据 |
+| 生产 soak 不足 | 当前证据覆盖本地与真实 PostgreSQL integration，尚无长期生产运行数据 | 作为 v1.x 运维证据继续积累，不降低当前 release 判定 |
 
 ---
 
 ## 15. 当前结论
 
-`postgresx` 已不再是“仅骨架”状态，代码层具备 v0.1.0 candidate 的核心能力。模块文档已对齐当前实现基线，但 v1.0 仍需完成契约冻结，尤其是指标名、版本矩阵和公开 API contract 的一致性。
+`postgresx` 已完成 v1.0.0 release 收束：代码、Public API、metrics contract、版本矩阵、release evidence 和真实 PostgreSQL integration 已形成闭环。综合评分为 `98/100`；剩余扣分来自下游真实接入和生产 soak 尚未形成证据。
 
 ## 16. Rollout Plan
 
-- 当前文档仅把 `/home/postgresx` 归类为 v0.1.0 candidate 证据基线，不声明 v1.0 发布完成。
+- `/home/postgresx` 以 `v1.0.0` tag、GitHub release 和提交 `310a249e` 为当前发布基线。
 - 下游模块只允许依赖已实现的 `pkg/postgresx` 入口：显式 `Config`、连接池生命周期、SQL 执行、事务、迁移、健康检查、错误映射和可观测 hook。
-- v1.0 发布前必须关闭 TASK-PG-003，并冻结指标命名、Go baseline、Public API contract 和发布证据索引。
+- 未来 v1.x 破坏性变更必须同步 SPEC、TRACEABILITY、Task、contracts 和 release evidence，不重新打开已关闭的 v1.0 阻断项。
 - `x.go` 或业务模块接入前必须新增对应追溯证据，不能把潜在消费者计入完成度。
 
 ## 17. Migration Plan
@@ -342,7 +341,7 @@ func WithClock(clock Clock) Option
 
 - `postgresx` 只暴露 logger、metrics、clock 等 hook，不绑定具体观测后端。
 - 必须覆盖连接池、查询、事务、迁移和健康检查事件；事件字段不得包含明文 DSN、密码或 SQL 参数 Secret。
-- 指标名在 v1.0 前由 TASK-PG-003 冻结，当前不得同时把 underscore 与 dot 两套命名都标为权威。
+- 指标名已由 TASK-PG-003 冻结为 dotted `postgresx.*` 命名，后续变更必须同步代码、contract、SPEC 与 TRACEABILITY。
 - 健康检查实现必须保持 `foundationx.HealthChecker` 兼容，并保留 context 取消语义。
 
 ## 19. Security
@@ -357,12 +356,12 @@ func WithClock(clock Clock) Option
 - 连接池生命周期以 `pgxpool` 为核心，默认池参数必须可被调用方覆盖。
 - 查询和事务 helper 不得隐藏 context deadline，也不得引入无界 retry。
 - 迁移执行必须保持确定性顺序，并阻断重复版本，避免启动期重复执行。
-- v1.0 前如新增性能声明，必须补充可复现 benchmark 或 live PostgreSQL evidence。
+- v1.x 如新增性能声明，必须补充可复现 benchmark 或 live PostgreSQL evidence。
 
 ## 21. Compatibility
 
 - 当前实现基线记录为 `go 1.25.0`、`github.com/jackc/pgx/v5 v5.9.2`、`github.com/ZoneCNH/foundationx v0.1.1`。
-- v1.0 前 Public API 仍可收敛，但任何破坏性变更都必须同步 SPEC、TRACEABILITY、Task 和 `/home/postgresx` contract 文档。
+- v1.x Public API 已冻结；任何破坏性变更都必须同步 SPEC、TRACEABILITY、Task 和 `/home/postgresx` contract 文档。
 - 基座边界保持不变：`postgresx` 可以依赖 `foundationx` 和 `pgx`，不得依赖业务域、入口仓库或数据域仓库。
 - Release evidence 必须支持 `GOWORK=off`，避免本地 workspace 掩盖模块依赖问题。
 
@@ -370,15 +369,15 @@ func WithClock(clock Clock) Option
 
 | 问题 | 当前决策 | 关闭条件 |
 | ---- | -------- | -------- |
-| 指标命名 | TASK-PG-003 未完成，underscore 与 dot 命名尚未统一 | 代码、contract、SPEC、TRACEABILITY 全部引用同一命名 |
-| Go baseline | 以 `/home/postgresx/go.mod` 的 `go 1.25.0` 为当前证据 | VERSION_MATRIX 与 release evidence 统一 |
-| Public API contract | 以代码和测试为当前基线 | contract 文档删除未实现符号并补齐示例 |
+| 指标命名 | 已由 TASK-PG-003 关闭，代码、contract、SPEC、TRACEABILITY 采用 dotted `postgresx.*` 命名 | 后续变更必须同步 release evidence |
+| Go baseline | `/home/postgresx/go.mod`、VERSION_MATRIX 与 release evidence 已统一到 go 1.25.0 | 升级 Go baseline 时同步版本矩阵和 release gates |
+| Public API contract | 已按代码和测试冻结为 v1.0.0 contract | 新增/删除公开符号必须更新 contract 与 tests |
 | 下游接入 | 仅标记为潜在消费者 | 出现真实 import、测试或发布证据 |
 
 ## 23. Definition of Done
 
 - SPEC 保持 23 节结构，`Spec-Version` 使用 semver，且不包含模糊状态词。
 - `TRACEABILITY.md` 覆盖 FR-001..FR-007、BR-001..BR-012、TC-001..TC-008，并映射 TASK-PG-001..TASK-PG-003。
-- `/home/postgresx` 中 `GOWORK=off go test ./...` 和 `GOWORK=off go vet ./...` 通过。
+- `/home/postgresx` 中 `GOWORK=off VERSION=v1.0.0 make release-evidence-check`、`make release-final-check` 与强制 integration 的 `make release-preflight` 通过。
 - 本仓库 `git diff --check`、状态一致性检查、postgresx 规格 lint 和 postgresx traceability 检查通过。
-- v1.0 发布声明必须等待 TASK-PG-003 关闭，不能仅凭 v0.1.0 candidate 证据提升为 release complete。
+- TASK-PG-003 已关闭，v1.0.0 发布声明必须继续以 tag、release evidence、contract check 和真实 PostgreSQL integration 为依据。

@@ -71,7 +71,7 @@ L2.5: decimalx / domain-market / domain-exchange / domain-macro
 
 ### 基座 · 存储与中间件
 
-- [postgresx](https://github.com/ZoneCNH/postgresx) — PostgreSQL — 关系型存储、事务、迁移（v0.1.0 candidate，SPEC + TRACEABILITY + goal + tasks 就绪） `公开`
+- [postgresx](https://github.com/ZoneCNH/postgresx) — PostgreSQL — 关系型存储、事务、迁移（v1.0.0 已发布；Public API、metrics contract、release evidence 与真实 PostgreSQL integration 已冻结） `公开`
 - [redisx](https://github.com/ZoneCNH/redisx) — Redis KeyBuilder、Options、KV/TTL、Cache、Hash/List、Pub/Sub、Pipeline、Locker、Counter/RateLimit、Codec/Health 规格；生产依赖限定为 kernel + Redis 客户端库，观测/配置/弹性通过外部 adapter 接入 `公开`
 - [clickhousex](https://github.com/ZoneCNH/clickhousex) — ClickHouse — OLAP 查询、批量写入（完整 SPEC + TRACEABILITY + goal 规格就绪） `公开`
 - [taosx](https://github.com/ZoneCNH/taosx) — TDengine — 时序数据写入与查询（完整 SPEC + TRACEABILITY + goal 规格就绪） `公开`

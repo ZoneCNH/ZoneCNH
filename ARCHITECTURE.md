@@ -287,7 +287,7 @@ Foundation v1 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中�
 | 基座                  | [redisx](https://github.com/ZoneCNH/redisx)                     | -      | ✅ 已有   | ███░░ 50% | Redis KeyBuilder/Options/KV/TTL/Cache/Hash/List/PubSub/Pipeline/Locker/Counter/RateLimit/Codec/Health（12 FR，10 BR，4 NFR，10 tasks） |
 | 基座                  | [kafkax](https://github.com/ZoneCNH/kafkax)                     | -      | ✅ 已有   | ██░░░ 30% | Kafka — 消息队列、事件流（完整规格，骨架之上）                                                  |
 | 基座                  | [natsx](https://github.com/ZoneCNH/natsx)                       | -      | ✅ 已有   | ████░ 80% | NATS，349KB/27 项                                                                         |
-| 基座                  | [postgresx](https://github.com/ZoneCNH/postgresx)               | -      | ✅ 已有   | ███░░ 50% | PostgreSQL — 关系型存储、事务、迁移（v0.1.0 candidate）                                     |
+| 基座                  | [postgresx](https://github.com/ZoneCNH/postgresx)               | v1.0.0 | ✅ 已发布 | ████░ 90% | PostgreSQL — 关系型存储、事务、迁移（release-final-check 与真实 PostgreSQL integration 通过） |
 | 基座                  | [taosx](https://github.com/ZoneCNH/taosx)                       | -      | ✅ 已有   | ██░░░ 30% | TDengine — 时序数据写入与查询（完整规格，骨架之上）                                          |
 | 基座                  | [ossx](https://github.com/ZoneCNH/ossx)                         | -      | ✅ 已有   | ███░░ 50% | 对象存储 S3/MinIO/local 多后端（SPEC + plan + tasks + prompts + evidence 全链路文档就绪）   |
 | 基座                  | [clickhousex](https://github.com/ZoneCNH/clickhousex)           | -      | ✅ 已有   | ██░░░ 30% | ClickHouse — OLAP 查询、批量写入（完整规格，骨架之上）                                      |

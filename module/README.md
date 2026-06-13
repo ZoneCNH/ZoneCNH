@@ -2,7 +2,7 @@
 
 > 16 个基座模块的独立完整规格，按架构层级组织。`x.go` 组合根不再作为 `module/` 下的模块规格维护。
 
-最后更新：2026-06-12
+最后更新：2026-06-13
 
 ---
 
@@ -114,7 +114,7 @@ test-only，不参与生产运行时。
 | redisx      | [SPEC.md](./redisx/SPEC.md) · [goal.md](./redisx/goal.md) · [TRACEABILITY.md](./redisx/TRACEABILITY.md) · [tasks/](./redisx/tasks/) | Redis KeyBuilder/Options/KV/TTL/Cache/Hash/List/PubSub/Pipeline/Locker/Counter/RateLimit/Codec/Health；直接生产依赖限定为 kernel + Redis 客户端库，configx/observex/resiliencx/contracts 仅作为外部投影或 adapter 边界（12 FR，10 BR，4 NFR，10 tasks） |
 | kafkax      | [SPEC.md](./kafkax/SPEC.md) · [TRACEABILITY.md](./kafkax/TRACEABILITY.md) · [goal.md](./kafkax/goal.md) | Kafka — 消息队列、事件流                                                                             |
 | natsx       | [SPEC.md](./natsx/SPEC.md) · [TRACEABILITY.md](./natsx/TRACEABILITY.md) | NATS — 内部通信、JetStream（80%，生命周期/投递证据已验证）                                              |
-| postgresx   | [SPEC.md](./postgresx/SPEC.md) · [TRACEABILITY.md](./postgresx/TRACEABILITY.md) · [goal.md](./postgresx/goal.md) · [tasks/](./postgresx/tasks/) | PostgreSQL — 关系型存储、事务、迁移（v0.1.0 candidate）                                                 |
+| postgresx   | [SPEC.md](./postgresx/SPEC.md) · [TRACEABILITY.md](./postgresx/TRACEABILITY.md) · [goal.md](./postgresx/goal.md) · [tasks/](./postgresx/tasks/) | PostgreSQL — 关系型存储、事务、迁移（v1.0.0 已发布，release-final-check + live integration 通过） |
 | taosx       | [SPEC.md](./taosx/SPEC.md) · [TRACEABILITY.md](./taosx/TRACEABILITY.md) · [goal.md](./taosx/goal.md) | TDengine — 时序数据写入与查询                                                                        |
 | ossx        | [SPEC.md](./ossx/SPEC.md) · [TRACEABILITY.md](./ossx/TRACEABILITY.md) · [goal.md](./ossx/goal.md) · [IMPLEMENTATION-PLAN.md](./ossx/IMPLEMENTATION-PLAN.md) · [tasks/](./ossx/tasks/) · [prompt/](./ossx/prompt/) | 对象存储 — S3/MinIO/local 多后端                                                                     |
 | clickhousex | [SPEC.md](./clickhousex/SPEC.md) · [TRACEABILITY.md](./clickhousex/TRACEABILITY.md) · [goal.md](./clickhousex/goal.md) | ClickHouse — OLAP 查询、批量写入                                                                     |

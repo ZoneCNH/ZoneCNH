@@ -4,7 +4,7 @@
 >
 > 数据来源：各 GitHub 仓库实际状态，定期更新
 >
-> 最后更新：2026-06-12
+> 最后更新：2026-06-13
 >
 > 同步基线：`module/` 为模块规格库 SSOT，`docs/governance/` 为 Spec 治理 SSOT，`docs/goal/` 为 Goal 规则 SSOT，`specs/` 已移除。
 
@@ -52,7 +52,7 @@
 
 - 组件：16 个，平均进度 55%
 - 核心模块（kernel / configx / observex / resiliencx）已成熟，有版本号；kernel v1.0.0、configx v1.0.0、observex v1.0.0 已发布（100% 覆盖）
-- 存储层 3/7 已文档化 50%（redisx / ossx / postgresx）、3/7 已规格化 30%（kafkax / taosx / clickhousex），均已脱离仅骨架阶段
+- 存储层 `postgresx` 已发布 v1.0.0；`natsx` 已达 80% 但未批准发布；`redisx` / `ossx` 已文档化 50%；`kafkax` / `taosx` / `clickhousex` 已规格化 30%，均已脱离仅骨架阶段
 - **阻塞项**：存储层代码实现仍滞后，但不影响上层开发（全模块 SPEC/TRACEABILITY 已就绪，可通过 contracts 稳定端口 mock）
 
 ### 🟢 L2.5 领域共享层（健康）
@@ -125,7 +125,7 @@
 | [redisx](https://github.com/ZoneCNH/redisx) | - | ███░░ 50% | SPEC v1.0 + TRACEABILITY + goal + 10 tasks | Redis KeyBuilder/Options/KV/TTL/Cache/Hash/List/PubSub/Pipeline/Locker/Counter/RateLimit/Codec/Health（12 FR，10 BR，4 NFR，10 tasks）；直接生产依赖限定为 kernel + Redis 客户端库 |
 | [kafkax](https://github.com/ZoneCNH/kafkax) | - | ██░░░ 30% | SPEC + TRACEABILITY + goal | Kafka — 消息队列、事件流（完整规格，骨架之上） |
 | [natsx](https://github.com/ZoneCNH/natsx) | - | ████░ 80% | 349KB/27 项 | NATS 生命周期/投递证据已验证（`/home/natsx` `3053e80`）；8/14 complete、6/14 partial、0/14 pending；未批准发布 |
-| [postgresx](https://github.com/ZoneCNH/postgresx) | - | ███░░ 50% | SPEC v0.1.0 + TRACEABILITY + goal + 3 tasks | PostgreSQL — 关系型存储、事务、迁移（已提升为 v0.1.0 candidate） |
+| [postgresx](https://github.com/ZoneCNH/postgresx) | v1.0.0 | ████░ 90% | SPEC Implemented + TRACEABILITY + goal + 3 tasks + release evidence | PostgreSQL — 关系型存储、事务、迁移（v1.0.0 已发布，release-final-check 与真实 PostgreSQL integration 通过） |
 | [taosx](https://github.com/ZoneCNH/taosx) | - | ██░░░ 30% | SPEC + TRACEABILITY + goal | TDengine — 时序数据写入与查询（完整规格，骨架之上） |
 | [ossx](https://github.com/ZoneCNH/ossx) | - | ███░░ 50% | SPEC + TRACEABILITY + goal + IMPLEMENTATION-PLAN + 7 prompts + 7 tasks + evidence | 对象存储 — S3/MinIO/local 多后端（全链路文档就绪：plan/tasks/prompts/evidence 齐备） |
 | [clickhousex](https://github.com/ZoneCNH/clickhousex) | - | ██░░░ 30% | SPEC + TRACEABILITY + goal | ClickHouse — OLAP 查询、批量写入（完整规格，骨架之上） |
