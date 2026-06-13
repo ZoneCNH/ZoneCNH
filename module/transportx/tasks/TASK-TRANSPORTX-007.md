@@ -3,6 +3,7 @@
 - **Module**: transportx
 - **spec_ref**: module/transportx/SPEC.md#FR-017
 
+- **BR_ref**: module/transportx/SPEC.md#BR-013 ,#BR-014
 - **ACs**: AC-017
 - **TCs**: TC-017
 - **Phase**: QoS + Codec + Registry (Phase 2)

@@ -3,6 +3,7 @@
 - **Module**: transportx
 - **spec_ref**: module/transportx/SPEC.md#FR-013
 
+- **BR_ref**: module/transportx/SPEC.md#BR-010
 - **ACs**: AC-013
 - **TCs**: TC-013
 - **Phase**: Middleware + Control (Phase 3)

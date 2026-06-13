@@ -3,6 +3,7 @@
 - **Module**: transportx
 - **spec_ref**: module/transportx/SPEC.md#FR-008
 
+- **BR_ref**: module/transportx/SPEC.md#BR-009
 - **ACs**: AC-008
 - **TCs**: TC-008
 - **Phase**: Advanced Features (Phase 4)
