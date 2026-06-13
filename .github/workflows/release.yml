@@ -1,7 +1,7 @@
 # 发布工作流 — 版本标签推送时自动创建 GitHub Release
 #
 # 触发条件：推送 v* 格式的 tag
-# 流程：docs-ci 质量门禁 → Goal CI → Goal release gate → 生成 release manifest → 创建 GitHub Release
+# 流程：docs-ci 质量门禁 → Goal CI → Goal release gate → 生成 release manifest + SRE 合同预检 → 创建 GitHub Release
 
 name: Release
 
@@ -55,8 +55,23 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: 下载 Goal release gate 产物
+        uses: actions/download-artifact@v4
+        with:
+          name: goal-release-gate
+          path: release/manifest/
+
       - name: 生成 release manifest
+        env:
+          DEPLOY_ENVIRONMENT: staging
+          DEPLOY_TARGET: homepage
+          DEPLOY_TARGET_POOL: sre/homepage
         run: bash .github/ci/generate-release-manifest.sh
+
+      - name: 校验 SRE deploy contract
+        env:
+          REQUIRE_DEPLOY_EVIDENCE: "1"
+        run: bash .github/ci/deploy-contract-preflight.sh
 
       - name: 上传 manifest 产物
         uses: actions/upload-artifact@v4

@@ -2,7 +2,9 @@
 # generate-release-manifest.sh — 生成发布时刻的系统快照
 #
 # 从 STATUS.md 提取组件统计，结合 git 信息生成 release manifest。
-# 输出：release/manifest/release-manifest.json
+# 输出：
+# - release/manifest/release-manifest.json
+# - release/manifest/sre-deploy-contract.json
 
 set -euo pipefail
 
@@ -10,6 +12,9 @@ TAG="${GITHUB_REF_NAME:-$(git describe --tags --abbrev=0 2>/dev/null || echo 'un
 COMMIT_SHA="$(git rev-parse HEAD)"
 COMMIT_SHORT="$(git rev-parse --short HEAD)"
 GENERATED_AT="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+DEPLOY_ENVIRONMENT="${DEPLOY_ENVIRONMENT:-staging}"
+DEPLOY_TARGET="${DEPLOY_TARGET:-homepage}"
+DEPLOY_TARGET_POOL="${DEPLOY_TARGET_POOL:-sre/homepage}"
 
 # ── 从 STATUS.md 提取统计 ──────────────────────────────────────
 STATUS_FILE="STATUS.md"
@@ -71,6 +76,30 @@ EOF
 sha256sum release/manifest/release-manifest.json \
   | awk '{print $1}' > release/manifest/release-manifest.json.sha256
 
+cat > release/manifest/sre-deploy-contract.json <<EOF
+{
+  "contract_version": "2026-06-13",
+  "release_ref": "${COMMIT_SHA}",
+  "release_version": "${TAG}",
+  "environment": "${DEPLOY_ENVIRONMENT}",
+  "target": "${DEPLOY_TARGET}",
+  "target_pool": "${DEPLOY_TARGET_POOL}",
+  "action": "deploy",
+  "dry_run": true,
+  "manifest_path": "release/manifest/release-manifest.json",
+  "evidence_path": "release/manifest/goal-release-gate.json",
+  "execution_plane": {
+    "repository": "ZoneCNH/sre",
+    "workflow": "ZoneCNH/sre/.github/workflows/deploy-contract.yml@main",
+    "runner_pool": "sre/",
+    "remote_execution_allowed_in_this_repo": false
+  }
+}
+EOF
+
+sha256sum release/manifest/sre-deploy-contract.json \
+  | awk '{print $1}' > release/manifest/sre-deploy-contract.json.sha256
+
 echo "✅ Release manifest 已生成："
 echo "   版本: ${TAG}"
 echo "   提交: ${COMMIT_SHORT}"
@@ -78,3 +107,4 @@ echo "   组件: ${TOTAL:-?} (已有 ${EXISTING:-?} / 已创建 ${PLANNED:-?})"
 echo "   进度: ${AVG_PROGRESS:-?}%"
 echo "   仓库: ${REPO_COUNT:-?}"
 echo "   文件: ${MD_COUNT:-?} 个 Markdown, ${MD_TOTAL_LINES:-?} 行"
+echo "   SRE 合同: ${DEPLOY_TARGET_POOL} / ${DEPLOY_ENVIRONMENT} / dry_run=true"
