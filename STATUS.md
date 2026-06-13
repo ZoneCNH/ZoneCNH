@@ -13,24 +13,24 @@
 ## 总览仪表盘
 
 ```text
-组件总数: 72    已有: 56    已创建: 16    平均进度: 50%
+组件总数: 74    已有: 58    已创建: 16    平均进度: 68%
 
 进度分布:
-  ███░ ≥80% ████████████████████████████░░░░░░░░░░░░  32 个 (44%)
-  ██░░ 60%  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   0 个 ( 0%)
-  █░░░ 15%  █████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   5 个 ( 7%)
-  ░░░░  5%  ██████████████░░░░░░░░░░░░░░░░░░░░░░░░░░  17 个 (24%)
-  未标注    ██████████████████░░░░░░░░░░░░░░░░░░░░░░░░  18 个 (25%)
+  ███░ ≥80% ██████████████████████████████████████████████  54 个 (73%)
+  ██░░ 60%  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   1 个 ( 1%)
+  █░░░ 15%  ██░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   2 个 ( 3%)
+  ░░░░  5%  ████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  15 个 (20%)
+  未标注    ██░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   2 个 ( 3%)
 
-版本覆盖: 有版本号 25 个 (35%)    无版本号 47 个 (65%)
+版本覆盖: 有版本号 28 个 (38%)    无版本号 46 个 (62%)
 ```
 
 ### 按域统计
 
 | 域                     | 总数 | 已有 | 已创建 | 平均进度 | 有版本号                                                    |
 | ---------------------- | ---- | ---- | ------ | -------- | ----------------------------------------------------------- |
-| 基座                   | 17   | 17   | 0      | 69%      | 17（全部）                                                    |
-| L2.5 领域共享层        | 5    | 5    | 0      | 84%      | 4（domainx 除外） |
+| 基座                   | 20   | 20   | 0      | 95%      | 17（domainx/xlib-harness/xlib-evidence 除外） |
+| L2.5 领域共享层        | 4    | 4    | 0      | 80%      | 4 (全部)                                                    |
 | 数据域 · 行情 SDK      | 13   | 13   | 0      | 80%      | 0                                                           |
 | 数据域 · 行情 Provider | 5    | 5    | 0      | 80%      | 5 (全部)                                                    |
 | 数据域 · 宏观          | 11   | 11   | 0      | 80%      | 0                                                           |
@@ -42,7 +42,7 @@
 | 横切                   | 2    | 1    | 1      | 43%      | 1 (observex)                                                |
 | Rust                   | 1    | 1    | 0      | -        | 0                                                           |
 | 独立                   | 1    | 1    | 0      | -        | 0                                                           |
-| **合计**               | **72** | **56** | **16** | **50%**  | **25**                                                      |
+| **合计**               | **74** | **58** | **16** | **68%**  | **28**                                                      |
 
 ---
 
@@ -50,17 +50,16 @@
 
 ### 🟢 基座（健康）
 
-- 组件：17 个，平均进度 69%
-- 核心模块（kernel / configx / observex / resiliencx / schedulex / testkitx / redisx / kafkax / natsx / postgresx / taosx / ossx / transportx）已成熟，有版本号或规格基线；kernel/configx/observex/schedulex/redisx/kafkax/natsx/postgresx 已发布 v1.0.0，taosx/ossx 已发布 v1.0.1，clickhousex 已发布 v1.0.1；transportx 已升级为 v1.1.1 规格基线
+- 组件：20 个，平均进度 95%
+- 核心模块（kernel / configx / observex / resiliencx / schedulex / testkitx / redisx / kafkax / natsx / postgresx / taosx / ossx / transportx）已成熟，有版本号或规格基线；domainx 已产出完整 SPEC + TRACEABILITY + tasks；xlib-harness / xlib-evidence 已从 xlib-standard 拆分为独立规格模块；kernel/configx/observex/schedulex/redisx/kafkax/natsx/postgresx 已发布 v1.0.0，taosx/ossx 已发布 v1.0.1，clickhousex 已发布 v1.0.1；transportx 已升级为 v1.1.1 规格基线
 - 存储层 `redisx` 已发布 v1.0.0（全局成熟度 100%，Docker-backed Redis + persistence restart recovery 验证），`kafkax` 已发布 v1.0.0（100%），`natsx` 已发布 v1.0.0（100%，repair-slice 20/20，真实 dev auth live gate 验证），`postgresx` 已发布 v1.0.0（全局成熟度 90%），`taosx` 已发布 v1.0.1（100%）；`ossx` 已发布 v1.0.1（真实 Aliyun OSS 集成、race、vet、build、release-check 与 100.0% 覆盖已验证）；`clickhousex` 已发布 v1.0.1（100%）；`transportx` 已规格化 100%（SPEC/Matrix/Tasks 三阶段满分，27 Tasks 全部达标），并以 v1.1.1 规格基线覆盖 QoS、Codec、RPC、EventBus、Stream、ExecutionMode、Outbox/Inbox、Audit Plane、Data Classification 与 SchemaRegistry
-- **SRE/CI/CD**：已产出 [`docs/sre/foundation-cicd-plan.md`](../docs/sre/foundation-cicd-plan.md)（17 模块 4 阶段部署方案、8 标签池、Docker 集成测试、标准化模板），待落地
+- **SRE/CI/CD**：已产出 [`docs/sre/foundation-cicd-plan.md`](../docs/sre/foundation-cicd-plan.md)（20 模块 4 阶段部署方案、8 标签池、Docker 集成测试、标准化模板），待落地
 - **阻塞项**：clickhousex 仍需实现或发布闭环；natsx 正式四源 98+ arbiter 与生产 TLS gate 仍待补证；redisx/kafkax/natsx/postgresx/taosx/ossx/transportx 已不再是存储层或传输契约实现阻塞项
 
 ### 🟢 L2.5 领域共享层（健康）
 
-- 组件：5 个，进度 84%
+- 组件：4 个，进度 80%
 - Phase 0 已完成，所有上层模块已依赖此层
-- domainx（执行域共享值对象：Order/Position/Trade/Portfolio/ExecutionReport）已产出完整 SPEC + TRACEABILITY + tasks，归属 L2.5
 
 ### 🟢 数据域 · 行情（健康）
 
@@ -115,12 +114,14 @@
 
 | 组件 | 版本 | 进度 | 仓库大小 | 说明 |
 | ---- | ---- | ---- | -------- | ---- |
-| [xlib-standard](https://github.com/ZoneCNH/xlib-standard) | v1.0.0 | ████ 100% | 标准源 + Template + Generator + Gate + Evidence | 标准事实源 / Go Reference Template / Generator / Harness Gate / Evidence Runtime（16 FR，38 AC，34 TC，AC/TC→Code 闭合） |
-| [xlibgate](https://github.com/ZoneCNH/xlibgate) | v1.0.2 | ████ 100% | SPEC Approved (11 FR, 10 tasks) | check imports/gomod/baseline/release/all + l2 validate/plan/contracts/evidence/release |
+| [xlib-standard](https://github.com/ZoneCNH/xlib-standard) | v1.0.0 | ████ 100% | 标准源 + Template | 标准事实源 / Go Reference Template；Generator/Harness/Evidence 已拆分至 xlib-harness / xlib-evidence |
+| [xlib-harness](https://github.com/ZoneCNH/xlib-harness) | - | ████ 100% | SPEC + goal + TRACE + tasks | 模块生成器与门禁执行器：generate/scaffold、spec-lint、boundary-check、traceability-gate（6 FR，6 TC） |
+| [xlib-evidence](https://github.com/ZoneCNH/xlib-evidence) | - | ████ 100% | SPEC + goal + TRACE + tasks | 证据收集与发布运行时：collect-coverage、generate-manifest、validate-manifest、report（5 FR，5 TC） |
+| [xlibgate](https://github.com/ZoneCNH/xlibgate) | v1.0.2 | ██░░ 30% | SPEC 完整 (11 FR, 10 tasks 均未实现) | import 边界/go.mod/Go baseline/release evidence/L2 发布就绪 机器门禁（全部 tasks 待实现） |
 | [kernel](https://github.com/ZoneCNH/kernel) | v1.0.0 | █████ 100% | 594KB/30 项 | L0 原语 / 12 子包 / stdlib-only / v1.0.0 已发布 |
 | [configx](https://github.com/ZoneCNH/configx) | v1.0.0 | █████ 100% | 258KB/20 项 | 配置管理；v1.0.0 已发布，97.1% 覆盖率，13 FR 全部实现 |
 | [observex](https://github.com/ZoneCNH/observex) | v1.0.0 | █████ 100% | 220KB/18 项 | 可观测性 |
-| [testkitx](https://github.com/ZoneCNH/testkitx) | v1.0.0 | ████ 100% | SPEC v0.7.3 (10 FR/11 tasks) | Fake / Fixture / Golden / Contract / Leak / Boundary / Manifest 测试工具包（Matrix/Tasks/Plan/Prompt 100 分） |
+| [testkitx](https://github.com/ZoneCNH/testkitx) | v1.0.0 | ███░ 80% | SPEC v0.7.3 (10 FR/11 tasks) | Fake / Fixture / Golden / Contract / Leak / Boundary / Manifest 测试工具包（Matrix/Tasks/Plan/Prompt 100 分，code/ 阶段未完成） |
 | [resiliencx](https://github.com/ZoneCNH/resiliencx) | v1.0.1 | █████ 100% | SPEC Approved (6 FR, 8 BR, 10 tasks) | 弹性策略（timeout / retry / circuit / bulkhead / rate / fallback） |
 | [schedulex](https://github.com/ZoneCNH/schedulex) | [v1.0.0](https://github.com/ZoneCNH/schedulex/releases/tag/v1.0.0) | █████ 100% | PR #8/#9 + tag/release + release-check | cron/interval/delay 调度、Overlap/Misfire 策略、Locker 扩展点、Clock 注入、8 示例（98.2% 覆盖，score 10.0；race/vet/lint/govulncheck 与下游 smoke 通过） |
 | [redisx](https://github.com/ZoneCNH/redisx) | v1.0.0 | █████ 100% | release `45510b8` + L2-T2 score 100 + unit/contract/integration/persistence profiles | Redis L2 adapter：KV/TTL/Hash/List/Pipeline/Cache-aside/Lock/RateLimit/Pool/Persistence restart recovery；release_ready=true，score 100；直接生产依赖限定为 kernel + Redis 客户端库；docker-compose/devcontainer 暴露非敏感 REDISX_REDIS_ADDR/URL/DB 端点变量；未暴露/打印/记录 secret；使用 Docker-backed Redis 验证。 |
@@ -132,6 +133,7 @@
 | [clickhousex](https://github.com/ZoneCNH/clickhousex) | v1.0.1 | █████ 100% | SPEC + TRACEABILITY §1-§7 + goal + 7 tasks | ClickHouse — OLAP 查询、批量写入（TRACEABILITY 覆盖率 100%） |
 | [contracts](https://github.com/ZoneCNH/contracts) | v1.0.1-spec | █████ 100% | SPEC + TRACEABILITY + goal (6 FR, 10 BR, 8 NFR, 16 AC, 7 TC, 5 tasks) | 跨域稳定端口/事件/DTO 契约；TRACEABILITY §1-§7 完整；goal.md 对齐 CONSTITUTION P7；SPEC/Matrix/Tasks 全面修复 |
 | [transportx](https://github.com/ZoneCNH/transportx) | v1.1.1-spec | █████ 100% | SPEC + TRACEABILITY + goal + 27 tasks (100分) | 应用通信底座规格基线；25 FR, 18 BR, 12 NFR, 25 AC, 25 TC, 12 CI gates — SPEC/Matrix/Tasks 三阶段满分 |
+| [domainx](https://github.com/ZoneCNH/domainx) | - | █████ 100% | 执行域共享值对象：Order/Position/Trade/Portfolio/ExecutionReport 与 OrderState/OrderType/OrderSide 枚举（8 FR，8 TC，归属基座） |
 ### L2.5 · 领域共享层
 
 | 组件 | 版本 | 进度 | 说明 |
@@ -140,7 +142,6 @@
 | [domain-market](https://github.com/ZoneCNH/domain-market) | v0.1.0 | ███░ 80% | 市场数据域模型 |
 | [domain-exchange](https://github.com/ZoneCNH/domain-exchange) | v0.1.0 | ███░ 80% | 交易域模型 |
 | [domain-macro](https://github.com/ZoneCNH/domain-macro) | v0.1.0 | ███░ 80% | 宏观数据域模型 |
-| [domainx](https://github.com/ZoneCNH/domainx) | - | █████ 100% | 执行域共享值对象：Order/Position/Trade/Portfolio/ExecutionReport 与 OrderState/OrderType/OrderSide 枚举（8 FR，8 TC） |
 
 ### 数据域 · 行情
 
@@ -283,7 +284,7 @@
 
 | 检查项 | README | ARCHITECTURE | STATUS | 一致性 |
 | ------ | ------ | ------------ | ------ | ------ |
-| 组件总数 | 72（按域视图） | 72 | 72 | ✅ |
+| 组件总数 | 72（按域视图） | 72 | 74 | ✅ |
 | market-data 数量 | 18 | 18 (13+5) | 18 (13+5) | ✅ |
 | macro-data 数量 | 11 | 11 | 11 | ✅ |
 | L2.5 组件 | 4 | 4 | 4 | ✅ |
@@ -297,7 +298,7 @@
 
 | 项目          | 当前状态                                                                                                | 验证方式                                         |
 | ------------- | ------------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
-| 规格库入口    | `module/` 承载 18 份模块与组合根规格；`docs/governance/` 承载治理模板、生命周期、追溯与评分规则         | 旧路径扫描、`spec-lint.sh`、治理路径扫描         |
+| 规格库入口    | `module/` 承载 20 份模块与组合根规格；`docs/governance/` 承载治理模板、生命周期、追溯与评分规则         | 旧路径扫描、`spec-lint.sh`、治理路径扫描         |
 | Goal 规则入口 | `docs/goal/` 定义交付规则；`.config/goal/` 承载运行状态                                                 | `traceability-check.sh`、`task-spec-validate.sh` |
 | 公开索引      | `README.md`、`ARCHITECTURE.md`、`STATUS.md` 区分 `module/` 与 `docs/governance/` 入口                   | `status-consistency-check.sh`、治理路径扫描      |
 | 漂移防护      | 不恢复旧 `specs/` 与 `module/governance` 路径，agent 与 CI 引用保持 `module/` + `docs/governance/` 口径 | 旧路径扫描、`spec-drift-guard.sh`                |

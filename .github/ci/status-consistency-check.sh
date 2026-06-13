@@ -101,6 +101,8 @@ STATUS_DOMAIN_VERSIONED=$(awk -F'|' '/^\| \*\*合计/ {gsub(/[^0-9]/, "", $7); p
 # 从 module/ 提取 Foundation 规格数量；domainx 现已归入基座/领域共享（见 module/README.md）。
 FOUNDATION_MODULES=(
   xlib-standard
+  xlib-harness
+  xlib-evidence
   kernel
   configx
   observex
