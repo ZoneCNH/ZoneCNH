@@ -46,11 +46,11 @@ x.go ───────────────► 基座运行时 / L2.5 / �
 ### 业务流与反馈
 
 ```text
-market-data (19) ──────────────► market_regime ──┐
+market-data (18) ──────────────► market_regime ──┐
   domain-market (Bar/Tick/OB)     S1-S7 状态     │
   质量门禁 → 特征 → 分类器       bias/permission  │
                                                ├──► regime-engine ──► DecisionCard
-macro-data (10) ───────────────► macro_regime ──┘     M×S 融合        action A-E
+macro-data (11) ───────────────► macro_regime ──┘     M×S 融合        action A-E
   domain-macro (MacroPoint)      M1-M7 状态           冲突门           profile
   LGIP 四因子                    LGIP 得分            风险放大          risk_tier
                                                                  position_caps
@@ -89,7 +89,7 @@ x.go
 | ------ | ----------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 基座   | 标准源、L0 原语、L1 运行时横切能力、测试期证据、存储扩展、稳定契约                                                            | xlib-standard, kernel, configx, observex, testkitx, resiliencx, schedulex, xlibgate, redisx, kafkax, natsx, postgresx, taosx, ossx, clickhousex, contracts |
 | L2.5   | 领域值对象和语义模型，上层统一依赖                                                                                            | decimalx, domain-market, domain-exchange, domain-macro                                                                                                     |
-| 数据域 | 行情、宏观、另类数据采集                                                                                                      | market-data (14 SDK + 5 Provider), macro-data (10), alternative-data                                                                                       |
+| 数据域 | 行情、宏观、另类数据采集                                                                                                      | market-data (13 SDK + 5 Provider), macro-data (11), alternative-data                                                                                       |
 | 分析域 | 因子计算、特征存储、因子评估、市场/宏观环境分类、M×S 联合决策（三引擎：market_engine→S / macro_engine→M / regime_engine→M+S） | factor-engine, feature-store, factor-eval, market_regime, macro_regime, regime-engine, ms_brain                                                            |
 | 决策域 | 信号生成、历史回测、参数优化（并行协作）                                                                                      | signal-factory, backtest-engine, optimizer, strategies                                                                                                     |
 | 执行域 | 风险管理、订单执行、组合管理、结算                                                                                            | risk-engine, order-engine, portfolio-engine, settlement                                                                                                    |
@@ -311,7 +311,6 @@ Foundation v1 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中�
 | 数据域                | [lighter](https://github.com/ZoneCNH/lighter)                   | -      | ✅ 已有   | ███░ 80% | Lighter DEX SDK                                                                           |
 | 数据域                | [upbit](https://github.com/ZoneCNH/upbit)                       | -      | ✅ 已有   | ███░ 80% | Upbit CEX SDK                                                                             |
 | 数据域                | [coinglass](https://github.com/ZoneCNH/coinglass)               | -      | ✅ 已有   | ███░ 80% | 衍生品聚合数据                                                                            |
-| 数据域                | [yield-curve](https://github.com/ZoneCNH/yield-curve)           | -      | ✅ 已有   | ███░ 80% | 收益率曲线                                                                                |
 | 数据域                | [binance-market](https://github.com/ZoneCNH/binance-market)     | v0.1.0 | ✅ P0     | ███░ 80% | Binance Kline/Ticker Provider                                                             |
 | 数据域                | [bybit-market](https://github.com/ZoneCNH/bybit-market)         | v0.1.0 | ✅ P0     | ███░ 80% | Bybit Kline/Ticker Provider                                                               |
 | 数据域                | [bitget-market](https://github.com/ZoneCNH/bitget-market)       | v0.1.0 | ✅ P0     | ███░ 80% | Bitget Kline/Ticker Provider                                                              |
@@ -320,6 +319,7 @@ Foundation v1 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中�
 | **数据域 · 宏观**     |                                                                 |        |           |          |                                                                                           |
 | 数据域                | [fred](https://github.com/ZoneCNH/fred)                         | -      | ✅ 已有   | ███░ 80% | 美联储 FRED                                                                               |
 | 数据域                | [treasury](https://github.com/ZoneCNH/treasury)                 | -      | ✅ 已有   | ███░ 80% | 美国财政部                                                                                |
+| 数据域                | [yield-curve](https://github.com/ZoneCNH/yield-curve)           | -      | ✅ 已有   | ███░ 80% | 收益率曲线                                                                                |
 | 数据域                | [bea](https://github.com/ZoneCNH/bea)                           | -      | ✅ 已有   | ███░ 80% | 美国经济分析局                                                                            |
 | 数据域                | [ecb](https://github.com/ZoneCNH/ecb)                           | -      | ✅ 已有   | ███░ 80% | 欧洲央行                                                                                  |
 | 数据域                | [uk-cb](https://github.com/ZoneCNH/uk-cb)                       | -      | ✅ 已有   | ███░ 80% | 英国央行                                                                                  |
@@ -353,8 +353,6 @@ Foundation v1 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中�
 | **横切**              |                                                                 |        |           |          |                                                                                           |
 | 横切                  | [alertx](https://github.com/ZoneCNH/alertx)                     | -      | 🔨 已创建 | ░░░░ 5%  | 策略异常、风控触发告警                                                                    |
 | 横切                  | [observex](https://github.com/ZoneCNH/observex)                 | v0.3.1 | ✅ 已有   | ███░ 80% | 可观测性（同时归属基座，提供底层 metrics/tracing/logging）                                |
-| **Rust**              |                                                                 |        |           |          |                                                                                           |
-| Rust                  | [stdlib.rs](https://github.com/ZoneCNH/stdlib.rs)               | -      | ✅ 已有   | -        | Rust 标准库                                                                               |
 | **独立**              |                                                                 |        |           |          |                                                                                           |
 | 独立                  | [module](./module/README.md)                                    | -      | ✅ 已有   | -        | 项目技术规范、接口定义与 Goal 适配模块索引                                                |
 | 独立                  | [docs/governance](./docs/governance/README.md)                  | -      | ✅ 已有   | -        | Spec → Code 交付治理、模板、门禁与评分规则                                                |
