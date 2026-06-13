@@ -2,7 +2,7 @@
 
 > 消息扩展层 / NATS 轻量消息与服务通信。NATS 内部通信封装，提供统一的发布/订阅、请求/响应、JetStream 和可观测集成。
 
-最后更新：2026-06-12
+最后更新：2026-06-13
 
 ---
 
@@ -10,7 +10,7 @@
 
 - Status: Draft
 - Spec-Version: v1.0.0
-- Last-Updated: 2026-06-12
+- Last-Updated: 2026-06-13
 - Owner: ZoneCNH
 - Layer: 消息扩展层 / NATS 轻量消息与服务通信
 - Version: v1.0.0
@@ -20,9 +20,9 @@
 
 ### 1.0 Repair Review Status
 
-- Approved for release: **No**. This specification remains the 1.0 target contract; `/home/natsx/pkg/natsx` now has an executable lifecycle/delivery repair baseline, but it is not release-complete.
-- Evidence refreshed on 2026-06-12: `/home/natsx/README.md`, `/home/natsx/examples/README.md`, `/home/natsx` commit `3053e80`, embedded Core NATS / JetStream tests in `/home/natsx/pkg/natsx`, subscription Drain, reconnect/degraded health, JetStream max-deliveries advisory, runnable `pkg/natsx` examples, publish/request/JetStream publish benchmark evidence, and `TRACEABILITY.md`.
-- Release promotion remains blocked until `TRACEABILITY.md` closes the remaining formal arbiter, live TLS/auth/config-alias breadth, production SLO thresholds, and higher-level consumer lifecycle/API/observability gaps.
+- Approved for release: **No**. This specification remains the 1.0 target contract; `/home/ZoneCNH/.worktree/workspaces/natsx-code/pkg/natsx` now has repair-slice executable evidence for lifecycle, delivery, config aliasing, auth live integration, canonical metrics, and metadata-only logs, but formal release approval still requires the four-source arbiter and production gates.
+- Evidence refreshed on 2026-06-13: `/home/natsx` commit `3053e80`, `/home/ZoneCNH/.worktree/workspaces/natsx-code` commit `7d9c1b7`, embedded Core NATS / JetStream tests, subscription Drain, reconnect/degraded health, JetStream max-deliveries advisory, runnable `pkg/natsx` examples, publish/request/JetStream publish benchmark evidence, redacted local auth live integration, canonical `foundationx_nats_*` metric assertions, metadata-only structured logging assertions, and `TRACEABILITY.md`.
+- Release promotion remains blocked until the formal four-source arbiter, production TLS endpoint, production benchmark threshold gates, and higher-level consumer integration gates are complete.
 
 ---
 
@@ -30,6 +30,7 @@
 
 | 日期 | 版本 | 变更内容 | 作者 |
 |------|------|----------|------|
+| 2026-06-13 | v1.0.0-draft | 对齐 natsx 全分修复证据：canonical metrics、metadata-only logs、redacted auth live test 与矩阵 20/20 repair-slice score | Codex |
 | 2026-06-12 | v1.0.0-draft | 记录 natsx 生命周期/投递修复基线与剩余发布阻塞项 | Codex |
 | 2026-06-07 | v1.0.0 | 初始版本 | ZoneCNH |
 
@@ -215,7 +216,7 @@ THEN 返回 HealthStatus{Ready: false, Live: true, Message: "jetstream unavailab
 
 公开 API 命名以 `goal.md` 的 1.0 逻辑接口基线为准：`NatsPubSubClient`、`NatsRequestClient`、`JetStreamClientX`、`NatsMessageEnvelope` 和 `SubjectBuilder`。实现可以保留内部适配器，但 Public API 不再暴露泛化的 `Client`/`JetStream` 命名作为 1.0 稳定契约。
 
-Implementation repair note (2026-06-12): `/home/natsx/pkg/natsx` currently exposes concrete `Client`, `Envelope`, `SubjectBuilder`, and `JetStreamClient` repair APIs (`New`, `Publish`, `Request`, `Subscribe`, `QueueSubscribe`, `JetStream`) so executable behavior can be verified against embedded NATS. These names are repair-baseline evidence, not final 1.0 API approval.
+Implementation repair note (2026-06-13): `/home/ZoneCNH/.worktree/workspaces/natsx-code/pkg/natsx` exposes the concrete repair APIs (`Client`, `Envelope`, `SubjectBuilder`, `JetStreamClient`) and compatibility aliases (`NatsPubSubClient`, `NatsRequestClient`, `JetStreamClientX`, `NatsMessageEnvelope`) so executable behavior can be verified while preserving the 1.0 naming surface. The current aliases are evidence for compatibility; final interface factories remain governed by this contract.
 
 ```go
 type NatsPubSubClient interface {
@@ -331,7 +332,7 @@ type Codec interface {
 
 ## 11. Config Schema
 
-配置命名以 `foundationx.nats.*` 为稳定前缀，避免与其它消息模块冲突。环境变量使用复数 `FOUNDATIONX_NATS_SERVERS` 表达 server 列表，旧的 `FOUNDATIONX_NATS_URL` 仅可作为兼容别名。
+配置命名以 `foundationx.nats.*` 为稳定前缀，避免与其它消息模块冲突。环境变量使用 `FOUNDATIONX_NATS_*` 作为 canonical 输入，旧的 `NATS_*` 变量仅作为兼容回退；当两者同时存在时，`FOUNDATIONX_NATS_*` 必须优先生效。
 
 ```yaml
 foundationx:
@@ -358,6 +359,8 @@ foundationx:
       enabled: false
       ca-file: ""
 ```
+
+Executable repair evidence (2026-06-13): `ConfigFromEnv` / `LoadConfigFromEnv` 支持以下后缀，canonical `FOUNDATIONX_NATS_*` 优先，legacy `NATS_*` fallback：`NAME`、`URL`、`SERVERS`、`TOKEN`、`USERNAME`、`PASSWORD`、`NKEY_SEED`、`CREDENTIALS_FILE`、`TIMEOUT`、`DRAIN_TIMEOUT`、`MAX_RECONNECTS`、`RECONNECT_WAIT`、`ENABLE_JETSTREAM`。配置解析错误不得打印 token、password、nkey seed 或 credentials file 内容。
 
 ---
 
@@ -539,6 +542,8 @@ Then 返回 healthy；连接断开时返回 unhealthy
 | 常驻内存              | < 5MB   | profiling      |
 | 订阅 handler 调度延迟 | < 100μs | benchmark test |
 
+Executable repair evidence (2026-06-13): embedded CI assertions now enforce generous smoke SLOs in `pkg/natsx/embedded_nats_test.go` (`Core Request <= 1500ms`, `JetStream Publish <= 2s`, `JetStream Fetch <= 4s`) and assert handler latency metric emission. These thresholds are CI stability guards, not replacements for the production benchmark targets above.
+
 ---
 
 ## 18. Observability
@@ -557,6 +562,8 @@ Then 返回 healthy；连接断开时返回 unhealthy
 | log | `natsx.reconnecting` | info，正在重连 |
 | log | `natsx.reconnected` | info，重连成功 |
 | log | `natsx.handler.panic` | error，handler panic 详情 |
+
+Executable repair evidence (2026-06-13): `/home/ZoneCNH/.worktree/workspaces/natsx-code` commit `7d9c1b7` records canonical `foundationx_nats_*` metrics for publish/request/consume counts, publish/request/consume durations, redelivery, and connection state. Deprecated compatibility aliases point to the canonical metric names. Structured log events cover connect, disconnect, reconnect, publish, request, and consume paths with metadata-only fields (`subject`, `queue`, status, error kind, event/message/schema/trace IDs) and tests assert that payloads, headers, credentials, and tokens are not logged.
 
 ---
 
@@ -588,9 +595,12 @@ Then 返回 healthy；连接断开时返回 unhealthy
 
 ### 20.2 natsx 专属 Gate
 
-| Gate     | 命令                              | 阻塞条件                   |
-| -------- | --------------------------------- | -------------------------- |
-| 集成测试 | `go test -tags=integration ./...` | NATS 不可达时 skip，不阻塞 |
+| Gate | 命令 | 阻塞条件 |
+| ---- | ---- | -------- |
+| package tests | `GOWORK=off go test ./pkg/natsx -count=1` | 任何测试失败 |
+| vet | `GOWORK=off go vet ./pkg/natsx` | 任何 vet 错误 |
+| live gate default | `GOWORK=off go test ./pkg/natsx -run TestLiveNATSIntegration -count=1` | gate unset 时应 skip/pass |
+| live local integration | `NATSX_LIVE_INTEGRATION=1 FOUNDATIONX_NATS_URL=<loopback-url> FOUNDATIONX_NATS_USERNAME=<redacted> FOUNDATIONX_NATS_PASSWORD=<redacted> GOWORK=off go test ./pkg/natsx -run TestLiveNATSIntegration -count=1 -v` | 仅允许 localhost/loopback；凭据来自 redacted dev config，测试输出不得打印凭据 |
 
 ---
 
