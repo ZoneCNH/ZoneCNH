@@ -202,19 +202,19 @@ THEN 使用 NoopMetrics（零开销空实现）
 
 ## 8. Business Rules
 
-| 编号   | 规则                                                                 |
-| ------ | -------------------------------------------------------------------- |
-| BR-001 | 合并策略：LastWins — 后加载的 Source 覆盖先加载的同名 key            |
-| BR-002 | Config.Name 必须非空（Validate 时检查）                              |
-| BR-003 | Config.Timeout 必须 ≥ 0（负数拒绝）                                  |
-| BR-004 | 配置加载显式：调用方必须显式添加每个 Source，无隐式发现              |
-| BR-005 | SecretString 在所有格式化输出中自动脱敏（String/JSON/GoString/Text） |
-| BR-006 | SecretPolicy 默认匹配 7 种模式，支持 CustomMatcher 扩展              |
-| BR-007 | StrictDecode 默认拒绝未知字段和重复 key                              |
-| BR-008 | 公共错误变量使用 `configx:` 前缀命名空间                             |
-| BR-009 | 无全局状态：无进程级 config singleton（NoGlobalStateGate CI 门禁）   |
-| BR-010 | Release 制品通过全部 CI Gate（编译/测试/覆盖率/vet/lint/secret）     |
-| BR-011 | context.Context 必须非 nil 且未过期（所有公开 API 强制检查）         |
+| 编号 | 规则 | 违反时 |
+| --- | --- | --- |
+| BR-001 | 合并策略：LastWins — 后加载的 Source 覆盖先加载的同名 key | 合并覆盖排序错误视为 bug |
+| BR-002 | Config.Name 必须非空（Validate 时检查） | 返回 `ErrValidationFailed`，含字段路径 name |
+| BR-003 | Config.Timeout 必须 ≥ 0（负数拒绝） | 返回 `ErrValidationFailed`，含字段路径 timeout |
+| BR-004 | 配置加载显式：调用方必须显式添加每个 Source，无隐式发现 | CI Gate：静态分析检测隐式配置发现调用 |
+| BR-005 | SecretString 在所有格式化输出中自动脱敏（String/JSON/GoString/Text） | TC-003 验证——任何格式化输出出现原始值即测试失败 |
+| BR-006 | SecretPolicy 默认匹配 7 种模式，支持 CustomMatcher 扩展 | TC-005 验证——自定义匹配器不生效即测试失败 |
+| BR-007 | StrictDecode 默认拒绝未知字段和重复 key | 返回解码错误，包含未知字段名——TC-002 验证 |
+| BR-008 | 公共错误变量使用 `configx:` 前缀命名空间 | CI Gate：`golangci-lint` 检测错误字符串前缀 |
+| BR-009 | 无全局状态：无进程级 config singleton（NoGlobalStateGate CI 门禁） | NoGlobalStateGate CI 门禁阻断合并 |
+| BR-010 | Release 制品通过全部 CI Gate（编译/测试/覆盖率/vet/lint/secret） | CI Gate 任一失败阻断发布 |
+| BR-011 | context.Context 必须非 nil 且未过期（所有公开 API 强制检查） | 返回 validation error——TC-008 验证 |
 
 ---
 
@@ -693,18 +693,7 @@ type NoopMetrics struct{}  // 零开销空实现
 
 ---
 
-## 23. Lifecycle
-
-| 阶段   | 触发方法                 | 状态变更                                              | 错误处理                                     |
-| ------ | ------------------------ | ----------------------------------------------------- | -------------------------------------------- |
-| 创建   | `New(ctx, cfg, opts...)` | 校验 cfg → 初始化 Client → metrics+1                  | ctx nil 或 Validate 失败 → 返回 error        |
-| 加载   | `loader.Load(ctx)`       | 按序加载所有 Source → LastWins 合并 → 返回 LoadResult | Source 失败且 failFast=true → 立即返回 error |
-| 运行   | Client 就绪              | 并发安全，可调用 HealthCheck                          | 操作失败 → metrics 记录                      |
-| 关闭   | `client.Close(ctx)`      | 标记 closed=true → metrics+1                          | ctx nil → 返回 error                         |
-
----
-
-## Appendix A: Open Questions
+## 23. Open Questions
 
 ### Blocking（阻塞开发）
 
@@ -722,3 +711,16 @@ type NoopMetrics struct{}  // 零开销空实现
 | OQ-002 | 是否需要支持配置版本管理（记录每次配置变更）？ | 待评估 | ZoneCNH  |
 | OQ-003 | 是否需要支持远程配置源（etcd/consul/vault）？  | 待评估 | ZoneCNH  |
 | OQ-004 | 是否需要支持配置模板（引用其他 key 的值）？    | 待评估 | ZoneCNH  |
+
+---
+
+## Appendix A: Lifecycle
+
+| 阶段   | 触发方法                 | 状态变更                                              | 错误处理                                     |
+| ------ | ------------------------ | ----------------------------------------------------- | -------------------------------------------- |
+| 创建   | `New(ctx, cfg, opts...)` | 校验 cfg → 初始化 Client → metrics+1                  | ctx nil 或 Validate 失败 → 返回 error        |
+| 加载   | `loader.Load(ctx)`       | 按序加载所有 Source → LastWins 合并 → 返回 LoadResult | Source 失败且 failFast=true → 立即返回 error |
+| 运行   | Client 就绪              | 并发安全，可调用 HealthCheck                          | 操作失败 → metrics 记录                      |
+| 关闭   | `client.Close(ctx)`      | 标记 closed=true → metrics+1                          | ctx nil → 返回 error                         |
+
+---
