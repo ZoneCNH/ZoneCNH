@@ -198,17 +198,17 @@ THEN 返回 HealthStatus{Ready: false, Live: true, Message: "jetstream unavailab
 
 ## 8. Business Rules
 
-| 编号   | 规则                                                |
-| ------ | --------------------------------------------------- |
-| BR-001 | Core NATS 用于实时低延迟场景（at-most-once）        |
-| BR-002 | JetStream 用于需要持久化保证的场景（at-least-once） |
-| BR-003 | 所有操作必须接受 `context.Context`，支持超时和取消  |
-| BR-004 | 订阅 handler 必须快速返回，长时间处理应异步化       |
-| BR-005 | 自动重连策略可配置，默认指数退避                    |
-| BR-006 | Health() 必须是幂等的、无副作用的                   |
-| BR-007 | JetStream stream 和 consumer 创建应在应用启动时完成 |
-| BR-008 | 错误消息不包含消息内容（防泄露敏感数据）            |
-| BR-009 | Subscription 必须在 Close/Drain 时正确释放资源      |
+| 编号 | 规则 | 违反时 |
+| --- | --- | --- |
+| BR-001 | Core NATS 用于实时低延迟场景（at-most-once） | 误用 JetStream 处理实时消息 → 延迟超标、性能告警 |
+| BR-002 | JetStream 用于需要持久化保证的场景（at-least-once） | 误用 Core NATS 处理持久化消息 → 消息丢失风险 |
+| BR-003 | 所有操作必须接受 `context.Context`，支持超时和取消 | 编译失败：接口签名不含 ctx；或 ctx 取消不生效 → TC-001/TC-002 测试失败 |
+| BR-004 | 订阅 handler 必须快速返回，长时间处理应异步化 | handler 阻塞 → Drain 超时 → 返回 ErrDrainTimeout |
+| BR-005 | 自动重连策略可配置，默认指数退避 | 重连失败 → 返回 ErrConnectionFailed；CI Gate TC-004 失败 |
+| BR-006 | Health() 必须是幂等的、无副作用的 | 多次调用产生副作用 → CI Gate 健康检查测试失败 |
+| BR-007 | JetStream stream 和 consumer 创建应在应用启动时完成 | 运行时创建失败 → 返回 ErrStreamNotFound 或 ErrStreamExists（配置冲突） |
+| BR-008 | 错误消息不包含消息内容（防泄露敏感数据） | 日志/错误含 payload → CI Gate secret scan 或 redaction check 阻断 |
+| BR-009 | Subscription 必须在 Close/Drain 时正确释放资源 | 资源泄漏 → go test -race 检测；Drain 超时返回 ErrDrainTimeout |
 
 ---
 
