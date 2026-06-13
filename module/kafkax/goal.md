@@ -4,15 +4,29 @@
 | --- | --- |
 | 模块名 | `kafkax` |
 | 目标规格版本 | v1.0.0 |
-| 当前实现版本参考 | v0.7.3 |
+| 当前实现版本参考 | 1.0-candidate @ `05cd018ebfa5c853f35efe920cc9dde8134c49b7` |
 | 所属层级 | 基座 · 存储扩展 / Kafka 客户端封装 |
-| 稳定级别 | Candidate；公开 API 进入 1.0 前仍需仲裁 |
-| 文档状态 | Draft / 1.0 候选基线 |
-| 发布日期基准 | 2026-06-12 |
+| 稳定级别 | Candidate；L2 发布门禁证据已闭合，合入 main 与 tag 前不宣称正式发布 |
+| 文档状态 | 1.0 候选基线 / 实现证据已对齐 |
+| 发布日期基准 | 2026-06-13（证据对齐）；正式发布日期以 tag 为准 |
 
 ## 术语约定
 
 本文档中的 **MUST / 必须** 表示 1.0 候选基线阻断项；**SHOULD / 应该** 表示 1.0 推荐项，允许带明确理由延期；**MAY / 可以** 表示可选能力，不影响 1.0 候选基线。
+
+## 当前对齐证据
+
+本文档对齐 `kafkax@05cd018ebfa5c853f35efe920cc9dde8134c49b7`。该证据锚点已通过：
+
+- `GOWORK=off go test ./...`
+- 真实 broker fixture gates：`kafka-integration`、`kafka-fault-injection`、`kafka-metrics-golden`、`kafka-admin-golden`
+- `traceability-check`、`boundary`、`kafka-contract`
+- `GOWORK=off go run ./cmd/goalcli score --min 9.8`，结果为 10/10
+- `GOWORK=off make integration`
+- `XLIB_CONTEXT=release_verify GOWORK=off make release-check`
+- `git diff --check`
+
+真实 broker fixture 保持在仓库外部，文档只记录脱敏后的 gate 结果，不记录 broker 地址、账号、密码或 token。该状态表示 1.0 候选实现证据已闭合；正式发布仍以 PR 合入、tag 和发布仲裁为准。
 
 ## 0. 1.0 判定原则
 
@@ -194,20 +208,20 @@
 | 测试类型 | 必须覆盖内容 | 发布门禁 |
 | --- | --- | --- |
 | 单元测试 | Producer、Consumer、Message、Codec、Health、公共错误 | MUST 通过 |
-| 集成测试 | 真实 Kafka 发送、消费、提交、rebalance 基础场景 | MUST 通过；Kafka 不可用时可 skip 专属集成门禁 |
+| 集成测试 | 真实 Kafka 发送、消费、提交、rebalance 基础场景 | MUST 通过；无真实 broker fixture 时 broker 专属 gate 必须记录 gap/blocked，不得伪造 passed |
 | 失败测试 | broker 不可达、空 topic、nil 消息、重复订阅、commit 失败、codec 失败 | MUST 通过 |
 | 观测测试 | 指标名、日志脱敏、trace 标签 | MUST 通过 |
 | 兼容测试 | 公共接口和配置默认值不发生未声明破坏 | MUST 通过 |
 
 ## 13. 1.0 候选发布验收清单
 
-- [ ] `Producer` / `Consumer` / `Message` / `Codec` / `HealthStatus` 有 godoc 和示例。
-- [ ] 所有运行时操作接收 `context.Context` 并返回错误。
-- [ ] 配置命名空间统一为 `kafkax.*`。
-- [ ] 指标命名空间统一为 `kafkax.*`。
-- [ ] 错误、日志和 trace 均不泄露 payload 或敏感配置。
-- [ ] `TRACEABILITY.md` 覆盖 FR-001..FR-006 和 BR-001..BR-009，并包含 Task 列。
-- [ ] `SPEC.md` Open Questions 仅包含非阻断候选或已明确出界事项。
+- [ ] `Producer` / `Consumer` / `Message` / `Codec` / `HealthStatus` 有 godoc 和示例（tag 前仍需抽样确认）。
+- [x] 所有运行时操作接收 `context.Context` 并返回错误。
+- [x] 配置命名空间统一为 `kafkax.*`。
+- [x] 指标命名空间统一为 `kafkax.*`。
+- [x] 错误、日志和 trace 均不泄露 payload 或敏感配置。
+- [x] `TRACEABILITY.md` 覆盖 FR-001..FR-006 和 BR-001..BR-009，并包含 Task 列。
+- [x] `SPEC.md` Open Questions 仅包含非阻断候选或已明确出界事项。
 
 ## 14. 后续演进候选
 

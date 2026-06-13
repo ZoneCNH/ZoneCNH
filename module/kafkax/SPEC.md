@@ -2,20 +2,20 @@
 
 > 基座 · 存储扩展。Kafka 客户端封装，提供统一的生产者、消费者、消息模型、序列化、健康检查和可观测集成。
 
-最后更新：2026-06-12
+最后更新：2026-06-13
 
 ---
 
 ## 1. Metadata
 
-- Status: Draft
-- Governance-Status: 未仲裁；等待四源评分 / arbiter 判定
+- Status: Candidate
+- Governance-Status: 实现证据已闭合；score 10/10；等待 PR 合入、tag 和正式发布仲裁
 - Spec-Version: v1.0.0
-- Last-Updated: 2026-06-12
+- Last-Updated: 2026-06-13
 - Owner: ZoneCNH
 - Layer: 基座 · 存储扩展
-- Implementation-Version: v0.7.3
-- Baseline: 1.0 候选规格；非发布批准状态
+- Implementation-Version: 1.0-candidate @ 05cd018ebfa5c853f35efe920cc9dde8134c49b7
+- Baseline: 1.0 候选规格；release gate 证据通过，正式发布以合入 main 和 tag 为准
 - Repository: [github.com/ZoneCNH/kafkax](https://github.com/ZoneCNH/kafkax)
 - Related: [CONSTITUTION.md](../../CONSTITUTION.md), [ARCHITECTURE.md](../../ARCHITECTURE.md), [goal.md](./goal.md), [TRACEABILITY.md](./TRACEABILITY.md)
 
@@ -25,10 +25,19 @@
 |------|------|----------|------|
 | 2026-06-07 | v1.0.0 | 初始版本 | ZoneCNH |
 | 2026-06-12 | v1.0.0-candidate | 对齐 1.0 候选基线、BR 处理、接口上下文与追溯要求 | ZoneCNH |
+| 2026-06-13 | v1.0.0-candidate+evidence | 对齐 kafkax@05cd018ebfa5c853f35efe920cc9dde8134c49b7 实现证据、真实 broker gates、release-check 与 score 10/10 | ZoneCNH |
 
 ## 2. Summary
 
 `kafkax` 封装 Kafka 客户端，提供统一的生产者（同步发送和批量发送）、消费者（消费组、offset 管理）、序列化/反序列化、健康检查和可观测集成。与 kernel 生命周期集成，保证连接随应用启停。异步发送、事务、Schema Registry、手动 partition assign、深度失败重试/转储编排属于后续候选或非目标，不作为 1.0 候选基线。
+
+### 2.1 当前实现证据
+
+本规格当前对齐 `kafkax@05cd018ebfa5c853f35efe920cc9dde8134c49b7`。该实现保持 `pkg/kafkax` driver-neutral 公开 API，并提供可选 `pkg/kafkax/kafkago` kafka-go production driver；公开契约不得暴露 `kafka-go`、`confluent` 或其他 driver 专属类型。
+
+已验证门禁包括：`GOWORK=off go test ./...`、真实 broker `kafka-integration` / `kafka-fault-injection` / `kafka-metrics-golden` / `kafka-admin-golden`、`traceability-check`、`boundary`、`kafka-contract`、`GOWORK=off go run ./cmd/goalcli score --min 9.8`（10/10）、`GOWORK=off make integration`、`XLIB_CONTEXT=release_verify GOWORK=off make release-check` 和 `git diff --check`。
+
+发布边界：真实 broker fixture 只存在于仓库外部并在 gate 输出中脱敏；未提供 fixture 时 broker-dependent gates 必须记录 `gap`/`blocked`，不得用 fake 或 mock-only 结果替代。正式发布仍等待 PR 合入、tag 和发布仲裁。
 
 ---
 
@@ -648,10 +657,17 @@ Then 错误、日志和 trace 标签不包含完整 payload 或敏感片段。
 
 ### 20.2 kafkax 专属 Gate
 
-| Gate     | 命令                              | 阻塞条件                    |
-| -------- | --------------------------------- | --------------------------- |
-| 集成测试 | `go test -tags=integration ./...` | Kafka 不可达时 skip，不阻塞 |
-| 结构追溯 | `TRACEABILITY.md` 覆盖 FR-001..FR-006 与 BR-001..BR-009 且包含 Task 列 | 覆盖缺失 |
+| Gate | 命令 | 阻塞条件 |
+| ---- | ---- | -------- |
+| L2 contract | `GOWORK=off make kafka-contract` | driver-neutral API、schema、metrics/config/message/topic contract 破坏 |
+| 真实 broker 集成 | `GOWORK=off make kafka-integration` 或 `GOWORK=off go run ./cmd/goalcli kafka-integration --broker-fixture <redacted-fixture>` | 有 fixture 时任何失败阻塞；无 fixture 时只能记录 gap/blocked，不得 passed |
+| 故障注入 | `GOWORK=off make kafka-fault-injection` 或 `GOWORK=off go run ./cmd/goalcli kafka-fault-injection --broker-fixture <redacted-fixture>` | retry、timeout、auth/broker unavailable、close/flush 证据缺失 |
+| 观测 golden | `GOWORK=off make kafka-metrics-golden` 或 `GOWORK=off go run ./cmd/goalcli kafka-metrics-golden --broker-fixture <redacted-fixture>` | metrics label allowlist、secret/message-value 脱敏证据缺失 |
+| Admin golden | `GOWORK=off make kafka-admin-golden` 或 `GOWORK=off go run ./cmd/goalcli kafka-admin-golden --broker-fixture <redacted-fixture>` | topic/admin smoke 或 unsupported-operation evidence 缺失 |
+| 结构追溯 | `GOWORK=off make traceability-check` | FR-001..FR-006 或 BR-001..BR-009 覆盖缺失 |
+| 边界检查 | `GOWORK=off make boundary` | L0/L1/L2 边界、driver-neutral 公开契约或禁止依赖被破坏 |
+| 发布评分 | `GOWORK=off go run ./cmd/goalcli score --min 9.8` | score < 9.8；当前证据为 10/10 |
+| 发布检查 | `XLIB_CONTEXT=release_verify GOWORK=off make release-check` | 任一 release gate 失败 |
 | 文档结构 | `SPEC.md` 无错误代码块闭合标记，无未分类阻塞 Open Questions | 结构缺陷存在 |
 
 ---
@@ -673,20 +689,22 @@ Then 错误、日志和 trace 标签不包含完整 payload 或敏感片段。
 
 ## 22. Release DoD
 
-- [ ] 所有公共接口有 godoc 注释。
-- [ ] 所有公共类型有示例代码。
-- [ ] CHANGELOG.md 已更新。
-- [ ] README.md 包含：模块定位、快速开始、配置说明、API 概览。
-- [ ] 单元测试覆盖率 ≥ 80%。
-- [ ] `-race` 测试通过。
+当前证据锚点为 `kafkax@05cd018ebfa5c853f35efe920cc9dde8134c49b7`。已满足 release-check、score、contract 与真实 broker gates；以下清单保留 tag 前人工确认项。
+
+- [ ] 所有公共接口有 godoc 注释（tag 前抽样确认）。
+- [ ] 所有公共类型有示例代码（tag 前抽样确认）。
+- [ ] CHANGELOG.md 已更新（tag 前确认）。
+- [ ] README.md 包含：模块定位、快速开始、配置说明、API 概览（tag 前确认）。
+- [ ] 单元测试覆盖率 ≥ 80%（tag 前读取覆盖率输出确认）。
+- [x] `-race` 测试通过（`release-check` 的 `ci` gate 覆盖）。
 - [ ] Benchmark 结果无 > 10% 回退。
-- [ ] `go vet` 无警告。
-- [ ] `golangci-lint` 无错误。
-- [ ] Secret 扫描通过。
-- [ ] 公共 API 无破坏性变更（或已 bump major）。
-- [ ] 所有 Functional Requirements 有对应测试。
-- [ ] 所有 Business Rules 有违反处理与对应测试或审查任务。
-- [ ] 所有 Edge Cases 有对应测试。
+- [x] `go vet` 无警告（`release-check` 的 `ci` gate 覆盖）。
+- [x] `golangci-lint` 无错误（`release-check` 的 `ci` gate 覆盖）。
+- [x] Secret 扫描通过。
+- [x] 公共 API 无破坏性变更（`kafka-contract` 与 `boundary` 已通过）。
+- [x] 所有 Functional Requirements 有对应测试。
+- [x] 所有 Business Rules 有违反处理与对应测试或审查任务。
+- [x] 所有 Edge Cases 有对应测试。
 
 ---
 
