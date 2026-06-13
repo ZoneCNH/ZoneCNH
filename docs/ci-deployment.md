@@ -404,7 +404,11 @@ git push origin v0.5.0
 - `workflow-policy-guard.sh`（131）：全局 runner 与 `sre/` 部署目标策略守卫；调用方：docs-ci。
 - `deploy-policy-guard.sh`（53）：禁止本仓内联远程部署命令，固定 SRE 控制面边界；调用方：docs-ci。
 - `deploy-contract-preflight.sh`（119）：校验 SRE 部署合同字段、证据路径和执行面声明；调用方：release。
+<<<<<<< HEAD
 - `foundation-deps-full-check.sh`（约 190）：校验 Foundation 模块依赖矩阵、模块路径身份、Go baseline 默认阻断、模块本地边界和 secret scan；调用方：foundation-integration。
+=======
+- `foundation-deps-full-check.sh`（约 190）：校验 Foundation 16 条依赖矩阵、模块路径身份、Go baseline 默认阻断、模块本地边界和 secret scan；调用方：foundation-integration。
+>>>>>>> main
 - `foundation-boundary-check.sh`（约 360）：扫描真实 Go import 图，执行 module path、allowed/forbidden deps、forbidden edges、stdlib-only 和 `testkitx` 生产导入门禁；调用方：foundation-integration。
 - `foundation-joint-build.sh`（55）：克隆基础模块、生成 `go.work`、执行联合 build/test；调用方：foundation-integration。
 - `foundation-evidence-collect.sh`（259）：聚合 Foundation 集成证据，输出模块身份、commit、Go 版本、runner/provenance 和 artifact digest；调用方：foundation-integration。
