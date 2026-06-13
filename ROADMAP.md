@@ -6,13 +6,13 @@
 >
 > 详细执行跟踪见 [module/FOUNDATION-TRACKER.md](./module/FOUNDATION-TRACKER.md)、[STATUS.md](./STATUS.md)、[DATAFLOW.md](./DATAFLOW.md)。
 
-最后更新：2026-06-10
+最后更新：2026-06-14
 
 ---
 
 ## Vision
 
-构建完整的量化交易基础设施，实现从数据采集 → 因子计算 → Regime 识别 → 信号生成 → 风控执行 → 结算对账的端到端闭环。70 个模块各司其职，通过 contracts 契约解耦，x.go 作为组合根统一编排。
+构建完整的量化交易基础设施，实现从数据采集 → 因子计算 → Regime 识别 → 信号生成 → 风控执行 → 结算对账的端到端闭环。71 个模块各司其职，通过 contracts 契约解耦，x.go 作为组合根统一编排。
 
 **长期目标：** 支撑多策略、多交易所、多资产类别的自动化量化交易系统。
 
@@ -301,7 +301,7 @@ Blocked By:
 - [ ] xlibgate import check 全域覆盖 — `testing`
 - [ ] Spec → Code 四源评分管线运行 — `testing`
 - [ ] 追溯矩阵完整性检查（无孤儿 Task / 无空 AC） — `testing`
-- [ ] 14 个交易所 SDK 版本化发布 — `maintenance`
+- [ ] 13 个交易所 SDK 版本化发布 — `maintenance`
 - [ ] 宏观数据源适配器合并评估 — `maintenance`
 
 ---
@@ -313,7 +313,7 @@ Blocked By:
 | 分析域/决策域/执行域完成度极低（5-8%） | Critical | Active     | 聚焦 v0.2.0，先固化契约再实现       |
 | resiliencx 身份未修复                  | Critical | Active     | v0.1.0 最高优先级                   |
 | x.go 2.8MB 体量异常                    | High     | Active     | v0.1.0 体检与瘦身                   |
-| 14 个交易所 SDK 无版本号               | High     | Monitoring | Backlog 中跟进                      |
+| 13 个交易所 SDK 无版本号               | High     | Monitoring | Backlog 中跟进                      |
 | 宏观数据源同质化                       | Medium   | Monitoring | Backlog 中评估合并                  |
 | 单人开发 + AI 代理，资源有限           | Medium   | Active     | 严格优先级，先闭环后扩展            |
 | 回测与实盘共享代码验证不足             | Medium   | Monitoring | v0.3.0 回测引擎必须验证共享代码路径 |
