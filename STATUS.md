@@ -51,7 +51,7 @@
 ### 🟢 基座（健康）
 
 - 组件：16 个，平均进度 63%
-- 核心模块（kernel / configx / observex / resiliencx / schedulex / testkitx / kafkax / postgresx / taosx）已成熟，有版本号；kernel/configx/observex/kafkax/postgresx 已发布 v1.0.0，taosx 已发布 v1.0.1
+- 核心模块（kernel / configx / observex / resiliencx / schedulex / testkitx / kafkax / postgresx / taosx）已成熟，有版本号；kernel/configx/observex/schedulex/kafkax/postgresx 已发布 v1.0.0，taosx 已发布 v1.0.1
 - 存储层 `kafkax` 已发布 v1.0.0（100%），`postgresx` 已发布 v1.0.0（全局成熟度 90%），`taosx` 已发布 v1.0.1（100%）；`natsx` 已达 80% 但未批准发布；`redisx` / `ossx` 已文档化 50%；`clickhousex` 已规格化 30%，均已脱离仅骨架阶段
 - **阻塞项**：redisx/ossx/clickhousex 仍需实现或发布闭环；natsx 仍待发布批准；kafkax/postgresx/taosx 已不再是存储层实现阻塞项
 
@@ -121,7 +121,7 @@
 | [observex](https://github.com/ZoneCNH/observex) | v1.0.0 | █████ 100% | 220KB/18 项 | 可观测性 |
 | [testkitx](https://github.com/ZoneCNH/testkitx) | v1.0.0 | ████ 100% | SPEC v0.7.3 (10 FR/11 tasks) | Fake / Fixture / Golden / Contract / Leak / Boundary / Manifest 测试工具包（Matrix/Tasks/Plan/Prompt 100 分） |
 | [resiliencx](https://github.com/ZoneCNH/resiliencx) | v1.0.1 | █████ 100% | SPEC Approved (6 FR, 8 BR, 10 tasks) | 弹性策略（timeout / retry / circuit / bulkhead / rate / fallback） |
-| [schedulex](https://github.com/ZoneCNH/schedulex) | v0.1.2 | █████ 100% | 398KB/25 项 | cron/interval/delay 调度、Overlap/Misfire 策略、分布式锁、Clock 注入、8 示例（98.8% 覆盖，race/bench/vet 通过，SPEC v1.0.1） |
+| [schedulex](https://github.com/ZoneCNH/schedulex) | [v1.0.0](https://github.com/ZoneCNH/schedulex/releases/tag/v1.0.0) | █████ 100% | PR #8/#9 + tag/release + release-check | cron/interval/delay 调度、Overlap/Misfire 策略、Locker 扩展点、Clock 注入、8 示例（98.2% 覆盖，score 10.0；race/vet/lint/govulncheck 与下游 smoke 通过） |
 | [redisx](https://github.com/ZoneCNH/redisx) | - | ███░░ 50% | SPEC v1.0 + TRACEABILITY + goal + 10 tasks | Redis KeyBuilder/Options/KV/TTL/Cache/Hash/List/PubSub/Pipeline/Locker/Counter/RateLimit/Codec/Health（12 FR，10 BR，4 NFR，10 tasks）；直接生产依赖限定为 kernel + Redis 客户端库 |
 | [kafkax](https://github.com/ZoneCNH/kafkax) | [v1.0.0](https://github.com/ZoneCNH/kafkax/releases/tag/v1.0.0) | █████ 100% | [PR #5](https://github.com/ZoneCNH/kafkax/pull/5) + tag/release + release-check | Kafka L2 adapter 已发布；driver-neutral API + 可选 kafka-go 生产驱动；真实 broker gates；merge `0545db2` |
 | [natsx](https://github.com/ZoneCNH/natsx) | - | ████░ 80% | 349KB/27 项 | NATS 生命周期/投递证据已验证（`/home/natsx` `3053e80`）；8/14 complete、6/14 partial、0/14 pending；未批准发布 |
