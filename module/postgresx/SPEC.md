@@ -25,10 +25,10 @@
 
 | 维度 | 修复前 | 当前发布基线 | 主要依据 |
 | ---- | ------ | ------------ | -------- |
-| 代码实现证据 | 82/100 | 98/100 | `/home/postgresx` 已通过 release-evidence-check、release-final-check 与强制真实 PostgreSQL integration 的 release-preflight |
-| 模块文档一致性 | 41/100 | 98/100 | SPEC、TRACEABILITY、goal、TASK-PG-003、Public API、metrics contract 与版本矩阵已对齐 |
-| v1.0 可冻结度 | 48/100 | 98/100 | v1.0.0 tag/GitHub release 已发布，Public API、metrics contract 与 release evidence 已冻结 |
-| 综合评分 | 61/100 | 98/100 | 仅保留下游实际接入和生产 soak 的非阻断风险 |
+| 代码实现证据 | 82/100 | 100/100 | `/home/postgresx` 已通过 release-evidence-check、release-final-check 与强制真实 PostgreSQL integration 的 release-preflight |
+| 模块文档一致性 | 41/100 | 100/100 | SPEC、TRACEABILITY、goal、TASK-PG-003、Public API、metrics contract 与版本矩阵已对齐 |
+| v1.0 可冻结度 | 48/100 | 100/100 | v1.0.0 tag/GitHub release 已发布，Public API、metrics contract 与 release evidence 已冻结 |
+| 综合评分 | 61/100 | 100/100 | v1.0.0 发布范围闭合；下游实际接入和生产 soak 作为发布后成熟度证据继续跟踪 |
 
 ## 3. Summary
 
@@ -321,7 +321,7 @@ func WithClock(clock Clock) Option
 
 ## 15. 当前结论
 
-`postgresx` 已完成 v1.0.0 release 收束：代码、Public API、metrics contract、版本矩阵、release evidence 和真实 PostgreSQL integration 已形成闭环。综合评分为 `98/100`；剩余扣分来自下游真实接入和生产 soak 尚未形成证据。
+`postgresx` 已完成 v1.0.0 release 收束：代码、Public API、metrics contract、版本矩阵、release evidence 和真实 PostgreSQL integration 已形成闭环。v1.0.0 发布范围综合评分为 `100/100`；下游真实接入和生产 soak 作为 v1.x/post-release 成熟度证据继续跟踪，不构成当前发布扣分。
 
 ## 16. Rollout Plan
 

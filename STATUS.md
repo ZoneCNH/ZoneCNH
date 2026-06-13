@@ -125,7 +125,7 @@
 | [redisx](https://github.com/ZoneCNH/redisx) | - | ███░░ 50% | SPEC v1.0 + TRACEABILITY + goal + 10 tasks | Redis KeyBuilder/Options/KV/TTL/Cache/Hash/List/PubSub/Pipeline/Locker/Counter/RateLimit/Codec/Health（12 FR，10 BR，4 NFR，10 tasks）；直接生产依赖限定为 kernel + Redis 客户端库 |
 | [kafkax](https://github.com/ZoneCNH/kafkax) | - | ██░░░ 30% | SPEC + TRACEABILITY + goal | Kafka — 消息队列、事件流（完整规格，骨架之上） |
 | [natsx](https://github.com/ZoneCNH/natsx) | - | ████░ 80% | 349KB/27 项 | NATS 生命周期/投递证据已验证（`/home/natsx` `3053e80`）；8/14 complete、6/14 partial、0/14 pending；未批准发布 |
-| [postgresx](https://github.com/ZoneCNH/postgresx) | v1.0.0 | ████░ 90% | SPEC Implemented + TRACEABILITY + goal + 3 tasks + release evidence | PostgreSQL — 关系型存储、事务、迁移（v1.0.0 已发布，release-final-check 与真实 PostgreSQL integration 通过） |
+| [postgresx](https://github.com/ZoneCNH/postgresx) | v1.0.0 | ████░ 90% | SPEC Implemented + TRACEABILITY + goal + 3 tasks + release evidence | PostgreSQL — 关系型存储、事务、迁移（v1.0 发布范围 100/100；全局成熟度待生产 soak 后提升） |
 | [taosx](https://github.com/ZoneCNH/taosx) | - | ██░░░ 30% | SPEC + TRACEABILITY + goal | TDengine — 时序数据写入与查询（完整规格，骨架之上） |
 | [ossx](https://github.com/ZoneCNH/ossx) | - | ███░░ 50% | SPEC + TRACEABILITY + goal + IMPLEMENTATION-PLAN + 7 prompts + 7 tasks + evidence | 对象存储 — S3/MinIO/local 多后端（全链路文档就绪：plan/tasks/prompts/evidence 齐备） |
 | [clickhousex](https://github.com/ZoneCNH/clickhousex) | - | ██░░░ 30% | SPEC + TRACEABILITY + goal | ClickHouse — OLAP 查询、批量写入（完整规格，骨架之上） |

@@ -54,4 +54,4 @@ Source: [SPEC.md](./SPEC.md), [goal.md](./goal.md), `/home/postgresx`
 
 ---
 
-追溯结论：FR/BR 全部 Done，TASK-PG-003 已关闭；v1.0.0 发布证据已覆盖 GOWORK=off、contracts、race、secret scan 与真实 PostgreSQL integration。下游接入证据仍作为非阻断风险跟踪。
+追溯结论：FR/BR 全部 Done，TASK-PG-003 已关闭；v1.0.0 发布证据已覆盖 GOWORK=off、contracts、race、secret scan 与真实 PostgreSQL integration。下游接入证据作为 v1.x/post-release 成熟度项跟踪，不计入 v1.0.0 发布范围扣分。
