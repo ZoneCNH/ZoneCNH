@@ -30,7 +30,7 @@ x.go ───────────────► 基座运行时 / L2.5 / �
    ├───────────────► transportx
    │                  跨 runtime / adapter 传输契约
    │
-   └───────────────► 基座运行时 Foundation
+   └───────────────► 基座运行时 Foundation (17)
                       L0: kernel
                       L1 runtime: configx · observex · resiliencx · schedulex
                       L1 test-only: testkitx
