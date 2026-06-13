@@ -30,7 +30,7 @@ x.go ───────────────► 基座运行时 / L2.5 / �
    ├───────────────► transportx
    │                  跨 runtime / adapter 传输契约
    │
-   └───────────────► 基座运行时 Foundation (18)
+   └───────────────► 基座运行时 Foundation (20)
                       L0: kernel
                       L1 runtime: configx · observex · resiliencx · schedulex
                       L1 test-only: testkitx
@@ -39,7 +39,9 @@ x.go ───────────────► 基座运行时 / L2.5 / �
                       领域共享: domainx
 
 标准与门禁：
-  xlib-standard ─── 标准事实源 / Go Reference Template / Generator / Harness Gate / Evidence Runtime，不参与业务运行
+  xlib-standard ─── 标准事实源 / Go Reference Template，不参与业务运行
+  xlib-harness  ─── 模块生成器（generate）与门禁执行器（spec-lint / boundary / traceability / format-check）
+  xlib-evidence ─── 证据收集与发布运行时（coverage / manifest / remote evidence / report）
   xlibgate      ─── import 边界、go.mod、Go baseline、release evidence、L2 发布就绪 机器门禁
 
 横切关注点：
@@ -92,7 +94,7 @@ x.go
 
 | 域     | 职责                                                                                                                          | 组件                                                                                                                                                       |
 | ------ | ----------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 基座   | 标准源、L0 原语、L1 运行时横切能力、测试期证据、存储扩展、稳定契约与传输契约、领域共享                                            | xlib-standard, kernel, configx, observex, testkitx, resiliencx, schedulex, xlibgate, redisx, kafkax, natsx, postgresx, taosx, ossx, clickhousex, contracts, transportx, domainx |
+| 基座   | 标准源、生成器、证据运行时、L0 原语、L1 运行时横切能力、测试期证据、存储扩展、稳定契约与传输契约、领域共享                                            | xlib-standard, xlib-harness, xlib-evidence, kernel, configx, observex, testkitx, resiliencx, schedulex, xlibgate, redisx, kafkax, natsx, postgresx, taosx, ossx, clickhousex, contracts, transportx, domainx |
 | L2.5   | 领域值对象和语义模型，上层统一依赖                                                                                            | decimalx, domain-market, domain-exchange, domain-macro                                                                                                  |
 | 数据域 | 行情、宏观、另类数据采集                                                                                                      | market-data (13 SDK + 5 Provider), macro-data (11), alternative-data                                                                                       |
 | 分析域 | 因子计算、特征存储、因子评估、市场/宏观环境分类、M×S 联合决策（三引擎：market_engine→S / macro_engine→M / regime_engine→M+S） | factor-engine, feature-store, factor-eval, market_regime, macro_regime, regime-engine, ms_brain                                                            |
