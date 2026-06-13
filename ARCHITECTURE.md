@@ -21,7 +21,7 @@ x.go ───────────────► 基座运行时 / L2.5 / �
 
 数据域 ─┐
 分析域 ─┼──────────► L2.5 Domain Shared
-决策域 ─┤             decimalx · domain-market · domain-exchange · domain-macro · domainx
+决策域 ─┤             decimalx · domain-market · domain-exchange · domain-macro
 执行域 ─┘
    │
    ├───────────────► contracts
@@ -30,12 +30,13 @@ x.go ───────────────► 基座运行时 / L2.5 / �
    ├───────────────► transportx
    │                  跨 runtime / adapter 传输契约
    │
-   └───────────────► 基座运行时 Foundation (17)
+   └───────────────► 基座运行时 Foundation (18)
                       L0: kernel
                       L1 runtime: configx · observex · resiliencx · schedulex
                       L1 test-only: testkitx
                       扩展: redisx · kafkax · natsx · postgresx · taosx · ossx · clickhousex
                       契约: contracts · transportx
+                      领域共享: domainx
 
 标准与门禁：
   xlib-standard ─── 标准事实源 / Go Reference Template / Generator / Harness Gate / Evidence Runtime，不参与业务运行
@@ -91,8 +92,8 @@ x.go
 
 | 域     | 职责                                                                                                                          | 组件                                                                                                                                                       |
 | ------ | ----------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 基座   | 标准源、L0 原语、L1 运行时横切能力、测试期证据、存储扩展、稳定契约与传输契约                                                    | xlib-standard, kernel, configx, observex, testkitx, resiliencx, schedulex, xlibgate, redisx, kafkax, natsx, postgresx, taosx, ossx, clickhousex, contracts, transportx |
-| L2.5   | 领域值对象和语义模型，上层统一依赖                                                                                            | decimalx, domain-market, domain-exchange, domain-macro, domainx                                                                                           |
+| 基座   | 标准源、L0 原语、L1 运行时横切能力、测试期证据、存储扩展、稳定契约与传输契约、领域共享                                            | xlib-standard, kernel, configx, observex, testkitx, resiliencx, schedulex, xlibgate, redisx, kafkax, natsx, postgresx, taosx, ossx, clickhousex, contracts, transportx, domainx |
+| L2.5   | 领域值对象和语义模型，上层统一依赖                                                                                            | decimalx, domain-market, domain-exchange, domain-macro                                                                                                  |
 | 数据域 | 行情、宏观、另类数据采集                                                                                                      | market-data (13 SDK + 5 Provider), macro-data (11), alternative-data                                                                                       |
 | 分析域 | 因子计算、特征存储、因子评估、市场/宏观环境分类、M×S 联合决策（三引擎：market_engine→S / macro_engine→M / regime_engine→M+S） | factor-engine, feature-store, factor-eval, market_regime, macro_regime, regime-engine, ms_brain                                                            |
 | 决策域 | 信号生成、历史回测、参数优化（并行协作）                                                                                      | signal-factory, backtest-engine, optimizer, strategies                                                                                                     |
@@ -115,9 +116,9 @@ Foundation v1 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中�
 | [`ROADMAP.md`](./ROADMAP.md)                                             | 六阶段交付路线图 — 任务编号、依赖链、验收标准                     |
 | [`docs/governance/ROADMAP-RULES.md`](./docs/governance/ROADMAP-RULES.md) | ROADMAP 编写规范 — 状态流转、版本规划、任务拆分、维护原则         |
 | [`CONSTITUTION.md`](./CONSTITUTION.md)                                   | 系统宪法 — FoundationX 全系统最高治理文件，覆盖模块实现与交付管线 |
-| [`docs/sre/foundation-cicd-plan.md`](./docs/sre/foundation-cicd-plan.md) | SRE CI/CD — 基座层 17 模块 4 阶段部署方案、机器池架构、标准化模板   |
+| [`docs/sre/foundation-cicd-plan.md`](./docs/sre/foundation-cicd-plan.md) | SRE CI/CD — 基座层 18 模块 4 阶段部署方案、机器池架构、标准化模板   |
 
-17 个基座模块的独立完整规格均为 23 节结构：行为规格 WHEN/THEN、接口契约、业务规则、错误处理、边界场景、验收标准、目录结构、CI Gate、测试矩阵、性能预算、可观测输出、发布 DoD。完整索引见 [`module/README.md`](./module/README.md)。`x.go` 组合根仍作为运行时入口维护，但不再作为 `module/` 下的模块规格。
+18 个基座模块的独立完整规格均为 23 节结构：行为规格 WHEN/THEN、接口契约、业务规则、错误处理、边界场景、验收标准、目录结构、CI Gate、测试矩阵、性能预算、可观测输出、发布 DoD。完整索引见 [`module/README.md`](./module/README.md)。`x.go` 组合根仍作为运行时入口维护，但不再作为 `module/` 下的模块规格。
 
 | 层级          | 模块          | 完整规格                                                         |
 | ------------- | ------------- | ---------------------------------------------------------------- |
@@ -138,6 +139,7 @@ Foundation v1 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中�
 |               | clickhousex   | [`module/clickhousex/SPEC.md`](./module/clickhousex/SPEC.md)     |
 | **契约/传输** | contracts     | [`module/contracts/SPEC.md`](./module/contracts/SPEC.md)         |
 |               | transportx    | [`module/transportx/SPEC.md`](./module/transportx/SPEC.md)       |
+| **领域共享**  | domainx       | [`module/domainx/SPEC.md`](./module/domainx/SPEC.md)             |
 
 ### 规格体系与治理文档
 
@@ -302,6 +304,7 @@ Foundation v1 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中�
 | 基座                  | [clickhousex](https://github.com/ZoneCNH/clickhousex)           | v1.0.1 | ✅ 已发布 | █████ 100% | ClickHouse — OLAP 查询、批量写入（完整 SPEC + TRACEABILITY §1-§7 + 7 Tasks，覆盖率 100%）                                      |
 | 基座                  | [contracts](https://github.com/ZoneCNH/contracts)               | v1.0.1-spec | ✅ 已有   | █████ 100% | 跨域稳定端口/事件/DTO 契约（6 FR，10 BR，8 NFR，16 AC，7 TC，5 tasks，TRACEABILITY §1-§7 完整，goal.md 对齐 CONSTITUTION P7） |
 | 基座                  | [transportx](https://github.com/ZoneCNH/transportx)             | v1.1.1-spec | ✅ 已有   | █████ 100% | 应用通信底座规格基线；25 FR, 18 BR, 12 NFR, 25 AC, 25 TC, 12 CI gates — SPEC/Matrix/Tasks 三阶段满分 |
+| 基座                  | [domainx](https://github.com/ZoneCNH/domainx)                   | -      | ✅ 已有   | █████ 100% | 执行域共享值对象：Order/Position/Trade/Portfolio/ExecutionReport 与 OrderState/OrderType/OrderSide 枚举（8 FR，8 TC，6 tasks） |
 | **L2.5 · 领域共享层** |                                                                 |        |           |          |                                                                                           |
 | L2.5                  | [decimalx](https://github.com/ZoneCNH/decimalx)                 | v0.1.0 | ✅ P0     | ███░ 80% | 高精度十进制类型（Decimal/Price/Qty/Ratio/Money）                                         |
 | L2.5                  | [domain-market](https://github.com/ZoneCNH/domain-market)       | v0.1.0 | ✅ P0     | ███░ 80% | 市场数据域模型（Tick/Quote/Bar/OrderBook）                                                |
@@ -391,6 +394,7 @@ Foundation v1 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中�
 | 基座              | ossx                                                                                                      | `/home/ossx/`                               |
 | 基座              | contracts                                                                                                 | `/home/contracts/`                          |
 | 基座              | transportx                                                                                                | `/home/transportx/`                         |
+| 基座              | domainx                                                                                                   | `/home/domainx/`                            |
 | 基座              | decimalx                                                                                                  | `/home/decimalx/`                           |
 | 基座              | domain-market                                                                                             | `/home/domain-market/`                      |
 | 基座              | domain-exchange                                                                                           | `/home/domain-exchange/`                    |
