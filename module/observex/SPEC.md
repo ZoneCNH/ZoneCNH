@@ -44,14 +44,6 @@
 - 提供 Noop / Test / OTLP 三种 Exporter 实现，支持优雅 Shutdown
 - 提供 Health JSON schema 输出（ready / live / message / components）
 
-### 2.2 明确不做
-
-- 不做告警升级（由 `alertx` 负责）
-- 不做业务判断或风控放行（由 `risk-engine` 负责）
-- 不直接绑定 Prometheus / OTel / Zap 实现（通过 Exporter 接口抽象）
-- 不把业务状态写死为 metrics 或 log 的强制枚举
-- 不在 kernel 中创建强依赖（observex 作为可选注入）
-
 ---
 
 ## 3. Problem
