@@ -1,7 +1,7 @@
 # transportx Specification
 
 - Status: Approved
-- Spec-Version: v1.1.0
+- Spec-Version: v1.1.1
 - Last-Updated: 2026-06-14
 - Owner: ZoneCNH
 - Layer: 基座 · 传输契约
@@ -15,7 +15,7 @@
 | Module | transportx |
 | Domain | 基座 |
 | Layer | 传输契约 · 应用通信底座 |
-| Version | v1.1.0 |
+| Version | v1.1.1 |
 | Status | Approved |
 | Last Updated | 2026-06-14 |
 | Source of Truth | `module/transportx/SPEC.md` |
@@ -45,7 +45,17 @@ x.go / service adapter 负责"运行时接哪种实现"
 | Admin | HTTP / gRPC health | config、health、ops command | auth、rate limit、audit |
 | Audit | append-only log / Kafka / JetStream | risk reject、fill、settlement | 不可静默丢、可重放、可对账 |
 
-`transportx` 不实现 broker client，也不定义业务事件语义。具体的 Kafka、NATS、HTTP、RPC、Redis stream 或本地队列实现必须依赖该契约，而不是把传输行为散落在领域模块中。
+### Consumers
+
+| Consumer | Role | Typical Operations |
+| --- | --- | --- |
+| service adapter (x.go/cmd wire) | 运行时组装 transport + adapter | 注入 Publisher, Subscriber, Runtime |
+| contracts | 引用 transport 类型定义 | 定义 Topic, Event, DTO port |
+| kafkax / natsx adapters | 实现 transportx adapter 契约 | Publish, Subscribe, Ack, Nack |
+| observex | 消费 transportx trace/metric headers | 跨协议 trace/span 传播 |
+| resiliencx | 消费 retry/bulkhead/deadline 策略接口 | 弹性策略执行 |
+| conformance suite | 验证 transportx 实现合规性 | RunLifecycle, RunEnvelope, RunControlPlane |
+| domain modules (间接) | 通过 contracts port 调用，不直接依赖 transportx | 业务操作 |
 
 ## 3. Problem Statement
 
@@ -55,13 +65,13 @@ Foundation 模块已有 `contracts` 用于跨域端口、事件协议和 DTO 契
 - runtime 生命周期缺少 pause、drain、resume、shutdown 与 force-stop 状态机。
 - kill switch、mirror、canary、bulkhead 与 backpressure 控制面缺少可审计接口。
 - ServiceIdentity、认证、授权、deadline、clock skew、幂等冲突和交付回执没有统一错误映射。
-- QoS 分级（REALTIME_BEST_EFFORT / DURABLE_EVENT / COMMAND_IDEMPOTENT / COMMAND_STRICT / AUDIT）未定义，导致不同消息类型混用传输策略。
+- QoS 分级未定义，导致不同消息类型混用传输策略。
 - Codec 接口未标准化，各 adapter 自行决定序列化方式。
-- TopicRegistry、MethodRegistry、SchemaRegistry 未定义，RPC 方法和 Topic 缺少统一注册与兼容性验证。
+- TopicRegistry、MethodRegistry、SchemaRegistry 未定义，缺少统一注册与兼容性验证。
 - 执行模式（LIVE / PAPER / REPLAY / DRY_RUN）没有统一 gate 规则。
 - Outbox/Inbox 模式未定义 SPI，业务状态与事件一致性缺少契约。
 - Audit Plane 缺少独立接口，审计事件散落在各模块。
-- 数据分级（PUBLIC / INTERNAL / CONFIDENTIAL / SECRET）未纳入传输契约。
+- 数据分级未纳入传输契约。
 - 中间件顺序没有强制 redaction 先于 logging，存在日志泄漏风险。
 - CI 与发布 DoD 没有把 transport conformance 纳入门禁。
 
@@ -100,11 +110,11 @@ Foundation 模块已有 `contracts` 用于跨域端口、事件协议和 DTO 契
 | Runtime | 执行 publish、subscribe、request、stream 或 bridge 的传输运行时。 |
 | Control Plane | 对 runtime 施加 kill switch、mirror、canary、backpressure 和 drain 等控制的接口。 |
 | Conformance | 任何实现必须通过的契约一致性测试集合。 |
-| QoS Class | 消息传输质量分级（REALTIME_BEST_EFFORT / DURABLE_EVENT / COMMAND_IDEMPOTENT / COMMAND_STRICT / AUDIT），决定持久化、ack、幂等和可丢弃策略。 |
+| QoS Class | 消息传输质量分级，决定持久化、ack、幂等和可丢弃策略。 |
 | Codec | 将业务对象与 Envelope payload 互转的序列化契约接口，第一版提供 JSON codec。 |
 | TopicRegistry | 注册和校验业务 Topic 的接口，确保 Topic 命名、schema 和 QoS 绑定。 |
 | MethodRegistry | 注册和校验 RPC 方法的接口，确保 method 命名、deadline、retry class 和幂等约束。 |
-| SchemaRegistry | 校验 Envelope/Endpoint/Receipt schema 兼容性并记录版本演进的接口。 |
+| SchemaRegistry | 校验 Envelope/Endpoint/Receipt schema 兼容性并记录版本历史的接口。 |
 | Execution Mode | 运行时执行模式（LIVE / PAPER / REPLAY / DRY_RUN），决定是否允许真实下单、外部副作用和审计要求。 |
 | Outbox/Inbox | 保证业务状态与事件发布一致性的模式：Outbox 在事务中写事件后异步发布；Inbox 去重消费。 |
 | Audit Plane | 独立审计通道，记录风控决策、订单状态变更、成交、结算等不可抵赖事件。 |
@@ -126,7 +136,40 @@ WHEN an adapter registers an Endpoint, THEN transportx MUST validate scheme, aut
 
 ### FR-004: Runtime Lifecycle
 
-WHEN runtime control changes state, THEN transportx MUST enforce the lifecycle sequence `new -> starting -> running -> paused -> draining -> stopped` with explicit transitions for resume, shutdown and force-stop.
+WHEN runtime control changes state, THEN transportx MUST enforce the lifecycle state machine with explicit transitions for Start, Pause, Resume, Drain, Shutdown and ForceStop.
+
+State machine:
+
+```text
+                    ┌──────────┐
+                    │   new    │
+                    └────┬─────┘
+                         │ Start()
+                         ▼
+                    ┌──────────┐
+          ┌────────>│ starting │
+          │         └────┬─────┘
+          │              │ (auto)
+          │              ▼
+          │         ┌──────────┐     Pause()     ┌──────────┐
+          │         │  running │────────────────>│  paused  │
+          │         └────┬─────┘<────────────────└──────────┘
+          │              │           Resume()
+          │              │ Drain()
+          │              ▼
+          │         ┌──────────┐
+          │         │ draining │
+          │         └────┬─────┘
+          │              │ (in-flight complete ∨ deadline)
+          │              ▼
+          │         ┌──────────┐
+          │         │ stopped  │──── Shutdown() ──> [terminal]
+          │         └──────────┘
+          │
+          └──── ForceStop() ── from any state ──> stopped (abandoned)
+```
+
+Forbidden transitions: `paused -> running` without Resume(); `draining -> running`; `stopped -> *`. ForceStop() marks all in-flight work as abandoned with receipt evidence.
 
 ### FR-005: Drain Semantics
 
@@ -178,31 +221,31 @@ WHEN a transportx implementation claims compatibility, THEN CI MUST run spec lin
 
 ### FR-017: QoS Classification
 
-WHEN a message is produced, THEN transportx MUST classify it into one of five QoS classes: REALTIME_BEST_EFFORT (tick/orderbook, droppable), DURABLE_EVENT (factor/signal/position/PnL, must persist), COMMAND_IDEMPOTENT (order submit/cancel/modify, must have idempotency key), COMMAND_STRICT (risk approval/fund freeze, must persist + idempotent), AUDIT (fill/reject/settlement, immutable append-only). Hard rules: order/fill/risk/settlement events MUST NOT use REALTIME_BEST_EFFORT; COMMAND_IDEMPOTENT without idempotency key MUST be rejected; AUDIT events MUST enter audit sink or durable backend.
+WHEN a message is produced, THEN transportx MUST classify it into one of five QoS classes. Hard rules: order/fill/risk/settlement events MUST NOT use REALTIME_BEST_EFFORT; COMMAND_IDEMPOTENT without idempotency key MUST be rejected with `TX_QOS_VIOLATION`; AUDIT events MUST enter audit sink or durable backend.
 
 ### FR-018: Codec Interface
 
-WHEN an adapter serializes or deserializes payload, THEN transportx MUST provide a Codec interface with `Marshal(v any) ([]byte, error)` and `Unmarshal(data []byte, v any) error`. A JSON codec implementation MUST be provided as the default. The Codec MUST be pluggable per Endpoint or per method.
+WHEN an adapter serializes or deserializes payload, THEN transportx MUST provide a Codec interface with `Marshal(v any) ([]byte, error)` and `Unmarshal(data []byte, v any) error`. A JSON codec implementation MUST be provided as the default.
 
 ### FR-019: TopicRegistry
 
-WHEN a business module registers a topic, THEN TopicRegistry MUST validate topic naming, schema binding, QoS assignment and ownership. Topic names MUST follow the pattern `{domain}.{version}.{entity}.{action}` (e.g. `order.v1.order.submitted`). Duplicate topic registration MUST be rejected.
+WHEN a business module registers a topic, THEN TopicRegistry MUST validate topic naming (`{domain}.{version}.{entity}.{action}`), schema binding, QoS assignment and ownership. Duplicate topic registration MUST be rejected with `TX_TOPIC_DUPLICATE`.
 
 ### FR-020: MethodRegistry
 
-WHEN a business module registers an RPC method, THEN MethodRegistry MUST validate method naming, input/output schema, required deadline, retry classification (READ_ONLY / IDEMPOTENT / UNSAFE) and idempotency requirement. Method names MUST follow `{service}.{version}.{Service}/{Method}` (e.g. `risk.v1.RiskService/CheckOrder`).
+WHEN a business module registers an RPC method, THEN MethodRegistry MUST validate method naming, required deadline, retry classification (READ_ONLY / IDEMPOTENT / UNSAFE) and idempotency requirement. UNSAFE methods without explicit retry opt-out MUST be rejected.
 
 ### FR-021: Execution Modes
 
-WHEN the runtime starts, THEN transportx MUST enforce the configured ExecutionMode: LIVE requires auth + deadline + idempotency + audit sink; PAPER allows paper order adapter; REPLAY forbids live exchange adapter and real order submission; DRY_RUN forbids external side effects. Mode transitions MUST require explicit confirmation and emit audit events.
+WHEN the runtime starts, THEN transportx MUST enforce the configured ExecutionMode: LIVE requires auth + deadline + idempotency + audit sink; PAPER allows paper order adapter; REPLAY forbids live exchange adapter and real order submission; DRY_RUN forbids external side effects.
 
 ### FR-022: Outbox/Inbox SPI
 
-WHEN business state and event publication must be consistent, THEN transportx MUST define Outbox interface (`Save`, `MarkPublished`, `Pending`) and Inbox interface (`Seen`, `MarkProcessed`). transportx/core MUST define only the SPI, not the business orchestration.
+WHEN business state and event publication must be consistent, THEN transportx MUST define Outbox interface (`Save`, `MarkPublished`, `Pending`) and Inbox interface (`Seen`, `MarkProcessed`). transportx/core MUST define only the SPI.
 
 ### FR-023: Audit Plane
 
-WHEN audit-worthy events occur (risk decision, order status change, execution fill, settlement, manual override, config change, service lifecycle), THEN transportx MUST provide AuditSink interface (`Append`) and ReplaySource interface (`Replay`). Audit records MUST contain trace_id, correlation_id, and MUST NOT contain secrets. Order status changes MUST be reconstructable from audit log.
+WHEN audit-worthy events occur (risk decision, order status change, execution fill, settlement, manual override, config change, service lifecycle), THEN transportx MUST provide AuditSink and ReplaySource interfaces. Audit records MUST contain trace_id, correlation_id, and MUST NOT contain secrets.
 
 ### FR-024: Data Classification
 
@@ -210,30 +253,47 @@ WHEN data flows through transportx, THEN it MUST be classified as PUBLIC, INTERN
 
 ### FR-025: SchemaRegistry
 
-WHEN Envelope, Endpoint, Receipt or method schema is registered, THEN SchemaRegistry MUST record schema version, digest, compatibility classification and migration notes. Breaking schema changes MUST require a major version bump. Unknown schema versions MUST be rejected with compatibility error and registry evidence.
+WHEN Envelope, Endpoint, Receipt or method schema is registered, THEN SchemaRegistry MUST record version, digest, compatibility classification and migration notes. Breaking schema changes MUST require a major version bump. Unknown schema versions MUST be rejected.
 
 ## 8. Business Rules
 
-| Rule | Statement |
-| --- | --- |
-| BR-001 | Payload content MUST NOT appear in logs, metrics labels, audit events or DeliveryReceipt. |
-| BR-002 | Redaction MUST execute before logging and tracing exporters receive stringified fields. |
-| BR-003 | Control-plane commands MUST be auditable by command id, actor and rollback token. |
-| BR-004 | Force-stop MUST mark unfinished work as abandoned and include receipt evidence. |
-| BR-005 | Mirror and canary modes MUST preserve production path idempotency semantics. |
-| BR-006 | Adapter-specific fields MUST live under namespaced extension blocks. |
-| BR-007 | Envelope id and idempotency key MUST be stable across retries. |
-| BR-008 | Deadline decisions MUST use monotonic runtime clock plus configured wall-clock skew guard. |
-| BR-009 | Authorization failures MUST not expose endpoint secrets or payload bytes. |
-| BR-010 | Dead-letter records MUST retain trace context and redacted failure metadata. |
-| BR-011 | Breaking schema changes MUST require a major version bump. |
-| BR-012 | Release evidence MUST include conformance output and drift-check output. |
-| BR-013 | Order, fill, risk and settlement events MUST NOT use REALTIME_BEST_EFFORT QoS. |
-| BR-014 | COMMAND_IDEMPOTENT without idempotency_key MUST be rejected before adapter dispatch. |
-| BR-015 | Audit events MUST NOT be silently dropped; delivery failure MUST escalate. |
-| BR-016 | REPLAY and DRY_RUN modes MUST prevent real order submission and external side effects. |
-| BR-017 | READ_ONLY methods may be auto-retried; IDEMPOTENT methods require idempotency key for retry; UNSAFE methods MUST NOT be auto-retried. |
-| BR-018 | SECRET-classified data MUST NOT appear in any log, metric, trace span attribute, audit record or receipt text under any circumstance. |
+| Rule | Statement | Error on Violation |
+| --- | --- | --- |
+| BR-001 | Payload content MUST NOT appear in logs, metrics labels, audit events or DeliveryReceipt. | `TX_REDACTION_FAILED` — fail closed |
+| BR-002 | Redaction MUST execute before logging and tracing exporters receive stringified fields. | `TX_REDACTION_FAILED` — fail closed |
+| BR-003 | Control-plane commands MUST be auditable by command id, actor and rollback token. | `TX_AUDIT_MISSING` — reject command |
+| BR-004 | Force-stop MUST mark unfinished work as abandoned and include receipt evidence. | receipt status = `ABANDONED` |
+| BR-005 | Mirror and canary modes MUST preserve production path idempotency semantics. | `TX_MIRROR_IDEMPOTENCY_VIOLATION` |
+| BR-006 | Adapter-specific fields MUST live under namespaced extension blocks. | `TX_SCHEMA_INCOMPATIBLE` |
+| BR-007 | Envelope id and idempotency key MUST be stable across retries. | `TX_IDEMPOTENCY_CONFLICT` |
+| BR-008 | Deadline decisions MUST use monotonic runtime clock plus configured wall-clock skew guard. | `TX_CLOCK_SKEW` |
+| BR-009 | Authorization failures MUST not expose endpoint secrets or payload bytes. | `TX_AUTHZ_DENIED` — redacted only |
+| BR-010 | Dead-letter records MUST retain trace context and redacted failure metadata. | `TX_DLQ_INCOMPLETE` — reject DLQ write |
+| BR-011 | Breaking schema changes MUST require a major version bump. | `TX_SCHEMA_INCOMPATIBLE` |
+| BR-012 | Release evidence MUST include conformance output and drift-check output. | CI gate TX-GATE-009 blocks release |
+| BR-013 | Order, fill, risk and settlement events MUST NOT use REALTIME_BEST_EFFORT QoS. | `TX_QOS_VIOLATION` — reject before publish |
+| BR-014 | COMMAND_IDEMPOTENT without idempotency_key MUST be rejected before adapter dispatch. | `TX_QOS_VIOLATION` — reject before publish |
+| BR-015 | Audit events MUST NOT be silently dropped; delivery failure MUST escalate. | `TX_AUDIT_DROPPED` — alert + retry |
+| BR-016 | REPLAY and DRY_RUN modes MUST prevent real order submission and external side effects. | `TX_MODE_VIOLATION` — deny and audit |
+| BR-017 | READ_ONLY methods may be auto-retried; IDEMPOTENT methods require idempotency key for retry; UNSAFE methods MUST NOT be auto-retried. | `TX_RETRY_UNSAFE` — deny retry |
+| BR-018 | SECRET-classified data MUST NOT appear in any log, metric, trace span attribute, audit record or receipt text. | `TX_REDACTION_FAILED` — fail closed |
+
+### 8.5 Non-Functional Requirements
+
+| NFR | Category | Requirement | Verification |
+| --- | --- | --- | --- |
+| NFR-001 | Security | Payload bytes absent from all telemetry output | TC-024: Data classification redaction test |
+| NFR-002 | Security | Redaction fail-closed before logging/adapter dispatch | TC-014: Middleware order test |
+| NFR-003 | Security | Authz denial without secret leakage | TC-008: Authorization denial test |
+| NFR-004 | Security | REPLAY/DRY_RUN blocks real order + side effects | TC-021: Execution mode test |
+| NFR-005 | Observability | Metrics labels use bounded cardinality | Manual review of metric label dimensions |
+| NFR-006 | Observability | Trace context propagated across all six planes | TC-007: Identity validation (trace fields present) |
+| NFR-007 | Performance | Envelope validation p95 ≤ 1 ms | Benchmark in conformance report |
+| NFR-008 | Performance | Middleware p95 ≤ 2 ms excluding adapter I/O | Benchmark in conformance report |
+| NFR-009 | Performance | JSON codec round-trip p95 ≤ 5 ms (1 KB payload) | Benchmark in conformance report |
+| NFR-010 | Reliability | Audit events not silently dropped | BR-015 enforcement: alert on delivery failure |
+| NFR-011 | Reliability | Dead-letter retains trace context | TC-013: DLQ trace context verification |
+| NFR-012 | Compatibility | Breaking schema change requires major version bump | TC-025: SchemaRegistry compatibility test |
 
 ## 9. Interface Contracts
 
@@ -275,7 +335,25 @@ Interfaces must accept context, ServiceIdentity and immutable request structures
 | Topic | `name`, `domain`, `version`, `entity`, `action`, `qosClass`, `schemaRef`, `owner` |
 | Method | `name`, `service`, `version`, `inputSchema`, `outputSchema`, `requiredDeadline`, `retryClass`, `requiresIdempotency` |
 
-Payload storage is represented through `payloadRef` and `payloadDigest`. Raw payload bytes are never part of audit output.
+### 10.5 Runtime Configuration Items
+
+| Config Key | Type | Default | Description |
+| --- | --- | --- | --- |
+| `tx.payload.max_bytes` | int | 1_048_576 | Maximum payload size in bytes |
+| `tx.header.max_count` | int | 64 | Maximum header count per Envelope |
+| `tx.header.max_bytes` | int | 8_192 | Maximum total header bytes |
+| `tx.deadline.default_ms` | int | 30_000 | Default RPC deadline in milliseconds |
+| `tx.clock_skew.max_ms` | int | 5_000 | Maximum allowed clock skew |
+| `tx.retry.max_attempts` | int | 3 | Default max retry attempts |
+| `tx.backpressure.policy` | string | `BLOCK` | Default backpressure policy |
+| `tx.bulkhead.max_concurrency` | int | 100 | Default bulkhead concurrency limit |
+| `tx.dlq.enabled` | bool | true | Enable dead-letter queue |
+| `tx.dlq.max_attempts` | int | 5 | Max attempts before DLQ |
+| `tx.redaction.version` | string | `v1` | Redaction ruleset version |
+| `tx.audit.batch_size` | int | 100 | Audit append batch size |
+| `tx.execution_mode` | string | `LIVE` | Runtime execution mode |
+
+All configuration consumed through `configx` immutable config interface.
 
 ## 11. Error Handling
 
@@ -293,12 +371,17 @@ Payload storage is represented through `payloadRef` and `payloadDigest`. Raw pay
 | TX_BULKHEAD_REJECTED | Bulkhead capacity exhausted | Reject with retry hint |
 | TX_ADAPTER_FAILURE | Adapter returns failure | Retry or dead-letter |
 | TX_CONTROL_CONFLICT | Concurrent control command conflict | Reject command with current state |
-| TX_QOS_VIOLATION | QoS constraints violated (e.g. order event on REALTIME) | Reject before publish |
-| TX_MODE_VIOLATION | Execution mode constraint violated (e.g. real order in REPLAY) | Deny and audit |
+| TX_QOS_VIOLATION | QoS constraints violated | Reject before publish |
+| TX_MODE_VIOLATION | Execution mode constraint violated | Deny and audit |
 | TX_SCHEMA_INCOMPATIBLE | Schema version unknown or breaking | Reject with registry evidence |
 | TX_TOPIC_DUPLICATE | Duplicate topic registration | Reject registration |
 | TX_METHOD_DUPLICATE | Duplicate method registration | Reject registration |
 | TX_RETRY_UNSAFE | Auto-retry attempted on UNSAFE method | Deny retry and escalate |
+| TX_REDACTION_FAILED | Redaction error (fail-closed) | Block logging and adapter dispatch |
+| TX_AUDIT_MISSING | Control command without audit evidence | Reject command |
+| TX_AUDIT_DROPPED | Audit event delivery failure | Alert and retry |
+| TX_DLQ_INCOMPLETE | DLQ record missing trace context or metadata | Reject DLQ write |
+| TX_MIRROR_IDEMPOTENCY_VIOLATION | Mirror/canary idempotency semantic broken | Preserve primary, emit mirror failure |
 
 Every error must include stable code, redacted message, retry classification, endpoint reference and trace id.
 
@@ -322,37 +405,35 @@ Every error must include stable code, redacted message, retry classification, en
 
 ## 13. Acceptance Criteria
 
-| AC | Requirement | Criterion |
-| --- | --- | --- |
-| AC-001 | FR-001 | Envelope validation rejects missing identity, endpoint, deadline, trace or payload reference. |
-| AC-002 | FR-002 | Limit tests cover payload bytes, header count and header bytes. |
-| AC-003 | FR-003 | Endpoint registration rejects invalid scheme, missing owner and unsupported capability. |
-| AC-004 | FR-004 | Lifecycle tests cover every allowed transition and every forbidden transition. |
-| AC-005 | FR-005 | Drain report includes accepted, completed, abandoned and timed-out counts. |
-| AC-006 | FR-006 | Each control command emits audit evidence and rollback token. |
-| AC-007 | FR-007 | Missing or expired ServiceIdentity is rejected before adapter dispatch. |
-| AC-008 | FR-008 | Scope and tenant violations return `TX_AUTHZ_DENIED` without payload leakage. |
-| AC-009 | FR-009 | Expired deadline and clock skew branches produce distinct error codes. |
-| AC-010 | FR-010 | Idempotency conflict prevents duplicate publish. |
-| AC-011 | FR-011 | Receipt includes status, ack, offset, attempt, latency and retry decision. |
-| AC-012 | FR-012 | Saturation tests cover queue, concurrency, memory and rate limits. |
-| AC-013 | FR-013 | Retry exhaustion creates dead-letter evidence with trace context. |
-| AC-014 | FR-014 | Middleware test proves redaction occurs before logging and tracing. |
-| AC-015 | FR-015 | Compatibility test detects breaking schema changes. |
-| AC-016 | FR-016 | CI blocks release when conformance evidence is missing. |
-| AC-017 | FR-017 | QoS validation: order/fill/risk events rejected on REALTIME_BEST_EFFORT; COMMAND_IDEMPOTENT without key rejected. |
-| AC-018 | FR-018 | Codec round-trip test: Marshal → Unmarshal preserves equality for JSON codec. |
-| AC-019 | FR-019 | TopicRegistry rejects duplicate topic name and invalid naming pattern. |
-| AC-020 | FR-020 | MethodRegistry rejects UNSAFE method without explicit retry opt-out annotation. |
-| AC-021 | FR-021 | Execution mode test: REPLAY prevents real order; DRY_RUN prevents external side effect; LIVE requires audit sink. |
-| AC-022 | FR-022 | Outbox Save + Pending + MarkPublished cycle passes; Inbox Seen(idempotent) + MarkProcessed cycle passes. |
-| AC-023 | FR-023 | AuditSink Append succeeds; Replay replays matching records in order. |
-| AC-024 | FR-024 | CONFIDENTIAL and SECRET data redacted before logging; SECRET absent from audit and receipt. |
-| AC-025 | FR-025 | SchemaRegistry rejects unknown version; breaking change returns incompatible classification. |
+| AC | Requirement | Criterion | Verification Method |
+| --- | --- | --- | --- |
+| AC-001 | FR-001 | Envelope validation rejects missing identity, endpoint, deadline, trace or payload reference. | `go test ./envelope/... -run TestValidateRequired` |
+| AC-002 | FR-002 | Limit tests cover payload bytes, header count and header bytes. | `go test ./envelope/... -run TestLimits` |
+| AC-003 | FR-003 | Endpoint registration rejects invalid scheme, missing owner and unsupported capability. | `go test ./endpoint/... -run TestRegisterInvalid` |
+| AC-004 | FR-004 | Lifecycle tests cover every allowed transition and every forbidden transition. | `go test ./runtime/... -run TestLifecycleTransitions` |
+| AC-005 | FR-005 | Drain report includes accepted, completed, abandoned and timed-out counts. | `go test ./runtime/... -run TestDrainReport` |
+| AC-006 | FR-006 | Each control command emits audit evidence and rollback token. | `go test ./control/... -run TestCommandAudit` |
+| AC-007 | FR-007 | Missing or expired ServiceIdentity is rejected before adapter dispatch. | `go test ./middleware/... -run TestIdentityValidation` |
+| AC-008 | FR-008 | Scope and tenant violations return `TX_AUTHZ_DENIED` without payload leakage. | `go test ./middleware/... -run TestAuthzDenialNoLeak` |
+| AC-009 | FR-009 | Expired deadline and clock skew branches produce distinct error codes. | `go test ./middleware/... -run TestDeadlineAndSkew` |
+| AC-010 | FR-010 | Idempotency conflict prevents duplicate publish. | `go test ./middleware/... -run TestIdempotencyConflict` |
+| AC-011 | FR-011 | Receipt includes status, ack, offset, attempt, latency and retry decision. | `go test ./receipt/... -run TestReceiptFields` |
+| AC-012 | FR-012 | Saturation tests cover queue, concurrency, memory and rate limits. | `go test ./middleware/... -run TestBackpressure` |
+| AC-013 | FR-013 | Retry exhaustion creates dead-letter evidence with trace context. | `go test ./middleware/... -run TestDLQWithTrace` |
+| AC-014 | FR-014 | Middleware test proves redaction occurs before logging and tracing. | `go test ./middleware/... -run TestRedactionOrder` |
+| AC-015 | FR-015 | Compatibility test detects breaking schema changes. | `go test ./registry/... -run TestSchemaBreakingChange` |
+| AC-016 | FR-016 | CI blocks release when conformance evidence is missing. | CI gate TX-GATE-009 |
+| AC-017 | FR-017 | QoS validation: order/fill/risk events rejected on REALTIME_BEST_EFFORT; COMMAND_IDEMPOTENT without key rejected. | `go test ./middleware/... -run TestQoSHardRules` |
+| AC-018 | FR-018 | Codec round-trip test: Marshal → Unmarshal preserves equality for JSON codec. | `go test ./codec/json/... -run TestRoundTrip` |
+| AC-019 | FR-019 | TopicRegistry rejects duplicate topic name and invalid naming pattern. | `go test ./registry/... -run TestTopicValidation` |
+| AC-020 | FR-020 | MethodRegistry rejects UNSAFE method without explicit retry opt-out annotation. | `go test ./registry/... -run TestMethodRetryClass` |
+| AC-021 | FR-021 | Execution mode test: REPLAY prevents real order; DRY_RUN prevents external side effect; LIVE requires audit sink. | `go test ./runtime/... -run TestExecutionModeGates` |
+| AC-022 | FR-022 | Outbox Save + Pending + MarkPublished cycle passes; Inbox Seen(idempotent) + MarkProcessed cycle passes. | `go test ./conformance/... -run TestOutboxInboxCycle` |
+| AC-023 | FR-023 | AuditSink Append succeeds; Replay replays matching records in order. | `go test ./conformance/... -run TestAuditPlane` |
+| AC-024 | FR-024 | CONFIDENTIAL and SECRET data redacted before logging; SECRET absent from audit and receipt. | `go test ./middleware/... -run TestDataClassRedaction` |
+| AC-025 | FR-025 | SchemaRegistry rejects unknown version; breaking change returns incompatible classification. | `go test ./registry/... -run TestSchemaCompatibility` |
 
 ## 14. Directory Structure
-
-The implementation repository must keep public contracts separate from adapter implementations:
 
 | Path | Purpose |
 | --- | --- |
@@ -369,21 +450,21 @@ The implementation repository must keep public contracts separate from adapter i
 | `rpc/` | RPC client, server, handler, option and validation contracts |
 | `eventbus/` | EventBus publisher, subscriber, subscription and validation contracts |
 | `stream/` | Stream client, backpressure and message contracts |
-| `middleware/` | Middleware chain and individual middleware (recover, validate, identity, trace, metrics, logging, redaction, deadline, auth, idempotency, retry_safety, ratelimit, circuit) |
+| `middleware/` | Middleware chain and individual middleware |
 | `registry/` | TopicRegistry, MethodRegistry and SchemaRegistry contracts |
 | `memory/` | In-memory runtime, RPC, eventbus, stream and registry for testing |
 | `adapters/` | Adapter implementations — each with independent `go.mod` |
-| `adapters/grpc/` | gRPC adapter (module `github.com/ZoneCNH/transportx/adapters/grpc`) |
-| `adapters/kafka/` | Kafka adapter (module `github.com/ZoneCNH/transportx/adapters/kafka`) |
-| `adapters/nats/` | NATS adapter (module `github.com/ZoneCNH/transportx/adapters/nats`) |
-| `adapters/http/` | HTTP adapter (module `github.com/ZoneCNH/transportx/adapters/http`) |
+| `adapters/grpc/` | gRPC adapter |
+| `adapters/kafka/` | Kafka adapter |
+| `adapters/nats/` | NATS adapter |
+| `adapters/http/` | HTTP adapter |
 | `adapters/websocket/` | WebSocket adapter |
 | `adapters/redisidem/` | Redis-backed idempotency store adapter |
 | `adapters/postgresoutbox/` | PostgreSQL-backed outbox adapter |
 | `adapters/clickhouseaudit/` | ClickHouse-backed audit sink adapter |
 | `adapters/s3replay/` | S3-backed replay source adapter |
 
-Multi-module layout: root `go.mod` (core module `github.com/ZoneCNH/transportx`), each `adapters/*/go.mod` is a separate Go module. `go.work` unifies for local development and CI. Core does not import any adapter. Adapters may import core.
+Multi-module layout: root `go.mod` (core), each `adapters/*/go.mod` separate module. `go.work` for local dev/CI. Core does not import adapters.
 
 ## 15. Dependency Rules
 
@@ -397,8 +478,6 @@ Multi-module layout: root `go.mod` (core module `github.com/ZoneCNH/transportx`)
 | domain modules | domain modules may call transportx through ports; transportx must not import domain packages. |
 | adapters/* | each adapter module MAY import transportx/core; transportx/core MUST NOT import any adapter. |
 
-No production implementation may add a new dependency edge that violates `module/FOUNDATION-DEPS.yaml`.
-
 ## 16. Security Requirements
 
 | Requirement | Control |
@@ -409,7 +488,7 @@ No production implementation may add a new dependency edge that violates `module
 | Tenant isolation | Endpoint resolution and idempotency stores include tenant scope. |
 | Auditability | Control-plane and authorization failures produce immutable audit events. |
 | Fail-closed redaction | Redaction errors block logging and adapter dispatch. |
-| Data classification | CONFIDENTIAL and SECRET data redacted before telemetry; SECRET blocked from audit and receipt. |
+| Data classification | CONFIDENTIAL and SECRET data redacted before telemetry; SECRET blocked from audit/receipt. |
 | Mode gate | REPLAY and DRY_RUN modes prevent real order submission and external side effects. |
 | Secret-free audit | AuditRecord must not contain SECRET-classified fields. |
 
@@ -422,71 +501,69 @@ No production implementation may add a new dependency edge that violates `module
 | Logs | redacted envelope id, endpoint reference, error code, receipt id, actor, command id, data class |
 | Audit | ServiceIdentity, control command, authz decision, endpoint, timestamp, reason, execution mode |
 
-Metrics labels must use bounded cardinality fields. Envelope payload and unredacted headers are prohibited in observability output. SECRET data must never appear in any observability output.
+Metrics labels must use bounded cardinality fields. Payload/unredacted headers prohibited. SECRET data must never appear in any output.
 
 ## 18. Performance Budget
 
 | Budget | Target |
 | --- | --- |
-| Envelope validation overhead | p95 <= 1 ms for in-memory validation |
-| Middleware overhead | p95 <= 2 ms excluding adapter I/O |
-| Control command application | p95 <= 10 ms excluding durable store latency |
-| Drain bookkeeping | O(in-flight work) with bounded memory per receipt |
-| Redaction | p95 <= 1 ms for metadata-only Envelope |
-| JSON codec round-trip | p95 <= 5 ms for 1 KB payload |
-| TopicRegistry resolution | p95 <= 0.1 ms for in-memory registry |
-| Audit append | p95 <= 20 ms excluding sink I/O |
+| Envelope validation overhead | p95 ≤ 1 ms (in-memory) |
+| Middleware overhead | p95 ≤ 2 ms (excluding adapter I/O) |
+| Control command application | p95 ≤ 10 ms (excluding durable store) |
+| Drain bookkeeping | O(in-flight work), bounded memory per receipt |
+| Redaction | p95 ≤ 1 ms (metadata-only Envelope) |
+| JSON codec round-trip | p95 ≤ 5 ms (1 KB payload) |
+| TopicRegistry resolution | p95 ≤ 0.1 ms (in-memory) |
+| Audit append | p95 ≤ 20 ms (excluding sink I/O) |
 
 Implementations must report benchmark hardware, runtime version and adapter type in release evidence.
 
 ## 19. Test Matrix
 
-| Test | Coverage |
-| --- | --- |
-| **TC-001:** Envelope required fields | FR-001, AC-001 |
-| **TC-002:** Payload and header limits | FR-002, AC-002 |
-| **TC-003:** Endpoint registration | FR-003, AC-003 |
-| **TC-004:** Lifecycle state machine | FR-004, AC-004 |
-| **TC-005:** Drain semantics | FR-005, AC-005 |
-| **TC-006:** Control-plane audit | FR-006, AC-006 |
-| **TC-007:** ServiceIdentity validation | FR-007, AC-007 |
-| **TC-008:** Authorization denial | FR-008, AC-008 |
-| **TC-009:** Deadline and clock skew | FR-009, AC-009 |
-| **TC-010:** Idempotency conflict | FR-010, AC-010 |
-| **TC-011:** DeliveryReceipt shape | FR-011, AC-011 |
-| **TC-012:** Backpressure and bulkhead | FR-012, AC-012 |
-| **TC-013:** Retry and dead-letter | FR-013, AC-013 |
-| **TC-014:** Middleware redaction order | FR-014, AC-014 |
-| **TC-015:** Schema compatibility | FR-015, AC-015 |
-| **TC-016:** Conformance gate failure | FR-016, AC-016 |
-| **TC-017:** QoS classification and hard rules | FR-017, AC-017 |
-| **TC-018:** Codec round-trip | FR-018, AC-018 |
-| **TC-019:** TopicRegistry validation | FR-019, AC-019 |
-| **TC-020:** MethodRegistry retry classification | FR-020, AC-020 |
-| **TC-021:** Execution mode gate | FR-021, AC-021 |
-| **TC-022:** Outbox/Inbox cycle | FR-022, AC-022 |
-| **TC-023:** Audit append and replay | FR-023, AC-023 |
-| **TC-024:** Data classification redaction | FR-024, AC-024 |
-| **TC-025:** SchemaRegistry compatibility | FR-025, AC-025 |
+| Test | Coverage | Command |
+| --- | --- | --- |
+| **TC-001:** Envelope required fields | FR-001, AC-001 | `go test ./conformance/... -run TestEnvelopeRequiredFields` |
+| **TC-002:** Payload and header limits | FR-002, AC-002 | `go test ./conformance/... -run TestPayloadLimits` |
+| **TC-003:** Endpoint registration | FR-003, AC-003 | `go test ./conformance/... -run TestEndpointRegistration` |
+| **TC-004:** Lifecycle state machine | FR-004, AC-004 | `go test ./conformance/... -run TestLifecycleAllTransitions` |
+| **TC-005:** Drain semantics | FR-005, AC-005 | `go test ./conformance/... -run TestDrainSemantics` |
+| **TC-006:** Control-plane audit | FR-006, AC-006 | `go test ./conformance/... -run TestControlPlaneAudit` |
+| **TC-007:** ServiceIdentity validation | FR-007, AC-007 | `go test ./conformance/... -run TestIdentityValidation` |
+| **TC-008:** Authorization denial | FR-008, AC-008 | `go test ./conformance/... -run TestAuthzDenialNoLeak` |
+| **TC-009:** Deadline and clock skew | FR-009, AC-009 | `go test ./conformance/... -run TestDeadlineAndSkew` |
+| **TC-010:** Idempotency conflict | FR-010, AC-010 | `go test ./conformance/... -run TestIdempotencyConflict` |
+| **TC-011:** DeliveryReceipt shape | FR-011, AC-011 | `go test ./conformance/... -run TestReceiptShape` |
+| **TC-012:** Backpressure and bulkhead | FR-012, AC-012 | `go test ./conformance/... -run TestBackpressureBulkhead` |
+| **TC-013:** Retry and dead-letter | FR-013, AC-013 | `go test ./conformance/... -run TestRetryDLQ` |
+| **TC-014:** Middleware redaction order | FR-014, AC-014 | `go test ./conformance/... -run TestRedactionOrder` |
+| **TC-015:** Schema compatibility | FR-015, AC-015 | `go test ./conformance/... -run TestSchemaCompatibility` |
+| **TC-016:** Conformance gate failure | FR-016, AC-016 | CI: `bash .github/ci/spec-lint.sh module/transportx/SPEC.md` |
+| **TC-017:** QoS classification | FR-017, AC-017 | `go test ./conformance/... -run TestQoSHardRules` |
+| **TC-018:** Codec round-trip | FR-018, AC-018 | `go test ./conformance/... -run TestCodecRoundTrip` |
+| **TC-019:** TopicRegistry validation | FR-019, AC-019 | `go test ./conformance/... -run TestTopicValidation` |
+| **TC-020:** MethodRegistry retry class | FR-020, AC-020 | `go test ./conformance/... -run TestMethodRetryClass` |
+| **TC-021:** Execution mode gate | FR-021, AC-021 | `go test ./conformance/... -run TestExecutionModeGates` |
+| **TC-022:** Outbox/Inbox cycle | FR-022, AC-022 | `go test ./conformance/... -run TestOutboxInboxCycle` |
+| **TC-023:** Audit append and replay | FR-023, AC-023 | `go test ./conformance/... -run TestAuditPlane` |
+| **TC-024:** Data classification redaction | FR-024, AC-024 | `go test ./conformance/... -run TestDataClassRedaction` |
+| **TC-025:** SchemaRegistry compatibility | FR-025, AC-025 | `go test ./conformance/... -run TestSchemaCompatibility` |
 
 ## 20. CI Gate
 
-| Gate | Command Or Evidence | Blocks Release |
+| Gate | Evidence | Blocks Release |
 | --- | --- | --- |
 | TX-GATE-001 | `.github/ci/spec-lint.sh` includes `module/transportx/SPEC.md` | Yes |
 | TX-GATE-002 | `.github/ci/traceability-check.sh` requires `transportx` | Yes |
 | TX-GATE-003 | `.github/ci/status-consistency-check.sh` expects 17 Foundation specs | Yes |
-| TX-GATE-004 | `.github/ci/spec-drift-guard.sh` checks README, ARCHITECTURE, STATUS and module index drift | Yes |
-| TX-GATE-005 | Conformance suite passes Envelope, Endpoint and Receipt tests | Yes |
-| TX-GATE-006 | Conformance suite passes lifecycle, drain and force-stop tests | Yes |
-| TX-GATE-007 | Conformance suite passes control-plane, authz and redaction-order tests | Yes |
-| TX-GATE-008 | Compatibility checker confirms no breaking schema drift inside v1.x | Yes |
-| TX-GATE-009 | Release evidence contains changelog, tag, conformance output and drift output | Yes |
-| TX-GATE-010 | Conformance suite passes QoS classification, Codec round-trip and Registry validation tests | Yes |
-| TX-GATE-011 | Conformance suite passes Execution Mode gate, Outbox/Inbox and Audit Plane tests | Yes |
-| TX-GATE-012 | Conformance suite passes Data Classification redaction and SchemaRegistry compatibility tests | Yes |
-
-CI must fail if any required gate is absent, skipped or stale against the current `Spec-Version`.
+| TX-GATE-004 | `.github/ci/spec-drift-guard.sh` checks README, ARCHITECTURE, STATUS, module index | Yes |
+| TX-GATE-005 | Conformance: Envelope, Endpoint, Receipt tests | Yes |
+| TX-GATE-006 | Conformance: lifecycle, drain, force-stop tests | Yes |
+| TX-GATE-007 | Conformance: control-plane, authz, redaction-order tests | Yes |
+| TX-GATE-008 | Compatibility: no breaking schema drift in v1.x | Yes |
+| TX-GATE-009 | Release evidence: changelog, tag, conformance, drift output | Yes |
+| TX-GATE-010 | Conformance: QoS, Codec, Registry tests | Yes |
+| TX-GATE-011 | Conformance: Execution Mode, Outbox/Inbox, Audit Plane tests | Yes |
+| TX-GATE-012 | Conformance: Data Classification, SchemaRegistry tests | Yes |
 
 ## 21. Migration Plan
 
@@ -499,30 +576,41 @@ CI must fail if any required gate is absent, skipped or stale against the curren
 | 5 | Add Codec interface and JSON codec implementation. |
 | 6 | Add TopicRegistry, MethodRegistry and SchemaRegistry contracts. |
 | 7 | Add conformance suite and in-memory adapter for all interfaces. |
-| 8 | Wire kafkax, natsx or redisx adapters through transportx ports in follow-up tasks. |
+| 8 | Wire kafkax, natsx or redisx adapters through transportx ports. |
 | 9 | Implement adapter modules (grpc, kafka, nats, http) with independent go.mod. |
-| 10 | Publish v1.1.0 tag with conformance report and release evidence. |
+| 10 | Publish v1.1.1 tag with conformance report and release evidence. |
+
+### Schema Breaking Change Rollback
+
+WHEN a breaking schema change is detected:
+1. CI gate TX-GATE-008 blocks release.
+2. SchemaRegistry records incompatible version with migration notes.
+3. Rollback token from breaking commit is stored.
+4. Consumers pin to previous compatible version until migration complete.
+5. Adapter implementations support both old and new schema versions during migration window (minimum one release cycle).
+6. After migration window, old schema version is deprecated (not removed) for one additional release cycle.
 
 ## 22. Release DoD
 
 | Requirement | Evidence |
 | --- | --- |
-| Spec approved | `module/transportx/SPEC.md` status and version |
-| Traceability complete | `module/transportx/TRACEABILITY.md` covers every FR |
+| Spec approved | `module/transportx/SPEC.md` v1.1.1 |
+| Traceability complete | `module/transportx/TRACEABILITY.md` covers all FRs, BRs and NFRs |
 | CI gates configured | traceability and status consistency scripts include `transportx` |
 | Contract implementation | public package compiles in `transportx` repository |
 | Codec verified | JSON codec round-trip tests pass |
 | Registry verified | TopicRegistry, MethodRegistry, SchemaRegistry validation tests pass |
-| Conformance passed | lifecycle, envelope, endpoint, control-plane, error taxonomy, QoS, mode, outbox/inbox, audit and data classification report |
-| Security verified | redaction-before-logging, authz-denial, mode-gate and secret-free-audit tests pass |
-| Compatibility verified | schema registry compatibility report for v1.1.0 |
-| Release published | git tag, changelog entry and release notes reference evidence |
+| Conformance passed | full conformance report (25 TCs + NFR verification) |
+| Security verified | redaction-order, authz-denial, mode-gate, secret-free-audit tests pass |
+| Compatibility verified | schema registry compatibility report for v1.1.1 |
+| NFR verified | NFR-001 through NFR-012 verification evidence collected |
+| Release published | git tag, changelog, release notes reference evidence |
 
 ## 23. Open Questions
 
 | # | Question | Status |
 | --- | --- | --- |
-| OQ-1 | Which reference adapter (kafkax, natsx, or in-memory) ships first with v1.1.0? | Deferred to implementation |
+| OQ-1 | Which reference adapter (kafkax, natsx, or in-memory) ships first? | Deferred to implementation |
 | OQ-2 | What durable store backs control-plane audit records and DLQ? | Deferred to implementation |
-| OQ-3 | Should SchemaRegistry use a standalone service or embedded library? | Embedded library for v1.x; standalone deferred |
-| OQ-4 | Protobuf codec: include in v1.1.0 or defer to v1.2.0? | Defer to v1.2.0 |
+| OQ-3 | Should SchemaRegistry use standalone service or embedded library? | Embedded library for v1.x; standalone deferred |
+| OQ-4 | Protobuf codec: v1.1.1 or v1.2.0? | Defer to v1.2.0 |
