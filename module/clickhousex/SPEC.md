@@ -8,9 +8,9 @@
 
 ## 1. Metadata
 
-- Status: Draft
-- Spec-Version: v1.0.0
-- Last-Updated: 2026-06-07
+- Status: Approved
+- Spec-Version: v1.0.1
+- Last-Updated: 2026-06-14
 - Owner: ZoneCNH
 - Layer: L1 存储扩展
 - Version: v0.1.0
@@ -23,7 +23,8 @@
 
 | 日期       | 版本   | 变更内容   | 作者    |
 | ---------- | ------ | ---------- | ------- |
-| 2026-06-07 | v1.0.0 | 初始版本   | ZoneCNH |
+| 2026-06-07 | v1.0.0 | 初始版本                                                              | ZoneCNH |
+| 2026-06-14 | v1.0.1 | 完整追溯矩阵（§1-§7）、AC 编号体系（AC-001~AC-026）、覆盖率 100%、Status → Approved | ZoneCNH |
 
 ## 2. Summary
 
@@ -444,25 +445,34 @@ clickhousex 通过接口接收 `observex.Logger` / `observex.Meter` / `observex.
 
 ### 16.1 单元测试
 
-| 测试场景               | 验证点                        |
-| ---------------------- | ----------------------------- |
-| NewClient 合法配置     | 返回 Client，nil 错误         |
-| NewClient 空 DSN       | 返回 `ErrInvalidConfig`       |
-| Exec 正常 SQL          | 返回 nil                      |
-| Exec 语法错误          | 返回包装错误                  |
-| Query 有结果           | Rows 可迭代                   |
-| Query 无结果           | 空 Rows，无错误               |
-| InsertBatch 正常写入   | 返回 nil                      |
-| InsertBatch 空 rows    | 返回 nil                      |
-| InsertBatch 空 cols    | 返回 `ErrEmptyColumns`        |
-| InsertBatch 列数不匹配 | 返回 `ErrColumnCountMismatch` |
-| InsertBatch 表不存在   | 返回 `ErrTableNotFound`       |
-| Scan 列数不匹配        | 返回 `ErrColumnCountMismatch` |
-| Scan Nullable 到非指针 | 返回 `ErrTypeMismatch`        |
-| ColumnTypes 返回正确   | 列名、类型、Nullable 标志正确 |
-| Close 幂等             | 多次调用不 panic              |
-| Health 连接正常        | Ready=true, Live=true         |
-| Health 连接异常        | Ready=false, Live=false       |
+| AC     | 测试场景               | 验证点                        |
+| ------ | ---------------------- | ----------------------------- |
+| AC-001 | NewClient 合法配置     | 返回 Client，nil 错误         |
+| AC-002 | NewClient 空 DSN       | 返回 `ErrInvalidConfig`       |
+| AC-003 | Exec 正常 SQL          | 返回 nil                      |
+| AC-004 | Exec 语法错误          | 返回包装错误                  |
+| AC-005 | Query 有结果           | Rows 可迭代                   |
+| AC-006 | Query 无结果           | 空 Rows，无错误               |
+| AC-007 | InsertBatch 正常写入   | 返回 nil                      |
+| AC-008 | InsertBatch 空 rows    | 返回 nil                      |
+| AC-009 | InsertBatch 空 cols    | 返回 `ErrEmptyColumns`        |
+| AC-010 | InsertBatch 列数不匹配 | 返回 `ErrColumnCountMismatch` |
+| AC-011 | InsertBatch 表不存在   | 返回 `ErrTableNotFound`       |
+| AC-012 | Scan 列数不匹配        | 返回 `ErrColumnCountMismatch` |
+| AC-013 | Scan Nullable 到非指针 | 返回 `ErrTypeMismatch`        |
+| AC-014 | ColumnTypes 返回正确   | 列名、类型、Nullable 标志正确 |
+| AC-015 | Close 幂等             | 多次调用不 panic              |
+| AC-016 | Health 连接正常        | Ready=true, Live=true         |
+| AC-017 | Health 连接异常        | Ready=false, Live=false       |
+| AC-018 | 连接池配置校验         | 默认 PoolSize=10, Max=100     |
+| AC-019 | 原生 batch insert 协议 | 使用 ClickHouse 原生协议写入  |
+| AC-020 | 参数化绑定防 SQL 注入  | args 使用占位符绑定           |
+| AC-021 | 连接重试 3 次指数退避  | 断开后自动重连                |
+| AC-022 | Health 幂等无副作用    | 多次调用结果一致              |
+| AC-023 | context 取消/超时      | 操作中断，返回 ctx.Err()      |
+| AC-024 | 错误消息格式           | "clickhousex: <op>: <detail>" |
+| AC-025 | 可观测指标标签完整     | table/query 标签正确          |
+| AC-026 | Decimal 类型映射       | Decimal → decimal.Decimal     |
 
 ### 16.2 Given/When/Then 用例
 
