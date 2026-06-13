@@ -50,9 +50,9 @@
 
 ### 🟢 基座（健康）
 
-- 组件：16 个，平均进度 55%
+- 组件：16 个，平均进度 60%
 - 核心模块（kernel / configx / observex / resiliencx）已成熟，有版本号；kernel v1.0.0、configx v1.0.0、observex v1.0.0 已发布（100% 覆盖）
-- 存储层 6/7 仅骨架（15%）：redisx / kafkax / postgresx / taosx / ossx / clickhousex
+- 存储层 5/7 仅骨架（15%）：redisx / kafkax / postgresx / ossx / clickhousex；taosx v1.0.0 已发布，natsx 已验证 80% 但未发布
 - **阻塞项**：存储层实现滞后，但不影响上层开发（可通过 contracts 稳定端口 mock）
 
 ### 🟢 L2.5 领域共享层（健康）
@@ -126,7 +126,7 @@
 | [kafkax](https://github.com/ZoneCNH/kafkax) | - | █░░░ 15% | - | Kafka，仅骨架 |
 | [natsx](https://github.com/ZoneCNH/natsx) | - | ████░ 80% | 349KB/27 项 | NATS 生命周期/投递证据已验证（`/home/natsx` `3053e80`）；8/14 complete、6/14 partial、0/14 pending；未批准发布 |
 | [postgresx](https://github.com/ZoneCNH/postgresx) | - | █░░░ 15% | - | PostgreSQL，仅骨架 |
-| [taosx](https://github.com/ZoneCNH/taosx) | - | █░░░ 15% | - | TDengine，仅骨架 |
+| [taosx](https://github.com/ZoneCNH/taosx) | v1.0.0 | █████ 100% | 真实 TDengine WebSocket 集成 / 92.6% 覆盖 | TDengine L2 adapter contract；pkg/taosx 公共 API，默认驱动显式不可用，真实 taosWS 集成已验证 |
 | [ossx](https://github.com/ZoneCNH/ossx) | - | █░░░ 15% | - | 对象存储，仅骨架 |
 | [clickhousex](https://github.com/ZoneCNH/clickhousex) | - | █░░░ 15% | - | ClickHouse，仅骨架 |
 | [contracts](https://github.com/ZoneCNH/contracts) | - | ███░ 80% | 191KB/27 项 | 跨域稳定端口/事件/DTO 契约 |
@@ -253,7 +253,7 @@
 
 | # | 风险 | 影响 | 建议 |
 | -- | ---- | ---- | ---- |
-| R8 | 存储层 6/7 仅骨架（15%） | 不阻塞上层开发 | 按需实现，contracts 稳定端口可 mock |
+| R8 | 存储层 5/7 仅骨架（15%） | 不阻塞上层开发 | taosx 已完成 v1.0.0；其余存储模块按需实现，contracts 稳定端口可 mock |
 | R9 | 分析域↔决策域若用实现包互调 | Go 循环导入和边界泄漏 | 只允许通过 contracts 事件/DTO 与 L2.5 模型连接 |
 
 ---

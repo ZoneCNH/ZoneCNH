@@ -2,7 +2,7 @@
 
 > 16 个基座模块的独立完整规格，按架构层级组织。`x.go` 组合根不再作为 `module/` 下的模块规格维护。
 
-最后更新：2026-06-12
+最后更新：2026-06-13
 
 ---
 
@@ -115,7 +115,7 @@ test-only，不参与生产运行时。
 | kafkax      | [SPEC.md](./kafkax/SPEC.md)      | Kafka — 消息队列、事件流            |
 | natsx       | [SPEC.md](./natsx/SPEC.md)       | NATS — 内部通信、JetStream          |
 | postgresx   | [SPEC.md](./postgresx/SPEC.md)   | PostgreSQL — 关系型存储、事务、迁移 |
-| taosx       | [SPEC.md](./taosx/SPEC.md)       | TDengine L2 adapter contract（Driver 注入、批量与 schemaless 契约） |
+| taosx       | [SPEC.md](./taosx/SPEC.md)       | TDengine L2 adapter contract（pkg/taosx v1.0.0；真实 taosWS WebSocket 集成已验证） |
 | ossx        | [SPEC.md](./ossx/SPEC.md)        | 对象存储 — S3/MinIO/local 多后端    |
 | clickhousex | [SPEC.md](./clickhousex/SPEC.md) | ClickHouse — OLAP 查询、批量写入    |
 

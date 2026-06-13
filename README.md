@@ -74,7 +74,7 @@ L2.5: decimalx / domain-market / domain-exchange / domain-macro
 - [postgresx](https://github.com/ZoneCNH/postgresx) — PostgreSQL 模块 `公开`
 - [redisx](https://github.com/ZoneCNH/redisx) — Redis KeyBuilder、Options、KV/TTL、Cache、Hash/List、Pub/Sub、Pipeline、Locker、Counter/RateLimit、Codec/Health 规格；生产依赖限定为 kernel + Redis 客户端库，观测/配置/弹性通过外部 adapter 接入 `公开`
 - [clickhousex](https://github.com/ZoneCNH/clickhousex) — ClickHouse 模块 `公开`
-- [taosx](https://github.com/ZoneCNH/taosx) — TDengine 模块 `公开`
+- [taosx](https://github.com/ZoneCNH/taosx) — TDengine L2 adapter contract（pkg/taosx v1.0.0；真实 taosWS WebSocket 集成已验证，92.6% 覆盖） `公开`
 - [kafkax](https://github.com/ZoneCNH/kafkax) — Kafka 模块 `公开`
 - [natsx](https://github.com/ZoneCNH/natsx) — NATS 内部通信模块（生命周期/投递证据已验证；发布门禁未闭合） `公开`
 - [ossx](https://github.com/ZoneCNH/ossx) — 对象存储 (OSS) 模块 `公开`

@@ -1,9 +1,9 @@
 # taosx 追溯矩阵
 
-Last-Updated: 2026-06-12
+Last-Updated: 2026-06-13
 Source: `module/taosx/SPEC.md`, `/home/taosx/pkg/taosx`
 
-本矩阵追踪中心规格与 `/home/taosx` 当前实现之间的契约关系。`taosx` 当前定位为 TDengine L2 存储适配器契约，不是内置真实 TDengine 驱动、连接池、STMT 或自动重试的平台模块。
+本矩阵追踪中心规格与 `/home/taosx` 当前实现之间的契约关系。`taosx` v1.0.0 定位为 TDengine L2 存储适配器契约：公共核心 API 保持驱动注入边界，官方 `taosWS` WebSocket driver 通过显式 opt-in 集成测试验证；核心包仍不是内置连接池、STMT 或自动重试的平台模块。
 
 ## 功能需求追溯
 
@@ -19,6 +19,7 @@ Source: `module/taosx/SPEC.md`, `/home/taosx/pkg/taosx`
 | FR-008 | `Health` 调用 `Driver.Health(ctx) error` 并映射为 `HealthStatus`；默认不可用驱动 degraded。 | `/home/taosx/pkg/taosx/client.go`, `/home/taosx/pkg/taosx/health.go`, `/home/taosx/pkg/taosx/health_test.go`, `/home/taosx/contracts/health.schema.json` | ✅ 已实现 |
 | FR-009 | `Close` 幂等并接受 context；关闭后业务操作返回 closed 错误。 | `/home/taosx/pkg/taosx/client.go`, `/home/taosx/pkg/taosx/client_test.go` | ✅ 已实现 |
 | FR-010 | metrics 端口可选，默认 no-op，注入后记录 `taosx_client_*` 指标。 | `/home/taosx/pkg/taosx/metrics.go`, `/home/taosx/pkg/taosx/options.go`, `/home/taosx/pkg/taosx/client_test.go`, `/home/taosx/contracts/metrics.contract.yaml` | ✅ 已实现 |
+| FR-011 | 官方 `taosWS` WebSocket 集成测试必须显式 opt-in、环境变量配置且凭据脱敏。 | `/home/taosx/pkg/taosx/integration_tdengine_test.go`, `/home/taosx/docs/testing.md`, `/home/taosx/go.mod` | ✅ 已验证 |
 
 ## 行为约束追溯
 
@@ -30,9 +31,10 @@ Source: `module/taosx/SPEC.md`, `/home/taosx/pkg/taosx`
 | BR-004 | `MaxRetries` 是配置契约保留字段，不代表核心 client 自动重试。 | `/home/taosx/pkg/taosx/config.go`, `/home/taosx/pkg/taosx/client.go`, `/home/taosx/docs/api.md`, `/home/taosx/docs/config.md` | ✅ 已锁定 |
 | BR-005 | 默认驱动必须显式不可用，避免零配置被误认为真实 TDengine 连接。 | `/home/taosx/pkg/taosx/options.go`, `/home/taosx/pkg/taosx/client.go`, `/home/taosx/pkg/taosx/client_test.go` | ✅ 已实现 |
 | BR-006 | 原始 SQL 只做空值校验，不声明注入防护。 | `/home/taosx/pkg/taosx/sql.go`, `/home/taosx/docs/api.md` | ✅ 已锁定 |
+| BR-007 | 真实集成测试不得进入默认测试路径，且失败输出不得包含 DSN、用户名或密码。 | `/home/taosx/pkg/taosx/integration_tdengine_test.go`, `/home/taosx/docs/testing.md` | ✅ 已锁定 |
 
 ## 已知缺口 / 后续范围
 
-- 尚未接入真实 TDengine driver；这是当前非目标，不应被中心文档描述为已完成能力。
 - `MaxRetries` 仍是配置契约字段，核心 client 不自动重试；未来如实现 retry，必须新增需求、测试和依赖边界说明。
-- 真实 TDengine 集成测试、性能压测、连接池策略、STMT 写入和业务级时序模型属于后续版本范围。
+- 连接池策略、STMT 写入、性能压测和业务级时序模型仍属后续版本范围。
+- 真实 TDengine 集成测试依赖本地 dev 环境，不进入默认 `go test ./...`；发布前必须显式运行 `integration` tag。

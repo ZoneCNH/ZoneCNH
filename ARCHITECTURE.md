@@ -287,7 +287,7 @@ Foundation v1 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中�
 | 基座                  | [kafkax](https://github.com/ZoneCNH/kafkax)                     | -      | ✅ 已有   | █░░░ 15% | Kafka，仅骨架                                                                             |
 | 基座                  | [natsx](https://github.com/ZoneCNH/natsx)                       | -      | ✅ 已有   | ███░ 80% | NATS，349KB/27 项                                                                         |
 | 基座                  | [postgresx](https://github.com/ZoneCNH/postgresx)               | -      | ✅ 已有   | █░░░ 15% | PostgreSQL，仅骨架                                                                        |
-| 基座                  | [taosx](https://github.com/ZoneCNH/taosx)                       | -      | ✅ 已有   | █░░░ 15% | TDengine L2 adapter contract（Driver 注入），无内置真实驱动                              |
+| 基座                  | [taosx](https://github.com/ZoneCNH/taosx)                       | v1.0.0 | ✅ 已发布 | █████ 100% | TDengine L2 adapter contract；pkg/taosx 公共 API，真实 taosWS WebSocket 集成测试已通过；无内置连接池/STMT/自动重试 |
 | 基座                  | [ossx](https://github.com/ZoneCNH/ossx)                         | -      | ✅ 已有   | █░░░ 15% | 对象存储，仅骨架                                                                          |
 | 基座                  | [clickhousex](https://github.com/ZoneCNH/clickhousex)           | -      | ✅ 已有   | █░░░ 15% | ClickHouse，仅骨架                                                                        |
 | 基座                  | [contracts](https://github.com/ZoneCNH/contracts)               | -      | ✅ 已有   | ███░ 80% | 跨域稳定端口/事件/DTO 契约，191KB/27 项                                                   |
