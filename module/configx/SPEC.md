@@ -393,7 +393,7 @@ configx 自身的 Client 配置：
 config:
   name: my-service          # 必填，客户端名称
   timeout: 30s              # 必须 ≥ 0
-  secret: "***"             # 可选，自动脱敏
+  masked_ref: vault://configx/my-service/masked-value  # 可选，引用需脱敏的外部值
 ```
 
 ---

@@ -104,7 +104,7 @@
 ### 🟡 横切（注意）
 
 - alertx 仅创建（5%），observex 已完成（100%，v1.0.0）
-- observex 同属基座和横切，职责边界通过 ADR 明确（见 `module/observex/ADR-dual-attribution.md`，R7 已闭环）
+- observex 同属基座和横切，职责边界通过 ADR 明确（见 `docs/report/observex/ADR-dual-attribution.md`，R7 已闭环）
 
 ---
 
@@ -244,7 +244,7 @@
 | R4 | 14 个交易所 SDK 全部无版本号 | 无法追踪 API 兼容性 | 建立版本化发布机制 |
 | R5 | 宏观数据源 6 个央行适配器同质化 | 维护成本高 | 考虑合并为统一适配器 |
 | R6 | strategies 定位模糊（3.5MB/746 项） | 参考代码 vs 生产代码不清 | 明确定位，考虑从状态表分离 |
-| R7 | observex 双重归属（基座+横切） | 职责边界模糊 | ✅ 已记录 ADR：`module/observex/ADR-dual-attribution.md`（2026-06-12） |
+| R7 | observex 双重归属（基座+横切） | 职责边界模糊 | ✅ 已记录 ADR：`docs/report/observex/ADR-dual-attribution.md`（2026-06-12） |
 | R10 | ~~`.omc/state/sessions` 已入库~~ | ~~可能泄露 prompt/会话/环境信息~~ | ✅ 已修复：`git rm -r --cached .omc`（2026-06-07） |
 | R11 | ~~公开 README 含 `127.0.0.1` 本地链接~~ | ~~外部无法访问，降低专业度~~ | ✅ 已修复：批量移除所有本地链接（2026-06-07） |
 | R12 | 70 个仓库无统一命名前缀 | 分类困难，增加维护成本 | 按 `foundation-*`/`adapter-*`/`engine-*`/`lab-*` 重整 |

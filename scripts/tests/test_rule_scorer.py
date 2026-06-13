@@ -47,16 +47,22 @@ def tmp_module(tmp_path, monkeypatch):
 
 
 def _perfect_spec_text() -> str:
+    section_bodies = {
+        "Functional Requirements": "\n".join(
+            f"- FR-{i:03d}: WHEN x THEN y" for i in range(1, 6)
+        ),
+        "Business Rules": "\n".join(
+            f"- BR-{i:03d}: 违反 X 即拒绝" for i in range(1, 4)
+        ),
+        "Testing": "\n".join(f"- TC-{i:03d}: 测试 X" for i in range(1, 6)),
+        "Release DoD": "\n".join(f"- AC-{i:03d}: 验收 X" for i in range(1, 6)),
+    }
     sections = "\n".join(
-        f"## {s}\n\n内容占位。\n- a\n- b\n- c\n- d\n- e\n- f\n"
+        f"## {s}\n\n{section_bodies.get(s, '内容占位。\\n- a\\n- b\\n- c\\n- d\\n- e\\n- f')}\n"
         for s in rs.SPEC_REQUIRED_SECTIONS
     )
     meta = "Status: Draft\nOwner: zone\nVersion: 1.0\nUpdated: 2026-06-08\n\n"
-    fr = "\n".join(f"- FR-{i:03d}: WHEN x THEN y" for i in range(1, 6))
-    br = "\n".join(f"- BR-{i:03d}: 违反 X 即拒绝" for i in range(1, 4))
-    ac = "\n".join(f"- AC-{i:03d}: 验收 X" for i in range(1, 6))
-    tc = "\n".join(f"- TC-{i:03d}: 测试 X" for i in range(1, 6))
-    return f"# SPEC\n\n{meta}{sections}\n\n{fr}\n\n{br}\n\n{ac}\n\n{tc}\n"
+    return f"# SPEC\n\n{meta}{sections}\n"
 
 
 def test_spec_perfect_high_score(tmp_module):
@@ -77,7 +83,8 @@ def test_spec_missing_file_redline(tmp_module):
 
 def test_spec_duplicate_fr_redline(tmp_module):
     mod_dir, module = tmp_module
-    text = _perfect_spec_text() + "\n- FR-001: 重复！\n"
+    repeated = "\n".join("- FR-001: 重复！" for _ in range(11))
+    text = _perfect_spec_text() + f"\n{repeated}\n"
     (mod_dir / "SPEC.md").write_text(text, encoding="utf-8")
     s = rs.score_spec(module)
     assert s.redline is True
@@ -154,7 +161,19 @@ def test_tasks_good_structure(tmp_module):
     tasks_dir.mkdir()
     for i in range(1, 4):
         (tasks_dir / f"TASK-FIXTUREMOD-{i:03d}.md").write_text(
-            f"## Scope\nFR-{i:03d}\n## Non-scope\n无\n## Acceptance\nAC\n",
+            f"""---
+scope:
+  - FR-{i:03d}
+acceptance_criteria:
+  - AC-{i:03d}
+---
+## Scope
+FR-{i:03d}
+## Non-scope
+无
+## Acceptance
+AC-{i:03d}
+""",
             encoding="utf-8",
         )
     s = rs.score_tasks(module)
@@ -226,7 +245,9 @@ TASK-FIXTUREMOD-001
 ## Validation
 go test ./...
 """
-    (mod_dir / "TASK-001-PROMPT.md").write_text(prompt, encoding="utf-8")
+    tasks_dir = mod_dir / "tasks"
+    tasks_dir.mkdir()
+    (tasks_dir / "TASK-FIXTUREMOD-001-PROMPT.md").write_text(prompt, encoding="utf-8")
     s = rs.score_prompt(module)
     assert s.score >= 90, f"got {s.score}: {s.deductions}"
 

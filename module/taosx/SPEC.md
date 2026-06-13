@@ -187,13 +187,13 @@ taosx:
   endpoint: taos.example.internal:6041
   database: market
   username: root
-  password: "<redacted>"
+  auth_ref: vault://taosx/market/readwrite
   timeout: 5s
   max-retries: 0
   tls: true
 ```
 
-配置键由调用方映射到 `Config`。核心包不读取环境变量，也不输出原始 password。
+配置键由调用方映射到 `Config`。核心包不读取环境变量，也不输出原始认证材料。
 
 ---
 
