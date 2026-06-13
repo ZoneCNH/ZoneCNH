@@ -52,7 +52,7 @@
 
 - 组件：17 个，平均进度 71%
 - 核心模块（kernel / configx / observex / resiliencx / schedulex / testkitx / redisx / kafkax / natsx / postgresx / taosx / ossx / transportx）已成熟，有版本号或规格基线；kernel/configx/observex/schedulex/redisx/kafkax/natsx/postgresx 已发布 v1.0.0，taosx/ossx 已发布 v1.0.1，transportx 已升级为 v1.1.1 规格基线
-- 存储层 `redisx` 已发布 v1.0.0（全局成熟度 100%，Docker-backed Redis + persistence restart recovery 验证），`kafkax` 已发布 v1.0.0（100%），`natsx` 已发布 v1.0.0（100%，repair-slice 20/20，真实 dev auth live gate 验证），`postgresx` 已发布 v1.0.0（全局成熟度 90%），`taosx` 已发布 v1.0.1（100%）；`ossx` 已发布 v1.0.1（真实 Aliyun OSS 集成、race、vet、build、release-check 与 100.0% 覆盖已验证）；`clickhousex` 已规格化 30%，均已脱离仅骨架阶段；`transportx` 已规格化 80%，并以 v1.1.1 规格基线覆盖 QoS、Codec、RPC、EventBus、Stream、ExecutionMode、Outbox/Inbox、Audit Plane、Data Classification 与 SchemaRegistry
+- 存储层 `redisx` 已发布 v1.0.0（全局成熟度 100%，Docker-backed Redis + persistence restart recovery 验证），`kafkax` 已发布 v1.0.0（100%），`natsx` 已发布 v1.0.0（100%，repair-slice 20/20，真实 dev auth live gate 验证），`postgresx` 已发布 v1.0.0（全局成熟度 90%），`taosx` 已发布 v1.0.1（100%）；`ossx` 已发布 v1.0.1（真实 Aliyun OSS 集成、race、vet、build、release-check 与 100.0% 覆盖已验证）；`clickhousex` 已规格化 30%，均已脱离仅骨架阶段；`transportx` 已规格化 100%（SPEC/Matrix/Tasks 三阶段满分，27 Tasks 全部达标），并以 v1.1.1 规格基线覆盖 QoS、Codec、RPC、EventBus、Stream、ExecutionMode、Outbox/Inbox、Audit Plane、Data Classification 与 SchemaRegistry
 - **SRE/CI/CD**：已产出 [`docs/sre/foundation-cicd-plan.md`](../docs/sre/foundation-cicd-plan.md)（17 模块 4 阶段部署方案、8 标签池、Docker 集成测试、标准化模板），待落地
 - **阻塞项**：clickhousex 仍需实现或发布闭环；natsx 正式四源 98+ arbiter 与生产 TLS gate 仍待补证；redisx/kafkax/natsx/postgresx/taosx/ossx/transportx 已不再是存储层或传输契约实现阻塞项
 
@@ -131,7 +131,7 @@
 | [ossx](https://github.com/ZoneCNH/ossx) | v1.0.1 | █████ 100% | 真实 Aliyun OSS 集成 / pkg+internal 100.0% 覆盖 | Aliyun OSS 对象存储 L2 adapter；race、vet、build、release-check 已通过；S3/MinIO/Azure/GCS Provider 仅保留扩展位 |
 | [clickhousex](https://github.com/ZoneCNH/clickhousex) | v1.0.1 | █████ 100% | SPEC + TRACEABILITY §1-§7 + goal + 7 tasks | ClickHouse — OLAP 查询、批量写入（TRACEABILITY 覆盖率 100%） |
 | [contracts](https://github.com/ZoneCNH/contracts) | v1.0.1-spec | █████ 100% | SPEC + TRACEABILITY + goal (6 FR, 10 BR, 8 NFR, 16 AC, 7 TC, 5 tasks) | 跨域稳定端口/事件/DTO 契约；TRACEABILITY §1-§7 完整；goal.md 对齐 CONSTITUTION P7；SPEC/Matrix/Tasks 全面修复 |
-| [transportx](https://github.com/ZoneCNH/transportx) | v1.1.1-spec | ███░ 80% | SPEC + TRACEABILITY + goal | 应用通信底座规格基线；Envelope/Endpoint、ServiceIdentity、QoS、Codec、RPC、EventBus、Stream、Outbox/Inbox、Audit Plane、Data Classification、SchemaRegistry 与 conformance gates |
+| [transportx](https://github.com/ZoneCNH/transportx) | v1.1.1-spec | █████ 100% | SPEC + TRACEABILITY + goal + 27 tasks (100分) | 应用通信底座规格基线；25 FR, 18 BR, 12 NFR, 25 AC, 25 TC, 12 CI gates — SPEC/Matrix/Tasks 三阶段满分 |
 
 ### L2.5 · 领域共享层
 
