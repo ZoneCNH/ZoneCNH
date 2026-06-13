@@ -5,7 +5,9 @@
 > 契约签名/目录/CI/测试/发布 → `FOUNDATION-SPEC.md`
 > **验收标准与路线图 → 本文**
 
-最后更新：2026-06-07
+最后更新：2026-06-14
+
+> **范围说明（2026-06-14）**：本文是 Foundation v1 的**初始规划文档**，当时仅覆盖 6 个核心模块（kernel、configx、observex、testkitx、resiliencx、schedulex）。Foundation 此后已扩展至 17 个模块，涵盖门禁（xlib-standard、xlibgate）、存储扩展（redisx、kafkax、natsx、postgresx、taosx、ossx、clickhousex）、契约与传输（contracts、transportx）和领域共享（domainx）。**模块规格、状态和追踪矩阵的权威索引见 [`module/README.md`](./README.md)**；本文的第 2 节"六个模块的产品需求级定义"和第 8 节"模块最终关系"仅反映 v1 收敛期的初始范围，不反映当前完整模块集合。
 
 ---
 
