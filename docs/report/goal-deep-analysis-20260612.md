@@ -487,7 +487,7 @@ workflow improve analyze — 从失败证据生成改进候选
    从 Goal 定义到 Retrospective 复盘，覆盖软件交付全生命周期，形成可追溯、可验证、可自我改进的工程闭环。26 个规范文件 + 4 个 schema + 11 个工具构成自举体系。
 
 2. **SSOT 权威边界清晰**
-   `00-authority-map.md` 明确定义了 21 个主题的权威来源、可投影位置和禁止事项，有效防止文档腐化。配置与运行态边界（docs/goal/ vs .config/goal/ vs .omx/state/）划分明确。
+   `00-authority-map.md` 明确定义了 21 个主题的权威来源、可投影位置和禁止事项，有效防止文档腐化。配置与运行态边界（`docs/goal/`、`.config/goal/` 与 OMX 运行态目录）划分明确。
 
 3. **Schema 权威化设计优秀**
    4 个 YAML Schema 将人类文档、模板、Registry 三源字段统一为 canonical 字段，`field_mapping` 表清晰标注了标准/模板/Registry 三处的字段名差异。`state-dictionary.yaml` 将历史上混用的 5 种命名风格归并为 4 类状态字段，规定唯一大小写和允许值。

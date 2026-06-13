@@ -600,7 +600,7 @@ Executable repair evidence (2026-06-13): `/home/ZoneCNH/.worktree/workspaces/nat
 | package tests | `GOWORK=off go test ./pkg/natsx -count=1` | 任何测试失败 |
 | vet | `GOWORK=off go vet ./pkg/natsx` | 任何 vet 错误 |
 | live gate default | `GOWORK=off go test ./pkg/natsx -run TestLiveNATSIntegration -count=1` | gate unset 时应 skip/pass |
-| live local integration | `NATSX_LIVE_INTEGRATION=1 FOUNDATIONX_NATS_URL=<loopback-url> FOUNDATIONX_NATS_USERNAME=<redacted> FOUNDATIONX_NATS_PASSWORD=<redacted> GOWORK=off go test ./pkg/natsx -run TestLiveNATSIntegration -count=1 -v` | 仅允许 localhost/loopback；凭据来自 redacted dev config，测试输出不得打印凭据 |
+| live local integration | `NATSX_LIVE_INTEGRATION=1 FOUNDATIONX_NATS_URL=<loopback-url> FOUNDATIONX_NATS_USERNAME=<redacted> FOUNDATIONX_NATS_PASSWORD=<redacted> GOWORK=off go test ./pkg/natsx -run TestLiveNATSIntegration -count=1 -v` | 仅允许 loopback-only 测试端点；凭据来自 redacted dev config，测试输出不得打印凭据 |
 
 ---
 

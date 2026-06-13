@@ -6,8 +6,6 @@ Owner: ZoneCNH
 Version: v1.0.0
 Updated: 2026-06-12
 
-> 归档说明：本 SPEC.md 为 v1.0.0 可执行交付整理稿的历史视图，不再作为 xlib-standard 快照分析的可执行规格；当前快照审计入口为 README.md、ANALYSIS.md、FR-DETAIL.md 和 TRACEABILITY.md。
-
 本规格定义 `xlib-standard` 五类职责中后四类的可执行交付规格——Go Reference Template、Generator、Harness Gate 和 Evidence Runtime。第一类职责（Standard Source / 标准事实源）的文档规范定义见 goal.md。本规格约束公共 API、模板生成、验证 gate、release manifest 与最终验收，不承载业务域实现。
 
 ## Constitution Compliance
@@ -383,3 +381,5 @@ CI 必须运行 `GOWORK=off make ci` 和 `GOWORK=off make release-check`。`make
 ## Rollout
 
 先修复并验证 `xlib-standard` 标准源，再用于生成 `kernel` 等下游基础库。每次下游采用前必须重新运行渲染 smoke test、边界检查和生成库测试。破坏性接口变更必须进入 semver 兼容矩阵并在 release manifest 中体现。
+
+归档说明：本 SPEC.md 为 v1.0.0 可执行交付整理稿的历史视图，不再作为 xlib-standard 快照分析的可执行规格；当前快照审计入口为 README.md、ANALYSIS.md、FR-DETAIL.md 和 TRACEABILITY.md。
