@@ -1,0 +1,239 @@
+name: Foundation Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_version:
+        description: "Release version (e.g., v1.0.0)"
+        required: true
+        type: string
+      modules:
+        description: "Modules to release (comma-separated, or 'all')"
+        required: true
+        type: string
+        default: "all"
+
+permissions:
+  contents: write
+
+jobs:
+  quality-gate:
+    uses: ./.github/workflows/docs-ci.yml
+
+  release-prep:
+    name: Release Pre-flight
+    runs-on: [self-hosted, Linux, X64, homepage]
+    timeout-minutes: 10
+    needs: quality-gate
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate release inputs
+        env:
+          FOUNDATION_RELEASE_TOKEN: ${{ secrets.FOUNDATION_RELEASE_TOKEN }}
+          RELEASE_MODULES: ${{ inputs.modules }}
+        run: |
+          if [ -z "$FOUNDATION_RELEASE_TOKEN" ]; then
+            echo "ERROR: FOUNDATION_RELEASE_TOKEN secret is required for cross-repository release tagging."
+            exit 1
+          fi
+
+          if [ "$RELEASE_MODULES" != "all" ]; then
+            selected_count=0
+            IFS=',' read -ra modules <<< "$RELEASE_MODULES"
+            for raw_module in "${modules[@]}"; do
+              module="$(printf '%s' "$raw_module" | tr -d '[:space:]')"
+              case "$module" in
+                kernel|configx|observex|resiliencx|schedulex|testkitx)
+                  selected_count=$((selected_count + 1))
+                  ;;
+                "")
+                  ;;
+                *)
+                  echo "ERROR: Unknown Foundation module '$module'"
+                  exit 1
+                  ;;
+              esac
+            done
+
+            if [ "$selected_count" -eq 0 ]; then
+              echo "ERROR: No Foundation modules selected."
+              exit 1
+            fi
+          fi
+      - name: Validate FOUNDATION-DEPS.yaml pre-release
+        run: |
+          python3 -c "
+          import yaml
+          with open('module/FOUNDATION-DEPS.yaml') as f:
+              matrix = yaml.safe_load(f)
+          print(f'Go baseline: {matrix[\"go_baseline\"]}')
+          print(f'Modules: {len(matrix[\"modules\"])}')
+          print(f'Forbidden edges: {len(matrix.get(\"forbidden_foundation_edges\", []))}')
+          print('Pre-flight OK')
+          "
+
+  release-kernel:
+    name: Release kernel
+    needs: release-prep
+    if: contains(inputs.modules, 'kernel') || inputs.modules == 'all'
+    runs-on: [self-hosted, Linux, X64, homepage]
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: ZoneCNH/kernel
+          token: ${{ secrets.FOUNDATION_RELEASE_TOKEN }}
+          fetch-depth: 0
+      - name: Tag and push kernel
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag -a "${{ inputs.release_version }}" -m "Foundation release ${{ inputs.release_version }}"
+          git push origin "${{ inputs.release_version }}"
+
+  release-configx:
+    name: Release configx
+    needs: release-kernel
+    if: always() && (contains(inputs.modules, 'configx') || inputs.modules == 'all') && needs.release-kernel.result != 'failure' && needs.release-kernel.result != 'cancelled'
+    runs-on: [self-hosted, Linux, X64, homepage]
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: ZoneCNH/configx
+          token: ${{ secrets.FOUNDATION_RELEASE_TOKEN }}
+          fetch-depth: 0
+      - name: Tag and push configx
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag -a "${{ inputs.release_version }}" -m "Foundation release ${{ inputs.release_version }}"
+          git push origin "${{ inputs.release_version }}"
+
+  release-observex:
+    name: Release observex
+    needs: release-kernel
+    if: always() && (contains(inputs.modules, 'observex') || inputs.modules == 'all') && needs.release-kernel.result != 'failure' && needs.release-kernel.result != 'cancelled'
+    runs-on: [self-hosted, Linux, X64, homepage]
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: ZoneCNH/observex
+          token: ${{ secrets.FOUNDATION_RELEASE_TOKEN }}
+          fetch-depth: 0
+      - name: Tag and push observex
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag -a "${{ inputs.release_version }}" -m "Foundation release ${{ inputs.release_version }}"
+          git push origin "${{ inputs.release_version }}"
+
+  release-resiliencx:
+    name: Release resiliencx
+    needs: release-kernel
+    if: always() && (contains(inputs.modules, 'resiliencx') || inputs.modules == 'all') && needs.release-kernel.result != 'failure' && needs.release-kernel.result != 'cancelled'
+    runs-on: [self-hosted, Linux, X64, homepage]
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: ZoneCNH/resiliencx
+          token: ${{ secrets.FOUNDATION_RELEASE_TOKEN }}
+          fetch-depth: 0
+      - name: Tag and push resiliencx
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag -a "${{ inputs.release_version }}" -m "Foundation release ${{ inputs.release_version }}"
+          git push origin "${{ inputs.release_version }}"
+
+  release-schedulex:
+    name: Release schedulex
+    needs: release-kernel
+    if: always() && (contains(inputs.modules, 'schedulex') || inputs.modules == 'all') && needs.release-kernel.result != 'failure' && needs.release-kernel.result != 'cancelled'
+    runs-on: [self-hosted, Linux, X64, homepage]
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: ZoneCNH/schedulex
+          token: ${{ secrets.FOUNDATION_RELEASE_TOKEN }}
+          fetch-depth: 0
+      - name: Tag and push schedulex
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag -a "${{ inputs.release_version }}" -m "Foundation release ${{ inputs.release_version }}"
+          git push origin "${{ inputs.release_version }}"
+
+  release-testkitx:
+    name: Release testkitx
+    needs: [release-configx, release-observex, release-resiliencx, release-schedulex]
+    if: always() && (contains(inputs.modules, 'testkitx') || inputs.modules == 'all') && needs.release-configx.result != 'failure' && needs.release-configx.result != 'cancelled' && needs.release-observex.result != 'failure' && needs.release-observex.result != 'cancelled' && needs.release-resiliencx.result != 'failure' && needs.release-resiliencx.result != 'cancelled' && needs.release-schedulex.result != 'failure' && needs.release-schedulex.result != 'cancelled'
+    runs-on: [self-hosted, Linux, X64, homepage]
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: ZoneCNH/testkitx
+          token: ${{ secrets.FOUNDATION_RELEASE_TOKEN }}
+          fetch-depth: 0
+      - name: Tag and push testkitx
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag -a "${{ inputs.release_version }}" -m "Foundation release ${{ inputs.release_version }}"
+          git push origin "${{ inputs.release_version }}"
+
+  aggregate-manifest:
+    name: Aggregate Release Manifest
+    runs-on: [self-hosted, Linux, X64, homepage]
+    timeout-minutes: 10
+    needs: [release-kernel, release-configx, release-observex, release-resiliencx, release-schedulex, release-testkitx]
+    if: always() && needs.release-kernel.result != 'failure' && needs.release-kernel.result != 'cancelled' && needs.release-configx.result != 'failure' && needs.release-configx.result != 'cancelled' && needs.release-observex.result != 'failure' && needs.release-observex.result != 'cancelled' && needs.release-resiliencx.result != 'failure' && needs.release-resiliencx.result != 'cancelled' && needs.release-schedulex.result != 'failure' && needs.release-schedulex.result != 'cancelled' && needs.release-testkitx.result != 'failure' && needs.release-testkitx.result != 'cancelled'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Generate aggregated foundation release manifest
+        run: |
+          mkdir -p release/foundation
+          cat > release/foundation/release-${{ inputs.release_version }}.json << EOF
+          {
+            "version": "${{ inputs.release_version }}",
+            "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+            "go_baseline": "1.23",
+            "modules": [
+              "kernel",
+              "configx",
+              "observex",
+              "resiliencx",
+              "schedulex",
+              "testkitx"
+            ],
+            "gate_modules": [
+              "xlib-standard",
+              "xlibgate"
+            ]
+          }
+          EOF
+      - name: Commit and push manifest
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add release/foundation/
+          if ! git diff --cached --quiet; then
+            cat > /tmp/foundation-release-commit-message.txt << MSG
+          Record foundation release manifest
+
+          Constraint: Foundation release workflow writes release/foundation manifests from the homepage repository.
+          Rejected: One-line generated commit | repository commit protocol requires audit trailers.
+          Confidence: medium
+          Scope-risk: narrow
+          Directive: Keep release automation commits compliant with the Lore protocol.
+          Tested: Foundation release workflow reached manifest aggregation.
+          Not-tested: Manual inspection before generated workflow commit.
+          Co-authored-by: OmX <omx@oh-my-codex.dev>
+          MSG
+            git commit -F /tmp/foundation-release-commit-message.txt
+            git push
+          fi
