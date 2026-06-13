@@ -21,7 +21,7 @@ x.go ───────────────► 基座运行时 / L2.5 / �
 
 数据域 ─┐
 分析域 ─┼──────────► L2.5 Domain Shared
-决策域 ─┤             decimalx · domain-market · domain-exchange · domain-macro
+决策域 ─┤             decimalx · domain-market · domain-exchange · domain-macro · domainx
 执行域 ─┘
    │
    ├───────────────► contracts
@@ -67,6 +67,7 @@ optimizer ───────────┘
       │
       ▼
 risk-engine ───► order-engine ───► portfolio-engine ───► settlement
+  domainx (Order/Fill/Position/Exposure) ──── 执行域 L2.5 共享值对象
   ◄── trade_permission                │                 │
       position_caps                   └──── fills ──────┤
       risk_multiplier                                  ▼
@@ -91,7 +92,7 @@ x.go
 | 域     | 职责                                                                                                                          | 组件                                                                                                                                                       |
 | ------ | ----------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 基座   | 标准源、L0 原语、L1 运行时横切能力、测试期证据、存储扩展、稳定契约与传输契约                                                    | xlib-standard, kernel, configx, observex, testkitx, resiliencx, schedulex, xlibgate, redisx, kafkax, natsx, postgresx, taosx, ossx, clickhousex, contracts, transportx |
-| L2.5   | 领域值对象和语义模型，上层统一依赖                                                                                            | decimalx, domain-market, domain-exchange, domain-macro                                                                                                     |
+| L2.5   | 领域值对象和语义模型，上层统一依赖                                                                                            | decimalx, domain-market, domain-exchange, domain-macro, domainx                                                                                           |
 | 数据域 | 行情、宏观、另类数据采集                                                                                                      | market-data (13 SDK + 5 Provider), macro-data (11), alternative-data                                                                                       |
 | 分析域 | 因子计算、特征存储、因子评估、市场/宏观环境分类、M×S 联合决策（三引擎：market_engine→S / macro_engine→M / regime_engine→M+S） | factor-engine, feature-store, factor-eval, market_regime, macro_regime, regime-engine, ms_brain                                                            |
 | 决策域 | 信号生成、历史回测、参数优化（并行协作）                                                                                      | signal-factory, backtest-engine, optimizer, strategies                                                                                                     |
