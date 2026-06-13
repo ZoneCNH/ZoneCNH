@@ -118,9 +118,9 @@ Foundation v1 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中�
 | [`ROADMAP.md`](./ROADMAP.md)                                             | 六阶段交付路线图 — 任务编号、依赖链、验收标准                     |
 | [`docs/governance/ROADMAP-RULES.md`](./docs/governance/ROADMAP-RULES.md) | ROADMAP 编写规范 — 状态流转、版本规划、任务拆分、维护原则         |
 | [`CONSTITUTION.md`](./CONSTITUTION.md)                                   | 系统宪法 — FoundationX 全系统最高治理文件，覆盖模块实现与交付管线 |
-| [`docs/sre/foundation-cicd-plan.md`](./docs/sre/foundation-cicd-plan.md) | SRE CI/CD — 基座层 18 模块 4 阶段部署方案、机器池架构、标准化模板   |
+| [`docs/sre/foundation-cicd-plan.md`](./docs/sre/foundation-cicd-plan.md) | SRE CI/CD — 基座层 20 模块 4 阶段部署方案、机器池架构、标准化模板   |
 
-18 个基座模块的独立完整规格均为 23 节结构：行为规格 WHEN/THEN、接口契约、业务规则、错误处理、边界场景、验收标准、目录结构、CI Gate、测试矩阵、性能预算、可观测输出、发布 DoD。完整索引见 [`module/README.md`](./module/README.md)。`x.go` 组合根仍作为运行时入口维护，但不再作为 `module/` 下的模块规格。
+20 个基座模块的独立完整规格均为 23 节结构：行为规格 WHEN/THEN、接口契约、业务规则、错误处理、边界场景、验收标准、目录结构、CI Gate、测试矩阵、性能预算、可观测输出、发布 DoD。完整索引见 [`module/README.md`](./module/README.md)。`x.go` 组合根仍作为运行时入口维护，但不再作为 `module/` 下的模块规格。
 
 | 层级          | 模块          | 完整规格                                                         |
 | ------------- | ------------- | ---------------------------------------------------------------- |
@@ -132,6 +132,8 @@ Foundation v1 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中�
 | **L1 测试**   | testkitx      | [`module/testkitx/SPEC.md`](./module/testkitx/SPEC.md)           |
 | **门禁**      | xlib-standard | [`module/xlib-standard/SPEC.md`](./module/xlib-standard/SPEC.md) |
 |               | xlibgate      | [`module/xlibgate/SPEC.md`](./module/xlibgate/SPEC.md)           |
+|               | xlib-harness  | [`module/xlib-harness/SPEC.md`](./module/xlib-harness/SPEC.md)   |
+|               | xlib-evidence | [`module/xlib-evidence/SPEC.md`](./module/xlib-evidence/SPEC.md) |
 | **存储扩展**  | redisx        | [`module/redisx/SPEC.md`](./module/redisx/SPEC.md)               |
 |               | kafkax        | [`module/kafkax/SPEC.md`](./module/kafkax/SPEC.md)               |
 |               | natsx         | [`module/natsx/SPEC.md`](./module/natsx/SPEC.md)                 |
@@ -292,11 +294,13 @@ Foundation v1 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中�
 | 基座                  | [kernel](https://github.com/ZoneCNH/kernel)                     | v1.0.0 | ✅ 已发布 | █████ 100% | L0 原语 / 12 子包轻量工具集：lifecycx/errx/healthx/obsx/retryx/shutdownx/syncx/timex/validx/versionx/contextx/contracttest，stdlib-only，v1.0.0 已发布 |
 | 基座                  | [configx](https://github.com/ZoneCNH/configx)                   | v1.0.0 | ✅ 已发布 | █████ 100% | 显式配置加载、多源合并（YAML/TOML/JSON/.env/Env/Map）、StrictDecode、SecretString 脱敏、SecretPolicy、Provenance、EffectiveConfigHash、SanitizedManifest、HealthCheck、Metrics；97.1% 覆盖率，SPEC Approved |
 | 基座                  | [observex](https://github.com/ZoneCNH/observex)                 | v1.0.0 | ✅ 已发布 | █████ 100% | vendor-neutral 日志、指标、追踪、健康、字段和 label policy 契约；v1.0.0 已发布 |
-| 基座                  | [testkitx](https://github.com/ZoneCNH/testkitx)                 | v1.0.0-spec | ✅ 已有   | ████ 100% | 测试专用 fake/fixture/golden/contract/boundary/leak 工具包，管线就绪，禁止生产导入 |
+| 基座                  | [testkitx](https://github.com/ZoneCNH/testkitx)                 | v1.0.0-spec | ✅ 已有   | ███░ 80% | 测试专用 fake/fixture/golden/contract/boundary/leak 工具包，管线就绪，code/ 阶段未完成，禁止生产导入 |
 | 基座                  | [resiliencx](https://github.com/ZoneCNH/resiliencx)             | v1.0.1 | ✅ 已发布 | █████ 100% | 运行时弹性策略库：timeout/retry/circuit/bulkhead/rate/fallback（v1.0.1 Approved，100% 覆盖） |
 | 基座                  | [schedulex](https://github.com/ZoneCNH/schedulex)               | v1.0.0 | ✅ 已发布 | █████ 100% | cron/interval/delay 调度、OverlapPolicy（Skip/Queue/Replace）、MisfirePolicy（Skip/RunOnce/CatchUp）、EventSink、Locker、Clock 注入；98.2% 覆盖，release-check 通过 |
-| 基座                  | [xlibgate](https://github.com/ZoneCNH/xlibgate)                 | -      | ✅ 已有   | -        | import 边界、go.mod、Go baseline、release evidence、L2 发布就绪 机器门禁                               |
-| 基座                  | [xlib-standard](https://github.com/ZoneCNH/xlib-standard)       | -      | ✅ 已有   | -        | 标准事实源、Go Reference Template、Generator、Harness Gate、Evidence Runtime；不参与运行时 import |
+| 基座                  | [xlibgate](https://github.com/ZoneCNH/xlibgate)                 | v1.0.2 | 🔨 待实现 | ██░░ 30% | import 边界、go.mod、Go baseline、release evidence、L2 发布就绪 机器门禁（SPEC 完整，10 tasks 均未实现） |
+| 基座                  | [xlib-standard](https://github.com/ZoneCNH/xlib-standard)       | -      | ✅ 已有   | █████ 100% | 标准事实源、Go Reference Template；Generator/Harness/Evidence 已拆分，不参与运行时 import |
+| 基座                  | [xlib-harness](https://github.com/ZoneCNH/xlib-harness)         | -      | ✅ 已有   | █████ 100% | 模块生成器与门禁执行器：generate/scaffold、spec-lint、boundary-check、traceability-gate |
+| 基座                  | [xlib-evidence](https://github.com/ZoneCNH/xlib-evidence)       | -      | ✅ 已有   | █████ 100% | 证据收集与发布运行时：collect-coverage、generate-manifest、validate-manifest、report |
 | 基座                  | [redisx](https://github.com/ZoneCNH/redisx)                     | v1.0.0 | ✅ 已发布 | █████ 100% | Redis L2 adapter：KV/TTL/Hash/List/Pipeline/Cache-aside/Lock/RateLimit/Pool/Persistence restart recovery；release_ready=true，score 100；devcontainer/docker-compose 暴露非敏感 REDISX_REDIS_ADDR/URL/DB 端点变量；未暴露/打印/记录 secret；使用 Docker-backed Redis 验证；tag `45510b8`。 |
 | 基座                  | [kafkax](https://github.com/ZoneCNH/kafkax)                     | v1.0.0 | ✅ 已发布 | █████ 100% | Kafka L2 adapter — 消息队列、事件流（v1.0.0 已发布，driver-neutral API + kafka-go 生产驱动，真实 broker gates） |
 | 基座                  | [natsx](https://github.com/ZoneCNH/natsx)                       | v1.0.0 | ✅ 已发布 | █████ 100% | NATS L2 adapter：Core NATS / JetStream、Drain/reconnect/degraded health、canonical `FOUNDATIONX_NATS_*` 配置和真实 dev auth live gate 已验证；repair-slice 20/20；正式四源 98+ arbiter 与生产 TLS gate 待补 |
@@ -397,10 +401,11 @@ Foundation v1 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中�
 | 基座              | contracts                                                                                                 | `/home/contracts/`                          |
 | 基座              | transportx                                                                                                | `/home/transportx/`                         |
 | 基座              | domainx                                                                                                   | `/home/domainx/`                            |
-| 基座              | decimalx                                                                                                  | `/home/decimalx/`                           |
-| 基座              | domain-market                                                                                             | `/home/domain-market/`                      |
-| 基座              | domain-exchange                                                                                           | `/home/domain-exchange/`                    |
-| 基座              | domain-macro                                                                                              | `/home/domain-macro/`                       |
+| **L2.5**          |                                                                                                           |                                             |
+| L2.5              | decimalx                                                                                                  | `/home/decimalx/`                           |
+| L2.5              | domain-market                                                                                             | `/home/domain-market/`                      |
+| L2.5              | domain-exchange                                                                                           | `/home/domain-exchange/`                    |
+| L2.5              | domain-macro                                                                                              | `/home/domain-macro/`                       |
 | **数据域 · 行情** |                                                                                                           |                                             |
 | 数据域            | binance, binance-market                                                                                   | `/home/binance/`, `/home/binance-market/`   |
 | 数据域            | okx, okx-market                                                                                           | `/home/okx/`, `/home/okx-market/`           |
