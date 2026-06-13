@@ -13,6 +13,8 @@
 
 `taosx` 是 TDengine 的 L2 存储适配器契约模块。v1.0.1 在保持 v1.0.0 公共 API 与适配器边界不变的前提下，交付 Go 侧可审计的配置归一化与脱敏、SQL 执行与查询契约、批量写入与 schemaless 写入契约、健康检查、可注入驱动端口和可选指标端口。
 
+**时序存储边界：taosx vs clickhousex** — taosx 面向 **IoT 时序存储**场景（高频传感器/行情数据写入、时间窗口查询、设备监控），基于 TDengine 的超级表（supertable）模型优化写入吞吐，适合每秒数万点的高频写入和简单时间窗口聚合（如 `INTERVAL(1m)` 均值/最大/最小）。clickhousex 面向 **OLAP 分析查询**场景（复杂聚合、多维分析、即席查询），适合需要对历史数据进行灵活 SQL 分析的分析工作负载。选型指南：高频写入 + 固定窗口查询 → taosx；复杂聚合 + 灵活多维分析 → clickhousex。两者不重叠，按场景组合使用。
+
 v1.0.1 保持 `pkg/taosx` 为公共运行时 API：默认驱动仍显式不可用，真实 TDengine 通过 `WithDriver` 注入或测试适配器接入。发布验证已使用官方 `taosWS` WebSocket driver 在本地 dev 环境执行真实 `SHOW TABLES` 集成测试，并补齐 batch rows / schemaless lines 指标语义与 `pkg/taosx` 100.0% 覆盖证据；核心包仍不内置连接池、STMT 批量写入实现或自动重试策略。
 
 ## 2. 目标
