@@ -2,7 +2,7 @@
 
 > Feature 做完后、PR 前的 RC 检查，以及部署后的 Smoke Test。
 
-最后更新：2026-06-11
+最后更新：2026-06-13
 
 ---
 
@@ -52,7 +52,7 @@ Feature 做完后，进入 PR 前，做一次 RC 检查。
 - [ ] .env.example updated, if needed
 - [ ] Changelog updated
 - [ ] Spec status updated
-```text
+```
 
 ---
 
@@ -97,7 +97,7 @@ Feature 做完后，进入 PR 前，做一次 RC 检查。
 - [ ] Previous version available
 - [ ] Migration reversible, if applicable
 - [ ] Known limitations documented
-```text
+```
 
 ---
 
@@ -109,6 +109,8 @@ Feature 做完后，进入 PR 前，做一次 RC 检查。
 - 普通文档、测试、治理类 job 使用业务仓库 profile 标签 `homepage`。
 - 部署执行必须通过 `ZoneCNH/sre` reusable workflow；部署 profile 标签由 SRE 仓库内部承接，本仓库不得直接声明。
 - 部署控制面权威仓库为 `ZoneCNH/sre`；本仓库只引用，不复制、不收纳 `sre/` 源码。
+- 本仓 `release.yml` 只生成并预检 `release/manifest/release-manifest.json` 与 `release/manifest/sre-deploy-contract.json`，不执行真实机器部署。
+- SRE 部署合同必须固定 `execution_plane.repository=ZoneCNH/sre`、`workflow=ZoneCNH/sre/.github/workflows/deploy-contract.yml@main`、`runner_pool=sre/`、`remote_execution_allowed_in_this_repo=false`。
 - `.gitignore` 必须保留 `sre/`，并由 `.github/ci/deploy-policy-guard.sh` 防止误提交。
 
 业务仓库新增部署时，只允许调用 SRE reusable workflow：
@@ -118,16 +120,20 @@ jobs:
   deploy:
     uses: ZoneCNH/sre/.github/workflows/deploy-contract.yml@main
     with:
-      target: homepage
+      release_ref: ${{ github.sha }}
       environment: staging
-      action: deploy
-      ref: ${{ github.sha }}
+      target: homepage
+      target_pool: sre/homepage
+      manifest_path: release/manifest/release-manifest.json
+      evidence_path: release/manifest/goal-release-gate.json
+      dry_run: false
 ```
 
 部署 workflow 规则：
 
 - 禁止 `pull_request` 触发部署。
-- 必须配置 GitHub Environment；生产部署只能走 `production` 环境审批。
+- 本仓 `release.yml` 必须先运行 `bash .github/ci/generate-release-manifest.sh`，再运行 `bash .github/ci/deploy-contract-preflight.sh`，预检通过后才允许调用 SRE reusable workflow。
+- 必须配置 GitHub Environment；生产部署只能走 `production` 环境审批，真实部署只允许在受保护环境审批后进入 SRE 执行面。
 - 必须配置 `concurrency`，避免同一 target/environment 并发发布。
 - 禁止在业务仓库 workflow 中内联 `ssh`、`scp`、`rsync`、`kubectl`、`helm`、`systemctl` 或 `docker compose`。
 - smoke 和 rollback 必须通过 SRE 仓库的 `deploy/smoke.sh`、`deploy/rollback.sh` 入口承接。
@@ -175,7 +181,7 @@ Expected:
 
 Expected:
 - Data persists (if persistence is in MVP)
-```text
+```
 
 ---
 
@@ -215,9 +221,9 @@ jobs:
 
       - name: Lint
         uses: golangci/golangci-lint-action@v4
-```text
+```
 
-仓库全局 CI/CD 禁止 GitHub-hosted runner。本仓库直接 job 统一使用 `[self-hosted, Linux, X64, homepage]`；部署到运行环境或远端机器时，必须调用 SRE 发布入口并以 `sre/` 机器池为目标。
+仓库全局 CI/CD 禁止 GitHub-hosted runner。本仓库直接 job 统一使用 `[self-hosted, Linux, X64, homepage]`；本仓 release 只做 manifest、contract 和 preflight，真实部署必须调用 SRE 发布入口并以 `sre/` 机器池为目标。
 
 ### CI 的作用
 
@@ -225,7 +231,7 @@ jobs:
 防止 AI 写出本地没跑过的代码
 防止后续 task 破坏前面功能
 防止 review 靠感觉
-```text
+```
 
 ---
 
@@ -256,7 +262,7 @@ jobs:
 
 - No cloud sync
 - No authentication
-```text
+```
 
 ### 从 Diff 生成 Changelog
 
@@ -268,7 +274,7 @@ jobs:
 - 引用相关 Spec 和 Task
 - 不夸大功能
 - 不写未实现的内容
-```text
+```
 
 ---
 
@@ -282,7 +288,7 @@ module/{module}/SPEC.md
 module/{module}/tasks/TASK-*.md
 CHANGELOG.md
 .env.example
-```text
+```
 
 ### 同步 Prompt
 
@@ -300,7 +306,7 @@ CHANGELOG.md
 2. 更新原因
 3. 建议修改内容
 4. 不要修改代码
-```text
+```
 
 ---
 
@@ -329,7 +335,7 @@ CHANGELOG.md
 - 不实现新功能
 
 请先输出重构计划，不要直接改代码。
-```text
+```
 
 ### 重构后验收
 
@@ -342,7 +348,7 @@ CHANGELOG.md
 - Risks
 - Files changed
 - Any accidental feature changes
-```text
+```
 
 ---
 
