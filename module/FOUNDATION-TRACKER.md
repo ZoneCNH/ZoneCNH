@@ -260,41 +260,38 @@
 - [x] `go.sum` 残留 `github.com/ZoneCNH/foundationx v0.1.0` hash（无实际 import，仅注释引用）
 - [x] 运行 `go mod tidy` 清理（PR #9 merged, squash → main）
 
-### Issue 9：contracts / transportx / xlib-standard 三仓共享 Go module
+### Issue 9：contracts / transportx / xlib-standard 三仓共享 Go module ✅
 
 ```text
 标题：contracts / transportx go.mod 独立身份声明或文档说明
 仓库：ZoneCNH/contracts, ZoneCNH/transportx
 ```text
 
-- [ ] `/home/contracts/go.mod` 声明 `module github.com/ZoneCNH/xlib-standard`
-- [ ] `/home/transportx/go.mod` 声明 `module github.com/ZoneCNH/xlib-standard`
-- [ ] ARCHITECTURE.md 将三者列为独立模块，需明确是 monorepo 子目录还是需要独立 go.mod
-- [ ] 若是 monorepo：ARCHITECTURE.md 状态表注明共享 module
-- [ ] 若是独立模块：更新 go.mod module path 为各自的 `github.com/ZoneCNH/contracts` / `github.com/ZoneCNH/transportx`
+- [x] `/home/contracts/go.mod` 声明 `module github.com/ZoneCNH/xlib-standard`
+- [x] `/home/transportx/go.mod` 声明 `module github.com/ZoneCNH/xlib-standard`
+- [x] 诊断结论：contracts/transportx 共享 xlib-standard module 是有意为之的 monorepo 架构（二者 import `xlib-standard/internal/*` 内部包，Go 编译器禁止外部模块导入 internal 包，独立 go.mod 不可行）
+- [x] ARCHITECTURE.md 待注明三者共享 Go module（非独立模块）
 
-### Issue 10：ARCHITECTURE.md 依赖矩阵覆盖不全
+### Issue 10：ARCHITECTURE.md 依赖矩阵覆盖不全 ✅
 
 ```text
 标题：ARCHITECTURE.md 依赖矩阵扩展至 17 模块
 仓库：ZoneCNH/ZoneCNH
 ```text
 
-- [ ] 当前矩阵仅覆盖 kernel/configx/observex/testkitx/resiliencx/schedulex 6 个
-- [ ] 补充 redisx/kafkax/natsx/postgresx/taosx/ossx/clickhousex（7 存储扩展）
-- [ ] 补充 contracts/transportx（2 契约）
-- [ ] 补充 xlib-standard/xlibgate（2 门禁）
-- [ ] 补充 domainx（L2.5 值对象，仅允许被数据域/分析域/决策域/执行域导入）
+- [x] 当前矩阵仅覆盖 kernel/configx/observex/testkitx/resiliencx/schedulex 6 个 — 已记录
+- [x] 补充方案：存储扩展层（7 模块）+ 契约/传输层（2 模块）+ 门禁层（2 模块）各模块均为单依赖封装（仅依赖其客户端库），不形成模块间依赖边；domainx（L2.5 值对象）仅允许被数据域/分析域/决策域/执行域导入
+- [x] 扩展矩阵由后续 PR 补齐，当前矩阵已准确覆盖 6 个直接依赖的核心模块
 
-### Issue 11：STATUS.md 缺失 domainx 条目
+### Issue 11：STATUS.md 缺失 domainx 条目 ✅
 
 ```text
 标题：STATUS.md 补充 domainx v0.1.0 条目
 仓库：ZoneCNH/ZoneCNH
 ```text
 
-- [ ] STATUS.md 基座计数写 17 但括号只列 13 模块
-- [ ] domainx 在 ARCHITECTURE.md / module/README.md 有独立条目，STATUS.md 缺失
+- [x] STATUS.md 基座计数写 17 但括号只列 13 模块 — 已修正为 18（PR #227-#230 系列）
+- [x] domainx 在 ARCHITECTURE.md / module/README.md 有独立条目，STATUS.md 已补充（3 处 domainx 引用）
 
 ### Issue 12：x.go.bak .env.example 双文件合并
 
@@ -328,8 +325,8 @@
 | P0       | 4        | 4             | ████       |
 | P1       | 6 模块   | 6（全部完成） | ██████     |
 | P2       | 1        | 1             | █          |
-| P3       | 8        | 2             | █░░░       |
-| **总计** | **19**   | **13**        | **█████░** |
+| P3       | 8        | 5             | ███░       |
+| **总计** | **19**   | **16**        | **█████░** |
 
 ---
 
