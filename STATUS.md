@@ -129,7 +129,7 @@
 | [taosx](https://github.com/ZoneCNH/taosx) | v1.0.1 | █████ 100% | 真实 TDengine WebSocket 集成 / pkg/taosx 100.0% 覆盖 | TDengine L2 adapter contract；pkg/taosx 公共 API，默认驱动显式不可用，真实 taosWS 集成已验证 |
 | [ossx](https://github.com/ZoneCNH/ossx) | v1.0.1 | █████ 100% | 真实 Aliyun OSS 集成 / pkg+internal 100.0% 覆盖 | Aliyun OSS 对象存储 L2 adapter；race、vet、build、release-check 已通过；S3/MinIO/Azure/GCS Provider 仅保留扩展位 |
 | [clickhousex](https://github.com/ZoneCNH/clickhousex) | v1.0.1 | █████ 100% | SPEC + TRACEABILITY §1-§7 + goal + 7 tasks | ClickHouse — OLAP 查询、批量写入（TRACEABILITY 覆盖率 100%） |
-| [contracts](https://github.com/ZoneCNH/contracts) | v1.0.1-spec | ████░ 90% | SPEC + TRACEABILITY + goal (6 FR, 10 BR, 8 NFR, 5 tasks) | 跨域稳定端口/事件/DTO 契约；TRACEABILITY §1-§7 完整重建 |
+| [contracts](https://github.com/ZoneCNH/contracts) | v1.0.1-spec | █████ 100% | SPEC + TRACEABILITY + goal (6 FR, 10 BR, 8 NFR, 16 AC, 7 TC, 5 tasks) | 跨域稳定端口/事件/DTO 契约；TRACEABILITY §1-§7 完整；goal.md 对齐 CONSTITUTION P7；SPEC/Matrix/Tasks 全面修复 |
 | [transportx](https://github.com/ZoneCNH/transportx) | v1.1.1-spec | ███░ 80% | SPEC + TRACEABILITY + goal | 应用通信底座规格基线；Envelope/Endpoint、ServiceIdentity、QoS、Codec、RPC、EventBus、Stream、Outbox/Inbox、Audit Plane、Data Classification、SchemaRegistry 与 conformance gates |
 
 ### L2.5 · 领域共享层

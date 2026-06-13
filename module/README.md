@@ -130,7 +130,7 @@ test-only，不参与生产运行时。
 
 | 模块       | 规格                                                                                                                | 核心职责                                                                                                                       |
 | ---------- | ------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| contracts  | [SPEC.md](./contracts/SPEC.md) · [goal.md](./contracts/goal.md) · [TRACEABILITY.md](./contracts/TRACEABILITY.md) · [tasks/](./contracts/tasks/) | MarketDataProvider/MacroDataProvider、Event、Topic、DTO、Breaking Change（6 FR，10 BR，8 NFR，5 tasks）                                      |
+| contracts  | [SPEC.md](./contracts/SPEC.md) · [goal.md](./contracts/goal.md) · [TRACEABILITY.md](./contracts/TRACEABILITY.md) · [tasks/](./contracts/tasks/) | MarketDataProvider/MacroDataProvider、Event、Topic、DTO、Breaking Change（6 FR，10 BR，8 NFR，16 AC，7 TC，5 tasks）                                      |
 | transportx | [SPEC.md](./transportx/SPEC.md) · [TRACEABILITY.md](./transportx/TRACEABILITY.md) · [goal.md](./transportx/goal.md) | 应用通信底座规格基线；Envelope/Endpoint、ServiceIdentity、QoS、Codec、RPC、EventBus、Stream、Outbox/Inbox、Audit Plane、Data Classification、SchemaRegistry 与 conformance gates（25 FR，18 BR，25 TC） |
 
 ---
