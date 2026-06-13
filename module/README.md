@@ -1,6 +1,6 @@
 # Foundation 模块规格索引
 
-> 17 个基座模块的独立完整规格（另有 1 个 goal-only 模块 domainx），按架构层级组织。`x.go` 组合根不再作为 `module/` 下的模块规格维护。
+> 18 个基座模块的独立完整规格，按架构层级组织。`x.go` 组合根不再作为 `module/` 下的模块规格维护。
 
 最后更新：2026-06-14
 
@@ -20,7 +20,7 @@
 ## 分层总览
 
 ```text
-标准源 ──→ 门禁校验 ──→ L0 原语 ──→ L1 运行时 / 测试 ──→ 存储扩展 / 契约 / 传输
+标准源 ──→ 门禁校验 ──→ L0 原语 ──→ L1 运行时 / 测试 ──→ 存储扩展 / 契约 / 传输 / 领域共享
  xlib-standard    xlibgate       kernel    configx            redisx        contracts
                   (CI gate)               observex            kafkax
                                           resiliencx          natsx
@@ -29,6 +29,7 @@
                                                               ossx
                                                               clickhousex
                                                               transportx
+                                                              domainx
 ```
 
 依赖方向：自上而下。同层模块平级协作，不存在编译期依赖。
@@ -135,13 +136,13 @@ test-only，不参与生产运行时。
 
 ---
 
-## 领域共享（goal-only，1 个）
+## 领域共享（1 个）
 
-`domainx` 当前仅有 `goal.md`，尚未产出完整 SPEC.md、TRACEABILITY.md 和 tasks/。待其 SPEC 补齐后归入正式层表。
+Foundation 目录内的 L2.5 领域共享规格，用于执行域订单、成交、持仓和组合语义；业务域仍通过 `contracts` / `transportx` 保持跨域边界。
 
-| 模块    | 规格                    | 核心职责                              |
-| ------- | ----------------------- | ------------------------------------- |
-| domainx | [goal.md](./domainx/goal.md) | 领域共享类型（L2.5），SPEC 待补 |
+| 模块    | 规格                                                                                                                | 核心职责                                                                                                                    |
+| ------- | ------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| domainx | [SPEC.md](./domainx/SPEC.md) · [TRACEABILITY.md](./domainx/TRACEABILITY.md) · [goal.md](./domainx/goal.md) · [tasks/](./domainx/tasks/) | Order/Position/Trade/Portfolio/ExecutionReport 值对象与 OrderState/OrderType/OrderSide 枚举（8 FR，8 TC，6 tasks） |
 
 ---
 
@@ -284,7 +285,7 @@ Draft → Review → Approved → Implemented → Changed → Deprecated
 | [`module/FOUNDATION-SPEC.md`](./FOUNDATION-SPEC.md)                 | How & Check — 接口签名和 CI gate           |
 | [`module/FOUNDATION-DEPS.yaml`](./FOUNDATION-DEPS.yaml)             | 机器可读依赖矩阵                           |
 | [`module/FOUNDATION-V1.md`](./FOUNDATION-V1.md)                     | v1 路线图                                  |
-| [`docs/sre/foundation-cicd-plan.md`](../docs/sre/foundation-cicd-plan.md) | SRE CI/CD — 基座层 17 模块部署执行方案                              |
+| [`docs/sre/foundation-cicd-plan.md`](../docs/sre/foundation-cicd-plan.md) | SRE CI/CD — 基座层 18 模块部署执行方案                              |
 
 ---
 
