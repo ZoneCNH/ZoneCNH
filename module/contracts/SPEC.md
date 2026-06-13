@@ -25,6 +25,7 @@
 | ---------- | ------ | ---------- | ------- |
 | 2026-06-07 | v1.0.0 | 初始版本   | ZoneCNH |
 | 2026-06-14 | v1.0.1 | TRACEABILITY §1-§7 完整重建（6 FR + 10 BR + 8 NFR + 7 TC + 15 AC），对齐文档同步，版本升至 v1.0.1-spec | ZoneCNH |
+| 2026-06-14 | v1.0.1-spec | FR-006 去测试化措辞（改为行为规格语义）、BR-001~BR-010 补充违反后果列 | ZoneCNH |
 
 ## 2. Summary
 
@@ -154,33 +155,33 @@ AND 不能删除或重命名已有字段
 ### FR-006: Breaking Change 检测
 
 WHEN 端口接口的方法签名变更（增删方法、修改参数/返回值）
-THEN breaking change 测试应失败
-AND 需要版本升级
+THEN 系统检测到破坏性变更
+AND 阻止发布并要求版本升级
 
 WHEN DTO 字段删除或类型变更
-THEN breaking change 测试应失败
-AND 需要版本升级
+THEN 系统检测到破坏性变更
+AND 阻止发布并要求版本升级
 
 WHEN 新增可选字段（有默认值）
-THEN breaking change 测试应通过
-AND 版本为 minor 升级
+THEN 系统判定为非破坏性变更
+AND 允许发布，版本为 minor 升级
 
 ---
 
 ## 8. Business Rules
 
-| 编号   | 规则                                                           |
-| ------ | -------------------------------------------------------------- |
-| BR-001 | 所有跨域 DTO 必须在 `contracts` 中定义                         |
-| BR-002 | 新增契约必须说明消费方、生产方和稳定期                         |
-| BR-003 | 契约变更是 breaking change → 需要版本升级                      |
-| BR-004 | 端口接口保持窄（3-5 个方法）                                   |
-| BR-005 | 事件 DTO 不可变（只读字段）                                    |
-| BR-006 | Topic 常量全局唯一，使用点分命名                               |
-| BR-007 | 接口实现方必须有编译期检查（`var _ Interface = (*Impl)(nil)`） |
-| BR-008 | `contracts` 只依赖 L2.5 领域共享层和 stdlib                    |
-| BR-009 | DTO 的 JSON tag 必须使用 snake_case                            |
-| BR-010 | 契约版本遵循 semver（breaking change → major）                 |
+| 编号   | 规则                                                           | 违反后果 |
+| ------ | -------------------------------------------------------------- | -------- |
+| BR-001 | 所有跨域 DTO 必须在 `contracts` 中定义                         | 编译失败：跨域 DTO 不在 contracts 中导致其他域无法 import|
+| BR-002 | 新增契约必须说明消费方、生产方和稳定期                         | PR 审查不通过：缺少三方说明的契约变更被 CI Gate 阻断|
+| BR-003 | 契约变更是 breaking change → 需要版本升级                      | CI 阻断：breaking change 测试失败，阻止合并|
+| BR-004 | 端口接口保持窄（3-5 个方法）                                   | 审查不通过：接口方法数超出范围，增加实现方负担|
+| BR-005 | 事件 DTO 不可变（只读字段）                                    | 数据竞争风险：可变 DTO 在并发消费时产生非确定性行为|
+| BR-006 | Topic 常量全局唯一，使用点分命名                               | 消息路由冲突：重复或非标准命名的 Topic 导致消息错投|
+| BR-007 | 接口实现方必须有编译期检查（`var _ Interface = (*Impl)(nil)`） | 编译通过但运行时 panic：未实现接口的方法在运行时才能发现|
+| BR-008 | `contracts` 只依赖 L2.5 领域共享层和 stdlib                    | 循环依赖风险：contracts 若依赖 L1 运行时模块会形成依赖环|
+| BR-009 | DTO 的 JSON tag 必须使用 snake_case                            | 序列化不兼容：不同命名风格导致跨语言消费方解析失败|
+| BR-010 | 契约版本遵循 semver（breaking change → major）                 | 下游编译失败：版本号未正确反映变更级别，消费者无法评估升级风险|
 
 ---
 

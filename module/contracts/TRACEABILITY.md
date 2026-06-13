@@ -9,27 +9,27 @@ Source: module/contracts/SPEC.md
 
 | Requirement | Description | Acceptance Criteria | Test Case | Task | Status |
 | --- | --- | --- | --- | --- | --- |
-| FR-001 | MarketDataProvider — Subscribe/GetSnapshot/GetHistory 端口 | DoD: 所有 FR 有测试，接口编译通过 | TC-001 | TASK-CONTRACTS-001 | Pending |
-| FR-002 | MacroDataProvider — GetLatest/GetHistory/Subscribe 端口 | DoD: 所有 FR 有测试，接口编译通过 | TC-001 | TASK-CONTRACTS-001 | Pending |
-| FR-003 | Event 接口 — EventID/EventType/Timestamp/Source 四方法 | DoD: 所有 FR 有测试，接口完整性 | TC-005 | TASK-CONTRACTS-002 | Pending |
-| FR-004 | Topic 常量 — 全局唯一、点分命名 | DoD: 所有 FR 有测试，Topic 无重复 | TC-004 | TASK-CONTRACTS-002 | Pending |
-| FR-005 | DTO 契约 — JSON tag snake_case、不可变、版本演进 | DoD: 所有 FR 有测试，JSON round-trip 通过 | TC-002, TC-007 | TASK-CONTRACTS-002 | Pending |
-| FR-006 | Breaking Change 检测 — 接口/DTO 变更感知与版本升级 | DoD: 所有 FR 有测试，breaking change 测试通过 | TC-003 | TASK-CONTRACTS-003 | Pending |
+| FR-001 | MarketDataProvider — Subscribe/GetSnapshot/GetHistory 端口 | AC-FR-001: 编译期检查通过，接口方法完整 | TC-001 | TASK-CONTRACTS-001 | Pending |
+| FR-002 | MacroDataProvider — GetLatest/GetHistory/Subscribe 端口 | AC-FR-001: 编译期检查通过，接口方法完整 | TC-001 | TASK-CONTRACTS-001 | Pending |
+| FR-003 | Event 接口 — EventID/EventType/Timestamp/Source 四方法 | AC-FR-002: Event 接口完整性 | TC-005 | TASK-CONTRACTS-002 | Pending |
+| FR-004 | Topic 常量 — 全局唯一、点分命名 | AC-FR-003: Topic 无重复，命名合规 | TC-004 | TASK-CONTRACTS-002 | Pending |
+| FR-005 | DTO 契约 — JSON tag snake_case、不可变、版本演进 | AC-FR-004: JSON round-trip + 不可变性 | TC-002, TC-007 | TASK-CONTRACTS-002 | Pending |
+| FR-006 | Breaking Change 检测 — 接口/DTO 变更感知与版本升级 | AC-FR-005: breaking change 检测通过 | TC-003 | TASK-CONTRACTS-003 | Pending |
 
 ## §2 业务规则追溯（BR）
 
 | Requirement | Description | Acceptance Criteria | Verification | Task | Status |
 | --- | --- | --- | --- | --- | --- |
-| BR-001 | 所有跨域 DTO 必须在 contracts 中定义 | DTO 定义集中在 contracts 包 | TC-002 (JSON round-trip) | TASK-CONTRACTS-002 | Pending |
-| BR-002 | 新增契约必须说明消费方、生产方和稳定期 | PR 必须包含契约三方说明 | CI Gate: PR 审查 (新增契约审查) | TASK-CONTRACTS-004 | Pending |
-| BR-003 | 契约变更是 breaking change → 需要版本升级 | breaking change 测试失败触发版本检查 | TC-003 | TASK-CONTRACTS-003 | Pending |
-| BR-004 | 端口接口保持窄（3-5 个方法） | 每个端口接口方法数在 3-5 范围 | TC-006 | TASK-CONTRACTS-001 | Pending |
-| BR-005 | 事件 DTO 不可变（只读字段） | DTO 创建后字段不可修改 | TC-007 | TASK-CONTRACTS-002 | Pending |
-| BR-006 | Topic 常量全局唯一，使用点分命名 | Topic 值无重复，命名符合 `domain.action` | TC-004 | TASK-CONTRACTS-002 | Pending |
-| BR-007 | 接口实现方必须有编译期检查 (`var _ Interface = (*Impl)(nil)`) | 编译期检查语句存在且编译通过 | TC-001 | TASK-CONTRACTS-001 | Pending |
-| BR-008 | contracts 只依赖 L2.5 领域共享层和 stdlib | go.mod 无 L1 运行时或存储扩展依赖 | CI Gate: `go mod tidy` + 依赖检查 | TASK-CONTRACTS-000 | Pending |
-| BR-009 | DTO 的 JSON tag 必须使用 snake_case | 所有 DTO 字段 JSON tag 为 snake_case | TC-002 (JSON round-trip) | TASK-CONTRACTS-002 | Pending |
-| BR-010 | 契约版本遵循 semver（breaking change → major） | 版本升级策略与变更类型匹配 | TC-003 | TASK-CONTRACTS-003 | Pending |
+| BR-001 | 所有跨域 DTO 必须在 contracts 中定义 | AC-FR-004: DTO 定义集中在 contracts 包 | TC-002 (JSON round-trip) | TASK-CONTRACTS-002 | Pending |
+| BR-002 | 新增契约必须说明消费方、生产方和稳定期 | AC-BR-002: PR 必须包含契约三方说明 | CI Gate: PR 审查 (新增契约审查) | TASK-CONTRACTS-004 | Pending |
+| BR-003 | 契约变更是 breaking change → 需要版本升级 | AC-FR-005: breaking change 测试失败触发版本检查 | TC-003 | TASK-CONTRACTS-003 | Pending |
+| BR-004 | 端口接口保持窄（3-5 个方法） | AC-BR-004: 每个端口接口方法数在 3-5 范围 | TC-006 | TASK-CONTRACTS-001 | Pending |
+| BR-005 | 事件 DTO 不可变（只读字段） | AC-FR-004: DTO 创建后字段不可修改 | TC-007 | TASK-CONTRACTS-002 | Pending |
+| BR-006 | Topic 常量全局唯一，使用点分命名 | AC-FR-003: Topic 值无重复，命名符合 `domain.action` | TC-004 | TASK-CONTRACTS-002 | Pending |
+| BR-007 | 接口实现方必须有编译期检查 (`var _ Interface = (*Impl)(nil)`) | AC-FR-001: 编译期检查语句存在且编译通过 | TC-001 | TASK-CONTRACTS-001 | Pending |
+| BR-008 | contracts 只依赖 L2.5 领域共享层和 stdlib | AC-BR-008: go.mod 无 L1 运行时或存储扩展依赖 | CI Gate: `go mod tidy` + 依赖检查 | TASK-CONTRACTS-000 | Pending |
+| BR-009 | DTO 的 JSON tag 必须使用 snake_case | AC-FR-004: 所有 DTO 字段 JSON tag 为 snake_case | TC-002 (JSON round-trip) | TASK-CONTRACTS-002 | Pending |
+| BR-010 | 契约版本遵循 semver（breaking change → major） | AC-FR-005: 版本升级策略与变更类型匹配 | TC-003 | TASK-CONTRACTS-003 | Pending |
 
 ## §3 非功能需求追溯（NFR）
 
@@ -75,6 +75,7 @@ Source: module/contracts/SPEC.md
 | AC-NFR-005 | NFR-005 | CI Gate (breaking change 检查) | Pending |
 | AC-NFR-006 | NFR-006 | CI Gate (benchmark 对比) | Pending |
 | AC-NFR-007 | NFR-007 | Documentation evidence (README/CHANGELOG/godoc) | Pending |
+| AC-NFR-008 | NFR-008 | TC-002 + CI Gate (错误格式检查: `"contracts: <desc>"`) | Pending |
 
 ## §6 覆盖率仪表盘
 
@@ -84,7 +85,7 @@ Source: module/contracts/SPEC.md
 | BR | 10 | 10 | 100% | ✅ |
 | NFR | 8 | 8 | 100% | ✅ |
 | TC | 7 | 7 | 100% | ✅ |
-| AC | 15 | 15 | 100% | ✅ |
+| AC | 16 | 16 | 100% | ✅ |
 | Task | 5 | 5 | — | All Pending |
 
 ## §7 变更历史
@@ -93,3 +94,4 @@ Source: module/contracts/SPEC.md
 | --- | --- | --- |
 | 2026-06-09 | 初始版本（迁移前全局矩阵） | ZoneCNH |
 | 2026-06-14 | 完整重建：补全 BR-001/002/007/008/009/010 + NFR §1-§8 + TC→FR §4 + AC §5 + 仪表盘 §6 | ZoneCNH |
+| 2026-06-14 | 修复：FR行AC列改用AC ID引用、BR行AC列引用AC ID、补充AC-NFR-008（AC总数 15→16）、仪表盘更新 | ZoneCNH |
