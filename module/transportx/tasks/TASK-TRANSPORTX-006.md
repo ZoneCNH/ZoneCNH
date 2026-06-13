@@ -1,16 +1,25 @@
-# TASK-TRANSPORTX-006: Error Taxonomy
+# TASK-TRANSPORTX-006: Error Taxonomy — Transport + Idempotency
 
 - **Module**: transportx
 - **Spec**: `module/transportx/SPEC.md` v1.1.1
-- **FRs**: FR-002, FR-008, FR-009, FR-010, FR-012, FR-013, FR-017, FR-021
-- **ACs**: AC-002, AC-008, AC-009, AC-010, AC-012, AC-013, AC-017, AC-021
+- **FRs**: FR-002, FR-010, FR-012
+- **ACs**: AC-002, AC-010, AC-012
+- **TCs**: TC-002, TC-010, TC-012
 - **Phase**: Foundation Contracts (Phase 1)
+- **Priority**: P0
 - **Dependencies**: none
 - **Status**: Pending
 
 ## Scope
 
-Implement complete typed transport error taxonomy (23 error codes). Every error must include stable code, redacted message, retry classification, endpoint reference and trace id.
+Implement typed transport error struct and common error codes. Every error must include stable code, redacted message, retry classification, endpoint reference and trace id. This task covers transport-level, idempotency, backpressure/bulkhead, adapter, control, schema, topic/method duplication, redaction and mirror error codes.
+
+## Non-Scope
+
+- Auth/authz deadline, clock skew, retry, DLQ error behavior (see TASK-006b)
+- QoS and Execution Mode error behavior (see TASK-006c)
+- Business error codes beyond the 23 transport error codes defined in SPEC §12
+- Broker clients, HTTP/RPC servers, storage drivers, business event semantics
 
 ## Files
 
@@ -19,13 +28,15 @@ Implement complete typed transport error taxonomy (23 error codes). Every error 
 - `errors/classification.go` — RetryClassFor(err) mapping
 - `errors/errors_test.go` — Error construction + classification tests
 
-## Key Error Codes
+## Covered Error Codes
 
-TX_PAYLOAD_LIMIT_EXCEEDED, TX_HEADER_LIMIT_EXCEEDED, TX_ENDPOINT_INVALID, TX_AUTHN_REQUIRED, TX_AUTHZ_DENIED, TX_DEADLINE_EXCEEDED, TX_CLOCK_SKEW, TX_IDEMPOTENCY_CONFLICT, TX_BACKPRESSURE, TX_BULKHEAD_REJECTED, TX_ADAPTER_FAILURE, TX_CONTROL_CONFLICT, TX_QOS_VIOLATION, TX_MODE_VIOLATION, TX_SCHEMA_INCOMPATIBLE, TX_TOPIC_DUPLICATE, TX_METHOD_DUPLICATE, TX_RETRY_UNSAFE, TX_REDACTION_FAILED, TX_AUDIT_MISSING, TX_AUDIT_DROPPED, TX_DLQ_INCOMPLETE, TX_MIRROR_IDEMPOTENCY_VIOLATION
+TX_PAYLOAD_LIMIT_EXCEEDED, TX_HEADER_LIMIT_EXCEEDED, TX_ENDPOINT_INVALID, TX_IDEMPOTENCY_CONFLICT, TX_BACKPRESSURE, TX_BULKHEAD_REJECTED, TX_ADAPTER_FAILURE, TX_CONTROL_CONFLICT, TX_SCHEMA_INCOMPATIBLE, TX_TOPIC_DUPLICATE, TX_METHOD_DUPLICATE, TX_REDACTION_FAILED, TX_MIRROR_IDEMPOTENCY_VIOLATION
 
 ## Acceptance
 
-- [ ] All 23 error codes defined as typed constants
 - [ ] TransportError includes code, message (redacted), retryClass, endpoint, traceId
+- [ ] All 13 transport/idempotency error codes defined as typed constants
 - [ ] RetryClassFor maps each error to NONE/READ_ONLY/IDEMPOTENT/UNSAFE
 - [ ] Error message never contains raw payload
+- [ ] `go test ./errors/... -run TestTransportError` passes
+- [ ] `go test ./errors/... -run TestRetryClassFor` passes

@@ -6,6 +6,7 @@
 - **ACs**: AC-001, AC-002
 - **TCs**: TC-001, TC-002
 - **Phase**: Foundation Contracts (Phase 1)
+- **Priority**: P0
 - **Dependencies**: none
 - **Status**: Pending
 
@@ -13,10 +14,16 @@
 
 Implement Envelope struct with required fields (id, type, schemaVersion, source, endpoint, tenant, createdAt, deadlineAt, traceContext, idempotencyKey, headers, payloadRef, payloadDigest) and payload/header limit enforcement.
 
+## Non-Scope
+
+- Endpoint model implementation (see TASK-002)
+- DeliveryReceipt implementation (see TASK-005)
+- Envelope codec/serialization (see TASK-010)
+- Business event schema, domain DTOs, broker-specific envelopes
+
 ## Files
 
-- `envelope/envelope.go` — Envelope struct + validation
-- `envelope/header.go` — Header type
+- `envelope/envelope.go` — Envelope struct + Header type + validation
 - `envelope/payload_ref.go` — PayloadRef + PayloadDigest
 - `envelope/limits.go` — Payload/header limit config + check
 - `envelope/envelope_test.go` — Required field rejection tests
