@@ -6,11 +6,14 @@
 
 ---
 
+
+
 ## 1. Metadata
 
 - Status: Implemented
 - Spec-Version: v1.0.0
 - Last-Updated: 2026-06-13
+- Version: v1.0.0
 - Owner: ZoneCNH
 - Layer: 基座 · 存储扩展
 - Implementation-Baseline: v1.0.0 release (tag `v1.0.0`, commit `310a249e`)
@@ -21,16 +24,7 @@
 
 ---
 
-## 2. 评分结论
-
-| 维度 | 修复前 | 当前发布基线 | 主要依据 |
-| ---- | ------ | ------------ | -------- |
-| 代码实现证据 | 82/100 | 100/100 | `/home/postgresx` 已通过 release-evidence-check、release-final-check 与强制真实 PostgreSQL integration 的 release-preflight |
-| 模块文档一致性 | 41/100 | 100/100 | SPEC、TRACEABILITY、goal、TASK-PG-003、Public API、metrics contract 与版本矩阵已对齐 |
-| v1.0 可冻结度 | 48/100 | 100/100 | v1.0.0 tag/GitHub release 已发布，Public API、metrics contract 与 release evidence 已冻结 |
-| 综合评分 | 61/100 | 100/100 | v1.0.0 发布范围闭合；下游实际接入和生产 soak 作为发布后成熟度证据继续跟踪 |
-
-## 3. Summary
+## 2. Summary
 
 `postgresx` 是 ZoneCNH 基座层的 PostgreSQL 访问模块。当前实现围绕 `pgx/v5` 提供：
 
@@ -44,7 +38,7 @@
 
 本模块不是 ORM，不读取环境变量或配置文件，不接管应用生命周期，不向上依赖业务仓库。
 
-## 4. Problem
+## 3. Problem
 
 多个模块需要 PostgreSQL 访问能力。如果各自封装，会造成：
 
@@ -55,7 +49,7 @@
 - 健康检查、连接池状态、查询耗时和失败指标缺少统一采集点。
 - 连接串、密码或 SQL 参数存在日志泄露风险。
 
-## 5. Goals
+## 4. Goals
 
 - 提供小而稳定的 PostgreSQL 客户端基线，直接暴露 SQL 能力而非 ORM。
 - 统一连接池、配置默认值、生命周期和健康检查语义。
@@ -65,7 +59,7 @@
 - 提供日志与指标适配点，但不绑定具体可观测后端。
 - 维持基座模块边界，不依赖业务域仓库或 `x.go` 入口。
 
-## 6. Non-Goals
+## 5. Non-Goals
 
 - 不做 ORM、Repository 生成器、SQL builder 或实体映射框架。
 - 不做读写分离、数据库集群管理、备份恢复和容量治理。
@@ -74,7 +68,7 @@
 - 不内置 `observex`、`resiliencx`、`configx` 运行时耦合；如需集成必须通过接口适配。
 - 不承诺分页、排序、审计字段、租户隔离或批处理工具进入当前 v1.0 基线。
 
-## 7. Consumers
+## 6. Consumers
 
 | 消费者 | 使用方式 | 当前约束 |
 | ------ | -------- | -------- |
@@ -85,7 +79,7 @@
 | `backtest-engine` | 存储回测结果和参数 | 可复用迁移与查询接口 |
 | 其他基座/业务模块 | 通过 `pkg/postgresx` 显式构造客户端 | 禁止引入业务反向依赖 |
 
-## 8. Functional Requirements
+## 7. Functional Requirements
 
 ### FR-001: Config 与连接池生命周期
 
@@ -140,24 +134,25 @@ THEN 模块必须调用适配器记录查询、事务、健康和池状态，不
 WHEN 构造或记录 DSN
 THEN `Config.RedactedDSN()` 必须隐藏密码，日志和指标不得包含完整连接串或 SQL 参数值。
 
-## 9. Business Rules
+## 8. Business Rules
+| 编号 | 规则 | 违反时 |
+| --- | --- | --- |
+| 编号 | 规则 | 违反时 |
+| --- | --- | --- |
+| BR-001 | `postgresx` 不得依赖业务域仓库、入口仓库或具体应用模块。 | CI Gate：import check 检测到业务域依赖 → 阻断合并 |
+| BR-002 | 模块不得读取环境变量、配置文件或 Secret 文件；调用方必须显式传入 `Config`。 | CI Gate：静态分析检测到环境变量/文件读取 → 阻断 |
+| BR-003 | 模块不得实现 ORM、schema ownership 或全局默认数据库。 | 不符合模块边界——代码审查拒绝 |
+| BR-004 | 所有外部 I/O 入口必须接受 `context.Context` 并尊重取消、超时。 | context 取消/超时不生效 → 测试失败 |
+| BR-005 | `Rows` 生命周期由调用方关闭，模块必须保留 `Err()` 查询迭代错误。 | Rows 未关闭导致连接泄漏 → go test -race 检测 |
+| BR-006 | 事务必须只在 `fn` 返回 nil 时提交；error、context 取消和 panic 路径必须回滚。 | panic 未回滚或 error 未回滚 → TC-003 测试失败 |
+| BR-007 | 迁移版本必须为正整数且单调执行；重复版本和无效迁移必须阻断。 | 迁移阻断，返回错误含版本号和原因 |
+| BR-008 | 健康检查必须幂等、无副作用，并只输出安全元数据。 | 暴露密码/DSN → CI Gate secret scan 阻断 |
+| BR-009 | 指标适配必须不泄露敏感信息；代码与契约中的指标命名必须保持唯一且一致。 | 指标包含明文凭据 → CI Gate redaction check 阻断 |
+| BR-010 | PostgreSQL 错误码必须稳定映射到 `foundationx` 错误 kind 和 retryability。 | 错误映射缺失或错误 → TC-006 测试失败 |
+| BR-011 | 发布证据必须支持 `GOWORK=off`，避免依赖本地 workspace 污染。 | GOWORK 依赖导致 CI 不可复现 → release gate 阻断 |
+| BR-012 | `go.mod`、版本矩阵、公开 API 文档和模块规格必须在发布后持续保持一致。 | go.mod/版本矩阵/文档不一致 → CI Gate doc check 阻断 |
 
-| 编号 | 规则 |
-| ---- | ---- |
-| BR-001 | `postgresx` 不得依赖业务域仓库、入口仓库或具体应用模块。 |
-| BR-002 | 模块不得读取环境变量、配置文件或 Secret 文件；调用方必须显式传入 `Config`。 |
-| BR-003 | 模块不得实现 ORM、schema ownership 或全局默认数据库。 |
-| BR-004 | 所有外部 I/O 入口必须接受 `context.Context` 并尊重取消、超时。 |
-| BR-005 | `Rows` 生命周期由调用方关闭，模块必须保留 `Err()` 查询迭代错误。 |
-| BR-006 | 事务必须只在 `fn` 返回 nil 时提交；error、context 取消和 panic 路径必须回滚。 |
-| BR-007 | 迁移版本必须为正整数且单调执行；重复版本和无效迁移必须阻断。 |
-| BR-008 | 健康检查必须幂等、无副作用，并只输出安全元数据。 |
-| BR-009 | 指标适配必须不泄露敏感信息；代码与契约中的指标命名必须保持唯一且一致。 |
-| BR-010 | PostgreSQL 错误码必须稳定映射到 `foundationx` 错误 kind 和 retryability。 |
-| BR-011 | 发布证据必须支持 `GOWORK=off`，避免依赖本地 workspace 污染。 |
-| BR-012 | `go.mod`、版本矩阵、公开 API 文档和模块规格必须在发布后持续保持一致。 |
-
-## 10. Interface Contract
+## 9. Interface Contract
 
 当前实现基线以 `github.com/ZoneCNH/postgresx/pkg/postgresx` 为准：
 
@@ -271,7 +266,117 @@ func WithClock(clock Clock) Option
 
 旧文档中提到的 DSN option、环境变量式 DSN 配置和无参构造器均不属于当前基线。
 
-## 11. Dependencies
+## 10. Data Model
+### 10.1 Client
+
+`Client` 封装 `pgxpool.Pool`，管理连接池生命周期。
+
+### 10.2 Config
+
+| 字段 | 类型 | 默认值 | 说明 |
+|------|------|--------|------|
+| Host | string | — | PostgreSQL 主机地址 |
+| Port | int | 5432 | 端口 |
+| Database | string | — | 数据库名 |
+| User | string | — | 用户名 |
+| Password | SecretString | — | 密码（自动脱敏） |
+| SSLMode | string | disable | SSL 模式 |
+| MaxOpenConns | int32 | 10 | 最大连接数 |
+| MinIdleConns | int32 | 1 | 最小空闲连接 |
+| MaxConnLifetime | Duration | 1h | 连接最大存活时间 |
+| MaxConnIdleTime | Duration | 30m | 连接最大空闲时间 |
+| ConnectTimeout | Duration | 5s | 连接超时 |
+| HealthTimeout | Duration | 2s | 健康检查超时 |
+
+### 10.3 公共错误
+
+- `ErrClosed` — Client 已关闭
+- `ErrInvalidConfig` — Config 校验失败
+- `ErrMigrationDuplicate` — 迁移版本重复
+- `ErrMigrationInvalid` — 迁移无效
+- MapError 映射：context.Canceled→ErrCanceled, pgx.ErrNoRows→ErrNotFound, pgconn 认证→ErrAuth, 约束→ErrConstraint
+
+## 11. Config Schema
+`postgresx` 通过 `Config` 结构体接收显式配置，不读取环境变量或配置文件。
+
+```yaml
+postgresx:
+  host: localhost
+  port: 5432
+  database: foundationx
+  user: app
+  password: ${POSTGRES_PASSWORD}  # SecretString 自动脱敏
+  ssl_mode: disable
+  max_open_conns: 10
+  min_idle_conns: 1
+  max_conn_lifetime: 1h
+  max_conn_idle_time: 30m
+  connect_timeout: 5s
+  health_timeout: 2s
+  application_name: postgresx
+```
+
+调用方通过 `New(ctx, cfg, opts...)` 传入。`Config.RedactedDSN()` 返回密码脱敏后的连接串。
+
+## 12. Error Handling
+| 错误 | 触发条件 | 处理方式 |
+| --- | --- | --- |
+| `ErrClosed` | Client 已关闭后调用 | 返回稳定错误，Close 幂等 |
+| `ErrInvalidConfig` | Host/Port/Database 为空 | 不创建连接池，返回参数错误 |
+| `ErrCanceled` | context 取消 | 返回 context 错误，事务回滚 |
+| `ErrNotFound` | 查询无结果 (pgx.ErrNoRows) | 可处理状态，非系统错误 |
+| `ErrTimeout` | context deadline 或连接超时 | 返回可识别超时错误 |
+| `ErrAuth` | PostgreSQL 认证失败 | 不重试，返回认证错误 |
+| `ErrConstraint` | 约束冲突（unique/foreign key） | 映射为 foundationx conflict kind |
+| `ErrConnection` | 连接断开或池耗尽 | 可重试，返回连接错误 |
+
+**错误映射**：`MapError(err)` 将 pgx/pgconn 错误归一化为 foundationx 错误 kind + retryability。
+**错误消息格式**：`"postgresx: <operation>: <detail>"`
+
+## 13. Edge Cases
+| 场景 | 预期行为 |
+| --- | --- |
+| Config Host 为空 | New 返回 `ErrInvalidConfig`，不访问 PostgreSQL |
+| context 已取消 | Exec/Query 不发起或尽快停止，返回 context 错误 |
+| Close 多次调用 | 幂等返回 nil 或 closed 状态 |
+| 事务 fn panic | 回滚事务后重新抛出 panic |
+| 迁移版本重复 | MigrationRunner 阻断，返回错误含版本号 |
+| 迁移版本非正 | 拒绝执行并返回错误 |
+| 迁移名称为空 | 拒绝执行并返回错误 |
+| 查询返回空结果 | 返回 ErrNotFound，非系统错误 |
+| Rows 未关闭 | 调用方负责 Close；Err() 查询迭代错误 |
+| 连接池耗尽 | 阻塞等待空闲连接，超时后返回错误 |
+| DSN/密码 日志泄露 | RedactedDSN() 脱敏，日志不含明文凭据 |
+
+## 14. Directory Structure
+```text
+postgresx/
+├── go.mod
+├── go.sum
+├── README.md
+├── CHANGELOG.md
+├── VERSION_MATRIX.md
+├── Makefile
+├── pkg/
+│   └── postgresx/
+│       ├── client.go          # Client + New/Open/Close/Ping/Stats
+│       ├── config.go          # Config + DSN/RedactedDSN + defaults
+│       ├── query.go           # Exec/Query/QueryRow + Queryer/Row/Rows
+│       ├── tx.go              # WithTx/WithTxOptions + TxFunc/TxOptions
+│       ├── migration.go       # MigrationRunner + Migration/MigrationSource
+│       ├── health.go          # HealthChecker (Name + Check)
+│       ├── errors.go          # MapError/IsRetryable + 错误常量
+│       ├── metrics.go         # Logger/Metrics hooks
+│       ├── options.go         # Option/WithLogger/WithMetrics/WithClock
+│       └── *_test.go
+├── internal/
+│   └── testutil/
+├── testdata/
+├── examples/
+└── docs/
+```
+
+## 15. Dependencies
 
 | 依赖 | 用途 | 约束 |
 | ---- | ---- | ---- |
@@ -281,7 +386,7 @@ func WithClock(clock Clock) Option
 
 禁止新增业务模块依赖。新增基座依赖必须先更新 [goal.md](./goal.md)、[TRACEABILITY.md](./TRACEABILITY.md) 与根架构文档。
 
-## 12. Test Cases
+## 16. Testing
 
 | Test Case | 覆盖范围 | 验收标准 |
 | --------- | -------- | -------- |
@@ -295,47 +400,12 @@ func WithClock(clock Clock) Option
 | **TC-008:** | 边界与发布证据 | `GOWORK=off` 下测试通过，无业务反向依赖 |
 | **TC-009:** | 契约一致性 | `go.mod`、版本矩阵、公开 API 文档、指标契约和代码一致 |
 
-## 13. Verification Gates
+## 17. Performance Budget
 
-当前实现仓库 `/home/postgresx` 已作为 v1.0.0 release 验证：
-
-- `GOWORK=off VERSION=v1.0.0 make release-evidence-check`：通过。
-- `GOWORK=off VERSION=v1.0.0 make release-final-check`：通过。
-- `GOWORK=off VERSION=v1.0.0 make release-preflight` 在 `POSTGRESX_REQUIRE_INTEGRATION=1` 和注入的 dev PostgreSQL DSN/凭据下通过，覆盖 `go vet`、`go test`、`go test -race`、边界检查、contract check、secret scan、foundationx API check、template alignment 与真实 PostgreSQL integration。
-- Git tag / GitHub release：`v1.0.0`，对应提交 `310a249e`。
-
-文档修复侧必须通过：
-
-- `rg` 检查不再出现旧 DSN option、环境变量式 DSN 配置、无参构造器或旧事务入口。
-- `TRACEABILITY.md` 必须包含 `Task` 列，并覆盖 FR-001..FR-007 与 BR-001..BR-012。
-- `git diff --check` 必须通过。
-
-## 14. Residual Risks
-
-| 风险 | 影响 | 处置 |
-| ---- | ---- | ---- |
-| 下游接入证据缺口 | `x.go` 和业务模块尚未形成真实依赖证据 | 作为发布后接入跟踪项；下游接入时补充 import、测试或发布证据 |
-| 生产 soak 不足 | 当前证据覆盖本地与真实 PostgreSQL integration，尚无长期生产运行数据 | 作为 v1.x 运维证据继续积累，不降低当前 release 判定 |
-
----
-
-## 15. 当前结论
-
-`postgresx` 已完成 v1.0.0 release 收束：代码、Public API、metrics contract、版本矩阵、release evidence 和真实 PostgreSQL integration 已形成闭环。v1.0.0 发布范围综合评分为 `100/100`；下游真实接入和生产 soak 作为 v1.x/post-release 成熟度证据继续跟踪，不构成当前发布扣分。
-
-## 16. Rollout Plan
-
-- `/home/postgresx` 以 `v1.0.0` tag、GitHub release 和提交 `310a249e` 为当前发布基线。
-- 下游模块只允许依赖已实现的 `pkg/postgresx` 入口：显式 `Config`、连接池生命周期、SQL 执行、事务、迁移、健康检查、错误映射和可观测 hook。
-- 未来 v1.x 破坏性变更必须同步 SPEC、TRACEABILITY、Task、contracts 和 release evidence，不重新打开已关闭的 v1.0 阻断项。
-- `x.go` 或业务模块接入前必须新增对应追溯证据，不能把潜在消费者计入完成度。
-
-## 17. Migration Plan
-
-- 本仓库不承载数据库 schema 迁移文件；运行期迁移由 `/home/postgresx/pkg/postgresx/migration.go` 的 `MigrationRunner` 负责。
-- 调用方必须显式传入迁移集合和 `Config`，`postgresx` 不读取环境变量、配置文件或 Secret 文件。
-- 已应用迁移表、重复版本阻断、迁移顺序和失败回滚行为以 `/home/postgresx` 当前测试为准。
-- 文档迁移只涉及 SPEC、TRACEABILITY、Goal、Task 与状态表同步，不迁移应用数据。
+- 连接池生命周期以 `pgxpool` 为核心，默认池参数必须可被调用方覆盖。
+- 查询和事务 helper 不得隐藏 context deadline，也不得引入无界 retry。
+- 迁移执行必须保持确定性顺序，并阻断重复版本，避免启动期重复执行。
+- v1.x 如新增性能声明，必须补充可复现 benchmark 或 live PostgreSQL evidence。
 
 ## 18. Observability
 
@@ -351,33 +421,79 @@ func WithClock(clock Clock) Option
 - SQL 参数不得进入默认日志字段；如调用方自定义 logger 记录参数，责任边界必须在调用方侧。
 - 错误归一化不能泄露认证材料、连接串或私有端点。
 
-## 20. Performance
+## 20. CI Gate
 
-- 连接池生命周期以 `pgxpool` 为核心，默认池参数必须可被调用方覆盖。
-- 查询和事务 helper 不得隐藏 context deadline，也不得引入无界 retry。
-- 迁移执行必须保持确定性顺序，并阻断重复版本，避免启动期重复执行。
-- v1.x 如新增性能声明，必须补充可复现 benchmark 或 live PostgreSQL evidence。
+当前实现仓库 `/home/postgresx` 已作为 v1.0.0 release 验证：
 
-## 21. Compatibility
+- `GOWORK=off VERSION=v1.0.0 make release-evidence-check`：通过。
+- `GOWORK=off VERSION=v1.0.0 make release-final-check`：通过。
+- `GOWORK=off VERSION=v1.0.0 make release-preflight` 在 `POSTGRESX_REQUIRE_INTEGRATION=1` 和注入的 dev PostgreSQL DSN/凭据下通过，覆盖 `go vet`、`go test`、`go test -race`、边界检查、contract check、secret scan、foundationx API check、template alignment 与真实 PostgreSQL integration。
+- Git tag / GitHub release：`v1.0.0`，对应提交 `310a249e`。
+
+文档修复侧必须通过：
+
+- `rg` 检查不再出现旧 DSN option、环境变量式 DSN 配置、无参构造器或旧事务入口。
+- `TRACEABILITY.md` 必须包含 `Task` 列，并覆盖 FR-001..FR-007 与 BR-001..BR-012。
+- `git diff --check` 必须通过。
+
+## 21. Upgrade Compatibility
+- `/home/postgresx` 以 `v1.0.0` tag、GitHub release 和提交 `310a249e` 为当前发布基线。
+- 下游模块只允许依赖已实现的 `pkg/postgresx` 入口：显式 `Config`、连接池生命周期、SQL 执行、事务、迁移、健康检查、错误映射和可观测 hook。
+- 未来 v1.x 破坏性变更必须同步 SPEC、TRACEABILITY、Task、contracts 和 release evidence，不重新打开已关闭的 v1.0 阻断项。
+- `x.go` 或业务模块接入前必须新增对应追溯证据，不能把潜在消费者计入完成度。
+
+- 本仓库不承载数据库 schema 迁移文件；运行期迁移由 `/home/postgresx/pkg/postgresx/migration.go` 的 `MigrationRunner` 负责。
+- 调用方必须显式传入迁移集合和 `Config`，`postgresx` 不读取环境变量、配置文件或 Secret 文件。
+- 已应用迁移表、重复版本阻断、迁移顺序和失败回滚行为以 `/home/postgresx` 当前测试为准。
+- 文档迁移只涉及 SPEC、TRACEABILITY、Goal、Task 与状态表同步，不迁移应用数据。
 
 - 当前实现基线记录为 `go 1.25.0`、`github.com/jackc/pgx/v5 v5.9.2`、`github.com/ZoneCNH/foundationx v0.1.1`。
 - v1.x Public API 已冻结；任何破坏性变更都必须同步 SPEC、TRACEABILITY、Task 和 `/home/postgresx` contract 文档。
 - 基座边界保持不变：`postgresx` 可以依赖 `foundationx` 和 `pgx`，不得依赖业务域、入口仓库或数据域仓库。
 - Release evidence 必须支持 `GOWORK=off`，避免本地 workspace 掩盖模块依赖问题。
 
-## 22. Open Questions
-
-| 问题 | 当前决策 | 关闭条件 |
-| ---- | -------- | -------- |
-| 指标命名 | 已由 TASK-PG-003 关闭，代码、contract、SPEC、TRACEABILITY 采用 dotted `postgresx.*` 命名 | 后续变更必须同步 release evidence |
-| Go baseline | `/home/postgresx/go.mod`、VERSION_MATRIX 与 release evidence 已统一到 go 1.25.0 | 升级 Go baseline 时同步版本矩阵和 release gates |
-| Public API contract | 已按代码和测试冻结为 v1.0.0 contract | 新增/删除公开符号必须更新 contract 与 tests |
-| 下游接入 | 仅标记为潜在消费者 | 出现真实 import、测试或发布证据 |
-
-## 23. Definition of Done
+## 22. Release DoD
 
 - SPEC 保持 23 节结构，`Spec-Version` 使用 semver，且不包含模糊状态词。
 - `TRACEABILITY.md` 覆盖 FR-001..FR-007、BR-001..BR-012、TC-001..TC-008，并映射 TASK-PG-001..TASK-PG-003。
 - `/home/postgresx` 中 `GOWORK=off VERSION=v1.0.0 make release-evidence-check`、`make release-final-check` 与强制 integration 的 `make release-preflight` 通过。
 - 本仓库 `git diff --check`、状态一致性检查、postgresx 规格 lint 和 postgresx traceability 检查通过。
 - TASK-PG-003 已关闭，v1.0.0 发布声明必须继续以 tag、release evidence、contract check 和真实 PostgreSQL integration 为依据。
+
+## 23. Open Questions
+### Resolved
+
+| 问题 | 决策 |
+|------|------|
+| 指标命名 | dotted `postgresx.*` (TASK-PG-003) |
+| Go baseline | go 1.25.0 |
+| Public API | v1.0.0 冻结 |
+
+### Non-blocking
+
+| ID | 问题 | 状态 |
+|----|------|------|
+| OQ-001 | 下游真实接入证据（x.go/业务模块 import） | 跟踪中 |
+| OQ-002 | 生产 soak 数据积累 | 跟踪中 |
+
+## Appendix: 评分结论
+
+| 维度 | 修复前 | 当前发布基线 | 主要依据 |
+| ---- | ------ | ------------ | -------- |
+| 代码实现证据 | 82/100 | 100/100 | `/home/postgresx` 已通过 release-evidence-check、release-final-check 与强制真实 PostgreSQL integration 的 release-preflight |
+| 模块文档一致性 | 41/100 | 100/100 | SPEC、TRACEABILITY、goal、TASK-PG-003、Public API、metrics contract 与版本矩阵已对齐 |
+| v1.0 可冻结度 | 48/100 | 100/100 | v1.0.0 tag/GitHub release 已发布，Public API、metrics contract 与 release evidence 已冻结 |
+| 综合评分 | 61/100 | 100/100 | v1.0.0 发布范围闭合；下游实际接入和生产 soak 作为发布后成熟度证据继续跟踪 |
+
+## Appendix: Residual Risks
+
+| 风险 | 影响 | 处置 |
+| ---- | ---- | ---- |
+| 下游接入证据缺口 | `x.go` 和业务模块尚未形成真实依赖证据 | 作为发布后接入跟踪项；下游接入时补充 import、测试或发布证据 |
+| 生产 soak 不足 | 当前证据覆盖本地与真实 PostgreSQL integration，尚无长期生产运行数据 | 作为 v1.x 运维证据继续积累，不降低当前 release 判定 |
+
+---
+
+## Appendix: 当前结论
+
+`postgresx` 已完成 v1.0.0 release 收束：代码、Public API、metrics contract、版本矩阵、release evidence 和真实 PostgreSQL integration 已形成闭环。v1.0.0 发布范围综合评分为 `100/100`；下游真实接入和生产 soak 作为 v1.x/post-release 成熟度证据继续跟踪，不构成当前发布扣分。

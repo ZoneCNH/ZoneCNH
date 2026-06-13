@@ -3,6 +3,7 @@
 - **Module**: transportx
 - **Spec**: `module/transportx/SPEC.md` v1.1.1
 - **FRs**: FR-025
+- **BRs**: BR-006, BR-011
 - **ACs**: AC-025
 - **TCs**: TC-025
 - **Phase**: QoS + Codec + Registry (Phase 2)
@@ -29,6 +30,7 @@ Does NOT implement standalone SchemaRegistry service (embedded library for v1.x 
 ## Acceptance
 
 - [ ] Schema.Register records version, digest, classification, migration notes
-- [ ] Breaking change returns incompatible classification
+- [ ] Breaking change returns incompatible classification (BR-011)
+- [ ] Adapter fields in namespaced extensions (BR-006)
 - [ ] Unknown version → `TX_SCHEMA_INCOMPATIBLE`
 - [ ] `go test ./registry/... -run TestSchemaCompatibility` passes
