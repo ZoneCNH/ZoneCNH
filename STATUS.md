@@ -22,14 +22,14 @@
   ░░░░  5%  ████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  15 个 (20%)
   未标注    ██░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   2 个 ( 3%)
 
-版本覆盖: 有版本号 28 个 (38%)    无版本号 46 个 (62%)
+版本覆盖: 有版本号 29 个 (39%)    无版本号 45 个 (61%)
 ```
 
 ### 按域统计
 
 | 域                     | 总数 | 已有 | 已创建 | 平均进度 | 有版本号                                                    |
 | ---------------------- | ---- | ---- | ------ | -------- | ----------------------------------------------------------- |
-| 基座                   | 20   | 20   | 0      | 95%      | 17（domainx/xlib-harness/xlib-evidence 除外） |
+| 基座                   | 20   | 20   | 0      | 95%      | 18（xlib-harness/xlib-evidence 除外） |
 | L2.5 领域共享层        | 4    | 4    | 0      | 80%      | 4 (全部)                                                    |
 | 数据域 · 行情 SDK      | 13   | 13   | 0      | 80%      | 0                                                           |
 | 数据域 · 行情 Provider | 5    | 5    | 0      | 80%      | 5 (全部)                                                    |
@@ -42,7 +42,7 @@
 | 横切                   | 2    | 1    | 1      | 43%      | 1 (observex)                                                |
 | Rust                   | 1    | 1    | 0      | -        | 0                                                           |
 | 独立                   | 1    | 1    | 0      | -        | 0                                                           |
-| **合计**               | **74** | **58** | **16** | **68%**  | **28**                                                      |
+| **合计**               | **74** | **58** | **16** | **68%**  | **29**                                                      |
 
 ---
 
@@ -133,7 +133,7 @@
 | [clickhousex](https://github.com/ZoneCNH/clickhousex) | v1.0.1 | █████ 100% | SPEC + TRACEABILITY §1-§7 + goal + 7 tasks | ClickHouse — OLAP 查询、批量写入（TRACEABILITY 覆盖率 100%） |
 | [contracts](https://github.com/ZoneCNH/contracts) | v1.0.1-spec | █████ 100% | SPEC + TRACEABILITY + goal (6 FR, 10 BR, 8 NFR, 16 AC, 7 TC, 5 tasks) | 跨域稳定端口/事件/DTO 契约；TRACEABILITY §1-§7 完整；goal.md 对齐 CONSTITUTION P7；SPEC/Matrix/Tasks 全面修复 |
 | [transportx](https://github.com/ZoneCNH/transportx) | v1.1.1-spec | █████ 100% | SPEC + TRACEABILITY + goal + 27 tasks (100分) | 应用通信底座规格基线；25 FR, 18 BR, 12 NFR, 25 AC, 25 TC, 12 CI gates — SPEC/Matrix/Tasks 三阶段满分 |
-| [domainx](https://github.com/ZoneCNH/domainx) | - | █████ 100% | 执行域共享值对象：Order/Position/Trade/Portfolio/ExecutionReport 与 OrderState/OrderType/OrderSide 枚举（8 FR，8 TC，归属基座） |
+| [domainx](https://github.com/ZoneCNH/domainx) | v0.1.0 | █████ 100% | 执行域共享值对象：Order/Position/Trade/Portfolio/ExecutionReport 与 OrderState/OrderType/OrderSide 枚举（8 FR，8 TC，归属基座） |
 ### L2.5 · 领域共享层
 
 | 组件 | 版本 | 进度 | 说明 |
