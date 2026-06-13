@@ -13,6 +13,7 @@
 - Spec-Version: v1.0.0
 - Last-Updated: 2026-06-12
 - Owner: ZoneCNH
+- Version: v0.7.3
 - Layer: 基座 · 存储扩展
 - Implementation-Version: v0.7.3
 - Baseline: 1.0 候选规格；非发布批准状态
@@ -168,8 +169,8 @@ THEN 返回 HealthStatus{Ready: false, Live: false, Message: "..."}
 
 ## 8. Business Rules
 
-| 编号 | 规则 | 违反时处理 |
-|------|------|------------|
+| 编号 | 规则 | 违反时 |
+| --- | --- | --- |
 | BR-001 | Producer 默认使用同步发送（acks=all），可通过配置切换 | 非法 acks 在构造或首次发送前返回配置错误；默认值不得静默降级 |
 | BR-002 | Consumer 默认使用手动 offset 提交（at-least-once） | 自动提交不得作为默认值；发现默认自动提交视为发布阻断 |
 | BR-003 | 所有运行时操作必须接受 `context.Context`，支持超时和取消 | 缺少 ctx 或忽略 ctx 取消视为接口阻断；ctx 取消必须返回 `ctx.Err()` 或包装错误 |
