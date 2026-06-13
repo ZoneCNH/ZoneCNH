@@ -74,7 +74,7 @@ L2.5: decimalx / domain-market / domain-exchange / domain-macro
 - [postgresx](https://github.com/ZoneCNH/postgresx) — PostgreSQL — 关系型存储、事务、迁移（v1.0.0 已发布；Public API、metrics contract、release evidence 与真实 PostgreSQL integration 已冻结；v1.0 发布范围 100/100） `公开`
 - [redisx](https://github.com/ZoneCNH/redisx) — Redis KeyBuilder、Options、KV/TTL、Cache、Hash/List、Pub/Sub、Pipeline、Locker、Counter/RateLimit、Codec/Health 规格；生产依赖限定为 kernel + Redis 客户端库，观测/配置/弹性通过外部 adapter 接入 `公开`
 - [clickhousex](https://github.com/ZoneCNH/clickhousex) — ClickHouse — OLAP 查询、批量写入（完整 SPEC + TRACEABILITY + goal 规格就绪） `公开`
-- [taosx](https://github.com/ZoneCNH/taosx) — TDengine — 时序数据写入与查询（完整 SPEC + TRACEABILITY + goal 规格就绪） `公开`
+- [taosx](https://github.com/ZoneCNH/taosx) — TDengine L2 adapter contract（pkg/taosx v1.0.0；真实 taosWS WebSocket 集成已验证，92.6% 覆盖） `公开`
 - [kafkax](https://github.com/ZoneCNH/kafkax) — Kafka — 消息队列、事件流（完整 SPEC + TRACEABILITY + goal 规格就绪） `公开`
 - [natsx](https://github.com/ZoneCNH/natsx) — NATS 内部通信模块（生命周期/投递证据已验证；发布门禁未闭合） `公开`
 - [ossx](https://github.com/ZoneCNH/ossx) — 对象存储 S3/MinIO/local 多后端（SPEC + plan + tasks + prompts + evidence 全链路文档就绪） `公开`
