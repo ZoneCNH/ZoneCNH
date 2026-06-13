@@ -1,0 +1,71 @@
+# schedulex 实现计划
+
+> 来源：[SPEC.md](./SPEC.md)
+> 生成日期：2026-06-14
+
+---
+
+## 1. 依赖 DAG
+
+```text
+TASK-SCHEDULEX-000 (Phase 1: foundation)
+├── TASK-SCHEDULEX-001
+├── TASK-SCHEDULEX-002
+├── TASK-SCHEDULEX-003
+├── TASK-SCHEDULEX-004
+├── TASK-SCHEDULEX-005
+├── TASK-SCHEDULEX-006
+├── TASK-SCHEDULEX-007
+├── TASK-SCHEDULEX-008
+├── TASK-SCHEDULEX-009
+├── TASK-SCHEDULEX-010
+├── TASK-SCHEDULEX-011
+```
+
+## 2. 实现顺序
+
+### Phase 1: Foundation (2 tasks)
+
+| Task | Scope | Effort |
+|------|-------|--------|
+| TASK-SCHEDULEX-000 | Core implementation | 2h |
+| TASK-SCHEDULEX-001 | Core implementation | 2h |
+
+### Phase 2: Features (10 tasks)
+
+| Task | Scope | Effort |
+|------|-------|--------|
+| TASK-SCHEDULEX-002 | Feature implementation | 2h |
+| TASK-SCHEDULEX-003 | Feature implementation | 2h |
+| TASK-SCHEDULEX-004 | Feature implementation | 2h |
+| TASK-SCHEDULEX-005 | Feature implementation | 2h |
+| TASK-SCHEDULEX-006 | Feature implementation | 2h |
+| TASK-SCHEDULEX-007 | Feature implementation | 2h |
+| TASK-SCHEDULEX-008 | Feature implementation | 2h |
+| TASK-SCHEDULEX-009 | Feature implementation | 2h |
+| TASK-SCHEDULEX-010 | Feature implementation | 2h |
+
+### Phase 3: Quality Gates (1 task)
+
+| TASK-SCHEDULEX-011 | CI/Benchmark/Docs | 2h |
+
+
+## 3. 总 Effort
+
+| Phase | Tasks | Effort |
+|-------|-------|--------|
+| Foundation | 2 | 4h |
+| Features | 9 | 18h |
+| Quality | 1 | 2h |
+| **Total** | **12** | **24h** |
+
+## 4. CI Gate 矩阵
+
+| Gate | Phase | 条件 |
+|------|-------|------|
+| go build | All | 零错误 |
+| go test -race | All | 全部通过 |
+| coverage >= 80% | Final | 覆盖率达标 |
+| go vet | Final | 零警告 |
+| golangci-lint | Final | 零错误 |
+| gitleaks | Final | 零命中 |
