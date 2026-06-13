@@ -3,14 +3,14 @@
 Last-Updated: 2026-06-13
 Source: `module/taosx/SPEC.md`, `/home/taosx/pkg/taosx`
 
-本矩阵追踪中心规格与 `/home/taosx` 当前实现之间的契约关系。`taosx` v1.0.0 定位为 TDengine L2 存储适配器契约：公共核心 API 保持驱动注入边界，官方 `taosWS` WebSocket driver 通过显式 opt-in 集成测试验证；核心包仍不是内置连接池、STMT 或自动重试的平台模块。
+本矩阵追踪中心规格与 `/home/taosx` 当前实现之间的契约关系。`taosx` v1.0.1 定位为 TDengine L2 存储适配器契约：公共核心 API 保持驱动注入边界，官方 `taosWS` WebSocket driver 通过显式 opt-in 集成测试验证；核心包仍不是内置连接池、STMT 或自动重试的平台模块。
 
 ## 功能需求追溯
 
 | ID | Spec 需求 | 实现/证据 | 状态 |
 | --- | --- | --- | --- |
 | FR-001 | `Config.Normalize` 补齐默认名称、驱动模式和零值超时时间。 | `/home/taosx/pkg/taosx/config.go`, `/home/taosx/pkg/taosx/config_test.go`, `/home/taosx/contracts/config.schema.json` | ✅ 已实现 |
-| FR-002 | `Config.Validate` 拒绝缺失名称、endpoint、database、非法 driver mode、负 timeout、负 max retries。 | `/home/taosx/pkg/taosx/config.go`, `/home/taosx/pkg/taosx/config_test.go`, `/home/taosx/contracts/contracts_test.go` | ✅ 已实现 |
+| FR-002 | `Config.Validate` 拒绝缺失 endpoint、database、非法 driver mode、负 timeout、负 max retries；缺失名称由 `Config.Normalize` 补齐默认包名。 | `/home/taosx/pkg/taosx/config.go`, `/home/taosx/pkg/taosx/config_test.go`, `/home/taosx/contracts/contracts_test.go` | ✅ 已实现 |
 | FR-003 | `New` 校验 context、配置和 options，默认驱动显式不可用。 | `/home/taosx/pkg/taosx/client.go`, `/home/taosx/pkg/taosx/options.go`, `/home/taosx/pkg/taosx/client_test.go`, `/home/taosx/README.md` | ✅ 已实现 |
 | FR-004 | `Exec` 校验非空 SQL statement 并委托驱动。 | `/home/taosx/pkg/taosx/client.go`, `/home/taosx/pkg/taosx/sql.go`, `/home/taosx/pkg/taosx/client_test.go` | ✅ 已实现 |
 | FR-005 | `Query` 校验非空查询并返回驱动提供的 `Rows`。 | `/home/taosx/pkg/taosx/client.go`, `/home/taosx/pkg/taosx/sql.go`, `/home/taosx/pkg/taosx/fake.go`, `/home/taosx/pkg/taosx/client_test.go` | ✅ 已实现 |
