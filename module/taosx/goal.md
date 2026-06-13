@@ -4,14 +4,14 @@
 
 | 字段 | 值 |
 | --- | --- |
-| Target | v0.1.0 MVA |
+| Target | v1.0.0 |
 | Layer | L2 存储适配器 |
 | Source of truth | `/home/taosx/pkg/taosx` |
-| Last-Updated | 2026-06-12 |
+| Last-Updated | 2026-06-13 |
 
 ## 目标
 
-`taosx` 的 v0.1 MVA 目标是交付一个可审计、可测试、可替换驱动实现的 TDengine L2 存储适配器契约。模块应让上层系统用稳定 Go API 组合 TDengine 写入、查询、健康检查和指标采集，而不是在核心包中内置真实 TDengine 客户端、连接池或横切运行时。
+`taosx` 的 v1.0.0 目标是交付一个可审计、可测试、可替换驱动实现的 TDengine L2 存储适配器契约，并用真实 TDengine WebSocket 集成测试证明官方 `taosWS` driver 可通过 `WithDriver` 接入。模块应让上层系统用稳定 Go API 组合 TDengine 写入、查询、健康检查和指标采集，而不是在核心包中内置连接池、STMT 写入、自动重试或横切运行时。
 
 ## 成功标准
 
@@ -26,6 +26,7 @@
 - 指标名称保持 `taosx_client_*` 前缀，且 metrics 是接口注入能力，不形成对观测模块的直接依赖。
 - `Close` 幂等；关闭后业务操作返回 closed 错误。
 - 中心依赖契约保持 `taosx: [kernel]`，不得声明直接依赖 `configx`、`observex` 或 `resiliencx`。
+- v1.0.0 发布前必须通过官方 `taosWS` WebSocket driver 的 env-gated 集成测试，且测试失败输出不得泄漏 DSN 或密码。
 
 ## 范围内
 
@@ -35,10 +36,11 @@
 - 健康检查状态模型：client 返回 `HealthStatus`，driver 只返回 health error。
 - no-op metrics 默认实现与可注入 metrics 接口。
 - 默认 unavailable driver，防止误认为零配置可连接真实 TDengine。
+- 基于官方 `taosWS` 的显式 opt-in TDengine WebSocket 集成测试证据。
 
 ## 范围外
 
-- 真实 TDengine Go driver、连接池、STMT 写入、自动重试和退避。
+- 核心包默认真实驱动、内置凭据管理、连接池、STMT 写入、自动重试和退避。
 - 自动建表、schema migration、订阅、流式查询和业务级时序模型。
 - 直接读取配置中心、环境变量或密钥管理系统。
 - 直接依赖 `configx`、`observex`、`resiliencx` 等横切模块。
@@ -87,8 +89,10 @@ type Config struct {
 - `/home/taosx/pkg/taosx/config.go` 与 `contracts/config.schema.json` 锁定 `Config` 字段、默认值和校验。
 - `/home/taosx/pkg/taosx/client.go`、`batch.go`、`schemaless.go`、`health.go` 锁定 client/driver 行为。
 - `/home/taosx/pkg/taosx/*_test.go`、`/home/taosx/contracts/contracts_test.go`、`/home/taosx/examples/*/*_test.go` 提供回归证据。
-- `go test ./...` 是实现仓的最小完整验证；中心仓文档修改至少通过 `git diff --check` 和契约文本漂移检查。
+- `go test ./...`、`go test -race ./pkg/taosx ./contracts`、`go test ./pkg/taosx ./contracts -cover`（`pkg/taosx` 92.6%）是实现仓的完整默认验证。
+- `TAOSX_INTEGRATION=1 go test -tags=integration ./pkg/taosx -run TestTDengineWebSocketIntegration -count=1` 使用本地 dev 配置注入真实 TDengine 连接参数，且不输出凭据。
+- 中心仓文档修改至少通过 `git diff --check` 和契约文本漂移检查。
 
 ## 评分基线
 
-当前评估重点不是“是否连接真实 TDengine”，而是契约是否准确、边界是否诚实、测试是否锁定行为、文档是否不夸大能力。任何文档声称内置连接池、STMT、自动重试、真实默认驱动、直接依赖 `configx`/`observex`/`resiliencx`，或把空 batch 描述为 no-op，均视为 contract drift。
+v1.0.0 评分同时看契约准确性、边界诚实、测试锁定行为、真实 TDengine 集成证据和文档一致性。未显式 opt-in 的默认测试可不连接 TDengine；但发布评分必须包含 `integration` tag 实测。任何文档声称内置连接池、STMT、自动重试、真实默认驱动、直接依赖 `configx`/`observex`/`resiliencx`，或把空 batch 描述为 no-op，均视为 contract drift。

@@ -4,7 +4,7 @@
 >
 > 数据来源：各 GitHub 仓库实际状态，定期更新
 >
-> 最后更新：2026-06-12
+> 最后更新：2026-06-13
 >
 > 同步基线：`module/` 为模块规格库 SSOT，`docs/governance/` 为 Spec 治理 SSOT，`docs/goal/` 为 Goal 规则 SSOT，`specs/` 已移除。
 
@@ -13,23 +13,23 @@
 ## 总览仪表盘
 
 ```text
-组件总数: 70    已有: 54    已创建: 16    平均进度: 47%
+组件总数: 70    已有: 54    已创建: 16    平均进度: 48%
 
 进度分布:
-  ███░ 80%  ████████████████████████░░░░░░░░░░░░░░░░  27 个 (39%)
+  ███░ ≥80% █████████████████████████░░░░░░░░░░░░░░░  28 个 (40%)
   ██░░ 60%  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   0 个 ( 0%)
   █░░░ 15%  ██████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   6 个 ( 9%)
-  ░░░░  5%  ██████████████░░░░░░░░░░░░░░░░░░░░░░░░░░  17 个 (25%)
+  ░░░░  5%  ██████████████░░░░░░░░░░░░░░░░░░░░░░░░░░  17 个 (24%)
   未标注    ████████████████████░░░░░░░░░░░░░░░░░░░░░░  20 个 (29%)
 
-版本覆盖: 有版本号 18 个 (26%)    无版本号 52 个 (74%)
+版本覆盖: 有版本号 19 个 (27%)    无版本号 51 个 (73%)
 ```
 
 ### 按域统计
 
 | 域                     | 总数 | 已有 | 已创建 | 平均进度 | 有版本号                                                    |
 | ---------------------- | ---- | ---- | ------ | -------- | ----------------------------------------------------------- |
-| 基座                   | 16   | 16   | 0      | 55%      | 6 (kernel / configx / observex / testkitx / resiliencx / schedulex) |
+| 基座                   | 16   | 16   | 0      | 79%      | 7 (kernel / configx / observex / testkitx / resiliencx / schedulex / taosx) |
 | L2.5 领域共享层        | 4    | 4    | 0      | 80%      | 4 (全部)                                                    |
 | 数据域 · 行情 SDK      | 14   | 14   | 0      | 80%      | 0                                                           |
 | 数据域 · 行情 Provider | 5    | 5    | 0      | 80%      | 5 (全部)                                                    |
@@ -42,7 +42,7 @@
 | 横切                   | 2    | 1    | 1      | 43%      | 1 (observex)                                                |
 | Rust                   | 1    | 1    | 0      | -        | 0                                                           |
 | 独立                   | 1    | 1    | 0      | -        | 0                                                           |
-| **合计**               | **70** | **54** | **16** | **47%**  | **18**                                                      |
+| **合计**               | **70** | **54** | **16** | **48%**  | **19**                                                      |
 
 ---
 
@@ -50,10 +50,10 @@
 
 ### 🟢 基座（健康）
 
-- 组件：16 个，平均进度 55%
-- 核心模块（kernel / configx / observex / resiliencx）已成熟，有版本号；kernel v1.0.0、configx v1.0.0、observex v1.0.0 已发布（100% 覆盖）
-- 存储层 3/7 已文档化 50%（redisx / ossx / postgresx）、3/7 已规格化 30%（kafkax / taosx / clickhousex），均已脱离仅骨架阶段
-- **阻塞项**：存储层代码实现仍滞后，但不影响上层开发（全模块 SPEC/TRACEABILITY 已就绪，可通过 contracts 稳定端口 mock）
+- 组件：16 个，平均进度 79%
+- 核心模块（kernel / configx / observex / resiliencx）已成熟，有版本号；kernel / configx / observex / resiliencx 已发布 v1.0.x，taosx v1.0.0 已发布
+- 存储扩展：taosx v1.0.0 已发布；natsx 已验证 80% 但未批准发布；redisx / postgresx / ossx 已文档化 50%，kafkax / clickhousex 已规格化 30%
+- **阻塞项**：部分存储层代码实现仍滞后，但不影响上层开发（全模块 SPEC/TRACEABILITY 已就绪，可通过 contracts 稳定端口 mock）
 
 ### 🟢 L2.5 领域共享层（健康）
 
@@ -126,7 +126,7 @@
 | [kafkax](https://github.com/ZoneCNH/kafkax) | - | ██░░░ 30% | SPEC + TRACEABILITY + goal | Kafka — 消息队列、事件流（完整规格，骨架之上） |
 | [natsx](https://github.com/ZoneCNH/natsx) | - | ████░ 80% | 349KB/27 项 | NATS 生命周期/投递证据已验证（`/home/natsx` `3053e80`）；8/14 complete、6/14 partial、0/14 pending；未批准发布 |
 | [postgresx](https://github.com/ZoneCNH/postgresx) | - | ███░░ 50% | SPEC v0.1.0 + TRACEABILITY + goal + 3 tasks | PostgreSQL — 关系型存储、事务、迁移（已提升为 v0.1.0 candidate） |
-| [taosx](https://github.com/ZoneCNH/taosx) | - | ██░░░ 30% | SPEC + TRACEABILITY + goal | TDengine — 时序数据写入与查询（完整规格，骨架之上） |
+| [taosx](https://github.com/ZoneCNH/taosx) | v1.0.0 | █████ 100% | 真实 TDengine WebSocket 集成 / 92.6% 覆盖 | TDengine L2 adapter contract；pkg/taosx 公共 API，默认驱动显式不可用，真实 taosWS 集成已验证 |
 | [ossx](https://github.com/ZoneCNH/ossx) | - | ███░░ 50% | SPEC + TRACEABILITY + goal + IMPLEMENTATION-PLAN + 7 prompts + 7 tasks + evidence | 对象存储 — S3/MinIO/local 多后端（全链路文档就绪：plan/tasks/prompts/evidence 齐备） |
 | [clickhousex](https://github.com/ZoneCNH/clickhousex) | - | ██░░░ 30% | SPEC + TRACEABILITY + goal | ClickHouse — OLAP 查询、批量写入（完整规格，骨架之上） |
 | [contracts](https://github.com/ZoneCNH/contracts) | - | ███░ 80% | 191KB/27 项 | 跨域稳定端口/事件/DTO 契约 |
@@ -253,7 +253,7 @@
 
 | # | 风险 | 影响 | 建议 |
 | -- | ---- | ---- | ---- |
-| R8 | 存储层全部脱离仅骨架（30-50%），代码实现滞后 | 不阻塞上层开发 | 按需实现，contracts 稳定端口可 mock，各模块 SPEC/TRACEABILITY 已就绪 |
+| R8 | 存储扩展进度分化：taosx 已发布，natsx 已验证，其余 5 个处于 30-50% 规格/文档阶段 | 不阻塞上层开发 | taosx 已完成 v1.0.0；natsx 已验证但未发布；redisx / kafkax / postgresx / ossx / clickhousex 按需推进，contracts 稳定端口可 mock |
 | R9 | 分析域↔决策域若用实现包互调 | Go 循环导入和边界泄漏 | 只允许通过 contracts 事件/DTO 与 L2.5 模型连接 |
 
 ---
