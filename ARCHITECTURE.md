@@ -27,12 +27,15 @@ x.go ───────────────► 基座运行时 / L2.5 / �
    ├───────────────► contracts
    │                  跨域稳定端口、事件协议、DTO 契约
    │
+   ├───────────────► transportx
+   │                  跨 runtime / adapter 传输契约
+   │
    └───────────────► 基座运行时 Foundation
                       L0: kernel
                       L1 runtime: configx · observex · resiliencx · schedulex
                       L1 test-only: testkitx
                       扩展: redisx · kafkax · natsx · postgresx · taosx · ossx · clickhousex
-                      契约: contracts
+                      契约: contracts · transportx
 
 标准与门禁：
   xlib-standard ─── 标准事实源 / Go Reference Template / Generator / Harness Gate / Evidence Runtime，不参与业务运行
@@ -87,7 +90,7 @@ x.go
 
 | 域     | 职责                                                                                                                          | 组件                                                                                                                                                       |
 | ------ | ----------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 基座   | 标准源、L0 原语、L1 运行时横切能力、测试期证据、存储扩展、稳定契约                                                            | xlib-standard, kernel, configx, observex, testkitx, resiliencx, schedulex, xlibgate, redisx, kafkax, natsx, postgresx, taosx, ossx, clickhousex, contracts |
+| 基座   | 标准源、L0 原语、L1 运行时横切能力、测试期证据、存储扩展、稳定契约与传输契约                                                    | xlib-standard, kernel, configx, observex, testkitx, resiliencx, schedulex, xlibgate, redisx, kafkax, natsx, postgresx, taosx, ossx, clickhousex, contracts, transportx |
 | L2.5   | 领域值对象和语义模型，上层统一依赖                                                                                            | decimalx, domain-market, domain-exchange, domain-macro                                                                                                     |
 | 数据域 | 行情、宏观、另类数据采集                                                                                                      | market-data (13 SDK + 5 Provider), macro-data (11), alternative-data                                                                                       |
 | 分析域 | 因子计算、特征存储、因子评估、市场/宏观环境分类、M×S 联合决策（三引擎：market_engine→S / macro_engine→M / regime_engine→M+S） | factor-engine, feature-store, factor-eval, market_regime, macro_regime, regime-engine, ms_brain                                                            |
@@ -112,7 +115,7 @@ Foundation v1 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中�
 | [`docs/governance/ROADMAP-RULES.md`](./docs/governance/ROADMAP-RULES.md) | ROADMAP 编写规范 — 状态流转、版本规划、任务拆分、维护原则         |
 | [`CONSTITUTION.md`](./CONSTITUTION.md)                                   | 系统宪法 — FoundationX 全系统最高治理文件，覆盖模块实现与交付管线 |
 
-16 个基座模块的独立完整规格均为 23 节结构：行为规格 WHEN/THEN、接口契约、业务规则、错误处理、边界场景、验收标准、目录结构、CI Gate、测试矩阵、性能预算、可观测输出、发布 DoD。完整索引见 [`module/README.md`](./module/README.md)。`x.go` 组合根仍作为运行时入口维护，但不再作为 `module/` 下的模块规格。
+17 个基座模块的独立完整规格均为 23 节结构：行为规格 WHEN/THEN、接口契约、业务规则、错误处理、边界场景、验收标准、目录结构、CI Gate、测试矩阵、性能预算、可观测输出、发布 DoD。完整索引见 [`module/README.md`](./module/README.md)。`x.go` 组合根仍作为运行时入口维护，但不再作为 `module/` 下的模块规格。
 
 | 层级          | 模块          | 完整规格                                                         |
 | ------------- | ------------- | ---------------------------------------------------------------- |
@@ -131,7 +134,8 @@ Foundation v1 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中�
 |               | taosx         | [`module/taosx/SPEC.md`](./module/taosx/SPEC.md)                 |
 |               | ossx          | [`module/ossx/SPEC.md`](./module/ossx/SPEC.md)                   |
 |               | clickhousex   | [`module/clickhousex/SPEC.md`](./module/clickhousex/SPEC.md)     |
-| **契约**      | contracts     | [`module/contracts/SPEC.md`](./module/contracts/SPEC.md)         |
+| **契约/传输** | contracts     | [`module/contracts/SPEC.md`](./module/contracts/SPEC.md)         |
+|               | transportx    | [`module/transportx/SPEC.md`](./module/transportx/SPEC.md)       |
 
 ### 规格体系与治理文档
 
@@ -209,6 +213,7 @@ Foundation v1 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中�
 | `testkitx`                                          | 测试、golden、contract、fixture、harness、boundary evidence                  | production import graph、真实外部系统入口        |
 | `L2.5`                                              | 多个业务域共享的领域值对象、枚举、语义模型                                   | Provider 实现、策略逻辑、执行策略                |
 | `contracts`                                         | 跨域稳定端口、事件协议、DTO 契约                                             | 域内接口、临时适配器、通用工具函数、领域模型全集 |
+| `transportx`                                        | 跨 runtime / adapter 传输契约、运行时生命周期、ServiceIdentity、control plane、DeliveryReceipt | 具体 broker/client、协议 SDK、业务语义、领域模型全集 |
 | `x.go`                                              | 配置加载、依赖创建、模块 wiring、生命周期管理                                | 因子计算、信号判断、风控规则、订单路由           |
 | `observex` / `alertx`                               | 指标、追踪、日志、告警事件                                                   | 业务决策和风控放行逻辑                           |
 
@@ -233,6 +238,7 @@ Foundation v1 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中�
 | 决策到执行        | signal-factory / optimizer 通过 risk-engine 提交执行意图          | 绕过 risk-engine 直接调用 order-engine 或交易所 SDK                                          | paper trade 链路能证明 risk gate 必经     |
 | 执行反馈          | fills / positions / PnL / exposure 以事件进入决策域               | execution 包同步调用 strategy / backtest 内部实现                                            | 事件 topic、DTO 和消费方在 contracts 固化 |
 | contracts         | 跨域端口、事件协议、DTO                                           | 领域模型全集、通用工具、域内临时接口                                                         | 新增契约必须说明消费方、生产方和稳定期    |
+| transportx        | Envelope、Endpoint、运行时生命周期、ServiceIdentity、control plane、DeliveryReceipt、conformance gate | 具体 broker/client、协议 SDK、业务语义、领域模型                                             | 新增传输契约必须说明 runtime / adapter 边界和兼容期 |
 | x.go              | 读取配置、创建依赖、连接模块、管理生命周期                        | 因子计算、信号生成、风控判断、订单路由                                                       | 入口包只出现 wiring / lifecycle 测试      |
 
 ## 契约固化优先级
@@ -252,12 +258,13 @@ Foundation v1 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中�
 5. **风控是独立引擎** — 策略只能通过 risk-engine 提交订单，不能直接调用 order-engine
 6. **回测与实盘共享代码** — signal-factory / factor-engine / risk-engine 同一套，backtest-engine 只替换数据源和撮合/回放环境
 7. **contracts 只定义跨域稳定契约** — 跨域端口、事件协议、DTO 放在 contracts；域内接口留在域内，领域值对象放在 L2.5
-8. **领域语义沉到 L2.5** — 多域共享的 Price/Qty/Tick/Quote/MacroPoint 等模型统一来自 decimalx / domain-\*，避免各域重复定义
-9. **数据职责不跨域** — 数据域只负责采集、标准化和存储，因子计算在分析域，策略逻辑在决策域
-10. **执行抽象交易所差异** — order-engine 对上层暴露统一接口，内部适配各交易所
-11. **反馈通过事件表达** — 执行结果、仓位、PnL、风险暴露以事件反馈决策域，避免执行域反向调用决策内部实现
-12. **x.go 只做组合根** — 不含业务逻辑，仅负责启动、配置加载、依赖组装和生命周期控制
-13. **域内平级协作** — 同域模块不编号、不分先后，按需协作
+8. **transportx 只定义传输边界契约** — Envelope、Endpoint、运行时生命周期、ServiceIdentity、control plane、DeliveryReceipt 和 conformance gate 放在 transportx；具体 broker/client、协议 SDK、业务语义和领域模型留在 adapter 或业务域内
+9. **领域语义沉到 L2.5** — 多域共享的 Price/Qty/Tick/Quote/MacroPoint 等模型统一来自 decimalx / domain-\*，避免各域重复定义
+10. **数据职责不跨域** — 数据域只负责采集、标准化和存储，因子计算在分析域，策略逻辑在决策域
+11. **执行抽象交易所差异** — order-engine 对上层暴露统一接口，内部适配各交易所
+12. **反馈通过事件表达** — 执行结果、仓位、PnL、风险暴露以事件反馈决策域，避免执行域反向调用决策内部实现
+13. **x.go 只做组合根** — 不含业务逻辑，仅负责启动、配置加载、依赖组装和生命周期控制
+14. **域内平级协作** — 同域模块不编号、不分先后，按需协作
 
 ## 进度校准标准
 
@@ -292,6 +299,7 @@ Foundation v1 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中�
 | 基座                  | [ossx](https://github.com/ZoneCNH/ossx)                         | v1.0.1 | ✅ 已发布 | █████ 100% | Aliyun OSS 对象存储 L2 adapter；真实 Aliyun OSS 集成测试、race、vet、build、release-check 与 100.0% 覆盖已验证；S3/MinIO/Azure/GCS Provider 仅保留扩展位 |
 | 基座                  | [clickhousex](https://github.com/ZoneCNH/clickhousex)           | -      | ✅ 已有   | ██░░░ 30% | ClickHouse — OLAP 查询、批量写入（完整规格，骨架之上）                                      |
 | 基座                  | [contracts](https://github.com/ZoneCNH/contracts)               | -      | ✅ 已有   | ███░ 80% | 跨域稳定端口/事件/DTO 契约，191KB/27 项                                                   |
+| 基座                  | [transportx](https://github.com/ZoneCNH/transportx)             | v1.0.1 | ✅ 已有   | ███░ 80% | 跨 runtime / adapter 传输契约；Envelope/Endpoint、运行时生命周期、ServiceIdentity、control plane、DeliveryReceipt 与 conformance gates |
 | **L2.5 · 领域共享层** |                                                                 |        |           |          |                                                                                           |
 | L2.5                  | [decimalx](https://github.com/ZoneCNH/decimalx)                 | v0.1.0 | ✅ P0     | ███░ 80% | 高精度十进制类型（Decimal/Price/Qty/Ratio/Money）                                         |
 | L2.5                  | [domain-market](https://github.com/ZoneCNH/domain-market)       | v0.1.0 | ✅ P0     | ███░ 80% | 市场数据域模型（Tick/Quote/Bar/OrderBook）                                                |
@@ -379,6 +387,8 @@ Foundation v1 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中�
 | 基座              | clickhousex                                                                                               | `/home/clickhousex/`                        |
 | 基座              | taosx                                                                                                     | `/home/taosx/`                              |
 | 基座              | ossx                                                                                                      | `/home/ossx/`                               |
+| 基座              | contracts                                                                                                 | `/home/contracts/`                          |
+| 基座              | transportx                                                                                                | `/home/transportx/`                         |
 | 基座              | decimalx                                                                                                  | `/home/decimalx/`                           |
 | 基座              | domain-market                                                                                             | `/home/domain-market/`                      |
 | 基座              | domain-exchange                                                                                           | `/home/domain-exchange/`                    |

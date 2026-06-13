@@ -4,7 +4,7 @@
 >
 > 数据来源：各 GitHub 仓库实际状态，定期更新
 >
-> 最后更新：2026-06-13
+> 最后更新：2026-06-14
 >
 > 同步基线：`module/` 为模块规格库 SSOT，`docs/governance/` 为 Spec 治理 SSOT，`docs/goal/` 为 Goal 规则 SSOT，`specs/` 已移除。
 
@@ -13,27 +13,27 @@
 ## 总览仪表盘
 
 ```text
-组件总数: 70    已有: 54    已创建: 16    平均进度: 49%
+组件总数: 71    已有: 55    已创建: 16    平均进度: 49%
 
 进度分布:
-  ███░ ≥80% ███████████████████████████░░░░░░░░░░░░░  30 个 (43%)
+  ███░ ≥80% ████████████████████████████░░░░░░░░░░░░  31 个 (44%)
   ██░░ 60%  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   0 个 ( 0%)
   █░░░ 15%  █████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   5 个 ( 7%)
   ░░░░  5%  ██████████████░░░░░░░░░░░░░░░░░░░░░░░░░░  17 个 (24%)
-  未标注    ██████████████████░░░░░░░░░░░░░░░░░░░░░░░░  18 个 (26%)
+  未标注    ██████████████████░░░░░░░░░░░░░░░░░░░░░░░░  18 个 (25%)
 
-版本覆盖: 有版本号 24 个 (34%)    无版本号 46 个 (66%)
+版本覆盖: 有版本号 25 个 (35%)    无版本号 46 个 (65%)
 ```
 
 ### 按域统计
 
 | 域                     | 总数 | 已有 | 已创建 | 平均进度 | 有版本号                                                    |
 | ---------------------- | ---- | ---- | ------ | -------- | ----------------------------------------------------------- |
-| 基座                   | 16   | 16   | 0      | 70%      | 12 (kernel / configx / observex / testkitx / resiliencx / schedulex / redisx / kafkax / natsx / postgresx / taosx / ossx) |
+| 基座                   | 17   | 17   | 0      | 71%      | 13 (kernel / configx / observex / testkitx / resiliencx / schedulex / redisx / kafkax / natsx / postgresx / taosx / ossx / transportx) |
 | L2.5 领域共享层        | 4    | 4    | 0      | 80%      | 4 (全部)                                                    |
-| 数据域 · 行情 SDK      | 14   | 14   | 0      | 80%      | 0                                                           |
+| 数据域 · 行情 SDK      | 13   | 13   | 0      | 80%      | 0                                                           |
 | 数据域 · 行情 Provider | 5    | 5    | 0      | 80%      | 5 (全部)                                                    |
-| 数据域 · 宏观          | 10   | 10   | 0      | 80%      | 0                                                           |
+| 数据域 · 宏观          | 11   | 11   | 0      | 80%      | 0                                                           |
 | 数据域 · 另类          | 1    | 0    | 1      | 5%       | 0                                                           |
 | 分析域                 | 7    | 1    | 6      | 8%       | 1 (regime-engine)                                           |
 | 决策域                 | 4    | 1    | 3      | 19%      | 0                                                           |
@@ -42,7 +42,7 @@
 | 横切                   | 2    | 1    | 1      | 43%      | 1 (observex)                                                |
 | Rust                   | 1    | 1    | 0      | -        | 0                                                           |
 | 独立                   | 1    | 1    | 0      | -        | 0                                                           |
-| **合计**               | **70** | **54** | **16** | **49%**  | **24**                                                      |
+| **合计**               | **71** | **55** | **16** | **49%**  | **25**                                                      |
 
 ---
 
@@ -50,10 +50,10 @@
 
 ### 🟢 基座（健康）
 
-- 组件：16 个，平均进度 70%
-- 核心模块（kernel / configx / observex / resiliencx / schedulex / testkitx / redisx / kafkax / natsx / postgresx / taosx / ossx）已成熟，有版本号；kernel/configx/observex/schedulex/redisx/kafkax/natsx/postgresx 已发布 v1.0.0，taosx/ossx 已发布 v1.0.1
-- 存储层 `redisx` 已发布 v1.0.0（全局成熟度 100%，Docker-backed Redis + persistence restart recovery 验证），`kafkax` 已发布 v1.0.0（100%），`natsx` 已发布 v1.0.0（100%，repair-slice 20/20，真实 dev auth live gate 验证），`postgresx` 已发布 v1.0.0（全局成熟度 90%），`taosx` 已发布 v1.0.1（100%）；`ossx` 已发布 v1.0.1（真实 Aliyun OSS 集成、race、vet、build、release-check 与 100.0% 覆盖已验证）；`clickhousex` 已规格化 30%，均已脱离仅骨架阶段
-- **阻塞项**：clickhousex 仍需实现或发布闭环；natsx 正式四源 98+ arbiter 与生产 TLS gate 仍待补证；redisx/kafkax/natsx/postgresx/taosx/ossx 已不再是存储层实现阻塞项
+- 组件：17 个，平均进度 71%
+- 核心模块（kernel / configx / observex / resiliencx / schedulex / testkitx / redisx / kafkax / natsx / postgresx / taosx / ossx / transportx）已成熟，有版本号；kernel/configx/observex/schedulex/redisx/kafkax/natsx/postgresx 已发布 v1.0.0，taosx/ossx/transportx 已发布 v1.0.1
+- 存储层 `redisx` 已发布 v1.0.0（全局成熟度 100%，Docker-backed Redis + persistence restart recovery 验证），`kafkax` 已发布 v1.0.0（100%），`natsx` 已发布 v1.0.0（100%，repair-slice 20/20，真实 dev auth live gate 验证），`postgresx` 已发布 v1.0.0（全局成熟度 90%），`taosx` 已发布 v1.0.1（100%）；`ossx` 已发布 v1.0.1（真实 Aliyun OSS 集成、race、vet、build、release-check 与 100.0% 覆盖已验证）；`clickhousex` 已规格化 30%，均已脱离仅骨架阶段；`transportx` 已规格化 80% 并纳入传输契约层
+- **阻塞项**：clickhousex 仍需实现或发布闭环；natsx 正式四源 98+ arbiter 与生产 TLS gate 仍待补证；redisx/kafkax/natsx/postgresx/taosx/ossx/transportx 已不再是存储层或传输契约实现阻塞项
 
 ### 🟢 L2.5 领域共享层（健康）
 
@@ -63,13 +63,13 @@
 
 ### 🟢 数据域 · 行情（健康）
 
-- SDK：14 个交易所适配器，全部 80%，无版本号
+- SDK：13 个交易所适配器，全部 80%，无版本号
 - Provider：5 个 Kline/Ticker Provider，全部 v0.1.0，进度 80%
 - **待确认**：SDK 全部无版本号，是否已通过生产验证？
 
 ### 🟡 数据域 · 宏观（注意）
 
-- 组件：10 个，全部 80%，无版本号
+- 组件：11 个，全部 80%，无版本号
 - 6 个央行数据源结构高度相似（fred / treasury / bea / ecb / uk-cb / japan-cb）
 - **风险**：同质化严重，是否考虑合并为统一适配器？
 
@@ -130,6 +130,7 @@
 | [ossx](https://github.com/ZoneCNH/ossx) | v1.0.1 | █████ 100% | 真实 Aliyun OSS 集成 / pkg+internal 100.0% 覆盖 | Aliyun OSS 对象存储 L2 adapter；race、vet、build、release-check 已通过；S3/MinIO/Azure/GCS Provider 仅保留扩展位 |
 | [clickhousex](https://github.com/ZoneCNH/clickhousex) | - | ██░░░ 30% | SPEC + TRACEABILITY + goal | ClickHouse — OLAP 查询、批量写入（完整规格，骨架之上） |
 | [contracts](https://github.com/ZoneCNH/contracts) | - | ███░ 80% | 191KB/27 项 | 跨域稳定端口/事件/DTO 契约 |
+| [transportx](https://github.com/ZoneCNH/transportx) | v1.0.1 | ███░ 80% | SPEC + TRACEABILITY + goal | 跨 runtime / adapter 传输契约；Envelope/Endpoint、运行时生命周期、ServiceIdentity、control plane、DeliveryReceipt 与 conformance gates |
 
 ### L2.5 · 领域共享层
 
@@ -157,7 +158,6 @@
 | [lighter](https://github.com/ZoneCNH/lighter) | SDK | - | ███░ 80% | Lighter DEX |
 | [upbit](https://github.com/ZoneCNH/upbit) | SDK | - | ███░ 80% | Upbit CEX |
 | [coinglass](https://github.com/ZoneCNH/coinglass) | SDK | - | ███░ 80% | 衍生品聚合数据 |
-| [yield-curve](https://github.com/ZoneCNH/yield-curve) | SDK | - | ███░ 80% | 收益率曲线 |
 | [binance-market](https://github.com/ZoneCNH/binance-market) | Provider | v0.1.0 | ███░ 80% | Binance Kline/Ticker |
 | [bybit-market](https://github.com/ZoneCNH/bybit-market) | Provider | v0.1.0 | ███░ 80% | Bybit Kline/Ticker |
 | [bitget-market](https://github.com/ZoneCNH/bitget-market) | Provider | v0.1.0 | ███░ 80% | Bitget Kline/Ticker |
@@ -170,6 +170,7 @@
 | ---- | ---- | ---- | ---- |
 | [fred](https://github.com/ZoneCNH/fred) | - | ███░ 80% | 美联储 FRED |
 | [treasury](https://github.com/ZoneCNH/treasury) | - | ███░ 80% | 美国财政部 |
+| [yield-curve](https://github.com/ZoneCNH/yield-curve) | - | ███░ 80% | 收益率曲线 |
 | [bea](https://github.com/ZoneCNH/bea) | - | ███░ 80% | 美国经济分析局 |
 | [ecb](https://github.com/ZoneCNH/ecb) | - | ███░ 80% | 欧洲央行 |
 | [uk-cb](https://github.com/ZoneCNH/uk-cb) | - | ███░ 80% | 英国央行 |
@@ -241,19 +242,19 @@
 | # | 风险 | 影响 | 建议 |
 | -- | ---- | ---- | ---- |
 | R3 | x.go 2.8MB 体量异常 | 可能违反组合根边界 | 按 ARCHITECTURE.md 的组合根守卫核实，剥离业务逻辑 |
-| R4 | 14 个交易所 SDK 全部无版本号 | 无法追踪 API 兼容性 | 建立版本化发布机制 |
+| R4 | 13 个交易所 SDK 全部无版本号 | 无法追踪 API 兼容性 | 建立版本化发布机制 |
 | R5 | 宏观数据源 6 个央行适配器同质化 | 维护成本高 | 考虑合并为统一适配器 |
 | R6 | strategies 定位模糊（3.5MB/746 项） | 参考代码 vs 生产代码不清 | 明确定位，考虑从状态表分离 |
 | R7 | observex 双重归属（基座+横切） | 职责边界模糊 | ✅ 已记录 ADR：`module/observex/ADR-dual-attribution.md`（2026-06-12） |
 | R10 | ~~`.omc/state/sessions` 已入库~~ | ~~可能泄露 prompt/会话/环境信息~~ | ✅ 已修复：`git rm -r --cached .omc`（2026-06-07） |
 | R11 | ~~公开 README 含 `127.0.0.1` 本地链接~~ | ~~外部无法访问，降低专业度~~ | ✅ 已修复：批量移除所有本地链接（2026-06-07） |
-| R12 | 70 个仓库无统一命名前缀 | 分类困难，增加维护成本 | 按 `foundation-*`/`adapter-*`/`engine-*`/`lab-*` 重整 |
+| R12 | 71 个仓库无统一命名前缀 | 分类困难，增加维护成本 | 按 `foundation-*`/`adapter-*`/`engine-*`/`lab-*` 重整 |
 
 ### 🟢 低风险
 
 | # | 风险 | 影响 | 建议 |
 | -- | ---- | ---- | ---- |
-| R8 | 剩余存储层已脱离仅骨架（30-100%），但 clickhousex 仍缺实现或发布闭环；natsx 已完成 v1.0.0 发布证据闭环但正式四源 98+ arbiter 与生产 TLS gate 待补 | 不阻塞上层开发；redisx/kafkax/natsx/postgresx 已发布 v1.0.0，taosx/ossx 已发布 v1.0.1 | 按需推进剩余模块实现与补证，contracts 稳定端口可 mock，各模块 SPEC/TRACEABILITY 已就绪 |
+| R8 | 剩余存储/传输层已脱离仅骨架（30-100%），但 clickhousex 仍缺实现或发布闭环；natsx 已完成 v1.0.0 发布证据闭环但正式四源 98+ arbiter 与生产 TLS gate 待补 | 不阻塞上层开发；redisx/kafkax/natsx/postgresx 已发布 v1.0.0，taosx/ossx/transportx 已发布 v1.0.1 | 按需推进剩余模块实现与补证，contracts 稳定端口和 transportx 传输契约可 mock，各模块 SPEC/TRACEABILITY 已就绪 |
 | R9 | 分析域↔决策域若用实现包互调 | Go 循环导入和边界泄漏 | 只允许通过 contracts 事件/DTO 与 L2.5 模型连接 |
 
 ---
@@ -269,7 +270,7 @@
 
 1. **聚焦 Phase 1**：先固化 MarketDataProvider / FactorInput / FactorOutput，再实现 factor-engine → feature-store → factor-eval
 2. **核实 x.go**：确认只包含配置加载、依赖 wiring 和生命周期控制，必要时剥离业务逻辑
-3. **版本化 SDK**：为 14 个交易所 SDK 建立 tagged release
+3. **版本化 SDK**：为 13 个交易所 SDK 建立 tagged release
 4. **统一宏观适配器**：评估 6 个央行数据源合并可行性
 5. ~~**清理仓库卫生**（R10）~~：✅ 已完成（2026-06-07）
 6. ~~**移除本地链接**（R11）~~：✅ 已完成（2026-06-07）
@@ -281,9 +282,9 @@
 
 | 检查项 | README | ARCHITECTURE | STATUS | 一致性 |
 | ------ | ------ | ------------ | ------ | ------ |
-| 组件总数 | 70（按域视图） | 70 | 70 | ✅ |
-| market-data 数量 | 19 | 19 (14+5) | 19 (14+5) | ✅ |
-| macro-data 数量 | 10 | 10 | 10 | ✅ |
+| 组件总数 | 71（按域视图） | 71 | 71 | ✅ |
+| market-data 数量 | 18 | 18 (13+5) | 18 (13+5) | ✅ |
+| macro-data 数量 | 11 | 11 | 11 | ✅ |
 | L2.5 组件 | 4 | 4 | 4 | ✅ |
 | 分析域组件 | 7 | 7 | 7 | ✅ |
 | 决策域组件 | 4 | 4 | 4 | ✅ |

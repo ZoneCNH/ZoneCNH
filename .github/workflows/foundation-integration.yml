@@ -72,6 +72,15 @@ jobs:
       - uses: actions/checkout@v4
       - name: Collect evidence from all modules
         run: bash .github/ci/foundation-evidence-collect.sh foundation-integration
+      - name: Upload Foundation evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: foundation-integration-evidence
+          path: |
+            release/foundation/evidence-foundation-integration.json
+            release/foundation/evidence-foundation-integration.json.sha256
+          if-no-files-found: error
+          retention-days: 30
 
   summary:
     name: Integration Summary

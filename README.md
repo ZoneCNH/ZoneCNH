@@ -18,7 +18,7 @@ Go 🐹 (主要) · Rust 🦀 (底层) · Python 🐍 (脚本/数据) · TypeScr
 >
 > 🧱 Foundation v1 规格、依赖矩阵、执行跟踪与 ADR → **[module/](./module/)**
 >
-> 📋 16 个基座模块规格 → **[module/](./module/)**
+> 📋 17 个基座模块规格 → **[module/](./module/)**
 >
 > 🧭 Spec 治理模板、生命周期、追溯与评分规则 → **[docs/governance/](./docs/governance/)**
 >
@@ -38,7 +38,7 @@ L1 运行时: configx / observex / resiliencx / schedulex
 L1 测试: testkitx (test-only)
       │
       ▼
-基座扩展: redisx / kafkax / natsx / postgresx / taosx / ossx / clickhousex / contracts
+基座扩展: redisx / kafkax / natsx / postgresx / taosx / ossx / clickhousex / contracts / transportx
       │
       ▼
 L2.5: decimalx / domain-market / domain-exchange / domain-macro
@@ -79,9 +79,10 @@ L2.5: decimalx / domain-market / domain-exchange / domain-macro
 - [natsx](https://github.com/ZoneCNH/natsx) — NATS 内部通信模块（v1.0.0 已发布；Core NATS / JetStream、Drain/reconnect/degraded health、canonical `FOUNDATIONX_NATS_*` 配置和真实 dev auth live gate 已验证；repair-slice 20/20，正式四源 98+ arbiter 与生产 TLS gate 待补） `公开`
 - [ossx](https://github.com/ZoneCNH/ossx) — Aliyun OSS 对象存储 L2 adapter（v1.0.1 已发布；真实 Aliyun OSS 集成、race、vet、build、release-check 与 100.0% 覆盖已验证；S3/MinIO/Azure/GCS Provider 仅保留扩展位） `公开`
 
-### 基座 · 契约层
+### 基座 · 契约与传输
 
 - [contracts](https://github.com/ZoneCNH/contracts) — 跨域稳定端口、事件协议与 DTO 契约 `公开`
+- [transportx](https://github.com/ZoneCNH/transportx) — 跨 runtime / adapter 传输契约（Envelope/Endpoint、运行时生命周期、ServiceIdentity、control plane、DeliveryReceipt 与 conformance gates） `公开`
 
 ### L2.5 · 领域共享层
 

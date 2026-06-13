@@ -1,8 +1,8 @@
 # Foundation 模块规格索引
 
-> 16 个基座模块的独立完整规格，按架构层级组织。`x.go` 组合根不再作为 `module/` 下的模块规格维护。
+> 17 个基座模块的独立完整规格，按架构层级组织。`x.go` 组合根不再作为 `module/` 下的模块规格维护。
 
-最后更新：2026-06-13
+最后更新：2026-06-14
 
 ---
 
@@ -20,7 +20,7 @@
 ## 分层总览
 
 ```text
-标准源 ──→ 门禁校验 ──→ L0 原语 ──→ L1 运行时 / 测试 ──→ 存储扩展 / 契约
+标准源 ──→ 门禁校验 ──→ L0 原语 ──→ L1 运行时 / 测试 ──→ 存储扩展 / 契约 / 传输
  xlib-standard    xlibgate       kernel    configx            redisx        contracts
                   (CI gate)               observex            kafkax
                                           resiliencx          natsx
@@ -28,6 +28,7 @@
                                           testkitx            taosx
                                                               ossx
                                                               clickhousex
+                                                              transportx
 ```
 
 依赖方向：自上而下。同层模块平级协作，不存在编译期依赖。
@@ -58,6 +59,7 @@
 | ossx          | [goal.md](./ossx/goal.md)          |
 | clickhousex   | [goal.md](./clickhousex/goal.md)   |
 | contracts     | [goal.md](./contracts/goal.md)     |
+| transportx    | [goal.md](./transportx/goal.md)    |
 
 ---
 
@@ -121,13 +123,14 @@ test-only，不参与生产运行时。
 
 ---
 
-## 契约（1 个）
+## 契约与传输（2 个）
 
-跨域稳定端口和事件协议。
+跨域稳定端口、事件协议与跨 runtime / adapter 传输契约。
 
-| 模块      | 规格                                                          | 核心职责                                                                                  |
-| --------- | ------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| contracts | [SPEC.md](./contracts/SPEC.md) · [tasks/](./contracts/tasks/) | MarketDataProvider/MacroDataProvider、Event、Topic、DTO、Breaking Change（6 FR，5 tasks） |
+| 模块       | 规格                                                                                                                | 核心职责                                                                                                                       |
+| ---------- | ------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| contracts  | [SPEC.md](./contracts/SPEC.md) · [tasks/](./contracts/tasks/)                                                       | MarketDataProvider/MacroDataProvider、Event、Topic、DTO、Breaking Change（6 FR，5 tasks）                                      |
+| transportx | [SPEC.md](./transportx/SPEC.md) · [TRACEABILITY.md](./transportx/TRACEABILITY.md) · [goal.md](./transportx/goal.md) | Envelope/Endpoint、运行时生命周期、ServiceIdentity、control plane、DeliveryReceipt 与 conformance gates（16 FR，12 BR，16 TC） |
 
 ---
 

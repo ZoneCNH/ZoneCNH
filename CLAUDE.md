@@ -219,3 +219,59 @@ Claude 执行：
 - **规格标准**：模块规格遵循 `CONSTITUTION.md` 第四条，采用 23 节结构（行为规格 WHEN/THEN、接口契约、业务规则、错误处理、边界场景、验收标准等）。模板见 `module/README.md`。追溯矩阵规范见 `docs/governance/TRACEABILITY.md`，具体矩阵位于 `module/{module}/TRACEABILITY.md`。
 - **Goal 文档**：修改 `docs/goal/` 后需同步 `CHANGELOG.md`；涉及 schema 或状态变更时同步更新评分账本（`24-standard-unification-analysis.md`）和对应 YAML schema 文件。提交前运行 `lint-goal.sh && lint-goal.sh --spec`。
 - **安全**：不要提交凭证、API key、账户 ID、私有端点或实盘交易配置。
+
+# Harness 自动化（Harness Starter）
+
+本项目已集成 Harness Starter 三层自动化体系（安全/感知/审查）。
+
+## Hook 生命周期
+
+每次对话中，以下 Hook 自动触发：
+
+| Hook | 时机 | 职责 |
+|------|------|------|
+| **PreToolUse** | 工具执行前 | 安全拦截：`.env` 保护、危险命令阻止（`rm -rf`、`git push --force`） |
+| **PostToolUse** | 编辑完成后 | 自动格式化（检测项目格式化工具，无匹配时静默跳过） |
+| **PreCompact** | 上下文压缩前 | 保存会话关键状态 + Loop 进度 |
+| **SessionStart** | 新对话开始 | 注入 git 状态 + Harness 状态 + 最近审查记录 |
+| **Stop** | 每次响应后 | 审查变更范围、调试残留、依赖一致性，生成报告至 `.claude/reviews/` |
+
+## 工作流模式与阶段
+
+通过 `.claude/.harness-state` 控制审查严格度：
+
+| 命令 | 效果 |
+|------|------|
+| `/harness-mode full` | 完整检查，所有规则生效（默认） |
+| `/harness-mode hotfix` | 紧急修复，跳过行数/文件数检查 |
+| `/harness-mode tweak` | 微调模式，仅 `.env` 保护 |
+| `/harness-phase design` | 设计阶段，宽松审查，不检查调试残留 |
+| `/harness-phase build` | 构建阶段，正常审查（默认） |
+| `/harness-phase fix` | 修复阶段，>5 个文件变更即告警 |
+
+查看当前状态：`/harness-status`
+
+## GC Agent（可选）
+
+定期扫描项目健康状态（8 个维度），手动触发：
+
+```bash
+node scripts/gc-scan.mjs          # 标准输出
+node scripts/gc-scan.mjs --json   # JSON 输出
+```
+
+## 健康检查
+
+```bash
+node scripts/check.mjs            # 验证 Harness 配置完整性
+```
+
+## 成熟度路线图
+
+| 级别 | 名称 | 指标 | 状态 |
+|:---:|------|------|:---:|
+| L0 | 裸用 | 无 CLAUDE.md | — |
+| L1 | 规则层 | CLAUDE.md + 行为准则 | ✅ |
+| L2 | 反馈回路 | PreToolUse + SessionStart + Stop 已激活 | ✅ |
+| L3 | 自动修正 | PostToolUse + PreCompact 已激活 + 审查报告 ≥5 份 | 🔧 |
+| L4 | 自治系统 | GC Agent 连续 3 次 0 critical | ⬜ |

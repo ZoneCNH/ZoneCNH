@@ -35,7 +35,9 @@ count_readme_section() {
 # 从 ARCHITECTURE.md 状态总览表，按域列匹配
 count_arch_domain() {
   local domain="$1"
-  grep -cP "^\|\s*${domain}\s*\|\s*\[" "$REPO_ROOT/ARCHITECTURE.md" 2>/dev/null || echo "0"
+  local count
+  count=$(grep -cP "^\|\s*${domain}\s*\|\s*\[" "$REPO_ROOT/ARCHITECTURE.md" 2>/dev/null || true)
+  printf '%s\n' "${count:-0}"
 }
 
 # 从 STATUS.md 统计表提取某域的 "总数" 列
@@ -96,7 +98,7 @@ STATUS_VERSIONED=$(grep -oP '版本覆盖:\s*有版本号\s*\K[0-9]+' "$REPO_ROO
 STATUS_UNVERSIONED=$(grep -oP '版本覆盖:.*无版本号\s*\K[0-9]+' "$REPO_ROOT/STATUS.md" | head -1)
 STATUS_DOMAIN_VERSIONED=$(awk -F'|' '/^\| \*\*合计/ {gsub(/[^0-9]/, "", $7); print $7}' "$REPO_ROOT/STATUS.md")
 
-# 从 module/ 提取规格数量：Foundation 16
+# 从 module/ 提取规格数量：Foundation 17
 SPEC_COUNT=$(find "$SPEC_DIR" -mindepth 2 -maxdepth 2 -name SPEC.md | wc -l | tr -d ' ')
 FOUNDATION_SPEC_COUNT="$SPEC_COUNT"
 
@@ -142,16 +144,16 @@ check "market-data (列表条目 vs 图中标注)" "$README_MARKET" "$README_MD_
 check "macro-data (列表条目 vs 图中标注)" "$README_MACRO" "$README_MACRO_NUM"
 
 # 4. ARCHITECTURE 状态表组件行总数 vs STATUS 总数
-# x.go 是入口/组合根，不再纳入 module 规格和 STATUS 组件总数。
-ARCH_TOTAL=$((ARCH_BASE + ARCH_L25 + ARCH_DATA + ARCH_ANALYSIS + ARCH_DECISION + ARCH_EXEC + ARCH_CROSS + ARCH_RUST + ARCH_INDEP))
-check "组件总数 (ARCHITECTURE 表合计不含入口 vs STATUS)" "$ARCH_TOTAL" "$STATUS_TOTAL"
+# module/ 规格数量只统计 Foundation 规格；公开组件总数仍包含入口组合根 x.go。
+ARCH_TOTAL=$((ARCH_BASE + ARCH_L25 + ARCH_DATA + ARCH_ANALYSIS + ARCH_DECISION + ARCH_EXEC + ARCH_ENTRY + ARCH_CROSS + ARCH_RUST + ARCH_INDEP))
+check "组件总数 (ARCHITECTURE 表合计含入口 vs STATUS)" "$ARCH_TOTAL" "$STATUS_TOTAL"
 
 # 5. STATUS 组件总数行 vs 同步表
 check "STATUS (仪表盘总数 vs 同步表总计)" "$STATUS_TOTAL" "$STATUS_SYNC_TOTAL"
 
-# 6. module/ 数量口径：Foundation 16
-check "规格总数 (Foundation 16)" "$SPEC_COUNT" "16"
-check "Foundation 规格数" "$FOUNDATION_SPEC_COUNT" "16"
+# 6. module/ 数量口径：Foundation 17
+check "规格总数 (Foundation 17)" "$SPEC_COUNT" "17"
+check "Foundation 规格数" "$FOUNDATION_SPEC_COUNT" "17"
 
 # 7. STATUS 内部统计应与仪表盘总数一致
 check "STATUS (进度分布合计 vs 仪表盘总数)" "$STATUS_PROGRESS_BUCKET_TOTAL" "$STATUS_TOTAL"

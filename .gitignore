@@ -99,3 +99,7 @@ sre/
 # Report tooling npm artifacts
 docs/report/package.json
 docs/report/package-lock.json
+
+# Harness Starter — 运行时生成物
+.claude/reviews/
+.claude/loops/

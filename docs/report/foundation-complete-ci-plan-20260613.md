@@ -1,7 +1,7 @@
 # Foundation 完整 CI 方案
 
 - 日期：2026-06-13
-- 状态：Draft
+- 状态：已落地控制面、SRE 合同预检、Go baseline 阻断、真实 import 边界扫描、模块身份门禁和集成 evidence artifact；模块仓 CI 与发布级证据仍按 P2-P5 推进
 - 范围：CI 体系设计、机器池执行策略、跨仓集成、发布前置校验、SRE 机器部署边界和证据链。
 - 非范围：不在本仓库内联真实机器部署，不在本仓库管理 SRE 机器凭据，不修改 SRE 控制面实现。
 
@@ -52,17 +52,29 @@
 | 文档/治理 CI        | docs、goal、脚本测试、依赖矩阵检查                      | `.github/workflows/*.yml`                      |
 | Foundation 集成 CI  | YAML lint、依赖矩阵、边界、联合构建测试、证据收集       | `.github/workflows/foundation-integration.yml` |
 | Foundation 发布前置 | 质量门禁、模块选择、tag、manifest、evidence             | `.github/workflows/foundation-release.yml`     |
+| Release/SRE 合同    | 生成 release manifest、SRE deploy contract 并预检       | `.github/workflows/release.yml`                |
 
-### 2.3 已知缺口
+### 2.3 已收敛项与剩余缺口
 
-现有骨架可以支撑完整 CI，但还需要补齐以下缺口：
+本轮已收敛：
 
-1. `docs/ci-deployment.md` 的 workflow 清单落后于实际文件，实际已有 `foundation-integration.yml` 和 `foundation-release.yml`。
-2. `.github/ci/foundation-joint-build.sh` 当前 `go build ./...` 失败后只打印失败，没有立即退出，可能掩盖构建失败。
-3. `.github/ci/foundation-boundary-check.sh` 主要校验 YAML 结构，还没有对真实仓库 import 图做强校验。
-4. `.github/ci/foundation-deps-full-check.sh` 对 Go baseline mismatch 只告警；第一阶段完成后应升级为阻断。
-5. 证据文件已有雏形，但缺少 artifact digest、SBOM、provenance、runner 信息和测试摘要。
-6. self-hosted runner 执行 PR 需要明确安全策略，避免未受信任 fork PR 接触内部机器和 secrets。
+1. `docs/ci-deployment.md` 已纳入 `foundation-integration.yml`、`foundation-release.yml` 和 release/SRE 合同预检说明。
+2. `.github/ci/foundation-joint-build.sh` 已按失败即非零退出的语义处理联合 build/test。
+3. `release.yml` 已生成 `release-manifest.json`、`sre-deploy-contract.json`，并通过 `deploy-contract-preflight.sh` 校验 SRE 执行面字段。
+4. `docs/governance/DEPLOYMENT.md` 已明确本仓 release 只做 manifest、contract 和 preflight，不执行真实机器部署。
+5. `.github/ci/foundation-deps-full-check.sh` 已读取 YAML `go_baseline`，默认阻断 Go baseline mismatch，并校验模块路径身份。
+6. `.github/ci/foundation-boundary-check.sh` 已扫描真实 Go import 图，按 YAML 执行 allowed/forbidden/test-only 边界和 module path 身份门禁。
+7. `.github/ci/foundation-evidence-collect.sh` 已输出 schema 化 JSON、sha256、模块 commit、Go 版本、runner/provenance 和 artifact digest；`foundation-integration.yml` 已上传 `foundation-integration-evidence` artifact。
+8. 本地验证已覆盖 `kernel` 正向通过；全量 boundary 扫描只暴露 `contracts` 模块身份漂移。
+
+剩余缺口：
+
+1. 发布级 SBOM、模块 build/test 摘要和 release evidence 仍需与模块仓 CI 产物打通。
+2. 6 个基础模块仓库还需要铺同构 `module-ci.yml` 和 evidence 输出。
+3. self-hosted runner 执行 PR 需要明确安全策略，避免未受信任 fork PR 接触内部机器和 secrets。
+4. 当前真实模块状态存在 drift：`/home/contracts` 的 `go.mod` 声明为 `github.com/ZoneCNH/xlib-standard`，与矩阵期望 `github.com/ZoneCNH/contracts` 不一致；`kafkax`、`natsx`、`ossx`、`postgresx` 的本地 Go baseline 也已被 evidence 标记为不匹配。
+5. 多个模块仓边界脚本仍需修正。当前已见问题包括 `observex` secret fixture 命中 `password=` 扫描、`resiliencx` boundary 目标引用缺失目录、`schedulex` 需要 `GOWORK=off`、`kafkax` 存在 internal 到 public 包导入。
+   `testkitx` 仍命中 `pkg/testkitx/boundarytest/boundarytest.go:69` 的 `Position` 业务语义项。
 
 ## 3. CI 总体架构
 
@@ -208,26 +220,30 @@ jobs:
 
 ### 5.3 Foundation 集成 CI
 
-现有 `foundation-integration.yml` 是正确入口，应升级为完整集成门禁。
+现有 `foundation-integration.yml` 是正确入口，已承接完整集成门禁的核心阻断。
 
 必跑检查：
 
-| 检查                 | 目标                                                         |
-| -------------------- | ------------------------------------------------------------ |
-| YAML lint            | `FOUNDATION-DEPS.yaml` 结构可读                              |
-| deps full check      | 16 个矩阵条目均可解释，6 个基础模块可 clone                  |
-| real import boundary | 基于真实仓库 import 图拒绝禁止依赖                           |
-| joint build          | 6 个基础模块在同一 `go.work` 中 `go build ./...`             |
-| joint test           | 6 个基础模块在同一 `go.work` 中 `go test ./...`              |
-| adapter rule         | `resiliencx`、`schedulex` 对 `observex` 的集成只允许 adapter |
-| test-only rule       | `testkitx` 不得被生产模块导入                                |
-| evidence collect     | 输出模块 commit、Go 版本、结果摘要、artifact digest          |
+- `YAML lint`：`FOUNDATION-DEPS.yaml` 结构可读。
+- `deps full check`：16 个条目可解释，校验 module path，Go baseline 默认阻断。
+- `real import boundary`：基于真实仓库 import 图拒绝禁止依赖。
+- `joint build`：6 个基础模块在同一 `go.work` 中 `go build ./...`。
+- `joint test`：6 个基础模块在同一 `go.work` 中 `go test ./...`。
+- `adapter rule`：`resiliencx`、`schedulex` 对 `observex` 的集成只允许 adapter。
+- `test-only rule`：`testkitx` 不得被生产模块导入。
+- `evidence collect`：输出模块 commit、Go 版本、结果摘要、artifact digest。
 
-必须修正：
+已修正：
 
 - `foundation-joint-build.sh` 中 `go build ./...` 失败必须退出非零。
-- `foundation-boundary-check.sh` 需要从 YAML 结构检查升级为真实 import 检查。
-- Go baseline 统一完成后，`go 1.24` 或其他版本应阻断，而不是只告警。
+- `foundation-boundary-check.sh` 已从 YAML 结构检查升级为真实 Go import 图检查。
+- Go baseline mismatch 默认阻断；兼容期只能显式设置 `FOUNDATION_GO_BASELINE_MODE=warn` 降级。
+
+仍需继续推进：
+
+- evidence 输出补 artifact digest、SBOM、provenance、runner 信息和测试摘要。
+- 6 个基础模块仓库补同构 module CI。
+- 修正 `contracts` module path drift 和 `testkitx` boundary 词表命中。
 
 ### 5.4 发布前置 CI
 
@@ -431,10 +447,11 @@ CI 自身也需要观测。
 
 ### P1：修正文档和脚本缺口
 
-1. 更新 `docs/ci-deployment.md` workflow 清单，纳入 `foundation-integration.yml` 和 `foundation-release.yml`。
-2. 修复 `foundation-joint-build.sh`，使 `go build ./...` 失败立即退出。
-3. 将 Go baseline mismatch 从 warn 逐步切换为 fail。
-4. 为 `foundation-boundary-check.sh` 增加真实 import 图检查。
+1. [x] 更新 `docs/ci-deployment.md` workflow 清单，纳入 `foundation-integration.yml` 和 `foundation-release.yml`。
+2. [x] 修复 `foundation-joint-build.sh`，使 `go build ./...` 失败立即退出。
+3. [x] 补齐 release manifest、SRE deploy contract 与本地 preflight。
+4. [x] 将 Go baseline mismatch 从 warn 逐步切换为 fail。
+5. [x] 为 `foundation-boundary-check.sh` 增加真实 import 图检查。
 
 验收：
 
@@ -457,9 +474,10 @@ CI 自身也需要观测。
 
 ### P3：升级集成 CI
 
-1. `foundation-integration.yml` 克隆 6 个模块后执行真实 import 图检查。
-2. `go.work` 联合 build/test 失败必须阻断。
-3. evidence 输出纳入模块 commit、Go version、build/test/boundary 结果。
+1. [x] `foundation-integration.yml` 执行真实 import 图检查，覆盖 16 个矩阵条目与 6 个基础模块。
+2. [x] `go.work` 联合 build/test 失败必须阻断。
+3. [x] 集成 evidence 输出纳入模块 commit、Go version、runner/provenance 和 artifact digest。
+4. [ ] release evidence 继续接入模块 build/test/boundary 结果与 SBOM。
 
 验收：
 
@@ -494,13 +512,11 @@ CI 自身也需要观测。
 
 如果用 agent team 落地，建议拆 5 条并行 lane：
 
-| lane | 角色         | 输出                                                      |
-| ---- | ------------ | --------------------------------------------------------- |
-| L1   | docs/explore | 更新 `docs/ci-deployment.md` 与 workflow 清单一致性       |
-| L2   | executor     | 修复 `foundation-joint-build.sh` 和 Go baseline fail 策略 |
-| L3   | executor     | 实现真实 import boundary checker                          |
-| L4   | executor     | 定义 evidence schema 并升级 collect/release 脚本          |
-| L5   | verifier     | 设计 fixture 和回归命令，验证 guards 不被绕过             |
+- `L1 docs/explore`：更新 `docs/ci-deployment.md` 与 workflow 清单一致性。
+- `L2 executor`：已修复 joint build 与 Go baseline fail 策略。
+- `L3 executor`：已实现真实 import boundary checker。
+- `L4 executor`：已定义集成 evidence schema 并升级 collect 脚本；release evidence 与 SBOM 接入留在 P4。
+- `L5 verifier`：设计 fixture 和回归命令，验证 guards 不被绕过。
 
 主控 agent 负责合并、统一错误语义、跑最终验证，并确认没有引入部署行为。
 
@@ -526,14 +542,32 @@ CI 自身也需要观测。
 git diff --check
 bash .github/ci/workflow-policy-guard.sh
 bash .github/ci/deploy-policy-guard.sh
-bash .github/ci/foundation-boundary-check.sh
-npx --yes markdownlint-cli2 docs/report/foundation-complete-ci-plan-20260613.md
+npx --yes markdownlint-cli2 docs/ci-deployment.md docs/governance/DEPLOYMENT.md docs/report/foundation-complete-ci-plan-20260613.md
+bash .github/ci/generate-release-manifest.sh
+bash .github/ci/deploy-contract-preflight.sh
+bash -n .github/ci/foundation-deps-full-check.sh
+bash -n .github/ci/foundation-boundary-check.sh
+bash -n .github/ci/foundation-evidence-collect.sh
+FOUNDATION_DEPS_MODULES=kernel FOUNDATION_GO_BASELINE_MODE=fail bash .github/ci/foundation-deps-full-check.sh
+FOUNDATION_BOUNDARY_MODULES=kernel bash .github/ci/foundation-boundary-check.sh
+FOUNDATION_EVIDENCE_OUTDIR=/tmp/foundation-evidence-smoke bash .github/ci/foundation-evidence-collect.sh foundation-ci-plan-smoke
 ```
 
-需要网络和跨仓访问的验证：
+当前已知漂移复现命令，修复前预期返回非零，不作为通过项：
+
+```bash
+FOUNDATION_BOUNDARY_MODULES=contracts bash .github/ci/foundation-boundary-check.sh
+FOUNDATION_DEPS_MODULES=contracts FOUNDATION_GO_BASELINE_MODE=fail bash .github/ci/foundation-deps-full-check.sh
+bash .github/ci/foundation-deps-full-check.sh
+```
+
+本地全量 deps smoke 已确认上述模块仓 drift 会阻断；其中 `natsx` 模块 boundary 在本地环境长时间无输出，当前回合已终止该验证进程，完整全量运行应交给 CI runner 按 job timeout 执行。
+
+需要网络和跨仓访问的完整验证：
 
 ```bash
 bash .github/ci/foundation-deps-full-check.sh
+bash .github/ci/foundation-boundary-check.sh
 bash .github/ci/foundation-joint-build.sh
 bash .github/ci/foundation-evidence-collect.sh foundation-ci-plan-smoke
 ```
@@ -546,7 +580,9 @@ bash .github/ci/foundation-evidence-collect.sh foundation-ci-plan-smoke
 
 短期优先级：
 
-1. 修正当前脚本缺口，尤其是 joint build 失败不阻断和真实 import 边界缺失。
-2. 统一 6 个模块仓的 module-ci。
-3. 将 release evidence 升级为 SRE 可消费合同。
-4. 保持 CI 与部署双平面隔离，避免为了接入机器池而放宽 runner 和部署守卫。
+1. 已完成控制面文档同步、joint build 失败阻断、release manifest/SRE contract 生成与 preflight。
+2. 已完成真实 import 边界检查、module path 身份门禁和 Go baseline 默认阻断。
+3. 统一 6 个模块仓的 module-ci，输出同构 evidence。
+4. 继续把 release evidence 接入模块 build/test 摘要、SBOM 和 SRE 返回证据。
+5. 修正 `contracts` module path drift 与 `testkitx` boundary 命中。
+6. 保持 CI 与部署双平面隔离，避免为了接入机器池而放宽 runner 和部署守卫。

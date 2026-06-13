@@ -3,7 +3,7 @@
 # 与 FOUNDATION-V1.md Issue 2 对应
 
 version: "1.1"
-updated: "2026-06-12"
+updated: "2026-06-14"
 
 # ============================================================
 # Go baseline
@@ -119,6 +119,12 @@ modules:
     stdlib_only: false
     description: "跨域稳定端口、事件协议、DTO"
 
+  transportx:
+    path: github.com/ZoneCNH/transportx
+    layer: contracts
+    stdlib_only: false
+    description: "跨 runtime / adapter 传输契约"
+
 # ============================================================
 # 允许的依赖关系（单向箭头 = 调用方可以依赖被调方）
 # ============================================================
@@ -139,6 +145,7 @@ allowed_deps:
   ossx:          [kernel]                              # 只依赖 kernel 原语
   clickhousex:   [kernel]                              # 只依赖 kernel 原语
   contracts:     []                                    # 契约独立，依赖 L2.5 领域共享层
+  transportx:    [contracts, configx, observex, resiliencx]  # 传输契约可消费公开契约和横切接口
 
 # ============================================================
 # 禁止的依赖（任何基础模块都不得导入）
@@ -270,6 +277,11 @@ interface_only_integrations:
       mode: "composition-root"
       rule: "x.go 可以装配 configx、observex、resiliencx、schedulex 和业务模块；基础模块不得反向依赖 x.go。"
 
+  transportx:
+    adapters:
+      mode: "adapter-implements-contract"
+      rule: "kafkax/natsx/redisx 等具体传输实现可在 adapter 层实现 transportx 契约；transportx 不得反向依赖 broker/client 模块。"
+
 # ============================================================
 # 基础模块间禁止的依赖边
 # ============================================================
@@ -300,11 +312,11 @@ forbidden_foundation_edges:
 
   # 标准源 / 门禁
   - from: xlib-standard
-    to: [kernel, configx, observex, resiliencx, schedulex, testkitx, redisx, kafkax, natsx, postgresx, taosx, ossx, clickhousex, contracts, x.go, business]
+    to: [kernel, configx, observex, resiliencx, schedulex, testkitx, redisx, kafkax, natsx, postgresx, taosx, ossx, clickhousex, contracts, transportx, x.go, business]
     rule: "xlib-standard 是标准源，不 import 任何运行时模块。只通过脚本扫描/检查下游仓库。"
 
   - from: xlibgate
-    to: [kernel, configx, observex, resiliencx, schedulex, testkitx, redisx, kafkax, natsx, postgresx, taosx, ossx, clickhousex, contracts, x.go, business]
+    to: [kernel, configx, observex, resiliencx, schedulex, testkitx, redisx, kafkax, natsx, postgresx, taosx, ossx, clickhousex, contracts, transportx, x.go, business]
     rule: "xlibgate 是机器门禁，不 import 任何运行时模块。只通过脚本扫描/检查下游仓库。"
 
   # 存储扩展
@@ -340,6 +352,10 @@ forbidden_foundation_edges:
   - from: contracts
     to: [kernel, configx, observex, resiliencx, schedulex, testkitx, redisx, kafkax, natsx, postgresx, taosx, ossx, clickhousex, x.go, business]
     rule: "contracts 只定义跨域稳定接口，不依赖任何模块实现。"
+
+  - from: transportx
+    to: [schedulex, testkitx, redisx, kafkax, natsx, postgresx, taosx, ossx, clickhousex, x.go, business]
+    rule: "transportx 只定义跨 runtime / adapter 传输契约；可依赖 contracts/configx/observex/resiliencx 的公开接口，但不得依赖具体 broker/client、存储实现、入口或业务域。"
 
 # ============================================================
 # foundationx compatibility（待退出）
