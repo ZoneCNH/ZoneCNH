@@ -45,7 +45,7 @@ L2.5: decimalx / domain-market / domain-exchange / domain-macro
       │
       ▼
 业务流: 数据域 → 分析域 ↔ 决策域 → 执行域
-数据域: market-data (19) / macro-data (10) / alternative-data
+数据域: market-data (18) / macro-data (11) / alternative-data
 分析域: factor-engine / feature-store / factor-eval / market_regime / macro_regime / regime-engine / ms_brain
        三引擎: market_engine(market facts → S state) / macro_engine(macro facts → M state) / regime_engine(M+S → action/risk/permission)
 决策域: signal-factory / backtest-engine / optimizer / strategies
@@ -90,7 +90,7 @@ L2.5: decimalx / domain-market / domain-exchange / domain-macro
 - [domain-exchange](https://github.com/ZoneCNH/domain-exchange) — 交易域模型（VenueAdapter 13 方法接口） `公开`
 - [domain-macro](https://github.com/ZoneCNH/domain-macro) — 宏观数据域模型（MacroPoint/MacroState） `公开`
 
-### 数据域 · market-data（SDK 14 + Provider 5）
+### 数据域 · market-data（SDK 13 + Provider 5）
 
 **交易所 SDK：**
 
@@ -107,7 +107,6 @@ L2.5: decimalx / domain-market / domain-exchange / domain-macro
 - [lighter](https://github.com/ZoneCNH/lighter) — Lighter `公开`
 - [upbit](https://github.com/ZoneCNH/upbit) — Upbit `公开`
 - [coinglass](https://github.com/ZoneCNH/coinglass) — Coinglass 加密货币数据 `公开`
-- [yield-curve](https://github.com/ZoneCNH/yield-curve) — 收益率曲线 `公开`
 
 **Kline/Ticker Provider：**
 
@@ -121,6 +120,7 @@ L2.5: decimalx / domain-market / domain-exchange / domain-macro
 
 - [fred](https://github.com/ZoneCNH/fred) — 美联储经济数据 (FRED) `公开`
 - [treasury](https://github.com/ZoneCNH/treasury) — 美国国债/财政数据 `公开`
+- [yield-curve](https://github.com/ZoneCNH/yield-curve) — 收益率曲线 `公开`
 - [bea](https://github.com/ZoneCNH/bea) — 美国经济分析局 (BEA) `公开`
 - [ecb](https://github.com/ZoneCNH/ecb) — 欧洲央行 (ECB) `公开`
 - [uk-cb](https://github.com/ZoneCNH/uk-cb) — 英国央行 `公开`
@@ -158,11 +158,10 @@ L2.5: decimalx / domain-market / domain-exchange / domain-macro
 - [portfolio-engine](https://github.com/ZoneCNH/portfolio-engine) — 投资组合管理 `公开`
 - [settlement](https://github.com/ZoneCNH/settlement) — 结算与对账 `公开`
 
-### 横切 · 入口 · Rust
+### 横切 · 入口
 
 - [alertx](https://github.com/ZoneCNH/alertx) — 告警引擎 `公开`
 - [x.go](https://github.com/ZoneCNH/x.go) — 组合根，负责启动、配置加载与引擎组装 `私有`
-- [stdlib.rs](https://github.com/ZoneCNH/stdlib.rs) — Rust 标准库 `公开`
 - [module](./module/README.md) — 项目技术规范、接口定义与 Goal 适配模块索引
 - [docs/governance](./docs/governance/README.md) — Spec → Code 交付治理、模板、门禁与评分规则
 - [docs/RSI_SG_001_complete_standard_v1.1_zh.md](./docs/RSI_SG_001_complete_standard_v1.1_zh.md) — RSI 递归自我改进完整标准中文版 v1.1
