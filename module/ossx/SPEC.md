@@ -137,18 +137,21 @@ Acceptance criteria:
 
 ## 8. Business Rules
 
-- BR-001: Every public operation MUST accept `context.Context` or be construction-only.
-- BR-002: ossx MUST NOT directly import or depend on `configx`.
-- BR-003: ossx MAY use `kernel` lifecycle and error primitives only at approved boundaries.
-- BR-004: ossx MAY use `observex` only through interface-oriented hooks and contracts.
-- BR-005: ossx MUST NOT depend on business domains, L2.5 application code, or other storage extensions.
-- BR-006: List operations MUST enforce bounded page sizes and stable continuation tokens.
-- BR-007: Multipart abort MUST be idempotent and part validation MUST happen before complete.
-- BR-008: Presigned URL TTL MUST default to at most 15 minutes and operations MUST be allowlisted.
-- BR-009: Secrets, credentials, signatures, and tokens MUST never be logged or traced.
-- BR-010: Checksum mismatch MUST return a typed error and clean temporary state when safe.
-- BR-011: Adapter-specific SDK types MUST NOT appear in public ossx APIs.
-- BR-012: Every acceptance check MUST have a validation command or evidence note.
+| 编号 | 规则 | 违反时 |
+| --- | --- | --- |
+| BR-001 | Every public operation MUST accept `context.Context` or be construction-only. | 编译失败——接口签名不含 context.Context；TC-004 测试失败 |
+| BR-002 | ossx MUST NOT directly import or depend on `configx`. | CI Gate: go list -deps 检测到 configx import → 阻断 |
+| BR-003 | ossx MAY use `kernel` lifecycle and error primitives only at approved boundaries. | 超出批准边界 → 代码审查拒绝 |
+| BR-004 | ossx MAY use `observex` only through interface-oriented hooks and contracts. | 直接依赖 observex 实现 → CI Gate import check 阻断 |
+| BR-005 | ossx MUST NOT depend on business domains, L2.5 application code, or other storage extensions. | 循环依赖或层级破坏 → CI Gate dependency guard 阻断 |
+| BR-006 | List operations MUST enforce bounded page sizes and stable continuation tokens. | 无界列表 → 内存溢出或超时 |
+| BR-007 | Multipart abort MUST be idempotent and part validation MUST happen before complete. | 部分上传残留 → 存储泄漏；非幂等 abort → 资源无法清理 |
+| BR-008 | Presigned URL TTL MUST default to at most 15 minutes and operations MUST be allowlisted. | 安全风险 → 超额 TTL 或未授权操作 → Presign 校验拒绝 |
+| BR-009 | Secrets, credentials, signatures, and tokens MUST never be logged or traced. | 凭据泄露 → CI Gate gitleaks 或 secret scan 阻断 |
+| BR-010 | Checksum mismatch MUST return a typed error and clean temporary state when safe. | 数据损坏 → 返回 typed checksum error；临时对象残留 |
+| BR-011 | Adapter-specific SDK types MUST NOT appear in public ossx APIs. | SDK 类型泄露 → TC-009 adapter SPI 测试失败 |
+| BR-012 | Every acceptance check MUST have a validation command or evidence note. | 验收证据缺失 → CI Gate traceability check 阻断 |
+
 
 ## 9. Interface Contract
 
@@ -210,15 +213,29 @@ The external namespace is `foundationx.oss` only at the composition-root configu
 
 ## 12. Error Handling
 
-ossx errors MUST be typed or unwrap to typed causes for validation, not-found, conflict, permission, checksum mismatch, timeout, cancellation, provider failure, and closed-store states. Provider-specific errors are translated by adapters before crossing the public boundary.
+| 错误类型 | 触发条件 | 处理方式 |
+| --- | --- | --- |
+| `ErrInvalidConfig` | endpoint/bucket/region 为空或非法 | 构造时拒绝，不访问存储 |
+| `ErrNotFound` | 对象不存在 | 可处理状态，调用方决定重试或跳过 |
+| `ErrConflict` | 对象已存在或版本冲突 | 返回冲突错误，含对象 key |
+| `ErrPermission` | 权限不足 | 返回权限错误，不重试 |
+| `ErrChecksumMismatch` | 校验和不匹配 | 返回 typed error，清理临时状态 |
+| `ErrTimeout` | context deadline 或操作超时 | 返回超时错误 |
+| `ErrCancelled` | context 取消 | 返回取消错误，清理进行中操作 |
+| `ErrProviderFailure` | 后端存储不可达 | 适配器翻译后返回 |
+| `ErrClosed` | BlobStore 已关闭 | 返回稳定错误，幂等 |
+
+Provider 特定错误由适配器在公开边界前翻译为 typed ossx 错误。
 
 ## 13. Edge Cases
 
-- Empty payloads and zero-byte objects are valid when policy allows them.
-- Very large objects must use streaming or multipart paths.
-- Cancellation during multipart complete must leave enough state for retry or abort.
-- Repeated delete, abort, close, and health calls must be safe.
-- Unicode keys must normalize consistently and reject ambiguous traversal.
+| 场景 | 预期行为 |
+| --- | --- |
+| 空 payload / 零字节对象 | 策略允许时有效 |
+| 超大对象 | 必须使用 streaming 或 multipart 路径 |
+| multipart complete 期间取消 | 保留足够状态以重试或 abort |
+| 重复 delete/abort/close/health | 安全幂等 |
+| Unicode key 遍历歧义 | 一致规范化并拒绝歧义路径 |
 
 ## 14. Directory Structure
 
@@ -319,6 +336,10 @@ Public API changes after first implementation require a compatibility note, migr
 
 ## 23. Open Questions
 
-- Which S3-compatible backend will be the first integration target for gated tests?
-- Should checksum verification be mandatory for all reads or configurable per bucket policy?
-- Which observex hook shape should become the shared interface once observex stabilizes?
+### Non-blocking
+
+| ID | 问题 | 状态 |
+| --- | --- | --- |
+| OQ-001 | Which S3-compatible backend will be the first integration target for gated tests? | 待确认 |
+| OQ-002 | Should checksum verification be mandatory for all reads or configurable per bucket policy? | 待确认 |
+| OQ-003 | Which observex hook shape should become the shared interface once observex stabilizes? | 待确认 |
