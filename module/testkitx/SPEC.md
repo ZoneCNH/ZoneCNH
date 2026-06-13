@@ -29,6 +29,17 @@
 
 `testkitx` 是测试基础设施，提供 fake 实现、fixture 加载、golden 测试、contract 测试、边界扫描等工具，帮助各模块稳定验证边界、错误路径和集成行为。禁止进入生产依赖图。
 
+**证据边界：testkitx 提供测试期证据（test-time evidence）。** testkitx 的证据产物——golden file（FR-008 GoldenUpdate）、contract test 结果（§16.3）、boundary check 输出（FR-009）、goroutine leak check 输出（FR-010）、manifest——全部在 `go test` 进程内生成，服务于开发和 CI 测试阶段。testkitx 不做证据收集、汇总或发布；这些职责属于 xlib-evidence。详细分工：
+
+| 维度 | testkitx（测试期证据） | xlib-evidence（CI/发布期证据） |
+|------|----------------------|------------------------------|
+| 运行阶段 | `go test` 进程内 | CI pipeline |
+| 证据类型 | golden/contract/boundary/leak/manifest | coverage/manifest/remote evidence/report |
+| 角色 | 证据**生成者** | 证据**收集者与发布者** |
+| manifest | 测试期 manifest（本次测试的 golden/contract/boundary 结果） | 发布期 manifest（汇总所有模块 coverage/gate/manifest） |
+
+两者互补：testkitx 产出原始证据 → xlib-evidence 在 CI pipeline 中收集、验证、发布为统一报告。
+
 ---
 
 ## 3. Problem
