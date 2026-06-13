@@ -55,3 +55,19 @@ Source: [SPEC.md](./SPEC.md), [goal.md](./goal.md), `/home/postgresx`
 ---
 
 追溯结论：FR/BR 全部 Done，TASK-PG-003 已关闭；v1.0.0 发布证据已覆盖 GOWORK=off、contracts、race、secret scan 与真实 PostgreSQL integration。下游接入证据作为 v1.x/post-release 成熟度项跟踪，不计入 v1.0.0 发布范围扣分。
+
+## §3 非功能需求追溯（NFR）
+
+| Requirement | Description | 目标值 | 验证方式 | Task | Status |
+| --- | --- | --- | --- | --- | --- |
+| NFR-001 | 单次 Exec 性能 | < 10ms | Benchmark | - | Pending |
+| NFR-002 | InsertBatch 100行 | < 50ms | Benchmark | - | Pending |
+| NFR-003 | 单次 Query 性能 | < 10ms | Benchmark | - | Pending |
+| NFR-004 | 连接池获取性能 | < 1ms | Benchmark | - | Pending |
+| NFR-005 | 常驻内存（空闲） | < 5MB | Profiling | - | Pending |
+| NFR-006 | 单元测试覆盖率 | >= 80% | go tool cover | - | Pending |
+| NFR-007 | race 检测通过 | 零 data race | go test -race | - | Pending |
+| NFR-008 | vet 检查通过 | 零警告 | go vet | - | Pending |
+| NFR-009 | lint 检查通过 | 零错误 | golangci-lint | - | Pending |
+| NFR-010 | Secret 扫描通过 | 零命中 | gitleaks | - | Pending |
+

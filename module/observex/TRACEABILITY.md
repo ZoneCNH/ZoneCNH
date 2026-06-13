@@ -24,3 +24,19 @@ Source: docs/governance/TRACEABILITY.md（迁移前全局矩阵）
 | BR-008      | 不直接绑定后端   | AC-015 | CI Gate (import check) | TASK-OBSERVEX-005 | ⬜ |
 
 ---
+
+## §3 非功能需求追溯（NFR）
+
+| Requirement | Description | 目标值 | 验证方式 | Task | Status |
+| --- | --- | --- | --- | --- | --- |
+| NFR-001 | 结构化日志写入延迟 | < 5us | Benchmark | - | Pending |
+| NFR-002 | metrics 记录延迟 | < 1us | Benchmark | - | Pending |
+| NFR-003 | trace span 创建+传播 | < 10us | Benchmark | - | Pending |
+| NFR-004 | 常驻内存（noop模式） | < 1MB | Profiling | - | Pending |
+| NFR-005 | 单元测试覆盖率 | >= 80% | go tool cover | - | Pending |
+| NFR-006 | race 检测通过 | 零 data race | go test -race | - | Pending |
+| NFR-007 | vet 检查通过 | 零警告 | go vet | - | Pending |
+| NFR-008 | lint 检查通过 | 零错误 | golangci-lint | - | Pending |
+| NFR-009 | Secret 扫描通过 | 零命中 | gitleaks | - | Pending |
+| NFR-010 | 无直接依赖Prometheus/Zap | 编译期保证 | go list -deps | - | Pending |
+

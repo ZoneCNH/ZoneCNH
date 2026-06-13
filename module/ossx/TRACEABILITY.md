@@ -104,6 +104,21 @@ Scope: Matrix repair for current `FR/BR -> AC -> TC -> Task -> Evidence -> Statu
 
 ---
 
+## §3 非功能需求追溯（NFR）
+
+| Requirement | Description | 目标值 | 验证方式 | Task | Status |
+| --- | --- | --- | --- | --- | --- |
+| NFR-001 | Put/Get 延迟（1MB） | < 50ms | Benchmark | - | Pending |
+| NFR-002 | 流式上传 100MB | < 5s | Benchmark | - | Pending |
+| NFR-003 | List 操作（1000 objects） | < 1s | Benchmark | - | Pending |
+| NFR-004 | 常驻内存（空闲） | < 10MB | Profiling | - | Pending |
+| NFR-005 | 单元测试覆盖率 | >= 80% | go tool cover | - | Pending |
+| NFR-006 | race 检测通过 | 零 data race | go test -race | - | Pending |
+| NFR-007 | vet 检查通过 | 零警告 | go vet | - | Pending |
+| NFR-008 | lint 检查通过 | 零错误 | golangci-lint | - | Pending |
+| NFR-009 | Secret 扫描通过 | 零命中 | gitleaks | - | Pending |
+| NFR-010 | Adapter类型隔离 | 编译期保证 | go build | - | Pending |
+
 ## 6. Change History
 
 | Date | Version | Change |
