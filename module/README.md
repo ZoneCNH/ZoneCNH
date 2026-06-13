@@ -1,6 +1,6 @@
 # Foundation 模块规格索引
 
-> 18 个基座模块的独立完整规格，按架构层级组织。`x.go` 组合根不再作为 `module/` 下的模块规格维护。
+> 20 个基座模块的独立完整规格，按架构层级组织。`x.go` 组合根不再作为 `module/` 下的模块规格维护。
 
 最后更新：2026-06-14
 
@@ -22,8 +22,8 @@
 ```text
 标准源 ──→ 门禁校验 ──→ L0 原语 ──→ L1 运行时 / 测试 ──→ 存储扩展 / 契约 / 传输 / 领域共享
  xlib-standard    xlibgate       kernel    configx            redisx        contracts
-                  (CI gate)               observex            kafkax
-                                          resiliencx          natsx
+ xlib-harness     (CI gate)               observex            kafkax
+ xlib-evidence                            resiliencx          natsx
                                           schedulex           postgresx
                                           testkitx            taosx
                                                               ossx
@@ -45,6 +45,8 @@
 | 模块          | 1.0 Goal                           |
 | ------------- | ---------------------------------- |
 | xlib-standard | [goal.md](./xlib-standard/goal.md) |
+| xlib-harness  | [goal.md](./xlib-harness/goal.md)  |
+| xlib-evidence | [goal.md](./xlib-evidence/goal.md) |
 | kernel        | [goal.md](./kernel/goal.md)        |
 | configx       | [goal.md](./configx/goal.md)       |
 | observex      | [goal.md](./observex/goal.md)      |
@@ -98,13 +100,15 @@ test-only，不参与生产运行时。
 
 ---
 
-## 门禁（2 个）
+## 门禁（4 个）
 
-标准源和机器门禁，不参与运行时。
+标准源、生成器、证据运行时和机器门禁，不参与运行时。
 
 | 模块          | 规格                                                                  | 核心职责                                                                                                                                      |
 | ------------- | --------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| xlib-standard | [SPEC.md](./xlib-standard/SPEC.md) · [tasks/](./xlib-standard/tasks/) | 标准事实源、Go Reference Template、Generator、Harness Gate、Evidence Runtime（15 FR + goalcli，12 tasks）                                     |
+| xlib-standard | [SPEC.md](./xlib-standard/SPEC.md) · [tasks/](./xlib-standard/tasks/) | 标准事实源、Go Reference Template（声明式标准定义，15 FR + goalcli，12 tasks）                                                                   |
+| xlib-harness  | [SPEC.md](./xlib-harness/SPEC.md) · [goal.md](./xlib-harness/goal.md) · [TRACEABILITY.md](./xlib-harness/TRACEABILITY.md) · [tasks/](./xlib-harness/tasks/) | 模块生成器与门禁执行器：generate/scaffold、spec-lint、boundary-check、format-check、traceability-gate、template-validate（6 FR，6 TC） |
+| xlib-evidence | [SPEC.md](./xlib-evidence/SPEC.md) · [goal.md](./xlib-evidence/goal.md) · [TRACEABILITY.md](./xlib-evidence/TRACEABILITY.md) · [tasks/](./xlib-evidence/tasks/) | 证据收集与发布运行时：collect-coverage、generate-manifest、validate-manifest、remote-evidence、evidence-report（5 FR，5 TC） |
 | xlibgate      | [SPEC.md](./xlibgate/SPEC.md) · [tasks/](./xlibgate/tasks/)           | check imports/gomod/baseline/release/all、输出格式、l2 validate-manifest/plan/check-contracts/check-evidence/release-check（11 FR，10 tasks） |
 
 ---
@@ -285,7 +289,7 @@ Draft → Review → Approved → Implemented → Changed → Deprecated
 | [`module/FOUNDATION-SPEC.md`](./FOUNDATION-SPEC.md)                 | How & Check — 接口签名和 CI gate           |
 | [`module/FOUNDATION-DEPS.yaml`](./FOUNDATION-DEPS.yaml)             | 机器可读依赖矩阵                           |
 | [`module/FOUNDATION-V1.md`](./FOUNDATION-V1.md)                     | v1 路线图                                  |
-| [`docs/sre/foundation-cicd-plan.md`](../docs/sre/foundation-cicd-plan.md) | SRE CI/CD — 基座层 18 模块部署执行方案                              |
+| [`docs/sre/foundation-cicd-plan.md`](../docs/sre/foundation-cicd-plan.md) | SRE CI/CD — 基座层 20 模块部署执行方案                              |
 
 ---
 
