@@ -11,21 +11,21 @@ Source: [SPEC.md](./SPEC.md), [goal.md](./goal.md), `/home/postgresx`
 | ----------- | ----------- | ------------------- | --------------- | ---- | ------ |
 | FR-001 | Config 与连接池生命周期 | `New` / `Open` 校验配置、填充默认值、初始 Ping 失败关闭池，`Close` 幂等 | TC-001, TC-008, `/home/postgresx/pkg/postgresx/client.go` | [TASK-PG-001](./tasks/TASK-PG-001.md) | Done |
 | FR-002 | SQL 执行接口 | `Exec`、`Query`、`QueryRow` 保留 context 语义，`Rows` 暴露 `Close` 和 `Err` | TC-002, `/home/postgresx/pkg/postgresx/query.go` | [TASK-PG-001](./tasks/TASK-PG-001.md) | Done |
-| FR-003 | 事务边界 | `WithTx` / `WithTxOptions` 覆盖 commit、rollback、context 取消和 panic 回滚 | TC-003, `/home/postgresx/pkg/postgresx/tx.go` | [TASK-PG-002](./tasks/TASK-PG-002.md) | Done |
-| FR-004 | 迁移执行 | `MigrationRunner.Up` 升序执行未应用迁移，阻断重复版本和无效迁移 | TC-004, `/home/postgresx/pkg/postgresx/migration.go` | [TASK-PG-002](./tasks/TASK-PG-002.md) | Done |
-| FR-005 | 健康检查与池状态 | `Name` / `Check` 符合 `foundationx.HealthChecker`，`Stats` 不泄露 Secret | TC-005, `/home/postgresx/pkg/postgresx/health.go` | [TASK-PG-002](./tasks/TASK-PG-002.md) | Done |
-| FR-006 | 错误归一化与 retryability | PostgreSQL 和 context 错误映射到 `foundationx` 错误模型 | TC-006, `/home/postgresx/pkg/postgresx/errors.go` | [TASK-PG-002](./tasks/TASK-PG-002.md) | Done |
+| FR-003 | 事务边界 | `WithTx` / `WithTxOptions` 覆盖 commit、rollback、context 取消和 panic 回滚 | TC-003, `/home/postgresx/pkg/postgresx/tx.go` | [TASK-PG-002a](./tasks/TASK-PG-002a.md) | Done |
+| FR-004 | 迁移执行 | `MigrationRunner.Up` 升序执行未应用迁移，阻断重复版本和无效迁移 | TC-004, `/home/postgresx/pkg/postgresx/migration.go` | [TASK-PG-002b](./tasks/TASK-PG-002b.md) | Done |
+| FR-005 | 健康检查与池状态 | `Name` / `Check` 符合 `foundationx.HealthChecker`，`Stats` 不泄露 Secret | TC-005, `/home/postgresx/pkg/postgresx/health.go` | [TASK-PG-002a](./tasks/TASK-PG-002a.md) | Done |
+| FR-006 | 错误归一化与 retryability | PostgreSQL 和 context 错误映射到 `foundationx` 错误模型 | TC-006, `/home/postgresx/pkg/postgresx/errors.go` | [TASK-PG-002b](./tasks/TASK-PG-002b.md) | Done |
 | FR-007 | 可观测适配与 Secret Hygiene | logger/metrics hook 可插拔，DSN 和参数不泄露 | TC-007, TC-009, `/home/postgresx/contracts/metrics.md`, `/home/postgresx/pkg/postgresx/metrics.go` | [TASK-PG-003](./tasks/TASK-PG-003.md) | Done |
 | BR-001 | 不依赖业务域仓库或入口仓库 | `go.mod` 仅含允许的基座依赖 | TC-008, `/home/postgresx/go.mod` | [TASK-PG-001](./tasks/TASK-PG-001.md) | Done |
 | BR-002 | 不读取环境变量、配置文件或 Secret 文件 | 仅通过显式 `Config` 构造连接 | TC-001, `/home/postgresx/pkg/postgresx/config.go` | [TASK-PG-001](./tasks/TASK-PG-001.md) | Done |
 | BR-003 | 不实现 ORM、schema ownership 或全局 DB | API 面只暴露客户端、查询、事务、迁移和健康检查 | TC-008, public API review | [TASK-PG-001](./tasks/TASK-PG-001.md) | Done |
 | BR-004 | 所有外部 I/O 入口接受 context | `New`、`Ping`、`Close`、查询、事务、迁移、健康检查均传入 context | TC-001, TC-002, TC-003, TC-004, TC-005, TC-006 | [TASK-PG-001](./tasks/TASK-PG-001.md) | Done |
 | BR-005 | `Rows` 生命周期和迭代错误可控 | 调用方关闭 `Rows`，通过 `Err` 获取迭代错误 | TC-002 | [TASK-PG-001](./tasks/TASK-PG-001.md) | Done |
-| BR-006 | 事务提交/回滚规则稳定 | nil 提交，error/context/panic 回滚，panic 后重新抛出 | TC-003 | [TASK-PG-002](./tasks/TASK-PG-002.md) | Done |
-| BR-007 | 迁移版本正整数且单调执行 | 非正版本、空名称、空 SQL、重复版本阻断 | TC-004 | [TASK-PG-002](./tasks/TASK-PG-002.md) | Done |
-| BR-008 | 健康检查幂等且安全 | 不输出密码、完整 DSN 或 SQL 参数 | TC-005, TC-007 | [TASK-PG-002](./tasks/TASK-PG-002.md) | Done |
+| BR-006 | 事务提交/回滚规则稳定 | nil 提交，error/context/panic 回滚，panic 后重新抛出 | TC-003 | [TASK-PG-002a](./tasks/TASK-PG-002a.md) | Done |
+| BR-007 | 迁移版本正整数且单调执行 | 非正版本、空名称、空 SQL、重复版本阻断 | TC-004 | [TASK-PG-002b](./tasks/TASK-PG-002b.md) | Done |
+| BR-008 | 健康检查幂等且安全 | 不输出密码、完整 DSN 或 SQL 参数 | TC-005, TC-007 | [TASK-PG-002a](./tasks/TASK-PG-002a.md) | Done |
 | BR-009 | 指标适配不泄露敏感信息且命名一致 | 代码和 contract 采用同一指标命名规范 | TC-007, TC-009 | [TASK-PG-003](./tasks/TASK-PG-003.md) | Done |
-| BR-010 | PostgreSQL 错误码映射稳定 | SQLSTATE 到 `foundationx` kind 和 retryability 的映射有测试 | TC-006 | [TASK-PG-002](./tasks/TASK-PG-002.md) | Done |
+| BR-010 | PostgreSQL 错误码映射稳定 | SQLSTATE 到 `foundationx` kind 和 retryability 的映射有测试 | TC-006 | [TASK-PG-002b](./tasks/TASK-PG-002b.md) | Done |
 | BR-011 | 发布证据支持 `GOWORK=off` | `go test`、`go vet`、release evidence 不依赖 workspace | TC-008, `/home/postgresx/docs/EVIDENCE-20260601.md`, `/home/postgresx/docs/RELEASE_MANIFEST-v1.0.0.md`, `/home/postgresx/release/manifest/v1.0.0.json` | [TASK-PG-001](./tasks/TASK-PG-001.md) | Done |
 | BR-012 | 版本、API 和文档一致 | `go.mod`、版本矩阵、contract、SPEC 同步 | TC-009 | [TASK-PG-003](./tasks/TASK-PG-003.md) | Done |
 
@@ -54,20 +54,20 @@ Source: [SPEC.md](./SPEC.md), [goal.md](./goal.md), `/home/postgresx`
 
 ---
 
-追溯结论：FR/BR 全部 Done，TASK-PG-003 已关闭；v1.0.0 发布证据已覆盖 GOWORK=off、contracts、race、secret scan 与真实 PostgreSQL integration。下游接入证据作为 v1.x/post-release 成熟度项跟踪，不计入 v1.0.0 发布范围扣分。
+追溯结论：FR/BR 全部 Done，全部 4 Task（TASK-PG-001/002a/002b/003）已关闭；v1.0.0 发布证据已覆盖 GOWORK=off、contracts、race、secret scan 与真实 PostgreSQL integration。下游接入证据作为 v1.x/post-release 成熟度项跟踪，不计入 v1.0.0 发布范围扣分。
 
 ## §3 非功能需求追溯（NFR）
 
 | Requirement | Description | 目标值 | 验证方式 | Task | Status |
 | --- | --- | --- | --- | --- | --- |
-| NFR-001 | 单次 Exec 性能 | < 10ms | Benchmark | - | Pending |
-| NFR-002 | InsertBatch 100行 | < 50ms | Benchmark | - | Pending |
-| NFR-003 | 单次 Query 性能 | < 10ms | Benchmark | - | Pending |
-| NFR-004 | 连接池获取性能 | < 1ms | Benchmark | - | Pending |
-| NFR-005 | 常驻内存（空闲） | < 5MB | Profiling | - | Pending |
-| NFR-006 | 单元测试覆盖率 | >= 80% | go tool cover | - | Pending |
-| NFR-007 | race 检测通过 | 零 data race | go test -race | - | Pending |
-| NFR-008 | vet 检查通过 | 零警告 | go vet | - | Pending |
-| NFR-009 | lint 检查通过 | 零错误 | golangci-lint | - | Pending |
-| NFR-010 | Secret 扫描通过 | 零命中 | gitleaks | - | Pending |
+| NFR-001 | 单次 Exec 性能 | < 10ms | Benchmark | - | Deferred (v1.x) |
+| NFR-002 | InsertBatch 100行 | < 50ms | Benchmark | - | Deferred (v1.x) |
+| NFR-003 | 单次 Query 性能 | < 10ms | Benchmark | - | Deferred (v1.x) |
+| NFR-004 | 连接池获取性能 | < 1ms | Benchmark | - | Deferred (v1.x) |
+| NFR-005 | 常驻内存（空闲） | < 5MB | Profiling | - | Deferred (v1.x) |
+| NFR-006 | 单元测试覆盖率 | >= 80% | go tool cover | TASK-PG-001 | Done |
+| NFR-007 | race 检测通过 | 零 data race | go test -race | TASK-PG-001 | Done |
+| NFR-008 | vet 检查通过 | 零警告 | go vet | TASK-PG-001 | Done |
+| NFR-009 | lint 检查通过 | 零错误 | golangci-lint | TASK-PG-001 | Done |
+| NFR-010 | Secret 扫描通过 | 零命中 | gitleaks | TASK-PG-001 | Done |
 

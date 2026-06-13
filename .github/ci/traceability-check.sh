@@ -2,7 +2,7 @@
 # traceability-check.sh — 校验 module/{module}/TRACEABILITY.md 的完整性
 #
 # 检查逻辑：
-#   1. 模块覆盖：必须包含所有 Foundation 模块的矩阵文件
+#   1. 模块覆盖：必须包含所有 Foundation 模块及已纳入治理的 L2.5 矩阵文件
 #   2. FR 覆盖：每个模块的 FR 参考文件在追踪表中都有对应行
 #   3. AC 非空：每个 FR 行的 Acceptance Criteria 列不为 "-"
 #   4. TC 非空：每个 FR/BR 行的 Test Case 列不为 "-"
@@ -23,8 +23,8 @@ SPEC_DIR="$REPO_ROOT/module"
 echo "=== Traceability Check ==="
 echo ""
 
-# 必须包含的模块
-REQUIRED_MODULES="kernel configx resiliencx observex schedulex testkitx xlibgate xlib-standard redisx kafkax natsx postgresx taosx ossx clickhousex contracts transportx"
+# 必须包含的矩阵：Foundation 模块 + 已纳入治理的 L2.5 模块
+REQUIRED_MODULES="kernel configx resiliencx observex schedulex testkitx xlibgate xlib-standard redisx kafkax natsx postgresx taosx ossx clickhousex contracts transportx domainx"
 
 is_required_module() {
   local candidate="$1"

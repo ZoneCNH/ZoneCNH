@@ -1,36 +1,50 @@
-# TASK-PG-003: 可观测契约与 v1.0 文档冻结
+```yaml
+TASK-PG-003:
+  module: postgresx
+  scope: "实现可观测适配（Logger/Metrics hooks）与 v1.0 文档契约冻结"
+  spec_ref:
+    - "module/postgresx/SPEC.md#FR-007"
+    - "module/postgresx/SPEC.md#BR-009"
+    - "module/postgresx/SPEC.md#BR-012"
+  files:
+    - "pkg/postgresx/metrics.go"
+    - "pkg/postgresx/options.go"
+    - "contracts/metrics.md"
+  acceptance_criteria:
+    - "TC-007: Logger/Metrics hook 触发查询/事务/健康/池指标，不泄露 Secret"
+    - "TC-009: 指标命名、Go 版本、public API contract 与 SPEC 一致"
+  depends_on:
+    - "TASK-PG-002a"
+    - "TASK-PG-002b"
+  estimated_effort: "2h"
+  priority: P1
+  status: done
+```
 
-## Scope
+## Non-scope
 
-冻结 v1.0.0 契约一致性：指标命名、Go 版本矩阵、public API contract、SPEC、goal 与 TRACEABILITY。
+- 不修改已冻结的 v1.0 Public API
+- 不新增指标或变更现有指标命名
+- 不修改 contract 中已冻结的接口签名
+- 下游真实接入证据（x.go/业务模块 import）作为发布后跟踪项
 
-## Requirements
+## Test Plan
 
-- FR-007
-- BR-009
-- BR-012
-
-## Acceptance
-
-- 指标名在代码和 contract 中唯一，并已通过 contract/evidence gate。
-- `go.mod` 的 `go 1.25.0` 与版本矩阵文档保持一致。
-- public API contract 不列出当前代码未实现的符号。
-- `SPEC.md`、`goal.md`、`TRACEABILITY.md` 和 `ARCHITECTURE.md` 反映同一 v1.0.0 release 基线。
-- Secret、DSN、SQL 参数不得进入日志和指标标签。
+| TC | 验证内容 | 验证命令 |
+|-----|---------|---------|
+| TC-007 | Logger/Metrics hook 插拔、Secret hygiene（DSN 脱敏、SQL 参数不入日志） | `GOWORK=off go test -run "TestLogger|TestMetrics" ./pkg/postgresx/` |
+| TC-009 | go.mod Go 版本、版本矩阵、public API contract、SPEC 一致性 | `GOWORK=off VERSION=v1.0.0 make release-evidence-check` |
 
 ## Evidence
 
 - `/home/postgresx/pkg/postgresx/metrics.go`
+- `/home/postgresx/pkg/postgresx/options.go`
 - `/home/postgresx/contracts/metrics.md`
 - `/home/postgresx/docs/VERSION_MATRIX.md`
 - `/home/postgresx/contracts/`
-- `GOWORK=off VERSION=v1.0.0 make release-evidence-check`
-- `GOWORK=off VERSION=v1.0.0 make release-final-check`
-- `GOWORK=off VERSION=v1.0.0 make release-preflight`，在 `POSTGRESX_REQUIRE_INTEGRATION=1` 与注入的 dev PostgreSQL DSN/凭据下执行
-- `tag v1.0.0 / commit 310a249e`
 - `module/postgresx/SPEC.md`
 - `module/postgresx/TRACEABILITY.md`
-
-## Status
-
-Done。TASK-PG-003 已关闭；指标命名、Go baseline、Public API contract 与 v1.0.0 release evidence 已对齐。
+- `GOWORK=off VERSION=v1.0.0 make release-evidence-check`
+- `GOWORK=off VERSION=v1.0.0 make release-final-check`
+- `GOWORK=off VERSION=v1.0.0 make release-preflight`
+- `tag v1.0.0 / commit 310a249e`

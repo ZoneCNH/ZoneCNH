@@ -137,8 +137,6 @@ THEN `Config.RedactedDSN()` 必须隐藏密码，日志和指标不得包含完�
 ## 8. Business Rules
 | 编号 | 规则 | 违反时 |
 | --- | --- | --- |
-| 编号 | 规则 | 违反时 |
-| --- | --- | --- |
 | BR-001 | `postgresx` 不得依赖业务域仓库、入口仓库或具体应用模块。 | CI Gate：import check 检测到业务域依赖 → 阻断合并 |
 | BR-002 | 模块不得读取环境变量、配置文件或 Secret 文件；调用方必须显式传入 `Config`。 | CI Gate：静态分析检测到环境变量/文件读取 → 阻断 |
 | BR-003 | 模块不得实现 ORM、schema ownership 或全局默认数据库。 | 不符合模块边界——代码审查拒绝 |
@@ -175,7 +173,7 @@ func (c *Client) WithTx(ctx context.Context, fn TxFunc) error
 func (c *Client) WithTxOptions(ctx context.Context, opts TxOptions, fn TxFunc) error
 ```
 
-### 10.1 Config
+### 9.1 Config
 
 ```go
 type Config struct {
@@ -200,7 +198,7 @@ func (c Config) RedactedDSN() string
 
 默认值：port 5432、sslmode disable、max open 10、min idle 1、connection lifetime 1h、idle timeout 30m、connect timeout 5s、health timeout 2s。
 
-### 10.2 Query Interfaces
+### 9.2 Query Interfaces
 
 ```go
 type Queryer interface {
@@ -221,7 +219,7 @@ type Rows interface {
 }
 ```
 
-### 10.3 Transactions
+### 9.3 Transactions
 
 ```go
 type Tx interface {
@@ -236,7 +234,7 @@ type TxOptions struct {
 }
 ```
 
-### 10.4 Migrations
+### 9.4 Migrations
 
 ```go
 type Migration struct {
@@ -254,7 +252,7 @@ func (r *MigrationRunner) Up(ctx context.Context, source MigrationSource) error
 func (r *MigrationRunner) Applied(ctx context.Context) ([]AppliedMigration, error)
 ```
 
-### 10.5 Options
+### 9.5 Options
 
 ```go
 type Option func(*options)
@@ -287,6 +285,7 @@ func WithClock(clock Clock) Option
 | MaxConnIdleTime | Duration | 30m | 连接最大空闲时间 |
 | ConnectTimeout | Duration | 5s | 连接超时 |
 | HealthTimeout | Duration | 2s | 健康检查超时 |
+| ApplicationName | string | — | 应用名称 |
 
 ### 10.3 公共错误
 
@@ -476,7 +475,7 @@ postgresx/
 | OQ-001 | 下游真实接入证据（x.go/业务模块 import） | 跟踪中 |
 | OQ-002 | 生产 soak 数据积累 | 跟踪中 |
 
-## Appendix: 评分结论
+## Appendix A: 评分结论
 
 | 维度 | 修复前 | 当前发布基线 | 主要依据 |
 | ---- | ------ | ------------ | -------- |
@@ -485,7 +484,7 @@ postgresx/
 | v1.0 可冻结度 | 48/100 | 100/100 | v1.0.0 tag/GitHub release 已发布，Public API、metrics contract 与 release evidence 已冻结 |
 | 综合评分 | 61/100 | 100/100 | v1.0.0 发布范围闭合；下游实际接入和生产 soak 作为发布后成熟度证据继续跟踪 |
 
-## Appendix: Residual Risks
+## Appendix B: Residual Risks
 
 | 风险 | 影响 | 处置 |
 | ---- | ---- | ---- |
@@ -494,6 +493,6 @@ postgresx/
 
 ---
 
-## Appendix: 当前结论
+## Appendix C: 当前结论
 
 `postgresx` 已完成 v1.0.0 release 收束：代码、Public API、metrics contract、版本矩阵、release evidence 和真实 PostgreSQL integration 已形成闭环。v1.0.0 发布范围综合评分为 `100/100`；下游真实接入和生产 soak 作为 v1.x/post-release 成熟度证据继续跟踪，不构成当前发布扣分。

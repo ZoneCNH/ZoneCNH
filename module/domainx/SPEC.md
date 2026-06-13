@@ -411,35 +411,53 @@ domainx/
 
 ### 16.3 Given/When/Then
 
-**TC-001: 合法 Order**
+**TC-001: Order 构造与校验**
 Given symbol="BTCUSDT", side=Buy, type=Limit, qty=1, price=50000
 When NewOrder
 Then Order{State=PENDING}, nil error
 
-**TC-002: 非法 quantity**
-Given quantity=0
-When NewOrder
-Then ErrInvalidQuantity
-
-**TC-003: 合法流转**
+**TC-002: OrderState 合法与非法流转**
 Given Order{State=SUBMITTED}
 When TransitionTo(PartialFilled)
 Then Order{State=PartialFilled}
 
-**TC-004: 非法流转**
 Given Order{State=FILLED}
 When TransitionTo(Submitted)
 Then ErrInvalidTransition
 
-**TC-005: 加仓均价**
+**TC-003: JSON round-trip 精度**
+Given Order{Price=50000.12345678}
+When JSON marshal→unmarshal
+Then Price=50000.12345678
+
+**TC-004: Trade 构造与校验**
+Given orderID="order-1", symbol="BTCUSDT", qty=1, price=50000
+When NewTrade
+Then Trade{OrderID: "order-1"}, nil error
+
+**TC-005: Position 加仓均价**
 Given Position{qty=1, avgPrice=50000}
 When WithQuantity(2, 55000)
 Then Position{qty=2, avgPrice=55000}
 
-**TC-006: Decimal 精度**
-Given Order{Price=50000.12345678}
-When JSON marshal→unmarshal
-Then Price=50000.12345678
+**TC-006: ExecutionReport 状态与数量一致性**
+Given ExecutionReport{state=FILLED, filledQty=1, remainingQty=0}
+When NewExecutionReport
+Then report is accepted
+
+Given ExecutionReport{state=FILLED, remainingQty=1}
+When NewExecutionReport
+Then ErrStateQuantityMismatch
+
+**TC-007: Portfolio 总权益**
+Given balances=[USDT:1000], positions=[BTC marketValue=50000]
+When NewPortfolio
+Then TotalEquity=51000
+
+**TC-008: 不可变性**
+Given an existing Order
+When update-like operations are needed
+Then a new value object is returned and no setter is exposed
 
 ---
 
@@ -527,7 +545,7 @@ Then Price=50000.12345678
 
 ---
 
-## 附录 A: L2.5 约定
+## Appendix A: L2.5 约定
 
 | 约定 | 说明 |
 |------|------|
