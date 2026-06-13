@@ -23,9 +23,13 @@ files:
   - "topic_test.go"
   - "dto.go"
 acceptance_criteria:
-  - "Event 接口包含 EventID/EventType/Timestamp/Source 方法"
-  - "Topic 常量覆盖所有事件类型"
-  - "DTO 结构体定义完整"
+  - "AC-FR-002: Event 接口包含 EventID/EventType/Timestamp/Source 四方法"
+  - "AC-FR-003: Topic 常量全局唯一且命名合规"
+  - "AC-FR-004: DTO JSON round-trip 序列化/反序列化后字段值不变"
+  - "AC-BR-001: 所有跨域 DTO 定义集中在 contracts 包"
+  - "AC-BR-005: DTO 创建后字段不可修改（不可变）"
+  - "AC-BR-006: Topic 值无重复，命名符合 domain.action"
+  - "AC-BR-009: 所有 DTO 字段 JSON tag 为 snake_case"
 depends_on:
   - "TASK-CONTRACTS-000"
 estimated_effort: "1h"
@@ -43,9 +47,13 @@ non_scope:
 
 | Requirement | Description | Acceptance Criteria    |
 | ----------- | ----------- | ---------------------- |
-| FR-003      | Event 接口  | EventID/EventType/Timestamp/Source |
-| FR-004      | Topic 常量  | 所有事件类型           |
-| FR-005      | DTO 契约    | 结构体定义完整         |
+| FR-003      | Event 接口  | AC-FR-002: 四方法签名完整 |
+| FR-004      | Topic 常量  | AC-FR-003: 全局唯一+命名合规 |
+| FR-005      | DTO 契约    | AC-FR-004: JSON round-trip |
+| BR-001      | DTO 集中定义 | AC-BR-001: 全部在 contracts 包 |
+| BR-005      | DTO 不可变   | AC-BR-005: 只读字段 |
+| BR-006      | Topic 命名   | AC-BR-006: domain.action 格式 |
+| BR-009      | JSON tag    | AC-BR-009: snake_case |
 
 ## Test Plan
 
