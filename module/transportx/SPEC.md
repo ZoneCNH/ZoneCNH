@@ -114,7 +114,7 @@ Foundation 模块已有 `contracts` 用于跨域端口、事件协议和 DTO 契
 | Codec | 将业务对象与 Envelope payload 互转的序列化契约接口，第一版提供 JSON codec。 |
 | TopicRegistry | 注册和校验业务 Topic 的接口，确保 Topic 命名、schema 和 QoS 绑定。 |
 | MethodRegistry | 注册和校验 RPC 方法的接口，确保 method 命名、deadline、retry class 和幂等约束。 |
-| SchemaRegistry | 校验 Envelope/Endpoint/Receipt schema 兼容性并记录版本历史的接口。 |
+| SchemaRegistry | 校验 Envelope/Endpoint/Receipt schema 兼容性并记录版本演进的接口。 |
 | Execution Mode | 运行时执行模式（LIVE / PAPER / REPLAY / DRY_RUN），决定是否允许真实下单、外部副作用和审计要求。 |
 | Outbox/Inbox | 保证业务状态与事件发布一致性的模式：Outbox 在事务中写事件后异步发布；Inbox 去重消费。 |
 | Audit Plane | 独立审计通道，记录风控决策、订单状态变更、成交、结算等不可抵赖事件。 |
