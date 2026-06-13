@@ -68,7 +68,7 @@ optimizer ───────────┘
       │
       ▼
 risk-engine ───► order-engine ───► portfolio-engine ───► settlement
-  domainx (Order/Fill/Position/Exposure) ──── 执行域 L2.5 共享值对象
+  domainx (Order/Fill/Position/Exposure) ──── 执行域共享值对象（归属基座）
   ◄── trade_permission                │                 │
       position_caps                   └──── fills ──────┤
       risk_multiplier                                  ▼
