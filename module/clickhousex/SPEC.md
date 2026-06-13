@@ -188,20 +188,20 @@ THEN 返回列类型信息切片，包含列名、ClickHouse 类型、Nullable �
 
 ## 8. Business Rules
 
-| 编号   | 规则                                                                |
-| ------ | ------------------------------------------------------------------- |
-| BR-001 | 连接池大小默认 10，最大 100，通过 Config 配置                       |
-| BR-002 | 批量写入使用原生 batch insert 协议，不使用拼接 SQL                  |
-| BR-003 | Exec / Query 的 args 使用参数化绑定，禁止 SQL 拼接                  |
-| BR-004 | 连接断开后自动重试 3 次（指数退避），超过后返回 `ErrConnectionLost` |
-| BR-005 | Health() 必须是幂等的、无副作用的                                   |
-| BR-006 | 所有操作必须接受 `context.Context`，支持取消和超时                  |
-| BR-007 | 错误消息格式：`"clickhousex: <operation>: <detail>"`                |
-| BR-008 | 可观测指标必须包含 table 标签（写入操作）或 query 标签（查询操作）  |
-| BR-009 | Close() 必须是幂等的，多次调用不 panic                              |
-| BR-010 | InsertBatch 不自动建表，表不存在时返回明确错误                      |
-| BR-011 | ClickHouse Nullable 类型映射到 Go 指针类型                          |
-| BR-012 | ClickHouse Decimal 类型映射到 `shopspring/decimal` 或 `apd.Decimal` |
+| 编号 | 规则 | 违反时 |
+| --- | --- | --- |
+| BR-001 | 连接池大小默认 10，最大 100，通过 Config 配置 | 配置校验拒绝，返回 `ErrInvalidConfig` |
+| BR-002 | 批量写入使用原生 batch insert 协议，不使用拼接 SQL | CI Gate 阻断：`golangci-lint` 检测 `fmt.Sprintf` 拼接 SQL |
+| BR-003 | Exec / Query 的 args 使用参数化绑定，禁止 SQL 拼接 | 返回 `clickhousex: exec: invalid args`；SQL 注入扫描阻断 |
+| BR-004 | 连接断开后自动重试 3 次（指数退避），超过后返回 `ErrConnectionLost` | 重试耗尽后返回 `ErrConnectionLost`，触发调用方感知 |
+| BR-005 | Health() 必须是幂等的、无副作用的 | 行为违规——多次调用结果不一致或产生副作用时 CI Gate 健康检查测试失败 |
+| BR-006 | 所有操作必须接受 `context.Context`，支持取消和超时 | 编译失败：接口签名不含 `context.Context` 参数 |
+| BR-007 | 错误消息格式：`"clickhousex: <operation>: <detail>"` | CI Gate 错误格式检查失败；返回的错误不符合约定 |
+| BR-008 | 可观测指标必须包含 table 标签（写入操作）或 query 标签（查询操作） | 可观测面板缺失维度——指标缺少 table/query 标签 |
+| BR-009 | Close() 必须是幂等的，多次调用不 panic | 运行时 panic——`TC-007` 幂等 Close 测试失败 |
+| BR-010 | InsertBatch 不自动建表，表不存在时返回明确错误 | 返回 `ErrTableNotFound`，包含表名 |
+| BR-011 | ClickHouse Nullable 类型映射到 Go 指针类型 | 返回 `ErrTypeMismatch`——Scan 到非指针类型时拒绝 |
+| BR-012 | ClickHouse Decimal 类型映射到 `shopspring/decimal` 或 `apd.Decimal` | 返回 `ErrTypeMismatch`——精度丢失时拒绝，提示使用 decimal.Decimal |
 
 ---
 
