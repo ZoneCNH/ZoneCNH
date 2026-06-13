@@ -179,6 +179,44 @@ THEN 返回 HealthStatus{Ready: false, Live: false, Message: "..."}
 WHEN JetStream 已启用且 JetStream 不可用
 THEN 返回 HealthStatus{Ready: false, Live: true, Message: "jetstream unavailable"}
 
+### FR-009: SubjectBuilder
+
+WHEN 调用 `SubjectBuilder.Build(domain, resource, action, version)` 且参数合法
+THEN 返回 `domain.resource.action.v{version}` 格式 subject
+
+WHEN 调用 `SubjectBuilder.Parse(subject)` 且 subject 格式合法
+THEN 返回 domain/resource/action/version 分量
+
+WHEN subject 含空 token、通配符或非法字符
+THEN 返回 `ErrInvalidSubject`
+
+### FR-010: NatsMessageEnvelope
+
+WHEN 创建 envelope 且包含 traceId/messageId/schemaVersion/header
+THEN 这些元数据被写入 NATS header
+
+WHEN 从 NATS message 读取 envelope
+THEN payload 与元数据可无损还原
+
+### FR-011: Config contract
+
+WHEN 加载 `foundationx.nats.*` 配置且未填写可选项
+THEN 默认 request timeout、reconnect、ping、serializer 和 health interval 被补齐
+
+WHEN 使用旧别名 `FOUNDATIONX_NATS_URL`
+THEN 仅作为兼容输入映射为 `FOUNDATIONX_NATS_SERVERS`
+
+WHEN 输出配置诊断
+THEN credentials/token 不出现在明文日志或状态里
+
+### FR-012: Observability contract
+
+WHEN publish/request/subscribe/JetStream 操作成功或失败
+THEN 记录 `foundationx_nats_*` 指标，包含 operation、subject_class、status 标签
+
+WHEN 记录结构化日志
+THEN 包含 client name、operation、status、duration_ms，且不包含 payload 明文或 credentials
+
 ---
 
 ### 7.1 Acceptance Criteria Registry
@@ -505,6 +543,51 @@ Then 自动重连成功，后续操作正常
 Given NATS 连接正常
 When 调用 Health
 Then 返回 healthy；连接断开时返回 unhealthy
+
+**TC-006: SubjectBuilder**
+Given 合法 domain/resource/action/version
+When Build 后再 Parse
+Then subject 分量保持一致
+
+**TC-007: Envelope metadata**
+Given envelope 包含 traceId、messageId、schemaVersion 和 headers
+When 发布并读取消息
+Then payload 与 metadata round-trip 一致
+
+**TC-008: Config contract**
+Given `foundationx.nats.*` 配置缺省可选字段
+When Normalize/Validate
+Then 默认值补齐，旧别名兼容状态被明确记录
+
+**TC-009: Observability contract**
+Given 注入 metrics recorder
+When publish/request/subscribe 操作成功或失败
+Then 记录 foundationx_nats_* 指标且标签不泄露 payload
+
+**TC-010: Handler latency boundary**
+Given handler 被同步调用
+When handler 执行耗时超过预算
+Then 文档与测试明确调用方应异步化长任务
+
+**TC-011: Redaction and auth**
+Given 配置包含 credentials 或 token
+When 输出诊断、错误或健康状态
+Then 敏感字段被脱敏，TLS/auth 配置只在边界表达
+
+**TC-012: Performance budget**
+Given benchmark suite
+When 测量 publish/request/JetStream publish/consume
+Then 结果对照性能预算并保存证据
+
+**TC-013: Dependency boundary**
+Given 运行依赖列表检查
+When 扫描 `pkg/natsx` 与 examples
+Then 不出现 forbidden ZoneCNH messaging/storage 模块依赖
+
+**TC-014: Release evidence**
+Given SPEC、goal、TRACEABILITY 与代码证据
+When 执行发布前门禁
+Then 状态、FR、TC、Task 追溯一致
 
 ### 16.3 Benchmark
 

@@ -640,7 +640,7 @@ When 写入结构化日志
 Then 输出中敏感值被替换为 `***`
 
 **TC-012: redact.Check 扫描文本**
-Given 包含 `api_key=sk-abc123` 的文本
+Given 包含 `api_key=<placeholder>` 的文本
 When 调用 `redact.Check(text)`
 Then 返回检测到的泄露 secret 位置
 

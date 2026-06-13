@@ -9,28 +9,28 @@ Source: `goal.md` 1.0 发布基线 + `SPEC.md` Draft v1.0.0 + `/home/natsx` comm
 
 | Requirement | Description | Acceptance Criteria | Test Case | Task | Status |
 | ----------- | ----------- | ------------------- | --------- | ---- | ------ |
-| FR-001 | Publish（Core NATS） | 发布成功、连接错误、空 subject 错误均有测试 | TC-001 | TASK-NATSX-001 | ✅ Embedded broker publish and precondition tests |
-| FR-002 | Subscribe（Core NATS） | subscribe/handler/unsubscribe/drain 均有测试 | TC-001 | TASK-NATSX-001 | ✅ Subscribe, queue subscribe, unsubscribe, subscription Drain, and client close covered |
-| FR-003 | Request（Core NATS） | responder、timeout、ctx cancel 均有测试 | TC-002 | TASK-NATSX-002 | ✅ Responder, no-responder, timeout, and cancel covered |
-| FR-004 | JetStream.Publish | stream 存在/缺失场景均有测试 | TC-003 | TASK-NATSX-003 | ✅ Stream-present and missing-stream publish covered |
-| FR-005 | JetStream.Subscribe | ack、redelivery、dead-letter 行为均有测试 | TC-003 | TASK-NATSX-003 | ✅ Pull, ack, nack redelivery, and max-deliveries advisory behavior covered |
-| FR-006 | JetStream.AddStream | 创建、幂等、冲突配置均有测试 | TC-003 | TASK-NATSX-003 | ✅ Embedded AddStream create/idempotency/conflict covered |
-| FR-007 | JetStream.AddConsumer | 创建、幂等、冲突配置均有测试 | TC-003 | TASK-NATSX-003 | ✅ Embedded AddConsumer create/idempotency/conflict covered |
-| FR-008 | Health | ready/live/message 与连接状态映射有测试 | TC-005 | TASK-NATSX-005 | ✅ Healthy, disconnected, nil, canceled, closed, reconnect, and degraded health paths covered |
-| FR-009 | SubjectBuilder | `domain.resource.action.v{version}` 构造和解析有测试 | TC-006 | TASK-NATSX-006 | ✅ Build/parse/validation tests |
-| FR-010 | NatsMessageEnvelope | traceId/messageId/schemaVersion/header 双向映射有测试 | TC-007 | TASK-NATSX-007 | ✅ Header metadata round-trip and embedded propagation tests |
-| FR-011 | Config contract | `foundationx.nats.*` 配置、默认值和旧别名兼容有测试 | TC-008 | TASK-NATSX-008 | ◐ Defaults/sanitize/validation covered; old-alias compatibility pending |
-| FR-012 | Observability contract | `foundationx_nats_*` 指标和结构化日志字段有测试 | TC-009 | TASK-NATSX-009 | ◐ Noop and selected error metrics covered; full metric/log contract pending |
-| BR-001 | Core NATS at-most-once | 不承诺持久化，低延迟发布订阅场景有说明和测试 | TC-001 | TASK-NATSX-001 | ✅ Core publish/subscribe/request/queue baseline covered |
-| BR-002 | JetStream at-least-once | ack/nack/redelivery 语义有测试 | TC-003 | TASK-NATSX-003 | ✅ Ack/nack/redelivery and max-deliveries advisory covered |
-| BR-003 | Context boundary | 所有网络操作接受 context 并尊重取消/超时 | TC-002 | TASK-NATSX-002 | ◐ Request timeout/cancel and close context covered; broader network-operation matrix pending |
-| BR-004 | Handler latency | 订阅 handler 快速返回/异步化约束有测试或示例 | TC-010 | TASK-NATSX-010 | ◐ Handler path covered; async/latency constraint evidence pending |
-| BR-005 | 自动重连指数退避 | 断线重连、max-attempts、状态事件有测试 | TC-004 | TASK-NATSX-004 | ◐ Reconnect/degraded health and policy knobs covered; exponential-backoff SLO assertions pending |
-| NFR-001 | Security redaction | credentials/token/连接串敏感片段脱敏 | TC-011 | TASK-NATSX-011 | ◐ Config sanitize coverage exists; broader credential surfaces pending |
-| NFR-002 | TLS/auth | TLS 与认证配置可表达且不泄漏凭据 | TC-011 | TASK-NATSX-011 | ◐ Config expression/sanitize coverage exists; live TLS/auth integration pending |
-| NFR-003 | Performance budget | publish/request/JetStream 延迟预算有 benchmark | TC-012 | TASK-NATSX-012 | ◐ Publish/request/JetStream publish benchmarks exist; formal SLO assertions plus JetStream consume/handler latency coverage pending |
-| NFR-004 | Layer boundary | 不依赖 kafkax，不替代 RPC/治理框架 | TC-013 | TASK-NATSX-013 | ✅ Dependency boundary clean |
-| NFR-005 | Release evidence | SPEC、goal、traceability、matrix evidence 一致 | TC-014 | TASK-NATSX-014 | ✅ Documentation and executable evidence reconciled |
+| FR-001 | Publish（Core NATS） | 发布成功、连接错误、空 subject 错误均有测试 | TC-001 | TASK-NATSX-001 | Done |
+| FR-002 | Subscribe（Core NATS） | subscribe/handler/unsubscribe/drain 均有测试 | TC-001 | TASK-NATSX-001 | Done |
+| FR-003 | Request（Core NATS） | responder、timeout、ctx cancel 均有测试 | TC-002 | TASK-NATSX-002 | Done |
+| FR-004 | JetStream.Publish | stream 存在/缺失场景均有测试 | TC-003 | TASK-NATSX-003 | Done |
+| FR-005 | JetStream.Subscribe | ack、redelivery、dead-letter 行为均有测试 | TC-003 | TASK-NATSX-003 | Done |
+| FR-006 | JetStream.AddStream | 创建、幂等、冲突配置均有测试 | TC-003 | TASK-NATSX-003 | Done |
+| FR-007 | JetStream.AddConsumer | 创建、幂等、冲突配置均有测试 | TC-003 | TASK-NATSX-003 | Done |
+| FR-008 | Health | ready/live/message 与连接状态映射有测试 | TC-005 | TASK-NATSX-005 | Done |
+| FR-009 | SubjectBuilder | `domain.resource.action.v{version}` 构造和解析有测试 | TC-006 | TASK-NATSX-006 | Done |
+| FR-010 | NatsMessageEnvelope | traceId/messageId/schemaVersion/header 双向映射有测试 | TC-007 | TASK-NATSX-007 | Done |
+| FR-011 | Config contract | `foundationx.nats.*` 配置、默认值和旧别名兼容有测试 | TC-008 | TASK-NATSX-008 | In Progress |
+| FR-012 | Observability contract | `foundationx_nats_*` 指标和结构化日志字段有测试 | TC-009 | TASK-NATSX-009 | In Progress |
+| BR-001 | Core NATS at-most-once | 不承诺持久化，低延迟发布订阅场景有说明和测试 | TC-001 | TASK-NATSX-001 | Done |
+| BR-002 | JetStream at-least-once | ack/nack/redelivery 语义有测试 | TC-003 | TASK-NATSX-003 | Done |
+| BR-003 | Context boundary | 所有网络操作接受 context 并尊重取消/超时 | TC-002 | TASK-NATSX-002 | In Progress |
+| BR-004 | Handler latency | 订阅 handler 快速返回/异步化约束有测试或示例 | TC-010 | TASK-NATSX-010 | In Progress |
+| BR-005 | 自动重连指数退避 | 断线重连、max-attempts、状态事件有测试 | TC-004 | TASK-NATSX-004 | In Progress |
+| NFR-001 | Security redaction | credentials/token/连接串敏感片段脱敏 | TC-011 | TASK-NATSX-011 | In Progress |
+| NFR-002 | TLS/auth | TLS 与认证配置可表达且不泄漏凭据 | TC-011 | TASK-NATSX-011 | In Progress |
+| NFR-003 | Performance budget | publish/request/JetStream 延迟预算有 benchmark | TC-012 | TASK-NATSX-012 | In Progress |
+| NFR-004 | Layer boundary | 不依赖 kafkax，不替代 RPC/治理框架 | TC-013 | TASK-NATSX-013 | Done |
+| NFR-005 | Release evidence | SPEC、goal、traceability、matrix evidence 一致 | TC-014 | TASK-NATSX-014 | Done |
 
 ## Acceptance Criteria Linkage
 

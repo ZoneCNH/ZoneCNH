@@ -87,7 +87,7 @@ parse_tasks() {
     [[ $in_yaml -eq 0 ]] && continue
 
     # Match task ID as YAML field value or top-level key
-    if [[ "$line" =~ ^[[:space:]]*(TASK-[A-Z]+-[0-9]+[A-Z]?): ]] || [[ "$line" =~ ^[[:space:]]*task_id:[[:space:]]*(TASK-[A-Z]+-[0-9]+[A-Z]?) ]]; then
+    if [[ "$line" =~ ^[[:space:]]*(TASK-[A-Z]+-[0-9]+[A-Za-z]?): ]] || [[ "$line" =~ ^[[:space:]]*task_id:[[:space:]]*(TASK-[A-Z]+-[0-9]+[A-Za-z]?) ]]; then
       current_id="${BASH_REMATCH[1]}"
       ALL_IDS+=("$current_id")
       TASK_AC_COUNT["$current_id"]=0
@@ -140,7 +140,7 @@ parse_tasks() {
       local file="${BASH_REMATCH[1]//\"/}"
       TASK_FILES_LIST["$current_id"]+="$file"$'\n'
       TASK_FILE_COUNT["$current_id"]=$(( ${TASK_FILE_COUNT["$current_id"]} + 1 ))
-    elif [[ "$line" =~ ^[[:space:]]*-[[:space:]]+"?(TASK-[A-Z]+-[0-9]+[A-Z]?)"?$ ]]; then
+    elif [[ "$line" =~ ^[[:space:]]*-[[:space:]]+"?(TASK-[A-Z]+-[0-9]+[A-Za-z]?)"?$ ]]; then
       TASK_DEPENDS["$current_id"]+="${BASH_REMATCH[1]}"$'\n'
     fi
   done < "$task_file"
@@ -173,8 +173,8 @@ for id in "${ALL_IDS[@]}"; do
     ID_SEEN["$id"]=1
   fi
   # 检查 ID 格式
-  if [[ ! "$id" =~ ^TASK-[A-Z]+-[0-9]{3}[A-Z]?$ ]]; then
-    add_warning "ID 格式不规范: $id（期望 TASK-{MODULE}-{NNN}，NNN 为三位数字）"
+  if [[ ! "$id" =~ ^TASK-[A-Z]+-[0-9]{3}[A-Za-z]?$ ]]; then
+    add_warning "ID 格式不规范: $id（期望 TASK-{MODULE}-{NNN}，NNN 为三位数字，可带单字母后缀）"
   fi
 done
 echo "  检查 ${#ALL_IDS[@]} 个 ID"

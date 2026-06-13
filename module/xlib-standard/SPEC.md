@@ -6,7 +6,7 @@ Owner: ZoneCNH
 Version: v1.0.0
 Updated: 2026-06-12
 
-> 归档说明：本 SPEC.md 为 v1.0.0 可执行交付整理稿的历史视图，不再作为 xlib-standard 快照分析的可执行规格；当前快照审计入口为 README.md、ANALYSIS.md、FR-DETAIL.md 和 TRACEABILITY.md。
+> 归档说明：本 SPEC.md 为 v1.0.0 可执行交付整理稿的存档视图，不再作为 xlib-standard 快照分析的可执行规格；当前快照审计入口为 README.md、ANALYSIS.md、FR-DETAIL.md 和 TRACEABILITY.md。
 
 本规格定义 `xlib-standard` 五类职责中后四类的可执行交付规格——Go Reference Template、Generator、Harness Gate 和 Evidence Runtime。第一类职责（Standard Source / 标准事实源）的文档规范定义见 goal.md。本规格约束公共 API、模板生成、验证 gate、release manifest 与最终验收，不承载业务域实现。
 

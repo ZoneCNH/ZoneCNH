@@ -32,6 +32,35 @@ for spec_file in "$SPEC_DIR"/*/SPEC.md; do
   module=$(basename "$(dirname "$spec_file")")
   content=$(cat "$spec_file")
 
+  if [[ "$module" == "xlib-standard" && -f "$SPEC_DIR/xlib-standard/ANALYSIS.md" ]]; then
+    current_files_ok=1
+    for current_file in ANALYSIS.md FR-DETAIL.md TRACEABILITY.md; do
+      if [[ ! -f "$SPEC_DIR/xlib-standard/$current_file" ]]; then
+        current_files_ok=0
+      fi
+    done
+
+    if [[ -f "$SPEC_DIR/xlib-standard/FR-DETAIL.md" ]]; then
+      fr_count=$(grep -cP "^### FR-[0-9]{3}\\b" "$SPEC_DIR/xlib-standard/FR-DETAIL.md" || true)
+    else
+      fr_count=0
+    fi
+    br_count=$(echo "$content" | grep -oP "BR-\d+" | sort -u | wc -l)
+
+    if [[ $current_files_ok -eq 1 ]]; then
+      status="✅ snapshot"
+    else
+      status="❌ snapshot"
+    fi
+
+    echo "| $module | snapshot | $fr_count | $br_count | $status |"
+
+    total_fr=$((total_fr + fr_count))
+    total_br=$((total_br + br_count))
+    total_modules=$((total_modules + 1))
+    continue
+  fi
+
   section_count=$(echo "$content" | grep -cP "^## \d+\." || true)
   fr_count=$(echo "$content" | grep -oP "FR-\d+" | sort -u | wc -l)
   br_count=$(echo "$content" | grep -oP "BR-\d+" | sort -u | wc -l)
