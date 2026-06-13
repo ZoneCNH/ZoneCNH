@@ -24,7 +24,7 @@ echo "=== Traceability Check ==="
 echo ""
 
 # 必须包含的模块
-REQUIRED_MODULES="kernel configx resiliencx observex schedulex testkitx xlibgate xlib-standard redisx kafkax natsx postgresx taosx ossx clickhousex contracts"
+REQUIRED_MODULES="kernel configx resiliencx observex schedulex testkitx xlibgate xlib-standard redisx kafkax natsx postgresx taosx ossx clickhousex contracts transportx"
 
 is_required_module() {
   local candidate="$1"
