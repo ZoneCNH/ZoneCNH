@@ -1,52 +1,26 @@
-# TASK-TAOSX-005
+# TASK-TAOSX-005: taosx_client_* 指标、noop 默认、日志脱敏
 
-> Metrics + 可观测
+- **Module**: taosx
+- **spec_ref**: module/taosx/SPEC.md#FR-010
+- **BR_ref**: module/taosx/SPEC.md#BR-006 ,module/taosx/SPEC.md#BR-007 ,module/taosx/SPEC.md#BR-008
+- **ACs**: AC-010
+- **Phase**: Health + Observability (Phase 3)
+- **Priority**: P1
+- **Dependencies**: none
+- **Status**: Pending
 
----
+## Scope
 
-```yaml
-task_id: TASK-TAOSX-005
-module: taosx
-scope: "taosx_client_* 指标、noop 默认、日志脱敏"
-spec_ref:
-  - "module/taosx/SPEC.md#FR-010"
-  - "module/taosx/SPEC.md#BR-006"
-  - "module/taosx/SPEC.md#BR-007"
-  - "module/taosx/SPEC.md#BR-008"
-files:
-  - (implementation files)
-acceptance_criteria:
-  - "All related FRs verified via TC"
-depends_on: []
-estimated_effort: "2h"
-priority: P0
-status: pending
-```
+taosx_client_* 指标、noop 默认、日志脱敏
 
----
+## Non-Scope
 
-## Requirements Covered
+Does NOT implement TDengine cluster deployment, database auto-creation, or supertable management. Does NOT implement business event semantics or domain DTOs.
 
-| Requirement | Description | Acceptance Criteria |
-|-------------|-------------|---------------------|
-| FR-010 | Metrics + 可观测 | TBD |
-| BR-006 | Metrics + 可观测 | TBD |
-| BR-007 | Metrics + 可观测 | TBD |
-| BR-008 | Metrics + 可观测 | TBD |
+## Files
 
-## Non-scope
+- (implementation files — TBD)
 
-- 不超出本 Task FR 范围
-- 不实现其他 Task 的 FR
+## Acceptance
 
-## Test Plan
-
-| Test Case | Type | Description |
-|-----------|------|-------------|
-| TBD | Unit | TBD |
-
-## Implementation Notes
-
-- 遵循 taosx SPEC.md 规范
-- 使用 kernel/observex 通过接口注入
-- 不直接依赖 configx
+- [ ] FR-010 verified via TC

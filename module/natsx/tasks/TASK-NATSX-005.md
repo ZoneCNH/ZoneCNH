@@ -1,52 +1,26 @@
-# TASK-NATSX-005
+# TASK-NATSX-005: Health 检查、GracefulShutdown、Drain、错误脱敏
 
-> Health + Close + 生命周期
+- **Module**: natsx
+- **spec_ref**: module/natsx/SPEC.md#FR-008
+- **BR_ref**: module/natsx/SPEC.md#BR-006 ,module/natsx/SPEC.md#BR-007 ,module/natsx/SPEC.md#BR-008
+- **ACs**: AC-008
+- **Phase**: Health + Observability (Phase 3)
+- **Priority**: P1
+- **Dependencies**: none
+- **Status**: Pending
 
----
+## Scope
 
-```yaml
-task_id: TASK-NATSX-005
-module: natsx
-scope: "Health 检查、GracefulShutdown、Drain、错误脱敏"
-spec_ref:
-  - "module/natsx/SPEC.md#FR-008"
-  - "module/natsx/SPEC.md#BR-006"
-  - "module/natsx/SPEC.md#BR-007"
-  - "module/natsx/SPEC.md#BR-008"
-files:
-  - (implementation files)
-acceptance_criteria:
-  - "All related FRs verified via TC"
-depends_on: []
-estimated_effort: "2h"
-priority: P0
-status: pending
-```
+Health 检查、GracefulShutdown、Drain、错误脱敏
 
----
+## Non-Scope
 
-## Requirements Covered
+Does NOT implement NATS server deployment, JetStream stream auto-provisioning, or NATS account management. Does NOT implement business event semantics or domain DTOs.
 
-| Requirement | Description | Acceptance Criteria |
-|-------------|-------------|---------------------|
-| FR-008 | Health + Close + 生命周期 | TBD |
-| BR-006 | Health + Close + 生命周期 | TBD |
-| BR-007 | Health + Close + 生命周期 | TBD |
-| BR-008 | Health + Close + 生命周期 | TBD |
+## Files
 
-## Non-scope
+- (implementation files — TBD)
 
-- 不超出本 Task FR 范围
-- 不实现其他 Task 的 FR
+## Acceptance
 
-## Test Plan
-
-| Test Case | Type | Description |
-|-----------|------|-------------|
-| TBD | Unit | TBD |
-
-## Implementation Notes
-
-- 遵循 natsx SPEC.md 规范
-- 使用 kernel/observex 通过接口注入
-- 不直接依赖 configx
+- [ ] FR-008 verified via TC

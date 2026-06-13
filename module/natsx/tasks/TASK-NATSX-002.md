@@ -1,48 +1,26 @@
-# TASK-NATSX-002
+# TASK-NATSX-002: Request + 超时
 
-> Core NATS: Request + 超时
+- **Module**: natsx
+- **spec_ref**: module/natsx/SPEC.md#FR-003
+- **BR_ref**: module/natsx/SPEC.md#BR-003
+- **ACs**: AC-003
+- **Phase**: Foundation (Phase 1)
+- **Priority**: P0
+- **Dependencies**: none
+- **Status**: Pending
 
----
+## Scope
 
-```yaml
-task_id: TASK-NATSX-002
-module: natsx
-scope: "Request-Reply 模式：responder、timeout、ctx cancel"
-spec_ref:
-  - "module/natsx/SPEC.md#FR-003"
-  - "module/natsx/SPEC.md#BR-003"
-files:
-  - (implementation files)
-acceptance_criteria:
-  - "All related FRs verified via TC"
-depends_on: []
-estimated_effort: "2h"
-priority: P0
-status: pending
-```
+Request-Reply 模式：responder、timeout、ctx cancel
 
----
+## Non-Scope
 
-## Requirements Covered
+Does NOT implement NATS server deployment, JetStream stream auto-provisioning, or NATS account management. Does NOT implement business event semantics or domain DTOs.
 
-| Requirement | Description | Acceptance Criteria |
-|-------------|-------------|---------------------|
-| FR-003 | Core NATS: Request + 超时 | TBD |
-| BR-003 | Core NATS: Request + 超时 | TBD |
+## Files
 
-## Non-scope
+- (implementation files — TBD)
 
-- 不超出本 Task FR 范围
-- 不实现其他 Task 的 FR
+## Acceptance
 
-## Test Plan
-
-| Test Case | Type | Description |
-|-----------|------|-------------|
-| TBD | Unit | TBD |
-
-## Implementation Notes
-
-- 遵循 natsx SPEC.md 规范
-- 使用 kernel/observex 通过接口注入
-- 不直接依赖 configx
+- [ ] FR-003 verified via TC

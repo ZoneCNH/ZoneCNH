@@ -1,52 +1,27 @@
-# TASK-TAOSX-004
+# TASK-TAOSX-004: Health 检查、幂等 Close、degraded 状态
 
-> Health + Close
+- **Module**: taosx
+- **spec_ref**: module/taosx/SPEC.md#FR-008 ,module/taosx/SPEC.md#FR-009
+- **BR_ref**: module/taosx/SPEC.md#BR-004 ,module/taosx/SPEC.md#BR-005
+- **ACs**: AC-008, AC-009
+- **Phase**: Core Implementation (Phase 2)
+- **Priority**: P0
+- **Dependencies**: none
+- **Status**: Pending
 
----
+## Scope
 
-```yaml
-task_id: TASK-TAOSX-004
-module: taosx
-scope: "Health 检查、幂等 Close、degraded 状态"
-spec_ref:
-  - "module/taosx/SPEC.md#FR-008"
-  - "module/taosx/SPEC.md#FR-009"
-  - "module/taosx/SPEC.md#BR-004"
-  - "module/taosx/SPEC.md#BR-005"
-files:
-  - (implementation files)
-acceptance_criteria:
-  - "All related FRs verified via TC"
-depends_on: []
-estimated_effort: "2h"
-priority: P0
-status: pending
-```
+Health 检查、幂等 Close、degraded 状态
 
----
+## Non-Scope
 
-## Requirements Covered
+Does NOT implement TDengine cluster deployment, database auto-creation, or supertable management. Does NOT implement business event semantics or domain DTOs.
 
-| Requirement | Description | Acceptance Criteria |
-|-------------|-------------|---------------------|
-| FR-008 | Health + Close | TBD |
-| FR-009 | Health + Close | TBD |
-| BR-004 | Health + Close | TBD |
-| BR-005 | Health + Close | TBD |
+## Files
 
-## Non-scope
+- (implementation files — TBD)
 
-- 不超出本 Task FR 范围
-- 不实现其他 Task 的 FR
+## Acceptance
 
-## Test Plan
-
-| Test Case | Type | Description |
-|-----------|------|-------------|
-| TBD | Unit | TBD |
-
-## Implementation Notes
-
-- 遵循 taosx SPEC.md 规范
-- 使用 kernel/observex 通过接口注入
-- 不直接依赖 configx
+- [ ] FR-008 verified via TC
+- [ ] FR-009 verified via TC

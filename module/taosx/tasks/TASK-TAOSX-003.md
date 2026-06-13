@@ -1,50 +1,27 @@
-# TASK-TAOSX-003
+# TASK-TAOSX-003: 批量写入
 
-> WriteBatch + SchemalessWrite
+- **Module**: taosx
+- **spec_ref**: module/taosx/SPEC.md#FR-006 ,module/taosx/SPEC.md#FR-007
+- **BR_ref**: module/taosx/SPEC.md#BR-003
+- **ACs**: AC-006, AC-007
+- **Phase**: Core Implementation (Phase 2)
+- **Priority**: P0
+- **Dependencies**: none
+- **Status**: Pending
 
----
+## Scope
 
-```yaml
-task_id: TASK-TAOSX-003
-module: taosx
-scope: "批量写入：table/timestamp/fields 校验、Schemaless 协议"
-spec_ref:
-  - "module/taosx/SPEC.md#FR-006"
-  - "module/taosx/SPEC.md#FR-007"
-  - "module/taosx/SPEC.md#BR-003"
-files:
-  - (implementation files)
-acceptance_criteria:
-  - "All related FRs verified via TC"
-depends_on: []
-estimated_effort: "2h"
-priority: P0
-status: pending
-```
+批量写入：table/timestamp/fields 校验、Schemaless 协议
 
----
+## Non-Scope
 
-## Requirements Covered
+Does NOT implement TDengine cluster deployment, database auto-creation, or supertable management. Does NOT implement business event semantics or domain DTOs.
 
-| Requirement | Description | Acceptance Criteria |
-|-------------|-------------|---------------------|
-| FR-006 | WriteBatch + SchemalessWrite | TBD |
-| FR-007 | WriteBatch + SchemalessWrite | TBD |
-| BR-003 | WriteBatch + SchemalessWrite | TBD |
+## Files
 
-## Non-scope
+- (implementation files — TBD)
 
-- 不超出本 Task FR 范围
-- 不实现其他 Task 的 FR
+## Acceptance
 
-## Test Plan
-
-| Test Case | Type | Description |
-|-----------|------|-------------|
-| TBD | Unit | TBD |
-
-## Implementation Notes
-
-- 遵循 taosx SPEC.md 规范
-- 使用 kernel/observex 通过接口注入
-- 不直接依赖 configx
+- [ ] FR-006 verified via TC
+- [ ] FR-007 verified via TC

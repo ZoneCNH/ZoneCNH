@@ -1,44 +1,23 @@
-# TASK-NATSX-006
+# TASK-NATSX-006: go.mod、单元测试、集成测试、benchmark、README、CHANGELOG
 
-> CI Gate + Benchmark + 文档
+- **Module**: natsx
+- **Phase**: CI + Release (Phase 4)
+- **Priority**: P2
+- **Dependencies**: none
+- **Status**: Pending
 
----
+## Scope
 
-```yaml
-task_id: TASK-NATSX-006
-module: natsx
-scope: "go.mod、单元测试、集成测试、benchmark、README、CHANGELOG"
-spec_ref:
-files:
-  - (implementation files)
-acceptance_criteria:
-  - "All related FRs verified via TC"
-depends_on: []
-estimated_effort: "2h"
-priority: P0
-status: pending
-```
+go.mod、单元测试、集成测试、benchmark、README、CHANGELOG
 
----
+## Non-Scope
 
-## Requirements Covered
+Does NOT implement NATS server deployment, JetStream stream auto-provisioning, or NATS account management. Does NOT implement business event semantics or domain DTOs.
 
-| Requirement | Description | Acceptance Criteria |
-|-------------|-------------|---------------------|
+## Files
 
-## Non-scope
+- (implementation files — TBD)
 
-- 不超出本 Task FR 范围
-- 不实现其他 Task 的 FR
+## Acceptance
 
-## Test Plan
-
-| Test Case | Type | Description |
-|-----------|------|-------------|
-| TBD | Unit | TBD |
-
-## Implementation Notes
-
-- 遵循 natsx SPEC.md 规范
-- 使用 kernel/observex 通过接口注入
-- 不直接依赖 configx
+- [ ] CI gate + benchmark + docs verified
