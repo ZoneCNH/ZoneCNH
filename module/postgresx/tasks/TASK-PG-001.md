@@ -1,38 +1,53 @@
-# TASK-PG-001: Config、连接池与 SQL 执行基线
+```yaml
+TASK-PG-001:
+  module: postgresx
+  scope: "实现 Config、连接池生命周期与 SQL 执行基线（Exec/Query/QueryRow/Rows）"
+  spec_ref:
+    - "module/postgresx/SPEC.md#FR-001"
+    - "module/postgresx/SPEC.md#FR-002"
+    - "module/postgresx/SPEC.md#BR-001"
+    - "module/postgresx/SPEC.md#BR-002"
+    - "module/postgresx/SPEC.md#BR-003"
+    - "module/postgresx/SPEC.md#BR-004"
+    - "module/postgresx/SPEC.md#BR-005"
+    - "module/postgresx/SPEC.md#BR-011"
+  files:
+    - "pkg/postgresx/client.go"
+    - "pkg/postgresx/config.go"
+    - "pkg/postgresx/query.go"
+    - "pkg/postgresx/dsn.go"
+    - "go.mod"
+  acceptance_criteria:
+    - "TC-001: Config 默认值稳定、DSN 脱敏、无效配置返回错误"
+    - "TC-002: Exec/Query/QueryRow 保留 context 语义，Rows Close/Err 行为正确"
+    - "TC-008: GOWORK=off 下测试通过，go.mod 仅含允许的基座依赖"
+  depends_on: []
+  estimated_effort: "4h"
+  priority: P0
+  status: done
+```
 
-## Scope
+## Non-scope
 
-锁定 `postgresx` 的最小客户端基线：显式 `Config`、`New` / `Open`、连接池生命周期、`Exec`、`Query`、`QueryRow`、`Rows` 和依赖边界。
+- 不涉及事务边界（WithTx/WithTxOptions）
+- 不涉及迁移执行（MigrationRunner）
+- 不涉及健康检查（HealthChecker/Stats）
+- 不涉及错误映射（MapError/IsRetryable）
+- 不涉及可观测 hook（Logger/Metrics）
 
-## Requirements
+## Test Plan
 
-- FR-001
-- FR-002
-- BR-001
-- BR-002
-- BR-003
-- BR-004
-- BR-005
-- BR-011
-
-## Acceptance
-
-- `go.mod` 只包含允许的基座依赖：`foundationx` 与 `pgx/v5`。
-- `Config` 不读取环境变量、配置文件或 Secret 文件。
-- `New` / `Open` 初始化失败时关闭连接池。
-- `Close` 幂等，关闭后查询和事务入口返回错误。
-- 查询接口保留 `context.Context` 行为，`Rows` 暴露 `Close` 与 `Err`。
-- `GOWORK=off go test ./...` 和 `GOWORK=off go vet ./...` 通过。
+| TC | 验证内容 | 验证命令 |
+|-----|---------|---------|
+| TC-001 | Config 校验、默认值填充、DSN/RedactedDSN、New/Open 生命周期 | `GOWORK=off go test -run TestConfig ./pkg/postgresx/` |
+| TC-002 | Exec/Query/QueryRow 参数绑定、扫描、Rows 生命周期与迭代错误 | `GOWORK=off go test -run "TestExec|TestQuery|TestRows" ./pkg/postgresx/` |
+| TC-008 | GOWORK=off go test/go vet 通过，依赖边界检查 | `GOWORK=off go test ./... && GOWORK=off go vet ./...` |
 
 ## Evidence
 
 - `/home/postgresx/pkg/postgresx/client.go`
 - `/home/postgresx/pkg/postgresx/config.go`
-- `/home/postgresx/pkg/postgresx/dsn.go`
 - `/home/postgresx/pkg/postgresx/query.go`
+- `/home/postgresx/pkg/postgresx/dsn.go`
 - `/home/postgresx/go.mod`
 - `/home/postgresx/docs/EVIDENCE-20260601.md`
-
-## Status
-
-已有实现和验证证据。v1.0.0 已通过 TASK-PG-003 冻结 public API contract 与代码一致性。

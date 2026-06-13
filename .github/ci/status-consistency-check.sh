@@ -98,8 +98,33 @@ STATUS_VERSIONED=$(grep -oP '版本覆盖:\s*有版本号\s*\K[0-9]+' "$REPO_ROO
 STATUS_UNVERSIONED=$(grep -oP '版本覆盖:.*无版本号\s*\K[0-9]+' "$REPO_ROOT/STATUS.md" | head -1)
 STATUS_DOMAIN_VERSIONED=$(awk -F'|' '/^\| \*\*合计/ {gsub(/[^0-9]/, "", $7); print $7}' "$REPO_ROOT/STATUS.md")
 
-# 从 module/ 提取规格数量：Foundation 17
-SPEC_COUNT=$(find "$SPEC_DIR" -mindepth 2 -maxdepth 2 -name SPEC.md | wc -l | tr -d ' ')
+# 从 module/ 提取 Foundation 规格数量；L2.5/domain 规格不计入 Foundation 基座口径。
+FOUNDATION_MODULES=(
+  xlib-standard
+  kernel
+  configx
+  observex
+  testkitx
+  resiliencx
+  schedulex
+  xlibgate
+  redisx
+  kafkax
+  natsx
+  postgresx
+  taosx
+  ossx
+  clickhousex
+  contracts
+  transportx
+)
+FOUNDATION_EXPECTED_COUNT=${#FOUNDATION_MODULES[@]}
+SPEC_COUNT=0
+for module in "${FOUNDATION_MODULES[@]}"; do
+  if [[ -f "$SPEC_DIR/$module/SPEC.md" ]]; then
+    SPEC_COUNT=$((SPEC_COUNT + 1))
+  fi
+done
 FOUNDATION_SPEC_COUNT="$SPEC_COUNT"
 
 echo "--- 数据采集 ---"
@@ -110,7 +135,7 @@ echo "ARCHITECTURE 表:   基座=$ARCH_BASE, L2.5=$ARCH_L25, 数据域=$ARCH_DAT
 echo "STATUS 总数:       $STATUS_TOTAL"
 echo "STATUS 同步表:     总计=$STATUS_SYNC_TOTAL, market-data=$STATUS_SYNC_MD, macro-data=$STATUS_SYNC_MACRO"
 echo "STATUS 分布/版本:  进度分布合计=$STATUS_PROGRESS_BUCKET_TOTAL, 版本覆盖=$STATUS_VERSIONED+$STATUS_UNVERSIONED, 域统计有版本号=$STATUS_DOMAIN_VERSIONED"
-echo "Spec 规格计数:     Foundation=$FOUNDATION_SPEC_COUNT, 总计=$SPEC_COUNT"
+echo "Spec 规格计数:     Foundation=$FOUNDATION_SPEC_COUNT, 预期=$FOUNDATION_EXPECTED_COUNT"
 echo ""
 
 # ── 一致性检查 ───────────────────────────────────────────
@@ -152,8 +177,8 @@ check "组件总数 (ARCHITECTURE 表合计含入口 vs STATUS)" "$ARCH_TOTAL" "
 check "STATUS (仪表盘总数 vs 同步表总计)" "$STATUS_TOTAL" "$STATUS_SYNC_TOTAL"
 
 # 6. module/ 数量口径：Foundation 17
-check "规格总数 (Foundation 17)" "$SPEC_COUNT" "17"
-check "Foundation 规格数" "$FOUNDATION_SPEC_COUNT" "17"
+check "规格总数 (Foundation $FOUNDATION_EXPECTED_COUNT)" "$SPEC_COUNT" "$FOUNDATION_EXPECTED_COUNT"
+check "Foundation 规格数" "$FOUNDATION_SPEC_COUNT" "$FOUNDATION_EXPECTED_COUNT"
 
 # 7. STATUS 内部统计应与仪表盘总数一致
 check "STATUS (进度分布合计 vs 仪表盘总数)" "$STATUS_PROGRESS_BUCKET_TOTAL" "$STATUS_TOTAL"

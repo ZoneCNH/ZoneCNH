@@ -3,97 +3,93 @@
 > 模块级追溯矩阵。治理规范见 [docs/governance/TRACEABILITY.md](../../docs/governance/TRACEABILITY.md)。
 
 Last-Updated: 2026-06-14
-Source: module/domainx/SPEC.md
+Source: `module/domainx/SPEC.md`
 
 ## §1 功能需求追溯（FR）
 
 | Requirement | Description | Acceptance Criteria | Test Case | Task | Status |
 | --- | --- | --- | --- | --- | --- |
-| FR-001 | Order 值对象 — NewOrder 构造 + 校验（quantity/price/symbol） + getter 只读 | AC-001, AC-002, AC-003, AC-004 | TC-001, TC-002, TC-003, TC-004 | TASK-DOMAINX-001 | Pending |
-| FR-002 | Fill 值对象 — NewFill 构造 + 校验（quantity/price/fee） | AC-005, AC-006 | TC-005, TC-006 | TASK-DOMAINX-002 | Pending |
-| FR-003 | Position 值对象 — NewPosition + MarketValue() + UnrealizedPnL() | AC-007, AC-008 | TC-007, TC-008 | TASK-DOMAINX-003 | Pending |
-| FR-004 | Exposure 值对象 — NewExposure + NetExposureRatio() | AC-009, AC-010 | TC-009, TC-010 | TASK-DOMAINX-004 | Pending |
-| FR-005 | JSON 序列化/反序列化 — 所有值对象支持 snake_case round-trip | AC-011, AC-012, AC-013 | TC-011, TC-012, TC-013 | TASK-DOMAINX-005 | Pending |
-| FR-006 | 不可变性 — 值对象创建后字段只读 + 并发读安全 | AC-014 | TC-014 | TASK-DOMAINX-005 | Pending |
+| FR-001 | Order 值对象 — 构造、校验与初始状态 | AC-001, AC-009 | TC-001 | TASK-DOMAINX-001 | Pending |
+| FR-002 | OrderState 枚举与合法状态流转 | AC-002, AC-010 | TC-002 | TASK-DOMAINX-001 | Pending |
+| FR-003 | Trade 值对象 — 构造、数量、价格与手续费校验 | AC-003 | TC-004 | TASK-DOMAINX-002 | Pending |
+| FR-004 | Position 值对象 — 只读字段与 WithQuantity 均价更新 | AC-004 | TC-005 | TASK-DOMAINX-003 | Pending |
+| FR-005 | ExecutionReport 值对象 — 执行状态与数量一致性 | AC-005 | TC-006 | TASK-DOMAINX-004 | Pending |
+| FR-006 | Portfolio 值对象 — 余额、持仓与 totalEquity 自动计算 | AC-006, AC-011 | TC-007 | TASK-DOMAINX-005 | Pending |
+| FR-007 | 序列化兼容 — snake_case、decimal 字符串与 RFC3339 时间 | AC-007 | TC-003 | TASK-DOMAINX-005 | Pending |
+| FR-008 | 不可变性 — 无公开 setter、copy-on-write 与并发读安全 | AC-008 | TC-008 | TASK-DOMAINX-005 | Pending |
 
 ## §2 业务规则追溯（BR）
 
 | Requirement | Description | 违反后果 | 验证方式 | Task | Status |
 | --- | --- | --- | --- | --- | --- |
-| BR-001 | 金额精度 — 所有金额/价格/费用字段使用 decimal.Decimal | 精度丢失，跨模块数据不一致 | 编译期类型检查 (`decimal.Decimal`) | TASK-DOMAINX-001 | Pending |
-| BR-002 | Quantity 正数校验 — Order/Fill quantity > 0 | 负数量导致风控/结算计算错误 | TC-002, TC-006 (非法 quantity 测试) | TASK-DOMAINX-001 | Pending |
-| BR-003 | Price 非负校验 — Order price/Fill price/Position avgPrice >= 0 | 负价格导致估值异常 | TC-003 (非法 price 测试) | TASK-DOMAINX-001 | Pending |
-| BR-004 | Symbol 非空 — 所有含 symbol 字段的值对象 symbol != "" | 空 symbol 导致消息路由失败 | TC-004 (空 symbol 测试) | TASK-DOMAINX-001 | Pending |
-| BR-005 | 不可变性 — 私有字段 + 公开只读 getter，无 setter | 并发修改导致 data race | TC-014 (并发读取 race 测试) | TASK-DOMAINX-005 | Pending |
-| BR-006 | snake_case JSON — 所有 JSON tag 与 contracts DTO 对齐 | 跨模块序列化不兼容 | TC-011, TC-012 (JSON round-trip 测试) | TASK-DOMAINX-005 | Pending |
-| BR-007 | Decimal 零值语义 — 拒绝未初始化的 decimal.Decimal{} | 零值与数值 0 混淆，计算错误 | TC-002, TC-003 (零值 decimal 校验) | TASK-DOMAINX-001 | Pending |
+| BR-001 | 所有金额/价格字段使用 decimal.Decimal，不得使用 float64 | 编译失败：类型不匹配 | go test ./... | TASK-DOMAINX-006 | Pending |
+| BR-002 | Order.quantity > 0 且限价单 price >= 0（市价单 price 可为 0） | 返回 ErrInvalidQuantity 或 ErrInvalidPrice | TC-001 | TASK-DOMAINX-001 | Pending |
+| BR-003 | OrderState 流转必须遵循合法迁移表 | 返回 ErrInvalidTransition | TC-002 | TASK-DOMAINX-001 | Pending |
+| BR-004 | Trade 必须关联有效的 OrderID | 返回 ErrOrderNotFound（由调用方校验） | TC-004 | TASK-DOMAINX-002 | Pending |
+| BR-005 | Position.avgPrice 在加仓/减仓后按加权均价重新计算 | WithQuantity 返回新 Position，avgPrice 自动更新 | TC-005 | TASK-DOMAINX-003 | Pending |
+| BR-006 | ExecutionReport.state 为 FILLED 时 remainingQty 必须为 0 | 返回 ErrStateQuantityMismatch | TC-006 | TASK-DOMAINX-004 | Pending |
+| BR-007 | 所有值对象字段不可变（私有 + getter） | 编译期约束，无公开 setter | TC-008 | TASK-DOMAINX-005 | Pending |
+| BR-008 | JSON tag 统一使用 snake_case | CI Gate: TC-003 JSON round-trip 测试失败 | TC-003 | TASK-DOMAINX-005 | Pending |
+| BR-009 | 错误消息格式：`domainx: <type>: <detail>` | CI Gate 错误格式检查失败 | go test ./... | TASK-DOMAINX-006 | Pending |
+| BR-010 | Portfolio.totalEquity = sum(balances) + sum(positions.marketValue) | 返回 ErrPortfolioBalanceMismatch | TC-007 | TASK-DOMAINX-005 | Pending |
 
 ## §3 非功能需求追溯（NFR）
 
 | Requirement | Description | 目标值 | 验证方式 | Task | Status |
 | --- | --- | --- | --- | --- | --- |
-| NFR-001 | Order 构造性能 | < 500ns | Benchmark `BenchmarkNewOrder` | TASK-DOMAINX-006 | Pending |
-| NFR-002 | Position.MarketValue() 性能 | < 100ns | Benchmark `BenchmarkMarketValue` | TASK-DOMAINX-006 | Pending |
-| NFR-003 | JSON round-trip 性能 | < 1μs | Benchmark `BenchmarkJSONRoundTrip` | TASK-DOMAINX-006 | Pending |
-| NFR-004 | 单元测试覆盖率 | ≥ 80% | `go tool cover -func` | TASK-DOMAINX-006 | Pending |
-| NFR-005 | 编译通过 | 零错误 | `go build ./...` | TASK-DOMAINX-006 | Pending |
-| NFR-006 | race 检测通过 | 零 data race | `go test -race ./...` | TASK-DOMAINX-006 | Pending |
-| NFR-007 | vet 检查通过 | 零警告 | `go vet ./...` | TASK-DOMAINX-006 | Pending |
-| NFR-008 | lint 检查通过 | 零错误 | `golangci-lint run` | TASK-DOMAINX-006 | Pending |
-| NFR-009 | Secret 扫描通过 | 零命中 | `gitleaks detect --no-git` | TASK-DOMAINX-006 | Pending |
-| NFR-010 | 零内存分配（单值对象构造） | 0 allocs | `go test -benchmem` | TASK-DOMAINX-006 | Pending |
+| NFR-001 | 值对象构造延迟 | < 1μs | go test -bench . ./... | TASK-DOMAINX-006 | Pending |
+| NFR-002 | 值对象构造分配 | 0 allocs | go test -bench . -benchmem ./... | TASK-DOMAINX-006 | Pending |
+| NFR-003 | JSON round-trip 精度 | decimal 精度无损 | TC-003 | TASK-DOMAINX-005 | Pending |
+| NFR-004 | 单元测试覆盖率 | >= 80% | go test -cover ./... | TASK-DOMAINX-006 | Pending |
+| NFR-005 | 编译通过 | 零错误 | go build ./... | TASK-DOMAINX-006 | Pending |
+| NFR-006 | race 检测通过 | 零 data race | go test -race ./... | TASK-DOMAINX-006 | Pending |
+| NFR-007 | vet 检查通过 | 零警告 | go vet ./... | TASK-DOMAINX-006 | Pending |
+| NFR-008 | lint 检查通过 | 零错误 | golangci-lint run | TASK-DOMAINX-006 | Pending |
+| NFR-009 | Secret 扫描通过 | 零命中 | gitleaks detect --no-git | TASK-DOMAINX-006 | Pending |
+| NFR-010 | 公共 API 与 contracts 对齐 | 快照无漂移 | API snapshot / contracts check | TASK-DOMAINX-006 | Pending |
 
 ## §4 TC → FR 反向追溯
 
 | Test Case | 覆盖需求 | 测试类型 | 描述 |
 | --- | --- | --- | --- |
-| TC-001 | FR-001 | 单元 | Order 正常构造：合法参数 → 返回 Order + nil 错误 |
-| TC-002 | FR-001, BR-002, BR-007 | 单元 | Order 非法 quantity：quantity<=0 或 decimal 零值 → ErrInvalidQuantity |
-| TC-003 | FR-001, BR-003, BR-007 | 单元 | Order 非法 price：price<0 或 decimal 零值 → ErrInvalidPrice |
-| TC-004 | FR-001, BR-004 | 单元 | Order 空 symbol：symbol="" → ErrEmptySymbol |
-| TC-005 | FR-002 | 单元 | Fill 正常构造：合法参数 → 返回 Fill + nil 错误 |
-| TC-006 | FR-002, BR-002 | 单元 | Fill 非法 fee：fee<0 → ErrInvalidFee |
-| TC-007 | FR-003 | 单元 | Position.MarketValue()：quantity * avgPrice 精确计算 |
-| TC-008 | FR-003 | 单元 | Position.UnrealizedPnL(currentPrice)：(currentPrice-avgPrice)*quantity |
-| TC-009 | FR-004 | 单元 | Exposure 正常构造：合法参数 → 返回 Exposure + nil 错误 |
-| TC-010 | FR-004 | 单元 | Exposure.NetExposureRatio() 除零保护：grossExposure=0 → 返回 0 |
-| TC-011 | FR-005, BR-006 | 单元 | Order JSON round-trip：Marshal → Unmarshal → 字段值一致 |
-| TC-012 | FR-005, BR-006 | 单元 | Fill JSON round-trip：Marshal → Unmarshal → 字段值一致 |
-| TC-013 | FR-005 | 单元 | JSON 缺失必填字段：反序列化返回错误 |
-| TC-014 | FR-006, BR-005 | 单元 | 并发读取无 data race：多 goroutine 同时 getter → `-race` 零告警 |
+| TC-001 | FR-001, BR-002 | 单元 | Order 构造与 quantity/price/symbol 校验 |
+| TC-002 | FR-002, BR-003 | 单元 | OrderState 合法与非法状态流转 |
+| TC-003 | FR-007, BR-008 | 单元 | JSON round-trip 保持 snake_case 与 decimal 精度 |
+| TC-004 | FR-003, BR-004 | 单元 | Trade 构造与 OrderID 关联 |
+| TC-005 | FR-004, BR-005 | 单元 | Position 加仓/减仓后均价更新 |
+| TC-006 | FR-005, BR-006 | 单元 | ExecutionReport 状态与数量一致性 |
+| TC-007 | FR-006, BR-010 | 单元 | Portfolio totalEquity 计算与余额一致性 |
+| TC-008 | FR-008, BR-007 | 单元 | 值对象不可变性与无公开 setter |
 
 ## §5 全局 AC 注册表
 
 | AC ID | 所属需求 | 验证方式 | 状态 |
 | --- | --- | --- | --- |
-| AC-001 | FR-001 | TC-001: Order 正常构造测试 | Pending |
-| AC-002 | FR-001, BR-002, BR-007 | TC-002: 非法 quantity 测试 | Pending |
-| AC-003 | FR-001, BR-003, BR-007 | TC-003: 非法 price 测试 | Pending |
-| AC-004 | FR-001, BR-004 | TC-004: 空 symbol 测试 | Pending |
-| AC-005 | FR-002 | TC-005: Fill 正常构造测试 | Pending |
-| AC-006 | FR-002, BR-002 | TC-006: 非法 fee 测试 | Pending |
-| AC-007 | FR-003 | TC-007: MarketValue() 计算测试 | Pending |
-| AC-008 | FR-003 | TC-008: UnrealizedPnL() 计算测试 | Pending |
-| AC-009 | FR-004 | TC-009: Exposure 正常构造测试 | Pending |
-| AC-010 | FR-004 | TC-010: NetExposureRatio() 除零测试 | Pending |
-| AC-011 | FR-005, BR-006 | TC-011: Order JSON round-trip 测试 | Pending |
-| AC-012 | FR-005, BR-006 | TC-012: Fill JSON round-trip 测试 | Pending |
-| AC-013 | FR-005 | TC-013: JSON 缺失字段错误测试 | Pending |
-| AC-014 | FR-006, BR-005 | TC-014: 并发读取 race 测试 | Pending |
+| AC-001 | FR-001 | TC-001: Order 构造校验 quantity/price/symbol | Pending |
+| AC-002 | FR-002 | TC-002: 合法流转成功，非法返回 ErrInvalidTransition | Pending |
+| AC-003 | FR-003 | TC-004: Trade 构造校验 quantity/price/fee | Pending |
+| AC-004 | FR-004 | TC-005: Position 只读，WithQuantity 更新均价 | Pending |
+| AC-005 | FR-005 | TC-006: ExecutionReport 校验 state/quantity | Pending |
+| AC-006 | FR-006 | TC-007: Portfolio 自动计算 totalEquity | Pending |
+| AC-007 | FR-007 | TC-003: JSON round-trip Decimal 精度不变 | Pending |
+| AC-008 | FR-008 | TC-008: 无公开 setter，修改返回新实例 | Pending |
+| AC-009 | BR-002 | TC-001: quantity<=0 返回 ErrInvalidQuantity | Pending |
+| AC-010 | BR-003 | TC-002: 非法流转返回 ErrInvalidTransition | Pending |
+| AC-011 | BR-010 | TC-007: Portfolio 余额不一致返回错误 | Pending |
 
 ## §6 覆盖率仪表盘
 
 | 类别 | 总数 | 已覆盖 | 覆盖率 | 状态 |
 | --- | --- | --- | --- | --- |
-| FR | 6 | 6 | 100% | ✅ |
-| BR | 7 | 7 | 100% | ✅ |
+| FR | 8 | 8 | 100% | ✅ |
+| BR | 10 | 10 | 100% | ✅ |
 | NFR | 10 | 10 | 100% | ✅ |
-| TC | 14 | 14 | 100% | ✅ |
-| AC | 14 | 14 | 100% | ✅ |
+| TC | 8 | 8 | 100% | ✅ |
+| AC | 11 | 11 | 100% | ✅ |
 | Task | 6 | 6 | — | All Pending |
 
 ## §7 变更历史
 
 | 日期 | 版本 | 变更 |
 | --- | --- | --- |
-| 2026-06-14 | v1.0 | 初始矩阵：6 FR + 7 BR + 10 NFR + 14 TC + 14 AC；覆盖率 100% |
+| 2026-06-14 | v1.1 | 对齐当前 SPEC：8 FR + 10 BR + 10 NFR + 8 TC + 11 AC；纳入 traceability 门禁 |
