@@ -19,6 +19,8 @@
 - Repository: [github.com/ZoneCNH/kafkax](https://github.com/ZoneCNH/kafkax)
 - Related: [CONSTITUTION.md](../../CONSTITUTION.md), [ARCHITECTURE.md](../../ARCHITECTURE.md), [goal.md](./goal.md), [TRACEABILITY.md](./TRACEABILITY.md)
 
+---
+
 ### 1.1 变更历史
 
 | 日期 | 版本 | 变更内容 | 作者 |

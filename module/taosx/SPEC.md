@@ -1,15 +1,13 @@
 # taosx 规格
 
-## 元数据
+- Status: Approved
+- Spec-Version: v1.0.1
+- Last-Updated: 2026-06-13
+- Layer: L2 存储适配器
+- Module-Version: v1.0.1
+- Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `kernel`
 
-| 字段 | 值 |
-| --- | --- |
-| Status | Approved |
-| Spec-Version | v0.2.0 |
-| Last-Updated | 2026-06-13 |
-| Layer | L2 存储适配器 |
-| Module-Version | v1.0.1 |
-| Related | `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `kernel` |
+---
 
 ## 1. 摘要
 
@@ -37,6 +35,8 @@ v1.0.1 保持 `pkg/taosx` 为公共运行时 API：默认驱动仍显式不可�
 - 不保证原始 SQL 的注入安全；`taosx` 只拒绝空 SQL，参数化和 SQL DSL 属于上层或具体驱动职责。
 
 ## 4. 功能需求
+
+- 以下功能需求定义 v1.0.1 必须稳定交付的 TDengine 适配器公共能力。
 
 | ID | 需求 | 验收标准 |
 | --- | --- | --- |
@@ -100,10 +100,10 @@ type Config struct {
 
 ```go
 cfg := taosx.Config{
-	Endpoint: "127.0.0.1:6041",
+	Endpoint: "tdengine.example.internal:6041",
 	Database: "market",
 	Username: "root",
-	Password: "taosdata",
+	Password: os.Getenv("TAOSX_PASSWORD"),
 }
 
 client, err := taosx.New(ctx, cfg, taosx.WithDriver(driver))
@@ -136,3 +136,65 @@ defer rows.Close()
 - `TAOSX_INTEGRATION=1 go test -tags=integration ./pkg/taosx -run TestTDengineWebSocketIntegration -count=1`（使用本地 dev 配置注入环境变量，不输出凭据）
 - `git diff --check`
 - 边界检查必须确认核心包没有引入未批准的 Zone 模块依赖。
+
+## 9. 数据模型
+
+核心数据模型包括 `Config`、`Statement`、`Query`、`Rows`、`Batch`、`Point`、`SchemalessPayload`、`WriteResult`、`HealthStatus` 和错误分类。所有模型由调用方显式构造，不在包内读取环境变量。
+
+## 10. 错误模型
+
+错误必须带操作名、分类和可脱敏上下文。配置错误归类为 validation，默认驱动错误归类为 unavailable，关闭后的操作归类为 closed，驱动透传错误必须保留原始 cause 供调用方诊断。
+
+## 11. 配置契约
+
+`Config.Normalize` 只补齐安全默认值，不连接外部系统。`Config.Validate` 必须拒绝空 endpoint、空 database、非法 driver mode、负 timeout 和负 retry count。`Config.RedactedDSN` 不得输出密码。
+
+## 12. 并发与生命周期
+
+`Client` 构造后可被并发调用。`Close` 必须幂等；关闭过程中不得产生 panic。关闭完成后，执行、查询、批量写入、schemaless 写入和健康检查必须返回可分类状态。
+
+## 13. 可观测性
+
+指标端口只记录低基数标签。`Metrics` 实现不得成为核心依赖；默认 no-op 实现必须零配置可用。健康检查状态不得包含明文密码或完整 DSN。
+
+## 14. 安全与脱敏
+
+错误、状态、日志、测试失败输出和示例均不得暴露真实密码、API key、私有 endpoint 或账户信息。示例凭据必须使用环境变量或占位符表达。
+
+## 15. 依赖边界
+
+核心包直接 Zone 依赖仅允许 `kernel`。真实 TDengine driver、指标后端、配置中心和重试组件都必须通过端口注入或测试边界接入。
+
+## 16. 兼容性
+
+v1.0.1 不改变 v1.0.0 的公共构造入口和核心接口语义。新增字段、方法或错误分类必须保留旧调用方的编译兼容性，破坏性变更必须进入后续 major 版本。
+
+## 17. 迁移策略
+
+从 v1.0.0 升级到 v1.0.1 的调用方只需重新运行验证命令。已注入自定义 driver、metrics 或测试适配器的项目不需要调整构造方式。
+
+## 18. 发布证据
+
+发布证据必须包含单元测试、契约测试、示例测试、race 检查、覆盖率报告、边界检查、依赖差异检查、Docker 或本地 TDengine 集成测试、`git diff --check` 输出和无凭据泄漏检查。
+
+## 19. 回滚策略
+
+如 v1.0.1 发布后出现回归，调用方可回退到 v1.0.0 tag。回滚不需要数据迁移，因为核心包不持久化状态、不写 schema、不管理连接池。
+
+## 20. 运行手册
+
+运行方必须在外部配置 TDengine endpoint、database、username、password、timeout 和 driver。生产 driver 由调用方注入，核心包只负责端口契约、配置校验、错误分类和脱敏。
+
+## 21. 测试矩阵
+
+测试矩阵覆盖配置归一化、校验失败、默认不可用驱动、注入驱动成功路径、错误分类、关闭幂等性、Rows 行为、批量写入、schemaless 写入、健康状态和指标回调。
+
+## 22. 验收状态
+
+本规格状态为 Approved。进入 release_ready 前，必须确认 TRACEABILITY 中 FR-001 到 FR-010 与 BR-001 到 BR-006 的测试证据均为通过状态。
+
+## 23. 开放问题
+
+- 是否将官方 TDengine driver 包装器独立为 `taosx-driver-taosws` 仓库。
+- 是否在后续版本提供 STMT 批量写入端口。
+- 是否增加面向超级表 schema 管理的独立契约。
