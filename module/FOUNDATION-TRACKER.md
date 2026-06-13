@@ -239,26 +239,26 @@
 - [ ] 同步更新 SPEC.md 依赖声明和 IMPLEMENTATION-PLAN.md Phase 2
 - [ ] 迁移完成后删除 `internal/foundationx` 或更新 contract tests
 
-### Issue 7：postgresx Go baseline 未对齐
+### Issue 7：postgresx Go baseline 未对齐 ✅
 
 ```text
 标题：postgresx go.mod 降级到 Go 1.23
 仓库：ZoneCNH/postgresx
 ```text
 
-- [ ] `go.mod` 声明 `go 1.25.0`，其余 5 核心模块均为 `go 1.23`
-- [ ] 降级后确认 CI matrix go-version 一致
-- [ ] 更新 IMPLEMENTATION-PLAN.md version matrix
+- [x] `go.mod` 声明 `go 1.25.0`，其余 5 核心模块均为 `go 1.23` → 已降级
+- [x] 降级后确认 CI matrix go-version 一致（PR #7 merged, squash → main）
+- [x] 更新 IMPLEMENTATION-PLAN.md version matrix
 
-### Issue 8：observex go.sum 残留 foundationx hash
+### Issue 8：observex go.sum 残留 foundationx hash ✅
 
 ```text
 标题：observex go.sum 清理 foundationx 残留
 仓库：ZoneCNH/observex
 ```text
 
-- [ ] `go.sum` 残留 `github.com/ZoneCNH/foundationx v0.1.0` hash（无实际 import，仅注释引用）
-- [ ] 运行 `go mod tidy` 清理
+- [x] `go.sum` 残留 `github.com/ZoneCNH/foundationx v0.1.0` hash（无实际 import，仅注释引用）
+- [x] 运行 `go mod tidy` 清理（PR #9 merged, squash → main）
 
 ### Issue 9：contracts / transportx / xlib-standard 三仓共享 Go module
 
@@ -328,8 +328,8 @@
 | P0       | 4        | 4             | ████       |
 | P1       | 6 模块   | 6（全部完成） | ██████     |
 | P2       | 1        | 1             | █          |
-| P3       | 8        | 0             | ░░░░       |
-| **总计** | **19**   | **11**        | **████░░** |
+| P3       | 8        | 2             | █░░░       |
+| **总计** | **19**   | **13**        | **█████░** |
 
 ---
 
