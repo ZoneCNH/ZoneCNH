@@ -10,19 +10,19 @@
 
 | FR     | Description                        | Acceptance Criteria                               | Test Case      | Task                               | Status   |
 | ------ | ---------------------------------- | ------------------------------------------------- | -------------- | ---------------------------------- | -------- |
-| FR-001 | Client 创建与生命周期（New/Close） | New 校验 ctx+cfg，Close 标记关闭                  | TC-007, TC-008 | TASK-CONFIGX-000, TASK-CONFIGX-001 | ✅        |
-| FR-002 | Loader + Source 模式               | NewLoader().AddSource().Load(ctx)                 | TC-001         | TASK-CONFIGX-002, TASK-CONFIGX-003 | ✅        |
-| FR-003 | FileSource — YAML/TOML/JSON/.env   | 4 种文件格式解析正确                              | TC-001         | TASK-CONFIGX-002                   | ✅        |
-| FR-004 | EnvSource — 环境变量               | 前缀匹配 + key 过滤                               | TC-001         | TASK-CONFIGX-004                   | ✅        |
-| FR-005 | MapSource — 字符串 map             | map→Value 转换正确                                | TC-001         | TASK-CONFIGX-003                   | ✅        |
-| FR-006 | StrictDecode                       | 拒绝未知字段/重复key；支持 WithAllowUnknownFields | TC-002         | TASK-CONFIGX-005                   | ✅        |
-| FR-007 | SecretString 自动脱敏              | String/JSON/GoString/Text 全路径脱敏              | TC-003         | TASK-CONFIGX-010                   | ✅        |
-| FR-008 | SecretPolicy 密钥检测              | 默认 7 模式 + CustomMatcher                       | TC-005         | TASK-CONFIGX-010                   | ✅        |
-| FR-009 | Provenance 来源追踪                | 每个 key 记录 Source/Priority/Override            | TC-001         | TASK-CONFIGX-006                   | ✅        |
-| FR-010 | EffectiveConfigHash                | SHA-256，排除 volatile 字段，可复现               | TC-006         | TASK-CONFIGX-006                   | ✅        |
-| FR-011 | SanitizedManifest                  | 敏感字段自动替换，nil 安全                        | TC-003         | TASK-CONFIGX-010                   | ✅        |
-| FR-012 | HealthCheck                        | Status/LatencyMs/Metadata                         | TC-007         | TASK-CONFIGX-006                   | ✅        |
-| FR-013 | Metrics                            | 8 标准指标 + NoopMetrics 零开销                   | TC-009         | TASK-CONFIGX-009                   | ✅        |
+| FR-001 | Client 创建与生命周期（New/Close） | New 校验 ctx+cfg，Close 标记关闭                  | TC-007, TC-008 | - | TASK-CONFIGX-000, TASK-CONFIGX-001 | ✅        |
+| FR-002 | Loader + Source 模式               | NewLoader().AddSource().Load(ctx)                 | TC-001         | - | TASK-CONFIGX-002, TASK-CONFIGX-003 | ✅        |
+| FR-003 | FileSource — YAML/TOML/JSON/.env   | 4 种文件格式解析正确                              | TC-001         | - | TASK-CONFIGX-002                   | ✅        |
+| FR-004 | EnvSource — 环境变量               | 前缀匹配 + key 过滤                               | TC-001         | - | TASK-CONFIGX-004                   | ✅        |
+| FR-005 | MapSource — 字符串 map             | map→Value 转换正确                                | TC-001         | - | TASK-CONFIGX-003                   | ✅        |
+| FR-006 | StrictDecode                       | 拒绝未知字段/重复key；支持 WithAllowUnknownFields | TC-002         | - | TASK-CONFIGX-005                   | ✅        |
+| FR-007 | SecretString 自动脱敏              | String/JSON/GoString/Text 全路径脱敏              | TC-003         | - | TASK-CONFIGX-010                   | ✅        |
+| FR-008 | SecretPolicy 密钥检测              | 默认 7 模式 + CustomMatcher                       | TC-005         | - | TASK-CONFIGX-010                   | ✅        |
+| FR-009 | Provenance 来源追踪                | 每个 key 记录 Source/Priority/Override            | TC-001         | - | TASK-CONFIGX-006                   | ✅        |
+| FR-010 | EffectiveConfigHash                | SHA-256，排除 volatile 字段，可复现               | TC-006         | - | TASK-CONFIGX-006                   | ✅        |
+| FR-011 | SanitizedManifest                  | 敏感字段自动替换，nil 安全                        | TC-003         | - | TASK-CONFIGX-010                   | ✅        |
+| FR-012 | HealthCheck                        | Status/LatencyMs/Metadata                         | TC-007         | - | TASK-CONFIGX-006                   | ✅        |
+| FR-013 | Metrics                            | 8 标准指标 + NoopMetrics 零开销                   | TC-009         | - | TASK-CONFIGX-009                   | ✅        |
 
 ---
 
@@ -30,17 +30,17 @@
 
 | BR     | Description                | Acceptance Criteria                   | Test Case                  | Task             | Status   |
 | ------ | -------------------------- | ------------------------------------- | -------------------------- | ---------------- | -------- |
-| BR-001 | LastWins 合并策略          | 后加载 Source 覆盖先加载的同名 key    | TC-001                     | TASK-CONFIGX-003 | ✅        |
-| BR-002 | Config.Name 必须非空       | Validate 时检查 Name                  | TC-008                     | TASK-CONFIGX-005 | ✅        |
-| BR-003 | Config.Timeout ≥ 0         | 负数拒绝                              | TC-008                     | TASK-CONFIGX-005 | ✅        |
-| BR-004 | 显式加载（无隐式发现）     | 调用方必须显式 AddSource              | CI Gate: NoGlobalStateGate | TASK-CONFIGX-009 | ✅        |
-| BR-005 | SecretString 全路径脱敏    | String/JSON/GoString/Text 均返回 ***  | TC-003                     | TASK-CONFIGX-010 | ✅        |
-| BR-006 | SecretPolicy 可配置模式    | 默认 7 模式 + CustomMatcher           | TC-005                     | TASK-CONFIGX-010 | ✅        |
-| BR-007 | StrictDecode 默认严格      | 拒绝未知字段和重复 key                | TC-002                     | TASK-CONFIGX-005 | ✅        |
-| BR-008 | 公共错误 `configx:` 前缀   | 所有错误变量使用 configx: 前缀        | CI Gate: go vet            | TASK-CONFIGX-000 | ✅        |
-| BR-009 | 无全局状态                 | 无进程级 config singleton             | CI Gate: NoGlobalStateGate | TASK-CONFIGX-009 | ✅        |
-| BR-010 | Release 通过全部 CI Gate   | 编译/测试/覆盖率/vet/lint/secret/vuln | TC-009                     | TASK-CONFIGX-009 | ✅        |
-| BR-011 | context.Context 必须非 nil | 所有公开 API 强制 ctx 检查            | TC-008                     | TASK-CONFIGX-001 | ✅        |
+| BR-001 | LastWins 合并策略          | 后加载 Source 覆盖先加载的同名 key    | TC-001                     | - | TASK-CONFIGX-003 | ✅        |
+| BR-002 | Config.Name 必须非空       | Validate 时检查 Name                  | TC-008                     | - | TASK-CONFIGX-005 | ✅        |
+| BR-003 | Config.Timeout ≥ 0         | 负数拒绝                              | TC-008                     | - | TASK-CONFIGX-005 | ✅        |
+| BR-004 | 显式加载（无隐式发现）     | 调用方必须显式 AddSource              | CI Gate: NoGlobalStateGate | - | TASK-CONFIGX-009 | ✅        |
+| BR-005 | SecretString 全路径脱敏    | String/JSON/GoString/Text 均返回 ***  | TC-003                     | - | TASK-CONFIGX-010 | ✅        |
+| BR-006 | SecretPolicy 可配置模式    | 默认 7 模式 + CustomMatcher           | TC-005                     | - | TASK-CONFIGX-010 | ✅        |
+| BR-007 | StrictDecode 默认严格      | 拒绝未知字段和重复 key                | TC-002                     | - | TASK-CONFIGX-005 | ✅        |
+| BR-008 | 公共错误 `configx:` 前缀   | 所有错误变量使用 configx: 前缀        | CI Gate: go vet            | - | TASK-CONFIGX-000 | ✅        |
+| BR-009 | 无全局状态                 | 无进程级 config singleton             | CI Gate: NoGlobalStateGate | - | TASK-CONFIGX-009 | ✅        |
+| BR-010 | Release 通过全部 CI Gate   | 编译/测试/覆盖率/vet/lint/secret/vuln | TC-009                     | - | TASK-CONFIGX-009 | ✅        |
+| BR-011 | context.Context 必须非 nil | 所有公开 API 强制 ctx 检查            | TC-008                     | - | TASK-CONFIGX-001 | ✅        |
 
 ---
 

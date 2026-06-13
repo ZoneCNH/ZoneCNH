@@ -6,12 +6,17 @@
 - **ACs**: AC-016
 - **TCs**: TC-016
 - **Phase**: CI + Release (Phase 6)
+- **Priority**: P2
 - **Dependencies**: TASK-024 (Conformance Suite)
 - **Status**: Pending
 
 ## Scope
 
 Configure all 12 CI gates (TX-GATE-001 through TX-GATE-012). Ensure spec-lint.sh, traceability-check.sh, status-consistency-check.sh, spec-drift-guard.sh include transportx. Generate release evidence: changelog, tag, conformance report, drift output. Publish v1.1.1 tag.
+
+## Non-Scope
+
+Does NOT implement CI infrastructure for the documentation repo (TX-GATE-001~004 already configured). Implements only implementation-repo conformance gates. Does NOT implement broker clients, storage drivers, or CI/CD platform infrastructure beyond transportx conformance gates.
 
 ## Actions
 

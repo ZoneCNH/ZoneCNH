@@ -16,20 +16,20 @@
 | FR-005 | Drain Semantics — 停止接受新工作，完成在途工作并在deadline内报告剩余 | Functional | SPEC §7 | AC-005 | TC-005 | TASK-TRANSPORTX-004 | Pending |
 | FR-006 | Control Plane — 持久化kill switch/pause/resume/mirror/canary/rate-limit命令的审计证据和rollback token | Functional | SPEC §7 | AC-006 | TC-006 | TASK-TRANSPORTX-013 | Pending |
 | FR-007 | Service Identity — 要求ServiceIdentity含service/environment/tenant/trustDomain/scopes/authContext | Functional | SPEC §7 | AC-007 | TC-007 | TASK-TRANSPORTX-003 | Pending |
-| FR-008 | Authorization — 缺少scope时拒绝并返回TX_AUTHZ_DENIED，审计事件不含载荷内容 | Functional | SPEC §7 | AC-008 | TC-008 | TASK-TRANSPORTX-006, TASK-TRANSPORTX-016 | Pending |
-| FR-009 | Deadline And Clock Skew — 截止时间过期或时钟偏差超限时拒绝/死信 | Functional | SPEC §7 | AC-009 | TC-009 | TASK-TRANSPORTX-006, TASK-TRANSPORTX-017 | Pending |
+| FR-008 | Authorization — 缺少scope时拒绝并返回TX_AUTHZ_DENIED，审计事件不含载荷内容 | Functional | SPEC §7 | AC-008 | TC-008 | TASK-TRANSPORTX-006b, TASK-TRANSPORTX-016 | Pending |
+| FR-009 | Deadline And Clock Skew — 截止时间过期或时钟偏差超限时拒绝/死信 | Functional | SPEC §7 | AC-009 | TC-009 | TASK-TRANSPORTX-006b, TASK-TRANSPORTX-017 | Pending |
 | FR-010 | Idempotency — 幂等键冲突时返回TX_IDEMPOTENCY_CONFLICT且不发布重复工作 | Functional | SPEC §7 | AC-010 | TC-010 | TASK-TRANSPORTX-006, TASK-TRANSPORTX-018 | Pending |
 | FR-011 | Delivery Receipt — 返回含status/endpoint/ackId/offset/attempt/latency/retryDecision/errorCode的回执 | Functional | SPEC §7 | AC-011 | TC-011 | TASK-TRANSPORTX-005 | Pending |
 | FR-012 | Backpressure And Bulkhead — 饱和时应用策略并返回TX_BACKPRESSURE或TX_BULKHEAD_REJECTED | Functional | SPEC §7 | AC-012 | TC-012 | TASK-TRANSPORTX-006, TASK-TRANSPORTX-014 | Pending |
-| FR-013 | Retry And Dead Letter — 可重试失败应用有界重试策略，耗尽后路由到死信并保留trace | Functional | SPEC §7 | AC-013 | TC-013 | TASK-TRANSPORTX-006, TASK-TRANSPORTX-015 | Pending |
+| FR-013 | Retry And Dead Letter — 可重试失败应用有界重试策略，耗尽后路由到死信并保留trace | Functional | SPEC §7 | AC-013 | TC-013 | TASK-TRANSPORTX-006b, TASK-TRANSPORTX-015 | Pending |
 | FR-014 | Middleware Ordering — 按validation/authn/authz/redaction/logging/tracing/metrics/adapter顺序执行 | Functional | SPEC §7 | AC-014 | TC-014 | TASK-TRANSPORTX-012 | Pending |
 | FR-015 | Schema Compatibility — schema变更分类为兼容或破坏性并记录注册表版本 | Functional | SPEC §7 | AC-015 | TC-015 | TASK-TRANSPORTX-023 | Pending |
 | FR-016 | Conformance Gates — CI运行spec lint/traceability/lifecycle/control-plane/error taxonomy/release evidence检查 | Functional | SPEC §7 | AC-016 | TC-016 | TASK-TRANSPORTX-024, TASK-TRANSPORTX-025 | Pending |
-| FR-017 | QoS Classification — 消息分五级QoS；order/fill/risk/settlement禁用REALTIME_BEST_EFFORT | Functional | SPEC §7 | AC-017 | TC-017 | TASK-TRANSPORTX-006, TASK-TRANSPORTX-007 | Pending |
+| FR-017 | QoS Classification — 消息分五级QoS；order/fill/risk/settlement禁用REALTIME_BEST_EFFORT | Functional | SPEC §7 | AC-017 | TC-017 | TASK-TRANSPORTX-006c, TASK-TRANSPORTX-007 | Pending |
 | FR-018 | Codec Interface — 提供Marshal/Unmarshal接口；默认JSON codec实现 | Functional | SPEC §7 | AC-018 | TC-018 | TASK-TRANSPORTX-008 | Pending |
 | FR-019 | TopicRegistry — 校验topic命名({domain}.{version}.{entity}.{action})、schema绑定、QoS分配和所有权 | Functional | SPEC §7 | AC-019 | TC-019 | TASK-TRANSPORTX-009 | Pending |
 | FR-020 | MethodRegistry — 校验method命名/deadline/retry分类(READ_ONLY/IDEMPOTENT/UNSAFE)和幂等要求 | Functional | SPEC §7 | AC-020 | TC-020 | TASK-TRANSPORTX-010 | Pending |
-| FR-021 | Execution Modes — LIVE需auth+deadline+idempotency+audit；REPLAY禁止真实订单；DRY_RUN禁止外部副作用 | Functional | SPEC §7 | AC-021 | TC-021 | TASK-TRANSPORTX-006, TASK-TRANSPORTX-019 | Pending |
+| FR-021 | Execution Modes — LIVE需auth+deadline+idempotency+audit；REPLAY禁止真实订单；DRY_RUN禁止外部副作用 | Functional | SPEC §7 | AC-021 | TC-021 | TASK-TRANSPORTX-006c, TASK-TRANSPORTX-019 | Pending |
 | FR-022 | Outbox/Inbox SPI — 定义Outbox(Save/MarkPublished/Pending)和Inbox(Seen/MarkProcessed)接口 | Functional | SPEC §7 | AC-022 | TC-022 | TASK-TRANSPORTX-020 | Pending |
 | FR-023 | Audit Plane — 提供AuditSink和ReplaySource接口；审计记录含trace_id/correlation_id，不含secrets | Functional | SPEC §7 | AC-023 | TC-023 | TASK-TRANSPORTX-021 | Pending |
 | FR-024 | Data Classification — 数据分PUBLIC/INTERNAL/CONFIDENTIAL/SECRET四级；敏感数据日志前脱敏 | Functional | SPEC §7 | AC-024 | TC-024 | TASK-TRANSPORTX-022 | Pending |
@@ -94,7 +94,7 @@
 
 ## Coverage Notes
 
-- 25 FRs, 18 BRs (with error codes), 12 NFRs, 25 ACs (with verification commands), 25 TCs (with commands), 12 CI gates, 25 Tasks (TASK-TRANSPORTX-001~025).
+- 25 FRs, 18 BRs (with error codes), 12 NFRs, 25 ACs (with verification commands), 25 TCs (with commands), 12 CI gates, 27 Tasks (TASK-TRANSPORTX-001~025, TASK-006b, TASK-006c).
 - All FR -> AC -> TC chains closed. All BRs have explicit violation error codes. All FRs mapped to at least one Task.
 - `transportx` is a Foundation transport-contract module, not a broker implementation.
 - CI gates TX-GATE-001 through TX-GATE-004 are repository-documentation gates.
