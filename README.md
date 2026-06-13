@@ -73,7 +73,7 @@ L2.5: decimalx / domain-market / domain-exchange / domain-macro
 
 - [postgresx](https://github.com/ZoneCNH/postgresx) — PostgreSQL — 关系型存储、事务、迁移（v1.0.0 已发布；Public API、metrics contract、release evidence 与真实 PostgreSQL integration 已冻结；v1.0 发布范围 100/100） `公开`
 - [redisx](https://github.com/ZoneCNH/redisx) — Redis L2 adapter（v1.0.0 已发布；KV/TTL、Hash/List、Pipeline、Cache-aside、Lock/RateLimit、Pool、Persistence restart recovery；release evidence 已闭合；生产依赖限定为 kernel + Redis 客户端库） `公开`
-- [clickhousex](https://github.com/ZoneCNH/clickhousex) — ClickHouse — OLAP 查询、批量写入（完整 SPEC + TRACEABILITY + goal 规格就绪） `公开`
+- [clickhousex](https://github.com/ZoneCNH/clickhousex) — ClickHouse — OLAP 查询、批量写入（v1.0.1；完整 SPEC + TRACEABILITY §1-§7 + 7 Tasks，覆盖率 100%） `公开`
 - [taosx](https://github.com/ZoneCNH/taosx) — TDengine L2 adapter contract（pkg/taosx v1.0.1；真实 taosWS WebSocket 集成已验证，pkg/taosx 100.0% 覆盖） `公开`
 - [kafkax](https://github.com/ZoneCNH/kafkax) — Kafka — 消息队列、事件流（完整 SPEC + TRACEABILITY + goal 规格就绪） `公开`
 - [natsx](https://github.com/ZoneCNH/natsx) — NATS 内部通信模块（v1.0.0 已发布；Core NATS / JetStream、Drain/reconnect/degraded health、canonical `FOUNDATIONX_NATS_*` 配置和真实 dev auth live gate 已验证；repair-slice 20/20，正式四源 98+ arbiter 与生产 TLS gate 待补） `公开`
