@@ -35,4 +35,4 @@
 
 ## Status
 
-已有实现和验证证据。v1.0 前需保持 public API contract 与代码一致。
+已有实现和验证证据。v1.0.0 已通过 TASK-PG-003 冻结 public API contract 与代码一致性。

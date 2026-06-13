@@ -4,11 +4,11 @@
 | ---- | ---- |
 | 模块名 | `postgresx` |
 | 发布目标 | v1.0.0 |
-| 当前实现基线 | v0.1.0 candidate |
+| 当前实现基线 | v1.0.0 release |
 | 所属层级 | 基座 · PostgreSQL 存储扩展 |
-| 稳定目标 | Public API 待冻结；当前以 `/home/postgresx/pkg/postgresx` 为实现基线 |
-| 最后更新 | 2026-06-12 |
-| 文档状态 | 实现基线已对齐，v1.0 契约待冻结 |
+| 稳定目标 | Public API、metrics contract、版本矩阵与 release evidence 已冻结 |
+| 最后更新 | 2026-06-13 |
+| 文档状态 | v1.0.0 已发布；v1.0 发布范围闭合，下游接入和生产 soak 作为 v1.x 成熟度证据跟踪 |
 
 ## 1. Goal 定位
 
@@ -39,11 +39,12 @@
 - `pkg/postgresx/errors.go`：context、no rows、认证、约束、序列化、连接类错误映射。
 - `pkg/postgresx/options.go` 和 `metrics.go`：logger、metrics、clock 可插拔适配点。
 
-team 审计已验证 `/home/postgresx`：
+v1.0.0 发布收束已验证 `/home/postgresx`：
 
-- `GOWORK=off go test ./...` 通过。
-- `GOWORK=off go vet ./...` 通过。
-- release evidence 中已有 `make ci`、race、secret scan、真实 PostgreSQL integration 与 migration 证据。
+- `GOWORK=off VERSION=v1.0.0 make release-evidence-check` 通过。
+- `GOWORK=off VERSION=v1.0.0 make release-final-check` 通过。
+- `GOWORK=off VERSION=v1.0.0 make release-preflight` 在 `POSTGRESX_REQUIRE_INTEGRATION=1` 和注入的 dev PostgreSQL DSN/凭据下通过。
+- Git tag / GitHub release：`v1.0.0`。
 
 ## 4. MUST / SHOULD / MAY
 
@@ -56,7 +57,7 @@ team 审计已验证 `/home/postgresx`：
 - MUST 事务只在 callback 返回 nil 时提交，其余路径回滚。
 - MUST 迁移版本为正整数，重复版本、空名称、空 SQL 必须阻断。
 - MUST 健康检查不泄露密码、完整 DSN 或 SQL 参数。
-- MUST 在 v1.0 前统一指标名、Go 版本矩阵和公开 API 文档。
+- MUST 保持已冻结的指标名、Go 版本矩阵和公开 API 文档一致。
 
 ### SHOULD
 
@@ -87,23 +88,24 @@ team 审计已验证 `/home/postgresx`：
 - 不默认拼接 SQL 或记录 SQL 参数。
 - 不管理应用启动、停止或配置加载。
 
-## 7. v1.0 发布阻断项
+## 7. v1.0 发布收束项与剩余风险
 
-| 阻断项 | 当前状态 | 解除条件 |
-| ------ | -------- | -------- |
-| 指标命名未冻结 | 代码使用 underscore 名称，契约文档存在 dot 名称 | 选定唯一指标名并同步代码、contract、SPEC、TRACEABILITY |
-| 版本矩阵漂移 | `go.mod` 与版本矩阵记录不一致 | 统一 Go baseline 并补充校验 |
-| 公开 API 文档漂移 | contract 文档可能列出未实现符号 | 以代码为准重写 public API contract |
-| 下游接入证据不足 | 尚未证明核心下游实际接入 | 作为非阻断风险记录，不提升为完成项 |
+| 项目 | 当前状态 | 后续条件 |
+| ---- | -------- | -------- |
+| 指标命名 | 已冻结为 dotted `postgresx.*` contract | 指标变更必须同步代码、contract、SPEC、TRACEABILITY 和 release evidence |
+| 版本矩阵 | `go.mod`、VERSION_MATRIX 与 release evidence 已统一到 go 1.25.0 | Go baseline 升级时同步所有发布门禁 |
+| 公开 API 文档 | public API contract 已按 v1.0.0 代码面冻结 | 新增/删除公开符号必须补 contract 与 tests |
+| 下游接入证据不足 | 尚未证明核心下游实际接入 | 作为非阻断风险记录，不降低 v1.0.0 发布评分 |
+| 生产 soak 不足 | 尚无长期生产运行数据 | 作为 v1.x 运维证据继续积累 |
 
 ## 8. 验收标准
 
-- `/home/postgresx` 中 `GOWORK=off go test ./...` 和 `GOWORK=off go vet ./...` 通过。
+- `/home/postgresx` 中 `GOWORK=off VERSION=v1.0.0 make release-evidence-check`、`make release-final-check` 和强制 integration 的 `make release-preflight` 通过。
 - 迁移、事务、健康检查、错误映射、Config 和 metrics hook 均有测试或 release evidence。
 - `module/postgresx/TRACEABILITY.md` 覆盖全部 FR/BR，并映射到任务文档。
 - `module/postgresx/SPEC.md` 不再包含旧 DSN option、无参构造器、旧健康检查入口或旧环境变量配置。
-- `ARCHITECTURE.md` 中 `postgresx` 状态反映当前 v0.1.0 candidate，而不是“仅骨架”。
+- `ARCHITECTURE.md` 中 `postgresx` 状态反映当前 v1.0.0 已发布基线。
 
 ## 9. 当前结论
 
-`postgresx` 已经具备 PostgreSQL 基座访问模块的核心实现，当前重点不是继续扩大能力面，而是冻结 v1.0 契约并清除文档漂移。综合评分为 82/100；剩余分数主要扣在指标名、版本矩阵和 public API contract 尚未完全一致。
+`postgresx` 已完成 v1.0.0 发布收束，核心实现、契约文档、版本矩阵和发布证据已闭合。v1.0.0 发布范围综合评分为 100/100；下游实际接入和生产 soak 尚未形成证据，但作为 v1.x/post-release 成熟度跟踪项，不构成当前发布扣分。

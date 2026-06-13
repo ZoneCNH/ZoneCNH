@@ -33,4 +33,4 @@
 
 ## Status
 
-已有实现和验证证据。v1.0 前需确认 public API contract 不承诺未实现的事务传播或迁移 checksum 语义。
+已有实现和验证证据。v1.0.0 public API contract 已按当前事务和迁移能力冻结，未承诺事务传播或迁移 checksum 语义。
