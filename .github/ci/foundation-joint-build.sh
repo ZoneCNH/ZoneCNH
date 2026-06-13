@@ -20,16 +20,28 @@ echo "── Creating go.work ──"
 cd "$WORKDIR"
 go work init 2>/dev/null || true
 
+added_modules=0
 for mod in "${FOUNDATION_MODULES[@]}"; do
     if [ -d "$mod" ] && [ -f "$mod/go.mod" ]; then
-        go work use "./$mod" 2>/dev/null && echo "  added: $mod" || echo "  skip: $mod (go.work add failed)"
+        if go work use "./$mod" 2>/dev/null; then
+            echo "  added: $mod"
+            added_modules=$((added_modules + 1))
+        else
+            echo "  skip: $mod (go.work add failed)"
+        fi
     fi
 done
+
+if [ "$added_modules" -eq 0 ]; then
+    echo "  ERROR: no cloneable Go modules were added to go.work"
+    exit 1
+fi
 
 echo ""
 echo "── Building all modules jointly ──"
 go build ./... 2>&1 && echo "  BUILD PASS" || {
-    echo "  BUILD FAIL (some modules may not be cloneable yet)"
+    echo "  BUILD FAIL (check module compatibility and dependencies)"
+    exit 1
 }
 
 echo ""
