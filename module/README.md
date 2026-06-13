@@ -60,6 +60,7 @@
 | clickhousex   | [goal.md](./clickhousex/goal.md)   |
 | contracts     | [goal.md](./contracts/goal.md)     |
 | transportx    | [goal.md](./transportx/goal.md)    |
+| domainx       | [goal.md](./domainx/goal.md)       |
 
 ---
 
