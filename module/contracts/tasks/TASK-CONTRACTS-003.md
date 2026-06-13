@@ -16,9 +16,11 @@ files:
   - "compat.go"
   - "compat_test.go"
 acceptance_criteria:
-  - "检测接口方法签名变更"
-  - "检测 DTO 字段删除"
-  - "输出 breaking change 列表"
+  - "AC-FR-005: 接口方法签名变更检测 — 增删方法/修改参数返回值触发 breaking"
+  - "AC-FR-005: DTO 字段删除或类型变更检测 — 触发 breaking"
+  - "AC-FR-005: 新增可选字段判定为非 breaking — minor 升级"
+  - "AC-BR-003: breaking change → 需要版本升级"
+  - "AC-BR-010: 版本升级策略与变更类型匹配 (semver)"
 depends_on:
   - "TASK-CONTRACTS-001"
   - "TASK-CONTRACTS-002"
@@ -36,7 +38,9 @@ non_scope:
 
 | Requirement | Description          | Acceptance Criteria   |
 | ----------- | -------------------- | --------------------- |
-| FR-006      | Breaking Change 检测 | 签名变更/字段删除检测 |
+| FR-006      | Breaking Change 检测 | AC-FR-005: 签名+字段变更检测 |
+| BR-003      | BC→版本升级 | AC-BR-003: TC-003 |
+| BR-010      | semver 策略 | AC-BR-010: TC-003 |
 
 ## Test Plan
 
