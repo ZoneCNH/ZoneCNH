@@ -1,0 +1,28 @@
+# TASK-TRANSPORTX-011: SchemaRegistry
+
+- **Module**: transportx
+- **Spec**: `module/transportx/SPEC.md` v1.1.1
+- **FRs**: FR-025
+- **ACs**: AC-025
+- **TCs**: TC-025
+- **Phase**: QoS + Codec + Registry (Phase 2)
+- **Dependencies**: TASK-001 (Envelope), TASK-002 (Endpoint), TASK-005 (Receipt)
+- **Status**: Pending
+
+## Scope
+
+Implement SchemaRegistry interface with Register, CheckCompatibility, Versions. Record schema version, digest, compatibility classification (compatible/breaking), migration notes. Reject unknown versions with `TX_SCHEMA_INCOMPATIBLE`.
+
+## Files
+
+- `registry/schema.go` — Schema struct
+- `registry/schema_registry.go` — SchemaRegistry interface + in-memory impl
+- `registry/compatibility.go` — CompatibilityResult type + checker
+- `registry/schema_registry_test.go` — Compatibility + version tests
+
+## Acceptance
+
+- [ ] Schema.Register records version, digest, classification, migration notes
+- [ ] Breaking change returns incompatible classification
+- [ ] Unknown version → `TX_SCHEMA_INCOMPATIBLE`
+- [ ] `go test ./registry/... -run TestSchemaCompatibility` passes

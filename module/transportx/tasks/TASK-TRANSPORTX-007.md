@@ -1,0 +1,28 @@
+# TASK-TRANSPORTX-007: QoS Classification
+
+- **Module**: transportx
+- **Spec**: `module/transportx/SPEC.md` v1.1.1
+- **FRs**: FR-017
+- **ACs**: AC-017
+- **TCs**: TC-017
+- **Phase**: QoS + Codec + Registry (Phase 2)
+- **Dependencies**: TASK-001 (Envelope), TASK-006 (Errors)
+- **Status**: Pending
+
+## Scope
+
+Implement QoSClass enum (REALTIME_BEST_EFFORT, DURABLE_EVENT, COMMAND_IDEMPOTENT, COMMAND_STRICT, AUDIT). Enforce hard rules: order/fill/risk/settlement ≠ REALTIME; COMMAND_IDEMPOTENT requires key; AUDIT must enter audit sink.
+
+## Files
+
+- `qos/qos.go` — QoSClass enum + validation
+- `qos/rules.go` — Hard rule enforcement
+- `qos/qos_test.go` — QoS violation + hard rules tests
+
+## Acceptance
+
+- [ ] QoSClass enum with 5 values
+- [ ] order/fill/risk/settlement events on REALTIME_BEST_EFFORT → `TX_QOS_VIOLATION`
+- [ ] COMMAND_IDEMPOTENT without idempotency_key → `TX_QOS_VIOLATION`
+- [ ] AUDIT events must have audit sink configured
+- [ ] `go test ./middleware/... -run TestQoSHardRules` passes
