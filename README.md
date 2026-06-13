@@ -77,7 +77,7 @@ L2.5: decimalx / domain-market / domain-exchange / domain-macro
 - [taosx](https://github.com/ZoneCNH/taosx) — TDengine L2 adapter contract（pkg/taosx v1.0.1；真实 taosWS WebSocket 集成已验证，pkg/taosx 100.0% 覆盖） `公开`
 - [kafkax](https://github.com/ZoneCNH/kafkax) — Kafka — 消息队列、事件流（完整 SPEC + TRACEABILITY + goal 规格就绪） `公开`
 - [natsx](https://github.com/ZoneCNH/natsx) — NATS 内部通信模块（v1.0.0 已发布；Core NATS / JetStream、Drain/reconnect/degraded health、canonical `FOUNDATIONX_NATS_*` 配置和真实 dev auth live gate 已验证；repair-slice 20/20，正式四源 98+ arbiter 与生产 TLS gate 待补） `公开`
-- [ossx](https://github.com/ZoneCNH/ossx) — 对象存储 S3/MinIO/local 多后端（SPEC + plan + tasks + prompts + evidence 全链路文档就绪） `公开`
+- [ossx](https://github.com/ZoneCNH/ossx) — Aliyun OSS 对象存储 L2 adapter（v1.0.1 已发布；真实 Aliyun OSS 集成、race、vet、build、release-check 与 100.0% 覆盖已验证；S3/MinIO/Azure/GCS Provider 仅保留扩展位） `公开`
 
 ### 基座 · 契约层
 
