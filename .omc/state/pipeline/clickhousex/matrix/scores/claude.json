@@ -1,0 +1,23 @@
+{
+  "module": "clickhousex",
+  "stage": "matrix",
+  "platform": "claude",
+  "scored_at": "2026-06-14T10:00:00Z",
+  "score": 100,
+  "redline": false,
+  "verdict": "Ready-candidate",
+  "confidence": "high",
+  "dimensions": [
+    { "name": "表结构完整性", "max": 15, "deducted": 0, "score": 15 },
+    { "name": "FR 覆盖闭合", "max": 20, "deducted": 0, "score": 20 },
+    { "name": "AC 闭合", "max": 15, "deducted": 0, "score": 15 },
+    { "name": "TC 闭合", "max": 15, "deducted": 0, "score": 15 },
+    { "name": "反向追溯", "max": 10, "deducted": 0, "score": 10 },
+    { "name": "Task 映射", "max": 10, "deducted": 0, "score": 10 },
+    { "name": "BR/NFR 覆盖", "max": 8, "deducted": 0, "score": 8 },
+    { "name": "编号一致性", "max": 7, "deducted": 0, "score": 7 }
+  ],
+  "deductions": [],
+  "redlines": [],
+  "report_md": ".omc/state/pipeline/clickhousex/matrix/scores/claude.md"
+}
