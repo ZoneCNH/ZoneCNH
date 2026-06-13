@@ -170,11 +170,11 @@ Foundation v1 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中�
 
 这 6 个基础模块可以构成第一阶段最小闭环：`kernel` 提供 L0 原语，`configx` / `observex` / `resiliencx` / `schedulex` 提供 L1 运行时横切能力，`testkitx` 只服务测试期。
 
-`xlib-standard` 是独立 Go module，承担标准事实源、Go Reference Template、Generator、Harness Gate 和 Evidence Runtime 五类职责，不作为其他模块的运行时 import 依赖。
+`xlib-standard` 是独立 Go module，承担标准事实源和 Go Reference Template 二类职责（Generator/Harness/Evidence 已拆分至 `xlib-harness` / `xlib-evidence`），不作为其他模块的运行时 import 依赖。
 
 | 模块            | 层级          | 拥有                                                                                                                                                     | 不拥有                                                     |
 | --------------- | ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
-| `xlib-standard` | 标准源        | 标准事实源、Go Reference Template、Generator、Harness Gate、Evidence Runtime                                                                             | 业务运行、运行时 import 依赖、模块实现身份                 |
+| `xlib-standard` | 标准源        | 标准事实源、Go Reference Template（Generator/Harness/Evidence 已拆分至 xlib-harness / xlib-evidence）                          | 业务运行、运行时 import 依赖、模块实现身份                 |
 | `kernel`        | L0 原语       | 12 子包轻量工具集：lifecycx/errx/healthx/obsx/retryx/shutdownx/syncx/timex/validx/versionx/contextx/contracttest（stdlib-only）                          | 配置解析、观测后端、存储、网络、业务 DTO、全局可变单例     |
 | `configx`       | L1 运行时     | explicit source、merge、decode、validate、sanitize、provenance、config hash                                                                              | secret backend、全局配置中心、自动发现、业务配置结构体     |
 | `observex`      | L1 运行时契约 | logger、metrics、tracer、field、redactor、label policy、health schema、noop、memory recorder                                                             | Prometheus/Otel/Zap 直接绑定、alert routing、业务监控规则  |
@@ -188,7 +188,7 @@ Foundation v1 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中�
 
 `risk-engine` 才负责 trading risk，二者不能混用。
 
-`xlib-standard` v1.0.0 已发布（tag v1.0.0, PR #115），五类职责（Standard Source / Go Reference Template / Generator / Harness Gate / Evidence Runtime）已完整落地。`resiliencx` 已围绕 timeout、retry、circuit、bulkhead、rate limit、fallback 和 policy event 完成身份修复，测试覆盖率 100%。
+`xlib-standard` v1.0.0 已发布（tag v1.0.0, PR #115），标准源和 Go Reference Template 职责已完整落地。Generator / Harness Gate / Evidence Runtime 职责已于 PR #233 拆分至 `xlib-harness` 和 `xlib-evidence`。`resiliencx` 已围绕 timeout、retry、circuit、bulkhead、rate limit、fallback 和 policy event 完成身份修复，测试覆盖率 100%。
 
 | 边界     | `kernel.retryx`                        | `resiliencx`                                      |
 | -------- | -------------------------------------- | ------------------------------------------------- |
@@ -215,7 +215,7 @@ Foundation v1 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中�
 
 | 边界                                                | 放什么                                                                       | 不放什么                                         |
 | --------------------------------------------------- | ---------------------------------------------------------------------------- | ------------------------------------------------ |
-| `xlib-standard`                                     | 标准事实源、Go Reference Template、Generator、Harness Gate、Evidence Runtime | 运行时业务依赖、具体弹性策略实现                 |
+| `xlib-standard`                                     | 标准事实源、Go Reference Template（Generator/Harness/Evidence 已拆分至 xlib-harness / xlib-evidence） | 运行时业务依赖、具体弹性策略实现                 |
 | `kernel`                                            | 最小稳定原语和 stdlib-only 基础能力                                          | 配置解析、观测后端、业务 DTO、存储/网络适配器    |
 | `configx` / `observex` / `resiliencx` / `schedulex` | L1 横切运行时能力，彼此通过窄接口协作                                        | 业务模型、组合根职责、对彼此的强耦合反向依赖     |
 | `testkitx`                                          | 测试、golden、contract、fixture、harness、boundary evidence                  | production import graph、真实外部系统入口        |
@@ -260,7 +260,7 @@ Foundation v1 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中�
 ## 核心设计原则
 
 1. **Foundation 先边界后功能** — 先固化 `xlib-standard`、依赖矩阵、Go baseline 和 release gate，再扩大 L1 能力面
-2. **`xlib-standard` 不是运行时依赖** — 它是独立 Go module，承担标准事实源、Go Reference Template、Generator、Harness Gate 和 Evidence Runtime 五类职责，不承载业务运行
+2. **`xlib-standard` 不是运行时依赖** — 它是独立 Go module，承担标准事实源和 Go Reference Template 职责（Generator/Harness/Evidence 已拆分至 `xlib-harness` / `xlib-evidence`），不承载业务运行
 3. **`resiliencx` 只做运行时弹性** — timeout/retry/circuit/bulkhead/rate/fallback 属于它，交易风控属于 `risk-engine`
 4. **`testkitx` 只能 test-only** — 生产 import graph 不允许出现测试工具包
 5. **风控是独立引擎** — 策略只能通过 risk-engine 提交订单，不能直接调用 order-engine
@@ -442,7 +442,7 @@ Foundation v1 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中�
 ```text
 Foundation P0: 基础闭环校准 ← kernel + configx + observex + testkitx + resiliencx + schedulex
                1. resiliencx 从标准模板身份改回运行时弹性策略库
-               2. xlib-standard 固定为标准事实源 / Go Reference Template / Generator / Harness Gate / Evidence Runtime
+               2. xlib-standard 固定为标准事实源 / Go Reference Template（Generator / Harness Gate / Evidence Runtime 已拆分至 xlib-harness / xlib-evidence）
                3. configx / observex 迁移到 kernel，或标注 foundationx 兼容期
                4. 统一 Foundation Go baseline
                5. 用 xlibgate / 脚本执行依赖矩阵、testkitx 边界和 release evidence
