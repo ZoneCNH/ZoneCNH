@@ -13,6 +13,17 @@
 
 xlib-evidence 是 Foundation 的**证据收集与发布运行时**——收集各模块的覆盖率、门禁结果、发布 manifest，生成统一证据报告，支持远程证据验证。
 
+**证据边界：xlib-evidence 提供 CI/发布期证据（CI/release-time evidence）。** xlib-evidence 在 CI pipeline 中运行，不做测试也不生成原始证据——它从各模块（包括 testkitx）收集已有证据，汇总为标准报告。详细分工：
+
+| 维度 | xlib-evidence（CI/发布期证据） | testkitx（测试期证据） |
+|------|------------------------------|----------------------|
+| 运行阶段 | CI pipeline | `go test` 进程内 |
+| 证据类型 | coverage（FR-001）、manifest（FR-002/003）、remote evidence（FR-004）、report（FR-005） | golden/contract/boundary/leak/manifest |
+| 角色 | 证据**收集者与发布者** | 证据**生成者** |
+| manifest | 发布期 manifest（汇总所有模块 coverage/gate/manifest，含 hash 链校验） | 测试期 manifest（本次测试的 golden/contract/boundary 结果） |
+
+testkitx 与 xlib-evidence 的分工链：testkitx 在 `go test` 过程中生成 golden/contract/boundary/leak 等原始证据 → xlib-evidence 在 CI pipeline 中收集这些证据，结合 coverage 和 gate 结果，生成发布期 manifest 和统一报告。
+
 ## 3. Problem
 
 xlib-standard 的 Evidence Runtime 与其声明式标准定义耦合，导致证据收集逻辑和标准定义无法独立演进。证据运行时是一个独立的观测/报告系统，应有自己的发布周期。
