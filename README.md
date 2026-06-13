@@ -165,6 +165,7 @@ L2.5: decimalx / domain-market / domain-exchange / domain-macro
 - [x.go](https://github.com/ZoneCNH/x.go) — 组合根，负责启动、配置加载与引擎组装 `私有`
 - [module](./module/README.md) — 项目技术规范、接口定义与 Goal 适配模块索引
 - [docs/governance](./docs/governance/README.md) — Spec → Code 交付治理、模板、门禁与评分规则
+- [docs/sre/foundation-cicd-plan.md](./docs/sre/foundation-cicd-plan.md) — 基座层 17 模块 CI/CD 部署执行方案（SRE 机器池 4 阶段）
 - [docs/RSI_SG_001_complete_standard_v1.1_zh.md](./docs/RSI_SG_001_complete_standard_v1.1_zh.md) — RSI 递归自我改进完整标准中文版 v1.1
 
 ## 📊 GitHub 统计

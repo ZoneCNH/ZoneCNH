@@ -25,6 +25,7 @@
 1. **Foundation v1 基座闭环** — resiliencx 身份修复、Go baseline 统一、依赖矩阵 CI 化（阻塞所有后续阶段）
 2. **分析域契约固化** — RegimeSnapshot / RegimeCard / DecisionCard DTO 定义（三引擎的前置条件）
 3. **三引擎最小实现** — market_regime / macro_regime / regime_engine 核心逻辑（核心业务链路起点）
+4. **SRE CI/CD 基础设施** — 机器池节点注册、Docker 服务编排、17 模块标准化 CI/CD 管线（部署自动化前置条件）
 
 ---
 

@@ -274,6 +274,7 @@ Draft → Review → Approved → Implemented → Changed → Deprecated
 | [`module/FOUNDATION-SPEC.md`](./FOUNDATION-SPEC.md)                 | How & Check — 接口签名和 CI gate           |
 | [`module/FOUNDATION-DEPS.yaml`](./FOUNDATION-DEPS.yaml)             | 机器可读依赖矩阵                           |
 | [`module/FOUNDATION-V1.md`](./FOUNDATION-V1.md)                     | v1 路线图                                  |
+| [`docs/sre/foundation-cicd-plan.md`](../docs/sre/foundation-cicd-plan.md) | SRE CI/CD — 基座层 17 模块部署执行方案                              |
 
 ---
 

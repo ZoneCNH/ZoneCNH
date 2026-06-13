@@ -1,50 +1,27 @@
-# TASK-TAOSX-002
+# TASK-TAOSX-002: SQL 执行接口
 
-> Exec + Query
+- **Module**: taosx
+- **spec_ref**: module/taosx/SPEC.md#FR-004 ,module/taosx/SPEC.md#FR-005
+- **BR_ref**: module/taosx/SPEC.md#BR-002
+- **ACs**: AC-004, AC-005
+- **Phase**: Foundation (Phase 1)
+- **Priority**: P0
+- **Dependencies**: none
+- **Status**: Pending
 
----
+## Scope
 
-```yaml
-task_id: TASK-TAOSX-002
-module: taosx
-scope: "SQL 执行接口：非空校验、context 传播、Rows 迭代"
-spec_ref:
-  - "module/taosx/SPEC.md#FR-004"
-  - "module/taosx/SPEC.md#FR-005"
-  - "module/taosx/SPEC.md#BR-002"
-files:
-  - (implementation files)
-acceptance_criteria:
-  - "All related FRs verified via TC"
-depends_on: []
-estimated_effort: "2h"
-priority: P0
-status: pending
-```
+SQL 执行接口：非空校验、context 传播、Rows 迭代
 
----
+## Non-Scope
 
-## Requirements Covered
+Does NOT implement TDengine cluster deployment, database auto-creation, or supertable management. Does NOT implement business event semantics or domain DTOs.
 
-| Requirement | Description | Acceptance Criteria |
-|-------------|-------------|---------------------|
-| FR-004 | Exec + Query | TBD |
-| FR-005 | Exec + Query | TBD |
-| BR-002 | Exec + Query | TBD |
+## Files
 
-## Non-scope
+- (implementation files — TBD)
 
-- 不超出本 Task FR 范围
-- 不实现其他 Task 的 FR
+## Acceptance
 
-## Test Plan
-
-| Test Case | Type | Description |
-|-----------|------|-------------|
-| TBD | Unit | TBD |
-
-## Implementation Notes
-
-- 遵循 taosx SPEC.md 规范
-- 使用 kernel/observex 通过接口注入
-- 不直接依赖 configx
+- [ ] FR-004 verified via TC
+- [ ] FR-005 verified via TC

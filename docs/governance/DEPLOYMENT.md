@@ -112,6 +112,7 @@ Feature 做完后，进入 PR 前，做一次 RC 检查。
 - 本仓 `release.yml` 只生成并预检 `release/manifest/release-manifest.json` 与 `release/manifest/sre-deploy-contract.json`，不执行真实机器部署。
 - SRE 部署合同必须固定 `execution_plane.repository=ZoneCNH/sre`、`workflow=ZoneCNH/sre/.github/workflows/deploy-contract.yml@main`、`runner_pool=sre/`、`remote_execution_allowed_in_this_repo=false`。
 - `.gitignore` 必须保留 `sre/`，并由 `.github/ci/deploy-policy-guard.sh` 防止误提交。
+- 完整 SRE CI/CD 方案见 [`docs/sre/foundation-cicd-plan.md`](../sre/foundation-cicd-plan.md)（机器池架构、分阶段路线、标准化模板、部署合同）。
 
 业务仓库新增部署时，只允许调用 SRE reusable workflow：
 

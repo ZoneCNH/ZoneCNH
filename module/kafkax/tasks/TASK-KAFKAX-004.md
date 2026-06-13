@@ -1,50 +1,26 @@
-# TASK-KAFKAX-004
+# TASK-KAFKAX-004: TASK-KAFKAX-004
 
-> Health + 错误脱敏
+- **Module**: kafkax
+- **spec_ref**: module/kafkax/SPEC.md#FR-006
+- **BR_ref**: module/kafkax/SPEC.md#BR-007 ,module/kafkax/SPEC.md#BR-008
+- **ACs**: AC-006
+- **Phase**: Core Implementation (Phase 2)
+- **Priority**: P0
+- **Dependencies**: none
+- **Status**: Pending
 
----
+## Scope
 
-```yaml
-task_id: TASK-KAFKAX-004
-module: kafkax
-scope: "实现幂等 Health 检查、错误消息不含 payload、sanitized errors"
-spec_ref:
-  - "module/kafkax/SPEC.md#FR-006"
-  - "module/kafkax/SPEC.md#BR-007"
-  - "module/kafkax/SPEC.md#BR-008"
-files:
-  - (implementation files)
-acceptance_criteria:
-  - "All related FRs verified via TC"
-depends_on: []
-estimated_effort: "2h"
-priority: P0
-status: pending
-```
+实现幂等 Health 检查、错误消息不含 payload、sanitized errors
 
----
+## Non-Scope
 
-## Requirements Covered
+Does NOT implement Kafka broker deployment, topic auto-creation, or Kafka Connect integration. Does NOT implement business event semantics or domain DTOs.
 
-| Requirement | Description | Acceptance Criteria |
-|-------------|-------------|---------------------|
-| FR-006 | Health + 错误脱敏 | TBD |
-| BR-007 | Health + 错误脱敏 | TBD |
-| BR-008 | Health + 错误脱敏 | TBD |
+## Files
 
-## Non-scope
+- (implementation files — TBD)
 
-- 不超出本 Task FR 范围
-- 不实现其他 Task 的 FR
+## Acceptance
 
-## Test Plan
-
-| Test Case | Type | Description |
-|-----------|------|-------------|
-| TBD | Unit | TBD |
-
-## Implementation Notes
-
-- 遵循 kafkax SPEC.md 规范
-- 使用 kernel/observex 通过接口注入
-- 不直接依赖 configx
+- [ ] FR-006 verified via TC
