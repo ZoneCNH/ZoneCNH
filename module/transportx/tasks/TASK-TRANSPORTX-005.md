@@ -1,8 +1,8 @@
 # TASK-TRANSPORTX-005: DeliveryReceipt
 
 - **Module**: transportx
-- **Spec**: `module/transportx/SPEC.md` v1.1.1
-- **FRs**: FR-011
+- **spec_ref**: module/transportx/SPEC.md#FR-011
+
 - **ACs**: AC-011
 - **TCs**: TC-011
 - **Phase**: Foundation Contracts (Phase 1)

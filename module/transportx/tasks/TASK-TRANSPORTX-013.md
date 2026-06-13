@@ -1,9 +1,9 @@
 # TASK-TRANSPORTX-013: Control Plane
 
 - **Module**: transportx
-- **Spec**: `module/transportx/SPEC.md` v1.1.1
-- **FRs**: FR-006
-- **BRs**: BR-003, BR-005
+- **spec_ref**: module/transportx/SPEC.md#FR-006
+- **BR_ref**: module/transportx/SPEC.md#BR-003, #BR-005
+
 - **ACs**: AC-006
 - **TCs**: TC-006
 - **Priority**: P1

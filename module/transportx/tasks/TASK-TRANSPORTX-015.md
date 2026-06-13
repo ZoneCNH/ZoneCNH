@@ -1,8 +1,8 @@
 # TASK-TRANSPORTX-015: Retry + Dead Letter
 
 - **Module**: transportx
-- **Spec**: `module/transportx/SPEC.md` v1.1.1
-- **FRs**: FR-013
+- **spec_ref**: module/transportx/SPEC.md#FR-013
+
 - **ACs**: AC-013
 - **TCs**: TC-013
 - **Phase**: Middleware + Control (Phase 3)

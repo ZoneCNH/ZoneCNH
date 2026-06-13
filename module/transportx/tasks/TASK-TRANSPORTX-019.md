@@ -1,8 +1,8 @@
 # TASK-TRANSPORTX-019: Execution Modes
 
 - **Module**: transportx
-- **Spec**: `module/transportx/SPEC.md` v1.1.1
-- **FRs**: FR-021
+- **spec_ref**: module/transportx/SPEC.md#FR-021
+
 - **ACs**: AC-021
 - **TCs**: TC-021
 - **Phase**: Advanced Features (Phase 4)

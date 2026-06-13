@@ -1,8 +1,9 @@
 # TASK-TRANSPORTX-022: Data Classification + Redaction
 
 - **Module**: transportx
-- **Spec**: `module/transportx/SPEC.md` v1.1.1
-- **FRs**: FR-024
+- **spec_ref**: module/transportx/SPEC.md#FR-024
+- **BR_ref**: module/transportx/SPEC.md#BR-018
+
 - **ACs**: AC-024
 - **TCs**: TC-024
 - **Phase**: Data Integrity (Phase 5)

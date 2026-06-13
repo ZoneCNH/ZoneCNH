@@ -1,8 +1,8 @@
 # TASK-TRANSPORTX-009: TopicRegistry
 
 - **Module**: transportx
-- **Spec**: `module/transportx/SPEC.md` v1.1.1
-- **FRs**: FR-019
+- **spec_ref**: module/transportx/SPEC.md#FR-019
+
 - **ACs**: AC-019
 - **TCs**: TC-019
 - **Phase**: QoS + Codec + Registry (Phase 2)

@@ -1,8 +1,9 @@
 # TASK-TRANSPORTX-004: Runtime Lifecycle + Drain
 
 - **Module**: transportx
-- **Spec**: `module/transportx/SPEC.md` v1.1.1
-- **FRs**: FR-004, FR-005
+- **spec_ref**: module/transportx/SPEC.md#FR-004, #FR-005
+- **BR_ref**: module/transportx/SPEC.md#BR-004
+
 - **ACs**: AC-004, AC-005
 - **TCs**: TC-004, TC-005
 - **Phase**: Foundation Contracts (Phase 1)

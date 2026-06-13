@@ -1,8 +1,8 @@
 # TASK-TRANSPORTX-001: Envelope Schema + Payload Limits
 
 - **Module**: transportx
-- **Spec**: `module/transportx/SPEC.md` v1.1.1
-- **FRs**: FR-001, FR-002
+- **spec_ref**: module/transportx/SPEC.md#FR-001, #FR-002
+- **BRs**: BR-001
 - **ACs**: AC-001, AC-002
 - **TCs**: TC-001, TC-002
 - **Phase**: Foundation Contracts (Phase 1)

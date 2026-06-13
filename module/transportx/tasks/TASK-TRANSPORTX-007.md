@@ -1,8 +1,8 @@
 # TASK-TRANSPORTX-007: QoS Classification
 
 - **Module**: transportx
-- **Spec**: `module/transportx/SPEC.md` v1.1.1
-- **FRs**: FR-017
+- **spec_ref**: module/transportx/SPEC.md#FR-017
+
 - **ACs**: AC-017
 - **TCs**: TC-017
 - **Phase**: QoS + Codec + Registry (Phase 2)

@@ -1,8 +1,8 @@
 # TASK-TRANSPORTX-017: Deadline + Clock Skew
 
 - **Module**: transportx
-- **Spec**: `module/transportx/SPEC.md` v1.1.1
-- **FRs**: FR-009
+- **spec_ref**: module/transportx/SPEC.md#FR-009
+
 - **ACs**: AC-009
 - **TCs**: TC-009
 - **Phase**: Advanced Features (Phase 4)

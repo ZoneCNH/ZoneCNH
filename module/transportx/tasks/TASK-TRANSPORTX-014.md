@@ -1,8 +1,8 @@
 # TASK-TRANSPORTX-014: Backpressure + Bulkhead
 
 - **Module**: transportx
-- **Spec**: `module/transportx/SPEC.md` v1.1.1
-- **FRs**: FR-012
+- **spec_ref**: module/transportx/SPEC.md#FR-012
+
 - **ACs**: AC-012
 - **TCs**: TC-012
 - **Phase**: Middleware + Control (Phase 3)

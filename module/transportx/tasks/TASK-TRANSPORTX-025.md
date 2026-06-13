@@ -1,8 +1,8 @@
 # TASK-TRANSPORTX-025: CI Gates + Release Evidence
 
 - **Module**: transportx
-- **Spec**: `module/transportx/SPEC.md` v1.1.1
-- **FRs**: FR-016
+- **spec_ref**: module/transportx/SPEC.md#FR-016
+
 - **BRs**: BR-012
 - **ACs**: AC-016
 - **TCs**: TC-016
