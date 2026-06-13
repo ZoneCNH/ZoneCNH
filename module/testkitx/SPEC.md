@@ -176,15 +176,15 @@ THEN 测试通过
 
 ## 8. Business Rules
 
-| 编号   | 规则                                                                                     |
-| ------ | ---------------------------------------------------------------------------------------- |
-| BR-001 | 所有 fake 必须实现对应接口，编译期检查：`var _ observex.Logger = (*FakeLoggerImpl)(nil)` |
-| BR-002 | fake 行为必须确定性，不引入 `time.Now()` 或 `math.Rand()`                                |
-| BR-003 | Eventually 使用 `testing.T` 而非 `panic`，失败时输出清晰诊断                             |
-| BR-004 | GoldenUpdate() 只在 `GOLDEN_UPDATE=1` 环境变量下返回 true                                |
-| BR-005 | 生产 import graph 中不能出现 testkitx（go list 验证）                                    |
-| BR-006 | testkitx 是唯一允许依赖所有 Foundation L1 模块的包（仅 go test）                         |
-| BR-007 | golden 文件不泄露 secret（更新时自动检查）                                               |
+| 编号 | 规则 | 违反时 |
+| --- | --- | --- |
+|  BR-001  | 所有 fake 必须实现对应接口，编译期检查：`var _ observex.Logger = (*FakeLoggerImpl)(nil)` | 编译失败 — CI Gate contract test 阻断 |
+|  BR-002  | fake 行为必须确定性，不引入 `time.Now()` 或 `math.Rand()` | 测试结果不稳定 — CI 中非确定性失败 |
+|  BR-003  | Eventually 使用 `testing.T` 而非 `panic`，失败时输出清晰诊断 | panic 代替测试失败 — 调用栈无诊断信息 |
+|  BR-004  | GoldenUpdate() 只在 `GOLDEN_UPDATE=1` 环境变量下返回 true | CI 中误更新 golden 文件 — CI Gate golden update guard 阻断 |
+|  BR-005  | 生产 import graph 中不能出现 testkitx（go list 验证） | CI Gate no-production-import 阻断 |
+|  BR-006  | testkitx 是唯一允许依赖所有 Foundation L1 模块的包（仅 go test） | 其他模块引入 — CI Gate boundary check 阻断 |
+|  BR-007  | golden 文件不泄露 secret（更新时自动检查） | CI Gate gitleaks 阻断 |
 
 ---
 
@@ -582,7 +582,12 @@ exporter.AssertSpanCount(3)
 
 ## 23. Open Questions
 
-- 是否需要支持自定义 fake 行为（如 FakeLogger 的 level 过滤模拟）？
-- fixture loader 是否需要支持 YAML/TOML 格式（当前仅 JSON/golden）？
-- contract test 是否需要覆盖 schedulex.Scheduler 接口？
-- BoundaryCheck 是否需要支持白名单（允许特定测试包依赖 testkitx）？
+
+### Non-blocking
+
+| ID | 问题 | 状态 |
+| --- | --- | --- |
+| OQ-001 | 是否需要支持自定义 fake 行为（如 FakeLogger 的 level 过滤模拟）？ | 待评估 |
+| OQ-002 | fixture loader 是否需要支持 YAML/TOML 格式（当前仅 JSON/golden）？ | 待评估 |
+| OQ-003 | contract test 是否需要覆盖 schedulex.Scheduler 接口？ | 待评估 |
+| OQ-004 | BoundaryCheck 是否需要支持白名单（允许特定测试包依赖 testkitx）？ | 待评估 |
