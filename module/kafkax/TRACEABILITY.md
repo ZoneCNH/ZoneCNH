@@ -42,3 +42,19 @@ Source: module/kafkax/SPEC.md（1.0 候选规格）
 | KAFKAX-T13 | Health 幂等性 | unit |
 | KAFKAX-T14 | 错误和日志脱敏 | unit |
 | KAFKAX-T15 | 禁用自动提交默认值 | unit + integration |
+
+## §3 非功能需求追溯（NFR）
+
+| Requirement | Description | 目标值 | 验证方式 | Task | Status |
+| --- | --- | --- | --- | --- | --- |
+| NFR-001 | 单条发送性能 | < 5ms | Benchmark | - | Pending |
+| NFR-002 | 批量发送 100 条性能 | < 20ms | Benchmark | - | Pending |
+| NFR-003 | 单条消费性能 | < 5ms | Benchmark | - | Pending |
+| NFR-004 | 常驻内存（空闲） | < 10MB | Profiling | - | Pending |
+| NFR-005 | Consumer lag | < 1000条 | CI Gate | - | Pending |
+| NFR-006 | 单元测试覆盖率 | >= 80% | go tool cover | - | Pending |
+| NFR-007 | race 检测通过 | 零 data race | go test -race | - | Pending |
+| NFR-008 | vet 检查通过 | 零警告 | go vet | - | Pending |
+| NFR-009 | lint 检查通过 | 零错误 | golangci-lint | - | Pending |
+| NFR-010 | Secret 扫描通过 | 零命中 | gitleaks | - | Pending |
+
