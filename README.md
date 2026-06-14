@@ -38,10 +38,10 @@ L1 运行时: configx / observex / resiliencx / schedulex
 L1 测试: testkitx (test-only)
       │
       ▼
-基座扩展: redisx / kafkax / natsx / postgresx / taosx / ossx / clickhousex / contracts / transportx
+基座扩展: redisx / kafkax / natsx / postgresx / taosx / ossx / clickhousex / contracts / transportx / domainx
       │
       ▼
-L2.5: decimalx / domain-market / domain-exchange / domain-macro / domainx
+L2.5: decimalx / domain-market / domain-exchange / domain-macro 
       │
       ▼
 业务流: 数据域 → 分析域 ↔ 决策域 → 执行域
@@ -85,10 +85,10 @@ L2.5: decimalx / domain-market / domain-exchange / domain-macro / domainx
 
 - [contracts](https://github.com/ZoneCNH/contracts) — 跨域稳定端口、事件协议与 DTO 契约 `公开`
 - [transportx](https://github.com/ZoneCNH/transportx) — 应用通信底座规格基线（Envelope/Endpoint、ServiceIdentity、QoS、Codec、RPC、EventBus、Stream、Outbox/Inbox、Audit Plane、Data Classification、SchemaRegistry 与 conformance gates） `公开`
+- [domainx](https://github.com/ZoneCNH/domainx) — 执行域共享值对象：Order/Position/Trade/Portfolio/ExecutionReport 枚举与类型 `公开`
 
 ### L2.5 · 领域共享层
 
-- [domainx](https://github.com/ZoneCNH/domainx) — 执行域共享值对象：Order/Position/Trade/Portfolio/ExecutionReport 枚举与类型 `公开`
 - [decimalx](https://github.com/ZoneCNH/decimalx) — 高精度十进制类型（Decimal/Price/Qty/Ratio/Money） `公开`
 - [domain-market](https://github.com/ZoneCNH/domain-market) — 市场数据域模型（Tick/Quote/Bar/OrderBook） `公开`
 - [domain-exchange](https://github.com/ZoneCNH/domain-exchange) — 交易域模型（VenueAdapter 13 方法接口） `公开`
