@@ -297,7 +297,7 @@ Foundation v1 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中�
 | 基座                  | [testkitx](https://github.com/ZoneCNH/testkitx)                 | v1.0.0 | ✅ 已发布 | ███░ 90% | 测试专用 fake/fixture/golden/contract/boundary/leak 工具包，PR #13 code 阶段完成（80.7% 覆盖），禁止生产导入 |
 | 基座                  | [resiliencx](https://github.com/ZoneCNH/resiliencx)             | v1.0.1 | ✅ 已发布 | █████ 100% | 运行时弹性策略库：timeout/retry/circuit/bulkhead/rate/fallback（v1.0.1 Approved，100% 覆盖） |
 | 基座                  | [schedulex](https://github.com/ZoneCNH/schedulex)               | v1.0.0 | ✅ 已发布 | █████ 100% | cron/interval/delay 调度、OverlapPolicy（Skip/Queue/Replace）、MisfirePolicy（Skip/RunOnce/CatchUp）、EventSink、Locker、Clock 注入；98.2% 覆盖，release-check 通过 |
-| 基座                  | [xlibgate](https://github.com/ZoneCNH/xlibgate)                 | v1.0.2 | 🔨 待实现 | ██░░ 30% | import 边界、go.mod、Go baseline、release evidence、L2 发布就绪 机器门禁（SPEC 完整，10 tasks 均未实现） |
+| 基座                  | [xlibgate](https://github.com/ZoneCNH/xlibgate)                 | v1.0.2 | ✅ 已发布 | ███░ 90% | import 边界、go.mod、Go baseline、release evidence、L2 发布就绪 机器门禁（PR #23 merged, 10 tasks 完成） |
 | 基座                  | [xlib-standard](https://github.com/ZoneCNH/xlib-standard)       | -      | ✅ 已有   | █████ 100% | 标准事实源、Go Reference Template；Generator/Harness/Evidence 已拆分，不参与运行时 import |
 | 基座                  | [xlib-harness](https://github.com/ZoneCNH/xlib-harness)         | v1.0.0      | ✅ 已有   | █████ 100% | 模块生成器与门禁执行器：generate/scaffold、spec-lint、boundary-check、traceability-gate |
 | 基座                  | [xlib-evidence](https://github.com/ZoneCNH/xlib-evidence)       | v1.0.0      | ✅ 已有   | █████ 100% | 证据收集与发布运行时：collect-coverage、generate-manifest、validate-manifest、report |
