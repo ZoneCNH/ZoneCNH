@@ -30,6 +30,20 @@ const filePath = args.file_path || args.path || "";
 
 // 只对 Write/Edit 操作执行格式化
 if ((tool === "Write" || tool === "Edit") && filePath) {
+  // Guard: skip formatting on files with unstaged changes (working tree ≠ HEAD)
+  // Prevents prettier from silently rewriting in-progress edits against a stale baseline
+  const isStale = (() => {
+    try {
+      const diff = execSync(`git diff --name-only -- "${filePath}"`, {
+        cwd: projectRoot, timeout: 3000, stdio: "pipe", encoding: "utf-8"
+      }).trim();
+      return diff !== "";
+    } catch {
+      return false;
+    }
+  })();
+  if (isStale) process.exit(0);
+
   // 检查项目根目录是否有格式化工具配置
   const hasFormatter = FORMATTERS.some((f) => existsSync(join(projectRoot, f.check)));
   if (!hasFormatter) process.exit(0);

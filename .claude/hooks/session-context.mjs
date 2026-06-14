@@ -21,6 +21,21 @@ const log = run("git log --oneline -10 2>/dev/null") || "";
 
 const lines = ["--- SessionStart Hook ---", "分支: " + branch];
 
+// === Branch discipline guard ===
+if (branch === "main") {
+  lines.push("---", "⚠️ 当前在 main 分支！CLAUDE.md 禁止在 main 上直接编辑。请创建 feature 分支：");
+  lines.push("   git checkout -b docs/<module>-<描述>");
+}
+
+// === Stale working tree guard ===
+const originDiff = run("git diff origin/main --stat 2>/dev/null") || "";
+if (originDiff) {
+  lines.push("---", "⚠️ 工作区与 origin/main 存在差异 — 可能使用了过时的文件版本。运行 git pull origin main 同步后重新开始：");
+  const diffLines = originDiff.split("\n").filter(Boolean);
+  lines.push(...diffLines.slice(0, 5).map(l => "   " + l));
+  if (diffLines.length > 5) lines.push("   ... 还有 " + (diffLines.length - 5) + " 个文件");
+}
+
 if (status) {
   lines.push("---", "变更:");
   lines.push(status);
