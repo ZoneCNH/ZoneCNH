@@ -102,6 +102,7 @@ def arbitrate(
     max_stage_attempts: int,
     max_total: int,
     runtime: str = "claude",
+    force: bool = False,
 ) -> dict:
     state = _state_dir(module, stage, runtime)
     scores_dir = state / "scores"
@@ -128,12 +129,68 @@ def arbitrate(
     redlines: list[dict] = []
     gate = "pass"
 
-    if missing:
+    if missing and not force:
         gate = "fail"
         reasons.append(f"missing_score_source:{','.join(missing)}")
         next_action = "route_to_missing_score_source"
         composite_score = 0
         llm_scores: list[int] = []
+    elif missing and force:
+        # --force: 缺源不阻塞，用已有源计算 composite
+        reasons.append(f"forced_missing_source:{','.join(missing)}")
+        # 用已有 LLM 源
+        present_llm = [s for s in LLM_SOURCES if s in sources_data]
+        if present_llm:
+            all_scores = {src: int(sources_data[src].get("score", 0)) for src in sources_data}
+            composite_score = min(all_scores.values())
+            llm_scores = [all_scores[s] for s in present_llm]
+            if composite_score < 98:
+                gate = "fail"
+                reasons.append(f"composite_score({composite_score}) < 98")
+            # LLM 分差：至少 2 个 LLM 源才检查
+            if len(present_llm) >= 2:
+                llm_spread = max(llm_scores) - min(llm_scores)
+                if llm_spread > 5:
+                    gate = "fail"
+                    reasons.append(f"score_spread_too_large:{llm_spread}")
+            # 置信度
+            low_conf = [s for s in present_llm if sources_data[s].get("confidence") == "low"]
+            if low_conf:
+                gate = "fail"
+                reasons.append(f"low_confidence_score:{','.join(low_conf)}")
+            # 红线
+            for src, d in sources_data.items():
+                if d.get("redline"):
+                    redlines.append({"source": src, "deductions": d.get("deductions", [])})
+            if redlines:
+                gate = "fail"
+                reasons.append("redline_present")
+            # 异构一致性：rules 必须在
+            if "rules" in sources_data and len(present_llm) >= 1:
+                rules_score = int(sources_data["rules"].get("score", 0))
+                llm_median = int(statistics.median(llm_scores))
+                divergence = abs(rules_score - llm_median)
+                if divergence > 15:
+                    gate = "fail"
+                    reasons.append(f"heterogeneous_divergence:{divergence}")
+            # 路由
+            if gate == "fail":
+                next_action = "route_to_executor_for_repair"
+            else:
+                next_action = (
+                    "advance_to_next_stage_and_approve_spec"
+                    if stage == "spec"
+                    else "advance_to_next_stage"
+                )
+        else:
+            # 所有 LLM 源都缺失，无法判定
+            gate = "fail"
+            composite_score = 0
+            llm_scores = []
+            reasons.append("forced_no_llm_source:无法判定")
+            next_action = "route_to_missing_score_source"
+        # --force 时仍计入有效 attempt（因为这是主动决策）
+        attempts["stage_attempt"] += 1
     elif invalid:
         gate = "fail"
         invalid_sources = ",".join(src for src, _ in invalid)
@@ -192,7 +249,7 @@ def arbitrate(
             if stage == "spec"
             else "advance_to_next_stage"
         )
-    elif missing:
+    elif missing and not force:
         next_action = "route_to_missing_score_source"
     elif invalid:
         next_action = "route_to_invalid_score_source"
@@ -250,7 +307,7 @@ def arbitrate(
         ),
         "heterogeneous_divergence": (
             abs(int(sources_data["rules"]["score"]) - int(statistics.median(llm_scores)))
-            if not missing and not invalid
+            if (not missing or force) and not invalid and "rules" in sources_data and llm_scores
             else None
         ),
         "invalid_scores": [
@@ -288,9 +345,10 @@ def main() -> int:
     )
     ap.add_argument("--max-stage-attempts", type=int, default=3)
     ap.add_argument("--max-total", type=int, default=18)
+    ap.add_argument("--force", action="store_true", help="缺源不阻塞门禁，用已有源判定")
     args = ap.parse_args()
 
-    verdict = arbitrate(args.module, args.stage, args.max_stage_attempts, args.max_total, args.runtime)
+    verdict = arbitrate(args.module, args.stage, args.max_stage_attempts, args.max_total, args.runtime, args.force)
     print(json.dumps(verdict, ensure_ascii=False, indent=2))
     print(f"\ngate = {verdict['gate']}  next_action = {verdict['next_action']}", file=sys.stderr)
     return 0 if verdict["gate"] == "pass" else 1
