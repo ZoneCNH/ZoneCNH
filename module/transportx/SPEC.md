@@ -625,7 +625,7 @@ WHEN a breaking schema change is detected:
 
 | Requirement | Evidence |
 | --- | --- |
-| Spec approved | `module/transportx/SPEC.md` v1.1.1 |
+| Spec approved | `module/transportx/SPEC.md` v1.2.0 |
 | Traceability complete | `module/transportx/TRACEABILITY.md` covers all FRs, BRs and NFRs |
 | CI gates configured | traceability and status consistency scripts include `transportx` |
 | Contract implementation | public package compiles in `transportx` repository |
@@ -633,7 +633,7 @@ WHEN a breaking schema change is detected:
 | Registry verified | TopicRegistry, MethodRegistry, SchemaRegistry validation tests pass |
 | Conformance passed | full conformance report (25 TCs + NFR verification) |
 | Security verified | redaction-order, authz-denial, mode-gate, secret-free-audit tests pass |
-| Compatibility verified | schema registry compatibility report for v1.1.1 |
+| Compatibility verified | schema registry compatibility report for v1.2.0 |
 | NFR verified | NFR-001 through NFR-012 verification evidence collected |
 | Release published | git tag, changelog, release notes reference evidence |
 
@@ -644,7 +644,7 @@ WHEN a breaking schema change is detected:
 | OQ-1 | Which reference adapter (kafkax, natsx, or in-memory) ships first? | Deferred to implementation |
 | OQ-2 | What durable store backs control-plane audit records and DLQ? | Deferred to implementation |
 | OQ-3 | Should SchemaRegistry use standalone service or embedded library? | Embedded library for v1.x; standalone deferred |
-| OQ-4 | Protobuf codec: v1.1.1 or v1.2.0? | Defer to v1.2.0 |
+| OQ-4 | Protobuf codec: v1.2.0 or v1.3.0? | Defer to v1.3.0 (v1.2.0 released with §5 boundary + FR-026) |
 
 ## Appendix A: Glossary
 
