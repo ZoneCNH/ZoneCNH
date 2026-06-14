@@ -1,13 +1,12 @@
-# TASK-NATSX-005: Health 检查、GracefulShutdown、Drain、错误脱敏
-
-- **Module**: natsx
-- **spec_ref**: module/natsx/SPEC.md#FR-008
-- **BR_ref**: module/natsx/SPEC.md#BR-006 ,module/natsx/SPEC.md#BR-007 ,module/natsx/SPEC.md#BR-008
-- **ACs**: AC-008
-- **Phase**: Health + Observability (Phase 3)
-- **Priority**: P1
-- **Dependencies**: none
-- **Status**: Pending
+---
+TASK-NATSX-005:
+  module: natsx
+  scope: "Health 检查、GracefulShutdown、Drain、错误脱敏"
+  acceptance_criteria:
+    - "AC-008: Health 端点返回健康状态及组件详情"
+  priority: P1
+  status: pending
+---
 
 ## Scope
 

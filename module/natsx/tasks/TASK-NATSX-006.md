@@ -1,10 +1,13 @@
-# TASK-NATSX-006: go.mod、单元测试、集成测试、benchmark、README、CHANGELOG
-
-- **Module**: natsx
-- **Phase**: CI + Release (Phase 4)
-- **Priority**: P2
-- **Dependencies**: none
-- **Status**: Pending
+---
+TASK-NATSX-006:
+  module: natsx
+  scope: "go.mod、单元测试、集成测试、benchmark、README、CHANGELOG"
+  acceptance_criteria:
+    - "AC-009: CI 全绿，测试覆盖 >= 80%"
+    - "AC-010: CHANGELOG 记录 v1.0.0 变更"
+  priority: P2
+  status: pending
+---
 
 ## Scope
 

@@ -1,13 +1,12 @@
-# TASK-NATSX-002: Request + 超时
-
-- **Module**: natsx
-- **spec_ref**: module/natsx/SPEC.md#FR-003
-- **BR_ref**: module/natsx/SPEC.md#BR-003
-- **ACs**: AC-003
-- **Phase**: Foundation (Phase 1)
-- **Priority**: P0
-- **Dependencies**: none
-- **Status**: Pending
+---
+TASK-NATSX-002:
+  module: natsx
+  scope: "Request-Reply 模式：responder、timeout、ctx cancel"
+  acceptance_criteria:
+    - "AC-003: Request 在超时内收到 Response"
+  priority: P0
+  status: pending
+---
 
 ## Scope
 
