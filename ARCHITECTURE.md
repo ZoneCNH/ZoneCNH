@@ -59,22 +59,20 @@ market-data (18) ──────────────► market_regime ─
 macro-data (11) ───────────────► macro_regime ──┘     M×S 融合        action A-E
   domain-macro (MacroPoint)      M1-M7 状态           冲突门           profile
   LGIP 四因子                    LGIP 得分            风险放大          risk_tier
-                                                                 position_caps
+                                                                      position_caps
 factor-engine ◄──► feature-store ◄──► factor-eval                     template
               │                         ▲
               ▼                         │
-signal-factory ◄── backtest-engine ─────┘    ◄── DecisionCard (action/risk/template)
-      │              ▲
-      ▼              │
-optimizer ───────────┘
-      │
-      ▼
-risk-engine ───► order-engine ───► portfolio-engine ───► settlement
-  domainx (Order/Fill/Position/Exposure) ──── 执行域共享值对象（归属基座）
-  ◄── trade_permission                │                 │
-      position_caps                   └──── fills ──────┤
-      risk_multiplier                                  ▼
-                              决策域 ◄──── positions / PnL / exposure events
+  flowx ──► signal-factory ◄── backtest-engine ─┘   ◄── DecisionCard (action/risk/template)
+              │    ▲                        ▲
+              ▼    │                        │
+         strategyx ─► optimizer ────────────┘
+              │
+              ▼
+         maestro ──► riskx ──► orderx ──► positionx
+                      ▲           ▲           │
+                      │           │           ▼
+                      └─ fills ──┘   决策域 ◄── positions/PnL/exposure
 ```text
 
 ### 运行时组装
@@ -97,9 +95,9 @@ x.go
 | 基座   | 标准源、生成器、证据运行时、L0 原语、L1 运行时横切能力、测试期证据、存储扩展、稳定契约与传输契约、领域共享                                            | xlib-standard, xlib-harness, xlib-evidence, kernel, configx, observex, testkitx, resiliencx, schedulex, xlibgate, redisx, kafkax, natsx, postgresx, taosx, ossx, clickhousex, contracts, transportx, domainx |
 | L2.5   | 领域值对象和语义模型，上层统一依赖                                                                                            | decimalx, domain-market, domain-exchange, domain-macro                                                                                                  |
 | 数据域 | 行情、宏观、另类数据采集                                                                                                      | market-data (13 SDK + 5 Provider), macro-data (11), alternative-data                                                                                       |
-| 分析域 | 因子计算、特征存储、因子评估、市场/宏观环境分类、M×S 联合决策（三引擎：market_engine→S / macro_engine→M / regime_engine→M+S） | factor-engine, feature-store, factor-eval, market_regime, macro_regime, regime-engine, ms_brain                                                            |
-| 决策域 | 信号生成、历史回测、参数优化（并行协作）                                                                                      | signal-factory, backtest-engine, optimizer, strategies                                                                                                     |
-| 执行域 | 风险管理、订单执行、组合管理、结算                                                                                            | risk-engine, order-engine, portfolio-engine, settlement                                                                                                    |
+| 分析域 | 因子计算、特征存储、因子评估、市场/宏观环境分类、数据流管线、M×S 联合决策（三引擎：market_engine→S / macro_engine→M / regime_engine→M+S） | factor-engine, feature-store, factor-eval, market_regime, macro_regime, regime-engine, ms_brain, flowx                                                              |
+| 决策域 | 信号生成、历史回测、参数优化、策略工厂、工作流编排（并行协作）                                                                  | signal-factory, backtest-engine, optimizer, strategies, backtestx, strategyx, maestro                                                                          |
+| 执行域 | 风险管理、订单执行、仓位管理、结算                                                                                              | risk-engine, order-engine, portfolio-engine, settlement, riskx, orderx, positionx                                                                              |
 | 入口   | 启动、配置加载、依赖组装、生命周期控制                                                                                        | x.go                                                                                                                                                       |
 | 横切   | 告警、可观测性                                                                                                                | alertx, observex                                                                                                                                           |
 
@@ -357,15 +355,22 @@ Foundation v1 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中�
 | 分析域                | [macro_regime](https://github.com/ZoneCNH/macro_regime)         | -      | 🔨 已创建 | ░░░░ 5%  | 宏观经济体制识别（M1-M7：流动牛市/再通复苏/软着繁荣/鹰派通胀/衰退降息/信用去杠/滞胀冲击） |
 | 分析域                | [regime-engine](https://github.com/ZoneCNH/regime-engine)       | -      | 🔨 已创建 | ░░░░ 5%  | M×S 联合决策引擎（M+S → action/risk_tier/position_caps/trade_permission）                 |
 | 分析域                | [ms_brain](https://github.com/ZoneCNH/ms_brain)                 | -      | ✅ 已有   | -        | M×S 系统架构分析体系                                                                      |
+| 分析域                | [flowx](https://github.com/ZoneCNH/flowx)                       | v0.1.0-draft | 🔨 已创建 | ░░░░ 5%  | 数据流管线引擎 — 实时流式 ETL、窗口聚合、背压控制（7 FR, SPEC draft）                    |
 | **决策域**            |                                                                 |        |           |          |                                                                                           |
 | 决策域                | [signal-factory](https://github.com/ZoneCNH/signal-factory)     | -      | 🔨 已创建 | ░░░░ 5%  | 多因子信号生成、过滤、评分                                                                |
 | 决策域                | [backtest-engine](https://github.com/ZoneCNH/backtest-engine)   | -      | 🔨 已创建 | ░░░░ 5%  | 事件驱动回测、Tick 级回放                                                                 |
+| 决策域                | [backtestx](https://github.com/ZoneCNH/backtestx)               | v0.1.0-draft | 🔨 已创建 | ░░░░ 5%  | 回测引擎 — 事件驱动回测、Walk-Forward、蒙特卡洛（7 FR, SPEC draft）                      |
+| 决策域                | [strategyx](https://github.com/ZoneCNH/strategyx)               | v0.1.0-draft | 🔨 已创建 | ░░░░ 5%  | 策略工厂 — 策略注册、参数管理、信号组合（7 FR, SPEC draft）                              |
+| 决策域                | [maestro](https://github.com/ZoneCNH/maestro)                   | v0.1.0-draft | 🔨 已创建 | ░░░░ 5%  | 工作流编排引擎 — DAG 工作流、状态机、错误恢复（9 FR, SPEC draft）                        |
 | 决策域                | [optimizer](https://github.com/ZoneCNH/optimizer)               | -      | 🔨 已创建 | ░░░░ 5%  | 参数搜索、Walk-forward 验证                                                               |
 | 决策域                | [strategies](https://github.com/ZoneCNH/strategies)             | -      | ✅ 已有   | ██░░ 60% | 策略研究与参考库，3.5MB/746 项                                                            |
 | **执行域**            |                                                                 |        |           |          |                                                                                           |
 | 执行域                | [risk-engine](https://github.com/ZoneCNH/risk-engine)           | -      | 🔨 已创建 | ░░░░ 5%  | VaR、止损、持仓限额、压力测试                                                             |
+| 执行域                | [riskx](https://github.com/ZoneCNH/riskx)                       | v0.1.0-draft | 🔨 已创建 | ░░░░ 5%  | 风控引擎 — 事前风控、回撤控制、熔断机制（7 FR, SPEC draft）                              |
 | 执行域                | [order-engine](https://github.com/ZoneCNH/order-engine)         | -      | 🔨 已创建 | ░░░░ 5%  | 智能路由、TWAP/VWAP、滑点控制                                                             |
+| 执行域                | [orderx](https://github.com/ZoneCNH/orderx)                     | v0.1.0-draft | 🔨 已创建 | ░░░░ 5%  | 订单管理器 — 订单生命周期、SOR、状态机（7 FR, SPEC draft）                               |
 | 执行域                | [portfolio-engine](https://github.com/ZoneCNH/portfolio-engine) | -      | 🔨 已创建 | ░░░░ 5%  | 多策略资金分配、再平衡                                                                    |
+| 执行域                | [positionx](https://github.com/ZoneCNH/positionx)               | v0.1.0-draft | 🔨 已创建 | ░░░░ 5%  | 仓位管理器 — 实时仓位追踪、PnL、敞口监控（7 FR, SPEC draft）                             |
 | 执行域                | [settlement](https://github.com/ZoneCNH/settlement)             | -      | 🔨 已创建 | ░░░░ 5%  | PnL 计算、交易所对账                                                                      |
 | **入口**              |                                                                 |        |           |          |                                                                                           |
 | 入口                  | [x.go](https://github.com/ZoneCNH/x.go)                         | v0.0.1 | ✅ 已有   | ███░ 80% | 组合根，2.8MB/33 项                                                                       |
@@ -432,10 +437,20 @@ Foundation v1 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中�
 | 数据域            | jin10                                                                                                     | `/home/jin10/`                              |
 | 数据域            | yahoo                                                                                                     | `/home/yahoo/`                              |
 | 数据域            | yield-curve                                                                                               | `/home/yield-curve/`                        |
+| **分析域**        |                                                                                                           |                                             |
+| 分析域            | flowx                                                                                                     | `/home/flowx/`                              |
+| **决策域**        |                                                                                                           |                                             |
+| 决策域            | backtestx                                                                                                 | `/home/backtestx/`                          |
+| 决策域            | strategyx                                                                                                 | `/home/strategyx/`                          |
+| 决策域            | maestro                                                                                                   | `/home/maestro/`                            |
+| **执行域**        |                                                                                                           |                                             |
+| 执行域            | riskx                                                                                                     | `/home/riskx/`                              |
+| 执行域            | orderx                                                                                                    | `/home/orderx/`                             |
+| 执行域            | positionx                                                                                                 | `/home/positionx/`                          |
 | **入口**          |                                                                                                           |                                             |
 | 入口              | x.go                                                                                                      | `/home/x.go/`                               |
 
-> 完整仓库 URL 映射见上方状态总览表。分析域、决策域、执行域、横切域模块暂无本地检出。
+> 完整仓库 URL 映射见上方状态总览表。分析域（flowx）、决策域（backtestx/strategyx/maestro）、执行域（riskx/orderx/positionx）模块 SPEC 已发布（v0.1.0-draft）。
 
 ## 建议实现顺序
 
