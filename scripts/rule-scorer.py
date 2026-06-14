@@ -312,7 +312,7 @@ def score_tasks(module: str) -> Score:
         s.confidence = "low"
         return s
 
-    task_files = sorted(tasks_dir.glob("TASK-*.md"))
+    task_files = sorted([f for f in tasks_dir.glob("TASK-*.md") if "-PROMPT" not in f.name])
     if not task_files:
         s.flag_redline("tasks_empty", "tasks/ 目录为空")
         s.score = 0
