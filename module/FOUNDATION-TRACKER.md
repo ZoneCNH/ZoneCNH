@@ -4,7 +4,7 @@
 > 每项直接对应一个 GitHub Issue 或 PR。
 > 勾选 = 完成。
 
-最后更新：2026-06-14（环境扫描：全项目 .env.example 补全 35 个 + 5 项发现登记）
+最后更新：2026-06-14（审计报告闭环：F1-F8 + O3-O5 修复 + 对齐文档同步 — PR #235-#239）
 
 ---
 
@@ -275,13 +275,14 @@
 ### Issue 10：ARCHITECTURE.md 依赖矩阵覆盖不全 ✅
 
 ```text
-标题：ARCHITECTURE.md 依赖矩阵扩展至 17 模块
+标题：ARCHITECTURE.md 依赖矩阵扩展至 20 模块
 仓库：ZoneCNH/ZoneCNH
 ```text
 
 - [x] 当前矩阵仅覆盖 kernel/configx/observex/testkitx/resiliencx/schedulex 6 个 — 已记录
-- [x] 补充方案：存储扩展层（7 模块）+ 契约/传输层（2 模块）+ 门禁层（2 模块）各模块均为单依赖封装（仅依赖其客户端库），不形成模块间依赖边；domainx（L2.5 值对象）仅允许被数据域/分析域/决策域/执行域导入
+- [x] 补充方案：存储扩展层（7 模块）+ 契约/传输层（2 模块）+ 门禁层（4 模块，含 xlib-harness/xlib-evidence）各模块均为单依赖封装（仅依赖其客户端库），不形成模块间依赖边；domainx（L2.5 值对象，归属基座）仅允许被数据域/分析域/决策域/执行域导入
 - [x] 扩展矩阵由后续 PR 补齐，当前矩阵已准确覆盖 6 个直接依赖的核心模块
+- [x] 基座已扩展至 20 模块（PR #233 拆分 xlib-standard→standard+harness+evidence；PR #235 闭环文档矛盾）
 
 ### Issue 11：STATUS.md 缺失 domainx 条目 ✅
 
@@ -292,6 +293,22 @@
 
 - [x] STATUS.md 基座计数写 17 但括号只列 13 模块 — 已修正为 18（PR #227-#230 系列）
 - [x] domainx 在 ARCHITECTURE.md / module/README.md 有独立条目，STATUS.md 已补充（3 处 domainx 引用）
+
+### Issue 14：基座模块清单审计修复 ✅
+
+```text
+标题：docs/report/foundation-audit-report.md 驱动的跨文档一致性修复
+仓库：ZoneCNH/ZoneCNH
+```text
+
+- [x] F1-F8 立即修复（PR #235）：状态表 18→20、CI 数组对齐、testkitx/xlibgate 进度校准、L2.5 本地路径修正
+- [x] xlib-standard 五类职责→二类职责过时描述修复 ×6（PR #236）
+- [x] README.md 基座 17→20 模块列表 + 缺失 xlib-harness/xlib-evidence/domainx 条目（PR #237）
+- [x] O3: domainx 添加版本号 v0.1.0，版本覆盖 28→29（PR #238）
+- [x] O4: taosx/clickhousex 时序存储边界文档化（PR #239）
+- [x] O5: testkitx/xlib-evidence 证据边界文档化（测试期 vs CI/发布期）（PR #238）
+- [x] CI 一致性：status-consistency-check.sh 13/13 ✅
+- [x] FOUNDATION-TRACKER.md 本条目记录闭环
 
 ### Issue 12：x.go.bak .env.example 双文件合并
 
@@ -325,8 +342,8 @@
 | P0       | 4        | 4             | ████       |
 | P1       | 6 模块   | 6（全部完成） | ██████     |
 | P2       | 1        | 1             | █          |
-| P3       | 8        | 5             | ███░       |
-| **总计** | **19**   | **16**        | **█████░** |
+| P3       | 9        | 6             | ███░       |
+| **总计** | **20**   | **17**        | **█████░** |
 
 ---
 
