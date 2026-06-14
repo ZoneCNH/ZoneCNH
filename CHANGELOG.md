@@ -9,7 +9,7 @@
 ### Added
 
 - 新增 `transportx` Foundation 传输契约规格索引，并纳入架构、状态与 CI 一致性门禁。
-- 新增 `scripts/audit-status.py` 三文档交叉一致性自校验脚本（22 项检查）。
+- 新增 `scripts/audit-status.py` 三文档交叉一致性自校验脚本（23 项本地，24 项含网络）。
 - 新增 `.github/workflows/audit-status.yml` CI 门禁，PR 触及 STATUS/README/ARCHITECTURE 时自动运行 audit-status.py，FAIL 阻断合并。
 - 新增 `.claude/hooks/count-guard.mjs` PreToolUse hook，Write/Edit 三文档时扫描数量模式。BLOCK 级（exit 2）：组件总数/平均进度/有版本号；WARN 级（exit 0）：X/Y 分数/百分比/已有/已创建。COUNT_GUARD_STRICT=false 降级为全告警。
 
@@ -42,7 +42,7 @@
 
   **预防门禁**：
   - L1 CountGuard hook（BLOCK 组件总数/平均进度/有版本号，WARN 其余）
-  - L2 audit-status.py（22 项机械化验证）
+  - L2 audit-status.py（24 项机械化验证）
   - L3 CI gate（.github/workflows/audit-status.yml，PR 触及三文档时自动运行，FAIL 阻断 merge）
 
 - CLAUDE.md 新增 §数量验证门禁、§三文档交叉同步规则。
