@@ -1,25 +1,28 @@
 # TASK-NATSX-002 实现 Prompt
 
-## Context
+## 任务
 
-TASK-NATSX-002 实现 Prompt — 本次实现背景与约束
+Request-Reply 模式：responder、timeout、ctx cancel
 
-## Scope
+## 规格引用
 
-module/natsx/SPEC.md#FR-003,module/natsx/SPEC.md#BR-003,
+module/natsx/SPEC.md#FR-003, module/natsx/SPEC.md#BR-003
 
-## Non-scope
+## 验收标准
 
-- 不涉及本 Prompt 范围外的功能
+AC-003: Request 在超时内收到 Response
 
+## 验证
 
-## Files
+FR-003 verified via TC-002
 
-client.go, client_test.go, errors.go
-## Acceptance
+## 优先级
 
-AC-003: Request 在超时内收到 Response;
+P0
 
-## Validation
+## 约束
 
-FR-003 verified via TC-002;
+- 禁止跨模块引用
+- 禁止在错误/日志中打印凭证、token、消息内容
+- 所有网络操作接收 context.Context
+- 实现文件与测试文件在同一 task 中交付
