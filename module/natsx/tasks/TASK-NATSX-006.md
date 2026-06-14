@@ -1,26 +1,35 @@
 ---
 TASK-NATSX-006:
   module: natsx
-  scope: "go.mod、单元测试、集成测试、benchmark、README、CHANGELOG"
+  scope: "CI gate 集成、测试覆盖率、benchmark 基线、README、CHANGELOG"
+  spec_ref:
+    - "module/natsx/SPEC.md#20-ci-gate"
+    - "module/natsx/SPEC.md#16-testing"
+    - "module/natsx/SPEC.md#17-performance-budget"
+    - "module/natsx/SPEC.md#22-release-dod"
   acceptance_criteria:
-    - "AC-009: CI 全绿，测试覆盖 >= 80%"
-    - "AC-010: CHANGELOG 记录 v1.0.0 变更"
+    - "AC-001: CI gate 全绿（go build / go test / go vet / lint）"
+    - "AC-008: 测试覆盖率 >= 80%，benchmark 无 >10% 回退"
+  files:
+    - "go.mod"
+    - "README.md"
+    - "CHANGELOG.md"
+    - "benchmark_test.go"
+    - "example_test.go"
   priority: P2
   status: pending
 ---
 
 ## Scope
 
-go.mod、单元测试、集成测试、benchmark、README、CHANGELOG
+CI gate 集成、测试覆盖率、benchmark 基线、README、CHANGELOG
 
 ## Non-Scope
 
 Does NOT implement NATS server deployment, JetStream stream auto-provisioning, or NATS account management. Does NOT implement business event semantics or domain DTOs.
 
-## Files
-
-- (implementation files — TBD)
-
 ## Acceptance
 
-- [ ] CI gate + benchmark + docs verified
+- [ ] CI gate (build/test/vet/lint) all pass
+- [ ] coverage >= 80%, benchmark no >10% regression
+- [ ] README + CHANGELOG v1.0.0
