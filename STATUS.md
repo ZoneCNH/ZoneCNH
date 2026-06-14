@@ -54,7 +54,7 @@
 | kernel | ✅ | ✅ | ✅ | N/A | ✅ | ✅ | N/A | ✅ | v1.0.0; 4 CI workflows; 13 下游消费者; API 冻结建议 |
 | configx | ✅ | ✅ | ✅ | N/A | ✅ | ✅ | N/A | ✅ | v0.1.4; 4 CI workflows; 2 下游消费者; 此前误标 v1.0.0 |
 | observex | ✅ | ✅ | ✅ | N/A | ✅ | ✅ | N/A | ✅ | v0.3.1; 4 CI workflows; 2 下游消费者; 已采用 |
-| testkitx | ✅ | ✅ | ✅ | N/A | ✅ | N/A | N/A | ❌ | v0.4.0; 4 CI workflows; test-only 非运行时模块 |
+| testkitx | ✅ | ✅ | ✅ | N/A | ✅ | N/A | N/A | N/A | v0.4.0; 4 CI workflows; test-only — factory grade 不适用 | v0.4.0; 4 CI workflows; test-only 非运行时模块 |
 | resiliencx | ✅ | ✅ | ✅ | N/A | ✅ | ✅ | N/A | ✅ | v0.4.9; 9 CI workflows; 2 下游消费者; 已采用 |
 | schedulex | ✅ | ✅ | ✅ | N/A | ✅ | ✅ | N/A | ✅ | v1.0.0; 6 CI workflows; 下游 smoke 通过; 1 下游消费者 |
 | redisx | ✅ | ✅ | ✅ | ✅ | ✅ | N/A | N/A | ✅ | v1.0.1; 9 CI workflows; Docker-backed Redis 验证通过 |
