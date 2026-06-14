@@ -2,8 +2,8 @@
   "module": "natsx",
   "stage": "tasks",
   "platform": "claude",
-  "scored_at": "2026-06-14T08:35:00Z",
-  "score": 99,
+  "scored_at": "2026-06-14T09:00:00Z",
+  "score": 92,
   "redline": false,
   "verdict": "Ready-candidate",
   "confidence": "high",
@@ -11,8 +11,8 @@
     {
       "name": "Task 模板符合度",
       "max": 12,
-      "deducted": 1,
-      "score": 11
+      "deducted": 8,
+      "score": 4
     },
     {
       "name": "粒度合规",
@@ -62,9 +62,65 @@
       "id": "D1",
       "severity": "LOW",
       "points": 1,
-      "rule": "TASK-TEMPLATE.md: acceptance_criteria 格式为 {AC-ID}: {描述}。NFR task 使用 § section 引用替代 AC-ID（因 SPEC 对 NFR 无编号 AC），§ 引用直接对应 spec_ref。",
-      "evidence": "TASK-006~009,011~014 使用 §9/§11/§15/§17/§18/§19/§20/§22 作为 acceptance_criteria 前缀。",
-      "fix": "§ 引用是干净的工程惯例：直接映射 spec_ref，不伪造 AC 编号。"
+      "rule": "TASK-TEMPLATE.md: acceptance_criteria 格式为 {AC-ID}: {描述}。TASK-006 使用 §9 替代。",
+      "evidence": "TASK-NATSX-006.md: §9: Build/Parse/非法token",
+      "fix": "SPEC 对 NFR-006 无编号 AC，§ 引用是必要设计选择。"
+    },
+    {
+      "id": "D2",
+      "severity": "LOW",
+      "points": 1,
+      "rule": "TASK-007 acceptance_criteria §9 格式。",
+      "evidence": "TASK-NATSX-007.md",
+      "fix": "同上（NFR-007 无 SPEC AC）。"
+    },
+    {
+      "id": "D3",
+      "severity": "LOW",
+      "points": 1,
+      "rule": "TASK-008 acceptance_criteria §11 格式。",
+      "evidence": "TASK-NATSX-008.md",
+      "fix": "同上（NFR-008 无 SPEC AC）。"
+    },
+    {
+      "id": "D4",
+      "severity": "LOW",
+      "points": 1,
+      "rule": "TASK-009 acceptance_criteria §18 格式。",
+      "evidence": "TASK-NATSX-009.md",
+      "fix": "同上（NFR-009 无 SPEC AC）。"
+    },
+    {
+      "id": "D5",
+      "severity": "LOW",
+      "points": 1,
+      "rule": "TASK-011 acceptance_criteria §19 格式。",
+      "evidence": "TASK-NATSX-011.md",
+      "fix": "同上（NFR-001/002 无 SPEC AC）。"
+    },
+    {
+      "id": "D6",
+      "severity": "LOW",
+      "points": 1,
+      "rule": "TASK-012 acceptance_criteria §17 格式。",
+      "evidence": "TASK-NATSX-012.md",
+      "fix": "同上（NFR-003 无 SPEC AC）。"
+    },
+    {
+      "id": "D7",
+      "severity": "LOW",
+      "points": 1,
+      "rule": "TASK-013 acceptance_criteria §15 格式。",
+      "evidence": "TASK-NATSX-013.md",
+      "fix": "同上（NFR-004 无 SPEC AC）。"
+    },
+    {
+      "id": "D8",
+      "severity": "LOW",
+      "points": 1,
+      "rule": "TASK-014 acceptance_criteria §20/§22 格式。",
+      "evidence": "TASK-NATSX-014.md",
+      "fix": "同上（NFR-005 无 SPEC AC）。"
     }
   ],
   "redlines": [],
