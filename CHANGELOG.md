@@ -11,12 +11,12 @@
 - 新增 `transportx` Foundation 传输契约规格索引，并纳入架构、状态与 CI 一致性门禁。
 - 新增 `scripts/audit-status.py` 三文档交叉一致性自校验脚本（22 项检查）。
 - 新增 `.github/workflows/audit-status.yml` CI 门禁，PR 触及 STATUS/README/ARCHITECTURE 时自动运行 audit-status.py，FAIL 阻断合并。
-- 新增 `.claude/hooks/count-guard.mjs` PreToolUse hook，Write/Edit 三文档时扫描数量模式并告警。
+- 新增 `.claude/hooks/count-guard.mjs` PreToolUse hook，Write/Edit 三文档时扫描数量模式。BLOCK 级（exit 2）：组件总数/平均进度/有版本号；WARN 级（exit 0）：X/Y 分数/百分比/已有/已创建。COUNT_GUARD_STRICT=false 降级为全告警。
 
 ### Changed
 
 - 固化模块级 Goal 文档路径为 `module/{module}/goal.md`，禁止 `goal/` 目录和 `goal/1.md` 槽位。
-- **STATUS.md / README.md / ARCHITECTURE.md 三文档全量交叉审计闭合**（19 PR, #385-#413）。详情见 `docs/solutions/three-doc-audit-20260615.md`。
+- **STATUS.md / README.md / ARCHITECTURE.md 三文档全量交叉审计闭合**（21 PRs, #385-#418）。详情见 `docs/solutions/three-doc-audit-20260615.md`。
 
   **审计根因**：agent 凭常识编造计数（18 vs 14 个 Release、67% vs 62% 平均进度、有版本号 1/0/0 vs 2/3/3），而非逐表逐行 grep 统计。
 
@@ -39,7 +39,9 @@
   - 全部 20 模块 CI 已部署（1~11 workflows）
 
   **预防门禁**：
-  - count-guard.mjs（Write/Edit 告警）→ audit-status.py（本地 22 项验证）→ CI gate（PR 阻断）
+  - L1 CountGuard hook（BLOCK 组件总数/平均进度/有版本号，WARN 其余）
+  - L2 audit-status.py（22 项机械化验证）
+  - L3 CI gate（.github/workflows/audit-status.yml，PR 触及三文档时自动运行，FAIL 阻断 merge）
 
 - CLAUDE.md 新增 §数量验证门禁、§三文档交叉同步规则。
 
