@@ -179,23 +179,23 @@
 - [x] trigger determinism test（100 次一致性 + DST golden）
 - [x] resiliencx 集成示例（`examples/resilient_job/main.go`）
 
-### Issue 5：xlibgate CI Gate CLI 实现
+### Issue 5：xlibgate CI Gate CLI 实现 ✅
 
 ```text
 标题：Implement xlibgate as Foundation CI Gate CLI
 仓库：ZoneCNH/xlibgate
 ```text
 
-- [ ] TASK-XLIBGATE-000: 项目骨架
-- [ ] TASK-XLIBGATE-001: CLI 框架
-- [ ] TASK-XLIBGATE-002: check imports
-- [ ] TASK-XLIBGATE-003: check gomod
-- [ ] TASK-XLIBGATE-004: check baseline
-- [ ] TASK-XLIBGATE-005: check release
-- [ ] TASK-XLIBGATE-006: check all + 输出格式
-- [ ] TASK-XLIBGATE-007: 集成测试
-- [ ] TASK-XLIBGATE-008: 文档 + Release DoD
-- [ ] TASK-XLIBGATE-009: 评分修复（Matrix RL-001 + Plan D1 + Tasks D1-D3）
+- [x] TASK-XLIBGATE-000: 项目骨架
+- [x] TASK-XLIBGATE-001: CLI 框架
+- [x] TASK-XLIBGATE-002: check imports
+- [x] TASK-XLIBGATE-003: check gomod
+- [x] TASK-XLIBGATE-004: check baseline
+- [x] TASK-XLIBGATE-005: check release
+- [x] TASK-XLIBGATE-006: check all + 输出格式
+- [x] TASK-XLIBGATE-007: 集成测试
+- [x] TASK-XLIBGATE-008: 文档 + Release DoD
+- [x] TASK-XLIBGATE-009: 评分修复（Matrix RL-001 + Plan D1 + Tasks D1-D3）
 
 ---
 
@@ -344,7 +344,7 @@ PR: #8 (squash merged → main)
 | P1       | 6 模块   | 6（全部完成） | ██████     |
 | P2       | 1        | 1             | █          |
 | P3       | 9        | 7             | ███░       |
-| **总计** | **20**   | **18**        | **█████░** |
+| **总计** | **20**   | **19**        | **█████░** |
 
 ---
 
