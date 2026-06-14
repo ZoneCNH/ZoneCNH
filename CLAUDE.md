@@ -91,7 +91,7 @@
 
 ### 数量验证门禁（2026-06-15 STATUS.md 全量审计，PR #385-#446）
 
-> 基于一次 STATUS.md + README + ARCHITECTURE 三文档交叉审计会话。发现 7+ 处凭空编造的数量（18 vs 14 GitHub Release、67% vs 62% 平均进度、有版本号 1/0/0 vs 2/3/3 等），需 13 个 PR 修复。根因：agent 凭"常识"估算数量而非逐表逐行统计。
+> 基于一次 STATUS.md + README + ARCHITECTURE 三文档交叉审计会话。发现 7+ 处凭空编造的数量（18 vs 14 GitHub Release、67% vs 62% 平均进度、有版本号 1/0/0 vs 2/3/3 等），审计闭合共 52 个 PR（#385-#439）+ 后续 ADR/规则固化 6 个 PR（#440-#446）。根因：agent 凭"常识"估算数量而非逐表逐行统计。
 
 - **任何涉及 STATUS.md / README.md / ARCHITECTURE.md 中数量、百分比、合计、版本计数的变更，必须用 `grep`/`awk`/`sed` 或 `gh api` 实际统计，禁止凭记忆或常识编造。**
 - **统计方法必须可复现**：用 shell one-liner 而非人工点数。示例：
