@@ -1,0 +1,117 @@
+{
+  "schema_version": "blockers/v1",
+  "generated_at": "2026-06-14T15:30:00Z",
+  "source": ".foundationx/blockers.json",
+  "total_blockers": 8,
+  "by_severity": {
+    "critical": 2,
+    "high": 3,
+    "medium": 3
+  },
+  "blockers": [
+    {
+      "id": "BLK-001",
+      "severity": "critical",
+      "module": "natsx",
+      "title": "正式四源 98+ arbiter 归档未完成",
+      "status": "open",
+      "category": "governance",
+      "detail": "natsx README 明确列出 formal four-source arbiter 为剩余 gap；当前仅 claude+rules 双源 force-pass (26 行)，codex/copilot 待补",
+      "evidence": "STATUS.md L307",
+      "action": "完成四源评分 (codex + copilot) → 归档 arbiter verdict"
+    },
+    {
+      "id": "BLK-002",
+      "severity": "critical",
+      "module": "natsx",
+      "title": "生产 TLS gate 未闭合",
+      "status": "open",
+      "category": "security",
+      "detail": "natsx v1.0.0 已发布但 production TLS breadth 待验证；README 明确 production SLO thresholds / TLS gate 为 hardening gap",
+      "evidence": "STATUS.md L129, L259",
+      "action": "补 production TLS profile (good CA / bad CA / mTLS) + SLO thresholds"
+    },
+    {
+      "id": "BLK-003",
+      "severity": "high",
+      "module": "clickhousex",
+      "title": "公开 GitHub release 未发布",
+      "status": "open",
+      "category": "release",
+      "detail": "表格 v1.0.1 / SPEC+TRACEABILITY 100%，但公开 GitHub 页面 no releases published；建议补 release 或降级表格",
+      "evidence": "STATUS.md L36",
+      "action": "发布 v1.0.1 GitHub release + manifest + integration evidence，或表格降级"
+    },
+    {
+      "id": "BLK-004",
+      "severity": "high",
+      "module": "contracts",
+      "title": "仓库身份需重写 (README H1 仍是 xlib-standard)",
+      "status": "resolved",
+      "category": "identity",
+      "detail": "contracts 公开 README 曾是 xlib-standard 模板叙事；已在本仓库 STATUS/ARCHITECTURE/README 中修正为 spec-baseline 身份",
+      "evidence": "STATUS.md L37",
+      "action": "跨仓库: 在 github.com/ZoneCNH/contracts 中重写 README H1 和身份描述"
+    },
+    {
+      "id": "BLK-005",
+      "severity": "high",
+      "module": "transportx",
+      "title": "仓库身份需重写 + production_import_allowed=false",
+      "status": "resolved",
+      "category": "identity",
+      "detail": "transportx 公开 README 曾是 xlib-standard 模板叙事；已在本仓库标注 spec-baseline，production_import_allowed=false",
+      "evidence": "STATUS.md L38",
+      "action": "跨仓库: 在 github.com/ZoneCNH/transportx 中重写 README + 定义最小 Transport interface"
+    },
+    {
+      "id": "BLK-006",
+      "severity": "medium",
+      "module": "postgresx",
+      "title": "单元测试覆盖率仅 52.4% + Docker 集成 skip",
+      "status": "open",
+      "category": "quality",
+      "detail": "postgresx v1.0.0 已发布但单元测试 52.4%；Docker 集成测试 skip 中；v1.0.0 tag evidence ancestry 问题未闭合",
+      "evidence": "STATUS.md L33, R8",
+      "action": "补单元测试 + Docker integration → release-history.md → v1.0.1 evidence"
+    },
+    {
+      "id": "BLK-007",
+      "severity": "medium",
+      "module": "taosx",
+      "title": "SPEC 评分仅 67 (管线最低)",
+      "status": "open",
+      "category": "spec-quality",
+      "detail": "taosx SPEC 67 (缺 WHEN/THEN 等结构)，为 20 模块管线评分最低；tasks 76 同样偏低",
+      "evidence": "STATUS.md L375",
+      "action": "补 SPEC WHEN/THEN 结构 → 四源评分 ≥98 → tasks 更新"
+    },
+    {
+      "id": "BLK-008",
+      "severity": "medium",
+      "module": "ossx",
+      "title": "公开工程资产过薄 (README 仅简略描述, 2 commits)",
+      "status": "open",
+      "category": "evidence",
+      "detail": "ossx v1.0.1 已发布但公开仓库证据不足 (README 只有 ossx 公共基础模块，2 commits)；需补 API 文档、集成测试证据、quickstart",
+      "evidence": "STATUS.md L35",
+      "action": "补 pkg/ossx API doc + integration evidence + quickstart + release manifest"
+    }
+  ],
+  "by_module": {
+    "natsx": ["BLK-001", "BLK-002"],
+    "clickhousex": ["BLK-003"],
+    "contracts": ["BLK-004"],
+    "transportx": ["BLK-005"],
+    "postgresx": ["BLK-006"],
+    "taosx": ["BLK-007"],
+    "ossx": ["BLK-008"]
+  },
+  "resolved_in_repo": {
+    "note": "以下阻塞项已在本仓库 (ZoneCNH/ZoneCNH) 文档层面解决，但源仓库 (github.com/ZoneCNH/<module>) 仍需跨仓库 PR",
+    "items": [
+      "BLK-004: contracts identity → STATUS.md + ARCHITECTURE.md + FOUNDATION-DEPS.yaml 已标注 spec-baseline",
+      "BLK-005: transportx identity → STATUS.md + ARCHITECTURE.md + FOUNDATION-DEPS.yaml 已标注 spec-baseline"
+    ]
+  }
+}

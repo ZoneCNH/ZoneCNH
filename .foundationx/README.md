@@ -7,6 +7,7 @@
 | 文件 | 用途 | 消费者 |
 |------|------|--------|
 | `repo-contract.schema.json` | repo-contract/v1 JSON Schema | xlibgate, CI validators |
+| `blockers.json` | 已知阻塞项清单（按严重度/模块/类别索引） | xlibgate maturity-check, CI |
 | `status/index.json` | 20 模块聚合状态（fleet status） | xlibgate fleet-status, 生成投影 |
 | `status.generated.json` | 生成型状态块（用于 README/ARCHITECTURE/STATUS） | 文档生成器 |
 
