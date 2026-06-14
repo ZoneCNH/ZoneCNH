@@ -40,11 +40,11 @@
       "impl": true,
       "release": true,
       "live": "N/A",
-      "ci": false,
+      "ci": true,
       "adopt": "N/A",
       "soak": "N/A",
       "factory": false,
-      "note": "模块生成器与门禁执行器 (generate/scaffold/spec-lint/boundary/traceability); Draft→Approved 待四源评分 (6 FR, 6 TC)；CI 模板已就绪 (module/xlib-harness/ci-workflow.yaml)"
+      "note": "模块生成器与门禁执行器 (generate/scaffold/spec-lint/boundary/traceability); Draft→Approved 待四源评分 (6 FR, 6 TC)；CI 已部署 (module/xlib-harness/ci-workflow.yaml)"
     },
     "xlib-evidence": {
       "layer": "evidence",
@@ -53,11 +53,11 @@
       "impl": true,
       "release": true,
       "live": "N/A",
-      "ci": false,
+      "ci": true,
       "adopt": "N/A",
       "soak": "N/A",
       "factory": false,
-      "note": "证据收集与发布运行时 (collect-coverage/generate-manifest/validate-manifest/report); Draft→Approved 待四源评分 (5 FR, 5 TC)；CI 模板已就绪 (module/xlib-evidence/ci-workflow.yaml)"
+      "note": "证据收集与发布运行时 (collect-coverage/generate-manifest/validate-manifest/report); Draft→Approved 待四源评分 (5 FR, 5 TC)；CI 已部署 (module/xlib-evidence/ci-workflow.yaml)"
     },
     "xlibgate": {
       "layer": "gate",
@@ -222,11 +222,11 @@
       "impl": true,
       "release": true,
       "live": true,
-      "ci": false,
+      "ci": true,
       "adopt": "N/A",
       "soak": "partial",
       "factory": false,
-      "note": "Aliyun OSS L2 adapter; 真实 Aliyun OSS 集成/race/vet/build/release-check; 100.0% 覆盖; S3/MinIO/Azure/GCS 仅保留扩展位；CI 模板已就绪 (module/ossx/ci-workflow.yaml)"
+      "note": "Aliyun OSS L2 adapter; 真实 Aliyun OSS 集成/race/vet/build/release-check; 100.0% 覆盖; S3/MinIO/Azure/GCS 仅保留扩展位；CI 已部署 (module/ossx/ci-workflow.yaml)"
     },
     "clickhousex": {
       "layer": "L2",
@@ -235,7 +235,7 @@
       "impl": true,
       "release": true,
       "live": "partial",
-      "ci": false,
+      "ci": true,
       "adopt": "N/A",
       "soak": false,
       "factory": false,
@@ -274,11 +274,11 @@
       "impl": true,
       "release": "partial",
       "live": "N/A",
-      "ci": false,
+      "ci": true,
       "adopt": "N/A",
       "soak": "N/A",
       "factory": false,
-      "note": "Order/Position/Trade/Portfolio/ExecutionReport 值对象与枚举; .repo-contract.yaml (all_aligned=false, 无 git tag)；CI 模板已就绪 (module/domainx/ci-workflow.yaml)"
+      "note": "Order/Position/Trade/Portfolio/ExecutionReport 值对象与枚举; .repo-contract.yaml (all_aligned=false, 无 git tag)；CI 已部署 (module/domainx/ci-workflow.yaml)"
     }
   }
 }

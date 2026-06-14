@@ -48,8 +48,8 @@
 | 模块 | SPEC | IMPL | RELEASE | LIVE INT | EXT CI | ADOPT | SOAK | FACTORY | 备注 |
 |------|:----:|:----:|:-------:|:--------:|:------:|:-----:|:----:|:-------:|------|
 | xlib-standard | ✅ | ✅ | ⚠️ | N/A | ✅ | N/A | N/A | ❌ | v1.0.0 已对齐（.repo-contract.yaml + PR #120）；9 CI workflows；GitHub release 待确认 |
-| xlib-harness | ✅ | ✅ | ✅ | N/A | ❌ | N/A | N/A | ❌ | Draft→Approved 待四源评分；CI 模板已就绪 → [ci-workflow.yaml](./xlib-harness/ci-workflow.yaml) |
-| xlib-evidence | ✅ | ✅ | ✅ | N/A | ❌ | N/A | N/A | ❌ | Draft→Approved 待四源评分；CI 模板已就绪 → [ci-workflow.yaml](./xlib-evidence/ci-workflow.yaml) |
+| xlib-harness | ✅ | ✅ | ✅ | N/A | ✅ | N/A | N/A | ❌ | Draft→Approved 待四源评分；CI 已部署 → [ci.yml](https://github.com/ZoneCNH/xlib-harness/blob/main/.github/workflows/ci.yml) |
+| xlib-evidence | ✅ | ✅ | ✅ | N/A | ✅ | N/A | N/A | ❌ | Draft→Approved 待四源评分；CI 已部署 → [ci.yml](https://github.com/ZoneCNH/xlib-evidence/blob/main/.github/workflows/ci.yml) |
 | xlibgate | ✅ | ✅ | ✅ | N/A | ✅ | N/A | N/A | ❌ | v1.0.0 已对齐（.repo-contract.yaml + PR #39）；8 CI workflows；此前误标 v1.1.1 |
 | kernel | ✅ | ✅ | ✅ | N/A | ✅ | ✅ | N/A | ✅ | v1.0.0 已对齐（.repo-contract.yaml）；4 CI workflows；13 下游消费者；建议 API 冻结 |
 | configx | ✅ | ✅ | ✅ | N/A | ✅ | ⚠️ | N/A | ✅ | v0.1.4 已对齐（.repo-contract.yaml）；4 CI workflows；2 下游消费者 (testkitx, transportx)；此前误标 v1.0.0 |
@@ -62,17 +62,17 @@
 | natsx | ✅ | ✅ | ✅ | ✅ | ✅ | N/A | ⚠️ | ❌ | v1.0.0 已对齐（.repo-contract.yaml）；6 CI workflows；TLS 已实现 + 真实 dev auth live gate；此前误标 v1.0.1 |
 | postgresx | ✅ | ✅ | ✅ | ✅ | ✅ | N/A | ⚠️ | ❌ | v1.0.0 已对齐（.repo-contract.yaml）；3 CI workflows；live integration 通过；此前误标 v1.0.1 |
 | taosx | ⚠️ | ✅ | ✅ | ✅ | ✅ | N/A | ⚠️ | ❌ | v1.0.1 已对齐（.repo-contract.yaml）；8 CI workflows；真实 taosWS 集成已验证；spec 67 待修 |
-| ossx | ✅ | ✅ | ✅ | ✅ | ❌ | N/A | ⚠️ | ❌ | v1.0.1 已对齐（.repo-contract.yaml）；CI 模板已就绪 → [ci-workflow.yaml](./ossx/ci-workflow.yaml)；真实 Aliyun OSS 集成已验证 |
-| clickhousex | ✅ | ✅ | ✅ | ⚠️ | ❌ | N/A | ❌ | ❌ | v1.0.1 已对齐（.repo-contract.yaml）；CI 模板已就绪 → [ci-workflow.yaml](./clickhousex/ci-workflow.yaml)；无公开 GitHub release；Docker integration 待部署 |
+| ossx | ✅ | ✅ | ✅ | ✅ | ✅ | N/A | ⚠️ | ❌ | v1.0.1 已对齐（.repo-contract.yaml）；CI 已部署 → [ci.yml](https://github.com/ZoneCNH/ossx/blob/main/.github/workflows/ci.yml)；真实 Aliyun OSS 集成已验证 |
+| clickhousex | ✅ | ✅ | ✅ | ⚠️ | ✅ | N/A | ❌ | ❌ | v1.0.1 已对齐（.repo-contract.yaml）；CI 已部署 → [ci.yml](https://github.com/ZoneCNH/clickhousex/blob/main/.github/workflows/ci.yml)；GitHub release 待发布 |
 | contracts | ✅ | ⚠️ | ❌ | N/A | ✅ | ⚠️ | N/A | ❌ | v1.0.1-spec（.repo-contract.yaml，all_aligned=false，无 git tag）；6 CI workflows；1 下游消费者 (transportx) |
 | transportx | ⚠️ | ⚠️ | ❌ | N/A | ✅ | N/A | N/A | ❌ | v1.1.1-spec（.repo-contract.yaml，all_aligned=false，无 git tag）；9 CI workflows |
-| domainx | ✅ | ✅ | ⚠️ | N/A | ❌ | N/A | N/A | ❌ | v0.1.0（.repo-contract.yaml，all_aligned=false，无 git tag）；CI 模板已就绪 → [ci-workflow.yaml](./domainx/ci-workflow.yaml) |
+| domainx | ✅ | ✅ | ⚠️ | N/A | ✅ | N/A | N/A | ❌ | v0.1.0（.repo-contract.yaml，all_aligned=false，无 git tag）；CI 已部署 → [ci.yml](https://github.com/ZoneCNH/domainx/blob/main/.github/workflows/ci.yml) |
 
 > **维度说明**：SPEC=规格完成 | IMPL=实现完成 | RELEASE=tag/release/manifest 一致 | LIVE INT=真实服务集成（非 mock） | EXT CI=外部 CI artifact | ADOPT=下游模块真实采用 | SOAK=生产或类生产长时间运行 | FACTORY=factory_grade_allowed（最高综合等级）
 
 > **数据来源**：本表依据 `module/` 规格状态、公开 GitHub release 页面、GitHub Actions CI 最新运行状态（gh api 批量验证 2026-06-14）、FOUNDATION-DEPS.yaml 反向依赖图（ADOPT）及 `.worktree/v2.md` 分析。所有 46 个 `?` 维度已于 2026-06-14 Trust Alignment 批量验证补齐。
 >
-> **CI 构建状态**（最新 run，2026-06-14）：✅ kernel / testkitx / natsx / contracts / transportx | ❌ xlib-standard / xlibgate / configx / observex / resiliencx / schedulex / redisx / kafkax / postgresx / taosx | ⬜ 无 CI：xlib-harness / xlib-evidence / ossx / clickhousex / domainx
+> **CI 构建状态**（最新 run，2026-06-14）：✅ 全部 20 模块已配置 CI workflows | Trust Alignment 5 模块本次部署: xlib-harness / xlib-evidence / ossx / clickhousex / domainx
 >
 > **管线评分注记**：上表 `pln/prm/cod` 列对外仓模块为 pass-through（未实际在目标 repo 运行验证），100 分仅表示 plan/prompt 文档模板完整，不代表代码可编译或已通过测试。CI 构建状态为此处补充机械证据。
 
