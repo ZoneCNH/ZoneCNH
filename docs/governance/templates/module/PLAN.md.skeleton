@@ -1,0 +1,90 @@
+# {MODULE} 实现计划
+
+> 来源：[SPEC.md](./SPEC.md) {VERSION}
+> 生成日期：{DATE}
+
+---
+
+## 1. 依赖 DAG
+
+```text
+{ROOT_TASK}
+│
+├── {TASK_A} ──────────┐
+├── {TASK_B}           │
+└── {TASK_C}           │
+    │                   │
+    └── {TASK_D} ───────┘
+```
+
+---
+
+## 2. 实现顺序
+
+### Phase 0: {PHASE_0_NAME}（{N} tasks）
+
+| Task | 交付物 | 依赖 | Effort |
+|------|--------|------|--------|
+| {TASK_ID} | {DELIVERABLES} | — | {HOURS}h |
+
+**里程碑**：{MILESTONE}
+
+### Phase 1: {PHASE_1_NAME}（{N} tasks，可并行）
+
+| Task | 交付物 | 依赖 | Effort |
+|------|--------|------|--------|
+| {TASK_ID} | {DELIVERABLES} | {DEPS} | {HOURS}h |
+
+**并行度**：{N}
+
+---
+
+## 3. 关键路径
+
+```text
+{TASK_A} → {TASK_B} → {TASK_C}
+```
+
+**关键路径工期**：{HOURS}h
+
+---
+
+## 4. 并行策略
+
+| 策略 | 总工时 |
+|------|--------|
+| 全串行 | {SERIAL}h |
+| 最大并行 | {PARALLEL}h |
+
+---
+
+## 5. 文件冲突分析
+
+| 文件 | 创建 Task | 冲突风险 |
+|------|-----------|----------|
+| {FILE} | {TASK} | 无 |
+
+---
+
+## 6. 测试策略
+
+| 测试类型 | 覆盖 Task | 工具 |
+|----------|-----------|------|
+| 单元测试 | {TASKS} | `go test -race` |
+
+---
+
+## 7. 风险与缓解
+
+| 风险 | 概率 | 影响 | 缓解 | Task |
+|------|------|------|------|------|
+| {RISK} | {PROB} | {IMPACT} | {MITIGATION} | {TASK} |
+
+---
+
+## 8. 总工时估算
+
+| Phase | Tasks | 串行 Effort | 并行 Effort |
+|-------|-------|-------------|-------------|
+| Phase 0 | {N} | {HOURS}h | {HOURS}h |
+| **总计** | **{TOTAL}** | **{SERIAL}h** | **{PARALLEL}h** |
