@@ -17,8 +17,8 @@
 | 组件 | 版本 | 进度 | 仓库大小 | 说明 |
 | ---- | ---- | ---- | -------- | ---- |
 | [xlib-standard](https://github.com/ZoneCNH/xlib-standard) | v1.0.0 | ████ 100% | spec=100 mat=80 tsk=98 pln=100 prm=100 cod=100 | 标准事实源 / Go Reference Template；Generator/Harness/Evidence 已拆分至 xlib-harness / xlib-evidence |
-| [xlib-harness](https://github.com/ZoneCNH/xlib-harness) | v1.0.0 | ████ 100% | spec=83 mat=100 tsk=0 pln=92 prm=100 cod=100 | 模块生成器与门禁执行器：generate/scaffold、spec-lint、boundary-check、traceability-gate（6 FR，6 TC） |
-| [xlib-evidence](https://github.com/ZoneCNH/xlib-evidence) | v1.0.0 | ████ 100% | spec=83 mat=100 tsk=0 pln=100 prm=100 cod=100 | 证据收集与发布运行时：collect-coverage、generate-manifest、validate-manifest、report（5 FR，5 TC） |
+| [xlib-harness](https://github.com/ZoneCNH/xlib-harness) | v1.0.0 | ████ 100% | spec=83 mat=100 tsk=97 pln=92 prm=100 cod=100 | 模块生成器与门禁执行器：generate/scaffold、spec-lint、boundary-check、traceability-gate（6 FR，6 TC） |
+| [xlib-evidence](https://github.com/ZoneCNH/xlib-evidence) | v1.0.0 | ████ 100% | spec=83 mat=100 tsk=97 pln=100 prm=100 cod=100 | 证据收集与发布运行时：collect-coverage、generate-manifest、validate-manifest、report（5 FR，5 TC） |
 | [xlibgate](https://github.com/ZoneCNH/xlibgate) | v1.0.2 | ███░ 90% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | import 边界/go.mod/Go baseline/release/L2 门禁（14 files, +1053, xlibgate 测试通过） |
 | [kernel](https://github.com/ZoneCNH/kernel) | v1.0.0 | █████ 100% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | L0 原语 / 12 子包 / stdlib-only / v1.0.0 已发布 |
 | [configx](https://github.com/ZoneCNH/configx) | v1.0.0 | █████ 100% | spec=100 mat=100 tsk=88 pln=100 prm=100 cod=100 | 配置管理；v1.0.0 已发布，97.1% 覆盖率，13 FR 全部实现 |
@@ -27,14 +27,14 @@
 | [resiliencx](https://github.com/ZoneCNH/resiliencx) | v1.0.1 | █████ 100% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | 弹性策略（timeout / retry / circuit / bulkhead / rate / fallback） |
 | [schedulex](https://github.com/ZoneCNH/schedulex) | [v1.0.0](https://github.com/ZoneCNH/schedulex/releases/tag/v1.0.0) | █████ 100% | spec=98 mat=100 tsk=100 pln=100 prm=100 cod=100 | cron/interval/delay 调度、Overlap/Misfire 策略、Locker 扩展点、Clock 注入、8 示例（98.2% 覆盖，score 10.0；race/vet/lint/govulncheck 与下游 smoke 通过） |
 | [redisx](https://github.com/ZoneCNH/redisx) | v1.0.0 | █████ 100% | spec=98 mat=100 tsk=100 pln=100 prm=100 cod=100 | Redis L2 adapter：KV/TTL/Hash/List/Pipeline/Cache-aside/Lock/RateLimit/Pool/Persistence restart recovery；release_ready=true，score 100；直接生产依赖限定为 kernel + Redis 客户端库；docker-compose/devcontainer 暴露非敏感 REDISX_REDIS_ADDR/URL/DB 端点变量；未暴露/打印/记录 secret；使用 Docker-backed Redis 验证。 |
-| [kafkax](https://github.com/ZoneCNH/kafkax) | [v1.0.0](https://github.com/ZoneCNH/kafkax/releases/tag/v1.0.0) | █████ 100% | spec=100 mat=90 tsk=76 pln=100 prm=100 cod=100 | Kafka L2 adapter 已发布；driver-neutral API + 可选 kafka-go 生产驱动；真实 broker gates；merge `0545db2` |
+| [kafkax](https://github.com/ZoneCNH/kafkax) | [v1.0.0](https://github.com/ZoneCNH/kafkax/releases/tag/v1.0.0) | █████ 100% | spec=100 mat=100 tsk=76 pln=100 prm=100 cod=100 | Kafka L2 adapter 已发布；driver-neutral API + 可选 kafka-go 生产驱动；真实 broker gates；merge `0545db2` |
 | [natsx](https://github.com/ZoneCNH/natsx) | v1.0.1 | █████ 100% | spec=100 mat=100 tsk=100 pln=82 prm=0 cod=100 | NATS L2 adapter：Core NATS / JetStream / Drain / reconnect / degraded health / canonical FOUNDATIONX_NATS_* 配置；TLS 已实现；matrix 26 行全覆盖；claude+rules 双源 100/100；codex/copilot 待补齐 |
-| [postgresx](https://github.com/ZoneCNH/postgresx) | v1.0.1 | ████░ 90% | spec=100 mat=90 tsk=100 pln=100 prm=100 cod=100 | PostgreSQL — 关系型存储、事务、迁移（v1.0 发布范围 100/100；单元测试 52.4% + Docker 集成测试 skip 状态；全局成熟度待生产 soak 后提升） |
-| [taosx](https://github.com/ZoneCNH/taosx) | v1.0.1 | █████ 100% | spec=52 mat=80 tsk=76 pln=100 prm=100 cod=100 | TDengine L2 adapter contract；pkg/taosx 公共 API，默认驱动显式不可用，真实 taosWS 集成已验证 |
+| [postgresx](https://github.com/ZoneCNH/postgresx) | v1.0.1 | ████░ 90% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | PostgreSQL — 关系型存储、事务、迁移（v1.0 发布范围 100/100；单元测试 52.4% + Docker 集成测试 skip 状态；全局成熟度待生产 soak 后提升） |
+| [taosx](https://github.com/ZoneCNH/taosx) | v1.0.1 | █████ 100% | spec=67 mat=100 tsk=76 pln=100 prm=100 cod=100 | TDengine L2 adapter contract；pkg/taosx 公共 API，默认驱动显式不可用，真实 taosWS 集成已验证 |
 | [ossx](https://github.com/ZoneCNH/ossx) | v1.0.1 | █████ 100% | spec=100 mat=100 tsk=100 pln=92 prm=100 cod=100 | Aliyun OSS 对象存储 L2 adapter；race、vet、build、release-check 已通过；S3/MinIO/Azure/GCS Provider 仅保留扩展位 |
 | [clickhousex](https://github.com/ZoneCNH/clickhousex) | v1.0.1 | █████ 100% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | ClickHouse — OLAP 查询、批量写入（TRACEABILITY 覆盖率 100%） |
-| [contracts](https://github.com/ZoneCNH/contracts) | v1.0.1-spec | █████ 100% | spec=100 mat=90 tsk=100 pln=100 prm=100 cod=100 | 跨域稳定端口/事件/DTO 契约；TRACEABILITY §1-§7 完整；goal.md 对齐 CONSTITUTION P7；SPEC/Matrix/Tasks 全面修复 |
-| [transportx](https://github.com/ZoneCNH/transportx) | v1.1.1-spec | █████ 100% | spec=84 mat=100 tsk=0 pln=100 prm=100 cod=100 | 应用通信底座规格基线；25 FR, 18 BR, 12 NFR, 25 AC, 25 TC, 12 CI gates — SPEC/Matrix/Tasks 三阶段满分 |
+| [contracts](https://github.com/ZoneCNH/contracts) | v1.0.1-spec | █████ 100% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | 跨域稳定端口/事件/DTO 契约；TRACEABILITY §1-§7 完整；goal.md 对齐 CONSTITUTION P7；SPEC/Matrix/Tasks 全面修复 |
+| [transportx](https://github.com/ZoneCNH/transportx) | v1.1.1-spec | █████ 100% | spec=84 mat=100 tsk=100 pln=100 prm=100 cod=100 | 应用通信底座规格基线；25 FR, 18 BR, 12 NFR, 25 AC, 25 TC, 12 CI gates — SPEC/Matrix/Tasks 三阶段满分 |
 | [domainx](https://github.com/ZoneCNH/domainx) | v0.1.0 | █████ 100% | spec=100 mat=100 tsk=95 pln=100 prm=100 cod=100 |
 
 ### L2.5 · 领域共享层
@@ -315,48 +315,23 @@
 |------|:----:|:------:|:-----:|:----:|:------:|:----:|
 | clickhousex | 100 | 100 | 100 | 100 | 100 | 100 |
 | configx | 100 | 100 | 88 | 100 | 100 | 100 |
-| contracts | 100 | 90 | 100 | 100 | 100 | 100 |
+| contracts | 100 | 100 | 100 | 100 | 100 | 100 |
 | domainx | 100 | 100 | 95 | 100 | 100 | 100 |
-| kafkax | 100 | 90 | 76 | 100 | 100 | 100 |
+| kafkax | 100 | 100 | 76 | 100 | 100 | 100 |
 | kernel | 100 | 100 | 100 | 100 | 100 | 100 |
 | natsx | 100 | 100 | 100 | 82 | 0 | 100 |
 | observex | 100 | 100 | 100 | 100 | 100 | 100 |
 | ossx | 100 | 100 | 100 | 92 | 100 | 100 |
-| postgresx | 100 | 90 | 100 | 100 | 100 | 100 |
+| postgresx | 100 | 100 | 100 | 100 | 100 | 100 |
 | redisx | 98 | 100 | 100 | 100 | 100 | 100 |
 | resiliencx | 100 | 100 | 100 | 100 | 100 | 100 |
 | schedulex | 98 | 100 | 100 | 100 | 100 | 100 |
-| taosx | 52 | 80 | 76 | 100 | 100 | 100 |
+| taosx | 67 | 100 | 76 | 100 | 100 | 100 |
 | testkitx | 100 | 100 | 100 | 100 | 100 | 100 |
-| transportx | 84 | 100 | 0 | 100 | 100 | 100 |
-| xlib-evidence | 83 | 100 | 0 | 100 | 100 | 100 |
-| xlib-harness | 83 | 100 | 0 | 92 | 100 | 100 |
+| transportx | 84 | 100 | 100 | 100 | 100 | 100 |
+| xlib-evidence | 83 | 100 | 97 | 100 | 100 | 100 |
+| xlib-harness | 83 | 100 | 97 | 92 | 100 | 100 |
 | xlib-standard | 100 | 80 | 98 | 100 | 100 | 100 |
 | xlibgate | 100 | 100 | 100 | 100 | 100 | 100 |
 
-> 8/20 模块全部阶段 ≥98。prompt/code 外仓模块为 pass-through (100)。
-
----
-:|:------:|:-----:|:----:|:------:|:----:|
-| clickhousex | 100 | 100 | 100 | 100 | 100 | 100 |
-| configx | 100 | 100 | 88 | 100 | 100 | 100 |
-| contracts | 100 | 90 | 100 | 100 | 100 | 100 |
-| domainx | 100 | 100 | 95 | 100 | 100 | 100 |
-| kafkax | 100 | 90 | 76 | 100 | 100 | 100 |
-| kernel | 100 | 100 | 100 | 100 | 100 | 100 |
-| natsx | 100 | 100 | 100 | 82 | 0 | 100 |
-| observex | 100 | 100 | 100 | 100 | 100 | 100 |
-| ossx | 100 | 100 | 100 | 92 | 100 | 100 |
-| postgresx | 100 | 90 | 100 | 100 | 100 | 100 |
-| redisx | 98 | 100 | 100 | 100 | 100 | 100 |
-| resiliencx | 100 | 100 | 100 | 100 | 100 | 100 |
-| schedulex | 98 | 100 | 100 | 100 | 100 | 100 |
-| taosx | 52 | 80 | 76 | 100 | 100 | 100 |
-| testkitx | 100 | 100 | 100 | 100 | 100 | 100 |
-| transportx | 84 | 100 | 0 | 100 | 100 | 100 |
-| xlib-evidence | 83 | 100 | 0 | 100 | 100 | 100 |
-| xlib-harness | 83 | 100 | 0 | 92 | 100 | 100 |
-| xlib-standard | 100 | 80 | 98 | 100 | 100 | 100 |
-| xlibgate | 100 | 100 | 100 | 100 | 100 | 100 |
-
-> 8/20 模块全部阶段 ≥98。prompt/code 外仓模块为 pass-through (100)。
+> 10/20 模块全部阶段 ≥98。prompt/code 外仓模块为 pass-through (100)。xlib-standard 为快照模块（5 列格式除外）。

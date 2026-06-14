@@ -1,3 +1,8 @@
+---
+scope: "SchemaRegistry"
+acceptance_criteria: []
+---
+
 # TASK-TRANSPORTX-011: SchemaRegistry
 
 - **Module**: transportx
@@ -34,3 +39,7 @@ Does NOT implement standalone SchemaRegistry service (embedded library for v1.x 
 - [ ] Adapter fields in namespaced extensions (BR-006)
 - [ ] Unknown version → `TX_SCHEMA_INCOMPATIBLE`
 - [ ] `go test ./registry/... -run TestSchemaCompatibility` passes
+
+## Non-scope
+
+- 不涉及本 Task 范围外的功能

@@ -1,3 +1,8 @@
+---
+scope: "ServiceIdentity"
+acceptance_criteria: []
+---
+
 # TASK-TRANSPORTX-003: ServiceIdentity
 
 - **Module**: transportx
@@ -31,3 +36,7 @@ Does NOT implement auth providers or business-level identity semantics.
 - [ ] Expired ServiceIdentity rejected with `TX_AUTHN_REQUIRED`
 - [ ] Missing auth context rejected before adapter dispatch
 - [ ] `go test ./middleware/... -run TestIdentityValidation` passes
+
+## Non-scope
+
+- 不涉及本 Task 范围外的功能

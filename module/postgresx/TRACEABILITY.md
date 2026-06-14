@@ -71,3 +71,15 @@ Source: [SPEC.md](./SPEC.md), [goal.md](./goal.md), `/home/postgresx`
 | NFR-009 | lint 检查通过 | 零错误 | golangci-lint | TASK-PG-001 | Done |
 | NFR-010 | Secret 扫描通过 | 零命中 | gitleaks | TASK-PG-001 | Done |
 
+
+## Acceptance Criteria Linkage
+
+| Acceptance Criterion | Requirement | Test Case | Current Evidence |
+| -------------------- | ----------- | --------- | ---------------- |
+| AC-001 | FR-001 | TC-001 | Covered by TC-001 test evidence |
+| AC-002 | FR-002 | TC-002 | Covered by TC-002 test evidence |
+| AC-003 | FR-003 | TC-003 | Covered by TC-003 test evidence |
+| AC-004 | FR-004 | TC-004 | Covered by TC-004 test evidence |
+| AC-005 | FR-005 | TC-005 | Covered by TC-005 test evidence |
+| AC-006 | FR-006 | TC-006 | Covered by TC-006 test evidence |
+| AC-007 | FR-007 | TC-007 | Covered by TC-007 test evidence |

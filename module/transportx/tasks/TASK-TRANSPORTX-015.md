@@ -1,3 +1,8 @@
+---
+scope: "Retry + Dead Letter"
+acceptance_criteria: []
+---
+
 # TASK-TRANSPORTX-015: Retry + Dead Letter
 
 - **Module**: transportx
@@ -33,3 +38,7 @@ Does NOT implement broker clients, storage drivers, business event semantics, or
 - [ ] DLQ record missing trace context → `TX_DLQ_INCOMPLETE`
 - [ ] DLQ runbook: view, replay, skip, mark resolved
 - [ ] `go test ./middleware/... -run TestDLQWithTrace` passes
+
+## Non-scope
+
+- 不涉及本 Task 范围外的功能

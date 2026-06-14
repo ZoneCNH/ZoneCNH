@@ -1,3 +1,8 @@
+---
+scope: "Data Classification + Redaction"
+acceptance_criteria: []
+---
+
 # TASK-TRANSPORTX-022: Data Classification + Redaction
 
 - **Module**: transportx
@@ -34,3 +39,7 @@ Does NOT implement broker clients, storage drivers, business event semantics, or
 - [ ] SECRET data: redacted; absent from audit, receipt, all telemetry
 - [ ] Redaction failure → `TX_REDACTION_FAILED`, fail closed
 - [ ] `go test ./middleware/... -run TestDataClassRedaction` passes
+
+## Non-scope
+
+- 不涉及本 Task 范围外的功能

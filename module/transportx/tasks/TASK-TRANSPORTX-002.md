@@ -1,3 +1,8 @@
+---
+scope: "Endpoint Model + Registry"
+acceptance_criteria: []
+---
+
 # TASK-TRANSPORTX-002: Endpoint Model + Registry
 
 - **Module**: transportx
@@ -33,3 +38,7 @@ Does NOT implement broker clients, HTTP/RPC servers, or domain-specific endpoint
 - [ ] Endpoint.Resolve returns correct Endpoint by name
 - [ ] Endpoint.Deprecate marks endpoint status as deprecated
 - [ ] `go test ./endpoint/... -run TestRegisterInvalid` passes
+
+## Non-scope
+
+- 不涉及本 Task 范围外的功能

@@ -1,3 +1,8 @@
+---
+scope: "Authorization Middleware"
+acceptance_criteria: []
+---
+
 # TASK-TRANSPORTX-016: Authorization Middleware
 
 - **Module**: transportx
@@ -32,3 +37,7 @@ Does NOT implement broker clients, storage drivers, business event semantics, or
 - [ ] Error response contains no payload bytes or endpoint secrets
 - [ ] Audit event emitted on denial
 - [ ] `go test ./middleware/... -run TestAuthzDenialNoLeak` passes
+
+## Non-scope
+
+- 不涉及本 Task 范围外的功能

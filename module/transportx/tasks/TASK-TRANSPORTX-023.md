@@ -1,3 +1,8 @@
+---
+scope: "Schema Compatibility"
+acceptance_criteria: []
+---
+
 # TASK-TRANSPORTX-023: Schema Compatibility
 
 - **Module**: transportx
@@ -34,3 +39,7 @@ Does NOT implement broker clients, storage drivers, business event semantics, or
 - [ ] Rollback: consumers pin previous version, adapters support both versions
 - [ ] `go test ./registry/... -run TestSchemaBreakingChange` passes
 - [ ] `go test ./registry/... -run TestSchemaCompatibility` passes
+
+## Non-scope
+
+- 不涉及本 Task 范围外的功能

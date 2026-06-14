@@ -1,3 +1,8 @@
+---
+scope: "Control Plane"
+acceptance_criteria: []
+---
+
 # TASK-TRANSPORTX-013: Control Plane
 
 - **Module**: transportx
@@ -36,3 +41,7 @@ Does NOT implement durable audit store backend (deferred per SPEC OQ-2).
 - [ ] Snapshot captures current control state
 - [ ] Audit event emitted for every command (BR-003)
 - [ ] `go test ./control/... -run TestCommandAudit` passes
+
+## Non-scope
+
+- 不涉及本 Task 范围外的功能

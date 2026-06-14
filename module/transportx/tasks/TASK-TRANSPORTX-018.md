@@ -1,3 +1,8 @@
+---
+scope: "Idempotency"
+acceptance_criteria: []
+---
+
 # TASK-TRANSPORTX-018: Idempotency
 
 - **Module**: transportx
@@ -30,3 +35,7 @@ Does NOT implement broker clients, storage drivers, business event semantics, or
 - [ ] Same idempotency_key + different digest → `TX_IDEMPOTENCY_CONFLICT`
 - [ ] Envelope id and key stable across retries
 - [ ] `go test ./middleware/... -run TestIdempotencyConflict` passes
+
+## Non-scope
+
+- 不涉及本 Task 范围外的功能

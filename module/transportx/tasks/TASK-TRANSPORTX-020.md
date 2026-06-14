@@ -1,3 +1,8 @@
+---
+scope: "Outbox/Inbox SPI"
+acceptance_criteria: []
+---
+
 # TASK-TRANSPORTX-020: Outbox/Inbox SPI
 
 - **Module**: transportx
@@ -33,3 +38,7 @@ Does NOT implement broker clients, storage drivers, business event semantics, or
 - [ ] Inbox.Seen returns true for processed message_id
 - [ ] Inbox.MarkProcessed records message as processed
 - [ ] `go test ./conformance/... -run TestOutboxInboxCycle` passes
+
+## Non-scope
+
+- 不涉及本 Task 范围外的功能

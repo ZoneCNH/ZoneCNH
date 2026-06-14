@@ -1,3 +1,8 @@
+---
+scope: "Execution Modes"
+acceptance_criteria: []
+---
+
 # TASK-TRANSPORTX-019: Execution Modes
 
 - **Module**: transportx
@@ -33,3 +38,7 @@ Does NOT implement broker clients, storage drivers, business event semantics, or
 - [ ] DRY_RUN: external side effect → `TX_MODE_VIOLATION`
 - [ ] Mode transition emits audit event
 - [ ] `go test ./runtime/... -run TestExecutionModeGates` passes
+
+## Non-scope
+
+- 不涉及本 Task 范围外的功能

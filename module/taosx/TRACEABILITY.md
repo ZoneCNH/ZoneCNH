@@ -38,3 +38,18 @@ Source: `module/taosx/SPEC.md`, `/home/taosx/pkg/taosx`
 - `MaxRetries` 仍是配置契约字段，核心 client 不自动重试；未来如实现 retry，必须新增需求、测试和依赖边界说明。
 - 连接池策略、STMT 写入、性能压测和业务级时序模型仍属后续版本范围。
 - 真实 TDengine 集成测试依赖本地 dev 环境，不进入默认 `go test ./...`；发布前必须显式运行 `integration` tag。
+
+## Acceptance Criteria Linkage
+
+| Acceptance Criterion | Requirement | Test Case | Current Evidence |
+| -------------------- | ----------- | --------- | ---------------- |
+| AC-001 | FR-001 | TC-001 | Covered by TC-001 test evidence |
+| AC-002 | FR-002 | TC-002 | Covered by TC-002 test evidence |
+| AC-003 | FR-003 | TC-003 | Covered by TC-003 test evidence |
+| AC-004 | FR-004 | TC-004 | Covered by TC-004 test evidence |
+| AC-005 | FR-005 | TC-005 | Covered by TC-005 test evidence |
+| AC-006 | FR-006 | TC-006 | Covered by TC-006 test evidence |
+| AC-007 | FR-007 | TC-007 | Covered by TC-007 test evidence |
+| AC-008 | FR-008 | TC-008 | Covered by TC-008 test evidence |
+| AC-009 | FR-009 | TC-009 | Covered by TC-009 test evidence |
+| AC-010 | FR-010 | TC-010 | Covered by TC-010 test evidence |

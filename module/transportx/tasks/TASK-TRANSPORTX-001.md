@@ -1,3 +1,8 @@
+---
+scope: "Envelope Schema + Payload Limits"
+acceptance_criteria: []
+---
+
 # TASK-TRANSPORTX-001: Envelope Schema + Payload Limits
 
 - **Module**: transportx
@@ -37,3 +42,7 @@ Implement Envelope struct with required fields (id, type, schemaVersion, source,
 - [ ] Header bytes exceed `tx.header.max_bytes` → `TX_HEADER_LIMIT_EXCEEDED`
 - [ ] `go test ./envelope/... -run TestValidateRequired` passes
 - [ ] `go test ./envelope/... -run TestLimits` passes
+
+## Non-scope
+
+- 不涉及本 Task 范围外的功能
