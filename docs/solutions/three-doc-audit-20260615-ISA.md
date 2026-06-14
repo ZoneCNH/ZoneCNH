@@ -60,16 +60,16 @@ STATUS.md / README.md / ARCHITECTURE.md 三文档之间存在系统性数量漂�
 
 ## 8. 验收标准（ISC）
 
-- [x] ISC-1 domainx 三文件统一归基座：`grep -n domainx STATUS.md | grep 'github.com'` 在基座组件表中（非 L2.5 表）。三文档均如此。
-- [x] ISC-2 仪表盘三恒等式自洽：55+1+22+2=80, 37+43=80, 58+22=80。audit-status.py check 2 全 PASS。
-- [x] ISC-3 ARCHITECTURE 状态表 12 处版本/进度与 STATUS.md 组件表对齐。逐字段对比：xlib-standard v- → v1.0.0, testkitx v0.4.0→v1.0.0, redisx v1.0.0→v1.0.1, etc.
-- [x] ISC-4 三文档 78 unique repos 全部返回 HTTP 200。`audit-status.py --network` 逐一验证。
-- [x] ISC-5 同步检查表 README/ARCH/STATUS 三列与各文档 `grep -oP github.com... | sort -u | wc -l` 一致。决策域 6/6/6, 分析域 8/8/8, L2.5 4/4/4。
-- [x] ISC-6 strategies 全部引用已移除：`grep -rn strategies STATUS.md README.md ARCHITECTURE.md | grep -v strategyx` 返回空。
-- [x] ISC-7 GitHub Release 14/20、git tag 18/20：对 20 个基座模块逐一运行 `gh release view -R ZoneCNH/$repo` 和 `gh api repos/ZoneCNH/$repo/git/refs/tags`，与 STATUS.md 版本列逐行对比，全部一致。
-- [x] ISC-8 CountGuard hook + audit-status.py + CI gate 三层预防全部存在且可运行：`ls .claude/hooks/count-guard.mjs scripts/audit-status.py .github/workflows/audit-status.yml` 均存在；`node .claude/hooks/count-guard.mjs` 正确处理 block/warn/pass-through 三类输入。
-- [x] ISC-9 `python3 scripts/audit-status.py` 22/22 PASS（含 --network 标志时 22/22，纯本地 21/21）。
-- [x] ISC-10 域统计有版本号合计 37 = 18(base) + 4(L2.5) + 5(Provider) + 2(analysis) + 3(decision) + 3(execution) + 1(x.go) + 1(observex)。每个分项通过 `awk -F'|'` 从对应组件表逐行提取非空非 `-` 版本列计数验证。
+- [x] ISC-1 domainx 三文件统一归基座
+- [x] ISC-2 仪表盘三恒等式自洽：55+1+22+2=80, 37+43=80, 58+22=80
+- [x] ISC-3 ARCHITECTURE 状态表 12 处版本/进度与 STATUS.md 组件表对齐
+- [x] ISC-4 三文档 78 unique repos 全部返回 HTTP 200
+- [x] ISC-5 同步检查表与各文档 grep 计数一致
+- [x] ISC-6 strategies 全部引用已移除
+- [x] ISC-7 GitHub Release 14/20、git tag 18/20，与 STATUS.md 版本列一致
+- [x] ISC-8 CountGuard hook + audit-status.py + CI gate 三层预防部署且可运行
+- [x] ISC-9 `python3 scripts/audit-status.py` 22/22 PASS
+- [x] ISC-10 域统计有版本号合计 37，与分项和一致
 
 ## 9. 测试策略
 
@@ -143,13 +143,4 @@ STATUS.md / README.md / ARCHITECTURE.md 三文档之间存在系统性数量漂�
 
 ## 13. 最终验证
 
-- [x] ISC 1 通过（证据：`grep domainx STATUS.md \| grep github.com` → 行 39 在基座表内；README L88 在基座契约段；ARCH L24,L130 归基座）
-- [x] ISC 2 通过（证据：`python3 scripts/audit-status.py` check 2 → 4/4 PASS）
-- [x] ISC 3 通过（证据：`git diff 7cef153..HEAD -- ARCHITECTURE.md \| grep '^-.*\|^+.*'` → 12 模块逐项对齐）
-- [x] ISC 4 通过（证据：`python3 scripts/audit-status.py --network` check 7 → "No 404 links (78 repos)"）
-- [x] ISC 5 通过（证据：`python3 scripts/audit-status.py` check 3 → 3/3 PASS；同步表 77/77/78 与 grep 计数一致）
-- [x] ISC 6 通过（证据：`grep -rn strategies STATUS.md README.md ARCHITECTURE.md \| grep -v strategyx` → 空输出）
-- [x] ISC 7 通过（证据：`for r in ...; do gh api repos/ZoneCNH/$r/releases \| jq length; done` → 14 有 Release，18 有 tag，与 STATUS.md 版本列一致）
-- [x] ISC 8 通过（证据：文件存在 + `node .claude/hooks/count-guard.mjs < test_block.json` → exit 2; `python3 scripts/audit-status.py` → exit 0; CI yml 存在）
-- [x] ISC 9 通过（证据：`python3 scripts/audit-status.py` → "22 passed / 0 failed"）
-- [x] ISC 10 通过（证据：`awk -F'\|'` 逐域计数 → 18+4+5+2+3+3+1+1 = 37；域统计表合计行 = 37）
+见 `docs/evidence/three-doc-audit-20260615-evidence.md`。
