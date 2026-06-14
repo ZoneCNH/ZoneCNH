@@ -6,7 +6,7 @@ NatsMessageEnvelope：traceId/messageId/schemaVersion/header 双向映射
 
 ## 规格引用
 
-module/natsx/SPEC.md#FR-NFR-007, module/natsx/SPEC.md#9-interface-contract
+module/natsx/SPEC.md#module/natsx/SPEC.md#9-interface-contract
 
 ## 验收标准
 

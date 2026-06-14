@@ -6,7 +6,7 @@ SubjectBuilder：domain.resource.action.v{version} 构造与解析
 
 ## 规格引用
 
-module/natsx/SPEC.md#FR-NFR-006, module/natsx/SPEC.md#9-interface-contract
+module/natsx/SPEC.md#module/natsx/SPEC.md#9-interface-contract
 
 ## 验收标准
 

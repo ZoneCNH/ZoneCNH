@@ -6,7 +6,7 @@
 
 ## 规格引用
 
-module/natsx/SPEC.md#FR-NFR-009, module/natsx/SPEC.md#18-observability
+module/natsx/SPEC.md#module/natsx/SPEC.md#18-observability
 
 ## 验收标准
 

@@ -6,7 +6,7 @@
 
 ## 规格引用
 
-module/natsx/SPEC.md#FR-NFR-003, module/natsx/SPEC.md#17-performance-budget
+module/natsx/SPEC.md#module/natsx/SPEC.md#17-performance-budget
 
 ## 验收标准
 

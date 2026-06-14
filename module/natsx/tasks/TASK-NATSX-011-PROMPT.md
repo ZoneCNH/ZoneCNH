@@ -6,7 +6,7 @@
 
 ## 规格引用
 
-module/natsx/SPEC.md#FR-NFR-001, module/natsx/SPEC.md#FR-NFR-002, module/natsx/SPEC.md#BR-008, module/natsx/SPEC.md#19-security
+module/natsx/SPEC.md#module/natsx/SPEC.md#19-security, module/natsx/SPEC.md#BR-008
 
 ## 验收标准
 
