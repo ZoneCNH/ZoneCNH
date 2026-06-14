@@ -121,7 +121,7 @@
 | [kernel](https://github.com/ZoneCNH/kernel) | v1.0.0 | █████ 100% | 594KB/30 项 | L0 原语 / 12 子包 / stdlib-only / v1.0.0 已发布 |
 | [configx](https://github.com/ZoneCNH/configx) | v1.0.0 | █████ 100% | 258KB/20 项 | 配置管理；v1.0.0 已发布，97.1% 覆盖率，13 FR 全部实现 |
 | [observex](https://github.com/ZoneCNH/observex) | v1.0.0 | █████ 100% | 220KB/18 项 | 可观测性 |
-| [testkitx](https://github.com/ZoneCNH/testkitx) | v1.0.0 | ███░ 80% | SPEC v0.7.3 (10 FR/11 tasks) | Fake / Fixture / Golden / Contract / Leak / Boundary / Manifest 测试工具包（Matrix/Tasks/Plan/Prompt 100 分，code/ 阶段未完成） |
+| [testkitx](https://github.com/ZoneCNH/testkitx) | v1.0.0 | ███░ 90% | SPEC v0.7.3 + code 完成 (10 FR) | Fake / Fixture / Golden / Contract / Leak / Boundary / Manifest 测试工具包（PR #13 — fake + eventually + golden + boundary + leak，80.7% 覆盖，36/36 通过） |
 | [resiliencx](https://github.com/ZoneCNH/resiliencx) | v1.0.1 | █████ 100% | SPEC Approved (6 FR, 8 BR, 10 tasks) | 弹性策略（timeout / retry / circuit / bulkhead / rate / fallback） |
 | [schedulex](https://github.com/ZoneCNH/schedulex) | [v1.0.0](https://github.com/ZoneCNH/schedulex/releases/tag/v1.0.0) | █████ 100% | PR #8/#9 + tag/release + release-check | cron/interval/delay 调度、Overlap/Misfire 策略、Locker 扩展点、Clock 注入、8 示例（98.2% 覆盖，score 10.0；race/vet/lint/govulncheck 与下游 smoke 通过） |
 | [redisx](https://github.com/ZoneCNH/redisx) | v1.0.0 | █████ 100% | release `45510b8` + L2-T2 score 100 + unit/contract/integration/persistence profiles | Redis L2 adapter：KV/TTL/Hash/List/Pipeline/Cache-aside/Lock/RateLimit/Pool/Persistence restart recovery；release_ready=true，score 100；直接生产依赖限定为 kernel + Redis 客户端库；docker-compose/devcontainer 暴露非敏感 REDISX_REDIS_ADDR/URL/DB 端点变量；未暴露/打印/记录 secret；使用 Docker-backed Redis 验证。 |
