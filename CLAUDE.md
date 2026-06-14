@@ -163,8 +163,10 @@ git push -u origin HEAD
 
 # 2. 创建 PR（使用 gh CLI）
 gh pr create \
-  --title "docs: {module-name} — {变更摘要}" \
-  --body "{详细说明}" \
+  --title "docs: {变更摘要}" \
+  --body "[模块: {module-name}]
+
+{详细说明}" \
   --base main
 
 # 3. 等待 CI 通过后合并（squash merge）
@@ -174,7 +176,9 @@ gh pr merge --squash --delete-branch
 git checkout main && git pull origin main
 ```
 
-**PR 标题格式**：遵循 Conventional Commits，格式为 `docs: {module-name} — {描述}`。
+**PR 标题格式**：遵循 Conventional Commits，格式为 `<type>: <描述>`（不含模块名）。模块名放在 PR body 首行：`[模块: {module-name}]`。
+
+**PR 标题长度**：不超过 50 字符。如果加上 `(#NNN)` 后超过 50 字符，缩短描述部分，不要省略前置标识词（如"新增""修复""移除"）。
 
 **合并策略**：squash merge，PR 标题作为 squash commit 的提交信息。
 
@@ -192,7 +196,9 @@ Claude 执行：
 4. 检查对齐文档：ARCHITECTURE.md（无变更）、module/README.md（无变更）、README.md（无变更）
 5. git add + git commit
 6. git push -u origin HEAD
-7. gh pr create --title "docs: kernel — FR-003 描述更新"
+7. gh pr create --title "docs: FR-003 描述更新" --body "[模块: kernel]
+
+更新 SPEC.md 中 FR-003 的...
 8. gh pr merge --squash --delete-branch
 9. git checkout main && git pull origin main
 10. 报告：PR #N created → merged → branch deleted ✓
