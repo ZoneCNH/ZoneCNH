@@ -70,7 +70,11 @@
 
 > **维度说明**：SPEC=规格完成 | IMPL=实现完成 | RELEASE=tag/release/manifest 一致 | LIVE INT=真实服务集成（非 mock） | EXT CI=外部 CI artifact | ADOPT=下游模块真实采用 | SOAK=生产或类生产长时间运行 | FACTORY=factory_grade_allowed（最高综合等级）
 
-> **数据来源**：本表依据本仓库 `module/` 规格状态、公开 GitHub release 页面与 `.worktree/v2.md` 分析。标注 `?` 的维度需跨仓库验证后更新。
+> **数据来源**：本表依据本仓库 `module/` 规格状态、公开 GitHub release 页面、`.worktree/v2.md` 分析及 GitHub Actions CI 最新运行状态。标注 `?` 的维度需跨仓库验证后更新。
+>
+> **CI 构建状态**（最新 run，2026-06-14）：✅ kernel / testkitx / natsx / contracts | ❌ xlib-standard / xlibgate / configx / observex / resiliencx / schedulex / redisx / kafkax / postgresx / taosx | ⬜ 无 CI：xlib-harness / xlib-evidence / ossx / clickhousex / transportx / domainx
+>
+> **管线评分注记**：上表 `pln/prm/cod` 列对外仓模块为 pass-through（未实际在目标 repo 运行验证），100 分仅表示 plan/prompt 文档模板完整，不代表代码可编译或已通过测试。CI 构建状态为此处补充机械证据。
 
 </details>
 
