@@ -390,7 +390,7 @@ Blocked By:
 | [STATUS.md](./STATUS.md)                                               | 实时组件状态、健康度、风险追踪                                     |
 | [DATAFLOW.md](./DATAFLOW.md)                                           | 三引擎数据流全景、M×S 矩阵、契约清单                               |
 | [module/FOUNDATION-TRACKER.md](./module/FOUNDATION-TRACKER.md)         | Foundation v1 执行跟踪 — P0/P1/P2 Issue 检查清单                   |
-| [module/](./module/)                                                   | 20 个基座模块的 23 节规格                                          |
+| [module/](./module/)                                                   | 19 个基座模块 + domainx 的 23 节规格                                          |
 | [docs/governance/](./docs/governance/)                                 | Spec 治理模板、生命周期、追溯与评分规则                            |
 | [docs/governance/ROADMAP-RULES.md](./docs/governance/ROADMAP-RULES.md) | ROADMAP 编写规范 — 状态流转、决策规则、评审频率、标签规范（§1-54） |
 | [CONSTITUTION.md](./CONSTITUTION.md)                                   | 系统宪法 — AI 代理最高治理文件                                     |

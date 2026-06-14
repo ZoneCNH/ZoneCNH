@@ -38,7 +38,7 @@
 | [transportx](https://github.com/ZoneCNH/transportx) | v1.1.1-spec | █████ 100% | 100% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | 应用通信底座规格基线；✅ .repo-contract.yaml；git tag v1.1.1-spec 已创建；pkg/transportx 已实现 |
 | [domainx](https://github.com/ZoneCNH/domainx) | v0.1.0 | █████ 100% | 100% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | 执行域共享值对象：Order/Position/Trade/Portfolio/ExecutionReport 枚举与类型；v0.1.0 CI 已部署 |
 
-> ⚠️ **版本注记**：全部 20 基座模块均已对齐版本口径。14/20 已发布 GitHub Release（xlib-harness / xlib-evidence / clickhousex / contracts / transportx / domainx 缺失）；18/20 已创建 git tag（xlib-harness / xlib-evidence 缺失）；domainx 已从 L2.5 归入基座。
+> ⚠️ **版本注记**：全部 19 基座模块 v1.0.x + domainx (L2.5) 已发布 GitHub Release/git tag。Trust Alignment 迭代中 configx/observex/testkitx/resiliencx 已补发 v1.0.0 Release。
 
 > **成熟度语义说明（2026-06-14 v2 Trust Alignment）**：上表"进度"反映的是本仓库 Spec 管线评分（spec→code），不代表生产就绪（factory grade）。下表提供多维度成熟度视图，以 ✅（完成）/ ❌（未完成）/ N/A（不适用）标注。全部维度已于 Trust Alignment 迭代中验证补齐（0 ⚠️ / 0 ?）。
 
@@ -72,7 +72,7 @@
 
 > **数据来源**：本表依据 `module/` 规格状态、公开 GitHub release 页面、GitHub Actions CI 最新运行状态（gh api 批量验证 2026-06-14）、FOUNDATION-DEPS.yaml 反向依赖图（ADOPT）及 `.worktree/v2.md` 分析。所有 46 个 `?` 维度已于 2026-06-14 Trust Alignment 批量验证补齐。
 >
-> **CI 构建状态**（最新 run，2026-06-14）：✅ 全部 20 模块已配置 CI workflows | Trust Alignment 5 模块本次部署: xlib-harness / xlib-evidence / ossx / clickhousex / domainx
+> **CI 构建状态**（最新 run，2026-06-14）：✅ 全部 19 基座 + domainx 已配置 CI workflows | Trust Alignment 5 模块本次部署: xlib-harness / xlib-evidence / ossx / clickhousex / domainx
 >
 > **管线评分注记**：上表 `pln/prm/cod` 列对外仓模块为 pass-through（未实际在目标 repo 运行验证），100 分仅表示 plan/prompt 文档模板完整，不代表代码可编译或已通过测试。CI 构建状态为此处补充机械证据。
 
@@ -198,8 +198,8 @@
 
 | 域                     | 总数 | 已有 | 已创建 | 平均进度 | 有版本号                                                    |
 | ---------------------- | ---- | ---- | ------ | -------- | ----------------------------------------------------------- |
-| 基座                   | 20   | 20   | 0      | 100%     | 18 |
-| L2.5 领域共享层        | 4    | 4    | 0      | 80%      | 4 (全部)                                                    |
+| 基座                   | 19   | 19   | 0      | 100%     | 19（全部） |
+| L2.5 领域共享层        | 5    | 5    | 0      | 84%      | 5 (全部)                                                    |
 | 数据域 · 行情 SDK      | 13   | 13   | 0      | 80%      | 0                                                           |
 | 数据域 · 行情 Provider | 5    | 5    | 0      | 80%      | 5 (全部)                                                    |
 | 数据域 · 宏观          | 11   | 11   | 0      | 80%      | 0                                                           |
@@ -219,8 +219,8 @@
 
 ### 🟢 基座（健康）
 
-- 组件：20 个，平均进度 100%，100%
-- 核心模块已通过 .repo-contract.yaml 完成版本对齐：14/20 基座模块已发布 GitHub Release（xlib-harness / xlib-evidence / clickhousex / contracts / transportx / domainx 缺失）；18/20 已创建 git tag（xlib-harness / xlib-evidence 缺失）；全部 20 模块 CI 已部署；natsx / postgresx factory_grade_allowed=true（v1.0.0 + live integration + CI = 生产就绪）；domainx 已归入基座（v0.1.0 CI 已部署）
+- 组件：19 个基座模块，全部 v1.0.x + 进度 100%；FACTORY 18/19（testkitx=N/A）
+- 全部 19 模块 GitHub Release + git tag + CI 已部署；domainx 已移至 L2.5（v0.1.0 CI 已部署）
 - 存储层 `redisx` v1.0.1（Docker-backed Redis + persistence restart recovery 验证），`kafkax` v1.0.2（真实 broker gates 已验证），`natsx` v1.0.0（repair-slice 20/20，真实 dev auth live gate 验证，TLS 已实现），`postgresx` v1.0.0（live integration 通过，factory_grade_allowed=false），`taosx` v1.0.1（真实 taosWS WebSocket 集成已验证，pkg/taosx 100.0% 覆盖），`ossx` v1.0.1（真实 Aliyun OSS 集成、race/vet/build/release-check 已验证）；`clickhousex` v1.0.1（git tag v1.0.1 + CI 已部署+运行(Docker ClickHouse)，RELEASE=✅）；`transportx` v1.1.1-spec（SPEC baseline，9 CI workflows，production_import_allowed=false）
 - **SRE/CI/CD**：已产出 [`docs/sre/foundation-cicd-plan.md`](../docs/sre/foundation-cicd-plan.md)（20 模块 4 阶段部署方案、8 标签池、Docker 集成测试、标准化模板），待落地
 - **阻塞项**：无 — 全部 20 模块 CI 已部署、FACTORY 19/20（testkitx=N/A）；xlib-harness / xlib-evidence git tag 待创建
