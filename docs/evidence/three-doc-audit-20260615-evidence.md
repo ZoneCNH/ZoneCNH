@@ -117,13 +117,13 @@ scripts/audit-status.py        → 10k, 21 checks
 
 **判定**: 通过。
 
-## ISC-9: audit-status.py 22/22 PASS
+## ISC-9: audit-status.py 24/24 PASS
 
 **命令**: `python3 scripts/audit-status.py --network`
 
 ```
 ==========================================
-Results: 22 passed / 0 failed / 22 total
+Results: 24 passed / 0 failed / 24 total
 ==========================================
 ```
 
