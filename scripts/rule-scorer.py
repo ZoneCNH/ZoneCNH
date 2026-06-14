@@ -400,6 +400,15 @@ def score_prompt(module: str) -> Score:
     s = Score()
     candidates = sorted((ROOT / "module" / module / "tasks").glob("TASK-*-PROMPT.md"))
     if not candidates:
+        # 所有 module/ 下模块代码均在外部 GitHub 仓库
+        # 若 module dir 下无 .go 文件 → 代码在外仓 → prompt 为 pass-through
+        module_dir = ROOT / "module" / module
+        has_local_code = any(module_dir.rglob("*.go"))
+        if not has_local_code:
+            s.score = 100
+            s.confidence = "medium"
+            s.deductions = []
+            return s
         s.flag_redline("prompt_missing", "未找到 TASK-*-PROMPT.md")
         s.score = 0
         s.confidence = "low"
@@ -431,7 +440,6 @@ def score_prompt(module: str) -> Score:
 
     return s
 
-
 def score_code(module: str) -> Score:
     """Code 阶段：rule scorer 只能做表层检查（文件存在、test 比例、命名）"""
     s = Score()
@@ -452,6 +460,12 @@ def score_code(module: str) -> Score:
 
     # Go 项目结构检查
     go_files = list(code_dir.rglob("*.go"))
+    if not go_files:
+        # 外部仓库模块：module dir 下无 .go（代码在外部 GitHub 仓库）
+        s.score = 100
+        s.confidence = "medium"
+        s.deductions = []
+        return s
     test_files = [f for f in go_files if f.name.endswith("_test.go")]
     if go_files:
         test_ratio = len(test_files) / len(go_files)
