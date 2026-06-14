@@ -3,7 +3,6 @@ TASK-NATSX-007:
   module: natsx
   scope: "NatsMessageEnvelope：traceId/messageId/schemaVersion/header 双向映射与传播"
   spec_ref:
-    - "module/natsx/SPEC.md#FR-NFR-007"
     - "module/natsx/SPEC.md#9-interface-contract"
   acceptance_criteria:
     - "§9: traceId/messageId/schemaVersion Header→Envelope 正确映射"

@@ -3,7 +3,6 @@ TASK-NATSX-012:
   module: natsx
   scope: "性能验证：Publish/Request/JetStream benchmark 基线与 SLO 断言"
   spec_ref:
-    - "module/natsx/SPEC.md#FR-NFR-003"
     - "module/natsx/SPEC.md#17-performance-budget"
   acceptance_criteria:
     - "§17: Core Publish < 1ms benchmark"

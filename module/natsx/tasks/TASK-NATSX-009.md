@@ -3,7 +3,6 @@ TASK-NATSX-009:
   module: natsx
   scope: "可观测集成：foundationx_nats_* 指标、连接事件日志、错误脱敏"
   spec_ref:
-    - "module/natsx/SPEC.md#FR-NFR-009"
     - "module/natsx/SPEC.md#18-observability"
   acceptance_criteria:
     - "§18: foundationx_nats_publish_total 等 counter 正确 emit"
