@@ -28,8 +28,8 @@
 | [schedulex](https://github.com/ZoneCNH/schedulex) | [v1.0.0](https://github.com/ZoneCNH/schedulex/releases/tag/v1.0.0) | █████ 100% | PR #8/#9 + tag/release + release-check | cron/interval/delay 调度、Overlap/Misfire 策略、Locker 扩展点、Clock 注入、8 示例（98.2% 覆盖，score 10.0；race/vet/lint/govulncheck 与下游 smoke 通过） |
 | [redisx](https://github.com/ZoneCNH/redisx) | v1.0.0 | █████ 100% | release `45510b8` + L2-T2 score 100 + unit/contract/integration/persistence profiles | Redis L2 adapter：KV/TTL/Hash/List/Pipeline/Cache-aside/Lock/RateLimit/Pool/Persistence restart recovery；release_ready=true，score 100；直接生产依赖限定为 kernel + Redis 客户端库；docker-compose/devcontainer 暴露非敏感 REDISX_REDIS_ADDR/URL/DB 端点变量；未暴露/打印/记录 secret；使用 Docker-backed Redis 验证。 |
 | [kafkax](https://github.com/ZoneCNH/kafkax) | [v1.0.0](https://github.com/ZoneCNH/kafkax/releases/tag/v1.0.0) | █████ 100% | [PR #5](https://github.com/ZoneCNH/kafkax/pull/5) + tag/release + release-check | Kafka L2 adapter 已发布；driver-neutral API + 可选 kafka-go 生产驱动；真实 broker gates；merge `0545db2` |
-| [natsx](https://github.com/ZoneCNH/natsx) | v1.0.0 | █████ 100% | release `393d148` + repair-slice 20/20 + live auth gate | NATS L2 adapter：Core NATS / JetStream、Drain/reconnect/degraded health、canonical `FOUNDATIONX_NATS_*` 配置和真实 dev auth live gate 已验证；正式四源 98+ arbiter 与生产 TLS gate 待补 |
-| [postgresx](https://github.com/ZoneCNH/postgresx) | v1.0.0 | ████░ 90% | SPEC Implemented + TRACEABILITY + goal + 4 tasks + release evidence | PostgreSQL — 关系型存储、事务、迁移（v1.0 发布范围 100/100；全局成熟度待生产 soak 后提升） |
+| [natsx](https://github.com/ZoneCNH/natsx) | v1.0.1 | █████ 100% | PR #7 TLS gate merged + repair-slice 20/20 + live auth gate | NATS L2 adapter：Core NATS / JetStream、Drain/reconnect/degraded health、canonical `FOUNDATIONX_NATS_*` 配置和真实 dev auth live gate 已验证；TLS 配置支持已实现（Config.TLS/TLSInsecure + 集成测试）；正式四源 98+ arbiter 待补 |
+| [postgresx](https://github.com/ZoneCNH/postgresx) | v1.0.1 | ████░ 90% | PR #9 覆盖率提升 + foundationx 完全退出 | PostgreSQL — 关系型存储、事务、迁移（v1.0 发布范围 100/100；单元测试 52.4% + Docker 集成测试 skip 状态；全局成熟度待生产 soak 后提升） |
 | [taosx](https://github.com/ZoneCNH/taosx) | v1.0.1 | █████ 100% | 真实 TDengine WebSocket 集成 / pkg/taosx 100.0% 覆盖 | TDengine L2 adapter contract；pkg/taosx 公共 API，默认驱动显式不可用，真实 taosWS 集成已验证 |
 | [ossx](https://github.com/ZoneCNH/ossx) | v1.0.1 | █████ 100% | 真实 Aliyun OSS 集成 / pkg+internal 100.0% 覆盖 | Aliyun OSS 对象存储 L2 adapter；race、vet、build、release-check 已通过；S3/MinIO/Azure/GCS Provider 仅保留扩展位 |
 | [clickhousex](https://github.com/ZoneCNH/clickhousex) | v1.0.1 | █████ 100% | SPEC + TRACEABILITY §1-§7 + goal + 7 tasks | ClickHouse — OLAP 查询、批量写入（TRACEABILITY 覆盖率 100%） |
@@ -177,7 +177,7 @@
 - 核心模块（kernel / configx / observex / resiliencx / schedulex / testkitx / redisx / kafkax / natsx / postgresx / taosx / ossx / transportx）已成熟，有版本号或规格基线；domainx 已产出完整 SPEC + TRACEABILITY + tasks；xlib-harness / xlib-evidence 已从 xlib-standard 拆分为独立规格模块；kernel/configx/observex/schedulex/redisx/kafkax/natsx/postgresx 已发布 v1.0.0，taosx/ossx 已发布 v1.0.1，clickhousex 已发布 v1.0.1；transportx 已升级为 v1.1.1 规格基线
 - 存储层 `redisx` 已发布 v1.0.0（全局成熟度 100%，Docker-backed Redis + persistence restart recovery 验证），`kafkax` 已发布 v1.0.0（100%），`natsx` 已发布 v1.0.0（100%，repair-slice 20/20，真实 dev auth live gate 验证），`postgresx` 已发布 v1.0.0（全局成熟度 90%），`taosx` 已发布 v1.0.1（100%）；`ossx` 已发布 v1.0.1（真实 Aliyun OSS 集成、race、vet、build、release-check 与 100.0% 覆盖已验证）；`clickhousex` 已发布 v1.0.1（100%）；`transportx` 已规格化 100%（SPEC/Matrix/Tasks 三阶段满分，27 Tasks 全部达标），并以 v1.1.1 规格基线覆盖 QoS、Codec、RPC、EventBus、Stream、ExecutionMode、Outbox/Inbox、Audit Plane、Data Classification 与 SchemaRegistry
 - **SRE/CI/CD**：已产出 [`docs/sre/foundation-cicd-plan.md`](../docs/sre/foundation-cicd-plan.md)（20 模块 4 阶段部署方案、8 标签池、Docker 集成测试、标准化模板），待落地
-- **阻塞项**：natsx 正式四源 98+ arbiter 与生产 TLS gate 仍待补证（唯一剩余阻塞）；clickhousex 已发布 v1.0.1；xlibgate CLI 已实现（PR #23）；testkitx code 阶段已完成（PR #13）；postgresx foundationx 依赖已移除（PR #8）；redisx/kafkax/natsx/postgresx/taosx/ossx/transportx 已不再是存储层或传输契约实现阻塞项
+- **阻塞项**：natsx 正式四源 98+ arbiter 待补证（最后剩余阻塞，TLS gate 已于 PR #7 完成）；clickhousex 已发布 v1.0.1；xlibgate CLI 已实现（PR #23）；testkitx code 阶段已完成（PR #13）；postgresx foundationx 依赖已移除（PR #8 → PR #9）；redisx/kafkax/natsx/postgresx/taosx/ossx/transportx 已不再是存储层或传输契约实现阻塞项
 
 ### 🟢 L2.5 领域共享层（健康）
 
@@ -257,7 +257,7 @@
 
 | # | 风险 | 影响 | 建议 |
 | -- | ---- | ---- | ---- |
-| R8 | 剩余存储/传输层已脱离仅骨架（30-100%），但 clickhousex 仍缺实现或发布闭环；natsx 已完成 v1.0.0 发布证据闭环但正式四源 98+ arbiter 与生产 TLS gate 待补 | 不阻塞上层开发；redisx/kafkax/natsx/postgresx 已发布 v1.0.0，taosx/ossx 已发布 v1.0.1，transportx v1.1.1 规格基线已完成且发布证据仍按 TX-GATE-005..012 补齐 | 按需推进剩余模块实现与补证，contracts 稳定端口和 transportx 通信契约可 mock，各模块 SPEC/TRACEABILITY 已就绪 |
+| R8 | natsx 正式四源 98+ arbiter 待补（TLS gate 已完成 PR #7）；postgresx 单元测试覆盖率 52.4% 加 Docker 集成测试 skip 中 | 不阻塞上层开发；redisx/kafkax/natsx/postgresx 已发布 v1.0.0+，taosx/ossx/clickhousex 已发布 v1.0.1，transportx v1.1.1 规格基线已完成 | 按需推进剩余补证，contracts 稳定端口和 transportx 通信契约可 mock，各模块 SPEC/TRACEABILITY 已就绪 |
 | R9 | 分析域↔决策域若用实现包互调 | Go 循环导入和边界泄漏 | 只允许通过 contracts 事件/DTO 与 L2.5 模型连接 |
 
 ---
