@@ -30,7 +30,7 @@
 
 | ID | 扣分 | 说明 |
 |----|------|------|
-| D1 | -1 | TASK-006~009,011~014 的 acceptance_criteria 使用自定义 AC ID 前缀 (AC-SBJ/ENV/CFG/OBS/SEC/PERF/REL)。NFR 在 SPEC 中无对应编号 AC，task 级 ID 是必要设计选择，非结构性缺陷。 |
+| D1 | -1 | NFR task 使用 § section 引用（如 §9/§11/§18/§19）替代 AC-ID，因 SPEC 对 NFR 无编号 AC。§ 引用直接映射 spec_ref，不伪造 AC 编号。 |
 
 ---
 
