@@ -219,8 +219,7 @@
 
 ### 🟢 基座（健康）
 
-- 组件：20 个，平均进度 100%，100%
-- 核心模块已通过 .repo-contract.yaml 完成版本对齐：14/20 基座模块已发布 GitHub Release（xlib-harness / xlib-evidence / clickhousex / contracts / transportx / domainx 缺失）；18/20 已创建 git tag（xlib-harness / xlib-evidence 缺失）；全部 20 模块 CI 已部署；natsx / postgresx factory_grade_allowed=true（v1.0.0 + live integration + CI = 生产就绪）；domainx 已归入基座（v0.1.0 CI 已部署）
+- 组件：19 个基座模块，全部 v1.0.x + 进度 100%；FACTORY 18/19（testkitx=N/A）；domainx 已移至 L2.5（v0.1.0 CI 已部署）
 - 存储层 `redisx` v1.0.1（Docker-backed Redis + persistence restart recovery 验证），`kafkax` v1.0.2（真实 broker gates 已验证），`natsx` v1.0.0（repair-slice 20/20，真实 dev auth live gate 验证，TLS 已实现），`postgresx` v1.0.0（live integration 通过，factory_grade_allowed=false），`taosx` v1.0.1（真实 taosWS WebSocket 集成已验证，pkg/taosx 100.0% 覆盖），`ossx` v1.0.1（真实 Aliyun OSS 集成、race/vet/build/release-check 已验证）；`clickhousex` v1.0.1（git tag v1.0.1 + CI 已部署+运行(Docker ClickHouse)，RELEASE=✅）；`transportx` v1.1.1-spec（SPEC baseline，9 CI workflows，production_import_allowed=false）
 - **SRE/CI/CD**：已产出 [`docs/sre/foundation-cicd-plan.md`](../docs/sre/foundation-cicd-plan.md)（20 模块 4 阶段部署方案、8 标签池、Docker 集成测试、标准化模板），待落地
 - **阻塞项**：无 — 全部 20 模块 CI 已部署、FACTORY 19/20（testkitx=N/A）；xlib-harness / xlib-evidence git tag 待创建
