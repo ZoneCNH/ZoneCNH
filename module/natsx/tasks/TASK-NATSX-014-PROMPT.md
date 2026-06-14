@@ -6,7 +6,7 @@
 
 ## 规格引用
 
-module/natsx/SPEC.md#FR-NFR-005, module/natsx/SPEC.md#20-ci-gate, module/natsx/SPEC.md#22-release-dod
+module/natsx/SPEC.md#module/natsx/SPEC.md#20-ci-gate, module/natsx/SPEC.md#22-release-dod
 
 ## 验收标准
 

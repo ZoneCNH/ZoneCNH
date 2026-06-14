@@ -6,7 +6,7 @@
 
 ## 规格引用
 
-module/natsx/SPEC.md#FR-NFR-004, module/natsx/SPEC.md#15-dependencies
+module/natsx/SPEC.md#module/natsx/SPEC.md#15-dependencies
 
 ## 验收标准
 

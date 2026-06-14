@@ -84,3 +84,30 @@ TASK-003 (JetStream Pub/Sub) ──→ TASK-004 (AddStream/Consumer + reconnect,
 | client.go / jetstream.go 多个 TASK 共享 | 合并冲突 | Phase 内顺序执行，Phase 间按文件归属协调 |
 | NFR task AC ID 为自定义前缀 | rubric 扣 1 分 LOW | 已记录为工程惯例，不阻塞 |
 | codex/copilot 评分源缺失 | gate 依赖 --force | 待补齐后重新仲裁 |
+
+## Task References
+
+| FR/BR/NFR | Task |
+|-----------|------|
+| FR-001, FR-002, BR-001, BR-004, BR-009 | TASK-NATSX-001 |
+| FR-003, BR-003 | TASK-NATSX-002 |
+| FR-004, FR-005, BR-002, BR-007 | TASK-NATSX-003 |
+| FR-006, FR-007, BR-005 | TASK-NATSX-004 |
+| FR-008, BR-006 | TASK-NATSX-005 |
+| NFR-006 | TASK-NATSX-006 |
+| NFR-007 | TASK-NATSX-007 |
+| NFR-008 | TASK-NATSX-008 |
+| NFR-009 | TASK-NATSX-009 |
+| NFR-001, NFR-002, BR-008 | TASK-NATSX-011 |
+| NFR-003 | TASK-NATSX-012 |
+| NFR-004 | TASK-NATSX-013 |
+| NFR-005 | TASK-NATSX-014 |
+
+## Rollback Strategy
+
+| Risk | Rollback |
+|------|----------|
+| 配置兼容回归 | 回退 env loading 逻辑，已有 canonical+legacy 测试 |
+| JetStream 语义回归 | 回退到 commit 393d148，已有 publish/pull/ack/nack 测试 |
+| Core NATS API 变更 | `git revert` 单 commit |
+| 依赖升级 | 回退 go.mod + go.sum |

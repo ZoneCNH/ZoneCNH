@@ -6,7 +6,7 @@
 
 ## 规格引用
 
-module/natsx/SPEC.md#FR-NFR-008, module/natsx/SPEC.md#11-config-schema
+module/natsx/SPEC.md#module/natsx/SPEC.md#11-config-schema
 
 ## 验收标准
 
