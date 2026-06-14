@@ -63,10 +63,10 @@
 | postgresx | ✅ | ✅ | ✅ | ✅ | ✅ | N/A | N/A | ✅ | v1.0.0; 3 CI workflows; live integration 通过; migration runner; 生产就绪 |
 | taosx | ✅ | ✅ | ✅ | ✅ | ✅ | N/A | N/A | ✅ | v1.0.1; 8 CI workflows; 真实 taosWS 已验证; SPEC WHEN/THEN 已补齐 (PR #374) |
 | ossx | ✅ | ✅ | ✅ | ✅ | ✅ | N/A | N/A | ✅ | v1.0.1; CI 已部署; 真实 Aliyun OSS 集成已验证 |
-| clickhousex | ✅ | ✅ | ✅ | ✅ | ✅ | N/A | N/A | ✅ | v1.0.1; CI 已部署+运行(Docker ClickHouse); git tag 已创建; SPEC+TRACEABILITY+TASKS 100% |
-| contracts | ✅ | ✅ | ✅ | N/A | ✅ | ✅ | N/A | ✅ | v1.0.1-spec; pkg/contracts 已实现 (PR #6); git tag + CI 已部署 |
-| transportx | ✅ | ✅ | ✅ | N/A | ✅ | N/A | N/A | ✅ | v1.1.1-spec; pkg/transportx 已实现; 24节/25FR/57WHEN-THEN/32TC/AC矩阵完整 |
-| domainx | ✅ | ✅ | ✅ | N/A | ✅ | N/A | N/A | ✅ | v0.1.0; CI 已部署+已运行; git tag 已创建 |
+| clickhousex | ✅ | ✅ | ❌ | ✅ | ✅ | N/A | N/A | ✅ | v1.0.1; CI 已部署+运行(Docker ClickHouse); git tag 已创建; SPEC+TRACEABILITY+TASKS 100% |
+| contracts | ✅ | ✅ | ❌ | N/A | ✅ | ✅ | N/A | ✅ | v1.0.1-spec; pkg/contracts 已实现 (PR #6); git tag + CI 已部署 |
+| transportx | ✅ | ✅ | ❌ | N/A | ✅ | N/A | N/A | ✅ | v1.1.1-spec; pkg/transportx 已实现; 24节/25FR/57WHEN-THEN/32TC/AC矩阵完整 |
+| domainx | ✅ | ✅ | ❌ | N/A | ✅ | N/A | N/A | ✅ | v0.1.0; CI 已部署+已运行; git tag 已创建 |
 
 > **维度说明**：SPEC=规格完成 | IMPL=实现完成 | RELEASE=tag/release/manifest 一致 | LIVE INT=真实服务集成（非 mock） | EXT CI=外部 CI artifact | ADOPT=下游模块真实采用 | SOAK=生产或类生产长时间运行 | FACTORY=factory_grade_allowed（最高综合等级）
 
