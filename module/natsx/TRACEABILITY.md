@@ -77,15 +77,14 @@ Source: `goal.md` 1.0 发布基线 + `SPEC.md` Draft v1.0.0 + `/home/natsx` comm
 | TASK-NATSX-003 | FR-004, FR-005, BR-002, BR-007 | Complete JetStream publish/pull, missing-stream publish, nack redelivery, and max-deliveries advisory coverage |
 | TASK-NATSX-004 | FR-006, FR-007, BR-005 | Complete AddStream/AddConsumer idempotency/conflict, management edge failures, reconnect/degraded health, retry/backoff knobs, connection-state metrics, and reconnect/disconnect guardrail evidence; production SLO gate remains separate |
 | TASK-NATSX-005 | FR-008, BR-006 | Complete health healthy/closed/failure/reconnect/degraded coverage |
-| TASK-NATSX-006 | NFR-006 | Complete SubjectBuilder construction/parsing/validation coverage |
+| TASK-NATSX-006 | NFR-006 | Complete SubjectBuilder Build/Parse/Validate coverage; canonical token rejection tests; SPEC §9.1 interface alignment |
 | TASK-NATSX-007 | NFR-007 | Complete envelope/header metadata round-trip coverage |
 | TASK-NATSX-008 | NFR-008 | Complete config default/sanitize/validation plus canonical/legacy env alias precedence coverage |
 | TASK-NATSX-009 | NFR-009 | Complete repair-slice canonical metrics and secret-safe error/log evidence; distributed tracing is not claimed by this matrix |
-| TASK-NATSX-010 | BR-004 | Complete repair-slice handler latency evidence via embedded SLO assertion and histogram observation |
 | TASK-NATSX-011 | NFR-001, NFR-002, BR-008 | Complete repair-slice sanitize/config evidence plus local auth live integration passed with redacted local config; production TLS endpoint remains separate |
 | TASK-NATSX-012 | NFR-003 | Complete repair-slice SLO assertions for embedded request, JetStream publish/fetch, and handler latency; production benchmark gate still separate |
 | TASK-NATSX-013 | NFR-004 | Dependency boundary check passed for forbidden ZoneCNH messaging/storage modules |
-| TASK-NATSX-014 | NFR-005 | `SPEC.md` / `TRACEABILITY.md` / matrix evidence refreshed on 2026-06-13; `/home/natsx` code evidence pinned to commit `393d148` |
+| TASK-NATSX-014 | NFR-005 | Release evidence + CI gate: `README.md` quickstart/API overview, `CHANGELOG.md` v1.0.0, CI gate (build/test/vet/lint/secret scan), coverage >=80%, benchmark regression guard; `/home/natsx` evidence pinned to commit `393d148` |
 
 ## Documentation Evidence Inventory
 
