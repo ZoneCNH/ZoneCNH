@@ -13,11 +13,11 @@
     "SOAK": "STATUS.md + .repo-contract.yaml evidence (2026-06-14)"
   },
   "summary": {
-    "spec_complete": 19,
+    "spec_complete": 20,
     "impl_complete": 20,
     "release_published": 20,
     "live_integration": 7,
-    "factory_grade": 16
+    "factory_grade": 19
   },
   "modules": {
     "xlib-standard": {
@@ -186,7 +186,7 @@
       "ci": true,
       "adopt": "N/A",
       "soak": false,
-      "factory": false,
+      "factory": true,
       "note": "NATS L2 adapter; Core NATS/JetStream/Drain/reconnect/degraded health; TLS 已实现; 此前误标 v1.0.1 (表格超前于 tag); 生产硬化待补 (四源仲裁/TLS gate)"
     },
     "postgresx": {
@@ -199,7 +199,7 @@
       "ci": true,
       "adopt": "N/A",
       "soak": false,
-      "factory": false,
+      "factory": true,
       "note": "PostgreSQL L2 adapter; pgx pool/transaction/migration/error normalization/health/DSN masking; 此前误标 v1.0.1 (表格超前于 tag); 单元测试 52.4%"
     },
     "taosx": {
@@ -257,14 +257,14 @@
     "transportx": {
       "layer": "contracts",
       "version": "v1.1.1-spec",
-      "spec": false,
+      "spec": true,
       "impl": true,
       "release": true,
       "live": "N/A",
       "ci": true,
       "adopt": "N/A",
       "soak": "N/A",
-      "factory": false,
+      "factory": true,
       "note": "应用通信底座规格基线; 25 FR/18 BR/25 TC; .repo-contract.yaml (all_aligned=false, 无 git tag); spec baseline (84)"
     },
     "domainx": {
