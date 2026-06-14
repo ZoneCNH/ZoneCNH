@@ -105,6 +105,22 @@
 - 会话中期检查成本：超过 $30 时主动与用户确认是否继续
 - **校验命令不受成本约束**：`git log`、`grep`、`head`、`ls` 等单次调用成本可忽略，但不执行导致的错误修正成本极高（kafkax session：跳过数次 grep → $49.52 无效编辑）。编辑文件前和声称完成前的校验命令**必须执行**，不计入成本控制范围。
 
+### xlibgate Trust Alignment session 复盘成本规则（2026-06-14）
+
+> 基于一次从 SPEC 到 Code 的全管线交付会话（$55.84 / 19 PR / 53 steps），提取以下成本控制规则。
+
+- **原子写入优先**：大节（>20 行）修改用 `Write` 替代 `Edit`。`Edit` 被 linter hook 回退时会触发重复编辑循环（session 中 5-8 次 → ~$12-15 浪费）。
+- **SPEC 骨架模板预加载**：新模块从 `docs/governance/templates/module/SPEC.md.skeleton` 实例化，跳过格式发现阶段。参考 `docs/governance/templates/orchestration/PIPELINE-AGENTS.md`。
+- **PROMPT 合并**：同模块多 task 用 1 个 consolidated PROMPT 文件，不创建 N 个独立文件（session 中 10→1 节省 471 行 / ~$2-3）。
+- **先读 scorer 源码再写 Prompt**：`rule-scorer.py` 的 required section 名称与直觉不一致（`Scope` 非 `Current Scope`，`Validation` 非 `Verification`）。1 次读 scorer 替代 N 次修复循环（session 中 ~$3-4 浪费）。
+- **信任 lint 结果**：`rule-scorer.py` 是确定性工具。一次 100 分后不重复跑相同 stage（session 中 6-8 次重跑 → ~$5-7 浪费）。
+- **YAML 测试夹具不用 raw string literal**：Go 的 raw string 会混入 tab 缩进导致 YAML 解析失败。用 `"key: " + value + "\n"` 字符串拼接。跳过 8+ 次 debug（session 中 ~$3-4 浪费）。
+- **外部仓库代码不用 agent 评分**：`code-structural-score` agent 在 docs-only repo 无输出（48 tool calls 白费）。手动按 RUBRIC-code.md 逐维度判定更快且确定性高。
+- **编辑前 branch 检查**：`git branch --show-current && git merge-base --is-ancestor main HEAD`。避免在 `main` 上 `stash pop` + commit（session 中 3 次事故 → ~$6-8 浪费）。已关联 PR #340。
+- **报告模板复用**：会话末构建总结报告只做一次，后续更新用 `grep`/`sed` 补数字，不重写完整报告（session 中 3-4 次重建 → ~$3-4 浪费）。
+
+预计优化成本：$8-20 / 全管线模块（vs 本次 $55.84）。详见 `docs/governance/improvements/20260614-xlibgate-trust-session/SESSION.md`。
+
 ## 模块工作流规则（自动分支 + 对齐同步 + PR 闭环）
 
 > 处理 `module/{模块名}/` 下任何文件时，自动执行端到端工作流闭环。
