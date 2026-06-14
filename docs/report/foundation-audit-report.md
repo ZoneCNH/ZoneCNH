@@ -379,7 +379,7 @@ _下一步：O1 (xlibgate 代码) / O2 (testkitx code 阶段) / O6 (postgresx fo
 
 ## 7. 修复状态（2026-06-14 闭环）
 
-### 已完成（本仓库 10 PR + 3 外部仓库 PR）
+### 已完成（本仓库 12 PR + 7 外部仓库 PR — 全部闭环 🎉）
 
 | 修复 | PR | 内容 |
 |------|----|------|
@@ -393,6 +393,7 @@ _下一步：O1 (xlibgate 代码) / O2 (testkitx code 阶段) / O6 (postgresx fo
 | O2 代码 | [#244](https://github.com/ZoneCNH/ZoneCNH/pull/244) | testkitx code 阶段完成 → 80%→90%（外部 [testkitx#13](https://github.com/ZoneCNH/testkitx/pull/13)） |
 | O6 迁移 | [#245](https://github.com/ZoneCNH/ZoneCNH/pull/245) | postgresx foundationx 依赖迁移完成（外部 [postgresx#8](https://github.com/ZoneCNH/postgresx/pull/8)） |
 | O1 门禁 | [#246](https://github.com/ZoneCNH/ZoneCNH/pull/246) | xlibgate CLI 实现完成 → 30%→90%（外部 [xlibgate#23](https://github.com/ZoneCNH/xlibgate/pull/23)） |
+| P3 运维 | [#248](https://github.com/ZoneCNH/ZoneCNH/pull/248) | Issues 12+13: .env 合并 + CI 密钥扫描（外部 redisx#10 taosx#9 ossx#3 natsx#6） |
 
 ### 审计遗漏项（本报告未覆盖，已修复）
 
@@ -402,13 +403,13 @@ _下一步：O1 (xlibgate 代码) / O2 (testkitx code 阶段) / O6 (postgresx fo
 | README.md 基座列表仅 17 个 | 第三轮深度排查 | [#237](https://github.com/ZoneCNH/ZoneCNH/pull/237) |
 | xlib-standard 五类职责描述 6 处过时 | 第二轮深度排查 | [#236](https://github.com/ZoneCNH/ZoneCNH/pull/236) |
 
-### 未完成（需跨仓库代码操作）
+### ~~未完成~~ — 全部闭环 ✅
 
 | 项 | 仓库 | 说明 |
 |----|------|------|
-| O1 | ZoneCNH/xlibgate | ✅ PR #23 merged — CLI 实现完成（进度 30%→90%） |
-| O2 | ZoneCNH/testkitx | ✅ PR #13 merged — code 阶段完成（进度 80%→90%） |
-| O6 | ZoneCNH/postgresx | ✅ PR #8 merged — 132 foundationx 引用→0 |
+| ~~O1~~ | ZoneCNH/xlibgate | ✅ PR #23 merged — CLI 实现完成 |
+| ~~O2~~ | ZoneCNH/testkitx | ✅ PR #13 merged — code 阶段完成 |
+| ~~O6~~ | ZoneCNH/postgresx | ✅ PR #8 merged — 132 foundationx 引用→0 |
 
 ### 当前基线
 
