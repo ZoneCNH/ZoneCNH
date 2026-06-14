@@ -40,7 +40,9 @@
       "category": "release",
       "detail": "表格 v1.0.1 / SPEC+TRACEABILITY 100%，但公开 GitHub 页面 no releases published；建议补 release 或降级表格",
       "evidence": "STATUS.md L36",
-      "action": "发布 v1.0.1 GitHub release + manifest + integration evidence，或表格降级"
+      "action": "发布 v1.0.1 GitHub release + manifest + integration evidence，或表格降级",
+      "remediation": "CI 模板已就绪: module/clickhousex/ci-workflow.yaml (含 Docker ClickHouse integration)；需发布 GitHub release",
+      "template_path": "module/clickhousex/ci-workflow.yaml"
     },
     {
       "id": "BLK-004",
@@ -95,17 +97,34 @@
       "category": "evidence",
       "detail": "ossx v1.0.1 已发布但公开仓库证据不足 (README 只有 ossx 公共基础模块，2 commits)；需补 API 文档、集成测试证据、quickstart",
       "evidence": "STATUS.md L35",
-      "action": "补 pkg/ossx API doc + integration evidence + quickstart + release manifest"
+      "action": "补 pkg/ossx API doc + integration evidence + quickstart + release manifest",
+      "remediation": "CI 模板已就绪: module/ossx/ci-workflow.yaml (含 Aliyun OSS integration job)",
+      "template_path": "module/ossx/ci-workflow.yaml"
     }
   ],
   "by_module": {
-    "natsx": ["BLK-001", "BLK-002"],
-    "clickhousex": ["BLK-003"],
-    "contracts": ["BLK-004"],
-    "transportx": ["BLK-005"],
-    "postgresx": ["BLK-006"],
-    "taosx": ["BLK-007"],
-    "ossx": ["BLK-008"]
+    "natsx": [
+      "BLK-001",
+      "BLK-002"
+    ],
+    "clickhousex": [
+      "BLK-003"
+    ],
+    "contracts": [
+      "BLK-004"
+    ],
+    "transportx": [
+      "BLK-005"
+    ],
+    "postgresx": [
+      "BLK-006"
+    ],
+    "taosx": [
+      "BLK-007"
+    ],
+    "ossx": [
+      "BLK-008"
+    ]
   },
   "resolved_in_repo": {
     "note": "以下阻塞项已在本仓库 (ZoneCNH/ZoneCNH) 文档层面解决，但源仓库 (github.com/ZoneCNH/<module>) 仍需跨仓库 PR",
