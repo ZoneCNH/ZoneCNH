@@ -1,3 +1,8 @@
+---
+scope: "TASK-TAOSX-001"
+acceptance_criteria: []
+---
+
 # TASK-TAOSX-001: Config.Normalize/Validate、NewClient 工厂、driver 注入
 
 - **Module**: taosx
@@ -26,3 +31,7 @@ Does NOT implement TDengine cluster deployment, database auto-creation, or super
 - [ ] FR-001 verified via TC
 - [ ] FR-002 verified via TC
 - [ ] FR-003 verified via TC
+
+## Non-scope
+
+- 不涉及本 Task 范围外的功能

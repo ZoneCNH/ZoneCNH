@@ -1,3 +1,8 @@
+---
+scope: "TASK-TAOSX-002"
+acceptance_criteria: []
+---
+
 # TASK-TAOSX-002: SQL 执行接口
 
 - **Module**: taosx
@@ -25,3 +30,7 @@ Does NOT implement TDengine cluster deployment, database auto-creation, or super
 
 - [ ] FR-004 verified via TC
 - [ ] FR-005 verified via TC
+
+## Non-scope
+
+- 不涉及本 Task 范围外的功能

@@ -1,3 +1,8 @@
+---
+scope: "TASK-TAOSX-003"
+acceptance_criteria: []
+---
+
 # TASK-TAOSX-003: 批量写入
 
 - **Module**: taosx
@@ -25,3 +30,7 @@ Does NOT implement TDengine cluster deployment, database auto-creation, or super
 
 - [ ] FR-006 verified via TC
 - [ ] FR-007 verified via TC
+
+## Non-scope
+
+- 不涉及本 Task 范围外的功能

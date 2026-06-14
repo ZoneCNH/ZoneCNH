@@ -1,3 +1,8 @@
+---
+scope: "TASK-TAOSX-004"
+acceptance_criteria: []
+---
+
 # TASK-TAOSX-004: Health 检查、幂等 Close、degraded 状态
 
 - **Module**: taosx
@@ -25,3 +30,7 @@ Does NOT implement TDengine cluster deployment, database auto-creation, or super
 
 - [ ] FR-008 verified via TC
 - [ ] FR-009 verified via TC
+
+## Non-scope
+
+- 不涉及本 Task 范围外的功能

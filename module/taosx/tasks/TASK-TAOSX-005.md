@@ -1,3 +1,8 @@
+---
+scope: "TASK-TAOSX-005"
+acceptance_criteria: []
+---
+
 # TASK-TAOSX-005: taosx_client_* 指标、noop 默认、日志脱敏
 
 - **Module**: taosx
@@ -24,3 +29,7 @@ Does NOT implement TDengine cluster deployment, database auto-creation, or super
 ## Acceptance
 
 - [ ] FR-010 verified via TC
+
+## Non-scope
+
+- 不涉及本 Task 范围外的功能
