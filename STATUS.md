@@ -16,23 +16,23 @@
 
 | 组件 | 版本 | 进度 | 仓库大小 | 说明 |
 | ---- | ---- | ---- | -------- | ---- |
-| [xlib-standard](https://github.com/ZoneCNH/xlib-standard) | v1.0.0 | ████ 100% | spec=100 mat=80 tsk=98 pln=100 prm=100 cod=100 | 标准事实源 / Go Reference Template；Generator/Harness/Evidence 已拆分至 xlib-harness / xlib-evidence；⚠️ 表格 v1.0.0，公开 latest v0.6.5，版本待对齐 |
+| [xlib-standard](https://github.com/ZoneCNH/xlib-standard) | v1.0.0 | ████ 100% | spec=100 mat=80 tsk=98 pln=100 prm=100 cod=100 | 标准事实源 / Go Reference Template；Generator/Harness/Evidence 已拆分至 xlib-harness / xlib-evidence；⚠️ git tag v1.0.0 存在，GitHub release 待确认 |
 | [xlib-harness](https://github.com/ZoneCNH/xlib-harness) | v1.0.0 | ████ 100% | spec=83 mat=100 tsk=97 pln=100 prm=100 cod=100 | 模块生成器与门禁执行器：generate/scaffold、spec-lint、boundary-check、traceability-gate；⚠️ Draft→Approved 待四源评分（6 FR，6 TC） |
 | [xlib-evidence](https://github.com/ZoneCNH/xlib-evidence) | v1.0.0 | ████ 100% | spec=83 mat=100 tsk=100 pln=100 prm=100 cod=100 | 证据收集与发布运行时：collect-coverage、generate-manifest、validate-manifest、report；⚠️ Draft→Approved 待四源评分（5 FR，5 TC） |
 | [xlibgate](https://github.com/ZoneCNH/xlibgate) | v1.1.1 | ███░ 95% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | check / l2 / trust 三组门禁；trust 规格/设计/计划/任务/提示词完备（8 FR, 16 TC, 10 Task），待代码实现 |
 | [kernel](https://github.com/ZoneCNH/kernel) | v1.0.0 | █████ 100% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | L0 原语 / 12 子包 / stdlib-only / v1.0.0 已发布；✅ 公开 release 一致，建议 API 冻结 |
 | [configx](https://github.com/ZoneCNH/configx) | v1.0.0 | █████ 100% | spec=100 mat=100 tsk=96 pln=100 prm=100 cod=100 | 配置管理；v1.0.0 已发布，97.1% 覆盖率，13 FR 全部实现；✅ 公开 release 一致 |
-| [observex](https://github.com/ZoneCNH/observex) | v1.0.0 | ███░ 95% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | 可观测性；⚠️ 表格 v1.0.0，公开 latest v0.3.1 — release 口径待对齐 |
-| [testkitx](https://github.com/ZoneCNH/testkitx) | v1.0.0 | ███░ 90% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | Fake / Fixture / Golden / Contract / Leak / Boundary / Manifest 测试工具包；⚠️ 表格 v1.0.0，公开 latest v0.4.0；test-only，full 口径需外部 CI + 下游采用（PR #13，80.7% 覆盖） |
-| [resiliencx](https://github.com/ZoneCNH/resiliencx) | v1.0.1 | ███░ 95% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | 弹性策略（timeout / retry / circuit / bulkhead / rate / fallback）；⚠️ 表格 v1.0.1，公开 latest v0.4.9 — release 口径待对齐 |
+| [observex](https://github.com/ZoneCNH/observex) | v1.0.0 | ███░ 95% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | 可观测性；⚠️ 表格 v1.0.0，git tag latest v0.3.1 — release 口径待对齐 |
+| [testkitx](https://github.com/ZoneCNH/testkitx) | v1.0.0 | ███░ 90% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | Fake / Fixture / Golden / Contract / Leak / Boundary / Manifest 测试工具包；⚠️ 表格 v1.0.0，git tag latest v0.4.0；test-only，full 口径需外部 CI + 下游采用 |
+| [resiliencx](https://github.com/ZoneCNH/resiliencx) | v1.0.1 | ███░ 95% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | 弹性策略（timeout / retry / circuit / bulkhead / rate / fallback）；⚠️ 表格 v1.0.1，git tag latest v0.4.9 — release 口径待对齐 |
 | [schedulex](https://github.com/ZoneCNH/schedulex) | [v1.0.0](https://github.com/ZoneCNH/schedulex/releases/tag/v1.0.0) | █████ 100% | spec=98 mat=100 tsk=100 pln=100 prm=100 cod=100 | cron/interval/delay 调度、Overlap/Misfire 策略、Locker 扩展点、Clock 注入；✅ 公开 release 一致（98.2% 覆盖，race/vet/lint/govulncheck 与下游 smoke 通过） |
-| [redisx](https://github.com/ZoneCNH/redisx) | v1.0.0 | █████ 100% | spec=98 mat=100 tsk=100 pln=100 prm=100 cod=100 | Redis L2 adapter：KV/TTL/Hash/List/Pipeline/Cache-aside/Lock/RateLimit/Pool/Persistence restart recovery；✅ release_ready=true；⚠️ README 身份残留模板叙事，待跨仓库修复；Docker-backed Redis 验证通过 |
-| [kafkax](https://github.com/ZoneCNH/kafkax) | [v1.0.0](https://github.com/ZoneCNH/kafkax/releases/tag/v1.0.0) | █████ 100% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | Kafka L2 adapter 已发布；driver-neutral API + 可选 kafka-go 生产驱动；真实 broker gates；⚠️ README 身份残留模板叙事，待跨仓库修复 |
+| [redisx](https://github.com/ZoneCNH/redisx) | v1.0.0 | █████ 100% | spec=98 mat=100 tsk=100 pln=100 prm=100 cod=100 | Redis L2 adapter：KV/TTL/Hash/List/Pipeline/Cache-aside/Lock/RateLimit/Pool/Persistence restart recovery；✅ release_ready=true；⚠️ README 身份残留模板叙事（修复中）；Docker-backed Redis 验证通过 |
+| [kafkax](https://github.com/ZoneCNH/kafkax) | [v1.0.0](https://github.com/ZoneCNH/kafkax/releases/tag/v1.0.0) | █████ 100% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | Kafka L2 adapter 已发布；driver-neutral API + 可选 kafka-go 生产驱动；真实 broker gates；⚠️ README 身份残留模板叙事（修复中） |
 | [natsx](https://github.com/ZoneCNH/natsx) | v1.0.1 | ███░ 95% | spec=100 mat=100 tsk=92 pln=100 prm=100 cod=100 | NATS L2 adapter：Core NATS / JetStream / Drain / reconnect / degraded health；TLS 已实现；⚠️ 正式四源 98+ arbiter + 生产 TLS gate + production SLO 待补（hardening pending） |
 | [postgresx](https://github.com/ZoneCNH/postgresx) | v1.0.1 | ███░ 90% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | PostgreSQL — 关系型存储、事务、迁移；⚠️ 单元测试 52.4% + Docker 集成 skip；evidence ancestry 问题 + production soak/adoption 待补（factory_grade_allowed=false） |
 | [taosx](https://github.com/ZoneCNH/taosx) | v1.0.1 | ███░ 90% | spec=67 mat=100 tsk=76 pln=100 prm=100 cod=100 | TDengine L2 adapter contract；pkg/taosx 公共 API；真实 taosWS 集成已验证；⚠️ spec 67 待修 |
 | [ossx](https://github.com/ZoneCNH/ossx) | v1.0.1 | ███░ 90% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | Aliyun OSS 对象存储 L2 adapter；⚠️ 公开 README 过薄（仅 2 commits），公开证据不足；race/vet/build/release-check 已通过 |
-| [clickhousex](https://github.com/ZoneCNH/clickhousex) | v1.0.1 ⚠️ | ██░░ 50% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | ClickHouse — OLAP 查询、批量写入；🔴 公开页面 no releases published — 表格 v1.0.1 待确认；建议降级为 spec/impl partial，补齐 release 后恢复 |
+| [clickhousex](https://github.com/ZoneCNH/clickhousex) | v1.0.1 | ███░ 80% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | ClickHouse — OLAP 查询、批量写入；⚠️ git tag v1.0.1 存在但 GitHub release 未发布；TRACEABILITY 覆盖率 100% |
 | [contracts](https://github.com/ZoneCNH/contracts) | v1.0.1-spec ⚠️ | ██░░ 50% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | 跨域稳定端口/事件/DTO 契约；🔴 公开 README H1 仍是 xlib-standard，no releases published — spec baseline，需身份重写 + release |
 | [transportx](https://github.com/ZoneCNH/transportx) | v1.1.1-spec ⚠️ | ██░░ 40% | spec=84 mat=100 tsk=100 pln=100 prm=100 cod=100 | 应用通信底座规格基线；🔴 公开 README H1 仍是 xlib-standard，no releases published — spec baseline，production_import_allowed=false |
 | [domainx](https://github.com/ZoneCNH/domainx) | v0.1.0 | █████ 100% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 |
@@ -44,23 +44,23 @@
 
 | 模块 | SPEC | IMPL | RELEASE | LIVE INT | EXT CI | ADOPT | SOAK | FACTORY | 备注 |
 |------|:----:|:----:|:-------:|:--------:|:------:|:-----:|:----:|:-------:|------|
-| xlib-standard | ✅ | ✅ | ⚠️ | N/A | ? | ? | N/A | ❌ | 表格 v1.0.0，公开 latest v0.6.5；版本待对齐 |
+| xlib-standard | ✅ | ✅ | ⚠️ | N/A | ? | ? | N/A | ❌ | git tag v1.0.0 存在，GitHub release 待确认 |
 | xlib-harness | ✅ | ✅ | ✅ | N/A | ? | ? | N/A | ❌ | Draft→Approved 待四源评分 |
 | xlib-evidence | ✅ | ✅ | ✅ | N/A | ? | ? | N/A | ❌ | Draft→Approved 待四源评分 |
 | xlibgate | ✅ | ✅ | ✅ | N/A | ? | ? | N/A | ❌ | v1.1.1 spec 完备（check+l2+trust），trust 代码待实现 |
 | kernel | ✅ | ✅ | ✅ | N/A | ? | ✅ | N/A | ✅ | L0 stdlib-only，建议 API 冻结 |
 | configx | ✅ | ✅ | ✅ | N/A | ? | ? | N/A | ✅ | v1.0.0 已发布，成熟度最高 |
-| observex | ✅ | ✅ | ⚠️ | N/A | ? | ? | N/A | ❌ | 表格 v1.0.0，公开 latest v0.3.1 |
-| testkitx | ✅ | ✅ | ⚠️ | N/A | ? | ? | N/A | ❌ | 表格 v1.0.0，公开 latest v0.4.0；test-only |
-| resiliencx | ✅ | ✅ | ⚠️ | N/A | ? | ? | N/A | ❌ | 表格 v1.0.1，公开 latest v0.4.9 |
+| observex | ✅ | ✅ | ⚠️ | N/A | ? | ? | N/A | ❌ | git tag latest v0.3.1，表格 v1.0.0 待对齐 |
+| testkitx | ✅ | ✅ | ⚠️ | N/A | ? | ? | N/A | ❌ | git tag latest v0.4.0，表格 v1.0.0 待对齐；test-only |
+| resiliencx | ✅ | ✅ | ⚠️ | N/A | ? | ? | N/A | ❌ | git tag latest v0.4.9，表格 v1.0.1 待对齐 |
 | schedulex | ✅ | ✅ | ✅ | N/A | ✅ | ? | ? | ✅ | v1.0.0 已发布，下游 smoke 通过 |
-| redisx | ✅ | ✅ | ✅ | ✅ | ? | ? | ? | ❌ | Docker Redis 集成已过；README 身份待修 |
-| kafkax | ✅ | ✅ | ✅ | ✅ | ? | ? | ? | ❌ | 真实 broker gate 已过；README 身份待修 |
+| redisx | ✅ | ✅ | ✅ | ✅ | ? | ? | ? | ❌ | Docker Redis 集成已过；README 身份修复中 |
+| kafkax | ✅ | ✅ | ✅ | ✅ | ? | ? | ? | ❌ | 真实 broker gate 已过；README 身份修复中 |
 | natsx | ✅ | ✅ | ✅ | ✅ | ? | ? | ? | ❌ | v1.0.0 已发布；正式四源 98+ 与生产 TLS gate 待补 |
 | postgresx | ✅ | ✅ | ✅ | ✅ | ? | ? | ? | ❌ | v1.0.0 已发布；evidence ancestry/soak/adoption 待补 |
 | taosx | ⚠️ | ✅ | ✅ | ✅ | ? | ? | ? | ❌ | spec 67 待修；真实 taosWS 集成已验证 |
 | ossx | ✅ | ✅ | ✅ | ✅ | ? | ? | ? | ❌ | Aliyun OSS 真实集成已过；公开证据偏薄 |
-| clickhousex | ✅ | ✅ | ✅ | ? | ? | ? | ? | ❌ | 表格 v1.0.1；需确认公开 release 状态 |
+| clickhousex | ✅ | ✅ | ✅ | ? | ? | ? | ? | ❌ | git tag v1.0.1 存在，GitHub release 待发布 |
 | contracts | ✅ | ⚠️ | ❌ | N/A | ? | ? | N/A | ❌ | spec baseline；无 release；README 身份待修 |
 | transportx | ⚠️ | ⚠️ | ❌ | N/A | ? | ? | N/A | ❌ | spec baseline (84)；无 release；README 身份待修 |
 | domainx | ✅ | ✅ | ⚠️ | N/A | ? | ? | N/A | ❌ | v0.1.0；待纳入 DEPS 与生成状态 |
