@@ -61,7 +61,7 @@
 | kafkax | ✅ | ✅ | ✅ | ✅ | ✅ | N/A | N/A | ✅ | v1.0.2; 8 CI workflows; 真实 broker gates 已验证 |
 | natsx | ✅ | ✅ | ✅ | ✅ | ✅ | N/A | N/A | ❌ | v1.0.0; 6 CI workflows; TLS 已实现; 四源仲裁+生产TLS gate 待补 |
 | postgresx | ✅ | ✅ | ✅ | ✅ | ✅ | N/A | N/A | ❌ | v1.0.0; 3 CI workflows; live integration 通过; 单元测试 52.4% |
-| taosx | ❌ | ✅ | ✅ | ✅ | ✅ | N/A | N/A | ❌ | v1.0.1; 8 CI workflows; 真实 taosWS 已验证; SPEC 67 待修 |
+| taosx | ✅ | ✅ | ✅ | ✅ | ✅ | N/A | N/A | ✅ | v1.0.1; 8 CI workflows; 真实 taosWS 已验证; SPEC WHEN/THEN 已补齐 (PR #374) |
 | ossx | ✅ | ✅ | ✅ | ✅ | ✅ | N/A | N/A | ✅ | v1.0.1; CI 已部署; 真实 Aliyun OSS 集成已验证 |
 | clickhousex | ✅ | ✅ | ✅ | ✅ | ✅ | N/A | N/A | ✅ | v1.0.1; CI 已部署+运行(Docker ClickHouse); git tag 已创建; SPEC+TRACEABILITY+TASKS 100% | v1.0.1; CI 已部署+运行(Docker ClickHouse); git tag 已创建; SPEC+TRACEABILITY+TASKS 100% |
 | contracts | ✅ | ❌ | ✅ | N/A | ✅ | ✅ | N/A | ❌ | v1.0.1-spec; git tag 已创建; 6 CI workflows; 1 下游消费者; 实现未完成 |
