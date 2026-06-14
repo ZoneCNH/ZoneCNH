@@ -1,8 +1,8 @@
 # xlibgate 设计方案
 
 > Design ID: DESIGN-xlibgate-v1
-> Source Spec: [SPEC.md](./SPEC.md) v1.0.0
-> 生成日期：2026-06-12
+> Source Spec: [SPEC.md](./SPEC.md) v1.1.1
+> 生成日期：2026-06-12 / 更新：2026-06-14（新增 §12 Trust Alignment 架构）
 
 ---
 
@@ -449,3 +449,236 @@ go test -bench=. -benchmem -count=3 ./scanner/ ./...
 - JSON 输出新增字段（如 `suggestions`），不破坏现有消费者
 - Human-readable 输出新增格式选项（如 `--output markdown`）
 - 支持插件化 checker（通过外部二进制调用，类似 gitleaks 模式）
+
+---
+
+## 12. Trust Alignment 架构
+
+> 对应 SPEC v1.1.1 FR-012~FR-019。本章描述 trust 子命令组的架构设计，与 check/l2 子命令组独立但不重复。
+
+### 12.1 架构概述
+
+trust 子命令组是 xlibgate 的 v2 Trust Alignment 门禁，负责 Foundation 70+ 模块的信任对齐验证。与 check 组不同，trust 组消费 xlib-standard 定义的标准文件（.repo-contract.yaml、FOUNDATION-DEPS.yaml）而非 xlibgate 自身配置文件。
+
+```text
+┌─────────────────────────────────────────────────────────────────────────┐
+│                          trust 子命令组                                  │
+│                                                                          │
+│  xlibgate trust identity --repo <path>                                   │
+│  xlibgate trust template-residue --repo <path>                           │
+│  xlibgate trust release-consistency --offline --repo <path>              │
+│  xlibgate trust maturity --factory --repo <path>                         │
+│  xlibgate trust import-boundary --repo <path> --deps FOUNDATION-DEPS.yaml│
+│  xlibgate trust testkit-prod-import --repo <path>                        │
+│  xlibgate trust secret-redaction --repo <path> --path release/evidence   │
+│  xlibgate trust fleet-status --repos-root <path> --output index.json     │
+└───────┬─────────────────────────────────────────────────────────────────┘
+        │
+        ▼
+┌──────────────────────────────────────────────────────────────────────────┐
+│  scanner/trust/  — 核心扫描引擎（新增）                                    │
+│                                                                           │
+│  common.go    — 统一 JSON schema + reason_code 枚举 + TrustResult 结构体  │
+│  identity.go  — 五源比对（README H1 / go.mod / contract / identity）      │
+│  template.go  — BR-010 禁止短语精确字符串扫描                              │
+│  release.go   — 七源版本一致性校验（含 --offline/--online 模式）           │
+│  maturity.go  — 11 维工厂级成熟度判定                                     │
+│  boundary.go  — FOUNDATION-DEPS.yaml 驱动的 import 边界检查               │
+│  testkit.go   — testkitx 生产代码隔离检测（路径分类）                      │
+│  secret.go    — 文档密钥/私有端点扫描（正则匹配 + 脱敏输出）                │
+│  fleet.go     — 20 模块舰队状态聚合（内联检查 + JSON 生成）                │
+└──────────────────────────────────────────────────────────────────────────┘
+        │
+        ▼
+┌──────────────────────────────────────────────────────────────────────────┐
+│  cmd/trust*.go  — CLI 子命令层（新增 9 文件）                              │
+│                                                                           │
+│  trust.go           — trust 父命令注册                                    │
+│  trust_identity.go  — --repo flag → scanner/trust/identity.go             │
+│  trust_template.go  — --repo, --summary → scanner/trust/template.go       │
+│  trust_release.go   — --repo, --offline/--online → scanner/trust/release  │
+│  trust_maturity.go  — --repo, --factory → scanner/trust/maturity.go       │
+│  trust_boundary.go  — --repo, --deps → scanner/trust/boundary.go          │
+│  trust_testkit.go   — --repo, --strict → scanner/trust/testkit.go         │
+│  trust_secret.go    — --repo, --path → scanner/trust/secret.go            │
+│  trust_fleet.go     — --repos-root, --output, --summary-only → fleet.go   │
+└──────────────────────────────────────────────────────────────────────────┘
+```
+
+### 12.2 与 check 子命令组的关系
+
+| 维度 | check | trust |
+|------|-------|-------|
+| 配置来源 | xlibgate.yaml（项目本地） | xlib-standard 标准文件（跨仓库） |
+| 扫描范围 | 单模块源码 | 单模块源码 + 跨模块聚合（fleet-status） |
+| 输出格式 | 汇总 JSON（checks[]） | 统一 per-check JSON（§9.3.1） |
+| 外部依赖 | gitleaks 二进制 | FOUNDATION-DEPS.yaml、.repo-contract.yaml |
+| 并行度 | check all 顺序执行 6 子检查 | 8 检查器完全独立（可并行调用） |
+
+trust import-boundary vs check imports：
+- check imports 消费 `xlibgate.yaml` 中的 `imports.forbidden` 规则
+- trust import-boundary 消费 `FOUNDATION-DEPS.yaml` 中的 `allowed_deps` 和 `forbidden_foundation_edges`
+- 两者独立实现，不共享扫描逻辑，因为输入来源和规则语义不同
+
+trust secret-redaction vs check all（secret_scan）：
+- check all 通过 gitleaks 扫描源码中的硬编码密钥
+- trust secret-redaction 扫描 release/evidence 文档中的明文密钥和私有端点
+- 互补关系：gitleaks 检测代码层泄露，secret-redaction 检测文档层泄露
+
+### 12.3 统一 JSON 输出设计
+
+所有 trust 子命令共享 `scanner/trust/common.go` 中定义的统一输出结构：
+
+```go
+// TrustResult 为所有 trust 子命令的统一输出结构
+type TrustResult struct {
+    Check      string     `json:"check"`
+    Repo       string     `json:"repo"`
+    Status     string     `json:"status"`     // pass|fail|error
+    Severity   string     `json:"severity"`   // info|warn|block
+    Findings   []Finding  `json:"findings"`
+    ReasonCode string     `json:"reason_code"`
+    Evidence   any        `json:"evidence"`
+}
+
+type Finding struct {
+    File    string `json:"file"`
+    Line    int    `json:"line,omitempty"`
+    Rule    string `json:"rule"`
+    Message string `json:"message"`
+}
+
+// ReasonCode 10 值枚举（定义在 common.go 中）
+type ReasonCode string
+const (
+    ReasonNone                 ReasonCode = ""
+    ReasonIdentityMismatch     ReasonCode = "IDENTITY_MISMATCH"
+    ReasonTemplateResidue      ReasonCode = "TEMPLATE_RESIDUE"
+    ReasonTemplateSelfSkip     ReasonCode = "TEMPLATE_RESIDUE_SELF_SKIP"
+    ReasonReleaseDrift         ReasonCode = "RELEASE_DRIFT"
+    ReasonFactoryGateBlocked   ReasonCode = "FACTORY_GATE_BLOCKED"
+    ReasonImportBoundary       ReasonCode = "IMPORT_BOUNDARY_VIOLATION"
+    ReasonTestkitProdImport    ReasonCode = "TESTKIT_PROD_IMPORT"
+    ReasonSecretLeak           ReasonCode = "SECRET_LEAK"
+    ReasonPrivateEndpointLeak  ReasonCode = "PRIVATE_ENDPOINT_LEAK"
+    ReasonContractParseError   ReasonCode = "CONTRACT_PARSE_ERROR"
+)
+```
+
+### 12.4 8 个检查器设计要点
+
+#### (1) identity — 五源比对
+
+- 输入：README.md、go.mod、.repo-contract.yaml
+- 比对逻辑：字符串精确比对
+- 身份声明检测：扫描 README 和 SPEC 中的关键词 "Standard Source" / "Generator" / "Go Reference Template"
+- public_package 检测：验证 .repo-contract.yaml 中存在 `public_package` 字段
+- 复杂度：O(1) 文件读取 + O(n) 关键词扫描
+
+#### (2) template-residue — 禁止短语扫描
+
+- 输入：仓库中所有 .md/.yaml/.go/.txt/.json 文本文件
+- 算法：对 BR-010 中 5 条短语逐一执行 `strings.Contains` 精确匹配
+- xlib-standard 自跳：通过 `--repo` 路径判断，若 repo 名 == `xlib-standard` 则 skip
+- 二进制跳过：文件扩展名判断（.png/.so/.exe 等跳过）
+- 复杂度：O(files × phrases × avg_line_length)，50 模块 < 15s
+
+#### (3) release-consistency — 七源一致性
+
+- 离线模式（默认）：读取本地文件 + git tag 本地投影
+  - `.repo-contract.yaml` → versions.table_version
+  - `go.mod` → module path
+  - `VERSION` 文件
+  - `CHANGELOG.md` → 解析 latest section 版本号
+  - `git tag` → 最新 tag（`git describe --tags --abbrev=0`）
+  - `release/manifest/latest.json` → version 字段
+- 在线模式（`--online`）：GitHub Releases API 替代后两项
+- 比对结果：任一不一致 → RELEASE_DRIFT
+- 复杂度：文件 I/O + 1 次 git 命令（离线），+ 1 次 HTTP API 调用（在线）
+
+#### (4) maturity — 11 维工厂级判定
+
+- 输入：.repo-contract.yaml maturity 节
+- 11 维：spec_complete, implementation_complete, unit_tests_complete, contract_tests_complete, traceability_complete, release_manifest_complete, live_integration_complete, failure_profiles_complete, external_ci_artifacts_complete, downstream_adoption_complete, production_soak_complete
+- 判定：全部 == true → pass；任一 false → FACTORY_GATE_BLOCKED
+- 防 Goodhart：若 maturity 节仅提供单个百分比值（如 "100%"）而缺少 11 维明细 → 拒绝接受
+- 复杂度：O(1) 布尔遍历
+
+#### (5) import-boundary — FOUNDATION-DEPS.yaml 驱动
+
+- 输入：FOUNDATION-DEPS.yaml + 目标仓库源码
+- YAML 解析：`allowed_deps`（白名单）和 `forbidden_foundation_edges`（黑名单）
+- AST 扫描：`go/parser` + `go/ast` 遍历所有 .go 文件 import 声明
+- kernel 特殊规则：若 repo == kernel 且 import 非 stdlib → kernel_stdlib_violation
+- 复杂度：O(files × imports)，50 模块 < 10s
+
+#### (6) testkit-prod-import — 路径分类
+
+- 路径分类表（见 SPEC.md FR-017）
+- 默认模式：pkg/、internal/、cmd/ 生产路径检测 testkitx
+- 豁免：*_test.go、test/、testkit/、examples/、internal/test*、cmd/test*
+- --strict：internal/ 所有子目录（含非 test）视为生产代码
+- testkitx 自身跳过
+- 复杂度：O(files × imports)，与 import-boundary 相当
+
+#### (7) secret-redaction — 文档脱敏
+
+- 输入：release/evidence/ 目录下的所有文本文件
+- 密钥检测正则：`(?i)(api_key|secret_key|access_key|password|token|dsn)\s*[=:]\s*\S+`
+- 私有端点检测：IPv4 私有地址范围（127., 10., 172.16-31., 192.168.）+ localhost
+- 脱敏输出：仅输出匹配类型（如 "AWS_SECRET_ACCESS_KEY"），绝不输出值
+- 开发上下文豁免：文件路径含 test/、testdata/、*_test.go；.md 中 `dev-only` 代码块
+- 符号链接：跟踪但限制深度 max 3 层
+- 复杂度：O(files × lines)，50 模块 < 10s
+
+#### (8) fleet-status — 舰队聚合
+
+- 输入：`--repos-root` 下的模块目录列表
+- 聚合流程：遍历模块 → 读取 .repo-contract.yaml → 内联检查（不调用外部 CLI）
+- 每模块检查：identity 存在性、release 版本、maturity 状态、boundaries、blockers
+- 输出：.foundationx/status/index.json
+- 容错：缺失 .repo-contract.yaml 的模块 → status=error，继续聚合
+- --summary-only：仅输出 pass/fail/error 计数和 blocker 列表
+- 复杂度：O(modules × avg_repo_check_time)，20 模块 < 60s
+
+### 12.5 并行策略
+
+所有 8 个 trust 检查器完全独立，互相无依赖。在 CI 中可以并行调用：
+
+```bash
+# 并行执行所有 trust 检查（每个检查独立 repo）
+xlibgate trust identity --repo . &
+xlibgate trust template-residue --repo . &
+xlibgate trust release-consistency --offline --repo . &
+xlibgate trust maturity --factory --repo . &
+xlibgate trust import-boundary --repo . --deps FOUNDATION-DEPS.yaml &
+xlibgate trust testkit-prod-import --repo . &
+xlibgate trust secret-redaction --repo . --path release/evidence &
+xlibgate trust fleet-status --repos-root .. --output index.json &
+wait
+```
+
+fleet-status 聚合可在此之后运行（消费各模块独立检查结果）。
+
+### 12.6 错误处理策略
+
+所有 trust 检查器使用统一的错误分类：
+
+| 错误类型 | reason_code | Exit |
+|----------|-------------|------|
+| 检查通过 | "" | 0 |
+| 业务违规 | 具体 reason_code（如 IDENTITY_MISMATCH） | 1 |
+| 配置/文件缺失 | CONTRACT_PARSE_ERROR | 2 |
+
+与 check 子命令组一致：exit 1 = 业务失败，exit 2 = 内部错误。各 checker 不 panic，所有错误通过 TrustResult 返回。
+
+### 12.7 测试策略
+
+| 层级 | 覆盖 | 位置 |
+|------|------|------|
+| 单元测试 | scanner/trust/*_test.go | 每个 checker 独立测试 |
+| 验收测试 | TC-014~TC-029 | 端到端 CLI 调用验证 |
+| 边界测试 | SPEC §13 10 个 trust Edge Cases | 异常输入 + 边界条件 |
+| Benchmark | SPEC §17 9 个 trust 性能目标 | go test -bench |
+| 集成测试 | TASK-XLIBGATE-019 | fleet-status 全链路 |
+
