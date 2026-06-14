@@ -1,10 +1,22 @@
 # Foundation 模块规格索引
 
-> 20 个基座模块（含 domainx） 的独立完整规格，按架构层级组织。`x.go` 组合根不再作为 `module/` 下的模块规格维护。
+> 19 个基座模块与 5 个 L2.5 领域共享模块 的独立完整规格，按架构层级组织。`x.go` 组合根不再作为 `module/` 下的模块规格维护。
 
-最后更新：2026-06-14
+最后更新：2026-06-15
 
 ---
+
+## L2.5 v1.0.0 执行计划索引
+
+| 模块 | 当前版本 | 目标版本 | 职责 | 文档 |
+| --- | --- | --- | --- | --- |
+| `decimalx` | v0.2.0 | v1.0.0 | 高精度 Decimal / Money / Currency 数值基础 | [Goal](decimalx/goal.md) / [Spec](decimalx/SPEC.md) / [Traceability](decimalx/TRACEABILITY.md) / [Plan](decimalx/IMPLEMENTATION-PLAN.md) |
+| `domain-market` | v0.1.0 | v1.0.0 | Tick / Quote / Bar / OrderBook / Instrument / quality gate 市场语义 | [Goal](domain-market/goal.md) / [Spec](domain-market/SPEC.md) / [Traceability](domain-market/TRACEABILITY.md) / [Plan](domain-market/IMPLEMENTATION-PLAN.md) |
+| `domain-macro` | v0.1.0 | v1.0.0 | MacroPoint / MacroInformationSet / no-lookahead 宏观语义 | [Goal](domain-macro/goal.md) / [Spec](domain-macro/SPEC.md) / [Traceability](domain-macro/TRACEABILITY.md) / [Plan](domain-macro/IMPLEMENTATION-PLAN.md) |
+| `domainx` | v0.1.0 | v1.0.0 | Order / Trade / Position / Portfolio / ExecutionReport 交易域共享模型 | [Goal](domainx/goal.md) / [Spec](domainx/SPEC.md) / [Traceability](domainx/TRACEABILITY.md) / [Plan](domainx/V1-GOAL-EXECUTION-PLAN.md) |
+| `domain-exchange` | v0.1.0 | v1.0.0 | Exchange SPI / VenueCapability / RateLimitPolicy / ExchangeError | [Goal](domain-exchange/goal.md) / [Spec](domain-exchange/SPEC.md) / [Traceability](domain-exchange/TRACEABILITY.md) / [Plan](domain-exchange/IMPLEMENTATION-PLAN.md) |
+
+依赖顺序：`decimalx` -> `domain-market` / `domain-macro` / `domainx` -> `domain-exchange`。上述目标版本表示执行计划基线，不代表对应模块仓库已经完成 v1.0.0 tag。
 
 ## 同步口径
 
@@ -140,7 +152,7 @@ test-only，不参与生产运行时。
 
 ---
 
-## 领域共享（1 个）
+## 领域共享（5 个）
 
 Foundation 目录内的 L2.5 领域共享规格，用于执行域订单、成交、持仓和组合语义；业务域仍通过 `contracts` / `transportx` 保持跨域边界。
 
