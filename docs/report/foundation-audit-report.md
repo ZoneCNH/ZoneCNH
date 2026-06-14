@@ -379,7 +379,7 @@ _下一步：O1 (xlibgate 代码) / O2 (testkitx code 阶段) / O6 (postgresx fo
 
 ## 7. 修复状态（2026-06-14 闭环）
 
-### 已完成（本仓库 7 PR）
+### 已完成（本仓库 10 PR + 3 外部仓库 PR）
 
 | 修复 | PR | 内容 |
 |------|----|------|
@@ -390,6 +390,9 @@ _下一步：O1 (xlibgate 代码) / O2 (testkitx code 阶段) / O6 (postgresx fo
 | O4 | [#239](https://github.com/ZoneCNH/ZoneCNH/pull/239) | taosx/clickhousex 时序存储边界 |
 | TRACKER | [#240](https://github.com/ZoneCNH/ZoneCNH/pull/240) | FOUNDATION-TRACKER 对齐更新 |
 | 仓库+规则 | [#241](https://github.com/ZoneCNH/ZoneCNH/pull/241) | 创建 3 缺失仓库 + CLAUDE.md 强制对应规则 + CI |
+| O2 代码 | [#244](https://github.com/ZoneCNH/ZoneCNH/pull/244) | testkitx code 阶段完成 → 80%→90%（外部 [testkitx#13](https://github.com/ZoneCNH/testkitx/pull/13)） |
+| O6 迁移 | [#245](https://github.com/ZoneCNH/ZoneCNH/pull/245) | postgresx foundationx 依赖迁移完成（外部 [postgresx#8](https://github.com/ZoneCNH/postgresx/pull/8)） |
+| O1 门禁 | [#246](https://github.com/ZoneCNH/ZoneCNH/pull/246) | xlibgate CLI 实现完成 → 30%→90%（外部 [xlibgate#23](https://github.com/ZoneCNH/xlibgate/pull/23)） |
 
 ### 审计遗漏项（本报告未覆盖，已修复）
 
@@ -403,9 +406,9 @@ _下一步：O1 (xlibgate 代码) / O2 (testkitx code 阶段) / O6 (postgresx fo
 
 | 项 | 仓库 | 说明 |
 |----|------|------|
-| O1 | ZoneCNH/xlibgate | 10 tasks 代码实现（当前 SPEC 完整，进度 30%） |
-| O2 | ZoneCNH/testkitx | code/ 阶段 Go 实现（当前进度 80%） |
-| O6 | ZoneCNH/postgresx | Issue 6: foundationx 依赖迁移 |
+| O1 | ZoneCNH/xlibgate | ✅ PR #23 merged — CLI 实现完成（进度 30%→90%） |
+| O2 | ZoneCNH/testkitx | ✅ PR #13 merged — code 阶段完成（进度 80%→90%） |
+| O6 | ZoneCNH/postgresx | ✅ PR #8 merged — 132 foundationx 引用→0 |
 
 ### 当前基线
 
