@@ -113,7 +113,7 @@ scripts/audit-status.py        → 10k, 21 checks
 .github/workflows/audit-status.yml → 410B, blocks merge on FAIL
 ```
 
-`node .claude/hooks/count-guard.mjs < test_block.json` → exit 2（block 模式生效）。`python3 scripts/audit-status.py` → exit 0。
+`python3 scripts/audit-status.py` → exit 0（21/21 PASS）。CountGuard hook 语法校验通过（`node -c .claude/hooks/count-guard.mjs`）。
 
 **判定**: 通过。
 
