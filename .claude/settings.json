@@ -18,6 +18,15 @@
                         "command": "node .claude/hooks/edit-guard.mjs"
                     }
                 ]
+            },
+            {
+                "matcher": "Write|Edit",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "node .claude/hooks/count-guard.mjs"
+                    }
+                ]
             }
         ],
         "PostToolUse": [
