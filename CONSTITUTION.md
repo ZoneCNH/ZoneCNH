@@ -55,7 +55,7 @@
 
 ## 序言
 
-FoundationX 由基座层（16 个模块）、L2.5 领域共享层（4 个模块）以及数据域、分析域、决策域、执行域组成。本宪法规定模块实现和交付管线必须遵守的不变量，确保系统在演进过程中保持一致性、可追溯性和可维护性。
+FoundationX 由基座层（20 个模块）、L2.5 领域共享层（4 个模块）以及数据域、分析域、决策域、执行域组成。本宪法规定模块实现和交付管线必须遵守的不变量，确保系统在演进过程中保持一致性、可追溯性和可维护性。
 
 本宪法的约束对象：
 
@@ -76,7 +76,7 @@ FoundationX 由基座层（16 个模块）、L2.5 领域共享层（4 个模块�
 | 编号 | 原则                           | 含义                                                                                                        |
 | ---- | ------------------------------ | ----------------------------------------------------------------------------------------------------------- |
 | P1   | Foundation 先边界后功能        | 先固化 `xlib-standard`、依赖矩阵、Go baseline 和 release gate，再扩大 L1 能力面                             |
-| P2   | `xlib-standard` 不是运行时依赖 | 它是标准事实源、Go Reference Template、Generator、Harness Gate 和 Evidence Runtime 五类职责，不承载业务运行 |
+| P2   | `xlib-standard` 不是运行时依赖 | 它是标准事实源和 Go Reference Template 二类职责（Generator/Harness/Evidence 已拆分至 `xlib-harness` / `xlib-evidence`），不承载业务运行 |
 | P3   | `resiliencx` 只做运行时弹性    | timeout/retry/circuit/bulkhead/rate/fallback 属于它，交易风控属于 `risk-engine`                             |
 | P4   | `testkitx` 只能 test-only      | 生产 import graph 不允许出现测试工具包                                                                      |
 
@@ -582,7 +582,7 @@ AI 代理在生成或审查代码时：
 
 本宪法适用于 `github.com/ZoneCNH` 下：
 
-- **模块实现**：所有基座层模块（16 个）和 L2.5 领域共享层（4 个）
+- **模块实现**：所有基座层模块（20 个）和 L2.5 领域共享层（4 个）
 - **交付管线**：数据域、分析域、决策域、执行域的功能开发（Bug 修复和配置变更可走轻量流程，但仍需满足 §15.2 D1 和 D6）
 
 §1-§14 约束模块实现质量；§15-§19 约束交付流程质量。两者互补，不可互相豁免。
@@ -846,25 +846,29 @@ AI 生成的代码必须经过：
 
 ## 附录 A：模块清单
 
-| 层级         | 模块          | 规格                                   | 仓库                                                      |
-| ------------ | ------------- | -------------------------------------- | --------------------------------------------------------- |
-| L0           | kernel        | [SPEC](./module/kernel/SPEC.md)        | [kernel](https://github.com/ZoneCNH/kernel)               |
-| L1           | configx       | [SPEC](./module/configx/SPEC.md)       | [configx](https://github.com/ZoneCNH/configx)             |
-| L1           | observex      | [SPEC](./module/observex/SPEC.md)      | [observex](https://github.com/ZoneCNH/observex)           |
-| L1           | resiliencx    | [SPEC](./module/resiliencx/SPEC.md)    | [resiliencx](https://github.com/ZoneCNH/resiliencx)       |
-| L1           | schedulex     | [SPEC](./module/schedulex/SPEC.md)     | [schedulex](https://github.com/ZoneCNH/schedulex)         |
-| L1 test-only | testkitx      | [SPEC](./module/testkitx/SPEC.md)      | [testkitx](https://github.com/ZoneCNH/testkitx)           |
-| 标准源       | xlib-standard | [SPEC](./module/xlib-standard/SPEC.md) | [xlib-standard](https://github.com/ZoneCNH/xlib-standard) |
-| 门禁         | xlibgate      | [SPEC](./module/xlibgate/SPEC.md)      | [xlibgate](https://github.com/ZoneCNH/xlibgate)           |
-| 存储扩展     | redisx        | [SPEC](./module/redisx/SPEC.md)        | [redisx](https://github.com/ZoneCNH/redisx)               |
-| 存储扩展     | kafkax        | [SPEC](./module/kafkax/SPEC.md)        | [kafkax](https://github.com/ZoneCNH/kafkax)               |
-| 存储扩展     | natsx         | [SPEC](./module/natsx/SPEC.md)         | [natsx](https://github.com/ZoneCNH/natsx)                 |
-| 存储扩展     | postgresx     | [SPEC](./module/postgresx/SPEC.md)     | [postgresx](https://github.com/ZoneCNH/postgresx)         |
-| 存储扩展     | taosx         | [SPEC](./module/taosx/SPEC.md)         | [taosx](https://github.com/ZoneCNH/taosx)                 |
-| 存储扩展     | ossx          | [SPEC](./module/ossx/SPEC.md)          | [ossx](https://github.com/ZoneCNH/ossx)                   |
-| 存储扩展     | clickhousex   | [SPEC](./module/clickhousex/SPEC.md)   | [clickhousex](https://github.com/ZoneCNH/clickhousex)     |
-| 契约         | contracts     | [SPEC](./module/contracts/SPEC.md)     | [contracts](https://github.com/ZoneCNH/contracts)         |
-| 组合根       | x.go          | [SPEC](./module/xgo/SPEC.md)           | [x.go](https://github.com/ZoneCNH/x.go)                   |
+| 层级           | 模块          | 规格                                   | 仓库                                                      |
+| -------------- | ------------- | -------------------------------------- | --------------------------------------------------------- |
+| L0 原语        | kernel        | [SPEC](./module/kernel/SPEC.md)        | [kernel](https://github.com/ZoneCNH/kernel)               |
+| L1 运行时      | configx       | [SPEC](./module/configx/SPEC.md)       | [configx](https://github.com/ZoneCNH/configx)             |
+| L1 运行时      | observex      | [SPEC](./module/observex/SPEC.md)      | [observex](https://github.com/ZoneCNH/observex)           |
+| L1 运行时      | resiliencx    | [SPEC](./module/resiliencx/SPEC.md)    | [resiliencx](https://github.com/ZoneCNH/resiliencx)       |
+| L1 运行时      | schedulex     | [SPEC](./module/schedulex/SPEC.md)     | [schedulex](https://github.com/ZoneCNH/schedulex)         |
+| L1 test-only   | testkitx      | [SPEC](./module/testkitx/SPEC.md)      | [testkitx](https://github.com/ZoneCNH/testkitx)           |
+| 标准源         | xlib-standard | [SPEC](./module/xlib-standard/SPEC.md) | [xlib-standard](https://github.com/ZoneCNH/xlib-standard) |
+| 门禁           | xlibgate      | [SPEC](./module/xlibgate/SPEC.md)      | [xlibgate](https://github.com/ZoneCNH/xlibgate)           |
+| 门禁           | xlib-harness  | [SPEC](./module/xlib-harness/SPEC.md)  | [xlib-harness](https://github.com/ZoneCNH/xlib-harness)   |
+| 门禁           | xlib-evidence | [SPEC](./module/xlib-evidence/SPEC.md) | [xlib-evidence](https://github.com/ZoneCNH/xlib-evidence) |
+| 存储扩展       | redisx        | [SPEC](./module/redisx/SPEC.md)        | [redisx](https://github.com/ZoneCNH/redisx)               |
+| 存储扩展       | kafkax        | [SPEC](./module/kafkax/SPEC.md)        | [kafkax](https://github.com/ZoneCNH/kafkax)               |
+| 存储扩展       | natsx         | [SPEC](./module/natsx/SPEC.md)         | [natsx](https://github.com/ZoneCNH/natsx)                 |
+| 存储扩展       | postgresx     | [SPEC](./module/postgresx/SPEC.md)     | [postgresx](https://github.com/ZoneCNH/postgresx)         |
+| 存储扩展       | taosx         | [SPEC](./module/taosx/SPEC.md)         | [taosx](https://github.com/ZoneCNH/taosx)                 |
+| 存储扩展       | ossx          | [SPEC](./module/ossx/SPEC.md)          | [ossx](https://github.com/ZoneCNH/ossx)                   |
+| 存储扩展       | clickhousex   | [SPEC](./module/clickhousex/SPEC.md)   | [clickhousex](https://github.com/ZoneCNH/clickhousex)     |
+| 契约           | contracts     | [SPEC](./module/contracts/SPEC.md)     | [contracts](https://github.com/ZoneCNH/contracts)         |
+| 契约/传输      | transportx    | [SPEC](./module/transportx/SPEC.md)    | [transportx](https://github.com/ZoneCNH/transportx)       |
+| 领域共享       | domainx       | [SPEC](./module/domainx/SPEC.md)       | [domainx](https://github.com/ZoneCNH/domainx)             |
+| 组合根         | x.go          | [SPEC](./module/xgo/SPEC.md)           | [x.go](https://github.com/ZoneCNH/x.go)                   |
 
 ## 附录 B：与 CLAUDE.md 的关系
 
