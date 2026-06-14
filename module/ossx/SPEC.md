@@ -3,9 +3,9 @@
 ## 1. Metadata
 
 - Module: `module/ossx`
-- Status: Review
+- Status: Approved
 - Spec-Version: v1.0.0
-- Last-Updated: 2026-06-12
+- Last-Updated: 2026-06-14
 - Version: v1.0.0
 - Owner: platform storage maintainers
 - Related:

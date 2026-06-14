@@ -2,15 +2,15 @@
 
 > Foundation L1 test-only。fake/fixture/golden/contract/boundary 工具包。禁止生产导入。
 
-最后更新：2026-06-07
+最后更新：2026-06-14
 
 ---
 
 ## 1. Metadata
 
-- Status: Draft
+- Status: Review
 - Spec-Version: v0.7.3
-- Last-Updated: 2026-06-07
+- Last-Updated: 2026-06-14
 - Owner: ZoneCNH
 - Layer: L1 test-only
 - Version: v0.7.3

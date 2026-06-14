@@ -2,15 +2,15 @@
 
 > Foundation L1 运行时契约。vendor-neutral 日志、指标、追踪、健康与脱敏契约。
 
-最后更新：2026-06-12
+最后更新：2026-06-14
 
 ---
 
 ## 1. Metadata
 
-- Status: Review
+- Status: Approved
 - Spec-Version: v1.0.1
-- Last-Updated: 2026-06-12
+- Last-Updated: 2026-06-14
 - Owner: ZoneCNH
 - Layer: L1 基础能力
 - Version: v0.7.3 <!-- 模块发布版本；Spec-Version 为本文档自身版本 -->

@@ -2,7 +2,7 @@
 
 > 基座 · Redis 基础能力封装。提供统一 Key、连接生命周期、KV/TTL、缓存、基础数据结构、Pub/Sub、Pipeline、分布式锁、计数限流、Codec、Health 和观测 hooks。
 
-最后更新：2026-06-12
+最后更新：2026-06-14
 
 ---
 
@@ -10,9 +10,9 @@
 
 ## 1. Metadata
 
-- Status: Draft
+- Status: Review
 - Spec-Version: v1.0.0
-- Last-Updated: 2026-06-12
+- Last-Updated: 2026-06-14
 - Owner: ZoneCNH
 - Layer: 基座 · 存储扩展
 - Repository: [github.com/ZoneCNH/redisx](https://github.com/ZoneCNH/redisx)

@@ -4,7 +4,7 @@
 
 | 字段 | 值 |
 |------|-----|
-| Status | Draft |
+| Status | Review |
 | Owner | Foundation |
 | Source | 从 xlib-standard 拆分：承接 Generator + Harness Gate 职责 |
 | Last Updated | 2026-06-14 |

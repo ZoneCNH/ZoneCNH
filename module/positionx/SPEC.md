@@ -8,8 +8,8 @@
 
 ## 1. Metadata
 
-- Status: Draft
-- Spec-Version: v0.1.0
+- Status: Review
+- Spec-Version: v1.0.0
 - Last-Updated: 2026-06-14
 - Owner: ZoneCNH
 - Layer: 执行域 · 仓位管理
