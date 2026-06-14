@@ -52,7 +52,7 @@ STATUS.md / ARCHITECTURE.md / README.md 跨文件域成员、版本号、进度�
 - [x] ISC-7 RELEASE 列 14✅/6❌ (GitHub API 验证)
 - [x] ISC-8 audit-status.py 21/21 PASS
 
-## 最终自洽状态（22 项机械化验证 + 6 项人工核查全部 PASS）
+## 最终自洽状态（24 项机械化验证 + 6 项人工核查全部 PASS）
 
 ### 自动化检查 (audit-status.py)
 
