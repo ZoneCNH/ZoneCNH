@@ -42,6 +42,11 @@ status: pending
 | §16.5       | 集成测试                                 |
 | §22         | Release DoD                              |
 
+## Non-scope
+
+- 不实现新的 trust 检查逻辑
+- 不修改 check/l2 文档
+
 ## Deliverables
 
 | 文件          | 内容                                       |

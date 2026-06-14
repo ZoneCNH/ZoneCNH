@@ -12,7 +12,7 @@ TASK-XLIBGATE-015: 实现 trust import-boundary 命令，消费 FOUNDATION-DEPS.
 - module/xlibgate/SPEC.md FR-016 (trust import-boundary)
 - module/xlibgate/SPEC.md TC-022 (pass), TC-023 (violation)
 
-## Current Scope
+## Scope
 
 | Deliverable | Description |
 |-------------|-------------|
@@ -52,7 +52,7 @@ TASK-XLIBGATE-015: 实现 trust import-boundary 命令，消费 FOUNDATION-DEPS.
 - findings 含文件路径、行号、违规 import 路径、违反的规则
 - 统一 JSON 输出
 
-## Verification
+## Validation
 
 ```bash
 xlibgate trust import-boundary --repo testdata/trust-pass --deps FOUNDATION-DEPS.yaml 2>&1; [ $? -eq 0 ]

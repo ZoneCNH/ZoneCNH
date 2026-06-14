@@ -18,7 +18,7 @@ TASK-XLIBGATE-010: 实现 trust 父命令注册、统一 JSON 输出 schema、re
 - FR-006: 输出格式（JSON 含 status/checks[]/summary）
 - §9.3.1: 统一 JSON schema `{check, repo, status, severity, findings, reason_code, evidence}`
 
-## Current Scope
+## Scope
 
 | Deliverable | Description |
 |-------------|-------------|
@@ -47,7 +47,7 @@ TASK-XLIBGATE-010: 实现 trust 父命令注册、统一 JSON 输出 schema、re
 - JSON 序列化使用 `encoding/json` 标准库
 - exit code 协议：0=pass, 1=fail, 2=error
 
-## Verification
+## Validation
 
 ```bash
 go build ./... && xlibgate trust --help 2>&1 | grep -q "identity\|template\|release-consistency\|maturity\|import-boundary\|testkit-prod-import\|secret-redaction\|fleet-status"

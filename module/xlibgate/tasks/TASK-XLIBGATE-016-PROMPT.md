@@ -12,7 +12,7 @@ TASK-XLIBGATE-016: 实现 trust testkit-prod-import 命令，检测生产代码�
 - module/xlibgate/SPEC.md FR-017 (trust testkit-prod-import)
 - module/xlibgate/SPEC.md TC-024 (pass), TC-025 (violation)
 
-## Current Scope
+## Scope
 
 | Deliverable | Description |
 |-------------|-------------|
@@ -50,7 +50,7 @@ TASK-XLIBGATE-016: 实现 trust testkit-prod-import 命令，检测生产代码�
 - 统一 JSON 输出
 - Edge case: testkitx 自身仓库跳过（testkitx 允许引用自身）
 
-## Verification
+## Validation
 
 ```bash
 xlibgate trust testkit-prod-import --repo testdata/trust-pass 2>&1; [ $? -eq 0 ]

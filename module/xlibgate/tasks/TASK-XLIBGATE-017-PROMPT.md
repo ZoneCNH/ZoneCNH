@@ -12,7 +12,7 @@ TASK-XLIBGATE-017: 实现 trust secret-redaction 命令，扫描文档中的敏�
 - module/xlibgate/SPEC.md FR-018 (trust secret-redaction)
 - module/xlibgate/SPEC.md TC-026 (clean), TC-027 (leak)
 
-## Current Scope
+## Scope
 
 | Deliverable | Description |
 |-------------|-------------|
@@ -56,7 +56,7 @@ TASK-XLIBGATE-017: 实现 trust secret-redaction 命令，扫描文档中的敏�
 - 符号链接深度限制 max 3 层（Edge Case）
 - 统一 JSON 输出
 
-## Verification
+## Validation
 
 ```bash
 xlibgate trust secret-redaction --repo testdata/trust-pass --path release/evidence 2>&1; [ $? -eq 0 ]

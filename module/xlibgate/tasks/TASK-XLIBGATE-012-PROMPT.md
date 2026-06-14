@@ -13,7 +13,7 @@ TASK-XLIBGATE-012: 实现 trust template-residue 命令，扫描下游仓库中�
 - module/xlibgate/SPEC.md BR-010 (5 条禁止模板身份短语)
 - module/xlibgate/SPEC.md TC-016, TC-017
 
-## Current Scope
+## Scope
 
 | Deliverable | Description |
 |-------------|-------------|
@@ -52,7 +52,7 @@ TASK-XLIBGATE-012: 实现 trust template-residue 命令，扫描下游仓库中�
 - 不区分注释或代码上下文
 - 统一 JSON 输出
 
-## Verification
+## Validation
 
 ```bash
 xlibgate trust template-residue --repo testdata/trust-pass 2>&1; [ $? -eq 0 ]

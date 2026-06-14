@@ -12,7 +12,7 @@ TASK-XLIBGATE-018: 实现 trust fleet-status 命令，聚合 20 模块舰队状�
 - module/xlibgate/SPEC.md FR-019 (trust fleet-status)
 - module/xlibgate/SPEC.md TC-028 (all pass), TC-029 (partial fail)
 
-## Current Scope
+## Scope
 
 | Deliverable | Description |
 |-------------|-------------|
@@ -56,7 +56,7 @@ TASK-XLIBGATE-018: 实现 trust fleet-status 命令，聚合 20 模块舰队状�
 - index.json 为合法 JSON
 - 统一 JSON 输出
 
-## Verification
+## Validation
 
 ```bash
 xlibgate trust fleet-status --repos-root testdata/foundation-root --output /tmp/index.json 2>&1; [ $? -eq 0 ]
