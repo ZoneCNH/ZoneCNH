@@ -6,9 +6,9 @@ TASK-NATSX-006:
     - "module/natsx/SPEC.md#FR-NFR-006"
     - "module/natsx/SPEC.md#9-interface-contract"
   acceptance_criteria:
-    - "AC-SBJ-001: Build 产出合法 subject 字符串"
-    - "AC-SBJ-002: Parse 还原 domain/resource/action/version"
-    - "AC-SBJ-003: 非法 token 拒绝并返回错误"
+    - "§9: Build 产出合法 subject 字符串"
+    - "§9: Parse 还原 domain/resource/action/version"
+    - "§9: 非法 token 拒绝并返回错误"
   files:
     - "subject.go"
     - "subject_test.go"

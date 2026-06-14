@@ -6,9 +6,9 @@ TASK-NATSX-008:
     - "module/natsx/SPEC.md#FR-NFR-008"
     - "module/natsx/SPEC.md#11-config-schema"
   acceptance_criteria:
-    - "AC-CFG-001: foundationx.nats.* 默认值正确"
-    - "AC-CFG-002: FOUNDATIONX_NATS_* 优先于 legacy NATS_*"
-    - "AC-CFG-003: 配置错误不打印 token/password/nkey/credentials"
+    - "§11: foundationx.nats.* 默认值正确"
+    - "§11: FOUNDATIONX_NATS_* 优先于 legacy NATS_*"
+    - "§11: 配置错误不打印 token/password/nkey/credentials"
   files:
     - "config.go"
     - "env.go"
@@ -24,7 +24,7 @@ TASK-NATSX-008:
 
 ## Non-Scope
 
-Does NOT implement NATS server deployment, JetStream stream auto-provisioning, or NATS account management. Does NOT implement config source parsing (→ configx).
+Does NOT implement config source parsing (→ configx).
 
 ## Acceptance
 

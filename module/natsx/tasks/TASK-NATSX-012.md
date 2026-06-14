@@ -6,9 +6,9 @@ TASK-NATSX-012:
     - "module/natsx/SPEC.md#FR-NFR-003"
     - "module/natsx/SPEC.md#17-performance-budget"
   acceptance_criteria:
-    - "AC-PERF-001: Core Publish < 1ms benchmark"
-    - "AC-PERF-002: Request-Reply < 5ms benchmark"
-    - "AC-PERF-003: JetStream Publish/Fetch < 2ms benchmark"
+    - "§17: Core Publish < 1ms benchmark"
+    - "§17: Request-Reply < 5ms benchmark"
+    - "§17: JetStream Publish/Fetch < 2ms benchmark"
   files:
     - "benchmark_test.go"
   priority: P2
@@ -21,7 +21,7 @@ TASK-NATSX-012:
 
 ## Non-Scope
 
-Does NOT implement NATS server deployment, JetStream stream auto-provisioning, or NATS account management. Production benchmark threshold enforcement remains separate.
+Production benchmark threshold enforcement remains separate.
 
 ## Acceptance
 

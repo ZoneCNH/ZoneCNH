@@ -2,7 +2,7 @@
   "module": "natsx",
   "stage": "tasks",
   "platform": "claude",
-  "scored_at": "2026-06-14T08:25:00Z",
+  "scored_at": "2026-06-14T08:35:00Z",
   "score": 99,
   "redline": false,
   "verdict": "Ready-candidate",
@@ -62,9 +62,9 @@
       "id": "D1",
       "severity": "LOW",
       "points": 1,
-      "rule": "NFR task（006-009,011-014）的 AC ID 为 task 级自定义前缀，非 SPEC AC registry 编号 ID。NFR 在 SPEC 中无对应编号 AC，task 级 ID 是必要设计选择。",
-      "evidence": "AC-SBJ/ENV/CFG/OBS/SEC/PERF/REL 前缀，共 7 个 task。",
-      "fix": "可接受为工程惯例。"
+      "rule": "TASK-TEMPLATE.md: acceptance_criteria 格式为 {AC-ID}: {描述}。NFR task 使用 § section 引用替代 AC-ID（因 SPEC 对 NFR 无编号 AC），§ 引用直接对应 spec_ref。",
+      "evidence": "TASK-006~009,011~014 使用 §9/§11/§15/§17/§18/§19/§20/§22 作为 acceptance_criteria 前缀。",
+      "fix": "§ 引用是干净的工程惯例：直接映射 spec_ref，不伪造 AC 编号。"
     }
   ],
   "redlines": [],

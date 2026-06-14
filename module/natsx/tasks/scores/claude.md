@@ -3,7 +3,7 @@
 - **模块**: natsx
 - **阶段**: tasks
 - **平台**: Claude (Opus)
-- **评分时间**: 2026-06-14T08:20:00Z
+- **评分时间**: 2026-06-14T08:35:00Z
 - **总分**: 99 / 100
 - **红线**: 无
 - **裁定**: Ready-candidate
@@ -15,7 +15,7 @@
 
 | 维度 | 得分 | 说明 |
 |------|------|------|
-| Task 模板符合度 | 11/12 | D1: NFR task AC ID 为 task 级自定义前缀，非 SPEC AC registry 编号 ID |
+| Task 模板符合度 | 11/12 | D1: NFR task 使用 § section 引用替代 AC-ID，因 SPEC 对 NFR 无编号 AC。§ 引用直接映射 spec_ref，不伪造 AC 编号。 |
 | 粒度合规 | 15/15 | 全部 ≤5 文件，测试同 task |
 | spec_ref 闭合 | 15/15 | 全部 task 有 spec_ref，FR/BR/NFR 引至 SPEC |
 | Scope/Non-scope | 12/12 | 全部 task 声明 scope + non-scope |

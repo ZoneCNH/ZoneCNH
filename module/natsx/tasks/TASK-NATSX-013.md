@@ -6,7 +6,7 @@ TASK-NATSX-013:
     - "module/natsx/SPEC.md#FR-NFR-004"
     - "module/natsx/SPEC.md#15-dependencies"
   acceptance_criteria:
-    - "AC-LYR-001: go list -deps 不含 ZoneCNH 消息/存储模块"
+    - "§15: go list -deps 不含 ZoneCNH 消息/存储模块"
   files:
     - "go.mod"
   priority: P2
@@ -19,7 +19,7 @@ TASK-NATSX-013:
 
 ## Non-Scope
 
-Does NOT implement NATS server deployment, JetStream stream auto-provisioning, or NATS account management.
+Does NOT implement NATS server deployment, JetStream stream auto-provisioning, or NATS account management. Does NOT implement business event semantics or domain DTOs.
 
 ## Acceptance
 
