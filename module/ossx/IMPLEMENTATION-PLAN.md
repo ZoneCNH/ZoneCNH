@@ -41,3 +41,9 @@ Implement tasks in numeric order unless a later adapter task is split into a sep
 | 外部依赖不可用 | MEDIUM | 健康检查 + 降级策略 | 回退到上一稳定版本 |
 | 配置兼容性回归 | LOW | 已有 canonical+legacy 测试覆盖 | 回退配置变更 |
 
+
+## Steps
+
+1. Phase 1: Foundation — 实现核心 BlobStore 接口
+2. Phase 2: Features — Provider 适配器 (Aliyun/S3)
+3. Phase 3: Quality — CI gates + benchmark + docs

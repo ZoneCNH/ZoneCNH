@@ -1,3 +1,8 @@
+---
+scope: "TASK-KAFKAX-006: 配置 go.mod、单元测试、集成测试、benchmark、README、CHANGELOG"
+acceptance_criteria: []
+---
+
 # TASK-KAFKAX-006: 配置 go.mod、单元测试、集成测试、benchmark、README、CHANGELOG
 
 - **Module**: kafkax
@@ -21,3 +26,7 @@ Does NOT implement Kafka broker deployment, topic auto-creation, or Kafka Connec
 ## Acceptance
 
 - [ ] CI gate + benchmark + docs verified
+
+## Non-scope
+
+- 不涉及本 Task 范围外的功能
