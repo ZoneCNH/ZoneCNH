@@ -10,104 +10,6 @@
 
 ---
 
-## 总览仪表盘
-
-```text
-组件总数: 74    已有: 58    已创建: 16    平均进度: 69%
-
-进度分布:
-  ███░ ≥80% ██████████████████████████████████████████████  54 个 (73%)
-  ██░░ 60%  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   1 个 ( 1%)
-  █░░░ 15%  ██░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   2 个 ( 3%)
-  ░░░░  5%  ████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  15 个 (20%)
-  未标注    ██░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   2 个 ( 3%)
-
-版本覆盖: 有版本号 31 个 (42%)    无版本号 43 个 (58%)
-```
-
-### 按域统计
-
-| 域                     | 总数 | 已有 | 已创建 | 平均进度 | 有版本号                                                    |
-| ---------------------- | ---- | ---- | ------ | -------- | ----------------------------------------------------------- |
-| 基座                   | 20   | 20   | 0      | 99%      | 20（全部） |
-| L2.5 领域共享层        | 4    | 4    | 0      | 80%      | 4 (全部)                                                    |
-| 数据域 · 行情 SDK      | 13   | 13   | 0      | 80%      | 0                                                           |
-| 数据域 · 行情 Provider | 5    | 5    | 0      | 80%      | 5 (全部)                                                    |
-| 数据域 · 宏观          | 11   | 11   | 0      | 80%      | 0                                                           |
-| 数据域 · 另类          | 1    | 0    | 1      | 5%       | 0                                                           |
-| 分析域                 | 7    | 1    | 6      | 8%       | 1 (regime-engine)                                           |
-| 决策域                 | 4    | 1    | 3      | 19%      | 0                                                           |
-| 执行域                 | 4    | 0    | 4      | 5%       | 0                                                           |
-| 入口                   | 1    | 1    | 0      | 80%      | 1 (x.go)                                                    |
-| 横切                   | 2    | 1    | 1      | 43%      | 1 (observex)                                                |
-| Rust                   | 1    | 1    | 0      | -        | 0                                                           |
-| 独立                   | 1    | 1    | 0      | -        | 0                                                           |
-| **合计**               | **74** | **58** | **16** | **69%**  | **31**                                                      |
-
----
-
-## 域健康度
-
-### 🟢 基座（健康）
-
-- 组件：20 个，平均进度 99%
-- 核心模块（kernel / configx / observex / resiliencx / schedulex / testkitx / redisx / kafkax / natsx / postgresx / taosx / ossx / transportx）已成熟，有版本号或规格基线；domainx 已产出完整 SPEC + TRACEABILITY + tasks；xlib-harness / xlib-evidence 已从 xlib-standard 拆分为独立规格模块；kernel/configx/observex/schedulex/redisx/kafkax/natsx/postgresx 已发布 v1.0.0，taosx/ossx 已发布 v1.0.1，clickhousex 已发布 v1.0.1；transportx 已升级为 v1.1.1 规格基线
-- 存储层 `redisx` 已发布 v1.0.0（全局成熟度 100%，Docker-backed Redis + persistence restart recovery 验证），`kafkax` 已发布 v1.0.0（100%），`natsx` 已发布 v1.0.0（100%，repair-slice 20/20，真实 dev auth live gate 验证），`postgresx` 已发布 v1.0.0（全局成熟度 90%），`taosx` 已发布 v1.0.1（100%）；`ossx` 已发布 v1.0.1（真实 Aliyun OSS 集成、race、vet、build、release-check 与 100.0% 覆盖已验证）；`clickhousex` 已发布 v1.0.1（100%）；`transportx` 已规格化 100%（SPEC/Matrix/Tasks 三阶段满分，27 Tasks 全部达标），并以 v1.1.1 规格基线覆盖 QoS、Codec、RPC、EventBus、Stream、ExecutionMode、Outbox/Inbox、Audit Plane、Data Classification 与 SchemaRegistry
-- **SRE/CI/CD**：已产出 [`docs/sre/foundation-cicd-plan.md`](../docs/sre/foundation-cicd-plan.md)（20 模块 4 阶段部署方案、8 标签池、Docker 集成测试、标准化模板），待落地
-- **阻塞项**：natsx 正式四源 98+ arbiter 与生产 TLS gate 仍待补证（唯一剩余阻塞）；clickhousex 已发布 v1.0.1；xlibgate CLI 已实现（PR #23）；testkitx code 阶段已完成（PR #13）；postgresx foundationx 依赖已移除（PR #8）；redisx/kafkax/natsx/postgresx/taosx/ossx/transportx 已不再是存储层或传输契约实现阻塞项
-
-### 🟢 L2.5 领域共享层（健康）
-
-- 组件：4 个，进度 80%
-- Phase 0 已完成，所有上层模块已依赖此层
-
-### 🟢 数据域 · 行情（健康）
-
-- SDK：13 个交易所适配器，全部 80%，无版本号
-- Provider：5 个 Kline/Ticker Provider，全部 v0.1.0，进度 80%
-- **待确认**：SDK 全部无版本号，是否已通过生产验证？
-
-### 🟡 数据域 · 宏观（注意）
-
-- 组件：11 个，全部 80%，无版本号
-- 6 个央行数据源结构高度相似（fred / treasury / bea / ecb / uk-cb / japan-cb）
-- **风险**：同质化严重，是否考虑合并为统一适配器？
-
-### 🔴 数据域 · 另类（阻塞）
-
-- 组件：1 个，仅创建（5%）
-- **阻塞项**：链上数据、社交情绪、新闻 NLP 尚未开始实现
-
-### 🔴 分析域（阻塞）
-
-- 组件：7 个，6 个处于早期（5%），regime-engine 骨架完成（25%）
-- **阻塞项**：factor-engine / feature-store / factor-eval / market_regime / macro_regime / ms_brain 均未实现到可用闭环
-- **依赖**：需要数据域提供数据，L2.5 已就绪
-
-### 🔴 决策域（阻塞）
-
-- 核心组件 3 个仅创建（5%）：signal-factory / backtest-engine / optimizer
-- strategies 已有（60%，3.5MB/746 项），但定位模糊
-- **阻塞项**：依赖分析域产出因子
-
-### 🔴 执行域（阻塞）
-
-- 组件：4 个，全部仅创建（5%）
-- **阻塞项**：依赖决策域产出信号
-
-### 🟡 入口（注意）
-
-- x.go 已有（80%，v0.0.1），但 2.8MB/33 项体量异常大
-- **架构守卫**：x.go 应只承担组合根职责；需核实是否存在因子计算、信号判断、风控规则或订单路由
-- **待确认**：入口主逻辑是否能收敛为配置加载、依赖 wiring 和生命周期控制
-
-### 🟡 横切（注意）
-
-- alertx 仅创建（5%），observex 已完成（100%，v1.0.0）
-- observex 同属基座和横切，职责边界通过 ADR 明确（见 `module/observex/ADR-dual-attribution.md`，R7 已闭环）
-
----
-
 ## 组件明细表
 
 ### 基座
@@ -134,6 +36,7 @@
 | [contracts](https://github.com/ZoneCNH/contracts) | v1.0.1-spec | █████ 100% | SPEC + TRACEABILITY + goal (6 FR, 10 BR, 8 NFR, 16 AC, 7 TC, 5 tasks) | 跨域稳定端口/事件/DTO 契约；TRACEABILITY §1-§7 完整；goal.md 对齐 CONSTITUTION P7；SPEC/Matrix/Tasks 全面修复 |
 | [transportx](https://github.com/ZoneCNH/transportx) | v1.1.1-spec | █████ 100% | SPEC + TRACEABILITY + goal + 27 tasks (100分) | 应用通信底座规格基线；25 FR, 18 BR, 12 NFR, 25 AC, 25 TC, 12 CI gates — SPEC/Matrix/Tasks 三阶段满分 |
 | [domainx](https://github.com/ZoneCNH/domainx) | v0.1.0 | █████ 100% | 执行域共享值对象：Order/Position/Trade/Portfolio/ExecutionReport 与 OrderState/OrderType/OrderSide 枚举（8 FR，8 TC，归属基座） |
+
 ### L2.5 · 领域共享层
 
 | 组件 | 版本 | 进度 | 说明 |
@@ -227,6 +130,104 @@
 | [observex](https://github.com/ZoneCNH/observex) | 横切 | v1.0.0 | █████ 100% | 可观测性（同时归属基座） |
 | [stdlib.rs](https://github.com/ZoneCNH/stdlib.rs) | Rust | - | - | Rust 标准库 |
 | [module](./module/README.md) | 独立 | - | - | 项目技术规范与接口定义 |
+
+---
+
+## 总览仪表盘
+
+```text
+组件总数: 74    已有: 58    已创建: 16    平均进度: 69%
+
+进度分布:
+  ███░ ≥80% ██████████████████████████████████████████████  54 个 (73%)
+  ██░░ 60%  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   1 个 ( 1%)
+  █░░░ 15%  ██░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   2 个 ( 3%)
+  ░░░░  5%  ████████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  15 个 (20%)
+  未标注    ██░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   2 个 ( 3%)
+
+版本覆盖: 有版本号 31 个 (42%)    无版本号 43 个 (58%)
+```
+
+### 按域统计
+
+| 域                     | 总数 | 已有 | 已创建 | 平均进度 | 有版本号                                                    |
+| ---------------------- | ---- | ---- | ------ | -------- | ----------------------------------------------------------- |
+| 基座                   | 20   | 20   | 0      | 99%      | 20（全部） |
+| L2.5 领域共享层        | 4    | 4    | 0      | 80%      | 4 (全部)                                                    |
+| 数据域 · 行情 SDK      | 13   | 13   | 0      | 80%      | 0                                                           |
+| 数据域 · 行情 Provider | 5    | 5    | 0      | 80%      | 5 (全部)                                                    |
+| 数据域 · 宏观          | 11   | 11   | 0      | 80%      | 0                                                           |
+| 数据域 · 另类          | 1    | 0    | 1      | 5%       | 0                                                           |
+| 分析域                 | 7    | 1    | 6      | 8%       | 1 (regime-engine)                                           |
+| 决策域                 | 4    | 1    | 3      | 19%      | 0                                                           |
+| 执行域                 | 4    | 0    | 4      | 5%       | 0                                                           |
+| 入口                   | 1    | 1    | 0      | 80%      | 1 (x.go)                                                    |
+| 横切                   | 2    | 1    | 1      | 43%      | 1 (observex)                                                |
+| Rust                   | 1    | 1    | 0      | -        | 0                                                           |
+| 独立                   | 1    | 1    | 0      | -        | 0                                                           |
+| **合计**               | **74** | **58** | **16** | **69%**  | **31**                                                      |
+
+---
+
+## 域健康度
+
+### 🟢 基座（健康）
+
+- 组件：20 个，平均进度 99%
+- 核心模块（kernel / configx / observex / resiliencx / schedulex / testkitx / redisx / kafkax / natsx / postgresx / taosx / ossx / transportx）已成熟，有版本号或规格基线；domainx 已产出完整 SPEC + TRACEABILITY + tasks；xlib-harness / xlib-evidence 已从 xlib-standard 拆分为独立规格模块；kernel/configx/observex/schedulex/redisx/kafkax/natsx/postgresx 已发布 v1.0.0，taosx/ossx 已发布 v1.0.1，clickhousex 已发布 v1.0.1；transportx 已升级为 v1.1.1 规格基线
+- 存储层 `redisx` 已发布 v1.0.0（全局成熟度 100%，Docker-backed Redis + persistence restart recovery 验证），`kafkax` 已发布 v1.0.0（100%），`natsx` 已发布 v1.0.0（100%，repair-slice 20/20，真实 dev auth live gate 验证），`postgresx` 已发布 v1.0.0（全局成熟度 90%），`taosx` 已发布 v1.0.1（100%）；`ossx` 已发布 v1.0.1（真实 Aliyun OSS 集成、race、vet、build、release-check 与 100.0% 覆盖已验证）；`clickhousex` 已发布 v1.0.1（100%）；`transportx` 已规格化 100%（SPEC/Matrix/Tasks 三阶段满分，27 Tasks 全部达标），并以 v1.1.1 规格基线覆盖 QoS、Codec、RPC、EventBus、Stream、ExecutionMode、Outbox/Inbox、Audit Plane、Data Classification 与 SchemaRegistry
+- **SRE/CI/CD**：已产出 [`docs/sre/foundation-cicd-plan.md`](../docs/sre/foundation-cicd-plan.md)（20 模块 4 阶段部署方案、8 标签池、Docker 集成测试、标准化模板），待落地
+- **阻塞项**：natsx 正式四源 98+ arbiter 与生产 TLS gate 仍待补证（唯一剩余阻塞）；clickhousex 已发布 v1.0.1；xlibgate CLI 已实现（PR #23）；testkitx code 阶段已完成（PR #13）；postgresx foundationx 依赖已移除（PR #8）；redisx/kafkax/natsx/postgresx/taosx/ossx/transportx 已不再是存储层或传输契约实现阻塞项
+
+### 🟢 L2.5 领域共享层（健康）
+
+- 组件：4 个，进度 80%
+- Phase 0 已完成，所有上层模块已依赖此层
+
+### 🟢 数据域 · 行情（健康）
+
+- SDK：13 个交易所适配器，全部 80%，无版本号
+- Provider：5 个 Kline/Ticker Provider，全部 v0.1.0，进度 80%
+- **待确认**：SDK 全部无版本号，是否已通过生产验证？
+
+### 🟡 数据域 · 宏观（注意）
+
+- 组件：11 个，全部 80%，无版本号
+- 6 个央行数据源结构高度相似（fred / treasury / bea / ecb / uk-cb / japan-cb）
+- **风险**：同质化严重，是否考虑合并为统一适配器？
+
+### 🔴 数据域 · 另类（阻塞）
+
+- 组件：1 个，仅创建（5%）
+- **阻塞项**：链上数据、社交情绪、新闻 NLP 尚未开始实现
+
+### 🔴 分析域（阻塞）
+
+- 组件：7 个，6 个处于早期（5%），regime-engine 骨架完成（25%）
+- **阻塞项**：factor-engine / feature-store / factor-eval / market_regime / macro_regime / ms_brain 均未实现到可用闭环
+- **依赖**：需要数据域提供数据，L2.5 已就绪
+
+### 🔴 决策域（阻塞）
+
+- 核心组件 3 个仅创建（5%）：signal-factory / backtest-engine / optimizer
+- strategies 已有（60%，3.5MB/746 项），但定位模糊
+- **阻塞项**：依赖分析域产出因子
+
+### 🔴 执行域（阻塞）
+
+- 组件：4 个，全部仅创建（5%）
+- **阻塞项**：依赖决策域产出信号
+
+### 🟡 入口（注意）
+
+- x.go 已有（80%，v0.0.1），但 2.8MB/33 项体量异常大
+- **架构守卫**：x.go 应只承担组合根职责；需核实是否存在因子计算、信号判断、风控规则或订单路由
+- **待确认**：入口主逻辑是否能收敛为配置加载、依赖 wiring 和生命周期控制
+
+### 🟡 横切（注意）
+
+- alertx 仅创建（5%），observex 已完成（100%，v1.0.0）
+- observex 同属基座和横切，职责边界通过 ADR 明确（见 `module/observex/ADR-dual-attribution.md`，R7 已闭环）
 
 ---
 
