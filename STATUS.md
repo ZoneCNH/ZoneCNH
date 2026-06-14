@@ -26,8 +26,8 @@
 | [testkitx](https://github.com/ZoneCNH/testkitx) | v1.0.0 | ███░ 90% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | Fake / Fixture / Golden / Contract / Leak / Boundary / Manifest 测试工具包；⚠️ 表格 v1.0.0，git tag latest v0.4.0；test-only，full 口径需外部 CI + 下游采用 |
 | [resiliencx](https://github.com/ZoneCNH/resiliencx) | v1.0.1 | ███░ 95% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | 弹性策略（timeout / retry / circuit / bulkhead / rate / fallback）；⚠️ 表格 v1.0.1，git tag latest v0.4.9 — release 口径待对齐 |
 | [schedulex](https://github.com/ZoneCNH/schedulex) | [v1.0.0](https://github.com/ZoneCNH/schedulex/releases/tag/v1.0.0) | █████ 100% | spec=98 mat=100 tsk=100 pln=100 prm=100 cod=100 | cron/interval/delay 调度、Overlap/Misfire 策略、Locker 扩展点、Clock 注入；✅ 公开 release 一致（98.2% 覆盖，race/vet/lint/govulncheck 与下游 smoke 通过） |
-| [redisx](https://github.com/ZoneCNH/redisx) | v1.0.0 | █████ 100% | spec=98 mat=100 tsk=100 pln=100 prm=100 cod=100 | Redis L2 adapter：KV/TTL/Hash/List/Pipeline/Cache-aside/Lock/RateLimit/Pool/Persistence restart recovery；✅ release_ready=true；⚠️ README 身份残留模板叙事（修复中）；Docker-backed Redis 验证通过 |
-| [kafkax](https://github.com/ZoneCNH/kafkax) | [v1.0.0](https://github.com/ZoneCNH/kafkax/releases/tag/v1.0.0) | █████ 100% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | Kafka L2 adapter 已发布；driver-neutral API + 可选 kafka-go 生产驱动；真实 broker gates；⚠️ README 身份残留模板叙事（修复中） |
+| [redisx](https://github.com/ZoneCNH/redisx) | v1.0.0 | █████ 100% | spec=98 mat=100 tsk=100 pln=100 prm=100 cod=100 | Redis L2 adapter：KV/TTL/Hash/List/Pipeline/Cache-aside/Lock/RateLimit/Pool/Persistence restart recovery；✅ release_ready=true；✅ README 身份已修复（PR #12）；Docker-backed Redis 验证通过 |
+| [kafkax](https://github.com/ZoneCNH/kafkax) | [v1.0.0](https://github.com/ZoneCNH/kafkax/releases/tag/v1.0.0) | █████ 100% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | Kafka L2 adapter 已发布；driver-neutral API + 可选 kafka-go 生产驱动；真实 broker gates；✅ README 身份已修复（PR #6）；新增 Kafka 语义白皮书 |
 | [natsx](https://github.com/ZoneCNH/natsx) | v1.0.1 | ███░ 95% | spec=100 mat=100 tsk=92 pln=100 prm=100 cod=100 | NATS L2 adapter：Core NATS / JetStream / Drain / reconnect / degraded health；TLS 已实现；⚠️ 正式四源 98+ arbiter + 生产 TLS gate + production SLO 待补（hardening pending） |
 | [postgresx](https://github.com/ZoneCNH/postgresx) | v1.0.1 | ███░ 90% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | PostgreSQL — 关系型存储、事务、迁移；⚠️ 单元测试 52.4% + Docker 集成 skip；evidence ancestry 问题 + production soak/adoption 待补（factory_grade_allowed=false） |
 | [taosx](https://github.com/ZoneCNH/taosx) | v1.0.1 | ███░ 90% | spec=67 mat=100 tsk=76 pln=100 prm=100 cod=100 | TDengine L2 adapter contract；pkg/taosx 公共 API；真实 taosWS 集成已验证；⚠️ spec 67 待修 |
@@ -54,8 +54,8 @@
 | testkitx | ✅ | ✅ | ⚠️ | N/A | ? | ? | N/A | ❌ | git tag latest v0.4.0，表格 v1.0.0 待对齐；test-only |
 | resiliencx | ✅ | ✅ | ⚠️ | N/A | ? | ? | N/A | ❌ | git tag latest v0.4.9，表格 v1.0.1 待对齐 |
 | schedulex | ✅ | ✅ | ✅ | N/A | ✅ | ? | ? | ✅ | v1.0.0 已发布，下游 smoke 通过 |
-| redisx | ✅ | ✅ | ✅ | ✅ | ? | ? | ? | ❌ | Docker Redis 集成已过；README 身份修复中 |
-| kafkax | ✅ | ✅ | ✅ | ✅ | ? | ? | ? | ❌ | 真实 broker gate 已过；README 身份修复中 |
+| redisx | ✅ | ✅ | ✅ | ✅ | ? | ? | ? | ❌ | Docker Redis 集成已过；✅ README 身份已修复 |
+| kafkax | ✅ | ✅ | ✅ | ✅ | ? | ? | ? | ❌ | 真实 broker gate 已过；✅ README 身份已修复 |
 | natsx | ✅ | ✅ | ✅ | ✅ | ? | ? | ? | ❌ | v1.0.0 已发布；正式四源 98+ 与生产 TLS gate 待补 |
 | postgresx | ✅ | ✅ | ✅ | ✅ | ? | ? | ? | ❌ | v1.0.0 已发布；evidence ancestry/soak/adoption 待补 |
 | taosx | ⚠️ | ✅ | ✅ | ✅ | ? | ? | ? | ❌ | spec 67 待修；真实 taosWS 集成已验证 |
