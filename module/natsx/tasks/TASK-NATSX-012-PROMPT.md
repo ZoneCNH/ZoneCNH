@@ -12,6 +12,10 @@ module/natsx/SPEC.md#17-performance-budget
 
 §17: Core Publish < 1ms benchmark; §17: Request-Reply < 5ms benchmark; §17: JetStream Publish/Fetch < 2ms benchmark
 
+## 文件
+
+benchmark_test.go
+
 ## 验证
 
 NFR-003 verified via TC-012

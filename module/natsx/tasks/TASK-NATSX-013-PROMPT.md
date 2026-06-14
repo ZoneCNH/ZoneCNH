@@ -12,6 +12,10 @@ module/natsx/SPEC.md#15-dependencies
 
 §15: go list -deps 不含 ZoneCNH 消息/存储模块
 
+## 文件
+
+go.mod
+
 ## 验证
 
 NFR-004 verified via TC-013

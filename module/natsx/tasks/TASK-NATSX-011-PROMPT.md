@@ -12,6 +12,10 @@ module/natsx/SPEC.md#19-security, module/natsx/SPEC.md#BR-008
 
 §19: FOUNDATIONX_NATS_TOKEN/USERNAME/PASSWORD/NKEY 安全加载; §19: TLS ca-file 可配置，配置错误不泄露凭据; §19: live integration 测试通过且输出不含凭据
 
+## 文件
+
+config.go, live_integration_test.go
+
 ## 验证
 
 NFR-001 verified via TC-011; NFR-002 verified via TC-011

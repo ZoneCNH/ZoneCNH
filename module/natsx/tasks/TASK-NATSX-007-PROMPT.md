@@ -12,6 +12,10 @@ module/natsx/SPEC.md#9-interface-contract
 
 §9: traceId/messageId/schemaVersion Header→Envelope 正确映射; §9: 已有上游 Header 不被丢弃，冲突字段以 Envelope 为准
 
+## 文件
+
+msg.go, msg_test.go
+
 ## 验证
 
 NFR-007 verified via TC-007

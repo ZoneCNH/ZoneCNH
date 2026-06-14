@@ -12,6 +12,10 @@ module/natsx/SPEC.md#11-config-schema
 
 §11: foundationx.nats.* 默认值正确; §11: FOUNDATIONX_NATS_* 优先于 legacy NATS_*; §11: 配置错误不打印 token/password/nkey/credentials
 
+## 文件
+
+config.go, env.go, options.go, config_test.go
+
 ## 验证
 
 NFR-008 verified via TC-008
