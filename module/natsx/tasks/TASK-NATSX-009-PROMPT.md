@@ -4,6 +4,10 @@
 
 可观测集成：foundationx_nats_* 指标、连接事件日志、错误脱敏
 
+## 前置依赖
+
+(none)
+
 ## 规格引用
 
 module/natsx/SPEC.md#18-observability

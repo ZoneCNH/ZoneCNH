@@ -4,6 +4,10 @@
 
 发布就绪：README、CHANGELOG、CI gate 集成、测试覆盖率
 
+## 前置依赖
+
+(none)
+
 ## 规格引用
 
 module/natsx/SPEC.md#20-ci-gate, module/natsx/SPEC.md#22-release-dod

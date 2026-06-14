@@ -4,13 +4,17 @@
 
 Request-Reply 模式：responder、timeout、ctx cancel
 
+## 前置依赖
+
+TASK-NATSX-001
+
 ## 规格引用
 
 module/natsx/SPEC.md#FR-003, module/natsx/SPEC.md#BR-003
 
 ## 验收标准
 
-AC-003: Request 在超时内收到 Response
+AC-003: Request 有 responder 时返回响应数据; AC-003: Request 无 responder 时超时返回错误; AC-003: Request ctx 取消时返回 ctx.Err()
 
 ## 文件
 

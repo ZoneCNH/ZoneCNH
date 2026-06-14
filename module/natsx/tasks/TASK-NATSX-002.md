@@ -2,11 +2,15 @@
 TASK-NATSX-002:
   module: natsx
   scope: "Request-Reply 模式：responder、timeout、ctx cancel"
+  depends_on:
+    - "TASK-NATSX-001"
   spec_ref:
     - "module/natsx/SPEC.md#FR-003"
     - "module/natsx/SPEC.md#BR-003"
   acceptance_criteria:
-    - "AC-003: Request 在超时内收到 Response"
+    - "AC-003: Request 有 responder 时返回响应数据"
+    - "AC-003: Request 无 responder 时超时返回错误"
+    - "AC-003: Request ctx 取消时返回 ctx.Err()"
   files:
     - "client.go"
     - "client_test.go"

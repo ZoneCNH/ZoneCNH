@@ -4,6 +4,10 @@
 
 依赖边界：禁止依赖 kafkax/redisx/postgresx 等消息/存储模块
 
+## 前置依赖
+
+(none)
+
 ## 规格引用
 
 module/natsx/SPEC.md#15-dependencies
