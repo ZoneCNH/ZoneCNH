@@ -3,9 +3,8 @@
 - **模块**: natsx
 - **阶段**: tasks
 - **平台**: Claude (Opus)
-- **评分时间**: 2026-06-14T07:50:00Z
-- **评分基线**: 同会话修复后（spec_ref + BR + TC ID + TRACEABILITY 对齐 + files 填写）
-- **总分**: 99 / 100
+- **评分时间**: 2026-06-14T08:00:00Z
+- **总分**: 98 / 100
 - **红线**: 无
 - **裁定**: Ready-candidate
 - **置信度**: high
@@ -16,7 +15,7 @@
 
 | 维度 | 满分 | 扣分 | 得分 |
 |------|------|------|------|
-| Task 模板符合度 | 12 | 0 | 12 |
+| Task 模板符合度 | 12 | -1 | 11 |
 | 粒度合规 | 15 | 0 | 15 |
 | spec_ref 闭合 | 15 | 0 | 15 |
 | Scope/Non-scope | 12 | 0 | 12 |
@@ -24,40 +23,37 @@
 | 依赖声明 | 10 | 0 | 10 |
 | 测试计划 | 10 | -1 | 9 |
 | 优先级与文件清单 | 11 | 0 | 11 |
-| **合计** | **100** | **-1** | **99** |
+| **合计** | **100** | **-2** | **98** |
 
 ---
 
-## 扣分（1 条，增强建议）
+## 扣分（2 条，均为 LOW）
 
-| ID | 严重级别 | 扣分 | 规则 | 修复 |
-|----|----------|------|------|------|
-| D1 | LOW | -1 | 验证条目未附带执行命令 | 可选：为 Acceptance 补充 `go test -run ...` |
-
----
-
-## Task 文件清单
-
-| Task | 文件数 | 文件 |
-|------|--------|------|
-| 001 | 5 | client.go, subscription.go, msg.go, errors.go, client_test.go |
-| 002 | 2 | client.go, client_test.go |
-| 003 | 3 | jetstream.go, errors.go, jetstream_test.go |
-| 004 | 3 | jetstream.go, options.go, jetstream_test.go |
-| 005 | 2 | health.go, health_test.go |
-| 006 | 5 | go.mod, README.md, CHANGELOG.md, benchmark_test.go, example_test.go |
+| ID | 扣分 | 规则 | 说明 |
+|----|------|------|------|
+| D1 | -1 | TASK-006 acceptance_criteria 使用 section 引用替代 AC-ID | 追溯存在（与 spec_ref 一一对应），格式偏离 TASK-TEMPLATE |
+| D2 | -1 | 验证条目未附执行命令 | 可选增强 |
 
 ---
 
-## 同会话修复总结
+## 非 Rubric 质量差距（不扣分，供参考）
 
-| 阶段 | 分数 | 关键变化 |
-|------|------|----------|
-| 初评 | 44 | spec_ref 全缺、files TBD、AC 虚构、BR 未声明 |
-| 跨表核查 | 48 | NFR 排除出 FR/BR 覆盖计数 |
-| 非 issue 排除 | 56 | 格式/depends_on/Non-Scope |
-| BR 覆盖判定 | 62 | BR-004→TASK-001 归位 |
-| spec_ref 实质追溯 | 80 | 红线消除，追溯闭合 |
-| 补齐 spec_ref/BR/TC | 87 | 6 TASK + TRACEABILITY 修复 |
-| TRACEABILITY 对齐 | 88 | FR-006/007/BR-004 修正 |
-| **填写 files** | **99** | **仅剩 1 条增强建议** |
+| 项 | 说明 |
+|----|------|
+| AC 描述覆盖范围 | TASK-001 至 005 的 AC 描述仅覆盖成功路径，未声明边界场景 |
+| TASK-007 至 TASK-014 缺失 | NFR 需求无对应 TASK 文件 |
+| 文件重叠 | TASK-001/002 共享 client.go；TASK-003/004 共享 jetstream.go |
+| depends_on 未声明 | 模板标注可选，但隐式依赖链可显式化 |
+
+---
+
+## Task 清单
+
+| Task | FR/BR 覆盖 | 文件数 |
+|------|-----------|--------|
+| 001 | FR-001/002, BR-001/004/009 | 5 |
+| 002 | FR-003, BR-003 | 2 |
+| 003 | FR-004/005, BR-002/007 | 3 |
+| 004 | FR-006/007, BR-005 | 4 |
+| 005 | FR-008, BR-006 | 2 |
+| 006 | SPEC sect16/17/20/22 | 5 |
