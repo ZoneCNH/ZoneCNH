@@ -19,7 +19,7 @@
 | [xlib-standard](https://github.com/ZoneCNH/xlib-standard) | v1.0.0 | ████ 100% | spec=100 mat=80 tsk=98 pln=100 prm=100 cod=100 | 标准事实源 / Go Reference Template；Generator/Harness/Evidence 已拆分至 xlib-harness / xlib-evidence；⚠️ 表格 v1.0.0，公开 latest v0.6.5，版本待对齐 |
 | [xlib-harness](https://github.com/ZoneCNH/xlib-harness) | v1.0.0 | ████ 100% | spec=83 mat=100 tsk=97 pln=100 prm=100 cod=100 | 模块生成器与门禁执行器：generate/scaffold、spec-lint、boundary-check、traceability-gate；⚠️ Draft→Approved 待四源评分（6 FR，6 TC） |
 | [xlib-evidence](https://github.com/ZoneCNH/xlib-evidence) | v1.0.0 | ████ 100% | spec=83 mat=100 tsk=100 pln=100 prm=100 cod=100 | 证据收集与发布运行时：collect-coverage、generate-manifest、validate-manifest、report；⚠️ Draft→Approved 待四源评分（5 FR，5 TC） |
-| [xlibgate](https://github.com/ZoneCNH/xlibgate) | v1.0.2 | ███░ 90% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | import 边界/go.mod/Go baseline/release/L2 门禁；⚠️ 缺 v2 trust checks（identity/template-residue/release-consistency/maturity） |
+| [xlibgate](https://github.com/ZoneCNH/xlibgate) | v1.1.1 | ███░ 95% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | check / l2 / trust 三组门禁；trust 规格/设计/计划/任务/提示词完备（8 FR, 16 TC, 10 Task），待代码实现 |
 | [kernel](https://github.com/ZoneCNH/kernel) | v1.0.0 | █████ 100% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | L0 原语 / 12 子包 / stdlib-only / v1.0.0 已发布；✅ 公开 release 一致，建议 API 冻结 |
 | [configx](https://github.com/ZoneCNH/configx) | v1.0.0 | █████ 100% | spec=100 mat=100 tsk=96 pln=100 prm=100 cod=100 | 配置管理；v1.0.0 已发布，97.1% 覆盖率，13 FR 全部实现；✅ 公开 release 一致 |
 | [observex](https://github.com/ZoneCNH/observex) | v1.0.0 | ███░ 95% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | 可观测性；⚠️ 表格 v1.0.0，公开 latest v0.3.1 — release 口径待对齐 |
@@ -47,7 +47,7 @@
 | xlib-standard | ✅ | ✅ | ⚠️ | N/A | ? | ? | N/A | ❌ | 表格 v1.0.0，公开 latest v0.6.5；版本待对齐 |
 | xlib-harness | ✅ | ✅ | ✅ | N/A | ? | ? | N/A | ❌ | Draft→Approved 待四源评分 |
 | xlib-evidence | ✅ | ✅ | ✅ | N/A | ? | ? | N/A | ❌ | Draft→Approved 待四源评分 |
-| xlibgate | ✅ | ✅ | ✅ | N/A | ? | ? | N/A | ❌ | v1.0.2 CLI，缺 trust check |
+| xlibgate | ✅ | ✅ | ✅ | N/A | ? | ? | N/A | ❌ | v1.1.1 spec 完备（check+l2+trust），trust 代码待实现 |
 | kernel | ✅ | ✅ | ✅ | N/A | ? | ✅ | N/A | ✅ | L0 stdlib-only，建议 API 冻结 |
 | configx | ✅ | ✅ | ✅ | N/A | ? | ? | N/A | ✅ | v1.0.0 已发布，成熟度最高 |
 | observex | ✅ | ✅ | ⚠️ | N/A | ? | ? | N/A | ❌ | 表格 v1.0.0，公开 latest v0.3.1 |
