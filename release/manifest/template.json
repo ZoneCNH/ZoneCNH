@@ -16,6 +16,50 @@
   "sources": {
     "status": "STATUS.md",
     "readme": "README.md",
-    "architecture": "ARCHITECTURE.md"
+    "architecture": "ARCHITECTURE.md",
+    "foundation_status": ".foundationx/status/index.json",
+    "foundation_blockers": ".foundationx/blockers.json",
+    "foundation_contract": ".foundationx/repo-contract.json"
+  },
+  "foundation_trust": {
+    "available": false,
+    "summary": {
+      "source": ".foundationx/status/index.json",
+      "schema_version": "",
+      "generated_at": "",
+      "total_modules": 0,
+      "spec_complete": 0,
+      "impl_complete": 0,
+      "release_published": 0,
+      "live_integration": 0,
+      "factory_grade": 0
+    },
+    "open_blockers": {
+      "source": ".foundationx/blockers.json",
+      "total": 0,
+      "by_severity": {},
+      "by_module": {},
+      "by_category": {},
+      "ids": []
+    },
+    "projection_guard": {
+      "source": ".foundationx/repo-contract.json",
+      "contract_version": "",
+      "public_docs": [],
+      "release_manifest": "",
+      "reason_code": "policy_contract_projection_drift",
+      "reason_present": false
+    },
+    "claim_policy": {
+      "audit_status_factory_grade_proof": false,
+      "audit_status_role": "projection consistency guard only; not factory-grade proof",
+      "factory_grade_requires": [
+        "foundation status summary",
+        "open blocker review",
+        "projection guard",
+        "xlibgate trust evidence"
+      ]
+    },
+    "missing_sources": []
   }
 }
