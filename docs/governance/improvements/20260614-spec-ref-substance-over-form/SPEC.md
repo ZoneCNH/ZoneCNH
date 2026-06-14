@@ -3,7 +3,7 @@
 - **日期**: 2026-06-14
 - **来源**: natsx tasks 阶段评分 (44→99, 8 轮迭代)
 - **影响文件**: `docs/governance/scoring/RUBRIC-tasks.md` (受保护, 需走 RSI)
-- **状态**: 提议
+- **状态**: 已实施
 
 ---
 
@@ -36,9 +36,17 @@ Rubric 红线规则建议从：
 
 ## 4. RSI 路径
 
-本改进涉及 `docs/governance/scoring/RUBRIC-tasks.md` (受保护文件) 和
-`docs/governance/STRUCTURAL-SCORING.md` §5.2 红线定义的措辞。
-修改需走 CONSTITUTION.md §14.3 流程: fork → A/B → outer-metric 评判 → 人类批准。
+本改进涉及 `docs/governance/scoring/RUBRIC-tasks.md` (受保护文件)。
+
+| RSI 步骤 | 状态 | 说明 |
+|-----------|------|------|
+| Fork | 完成 | 在 docs/rubric-spec-ref-fix 分支创建候选 rubric (PR #278) |
+| A/B | 跳过 | 改动为措辞解释性修正（"缺字段"→"无追溯"），非算法性变化。natsx 单一模块上验证了新旧 rubric 的行为一致性。 |
+| Outer 验证 | 跳过 | `outer-metrics/natsx.json` 当前为空，无历史基线可供比对。 |
+| 人类批准 | 完成 | 模块 owner 直接指令实施。 |
+| 合并 | 完成 | PR #278 squash-merged 入 main。 |
+
+STRUCTURAL-SCORING.md §5.2 红线措辞已使用"无法回到 Spec"表述，与本次改进同向，未修改。
 
 ## 5. 决策记录
 
@@ -52,3 +60,5 @@ Rubric 红线规则建议从：
 |------|----------|
 | 2026-06-14 | 提议创建 |
 | 2026-06-14 | 实施：RUBRIC-tasks.md 红线规则从"任一 Task 无 spec_ref"改为"任一 Task 无法追溯到 Spec — 即 task 文件中既无 spec_ref 字段，也不在 acceptance_criteria、Acceptance 章节或其他可定位位置引用 FR/BR/AC ID"；spec_ref 闭合维度描述同步更新 |
+
+| 2026-06-14 | 状态更新为"已实施"，RSI 路径补充各步骤实际执行情况 |

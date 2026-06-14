@@ -1,6 +1,7 @@
 ---
 scope: "xlib-harness FR-001 coverage"
 spec_ref:
+  - "module/xlib-harness/SPEC.md#FR-006"
   - "module/xlib-harness/SPEC.md#FR-001"
 acceptance_criteria:
   - "FR-001 baseline coverage"

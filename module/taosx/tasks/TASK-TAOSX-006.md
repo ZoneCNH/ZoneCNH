@@ -1,3 +1,8 @@
+---
+scope: "TASK-TAOSX-006"
+acceptance_criteria: []
+---
+
 # TASK-TAOSX-006: go.mod、单元测试、集成测试、benchmark、README、CHANGELOG
 
 - **Module**: taosx
@@ -21,3 +26,7 @@ Does NOT implement TDengine cluster deployment, database auto-creation, or super
 ## Acceptance
 
 - [ ] CI gate + benchmark + docs verified
+
+## Non-scope
+
+- 不涉及本 Task 范围外的功能
