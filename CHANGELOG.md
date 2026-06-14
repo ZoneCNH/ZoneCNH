@@ -16,7 +16,31 @@
 ### Changed
 
 - 固化模块级 Goal 文档路径为 `module/{module}/goal.md`，禁止 `goal/` 目录和 `goal/1.md` 槽位。
-- STATUS.md / README.md / ARCHITECTURE.md 三文档全量交叉审计闭合（18 PR，基座版本 vs GitHub Release 对齐、domainx 归并、strategies 404 移除、仪表盘递推、同步表自洽）。
+- **STATUS.md / README.md / ARCHITECTURE.md 三文档全量交叉审计闭合**（19 PR, #385-#413）。详情见 `docs/solutions/three-doc-audit-20260615.md`。
+
+  **审计根因**：agent 凭常识编造计数（18 vs 14 个 Release、67% vs 62% 平均进度、有版本号 1/0/0 vs 2/3/3），而非逐表逐行 grep 统计。
+
+  **修正清单**：
+  - 基座 20 模块版本号 vs GitHub Release 逐一核对（14/20 有 Release，18/20 有 git tag）
+  - domainx 三文档归属统一（L2.5 → 基座）
+  - strategies 404 仓库全文件移除（决策域 7→6，组件总数 81→80）
+  - 域统计有版本号：分析域 1→2，决策域 0→3，执行域 0→3，合计 30→37
+  - 仪表盘全部递推重算（平均进度 67%→62%，5% 分布 15→22，已创建 16→22）
+  - 同步检查表自身 5 处过时计数修正
+  - ARCHITECTURE 状态表 12 处版本/进度对齐
+
+  **最终自洽状态**（22/22 机械化检查全部 PASS）：
+  - 组件总数 80 = 55(≥80%) + 1(25%) + 22(5%) + 2(未标注)
+  - 80 = 58(已有) + 22(已创建)
+  - 80 = 37(有版本号) + 43(无版本号)
+  - 78 repos gh api 逐一验证，0 404
+  - 14 个 GitHub Release tag 全部与 STATUS.md 版本号一致
+  - 管线评分全部 ≥67（最低 taosx spec=67），其中 13/20 全线 ≥98
+  - 全部 20 模块 CI 已部署（1~11 workflows）
+
+  **预防门禁**：
+  - count-guard.mjs（Write/Edit 告警）→ audit-status.py（本地 22 项验证）→ CI gate（PR 阻断）
+
 - CLAUDE.md 新增 §数量验证门禁、§三文档交叉同步规则。
 
 ## [v0.5.0] - 2026-06-09
