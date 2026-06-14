@@ -14,7 +14,7 @@ module/natsx/SPEC.md#FR-001, module/natsx/SPEC.md#FR-002, module/natsx/SPEC.md#B
 
 ## 验收标准
 
-AC-001: Publish 到合法 subject 时 handler 收到消息; AC-001: Publish 时连接不可用返回错误; AC-001: Publish 空 subject 返回 ErrInvalidSubject; AC-002: Subscribe 注册 handler 并接收消息; AC-002: Unsubscribe 后不再接收消息; AC-002: Drain 处理完已接收消息后关闭订阅
+AC-001: Publish 成功返回 nil; AC-001: Publish 时连接不可用返回错误; AC-001: Publish 空 subject 返回 ErrInvalidSubject; AC-002: Subscribe 注册返回 Subscription; AC-002: 收到消息时调用 handler; AC-002: Unsubscribe 后不再接收消息; AC-002: Drain 处理完已接收消息后关闭订阅
 
 ## 文件
 
