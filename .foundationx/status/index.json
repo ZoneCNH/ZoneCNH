@@ -13,11 +13,11 @@
     "SOAK": "STATUS.md + .repo-contract.yaml evidence (2026-06-14)"
   },
   "summary": {
-    "spec_complete": 18,
+    "spec_complete": 19,
     "impl_complete": 18,
     "release_published": 20,
     "live_integration": 7,
-    "factory_grade": 14
+    "factory_grade": 15
   },
   "modules": {
     "xlib-standard": {
@@ -205,14 +205,14 @@
     "taosx": {
       "layer": "L2",
       "version": "v1.0.1",
-      "spec": false,
+      "spec": true,
       "impl": true,
       "release": true,
       "live": true,
       "ci": true,
       "adopt": "N/A",
       "soak": false,
-      "factory": false,
+      "factory": true,
       "note": "TDengine L2 adapter; 真实 taosWS WebSocket 集成已验证; pkg/taosx 100.0% 覆盖; spec 67 待修"
     },
     "ossx": {
