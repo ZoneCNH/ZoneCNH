@@ -14,7 +14,7 @@ STATUS.md / ARCHITECTURE.md / README.md 跨文件域成员、版本号、进度�
 | 最终组件数 | 80 |
 | 仪表盘自洽 | 55+1+22+2=80, 37+43=80, 58+22=80 |
 | 404 仓库 | 0 (78 repos 全量验证) |
-| audit-status.py 检查 | 22/22 PASS |
+| audit-status.py 检查 | 21/21 PASS |
 
 ## PR 清单
 
@@ -124,7 +124,7 @@ STATUS.md / ARCHITECTURE.md / README.md 跨文件域成员、版本号、进度�
 - [x] ISC-6 strategies 全部引用已移除
 - [x] ISC-7 GitHub Release / git tag 计数与 gh api 验证一致
 - [x] ISC-8 CountGuard hook + audit-status.py + CI gate 三线预防已部署
-- [x] ISC-9 audit-status.py 22/22 PASS
+- [x] ISC-9 audit-status.py 21/21 PASS
 - [x] ISC-10 域统计有版本号合计 37，各域分项与表列一致
 
 ## 预防门禁
