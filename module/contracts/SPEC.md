@@ -9,11 +9,11 @@
 ## 1. Metadata
 
 - Status: Approved
-- Spec-Version: v1.0.1
+- Spec-Version: v1.1.0
 - Last-Updated: 2026-06-14
 - Owner: ZoneCNH
 - Layer: L1 基础能力
-- Version: v1.0.1-spec
+- Version: v1.1.0-spec
 - Repository: [github.com/ZoneCNH/contracts](https://github.com/ZoneCNH/contracts)
 - Related: [CONSTITUTION.md](../../CONSTITUTION.md), [ARCHITECTURE.md](../../ARCHITECTURE.md)
 
@@ -26,7 +26,7 @@
 | 2026-06-07 | v1.0.0 | 初始版本   | ZoneCNH |
 | 2026-06-14 | v1.0.1-spec | FR-006去测试化+BR违反后果列 | ZoneCNH |
 | 2026-06-14 | v1.0.1 | TRACEABILITY §1-§7 完整重建（6 FR + 10 BR + 8 NFR + 7 TC + 15 AC），对齐文档同步，版本升至 v1.0.1-spec | ZoneCNH |
-| 2026-06-14 | v1.0.1-spec | FR-006 去测试化措辞（改为行为规格语义）、BR-001~BR-010 补充违反后果列 | ZoneCNH |
+| 2026-06-14 | v1.1.0-spec | §5 边界声明重构（OWN/MUST NOT OWN/governance boundary）+ FR-007 Module Identity | ZoneCNH |
 
 ## 2. Summary
 

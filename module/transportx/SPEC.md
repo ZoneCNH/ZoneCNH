@@ -1,10 +1,10 @@
 # transportx Specification
 
 - Status: Approved
-- Spec-Version: v1.1.1
+- Spec-Version: v1.2.0
 - Last-Updated: 2026-06-14
 - Owner: ZoneCNH
-- Version: v1.1.1
+- Version: v1.2.0
 - Layer: 基座 · 传输契约
 - Repository: https://github.com/ZoneCNH/transportx
 - Related-Modules: contracts, observex, resiliencx, configx, natsx, kafkax, redisx, postgresx
@@ -18,7 +18,7 @@
 | Module | transportx |
 | Domain | 基座 |
 | Layer | 传输契约 · 应用通信底座 |
-| Version | v1.1.1 |
+| Version | v1.2.0 |
 | Status | Approved |
 | Last Updated | 2026-06-14 |
 | Source of Truth | `module/transportx/SPEC.md` |
