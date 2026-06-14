@@ -22,14 +22,14 @@
   ░░░░  5%  ████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  15 个 (20%)
   未标注    ██░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   2 个 ( 3%)
 
-版本覆盖: 有版本号 29 个 (39%)    无版本号 45 个 (61%)
+版本覆盖: 有版本号 31 个 (42%)    无版本号 43 个 (58%)
 ```
 
 ### 按域统计
 
 | 域                     | 总数 | 已有 | 已创建 | 平均进度 | 有版本号                                                    |
 | ---------------------- | ---- | ---- | ------ | -------- | ----------------------------------------------------------- |
-| 基座                   | 20   | 20   | 0      | 95%      | 18（xlib-harness/xlib-evidence 除外） |
+| 基座                   | 20   | 20   | 0      | 95%      | 20（全部） |
 | L2.5 领域共享层        | 4    | 4    | 0      | 80%      | 4 (全部)                                                    |
 | 数据域 · 行情 SDK      | 13   | 13   | 0      | 80%      | 0                                                           |
 | 数据域 · 行情 Provider | 5    | 5    | 0      | 80%      | 5 (全部)                                                    |
@@ -42,7 +42,7 @@
 | 横切                   | 2    | 1    | 1      | 43%      | 1 (observex)                                                |
 | Rust                   | 1    | 1    | 0      | -        | 0                                                           |
 | 独立                   | 1    | 1    | 0      | -        | 0                                                           |
-| **合计**               | **74** | **58** | **16** | **68%**  | **29**                                                      |
+| **合计**               | **74** | **58** | **16** | **68%**  | **31**                                                      |
 
 ---
 
@@ -115,8 +115,8 @@
 | 组件 | 版本 | 进度 | 仓库大小 | 说明 |
 | ---- | ---- | ---- | -------- | ---- |
 | [xlib-standard](https://github.com/ZoneCNH/xlib-standard) | v1.0.0 | ████ 100% | 标准源 + Template | 标准事实源 / Go Reference Template；Generator/Harness/Evidence 已拆分至 xlib-harness / xlib-evidence |
-| [xlib-harness](https://github.com/ZoneCNH/xlib-harness) | - | ████ 100% | SPEC + goal + TRACE + tasks | 模块生成器与门禁执行器：generate/scaffold、spec-lint、boundary-check、traceability-gate（6 FR，6 TC） |
-| [xlib-evidence](https://github.com/ZoneCNH/xlib-evidence) | - | ████ 100% | SPEC + goal + TRACE + tasks | 证据收集与发布运行时：collect-coverage、generate-manifest、validate-manifest、report（5 FR，5 TC） |
+| [xlib-harness](https://github.com/ZoneCNH/xlib-harness) | v1.0.0 | ████ 100% | SPEC + goal + TRACE + tasks | 模块生成器与门禁执行器：generate/scaffold、spec-lint、boundary-check、traceability-gate（6 FR，6 TC） |
+| [xlib-evidence](https://github.com/ZoneCNH/xlib-evidence) | v1.0.0 | ████ 100% | SPEC + goal + TRACE + tasks | 证据收集与发布运行时：collect-coverage、generate-manifest、validate-manifest、report（5 FR，5 TC） |
 | [xlibgate](https://github.com/ZoneCNH/xlibgate) | v1.0.2 | ██░░ 30% | SPEC 完整 (11 FR, 10 tasks 均未实现) | import 边界/go.mod/Go baseline/release evidence/L2 发布就绪 机器门禁（全部 tasks 待实现） |
 | [kernel](https://github.com/ZoneCNH/kernel) | v1.0.0 | █████ 100% | 594KB/30 项 | L0 原语 / 12 子包 / stdlib-only / v1.0.0 已发布 |
 | [configx](https://github.com/ZoneCNH/configx) | v1.0.0 | █████ 100% | 258KB/20 项 | 配置管理；v1.0.0 已发布，97.1% 覆盖率，13 FR 全部实现 |
