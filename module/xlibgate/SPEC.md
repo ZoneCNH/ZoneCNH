@@ -9,7 +9,7 @@
 ## 1. Metadata
 
 - Status: Approved
-- Spec-Version: v1.1.0
+- Spec-Version: v1.1.1
 - Last-Updated: 2026-06-14
 - Owner: ZoneCNH
 - Layer: L0 基座
