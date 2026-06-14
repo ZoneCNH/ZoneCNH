@@ -1,0 +1,277 @@
+# {MODULE} 完整规格
+
+> {LAYER} · {ONE_LINE_DESCRIPTION}
+
+最后更新：{DATE}
+
+---
+
+## 1. Metadata
+
+- Status: Draft
+- Spec-Version: v0.1.0
+- Last-Updated: {DATE}
+- Owner: ZoneCNH
+- Layer: {LAYER}
+- Version: v0.1.0
+- Repository: [github.com/ZoneCNH/{MODULE}](https://github.com/ZoneCNH/{MODULE})
+
+---
+
+### 1.1 变更历史
+
+| 日期 | 版本 | 变更内容 | 作者 |
+|------|------|----------|------|
+| {DATE} | v0.1.0 | 初始版本 | ZoneCNH |
+
+---
+
+## 2. Summary
+
+`{MODULE}` 是 {SUMMARY_DESCRIPTION}
+
+---
+
+## 3. Problem
+
+{PROBLEM_STATEMENT}
+
+---
+
+## 4. Goals
+
+- {GOAL_1}
+- {GOAL_2}
+
+---
+
+## 5. Non-goals
+
+- {NON_GOAL_1}
+- {NON_GOAL_2}
+
+---
+
+## 6. Consumers
+
+| 消费者 | 使用方式 |
+|--------|----------|
+| {CONSUMER_1} | {USAGE_1} |
+
+---
+
+## 7. Functional Requirements
+
+### FR-001: {FR_NAME}
+
+WHEN {CONDITION}
+THEN {BEHAVIOR}
+
+WHEN {ERROR_CONDITION}
+THEN {ERROR_BEHAVIOR}
+
+---
+
+## 8. Business Rules
+
+### BR-001: {RULE_NAME}
+
+{CONSTRAINT_DESCRIPTION}
+
+**约束**：{CONSTRAINT}
+**违反时**：{VIOLATION_CONSEQUENCE}
+
+---
+
+## 9. Interface Contract
+
+### 9.1 CLI 命令
+
+```bash
+{MODULE} {command} [flags]
+```
+
+### 9.2 Exit Code 定义
+
+```text
+0 — pass
+1 — fail
+2 — error
+```
+
+### 9.3 JSON 输出格式
+
+```json
+{
+  "status": "pass|fail|error",
+  "timestamp": "{ISO_TIMESTAMP}"
+}
+```
+
+---
+
+## 10. Data Model
+
+```go
+// {TYPE_DESCRIPTION}
+type {TypeName} struct {
+    // fields
+}
+```
+
+---
+
+## 11. Config Schema
+
+```yaml
+# {MODULE}.yaml
+{CONFIG_SCHEMA}
+```
+
+---
+
+## 12. Error Handling
+
+| 错误 | 调用方处理 |
+|------|------------|
+| `Err{Name}` | {FIX_ACTION} |
+
+---
+
+## 13. Edge Cases
+
+| 场景 | 预期行为 |
+|------|----------|
+| {EDGE_CASE} | {EXPECTED_BEHAVIOR} |
+
+---
+
+## 14. Directory Structure
+
+```text
+{MODULE}/
+├── go.mod
+├── README.md
+├── CHANGELOG.md
+├── cmd/
+│   └── main.go
+├── internal/
+└── pkg/
+```
+
+---
+
+## 15. Dependencies
+
+### 15.1 go.mod
+
+```text
+module github.com/ZoneCNH/{MODULE}
+go {GO_VERSION}
+```
+
+### 15.2 直接依赖
+
+| 依赖 | 版本 | 用途 | 来源 |
+|------|------|------|------|
+| stdlib | Go {GO_VERSION} | {USAGE} | 标准库 |
+
+---
+
+## 16. Testing
+
+### 16.1 测试工具
+
+| 工具 | 用途 |
+|------|------|
+| `testing` | Go 标准测试框架 |
+| `go test -race` | 竞态检测 |
+
+### 16.2 单元测试
+
+| 测试场景 | 验证点 |
+|----------|--------|
+| {SCENARIO} | {VERIFICATION} |
+
+### 16.3 Given/When/Then 用例
+
+**TC-001: {TEST_NAME}**
+Given {PRECONDITION}
+When {ACTION}
+Then {EXPECTED_RESULT}
+
+---
+
+## 17. Performance Budget
+
+| 操作 | 目标 | 测量方式 |
+|------|------|----------|
+| {OPERATION} | {TARGET} | benchmark test |
+
+---
+
+## 18. Observability
+
+### 18.1 Logging
+
+| 类型 | 名称 | 说明 |
+|------|------|------|
+| log | `{MODULE}.{event}` | {DESCRIPTION} |
+
+### 18.2 Metrics
+
+| 指标名 | 类型 | 说明 |
+|--------|------|------|
+| `foundationx_{MODULE}_{metric}` | {TYPE} | {DESCRIPTION} |
+
+---
+
+## 19. Security
+
+| 要求 | 实现方式 |
+|------|----------|
+| {REQUIREMENT} | {IMPLEMENTATION} |
+
+---
+
+## 20. CI Gate
+
+| Gate | 命令 | 阻塞条件 |
+|------|------|----------|
+| 编译 | `go build ./...` | 编译失败 |
+
+---
+
+## 21. Upgrade Compatibility
+
+| 变更类型 | 版本升级 | 迁移方式 |
+|----------|----------|----------|
+| {CHANGE_TYPE} | **{SEMVER}** | {MIGRATION} |
+
+---
+
+## 22. Release DoD
+
+- [ ] 单元测试覆盖率 >= 80%
+- [ ] `-race` 测试通过
+- [ ] `go vet` 无警告
+
+---
+
+## 23. Open Questions
+
+### Blocking
+
+无。
+
+### Non-blocking
+
+| ID | 问题 | 状态 | 负责人 |
+|----|------|------|--------|
+| OQ-001 | {QUESTION} | 待评估 | - |
+
+### Future
+
+| ID | 问题 | 状态 | 负责人 |
+|----|------|------|--------|
+| OQ-002 | {QUESTION} | 待评估 | - |
