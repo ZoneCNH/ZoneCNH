@@ -44,6 +44,21 @@
 
 ---
 
+
+
+## 上游质量注记
+
+本次 tasks 评分仅覆盖 TASK 文件自身的结构性质量。会话中发现的以下缺陷属于上游阶段（matrix/plan）的 false gate pass，不在 tasks 评分范围内，但影响 tasks 阶段的工作量：
+
+| 缺陷 | 阶段 | 阶段得分 | 说明 |
+|------|------|----------|------|
+| BR-004→TASK-010 不存在 | matrix | 100 | Forward Coverage 引用不存在的 TASK 文件 |
+| FR-006/007 跨表分配不一致 | matrix | 100 | Forward Coverage vs Task Coverage 数据冲突 |
+| BR-008/BR-009 缺失 | matrix | 100 | SPEC 定义但矩阵中无行 |
+| Plan 仅 6 task | plan | 100 | TRACEABILITY 映射至 13+ task，plan 缺口 7 个 |
+
+详见 `docs/governance/improvements/20260614-cross-stage-gate-integrity/SPEC.md`。
+
 ## 备注
 
 - 13 TASK + 13 PROMPT + PLAN + TRACEABILITY 齐全
