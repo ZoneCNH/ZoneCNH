@@ -136,6 +136,7 @@
 | [macro_regime](https://github.com/ZoneCNH/macro_regime) | - | ░░░░ 5% | 宏观经济体制识别（M1-M7） |
 | [ms_brain](https://github.com/ZoneCNH/ms_brain) | - | ░░░░ 5% | M×S 系统架构分析体系 |
 | [regime-engine](https://github.com/ZoneCNH/regime-engine) | v0.1.0 | ██░░ 25% | M×S 联合决策引擎（M+S → action/risk/permission），骨架完成，30+ 测试通过 |
+| [flowx](https://github.com/ZoneCNH/flowx) | v0.1.0-draft | ░░░░ 5% | 数据流管线引擎 — 流式 ETL、窗口聚合、背压控制（7 FR, SPEC draft） |
 
 ### 决策域
 
@@ -145,6 +146,9 @@
 | [backtest-engine](https://github.com/ZoneCNH/backtest-engine) | - | ░░░░ 5% | 事件驱动回测 |
 | [optimizer](https://github.com/ZoneCNH/optimizer) | - | ░░░░ 5% | 参数优化 |
 | [strategies](https://github.com/ZoneCNH/strategies) | - | ██░░ 60% | 策略研究与参考库，3.5MB/746 项 |
+| [backtestx](https://github.com/ZoneCNH/backtestx) | v0.1.0-draft | ░░░░ 5% | 回测引擎 — 事件驱动回测、Walk-Forward、蒙特卡洛（7 FR, SPEC draft） |
+| [strategyx](https://github.com/ZoneCNH/strategyx) | v0.1.0-draft | ░░░░ 5% | 策略工厂 — 策略注册、参数管理、信号组合（7 FR, SPEC draft） |
+| [maestro](https://github.com/ZoneCNH/maestro) | v0.1.0-draft | ░░░░ 5% | 工作流编排引擎 — DAG 工作流、状态机、错误恢复（9 FR, SPEC draft） |
 
 ### 执行域
 
@@ -154,6 +158,9 @@
 | [order-engine](https://github.com/ZoneCNH/order-engine) | - | ░░░░ 5% | 订单执行引擎 |
 | [portfolio-engine](https://github.com/ZoneCNH/portfolio-engine) | - | ░░░░ 5% | 投资组合管理 |
 | [settlement](https://github.com/ZoneCNH/settlement) | - | ░░░░ 5% | 结算与对账 |
+| [riskx](https://github.com/ZoneCNH/riskx) | v0.1.0-draft | ░░░░ 5% | 风控引擎 — 事前风控、回撤控制、熔断机制（7 FR, SPEC draft） |
+| [orderx](https://github.com/ZoneCNH/orderx) | v0.1.0-draft | ░░░░ 5% | 订单管理器 — 订单生命周期、SOR、状态机（7 FR, SPEC draft） |
+| [positionx](https://github.com/ZoneCNH/positionx) | v0.1.0-draft | ░░░░ 5% | 仓位管理器 — 实时仓位追踪、PnL、敞口监控（7 FR, SPEC draft） |
 
 ### 入口 · 横切 · Rust
 
@@ -192,14 +199,14 @@
 | 数据域 · 行情 Provider | 5    | 5    | 0      | 80%      | 5 (全部)                                                    |
 | 数据域 · 宏观          | 11   | 11   | 0      | 80%      | 0                                                           |
 | 数据域 · 另类          | 1    | 0    | 1      | 5%       | 0                                                           |
-| 分析域                 | 7    | 1    | 6      | 8%       | 1 (regime-engine)                                           |
-| 决策域                 | 4    | 1    | 3      | 19%      | 0                                                           |
-| 执行域                 | 4    | 0    | 4      | 5%       | 0                                                           |
+| 分析域                 | 8    | 1    | 7      | 8%       | 1 (regime-engine)                                           |
+| 决策域                 | 7    | 1    | 6      | 16%      | 0                                                           |
+| 执行域                 | 7    | 0    | 7      | 5%       | 0                                                           |
 | 入口                   | 1    | 1    | 0      | 80%      | 1 (x.go)                                                    |
 | 横切                   | 2    | 1    | 1      | 43%      | 1 (observex)                                                |
 | Rust                   | 1    | 1    | 0      | -        | 0                                                           |
 | 独立                   | 1    | 1    | 0      | -        | 0                                                           |
-| **合计**               | **74** | **58** | **16** | **69%**  | **31**                                                      |
+| **合计**               | **81** | **58** | **23** | **67%**  | **31**                                                      |
 
 ---
 
@@ -237,19 +244,21 @@
 
 ### 🔴 分析域（阻塞）
 
-- 组件：7 个，6 个处于早期（5%），regime-engine 骨架完成（25%）
-- **阻塞项**：factor-engine / feature-store / factor-eval / market_regime / macro_regime / ms_brain 均未实现到可用闭环
+- 组件：8 个，7 个处于早期（5%），regime-engine 骨架完成（25%）
+- **阻塞项**：factor-engine / feature-store / factor-eval / market_regime / macro_regime / ms_brain 均未实现到可用闭环；flowx SPEC 已创建（v0.1.0-draft）
 - **依赖**：需要数据域提供数据，L2.5 已就绪
 
 ### 🔴 决策域（阻塞）
 
 - 核心组件 3 个仅创建（5%）：signal-factory / backtest-engine / optimizer
 - strategies 已有（60%，3.5MB/746 项），但定位模糊
+- backtestx / strategyx / maestro SPEC 已创建（v0.1.0-draft）
 - **阻塞项**：依赖分析域产出因子
 
 ### 🔴 执行域（阻塞）
 
-- 组件：4 个，全部仅创建（5%）
+- 组件：7 个，全部仅创建（5%）
+- riskx / orderx / positionx SPEC 已创建（v0.1.0-draft）
 - **阻塞项**：依赖决策域产出信号
 
 ### 🟡 入口（注意）
