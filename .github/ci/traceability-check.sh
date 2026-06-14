@@ -24,7 +24,7 @@ echo "=== Traceability Check ==="
 echo ""
 
 # 必须包含的矩阵：Foundation 模块 + 已纳入治理的 L2.5 模块
-REQUIRED_MODULES="kernel configx resiliencx observex schedulex testkitx xlibgate xlib-standard redisx kafkax natsx postgresx taosx ossx clickhousex contracts transportx domainx"
+REQUIRED_MODULES="kernel configx resiliencx observex schedulex testkitx xlibgate xlib-standard xlib-harness xlib-evidence redisx kafkax natsx postgresx taosx ossx clickhousex contracts transportx domainx"
 
 is_required_module() {
   local candidate="$1"

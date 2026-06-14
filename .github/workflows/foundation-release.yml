@@ -43,7 +43,7 @@ jobs:
             for raw_module in "${modules[@]}"; do
               module="$(printf '%s' "$raw_module" | tr -d '[:space:]')"
               case "$module" in
-                kernel|configx|observex|resiliencx|schedulex|testkitx)
+                kernel|configx|observex|resiliencx|schedulex|testkitx|xlib-standard|xlib-harness|xlib-evidence|xlibgate|redisx|kafkax|natsx|postgresx|taosx|ossx|clickhousex|contracts|transportx|domainx)
                   selected_count=$((selected_count + 1))
                   ;;
                 "")
@@ -68,121 +68,73 @@ jobs:
               matrix = yaml.safe_load(f)
           print(f'Go baseline: {matrix[\"go_baseline\"]}')
           print(f'Modules: {len(matrix[\"modules\"])}')
-          print(f'Forbidden edges: {len(matrix.get(\"forbidden_foundation_edges\", []))}')
+          print(f'Allowed dependency entries: {len(matrix[\"allowed_deps\"])}')
           print('Pre-flight OK')
           "
 
-  release-kernel:
-    name: Release kernel
+  release-modules:
+    name: Release ${{ matrix.module }}
     needs: release-prep
-    if: contains(inputs.modules, 'kernel') || inputs.modules == 'all'
     runs-on: [self-hosted, Linux, X64, homepage]
     timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        module:
+          - kernel
+          - configx
+          - observex
+          - resiliencx
+          - schedulex
+          - testkitx
+          - xlib-standard
+          - xlib-harness
+          - xlib-evidence
+          - xlibgate
+          - redisx
+          - kafkax
+          - natsx
+          - postgresx
+          - taosx
+          - ossx
+          - clickhousex
+          - contracts
+          - transportx
+          - domainx
     steps:
-      - uses: actions/checkout@v4
-        with:
-          repository: ZoneCNH/kernel
-          token: ${{ secrets.FOUNDATION_RELEASE_TOKEN }}
-          fetch-depth: 0
-      - name: Tag and push kernel
+      - name: Check module selection
+        id: selection
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git tag -a "${{ inputs.release_version }}" -m "Foundation release ${{ inputs.release_version }}"
-          git push origin "${{ inputs.release_version }}"
+          if [ "${{ inputs.modules }}" = "all" ]; then
+            echo "release_module=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
 
-  release-configx:
-    name: Release configx
-    needs: release-kernel
-    if: always() && (contains(inputs.modules, 'configx') || inputs.modules == 'all') && needs.release-kernel.result != 'failure' && needs.release-kernel.result != 'cancelled'
-    runs-on: [self-hosted, Linux, X64, homepage]
-    timeout-minutes: 10
-    steps:
+          release_module=false
+          IFS=',' read -ra selected <<< "${{ inputs.modules }}"
+          for raw_module in "${selected[@]}"; do
+            module="$(printf '%s' "$raw_module" | tr -d '[:space:]')"
+            if [ "$module" = "${{ matrix.module }}" ]; then
+              release_module=true
+              break
+            fi
+          done
+          echo "release_module=$release_module" >> "$GITHUB_OUTPUT"
       - uses: actions/checkout@v4
+        if: steps.selection.outputs.release_module == 'true'
         with:
-          repository: ZoneCNH/configx
+          repository: ZoneCNH/${{ matrix.module }}
           token: ${{ secrets.FOUNDATION_RELEASE_TOKEN }}
           fetch-depth: 0
-      - name: Tag and push configx
+      - name: Tag and push ${{ matrix.module }}
+        if: steps.selection.outputs.release_module == 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git tag -a "${{ inputs.release_version }}" -m "Foundation release ${{ inputs.release_version }}"
-          git push origin "${{ inputs.release_version }}"
-
-  release-observex:
-    name: Release observex
-    needs: release-kernel
-    if: always() && (contains(inputs.modules, 'observex') || inputs.modules == 'all') && needs.release-kernel.result != 'failure' && needs.release-kernel.result != 'cancelled'
-    runs-on: [self-hosted, Linux, X64, homepage]
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          repository: ZoneCNH/observex
-          token: ${{ secrets.FOUNDATION_RELEASE_TOKEN }}
-          fetch-depth: 0
-      - name: Tag and push observex
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git tag -a "${{ inputs.release_version }}" -m "Foundation release ${{ inputs.release_version }}"
-          git push origin "${{ inputs.release_version }}"
-
-  release-resiliencx:
-    name: Release resiliencx
-    needs: release-kernel
-    if: always() && (contains(inputs.modules, 'resiliencx') || inputs.modules == 'all') && needs.release-kernel.result != 'failure' && needs.release-kernel.result != 'cancelled'
-    runs-on: [self-hosted, Linux, X64, homepage]
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          repository: ZoneCNH/resiliencx
-          token: ${{ secrets.FOUNDATION_RELEASE_TOKEN }}
-          fetch-depth: 0
-      - name: Tag and push resiliencx
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git tag -a "${{ inputs.release_version }}" -m "Foundation release ${{ inputs.release_version }}"
-          git push origin "${{ inputs.release_version }}"
-
-  release-schedulex:
-    name: Release schedulex
-    needs: release-kernel
-    if: always() && (contains(inputs.modules, 'schedulex') || inputs.modules == 'all') && needs.release-kernel.result != 'failure' && needs.release-kernel.result != 'cancelled'
-    runs-on: [self-hosted, Linux, X64, homepage]
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          repository: ZoneCNH/schedulex
-          token: ${{ secrets.FOUNDATION_RELEASE_TOKEN }}
-          fetch-depth: 0
-      - name: Tag and push schedulex
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git tag -a "${{ inputs.release_version }}" -m "Foundation release ${{ inputs.release_version }}"
-          git push origin "${{ inputs.release_version }}"
-
-  release-testkitx:
-    name: Release testkitx
-    needs: [release-configx, release-observex, release-resiliencx, release-schedulex]
-    if: always() && (contains(inputs.modules, 'testkitx') || inputs.modules == 'all') && needs.release-configx.result != 'failure' && needs.release-configx.result != 'cancelled' && needs.release-observex.result != 'failure' && needs.release-observex.result != 'cancelled' && needs.release-resiliencx.result != 'failure' && needs.release-resiliencx.result != 'cancelled' && needs.release-schedulex.result != 'failure' && needs.release-schedulex.result != 'cancelled'
-    runs-on: [self-hosted, Linux, X64, homepage]
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          repository: ZoneCNH/testkitx
-          token: ${{ secrets.FOUNDATION_RELEASE_TOKEN }}
-          fetch-depth: 0
-      - name: Tag and push testkitx
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
+          if git rev-parse "${{ inputs.release_version }}" >/dev/null 2>&1; then
+            echo "ERROR: tag ${{ inputs.release_version }} already exists in ${{ matrix.module }}"
+            exit 1
+          fi
           git tag -a "${{ inputs.release_version }}" -m "Foundation release ${{ inputs.release_version }}"
           git push origin "${{ inputs.release_version }}"
 
@@ -190,8 +142,8 @@ jobs:
     name: Aggregate Release Manifest
     runs-on: [self-hosted, Linux, X64, homepage]
     timeout-minutes: 10
-    needs: [release-kernel, release-configx, release-observex, release-resiliencx, release-schedulex, release-testkitx]
-    if: always() && needs.release-kernel.result != 'failure' && needs.release-kernel.result != 'cancelled' && needs.release-configx.result != 'failure' && needs.release-configx.result != 'cancelled' && needs.release-observex.result != 'failure' && needs.release-observex.result != 'cancelled' && needs.release-resiliencx.result != 'failure' && needs.release-resiliencx.result != 'cancelled' && needs.release-schedulex.result != 'failure' && needs.release-schedulex.result != 'cancelled' && needs.release-testkitx.result != 'failure' && needs.release-testkitx.result != 'cancelled'
+    needs: release-modules
+    if: always() && needs.release-modules.result != 'failure' && needs.release-modules.result != 'cancelled'
     steps:
       - uses: actions/checkout@v4
       - name: Generate aggregated foundation release manifest
@@ -208,12 +160,29 @@ jobs:
               "observex",
               "resiliencx",
               "schedulex",
-              "testkitx"
+              "testkitx",
+              "xlib-standard",
+              "xlib-harness",
+              "xlib-evidence",
+              "xlibgate",
+              "redisx",
+              "kafkax",
+              "natsx",
+              "postgresx",
+              "taosx",
+              "ossx",
+              "clickhousex",
+              "contracts",
+              "transportx",
+              "domainx"
             ],
             "gate_modules": [
               "xlib-standard",
+              "xlib-harness",
+              "xlib-evidence",
               "xlibgate"
-            ]
+            ],
+            "trust_contract": ".foundationx/repo-contract.json"
           }
           EOF
       - name: Commit and push manifest

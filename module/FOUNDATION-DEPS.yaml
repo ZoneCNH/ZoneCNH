@@ -2,7 +2,7 @@
 # CI 可直接消费此文件执行依赖守卫检查
 # 与 FOUNDATION-V1.md Issue 2 对应
 
-version: "1.1"
+version: "1.2"
 updated: "2026-06-14"
 
 # ============================================================
@@ -60,14 +60,28 @@ modules:
     layer: standard-source
     stdlib_only: false
     runtime_dependency: false
-    description: "标准事实源 / Go Reference Template / Generator / Harness Gate / Evidence Runtime"
+    description: "标准事实源 / Go Reference Template / schema / template"
+
+  xlib-harness:
+    path: github.com/ZoneCNH/xlib-harness
+    layer: harness
+    stdlib_only: false
+    runtime_dependency: false
+    description: "generator/scaffold/spec-lint/boundary/traceability/format/template 门禁运行器"
+
+  xlib-evidence:
+    path: github.com/ZoneCNH/xlib-evidence
+    layer: evidence
+    stdlib_only: false
+    runtime_dependency: false
+    description: "CI/release evidence manifest 与 report runtime"
 
   xlibgate:
     path: github.com/ZoneCNH/xlibgate
     layer: gate
     stdlib_only: false
     runtime_dependency: false
-    description: "import/gomod/baseline/release 机器门禁"
+    description: "import/gomod/baseline/release/repo-contract/reason_code/maturity claim 机器门禁"
 
   # 存储扩展（按需引入）
   redisx:
@@ -125,6 +139,12 @@ modules:
     stdlib_only: false
     description: "跨 runtime / adapter 传输契约"
 
+  domainx:
+    path: github.com/ZoneCNH/domainx
+    layer: domain-shared
+    stdlib_only: false
+    description: "领域共享基础契约与原语"
+
 # ============================================================
 # 允许的依赖关系（单向箭头 = 调用方可以依赖被调方）
 # ============================================================
@@ -136,6 +156,8 @@ allowed_deps:
   schedulex:     [kernel]                              # 不直接依赖 resiliencx/observex
   testkitx:      [kernel, configx, observex, resiliencx, schedulex]  # 测试所有
   xlib-standard: []                                    # 标准源，无运行时依赖
+  xlib-harness:  []                                    # 工具运行器，无 Foundation 运行时依赖
+  xlib-evidence: []                                    # evidence runtime，无 Foundation 运行时依赖
   xlibgate:      []                                    # 机器门禁，无运行时依赖
   redisx:        [kernel]                              # 只依赖 kernel 原语
   kafkax:        [kernel]                              # 只依赖 kernel 原语
@@ -144,8 +166,9 @@ allowed_deps:
   taosx:         [kernel]                              # 只依赖 kernel 原语
   ossx:          [kernel]                              # 只依赖 kernel 原语
   clickhousex:   [kernel]                              # 只依赖 kernel 原语
-  contracts:     []                                    # 契约独立，依赖 L2.5 领域共享层
+  contracts:     []                                    # 跨域契约独立，无 Foundation 运行时依赖
   transportx:    [contracts, configx, observex, resiliencx]  # 传输契约可消费公开契约和横切接口
+  domainx:       [kernel]                              # 领域共享原语只依赖 kernel
 
 # ============================================================
 # 禁止的依赖（任何基础模块都不得导入）
