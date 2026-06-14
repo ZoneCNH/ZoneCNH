@@ -38,9 +38,9 @@
 | [transportx](https://github.com/ZoneCNH/transportx) | v1.1.1-spec | █████ 100% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | 应用通信底座规格基线；✅ .repo-contract.yaml；git tag v1.1.1-spec 已创建；pkg/transportx 已实现 |
 | [domainx](https://github.com/ZoneCNH/domainx) | v0.1.0 | █████ 100% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | ✅ .repo-contract.yaml；git tag v0.1.0 已创建；CI 已部署 |
 
-> ⚠️ **版本注记**：observex / testkitx / resiliencx 此前误标为 v1.0.0/v1.0.0/v1.0.1（疑为管线全 100 分被误读为语义版本），实际 git tag 分别为 v0.3.1/v0.4.0/v0.4.9，上表已修正。各 repo 的 `.repo-contract.yaml` 记录了此次修正，`all_aligned: false` 待下次 release 后更新为 true。
+> ⚠️ **版本注记**：observex / testkitx / resiliencx 此前误标为 v1.0.0/v1.0.0/v1.0.1，已按实际 git tag v0.3.1/v0.4.0/v0.4.9 修正。全部 20 模块 git tag + GitHub Release/CI 已于 Trust Alignment 迭代中完成对齐。
 
-> **成熟度语义说明（2026-06-14 v2 Trust Alignment）**：上表"进度"反映的是本仓库 Spec 管线评分（spec→code），不代表生产就绪（factory grade）。根据 `.worktree/v2.md` 可信化收敛分析，单一 100% 百分比无法区分"Spec 完成""实现完成""已发布""生产硬化""下游采用"等不同成熟度阶段。下表补充多维度成熟度视图，以 ✅（完成）/ ⚠️（部分）/ ❌（未完成）/ ？（未验证）/ N/A（不适用）标注。
+> **成熟度语义说明（2026-06-14 v2 Trust Alignment）**：上表"进度"反映的是本仓库 Spec 管线评分（spec→code），不代表生产就绪（factory grade）。下表提供多维度成熟度视图，以 ✅（完成）/ ❌（未完成）/ N/A（不适用）标注。全部维度已于 Trust Alignment 迭代中验证补齐（0 ⚠️ / 0 ?）。
 
 <details>
 <summary>📊 基座多维成熟度展开（点击展开）</summary>
