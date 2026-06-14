@@ -12,6 +12,10 @@ module/natsx/SPEC.md#18-observability
 
 §18: foundationx_nats_publish_total 等 counter 正确 emit; §18: foundationx_nats_connection_state gauge 反映连接状态; §18: 错误/日志不含 payload/credential 内容
 
+## 文件
+
+natsx.go, metrics_test.go
+
 ## 验证
 
 NFR-009 verified via TC-009

@@ -12,6 +12,10 @@ module/natsx/SPEC.md#FR-006, module/natsx/SPEC.md#FR-007, module/natsx/SPEC.md#B
 
 AC-006: AddStream 创建或幂等返回已有 stream; AC-007: AddConsumer 创建或幂等返回已有 consumer
 
+## 文件
+
+jetstream.go, options.go, internal/reconnect/backoff.go, jetstream_test.go
+
 ## 验证
 
 FR-006 verified via TC-003; FR-007 verified via TC-003

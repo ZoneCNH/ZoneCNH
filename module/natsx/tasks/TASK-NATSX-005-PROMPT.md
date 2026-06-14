@@ -12,6 +12,10 @@ module/natsx/SPEC.md#FR-008, module/natsx/SPEC.md#BR-006
 
 AC-008: Health 端点返回健康状态及组件详情
 
+## 文件
+
+health.go, health_test.go
+
 ## 验证
 
 FR-008 verified via TC-005

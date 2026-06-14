@@ -12,6 +12,10 @@ module/natsx/SPEC.md#9-interface-contract
 
 §9: Build 产出合法 subject 字符串; §9: Parse 还原 domain/resource/action/version; §9: 非法 token 拒绝并返回错误
 
+## 文件
+
+subject.go, subject_test.go
+
 ## 验证
 
 NFR-006 verified via TC-006

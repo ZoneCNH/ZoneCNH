@@ -12,6 +12,10 @@ module/natsx/SPEC.md#FR-003, module/natsx/SPEC.md#BR-003
 
 AC-003: Request 在超时内收到 Response
 
+## 文件
+
+client.go, client_test.go
+
 ## 验证
 
 FR-003 verified via TC-002

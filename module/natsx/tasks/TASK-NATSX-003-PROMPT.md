@@ -12,6 +12,10 @@ module/natsx/SPEC.md#FR-004, module/natsx/SPEC.md#FR-005, module/natsx/SPEC.md#B
 
 AC-004: JetStream Publish 收到 pubAck; AC-005: Subscribe 正确处理 ack/redelivery
 
+## 文件
+
+jetstream.go, errors.go, jetstream_test.go
+
 ## 验证
 
 FR-004 verified via TC-003; FR-005 verified via TC-003

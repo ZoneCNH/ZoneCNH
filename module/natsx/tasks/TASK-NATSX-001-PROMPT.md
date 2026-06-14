@@ -12,6 +12,10 @@ module/natsx/SPEC.md#FR-001, module/natsx/SPEC.md#FR-002, module/natsx/SPEC.md#B
 
 AC-001: Publish 到合法 subject 被 handler 消费; AC-002: Subscribe 注册 handler 并接收消息
 
+## 文件
+
+client.go, subscription.go, msg.go, errors.go, client_test.go
+
 ## 验证
 
 FR-001 verified via TC-001; FR-002 verified via TC-001
