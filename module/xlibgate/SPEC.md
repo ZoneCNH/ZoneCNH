@@ -2,7 +2,7 @@
 
 > 基座 · 机器门禁。import 边界、go.mod、Go baseline、release evidence 机器检查。
 
-最后更新：2026-06-12
+最后更新：2026-06-14
 
 ---
 
@@ -92,6 +92,8 @@ Foundation 由 70+ 个 Go 模块组成，模块间的依赖关系、import 边�
 | Foundation 治理     | 通过门禁结果监控架构合规性                                  |
 | L2 发布管线         | 调用 `xlibgate l2 release-check` 判定发布就绪               |
 | 模块维护者          | 调用 `xlibgate l2 validate-manifest` 校验能力清单           |
+| Trust Alignment 门禁 | 调用 `xlibgate trust identity/release-consistency/maturity` 系列命令验证模块信任对齐 |
+| Foundation 治理（舰队） | 调用 `xlibgate trust fleet-status` 生成舰队级信任状态聚合报告 |
 
 ---
 
@@ -275,6 +277,8 @@ THEN 在线查询 GitHub latest release API 替代本地 manifest/tag 投影，�
 
 ### FR-015: trust maturity
 
+工厂级 11 维判定维度：`spec_complete`、`implementation_complete`、`unit_tests_complete`、`contract_tests_complete`、`traceability_complete`、`release_manifest_complete`、`live_integration_complete`、`failure_profiles_complete`、`external_ci_artifacts_complete`、`downstream_adoption_complete`、`production_soak_complete`。所有维度必须为 true 方可通过工厂级门禁，禁止用单个百分比值替代。
+
 WHEN 调用 `xlibgate trust maturity --factory --repo <repo-path>` 且所有 11 维工厂级判定均为 true
 THEN 输出 JSON 含 11 维逐项判定和 overall=pass，reason_code=""，exit code 0
 
@@ -323,7 +327,7 @@ THEN 输出 JSON `{check: "secret-redaction", repo, status: "pass", reason_code:
 WHEN 检测到 secrets（API keys、passwords、tokens、DSN with credentials）
 THEN 输出 findings 含文件路径、行号和脱敏后的匹配类型（不输出密钥原文），reason_code=SECRET_LEAK，exit code 1
 
-WHEN 检测到私有端点（127.0.0.1、localhost 在非开发上下文）
+WHEN 检测到私有端点（127.0.0.1、localhost、10.x.x.x、172.16-31.x.x、192.168.x.x），但以下开发上下文豁免：文件路径含 `test/`、`testdata/`、`_test.go`、`.md` 中的示例代码块标记为 `dev-only`、`README.md` 的本地开发章节
 THEN 输出 findings 含文件路径、行号和端点地址，reason_code=PRIVATE_ENDPOINT_LEAK，exit code 1
 
 WHEN 扫描路径下无 release/evidence 目录
@@ -762,11 +766,29 @@ xlibgate/
 │   ├── gomod.go                # check gomod 子命令
 │   ├── baseline.go             # check baseline 子命令
 │   ├── release.go              # check release 子命令
-│   └── all.go                  # check all 子命令
+│   ├── all.go                  # check all 子命令
+│   ├── trust.go                # trust 父命令
+│   ├── trust_identity.go       # trust identity 子命令
+│   ├── trust_template.go       # trust template-residue 子命令
+│   ├── trust_release.go        # trust release-consistency 子命令
+│   ├── trust_maturity.go       # trust maturity 子命令
+│   ├── trust_boundary.go       # trust import-boundary 子命令
+│   ├── trust_testkit.go        # trust testkit-prod-import 子命令
+│   ├── trust_secret.go         # trust secret-redaction 子命令
+│   └── trust_fleet.go          # trust fleet-status 子命令
 ├── scanner/
 │   ├── imports.go              # import 边界扫描器
 │   ├── gomod.go                # go.mod 整洁度检查器
-│   └── baseline.go             # Go baseline 检查器
+│   ├── baseline.go             # Go baseline 检查器
+│   └── trust/
+│       ├── identity.go         # 身份对齐扫描器
+│       ├── template.go         # 模板残留扫描器
+│       ├── release.go          # 发布一致性扫描器
+│       ├── maturity.go         # 成熟度工厂扫描器
+│       ├── boundary.go         # import 边界扫描器（trust 版）
+│       ├── testkit.go          # testkitx 生产隔离扫描器
+│       ├── secret.go           # secret 脱敏扫描器
+│       └── fleet.go            # 舰队状态聚合器
 ├── evidence/
 │   ├── collector.go            # evidence 收集
 │   └── validator.go            # evidence 校验
