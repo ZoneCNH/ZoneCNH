@@ -37,6 +37,40 @@
 | [transportx](https://github.com/ZoneCNH/transportx) | v1.1.1-spec | █████ 100% | spec=84 mat=100 tsk=100 pln=100 prm=100 cod=100 | 应用通信底座规格基线；25 FR, 18 BR, 12 NFR, 25 AC, 25 TC, 12 CI gates — SPEC/Matrix/Tasks 三阶段满分 |
 | [domainx](https://github.com/ZoneCNH/domainx) | v0.1.0 | █████ 100% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 |
 
+> **成熟度语义说明（2026-06-14 v2 Trust Alignment）**：上表"进度"反映的是本仓库 Spec 管线评分（spec→code），不代表生产就绪（factory grade）。根据 `.worktree/v2.md` 可信化收敛分析，单一 100% 百分比无法区分"Spec 完成""实现完成""已发布""生产硬化""下游采用"等不同成熟度阶段。下表补充多维度成熟度视图，以 ✅（完成）/ ⚠️（部分）/ ❌（未完成）/ ？（未验证）/ N/A（不适用）标注。
+
+<details>
+<summary>📊 基座多维成熟度展开（点击展开）</summary>
+
+| 模块 | SPEC | IMPL | RELEASE | LIVE INT | EXT CI | ADOPT | SOAK | FACTORY | 备注 |
+|------|:----:|:----:|:-------:|:--------:|:------:|:-----:|:----:|:-------:|------|
+| xlib-standard | ✅ | ✅ | ⚠️ | N/A | ? | ? | N/A | ❌ | 表格 v1.0.0，公开 latest v0.6.5；版本待对齐 |
+| xlib-harness | ✅ | ✅ | ✅ | N/A | ? | ? | N/A | ❌ | Draft→Approved 待四源评分 |
+| xlib-evidence | ✅ | ✅ | ✅ | N/A | ? | ? | N/A | ❌ | Draft→Approved 待四源评分 |
+| xlibgate | ✅ | ✅ | ✅ | N/A | ? | ? | N/A | ❌ | v1.0.2 CLI，缺 trust check |
+| kernel | ✅ | ✅ | ✅ | N/A | ? | ✅ | N/A | ✅ | L0 stdlib-only，建议 API 冻结 |
+| configx | ✅ | ✅ | ✅ | N/A | ? | ? | N/A | ✅ | v1.0.0 已发布，成熟度最高 |
+| observex | ✅ | ✅ | ⚠️ | N/A | ? | ? | N/A | ❌ | 表格 v1.0.0，公开 latest v0.3.1 |
+| testkitx | ✅ | ✅ | ⚠️ | N/A | ? | ? | N/A | ❌ | 表格 v1.0.0，公开 latest v0.4.0；test-only |
+| resiliencx | ✅ | ✅ | ⚠️ | N/A | ? | ? | N/A | ❌ | 表格 v1.0.1，公开 latest v0.4.9 |
+| schedulex | ✅ | ✅ | ✅ | N/A | ✅ | ? | ? | ✅ | v1.0.0 已发布，下游 smoke 通过 |
+| redisx | ✅ | ✅ | ✅ | ✅ | ? | ? | ? | ❌ | Docker Redis 集成已过；README 身份待修 |
+| kafkax | ✅ | ✅ | ✅ | ✅ | ? | ? | ? | ❌ | 真实 broker gate 已过；README 身份待修 |
+| natsx | ✅ | ✅ | ✅ | ✅ | ? | ? | ? | ❌ | v1.0.0 已发布；正式四源 98+ 与生产 TLS gate 待补 |
+| postgresx | ✅ | ✅ | ✅ | ✅ | ? | ? | ? | ❌ | v1.0.0 已发布；evidence ancestry/soak/adoption 待补 |
+| taosx | ⚠️ | ✅ | ✅ | ✅ | ? | ? | ? | ❌ | spec 67 待修；真实 taosWS 集成已验证 |
+| ossx | ✅ | ✅ | ✅ | ✅ | ? | ? | ? | ❌ | Aliyun OSS 真实集成已过；公开证据偏薄 |
+| clickhousex | ✅ | ✅ | ✅ | ? | ? | ? | ? | ❌ | 表格 v1.0.1；需确认公开 release 状态 |
+| contracts | ✅ | ⚠️ | ❌ | N/A | ? | ? | N/A | ❌ | spec baseline；无 release；README 身份待修 |
+| transportx | ⚠️ | ⚠️ | ❌ | N/A | ? | ? | N/A | ❌ | spec baseline (84)；无 release；README 身份待修 |
+| domainx | ✅ | ✅ | ⚠️ | N/A | ? | ? | N/A | ❌ | v0.1.0；待纳入 DEPS 与生成状态 |
+
+> **维度说明**：SPEC=规格完成 | IMPL=实现完成 | RELEASE=tag/release/manifest 一致 | LIVE INT=真实服务集成（非 mock） | EXT CI=外部 CI artifact | ADOPT=下游模块真实采用 | SOAK=生产或类生产长时间运行 | FACTORY=factory_grade_allowed（最高综合等级）
+
+> **数据来源**：本表依据本仓库 `module/` 规格状态、公开 GitHub release 页面与 `.worktree/v2.md` 分析。标注 `?` 的维度需跨仓库验证后更新。
+
+</details>
+
 ### L2.5 · 领域共享层
 
 | 组件 | 版本 | 进度 | 说明 |

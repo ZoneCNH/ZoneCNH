@@ -2,9 +2,9 @@
 
 最后更新：2026-06-07
 
-本文固化 Foundation 第一阶段 6 个基础模块的定位、边界、交互、故障模式和建设顺序。执行层规格见 `FOUNDATION-SPEC.md`，机器依赖矩阵见 `FOUNDATION-DEPS.yaml`。
+> **范围说明（2026-06-14）**：本文是 Foundation 第一阶段的**初始模块定位文档**，当时仅覆盖 6 个核心模块。Foundation 此后已扩展至 20 个基座模块（完整清单见 [`module/README.md`](./README.md)），机器可读依赖矩阵见 [`FOUNDATION-DEPS.yaml`](./FOUNDATION-DEPS.yaml)。本文的模块定位、边界、故障模式和建设顺序仅反映第一阶段初始范围，**不应作为当前完整模块集合的权威参考**。
 
-## 总体分层
+## 总体分层（历史：第一阶段）
 
 ```text
 xlib-standard：标准事实源 / 模板 / Gate / Evidence，不进入业务运行时
