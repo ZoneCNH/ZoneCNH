@@ -7,9 +7,9 @@ TASK-NATSX-014:
     - "module/natsx/SPEC.md#20-ci-gate"
     - "module/natsx/SPEC.md#22-release-dod"
   acceptance_criteria:
-    - "AC-REL-001: CI gate 全绿（build/test/vet/lint/secret scan）"
-    - "AC-REL-002: 测试覆盖率 >= 80%，benchmark 无 >10% 回退"
-    - "AC-REL-003: README 含快速开始 + API 概览，CHANGELOG 记录 v1.0.0"
+    - "§20: CI gate 全绿（build/test/vet/lint/secret scan）"
+    - "§22: 测试覆盖率 >= 80%，benchmark 无 >10% 回退"
+    - "§22: README 含快速开始 + API 概览，CHANGELOG 记录 v1.0.0"
   files:
     - "go.mod"
     - "README.md"
