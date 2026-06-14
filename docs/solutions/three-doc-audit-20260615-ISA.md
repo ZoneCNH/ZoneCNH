@@ -27,7 +27,7 @@ STATUS.md / README.md / ARCHITECTURE.md 三文档之间存在系统性数量漂�
 
 ## 3. 理想状态 — 用户视角的成功描述
 
-运行 `python3 scripts/audit-status.py --network` 输出 22/22 PASS。三文档全部自洽，零 404，各有版本号/无版本号/进度分布/已有已创建全部满足自洽恒等式。后续任何数量变更被 CountGuard+CI 阻断，无法再凭空编造。
+运行 `python3 scripts/audit-status.py --network` 输出 24/24 PASS。三文档全部自洽，零 404，各有版本号/无版本号/进度分布/已有已创建全部满足自洽恒等式。后续任何数量变更被 CountGuard+CI 阻断，无法再凭空编造。
 
 ## 4. 不做什么
 
@@ -68,7 +68,7 @@ STATUS.md / README.md / ARCHITECTURE.md 三文档之间存在系统性数量漂�
 - [x] ISC-6 strategies 全部引用已移除
 - [x] ISC-7 GitHub Release 14/20、git tag 18/20，与 STATUS.md 版本列一致
 - [x] ISC-8 CountGuard hook + audit-status.py + CI gate 三层预防部署且可运行
-- [x] ISC-9 `python3 scripts/audit-status.py` 22/22 PASS
+- [x] ISC-9 `python3 scripts/audit-status.py` 24/24 PASS
 - [x] ISC-10 域统计有版本号合计 37，与分项和一致
 
 ## 9. 测试策略
