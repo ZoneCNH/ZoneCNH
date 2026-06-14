@@ -45,3 +45,10 @@ Rubric 红线规则建议从：
 | 日期 | 决策 | 理由 |
 |------|------|------|
 | 2026-06-14 | 创建本改进规格 | natsx 评分 8 轮 spec_ref 争议, 根源在 rubric 形式化触发条件 |
+
+## 变更日志
+
+| 日期 | 变更内容 |
+|------|----------|
+| 2026-06-14 | 提议创建 |
+| 2026-06-14 | 实施：RUBRIC-tasks.md 红线规则从"任一 Task 无 spec_ref"改为"任一 Task 无法追溯到 Spec — 即 task 文件中既无 spec_ref 字段，也不在 acceptance_criteria、Acceptance 章节或其他可定位位置引用 FR/BR/AC ID"；spec_ref 闭合维度描述同步更新 |

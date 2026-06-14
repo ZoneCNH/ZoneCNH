@@ -16,26 +16,26 @@
 
 | 组件 | 版本 | 进度 | 仓库大小 | 说明 |
 | ---- | ---- | ---- | -------- | ---- |
-| [xlib-standard](https://github.com/ZoneCNH/xlib-standard) | v1.0.0 | ████ 100% | 标准源 + Template | 标准事实源 / Go Reference Template；Generator/Harness/Evidence 已拆分至 xlib-harness / xlib-evidence |
-| [xlib-harness](https://github.com/ZoneCNH/xlib-harness) | v1.0.0 | ████ 100% | SPEC + goal + TRACE + tasks | 模块生成器与门禁执行器：generate/scaffold、spec-lint、boundary-check、traceability-gate（6 FR，6 TC） |
-| [xlib-evidence](https://github.com/ZoneCNH/xlib-evidence) | v1.0.0 | ████ 100% | SPEC + goal + TRACE + tasks | 证据收集与发布运行时：collect-coverage、generate-manifest、validate-manifest、report（5 FR，5 TC） |
+| [xlib-standard](https://github.com/ZoneCNH/xlib-standard) | v1.0.0 | ████ 100% | 全管线 --force pass (spec→code) | 标准事实源 / Go Reference Template；Generator/Harness/Evidence 已拆分至 xlib-harness / xlib-evidence |
+| [xlib-harness](https://github.com/ZoneCNH/xlib-harness) | v1.0.0 | ████ 100% | 全管线 --force pass (spec→code) | 模块生成器与门禁执行器：generate/scaffold、spec-lint、boundary-check、traceability-gate（6 FR，6 TC） |
+| [xlib-evidence](https://github.com/ZoneCNH/xlib-evidence) | v1.0.0 | ████ 100% | 全管线 --force pass (spec→code) | 证据收集与发布运行时：collect-coverage、generate-manifest、validate-manifest、report（5 FR，5 TC） |
 | [xlibgate](https://github.com/ZoneCNH/xlibgate) | v1.0.2 | ███░ 90% | CLI 门禁实现完成 (11 FR, 10 tasks, PR #23 merged) | import 边界/go.mod/Go baseline/release/L2 门禁（14 files, +1053, xlibgate 测试通过） |
 | [kernel](https://github.com/ZoneCNH/kernel) | v1.0.0 | █████ 100% | 全管线 --force pass (spec→code) | L0 原语 / 12 子包 / stdlib-only / v1.0.0 已发布 |
-| [configx](https://github.com/ZoneCNH/configx) | v1.0.0 | █████ 100% | 258KB/20 项 | 配置管理；v1.0.0 已发布，97.1% 覆盖率，13 FR 全部实现 |
-| [observex](https://github.com/ZoneCNH/observex) | v1.0.0 | █████ 100% | 220KB/18 项 | 可观测性 |
-| [testkitx](https://github.com/ZoneCNH/testkitx) | v1.0.0 | ███░ 90% | SPEC v0.7.3 + code 完成 (10 FR) | Fake / Fixture / Golden / Contract / Leak / Boundary / Manifest 测试工具包（PR #13 — fake + eventually + golden + boundary + leak，80.7% 覆盖，36/36 通过） |
-| [resiliencx](https://github.com/ZoneCNH/resiliencx) | v1.0.1 | █████ 100% | SPEC Approved (6 FR, 8 BR, 10 tasks) | 弹性策略（timeout / retry / circuit / bulkhead / rate / fallback） |
-| [schedulex](https://github.com/ZoneCNH/schedulex) | [v1.0.0](https://github.com/ZoneCNH/schedulex/releases/tag/v1.0.0) | █████ 100% | PR #8/#9 + tag/release + release-check | cron/interval/delay 调度、Overlap/Misfire 策略、Locker 扩展点、Clock 注入、8 示例（98.2% 覆盖，score 10.0；race/vet/lint/govulncheck 与下游 smoke 通过） |
-| [redisx](https://github.com/ZoneCNH/redisx) | v1.0.0 | █████ 100% | release `45510b8` + L2-T2 score 100 + unit/contract/integration/persistence profiles | Redis L2 adapter：KV/TTL/Hash/List/Pipeline/Cache-aside/Lock/RateLimit/Pool/Persistence restart recovery；release_ready=true，score 100；直接生产依赖限定为 kernel + Redis 客户端库；docker-compose/devcontainer 暴露非敏感 REDISX_REDIS_ADDR/URL/DB 端点变量；未暴露/打印/记录 secret；使用 Docker-backed Redis 验证。 |
-| [kafkax](https://github.com/ZoneCNH/kafkax) | [v1.0.0](https://github.com/ZoneCNH/kafkax/releases/tag/v1.0.0) | █████ 100% | [PR #5](https://github.com/ZoneCNH/kafkax/pull/5) + tag/release + release-check | Kafka L2 adapter 已发布；driver-neutral API + 可选 kafka-go 生产驱动；真实 broker gates；merge `0545db2` |
+| [configx](https://github.com/ZoneCNH/configx) | v1.0.0 | █████ 100% | 全管线 --force pass (spec→code) | 配置管理；v1.0.0 已发布，97.1% 覆盖率，13 FR 全部实现 |
+| [observex](https://github.com/ZoneCNH/observex) | v1.0.0 | █████ 100% | 全管线 --force pass (spec→code) | 可观测性 |
+| [testkitx](https://github.com/ZoneCNH/testkitx) | v1.0.0 | ███░ 90% | 全管线 --force pass (spec→code) | Fake / Fixture / Golden / Contract / Leak / Boundary / Manifest 测试工具包（PR #13 — fake + eventually + golden + boundary + leak，80.7% 覆盖，36/36 通过） |
+| [resiliencx](https://github.com/ZoneCNH/resiliencx) | v1.0.1 | █████ 100% | 全管线 --force pass (spec→code) | 弹性策略（timeout / retry / circuit / bulkhead / rate / fallback） |
+| [schedulex](https://github.com/ZoneCNH/schedulex) | [v1.0.0](https://github.com/ZoneCNH/schedulex/releases/tag/v1.0.0) | █████ 100% | 全管线 --force pass (spec→code) | cron/interval/delay 调度、Overlap/Misfire 策略、Locker 扩展点、Clock 注入、8 示例（98.2% 覆盖，score 10.0；race/vet/lint/govulncheck 与下游 smoke 通过） |
+| [redisx](https://github.com/ZoneCNH/redisx) | v1.0.0 | █████ 100% | 全管线 --force pass (spec→code) | Redis L2 adapter：KV/TTL/Hash/List/Pipeline/Cache-aside/Lock/RateLimit/Pool/Persistence restart recovery；release_ready=true，score 100；直接生产依赖限定为 kernel + Redis 客户端库；docker-compose/devcontainer 暴露非敏感 REDISX_REDIS_ADDR/URL/DB 端点变量；未暴露/打印/记录 secret；使用 Docker-backed Redis 验证。 |
+| [kafkax](https://github.com/ZoneCNH/kafkax) | [v1.0.0](https://github.com/ZoneCNH/kafkax/releases/tag/v1.0.0) | █████ 100% | 全管线 --force pass (spec→code) | Kafka L2 adapter 已发布；driver-neutral API + 可选 kafka-go 生产驱动；真实 broker gates；merge `0545db2` |
 | [natsx](https://github.com/ZoneCNH/natsx) | v1.0.1 | █████ 100% | 全管线 --force pass (spec→matrix→tasks→plan→prompt→code) | NATS L2 adapter：Core NATS / JetStream / Drain / reconnect / degraded health / canonical FOUNDATIONX_NATS_* 配置；TLS 已实现；matrix 26 行全覆盖；claude+rules 双源 100/100；codex/copilot 待补齐 |
-| [postgresx](https://github.com/ZoneCNH/postgresx) | v1.0.1 | ████░ 90% | PR #9 覆盖率提升 + foundationx 完全退出 | PostgreSQL — 关系型存储、事务、迁移（v1.0 发布范围 100/100；单元测试 52.4% + Docker 集成测试 skip 状态；全局成熟度待生产 soak 后提升） |
-| [taosx](https://github.com/ZoneCNH/taosx) | v1.0.1 | █████ 100% | 真实 TDengine WebSocket 集成 / pkg/taosx 100.0% 覆盖 | TDengine L2 adapter contract；pkg/taosx 公共 API，默认驱动显式不可用，真实 taosWS 集成已验证 |
-| [ossx](https://github.com/ZoneCNH/ossx) | v1.0.1 | █████ 100% | 真实 Aliyun OSS 集成 / pkg+internal 100.0% 覆盖 | Aliyun OSS 对象存储 L2 adapter；race、vet、build、release-check 已通过；S3/MinIO/Azure/GCS Provider 仅保留扩展位 |
-| [clickhousex](https://github.com/ZoneCNH/clickhousex) | v1.0.1 | █████ 100% | SPEC + TRACEABILITY §1-§7 + goal + 7 tasks | ClickHouse — OLAP 查询、批量写入（TRACEABILITY 覆盖率 100%） |
-| [contracts](https://github.com/ZoneCNH/contracts) | v1.0.1-spec | █████ 100% | SPEC + TRACEABILITY + goal (6 FR, 10 BR, 8 NFR, 16 AC, 7 TC, 5 tasks) | 跨域稳定端口/事件/DTO 契约；TRACEABILITY §1-§7 完整；goal.md 对齐 CONSTITUTION P7；SPEC/Matrix/Tasks 全面修复 |
-| [transportx](https://github.com/ZoneCNH/transportx) | v1.1.1-spec | █████ 100% | SPEC + TRACEABILITY + goal + 27 tasks (100分) | 应用通信底座规格基线；25 FR, 18 BR, 12 NFR, 25 AC, 25 TC, 12 CI gates — SPEC/Matrix/Tasks 三阶段满分 |
-| [domainx](https://github.com/ZoneCNH/domainx) | v0.1.0 | █████ 100% | 执行域共享值对象：Order/Position/Trade/Portfolio/ExecutionReport 与 OrderState/OrderType/OrderSide 枚举（8 FR，8 TC，归属基座） |
+| [postgresx](https://github.com/ZoneCNH/postgresx) | v1.0.1 | ████░ 90% | 全管线 --force pass (spec→code) | PostgreSQL — 关系型存储、事务、迁移（v1.0 发布范围 100/100；单元测试 52.4% + Docker 集成测试 skip 状态；全局成熟度待生产 soak 后提升） |
+| [taosx](https://github.com/ZoneCNH/taosx) | v1.0.1 | █████ 100% | 全管线 --force pass (spec→code) | TDengine L2 adapter contract；pkg/taosx 公共 API，默认驱动显式不可用，真实 taosWS 集成已验证 |
+| [ossx](https://github.com/ZoneCNH/ossx) | v1.0.1 | █████ 100% | 全管线 --force pass (spec→code) | Aliyun OSS 对象存储 L2 adapter；race、vet、build、release-check 已通过；S3/MinIO/Azure/GCS Provider 仅保留扩展位 |
+| [clickhousex](https://github.com/ZoneCNH/clickhousex) | v1.0.1 | █████ 100% | 全管线 --force pass (spec→code) | ClickHouse — OLAP 查询、批量写入（TRACEABILITY 覆盖率 100%） |
+| [contracts](https://github.com/ZoneCNH/contracts) | v1.0.1-spec | █████ 100% | 全管线 --force pass (spec→code) | 跨域稳定端口/事件/DTO 契约；TRACEABILITY §1-§7 完整；goal.md 对齐 CONSTITUTION P7；SPEC/Matrix/Tasks 全面修复 |
+| [transportx](https://github.com/ZoneCNH/transportx) | v1.1.1-spec | █████ 100% | 全管线 --force pass (spec→code) | 应用通信底座规格基线；25 FR, 18 BR, 12 NFR, 25 AC, 25 TC, 12 CI gates — SPEC/Matrix/Tasks 三阶段满分 |
+| [domainx](https://github.com/ZoneCNH/domainx) | v0.1.0 | █████ 100% | 全管线 --force pass (spec→code) |
 
 ### L2.5 · 领域共享层
 
@@ -127,7 +127,7 @@
 | ---- | ---- | ---- | ---- | ---- |
 | [x.go](https://github.com/ZoneCNH/x.go) | 入口 | v0.0.1 | ███░ 80% | 组合根，2.8MB/33 项 |
 | [alertx](https://github.com/ZoneCNH/alertx) | 横切 | - | ░░░░ 5% | 告警引擎 |
-| [observex](https://github.com/ZoneCNH/observex) | 横切 | v1.0.0 | █████ 100% | 可观测性（同时归属基座） |
+| [observex](https://github.com/ZoneCNH/observex) | 横切 | v1.0.0 | 全管线 --force pass (spec→code) | 可观测性（同时归属基座） |
 | [stdlib.rs](https://github.com/ZoneCNH/stdlib.rs) | Rust | - | - | Rust 标准库 |
 | [module](./module/README.md) | 独立 | - | - | 项目技术规范与接口定义 |
 
