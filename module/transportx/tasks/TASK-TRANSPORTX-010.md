@@ -1,3 +1,8 @@
+---
+scope: "MethodRegistry"
+acceptance_criteria: []
+---
+
 # TASK-TRANSPORTX-010: MethodRegistry
 
 - **Module**: transportx
@@ -33,3 +38,7 @@ Does NOT implement broker clients, storage drivers, or business event semantics.
 - [ ] UNSAFE method without explicit retry opt-out rejected
 - [ ] RetryClass(method) returns correct classification
 - [ ] `go test ./registry/... -run TestMethodRetryClass` passes
+
+## Non-scope
+
+- 不涉及本 Task 范围外的功能

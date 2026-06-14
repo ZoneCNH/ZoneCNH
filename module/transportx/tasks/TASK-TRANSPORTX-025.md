@@ -1,3 +1,8 @@
+---
+scope: "CI Gates + Release Evidence"
+acceptance_criteria: []
+---
+
 # TASK-TRANSPORTX-025: CI Gates + Release Evidence
 
 - **Module**: transportx
@@ -34,3 +39,7 @@ Does NOT implement CI infrastructure for the documentation repo (TX-GATE-001~004
 - `.github/workflows/transportx-conformance.yml` — Conformance CI workflow
 - `docs/release/v1.1.1.md` — Release notes
 - `docs/conformance/v1.1.1-report.md` — Conformance report
+
+## Non-scope
+
+- 不涉及本 Task 范围外的功能

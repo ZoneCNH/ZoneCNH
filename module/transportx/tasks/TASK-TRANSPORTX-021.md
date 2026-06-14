@@ -1,3 +1,8 @@
+---
+scope: "Audit Plane"
+acceptance_criteria: []
+---
+
 # TASK-TRANSPORTX-021: Audit Plane
 
 - **Module**: transportx
@@ -34,3 +39,7 @@ Does NOT implement broker clients, storage drivers, business event semantics, or
 - [ ] Audit records contain trace_id, correlation_id
 - [ ] SECRET data absent from audit records
 - [ ] `go test ./conformance/... -run TestAuditPlane` passes
+
+## Non-scope
+
+- 不涉及本 Task 范围外的功能

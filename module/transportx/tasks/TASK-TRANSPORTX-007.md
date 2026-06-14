@@ -1,3 +1,8 @@
+---
+scope: "QoS Classification"
+acceptance_criteria: []
+---
+
 # TASK-TRANSPORTX-007: QoS Classification
 
 - **Module**: transportx
@@ -33,3 +38,7 @@ Does NOT implement broker clients, storage drivers, or business event semantics.
 - [ ] COMMAND_IDEMPOTENT without idempotency_key → `TX_QOS_VIOLATION`
 - [ ] AUDIT events must have audit sink configured
 - [ ] `go test ./middleware/... -run TestQoSHardRules` passes
+
+## Non-scope
+
+- 不涉及本 Task 范围外的功能

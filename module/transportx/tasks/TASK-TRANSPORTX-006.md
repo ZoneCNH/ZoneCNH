@@ -1,3 +1,8 @@
+---
+scope: "Error Taxonomy — Transport + Idempotency"
+acceptance_criteria: []
+---
+
 # TASK-TRANSPORTX-006: Error Taxonomy — Transport + Idempotency
 
 - **Module**: transportx
@@ -39,3 +44,7 @@ TX_PAYLOAD_LIMIT_EXCEEDED, TX_HEADER_LIMIT_EXCEEDED, TX_ENDPOINT_INVALID, TX_IDE
 - [ ] Error message never contains raw payload
 - [ ] `go test ./errors/... -run TestTransportError` passes
 - [ ] `go test ./errors/... -run TestRetryClassFor` passes
+
+## Non-scope
+
+- 不涉及本 Task 范围外的功能

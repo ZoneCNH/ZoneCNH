@@ -1,3 +1,8 @@
+---
+scope: "Conformance Suite"
+acceptance_criteria: []
+---
+
 # TASK-TRANSPORTX-024: Conformance Suite
 
 - **Module**: transportx
@@ -33,3 +38,7 @@ Does NOT implement broker clients, storage drivers, business event semantics, or
 - [ ] Missing conformance evidence → CI blocks release (TX-GATE-005~012)
 - [ ] Suite works against in-memory adapter for local testing
 - [ ] Report output includes test counts, pass/fail, timing
+
+## Non-scope
+
+- 不涉及本 Task 范围外的功能

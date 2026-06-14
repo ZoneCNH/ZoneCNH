@@ -1,3 +1,8 @@
+---
+scope: "TopicRegistry"
+acceptance_criteria: []
+---
+
 # TASK-TRANSPORTX-009: TopicRegistry
 
 - **Module**: transportx
@@ -32,3 +37,7 @@ Does NOT implement broker clients, storage drivers, or business event semantics.
 - [ ] Topic.Resolve returns correct Topic by name
 - [ ] Topic.List returns all registered topics
 - [ ] `go test ./registry/... -run TestTopicValidation` passes
+
+## Non-scope
+
+- 不涉及本 Task 范围外的功能

@@ -95,3 +95,16 @@ Source: module/contracts/SPEC.md
 | 2026-06-09 | 初始版本（迁移前全局矩阵） | ZoneCNH |
 | 2026-06-14 | 完整重建：补全 BR-001/002/007/008/009/010 + NFR §1-§8 + TC→FR §4 + AC §5 + 仪表盘 §6 | ZoneCNH |
 | 2026-06-14 | 修复：FR行AC列改用AC ID引用、BR行AC列引用AC ID、补充AC-NFR-008（AC总数 15→16）、仪表盘更新 | ZoneCNH |
+
+## Acceptance Criteria Linkage
+
+| Acceptance Criterion | Requirement | Test Case | Current Evidence |
+| -------------------- | ----------- | --------- | ---------------- |
+| AC-001 | FR-001 | TC-001 | Covered by TC-001 test evidence |
+| AC-002 | FR-002 | TC-001 | Covered by TC-001 test evidence |
+| AC-003 | FR-003 | TC-005 | Covered by TC-005 test evidence |
+| AC-004 | FR-004 | TC-004 | Covered by TC-004 test evidence |
+| AC-005 | FR-005 | TC-005 | Covered by TC-005 test evidence |
+| AC-006 | FR-006 | TC-003 | Covered by TC-003 test evidence |
+| AC-007 | FR-003 | TC-005 | Covered by TC-005 test evidence |
+| AC-008 | FR-003 | TC-005 | Covered by TC-005 test evidence |

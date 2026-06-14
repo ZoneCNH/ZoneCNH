@@ -1,3 +1,8 @@
+---
+scope: "Middleware Chain + Redaction Order"
+acceptance_criteria: []
+---
+
 # TASK-TRANSPORTX-012: Middleware Chain + Redaction Order
 
 - **Module**: transportx
@@ -34,3 +39,7 @@ Does NOT implement broker clients, storage drivers, business event semantics, or
 - [ ] Redaction executes before Logging and Tracing receive stringified fields
 - [ ] Redaction failure → fail closed (block logging + adapter dispatch)
 - [ ] `go test ./middleware/... -run TestRedactionOrder` passes
+
+## Non-scope
+
+- 不涉及本 Task 范围外的功能

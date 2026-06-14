@@ -1,3 +1,8 @@
+---
+scope: "DeliveryReceipt"
+acceptance_criteria: []
+---
+
 # TASK-TRANSPORTX-005: DeliveryReceipt
 
 - **Module**: transportx
@@ -32,3 +37,7 @@ Does NOT implement broker clients or domain-specific receipt semantics.
 - [ ] Status enum: OK, FAILED, ABANDONED, DEAD_LETTERED
 - [ ] RetryDecision enum: NONE, RETRY, DEAD_LETTER
 - [ ] `go test ./receipt/... -run TestReceiptFields` passes
+
+## Non-scope
+
+- 不涉及本 Task 范围外的功能

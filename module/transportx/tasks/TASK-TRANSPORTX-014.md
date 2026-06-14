@@ -1,3 +1,8 @@
+---
+scope: "Backpressure + Bulkhead"
+acceptance_criteria: []
+---
+
 # TASK-TRANSPORTX-014: Backpressure + Bulkhead
 
 - **Module**: transportx
@@ -31,3 +36,7 @@ Does NOT implement broker clients, storage drivers, business event semantics, or
 - [ ] Concurrency saturation → `TX_BULKHEAD_REJECTED`
 - [ ] DROP_OLDEST on REALTIME_BEST_EFFORT, SPILL_TO_DISK on AUDIT
 - [ ] `go test ./middleware/... -run TestBackpressure` passes
+
+## Non-scope
+
+- 不涉及本 Task 范围外的功能

@@ -1,3 +1,8 @@
+---
+scope: "Error Taxonomy — QoS + Mode"
+acceptance_criteria: []
+---
+
 # TASK-TRANSPORTX-006c: Error Taxonomy — QoS + Mode
 
 - **Module**: transportx
@@ -39,3 +44,7 @@ TX_QOS_VIOLATION, TX_MODE_VIOLATION, TX_AUDIT_MISSING, TX_AUDIT_DROPPED
 - [ ] TX_AUDIT_DROPPED raised on audit delivery failure (not silently dropped)
 - [ ] `go test ./errors/... -run TestQoSHardRules` passes
 - [ ] `go test ./errors/... -run TestExecutionModeGates` passes
+
+## Non-scope
+
+- 不涉及本 Task 范围外的功能

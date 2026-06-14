@@ -1,3 +1,8 @@
+---
+scope: "Codec Interface + JSON Implementation"
+acceptance_criteria: []
+---
+
 # TASK-TRANSPORTX-008: Codec Interface + JSON Implementation
 
 - **Module**: transportx
@@ -31,3 +36,7 @@ Does NOT implement Protobuf codec (deferred to v1.2.0 per SPEC OQ-4).
 - [ ] JSON codec round-trip preserves equality for structs, primitives, slices
 - [ ] p95 ≤ 5 ms for 1 KB payload
 - [ ] `go test ./codec/json/... -run TestRoundTrip` passes
+
+## Non-scope
+
+- 不涉及本 Task 范围外的功能

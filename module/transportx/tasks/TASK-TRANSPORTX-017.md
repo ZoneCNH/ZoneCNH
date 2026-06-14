@@ -1,3 +1,8 @@
+---
+scope: "Deadline + Clock Skew"
+acceptance_criteria: []
+---
+
 # TASK-TRANSPORTX-017: Deadline + Clock Skew
 
 - **Module**: transportx
@@ -32,3 +37,7 @@ Does NOT implement broker clients, storage drivers, business event semantics, or
 - [ ] Clock skew exceeds guard → `TX_CLOCK_SKEW`
 - [ ] Deadline and skew branches produce distinct error codes
 - [ ] `go test ./middleware/... -run TestDeadlineAndSkew` passes
+
+## Non-scope
+
+- 不涉及本 Task 范围外的功能

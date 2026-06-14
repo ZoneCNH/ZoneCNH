@@ -1,3 +1,8 @@
+---
+scope: "Runtime Lifecycle + Drain"
+acceptance_criteria: []
+---
+
 # TASK-TRANSPORTX-004: Runtime Lifecycle + Drain
 
 - **Module**: transportx
@@ -36,3 +41,7 @@ Does NOT implement a scheduler, service mesh, or API gateway.
 - [ ] Drain report includes accepted, completed, abandoned, timed-out counts
 - [ ] `go test ./runtime/... -run TestLifecycleTransitions` passes
 - [ ] `go test ./runtime/... -run TestDrainReport` passes
+
+## Non-scope
+
+- 不涉及本 Task 范围外的功能

@@ -1,3 +1,8 @@
+---
+scope: "Error Taxonomy — Auth + Deadline + Retry"
+acceptance_criteria: []
+---
+
 # TASK-TRANSPORTX-006b: Error Taxonomy — Auth + Deadline + Retry
 
 - **Module**: transportx
@@ -39,3 +44,7 @@ TX_AUTHN_REQUIRED, TX_AUTHZ_DENIED, TX_DEADLINE_EXCEEDED, TX_CLOCK_SKEW, TX_DLQ_
 - [ ] `go test ./errors/... -run TestAuthzDenialNoLeak` passes
 - [ ] `go test ./errors/... -run TestDeadlineAndSkew` passes
 - [ ] `go test ./errors/... -run TestDLQWithTrace` passes
+
+## Non-scope
+
+- 不涉及本 Task 范围外的功能
