@@ -16,7 +16,7 @@
 ### Changed
 
 - 固化模块级 Goal 文档路径为 `module/{module}/goal.md`，禁止 `goal/` 目录和 `goal/1.md` 槽位。
-- **STATUS.md / README.md / ARCHITECTURE.md 三文档全量交叉审计闭合**（44 PRs, #385-#431）。审计日期 2026-06-15，最终 audit-status.py 22/22 PASS，78 repos 0 404。详情见 `docs/solutions/three-doc-audit-20260615.md`。
+- **STATUS.md / README.md / ARCHITECTURE.md 三文档全量交叉审计闭合**（44 PRs, #385-#431）。审计日期 2026-06-15，最终 audit-status.py (v2 cross-dimension) 24/24 PASS，78 repos 0 404。详情见 `docs/solutions/three-doc-audit-20260615.md`。
 
   > 验证：`gh pr list --repo ZoneCNH/ZoneCNH --state merged --json number --jq '[.[] | select(.number >= 385 and .number <= 431)] | length'` → 44
 
@@ -31,7 +31,7 @@
   - 同步检查表自身 5 处过时计数修正
   - ARCHITECTURE 状态表 12 处版本/进度对齐
 
-  **最终自洽状态**（22/22 机械化检查全部 PASS）：
+  **最终自洽状态**（24/24 机械化检查全部 PASS，含 RELEASE 列与版本注记交叉验证）：
   - 组件总数 80 = 55(≥80%) + 1(25%) + 22(5%) + 2(未标注)
   - 80 = 58(已有) + 22(已创建)
   - 80 = 37(有版本号) + 43(无版本号)
