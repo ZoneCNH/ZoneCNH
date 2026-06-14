@@ -28,7 +28,7 @@
 | [schedulex](https://github.com/ZoneCNH/schedulex) | [v1.0.0](https://github.com/ZoneCNH/schedulex/releases/tag/v1.0.0) | █████ 100% | spec=98 mat=100 tsk=100 pln=100 prm=100 cod=100 | cron/interval/delay 调度、Overlap/Misfire 策略、Locker 扩展点、Clock 注入、8 示例（98.2% 覆盖，score 10.0；race/vet/lint/govulncheck 与下游 smoke 通过） |
 | [redisx](https://github.com/ZoneCNH/redisx) | v1.0.0 | █████ 100% | spec=98 mat=100 tsk=100 pln=100 prm=100 cod=100 | Redis L2 adapter：KV/TTL/Hash/List/Pipeline/Cache-aside/Lock/RateLimit/Pool/Persistence restart recovery；release_ready=true，score 100；直接生产依赖限定为 kernel + Redis 客户端库；docker-compose/devcontainer 暴露非敏感 REDISX_REDIS_ADDR/URL/DB 端点变量；未暴露/打印/记录 secret；使用 Docker-backed Redis 验证。 |
 | [kafkax](https://github.com/ZoneCNH/kafkax) | [v1.0.0](https://github.com/ZoneCNH/kafkax/releases/tag/v1.0.0) | █████ 100% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | Kafka L2 adapter 已发布；driver-neutral API + 可选 kafka-go 生产驱动；真实 broker gates；merge `0545db2` |
-| [natsx](https://github.com/ZoneCNH/natsx) | v1.0.1 | █████ 100% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | NATS L2 adapter：Core NATS / JetStream / Drain / reconnect / degraded health / canonical FOUNDATIONX_NATS_* 配置；TLS 已实现；matrix 26 行全覆盖；claude+rules 双源 100/100；codex/copilot 待补齐 |
+| [natsx](https://github.com/ZoneCNH/natsx) | v1.0.1 | █████ 100% | spec=100 mat=100 tsk=99 pln=100 prm=100 cod=100 | NATS L2 adapter：Core NATS / JetStream / Drain / reconnect / degraded health / canonical FOUNDATIONX_NATS_* 配置；TLS 已实现；matrix 26 行全覆盖；claude+rules 双源 100/100；codex/copilot 待补齐 |
 | [postgresx](https://github.com/ZoneCNH/postgresx) | v1.0.1 | ████░ 90% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | PostgreSQL — 关系型存储、事务、迁移（v1.0 发布范围 100/100；单元测试 52.4% + Docker 集成测试 skip 状态；全局成熟度待生产 soak 后提升） |
 | [taosx](https://github.com/ZoneCNH/taosx) | v1.0.1 | █████ 100% | spec=67 mat=100 tsk=76 pln=100 prm=100 cod=100 | TDengine L2 adapter contract；pkg/taosx 公共 API，默认驱动显式不可用，真实 taosWS 集成已验证 |
 | [ossx](https://github.com/ZoneCNH/ossx) | v1.0.1 | █████ 100% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | Aliyun OSS 对象存储 L2 adapter；race、vet、build、release-check 已通过；S3/MinIO/Azure/GCS Provider 仅保留扩展位 |
@@ -319,7 +319,7 @@
 | domainx | 100 | 100 | 100 | 100 | 100 | 100 |
 | kafkax | 100 | 100 | 100 | 100 | 100 | 100 |
 | kernel | 100 | 100 | 100 | 100 | 100 | 100 |
-| natsx | 100 | 100 | 100 | 100 | 0 | 100 |
+| natsx | 100 | 100 | 99  | 100 | 100 | 100 |
 | observex | 100 | 100 | 100 | 100 | 100 | 100 |
 | ossx | 100 | 100 | 100 | 100 | 100 | 100 |
 | postgresx | 100 | 100 | 100 | 100 | 100 | 100 |
