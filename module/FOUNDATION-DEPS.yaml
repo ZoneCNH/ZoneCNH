@@ -10,9 +10,8 @@ updated: "2026-06-14"
 # ============================================================
 go_baseline: "1.23"
 go_baseline_note: >
-  所有 Foundation 模块统一 Go 1.23。
+  所有 Foundation 模块统一 Go 1.23（含 testkitx，已于 2026-06-12 从 1.24 降级对齐）。
   等全仓库 CI 确认后再统一升级到 1.24。
-  testkitx 当前 go.mod 是 1.24，需要降级对齐。
 
 # ============================================================
 # 模块定义
@@ -388,18 +387,19 @@ forbidden_foundation_edges:
     rule: "transportx 只定义跨 runtime / adapter 传输契约；可依赖 contracts/configx/observex/resiliencx 的公开接口，但不得依赖具体 broker/client、存储实现、入口或业务域。"
 
 # ============================================================
-# foundationx compatibility（待退出）
+# foundationx compatibility（已退出 — 2026-06-14）
 # ============================================================
 foundationx_compatibility:
-  status: "transitional"
+  status: "completed"
   adr: "module/ADR-foundationx-exit.md"
-  current_usage:
-    configx:
-      version: "v0.0.0"
-      replace: "./internal/foundationx"
-      note: "本地 replace，非远程依赖"
-    observex:
-      version: "v0.1.0"
-      note: "远程依赖，需迁移"
-  deadline: "configx v0.3 / observex v0.4"
+  completed_at: "2026-06-14"
+  configx:
+    status: "fully decoupled"
+    note: "SecretString 原生化 + internal/foundationx 已删除 + contract tests 已重写，go.mod replace 已移除"
+  observex:
+    status: "fully decoupled"
+    note: "ErrorKind + Sanitizer 原生化，零 foundationx import；contract tests 已重写，internal/foundationx 已删除"
   migration_target: "kernel 原语 + 本地显式契约"
+  freeze_gate: >
+    FOUNDATION-DEPS.yaml constraints 中 configx/observex 的 no-foundationx-new-usage
+    门禁已激活，CI 会阻断任何新增 foundationx import。
