@@ -1,6 +1,6 @@
 # 基座层 CI/CD 部署执行方案
 
-> FoundationX 基座层 17 个模块的完整 CI/CD 分析报告与 SRE 机器池部署方案。
+> FoundationX 基座层 20 个模块的完整 CI/CD 分析报告与 SRE 机器池部署方案。
 >
 > 状态：Draft
 > 最后更新：2026-06-14
@@ -10,61 +10,63 @@
 
 ## 一、基座模块全景
 
-### 1.1 模块总数：17 个
+### 1.1 模块总数：20 个
 
 ```
-标准源/门禁 (2) ——→ L0 原语 (1) ——→ L1 运行时 (4) ——→ 存储扩展 (7) ——→ 契约/传输 (2)
-xlib-standard         kernel           configx              redisx              contracts
-xlibgate                                observex             kafkax              transportx
-(不参与运行时)                          resiliencx           natsx
-                                        schedulex            postgresx
+标准源/门禁 (4) ——→ L0 原语 (1) ——→ L1 运行时 (4) ——→ 存储扩展 (7) ——→ 契约/传输 (2) ——→ 领域共享 (1)
+xlib-standard         kernel           configx              redisx              contracts          domainx
+xlib-harness                            observex             kafkax              transportx
+xlib-evidence                           resiliencx           natsx
+xlibgate                                schedulex            postgresx
                                                              taosx
-                    L1 test-only (1)                         ossx
-                    testkitx                                 clickhousex
-                    (禁止生产导入)
+                  L1 test-only (1)                          ossx
+                  testkitx                                  clickhousex
+                  (禁止生产导入)
 ```
 
 ### 1.2 分层详解
 
 | 层级 | 数量 | 模块 | 核心职责 |
 |------|:---:|------|----------|
-| 标准源/门禁 | 2 | xlib-standard、xlibgate | 标准事实源、Go Template、Generator、Harness Gate、Evidence Runtime、机器门禁。不参与运行时 |
+| 标准源/门禁 | 4 | xlib-standard、xlib-harness、xlib-evidence、xlibgate | 标准事实源、Go Template、模块生成器、证据收集与发布运行时、机器门禁。不参与运行时 |
 | L0 原语 | 1 | kernel | 12 子包 stdlib-only 工具集 |
 | L1 运行时 | 4 | configx、observex、resiliencx、schedulex | 配置加载与脱敏、可观测性契约、弹性策略、任务调度 |
 | L1 test-only | 1 | testkitx | 测试专用能力库。禁止生产导入 |
 | 存储扩展 | 7 | redisx、kafkax、natsx、postgresx、taosx、ossx、clickhousex | 基础设施客户端封装 |
 | 契约/传输 | 2 | contracts、transportx | 跨域稳定端口/事件/DTO 契约；通信底座契约 |
+| 领域共享 | 1 | domainx | 执行域共享值对象：Order/Position/Trade/Portfolio/ExecutionReport 与 OrderState/OrderType/OrderSide 枚举 |
 
 ### 1.3 按成熟度分级
 
 | 进度 | 数量 | 模块 |
 |------|:---:|------|
-| 100% 已发布 | 12 | kernel, configx, schedulex, testkitx, redisx, natsx, postgresx, taosx, ossx, clickhousex, contracts, xlib-standard, xlibgate |
-| 80% 已有 | 2 | observex, transportx |
-| 50% P0 | 1 | resiliencx |
-| 30% 已有 | 1 | kafkax |
+| 100% 已发布 | 17 | kernel, configx, observex, resiliencx, schedulex, redisx, kafkax, natsx, taosx, ossx, clickhousex, contracts, transportx, xlib-standard, xlib-harness, xlib-evidence, domainx |
+| 90% 已有 | 3 | xlibgate, testkitx, postgresx |
 
 ### 1.4 各模块详细信息
 
 | # | 模块 | 层级 | 版本 | 状态 | 进度 | 覆盖率 | 仓库 |
 |---|------|------|------|------|------|--------|------|
-| 1 | xlib-standard | 标准源 | - | 已有 | - | - | ZoneCNH/xlib-standard |
-| 2 | xlibgate | 门禁 | - | 已有 | - | - | ZoneCNH/xlibgate |
-| 3 | kernel | L0 原语 | v1.0.0 | 已发布 | 100% | 100% | ZoneCNH/kernel |
-| 4 | configx | L1 运行时 | v1.0.0 | 已发布 | 100% | 97.1% | ZoneCNH/configx |
-| 5 | observex | L1 运行时 | v0.3.1 | 已有 | 80% | - | ZoneCNH/observex |
-| 6 | resiliencx | L1 运行时 | v0.4.8 | P0 | 50% | 100% | ZoneCNH/resiliencx |
-| 7 | schedulex | L1 运行时 | v1.0.0 | 已发布 | 100% | 98.2% | ZoneCNH/schedulex |
-| 8 | testkitx | L1 test-only | v1.0.0-spec | 已有 | 100% | - | ZoneCNH/testkitx |
-| 9 | redisx | 存储扩展 | v1.0.0 | 已发布 | 100% | - | ZoneCNH/redisx |
-| 10 | kafkax | 存储扩展 | - | 已有 | 30% | - | ZoneCNH/kafkax |
-| 11 | natsx | 存储扩展 | v1.0.0 | 已发布 | 100% | - | ZoneCNH/natsx |
-| 12 | postgresx | 存储扩展 | v1.0.0 | 已发布 | 90% | - | ZoneCNH/postgresx |
-| 13 | taosx | 存储扩展 | v1.0.1 | 已发布 | 100% | 100% | ZoneCNH/taosx |
-| 14 | ossx | 存储扩展 | v1.0.1 | 已发布 | 100% | 100% | ZoneCNH/ossx |
-| 15 | clickhousex | 存储扩展 | v1.0.1 | 已发布 | 100% | 100% | ZoneCNH/clickhousex |
-| 16 | contracts | 契约 | v1.0.1-spec | 已有 | 100% | - | ZoneCNH/contracts |
-| 17 | transportx | 传输 | v1.1.1-spec | 已有 | 80% | - | ZoneCNH/transportx |
+| 1 | xlib-standard | 标准源 | v1.0.0 | 已发布 | 100% | - | ZoneCNH/xlib-standard |
+| 2 | xlib-harness | 门禁 | v1.0.0 | 已发布 | 100% | - | ZoneCNH/xlib-harness |
+| 3 | xlib-evidence | 门禁 | v1.0.0 | 已发布 | 100% | - | ZoneCNH/xlib-evidence |
+| 4 | xlibgate | 门禁 | v1.0.2 | 已有 | 90% | - | ZoneCNH/xlibgate |
+| 5 | kernel | L0 原语 | v1.0.0 | 已发布 | 100% | 100% | ZoneCNH/kernel |
+| 6 | configx | L1 运行时 | v1.0.0 | 已发布 | 100% | 97.1% | ZoneCNH/configx |
+| 7 | observex | L1 运行时 | v1.0.0 | 已发布 | 100% | - | ZoneCNH/observex |
+| 8 | resiliencx | L1 运行时 | v1.0.1 | 已发布 | 100% | 100% | ZoneCNH/resiliencx |
+| 9 | schedulex | L1 运行时 | v1.0.0 | 已发布 | 100% | 98.2% | ZoneCNH/schedulex |
+| 10 | testkitx | L1 test-only | v1.0.0 | 已有 | 90% | 80.7% | ZoneCNH/testkitx |
+| 11 | redisx | 存储扩展 | v1.0.0 | 已发布 | 100% | - | ZoneCNH/redisx |
+| 12 | kafkax | 存储扩展 | v1.0.0 | 已发布 | 100% | - | ZoneCNH/kafkax |
+| 13 | natsx | 存储扩展 | v1.0.0 | 已发布 | 100% | - | ZoneCNH/natsx |
+| 14 | postgresx | 存储扩展 | v1.0.0 | 已有 | 90% | - | ZoneCNH/postgresx |
+| 15 | taosx | 存储扩展 | v1.0.1 | 已发布 | 100% | 100% | ZoneCNH/taosx |
+| 16 | ossx | 存储扩展 | v1.0.1 | 已发布 | 100% | 100% | ZoneCNH/ossx |
+| 17 | clickhousex | 存储扩展 | v1.0.1 | 已发布 | 100% | 100% | ZoneCNH/clickhousex |
+| 18 | contracts | 契约 | v1.0.1-spec | 已有 | 100% | - | ZoneCNH/contracts |
+| 19 | transportx | 传输 | v1.1.1-spec | 已有 | 100% | - | ZoneCNH/transportx |
+| 20 | domainx | 领域共享 | v0.1.0 | 已有 | 100% | - | ZoneCNH/domainx |
 
 ---
 
@@ -79,12 +81,13 @@ x.go ——→ 基座运行时 / L2.5 / 数据域 / 分析域 / 决策域 / 执�
      |
      +——→ contracts (跨域稳定端口、事件协议、DTO 契约)
      |
-     +——→ 基座运行时 Foundation (17):
+     +——→ 基座运行时 Foundation (20):
             L0: kernel
             L1: configx · observex · resiliencx · schedulex
             L1 test-only: testkitx
             扩展: redisx · kafkax · natsx · postgresx · taosx · ossx · clickhousex
             契约: contracts · transportx
+            领域共享: domainx
 ```
 
 ### 2.2 CI 硬约束
@@ -92,13 +95,13 @@ x.go ——→ 基座运行时 / L2.5 / 数据域 / 分析域 / 决策域 / 执�
 | 约束 | 适用模块 | 检查方式 |
 |------|----------|----------|
 | stdlib-only | kernel | go list -m all |
-| 禁止生产导入 testkitx | 16 个非 test 模块 | import scan |
+| 禁止生产导入 testkitx | 19 个非 test 模块 | import scan |
 | 不再新增 foundationx 依赖 | configx、observex | grep go.mod |
 | 核心包不硬 import observex | resiliencx | grep import |
 | 不硬 import observex/resiliencx | schedulex | grep import |
 | 存储间不得互依 | 7 存储扩展 | FOUNDATION-DEPS.yaml |
 | 禁止 import x.go / 业务域 | 全部基座模块 | FOUNDATION-DEPS.yaml |
-| Go baseline 1.23 | 全部 17 模块 | go.mod 扫描 |
+| Go baseline 1.23 | 全部 20 模块 | go.mod 扫描 |
 
 ---
 
@@ -121,10 +124,7 @@ x.go ——→ 基座运行时 / L2.5 / 数据域 / 分析域 / 决策域 / 执�
 |------|:----:|
 | SRE 仓库未初始化（阻塞所有 CD） | P0 |
 | 机器池仅 1 节点（无标签隔离） | P0 |
-| resiliencx 身份修复未完成 | P0 |
 | 存储扩展无 Docker 集成测试 | P1 |
-| observex/transportx CI Gate 待补 | P1 |
-| kafkax 仅 30% 进度 | P1 |
 | 无联合构建验证 | P2 |
 
 ---
@@ -169,8 +169,8 @@ x.go ——→ 基座运行时 / L2.5 / 数据域 / 分析域 / 决策域 / 执�
 | sre/foundation-l1 | configx, observex, resiliencx, schedulex, testkitx | 4C/8G | - |
 | sre/storage-light | redisx, natsx, ossx | 4C/8G | 是 |
 | sre/storage-heavy | postgresx, kafkax, clickhousex, taosx | 8C/16G | 是 |
-| sre/contracts | contracts, transportx | 2C/4G | - |
-| sre/gate | xlib-standard, xlibgate | 2C/4G | - |
+| sre/contracts | contracts, transportx, domainx | 2C/4G | - |
+| sre/gate | xlib-standard, xlib-harness, xlib-evidence, xlibgate | 2C/4G | - |
 | sre/deploy | 所有 release job | 2C/4G | - |
 
 ---
@@ -185,7 +185,7 @@ x.go ——→ 基座运行时 / L2.5 / 数据域 / 分析域 / 决策域 / 执�
 
 ### Phase 1: L0/L1 + 门禁 CI/CD（Week 3-4）
 
-8 个模块（kernel, configx, observex, resiliencx, schedulex, testkitx, xlib-standard, xlibgate）接入 CI/CD
+10 个模块（kernel, configx, observex, resiliencx, schedulex, testkitx, xlib-standard, xlib-harness, xlib-evidence, xlibgate）接入 CI/CD
 
 每模块 CI jobs：build / test-race / lint / boundary / secret-scan + 模块特定 golden/contract test
 
@@ -207,6 +207,7 @@ x.go ——→ 基座运行时 / L2.5 / 数据域 / 分析域 / 决策域 / 执�
 
 - contracts: breaking change detection, contract hash, cross-domain interface consistency
 - transportx: conformance gate, audit plane, schema compatibility
+- domainx: 值对象完整性验证、枚举一致性检查
 - foundation-joint-build: 全链路构建验证，go.mod 一致性，无循环依赖
 
 ### Phase 4: 部署闭环（Week 8）
@@ -355,24 +356,27 @@ jobs:
     "remote_execution_allowed_in_this_repo": false
   },
   "deploy_targets": {
-    "kernel":       { "pool": "sre/foundation-l0",  "docker": false },
-    "configx":      { "pool": "sre/foundation-l1",  "docker": false },
-    "observex":     { "pool": "sre/foundation-l1",  "docker": false },
-    "resiliencx":   { "pool": "sre/foundation-l1",  "docker": false },
-    "schedulex":    { "pool": "sre/foundation-l1",  "docker": false },
-    "testkitx":     { "pool": "sre/foundation-l1",  "docker": false, "cd": false },
-    "xlib-standard":{ "pool": "sre/gate",           "docker": false, "cd": false },
-    "xlibgate":     { "pool": "sre/gate",           "docker": false, "cd": false },
-    "redisx":       { "pool": "sre/storage-light",  "docker": true, "services": ["redis:7-alpine"] },
-    "kafkax":       { "pool": "sre/storage-heavy",  "docker": true, "services": ["kafka", "zookeeper"] },
-    "natsx":        { "pool": "sre/storage-light",  "docker": true, "services": ["nats:2-alpine"] },
-    "postgresx":    { "pool": "sre/storage-heavy",  "docker": true, "services": ["postgres:16-alpine"] },
-    "taosx":        { "pool": "sre/storage-heavy",  "docker": true, "services": ["tdengine:latest"] },
-    "ossx":         { "pool": "sre/storage-light",  "docker": true, "services": ["minio:latest"] },
-    "clickhousex":  { "pool": "sre/storage-heavy",  "docker": true, "services": ["clickhouse:latest"] },
-    "contracts":    { "pool": "sre/contracts",      "docker": false },
-    "transportx":   { "pool": "sre/contracts",      "docker": false },
-    "homepage":     { "pool": "sre/homepage",       "docker": false }
+    "kernel":        { "pool": "sre/foundation-l0",  "docker": false },
+    "configx":       { "pool": "sre/foundation-l1",  "docker": false },
+    "observex":      { "pool": "sre/foundation-l1",  "docker": false },
+    "resiliencx":    { "pool": "sre/foundation-l1",  "docker": false },
+    "schedulex":     { "pool": "sre/foundation-l1",  "docker": false },
+    "testkitx":      { "pool": "sre/foundation-l1",  "docker": false, "cd": false },
+    "xlib-standard": { "pool": "sre/gate",           "docker": false, "cd": false },
+    "xlib-harness":  { "pool": "sre/gate",           "docker": false, "cd": false },
+    "xlib-evidence": { "pool": "sre/gate",           "docker": false, "cd": false },
+    "xlibgate":      { "pool": "sre/gate",           "docker": false, "cd": false },
+    "redisx":        { "pool": "sre/storage-light",  "docker": true, "services": ["redis:7-alpine"] },
+    "kafkax":        { "pool": "sre/storage-heavy",  "docker": true, "services": ["kafka", "zookeeper"] },
+    "natsx":         { "pool": "sre/storage-light",  "docker": true, "services": ["nats:2-alpine"] },
+    "postgresx":     { "pool": "sre/storage-heavy",  "docker": true, "services": ["postgres:16-alpine"] },
+    "taosx":         { "pool": "sre/storage-heavy",  "docker": true, "services": ["tdengine:latest"] },
+    "ossx":          { "pool": "sre/storage-light",  "docker": true, "services": ["minio:latest"] },
+    "clickhousex":   { "pool": "sre/storage-heavy",  "docker": true, "services": ["clickhouse:latest"] },
+    "contracts":     { "pool": "sre/contracts",      "docker": false },
+    "transportx":    { "pool": "sre/contracts",      "docker": false },
+    "domainx":       { "pool": "sre/contracts",      "docker": false, "cd": false },
+    "homepage":      { "pool": "sre/homepage",       "docker": false }
   }
 }
 ```
@@ -383,21 +387,24 @@ jobs:
 |------|:-----:|:----:|:----:|:----:|:--------:|:------:|:--------:|:------:|:----------:|:---:|
 | kernel | Y | Y | Y | Y | Y | Y | Y | Y | - | 100% |
 | configx | Y | Y | Y | Y | Y | Y | - | Y | - | 97% |
-| observex | Y | Y | Y | Y | Y | Y | Y | Y | - | 80% |
-| resiliencx | Y | Y | Y | Y | Y | Y | Y | Y | - | 80% |
+| observex | Y | Y | Y | Y | Y | Y | Y | Y | - | - |
+| resiliencx | Y | Y | Y | Y | Y | Y | Y | Y | - | 100% |
 | schedulex | Y | Y | Y | Y | Y | Y | Y | Y | - | 98% |
-| testkitx | Y | Y | Y | Y | Y | Y | Y | Y | - | 80% |
-| xlib-standard | Y | Y | Y | Y | - | Y | - | - | - | 80% |
-| xlibgate | Y | Y | Y | Y | - | Y | - | - | - | 80% |
-| redisx | Y | Y | Y | Y | Y | Y | - | - | Redis | 80% |
-| kafkax | Y | Y | Y | Y | Y | Y | - | - | Kafka | 80% |
-| natsx | Y | Y | Y | Y | Y | Y | - | - | NATS | 80% |
-| postgresx | Y | Y | Y | Y | Y | Y | - | - | PG | 80% |
+| testkitx | Y | Y | Y | Y | Y | Y | Y | Y | - | 81% |
+| xlib-standard | Y | Y | Y | Y | - | Y | - | - | - | - |
+| xlib-harness | Y | Y | Y | Y | - | Y | - | - | - | - |
+| xlib-evidence | Y | Y | Y | Y | - | Y | - | - | - | - |
+| xlibgate | Y | Y | Y | Y | - | Y | - | - | - | - |
+| redisx | Y | Y | Y | Y | Y | Y | - | - | Redis | - |
+| kafkax | Y | Y | Y | Y | Y | Y | - | - | Kafka | - |
+| natsx | Y | Y | Y | Y | Y | Y | - | - | NATS | - |
+| postgresx | Y | Y | Y | Y | Y | Y | - | - | PG | - |
 | taosx | Y | Y | Y | Y | Y | Y | - | - | TD | 100% |
 | ossx | Y | Y | Y | Y | Y | Y | - | - | MinIO | 100% |
 | clickhousex | Y | Y | Y | Y | Y | Y | - | - | CH | 100% |
-| contracts | Y | Y | Y | Y | Y | Y | Y | - | - | 80% |
-| transportx | Y | Y | Y | Y | Y | Y | Y | - | - | 80% |
+| contracts | Y | Y | Y | Y | Y | Y | Y | - | - | - |
+| transportx | Y | Y | Y | Y | Y | Y | Y | - | - | - |
+| domainx | Y | Y | Y | Y | - | Y | - | - | - | - |
 
 ---
 
@@ -407,14 +414,14 @@ jobs:
 Week 1-2  Phase 0: SRE 基础设施
           SRE 仓库 + 机器池注册(3+ nodes, 8 标签池) + Docker 服务编排
 
-Week 3-4  Phase 1: L0/L1 + 门禁 CI/CD (8 模块)
-          kernel/configx/observex/resiliencx/schedulex/testkitx/xlib-standard/xlibgate
+Week 3-4  Phase 1: L0/L1 + 门禁 CI/CD (10 模块)
+          kernel/configx/observex/resiliencx/schedulex/testkitx/xlib-standard/xlib-harness/xlib-evidence/xlibgate
 
 Week 5-6  Phase 2: 存储扩展 CI/CD (7 模块)
           redisx/kafkax/natsx/postgresx/taosx/ossx/clickhousex + Docker 集成测试
 
 Week 7    Phase 3: 契约 + 联合 CI
-          contracts + transportx + foundation-joint-build(全链路)
+          contracts + transportx + domainx + foundation-joint-build(全链路)
 
 Week 8    Phase 4: 部署闭环
           Release → staging → production(审批) → smoke → evidence → monitor
@@ -426,12 +433,10 @@ Week 8    Phase 4: 部署闭环
 
 | # | 风险 | 缓解 |
 |---|------|------|
-| 1 | resiliencx 身份修复未完成 → 阻塞 L1 CI gate | P0 优先，Week 3 前完成 |
-| 2 | SRE 仓库未初始化 → 阻塞所有 CD | Phase 0 第一优先级 |
-| 3 | 机器池仅 1 节点 → 资源不足 | 最少 3 节点 + 标签隔离 |
-| 4 | Docker 服务不稳定 → 测试 flaky | health check + retry + 固定镜像 |
-| 5 | kafkax 仅 30% → 集成测试缺失 | 先 CI 骨架，集成标记 skip |
-| 6 | Go baseline 不统一 | Phase 1 统一到 1.23 |
+| 1 | SRE 仓库未初始化 → 阻塞所有 CD | Phase 0 第一优先级 |
+| 2 | 机器池仅 1 节点 → 资源不足 | 最少 3 节点 + 标签隔离 |
+| 3 | Docker 服务不稳定 → 测试 flaky | health check + retry + 固定镜像 |
+| 4 | Go baseline 不统一 | Phase 1 统一到 1.23 |
 
 ---
 
@@ -441,7 +446,7 @@ Week 8    Phase 4: 部署闭环
 |------|------|
 | ARCHITECTURE.md | 系统全局架构、依赖拓扑 |
 | CONSTITUTION.md | 系统宪法 (§0-§19) |
-| module/README.md | 17 模块规格索引 |
+| module/README.md | 20 模块规格索引 |
 | module/FOUNDATION-DEPS.yaml | 机器可读依赖矩阵 v1.1 |
 | docs/governance/DEPLOYMENT.md | 部署清单与 CI 配置 |
 | ROADMAP.md | 六阶段交付路线图 |
