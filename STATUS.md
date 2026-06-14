@@ -63,7 +63,7 @@
 | postgresx | ✅ | ✅ | ✅ | ✅ | ✅ | N/A | ⚠️ | ❌ | v1.0.0 已对齐（.repo-contract.yaml）；3 CI workflows；live integration 通过；此前误标 v1.0.1 |
 | taosx | ⚠️ | ✅ | ✅ | ✅ | ✅ | N/A | ⚠️ | ❌ | v1.0.1 已对齐（.repo-contract.yaml）；8 CI workflows；真实 taosWS 集成已验证；spec 67 待修 |
 | ossx | ✅ | ✅ | ✅ | ✅ | ❌ | N/A | ⚠️ | ❌ | v1.0.1 已对齐（.repo-contract.yaml）；CI 模板已就绪 → [ci-workflow.yaml](./ossx/ci-workflow.yaml)；真实 Aliyun OSS 集成已验证 |
-| clickhousex | ✅ | ✅ | ✅ | ✅ | ❌ | N/A | ❌ | ❌ | v1.0.1 已对齐（.repo-contract.yaml）；CI 模板已就绪 → [ci-workflow.yaml](./clickhousex/ci-workflow.yaml)；GitHub release + Docker integration 待补 |
+| clickhousex | ✅ | ✅ | ✅ | ⚠️ | ❌ | N/A | ❌ | ❌ | v1.0.1 已对齐（.repo-contract.yaml）；CI 模板已就绪 → [ci-workflow.yaml](./clickhousex/ci-workflow.yaml)；无公开 GitHub release；Docker integration 待部署 |
 | contracts | ✅ | ⚠️ | ❌ | N/A | ✅ | ⚠️ | N/A | ❌ | v1.0.1-spec（.repo-contract.yaml，all_aligned=false，无 git tag）；6 CI workflows；1 下游消费者 (transportx) |
 | transportx | ⚠️ | ⚠️ | ❌ | N/A | ✅ | N/A | N/A | ❌ | v1.1.1-spec（.repo-contract.yaml，all_aligned=false，无 git tag）；9 CI workflows |
 | domainx | ✅ | ✅ | ⚠️ | N/A | ❌ | N/A | N/A | ❌ | v0.1.0（.repo-contract.yaml，all_aligned=false，无 git tag）；CI 模板已就绪 → [ci-workflow.yaml](./domainx/ci-workflow.yaml) |
@@ -72,7 +72,7 @@
 
 > **数据来源**：本表依据 `module/` 规格状态、公开 GitHub release 页面、GitHub Actions CI 最新运行状态（gh api 批量验证 2026-06-14）、FOUNDATION-DEPS.yaml 反向依赖图（ADOPT）及 `.worktree/v2.md` 分析。所有 46 个 `?` 维度已于 2026-06-14 Trust Alignment 批量验证补齐。
 >
-> **CI 构建状态**（最新 run，2026-06-14）：✅ kernel / testkitx / natsx / contracts | ❌ xlib-standard / xlibgate / configx / observex / resiliencx / schedulex / redisx / kafkax / postgresx / taosx | ⬜ 无 CI：xlib-harness / xlib-evidence / ossx / clickhousex / transportx / domainx
+> **CI 构建状态**（最新 run，2026-06-14）：✅ kernel / testkitx / natsx / contracts / transportx | ❌ xlib-standard / xlibgate / configx / observex / resiliencx / schedulex / redisx / kafkax / postgresx / taosx | ⬜ 无 CI：xlib-harness / xlib-evidence / ossx / clickhousex / domainx
 >
 > **管线评分注记**：上表 `pln/prm/cod` 列对外仓模块为 pass-through（未实际在目标 repo 运行验证），100 分仅表示 plan/prompt 文档模板完整，不代表代码可编译或已通过测试。CI 构建状态为此处补充机械证据。
 
@@ -223,9 +223,9 @@
 
 - 组件：20 个，平均进度 94%
 - 核心模块已通过 .repo-contract.yaml 完成版本对齐：kernel (v1.0.0) / configx (v0.1.4，此前误标 v1.0.0) / schedulex (v1.0.0) / observex (v0.3.1) / testkitx (v0.4.0) / resiliencx (v0.4.9) / redisx (v1.0.1) / kafkax (v1.0.2) / natsx (v1.0.0) / postgresx (v1.0.0) / xlibgate (v1.0.0，此前误标 v1.1.1)；contracts/transportx/domainx 无 git tag（all_aligned=false）；natsx / postgresx 已发布但 hardening 待补（factory_grade_allowed=false）；clickhousex 公开 no releases published（建议降级）；contracts / transportx 为 spec baseline（无公开 release，需身份重写）；redisx / kafkax 已发布但 README 身份残留模板叙事；xlib-harness / xlib-evidence 为 Draft 待四源评分升级
-- 存储层 `redisx` 已发布 v1.0.0（全局成熟度 100%，Docker-backed Redis + persistence restart recovery 验证），`kafkax` 已发布 v1.0.0（100%），`natsx` 已发布 v1.0.0（100%，repair-slice 20/20，真实 dev auth live gate 验证），`postgresx` 已发布 v1.0.0（全局成熟度 90%），`taosx` 已发布 v1.0.1（100%）；`ossx` 已发布 v1.0.1（真实 Aliyun OSS 集成、race、vet、build、release-check 与 100.0% 覆盖已验证）；`clickhousex` 已发布 v1.0.1（100%）；`transportx` 已规格化 100%（SPEC/Matrix/Tasks 三阶段满分，27 Tasks 全部达标），并以 v1.1.1 规格基线覆盖 QoS、Codec、RPC、EventBus、Stream、ExecutionMode、Outbox/Inbox、Audit Plane、Data Classification 与 SchemaRegistry
+- 存储层 `redisx` v1.0.1（Docker-backed Redis + persistence restart recovery 验证），`kafkax` v1.0.2（真实 broker gates 已验证），`natsx` v1.0.0（repair-slice 20/20，真实 dev auth live gate 验证，TLS 已实现），`postgresx` v1.0.0（live integration 通过，factory_grade_allowed=false），`taosx` v1.0.1（真实 taosWS WebSocket 集成已验证，pkg/taosx 100.0% 覆盖），`ossx` v1.0.1（真实 Aliyun OSS 集成、race/vet/build/release-check 已验证）；`clickhousex` v1.0.1（GitHub release 未发布，CI 模板已就绪）；`transportx` v1.1.1-spec（SPEC baseline，9 CI workflows，production_import_allowed=false）
 - **SRE/CI/CD**：已产出 [`docs/sre/foundation-cicd-plan.md`](../docs/sre/foundation-cicd-plan.md)（20 模块 4 阶段部署方案、8 标签池、Docker 集成测试、标准化模板），待落地
-- **阻塞项**：clickhousex 已发布 v1.0.1；xlibgate CLI 已实现（PR #23）；testkitx code 阶段已完成（PR #13）；postgresx foundationx 依赖已移除（PR #8 → PR #9）
+- **阻塞项**：clickhousex GitHub release 待发布（CI 模板已就绪）；natsx 四源仲裁 + 生产 TLS gate 待补；postgresx 单元测试覆盖率 52.4% 待提升；xlib-harness / xlib-evidence Draft→Approved 待四源评分；ossx / clickhousex / xlib-harness / xlib-evidence / domainx CI workflows 待部署至源仓库
 
 ### 🟢 L2.5 领域共享层（健康）
 
