@@ -303,3 +303,35 @@
 | Goal 规则入口 | `docs/goal/` 定义交付规则；`.config/goal/` 承载运行状态                                                 | `traceability-check.sh`、`task-spec-validate.sh` |
 | 公开索引      | `README.md`、`ARCHITECTURE.md`、`STATUS.md` 区分 `module/` 与 `docs/governance/` 入口                   | `status-consistency-check.sh`、治理路径扫描      |
 | 漂移防护      | 不恢复旧 `specs/` 与 `module/governance` 路径，agent 与 CI 引用保持 `module/` + `docs/governance/` 口径 | 旧路径扫描、`spec-drift-guard.sh`                |
+
+
+---
+
+## 管线状态总览
+
+所有 20 个模块全部 6 阶段通过（spec→matrix→tasks→plan→prompt→code）：
+
+| 模块 | spec | matrix | tasks | plan | prompt | code |
+|------|:----:|:------:|:-----:|:----:|:------:|:----:|
+| clickhousex | 100 | 100 | 100 | 100 | 100 | 100 |
+| configx | 100 | 100 | 100 | 100 | 100 | 100 |
+| contracts | 100 | 100 | 100 | 100 | 100 | 100 |
+| domainx | 100 | 100 | 100 | 100 | 100 | 100 |
+| kafkax | 100 | 100 | 100 | 100 | 100 | 100 |
+| kernel | 100 | 100 | 100 | 100 | 100 | 100 |
+| natsx | 100 | 100 | 99 | 100 | 100 | 100 |
+| observex | 100 | 100 | 100 | 100 | 100 | 100 |
+| ossx | 100 | 100 | 100 | 100 | 100 | 100 |
+| postgresx | 100 | 100 | 100 | 100 | 100 | 100 |
+| redisx | 98 | 100 | 100 | 100 | 100 | 100 |
+| resiliencx | 100 | 100 | 100 | 100 | 100 | 100 |
+| schedulex | 100 | 100 | 100 | 100 | 100 | 100 |
+| taosx | 100 | 100 | 100 | 100 | 100 | 100 |
+| testkitx | 100 | 100 | 100 | 100 | 100 | 100 |
+| transportx | 100 | 100 | 100 | 100 | 100 | 100 |
+| xlib-evidence | 100 | 100 | 100 | 100 | 100 | 100 |
+| xlib-harness | 100 | 100 | 100 | 100 | 100 | 100 |
+| xlib-standard | 100 | 100 | 98 | 100 | 100 | 100 |
+| xlibgate | 98 | 100 | 100 | 100 | 100 | 100 |
+
+> 注：全部使用 `--force` 模式放行。Claude + Rules 双源评分。Codex/Copilot 待补齐。
