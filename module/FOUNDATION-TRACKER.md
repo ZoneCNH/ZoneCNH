@@ -135,7 +135,7 @@
 - [x] Plan 阶段初始化: OVERVIEW+11个Task计划 (#127)
 - [x] Prompt 阶段初始化: 11个开发Prompt (#127)
 - [x] Plan+Prompt 7项扣分修复→全线100分 (#133)
-- [ ] code/ 阶段: 在 testkitx 仓库实现 Go 代码
+- [x] code/ 阶段: 在 testkitx 仓库实现 Go 代码（PR #13 merged — fake/config/logger/meter/tracer/clock/breaker + eventually/golden/boundary/leak，80.7% 覆盖，36/36 测试通过）
 
 ### testkitx ✅ (PR #1 合入)
 
