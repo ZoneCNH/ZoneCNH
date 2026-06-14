@@ -199,7 +199,10 @@ def score_spec(module: str) -> Score:
 
     # 5. 行为规格 WHEN/THEN（10 分）
     when_then = len(re.findall(r"\bWHEN\b.*?\bTHEN\b", text, re.IGNORECASE | re.DOTALL))
-    if fr_ids and when_then < len(fr_ids) // 2:
+    # 外仓模块（module dir 无 .go）跳过 WHEN/THEN 检查：spec 描述既有代码行为
+    module_dir = ROOT / "module" / module
+    has_local_code = any(module_dir.rglob("*.go"))
+    if fr_ids and when_then < len(fr_ids) // 2 and has_local_code:
         s.deduct(
             8,
             "spec_when_then_sparse",
