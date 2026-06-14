@@ -3,7 +3,6 @@ TASK-NATSX-008:
   module: natsx
   scope: "配置契约：foundationx.nats.* 加载、默认值、环境变量、旧别名兼容"
   spec_ref:
-    - "module/natsx/SPEC.md#FR-NFR-008"
     - "module/natsx/SPEC.md#11-config-schema"
   acceptance_criteria:
     - "§11: foundationx.nats.* 默认值正确"

@@ -3,7 +3,6 @@ TASK-NATSX-014:
   module: natsx
   scope: "发布就绪：README、CHANGELOG、CI gate 集成、测试覆盖率"
   spec_ref:
-    - "module/natsx/SPEC.md#FR-NFR-005"
     - "module/natsx/SPEC.md#20-ci-gate"
     - "module/natsx/SPEC.md#22-release-dod"
   acceptance_criteria:

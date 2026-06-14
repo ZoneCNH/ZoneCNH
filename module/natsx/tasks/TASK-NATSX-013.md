@@ -3,7 +3,6 @@ TASK-NATSX-013:
   module: natsx
   scope: "依赖边界：禁止依赖 kafkax/redisx/postgresx 等消息/存储模块"
   spec_ref:
-    - "module/natsx/SPEC.md#FR-NFR-004"
     - "module/natsx/SPEC.md#15-dependencies"
   acceptance_criteria:
     - "§15: go list -deps 不含 ZoneCNH 消息/存储模块"

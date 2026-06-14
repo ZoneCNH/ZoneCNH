@@ -3,7 +3,6 @@ TASK-NATSX-006:
   module: natsx
   scope: "SubjectBuilder：domain.resource.action.v{version} 构造与解析"
   spec_ref:
-    - "module/natsx/SPEC.md#FR-NFR-006"
     - "module/natsx/SPEC.md#9-interface-contract"
   acceptance_criteria:
     - "§9: Build 产出合法 subject 字符串"
