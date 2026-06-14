@@ -88,7 +88,42 @@ x.go
   └── run lifecycle / graceful shutdown
 ```text
 
-## 各域说明
+## 思路推演 — 2026-06-14 业务域模块化决策
+
+### 为什么新增 7 个业务域模块
+
+在此次推演之前，分析/决策/执行域仅有早期占位仓库（factor-engine、backtest-engine、risk-engine 等），缺乏规范化规格和接口契约。本次以 23 节 SPEC 结构为每个域创建了具名模块（X 后缀），形成从数据到执行的完整链路：
+
+```text
+flowx ──► strategyx ──► maestro ──► riskx ──► orderx ──► positionx
+(数据流)   (策略工厂)    (工作流)     (风控)     (订单)     (仓位)
+```
+
+### 命名约定：为什么是 X 后缀
+
+| 旧名（占位） | 新名 | 理由 |
+|---|---|---|
+| risk-engine | riskx | 统一 Foundation 命名风格（configx, redisx, kafkax...），旧名保留为 GitHub 仓库并存但以新 SPEC 为准 |
+| order-engine | orderx | 同上 |
+| portfolio-engine | positionx | 职责更精确——定位为跨账户仓位管理，而非完整投资组合 |
+| backtest-engine | backtestx | 同上 |
+| strategies | strategyx | 从松散策略集合升级为策略工厂——注册表、参数管理、信号组合 |
+| (无) | maestro | 新概念——工作流编排填补了策略到执行之间的空白 |
+| (无) | flowx | 新概念——数据流管线填补了行情到因子之间的空白 |
+
+### 关键边界决策
+
+1. **contracts 不拥有传输**：contracts 定义"传什么"（DTO、端口、事件协议），但不绑定 HTTP/gRPC/Kafka/NATS 实现。传输职责在 transportx 和具体 adapter。
+
+2. **transportx 不承载业务 DTO**：transportx 定义"怎么传"（Envelope、Middleware、Error mapping），但不定义 MarketEvent、OrderCommand 等业务对象。业务 DTO 归 contracts。
+
+3. **maestro 不计算、不判断、不下单**：maestro 是纯编排引擎——它协调 strategyx（计算信号）、riskx（风控判断）、orderx（下单执行），自己不含业务逻辑。
+
+4. **回测与实盘共享代码**：backtestx 明确规定必须使用与实盘相同的 factor-engine、strategyx、riskx 代码路径，杜绝回测偏差。
+
+5. **Module Identity**：全部 9 个新规格模块均含 FR（Module Identity），要求 README H1 = 模块名、go.mod = `github.com/ZoneCNH/<module>`，禁止 xlib-standard 身份残留。
+
+### 各域说明
 
 | 域     | 职责                                                                                                                          | 组件                                                                                                                                                       |
 | ------ | ----------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
