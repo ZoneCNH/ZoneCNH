@@ -940,6 +940,14 @@ Then 输出 status=pass, score ≥ 80, hard_failures=0，exit code 0
 | baseline 检查（50 模块） | < 5s    | benchmark test |
 | JSON 报告生成            | < 100ms | benchmark test |
 | 内存占用                 | < 100MB | profiling      |
+| trust identity 检查       | < 2s    | benchmark test |
+| trust template-residue 扫描（50 模块） | < 15s | benchmark test |
+| trust release-consistency 检查 | < 3s | benchmark test |
+| trust maturity 检查       | < 1s    | benchmark test |
+| trust import-boundary 检查 | < 10s  | benchmark test |
+| trust testkit-prod-import 检查 | < 5s | benchmark test |
+| trust secret-redaction 扫描 | < 10s | benchmark test |
+| trust fleet-status 聚合（20 模块） | < 60s | benchmark test |
 
 ---
 
@@ -979,6 +987,14 @@ CLI 短生命周期工具不启动 tracing exporter。执行流程通过父子�
 | `xlibgate.check_baseline`    | `check.started` + `check.completed` (name=baseline)    | baseline 检查子 span     |
 | `xlibgate.check_release`     | `check.started` + `check.completed` (name=release)     | release evidence 子 span |
 | `xlibgate.check_secret_scan` | `check.started` + `check.completed` (name=secret_scan) | secret 扫描子 span       |
+| `xlibgate.trust_identity` | `trust.started` + `trust.completed` (name=identity) | 身份对齐检查 span |
+| `xlibgate.trust_template` | `trust.started` + `trust.completed` (name=template-residue) | 模板残留检查 span |
+| `xlibgate.trust_release` | `trust.started` + `trust.completed` (name=release-consistency) | 发布一致性检查 span |
+| `xlibgate.trust_maturity` | `trust.started` + `trust.completed` (name=maturity) | 成熟度检查 span |
+| `xlibgate.trust_boundary` | `trust.started` + `trust.completed` (name=import-boundary) | import 边界检查 span |
+| `xlibgate.trust_testkit` | `trust.started` + `trust.completed` (name=testkit-prod-import) | testkitx 隔离检查 span |
+| `xlibgate.trust_secret` | `trust.started` + `trust.completed` (name=secret-redaction) | secret 脱敏检查 span |
+| `xlibgate.trust_fleet` | `trust.started` + `trust.completed` (name=fleet-status) | 舰队状态聚合 span |
 
 ---
 
@@ -1015,6 +1031,19 @@ CLI 短生命周期工具不启动 tracing exporter。执行流程通过父子�
 | 自检                     | `xlibgate check all --config xlibgate.yaml` | 自身门禁不通过        |                  |                    |                |
 | 不依赖 Foundation 运行时 | `go list -deps ./... \                      | grep "ZoneCNH/kernel\ | ZoneCNH/configx\ | ZoneCNH/observex"` | 依赖运行时模块 |
 
+### 20.3 Trust Alignment Gate
+
+| Gate | 命令 | 阻塞条件 |
+|------|------|----------|
+| 身份对齐 | `xlibgate trust identity --repo .` | IDENTITY_MISMATCH 或 CONTRACT_PARSE_ERROR |
+| 模板残留 | `xlibgate trust template-residue --repo .` | 非 xlib-standard 仓库命中禁止短语 |
+| 发布一致性 | `xlibgate trust release-consistency --offline --repo .` | RELEASE_DRIFT |
+| 成熟度工厂 | `xlibgate trust maturity --factory --repo .` | FACTORY_GATE_BLOCKED |
+| import 边界 | `xlibgate trust import-boundary --repo . --deps FOUNDATION-DEPS.yaml` | IMPORT_BOUNDARY_VIOLATION |
+| testkitx 隔离 | `xlibgate trust testkit-prod-import --repo .` | TESTKIT_PROD_IMPORT |
+| secret 脱敏 | `xlibgate trust secret-redaction --repo . --path release/evidence` | SECRET_LEAK 或 PRIVATE_ENDPOINT_LEAK |
+| 舰队状态 | `xlibgate trust fleet-status --repos-root .. --output .foundationx/status/index.json` | 任一模块 error |
+
 ---
 
 ## 21. Upgrade Compatibility
@@ -1049,6 +1078,9 @@ CLI 短生命周期工具不启动 tracing exporter。执行流程通过父子�
 - [ ] 自检通过（`xlibgate check all`）
 - [ ] 所有 Functional Requirements 有对应测试
 - [ ] 所有 Edge Cases 有对应测试
+- [ ] trust 子命令全部实现并通过 TC-014~TC-029
+- [ ] trust 统一 JSON 输出格式符合 §9.3.1 schema
+- [ ] trust fleet-status 可对 20 模块基金会产生正确聚合
 
 ---
 
