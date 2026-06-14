@@ -8,6 +8,7 @@
 
 ### Added
 
+- Release manifest evidence now embeds Foundation trust summary, open blocker counts, projection guard sources, and an explicit policy that `audit-status` is a projection/consistency guard rather than factory-grade proof.
 - 新增 `transportx` Foundation 传输契约规格索引，并纳入架构、状态与 CI 一致性门禁。
 - 新增 `scripts/audit-status.py` 三文档交叉一致性自校验脚本（23 项本地，24 项含网络）。
 - 新增 `.github/workflows/audit-status.yml` CI 门禁，PR 触及 STATUS/README/ARCHITECTURE 时自动运行 audit-status.py，FAIL 阻断合并。
