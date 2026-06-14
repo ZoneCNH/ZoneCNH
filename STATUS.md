@@ -18,8 +18,8 @@
 | 组件 | 版本 | 进度 | 覆盖率要求 | 仓库大小 | 说明 |
 | ---- | ---- | ---- | ---------- | -------- | ---- |
 | [xlib-standard](https://github.com/ZoneCNH/xlib-standard) | v1.0.0 | █████ 100% | 100% | spec=100 mat=98 tsk=100 pln=100 prm=100 cod=100 | 标准事实源 / Go Reference Template；Generator/Harness/Evidence 已拆分至 xlib-harness / xlib-evidence；✅ .repo-contract.yaml (is_standard_source)；✅ GitHub Release v1.0.0 已发布|
-| [xlib-harness](https://github.com/ZoneCNH/xlib-harness) | v1.0.0 | █████ 100% | 100% | spec=98 mat=100 tsk=98 pln=100 prm=100 cod=100 | 模块生成器与门禁执行器：generate/scaffold、spec-lint、boundary-check、traceability-gate；✅ CI 已部署 |
-| [xlib-evidence](https://github.com/ZoneCNH/xlib-evidence) | v1.0.0 | █████ 100% | 100% | spec=98 mat=100 tsk=100 pln=100 prm=100 cod=100 | 证据收集与发布运行时：collect-coverage、generate-manifest、validate-manifest、report；✅ CI 已部署 |
+| [xlib-harness](https://github.com/ZoneCNH/xlib-harness) | - | █████ 100% | 100% | spec=98 mat=100 tsk=98 pln=100 prm=100 cod=100 | 模块生成器与门禁执行器：generate/scaffold、spec-lint、boundary-check、traceability-gate；✅ CI 已部署；⚠️ git tag + GitHub Release 缺失 |
+| [xlib-evidence](https://github.com/ZoneCNH/xlib-evidence) | - | █████ 100% | 100% | spec=98 mat=100 tsk=100 pln=100 prm=100 cod=100 | 证据收集与发布运行时：collect-coverage、generate-manifest、validate-manifest、report；✅ CI 已部署；⚠️ git tag + GitHub Release 缺失 |
 | [xlibgate](https://github.com/ZoneCNH/xlibgate) | v1.0.0 | █████ 100% | 100% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | check/l2/trust 三组门禁；✅ .repo-contract.yaml，v1.0.0 已对齐（此前误标 v1.1.1）；trust CLI 已实现 |
 | [kernel](https://github.com/ZoneCNH/kernel) | v1.0.0 | █████ 100% | 100% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | L0 原语 / 12 子包 / stdlib-only；✅ .repo-contract.yaml，v1.0.0 已对齐，建议 API 冻结 |
 | [configx](https://github.com/ZoneCNH/configx) | v1.0.0 | █████ 100% | 100% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | 配置管理；✅ v1.0.0 GitHub Release 已发布；✅ .repo-contract.yaml |
@@ -53,7 +53,7 @@
 | kernel | ✅ | ✅ | ✅ | N/A | ✅ | ✅ | N/A | ✅ | v1.0.0; 4 CI workflows; 13 下游消费者; API 冻结建议 |
 | configx | ✅ | ✅ | ✅ | N/A | ✅ | ✅ | N/A | ✅ | v1.0.0; 4 CI workflows; 2 下游消费者; 此前误标 v1.0.0 |
 | observex | ✅ | ✅ | ✅ | N/A | ✅ | ✅ | N/A | ✅ | v1.0.0; 4 CI workflows; 2 下游消费者; 已采用 |
-| testkitx | ✅ | ✅ | ✅ | N/A | ✅ | N/A | N/A | N/A | v1.0.0; 4 CI workflows; test-only — factory grade 不适用 | v0.4.0; 4 CI workflows; test-only 非运行时模块 |
+| testkitx | ✅ | ✅ | ✅ | N/A | ✅ | N/A | N/A | N/A | v1.0.0; 4 CI workflows; test-only — factory grade 不适用 |
 | resiliencx | ✅ | ✅ | ✅ | N/A | ✅ | ✅ | N/A | ✅ | v1.0.0; 9 CI workflows; 2 下游消费者; 已采用 |
 | schedulex | ✅ | ✅ | ✅ | N/A | ✅ | ✅ | N/A | ✅ | v1.0.0; 6 CI workflows; 下游 smoke 通过; 1 下游消费者 |
 | redisx | ✅ | ✅ | ✅ | ✅ | ✅ | N/A | N/A | ✅ | v1.0.1; 9 CI workflows; Docker-backed Redis 验证通过 |
@@ -62,7 +62,7 @@
 | postgresx | ✅ | ✅ | ✅ | ✅ | ✅ | N/A | N/A | ✅ | v1.0.0; 3 CI workflows; live integration 通过; migration runner; 生产就绪 |
 | taosx | ✅ | ✅ | ✅ | ✅ | ✅ | N/A | N/A | ✅ | v1.0.1; 8 CI workflows; 真实 taosWS 已验证; SPEC WHEN/THEN 已补齐 (PR #374) |
 | ossx | ✅ | ✅ | ✅ | ✅ | ✅ | N/A | N/A | ✅ | v1.0.1; CI 已部署; 真实 Aliyun OSS 集成已验证 |
-| clickhousex | ✅ | ✅ | ✅ | ✅ | ✅ | N/A | N/A | ✅ | v1.0.1; CI 已部署+运行(Docker ClickHouse); git tag 已创建; SPEC+TRACEABILITY+TASKS 100% | v1.0.1; CI 已部署+运行(Docker ClickHouse); git tag 已创建; SPEC+TRACEABILITY+TASKS 100% |
+| clickhousex | ✅ | ✅ | ✅ | ✅ | ✅ | N/A | N/A | ✅ | v1.0.1; CI 已部署+运行(Docker ClickHouse); git tag 已创建; SPEC+TRACEABILITY+TASKS 100% |
 | contracts | ✅ | ✅ | ✅ | N/A | ✅ | ✅ | N/A | ✅ | v1.0.1-spec; pkg/contracts 已实现 (PR #6); git tag + CI 已部署 |
 | transportx | ✅ | ✅ | ✅ | N/A | ✅ | N/A | N/A | ✅ | v1.1.1-spec; pkg/transportx 已实现; 24节/25FR/57WHEN-THEN/32TC/AC矩阵完整 |
 | domainx | ✅ | ✅ | ✅ | N/A | ✅ | N/A | N/A | ✅ | v0.1.0; CI 已部署+已运行; git tag 已创建 |
@@ -359,7 +359,7 @@
 
 ## 管线状态总览
 
-20/20 模块全部阶段 ≥98（rule-scorer 真实评分）：
+20/20 模块全部阶段 ≥67（rule-scorer 真实评分），其中 13/20 全线 ≥98：
 
 | 模块 | spec | matrix | tasks | plan | prompt | code |
 |------|:----:|:------:|:-----:|:----:|:------:|:----:|
