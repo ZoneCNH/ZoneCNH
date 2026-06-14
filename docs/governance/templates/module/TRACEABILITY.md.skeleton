@@ -1,0 +1,71 @@
+# {MODULE} 需求追溯矩阵
+
+> 更新：{DATE}（Matrix v1.0）
+> 来源：module/{MODULE}/SPEC.md {VERSION}
+> 规范：docs/governance/TRACEABILITY.md
+
+---
+
+## 1. 功能需求追溯（FR）
+
+| FR | Description | Acceptance Criteria | Test Case | Task | Status |
+|----|-------------|---------------------|-----------|------|--------|
+| FR-001 | {DESCRIPTION} | AC-001 | TC-001 | {TASK_ID} | 🔴 |
+
+> Status 说明：✅=已完成, ⚠️=部分完成/需修复, 🔴=未按 SPEC 实现
+
+---
+
+## 2. 业务规则追溯（BR）
+
+| BR | Description | 违反后果 | 验证方式 | Task | Status |
+|----|-------------|----------|----------|------|--------|
+| BR-001 | {DESCRIPTION} | {CONSEQUENCE} | {VERIFICATION} | {TASK_ID} | 🔴 |
+
+---
+
+## 3. 非功能需求追溯（NFR）
+
+| NFR | Description | 目标值 | 验证方式 | Task | Status |
+|-----|-------------|--------|----------|------|--------|
+| NFR-001 | {DESCRIPTION} | {TARGET} | {VERIFICATION} | {TASK_ID} | 🔴 |
+
+---
+
+## 4. TC -> FR 反向追溯
+
+| TC | FR/BR | Given/When/Then 场景 |
+|----|-------|---------------------|
+| TC-001 | FR-001 | Given {PRECONDITION}, When {ACTION}, Then {RESULT} |
+
+---
+
+## 5. 全局 AC 注册表
+
+| AC | 所属 FR/BR | Task | 验收条件摘要 |
+|----|-----------|------|-------------|
+| AC-001 | FR-001 | {TASK_ID} | {SUMMARY} |
+
+---
+
+## 6. 覆盖率仪表盘
+
+| 指标 | 数值 | 说明 |
+|------|------|------|
+| FR 总数 | {N} | FR-001 ~ FR-{NNN} |
+| FR 有 AC 覆盖 | {M}/{N} ({PCT}%) | |
+| FR 有 TC 覆盖 | {M}/{N} ({PCT}%) | |
+| FR 有 Task 分配 | {M}/{N} ({PCT}%) | |
+| BR 总数 | {N} | BR-001 ~ BR-{NNN} |
+| NFR 总数 | {N} | NFR-001 ~ NFR-{NNN} |
+| AC 总数 | {N} | AC-001 ~ AC-{NNN} |
+| TC 总数 | {N} | TC-001 ~ TC-{NNN} |
+| Task 总数 | {N} | TASK-{MODULE}-000 ~ {NNN} |
+
+---
+
+## 7. 变更历史
+
+| 日期 | 版本 | 变更 |
+|------|------|------|
+| {DATE} | v1.0 | 初始版本 |
