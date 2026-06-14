@@ -227,17 +227,18 @@
 
 > 全项目 .env / go.mod / 依赖矩阵一致性扫描。非阻塞，按优先级自行排期。
 
-### Issue 6：postgresx foundationx 依赖未纳入退出计划
+### Issue 6：postgresx foundationx 依赖未纳入退出计划 ✅
 
 ```text
 标题：postgresx 迁移出 foundationx 依赖
 仓库：ZoneCNH/postgresx
+PR: #8 (squash merged → main)
 ```text
 
-- [ ] `pkg/postgresx/` 下 9 个非测试 .go 文件 import `github.com/ZoneCNH/foundationx/pkg/foundationx`
-- [ ] SPEC.md §15 Dependencies 写 `github.com/ZoneCNH/foundationx v0.1.1`，与 FOUNDATION-TRACKER Issue 4 退出完成声明矛盾
-- [ ] 同步更新 SPEC.md 依赖声明和 IMPLEMENTATION-PLAN.md Phase 2
-- [ ] 迁移完成后删除 `internal/foundationx` 或更新 contract tests
+- [x] `pkg/postgresx/` 下 9 个非测试 .go 文件 + 全部测试/示例文件 import 已清零（新增 3 个本地类型文件：error.go/clock.go/secret.go）
+- [x] SPEC.md §15 Dependencies 已移除 `github.com/ZoneCNH/foundationx v0.1.1`；全部 foundationx 引用已替换为本地类型描述
+- [x] 同步更新 SPEC.md 依赖声明；IMPLEMENTATION-PLAN.md Phase 2 无单独引用
+- [x] foundationx import 完全移除，contract tests 全部通过，无 `internal/foundationx` 目录
 
 ### Issue 7：postgresx Go baseline 未对齐 ✅
 

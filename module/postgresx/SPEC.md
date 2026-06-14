@@ -2,7 +2,7 @@
 
 > 基座 · PostgreSQL 存储扩展。以 `pgxpool` 为核心，提供显式配置、连接池生命周期、SQL 执行、事务、迁移、健康检查、错误归一化与可观测适配点。
 
-最后更新：2026-06-13
+最后更新：2026-06-14
 
 ---
 
@@ -18,7 +18,7 @@
 - Layer: 基座 · 存储扩展
 - Implementation-Baseline: v1.0.0 release (tag `v1.0.0`, commit `310a249e`)
 - Go-Baseline: `go 1.25.0`
-- Runtime Dependencies: `github.com/ZoneCNH/foundationx v0.1.1`, `github.com/jackc/pgx/v5 v5.9.2`
+- Runtime Dependencies: `github.com/jackc/pgx/v5 v5.9.2`
 - Repository: [github.com/ZoneCNH/postgresx](https://github.com/ZoneCNH/postgresx)
 - Related: [goal.md](./goal.md), [TRACEABILITY.md](./TRACEABILITY.md), [ARCHITECTURE.md](../../ARCHITECTURE.md)
 
@@ -33,8 +33,8 @@
 - `Exec`、`Query`、`QueryRow` 和调用方负责关闭的 `Rows` 抽象。
 - `WithTx` / `WithTxOptions` 自动提交、回滚和 panic 回滚。
 - `MigrationRunner` 执行版本化 SQL 迁移并记录已应用版本。
-- `foundationx.HealthChecker` 兼容的 `Name` / `Check` 健康检查。
-- `foundationx` 错误归一化、可重试判断、SecretString 脱敏、日志和指标 hook。
+- `HealthChecker` 兼容的 `Name` / `Check` 健康检查。
+- 本地错误归一化（ErrorKind 分类）、可重试判断、SecretString 脱敏、日志和指标 hook。
 
 本模块不是 ORM，不读取环境变量或配置文件，不接管应用生命周期，不向上依赖业务仓库。
 
@@ -44,7 +44,7 @@
 
 - 连接池配置、超时和关闭语义不一致。
 - 事务提交、回滚和 panic 路径遗漏。
-- PostgreSQL 错误码无法统一映射到 `foundationx` 错误模型。
+- PostgreSQL 错误码无法统一映射到结构化错误模型。
 - 迁移版本和执行记录分散，难以审计。
 - 健康检查、连接池状态、查询耗时和失败指标缺少统一采集点。
 - 连接串、密码或 SQL 参数存在日志泄露风险。
@@ -116,7 +116,7 @@ THEN 模块必须拒绝执行并返回错误。
 ### FR-005: 健康检查与池状态
 
 WHEN 调用 `Name()` 和 `Check(ctx)`
-THEN 模块必须符合 `foundationx.HealthChecker`，输出 healthy/degraded/unhealthy 状态、耗时和安全元数据。
+THEN 模块必须符合 `HealthChecker` 接口，输出 healthy/degraded/unhealthy 状态、耗时和安全元数据。
 
 WHEN `Stats()` 被调用
 THEN 模块必须返回连接池快照，不暴露密码、完整 DSN 或 SQL 参数。
@@ -124,7 +124,7 @@ THEN 模块必须返回连接池快照，不暴露密码、完整 DSN 或 SQL �
 ### FR-006: 错误归一化与可重试判断
 
 WHEN 底层返回 PostgreSQL 或 context 错误
-THEN 模块必须通过 `MapError` 映射为 `foundationx` 错误，并通过 `IsRetryable` 暴露可重试语义。
+THEN 模块必须通过 `MapError` 将底层错误归一化为结构化 Error，并通过 `IsRetryable` 暴露可重试语义。
 
 ### FR-007: 可观测适配与 Secret Hygiene
 
@@ -146,7 +146,7 @@ THEN `Config.RedactedDSN()` 必须隐藏密码，日志和指标不得包含完�
 | BR-007 | 迁移版本必须为正整数且单调执行；重复版本和无效迁移必须阻断。 | 迁移阻断，返回错误含版本号和原因 |
 | BR-008 | 健康检查必须幂等、无副作用，并只输出安全元数据。 | 暴露密码/DSN → CI Gate secret scan 阻断 |
 | BR-009 | 指标适配必须不泄露敏感信息；代码与契约中的指标命名必须保持唯一且一致。 | 指标包含明文凭据 → CI Gate redaction check 阻断 |
-| BR-010 | PostgreSQL 错误码必须稳定映射到 `foundationx` 错误 kind 和 retryability。 | 错误映射缺失或错误 → TC-006 测试失败 |
+| BR-010 | PostgreSQL 错误码必须稳定映射到结构化错误 kind 和 retryability。 | 错误映射缺失或错误 → TC-006 测试失败 |
 | BR-011 | 发布证据必须支持 `GOWORK=off`，避免依赖本地 workspace 污染。 | GOWORK 依赖导致 CI 不可复现 → release gate 阻断 |
 | BR-012 | `go.mod`、版本矩阵、公开 API 文档和模块规格必须在发布后持续保持一致。 | go.mod/版本矩阵/文档不一致 → CI Gate doc check 阻断 |
 
@@ -181,7 +181,7 @@ type Config struct {
     Port            int
     Database        string
     User            string
-    Password        foundationx.SecretString
+    Password        SecretString
     SSLMode         string
     MaxOpenConns    int32
     MinIdleConns    int32
@@ -302,7 +302,7 @@ func WithClock(clock Clock) Option
 postgresx:
   host: localhost
   port: 5432
-  database: foundationx
+  database: app
   user: app
   password: ${POSTGRES_PASSWORD}  # SecretString 自动脱敏
   ssl_mode: disable
@@ -326,10 +326,10 @@ postgresx:
 | `ErrNotFound` | 查询无结果 (pgx.ErrNoRows) | 可处理状态，非系统错误 |
 | `ErrTimeout` | context deadline 或连接超时 | 返回可识别超时错误 |
 | `ErrAuth` | PostgreSQL 认证失败 | 不重试，返回认证错误 |
-| `ErrConstraint` | 约束冲突（unique/foreign key） | 映射为 foundationx conflict kind |
+| `ErrConstraint` | 约束冲突（unique/foreign key） | 映射为 conflict kind |
 | `ErrConnection` | 连接断开或池耗尽 | 可重试，返回连接错误 |
 
-**错误映射**：`MapError(err)` 将 pgx/pgconn 错误归一化为 foundationx 错误 kind + retryability。
+**错误映射**：`MapError(err)` 将 pgx/pgconn 错误归一化为结构化错误 kind + retryability。
 **错误消息格式**：`"postgresx: <operation>: <detail>"`
 
 ## 13. Edge Cases
@@ -381,7 +381,6 @@ postgresx/
 | ---- | ---- | ---- |
 | Go stdlib | context、time、errors、sync/atomic | 必须保持轻量 |
 | `github.com/jackc/pgx/v5` | PostgreSQL driver、pool、tx、pgconn 错误码 | 当前基线 `v5.9.2` |
-| `github.com/ZoneCNH/foundationx` | SecretString、HealthChecker、Error model | 当前基线 `v0.1.1` |
 
 禁止新增业务模块依赖。新增基座依赖必须先更新 [goal.md](./goal.md)、[TRACEABILITY.md](./TRACEABILITY.md) 与根架构文档。
 
@@ -411,7 +410,7 @@ postgresx/
 - `postgresx` 只暴露 logger、metrics、clock 等 hook，不绑定具体观测后端。
 - 必须覆盖连接池、查询、事务、迁移和健康检查事件；事件字段不得包含明文 DSN、密码或 SQL 参数 Secret。
 - 指标名已由 TASK-PG-003 冻结为 dotted `postgresx.*` 命名，后续变更必须同步代码、contract、SPEC 与 TRACEABILITY。
-- 健康检查实现必须保持 `foundationx.HealthChecker` 兼容，并保留 context 取消语义。
+- 健康检查实现必须保持 `HealthChecker` 接口兼容，并保留 context 取消语义。
 
 ## 19. Security
 
@@ -426,7 +425,7 @@ postgresx/
 
 - `GOWORK=off VERSION=v1.0.0 make release-evidence-check`：通过。
 - `GOWORK=off VERSION=v1.0.0 make release-final-check`：通过。
-- `GOWORK=off VERSION=v1.0.0 make release-preflight` 在 `POSTGRESX_REQUIRE_INTEGRATION=1` 和注入的 dev PostgreSQL DSN/凭据下通过，覆盖 `go vet`、`go test`、`go test -race`、边界检查、contract check、secret scan、foundationx API check、template alignment 与真实 PostgreSQL integration。
+- `GOWORK=off VERSION=v1.0.0 make release-preflight` 在 `POSTGRESX_REQUIRE_INTEGRATION=1` 和注入的 dev PostgreSQL DSN/凭据下通过，覆盖 `go vet`、`go test`、`go test -race`、边界检查、contract check、secret scan、contract check、template alignment 与真实 PostgreSQL integration。
 - Git tag / GitHub release：`v1.0.0`，对应提交 `310a249e`。
 
 文档修复侧必须通过：
@@ -446,9 +445,9 @@ postgresx/
 - 已应用迁移表、重复版本阻断、迁移顺序和失败回滚行为以 `/home/postgresx` 当前测试为准。
 - 文档迁移只涉及 SPEC、TRACEABILITY、Goal、Task 与状态表同步，不迁移应用数据。
 
-- 当前实现基线记录为 `go 1.25.0`、`github.com/jackc/pgx/v5 v5.9.2`、`github.com/ZoneCNH/foundationx v0.1.1`。
+- 当前实现基线记录为 `go 1.25.0`、`github.com/jackc/pgx/v5 v5.9.2`、。
 - v1.x Public API 已冻结；任何破坏性变更都必须同步 SPEC、TRACEABILITY、Task 和 `/home/postgresx` contract 文档。
-- 基座边界保持不变：`postgresx` 可以依赖 `foundationx` 和 `pgx`，不得依赖业务域、入口仓库或数据域仓库。
+- 基座边界保持不变：`postgresx` 可以依赖 `pgx`，不得依赖业务域、入口仓库或数据域仓库。
 - Release evidence 必须支持 `GOWORK=off`，避免本地 workspace 掩盖模块依赖问题。
 
 ## 22. Release DoD
