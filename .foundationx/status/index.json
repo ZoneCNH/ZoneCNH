@@ -121,8 +121,8 @@
       "ci": true,
       "adopt": "N/A",
       "soak": "N/A",
-      "factory": false,
-      "note": "Fake/Fixture/Golden/Contract/Leak/Boundary/Manifest 测试工具包; test-only; 此前误标 v1.0.0 已修正; .repo-contract.yaml aligned"
+      "factory": "N/A",
+      "note": "v0.4.0; test-only 非运行时模块; factory grade 不适用"
     },
     "resiliencx": {
       "layer": "L1",
