@@ -17,7 +17,7 @@
 
 | 组件 | 版本 | 进度 | 仓库大小 | 说明 |
 | ---- | ---- | ---- | -------- | ---- |
-| [xlib-standard](https://github.com/ZoneCNH/xlib-standard) | v1.0.0 | ████ 100% | spec=100 mat=80 tsk=98 pln=100 prm=100 cod=100 | 标准事实源 / Go Reference Template；Generator/Harness/Evidence 已拆分至 xlib-harness / xlib-evidence；⚠️ git tag v1.0.0 存在，GitHub release 待确认 |
+| [xlib-standard](https://github.com/ZoneCNH/xlib-standard) | v1.0.0 | ████ 100% | spec=100 mat=80 tsk=98 pln=100 prm=100 cod=100 | 标准事实源 / Go Reference Template；Generator/Harness/Evidence 已拆分至 xlib-harness / xlib-evidence；✅ .repo-contract.yaml (is_standard_source)，v1.0.0 已对齐；⚠️ GitHub release 待确认 |
 | [xlib-harness](https://github.com/ZoneCNH/xlib-harness) | v1.0.0 | ████ 100% | spec=83 mat=100 tsk=97 pln=100 prm=100 cod=100 | 模块生成器与门禁执行器：generate/scaffold、spec-lint、boundary-check、traceability-gate；⚠️ Draft→Approved 待四源评分（6 FR，6 TC） |
 | [xlib-evidence](https://github.com/ZoneCNH/xlib-evidence) | v1.0.0 | ████ 100% | spec=83 mat=100 tsk=100 pln=100 prm=100 cod=100 | 证据收集与发布运行时：collect-coverage、generate-manifest、validate-manifest、report；⚠️ Draft→Approved 待四源评分（5 FR，5 TC） |
 | [xlibgate](https://github.com/ZoneCNH/xlibgate) | v1.1.1 | ███░ 95% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | check / l2 / trust 三组门禁；✅ trust CLI 已实现（PR #28，9 个子命令，30+ 测试通过）；trust 规格/设计/计划/任务/提示词完备（8 FR, 16 TC, 10 Task） |
@@ -47,7 +47,7 @@
 
 | 模块 | SPEC | IMPL | RELEASE | LIVE INT | EXT CI | ADOPT | SOAK | FACTORY | 备注 |
 |------|:----:|:----:|:-------:|:--------:|:------:|:-----:|:----:|:-------:|------|
-| xlib-standard | ✅ | ✅ | ⚠️ | N/A | ? | ? | N/A | ❌ | git tag v1.0.0 存在，GitHub release 待确认 |
+| xlib-standard | ✅ | ✅ | ⚠️ | N/A | ? | ? | N/A | ❌ | v1.0.0 已对齐（.repo-contract.yaml + PR #120）；GitHub release 待确认 |
 | xlib-harness | ✅ | ✅ | ✅ | N/A | ? | ? | N/A | ❌ | Draft→Approved 待四源评分 |
 | xlib-evidence | ✅ | ✅ | ✅ | N/A | ? | ? | N/A | ❌ | Draft→Approved 待四源评分 |
 | xlibgate | ✅ | ✅ | ✅ | N/A | ? | ? | N/A | ❌ | v1.1.1 spec 完备（check+l2+trust），trust 代码待实现 |
