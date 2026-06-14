@@ -386,6 +386,56 @@ forbidden_foundation_edges:
     rule: "transportx 只定义跨 runtime / adapter 传输契约；可依赖 contracts/configx/observex/resiliencx 的公开接口，但不得依赖具体 broker/client、存储实现、入口或业务域。"
 
 # ============================================================
+# Trust hardening rules (xlibgate v1.1.2)
+# ============================================================
+trust_hardening:
+  version: "v1.1.2"
+  fact_sources:
+    status_index: ".foundationx/status/index.json"
+    blockers: ".foundationx/blockers.json"
+    repo_contract: ".foundationx/repo-contract.json"
+    release_manifest_template: "release/manifest/template.json"
+  projection_paths:
+    - "STATUS.md"
+    - "README.md"
+    - "ARCHITECTURE.md"
+    - "module/README.md"
+    - "release/manifest/template.json"
+  stable_reason_codes:
+    factory_gate_blocked: "FACTORY_GATE_BLOCKED"
+    contract_parse_error: "CONTRACT_PARSE_ERROR"
+  exit_codes:
+    pass: 0
+    fail: 1
+    error: 2
+  rules:
+    - id: projection-drift
+      check: "public projections and release manifest trust evidence must match FoundationX fact sources"
+      fail_if: "public docs, release/factory claims, open blockers, or projection_guard values drift from .foundationx facts"
+      reason_code: "FACTORY_GATE_BLOCKED"
+      exit_code: 1
+    - id: release-false-blocks-factory
+      check: "release=false implies factory=false"
+      fail_if: "module status has release=false while factory=true"
+      reason_code: "FACTORY_GATE_BLOCKED"
+      exit_code: 1
+    - id: open-blocker-blocks-factory
+      check: "open blocker implies factory=false"
+      fail_if: "module has an open blocker while factory=true"
+      reason_code: "FACTORY_GATE_BLOCKED"
+      exit_code: 1
+    - id: audit-status-not-factory-proof
+      check: "audit-status remains a projection consistency guard"
+      fail_if: "audit-status pass is documented or emitted as factory-grade proof"
+      reason_code: "FACTORY_GATE_BLOCKED"
+      exit_code: 1
+  invariants:
+    - "Preserve exit code semantics: 0=pass, 1=fail, 2=error."
+    - "Keep reason_code values stable for CI and release evidence consumers."
+    - "Malformed or missing fact sources remain CONTRACT_PARSE_ERROR with exit code 2."
+    - "Factory-grade claims require release evidence, blocker review, projection guard, and xlibgate trust evidence."
+
+# ============================================================
 # foundationx compatibility（已退出 — 2026-06-14）
 # ============================================================
 foundationx_compatibility:
