@@ -51,6 +51,11 @@ def _load_schema() -> dict:
 def validate(payload: dict, schema: dict | None = None) -> list[str]:
     """轻量手写校验，避免 jsonschema 依赖。返回错误列表。"""
     errs: list[str] = []
+
+    # Normalize: accept 'platform' as alias for 'source'
+    if "source" not in payload and "platform" in payload:
+        payload["source"] = payload["platform"]
+
     required = ["source", "stage", "module", "score", "redline", "confidence", "deductions"]
     for key in required:
         if key not in payload:
