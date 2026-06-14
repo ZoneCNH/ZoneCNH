@@ -410,7 +410,7 @@ Foundation v1 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中�
 | 入口                  | [x.go](https://github.com/ZoneCNH/x.go)                         | v0.0.1 | ✅ 已有   | ███░ 80% | 组合根，2.8MB/33 项                                                                       |
 | **横切**              |                                                                 |        |           |          |                                                                                           |
 | 横切                  | [alertx](https://github.com/ZoneCNH/alertx)                     | -      | 🔨 已创建 | ░░░░ 5%  | 策略异常、风控触发告警                                                                    |
-| 横切                  | [observex](https://github.com/ZoneCNH/observex)                 | v0.3.1 | ✅ 已有   | ███░ 80% | 可观测性（同时归属基座，提供底层 metrics/tracing/logging）                                |
+| 横切                  | [observex](https://github.com/ZoneCNH/observex)                 | v1.0.0 | ✅ 已发布 | █████ 100% | 可观测性（同时归属基座，提供底层 metrics/tracing/logging）                                |
 | **独立**              |                                                                 |        |           |          |                                                                                           |
 | 独立                  | [module](./module/README.md)                                    | -      | ✅ 已有   | -        | 项目技术规范、接口定义与 Goal 适配模块索引                                                |
 | 独立                  | [docs/governance](./docs/governance/README.md)                  | -      | ✅ 已有   | -        | Spec → Code 交付治理、模板、门禁与评分规则                                                |
