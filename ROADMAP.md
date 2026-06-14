@@ -292,7 +292,7 @@ Blocked By:
 ### 文档类
 
 - [ ] observex 双重归属边界文档（基座 vs 横切） — `documentation`
-- [ ] strategies 定位澄清（策略研究参考库） — `documentation`
+- [x] ~~strategies 定位澄清~~ — 已移除（仓库不存在，2026-06-15 审计） `documentation`
 - [ ] 快速开始文档 — `documentation`
 - [ ] API 示例文档 — `documentation`
 
