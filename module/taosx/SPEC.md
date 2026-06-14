@@ -38,20 +38,95 @@ v1.0.1 保持 `pkg/taosx` 为公共运行时 API：默认驱动仍显式不可�
 
 ## 4. 功能需求
 
-- 以下功能需求定义 v1.0.1 必须稳定交付的 TDengine 适配器公共能力。
+以下功能需求定义 v1.0.1 必须稳定交付的 TDengine 适配器公共能力。每条 FR 包含 WHEN/THEN 行为规格和对应的验收标准 (AC) 与测试用例 (TC) 映射。
 
-| ID | 需求 | 验收标准 |
-| --- | --- | --- |
-| FR-001 | `Config.Normalize` 必须补齐默认名称、驱动模式和超时时间。 | 空名称归一化为包名，空驱动模式归一化为 WebSocket，零值超时归一化为 5 秒；负超时由校验拒绝。 |
-| FR-002 | `Config.Validate` 必须拒绝缺失 endpoint、database、非法驱动模式、负超时和负重试次数；名称缺失由 `Config.Normalize` 补齐默认包名。 | 校验错误使用 `taosx.Config` 操作名，并不泄漏密码。 |
-| FR-003 | `New` 必须校验 context、配置和 options，并允许默认不可用驱动。 | 无注入驱动时构造成功；运行操作返回可重试的 unavailable 错误。 |
-| FR-004 | `Exec` 必须拒绝空 SQL statement，并把合法 statement 委托给注入驱动。 | 空 SQL 返回 validation error；驱动错误保留错误分类和操作名。 |
-| FR-005 | `Query` 必须拒绝空查询，并返回驱动提供的 `Rows`。 | 查询结果可以读取列、扫描行、关闭；驱动错误时不伪造结果。 |
-| FR-006 | `WriteBatch` 必须校验 database、table 和 points。 | 空 batch 是 validation error；驱动部分失败时返回 partial result 和错误。 |
-| FR-007 | `SchemalessWrite` 必须校验 lines 与协议。 | 空 lines 或非法协议返回 validation error；成功路径记录写入行数指标。 |
-| FR-008 | `Health` 必须调用 `Driver.Health(ctx)` 并把 nil/error 映射为 `HealthStatus`。 | 默认不可用驱动返回 degraded；状态包含 mode、database 和 redacted error；调用不 panic。 |
-| FR-009 | `Close` 必须幂等并接受 context。 | 重复关闭返回 nil；关闭后操作返回 closed 错误。 |
-| FR-010 | 指标端口必须可选。 | 未注入 metrics 时使用 no-op；注入后记录 request、duration、error、health、batch rows 等 `taosx_client_*` 指标。 |
+### FR-001: Config.Normalize 默认值补齐
+
+**WHEN** 创建 `Config` 时名称、驱动模式或超时为零值/空值  
+**THEN** `Normalize()` 必须将空名称归一化为包名 `taosx`，空驱动模式归一化为 `websocket`，零值超时归一化为 5 秒  
+**AC**: 零值字段归一化为预期默认值；负超时由后续 Validate 拒绝  
+**TC**: TC-001 (Config 默认值 golden)
+
+### FR-002: Config.Validate 校验拒绝
+
+**WHEN** `Config.Validate()` 被调用且 endpoint、database 缺失、驱动模式非法、超时/重试次数为负  
+**THEN** 返回 validation error，操作名为 `taosx.Config`，错误消息不包含密码原文  
+**AC**: 缺失 endpoint 返回错误；缺失 database 返回错误；非法驱动模式返回错误；负超时返回错误；错误不含密码  
+**TC**: TC-002 (Config 校验错误), TC-003 (密码脱敏)
+
+### FR-003: New 构造函数
+
+**WHEN** 调用 `New(ctx, config, opts...)` 且无驱动注入  
+**THEN** 构造成功，返回非 nil Client；后续操作返回可重试的 unavailable 错误  
+**WHEN** 注入自定义 Driver  
+**THEN** 构造成功，后续操作委托给注入驱动  
+**AC**: 无驱动构造成功，操作返回 unavailable；有驱动构造成功，操作正常执行  
+**TC**: TC-004 (默认不可用驱动), TC-005 (驱动注入)
+
+### FR-004: Exec 执行
+
+**WHEN** 调用 `Exec(ctx, statement)` 且 SQL 为空  
+**THEN** 返回 validation error，操作名 `taosx.Exec`  
+**WHEN** SQL 非空且驱动已注入  
+**THEN** 委托给 `Driver.Exec(ctx, statement)`，保留驱动的错误分类和操作名  
+**AC**: 空 SQL 拒绝；驱动错误透传；成功返回 ExecResult  
+**TC**: TC-006 (空 SQL 拒绝), TC-007 (驱动委托)
+
+### FR-005: Query 查询
+
+**WHEN** 调用 `Query(ctx, query)` 且查询语句为空  
+**THEN** 返回 validation error  
+**WHEN** 查询非空且驱动已注入  
+**THEN** 返回 `Rows` 可读取列信息、按行扫描、关闭；驱动错误时不伪造空结果  
+**AC**: 空查询拒绝；Rows 可遍历；驱动错误透传  
+**TC**: TC-008 (空查询拒绝), TC-009 (Rows 遍历与关闭)
+
+### FR-006: WriteBatch 批量写入
+
+**WHEN** 调用 `WriteBatch(ctx, batch)` 且 batch 为空或无 points  
+**THEN** 返回 validation error  
+**WHEN** batch 合法且驱动已注入  
+**THEN** 委托给驱动执行；驱动部分失败时返回 partial result 和错误  
+**AC**: 空 batch 拒绝；部分失败含 partial result；成功记录写入行数指标  
+**TC**: TC-010 (空 batch 拒绝), TC-011 (部分失败 partial result)
+
+### FR-007: SchemalessWrite 无模式写入
+
+**WHEN** 调用 `SchemalessWrite(ctx, payload)` 且 lines 为空或协议非法  
+**THEN** 返回 validation error  
+**WHEN** payload 合法且驱动已注入  
+**THEN** 成功写入并记录 `taosx_client_schemaless_lines` 指标  
+**AC**: 空 lines 拒绝；非法协议拒绝；成功路径记录指标  
+**TC**: TC-012 (空 lines 拒绝), TC-013 (协议校验)
+
+### FR-008: Health 健康检查
+
+**WHEN** 调用 `Health(ctx)` 且驱动未注入  
+**THEN** 返回 degraded 状态，含 mode=`websocket`、database 名和 redacted 错误信息  
+**WHEN** 驱动已注入  
+**THEN** 委托给 `Driver.Health(ctx)`，映射 nil→ready、error→degraded/unhealthy  
+**AC**: 默认驱动返回 degraded；注入驱动透传健康状态；调用不 panic；错误信息不含密码  
+**TC**: TC-014 (默认 degraded), TC-015 (驱动健康透传)
+
+### FR-009: Close 关闭
+
+**WHEN** 调用 `Close(ctx)` 首次  
+**THEN** 关闭客户端，释放资源，返回 nil  
+**WHEN** 重复调用 `Close(ctx)`  
+**THEN** 幂等返回 nil  
+**WHEN** 关闭后调用任何操作  
+**THEN** 返回 closed 错误  
+**AC**: 首次关闭成功；重复关闭幂等；关闭后操作返回 closed  
+**TC**: TC-016 (关闭幂等), TC-017 (关闭后操作拒绝)
+
+### FR-010: Metrics 可选指标
+
+**WHEN** 未注入 `Metrics` 实现  
+**THEN** 使用 no-op 实现，所有指标调用为零开销  
+**WHEN** 注入 `Metrics` 实现  
+**THEN** 记录 `taosx_client_request_total`、`taosx_client_duration_seconds`、`taosx_client_error_total`、`taosx_client_health_status`、`taosx_client_batch_rows` 等指标  
+**AC**: 未注入时零开销；注入后正确记录；指标名统一 `taosx_client_*` 前缀  
+**TC**: TC-018 (no-op 零开销), TC-019 (指标记录)
 
 ## 5. 行为约束
 
