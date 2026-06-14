@@ -111,6 +111,7 @@
 - **CountGuard hook 已部署**：`.claude/hooks/count-guard.mjs`。Write/Edit 到上述三文件时自动扫描内容中的数量模式。BLOCK 级（exit 2）：组件总数/平均进度/有版本号；WARN 级（exit 0）：X/Y 分数/百分比/已有/已创建。`COUNT_GUARD_STRICT=false` 降级为全告警模式。告警不可忽略——必须实际跑验证命令确认数量正确后方可 commit。
 - **跨维度交叉验证**：单一表格内部自洽不足以防漂移——必须交叉验证不同章节/不同文档中描述同一事实的数字。示例：RELEASE 列 ✅ 计数 vs 版本注记 Release 数、FACTORY N/A 计数 vs 组件表 testkitx 标记、仪表盘已有 vs 合计已有、同步表 STATUS 列 vs grep 唯一仓库数。`scripts/audit-status.py` check 8 已实现 RELEASE 和 FACTORY 的跨维度自动检查，新增维度时同步扩展该脚本。
 - **审计闭合前必须跑 `python3 scripts/audit-status.py --network`**：24 项机械化检查（含跨维度验证） + 78 repos 全量 404 扫描。全部 PASS 方可声称"无残余问题"。不得以"之前跑过"为由跳过最终验证。
+- **审计命令跨平台兼容（POSIX-ACK）**：`grep -c` / `wc -l` / `sed -n` 在 zsh glob 或 BSD/GNU 差异下偶尔返回空或错误行数。统计命令优先用 `python3` 脚本（`audit-status.py` 即为例），shell one-liner 仅作快速抽查。若 shell 输出异常（如空结果），立即切换到 `python3` 重跑，不得基于空输出声称"无残留"。
 
 ### Plan-first 原则
 
