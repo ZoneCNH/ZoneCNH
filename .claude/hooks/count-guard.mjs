@@ -21,18 +21,25 @@ const TRACKED_FILES = [
   "ARCHITECTURE.md",
 ];
 
-// Patterns that look like made-up counts
+// BLOCK-level patterns: editing these numbers requires pre-verification.
+// Exit code 2 = block the edit. Set COUNT_GUARD_STRICT=false to demote to warn-only.
+const BLOCK_PATTERNS = [
+  { re: /组件总数[：:]\s*\d+/g, label: "组件总数 (BLOCKED)" },
+  { re: /平均进度[：:]\s*\d+%/g, label: "平均进度 (BLOCKED)" },
+  { re: /有版本号[：:]\s*\d+/g, label: "有版本号计数 (BLOCKED)" },
+];
+
+// WARN-level patterns: suspect but may be legitimate
 const COUNT_PATTERNS = [
   { re: /\d+\/\d+\s*(已发布|已创建|缺失|全部)/g, label: "X/Y 分数" },
   { re: /\d+\s*个\s*[\(（]\s*\d+%\s*[\)）]/g, label: "N 个 (X%)" },
   { re: /[：:]\s*\*?\*?\d+\*?\*?\s*$|^\s*\*?\*?\d+\*?\*?\s*$/gm, label: "裸数字 (可能是合计)" },
   { re: /\d+个\s*\(\s*(全部|全\))/g, label: "N 个 (全部)" },
-  { re: /平均进度[：:]\s*\d+%/g, label: "平均进度百分比" },
-  { re: /组件总数[：:]\s*\d+/g, label: "组件总数" },
   { re: /已有[：:]\s*\d+/g, label: "已有计数" },
   { re: /已创建[：:]\s*\d+/g, label: "已创建计数" },
-  { re: /有版本号[：:]\s*\d+/g, label: "有版本号计数" },
 ];
+
+const STRICT = (process.env.COUNT_GUARD_STRICT || "true") !== "false";
 
 const VERIFY_COMMANDS = {
   "STATUS.md": [
@@ -94,7 +101,16 @@ function main() {
       return;
     }
 
-    // Scan for count patterns
+    // Scan for block-level patterns first
+    const blocked = [];
+    for (const { re, label } of BLOCK_PATTERNS) {
+      const matches = content.match(re);
+      if (matches && matches.length > 0) {
+        blocked.push({ label, matches: [...new Set(matches)] });
+      }
+    }
+
+    // Scan for warn-level patterns
     const found = [];
     for (const { re, label } of COUNT_PATTERNS) {
       const matches = content.match(re);
@@ -103,22 +119,37 @@ function main() {
       }
     }
 
-    if (found.length === 0) {
+    if (found.length === 0 && blocked.length === 0) {
       process.stdout.write(input);
       return;
     }
 
-    // Build warning message
+    // Build message
     const lines = [];
     lines.push("");
     lines.push("══════════════════════════════════════════════");
-    lines.push(`[CountGuard] ⚠️  Edit to ${fileName} contains COUNT PATTERNS`);
-    lines.push("");
-    lines.push("  Detected:");
-    for (const { label, matches } of found) {
-      lines.push(`    ${label}: ${matches.slice(0, 5).join(", ")}${matches.length > 5 ? " ..." : ""}`);
+    if (blocked.length > 0 && STRICT) {
+      lines.push(`[CountGuard] 🛑 BLOCKED — ${fileName} contains HIGH-RISK count patterns`);
+    } else {
+      lines.push(`[CountGuard] ⚠️  Edit to ${fileName} contains COUNT PATTERNS`);
     }
     lines.push("");
+
+    if (blocked.length > 0) {
+      lines.push("  BLOCK-level (requires pre-verification):");
+      for (const { label, matches } of blocked) {
+        lines.push(`    ${label}: ${matches.slice(0, 5).join(", ")}`);
+      }
+      lines.push("");
+    }
+    if (found.length > 0) {
+      lines.push("  WARN-level:");
+      for (const { label, matches } of found) {
+        lines.push(`    ${label}: ${matches.slice(0, 5).join(", ")}${matches.length > 5 ? " ..." : ""}`);
+      }
+      lines.push("");
+    }
+
     lines.push("  CLAUDE.md rule: 声称已完成前必须核对源码");
     lines.push("  → 用 grep/awk/gh api 验证，禁止凭常识编造数量。");
     lines.push("");
@@ -128,7 +159,16 @@ function main() {
       lines.push(`    $ ${cmd}`);
     }
     lines.push("");
-    lines.push("  本次会话 audit (2026-06-15): 12 个 PR 修复了 7+ 处编造的数量。");
+
+    if (blocked.length > 0 && STRICT) {
+      lines.push("  To bypass (after verification): export COUNT_GUARD_STRICT=false");
+      lines.push("  Or attach verification output to commit message.");
+      lines.push("══════════════════════════════════════════════");
+      console.error(lines.join("\n"));
+      process.exit(2);
+    }
+
+    lines.push("  本次会话 audit (2026-06-15): 20 PRs 修复了 7+ 处编造的数量。");
     lines.push("  Don't make count changes without verification.");
     lines.push("══════════════════════════════════════════════");
 
