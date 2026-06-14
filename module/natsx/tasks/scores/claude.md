@@ -11,54 +11,54 @@
 
 ---
 
-## 评分摘要
+## 评分 (99/100)
 
-| 维度 | 满分 | 扣分 | 得分 |
-|------|------|------|------|
-| Task 模板符合度 | 12 | -1 | 11 |
-| 粒度合规 | 15 | 0 | 15 |
-| spec_ref 闭合 | 15 | 0 | 15 |
-| Scope/Non-scope | 12 | 0 | 12 |
-| 覆盖完整性 | 15 | 0 | 15 |
-| 依赖声明 | 10 | 0 | 10 |
-| 测试计划 | 10 | 0 | 10 |
-| 优先级与文件清单 | 11 | 0 | 11 |
-| **合计** | **100** | **-1** | **99** |
+| 维度 | 得分 | 说明 |
+|------|------|------|
+| Task 模板符合度 | 11/12 | D1: NFR task AC ID 为 task 级自定义前缀，非 SPEC AC registry 编号 ID |
+| 粒度合规 | 15/15 | 全部 ≤5 文件，测试同 task |
+| spec_ref 闭合 | 15/15 | 全部 task 有 spec_ref，FR/BR/NFR 引至 SPEC |
+| Scope/Non-scope | 12/12 | 全部 task 声明 scope + non-scope |
+| 覆盖完整性 | 15/15 | 全矩阵 FR/BR 行有对应 TASK |
+| 依赖声明 | 10/10 | depends_on 模板标注可选 |
+| 测试计划 | 10/10 | 全部 task 声明 TC→FR 映射 (如 TC-001→FR-001) |
+| 优先级与文件清单 | 11/11 | 全部 task 有 P0/P1/P2 + files 列表 |
 
 ---
 
-## 扣分（1 LOW）
+## 扣分 (1 LOW)
 
 | ID | 扣分 | 说明 |
 |----|------|------|
-| D1 | -1 | NFR task（006-009,011-014）的 AC ID 为 task 级自定义前缀（AC-SBJ/ENV/CFG/OBS/SEC/PERF/REL），非 SPEC AC registry 中的编号 ID。NFR 在 SPEC 中无对应编号 AC，task 级 ID 是必要设计选择。 |
+| D1 | -1 | TASK-006~009,011~014 的 acceptance_criteria 使用自定义 AC ID 前缀 (AC-SBJ/ENV/CFG/OBS/SEC/PERF/REL)。NFR 在 SPEC 中无对应编号 AC，task 级 ID 是必要设计选择，非结构性缺陷。 |
 
 ---
 
-## Task 清单（13 个，全矩阵覆盖）
+## 13 个 TASK 全量清单
 
-| Task | 覆盖 | 文件 | 状态 |
-|------|------|------|------|
-| 001 | FR-001/002, BR-001/004/009 | 5 | pending |
-| 002 | FR-003, BR-003 | 2 | pending |
-| 003 | FR-004/005, BR-002/007 | 3 | pending |
-| 004 | FR-006/007, BR-005 | 4 | pending |
-| 005 | FR-008, BR-006 | 2 | pending |
-| 006 | NFR-006 SubjectBuilder | 2 | pending |
-| 007 | NFR-007 Envelope | 2 | pending |
-| 008 | NFR-008 Config | 4 | pending |
-| 009 | NFR-009 Observability | 2 | pending |
-| 011 | NFR-001/002, BR-008 Security/TLS | 2 | pending |
-| 012 | NFR-003 Performance | 1 | pending |
-| 013 | NFR-004 Layer boundary | 1 | pending |
-| 014 | NFR-005 Release + CI gate | 5 | pending |
+| Task | 覆盖范围 | 文件数 | 优先级 |
+|------|----------|--------|--------|
+| 001 | FR-001/002 (Core Publish/Subscribe), BR-001/004/009 | 5 | P0 |
+| 002 | FR-003 (Request-Reply), BR-003 | 2 | P0 |
+| 003 | FR-004/005 (JetStream Publish/Subscribe), BR-002/007 | 3 | P0 |
+| 004 | FR-006/007 (AddStream/AddConsumer), BR-005 | 4 | P0 |
+| 005 | FR-008 (Health), BR-006 | 2 | P1 |
+| 006 | NFR-006 (SubjectBuilder) | 2 | P1 |
+| 007 | NFR-007 (NatsMessageEnvelope) | 2 | P1 |
+| 008 | NFR-008 (Config contract) | 4 | P1 |
+| 009 | NFR-009 (Observability) | 2 | P1 |
+| 011 | NFR-001/002 (Security/TLS), BR-008 | 2 | P1 |
+| 012 | NFR-003 (Performance budget) | 1 | P2 |
+| 013 | NFR-004 (Layer boundary) | 1 | P2 |
+| 014 | NFR-005 (Release evidence + CI gate) | 5 | P2 |
 
 ---
 
-## 非 Rubric 质量差距
+## 待完成 (不属于 tasks 阶段评分范围)
 
-| 项 | 说明 |
-|----|------|
-| AC 描述仅成功路径 | TASK-001 至 005 未声明错误/边界场景 |
-| 文件重叠 | 多个 TASK 共享 client.go / jetstream.go / msg.go |
-| depends_on 隐式 | 模板标注可选，实现时可显式化 |
+| 项 | 类型 | 说明 |
+|----|------|------|
+| AC 描述扩展至边界场景 | task 增强 | TASK-001~005 的 AC 描述仅覆盖成功路径，缺错误/边界场景声明 |
+| depends_on 显式化 | task 增强 | 当前隐式依赖链 (001→002→003→004→005)，模板标注可选但建议显式 |
+| 文件重叠协调 | 实现阶段 | client.go 被 TASK-001/002 共享，jetstream.go 被 TASK-003/004 共享，msg.go 被 TASK-001/007 共享。实现时需协调 |
+| TRACEABILITY TC-010 行 | matrix 阶段 | Reverse Coverage TC-010 仍引用 BR-004 (handler latency)，与更新后的 Forward Coverage (BR-004→TASK-001 via TC-001) 不一致 |
