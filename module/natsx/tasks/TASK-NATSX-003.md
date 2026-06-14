@@ -8,7 +8,6 @@ TASK-NATSX-003:
     - "module/natsx/SPEC.md#FR-004"
     - "module/natsx/SPEC.md#FR-005"
     - "module/natsx/SPEC.md#BR-002"
-    - "module/natsx/SPEC.md#BR-007"
   acceptance_criteria:
     - "AC-004: JetStream Publish 返回 PublishAck（stream 已创建）"
     - "AC-004: JetStream Publish 时 stream 未创建返回错误"

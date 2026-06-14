@@ -27,7 +27,7 @@ Source: `goal.md` 1.0 发布基线 + `SPEC.md` Draft v1.0.0 + `/home/natsx` comm
 | BR-004 | Handler latency | 订阅 handler 快速返回/异步化约束有测试或示例 | TC-001 | TASK-NATSX-001 | ✅ |
 | BR-005 | 自动重连指数退避 | 断线重连、max-attempts、状态事件有测试 | TC-004 | TASK-NATSX-004 | ✅ |
 | BR-006 | Health 幂等无副作用 | 多次 Health() 调用无副作用，健康状态一致 | TC-005 | TASK-NATSX-005 | ✅ |
-| BR-007 | JetStream 启动时创建 | stream/consumer 在启动时创建，运行时创建失败返回预期错误 | TC-003 | TASK-NATSX-003 | ✅ |
+| BR-007 | JetStream 启动时创建 | stream/consumer 在启动时创建，运行时创建失败返回预期错误 | TC-003 | TASK-NATSX-004 | ✅ |
 | BR-008 | 错误不含消息内容 | 错误/日志不包含 payload 内容，防止敏感数据泄露 | TC-011 | TASK-NATSX-011 | ✅ |
 | BR-009 | Subscription 资源释放 | Close/Drain 时正确释放资源，无泄漏 | TC-001 | TASK-NATSX-001 | ✅ |
 | NFR-001 | Security redaction | credentials/token/连接串敏感片段脱敏 | TC-011 | TASK-NATSX-011 | ✅ Config/env sanitize and live-test output without secret values covered |
@@ -74,8 +74,8 @@ Source: `goal.md` 1.0 发布基线 + `SPEC.md` Draft v1.0.0 + `/home/natsx` comm
 | ---- | -------------------- | ---------------- |
 | TASK-NATSX-001 | FR-001, FR-002, BR-001, BR-004, BR-009 | Complete publish/subscribe/request/queue baseline with unsubscribe, subscription Drain, handler latency, and client close evidence |
 | TASK-NATSX-002 | FR-003, BR-003 | Complete responder/no-responder/timeout/cancel coverage |
-| TASK-NATSX-003 | FR-004, FR-005, BR-002, BR-007 | Complete JetStream publish/pull, missing-stream publish, nack redelivery, and max-deliveries advisory coverage |
-| TASK-NATSX-004 | FR-006, FR-007, BR-005 | Complete AddStream/AddConsumer idempotency/conflict, management edge failures, reconnect/degraded health, retry/backoff knobs, connection-state metrics, and reconnect/disconnect guardrail evidence; production SLO gate remains separate |
+| TASK-NATSX-003 | FR-004, FR-005, BR-002 | Complete JetStream publish/pull, missing-stream publish, nack redelivery, and max-deliveries advisory coverage |
+| TASK-NATSX-004 | FR-006, FR-007, BR-005, BR-007 | Complete AddStream/AddConsumer idempotency/conflict, startup creation enforcement, management edge failures, reconnect/degraded health, retry/backoff knobs, connection-state metrics, and reconnect/disconnect guardrail evidence; production SLO gate remains separate |
 | TASK-NATSX-005 | FR-008, BR-006 | Complete health healthy/closed/failure/reconnect/degraded coverage |
 | TASK-NATSX-006 | NFR-006 | Complete SubjectBuilder Build/Parse/Validate coverage; canonical token rejection tests; SPEC §9.1 interface alignment |
 | TASK-NATSX-007 | NFR-007 | Complete envelope/header metadata round-trip coverage |

@@ -10,7 +10,7 @@ TASK-NATSX-003
 
 ## 规格引用
 
-module/natsx/SPEC.md#FR-006, module/natsx/SPEC.md#FR-007, module/natsx/SPEC.md#BR-005
+module/natsx/SPEC.md#FR-006, module/natsx/SPEC.md#FR-007, module/natsx/SPEC.md#BR-005, module/natsx/SPEC.md#BR-007
 
 ## 验收标准
 

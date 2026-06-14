@@ -8,6 +8,7 @@ TASK-NATSX-004:
     - "module/natsx/SPEC.md#FR-006"
     - "module/natsx/SPEC.md#FR-007"
     - "module/natsx/SPEC.md#BR-005"
+    - "module/natsx/SPEC.md#BR-007"
   acceptance_criteria:
     - "AC-006: AddStream 创建不存在的 stream 返回 nil"
     - "AC-006: AddStream 重复调用且配置兼容返回 nil（幂等）"
