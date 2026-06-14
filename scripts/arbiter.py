@@ -122,8 +122,7 @@ def arbitrate(
         sources_data[src] = data
 
     attempts = _load_attempts(module, stage, runtime)
-    attempts["stage_attempt"] += 1
-    # 失败时增加 total_gate_failures（计在末尾）
+    # stage_attempt 仅在有完整四源时才递增；缺失源属于外部平台不可用，不消耗配额
 
     reasons: list[str] = []
     redlines: list[dict] = []
@@ -146,6 +145,8 @@ def arbitrate(
         composite_score = 0
         llm_scores = []
     else:
+        # 四源齐全且全部通过 schema 校验 → 消耗一次有效 stage attempt
+        attempts["stage_attempt"] += 1
         # 2. 红线
         for src, d in sources_data.items():
             if d.get("redline"):
@@ -209,7 +210,8 @@ def arbitrate(
             next_action = "route_to_executor_for_repair"
 
     # 失败循环边界
-    if gate == "fail":
+    # missing_score_source 是外部平台可用性问题，不消耗失败配额
+    if gate == "fail" and not missing:
         attempts["total_gate_failures"] += 1
         if attempts["total_gate_failures"] >= max_total:
             next_action = "pipeline_blocked_for_retrospective"
