@@ -234,12 +234,12 @@
       "spec": true,
       "impl": true,
       "release": true,
-      "live": "?",
+      "live": "partial",
       "ci": false,
       "adopt": "N/A",
       "soak": false,
       "factory": false,
-      "note": "ClickHouse OLAP; 完整 SPEC + TRACEABILITY §1-§7 + 7 Tasks; 覆盖率 100%; GitHub release 待发布；CI 模板已就绪 (module/clickhousex/ci-workflow.yaml)"
+      "note": "v1.0.1；SPEC+TRACEABILITY+TASKS 100%；CI 模板就绪(module/clickhousex/ci-workflow.yaml)；无公开 GitHub release；Docker integration 待部署"
     },
     "contracts": {
       "layer": "contracts",
