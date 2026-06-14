@@ -17,7 +17,7 @@ import { readFileSync, writeFileSync, existsSync } from 'fs';
 import { join } from 'path';
 
 const STATE_FILE = '.claude/.edit-guard-state.json';
-const EDIT_THRESHOLD = 3;
+const EDIT_THRESHOLD = parseInt(process.env.EDIT_GUARD_THRESHOLD || '4');
 const CWD = process.env.CLAUDE_WORKING_DIR || process.cwd();
 
 function loadState() {
