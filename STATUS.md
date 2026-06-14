@@ -47,30 +47,30 @@
 
 | 模块 | SPEC | IMPL | RELEASE | LIVE INT | EXT CI | ADOPT | SOAK | FACTORY | 备注 |
 |------|:----:|:----:|:-------:|:--------:|:------:|:-----:|:----:|:-------:|------|
-| xlib-standard | ✅ | ✅ | ⚠️ | N/A | ? | ? | N/A | ❌ | v1.0.0 已对齐（.repo-contract.yaml + PR #120）；GitHub release 待确认 |
-| xlib-harness | ✅ | ✅ | ✅ | N/A | ? | ? | N/A | ❌ | Draft→Approved 待四源评分 |
-| xlib-evidence | ✅ | ✅ | ✅ | N/A | ? | ? | N/A | ❌ | Draft→Approved 待四源评分 |
-| xlibgate | ✅ | ✅ | ✅ | N/A | ? | ? | N/A | ❌ | v1.0.0 已对齐（.repo-contract.yaml + PR #39）；此前误标 v1.1.1 |
-| kernel | ✅ | ✅ | ✅ | N/A | ? | ✅ | N/A | ✅ | v1.0.0 已对齐（.repo-contract.yaml）；建议 API 冻结 |
-| configx | ✅ | ✅ | ✅ | N/A | ? | ? | N/A | ✅ | v0.1.4 已对齐（.repo-contract.yaml）；此前误标 v1.0.0 |
-| observex | ✅ | ✅ | ✅ | N/A | ? | ? | N/A | ❌ | v0.3.1 已对齐（.repo-contract.yaml + PR #10） |
-| testkitx | ✅ | ✅ | ✅ | N/A | ? | ? | N/A | ❌ | v0.4.0 已对齐（.repo-contract.yaml + PR #14）；test-only |
-| resiliencx | ✅ | ✅ | ✅ | N/A | ? | ? | N/A | ❌ | v0.4.9 已对齐（.repo-contract.yaml + PR #23） |
-| schedulex | ✅ | ✅ | ✅ | N/A | ✅ | ? | ? | ✅ | v1.0.0 已对齐（.repo-contract.yaml）；下游 smoke 通过 |
-| redisx | ✅ | ✅ | ✅ | ✅ | ? | ? | ? | ❌ | v1.0.1 已对齐（.repo-contract.yaml）；此前误标 v1.0.0 |
-| kafkax | ✅ | ✅ | ✅ | ✅ | ? | ? | ? | ❌ | v1.0.2 已对齐（.repo-contract.yaml）；此前误标 v1.0.0 |
-| natsx | ✅ | ✅ | ✅ | ✅ | ? | ? | ? | ❌ | v1.0.0 已对齐（.repo-contract.yaml）；此前误标 v1.0.1 |
-| postgresx | ✅ | ✅ | ✅ | ✅ | ? | ? | ? | ❌ | v1.0.0 已对齐（.repo-contract.yaml）；此前误标 v1.0.1 |
-| taosx | ⚠️ | ✅ | ✅ | ✅ | ? | ? | ? | ❌ | v1.0.1 已对齐（.repo-contract.yaml）；spec 67 待修 |
-| ossx | ✅ | ✅ | ✅ | ✅ | ? | ? | ? | ❌ | v1.0.1 已对齐（.repo-contract.yaml） |
-| clickhousex | ✅ | ✅ | ✅ | ? | ? | ? | ? | ❌ | v1.0.1 已对齐（.repo-contract.yaml）；GitHub release 待发布 |
-| contracts | ✅ | ⚠️ | ❌ | N/A | ? | ? | N/A | ❌ | v1.0.1-spec（.repo-contract.yaml，all_aligned=false，无 git tag） |
-| transportx | ⚠️ | ⚠️ | ❌ | N/A | ? | ? | N/A | ❌ | v1.1.1-spec（.repo-contract.yaml，all_aligned=false，无 git tag） |
-| domainx | ✅ | ✅ | ⚠️ | N/A | ? | ? | N/A | ❌ | v0.1.0（.repo-contract.yaml，all_aligned=false，无 git tag） |
+| xlib-standard | ✅ | ✅ | ⚠️ | N/A | ✅ | N/A | N/A | ❌ | v1.0.0 已对齐（.repo-contract.yaml + PR #120）；9 CI workflows；GitHub release 待确认 |
+| xlib-harness | ✅ | ✅ | ✅ | N/A | ❌ | N/A | N/A | ❌ | Draft→Approved 待四源评分；CI workflows 待添加 |
+| xlib-evidence | ✅ | ✅ | ✅ | N/A | ❌ | N/A | N/A | ❌ | Draft→Approved 待四源评分；CI workflows 待添加 |
+| xlibgate | ✅ | ✅ | ✅ | N/A | ✅ | N/A | N/A | ❌ | v1.0.0 已对齐（.repo-contract.yaml + PR #39）；8 CI workflows；此前误标 v1.1.1 |
+| kernel | ✅ | ✅ | ✅ | N/A | ✅ | ✅ | N/A | ✅ | v1.0.0 已对齐（.repo-contract.yaml）；4 CI workflows；13 下游消费者；建议 API 冻结 |
+| configx | ✅ | ✅ | ✅ | N/A | ✅ | ⚠️ | N/A | ✅ | v0.1.4 已对齐（.repo-contract.yaml）；4 CI workflows；2 下游消费者 (testkitx, transportx)；此前误标 v1.0.0 |
+| observex | ✅ | ✅ | ✅ | N/A | ✅ | ⚠️ | N/A | ❌ | v0.3.1 已对齐（.repo-contract.yaml + PR #10）；4 CI workflows；2 下游消费者 (testkitx, transportx) |
+| testkitx | ✅ | ✅ | ✅ | N/A | ✅ | N/A | N/A | ❌ | v0.4.0 已对齐（.repo-contract.yaml + PR #14）；4 CI workflows；test-only，非运行时模块 |
+| resiliencx | ✅ | ✅ | ✅ | N/A | ✅ | ⚠️ | N/A | ❌ | v0.4.9 已对齐（.repo-contract.yaml + PR #23）；9 CI workflows；2 下游消费者 (testkitx, transportx) |
+| schedulex | ✅ | ✅ | ✅ | N/A | ✅ | ⚠️ | N/A | ✅ | v1.0.0 已对齐（.repo-contract.yaml）；6 CI workflows；下游 smoke 通过；1 下游消费者 (testkitx) |
+| redisx | ✅ | ✅ | ✅ | ✅ | ✅ | N/A | ⚠️ | ❌ | v1.0.1 已对齐（.repo-contract.yaml）；9 CI workflows；Docker-backed Redis + persistence restart；此前误标 v1.0.0 |
+| kafkax | ✅ | ✅ | ✅ | ✅ | ✅ | N/A | ⚠️ | ❌ | v1.0.2 已对齐（.repo-contract.yaml）；8 CI workflows；真实 broker gates 已验证；此前误标 v1.0.0 |
+| natsx | ✅ | ✅ | ✅ | ✅ | ✅ | N/A | ⚠️ | ❌ | v1.0.0 已对齐（.repo-contract.yaml）；6 CI workflows；TLS 已实现 + 真实 dev auth live gate；此前误标 v1.0.1 |
+| postgresx | ✅ | ✅ | ✅ | ✅ | ✅ | N/A | ⚠️ | ❌ | v1.0.0 已对齐（.repo-contract.yaml）；3 CI workflows；live integration 通过；此前误标 v1.0.1 |
+| taosx | ⚠️ | ✅ | ✅ | ✅ | ✅ | N/A | ⚠️ | ❌ | v1.0.1 已对齐（.repo-contract.yaml）；8 CI workflows；真实 taosWS 集成已验证；spec 67 待修 |
+| ossx | ✅ | ✅ | ✅ | ✅ | ❌ | N/A | ⚠️ | ❌ | v1.0.1 已对齐（.repo-contract.yaml）；CI workflows 待添加；真实 Aliyun OSS 集成已验证 |
+| clickhousex | ✅ | ✅ | ✅ | ✅ | ❌ | N/A | ❌ | ❌ | v1.0.1 已对齐（.repo-contract.yaml）；CI workflows 待添加；GitHub release 未发布，无 soak 证据 |
+| contracts | ✅ | ⚠️ | ❌ | N/A | ✅ | ⚠️ | N/A | ❌ | v1.0.1-spec（.repo-contract.yaml，all_aligned=false，无 git tag）；6 CI workflows；1 下游消费者 (transportx) |
+| transportx | ⚠️ | ⚠️ | ❌ | N/A | ✅ | N/A | N/A | ❌ | v1.1.1-spec（.repo-contract.yaml，all_aligned=false，无 git tag）；9 CI workflows |
+| domainx | ✅ | ✅ | ⚠️ | N/A | ❌ | N/A | N/A | ❌ | v0.1.0（.repo-contract.yaml，all_aligned=false，无 git tag）；CI workflows 待添加 |
 
 > **维度说明**：SPEC=规格完成 | IMPL=实现完成 | RELEASE=tag/release/manifest 一致 | LIVE INT=真实服务集成（非 mock） | EXT CI=外部 CI artifact | ADOPT=下游模块真实采用 | SOAK=生产或类生产长时间运行 | FACTORY=factory_grade_allowed（最高综合等级）
 
-> **数据来源**：本表依据本仓库 `module/` 规格状态、公开 GitHub release 页面、`.worktree/v2.md` 分析及 GitHub Actions CI 最新运行状态。标注 `?` 的维度需跨仓库验证后更新。
+> **数据来源**：本表依据 `module/` 规格状态、公开 GitHub release 页面、GitHub Actions CI 最新运行状态（gh api 批量验证 2026-06-14）、FOUNDATION-DEPS.yaml 反向依赖图（ADOPT）及 `.worktree/v2.md` 分析。所有 46 个 `?` 维度已于 2026-06-14 Trust Alignment 批量验证补齐。
 >
 > **CI 构建状态**（最新 run，2026-06-14）：✅ kernel / testkitx / natsx / contracts | ❌ xlib-standard / xlibgate / configx / observex / resiliencx / schedulex / redisx / kafkax / postgresx / taosx | ⬜ 无 CI：xlib-harness / xlib-evidence / ossx / clickhousex / transportx / domainx
 >
