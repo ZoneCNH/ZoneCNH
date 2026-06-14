@@ -1,15 +1,18 @@
 import { execSync } from "child_process";
-import { readFileSync } from "fs";
+import { existsSync, readFileSync } from "fs";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const projectRoot = join(__dirname, "../..");
 
-// PostToolUse — dirty-file guard
-// 检测 Edit/Write 目标文件是否相对于 HEAD 有未暂存变更，
-// 若有则表明工作树文件可能过期（working tree ≠ HEAD），
-// 此时跳过后续处理以防止静默重写。
+// PostToolUse — 在 Write/Edit 后自动格式化
+// 支持多种格式化工具，找不到时静默跳过
+const FORMATTERS = [
+  { check: "node_modules/.bin/prettier", cmd: (f) => `npx prettier --write "${f}" 2>/dev/null` },
+  { check: ".prettierrc", cmd: (f) => `npx prettier --write "${f}" 2>/dev/null` },
+  { check: "node_modules/.bin/biome", cmd: (f) => `npx biome format --write "${f}" 2>/dev/null` },
+];
 
 const input = readFileSync(0, "utf-8").trim();
 if (!input) process.exit(0);
@@ -25,7 +28,10 @@ const tool = call.tool || "";
 const args = call.input || {};
 const filePath = args.file_path || args.path || "";
 
+// 只对 Write/Edit 操作执行格式化
 if ((tool === "Write" || tool === "Edit") && filePath) {
+  // Guard: skip formatting on files with unstaged changes (working tree ≠ HEAD)
+  // Prevents prettier from silently rewriting in-progress edits against a stale baseline
   const isStale = (() => {
     try {
       const diff = execSync(`git diff --name-only -- "${filePath}"`, {
@@ -36,10 +42,22 @@ if ((tool === "Write" || tool === "Edit") && filePath) {
       return false;
     }
   })();
+  if (isStale) process.exit(0);
 
-  if (isStale) {
-    process.stderr.write(`[post-tool-check] 跳过：${filePath} 有未暂存变更（工作树可能过期）\n`);
-    process.exit(0);
+  // 检查项目根目录是否有格式化工具配置
+  const hasFormatter = FORMATTERS.some((f) => existsSync(join(projectRoot, f.check)));
+  if (!hasFormatter) process.exit(0);
+
+  // 运行格式化（静默模式，失败不报错）
+  for (const f of FORMATTERS) {
+    if (existsSync(join(projectRoot, f.check))) {
+      try {
+        execSync(f.cmd(filePath), { cwd: projectRoot, timeout: 5000, stdio: "pipe" });
+      } catch {
+        // 格式化失败不阻塞操作
+      }
+      break;
+    }
   }
 }
 
