@@ -32,14 +32,31 @@
 
 `ARCHITECTURE.md` 的状态表是组件版本、状态和进度的事实来源。组件状态变化时，应优先更新该表。
 
-## 模块-仓库强制对应（2026-06-14 审计复盘）
+### 三文档交叉同步（2026-06-15 STATUS.md 全量审计）
 
-> 审计发现 xlib-harness、xlib-evidence、domainx 三个模块在文档中链接了不存在的 GitHub 仓库（404）。
+> `README.md`、`ARCHITECTURE.md`、`STATUS.md` 从不同视角描述同一套系统。本次审计发现三文档在多处互不一致（domainx 归属基座 vs L2.5、组件数量 4 vs 5、版本号 v0.3.1 vs v1.0.0、决策域 4 vs 6 vs 7 项等）。
+
+- **模块归属变更（如 domainx 从 L2.5 移至基座）必须三文档同步**：更新所有 ASCII 架构图、各域说明表、组件明细表、按域统计表、以及包含该模块数量引用的所有行。
+- **版本号变更**（如 testkitx v0.4.0→v1.0.0）必须同步更新 `ARCHITECTURE.md` 状态表和 `STATUS.md` 组件明细表。先确认 GitHub 实际 release 再改文档，禁止改完文档后发现 release 不存在。
+- **组件增删**（新增 7 个 v0.1.0-draft 模块、删除 strategies）必须同步更新三文档的表格、域统计、仪表盘进度分布、域健康度描述、风险清单、同步检查表。
+- **`STATUS.md` 文档同步检查表**（≈L335-345）是交叉验证的快速入口。该表本身的计数也必须与实际一致——本次审计发现该表自身就有 5 处过时计数（L2.5=4 vs 实际 5、分析域=7 vs 实际 8、决策域=4 vs 实际 7、组件总数=74 vs 实际 81、README=72 vs 实际 79）。
+
+## 模块-仓库强制对应（2026-06-14 审计复盘，2026-06-15 补充）
+
+> 初始审计发现 xlib-harness、xlib-evidence、domainx 链接不存在的仓库（404）。
+> 2026-06-15 STATUS.md 全量审计再发现 `strategies` 仓库 404（已删除入口，PR #393）。
 > 此规则为预防性门禁。
 
 - **每个在 STATUS.md 和 ARCHITECTURE.md 状态表中列出 GitHub 链接的模块，必须有对应的公开仓库。**
 - 新增模块时，必须同时创建对应 GitHub 仓库（至少含 README.md + 模块说明）。
 - 文档中的 GitHub 链接（`https://github.com/ZoneCNH/<module>`）禁止指向 404。
+- **全量 404 扫描命令**（跨三文档）：
+  ```bash
+  for url in $(grep -oPh 'github\.com/ZoneCNH/[a-zA-Z0-9_.-]+' STATUS.md README.md ARCHITECTURE.md | sort -u); do
+    repo=$(echo "$url" | grep -oP 'ZoneCNH/\K.*')
+    gh api "repos/ZoneCNH/$repo" >/dev/null 2>&1 || echo "404: $repo"
+  done
+  ```
 - CI 检查 `repo-existence-check.sh` 会扫描状态表中的所有链接，验证 HTTP 200。
 - 已知例外：`contracts` / `transportx` / `xlib-harness` / `xlib-evidence` 共享 `xlib-standard` 的 Go module（`module github.com/ZoneCNH/xlib-standard`），但它们各自拥有独立仓库，只是代码物理上位于 xlib-standard monorepo。
 
@@ -68,9 +85,30 @@
 - 工作完成后通过 PR 或 merge 合入 main，随后清理 worktree。
 - 仅 `git merge`/`git rebase`/`git pull` 和紧急 hotfix 允许在 main 上执行。
 
-## 工作流规则（2026-06-12 / 2026-06-14 会话复盘）
+## 工作流规则（2026-06-12 / 2026-06-14 / 2026-06-15 三场会话复盘）
 
-> 基于两次会话复盘（14 PR / $89 + 3 PR / $49.52），制定以下编辑纪律、验证门禁和效率规则。
+> 基于三场会话复盘（14 PR / $89 + 3 PR / $49.52 + 13 PR / STATUS.md 全量审计），制定以下编辑纪律、验证门禁和效率规则。
+
+### 数量验证门禁（2026-06-15 STATUS.md 全量审计，PR #385-#399）
+
+> 基于一次 STATUS.md + README + ARCHITECTURE 三文档交叉审计会话。发现 7+ 处凭空编造的数量（18 vs 14 GitHub Release、67% vs 62% 平均进度、有版本号 1/0/0 vs 2/3/3 等），需 13 个 PR 修复。根因：agent 凭"常识"估算数量而非逐表逐行统计。
+
+- **任何涉及 STATUS.md / README.md / ARCHITECTURE.md 中数量、百分比、合计、版本计数的变更，必须用 `grep`/`awk`/`sed` 或 `gh api` 实际统计，禁止凭记忆或常识编造。**
+- **统计方法必须可复现**：用 shell one-liner 而非人工点数。示例：
+  ```bash
+  # 统计某域组件数
+  sed -n '152,158p' STATUS.md | grep -c 'github.com'
+  # 统计 unique repo 链接
+  grep -oP 'github\.com/ZoneCNH/[a-zA-Z0-9_.-]+' STATUS.md | sort -u | wc -l
+  # 统计有版本号的组件
+  sed -n '20,39p' STATUS.md | grep 'github.com' | awk -F'|' '{gsub(/^[ ]+|[ ]+$/,"",$3); if($3!="" && $3!="-") print}' | wc -l
+  # 验证 GitHub Release 是否存在
+  gh api repos/ZoneCNH/<module>/releases | python3 -c "import sys,json; print(len(json.load(sys.stdin)))"
+  ```
+- **同步检查表维护**：`STATUS.md` 文档同步检查表（≈L335-345）的 README/ARCHITECTURE/STATUS 三列必须与各文档 `grep -oP 'github\.com/ZoneCNH/[a-zA-Z0-9_.-]+' | sort -u | wc -l` 的实际 unique repo 数一致。STATUS 列因 double-count observex（基座+横切）比 unique 数多 1；该差异需在表注中说明。
+- **Dashboard 同步**：按域统计表合计行（总数/已有/已创建/平均进度/有版本号）变更时，必须同步更新仪表盘的 `组件总数/已有/已创建/平均进度` 和进度分布条目的计数与百分比。
+- **有版本号/无版本号 合计必须等于组件总数**：用 `awk -F'|'` 逐行查 version 列，非空且非 `-` 即计入有版本号，其余计无版本号，两者之和必须等于该域总数。
+- **CountGuard hook 已部署**：`.claude/hooks/count-guard.mjs`。Write/Edit 到上述三文件时自动扫描内容中的数量模式并输出验证提醒。该 hook 仅告警不阻断，但告警不可忽略——必须实际跑验证命令确认数量正确后方可 commit。
 
 ### Plan-first 原则
 
