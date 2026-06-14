@@ -24,6 +24,7 @@
 | 日期       | 版本         | 变更内容 | 作者    |
 | ---------- | ------------ | -------- | ------- |
 | 2026-06-14 | v0.1.0-draft | 初始版本 | ZoneCNH |
+| 2026-06-14 | v0.1.0-draft | FR-010 Module Identity (README H1 + go.mod 校验) | ZoneCNH |
 
 ## 2. Summary
 
@@ -173,6 +174,21 @@ AND 支持运行时注册、更新（新实例使用新定义，旧实例不受�
 AND 注册表支持 List、Get、Delete
 
 ---
+
+### FR-010: Module Identity
+
+WHEN downstream consumer reads `maestro` `README.md`
+THEN the H1 heading MUST be `# maestro`
+AND MUST NOT be `# xlib-standard`
+
+WHEN module documentation references the `maestro` Go module path
+THEN it MUST use `github.com/ZoneCNH/maestro`
+AND MUST NOT use `github.com/ZoneCNH/xlib-standard`
+
+WHEN `go.mod` declares the module name
+THEN it MUST be `module github.com/ZoneCNH/maestro`
+
+
 
 ## 8. Business Rules
 

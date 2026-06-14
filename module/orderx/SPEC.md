@@ -24,6 +24,7 @@
 | 日期       | 版本         | 变更内容 | 作者    |
 | ---------- | ------------ | -------- | ------- |
 | 2026-06-14 | v0.1.0-draft | 初始版本 | ZoneCNH |
+| 2026-06-14 | v0.1.0-draft | FR-008 Module Identity (README H1 + go.mod 校验) | ZoneCNH |
 
 ## 2. Summary
 
@@ -140,6 +141,21 @@ THEN 记录 OrderAuditEvent：orderId, timestamp, oldState, newState, reason, fi
 AND 审计事件不可删除
 
 ---
+
+### FR-008: Module Identity
+
+WHEN downstream consumer reads `orderx` `README.md`
+THEN the H1 heading MUST be `# orderx`
+AND MUST NOT be `# xlib-standard`
+
+WHEN module documentation references the `orderx` Go module path
+THEN it MUST use `github.com/ZoneCNH/orderx`
+AND MUST NOT use `github.com/ZoneCNH/xlib-standard`
+
+WHEN `go.mod` declares the module name
+THEN it MUST be `module github.com/ZoneCNH/orderx`
+
+
 
 ## 8. Business Rules
 
