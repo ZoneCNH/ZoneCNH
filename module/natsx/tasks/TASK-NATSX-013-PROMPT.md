@@ -6,11 +6,11 @@
 
 ## 规格引用
 
-module/natsx/SPEC.md#FR-NFR-004,module/natsx/SPEC.md#15-dependencies,
+module/natsx/SPEC.md#FR-NFR-004, module/natsx/SPEC.md#15-dependencies
 
 ## 验收标准
 
-AC-LYR-001: go list -deps 不含 ZoneCNH 消息/存储模块;
+§15: go list -deps 不含 ZoneCNH 消息/存储模块
 
 ## 文件
 
@@ -18,7 +18,7 @@ go.mod
 
 ## 验证
 
-NFR-004 verified via TC-013;
+NFR-004 verified via TC-013
 
 ## 优先级
 

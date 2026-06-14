@@ -34,6 +34,11 @@ non_scope:
 
 ---
 
+## Non-scope
+
+- 不实现运行时版本切换
+- 不管理CHANGELOG（→TASK-004）
+
 ## Requirements Covered
 
 | Requirement | Description          | Acceptance Criteria   |

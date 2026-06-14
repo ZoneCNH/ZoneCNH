@@ -6,11 +6,11 @@
 
 ## 规格引用
 
-module/natsx/SPEC.md#FR-NFR-009,module/natsx/SPEC.md#18-observability,
+module/natsx/SPEC.md#FR-NFR-009, module/natsx/SPEC.md#18-observability
 
 ## 验收标准
 
-AC-OBS-001: foundationx_nats_publish_total 等 counter 正确 emit;AC-OBS-002: foundationx_nats_connection_state gauge 反映连接状态;AC-OBS-003: 错误/日志不含 payload/credential 内容;
+§18: foundationx_nats_publish_total 等 counter 正确 emit; §18: foundationx_nats_connection_state gauge 反映连接状态; §18: 错误/日志不含 payload/credential 内容
 
 ## 文件
 
@@ -18,7 +18,7 @@ natsx.go, metrics_test.go
 
 ## 验证
 
-NFR-009 verified via TC-009;
+NFR-009 verified via TC-009
 
 ## 优先级
 
