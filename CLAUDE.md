@@ -32,6 +32,17 @@
 
 `ARCHITECTURE.md` 的状态表是组件版本、状态和进度的事实来源。组件状态变化时，应优先更新该表。
 
+## 模块-仓库强制对应（2026-06-14 审计复盘）
+
+> 审计发现 xlib-harness、xlib-evidence、domainx 三个模块在文档中链接了不存在的 GitHub 仓库（404）。
+> 此规则为预防性门禁。
+
+- **每个在 STATUS.md 和 ARCHITECTURE.md 状态表中列出 GitHub 链接的模块，必须有对应的公开仓库。**
+- 新增模块时，必须同时创建对应 GitHub 仓库（至少含 README.md + 模块说明）。
+- 文档中的 GitHub 链接（`https://github.com/ZoneCNH/<module>`）禁止指向 404。
+- CI 检查 `repo-existence-check.sh` 会扫描状态表中的所有链接，验证 HTTP 200。
+- 已知例外：`contracts` / `transportx` / `xlib-harness` / `xlib-evidence` 共享 `xlib-standard` 的 Go module（`module github.com/ZoneCNH/xlib-standard`），但它们各自拥有独立仓库，只是代码物理上位于 xlib-standard monorepo。
+
 ## 当前架构模型
 
 系统采用分层领域模型，而不是编号层级。依赖按数据流方向向下，同一领域内模块平级协作：
