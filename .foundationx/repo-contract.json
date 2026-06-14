@@ -1,0 +1,79 @@
+{
+  "schema_version": "foundation.repo-contract/v1",
+  "contract_version": "v0.5.1-foundation-v2",
+  "updated": "2026-06-14",
+  "repo": {
+    "name": "ZoneCNH",
+    "path": "github.com/ZoneCNH/ZoneCNH",
+    "role": "foundation-index"
+  },
+  "foundation": {
+    "name": "Foundation v2",
+    "module_count": 20,
+    "go_baseline": "1.23",
+    "deps_matrix": "module/FOUNDATION-DEPS.yaml",
+    "current_sources": [
+      "module/README.md",
+      "module/*/SPEC.md",
+      "module/FOUNDATION-DEPS.yaml",
+      ".foundationx/repo-contract.json"
+    ],
+    "historical_sources": [
+      "module/FOUNDATION-SPEC.md",
+      "module/FOUNDATION-V1.md",
+      "module/foundation-modules.md"
+    ]
+  },
+  "xlib_roles": {
+    "xlib-standard": "standards, schemas, templates, and reference facts only",
+    "xlib-harness": "generator, scaffold, spec-lint, boundary, traceability, format, and template gate runner",
+    "xlib-evidence": "CI/release evidence manifest and report runtime",
+    "xlibgate": "machine policy gate for repo-contract, imports, go.mod, baseline, secrets, release evidence, and maturity claims"
+  },
+  "exit_codes": {
+    "pass": 0,
+    "policy_failure": 1,
+    "tool_error": 2
+  },
+  "reason_codes": {
+    "policy_failures": [
+      "policy_import_violation",
+      "policy_gomod_drift",
+      "policy_baseline_mismatch",
+      "policy_secret_scan_failure",
+      "policy_release_evidence_missing",
+      "policy_contract_projection_drift",
+      "policy_repo_identity_mismatch",
+      "policy_template_residue",
+      "policy_maturity_claim_overreach"
+    ],
+    "tool_errors": [
+      "tool_config_missing",
+      "tool_config_invalid",
+      "tool_evidence_parse_error",
+      "tool_external_command_error",
+      "tool_missing_dependency",
+      "tool_io_error",
+      "tool_unknown_error"
+    ]
+  },
+  "maturity_dimensions": [
+    "spec",
+    "implementation",
+    "release",
+    "live_integration",
+    "external_ci",
+    "downstream_adoption",
+    "production_soak",
+    "factory_gate"
+  ],
+  "projection_guards": {
+    "public_docs": [
+      "README.md",
+      "ARCHITECTURE.md",
+      "STATUS.md",
+      "module/README.md"
+    ],
+    "release_manifest": "release/manifest/v0.5.1-foundation-v2.json"
+  }
+}
