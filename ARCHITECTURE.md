@@ -317,35 +317,35 @@ Foundation v1 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中�
 | 半成 | ███░ 50%  | 核心功能可用或完整文档+任务就绪（tasks/prompts/evidence 齐备），缺少边界场景或代码实现  |
 | 成熟 | ███░ 80%  | 核心功能完整，有测试覆盖，可用于生产 |
 | 发布 | ███░ 90%  | 版本化发布，文档完整，长期维护       |
-| 完备 | ████ 100% | 全功能、全测试、全文档、生产验证     |
+| 完备 | Spec→Code 满分 | 全功能、全测试、全文档、生产验证（定义口径，不构成单模块状态判断） |
 
 ## 状态总览
 
 > **公开投影口径**：架构矩阵中的进度是 Spec→Code 管线投影；release/factory 以 `.foundationx/status/index.json` + `.foundationx/blockers.json` 为准。存在 RELEASE=❌ 或 BLK-001/002/003/006/007 open 时，不投影为 Foundation factory grade。
 
-| 域                    | 组件                                                            | 版本   | 状态      | 进度     | 说明                                                                                      |
+| 域                    | 组件                                                            | 版本   | 状态      | Spec→Code 投影 | 说明                                                                                      |
 | --------------------- | --------------------------------------------------------------- | ------ | --------- | -------- | ----------------------------------------------------------------------------------------- |
 | **基座**              |                                                                 |        |           |          |                                                                                           |
-| 基座                  | [kernel](https://github.com/ZoneCNH/kernel)                     | v1.0.0 | ✅ 已发布 | █████ 100% | L0 原语 / 12 子包轻量工具集：lifecycx/errx/healthx/obsx/retryx/shutdownx/syncx/timex/validx/versionx/contextx/contracttest，stdlib-only，v1.0.0 已发布 |
-| 基座                  | [configx](https://github.com/ZoneCNH/configx)                   | v0.1.4 | ✅ 已发布 | █████ 100% | 显式配置加载、多源合并（YAML/TOML/JSON/.env/Env/Map）、StrictDecode、SecretString 脱敏、SecretPolicy、Provenance、EffectiveConfigHash、SanitizedManifest、HealthCheck、Metrics；97.1% 覆盖率；此前误标 v1.0.0 已修正 |
-| 基座                  | [observex](https://github.com/ZoneCNH/observex)                 | v0.3.1 | ✅ 已发布 | █████ 100% | vendor-neutral 日志、指标、追踪、健康、字段和 label policy 契约；此前误标 v1.0.0 已修正 |
-| 基座                  | [testkitx](https://github.com/ZoneCNH/testkitx)                 | v0.4.0 | ✅ 已发布 | █████ 100% | Fake / Fixture / Golden / Contract / Leak / Boundary / Manifest 测试工具包；test-only；禁止生产导入；factory grade 不适用 |
-| 基座                  | [resiliencx](https://github.com/ZoneCNH/resiliencx)             | v0.4.9 | ✅ 已发布 | █████ 100% | 运行时弹性策略库：timeout/retry/circuit/bulkhead/rate/fallback；此前误标 v1.0.1 已修正 |
-| 基座                  | [schedulex](https://github.com/ZoneCNH/schedulex)               | v1.0.0 | ✅ 已发布 | █████ 100% | cron/interval/delay 调度、OverlapPolicy（Skip/Queue/Replace）、MisfirePolicy（Skip/RunOnce/CatchUp）、EventSink、Locker、Clock 注入；98.2% 覆盖，release-check 通过 |
-| 基座                  | [xlibgate](https://github.com/ZoneCNH/xlibgate)                 | v1.0.0 | ✅ 已发布 | █████ 100% | check / l2 / trust 三组门禁；全管线评分 100 |
-| 基座                  | [xlib-standard](https://github.com/ZoneCNH/xlib-standard)       | v1.0.0 | ✅ 已发布 | █████ 100% | 标准事实源、Go Reference Template；Generator/Harness/Evidence 已拆分，不参与运行时 import |
-| 基座                  | [xlib-harness](https://github.com/ZoneCNH/xlib-harness)         | -      | ✅ 已有   | █████ 100% | 模块生成器与门禁执行器：generate/scaffold、spec-lint、boundary-check、traceability-gate；⚠️ git tag + GitHub Release 缺失 |
-| 基座                  | [xlib-evidence](https://github.com/ZoneCNH/xlib-evidence)       | -      | ✅ 已有   | █████ 100% | 证据收集与发布运行时：collect-coverage、generate-manifest、validate-manifest、report；⚠️ git tag + GitHub Release 缺失 |
-| 基座                  | [redisx](https://github.com/ZoneCNH/redisx)                     | v1.0.1 | ✅ 已发布 | █████ 100% | Redis L2 adapter：KV/TTL/Hash/List/Pipeline/Cache-aside/Lock/RateLimit/Pool/Persistence restart recovery；Docker-backed Redis 验证通过 |
-| 基座                  | [kafkax](https://github.com/ZoneCNH/kafkax)                     | v1.0.2 | ✅ 已发布 | █████ 100% | Kafka L2 adapter — 消息队列、事件流（v1.0.0 已发布，driver-neutral API + kafka-go 生产驱动，真实 broker gates） |
-| 基座                  | [natsx](https://github.com/ZoneCNH/natsx)                       | v1.0.0 | ✅ 已发布 | █████ 100% | NATS L2 adapter：Core NATS / JetStream、Drain/reconnect/degraded health、canonical `FOUNDATIONX_NATS_*` 配置和真实 dev auth live gate 已验证；repair-slice 20/20；正式四源 98+ arbiter 与生产 TLS gate 待补（BLK-001/BLK-002）；非 factory |
-| 基座                  | [postgresx](https://github.com/ZoneCNH/postgresx)               | v1.0.0 | ✅ 已发布 | █████ 100% | PostgreSQL — 关系型存储、事务、迁移；live integration 通过；BLK-006 open（52.4% coverage + Docker integration skip）；非 factory |
-| 基座                  | [taosx](https://github.com/ZoneCNH/taosx)                       | v1.0.1 | ✅ 已发布 | █████ 100% | TDengine L2 adapter contract；真实 taosWS WebSocket 集成测试已通过；BLK-007 open（SPEC 67）；非 factory |
-| 基座                  | [ossx](https://github.com/ZoneCNH/ossx)                         | v1.0.1 | ✅ 已发布 | █████ 100% | Aliyun OSS 对象存储 L2 adapter；真实 Aliyun OSS 集成测试、race、vet、build、release-check 与 100.0% 覆盖已验证；S3/MinIO/Azure/GCS Provider 仅保留扩展位 |
-| 基座                  | [clickhousex](https://github.com/ZoneCNH/clickhousex)           | v1.0.1 | ✅ 已有   | █████ 100% | ClickHouse — OLAP 查询、批量写入；SPEC/TRACEABILITY/TASKS 完成；公开 GitHub Release 未发布（BLK-003）；非 factory |
-| 基座                  | [contracts](https://github.com/ZoneCNH/contracts)               | v1.0.1-spec | ✅ 已有   | █████ 100% | 跨域稳定端口/事件/DTO 契约；spec-only；无公开 GitHub Release / git tag 对齐；非 factory until release |
-| 基座                  | [transportx](https://github.com/ZoneCNH/transportx)             | v1.1.1-spec | ✅ 已有   | █████ 100% | 应用通信底座规格基线；SPEC/Matrix/Tasks 三阶段满分；无公开 GitHub Release / git tag 对齐；production_import_allowed=false |
-| 基座                  | [domainx](https://github.com/ZoneCNH/domainx)                   | v0.1.0 | ✅ 已有   | █████ 100% | 执行域共享值对象：Order/Position/Trade/Portfolio/ExecutionReport 与 OrderState/OrderType/OrderSide 枚举（8 FR，8 TC，6 tasks）；无公开 GitHub Release / git tag 对齐；非 factory until release |
+| 基座                  | [kernel](https://github.com/ZoneCNH/kernel)                     | v1.0.0 | ✅ 已发布 | Spec→Code 完成 | L0 原语 / 12 子包轻量工具集：lifecycx/errx/healthx/obsx/retryx/shutdownx/syncx/timex/validx/versionx/contextx/contracttest，stdlib-only，v1.0.0 已发布 |
+| 基座                  | [configx](https://github.com/ZoneCNH/configx)                   | v0.1.4 | ✅ 已发布 | Spec→Code 完成 | 显式配置加载、多源合并（YAML/TOML/JSON/.env/Env/Map）、StrictDecode、SecretString 脱敏、SecretPolicy、Provenance、EffectiveConfigHash、SanitizedManifest、HealthCheck、Metrics；97.1% 覆盖率；此前误标 v1.0.0 已修正 |
+| 基座                  | [observex](https://github.com/ZoneCNH/observex)                 | v0.3.1 | ✅ 已发布 | Spec→Code 完成 | vendor-neutral 日志、指标、追踪、健康、字段和 label policy 契约；此前误标 v1.0.0 已修正 |
+| 基座                  | [testkitx](https://github.com/ZoneCNH/testkitx)                 | v0.4.0 | ✅ 已发布 | Spec→Code 完成 | Fake / Fixture / Golden / Contract / Leak / Boundary / Manifest 测试工具包；test-only；禁止生产导入；factory grade 不适用 |
+| 基座                  | [resiliencx](https://github.com/ZoneCNH/resiliencx)             | v0.4.9 | ✅ 已发布 | Spec→Code 完成 | 运行时弹性策略库：timeout/retry/circuit/bulkhead/rate/fallback；此前误标 v1.0.1 已修正 |
+| 基座                  | [schedulex](https://github.com/ZoneCNH/schedulex)               | v1.0.0 | ✅ 已发布 | Spec→Code 完成 | cron/interval/delay 调度、OverlapPolicy（Skip/Queue/Replace）、MisfirePolicy（Skip/RunOnce/CatchUp）、EventSink、Locker、Clock 注入；98.2% 覆盖，release-check 通过 |
+| 基座                  | [xlibgate](https://github.com/ZoneCNH/xlibgate)                 | v1.0.0 | ✅ 已发布 | Spec→Code 完成 | check / l2 / trust 三组门禁；全管线评分 100 |
+| 基座                  | [xlib-standard](https://github.com/ZoneCNH/xlib-standard)       | v1.0.0 | ✅ 已发布 | Spec→Code 完成 | 标准事实源、Go Reference Template；Generator/Harness/Evidence 已拆分，不参与运行时 import |
+| 基座                  | [xlib-harness](https://github.com/ZoneCNH/xlib-harness)         | -      | ✅ 已有   | Spec→Code 完成 | 模块生成器与门禁执行器：generate/scaffold、spec-lint、boundary-check、traceability-gate；⚠️ git tag + GitHub Release 缺失 |
+| 基座                  | [xlib-evidence](https://github.com/ZoneCNH/xlib-evidence)       | -      | ✅ 已有   | Spec→Code 完成 | 证据收集与发布运行时：collect-coverage、generate-manifest、validate-manifest、report；⚠️ git tag + GitHub Release 缺失 |
+| 基座                  | [redisx](https://github.com/ZoneCNH/redisx)                     | v1.0.1 | ✅ 已发布 | Spec→Code 完成 | Redis L2 adapter：KV/TTL/Hash/List/Pipeline/Cache-aside/Lock/RateLimit/Pool/Persistence restart recovery；Docker-backed Redis 验证通过 |
+| 基座                  | [kafkax](https://github.com/ZoneCNH/kafkax)                     | v1.0.2 | ✅ 已发布 | Spec→Code 完成 | Kafka L2 adapter — 消息队列、事件流（v1.0.0 已发布，driver-neutral API + kafka-go 生产驱动，真实 broker gates） |
+| 基座                  | [natsx](https://github.com/ZoneCNH/natsx)                       | v1.0.0 | ✅ 已发布 | Spec→Code 完成 | NATS L2 adapter：Core NATS / JetStream、Drain/reconnect/degraded health、canonical `FOUNDATIONX_NATS_*` 配置和真实 dev auth live gate 已验证；repair-slice 20/20；正式四源 98+ arbiter 与生产 TLS gate 待补（BLK-001/BLK-002）；非 factory |
+| 基座                  | [postgresx](https://github.com/ZoneCNH/postgresx)               | v1.0.0 | ✅ 已发布 | Spec→Code 完成 | PostgreSQL — 关系型存储、事务、迁移；live integration 通过；BLK-006 open（52.4% coverage + Docker integration skip）；非 factory |
+| 基座                  | [taosx](https://github.com/ZoneCNH/taosx)                       | v1.0.1 | ✅ 已发布 | Spec→Code 完成 | TDengine L2 adapter contract；真实 taosWS WebSocket 集成测试已通过；BLK-007 open（SPEC 67）；非 factory |
+| 基座                  | [ossx](https://github.com/ZoneCNH/ossx)                         | v1.0.1 | ✅ 已发布 | Spec→Code 完成 | Aliyun OSS 对象存储 L2 adapter；真实 Aliyun OSS 集成测试、race、vet、build、release-check 与 100.0% 覆盖已验证（仅覆盖验证口径，不等同于 factory-ready）；S3/MinIO/Azure/GCS Provider 仅保留扩展位 |
+| 基座                  | [clickhousex](https://github.com/ZoneCNH/clickhousex)           | v1.0.1 | ✅ 已有   | Spec→Code 完成 | ClickHouse — OLAP 查询、批量写入；SPEC/TRACEABILITY/TASKS 完成；公开 GitHub Release 未发布（BLK-003）；非 factory |
+| 基座                  | [contracts](https://github.com/ZoneCNH/contracts)               | v1.0.1-spec | ✅ 已有   | Spec→Code 完成 | 跨域稳定端口/事件/DTO 契约；spec-only；无公开 GitHub Release / git tag 对齐；非 factory until release |
+| 基座                  | [transportx](https://github.com/ZoneCNH/transportx)             | v1.1.1-spec | ✅ 已有   | Spec→Code 完成 | 应用通信底座规格基线；SPEC/Matrix/Tasks 三阶段满分；无公开 GitHub Release / git tag 对齐；production_import_allowed=false |
+| 基座                  | [domainx](https://github.com/ZoneCNH/domainx)                   | v0.1.0 | ✅ 已有   | Spec→Code 完成 | 执行域共享值对象：Order/Position/Trade/Portfolio/ExecutionReport 与 OrderState/OrderType/OrderSide 枚举（8 FR，8 TC，6 tasks）；无公开 GitHub Release / git tag 对齐；非 factory until release |
 | **L2.5 · 领域共享层** |                                                                 |        |           |          |                                                                                           |
 | L2.5                  | [decimalx](https://github.com/ZoneCNH/decimalx)                 | v0.1.0 | ✅ P0     | ███░ 80% | 高精度十进制类型（Decimal/Price/Qty/Ratio/Money）                                         |
 | L2.5                  | [domain-market](https://github.com/ZoneCNH/domain-market)       | v0.1.0 | ✅ P0     | ███░ 80% | 市场数据域模型（Tick/Quote/Bar/OrderBook）                                                |
