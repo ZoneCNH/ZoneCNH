@@ -60,6 +60,44 @@
 
 ## 5. Non-goals
 
+### 5.1 What contracts OWNS
+
+`contracts` 的职责边界内包括：
+
+- **DTO**：跨域数据传输对象（`MarketEvent`、`MacroPoint`、`Bar`、`SignalEvent`、`OrderEvent`、`ExecutionEvent`、`PositionEvent`、`RiskEvent`、`AlternativeEvent` 等）及其 JSON tag 和不可变性约束。
+- **Event Envelope**：事件基础接口（`Event`），定义 `EventID()`、`EventType()`、`Timestamp()`、`Source()` 四个方法，以及 Topic 常量定义（点分命名，全局唯一）。
+- **Command**：跨域命令对象的契约定义（如 `OrderCommand`、`RiskCommand`），提供统一的命令结构。
+- **Query**：跨域查询对象的契约定义（如 `HistoryRequest`、`MacroHistoryRequest`），提供统一的查询结构。
+- **Port Interface**：跨域稳定端口接口（`MarketDataProvider`、`MacroDataProvider` 等），定义方法签名、参数和返回值契约。
+- **Error Code Registry**：公共错误变量注册表（`ErrInvalidSymbol`、`ErrInvalidIndicator` 等），统一错误消息格式（`"contracts: <desc>"`）。
+- **Schema Versioning**：契约版本管理（`ContractVersion`、`VersionInfo`、`Change`），记录每次变更的类型、描述和影响范围。
+- **Compatibility Policy**：破坏性变更检测规则和 semver 版本升级策略（major/minor 判定标准）。
+- **Consumer-driven Contract Tests**：编译期接口检查（`var _ Interface = (*Impl)(nil)`）和 breaking change 测试。
+
+### 5.2 What contracts MUST NOT own
+
+`contracts` 明确不拥有的范围：
+
+- **HTTP client**：不做 HTTP 请求封装，不管理连接池或 TLS 配置。
+- **gRPC server**：不实现 gRPC 服务端注册、监听或 proto 编译。
+- **NATS publisher**：不实现 NATS 消息发布、订阅管理或 JetStream 配置。
+- **Kafka consumer**：不实现 Kafka 消费者组、offset 管理或 partition 分配。
+- **Retry middleware**：不做重试策略、退避算法或熔断逻辑（→ `resiliencx`）。
+- **Timeout transport**：不做传输层超时控制、deadline 传播或取消信号传递（→ `transportx`）。
+- **Business workflow logic**：不承载任何业务工作流编排、状态机或决策逻辑。
+
+### 5.3 Governance boundary
+
+`contracts` 遵循 `xlib-standard` 的治理协议（Conventional Commits、semver、PR 模板、CI gate），但：
+
+- **不是标准源**：`contracts` 不定义 xlib-standard 的编码规范、目录布局或工具链约定——这些由 `xlib-standard` 自身定义。
+- **不是 generator**：`contracts` 不生成代码（不通过 protoc、go generate 或模板引擎产出任何文件）。
+- **不是模板仓库**：`contracts` 不作为其他模块的脚手架或模板使用，每个模块从自身 SPEC 出发独立初始化。
+
+**核心声明：`contracts` 不拥有传输实现，不绑定具体通信协议。** 它的唯一职责是定义跨域通信的"语言"（类型、接口、错误码和版本规则），而"怎么传"（传输协议、序列化格式选择、网络配置）由 `transportx` 和具体 adapter 负责。
+
+### 5.4 明确的 Non-goals（已有）
+
 - 不包含域内接口（留在各域内部）
 - 不包含临时适配器
 - 不包含通用工具函数（→ `x` 工具包）
@@ -167,6 +205,19 @@ WHEN 新增可选字段（有默认值）
 THEN 系统判定为非破坏性变更
 AND 允许发布，版本为 minor 升级
 
+### FR-007: Module Identity
+
+WHEN downstream consumer reads `contracts` `README.md`
+THEN the H1 heading MUST be `# contracts`
+AND MUST NOT be `# xlib-standard`
+
+WHEN module documentation references the `contracts` Go module path
+THEN it MUST use `github.com/ZoneCNH/contracts`
+AND MUST NOT use `github.com/ZoneCNH/xlib-standard`
+
+WHEN `go.mod` declares the module name
+THEN it MUST be `module github.com/ZoneCNH/contracts`
+
 ---
 
 
@@ -180,6 +231,7 @@ AND 允许发布，版本为 minor 升级
 | AC-004 | FR-004 | 验收标准 TC-004 | unit test |
 | AC-005 | FR-005 | 验收标准 TC-005 | unit test |
 | AC-006 | FR-006 | 验收标准 TC-006 | unit test |
+| AC-007 | FR-007 | 验收标准 TC-008 | unit test |
 
 ## 8. Business Rules
 
@@ -525,6 +577,12 @@ Then 每个端口接口包含 3-5 个业务方法
 Given DTO 已创建
 When 调用公开方法
 Then 不暴露可变内部切片或 map
+
+**TC-008: Module Identity**
+Given `contracts` `README.md` 存在
+When 读取 H1 标题和 `go.mod` module 声明
+Then H1 为 `# contracts`（非 `# xlib-standard`）
+AND `go.mod` 声明 `module github.com/ZoneCNH/contracts`
 
 ### 16.3 Benchmark
 

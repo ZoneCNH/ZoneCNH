@@ -83,6 +83,39 @@ Foundation 模块已有 `contracts` 用于跨域端口、事件协议和 DTO 契
 
 ## 5. Non-Goals
 
+### 5.1 What transportx OWNS
+
+`transportx` 的职责边界内包括：
+
+- **Request**：统一请求结构，封装 Envelope、Endpoint、ServiceIdentity、deadline 和 idempotency key。
+- **Response**：统一响应结构，封装 DeliveryReceipt、error code、trace context 和 redaction version。
+- **Transport interface**：`Publisher`、`Subscriber`、`TransportRuntime` 等传输接口定义，作为所有 adapter 的契约面。
+- **Codec interface**：`Marshal` / `Unmarshal` 序列化契约接口，以及默认 JSON codec 实现。
+- **Middleware chain**：中间件链定义和执行顺序（validation → authn → authz → redaction → logging → tracing → metrics → adapter dispatch）。
+- **Error mapping**：统一的传输层错误分类和错误码注册表（`TX_PAYLOAD_LIMIT_EXCEEDED`、`TX_AUTHZ_DENIED` 等）。
+- **Timeout propagation**：deadline 传递和超时控制语义。
+- **Cancellation propagation**：通过 context 取消信号传递取消意图。
+- **Trace propagation**：跨六通信平面的 trace context（trace id、span id）传播契约。
+- **Idempotency key propagation**：幂等键在 Envelope 中的传递和冲突检测语义。
+
+### 5.2 What transportx MUST NOT own
+
+`transportx` 明确不拥有的范围：
+
+- **业务 DTO**：不定义 `MarketEvent`、`SignalEvent`、`OrderEvent` 等业务数据结构（→ `contracts`）。
+- **业务 Event schema**：不定义事件字段语义、Topic 命名或领域事件分类（→ `contracts`）。
+- **业务 Command schema**：不定义 `OrderCommand`、`RiskCommand` 等命令结构（→ `contracts`）。
+- **领域错误码定义**：不定义 `ErrInvalidSymbol`、`ErrInvalidIndicator` 等业务错误（→ `contracts`）。
+- **具体 Kafka/NATS/Postgres 业务封装**：不实现与具体中间件绑定的业务逻辑封装（→ `kafkax`、`natsx`、`postgresx` 等 adapter 模块）。
+
+### 5.3 Governance boundary
+
+**核心声明：`transportx` 不承载业务 DTO，不替代 `contracts`，不直接绑定 HTTP/gRPC/Kafka/NATS 实现。** `transportx` 是 SPEC baseline，定义传输层的"语法规则"（Envelope 格式、中间件顺序、错误码体系、生命周期状态机），而"传什么内容"由 `contracts` 定义，"用什么传"由具体 adapter 实现。
+
+`transportx` 的 `production_import_allowed=false` 直至实现完成并通过 release gate（CI gate TX-GATE-001 至 TX-GATE-012 全部通过 + conformance report 完整）。
+
+### 5.4 明确的 Non-goals（已有）
+
 - 不实现 Kafka、NATS、HTTP、RPC、Redis stream、S3 或数据库客户端。
 - 不定义业务事件 schema、领域 DTO、订单语义、行情语义或风控语义。
 - 不取代 `contracts` 的跨域端口和 DTO 契约。
@@ -236,6 +269,19 @@ WHEN data flows through transportx, THEN it MUST be classified as PUBLIC, INTERN
 ### FR-025: SchemaRegistry
 
 WHEN Envelope, Endpoint, Receipt or method schema is registered, THEN SchemaRegistry MUST record version, digest, compatibility classification and migration notes. Breaking schema changes MUST require a major version bump. Unknown schema versions MUST be rejected.
+
+### FR-026: Module Identity
+
+WHEN downstream consumer reads `transportx` `README.md`
+THEN the H1 heading MUST be `# transportx`
+AND MUST NOT be `# xlib-standard`
+
+WHEN module documentation references the `transportx` Go module path
+THEN it MUST use `github.com/ZoneCNH/transportx`
+AND MUST NOT use `github.com/ZoneCNH/xlib-standard`
+
+WHEN `go.mod` declares the module name
+THEN it MUST be `module github.com/ZoneCNH/transportx`
 
 ## 8. Business Rules
 
@@ -461,6 +507,7 @@ Multi-module layout: root `go.mod` (core), each `adapters/*/go.mod` separate mod
 | AC-023 | FR-023 | AuditSink Append succeeds; Replay replays matching records in order. | `go test ./conformance/... -run TestAuditPlane` |
 | AC-024 | FR-024 | CONFIDENTIAL and SECRET data redacted before logging; SECRET absent from audit and receipt. | `go test ./middleware/... -run TestDataClassRedaction` |
 | AC-025 | FR-025 | SchemaRegistry rejects unknown version; breaking change returns incompatible classification. | `go test ./registry/... -run TestSchemaCompatibility` |
+| AC-026 | FR-026 | README.md H1 is `# transportx` (not `# xlib-standard`); go.mod declares `module github.com/ZoneCNH/transportx`. | `grep '^# transportx$$' README.md && grep 'module github.com/ZoneCNH/transportx' go.mod` |
 
 ### 16.2 Test Matrix
 
