@@ -1,29 +1,24 @@
 ---
 TASK-NATSX-006:
   module: natsx
-  scope: "CI gate 集成、测试覆盖率、benchmark 基线、README、CHANGELOG"
+  scope: "SubjectBuilder：domain.resource.action.v{version} 构造与解析"
   spec_ref:
-    - "module/natsx/SPEC.md#20-ci-gate"
-    - "module/natsx/SPEC.md#16-testing"
-    - "module/natsx/SPEC.md#17-performance-budget"
-    - "module/natsx/SPEC.md#22-release-dod"
+    - "module/natsx/SPEC.md#FR-NFR-006"
+    - "module/natsx/SPEC.md#9-interface-contract"
   acceptance_criteria:
-    - "§20: CI gate 全绿（go build / go test / go vet / lint）"
-    - "§16+§17: 测试覆盖率 >= 80%，benchmark 无 >10% 回退"
-    - "§22: README + CHANGELOG v1.0.0"
+    - "AC-SBJ-001: Build 产出合法 subject 字符串"
+    - "AC-SBJ-002: Parse 还原 domain/resource/action/version"
+    - "AC-SBJ-003: 非法 token 拒绝并返回错误"
   files:
-    - "go.mod"
-    - "README.md"
-    - "CHANGELOG.md"
-    - "benchmark_test.go"
-    - "example_test.go"
-  priority: P2
+    - "subject.go"
+    - "subject_test.go"
+  priority: P1
   status: pending
 ---
 
 ## Scope
 
-CI gate 集成、测试覆盖率、benchmark 基线、README、CHANGELOG
+SubjectBuilder：domain.resource.action.v{version} 构造与解析
 
 ## Non-Scope
 
@@ -31,6 +26,4 @@ Does NOT implement NATS server deployment, JetStream stream auto-provisioning, o
 
 ## Acceptance
 
-- [ ] CI gate (build/test/vet/lint) all pass
-- [ ] coverage >= 80%, benchmark no >10% regression
-- [ ] README + CHANGELOG v1.0.0
+- [ ] NFR-006 verified via TC-006
