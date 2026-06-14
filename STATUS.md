@@ -19,7 +19,7 @@
 | [xlib-standard](https://github.com/ZoneCNH/xlib-standard) | v1.0.0 | ████ 100% | 全管线 --force pass (spec→code) | 标准事实源 / Go Reference Template；Generator/Harness/Evidence 已拆分至 xlib-harness / xlib-evidence |
 | [xlib-harness](https://github.com/ZoneCNH/xlib-harness) | v1.0.0 | ████ 100% | 全管线 --force pass (spec→code) | 模块生成器与门禁执行器：generate/scaffold、spec-lint、boundary-check、traceability-gate（6 FR，6 TC） |
 | [xlib-evidence](https://github.com/ZoneCNH/xlib-evidence) | v1.0.0 | ████ 100% | 全管线 --force pass (spec→code) | 证据收集与发布运行时：collect-coverage、generate-manifest、validate-manifest、report（5 FR，5 TC） |
-| [xlibgate](https://github.com/ZoneCNH/xlibgate) | v1.0.2 | ███░ 90% | CLI 门禁实现完成 (11 FR, 10 tasks, PR #23 merged) | import 边界/go.mod/Go baseline/release/L2 门禁（14 files, +1053, xlibgate 测试通过） |
+| [xlibgate](https://github.com/ZoneCNH/xlibgate) | v1.0.2 | ███░ 90% | 全管线 --force pass (spec→code) | import 边界/go.mod/Go baseline/release/L2 门禁（14 files, +1053, xlibgate 测试通过） |
 | [kernel](https://github.com/ZoneCNH/kernel) | v1.0.0 | █████ 100% | 全管线 --force pass (spec→code) | L0 原语 / 12 子包 / stdlib-only / v1.0.0 已发布 |
 | [configx](https://github.com/ZoneCNH/configx) | v1.0.0 | █████ 100% | 全管线 --force pass (spec→code) | 配置管理；v1.0.0 已发布，97.1% 覆盖率，13 FR 全部实现 |
 | [observex](https://github.com/ZoneCNH/observex) | v1.0.0 | █████ 100% | 全管线 --force pass (spec→code) | 可观测性 |
