@@ -17,7 +17,7 @@
     "impl_complete": 20,
     "release_published": 14,
     "live_integration": 7,
-    "factory_grade": 10
+    "factory_grade": 9
   },
   "modules": {
     "xlib-standard": {
@@ -225,8 +225,8 @@
       "ci": true,
       "adopt": "N/A",
       "soak": false,
-      "factory": true,
-      "note": "Aliyun OSS L2 adapter; 真实 Aliyun OSS 集成/race/vet/build/release-check; 100.0% 覆盖; S3/MinIO/Azure/GCS 仅保留扩展位；CI 已部署 (module/ossx/ci-workflow.yaml)"
+      "factory": false,
+      "note": "Aliyun OSS L2 adapter; release/live/CI 仍记录为 true，但 BLK-008 已因公开证据不足重新打开：API 文档、集成测试证据、quickstart、release manifest 尚未在事实层归档；factory=false 直到证据闭环。"
     },
     "clickhousex": {
       "layer": "L2",
@@ -300,6 +300,7 @@
     "open_blocker_modules": [
       "clickhousex",
       "natsx",
+      "ossx",
       "postgresx",
       "taosx"
     ],
@@ -308,6 +309,7 @@
       "contracts",
       "domainx",
       "natsx",
+      "ossx",
       "postgresx",
       "taosx",
       "transportx",

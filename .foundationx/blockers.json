@@ -94,15 +94,14 @@
       "severity": "medium",
       "module": "ossx",
       "title": "公开工程资产过薄 (README 仅简略描述, 2 commits)",
-      "status": "resolved",
+      "status": "open",
       "category": "evidence",
-      "detail": "ossx v1.0.1 已发布但公开仓库证据不足 (README 只有 ossx 公共基础模块，2 commits)；需补 API 文档、集成测试证据、quickstart",
+      "detail": "ossx v1.0.1 已发布且 CI workflow 已部署，但公开仓库证据仍不足；API 文档、集成测试证据、quickstart、release manifest 尚未在本事实层归档，不能作为 factory-grade 证据",
       "evidence": "STATUS.md L35",
       "action": "补 pkg/ossx API doc + integration evidence + quickstart + release manifest",
-      "remediation": "CI 模板已就绪: module/ossx/ci-workflow.yaml (含 Aliyun OSS integration job)",
+      "remediation": "CI 模板/部署记录仅覆盖部分整改: module/ossx/ci-workflow.yaml (含 Aliyun OSS integration job)；仍需归档 API doc + integration evidence + quickstart + release manifest",
       "template_path": "module/ossx/ci-workflow.yaml",
-      "resolved_at": "2026-06-14",
-      "resolution": "CI workflow deployed (ossx PR #5)"
+      "ci_deployed": true
     }
   ],
   "by_module": {
@@ -133,20 +132,20 @@
     "note": "以下阻塞项已在本仓库 (ZoneCNH/ZoneCNH) 文档层面解决，但源仓库 (github.com/ZoneCNH/<module>) 仍需跨仓库 PR",
     "items": [
       "BLK-004: contracts identity → STATUS.md + ARCHITECTURE.md + FOUNDATION-DEPS.yaml 已标注 spec-baseline",
-      "BLK-005: transportx identity → STATUS.md + ARCHITECTURE.md + FOUNDATION-DEPS.yaml 已标注 spec-baseline",
-      "BLK-008: ossx evidence → CI workflow deployed (ossx PR #5) and recorded in blockers.json"
+      "BLK-005: transportx identity → STATUS.md + ARCHITECTURE.md + FOUNDATION-DEPS.yaml 已标注 spec-baseline"
     ]
   },
-  "open_blockers": 5,
-  "resolved_blockers": 3,
+  "open_blockers": 6,
+  "resolved_blockers": 2,
   "open_by_severity": {
     "critical": 2,
     "high": 1,
-    "medium": 2
+    "medium": 3
   },
   "factory_blocking_modules": [
     "clickhousex",
     "natsx",
+    "ossx",
     "postgresx",
     "taosx"
   ],
