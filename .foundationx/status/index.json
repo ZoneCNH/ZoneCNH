@@ -268,7 +268,7 @@
       "note": "应用通信底座规格基线; 25 FR/18 BR/25 TC; .repo-contract.yaml (all_aligned=false, 无 git tag); spec baseline (84)"
     },
     "domainx": {
-      "layer": "domain-shared",
+      "layer": "L2.5",
       "version": "v0.1.0",
       "spec": true,
       "impl": true,
