@@ -12,7 +12,7 @@ TASK-XLIBGATE-011: 实现 trust identity 命令，完成五源身份比对
 - module/xlibgate/SPEC.md FR-012 (trust identity)
 - module/xlibgate/SPEC.md TC-014 (identity pass), TC-015 (identity mismatch)
 
-## Current Scope
+## Scope
 
 | Deliverable | Description |
 |-------------|-------------|
@@ -55,7 +55,7 @@ TASK-XLIBGATE-011: 实现 trust identity 命令，完成五源身份比对
 - 不输出文件内容到错误消息（仅文件路径和行号）
 - `go test -race -count=1 ./scanner/trust/...` 通过
 
-## Verification
+## Validation
 
 ```bash
 go build ./... && xlibgate trust identity --repo testdata/trust-pass 2>&1; [ $? -eq 0 ]

@@ -12,7 +12,7 @@ TASK-XLIBGATE-013: 实现 trust release-consistency 命令，七源版本一致�
 - module/xlibgate/SPEC.md FR-014 (trust release-consistency)
 - module/xlibgate/SPEC.md TC-018 (offline pass), TC-019 (drift fail)
 
-## Current Scope
+## Scope
 
 | Deliverable | Description |
 |-------------|-------------|
@@ -56,7 +56,7 @@ TASK-XLIBGATE-013: 实现 trust release-consistency 命令，七源版本一致�
 - --online 模式需处理 GitHub API 速率限制（403 → 友好错误提示）
 - 统一 JSON 输出
 
-## Verification
+## Validation
 
 ```bash
 xlibgate trust release-consistency --offline --repo testdata/trust-pass 2>&1; [ $? -eq 0 ]

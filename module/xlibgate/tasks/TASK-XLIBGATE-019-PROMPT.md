@@ -13,7 +13,7 @@ TASK-XLIBGATE-019: trust 子命令组集成测试、README trust 章节、CHANGE
 - module/xlibgate/SPEC.md §22 Release DoD
 - module/xlibgate/SPEC.md TC-014~TC-029
 
-## Current Scope
+## Scope
 
 | Deliverable | Description |
 |-------------|-------------|
@@ -50,7 +50,7 @@ TASK-XLIBGATE-019: trust 子命令组集成测试、README trust 章节、CHANGE
 - README 遵循项目文档风格
 - 不依赖 Foundation 运行时模块
 
-## Verification
+## Validation
 
 ```bash
 go test -race -count=1 ./...

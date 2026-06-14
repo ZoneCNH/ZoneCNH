@@ -12,7 +12,7 @@ TASK-XLIBGATE-014: 实现 trust maturity --factory 命令，11 维工厂级成�
 - module/xlibgate/SPEC.md FR-015 (trust maturity)
 - module/xlibgate/SPEC.md TC-020 (factory pass), TC-021 (factory blocked)
 
-## Current Scope
+## Scope
 
 | Deliverable | Description |
 |-------------|-------------|
@@ -47,7 +47,7 @@ TASK-XLIBGATE-014: 实现 trust maturity --factory 命令，11 维工厂级成�
 - 输出 JSON evidence 字段含 11 维逐项判定明细
 - 统一 JSON 输出
 
-## Verification
+## Validation
 
 ```bash
 xlibgate trust maturity --factory --repo testdata/trust-pass 2>&1; [ $? -eq 0 ]
