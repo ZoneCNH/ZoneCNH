@@ -27,7 +27,8 @@
 | 2026-06-12 | v1.0.1 | 结构评分修复：BR 逐条"违反时"、Open Questions 分类编号、Observability 补充 Metrics/Tracing、Edge Cases 补充重试、Upgrade Compatibility 补迁移步骤、Security 补输入校验、Testing 补工具声明、Dependencies 补直接/间接依赖表、FR-005 显式枚举 secret_scan 子检查、新增 TC-008 | ZoneCNH |
 | 2026-06-12 | v1.0.2 | 范围对齐（R1/R2 修复）：§2 Summary + §4 Goals 新增 `l2` 子命令组、新增 FR-007~FR-011（l2 validate-manifest / plan / check-contracts / check-evidence / release-check）                                                                                                      | ZoneCNH |
 | 2026-06-12 | v1.0.2 | Status: Draft → Approved（Spec 四源评分 Claude 98 + rules 100，0 红线；Codex/Copilot 环境缺失由维护者 override）                                                                                                                                                            | ZoneCNH |
-| 2026-06-14 | v1.1.0 | v2 Trust Alignment 检查：新增 FR-012~FR-019（identity / template-residue / release-consistency / maturity / import-boundary / testkit-prod-import / secret-redaction / fleet-status）；新增 BR-010（禁止模板身份短语）；新增 TC-014~TC-029；统一定义 per-check JSON 输出格式（含 reason_code、evidence 字段） | ZoneCNH |
+| 2026-06-14 | v1.1.0 | v2 Trust Alignment 检查：新增 FR-012~FR-019（identity / template-residue / release-consistency / maturity / import-boundary / testkit-prod-import / secret-redaction / fleet-status）；新增 BR-010（禁止模板身份短语）；统一定义 per-check JSON 输出格式（含 reason_code、evidence 字段） | ZoneCNH |
+| 2026-06-14 | v1.1.1 | Trust Alignment 补充：新增 TC-014~TC-029（16 条验收标准，每 FR 2 条）；新增 6 个 trust 错误码；Edge Cases 补充 10 个 trust 边界场景；§16.2 单元测试补充 16 个 trust 测试场景 | ZoneCNH |
 
 ---
 
@@ -705,6 +706,12 @@ secret_scan:
 | `ErrBaselineMismatch` | 更新模块的 `go.mod` 中 `go` 指令版本，或更新 baseline 配置       |
 | `ErrImportViolation`  | 移除违规的 import 语句，调整模块依赖关系                         |
 | `ErrGomodDirty`       | 运行 `go mod tidy` 并提交变更                                    |
+| `ErrIdentityMismatch`  | 检查 README H1、go.mod module、contract identity 字段，修复不匹配项 |
+| `ErrTemplateResidue`   | 从下游仓库文档中移除 BR-010 定义的禁止短语 |
+| `ErrReleaseDrift`      | 对齐 .repo-contract.yaml、VERSION、CHANGELOG、git tag、release manifest 七源版本 |
+| `ErrFactoryGateBlocked` | 补充未满足的成熟度维度证据（如补齐单元测试、集成测试、契约测试） |
+| `ErrSecretLeak`        | 从 release/evidence 文档中移除泄露的密钥/端点，轮换已暴露的凭证 |
+| `ErrFleetPartialFail`  | 检查失败模块的 .repo-contract.yaml，修复后重新运行 fleet-status |
 
 **错误消息格式：** `"xlibgate: <check>: <detail>"`
 **错误包装：** 使用 `%w` 保留底层错误链
@@ -726,6 +733,15 @@ secret_scan:
 | `check all` 中某子检查超时           | 标记为 error，继续执行其余检查                                                                                            |
 | CI 环境无 color 支持                 | 自动检测终端，无 color 时输出纯文本                                                                                       |
 | 子检查失败后自动重试                 | 默认不重试（单次执行）；可通过配置 `retry: {max_attempts: N, backoff: "constant"}` 启用有限重试，N 次后仍失败标记为 error |
+| trust identity 目标仓库无 .repo-contract.yaml | reason_code=CONTRACT_PARSE_ERROR，exit code 2 |
+| trust template-residue 扫描二进制文件（.png、.so） | 跳过非文本文件，只扫描 .md/.yaml/.go/.txt/.json 等文本格式 |
+| trust release-consistency 离线模式下 VERSION 文件为空 | reason_code=RELEASE_DRIFT，作为缺失子项 |
+| trust maturity 数据源仅提供单个百分比值 | 拒绝接受，reason_code=FACTORY_GATE_BLOCKED，exit code 1 |
+| trust import-boundary 目标模块无 FOUNDATION-DEPS.yaml | reason_code=CONTRACT_PARSE_ERROR，exit code 2 |
+| trust testkit-prod-import 目标为 testkitx 自身 | 自动跳过检查，status=pass，reason_code=""（testkitx 允许引用自身） |
+| trust secret-redaction 扫描路径含符号链接 | 跟踪符号链接，但限制深度 max 3 层防止循环 |
+| trust fleet-status repos-root 下模块目录名与 go.mod module 不一致 | 输出 warning，记录不一致详情，不阻塞聚合 |
+| trust fleet-status 输出文件已存在 | 覆盖写入，不报错 |
 
 ---
 
@@ -842,6 +858,22 @@ xlibgate 是纯 CLI 工具，不被任何模块 import。它只扫描其他模�
 | human-readable 输出   | 包含文件路径和行号                                 |
 | secret 扫描通过       | gitleaks 零命中 → pass                             |
 | secret 扫描命中       | gitleaks 检测到泄露 → 报错，含文件路径和行号       |
+| trust identity 匹配   | README H1/go.mod/contract 五源一致 → pass          |
+| trust identity 不匹配 | README H1 不匹配 repo name → fail，reason_code=IDENTITY_MISMATCH |
+| trust template 无残留 | 下游仓库无禁止短语 → pass                          |
+| trust template 有残留 | 下游含 "承担五类职责" → fail，reason_code=TEMPLATE_RESIDUE |
+| trust release 一致    | 七源版本一致 → pass                                |
+| trust release 不一致  | VERSION vs CHANGELOG 不一致 → fail，reason_code=RELEASE_DRIFT |
+| trust maturity 通过   | 11 维工厂级全 true → pass                          |
+| trust maturity 阻塞   | 某维度 false → fail，reason_code=FACTORY_GATE_BLOCKED |
+| trust boundary 合规   | import 符合 FOUNDATION-DEPS.yaml → pass            |
+| trust boundary 违规   | 违反 forbidden_foundation_edges → fail              |
+| trust testkit 隔离    | 生产代码无 testkitx → pass                         |
+| trust testkit 违规    | pkg/ 中 import testkitx → fail，reason_code=TESTKIT_PROD_IMPORT |
+| trust secret 清洁     | release/evidence 无泄露 → pass                     |
+| trust secret 泄露     | 检测到 AWS key → fail，reason_code=SECRET_LEAK     |
+| trust fleet 全通过    | 20 模块全成功 → exit 0                             |
+| trust fleet 部分失败  | 2 模块 error → exit 1，index.json 仍生成            |
 
 ### 16.3 Given/When/Then 用例
 
@@ -909,6 +941,86 @@ Then 输出 present 计数 > 0, missing=0，exit code 0
 Given 所有硬性门禁通过且综合评分 ≥ 80
 When 运行 `xlibgate l2 release-check`
 Then 输出 status=pass, score ≥ 80, hard_failures=0，exit code 0
+
+**TC-014: trust identity pass**
+Given 目标仓库 README H1 == repo name、go.mod module == github.com/ZoneCNH/<repo>、public_package 存在、未声称 xlib-standard 身份
+When 运行 `xlibgate trust identity --repo <repo-path>`
+Then 输出 status=pass, reason_code=""，exit code 0
+
+**TC-015: trust identity mismatch**
+Given 目标仓库 README H1 为 "My Lib" 而 repo name 为 "xlibgate"
+When 运行 `xlibgate trust identity --repo <repo-path>`
+Then 输出 findings 含 README H1 不匹配详情，reason_code=IDENTITY_MISMATCH，exit code 1
+
+**TC-016: trust template-residue pass**
+Given 下游仓库（非 xlib-standard）不包含任何 BR-010 定义的禁止短语
+When 运行 `xlibgate trust template-residue --repo <repo-path>`
+Then 输出 status=pass, reason_code=""，exit code 0
+
+**TC-017: trust template-residue fail**
+Given 下游仓库 README.md 包含 "承担五类职责：Standard Source、Go Reference Template、Generator、Harness 和 Evidence Runtime"
+When 运行 `xlibgate trust template-residue --repo <repo-path>`
+Then 输出 findings 含文件路径、行号和匹配短语，reason_code=TEMPLATE_RESIDUE，exit code 1
+
+**TC-018: trust release-consistency offline pass**
+Given .repo-contract.yaml versions.table_version、go.mod module、VERSION 文件、CHANGELOG latest section、git tag、release/manifest/latest.json 七源版本一致
+When 运行 `xlibgate trust release-consistency --offline --repo <repo-path>`
+Then 输出 status=pass, reason_code=""，exit code 0
+
+**TC-019: trust release-consistency fail**
+Given VERSION 文件值为 "v1.2.0" 而 CHANGELOG latest section 为 "v1.1.0"
+When 运行 `xlibgate trust release-consistency --offline --repo <repo-path>`
+Then 输出 findings 含 VERSION 和 CHANGELOG 的不一致值，reason_code=RELEASE_DRIFT，exit code 1
+
+**TC-020: trust maturity factory pass**
+Given .repo-contract.yaml maturity 节中所有 11 维工厂级判定均为 true
+When 运行 `xlibgate trust maturity --factory --repo <repo-path>`
+Then 输出 11 维逐项判定均为 pass，overall=pass，reason_code=""，exit code 0
+
+**TC-021: trust maturity factory fail**
+Given .repo-contract.yaml maturity 节中 unit_tests_complete=false、live_integration_complete=false
+When 运行 `xlibgate trust maturity --factory --repo <repo-path>`
+Then 输出未满足维度列表（unit_tests_complete、live_integration_complete），reason_code=FACTORY_GATE_BLOCKED，exit code 1
+
+**TC-022: trust import-boundary pass**
+Given FOUNDATION-DEPS.yaml 定义了 allowed_deps 和 forbidden_foundation_edges，且模块所有 import 均合规
+When 运行 `xlibgate trust import-boundary --repo <repo-path> --deps FOUNDATION-DEPS.yaml`
+Then 输出 status=pass, reason_code=""，exit code 0
+
+**TC-023: trust import-boundary fail**
+Given FOUNDATION-DEPS.yaml 禁止 binance import kernel，而 pkg/trade.go 第 5 行 import 了 kernel
+When 运行 `xlibgate trust import-boundary --repo <repo-path> --deps FOUNDATION-DEPS.yaml`
+Then 输出 findings 含文件路径 pkg/trade.go、行号 5、违规 import 路径，reason_code=IMPORT_BOUNDARY_VIOLATION，exit code 1
+
+**TC-024: trust testkit-prod-import pass**
+Given 模块生产代码中无 testkitx import，但 *_test.go 文件中有 testkitx import
+When 运行 `xlibgate trust testkit-prod-import --repo <repo-path>`
+Then *_test.go 中的 testkitx import 不触发违规，status=pass，exit code 0
+
+**TC-025: trust testkit-prod-import fail**
+Given pkg/engine.go 第 8 行 import 了 github.com/ZoneCNH/testkitx
+When 运行 `xlibgate trust testkit-prod-import --repo <repo-path>`
+Then 输出 findings 含 pkg/engine.go、行号 8，reason_code=TESTKIT_PROD_IMPORT，exit code 1
+
+**TC-026: trust secret-redaction pass**
+Given release/evidence/ 下所有文档不含 secrets/API keys/私有端点/DSN with credentials
+When 运行 `xlibgate trust secret-redaction --repo <repo-path> --path release/evidence`
+Then 输出 status=pass, reason_code=""，exit code 0
+
+**TC-027: trust secret-redaction fail**
+Given release/evidence/deploy-log.md 包含 AWS_SECRET_ACCESS_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+When 运行 `xlibgate trust secret-redaction --repo <repo-path> --path release/evidence`
+Then 输出 findings 含文件路径、行号和脱敏后的匹配类型（不输出密钥原文），reason_code=SECRET_LEAK，exit code 1
+
+**TC-028: trust fleet-status pass**
+Given --repos-root 下精确有 20 个 Foundation 模块且全部扫描成功
+When 运行 `xlibgate trust fleet-status --repos-root <foundation-root> --output .foundationx/status/index.json`
+Then 生成 index.json 含 20 模块各自身份/发布/成熟度/边界/阻断项/证据索引状态，exit code 0
+
+**TC-029: trust fleet-status partial fail**
+Given --repos-root 下有 20 个模块，其中 2 个缺少 .repo-contract.yaml 扫描失败
+When 运行 `xlibgate trust fleet-status --repos-root <foundation-root> --output .foundationx/status/index.json`
+Then 生成 index.json（含 2 个 status=error 模块），exit code 1
 
 ### 16.4 Benchmark
 
