@@ -28,7 +28,7 @@ Go 🐹 (主要) · Rust 🦀 (底层) · Python 🐍 (脚本/数据) · TypeScr
 入口: x.go (Composition Root: 启动 / 配置 / 组装)
       │
       ▼
-标准: xlib-standard · xlib-harness · xlib-evidence · xlibgate（标准源、门禁生成/执行、证据收集，不参与运行时）
+标准: xlib-standard · xlib-harness · xlib-evidence · xlibgate（标准源、门禁生成/执行、证据收集、Trust Alignment，不参与运行时）
       │
       ▼
 L0: kernel (stdlib-only primitives)
@@ -67,7 +67,7 @@ L2.5: decimalx / domain-market / domain-exchange / domain-macro
 - [resiliencx](https://github.com/ZoneCNH/resiliencx) — 运行时弹性策略（timeout/retry/circuit/bulkhead/rate/fallback） `公开`
 - [schedulex](https://github.com/ZoneCNH/schedulex) — 任务调度运行时（cron/interval/delay、Overlap/Misfire 策略、Locker 扩展点、Clock 注入、v1.0.0 已发布，98.2% 覆盖） `公开`
 - [testkitx](https://github.com/ZoneCNH/testkitx) — 测试专用 evidence/golden/fixture/boundary 工具包 `公开`
-- [xlibgate](https://github.com/ZoneCNH/xlibgate) — import 边界、go.mod、Go baseline、release evidence 门禁 `公开`
+- [xlibgate](https://github.com/ZoneCNH/xlibgate) — import 边界、go.mod、Go baseline、release evidence、Trust Alignment 门禁 `公开`
 
 > `resiliencx` v1.0.1：SPEC Approved，身份修复已完成（P3 宪法原则 + goal.md v1.2+ 演进路线图）。
 
