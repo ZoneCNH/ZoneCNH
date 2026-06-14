@@ -1,25 +1,28 @@
 # TASK-NATSX-005 实现 Prompt
 
-## Context
+## 任务
 
-TASK-NATSX-005 实现 Prompt — 本次实现背景与约束
+Health 检查、GracefulShutdown、Drain、错误脱敏
 
-## Scope
+## 规格引用
 
-module/natsx/SPEC.md#FR-008,module/natsx/SPEC.md#BR-006,
+module/natsx/SPEC.md#FR-008, module/natsx/SPEC.md#BR-006
 
-## Non-scope
+## 验收标准
 
-- 不涉及本 Prompt 范围外的功能
+AC-008: Health 端点返回健康状态及组件详情
 
+## 验证
 
-## Files
+FR-008 verified via TC-005
 
-health.go, health_test.go, client.go
-## Acceptance
+## 优先级
 
-AC-008: Health 端点返回健康状态及组件详情;
+P1
 
-## Validation
+## 约束
 
-FR-008 verified via TC-005;
+- 禁止跨模块引用
+- 禁止在错误/日志中打印凭证、token、消息内容
+- 所有网络操作接收 context.Context
+- 实现文件与测试文件在同一 task 中交付

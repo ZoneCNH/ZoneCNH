@@ -1,21 +1,28 @@
 # TASK-NATSX-003 实现 Prompt
 
-## Context
+## 任务
 
-TASK-NATSX-003 实现 Prompt — 本次实现背景与约束
+JetStream 发布订阅：ack/redelivery/dead-letter 行为
 
-## Scope
+## 规格引用
 
-module/natsx/SPEC.md#FR-004,module/natsx/SPEC.md#FR-005,module/natsx/SPEC.md#BR-002,module/natsx/SPEC.md#BR-007,
+module/natsx/SPEC.md#FR-004, module/natsx/SPEC.md#FR-005, module/natsx/SPEC.md#BR-002, module/natsx/SPEC.md#BR-007
 
-## Non-scope
+## 验收标准
 
-- 不涉及本 Prompt 范围外的功能
+AC-004: JetStream Publish 收到 pubAck; AC-005: Subscribe 正确处理 ack/redelivery
 
-## Acceptance
+## 验证
 
-AC-004: JetStream Publish 收到 pubAck;AC-005: Subscribe 正确处理 ack/redelivery;
+FR-004 verified via TC-003; FR-005 verified via TC-003
 
-## Validation
+## 优先级
 
-FR-004 verified via TC-003;FR-005 verified via TC-003;
+P0
+
+## 约束
+
+- 禁止跨模块引用
+- 禁止在错误/日志中打印凭证、token、消息内容
+- 所有网络操作接收 context.Context
+- 实现文件与测试文件在同一 task 中交付

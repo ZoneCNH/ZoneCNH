@@ -1,25 +1,28 @@
 # TASK-NATSX-012 实现 Prompt
 
-## Context
+## 任务
 
-TASK-NATSX-012 实现 Prompt — 本次实现背景与约束
+性能验证：Publish/Request/JetStream benchmark 基线与 SLO 断言
 
-## Scope
+## 规格引用
 
-module/natsx/SPEC.md#module/natsx/SPEC.md#17-performance-budget
+module/natsx/SPEC.md#17-performance-budget
 
-## Non-scope
-
-- 不涉及本 Prompt 范围外的功能
-
-
-## Files
-
-benchmark_test.go, client.go, jetstream.go
-## Acceptance
+## 验收标准
 
 §17: Core Publish < 1ms benchmark; §17: Request-Reply < 5ms benchmark; §17: JetStream Publish/Fetch < 2ms benchmark
 
-## Validation
+## 验证
 
 NFR-003 verified via TC-012
+
+## 优先级
+
+P2
+
+## 约束
+
+- 禁止跨模块引用
+- 禁止在错误/日志中打印凭证、token、消息内容
+- 所有网络操作接收 context.Context
+- 实现文件与测试文件在同一 task 中交付
