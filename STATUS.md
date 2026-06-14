@@ -20,7 +20,7 @@
 | [xlib-standard](https://github.com/ZoneCNH/xlib-standard) | v1.0.0 | ████ 100% | spec=100 mat=80 tsk=98 pln=100 prm=100 cod=100 | 标准事实源 / Go Reference Template；Generator/Harness/Evidence 已拆分至 xlib-harness / xlib-evidence；✅ .repo-contract.yaml (is_standard_source)，v1.0.0 已对齐；⚠️ GitHub release 待确认 |
 | [xlib-harness](https://github.com/ZoneCNH/xlib-harness) | v1.0.0 | ████ 100% | spec=83 mat=100 tsk=97 pln=100 prm=100 cod=100 | 模块生成器与门禁执行器：generate/scaffold、spec-lint、boundary-check、traceability-gate；⚠️ Draft→Approved 待四源评分（6 FR，6 TC） |
 | [xlib-evidence](https://github.com/ZoneCNH/xlib-evidence) | v1.0.0 | ████ 100% | spec=83 mat=100 tsk=100 pln=100 prm=100 cod=100 | 证据收集与发布运行时：collect-coverage、generate-manifest、validate-manifest、report；⚠️ Draft→Approved 待四源评分（5 FR，5 TC） |
-| [xlibgate](https://github.com/ZoneCNH/xlibgate) | v1.1.1 | ███░ 95% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | check/l2/trust 三组门禁；✅ .repo-contract.yaml（all_aligned=false，无 git tag）；trust CLI 已实现（PR #28） |
+| [xlibgate](https://github.com/ZoneCNH/xlibgate) | v1.0.0 | ███░ 95% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | check/l2/trust 三组门禁；✅ .repo-contract.yaml，v1.0.0 已对齐（此前误标 v1.1.1）；trust CLI 已实现 |
 | [kernel](https://github.com/ZoneCNH/kernel) | v1.0.0 | █████ 100% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | L0 原语 / 12 子包 / stdlib-only；✅ .repo-contract.yaml，v1.0.0 已对齐，建议 API 冻结 |
 | [configx](https://github.com/ZoneCNH/configx) | v0.1.4 | █████ 100% | spec=100 mat=100 tsk=96 pln=100 prm=100 cod=100 | 配置管理；此前误标 v1.0.0，已按 git tag v0.1.4 修正；✅ .repo-contract.yaml |
 | [observex](https://github.com/ZoneCNH/observex) | v0.3.1 | ███░ 95% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | 可观测性；此前误标 v1.0.0，已按 git tag v0.3.1 修正 |
@@ -50,7 +50,7 @@
 | xlib-standard | ✅ | ✅ | ⚠️ | N/A | ? | ? | N/A | ❌ | v1.0.0 已对齐（.repo-contract.yaml + PR #120）；GitHub release 待确认 |
 | xlib-harness | ✅ | ✅ | ✅ | N/A | ? | ? | N/A | ❌ | Draft→Approved 待四源评分 |
 | xlib-evidence | ✅ | ✅ | ✅ | N/A | ? | ? | N/A | ❌ | Draft→Approved 待四源评分 |
-| xlibgate | ✅ | ✅ | ✅ | N/A | ? | ? | N/A | ❌ | v1.1.1（.repo-contract.yaml，all_aligned=false，无 git tag） |
+| xlibgate | ✅ | ✅ | ✅ | N/A | ? | ? | N/A | ❌ | v1.0.0 已对齐（.repo-contract.yaml + PR #39）；此前误标 v1.1.1 |
 | kernel | ✅ | ✅ | ✅ | N/A | ? | ✅ | N/A | ✅ | v1.0.0 已对齐（.repo-contract.yaml）；建议 API 冻结 |
 | configx | ✅ | ✅ | ✅ | N/A | ? | ? | N/A | ✅ | v0.1.4 已对齐（.repo-contract.yaml）；此前误标 v1.0.0 |
 | observex | ✅ | ✅ | ✅ | N/A | ? | ? | N/A | ❌ | v0.3.1 已对齐（.repo-contract.yaml + PR #10） |
@@ -218,7 +218,7 @@
 ### 🟢 基座（健康）
 
 - 组件：20 个，平均进度 94%
-- 核心模块已通过 .repo-contract.yaml 完成版本对齐：kernel (v1.0.0) / configx (v0.1.4，此前误标 v1.0.0) / schedulex (v1.0.0) / observex (v0.3.1) / testkitx (v0.4.0) / resiliencx (v0.4.9) / redisx (v1.0.1) / kafkax (v1.0.2) / natsx (v1.0.0) / postgresx (v1.0.0)；xlibgate/contracts/transportx/domainx 无 git tag（all_aligned=false）；natsx / postgresx 已发布但 hardening 待补（factory_grade_allowed=false）；clickhousex 公开 no releases published（建议降级）；contracts / transportx 为 spec baseline（无公开 release，需身份重写）；redisx / kafkax 已发布但 README 身份残留模板叙事；xlib-harness / xlib-evidence 为 Draft 待四源评分升级
+- 核心模块已通过 .repo-contract.yaml 完成版本对齐：kernel (v1.0.0) / configx (v0.1.4，此前误标 v1.0.0) / schedulex (v1.0.0) / observex (v0.3.1) / testkitx (v0.4.0) / resiliencx (v0.4.9) / redisx (v1.0.1) / kafkax (v1.0.2) / natsx (v1.0.0) / postgresx (v1.0.0) / xlibgate (v1.0.0，此前误标 v1.1.1)；contracts/transportx/domainx 无 git tag（all_aligned=false）；natsx / postgresx 已发布但 hardening 待补（factory_grade_allowed=false）；clickhousex 公开 no releases published（建议降级）；contracts / transportx 为 spec baseline（无公开 release，需身份重写）；redisx / kafkax 已发布但 README 身份残留模板叙事；xlib-harness / xlib-evidence 为 Draft 待四源评分升级
 - 存储层 `redisx` 已发布 v1.0.0（全局成熟度 100%，Docker-backed Redis + persistence restart recovery 验证），`kafkax` 已发布 v1.0.0（100%），`natsx` 已发布 v1.0.0（100%，repair-slice 20/20，真实 dev auth live gate 验证），`postgresx` 已发布 v1.0.0（全局成熟度 90%），`taosx` 已发布 v1.0.1（100%）；`ossx` 已发布 v1.0.1（真实 Aliyun OSS 集成、race、vet、build、release-check 与 100.0% 覆盖已验证）；`clickhousex` 已发布 v1.0.1（100%）；`transportx` 已规格化 100%（SPEC/Matrix/Tasks 三阶段满分，27 Tasks 全部达标），并以 v1.1.1 规格基线覆盖 QoS、Codec、RPC、EventBus、Stream、ExecutionMode、Outbox/Inbox、Audit Plane、Data Classification 与 SchemaRegistry
 - **SRE/CI/CD**：已产出 [`docs/sre/foundation-cicd-plan.md`](../docs/sre/foundation-cicd-plan.md)（20 模块 4 阶段部署方案、8 标签池、Docker 集成测试、标准化模板），待落地
 - **阻塞项**：clickhousex 已发布 v1.0.1；xlibgate CLI 已实现（PR #23）；testkitx code 阶段已完成（PR #13）；postgresx foundationx 依赖已移除（PR #8 → PR #9）
