@@ -45,7 +45,12 @@
       "policy_contract_projection_drift",
       "policy_repo_identity_mismatch",
       "policy_template_residue",
-      "policy_maturity_claim_overreach"
+      "policy_maturity_claim_overreach",
+      "policy_status_summary_drift",
+      "policy_blocker_index_drift",
+      "policy_open_blocker_factory_gate",
+      "policy_release_factory_inconsistent",
+      "policy_projection_overstates_fact_layer"
     ],
     "tool_errors": [
       "tool_config_missing",
@@ -74,6 +79,30 @@
       "STATUS.md",
       "module/README.md"
     ],
-    "release_manifest": "release/manifest/v0.5.1-foundation-v2.json"
+    "release_manifest": "release/manifest/v0.5.1-foundation-v2.json",
+    "fact_sources": [
+      ".foundationx/status/index.json",
+      ".foundationx/blockers.json"
+    ],
+    "audit_scripts": [
+      "scripts/audit-status.py",
+      ".github/ci/status-consistency-check.sh"
+    ],
+    "rules": [
+      "public projections must not overstate .foundationx/status/index.json",
+      "generated claims must fail CI when fact-layer invariants fail"
+    ]
+  },
+  "trust_hardening": {
+    "ruleset": "v1.1.2",
+    "status_source": ".foundationx/status/index.json",
+    "blocker_source": ".foundationx/blockers.json",
+    "policy_rules": [
+      "summary counts are derived from module entries",
+      "release=false forces factory=false",
+      "open blocker forces factory=false for that module",
+      "open release blocker forces release=false for that module",
+      "public projections must not overstate the fact layer"
+    ]
   }
 }

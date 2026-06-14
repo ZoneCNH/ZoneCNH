@@ -106,18 +106,18 @@
     }
   ],
   "by_module": {
-    "natsx": [
-      "BLK-001",
-      "BLK-002"
-    ],
     "clickhousex": [
       "BLK-003"
     ],
     "contracts": [
       "BLK-004"
     ],
-    "transportx": [
-      "BLK-005"
+    "natsx": [
+      "BLK-001",
+      "BLK-002"
+    ],
+    "ossx": [
+      "BLK-008"
     ],
     "postgresx": [
       "BLK-006"
@@ -125,15 +125,32 @@
     "taosx": [
       "BLK-007"
     ],
-    "ossx": [
-      "BLK-008"
+    "transportx": [
+      "BLK-005"
     ]
   },
   "resolved_in_repo": {
     "note": "以下阻塞项已在本仓库 (ZoneCNH/ZoneCNH) 文档层面解决，但源仓库 (github.com/ZoneCNH/<module>) 仍需跨仓库 PR",
     "items": [
       "BLK-004: contracts identity → STATUS.md + ARCHITECTURE.md + FOUNDATION-DEPS.yaml 已标注 spec-baseline",
-      "BLK-005: transportx identity → STATUS.md + ARCHITECTURE.md + FOUNDATION-DEPS.yaml 已标注 spec-baseline"
+      "BLK-005: transportx identity → STATUS.md + ARCHITECTURE.md + FOUNDATION-DEPS.yaml 已标注 spec-baseline",
+      "BLK-008: ossx evidence → CI workflow deployed (ossx PR #5) and recorded in blockers.json"
     ]
-  }
+  },
+  "open_blockers": 5,
+  "resolved_blockers": 3,
+  "open_by_severity": {
+    "critical": 2,
+    "high": 1,
+    "medium": 2
+  },
+  "factory_blocking_modules": [
+    "clickhousex",
+    "natsx",
+    "postgresx",
+    "taosx"
+  ],
+  "release_blocking_modules": [
+    "clickhousex"
+  ]
 }
