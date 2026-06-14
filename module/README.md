@@ -117,15 +117,17 @@ test-only，不参与生产运行时。
 
 基础设施客户端封装。均为可选，按需引入。
 
+> **投影口径**：`module/` 是规格 SSOT；release/factory 公共成熟度由 `.foundationx/status/index.json` + `.foundationx/blockers.json` 投影。存在公开 release 缺口或 BLK-001/002/003/006/007 open 时，不声明 Foundation 单一 100% 或 factory-grade。
+
 | 模块        | 规格                                                    | 封装目标                                                                                             |
 | ----------- | ------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
 | redisx      | [SPEC.md](./redisx/SPEC.md) · [goal.md](./redisx/goal.md) · [TRACEABILITY.md](./redisx/TRACEABILITY.md) · [tasks/](./redisx/tasks/) | Redis KeyBuilder/Options/KV/TTL/Cache/Hash/List/PubSub/Pipeline/Locker/Counter/RateLimit/Codec/Health；直接生产依赖限定为 kernel + Redis 客户端库，configx/observex/resiliencx/contracts 仅作为外部投影或 adapter 边界（12 FR，10 BR，4 NFR，10 tasks） |
 | kafkax      | [SPEC.md](./kafkax/SPEC.md) · [TRACEABILITY.md](./kafkax/TRACEABILITY.md) · [goal.md](./kafkax/goal.md) | Kafka — 消息队列、事件流                                                                             |
-| natsx       | [SPEC.md](./natsx/SPEC.md) · [TRACEABILITY.md](./natsx/TRACEABILITY.md) | NATS — 内部通信、JetStream（v1.0.0 已发布；repair-slice 20/20；真实 dev auth live gate 已验证；正式四源 98+ arbiter 与生产 TLS gate 待补） |
-| postgresx   | [SPEC.md](./postgresx/SPEC.md) · [TRACEABILITY.md](./postgresx/TRACEABILITY.md) · [goal.md](./postgresx/goal.md) · [tasks/](./postgresx/tasks/) | PostgreSQL — 关系型存储、事务、迁移（v1.0.0 已发布，release-final-check + live integration 通过） |
-| taosx       | [SPEC.md](./taosx/SPEC.md) · [TRACEABILITY.md](./taosx/TRACEABILITY.md) · [goal.md](./taosx/goal.md) | TDengine L2 adapter contract（pkg/taosx v1.0.1；真实 taosWS WebSocket 集成已验证，pkg/taosx 100.0% 覆盖） |
+| natsx       | [SPEC.md](./natsx/SPEC.md) · [TRACEABILITY.md](./natsx/TRACEABILITY.md) | NATS — 内部通信、JetStream（v1.0.0 已发布；真实 dev auth live gate 已验证；正式四源 98+ arbiter 与生产 TLS gate 待补，BLK-001/BLK-002 open；非 factory） |
+| postgresx   | [SPEC.md](./postgresx/SPEC.md) · [TRACEABILITY.md](./postgresx/TRACEABILITY.md) · [goal.md](./postgresx/goal.md) · [tasks/](./postgresx/tasks/) | PostgreSQL — 关系型存储、事务、迁移（v1.0.0 已发布，release-final-check + live integration 通过；单元测试 52.4% + Docker integration skip，BLK-006 open；非 factory） |
+| taosx       | [SPEC.md](./taosx/SPEC.md) · [TRACEABILITY.md](./taosx/TRACEABILITY.md) · [goal.md](./taosx/goal.md) | TDengine L2 adapter contract（pkg/taosx v1.0.1；真实 taosWS WebSocket 集成已验证；SPEC 67，BLK-007 open；非 factory） |
 | ossx        | [SPEC.md](./ossx/SPEC.md) · [TRACEABILITY.md](./ossx/TRACEABILITY.md) · [goal.md](./ossx/goal.md) · [IMPLEMENTATION-PLAN.md](./ossx/IMPLEMENTATION-PLAN.md) · [tasks/](./ossx/tasks/) · [prompt/](./ossx/prompt/) | Aliyun OSS 对象存储 L2 adapter（v1.0.1 已发布；真实 Aliyun OSS 集成、race、vet、build、release-check 与 100.0% 覆盖已验证；S3/MinIO/Azure/GCS Provider 仅保留扩展位） |
-| clickhousex | [SPEC.md](./clickhousex/SPEC.md) · [TRACEABILITY.md](./clickhousex/TRACEABILITY.md) · [goal.md](./clickhousex/goal.md) · [tasks/](./clickhousex/tasks/) | ClickHouse — OLAP 查询、批量写入（v1.0.1；完整 SPEC + TRACEABILITY §1-§7 + 7 Tasks，覆盖率 100%）                                                                     |
+| clickhousex | [SPEC.md](./clickhousex/SPEC.md) · [TRACEABILITY.md](./clickhousex/TRACEABILITY.md) · [goal.md](./clickhousex/goal.md) · [tasks/](./clickhousex/tasks/) | ClickHouse — OLAP 查询、批量写入（v1.0.1；完整 SPEC + TRACEABILITY §1-§7 + 7 Tasks；公开 GitHub Release 未发布，BLK-003 open；非 factory）                                                                     |
 
 ---
 
@@ -135,8 +137,8 @@ test-only，不参与生产运行时。
 
 | 模块       | 规格                                                                                                                | 核心职责                                                                                                                       |
 | ---------- | ------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| contracts  | [SPEC.md](./contracts/SPEC.md) · [goal.md](./contracts/goal.md) · [TRACEABILITY.md](./contracts/TRACEABILITY.md) · [tasks/](./contracts/tasks/) | MarketDataProvider/MacroDataProvider、Event、Topic、DTO、Breaking Change（6 FR，10 BR，8 NFR，16 AC，7 TC，5 tasks）                                      |
-| transportx | [SPEC.md](./transportx/SPEC.md) · [TRACEABILITY.md](./transportx/TRACEABILITY.md) · [goal.md](./transportx/goal.md) | 应用通信底座规格基线；Envelope/Endpoint、ServiceIdentity、QoS、Codec、RPC、EventBus、Stream、Outbox/Inbox、Audit Plane、Data Classification、SchemaRegistry 与 conformance gates（25 FR，18 BR，25 TC） |
+| contracts  | [SPEC.md](./contracts/SPEC.md) · [goal.md](./contracts/goal.md) · [TRACEABILITY.md](./contracts/TRACEABILITY.md) · [tasks/](./contracts/tasks/) | MarketDataProvider/MacroDataProvider、Event、Topic、DTO、Breaking Change（6 FR，10 BR，8 NFR，16 AC，7 TC，5 tasks；spec-only，无公开 GitHub Release / git tag 对齐；非 factory until release）                                      |
+| transportx | [SPEC.md](./transportx/SPEC.md) · [TRACEABILITY.md](./transportx/TRACEABILITY.md) · [goal.md](./transportx/goal.md) | 应用通信底座规格基线；Envelope/Endpoint、ServiceIdentity、QoS、Codec、RPC、EventBus、Stream、Outbox/Inbox、Audit Plane、Data Classification、SchemaRegistry 与 conformance gates（25 FR，18 BR，25 TC；spec-only，无公开 GitHub Release / git tag 对齐；production_import_allowed=false；非 factory until release） |
 
 ---
 
