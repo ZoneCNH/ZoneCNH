@@ -294,7 +294,7 @@ Claude 执行：
 ## 约定
 
 - **语言**：Claude 的所有回复、文档和提交信息默认使用中文，英文保留给仓库名、模块名、命令和标准技术术语。
-- **提交**：使用 Conventional Commits 前缀和中文描述，例如 `docs:`、`feat:`、`refactor:`、`fix:`。
+- **提交**：使用 Conventional Commits 前缀和中文描述，例如 `docs:`、`feat:`、`refactor:`、`fix:`。每个 commit 消息末尾必须追加 `Co-Authored-By: Claude <noreply@anthropic.com>`。PR body 末尾同样必须包含此行，确保 squash merge 后不丢失署名。
 - **链接**：引用组件时，使用既有表格风格的 `https://github.com/ZoneCNH/<repo>` 链接。
 - **规格标准**：模块规格遵循 `CONSTITUTION.md` 第四条，采用 23 节结构（行为规格 WHEN/THEN、接口契约、业务规则、错误处理、边界场景、验收标准等）。模板见 `module/README.md`。追溯矩阵规范见 `docs/governance/TRACEABILITY.md`，具体矩阵位于 `module/{module}/TRACEABILITY.md`。
 - **Goal 文档**：修改 `docs/goal/` 后需同步 `CHANGELOG.md`；涉及 schema 或状态变更时同步更新评分账本（`24-standard-unification-analysis.md`）和对应 YAML schema 文件。提交前运行 `lint-goal.sh && lint-goal.sh --spec`。
