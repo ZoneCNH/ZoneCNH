@@ -89,7 +89,7 @@
 
 > 基于三场会话复盘（14 PR / $89 + 3 PR / $49.52 + 13 PR / STATUS.md 全量审计），制定以下编辑纪律、验证门禁和效率规则。
 
-### 数量验证门禁（2026-06-15 STATUS.md 全量审计，PR #385-#437）
+### 数量验证门禁（2026-06-15 STATUS.md 全量审计，PR #385-#438）
 
 > 基于一次 STATUS.md + README + ARCHITECTURE 三文档交叉审计会话。发现 7+ 处凭空编造的数量（18 vs 14 GitHub Release、67% vs 62% 平均进度、有版本号 1/0/0 vs 2/3/3 等），需 13 个 PR 修复。根因：agent 凭"常识"估算数量而非逐表逐行统计。
 
@@ -110,7 +110,7 @@
 - **有版本号/无版本号 合计必须等于组件总数**：用 `awk -F'|'` 逐行查 version 列，非空且非 `-` 即计入有版本号，其余计无版本号，两者之和必须等于该域总数。
 - **CountGuard hook 已部署**：`.claude/hooks/count-guard.mjs`。Write/Edit 到上述三文件时自动扫描内容中的数量模式。BLOCK 级（exit 2）：组件总数/平均进度/有版本号；WARN 级（exit 0）：X/Y 分数/百分比/已有/已创建。`COUNT_GUARD_STRICT=false` 降级为全告警模式。告警不可忽略——必须实际跑验证命令确认数量正确后方可 commit。
 - **跨维度交叉验证**：单一表格内部自洽不足以防漂移——必须交叉验证不同章节/不同文档中描述同一事实的数字。示例：RELEASE 列 ✅ 计数 vs 版本注记 Release 数、FACTORY N/A 计数 vs 组件表 testkitx 标记、仪表盘已有 vs 合计已有、同步表 STATUS 列 vs grep 唯一仓库数。`scripts/audit-status.py` check 8 已实现 RELEASE 和 FACTORY 的跨维度自动检查，新增维度时同步扩展该脚本。
-- **审计闭合前必须跑 `python3 scripts/audit-status.py --network`**：22 项机械化检查 + 78 repos 全量 404 扫描。全部 PASS 方可声称"无残余问题"。不得以"之前跑过"为由跳过最终验证。
+- **审计闭合前必须跑 `python3 scripts/audit-status.py --network`**：24 项机械化检查（含跨维度验证） + 78 repos 全量 404 扫描。全部 PASS 方可声称"无残余问题"。不得以"之前跑过"为由跳过最终验证。
 
 ### Plan-first 原则
 
