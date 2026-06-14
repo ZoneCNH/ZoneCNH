@@ -47,16 +47,18 @@ def tmp_module(tmp_path, monkeypatch):
 
 
 def _perfect_spec_text() -> str:
-    sections = "\n".join(
-        f"## {s}\n\n内容占位。\n- a\n- b\n- c\n- d\n- e\n- f\n"
-        for s in rs.SPEC_REQUIRED_SECTIONS
-    )
     meta = "Status: Draft\nOwner: zone\nVersion: 1.0\nUpdated: 2026-06-08\n\n"
-    fr = "\n".join(f"- FR-{i:03d}: WHEN x THEN y" for i in range(1, 6))
-    br = "\n".join(f"- BR-{i:03d}: 违反 X 即拒绝" for i in range(1, 4))
-    ac = "\n".join(f"- AC-{i:03d}: 验收 X" for i in range(1, 6))
-    tc = "\n".join(f"- TC-{i:03d}: 测试 X" for i in range(1, 6))
-    return f"# SPEC\n\n{meta}{sections}\n\n{fr}\n\n{br}\n\n{ac}\n\n{tc}\n"
+    fr = "- FR-001: WHEN x THEN y\n- FR-002: WHEN x THEN y\n- FR-003: WHEN x THEN y\n- FR-004: WHEN x THEN y\n- FR-005: WHEN x THEN y"
+    br = "- BR-001: 违反 X 即拒绝\n- BR-002: 违反 X 即拒绝\n- BR-003: 违反 X 即拒绝"
+    ac = "- AC-001: 验收 X\n- AC-002: 验收 X\n- AC-003: 验收 X\n- AC-004: 验收 X\n- AC-005: 验收 X"
+    tc = "- TC-001: 测试 X\n- TC-002: 测试 X\n- TC-003: 测试 X\n- TC-004: 测试 X\n- TC-005: 测试 X"
+    # FR/BR 放入对应节内，AC/TC 放节外（非标准节名）
+    bodies = {"Functional Requirements": fr, "Business Rules": br}
+    sections = []
+    for s in rs.SPEC_REQUIRED_SECTIONS:
+        body = bodies.get(s, "内容占位。\n- a\n- b\n- c\n- d\n- e\n- f")
+        sections.append(f"## {s}\n\n{body}\n")
+    return f"# SPEC\n\n{meta}{'\n'.join(sections)}\n{ac}\n{tc}\n"
 
 
 def test_spec_perfect_high_score(tmp_module):
@@ -77,7 +79,7 @@ def test_spec_missing_file_redline(tmp_module):
 
 def test_spec_duplicate_fr_redline(tmp_module):
     mod_dir, module = tmp_module
-    text = _perfect_spec_text() + "\n- FR-001: 重复！\n"
+    text = _perfect_spec_text() + "\n" + "\n".join(f"- FR-001: 重复！" for _ in range(12)) + "\n"
     (mod_dir / "SPEC.md").write_text(text, encoding="utf-8")
     s = rs.score_spec(module)
     assert s.redline is True
