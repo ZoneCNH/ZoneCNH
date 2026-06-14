@@ -40,7 +40,7 @@
 
 > ⚠️ **版本 / release 注记**：公开文档是投影层；版本、release 与 factory 状态以 `.foundationx/status/index.json` + `.foundationx/blockers.json` 为准。当前公开投影仍有 BLK-001/002/003/006/007 open，不声明 Foundation 整体 factory grade。
 
-> **成熟度语义说明（2026-06-14 v2 Trust Alignment）**：上表"进度"反映本仓库 Spec 管线评分（spec→code），不代表生产就绪（factory grade）。下表提供多维度成熟度视图；RELEASE=❌ 或存在 open blocker 的模块不得投影为 FACTORY=✅。
+> **成熟度语义说明（2026-06-14 v2 Trust Alignment）**：上表"进度"反映本仓库 Spec 管线评分（spec→code），不代表可投产等级（factory grade）。下表提供多维度成熟度视图；RELEASE=❌ 或存在 open blocker 的模块不得投影为 FACTORY=✅。
 
 <details>
 <summary>📊 基座多维成熟度展开（点击展开）</summary>
@@ -273,7 +273,7 @@
 
 ### 🟡 横切（注意）
 
-- alertx 仅创建（5%），observex 已完成（100%，v1.0.0，✅ GitHub Release 已发布）
+- alertx 仅创建（5%），observex 已完成（100%，v0.3.1，✅ GitHub Release 已发布）
 - observex 同属基座和横切，职责边界通过 ADR 明确（见 `module/observex/ADR-dual-attribution.md`，R7 已闭环）
 
 ---
@@ -355,31 +355,29 @@
 
 ## 管线状态总览
 
-20/20 模块全部阶段 ≥67（rule-scorer 真实评分），其中 13/20 全线 ≥98：
+20/20 模块全部阶段 ≥67（rule-scorer 真实评分），其中 13/20 全线 ≥98。该表是 Spec→Code 管线分项评分，不代表 release/factory；release/factory 投影以 `.foundationx/status/index.json` + `.foundationx/blockers.json` 为准。
 
 | 模块 | spec | matrix | tasks | plan | prompt | code |
 |------|:----:|:------:|:-----:|:----:|:------:|:----:|
-| clickhousex | ✅ | ✅ | ❌ | ✅ | ✅ | N/A | N/A | ❌ | v1.0.1; CI 已部署+运行(Docker ClickHouse); 公开 GitHub Release 未发布（BLK-003）; 非 factory |
-| configx | ✅ | ✅ | ✅ | N/A | ✅ | ✅ | N/A | ✅ | v0.1.4; GitHub Release 已发布; 4 CI workflows; 2 下游消费者; 此前误标 v1.0.0 已修正 |
-| contracts | ✅ | ✅ | ❌ | N/A | ✅ | ✅ | N/A | ❌ | v1.0.1-spec; spec-only; 无公开 GitHub Release / git tag 对齐; all_aligned=false |
-| domainx | ✅ | ✅ | ❌ | N/A | ✅ | N/A | N/A | ❌ | v0.1.0; CI 已部署+已运行; 无公开 GitHub Release / git tag 对齐 |
+| clickhousex | 100 | 100 | 100 | 100 | 100 | 100 |
+| configx | 100 | 100 | 96 | 100 | 100 | 100 |
+| contracts | 100 | 100 | 100 | 100 | 100 | 100 |
+| domainx | 100 | 100 | 100 | 100 | 100 | 100 |
 | kafkax | 100 | 100 | 100 | 100 | 100 | 100 |
 | kernel | 100 | 100 | 100 | 100 | 100 | 100 |
-| natsx | ✅ | ✅ | ✅ | ✅ | ✅ | N/A | N/A | ❌ | v1.0.0; 6 CI workflows; dev auth live gate 已验证; BLK-001/BLK-002 open; 非 factory |
-| observex | ✅ | ✅ | ✅ | N/A | ✅ | ✅ | N/A | ✅ | v0.3.1; GitHub Release 已发布; 4 CI workflows; 2 下游消费者; 此前误标 v1.0.0 已修正 |
+| natsx | 100 | 100 | 92 | 100 | 100 | 100 |
+| observex | 100 | 100 | 100 | 100 | 100 | 100 |
 | ossx | 100 | 100 | 100 | 100 | 100 | 100 |
-| postgresx | ✅ | ✅ | ✅ | ✅ | ✅ | N/A | N/A | ❌ | v1.0.0; 3 CI workflows; live integration 通过; BLK-006 open（52.4% coverage + Docker integration skip）; 非 factory |
+| postgresx | 100 | 100 | 100 | 100 | 100 | 100 |
 | redisx | 98 | 100 | 100 | 100 | 100 | 100 |
-| resiliencx | ✅ | ✅ | ✅ | N/A | ✅ | ✅ | N/A | ✅ | v0.4.9; GitHub Release 已发布; 9 CI workflows; 2 下游消费者; 此前误标 v1.0.1 已修正 |
+| resiliencx | 100 | 100 | 100 | 100 | 100 | 100 |
 | schedulex | 98 | 100 | 100 | 100 | 100 | 100 |
-| taosx | ✅ | ✅ | ✅ | ✅ | ✅ | N/A | N/A | ❌ | v1.0.1; 8 CI workflows; 真实 taosWS 已验证; BLK-007 open（SPEC 67）; 非 factory |
-| testkitx | ✅ | ✅ | ✅ | N/A | ✅ | N/A | N/A | N/A | v0.4.0; GitHub Release 已发布; 4 CI workflows; test-only — factory grade 不适用 |
-| transportx | ✅ | ✅ | ❌ | N/A | ✅ | N/A | N/A | ❌ | v1.1.1-spec; spec-only; 无公开 GitHub Release / git tag 对齐; production_import_allowed=false |
-| xlib-evidence | ✅ | ✅ | ❌ | N/A | ✅ | N/A | N/A | ❌ | CI 已部署; evidence collect/generate/validate/report; ⚠️ git tag + GitHub Release 缺失 |
-| xlib-harness | ✅ | ✅ | ❌ | N/A | ✅ | N/A | N/A | ❌ | CI 已部署; generate/scaffold/spec-lint/boundary/traceability; ⚠️ git tag + GitHub Release 缺失 |
+| taosx | 67 | 100 | 76 | 100 | 100 | 100 |
+| testkitx | 100 | 100 | 100 | 100 | 100 | 100 |
+| transportx | 84 | 100 | 100 | 100 | 100 | 100 |
+| xlib-evidence | 83 | 100 | 100 | 100 | 100 | 100 |
+| xlib-harness | 83 | 100 | 97 | 100 | 100 | 100 |
 | xlib-standard | 100 | 80 | 98 | 100 | 100 | 100 |
 | xlibgate | 100 | 100 | 100 | 100 | 100 | 100 |
 
 > 剩余 7 模块需 SPEC 级内容修复（spec 缺 WHEN/THEN、章节等）。prompt/code 外仓模块为 pass-through。xlib-standard 为快照格式除外。
-
----
