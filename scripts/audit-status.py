@@ -218,6 +218,46 @@ if NETWORK:
 else:
     print("  SKIPPED (use --network)")
 
+# ── 8. Cross-dimension: RELEASE/FACTORY ↔ version note ──────
+print("\n--- 8. Cross-dimension checks ---")
+# Count RELEASE ✅/❌ from multidimensional table
+release_yes = release_no = 0
+in_multi = False
+for line in STATUS.splitlines():
+    if "📊 基座多维成熟度展开" in line: in_multi = True; continue
+    if in_multi and line.startswith("</details>"): break
+    if in_multi and re.match(r'^\| [a-z]', line):
+        parts = [p.strip() for p in line.split("|")]
+        if len(parts) >= 6:
+            r_val = parts[4]  # RELEASE = column 5 (1-indexed)
+            if r_val == "✅": release_yes += 1
+            elif r_val == "❌": release_no += 1
+
+# Parse version note for "14/20 已发布 GitHub Release"
+vn_match = re.search(r'(\d+)/20\s+已发布 GitHub Release', STATUS)
+if vn_match:
+    vn_release = int(vn_match.group(1))
+    chk("RELEASE ✅ vs version-note", str(release_yes), str(vn_release))
+else:
+    no("Could not parse version-note release count")
+
+# FACTORY N/A count
+factory_na = 0
+in_multi = False
+for line in STATUS.splitlines():
+    if "📊 基座多维成熟度展开" in line: in_multi = True; continue
+    if in_multi and line.startswith("</details>"): break
+    if in_multi and re.match(r'^\| [a-z]', line):
+        parts = [p.strip() for p in line.split("|")]
+        if len(parts) >= 10:
+            f_val = parts[9]  # FACTORY = column 10
+            if f_val == "N/A": factory_na += 1
+# testkitx should be N/A (test-only)
+if factory_na >= 1:
+    ok(f"FACTORY N/A={factory_na} (testkitx=test-only)")
+else:
+    no(f"FACTORY N/A={factory_na} (expected >=1)")
+
 # ── Summary ─────────────────────────────────────────────────
 total = PASS + FAIL
 print(f"\n{'='*42}")
