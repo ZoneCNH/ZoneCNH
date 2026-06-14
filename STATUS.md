@@ -38,7 +38,7 @@
 | [transportx](https://github.com/ZoneCNH/transportx) | v1.1.1-spec | █████ 100% | 100% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | 应用通信底座规格基线；spec-only；无公开 GitHub Release / git tag 对齐；production_import_allowed=false；非 factory until release |
 | [domainx](https://github.com/ZoneCNH/domainx) | v0.1.0 | █████ 100% | 100% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | 领域共享模型；CI 已部署；无公开 GitHub Release / git tag 对齐；非 factory until release |
 
-> ⚠️ **版本 / release 注记**：公开文档是投影层；版本、release 与 factory 状态以 `.foundationx/status/index.json` + `.foundationx/blockers.json` 为准。当前公开投影仍有 BLK-001/002/003/006/007 open，不声明 Foundation 整体 factory grade。
+> ⚠️ **版本 / release 注记**：公开文档是投影层；版本、release 与 factory 状态以 `.foundationx/status/index.json` + `.foundationx/blockers.json` 为准。当前多维成熟度表中 14/20 已发布 GitHub Release；公开投影仍有 BLK-001/002/003/006/007 open，不声明 Foundation 整体 factory grade。
 
 > **成熟度语义说明（2026-06-14 v2 Trust Alignment）**：上表"进度"反映本仓库 Spec 管线评分（spec→code），不代表可投产等级（factory grade）。下表提供多维度成熟度视图；RELEASE=❌ 或存在 open blocker 的模块不得投影为 FACTORY=✅。
 
@@ -331,7 +331,7 @@
 
 | 检查项 | README | ARCHITECTURE | STATUS | 一致性 |
 | ------ | ------ | ------------ | ------ | ------ |
-| 组件总数 | 77 | 77 | 78 | ⚠️ |
+| 组件总数 | 77 | 77 | 80 | ⚠️ |
 | market-data 数量 | 18 | 18 (13+5) | 18 (13+5) | ✅ |
 | macro-data 数量 | 11 | 11 | 11 | ✅ |
 | L2.5 组件 | 4 | 4 | 4 | ✅ |
