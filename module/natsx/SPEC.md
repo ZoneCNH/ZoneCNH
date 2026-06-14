@@ -2,15 +2,15 @@
 
 > 消息扩展层 / NATS 轻量消息与服务通信。NATS 内部通信封装，提供统一的发布/订阅、请求/响应、JetStream 和可观测集成。
 
-最后更新：2026-06-13
+最后更新：2026-06-14
 
 ---
 
 ## 1. Metadata
 
-- Status: Draft
+- Status: Review
 - Spec-Version: v1.0.0
-- Last-Updated: 2026-06-13
+- Last-Updated: 2026-06-14
 - Owner: ZoneCNH
 - Layer: 消息扩展层 / NATS 轻量消息与服务通信
 - Version: v1.0.0

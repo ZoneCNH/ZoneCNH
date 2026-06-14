@@ -2,15 +2,15 @@
 
 > Foundation L1 运行时调度。cron/interval/delay job、misfire、overlap、jitter、并发控制和优雅停机。
 
-最后更新：2026-06-07
+最后更新：2026-06-14
 
 ---
 
 ## 1. Metadata
 
-- Status: Draft
+- Status: Review
 - Spec-Version: v1.0.0
-- Last-Updated: 2026-06-07
+- Last-Updated: 2026-06-14
 - Owner: ZoneCNH
 - Layer: L1 基础能力
 - Version: v0.7.3

@@ -2,16 +2,16 @@
 
 > 基座 · 存储扩展。Kafka 客户端封装，提供统一的生产者、消费者、消息模型、序列化、健康检查和可观测集成。
 
-最后更新：2026-06-12
+最后更新：2026-06-14
 
 ---
 
 ## 1. Metadata
 
-- Status: Draft
-- Governance-Status: 未仲裁；等待四源评分 / arbiter 判定
+- Status: Review
+- Governance-Status: 等待四源评分
 - Spec-Version: v1.0.0
-- Last-Updated: 2026-06-12
+- Last-Updated: 2026-06-14
 - Owner: ZoneCNH
 - Version: v0.7.3
 - Layer: 基座 · 存储扩展
