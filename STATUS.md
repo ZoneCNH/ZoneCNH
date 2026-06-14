@@ -20,7 +20,7 @@
 | [xlib-harness](https://github.com/ZoneCNH/xlib-harness) | v1.0.0 | ████ 100% | SPEC + goal + TRACE + tasks | 模块生成器与门禁执行器：generate/scaffold、spec-lint、boundary-check、traceability-gate（6 FR，6 TC） |
 | [xlib-evidence](https://github.com/ZoneCNH/xlib-evidence) | v1.0.0 | ████ 100% | SPEC + goal + TRACE + tasks | 证据收集与发布运行时：collect-coverage、generate-manifest、validate-manifest、report（5 FR，5 TC） |
 | [xlibgate](https://github.com/ZoneCNH/xlibgate) | v1.0.2 | ███░ 90% | CLI 门禁实现完成 (11 FR, 10 tasks, PR #23 merged) | import 边界/go.mod/Go baseline/release/L2 门禁（14 files, +1053, xlibgate 测试通过） |
-| [kernel](https://github.com/ZoneCNH/kernel) | v1.0.0 | █████ 100% | 594KB/30 项 | L0 原语 / 12 子包 / stdlib-only / v1.0.0 已发布 |
+| [kernel](https://github.com/ZoneCNH/kernel) | v1.0.0 | █████ 100% | 全管线 --force pass (spec→code) | L0 原语 / 12 子包 / stdlib-only / v1.0.0 已发布 |
 | [configx](https://github.com/ZoneCNH/configx) | v1.0.0 | █████ 100% | 258KB/20 项 | 配置管理；v1.0.0 已发布，97.1% 覆盖率，13 FR 全部实现 |
 | [observex](https://github.com/ZoneCNH/observex) | v1.0.0 | █████ 100% | 220KB/18 项 | 可观测性 |
 | [testkitx](https://github.com/ZoneCNH/testkitx) | v1.0.0 | ███░ 90% | SPEC v0.7.3 + code 完成 (10 FR) | Fake / Fixture / Golden / Contract / Leak / Boundary / Manifest 测试工具包（PR #13 — fake + eventually + golden + boundary + leak，80.7% 覆盖，36/36 通过） |
