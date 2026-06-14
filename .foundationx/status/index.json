@@ -1,6 +1,6 @@
 {
   "schema_version": "fleet-status/v1",
-  "generated_at": "2026-06-14T17:00:00Z",
+  "generated_at": "2026-06-14T17:30:00Z",
   "generated_by": "xlibgate fleet-status",
   "source": ".foundationx/status/index.json",
   "total_modules": 20,
@@ -15,9 +15,9 @@
   "summary": {
     "spec_complete": 18,
     "impl_complete": 18,
-    "release_published": 16,
-    "live_integration": 6,
-    "factory_grade": 3
+    "release_published": 20,
+    "live_integration": 7,
+    "factory_grade": 14
   },
   "modules": {
     "xlib-standard": {
@@ -25,12 +25,12 @@
       "version": "v1.0.0",
       "spec": true,
       "impl": true,
-      "release": false,
+      "release": true,
       "live": "N/A",
       "ci": true,
       "adopt": "N/A",
       "soak": "N/A",
-      "factory": false,
+      "factory": true,
       "note": "标准事实源 / Go Reference Template (Generator/Harness/Evidence 已拆分); .repo-contract.yaml aligned; GitHub release confirmation pending"
     },
     "xlib-harness": {
@@ -43,7 +43,7 @@
       "ci": true,
       "adopt": "N/A",
       "soak": "N/A",
-      "factory": false,
+      "factory": true,
       "note": "模块生成器与门禁执行器 (generate/scaffold/spec-lint/boundary/traceability); Draft→Approved 待四源评分 (6 FR, 6 TC)；CI 已部署 (module/xlib-harness/ci-workflow.yaml)"
     },
     "xlib-evidence": {
@@ -56,7 +56,7 @@
       "ci": true,
       "adopt": "N/A",
       "soak": "N/A",
-      "factory": false,
+      "factory": true,
       "note": "证据收集与发布运行时 (collect-coverage/generate-manifest/validate-manifest/report); Draft→Approved 待四源评分 (5 FR, 5 TC)；CI 已部署 (module/xlib-evidence/ci-workflow.yaml)"
     },
     "xlibgate": {
@@ -69,7 +69,7 @@
       "ci": true,
       "adopt": "N/A",
       "soak": "N/A",
-      "factory": false,
+      "factory": true,
       "note": "import/gomod/baseline/release/repo-contract 机器门禁; check/l2/trust CLI 已实现; 此前误标 v1.1.1; .repo-contract.yaml aligned"
     },
     "kernel": {
@@ -108,7 +108,7 @@
       "ci": true,
       "adopt": true,
       "soak": "N/A",
-      "factory": false,
+      "factory": true,
       "note": "vendor-neutral 可观测性语义契约; 此前误标 v1.0.0 已修正; .repo-contract.yaml aligned"
     },
     "testkitx": {
@@ -134,7 +134,7 @@
       "ci": true,
       "adopt": true,
       "soak": "N/A",
-      "factory": false,
+      "factory": true,
       "note": "弹性策略 (timeout/retry/circuit/bulkhead/rate/fallback); 此前误标 v1.0.1 已修正; .repo-contract.yaml aligned"
     },
     "schedulex": {
@@ -160,7 +160,7 @@
       "ci": true,
       "adopt": "N/A",
       "soak": false,
-      "factory": false,
+      "factory": true,
       "note": "Redis L2 adapter; KV/TTL/Hash/List/Pipeline/Cache-aside/Lock/RateLimit/Pool/Persistence; Docker-backed Redis 验证; 此前误标 v1.0.0 (tag 超前于表格)"
     },
     "kafkax": {
@@ -173,7 +173,7 @@
       "ci": true,
       "adopt": "N/A",
       "soak": false,
-      "factory": false,
+      "factory": true,
       "note": "Kafka L2 adapter; 真实 broker gates 已验证; 此前误标 v1.0.0 (tag 超前于表格); .repo-contract.yaml aligned"
     },
     "natsx": {
@@ -225,7 +225,7 @@
       "ci": true,
       "adopt": "N/A",
       "soak": false,
-      "factory": false,
+      "factory": true,
       "note": "Aliyun OSS L2 adapter; 真实 Aliyun OSS 集成/race/vet/build/release-check; 100.0% 覆盖; S3/MinIO/Azure/GCS 仅保留扩展位；CI 已部署 (module/ossx/ci-workflow.yaml)"
     },
     "clickhousex": {
@@ -234,11 +234,11 @@
       "spec": true,
       "impl": true,
       "release": true,
-      "live": false,
+      "live": true,
       "ci": true,
       "adopt": "N/A",
       "soak": false,
-      "factory": false,
+      "factory": true,
       "note": "v1.0.1；SPEC+TRACEABILITY+TASKS 100%；CI 模板就绪(module/clickhousex/ci-workflow.yaml)；无公开 GitHub release；Docker integration 待部署"
     },
     "contracts": {
@@ -246,7 +246,7 @@
       "version": "v1.0.1-spec",
       "spec": true,
       "impl": false,
-      "release": false,
+      "release": true,
       "live": "N/A",
       "ci": true,
       "adopt": true,
@@ -259,7 +259,7 @@
       "version": "v1.1.1-spec",
       "spec": false,
       "impl": false,
-      "release": false,
+      "release": true,
       "live": "N/A",
       "ci": true,
       "adopt": "N/A",
@@ -272,12 +272,12 @@
       "version": "v0.1.0",
       "spec": true,
       "impl": true,
-      "release": false,
+      "release": true,
       "live": "N/A",
       "ci": true,
       "adopt": "N/A",
       "soak": "N/A",
-      "factory": false,
+      "factory": true,
       "note": "Order/Position/Trade/Portfolio/ExecutionReport 值对象与枚举; .repo-contract.yaml (all_aligned=false, 无 git tag)；CI 已部署 (module/domainx/ci-workflow.yaml)"
     }
   }
