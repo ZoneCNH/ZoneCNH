@@ -372,5 +372,44 @@ M1-M5（中期建议）→ 独立规划文档
 ---
 
 _报告生成：Claude Code 多维度手工分析（agent team 因 API 余额不足回退为直接分析）_
-_审核状态：待审核_
-_下一步：根据本报告执行 F1-F8 立即修复，创建对应的 docs/ PR_
+_审核状态：已审核 — 2026-06-14 全部可文档化项已修复_
+_下一步：O1 (xlibgate 代码) / O2 (testkitx code 阶段) / O6 (postgresx foundationx) 需跨仓库操作_
+
+---
+
+## 7. 修复状态（2026-06-14 闭环）
+
+### 已完成（本仓库 7 PR）
+
+| 修复 | PR | 内容 |
+|------|----|------|
+| F1-F8 | [#235](https://github.com/ZoneCNH/ZoneCNH/pull/235) | 状态表 18→20、CI 对齐、进度校准、L2.5 修正 |
+| 五类职责 | [#236](https://github.com/ZoneCNH/ZoneCNH/pull/236) | xlib-standard 五类→二类职责 ×6 |
+| README | [#237](https://github.com/ZoneCNH/ZoneCNH/pull/237) | README 17→20 + 缺失模块条目 |
+| O3+O5 | [#238](https://github.com/ZoneCNH/ZoneCNH/pull/238) | domainx v0.1.0 + evidence 边界文档化 |
+| O4 | [#239](https://github.com/ZoneCNH/ZoneCNH/pull/239) | taosx/clickhousex 时序存储边界 |
+| TRACKER | [#240](https://github.com/ZoneCNH/ZoneCNH/pull/240) | FOUNDATION-TRACKER 对齐更新 |
+| 仓库+规则 | [#241](https://github.com/ZoneCNH/ZoneCNH/pull/241) | 创建 3 缺失仓库 + CLAUDE.md 强制对应规则 + CI |
+
+### 审计遗漏项（本报告未覆盖，已修复）
+
+| 遗漏 | 发现方式 | PR |
+|------|----------|----|
+| xlib-harness/xlib-evidence/domainx 仓库 404 | 第三轮深度排查 | [#241](https://github.com/ZoneCNH/ZoneCNH/pull/241) |
+| README.md 基座列表仅 17 个 | 第三轮深度排查 | [#237](https://github.com/ZoneCNH/ZoneCNH/pull/237) |
+| xlib-standard 五类职责描述 6 处过时 | 第二轮深度排查 | [#236](https://github.com/ZoneCNH/ZoneCNH/pull/236) |
+
+### 未完成（需跨仓库代码操作）
+
+| 项 | 仓库 | 说明 |
+|----|------|------|
+| O1 | ZoneCNH/xlibgate | 10 tasks 代码实现（当前 SPEC 完整，进度 30%） |
+| O2 | ZoneCNH/testkitx | code/ 阶段 Go 实现（当前进度 80%） |
+| O6 | ZoneCNH/postgresx | Issue 6: foundationx 依赖迁移 |
+
+### 当前基线
+
+```
+基座模块: 20 (全文档统一) · 仓库: 20/20 · 版本覆盖: 29/74
+CI: status-consistency-check 13/13 ✅ · repo-existence-check 20/20 ✅
+```
