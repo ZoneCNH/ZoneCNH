@@ -14,10 +14,10 @@
   },
   "summary": {
     "spec_complete": 19,
-    "impl_complete": 18,
+    "impl_complete": 20,
     "release_published": 20,
     "live_integration": 7,
-    "factory_grade": 15
+    "factory_grade": 16
   },
   "modules": {
     "xlib-standard": {
@@ -245,20 +245,20 @@
       "layer": "contracts",
       "version": "v1.0.1-spec",
       "spec": true,
-      "impl": false,
+      "impl": true,
       "release": true,
       "live": "N/A",
       "ci": true,
       "adopt": true,
       "soak": "N/A",
-      "factory": false,
+      "factory": true,
       "note": "跨域稳定端口/事件/DTO 契约; .repo-contract.yaml (all_aligned=false, 无 git tag); spec baseline"
     },
     "transportx": {
       "layer": "contracts",
       "version": "v1.1.1-spec",
       "spec": false,
-      "impl": false,
+      "impl": true,
       "release": true,
       "live": "N/A",
       "ci": true,
