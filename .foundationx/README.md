@@ -6,10 +6,9 @@
 
 | 文件 | 用途 | 消费者 |
 |------|------|--------|
-| `repo-contract.schema.json` | repo-contract/v1 JSON Schema | xlibgate, CI validators |
-| `blockers.json` | 已知阻塞项清单（按严重度/模块/类别索引） | xlibgate maturity-check, CI |
+| `repo-contract.schema.json` | `foundation.repo-contract/v1` 聚合 JSON Schema | xlibgate, CI validators |
+| `blockers.json` | 已知阻塞项清单（按严重度/模块/类别索引，含 open/resolved 派生索引） | xlibgate maturity-check, CI |
 | `status/index.json` | 20 模块聚合状态（fleet status） | xlibgate fleet-status, 生成投影 |
-| `status.generated.json` | 生成型状态块（用于 README/ARCHITECTURE/STATUS） | 文档生成器 |
 
 ## 投影链路
 
@@ -18,9 +17,9 @@ module/*/SPEC.md + module/FOUNDATION-DEPS.yaml
         ↓
 xlibgate fleet-status --repos-root /home --output .foundationx/status/index.json
         ↓
-.foundationx/status/index.json
-        ↓ (生成)
-status.generated.json → README.md / ARCHITECTURE.md / STATUS.md generated blocks
+.foundationx/status/index.json + .foundationx/blockers.json
+        ↓ (生成 / 投影)
+README.md / ARCHITECTURE.md / STATUS.md generated blocks
 ```
 
 ## 更新方式
@@ -35,11 +34,21 @@ status.generated.json → README.md / ARCHITECTURE.md / STATUS.md generated bloc
 
 | 维度 | 字段 | 说明 |
 |------|------|------|
-| SPEC | `spec_complete` | 规格完成 |
-| IMPL | `implementation_complete` | 实现完成 |
-| RELEASE | `release_published` | tag/release/manifest 一致 |
-| LIVE INT | `live_integration` | 真实服务集成 |
-| EXT CI | `external_ci` | 外部 CI artifact |
-| ADOPT | `downstream_adoption` | 下游真实采用 |
-| SOAK | `production_soak` | 生产长时间运行 |
-| FACTORY | `factory_grade` | 最高综合等级 |
+| SPEC | `spec` | 规格完成 |
+| IMPL | `impl` | 实现完成 |
+| RELEASE | `release` | tag/release/manifest 一致 |
+| LIVE INT | `live` | 真实服务集成 |
+| EXT CI | `ci` | 外部 CI artifact |
+| ADOPT | `adopt` | 下游真实采用 |
+| SOAK | `soak` | 生产长时间运行 |
+| FACTORY | `factory` | 最高综合等级 |
+
+`status/index.json.summary` 使用长字段名（`spec_complete`、`impl_complete`、`release_published`、`live_integration`、`factory_grade`），必须从 `modules` 中的短字段派生。
+
+## Trust hardening invariants
+
+- `summary` 计数必须等于 `modules` 明细派生结果。
+- `release=false` 必须同时 `factory=false`。
+- `blockers.json` 中任一 `status=open` 的模块必须 `factory=false`。
+- `category=release` 且 `status=open` 的 blocker 必须使对应模块 `release=false`。
+- README / ARCHITECTURE / STATUS 等公开投影不得高于 `.foundationx/status/index.json` 事实层。

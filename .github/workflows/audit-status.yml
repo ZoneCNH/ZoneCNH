@@ -6,17 +6,38 @@ on:
       - STATUS.md
       - README.md
       - ARCHITECTURE.md
+      - .foundationx/**
+      - scripts/audit-status.py
+      - .github/ci/status-consistency-check.sh
+      - .github/workflows/audit-status.yml
   push:
     branches: [main]
     paths:
       - STATUS.md
       - README.md
       - ARCHITECTURE.md
+      - .foundationx/**
+      - scripts/audit-status.py
+      - .github/ci/status-consistency-check.sh
+      - .github/workflows/audit-status.yml
 
 jobs:
   audit:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Validate FoundationX JSON files
+        run: |
+          python3 -m json.tool .foundationx/status/index.json >/dev/null
+          python3 -m json.tool .foundationx/blockers.json >/dev/null
+          python3 -m json.tool .foundationx/repo-contract.json >/dev/null
+          python3 -m json.tool .foundationx/repo-contract.schema.json >/dev/null
+      - name: Validate audit guard syntax
+        run: |
+          python3 -m py_compile scripts/audit-status.py
+          bash -n .github/ci/status-consistency-check.sh
       - name: Run cross-document consistency check
-        run: python3 scripts/audit-status.py
+        run: |
+          python3 scripts/audit-status.py
+          python3 scripts/audit-status.py --foundationx-only
+          bash .github/ci/status-consistency-check.sh
