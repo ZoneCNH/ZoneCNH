@@ -4,6 +4,10 @@
 
 NatsMessageEnvelope：traceId/messageId/schemaVersion/header 双向映射与传播
 
+## 前置依赖
+
+(none)
+
 ## 规格引用
 
 module/natsx/SPEC.md#9-interface-contract

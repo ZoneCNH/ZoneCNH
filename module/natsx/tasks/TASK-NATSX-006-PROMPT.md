@@ -4,6 +4,10 @@
 
 SubjectBuilder：domain.resource.action.v{version} 构造与解析
 
+## 前置依赖
+
+(none)
+
 ## 规格引用
 
 module/natsx/SPEC.md#9-interface-contract

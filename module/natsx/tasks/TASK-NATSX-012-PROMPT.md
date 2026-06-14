@@ -4,6 +4,10 @@
 
 性能验证：Publish/Request/JetStream benchmark 基线与 SLO 断言
 
+## 前置依赖
+
+(none)
+
 ## 规格引用
 
 module/natsx/SPEC.md#17-performance-budget

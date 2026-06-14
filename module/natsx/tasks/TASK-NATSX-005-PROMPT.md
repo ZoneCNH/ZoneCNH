@@ -4,13 +4,17 @@
 
 Health 检查、GracefulShutdown、Drain、错误脱敏
 
+## 前置依赖
+
+TASK-NATSX-001
+
 ## 规格引用
 
 module/natsx/SPEC.md#FR-008, module/natsx/SPEC.md#BR-006
 
 ## 验收标准
 
-AC-008: Health 端点返回健康状态及组件详情
+AC-008: NATS 连接正常时 Health() 返回 Ready=true, Live=true; AC-008: NATS 不可达时 Health() 返回 Ready=false, Live=false; AC-008: JetStream 不可用时 Health() 返回 Ready=false, Live=true
 
 ## 文件
 

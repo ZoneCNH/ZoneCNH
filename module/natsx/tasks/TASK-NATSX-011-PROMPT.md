@@ -4,6 +4,10 @@
 
 安全注入：凭证环境变量、TLS 配置、日志脱敏、live integration
 
+## 前置依赖
+
+(none)
+
 ## 规格引用
 
 module/natsx/SPEC.md#19-security, module/natsx/SPEC.md#BR-008
