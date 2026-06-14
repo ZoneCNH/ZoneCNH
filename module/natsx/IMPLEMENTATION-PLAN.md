@@ -1,53 +1,69 @@
 # natsx 实现计划
 
-> 来源：[SPEC.md](./SPEC.md) | [TRACEABILITY.md](./TRACEABILITY.md)
+> 来源：[SPEC.md](./SPEC.md) | [TRACEABILITY.md](./TRACEABILITY.md) | 13 TASK 文件
 > 生成日期：2026-06-14
-> 更新：2026-06-14（补齐 files/验证命令/风险）
+> 更新：2026-06-14（task 6→13 重构：补齐 NFR 覆盖，TASK-006 重聚焦，TASK-010 废弃）
 
 ---
 
 ## 1. 依赖 DAG
 
 ```text
-TASK-NATSX-001 (Phase 1: Core NATS publish/subscribe)
-├── TASK-NATSX-002 (Request-Reply)
-├── TASK-NATSX-003 (JetStream publish/subscribe)
-├── TASK-NATSX-004 (JetStream AddStream/AddConsumer + reconnect)
-├── TASK-NATSX-005 (Health checks)
-└── TASK-NATSX-006 (CI/Benchmark/Docs)
+TASK-001 (Core NATS Pub/Sub) ──→ TASK-002 (Request-Reply, extends client.go)
+    │
+    ├──→ TASK-005 (Health)
+    ├──→ TASK-006 (SubjectBuilder)
+    ├──→ TASK-007 (Envelope, extends msg.go)
+    │
+TASK-003 (JetStream Pub/Sub) ──→ TASK-004 (AddStream/Consumer + reconnect, extends jetstream.go)
+    │
+    ├──→ TASK-008 (Config contract)
+    ├──→ TASK-009 (Observability)
+    └──→ TASK-011 (Security/TLS/live integration)
+            │
+            └──→ TASK-012 (Performance benchmark)
+                    │
+                    └──→ TASK-013 (Layer boundary) ──→ TASK-014 (Release + CI gate)
 ```
 
 ## 2. 实现顺序
 
-### Phase 1: Foundation
+### Phase 1: Core Foundation (P0, 阻塞链)
 
-| Task | Scope | Files | Effort | Verify |
-|------|-------|-------|--------|--------|
-| TASK-NATSX-001 | Publish/Subscribe 基础接口：subject 校验、handler 注册、连接错误处理 | client.go, subscription.go, msg.go, errors.go, client_test.go | 2h | `go test -run 'TestEmbeddedNATSCore' -count=1` |
-| TASK-NATSX-002 | Request-Reply 模式：responder、timeout、ctx cancel | client.go, client_test.go | 2h | `go test -run 'TestEmbeddedNATSCore' -count=1` |
+| Task | Scope | Files | Effort |
+|------|-------|-------|--------|
+| TASK-001 | Publish/Subscribe：subject 校验、handler 注册、连接错误处理 | client.go, subscription.go, msg.go, errors.go, client_test.go | 2h |
+| TASK-002 | Request-Reply：responder、timeout、ctx cancel | client.go, client_test.go | 1h |
+| TASK-003 | JetStream Publish/Subscribe：ack/redelivery/dead-letter | jetstream.go, errors.go, jetstream_test.go | 2h |
+| TASK-004 | AddStream/AddConsumer：创建、幂等、冲突配置、reconnect | jetstream.go, options.go, internal/reconnect/backoff.go, jetstream_test.go | 2h |
 
-### Phase 2: Features
+### Phase 2: Cross-cutting (P1, 可并行)
 
-| Task | Scope | Files | Effort | Verify |
-|------|-------|-------|--------|--------|
-| TASK-NATSX-003 | JetStream 发布订阅：ack/redelivery/dead-letter 行为 | jetstream.go, errors.go, jetstream_test.go | 2h | `go test -race -count=1` |
-| TASK-NATSX-004 | AddStream/AddConsumer：创建、幂等、冲突配置、drain | jetstream.go, options.go, internal/reconnect/backoff.go, jetstream_test.go | 2h | `go test -race -count=1` |
-| TASK-NATSX-005 | Health 检查、GracefulShutdown、Drain、错误脱敏 | health.go, health_test.go | 2h | `go test -race -count=1` |
+| Task | Scope | Files | Effort |
+|------|-------|-------|--------|
+| TASK-005 | Health 检查、GracefulShutdown、Drain | health.go, health_test.go | 1h |
+| TASK-006 | SubjectBuilder：构造与解析 | subject.go, subject_test.go | 1h |
+| TASK-007 | NatsMessageEnvelope：trace/message/schema header 双向映射 | msg.go, msg_test.go | 1h |
+| TASK-008 | Config：foundationx.nats.* 加载、环境变量、旧别名兼容 | config.go, env.go, options.go, config_test.go | 2h |
+| TASK-009 | Observability：foundationx_nats_* 指标、连接日志、错误脱敏 | natsx.go, metrics_test.go | 1h |
+| TASK-011 | Security/TLS：凭证注入、TLS 配置、live integration | config.go, live_integration_test.go | 1h |
 
-### Phase 3: Quality Gates
+### Phase 3: Quality Gates (P2, 收尾)
 
-| Task | Scope | Files | Effort | Verify |
-|------|-------|-------|--------|--------|
-| TASK-NATSX-006 | CI gate 集成、测试覆盖率、benchmark 基线、README、CHANGELOG | go.mod, README.md, CHANGELOG.md, benchmark_test.go, example_test.go | 2h | `go test ./... -coverprofile=coverage.out && go tool cover -func=coverage.out` |
+| Task | Scope | Files | Effort |
+|------|-------|-------|--------|
+| TASK-012 | Performance：benchmark 基线 + SLO 断言 | benchmark_test.go | 1h |
+| TASK-013 | Layer boundary：依赖边界检查 | go.mod | 0.5h |
+| TASK-014 | Release：README、CHANGELOG、CI gate、覆盖率 | go.mod, README.md, CHANGELOG.md, example_test.go, integration_test.go | 2h |
 
 ## 3. 总 Effort
 
 | Phase | Tasks | Effort |
 |-------|-------|--------|
-| Foundation | 2 | 4h |
-| Features | 3 | 6h |
-| Quality | 1 | 2h |
-| **Total** | **6** | **12h** |
+| Core Foundation | 4 | 7h |
+| Cross-cutting | 6 | 7h |
+| Quality Gates | 3 | 3.5h |
+| **Total** | **13** | **17.5h** |
 
 ## 4. CI Gate 矩阵
 
@@ -58,13 +74,13 @@ TASK-NATSX-001 (Phase 1: Core NATS publish/subscribe)
 | coverage >= 80% | Final | 覆盖率达标 | `go test ./... -coverprofile=.coverage/cover.out && go tool cover -func=.coverage/cover.out` |
 | go vet | Final | 零警告 | `GOWORK=off go vet ./pkg/natsx` |
 | golangci-lint | Final | 零错误 | `golangci-lint run` |
-| gitleaks | Final | 零命中 | `gitleaks detect --no-git` |
+| secret scan | Final | 零泄露 | `gitleaks detect --no-git` |
+| benchmark | Phase 3 | 结果附 PR | `go test -bench=. -benchmem -count=3 ./...` |
 
-## 5. 风险与回滚
+## 5. 风险
 
-| 风险 | 级别 | 缓解 | 回滚 |
-|------|------|------|------|
-| Core NATS API 破坏性变更 | LOW | 已有可工作实现 (repair-slice)，向后兼容 | `git revert` 单 commit |
-| JetStream 消费语义回归 | LOW | repair-slice 已覆盖 publish/pull/ack/nack/redelivery | 回滚到 commit `393d148` |
-| 配置兼容 (FOUNDATIONX_NATS_* vs NATS_*) | LOW | 已有 canonical+legacy fallback 测试 | 回退 env loading 逻辑 |
-| TLS 配置遗漏 | LOW | PR #7 已实现 TLS gate + 集成测试 | 回退 TLS config 变更 |
+| 风险 | 影响 | 缓解 |
+|------|------|------|
+| client.go / jetstream.go 多个 TASK 共享 | 合并冲突 | Phase 内顺序执行，Phase 间按文件归属协调 |
+| NFR task AC ID 为自定义前缀 | rubric 扣 1 分 LOW | 已记录为工程惯例，不阻塞 |
+| codex/copilot 评分源缺失 | gate 依赖 --force | 待补齐后重新仲裁 |
