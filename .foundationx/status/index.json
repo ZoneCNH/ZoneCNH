@@ -44,7 +44,7 @@
       "adopt": "N/A",
       "soak": "N/A",
       "factory": false,
-      "note": "模块生成器与门禁执行器 (generate/scaffold/spec-lint/boundary/traceability); Draft→Approved 待四源评分 (6 FR, 6 TC)"
+      "note": "模块生成器与门禁执行器 (generate/scaffold/spec-lint/boundary/traceability); Draft→Approved 待四源评分 (6 FR, 6 TC)；CI 模板已就绪 (module/xlib-harness/ci-workflow.yaml)"
     },
     "xlib-evidence": {
       "layer": "evidence",
@@ -57,7 +57,7 @@
       "adopt": "N/A",
       "soak": "N/A",
       "factory": false,
-      "note": "证据收集与发布运行时 (collect-coverage/generate-manifest/validate-manifest/report); Draft→Approved 待四源评分 (5 FR, 5 TC)"
+      "note": "证据收集与发布运行时 (collect-coverage/generate-manifest/validate-manifest/report); Draft→Approved 待四源评分 (5 FR, 5 TC)；CI 模板已就绪 (module/xlib-evidence/ci-workflow.yaml)"
     },
     "xlibgate": {
       "layer": "gate",
@@ -226,7 +226,7 @@
       "adopt": "N/A",
       "soak": "partial",
       "factory": false,
-      "note": "Aliyun OSS L2 adapter; 真实 Aliyun OSS 集成/race/vet/build/release-check; 100.0% 覆盖; S3/MinIO/Azure/GCS 仅保留扩展位"
+      "note": "Aliyun OSS L2 adapter; 真实 Aliyun OSS 集成/race/vet/build/release-check; 100.0% 覆盖; S3/MinIO/Azure/GCS 仅保留扩展位；CI 模板已就绪 (module/ossx/ci-workflow.yaml)"
     },
     "clickhousex": {
       "layer": "L2",
@@ -239,7 +239,7 @@
       "adopt": "N/A",
       "soak": false,
       "factory": false,
-      "note": "ClickHouse OLAP; 完整 SPEC + TRACEABILITY §1-§7 + 7 Tasks; 覆盖率 100%; GitHub release 待发布"
+      "note": "ClickHouse OLAP; 完整 SPEC + TRACEABILITY §1-§7 + 7 Tasks; 覆盖率 100%; GitHub release 待发布；CI 模板已就绪 (module/clickhousex/ci-workflow.yaml)"
     },
     "contracts": {
       "layer": "contracts",
@@ -278,7 +278,7 @@
       "adopt": "N/A",
       "soak": "N/A",
       "factory": false,
-      "note": "Order/Position/Trade/Portfolio/ExecutionReport 值对象与枚举; .repo-contract.yaml (all_aligned=false, 无 git tag)"
+      "note": "Order/Position/Trade/Portfolio/ExecutionReport 值对象与枚举; .repo-contract.yaml (all_aligned=false, 无 git tag)；CI 模板已就绪 (module/domainx/ci-workflow.yaml)"
     }
   }
 }
