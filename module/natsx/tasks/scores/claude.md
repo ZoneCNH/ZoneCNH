@@ -59,7 +59,6 @@
 | 项 | 类型 | 说明 |
 |----|------|------|
 | AC 描述扩展至边界场景 | task 增强 | TASK-001~005 的 AC 描述仅覆盖成功路径，缺错误/边界场景声明 |
-| depends_on 显式化 | task 增强 | 当前隐式依赖链 (001→002→003→004→005)，模板标注可选但建议显式 |
-| TRACEABILITY TC-010 行 | matrix 阶段 | Reverse Coverage TC-010 仍引用 BR-004 (handler latency)，与更新后的 Forward Coverage (BR-004→TASK-001 via TC-001) 不一致 |
+| depends_on 显式化 | task 增强 | 当前隐式依赖链，模板标注可选但建议显式 |
 
-> 文件重叠 (client.go / jetstream.go / msg.go 被多个 TASK 引用) 为按设计的分层架构：top-level 文件是集成注册点，`internal/` 子包隔离各 task 独立实现。不视为质量差距。
+> 文件重叠为按设计的分层架构：top-level 文件是集成注册点，`internal/` 子包隔离各 task 独立实现。不视为质量差距。
