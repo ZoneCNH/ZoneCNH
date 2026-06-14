@@ -108,7 +108,9 @@
 - **同步检查表维护**：`STATUS.md` 文档同步检查表（≈L335-345）的 README/ARCHITECTURE/STATUS 三列必须与各文档 `grep -oP 'github\.com/ZoneCNH/[a-zA-Z0-9_.-]+' | sort -u | wc -l` 的实际 unique repo 数一致。STATUS 列因 double-count observex（基座+横切）比 unique 数多 1；该差异需在表注中说明。
 - **Dashboard 同步**：按域统计表合计行（总数/已有/已创建/平均进度/有版本号）变更时，必须同步更新仪表盘的 `组件总数/已有/已创建/平均进度` 和进度分布条目的计数与百分比。
 - **有版本号/无版本号 合计必须等于组件总数**：用 `awk -F'|'` 逐行查 version 列，非空且非 `-` 即计入有版本号，其余计无版本号，两者之和必须等于该域总数。
-- **CountGuard hook 已部署**：`.claude/hooks/count-guard.mjs`。Write/Edit 到上述三文件时自动扫描内容中的数量模式并输出验证提醒。该 hook 仅告警不阻断，但告警不可忽略——必须实际跑验证命令确认数量正确后方可 commit。
+- **CountGuard hook 已部署**：`.claude/hooks/count-guard.mjs`。Write/Edit 到上述三文件时自动扫描内容中的数量模式。BLOCK 级（exit 2）：组件总数/平均进度/有版本号；WARN 级（exit 0）：X/Y 分数/百分比/已有/已创建。`COUNT_GUARD_STRICT=false` 降级为全告警模式。告警不可忽略——必须实际跑验证命令确认数量正确后方可 commit。
+- **跨维度交叉验证**：单一表格内部自洽不足以防漂移——必须交叉验证不同章节/不同文档中描述同一事实的数字。示例：RELEASE 列 ✅ 计数 vs 版本注记 Release 数、FACTORY N/A 计数 vs 组件表 testkitx 标记、仪表盘已有 vs 合计已有、同步表 STATUS 列 vs grep 唯一仓库数。`scripts/audit-status.py` check 8 已实现 RELEASE 和 FACTORY 的跨维度自动检查，新增维度时同步扩展该脚本。
+- **审计闭合前必须跑 `python3 scripts/audit-status.py --network`**：22 项机械化检查 + 78 repos 全量 404 扫描。全部 PASS 方可声称"无残余问题"。不得以"之前跑过"为由跳过最终验证。
 
 ### Plan-first 原则
 
