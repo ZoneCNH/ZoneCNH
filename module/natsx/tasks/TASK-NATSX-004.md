@@ -12,6 +12,7 @@ TASK-NATSX-004:
   files:
     - "jetstream.go"
     - "options.go"
+    - "internal/reconnect/backoff.go"
     - "jetstream_test.go"
   priority: P0
   status: pending

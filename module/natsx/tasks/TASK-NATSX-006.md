@@ -8,8 +8,9 @@ TASK-NATSX-006:
     - "module/natsx/SPEC.md#17-performance-budget"
     - "module/natsx/SPEC.md#22-release-dod"
   acceptance_criteria:
-    - "AC-001: CI gate 全绿（go build / go test / go vet / lint）"
-    - "AC-008: 测试覆盖率 >= 80%，benchmark 无 >10% 回退"
+    - "§20: CI gate 全绿（go build / go test / go vet / lint）"
+    - "§16+§17: 测试覆盖率 >= 80%，benchmark 无 >10% 回退"
+    - "§22: README + CHANGELOG v1.0.0"
   files:
     - "go.mod"
     - "README.md"
