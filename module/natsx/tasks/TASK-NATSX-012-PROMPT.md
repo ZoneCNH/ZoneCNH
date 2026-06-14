@@ -6,11 +6,11 @@
 
 ## 规格引用
 
-module/natsx/SPEC.md#FR-NFR-003,module/natsx/SPEC.md#17-performance-budget,
+module/natsx/SPEC.md#FR-NFR-003, module/natsx/SPEC.md#17-performance-budget
 
 ## 验收标准
 
-AC-PERF-001: Core Publish < 1ms benchmark;AC-PERF-002: Request-Reply < 5ms benchmark;AC-PERF-003: JetStream Publish/Fetch < 2ms benchmark;
+§17: Core Publish < 1ms benchmark; §17: Request-Reply < 5ms benchmark; §17: JetStream Publish/Fetch < 2ms benchmark
 
 ## 文件
 
@@ -18,7 +18,7 @@ benchmark_test.go
 
 ## 验证
 
-NFR-003 verified via TC-012;
+NFR-003 verified via TC-012
 
 ## 优先级
 

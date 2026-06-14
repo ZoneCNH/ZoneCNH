@@ -169,6 +169,18 @@ AND 允许发布，版本为 minor 升级
 
 ---
 
+
+## Acceptance Criteria Registry
+
+| AC ID | FR 引用 | 验收标准 | 验证方式 |
+|-------|---------|----------|----------|
+| AC-001 | FR-001 | 验收标准 TC-001 | unit test |
+| AC-002 | FR-002 | 验收标准 TC-002 | unit test |
+| AC-003 | FR-003 | 验收标准 TC-003 | unit test |
+| AC-004 | FR-004 | 验收标准 TC-004 | unit test |
+| AC-005 | FR-005 | 验收标准 TC-005 | unit test |
+| AC-006 | FR-006 | 验收标准 TC-006 | unit test |
+
 ## 8. Business Rules
 
 | 编号   | 规则                                                           | 违反后果 |

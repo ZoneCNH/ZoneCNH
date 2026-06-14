@@ -67,3 +67,12 @@ TASK-RESILIENCX-000 (Phase 1: foundation)
 | go vet | Final | 零警告 |
 | golangci-lint | Final | 零错误 |
 | gitleaks | Final | 零命中 |
+
+## 5. 风险与回滚
+
+| 风险 | 级别 | 缓解 | 回滚 |
+|------|------|------|------|
+| API 破坏性变更 | LOW | 已有可工作实现，向后兼容 | `git revert` |
+| 外部依赖不可用 | MEDIUM | 健康检查 + 降级策略 | 回退到上一稳定版本 |
+| 配置兼容性回归 | LOW | 已有 canonical+legacy 测试覆盖 | 回退配置变更 |
+

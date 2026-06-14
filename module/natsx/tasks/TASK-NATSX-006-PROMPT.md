@@ -6,11 +6,11 @@ SubjectBuilder：domain.resource.action.v{version} 构造与解析
 
 ## 规格引用
 
-module/natsx/SPEC.md#FR-NFR-006,module/natsx/SPEC.md#9-interface-contract,
+module/natsx/SPEC.md#FR-NFR-006, module/natsx/SPEC.md#9-interface-contract
 
 ## 验收标准
 
-AC-SBJ-001: Build 产出合法 subject 字符串;AC-SBJ-002: Parse 还原 domain/resource/action/version;AC-SBJ-003: 非法 token 拒绝并返回错误;
+§9: Build 产出合法 subject 字符串; §9: Parse 还原 domain/resource/action/version; §9: 非法 token 拒绝并返回错误
 
 ## 文件
 
@@ -18,7 +18,7 @@ subject.go, subject_test.go
 
 ## 验证
 
-NFR-006 verified via TC-006;
+NFR-006 verified via TC-006
 
 ## 优先级
 

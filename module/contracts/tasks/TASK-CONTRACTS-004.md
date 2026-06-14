@@ -35,6 +35,11 @@ non_scope:
 
 ---
 
+## Non-scope
+
+- 不编写Go代码（纯文档）
+- 不修改SPEC（已完成）
+
 ## Requirements Covered
 
 | Requirement | Description   | Acceptance Criteria           |

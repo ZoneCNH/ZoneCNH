@@ -33,6 +33,10 @@ status: pending
 
 ---
 
+## Non-scope
+
+- 不涉及本 Task 范围外的功能
+
 ## Requirements Covered
 
 | Requirement | Description                                             | Acceptance Criteria |

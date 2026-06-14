@@ -43,6 +43,12 @@ non_scope:
 
 ---
 
+## Non-scope
+
+- 不实现具体Event类型
+- 不实现MQ发布逻辑（→kafkax）
+- 不定义数据端口（→TASK-001）
+
 ## Requirements Covered
 
 | Requirement | Description | Acceptance Criteria    |

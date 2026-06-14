@@ -32,6 +32,12 @@ non_scope:
 
 ---
 
+## Non-scope
+
+- 不定义接口或DTO签名（→TASK-001/002）
+- 不编写测试文件（骨架任务，CI Gate 编译期检查即通过）
+- 不引入任何非 stdlib/L2.5 依赖
+
 ## Requirements Covered
 
 | Requirement | Description     | Acceptance Criteria |

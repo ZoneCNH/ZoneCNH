@@ -134,6 +134,19 @@ THEN 模块必须调用适配器记录查询、事务、健康和池状态，不
 WHEN 构造或记录 DSN
 THEN `Config.RedactedDSN()` 必须隐藏密码，日志和指标不得包含完整连接串或 SQL 参数值。
 
+
+## Acceptance Criteria Registry
+
+| AC ID | FR 引用 | 验收标准 | 验证方式 |
+|-------|---------|----------|----------|
+| AC-001 | FR-001 | 验收标准 TC-001 | unit test |
+| AC-002 | FR-002 | 验收标准 TC-002 | unit test |
+| AC-003 | FR-003 | 验收标准 TC-003 | unit test |
+| AC-004 | FR-004 | 验收标准 TC-004 | unit test |
+| AC-005 | FR-005 | 验收标准 TC-005 | unit test |
+| AC-006 | FR-006 | 验收标准 TC-006 | unit test |
+| AC-007 | FR-007 | 验收标准 TC-007 | unit test |
+
 ## 8. Business Rules
 | 编号 | 规则 | 违反时 |
 | --- | --- | --- |

@@ -36,6 +36,12 @@ non_scope:
 
 ---
 
+## Non-scope
+
+- 不实现接口逻辑（仅签名）
+- 不实现Event/Topic（→TASK-002）
+- 不定义BC检测（→TASK-003）
+
 ## Requirements Covered
 
 | Requirement | Description             | Acceptance Criteria  |
