@@ -24,6 +24,7 @@
 | 日期       | 版本         | 变更内容 | 作者    |
 | ---------- | ------------ | -------- | ------- |
 | 2026-06-14 | v0.1.0-draft | 初始版本 | ZoneCNH |
+| 2026-06-14 | v0.1.0-draft | FR-008 Module Identity (README H1 + go.mod 校验) | ZoneCNH |
 
 ## 2. Summary
 
@@ -136,6 +137,21 @@ AND 应用手续费模型：maker/taker 费率按交易所配置
 AND 支持自定义滑点和手续费函数
 
 ---
+
+### FR-008: Module Identity
+
+WHEN downstream consumer reads `backtestx` `README.md`
+THEN the H1 heading MUST be `# backtestx`
+AND MUST NOT be `# xlib-standard`
+
+WHEN module documentation references the `backtestx` Go module path
+THEN it MUST use `github.com/ZoneCNH/backtestx`
+AND MUST NOT use `github.com/ZoneCNH/xlib-standard`
+
+WHEN `go.mod` declares the module name
+THEN it MUST be `module github.com/ZoneCNH/backtestx`
+
+
 
 ## 8. Business Rules
 

@@ -24,6 +24,7 @@
 | 日期       | 版本         | 变更内容 | 作者    |
 | ---------- | ------------ | -------- | ------- |
 | 2026-06-14 | v0.1.0-draft | 初始版本 | ZoneCNH |
+| 2026-06-14 | v0.1.0-draft | FR-010 Module Identity (README H1 + go.mod 校验) | ZoneCNH |
 
 ## 2. Summary
 
@@ -147,6 +148,21 @@ THEN 执行 Drain-Then-Apply：先停止旧拓扑上游 → 等待 in-flight 数
 AND 热更新期间数据不丢不重（通过 offset checkpoint）
 
 ---
+
+### FR-010: Module Identity
+
+WHEN downstream consumer reads `flowx` `README.md`
+THEN the H1 heading MUST be `# flowx`
+AND MUST NOT be `# xlib-standard`
+
+WHEN module documentation references the `flowx` Go module path
+THEN it MUST use `github.com/ZoneCNH/flowx`
+AND MUST NOT use `github.com/ZoneCNH/xlib-standard`
+
+WHEN `go.mod` declares the module name
+THEN it MUST be `module github.com/ZoneCNH/flowx`
+
+
 
 ## 8. Business Rules
 
