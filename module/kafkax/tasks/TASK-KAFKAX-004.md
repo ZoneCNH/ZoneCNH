@@ -1,3 +1,8 @@
+---
+scope: "TASK-KAFKAX-004: TASK-KAFKAX-004"
+acceptance_criteria: []
+---
+
 # TASK-KAFKAX-004: TASK-KAFKAX-004
 
 - **Module**: kafkax
@@ -24,3 +29,7 @@ Does NOT implement Kafka broker deployment, topic auto-creation, or Kafka Connec
 ## Acceptance
 
 - [ ] FR-006 verified via TC
+
+## Non-scope
+
+- 不涉及本 Task 范围外的功能
