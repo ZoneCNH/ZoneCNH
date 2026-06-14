@@ -1,0 +1,22 @@
+name: Audit STATUS.md consistency
+
+on:
+  pull_request:
+    paths:
+      - STATUS.md
+      - README.md
+      - ARCHITECTURE.md
+  push:
+    branches: [main]
+    paths:
+      - STATUS.md
+      - README.md
+      - ARCHITECTURE.md
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run cross-document consistency check
+        run: python3 scripts/audit-status.py
