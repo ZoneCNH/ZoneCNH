@@ -16,9 +16,9 @@
 ### Changed
 
 - 固化模块级 Goal 文档路径为 `module/{module}/goal.md`，禁止 `goal/` 目录和 `goal/1.md` 槽位。
-- **STATUS.md / README.md / ARCHITECTURE.md 三文档全量交叉审计闭合**（44 PRs, #385-#431）。审计日期 2026-06-15，最终 audit-status.py (v2 cross-dimension) 24/24 PASS，78 repos 0 404。详情见 `docs/solutions/three-doc-audit-20260615.md`。
+- **STATUS.md / README.md / ARCHITECTURE.md 三文档全量交叉审计闭合**（52 PRs, #385-#439）。审计日期 2026-06-15，最终 audit-status.py (v2 cross-dimension) 24/24 PASS，78 repos 0 404。详情见 `docs/solutions/three-doc-audit-20260615.md`。
 
-  > 验证：`gh pr list --repo ZoneCNH/ZoneCNH --state merged --json number --jq '[.[] | select(.number >= 385 and .number <= 431)] | length'` → 44
+  > 验证：`gh pr list --repo ZoneCNH/ZoneCNH --state merged --json number --jq '[.[] | select(.number >= 385 and .number <= 439)] | length'` → 52
 
   **审计根因**：agent 凭常识编造计数（18 vs 14 个 Release、67% vs 62% 平均进度、有版本号 1/0/0 vs 2/3/3），而非逐表逐行 grep 统计。
 
