@@ -140,7 +140,7 @@ modules:
 
   domainx:
     path: github.com/ZoneCNH/domainx
-    layer: domain-shared
+    layer: L2.5
     stdlib_only: false
     description: "领域共享基础契约与原语"
 
