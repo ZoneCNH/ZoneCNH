@@ -48,7 +48,7 @@ L2.5: decimalx / domain-market / domain-exchange / domain-macro
 数据域: market-data (18) / macro-data (11) / alternative-data
 分析域: factor-engine / feature-store / factor-eval / market_regime / macro_regime / regime-engine / ms_brain / flowx
        三引擎: market_engine(market facts → S state) / macro_engine(macro facts → M state) / regime_engine(M+S → action/risk/permission)
-决策域: signal-factory / backtest-engine / optimizer / strategies / backtestx / strategyx / maestro
+决策域: signal-factory / backtest-engine / optimizer / backtestx / strategyx / maestro
 执行域: risk-engine → order-engine → portfolio-engine / settlement ; riskx / orderx / positionx
 
 反馈: backtest → factor-eval；fills / PnL / exposure events → 决策域
@@ -154,7 +154,6 @@ L2.5: decimalx / domain-market / domain-exchange / domain-macro
 - [signal-factory](https://github.com/ZoneCNH/signal-factory) — 信号生成与组合 `公开`
 - [backtest-engine](https://github.com/ZoneCNH/backtest-engine) — 事件驱动回测引擎 `公开`
 - [optimizer](https://github.com/ZoneCNH/optimizer) — 参数优化 `公开`
-- [strategies](https://github.com/ZoneCNH/strategies) — 策略研究与信号参考 `公开`
 - [backtestx](https://github.com/ZoneCNH/backtestx) — 回测引擎（事件驱动、Walk-Forward、蒙特卡洛） `公开`
 - [strategyx](https://github.com/ZoneCNH/strategyx) — 策略工厂（策略注册、参数管理、信号组合） `公开`
 - [maestro](https://github.com/ZoneCNH/maestro) — 工作流编排引擎（DAG 工作流、状态机、错误恢复） `公开`

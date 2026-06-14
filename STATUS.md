@@ -152,7 +152,6 @@
 | [signal-factory](https://github.com/ZoneCNH/signal-factory) | - | ░░░░ 5% | 100% | 信号生成与组合 |
 | [backtest-engine](https://github.com/ZoneCNH/backtest-engine) | - | ░░░░ 5% | 100% | 事件驱动回测 |
 | [optimizer](https://github.com/ZoneCNH/optimizer) | - | ░░░░ 5% | 100% | 参数优化 |
-| [strategies](https://github.com/ZoneCNH/strategies) | - | ██░░ 60% | 100% | 策略研究与参考库，3.5MB/746 项 |
 | [backtestx](https://github.com/ZoneCNH/backtestx) | v0.1.0-draft | ░░░░ 5% | 100% | 回测引擎 — 事件驱动回测、Walk-Forward、蒙特卡洛（7 FR, SPEC draft） |
 | [strategyx](https://github.com/ZoneCNH/strategyx) | v0.1.0-draft | ░░░░ 5% | 100% | 策略工厂 — 策略注册、参数管理、信号组合（7 FR, SPEC draft） |
 | [maestro](https://github.com/ZoneCNH/maestro) | v0.1.0-draft | ░░░░ 5% | 100% | 工作流编排引擎 — DAG 工作流、状态机、错误恢复（9 FR, SPEC draft） |
@@ -184,16 +183,16 @@
 ## 总览仪表盘
 
 ```text
-组件总数: 81    已有: 65    已创建: 16    平均进度: 65%
+组件总数: 81    已有: 59    已创建: 22    平均进度: 67%
 
 进度分布:
-  ███░ ≥80% ██████████████████████████████████████████████  54 个 (73%)
+  ███░ ≥80% ██████████████████████████████████████████████  55 个 (68%)
   ██░░ 60%  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   1 个 ( 1%)
-  █░░░ 15%  ██░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   2 个 ( 3%)
+  █░░░ 25%  ░                                                 1 个 ( 1%)
   ░░░░  5%  ████████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  15 个 (20%)
   未标注    ██░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   2 个 ( 3%)
 
-版本覆盖: 有版本号 37 个 (46%)    无版本号 44 个 (54%)
+版本覆盖: 有版本号 37 个 (46%)    无版本号 43 个 (54%)
 ```
 
 ### 按域统计
@@ -207,13 +206,13 @@
 | 数据域 · 宏观          | 11   | 11   | 0      | 80%      | 0                                                           |
 | 数据域 · 另类          | 1    | 0    | 1      | 5%       | 0                                                           |
 | 分析域                 | 8    | 1    | 7      | 8%       | 2 (regime-engine, flowx)                                           |
-| 决策域                 | 7    | 1    | 6      | 13%      | 3 (backtestx, strategyx, maestro)                                                           |
+| 决策域                 | 6    | 0    | 6      | 5%       | 3 (backtestx, strategyx, maestro)                                                           |
 | 执行域                 | 7    | 0    | 7      | 5%       | 3 (riskx, orderx, positionx)                                                           |
 | 入口                   | 1    | 1    | 0      | 80%      | 1 (x.go)                                                    |
 | 横切                   | 2    | 1    | 1      | 53%      | 1 (observex)                                                |
 | Rust                   | 1    | 1    | 0      | -        | 0                                                           |
 | 独立                   | 1    | 1    | 0      | -        | 0                                                           |
-| **合计**               | **81** | **59** | **22** | **67%**  | **37**                                                      |
+| **合计**               | **80** | **58** | **21** | **67%**  | **37**                                                      |
 
 ---
 
@@ -223,7 +222,7 @@
 
 - 组件：20 个，平均进度 100%，100%
 - 核心模块已通过 .repo-contract.yaml 完成版本对齐：18/20 基座模块已发布 GitHub Release（xlib-harness / xlib-evidence 缺失）；18/20 已创建 git tag（xlib-harness / xlib-evidence 缺失）；全部 20 模块 CI 已部署；natsx / postgresx factory_grade_allowed=true（v1.0.0 + live integration + CI = 生产就绪）；domainx 已归入基座（v0.1.0 CI 已部署）
-- 存储层 `redisx` v1.0.1（Docker-backed Redis + persistence restart recovery 验证），`kafkax` v1.0.2（真实 broker gates 已验证），`natsx` v1.0.0（repair-slice 20/20，真实 dev auth live gate 验证，TLS 已实现），`postgresx` v1.0.0（live integration 通过，factory_grade_allowed=false），`taosx` v1.0.1（真实 taosWS WebSocket 集成已验证，pkg/taosx 100.0% 覆盖），`ossx` v1.0.1（真实 Aliyun OSS 集成、race/vet/build/release-check 已验证）；`clickhousex` v1.0.1（GitHub release 未发布，CI 模板已就绪）；`transportx` v1.1.1-spec（SPEC baseline，9 CI workflows，production_import_allowed=false）
+- 存储层 `redisx` v1.0.1（Docker-backed Redis + persistence restart recovery 验证），`kafkax` v1.0.2（真实 broker gates 已验证），`natsx` v1.0.0（repair-slice 20/20，真实 dev auth live gate 验证，TLS 已实现），`postgresx` v1.0.0（live integration 通过，factory_grade_allowed=false），`taosx` v1.0.1（真实 taosWS WebSocket 集成已验证，pkg/taosx 100.0% 覆盖），`ossx` v1.0.1（真实 Aliyun OSS 集成、race/vet/build/release-check 已验证）；`clickhousex` v1.0.1（git tag v1.0.1 + CI 已部署+运行(Docker ClickHouse)，RELEASE=✅）；`transportx` v1.1.1-spec（SPEC baseline，9 CI workflows，production_import_allowed=false）
 - **SRE/CI/CD**：已产出 [`docs/sre/foundation-cicd-plan.md`](../docs/sre/foundation-cicd-plan.md)（20 模块 4 阶段部署方案、8 标签池、Docker 集成测试、标准化模板），待落地
 - **阻塞项**：无 — 全部 20 模块 CI 已部署、FACTORY 19/20（testkitx=N/A）；xlib-harness / xlib-evidence git tag 待创建
 
@@ -258,7 +257,6 @@
 ### 🔴 决策域（阻塞）
 
 - 核心组件 3 个仅创建（5%）：signal-factory / backtest-engine / optimizer
-- strategies 已有（60%，3.5MB/746 项），但定位模糊
 - backtestx / strategyx / maestro SPEC 已创建（v0.1.0-draft）
 - **阻塞项**：依赖分析域产出因子
 
@@ -298,7 +296,6 @@
 | R4 | 13 个交易所 SDK 全部无版本号 | 无法追踪 API 兼容性 | 建立版本化发布机制 |
 | R5 | 宏观数据源 6 个央行适配器同质化 | 维护成本高 | 考虑合并为统一适配器 |
 | R6 | strategies 定位模糊（3.5MB/746 项） | 参考代码 vs 生产代码不清 | 明确定位，考虑从状态表分离 |
-| R7 | observex 双重归属（基座+横切） | 职责边界模糊 | ✅ 已记录 ADR：`module/observex/ADR-dual-attribution.md`（2026-06-12） |
 | R10 | ~~`.omc/state/sessions` 已入库~~ | ~~可能泄露 prompt/会话/环境信息~~ | ✅ 已修复：`git rm -r --cached .omc`（2026-06-07） |
 | R11 | ~~公开 README 含 `127.0.0.1` 本地链接~~ | ~~外部无法访问，降低专业度~~ | ✅ 已修复：批量移除所有本地链接（2026-06-07） |
 | R12 | 71 个仓库无统一命名前缀 | 分类困难，增加维护成本 | 按 `foundation-*`/`adapter-*`/`engine-*`/`lab-*` 重整 |
@@ -335,15 +332,15 @@
 
 | 检查项 | README | ARCHITECTURE | STATUS | 一致性 |
 | ------ | ------ | ------------ | ------ | ------ |
-| 组件总数 | 78 | 78 | 79 | ⚠️ |
+| 组件总数 | 78 | 78 | 78 | ✅ |
 | market-data 数量 | 18 | 18 (13+5) | 18 (13+5) | ✅ |
 | macro-data 数量 | 11 | 11 | 11 | ✅ |
 | L2.5 组件 | 4 | 4 | 4 | ✅ |
 | 分析域组件 | 8 | 8 | 8 | ✅ |
-| 决策域组件 | 7 | 7 | 7 | ✅ |
+| 决策域组件 | 6 | 6 | 6 | ✅ |
 | 横切组件 | 2 | 2 | 2 | ✅ |
 
-注：以上为各文档 unique repo 链接数（grep github.com/ZoneCNH 去重后计数）。README 与 ARCH 均为 78；STATUS 为 79（多 stdlib.rs）。STATUS 按域统计表 domain-sum 合 81（observex 计入基座+横切 2 域，stdlib.rs+module 独立计）。L2.5=4/分析域=8/决策域=7 三文档一致。
+注：以上为各文档 unique repo 链接数（grep github.com/ZoneCNH 去重后计数）。README 与 ARCH 均为 78；STATUS 为 78（与 README/ARCH 一致）。STATUS 按域统计表 domain-sum 合 80（observex 计入基座+横切 2 域，stdlib.rs+module 独立计）。L2.5=4/分析域=8/决策域=6 三文档一致。
 
 ### 迁移与门禁基线
 

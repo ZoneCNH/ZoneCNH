@@ -108,7 +108,6 @@ flowx ──► strategyx ──► maestro ──► riskx ──► orderx ─
 | order-engine | orderx | 同上 |
 | portfolio-engine | positionx | 职责更精确——定位为跨账户仓位管理，而非完整投资组合 |
 | backtest-engine | backtestx | 同上 |
-| strategies | strategyx | 从松散策略集合升级为策略工厂——注册表、参数管理、信号组合 |
 | (无) | maestro | 新概念——工作流编排填补了策略到执行之间的空白 |
 | (无) | flowx | 新概念——数据流管线填补了行情到因子之间的空白 |
 
@@ -132,7 +131,7 @@ flowx ──► strategyx ──► maestro ──► riskx ──► orderx ─
 | L2.5   | 领域值对象和语义模型，上层统一依赖                                                                                            | decimalx, domain-market, domain-exchange, domain-macro                                                                                                  |
 | 数据域 | 行情、宏观、另类数据采集                                                                                                      | market-data (13 SDK + 5 Provider), macro-data (11), alternative-data                                                                                       |
 | 分析域 | 因子计算、特征存储、因子评估、市场/宏观环境分类、数据流管线、M×S 联合决策（三引擎：market_engine→S / macro_engine→M / regime_engine→M+S） | factor-engine, feature-store, factor-eval, market_regime, macro_regime, regime-engine, ms_brain, flowx                                                              |
-| 决策域 | 信号生成、历史回测、参数优化、策略工厂、工作流编排（并行协作）                                                                  | signal-factory, backtest-engine, optimizer, strategies, backtestx, strategyx, maestro                                                                          |
+| 决策域 | 信号生成、历史回测、参数优化、策略工厂、工作流编排（并行协作）                                                                  | signal-factory, backtest-engine, optimizer, backtestx, strategyx, maestro                                                                          |
 | 执行域 | 风险管理、订单执行、仓位管理、结算                                                                                              | risk-engine, order-engine, portfolio-engine, settlement, riskx, orderx, positionx                                                                              |
 | 入口   | 启动、配置加载、依赖组装、生命周期控制                                                                                        | x.go                                                                                                                                                       |
 | 横切   | 告警、可观测性                                                                                                                | alertx, observex                                                                                                                                           |
@@ -399,7 +398,6 @@ Foundation v1 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中�
 | 决策域                | [strategyx](https://github.com/ZoneCNH/strategyx)               | v0.1.0-draft | 🔨 已创建 | ░░░░ 5%  | 策略工厂 — 策略注册、参数管理、信号组合（7 FR, SPEC draft）                              |
 | 决策域                | [maestro](https://github.com/ZoneCNH/maestro)                   | v0.1.0-draft | 🔨 已创建 | ░░░░ 5%  | 工作流编排引擎 — DAG 工作流、状态机、错误恢复（9 FR, SPEC draft）                        |
 | 决策域                | [optimizer](https://github.com/ZoneCNH/optimizer)               | -      | 🔨 已创建 | ░░░░ 5%  | 参数搜索、Walk-forward 验证                                                               |
-| 决策域                | [strategies](https://github.com/ZoneCNH/strategies)             | -      | ✅ 已有   | ██░░ 60% | 策略研究与参考库，3.5MB/746 项                                                            |
 | **执行域**            |                                                                 |        |           |          |                                                                                           |
 | 执行域                | [risk-engine](https://github.com/ZoneCNH/risk-engine)           | -      | 🔨 已创建 | ░░░░ 5%  | VaR、止损、持仓限额、压力测试                                                             |
 | 执行域                | [riskx](https://github.com/ZoneCNH/riskx)                       | v0.1.0-draft | 🔨 已创建 | ░░░░ 5%  | 风控引擎 — 事前风控、回撤控制、熔断机制（7 FR, SPEC draft）                              |
