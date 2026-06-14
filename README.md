@@ -41,7 +41,7 @@ L1 测试: testkitx (test-only)
 基座扩展: redisx / kafkax / natsx / postgresx / taosx / ossx / clickhousex / contracts / transportx / domainx
       │
       ▼
-L2.5: decimalx / domain-market / domain-exchange / domain-macro 
+L2.5: decimalx / domain-market / domain-macro / domainx / domain-exchange (v1.0.0 执行计划)
       │
       ▼
 业务流: 数据域 → 分析域 ↔ 决策域 → 执行域
@@ -54,6 +54,18 @@ L2.5: decimalx / domain-market / domain-exchange / domain-macro
 反馈: backtest → factor-eval；fills / PnL / exposure events → 决策域
 横切: alertx (告警) / observex (可观测)
 ```
+
+## L2.5 v1.0.0 执行计划基线
+
+| 模块 | 当前版本 | 目标版本 | 状态 | 模块文档 |
+| --- | --- | --- | --- | --- |
+| `decimalx` | v0.2.0 | v1.0.0 | API freeze / 精度门禁待落地 | [module/decimalx](module/decimalx/goal.md) |
+| `domain-market` | v0.1.0 | v1.0.0 | 市场数据语义与质量门禁待冻结 | [module/domain-market](module/domain-market/goal.md) |
+| `domain-macro` | v0.1.0 | v1.0.0 | no-lookahead 与精度 ADR 待冻结 | [module/domain-macro](module/domain-macro/goal.md) |
+| `domainx` | v0.1.0 | v1.0.0 | 交易域共享模型执行计划已对齐 | [module/domainx](module/domainx/V1-GOAL-EXECUTION-PLAN.md) |
+| `domain-exchange` | v0.1.0 | v1.0.0 | Exchange SPI 待在上游共享模型后冻结 | [module/domain-exchange](module/domain-exchange/goal.md) |
+
+依赖顺序：`decimalx` -> `domain-market` / `domain-macro` / `domainx` -> `domain-exchange`。这里的 v1.0.0 是 Goal execution baseline，不代表各独立模块仓库已经发布 v1.0.0 tag。
 
 ## 📦 核心项目
 

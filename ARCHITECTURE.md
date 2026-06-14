@@ -518,3 +518,15 @@ Phase 4: 平台化   ← settlement + alertx + alternative-data
 Phase 5: 入口验收 ← x.go
          只补最终 wiring 和生命周期，验证完整闭环，不新增业务逻辑
 ```text
+
+## L2.5 v1.0.0 执行计划同步
+
+| 模块 | 当前版本 | 目标版本 | 架构职责 | 发布依赖 |
+| --- | --- | --- | --- | --- |
+| `decimalx` | L2.5 领域共享 | 高精度 Decimal / Money / Currency 数值根 | v0.2.0 -> v1.0.0 计划 | 🟡 执行计划 | 80% |
+| `domain-market` | L2.5 领域共享 | 市场数据模型、Instrument、质量门禁、provider contract | v0.1.0 -> v1.0.0 计划 | 🟡 执行计划 | 80% |
+| `domain-macro` | L2.5 领域共享 | MacroPoint、MacroInformationSet、revision、no-lookahead | v0.1.0 -> v1.0.0 计划 | 🟡 执行计划 | 80% |
+| `domainx` | L2.5 领域共享 | Order、Trade、Position、Portfolio、ExecutionReport 交易域共享模型 | v0.1.0 -> v1.0.0 计划 | 🟡 执行计划 | 100% 文档基线 |
+| `domain-exchange` | L2.5 领域共享 | Exchange SPI、VenueCapability、RateLimitPolicy、ExchangeError、Registry | v0.1.0 -> v1.0.0 计划 | 🟡 执行计划 | 80% |
+
+架构规则：L2.5 只承载领域共享语义，不承载 transport DTO、DB/ORM tag、HTTP/WS/Kafka/TDengine 细节、provider 原始响应或策略/风控/账本逻辑。所有公开金融数值字段必须使用 `decimalx.Decimal` 或明确值对象；`domain-macro` 的历史 `float64` 字段必须通过 v1.0.0 精度 ADR 处理。

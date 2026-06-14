@@ -3,7 +3,7 @@
 # 与 FOUNDATION-V1.md Issue 2 对应
 
 version: "1.2"
-updated: "2026-06-14"
+updated: "2026-06-15"
 
 # ============================================================
 # Go baseline
@@ -147,6 +147,27 @@ modules:
 # ============================================================
 # 允许的依赖关系（单向箭头 = 调用方可以依赖被调方）
 # ============================================================
+  decimalx:
+    layer: L2.5-domain-shared
+    repo: https://github.com/ZoneCNH/decimalx
+    status: v1.0.0-plan
+    role: High-precision Decimal, Money, and Currency value objects.
+  domain-market:
+    layer: L2.5-domain-shared
+    repo: https://github.com/ZoneCNH/domain-market
+    status: v1.0.0-plan
+    role: Market data domain model and quality gate.
+  domain-macro:
+    layer: L2.5-domain-shared
+    repo: https://github.com/ZoneCNH/domain-macro
+    status: v1.0.0-plan
+    role: Macro information set, revision, freshness, and no-lookahead semantics.
+  domain-exchange:
+    layer: L2.5-domain-shared
+    repo: https://github.com/ZoneCNH/domain-exchange
+    status: v1.0.0-plan
+    role: Exchange SPI, venue capabilities, rate limits, errors, and registry.
+
 allowed_deps:
   kernel:        []                                    # stdlib-only
   configx:       [kernel]                              # 显式配置契约，可使用 kernel 原语
@@ -402,3 +423,19 @@ foundationx_compatibility:
   freeze_gate: >
     FOUNDATION-DEPS.yaml constraints 中 configx/observex 的 no-foundationx-new-usage
     门禁已激活，CI 会阻断任何新增 foundationx import。
+
+
+l2_5_release_order:
+  - decimalx
+  - domain-market
+  - domain-macro
+  - domainx
+  - domain-exchange
+
+l2_5_public_contract_rules:
+  - Public finance fields use decimalx.Decimal or explicit value objects; no public float64 for price, quantity, money, rates, or notional values.
+  - Domain shared modules do not expose transport DTOs, ORM tags, raw exchange responses, HTTP, Kafka, or storage details.
+  - domainx owns Order, Trade, Position, Portfolio, ExecutionReport, OrderSide, OrderType, and OrderState.
+  - domain-market owns market data semantics and quality gates.
+  - domain-exchange owns SPI requests, venue capability, rate-limit policy, ExchangeError, and registry.
+  - domain-macro owns MacroPoint, MacroInformationSet, revision, freshness, and no-lookahead visibility semantics.

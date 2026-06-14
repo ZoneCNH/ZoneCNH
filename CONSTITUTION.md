@@ -881,3 +881,18 @@ AI 生成的代码必须经过：
 
 当两者冲突时，`CLAUDE.md` 中的安全条款（不提交凭证等）优先；技术条款以本宪法为准。
 ````
+
+
+## 附录：L2.5 领域共享 v1.0.0 收口边界
+
+截至 2026-06-15，L2.5 领域共享层按以下五个模块收口 v1.0.0 执行计划：
+
+| 模块 | 归属边界 | 发布依赖 |
+| --- | --- | --- |
+| `decimalx` | Decimal、Money、Currency、rounding/context、JSON/SQL 数值边界 | 第一优先级 |
+| `domain-market` | Tick、Quote、Bar、OrderBook、Instrument、Funding、OpenInterest、LongShortRatio、MarketDataQuality | `decimalx` |
+| `domain-macro` | MacroPoint、MacroInformationSet、revision、freshness、no-lookahead visibility | `decimalx` 精度 ADR |
+| `domainx` | Order、Trade、Position、Portfolio、ExecutionReport、OrderSide、OrderType、OrderState | `decimalx`，并与 `domain-market` 边界对齐 |
+| `domain-exchange` | Exchange SPI、VenueCapability、RateLimitPolicy、ExchangeError、Registry | `decimalx`、`domain-market`、`domainx` |
+
+L2.5 公共规则：公开金融数值字段不得使用 public `float64` 表示价格、数量、金额、费率或名义价值；领域共享层不得暴露 transport DTO、provider 原始响应、HTTP/WS/Kafka/TDengine 细节或数据库 ORM tag；跨模块重复语义必须收敛到唯一 SSOT。
