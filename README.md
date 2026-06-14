@@ -46,10 +46,10 @@ L2.5: decimalx / domain-market / domain-exchange / domain-macro
       ▼
 业务流: 数据域 → 分析域 ↔ 决策域 → 执行域
 数据域: market-data (18) / macro-data (11) / alternative-data
-分析域: factor-engine / feature-store / factor-eval / market_regime / macro_regime / regime-engine / ms_brain
+分析域: factor-engine / feature-store / factor-eval / market_regime / macro_regime / regime-engine / ms_brain / flowx
        三引擎: market_engine(market facts → S state) / macro_engine(macro facts → M state) / regime_engine(M+S → action/risk/permission)
-决策域: signal-factory / backtest-engine / optimizer / strategies
-执行域: risk-engine → order-engine → portfolio-engine / settlement
+决策域: signal-factory / backtest-engine / optimizer / strategies / backtestx / strategyx / maestro
+执行域: risk-engine → order-engine → portfolio-engine / settlement ; riskx / orderx / positionx
 
 反馈: backtest → factor-eval；fills / PnL / exposure events → 决策域
 横切: alertx (告警) / observex (可观测)
@@ -147,6 +147,7 @@ L2.5: decimalx / domain-market / domain-exchange / domain-macro
 - [macro_regime](https://github.com/ZoneCNH/macro_regime) — 宏观经济体制识别（M1-M7：流动牛市/再通复苏/软着繁荣/鹰派通胀/衰退降息/信用去杠/滞胀冲击） `私有`
 - [regime-engine](https://github.com/ZoneCNH/regime-engine) — M×S 联合决策引擎（M state + S state → action A-E / risk_tier / position_caps / trade_permission） `私有`
 - [ms_brain](https://github.com/ZoneCNH/ms_brain) — M×S 系统架构分析体系 `私有`
+- [flowx](https://github.com/ZoneCNH/flowx) — 数据流管线引擎（流式 ETL、窗口聚合、背压控制） `公开`
 
 ### 决策域
 
@@ -154,6 +155,9 @@ L2.5: decimalx / domain-market / domain-exchange / domain-macro
 - [backtest-engine](https://github.com/ZoneCNH/backtest-engine) — 事件驱动回测引擎 `公开`
 - [optimizer](https://github.com/ZoneCNH/optimizer) — 参数优化 `公开`
 - [strategies](https://github.com/ZoneCNH/strategies) — 策略研究与信号参考 `公开`
+- [backtestx](https://github.com/ZoneCNH/backtestx) — 回测引擎（事件驱动、Walk-Forward、蒙特卡洛） `公开`
+- [strategyx](https://github.com/ZoneCNH/strategyx) — 策略工厂（策略注册、参数管理、信号组合） `公开`
+- [maestro](https://github.com/ZoneCNH/maestro) — 工作流编排引擎（DAG 工作流、状态机、错误恢复） `公开`
 
 ### 执行域
 
@@ -161,6 +165,9 @@ L2.5: decimalx / domain-market / domain-exchange / domain-macro
 - [order-engine](https://github.com/ZoneCNH/order-engine) — 订单执行引擎 `公开`
 - [portfolio-engine](https://github.com/ZoneCNH/portfolio-engine) — 投资组合管理 `公开`
 - [settlement](https://github.com/ZoneCNH/settlement) — 结算与对账 `公开`
+- [riskx](https://github.com/ZoneCNH/riskx) — 风控引擎（事前风控、回撤控制、熔断机制） `公开`
+- [orderx](https://github.com/ZoneCNH/orderx) — 订单管理器（订单生命周期、SOR、状态机） `公开`
+- [positionx](https://github.com/ZoneCNH/positionx) — 仓位管理器（实时仓位追踪、PnL、敞口监控） `公开`
 
 ### 横切 · 入口
 
