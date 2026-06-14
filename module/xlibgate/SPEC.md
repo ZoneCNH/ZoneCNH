@@ -9,7 +9,7 @@
 ## 1. Metadata
 
 - Status: Approved
-- Spec-Version: v1.1.1
+- Spec-Version: v1.1.2
 - Last-Updated: 2026-06-14
 - Owner: ZoneCNH
 - Layer: L0 基座
@@ -29,6 +29,7 @@
 | 2026-06-12 | v1.0.2 | Status: Draft → Approved（Spec 四源评分 Claude 98 + rules 100，0 红线；Codex/Copilot 环境缺失由维护者 override）                                                                                                                                                            | ZoneCNH |
 | 2026-06-14 | v1.1.0 | v2 Trust Alignment 检查：新增 FR-012~FR-019（identity / template-residue / release-consistency / maturity / import-boundary / testkit-prod-import / secret-redaction / fleet-status）；新增 BR-010（禁止模板身份短语）；统一定义 per-check JSON 输出格式（含 reason_code、evidence 字段） | ZoneCNH |
 | 2026-06-14 | v1.1.1 | Trust Alignment 补充：新增 TC-014~TC-029（16 条验收标准，每 FR 2 条）；新增 6 个 trust 错误码；Edge Cases 补充 10 个 trust 边界场景；§16.2 单元测试补充 16 个 trust 测试场景 | ZoneCNH |
+| 2026-06-14 | v1.1.2 | Trust Hardening：明确 projection drift、blocker-aware factory gate、release=false=>factory=false、open blocker=>factory=false；保持 exit code 0/1/2 与既有 reason_code 稳定 | ZoneCNH |
 
 ---
 
@@ -279,6 +280,8 @@ THEN 在线查询 GitHub latest release API 替代本地 manifest/tag 投影，�
 
 工厂级 11 维判定维度：`spec_complete`、`implementation_complete`、`unit_tests_complete`、`contract_tests_complete`、`traceability_complete`、`release_manifest_complete`、`live_integration_complete`、`failure_profiles_complete`、`external_ci_artifacts_complete`、`downstream_adoption_complete`、`production_soak_complete`。所有维度必须为 true 方可通过工厂级门禁，禁止用单个百分比值替代。
 
+工厂级门禁必须 blocker-aware：除 11 维全部为 true 外，目标 repo 的发布状态和阻断项也参与判定。`release=false` 或存在任一 open blocker 时，`factory=false`，`overall=fail`，reason_code 保持 `FACTORY_GATE_BLOCKED`，exit code 1；不得把 release 缺失或 open blocker 投影为 factory pass。
+
 WHEN 调用 `xlibgate trust maturity --factory --repo <repo-path>` 且所有 11 维工厂级判定均为 true
 THEN 输出 JSON 含 11 维逐项判定和 overall=pass，reason_code=""，exit code 0
 
@@ -287,6 +290,12 @@ THEN 输出未满足维度列表和各自现状值，reason_code=FACTORY_GATE_BL
 
 WHEN maturity 数据源仅提供单个 "100%" 值而无 11 维明细
 THEN 拒绝接受该值，reason_code=FACTORY_GATE_BLOCKED，exit code 1
+
+WHEN `.repo-contract.yaml` 或状态投影中 `release=false`
+THEN 输出 release gate 未满足的 findings，factory=false，reason_code=FACTORY_GATE_BLOCKED，exit code 1
+
+WHEN `.repo-contract.yaml`、`.foundationx/blockers.json` 或状态投影中存在 target repo 的 open blocker
+THEN 输出 open blocker 的 id/severity/source，factory=false，reason_code=FACTORY_GATE_BLOCKED，exit code 1
 
 WHEN `.repo-contract.yaml` 中 `maturity` 节缺失
 THEN reason_code=CONTRACT_PARSE_ERROR，exit code 2
@@ -337,6 +346,15 @@ THEN reason_code=CONTRACT_PARSE_ERROR，exit code 2
 
 WHEN 调用 `xlibgate trust fleet-status --repos-root <foundation-root> --output .foundationx/status/index.json` 且 20 模块全部扫描成功
 THEN 生成 index.json 含每模块 identity/release/maturity/boundaries/blockers/evidence-index 状态，exit code 0
+
+WHEN repo 层 trust 子命令结果、`.repo-contract.yaml`、release manifest 或 `.foundationx/blockers.json` 投影到 index.json 后不一致（例如 release=false 但 factory=true，或存在 open blocker 但 factory=true）
+THEN 将该模块标记 status=fail，reason_code=FACTORY_GATE_BLOCKED，findings 指出 projection drift 的源字段和值，exit code 1
+
+WHEN 任一模块 release=false
+THEN 该模块 factory 必须投影为 false；若输入声明 factory=true，按 projection drift 处理，reason_code=FACTORY_GATE_BLOCKED，exit code 1
+
+WHEN 任一模块存在 open blocker
+THEN 该模块 factory 必须投影为 false，并在 index.json 的 blockers 列表保留 open blocker 摘要；若输入声明 factory=true，按 projection drift 处理，reason_code=FACTORY_GATE_BLOCKED，exit code 1
 
 WHEN 部分模块扫描失败（如缺失 .repo-contract.yaml）
 THEN 在 index.json 中对应模块标记 status=error 和 error 详情，仍生成完整 index.json，exit code 1
@@ -577,7 +595,13 @@ xlibgate version
     }
   ],
   "reason_code": "IDENTITY_MISMATCH|TEMPLATE_RESIDUE|RELEASE_DRIFT|FACTORY_GATE_BLOCKED|IMPORT_BOUNDARY_VIOLATION|TESTKIT_PROD_IMPORT|SECRET_LEAK|PRIVATE_ENDPOINT_LEAK|CONTRACT_PARSE_ERROR|TEMPLATE_RESIDUE_SELF_SKIP",
-  "evidence": {}
+  "evidence": {
+    "projection": {
+      "release": true,
+      "factory": true,
+      "open_blockers": []
+    }
+  }
 }
 ```
 
@@ -591,7 +615,7 @@ xlibgate version
 | `severity` | `info`（status=pass 时）/ `warn`（status=fail 但非阻塞）/ `block`（status=fail 且阻塞门禁） |
 | `findings` | 违规详情数组，status=pass 时为空 |
 | `reason_code` | 机器可读原因码，status=pass 时为空字符串 |
-| `evidence` | 检查中收集的辅助证据（如 identity 的比对表、maturity 的 11 维明细、release-consistency 的版本源值），供仲裁和审计使用 |
+| `evidence` | 检查中收集的辅助证据（如 identity 的比对表、maturity 的 11 维明细、release-consistency 的版本源值、fleet-status 的 release/factory/open_blockers 投影），供仲裁和审计使用 |
 
 **reason_code 枚举**：
 
@@ -601,7 +625,7 @@ xlibgate version
 | `TEMPLATE_RESIDUE` | 下游仓库包含禁止的模板身份短语 | template-residue |
 | `TEMPLATE_RESIDUE_SELF_SKIP` | 目标为 xlib-standard，自动跳过 | template-residue |
 | `RELEASE_DRIFT` | 七源版本信息不一致 | release-consistency |
-| `FACTORY_GATE_BLOCKED` | 工厂级成熟度门禁未通过 | maturity |
+| `FACTORY_GATE_BLOCKED` | 工厂级成熟度门禁未通过；或 release=false / open blocker / factory 投影不一致导致 factory=false | maturity / fleet-status |
 | `IMPORT_BOUNDARY_VIOLATION` | import 违反 allowed_deps 或 forbidden_foundation_edges | import-boundary |
 | `TESTKIT_PROD_IMPORT` | 生产代码导入了 testkitx | testkit-prod-import |
 | `SECRET_LEAK` | 文档中检测到密钥/API key/token/DSN | secret-redaction |
@@ -741,10 +765,14 @@ secret_scan:
 | trust template-residue 扫描二进制文件（.png、.so） | 跳过非文本文件，只扫描 .md/.yaml/.go/.txt/.json 等文本格式 |
 | trust release-consistency 离线模式下 VERSION 文件为空 | reason_code=RELEASE_DRIFT，作为缺失子项 |
 | trust maturity 数据源仅提供单个百分比值 | 拒绝接受，reason_code=FACTORY_GATE_BLOCKED，exit code 1 |
+| trust maturity release=false 但 11 维均为 true | factory=false，输出 release gate finding，reason_code=FACTORY_GATE_BLOCKED，exit code 1 |
+| trust maturity 存在 open blocker 但 11 维均为 true | factory=false，输出 blocker id/severity/source，reason_code=FACTORY_GATE_BLOCKED，exit code 1 |
 | trust import-boundary 目标模块无 FOUNDATION-DEPS.yaml | reason_code=CONTRACT_PARSE_ERROR，exit code 2 |
 | trust testkit-prod-import 目标为 testkitx 自身 | 自动跳过检查，status=pass，reason_code=""（testkitx 允许引用自身） |
 | trust secret-redaction 扫描路径含符号链接 | 跟踪符号链接，但限制深度 max 3 层防止循环 |
 | trust fleet-status repos-root 下模块目录名与 go.mod module 不一致 | 输出 warning，记录不一致详情，不阻塞聚合 |
+| trust fleet-status 输入声明 release=false 但 factory=true | 标记 projection drift，强制 factory=false，reason_code=FACTORY_GATE_BLOCKED，exit code 1 |
+| trust fleet-status 输入存在 open blocker 但 factory=true | 标记 projection drift，强制 factory=false，保留 blocker 摘要，reason_code=FACTORY_GATE_BLOCKED，exit code 1 |
 | trust fleet-status 输出文件已存在 | 覆盖写入，不报错 |
 
 ---
@@ -888,6 +916,8 @@ xlibgate 是纯 CLI 工具，不被任何模块 import。它只扫描其他模�
 | trust release 不一致  | VERSION vs CHANGELOG 不一致 → fail，reason_code=RELEASE_DRIFT |
 | trust maturity 通过   | 11 维工厂级全 true → pass                          |
 | trust maturity 阻塞   | 某维度 false → fail，reason_code=FACTORY_GATE_BLOCKED |
+| trust maturity release 阻塞 | release=false 即使 11 维全 true → factory=false，reason_code=FACTORY_GATE_BLOCKED |
+| trust maturity blocker 阻塞 | 存在 open blocker 即使 11 维全 true → factory=false，reason_code=FACTORY_GATE_BLOCKED |
 | trust boundary 合规   | import 符合 FOUNDATION-DEPS.yaml → pass            |
 | trust boundary 违规   | 违反 forbidden_foundation_edges → fail              |
 | trust testkit 隔离    | 生产代码无 testkitx → pass                         |
@@ -896,6 +926,7 @@ xlibgate 是纯 CLI 工具，不被任何模块 import。它只扫描其他模�
 | trust secret 泄露     | 检测到 AWS key → fail，reason_code=SECRET_LEAK     |
 | trust fleet 全通过    | 20 模块全成功 → exit 0                             |
 | trust fleet 部分失败  | 2 模块 error → exit 1，index.json 仍生成            |
+| trust fleet 投影漂移  | release=false 或 open blocker 时输入 factory=true → 输出 projection drift finding，强制 factory=false，exit 1 |
 
 ### 16.3 Given/When/Then 用例
 
@@ -1004,6 +1035,16 @@ Given .repo-contract.yaml maturity 节中 unit_tests_complete=false、live_integ
 When 运行 `xlibgate trust maturity --factory --repo <repo-path>`
 Then 输出未满足维度列表（unit_tests_complete、live_integration_complete），reason_code=FACTORY_GATE_BLOCKED，exit code 1
 
+**TC-021a: trust maturity release gate blocks factory**
+Given .repo-contract.yaml maturity 11 维均为 true，但 release.published=false
+When 运行 `xlibgate trust maturity --factory --repo <repo-path>`
+Then 输出 release gate finding，factory=false，reason_code=FACTORY_GATE_BLOCKED，exit code 1
+
+**TC-021b: trust maturity open blocker blocks factory**
+Given .repo-contract.yaml maturity 11 维均为 true，且 .foundationx/blockers.json 中目标 repo 存在 status=open 的 blocker
+When 运行 `xlibgate trust maturity --factory --repo <repo-path>`
+Then 输出 blocker id/severity/source，factory=false，reason_code=FACTORY_GATE_BLOCKED，exit code 1
+
 **TC-022: trust import-boundary pass**
 Given FOUNDATION-DEPS.yaml 定义了 allowed_deps 和 forbidden_foundation_edges，且模块所有 import 均合规
 When 运行 `xlibgate trust import-boundary --repo <repo-path> --deps FOUNDATION-DEPS.yaml`
@@ -1043,6 +1084,11 @@ Then 生成 index.json 含 20 模块各自身份/发布/成熟度/边界/阻断�
 Given --repos-root 下有 20 个模块，其中 2 个缺少 .repo-contract.yaml 扫描失败
 When 运行 `xlibgate trust fleet-status --repos-root <foundation-root> --output .foundationx/status/index.json`
 Then 生成 index.json（含 2 个 status=error 模块），exit code 1
+
+**TC-030: trust fleet-status projection drift**
+Given --repos-root 下某模块 release=false 或存在 open blocker，但输入状态声明 factory=true
+When 运行 `xlibgate trust fleet-status --repos-root <foundation-root> --output .foundationx/status/index.json`
+Then 生成 index.json 时该模块 factory=false，findings 含 projection drift 的源字段和值，reason_code=FACTORY_GATE_BLOCKED，exit code 1
 
 ### 16.4 Benchmark
 
@@ -1172,11 +1218,11 @@ CLI 短生命周期工具不启动 tracing exporter。执行流程通过父子�
 | 身份对齐 | `xlibgate trust identity --repo .` | IDENTITY_MISMATCH 或 CONTRACT_PARSE_ERROR |
 | 模板残留 | `xlibgate trust template-residue --repo .` | 非 xlib-standard 仓库命中禁止短语 |
 | 发布一致性 | `xlibgate trust release-consistency --offline --repo .` | RELEASE_DRIFT |
-| 成熟度工厂 | `xlibgate trust maturity --factory --repo .` | FACTORY_GATE_BLOCKED |
+| 成熟度工厂 | `xlibgate trust maturity --factory --repo .` | FACTORY_GATE_BLOCKED（11 维不满足、release=false、open blocker） |
 | import 边界 | `xlibgate trust import-boundary --repo . --deps FOUNDATION-DEPS.yaml` | IMPORT_BOUNDARY_VIOLATION |
 | testkitx 隔离 | `xlibgate trust testkit-prod-import --repo .` | TESTKIT_PROD_IMPORT |
 | secret 脱敏 | `xlibgate trust secret-redaction --repo . --path release/evidence` | SECRET_LEAK 或 PRIVATE_ENDPOINT_LEAK |
-| 舰队状态 | `xlibgate trust fleet-status --repos-root .. --output .foundationx/status/index.json` | 任一模块 error |
+| 舰队状态 | `xlibgate trust fleet-status --repos-root .. --output .foundationx/status/index.json` | 任一模块 error、projection drift、release=false=>factory=true、open blocker=>factory=true |
 
 ---
 

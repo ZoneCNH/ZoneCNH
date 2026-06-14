@@ -2,7 +2,7 @@
 # CI 可直接消费此文件执行依赖守卫检查
 # 与 FOUNDATION-V1.md Issue 2 对应
 
-version: "1.2"
+version: "1.2.1"
 updated: "2026-06-14"
 
 # ============================================================
@@ -80,7 +80,7 @@ modules:
     layer: gate
     stdlib_only: false
     runtime_dependency: false
-    description: "import/gomod/baseline/release/repo-contract/reason_code/maturity claim 机器门禁"
+    description: "import/gomod/baseline/release/repo-contract/reason_code/maturity claim/projection drift/blocker-aware factory gate 机器门禁"
 
   # 存储扩展（按需引入）
   redisx:
