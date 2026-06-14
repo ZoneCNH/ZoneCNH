@@ -9,10 +9,15 @@
 ### Added
 
 - 新增 `transportx` Foundation 传输契约规格索引，并纳入架构、状态与 CI 一致性门禁。
+- 新增 `scripts/audit-status.py` 三文档交叉一致性自校验脚本（22 项检查）。
+- 新增 `.github/workflows/audit-status.yml` CI 门禁，PR 触及 STATUS/README/ARCHITECTURE 时自动运行 audit-status.py，FAIL 阻断合并。
+- 新增 `.claude/hooks/count-guard.mjs` PreToolUse hook，Write/Edit 三文档时扫描数量模式并告警。
 
 ### Changed
 
 - 固化模块级 Goal 文档路径为 `module/{module}/goal.md`，禁止 `goal/` 目录和 `goal/1.md` 槽位。
+- STATUS.md / README.md / ARCHITECTURE.md 三文档全量交叉审计闭合（18 PR，基座版本 vs GitHub Release 对齐、domainx 归并、strategies 404 移除、仪表盘递推、同步表自洽）。
+- CLAUDE.md 新增 §数量验证门禁、§三文档交叉同步规则。
 
 ## [v0.5.0] - 2026-06-09
 
