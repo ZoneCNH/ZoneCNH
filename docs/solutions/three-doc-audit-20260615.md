@@ -10,8 +10,8 @@ STATUS.md / ARCHITECTURE.md / README.md 跨文件域成员、版本号、进度�
 |------|----|
 | 波及文件 | 3 (STATUS.md / ARCHITECTURE.md / README.md) |
 | 额外固化 | CLAUDE.md + hooks + CI |
-| 审计 PR (本会话) | 14 (#392-#398, #400-#404, #406) |
-| 基础设施 PR (独立) | 3 (#399, #401, #408) |
+| 审计 PR (本会话) | 13 (#392-#398, #400-#404, #406) |
+| 基础设施 PR (独立) | 2 (#399, #408) |
 | 最终组件数 | 80 |
 | 仪表盘自洽 | 55+1+22+2=80, 37+43=80, 58+22=80 |
 | 404 仓库 | 0 (78 repos 全量验证) |
@@ -39,7 +39,6 @@ STATUS.md / ARCHITECTURE.md / README.md 跨文件域成员、版本号、进度�
 | PR | 内容 |
 |----|------|
 | #399 | CountGuard PreToolUse hook |
-| #401 | CLAUDE.md 数量验证门禁规则 |
 | #408 | audit-status.py + CI gate |
 
 ## 验收标准
