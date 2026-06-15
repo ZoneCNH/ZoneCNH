@@ -6,17 +6,17 @@
 | 当前版本 | v0.1.0 |
 | 目标版本 | v1.0.0 |
 | 依赖顺序 | `decimalx` API freeze 后；`domain-exchange` 之前 |
-| 最后更新 | 2026-06-15 |
+| 最后更新 | 2026-06-16 |
 
 ## 里程碑
 
 | 里程碑 | 内容 | 退出条件 |
 | --- | --- | --- |
-| M0 Scope / ADR | 固化 market vs domainx 边界、精度策略和 provider 纯净边界 | ADR/SPEC 完成 |
-| M1 Validators | Tick/Quote/Bar/OrderBook/Instrument 验证器 | invalid cases 全覆盖 |
-| M2 Quality gate | dirty/stale/time-invalid fail-closed | quality gate 测试通过 |
-| M3 Provider contract | DataProvider/HistoricalBarsRequest 返回纯领域模型 | 静态边界扫描无 transport 泄漏 |
-| M4 Release gates | CI、docs、migration、release manifest | tag v1.0.0 前门禁通过 |
+| M0 API freeze | 冻结 DataProvider 接口、MarketEventEnvelope、值对象字段签名、domainx 边界 ADR | SPEC Approved + 兼容测试清单完成 |
+| M1 核心不变量 | Tick/Quote/Bar/OrderBook/Instrument/Funding/OpenInterest/LongShortRatio Validate 实现；decimalx 精度替换；domainx 枚举迁出 | TASK-MKT-001/002/004/005/007 全部完成，invalid cases 全覆盖 |
+| M2 验证资产 | quality gate fail-closed；stale/future/recovered gate；fuzz/race/golden 测试；domain struct lint（禁止 tag、禁止 float64） | TASK-MKT-003 完成，quality gate 测试通过 |
+| M3 下游采用 | DataProvider 返回纯领域模型；fake provider 可复用；domain-exchange adoption smoke 通过 | TASK-MKT-006 完成，静态边界扫描无 transport 泄漏 |
+| M4 发布 | CHANGELOG、MIGRATION、release manifest、CI gate（staticcheck/govulncheck/race/adoption）、tag v1.0.0 | 所有 v1 门禁通过 |
 
 ## PR 类别
 
