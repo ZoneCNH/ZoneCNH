@@ -4,7 +4,7 @@ baseline:
   initial_maturity: L3
   target_maturity: L4
 retrospective_cycle:
-  total_retrospectives: 4
+  total_retrospectives: 5
   cycles:
   - id: RETRO-001
     date: '2026-06-10'
@@ -46,8 +46,17 @@ retrospective_cycle:
     patches:
     - 'PR 批处理纪律: 积累所有变更→统一 audit→单 PR (目标 ≤3)'
     - 文件创建前 git check-ignore 预检 (避免 gitignore 拦截)
-    audit_after: 52 PASS / 0 FAIL
+    - 'PR #500 应并入 #499：batch window 关闭前先 bump→amend→push，而非分开发 PR'
+    audit_after: '52 PASS / 0 FAIL；version bump 应从 #499 批次中分离 (#500)'
     compound_note: 首次 L4 机制自我应用 — 复盘发现自身执行低效并即时修正
+  - id: RETRO-005
+    date: '2026-06-15'
+    goal: 自我纠错实时追踪
+    patches_applied: 1
+    patches:
+    - batch window 收尾流程：全部变更完成 → audit → version bump → 单 commit → 单 PR
+    audit_after: 52 PASS / 0 FAIL
+    compound_note: RETRO-004 规则提出后立即被自身违反，证明规则需要执行层面的机械检查而不仅是意识层面
 gate_health_trend:
 - date: '2026-06-09'
   canonical_pass: 12
@@ -62,11 +71,11 @@ gate_health_trend:
   kernel_pass: 12
   total_fail_blocked: 0
 rule_improvement_pipeline:
-  active_rules: 86
+  active_rules: 87
   expired_rules: 0
-  merged_rules: 5
+  merged_rules: 6
   quarterly_review_due: '2026-09-16'
-  latest_addition: 'RETRO-004: PR 批处理纪律'
+  latest_addition: 'RETRO-005: batch window 收尾强制流程'
 L4_prerequisites:
   retrospectives_3plus: true
   kernel_gates_all_pass: true
