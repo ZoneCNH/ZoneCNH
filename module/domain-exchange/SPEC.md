@@ -11,7 +11,7 @@
 
 ---
 
-## 1. 范围
+## 1. 摘要
 
 `domain-exchange` 定义交易所领域接口和 adapter SPI，承接 venue capability、request、error、rate limit、registry 和 streaming 语义。
 
