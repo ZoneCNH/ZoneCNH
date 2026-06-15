@@ -12,7 +12,7 @@
 ┌─────────────────────────────────────────────────────────────────────────────────┐
 │                                  数据域                                          │
 │                                                                                 │
-│  market-data (19)                    macro-data (10)           alternative-data │
+│  market-data (18)                    macro-data (11)           alternative-data │
 │  ┌──────────────────┐                ┌──────────────────┐      ┌──────────────┐ │
 │  │ 14 交易所 SDK     │                │ fred             │      │ 链上数据     │ │
 │  │ binance/okx/...   │                │ treasury         │      │ 社交情绪     │ │
@@ -28,6 +28,7 @@
 │                              L2.5 领域共享层                                      │
 │                                                                                 │
 │  domain-market                         domain-macro                              │
+│  domainx (Order/Position/Trade)                                               │
 │  ┌──────────────────┐                ┌──────────────────┐                       │
 │  │ Tick (逐笔成交)   │                │ MacroPoint       │                       │
 │  │ Quote (报价快照)  │                │   SeriesCode     │                       │

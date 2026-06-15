@@ -5,7 +5,7 @@
 > 本文件是 AI 代理和人类贡献者在实现、审查或修改任何模块或交付流程时的最高权威参考。
 > 当本文件与 `module/*/SPEC.md`、`module/FOUNDATION-SPEC.md`、`docs/governance/DEVELOPMENT-WORKFLOW.md` 或其他文档冲突时，以本文件为准。
 
-最后更新：2026-06-09
+最后更新：2026-06-15
 
 ---
 
@@ -29,9 +29,9 @@
 所有开发工作必须通过 `git worktree` 或 feature branch 进行：
 
 0. **所有分支必须从 `main` HEAD 创建**——禁止从其他 feature branch、旧 commit 或 detached HEAD 拉取新分支。创建前必须先 `git fetch origin && git rebase origin/main`（或 `git pull --rebase`）确保本地 main 为最新。
-1. **每个独立任务**必须在独立 worktree 中执行
-2. **worktree 命名**必须遵循 `{branch-name}` 或 `{module}-{purpose}` 格式
-3. **工作完成后**通过 PR 或 merge 合入 main，随后清理 worktree
+1. **每个独立任务**必须在独立 worktree 或 feature branch 中执行（纯文档仓库允许 feature branch 替代 worktree；含源码的模块仓库应优先使用 `git worktree add`）
+2. **分支/worktree 命名**必须遵循 `{type}/{module}-{description}` 格式（如 `docs/kernel-spec-update`、`feat/kernel-new-api`、`fix/redisx-timeout`），或 `{branch-name}` 格式（如 `feat/v2-foundation-trust-governance-20260615`）
+3. **工作完成后**通过 PR 或 merge 合入 main，随后清理 worktree 和 feature branch
 4. **禁止**在 main worktree 中堆积未提交变更
 
 ### 0.3 Agent 约束
@@ -39,7 +39,7 @@
 所有 AI 代理（Claude、Codex、Copilot 及任何未来代理）在本仓库工作时：
 
 1. **必须**在开始**编辑文件**前确认当前不在 main 分支（`git checkout main` 等 git 操作不受此约束）
-2. **必须**使用 worktree 隔离开发任务
+2. **必须**使用 worktree 或 feature branch 隔离开发任务（参见 §0.2.1）
 3. **禁止**在 main 上直接 commit
 4. **发现** main 上有未提交变更时，**必须**停止并警告人类维护者
 

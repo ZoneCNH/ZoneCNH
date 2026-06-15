@@ -18,7 +18,7 @@ Go 🐹 (主要) · Rust 🦀 (底层) · Python 🐍 (脚本/数据) · TypeScr
 >
 > 🧱 Foundation 公开规格、依赖矩阵、执行跟踪与 ADR → **[module/](./module/)**
 >
-> 📋 20 个 Foundation 模块规格，另含 4 个 L2.5 领域共享规划/基线规格（不作 release/factory 声明） → **[module/](./module/)**
+> 📋 19 个 Foundation 模块规格，另含 5 个 L2.5 领域共享规划/基线规格（不作 release/factory 声明） → **[module/](./module/)**
 >
 > 🧭 Spec 治理模板、生命周期、追溯与评分规则 → **[docs/governance/](./docs/governance/)**
 >
@@ -41,7 +41,7 @@ L1 测试: testkitx (test-only)
 基座扩展: redisx / kafkax / natsx / postgresx / taosx / ossx / clickhousex / contracts / transportx
       │
       ▼
-L2.5: decimalx / domain-market / domain-macro / domain-exchange (v1.0.0 执行计划；设计基线可用，release / factory-grade 待补证)
+L2.5: domainx / decimalx / domain-market / domain-macro / domain-exchange (v1.0.0 执行计划；设计基线可用，release / factory-grade 待补证)
       │
       ▼
 业务流: 数据域 → 分析域 ↔ 决策域 → 执行域
@@ -60,13 +60,14 @@ L2.5: decimalx / domain-market / domain-macro / domain-exchange (v1.0.0 执行�
 | 模块 | 当前版本 | 目标版本 | 状态 | 模块文档 |
 | --- | --- | --- | --- | --- |
 | `decimalx` | v0.2.0 | v1.0.0 | API freeze / 精度门禁待落地 | [module/decimalx](module/decimalx/goal.md) |
+| `domainx` | v1.0.0 | v1.0.0 | 领域共享值对象基线；订单、成交、持仓与敞口语义统一 | [module/domainx](module/domainx/goal.md) |
 | `domain-market` | v0.1.0 | v1.0.0 | 市场数据语义与质量门禁待冻结 | [module/domain-market](module/domain-market/goal.md) |
 | `domain-macro` | v0.1.0 | v1.0.0 | no-lookahead 与精度 ADR 待冻结 | [module/domain-macro](module/domain-macro/goal.md) |
 | `domain-exchange` | v0.1.0 | v1.0.0 | Exchange SPI 待在上游共享模型后冻结 | [module/domain-exchange](module/domain-exchange/goal.md) |
 
-成熟度口径：4/4 已有 v1.0.0 Draft Spec / Traceability / Plan 基线；0/4 完成 v1.0.0 release、EXT CI 与 factory-grade 门禁。该层当前可作为 Phase 0 设计依赖推进，但不能宣告 factory-grade adoption。
+成熟度口径：5/5 已有 v1.0.0 Draft Spec / Traceability / Plan 基线；0/5 完成 v1.0.0 release、EXT CI 与 factory-grade 门禁。该层当前可作为 Phase 0 设计依赖推进，但不能宣告 factory-grade adoption。
 
-依赖顺序：`decimalx` -> `domain-market` / `domain-macro` -> `domain-exchange`。这里的 v1.0.0 是文档 / Goal execution baseline，用于锁定目标范围与依赖顺序；不代表各独立模块仓库已经完成 API freeze、CI release gate、外部 CI artifact、adoption gate、v1.0.0 git tag 或 GitHub Release。`domainx` 已归入基座，不计入 L2.5 组件数。
+依赖顺序：`decimalx` -> `domainx` -> `domain-market` / `domain-macro` -> `domain-exchange`。这里的 v1.0.0 是文档 / Goal execution baseline，用于锁定目标范围与依赖顺序；不代表各独立模块仓库已经完成 API freeze、CI release gate、外部 CI artifact、adoption gate、v1.0.0 git tag 或 GitHub Release。`domainx` 已归入 L2.5 领域共享层，不计入基座组件数。
 
 ## 📦 核心项目
 
@@ -100,11 +101,11 @@ L2.5: decimalx / domain-market / domain-macro / domain-exchange (v1.0.0 执行�
 
 - [contracts](https://github.com/ZoneCNH/contracts) — 跨域稳定端口、事件协议与 DTO 契约 `公开`
 - [transportx](https://github.com/ZoneCNH/transportx) — 应用通信底座规格基线（Envelope/Endpoint、ServiceIdentity、QoS、Codec、RPC、EventBus、Stream、Outbox/Inbox、Audit Plane、Data Classification、SchemaRegistry 与 conformance gates） `公开`
-- [domainx](https://github.com/ZoneCNH/domainx) — 执行域共享值对象：Order/Position/Trade/Portfolio/ExecutionReport 枚举与类型 `公开`
 
 ### L2.5 · 领域共享层
 
 - [decimalx](https://github.com/ZoneCNH/decimalx) — 高精度十进制类型（Decimal/Price/Qty/Ratio/Money） `公开`
+- [domainx](https://github.com/ZoneCNH/domainx) — 领域共享值对象：Order/Position/Trade/Portfolio/ExecutionReport 枚举与类型 `公开`
 - [domain-market](https://github.com/ZoneCNH/domain-market) — 市场数据域模型（Tick/Quote/Bar/OrderBook） `公开`
 - [domain-macro](https://github.com/ZoneCNH/domain-macro) — 宏观经济领域共享模型：国家/地区/指标/发布日历、MacroPoint/MacroState `公开`
 - [domain-exchange](https://github.com/ZoneCNH/domain-exchange) — 交易域模型（VenueAdapter 13 方法接口） `公开`
