@@ -85,6 +85,51 @@
 - 工作完成后通过 PR 或 merge 合入 main，随后清理 worktree 和 feature branch。
 - 仅 `git merge`/`git rebase`/`git pull` 和紧急 hotfix 允许在 main 上执行。
 
+### 分支保护（2026-06-15 worktree 会话复盘）
+
+> **O2 修复**：Hook 自动切换到 main 并删除 feature branch 导致未合并提交丢失，需从 reflog 恢复。
+
+- **禁止自动删除未合并分支**。Stop/SessionEnd hook 在 `git checkout main` 前必须验证：
+  ```bash
+  # 检查是否有未合并到 main 的提交
+  git log origin/main..HEAD --oneline | wc -l  # >0 则禁止删除
+  # 或检查 PR 是否已合并
+  gh pr list --head "$BRANCH" --state merged --json number | python3 -c "import sys,json; exit(0 if len(json.load(sys.stdin))>0 else 1)"
+  ```
+- **分支恢复协议**：若分支被误删，通过 `git reflog` 定位最后 commit SHA → `git checkout -b <branch> <sha>` 恢复。
+
+### 工作区 GC（2026-06-15 worktree 会话复盘）
+
+> **O11 修复**：`.worktree/` 下 OMX worker 日志、diff.md、notify-fallback JSONL 无 TTL，跨天堆积。
+
+- **`.worktree/` 临时文件 TTL = 24h**。PreCompact 或 PostToolUse hook 自动清理超过 24h 的 stale 文件。
+- **OMX team worker 子目录**：worker 完成合并后，其 `.worktree/omx-team/{worker}/` 在下一个 SessionStart 时自动 `rm -rf`。
+- **例外**：`note.md`、`v2.md`（手动工作文件）不自动清理——仅清理 `.omx/` 下的日志和 state。
+
+### 提交批处理（2026-06-15 worktree 会话复盘）
+
+> **O3 修复**：本会话 5 个独立 commit 实为 1 个逻辑变更（worktree 治理对齐），每个 commit 触发完整 CI 管线。
+
+- **同一逻辑变更聚合为 1 个 commit**。禁止每个 `Edit`/`Write` 后立即 commit。
+- **批处理窗口**：连续编辑多个文件后，待所有变更完成并 audit PASS 后一次性 `git add` + `git commit`。
+- **版本 bump 必须在最后**：bump commit 是 PR 的最后一个 commit，不在中间执行。
+- **OMX team auto-checkpoint** 不得打断批处理窗口。若检测到连续的 Write/Edit 操作流，延迟 checkpoint 至用户确认或 5 分钟空闲后。
+
+### OMX Team 分支隔离
+
+> **O1 修复**：多 session/worker 共享同一 feature branch 导致 commit 交织（本会话 4 个外部 session + 2 个 auto-checkpoint 注入同一分支）。
+
+- **OMX team worker 必须使用子分支**：`{parent-branch}/worker-{N}`，禁止直接 commit 到 parent branch。
+- **主 session 持 parent branch**，worker 完成后通过 PR 或 cherry-pick 合入。
+
+### Team 技能复杂度门槛（2026-06-15 worktree 会话复盘）
+
+> **O4 修复**：Team 技能（`/team`）对 3 个 bash 命令也走完整管线（plan → prd → exec → verify → fix），开销远超任务本身。
+
+- **少于 5 个独立文件变更 → 直接执行，跳过 Team 管线**。
+- **仅以下场景触发 Team**：跨模块重构（≥5 文件）、安全审计、多仓库同步、需要多视角对抗验证。
+- **用户说"agent team"但任务简单时**：降级为并行 Agent 调用（非 Team 管线），明确告知用户。
+
 ## 工作流规则（2026-06-12 / 2026-06-14 / 2026-06-15 三场会话复盘）
 
 > 基于三场会话复盘（14 PR / $89 + 3 PR / $49.52 + 58 PR / STATUS.md 全量审计），制定以下编辑纪律、验证门禁和效率规则。
@@ -113,54 +158,28 @@
 - **审计闭合前必须跑 `python3 scripts/audit-status.py --network`**：24 项机械化检查（含跨维度验证） + 78 repos 全量 404 扫描。全部 PASS 方可声称"无残余问题"。不得以"之前跑过"为由跳过最终验证。
 - **审计命令跨平台兼容（POSIX-ACK）**：`grep -c` / `wc -l` / `sed -n` 在 zsh glob 或 BSD/GNU 差异下偶尔返回空或错误行数。统计命令优先用 `python3` 脚本（`audit-status.py` 即为例），shell one-liner 仅作快速抽查。若 shell 输出异常（如空结果），立即切换到 `python3` 重跑，不得基于空输出声称"无残留"。
 
-### Plan-first 原则
+### 编辑前原则（Plan-first + 基线确认）
 
-- **分析阶段读完所有相关文件后再编辑**——禁止边读边改
-- **列出完整变更清单后再动手**——同一文件所有修改一次性完成
-- **同模块相关变更聚合为一个 PR**——禁止每个小修改单独 PR
-
-### 编辑前基线确认（2026-06-14 kafkax 复盘，PR #340-#343）
-
-> 基于一次"不知道 PR #6 已重写目标文件、基于错误基线反复编辑"的 session 复盘。编辑前必须先确认当前状态。具体规则同步至 kafkax/CLAUDE.md（Go 源码上下文落地）。
-
-- **`git log --oneline -5` 检查目标文件最近提交，然后 `Read` 确认当前内容**——确认文件状态是否与自己的假设一致、是否已有他人/其他 session 修改。禁止假设文件仍是自己上次看到的状态。
-- **先列验证清单，再列变更清单**——先确定需要查什么（实际 struct 字段？panic 处理？文档内容？），验证完了再按 Plan-first 原则列变更清单。
-- **声称"已完成"前必须核对源码**——对 README 或文档中的任何代码事实声称，用 `grep`/`head`/`git log` 确认，禁止凭常识假设。
-
-### 编辑策略
-
-- **同一文件只编辑一次**：列出该文件所有需要变更的行，一次性完成
-- **优先 `Write` 替代多次 `Edit`**——当文件变更 > 30% 时直接重写，但 Write 前必须先确认当前基线（`git log` + `Read`），禁止在未验证文件状态的情况下全量重写。
-- **批量 sed/python 替代多次 Edit 调用**
+- **分析阶段读完所有相关文件后再编辑**——禁止边读边改。`git log --oneline -5` + `Read` 确认当前基线，禁止假设文件仍是自己上次看到的状态。
+- **列出完整变更清单后再动手**——先列验证清单（需要查什么），再列变更清单（需要改什么）。同一文件所有修改一次性完成。
+- **优先 `Write` 替代多次 `Edit`**（变更 > 30% 时），批量 sed/python 替代多次 Edit 调用。禁止 Edit 循环（linter hook 回退 → 重复编辑 → 成本放大）。
+- **声称"已完成"前必须核对源码**——用 `grep`/`head`/`git log` 确认，禁止凭常识假设。
 
 ### PR 聚合规则
 
-- **同一模块的所有文档修复 → 1 个 PR**
-- **跨文档同步 → 1 个 PR**（STATUS + ARCHITECTURE + 对齐文档同步）
+- **同一模块的所有文档修复 → 1 个 PR**；跨文档同步 → 1 个 PR
 - **禁止 1 行变更的 PR**（如单个错字或单行更新）
+- **同逻辑变更聚合为 1 个 commit**，版本 bump 放 PR 最后（参见 §提交批处理）
 
-### 成本控制
+### 成本纪律
 
-- 限制 `sequential-thinking`：仅在需要多假设推理时使用，常规分析直接输出
-- 批量并行读取：`for f in a b c; do read $f & done`
-- 会话中期检查成本：超过 $30 时主动与用户确认是否继续
-- **校验命令不受成本约束**：`git log`、`grep`、`head`、`ls` 等单次调用成本可忽略，但不执行导致的错误修正成本极高（kafkax session：跳过数次 grep → $49.52 无效编辑）。编辑文件前和声称完成前的校验命令**必须执行**，不计入成本控制范围。
-
-### xlibgate Trust Alignment session 复盘成本规则（2026-06-14）
-
-> 基于一次从 SPEC 到 Code 的全管线交付会话（$55.84 / 19 PR / 53 steps），提取以下成本控制规则。
-
-- **原子写入优先**：大节（>20 行）修改用 `Write` 替代 `Edit`。`Edit` 被 linter hook 回退时会触发重复编辑循环（session 中 5-8 次 → ~$12-15 浪费）。
-- **SPEC 骨架模板预加载**：新模块从 `docs/governance/templates/module/SPEC.md.skeleton` 实例化，跳过格式发现阶段。参考 `docs/governance/templates/orchestration/PIPELINE-AGENTS.md`。
-- **PROMPT 合并**：同模块多 task 用 1 个 consolidated PROMPT 文件，不创建 N 个独立文件（session 中 10→1 节省 471 行 / ~$2-3）。
-- **先读 scorer 源码再写 Prompt**：`rule-scorer.py` 的 required section 名称与直觉不一致（`Scope` 非 `Current Scope`，`Validation` 非 `Verification`）。1 次读 scorer 替代 N 次修复循环（session 中 ~$3-4 浪费）。
-- **信任 lint 结果**：`rule-scorer.py` 是确定性工具。一次 100 分后不重复跑相同 stage（session 中 6-8 次重跑 → ~$5-7 浪费）。
-- **YAML 测试夹具不用 raw string literal**：Go 的 raw string 会混入 tab 缩进导致 YAML 解析失败。用 `"key: " + value + "\n"` 字符串拼接。跳过 8+ 次 debug（session 中 ~$3-4 浪费）。
-- **外部仓库代码不用 agent 评分**：`code-structural-score` agent 在 docs-only repo 无输出（48 tool calls 白费）。手动按 RUBRIC-code.md 逐维度判定更快且确定性高。
-- **编辑前 branch 检查**：`git branch --show-current && git merge-base --is-ancestor main HEAD`。避免在 `main` 上 `stash pop` + commit（session 中 3 次事故 → ~$6-8 浪费）。已关联 PR #340。
-- **报告模板复用**：会话末构建总结报告只做一次，后续更新用 `grep`/`sed` 补数字，不重写完整报告（session 中 3-4 次重建 → ~$3-4 浪费）。
-
-预计优化成本：$8-20 / 全管线模块（vs 本次 $55.84）。详见 `docs/governance/improvements/20260614-xlibgate-trust-session/SESSION.md`。
+- **校验命令不受成本约束**：`git log`、`grep`、`head`、`ls` 等必须执行，不执行导致的错误修正成本极高。
+- 限制 `sequential-thinking` 仅在多假设推理时使用，常规分析直接输出。
+- 会话中期检查成本：超过 $30 时主动与用户确认是否继续。
+- 关键复盘教训（详见 `docs/governance/improvements/20260614-xlibgate-trust-session/SESSION.md`）：
+  - **信任确定性工具**（如 `rule-scorer.py`）：100 分后不重复跑相同 stage。
+  - **编辑前 branch 检查**：`git branch --show-current && git merge-base --is-ancestor main HEAD`。
+  - **新模块用 SPEC 骨架模板**，同模块多 task 用 1 个 PROMPT 文件。
 
 ### 版本号自动递增（2026-06-15）
 
@@ -225,6 +244,7 @@
 2. **同一 PR 内包含版本 bump**：不要把版本 bump 拆成独立 PR
 3. **版本号只能升不能降**：如果 bump 错了级别（比如该 bump minor 却 bump 了 patch），不要再降回去——下一个 PR 正确 bump 即可
 4. **版本号与实际内容一致**：bump 前用 `git diff --stat` 确认变更范围，选择合适的 bump 级别
+5. **版本 bump 必须是 PR 最后一个 commit**——禁止在会话中间 bump，后续 commit 会导致版本号过期。若 Stop 时发现版本落后于最新 commit，Stop hook 自动补 bump（无需人工干预）。
 
 ## 模块工作流规则（自动分支 + 对齐同步 + PR 闭环）
 
@@ -358,7 +378,14 @@ Claude 执行：
 
 单模块单阶段评分超过 5 轮仍未收敛时，暂停自我纠错。先把当前结论和争议点写入报告，让 arbiter 做多源裁决——不要一个 scorer 在内部模拟多源收敛。
 
-## 约定
+### 复盘元规则（2026-06-15 worktree 会话复盘）
+
+> **O12 修复**：每次复盘新增规则 → CLAUDE.md 膨胀（453 行 / 9 个复盘来源），无规则退休机制。
+
+- **新增规则必须声明 `supersedes`**：新规则若取代旧规则，必须在注释中引用被取代的规则编号（如 `> 取代: 2026-06-14 编辑策略 §原子写入优先`）。
+- **规则 TTL**：复盘来源超过 90 天的规则自动降级为"参考"（非强制），除非标注 `[永久]`。
+- **重复合并**：每次新增规则前，检查是否与现有规则重叠。重叠 → 合并而非新增。
+- **年度瘦身**：每季度检查 CLAUDE.md，合并/删除已内化为习惯的规则。目标：< 350 行。
 
 - **语言**：Claude 的所有回复、文档和提交信息默认使用中文，英文保留给仓库名、模块名、命令和标准技术术语。
 - **提交**：使用 Conventional Commits 前缀和中文描述，例如 `docs:`、`feat:`、`refactor:`、`fix:`。每个 commit 消息末尾必须追加 `Co-Authored-By: Claude <noreply@anthropic.com>`。`gh pr create` 的 body 末尾同样包含此行（确保 squash merge 后署名保留在 commit 中）。
@@ -412,6 +439,17 @@ node scripts/gc-scan.mjs --json   # JSON 输出
 ```bash
 node scripts/check.mjs            # 验证 Harness 配置完整性
 ```
+
+## 待办基础设施优化（2026-06-15 worktree 会话）
+
+> 以下 4 项需要修改 `.github/workflows/` 或 `.claude/hooks/` 代码，已分析待后续 PR 实现。
+
+| # | 项 | 文件 | 方案 |
+|:---:|------|------|------|
+| O5 | CI diff 感知 | `.github/workflows/docs-ci.yml` | 各 job 增加 `if: steps.filter.outputs.module == 'true'` 条件，仅当 `module/**` 变更时跑 spec-lint/traceability |
+| O8 | CI 死锁 | `.github/workflows/docs-ci.yml` | docs-only PR (`*.md` only) 自动 reduce 到 3 个必须 job（markdownlint + link-check + audit），其余 skip |
+| O10 | Hook 合并 | `.claude/hooks/pre-tool-check.mjs` | 合并 edit-guard + count-guard 为一个 `pre-edit-check.mjs`，PreToolUse 从 3 个减到 2 个 |
+| O6 | 自动影响分析 | `scripts/impact-analyze.sh` | 输入 `git diff --name-only` → 输出需同步的对齐文档列表（基于引用关系图） |
 
 ## 成熟度路线图
 

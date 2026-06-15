@@ -35,8 +35,9 @@
 .config/goal/**/*.tmp
 .config/goal/**/*.log
 
-# Worktree isolation
+# Worktree isolation — canonical: .worktree/ (单数)
 .worktree/
+.worktrees/
 
 # OMC runtime temp files
 .omc/**/*.tmp
