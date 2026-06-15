@@ -168,6 +168,54 @@ def fact_bool_to_status(value):
         return "❌"
     return "N/A"
 
+def compare_multidimensional_projection(status_rows, modules, blockers_doc):
+    """Compare STATUS multidimensional rows against the fact-layer projection."""
+    missing_status_rows = sorted(set(modules) - set(status_rows))
+    extra_status_rows = sorted(set(status_rows) - set(modules))
+    release_yes = sum(1 for row in status_rows.values() if row["release"] == "✅")
+
+    release_mismatches = []
+    factory_mismatches = []
+    for module, fact in sorted(modules.items()):
+        row = status_rows.get(module)
+        if not row:
+            continue
+
+        expected_release = fact_bool_to_status(fact.get("release"))
+        if row["release"] != expected_release:
+            release_mismatches.append(
+                f"{module} (STATUS {row['release']} != fact-layer {expected_release})"
+            )
+
+        expected_factory = fact_bool_to_status(fact.get("factory"))
+        if row["factory"] != expected_factory:
+            factory_mismatches.append(
+                f"{module} (STATUS {row['factory']} != fact-layer {expected_factory})"
+            )
+
+    factory_na = sum(1 for row in status_rows.values() if row["factory"] == "N/A")
+    open_factory_blockers = set(blockers_doc.get("factory_blocking_modules") or sorted({
+        blocker.get("module")
+        for blocker in blockers_doc.get("blockers", [])
+        if blocker.get("status") == "open"
+    }))
+    factory_overclaims = [
+        module
+        for module, row in sorted(status_rows.items())
+        if row["factory"] == "✅" and module in open_factory_blockers
+    ]
+
+    return {
+        "missing_status_rows": missing_status_rows,
+        "extra_status_rows": extra_status_rows,
+        "release_yes": release_yes,
+        "release_mismatches": release_mismatches,
+        "factory_mismatches": factory_mismatches,
+        "factory_na": factory_na,
+        "open_factory_blockers": sorted(open_factory_blockers),
+        "factory_overclaims": factory_overclaims,
+    }
+
 def audit_foundationx_fact_layer():
     """Validate machine-readable FoundationX fact sources and invariants."""
     print("--- 9. FoundationX fact-layer guard ---")
@@ -373,9 +421,10 @@ foundation_status = load_json(".foundationx/status/index.json")
 blockers_doc = load_json(".foundationx/blockers.json")
 modules = foundation_status.get("modules", {})
 multi_rows = parse_multidimensional_status_rows(STATUS)
+projection = compare_multidimensional_projection(multi_rows, modules, blockers_doc)
 
-missing_status_rows = sorted(set(modules) - set(multi_rows))
-extra_status_rows = sorted(set(multi_rows) - set(modules))
+missing_status_rows = projection["missing_status_rows"]
+extra_status_rows = projection["extra_status_rows"]
 if missing_status_rows or extra_status_rows:
     details = []
     if missing_status_rows:
@@ -386,31 +435,15 @@ if missing_status_rows or extra_status_rows:
 else:
     ok(f"STATUS multidimensional table covers {len(multi_rows)} fact-layer modules")
 
-release_yes = sum(1 for row in multi_rows.values() if row["release"] == "✅")
+release_yes = projection["release_yes"]
 fact_release_published = foundation_status.get("summary", {}).get("release_published")
 if fact_release_published is None:
     no("Could not parse FoundationX release_published summary")
 else:
     chk("RELEASE ✅ vs fact-layer release_published", str(release_yes), str(fact_release_published))
 
-release_mismatches = []
-factory_mismatches = []
-for module, fact in sorted(modules.items()):
-    row = multi_rows.get(module)
-    if not row:
-        continue
-
-    expected_release = fact_bool_to_status(fact.get("release"))
-    if row["release"] != expected_release:
-        release_mismatches.append(
-            f"{module} (STATUS {row['release']} != fact-layer {expected_release})"
-        )
-
-    expected_factory = fact_bool_to_status(fact.get("factory"))
-    if row["factory"] != expected_factory:
-        factory_mismatches.append(
-            f"{module} (STATUS {row['factory']} != fact-layer {expected_factory})"
-        )
+release_mismatches = projection["release_mismatches"]
+factory_mismatches = projection["factory_mismatches"]
 
 if release_mismatches:
     no("STATUS RELEASE projection mismatches fact layer: " + "; ".join(release_mismatches))
@@ -422,22 +455,13 @@ if factory_mismatches:
 else:
     ok("STATUS FACTORY rows match fact-layer factory values")
 
-factory_na = sum(1 for row in multi_rows.values() if row["factory"] == "N/A")
+factory_na = projection["factory_na"]
 if factory_na >= 1:
     ok(f"FACTORY N/A={factory_na} (testkitx=test-only)")
 else:
     no(f"FACTORY N/A={factory_na} (expected >=1)")
 
-open_factory_blockers = set(blockers_doc.get("factory_blocking_modules") or sorted({
-    blocker.get("module")
-    for blocker in blockers_doc.get("blockers", [])
-    if blocker.get("status") == "open"
-}))
-factory_overclaims = [
-    module
-    for module, row in sorted(multi_rows.items())
-    if row["factory"] == "✅" and module in open_factory_blockers
-]
+factory_overclaims = projection["factory_overclaims"]
 
 if factory_overclaims:
     no("STATUS FACTORY projection overclaims open blockers: " + ", ".join(factory_overclaims))
