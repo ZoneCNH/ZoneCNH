@@ -13,7 +13,7 @@
 - Last-Updated: 2026-06-14
 - Owner: ZoneCNH
 - Layer: L2.5 领域共享层
-- Version: v0.1.0
+- Version: v1.0.1
 - Repository: [github.com/ZoneCNH/domainx](https://github.com/ZoneCNH/domainx)
 - Related: [CONSTITUTION.md](../../CONSTITUTION.md), [ARCHITECTURE.md](../../ARCHITECTURE.md), [contracts](../contracts/SPEC.md), [decimalx](https://github.com/ZoneCNH/decimalx)
 
@@ -509,19 +509,19 @@ Then a new value object is returned and no setter is exposed
 
 ## 22. Release DoD
 
-- [ ] 所有值对象有 godoc
-- [ ] 所有枚举有文档
-- [ ] CHANGELOG 已更新
-- [ ] README 完整
-- [ ] 覆盖率 ≥ 80%
-- [ ] -race 通过
-- [ ] Benchmark 无 >10% 回退
-- [ ] vet/lint 无警告
-- [ ] gitleaks 通过
-- [ ] 全部 FR 有测试
-- [ ] 全部 Edge Cases 有测试
-- [ ] JSON round-trip 通过（含 Decimal）
-- [ ] OrderState 流转全部覆盖
+- [x] 所有值对象有 godoc
+- [x] 所有枚举有文档
+- [x] CHANGELOG 已更新
+- [x] README 完整
+- [x] 覆盖率 ≥ 80%
+- [x] -race 通过
+- [x] Benchmark 无 >10% 回退
+- [x] vet/lint 无警告
+- [x] gitleaks 通过
+- [x] 全部 FR 有测试
+- [x] 全部 Edge Cases 有测试
+- [x] JSON round-trip 通过（含 Decimal）
+- [x] OrderState 流转全部覆盖
 
 ---
 

@@ -155,7 +155,7 @@ THEN it MUST be `module github.com/ZoneCNH/positionx`
 | AC-POS-005 | FR-005 | Reconciliation 拉取交易所持仓对比本地；差异超过 threshold emit reconciliation_alert；差异写入 audit log |
 | AC-POS-006 | FR-006 | Snapshot 生成只读仓位快照；通过 observex 推送；间隔可配置（默认 1s） |
 | AC-POS-007 | FR-007 | PositionHistory 返回指定时间段仓位变更事件列表（timestamp/fill_id/deltaQty/price/reason） |
-| AC-POS-008 | FR-010 | README H1 为 `# positionx`；Go module path 为 `github.com/ZoneCNH/positionx`；go.mod 声明 `module github.com/ZoneCNH/positionx` |
+| AC-POS-008 | FR-008 | README H1 为 `# positionx`；Go module path 为 `github.com/ZoneCNH/positionx`；go.mod 声明 `module github.com/ZoneCNH/positionx` |
 
 ## 8. Business Rules
 

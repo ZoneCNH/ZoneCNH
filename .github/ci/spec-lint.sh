@@ -6,7 +6,7 @@
 #   2. WHEN/THEN 覆盖：每个 FR 至少有 1 条 WHEN
 #   3. 模糊词检测：grep 模糊词列表，发现则 WARN
 #   4. FR 编号连续：FR-001 到 FR-{N} 无跳号
-#   5. Non-goals 非空：Section 4 至少有 1 条
+#   5. Non-goals 非空：Non-goals / 非目标 section 至少有 1 条
 #   6. Metadata 必填项：Status / Spec-Version / Last-Updated 符合生命周期规范
 #   7. Markdown fence 结束标记必须为裸 ```
 #   8. xlib-standard 分析快照使用 ANALYSIS.md / FR-DETAIL.md / TRACEABILITY.md 门禁，
@@ -182,11 +182,22 @@ check_spec() {
     done
   fi
 
-  # 6. Non-goals 非空（Section 4）
+  # 6. Non-goals 非空（按标题识别，避免依赖章节编号）
   local non_goals
-  non_goals=$(awk '/^## 4\./,/^## 5\./' "$spec_file" | grep -cP "^- " || true)
+  non_goals=$(awk '
+    /^## [0-9]+\. / {
+      in_section = ($0 ~ /(Non-goals|非目标|不做什么)/)
+      next
+    }
+    /^## / {
+      in_section = 0
+      next
+    }
+    in_section && /^- / { count++ }
+    END { print count + 0 }
+  ' "$spec_file")
   if [[ $non_goals -eq 0 ]]; then
-    issues+=("⚠️  Section 4 Non-goals is empty")
+    issues+=("⚠️  Non-goals section is empty")
     WARN=1
   fi
 

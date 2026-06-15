@@ -7,7 +7,7 @@ acceptance_criteria:
   - "FR-007 baseline"
   - "FR-008 baseline"
 priority: P2
-status: pending
+status: done
 ---
 
 # TASK-DOMAINX-008: FR-007 + FR-008

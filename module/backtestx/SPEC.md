@@ -162,7 +162,7 @@ THEN it MUST be `module github.com/ZoneCNH/backtestx`
 | AC-BTX-005 | FR-005 | StressTest 注入极端行情场景（闪崩/波动率5x/流动性0）；输出最大亏损和恢复能力的情景分析报告 |
 | AC-BTX-006 | FR-006 | Benchmark 同时计算基准收益；输出 Alpha 和 Beta |
 | AC-BTX-007 | FR-007 | 滑点模型（固定+比例）和手续费模型（maker/taker）正确应用；支持自定义滑点和手续费函数 |
-| AC-BTX-008 | FR-010 | README H1 为 `# backtestx`；Go module path 为 `github.com/ZoneCNH/backtestx`；go.mod 声明 `module github.com/ZoneCNH/backtestx` |
+| AC-BTX-008 | FR-008 | README H1 为 `# backtestx`；Go module path 为 `github.com/ZoneCNH/backtestx`；go.mod 声明 `module github.com/ZoneCNH/backtestx` |
 
 ## 8. Business Rules
 
@@ -293,7 +293,7 @@ backtestx/
 | 事件驱动回测         | tick/bar 按时间顺序正确驱动      |
 | 绩效指标             | 手工计算验证所有指标             |
 | Walk-Forward         | 窗口不重叠，参数收敛             |
-| 蒙特卡洛             | 分布合理，置信区间有效           |
+| 蒙特卡洛             | 分布形态与置信区间计算可复验     |
 | 压力测试             | 极端场景下策略行为可预测         |
 
 ---

@@ -41,7 +41,7 @@ L1 测试: testkitx (test-only)
 基座扩展: redisx / kafkax / natsx / postgresx / taosx / ossx / clickhousex / contracts / transportx
       │
       ▼
-L2.5: domainx / decimalx / domain-market / domain-macro / domain-exchange (v1.0.0 执行计划；domainx v1.0.1 release 已对账；factory-grade 仍待补证)
+L2.5: domainx / decimalx / domain-market / domain-macro / domain-exchange (5/5 v1.0.0 Spec Approved；domainx v1.0.1 release 已对账；factory-grade 仍待补证)
       │
       ▼
 业务流: 数据域 → 分析域 ↔ 决策域 → 执行域
@@ -106,11 +106,11 @@ L2.5: domainx / decimalx / domain-market / domain-macro / domain-exchange (v1.0.
 
 ### L2.5 · 领域共享层
 
-- [decimalx](https://github.com/ZoneCNH/decimalx) — 高精度十进制类型（Decimal/Price/Qty/Ratio/Money） `公开`
+- [decimalx](https://github.com/ZoneCNH/decimalx) — 高精度十进制类型（Decimal/Price/Qty/Ratio/Money）；v1.0.0 Spec Approved `公开`
 - [domainx](https://github.com/ZoneCNH/domainx) — 领域共享值对象：Order/Position/Trade/Portfolio/ExecutionReport 枚举与类型；L2.5 design baseline；公开 v1.0.1 GitHub Release/tag 已观测并已对账为 release=true；factory=false until L2.5 adoption / factory evidence archived `公开`
-- [domain-market](https://github.com/ZoneCNH/domain-market) — 市场数据域模型（Tick/Quote/Bar/OrderBook） `公开`
-- [domain-macro](https://github.com/ZoneCNH/domain-macro) — 宏观经济领域共享模型：国家/地区/指标/发布日历、MacroPoint/MacroState `公开`
-- [domain-exchange](https://github.com/ZoneCNH/domain-exchange) — 交易域模型（VenueAdapter 13 方法接口） `公开`
+- [domain-market](https://github.com/ZoneCNH/domain-market) — 市场数据域模型（Tick/Quote/Bar/OrderBook）；v1.0.0 Spec Approved `公开`
+- [domain-macro](https://github.com/ZoneCNH/domain-macro) — 宏观经济领域共享模型：国家/地区/指标/发布日历、MacroPoint/MacroState；v1.0.0 Spec Approved `公开`
+- [domain-exchange](https://github.com/ZoneCNH/domain-exchange) — 交易域模型（VenueAdapter 13 方法接口）；v1.0.0 Spec Approved `公开`
 
 ### 数据域 · market-data（SDK 13 + Provider 5）
 

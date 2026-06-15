@@ -7,9 +7,9 @@
 | 仓库 | <https://github.com/ZoneCNH/domain-market> |
 | 当前版本 | v0.1.0 |
 | 目标版本 | v1.0.0 |
-| 状态 | v1.0.0 执行计划待落地 |
+| 状态 | v1.0.0 执行计划已落地 |
 | 计划来源 | `/home/zone/Downloads/0615/ZoneCNH-v1.0.0-goal-execution-plans/domain-market-v1.0.0-goal-execution-plan.md` |
-| 最后更新 | 2026-06-15 |
+| 最后更新 | 2026-06-16 |
 
 ## 目标
 

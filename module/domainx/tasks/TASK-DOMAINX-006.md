@@ -46,7 +46,7 @@ depends_on:
   - "TASK-DOMAINX-005"
 estimated_effort: "2h"
 priority: P1
-status: pending
+status: done
 ```
 
 ---

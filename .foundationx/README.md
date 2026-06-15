@@ -49,6 +49,7 @@ README.md / ARCHITECTURE.md / STATUS.md generated blocks
 
 - `summary` 计数必须等于 `modules` 明细派生结果。
 - `release=false` 必须同时 `factory=false`。
+- `blockers.json.factory_blocking_modules` 必须枚举所有 `factory=false` 模块。
 - `blockers.json` 中任一 `status=open` 的模块必须 `factory=false`。
 - `category=release` 且 `status=open` 的 blocker 必须使对应模块 `release=false`。
 - README / ARCHITECTURE / STATUS 等公开投影不得高于 `.foundationx/status/index.json` 事实层。

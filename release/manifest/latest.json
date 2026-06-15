@@ -1,8 +1,8 @@
 {
-  "version": "v1.2.0",
+  "version": "v1.3.0",
   "commit": "768c83ff9717a5e475b9efc22dfbee3ea8dffb21",
   "commit_short": "768c83f",
-  "generated_at": "2026-06-15T19:45:52Z",
+  "generated_at": "2026-06-15T20:17:41Z",
   "stats": {
     "total_components": 70,
     "existing": 54,
