@@ -7,7 +7,9 @@
 #   3. 从 STATUS.md 提取 domain-level 统计表中的组件数量
 #   4. 从 module/ 提取 Foundation 规格数量
 #   5. 校验 STATUS 进度分布、版本覆盖与域统计合计
-#   6. 比对各方是否一致
+#   6. 校验文档同步表的 unique repo 投影口径
+#   7. 比对各方是否一致
+#   8. 调用 .foundationx 事实层守卫，防止公开投影高于机器事实层
 
 set -euo pipefail
 
@@ -88,6 +90,7 @@ ARCH_INDEP=$(count_arch_domain "独立")
 
 # 从 STATUS.md "组件总数" 提取
 STATUS_TOTAL=$(grep -oP '组件总数:\s*\K[0-9]+' "$REPO_ROOT/STATUS.md" | head -1)
+STATUS_UNIQUE_REPOS=$(grep -oP 'github\.com/ZoneCNH/[a-zA-Z0-9_.-]+' "$REPO_ROOT/STATUS.md" | sort -u | wc -l | tr -d ' ')
 
 # 从 STATUS.md "文档同步检查" 表提取（匹配表格行 "| 组件总数"）
 STATUS_SYNC_TOTAL=$(awk -F'|' '/^\| 组件总数/{gsub(/[ \t*\r]/, "", $5); match($5, /^[0-9]+/); print substr($5, RSTART, RLENGTH)}' "$REPO_ROOT/STATUS.md")
@@ -136,6 +139,7 @@ echo "README 列表计数:   market-data = $README_MARKET, macro-data = $README_
 echo "ARCHITECTURE 图:   market-data = $ARCH_MD_NUM, macro-data = $ARCH_MACRO_NUM"
 echo "ARCHITECTURE 表:   基座=$ARCH_BASE, L2.5=$ARCH_L25, 数据域=$ARCH_DATA, 分析域=$ARCH_ANALYSIS, 决策域=$ARCH_DECISION, 执行域=$ARCH_EXEC, 入口=$ARCH_ENTRY, 横切=$ARCH_CROSS, Rust=$ARCH_RUST, 独立=$ARCH_INDEP"
 echo "STATUS 总数:       $STATUS_TOTAL"
+echo "STATUS 唯一仓库:   $STATUS_UNIQUE_REPOS"
 echo "STATUS 同步表:     总计=$STATUS_SYNC_TOTAL, market-data=$STATUS_SYNC_MD, macro-data=$STATUS_SYNC_MACRO"
 echo "STATUS 分布/版本:  进度分布合计=$STATUS_PROGRESS_BUCKET_TOTAL, 版本覆盖=$STATUS_VERSIONED+$STATUS_UNVERSIONED, 域统计有版本号=$STATUS_DOMAIN_VERSIONED"
 echo "Spec 规格计数:     Foundation=$FOUNDATION_SPEC_COUNT, 预期=$FOUNDATION_EXPECTED_COUNT"
@@ -152,6 +156,27 @@ check() {
     echo "  ✅ $label: $a == $b"
   else
     echo "  ❌ $label: $a != $b — 不一致!"
+    FAIL=1
+  fi
+}
+
+check_max_diff() {
+  local label="$1"
+  local a="$2"
+  local b="$3"
+  local max_diff="$4"
+  local diff
+
+  if (( a > b )); then
+    diff=$((a - b))
+  else
+    diff=$((b - a))
+  fi
+
+  if (( diff <= max_diff )); then
+    echo "  ✅ $label: actual=$a, expected=$b, diff=$diff <= $max_diff"
+  else
+    echo "  ❌ $label: actual=$a, expected=$b, diff=$diff > $max_diff — 不一致!"
     FAIL=1
   fi
 }
@@ -176,8 +201,8 @@ check "macro-data (列表条目 vs 图中标注)" "$README_MACRO" "$README_MACRO
 ARCH_TOTAL=$((ARCH_BASE + ARCH_L25 + ARCH_DATA + ARCH_ANALYSIS + ARCH_DECISION + ARCH_EXEC + ARCH_ENTRY + ARCH_CROSS + ARCH_RUST + ARCH_INDEP))
 check "组件总数 (ARCHITECTURE 表合计含入口 vs STATUS)" "$ARCH_TOTAL" "$STATUS_TOTAL"
 
-# 5. STATUS 组件总数行 vs 同步表
-check "STATUS (仪表盘总数 vs 同步表总计)" "$STATUS_TOTAL" "$STATUS_SYNC_TOTAL"
+# 5. STATUS 文档同步表采用 unique repo 投影口径；同步表仍保留已知复用仓库差异。
+check_max_diff "STATUS (唯一仓库数 vs 同步表总计)" "$STATUS_UNIQUE_REPOS" "$STATUS_SYNC_TOTAL" 2
 
 # 6. module/ 数量口径：Foundation 17
 check "规格总数 (Foundation $FOUNDATION_EXPECTED_COUNT)" "$SPEC_COUNT" "$FOUNDATION_EXPECTED_COUNT"
@@ -191,6 +216,17 @@ check "STATUS (版本覆盖 vs 域统计合计)" "$STATUS_VERSIONED" "$STATUS_DO
 
 echo ""
 
+# 8. .foundationx 事实层守卫：summary 派生计数、open blocker gate、release/factory invariant
+echo "--- FoundationX fact-layer guard ---"
+if python3 "$REPO_ROOT/scripts/audit-status.py" --foundationx-only; then
+  echo "  ✅ FoundationX fact-layer guard passed"
+else
+  echo "  ❌ FoundationX fact-layer guard failed"
+  FAIL=1
+fi
+
+echo ""
+
 # ── 结果 ─────────────────────────────────────────────────
 echo "=== 结果 ==="
 if [[ $FAIL -ne 0 ]]; then
@@ -198,7 +234,7 @@ if [[ $FAIL -ne 0 ]]; then
   echo ""
   echo "修复提示："
   echo "  1. 确保 README.md / ARCHITECTURE.md 中的 market-data (N) / macro-data (N) 数字与实际列表条目一致"
-  echo "  2. 确保 STATUS.md 的「组件总数」和「文档同步检查」表中的数字一致"
+  echo "  2. 确保 STATUS.md 的「文档同步检查」总计与唯一仓库数差异不超过已知复用仓库口径（当前 <=2）；仪表盘「组件总数」匹配域统计行口径"
   echo "  3. 确保 STATUS.md 的进度分布、版本覆盖与域统计合计一致"
   echo "  4. 新增/删除规格时，同步更新 module/README.md 与 Foundation 数量口径"
   echo "  5. 新增/删除组件时，同步更新三个文件中的所有引用"

@@ -16,7 +16,7 @@ Go 🐹 (主要) · Rust 🦀 (底层) · Python 🐍 (脚本/数据) · TypeScr
 >
 > 🗺️ 六阶段交付路线图、任务编号与验收标准 → **[ROADMAP.md](./ROADMAP.md)**
 >
-> 🧱 Foundation v1 规格、依赖矩阵、执行跟踪与 ADR → **[module/](./module/)**
+> 🧱 Foundation 公开规格、依赖矩阵、执行跟踪与 ADR → **[module/](./module/)**
 >
 > 📋 20 个基座模块规格 + 4 个 L2.5 领域共享规格 → **[module/](./module/)**
 >
@@ -82,17 +82,19 @@ L2.5: decimalx / domain-market / domain-macro / domain-exchange (v1.0.0 执行�
 - [testkitx](https://github.com/ZoneCNH/testkitx) — 测试专用 evidence/golden/fixture/boundary 工具包 `公开`
 - [xlibgate](https://github.com/ZoneCNH/xlibgate) — import 边界、go.mod、Go baseline、release evidence、Trust Alignment 门禁 `公开`
 
-> `resiliencx` v1.0.1：SPEC Approved，身份修复已完成（P3 宪法原则 + goal.md v1.2+ 演进路线图）。
+> **公开投影口径**：版本 / release / factory 状态以 `.foundationx/status/index.json` + `.foundationx/blockers.json` 为准；当前 BLK-001/002/003/006/007/008 open，因此 README 不声明 Foundation 单一 100% 或 factory-grade。
+>
+> `configx` v1.0.0、`observex` v0.3.1、`testkitx` v0.4.0、`resiliencx` v0.4.9 已发布；此前版本误标已修正。
 
 ### 基座 · 存储与中间件
 
-- [postgresx](https://github.com/ZoneCNH/postgresx) — PostgreSQL — 关系型存储、事务、迁移（v1.0.0 已发布；live integration 通过；factory_grade_allowed=false；单元测试 52.4% 待提升） `公开`
+- [postgresx](https://github.com/ZoneCNH/postgresx) — PostgreSQL — 关系型存储、事务、迁移（v1.0.0 已发布；live integration 通过；factory_grade_allowed=false；单元测试 52.4% + Docker integration skip，BLK-006 open） `公开`
 - [redisx](https://github.com/ZoneCNH/redisx) — Redis L2 adapter（v1.0.1 已发布；KV/TTL、Hash/List、Pipeline、Cache-aside、Lock/RateLimit、Pool、Persistence restart recovery；Docker-backed Redis 验证通过） `公开`
-- [clickhousex](https://github.com/ZoneCNH/clickhousex) — ClickHouse — OLAP 查询、批量写入（v1.0.1；SPEC + TRACEABILITY + TASKS 完成；GitHub release 待发布；CI 模板已就绪） `公开`
-- [taosx](https://github.com/ZoneCNH/taosx) — TDengine L2 adapter contract（pkg/taosx v1.0.1；真实 taosWS WebSocket 集成已验证，pkg/taosx 100.0% 覆盖） `公开`
+- [clickhousex](https://github.com/ZoneCNH/clickhousex) — ClickHouse — OLAP 查询、批量写入（v1.0.1；SPEC + TRACEABILITY + TASKS 完成；公开 GitHub release 待发布，BLK-003 open；非 factory） `公开`
+- [taosx](https://github.com/ZoneCNH/taosx) — TDengine L2 adapter contract（pkg/taosx v1.0.1；真实 taosWS WebSocket 集成已验证；SPEC 评分 67，BLK-007 open；非 factory） `公开`
 - [kafkax](https://github.com/ZoneCNH/kafkax) — Kafka — 消息队列、事件流（v1.0.2 已发布；真实 broker gates 已验证） `公开`
-- [natsx](https://github.com/ZoneCNH/natsx) — NATS 内部通信模块（v1.0.0 已发布；Core NATS / JetStream、Drain/reconnect/degraded health、canonical `FOUNDATIONX_NATS_*` 配置和真实 dev auth live gate 已验证；repair-slice 20/20，正式四源 98+ arbiter 与生产 TLS gate 待补） `公开`
-- [ossx](https://github.com/ZoneCNH/ossx) — Aliyun OSS 对象存储 L2 adapter（v1.0.1 已发布；真实 Aliyun OSS 集成、race、vet、build、release-check 与 100.0% 覆盖已验证；S3/MinIO/Azure/GCS Provider 仅保留扩展位） `公开`
+- [natsx](https://github.com/ZoneCNH/natsx) — NATS 内部通信模块（v1.0.0 已发布；Core NATS / JetStream、Drain/reconnect/degraded health、canonical `FOUNDATIONX_NATS_*` 配置和真实 dev auth live gate 已验证；正式四源 98+ arbiter 与生产 TLS gate 待补，BLK-001/BLK-002 open；非 factory） `公开`
+- [ossx](https://github.com/ZoneCNH/ossx) — Aliyun OSS 对象存储 L2 adapter（v1.0.1 已发布；真实 Aliyun OSS 集成、race、vet、build、release-check 与 100.0% 覆盖已验证（仅覆盖验证口径，不等同于 factory-ready）；BLK-008 open：API 文档 / integration evidence / quickstart / release manifest 未归档；非 factory；S3/MinIO/Azure/GCS Provider 仅保留扩展位） `公开`
 
 ### 基座 · 契约与传输
 

@@ -2,7 +2,8 @@
 """audit-status.py — Cross-document consistency checker.
 
 Validates STATUS.md / README.md / ARCHITECTURE.md counts against
-actual table data and unique repo links.
+actual table data and unique repo links. Also verifies the .foundationx
+fact layer so generated projections cannot overstate blocker/release state.
 
 Checks:
   1. Table row counts match domain stats totals
@@ -12,19 +13,24 @@ Checks:
   5. No stale "strategies" references
   6. Domain-sum arithmetic (row sums == aggregate)
   7. (--network) GitHub 404 link scan
+  8. Cross-dimension RELEASE/FACTORY checks against fact-layer projections
+  9. FoundationX fact-layer guard
 
 Usage:
-  python3 scripts/audit-status.py           # local checks
-  python3 scripts/audit-status.py --network # include 404 scan
+  python3 scripts/audit-status.py                      # local checks
+  python3 scripts/audit-status.py --foundationx-only   # fact-layer only
+  python3 scripts/audit-status.py --network            # include 404 scan
 
 Exit: 0 = PASS, 1 = FAIL
 """
-import re, sys, os, subprocess
+import json, re, sys, os, subprocess
+from collections import Counter, defaultdict
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 PASS, FAIL = 0, 0
 NETWORK = "--network" in sys.argv
+FOUNDATIONX_ONLY = "--foundationx-only" in sys.argv
 
 GREEN = "\033[32m"; RED = "\033[31m"; NC = "\033[0m"
 def ok(msg):
@@ -39,6 +45,12 @@ def chk(label, a, b):
 
 def load(name):
     return (ROOT / name).read_text()
+
+def load_json(name):
+    return json.loads((ROOT / name).read_text())
+
+def stable_counter(counter):
+    return {k: counter[k] for k in sorted(counter)}
 
 def unique_repos(text):
     return len(set(re.findall(r'github\.com/ZoneCNH/[a-zA-Z0-9_.-]+', text)))
@@ -120,7 +132,144 @@ def count_sdk_provider(text):
             elif "| Provider " in line: prov += 1
     return sdk, prov
 
+def parse_multidimensional_status_rows(text):
+    """Parse STATUS.md multidimensional maturity table rows by module name."""
+    rows = {}
+    in_multi = False
+    for line in text.splitlines():
+        if "📊 基座多维成熟度展开" in line:
+            in_multi = True
+            continue
+        if in_multi and line.startswith("</details>"):
+            break
+        if not in_multi or not re.match(r'^\| [a-z]', line):
+            continue
+
+        parts = [p.strip() for p in line.split("|")]
+        if len(parts) < 11:
+            continue
+        rows[parts[1]] = {
+            "spec": parts[2],
+            "impl": parts[3],
+            "release": parts[4],
+            "live": parts[5],
+            "ext_ci": parts[6],
+            "adopt": parts[7],
+            "soak": parts[8],
+            "factory": parts[9],
+            "note": parts[10],
+        }
+    return rows
+
+def fact_bool_to_status(value):
+    if value is True:
+        return "✅"
+    if value is False:
+        return "❌"
+    return "N/A"
+
+def audit_foundationx_fact_layer():
+    """Validate machine-readable FoundationX fact sources and invariants."""
+    print("--- 9. FoundationX fact-layer guard ---")
+    try:
+        status = load_json(".foundationx/status/index.json")
+        blockers_doc = load_json(".foundationx/blockers.json")
+        contract = load_json(".foundationx/repo-contract.json")
+        schema = load_json(".foundationx/repo-contract.schema.json")
+    except Exception as exc:
+        no(f"Could not load .foundationx JSON: {exc}")
+        return
+
+    modules = status.get("modules", {})
+    blockers = blockers_doc.get("blockers", [])
+    open_blockers = [b for b in blockers if b.get("status") == "open"]
+    resolved_blockers = [b for b in blockers if b.get("status") == "resolved"]
+
+    chk("Foundation module total", status.get("total_modules"), len(modules))
+    expected_summary = {
+        "spec_complete": sum(1 for m in modules.values() if m.get("spec") is True),
+        "impl_complete": sum(1 for m in modules.values() if m.get("impl") is True),
+        "release_published": sum(1 for m in modules.values() if m.get("release") is True),
+        "live_integration": sum(1 for m in modules.values() if m.get("live") is True),
+        "factory_grade": sum(1 for m in modules.values() if m.get("factory") is True),
+    }
+    for key, expected in expected_summary.items():
+        chk(f"status.summary.{key}", status.get("summary", {}).get(key), expected)
+
+    release_false_factory_true = [
+        name for name, mod in modules.items()
+        if mod.get("release") is False and mod.get("factory") is True
+    ]
+    if release_false_factory_true:
+        no(f"release=false but factory=true: {', '.join(release_false_factory_true)}")
+    else:
+        ok("release=false implies factory=false")
+
+    chk("Blocker total", blockers_doc.get("total_blockers"), len(blockers))
+    chk("Open blocker total", blockers_doc.get("open_blockers"), len(open_blockers))
+    chk("Resolved blocker total", blockers_doc.get("resolved_blockers"), len(resolved_blockers))
+    chk("Blockers by_severity", blockers_doc.get("by_severity"), stable_counter(Counter(b.get("severity") for b in blockers)))
+    chk("Blockers open_by_severity", blockers_doc.get("open_by_severity"), stable_counter(Counter(b.get("severity") for b in open_blockers)))
+
+    by_module = defaultdict(list)
+    for blocker in blockers:
+        by_module[blocker.get("module")].append(blocker.get("id"))
+    expected_by_module = {k: v for k, v in sorted(by_module.items())}
+    chk("Blockers by_module", blockers_doc.get("by_module"), expected_by_module)
+
+    open_modules = sorted({b.get("module") for b in open_blockers})
+    chk("factory_blocking_modules", blockers_doc.get("factory_blocking_modules"), open_modules)
+    factory_overstated = [
+        name for name in open_modules
+        if modules.get(name, {}).get("factory") is not False
+    ]
+    if factory_overstated:
+        no(f"open blocker modules with factory!=false: {', '.join(factory_overstated)}")
+    else:
+        ok("open blockers force factory=false")
+
+    release_blocking_modules = sorted({b.get("module") for b in open_blockers if b.get("category") == "release"})
+    chk("release_blocking_modules", blockers_doc.get("release_blocking_modules"), release_blocking_modules)
+    release_overstated = [
+        name for name in release_blocking_modules
+        if modules.get(name, {}).get("release") is not False
+    ]
+    if release_overstated:
+        no(f"open release blocker modules with release!=false: {', '.join(release_overstated)}")
+    else:
+        ok("open release blockers force release=false")
+
+    if schema.get("properties", {}).get("schema_version", {}).get("const") == contract.get("schema_version"):
+        ok("repo-contract schema const matches contract schema_version")
+    else:
+        no("repo-contract schema const does not match contract schema_version")
+
+    required = schema.get("required", [])
+    missing = [key for key in required if key not in contract]
+    if missing:
+        no(f"repo-contract missing schema-required keys: {', '.join(missing)}")
+    else:
+        ok("repo-contract contains schema-required keys")
+
+    for guard_key in ("public_docs", "fact_sources", "audit_scripts"):
+        missing_paths = [
+            path for path in contract.get("projection_guards", {}).get(guard_key, [])
+            if not (ROOT / path).exists()
+        ]
+        if missing_paths:
+            no(f"projection_guards.{guard_key} missing paths: {', '.join(missing_paths)}")
+        else:
+            ok(f"projection_guards.{guard_key} paths exist")
+
 # ── Load ────────────────────────────────────────────────────
+if FOUNDATIONX_ONLY:
+    print("=== audit-status.py --foundationx-only ===")
+    print()
+    audit_foundationx_fact_layer()
+    print()
+    print(f"Summary: {PASS} passed, {FAIL} failed")
+    sys.exit(1 if FAIL else 0)
+
 STATUS = load("STATUS.md")
 README = load("README.md")
 ARCH   = load("ARCHITECTURE.md")
@@ -218,49 +367,86 @@ if NETWORK:
 else:
     print("  SKIPPED (use --network)")
 
-# ── 8. Cross-dimension: RELEASE/FACTORY ↔ version note ──────
+# ── 8. Cross-dimension: RELEASE/FACTORY ↔ fact layer ──────
 print("\n--- 8. Cross-dimension checks ---")
-# Count RELEASE ✅/❌ from multidimensional table
-release_yes = release_no = 0
-in_multi = False
-for line in STATUS.splitlines():
-    if "📊 基座多维成熟度展开" in line: in_multi = True; continue
-    if in_multi and line.startswith("</details>"): break
-    if in_multi and re.match(r'^\| [a-z]', line):
-        parts = [p.strip() for p in line.split("|")]
-        if len(parts) >= 6:
-            r_val = parts[4]  # RELEASE = column 5 (1-indexed)
-            if r_val == "✅": release_yes += 1
-            elif r_val == "❌": release_no += 1
+foundation_status = load_json(".foundationx/status/index.json")
+blockers_doc = load_json(".foundationx/blockers.json")
+modules = foundation_status.get("modules", {})
+multi_rows = parse_multidimensional_status_rows(STATUS)
 
-# Parse version note for "14/20 已发布 GitHub Release"
-vn_match = re.search(r'(\d+)/20\s+已发布 GitHub Release', STATUS)
-if vn_match:
-    vn_release = int(vn_match.group(1))
-    chk("RELEASE ✅ vs version-note", str(release_yes), str(vn_release))
+missing_status_rows = sorted(set(modules) - set(multi_rows))
+extra_status_rows = sorted(set(multi_rows) - set(modules))
+if missing_status_rows or extra_status_rows:
+    details = []
+    if missing_status_rows:
+        details.append("missing rows: " + ", ".join(missing_status_rows))
+    if extra_status_rows:
+        details.append("extra rows: " + ", ".join(extra_status_rows))
+    no("STATUS multidimensional table coverage mismatch: " + "; ".join(details))
 else:
-    no("Could not parse version-note release count")
+    ok(f"STATUS multidimensional table covers {len(multi_rows)} fact-layer modules")
 
-# FACTORY N/A count
-factory_na = 0
-in_multi = False
-for line in STATUS.splitlines():
-    if "📊 基座多维成熟度展开" in line: in_multi = True; continue
-    if in_multi and line.startswith("</details>"): break
-    if in_multi and re.match(r'^\| [a-z]', line):
-        parts = [p.strip() for p in line.split("|")]
-        if len(parts) >= 10:
-            f_val = parts[9]  # FACTORY = column 10
-            if f_val == "N/A": factory_na += 1
-# testkitx should be N/A (test-only)
+release_yes = sum(1 for row in multi_rows.values() if row["release"] == "✅")
+fact_release_published = foundation_status.get("summary", {}).get("release_published")
+if fact_release_published is None:
+    no("Could not parse FoundationX release_published summary")
+else:
+    chk("RELEASE ✅ vs fact-layer release_published", str(release_yes), str(fact_release_published))
+
+release_mismatches = []
+factory_mismatches = []
+for module, fact in sorted(modules.items()):
+    row = multi_rows.get(module)
+    if not row:
+        continue
+
+    expected_release = fact_bool_to_status(fact.get("release"))
+    if row["release"] != expected_release:
+        release_mismatches.append(
+            f"{module} (STATUS {row['release']} != fact-layer {expected_release})"
+        )
+
+    expected_factory = fact_bool_to_status(fact.get("factory"))
+    if row["factory"] != expected_factory:
+        factory_mismatches.append(
+            f"{module} (STATUS {row['factory']} != fact-layer {expected_factory})"
+        )
+
+if release_mismatches:
+    no("STATUS RELEASE projection mismatches fact layer: " + "; ".join(release_mismatches))
+else:
+    ok("STATUS RELEASE rows match fact-layer release values")
+
+if factory_mismatches:
+    no("STATUS FACTORY projection mismatches fact layer: " + "; ".join(factory_mismatches))
+else:
+    ok("STATUS FACTORY rows match fact-layer factory values")
+
+factory_na = sum(1 for row in multi_rows.values() if row["factory"] == "N/A")
 if factory_na >= 1:
     ok(f"FACTORY N/A={factory_na} (testkitx=test-only)")
 else:
     no(f"FACTORY N/A={factory_na} (expected >=1)")
 
-# ── Summary ─────────────────────────────────────────────────
-total = PASS + FAIL
-print(f"\n{'='*42}")
-print(f"Results: {GREEN}{PASS} passed{NC} / {RED}{FAIL} failed{NC} / {total} total")
-print(f"{'='*42}")
-sys.exit(0 if FAIL == 0 else 1)
+open_factory_blockers = set(blockers_doc.get("factory_blocking_modules") or sorted({
+    blocker.get("module")
+    for blocker in blockers_doc.get("blockers", [])
+    if blocker.get("status") == "open"
+}))
+factory_overclaims = [
+    module
+    for module, row in sorted(multi_rows.items())
+    if row["factory"] == "✅" and module in open_factory_blockers
+]
+
+if factory_overclaims:
+    no("STATUS FACTORY projection overclaims open blockers: " + ", ".join(factory_overclaims))
+else:
+    ok("STATUS FACTORY ✅ rows have no open blockers")
+
+print()
+audit_foundationx_fact_layer()
+
+print()
+print(f"Summary: {PASS} passed, {FAIL} failed")
+sys.exit(1 if FAIL else 0)
