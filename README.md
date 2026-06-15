@@ -41,7 +41,7 @@ L1 测试: testkitx (test-only)
 基座扩展: redisx / kafkax / natsx / postgresx / taosx / ossx / clickhousex / contracts / transportx
       │
       ▼
-L2.5: decimalx / domain-market / domain-macro / domainx / domain-exchange (v1.0.0 执行计划)
+L2.5: decimalx / domain-market / domain-macro / domain-exchange (v1.0.0 执行计划；设计基线可用，release / factory-grade 待补证)
       │
       ▼
 业务流: 数据域 → 分析域 ↔ 决策域 → 执行域
@@ -62,10 +62,11 @@ L2.5: decimalx / domain-market / domain-macro / domainx / domain-exchange (v1.0.
 | `decimalx` | v0.2.0 | v1.0.0 | API freeze / 精度门禁待落地 | [module/decimalx](module/decimalx/goal.md) |
 | `domain-market` | v0.1.0 | v1.0.0 | 市场数据语义与质量门禁待冻结 | [module/domain-market](module/domain-market/goal.md) |
 | `domain-macro` | v0.1.0 | v1.0.0 | no-lookahead 与精度 ADR 待冻结 | [module/domain-macro](module/domain-macro/goal.md) |
-| `domainx` | v0.1.0 | v1.0.0 | 交易域共享模型执行计划已对齐 | [module/domainx](module/domainx/V1-GOAL-EXECUTION-PLAN.md) |
 | `domain-exchange` | v0.1.0 | v1.0.0 | Exchange SPI 待在上游共享模型后冻结 | [module/domain-exchange](module/domain-exchange/goal.md) |
 
-依赖顺序：`decimalx` -> `domain-market` / `domain-macro` / `domainx` -> `domain-exchange`。这里的 v1.0.0 是文档 / Goal execution baseline，用于锁定目标范围与依赖顺序；不代表各独立模块仓库已经完成 API freeze、CI release gate、v1.0.0 git tag 或 GitHub Release。
+成熟度口径：4/4 已有 v1.0.0 Draft Spec / Traceability / Plan 基线；0/4 完成 v1.0.0 release、EXT CI 与 factory-grade 门禁。该层当前可作为 Phase 0 设计依赖推进，但不能宣告 factory-grade adoption。
+
+依赖顺序：`decimalx` -> `domain-market` / `domain-macro` -> `domain-exchange`。这里的 v1.0.0 是文档 / Goal execution baseline，用于锁定目标范围与依赖顺序；不代表各独立模块仓库已经完成 API freeze、CI release gate、外部 CI artifact、adoption gate、v1.0.0 git tag 或 GitHub Release。`domainx` 已归入基座，不计入 L2.5 组件数。
 
 ## 📦 核心项目
 

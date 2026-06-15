@@ -342,10 +342,10 @@ Foundation v1 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中�
 | 基座                  | [contracts](https://github.com/ZoneCNH/contracts)               | v1.0.1-spec | ✅ 已有   | █████ 100% | 跨域稳定端口/事件/DTO 契约（6 FR，10 BR，8 NFR，16 AC，7 TC，5 tasks，TRACEABILITY §1-§7 完整，goal.md 对齐 CONSTITUTION P7） |
 | 基座                  | [transportx](https://github.com/ZoneCNH/transportx)             | v1.1.1-spec | ✅ 已有   | █████ 100% | 应用通信底座规格基线；25 FR, 18 BR, 12 NFR, 25 AC, 25 TC, 12 CI gates — SPEC/Matrix/Tasks 三阶段满分 |
 | **L2.5 · 领域共享层** |                                                                 |        |           |          |                                                                                           |
-| L2.5                  | [decimalx](https://github.com/ZoneCNH/decimalx)                 | v0.1.0 | ✅ P0     | ███░ 80% | 高精度十进制类型（Decimal/Price/Qty/Ratio/Money）                                         |
-| L2.5                  | [domain-market](https://github.com/ZoneCNH/domain-market)       | v0.1.0 | ✅ P0     | ███░ 80% | 市场数据域模型（Tick/Quote/Bar/OrderBook）                                                |
-| L2.5                  | [domain-exchange](https://github.com/ZoneCNH/domain-exchange)   | v0.1.0 | ✅ P0     | ███░ 80% | 交易域模型（VenueAdapter 13 方法接口）                                                    |
-| L2.5                  | [domain-macro](https://github.com/ZoneCNH/domain-macro)         | v0.1.0 | ✅ P0     | ███░ 80% | 宏观数据域模型（MacroPoint/MacroState）                                                   |
+| L2.5                  | [decimalx](https://github.com/ZoneCNH/decimalx)                 | v0.2.0 | 🟡 v1 计划 | ███░ 80% | 高精度十进制类型（Decimal/Price/Qty/Ratio/Money）；v1.0.0 release / factory-grade 待补证 |
+| L2.5                  | [domain-market](https://github.com/ZoneCNH/domain-market)       | v0.1.0 | 🟡 v1 计划 | ███░ 80% | 市场数据域模型（Tick/Quote/Bar/OrderBook）；v1.0.0 release / factory-grade 待补证 |
+| L2.5                  | [domain-exchange](https://github.com/ZoneCNH/domain-exchange)   | v0.1.0 | 🟡 v1 计划 | ███░ 80% | 交易域模型（VenueAdapter 13 方法接口）；v1.0.0 release / factory-grade 待补证 |
+| L2.5                  | [domain-macro](https://github.com/ZoneCNH/domain-macro)         | v0.1.0 | 🟡 v1 计划 | ███░ 80% | 宏观数据域模型（MacroPoint/MacroState）；v1.0.0 release / factory-grade 待补证 |
 | **数据域 · 行情**     |                                                                 |        |           |          |                                                                                           |
 | 数据域                | [binance](https://github.com/ZoneCNH/binance)                   | -      | ✅ 已有   | ███░ 80% | Binance CEX SDK                                                                           |
 | 数据域                | [okx](https://github.com/ZoneCNH/okx)                           | -      | ✅ 已有   | ███░ 80% | OKX CEX SDK                                                                               |
@@ -517,14 +517,17 @@ Phase 5: 入口验收 ← x.go
 
 ## L2.5 v1.0.0 执行计划同步
 
-| 模块 | 当前版本 | 目标版本 | 架构职责 | 发布依赖 |
-| --- | --- | --- | --- | --- |
+| 模块 | 层级 | 架构职责 | 当前 -> 目标 | 状态 | 成熟度 |
+| --- | --- | --- | --- | --- | --- |
 | `decimalx` | L2.5 领域共享 | 高精度 Decimal / Money / Currency 数值根 | v0.2.0 -> v1.0.0 计划 | 🟡 执行计划 | 80% |
 | `domain-market` | L2.5 领域共享 | 市场数据模型、Instrument、质量门禁、provider contract | v0.1.0 -> v1.0.0 计划 | 🟡 执行计划 | 80% |
 | `domain-macro` | L2.5 领域共享 | MacroPoint、MacroInformationSet、revision、no-lookahead | v0.1.0 -> v1.0.0 计划 | 🟡 执行计划 | 80% |
-| `domainx` | L2.5 领域共享 | Order、Trade、Position、Portfolio、ExecutionReport 交易域共享模型 | v0.1.0 -> v1.0.0 计划 | 🟡 执行计划 | 100% 文档基线 |
 | `domain-exchange` | L2.5 领域共享 | Exchange SPI、VenueCapability、RateLimitPolicy、ExchangeError、Registry | v0.1.0 -> v1.0.0 计划 | 🟡 执行计划 | 80% |
 
-发布边界：本节只同步 L2.5 文档 / 执行计划基线；独立模块的 API freeze、CI release gate、v1.0.0 git tag 与 GitHub Release 仍必须在各自仓库独立完成并提供证据。
+成熟度口径：4/4 已有 v1.0.0 Draft Spec / Traceability / Plan 基线；0/4 完成 v1.0.0 release、EXT CI 与 factory-grade 门禁。此节是手工投影，待纳入 `.foundationx/status/index.json`。
+
+归属边界：`domainx` 已归入基座，不计入 L2.5 组件数；执行域共享值对象由基座 `domainx` 承载。
+
+发布边界：本节只同步 L2.5 文档 / 执行计划基线；独立模块的 API freeze、CI release gate、外部 CI artifact、adoption gate、v1.0.0 git tag、GitHub Release 与 factory-grade_allowed 仍必须在各自仓库独立完成并提供证据。
 
 架构规则：L2.5 只承载领域共享语义，不承载 transport DTO、DB/ORM tag、HTTP/WS/Kafka/TDengine 细节、provider 原始响应或策略/风控/账本逻辑。所有公开金融数值字段必须使用 `decimalx.Decimal` 或明确值对象；`domain-macro` 的历史 `float64` 字段必须通过 v1.0.0 精度 ADR 处理。
