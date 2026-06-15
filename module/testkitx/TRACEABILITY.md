@@ -11,17 +11,16 @@ Source: module/testkitx/SPEC.md v1.0.0
 
 | Requirement   | Description                                   | Acceptance Criteria   | Test Case   | Task              | Status   |
 | ------------- | --------------------------------------------- | --------------------- | ----------- | ----------------- | -------- |
-| FR-001        | FakeConfig：内存配置源，支持测试注入          | AC-001                | TC-001      | TASK-TESTKITX-001 | ⬜        |
-| FR-002        | FakeLogger：记录日志到内存供断言              | AC-002                | TC-002      | TASK-TESTKITX-002 | ⬜        |
-| FR-003        | FakeMeter：记录 metrics 到内存供断言          | AC-003                | TC-003      | TASK-TESTKITX-003 | ⬜        |
-| FR-004        | FakeTracer：记录 spans 到内存供断言           | AC-004                | TC-004      | TASK-TESTKITX-004 | ⬜        |
-| FR-005        | FakeClock：可控制时间的时钟                   | AC-005                | TC-005      | TASK-TESTKITX-005 | ⬜        |
-| FR-006        | FakeBreaker：可控制熔断状态                   | AC-006                | TC-006      | TASK-TESTKITX-005 | ⬜        |
-| FR-007        | Eventually：轮询条件直到满足或超时            | AC-007                | TC-007      | TASK-TESTKITX-006 | ⬜        |
-| FR-008        | GoldenUpdate：环境变量控制的 golden file 更新 | AC-008                | TC-008      | TASK-TESTKITX-007 | ⬜        |
-| FR-009        | BoundaryCheck：生产包 import 边界扫描         | AC-009                | TC-009      | TASK-TESTKITX-008 | ⬜        |
-| FR-010        | GoroutineLeakCheck：goroutine 泄漏检测        | AC-010                | TC-010      | TASK-TESTKITX-009 | ⬜        |
-
+| FR-001        | FakeConfig：内存配置源，支持测试注入          | AC-001                | TC-001      | TASK-TESTKITX-001 | ⬜        | ✅ |
+| FR-002        | FakeLogger：记录日志到内存供断言              | AC-002                | TC-002      | TASK-TESTKITX-002 | ⬜        | ✅ |
+| FR-003        | FakeMeter：记录 metrics 到内存供断言          | AC-003                | TC-003      | TASK-TESTKITX-003 | ⬜        | ✅ |
+| FR-004        | FakeTracer：记录 spans 到内存供断言           | AC-004                | TC-004      | TASK-TESTKITX-004 | ⬜        | ✅ |
+| FR-005        | FakeClock：可控制时间的时钟                   | AC-005                | TC-005      | TASK-TESTKITX-005 | ⬜        | ✅ |
+| FR-006        | FakeBreaker：可控制熔断状态                   | AC-006                | TC-006      | TASK-TESTKITX-005 | ⬜        | ✅ |
+| FR-007        | Eventually：轮询条件直到满足或超时            | AC-007                | TC-007      | TASK-TESTKITX-006 | ⬜        | ✅ |
+| FR-008        | GoldenUpdate：环境变量控制的 golden file 更新 | AC-008                | TC-008      | TASK-TESTKITX-007 | ⬜        | ✅ |
+| FR-009        | BoundaryCheck：生产包 import 边界扫描         | AC-009                | TC-009      | TASK-TESTKITX-008 | ⬜        | ✅ |
+| FR-010        | GoroutineLeakCheck：goroutine 泄漏检测        | AC-010                | TC-010      | TASK-TESTKITX-009 | ⬜        | ✅ |
 ---
 
 ## §2 业务规则追溯 (BR)
