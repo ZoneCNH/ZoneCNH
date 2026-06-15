@@ -142,3 +142,17 @@ Scope: read-only public GitHub checks for `xlib-harness`, `xlib-evidence`, `clic
 | `domainx` | `git ls-remote --tags --refs https://github.com/ZoneCNH/domainx.git` returned `v0.1.0`, `v1.0.0`, and `v1.0.1`; public release HTML for `/releases` and `/releases/latest` contains `releases/tag/` and `v1.0.1`, with `/releases/latest` titled `Release domainx v1.0.1 · ZoneCNH/domainx · GitHub`. Raw checks did not find `.foundationx/repo-contract.json` or `release/manifest/latest.json`. | Preserve the separated current state: `release=true`, `factory=false`; do not infer factory/adoption proof from release page evidence. |
 
 Evidence caveat: unauthenticated GitHub API quota was exhausted after the `clickhousex` probe, so later module API calls were supplemented with public `git ls-remote`, raw-file, and release-page checks. Generic GitHub release page titles without `releases/tag/` evidence were not treated as proof of a published release.
+
+## Worker-1 task-2 release evidence API refresh — 2026-06-15T12:15Z
+
+Scope: read-only unauthenticated GitHub API checks for `clickhousex`, `xlib-harness`, `xlib-evidence`, `contracts`, and `transportx`. This refresh does not flip maturity flags because no module has both public GitHub Release evidence and an aligned release-manifest closure packet.
+
+| Module | Fresh public evidence | Decision / hard blocker |
+| --- | --- | --- |
+| `clickhousex` | `GET https://api.github.com/repos/ZoneCNH/clickhousex/releases?per_page=10` returned `[]`; `GET https://api.github.com/repos/ZoneCNH/clickhousex/tags?per_page=10` returned tag `v1.0.1` at commit `47098ecdcb8ea2c105f5da362c4f2d6182d85964`. | Keep `release=false` / `factory=false`; `BLK-003` remains open because a tag alone is not the required public GitHub Release + manifest + integration evidence packet. |
+| `xlib-harness` | `GET https://api.github.com/repos/ZoneCNH/xlib-harness/releases?per_page=10` returned `[]`; `GET https://api.github.com/repos/ZoneCNH/xlib-harness/tags?per_page=10` returned `[]`. | Keep `release=false` / `factory=false`; hard blocker is absent public tag/GitHub Release evidence. |
+| `xlib-evidence` | `GET https://api.github.com/repos/ZoneCNH/xlib-evidence/releases?per_page=10` returned `[]`; `GET https://api.github.com/repos/ZoneCNH/xlib-evidence/tags?per_page=10` returned `[]`. | Keep `release=false` / `factory=false`; hard blocker is absent public tag/GitHub Release evidence. |
+| `contracts` | `GET https://api.github.com/repos/ZoneCNH/contracts/releases?per_page=10` returned `[]`; `GET https://api.github.com/repos/ZoneCNH/contracts/tags?per_page=10` returned tag `v1.0.1-spec` at commit `8c15f061e991ea372d6b831f3d572ee41b3d9323`. | Keep `release=false` / `factory=false`; hard blocker is missing public GitHub Release/manifest alignment, not tag absence. |
+| `transportx` | `GET https://api.github.com/repos/ZoneCNH/transportx/releases?per_page=10` returned `[]`; `GET https://api.github.com/repos/ZoneCNH/transportx/tags?per_page=10` returned tag `v1.1.1-spec` at commit `bb61925161120da04bf8c8b36206275cfb74ba48`. | Keep `release=false` / `factory=false`; hard blocker is missing public GitHub Release/manifest alignment, not tag absence. |
+
+Minimal fact-layer update made: corrected explanatory `note` text in `.foundationx/status/index.json` for `clickhousex`, `contracts`, and `transportx` so the fact layer distinguishes public tags from release/manifest proof. No release/live/factory booleans were changed.
