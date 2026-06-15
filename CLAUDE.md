@@ -98,6 +98,14 @@
   ```
 - **分支恢复协议**：若分支被误删，通过 `git reflog` 定位最后 commit SHA → `git checkout -b <branch> <sha>` 恢复。
 
+### 工作区 GC（2026-06-15 worktree 会话复盘）
+
+> **O11 修复**：`.worktree/` 下 OMX worker 日志、diff.md、notify-fallback JSONL 无 TTL，跨天堆积。
+
+- **`.worktree/` 临时文件 TTL = 24h**。PreCompact 或 PostToolUse hook 自动清理超过 24h 的 stale 文件。
+- **OMX team worker 子目录**：worker 完成合并后，其 `.worktree/omx-team/{worker}/` 在下一个 SessionStart 时自动 `rm -rf`。
+- **例外**：`note.md`、`v2.md`（手动工作文件）不自动清理——仅清理 `.omx/` 下的日志和 state。
+
 ### 提交批处理（2026-06-15 worktree 会话复盘）
 
 > **O3 修复**：本会话 5 个独立 commit 实为 1 个逻辑变更（worktree 治理对齐），每个 commit 触发完整 CI 管线。
@@ -142,54 +150,28 @@
 - **审计闭合前必须跑 `python3 scripts/audit-status.py --network`**：24 项机械化检查（含跨维度验证） + 78 repos 全量 404 扫描。全部 PASS 方可声称"无残余问题"。不得以"之前跑过"为由跳过最终验证。
 - **审计命令跨平台兼容（POSIX-ACK）**：`grep -c` / `wc -l` / `sed -n` 在 zsh glob 或 BSD/GNU 差异下偶尔返回空或错误行数。统计命令优先用 `python3` 脚本（`audit-status.py` 即为例），shell one-liner 仅作快速抽查。若 shell 输出异常（如空结果），立即切换到 `python3` 重跑，不得基于空输出声称"无残留"。
 
-### Plan-first 原则
+### 编辑前原则（Plan-first + 基线确认）
 
-- **分析阶段读完所有相关文件后再编辑**——禁止边读边改
-- **列出完整变更清单后再动手**——同一文件所有修改一次性完成
-- **同模块相关变更聚合为一个 PR**——禁止每个小修改单独 PR
-
-### 编辑前基线确认（2026-06-14 kafkax 复盘，PR #340-#343）
-
-> 基于一次"不知道 PR #6 已重写目标文件、基于错误基线反复编辑"的 session 复盘。编辑前必须先确认当前状态。具体规则同步至 kafkax/CLAUDE.md（Go 源码上下文落地）。
-
-- **`git log --oneline -5` 检查目标文件最近提交，然后 `Read` 确认当前内容**——确认文件状态是否与自己的假设一致、是否已有他人/其他 session 修改。禁止假设文件仍是自己上次看到的状态。
-- **先列验证清单，再列变更清单**——先确定需要查什么（实际 struct 字段？panic 处理？文档内容？），验证完了再按 Plan-first 原则列变更清单。
-- **声称"已完成"前必须核对源码**——对 README 或文档中的任何代码事实声称，用 `grep`/`head`/`git log` 确认，禁止凭常识假设。
-
-### 编辑策略
-
-- **同一文件只编辑一次**：列出该文件所有需要变更的行，一次性完成
-- **优先 `Write` 替代多次 `Edit`**——当文件变更 > 30% 时直接重写，但 Write 前必须先确认当前基线（`git log` + `Read`），禁止在未验证文件状态的情况下全量重写。
-- **批量 sed/python 替代多次 Edit 调用**
+- **分析阶段读完所有相关文件后再编辑**——禁止边读边改。`git log --oneline -5` + `Read` 确认当前基线，禁止假设文件仍是自己上次看到的状态。
+- **列出完整变更清单后再动手**——先列验证清单（需要查什么），再列变更清单（需要改什么）。同一文件所有修改一次性完成。
+- **优先 `Write` 替代多次 `Edit`**（变更 > 30% 时），批量 sed/python 替代多次 Edit 调用。禁止 Edit 循环（linter hook 回退 → 重复编辑 → 成本放大）。
+- **声称"已完成"前必须核对源码**——用 `grep`/`head`/`git log` 确认，禁止凭常识假设。
 
 ### PR 聚合规则
 
-- **同一模块的所有文档修复 → 1 个 PR**
-- **跨文档同步 → 1 个 PR**（STATUS + ARCHITECTURE + 对齐文档同步）
+- **同一模块的所有文档修复 → 1 个 PR**；跨文档同步 → 1 个 PR
 - **禁止 1 行变更的 PR**（如单个错字或单行更新）
+- **同逻辑变更聚合为 1 个 commit**，版本 bump 放 PR 最后（参见 §提交批处理）
 
-### 成本控制
+### 成本纪律
 
-- 限制 `sequential-thinking`：仅在需要多假设推理时使用，常规分析直接输出
-- 批量并行读取：`for f in a b c; do read $f & done`
-- 会话中期检查成本：超过 $30 时主动与用户确认是否继续
-- **校验命令不受成本约束**：`git log`、`grep`、`head`、`ls` 等单次调用成本可忽略，但不执行导致的错误修正成本极高（kafkax session：跳过数次 grep → $49.52 无效编辑）。编辑文件前和声称完成前的校验命令**必须执行**，不计入成本控制范围。
-
-### xlibgate Trust Alignment session 复盘成本规则（2026-06-14）
-
-> 基于一次从 SPEC 到 Code 的全管线交付会话（$55.84 / 19 PR / 53 steps），提取以下成本控制规则。
-
-- **原子写入优先**：大节（>20 行）修改用 `Write` 替代 `Edit`。`Edit` 被 linter hook 回退时会触发重复编辑循环（session 中 5-8 次 → ~$12-15 浪费）。
-- **SPEC 骨架模板预加载**：新模块从 `docs/governance/templates/module/SPEC.md.skeleton` 实例化，跳过格式发现阶段。参考 `docs/governance/templates/orchestration/PIPELINE-AGENTS.md`。
-- **PROMPT 合并**：同模块多 task 用 1 个 consolidated PROMPT 文件，不创建 N 个独立文件（session 中 10→1 节省 471 行 / ~$2-3）。
-- **先读 scorer 源码再写 Prompt**：`rule-scorer.py` 的 required section 名称与直觉不一致（`Scope` 非 `Current Scope`，`Validation` 非 `Verification`）。1 次读 scorer 替代 N 次修复循环（session 中 ~$3-4 浪费）。
-- **信任 lint 结果**：`rule-scorer.py` 是确定性工具。一次 100 分后不重复跑相同 stage（session 中 6-8 次重跑 → ~$5-7 浪费）。
-- **YAML 测试夹具不用 raw string literal**：Go 的 raw string 会混入 tab 缩进导致 YAML 解析失败。用 `"key: " + value + "\n"` 字符串拼接。跳过 8+ 次 debug（session 中 ~$3-4 浪费）。
-- **外部仓库代码不用 agent 评分**：`code-structural-score` agent 在 docs-only repo 无输出（48 tool calls 白费）。手动按 RUBRIC-code.md 逐维度判定更快且确定性高。
-- **编辑前 branch 检查**：`git branch --show-current && git merge-base --is-ancestor main HEAD`。避免在 `main` 上 `stash pop` + commit（session 中 3 次事故 → ~$6-8 浪费）。已关联 PR #340。
-- **报告模板复用**：会话末构建总结报告只做一次，后续更新用 `grep`/`sed` 补数字，不重写完整报告（session 中 3-4 次重建 → ~$3-4 浪费）。
-
-预计优化成本：$8-20 / 全管线模块（vs 本次 $55.84）。详见 `docs/governance/improvements/20260614-xlibgate-trust-session/SESSION.md`。
+- **校验命令不受成本约束**：`git log`、`grep`、`head`、`ls` 等必须执行，不执行导致的错误修正成本极高。
+- 限制 `sequential-thinking` 仅在多假设推理时使用，常规分析直接输出。
+- 会话中期检查成本：超过 $30 时主动与用户确认是否继续。
+- 关键复盘教训（详见 `docs/governance/improvements/20260614-xlibgate-trust-session/SESSION.md`）：
+  - **信任确定性工具**（如 `rule-scorer.py`）：100 分后不重复跑相同 stage。
+  - **编辑前 branch 检查**：`git branch --show-current && git merge-base --is-ancestor main HEAD`。
+  - **新模块用 SPEC 骨架模板**，同模块多 task 用 1 个 PROMPT 文件。
 
 ### 版本号自动递增（2026-06-15）
 
@@ -254,6 +236,7 @@
 2. **同一 PR 内包含版本 bump**：不要把版本 bump 拆成独立 PR
 3. **版本号只能升不能降**：如果 bump 错了级别（比如该 bump minor 却 bump 了 patch），不要再降回去——下一个 PR 正确 bump 即可
 4. **版本号与实际内容一致**：bump 前用 `git diff --stat` 确认变更范围，选择合适的 bump 级别
+5. **版本 bump 必须是 PR 最后一个 commit**——禁止在会话中间 bump，后续 commit 会导致版本号过期。若 Stop 时发现版本落后于最新 commit，Stop hook 自动补 bump（无需人工干预）。
 
 ## 模块工作流规则（自动分支 + 对齐同步 + PR 闭环）
 
