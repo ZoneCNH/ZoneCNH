@@ -35,7 +35,7 @@ x.go / service adapter 负责"运行时接哪种实现"
 | Admin | HTTP / gRPC health | config、health、ops command | auth、rate limit、audit |
 | Audit | append-only log / Kafka / JetStream | risk reject、fill、settlement | 不可静默丢、可重放、可对账 |
 
-## 2. Problem Statement
+## 2. Problem
 
 Foundation 模块已有 `contracts` 用于跨域端口、事件协议和 DTO 契约，但传输层仍缺少独立规格。缺口集中在以下方面：
 
@@ -68,7 +68,7 @@ Foundation 模块已有 `contracts` 用于跨域端口、事件协议和 DTO 契
 - 定义错误分类、幂等冲突、timeout、deadline、clock skew 与 saturation 映射。
 - 定义 conformance test harness、CI gate 与 release evidence。
 
-## 4. Non-Goals
+## 4. Non-goals
 
 ### 5.1 What transportx OWNS
 
@@ -310,7 +310,7 @@ THEN it MUST be `module github.com/ZoneCNH/transportx`
 | NFR-011 | Reliability | Dead-letter retains trace context | TC-013: DLQ trace context verification |
 | NFR-012 | Compatibility | Breaking schema change requires major version bump | TC-025: SchemaRegistry compatibility test |
 
-## 8. Interface Contracts
+## 8. Interface Contract
 
 | Interface | Responsibility | Required Methods |
 | --- | --- | --- |
@@ -451,7 +451,7 @@ Every error must include stable code, redacted message, retry classification, en
 
 Multi-module layout: root `go.mod` (core), each `adapters/*/go.mod` separate module. `go.work` for local dev/CI. Core does not import adapters.
 
-## 14. Dependency Rules
+## 14. Dependencies
 
 | Dependency | Rule |
 | --- | --- |
@@ -552,7 +552,7 @@ Implementations must report benchmark hardware, runtime version and adapter type
 
 Metrics labels must use bounded cardinality fields. Payload/unredacted headers prohibited. SECRET data must never appear in any output.
 
-## 18. Security Requirements
+## 18. Security
 
 | Requirement | Control |
 | --- | --- |
