@@ -338,8 +338,8 @@ Result:   ✓ Goal 达成
 19-self-improving.md     — Patch 系统、体系演进
 20-metrics-evidence.md   — Metrics Review、Evidence Graph
 21-controlled-rsi.md     — 受控递归改进
-22-delivery-os.md        — Delivery OS 五个运行时（愿景架构）
-23-workflow-governance-checks.md — 工作流治理检查（愿景架构）
+22-delivery-os.md        — Delivery OS 五个运行时（已落地，Phase 1-5 完成）
+23-workflow-governance-checks.md — 工作流治理检查（已落地，全部实现）
 ```
 
 ---
