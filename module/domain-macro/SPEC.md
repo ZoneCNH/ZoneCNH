@@ -39,7 +39,16 @@ Source-Plan: /home/zone/Downloads/0615/ZoneCNH-v1.0.0-goal-execution-plans/domai
 - 可审计：来源、修订、初值/终值和 freshness 指标可追溯。
 - 领域纯净：公共模型不包含 provider DTO 或 transport schema。
 
-## 5. 发布门禁
+## 5. Non-Goals 与发布门禁
+
+- 不实现 provider API client（Yahoo/FRED API 调用由数据采集层负责）
+- 不实现经济预测或情景推演（由策略域和因子引擎负责）
+- 不实现因子计算或资产配置逻辑（由因子引擎和策略域负责）
+- 不在公共 API 暴露 provider DTO（yahoo_models 等须迁入 internal 或 infra 层）
+- 不依赖 transport 层（HTTP、gRPC、Kafka）或存储层（Redis、Postgres、TDengine）
+- 不实现策略或风控逻辑（由策略域和风控域负责）
+
+### 发布门禁
 
 | 门禁 | 要求 |
 | --- | --- |
