@@ -2,70 +2,74 @@
 
 > 模块级追溯矩阵。治理规范见 [docs/governance/TRACEABILITY.md](../../docs/governance/TRACEABILITY.md)。
 
-Last-Updated: 2026-06-12
-Source: module/kafkax/SPEC.md（1.0 候选规格）
+Last-Updated: 2026-06-16
+Source: module/kafkax/SPEC.md (v1.0.0)
 
-| Requirement | Description | Acceptance Criteria | Test Case | Task | Status |
-| ----------- | ----------- | ------------------- | --------- | ---- | ------ |
-| FR-001 | Producer.Send | 可用时发送成功；Kafka 不可用或 value nil 时返回错误 | TC-001, TC-004 | KAFKAX-T01 Producer send contract | ⬜ |
-| FR-002 | Producer.SendBatch | 有效批次全部发送；部分失败返回第一个错误；空列表返回 nil | TC-002, TC-004 | KAFKAX-T02 Batch send contract | ⬜ |
-| FR-003 | Consumer.Subscribe | 正常连接加入消费组；空 topics 或重复订阅返回错误 | TC-001, TC-006 | KAFKAX-T03 Subscribe contract | ⬜ |
-| FR-004 | Consumer.Poll | 有消息返回消息；无消息阻塞至新消息或 ctx 超时；ctx 取消返回 ctx.Err() | TC-001, TC-007 | KAFKAX-T04 Poll contract | ⬜ |
-| FR-005 | Consumer.Commit | 有效消息提交 offset；nil 或非法 offset 返回错误 | TC-003, TC-008 | KAFKAX-T05 Commit contract | ⬜ |
-| FR-006 | Health | Kafka metadata 成功返回 ready/live；不可达返回 unhealthy 和错误上下文 | TC-005 | KAFKAX-T06 Health contract | ⬜ |
-| BR-001 | Producer 默认同步发送且 acks=all | 默认配置必须是同步确认；非法 acks 在构造或发送前返回错误 | TC-001, TC-009 | KAFKAX-T07 Producer defaults | ⬜ |
-| BR-002 | Consumer 默认手动 offset 提交 | 默认禁用自动提交；成功处理后由调用方显式 Commit | TC-003, TC-010 | KAFKAX-T08 Manual commit defaults | ⬜ |
-| BR-003 | 所有运行时操作接受 context.Context | Send、SendBatch、Subscribe、Poll、Commit、Close、Health 均支持取消/超时 | TC-007, TC-011 | KAFKAX-T09 Context propagation | ⬜ |
-| BR-004 | Consumer Close 时处理最终 offset 边界 | Close(ctx) 尝试完成已确认的提交/释放；失败返回错误且不吞错 | TC-008, TC-012 | KAFKAX-T10 Close semantics | ⬜ |
-| BR-005 | Producer 重试策略可配置且默认 3 次 | retries 默认 3；负值配置被拒绝；最终失败返回包装错误 | TC-004, TC-009 | KAFKAX-T11 Retry config | ⬜ |
-| BR-006 | Consumer 轮询间隔和批量参数可配置 | max_poll_records、session_timeout、heartbeat_interval 合法性校验 | TC-006, TC-009 | KAFKAX-T12 Consumer config validation | ⬜ |
-| BR-007 | Health() 幂等且无副作用 | 多次调用不改变订阅、offset、连接生命周期；错误可重复观察 | TC-005 | KAFKAX-T13 Health idempotency | ⬜ |
-| BR-008 | 错误消息不包含消息内容 | 错误和日志不得输出 value/payload 或敏感配置 | TC-013 | KAFKAX-T14 Sanitized errors | ⬜ |
-| BR-009 | Consumer 不自动提交 offset | enable_auto_commit 默认 false；自动提交配置不得覆盖默认安全语义 | TC-003, TC-010 | KAFKAX-T15 No auto commit | ⬜ |
+## §1 功能需求追溯 (FR)
 
-## Task Catalog
+| FR ID | Requirement | AC ID(s) | TC ID(s) | Verification |
+|-------|-------------|----------|----------|-------------|
+| FR-001 | Producer.Send — Kafka 可用时发送成功返回 nil；不可用时按 retry 重试后失败返回包装错误；value nil 或 topic 为空返回 ErrInvalidMessage；ctx 取消返回 ctx.Err() | AC-001 | TC-001, TC-004 | `go test -race -run=ProducerSend ./...` |
+| FR-002 | Producer.SendBatch — 有效批次全部发送返回 nil；部分失败返回第一个可诊断错误且不回滚；空列表返回 nil；ctx 取消返回 ctx.Err() | AC-002 | TC-002, TC-004 | `go test -race -run=SendBatch ./...` |
+| FR-003 | Consumer.Subscribe — 正常连接加入消费组返回 nil；topics 为空返回错误；已订阅返回 ErrAlreadySubscribed | AC-003 | TC-001, TC-006 | `go test -race -run=Subscribe ./...` |
+| FR-004 | Consumer.Poll — 有新消息返回 *Message；无消息阻塞至 ctx 超时/取消；未订阅返回 ErrNotSubscribed；反序列化失败返回可分类错误且不自动提交 offset | AC-004 | TC-001, TC-007 | `go test -race -run=Poll ./...` |
+| FR-005 | Consumer.Commit — 有效消息提交 offset 返回 nil；nil 或非法 offset 返回 ErrInvalidMessage；commit 失败返回 ErrCommitFailed；ctx 取消返回 ctx.Err() | AC-005 | TC-003, TC-008 | `go test -race -run=Commit ./...` |
+| FR-006 | Health — Kafka metadata 成功返回 {Ready:true, Live:true}；不可达返回 {Ready:false, Live:false} 及错误上下文 | AC-006 | TC-005 | `go test -race -run=Health ./...` |
 
-| Task | Scope | Evidence |
-| ---- | ----- | -------- |
-| KAFKAX-T01 | Producer.Send API、错误包装、nil value 校验 | unit + integration |
-| KAFKAX-T02 | Producer.SendBatch 空批次、部分失败、批量成功 | unit + integration |
-| KAFKAX-T03 | Consumer.Subscribe topic 校验和重复订阅 | unit |
-| KAFKAX-T04 | Consumer.Poll 阻塞、ctx 取消和消息返回 | unit + integration |
-| KAFKAX-T05 | Consumer.Commit 有效/无效消息和 offset | unit + integration |
-| KAFKAX-T06 | Health metadata 成功/失败映射 | unit |
-| KAFKAX-T07 | Producer 默认值和 acks 校验 | unit |
-| KAFKAX-T08 | 手动提交默认行为 | unit + integration |
-| KAFKAX-T09 | context 传播、取消和超时 | unit |
-| KAFKAX-T10 | Close(ctx) 提交/释放/重复关闭语义 | unit |
-| KAFKAX-T11 | Producer retries 配置和失败语义 | unit |
-| KAFKAX-T12 | Consumer 配置合法性 | unit |
-| KAFKAX-T13 | Health 幂等性 | unit |
-| KAFKAX-T14 | 错误和日志脱敏 | unit |
-| KAFKAX-T15 | 禁用自动提交默认值 | unit + integration |
+## §2 业务规则追溯 (BR)
 
-## §3 非功能需求追溯（NFR）
+| BR ID | Rule | Verification Method |
+|-------|------|---------------------|
+| BR-001 | Producer 默认同步发送且 acks=all；非法 acks 在构造或首次发送前返回配置错误；默认值不得静默降级 | TC-001, TC-009 — unit test |
+| BR-002 | Consumer 默认手动 offset 提交 (at-least-once)；自动提交不得作为默认值；需调用方显式 Commit | TC-003, TC-010 — unit + integration |
+| BR-003 | 所有运行时操作 (Send/SendBatch/Subscribe/Poll/Commit/Close/Health) 接受 context.Context；ctx 取消必须返回 ctx.Err() 或包装错误 | TC-007, TC-011 — unit |
+| BR-004 | Consumer Close(ctx) 处理最终 offset/资源释放边界；失败返回错误且不吞错；重复调用不 panic | TC-008, TC-012 — unit |
+| BR-005 | Producer 重试策略可配置且默认 3 次；负数或非法重试配置返回配置错误；最终失败返回包装错误并记录指标 | TC-004, TC-009 — unit |
+| BR-006 | Consumer max_poll_records、session_timeout、heartbeat_interval 合法性校验；非法值返回配置错误 | TC-006, TC-009 — unit |
+| BR-007 | Health(ctx) 幂等且无副作用；多次调用不改变订阅、offset、连接生命周期；错误可重复观察 | TC-005 — unit |
+| BR-008 | 错误消息不包含消息内容 (value/payload)；日志和错误必须脱敏；发现 payload/凭据泄露视为安全阻断 | TC-013 — unit |
+| BR-009 | Consumer 不自动提交 offset；enable_auto_commit 默认 false；未显式 Commit 不得提交 offset | TC-003, TC-010 — unit + integration |
 
-| Requirement | Description | 目标值 | 验证方式 | Task | Status |
-| --- | --- | --- | --- | --- | --- |
-| NFR-001 | 单条发送性能 | < 5ms | Benchmark | - | Pending |
-| NFR-002 | 批量发送 100 条性能 | < 20ms | Benchmark | - | Pending |
-| NFR-003 | 单条消费性能 | < 5ms | Benchmark | - | Pending |
-| NFR-004 | 常驻内存（空闲） | < 10MB | Profiling | - | Pending |
-| NFR-005 | Consumer lag | < 1000条 | CI Gate | - | Pending |
-| NFR-006 | 单元测试覆盖率 | >= 80% | go tool cover | - | Pending |
-| NFR-007 | race 检测通过 | 零 data race | go test -race | - | Pending |
-| NFR-008 | vet 检查通过 | 零警告 | go vet | - | Pending |
-| NFR-009 | lint 检查通过 | 零错误 | golangci-lint | - | Pending |
-| NFR-010 | Secret 扫描通过 | 零命中 | gitleaks | - | Pending |
+## §3 非功能需求追溯 (NFR)
 
+| NFR ID | Category | Requirement | Verification |
+|--------|----------|-------------|-------------|
+| NFR-001 | Performance | 单条发送 < 5ms | `go test -bench=BenchmarkProducerSend ./...` |
+| NFR-002 | Performance | 批量发送 100 条 < 20ms | `go test -bench=BenchmarkSendBatch ./...` |
+| NFR-003 | Performance | 单条消费 < 5ms | `go test -bench=BenchmarkConsumerPoll ./...` |
+| NFR-004 | Resource | 常驻内存 (空闲) < 10MB | profiling |
+| NFR-005 | Resource | Consumer lag < 1000 条 | integration test |
+| NFR-006 | Quality | 单元测试覆盖率 >= 80% | `go tool cover -func=.coverage/cover.out` |
+| NFR-007 | Quality | race 检测通过，零 data race | `go test -race ./...` |
+| NFR-008 | Quality | vet 检查通过，零警告 | `go vet ./...` |
+| NFR-009 | Quality | lint 检查通过，零错误 | `golangci-lint run` |
+| NFR-010 | Security | Secret 扫描通过，零命中 | `gitleaks detect --no-git` |
 
-## Acceptance Criteria Linkage
+## §4 TC→FR 反向追溯
 
-| Acceptance Criterion | Requirement | Test Case | Current Evidence |
-| -------------------- | ----------- | --------- | ---------------- |
-| AC-001 | FR-001 | TC-001 | Covered by TC-001 test evidence |
-| AC-002 | FR-002 | TC-002 | Covered by TC-002 test evidence |
-| AC-003 | FR-003 | TC-003 | Covered by TC-003 test evidence |
-| AC-004 | FR-004 | TC-004 | Covered by TC-004 test evidence |
-| AC-005 | FR-005 | TC-005 | Covered by TC-005 test evidence |
-| AC-006 | FR-006 | TC-005 | Covered by TC-005 test evidence |
+| TC ID | Covers FR(s) | Command |
+|-------|-------------|---------|
+| TC-001 | FR-001, FR-003, BR-001 | `go test -race -run="ProducerSend|Subscribe" ./...` |
+| TC-002 | FR-002 | `go test -race -run=SendBatch ./...` |
+| TC-003 | FR-005, BR-002, BR-009 | `go test -race -run="Commit|ManualOffset" ./...` |
+| TC-004 | FR-001, FR-002, BR-005 | `go test -race -run="Retry|Send" ./...` |
+| TC-005 | FR-006, BR-007 | `go test -race -run=Health ./...` |
+| TC-006 | FR-003, BR-006 | `go test -race -run=Subscribe ./...` |
+| TC-007 | FR-004, BR-003 | `go test -race -run="Poll|Context" ./...` |
+| TC-008 | FR-005, BR-004 | `go test -race -run=Commit ./...` |
+| TC-009 | BR-001, BR-005, BR-006 | `go test -race -run=Config ./...` |
+| TC-010 | BR-002, BR-009 | `go test -race -run=AutoCommit ./...` |
+| TC-011 | BR-003 | `go test -race -run=Context ./...` |
+| TC-012 | BR-004 | `go test -race -run=Close ./...` |
+| TC-013 | BR-008 | `go test -race -run=Sanitize ./...` |
+
+## §5 AC 注册表
+
+| AC ID | FR/BR Ref | Criterion | Verification |
+|-------|-----------|-----------|-------------|
+| AC-001 | FR-001 | Send 在 Kafka 可用时发送成功返回 nil；不可用或 value nil 时返回错误 | unit test |
+| AC-002 | FR-002 | SendBatch 有效批次全部发送；部分失败返回第一个错误；空列表返回 nil | unit test |
+| AC-003 | FR-003 | Subscribe 正常连接加入消费组；空 topics 或重复订阅返回错误 | unit test |
+| AC-004 | FR-004 | Poll 有消息返回消息；无消息阻塞至 ctx 超时；未订阅返回错误 | unit test |
+| AC-005 | FR-005 | Commit 有效消息提交 offset；nil 或非法 offset 返回错误 | unit test |
+| AC-006 | FR-006 | Health 在 Kafka 可达时返回 ready/live；不可达返回 unhealthy 及错误 | unit test |
