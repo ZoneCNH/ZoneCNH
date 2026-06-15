@@ -65,7 +65,7 @@ L2.5: decimalx / domain-market / domain-macro / domainx / domain-exchange (v1.0.
 | `domainx` | v0.1.0 | v1.0.0 | 交易域共享模型执行计划已对齐 | [module/domainx](module/domainx/V1-GOAL-EXECUTION-PLAN.md) |
 | `domain-exchange` | v0.1.0 | v1.0.0 | Exchange SPI 待在上游共享模型后冻结 | [module/domain-exchange](module/domain-exchange/goal.md) |
 
-依赖顺序：`decimalx` -> `domain-market` / `domain-macro` / `domainx` -> `domain-exchange`。这里的 v1.0.0 是 Goal execution baseline，不代表各独立模块仓库已经发布 v1.0.0 tag。
+依赖顺序：`decimalx` -> `domain-market` / `domain-macro` / `domainx` -> `domain-exchange`。这里的 v1.0.0 是文档 / Goal execution baseline，用于锁定目标范围与依赖顺序；不代表各独立模块仓库已经完成 API freeze、CI release gate、v1.0.0 git tag 或 GitHub Release。
 
 ## 📦 核心项目
 

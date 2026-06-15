@@ -529,4 +529,6 @@ Phase 5: 入口验收 ← x.go
 | `domainx` | L2.5 领域共享 | Order、Trade、Position、Portfolio、ExecutionReport 交易域共享模型 | v0.1.0 -> v1.0.0 计划 | 🟡 执行计划 | 100% 文档基线 |
 | `domain-exchange` | L2.5 领域共享 | Exchange SPI、VenueCapability、RateLimitPolicy、ExchangeError、Registry | v0.1.0 -> v1.0.0 计划 | 🟡 执行计划 | 80% |
 
+发布边界：本节只同步 L2.5 文档 / 执行计划基线；独立模块的 API freeze、CI release gate、v1.0.0 git tag 与 GitHub Release 仍必须在各自仓库独立完成并提供证据。
+
 架构规则：L2.5 只承载领域共享语义，不承载 transport DTO、DB/ORM tag、HTTP/WS/Kafka/TDengine 细节、provider 原始响应或策略/风控/账本逻辑。所有公开金融数值字段必须使用 `decimalx.Decimal` 或明确值对象；`domain-macro` 的历史 `float64` 字段必须通过 v1.0.0 精度 ADR 处理。
