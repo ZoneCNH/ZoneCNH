@@ -1,0 +1,13 @@
+{
+  "source": ".foundationx/repo-contract.json",
+  "contract_version": "v0.5.1-foundation-v2",
+  "public_docs": [
+    "README.md",
+    "ARCHITECTURE.md",
+    "STATUS.md",
+    "module/README.md"
+  ],
+  "release_manifest": "release/manifest/latest.json",
+  "reason_code": "policy_contract_projection_drift",
+  "reason_present": false
+}

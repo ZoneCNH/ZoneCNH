@@ -79,7 +79,7 @@
       "STATUS.md",
       "module/README.md"
     ],
-    "release_manifest": "release/manifest/v0.5.1-foundation-v2.json",
+    "release_manifest": "release/manifest/latest.json",
     "fact_sources": [
       ".foundationx/status/index.json",
       ".foundationx/blockers.json"

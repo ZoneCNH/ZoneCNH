@@ -1,0 +1,172 @@
+schema_version: foundation-bom/v1
+generated_at: '2026-06-15T01:43:07Z'
+source: .foundationx/status/index.json
+modules:
+  xlib-standard:
+    release_model: standard
+    kind: standards
+    production_import_allowed: true
+    factory_grade_allowed: true
+    blocking_findings: []
+    public_code_verified: true
+    status_renderable: true
+  xlib-harness:
+    release_model: inherited
+    kind: tooling
+    production_import_allowed: false
+    factory_grade_allowed: false
+    blocking_findings: []
+    public_code_verified: true
+    status_renderable: true
+    inherited_from: xlib-standard
+  xlib-evidence:
+    release_model: inherited
+    kind: tooling
+    production_import_allowed: false
+    factory_grade_allowed: false
+    blocking_findings: []
+    public_code_verified: true
+    status_renderable: true
+    inherited_from: xlib-standard
+  xlibgate:
+    release_model: gate
+    kind: policy
+    production_import_allowed: false
+    factory_grade_allowed: true
+    blocking_findings: []
+    public_code_verified: true
+    status_renderable: true
+  kernel:
+    release_model: runtime
+    kind: core
+    production_import_allowed: true
+    factory_grade_allowed: true
+    blocking_findings: []
+    public_code_verified: true
+    status_renderable: true
+  configx:
+    release_model: runtime
+    kind: runtime
+    production_import_allowed: true
+    factory_grade_allowed: true
+    blocking_findings: []
+    public_code_verified: true
+    status_renderable: true
+  observex:
+    release_model: runtime
+    kind: runtime
+    production_import_allowed: true
+    factory_grade_allowed: true
+    blocking_findings: []
+    public_code_verified: true
+    status_renderable: true
+  testkitx:
+    release_model: test-only
+    kind: test
+    production_import_allowed: false
+    factory_grade_allowed: false
+    blocking_findings: []
+    public_code_verified: true
+    status_renderable: true
+  resiliencx:
+    release_model: runtime
+    kind: runtime
+    production_import_allowed: true
+    factory_grade_allowed: true
+    blocking_findings: []
+    public_code_verified: true
+    status_renderable: true
+  schedulex:
+    release_model: runtime
+    kind: runtime
+    production_import_allowed: true
+    factory_grade_allowed: true
+    blocking_findings: []
+    public_code_verified: true
+    status_renderable: true
+  redisx:
+    release_model: runtime
+    kind: runtime
+    production_import_allowed: true
+    factory_grade_allowed: true
+    blocking_findings: []
+    public_code_verified: true
+    status_renderable: true
+  kafkax:
+    release_model: runtime
+    kind: runtime
+    production_import_allowed: true
+    factory_grade_allowed: true
+    blocking_findings: []
+    public_code_verified: true
+    status_renderable: true
+  natsx:
+    release_model: runtime
+    kind: runtime
+    production_import_allowed: true
+    factory_grade_allowed: false
+    blocking_findings:
+    - BLK-001
+    - BLK-002
+    public_code_verified: true
+    status_renderable: true
+  postgresx:
+    release_model: runtime
+    kind: runtime
+    production_import_allowed: true
+    factory_grade_allowed: false
+    blocking_findings:
+    - BLK-006
+    public_code_verified: true
+    status_renderable: true
+  taosx:
+    release_model: runtime
+    kind: runtime
+    production_import_allowed: true
+    factory_grade_allowed: false
+    blocking_findings:
+    - BLK-007
+    public_code_verified: true
+    status_renderable: true
+  ossx:
+    release_model: skeleton
+    kind: skeleton
+    production_import_allowed: false
+    factory_grade_allowed: false
+    blocking_findings:
+    - BLK-008
+    public_code_verified: true
+    status_renderable: true
+  clickhousex:
+    release_model: runtime
+    kind: runtime
+    production_import_allowed: true
+    factory_grade_allowed: false
+    blocking_findings:
+    - BLK-003
+    public_code_verified: true
+    status_renderable: true
+  contracts:
+    release_model: spec_tag
+    kind: spec
+    production_import_allowed: false
+    factory_grade_allowed: true
+    blocking_findings: []
+    public_code_verified: true
+    status_renderable: true
+  transportx:
+    release_model: spec_tag
+    kind: spec
+    production_import_allowed: false
+    factory_grade_allowed: true
+    blocking_findings: []
+    public_code_verified: true
+    status_renderable: true
+  domainx:
+    release_model: partial_or_spec
+    kind: domain
+    production_import_allowed: false
+    factory_grade_allowed: false
+    blocking_findings: []
+    public_code_verified: false
+    status_renderable: true
