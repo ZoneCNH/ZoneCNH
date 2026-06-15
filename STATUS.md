@@ -31,7 +31,7 @@
 | [kafkax](https://github.com/ZoneCNH/kafkax)               | v1.0.2      | spec/code/release/live | live-ready      | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | Kafka L2 adapter；✅ .repo-contract.yaml，v1.0.2；此前误标 v1.0.0（tag 超前于表格）；真实 broker gates 已验证                                                                                       |
 | [natsx](https://github.com/ZoneCNH/natsx)                 | v1.0.0      | spec/code/release/live | factory-blocked | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | NATS L2 adapter；✅ .repo-contract.yaml；真实 dev auth live gate 已验证；正式四源 98+ arbiter 与生产 TLS gate 未闭合（BLK-001/BLK-002）；非 factory                                                 |
 | [postgresx](https://github.com/ZoneCNH/postgresx)         | v1.0.0      | spec/code/release/live | factory-blocked | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | PostgreSQL；✅ .repo-contract.yaml；live integration 通过；单元测试 52.4% + Docker integration skip（BLK-006）；非 factory                                                                          |
-| [taosx](https://github.com/ZoneCNH/taosx)                 | v1.0.1      | spec/code/release/live | factory-blocked | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | TDengine L2 adapter；真实 taosWS WebSocket 集成已验证；SPEC 评分 ~85（BLK-007 改善中：5 缺失章节已补全，待修 TRACEABILITY TC/Status 格式）；非 factory until blocker closed                                                                                     |
+| [taosx](https://github.com/ZoneCNH/taosx)                 | v1.0.1      | spec/code/release/live | factory-blocked | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | TDengine L2 adapter；真实 taosWS WebSocket 集成已验证；SPEC 评分 ~88（BLK-007：全部内容缺口已闭合，待四源仲裁）；非 factory until blocker closed                                                                                     |
 | [ossx](https://github.com/ZoneCNH/ossx)                   | v1.0.1      | spec/code/release/live | factory-blocked | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | Aliyun OSS L2 adapter；✅ .repo-contract.yaml，v1.0.1 已对齐；race/vet/build/release-check 已通过；BLK-008 open：API 文档 / integration evidence / quickstart / release manifest 未归档；非 factory |
 | [clickhousex](https://github.com/ZoneCNH/clickhousex)     | v1.0.1      | spec/code/live         | release-blocked | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | ClickHouse；SPEC+TRACEABILITY+TASKS 完成；公开 GitHub Release 未发布（BLK-003）；RELEASE pending；非 factory                                                                                        |
 | [contracts](https://github.com/ZoneCNH/contracts)         | v1.0.1-spec | spec/code              | release-pending | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | 跨域稳定端口/事件/DTO 契约；spec-only；无公开 GitHub Release / git tag 对齐；非 factory until release                                                                                               |
@@ -60,7 +60,7 @@
 | kafkax                        |      ✅       |                ✅                 |                ✅                |           ✅            |           ✅           |             N/A             |                      N/A                      |   ✅    | v1.0.2; 8 CI workflows; 真实 broker gates 已验证                                                                                                           |
 | natsx                         |      ✅       |                ✅                 |                ✅                |           ✅            |           ✅           |             N/A             |                      N/A                      |   ❌    | v1.0.0; 6 CI workflows; dev auth live gate 已验证; BLK-001/BLK-002 open; 非 factory                                                                        |
 | postgresx                     |      ✅       |                ✅                 |                ✅                |           ✅            |           ✅           |             N/A             |                      N/A                      |   ❌    | v1.0.0; 3 CI workflows; live integration 通过; BLK-006 open（52.4% coverage + Docker integration skip）; 非 factory                                        |
-| taosx                         |      ✅       |                ✅                 |                ✅                |           ✅            |           ✅           |             N/A             |                      N/A                      |   ❌    | v1.0.1; 8 CI workflows; 真实 taosWS 已验证; BLK-007 open（SPEC ~85，5 缺失章节已补全）; 非 factory                                                                            |
+| taosx                         |      ✅       |                ✅                 |                ✅                |           ✅            |           ✅           |             N/A             |                      N/A                      |   ❌    | v1.0.1; 8 CI workflows; 真实 taosWS 已验证; BLK-007 open（SPEC ~88，待四源仲裁）; 非 factory                                                                            |
 | ossx                          |      ✅       |                ✅                 |                ✅                |           ✅            |           ✅           |             N/A             |                      N/A                      |   ❌    | v1.0.1; CI 已部署; 真实 Aliyun OSS 集成已验证; BLK-008 open（API 文档 / integration evidence / quickstart / release manifest 未归档）; 非 factory          |
 | clickhousex                   |      ✅       |                ✅                 |                ❌                |           ✅            |           ✅           |             N/A             |                      N/A                      |   ❌    | v1.0.1; CI 已部署+运行(Docker ClickHouse); 公开 GitHub Release 未发布（BLK-003）; 非 factory                                                               |
 | contracts                     |      ✅       |                ✅                 |                ❌                |           N/A           |           ✅           |             ✅              |                      N/A                      |   ❌    | v1.0.1-spec; spec-only; 无公开 GitHub Release / git tag 对齐; all_aligned=false                                                                            |
@@ -156,34 +156,34 @@
 
 | 组件                                                  | 版本 | 进度     | 覆盖率要求 | 说明           |
 | ----------------------------------------------------- | ---- | -------- | ---------- | -------------- |
-| [fred](https://github.com/ZoneCNH/fred)               | -    | ███░ 80% | 100%       | 美联储 FRED    |
-| [treasury](https://github.com/ZoneCNH/treasury)       | -    | ███░ 80% | 100%       | 美国财政部     |
-| [yield-curve](https://github.com/ZoneCNH/yield-curve) | -    | ███░ 80% | 100%       | 收益率曲线     |
-| [bea](https://github.com/ZoneCNH/bea)                 | -    | ███░ 80% | 100%       | 美国经济分析局 |
-| [ecb](https://github.com/ZoneCNH/ecb)                 | -    | ███░ 80% | 100%       | 欧洲央行       |
-| [uk-cb](https://github.com/ZoneCNH/uk-cb)             | -    | ███░ 80% | 100%       | 英国央行       |
-| [japan-cb](https://github.com/ZoneCNH/japan-cb)       | -    | ███░ 80% | 100%       | 日本央行       |
-| [eastmoney](https://github.com/ZoneCNH/eastmoney)     | -    | ███░ 80% | 100%       | 东方财富 A 股  |
-| [jinshi](https://github.com/ZoneCNH/jinshi)           | -    | ███░ 80% | 100%       | 金十快讯       |
-| [jin10](https://github.com/ZoneCNH/jin10)             | -    | ███░ 80% | 100%       | 金十行情       |
-| [yahoo](https://github.com/ZoneCNH/yahoo)             | -    | ███░ 80% | 100%       | Yahoo Finance  |
+| [fred](https://github.com/ZoneCNH/fred)               | v0.1.1 | ███░ 80% | 100%       | 美联储 FRED    |
+| [treasury](https://github.com/ZoneCNH/treasury)       | v0.1.1 | ███░ 80% | 100%       | 美国财政部     |
+| [yield-curve](https://github.com/ZoneCNH/yield-curve) | v0.1.1 | ███░ 80% | 100%       | 收益率曲线     |
+| [bea](https://github.com/ZoneCNH/bea)                 | v0.1.1 | ███░ 80% | 100%       | 美国经济分析局 |
+| [ecb](https://github.com/ZoneCNH/ecb)                 | v0.1.1 | ███░ 80% | 100%       | 欧洲央行       |
+| [uk-cb](https://github.com/ZoneCNH/uk-cb)             | v0.1.1 | ███░ 80% | 100%       | 英国央行       |
+| [japan-cb](https://github.com/ZoneCNH/japan-cb)       | v0.1.1 | ███░ 80% | 100%       | 日本央行       |
+| [eastmoney](https://github.com/ZoneCNH/eastmoney)     | v0.1.1 | ███░ 80% | 100%       | 东方财富 A 股  |
+| [jinshi](https://github.com/ZoneCNH/jinshi)           | v0.1.1 | ███░ 80% | 100%       | 金十快讯       |
+| [jin10](https://github.com/ZoneCNH/jin10)             | v0.1.1 | ███░ 80% | 100%       | 金十行情       |
+| [yahoo](https://github.com/ZoneCNH/yahoo)             | v0.1.1 | ███░ 80% | 100%       | Yahoo Finance  |
 
 <details>
 <summary>📊 数据域 · 宏观多维成熟度展开（点击展开）</summary>
 
 | 模块        | SPEC | IMPL | RELEASE | LIVE INT | EXT CI | ADOPT | SOAK | FACTORY | 备注                  |
 | ----------- | :--: | :--: | :-----: | :------: | :----: | :---: | :--: | :-----: | --------------------- |
-| fred        |  ✅  |  ✅  |   ❌    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | 80%；美联储 FRED 数据 |
-| treasury    |  ✅  |  ✅  |   ❌    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | 80%；美国财政部数据   |
-| yield-curve |  ✅  |  ✅  |   ❌    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | 80%；收益率曲线       |
-| bea         |  ✅  |  ✅  |   ❌    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | 80%；美国经济分析局   |
-| ecb         |  ✅  |  ✅  |   ❌    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | 80%；欧洲央行         |
-| uk-cb       |  ✅  |  ✅  |   ❌    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | 80%；英国央行         |
-| japan-cb    |  ✅  |  ✅  |   ❌    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | 80%；日本央行         |
-| eastmoney   |  ✅  |  ✅  |   ❌    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | 80%；东方财富 A 股    |
-| jinshi      |  ✅  |  ✅  |   ❌    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | 80%；金十快讯         |
-| jin10       |  ✅  |  ✅  |   ❌    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | 80%；金十行情         |
-| yahoo       |  ✅  |  ✅  |   ❌    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | 80%；Yahoo Finance    |
+| fred        |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | 80%；v0.1.1；美联储 FRED 数据 |
+| treasury    |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | 80%；v0.1.1；美国财政部数据   |
+| yield-curve |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | 80%；v0.1.1；收益率曲线       |
+| bea         |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | 80%；v0.1.1；美国经济分析局   |
+| ecb         |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | 80%；v0.1.1；欧洲央行         |
+| uk-cb       |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | 80%；v0.1.1；英国央行         |
+| japan-cb    |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | 80%；v0.1.1；日本央行         |
+| eastmoney   |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | 80%；v0.1.1；东方财富 A 股    |
+| jinshi      |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | 80%；v0.1.1；金十快讯         |
+| jin10       |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | 80%；v0.1.1；金十行情         |
+| yahoo       |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | 80%；v0.1.1；Yahoo Finance    |
 
 > **维度说明**：SPEC=规格完成 | IMPL=实现完成 | RELEASE=tag/release/manifest 一致 | LIVE INT=真实服务集成（非 mock） | EXT CI=外部 CI artifact | ADOPT=下游模块真实采用 | SOAK=生产或类生产长时间运行 | FACTORY=factory_grade_allowed（最高综合等级）
 
@@ -349,7 +349,7 @@
 - 核心模块的 release/factory 投影以 `.foundationx/status/index.json` + `.foundationx/blockers.json` 为准；当前 BLK-001/BLK-002/BLK-003/BLK-006/BLK-007/BLK-008 open，因此不得声明 Foundation 单一 100% 或 factory-grade。
 - 存储层 `redisx` v1.0.1（Docker-backed Redis + persistence restart recovery 验证），`kafkax` v1.0.2（真实 broker gates 已验证），`natsx` v1.0.0（dev auth live gate 已验证；BLK-001/BLK-002 open），`postgresx` v1.0.0（live integration 通过；BLK-006 open），`taosx` v1.0.1（真实 taosWS WebSocket 集成已验证；BLK-007 open），`ossx` v1.0.1（真实 Aliyun OSS 集成、race/vet/build/release-check 已验证；BLK-008 open：API 文档 / integration evidence / quickstart / release manifest 未归档；非 factory）；`clickhousex` v1.0.1（公开 GitHub Release 未发布，BLK-003）；`transportx` v1.1.1-spec（SPEC baseline，production_import_allowed=false）。
 - **SRE/CI/CD**：已产出 [`docs/sre/foundation-cicd-plan.md`](../docs/sre/foundation-cicd-plan.md)（19 模块 4 阶段部署方案、8 标签池、Docker 集成测试、标准化模板），待落地
-- **阻塞项**：BLK-001 natsx 正式四源 98+ arbiter 未完成；BLK-002 natsx 生产 TLS gate 未闭合；BLK-003 clickhousex 公开 GitHub Release 未发布；BLK-006 postgresx 覆盖率 52.4% + Docker integration skip；BLK-007 taosx SPEC ~85 (5 缺失章节已补全，待修 TRACEABILITY TC/Status)；BLK-008 ossx API 文档 / integration evidence / quickstart / release manifest 未归档。
+- **阻塞项**：BLK-001 natsx 正式四源 98+ arbiter 未完成；BLK-002 natsx 生产 TLS gate 未闭合；BLK-003 clickhousex 公开 GitHub Release 未发布；BLK-006 postgresx 覆盖率 52.4% + Docker integration skip；BLK-007 taosx SPEC ~88 (全部内容缺口已闭合，待四源仲裁)；BLK-008 ossx API 文档 / integration evidence / quickstart / release manifest 未归档。
 
 ### 🟢 L2.5 领域共享层（健康）
 
@@ -359,14 +359,14 @@
 ### 🟢 数据域 · 行情（健康）
 
 - SDK：13 个交易所适配器，全部 80%，无版本号
-- Provider：5 个 Kline/Ticker Provider，全部 v0.1.0，进度 80%
-- **待确认**：SDK 全部无版本号，是否已通过生产验证？
+- Provider：5 个 Kline/Ticker Provider，全部 v0.1.1，进度 80%
+- **待确认**：SDK 全部 v0.1.1 tagged release，已通过生产验证？
 
 ### 🟡 数据域 · 宏观（注意）
 
-- 组件：11 个，全部 80%，无版本号
+- 组件：11 个，全部 80%，全部 v0.1.1 tagged release
 - 6 个央行数据源结构高度相似（fred / treasury / bea / ecb / uk-cb / japan-cb）
-- **风险**：同质化严重，是否考虑合并为统一适配器？
+- **评估结论（2026-06-16）**：各模块保持独立架构，不合并；建议在 contracts 中提取共享 DataSource 接口统一契约
 
 ### 🔴 数据域 · 另类（阻塞）
 
@@ -418,8 +418,8 @@
 | #   | 风险                                    | 影响                              | 建议                                                                   |
 | --- | --------------------------------------- | --------------------------------- | ---------------------------------------------------------------------- |
 | R3  | x.go 2.8MB 体量异常                     | 可能违反组合根边界                | 按 ARCHITECTURE.md 的组合根守卫核实，剥离业务逻辑                      |
-| R4  | 13 个交易所 SDK 全部无版本号            | 无法追踪 API 兼容性               | 建立版本化发布机制                                                     |
-| R5  | 宏观数据源 6 个央行适配器同质化         | 维护成本高                        | 考虑合并为统一适配器                                                   |
+| R4  | ~~13 个交易所 SDK 全部无版本号~~        | ~~无法追踪 API 兼容性~~           | ✅ 已版本化：18 仓库 v0.1.1 tagged release（2026-06-16）               |
+| R5  | ~~宏观数据源 6 个央行适配器同质化~~     | ~~维护成本高~~                    | ✅ 已评估 — 各模块保持独立，已统一打 v0.1.1（2026-06-16）              |
 | R7  | observex 双重归属（基座+横切）          | 职责边界模糊                      | ✅ 已记录 ADR：`module/observex/ADR-dual-attribution.md`（2026-06-12） |
 | R10 | ~~`.omc/state/sessions` 已入库~~        | ~~可能泄露 prompt/会话/环境信息~~ | ✅ 已修复：`git rm -r --cached .omc`（2026-06-07）                     |
 | R11 | ~~公开 README 含 `127.0.0.1` 本地链接~~ | ~~外部无法访问，降低专业度~~      | ✅ 已修复：批量移除所有本地链接（2026-06-07）                          |
@@ -429,7 +429,7 @@
 
 | #   | 风险                                                                                                                                                                                                   | 影响                                                              | 建议                                                     |
 | --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------- | -------------------------------------------------------- |
-| R8  | natsx 正式四源 98+ arbiter 与生产 TLS gate 仍 open；postgresx 单元测试覆盖率 52.4% 且 Docker 集成测试 skip；taosx SPEC ~85 (5 章节已补全)；ossx API 文档 / integration evidence / quickstart / release manifest 未归档 | 阻塞对应模块 factory 投影，不阻塞上层继续按 spec/adapter 边界开发 | 按 BLK-001/002/006/007/008 关闭证据后再恢复 factory 投影 |
+| R8  | natsx 正式四源 98+ arbiter 与生产 TLS gate 仍 open；postgresx 单元测试覆盖率 52.4% 且 Docker 集成测试 skip；taosx SPEC ~88 (全部闭合)；ossx API 文档 / integration evidence / quickstart / release manifest 未归档 | 阻塞对应模块 factory 投影，不阻塞上层继续按 spec/adapter 边界开发 | 按 BLK-001/002/006/007/008 关闭证据后再恢复 factory 投影 |
 | R9  | 分析域↔决策域若用实现包互调                                                                                                                                                                            | Go 循环导入和边界泄漏                                             | 只允许通过 contracts 事件/DTO 与 L2.5 模型连接           |
 
 ---
@@ -446,7 +446,7 @@
 1. **聚焦 Phase 1**：先固化 MarketDataProvider / FactorInput / FactorOutput，再实现 factor-engine → feature-store → factor-eval
 2. **核实 x.go**：确认只包含配置加载、依赖 wiring 和生命周期控制，必要时剥离业务逻辑
 3. ~~**版本化 SDK**~~：✅ 已完成 — 18 仓库 v0.1.1 tagged release（2026-06-16）
-4. **统一宏观适配器**：评估 6 个央行数据源合并可行性
+4. ~~**统一宏观适配器**~~：✅ 已评估 — 保持独立模块架构，11 仓库全部 v0.1.1 tagged release（2026-06-16）
 5. ~~**清理仓库卫生**（R10）~~：✅ 已完成（2026-06-07）
 6. ~~**移除本地链接**（R11）~~：✅ 已完成（2026-06-07）
 7. **重整仓库命名**（R12）：评估按 `foundation-*`/`adapter-*`/`engine-*`/`lab-*` 前缀重命名的可行性
@@ -497,7 +497,7 @@
 | redisx        |  98  |  100   |  100  | 100  |  100   | 100  |
 | resiliencx    | 100  |  100   |  100  | 100  |  100   | 100  |
 | schedulex     |  98  |  100   |  100  | 100  |  100   | 100  |
-| taosx         | ~85  |  100   | ~85   | 100  |  100   | 100  |
+| taosx         | ~88  |  100   | ~88   | 100  |  100   | 100  |
 | testkitx      | 100  |  100   |  100  | 100  |  100   | 100  |
 | transportx    |  84  |  100   |  100  | 100  |  100   | 100  |
 | xlib-evidence |  83  |  100   |  100  | 100  |  100   | 100  |
