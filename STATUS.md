@@ -37,7 +37,7 @@
 | [contracts](https://github.com/ZoneCNH/contracts)         | v1.0.1-spec | spec/code              | release-pending | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | 跨域稳定端口/事件/DTO 契约；spec-only；无公开 GitHub Release / git tag 对齐；非 factory until release                                                                                               |
 | [transportx](https://github.com/ZoneCNH/transportx)       | v1.1.1-spec | spec/code              | release-pending | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | 应用通信底座规格基线；spec-only；无公开 GitHub Release / git tag 对齐；production_import_allowed=false；非 factory until release                                                                    |
 
-> ⚠️ **版本 / release 注记**：公开文档是投影层；版本、release 与 factory 状态以 `.foundationx/status/index.json` + `.foundationx/blockers.json` 为准。当前 20-module projection 中 15/20 已发布 GitHub Release（19 个 Foundation 组件 + L2.5 `domainx` 事实层投影）；公开投影仍有 BLK-001/002/003/006/007/008 open，不声明 Foundation 整体 factory grade。
+> ⚠️ **版本 / release 注记**：公开文档是投影层；版本、release 与 factory 状态以 `.foundationx/status/index.json` + `.foundationx/blockers.json` 为准。当前 20-module projection 中 19/20 已发布 GitHub Release（19 个 Foundation 组件 + L2.5 全部 5 模块（decimalx/domainx/domain-market/domain-macro/domain-exchange）已发布 v1.0.0+ release）；公开投影仍有 BLK-001/002/003/006/007/008 open，不声明 Foundation 整体 factory grade。
 
 > **成熟度语义说明（2026-06-14 v2 Trust Alignment）**：上表"进度"反映本仓库 Spec 管线评分（spec→code），不代表可投产等级（factory grade）。下表提供多维度成熟度视图；RELEASE=❌ 或存在 open blocker 的模块不得投影为 FACTORY=✅。
 
@@ -80,22 +80,22 @@
 
 | 组件                                                          | 版本   | 进度     | 覆盖率要求 | 说明                                                                                                                                                        |
 | ------------------------------------------------------------- | ------ | -------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [decimalx](https://github.com/ZoneCNH/decimalx)               | v0.2.0 | ███░ 80% | 100%       | 高精度十进制类型；v1.0.0 Spec Approved，8 FR Ready                                                                                                          |
+| [decimalx](https://github.com/ZoneCNH/decimalx)               | v1.0.0 | ███░ 80% | 100%       | 高精度十进制类型；v1.0.0 GitHub Release 已发布，8 FR Done                                                                                                     |
 | [domainx](https://github.com/ZoneCNH/domainx)                 | v1.0.1 | ███░ 80% | 100%       | 领域共享值对象：Order / Position / Trade / Portfolio / ExecutionReport；公开 v1.0.1 release/tag 已观测并完成 trust 对账；factory 仍待 adoption/factory 证据 |
-| [domain-market](https://github.com/ZoneCNH/domain-market)     | v0.1.0 | ███░ 80% | 100%       | 市场数据域模型；v1.0.0 Spec Approved，7 FR Ready                                                                                                            |
-| [domain-macro](https://github.com/ZoneCNH/domain-macro)       | v0.1.0 | ███░ 80% | 100%       | 宏观数据域模型；v1.0.0 Spec Approved，7 FR Ready                                                                                                            |
-| [domain-exchange](https://github.com/ZoneCNH/domain-exchange) | v0.1.0 | ███░ 80% | 100%       | 交易域模型；v1.0.0 Spec Approved，7 FR Ready                                                                                                                |
+| [domain-market](https://github.com/ZoneCNH/domain-market)     | v1.0.0 | ███░ 80% | 100%       | 市场数据域模型；v1.0.0 GitHub Release 已发布，7 FR Done                                                                                                       |
+| [domain-macro](https://github.com/ZoneCNH/domain-macro)       | v1.0.0 | ███░ 80% | 100%       | 宏观数据域模型；v1.0.0 GitHub Release 已发布，7 FR Done                                                                                                       |
+| [domain-exchange](https://github.com/ZoneCNH/domain-exchange) | v1.0.0 | ███░ 80% | 100%       | 交易域模型；v1.0.0 GitHub Release 已发布，7 FR Done                                                                                                           |
 
 <details>
 <summary>📊 L2.5 领域共享层多维成熟度展开（点击展开）</summary>
 
 | 模块            | SPEC | IMPL | RELEASE | LIVE INT | EXT CI | ADOPT | SOAK | FACTORY | 备注                                                                                                                                                             |
 | --------------- | :--: | :--: | :-----: | :------: | :----: | :---: | :--: | :-----: | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| decimalx        |  ✅  |  ✅  |   ❌    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | v0.2.0；80%；v1.0.0 Spec Approved，8 FR Ready                                                                                                                    |
+| decimalx        |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | v1.0.0；80%；v1.0.0 GitHub Release 已发布，8 FR Done                                                                                                            |
 | domainx         |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | v1.0.1；80%；领域共享值对象：Order/Position/Trade/Portfolio/ExecutionReport；公开 v1.0.1 release/tag 已观测并完成 trust 对账；factory 仍待 adoption/factory 证据 |
-| domain-market   |  ✅  |  ✅  |   ❌    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | v0.1.0；80%；v1.0.0 Spec Approved，7 FR Ready                                                                                                                    |
-| domain-macro    |  ✅  |  ✅  |   ❌    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | v0.1.0；80%；v1.0.0 Spec Approved，7 FR Ready                                                                                                                    |
-| domain-exchange |  ✅  |  ✅  |   ❌    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | v0.1.0；80%；v1.0.0 Spec Approved，7 FR Ready                                                                                                                    |
+| domain-market   |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | v1.0.0；80%；v1.0.0 GitHub Release 已发布，7 FR Done                                                                                                            |
+| domain-macro    |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | v1.0.0；80%；v1.0.0 GitHub Release 已发布，7 FR Done                                                                                                            |
+| domain-exchange |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | v1.0.0；80%；v1.0.0 GitHub Release 已发布，7 FR Done                                                                                                            |
 
 > **维度说明**：SPEC=规格完成 | IMPL=实现完成 | RELEASE=tag/release/manifest 一致 | LIVE INT=真实服务集成（非 mock） | EXT CI=外部 CI artifact | ADOPT=下游模块真实采用 | SOAK=生产或类生产长时间运行 | FACTORY=factory_grade_allowed（最高综合等级）
 
@@ -324,7 +324,7 @@
 | 域                     | 总数   | 已有   | 已创建 | 平均进度                           | 有版本号                                              |
 | ---------------------- | ------ | ------ | ------ | ---------------------------------- | ----------------------------------------------------- |
 | 基座                   | 19     | 19     | 0      | Spec→Code 投影完成；factory 未闭合 | 17                                                    |
-| L2.5 领域共享层        | 5      | 5      | 0      | 80%                                | 5 (全部；仅 domainx release 已对账，factory 仍待补证) |
+| L2.5 领域共享层        | 5      | 5      | 4      | 80%                                | 5 (全部 5/5 v1.0.0 release 已发布；factory 仍待补证) |
 | 数据域 · 行情 SDK      | 13     | 13     | 0      | 80%                                | 0                                                     |
 | 数据域 · 行情 Provider | 5      | 5      | 0      | 80%                                | 5 (全部)                                              |
 | 数据域 · 宏观          | 11     | 11     | 0      | 80%                                | 0                                                     |

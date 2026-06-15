@@ -41,7 +41,7 @@ L1 测试: testkitx (test-only)
 基座扩展: redisx / kafkax / natsx / postgresx / taosx / ossx / clickhousex / contracts / transportx
       │
       ▼
-L2.5: domainx / decimalx / domain-market / domain-macro / domain-exchange (5/5 v1.0.0 Spec Approved；domainx v1.0.1 release 已对账；factory-grade 仍待补证)
+L2.5: domainx / decimalx / domain-market / domain-macro / domain-exchange (5/5 v1.0.0 已发布；5/5 GitHub Release 已观测对账；factory-grade 仍待补证)
       │
       ▼
 业务流: 数据域 → 分析域 ↔ 决策域 → 执行域
