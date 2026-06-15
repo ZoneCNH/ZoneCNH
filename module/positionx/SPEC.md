@@ -17,7 +17,7 @@
 
 ---
 
-## 2. Problem
+## 2. 问题与背景
 
 多交易所、多账户交易场景中，仓位信息分散在各交易所的 API 和本地数据库中：
 
@@ -29,7 +29,7 @@
 
 ---
 
-## 3. Goals
+## 3. 目标
 
 - 统一仓位视图：跨交易所、跨账户的净持仓
 - 实时仓位更新：fill event → position update（< 10ms）
@@ -40,7 +40,7 @@
 
 ---
 
-## 4. Non-goals
+## 4. 非目标
 
 - 不做交易所 API 对接（→ market-data）
 - 不做风控决策（→ riskx）
@@ -50,7 +50,7 @@
 
 ---
 
-## 5. Consumers
+## 5. 消费者
 
 | 消费者       | 使用方式                            |
 | ------------ | ----------------------------------- |
@@ -62,7 +62,7 @@
 
 ---
 
-## 6. Functional Requirements
+## 6. 功能需求
 
 ### FR-001: Position Update
 
@@ -142,7 +142,7 @@ THEN it MUST be `module github.com/ZoneCNH/positionx`
 | AC-POS-007 | FR-007 | PositionHistory 返回指定时间段仓位变更事件列表（timestamp/fill_id/deltaQty/price/reason） |
 | AC-POS-008 | FR-008 | README H1 为 `# positionx`；Go module path 为 `github.com/ZoneCNH/positionx`；go.mod 声明 `module github.com/ZoneCNH/positionx` |
 
-## 7. Business Rules
+## 7. 行为约束
 
 | 编号   | 规则                                   | 违反后果 |
 | ------ | -------------------------------------- | -------- |
@@ -154,7 +154,7 @@ THEN it MUST be `module github.com/ZoneCNH/positionx`
 
 ---
 
-## 8. Interface Contract
+## 8. 接口契约
 
 ```go
 type PositionManager interface {
@@ -175,7 +175,7 @@ type PnLCalculator interface {
 
 ---
 
-## 9. Data Model
+## 9. 数据模型
 
 | 模型                 | 字段 |
 | -------------------- | ---- |
@@ -188,7 +188,7 @@ type PnLCalculator interface {
 
 ---
 
-## 10. Config Schema
+## 10. 配置模式
 
 ```yaml
 positionx:
@@ -201,7 +201,7 @@ positionx:
 
 ---
 
-## 11. Error Handling
+## 11. 错误处理
 
 | 错误                   | 处理方式                         |
 | ---------------------- | -------------------------------- |
@@ -212,7 +212,7 @@ positionx:
 
 ---
 
-## 12. Edge Cases
+## 12. 边界情况
 
 | 场景                       | 预期行为                               |
 | -------------------------- | -------------------------------------- |
@@ -223,7 +223,7 @@ positionx:
 
 ---
 
-## 13. Directory Structure
+## 13. 目录结构
 
 ```text
 positionx/
@@ -244,7 +244,7 @@ positionx/
 
 ---
 
-## 14. Dependencies
+## 14. 依赖
 
 | 可以依赖                             | 禁止依赖                     |
 | ------------------------------------ | ---------------------------- |
@@ -254,7 +254,7 @@ positionx/
 
 ---
 
-## 15. Testing
+## 15. 测试
 
 | 测试场景            | 验证点                               |
 | ------------------- | ------------------------------------ |
@@ -266,7 +266,7 @@ positionx/
 
 ---
 
-## 16. Performance Budget
+## 16. 性能预算
 
 | 操作              | 目标     |
 | ----------------- | -------- |
@@ -277,7 +277,7 @@ positionx/
 
 ---
 
-## 17. Observability
+## 17. 可观测性
 
 | 信号   | 指标                                    |
 | ------ | --------------------------------------- |
@@ -289,7 +289,7 @@ positionx/
 
 ---
 
-## 18. Security
+## 18. 安全
 
 | 要求               | 实现方式                       |
 | ------------------ | ------------------------------ |
@@ -298,7 +298,7 @@ positionx/
 
 ---
 
-## 19. CI Gate
+## 19. CI 门禁
 
 | Gate   | 命令                                   | 阻塞条件       |
 | ------ | -------------------------------------- | -------------- |
@@ -310,7 +310,7 @@ positionx/
 
 ---
 
-## 20. Upgrade Compatibility
+## 20. 升级兼容性
 
 | 变更类型             | 版本升级 |
 | -------------------- | -------- |
@@ -320,7 +320,7 @@ positionx/
 
 ---
 
-## 21. Release DoD
+## 21. 发布 DoD
 
 - [ ] PositionManager 接口完整实现
 - [ ] PnL 计算所有口径验证
@@ -330,7 +330,7 @@ positionx/
 
 ---
 
-## 22. Open Questions
+## 22. 待解决问题
 
 - 是否需要支持组合保证金（portfolio margin）？
 - 是否需要支持跨交易所净额结算视角？

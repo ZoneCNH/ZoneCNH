@@ -19,7 +19,7 @@
 
 ---
 
-## 2. Problem
+## 2. 问题与背景
 
 多个模块需要 Redis 支撑缓存、锁、计数、限流、Pub/Sub 和状态存储。如果各模块各自封装，会产生以下问题：
 
@@ -31,7 +31,7 @@
 
 ---
 
-## 3. Goals
+## 3. 目标
 
 - 稳定 Redis 存储扩展的 1.0 公共能力边界，覆盖 Key、Options、KV/TTL、Cache、Hash/List、Pub/Sub、Pipeline、Locker、Counter/RateLimit、Codec 与 Health。
 
@@ -49,7 +49,7 @@
 
 ---
 
-## 4. Non-goals
+## 4. 非目标
 
 - 不封装 Redis 的全部命令集合，只稳定 1.0 明确列出的能力。
 - 不管理 Redis Cluster、Sentinel、备份、扩缩容、认证轮换或运维拓扑。
@@ -61,7 +61,7 @@
 
 ---
 
-## 5. Consumers
+## 5. 消费者
 
 | 消费者 | 使用方式 | 关键约束 |
 | --- | --- | --- |
@@ -74,7 +74,7 @@
 
 ---
 
-## 6. Functional Requirements
+## 6. 功能需求
 
 | ID | Requirement Statement | Acceptance Criteria | Test Case | Task |
 | --- | --- | --- | --- | --- |
@@ -93,7 +93,7 @@
 
 ---
 
-## 7. Business Rules
+## 7. 行为约束
 
 | ID | Rule | Acceptance Criteria | Test Case | Task |
 | --- | --- | --- | --- | --- |
@@ -110,7 +110,7 @@
 
 ---
 
-## 8. Non-Functional Requirements
+## 8. 非功能需求
 
 | ID | Requirement | Acceptance Criteria | Test Case | Task |
 | --- | --- | --- | --- | --- |
@@ -121,7 +121,7 @@
 
 ---
 
-## 9. Interface Contract
+## 9. 接口契约
 
 ```go
 type Options struct {
@@ -229,7 +229,7 @@ func NewRateLimitHelper(counter Counter) RateLimitHelper
 
 ---
 
-## 10. Data Model
+## 10. 数据模型
 
 | 数据对象 | 字段 | 语义 |
 | --- | --- | --- |
@@ -275,7 +275,7 @@ func NewRateLimitHelper(counter Counter) RateLimitHelper
 
 ---
 
-## 11. Config Schema
+## 11. 配置模式
 
 `redisx` 不读取配置源，只接受 typed `Options`。上层可以把以下外部投影解码后传入：
 
@@ -352,7 +352,7 @@ func DefaultConfig() Config {
 
 ---
 
-## 12. Error Handling
+## 12. 错误处理
 
 | 错误 | 场景 | 处理要求 |
 | --- | --- | --- |
@@ -370,7 +370,7 @@ func DefaultConfig() Config {
 
 ---
 
-## 13. Edge Cases
+## 13. 边界情况
 
 | Edge Case | 预期行为 |
 | --- | --- |
@@ -390,7 +390,7 @@ func DefaultConfig() Config {
 
 ---
 
-## 14. Directory Structure
+## 14. 目录结构
 ```text
 redisx/
 ├── go.mod
@@ -426,7 +426,7 @@ redisx/
 └── benchmark_test.go
 ```
 
-## 15. Testing
+## 15. 测试
 
 | Test Case | 覆盖 | 类型 | 任务 |
 | --- | --- | --- | --- |
@@ -478,7 +478,7 @@ redisx/
 
 ---
 
-## 16. Performance Budget
+## 16. 性能预算
 
 | 场景 | 预算 | 验证 |
 | --- | --- | --- |
@@ -494,7 +494,7 @@ redisx/
 
 ---
 
-## 17. Observability
+## 17. 可观测性
 
 `redisx` 通过本地 hooks 输出事件，上层 adapter 可以转接到日志、metrics 或 trace 系统。生产代码不得直接 import `observex`。
 
@@ -514,7 +514,7 @@ redisx/
 
 ---
 
-## 18. Security
+## 18. 安全
 
 - 连接地址、用户名、密码、完整 Key、payload 内容不得写入日志、metric label 或 trace tag。
 - `KeyBuilder.Pattern` 是观测唯一允许使用的 Key 表示。
@@ -525,7 +525,7 @@ redisx/
 
 ---
 
-## 19. CI Gate
+## 19. CI 门禁
 
 最小门禁：
 
@@ -539,7 +539,7 @@ redisx/
 
 ---
 
-## 20. Upgrade Compatibility
+## 20. 升级兼容性
 1. 先发布 `Options`、`KeyBuilder`、`Codec`、错误模型和只读 Health，冻结公共契约。
 2. 迁移下游缓存调用到 KeyBuilder 和 KV/TTL API，禁止继续裸 Key。
 3. 迁移分布式锁到 token owner Locker，并保留旧锁 key 的 TTL 过渡窗口。
@@ -582,7 +582,7 @@ Rollback 策略：
 
 ---
 
-## 21. Release DoD
+## 21. 发布 DoD
 
 - `goal.md`、`SPEC.md`、`TRACEABILITY.md`、10 个 task spec 和 `module/README.md` 的 12 FR、10 BR、4 NFR、10 task 映射一致。
 - 每个 FR 至少有 AC、TC、Task，且 task 文件存在。
@@ -594,7 +594,7 @@ Rollback 策略：
 
 Open Questions: none blocking.
 
-## 22. Open Questions
+## 22. 待解决问题
 ### Current
 
 无阻塞性问题。

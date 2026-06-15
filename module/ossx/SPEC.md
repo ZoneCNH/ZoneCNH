@@ -15,32 +15,32 @@
 
 `ossx` provides the platform object-storage extension. It defines a stable BlobStore API, object metadata model, streaming semantics, multipart lifecycle, presigned URL policy, adapter SPI, and observability hooks while keeping storage-provider SDKs outside the public API.
 
-## 2. Problem
+## 2. 问题与背景
 
 HAI services need object storage without coupling business code to cloud SDKs, provider-specific errors, ad hoc checksum handling, or direct configuration loaders. Existing documentation did not fully close Goal -> Spec -> Matrix -> Task traceability and contained dependency wording that could permit direct `configx` usage.
 
-## 3. Goals
+## 3. 目标
 
 - Provide a small storage API that covers common object and multipart operations.
 - Preserve Constitution layering by depending only on `kernel` and `observex` interface contracts.
 - Accept configuration as module-owned structs or options supplied by the composition root.
 - Capture every requirement in traceability, task, prompt, and evidence artifacts.
 
-## 4. Non-goals
+## 4. 非目标
 
 - 不做业务领域的上传工作流编排（由各业务服务自行实现）
 - 不在公开 API 暴露云厂商 SDK 类型（provider SDK 类型封装在 `adapters/s3/` 等 adapter/internal 层）
 - 不做配置加载或配置解析（Config 由调用方 / composition root 构造后传入）
 - 不做跨云迁移编排（由平台运维层或独立迁移工具负责）
 
-## 5. Consumers
+## 5. 消费者
 
 - L2/L3 services that need BlobStore operations.
 - Background jobs that need streaming or multipart upload.
 - Platform adapters that bind S3-compatible storage to ossx contracts.
 - Tests and examples that use fake adapters for deterministic validation.
 
-## 6. Functional Requirements
+## 6. 功能需求
 
 ### FR-001: Construction and configuration
 
@@ -147,7 +147,7 @@ Acceptance criteria:
 | AC-OSS-009 | FR-009 | 操作名/结果/延迟/对象大小/sanitized key 可观测；secret/签名URL/凭据/原始 metadata 不被记录；hook 失败不破坏操作结果（除非 fail-closed 策略） |
 | AC-OSS-010 | FR-010 | 健康检查区分配置错误/provider 不可达/降级状态；Close 幂等并排空 in-flight multipart；readiness 可无写操作测试 |
 
-## 7. Business Rules
+## 7. 行为约束
 
 | 编号 | 规则 | 违反时 |
 | --- | --- | --- |
@@ -165,7 +165,7 @@ Acceptance criteria:
 | BR-012 | Every acceptance check MUST have a validation command or evidence note. | 验收证据缺失 → CI Gate traceability check 阻断 |
 
 
-## 8. Interface Contract
+## 8. 接口契约
 
 ```go
 package ossx
@@ -187,7 +187,7 @@ type BlobStore interface {
 
 The exact names may change during implementation, but the implemented API must preserve these semantics and trace any naming change back to this section.
 
-## 9. Data Model
+## 9. 数据模型
 
 Core models:
 
@@ -198,7 +198,7 @@ Core models:
 - `MultipartUpload`: upload ID, key, initiated time, policy, uploaded parts, and expiration.
 - `AuditEvent`: operation, result, sanitized key scope, actor fields supplied by caller, and correlation IDs.
 
-## 10. Config Schema
+## 10. 配置模式
 
 ```yaml
 foundationx:
@@ -223,7 +223,7 @@ foundationx:
 
 The external namespace is `foundationx.oss` only at the composition-root configuration boundary. Only the composition root outside `module/ossx` may use an external configuration loader such as `configx`; it must project those values into `ossx.Config` or constructor options before calling ossx. The ossx module itself must not import `configx`, configuration-loader packages, or repository-global config registries.
 
-## 11. Error Handling
+## 11. 错误处理
 
 | 错误类型 | 触发条件 | 处理方式 |
 | --- | --- | --- |
@@ -239,7 +239,7 @@ The external namespace is `foundationx.oss` only at the composition-root configu
 
 Provider 特定错误由适配器在公开边界前翻译为 typed ossx 错误。
 
-## 12. Edge Cases
+## 12. 边界情况
 
 | 场景 | 预期行为 |
 | --- | --- |
@@ -249,7 +249,7 @@ Provider 特定错误由适配器在公开边界前翻译为 typed ossx 错误�
 | 重复 delete/abort/close/health | 安全幂等 |
 | Unicode key 遍历歧义 | 一致规范化并拒绝歧义路径 |
 
-## 13. Directory Structure
+## 13. 目录结构
 
 ```text
 module/ossx/
@@ -269,7 +269,7 @@ module/ossx/
   evidence/
 ```
 
-## 14. Dependencies
+## 14. 依赖
 
 Allowed dependencies:
 
@@ -285,7 +285,7 @@ Forbidden dependencies:
 - Other storage extensions such as natsx, kafkax, redisx, mysqlx, or pgx.
 - Provider SDK types in public ossx APIs.
 
-## 15. Testing
+## 15. 测试
 
 - **TC-001:** Dependency guard verifies ossx does not import configx or other storage extensions.
 - **TC-002:** Config validation covers endpoint, bucket, region, timeout, checksum, multipart, and presign settings.
@@ -301,25 +301,25 @@ Forbidden dependencies:
 - **TC-012:** Health and close tests verify readiness states and idempotent shutdown.
 - **TC-013:** Traceability validation checks Goal -> Spec -> Matrix -> Task -> Evidence closure.
 
-## 16. Performance Budget
+## 16. 性能预算
 
 - Put/Get streaming paths must not buffer complete objects in memory.
 - List operations must cap page size and avoid unbounded result accumulation.
 - Multipart upload must respect configured part-size and concurrency limits.
 - Hook emission must add bounded overhead and fail safely according to policy.
 
-## 17. Observability
+## 17. 可观测性
 
 Metrics, traces, and audit events MUST include operation, result, latency, payload size where available, adapter name, and sanitized key scope. They MUST exclude raw secrets, signatures, credentials, full signed URLs, and unrestricted metadata values.
 
-## 18. Security
+## 18. 安全
 
 - Presigned URL generation must be least-privilege by operation and TTL.
 - Credentials must be supplied by adapter configuration and never returned from public APIs.
 - Object keys must be sanitized before logging.
 - Checksum and permission policy failures must fail closed.
 
-## 19. CI Gate
+## 19. CI 门禁
 
 Required checks:
 
@@ -334,11 +334,11 @@ go list -deps ./module/ossx/... | grep -v configx
 
 If implementation code does not exist yet, Go checks may be recorded as not applicable with evidence. Once code exists, Go checks are required for release.
 
-## 20. Upgrade Compatibility
+## 20. 升级兼容性
 
 Public API changes after first implementation require a compatibility note, migration guidance, and traceability updates. Adapter-only changes may remain internal if public behavior and error contracts are unchanged.
 
-## 21. Release DoD
+## 21. 发布 DoD
 
 - Goal, SPEC, TRACEABILITY, PLAN, tasks, prompts, and evidence are present.
 - All FR and BR rows map to TC and task IDs.
@@ -346,7 +346,7 @@ Public API changes after first implementation require a compatibility note, migr
 - Targeted tests and CI gates pass or have documented pre-implementation not-applicable evidence.
 - Release notes identify adapter support and known limitations.
 
-## 22. Open Questions
+## 22. 待解决问题
 
 ### Non-blocking
 

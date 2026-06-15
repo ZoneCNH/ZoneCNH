@@ -25,7 +25,7 @@ backtestx 验证"决策是否正确"
 
 ---
 
-## 2. Problem
+## 2. 问题与背景
 
 量化交易系统中有多个独立模块（factor-engine、strategyx、riskx、orderx、positionx），但缺少统一的编排层：
 
@@ -37,7 +37,7 @@ backtestx 验证"决策是否正确"
 
 ---
 
-## 3. Goals
+## 3. 目标
 
 - DAG 工作流定义：节点（Task）和边（依赖关系）
 - 任务类型：Strategy（策略信号）、Risk（风控检查）、Order（订单提交）、Wait（等待）、Condition（条件分支）、Parallel（并行执行）
@@ -49,7 +49,7 @@ backtestx 验证"决策是否正确"
 
 ---
 
-## 4. Non-goals
+## 4. 非目标
 
 - 不做因子计算（→ factor-engine）
 - 不做策略决策（→ strategyx）
@@ -60,7 +60,7 @@ backtestx 验证"决策是否正确"
 
 ---
 
-## 5. Consumers
+## 5. 消费者
 
 | 消费者       | 使用方式                              |
 | ------------ | ------------------------------------- |
@@ -72,7 +72,7 @@ backtestx 验证"决策是否正确"
 
 ---
 
-## 6. Functional Requirements
+## 6. 功能需求
 
 ### FR-001: Workflow DAG
 
@@ -189,7 +189,7 @@ THEN it MUST be `module github.com/ZoneCNH/maestro`
 | AC-MAE-010 | FR-009 | Workflow 注册名称全局唯一；运行时注册/更新不影响已运行实例；List/Get/Delete 操作正确返回 |
 | AC-MAE-011 | FR-010 | README H1 为 `# maestro`；Go module path 为 `github.com/ZoneCNH/maestro`；go.mod 声明 `module github.com/ZoneCNH/maestro` |
 
-## 7. Business Rules
+## 7. 行为约束
 
 | 编号   | 规则                                   | 违反后果 |
 | ------ | -------------------------------------- | -------- |
@@ -202,7 +202,7 @@ THEN it MUST be `module github.com/ZoneCNH/maestro`
 
 ---
 
-## 8. Interface Contract
+## 8. 接口契约
 
 ```go
 type Orchestrator interface {
@@ -239,7 +239,7 @@ type WorkflowResult struct {
 
 ---
 
-## 9. Data Model
+## 9. 数据模型
 
 | 模型              | 字段 |
 | ----------------- | ---- |
@@ -255,7 +255,7 @@ type WorkflowResult struct {
 
 ---
 
-## 10. Config Schema
+## 10. 配置模式
 
 ```yaml
 maestro:
@@ -276,7 +276,7 @@ maestro:
 
 ---
 
-## 11. Error Handling
+## 11. 错误处理
 
 | 错误                  | 处理方式                           |
 | --------------------- | ---------------------------------- |
@@ -289,7 +289,7 @@ maestro:
 
 ---
 
-## 12. Edge Cases
+## 12. 边界情况
 
 | 场景                       | 预期行为                           |
 | -------------------------- | ---------------------------------- |
@@ -301,7 +301,7 @@ maestro:
 
 ---
 
-## 13. Directory Structure
+## 13. 目录结构
 
 ```text
 maestro/
@@ -328,7 +328,7 @@ maestro/
 
 ---
 
-## 14. Dependencies
+## 14. 依赖
 
 | 可以依赖                             | 禁止依赖                     |
 | ------------------------------------ | ---------------------------- |
@@ -341,7 +341,7 @@ maestro/
 
 ---
 
-## 15. Testing
+## 15. 测试
 
 | 测试场景            | 验证点                           |
 | ------------------- | -------------------------------- |
@@ -355,7 +355,7 @@ maestro/
 
 ---
 
-## 16. Performance Budget
+## 16. 性能预算
 
 | 操作                      | 目标     |
 | ------------------------- | -------- |
@@ -366,7 +366,7 @@ maestro/
 
 ---
 
-## 17. Observability
+## 17. 可观测性
 
 | 信号   | 指标                                    |
 | ------ | --------------------------------------- |
@@ -379,7 +379,7 @@ maestro/
 
 ---
 
-## 18. Security
+## 18. 安全
 
 | 要求               | 实现方式                         |
 | ------------------ | -------------------------------- |
@@ -388,7 +388,7 @@ maestro/
 
 ---
 
-## 19. CI Gate
+## 19. CI 门禁
 
 | Gate   | 命令                               | 阻塞条件       |
 | ------ | ---------------------------------- | -------------- |
@@ -399,7 +399,7 @@ maestro/
 
 ---
 
-## 20. Upgrade Compatibility
+## 20. 升级兼容性
 
 | 变更类型             | 版本升级 |
 | -------------------- | -------- |
@@ -409,7 +409,7 @@ maestro/
 
 ---
 
-## 21. Release DoD
+## 21. 发布 DoD
 
 - [ ] Orchestrator 接口完整实现
 - [ ] 全部 6 种 Node 类型实现并测试
@@ -420,7 +420,7 @@ maestro/
 
 ---
 
-## 22. Open Questions
+## 22. 待解决问题
 
 - 是否需要支持子工作流（SubWorkflow Node）？
 - 是否需要可视化 DAG 编辑器？

@@ -25,7 +25,7 @@
 
 本模块不是 ORM，不读取环境变量或配置文件，不接管应用生命周期，不向上依赖业务仓库。
 
-## 2. Problem
+## 2. 问题与背景
 
 多个模块需要 PostgreSQL 访问能力。如果各自封装，会造成：
 
@@ -36,7 +36,7 @@
 - 健康检查、连接池状态、查询耗时和失败指标缺少统一采集点。
 - 连接串、密码或 SQL 参数存在日志泄露风险。
 
-## 3. Goals
+## 3. 目标
 
 - 提供小而稳定的 PostgreSQL 客户端基线，直接暴露 SQL 能力而非 ORM。
 - 统一连接池、配置默认值、生命周期和健康检查语义。
@@ -46,7 +46,7 @@
 - 提供日志与指标适配点，但不绑定具体可观测后端。
 - 维持基座模块边界，不依赖业务域仓库或 `x.go` 入口。
 
-## 4. Non-Goals
+## 4. 非目标
 
 - 不做 ORM、Repository 生成器、SQL builder 或实体映射框架。
 - 不做读写分离、数据库集群管理、备份恢复和容量治理。
@@ -55,7 +55,7 @@
 - 不内置 `observex`、`resiliencx`、`configx` 运行时耦合；如需集成必须通过接口适配。
 - 不承诺分页、排序、审计字段、租户隔离或批处理工具进入当前 v1.0 基线。
 
-## 5. Consumers
+## 5. 消费者
 
 | 消费者 | 使用方式 | 当前约束 |
 | ------ | -------- | -------- |
@@ -66,7 +66,7 @@
 | `backtest-engine` | 存储回测结果和参数 | 可复用迁移与查询接口 |
 | 其他基座/业务模块 | 通过 `pkg/postgresx` 显式构造客户端 | 禁止引入业务反向依赖 |
 
-## 6. Functional Requirements
+## 6. 功能需求
 
 ### FR-001: Config 与连接池生命周期
 
@@ -133,7 +133,7 @@ THEN `Config.RedactedDSN()` 必须隐藏密码，日志和指标不得包含完�
 | AC-PGX-006 | FR-006 | MapError 将 PostgreSQL/context 错误归一化为结构化 Error；IsRetryable 正确暴露可重试语义 |
 | AC-PGX-007 | FR-007 | WithLogger/WithMetrics 适配器正确记录查询/事务/健康/池状态；Config.RedactedDSN() 隐藏密码；日志/指标不含完整连接串或 SQL 参数值 |
 
-## 7. Business Rules
+## 7. 行为约束
 | 编号 | 规则 | 违反时 |
 | --- | --- | --- |
 | BR-001 | `postgresx` 不得依赖业务域仓库、入口仓库或具体应用模块。 | CI Gate：import check 检测到业务域依赖 → 阻断合并 |
@@ -149,7 +149,7 @@ THEN `Config.RedactedDSN()` 必须隐藏密码，日志和指标不得包含完�
 | BR-011 | 发布证据必须支持 `GOWORK=off`，避免依赖本地 workspace 污染。 | GOWORK 依赖导致 CI 不可复现 → release gate 阻断 |
 | BR-012 | `go.mod`、版本矩阵、公开 API 文档和模块规格必须在发布后持续保持一致。 | go.mod/版本矩阵/文档不一致 → CI Gate doc check 阻断 |
 
-## 8. Interface Contract
+## 8. 接口契约
 
 当前实现基线以 `github.com/ZoneCNH/postgresx/pkg/postgresx` 为准：
 
@@ -263,7 +263,7 @@ func WithClock(clock Clock) Option
 
 旧文档中提到的 DSN option、环境变量式 DSN 配置和无参构造器均不属于当前基线。
 
-## 9. Data Model
+## 9. 数据模型
 ### 10.1 Client
 
 `Client` 封装 `pgxpool.Pool`，管理连接池生命周期。
@@ -294,7 +294,7 @@ func WithClock(clock Clock) Option
 - `ErrMigrationInvalid` — 迁移无效
 - MapError 映射：context.Canceled→ErrCanceled, pgx.ErrNoRows→ErrNotFound, pgconn 认证→ErrAuth, 约束→ErrConstraint
 
-## 10. Config Schema
+## 10. 配置模式
 `postgresx` 通过 `Config` 结构体接收显式配置，不读取环境变量或配置文件。
 
 ```yaml
@@ -316,7 +316,7 @@ postgresx:
 
 调用方通过 `New(ctx, cfg, opts...)` 传入。`Config.RedactedDSN()` 返回密码脱敏后的连接串。
 
-## 11. Error Handling
+## 11. 错误处理
 | 错误 | 触发条件 | 处理方式 |
 | --- | --- | --- |
 | `ErrClosed` | Client 已关闭后调用 | 返回稳定错误，Close 幂等 |
@@ -331,7 +331,7 @@ postgresx:
 **错误映射**：`MapError(err)` 将 pgx/pgconn 错误归一化为结构化错误 kind + retryability。
 **错误消息格式**：`"postgresx: <operation>: <detail>"`
 
-## 12. Edge Cases
+## 12. 边界情况
 | 场景 | 预期行为 |
 | --- | --- |
 | Config Host 为空 | New 返回 `ErrInvalidConfig`，不访问 PostgreSQL |
@@ -346,7 +346,7 @@ postgresx:
 | 连接池耗尽 | 阻塞等待空闲连接，超时后返回错误 |
 | DSN/密码 日志泄露 | RedactedDSN() 脱敏，日志不含明文凭据 |
 
-## 13. Directory Structure
+## 13. 目录结构
 ```text
 postgresx/
 ├── go.mod
@@ -374,7 +374,7 @@ postgresx/
 └── docs/
 ```
 
-## 14. Dependencies
+## 14. 依赖
 
 | 依赖 | 用途 | 约束 |
 | ---- | ---- | ---- |
@@ -383,7 +383,7 @@ postgresx/
 
 禁止新增业务模块依赖。新增基座依赖必须先更新 [goal.md](./goal.md)、[TRACEABILITY.md](./TRACEABILITY.md) 与根架构文档。
 
-## 15. Testing
+## 15. 测试
 
 | Test Case | 覆盖范围 | 验收标准 |
 | --------- | -------- | -------- |
@@ -397,28 +397,28 @@ postgresx/
 | **TC-008:** | 边界与发布证据 | `GOWORK=off` 下测试通过，无业务反向依赖 |
 | **TC-009:** | 契约一致性 | `go.mod`、版本矩阵、公开 API 文档、指标契约和代码一致 |
 
-## 16. Performance Budget
+## 16. 性能预算
 
 - 连接池生命周期以 `pgxpool` 为核心，默认池参数必须可被调用方覆盖。
 - 查询和事务 helper 不得隐藏 context deadline，也不得引入无界 retry。
 - 迁移执行必须保持确定性顺序，并阻断重复版本，避免启动期重复执行。
 - v1.x 如新增性能声明，必须补充可复现 benchmark 或 live PostgreSQL evidence。
 
-## 17. Observability
+## 17. 可观测性
 
 - `postgresx` 只暴露 logger、metrics、clock 等 hook，不绑定具体观测后端。
 - 必须覆盖连接池、查询、事务、迁移和健康检查事件；事件字段不得包含明文 DSN、密码或 SQL 参数 Secret。
 - 指标名已由 TASK-PG-003 冻结为 dotted `postgresx.*` 命名，后续变更必须同步代码、contract、SPEC 与 TRACEABILITY。
 - 健康检查实现必须保持 `HealthChecker` 接口兼容，并保留 context 取消语义。
 
-## 18. Security
+## 18. 安全
 
 - Secret 输入只能来自调用方显式配置，模块内不得读取环境变量、配置文件或 Secret 文件。
 - 日志、错误、健康检查和指标字段必须使用脱敏后的 DSN 或安全标签。
 - SQL 参数不得进入默认日志字段；如调用方自定义 logger 记录参数，责任边界必须在调用方侧。
 - 错误归一化不能泄露认证材料、连接串或私有端点。
 
-## 19. CI Gate
+## 19. CI 门禁
 
 当前实现仓库 `/home/postgresx` 已作为 v1.0.0 release 验证：
 
@@ -436,7 +436,7 @@ postgresx/
 - `TRACEABILITY.md` 必须包含 `Task` 列，并覆盖 FR-001..FR-007 与 BR-001..BR-012。
 - `git diff --check` 必须通过。
 
-## 20. Upgrade Compatibility
+## 20. 升级兼容性
 - `/home/postgresx` 以 `v1.0.0` tag、GitHub release 和提交 `310a249e` 为当前发布基线。
 - 下游模块只允许依赖已实现的 `pkg/postgresx` 入口：显式 `Config`、连接池生命周期、SQL 执行、事务、迁移、健康检查、错误映射和可观测 hook。
 - 未来 v1.x 破坏性变更必须同步 SPEC、TRACEABILITY、Task、contracts 和 release evidence，不重新打开已关闭的 v1.0 阻断项。
@@ -452,7 +452,7 @@ postgresx/
 - 基座边界保持不变：`postgresx` 可以依赖 `pgx`，不得依赖业务域、入口仓库或数据域仓库。
 - Release evidence 必须支持 `GOWORK=off`，避免本地 workspace 掩盖模块依赖问题。
 
-## 21. Release DoD
+## 21. 发布 DoD
 
 - SPEC 保持 23 节结构，`Spec-Version` 使用 semver，且不包含模糊状态词。
 - `TRACEABILITY.md` 覆盖 FR-001..FR-007、BR-001..BR-012、TC-001..TC-008，并映射 TASK-PG-001..TASK-PG-003。
@@ -460,7 +460,7 @@ postgresx/
 - 本仓库 `git diff --check`、状态一致性检查、postgresx 规格 lint 和 postgresx traceability 检查通过。
 - TASK-PG-003 已关闭，v1.0.0 发布声明必须继续以 tag、release evidence、contract check 和真实 PostgreSQL integration 为依据。
 
-## 22. Open Questions
+## 22. 待解决问题
 ### Resolved
 
 | 问题 | 决策 |

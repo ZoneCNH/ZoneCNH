@@ -17,7 +17,7 @@
 
 ---
 
-## 2. Problem
+## 2. 问题与背景
 
 70+ 模块中有多个需要使用 Kafka（事件流、日志采集、跨域消息），各自封装会导致：
 
@@ -30,7 +30,7 @@
 
 ---
 
-## 3. Goals
+## 3. 目标
 
 - 提供统一的 `Producer` 封装，支持同步单条发送和批量发送。
 - 提供统一的 `Consumer` 封装，支持消费组、轮询和手动 offset 管理。
@@ -43,7 +43,7 @@
 
 ---
 
-## 4. Non-goals
+## 4. 非目标
 
 - 不做 Kafka 集群管理（由运维配置）
 - 不做消息路由（业务层决定 topic）
@@ -58,7 +58,7 @@
 
 ---
 
-## 5. Consumers
+## 5. 消费者
 
 | 消费者 | 使用方式 |
 |--------|----------|
@@ -70,7 +70,7 @@
 
 ---
 
-## 6. Functional Requirements
+## 6. 功能需求
 
 ### FR-001: Producer.Send
 
@@ -149,7 +149,7 @@ THEN 返回 HealthStatus{Ready: false, Live: false, Message: "..."}
 
 ---
 
-## 7. Business Rules
+## 7. 行为约束
 
 | 编号 | 规则 | 违反时 |
 | --- | --- | --- |
@@ -165,7 +165,7 @@ THEN 返回 HealthStatus{Ready: false, Live: false, Message: "..."}
 
 ---
 
-## 8. Interface Contract
+## 8. 接口契约
 
 ```go
 type Producer interface {
@@ -279,7 +279,7 @@ for {
 
 ---
 
-## 9. Data Model
+## 9. 数据模型
 
 ### 10.1 Message
 
@@ -320,7 +320,7 @@ type Codec interface {
 
 ---
 
-## 10. Config Schema
+## 10. 配置模式
 
 ```yaml
 kafkax:
@@ -350,7 +350,7 @@ kafkax:
 
 ---
 
-## 11. Error Handling
+## 11. 错误处理
 
 | 错误 | 调用方处理 | 模块处理 |
 |------|-----------|----------|
@@ -370,7 +370,7 @@ kafkax:
 
 ---
 
-## 12. Edge Cases
+## 12. 边界情况
 
 | 场景 | 预期行为 |
 |------|----------|
@@ -397,7 +397,7 @@ kafkax:
 
 ---
 
-## 13. Directory Structure
+## 13. 目录结构
 
 ```
 kafkax/
@@ -427,7 +427,7 @@ kafkax/
 
 ---
 
-## 14. Dependencies
+## 14. 依赖
 
 ### 15.1 go.mod
 
@@ -448,7 +448,7 @@ go 1.23
 
 ---
 
-## 15. Testing
+## 15. 测试
 
 ### 16.1 单元测试
 
@@ -563,7 +563,7 @@ Then 错误、日志和 trace 标签不包含完整 payload 或敏感片段。
 
 ---
 
-## 16. Performance Budget
+## 16. 性能预算
 
 | 操作                   | 目标      | 测量方式         |
 | ---------------------- | --------- | ---------------- |
@@ -575,7 +575,7 @@ Then 错误、日志和 trace 标签不包含完整 payload 或敏感片段。
 
 ---
 
-## 17. Observability
+## 17. 可观测性
 
 | 类型 | 名称 | 说明 |
 |------|------|------|
@@ -604,7 +604,7 @@ Then 错误、日志和 trace 标签不包含完整 payload 或敏感片段。
 
 ---
 
-## 18. Security
+## 18. 安全
 
 | 要求 | 实现方式 |
 |------|----------|
@@ -616,7 +616,7 @@ Then 错误、日志和 trace 标签不包含完整 payload 或敏感片段。
 
 ---
 
-## 19. CI Gate
+## 19. CI 门禁
 
 ### 20.1 通用 Gate
 
@@ -641,7 +641,7 @@ Then 错误、日志和 trace 标签不包含完整 payload 或敏感片段。
 
 ---
 
-## 20. Upgrade Compatibility
+## 20. 升级兼容性
 
 | 变更类型 | 版本升级 |
 |----------|----------|
@@ -656,7 +656,7 @@ Then 错误、日志和 trace 标签不包含完整 payload 或敏感片段。
 
 ---
 
-## 21. Release DoD
+## 21. 发布 DoD
 
 - [ ] 所有公共接口有 godoc 注释。
 - [ ] 所有公共类型有示例代码。
@@ -675,7 +675,7 @@ Then 错误、日志和 trace 标签不包含完整 payload 或敏感片段。
 
 ---
 
-## 22. Open Questions
+## 22. 待解决问题
 
 ### 23.1 1.0 候选基线非阻断确认
 

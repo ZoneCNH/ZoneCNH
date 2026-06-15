@@ -42,7 +42,7 @@
 - 领域纯净：公共模型中不得出现 transport、persistence 或 vendor schema tag。
 - 下游稳定：v1.0.0 后公共字段含义和时间语义需保持兼容。
 
-## 5. Non-Goals 与发布门禁
+## 5. 非目标与发布门禁
 
 - 不实现 transport adapter（HTTP、WebSocket、Kafka 生产者/消费者）
 - 不定义 provider DTO 或 vendor schema（Binance/OKX 响应格式属于 adapter/internal 层）
@@ -61,7 +61,7 @@
 | 质量门禁 | dirty/stale/time-invalid 数据有 fail-closed 测试。 |
 | 下游门禁 | `domain-exchange` 可采用 market data types。 |
 
-## 6. Consumers
+## 6. 消费者
 
 - 策略/回测引擎：通过 MarketEventEnvelope 消费质量门禁后的市场数据
 - `domain-exchange`：MarketReader 返回 domain-market 行情类型
@@ -69,7 +69,7 @@
 - 数据采集层（provider）：构造 domain-market 值对象并通过 DataProvider 暴露
 - 研究平台：查询历史 Bar/Tick 和 Instrument 信息
 
-## 7. Functional Requirements
+## 7. 功能需求
 
 | ID | 需求 | WHEN | THEN |
 |----|------|------|------|
@@ -88,7 +88,7 @@
 | FR-MKT-013 | domain-no-transport | 定义 domain struct | 不含 json/db/yaml/kafka tag；transport schema 属 DTO 层 |
 | FR-MKT-014 | domainx-boundary | 与 domainx 枚举归属 | Side 表达市场事件方向可保留；OrderType/OrderSide/OrderState 归 domainx |
 
-## 8. Business Rules
+## 8. 行为约束
 
 | ID | 规则 |
 |----|------|
@@ -99,7 +99,7 @@
 | BR-MKT-005 | stale/future 数据 fail-closed，DegradeReason + metrics 暴露，不可靠数据不静默进入策略 |
 | BR-MKT-006 | domain-market 仅表达行情语义，订单生命周期语义归 domainx |
 
-## 9. Interface Contract
+## 9. 接口契约
 
 ```go
 type DataProvider interface {
@@ -130,7 +130,7 @@ type MarketEventEnvelope struct {
 func (e MarketEventEnvelope) Validate() error
 ```
 
-## 10. Data Model
+## 10. 数据模型
 
 ```go
 type Tick struct {
@@ -230,7 +230,7 @@ type MarketDataQuality struct {
 }
 ```
 
-## 11. Config Schema
+## 11. 配置模式
 
 ```yaml
 domain_market:
@@ -246,7 +246,7 @@ domain_market:
     quality_violation: true
 ```
 
-## 12. Error Handling
+## 12. 错误处理
 
 | 错误 | 含义 | 调用方处理 |
 |------|------|-----------|
@@ -258,7 +258,7 @@ domain_market:
 | ErrQualityViolation | 数据质量不达标 | 查看 MarketDataQuality.DegradeReason |
 | ErrFutureData | EventTime 晚于容忍窗口 | 检查时钟同步 |
 
-## 13. Edge Cases
+## 13. 边界情况
 
 - Bar 的 High 恰好等于 Open（High >= max(Open,Close,Low) 边界）
 - OrderBook 无 Bid 或无 Ask（单边挂空）
@@ -269,7 +269,7 @@ domain_market:
 - OrderBook seq 不连续（gap）时的处理策略
 - 同一 Symbol 同一 Timestamp 收到多个 Tick
 
-## 14. Directory Structure
+## 14. 目录结构
 
 ```text
 module/domain-market/
@@ -280,7 +280,7 @@ module/domain-market/
   tasks/
 ```
 
-## 15. Dependencies
+## 15. 依赖
 
 - 允许：`kernel`（errors、contracts）
 - 允许：`decimalx`（Price/Qty/金额/费率）
@@ -290,7 +290,7 @@ module/domain-market/
 - 禁止：vendor DTO（Binance/OKX 响应格式）
 - 禁止：domain 执行域（domainx 的 OrderType/OrderState）
 
-## 16. Testing
+## 16. 测试
 
 - 单元测试：每个值对象 Validate 的 valid/invalid table tests
 - 质量门禁测试：MarketEventEnvelope.Validate、stale/future/recovered gate
@@ -310,7 +310,7 @@ module/domain-market/
 **TC-MKT-007:** stale data 被 fail-closed 拒绝。
 **TC-MKT-008:** future data 在容忍窗口外被拒绝。
 
-## 17. Performance Budget
+## 17. 性能预算
 
 | 指标 | 目标 |
 |------|------|
@@ -320,21 +320,21 @@ module/domain-market/
 | MarketEventEnvelope Validate | < 1μs |
 | FilterMacroPointsForBacktest（1000 点） | < 1ms |
 
-## 18. Observability
+## 18. 可观测性
 
 - Metrics：stale_data_rejected、future_data_rejected、quality_violation、data_freshness
 - MarketDataQuality.DegradeReason 暴露降级原因
 - 证据报告格式：JSON
 - 数据质量指标 Prometheus adapter 放 adapter 层，不在 domain 内
 
-## 19. Security
+## 19. 安全
 
 - 不读取密钥
 - 不连接远程服务
 - Fail-closed 默认策略：非法数据、时序错误、质量不达标均返回错误
 - Validate 引入后旧数据不通过时：提供 ValidateStrict/ValidateLegacy 分层，但策略入口必须 strict
 
-## 20. CI Gate
+## 20. CI 门禁
 
 - `GOWORK=off go test ./...`
 - `GOWORK=off go test -race ./...`
@@ -344,14 +344,14 @@ module/domain-market/
 - Lint：domain struct 禁止 tag；price/qty 禁止 float
 - `GOWORK=off make adoption-check`（如接入 xlib-standard）
 
-## 21. Upgrade Compatibility
+## 21. 升级兼容性
 
 - v1 值对象字段语义保持稳定
 - 新增枚举值为追加，不删除旧枚举
 - ValidateStrict/ValidateLegacy 可共存，v2 删除 Legacy
 - domainx 枚举迁移（OrderType/Side）为破坏性变更，须 deprecated alias + MIGRATION.md
 
-## 22. Release DoD
+## 22. 发布 DoD
 
 - [ ] SPEC Approved
 - [ ] 所有 FR 实现并测试
@@ -365,7 +365,7 @@ module/domain-market/
 - [ ] Version 更新为 v1.0.0
 - [ ] CHANGELOG.md、MIGRATION.md、release manifest 齐全
 
-## 23. Open Questions
+## 23. 待解决问题
 
 - Side 枚举归属：domain-market 仅表达市场事件方向，还是统一到 domainx？
 - 交易所 interval 映射表是否纳入 v1.1？
