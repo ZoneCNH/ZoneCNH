@@ -1,30 +1,17 @@
-# transportx Specification
+# transportx 规格
 
 - Status: Approved
 - Spec-Version: v1.2.0
 - Last-Updated: 2026-06-14
-- Owner: ZoneCNH
-- Version: v1.2.0
 - Layer: 基座 · 传输契约
-- Repository: https://github.com/ZoneCNH/transportx
-- Related-Modules: contracts, observex, resiliencx, configx, natsx, kafkax, redisx, postgresx
+- Module-Version: v1.2.0
+- Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `contracts`, `observex`, `resiliencx`, `configx`, `natsx`, `kafkax`, `redisx`, `postgresx`
 
+> 公开投影 caveat：Status=Approved 与 100.0% 覆盖证据不等同于 factory-grade；机器事实层保持 factory=false。
 
+---
 
-## 1. Metadata
-
-| Field | Value |
-| --- | --- |
-| Module | transportx |
-| Domain | 基座 |
-| Layer | 传输契约 · 应用通信底座 |
-| Version | v1.2.0 |
-| Status | Approved |
-| Last Updated | 2026-06-14 |
-| Source of Truth | `module/transportx/SPEC.md` |
-| Traceability | `module/transportx/TRACEABILITY.md` |
-
-## 2. Summary
+## 1. 摘要
 
 `transportx` 是 ZoneCNH 的统一应用通信层（应用通信防腐层），负责服务之间、模块之间、服务器之间的通信语义。它为跨 runtime 与 adapter 的传输层建立稳定契约，定义 Envelope、Endpoint、DeliveryReceipt、ServiceIdentity、QoS、Codec、RPC、EventBus、Stream、六通信平面、Deadline、Retry Safety、Error Mapping、Trace Propagation、Auth、Idempotency、Delivery Semantics、DLQ、Replay、Audit 与 Adapter Contract。
 
@@ -48,7 +35,7 @@ x.go / service adapter 负责"运行时接哪种实现"
 | Admin | HTTP / gRPC health | config、health、ops command | auth、rate limit、audit |
 | Audit | append-only log / Kafka / JetStream | risk reject、fill、settlement | 不可静默丢、可重放、可对账 |
 
-## 3. Problem Statement
+## 2. Problem Statement
 
 Foundation 模块已有 `contracts` 用于跨域端口、事件协议和 DTO 契约，但传输层仍缺少独立规格。缺口集中在以下方面：
 
@@ -66,7 +53,7 @@ Foundation 模块已有 `contracts` 用于跨域端口、事件协议和 DTO 契
 - 中间件顺序没有强制 redaction 先于 logging，存在日志泄漏风险。
 - CI 与发布 DoD 没有把 transport conformance 纳入门禁。
 
-## 4. Goals
+## 3. Goals
 
 - 定义传输 Envelope、Endpoint、PayloadRef、Header 与 DeliveryReceipt。
 - 定义 QoS 五级分类：REALTIME_BEST_EFFORT、DURABLE_EVENT、COMMAND_IDEMPOTENT、COMMAND_STRICT、AUDIT。
@@ -81,7 +68,7 @@ Foundation 模块已有 `contracts` 用于跨域端口、事件协议和 DTO 契
 - 定义错误分类、幂等冲突、timeout、deadline、clock skew 与 saturation 映射。
 - 定义 conformance test harness、CI gate 与 release evidence。
 
-## 5. Non-Goals
+## 4. Non-Goals
 
 ### 5.1 What transportx OWNS
 
@@ -123,7 +110,7 @@ Foundation 模块已有 `contracts` 用于跨域端口、事件协议和 DTO 契
 - 不提供通用 scheduler、service mesh 或 API gateway。
 - 不保存 payload 明文归档；payload storage 由调用方或 adapter 管理。
 
-## 6. Consumers
+## 5. Consumers
 
 | Consumer | Role | Typical Operations |
 | --- | --- | --- |
@@ -135,7 +122,7 @@ Foundation 模块已有 `contracts` 用于跨域端口、事件协议和 DTO 契
 | conformance suite | 验证 transportx 实现合规性 | RunLifecycle, RunEnvelope, RunControlPlane |
 | domain modules (间接) | 通过 contracts port 调用，不直接依赖 transportx | 业务操作 |
 
-## 7. Functional Requirements
+## 6. Functional Requirements
 
 ### FR-001: Envelope Schema
 
@@ -283,7 +270,7 @@ AND MUST NOT use `github.com/ZoneCNH/xlib-standard`
 WHEN `go.mod` declares the module name
 THEN it MUST be `module github.com/ZoneCNH/transportx`
 
-## 8. Business Rules
+## 7. Business Rules
 
 | Rule | Statement | Error on Violation |
 | --- | --- | --- |
@@ -323,7 +310,7 @@ THEN it MUST be `module github.com/ZoneCNH/transportx`
 | NFR-011 | Reliability | Dead-letter retains trace context | TC-013: DLQ trace context verification |
 | NFR-012 | Compatibility | Breaking schema change requires major version bump | TC-025: SchemaRegistry compatibility test |
 
-## 9. Interface Contracts
+## 8. Interface Contracts
 
 | Interface | Responsibility | Required Methods |
 | --- | --- | --- |
@@ -344,7 +331,7 @@ THEN it MUST be `module github.com/ZoneCNH/transportx`
 
 Interfaces must accept context, ServiceIdentity and immutable request structures. Implementations must return DeliveryReceipt or typed transport error.
 
-## 10. Data Model
+## 9. Data Model
 
 | Model | Required Fields |
 | --- | --- |
@@ -363,7 +350,7 @@ Interfaces must accept context, ServiceIdentity and immutable request structures
 | Topic | `name`, `domain`, `version`, `entity`, `action`, `qosClass`, `schemaRef`, `owner` |
 | Method | `name`, `service`, `version`, `inputSchema`, `outputSchema`, `requiredDeadline`, `retryClass`, `requiresIdempotency` |
 
-## 11. Config Schema
+## 10. Config Schema
 
 | Config Key | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -383,7 +370,7 @@ Interfaces must accept context, ServiceIdentity and immutable request structures
 
 All configuration consumed through `configx` immutable config interface.
 
-## 12. Error Handling
+## 11. Error Handling
 
 | Error Code | Trigger | Required Response |
 | --- | --- | --- |
@@ -413,7 +400,7 @@ All configuration consumed through `configx` immutable config interface.
 
 Every error must include stable code, redacted message, retry classification, endpoint reference and trace id.
 
-## 13. Edge Cases
+## 12. Edge Cases
 
 | Case | Required Behavior |
 | --- | --- |
@@ -431,7 +418,7 @@ Every error must include stable code, redacted message, retry classification, en
 | DLQ poison message loop | After maxAttempts, park in DLQ and stop auto-retry; require manual runbook. |
 | SECRET data in audit path | Fail closed: reject audit append if redaction version is missing. |
 
-## 14. Directory Structure
+## 13. Directory Structure
 
 | Path | Purpose |
 | --- | --- |
@@ -464,7 +451,7 @@ Every error must include stable code, redacted message, retry classification, en
 
 Multi-module layout: root `go.mod` (core), each `adapters/*/go.mod` separate module. `go.work` for local dev/CI. Core does not import adapters.
 
-## 15. Dependency Rules
+## 14. Dependency Rules
 
 | Dependency | Rule |
 | --- | --- |
@@ -476,7 +463,7 @@ Multi-module layout: root `go.mod` (core), each `adapters/*/go.mod` separate mod
 | domain modules | domain modules may call transportx through ports; transportx must not import domain packages. |
 | adapters/* | each adapter module MAY import transportx/core; transportx/core MUST NOT import any adapter. |
 
-## 16. Testing
+## 15. Testing
 
 ### 16.1 Acceptance Criteria
 
@@ -539,7 +526,7 @@ Multi-module layout: root `go.mod` (core), each `adapters/*/go.mod` separate mod
 | **TC-024:** Data classification redaction | FR-024, AC-024 | `go test ./conformance/... -run TestDataClassRedaction` |
 | **TC-025:** SchemaRegistry compatibility | FR-025, AC-025 | `go test ./conformance/... -run TestSchemaCompatibility` |
 
-## 17. Performance Budget
+## 16. Performance Budget
 
 | Budget | Target |
 | --- | --- |
@@ -554,7 +541,7 @@ Multi-module layout: root `go.mod` (core), each `adapters/*/go.mod` separate mod
 
 Implementations must report benchmark hardware, runtime version and adapter type in release evidence.
 
-## 18. Observability
+## 17. Observability
 
 | Signal | Required Fields |
 | --- | --- |
@@ -565,7 +552,7 @@ Implementations must report benchmark hardware, runtime version and adapter type
 
 Metrics labels must use bounded cardinality fields. Payload/unredacted headers prohibited. SECRET data must never appear in any output.
 
-## 19. Security Requirements
+## 18. Security Requirements
 
 | Requirement | Control |
 | --- | --- |
@@ -579,7 +566,7 @@ Metrics labels must use bounded cardinality fields. Payload/unredacted headers p
 | Mode gate | REPLAY and DRY_RUN modes prevent real order submission and external side effects. |
 | Secret-free audit | AuditRecord must not contain SECRET-classified fields. |
 
-## 20. CI Gate
+## 19. CI Gate
 
 | Gate | Evidence | Blocks Release |
 | --- | --- | --- |
@@ -596,7 +583,7 @@ Metrics labels must use bounded cardinality fields. Payload/unredacted headers p
 | TX-GATE-011 | Conformance: Execution Mode, Outbox/Inbox, Audit Plane tests | Yes |
 | TX-GATE-012 | Conformance: Data Classification, SchemaRegistry tests | Yes |
 
-## 21. Upgrade Compatibility
+## 20. Upgrade Compatibility
 
 | Step | Action |
 | --- | --- |
@@ -621,7 +608,7 @@ WHEN a breaking schema change is detected:
 5. Adapter implementations support both old and new schema versions during migration window (minimum one release cycle).
 6. After migration window, old schema version is deprecated (not removed) for one additional release cycle.
 
-## 22. Release DoD
+## 21. Release DoD
 
 | Requirement | Evidence |
 | --- | --- |
@@ -637,7 +624,7 @@ WHEN a breaking schema change is detected:
 | NFR verified | NFR-001 through NFR-012 verification evidence collected |
 | Release published | git tag, changelog, release notes reference evidence |
 
-## 23. Open Questions
+## 22. Open Questions
 
 | # | Question | Status |
 | --- | --- | --- |
@@ -645,6 +632,14 @@ WHEN a breaking schema change is detected:
 | OQ-2 | What durable store backs control-plane audit records and DLQ? | Deferred to implementation |
 | OQ-3 | Should SchemaRegistry use standalone service or embedded library? | Embedded library for v1.x; standalone deferred |
 | OQ-4 | Protobuf codec: v1.2.0 or v1.3.0? | Defer to v1.3.0 (v1.2.0 released with §5 boundary + FR-026) |
+
+## 23. 变更历史
+
+| 日期 | 版本 | 变更内容 | 作者 |
+|------|------|----------|------|
+| 2026-06-14 | v1.2.0 | 初始版本：统一传输契约，六通信平面 | ZoneCNH |
+
+---
 
 ## Appendix A: Glossary
 

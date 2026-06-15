@@ -1,12 +1,15 @@
-# domain-market v1.0.0 Spec
+# domain-market 规格
 
 - Status: Approved
 - Spec-Version: v1.0.0
-Module-Version: v0.1.0 -> v1.0.0
-Layer: L2.5 领域共享
-Repository: https://github.com/ZoneCNH/domain-market
-Source-Plan: /home/zone/Downloads/0615/ZoneCNH-v1.0.0-goal-execution-plans/domain-market-v1.0.0-goal-execution-plan.md
 - Last-Updated: 2026-06-15
+- Layer: L2.5 领域共享
+- Module-Version: v1.0.0
+- Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `kernel`, `decimalx`
+
+> 公开投影 caveat：Status=Approved 与 100.0% 覆盖证据不等同于 factory-grade；机器事实层保持 factory=false。
+
+---
 
 ## 1. 范围
 
@@ -368,3 +371,13 @@ module/domain-market/
 - 交易所 interval 映射表是否纳入 v1.1？
 - 深度增量 merge helper 是否纳入 v1.1？
 - 数据质量指标 Prometheus adapter 是否在 adapter 层实现？
+
+---
+
+---
+
+**变更历史**
+
+| 日期 | 版本 | 变更内容 | 作者 |
+|------|------|----------|------|
+| 2026-06-15 | v1.0.0 | 初始版本：L2.5 市场数据领域模型与质量门禁 | ZoneCNH |
