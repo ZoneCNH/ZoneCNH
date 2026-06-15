@@ -440,6 +440,17 @@ node scripts/gc-scan.mjs --json   # JSON 输出
 node scripts/check.mjs            # 验证 Harness 配置完整性
 ```
 
+## 待办基础设施优化（2026-06-15 worktree 会话）
+
+> 以下 4 项需要修改 `.github/workflows/` 或 `.claude/hooks/` 代码，已分析待后续 PR 实现。
+
+| # | 项 | 文件 | 方案 |
+|:---:|------|------|------|
+| O5 | CI diff 感知 | `.github/workflows/docs-ci.yml` | 各 job 增加 `if: steps.filter.outputs.module == 'true'` 条件，仅当 `module/**` 变更时跑 spec-lint/traceability |
+| O8 | CI 死锁 | `.github/workflows/docs-ci.yml` | docs-only PR (`*.md` only) 自动 reduce 到 3 个必须 job（markdownlint + link-check + audit），其余 skip |
+| O10 | Hook 合并 | `.claude/hooks/pre-tool-check.mjs` | 合并 edit-guard + count-guard 为一个 `pre-edit-check.mjs`，PreToolUse 从 3 个减到 2 个 |
+| O6 | 自动影响分析 | `scripts/impact-analyze.sh` | 输入 `git diff --name-only` → 输出需同步的对齐文档列表（基于引用关系图） |
+
 ## 成熟度路线图
 
 | 级别 | 名称 | 指标 | 状态 |
