@@ -162,7 +162,20 @@ AND MUST NOT use `github.com/ZoneCNH/xlib-standard`
 WHEN `go.mod` declares the module name
 THEN it MUST be `module github.com/ZoneCNH/flowx`
 
+### Acceptance Criteria
 
+| AC 编号 | 对应 FR | 验收条件 |
+| ------- | ------- | -------- |
+| AC-FLX-001 | FR-001 | Pipeline DAG 定义 Source/Transform/Window/Sink 四类节点；检测循环依赖并在创建时报错 |
+| AC-FLX-002 | FR-002 | Source 支持 Kafka/NATS/gRPC/WebSocket/CSV 五种数据源类型；Source 声明输出数据类型 |
+| AC-FLX-003 | FR-003 | Transform 支持 Filter/Map/FlatMap/KeyBy/Join/Enrich 操作；函数签名为 `func(ctx, T) (U, error)`；Filter 返回 false 时丢弃数据 |
+| AC-FLX-004 | FR-004 | Window 支持 Tumbling/Sliding/Session 三种类型；聚合函数包含 Count/Sum/Avg/Min/Max/First/Last；触发策略基于事件时间+watermark+lateness |
+| AC-FLX-005 | FR-005 | Sink 支持 Kafka/NATS/gRPC/InMemory/CSV 五种类型；返回 DeliveryReceipt（at-least-once）；至少一个 Sink 标注为 primary |
+| AC-FLX-006 | FR-006 | 数据路由支持 symbol/exchange/dataType/自定义 key 分流；路由规则变更不丢数据（drain old → apply new） |
+| AC-FLX-007 | FR-007 | 背压策略 Block/Drop/Spill 正确执行；触发时 emit `flowx.backpressure` metric；Spill 磁盘满降级为 Drop |
+| AC-FLX-008 | FR-008 | Pipeline 按拓扑顺序启动（Source→Transform→Window→Sink）；启动失败回滚；支持 Pause/Resume/Stop |
+| AC-FLX-009 | FR-009 | 热更新执行 Drain-Then-Apply；热更新期间数据不丢不重（offset checkpoint） |
+| AC-FLX-010 | FR-010 | README H1 为 `# flowx`；Go module path 为 `github.com/ZoneCNH/flowx`；go.mod 声明 `module github.com/ZoneCNH/flowx` |
 
 ## 8. Business Rules
 

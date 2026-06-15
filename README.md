@@ -18,7 +18,7 @@ Go 🐹 (主要) · Rust 🦀 (底层) · Python 🐍 (脚本/数据) · TypeScr
 >
 > 🧱 Foundation 公开规格、依赖矩阵、执行跟踪与 ADR → **[module/](./module/)**
 >
-> 📋 19 个 Foundation 模块规格，另含 5 个 L2.5 领域共享规划/基线规格（不作 release/factory 声明） → **[module/](./module/)**
+> 📋 19 个基座 Foundation 模块规格，另含 5 个 L2.5 领域共享规划/基线规格（L2.5 不作整体 release/factory 声明） → **[module/](./module/)**
 >
 > 🧭 Spec 治理模板、生命周期、追溯与评分规则 → **[docs/governance/](./docs/governance/)**
 >
@@ -41,7 +41,7 @@ L1 测试: testkitx (test-only)
 基座扩展: redisx / kafkax / natsx / postgresx / taosx / ossx / clickhousex / contracts / transportx
       │
       ▼
-L2.5: domainx / decimalx / domain-market / domain-macro / domain-exchange (v1.0.0 执行计划；设计基线可用，release / factory-grade 待补证)
+L2.5: domainx / decimalx / domain-market / domain-macro / domain-exchange (v1.0.0 执行计划；domainx v1.0.1 release 已对账；factory-grade 仍待补证)
       │
       ▼
 业务流: 数据域 → 分析域 ↔ 决策域 → 执行域
@@ -65,16 +65,18 @@ L2.5: domainx / decimalx / domain-market / domain-macro / domain-exchange (v1.0.
 | `domain-macro` | v0.1.0 | v1.0.0 | no-lookahead 与精度 ADR 待冻结 | [module/domain-macro](module/domain-macro/goal.md) |
 | `domain-exchange` | v0.1.0 | v1.0.0 | Exchange SPI 待在上游共享模型后冻结 | [module/domain-exchange](module/domain-exchange/goal.md) |
 
-成熟度口径：5/5 已有 v1.0.0 Draft Spec / Traceability / Plan 基线；0/5 完成 v1.0.0 release、EXT CI 与 factory-grade 门禁。该层当前可作为 Phase 0 设计依赖推进，但不能宣告 factory-grade adoption。
+成熟度口径：5/5 已有 v1.0.0 Draft Spec / Traceability / Plan 基线；1/5（domainx v1.0.1）完成 release 对账，0/5 完成 EXT CI 与 factory-grade 门禁。该层当前可作为 Phase 0 设计依赖推进，但不能宣告 factory-grade adoption。
 
-依赖顺序：`decimalx` -> `domainx` -> `domain-market` / `domain-macro` -> `domain-exchange`。这里的 v1.0.0 是文档 / Goal execution baseline，用于锁定目标范围与依赖顺序；不代表各独立模块仓库已经完成 API freeze、CI release gate、外部 CI artifact、adoption gate、v1.0.0 git tag 或 GitHub Release。`domainx` 已归入 L2.5 领域共享层，不计入基座组件数。
+依赖顺序：`decimalx` -> `domainx` -> `domain-market` / `domain-macro` -> `domain-exchange`。这里的 v1.0.0 是文档 / Goal execution baseline，用于锁定目标范围与依赖顺序；除 `domainx` 已观测并对账 GitHub Release/tag v1.0.1 外，不代表各独立模块仓库已经完成 API freeze、CI release gate、外部 CI artifact、adoption gate、v1.0.0 git tag 或 GitHub Release。
+
+`domainx` 已归入 L2.5 领域共享层；机器事实层将其作为 L2.5 模块单独计入 20-module projection，不并入 19 个基座组件数。
 
 ## 📦 核心项目
 
 ### 基座 · 基础设施
 - [xlib-standard](https://github.com/ZoneCNH/xlib-standard) — 标准事实源、Go Reference Template（Generator/Harness/Evidence 已拆分至 xlib-harness / xlib-evidence）；不作为运行时 import 依赖 `公开`
-- [xlib-harness](https://github.com/ZoneCNH/xlib-harness) — 模块生成器与门禁执行器：generate/scaffold、spec-lint、boundary-check、traceability-gate `公开`
-- [xlib-evidence](https://github.com/ZoneCNH/xlib-evidence) — 证据收集与发布运行时：collect-coverage、generate-manifest、validate-manifest、report `公开`
+- [xlib-harness](https://github.com/ZoneCNH/xlib-harness) — 模块生成器与门禁执行器：generate/scaffold、spec-lint、boundary-check、traceability-gate；release=false/factory=false：未发公开 git tag / GitHub Release `公开`
+- [xlib-evidence](https://github.com/ZoneCNH/xlib-evidence) — 证据收集与发布运行时：collect-coverage、generate-manifest、validate-manifest、report；release=false/factory=false：未发公开 git tag / GitHub Release `公开`
 - [kernel](https://github.com/ZoneCNH/kernel) — L0 标准库扩展原语（error/time/context/lifecycle/health/sync） `公开`
 - [configx](https://github.com/ZoneCNH/configx) — 显式配置加载、多源合并、StrictDecode、SecretString 脱敏、Provenance 追踪与 EffectiveConfigHash `公开`
 - [observex](https://github.com/ZoneCNH/observex) — vendor-neutral 日志、指标、追踪、健康与脱敏契约 `公开`
@@ -99,13 +101,13 @@ L2.5: domainx / decimalx / domain-market / domain-macro / domain-exchange (v1.0.
 
 ### 基座 · 契约与传输
 
-- [contracts](https://github.com/ZoneCNH/contracts) — 跨域稳定端口、事件协议与 DTO 契约 `公开`
-- [transportx](https://github.com/ZoneCNH/transportx) — 应用通信底座规格基线（Envelope/Endpoint、ServiceIdentity、QoS、Codec、RPC、EventBus、Stream、Outbox/Inbox、Audit Plane、Data Classification、SchemaRegistry 与 conformance gates） `公开`
+- [contracts](https://github.com/ZoneCNH/contracts) — 跨域稳定端口、事件协议与 DTO 契约；release=false/factory=false：源仓库仍需 cross-repo PR / git tag / GitHub Release 证据 `公开`
+- [transportx](https://github.com/ZoneCNH/transportx) — 应用通信底座规格基线（Envelope/Endpoint、ServiceIdentity、QoS、Codec、RPC、EventBus、Stream、Outbox/Inbox、Audit Plane、Data Classification、SchemaRegistry 与 conformance gates）；release=false/factory=false：source repo 尚待 cross-repo PR / git tag / GitHub Release 证据 `公开`
 
 ### L2.5 · 领域共享层
 
 - [decimalx](https://github.com/ZoneCNH/decimalx) — 高精度十进制类型（Decimal/Price/Qty/Ratio/Money） `公开`
-- [domainx](https://github.com/ZoneCNH/domainx) — 领域共享值对象：Order/Position/Trade/Portfolio/ExecutionReport 枚举与类型 `公开`
+- [domainx](https://github.com/ZoneCNH/domainx) — 领域共享值对象：Order/Position/Trade/Portfolio/ExecutionReport 枚举与类型；L2.5 design baseline；公开 v1.0.1 GitHub Release/tag 已观测并已对账为 release=true；factory=false until L2.5 adoption / factory evidence archived `公开`
 - [domain-market](https://github.com/ZoneCNH/domain-market) — 市场数据域模型（Tick/Quote/Bar/OrderBook） `公开`
 - [domain-macro](https://github.com/ZoneCNH/domain-macro) — 宏观经济领域共享模型：国家/地区/指标/发布日历、MacroPoint/MacroState `公开`
 - [domain-exchange](https://github.com/ZoneCNH/domain-exchange) — 交易域模型（VenueAdapter 13 方法接口） `公开`

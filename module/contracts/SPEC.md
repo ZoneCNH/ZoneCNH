@@ -220,19 +220,6 @@ THEN it MUST be `module github.com/ZoneCNH/contracts`
 
 ---
 
-
-## Acceptance Criteria Registry
-
-| AC ID | FR 引用 | 验收标准 | 验证方式 |
-|-------|---------|----------|----------|
-| AC-001 | FR-001 | 验收标准 TC-001 | unit test |
-| AC-002 | FR-002 | 验收标准 TC-002 | unit test |
-| AC-003 | FR-003 | 验收标准 TC-003 | unit test |
-| AC-004 | FR-004 | 验收标准 TC-004 | unit test |
-| AC-005 | FR-005 | 验收标准 TC-005 | unit test |
-| AC-006 | FR-006 | 验收标准 TC-006 | unit test |
-| AC-007 | FR-007 | 验收标准 TC-008 | unit test |
-
 ## 8. Business Rules
 
 | 编号   | 规则                                                           | 违反后果 |
@@ -710,3 +697,15 @@ AND `go.mod` 声明 `module github.com/ZoneCNH/contracts`
 - 是否需要定义跨域的命令接口（如 `OrderCommand`、`RiskCommand`）？
 - 事件版本是否需要包含在 Event 接口中（如 `EventVersion()`）？
 - 是否需要支持事件 schema registry（集中管理事件格式演进）？
+
+## Appendix A: Acceptance Criteria Registry
+
+| AC ID | FR 引用 | 验收标准 | 验证方式 |
+|-------|---------|----------|----------|
+| AC-001 | FR-001 | 验收标准 TC-001 | unit test |
+| AC-002 | FR-002 | 验收标准 TC-002 | unit test |
+| AC-003 | FR-003 | 验收标准 TC-003 | unit test |
+| AC-004 | FR-004 | 验收标准 TC-004 | unit test |
+| AC-005 | FR-005 | 验收标准 TC-005 | unit test |
+| AC-006 | FR-006 | 验收标准 TC-006 | unit test |
+| AC-007 | FR-007 | 验收标准 TC-008 | unit test |

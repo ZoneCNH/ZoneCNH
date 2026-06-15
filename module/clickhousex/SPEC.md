@@ -17,6 +17,9 @@
 - Repository: [github.com/ZoneCNH/clickhousex](https://github.com/ZoneCNH/clickhousex)
 - Related: [CONSTITUTION.md](../../CONSTITUTION.md), [ARCHITECTURE.md](../../ARCHITECTURE.md), [kernel](../kernel/SPEC.md), [observex](../observex/SPEC.md)
 
+> 公开投影 caveat：Status=Approved 仅表示 SPEC/TRACEABILITY/TASKS 基线闭合；机器事实层仍为 release=false/factory=false。
+> BLK-003（公开 GitHub Release 未发布）关闭前不得宣告 release/factory。
+
 ---
 
 ### 1.1 变更历史

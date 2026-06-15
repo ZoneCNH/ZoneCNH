@@ -15,6 +15,7 @@ Source: module/contracts/SPEC.md
 | FR-004 | Topic 常量 — 全局唯一、点分命名 | AC-FR-003: Topic 无重复，命名合规 | TC-004 | TASK-CONTRACTS-002 | Pending |
 | FR-005 | DTO 契约 — JSON tag snake_case、不可变、版本演进 | AC-FR-004: JSON round-trip + 不可变性 | TC-002, TC-007 | TASK-CONTRACTS-002 | Pending |
 | FR-006 | Breaking Change 检测 — 接口/DTO 变更感知与版本升级 | AC-FR-005: breaking change 检测通过 | TC-003 | TASK-CONTRACTS-003 | Pending |
+| FR-007 | Module Identity — README H1 与 go.mod module path 必须为 contracts | AC-007: Module Identity | TC-008 | TASK-CONTRACTS-005 | Pending |
 
 ## §2 业务规则追溯（BR）
 
@@ -55,6 +56,7 @@ Source: module/contracts/SPEC.md
 | TC-005 | FR-003 | 单元测试 | Event 接口完整性（所有 Event 实现满足接口） |
 | TC-006 | BR-004 | 单元测试 | 端口接口方法数检查（3-5 方法） |
 | TC-007 | FR-005, BR-005 | 单元测试 | DTO 不可变性检查 |
+| TC-008 | FR-007 | 单元测试 | Module Identity（README H1 与 go.mod module 声明） |
 
 ## §5 全局 AC 注册表
 
@@ -81,10 +83,10 @@ Source: module/contracts/SPEC.md
 
 | 类别 | 总数 | 已覆盖 | 覆盖率 | 状态 |
 | --- | --- | --- | --- | --- |
-| FR | 6 | 6 | 100% | ✅ |
+| FR | 7 | 7 | 100% | ✅ |
 | BR | 10 | 10 | 100% | ✅ |
 | NFR | 8 | 8 | 100% | ✅ |
-| TC | 7 | 7 | 100% | ✅ |
+| TC | 8 | 8 | 100% | ✅ |
 | AC | 16 | 16 | 100% | ✅ |
 | Task | 5 | 5 | — | All Pending |
 
@@ -106,5 +108,5 @@ Source: module/contracts/SPEC.md
 | AC-004 | FR-004 | TC-004 | Covered by TC-004 test evidence |
 | AC-005 | FR-005 | TC-005 | Covered by TC-005 test evidence |
 | AC-006 | FR-006 | TC-003 | Covered by TC-003 test evidence |
-| AC-007 | FR-003 | TC-005 | Covered by TC-005 test evidence |
+| AC-007 | FR-007 | TC-008 | Covered by TC-008 test evidence |
 | AC-008 | FR-003 | TC-005 | Covered by TC-005 test evidence |

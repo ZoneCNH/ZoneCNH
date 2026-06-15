@@ -31,7 +31,7 @@ Source: `goal.md` 1.0 发布基线 + `SPEC.md` Draft v1.0.0 + `/home/natsx` comm
 | BR-008 | 错误不含消息内容 | 错误/日志不包含 payload 内容，防止敏感数据泄露 | TC-011 | TASK-NATSX-011 | ✅ |
 | BR-009 | Subscription 资源释放 | Close/Drain 时正确释放资源，无泄漏 | TC-001 | TASK-NATSX-001 | ✅ |
 | NFR-001 | Security redaction | credentials/token/连接串敏感片段脱敏 | TC-011 | TASK-NATSX-011 | ✅ Config/env sanitize and live-test output without secret values covered |
-| NFR-002 | TLS/auth | TLS 与认证配置可表达且不泄漏凭据 | TC-011 | TASK-NATSX-011 | ✅ Config expression/sanitize, canonical auth env vars, and local auth live test with redacted credentials covered; production TLS endpoint separate |
+| NFR-002 | TLS/auth | TLS 与认证配置可表达且不泄漏凭据 | TC-011 | TASK-NATSX-011 | ✅ Config expression/sanitize, canonical auth env vars, and local auth live test with redacted credentials covered; production TLS closure packet remains external release blocker `BLK-002` |
 | NFR-003 | Performance budget | publish/request/JetStream 延迟预算有 benchmark | TC-012 | TASK-NATSX-012 | ✅ Publish/request/JetStream benchmarks plus embedded request/publish/fetch SLO assertions and handler latency metric covered |
 | NFR-004 | Layer boundary | 不依赖 kafkax，不替代 RPC/治理框架 | TC-013 | TASK-NATSX-013 | ✅ Dependency boundary clean |
 | NFR-005 | Release evidence | SPEC、goal、traceability、matrix evidence 一致 | TC-014 | TASK-NATSX-014 | ✅ Documentation and executable evidence reconciled |
@@ -81,7 +81,7 @@ Source: `goal.md` 1.0 发布基线 + `SPEC.md` Draft v1.0.0 + `/home/natsx` comm
 | TASK-NATSX-007 | NFR-007 | Complete envelope/header metadata round-trip coverage |
 | TASK-NATSX-008 | NFR-008 | Complete config default/sanitize/validation plus canonical/legacy env alias precedence coverage |
 | TASK-NATSX-009 | NFR-009 | Complete repair-slice canonical metrics and secret-safe error/log evidence; distributed tracing is not claimed by this matrix |
-| TASK-NATSX-011 | NFR-001, NFR-002, BR-008 | Complete repair-slice sanitize/config evidence plus local auth live integration passed with redacted local config; production TLS endpoint remains separate |
+| TASK-NATSX-011 | NFR-001, NFR-002, BR-008 | Complete repair-slice sanitize/config evidence plus local auth live integration passed with redacted local config; production TLS closure packet remains separate release blocker `BLK-002` in `release/trust/foundation-maturity-evidence-matrix-20260615.md` |
 | TASK-NATSX-012 | NFR-003 | Complete repair-slice SLO assertions for embedded request, JetStream publish/fetch, and handler latency; production benchmark gate still separate |
 | TASK-NATSX-013 | NFR-004 | Dependency boundary check passed for forbidden ZoneCNH messaging/storage modules |
 | TASK-NATSX-014 | NFR-005 | Release evidence + CI gate: `README.md` quickstart/API overview, `CHANGELOG.md` v1.0.0, CI gate (build/test/vet/lint/secret scan), coverage >=80%, benchmark regression guard; `/home/natsx` evidence pinned to commit `393d148` |
@@ -137,4 +137,4 @@ Source: `goal.md` 1.0 发布基线 + `SPEC.md` Draft v1.0.0 + `/home/natsx` comm
 - `/home/ZoneCNH/module/natsx` has no Go source or executable tests; executable evidence lives in `/home/natsx/pkg/natsx`.
 - `/home/natsx` now has embedded NATS core/JetStream lifecycle, delivery, env loading, handler latency, canonical metric, secret-safe live auth, and SLO-smoke coverage, but this repair slice is not full release approval.
 - Examples import `pkg/natsx` and include embedded smoke tests, but they are scenario smoke evidence only; they do not close production SLO or formal release gates.
-- Remaining blockers: formal four-source 98+ arbiter, production benchmark threshold enforcement, production TLS endpoint, and higher-level consumer lifecycle/API integration gates.
+- Remaining blockers: formal four-source 98+ arbiter, production benchmark threshold enforcement, production TLS closure packet for `BLK-002`, and higher-level consumer lifecycle/API integration gates.
