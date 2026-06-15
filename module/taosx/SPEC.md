@@ -2,12 +2,12 @@
 
 - Status: Approved
 - Spec-Version: v1.0.1
-- Last-Updated: 2026-06-13
+- Last-Updated: 2026-06-16
 - Layer: L2 存储适配器
 - Module-Version: v1.0.1
 - Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `kernel`
 
-> 公开投影 caveat：Status=Approved 与 100.0% 覆盖证据不等同于 factory-grade；BLK-007（SPEC 67 / tasks 76）关闭前机器事实层保持 factory=false。
+> 公开投影 caveat：Status=Approved 与 100.0% 覆盖证据不等同于 factory-grade；BLK-007（SPEC ~77 / tasks 76）关闭前机器事实层保持 factory=false。
 
 ---
 
@@ -38,7 +38,17 @@ v1.0.1 保持 `pkg/taosx` 为公共运行时 API：默认驱动仍显式不可�
 - 不直接依赖 `configx`、`observex`、`resiliencx` 等横切模块；这些能力由调用方在边界外组合。
 - 不保证原始 SQL 的注入安全；`taosx` 只拒绝空 SQL，参数化和 SQL DSL 属于上层或具体驱动职责。
 
-## 4. 功能需求
+## 4. Consumers
+
+- `market-data` 采集层：通过 `WriteBatch`/`SchemalessWrite` 将 Tick/Bar/Kline 等行情数据写入 TDengine 超级表，利用高频写入吞吐优势。
+- `order-engine`：通过 `Exec`/`Query` 持久化订单执行报告和成交记录，支持历史订单查询。
+- `risk-engine`：通过 `Query` 读取历史行情和风控指标，支持回测和实时风控分析。
+- `factor-engine`：通过 `WriteBatch` 存储因子计算结果，通过 `Query` 读取历史因子值用于回溯。
+- `backtestx`：通过 `Query` 读取回测所需的历史行情、因子和宏观数据。
+- `observex` 适配器层：通过注入 `Metrics` 实现采集 `taosx_client_*` 指标，不通过直接依赖接入。
+- 上层 orchestration（`x.go`/`maestro`）：在启动时构造 `taosx.Client`，注入 TDengine driver 并将其注入下游模块。
+
+## 5. 功能需求
 
 以下功能需求定义 v1.0.1 必须稳定交付的 TDengine 适配器公共能力。每条 FR 包含 WHEN/THEN 行为规格和对应的验收标准 (AC) 与测试用例 (TC) 映射。
 
@@ -145,7 +155,7 @@ v1.0.1 保持 `pkg/taosx` 为公共运行时 API：默认驱动仍显式不可�
 | AC-TAO-009 | FR-009 | 首次关闭成功；重复关闭幂等返回 nil；关闭后操作返回 closed 错误 |
 | AC-TAO-010 | FR-010 | 未注入 Metrics 时零开销；注入后正确记录指标；指标名统一 `taosx_client_*` 前缀 |
 
-## 5. 行为约束
+## 6. 行为约束
 
 | ID | 约束 | 说明 |
 | --- | --- | --- |
@@ -156,7 +166,7 @@ v1.0.1 保持 `pkg/taosx` 为公共运行时 API：默认驱动仍显式不可�
 | BR-005 | 默认驱动必须显式不可用。 | 避免误导用户以为默认构造能连接真实 TDengine。 |
 | BR-006 | 真实集成测试必须显式 opt-in 且凭据脱敏。 | 只在 `TAOSX_INTEGRATION=1` 与 `integration` build tag 同时存在时运行；失败输出不得泄漏 DSN 或密码。 |
 
-## 6. 公共 API 契约
+## 7. 公共 API 契约与使用示例
 
 ```go
 type Client interface {
@@ -190,7 +200,7 @@ type Config struct {
 }
 ```
 
-## 7. 使用示例
+典型使用：
 
 ```go
 cfg := taosx.Config{
@@ -215,29 +225,49 @@ if err != nil {
 defer rows.Close()
 ```
 
-## 8. 验证要求
+## 8. CI Gate
 
-- `go test ./pkg/taosx`
-- `go test ./contracts`
-- `go test ./examples/...`
-- `go test ./...`
-- `go test -race ./pkg/taosx ./contracts`
-- `go test ./pkg/taosx -coverprofile=/tmp/taosx.cover`
-- `go tool cover -func=/tmp/taosx.cover`（`pkg/taosx` 覆盖率 100.0%）
-- `./scripts/check_boundary.sh`
-- `./scripts/check_contracts.sh`
-- `./scripts/check_dependency_diff.sh`
-- `TAOSX_INTEGRATION=1 go test -tags=integration ./pkg/taosx -run TestTDengineWebSocketIntegration -count=1`（使用本地 dev 配置注入环境变量，不输出凭据）
-- `git diff --check`
-- 边界检查必须确认核心包没有引入未批准的 Zone 模块依赖。
+| 门禁 | 命令 / 检查 | 阻断条件 |
+|------|-------------|----------|
+| 单元测试 | `go test ./pkg/taosx` | 任一测试失败 |
+| Race 检测 | `go test -race ./pkg/taosx ./contracts` | data race 检出 |
+| 覆盖率门禁 | `go test ./pkg/taosx -coverprofile=/tmp/taosx.cover` → `go tool cover -func=/tmp/taosx.cover` | `pkg/taosx` 覆盖率 < 100.0% |
+| 契约测试 | `go test ./contracts` | 契约违反 |
+| 示例测试 | `go test ./examples/...` | 示例不可运行 |
+| 全量测试 | `go test ./...` | 任一包失败 |
+| 静态分析 | `staticcheck ./...` | staticcheck 报错 |
+| 漏洞扫描 | `govulncheck ./...` | 已知漏洞检出 |
+| 边界检查 | `./scripts/check_boundary.sh` | 未批准 Zone 模块依赖引入 |
+| 契约合规 | `./scripts/check_contracts.sh` | 契约不符合 |
+| 依赖差异 | `./scripts/check_dependency_diff.sh` | 依赖漂移 |
+| 集成测试 (opt-in) | `TAOSX_INTEGRATION=1 go test -tags=integration ./pkg/taosx -run TestTDengineWebSocketIntegration -count=1` | env-gated，失败阻塞 release |
+| 格式检查 | `git diff --check` | 空白/格式违规 |
+| 凭据泄漏 | grep password/secret/token 失败输出 | 凭据泄露 |
 
-## 9. 数据模型
+## 9. 数据与错误模型
+
+### 数据模型
 
 核心数据模型包括 `Config`、`Statement`、`Query`、`Rows`、`Batch`、`Point`、`SchemalessPayload`、`WriteResult`、`HealthStatus` 和错误分类。所有模型由调用方显式构造，不在包内读取环境变量。
 
-## 10. 错误模型
+### 错误模型
 
 错误必须带操作名、分类和可脱敏上下文。配置错误归类为 validation，默认驱动错误归类为 unavailable，关闭后的操作归类为 closed，驱动透传错误必须保留原始 cause 供调用方诊断。
+
+## 10. Edge Cases
+
+- **空 SQL/Query/Batch**：`Exec(ctx, "")`、`Query(ctx, "")`、`WriteBatch(ctx, empty)` → 返回 validation error，不委托给驱动。
+- **驱动未注入时调用操作**：`Exec`/`Query`/`WriteBatch`/`SchemalessWrite` → 返回 unavailable 错误；`Health` → 返回 degraded 状态。
+- **ctx 已取消时调用**：操作必须检测 `ctx.Err()`，驱动委托前或委托中取消 → 返回 context error wrapped with operation name。
+- **WriteBatch 部分成功**：驱动写入 N 行中 M 行失败 (M < N) → WriteResult.RowsAffected = N-M，error 包含部分失败详情。
+- **SchemalessWrite 协议非法**：lines 格式不符合 InfluxDB Line Protocol 或 OpenTSDB Telnet → 返回 validation error。
+- **重复 Close**：第二次及后续 `Close(ctx)` 调用 → 幂等返回 nil，不 panic，不重复释放资源。
+- **Close 后操作**：`Close` 完成后调用任何 Client 方法 → 返回 closed 错误，操作名如 `taosx.Exec`。
+- **并发读写**：多个 goroutine 同时调用同一 Client 的 `Exec`/`Query`/`WriteBatch`/`SchemalessWrite` → 驱动必须线程安全；Client 层不做额外序列化。
+- **Config.RedactedDSN 脱敏**：RedactedDSN 不得包含密码明文；即使 Password 为空，输出也不应暗示凭据结构。
+- **TLS=true 但驱动不支持**：驱动在 `Open` 时检测 → 返回 configuration error，操作名 `taosx.New`。
+- **超时触发**：操作超过 `Config.Timeout` → ctx deadline exceeded，wrapped with operation name；不重试除非调用方注入 retry middleware。
+- **Config 零值字段**：`Normalize()` 后空 Name→`"taosx"`，空 DriverMode→`"websocket"`，零 Timeout→`5s`；Validate 在 Normalize 后执行。
 
 ## 11. 配置契约
 
@@ -247,41 +277,74 @@ defer rows.Close()
 
 `Client` 构造后可被并发调用。`Close` 必须幂等；关闭过程中不得产生 panic。关闭完成后，执行、查询、批量写入、schemaless 写入和健康检查必须返回可分类状态。
 
-## 13. 可观测性
+## 13. Performance Budget
+
+| 指标 | 目标 | 测量方法 |
+|------|------|----------|
+| `Config.Normalize` + `Validate` | < 5μs | benchmark 空配置到校验完成 |
+| `New()` 无驱动构造 | < 50μs | 不含网络调用，仅 struct 初始化 |
+| `Exec` 空 SQL 拒绝 | < 500ns | 不委托驱动，本地校验路径 |
+| `Query` 空查询拒绝 | < 500ns | 不委托驱动，本地校验路径 |
+| `WriteBatch` 空 batch 拒绝 | < 1μs | 不委托驱动，本地校验路径 |
+| `Health()` 默认驱动 | < 1μs | 无驱动时本地返回 degraded |
+| `Close()` 首次 | < 10ms | 驱动 Close 耗时取决于实现 |
+| `Close()` 重复（幂等） | < 500ns | 已关闭时快速返回 |
+| No-op Metrics 调用 | 零分配 | `BenchmarkNoopMetrics` 验证 `allocs/op = 0` |
+
+> 注：涉及驱动委托的操作（Exec/Query/WriteBatch/SchemalessWrite 成功路径）延迟由注入驱动决定，不在核心包性能预算内。核心包仅保证本地校验路径（空输入拒绝、默认驱动错误返回）的性能。
+
+## 14. 可观测性
 
 指标端口只记录低基数标签。`Metrics` 实现不得成为核心依赖；默认 no-op 实现必须零配置可用。健康检查状态不得包含明文密码或完整 DSN。
 
-## 14. 安全与脱敏
+## 15. 安全与脱敏
 
 错误、状态、日志、测试失败输出和示例均不得暴露真实密码、API key、私有 endpoint 或账户信息。示例凭据必须使用环境变量或占位符表达。
 
-## 15. 依赖边界
+## 16. 依赖边界
 
 核心包直接 Zone 依赖仅允许 `kernel`。真实 TDengine driver、指标后端、配置中心和重试组件都必须通过端口注入或测试边界接入。
 
-## 16. 兼容性
+## 17. Directory Structure
+
+```text
+module/taosx/
+  SPEC.md             # 本规格文档
+  goal.md             # Goal 驱动制品
+  TRACEABILITY.md     # 追溯矩阵 (FR/BR/NFR/TC/AC)
+  IMPLEMENTATION-PLAN.md
+  tasks/              # 任务拆分制品
+  contracts/          # 契约测试 (驱动合规验证)
+  examples/           # 可运行示例
+```
+
+## 18. 兼容性与迁移
+
+### 兼容性
 
 v1.0.1 不改变 v1.0.0 的公共构造入口和核心接口语义。新增字段、方法或错误分类必须保留旧调用方的编译兼容性，破坏性变更必须进入后续 major 版本。
 
-## 17. 迁移策略
+### 迁移策略
 
 从 v1.0.0 升级到 v1.0.1 的调用方只需重新运行验证命令。已注入自定义 driver、metrics 或测试适配器的项目不需要调整构造方式。
 
-## 18. 发布证据
+## 19. 发布证据与测试矩阵
+
+### 发布证据
 
 发布证据必须包含单元测试、契约测试、示例测试、race 检查、覆盖率报告、边界检查、依赖差异检查、Docker 或本地 TDengine 集成测试、`git diff --check` 输出和无凭据泄漏检查。
 
-## 19. 回滚策略
+### 测试矩阵
+
+测试矩阵覆盖配置归一化、校验失败、默认不可用驱动、注入驱动成功路径、错误分类、关闭幂等性、Rows 行为、批量写入、schemaless 写入、健康状态、指标回调和并发安全。
+
+## 20. 回滚策略
 
 如 v1.0.1 发布后出现回归，调用方可回退到 v1.0.0 tag。回滚不需要数据迁移，因为核心包不持久化状态、不写 schema、不管理连接池。
 
-## 20. 运行手册
+## 21. 运行手册
 
 运行方必须在外部配置 TDengine endpoint、database、username、password、timeout 和 driver。生产 driver 由调用方注入，核心包只负责端口契约、配置校验、错误分类和脱敏。
-
-## 21. 测试矩阵
-
-测试矩阵覆盖配置归一化、校验失败、默认不可用驱动、注入驱动成功路径、错误分类、关闭幂等性、Rows 行为、批量写入、schemaless 写入、健康状态和指标回调。
 
 ## 22. 验收状态
 
