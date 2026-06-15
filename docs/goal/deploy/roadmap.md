@@ -216,7 +216,7 @@ Scorecard 指标异常 → 自动生成 Improvement Proposal → R0-R9 Gate → 
    → Matrix 已控制 G5 和 G10。Prompt→Code 链路待 Compiler 自动化。
 
 4. **指标失败后是否有标准处理路径？**
-   → Metrics Gap Report 已定义，但实际触发链路待 Phase 5 自动化。
+   → Metrics Gap Report 已定义。触发链路通过 rsi-trigger.py --propose 自动化 ✅（Phase 5 完成）。
 
 5. **工作流改进是否有版本、验证和回滚？**
-   → RSI R0-R9 已定义版本和回滚。Eval Replay 数据集待 Phase 5 积累。
+   → RSI R0-R9 已定义版本和回滚。Eval Replay 数据集 100 cases ✅（Phase 5 完成）。
