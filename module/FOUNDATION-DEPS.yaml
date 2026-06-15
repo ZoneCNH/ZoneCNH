@@ -142,7 +142,7 @@ modules:
     path: github.com/ZoneCNH/domainx
     layer: L2.5
     stdlib_only: false
-    description: "领域共享基础契约与原语"
+    description: "L2.5 领域共享基础契约与原语"
 
 # ============================================================
 # 允许的依赖关系（单向箭头 = 调用方可以依赖被调方）
@@ -188,7 +188,7 @@ allowed_deps:
   clickhousex:   [kernel]                              # 只依赖 kernel 原语
   contracts:     []                                    # 跨域契约独立，无 Foundation 运行时依赖
   transportx:    [contracts, configx, observex, resiliencx]  # 传输契约可消费公开契约和横切接口
-  domainx:       [kernel]                              # 领域共享原语只依赖 kernel
+  domainx:       [kernel]                              # L2.5 领域共享原语只依赖 kernel
 
 # ============================================================
 # 禁止的依赖（任何基础模块都不得导入）

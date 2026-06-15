@@ -1,6 +1,6 @@
 # 基座层 CI/CD 部署执行方案
 
-> FoundationX 基座层 20 个模块的完整 CI/CD 分析报告与 SRE 机器池部署方案。
+> FoundationX 基座层 19 个模块与 L2.5 领域共享模块的完整 CI/CD 分析报告与 SRE 机器池部署方案。
 >
 > 状态：Draft
 > 最后更新：2026-06-14
@@ -10,11 +10,11 @@
 
 ## 一、基座模块全景
 
-### 1.1 模块总数：20 个
+### 1.1 模块总数：19 个基座模块 + 1 个 L2.5 联合验证模块
 
 ```
-标准源/门禁 (4) ——→ L0 原语 (1) ——→ L1 运行时 (4) ——→ 存储扩展 (7) ——→ 契约/传输 (2) ——→ 领域共享 (1)
-xlib-standard         kernel           configx              redisx              contracts          domainx
+标准源/门禁 (4) ——→ L0 原语 (1) ——→ L1 运行时 (4) ——→ 存储扩展 (7) ——→ 契约/传输 (2)
+xlib-standard         kernel           configx              redisx              contracts
 xlib-harness                            observex             kafkax              transportx
 xlib-evidence                           resiliencx           natsx
 xlibgate                                schedulex            postgresx
@@ -34,14 +34,14 @@ xlibgate                                schedulex            postgresx
 | L1 test-only | 1 | testkitx | 测试专用能力库。禁止生产导入 |
 | 存储扩展 | 7 | redisx、kafkax、natsx、postgresx、taosx、ossx、clickhousex | 基础设施客户端封装 |
 | 契约/传输 | 2 | contracts、transportx | 跨域稳定端口/事件/DTO 契约；通信底座契约 |
-| 领域共享 | 1 | domainx | 执行域共享值对象：Order/Position/Trade/Portfolio/ExecutionReport 与 OrderState/OrderType/OrderSide 枚举 |
 
 ### 1.3 按成熟度分级
 
 | 进度 | 数量 | 模块 |
 |------|:---:|------|
-| 100% 已发布 | 17 | kernel, configx, observex, resiliencx, schedulex, redisx, kafkax, natsx, taosx, ossx, clickhousex, contracts, transportx, xlib-standard, xlib-harness, xlib-evidence, domainx |
+| 100% 已发布 | 16 | kernel, configx, observex, resiliencx, schedulex, redisx, kafkax, natsx, taosx, ossx, clickhousex, contracts, transportx, xlib-standard, xlib-harness, xlib-evidence |
 | 90% 已有 | 3 | xlibgate, testkitx, postgresx |
+| L2.5 已有 | 1 | domainx |
 
 ### 1.4 各模块详细信息
 
@@ -66,7 +66,7 @@ xlibgate                                schedulex            postgresx
 | 17 | clickhousex | 存储扩展 | v1.0.1 | 已发布 | 100% | 100% | ZoneCNH/clickhousex |
 | 18 | contracts | 契约 | v1.0.1-spec | 已有 | 100% | - | ZoneCNH/contracts |
 | 19 | transportx | 传输 | v1.1.1-spec | 已有 | 100% | - | ZoneCNH/transportx |
-| 20 | domainx | 领域共享 | v0.1.0 | 已有 | 100% | - | ZoneCNH/domainx |
+| L2.5-1 | domainx | L2.5 领域共享 | v0.1.0 | 已有 | 100% | - | ZoneCNH/domainx |
 
 ---
 
@@ -81,13 +81,12 @@ x.go ——→ 基座运行时 / L2.5 / 数据域 / 分析域 / 决策域 / 执�
      |
      +——→ contracts (跨域稳定端口、事件协议、DTO 契约)
      |
-     +——→ 基座运行时 Foundation (20):
+     +——→ 基座运行时 Foundation (19):
             L0: kernel
             L1: configx · observex · resiliencx · schedulex
             L1 test-only: testkitx
             扩展: redisx · kafkax · natsx · postgresx · taosx · ossx · clickhousex
             契约: contracts · transportx
-            领域共享: domainx
 ```
 
 ### 2.2 CI 硬约束
@@ -169,7 +168,8 @@ x.go ——→ 基座运行时 / L2.5 / 数据域 / 分析域 / 决策域 / 执�
 | sre/foundation-l1 | configx, observex, resiliencx, schedulex, testkitx | 4C/8G | - |
 | sre/storage-light | redisx, natsx, ossx | 4C/8G | 是 |
 | sre/storage-heavy | postgresx, kafkax, clickhousex, taosx | 8C/16G | 是 |
-| sre/contracts | contracts, transportx, domainx | 2C/4G | - |
+| sre/contracts | contracts, transportx | 2C/4G | - |
+| sre/l2-5 | domainx | 2C/4G | - |
 | sre/gate | xlib-standard, xlib-harness, xlib-evidence, xlibgate | 2C/4G | - |
 | sre/deploy | 所有 release job | 2C/4G | - |
 
@@ -203,11 +203,11 @@ x.go ——→ 基座运行时 / L2.5 / 数据域 / 分析域 / 决策域 / 执�
 | ossx | MinIO :9001 | Put/Get/Delete/List/Presigned URL |
 | clickhousex | ClickHouse :9000 | OLAP 查询/批量写入 |
 
-### Phase 3: 契约 + 联合 CI（Week 7）
+### Phase 3: 契约 + L2.5 联合 CI（Week 7）
 
 - contracts: breaking change detection, contract hash, cross-domain interface consistency
 - transportx: conformance gate, audit plane, schema compatibility
-- domainx: 值对象完整性验证、枚举一致性检查
+- domainx: L2.5 值对象完整性验证、枚举一致性检查
 - foundation-joint-build: 全链路构建验证，go.mod 一致性，无循环依赖
 
 ### Phase 4: 部署闭环（Week 8）
@@ -375,7 +375,7 @@ jobs:
     "clickhousex":   { "pool": "sre/storage-heavy",  "docker": true, "services": ["clickhouse:latest"] },
     "contracts":     { "pool": "sre/contracts",      "docker": false },
     "transportx":    { "pool": "sre/contracts",      "docker": false },
-    "domainx":       { "pool": "sre/contracts",      "docker": false, "cd": false },
+    "domainx":       { "pool": "sre/l2-5",           "docker": false, "cd": false },
     "homepage":      { "pool": "sre/homepage",       "docker": false }
   }
 }
@@ -420,8 +420,8 @@ Week 3-4  Phase 1: L0/L1 + 门禁 CI/CD (10 模块)
 Week 5-6  Phase 2: 存储扩展 CI/CD (7 模块)
           redisx/kafkax/natsx/postgresx/taosx/ossx/clickhousex + Docker 集成测试
 
-Week 7    Phase 3: 契约 + 联合 CI
-          contracts + transportx + domainx + foundation-joint-build(全链路)
+Week 7    Phase 3: 契约 + L2.5 联合 CI
+          contracts + transportx + domainx(L2.5) + foundation-joint-build(全链路)
 
 Week 8    Phase 4: 部署闭环
           Release → staging → production(审批) → smoke → evidence → monitor
