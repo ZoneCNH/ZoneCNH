@@ -10,26 +10,26 @@
 
 | FR | Description | WHEN | THEN | AC | TC | Task | Status |
 |----|-------------|------|------|----|----|------|--------|
-| FR-001 | Position Update | 接收到 FillEvent（成交事件） | 更新对应 symbol/account/exchange 的仓位；更新耗时 < 10ms（p95）；记录变更原因和来源 fill_id | AC-POS-001 | TC-POS-001 | - | ✅ |
-| FR-002 | Position Query | 查询 Position(symbol, account, exchange) | 返回最新仓位：longQty/shortQty/netQty/avgPrice/lastUpdateTime；空参数返回跨交易所聚合视图 | AC-POS-002 | TC-POS-002 | - | ✅ |
-| FR-003 | PnL Calculation | 计算 PnL(symbol, account) | 返回 realizedPnl/unrealizedPnl/totalPnl；unrealizedPnl 基于 markPrice；markPrice 不可用时用最近成交价替代并标注 stale=true | AC-POS-003 | TC-POS-003 | - | ✅ |
-| FR-004 | Exposure | 查询 Exposure(account) | 返回 totalExposure（所有仓位 netQty*markPrice 绝对值之和）；返回 byExchange/bySymbol 敞口明细；计算 netDelta | AC-POS-004 | TC-POS-004 | - | ✅ |
-| FR-005 | Reconciliation | 触发 PositionReconciliation(account, exchange) | 从交易所 API 拉取持仓→与本地对比；差异超过 threshold emit reconciliation_alert；差异写入 audit log | AC-POS-005 | TC-POS-005 | - | ✅ |
-| FR-006 | Snapshot | 定时 Snapshot 触发 | 生成当前所有仓位的只读快照；通过 observex 推送给订阅方；间隔可配置（默认 1s） | AC-POS-006 | TC-POS-006 | - | ✅ |
-| FR-007 | Position History | 查询 PositionHistory(symbol, account, start, end) | 返回时间段内仓位变更事件列表；每条记录含 timestamp/fill_id/deltaQty/price/reason | AC-POS-007 | TC-POS-007 | - | ✅ |
-| FR-008 | Module Identity | downstream consumer 读取 README.md | H1 为 `# positionx`；Go module path 为 `github.com/ZoneCNH/positionx`；go.mod 声明 `module github.com/ZoneCNH/positionx` | AC-POS-008 | TC-POS-008 | - | ✅ |
+| FR-001 | Position Update | 接收到 FillEvent（成交事件） | 更新对应 symbol/account/exchange 的仓位；更新耗时 < 10ms（p95）；记录变更原因和来源 fill_id | AC-POS-001 | TC-POS-001 | - | 🔲 |
+| FR-002 | Position Query | 查询 Position(symbol, account, exchange) | 返回最新仓位：longQty/shortQty/netQty/avgPrice/lastUpdateTime；空参数返回跨交易所聚合视图 | AC-POS-002 | TC-POS-002 | - | 🔲 |
+| FR-003 | PnL Calculation | 计算 PnL(symbol, account) | 返回 realizedPnl/unrealizedPnl/totalPnl；unrealizedPnl 基于 markPrice；markPrice 不可用时用最近成交价替代并标注 stale=true | AC-POS-003 | TC-POS-003 | - | 🔲 |
+| FR-004 | Exposure | 查询 Exposure(account) | 返回 totalExposure（所有仓位 netQty*markPrice 绝对值之和）；返回 byExchange/bySymbol 敞口明细；计算 netDelta | AC-POS-004 | TC-POS-004 | - | 🔲 |
+| FR-005 | Reconciliation | 触发 PositionReconciliation(account, exchange) | 从交易所 API 拉取持仓→与本地对比；差异超过 threshold emit reconciliation_alert；差异写入 audit log | AC-POS-005 | TC-POS-005 | - | 🔲 |
+| FR-006 | Snapshot | 定时 Snapshot 触发 | 生成当前所有仓位的只读快照；通过 observex 推送给订阅方；间隔可配置（默认 1s） | AC-POS-006 | TC-POS-006 | - | 🔲 |
+| FR-007 | Position History | 查询 PositionHistory(symbol, account, start, end) | 返回时间段内仓位变更事件列表；每条记录含 timestamp/fill_id/deltaQty/price/reason | AC-POS-007 | TC-POS-007 | - | 🔲 |
+| FR-008 | Module Identity | downstream consumer 读取 README.md | H1 为 `# positionx`；Go module path 为 `github.com/ZoneCNH/positionx`；go.mod 声明 `module github.com/ZoneCNH/positionx` | AC-POS-008 | TC-POS-008 | - | 🔲 |
 
 ---
 
 ## §2 业务规则追溯（BR）
 
-| BR ID | Rule | TC ID(s) | Verification | Status |
-|-------|------|----------|--------------|--------|
-| BR-001 | 同一 fill_id 不可重复更新仓位 | TC-POS-009 | TC-POS-009 重复 fill_id 拒绝断言 | ✅ | |
-| BR-002 | long 和 short 不可同时非零 | TC-POS-001 | TC-POS-001 净持仓模式断言 | ✅ | |
-| BR-003 | 仓位核对差异 > 5% 必须人工确认 | TC-POS-005 | TC-POS-005 差异阈值告警断言 | ✅ | |
-| BR-004 | 快照不可变（创建后不能修改） | TC-POS-006 | TC-POS-006 快照不可变断言 | ✅ | |
-| BR-005 | markPrice 来源优先：最新成交 > 买一 > 上次 mark | TC-POS-003 | TC-POS-003 markPrice 降级断言 | ✅ | |
+| BR | Rule | 违反后果 | Verification Method | Task | Status |
+|----|------|----------|---------------------|------|--------|
+| BR-001 | 同一 fill_id 不可重复更新仓位 | 拒绝重复 + emit warning | TC-POS-009 重复 fill_id 拒绝断言 | - | 🔲 |
+| BR-002 | long 和 short 不可同时非零 | 交易系统保证（净持仓模式） | TC-POS-001 净持仓模式断言 | - | 🔲 |
+| BR-003 | 仓位核对差异 > 5% 必须人工确认 | 告警升级为 critical | TC-POS-005 差异阈值告警断言 | - | 🔲 |
+| BR-004 | 快照不可变（创建后不能修改） | 合规要求 | TC-POS-006 快照不可变断言 | - | 🔲 |
+| BR-005 | markPrice 来源优先：最新成交 > 买一 > 上次 mark | 标注数据质量 | TC-POS-003 markPrice 降级断言 | - | 🔲 |
 
 ---
 
@@ -37,12 +37,12 @@
 
 | NFR | Category | Requirement | Verification | Task | Status |
 |-----|----------|-------------|--------------|------|--------|
-| NFR-001 | 性能 | Position Update 延迟 < 10ms（p95） | Benchmark + p95 latency | - | ✅ |
-| NFR-002 | 性能 | Snapshot（1K positions）延迟 < 50ms | Benchmark `BenchmarkSnapshot` | - | ✅ |
-| NFR-003 | 性能 | PnL Calculation 延迟 < 1ms | Benchmark `BenchmarkPnL` | - | ✅ |
-| NFR-004 | 性能 | Reconciliation 延迟 < 5s | Benchmark `BenchmarkReconciliation` | - | ✅ |
-| NFR-005 | 质量 | 测试覆盖率 >= 80% | `go tool cover -func` | - | ✅ |
-| NFR-006 | 安全 | 无硬编码密钥 | `gitleaks detect --no-git` | - | ✅ |
+| NFR-001 | 性能 | Position Update 延迟 < 10ms（p95） | Benchmark + p95 latency | - | 🔲 |
+| NFR-002 | 性能 | Snapshot（1K positions）延迟 < 50ms | Benchmark `BenchmarkSnapshot` | - | 🔲 |
+| NFR-003 | 性能 | PnL Calculation 延迟 < 1ms | Benchmark `BenchmarkPnL` | - | 🔲 |
+| NFR-004 | 性能 | Reconciliation 延迟 < 5s | Benchmark `BenchmarkReconciliation` | - | 🔲 |
+| NFR-005 | 质量 | 测试覆盖率 >= 80% | `go tool cover -func` | - | 🔲 |
+| NFR-006 | 安全 | 无硬编码密钥 | `gitleaks detect --no-git` | - | 🔲 |
 
 ---
 
