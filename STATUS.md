@@ -369,7 +369,7 @@
 ### 🟢 L2.5 领域共享层（健康）
 
 - 组件：5 个，进度 80%
-- Phase 0 已完成，所有上层模块已依赖此层
+- Phase 0 已完成，当前已建模的上层模块已依赖此层
 
 ### 🟢 数据域 · 行情（健康）
 
@@ -480,7 +480,7 @@
 | 决策域组件 | 6 | 6 | 6 | ✅ |
 | 横切组件 | 2 | 2 | 2 | ✅ |
 
-注：以上为各文档 unique repo 链接数（grep github.com/ZoneCNH 去重后计数）。README 与 ARCH 均为 77；STATUS 去重后为 78（多 stdlib.rs）。STATUS 按域统计表 domain-sum 合 80（observex 计入基座+横切 2 域，stdlib.rs+module 独立计）。L2.5=5/分析域=8/决策域=6 三文档一致。
+注：以上为各文档 unique repo 链接数（grep github.com/ZoneCNH 去重后计数）。README 与 ARCH 均为 77；STATUS 去重后为 78（多 stdlib.rs）。STATUS 的 80 是域统计 domain-sum 口径，不与 README/ARCH unique-link 77 直接比较（observex 计入基座+横切 2 域，stdlib.rs+module 独立计）。L2.5=5/分析域=8/决策域=6 三文档一致。
 
 ### 迁移与门禁基线
 
