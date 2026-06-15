@@ -1,6 +1,7 @@
 # Foundation Maturity Evidence Matrix — release evidence reconciliation
 
 Generated: 2026-06-15T09:57Z
+Updated: 2026-06-15T12:54Z
 Scope: safe local validation commands for proving current FoundationX maturity claims; only evidence-backed local release reconciliation is allowed, while open blockers and external proof dimensions stay non-✅.
 
 ## Governance boundary
@@ -69,14 +70,15 @@ Run this command only from an authorized environment with approved credentials. 
 
 | Claim / dimension | Fact source paths | Safe local command | Local result | What this proves | What it does not prove |
 | --- | --- | --- | --- | --- | --- |
-| Branch/edit safety | `AGENTS.md`, `.git` | `git branch --show-current`; `git status --short --branch`; `git diff --check` | detached worker worktree; `git diff --check` exit 0 | Work occurred off `main`; patch has no whitespace errors | Remote branch state, CI, push/release status |
+| Branch/edit safety | `AGENTS.md`, `.git`, `.gitignore` | `git branch --show-current`; `git status --short --branch`; `git diff --check`; `rg -l 'ANTHROPIC_AUTH_TOKEN\|sk-[A-Za-z0-9]{20,}' --glob '!.git/**' .` | feature branch, not `main`; `git diff --check` exit 0; working-tree credential scan returned no paths after deleting `.claude/plans/settings.local.json` and ignoring future local plan settings | Work occurred off `main`; patch has no whitespace errors; current working tree no longer contains the local token config | Remote branch state, CI, push/release status; pre-sanitization branch history must not be pushed without rewriting |
 | Foundation fact-layer consistency | `.foundationx/status/index.json`, `.foundationx/blockers.json`, `.foundationx/repo-contract.json`, `scripts/audit-status.py` | `python3 scripts/audit-status.py --foundationx-only` | `Summary: 22 passed, 0 failed` | Machine facts obey local invariants: 20 modules, 20 spec complete, 20 impl complete, 15 release, 7 live, 9 factory, release/blocker forcing rules | Factory-grade proof; freshness of external release/CI/runtime evidence |
-| Public projection consistency | `README.md`, `ARCHITECTURE.md`, `STATUS.md`, `module/README.md`, `.foundationx/*`, `scripts/audit-status.py` | `python3 scripts/audit-status.py` | `Summary: 49 passed, 0 failed`; 404 check skipped unless `--network` | Public status rows match fact-layer release/factory values; factory ✅ rows have no open blockers | Network reachability, GitHub release existence, external CI results |
+| Public projection consistency | `README.md`, `ARCHITECTURE.md`, `STATUS.md`, `module/README.md`, `.foundationx/*`, `scripts/audit-status.py` | `python3 scripts/audit-status.py` | `Summary: 50 passed, 0 failed`; 404 check skipped unless `--network` | Public status rows match fact-layer release/factory values; factory ✅ rows have no open blockers | Network reachability, GitHub release existence, external CI results |
 | Status CI gate | `.github/ci/status-consistency-check.sh`, `STATUS.md`, `.foundationx/*` | `bash .github/ci/status-consistency-check.sh` | exit 0; status consistency and FoundationX guard passed | Repo status tables, counts, and fact-layer projections are locally consistent | Remote CI execution on GitHub |
 | Task topology gate | `.github/ci/task-spec-validate.sh`, `module/*/tasks/*.md` | `bash .github/ci/task-spec-validate.sh` | exit 0; `146` tasks validated | Task IDs, spec refs, AC coverage, dependencies, and in-progress file-conflict checks pass locally | Human PR review or cross-repo task completion |
-| Spec lint gate | `.github/ci/spec-lint.sh`, `module/*/SPEC.md` | `bash .github/ci/spec-lint.sh` | exit 1 with pre-existing spec issues | Identifies remaining spec-format defects that block broader governance proof | Cannot be counted as green until listed defects are remediated |
-| Traceability gate | `.github/ci/traceability-check.sh`, `module/*/TRACEABILITY.md` | `TRACEABILITY_STRICT=1 bash .github/ci/traceability-check.sh` | exit 1 with pre-existing traceability defects | Shows many Foundation modules trace locally, but strict repo-wide traceability is not fully green | Cannot prove all modules' FR↔evidence↔TC closure yet |
+| Spec lint gate | `.github/ci/spec-lint.sh`, `module/*/SPEC.md` | `bash .github/ci/spec-lint.sh` | exit 0 with warnings only: fuzzy word `合理` in `backtestx`, empty Non-goals in `taosx` | Repo-wide SPEC lint no longer blocks the local documentation proof | Warning cleanup; human review of wording quality |
+| Traceability gate | `.github/ci/traceability-check.sh`, `module/*/TRACEABILITY.md` | `TRACEABILITY_STRICT=1 bash .github/ci/traceability-check.sh` | exit 0; all 24 modules OK, including zero-FR modules | Strict repo-wide FR/BR/AC/TC traceability now passes locally | External evidence freshness or remote CI execution |
 | Deployment boundary | `.github/ci/deploy-policy-guard.sh`, `docs/ci-deployment.md`, `docs/governance/DEPLOYMENT.md` | `bash .github/ci/deploy-policy-guard.sh` | exit 0; `deployment_workflows=0` | Business repo has no inline deployment workflow and preserves SRE boundary | Real deployment, environment approval, runner/secrets success |
+| Audit-status unit tests | `scripts/tests/test_audit_status.py`, `scripts/audit-status.py` | `python3 -m pytest scripts/tests/test_audit_status.py -q` | `13 passed` | Projection guard behavior is covered by the focused test suite | Full repository test coverage outside this script |
 | Release trust package | `release/trust/index.json`, `release/trust/open-blockers.json`, `release/trust/projection-guard.json`, `release/trust/summary.json` | `jq '{summary,open_blockers,projection_guard,claim_policy,missing_sources}' release/trust/index.json` | summary matches fact layer; `missing_sources=[]`; `reason_present=true`; `audit_status_factory_grade_proof=false` | Trust package records projection guard and the no-overclaim policy | Public release/tag publication or external evidence closure |
 
 ## Current machine snapshot
@@ -100,8 +102,7 @@ Result:
 - Release remains non-✅ for `xlib-harness`, `xlib-evidence`, `clickhousex`, `contracts`, `transportx`.
 - `domainx` public v1.0.1 GitHub Release/tag is observed and reconciled to local fact-layer/trust release=true; factory remains non-✅ until adoption/factory evidence is archived.
 - Factory remains non-✅ for `xlib-harness`, `xlib-evidence`, `natsx`, `postgresx`, `taosx`, `ossx`, `clickhousex`, `contracts`, `transportx`, `domainx`.
-- Strict spec lint is non-✅ because of pre-existing defects in `contracts`, `decimalx`, `domain-exchange`, `domain-macro`, `domain-market`, `kafkax`, `postgresx`, `xlib-evidence`, and `xlib-harness`, plus warnings in `backtestx` and `taosx`.
-- Strict traceability is non-✅ because of pre-existing defects in `xlibgate`, `xlib-harness`, `xlib-evidence`, `natsx`, `contracts`, and `transportx`, plus unknown-module traceability warnings.
+- Local SPEC lint and strict traceability gates now pass; remaining local lint warnings are non-blocking wording/section-cleanup items and do not flip release/factory facts.
 - Open blockers remain:
   - `BLK-001` `natsx` governance critical
   - `BLK-002` `natsx` security critical
@@ -113,8 +114,8 @@ Result:
 ## Local fixable changes
 
 - Add this evidence matrix so the current local proof boundary is reviewable and repeatable.
-- Locally fix spec-lint issues in affected `module/*/SPEC.md` files without changing release/factory facts.
-- Locally fix traceability metadata/FR/TC/status issues in affected `module/*/TRACEABILITY.md` and `module/*/SPEC.md` files without flipping blocked modules green.
+- Optionally clean the remaining non-blocking spec-lint warnings in `backtestx` and `taosx` without changing release/factory facts.
+- Preserve the strict traceability pass when future `module/*/TRACEABILITY.md` or `module/*/SPEC.md` files change.
 - Add missing local evidence archives only when the evidence actually exists and is not a credentialed/external action.
 
 ## User-authorized external actions required before full ✅ can be honest
