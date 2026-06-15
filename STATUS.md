@@ -62,7 +62,7 @@
 | natsx | ✅ | ✅ | ✅ | ✅ | ✅ | N/A | N/A | ❌ | v1.0.0; 6 CI workflows; dev auth live gate 已验证; BLK-001/BLK-002 open; 非 factory |
 | postgresx | ✅ | ✅ | ✅ | ✅ | ✅ | N/A | N/A | ❌ | v1.0.0; 3 CI workflows; live integration 通过; BLK-006 open（52.4% coverage + Docker integration skip）; 非 factory |
 | taosx | ✅ | ✅ | ✅ | ✅ | ✅ | N/A | N/A | ❌ | v1.0.1; 8 CI workflows; 真实 taosWS 已验证; BLK-007 open（SPEC 67）; 非 factory |
-| ossx | ✅ | ✅ | ✅ | ✅ | ✅ | N/A | N/A | ✅ | v1.0.1; CI 已部署; 真实 Aliyun OSS 集成已验证 |
+| ossx | ✅ | ✅ | ✅ | ✅ | ✅ | N/A | N/A | ❌ | v1.0.1; CI 已部署; 真实 Aliyun OSS 集成已验证; BLK-008 open（API 文档 / integration evidence / quickstart / release manifest 未归档）; 非 factory |
 | clickhousex | ✅ | ✅ | ❌ | ✅ | ✅ | N/A | N/A | ❌ | v1.0.1; CI 已部署+运行(Docker ClickHouse); 公开 GitHub Release 未发布（BLK-003）; 非 factory |
 | contracts | ✅ | ✅ | ❌ | N/A | ✅ | ✅ | N/A | ❌ | v1.0.1-spec; spec-only; 无公开 GitHub Release / git tag 对齐; all_aligned=false |
 | transportx | ✅ | ✅ | ❌ | N/A | ✅ | N/A | N/A | ❌ | v1.1.1-spec; spec-only; 无公开 GitHub Release / git tag 对齐; production_import_allowed=false |
@@ -303,7 +303,7 @@
 
 | # | 风险 | 影响 | 建议 |
 | -- | ---- | ---- | ---- |
-| R8 | natsx 正式四源 98+ arbiter 与生产 TLS gate 仍 open；postgresx 单元测试覆盖率 52.4% 且 Docker 集成测试 skip；taosx SPEC 67 | 阻塞对应模块 factory 投影，不阻塞上层继续按 spec/adapter 边界开发 | 按 BLK-001/002/006/007 关闭证据后再恢复 factory 投影 |
+| R8 | natsx 正式四源 98+ arbiter 与生产 TLS gate 仍 open；postgresx 单元测试覆盖率 52.4% 且 Docker 集成测试 skip；taosx SPEC 67；ossx API 文档 / integration evidence / quickstart / release manifest 未归档 | 阻塞对应模块 factory 投影，不阻塞上层继续按 spec/adapter 边界开发 | 按 BLK-001/002/006/007/008 关闭证据后再恢复 factory 投影 |
 | R9 | 分析域↔决策域若用实现包互调 | Go 循环导入和边界泄漏 | 只允许通过 contracts 事件/DTO 与 L2.5 模型连接 |
 
 ---

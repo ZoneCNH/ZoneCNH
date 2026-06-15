@@ -132,6 +132,46 @@ def count_sdk_provider(text):
             elif "| Provider " in line: prov += 1
     return sdk, prov
 
+
+
+def parse_multidimensional_table(text):
+    """Parse the STATUS.md multidimensional maturity table by module name."""
+    rows = {}
+    in_multi = False
+    for line in text.splitlines():
+        if "📊 基座多维成熟度展开" in line:
+            in_multi = True
+            continue
+        if in_multi and line.startswith("</details>"):
+            break
+        if not in_multi or not re.match(r'^\| [a-z]', line):
+            continue
+        parts = [p.strip() for p in line.split("|")]
+        if len(parts) < 11:
+            continue
+        module = parts[1]
+        rows[module] = {
+            "spec": parts[2],
+            "impl": parts[3],
+            "release": parts[4],
+            "live": parts[5],
+            "ci": parts[6],
+            "adopt": parts[7],
+            "soak": parts[8],
+            "factory": parts[9],
+            "note": parts[10],
+        }
+    return rows
+
+def fact_bool_to_status(value):
+    if value is True:
+        return "✅"
+    if value is False:
+        return "❌"
+    if value == "N/A":
+        return "N/A"
+    return None
+
 def audit_foundationx_fact_layer():
     """Validate machine-readable FoundationX fact sources and invariants."""
     print("--- 9. FoundationX fact-layer guard ---")
@@ -346,26 +386,58 @@ for line in STATUS.splitlines():
             if r_val == "✅": release_yes += 1
             elif r_val == "❌": release_no += 1
 
-# Cross-check RELEASE projection against the machine-readable fact layer.
-# STATUS prose can change shape; the fact layer is the authority for release counts.
+# Cross-check RELEASE/FACTORY projection against the machine-readable fact layer.
+# STATUS prose can change shape; the fact layer is the authority for release/factory counts.
 foundation_status = load_json(".foundationx/status/index.json")
+blockers_doc = load_json(".foundationx/blockers.json")
+modules = foundation_status.get("modules", {})
+multi_rows = parse_multidimensional_table(STATUS)
 fact_release_published = foundation_status.get("summary", {}).get("release_published")
 if fact_release_published is None:
     no("Could not parse FoundationX release_published summary")
 else:
     chk("RELEASE ✅ vs fact-layer release_published", str(release_yes), str(fact_release_published))
 
+missing_multi_rows = sorted(set(modules) - set(multi_rows))
+if missing_multi_rows:
+    no(f"STATUS multidimensional table missing modules: {', '.join(missing_multi_rows)}")
+else:
+    ok("STATUS multidimensional table covers all FoundationX modules")
+
+release_mismatches = []
+factory_mismatches = []
+factory_overstated = []
+factory_blocking_modules = set(blockers_doc.get("factory_blocking_modules", []))
+for name, fact in sorted(modules.items()):
+    row = multi_rows.get(name)
+    if not row:
+        continue
+    expected_release = fact_bool_to_status(fact.get("release"))
+    expected_factory = fact_bool_to_status(fact.get("factory"))
+    if expected_release and row["release"] != expected_release:
+        release_mismatches.append(f"{name}: STATUS RELEASE={row['release']} fact={expected_release}")
+    if expected_factory and row["factory"] != expected_factory:
+        factory_mismatches.append(f"{name}: STATUS FACTORY={row['factory']} fact={expected_factory}")
+    if name in factory_blocking_modules and row["factory"] == "✅":
+        factory_overstated.append(name)
+
+if release_mismatches:
+    no("STATUS RELEASE projection mismatches fact layer: " + "; ".join(release_mismatches))
+else:
+    ok("STATUS RELEASE projections match fact layer")
+
+if factory_mismatches:
+    no("STATUS FACTORY projection mismatches fact layer: " + "; ".join(factory_mismatches))
+else:
+    ok("STATUS FACTORY projections match fact layer")
+
+if factory_overstated:
+    no("STATUS FACTORY=✅ despite open factory blockers: " + ", ".join(factory_overstated))
+else:
+    ok("STATUS FACTORY projections respect open factory blockers")
+
 # FACTORY N/A count
-factory_na = 0
-in_multi = False
-for line in STATUS.splitlines():
-    if "📊 基座多维成熟度展开" in line: in_multi = True; continue
-    if in_multi and line.startswith("</details>"): break
-    if in_multi and re.match(r'^\| [a-z]', line):
-        parts = [p.strip() for p in line.split("|")]
-        if len(parts) >= 10:
-            f_val = parts[9]  # FACTORY = column 10
-            if f_val == "N/A": factory_na += 1
+factory_na = sum(1 for row in multi_rows.values() if row["factory"] == "N/A")
 # testkitx should be N/A (test-only)
 if factory_na >= 1:
     ok(f"FACTORY N/A={factory_na} (testkitx=test-only)")
