@@ -345,11 +345,11 @@ Foundation 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中在 
 | 基座                  | [contracts](https://github.com/ZoneCNH/contracts)               | v1.0.1-spec | ✅ 已有   | Spec→Code 完成 | 跨域稳定端口/事件/DTO 契约；spec-only；无公开 GitHub Release / git tag 对齐；非 factory until release |
 | 基座                  | [transportx](https://github.com/ZoneCNH/transportx)             | v1.1.1-spec | ✅ 已有   | Spec→Code 完成 | 应用通信底座规格基线；SPEC/Matrix/Tasks 三阶段满分；无公开 GitHub Release / git tag 对齐；production_import_allowed=false |
 | **L2.5 · 领域共享层** |                                                                 |        |           |          |                                                                                           |
-| L2.5                  | [domainx](https://github.com/ZoneCNH/domainx)                   | v1.0.0-local | ✅ 本地验证 | Spec→Code 完成 | 领域共享值对象基线：Order/Position/Trade/Portfolio/ExecutionReport 与 OrderState/OrderType/OrderSide 枚举（8 FR，8 TC，6 tasks）；无公开 GitHub Release / git tag / 下游消费证据；非 factory until release |
-| L2.5                  | [decimalx](https://github.com/ZoneCNH/decimalx)                 | v1.0.0-local | ✅ 本地验证 | ████ 100% | 高精度十进制类型（Decimal/Price/Qty/Ratio/Money）；本地 release-check、ci-extended、race、vet、lint 已通过；无公开 GitHub Release / git tag / 下游消费证据；非 factory |
-| L2.5                  | [domain-market](https://github.com/ZoneCNH/domain-market)       | v1.0.0-local | ✅ 本地验证 | ████ 100% | 市场数据域模型（Tick/Quote/Bar/OrderBook）；本地 test、race、vet、diff-check 已通过；无公开 GitHub Release / git tag / 下游消费证据；非 factory |
-| L2.5                  | [domain-exchange](https://github.com/ZoneCNH/domain-exchange)   | v1.0.0-local | ✅ 本地验证 | ████ 100% | 交易域模型（VenueAdapter 13 方法接口）；本地 test、race、vet、diff-check 已通过；依赖 domainx 公开发布后移除 local replace；非 factory |
-| L2.5                  | [domain-macro](https://github.com/ZoneCNH/domain-macro)         | v1.0.0-local | ✅ 本地验证 | ████ 100% | 宏观数据域模型（MacroPoint/MacroState）；本地 test、race、vet、diff-check 已通过；无公开 GitHub Release / git tag / 下游消费证据；非 factory |
+| L2.5                  | [domainx](https://github.com/ZoneCNH/domainx)                   | v1.0.1 | ✅ 已发布 | Spec→Code 完成 | 领域共享值对象基线：Order/Position/Trade/Portfolio/ExecutionReport 与 OrderState/OrderType/OrderSide 枚举（8 FR，8 TC，6 tasks）；GitHub Release / tag 已发布；依赖 decimalx v1.0.0；被 domain-exchange v1.0.0 公开消费；非 factory |
+| L2.5                  | [decimalx](https://github.com/ZoneCNH/decimalx)                 | v1.0.0 | ✅ 已发布 | ████ 100% | 高精度十进制类型（Decimal/Price/Qty/Ratio/Money）；GitHub Release / tag 已发布；被 domainx、domain-market、domain-exchange 公开版本消费；非 factory |
+| L2.5                  | [domain-market](https://github.com/ZoneCNH/domain-market)       | v1.0.1 | ✅ 已发布 | ████ 100% | 市场数据域模型（Tick/Quote/Bar/OrderBook）；GitHub Release / tag 已发布；依赖 decimalx v1.0.0；被 domain-exchange v1.0.0 公开消费；非 factory |
+| L2.5                  | [domain-exchange](https://github.com/ZoneCNH/domain-exchange)   | v1.0.0 | ✅ 已发布 | ████ 100% | 交易域模型（VenueAdapter 13 方法接口）；GitHub Release / tag 已发布；已移除 local replace；公开依赖 domainx v1.0.1、domain-market v1.0.1 与 decimalx v1.0.0；非 factory |
+| L2.5                  | [domain-macro](https://github.com/ZoneCNH/domain-macro)         | v1.0.0 | ✅ 已发布 | ████ 100% | 宏观数据域模型（MacroPoint/MacroState）；GitHub Release / tag 已发布；no-lookahead、精度与宏观状态契约已验证；非 factory |
 | **数据域 · 行情**     |                                                                 |        |           |          |                                                                                           |
 | 数据域                | [binance](https://github.com/ZoneCNH/binance)                   | -      | ✅ 已有   | ███░ 80% | Binance CEX SDK                                                                           |
 | 数据域                | [okx](https://github.com/ZoneCNH/okx)                           | -      | ✅ 已有   | ███░ 80% | OKX CEX SDK                                                                               |
@@ -498,7 +498,7 @@ Foundation P0: 基础闭环校准 ← kernel + configx + observex + testkitx + r
                5. 用 xlibgate / 脚本执行依赖矩阵、testkitx 边界和 release evidence
 
 Phase 0: 领域共享层 ← domainx + decimalx + domain-market + domain-exchange + domain-macro
-         ✅ 本地 v1.0.0 release 分支已验证；公开 tag / GitHub Release / 下游消费证据待补齐
+         ✅ v1 公开 tag / GitHub Release 已完成；domain-exchange 公开消费 domainx / domain-market / decimalx；factory-grade adoption 待独立门禁
 
 Phase 1: 分析域   ← factor-engine + feature-store + factor-eval
          先固化 MarketDataProvider / FactorInput / FactorOutput；

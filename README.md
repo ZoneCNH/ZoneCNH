@@ -18,7 +18,7 @@ Go 🐹 (主要) · Rust 🦀 (底层) · Python 🐍 (脚本/数据) · TypeScr
 >
 > 🧱 Foundation 公开规格、依赖矩阵、执行跟踪与 ADR → **[module/](./module/)**
 >
-> 📋 19 个 Foundation 模块规格，另含 5 个 L2.5 领域共享规划/基线规格（不作 release/factory 声明） → **[module/](./module/)**
+> 📋 19 个 Foundation 模块规格，另含 5 个 L2.5 领域共享公开发布基线（不作 factory-grade 声明） → **[module/](./module/)**
 >
 > 🧭 Spec 治理模板、生命周期、追溯与评分规则 → **[docs/governance/](./docs/governance/)**
 >
@@ -41,7 +41,7 @@ L1 测试: testkitx (test-only)
 基座扩展: redisx / kafkax / natsx / postgresx / taosx / ossx / clickhousex / contracts / transportx
       │
       ▼
-L2.5: domainx / decimalx / domain-market / domain-macro / domain-exchange (v1.0.0 执行计划；设计基线可用，release / factory-grade 待补证)
+L2.5: domainx / decimalx / domain-market / domain-macro / domain-exchange (v1 公开发布基线；factory-grade adoption 待独立门禁)
       │
       ▼
 业务流: 数据域 → 分析域 ↔ 决策域 → 执行域
@@ -55,19 +55,19 @@ L2.5: domainx / decimalx / domain-market / domain-macro / domain-exchange (v1.0.
 横切: alertx (告警) / observex (可观测)
 ```
 
-## L2.5 v1.0.0 执行计划基线
+## L2.5 v1 公开发布基线
 
-| 模块 | 当前版本 | 目标版本 | 状态 | 模块文档 |
+| 模块 | 公开版本 | 目标 | 状态 | 模块文档 |
 | --- | --- | --- | --- | --- |
-| `decimalx` | v1.0.0-local | v1.0.0-public | 本地 release 分支已验证；待公开 tag / Release / 下游消费 | [module/decimalx](module/decimalx/goal.md) |
-| `domainx` | v1.0.0-local | v1.0.0-public | 领域共享值对象基线已验证；待公开 tag / Release / 下游消费 | [module/domainx](module/domainx/goal.md) |
-| `domain-market` | v1.0.0-local | v1.0.0-public | 市场数据语义与质量门禁已验证；待公开发布与下游替换 | [module/domain-market](module/domain-market/goal.md) |
-| `domain-macro` | v1.0.0-local | v1.0.0-public | no-lookahead、精度与宏观状态契约已验证；待公开发布与下游替换 | [module/domain-macro](module/domain-macro/goal.md) |
-| `domain-exchange` | v1.0.0-local | v1.0.0-public | Exchange SPI 已验证；待 domainx 公开发布后移除 local replace | [module/domain-exchange](module/domain-exchange/goal.md) |
+| `decimalx` | v1.0.0 | v1-public | GitHub tag / Release 已发布；被 domainx、domain-market、domain-exchange 公开版本消费 | [module/decimalx](module/decimalx/goal.md) |
+| `domainx` | v1.0.1 | v1-public | 领域共享值对象基线已发布；依赖 decimalx v1.0.0；被 domain-exchange 公开版本消费 | [module/domainx](module/domainx/goal.md) |
+| `domain-market` | v1.0.1 | v1-public | 市场数据语义与质量门禁已发布；依赖 decimalx v1.0.0；被 domain-exchange 公开版本消费 | [module/domain-market](module/domain-market/goal.md) |
+| `domain-macro` | v1.0.0 | v1-public | no-lookahead、精度与宏观状态契约已发布 | [module/domain-macro](module/domain-macro/goal.md) |
+| `domain-exchange` | v1.0.0 | v1-public | Exchange SPI 已发布；已移除 local replace；公开依赖 domainx v1.0.1 / domain-market v1.0.1 / decimalx v1.0.0 | [module/domain-exchange](module/domain-exchange/goal.md) |
 
-成熟度口径：5/5 已完成本地 v1.0.0 release 分支验证；0/5 具备公开 tag / GitHub Release / 下游消费证据。该层当前可作为 Phase 0 设计依赖推进，但不能宣告 factory-grade adoption。
+成熟度口径：5/5 已完成公开 tag 与 GitHub Release；关键依赖链已由 domain-exchange 公开版本消费并闭合。该层当前可作为 Phase 0 公开发布基线推进，但不能宣告 factory-grade adoption。
 
-依赖顺序：`decimalx` -> `domainx` -> `domain-market` / `domain-macro` -> `domain-exchange`。这里的 v1.0.0-local 表示各独立模块仓库已在本地 release 分支通过验证；不代表公开 GitHub Release、v1.0.0 git tag、外部 CI artifact 或 adoption gate 已完成。`domainx` 已归入 L2.5 领域共享层，不计入基座组件数。
+依赖顺序：`decimalx` -> `domainx` -> `domain-market` / `domain-macro` -> `domain-exchange`。这里的 v1-public 表示各独立模块仓库已有公开 tag 与 GitHub Release；不代表 factory-grade、外部生产采纳或全域 adoption gate 已完成。`domainx` 已归入 L2.5 领域共享层，不计入基座组件数。
 
 ## 📦 核心项目
 
