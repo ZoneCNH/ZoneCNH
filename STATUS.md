@@ -102,6 +102,21 @@
 | [domain-macro](https://github.com/ZoneCNH/domain-macro) | v0.1.0 | ███░ 80% | 100% | 宏观数据域模型 |
 | [domain-exchange](https://github.com/ZoneCNH/domain-exchange) | v0.1.0 | ███░ 80% | 100% | 交易域模型 |
 
+<details>
+<summary>📊 L2.5 领域共享层多维成熟度展开（点击展开）</summary>
+
+| 模块 | SPEC | IMPL | RELEASE | LIVE INT | EXT CI | ADOPT | SOAK | FACTORY | 备注 |
+|------|:----:|:----:|:-------:|:--------:|:------:|:-----:|:----:|:-------:|------|
+| decimalx | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | v0.1.0；80%；高精度十进制类型 |
+| domainx | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | v1.0.0；80%；领域共享值对象：Order/Position/Trade/Portfolio/ExecutionReport |
+| domain-market | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | v0.1.0；80%；市场数据域模型 |
+| domain-macro | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | v0.1.0；80%；宏观数据域模型 |
+| domain-exchange | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | v0.1.0；80%；交易域模型 |
+
+> **维度说明**：SPEC=规格完成 | IMPL=实现完成 | RELEASE=tag/release/manifest 一致 | LIVE INT=真实服务集成（非 mock） | EXT CI=外部 CI artifact | ADOPT=下游模块真实采用 | SOAK=生产或类生产长时间运行 | FACTORY=factory_grade_allowed（最高综合等级）
+
+</details>
+
 ### 数据域 · 行情
 
 | 组件 | 类型 | 版本 | 进度 | 覆盖率要求 | 说明 |
@@ -125,6 +140,34 @@
 | [okx-market](https://github.com/ZoneCNH/okx-market) | Provider | v0.1.0 | ███░ 80% | 100% | OKX Kline/Ticker |
 | [coinbase-market](https://github.com/ZoneCNH/coinbase-market) | Provider | v0.1.0 | ███░ 80% | 100% | Coinbase Kline/Ticker |
 
+<details>
+<summary>📊 数据域 · 行情多维成熟度展开（点击展开）</summary>
+
+| 模块 | SPEC | IMPL | RELEASE | LIVE INT | EXT CI | ADOPT | SOAK | FACTORY | 备注 |
+|------|:----:|:----:|:-------:|:--------:|:------:|:-----:|:----:|:-------:|------|
+| binance | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | SDK；80%；Binance CEX |
+| okx | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | SDK；80%；OKX CEX |
+| bybit | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | SDK；80%；Bybit CEX |
+| bitget | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | SDK；80%；Bitget CEX |
+| kucoin | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | SDK；80%；KuCoin CEX |
+| gate | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | SDK；80%；Gate CEX |
+| mexc | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | SDK；80%；MEXC CEX |
+| htx | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | SDK；80%；HTX CEX |
+| coinbase | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | SDK；80%；Coinbase CEX |
+| hyperliquid | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | SDK；80%；Hyperliquid DEX |
+| lighter | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | SDK；80%；Lighter DEX |
+| upbit | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | SDK；80%；Upbit CEX |
+| coinglass | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | SDK；80%；衍生品聚合数据 |
+| binance-market | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | Provider v0.1.0；80%；Kline/Ticker |
+| bybit-market | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | Provider v0.1.0；80%；Kline/Ticker |
+| bitget-market | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | Provider v0.1.0；80%；Kline/Ticker |
+| okx-market | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | Provider v0.1.0；80%；Kline/Ticker |
+| coinbase-market | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | Provider v0.1.0；80%；Kline/Ticker |
+
+> **维度说明**：SPEC=规格完成 | IMPL=实现完成 | RELEASE=tag/release/manifest 一致 | LIVE INT=真实服务集成（非 mock） | EXT CI=外部 CI artifact | ADOPT=下游模块真实采用 | SOAK=生产或类生产长时间运行 | FACTORY=factory_grade_allowed（最高综合等级）
+
+</details>
+
 ### 数据域 · 宏观
 
 | 组件 | 版本 | 进度 | 覆盖率要求 | 说明 |
@@ -141,11 +184,43 @@
 | [jin10](https://github.com/ZoneCNH/jin10) | - | ███░ 80% | 100% | 金十行情 |
 | [yahoo](https://github.com/ZoneCNH/yahoo) | - | ███░ 80% | 100% | Yahoo Finance |
 
+<details>
+<summary>📊 数据域 · 宏观多维成熟度展开（点击展开）</summary>
+
+| 模块 | SPEC | IMPL | RELEASE | LIVE INT | EXT CI | ADOPT | SOAK | FACTORY | 备注 |
+|------|:----:|:----:|:-------:|:--------:|:------:|:-----:|:----:|:-------:|------|
+| fred | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | 80%；美联储 FRED 数据 |
+| treasury | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | 80%；美国财政部数据 |
+| yield-curve | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | 80%；收益率曲线 |
+| bea | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | 80%；美国经济分析局 |
+| ecb | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | 80%；欧洲央行 |
+| uk-cb | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | 80%；英国央行 |
+| japan-cb | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | 80%；日本央行 |
+| eastmoney | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | 80%；东方财富 A 股 |
+| jinshi | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | 80%；金十快讯 |
+| jin10 | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | 80%；金十行情 |
+| yahoo | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | 80%；Yahoo Finance |
+
+> **维度说明**：SPEC=规格完成 | IMPL=实现完成 | RELEASE=tag/release/manifest 一致 | LIVE INT=真实服务集成（非 mock） | EXT CI=外部 CI artifact | ADOPT=下游模块真实采用 | SOAK=生产或类生产长时间运行 | FACTORY=factory_grade_allowed（最高综合等级）
+
+</details>
+
 ### 数据域 · 另类
 
 | 组件 | 版本 | 进度 | 覆盖率要求 | 说明 |
 | ---- | ---- | ---- | ---------- | ---- |
 | [alternative-data](https://github.com/ZoneCNH/alternative-data) | - | ░░░░ 5% | 100% | 链上、社交情绪、新闻 NLP |
+
+<details>
+<summary>📊 数据域 · 另类多维成熟度展开（点击展开）</summary>
+
+| 模块 | SPEC | IMPL | RELEASE | LIVE INT | EXT CI | ADOPT | SOAK | FACTORY | 备注 |
+|------|:----:|:----:|:-------:|:--------:|:------:|:-----:|:----:|:-------:|------|
+| alternative-data | ❌ | ❌ | N/A | N/A | N/A | N/A | N/A | ❌ | 5%；链上数据、社交情绪、新闻 NLP 均未开始 |
+
+> **维度说明**：SPEC=规格完成 | IMPL=实现完成 | RELEASE=tag/release/manifest 一致 | LIVE INT=真实服务集成（非 mock） | EXT CI=外部 CI artifact | ADOPT=下游模块真实采用 | SOAK=生产或类生产长时间运行 | FACTORY=factory_grade_allowed（最高综合等级）
+
+</details>
 
 ### 分析域
 
@@ -160,6 +235,24 @@
 | [regime-engine](https://github.com/ZoneCNH/regime-engine) | v0.1.0 | ██░░ 25% | 100% | M×S 联合决策引擎（M+S → action/risk/permission），骨架完成，30+ 测试通过 |
 | [flowx](https://github.com/ZoneCNH/flowx) | v0.1.0-draft | ░░░░ 5% | 100% | 数据流管线引擎 — 流式 ETL、窗口聚合、背压控制（7 FR, SPEC draft） |
 
+<details>
+<summary>📊 分析域多维成熟度展开（点击展开）</summary>
+
+| 模块 | SPEC | IMPL | RELEASE | LIVE INT | EXT CI | ADOPT | SOAK | FACTORY | 备注 |
+|------|:----:|:----:|:-------:|:--------:|:------:|:-----:|:----:|:-------:|------|
+| factor-engine | ❌ | ❌ | N/A | N/A | N/A | N/A | N/A | ❌ | 5%；仅创建，无实现 |
+| feature-store | ❌ | ❌ | N/A | N/A | N/A | N/A | N/A | ❌ | 5%；仅创建，无实现 |
+| factor-eval | ❌ | ❌ | N/A | N/A | N/A | N/A | N/A | ❌ | 5%；仅创建，无实现 |
+| market_regime | ❌ | ❌ | N/A | N/A | N/A | N/A | N/A | ❌ | 5%；仅创建，无实现 |
+| macro_regime | ❌ | ❌ | N/A | N/A | N/A | N/A | N/A | ❌ | 5%；仅创建，无实现 |
+| ms_brain | ❌ | ❌ | N/A | N/A | N/A | N/A | N/A | ❌ | 5%；仅创建，无实现 |
+| regime-engine | ❌ | ⚠️ | ❌ | N/A | N/A | N/A | N/A | ❌ | v0.1.0；25% 骨架完成，30+ 测试通过 |
+| flowx | ❌ | ❌ | N/A | N/A | N/A | N/A | N/A | ❌ | v0.1.0-draft；7 FR，SPEC draft |
+
+> **维度说明**：SPEC=规格完成 | IMPL=实现完成 | RELEASE=tag/release/manifest 一致 | LIVE INT=真实服务集成（非 mock） | EXT CI=外部 CI artifact | ADOPT=下游模块真实采用 | SOAK=生产或类生产长时间运行 | FACTORY=factory_grade_allowed（最高综合等级）
+
+</details>
+
 ### 决策域
 
 | 组件 | 版本 | 进度 | 覆盖率要求 | 说明 |
@@ -170,6 +263,22 @@
 | [backtestx](https://github.com/ZoneCNH/backtestx) | v0.1.0-draft | ░░░░ 5% | 100% | 回测引擎 — 事件驱动回测、Walk-Forward、蒙特卡洛（7 FR, SPEC draft） |
 | [strategyx](https://github.com/ZoneCNH/strategyx) | v0.1.0-draft | ░░░░ 5% | 100% | 策略工厂 — 策略注册、参数管理、信号组合（7 FR, SPEC draft） |
 | [maestro](https://github.com/ZoneCNH/maestro) | v0.1.0-draft | ░░░░ 5% | 100% | 工作流编排引擎 — DAG 工作流、状态机、错误恢复（9 FR, SPEC draft） |
+
+<details>
+<summary>📊 决策域多维成熟度展开（点击展开）</summary>
+
+| 模块 | SPEC | IMPL | RELEASE | LIVE INT | EXT CI | ADOPT | SOAK | FACTORY | 备注 |
+|------|:----:|:----:|:-------:|:--------:|:------:|:-----:|:----:|:-------:|------|
+| signal-factory | ❌ | ❌ | N/A | N/A | N/A | N/A | N/A | ❌ | 5%；仅创建，无实现 |
+| backtest-engine | ❌ | ❌ | N/A | N/A | N/A | N/A | N/A | ❌ | 5%；仅创建，无实现 |
+| optimizer | ❌ | ❌ | N/A | N/A | N/A | N/A | N/A | ❌ | 5%；仅创建，无实现 |
+| backtestx | ❌ | ❌ | N/A | N/A | N/A | N/A | N/A | ❌ | v0.1.0-draft；7 FR，SPEC draft |
+| strategyx | ❌ | ❌ | N/A | N/A | N/A | N/A | N/A | ❌ | v0.1.0-draft；7 FR，SPEC draft |
+| maestro | ❌ | ❌ | N/A | N/A | N/A | N/A | N/A | ❌ | v0.1.0-draft；9 FR，SPEC draft |
+
+> **维度说明**：SPEC=规格完成 | IMPL=实现完成 | RELEASE=tag/release/manifest 一致 | LIVE INT=真实服务集成（非 mock） | EXT CI=外部 CI artifact | ADOPT=下游模块真实采用 | SOAK=生产或类生产长时间运行 | FACTORY=factory_grade_allowed（最高综合等级）
+
+</details>
 
 ### 执行域
 
@@ -182,6 +291,23 @@
 | [riskx](https://github.com/ZoneCNH/riskx) | v0.1.0-draft | ░░░░ 5% | 100% | 风控引擎 — 事前风控、回撤控制、熔断机制（7 FR, SPEC draft） |
 | [orderx](https://github.com/ZoneCNH/orderx) | v0.1.0-draft | ░░░░ 5% | 100% | 订单管理器 — 订单生命周期、SOR、状态机（7 FR, SPEC draft） |
 | [positionx](https://github.com/ZoneCNH/positionx) | v0.1.0-draft | ░░░░ 5% | 100% | 仓位管理器 — 实时仓位追踪、PnL、敞口监控（7 FR, SPEC draft） |
+
+<details>
+<summary>📊 执行域多维成熟度展开（点击展开）</summary>
+
+| 模块 | SPEC | IMPL | RELEASE | LIVE INT | EXT CI | ADOPT | SOAK | FACTORY | 备注 |
+|------|:----:|:----:|:-------:|:--------:|:------:|:-----:|:----:|:-------:|------|
+| risk-engine | ❌ | ❌ | N/A | N/A | N/A | N/A | N/A | ❌ | 5%；仅创建，无实现 |
+| order-engine | ❌ | ❌ | N/A | N/A | N/A | N/A | N/A | ❌ | 5%；仅创建，无实现 |
+| portfolio-engine | ❌ | ❌ | N/A | N/A | N/A | N/A | N/A | ❌ | 5%；仅创建，无实现 |
+| settlement | ❌ | ❌ | N/A | N/A | N/A | N/A | N/A | ❌ | 5%；仅创建，无实现 |
+| riskx | ❌ | ❌ | N/A | N/A | N/A | N/A | N/A | ❌ | v0.1.0-draft；7 FR，SPEC draft |
+| orderx | ❌ | ❌ | N/A | N/A | N/A | N/A | N/A | ❌ | v0.1.0-draft；7 FR，SPEC draft |
+| positionx | ❌ | ❌ | N/A | N/A | N/A | N/A | N/A | ❌ | v0.1.0-draft；7 FR，SPEC draft |
+
+> **维度说明**：SPEC=规格完成 | IMPL=实现完成 | RELEASE=tag/release/manifest 一致 | LIVE INT=真实服务集成（非 mock） | EXT CI=外部 CI artifact | ADOPT=下游模块真实采用 | SOAK=生产或类生产长时间运行 | FACTORY=factory_grade_allowed（最高综合等级）
+
+</details>
 
 ### 入口 · 横切 · Rust
 
