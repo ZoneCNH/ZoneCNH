@@ -105,48 +105,48 @@
 
 | 组件                                                          | 类型     | 版本   | 进度     | 覆盖率要求 | 说明                  |
 | ------------------------------------------------------------- | -------- | ------ | -------- | ---------- | --------------------- |
-| [binance](https://github.com/ZoneCNH/binance)                 | SDK      | -      | ███░ 80% | 100%       | Binance CEX           |
-| [okx](https://github.com/ZoneCNH/okx)                         | SDK      | -      | ███░ 80% | 100%       | OKX CEX               |
-| [bybit](https://github.com/ZoneCNH/bybit)                     | SDK      | -      | ███░ 80% | 100%       | Bybit CEX             |
-| [bitget](https://github.com/ZoneCNH/bitget)                   | SDK      | -      | ███░ 80% | 100%       | Bitget CEX            |
-| [kucoin](https://github.com/ZoneCNH/kucoin)                   | SDK      | -      | ███░ 80% | 100%       | KuCoin CEX            |
-| [gate](https://github.com/ZoneCNH/gate)                       | SDK      | -      | ███░ 80% | 100%       | Gate CEX              |
-| [mexc](https://github.com/ZoneCNH/mexc)                       | SDK      | -      | ███░ 80% | 100%       | MEXC CEX              |
-| [htx](https://github.com/ZoneCNH/htx)                         | SDK      | -      | ███░ 80% | 100%       | HTX CEX               |
-| [coinbase](https://github.com/ZoneCNH/coinbase)               | SDK      | -      | ███░ 80% | 100%       | Coinbase CEX          |
-| [hyperliquid](https://github.com/ZoneCNH/hyperliquid)         | SDK      | -      | ███░ 80% | 100%       | Hyperliquid DEX       |
-| [lighter](https://github.com/ZoneCNH/lighter)                 | SDK      | -      | ███░ 80% | 100%       | Lighter DEX           |
-| [upbit](https://github.com/ZoneCNH/upbit)                     | SDK      | -      | ███░ 80% | 100%       | Upbit CEX             |
-| [coinglass](https://github.com/ZoneCNH/coinglass)             | SDK      | -      | ███░ 80% | 100%       | 衍生品聚合数据        |
-| [binance-market](https://github.com/ZoneCNH/binance-market)   | Provider | v0.1.0 | ███░ 80% | 100%       | Binance Kline/Ticker  |
-| [bybit-market](https://github.com/ZoneCNH/bybit-market)       | Provider | v0.1.0 | ███░ 80% | 100%       | Bybit Kline/Ticker    |
-| [bitget-market](https://github.com/ZoneCNH/bitget-market)     | Provider | v0.1.0 | ███░ 80% | 100%       | Bitget Kline/Ticker   |
-| [okx-market](https://github.com/ZoneCNH/okx-market)           | Provider | v0.1.0 | ███░ 80% | 100%       | OKX Kline/Ticker      |
-| [coinbase-market](https://github.com/ZoneCNH/coinbase-market) | Provider | v0.1.0 | ███░ 80% | 100%       | Coinbase Kline/Ticker |
+| [binance](https://github.com/ZoneCNH/binance)                 | SDK      | v0.1.1 | ███░ 80% | 100%       | Binance CEX           |
+| [okx](https://github.com/ZoneCNH/okx)                         | SDK      | v0.1.1 | ███░ 80% | 100%       | OKX CEX               |
+| [bybit](https://github.com/ZoneCNH/bybit)                     | SDK      | v0.1.1 | ███░ 80% | 100%       | Bybit CEX             |
+| [bitget](https://github.com/ZoneCNH/bitget)                   | SDK      | v0.1.1 | ███░ 80% | 100%       | Bitget CEX            |
+| [kucoin](https://github.com/ZoneCNH/kucoin)                   | SDK      | v0.1.1 | ███░ 80% | 100%       | KuCoin CEX            |
+| [gate](https://github.com/ZoneCNH/gate)                       | SDK      | v0.1.1 | ███░ 80% | 100%       | Gate CEX              |
+| [mexc](https://github.com/ZoneCNH/mexc)                       | SDK      | v0.1.1 | ███░ 80% | 100%       | MEXC CEX              |
+| [htx](https://github.com/ZoneCNH/htx)                         | SDK      | v0.1.1 | ███░ 80% | 100%       | HTX CEX               |
+| [coinbase](https://github.com/ZoneCNH/coinbase)               | SDK      | v0.1.1 | ███░ 80% | 100%       | Coinbase CEX          |
+| [hyperliquid](https://github.com/ZoneCNH/hyperliquid)         | SDK      | v0.1.1 | ███░ 80% | 100%       | Hyperliquid DEX       |
+| [lighter](https://github.com/ZoneCNH/lighter)                 | SDK      | v0.1.1 | ███░ 80% | 100%       | Lighter DEX           |
+| [upbit](https://github.com/ZoneCNH/upbit)                     | SDK      | v0.1.1 | ███░ 80% | 100%       | Upbit CEX             |
+| [coinglass](https://github.com/ZoneCNH/coinglass)             | SDK      | v0.1.1 | ███░ 80% | 100%       | 衍生品聚合数据        |
+| [binance-market](https://github.com/ZoneCNH/binance-market)   | Provider | v0.1.1 | ███░ 80% | 100%       | Binance Kline/Ticker  |
+| [bybit-market](https://github.com/ZoneCNH/bybit-market)       | Provider | v0.1.1 | ███░ 80% | 100%       | Bybit Kline/Ticker    |
+| [bitget-market](https://github.com/ZoneCNH/bitget-market)     | Provider | v0.1.1 | ███░ 80% | 100%       | Bitget Kline/Ticker   |
+| [okx-market](https://github.com/ZoneCNH/okx-market)           | Provider | v0.1.1 | ███░ 80% | 100%       | OKX Kline/Ticker      |
+| [coinbase-market](https://github.com/ZoneCNH/coinbase-market) | Provider | v0.1.1 | ███░ 80% | 100%       | Coinbase Kline/Ticker |
 
 <details>
 <summary>📊 数据域 · 行情多维成熟度展开（点击展开）</summary>
 
 | 模块            | SPEC | IMPL | RELEASE | LIVE INT | EXT CI | ADOPT | SOAK | FACTORY | 备注                               |
 | --------------- | :--: | :--: | :-----: | :------: | :----: | :---: | :--: | :-----: | ---------------------------------- |
-| binance         |  ✅  |  ✅  |   ❌    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | SDK；80%；Binance CEX              |
-| okx             |  ✅  |  ✅  |   ❌    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | SDK；80%；OKX CEX                  |
-| bybit           |  ✅  |  ✅  |   ❌    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | SDK；80%；Bybit CEX                |
-| bitget          |  ✅  |  ✅  |   ❌    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | SDK；80%；Bitget CEX               |
-| kucoin          |  ✅  |  ✅  |   ❌    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | SDK；80%；KuCoin CEX               |
-| gate            |  ✅  |  ✅  |   ❌    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | SDK；80%；Gate CEX                 |
-| mexc            |  ✅  |  ✅  |   ❌    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | SDK；80%；MEXC CEX                 |
-| htx             |  ✅  |  ✅  |   ❌    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | SDK；80%；HTX CEX                  |
-| coinbase        |  ✅  |  ✅  |   ❌    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | SDK；80%；Coinbase CEX             |
-| hyperliquid     |  ✅  |  ✅  |   ❌    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | SDK；80%；Hyperliquid DEX          |
-| lighter         |  ✅  |  ✅  |   ❌    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | SDK；80%；Lighter DEX              |
-| upbit           |  ✅  |  ✅  |   ❌    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | SDK；80%；Upbit CEX                |
-| coinglass       |  ✅  |  ✅  |   ❌    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | SDK；80%；衍生品聚合数据           |
-| binance-market  |  ✅  |  ✅  |   ❌    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | Provider v0.1.0；80%；Kline/Ticker |
-| bybit-market    |  ✅  |  ✅  |   ❌    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | Provider v0.1.0；80%；Kline/Ticker |
-| bitget-market   |  ✅  |  ✅  |   ❌    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | Provider v0.1.0；80%；Kline/Ticker |
-| okx-market      |  ✅  |  ✅  |   ❌    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | Provider v0.1.0；80%；Kline/Ticker |
-| coinbase-market |  ✅  |  ✅  |   ❌    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | Provider v0.1.0；80%；Kline/Ticker |
+| binance         |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | SDK；80%；Binance CEX              |
+| okx             |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | SDK；80%；OKX CEX                  |
+| bybit           |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | SDK；80%；Bybit CEX                |
+| bitget          |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | SDK；80%；Bitget CEX               |
+| kucoin          |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | SDK；80%；KuCoin CEX               |
+| gate            |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | SDK；80%；Gate CEX                 |
+| mexc            |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | SDK；80%；MEXC CEX                 |
+| htx             |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | SDK；80%；HTX CEX                  |
+| coinbase        |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | SDK；80%；Coinbase CEX             |
+| hyperliquid     |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | SDK；80%；Hyperliquid DEX          |
+| lighter         |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | SDK；80%；Lighter DEX              |
+| upbit           |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | SDK；80%；Upbit CEX                |
+| coinglass       |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | SDK；80%；衍生品聚合数据           |
+| binance-market  |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | Provider v0.1.1；80%；Kline/Ticker |
+| bybit-market    |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | Provider v0.1.1；80%；Kline/Ticker |
+| bitget-market   |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | Provider v0.1.1；80%；Kline/Ticker |
+| okx-market      |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | Provider v0.1.1；80%；Kline/Ticker |
+| coinbase-market |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | Provider v0.1.1；80%；Kline/Ticker |
 
 > **维度说明**：SPEC=规格完成 | IMPL=实现完成 | RELEASE=tag/release/manifest 一致 | LIVE INT=真实服务集成（非 mock） | EXT CI=外部 CI artifact | ADOPT=下游模块真实采用 | SOAK=生产或类生产长时间运行 | FACTORY=factory_grade_allowed（最高综合等级）
 
@@ -445,7 +445,7 @@
 
 1. **聚焦 Phase 1**：先固化 MarketDataProvider / FactorInput / FactorOutput，再实现 factor-engine → feature-store → factor-eval
 2. **核实 x.go**：确认只包含配置加载、依赖 wiring 和生命周期控制，必要时剥离业务逻辑
-3. **版本化 SDK**：为 13 个交易所 SDK 建立 tagged release
+3. ~~**版本化 SDK**~~：✅ 已完成 — 18 仓库 v0.1.1 tagged release（2026-06-16）
 4. **统一宏观适配器**：评估 6 个央行数据源合并可行性
 5. ~~**清理仓库卫生**（R10）~~：✅ 已完成（2026-06-07）
 6. ~~**移除本地链接**（R11）~~：✅ 已完成（2026-06-07）
