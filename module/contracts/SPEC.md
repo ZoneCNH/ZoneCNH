@@ -1,40 +1,23 @@
-# contracts 完整规格
-
-> 基座 · 契约层。跨域稳定端口（MarketDataProvider, MacroDataProvider）、事件协议、DTO 契约、Topic 常量定义。
-
-最后更新：2026-06-14
-
----
-
-## 1. Metadata
+# contracts 规格
 
 - Status: Approved
 - Spec-Version: v1.1.0
 - Last-Updated: 2026-06-14
-- Owner: ZoneCNH
-- Layer: L1 基础能力
-- Version: v1.1.0-spec
-- Repository: [github.com/ZoneCNH/contracts](https://github.com/ZoneCNH/contracts)
-- Related: [CONSTITUTION.md](../../CONSTITUTION.md), [ARCHITECTURE.md](../../ARCHITECTURE.md)
+- Layer: 基座 · 跨域接口契约
+- Module-Version: v1.1.0-spec
+- Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `kernel`, `transportx`
+
+> 公开投影 caveat：Status=Approved 与 100.0% 覆盖证据不等同于 factory-grade；机器事实层保持 factory=false。
 
 ---
 
-### 1.1 变更历史
-
-| 日期       | 版本   | 变更内容   | 作者    |
-| ---------- | ------ | ---------- | ------- |
-| 2026-06-07 | v1.0.0 | 初始版本   | ZoneCNH |
-| 2026-06-14 | v1.0.1-spec | FR-006去测试化+BR违反后果列 | ZoneCNH |
-| 2026-06-14 | v1.0.1 | TRACEABILITY §1-§7 完整重建（6 FR + 10 BR + 8 NFR + 7 TC + 15 AC），对齐文档同步，版本升至 v1.0.1-spec | ZoneCNH |
-| 2026-06-14 | v1.1.0-spec | §5 边界声明重构（OWN/MUST NOT OWN/governance boundary）+ FR-007 Module Identity | ZoneCNH |
-
-## 2. Summary
+## 1. 摘要
 
 `contracts` 定义跨域稳定契约——端口（接口）、事件协议和 DTO。它是域间通信的唯一合法通道，确保数据域、分析域、决策域和执行域之间的接口稳定、可演进。
 
 ---
 
-## 3. Problem
+## 2. Problem
 
 量化交易系统由多个领域组成（数据域、分析域、决策域、执行域），域间通信如果没有统一契约，会导致：
 
@@ -46,7 +29,7 @@
 
 ---
 
-## 4. Goals
+## 3. Goals
 
 - 定义跨域稳定端口：`MarketDataProvider`、`MacroDataProvider` 等核心接口
 - 定义事件协议：统一的 Event 接口和 Topic 常量
@@ -58,7 +41,7 @@
 
 ---
 
-## 5. Non-goals
+## 4. Non-goals
 
 ### 5.1 What contracts OWNS
 
@@ -108,7 +91,7 @@
 
 ---
 
-## 6. Consumers
+## 5. Consumers
 
 | 消费者             | 使用方式                                     |
 | ------------------ | -------------------------------------------- |
@@ -123,7 +106,7 @@
 
 ---
 
-## 7. Functional Requirements
+## 6. Functional Requirements
 
 ### FR-001: MarketDataProvider
 
@@ -220,7 +203,7 @@ THEN it MUST be `module github.com/ZoneCNH/contracts`
 
 ---
 
-## 8. Business Rules
+## 7. Business Rules
 
 | 编号   | 规则                                                           | 违反后果 |
 | ------ | -------------------------------------------------------------- | -------- |
@@ -237,7 +220,7 @@ THEN it MUST be `module github.com/ZoneCNH/contracts`
 
 ---
 
-## 9. Interface Contract
+## 8. Interface Contract
 
 ### 9.1 数据输入端口
 
@@ -353,7 +336,7 @@ type MacroHistoryRequest struct {
 
 ---
 
-## 10. Data Model
+## 9. Data Model
 
 ### 10.1 公共错误
 
@@ -407,7 +390,7 @@ var TopicEventTypes = map[string]reflect.Type{
 
 ---
 
-## 11. Config Schema
+## 10. Config Schema
 
 `contracts` 自身不加载配置。它的 Go 类型定义是其他模块的编译时依赖。
 
@@ -422,7 +405,7 @@ events:
 
 ---
 
-## 12. Error Handling
+## 11. Error Handling
 
 | 错误                   | 调用方处理                             |
 | ---------------------- | -------------------------------------- |
@@ -439,7 +422,7 @@ events:
 
 ---
 
-## 13. Edge Cases
+## 12. Edge Cases
 
 | 场景                             | 预期行为                                     |
 | -------------------------------- | -------------------------------------------- |
@@ -456,7 +439,7 @@ events:
 
 ---
 
-## 14. Directory Structure
+## 13. Directory Structure
 
 ```text
 contracts/
@@ -490,7 +473,7 @@ contracts/
 
 ---
 
-## 15. Dependencies
+## 14. Dependencies
 
 ### 15.1 go.mod
 
@@ -514,7 +497,7 @@ go 1.23
 
 ---
 
-## 16. Testing
+## 15. Testing
 
 ### 16.1 单元测试
 
@@ -589,7 +572,7 @@ AND `go.mod` 声明 `module github.com/ZoneCNH/contracts`
 
 ---
 
-## 17. Performance Budget
+## 16. Performance Budget
 
 | 操作                 | 目标    | 测量方式                          |
 | -------------------- | ------- | --------------------------------- |
@@ -601,7 +584,7 @@ AND `go.mod` 声明 `module github.com/ZoneCNH/contracts`
 
 ---
 
-## 18. Observability
+## 17. Observability
 
 | 类型   | 名称                          | 说明                                   |
 | ------ | ----------------------------- | -------------------------------------- |
@@ -614,7 +597,7 @@ AND `go.mod` 声明 `module github.com/ZoneCNH/contracts`
 
 ---
 
-## 19. Security
+## 18. Security
 
 | 要求               | 实现方式                                  |
 | ------------------ | ----------------------------------------- |
@@ -624,7 +607,7 @@ AND `go.mod` 声明 `module github.com/ZoneCNH/contracts`
 
 ---
 
-## 20. CI Gate
+## 19. CI Gate
 
 ### 20.1 通用 Gate
 
@@ -650,7 +633,7 @@ AND `go.mod` 声明 `module github.com/ZoneCNH/contracts`
 
 ---
 
-## 21. Upgrade Compatibility
+## 20. Upgrade Compatibility
 
 | 变更类型                     | 版本升级                  |
 | ---------------------------- | ------------------------- |
@@ -666,7 +649,7 @@ AND `go.mod` 声明 `module github.com/ZoneCNH/contracts`
 
 ---
 
-## 22. Release DoD
+## 21. Release DoD
 
 - [ ] 所有端口接口有 godoc 注释
 - [ ] 所有 DTO 有 JSON tag（snake_case）
@@ -689,7 +672,7 @@ AND `go.mod` 声明 `module github.com/ZoneCNH/contracts`
 
 ---
 
-## 23. Open Questions
+## 22. Open Questions
 
 - 端口接口是否需要支持批量操作（如 `Subscribe` 一次订阅多个 topic 的子集）？
 - 是否需要支持请求-响应模式的 RPC 端口（除了事件推送）？
@@ -697,6 +680,12 @@ AND `go.mod` 声明 `module github.com/ZoneCNH/contracts`
 - 是否需要定义跨域的命令接口（如 `OrderCommand`、`RiskCommand`）？
 - 事件版本是否需要包含在 Event 接口中（如 `EventVersion()`）？
 - 是否需要支持事件 schema registry（集中管理事件格式演进）？
+
+
+
+## 23. 变更历史
+
+---
 
 ## Appendix A: Acceptance Criteria Registry
 
@@ -709,3 +698,10 @@ AND `go.mod` 声明 `module github.com/ZoneCNH/contracts`
 | AC-005 | FR-005 | 验收标准 TC-005 | unit test |
 | AC-006 | FR-006 | 验收标准 TC-006 | unit test |
 | AC-007 | FR-007 | 验收标准 TC-008 | unit test |
+
+| 日期       | 版本   | 变更内容   | 作者    |
+| ---------- | ------ | ---------- | ------- |
+| 2026-06-07 | v1.0.0 | 初始版本   | ZoneCNH |
+| 2026-06-14 | v1.0.1-spec | FR-006去测试化+BR违反后果列 | ZoneCNH |
+| 2026-06-14 | v1.0.1 | TRACEABILITY §1-§7 完整重建（6 FR + 10 BR + 8 NFR + 7 TC + 15 AC），对齐文档同步，版本升至 v1.0.1-spec | ZoneCNH |
+| 2026-06-14 | v1.1.0-spec | §5 边界声明重构（OWN/MUST NOT OWN/governance boundary）+ FR-007 Module Identity | ZoneCNH |

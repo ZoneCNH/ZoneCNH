@@ -1,38 +1,23 @@
-# backtestx 完整规格
-
-> 决策域 · 回测引擎。历史回放、策略评估、绩效指标、Walk-Forward 优化、蒙特卡洛模拟。
-
-最后更新：2026-06-14
-
----
-
-## 1. Metadata
+# backtestx 规格
 
 - Status: Review
 - Spec-Version: v1.0.0
 - Last-Updated: 2026-06-14
-- Owner: ZoneCNH
-- Layer: 决策域 · 回测引擎
-- Version: v0.1.0-draft
-- Repository: [github.com/ZoneCNH/backtestx](https://github.com/ZoneCNH/backtestx)
-- Related: [CONSTITUTION.md](../../CONSTITUTION.md), [ARCHITECTURE.md](../../ARCHITECTURE.md)
+- Layer: 分析域 · 回测引擎
+- Module-Version: v0.1.0-draft
+- Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `strategyx`, `riskx`
+
+> 公开投影 caveat：Status=Review 与矩阵覆盖证据不等同于 factory-grade；四源评分通过前机器事实层保持 factory=false。
 
 ---
 
-### 1.1 变更历史
-
-| 日期       | 版本         | 变更内容 | 作者    |
-| ---------- | ------------ | -------- | ------- |
-| 2026-06-14 | v0.1.0-draft | 初始版本 | ZoneCNH |
-| 2026-06-14 | v0.1.0-draft | FR-008 Module Identity (README H1 + go.mod 校验) | ZoneCNH |
-
-## 2. Summary
+## 1. 摘要
 
 `backtestx` 是决策域的回测引擎，负责历史数据回放、策略模拟执行、绩效指标计算和 Walk-Forward 参数优化。回测与实盘共享因子、信号和风控代码（架构规则：同一段逻辑在回测和实盘中运行），确保回测结果可复现于实盘。
 
 ---
 
-## 3. Problem
+## 2. Problem
 
 量化策略开发中的回测挑战：
 
@@ -44,7 +29,7 @@
 
 ---
 
-## 4. Goals
+## 3. Goals
 
 - 事件驱动回测：按历史行情时间序列逐 tick/bar 驱动
 - 与实盘共享代码：回测和实盘使用相同的因子、信号、风控模块
@@ -55,7 +40,7 @@
 
 ---
 
-## 5. Non-goals
+## 4. Non-goals
 
 - 不做因子计算（→ factor-engine）
 - 不做信号生成（→ strategyx）
@@ -65,7 +50,7 @@
 
 ---
 
-## 6. Consumers
+## 5. Consumers
 
 | 消费者       | 使用方式                              |
 | ------------ | ------------------------------------- |
@@ -76,7 +61,7 @@
 
 ---
 
-## 7. Functional Requirements
+## 6. Functional Requirements
 
 ### FR-001: Event-Driven Simulation
 
@@ -164,7 +149,7 @@ THEN it MUST be `module github.com/ZoneCNH/backtestx`
 | AC-BTX-007 | FR-007 | 滑点模型（固定+比例）和手续费模型（maker/taker）正确应用；支持自定义滑点和手续费函数 |
 | AC-BTX-008 | FR-008 | README H1 为 `# backtestx`；Go module path 为 `github.com/ZoneCNH/backtestx`；go.mod 声明 `module github.com/ZoneCNH/backtestx` |
 
-## 8. Business Rules
+## 7. Business Rules
 
 | 编号   | 规则                                   | 违反后果 |
 | ------ | -------------------------------------- | -------- |
@@ -176,7 +161,7 @@ THEN it MUST be `module github.com/ZoneCNH/backtestx`
 
 ---
 
-## 9. Interface Contract
+## 8. Interface Contract
 
 ```go
 type BacktestEngine interface {
@@ -199,7 +184,7 @@ type DataFeed interface {
 
 ---
 
-## 10. Data Model
+## 9. Data Model
 
 | 模型              | 字段 |
 | ----------------- | ---- |
@@ -213,7 +198,7 @@ type DataFeed interface {
 
 ---
 
-## 11. Config Schema
+## 10. Config Schema
 
 ```yaml
 backtestx:
@@ -230,7 +215,7 @@ backtestx:
 
 ---
 
-## 12. Error Handling
+## 11. Error Handling
 
 | 错误                  | 处理方式                       |
 | --------------------- | ------------------------------ |
@@ -241,7 +226,7 @@ backtestx:
 
 ---
 
-## 13. Edge Cases
+## 12. Edge Cases
 
 | 场景                       | 预期行为                         |
 | -------------------------- | -------------------------------- |
@@ -252,7 +237,7 @@ backtestx:
 
 ---
 
-## 14. Directory Structure
+## 13. Directory Structure
 
 ```text
 backtestx/
@@ -274,7 +259,7 @@ backtestx/
 
 ---
 
-## 15. Dependencies
+## 14. Dependencies
 
 | 可以依赖                             | 禁止依赖                     |
 | ------------------------------------ | ---------------------------- |
@@ -286,7 +271,7 @@ backtestx/
 
 ---
 
-## 16. Testing
+## 15. Testing
 
 | 测试场景            | 验证点                           |
 | ------------------- | -------------------------------- |
@@ -298,7 +283,7 @@ backtestx/
 
 ---
 
-## 17. Performance Budget
+## 16. Performance Budget
 
 | 操作                  | 目标       |
 | --------------------- | ---------- |
@@ -309,7 +294,7 @@ backtestx/
 
 ---
 
-## 18. Observability
+## 17. Observability
 
 | 信号   | 指标                                  |
 | ------ | ------------------------------------- |
@@ -320,7 +305,7 @@ backtestx/
 
 ---
 
-## 19. Security
+## 18. Security
 
 | 要求               | 实现方式                         |
 | ------------------ | -------------------------------- |
@@ -329,7 +314,7 @@ backtestx/
 
 ---
 
-## 20. CI Gate
+## 19. CI Gate
 
 | Gate   | 命令                               | 阻塞条件       |
 | ------ | ---------------------------------- | -------------- |
@@ -339,7 +324,7 @@ backtestx/
 
 ---
 
-## 21. Upgrade Compatibility
+## 20. Upgrade Compatibility
 
 | 变更类型             | 版本升级 |
 | -------------------- | -------- |
@@ -349,7 +334,7 @@ backtestx/
 
 ---
 
-## 22. Release DoD
+## 21. Release DoD
 
 - [ ] 事件驱动回测引擎完整实现
 - [ ] 10+ 项绩效指标全部计算
@@ -360,8 +345,16 @@ backtestx/
 
 ---
 
-## 23. Open Questions
+## 22. Open Questions
 
 - 是否支持多资产组合回测（basket backtest）？
 - 是否需要支持 Tick 级回测（非 bar 级）？
 - 是否接入实时行情做 paper trading？
+
+
+## 23. 变更历史
+
+| 日期       | 版本         | 变更内容 | 作者    |
+| ---------- | ------------ | -------- | ------- |
+| 2026-06-14 | v0.1.0-draft | 初始版本 | ZoneCNH |
+| 2026-06-14 | v0.1.0-draft | FR-008 Module Identity (README H1 + go.mod 校验) | ZoneCNH |

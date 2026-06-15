@@ -1,34 +1,17 @@
-# configx 完整规格
-
-> Foundation L1 配置层。显式加载、多源合并、严格解码、校验、脱敏与 provenance。
-
-最后更新：2026-06-12
-
----
-
-## 1. Metadata
+# configx 规格
 
 - Status: Approved
 - Spec-Version: v1.0.0
 - Last-Updated: 2026-06-12
-- Owner: ZoneCNH
 - Layer: L1 基础能力
-- Version: v1.0.0
-- Repository: [github.com/ZoneCNH/configx](https://github.com/ZoneCNH/configx)
-- Related: [CONSTITUTION.md](../../CONSTITUTION.md), [ARCHITECTURE.md](../../ARCHITECTURE.md)
+- Module-Version: v1.0.0
+- Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `kernel`
+
+> 公开投影 caveat：Status=Approved 与 100.0% 覆盖证据不等同于 factory-grade；机器事实层保持 factory=false。
 
 ---
 
-### 1.1 变更历史
-
-| 日期       | 版本   | 变更内容                                                                                                                  | 作者    |
-| ---------- | ------ | ------------------------------------------------------------------------------------------------------------------------- | ------- |
-| 2026-06-12 | v1.1.0 | 完整重写：基于实际 v1.0.0 代码（97.1% 覆盖率），对齐 Client/Loader/Source/SecretString/Provenance/StrictDecode 等真实 API | ZoneCNH |
-| 2026-06-12 | v1.0.2 | 版本号对齐；Non-goals 澄清；移除过时 kernel 依赖声明                                                                      | ZoneCNH |
-| 2026-06-12 | v1.0.1 | 对齐修复：移除过时 kernel.Deps；Status Draft→Approved                                                                     | ZoneCNH |
-| 2026-06-07 | v1.0.0 | 初始版本                                                                                                                  | ZoneCNH |
-
-## 2. Summary
+## 1. 摘要
 
 `configx` 提供显式、可审计的 Go 配置管理原语。调用方显式选择每种配置源和加载路径。库不执行隐式发现、不创建全局状态、不注册单例、不强依赖任何驱动包或 x.go 模块。
 
@@ -36,7 +19,7 @@
 
 ---
 
-## 3. Problem
+## 2. Problem
 
 70+ 模块各自加载配置，格式不统一、覆盖优先级不明确、缺少验证，导致：
 
@@ -47,7 +30,7 @@
 
 ---
 
-## 4. Goals
+## 3. Goals
 
 - 显式配置加载：调用方选择每种 Source，无隐式发现
 - LastWins 合并策略：后加载的源覆盖先加载的同名 key
@@ -61,7 +44,7 @@
 
 ---
 
-## 5. Non-goals
+## 4. Non-goals
 
 - 不做隐式配置发现（无 auto-scan、无约定目录）
 - 不做远程配置中心产品（K8s ConfigMap 可通过文件挂载）
@@ -72,7 +55,7 @@
 
 ---
 
-## 6. Consumers
+## 5. Consumers
 
 | 消费者                                           | 使用方式                                          |
 | ------------------------------------------------ | ------------------------------------------------- |
@@ -83,7 +66,7 @@
 
 ---
 
-## 7. Functional Requirements
+## 6. Functional Requirements
 
 ### FR-001: Client 创建与生命周期
 
@@ -200,7 +183,7 @@ THEN 使用 NoopMetrics（零开销空实现）
 
 ---
 
-## 8. Business Rules
+## 7. Business Rules
 
 | 编号 | 规则 | 违反时 |
 | --- | --- | --- |
@@ -218,7 +201,7 @@ THEN 使用 NoopMetrics（零开销空实现）
 
 ---
 
-## 9. Interface Contract
+## 8. Interface Contract
 
 ### 9.1 Client — 配置客户端
 
@@ -301,7 +284,7 @@ func WithSourceName(name string) SourceOption
 
 ---
 
-## 10. Data Model
+## 9. Data Model
 
 ### 10.1 核心类型
 
@@ -385,7 +368,7 @@ var (
 
 ---
 
-## 11. Config Schema
+## 10. Config Schema
 
 configx 自身的 Client 配置：
 
@@ -398,7 +381,7 @@ config:
 
 ---
 
-## 12. Error Handling
+## 11. Error Handling
 
 | 错误                  | 调用方处理                     |
 | --------------------- | ------------------------------ |
@@ -414,7 +397,7 @@ config:
 
 ---
 
-## 13. Edge Cases
+## 12. Edge Cases
 
 | 场景                              | 预期行为                        |
 | --------------------------------- | ------------------------------- |
@@ -431,7 +414,7 @@ config:
 
 ---
 
-## 14. Directory Structure
+## 13. Directory Structure
 
 ```text
 configx/
@@ -482,7 +465,7 @@ configx/
 
 ---
 
-## 15. Dependencies
+## 14. Dependencies
 
 ### 15.1 go.mod
 
@@ -508,7 +491,7 @@ require (
 
 ---
 
-## 16. Testing
+## 15. Testing
 
 ### 16.1 测试统计
 
@@ -581,7 +564,7 @@ Then 全部通过，覆盖率 ≥ 97%
 
 ---
 
-## 17. Performance Budget
+## 16. Performance Budget
 
 | 操作                      | 目标       | 测量方式       |
 | ------------------------- | ---------- | -------------- |
@@ -592,7 +575,7 @@ Then 全部通过，覆盖率 ≥ 97%
 
 ---
 
-## 18. Observability
+## 17. Observability
 
 ### 18.1 Metrics
 
@@ -622,7 +605,7 @@ type NoopMetrics struct{}  // 零开销空实现
 
 ---
 
-## 19. Security
+## 18. Security
 
 | 要求                | 实现方式                                                                                              |
 | ------------------- | ----------------------------------------------------------------------------------------------------- |
@@ -637,7 +620,7 @@ type NoopMetrics struct{}  // 零开销空实现
 
 ---
 
-## 20. CI Gate
+## 19. CI Gate
 
 ### 20.1 通用 Gate
 
@@ -661,7 +644,7 @@ type NoopMetrics struct{}  // 零开销空实现
 
 ---
 
-## 21. Upgrade Compatibility
+## 20. Upgrade Compatibility
 
 | 变更类型                   | 版本升级              |
 | -------------------------- | --------------------- |
@@ -674,7 +657,7 @@ type NoopMetrics struct{}  // 零开销空实现
 
 ---
 
-## 22. Release DoD
+## 21. Release DoD
 
 - [x] 所有公共接口有 godoc 注释
 - [x] 所有公共类型有示例代码（examples/error-handling/）
@@ -693,7 +676,7 @@ type NoopMetrics struct{}  // 零开销空实现
 
 ---
 
-## 23. Open Questions
+## 22. Open Questions
 
 ### Blocking（阻塞开发）
 
@@ -714,6 +697,12 @@ type NoopMetrics struct{}  // 零开销空实现
 
 ---
 
+
+
+## 23. 变更历史
+
+---
+
 ## Appendix A: Lifecycle
 
 | 阶段   | 触发方法                 | 状态变更                                              | 错误处理                                     |
@@ -724,3 +713,10 @@ type NoopMetrics struct{}  // 零开销空实现
 | 关闭   | `client.Close(ctx)`      | 标记 closed=true → metrics+1                          | ctx nil → 返回 error                         |
 
 ---
+
+| 日期       | 版本   | 变更内容                                                                                                                  | 作者    |
+| ---------- | ------ | ------------------------------------------------------------------------------------------------------------------------- | ------- |
+| 2026-06-12 | v1.1.0 | 完整重写：基于实际 v1.0.0 代码（97.1% 覆盖率），对齐 Client/Loader/Source/SecretString/Provenance/StrictDecode 等真实 API | ZoneCNH |
+| 2026-06-12 | v1.0.2 | 版本号对齐；Non-goals 澄清；移除过时 kernel 依赖声明                                                                      | ZoneCNH |
+| 2026-06-12 | v1.0.1 | 对齐修复：移除过时 kernel.Deps；Status Draft→Approved                                                                     | ZoneCNH |
+| 2026-06-07 | v1.0.0 | 初始版本                                                                                                                  | ZoneCNH |

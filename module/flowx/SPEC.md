@@ -1,32 +1,17 @@
-# flowx 完整规格
-
-> 分析域 · 数据流管线引擎。实时流式 ETL、因子计算管线、窗口聚合、数据路由和背压控制。
-
-最后更新：2026-06-14
-
----
-
-## 1. Metadata
+# flowx 规格
 
 - Status: Review
 - Spec-Version: v1.0.0
 - Last-Updated: 2026-06-14
-- Owner: ZoneCNH
-- Layer: 分析域 · 数据流管线
-- Version: v0.1.0-draft
-- Repository: [github.com/ZoneCNH/flowx](https://github.com/ZoneCNH/flowx)
-- Related: [CONSTITUTION.md](../../CONSTITUTION.md), [ARCHITECTURE.md](../../ARCHITECTURE.md)
+- Layer: 执行域 · 工作流引擎
+- Module-Version: v0.1.0-draft
+- Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `orderx`, `positionx`, `riskx`
+
+> 公开投影 caveat：Status=Review 与矩阵覆盖证据不等同于 factory-grade；四源评分通过前机器事实层保持 factory=false。
 
 ---
 
-### 1.1 变更历史
-
-| 日期       | 版本         | 变更内容 | 作者    |
-| ---------- | ------------ | -------- | ------- |
-| 2026-06-14 | v0.1.0-draft | 初始版本 | ZoneCNH |
-| 2026-06-14 | v0.1.0-draft | FR-010 Module Identity (README H1 + go.mod 校验) | ZoneCNH |
-
-## 2. Summary
+## 1. 摘要
 
 `flowx` 是分析域的数据流管线引擎，负责实时流式数据处理、因子计算编排、窗口聚合、数据路由和背压控制。它是连接数据域（market-data、macro-data）与分析域（factor-engine、feature-store）的数据管道层。
 
@@ -40,7 +25,7 @@ kafkax / natsx 是"用什么传"
 
 ---
 
-## 3. Problem
+## 2. Problem
 
 量化交易系统需要处理多个实时数据流（行情、宏观、另类数据），每条数据流需要经过不同的处理管线（清洗、聚合、因子计算、特征提取），当前缺少统一的流处理抽象：
 
@@ -52,7 +37,7 @@ kafkax / natsx 是"用什么传"
 
 ---
 
-## 4. Goals
+## 3. Goals
 
 - 定义 DAG 数据流管线（Source → Transform → Window → Sink）
 - 定义窗口类型：Tumbling、Sliding、Session
@@ -63,7 +48,7 @@ kafkax / natsx 是"用什么传"
 
 ---
 
-## 5. Non-goals
+## 4. Non-goals
 
 - 不替代 Kafka Streams / Flink 等通用流处理框架
 - 不实现分布式流处理集群（单进程内管线）
@@ -73,7 +58,7 @@ kafkax / natsx 是"用什么传"
 
 ---
 
-## 6. Consumers
+## 5. Consumers
 
 | 消费者          | 使用方式                           |
 | --------------- | ---------------------------------- |
@@ -85,7 +70,7 @@ kafkax / natsx 是"用什么传"
 
 ---
 
-## 7. Functional Requirements
+## 6. Functional Requirements
 
 ### FR-001: Pipeline DAG
 
@@ -177,7 +162,7 @@ THEN it MUST be `module github.com/ZoneCNH/flowx`
 | AC-FLX-009 | FR-009 | 热更新执行 Drain-Then-Apply；热更新期间数据不丢不重（offset checkpoint） |
 | AC-FLX-010 | FR-010 | README H1 为 `# flowx`；Go module path 为 `github.com/ZoneCNH/flowx`；go.mod 声明 `module github.com/ZoneCNH/flowx` |
 
-## 8. Business Rules
+## 7. Business Rules
 
 | 编号   | 规则                                       | 违反后果 |
 | ------ | ------------------------------------------ | -------- |
@@ -189,7 +174,7 @@ THEN it MUST be `module github.com/ZoneCNH/flowx`
 
 ---
 
-## 9. Interface Contract
+## 8. Interface Contract
 
 ```go
 // Pipeline 数据流管线
@@ -234,7 +219,7 @@ type Sink interface {
 
 ---
 
-## 10. Data Model
+## 9. Data Model
 
 | 模型              | 字段                                                                 |
 | ----------------- | -------------------------------------------------------------------- |
@@ -246,7 +231,7 @@ type Sink interface {
 
 ---
 
-## 11. Config Schema
+## 10. Config Schema
 
 ```yaml
 flowx:
@@ -260,7 +245,7 @@ flowx:
 
 ---
 
-## 12. Error Handling
+## 11. Error Handling
 
 | 错误                        | 处理方式                                   |
 | --------------------------- | ------------------------------------------ |
@@ -272,7 +257,7 @@ flowx:
 
 ---
 
-## 13. Edge Cases
+## 12. Edge Cases
 
 | 场景                       | 预期行为                                 |
 | -------------------------- | ---------------------------------------- |
@@ -284,7 +269,7 @@ flowx:
 
 ---
 
-## 14. Directory Structure
+## 13. Directory Structure
 
 ```text
 flowx/
@@ -310,7 +295,7 @@ flowx/
 
 ---
 
-## 15. Dependencies
+## 14. Dependencies
 
 | 可以依赖                             | 禁止依赖                         |
 | ------------------------------------ | -------------------------------- |
@@ -320,7 +305,7 @@ flowx/
 
 ---
 
-## 16. Testing
+## 15. Testing
 
 | 测试场景              | 验证点                             |
 | --------------------- | ---------------------------------- |
@@ -333,7 +318,7 @@ flowx/
 
 ---
 
-## 17. Performance Budget
+## 16. Performance Budget
 
 | 操作               | 目标       |
 | ------------------ | ---------- |
@@ -345,7 +330,7 @@ flowx/
 
 ---
 
-## 18. Observability
+## 17. Observability
 
 | 信号   | 指标                                  |
 | ------ | ------------------------------------- |
@@ -359,7 +344,7 @@ flowx/
 
 ---
 
-## 19. Security
+## 18. Security
 
 | 要求               | 实现方式                         |
 | ------------------ | -------------------------------- |
@@ -369,7 +354,7 @@ flowx/
 
 ---
 
-## 20. CI Gate
+## 19. CI Gate
 
 | Gate    | 命令                                   | 阻塞条件       |
 | ------- | -------------------------------------- | -------------- |
@@ -382,7 +367,7 @@ flowx/
 
 ---
 
-## 21. Upgrade Compatibility
+## 20. Upgrade Compatibility
 
 | 变更类型               | 版本升级  |
 | ---------------------- | --------- |
@@ -394,7 +379,7 @@ flowx/
 
 ---
 
-## 22. Release DoD
+## 21. Release DoD
 
 - [ ] Pipeline 接口完整实现且通过单元测试
 - [ ] 三种 Window 类型全部验证
@@ -406,9 +391,17 @@ flowx/
 
 ---
 
-## 23. Open Questions
+## 22. Open Questions
 
 - 是否支持多 Pipeline 间的数据 Join？
 - 是否支持分布式 Pipeline（跨进程）？
 - 是否支持 Protobuf 序列化（除 JSON 外）？
 - Window 状态是否需要持久化到外部存储？
+
+
+## 23. 变更历史
+
+| 日期       | 版本         | 变更内容 | 作者    |
+| ---------- | ------------ | -------- | ------- |
+| 2026-06-14 | v0.1.0-draft | 初始版本 | ZoneCNH |
+| 2026-06-14 | v0.1.0-draft | FR-010 Module Identity (README H1 + go.mod 校验) | ZoneCNH |

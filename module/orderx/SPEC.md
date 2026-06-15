@@ -1,38 +1,23 @@
-# orderx 完整规格
-
-> 执行域 · 订单管理器。订单生命周期、路由、状态机、SOR、订单簿管理。
-
-最后更新：2026-06-14
-
----
-
-## 1. Metadata
+# orderx 规格
 
 - Status: Review
 - Spec-Version: v1.0.0
 - Last-Updated: 2026-06-14
-- Owner: ZoneCNH
-- Layer: 执行域 · 订单管理
-- Version: v0.1.0-draft
-- Repository: [github.com/ZoneCNH/orderx](https://github.com/ZoneCNH/orderx)
-- Related: [CONSTITUTION.md](../../CONSTITUTION.md), [ARCHITECTURE.md](../../ARCHITECTURE.md)
+- Layer: 执行域 · 订单引擎
+- Module-Version: v0.1.0-draft
+- Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `riskx`, `positionx`
+
+> 公开投影 caveat：Status=Review 与矩阵覆盖证据不等同于 factory-grade；四源评分通过前机器事实层保持 factory=false。
 
 ---
 
-### 1.1 变更历史
-
-| 日期       | 版本         | 变更内容 | 作者    |
-| ---------- | ------------ | -------- | ------- |
-| 2026-06-14 | v0.1.0-draft | 初始版本 | ZoneCNH |
-| 2026-06-14 | v0.1.0-draft | FR-008 Module Identity (README H1 + go.mod 校验) | ZoneCNH |
-
-## 2. Summary
+## 1. 摘要
 
 `orderx` 是执行域的订单管理器，负责订单全生命周期管理、订单路由、智能订单路由（SOR）、订单状态机和订单簿维护。它接收 strategyx 或 maestro 的订单请求，通过 riskx 进行风控检查，然后路由到交易所执行。架构规则明确：策略只能通过 riskx 提交订单，riskx 通过 orderx 执行。
 
 ---
 
-## 3. Problem
+## 2. Problem
 
 多交易所交易场景中的订单管理挑战：
 
@@ -44,7 +29,7 @@
 
 ---
 
-## 4. Goals
+## 3. Goals
 
 - 统一订单状态机：NEW → PENDING → PARTIAL → FILLED / CANCELLED / REJECTED / EXPIRED
 - 订单路由：根据 symbol、exchange、liquidity 选择最优执行场所
@@ -54,7 +39,7 @@
 
 ---
 
-## 5. Non-goals
+## 4. Non-goals
 
 - 不做风控决策（→ riskx）
 - 不做策略决策（→ strategyx）
@@ -64,7 +49,7 @@
 
 ---
 
-## 6. Consumers
+## 5. Consumers
 
 | 消费者       | 使用方式                            |
 | ------------ | ----------------------------------- |
@@ -76,7 +61,7 @@
 
 ---
 
-## 7. Functional Requirements
+## 6. Functional Requirements
 
 ### FR-001: Order Lifecycle
 
@@ -168,7 +153,7 @@ THEN it MUST be `module github.com/ZoneCNH/orderx`
 | AC-ORD-007 | FR-007 | 订单状态变更记录 OrderAuditEvent；审计事件不可删除 |
 | AC-ORD-008 | FR-008 | README H1 为 `# orderx`；Go module path 为 `github.com/ZoneCNH/orderx`；go.mod 声明 `module github.com/ZoneCNH/orderx` |
 
-## 8. Business Rules
+## 7. Business Rules
 
 | 编号   | 规则                                   | 违反后果 |
 | ------ | -------------------------------------- | -------- |
@@ -180,7 +165,7 @@ THEN it MUST be `module github.com/ZoneCNH/orderx`
 
 ---
 
-## 9. Interface Contract
+## 8. Interface Contract
 
 ```go
 type OrderManager interface {
@@ -217,7 +202,7 @@ type OrderReceipt struct {
 
 ---
 
-## 10. Data Model
+## 9. Data Model
 
 | 模型             | 字段 |
 | ---------------- | ---- |
@@ -229,7 +214,7 @@ type OrderReceipt struct {
 
 ---
 
-## 11. Config Schema
+## 10. Config Schema
 
 ```yaml
 orderx:
@@ -246,7 +231,7 @@ orderx:
 
 ---
 
-## 12. Error Handling
+## 11. Error Handling
 
 | 错误                | 处理方式                         |
 | ------------------- | -------------------------------- |
@@ -258,7 +243,7 @@ orderx:
 
 ---
 
-## 13. Edge Cases
+## 12. Edge Cases
 
 | 场景                       | 预期行为                           |
 | -------------------------- | ---------------------------------- |
@@ -269,7 +254,7 @@ orderx:
 
 ---
 
-## 14. Directory Structure
+## 13. Directory Structure
 
 ```text
 orderx/
@@ -291,7 +276,7 @@ orderx/
 
 ---
 
-## 15. Dependencies
+## 14. Dependencies
 
 | 可以依赖                             | 禁止依赖                     |
 | ------------------------------------ | ---------------------------- |
@@ -303,7 +288,7 @@ orderx/
 
 ---
 
-## 16. Testing
+## 15. Testing
 
 | 测试场景            | 验证点                           |
 | ------------------- | -------------------------------- |
@@ -315,7 +300,7 @@ orderx/
 
 ---
 
-## 17. Performance Budget
+## 16. Performance Budget
 
 | 操作              | 目标     |
 | ----------------- | -------- |
@@ -325,7 +310,7 @@ orderx/
 
 ---
 
-## 18. Observability
+## 17. Observability
 
 | 信号   | 指标                                  |
 | ------ | ------------------------------------- |
@@ -337,7 +322,7 @@ orderx/
 
 ---
 
-## 19. Security
+## 18. Security
 
 | 要求               | 实现方式                       |
 | ------------------ | ------------------------------ |
@@ -346,7 +331,7 @@ orderx/
 
 ---
 
-## 20. CI Gate
+## 19. CI Gate
 
 | Gate   | 命令                                   | 阻塞条件       |
 | ------ | -------------------------------------- | -------------- |
@@ -357,7 +342,7 @@ orderx/
 
 ---
 
-## 21. Upgrade Compatibility
+## 20. Upgrade Compatibility
 
 | 变更类型             | 版本升级 |
 | -------------------- | -------- |
@@ -367,7 +352,7 @@ orderx/
 
 ---
 
-## 22. Release DoD
+## 21. Release DoD
 
 - [ ] 订单状态机完整实现 + 所有转换测试
 - [ ] 路由策略全部实现
@@ -377,8 +362,16 @@ orderx/
 
 ---
 
-## 23. Open Questions
+## 22. Open Questions
 
 - 是否支持算法订单（TWAP/VWAP/Iceberg）？
 - 是否需要订单执行质量报告（slippage, fill ratio）？
 - 是否支持多腿订单（OCO, bracket order）？
+
+
+## 23. 变更历史
+
+| 日期       | 版本         | 变更内容 | 作者    |
+| ---------- | ------------ | -------- | ------- |
+| 2026-06-14 | v0.1.0-draft | 初始版本 | ZoneCNH |
+| 2026-06-14 | v0.1.0-draft | FR-008 Module Identity (README H1 + go.mod 校验) | ZoneCNH |

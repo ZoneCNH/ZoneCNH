@@ -1,39 +1,17 @@
-# xlibgate 完整规格
-
-> 基座 · 机器门禁。import 边界、go.mod、Go baseline、release evidence 机器检查。
-
-最后更新：2026-06-14
-
----
-
-## 1. Metadata
+# xlibgate 规格
 
 - Status: Approved
 - Spec-Version: v1.1.2
 - Last-Updated: 2026-06-14
-- Owner: ZoneCNH
-- Layer: L0 基座
-- Version: v0.2.0
-- Repository: [github.com/ZoneCNH/xlibgate](https://github.com/ZoneCNH/xlibgate)
-- Related: [CONSTITUTION.md](../../CONSTITUTION.md), [ARCHITECTURE.md](../../ARCHITECTURE.md), [xlib-standard](../xlib-standard/SPEC.md)
+- Layer: 基座 · CI 门禁
+- Module-Version: v0.2.0
+- Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `xlib-standard`
+
+> 公开投影 caveat：Status=Approved 与 100.0% 覆盖证据不等同于 factory-grade；机器事实层保持 factory=false。
 
 ---
 
-### 1.1 变更历史
-
-| 日期       | 版本   | 变更内容                                                                                                                                                                                                                                                                    | 作者    |
-| ---------- | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
-| 2026-06-07 | v1.0.0 | 初始版本                                                                                                                                                                                                                                                                    | ZoneCNH |
-| 2026-06-12 | v1.0.1 | 结构评分修复：BR 逐条"违反时"、Open Questions 分类编号、Observability 补充 Metrics/Tracing、Edge Cases 补充重试、Upgrade Compatibility 补迁移步骤、Security 补输入校验、Testing 补工具声明、Dependencies 补直接/间接依赖表、FR-005 显式枚举 secret_scan 子检查、新增 TC-008 | ZoneCNH |
-| 2026-06-12 | v1.0.2 | 范围对齐（R1/R2 修复）：§2 Summary + §4 Goals 新增 `l2` 子命令组、新增 FR-007~FR-011（l2 validate-manifest / plan / check-contracts / check-evidence / release-check）                                                                                                      | ZoneCNH |
-| 2026-06-12 | v1.0.2 | Status: Draft → Approved（Spec 四源评分 Claude 98 + rules 100，0 红线；Codex/Copilot 环境缺失由维护者 override）                                                                                                                                                            | ZoneCNH |
-| 2026-06-14 | v1.1.0 | v2 Trust Alignment 检查：新增 FR-012~FR-019（identity / template-residue / release-consistency / maturity / import-boundary / testkit-prod-import / secret-redaction / fleet-status）；新增 BR-010（禁止模板身份短语）；统一定义 per-check JSON 输出格式（含 reason_code、evidence 字段） | ZoneCNH |
-| 2026-06-14 | v1.1.1 | Trust Alignment 补充：新增 TC-014~TC-029（16 条验收标准，每 FR 2 条）；新增 6 个 trust 错误码；Edge Cases 补充 10 个 trust 边界场景；§16.2 单元测试补充 16 个 trust 测试场景 | ZoneCNH |
-| 2026-06-14 | v1.1.2 | Trust Hardening：明确 projection drift、blocker-aware factory gate、release=false=>factory=false、open blocker=>factory=false；保持 exit code 0/1/2 与既有 reason_code 稳定 | ZoneCNH |
-
----
-
-## 2. Summary
+## 1. 摘要
 
 `xlibgate` 是 Foundation 的机器可执行门禁 CLI 工具，提供三组子命令：
 - `check`：在 CI 中验证依赖矩阵、import 边界、Go baseline、secret 扫描和 release evidence，输出标准化 pass/fail。
@@ -44,7 +22,7 @@
 
 ---
 
-## 3. Problem
+## 2. Problem
 
 Foundation 由 70+ 个 Go 模块组成，模块间的依赖关系、import 边界和发布质量需要机器强制执行。没有统一门禁工具，会导致：
 
@@ -56,7 +34,7 @@ Foundation 由 70+ 个 Go 模块组成，模块间的依赖关系、import 边�
 
 ---
 
-## 4. Goals
+## 3. Goals
 
 - 提供 CLI 工具，可在 CI 和本地统一执行所有门禁检查
 - import 边界扫描：检测禁止的依赖方向（生产包不依赖 testkitx，业务域不反向依赖）
@@ -71,7 +49,7 @@ Foundation 由 70+ 个 Go 模块组成，模块间的依赖关系、import 边�
 
 ---
 
-## 5. Non-goals
+## 4. Non-goals
 
 - 不参与运行时（纯 CLI 工具，不被任何模块 import）
 - 不做 Go 源码解析或 AST 分析框架（依赖关系数据通过 `go list`、`go mod graph` 等标准工具获取，xlibgate 只做规则匹配和结果聚合，不构建自有代码分析引擎）
@@ -83,7 +61,7 @@ Foundation 由 70+ 个 Go 模块组成，模块间的依赖关系、import 边�
 
 ---
 
-## 6. Consumers
+## 5. Consumers
 
 | 消费者              | 使用方式                                                    |
 | ------------------- | ----------------------------------------------------------- |
@@ -98,7 +76,7 @@ Foundation 由 70+ 个 Go 模块组成，模块间的依赖关系、import 边�
 
 ---
 
-## 7. Functional Requirements
+## 6. Functional Requirements
 
 ### FR-001: check imports
 
@@ -370,7 +348,7 @@ THEN 只输出摘要 JSON（pass/fail/error 计数和 blocker 列表），不生
 
 ---
 
-## 8. Business Rules
+## 7. Business Rules
 
 ### BR-001: 标准化 exit code
 
@@ -460,7 +438,7 @@ JSON 输出必须包含 machine-readable 的 status 字段（pass/fail/error）�
 
 ---
 
-## 9. Interface Contract
+## 8. Interface Contract
 
 ### 9.1 CLI 命令
 
@@ -657,7 +635,7 @@ release:
 
 ---
 
-## 10. Data Model
+## 9. Data Model
 
 ### 10.1 公共错误
 
@@ -700,7 +678,7 @@ type Violation struct {
 
 ---
 
-## 11. Config Schema
+## 10. Config Schema
 
 ```yaml
 # xlibgate.yaml 完整 schema
@@ -723,7 +701,7 @@ secret_scan:
 
 ---
 
-## 12. Error Handling
+## 11. Error Handling
 
 | 错误                  | 调用方处理                                                       |
 | --------------------- | ---------------------------------------------------------------- |
@@ -746,7 +724,7 @@ secret_scan:
 
 ---
 
-## 13. Edge Cases
+## 12. Edge Cases
 
 | 场景                                 | 预期行为                                                                                                                  |
 | ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------- |
@@ -777,7 +755,7 @@ secret_scan:
 
 ---
 
-## 14. Directory Structure
+## 13. Directory Structure
 
 ```text
 xlibgate/
@@ -838,7 +816,7 @@ xlibgate/
 
 ---
 
-## 15. Dependencies
+## 14. Dependencies
 
 ### 15.1 go.mod
 
@@ -875,7 +853,7 @@ xlibgate 是纯 CLI 工具，不被任何模块 import。它只扫描其他模�
 
 ---
 
-## 16. Testing
+## 15. Testing
 
 ### 16.1 测试工具
 
@@ -1110,7 +1088,7 @@ Then 生成 index.json 时该模块 factory=false，findings 含 projection drif
 
 ---
 
-## 17. Performance Budget
+## 16. Performance Budget
 
 | 操作                     | 目标    | 测量方式       |
 | ------------------------ | ------- | -------------- |
@@ -1131,7 +1109,7 @@ Then 生成 index.json 时该模块 factory=false，findings 含 projection drif
 
 ---
 
-## 18. Observability
+## 17. Observability
 
 > xlibgate 是短生命周期 CLI 工具，不集成运行时 metrics exporter 或 tracing exporter。以下日志事件作为可观测性的主要载体，覆盖 Constitution §6.2 的"操作耗时"和"错误计数"需求（通过结构化日志中的 `duration_ms` 和 `status` 字段由 CI 日志系统聚合）。CLI 短生命周期工具无需健康检查端点（exit code 0/1/2 即为健康信号）。
 
@@ -1178,7 +1156,7 @@ CLI 短生命周期工具不启动 tracing exporter。执行流程通过父子�
 
 ---
 
-## 19. Security
+## 18. Security
 
 | 要求                       | 实现方式                                                                                                                                                                                |
 | -------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -1189,7 +1167,7 @@ CLI 短生命周期工具不启动 tracing exporter。执行流程通过父子�
 
 ---
 
-## 20. CI Gate
+## 19. CI Gate
 
 ### 20.1 通用 Gate
 
@@ -1226,7 +1204,7 @@ CLI 短生命周期工具不启动 tracing exporter。执行流程通过父子�
 
 ---
 
-## 21. Upgrade Compatibility
+## 20. Upgrade Compatibility
 
 | 变更类型 | 版本升级 | 迁移方式 |
 |----------|----------|----------|
@@ -1241,7 +1219,7 @@ CLI 短生命周期工具不启动 tracing exporter。执行流程通过父子�
 
 ---
 
-## 22. Release DoD
+## 21. Release DoD
 
 - [ ] CLI 帮助文档完整（`--help` 输出所有子命令和参数）
 - [ ] 所有 check 子命令有使用示例
@@ -1264,7 +1242,7 @@ CLI 短生命周期工具不启动 tracing exporter。执行流程通过父子�
 
 ---
 
-## 23. Open Questions
+## 22. Open Questions
 
 ### Blocking（阻塞开发）
 
@@ -1285,3 +1263,16 @@ CLI 短生命周期工具不启动 tracing exporter。执行流程通过父子�
 | OQ-004 | 是否需要支持高级插件能力（如插件市场、动态加载、沙箱隔离）？ | 待评估 | -        |
 | OQ-005 | import 边界规则是否需要支持正则表达式匹配？                  | 待评估 | -        |
 | OQ-006 | release evidence 是否需要支持从远程 URL 获取？               | 待评估 | -        |
+
+
+## 23. 变更历史
+
+| 日期       | 版本   | 变更内容                                                                                                                                                                                                                                                                    | 作者    |
+| ---------- | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
+| 2026-06-07 | v1.0.0 | 初始版本                                                                                                                                                                                                                                                                    | ZoneCNH |
+| 2026-06-12 | v1.0.1 | 结构评分修复：BR 逐条"违反时"、Open Questions 分类编号、Observability 补充 Metrics/Tracing、Edge Cases 补充重试、Upgrade Compatibility 补迁移步骤、Security 补输入校验、Testing 补工具声明、Dependencies 补直接/间接依赖表、FR-005 显式枚举 secret_scan 子检查、新增 TC-008 | ZoneCNH |
+| 2026-06-12 | v1.0.2 | 范围对齐（R1/R2 修复）：§2 Summary + §4 Goals 新增 `l2` 子命令组、新增 FR-007~FR-011（l2 validate-manifest / plan / check-contracts / check-evidence / release-check）                                                                                                      | ZoneCNH |
+| 2026-06-12 | v1.0.2 | Status: Draft → Approved（Spec 四源评分 Claude 98 + rules 100，0 红线；Codex/Copilot 环境缺失由维护者 override）                                                                                                                                                            | ZoneCNH |
+| 2026-06-14 | v1.1.0 | v2 Trust Alignment 检查：新增 FR-012~FR-019（identity / template-residue / release-consistency / maturity / import-boundary / testkit-prod-import / secret-redaction / fleet-status）；新增 BR-010（禁止模板身份短语）；统一定义 per-check JSON 输出格式（含 reason_code、evidence 字段） | ZoneCNH |
+| 2026-06-14 | v1.1.1 | Trust Alignment 补充：新增 TC-014~TC-029（16 条验收标准，每 FR 2 条）；新增 6 个 trust 错误码；Edge Cases 补充 10 个 trust 边界场景；§16.2 单元测试补充 16 个 trust 测试场景 | ZoneCNH |
+| 2026-06-14 | v1.1.2 | Trust Hardening：明确 projection drift、blocker-aware factory gate、release=false=>factory=false、open blocker=>factory=false；保持 exit code 0/1/2 与既有 reason_code 稳定 | ZoneCNH |

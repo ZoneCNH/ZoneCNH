@@ -1,46 +1,29 @@
-# kernel 完整规格
-
-> Foundation L0 原语层。轻量工具包子集，stdlib-only，零外部依赖。
-
-最后更新：2026-06-12
-
----
-
-## 1. Metadata
+# kernel 规格
 
 - Status: Approved
 - Spec-Version: v2.0.0
 - Last-Updated: 2026-06-12
-- Owner: ZoneCNH
 - Layer: L0 原语
-- Version: v1.0.0
-- Repository: [github.com/ZoneCNH/kernel](https://github.com/ZoneCNH/kernel)
-- Related: [CONSTITUTION.md](../../CONSTITUTION.md), [ARCHITECTURE.md](../../ARCHITECTURE.md)
+- Module-Version: v1.0.0
+- Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`
+
+> 公开投影 caveat：Status=Approved 与 100.0% 覆盖证据不等同于 factory-grade；机器事实层保持 factory=false。
 
 ---
 
-### 1.1 变更历史
-
-| 日期       | 版本   | 变更内容                                                                                                                                                                                                                                                                      | 作者    |
-| ---------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
-| 2026-06-12 | v2.0.1 | 深度分析修复：§20 CI Gate 覆盖 80%→100%（对齐 CONSTITUTION §16 L0 层）；§16.4 TC-003 顺序修正；删除冗余 TASK-001-PROMPT.md；补全 PROMPT-KERNEL-000                                                                                                                            | ZoneCNH |
-| 2026-06-12 | v2.0.0 | 全部重写：基于实际代码，从集中式 App/Module/Deps 框架改为 12 子包轻量工具集                                                                                                                                                                                                   | ZoneCNH |
-| 2026-06-08 | v1.1.0 | 对抗性审查修复：重写 §9.1 Deps 为 kernel 内接口；修正 §18 metric 命名；§22 覆盖率提至 90%；补充 FR-001/FR-002/FR-003 WHEN/THEN；BR-004~BR-009 补充违反处理；§16 补充 AC/TC 追溯链；§13 扩充至 18 条；§19 增加安全要求；§23 分类整理；FR-005 返回 GraphView；Health() 增加 ctx | ZoneCNH |
-| 2026-06-07 | v1.0.0 | 初始版本                                                                                                                                                                                                                                                                      | ZoneCNH |
-
-## 2. Summary
+## 1. 摘要
 
 `kernel` 是轻量工具包子集，为 Foundation L1 模块提供 stdlib-only 的 Go 基础原语。包含 12 个独立子包：`lifecycx`（组件生命周期）、`errx`（结构化错误）、`healthx`（健康检查）、`obsx`（可观测抽象）、`retryx`（重试策略）、`shutdownx`（优雅停机）、`syncx`（并发控制）、`timex`（时钟抽象）、`validx`（前置条件校验）、`versionx`（版本信息）、`contextx`（类型安全上下文）、`contracttest`（契约测试辅助）。各子包独立按需引用，互不绑定。
 
 ---
 
-## 3. Problem
+## 2. Problem
 
 Foundation 各模块需要统一的生命周期管理、错误分类、健康检查、可观测抽象、重试策略、优雅停机、并发控制等横切关注点。这些能力应在 L0 层提供，不引入任何外部依赖（stdlib-only），且各子包应独立可用，避免强制耦合。
 
 ---
 
-## 4. Goals
+## 3. Goals
 
 - `lifecycx`：组件有序启动/逆序停止管理器，失败自动回滚
 - `errx`：结构化错误类型（kind/severity/op/code/retryable），支持错误链遍历
@@ -58,7 +41,7 @@ Foundation 各模块需要统一的生命周期管理、错误分类、健康检
 
 ---
 
-## 5. Non-goals
+## 4. Non-goals
 
 - 不做集中式应用框架（无 App/Module/Deps 抽象）
 - 不做 DI 容器
@@ -71,7 +54,7 @@ Foundation 各模块需要统一的生命周期管理、错误分类、健康检
 
 ---
 
-## 6. Consumers
+## 5. Consumers
 
 | 消费者                                            | 使用方式                                                                    |
 | ------------------------------------------------- | --------------------------------------------------------------------------- |
@@ -83,7 +66,7 @@ Foundation 各模块需要统一的生命周期管理、错误分类、健康检
 
 ---
 
-## 7. Functional Requirements
+## 6. Functional Requirements
 
 ### FR-001: lifecycx — 组件生命周期管理
 
@@ -364,7 +347,7 @@ THEN 测试通过
 
 ---
 
-## 8. Business Rules
+## 7. Business Rules
 
 | 编号   | 规则                                                    | 违反时                                                                            |
 | ------ | ------------------------------------------------------- | --------------------------------------------------------------------------------- |
@@ -383,7 +366,7 @@ THEN 测试通过
 
 ---
 
-## 9. Interface Contract
+## 8. Interface Contract
 
 ### 9.1 lifecycx
 
@@ -682,7 +665,7 @@ func RequireEqual[T comparable](t testing.TB, got T, want T)
 
 ---
 
-## 10. Data Model
+## 9. Data Model
 
 ### 10.1 errx.Error
 
@@ -744,7 +727,7 @@ type Compatibility struct {
 
 ---
 
-## 11. Config Schema
+## 10. Config Schema
 
 kernel 本身不需要配置。各子包通过构造函数参数或 Option 模式接收配置：
 
@@ -758,7 +741,7 @@ kernel 本身不需要配置。各子包通过构造函数参数或 Option 模�
 
 ---
 
-## 12. Error Handling
+## 11. Error Handling
 
 | 错误来源                    | 调用方处理                                                   |
 | --------------------------- | ------------------------------------------------------------ |
@@ -779,7 +762,7 @@ kernel 本身不需要配置。各子包通过构造函数参数或 Option 模�
 
 ---
 
-## 13. Edge Cases
+## 12. Edge Cases
 
 | 场景                                                      | 预期行为                                                        |
 | --------------------------------------------------------- | --------------------------------------------------------------- |
@@ -818,7 +801,7 @@ kernel 本身不需要配置。各子包通过构造函数参数或 Option 模�
 
 ---
 
-## 14. Directory Structure
+## 13. Directory Structure
 
 ```text
 kernel/
@@ -941,7 +924,7 @@ kernel/
 
 ---
 
-## 15. Dependencies
+## 14. Dependencies
 
 ### 15.1 go.mod
 
@@ -990,7 +973,7 @@ import (
 
 ---
 
-## 16. Testing
+## 15. Testing
 
 ### 16.1 单元测试覆盖
 
@@ -1167,7 +1150,7 @@ When 调用 AssertErrorKind(t, err, ErrorKindTimeout)
 Then 测试通过（不调用 Fatalf）
 When 调用 AssertErrorKind(t, err, ErrorKindConnection)
 Then 测试失败（Fatalf）
-## 17. Performance Budget
+## 16. Performance Budget
 
 | 操作                      | 目标    | 测量方式       |
 | ------------------------- | ------- | -------------- |
@@ -1179,7 +1162,7 @@ Then 测试失败（Fatalf）
 
 ---
 
-## 18. Observability
+## 17. Observability
 
 kernel 本身通过 `obsx` 子包定义可观测接口，不触发具体观测行为。上层模块使用 `obsx` 接口消费日志/指标/追踪能力，kernel 子包在关键路径可接受 `obsx.Logger` 等接口用于内部日志。
 
@@ -1194,7 +1177,7 @@ kernel 本身通过 `obsx` 子包定义可观测接口，不触发具体观测�
 
 ---
 
-## 19. Security
+## 18. Security
 
 | 要求                 | 实现方式                                                            |
 | -------------------- | ------------------------------------------------------------------- |
@@ -1205,7 +1188,7 @@ kernel 本身通过 `obsx` 子包定义可观测接口，不触发具体观测�
 
 ---
 
-## 20. CI Gate
+## 19. CI Gate
 
 ### 20.1 通用 Gate
 
@@ -1230,7 +1213,7 @@ kernel 本身通过 `obsx` 子包定义可观测接口，不触发具体观测�
 
 ---
 
-## 21. Upgrade Compatibility
+## 20. Upgrade Compatibility
 
 | 变更类型                      | 版本升级      |
 | ----------------------------- | ------------- |
@@ -1242,7 +1225,7 @@ kernel 本身通过 `obsx` 子包定义可观测接口，不触发具体观测�
 
 ---
 
-## 22. Release DoD
+## 21. Release DoD
 
 - [ ] 所有子包公开类型/函数有 godoc 注释
 - [ ] 每个子包有 example_test.go 示例
@@ -1264,7 +1247,7 @@ kernel 本身通过 `obsx` 子包定义可观测接口，不触发具体观测�
 
 ---
 
-## 23. Open Questions
+## 22. Open Questions
 
 ### Resolved（已解决）
 
@@ -1276,3 +1259,13 @@ kernel 本身通过 `obsx` 子包定义可观测接口，不触发具体观测�
 
 - 是否需要为每个子包添加 structured logging 调用？（当前子包内部不使用日志，由调用方负责）→ **保持现状，子包保持纯逻辑无副作用。**
 - 是否需要新增 `configx` 子包？（当前 kernel 不包含配置解析，见 §5 Non-goals）→ **不纳入 kernel，由独立的 configx 模块负责。**
+
+
+## 23. 变更历史
+
+| 日期       | 版本   | 变更内容                                                                                                                                                                                                                                                                      | 作者    |
+| ---------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
+| 2026-06-12 | v2.0.1 | 深度分析修复：§20 CI Gate 覆盖 80%→100%（对齐 CONSTITUTION §16 L0 层）；§16.4 TC-003 顺序修正；删除冗余 TASK-001-PROMPT.md；补全 PROMPT-KERNEL-000                                                                                                                            | ZoneCNH |
+| 2026-06-12 | v2.0.0 | 全部重写：基于实际代码，从集中式 App/Module/Deps 框架改为 12 子包轻量工具集                                                                                                                                                                                                   | ZoneCNH |
+| 2026-06-08 | v1.1.0 | 对抗性审查修复：重写 §9.1 Deps 为 kernel 内接口；修正 §18 metric 命名；§22 覆盖率提至 90%；补充 FR-001/FR-002/FR-003 WHEN/THEN；BR-004~BR-009 补充违反处理；§16 补充 AC/TC 追溯链；§13 扩充至 18 条；§19 增加安全要求；§23 分类整理；FR-005 返回 GraphView；Health() 增加 ctx | ZoneCNH |
+| 2026-06-07 | v1.0.0 | 初始版本                                                                                                                                                                                                                                                                      | ZoneCNH |
