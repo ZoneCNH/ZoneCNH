@@ -49,16 +49,16 @@
 
 ## §4 TC→FR 反向追溯
 
-| TC | Covers FR(s) | Scenario | Command |
-|----|-------------|----------|---------|
-| TC-STX-001 | FR-001 | Strategy 接口实现 Name/Version/Init/OnSignal；Signal 包含完整字段；confidence 0-1 | `go test ./... -run TestStrategy` |
-| TC-STX-002 | FR-002, BR-001 | Register 注册成功；重名报错；List 返回 (name,version,status)；支持运行时注册和卸载 | `go test ./... -run TestRegistry` |
-| TC-STX-003 | FR-003 | 参数通过 configx 注入（不可变快照）；参数描述完整；热更新仅对新信号生效；变更记录 audit log | `go test ./... -run TestParam` |
-| TC-STX-004 | FR-004, BR-005 | 策略版本遵循 semver；旧版本不退市；backtestx 可通过 version 回放 | `go test ./... -run TestVersion` |
-| TC-STX-005 | FR-005, BR-002 | Signal 含 signalID(全局唯一)/strategy/timestamp/symbol/side/qty/confidence/reason；confidence < threshold 标记 WEAK | `go test ./... -run TestSignal` |
-| TC-STX-006 | FR-006, BR-004 | 信号合并 PRIORITY/WEIGHTED/UNANIMOUS 正确；资金分配 EQUAL/PROPORTIONAL/KELLY 正确；冲突解决+日志；分配比例和为 1 | `go test ./... -run TestCompos` |
-| TC-STX-007 | FR-007, BR-003 | WarmUp 完成后 Ready；WarmUp 超时 Degraded；未完成 WarmUp 前不生成信号 | `go test ./... -run TestWarmUp` |
-| TC-STX-008 | FR-008 | README H1 为 `# strategyx`；go.mod 声明 `module github.com/ZoneCNH/strategyx` | `go test ./... -run TestModule` |
+| TC ID | Covers FR(s) | Command |
+| ----- | ------------ | ------- |
+| TC-STX-001 | FR-001 | `go test ./... -run 'TestStrategy' -race -count=1` |
+| TC-STX-002 | FR-002, BR-001 | `go test ./... -run 'TestRegistry' -race -count=1` |
+| TC-STX-003 | FR-003 | `go test ./... -run 'TestParam' -race -count=1` |
+| TC-STX-004 | FR-004, BR-005 | `go test ./... -run 'TestVersion' -race -count=1` |
+| TC-STX-005 | FR-005, BR-002 | `go test ./... -run 'TestSignal' -race -count=1` |
+| TC-STX-006 | FR-006, BR-004 | `go test ./... -run 'TestCompos' -race -count=1` |
+| TC-STX-007 | FR-007, BR-003 | `go test ./... -run 'TestWarmUp' -race -count=1` |
+| TC-STX-008 | FR-008 | `go test ./... -run 'TestModule' -race -count=1`
 
 ---
 
@@ -96,5 +96,5 @@
 
 | 日期 | 版本 | 变更 |
 |------|------|------|
-| 2026-06-16 | v1.1 | 列标准化：§1 新增 Verification 列；§2 新增 违反后果/Task/Status 列；§4 新增 Scenario/Command 列；§5 新增 Verification 列 |
+| 2026-06-16 | v1.1 | 列标准化：§1 新增 Verification 列；§2 新增 违反后果/Task/Status 列；§4 标准化为 TC ID/Covers FR(s)/Command（增强 -race -count=1）；§5 新增 Verification 列；§1/§4/§5 移除空 Task/Status 列 |
 | 2026-06-15 | v1.0 | 初始版本：8 FR + 5 BR + 5 NFR + 8 TC + 8 AC |
