@@ -1,221 +1,224 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/ZoneCNH/ZoneCNH/.foundationx/repo-contract.schema.json",
-  "title": "FoundationX Repo Contract",
-  "description": "Machine-readable module identity, version, maturity, and boundary contract for xlibgate consumption.",
+  "title": "FoundationX Aggregate Repo Contract",
+  "description": "Machine-readable aggregate contract for Foundation v2 fact sources, xlib roles, projection guards, and trust-hardening policy.",
   "type": "object",
+  "additionalProperties": false,
   "required": [
     "schema_version",
+    "contract_version",
+    "updated",
     "repo",
-    "identity",
-    "versions",
-    "maturity",
-    "boundaries"
+    "foundation",
+    "xlib_roles",
+    "exit_codes",
+    "reason_codes",
+    "maturity_dimensions",
+    "projection_guards",
+    "trust_hardening"
   ],
   "properties": {
     "schema_version": {
       "type": "string",
-      "const": "repo-contract/v1"
+      "const": "foundation.repo-contract/v1"
     },
-    "generated_at": {
-      "type": "string",
-      "format": "date-time"
+    "contract_version": {
+      "type": "string"
+    },
+    "updated": {
+      "type": "string"
     },
     "repo": {
       "type": "object",
+      "additionalProperties": false,
       "required": [
         "name",
-        "owner",
-        "url",
-        "module"
+        "path",
+        "role"
       ],
       "properties": {
         "name": {
           "type": "string"
         },
-        "owner": {
-          "type": "string",
-          "const": "ZoneCNH"
-        },
-        "url": {
-          "type": "string",
-          "format": "uri"
-        },
-        "module": {
+        "path": {
           "type": "string"
         },
-        "default_branch": {
-          "type": "string",
-          "default": "main"
+        "role": {
+          "type": "string"
         }
       }
     },
-    "identity": {
+    "foundation": {
       "type": "object",
+      "additionalProperties": false,
       "required": [
-        "layer",
-        "readme_h1",
-        "public_package",
-        "is_standard_source",
-        "is_generator",
-        "production_import_allowed"
+        "name",
+        "module_count",
+        "go_baseline",
+        "deps_matrix",
+        "current_sources",
+        "historical_sources"
       ],
       "properties": {
-        "layer": {
-          "enum": [
-            "standard-source",
-            "harness",
-            "evidence",
-            "gate",
-            "L0",
-            "L1",
-            "L2",
-            "contracts",
-            "domain-shared"
-          ]
-        },
-        "kind": {
+        "name": {
           "type": "string"
         },
-        "readme_h1": {
+        "module_count": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "go_baseline": {
           "type": "string"
         },
-        "public_package": {
+        "deps_matrix": {
           "type": "string"
         },
-        "standard_source": {
-          "type": "string"
+        "current_sources": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1
         },
-        "is_standard_source": {
-          "type": "boolean"
-        },
-        "is_generator": {
-          "type": "boolean"
-        },
-        "is_harness_runtime": {
-          "type": "boolean"
-        },
-        "is_template_reference": {
-          "type": "boolean"
-        },
-        "production_import_allowed": {
-          "type": "boolean"
-        },
-        "test_only": {
-          "type": "boolean"
+        "historical_sources": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
-    "versions": {
+    "xlib_roles": {
       "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "exit_codes": {
+      "type": "object",
+      "additionalProperties": false,
       "required": [
-        "table_version",
-        "latest_git_tag",
-        "all_aligned"
+        "pass",
+        "policy_failure",
+        "tool_error"
       ],
       "properties": {
-        "table_version": {
-          "type": "string"
+        "pass": {
+          "const": 0
         },
-        "go_module_version": {
-          "type": "string"
+        "policy_failure": {
+          "const": 1
         },
-        "latest_git_tag": {
-          "type": "string"
-        },
-        "github_latest_release": {
-          "type": "string"
-        },
-        "changelog_latest": {
-          "type": "string"
-        },
-        "manifest_latest": {
-          "type": "string"
-        },
-        "all_aligned": {
-          "type": "boolean"
+        "tool_error": {
+          "const": 2
         }
       }
     },
-    "maturity": {
+    "reason_codes": {
       "type": "object",
+      "additionalProperties": false,
       "required": [
-        "spec_complete",
-        "implementation_complete",
-        "factory_grade_allowed"
+        "policy_failures",
+        "tool_errors"
       ],
       "properties": {
-        "spec_complete": {
-          "type": "boolean"
+        "policy_failures": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "uniqueItems": true
         },
-        "implementation_complete": {
-          "type": "boolean"
-        },
-        "traceability_complete": {
-          "type": "boolean"
-        },
-        "unit_tests_complete": {
-          "type": "boolean"
-        },
-        "contract_tests_complete": {
-          "type": "boolean"
-        },
-        "integration_tests_complete": {
-          "type": "boolean"
-        },
-        "live_integration_complete": {
-          "type": "boolean"
-        },
-        "failure_profiles_complete": {
-          "type": "boolean"
-        },
-        "release_manifest_complete": {
-          "type": "boolean"
-        },
-        "external_ci_artifacts_complete": {
-          "type": "boolean"
-        },
-        "downstream_adoption_complete": {
-          "type": "boolean"
-        },
-        "production_soak_complete": {
-          "type": "boolean"
-        },
-        "factory_grade_allowed": {
-          "type": "boolean"
+        "tool_errors": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "uniqueItems": true
         }
       }
     },
-    "boundaries": {
-      "type": "object",
-      "properties": {
-        "stdlib_only": {
-          "type": "boolean"
-        },
-        "depends_on_kernel": {
-          "type": "boolean"
-        },
-        "depends_on_testkitx_in_production": {
-          "type": "boolean"
-        },
-        "depends_on_x_go": {
-          "type": "boolean"
-        },
-        "reads_real_secret_paths": {
-          "type": "boolean"
-        },
-        "logs_secrets": {
-          "type": "boolean"
-        },
-        "creates_global_singletons": {
-          "type": "boolean"
-        }
-      }
-    },
-    "known_gaps": {
+    "maturity_dimensions": {
       "type": "array",
       "items": {
         "type": "string"
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "projection_guards": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "public_docs",
+        "release_manifest",
+        "fact_sources",
+        "audit_scripts",
+        "rules"
+      ],
+      "properties": {
+        "public_docs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1
+        },
+        "release_manifest": {
+          "type": "string"
+        },
+        "fact_sources": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1
+        },
+        "audit_scripts": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1
+        },
+        "rules": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1
+        }
+      }
+    },
+    "trust_hardening": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ruleset",
+        "status_source",
+        "blocker_source",
+        "policy_rules"
+      ],
+      "properties": {
+        "ruleset": {
+          "type": "string"
+        },
+        "status_source": {
+          "type": "string"
+        },
+        "blocker_source": {
+          "type": "string"
+        },
+        "policy_rules": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1
+        }
       }
     }
   }

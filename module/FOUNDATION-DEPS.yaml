@@ -2,8 +2,8 @@
 # CI 可直接消费此文件执行依赖守卫检查
 # 与 FOUNDATION-V1.md Issue 2 对应
 
-version: "1.2"
-updated: "2026-06-15"
+version: "1.2.1"
+updated: "2026-06-14"
 
 # ============================================================
 # Go baseline
@@ -80,7 +80,7 @@ modules:
     layer: gate
     stdlib_only: false
     runtime_dependency: false
-    description: "import/gomod/baseline/release/repo-contract/reason_code/maturity claim 机器门禁"
+    description: "import/gomod/baseline/release/repo-contract/reason_code/maturity claim/projection drift/blocker-aware factory gate 机器门禁"
 
   # 存储扩展（按需引入）
   redisx:
@@ -140,34 +140,13 @@ modules:
 
   domainx:
     path: github.com/ZoneCNH/domainx
-    layer: foundation-domain-shared
+    layer: L2.5
     stdlib_only: false
-    description: "执行域共享值对象与枚举，归入基座统计"
+    description: "领域共享基础契约与原语"
 
 # ============================================================
 # 允许的依赖关系（单向箭头 = 调用方可以依赖被调方）
 # ============================================================
-  decimalx:
-    layer: L2.5-domain-shared
-    repo: https://github.com/ZoneCNH/decimalx
-    status: v1.0.0-plan
-    role: High-precision Decimal, Money, and Currency value objects.
-  domain-market:
-    layer: L2.5-domain-shared
-    repo: https://github.com/ZoneCNH/domain-market
-    status: v1.0.0-plan
-    role: Market data domain model and quality gate.
-  domain-macro:
-    layer: L2.5-domain-shared
-    repo: https://github.com/ZoneCNH/domain-macro
-    status: v1.0.0-plan
-    role: Macro information set, revision, freshness, and no-lookahead semantics.
-  domain-exchange:
-    layer: L2.5-domain-shared
-    repo: https://github.com/ZoneCNH/domain-exchange
-    status: v1.0.0-plan
-    role: Exchange SPI, venue capabilities, rate limits, errors, and registry.
-
 allowed_deps:
   kernel:        []                                    # stdlib-only
   configx:       [kernel]                              # 显式配置契约，可使用 kernel 原语
@@ -188,7 +167,7 @@ allowed_deps:
   clickhousex:   [kernel]                              # 只依赖 kernel 原语
   contracts:     []                                    # 跨域契约独立，无 Foundation 运行时依赖
   transportx:    [contracts, configx, observex, resiliencx]  # 传输契约可消费公开契约和横切接口
-  domainx:       [kernel]                              # 执行域共享值对象只依赖 kernel
+  domainx:       [kernel]                              # 领域共享原语只依赖 kernel
 
 # ============================================================
 # 禁止的依赖（任何基础模块都不得导入）
@@ -407,6 +386,56 @@ forbidden_foundation_edges:
     rule: "transportx 只定义跨 runtime / adapter 传输契约；可依赖 contracts/configx/observex/resiliencx 的公开接口，但不得依赖具体 broker/client、存储实现、入口或业务域。"
 
 # ============================================================
+# Trust hardening rules (xlibgate v1.1.2)
+# ============================================================
+trust_hardening:
+  version: "v1.1.2"
+  fact_sources:
+    status_index: ".foundationx/status/index.json"
+    blockers: ".foundationx/blockers.json"
+    repo_contract: ".foundationx/repo-contract.json"
+    release_manifest_template: "release/manifest/template.json"
+  projection_paths:
+    - "STATUS.md"
+    - "README.md"
+    - "ARCHITECTURE.md"
+    - "module/README.md"
+    - "release/manifest/template.json"
+  stable_reason_codes:
+    factory_gate_blocked: "FACTORY_GATE_BLOCKED"
+    contract_parse_error: "CONTRACT_PARSE_ERROR"
+  exit_codes:
+    pass: 0
+    fail: 1
+    error: 2
+  rules:
+    - id: projection-drift
+      check: "public projections and release manifest trust evidence must match FoundationX fact sources"
+      fail_if: "public docs, release/factory claims, open blockers, or projection_guard values drift from .foundationx facts"
+      reason_code: "FACTORY_GATE_BLOCKED"
+      exit_code: 1
+    - id: release-false-blocks-factory
+      check: "release=false implies factory=false"
+      fail_if: "module status has release=false while factory=true"
+      reason_code: "FACTORY_GATE_BLOCKED"
+      exit_code: 1
+    - id: open-blocker-blocks-factory
+      check: "open blocker implies factory=false"
+      fail_if: "module has an open blocker while factory=true"
+      reason_code: "FACTORY_GATE_BLOCKED"
+      exit_code: 1
+    - id: audit-status-not-factory-proof
+      check: "audit-status remains a projection consistency guard"
+      fail_if: "audit-status pass is documented or emitted as factory-grade proof"
+      reason_code: "FACTORY_GATE_BLOCKED"
+      exit_code: 1
+  invariants:
+    - "Preserve exit code semantics: 0=pass, 1=fail, 2=error."
+    - "Keep reason_code values stable for CI and release evidence consumers."
+    - "Malformed or missing fact sources remain CONTRACT_PARSE_ERROR with exit code 2."
+    - "Factory-grade claims require release evidence, blocker review, projection guard, and xlibgate trust evidence."
+
+# ============================================================
 # foundationx compatibility（已退出 — 2026-06-14）
 # ============================================================
 foundationx_compatibility:
@@ -423,26 +452,3 @@ foundationx_compatibility:
   freeze_gate: >
     FOUNDATION-DEPS.yaml constraints 中 configx/observex 的 no-foundationx-new-usage
     门禁已激活，CI 会阻断任何新增 foundationx import。
-
-
-l2_5_release_order:
-  - decimalx
-  - domain-market
-  - domain-macro
-  - domain-exchange
-
-l2_5_release_boundary:
-  baseline: documentation_and_goal_execution_plan
-  not_implied:
-    - module_api_freeze
-    - module_ci_release_gate
-    - v1.0.0_git_tag
-    - github_release
-
-l2_5_public_contract_rules:
-  - Public finance fields use decimalx.Decimal or explicit value objects; no public float64 for price, quantity, money, rates, or notional values.
-  - Domain shared modules do not expose transport DTOs, ORM tags, raw exchange responses, HTTP, Kafka, or storage details.
-  - domainx is tracked as foundation-domain-shared and owns Order, Trade, Position, Portfolio, ExecutionReport, OrderSide, OrderType, and OrderState; it is not counted in the L2.5 release-order baseline.
-  - domain-market owns market data semantics and quality gates.
-  - domain-exchange owns SPI requests, venue capability, rate-limit policy, ExchangeError, and registry.
-  - domain-macro owns MacroPoint, MacroInformationSet, revision, freshness, and no-lookahead visibility semantics.
