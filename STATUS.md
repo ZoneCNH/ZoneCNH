@@ -36,7 +36,7 @@
 | [clickhousex](https://github.com/ZoneCNH/clickhousex) | v1.0.1 | spec/code/live | release-blocked | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | ClickHouse；SPEC+TRACEABILITY+TASKS 完成；公开 GitHub Release 未发布（BLK-003）；RELEASE pending；非 factory |
 | [contracts](https://github.com/ZoneCNH/contracts) | v1.0.1-spec | spec/code | release-pending | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | 跨域稳定端口/事件/DTO 契约；spec-only；无公开 GitHub Release / git tag 对齐；非 factory until release |
 | [transportx](https://github.com/ZoneCNH/transportx) | v1.1.1-spec | spec/code | release-pending | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | 应用通信底座规格基线；spec-only；无公开 GitHub Release / git tag 对齐；production_import_allowed=false；非 factory until release |
-> ⚠️ **版本 / release 注记**：公开文档是投影层；版本、release 与 factory 状态以 `.foundationx/status/index.json` + `.foundationx/blockers.json` 为准。当前多维成熟度表中 14/19 已发布 GitHub Release；公开投影仍有 BLK-001/002/003/006/007/008 open，不声明 Foundation 整体 factory grade。
+> ⚠️ **版本 / release 注记**：公开文档是投影层；版本、release 与 factory 状态以 `.foundationx/status/index.json` + `.foundationx/blockers.json` 为准。当前 20-module projection 中 15/20 已发布 GitHub Release（19 个 Foundation 组件 + L2.5 `domainx` 事实层投影）；公开投影仍有 BLK-001/002/003/006/007/008 open，不声明 Foundation 整体 factory grade。
 
 > **成熟度语义说明（2026-06-14 v2 Trust Alignment）**：上表"进度"反映本仓库 Spec 管线评分（spec→code），不代表可投产等级（factory grade）。下表提供多维度成熟度视图；RELEASE=❌ 或存在 open blocker 的模块不得投影为 FACTORY=✅。
 
@@ -64,7 +64,7 @@
 | clickhousex | ✅ | ✅ | ❌ | ✅ | ✅ | N/A | N/A | ❌ | v1.0.1; CI 已部署+运行(Docker ClickHouse); 公开 GitHub Release 未发布（BLK-003）; 非 factory |
 | contracts | ✅ | ✅ | ❌ | N/A | ✅ | ✅ | N/A | ❌ | v1.0.1-spec; spec-only; 无公开 GitHub Release / git tag 对齐; all_aligned=false |
 | transportx | ✅ | ✅ | ❌ | N/A | ✅ | N/A | N/A | ❌ | v1.1.1-spec; spec-only; 无公开 GitHub Release / git tag 对齐; production_import_allowed=false |
-| domainx | ✅ | ✅ | ❌ | N/A | ✅ | N/A | N/A | ❌ | v0.1.0; L2.5 领域共享层; 无 git tag; release/factory=false |
+| domainx | ✅ | ✅ | ✅ | N/A | ✅ | N/A | N/A | ❌ | v1.0.1; L2.5 领域共享层; 公开 GitHub Release/tag v1.0.1 已观测并完成 fact-layer/trust release 对账; factory=false until adoption/factory evidence archived |
 > **维度说明**：SPEC=规格完成 | IMPL=实现完成 | RELEASE=tag/release/manifest 一致 | LIVE INT=真实服务集成（非 mock） | EXT CI=外部 CI artifact | ADOPT=下游模块真实采用 | SOAK=生产或类生产长时间运行 | FACTORY=factory_grade_allowed（最高综合等级）
 
 > **数据来源**：本表依据 `module/` 规格状态、`.foundationx/status/index.json`、`.foundationx/blockers.json`、公开 GitHub release 页面、GitHub Actions CI 运行状态与 FOUNDATION-DEPS.yaml 反向依赖图（ADOPT）投影。Open blocker 会下调 FACTORY 投影。
@@ -80,7 +80,7 @@
 | 组件 | 版本 | 进度 | 覆盖率要求 | 说明 |
 | ---- | ---- | ---- | ---------- | ---- |
 | [decimalx](https://github.com/ZoneCNH/decimalx) | v0.1.0 | ███░ 80% | 100% | 高精度十进制类型 |
-| [domainx](https://github.com/ZoneCNH/domainx) | v1.0.0 | ███░ 80% | 100% | 领域共享值对象：Order / Position / Trade / Portfolio / ExecutionReport |
+| [domainx](https://github.com/ZoneCNH/domainx) | v1.0.1 | ███░ 80% | 100% | 领域共享值对象：Order / Position / Trade / Portfolio / ExecutionReport；公开 v1.0.1 release/tag 已观测并完成 trust 对账；factory 仍待 adoption/factory 证据 |
 | [domain-market](https://github.com/ZoneCNH/domain-market) | v0.1.0 | ███░ 80% | 100% | 市场数据域模型 |
 | [domain-macro](https://github.com/ZoneCNH/domain-macro) | v0.1.0 | ███░ 80% | 100% | 宏观数据域模型 |
 | [domain-exchange](https://github.com/ZoneCNH/domain-exchange) | v0.1.0 | ███░ 80% | 100% | 交易域模型 |
@@ -91,7 +91,7 @@
 | 模块 | SPEC | IMPL | RELEASE | LIVE INT | EXT CI | ADOPT | SOAK | FACTORY | 备注 |
 |------|:----:|:----:|:-------:|:--------:|:------:|:-----:|:----:|:-------:|------|
 | decimalx | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | v0.1.0；80%；高精度十进制类型 |
-| domainx | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | v1.0.0；80%；领域共享值对象：Order/Position/Trade/Portfolio/ExecutionReport |
+| domainx | ✅ | ✅ | ✅ | N/A | N/A | N/A | N/A | ❌ | v1.0.1；80%；领域共享值对象：Order/Position/Trade/Portfolio/ExecutionReport；公开 v1.0.1 release/tag 已观测并完成 trust 对账；factory 仍待 adoption/factory 证据 |
 | domain-market | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | v0.1.0；80%；市场数据域模型 |
 | domain-macro | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | v0.1.0；80%；宏观数据域模型 |
 | domain-exchange | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | v0.1.0；80%；交易域模型 |
@@ -323,7 +323,7 @@
 | 域                     | 总数 | 已有 | 已创建 | 平均进度 | 有版本号                                                    |
 | ---------------------- | ---- | ---- | ------ | -------- | ----------------------------------------------------------- |
 | 基座                   | 19   | 19   | 0      | Spec→Code 投影完成；factory 未闭合 | 17 |
-| L2.5 领域共享层        | 5    | 5    | 0      | 80%      | 5 (全部)                                                    |
+| L2.5 领域共享层        | 5    | 5    | 0      | 80%      | 5 (全部；仅 domainx release 已对账，factory 仍待补证)       |
 | 数据域 · 行情 SDK      | 13   | 13   | 0      | 80%      | 0                                                           |
 | 数据域 · 行情 Provider | 5    | 5    | 0      | 80%      | 5 (全部)                                                    |
 | 数据域 · 宏观          | 11   | 11   | 0      | 80%      | 0                                                           |
@@ -343,7 +343,8 @@
 
 ### 🟢 基座（健康）
 
-- 组件：19 个；Spec→Code 管线投影已闭合，但不等于 Foundation 整体 factory grade。
+- 组件：19 个（不含 L2.5；机器事实层另将 `domainx` 作为 L2.5 模块计入 20-module projection）；
+  Spec→Code 管线投影已闭合，但不等于 Foundation 整体 factory grade。
 - 核心模块的 release/factory 投影以 `.foundationx/status/index.json` + `.foundationx/blockers.json` 为准；当前 BLK-001/BLK-002/BLK-003/BLK-006/BLK-007/BLK-008 open，因此不得声明 Foundation 单一 100% 或 factory-grade。
 - 存储层 `redisx` v1.0.1（Docker-backed Redis + persistence restart recovery 验证），`kafkax` v1.0.2（真实 broker gates 已验证），`natsx` v1.0.0（dev auth live gate 已验证；BLK-001/BLK-002 open），`postgresx` v1.0.0（live integration 通过；BLK-006 open），`taosx` v1.0.1（真实 taosWS WebSocket 集成已验证；BLK-007 open），`ossx` v1.0.1（真实 Aliyun OSS 集成、race/vet/build/release-check 已验证；BLK-008 open：API 文档 / integration evidence / quickstart / release manifest 未归档；非 factory）；`clickhousex` v1.0.1（公开 GitHub Release 未发布，BLK-003）；`transportx` v1.1.1-spec（SPEC baseline，production_import_allowed=false）。
 - **SRE/CI/CD**：已产出 [`docs/sre/foundation-cicd-plan.md`](../docs/sre/foundation-cicd-plan.md)（19 模块 4 阶段部署方案、8 标签池、Docker 集成测试、标准化模板），待落地

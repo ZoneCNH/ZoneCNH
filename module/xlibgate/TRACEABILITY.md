@@ -21,16 +21,16 @@
 | FR-009 | l2 check-contracts：验证契约测试证据是否覆盖所有必需契约测试 | AC-012 | TC-011 | TASK-XLIBGATE-009 (TBD) | ✅ |
 | FR-010 | l2 check-evidence：验证 L2 evidence 目录下必需证据文件是否存在 | AC-013 | TC-012 | TASK-XLIBGATE-009 (TBD) | ✅ |
 | FR-011 | l2 release-check：完整 L2 发布就绪判定 | AC-014 | TC-013 | TASK-XLIBGATE-009 (TBD) | ✅ |
-| FR-012 | trust identity：五源身份比对（README H1 / go.mod / .repo-contract.yaml / public_package / 身份声明），不匹配时输出 IDENTITY_MISMATCH | AC-015 | TC-014, TC-015 | TASK-XLIBGATE-011 | 🔴 |
-| FR-013 | trust template-residue：扫描下游仓库中的 BR-010 禁止模板身份短语 | AC-016 | TC-016, TC-017 | TASK-XLIBGATE-012 | 🔴 |
-| FR-014 | trust release-consistency：七源版本一致性校验（.repo-contract.yaml / go.mod / VERSION / CHANGELOG / git tag / release manifest / GitHub release），默认离线模式 | AC-017 | TC-018, TC-019 | TASK-XLIBGATE-013 | 🔴 |
-| FR-015 | trust maturity --factory：11 维工厂级成熟度判定，拒绝单个百分比替代 | AC-018 | TC-020, TC-021 | TASK-XLIBGATE-014 | 🔴 |
-| FR-016 | trust import-boundary：消费 FOUNDATION-DEPS.yaml 的 allowed_deps 和 forbidden_foundation_edges | AC-019 | TC-022, TC-023 | TASK-XLIBGATE-015 | 🔴 |
-| FR-017 | trust testkit-prod-import：检测生产代码中的 testkitx import，区分生产/测试路径 | AC-020 | TC-024, TC-025 | TASK-XLIBGATE-016 | 🔴 |
-| FR-018 | trust secret-redaction：扫描 release/evidence 文档中的密钥和私有端点 | AC-021 | TC-026, TC-027 | TASK-XLIBGATE-017 | 🔴 |
-| FR-019 | trust fleet-status：20 模块舰队状态聚合 → .foundationx/status/index.json | AC-022 | TC-028, TC-029 | TASK-XLIBGATE-018 | 🔴 |
+| FR-012 | trust identity：五源身份比对（README H1 / go.mod / .repo-contract.yaml / public_package / 身份声明），不匹配时输出 IDENTITY_MISMATCH | AC-015 | TC-014, TC-015 | TASK-XLIBGATE-011 | ❌ |
+| FR-013 | trust template-residue：扫描下游仓库中的 BR-010 禁止模板身份短语 | AC-016 | TC-016, TC-017 | TASK-XLIBGATE-012 | ❌ |
+| FR-014 | trust release-consistency：七源版本一致性校验（.repo-contract.yaml / go.mod / VERSION / CHANGELOG / git tag / release manifest / GitHub release），默认离线模式 | AC-017 | TC-018, TC-019 | TASK-XLIBGATE-013 | ❌ |
+| FR-015 | trust maturity --factory：11 维工厂级成熟度判定，拒绝单个百分比替代 | AC-018 | TC-020, TC-021 | TASK-XLIBGATE-014 | ❌ |
+| FR-016 | trust import-boundary：消费 FOUNDATION-DEPS.yaml 的 allowed_deps 和 forbidden_foundation_edges | AC-019 | TC-022, TC-023 | TASK-XLIBGATE-015 | ❌ |
+| FR-017 | trust testkit-prod-import：检测生产代码中的 testkitx import，区分生产/测试路径 | AC-020 | TC-024, TC-025 | TASK-XLIBGATE-016 | ❌ |
+| FR-018 | trust secret-redaction：扫描 release/evidence 文档中的密钥和私有端点 | AC-021 | TC-026, TC-027 | TASK-XLIBGATE-017 | ❌ |
+| FR-019 | trust fleet-status：20 模块舰队状态聚合 → .foundationx/status/index.json | AC-022 | TC-028, TC-029 | TASK-XLIBGATE-018 | ❌ |
 
-> Status 说明：✅=已完成, ⚠️=部分完成/需修复, 🔴=未按 SPEC 实现
+> Status 说明：✅=已完成, ⚠️=部分完成/需修复, ❌=未按 SPEC 实现
 > FR-001~FR-011：check + l2 子命令组已完成（v1.0.2），AC/TC 追溯链闭合
 > FR-012~FR-019：trust 子命令组待实现（v1.1.1），SPEC/PLAN/Tasks 已完成
 
@@ -49,9 +49,9 @@
 | BR-007 | JSON 输出必须包含 machine-readable 的 status 字段 | CI 解析失败 | TC-007 | TASK-XLIBGATE-006 | ✅ |
 | BR-008 | human-readable 输出必须包含文件路径和行号 | 开发者无法定位违规位置 | TC-001, TC-002, TC-008 | TASK-XLIBGATE-002 | ✅ |
 | BR-009 | 依赖矩阵文件 `FOUNDATION-DEPS.yaml` schema 与 xlib-standard 定义一致 | deps.yaml 解析失败 | FR-001 config 加载（YAML 解析 + schema 校验）+ Config.Validate() | TASK-XLIBGATE-002 | ✅ |
-| BR-010 | 禁止模板身份短语：仅 xlib-standard 可含 5 条模板身份短语 | 模块身份定义冲突 | TC-016, TC-017 + template-residue 精确字符串匹配 | TASK-XLIBGATE-012 | 🔴 |
+| BR-010 | 禁止模板身份短语：仅 xlib-standard 可含 5 条模板身份短语 | 模块身份定义冲突 | TC-016, TC-017 + template-residue 精确字符串匹配 | TASK-XLIBGATE-012 | ❌ |
 
-> Status 说明：✅=已完成, ⚠️=部分完成/需修复, 🔴=未按 SPEC 实现
+> Status 说明：✅=已完成, ⚠️=部分完成/需修复, ❌=未按 SPEC 实现
 
 ---
 
@@ -69,16 +69,16 @@
 | NFR-008 | 无硬编码密钥                 | 全仓扫描零命中                      | `gitleaks detect --no-git`         | TASK-XLIBGATE-006 | ✅        |
 | NFR-009 | secret 扫描不泄露敏感数据    | 错误消息只含文件路径和行号          | review 错误输出格式                | TASK-XLIBGATE-006 | ⚠️       |
 | NFR-010 | 无 Foundation 运行时依赖     | `go list -deps` 零命中 ZoneCNH 模块 | CI gate `go list -deps ./...`      | TASK-XLIBGATE-006 | ✅        |
-| NFR-011 | trust identity 检查性能      | < 2s                                | Benchmark `BenchmarkTrustIdentity`  | TASK-XLIBGATE-011 | 🔴       |
-| NFR-012 | trust template-residue 扫描  | < 15s（50 模块）                     | Benchmark `BenchmarkTrustTemplate`  | TASK-XLIBGATE-012 | 🔴       |
-| NFR-013 | trust release-consistency    | < 3s                                | Benchmark `BenchmarkTrustRelease`   | TASK-XLIBGATE-013 | 🔴       |
-| NFR-014 | trust maturity 检查          | < 1s                                | Benchmark `BenchmarkTrustMaturity`  | TASK-XLIBGATE-014 | 🔴       |
-| NFR-015 | trust import-boundary 检查   | < 10s                               | Benchmark `BenchmarkTrustBoundary`  | TASK-XLIBGATE-015 | 🔴       |
-| NFR-016 | trust testkit-prod-import    | < 5s                                | Benchmark `BenchmarkTrustTestkit`   | TASK-XLIBGATE-016 | 🔴       |
-| NFR-017 | trust secret-redaction 扫描  | < 10s                               | Benchmark `BenchmarkTrustSecret`    | TASK-XLIBGATE-017 | 🔴       |
-| NFR-018 | trust fleet-status 聚合      | < 60s（20 模块）                     | Benchmark `BenchmarkTrustFleet`     | TASK-XLIBGATE-018 | 🔴       |
+| NFR-011 | trust identity 检查性能      | < 2s                                | Benchmark `BenchmarkTrustIdentity`  | TASK-XLIBGATE-011 | ❌       |
+| NFR-012 | trust template-residue 扫描  | < 15s（50 模块）                     | Benchmark `BenchmarkTrustTemplate`  | TASK-XLIBGATE-012 | ❌       |
+| NFR-013 | trust release-consistency    | < 3s                                | Benchmark `BenchmarkTrustRelease`   | TASK-XLIBGATE-013 | ❌       |
+| NFR-014 | trust maturity 检查          | < 1s                                | Benchmark `BenchmarkTrustMaturity`  | TASK-XLIBGATE-014 | ❌       |
+| NFR-015 | trust import-boundary 检查   | < 10s                               | Benchmark `BenchmarkTrustBoundary`  | TASK-XLIBGATE-015 | ❌       |
+| NFR-016 | trust testkit-prod-import    | < 5s                                | Benchmark `BenchmarkTrustTestkit`   | TASK-XLIBGATE-016 | ❌       |
+| NFR-017 | trust secret-redaction 扫描  | < 10s                               | Benchmark `BenchmarkTrustSecret`    | TASK-XLIBGATE-017 | ❌       |
+| NFR-018 | trust fleet-status 聚合      | < 60s（20 模块）                     | Benchmark `BenchmarkTrustFleet`     | TASK-XLIBGATE-018 | ❌       |
 
-> Status 说明：✅=已完成, ⚠️=需验证/待 benchmark, 🔴=未实现
+> Status 说明：✅=已完成, ⚠️=需验证/待 benchmark, ❌=未实现
 > NFR-001~006：核心逻辑已实现但 benchmark 未正式运行，status 标记 ⚠️（待验证）
 > NFR-007：internal/check 80.0%，核心包达标
 > NFR-008：gitleaks 集成已完成（BR-005）
@@ -175,7 +175,7 @@
 |------|------|------|
 | 2026-06-12 | v1.0 | 初始版本：完整 7 列矩阵 + BR 行 + NFR 行 + TC 反向追溯 + AC 注册表 + 覆盖率仪表盘 |
 | 2026-06-12 | v1.1 | 结构评分修复：FR 表 AC 列改为具体 AC-00X 引用、BR-005 补充 TC-008 引用、新增 secret 扫描测试用例 + AC-009（gitleaks 验收）、BR-008 验证方式追加 TC-008、仪表盘同步更新 |
-| 2026-06-12 | v1.2 | 实现状态回填：FR/BR/NFR Status 列全部更新反映实际实现进展（✅/⚠️/🔴）；仪表盘 Task 总数 7→9 修正（补充 TASK-007 集成测试、TASK-008 文档+DoD）；§1-§3 新增 Status 说明和修复项注释 |
+| 2026-06-12 | v1.2 | 实现状态回填：FR/BR/NFR Status 列全部更新反映实际实现进展（✅/⚠️/❌）；仪表盘 Task 总数 7→9 修正（补充 TASK-007 集成测试、TASK-008 文档+DoD）；§1-§3 新增 Status 说明和修复项注释 |
 | 2026-06-12 | v1.3 | 范围对齐（R1/R2 修复）：SPEC v1.0.2 新增 FR-007~FR-011（l2 子命令组）；FR 总数 6→11；BR-002/004/005/007 + NFR-007/008 Status → ✅；移除过时修复项注释 |
 | 2026-06-12 | v1.4 | 追溯链闭合（SPEC 结构评分 REDLINE 修复）：FR-007~FR-011 AC/TC 列填入 AC-010~AC-014 / TC-009~TC-013；§4 TC→FR 表格新增 TC-009~TC-013；§5 AC 注册表新增 AC-010~AC-014；仪表盘 AC 9→14 / TC 8→13 / FR 覆盖率 6/6→11/11 |
 | 2026-06-14 | v1.5 | Trust Alignment 追溯：SPEC v1.1.1 FR-012~FR-019 + BR-010 + TC-014~TC-029 + AC-015~AC-022 + NFR-011~NFR-018；仪表盘 FR 11→19 / BR 9→10 / NFR 10→18 / AC 14→22 / TC 13→29 / Task 9→19 |

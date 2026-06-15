@@ -22,7 +22,7 @@ TASK-NATSX-011:
 
 ## Non-Scope
 
-Production TLS endpoint gate remains separate.
+Production TLS endpoint gate remains separate. The release-blocking production TLS closure packet for `BLK-002` is governed by `release/trust/foundation-maturity-evidence-matrix-20260615.md` and must not be inferred from this local/dev live integration task.
 
 ## Acceptance
 

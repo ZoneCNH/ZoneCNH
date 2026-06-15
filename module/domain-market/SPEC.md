@@ -1,12 +1,12 @@
 # domain-market v1.0.0 Spec
 
-Status: Draft
-Spec-Version: v1.0.0-plan
+- Status: Draft
+- Spec-Version: v1.0.0
 Module-Version: v0.1.0 -> v1.0.0
 Layer: L2.5 领域共享
 Repository: https://github.com/ZoneCNH/domain-market
 Source-Plan: /home/zone/Downloads/0615/ZoneCNH-v1.0.0-goal-execution-plans/domain-market-v1.0.0-goal-execution-plan.md
-Last-Updated: 2026-06-15
+- Last-Updated: 2026-06-15
 
 ## 1. 范围
 
@@ -47,3 +47,75 @@ Last-Updated: 2026-06-15
 | 边界门禁 | 不含 HTTP/WS/DB/Kafka/TDengine/vendor DTO 泄漏。 |
 | 质量门禁 | dirty/stale/time-invalid 数据有 fail-closed 测试。 |
 | 下游门禁 | `domain-exchange` 可采用 market data types。 |
+
+## 6. Consumers
+
+- 待补齐：v1.0.0 planning SPEC 尚未展开本节；不得据此推断 release、live 或 factory 成熟度。
+
+## 7. Functional Requirements
+
+- 待补齐：v1.0.0 planning SPEC 尚未展开本节；不得据此推断 release、live 或 factory 成熟度。
+
+## 8. Business Rules
+
+- 待补齐：v1.0.0 planning SPEC 尚未展开本节；不得据此推断 release、live 或 factory 成熟度。
+
+## 9. Interface Contract
+
+- 待补齐：v1.0.0 planning SPEC 尚未展开本节；不得据此推断 release、live 或 factory 成熟度。
+
+## 10. Data Model
+
+- 待补齐：v1.0.0 planning SPEC 尚未展开本节；不得据此推断 release、live 或 factory 成熟度。
+
+## 11. Config Schema
+
+- 待补齐：v1.0.0 planning SPEC 尚未展开本节；不得据此推断 release、live 或 factory 成熟度。
+
+## 12. Error Handling
+
+- 待补齐：v1.0.0 planning SPEC 尚未展开本节；不得据此推断 release、live 或 factory 成熟度。
+
+## 13. Edge Cases
+
+- 待补齐：v1.0.0 planning SPEC 尚未展开本节；不得据此推断 release、live 或 factory 成熟度。
+
+## 14. Directory Structure
+
+- 待补齐：v1.0.0 planning SPEC 尚未展开本节；不得据此推断 release、live 或 factory 成熟度。
+
+## 15. Dependencies
+
+- 待补齐：v1.0.0 planning SPEC 尚未展开本节；不得据此推断 release、live 或 factory 成熟度。
+
+## 16. Testing
+
+- 待补齐：v1.0.0 planning SPEC 尚未展开本节；不得据此推断 release、live 或 factory 成熟度。
+
+## 17. Performance Budget
+
+- 待补齐：v1.0.0 planning SPEC 尚未展开本节；不得据此推断 release、live 或 factory 成熟度。
+
+## 18. Observability
+
+- 待补齐：v1.0.0 planning SPEC 尚未展开本节；不得据此推断 release、live 或 factory 成熟度。
+
+## 19. Security
+
+- 待补齐：v1.0.0 planning SPEC 尚未展开本节；不得据此推断 release、live 或 factory 成熟度。
+
+## 20. CI Gate
+
+- 待补齐：v1.0.0 planning SPEC 尚未展开本节；不得据此推断 release、live 或 factory 成熟度。
+
+## 21. Upgrade Compatibility
+
+- 待补齐：v1.0.0 planning SPEC 尚未展开本节；不得据此推断 release、live 或 factory 成熟度。
+
+## 22. Release DoD
+
+- 待补齐：v1.0.0 planning SPEC 尚未展开本节；不得据此推断 release、live 或 factory 成熟度。
+
+## 23. Open Questions
+
+- 待补齐：v1.0.0 planning SPEC 尚未展开本节；不得据此推断 release、live 或 factory 成熟度。
