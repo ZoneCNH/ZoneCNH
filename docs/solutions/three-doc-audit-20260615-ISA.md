@@ -110,8 +110,7 @@ STATUS.md / README.md / ARCHITECTURE.md 三文档之间存在系统性数量漂�
 |------|------|------|
 | 2026-06-15 | domainx 归入基座（三文档统一） | ARCH 和 STATUS 已将 domainx 列在基座，README 滞后。统一为基座后三文档 L2.5=4，无需维护两套口径 |
 | 2026-06-15 | strategies 全文件删除（非改为纯文本或标注"已移除"） | 仓库 404，保留引用违反 CLAUDE.md 模块-仓库强制对应规则。纯文本引用同样会成为误导（读者点不了链接） |
-| 2026-06-15 | `stdlib.rs` 不再作为项目仓库计入 | 当前仓库没有实际 `stdlib.rs` 文件，保留 GitHub 链接会把 Rust 标准库误计为项目模块。 |
-| 2026-06-15 | 同步表 STATUS 列用 unique repos (77) 非 domain-sum (79) | 与 README/ARCH 的 unique 计数方法一致，具有可比性。domain-sum=79 的差异在表注中说明（observex 双归属 + module） |
+| 2026-06-15 | 同步表 STATUS 列用 unique repos (78) 非 domain-sum (80) | 与 README/ARCH 的 unique 计数方法一致，具有可比性。domain-sum=80 的差异在表注中说明（observex 双归属 + stdlib.rs + module） |
 | 2026-06-15 | CountGuard 高危模式 block（exit 2）非 warn-only | 组件总数/平均进度/有版本号是本次审计发现的最高频编造项。告警不足以阻止——agent 在 linter 触发的快速编辑循环中会忽略 stderr 警告。Block 强制 agent 先验证 |
 | 2026-06-15 | `COUNT_GUARD_STRICT=false` 降级而非永久豁免 | 提供逃生舱但不鼓励滥用。agent 在已验证后 export 该变量，commit 后自动恢复严格模式 |
 | 2026-06-15 | CI gate 阻断非仅告警 | audit-status.py 是确定性工具（纯数据对比，无 AI/概率判断），假阳性概率为零。任何 FAIL 都意味着文档不一致，必须阻断 |
