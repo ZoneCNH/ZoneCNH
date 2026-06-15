@@ -157,7 +157,18 @@ AND MUST NOT use `github.com/ZoneCNH/xlib-standard`
 WHEN `go.mod` declares the module name
 THEN it MUST be `module github.com/ZoneCNH/strategyx`
 
+### Acceptance Criteria
 
+| AC 编号 | 对应 FR | 验收条件 |
+| ------- | ------- | -------- |
+| AC-STX-001 | FR-001 | Strategy 接口实现 Name/Version/Init/OnSignal 四个方法；Signal 包含 symbol, side, qty, confidence, reason；confidence 范围 0-1 |
+| AC-STX-002 | FR-002 | strategy.Register 注册策略名称全局唯一，重复注册报错；registry.List 返回 (name, version, status)；支持运行时注册和卸载 |
+| AC-STX-003 | FR-003 | 参数通过 configx 注入（不可变快照）；参数描述含 name/type/default/min/max/description；热更新仅对新信号生效；变更记录 audit log |
+| AC-STX-004 | FR-004 | 策略版本遵循 semver（major=信号逻辑改变，minor=参数新增，patch=修复）；旧版本不退市；backtestx 可通过 version 参数回放指定版本 |
+| AC-STX-005 | FR-005 | Signal 包含 signalID(全局唯一)/strategy/timestamp/symbol/side/qty/confidence/reason；confidence < threshold 标记 WEAK |
+| AC-STX-006 | FR-006 | 信号合并策略 PRIORITY/WEIGHTED/UNANIMOUS 正确执行；资金分配 EQUAL/PROPORTIONAL/KELLY 正确计算；冲突信号按策略解决并记录日志 |
+| AC-STX-007 | FR-007 | WarmUp 完成后进入 Ready 状态；WarmUp 超时标记为 Degraded |
+| AC-STX-008 | FR-010 | README H1 为 `# strategyx`；Go module path 为 `github.com/ZoneCNH/strategyx`；go.mod 声明 `module github.com/ZoneCNH/strategyx` |
 
 ## 8. Business Rules
 

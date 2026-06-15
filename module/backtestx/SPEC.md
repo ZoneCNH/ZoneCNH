@@ -151,7 +151,18 @@ AND MUST NOT use `github.com/ZoneCNH/xlib-standard`
 WHEN `go.mod` declares the module name
 THEN it MUST be `module github.com/ZoneCNH/backtestx`
 
+### Acceptance Criteria
 
+| AC 编号 | 对应 FR | 验收条件 |
+| ------- | ------- | -------- |
+| AC-BTX-001 | FR-001 | 回测按时间序列顺序回放历史数据；事件驱动 strategy.OnTick/OnBar；模拟订单执行（延迟+滑点+手续费）；模拟 riskx 风控；通过 positionx 追踪虚拟仓位 |
+| AC-BTX-002 | FR-002 | 回测完成后计算全部 10 项指标（Total/Annualized Return, Sharpe, Sortino, MaxDD/Duration, Calmar, WinRate, ProfitFactor, AvgWin/Loss, TradeCount）；输出分年/分月绩效明细 |
+| AC-BTX-003 | FR-003 | WalkForward 将数据分为训练/测试窗口；每个窗口训练集优化→测试集评估；最终参数为各窗口最优参数平均值 |
+| AC-BTX-004 | FR-004 | MonteCarlo 随机打乱交易序列；输出指标分布（mean/median/5th/95th percentile）；MC 95% 置信区间不穿越零收益线时判断稳健 |
+| AC-BTX-005 | FR-005 | StressTest 注入极端行情场景（闪崩/波动率5x/流动性0）；输出最大亏损和恢复能力的情景分析报告 |
+| AC-BTX-006 | FR-006 | Benchmark 同时计算基准收益；输出 Alpha 和 Beta |
+| AC-BTX-007 | FR-007 | 滑点模型（固定+比例）和手续费模型（maker/taker）正确应用；支持自定义滑点和手续费函数 |
+| AC-BTX-008 | FR-010 | README H1 为 `# backtestx`；Go module path 为 `github.com/ZoneCNH/backtestx`；go.mod 声明 `module github.com/ZoneCNH/backtestx` |
 
 ## 8. Business Rules
 

@@ -183,6 +183,21 @@ THEN 测试失败，报告泄漏的 goroutine 堆栈
 WHEN 调用 `GoroutineLeakCheck(t)` 且无泄漏
 THEN 测试通过
 
+### Acceptance Criteria
+
+| AC 编号 | 对应 FR | 验收条件 |
+| ------- | ------- | -------- |
+| AC-TKX-001 | FR-001 | FakeConfig(values) 返回 configx.Reader；Get(key) 返回对应值；key 不存在返回 nil |
+| AC-TKX-002 | FR-002 | FakeLogger() 返回 (*FakeLoggerImpl, observex.Logger)；AssertLogged 断言指定 level 包含文本；AssertNoErrors 断言无 Error 日志；Entries 返回全部条目 |
+| AC-TKX-003 | FR-003 | FakeMeter() 返回 (*FakeMeterImpl, observex.Meter)；AssertCounterValue 断言计数器值；AssertHistogramRecorded 断言直方图有记录 |
+| AC-TKX-004 | FR-004 | FakeTracer() 返回 (*FakeTracerImpl, observex.Tracer)；AssertSpanCount 断言 span 数量；AssertTraceID 断言 trace_id 已传播 |
+| AC-TKX-005 | FR-005 | FakeClock(at) Now() 返回 at；Advance(d) 后 Now() 返回 at+d；Set(t) 后 Now() 返回 t |
+| AC-TKX-006 | FR-006 | FakeBreaker(initial) 返回 resiliencx.Breaker，状态为 initial |
+| AC-TKX-007 | FR-007 | Eventually 在 timeout 内 fn 返回 true 则测试通过；超时仍 false 则测试失败并输出诊断 |
+| AC-TKX-008 | FR-008 | GOLDEN_UPDATE=1 时 GoldenUpdate() 返回 true；未设置时返回 false |
+| AC-TKX-009 | FR-009 | BoundaryCheck 检测到生产包依赖 testkitx 时测试失败报告路径；无依赖时通过 |
+| AC-TKX-010 | FR-010 | GoroutineLeakCheck 检测到泄漏时失败报告堆栈；无泄漏时通过 |
+
 ---
 
 ## 8. Business Rules

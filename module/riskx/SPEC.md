@@ -143,7 +143,18 @@ AND MUST NOT use `github.com/ZoneCNH/xlib-standard`
 WHEN `go.mod` declares the module name
 THEN it MUST be `module github.com/ZoneCNH/riskx`
 
+### Acceptance Criteria
 
+| AC 编号 | 对应 FR | 验收条件 |
+| ------- | ------- | -------- |
+| AC-RSK-001 | FR-001 | CheckOrder 短路求值，首个规则失败即拒绝；全部规则（maxOrderValue/maxPositionSize/maxDailyOrders/maxDailyVolume/禁止列表）逐项校验 |
+| AC-RSK-002 | FR-002 | 回撤超过 maxDrawdown 时拒绝新订单并 emit drawdown_circuit_breaker；回撤降至 maxDrawdown*0.5 以下时恢复 |
+| AC-RSK-003 | FR-003 | KillSwitch 立即取消所有挂单+拒绝新订单；状态持久化重启后仍生效；Resume 恢复下单能力 |
+| AC-RSK-004 | FR-004 | 订单频率超过 maxOrderRate 时拒绝并返回 RATE_LIMITED 错误；使用滑动窗口计数 |
+| AC-RSK-005 | FR-005 | 单 symbol 仓位占比超过 maxConcentration 时拒绝新增仓位；减仓不受限制 |
+| AC-RSK-006 | FR-006 | 风险指标输出 VaR(95%/99%)、Sharpe、MaxDrawdown、Calmar、Volatility；计算周期可配置（默认 5min） |
+| AC-RSK-007 | FR-007 | 风控 PASS/REJECT 均记录审计事件（timestamp/account/symbol/side/qty/price/result/reason/rule_id）；审计事件不可删除 |
+| AC-RSK-008 | FR-010 | README H1 为 `# riskx`；Go module path 为 `github.com/ZoneCNH/riskx`；go.mod 声明 `module github.com/ZoneCNH/riskx` |
 
 ## 8. Business Rules
 

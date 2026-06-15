@@ -188,7 +188,21 @@ AND MUST NOT use `github.com/ZoneCNH/xlib-standard`
 WHEN `go.mod` declares the module name
 THEN it MUST be `module github.com/ZoneCNH/maestro`
 
+### Acceptance Criteria
 
+| AC 编号 | 对应 FR | 验收条件 |
+| ------- | ------- | -------- |
+| AC-MAE-001 | FR-001 | Workflow DAG 创建时检测循环依赖并报错；必须包含且仅包含一个 Start 和一个 End 节点 |
+| AC-MAE-002 | FR-001 | 每个 Node 定义包含 name, type, config, retryPolicy, timeout 五个字段 |
+| AC-MAE-003 | FR-002 | 支持全部 6 种 Task 类型（STRATEGY, RISK_CHECK, ORDER_SUBMIT, WAIT, CONDITION, PARALLEL），未支持的类型创建失败 |
+| AC-MAE-004 | FR-003 | Workflow 按拓扑排序执行节点；节点超时时按策略（RETRY/FAIL/CONTINUE）处理；返回 WorkflowResult 含 status, nodeResults, totalDuration, error |
+| AC-MAE-005 | FR-004 | 状态机转换遵循 PENDING→RUNNING→SUCCEEDED/FAILED/CANCELLED，FAILED→RETRYING→RUNNING；每次变更 emit workflow.state_change 事件 |
+| AC-MAE-006 | FR-005 | 节点失败按 retryPolicy 重试；重试耗尽后执行 fallback（FAIL_WORKFLOW/SKIP_NODE/RUN_FALLBACK）；工作流失败时逆拓扑回滚 compensable 节点 |
+| AC-MAE-007 | FR-006 | Checkpoint 持久化 completedNodes, intermediateOutputs, timestamp；恢复时从最后 Checkpoint 继续，已完成节点不重复执行 |
+| AC-MAE-008 | FR-007 | CONDITION 节点评估表达式后走 thenBranch 或 elseBranch；两条分支汇聚到同一节点或 End |
+| AC-MAE-009 | FR-008 | PARALLEL 节点并发执行子节点，收集 fan-in 结果；failFast=true 时任一失败立即终止；并发数不超过 maxConcurrency |
+| AC-MAE-010 | FR-009 | Workflow 注册名称全局唯一；运行时注册/更新不影响已运行实例；List/Get/Delete 操作正确返回 |
+| AC-MAE-011 | FR-010 | README H1 为 `# maestro`；Go module path 为 `github.com/ZoneCNH/maestro`；go.mod 声明 `module github.com/ZoneCNH/maestro` |
 
 ## 8. Business Rules
 

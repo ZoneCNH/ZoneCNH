@@ -144,7 +144,18 @@ AND MUST NOT use `github.com/ZoneCNH/xlib-standard`
 WHEN `go.mod` declares the module name
 THEN it MUST be `module github.com/ZoneCNH/positionx`
 
+### Acceptance Criteria
 
+| AC 编号 | 对应 FR | 验收条件 |
+| ------- | ------- | -------- |
+| AC-POS-001 | FR-001 | FillEvent 触发仓位更新；更新耗时 < 10ms（p95）；记录变更原因和 fill_id |
+| AC-POS-002 | FR-002 | Position(symbol,account,exchange) 返回最新仓位（longQty/shortQty/netQty/avgPrice/lastUpdateTime）；空参数返回跨交易所聚合视图 |
+| AC-POS-003 | FR-003 | PnL 返回 realizedPnl/unrealizedPnl/totalPnl；unrealizedPnl 基于 markPrice；markPrice 不可用时用最近成交价替代并标注 stale=true |
+| AC-POS-004 | FR-004 | Exposure 返回 totalExposure/byExchange/bySymbol 明细和 netDelta |
+| AC-POS-005 | FR-005 | Reconciliation 拉取交易所持仓对比本地；差异超过 threshold emit reconciliation_alert；差异写入 audit log |
+| AC-POS-006 | FR-006 | Snapshot 生成只读仓位快照；通过 observex 推送；间隔可配置（默认 1s） |
+| AC-POS-007 | FR-007 | PositionHistory 返回指定时间段仓位变更事件列表（timestamp/fill_id/deltaQty/price/reason） |
+| AC-POS-008 | FR-010 | README H1 为 `# positionx`；Go module path 为 `github.com/ZoneCNH/positionx`；go.mod 声明 `module github.com/ZoneCNH/positionx` |
 
 ## 8. Business Rules
 

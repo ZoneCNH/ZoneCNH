@@ -155,7 +155,18 @@ AND MUST NOT use `github.com/ZoneCNH/xlib-standard`
 WHEN `go.mod` declares the module name
 THEN it MUST be `module github.com/ZoneCNH/orderx`
 
+### Acceptance Criteria
 
+| AC 编号 | 对应 FR | 验收条件 |
+| ------- | ------- | -------- |
+| AC-ORD-001 | FR-001 | 订单状态机遵循 NEW→PENDING→PARTIAL/FILLED/CANCELLED/REJECTED/EXPIRED 转换；非法转换被拒绝；每次变更记录 timestamp/oldState/newState/reason |
+| AC-ORD-002 | FR-002 | Submit 必须先通过 riskx.CheckOrder；风控拒绝时返回拒绝原因；通过后发送至 exchange adapter；返回 orderId 和初始状态 |
+| AC-ORD-003 | FR-003 | 路由策略 PREFERRED/BEST_PRICE/LOWEST_FEE 正确执行；PREFERRED 指定交易所不可用时 FAIL |
+| AC-ORD-004 | FR-004 | SOR 超过单笔上限时自动拆分为子订单；子订单可路由到不同交易所；父订单状态 = 所有子订单聚合 |
+| AC-ORD-005 | FR-005 | CancelOrder 未成交订单状态更新为 CANCELLED；部分成交仅取消剩余；AmendOrder 执行 Cancel-Replace 保留原 orderId |
+| AC-ORD-006 | FR-006 | Order(orderId) 返回完整订单信息；OpenOrders(account) 仅返回非终态订单 |
+| AC-ORD-007 | FR-007 | 订单状态变更记录 OrderAuditEvent；审计事件不可删除 |
+| AC-ORD-008 | FR-010 | README H1 为 `# orderx`；Go module path 为 `github.com/ZoneCNH/orderx`；go.mod 声明 `module github.com/ZoneCNH/orderx` |
 
 ## 8. Business Rules
 

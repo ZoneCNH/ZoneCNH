@@ -135,6 +135,21 @@ Acceptance criteria:
 - Close is idempotent and drains in-flight multipart bookkeeping where possible.
 - Readiness can be tested without writing objects unless configured to perform active probes.
 
+### Acceptance Criteria Registry
+
+| AC 编号 | 对应 FR | 验收条件 |
+| ------- | ------- | -------- |
+| AC-OSS-001 | FR-001 | 无效 endpoint/bucket/region/checksum/TTL 返回类型化配置错误；可通过纯 struct 或 options 传入配置；依赖守卫证明无 ossx 包导入 configx |
+| AC-OSS-002 | FR-002 | 空 key/绝对路径/遍历段/超大 metadata 被拒绝；metadata round trip 不泄露 provider 头部；checksum 枚举确定且校验确定性 |
+| AC-OSS-003 | FR-003 | not-found/conflict/permission/validation/timeout/provider 错误映射为稳定错误；List 返回有界分页+continuation token；Delete 对缺失对象幂等 |
+| AC-OSS-004 | FR-004 | 上传流不超出 context 取消边界；下载流暴露 close 错误；大流测试不分配完整 payload |
+| AC-OSS-005 | FR-005 | Part number/size/ETag/checksum 校验通过；Abort 幂等且部分失败安全；Complete 验证所有必需 part 后发布对象 |
+| AC-OSS-006 | FR-006 | TTL 不超过 15 分钟；仅已配置操作可 presign；凭据/签名/token 在日志和 trace 中脱敏 |
+| AC-OSS-007 | FR-007 | 不支持的 checksum 算法上传前失败；lifecycle/retention 负值或矛盾值被拒绝；权限策略在 presign 和 write 前校验 |
+| AC-OSS-008 | FR-008 | 公共接口仅使用 ossx/stdlib/kernel/observex 类型；S3 适配器隔离在 adapters/s3；provider 错误在适配器边界转换 |
+| AC-OSS-009 | FR-009 | 操作名/结果/延迟/对象大小/sanitized key 可观测；secret/签名URL/凭据/原始 metadata 不被记录；hook 失败不破坏操作结果（除非 fail-closed 策略） |
+| AC-OSS-010 | FR-010 | 健康检查区分配置错误/provider 不可达/降级状态；Close 幂等并排空 in-flight multipart；readiness 可无写操作测试 |
+
 ## 8. Business Rules
 
 | 编号 | 规则 | 违反时 |
