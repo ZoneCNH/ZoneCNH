@@ -161,6 +161,13 @@ def parse_multidimensional_status_rows(text):
         }
     return rows
 
+def fact_bool_to_status(value):
+    if value is True:
+        return "✅"
+    if value is False:
+        return "❌"
+    return "N/A"
+
 def audit_foundationx_fact_layer():
     """Validate machine-readable FoundationX fact sources and invariants."""
     print("--- 9. FoundationX fact-layer guard ---")
@@ -360,69 +367,82 @@ if NETWORK:
 else:
     print("  SKIPPED (use --network)")
 
-# ── 8. Cross-dimension: RELEASE/FACTORY ↔ version note ──────
+# ── 8. Cross-dimension: RELEASE/FACTORY ↔ fact layer ──────
 print("\n--- 8. Cross-dimension checks ---")
-# Count RELEASE ✅/❌ from multidimensional table
-release_yes = release_no = 0
-in_multi = False
-for line in STATUS.splitlines():
-    if "📊 基座多维成熟度展开" in line: in_multi = True; continue
-    if in_multi and line.startswith("</details>"): break
-    if in_multi and re.match(r'^\| [a-z]', line):
-        parts = [p.strip() for p in line.split("|")]
-        if len(parts) >= 6:
-            r_val = parts[4]  # RELEASE = column 5 (1-indexed)
-            if r_val == "✅": release_yes += 1
-            elif r_val == "❌": release_no += 1
-
-# Cross-check RELEASE/FACTORY projection against the machine-readable fact layer.
-# STATUS prose can change shape; the fact layer is the authority for release/factory counts.
 foundation_status = load_json(".foundationx/status/index.json")
 blockers_doc = load_json(".foundationx/blockers.json")
 modules = foundation_status.get("modules", {})
-multi_rows = parse_multidimensional_table(STATUS)
+multi_rows = parse_multidimensional_status_rows(STATUS)
+
+missing_status_rows = sorted(set(modules) - set(multi_rows))
+extra_status_rows = sorted(set(multi_rows) - set(modules))
+if missing_status_rows or extra_status_rows:
+    details = []
+    if missing_status_rows:
+        details.append("missing rows: " + ", ".join(missing_status_rows))
+    if extra_status_rows:
+        details.append("extra rows: " + ", ".join(extra_status_rows))
+    no("STATUS multidimensional table coverage mismatch: " + "; ".join(details))
+else:
+    ok(f"STATUS multidimensional table covers {len(multi_rows)} fact-layer modules")
+
+release_yes = sum(1 for row in multi_rows.values() if row["release"] == "✅")
 fact_release_published = foundation_status.get("summary", {}).get("release_published")
 if fact_release_published is None:
     no("Could not parse FoundationX release_published summary")
 else:
     chk("RELEASE ✅ vs fact-layer release_published", str(release_yes), str(fact_release_published))
 
-multi_rows = parse_multidimensional_status_rows(STATUS)
+release_mismatches = []
+factory_mismatches = []
+for module, fact in sorted(modules.items()):
+    row = multi_rows.get(module)
+    if not row:
+        continue
 
-# FACTORY N/A count
+    expected_release = fact_bool_to_status(fact.get("release"))
+    if row["release"] != expected_release:
+        release_mismatches.append(
+            f"{module} (STATUS {row['release']} != fact-layer {expected_release})"
+        )
+
+    expected_factory = fact_bool_to_status(fact.get("factory"))
+    if row["factory"] != expected_factory:
+        factory_mismatches.append(
+            f"{module} (STATUS {row['factory']} != fact-layer {expected_factory})"
+        )
+
+if release_mismatches:
+    no("STATUS RELEASE projection mismatches fact layer: " + "; ".join(release_mismatches))
+else:
+    ok("STATUS RELEASE rows match fact-layer release values")
+
+if factory_mismatches:
+    no("STATUS FACTORY projection mismatches fact layer: " + "; ".join(factory_mismatches))
+else:
+    ok("STATUS FACTORY rows match fact-layer factory values")
+
 factory_na = sum(1 for row in multi_rows.values() if row["factory"] == "N/A")
-# testkitx should be N/A (test-only)
 if factory_na >= 1:
     ok(f"FACTORY N/A={factory_na} (testkitx=test-only)")
 else:
     no(f"FACTORY N/A={factory_na} (expected >=1)")
 
-# FACTORY projection must not overstate the machine-readable fact layer.
-foundation_blockers = load_json(".foundationx/blockers.json")
-foundation_modules = foundation_status.get("modules", {})
-open_factory_blockers = {
+open_factory_blockers = set(blockers_doc.get("factory_blocking_modules") or sorted({
     blocker.get("module")
-    for blocker in foundation_blockers.get("blockers", [])
+    for blocker in blockers_doc.get("blockers", [])
     if blocker.get("status") == "open"
-}
-factory_overclaims = []
-for module, row in sorted(multi_rows.items()):
-    if row["factory"] != "✅":
-        continue
-    fact_factory = foundation_modules.get(module, {}).get("factory")
-    has_open_blocker = module in open_factory_blockers
-    if fact_factory is False or has_open_blocker:
-        reasons = []
-        if fact_factory is False:
-            reasons.append("fact-layer factory=false")
-        if has_open_blocker:
-            reasons.append("open factory blocker")
-        factory_overclaims.append(f"{module} ({', '.join(reasons)})")
+}))
+factory_overclaims = [
+    module
+    for module, row in sorted(multi_rows.items())
+    if row["factory"] == "✅" and module in open_factory_blockers
+]
 
 if factory_overclaims:
-    no("STATUS FACTORY projection overclaims: " + "; ".join(factory_overclaims))
+    no("STATUS FACTORY projection overclaims open blockers: " + ", ".join(factory_overclaims))
 else:
-    ok("STATUS FACTORY ✅ rows match fact-layer factory=true and have no open blockers")
+    ok("STATUS FACTORY ✅ rows have no open blockers")
 
 print()
 audit_foundationx_fact_layer()
