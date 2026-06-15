@@ -105,7 +105,9 @@
 
 </details>
 
-> **多维成熟度总则（2026-06-15）**：下面各域统一采用 `SPEC / IMPL / RELEASE / LIVE INT / EXT CI / ADOPT / SOAK / FACTORY` 维度。🟡 表示已有基线或草案但未完成门禁，❌ 表示未形成门禁，N/A 表示当前未单独评估。
+> **多维成熟度统一模板（2026-06-15）**
+> 维度列固定为：`SPEC` / `IMPL` / `RELEASE` / `LIVE` / `INT CI` / `EXT CI` / `ADOPT` / `SOAK` / `FACTORY`。
+> 状态符号固定为：`✅`=完成，`🟡`=进行中，`❌`=未覆盖；备注只写差异，不另起维度。
 
 ### 数据域 · 行情
 
