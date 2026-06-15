@@ -23,7 +23,7 @@ on:
 
 jobs:
   audit:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64, homepage]
     steps:
       - uses: actions/checkout@v4
       - name: Validate FoundationX JSON files
@@ -36,6 +36,9 @@ jobs:
         run: |
           python3 -m py_compile scripts/audit-status.py
           bash -n .github/ci/status-consistency-check.sh
+      - name: Run audit regression tests
+        run: |
+          python3 -m pytest scripts/tests -q
       - name: Run cross-document consistency check
         run: |
           python3 scripts/audit-status.py
