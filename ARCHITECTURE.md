@@ -126,8 +126,8 @@ flowx ──► strategyx ──► maestro ──► riskx ──► orderx ─
 
 | 域     | 职责                                                                                                                          | 组件                                                                                                                                                       |
 | ------ | ----------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 基座   | 标准源、生成器、证据运行时、L0 原语、L1 运行时横切能力、测试期证据、存储扩展、稳定契约与传输契约                                            | xlib-standard, xlib-harness, xlib-evidence, kernel, configx, observex, testkitx, resiliencx, schedulex, xlibgate, redisx, kafkax, natsx, postgresx, taosx, ossx, clickhousex, contracts, transportx |
-| L2.5   | 领域值对象和语义模型，上层统一依赖                                                                                            | decimalx, domain-market, domain-exchange, domain-macro, domainx                                                                                                  |
+| 基座   | 标准源、生成器、证据运行时、L0 原语、L1 运行时横切能力、测试期证据、存储扩展、稳定契约、传输契约与执行域共享值对象                                            | xlib-standard, xlib-harness, xlib-evidence, kernel, configx, observex, testkitx, resiliencx, schedulex, xlibgate, redisx, kafkax, natsx, postgresx, taosx, ossx, clickhousex, contracts, transportx, domainx |
+| L2.5   | 领域值对象和语义模型，上层统一依赖                                                                                            | decimalx, domain-market, domain-exchange, domain-macro                                                                                                  |
 | 数据域 | 行情、宏观、另类数据采集                                                                                                      | market-data (13 SDK + 5 Provider), macro-data (11), alternative-data                                                                                       |
 | 分析域 | 因子计算、特征存储、因子评估、市场/宏观环境分类、数据流管线、M×S 联合决策（三引擎：market_engine→S / macro_engine→M / regime_engine→M+S） | factor-engine, feature-store, factor-eval, market_regime, macro_regime, regime-engine, ms_brain, flowx                                                              |
 | 决策域 | 信号生成、历史回测、参数优化、策略工厂、工作流编排（并行协作）                                                                  | signal-factory, backtest-engine, optimizer, backtestx, strategyx, maestro                                                                          |
@@ -150,9 +150,9 @@ Foundation v1 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中�
 | [`ROADMAP.md`](./ROADMAP.md)                                             | 六阶段交付路线图 — 任务编号、依赖链、验收标准                     |
 | [`docs/governance/ROADMAP-RULES.md`](./docs/governance/ROADMAP-RULES.md) | ROADMAP 编写规范 — 状态流转、版本规划、任务拆分、维护原则         |
 | [`CONSTITUTION.md`](./CONSTITUTION.md)                                   | 系统宪法 — FoundationX 全系统最高治理文件，覆盖模块实现与交付管线 |
-| [`docs/sre/foundation-cicd-plan.md`](./docs/sre/foundation-cicd-plan.md) | SRE CI/CD — 基座层 19 模块 + L2.5 领域共享 4 阶段部署方案、机器池架构、标准化模板   |
+| [`docs/sre/foundation-cicd-plan.md`](./docs/sre/foundation-cicd-plan.md) | SRE CI/CD — 基座层 20 模块 + L2.5 领域共享 4 模块部署方案、机器池架构、标准化模板   |
 
-19 个基座模块的独立完整规格均为 23 节结构；L2.5 领域共享规格（含 domainx）单独维护，不计入基座模块数：行为规格 WHEN/THEN、接口契约、业务规则、错误处理、边界场景、验收标准、目录结构、CI Gate、测试矩阵、性能预算、可观测输出、发布 DoD。完整索引见 [`module/README.md`](./module/README.md)。`x.go` 组合根仍作为运行时入口维护，但不再作为 `module/` 下的模块规格。
+20 个基座模块的独立完整规格均为 23 节结构；`domainx` 归入基座共享值对象边界。L2.5 领域共享规格保留 `decimalx`、`domain-market`、`domain-exchange`、`domain-macro` 4 个模块，不计入基座模块数：行为规格 WHEN/THEN、接口契约、业务规则、错误处理、边界场景、验收标准、目录结构、CI Gate、测试矩阵、性能预算、可观测输出、发布 DoD。完整索引见 [`module/README.md`](./module/README.md)。`x.go` 组合根仍作为运行时入口维护，但不再作为 `module/` 下的模块规格。
 
 | 层级          | 模块          | 完整规格                                                         |
 | ------------- | ------------- | ---------------------------------------------------------------- |
@@ -175,6 +175,7 @@ Foundation v1 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中�
 |               | clickhousex   | [`module/clickhousex/SPEC.md`](./module/clickhousex/SPEC.md)     |
 | **契约/传输** | contracts     | [`module/contracts/SPEC.md`](./module/contracts/SPEC.md)         |
 |               | transportx    | [`module/transportx/SPEC.md`](./module/transportx/SPEC.md)       |
+| **基座共享**  | domainx       | [`module/domainx/SPEC.md`](./module/domainx/SPEC.md)             |
 
 ### 规格体系与治理文档
 
@@ -341,6 +342,7 @@ Foundation v1 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中�
 | 基座                  | [clickhousex](https://github.com/ZoneCNH/clickhousex)           | v1.0.1 | ✅ 已发布 | █████ 100% | ClickHouse — OLAP 查询、批量写入（完整 SPEC + TRACEABILITY §1-§7 + 7 Tasks，覆盖率 100%）                                      |
 | 基座                  | [contracts](https://github.com/ZoneCNH/contracts)               | v1.0.1-spec | ✅ 已有   | █████ 100% | 跨域稳定端口/事件/DTO 契约（6 FR，10 BR，8 NFR，16 AC，7 TC，5 tasks，TRACEABILITY §1-§7 完整，goal.md 对齐 CONSTITUTION P7） |
 | 基座                  | [transportx](https://github.com/ZoneCNH/transportx)             | v1.1.1-spec | ✅ 已有   | █████ 100% | 应用通信底座规格基线；25 FR, 18 BR, 12 NFR, 25 AC, 25 TC, 12 CI gates — SPEC/Matrix/Tasks 三阶段满分 |
+| 基座                  | [domainx](https://github.com/ZoneCNH/domainx)                   | v0.1.0 | ✅ 已有   | █████ 100% | 执行域共享值对象与枚举（Order/Trade/Position/Portfolio/ExecutionReport）；归入基座统计，不计入 L2.5 组件数 |
 | **L2.5 · 领域共享层** |                                                                 |        |           |          |                                                                                           |
 | L2.5                  | [decimalx](https://github.com/ZoneCNH/decimalx)                 | v0.2.0 | 🟡 v1 计划 | ███░ 80% | 高精度十进制类型（Decimal/Price/Qty/Ratio/Money）；v1.0.0 release / factory-grade 待补证 |
 | L2.5                  | [domain-market](https://github.com/ZoneCNH/domain-market)       | v0.1.0 | 🟡 v1 计划 | ███░ 80% | 市场数据域模型（Tick/Quote/Bar/OrderBook）；v1.0.0 release / factory-grade 待补证 |

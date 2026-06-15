@@ -140,9 +140,9 @@ modules:
 
   domainx:
     path: github.com/ZoneCNH/domainx
-    layer: L2.5
+    layer: foundation-domain-shared
     stdlib_only: false
-    description: "L2.5 领域共享基础契约与原语"
+    description: "执行域共享值对象与枚举，归入基座统计"
 
 # ============================================================
 # 允许的依赖关系（单向箭头 = 调用方可以依赖被调方）
@@ -188,7 +188,7 @@ allowed_deps:
   clickhousex:   [kernel]                              # 只依赖 kernel 原语
   contracts:     []                                    # 跨域契约独立，无 Foundation 运行时依赖
   transportx:    [contracts, configx, observex, resiliencx]  # 传输契约可消费公开契约和横切接口
-  domainx:       [kernel]                              # L2.5 领域共享原语只依赖 kernel
+  domainx:       [kernel]                              # 执行域共享值对象只依赖 kernel
 
 # ============================================================
 # 禁止的依赖（任何基础模块都不得导入）
@@ -429,7 +429,6 @@ l2_5_release_order:
   - decimalx
   - domain-market
   - domain-macro
-  - domainx
   - domain-exchange
 
 l2_5_release_boundary:
@@ -443,7 +442,7 @@ l2_5_release_boundary:
 l2_5_public_contract_rules:
   - Public finance fields use decimalx.Decimal or explicit value objects; no public float64 for price, quantity, money, rates, or notional values.
   - Domain shared modules do not expose transport DTOs, ORM tags, raw exchange responses, HTTP, Kafka, or storage details.
-  - domainx owns Order, Trade, Position, Portfolio, ExecutionReport, OrderSide, OrderType, and OrderState.
+  - domainx is tracked as foundation-domain-shared and owns Order, Trade, Position, Portfolio, ExecutionReport, OrderSide, OrderType, and OrderState; it is not counted in the L2.5 release-order baseline.
   - domain-market owns market data semantics and quality gates.
   - domain-exchange owns SPI requests, venue capability, rate-limit policy, ExchangeError, and registry.
   - domain-macro owns MacroPoint, MacroInformationSet, revision, freshness, and no-lookahead visibility semantics.
