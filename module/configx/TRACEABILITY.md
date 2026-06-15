@@ -10,20 +10,19 @@
 
 | FR     | Description                        | Acceptance Criteria                               | Test Case      | Task                               | Status   |
 | ------ | ---------------------------------- | ------------------------------------------------- | -------------- | ---------------------------------- | -------- |
-| FR-001 | Client 创建与生命周期（New/Close） | New 校验 ctx+cfg，Close 标记关闭                  | TC-007, TC-008 | - | TASK-CONFIGX-000, TASK-CONFIGX-001 | ✅        |
-| FR-002 | Loader + Source 模式               | NewLoader().AddSource().Load(ctx)                 | TC-001         | - | TASK-CONFIGX-002, TASK-CONFIGX-003 | ✅        |
-| FR-003 | FileSource — YAML/TOML/JSON/.env   | 4 种文件格式解析正确                              | TC-001         | - | TASK-CONFIGX-002                   | ✅        |
-| FR-004 | EnvSource — 环境变量               | 前缀匹配 + key 过滤                               | TC-001         | - | TASK-CONFIGX-004                   | ✅        |
-| FR-005 | MapSource — 字符串 map             | map→Value 转换正确                                | TC-001         | - | TASK-CONFIGX-003                   | ✅        |
-| FR-006 | StrictDecode                       | 拒绝未知字段/重复key；支持 WithAllowUnknownFields | TC-002         | - | TASK-CONFIGX-005                   | ✅        |
-| FR-007 | SecretString 自动脱敏              | String/JSON/GoString/Text 全路径脱敏              | TC-003         | - | TASK-CONFIGX-010                   | ✅        |
-| FR-008 | SecretPolicy 密钥检测              | 默认 7 模式 + CustomMatcher                       | TC-005         | - | TASK-CONFIGX-010                   | ✅        |
-| FR-009 | Provenance 来源追踪                | 每个 key 记录 Source/Priority/Override            | TC-001         | - | TASK-CONFIGX-006                   | ✅        |
-| FR-010 | EffectiveConfigHash                | SHA-256，排除 volatile 字段，可复现               | TC-006         | - | TASK-CONFIGX-006                   | ✅        |
-| FR-011 | SanitizedManifest                  | 敏感字段自动替换，nil 安全                        | TC-003         | - | TASK-CONFIGX-010                   | ✅        |
-| FR-012 | HealthCheck                        | Status/LatencyMs/Metadata                         | TC-007         | - | TASK-CONFIGX-006                   | ✅        |
-| FR-013 | Metrics                            | 8 标准指标 + NoopMetrics 零开销                   | TC-009         | - | TASK-CONFIGX-009                   | ✅        |
-
+| FR-001 | Client 创建与生命周期（New/Close） | New 校验 ctx+cfg，Close 标记关闭                  | TC-007, TC-008 | - | TASK-CONFIGX-000, TASK-CONFIGX-001 | ✅        | ✅ |
+| FR-002 | Loader + Source 模式               | NewLoader().AddSource().Load(ctx)                 | TC-001         | - | TASK-CONFIGX-002, TASK-CONFIGX-003 | ✅        | ✅ |
+| FR-003 | FileSource — YAML/TOML/JSON/.env   | 4 种文件格式解析正确                              | TC-001         | - | TASK-CONFIGX-002                   | ✅        | ✅ |
+| FR-004 | EnvSource — 环境变量               | 前缀匹配 + key 过滤                               | TC-001         | - | TASK-CONFIGX-004                   | ✅        | ✅ |
+| FR-005 | MapSource — 字符串 map             | map→Value 转换正确                                | TC-001         | - | TASK-CONFIGX-003                   | ✅        | ✅ |
+| FR-006 | StrictDecode                       | 拒绝未知字段/重复key；支持 WithAllowUnknownFields | TC-002         | - | TASK-CONFIGX-005                   | ✅        | ✅ |
+| FR-007 | SecretString 自动脱敏              | String/JSON/GoString/Text 全路径脱敏              | TC-003         | - | TASK-CONFIGX-010                   | ✅        | ✅ |
+| FR-008 | SecretPolicy 密钥检测              | 默认 7 模式 + CustomMatcher                       | TC-005         | - | TASK-CONFIGX-010                   | ✅        | ✅ |
+| FR-009 | Provenance 来源追踪                | 每个 key 记录 Source/Priority/Override            | TC-001         | - | TASK-CONFIGX-006                   | ✅        | ✅ |
+| FR-010 | EffectiveConfigHash                | SHA-256，排除 volatile 字段，可复现               | TC-006         | - | TASK-CONFIGX-006                   | ✅        | ✅ |
+| FR-011 | SanitizedManifest                  | 敏感字段自动替换，nil 安全                        | TC-003         | - | TASK-CONFIGX-010                   | ✅        | ✅ |
+| FR-012 | HealthCheck                        | Status/LatencyMs/Metadata                         | TC-007         | - | TASK-CONFIGX-006                   | ✅        | ✅ |
+| FR-013 | Metrics                            | 8 标准指标 + NoopMetrics 零开销                   | TC-009         | - | TASK-CONFIGX-009                   | ✅        | ✅ |
 ---
 
 ## 2. 业务规则追溯（BR）
