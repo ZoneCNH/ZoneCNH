@@ -78,6 +78,10 @@
                     {
                         "type": "command",
                         "command": "node .claude/hooks/session-review.mjs"
+                    },
+                    {
+                        "type": "command",
+                        "command": "node .claude/hooks/version-guard.mjs"
                     }
                 ]
             }

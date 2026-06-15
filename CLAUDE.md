@@ -162,6 +162,70 @@
 
 预计优化成本：$8-20 / 全管线模块（vs 本次 $55.84）。详见 `docs/governance/improvements/20260614-xlibgate-trust-session/SESSION.md`。
 
+### 版本号自动递增（2026-06-15）
+
+> **核心规则：每次更新迭代，版本号都要 +1。** 这是自动化门禁，不是可选建议。
+
+#### 版本号体系
+
+本仓库维护以下独立版本号，各自按语义化版本（MAJOR.MINOR.PATCH）管理：
+
+| 版本号 | 位置 | 当前值 | 触发递增条件 |
+|--------|------|--------|-------------|
+| 文档发布版本 | `release/manifest/latest.json` → `version` | v1.0.1 | 任何追踪文件变更 |
+| 信任规则版本 | `.repo-contract.yaml` → `trust_hardening.ruleset` | v1.1.2 | 信任加固规则变更 |
+
+#### 语义化版本 Bump 策略
+
+| Bump 级别 | 含义 | 示例 |
+|-----------|------|------|
+| **PATCH** (v1.0.1→v1.0.2) | 错字修复、链接更新、说明澄清 | 修一个 broken link |
+| **MINOR** (v1.0.1→v1.1.0) | 新增模块/章节、架构描述变更 | 新增模块、新增 SPEC 章节 |
+| **MAJOR** (v1.x→v2.0.0) | 治理体系重构、顶层架构重写 | CONSTITUTION.md 重写 |
+
+#### 触发条件
+
+以下文件的任何变更（内容修改，不是 git metadata）必须触发版本号递增：
+
+- `STATUS.md`、`README.md`、`ARCHITECTURE.md`、`module/README.md`
+- `module/*/SPEC.md`（任何模块的规格文件）
+- `.repo-contract.yaml`、`.foundationx/repo-contract.json`
+- `.foundationx/status/index.json`、`.foundationx/blockers.json`
+- `foundation-bom.yaml`
+
+#### 自动递增工具
+
+```bash
+# 文档发布版本 bump（默认 patch）
+./scripts/version-bump.sh                        # v1.0.1 → v1.0.2
+./scripts/version-bump.sh --level minor          # v1.0.1 → v1.1.0
+./scripts/version-bump.sh --level major          # v1.0.1 → v2.0.0
+./scripts/version-bump.sh --dry-run              # 预览不写入
+
+# 信任规则版本 bump
+./scripts/version-bump.sh --target trust         # trust_hardening.ruleset bump
+./scripts/version-bump.sh --target trust --level minor
+```
+
+#### 自动门禁
+
+- **VersionGuard Stop Hook**（`.claude/hooks/version-guard.mjs`）：每次会话结束时自动检查。如果追踪文件被修改但 `release/manifest/latest.json` 版本号未递增，输出 ⚠️ 警告。
+- **版本递增是会话收尾的强制步骤**。commit 前必须先 bump 版本。
+
+#### 版本同步链
+
+`release/manifest/latest.json` 版本 bump 时，以下文件自动同步：
+- `release/manifest/latest.json` → `version` + `generated_at`
+- `.repo-contract.yaml` / `.foundationx/repo-contract.json` → `trust_hardening.ruleset`（仅 trust target）
+- `.foundationx/status/index.json` → `trust_hardening.ruleset`（仅 trust target）
+
+#### 执行纪律
+
+1. **会话收尾时**：运行 `./scripts/version-bump.sh` bump 版本
+2. **同一 PR 内包含版本 bump**：不要把版本 bump 拆成独立 PR
+3. **版本号只能升不能降**：如果 bump 错了级别（比如该 bump minor 却 bump 了 patch），不要再降回去——下一个 PR 正确 bump 即可
+4. **版本号与实际内容一致**：bump 前用 `git diff --stat` 确认变更范围，选择合适的 bump 级别
+
 ## 模块工作流规则（自动分支 + 对齐同步 + PR 闭环）
 
 > 处理 `module/{模块名}/` 下任何文件时，自动执行端到端工作流闭环。
