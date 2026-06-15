@@ -250,9 +250,19 @@ defer rows.Close()
 
 核心数据模型包括 `Config`、`Statement`、`Query`、`Rows`、`Batch`、`Point`、`SchemalessPayload`、`WriteResult`、`HealthStatus` 和错误分类。所有模型由调用方显式构造，不在包内读取环境变量。
 
-### 错误模型
+### 错误处理
 
 错误必须带操作名、分类和可脱敏上下文。配置错误归类为 validation，默认驱动错误归类为 unavailable，关闭后的操作归类为 closed，驱动透传错误必须保留原始 cause 供调用方诊断。
+
+| 错误类型 | 分类 | 触发条件 |
+|----------|------|----------|
+| 配置缺失 | validation | endpoint/database 为空、驱动模式非法、超时/重试次数为负 |
+| 空 SQL/Query | validation | Exec/Query 收到空字符串或空 batch |
+| 驱动未注入 | unavailable | 操作用到未注入驱动的默认实例 |
+| ctx 取消 | context canceled | 操作前或操作中 ctx 被取消 |
+| 超时 | deadline exceeded | 操作超过 Config.Timeout |
+| 关闭后操作 | closed | Close() 后调用任何 Client 方法 |
+| 驱动透传 | 保留原始 cause | 驱动返回的错误，携带驱动诊断信息 |
 
 ## 10. 边界情况
 
