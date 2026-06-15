@@ -202,7 +202,7 @@ THEN 测试通过
 
 ## 8. 接口契约
 
-### 9.1 Fake 实现
+### 8.1 Fake 实现
 
 ```go
 func FakeConfig(values map[string]any) configx.Reader
@@ -214,7 +214,7 @@ func FakeBreaker(initial resiliencx.BreakerState) resiliencx.Breaker
 func FakeExporter() *FakeExporterImpl
 ```text
 
-### 9.2 FakeLoggerImpl
+### 8.2 FakeLoggerImpl
 
 ```go
 type FakeLoggerImpl struct{ /* ... */ }
@@ -224,7 +224,7 @@ func (l *FakeLoggerImpl) AssertNoErrors()
 func (l *FakeLoggerImpl) Entries() []LogEntry
 ```text
 
-### 9.3 FakeMeterImpl
+### 8.3 FakeMeterImpl
 
 ```go
 type FakeMeterImpl struct{ /* ... */ }
@@ -233,7 +233,7 @@ func (m *FakeMeterImpl) AssertCounterValue(name string, expected float64)
 func (m *FakeMeterImpl) AssertHistogramRecorded(name string)
 ```text
 
-### 9.4 FakeTracerImpl
+### 8.4 FakeTracerImpl
 
 ```go
 type FakeTracerImpl struct{ /* ... */ }
@@ -242,7 +242,7 @@ func (t *FakeTracerImpl) AssertSpanCount(expected int)
 func (t *FakeTracerImpl) AssertTraceID propagated
 ```text
 
-### 9.5 FakeClock
+### 8.5 FakeClock
 
 ```go
 type FakeClock struct{ /* ... */ }
@@ -252,7 +252,7 @@ func (c *FakeClock) Advance(d time.Duration)
 func (c *FakeClock) Set(t time.Time)
 ```text
 
-### 9.6 FakeExporterImpl
+### 8.6 FakeExporterImpl
 
 ```go
 type FakeExporterImpl struct{ /* ... */ }
@@ -262,14 +262,14 @@ func (e *FakeExporterImpl) AssertMetricRecorded(name string)
 func (e *FakeExporterImpl) AssertLogContains(contains string)
 ```text
 
-### 9.7 辅助函数
+### 8.7 辅助函数
 
 ```go
 func Eventually(t *testing.T, fn func() bool, timeout, interval time.Duration)
 func GoldenUpdate() bool // 环境变量 GOLDEN_UPDATE=1 时更新 golden 文件
 ```text
 
-### 9.8 边界扫描
+### 8.8 边界扫描
 
 ```go
 // BoundaryCheck 检查生产包是否依赖 testkitx
@@ -283,7 +283,7 @@ func GoroutineLeakCheck(t *testing.T)
 
 ## 9. 数据模型
 
-### 10.1 公共错误
+### 9.1 公共错误
 
 ```go
 var (
@@ -378,7 +378,7 @@ testkitx/
 
 ## 14. 依赖
 
-### 15.1 go.mod
+### 14.1 go.mod
 
 ```text
 module github.com/ZoneCNH/testkitx
@@ -386,7 +386,7 @@ module github.com/ZoneCNH/testkitx
 go 1.23
 ```text
 
-### 15.2 依赖方向
+### 14.2 依赖方向
 
 | 可以依赖           | 禁止依赖       |
 | ------------------ | -------------- |
@@ -397,7 +397,7 @@ go 1.23
 | schedulex（test）  |                |
 | stdlib             |                |
 
-### 15.3 特殊说明
+### 14.3 特殊说明
 
 testkitx 是唯一允许依赖所有 Foundation L1 模块的包，但仅在 `go test` 中使用。生产 import graph 中不能出现 testkitx。
 
@@ -405,7 +405,7 @@ testkitx 是唯一允许依赖所有 Foundation L1 模块的包，但仅在 `go 
 
 ## 15. 测试
 
-### 16.1 单元测试
+### 15.1 单元测试
 
 | 测试场景            | 验证点                                           |
 | ------------------- | ------------------------------------------------ |
@@ -420,7 +420,7 @@ testkitx 是唯一允许依赖所有 Foundation L1 模块的包，但仅在 `go 
 | BoundaryCheck       | 生产包不依赖 testkitx                            |
 | GoroutineLeakCheck  | 测试结束后无 goroutine 泄漏                      |
 
-### 16.2 编译期检查
+### 15.2 编译期检查
 
 | 场景                 | 验证点                                               |
 | -------------------- | ---------------------------------------------------- |
@@ -430,7 +430,7 @@ testkitx 是唯一允许依赖所有 Foundation L1 模块的包，但仅在 `go 
 | FakeConfig 接口实现  | `var _ configx.Reader = (*FakeConfigImpl)(nil)`      |
 | FakeBreaker 接口实现 | `var _ resiliencx.Breaker = (*FakeBreakerImpl)(nil)` |
 
-### 16.3 Contract 测试
+### 15.3 Contract 测试
 
 | Contract                              | 验证内容                                     |
 | ------------------------------------- | -------------------------------------------- |
@@ -443,7 +443,7 @@ testkitx 是唯一允许依赖所有 Foundation L1 模块的包，但仅在 `go 
 | `TestContract_Meter_LabelCardinality` | FakeMeter 拒绝高基数 label                   |
 | `TestContract_Config_Fingerprint`     | FakeConfig fingerprint 稳定性                |
 
-### 16.4 Given/When/Then 用例
+### 15.4 Given/When/Then 用例
 
 **TC-001: FakeConfig 类型安全**
 Given FakeConfig 设置 `symbol=BTCUSDT`
@@ -495,7 +495,7 @@ Given 测试后仍有新增 goroutine
 When 运行 GoroutineLeakCheck
 Then 报告泄漏并失败
 
-### 16.5 Benchmark
+### 15.5 Benchmark
 
 | 场景        | 目标   |
 | ----------- | ------ |
@@ -537,7 +537,7 @@ exporter.AssertSpanCount(3)
 
 ## 19. CI 门禁
 
-### 20.1 通用 Gate
+### 19.1 通用 Gate
 
 | Gate        | 命令                                                                                                               | 阻塞条件                 |
 | ----------- | ------------------------------------------------------------------------------------------------------------------ | ------------------------ |
@@ -550,7 +550,7 @@ exporter.AssertSpanCount(3)
 | Secret 扫描 | `gitleaks detect --no-git`                                                                                         | 泄露 secret              |
 | Benchmark   | `go test -bench=. -benchmem -count=3 ./...`                                                                        | 结果附在 PR comment      |
 
-### 20.2 testkitx 专属 Gate
+### 19.2 testkitx 专属 Gate
 
 | Gate                 | 命令                                                     | 阻塞条件                |                     |
 | -------------------- | -------------------------------------------------------- | ----------------------- |                     |

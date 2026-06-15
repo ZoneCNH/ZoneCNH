@@ -186,7 +186,7 @@ THEN 所有调度基于 FakeClock，不调用 time.Now（测试确定性）
 
 ## 8. 接口契约
 
-### 9.1 Scheduler
+### 8.1 Scheduler
 
 ```go
 type Scheduler interface {
@@ -200,7 +200,7 @@ type Scheduler interface {
 type JobID string
 ```text
 
-### 9.2 Job
+### 8.2 Job
 
 ```go
 type Job struct {
@@ -237,7 +237,7 @@ const (
 )
 ```text
 
-### 9.3 JobStatus
+### 8.3 JobStatus
 
 ```go
 type JobStatus struct {
@@ -261,7 +261,7 @@ const (
 )
 ```text
 
-### 9.4 EventSink
+### 8.4 EventSink
 
 ```go
 type JobEvent func(event JobEventData)
@@ -285,7 +285,7 @@ const (
 )
 ```text
 
-### 9.5 Locker
+### 8.5 Locker
 
 ```go
 type Locker interface {
@@ -294,7 +294,7 @@ type Locker interface {
 }
 ```text
 
-### 9.6 公共错误
+### 8.6 公共错误
 
 ```go
 var (
@@ -310,7 +310,7 @@ var (
 
 ## 9. 数据模型
 
-### 10.1 配置结构
+### 9.1 配置结构
 
 ```go
 type SchedulerConfig struct {
@@ -417,7 +417,7 @@ schedulex/
 
 ## 14. 依赖
 
-### 15.1 go.mod
+### 14.1 go.mod
 
 ```text
 module github.com/ZoneCNH/schedulex
@@ -425,7 +425,7 @@ module github.com/ZoneCNH/schedulex
 go 1.23
 ```text
 
-### 15.2 依赖方向
+### 14.2 依赖方向
 
 | 可以依赖                        | 禁止依赖            |
 | ------------------------------- | ------------------- |
@@ -468,7 +468,7 @@ go 1.23
 
 ## 16. 测试
 
-### 17.1 单元测试
+### 16.1 单元测试
 
 | 测试场景         | 验证点                              |
 | ---------------- | ----------------------------------- |
@@ -490,7 +490,7 @@ go 1.23
 | 触发确定性       | 相同 FakeClock → 相同 next time     |
 | event hook       | 事件正确输出到 hook                 |
 
-### 17.2 Given/When/Then 用例
+### 16.2 Given/When/Then 用例
 
 **TC-001: 正常 cron 触发**
 Given 注册 cron job `*/1 * * * *`
@@ -537,14 +537,14 @@ Given JobID `daily` 已注册
 When 再次注册同名 job
 Then 返回 ErrDuplicateJob
 
-### 17.3 Benchmark
+### 16.3 Benchmark
 
 | 场景             | 目标   |
 | ---------------- | ------ |
 | 1000 个 job 内存 | < 10MB |
 | job 触发延迟     | < 10ms |
 
-### 17.4 集成测试
+### 16.4 集成测试
 
 | 场景                   | 验证点                                           |
 | ---------------------- | ------------------------------------------------ |
@@ -597,7 +597,7 @@ Then 返回 ErrDuplicateJob
 
 ## 20. CI 门禁
 
-### 21.1 通用 Gate
+### 20.1 通用 Gate
 
 | Gate        | 命令                                                                                                               | 阻塞条件                 |
 | ----------- | ------------------------------------------------------------------------------------------------------------------ | ------------------------ |
@@ -610,7 +610,7 @@ Then 返回 ErrDuplicateJob
 | Secret 扫描 | `gitleaks detect --no-git`                                                                                         | 泄露 secret              |
 | Benchmark   | `go test -bench=. -benchmem -count=3 ./...`                                                                        | 结果附在 PR comment      |
 
-### 21.2 schedulex 专属 Gate
+### 20.2 schedulex 专属 Gate
 
 | Gate                | 命令                                        | 阻塞条件                   |
 | ------------------- | ------------------------------------------- | -------------------------- |

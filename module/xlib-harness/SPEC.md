@@ -156,7 +156,7 @@ module/xlib-harness/
 - 集成测试：generate → check 端到端（生成后立即检查）
 - 基准测试：generate 性能 < 5s
 
-### 16.1 Traceability Test Cases
+### 15.1 Traceability Test Cases
 
 **TC-001:** 空目录执行 generate 后文件齐全。
 **TC-002:** 合规模块通过；不合规模块逐项报告。

@@ -205,7 +205,7 @@ func NewProducer(opts ...ProducerOption) (Producer, error)
 func NewConsumer(opts ...ConsumerOption) (Consumer, error)
 ```
 
-### 9.1 Option 模式
+### 8.1 Option 模式
 
 ```go
 // Producer 选项
@@ -228,7 +228,7 @@ func WithAutoOffsetReset(reset string) ConsumerOption
 func WithConsumerCodec(codec Codec) ConsumerOption
 ```
 
-### 9.2 用法示例
+### 8.2 用法示例
 
 ```go
 // 创建 Producer
@@ -281,7 +281,7 @@ for {
 
 ## 9. 数据模型
 
-### 10.1 Message
+### 9.1 Message
 
 | 字段 | 类型 | 要求 |
 |------|------|------|
@@ -293,7 +293,7 @@ for {
 | Headers | map[string][]byte | 可携带 trace context 与扩展元数据 |
 | Timestamp | time.Time | Kafka 消息时间；生产时可由客户端填充 |
 
-### 10.2 公共错误
+### 9.2 公共错误
 
 ```go
 var (
@@ -309,7 +309,7 @@ var (
 )
 ```
 
-### 10.3 Codec 接口
+### 9.3 Codec 接口
 
 ```go
 type Codec interface {
@@ -429,7 +429,7 @@ kafkax/
 
 ## 14. 依赖
 
-### 15.1 go.mod
+### 14.1 go.mod
 
 ```
 module github.com/ZoneCNH/kafkax
@@ -437,7 +437,7 @@ module github.com/ZoneCNH/kafkax
 go 1.23
 ```
 
-### 15.2 依赖方向
+### 14.2 依赖方向
 
 | 可以依赖 | 禁止依赖 |
 |----------|----------|
@@ -450,7 +450,7 @@ go 1.23
 
 ## 15. 测试
 
-### 16.1 单元测试
+### 15.1 单元测试
 
 | 测试场景 | 验证点 |
 |----------|--------|
@@ -475,7 +475,7 @@ go 1.23
 | 错误脱敏 | 错误和日志不包含 payload 或凭据 |
 | 并发安全 | -race 测试通过 |
 
-### 16.2 Given/When/Then 用例
+### 15.2 Given/When/Then 用例
 
 **TC-001: 基本发送和消费**
 Given Kafka 连接正常
@@ -542,7 +542,7 @@ Given message value、broker 连接串或凭据包含敏感内容
 When Send、Poll、Commit 或 Health 失败
 Then 错误、日志和 trace 标签不包含完整 payload 或敏感片段。
 
-### 16.3 Benchmark
+### 15.3 Benchmark
 
 | 场景                        | 目标   |
 | --------------------------- | ------ |
@@ -551,7 +551,7 @@ Then 错误、日志和 trace 标签不包含完整 payload 或敏感片段。
 | 单条消费                    | < 5ms  |
 | 序列化/反序列化（1KB JSON） | < 10μs |
 
-### 16.4 集成测试
+### 15.4 集成测试
 
 | 场景 | 验证点 |
 |------|--------|
@@ -595,7 +595,7 @@ Then 错误、日志和 trace 标签不包含完整 payload 或敏感片段。
 | log | `kafkax.commit_failed` | error，commit 失败详情 |
 | log | `kafkax.poll_failed` | error，轮询失败详情 |
 
-### 18.1 Trace
+### 17.1 Trace
 
 - MUST 接收并传播上游 trace context，不得无故丢失 requestId / traceId。
 - MUST 在消息 headers 中注入 trace context。
@@ -618,7 +618,7 @@ Then 错误、日志和 trace 标签不包含完整 payload 或敏感片段。
 
 ## 19. CI 门禁
 
-### 20.1 通用 Gate
+### 19.1 通用 Gate
 
 | Gate        | 命令                                                                                                               | 阻塞条件                 |
 | ----------- | ------------------------------------------------------------------------------------------------------------------ | ------------------------ |
@@ -631,7 +631,7 @@ Then 错误、日志和 trace 标签不包含完整 payload 或敏感片段。
 | Secret 扫描 | `gitleaks detect --no-git`                                                                                         | 泄露 secret              |
 | Benchmark   | `go test -bench=. -benchmem -count=3 ./...`                                                                        | 结果附在 PR comment      |
 
-### 20.2 kafkax 专属 Gate
+### 19.2 kafkax 专属 Gate
 
 | Gate     | 命令                              | 阻塞条件                    |
 | -------- | --------------------------------- | --------------------------- |
@@ -677,12 +677,12 @@ Then 错误、日志和 trace 标签不包含完整 payload 或敏感片段。
 
 ## 22. 待解决问题
 
-### 23.1 1.0 候选基线非阻断确认
+### 22.1 1.0 候选基线非阻断确认
 
 - `Health(ctx)` 返回错误时是否需要固定错误码枚举？当前候选基线只要求返回 `HealthStatus` 和包装错误。
 - `Close(ctx)` 重复调用时返回 nil 还是已关闭错误？当前候选基线只要求不得 panic，且行为需在实现中固定。
 
-### 23.2 后续候选能力（不阻断 1.0）
+### 22.2 后续候选能力（不阻断 1.0）
 
 - 是否增加异步 Producer 回调 API？需要先定义背压、取消和错误语义。
 - 是否增加 Kafka Transactions 封装？需要先定义跨 topic 原子写入和失败恢复边界。
@@ -690,7 +690,7 @@ Then 错误、日志和 trace 标签不包含完整 payload 或敏感片段。
 - 是否支持 Schema Registry 集成（Avro/Protobuf schema 管理）？需要先定义依赖方向和兼容策略。
 - 是否支持消费失败重试/转储编排？需要先定义 topic 命名、脱敏、重试上限和告警策略。
 
-### 23.3 明确不属于 1.0 基线
+### 22.3 明确不属于 1.0 基线
 
 - 业务事件模型、业务 schema 治理和业务幂等存储不由 `kafkax` 1.0 定义。
 - Kafka 集群运维、Kafka Connect 和跨系统消息路由不由 `kafkax` 负责。

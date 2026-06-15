@@ -43,7 +43,7 @@
 
 ## 4. 非目标
 
-### 5.1 What contracts OWNS
+### 4.1 What contracts OWNS
 
 `contracts` 的职责边界内包括：
 
@@ -57,7 +57,7 @@
 - **Compatibility Policy**：破坏性变更检测规则和 semver 版本升级策略（major/minor 判定标准）。
 - **Consumer-driven Contract Tests**：编译期接口检查（`var _ Interface = (*Impl)(nil)`）和 breaking change 测试。
 
-### 5.2 What contracts MUST NOT own
+### 4.2 What contracts MUST NOT own
 
 `contracts` 明确不拥有的范围：
 
@@ -69,7 +69,7 @@
 - **Timeout transport**：不做传输层超时控制、deadline 传播或取消信号传递（→ `transportx`）。
 - **Business workflow logic**：不承载任何业务工作流编排、状态机或决策逻辑。
 
-### 5.3 Governance boundary
+### 4.3 Governance boundary
 
 `contracts` 遵循 `xlib-standard` 的治理协议（Conventional Commits、semver、PR 模板、CI gate），但：
 
@@ -79,7 +79,7 @@
 
 **核心声明：`contracts` 不拥有传输实现，不绑定具体通信协议。** 它的唯一职责是定义跨域通信的"语言"（类型、接口、错误码和版本规则），而"怎么传"（传输协议、序列化格式选择、网络配置）由 `transportx` 和具体 adapter 负责。
 
-### 5.4 明确的 Non-goals（已有）
+### 4.4 明确的 Non-goals（已有）
 
 - 不包含域内接口（留在各域内部）
 - 不包含临时适配器
@@ -222,7 +222,7 @@ THEN it MUST be `module github.com/ZoneCNH/contracts`
 
 ## 8. 接口契约
 
-### 9.1 数据输入端口
+### 8.1 数据输入端口
 
 ```go
 // MarketDataProvider 行情数据端口
@@ -240,7 +240,7 @@ type MacroDataProvider interface {
 }
 ```text
 
-### 9.2 事件协议
+### 8.2 事件协议
 
 ```go
 // Event 事件基础接口
@@ -264,7 +264,7 @@ const (
 )
 ```text
 
-### 9.3 核心 DTO
+### 8.3 核心 DTO
 
 ```go
 // MarketEvent 行情事件
@@ -338,7 +338,7 @@ type MacroHistoryRequest struct {
 
 ## 9. 数据模型
 
-### 10.1 公共错误
+### 9.1 公共错误
 
 ```go
 var (
@@ -352,7 +352,7 @@ var (
 )
 ```text
 
-### 10.2 版本管理
+### 9.2 版本管理
 
 ```go
 const (
@@ -373,7 +373,7 @@ type Change struct {
 }
 ```text
 
-### 10.3 事件 Topic 映射
+### 9.3 事件 Topic 映射
 
 ```go
 var TopicEventTypes = map[string]reflect.Type{
@@ -475,7 +475,7 @@ contracts/
 
 ## 14. 依赖
 
-### 15.1 go.mod
+### 14.1 go.mod
 
 ```text
 module github.com/ZoneCNH/contracts
@@ -483,7 +483,7 @@ module github.com/ZoneCNH/contracts
 go 1.23
 ```text
 
-### 15.2 依赖方向
+### 14.2 依赖方向
 
 | 可以依赖                                                                          | 禁止依赖                                                 |
 | --------------------------------------------------------------------------------- | -------------------------------------------------------- |
@@ -491,7 +491,7 @@ go 1.23
 | L2.5 领域共享层（`decimalx`, `domain-market`, `domain-exchange`, `domain-macro`） | Foundation L1 运行时模块（kernel, configx, observex 等） |
 |                                                                                   | 所有存储/中间件扩展（redisx, kafkax 等）                 |
 
-### 15.3 特殊说明
+### 14.3 特殊说明
 
 `contracts` 处于依赖拓扑的上层，只被业务域模块 import，不 import 任何 L1 运行时模块。它通过 L2.5 领域共享层获取 `decimal.Decimal` 等领域值对象。
 
@@ -499,7 +499,7 @@ go 1.23
 
 ## 15. 测试
 
-### 16.1 单元测试
+### 15.1 单元测试
 
 | 测试场景            | 验证点                                                 |
 | ------------------- | ------------------------------------------------------ |
@@ -511,7 +511,7 @@ go 1.23
 | 错误格式            | 所有错误符合 `"contracts: <desc>"` 格式                |
 | JSON tag            | 所有 DTO 字段有 snake_case JSON tag                    |
 
-### 16.2 Given/When/Then 用例
+### 15.2 Given/When/Then 用例
 
 **TC-001: MarketDataProvider 编译期检查**
 Given 定义 mock 实现 `type mockMarket struct{}`
@@ -554,7 +554,7 @@ When 读取 H1 标题和 `go.mod` module 声明
 Then H1 为 `# contracts`（非 `# xlib-standard`）
 AND `go.mod` 声明 `module github.com/ZoneCNH/contracts`
 
-### 16.3 Benchmark
+### 15.3 Benchmark
 
 | 场景              | 目标    |
 | ----------------- | ------- |
@@ -562,7 +562,7 @@ AND `go.mod` 声明 `module github.com/ZoneCNH/contracts`
 | DTO JSON 反序列化 | < 1μs   |
 | Event 接口调用    | < 100ns |
 
-### 16.4 集成测试
+### 15.4 集成测试
 
 | 场景         | 验证点                                           |
 | ------------ | ------------------------------------------------ |
@@ -609,7 +609,7 @@ AND `go.mod` 声明 `module github.com/ZoneCNH/contracts`
 
 ## 19. CI 门禁
 
-### 20.1 通用 Gate
+### 19.1 通用 Gate
 
 | Gate        | 命令                                                                                                               | 阻塞条件                 |
 | ----------- | ------------------------------------------------------------------------------------------------------------------ | ------------------------ |
@@ -622,7 +622,7 @@ AND `go.mod` 声明 `module github.com/ZoneCNH/contracts`
 | Secret 扫描 | `gitleaks detect --no-git`                                                                                         | 泄露 secret              |
 | Benchmark   | `go test -bench=. -benchmem -count=3 ./...`                                                                        | 结果附在 PR comment      |
 
-### 20.2 contracts 专属 Gate
+### 19.2 contracts 专属 Gate
 
 | Gate            | 命令                                     | 阻塞条件                            |
 | --------------- | ---------------------------------------- | ----------------------------------- |

@@ -286,7 +286,7 @@ xlib-standard/
 
 ## 15. 测试
 
-### 16.1 Acceptance Criteria
+### 15.1 Acceptance Criteria
 | AC     | Acceptance                                                          | 验证命令                                                                                                           | 代码位置                                                  |
 | ------ | ------------------------------------------------------------------- |                                                                                                                    |                                                           |
 | AC-000 | 管线基线清理完成，模块文档和任务入口可被规则评分器发现。            | `python3 scripts/rule-scorer.py spec xlib-standard --check`                                                        | `module/xlib-standard/SPEC.md`                            |
@@ -328,7 +328,7 @@ xlib-standard/
 | AC-036 | goalcli selfimproving 触发受控递归自改进流程。                      | `GOWORK=off go run ./cmd/goalcli selfimproving`                                                                    | `cmd/goalcli/selfimproving.go`                            |
 | AC-037 | templates/l2/ 12 个模板文件全部存在且可渲染。                       | `bash scripts/check_l2_templates.sh`                                                                               | `templates/l2/`                                           |
 
-### 16.2 Test Cases
+### 15.2 Test Cases
 | TC     | Type        | Scenario                | Expected                   | 代码位置                                                  |
 | ------ | ----------- | ----------------------- | -------------------------- |                                                           |
 | TC-001 | Unit        | Config 必填字段缺失     | 返回 validation kind       | `pkg/templatex/config_test.go`                            |
@@ -366,7 +366,7 @@ xlib-standard/
 | TC-033 | Integration | goalcli selfimproving   | 自改进流程正常执行         | `cmd/goalcli/selfimproving_test.go`                       |
 | TC-034 | Integration | templates/l2 完整性检查 | 12 模板文件在位            | `templates/l2/ (12 files)`                                |
 
-### 16.3 Testing Strategy
+### 15.3 Testing Strategy
 测试分三层：公共 API 单元测试、模板仓库集成测试、生成库 smoke test。最小验证命令包括 `GOWORK=off go test ./...`、`GOWORK=off go test -race ./...`、`GOWORK=off make ci`、`GOWORK=off make release-check` 和 `GOWORK=off make release-final-check`。
 
 ## 16. 性能预算

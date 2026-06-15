@@ -203,7 +203,7 @@ THEN 使用 NoopMetrics（零开销空实现）
 
 ## 8. 接口契约
 
-### 9.1 Client — 配置客户端
+### 8.1 Client — 配置客户端
 
 ```go
 type Client struct { /* 内部字段 */ }
@@ -213,7 +213,7 @@ func (c *Client) Close(ctx context.Context) error
 func (c *Client) HealthCheck(ctx context.Context) HealthStatus
 ```
 
-### 9.2 Config — 客户端配置
+### 8.2 Config — 客户端配置
 
 ```go
 type Config struct {
@@ -226,7 +226,7 @@ func (c Config) Validate() error
 func (c Config) Sanitize() SanitizedConfig
 ```
 
-### 9.3 Loader + Source — 配置加载
+### 8.3 Loader + Source — 配置加载
 
 ```go
 type Source interface {
@@ -242,7 +242,7 @@ func (l *Loader) AddSource(src Source) *Loader
 func (l *Loader) Load(ctx context.Context) (LoadResult, error)
 ```
 
-### 9.4 内置 Source
+### 8.4 内置 Source
 
 ```go
 func NewYAMLFileSource(path string, opts ...SourceOption) Source
@@ -254,7 +254,7 @@ func NewAllEnvSource(prefix string, opts ...SourceOption) Source
 func NewMapSource(name string, values map[string]string, opts ...SourceOption) Source
 ```
 
-### 9.5 便捷函数
+### 8.5 便捷函数
 
 ```go
 func LoadEnv(ctx context.Context, prefix string, keys []string) (LoadResult, error)
@@ -264,7 +264,7 @@ func LoadJSONFile(ctx context.Context, path string) (LoadResult, error)
 func LoadMap(ctx context.Context, name string, values map[string]string) (LoadResult, error)
 ```
 
-### 9.6 Option 模式
+### 8.6 Option 模式
 
 ```go
 type Option func(*options)
@@ -286,7 +286,7 @@ func WithSourceName(name string) SourceOption
 
 ## 9. 数据模型
 
-### 10.1 核心类型
+### 9.1 核心类型
 
 ```go
 type Value struct {
@@ -317,7 +317,7 @@ type SourceReport struct {
 }
 ```
 
-### 10.2 SecretString
+### 9.2 SecretString
 
 ```go
 type SecretString string
@@ -331,7 +331,7 @@ func (s SecretString) MarshalText() ([]byte, error)   // → "***"
 func (s SecretString) MarshalJSON() ([]byte, error)   // → "\"***\""
 ```
 
-### 10.3 SecretPolicy
+### 9.3 SecretPolicy
 
 ```go
 type SecretPolicy struct {
@@ -343,7 +343,7 @@ func DefaultSecretPolicy() *SecretPolicy
 func (sp *SecretPolicy) IsSecret(key string) bool
 ```
 
-### 10.4 Provenance
+### 9.4 Provenance
 
 ```go
 type Provenance struct { /* 内部 map */ }
@@ -354,7 +354,7 @@ func (p *Provenance) RecordOverride(key, source, oldValue, newValue string)
 func (p *Provenance) Entries() map[string]ProvenanceEntry
 ```
 
-### 10.5 公共错误
+### 9.5 公共错误
 
 ```go
 var (
@@ -467,7 +467,7 @@ configx/
 
 ## 14. 依赖
 
-### 15.1 go.mod
+### 14.1 go.mod
 
 ```text
 module github.com/ZoneCNH/configx
@@ -480,7 +480,7 @@ require (
 )
 ```
 
-### 15.2 依赖方向
+### 14.2 依赖方向
 
 | 可以依赖                          | 禁止依赖                                  |
 | --------------------------------- | ----------------------------------------- |
@@ -493,7 +493,7 @@ require (
 
 ## 15. 测试
 
-### 16.1 测试统计
+### 15.1 测试统计
 
 | 指标       | 数值                     |
 | ---------- | ------------------------ |
@@ -503,7 +503,7 @@ require (
 | Benchmark  | 6（core_bench_test.go）  |
 | Race 检测  | `go test -race` 全部通过 |
 
-### 16.2 测试类型
+### 15.2 测试类型
 
 | 类型            | 覆盖内容        | 文件                        |
 | --------------- | --------------- | --------------------------- |
@@ -515,7 +515,7 @@ require (
 | Precedence 测试 | 优先级/覆盖链路 | `precedence_test.go`        |
 | Benchmark       | Load/Get 性能   | `core_bench_test.go`        |
 
-### 16.3 Given/When/Then 用例
+### 15.3 Given/When/Then 用例
 
 **TC-001: LastWins 合并**
 Given Source A 设置 `key=value1`，Source B 设置 `key=value2`
@@ -577,7 +577,7 @@ Then 全部通过，覆盖率 ≥ 97%
 
 ## 17. 可观测性
 
-### 18.1 Metrics
+### 17.1 Metrics
 
 | 指标名                            | 类型      | 说明             |
 | --------------------------------- | --------- | ---------------- |
@@ -591,7 +591,7 @@ Then 全部通过，覆盖率 ≥ 97%
 | `client_retries_total`            | Counter   | 重试次数         |
 | `client_inflight`                 | Gauge     | 正在处理的请求数 |
 
-### 18.2 Metrics 接口
+### 17.2 Metrics 接口
 
 ```go
 type Metrics interface {
@@ -622,7 +622,7 @@ type NoopMetrics struct{}  // 零开销空实现
 
 ## 19. CI 门禁
 
-### 20.1 通用 Gate
+### 19.1 通用 Gate
 
 | Gate        | 命令                                                  | 阻塞条件                   |
 | ----------- | ----------------------------------------------------- | -------------------------- |
@@ -635,7 +635,7 @@ type NoopMetrics struct{}  // 零开销空实现
 | Secret 扫描 | `gitleaks detect --no-git`                            | 泄露 secret                |
 | 漏洞扫描    | `govulncheck ./...`                                   | 高危 CVE                   |
 
-### 20.2 configx 专属 Gate
+### 19.2 configx 专属 Gate
 
 | Gate          | 命令                   | 阻塞条件                    |             |
 | ------------- | ---------------------- | --------------------------- |             |

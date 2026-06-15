@@ -164,7 +164,7 @@ module/xlib-evidence/
 - 集成测试：collect → generate → validate 端到端
 - Golden 测试：固定覆盖率输入 → 固定 manifest 输出
 
-### 16.1 Traceability Test Cases
+### 15.1 Traceability Test Cases
 
 **TC-001:** mock 覆盖率输出 → CoverageReport 正确。
 **TC-002:** 给定全部门禁通过 → manifest 生成且 hash 有效。

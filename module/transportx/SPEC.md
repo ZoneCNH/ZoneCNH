@@ -70,7 +70,7 @@ Foundation 模块已有 `contracts` 用于跨域端口、事件协议和 DTO 契
 
 ## 4. 非目标
 
-### 5.1 What transportx OWNS
+### 4.1 What transportx OWNS
 
 `transportx` 的职责边界内包括：
 
@@ -85,7 +85,7 @@ Foundation 模块已有 `contracts` 用于跨域端口、事件协议和 DTO 契
 - **Trace propagation**：跨六通信平面的 trace context（trace id、span id）传播契约。
 - **Idempotency key propagation**：幂等键在 Envelope 中的传递和冲突检测语义。
 
-### 5.2 What transportx MUST NOT own
+### 4.2 What transportx MUST NOT own
 
 `transportx` 明确不拥有的范围：
 
@@ -95,13 +95,13 @@ Foundation 模块已有 `contracts` 用于跨域端口、事件协议和 DTO 契
 - **领域错误码定义**：不定义 `ErrInvalidSymbol`、`ErrInvalidIndicator` 等业务错误（→ `contracts`）。
 - **具体 Kafka/NATS/Postgres 业务封装**：不实现与具体中间件绑定的业务逻辑封装（→ `kafkax`、`natsx`、`postgresx` 等 adapter 模块）。
 
-### 5.3 Governance boundary
+### 4.3 Governance boundary
 
 **核心声明：`transportx` 不承载业务 DTO，不替代 `contracts`，不直接绑定 HTTP/gRPC/Kafka/NATS 实现。** `transportx` 是 SPEC baseline，定义传输层的"语法规则"（Envelope 格式、中间件顺序、错误码体系、生命周期状态机），而"传什么内容"由 `contracts` 定义，"用什么传"由具体 adapter 实现。
 
 `transportx` 的 `production_import_allowed=false` 直至实现完成并通过 release gate（CI gate TX-GATE-001 至 TX-GATE-012 全部通过 + conformance report 完整）。
 
-### 5.4 明确的 Non-goals（已有）
+### 4.4 明确的 Non-goals（已有）
 
 - 不实现 Kafka、NATS、HTTP、RPC、Redis stream、S3 或数据库客户端。
 - 不定义业务事件 schema、领域 DTO、订单语义、行情语义或风控语义。
@@ -293,7 +293,7 @@ THEN it MUST be `module github.com/ZoneCNH/transportx`
 | BR-017 | READ_ONLY methods may be auto-retried; IDEMPOTENT methods require idempotency key for retry; UNSAFE methods MUST NOT be auto-retried. | `TX_RETRY_UNSAFE` — deny retry |
 | BR-018 | SECRET-classified data MUST NOT appear in any log, metric, trace span attribute, audit record or receipt text. | `TX_REDACTION_FAILED` — fail closed |
 
-### 8.5 Non-Functional Requirements
+### 7.5 Non-Functional Requirements
 
 | NFR | Category | Requirement | Verification |
 | --- | --- | --- | --- |
@@ -465,7 +465,7 @@ Multi-module layout: root `go.mod` (core), each `adapters/*/go.mod` separate mod
 
 ## 15. 测试
 
-### 16.1 Acceptance Criteria
+### 15.1 Acceptance Criteria
 
 | AC | Requirement | Criterion | Verification Method |
 | --- | --- | --- | --- |
@@ -496,7 +496,7 @@ Multi-module layout: root `go.mod` (core), each `adapters/*/go.mod` separate mod
 | AC-025 | FR-025 | SchemaRegistry rejects unknown version; breaking change returns incompatible classification. | `go test ./registry/... -run TestSchemaCompatibility` |
 | AC-026 | FR-026 | README.md H1 is `# transportx` (not `# xlib-standard`); go.mod declares `module github.com/ZoneCNH/transportx`. | `grep '^# transportx$$' README.md && grep 'module github.com/ZoneCNH/transportx' go.mod` |
 
-### 16.2 Test Matrix
+### 15.2 Test Matrix
 
 | Test | Coverage | Command |
 | --- | --- | --- |

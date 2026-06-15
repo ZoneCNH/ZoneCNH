@@ -366,7 +366,7 @@ domainx/
 
 ## 15. 测试
 
-### 16.1 Acceptance Criteria
+### 15.1 Acceptance Criteria
 
 | AC | Requirement | Criterion | Verification |
 | --- | --- | --- | --- |
@@ -382,7 +382,7 @@ domainx/
 | AC-010 | BR-003 | 非法流转 → ErrInvalidTransition | `go test -run TestOrderStateTransition ./...` |
 | AC-011 | BR-010 | Portfolio 余额不一致 → 错误 | `go test -run TestPortfolioBalance ./...` |
 
-### 16.2 Test Matrix
+### 15.2 Test Matrix
 
 | TC | Coverage | Command |
 | --- | --- | --- |
@@ -395,7 +395,7 @@ domainx/
 | TC-007 | FR-006, AC-006, AC-011 | `go test -run TestPortfolio ./...` |
 | TC-008 | FR-008, AC-008 | `go test -run TestImmutability ./...` |
 
-### 16.3 Given/When/Then
+### 15.3 Given/When/Then
 
 **TC-001: Order 构造与校验**
 Given symbol="BTCUSDT", side=Buy, type=Limit, qty=1, price=50000

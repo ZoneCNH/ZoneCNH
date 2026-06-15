@@ -440,7 +440,7 @@ JSON 输出必须包含 machine-readable 的 status 字段（pass/fail/error）�
 
 ## 8. 接口契约
 
-### 9.1 CLI 命令
+### 8.1 CLI 命令
 
 ```bash
 # import 边界检查
@@ -501,7 +501,7 @@ xlibgate trust fleet-status --repos-root <foundation-root> --output .foundationx
 xlibgate version
 ```
 
-### 9.2 Exit Code 定义
+### 8.2 Exit Code 定义
 
 ```text
 0 — pass：所有检查通过
@@ -509,7 +509,7 @@ xlibgate version
 2 — error：发生内部错误（配置无效、文件缺失等）
 ```
 
-### 9.3 JSON 输出格式
+### 8.3 JSON 输出格式
 
 ```json
 {
@@ -610,7 +610,7 @@ xlibgate version
 | `PRIVATE_ENDPOINT_LEAK` | 文档中检测到私有端点地址 | secret-redaction |
 | `CONTRACT_PARSE_ERROR` | `.repo-contract.yaml` 或 `FOUNDATION-DEPS.yaml` 缺失/解析失败 | 多个检查 |
 
-### 9.4 配置格式
+### 8.4 配置格式
 
 ```yaml
 # xlibgate.yaml
@@ -637,7 +637,7 @@ release:
 
 ## 9. 数据模型
 
-### 10.1 公共错误
+### 9.1 公共错误
 
 ```go
 var (
@@ -651,7 +651,7 @@ var (
 )
 ```
 
-### 10.2 检查结果结构
+### 9.2 检查结果结构
 
 ```go
 type CheckResult struct {
@@ -818,7 +818,7 @@ xlibgate/
 
 ## 14. 依赖
 
-### 15.1 go.mod
+### 14.1 go.mod
 
 ```text
 module github.com/ZoneCNH/xlibgate
@@ -826,7 +826,7 @@ module github.com/ZoneCNH/xlibgate
 go 1.23
 ```
 
-### 15.2 直接依赖
+### 14.2 直接依赖
 
 | 依赖                                                                              | 版本          | 用途                                                       | 来源       |
 | --------------------------------------------------------------------------------- | ------------- | ---------------------------------------------------------- | ---------- |
@@ -834,11 +834,11 @@ go 1.23
 | `gopkg.in/yaml.v3`                                                                | v3            | YAML 配置文件解析（`xlibgate.yaml`、`deps.yaml`）          | 第三方     |
 | `gitleaks`                                                                        | latest stable | secret 扫描引擎（作为外部命令调用，非 Go import）          | 外部二进制 |
 
-### 15.3 间接依赖
+### 14.3 间接依赖
 
 xlibgate 是纯 CLI 工具，不被任何模块 import。仅通过 `go/parser` 标准库间接引入 Go 工具链的标准依赖，无第三方传递依赖。
 
-### 15.4 依赖方向
+### 14.4 依赖方向
 
 | 可以依赖                                    | 禁止依赖                                                   |
 | ------------------------------------------- | ---------------------------------------------------------- |
@@ -847,7 +847,7 @@ xlibgate 是纯 CLI 工具，不被任何模块 import。仅通过 `go/parser` �
 | Go AST 解析库（`go/parser`, `go/ast`）      | 所有 L2.5 领域共享层                                       |
 | `gitleaks`（secret 扫描，作为外部命令调用） |                                                            |
 
-### 15.5 特殊说明
+### 14.5 特殊说明
 
 xlibgate 是纯 CLI 工具，不被任何模块 import。它只扫描其他模块的代码，不产生运行时依赖。
 
@@ -855,7 +855,7 @@ xlibgate 是纯 CLI 工具，不被任何模块 import。它只扫描其他模�
 
 ## 15. 测试
 
-### 16.1 测试工具
+### 15.1 测试工具
 
 | 工具                           | 用途                           |
 | ------------------------------ | ------------------------------ |
@@ -865,7 +865,7 @@ xlibgate 是纯 CLI 工具，不被任何模块 import。它只扫描其他模�
 | `go test -race`                | 竞态检测                       |
 | `go test -bench` / `-benchmem` | 性能基准测试                   |
 
-### 16.2 单元测试
+### 15.2 单元测试
 
 | 测试场景              | 验证点                                             |
 | --------------------- | -------------------------------------------------- |
@@ -906,7 +906,7 @@ xlibgate 是纯 CLI 工具，不被任何模块 import。它只扫描其他模�
 | trust fleet 部分失败  | 2 模块 error → exit 1，index.json 仍生成            |
 | trust fleet 投影漂移  | release=false 或 open blocker 时输入 factory=true → 输出 projection drift finding，强制 factory=false，exit 1 |
 
-### 16.3 Given/When/Then 用例
+### 15.3 Given/When/Then 用例
 
 **TC-001: import 边界违规**
 Given 配置禁止业务域 import 基座层
@@ -1068,7 +1068,7 @@ Given --repos-root 下某模块 release=false 或存在 open blocker，但输入
 When 运行 `xlibgate trust fleet-status --repos-root <foundation-root> --output .foundationx/status/index.json`
 Then 生成 index.json 时该模块 factory=false，findings 含 projection drift 的源字段和值，reason_code=FACTORY_GATE_BLOCKED，exit code 1
 
-### 16.4 Benchmark
+### 15.4 Benchmark
 
 | 场景                     | 目标    |
 | ------------------------ | ------- |
@@ -1078,7 +1078,7 @@ Then 生成 index.json 时该模块 factory=false，findings 含 projection drif
 | baseline 检查（50 模块） | < 5s    |
 | JSON 报告生成            | < 100ms |
 
-### 16.5 集成测试
+### 15.5 集成测试
 
 | 场景             | 验证点                                             |
 | ---------------- | -------------------------------------------------- |
@@ -1113,7 +1113,7 @@ Then 生成 index.json 时该模块 factory=false，findings 含 projection drif
 
 > xlibgate 是短生命周期 CLI 工具，不集成运行时 metrics exporter 或 tracing exporter。以下日志事件作为可观测性的主要载体，覆盖 Constitution §6.2 的"操作耗时"和"错误计数"需求（通过结构化日志中的 `duration_ms` 和 `status` 字段由 CI 日志系统聚合）。CLI 短生命周期工具无需健康检查端点（exit code 0/1/2 即为健康信号）。
 
-### 18.1 Logging（主要可观测载体）
+### 17.1 Logging（主要可观测载体）
 
 | 类型   | 名称                       | 说明                                     |
 | ------ | -------------------------- | ---------------------------------------- |
@@ -1123,7 +1123,7 @@ Then 生成 index.json 时该模块 factory=false，findings 含 projection drif
 | log    | `xlibgate.check.error`     | error，检查出错，含 error message        |
 | log    | `xlibgate.config.loaded`   | info，配置加载完成，含文件路径           |
 
-### 18.2 Metrics（CI 日志聚合等效）
+### 17.2 Metrics（CI 日志聚合等效）
 
 CLI 工具不启动 HTTP metrics 端点。以下指标通过 CI 系统对结构化日志的解析实现等效聚合：
 
@@ -1133,7 +1133,7 @@ CLI 工具不启动 HTTP metrics 端点。以下指标通过 CI 系统对结构�
 | `foundationx_xlibgate_check_total`            | counter   | 检查执行总次数，label: `check_name`, `status`   | `xlibgate.check.completed` 的事件计数            |
 | `foundationx_xlibgate_check_errors_total`     | counter   | 检查错误次数，label: `check_name`               | `xlibgate.check.error` 的事件计数                |
 
-### 18.3 Tracing
+### 17.3 Tracing
 
 CLI 短生命周期工具不启动 tracing exporter。执行流程通过父子日志事件的关联字段（`check_name`、`timestamp`）重建调用链，等效于 span 语义：
 
@@ -1169,7 +1169,7 @@ CLI 短生命周期工具不启动 tracing exporter。执行流程通过父子�
 
 ## 19. CI 门禁
 
-### 20.1 通用 Gate
+### 19.1 通用 Gate
 
 | Gate        | 命令                                                                                                               | 阻塞条件                 |
 | ----------- | ------------------------------------------------------------------------------------------------------------------ | ------------------------ |
@@ -1182,14 +1182,14 @@ CLI 短生命周期工具不启动 tracing exporter。执行流程通过父子�
 | Secret 扫描 | `gitleaks detect --no-git`                                                                                         | 泄露 secret              |
 | Benchmark   | `go test -bench=. -benchmem -count=3 ./...`                                                                        | 结果附在 PR comment      |
 
-### 20.2 xlibgate 专属 Gate
+### 19.2 xlibgate 专属 Gate
 
 | Gate                     | 命令                                        | 阻塞条件              |                  |                    |                |
 | ------------------------ | ------------------------------------------- | --------------------- |                  |                    |                |
 | 自检                     | `xlibgate check all --config xlibgate.yaml` | 自身门禁不通过        |                  |                    |                |
 | 不依赖 Foundation 运行时 | `go list -deps ./... \                      | grep "ZoneCNH/kernel\ | ZoneCNH/configx\ | ZoneCNH/observex"` | 依赖运行时模块 |
 
-### 20.3 Trust Alignment Gate
+### 19.3 Trust Alignment Gate
 
 | Gate | 命令 | 阻塞条件 |
 |------|------|----------|
