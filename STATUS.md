@@ -75,23 +75,6 @@
 
 </details>
 
-<details>
-<summary>📊 领域多维成熟度速览（点击展开）</summary>
-
-> 说明：这是领域级公开投影速览，维度口径仍以 `.foundationx/status/index.json` + `.foundationx/blockers.json` 为准；`N/A` 表示该维度未在领域汇总层显式投影，不能据此上推 fact-layer 结论。
-
-| 域 | 组件 | 阶段 | SPEC | IMPL | RELEASE | LIVE INT | EXT CI | ADOPT | SOAK | FACTORY | 备注 |
-|----|----:|:----:|:----:|:----:|:-------:|:--------:|:------:|:-----:|:----:|:-------:|------|
-| 领域共享层（L2.5） | 5 | 80% | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | 5 个共享层组件，Phase 0 已完成 |
-| 数据域 · 行情 | 18 | 80% | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | 13 SDK + 5 Provider；全部 80% |
-| 数据域 · 宏观 | 11 | 80% | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | 11 个数据源；全部 80% |
-| 数据域 · 另类 | 1 | 5% | ❌ | ❌ | N/A | N/A | N/A | N/A | N/A | ❌ | 仅创建 |
-| 分析域 | 8 | 5% / 25% | ❌ | ❌ | N/A | N/A | N/A | N/A | N/A | ❌ | 7 个早期组件 + regime-engine 骨架 |
-| 决策域 | 6 | 5% | ❌ | ❌ | N/A | N/A | N/A | N/A | N/A | ❌ | signal-factory / backtest-engine / optimizer 仅创建 |
-| 执行域 | 7 | 5% | ❌ | ❌ | N/A | N/A | N/A | N/A | N/A | ❌ | riskx / orderx / positionx SPEC 已创建 |
-
-</details>
-
 ### L2.5 · 领域共享层（5 个）
 
 | 组件 | 版本 | 进度 | 覆盖率要求 | 说明 |
@@ -369,7 +352,7 @@
 ### 🟢 L2.5 领域共享层（健康）
 
 - 组件：5 个，进度 80%
-- Phase 0 已完成，所有上层模块已依赖此层
+- Phase 0 已完成，当前已建模的上层模块已依赖此层
 
 ### 🟢 数据域 · 行情（健康）
 
@@ -480,7 +463,7 @@
 | 决策域组件 | 6 | 6 | 6 | ✅ |
 | 横切组件 | 2 | 2 | 2 | ✅ |
 
-注：以上为各文档 unique repo 链接数（grep github.com/ZoneCNH 去重后计数）。README 与 ARCH 均为 77；STATUS 去重后为 78（多 stdlib.rs）。STATUS 按域统计表 domain-sum 合 80（observex 计入基座+横切 2 域，stdlib.rs+module 独立计）。L2.5=5/分析域=8/决策域=6 三文档一致。
+注：以上为各文档 unique repo 链接数（grep github.com/ZoneCNH 去重后计数）。README 与 ARCH 均为 77；STATUS 去重后为 78（多 stdlib.rs）。STATUS 的 80 是域统计 domain-sum 口径，不与 README/ARCH unique-link 77 直接比较（observex 计入基座+横切 2 域，stdlib.rs+module 独立计）。L2.5=5/分析域=8/决策域=6 三文档一致。
 
 ### 迁移与门禁基线
 

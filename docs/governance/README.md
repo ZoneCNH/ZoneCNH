@@ -35,6 +35,7 @@
 | [TESTING-STRATEGY.md](TESTING-STRATEGY.md)     | 测试策略               |
 | [REVIEW-STRATEGY.md](REVIEW-STRATEGY.md)       | 审查策略               |
 | [DEPLOYMENT.md](DEPLOYMENT.md)                 | 发布与部署规则         |
+| [BOM-FREEZE-GOVERNANCE.md](BOM-FREEZE-GOVERNANCE.md) | BOM 与 freeze 声明边界 |
 | [anti-requirements.md](anti-requirements.md)   | 反需求与范围约束       |
 
 ## 路径边界
