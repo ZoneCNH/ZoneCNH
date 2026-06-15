@@ -64,7 +64,7 @@
 | clickhousex | ✅ | ✅ | ❌ | ✅ | ✅ | N/A | N/A | ❌ | v1.0.1; CI 已部署+运行(Docker ClickHouse); 公开 GitHub Release 未发布（BLK-003）; 非 factory |
 | contracts | ✅ | ✅ | ❌ | N/A | ✅ | ✅ | N/A | ❌ | v1.0.1-spec; spec-only; 无公开 GitHub Release / git tag 对齐; all_aligned=false |
 | transportx | ✅ | ✅ | ❌ | N/A | ✅ | N/A | N/A | ❌ | v1.1.1-spec; spec-only; 无公开 GitHub Release / git tag 对齐; production_import_allowed=false |
-| domainx | ✅ | ✅ | ❌ | N/A | ✅ | N/A | N/A | ❌ | v0.1.0; L2.5 领域共享层; 无 git tag; release/factory=false |
+| domainx | ✅ | ✅ | ❌ | N/A | ✅ | N/A | N/A | ❌ | v1.0.0 规格基线; L2.5 领域共享层; 无公开 GitHub Release / git tag 对齐; release/factory=false |
 > **维度说明**：SPEC=规格完成 | IMPL=实现完成 | RELEASE=tag/release/manifest 一致 | LIVE INT=真实服务集成（非 mock） | EXT CI=外部 CI artifact | ADOPT=下游模块真实采用 | SOAK=生产或类生产长时间运行 | FACTORY=factory_grade_allowed（最高综合等级）
 
 > **数据来源**：本表依据 `module/` 规格状态、`.foundationx/status/index.json`、`.foundationx/blockers.json`、公开 GitHub release 页面、GitHub Actions CI 运行状态与 FOUNDATION-DEPS.yaml 反向依赖图（ADOPT）投影。Open blocker 会下调 FACTORY 投影。
@@ -79,7 +79,7 @@
 
 | 组件 | 版本 | 进度 | 覆盖率要求 | 说明 |
 | ---- | ---- | ---- | ---------- | ---- |
-| [decimalx](https://github.com/ZoneCNH/decimalx) | v0.1.0 | ███░ 80% | 100% | 高精度十进制类型 |
+| [decimalx](https://github.com/ZoneCNH/decimalx) | v0.2.0 | ███░ 80% | 100% | 高精度十进制类型 |
 | [domainx](https://github.com/ZoneCNH/domainx) | v1.0.0 | ███░ 80% | 100% | 领域共享值对象：Order / Position / Trade / Portfolio / ExecutionReport |
 | [domain-market](https://github.com/ZoneCNH/domain-market) | v0.1.0 | ███░ 80% | 100% | 市场数据域模型 |
 | [domain-macro](https://github.com/ZoneCNH/domain-macro) | v0.1.0 | ███░ 80% | 100% | 宏观数据域模型 |
@@ -90,11 +90,13 @@
 
 | 模块 | SPEC | IMPL | RELEASE | LIVE INT | EXT CI | ADOPT | SOAK | FACTORY | 备注 |
 |------|:----:|:----:|:-------:|:--------:|:------:|:-----:|:----:|:-------:|------|
-| decimalx | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | v0.1.0；80%；高精度十进制类型 |
+| decimalx | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | v0.2.0；80%；高精度十进制类型 |
 | domainx | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | v1.0.0；80%；领域共享值对象：Order/Position/Trade/Portfolio/ExecutionReport |
 | domain-market | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | v0.1.0；80%；市场数据域模型 |
 | domain-macro | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | v0.1.0；80%；宏观数据域模型 |
 | domain-exchange | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | v0.1.0；80%；交易域模型 |
+
+Readiness 证据切片：[`docs/evidence/l25-shared-domain-v100-readiness-20260615.md`](./docs/evidence/l25-shared-domain-v100-readiness-20260615.md)。当前 L2.5 为文档 / 规格 / 执行计划 baseline 对齐；release / factory-grade 仍需模块仓 CI artifact、v1.0.0 tag / GitHub Release 与 adoption gate。
 
 > **维度说明**：SPEC=规格完成 | IMPL=实现完成 | RELEASE=tag/release/manifest 一致 | LIVE INT=真实服务集成（非 mock） | EXT CI=外部 CI artifact | ADOPT=下游模块真实采用 | SOAK=生产或类生产长时间运行 | FACTORY=factory_grade_allowed（最高综合等级）
 

@@ -67,6 +67,8 @@ L2.5: domainx / decimalx / domain-market / domain-macro / domain-exchange (v1.0.
 
 成熟度口径：5/5 已有 v1.0.0 Draft Spec / Traceability / Plan 基线；0/5 完成 v1.0.0 release、EXT CI 与 factory-grade 门禁。该层当前可作为 Phase 0 设计依赖推进，但不能宣告 factory-grade adoption。
 
+Readiness 证据切片：[docs/evidence/l25-shared-domain-v100-readiness-20260615.md](./docs/evidence/l25-shared-domain-v100-readiness-20260615.md)。当前状态是 readiness snapshot；release / factory-grade 仍以各模块仓 worker evidence、CI artifact、v1.0.0 git tag / GitHub Release 与 adoption gate 为准。
+
 依赖顺序：`decimalx` -> `domainx` -> `domain-market` / `domain-macro` -> `domain-exchange`。这里的 v1.0.0 是文档 / Goal execution baseline，用于锁定目标范围与依赖顺序；不代表各独立模块仓库已经完成 API freeze、CI release gate、外部 CI artifact、adoption gate、v1.0.0 git tag 或 GitHub Release。`domainx` 已归入 L2.5 领域共享层，不计入基座组件数。
 
 ## 📦 核心项目

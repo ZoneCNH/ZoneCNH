@@ -2,7 +2,7 @@
 
 > FoundationX 系统中使用的专业术语及其定义。
 
-最后更新：2026-06-07
+最后更新：2026-06-15
 Status: Approved
 
 ---
@@ -14,7 +14,7 @@ Status: Approved
 - **英文名：** Domain Shared Layer
 - **中文名：** 领域共享层
 - **定义：** 位于 L1 运行时模块和 L2 业务域模块之间的共享层，提供跨域通用的类型和工具，避免业务域之间的直接依赖。
-- **所属模块：** `decimalx`、`domain-market`、`domain-exchange`、`domain-macro`
+- **所属模块：** `domainx`、`decimalx`、`domain-market`、`domain-exchange`、`domain-macro`
 
 ---
 
@@ -41,7 +41,7 @@ Status: Approved
 - **英文名：** Domain Shared Module
 - **中文名：** 领域共享模块
 - **定义：** L2.5 层的模块，提供跨域通用的领域类型（如价格精度、交易所枚举、市场元数据），消除业务域之间的耦合。
-- **所属模块：** `decimalx`、`domain-market`、`domain-exchange`、`domain-macro`
+- **所属模块：** `domainx`、`decimalx`、`domain-market`、`domain-exchange`、`domain-macro`
 
 ---
 

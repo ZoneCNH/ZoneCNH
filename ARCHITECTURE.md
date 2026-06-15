@@ -346,7 +346,7 @@ Foundation 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中在 
 | 基座                  | [transportx](https://github.com/ZoneCNH/transportx)             | v1.1.1-spec | ✅ 已有   | Spec→Code 完成 | 应用通信底座规格基线；SPEC/Matrix/Tasks 三阶段满分；无公开 GitHub Release / git tag 对齐；production_import_allowed=false |
 | **L2.5 · 领域共享层** |                                                                 |        |           |          |                                                                                           |
 | L2.5                  | [domainx](https://github.com/ZoneCNH/domainx)                   | v1.0.0 | ✅ 已有   | Spec→Code 完成 | 领域共享值对象基线：Order/Position/Trade/Portfolio/ExecutionReport 与 OrderState/OrderType/OrderSide 枚举（8 FR，8 TC，6 tasks）；无公开 GitHub Release / git tag 对齐；非 factory until release |
-| L2.5                  | [decimalx](https://github.com/ZoneCNH/decimalx)                 | v0.1.0 | ✅ P0     | ███░ 80% | 高精度十进制类型（Decimal/Price/Qty/Ratio/Money）                                         |
+| L2.5                  | [decimalx](https://github.com/ZoneCNH/decimalx)                 | v0.2.0 | ✅ P0     | ███░ 80% | 高精度十进制类型（Decimal/Price/Qty/Ratio/Money）                                         |
 | L2.5                  | [domain-market](https://github.com/ZoneCNH/domain-market)       | v0.1.0 | ✅ P0     | ███░ 80% | 市场数据域模型（Tick/Quote/Bar/OrderBook）                                                |
 | L2.5                  | [domain-exchange](https://github.com/ZoneCNH/domain-exchange)   | v0.1.0 | ✅ P0     | ███░ 80% | 交易域模型（VenueAdapter 13 方法接口）                                                    |
 | L2.5                  | [domain-macro](https://github.com/ZoneCNH/domain-macro)         | v0.1.0 | ✅ P0     | ███░ 80% | 宏观数据域模型（MacroPoint/MacroState）                                                   |
@@ -498,7 +498,7 @@ Foundation P0: 基础闭环校准 ← kernel + configx + observex + testkitx + r
                5. 用 xlibgate / 脚本执行依赖矩阵、testkitx 边界和 release evidence
 
 Phase 0: 领域共享层 ← domainx + decimalx + domain-market + domain-exchange + domain-macro
-         ✅ 已完成 (v0.1.0)，所有上层模块已依赖此层
+         ✅ v1.0.0 文档 / 执行计划 readiness baseline 已对齐；release / factory-grade 仍待模块仓证据补齐
 
 Phase 1: 分析域   ← factor-engine + feature-store + factor-eval
          先固化 MarketDataProvider / FactorInput / FactorOutput；

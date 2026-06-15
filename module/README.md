@@ -18,6 +18,8 @@
 
 依赖顺序：`decimalx` -> `domainx` -> `domain-market` / `domain-macro` -> `domain-exchange`。上述目标版本表示文档 / 执行计划基线，用于对齐目标范围与依赖顺序；不代表对应模块仓库已经完成 API freeze、CI release gate、v1.0.0 git tag 或 GitHub Release。`domainx` 已归入 L2.5 领域共享层，不计入基座模块统计。
 
+Readiness 证据切片：[docs/evidence/l25-shared-domain-v100-readiness-20260615.md](../docs/evidence/l25-shared-domain-v100-readiness-20260615.md)。本索引只维护总仓文档 / baseline 状态；release / factory-grade 结论必须等模块仓证据回填后再提升。
+
 ## 同步口径
 
 - `module/` 是当前仓库的模块规格制品 SSOT：承载 `module/*/SPEC.md`、`module/*/TRACEABILITY.md`、`module/*/tasks/` 和模块实现计划；`docs/governance/` 是 Spec → Code 治理、模板、门禁和评分规则 SSOT。
