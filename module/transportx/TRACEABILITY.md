@@ -34,6 +34,7 @@
 | FR-023 | Audit Plane — 提供AuditSink和ReplaySource接口；审计记录含trace_id/correlation_id，不含secrets | Functional | SPEC §7 | AC-023 | TC-023 | TASK-TRANSPORTX-021 | Pending |
 | FR-024 | Data Classification — 数据分PUBLIC/INTERNAL/CONFIDENTIAL/SECRET四级；敏感数据日志前脱敏 | Functional | SPEC §7 | AC-024 | TC-024 | TASK-TRANSPORTX-022 | Pending |
 | FR-025 | SchemaRegistry — 记录版本/digest/兼容性分类/迁移说明；破坏性变更需主版本升级 | Functional | SPEC §7 | AC-025 | TC-025 | TASK-TRANSPORTX-011, TASK-TRANSPORTX-023 | Pending |
+| FR-026 | Module Identity — README H1 与 go.mod module path 必须为 transportx | Functional | SPEC §7 | AC-026 | TC-016 | TASK-TRANSPORTX-024 | Pending |
 
 ## Business Rule Traceability
 

@@ -168,5 +168,5 @@ modules:
     production_import_allowed: false
     factory_grade_allowed: false
     blocking_findings: []
-    public_code_verified: false
+    public_code_verified: true
     status_renderable: true

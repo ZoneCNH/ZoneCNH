@@ -509,6 +509,11 @@ Given NATS 连接正常
 When 调用 Health
 Then 返回 healthy；连接断开时返回 unhealthy
 
+**TC-011: Secret Redaction**
+Given NATS 配置、错误或审计证据包含敏感字段
+When natsx 输出日志、错误或发布证据
+Then 输出 MUST NOT 包含 secret/token/password 明文
+
 ### 16.3 Benchmark
 
 | 场景                        | 目标   |

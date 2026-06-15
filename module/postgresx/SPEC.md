@@ -134,19 +134,6 @@ THEN 模块必须调用适配器记录查询、事务、健康和池状态，不
 WHEN 构造或记录 DSN
 THEN `Config.RedactedDSN()` 必须隐藏密码，日志和指标不得包含完整连接串或 SQL 参数值。
 
-
-## Acceptance Criteria Registry
-
-| AC ID | FR 引用 | 验收标准 | 验证方式 |
-|-------|---------|----------|----------|
-| AC-001 | FR-001 | 验收标准 TC-001 | unit test |
-| AC-002 | FR-002 | 验收标准 TC-002 | unit test |
-| AC-003 | FR-003 | 验收标准 TC-003 | unit test |
-| AC-004 | FR-004 | 验收标准 TC-004 | unit test |
-| AC-005 | FR-005 | 验收标准 TC-005 | unit test |
-| AC-006 | FR-006 | 验收标准 TC-006 | unit test |
-| AC-007 | FR-007 | 验收标准 TC-007 | unit test |
-
 ## 8. Business Rules
 | 编号 | 规则 | 违反时 |
 | --- | --- | --- |
@@ -441,6 +428,9 @@ postgresx/
 - `GOWORK=off VERSION=v1.0.0 make release-preflight` 在 `POSTGRESX_REQUIRE_INTEGRATION=1` 和注入的 dev PostgreSQL DSN/凭据下通过，覆盖 `go vet`、`go test`、`go test -race`、边界检查、contract check、secret scan、contract check、template alignment 与真实 PostgreSQL integration。
 - Git tag / GitHub release：`v1.0.0`，对应提交 `310a249e`。
 
+> Factory caveat：本节为 v1.0.0 release-scope 验证；BLK-006（unit coverage 52.4% + Docker integration skip）关闭前机器事实层保持 factory=false。
+> 不宣告 factory-grade。
+
 文档修复侧必须通过：
 
 - `rg` 检查不再出现旧 DSN option、环境变量式 DSN 配置、无参构造器或旧事务入口。
@@ -508,3 +498,15 @@ postgresx/
 ## Appendix C: 当前结论
 
 `postgresx` 已完成 v1.0.0 release 收束：代码、Public API、metrics contract、版本矩阵、release evidence 和真实 PostgreSQL integration 已形成闭环。v1.0.0 发布范围综合评分为 `100/100`；下游真实接入和生产 soak 作为 v1.x/post-release 成熟度证据继续跟踪，不构成当前发布扣分。
+
+## Appendix D: Acceptance Criteria Registry
+
+| AC ID | FR 引用 | 验收标准 | 验证方式 |
+|-------|---------|----------|----------|
+| AC-001 | FR-001 | 验收标准 TC-001 | unit test |
+| AC-002 | FR-002 | 验收标准 TC-002 | unit test |
+| AC-003 | FR-003 | 验收标准 TC-003 | unit test |
+| AC-004 | FR-004 | 验收标准 TC-004 | unit test |
+| AC-005 | FR-005 | 验收标准 TC-005 | unit test |
+| AC-006 | FR-006 | 验收标准 TC-006 | unit test |
+| AC-007 | FR-007 | 验收标准 TC-007 | unit test |

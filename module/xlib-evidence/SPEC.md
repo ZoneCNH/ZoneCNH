@@ -2,6 +2,10 @@
 
 ## 1. Metadata
 
+- Status: Review
+- Spec-Version: v1.0.0
+- Last-Updated: 2026-06-14
+
 | 字段 | 值 |
 |------|-----|
 | Status | Review |
@@ -161,6 +165,14 @@ module/xlib-evidence/
 - 单元测试：manifest 生成/验证独立可测
 - 集成测试：collect → generate → validate 端到端
 - Golden 测试：固定覆盖率输入 → 固定 manifest 输出
+
+### 16.1 Traceability Test Cases
+
+**TC-001:** mock 覆盖率输出 → CoverageReport 正确。
+**TC-002:** 给定全部门禁通过 → manifest 生成且 hash 有效。
+**TC-003:** 合法 manifest 通过；篡改 manifest 拒绝。
+**TC-004:** HTTP endpoint 返回 JSON 证据。
+**TC-005:** 3 模块输入 → 统合报告列出全部状态。
 
 ## 17. Performance Budget
 

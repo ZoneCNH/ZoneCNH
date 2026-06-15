@@ -7,6 +7,8 @@
 - Module-Version: v1.0.1
 - Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `kernel`
 
+> 公开投影 caveat：Status=Approved 与 100.0% 覆盖证据不等同于 factory-grade；BLK-007（SPEC 67 / tasks 76）关闭前机器事实层保持 factory=false。
+
 ---
 
 ## 1. 摘要

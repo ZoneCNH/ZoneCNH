@@ -15,7 +15,7 @@
   "summary": {
     "spec_complete": 20,
     "impl_complete": 20,
-    "release_published": 14,
+    "release_published": 15,
     "live_integration": 7,
     "factory_grade": 9
   },
@@ -269,16 +269,16 @@
     },
     "domainx": {
       "layer": "L2.5",
-      "version": "v0.1.0",
+      "version": "v1.0.1",
       "spec": true,
       "impl": true,
-      "release": false,
+      "release": true,
       "live": "N/A",
       "ci": true,
       "adopt": "N/A",
       "soak": "N/A",
       "factory": false,
-      "note": ".repo-contract.yaml all_aligned=false and no git tag; release=false/factory=false until aligned public release evidence exists"
+      "note": "release=true: public GitHub Release/tag v1.0.1 observed via gh api on 2026-06-15 (published_at 2026-06-15T09:27:39Z); factory=false until L2.5 adoption/factory evidence is archived"
     }
   },
   "trust_hardening": {
@@ -294,8 +294,7 @@
       "xlib-evidence",
       "clickhousex",
       "contracts",
-      "transportx",
-      "domainx"
+      "transportx"
     ],
     "open_blocker_modules": [
       "clickhousex",

@@ -24,7 +24,7 @@ echo "=== Traceability Check ==="
 echo ""
 
 # 必须包含的矩阵：Foundation 模块 + 已纳入治理的 L2.5 模块
-REQUIRED_MODULES="kernel configx resiliencx observex schedulex testkitx xlibgate xlib-standard xlib-harness xlib-evidence redisx kafkax natsx postgresx taosx ossx clickhousex contracts transportx domainx"
+REQUIRED_MODULES="kernel configx resiliencx observex schedulex testkitx xlibgate xlib-standard xlib-harness xlib-evidence redisx kafkax natsx postgresx taosx ossx clickhousex contracts decimalx domain-exchange domain-macro domain-market transportx domainx"
 
 is_required_module() {
   local candidate="$1"
@@ -62,7 +62,7 @@ check_module() {
   # 从当前模块的 FR 参考文件提取 FR 数量。
   local spec_fr_count=0
   if [[ -f "$fr_reference_file" ]]; then
-    spec_fr_count=$(grep -oP "FR-\d+" "$fr_reference_file" | sort -u | wc -l)
+    spec_fr_count=$( { grep -oP "FR-\d+" "$fr_reference_file" || true; } | sort -u | wc -l )
   fi
 
   # 从模块矩阵提取 Requirement 首列为 FR-### 的行数。

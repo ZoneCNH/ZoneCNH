@@ -2,6 +2,10 @@
 
 ## 1. Metadata
 
+- Status: Review
+- Spec-Version: v1.0.0
+- Last-Updated: 2026-06-14
+
 | 字段 | 值 |
 |------|-----|
 | Status | Review |
@@ -153,6 +157,15 @@ module/xlib-harness/
 - 单元测试：每个 check 独立可测
 - 集成测试：generate → check 端到端（生成后立即检查）
 - 基准测试：generate 性能 < 5s
+
+### 16.1 Traceability Test Cases
+
+**TC-001:** 空目录执行 generate 后文件齐全。
+**TC-002:** 合规模块通过；不合规模块逐项报告。
+**TC-003:** 违规依赖被检出。
+**TC-004:** 模板自举验证通过。
+**TC-005:** 格式问题逐项输出。
+**TC-006:** 断开 FR → AC → TC 链路被检出并报告缺口。
 
 ## 17. Performance Budget
 

@@ -161,6 +161,14 @@ def parse_multidimensional_status_rows(text):
         }
     return rows
 
+def parse_status_release_projection_count(text):
+    """Extract the prose GitHub Release count from STATUS.md's projection note."""
+    match = re.search(
+        r"当前\s+20-module projection\s+中\s+(\d+)/20\s+已发布 GitHub Release",
+        text,
+    )
+    return int(match.group(1)) if match else None
+
 def fact_bool_to_status(value):
     if value is True:
         return "✅"
@@ -449,6 +457,15 @@ if fact_release_published is None:
     no("Could not parse FoundationX release_published summary")
 else:
     chk("RELEASE ✅ vs fact-layer release_published", str(release_yes), str(fact_release_published))
+    prose_release_projection = parse_status_release_projection_count(STATUS)
+    if prose_release_projection is None:
+        no("Could not parse STATUS release projection note")
+    else:
+        chk(
+            "STATUS release projection note vs fact-layer release_published",
+            str(prose_release_projection),
+            str(fact_release_published),
+        )
 
 release_mismatches = projection["release_mismatches"]
 factory_mismatches = projection["factory_mismatches"]
