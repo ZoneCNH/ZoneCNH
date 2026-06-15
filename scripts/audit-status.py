@@ -274,15 +274,34 @@ def audit_foundationx_fact_layer():
     chk("Blockers by_module", blockers_doc.get("by_module"), expected_by_module)
 
     open_modules = sorted({b.get("module") for b in open_blockers})
-    chk("factory_blocking_modules", blockers_doc.get("factory_blocking_modules"), open_modules)
-    factory_overstated = [
+    factory_false_modules = sorted(
+        name for name, mod in modules.items()
+        if mod.get("factory") is False
+    )
+    chk("factory_blocking_modules", blockers_doc.get("factory_blocking_modules"), factory_false_modules)
+    missing_open_factory_blockers = sorted(
+        set(open_modules) - set(blockers_doc.get("factory_blocking_modules", []))
+    )
+    if missing_open_factory_blockers:
+        no("open blocker modules missing from factory_blocking_modules: " + ", ".join(missing_open_factory_blockers))
+    else:
+        ok("open blockers are listed in factory_blocking_modules")
+    open_factory_overstated = [
         name for name in open_modules
         if modules.get(name, {}).get("factory") is not False
     ]
-    if factory_overstated:
-        no(f"open blocker modules with factory!=false: {', '.join(factory_overstated)}")
+    if open_factory_overstated:
+        no(f"open blocker modules with factory!=false: {', '.join(open_factory_overstated)}")
     else:
         ok("open blockers force factory=false")
+    factory_overstated = [
+        name for name in blockers_doc.get("factory_blocking_modules", [])
+        if modules.get(name, {}).get("factory") is not False
+    ]
+    if factory_overstated:
+        no(f"factory_blocking_modules with factory!=false: {', '.join(factory_overstated)}")
+    else:
+        ok("factory_blocking_modules force factory=false")
 
     release_blocking_modules = sorted({b.get("module") for b in open_blockers if b.get("category") == "release"})
     chk("release_blocking_modules", blockers_doc.get("release_blocking_modules"), release_blocking_modules)

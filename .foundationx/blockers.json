@@ -144,10 +144,15 @@
   },
   "factory_blocking_modules": [
     "clickhousex",
+    "contracts",
+    "domainx",
     "natsx",
     "ossx",
     "postgresx",
-    "taosx"
+    "taosx",
+    "transportx",
+    "xlib-evidence",
+    "xlib-harness"
   ],
   "release_blocking_modules": [
     "clickhousex"

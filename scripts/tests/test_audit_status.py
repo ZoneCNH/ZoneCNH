@@ -205,7 +205,8 @@ def test_release_and_factory_closure_invariants_remain_evidence_backed():
         "xlib-evidence",
         "xlib-harness",
     ]
-    assert blockers["factory_blocking_modules"] == open_blocker_modules
+    assert blockers["factory_blocking_modules"] == factory_false_modules
+    assert set(open_blocker_modules).issubset(blockers["factory_blocking_modules"])
     assert blockers["release_blocking_modules"] == ["clickhousex"]
 
     for name in release_false_modules:
