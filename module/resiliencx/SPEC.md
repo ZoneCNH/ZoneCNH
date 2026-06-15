@@ -79,7 +79,7 @@
 ## 7. Functional Requirements
 
 ### FR-001: Timeout
-> AC-001: timeout 正常完成 / 超时 / ctx 取消
+> AC-RES-001: timeout 正常完成 / 超时 / ctx 取消
 
 WHEN 调用 `Timeout(ctx, duration, fn)` 且 fn 在 duration 内完成
 THEN 返回 fn 的结果
@@ -91,7 +91,7 @@ WHEN ctx 在 fn 完成前被取消
 THEN 返回 ctx.Err()
 
 ### FR-002: Retry
-> AC-002: retry 首次成功 / 持续失败 / 达到上限 / ctx 取消
+> AC-RES-002: retry 首次成功 / 持续失败 / 达到上限 / ctx 取消
 
 WHEN 调用 `Retry(ctx, policy, fn)` 且 fn 首次成功
 THEN 返回结果，不重试
@@ -106,7 +106,7 @@ WHEN retry 期间 ctx 被取消
 THEN 立即返回 ctx.Err()
 
 ### FR-003: CircuitBreaker
-> AC-003: 三态转换正确 & AC-004: 并发安全
+> AC-RES-003: 三态转换正确 & AC-RES-004: 并发安全
 
 WHEN 调用 `circuit.Execute(fn)` 且 circuit 为 Closed 状态
 THEN 执行 fn，成功计数，失败计数
@@ -124,7 +124,7 @@ WHEN 试探调用失败
 THEN circuit 保持 Open，重置 recovery_timeout
 
 ### FR-004: Bulkhead
-> AC-005: 并发控制 / 等待 / 超时
+> AC-RES-005: 并发控制 / 等待 / 超时
 
 WHEN 调用 `bulkhead.Execute(fn)` 且并发数 < max_concurrent
 THEN 执行 fn
@@ -133,7 +133,7 @@ WHEN 调用 `bulkhead.Execute(fn)` 且并发数已达 max_concurrent
 THEN 等待直到有空位或 ctx 超时，超时返回 `ErrBulkheadFull`
 
 ### FR-005: RateLimiter
-> AC-006: Allow/Wait 正确 & 并发安全
+> AC-RES-006: Allow/Wait 正确 & 并发安全
 
 WHEN 调用 `limiter.Allow()` 且当前速率 < max_rate
 THEN 返回 true
@@ -145,13 +145,25 @@ WHEN 调用 `limiter.Wait(ctx)` 且需要等待
 THEN 阻塞直到允许或 ctx 超时
 
 ### FR-006: Fallback
-> AC-007: primary 成功 / 失败降级
+> AC-RES-007: primary 成功 / 失败降级
 
 WHEN 调用 `Fallback(primary, secondary)` 且 primary 成功
 THEN 返回 primary 的结果
 
 WHEN 调用 `Fallback(primary, secondary)` 且 primary 失败
 THEN 执行 secondary，返回 secondary 的结果
+
+### Acceptance Criteria Registry
+
+| AC 编号 | 对应 FR | 验收条件 |
+| ------- | ------- | -------- |
+| AC-RES-001 | FR-001 | Timeout 正常完成返回 fn 结果；超过 duration 返回 ErrTimeout；ctx 取消返回 ctx.Err() |
+| AC-RES-002 | FR-002 | Retry 首次成功不重试；持续失败按 policy 重试至 max_retries；达到上限返回最后一次错误；ctx 取消立即返回 |
+| AC-RES-003 | FR-003 | CircuitBreaker Closed→Open→Half-Open→Closed 三态转换正确；失败率超 threshold + 连续失败超 min_failures 触发 Open |
+| AC-RES-004 | FR-003 | CircuitBreaker 并发安全，多 goroutine 同时 Execute 不 panic 不数据竞争 |
+| AC-RES-005 | FR-004 | Bulkhead 并发数 < max_concurrent 时执行；达上限时等待；ctx 超时返回 ErrBulkheadFull |
+| AC-RES-006 | FR-005 | RateLimiter.Allow 速率 < max_rate 返回 true，>= 返回 false；Wait 阻塞至允许或 ctx 超时；并发安全 |
+| AC-RES-007 | FR-006 | Fallback primary 成功返回 primary 结果；primary 失败执行 secondary 返回 secondary 结果 |
 
 ---
 

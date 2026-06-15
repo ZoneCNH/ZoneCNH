@@ -134,6 +134,18 @@ THEN 模块必须调用适配器记录查询、事务、健康和池状态，不
 WHEN 构造或记录 DSN
 THEN `Config.RedactedDSN()` 必须隐藏密码，日志和指标不得包含完整连接串或 SQL 参数值。
 
+### Acceptance Criteria Registry
+
+| AC 编号 | 对应 FR | 验收条件 |
+| ------- | ------- | -------- |
+| AC-PGX-001 | FR-001 | New 校验配置+填充默认值+构造 pgxpool；初始 Ping 失败时关闭池；Close 幂等关闭后查询/事务返回已关闭错误 |
+| AC-PGX-002 | FR-002 | Exec/Query/QueryRow 转发底层 pgxpool 保留 context 取消/超时语义；Query 返回 Rows 时调用方负责 Close 且 Rows.Err() 暴露迭代错误 |
+| AC-PGX-003 | FR-003 | WithTx fn 返回 nil 时提交；fn 返回 error 或 ctx 取消时回滚；fn panic 时先回滚再重新抛出 |
+| AC-PGX-004 | FR-004 | MigrationRunner.Up 按版本升序执行未应用迁移并记录版本/名称/执行时间；版本重复/非正/名称空/SQL 空均拒绝返回错误 |
+| AC-PGX-005 | FR-005 | Name/Check 符合 HealthChecker 接口输出 healthy/degraded/unhealthy+耗时+安全元数据；Stats 返回池快照不暴露密码/DSN/SQL 参数 |
+| AC-PGX-006 | FR-006 | MapError 将 PostgreSQL/context 错误归一化为结构化 Error；IsRetryable 正确暴露可重试语义 |
+| AC-PGX-007 | FR-007 | WithLogger/WithMetrics 适配器正确记录查询/事务/健康/池状态；Config.RedactedDSN() 隐藏密码；日志/指标不含完整连接串或 SQL 参数值 |
+
 ## 8. Business Rules
 | 编号 | 规则 | 违反时 |
 | --- | --- | --- |
@@ -503,10 +515,10 @@ postgresx/
 
 | AC ID | FR 引用 | 验收标准 | 验证方式 |
 |-------|---------|----------|----------|
-| AC-001 | FR-001 | 验收标准 TC-001 | unit test |
-| AC-002 | FR-002 | 验收标准 TC-002 | unit test |
-| AC-003 | FR-003 | 验收标准 TC-003 | unit test |
-| AC-004 | FR-004 | 验收标准 TC-004 | unit test |
-| AC-005 | FR-005 | 验收标准 TC-005 | unit test |
-| AC-006 | FR-006 | 验收标准 TC-006 | unit test |
-| AC-007 | FR-007 | 验收标准 TC-007 | unit test |
+| AC-PGX-001 | FR-001 | New 校验配置+填充默认值+构造 pgxpool；Ping 失败关闭池；Close 幂等 | unit test |
+| AC-PGX-002 | FR-002 | Exec/Query/QueryRow 保留 context 语义；Rows.Err() 暴露迭代错误 | unit test |
+| AC-PGX-003 | FR-003 | fn nil 提交；fn error/cancel 回滚；fn panic 回滚后重新抛出 | unit test |
+| AC-PGX-004 | FR-004 | Up 按版本升序执行；重复版本/非正版本/空名称/空SQL 拒绝 | unit test |
+| AC-PGX-005 | FR-005 | HealthChecker 接口正确；Stats 不暴露密码/DSN | unit test |
+| AC-PGX-006 | FR-006 | MapError 归一化；IsRetryable 语义正确 | unit test |
+| AC-PGX-007 | FR-007 | 适配器记录指标；RedactedDSN 隐藏密码；日志不含完整连接串 | unit test |

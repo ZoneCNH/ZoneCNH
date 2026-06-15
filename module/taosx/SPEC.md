@@ -46,14 +46,14 @@ v1.0.1 保持 `pkg/taosx` 为公共运行时 API：默认驱动仍显式不可�
 
 **WHEN** 创建 `Config` 时名称、驱动模式或超时为零值/空值  
 **THEN** `Normalize()` 必须将空名称归一化为包名 `taosx`，空驱动模式归一化为 `websocket`，零值超时归一化为 5 秒  
-**AC**: 零值字段归一化为预期默认值；负超时由后续 Validate 拒绝  
+**AC**: AC-TAO-001: 零值字段归一化为预期默认值；负超时由后续 Validate 拒绝
 **TC**: TC-001 (Config 默认值 golden)
 
 ### FR-002: Config.Validate 校验拒绝
 
 **WHEN** `Config.Validate()` 被调用且 endpoint、database 缺失、驱动模式非法、超时/重试次数为负  
 **THEN** 返回 validation error，操作名为 `taosx.Config`，错误消息不包含密码原文  
-**AC**: 缺失 endpoint 返回错误；缺失 database 返回错误；非法驱动模式返回错误；负超时返回错误；错误不含密码  
+**AC**: AC-TAO-002: 缺失 endpoint 返回错误；缺失 database 返回错误；非法驱动模式返回错误；负超时返回错误；错误不含密码
 **TC**: TC-002 (Config 校验错误), TC-003 (密码脱敏)
 
 ### FR-003: New 构造函数
@@ -62,7 +62,7 @@ v1.0.1 保持 `pkg/taosx` 为公共运行时 API：默认驱动仍显式不可�
 **THEN** 构造成功，返回非 nil Client；后续操作返回可重试的 unavailable 错误  
 **WHEN** 注入自定义 Driver  
 **THEN** 构造成功，后续操作委托给注入驱动  
-**AC**: 无驱动构造成功，操作返回 unavailable；有驱动构造成功，操作正常执行  
+**AC**: AC-TAO-003: 无驱动构造成功，操作返回 unavailable；有驱动构造成功，操作正常执行  
 **TC**: TC-004 (默认不可用驱动), TC-005 (驱动注入)
 
 ### FR-004: Exec 执行
@@ -71,7 +71,7 @@ v1.0.1 保持 `pkg/taosx` 为公共运行时 API：默认驱动仍显式不可�
 **THEN** 返回 validation error，操作名 `taosx.Exec`  
 **WHEN** SQL 非空且驱动已注入  
 **THEN** 委托给 `Driver.Exec(ctx, statement)`，保留驱动的错误分类和操作名  
-**AC**: 空 SQL 拒绝；驱动错误透传；成功返回 ExecResult  
+**AC**: AC-TAO-004: 空 SQL 拒绝；驱动错误透传；成功返回 ExecResult  
 **TC**: TC-006 (空 SQL 拒绝), TC-007 (驱动委托)
 
 ### FR-005: Query 查询
@@ -80,7 +80,7 @@ v1.0.1 保持 `pkg/taosx` 为公共运行时 API：默认驱动仍显式不可�
 **THEN** 返回 validation error  
 **WHEN** 查询非空且驱动已注入  
 **THEN** 返回 `Rows` 可读取列信息、按行扫描、关闭；驱动错误时不伪造空结果  
-**AC**: 空查询拒绝；Rows 可遍历；驱动错误透传  
+**AC**: AC-TAO-005: 空查询拒绝；Rows 可遍历；驱动错误透传  
 **TC**: TC-008 (空查询拒绝), TC-009 (Rows 遍历与关闭)
 
 ### FR-006: WriteBatch 批量写入
@@ -89,7 +89,7 @@ v1.0.1 保持 `pkg/taosx` 为公共运行时 API：默认驱动仍显式不可�
 **THEN** 返回 validation error  
 **WHEN** batch 合法且驱动已注入  
 **THEN** 委托给驱动执行；驱动部分失败时返回 partial result 和错误  
-**AC**: 空 batch 拒绝；部分失败含 partial result；成功记录写入行数指标  
+**AC**: AC-TAO-006: 空 batch 拒绝；部分失败含 partial result；成功记录写入行数指标  
 **TC**: TC-010 (空 batch 拒绝), TC-011 (部分失败 partial result)
 
 ### FR-007: SchemalessWrite 无模式写入
@@ -98,7 +98,7 @@ v1.0.1 保持 `pkg/taosx` 为公共运行时 API：默认驱动仍显式不可�
 **THEN** 返回 validation error  
 **WHEN** payload 合法且驱动已注入  
 **THEN** 成功写入并记录 `taosx_client_schemaless_lines` 指标  
-**AC**: 空 lines 拒绝；非法协议拒绝；成功路径记录指标  
+**AC**: AC-TAO-007: 空 lines 拒绝；非法协议拒绝；成功路径记录指标  
 **TC**: TC-012 (空 lines 拒绝), TC-013 (协议校验)
 
 ### FR-008: Health 健康检查
@@ -107,7 +107,7 @@ v1.0.1 保持 `pkg/taosx` 为公共运行时 API：默认驱动仍显式不可�
 **THEN** 返回 degraded 状态，含 mode=`websocket`、database 名和 redacted 错误信息  
 **WHEN** 驱动已注入  
 **THEN** 委托给 `Driver.Health(ctx)`，映射 nil→ready、error→degraded/unhealthy  
-**AC**: 默认驱动返回 degraded；注入驱动透传健康状态；调用不 panic；错误信息不含密码  
+**AC**: AC-TAO-008: 默认驱动返回 degraded；注入驱动透传健康状态；调用不 panic；错误信息不含密码  
 **TC**: TC-014 (默认 degraded), TC-015 (驱动健康透传)
 
 ### FR-009: Close 关闭
@@ -118,7 +118,7 @@ v1.0.1 保持 `pkg/taosx` 为公共运行时 API：默认驱动仍显式不可�
 **THEN** 幂等返回 nil  
 **WHEN** 关闭后调用任何操作  
 **THEN** 返回 closed 错误  
-**AC**: 首次关闭成功；重复关闭幂等；关闭后操作返回 closed  
+**AC**: AC-TAO-009: 首次关闭成功；重复关闭幂等；关闭后操作返回 closed  
 **TC**: TC-016 (关闭幂等), TC-017 (关闭后操作拒绝)
 
 ### FR-010: Metrics 可选指标
@@ -127,8 +127,23 @@ v1.0.1 保持 `pkg/taosx` 为公共运行时 API：默认驱动仍显式不可�
 **THEN** 使用 no-op 实现，所有指标调用为零开销  
 **WHEN** 注入 `Metrics` 实现  
 **THEN** 记录 `taosx_client_request_total`、`taosx_client_duration_seconds`、`taosx_client_error_total`、`taosx_client_health_status`、`taosx_client_batch_rows` 等指标  
-**AC**: 未注入时零开销；注入后正确记录；指标名统一 `taosx_client_*` 前缀  
+**AC**: AC-TAO-010: 未注入时零开销；注入后正确记录；指标名统一 `taosx_client_*` 前缀
 **TC**: TC-018 (no-op 零开销), TC-019 (指标记录)
+
+### Acceptance Criteria Registry
+
+| AC 编号 | 对应 FR | 验收条件 |
+| ------- | ------- | -------- |
+| AC-TAO-001 | FR-001 | Config 零值字段归一化为预期默认值（空名称→taosx，空驱动→websocket，零超时→5s）；负超时由 Validate 拒绝 |
+| AC-TAO-002 | FR-002 | 缺失 endpoint/database/非法驱动模式/负超时均返回 validation error；错误消息不含密码原文 |
+| AC-TAO-003 | FR-003 | 无驱动构造成功，后续操作返回 unavailable 错误；有驱动构造成功，操作正常执行 |
+| AC-TAO-004 | FR-004 | 空 SQL 返回 validation error；驱动错误透传；成功返回 ExecResult |
+| AC-TAO-005 | FR-005 | 空查询返回 validation error；Rows 可遍历且可关闭；驱动错误不伪造空结果 |
+| AC-TAO-006 | FR-006 | 空 batch 或无 points 返回 validation error；部分失败含 partial result 和错误；成功记录写入行数指标 |
+| AC-TAO-007 | FR-007 | 空 lines 或非法协议返回 validation error；成功路径记录 `taosx_client_schemaless_lines` 指标 |
+| AC-TAO-008 | FR-008 | 默认驱动返回 degraded 状态；注入驱动透传健康状态；调用不 panic；错误信息不含密码 |
+| AC-TAO-009 | FR-009 | 首次关闭成功；重复关闭幂等返回 nil；关闭后操作返回 closed 错误 |
+| AC-TAO-010 | FR-010 | 未注入 Metrics 时零开销；注入后正确记录指标；指标名统一 `taosx_client_*` 前缀 |
 
 ## 5. 行为约束
 
