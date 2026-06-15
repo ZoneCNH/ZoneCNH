@@ -7,7 +7,7 @@
 > 最后更新：2026-06-15
 >
 > 同步基线：`module/` 为模块规格库 SSOT，`docs/governance/` 为 Spec 治理 SSOT，`docs/goal/` 为 Goal 规则 SSOT，`specs/` 已移除。
-> 机器事实源：`.foundationx/status/index.json` — 由 `xlibgate fleet-status` 生成，供 CI 和自动投影消费。多维成熟度以该文件为准，本文手工块为投影。
+> 机器事实源：`.foundationx/status/index.json` — 由 `xlibgate fleet-status` 生成，供 CI 和自动投影消费。基座多维成熟度以该文件为准；L2.5 领域共享层当前为 `STATUS.md` 手工投影，待纳入机器事实源。
 
 ---
 
@@ -82,10 +82,28 @@
 
 | 组件 | 版本 | 进度 | 覆盖率要求 | 说明 |
 | ---- | ---- | ---- | ---------- | ---- |
-| [decimalx](https://github.com/ZoneCNH/decimalx) | v0.1.0 | ███░ 80% | 100% | 高精度十进制类型 |
+| [decimalx](https://github.com/ZoneCNH/decimalx) | v0.2.0 | ███░ 80% | 100% | 高精度十进制类型 |
 | [domain-market](https://github.com/ZoneCNH/domain-market) | v0.1.0 | ███░ 80% | 100% | 市场数据域模型 |
 | [domain-exchange](https://github.com/ZoneCNH/domain-exchange) | v0.1.0 | ███░ 80% | 100% | 交易域模型 |
 | [domain-macro](https://github.com/ZoneCNH/domain-macro) | v0.1.0 | ███░ 80% | 100% | 宏观数据域模型 |
+
+> **L2.5 成熟度语义说明（2026-06-15）**：下表按 v1.0.0 目标门禁评估，不把已存在的 v0.x 仓库与 Draft 计划等同于 release/factory-grade。🟡 表示已有计划或基线但未完成门禁。`.foundationx/status/index.json` 当前仅覆盖基座 20 模块，L2.5 独立仓库待纳入机器事实源。
+
+<details>
+<summary>📊 L2.5 领域共享层多维成熟度展开（点击展开）</summary>
+
+| 模块 | SPEC | IMPL | RELEASE | LIVE INT | EXT CI | ADOPT | SOAK | FACTORY | 备注 |
+| ---- | :--: | :--: | :-----: | :------: | :----: | :---: | :--: | :-----: | ---- |
+| decimalx | 🟡 | 🟡 | ❌ | N/A | ❌ | 🟡 | N/A | ❌ | 当前 v0.2.0；v1.0.0 Draft Spec/Traceability/Plan 已建；API freeze、CI release gate、tag v1.0.0 待落地 |
+| domain-market | 🟡 | 🟡 | ❌ | N/A | ❌ | 🟡 | N/A | ❌ | 当前 v0.1.0；市场语义 v1.0.0 Draft 基线已建；等待 decimalx API freeze 与 release/adoption gate |
+| domain-exchange | 🟡 | 🟡 | ❌ | N/A | ❌ | 🟡 | N/A | ❌ | 当前 v0.1.0；Exchange SPI v1.0.0 Draft 基线已建；需在上游共享模型冻结后完成 release gate |
+| domain-macro | 🟡 | 🟡 | ❌ | N/A | ❌ | 🟡 | N/A | ❌ | 当前 v0.1.0；no-lookahead 与精度边界 v1.0.0 Draft 基线已建；release/CI gate 待补证 |
+
+> **维度说明**：SPEC=规格完成或计划基线 | IMPL=实现/API freeze | RELEASE=tag/release/manifest 一致 | LIVE INT=真实服务集成（领域模型通常 N/A） | EXT CI=外部 CI artifact | ADOPT=下游真实采用或 adoption gate | SOAK=生产或类生产长时间运行 | FACTORY=factory_grade_allowed。✅=完成；🟡=部分完成/待门禁；❌=未完成；N/A=不适用。
+>
+> **数据来源**：`module/decimalx`、`module/domain-market`、`module/domain-exchange`、`module/domain-macro` 的 Goal/Spec/Traceability/Implementation Plan；本地 `/home/{module}` 仓库 tag 与 CI/workflow 文件线索。`index.json` 仍待扩展到 L2.5 独立仓库。
+
+</details>
 
 ### 数据域 · 行情
 
@@ -225,10 +243,11 @@
 - **SRE/CI/CD**：已产出 [`docs/sre/foundation-cicd-plan.md`](../docs/sre/foundation-cicd-plan.md)（20 模块 4 阶段部署方案、8 标签池、Docker 集成测试、标准化模板），待落地
 - **阻塞项**：无 — 全部 20 模块 CI 已部署、FACTORY 19/20（testkitx=N/A）；xlib-harness / xlib-evidence git tag 待创建
 
-### 🟢 L2.5 领域共享层（健康）
+### 🟡 L2.5 领域共享层（注意）
 
-- 组件：4 个，进度 80%
-- Phase 0 已完成，所有上层模块已依赖此层
+- 组件：4 个，进度 80%（代表计划/管线基线，不代表 v1.0.0 release）
+- 多维成熟度：4/4 已有 v1.0.0 Draft Spec/Traceability/Plan 基线；0/4 完成 v1.0.0 release、EXT CI 与 factory-grade 门禁
+- Phase 0 已完成，所有上层模块已依赖此层；v1.0.0 API freeze、CI release gate、adoption gate 待独立仓库补证
 
 ### 🟢 数据域 · 行情（健康）
 
@@ -251,7 +270,7 @@
 
 - 组件：8 个，7 个处于早期（5%），regime-engine 骨架完成（25%）
 - **阻塞项**：factor-engine / feature-store / factor-eval / market_regime / macro_regime / ms_brain 均未实现到可用闭环；flowx SPEC 已创建（v0.1.0-draft）
-- **依赖**：需要数据域提供数据，L2.5 已就绪
+- **依赖**：需要数据域提供数据，L2.5 已具备设计依赖基线；v1.0.0 release/factory-grade 待补证
 
 ### 🔴 决策域（阻塞）
 
@@ -294,6 +313,7 @@
 | R3 | x.go 2.8MB 体量异常 | 可能违反组合根边界 | 按 ARCHITECTURE.md 的组合根守卫核实，剥离业务逻辑 |
 | R4 | 13 个交易所 SDK 全部无版本号 | 无法追踪 API 兼容性 | 建立版本化发布机制 |
 | R5 | 宏观数据源 6 个央行适配器同质化 | 维护成本高 | 考虑合并为统一适配器 |
+| R6 | L2.5 领域共享层尚未完成 v1.0.0 release/EXT CI/factory-grade 门禁 | 上层可按 Phase 0 设计依赖推进，但不能宣告 factory-grade adoption | 先冻结 decimalx API，再逐个补齐 domain-* release-check、外部 CI artifact 与 adoption gate |
 | R7 | observex 双重归属（基座+横切） | 职责边界模糊 | ✅ 已记录 ADR：`module/observex/ADR-dual-attribution.md`（2026-06-12） |
 | R10 | ~~`.omc/state/sessions` 已入库~~ | ~~可能泄露 prompt/会话/环境信息~~ | ✅ 已修复：`git rm -r --cached .omc`（2026-06-07） |
 | R11 | ~~公开 README 含 `127.0.0.1` 本地链接~~ | ~~外部无法访问，降低专业度~~ | ✅ 已修复：批量移除所有本地链接（2026-06-07） |
@@ -314,16 +334,18 @@
 
 - [ ] Phase 1（分析域）未开始 → 阻塞 Phase 2/3/4/5
 - [ ] x.go 体量待核实 → 按组合根守卫确认并剥离业务逻辑
+- [ ] L2.5 v1.0.0 release/EXT CI/factory-grade 门禁未完成 → 阻塞领域共享层 factory-grade 宣告，不阻塞 Phase 1 设计启动
 
 ### 下一步行动
 
 1. **聚焦 Phase 1**：先固化 MarketDataProvider / FactorInput / FactorOutput，再实现 factor-engine → feature-store → factor-eval
-2. **核实 x.go**：确认只包含配置加载、依赖 wiring 和生命周期控制，必要时剥离业务逻辑
-3. **版本化 SDK**：为 13 个交易所 SDK 建立 tagged release
-4. **统一宏观适配器**：评估 6 个央行数据源合并可行性
-5. ~~**清理仓库卫生**（R10）~~：✅ 已完成（2026-06-07）
-6. ~~**移除本地链接**（R11）~~：✅ 已完成（2026-06-07）
-7. **重整仓库命名**（R12）：评估按 `foundation-*`/`adapter-*`/`engine-*`/`lab-*` 前缀重命名的可行性
+2. **补齐 L2.5 v1.0.0 门禁**：冻结 decimalx API，推进 domain-market / domain-exchange / domain-macro release-check、外部 CI artifact 与 adoption gate
+3. **核实 x.go**：确认只包含配置加载、依赖 wiring 和生命周期控制，必要时剥离业务逻辑
+4. **版本化 SDK**：为 13 个交易所 SDK 建立 tagged release
+5. **统一宏观适配器**：评估 6 个央行数据源合并可行性
+6. ~~**清理仓库卫生**（R10）~~：✅ 已完成（2026-06-07）
+7. ~~**移除本地链接**（R11）~~：✅ 已完成（2026-06-07）
+8. **重整仓库命名**（R12）：评估按 `foundation-*`/`adapter-*`/`engine-*`/`lab-*` 前缀重命名的可行性
 
 ---
 
