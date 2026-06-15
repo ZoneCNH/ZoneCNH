@@ -36,9 +36,7 @@
 | [clickhousex](https://github.com/ZoneCNH/clickhousex) | v1.0.1 | Spec→Code 完成 | 100% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | ClickHouse；SPEC+TRACEABILITY+TASKS 完成；公开 GitHub Release 未发布（BLK-003）；RELEASE pending；非 factory |
 | [contracts](https://github.com/ZoneCNH/contracts) | v1.0.1-spec | Spec→Code 完成 | 100% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | 跨域稳定端口/事件/DTO 契约；spec-only；无公开 GitHub Release / git tag 对齐；非 factory until release |
 | [transportx](https://github.com/ZoneCNH/transportx) | v1.1.1-spec | Spec→Code 完成 | 100% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | 应用通信底座规格基线；spec-only；无公开 GitHub Release / git tag 对齐；production_import_allowed=false；非 factory until release |
-| [domainx](https://github.com/ZoneCNH/domainx) | v0.1.0 | Spec→Code 完成 | 100% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | 领域共享模型；CI 已部署；无公开 GitHub Release / git tag 对齐；非 factory until release |
-
-> ⚠️ **版本 / release 注记**：公开文档是投影层；版本、release 与 factory 状态以 `.foundationx/status/index.json` + `.foundationx/blockers.json` 为准。当前多维成熟度表中 14/20 已发布 GitHub Release；公开投影仍有 BLK-001/002/003/006/007/008 open，不声明 Foundation 整体 factory grade。
+> ⚠️ **版本 / release 注记**：公开文档是投影层；版本、release 与 factory 状态以 `.foundationx/status/index.json` + `.foundationx/blockers.json` 为准。当前多维成熟度表中 14/19 已发布 GitHub Release；公开投影仍有 BLK-001/002/003/006/007/008 open，不声明 Foundation 整体 factory grade。
 
 > **成熟度语义说明（2026-06-14 v2 Trust Alignment）**：上表"进度"反映本仓库 Spec 管线评分（spec→code），不代表可投产等级（factory grade）。下表提供多维度成熟度视图；RELEASE=❌ 或存在 open blocker 的模块不得投影为 FACTORY=✅。
 
@@ -66,13 +64,11 @@
 | clickhousex | ✅ | ✅ | ❌ | ✅ | ✅ | N/A | N/A | ❌ | v1.0.1; CI 已部署+运行(Docker ClickHouse); 公开 GitHub Release 未发布（BLK-003）; 非 factory |
 | contracts | ✅ | ✅ | ❌ | N/A | ✅ | ✅ | N/A | ❌ | v1.0.1-spec; spec-only; 无公开 GitHub Release / git tag 对齐; all_aligned=false |
 | transportx | ✅ | ✅ | ❌ | N/A | ✅ | N/A | N/A | ❌ | v1.1.1-spec; spec-only; 无公开 GitHub Release / git tag 对齐; production_import_allowed=false |
-| domainx | ✅ | ✅ | ❌ | N/A | ✅ | N/A | N/A | ❌ | v0.1.0; CI 已部署+已运行; 无公开 GitHub Release / git tag 对齐 |
-
 > **维度说明**：SPEC=规格完成 | IMPL=实现完成 | RELEASE=tag/release/manifest 一致 | LIVE INT=真实服务集成（非 mock） | EXT CI=外部 CI artifact | ADOPT=下游模块真实采用 | SOAK=生产或类生产长时间运行 | FACTORY=factory_grade_allowed（最高综合等级）
 
 > **数据来源**：本表依据 `module/` 规格状态、`.foundationx/status/index.json`、`.foundationx/blockers.json`、公开 GitHub release 页面、GitHub Actions CI 运行状态与 FOUNDATION-DEPS.yaml 反向依赖图（ADOPT）投影。Open blocker 会下调 FACTORY 投影。
 >
-> **CI 构建状态**（最新 run，2026-06-14）：✅ 全部 20 模块已配置 CI workflows | Trust Alignment 5 模块本次部署: xlib-harness / xlib-evidence / ossx / clickhousex / domainx
+> **CI 构建状态**（最新 run，2026-06-14）：✅ 全部 19 模块已配置 CI workflows | Trust Alignment 5 模块本次部署: xlib-harness / xlib-evidence / ossx / clickhousex / domainx
 >
 > **管线评分注记**：上表 `pln/prm/cod` 列对外仓模块为 pass-through（未实际在目标 repo 运行验证），100 分仅表示 plan/prompt 文档模板完整，不代表代码可编译或已通过测试。CI 构建状态为此处补充机械证据。
 
@@ -85,7 +81,7 @@
 
 | 域 | 组件 | 阶段 | SPEC | IMPL | RELEASE | LIVE INT | EXT CI | ADOPT | SOAK | FACTORY | 备注 |
 |----|----:|:----:|:----:|:----:|:-------:|:--------:|:------:|:-----:|:----:|:-------:|------|
-| 领域共享层（L2.5） | 4 | 80% | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | 4 个共享层组件，Phase 0 已完成 |
+| 领域共享层（L2.5） | 5 | 80% | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | 5 个共享层组件，Phase 0 已完成 |
 | 数据域 · 行情 | 18 | 80% | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | 13 SDK + 5 Provider；全部 80% |
 | 数据域 · 宏观 | 11 | 80% | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | 11 个数据源；全部 80% |
 | 数据域 · 另类 | 1 | 5% | ❌ | ❌ | N/A | N/A | N/A | N/A | N/A | ❌ | 仅创建 |
@@ -95,14 +91,15 @@
 
 </details>
 
-### L2.5 · 领域共享层（4 个）
+### L2.5 · 领域共享层（5 个）
 
 | 组件 | 版本 | 进度 | 覆盖率要求 | 说明 |
 | ---- | ---- | ---- | ---------- | ---- |
 | [decimalx](https://github.com/ZoneCNH/decimalx) | v0.1.0 | ███░ 80% | 100% | 高精度十进制类型 |
+| [domainx](https://github.com/ZoneCNH/domainx) | v1.0.0 | ███░ 80% | 100% | 执行域共享值对象：Order / Position / Trade / Portfolio / ExecutionReport |
 | [domain-market](https://github.com/ZoneCNH/domain-market) | v0.1.0 | ███░ 80% | 100% | 市场数据域模型 |
-| [domain-exchange](https://github.com/ZoneCNH/domain-exchange) | v0.1.0 | ███░ 80% | 100% | 交易域模型 |
 | [domain-macro](https://github.com/ZoneCNH/domain-macro) | v0.1.0 | ███░ 80% | 100% | 宏观数据域模型 |
+| [domain-exchange](https://github.com/ZoneCNH/domain-exchange) | v0.1.0 | ███░ 80% | 100% | 交易域模型 |
 
 ### 数据域 · 行情
 
@@ -215,8 +212,8 @@
 
 | 域                     | 总数 | 已有 | 已创建 | 平均进度 | 有版本号                                                    |
 | ---------------------- | ---- | ---- | ------ | -------- | ----------------------------------------------------------- |
-| 基座                   | 20   | 20   | 0      | Spec→Code 投影完成；factory 未闭合 | 18 |
-| L2.5 领域共享层        | 4    | 4    | 0      | 80%      | 4 (全部)                                                    |
+| 基座                   | 19   | 19   | 0      | Spec→Code 投影完成；factory 未闭合 | 17 |
+| L2.5 领域共享层        | 5    | 5    | 0      | 80%      | 5 (全部)                                                    |
 | 数据域 · 行情 SDK      | 13   | 13   | 0      | 80%      | 0                                                           |
 | 数据域 · 行情 Provider | 5    | 5    | 0      | 80%      | 5 (全部)                                                    |
 | 数据域 · 宏观          | 11   | 11   | 0      | 80%      | 0                                                           |
@@ -236,15 +233,15 @@
 
 ### 🟢 基座（健康）
 
-- 组件：20 个；Spec→Code 管线投影已闭合，但不等于 Foundation 整体 factory grade。
+- 组件：19 个；Spec→Code 管线投影已闭合，但不等于 Foundation 整体 factory grade。
 - 核心模块的 release/factory 投影以 `.foundationx/status/index.json` + `.foundationx/blockers.json` 为准；当前 BLK-001/BLK-002/BLK-003/BLK-006/BLK-007/BLK-008 open，因此不得声明 Foundation 单一 100% 或 factory-grade。
 - 存储层 `redisx` v1.0.1（Docker-backed Redis + persistence restart recovery 验证），`kafkax` v1.0.2（真实 broker gates 已验证），`natsx` v1.0.0（dev auth live gate 已验证；BLK-001/BLK-002 open），`postgresx` v1.0.0（live integration 通过；BLK-006 open），`taosx` v1.0.1（真实 taosWS WebSocket 集成已验证；BLK-007 open），`ossx` v1.0.1（真实 Aliyun OSS 集成、race/vet/build/release-check 已验证；BLK-008 open：API 文档 / integration evidence / quickstart / release manifest 未归档；非 factory）；`clickhousex` v1.0.1（公开 GitHub Release 未发布，BLK-003）；`transportx` v1.1.1-spec（SPEC baseline，production_import_allowed=false）。
-- **SRE/CI/CD**：已产出 [`docs/sre/foundation-cicd-plan.md`](../docs/sre/foundation-cicd-plan.md)（20 模块 4 阶段部署方案、8 标签池、Docker 集成测试、标准化模板），待落地
+- **SRE/CI/CD**：已产出 [`docs/sre/foundation-cicd-plan.md`](../docs/sre/foundation-cicd-plan.md)（19 模块 4 阶段部署方案、8 标签池、Docker 集成测试、标准化模板），待落地
 - **阻塞项**：BLK-001 natsx 正式四源 98+ arbiter 未完成；BLK-002 natsx 生产 TLS gate 未闭合；BLK-003 clickhousex 公开 GitHub Release 未发布；BLK-006 postgresx 覆盖率 52.4% + Docker integration skip；BLK-007 taosx SPEC 67；BLK-008 ossx API 文档 / integration evidence / quickstart / release manifest 未归档。
 
 ### 🟢 L2.5 领域共享层（健康）
 
-- 组件：4 个，进度 80%
+- 组件：5 个，进度 80%
 - Phase 0 已完成，所有上层模块已依赖此层
 
 ### 🟢 数据域 · 行情（健康）
@@ -351,18 +348,18 @@
 | 组件总数 | 77 | 77 | 80 | ⚠️ |
 | market-data 数量 | 18 | 18 (13+5) | 18 (13+5) | ✅ |
 | macro-data 数量 | 11 | 11 | 11 | ✅ |
-| L2.5 组件 | 4 | 4 | 4 | ✅ |
+| L2.5 组件 | 5 | 5 | 5 | ✅ |
 | 分析域组件 | 8 | 8 | 8 | ✅ |
 | 决策域组件 | 6 | 6 | 6 | ✅ |
 | 横切组件 | 2 | 2 | 2 | ✅ |
 
-注：以上为各文档 unique repo 链接数（grep github.com/ZoneCNH 去重后计数）。README 与 ARCH 均为 77；STATUS 去重后为 78（多 stdlib.rs）。STATUS 按域统计表 domain-sum 合 80（observex 计入基座+横切 2 域，stdlib.rs+module 独立计）。L2.5=4/分析域=8/决策域=6 三文档一致。
+注：以上为各文档 unique repo 链接数（grep github.com/ZoneCNH 去重后计数）。README 与 ARCH 均为 77；STATUS 去重后为 78（多 stdlib.rs）。STATUS 按域统计表 domain-sum 合 80（observex 计入基座+横切 2 域，stdlib.rs+module 独立计）。L2.5=5/分析域=8/决策域=6 三文档一致。
 
 ### 迁移与门禁基线
 
 | 项目          | 当前状态                                                                                                | 验证方式                                         |
 | ------------- | ------------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
-| 规格库入口    | `module/` 承载 20 份模块与组合根规格；`docs/governance/` 承载治理模板、生命周期、追溯与评分规则         | 旧路径扫描、`spec-lint.sh`、治理路径扫描         |
+| 规格库入口    | `module/` 承载 24 份模块与组合根规格；`docs/governance/` 承载治理模板、生命周期、追溯与评分规则         | 旧路径扫描、`spec-lint.sh`、治理路径扫描         |
 | Goal 规则入口 | `docs/goal/` 定义交付规则；`.config/goal/` 承载运行状态                                                 | `traceability-check.sh`、`task-spec-validate.sh` |
 | 公开索引      | `README.md`、`ARCHITECTURE.md`、`STATUS.md` 区分 `module/` 与 `docs/governance/` 入口                   | `status-consistency-check.sh`、治理路径扫描      |
 | 漂移防护      | 不恢复旧 `specs/` 与 `module/governance` 路径，agent 与 CI 引用保持 `module/` + `docs/governance/` 口径 | 旧路径扫描、`spec-drift-guard.sh`                |
