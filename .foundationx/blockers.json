@@ -82,12 +82,12 @@
       "id": "BLK-007",
       "severity": "medium",
       "module": "taosx",
-      "title": "SPEC 评分仅 67 (管线最低)",
+      "title": "SPEC 评分 77 (从 67 改善 +10，距 ≥98 仍有差距)",
       "status": "open",
       "category": "spec-quality",
-      "detail": "taosx SPEC 67 (缺 WHEN/THEN 等结构)，为 20 模块管线评分最低；tasks 76 同样偏低",
-      "evidence": "STATUS.md L375",
-      "action": "补 SPEC WHEN/THEN 结构 → 四源评分 ≥98 → tasks 更新"
+      "detail": "taosx SPEC 已补齐 WHEN/THEN 结构 (10 FR 含 20 对 WHEN/THEN)、10 项 AC、19 个 TC 引用、6 条 BR、6 条 Non-goals。当前评分 77/100 (从 67 改善 +10)。剩余缺口：缺少独立 Performance Budget / Consumers / Edge Cases / Directory Structure / CI Gate 章节，为主要扣分项 (12 分维度仅得 7 分)。",
+      "evidence": "STATUS.md L375; SPEC §4 FR 全部含 WHEN/THEN; §4 AC Registry 10 项; §5 BR 6 条",
+      "action": "补 Performance Budget (P99/ms 目标) / Consumers / Edge Cases (独立节) / Directory Structure / CI Gate checklist → 四源评分 ≥98 → tasks 更新"
     },
     {
       "id": "BLK-008",
