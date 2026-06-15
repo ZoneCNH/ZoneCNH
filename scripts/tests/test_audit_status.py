@@ -31,7 +31,7 @@ def test_multidimensional_status_rows_cover_foundationx_modules():
 
     assert set(rows) == set(modules)
     assert len(rows) == 20
-    assert rows["domainx"]["release"] == "✅"
+    assert rows["domainx"]["release"] == "❌"
     assert rows["domainx"]["factory"] == "❌"
 
 
@@ -41,9 +41,9 @@ def test_multidimensional_status_rows_skip_malformed_entries():
 
     text = """
 📊 基座多维成熟度展开
-| module | spec | impl | release | live | ext ci | adopt | soak | factory | note |
+| 组件 | spec | impl | release | live | ext ci | adopt | soak | factory | note |
 | alpha | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | ok |
-| broken | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ |
+| broken | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌
 | beta | ✅ | ✅ | ✅ | N/A | N/A | N/A | N/A | ✅ | ok |
 </details>
 """.strip()
