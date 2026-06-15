@@ -105,6 +105,8 @@
 
 </details>
 
+> **多维成熟度总则（2026-06-15）**：下面各域统一采用 `SPEC / IMPL / RELEASE / LIVE INT / EXT CI / ADOPT / SOAK / FACTORY` 维度。🟡 表示已有基线或草案但未完成门禁，❌ 表示未形成门禁，N/A 表示当前未单独评估。
+
 ### 数据域 · 行情
 
 | 组件 | 类型 | 版本 | 进度 | 覆盖率要求 | 说明 |
@@ -128,6 +130,17 @@
 | [okx-market](https://github.com/ZoneCNH/okx-market) | Provider | v0.1.0 | ███░ 80% | 100% | OKX Kline/Ticker |
 | [coinbase-market](https://github.com/ZoneCNH/coinbase-market) | Provider | v0.1.0 | ███░ 80% | 100% | Coinbase Kline/Ticker |
 
+> **多维成熟度**：按组件组汇总，见展开表。
+<details>
+<summary>📊 数据域 · 行情多维成熟度展开（点击展开）</summary>
+
+| 组件组 | SPEC | IMPL | RELEASE | LIVE INT | EXT CI | ADOPT | SOAK | FACTORY | 备注 |
+| ---- | :--: | :--: | :-----: | :------: | :----: | :---: | :--: | :-----: | ---- |
+| 交易所/DEX SDK（13 个） | 🟡 | 🟡 | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | 13 个适配器，均为 80%，无版本号 |
+| Kline/Ticker Provider（5 个） | 🟡 | 🟡 | 🟡 | ❌ | ❌ | ❌ | ❌ | ❌ | 5 个 Provider，均为 80%，v0.1.0 |
+
+</details>
+
 ### 数据域 · 宏观
 
 | 组件 | 版本 | 进度 | 覆盖率要求 | 说明 |
@@ -144,11 +157,31 @@
 | [jin10](https://github.com/ZoneCNH/jin10) | - | ███░ 80% | 100% | 金十行情 |
 | [yahoo](https://github.com/ZoneCNH/yahoo) | - | ███░ 80% | 100% | Yahoo Finance |
 
+> **多维成熟度**：按组件组汇总，见展开表。
+<details>
+<summary>📊 数据域 · 宏观多维成熟度展开（点击展开）</summary>
+
+| 组件组 | SPEC | IMPL | RELEASE | LIVE INT | EXT CI | ADOPT | SOAK | FACTORY | 备注 |
+| ---- | :--: | :--: | :-----: | :------: | :----: | :---: | :--: | :-----: | ---- |
+| 宏观数据源（11 个） | 🟡 | 🟡 | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | 11 个适配器，均为 80%，无版本号 |
+
+</details>
+
 ### 数据域 · 另类
 
 | 组件 | 版本 | 进度 | 覆盖率要求 | 说明 |
 | ---- | ---- | ---- | ---------- | ---- |
 | [alternative-data](https://github.com/ZoneCNH/alternative-data) | - | ░░░░ 5% | 100% | 链上、社交情绪、新闻 NLP |
+
+> **多维成熟度**：按组件组汇总，见展开表。
+<details>
+<summary>📊 数据域 · 另类多维成熟度展开（点击展开）</summary>
+
+| 组件组 | SPEC | IMPL | RELEASE | LIVE INT | EXT CI | ADOPT | SOAK | FACTORY | 备注 |
+| ---- | :--: | :--: | :-----: | :------: | :----: | :---: | :--: | :-----: | ---- |
+| 另类数据（1 个） | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | 仅创建（5%），尚未启动可用基线 |
+
+</details>
 
 ### 分析域
 
@@ -163,6 +196,18 @@
 | [regime-engine](https://github.com/ZoneCNH/regime-engine) | v0.1.0 | ██░░ 25% | 100% | M×S 联合决策引擎（M+S → action/risk/permission），骨架完成，30+ 测试通过 |
 | [flowx](https://github.com/ZoneCNH/flowx) | v0.1.0-draft | ░░░░ 5% | 100% | 数据流管线引擎 — 流式 ETL、窗口聚合、背压控制（7 FR, SPEC draft） |
 
+> **多维成熟度**：按组件组汇总，见展开表。
+<details>
+<summary>📊 分析域多维成熟度展开（点击展开）</summary>
+
+| 组件组 | SPEC | IMPL | RELEASE | LIVE INT | EXT CI | ADOPT | SOAK | FACTORY | 备注 |
+| ---- | :--: | :--: | :-----: | :------: | :----: | :---: | :--: | :-----: | ---- |
+| 基础分析组件（6 个） | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | factor-engine / feature-store / factor-eval / market_regime / macro_regime / ms_brain 仍处早期（5%） |
+| regime-engine | 🟡 | 🟡 | 🟡 | ❌ | ❌ | ❌ | ❌ | ❌ | v0.1.0；骨架完成，30+ 测试通过，25% |
+| flowx | 🟡 | 🟡 | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | v0.1.0-draft；SPEC draft，流式 ETL/窗口聚合/背压控制（5%） |
+
+</details>
+
 ### 决策域
 
 | 组件 | 版本 | 进度 | 覆盖率要求 | 说明 |
@@ -173,6 +218,17 @@
 | [backtestx](https://github.com/ZoneCNH/backtestx) | v0.1.0-draft | ░░░░ 5% | 100% | 回测引擎 — 事件驱动回测、Walk-Forward、蒙特卡洛（7 FR, SPEC draft） |
 | [strategyx](https://github.com/ZoneCNH/strategyx) | v0.1.0-draft | ░░░░ 5% | 100% | 策略工厂 — 策略注册、参数管理、信号组合（7 FR, SPEC draft） |
 | [maestro](https://github.com/ZoneCNH/maestro) | v0.1.0-draft | ░░░░ 5% | 100% | 工作流编排引擎 — DAG 工作流、状态机、错误恢复（9 FR, SPEC draft） |
+
+> **多维成熟度**：按组件组汇总，见展开表。
+<details>
+<summary>📊 决策域多维成熟度展开（点击展开）</summary>
+
+| 组件组 | SPEC | IMPL | RELEASE | LIVE INT | EXT CI | ADOPT | SOAK | FACTORY | 备注 |
+| ---- | :--: | :--: | :-----: | :------: | :----: | :---: | :--: | :-----: | ---- |
+| 核心决策组件（3 个） | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | signal-factory / backtest-engine / optimizer 仍在 5% 早期 |
+| 草案仓（backtestx / strategyx / maestro） | 🟡 | 🟡 | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | v0.1.0-draft；已有 SPEC 草案，但尚未进入 release gate |
+
+</details>
 
 ### 执行域
 
@@ -185,6 +241,17 @@
 | [riskx](https://github.com/ZoneCNH/riskx) | v0.1.0-draft | ░░░░ 5% | 100% | 风控引擎 — 事前风控、回撤控制、熔断机制（7 FR, SPEC draft） |
 | [orderx](https://github.com/ZoneCNH/orderx) | v0.1.0-draft | ░░░░ 5% | 100% | 订单管理器 — 订单生命周期、SOR、状态机（7 FR, SPEC draft） |
 | [positionx](https://github.com/ZoneCNH/positionx) | v0.1.0-draft | ░░░░ 5% | 100% | 仓位管理器 — 实时仓位追踪、PnL、敞口监控（7 FR, SPEC draft） |
+
+> **多维成熟度**：按组件组汇总，见展开表。
+<details>
+<summary>📊 执行域多维成熟度展开（点击展开）</summary>
+
+| 组件组 | SPEC | IMPL | RELEASE | LIVE INT | EXT CI | ADOPT | SOAK | FACTORY | 备注 |
+| ---- | :--: | :--: | :-----: | :------: | :----: | :---: | :--: | :-----: | ---- |
+| 核心执行组件（4 个） | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | risk-engine / order-engine / portfolio-engine / settlement 仍在 5% 早期 |
+| 草案仓（riskx / orderx / positionx） | 🟡 | 🟡 | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | v0.1.0-draft；已有 SPEC 草案，但尚未进入 release gate |
+
+</details>
 
 ### 入口 · 横切
 
