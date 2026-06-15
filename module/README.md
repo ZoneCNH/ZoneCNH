@@ -16,7 +16,7 @@
 | `domainx` | v0.1.0 | v1.0.0 | Order / Trade / Position / Portfolio / ExecutionReport 交易域共享模型 | [Goal](domainx/goal.md) / [Spec](domainx/SPEC.md) / [Traceability](domainx/TRACEABILITY.md) / [Plan](domainx/V1-GOAL-EXECUTION-PLAN.md) |
 | `domain-exchange` | v0.1.0 | v1.0.0 | Exchange SPI / VenueCapability / RateLimitPolicy / ExchangeError | [Goal](domain-exchange/goal.md) / [Spec](domain-exchange/SPEC.md) / [Traceability](domain-exchange/TRACEABILITY.md) / [Plan](domain-exchange/IMPLEMENTATION-PLAN.md) |
 
-依赖顺序：`decimalx` -> `domain-market` / `domain-macro` / `domainx` -> `domain-exchange`。上述目标版本表示执行计划基线，不代表对应模块仓库已经完成 v1.0.0 tag。
+依赖顺序：`decimalx` -> `domain-market` / `domain-macro` / `domainx` -> `domain-exchange`。上述目标版本表示文档 / 执行计划基线，用于对齐目标范围与依赖顺序；不代表对应模块仓库已经完成 API freeze、CI release gate、v1.0.0 git tag 或 GitHub Release。
 
 ## 同步口径
 

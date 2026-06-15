@@ -432,6 +432,14 @@ l2_5_release_order:
   - domainx
   - domain-exchange
 
+l2_5_release_boundary:
+  baseline: documentation_and_goal_execution_plan
+  not_implied:
+    - module_api_freeze
+    - module_ci_release_gate
+    - v1.0.0_git_tag
+    - github_release
+
 l2_5_public_contract_rules:
   - Public finance fields use decimalx.Decimal or explicit value objects; no public float64 for price, quantity, money, rates, or notional values.
   - Domain shared modules do not expose transport DTOs, ORM tags, raw exchange responses, HTTP, Kafka, or storage details.
