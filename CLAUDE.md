@@ -236,5 +236,5 @@ PR 标题遵循 Conventional Commits（不含模块名，模块名放 body 首�
 | L0 | 裸用 | 无 CLAUDE.md | — |
 | L1 | 规则层 | CLAUDE.md + 行为准则 | ✅ |
 | L2 | 反馈回路 | PreToolUse + SessionStart + Stop | ✅ |
-| L3 | 自动修正 | PostToolUse + PreCompact + 审查报告 ≥5 | 🔧 |
+| L3 | 自动修正 | PostToolUse + PreCompact + 审查报告 ≥5 | ✅ |
 | L4 | 自治系统 | GC Agent 连续 3 次 0 critical | ⬜ |
