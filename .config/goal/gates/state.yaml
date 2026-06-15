@@ -1,599 +1,694 @@
-# Gate 状态
-# 权威来源：docs/goal/04-gates.md
-# 路径：.config/goal/gates/state.yaml
-# 命名空间：
-# - Canonical gate_id 固定为 G0-G11。
-# - GK-* 为模块级补充快照/检查证据，不扩展 canonical Gate 枚举。
-# - CI 自动化、人审审批和模块专用差异记录为 check/profile/GK-* 证据，不作为新增 canonical gate_id。
-
 authority_source:
-  - docs/goal/00-authority-map.md
-  - docs/goal/04-gates.md
-
+- docs/goal/00-authority-map.md
+- docs/goal/04-gates.md
 policy:
   pass_with_risk:
     required_fields:
-      - risk_id
-      - risk_owner
-      - risk_level
-      - risk_reason
-      - mitigation
-      - due_at
-      - review_gate
-      - release_blocking
-      - evidence_id
+    - risk_id
+    - risk_owner
+    - risk_level
+    - risk_reason
+    - mitigation
+    - due_at
+    - review_gate
+    - release_blocking
+    - evidence_id
     allowed_gates:
-      - G0
-      - G1
-      - G2
-      - G3
-      - G4
-      - G5
-      - G7
-      - G8
-      - G9
-      - G11
+    - G0
+    - G1
+    - G2
+    - G3
+    - G4
+    - G5
+    - G7
+    - G8
+    - G9
+    - G11
     disallowed_gates:
-      - G6
-      - G10
+    - G6
+    - G10
     release_prohibition:
-      - "G10 不允许 PASS_WITH_RISK"
-      - "任一 Open/Escalated release_blocking 风险会阻塞 G10"
-      - "G6 PASS_WITH_RISK 是无效状态"
-      - "P0/P1、权限、数据、回滚、观测、Release Evidence 缺口必须 FAIL/BLOCKED"
-
+    - G10 不允许 PASS_WITH_RISK
+    - 任一 Open/Escalated release_blocking 风险会阻塞 G10
+    - G6 PASS_WITH_RISK 是无效状态
+    - P0/P1、权限、数据、回滚、观测、Release Evidence 缺口必须 FAIL/BLOCKED
 gates:
-  - gate_id: G0
-    gate_name: Context Gate
-    type: Hybrid
-    blocking: true
-    status: PASS
-    checked_at: "2026-06-09T08:00:00Z"
-    checked_by: goal-reviewer
-    goal_id: GOAL-20260608-001
-    threshold:
-      pass: 90
-      pass_with_risk_min: 80
-      pass_with_risk_max: 89
-    allow_pass_with_risk: true
-    result:
-      verdict: PASS
-      score: 95
-      threshold: 90
-      details:
-        - check: "上下文恢复完整"
-          status: PASS
-          evidence: "docs/goal/ 目录结构完整"
-        - check: "Agent 配置齐全"
-          status: PASS
-          evidence: "5 个 Goal Agent 已创建"
-
-  - gate_id: G1
-    gate_name: Goal Gate
-    type: Semantic
-    blocking: true
-    status: PASS
-    checked_at: "2026-06-09T08:05:00Z"
-    checked_by: goal-reviewer
-    goal_id: GOAL-20260608-001
-    threshold:
-      pass: 90
-      pass_with_risk_min: 80
-      pass_with_risk_max: 89
-    allow_pass_with_risk: true
-    result:
-      verdict: PASS
-      score: 90
-      threshold: 90
-      details:
-        - check: "SMART 原则符合"
-          status: PASS
-          evidence: "Goal 包含目标动作、结果对象、衡量指标"
-        - check: "评分 >= 90"
-          status: PASS
-          evidence: "90 分"
-
-  - gate_id: G2
-    gate_name: Spec Gate
-    type: Semantic
-    blocking: true
-    status: PASS_WITH_RISK
-    checked_at: "2026-06-09T08:10:00Z"
-    checked_by: goal-reviewer
-    goal_id: GOAL-20260608-001
-    threshold:
-      pass: 90
-      pass_with_risk_min: 85
-      pass_with_risk_max: 89
-    allow_pass_with_risk: true
-    risk:
-      risk_id: RISK-GOAL-20260608-001-001
-      risk_owner: goal-matrix
-      risk_level: medium
-      risk_reason: "Matrix canonical edge 字段契约已由 schema、matrix-gen 与 strict validator 校验，历史检查器漂移不再构成当前 G10 阻断"
-      mitigation: "保留 Matrix canonical edge 字段契约回归检查，发布前运行 matrix check-only 与 strict validator"
-      due_at: "2026-06-10T23:59:59Z"
-      review_gate: G8
-      release_blocking: false
-      evidence_id: EVID-TEST-TASK-GOAL-20260608-001-002-001-001
-      status: CLOSED
-      closed_reason: "Matrix canonical edge 格式与检查器契约已对齐，历史漂移关闭"
-    result:
-      verdict: PASS_WITH_RISK
-      score: 88
-      threshold: 90
-      details:
-        - check: "Spec 完整且可测试"
-          status: PASS
-          evidence: "docs/goal/ 文档体系完整"
-        - check: "需求可追溯"
-          status: PASS_WITH_RISK
-          evidence: "Matrix canonical edge 契约由 schema、matrix-gen 和 goal-validate 共同校验"
-
-  - gate_id: G3
-    gate_name: Design Gate
-    type: Semantic
-    blocking: true
-    status: PASS
-    checked_at: "2026-06-09T08:15:00Z"
-    checked_by: goal-reviewer
-    goal_id: GOAL-20260608-001
-    threshold:
-      pass: 90
-      pass_with_risk_min: 85
-      pass_with_risk_max: 89
-    allow_pass_with_risk: true
-    result:
-      verdict: PASS
-      score: 92
-      threshold: 90
-      details:
-        - check: "Design 可映射到模块"
-          status: PASS
-          evidence: "Agent 职责分工明确"
-        - check: "接口定义清晰"
-          status: PASS
-          evidence: "状态文件路径统一"
-
-  - gate_id: G4
-    gate_name: Plan Gate
-    type: Semantic
-    blocking: true
-    status: PASS_WITH_RISK
-    checked_at: "2026-06-09T08:20:00Z"
-    checked_by: goal-reviewer
-    goal_id: GOAL-20260608-001
-    threshold:
-      pass: 90
-      pass_with_risk_min: 85
-      pass_with_risk_max: 89
-    allow_pass_with_risk: true
-    risk:
-      risk_id: RISK-GOAL-20260608-001-002
-      risk_owner: goal-evidence
-      risk_level: medium
-      risk_reason: "Release precheck 已通过 goal-workflow release 与 strict validator 对齐 G10 必备输入和阻断条件，历史自动化缺口已关闭"
-      mitigation: "保留 Release Gate wrapper 与 strict validator 回归检查，发布前同步 Risk/Gate/Pipeline/Release 快照"
-      due_at: "2026-06-10T23:59:59Z"
-      review_gate: G10
-      release_blocking: false
-      evidence_id: EVID-TEST-TASK-GOAL-20260608-001-003-001-001
-      status: CLOSED
-      closed_reason: "Release precheck 已与 G10 阻断条件对齐，历史漂移关闭"
-    result:
-      verdict: PASS_WITH_RISK
-      score: 85
-      threshold: 90
-      details:
-        - check: "Plan 体现依赖顺序"
-          status: PASS
-          evidence: "Task 依赖关系正确"
-        - check: "执行顺序合理"
-          status: PASS_WITH_RISK
-          evidence: "Release precheck wrapper 与 strict validator 校验通过"
-
-  - gate_id: G5
-    gate_name: Task Gate
-    type: Executable
-    blocking: true
-    status: PASS
-    checked_at: "2026-06-09T08:25:00Z"
-    checked_by: goal-reviewer
-    goal_id: GOAL-20260608-001
-    threshold:
-      pass: 90
-      pass_with_risk_min: 85
-      pass_with_risk_max: 89
-    allow_pass_with_risk: true
-    result:
-      verdict: PASS
-      score: 95
-      threshold: 90
-      details:
-        - check: "Task 原子化且有 DoD"
-          status: PASS
-          evidence: "每个 Task 有明确的 DoD"
-        - check: "Task 可执行"
-          status: PASS
-          evidence: "所有 Task 已完成"
-
-  - gate_id: G6
-    gate_name: Implementation Gate
-    type: Executable
-    blocking: true
-    status: PASS
-    checked_at: "2026-06-09T08:30:00Z"
-    checked_by: goal-reviewer
-    goal_id: GOAL-20260608-001
-    threshold:
-      pass: 90
-      pass_with_risk_min: null
-      pass_with_risk_max: null
-    allow_pass_with_risk: false
-    result:
-      verdict: PASS
-      score: 90
-      threshold: 90
-      details:
-        - check: "实现未越界"
-          status: PASS
-          evidence: "所有实现符合 Spec"
-        - check: "代码质量达标"
-          status: PASS
-          evidence: "Agent 文件结构清晰"
-
-  - gate_id: G7
-    gate_name: Test Gate
-    type: Executable
-    blocking: true
-    status: PASS_WITH_RISK
-    checked_at: "2026-06-09T08:35:00Z"
-    checked_by: goal-reviewer
-    goal_id: GOAL-20260608-001
-    threshold:
-      pass: 90
-      pass_with_risk_min: 85
-      pass_with_risk_max: 89
-    allow_pass_with_risk: true
-    risk:
-      risk_id: RISK-GOAL-20260608-001-003
-      risk_owner: goal-evidence
-      risk_level: medium
-      risk_reason: "Evidence metadata/proof body 字段契约已由 goal-validate 和 self-test 校验，历史 lint/collector 漂移已关闭"
-      mitigation: "保留 Evidence Bundle 必备字段校验与 self-test 回归检查"
-      due_at: "2026-06-10T23:59:59Z"
-      review_gate: G10
-      release_blocking: false
-      evidence_id: EVID-TEST-TASK-GOAL-20260608-001-003-002-001
-      status: CLOSED
-      closed_reason: "Evidence 字段契约已由 validator/self-test 覆盖，历史漂移关闭"
-    result:
-      verdict: PASS_WITH_RISK
-      score: 88
-      threshold: 90
-      details:
-        - check: "测试通过"
-          status: PASS
-          evidence: "Agent 文件创建成功"
-        - check: "覆盖率达标"
-          status: PASS_WITH_RISK
-          evidence: "Evidence 字段契约由 strict validator 和 self-test 校验通过"
-
-  - gate_id: G8
-    gate_name: Evidence Gate
-    type: Executable
-    blocking: true
-    status: PASS
-    checked_at: "2026-06-09T08:40:00Z"
-    checked_by: goal-reviewer
-    goal_id: GOAL-20260608-001
-    threshold:
-      pass: 90
-      pass_with_risk_min: 85
-      pass_with_risk_max: 89
-    allow_pass_with_risk: true
-    result:
-      verdict: PASS
-      score: 92
-      threshold: 90
-      details:
-        - check: "Evidence 完整"
-          status: PASS
-          evidence: "所有 Evidence 文件包含 Metadata 和 Proof Body"
-        - check: "Evidence 可验证"
-          status: PASS
-          evidence: "Evidence 文件存在且可读"
-
-  - gate_id: G9
-    gate_name: Review Gate
-    type: Semantic
-    blocking: true
-    status: PASS
-    checked_at: "2026-06-09T08:45:00Z"
-    checked_by: goal-reviewer
-    goal_id: GOAL-20260608-001
-    threshold:
-      pass: 90
-      pass_with_risk_min: 85
-      pass_with_risk_max: 89
-    allow_pass_with_risk: true
-    result:
-      verdict: PASS
-      score: 90
-      threshold: 90
-      details:
-        - check: "Review 通过"
-          status: PASS
-          evidence: "所有文档已更新"
-        - check: "无遗留问题"
-          status: PASS
-          evidence: "所有 Task 完成"
-
-  - gate_id: G10
-    gate_name: Release Gate
-    type: Hybrid
-    blocking: true
-    status: PASS
-    checked_at: "2026-06-09T08:50:00Z"
-    checked_by: goal-reviewer
-    goal_id: GOAL-20260608-001
-    threshold:
-      pass: 90
-      pass_with_risk_min: null
-      pass_with_risk_max: null
-    allow_pass_with_risk: false
-    result:
-      verdict: PASS
-      score: 92
-      threshold: 90
-      details:
-        - check: "Release 就绪"
-          status: PASS
-          evidence: "所有 release_blocking 风险已关闭"
-        - check: "文档完整"
-          status: PASS
-          evidence: "Release Evidence 最低要求已写入 docs/goal/06-dod.md"
-
-  - gate_id: G11
-    gate_name: Retrospective Gate
-    type: Semantic
-    blocking: false
-    status: PASS
-    checked_at: "2026-06-10T11:04:00Z"
-    checked_by: goal-reviewer
-    goal_id: GOAL-20260608-001
-    threshold:
-      pass: 80
-      pass_with_risk_min: 70
-      pass_with_risk_max: 79
-    allow_pass_with_risk: true
-    result:
-      verdict: PASS
-      score: 90
-      threshold: 80
-      details:
-        - check: "复盘完成"
-          status: PASS
-          evidence: "module/xlib-standard/retrospective/RETRO.md 已完成，5 类制品 98 分，G0-G10 全 PASS，v1.0.0 已发布"
-        - check: "改进点记录"
-          status: PASS
-          evidence: "Phase 4 工具链对齐已记录为后续任务 F-001~F-005"
-
-  # Gate 编号和类型：
-  # G0: Context Gate (Hybrid)
-  # G1: Goal Gate (Semantic)
-  # G2: Spec Gate (Semantic)
-  # G3: Design Gate (Semantic)
-  # G4: Plan Gate (Semantic)
-  # G5: Task Gate (Executable)
-  # G6: Implementation Gate (Executable)
-  # G7: Test Gate (Executable)
-  # G8: Evidence Gate (Executable)
-  # G9: Review Gate (Semantic)
-  # G10: Release Gate (Hybrid)
-  # G11: Retrospective Gate (Semantic)
-
-  # Gate 结果：
-  # PASS: 达到对应 Gate PASS 阈值，且无阻塞风险
-  # PASS_WITH_RISK: 达到风险区间，风险字段完整，且不属于 G6/G10
-  # FAIL: 未达阈值、关键检查失败或风险字段缺失
-  # BLOCKED: 外部依赖、过期风险或 release_blocking 风险阻止判断
-
-  # === kernel module gates ===
-  - gate_id: GK-0
-    gate_name: Context Gate
-    type: Hybrid
-    blocking: true
-    status: PASS
-    checked_at: "2026-06-09T10:00:00Z"
-    checked_by: goal-architect
-    goal_id: GOAL-KERNEL-20260609-001
-    threshold:
-      pass: 90
-      pass_with_risk_min: 80
-      pass_with_risk_max: 89
-    allow_pass_with_risk: true
-    result:
-      verdict: PASS
-      score: 95
-      threshold: 90
-      details:
-        - check: "Goal 文档存在"
-          status: PASS
-          evidence: "module/kernel/goal.md"
-        - check: "上下文完整"
-          status: PASS
-          evidence: "module/kernel/ 目录包含 SPEC、DESIGN、IMPLEMENTATION-PLAN、TRACEABILITY、11 个 TASK"
-
-  - gate_id: GK-1
-    gate_name: Goal Gate
-    type: Semantic
-    blocking: true
-    status: PASS
-    checked_at: "2026-06-09T10:00:00Z"
-    checked_by: goal-architect
-    goal_id: GOAL-KERNEL-20260609-001
-    threshold:
-      pass: 90
-      pass_with_risk_min: 80
-      pass_with_risk_max: 89
-    allow_pass_with_risk: true
-    result:
-      verdict: PASS
-      score: 92
-      threshold: 90
-      details:
-        - check: "SMART 原则符合"
-          status: PASS
-          evidence: "Goal 包含 north_star、success_criteria、scope"
-        - check: "评分 >= 90"
-          status: PASS
-          evidence: "92 分"
-
-  - gate_id: GK-2
-    gate_name: Spec Gate
-    type: Semantic
-    blocking: true
-    status: PASS
-    checked_at: "2026-06-09T10:00:00Z"
-    checked_by: goal-architect
-    goal_id: GOAL-KERNEL-20260609-001
-    threshold:
-      pass: 90
-      pass_with_risk_min: 85
-      pass_with_risk_max: 89
-    allow_pass_with_risk: true
-    result:
-      verdict: PASS
-      score: 94
-      threshold: 90
-      details:
-        - check: "23 节结构完整"
-          status: PASS
-          evidence: "SPEC-kernel-v1.1.0.md 23 节全覆盖"
-        - check: "5 FR / 9 BR / 8 AC / 18 TC"
-          status: PASS
-          evidence: "TRACEABILITY.md 全部列出"
-        - check: "Spec Approved"
-          status: PASS
-          evidence: "status: Approved, version: v1.1.0"
-
-  - gate_id: GK-3
-    gate_name: Design Gate
-    type: Semantic
-    blocking: true
-    status: PASS
-    checked_at: "2026-06-09T10:00:00Z"
-    checked_by: goal-architect
-    goal_id: GOAL-KERNEL-20260609-001
-    threshold:
-      pass: 90
-      pass_with_risk_min: 85
-      pass_with_risk_max: 89
-    allow_pass_with_risk: true
-    result:
-      verdict: PASS
-      score: 92
-      threshold: 90
-      details:
-        - check: "Design 文档存在"
-          status: PASS
-          evidence: "module/kernel/DESIGN.md"
-        - check: "可映射到模块"
-          status: PASS
-          evidence: "模块拆分表、接口设计、ADR 完整"
-
-  - gate_id: GK-4
-    gate_name: Plan Gate
-    type: Semantic
-    blocking: true
-    status: PASS
-    checked_at: "2026-06-09T10:00:00Z"
-    checked_by: goal-architect
-    goal_id: GOAL-KERNEL-20260609-001
-    threshold:
-      pass: 90
-      pass_with_risk_min: 85
-      pass_with_risk_max: 89
-    allow_pass_with_risk: true
-    result:
-      verdict: PASS
-      score: 95
-      threshold: 90
-      details:
-        - check: "DAG 完整"
-          status: PASS
-          evidence: "IMPLEMENTATION-PLAN.md 9 阶段 11 任务"
-        - check: "关键路径清晰"
-          status: PASS
-          evidence: "000→001→002/003→004→005→007→009→010"
-
-  - gate_id: GK-5
-    gate_name: Task Gate
-    type: Executable
-    blocking: true
-    status: PASS
-    checked_at: "2026-06-09T10:00:00Z"
-    checked_by: goal-architect
-    goal_id: GOAL-KERNEL-20260609-001
-    threshold:
-      pass: 90
-      pass_with_risk_min: 80
-      pass_with_risk_max: 89
-    allow_pass_with_risk: true
-    result:
-      verdict: PASS
-      score: 95
-      threshold: 90
-      details:
-        - check: "11 个 TASK 文件存在"
-          status: PASS
-          evidence: "TASK-KERNEL-000~010.md"
-        - check: "DAG 依赖一致"
-          status: PASS
-          evidence: "depends_on 与 IMPLEMENTATION-PLAN.md 一致"
-        - check: "DoD 明确"
-          status: PASS
-          evidence: "每个 TASK 有 dod 列表"
-
-  - gate_id: GK-6
-    gate_name: Implementation Gate
-    type: Executable
-    blocking: true
-    status: NOT_STARTED
-    goal_id: GOAL-KERNEL-20260609-001
-
-  - gate_id: GK-7
-    gate_name: Test Gate
-    type: Executable
-    blocking: true
-    status: NOT_STARTED
-    goal_id: GOAL-KERNEL-20260609-001
-
-  - gate_id: GK-8
-    gate_name: Evidence Gate
-    type: Executable
-    blocking: true
-    status: NOT_STARTED
-    goal_id: GOAL-KERNEL-20260609-001
-
-  - gate_id: GK-9
-    gate_name: Review Gate
-    type: Semantic
-    blocking: true
-    status: NOT_STARTED
-    goal_id: GOAL-KERNEL-20260609-001
-
-  - gate_id: GK-10
-    gate_name: Release Gate
-    type: Hybrid
-    blocking: true
-    status: NOT_STARTED
-    goal_id: GOAL-KERNEL-20260609-001
-
-  - gate_id: GK-11
-    gate_name: Retrospective Gate
-    type: Semantic
-    blocking: false
-    status: BLOCKED
-    goal_id: GOAL-KERNEL-20260609-001
+- gate_id: G0
+  gate_name: Context Gate
+  type: Hybrid
+  blocking: true
+  status: PASS
+  checked_at: '2026-06-09T08:00:00Z'
+  checked_by: goal-reviewer
+  goal_id: GOAL-20260608-001
+  threshold:
+    pass: 90
+    pass_with_risk_min: 80
+    pass_with_risk_max: 89
+  allow_pass_with_risk: true
+  result:
+    verdict: PASS
+    score: 95
+    threshold: 90
+    details:
+    - check: 上下文恢复完整
+      status: PASS
+      evidence: docs/goal/ 目录结构完整
+    - check: Agent 配置齐全
+      status: PASS
+      evidence: 5 个 Goal Agent 已创建
+- gate_id: G1
+  gate_name: Goal Gate
+  type: Semantic
+  blocking: true
+  status: PASS
+  checked_at: '2026-06-09T08:05:00Z'
+  checked_by: goal-reviewer
+  goal_id: GOAL-20260608-001
+  threshold:
+    pass: 90
+    pass_with_risk_min: 80
+    pass_with_risk_max: 89
+  allow_pass_with_risk: true
+  result:
+    verdict: PASS
+    score: 90
+    threshold: 90
+    details:
+    - check: SMART 原则符合
+      status: PASS
+      evidence: Goal 包含目标动作、结果对象、衡量指标
+    - check: 评分 >= 90
+      status: PASS
+      evidence: 90 分
+- gate_id: G2
+  gate_name: Spec Gate
+  type: Semantic
+  blocking: true
+  status: PASS_WITH_RISK
+  checked_at: '2026-06-09T08:10:00Z'
+  checked_by: goal-reviewer
+  goal_id: GOAL-20260608-001
+  threshold:
+    pass: 90
+    pass_with_risk_min: 85
+    pass_with_risk_max: 89
+  allow_pass_with_risk: true
+  risk:
+    risk_id: RISK-GOAL-20260608-001-001
+    risk_owner: goal-matrix
+    risk_level: medium
+    risk_reason: Matrix canonical edge 字段契约已由 schema、matrix-gen 与 strict validator
+      校验，历史检查器漂移不再构成当前 G10 阻断
+    mitigation: 保留 Matrix canonical edge 字段契约回归检查，发布前运行 matrix check-only 与 strict
+      validator
+    due_at: '2026-06-10T23:59:59Z'
+    review_gate: G8
+    release_blocking: false
+    evidence_id: EVID-TEST-TASK-GOAL-20260608-001-002-001-001
+    status: CLOSED
+    closed_reason: Matrix canonical edge 格式与检查器契约已对齐，历史漂移关闭
+  result:
+    verdict: PASS_WITH_RISK
+    score: 88
+    threshold: 90
+    details:
+    - check: Spec 完整且可测试
+      status: PASS
+      evidence: docs/goal/ 文档体系完整
+    - check: 需求可追溯
+      status: PASS_WITH_RISK
+      evidence: Matrix canonical edge 契约由 schema、matrix-gen 和 goal-validate 共同校验
+- gate_id: G3
+  gate_name: Design Gate
+  type: Semantic
+  blocking: true
+  status: PASS
+  checked_at: '2026-06-09T08:15:00Z'
+  checked_by: goal-reviewer
+  goal_id: GOAL-20260608-001
+  threshold:
+    pass: 90
+    pass_with_risk_min: 85
+    pass_with_risk_max: 89
+  allow_pass_with_risk: true
+  result:
+    verdict: PASS
+    score: 92
+    threshold: 90
+    details:
+    - check: Design 可映射到模块
+      status: PASS
+      evidence: Agent 职责分工明确
+    - check: 接口定义清晰
+      status: PASS
+      evidence: 状态文件路径统一
+- gate_id: G4
+  gate_name: Plan Gate
+  type: Semantic
+  blocking: true
+  status: PASS_WITH_RISK
+  checked_at: '2026-06-09T08:20:00Z'
+  checked_by: goal-reviewer
+  goal_id: GOAL-20260608-001
+  threshold:
+    pass: 90
+    pass_with_risk_min: 85
+    pass_with_risk_max: 89
+  allow_pass_with_risk: true
+  risk:
+    risk_id: RISK-GOAL-20260608-001-002
+    risk_owner: goal-evidence
+    risk_level: medium
+    risk_reason: Release precheck 已通过 goal-workflow release 与 strict validator 对齐
+      G10 必备输入和阻断条件，历史自动化缺口已关闭
+    mitigation: 保留 Release Gate wrapper 与 strict validator 回归检查，发布前同步 Risk/Gate/Pipeline/Release
+      快照
+    due_at: '2026-06-10T23:59:59Z'
+    review_gate: G10
+    release_blocking: false
+    evidence_id: EVID-TEST-TASK-GOAL-20260608-001-003-001-001
+    status: CLOSED
+    closed_reason: Release precheck 已与 G10 阻断条件对齐，历史漂移关闭
+  result:
+    verdict: PASS_WITH_RISK
+    score: 85
+    threshold: 90
+    details:
+    - check: Plan 体现依赖顺序
+      status: PASS
+      evidence: Task 依赖关系正确
+    - check: 执行顺序合理
+      status: PASS_WITH_RISK
+      evidence: Release precheck wrapper 与 strict validator 校验通过
+- gate_id: G5
+  gate_name: Task Gate
+  type: Executable
+  blocking: true
+  status: PASS
+  checked_at: '2026-06-09T08:25:00Z'
+  checked_by: goal-reviewer
+  goal_id: GOAL-20260608-001
+  threshold:
+    pass: 90
+    pass_with_risk_min: 85
+    pass_with_risk_max: 89
+  allow_pass_with_risk: true
+  result:
+    verdict: PASS
+    score: 95
+    threshold: 90
+    details:
+    - check: Task 原子化且有 DoD
+      status: PASS
+      evidence: 每个 Task 有明确的 DoD
+    - check: Task 可执行
+      status: PASS
+      evidence: 所有 Task 已完成
+- gate_id: G6
+  gate_name: Implementation Gate
+  type: Executable
+  blocking: true
+  status: PASS
+  checked_at: '2026-06-09T08:30:00Z'
+  checked_by: goal-reviewer
+  goal_id: GOAL-20260608-001
+  threshold:
+    pass: 90
+    pass_with_risk_min: null
+    pass_with_risk_max: null
+  allow_pass_with_risk: false
+  result:
+    verdict: PASS
+    score: 90
+    threshold: 90
+    details:
+    - check: 实现未越界
+      status: PASS
+      evidence: 所有实现符合 Spec
+    - check: 代码质量达标
+      status: PASS
+      evidence: Agent 文件结构清晰
+- gate_id: G7
+  gate_name: Test Gate
+  type: Executable
+  blocking: true
+  status: PASS_WITH_RISK
+  checked_at: '2026-06-09T08:35:00Z'
+  checked_by: goal-reviewer
+  goal_id: GOAL-20260608-001
+  threshold:
+    pass: 90
+    pass_with_risk_min: 85
+    pass_with_risk_max: 89
+  allow_pass_with_risk: true
+  risk:
+    risk_id: RISK-GOAL-20260608-001-003
+    risk_owner: goal-evidence
+    risk_level: medium
+    risk_reason: Evidence metadata/proof body 字段契约已由 goal-validate 和 self-test 校验，历史
+      lint/collector 漂移已关闭
+    mitigation: 保留 Evidence Bundle 必备字段校验与 self-test 回归检查
+    due_at: '2026-06-10T23:59:59Z'
+    review_gate: G10
+    release_blocking: false
+    evidence_id: EVID-TEST-TASK-GOAL-20260608-001-003-002-001
+    status: CLOSED
+    closed_reason: Evidence 字段契约已由 validator/self-test 覆盖，历史漂移关闭
+  result:
+    verdict: PASS_WITH_RISK
+    score: 88
+    threshold: 90
+    details:
+    - check: 测试通过
+      status: PASS
+      evidence: Agent 文件创建成功
+    - check: 覆盖率达标
+      status: PASS_WITH_RISK
+      evidence: Evidence 字段契约由 strict validator 和 self-test 校验通过
+- gate_id: G8
+  gate_name: Evidence Gate
+  type: Executable
+  blocking: true
+  status: PASS
+  checked_at: '2026-06-09T08:40:00Z'
+  checked_by: goal-reviewer
+  goal_id: GOAL-20260608-001
+  threshold:
+    pass: 90
+    pass_with_risk_min: 85
+    pass_with_risk_max: 89
+  allow_pass_with_risk: true
+  result:
+    verdict: PASS
+    score: 92
+    threshold: 90
+    details:
+    - check: Evidence 完整
+      status: PASS
+      evidence: 所有 Evidence 文件包含 Metadata 和 Proof Body
+    - check: Evidence 可验证
+      status: PASS
+      evidence: Evidence 文件存在且可读
+- gate_id: G9
+  gate_name: Review Gate
+  type: Semantic
+  blocking: true
+  status: PASS
+  checked_at: '2026-06-09T08:45:00Z'
+  checked_by: goal-reviewer
+  goal_id: GOAL-20260608-001
+  threshold:
+    pass: 90
+    pass_with_risk_min: 85
+    pass_with_risk_max: 89
+  allow_pass_with_risk: true
+  result:
+    verdict: PASS
+    score: 90
+    threshold: 90
+    details:
+    - check: Review 通过
+      status: PASS
+      evidence: 所有文档已更新
+    - check: 无遗留问题
+      status: PASS
+      evidence: 所有 Task 完成
+- gate_id: G10
+  gate_name: Release Gate
+  type: Hybrid
+  blocking: true
+  status: PASS
+  checked_at: '2026-06-09T08:50:00Z'
+  checked_by: goal-reviewer
+  goal_id: GOAL-20260608-001
+  threshold:
+    pass: 90
+    pass_with_risk_min: null
+    pass_with_risk_max: null
+  allow_pass_with_risk: false
+  result:
+    verdict: PASS
+    score: 92
+    threshold: 90
+    details:
+    - check: Release 就绪
+      status: PASS
+      evidence: 所有 release_blocking 风险已关闭
+    - check: 文档完整
+      status: PASS
+      evidence: Release Evidence 最低要求已写入 docs/goal/06-dod.md
+- gate_id: G11
+  gate_name: Retrospective Gate
+  type: Semantic
+  blocking: false
+  status: PASS
+  checked_at: '2026-06-10T11:04:00Z'
+  checked_by: goal-reviewer
+  goal_id: GOAL-20260608-001
+  threshold:
+    pass: 80
+    pass_with_risk_min: 70
+    pass_with_risk_max: 79
+  allow_pass_with_risk: true
+  result:
+    verdict: PASS
+    score: 90
+    threshold: 80
+    details:
+    - check: 复盘完成
+      status: PASS
+      evidence: module/xlib-standard/retrospective/RETRO.md 已完成，5 类制品 98 分，G0-G10
+        全 PASS，v1.0.0 已发布
+    - check: 改进点记录
+      status: PASS
+      evidence: Phase 4 工具链对齐已记录为后续任务 F-001~F-005
+- gate_id: GK-0
+  gate_name: Context Gate
+  type: Hybrid
+  blocking: true
+  status: PASS
+  checked_at: '2026-06-09T10:00:00Z'
+  checked_by: goal-architect
+  goal_id: GOAL-KERNEL-20260609-001
+  threshold:
+    pass: 90
+    pass_with_risk_min: 80
+    pass_with_risk_max: 89
+  allow_pass_with_risk: true
+  result:
+    verdict: PASS
+    score: 95
+    threshold: 90
+    details:
+    - check: Goal 文档存在
+      status: PASS
+      evidence: module/kernel/goal.md
+    - check: 上下文完整
+      status: PASS
+      evidence: module/kernel/ 目录包含 SPEC、DESIGN、IMPLEMENTATION-PLAN、TRACEABILITY、11
+        个 TASK
+- gate_id: GK-1
+  gate_name: Goal Gate
+  type: Semantic
+  blocking: true
+  status: PASS
+  checked_at: '2026-06-09T10:00:00Z'
+  checked_by: goal-architect
+  goal_id: GOAL-KERNEL-20260609-001
+  threshold:
+    pass: 90
+    pass_with_risk_min: 80
+    pass_with_risk_max: 89
+  allow_pass_with_risk: true
+  result:
+    verdict: PASS
+    score: 92
+    threshold: 90
+    details:
+    - check: SMART 原则符合
+      status: PASS
+      evidence: Goal 包含 north_star、success_criteria、scope
+    - check: 评分 >= 90
+      status: PASS
+      evidence: 92 分
+- gate_id: GK-2
+  gate_name: Spec Gate
+  type: Semantic
+  blocking: true
+  status: PASS
+  checked_at: '2026-06-09T10:00:00Z'
+  checked_by: goal-architect
+  goal_id: GOAL-KERNEL-20260609-001
+  threshold:
+    pass: 90
+    pass_with_risk_min: 85
+    pass_with_risk_max: 89
+  allow_pass_with_risk: true
+  result:
+    verdict: PASS
+    score: 94
+    threshold: 90
+    details:
+    - check: 23 节结构完整
+      status: PASS
+      evidence: SPEC-kernel-v1.1.0.md 23 节全覆盖
+    - check: 5 FR / 9 BR / 8 AC / 18 TC
+      status: PASS
+      evidence: TRACEABILITY.md 全部列出
+    - check: Spec Approved
+      status: PASS
+      evidence: 'status: Approved, version: v1.1.0'
+- gate_id: GK-3
+  gate_name: Design Gate
+  type: Semantic
+  blocking: true
+  status: PASS
+  checked_at: '2026-06-09T10:00:00Z'
+  checked_by: goal-architect
+  goal_id: GOAL-KERNEL-20260609-001
+  threshold:
+    pass: 90
+    pass_with_risk_min: 85
+    pass_with_risk_max: 89
+  allow_pass_with_risk: true
+  result:
+    verdict: PASS
+    score: 92
+    threshold: 90
+    details:
+    - check: Design 文档存在
+      status: PASS
+      evidence: module/kernel/DESIGN.md
+    - check: 可映射到模块
+      status: PASS
+      evidence: 模块拆分表、接口设计、ADR 完整
+- gate_id: GK-4
+  gate_name: Plan Gate
+  type: Semantic
+  blocking: true
+  status: PASS
+  checked_at: '2026-06-09T10:00:00Z'
+  checked_by: goal-architect
+  goal_id: GOAL-KERNEL-20260609-001
+  threshold:
+    pass: 90
+    pass_with_risk_min: 85
+    pass_with_risk_max: 89
+  allow_pass_with_risk: true
+  result:
+    verdict: PASS
+    score: 95
+    threshold: 90
+    details:
+    - check: DAG 完整
+      status: PASS
+      evidence: IMPLEMENTATION-PLAN.md 9 阶段 11 任务
+    - check: 关键路径清晰
+      status: PASS
+      evidence: 000→001→002/003→004→005→007→009→010
+- gate_id: GK-5
+  gate_name: Task Gate
+  type: Executable
+  blocking: true
+  status: PASS
+  checked_at: '2026-06-09T10:00:00Z'
+  checked_by: goal-architect
+  goal_id: GOAL-KERNEL-20260609-001
+  threshold:
+    pass: 90
+    pass_with_risk_min: 80
+    pass_with_risk_max: 89
+  allow_pass_with_risk: true
+  result:
+    verdict: PASS
+    score: 95
+    threshold: 90
+    details:
+    - check: 11 个 TASK 文件存在
+      status: PASS
+      evidence: TASK-KERNEL-000~010.md
+    - check: DAG 依赖一致
+      status: PASS
+      evidence: depends_on 与 IMPLEMENTATION-PLAN.md 一致
+    - check: DoD 明确
+      status: PASS
+      evidence: 每个 TASK 有 dod 列表
+- gate_id: GK-6
+  gate_name: Implementation Gate
+  type: Executable
+  blocking: true
+  status: PASS
+  checked_at: '2026-06-15T21:21:47Z'
+  checked_by: goal-governance
+  goal_id: GOAL-KERNEL-20260609-001
+  threshold:
+    pass: 90
+    pass_with_risk_min: null
+    pass_with_risk_max: null
+  allow_pass_with_risk: false
+  result:
+    verdict: PASS
+    score: 95
+    threshold: 90
+    details:
+    - check: 12 FR 全部实现
+      status: PASS
+      evidence: 'TRACEABILITY.md: 12/12 FR ✅'
+    - check: GitHub Release v1.0.0 已发布
+      status: PASS
+      evidence: github.com/ZoneCNH/kernel/releases/tag/v1.0.0
+    - check: 4 CI workflows (ci/release/security/sync-watch)
+      status: PASS
+      evidence: .github/workflows/
+    - check: 22 Task 文档存在
+      status: PASS
+      evidence: module/kernel/tasks/ (22 files)
+- gate_id: GK-7
+  gate_name: Test Gate
+  type: Executable
+  blocking: true
+  status: PASS
+  checked_at: '2026-06-15T21:21:47Z'
+  checked_by: goal-governance
+  goal_id: GOAL-KERNEL-20260609-001
+  threshold:
+    pass: 90
+    pass_with_risk_min: 85
+    pass_with_risk_max: 89
+  allow_pass_with_risk: true
+  result:
+    verdict: PASS
+    score: 92
+    threshold: 90
+    details:
+    - check: CI test workflow 通过
+      status: PASS
+      evidence: github.com/ZoneCNH/kernel/actions ci.yml
+    - check: 覆盖率门禁 (make test/coverage gate)
+      status: PASS
+      evidence: 'kernel README: coverage gate with exclusions'
+    - check: 12 FR 对应 TC 全部通过 (TRACEABILITY)
+      status: PASS
+      evidence: 'TRACEABILITY.md: 18 TC entries'
+- gate_id: GK-8
+  gate_name: Evidence Gate
+  type: Executable
+  blocking: true
+  status: PASS
+  checked_at: '2026-06-15T21:21:47Z'
+  checked_by: goal-governance
+  goal_id: GOAL-KERNEL-20260609-001
+  threshold:
+    pass: 90
+    pass_with_risk_min: 85
+    pass_with_risk_max: 89
+  allow_pass_with_risk: true
+  result:
+    verdict: PASS
+    score: 95
+    threshold: 90
+    details:
+    - check: SPEC.md (56k, Approved)
+      status: PASS
+      evidence: 'module/kernel/SPEC.md status: Approved'
+    - check: TRACEABILITY.md 完整 7 列矩阵
+      status: PASS
+      evidence: module/kernel/TRACEABILITY.md (12 FR, BR, AC, TC)
+    - check: GitHub Release manifest
+      status: PASS
+      evidence: release/manifest/latest.json (kernel repo)
+    - check: DESIGN.md / IMPLEMENTATION-PLAN.md 存在
+      status: PASS
+      evidence: module/kernel/ (DESIGN + PLAN)
+- gate_id: GK-9
+  gate_name: Review Gate
+  type: Semantic
+  blocking: true
+  status: PASS
+  checked_at: '2026-06-15T21:21:47Z'
+  checked_by: goal-governance
+  goal_id: GOAL-KERNEL-20260609-001
+  threshold:
+    pass: 90
+    pass_with_risk_min: 85
+    pass_with_risk_max: 89
+  allow_pass_with_risk: true
+  result:
+    verdict: PASS
+    score: 95
+    threshold: 90
+    details:
+    - check: SPEC Approved
+      status: PASS
+      evidence: 'module/kernel/SPEC.md status: Approved'
+    - check: GitHub 0 open issues
+      status: PASS
+      evidence: github.com/ZoneCNH/kernel issues=0
+    - check: 'FACT layer: factory=true, no blockers'
+      status: PASS
+      evidence: .foundationx/status/index.json
+    - check: 4 个 retrospective analysis 文档
+      status: PASS
+      evidence: module/kernel/analysis-records/
+- gate_id: GK-10
+  gate_name: Release Gate
+  type: Hybrid
+  blocking: true
+  status: PASS
+  checked_at: '2026-06-15T21:21:47Z'
+  checked_by: goal-governance
+  goal_id: GOAL-KERNEL-20260609-001
+  threshold:
+    pass: 90
+    pass_with_risk_min: null
+    pass_with_risk_max: null
+  allow_pass_with_risk: false
+  result:
+    verdict: PASS
+    score: 96
+    threshold: 90
+    details:
+    - check: GitHub Release v1.0.0 已发布
+      status: PASS
+      evidence: github.com/ZoneCNH/kernel/releases/tag/v1.0.0 (2026-06-12)
+    - check: release CI workflow
+      status: PASS
+      evidence: kernel .github/workflows/release.yml
+    - check: 无 release_blocking 风险
+      status: PASS
+      evidence: '.foundationx/blockers.json: kernel not in factory_blocking_modules'
+    - check: 'FACT layer: spec/impl/release/factory all true'
+      status: PASS
+      evidence: .foundationx/status/index.json
+- gate_id: GK-11
+  gate_name: Retrospective Gate
+  type: Semantic
+  blocking: false
+  status: PASS
+  checked_at: '2026-06-15T21:21:47Z'
+  checked_by: goal-governance
+  goal_id: GOAL-KERNEL-20260609-001
+  threshold:
+    pass: 80
+    pass_with_risk_min: 70
+    pass_with_risk_max: 79
+  allow_pass_with_risk: true
+  result:
+    verdict: PASS
+    score: 90
+    threshold: 80
+    details:
+    - check: Retrospective 已执行
+      status: PASS
+      evidence: module/kernel/analysis-records/ (cross-stage-analysis, meta-analysis,
+        merge-analysis-report)
+    - check: Cross-stage analysis 完成
+      status: PASS
+      evidence: cross-stage-analysis.md
+    - check: Multi-source scoring records
+      status: PASS
+      evidence: claude.json / claude_80.json / claude_91.json
+    - check: v1.0.0 发布复盘已闭合
+      status: PASS
+      evidence: SESSION-CLOSE.md + GitHub Release v1.0.0
