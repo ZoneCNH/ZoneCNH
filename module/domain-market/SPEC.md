@@ -1,6 +1,6 @@
 # domain-market v1.0.0 Spec
 
-- Status: Draft
+- Status: Approved
 - Spec-Version: v1.0.0
 Module-Version: v0.1.0 -> v1.0.0
 Layer: L2.5 领域共享

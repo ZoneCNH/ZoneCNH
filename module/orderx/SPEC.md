@@ -166,7 +166,7 @@ THEN it MUST be `module github.com/ZoneCNH/orderx`
 | AC-ORD-005 | FR-005 | CancelOrder 未成交订单状态更新为 CANCELLED；部分成交仅取消剩余；AmendOrder 执行 Cancel-Replace 保留原 orderId |
 | AC-ORD-006 | FR-006 | Order(orderId) 返回完整订单信息；OpenOrders(account) 仅返回非终态订单 |
 | AC-ORD-007 | FR-007 | 订单状态变更记录 OrderAuditEvent；审计事件不可删除 |
-| AC-ORD-008 | FR-010 | README H1 为 `# orderx`；Go module path 为 `github.com/ZoneCNH/orderx`；go.mod 声明 `module github.com/ZoneCNH/orderx` |
+| AC-ORD-008 | FR-008 | README H1 为 `# orderx`；Go module path 为 `github.com/ZoneCNH/orderx`；go.mod 声明 `module github.com/ZoneCNH/orderx` |
 
 ## 8. Business Rules
 

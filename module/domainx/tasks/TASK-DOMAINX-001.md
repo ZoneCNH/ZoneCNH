@@ -27,7 +27,7 @@ acceptance_criteria:
 depends_on: []
 estimated_effort: "2h"
 priority: P0
-status: pending
+status: done
 ```
 
 ---

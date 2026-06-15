@@ -168,7 +168,7 @@ THEN it MUST be `module github.com/ZoneCNH/strategyx`
 | AC-STX-005 | FR-005 | Signal 包含 signalID(全局唯一)/strategy/timestamp/symbol/side/qty/confidence/reason；confidence < threshold 标记 WEAK |
 | AC-STX-006 | FR-006 | 信号合并策略 PRIORITY/WEIGHTED/UNANIMOUS 正确执行；资金分配 EQUAL/PROPORTIONAL/KELLY 正确计算；冲突信号按策略解决并记录日志 |
 | AC-STX-007 | FR-007 | WarmUp 完成后进入 Ready 状态；WarmUp 超时标记为 Degraded |
-| AC-STX-008 | FR-010 | README H1 为 `# strategyx`；Go module path 为 `github.com/ZoneCNH/strategyx`；go.mod 声明 `module github.com/ZoneCNH/strategyx` |
+| AC-STX-008 | FR-008 | README H1 为 `# strategyx`；Go module path 为 `github.com/ZoneCNH/strategyx`；go.mod 声明 `module github.com/ZoneCNH/strategyx` |
 
 ## 8. Business Rules
 

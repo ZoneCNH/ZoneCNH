@@ -154,7 +154,7 @@ THEN it MUST be `module github.com/ZoneCNH/riskx`
 | AC-RSK-005 | FR-005 | 单 symbol 仓位占比超过 maxConcentration 时拒绝新增仓位；减仓不受限制 |
 | AC-RSK-006 | FR-006 | 风险指标输出 VaR(95%/99%)、Sharpe、MaxDrawdown、Calmar、Volatility；计算周期可配置（默认 5min） |
 | AC-RSK-007 | FR-007 | 风控 PASS/REJECT 均记录审计事件（timestamp/account/symbol/side/qty/price/result/reason/rule_id）；审计事件不可删除 |
-| AC-RSK-008 | FR-010 | README H1 为 `# riskx`；Go module path 为 `github.com/ZoneCNH/riskx`；go.mod 声明 `module github.com/ZoneCNH/riskx` |
+| AC-RSK-008 | FR-008 | README H1 为 `# riskx`；Go module path 为 `github.com/ZoneCNH/riskx`；go.mod 声明 `module github.com/ZoneCNH/riskx` |
 
 ## 8. Business Rules
 

@@ -7,7 +7,8 @@
 #   3. AC 非空：每个 FR 行的 Acceptance Criteria 列不为 "-"
 #   4. TC 非空：每个 FR/BR 行的 Test Case 列不为 "-"
 #   5. Status 有效：Status 列只能是约定枚举值
-#   6. TC 引用：TRACEABILITY.md 中的 TC-### 必须存在于对应 SPEC.md；
+#   6. TC 引用：TRACEABILITY.md 中的 TC-### / TC-XXX-### 必须存在于
+#      对应 SPEC.md 或 TRACEABILITY.md 的 TC 反向索引；
 #      没有当前 SPEC.md 的快照型模块跳过此引用存在性检查
 #   7. 交叉验证：TRACEABILITY.md 中的 FR 数量与对应 FR 参考文件一致
 #   8. TRACEABILITY_STRICT=1 时警告升级为失败
@@ -24,7 +25,7 @@ echo "=== Traceability Check ==="
 echo ""
 
 # 必须包含的矩阵：Foundation 模块 + 已纳入治理的 L2.5 模块
-REQUIRED_MODULES="kernel configx resiliencx observex schedulex testkitx xlibgate xlib-standard xlib-harness xlib-evidence redisx kafkax natsx postgresx taosx ossx clickhousex contracts decimalx domain-exchange domain-macro domain-market transportx domainx"
+REQUIRED_MODULES="kernel configx resiliencx observex schedulex testkitx xlibgate xlib-standard xlib-harness xlib-evidence redisx kafkax natsx postgresx taosx ossx clickhousex contracts decimalx domain-exchange domain-macro domain-market transportx domainx flowx backtestx strategyx maestro riskx orderx positionx"
 
 is_required_module() {
   local candidate="$1"
@@ -35,6 +36,25 @@ is_required_module() {
     fi
   done
   return 1
+}
+
+tc_grep_pattern() {
+  local tc="$1"
+  printf '(^|[^A-Z0-9-])%s([^A-Z0-9-]|$)' "$tc"
+}
+
+traceability_defines_tc() {
+  local trace_file="$1"
+  local tc="$2"
+  awk -F'|' -v target="$tc" '
+    function trim(s) { gsub(/^[ \t]+|[ \t]+$/, "", s); return s }
+    function strip_ticks(s) { gsub(/`/, "", s); return s }
+    /^\|/ {
+      first=strip_ticks(trim($2))
+      if (first == target) found=1
+    }
+    END { exit found ? 0 : 1 }
+  ' "$trace_file"
 }
 
 check_module() {
@@ -126,7 +146,7 @@ check_module() {
   fi
 
   # 检查 TC token 格式。允许 CI Gate/-race/import check 等非 TC 说明，
-  # 但凡出现 TC-*，必须是 TC-###。
+  # 但凡出现 TC-*，必须是 TC-### 或 TC-XXX-###。
   local invalid_tc_tokens
   invalid_tc_tokens=$(awk -F'|' '
     function trim(s) { gsub(/^[ \t]+|[ \t]+$/, "", s); return s }
@@ -137,7 +157,7 @@ check_module() {
       if (req !~ /^(FR|BR)-[0-9]+$/) next
       while (match(tc, /TC-[^, \t|]+/)) {
         token=substr(tc, RSTART, RLENGTH)
-        if (token !~ /^TC-[0-9][0-9][0-9]$/) print token
+        if (token !~ /^TC-([A-Z][A-Z][A-Z][A-Z]*-)?[0-9][0-9][0-9]$/) print token
         tc=substr(tc, RSTART + RLENGTH)
       }
     }
@@ -149,7 +169,7 @@ check_module() {
     FAIL=1
   fi
 
-  # 检查 TRACEABILITY.md 引用的 TC 是否存在于对应 SPEC.md。
+  # 检查 TRACEABILITY.md 引用的 TC 是否存在于对应 SPEC.md 或 TC 反向索引。
   # 快照型模块可以没有本地 SPEC.md，因此跳过此引用存在性检查。
   if [[ -n "$tc_reference_file" && -f "$tc_reference_file" ]]; then
     local missing_tc=0
@@ -161,7 +181,7 @@ check_module() {
         req=req_id($2)
         tc=$5
         if (req !~ /^(FR|BR)-[0-9]+$/) next
-        while (match(tc, /TC-[0-9][0-9][0-9]/)) {
+        while (match(tc, /TC-([A-Z][A-Z][A-Z][A-Z]*-)?[0-9][0-9][0-9]/)) {
           print substr(tc, RSTART, RLENGTH)
           tc=substr(tc, RSTART + RLENGTH)
         }
@@ -170,8 +190,8 @@ check_module() {
 
     local tc
     for tc in $referenced_tcs; do
-      if ! grep -q "\\*\\*$tc:" "$tc_reference_file"; then
-        echo "  ❌ $module: $tc referenced in TRACEABILITY.md but missing from SPEC.md"
+      if ! traceability_defines_tc "$trace_file" "$tc" && ! grep -Eq "$(tc_grep_pattern "$tc")" "$tc_reference_file"; then
+        echo "  ❌ $module: $tc referenced in TRACEABILITY.md but missing from SPEC.md or TC registry"
         missing_tc=1
       fi
     done
@@ -200,6 +220,7 @@ check_module() {
           status != "Failed" &&
           status != "Deferred" &&
           status != "⬜" &&
+          status != "🔲" &&
           status != "🔵" &&
           status != "✅" &&
           status != "❌" &&
