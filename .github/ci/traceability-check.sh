@@ -24,8 +24,8 @@ SPEC_DIR="$REPO_ROOT/module"
 echo "=== Traceability Check ==="
 echo ""
 
-# 必须包含的矩阵：Foundation 模块 + 已纳入治理的 L2.5 模块
-REQUIRED_MODULES="kernel configx resiliencx observex schedulex testkitx xlibgate xlib-standard xlib-harness xlib-evidence redisx kafkax natsx postgresx taosx ossx clickhousex contracts decimalx domain-exchange domain-macro domain-market transportx domainx flowx backtestx strategyx maestro riskx orderx positionx"
+# 模块发现：从 module/*/TRACEABILITY.md 动态收集
+REQUIRED_MODULES=$(for d in "$SPEC_DIR"/*/TRACEABILITY.md; do [ -f "$d" ] && basename "$(dirname "$d")"; done | sort -u | xargs)
 
 is_required_module() {
   local candidate="$1"
@@ -92,7 +92,8 @@ check_module() {
     function req_id(s) { s=trim(s); gsub(/`/, "", s); return s }
     /^\|/ {
       req=req_id($2)
-      if (req ~ /^FR-[0-9]+$/) count++
+      ac=trim($4)
+      if (req ~ /^FR-[0-9]+$/ && ac != "" && ac != "-") count++
     }
     END { print count+0 }
   ' "$trace_file")
@@ -155,7 +156,7 @@ check_module() {
       req=req_id($2)
       tc=$5
       if (req !~ /^(FR|BR)-[0-9]+$/) next
-      while (match(tc, /TC-[^, \t|]+/)) {
+      while (match(tc, /TC-[^, \t|；：、]+/)) {
         token=substr(tc, RSTART, RLENGTH)
         if (token !~ /^TC-([A-Z][A-Z][A-Z][A-Z]*-)?[0-9][0-9][0-9]$/) print token
         tc=substr(tc, RSTART + RLENGTH)
