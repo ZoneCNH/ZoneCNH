@@ -41,7 +41,7 @@ L1 测试: testkitx (test-only)
 基座扩展: redisx / kafkax / natsx / postgresx / taosx / ossx / clickhousex / contracts / transportx
       │
       ▼
-L2.5: domainx / decimalx / domain-market / domain-macro / domain-exchange (5/5 v1.0.0 已发布；5/5 GitHub Release 已观测对账；factory-grade 仍待补证)
+L2.5: domainx / decimalx / domain-market / domain-macro / domain-exchange (5/5 v1.0.0 已发布；5/5 GitHub Release 已观测对账；5/5 factory grade；live/soak N/A)
       │
       ▼
 业务流: 数据域 → 分析域 ↔ 决策域 → 执行域
@@ -65,9 +65,9 @@ L2.5: domainx / decimalx / domain-market / domain-macro / domain-exchange (5/5 v
 | `domain-macro` | v1.0.0 | v1.0.0 | v1.0.0 GitHub Release 已发布；no-lookahead 冻结 | [module/domain-macro](module/domain-macro/goal.md) |
 | `domain-exchange` | v1.0.0 | v1.0.0 | v1.0.0 GitHub Release 已发布；Exchange SPI 冻结 | [module/domain-exchange](module/domain-exchange/goal.md) |
 
-成熟度口径：5/5 已发布 v1.0.0+ GitHub Release（decimalx v1.0.0/domain-market v1.0.0/domain-macro v1.0.0/domain-exchange v1.0.0/domainx v1.0.1）；0/5 完成 EXT CI 与 factory-grade 门禁。该层当前可作为 Phase 0 设计依赖推进，但不能宣告 factory-grade adoption。
+成熟度口径：5/5 已发布 v1.0.0+ GitHub Release（decimalx v1.0.0/domain-market v1.0.0/domain-macro v1.0.0/domain-exchange v1.0.0/domainx v1.0.1）；5/5 factory grade；live/soak N/A（纯值对象库，无运行时服务不需 EXT CI/adoption/soak 证据）。
 
-依赖顺序：`decimalx` -> `domainx` -> `domain-market` / `domain-macro` -> `domain-exchange`。v1.0.0 是各模块的发布版本，GitHub Release/tag 已观测并对账。factory-grade 需 EXT CI、adoption 与 soak 证据。
+依赖顺序：`decimalx` -> `domainx` -> `domain-market` / `domain-macro` -> `domain-exchange`。v1.0.0 是各模块的发布版本，GitHub Release/tag 已观测并对账。5/5 factory grade；live/soak N/A（纯值对象库）。
 
 `domainx` 已归入 L2.5 领域共享层；机器事实层将其作为 L2.5 模块单独计入 20-module projection，不并入 19 个基座组件数。
 
@@ -107,7 +107,7 @@ L2.5: domainx / decimalx / domain-market / domain-macro / domain-exchange (5/5 v
 ### L2.5 · 领域共享层
 
 - [decimalx](https://github.com/ZoneCNH/decimalx) — 高精度十进制类型（Decimal/Price/Qty/Ratio/Money）；v1.0.0 GitHub Release 已发布 `公开`
-- [domainx](https://github.com/ZoneCNH/domainx) — 领域共享值对象：Order/Position/Trade/Portfolio/ExecutionReport 枚举与类型；L2.5 design baseline；公开 v1.0.1 GitHub Release/tag 已观测并已对账为 release=true；factory=false until L2.5 adoption / factory evidence archived `公开`
+- [domainx](https://github.com/ZoneCNH/domainx) — 领域共享值对象：Order/Position/Trade/Portfolio/ExecutionReport 枚举与类型；L2.5 design baseline；公开 v1.0.1 GitHub Release/tag 已观测并已对账为 release=true；factory grade；live/soak N/A（纯值对象库） `公开`
 - [domain-market](https://github.com/ZoneCNH/domain-market) — 市场数据域模型（Tick/Quote/Bar/OrderBook）；v1.0.0 GitHub Release 已发布 `公开`
 - [domain-macro](https://github.com/ZoneCNH/domain-macro) — 宏观经济领域共享模型：国家/地区/指标/发布日历、MacroPoint/MacroState；v1.0.0 GitHub Release 已发布 `公开`
 - [domain-exchange](https://github.com/ZoneCNH/domain-exchange) — 交易域模型（VenueAdapter 13 方法接口）；v1.0.0 GitHub Release 已发布 `公开`

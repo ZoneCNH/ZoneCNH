@@ -145,7 +145,6 @@
   "factory_blocking_modules": [
     "clickhousex",
     "contracts",
-    "domainx",
     "natsx",
     "ossx",
     "postgresx",
