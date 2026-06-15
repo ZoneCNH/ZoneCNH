@@ -6,7 +6,8 @@
   "by_severity": {
     "critical": 2,
     "high": 3,
-    "medium": 3
+    "low": 1,
+    "medium": 2
   },
   "blockers": [
     {
@@ -140,7 +141,8 @@
   "open_by_severity": {
     "critical": 2,
     "high": 1,
-    "medium": 3
+    "low": 1,
+    "medium": 2
   },
   "factory_blocking_modules": [
     "clickhousex",
