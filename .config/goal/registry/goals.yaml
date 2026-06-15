@@ -14,10 +14,10 @@ goals:
     owner: zone
     priority: P0
     north_star: 建立完整的 Goal 驱动交付体系，确保每一行代码都能追溯到可验证的业务目标
-    pipeline_state: BLOCKED
-    current_phase: RELEASE
-    phase_status: BLOCKED
-    workflow_step: RELEASE_EXECUTION
+    pipeline_state: DONE
+    current_phase: RETROSPECTIVE
+    phase_status: DONE
+    workflow_step: RETROSPECTIVE_EXECUTION
     created_at: "2026-06-08"
     updated_at: "2026-06-09"
     related_issues: []

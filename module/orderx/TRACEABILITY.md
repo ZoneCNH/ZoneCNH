@@ -1,30 +1,30 @@
 # orderx 需求追溯矩阵
 
-> 更新：2026-06-15
+> 更新：2026-06-16
 > 来源：module/orderx/SPEC.md v1.0.0
 > 规范：docs/governance/TRACEABILITY.md
 
 ---
 
-## 1. 功能需求追溯（FR）
+## §1 功能需求追溯（FR）
 
-| FR | Description | Acceptance Criteria | Test Case | Task | Status |
-|----|-------------|---------------------|-----------|------|--------|
-| FR-001 | Order Lifecycle：NEW→PENDING→PARTIAL/FILLED/CANCELLED/REJECTED/EXPIRED 状态机；每次变更记录 timestamp/oldState/newState/reason | AC-ORD-001 | TC-ORD-001 | - | 🔲 |
-| FR-002 | Order Submission：Submit 必须先通过 riskx.CheckOrder；风控拒绝时返回原因；通过后发送至 exchange adapter | AC-ORD-002 | TC-ORD-002 | - | 🔲 |
-| FR-003 | Order Routing：PREFERRED/BEST_PRICE/LOWEST_FEE 路由策略；PREFERRED 不可用时 FAIL | AC-ORD-003 | TC-ORD-003 | - | 🔲 |
-| FR-004 | SOR (Smart Order Routing)：超过单笔上限自动拆分子订单；子订单可路由不同交易所；父订单状态=子订单聚合 | AC-ORD-004 | TC-ORD-004 | - | 🔲 |
-| FR-005 | Cancel / Amend：CancelOrder 未成交→CANCELLED；部分成交仅取消剩余；AmendOrder Cancel-Replace 保留原 orderId | AC-ORD-005 | TC-ORD-005 | - | 🔲 |
-| FR-006 | Order Query：Order(orderId) 返回完整信息；OpenOrders(account) 仅返回非终态订单 | AC-ORD-006 | TC-ORD-006 | - | 🔲 |
-| FR-007 | Order Audit：订单状态变更记录 OrderAuditEvent；审计事件不可删除 | AC-ORD-007 | TC-ORD-007 | - | 🔲 |
-| FR-008 | Module Identity：README H1 为 `# orderx`；Go module path 为 `github.com/ZoneCNH/orderx` | AC-ORD-008 | TC-ORD-008 | - | 🔲 |
+| FR | Description | WHEN | THEN | AC | TC | Task | Status |
+|----|-------------|------|------|----|----|------|--------|
+| FR-001 | Order Lifecycle | 创建订单 | 状态机遵循 NEW→PENDING→PARTIAL/FILLED/CANCELLED/REJECTED/EXPIRED 转换；非法转换被拒绝；每次变更记录 timestamp/oldState/newState/reason | AC-ORD-001 | TC-ORD-001 | - | 🔲 |
+| FR-002 | Order Submission | Submit(order) | 必须先通过 riskx.CheckOrder 风控检查；风控拒绝时返回原因；通过后发送至 exchange adapter；返回 orderId 和初始状态 | AC-ORD-002 | TC-ORD-002 | - | 🔲 |
+| FR-003 | Order Routing | 订单需要选择交易所 | 使用路由策略 PREFERRED/BEST_PRICE/LOWEST_FEE；PREFERRED 指定交易所不可用时 FAIL；BEST_PRICE 同时询价选最优 | AC-ORD-003 | TC-ORD-003 | - | 🔲 |
+| FR-004 | SOR (Smart Order Routing) | 订单数量超过单笔上限 | 自动拆分为多个子订单（slice）；子订单可路由到不同交易所；父订单状态=所有子订单状态聚合；支持按时间、按成交量加权拆分 | AC-ORD-004 | TC-ORD-004 | - | 🔲 |
+| FR-005 | Cancel / Amend | CancelOrder(orderId) / AmendOrder(orderId, newPrice, newQty) | CancelOrder 未成交→CANCELLED；部分成交仅取消剩余；AmendOrder Cancel-Replace 保留原 orderId | AC-ORD-005 | TC-ORD-005 | - | 🔲 |
+| FR-006 | Order Query | 查询 Order(orderId) / OpenOrders(account) | Order(orderId) 返回完整订单信息；OpenOrders(account) 仅返回非终态订单（NEW/PENDING/PARTIAL） | AC-ORD-006 | TC-ORD-006 | - | 🔲 |
+| FR-007 | Order Audit | 订单状态变更 | 记录 OrderAuditEvent（orderId/timestamp/oldState/newState/reason/fillId/price/qty）；审计事件不可删除 | AC-ORD-007 | TC-ORD-007 | - | 🔲 |
+| FR-008 | Module Identity | downstream consumer 读取 README.md | H1 为 `# orderx`；Go module path 为 `github.com/ZoneCNH/orderx`；go.mod 声明 `module github.com/ZoneCNH/orderx` | AC-ORD-008 | TC-ORD-008 | - | 🔲 |
 
 ---
 
-## 2. 业务规则追溯（BR）
+## §2 业务规则追溯（BR）
 
-| BR | Description | 违反后果 | 验证方式 | Task | Status |
-|----|-------------|----------|----------|------|--------|
+| BR | Rule | 违反后果 | Verification Method | Task | Status |
+|----|------|----------|---------------------|------|--------|
 | BR-001 | 订单必须先通过 riskx 才能提交交易所 | 拒绝下单 | TC-ORD-002 riskx 调用断言 | - | 🔲 |
 | BR-002 | 终态订单不可再修改（FILLED/CANCELLED/REJECTED/EXPIRED） | 拒绝操作 | TC-ORD-001 终态转换拒绝断言 | - | 🔲 |
 | BR-003 | SOR 父订单状态 = 所有子订单状态的聚合 | 状态不一致告警 | TC-ORD-004 父订单聚合状态断言 | - | 🔲 |
@@ -33,50 +33,50 @@
 
 ---
 
-## 3. 非功能需求追溯（NFR）
+## §3 非功能需求追溯（NFR）
 
-| NFR | Description | 目标值 | 验证方式 | Task | Status |
-|-----|-------------|--------|----------|------|--------|
-| NFR-001 | Submit 延迟（不含风控） | < 5ms | Benchmark | - | 🔲 |
-| NFR-002 | Get/Cancel 延迟 | < 1ms | Benchmark | - | 🔲 |
-| NFR-003 | SOR Split 延迟 | < 10ms | Benchmark | - | 🔲 |
-| NFR-004 | 测试覆盖率 | >= 80% | `go tool cover -func` | - | 🔲 |
-| NFR-005 | 无硬编码密钥 | 全仓扫描零命中 | `gitleaks detect --no-git` | - | 🔲 |
-
----
-
-## 4. TC → FR 反向追溯
-
-| TC | FR/BR | Given/When/Then 场景 |
-|----|-------|---------------------|
-| TC-ORD-001 | FR-001, BR-002 | 订单状态机所有合法/非法转换；每次变更记录 timestamp/oldState/newState/reason |
-| TC-ORD-002 | FR-002, BR-001 | Submit 先通过 riskx.CheckOrder；风控拒绝返回原因；通过后发送 exchange adapter |
-| TC-ORD-003 | FR-003 | 路由策略 PREFERRED/BEST_PRICE/LOWEST_FEE 正确执行；PREFERRED 不可用时 FAIL |
-| TC-ORD-004 | FR-004, BR-003 | SOR 超过单笔上限自动拆分；子订单可路由不同交易所；父订单状态=子订单聚合 |
-| TC-ORD-005 | FR-005, BR-004 | CancelOrder 未成交→CANCELLED；部分成交仅取消剩余；AmendOrder Cancel-Replace 保留 orderId；撤单幂等 |
-| TC-ORD-006 | FR-006 | Order(orderId) 返回完整信息；OpenOrders(account) 仅返回非终态订单 |
-| TC-ORD-007 | FR-007 | 订单状态变更记录 OrderAuditEvent；审计事件不可删除 |
-| TC-ORD-008 | FR-008 | README H1 为 `# orderx`；go.mod 声明 `module github.com/ZoneCNH/orderx` |
-| TC-ORD-009 | BR-005 | orderID 全局唯一；冲突时拒绝创建 |
+| NFR | Category | Requirement | Verification | Task | Status |
+|-----|----------|-------------|--------------|------|--------|
+| NFR-001 | 性能 | Submit 延迟（不含风控）< 5ms | Benchmark `BenchmarkSubmit` | - | 🔲 |
+| NFR-002 | 性能 | Get/Cancel 延迟 < 1ms | Benchmark `BenchmarkGetCancel` | - | 🔲 |
+| NFR-003 | 性能 | SOR Split 延迟 < 10ms | Benchmark `BenchmarkSORSplit` | - | 🔲 |
+| NFR-004 | 质量 | 测试覆盖率 >= 80% | `go tool cover -func` | - | 🔲 |
+| NFR-005 | 安全 | 无硬编码密钥 | `gitleaks detect --no-git` | - | 🔲 |
 
 ---
 
-## 5. 全局 AC 注册表
+## §4 TC → FR 反向追溯
 
-| AC | 所属 FR/BR | 验收条件摘要 |
-|----|-----------|-------------|
-| AC-ORD-001 | FR-001 | 订单状态机遵循合法转换；非法转换拒绝；每次变更记录完整上下文 |
-| AC-ORD-002 | FR-002 | Submit 先通过 riskx.CheckOrder；风控拒绝返回原因；通过后发送 exchange adapter；返回 orderId 和初始状态 |
-| AC-ORD-003 | FR-003 | 路由策略 PREFERRED/BEST_PRICE/LOWEST_FEE 正确；PREFERRED 不可用 FAIL |
-| AC-ORD-004 | FR-004 | SOR 超限自动拆分；子订单可路由不同交易所；父订单状态=子订单聚合 |
-| AC-ORD-005 | FR-005 | CancelOrder 未成交→CANCELLED；部分成交仅取消剩余；AmendOrder Cancel-Replace 保留原 orderId |
-| AC-ORD-006 | FR-006 | Order(orderId) 返回完整信息；OpenOrders(account) 仅返回非终态订单 |
-| AC-ORD-007 | FR-007 | 订单状态变更记录 OrderAuditEvent；审计事件不可删除 |
-| AC-ORD-008 | FR-008 | README H1 为 `# orderx`；go.mod 声明 `module github.com/ZoneCNH/orderx` |
+| TC | Covers FR(s) | Scenario | Command |
+|----|-------------|----------|---------|
+| TC-ORD-001 | FR-001, BR-002 | 订单状态机所有合法/非法转换；每次变更记录 timestamp/oldState/newState/reason | `go test ./... -run TestOrderLifecycle` |
+| TC-ORD-002 | FR-002, BR-001 | Submit 先通过 riskx.CheckOrder；风控拒绝返回原因；通过后发送 exchange adapter | `go test ./... -run TestOrderSubmission` |
+| TC-ORD-003 | FR-003 | 路由策略 PREFERRED/BEST_PRICE/LOWEST_FEE 正确执行；PREFERRED 不可用时 FAIL | `go test ./... -run TestOrderRouting` |
+| TC-ORD-004 | FR-004, BR-003 | SOR 超过单笔上限自动拆分；子订单可路由不同交易所；父订单状态=子订单聚合 | `go test ./... -run TestSOR` |
+| TC-ORD-005 | FR-005, BR-004 | CancelOrder 未成交→CANCELLED；部分成交仅取消剩余；AmendOrder Cancel-Replace；撤单幂等 | `go test ./... -run TestCancelAmend` |
+| TC-ORD-006 | FR-006 | Order(orderId) 返回完整信息；OpenOrders(account) 仅返回非终态订单 | `go test ./... -run TestOrderQuery` |
+| TC-ORD-007 | FR-007 | 订单状态变更记录 OrderAuditEvent；审计事件不可删除 | `go test ./... -run TestOrderAudit` |
+| TC-ORD-008 | FR-008 | README H1 为 `# orderx`；go.mod 声明 `module github.com/ZoneCNH/orderx` | `go test ./... -run TestModuleIdentity` |
+| TC-ORD-009 | BR-005 | orderID 全局唯一；冲突时拒绝创建 | `go test ./... -run TestOrderIDUnique` |
 
 ---
 
-## 6. 覆盖率仪表盘
+## §5 全局 AC 注册表
+
+| AC | 所属 FR/BR | 验收条件摘要 | Verification |
+|----|-----------|-------------|--------------|
+| AC-ORD-001 | FR-001 | 订单状态机遵循合法转换；非法转换拒绝；每次变更记录完整上下文 | TC-ORD-001 |
+| AC-ORD-002 | FR-002 | Submit 先通过 riskx.CheckOrder；风控拒绝返回原因；通过后发送 exchange adapter；返回 orderId 和初始状态 | TC-ORD-002 |
+| AC-ORD-003 | FR-003 | 路由策略 PREFERRED/BEST_PRICE/LOWEST_FEE 正确；PREFERRED 不可用 FAIL | TC-ORD-003 |
+| AC-ORD-004 | FR-004 | SOR 超限自动拆分；子订单可路由不同交易所；父订单状态=子订单聚合 | TC-ORD-004 |
+| AC-ORD-005 | FR-005 | CancelOrder 未成交→CANCELLED；部分成交仅取消剩余；AmendOrder Cancel-Replace 保留原 orderId | TC-ORD-005 |
+| AC-ORD-006 | FR-006 | Order(orderId) 返回完整信息；OpenOrders(account) 仅返回非终态订单 | TC-ORD-006 |
+| AC-ORD-007 | FR-007 | 订单状态变更记录 OrderAuditEvent；审计事件不可删除 | TC-ORD-007 |
+| AC-ORD-008 | FR-008 | README H1 为 `# orderx`；go.mod 声明 `module github.com/ZoneCNH/orderx` | TC-ORD-008 |
+
+---
+
+## §6 覆盖率仪表盘
 
 | 指标 | 数值 | 说明 |
 |------|------|------|
@@ -84,15 +84,16 @@
 | FR 有 AC 覆盖 | 8/8 (100%) | |
 | FR 有 TC 覆盖 | 8/8 (100%) | |
 | BR 总数 | 5 | BR-001 ~ BR-005 |
-| BR 有 TC 覆盖 | 5/5 (100%) | |
+| BR 有验证机制 | 5/5 (100%) | |
 | NFR 总数 | 5 | NFR-001 ~ NFR-005 |
 | AC 总数 | 8 | AC-ORD-001 ~ AC-ORD-008 |
 | TC 总数 | 9 | TC-ORD-001 ~ TC-ORD-009 |
 
 ---
 
-## 7. 变更历史
+## §7 变更历史
 
 | 日期 | 版本 | 变更 |
 |------|------|------|
+| 2026-06-16 | v1.1 | 标准化为 §1-§7 结构；FR 表增加 WHEN/THEN 列；TC 表增加 Command 列；AC 表增加 Verification 列 |
 | 2026-06-15 | v1.0 | 初始版本：8 FR + 5 BR + 5 NFR + 9 TC + 8 AC |
