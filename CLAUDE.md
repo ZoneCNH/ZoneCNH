@@ -238,3 +238,4 @@ PR 标题遵循 Conventional Commits（不含模块名，模块名放 body 首�
 | L2 | 反馈回路 | PreToolUse + SessionStart + Stop | ✅ |
 | L3 | 自动修正 | PostToolUse + PreCompact + 审查报告 ≥5 | ✅ |
 | L4 | 自治系统 | GC Agent 连续 3 次 0 critical | ✅ |
+| L5 | 自治执行 | Agent 70%+ Task 自动化 + 人类介入<30% | 🔧 |
