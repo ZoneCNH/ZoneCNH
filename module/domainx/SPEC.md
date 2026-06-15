@@ -1,37 +1,23 @@
-# domainx 完整规格
-
-> 基座 · L2.5 领域共享层。订单、持仓、成交和投资组合的领域值对象与枚举定义。
-
-最后更新：2026-06-14
-
----
-
-## 1. Metadata
+# domainx 规格
 
 - Status: Approved
 - Spec-Version: v1.0.0
 - Last-Updated: 2026-06-14
-- Owner: ZoneCNH
-- Layer: L2.5 领域共享层
-- Version: v1.0.1
-- Repository: [github.com/ZoneCNH/domainx](https://github.com/ZoneCNH/domainx)
-- Related: [CONSTITUTION.md](../../CONSTITUTION.md), [ARCHITECTURE.md](../../ARCHITECTURE.md), [contracts](../contracts/SPEC.md), [decimalx](https://github.com/ZoneCNH/decimalx)
+- Layer: 基座 · 领域语义原语
+- Module-Version: v1.0.1
+- Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `kernel`, `decimalx`
+
+> 公开投影 caveat：Status=Approved 与 100.0% 覆盖证据不等同于 factory-grade；机器事实层保持 factory=false。
 
 ---
 
-### 1.1 变更历史
-
-| 日期 | 版本 | 变更内容 | 作者 |
-|------|------|----------|------|
-| 2026-06-14 | v1.0.0 | 初始规格：Order/Position/Trade/Portfolio/ExecutionReport 值对象 + OrderState/OrderType/OrderSide 枚举 | Claude |
-
-## 2. Summary
+## 1. 摘要
 
 `domainx` 是 FoundationX L2.5 领域共享层的投资组合与订单域模块。定义 Order、Position、Trade、Portfolio、ExecutionReport 等不可变值对象，以及 OrderState（7态）/ OrderType（6种）/ OrderSide 枚举。上层分析域、决策域、执行域通过 `domainx` 引用统一的订单-持仓语义，避免各域重复定义 Order/Position 结构。
 
 ---
 
-## 3. Problem
+## 2. Problem
 
 交易系统的订单、持仓和成交数据跨越多个域（决策域发信号 → 执行域下单 → 成交回报 → 风控域更新持仓）。当前缺少统一的订单-持仓域值对象：
 
@@ -43,7 +29,7 @@
 
 ---
 
-## 4. Goals
+## 3. Goals
 
 - 定义 Order 值对象：order_id、symbol、side、type、quantity、price、state、timestamps
 - 定义 Position 值对象：symbol、quantity、avg_price、unrealized_pnl、realized_pnl
@@ -55,7 +41,7 @@
 
 ---
 
-## 5. Non-Goals
+## 4. Non-Goals
 
 - 不做订单状态机引擎或生命周期管理（由 order-engine 负责）
 - 不做仓位计算逻辑（由 risk-engine 根据 Trade 流计算 Position）
@@ -67,7 +53,7 @@
 
 ---
 
-## 6. Consumers
+## 5. Consumers
 
 | 消费者 | 使用方式 |
 |--------|----------|
@@ -80,7 +66,7 @@
 
 ---
 
-## 7. Functional Requirements
+## 6. Functional Requirements
 
 ### FR-001: Order 值对象
 
@@ -172,7 +158,7 @@ THEN 无公开 setter，所有修改操作返回新实例（copy-on-write），�
 
 ---
 
-## 8. Business Rules
+## 7. Business Rules
 
 | 编号 | 规则 | 违反时 |
 | --- | --- | --- |
@@ -189,7 +175,7 @@ THEN 无公开 setter，所有修改操作返回新实例（copy-on-write），�
 
 ---
 
-## 9. Interface Contract
+## 8. Interface Contract
 
 L2.5 值对象模块不定义接口。domainx 提供纯值对象类型和枚举。
 
@@ -224,7 +210,7 @@ const (
 
 ---
 
-## 10. Data Model
+## 9. Data Model
 
 ### Order
 
@@ -308,13 +294,13 @@ const (
 
 ---
 
-## 11. Config Schema
+## 10. Config Schema
 
 domainx 作为 L2.5 值对象模块，不加载运行时配置。类型定义是编译时依赖。
 
 ---
 
-## 12. Error Handling
+## 11. Error Handling
 
 | 错误 | 触发条件 | 处理方式 |
 |------|----------|----------|
@@ -332,7 +318,7 @@ domainx 作为 L2.5 值对象模块，不加载运行时配置。类型定义是
 
 ---
 
-## 13. Edge Cases
+## 12. Edge Cases
 
 | 场景 | 预期行为 |
 |------|----------|
@@ -351,7 +337,7 @@ domainx 作为 L2.5 值对象模块，不加载运行时配置。类型定义是
 
 ---
 
-## 14. Directory Structure
+## 13. Directory Structure
 
 ```text
 domainx/
@@ -372,13 +358,13 @@ domainx/
 
 ---
 
-## 15. Dependencies
+## 14. Dependencies
 
 只依赖 stdlib + `github.com/ZoneCNH/decimalx`。禁止依赖任何 L1 运行时模块、存储扩展、业务域实现、其他 L2.5 模块。
 
 ---
 
-## 16. Testing
+## 15. Testing
 
 ### 16.1 Acceptance Criteria
 
@@ -461,7 +447,7 @@ Then a new value object is returned and no setter is exposed
 
 ---
 
-## 17. Performance Budget
+## 16. Performance Budget
 
 | 操作 | 目标 | 测量方式 |
 |------|------|----------|
@@ -472,13 +458,13 @@ Then a new value object is returned and no setter is exposed
 
 ---
 
-## 18. Observability
+## 17. Observability
 
 纯值对象模块，不直接产生可观测输出。由调用方（risk-engine、order-engine）通过 observex 集成。
 
 ---
 
-## 19. Security
+## 18. Security
 
 - 不硬编码 secret/API key/密码
 - 日志不记录敏感数据
@@ -488,14 +474,14 @@ Then a new value object is returned and no setter is exposed
 
 ---
 
-## 20. CI Gate
+## 19. CI Gate
 
 通用：build / test -race / coverage≥80% / vet / lint / go mod tidy / gitleaks
 专属：TestNew / TestJSONRoundTrip / TestImmutability / TestOrderStateTransition
 
 ---
 
-## 21. Upgrade Compatibility
+## 20. Upgrade Compatibility
 
 | 变更类型 | 兼容性 | 迁移 |
 |----------|--------|------|
@@ -507,7 +493,7 @@ Then a new value object is returned and no setter is exposed
 
 ---
 
-## 22. Release DoD
+## 21. Release DoD
 
 - [x] 所有值对象有 godoc
 - [x] 所有枚举有文档
@@ -525,7 +511,7 @@ Then a new value object is returned and no setter is exposed
 
 ---
 
-## 23. Open Questions
+## 22. Open Questions
 
 ### Non-blocking
 
@@ -545,6 +531,12 @@ Then a new value object is returned and no setter is exposed
 
 ---
 
+
+
+## 23. 变更历史
+
+---
+
 ## Appendix A: L2.5 约定
 
 | 约定 | 说明 |
@@ -556,3 +548,7 @@ Then a new value object is returned and no setter is exposed
 | 不依赖 L1 | stdlib + L2.5 only |
 | godoc | 每个公开类型/方法有注释 |
 | 状态迁移返回新实例 | TransitionTo 不修改原对象 |
+
+| 日期 | 版本 | 变更内容 | 作者 |
+|------|------|----------|------|
+| 2026-06-14 | v1.0.0 | 初始规格：Order/Position/Trade/Portfolio/ExecutionReport 值对象 + OrderState/OrderType/OrderSide 枚举 | Claude |

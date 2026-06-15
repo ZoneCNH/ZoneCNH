@@ -1,35 +1,17 @@
-# clickhousex 完整规格
-
-> 基座 · 存储扩展。ClickHouse OLAP 数据库客户端封装。
-
-最后更新：2026-06-07
-
----
-
-## 1. Metadata
+# clickhousex 规格
 
 - Status: Approved
 - Spec-Version: v1.0.1
 - Last-Updated: 2026-06-14
-- Owner: ZoneCNH
-- Layer: L1 存储扩展
-- Version: v0.1.0
-- Repository: [github.com/ZoneCNH/clickhousex](https://github.com/ZoneCNH/clickhousex)
-- Related: [CONSTITUTION.md](../../CONSTITUTION.md), [ARCHITECTURE.md](../../ARCHITECTURE.md), [kernel](../kernel/SPEC.md), [observex](../observex/SPEC.md)
+- Layer: 基座 · 存储扩展
+- Module-Version: v0.1.0
+- Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `kernel`
 
-> 公开投影 caveat：Status=Approved 仅表示 SPEC/TRACEABILITY/TASKS 基线闭合；机器事实层仍为 release=false/factory=false。
-> BLK-003（公开 GitHub Release 未发布）关闭前不得宣告 release/factory。
+> 公开投影 caveat：Status=Approved 与 100.0% 覆盖证据不等同于 factory-grade；机器事实层保持 factory=false。
 
 ---
 
-### 1.1 变更历史
-
-| 日期       | 版本   | 变更内容   | 作者    |
-| ---------- | ------ | ---------- | ------- |
-| 2026-06-07 | v1.0.0 | 初始版本                                                              | ZoneCNH |
-| 2026-06-14 | v1.0.1 | 完整追溯矩阵（§1-§7）、AC 编号体系（AC-001~AC-026）、覆盖率 100%、Status → Approved | ZoneCNH |
-
-## 2. Summary
+## 1. 摘要
 
 `clickhousex` 封装 ClickHouse 客户端，提供统一的连接管理、批量写入、OLAP 查询和可观测集成。屏蔽 ClickHouse 原生驱动的连接池、batch insert、类型映射差异，为上层分析域模块提供简洁的 OLAP 存储接口。
 
@@ -37,7 +19,7 @@
 
 ---
 
-## 3. Problem
+## 2. Problem
 
 量化交易系统需要高效执行分析型查询（因子回看、收益归因、风险归因）和存储大量历史数据。直接使用 ClickHouse 原生驱动存在以下问题：
 
@@ -50,7 +32,7 @@
 
 ---
 
-## 4. Goals
+## 3. Goals
 
 - 提供 `Client` 接口，统一封装 Exec / Query / InsertBatch 操作
 - 管理 ClickHouse 连接池，支持配置化调参
@@ -62,7 +44,7 @@
 
 ---
 
-## 5. Non-goals
+## 4. Non-goals
 
 - 不做 ClickHouse 集群管理或部署编排
 - 不做数据模型定义（表 schema 由业务层决定）
@@ -74,7 +56,7 @@
 
 ---
 
-## 6. Consumers
+## 5. Consumers
 
 | 消费者            | 使用方式                               |
 | ----------------- | -------------------------------------- |
@@ -87,7 +69,7 @@
 
 ---
 
-## 7. Functional Requirements
+## 6. Functional Requirements
 
 ### FR-001: NewClient
 
@@ -191,7 +173,7 @@ THEN 返回列类型信息切片，包含列名、ClickHouse 类型、Nullable �
 
 ---
 
-## 8. Business Rules
+## 7. Business Rules
 
 | 编号 | 规则 | 违反时 |
 | --- | --- | --- |
@@ -210,7 +192,7 @@ THEN 返回列类型信息切片，包含列名、ClickHouse 类型、Nullable �
 
 ---
 
-## 9. Interface Contract
+## 8. Interface Contract
 
 ### 9.1 Client / Rows
 
@@ -303,7 +285,7 @@ for rs.Next() {
 
 ---
 
-## 10. Data Model
+## 9. Data Model
 
 ### 10.1 公共错误
 
@@ -336,7 +318,7 @@ var (
 
 ---
 
-## 11. Config Schema
+## 10. Config Schema
 
 ```yaml
 clickhousex:
@@ -353,7 +335,7 @@ clickhousex:
 
 ---
 
-## 12. Error Handling
+## 11. Error Handling
 
 | 错误                     | 调用方处理                                           |
 | ------------------------ | ---------------------------------------------------- |
@@ -371,7 +353,7 @@ clickhousex:
 
 ---
 
-## 13. Edge Cases
+## 12. Edge Cases
 
 | 场景                      | 预期行为                                         |
 | ------------------------- | ------------------------------------------------ |
@@ -390,7 +372,7 @@ clickhousex:
 
 ---
 
-## 14. Directory Structure
+## 13. Directory Structure
 
 ```text
 clickhousex/
@@ -420,7 +402,7 @@ clickhousex/
 
 ---
 
-## 15. Dependencies
+## 14. Dependencies
 
 ### 15.1 go.mod
 
@@ -446,7 +428,7 @@ clickhousex 通过接口接收 `observex.Logger` / `observex.Meter` / `observex.
 
 ---
 
-## 16. Testing
+## 15. Testing
 
 ### 16.1 单元测试
 
@@ -542,7 +524,7 @@ Then 返回 nil 且不 panic
 
 ---
 
-## 17. Performance Budget
+## 16. Performance Budget
 
 | 操作                  | 目标    | 测量方式       |
 | --------------------- | ------- | -------------- |
@@ -556,7 +538,7 @@ Then 返回 nil 且不 panic
 
 ---
 
-## 18. Observability
+## 17. Observability
 
 | 类型   | 名称                         | 说明                                   |
 | ------ | ---------------------------- | -------------------------------------- |
@@ -577,7 +559,7 @@ Then 返回 nil 且不 panic
 
 ---
 
-## 19. Security
+## 18. Security
 
 | 要求                   | 实现方式                                 |
 | ---------------------- | ---------------------------------------- |
@@ -588,7 +570,7 @@ Then 返回 nil 且不 panic
 
 ---
 
-## 20. CI Gate
+## 19. CI Gate
 
 ### 20.1 通用 Gate
 
@@ -612,7 +594,7 @@ Then 返回 nil 且不 panic
 
 ---
 
-## 21. Upgrade Compatibility
+## 20. Upgrade Compatibility
 
 | 变更类型              | 版本升级                                    |
 | --------------------- | ------------------------------------------- |
@@ -626,7 +608,7 @@ Then 返回 nil 且不 panic
 
 ---
 
-## 22. Release DoD
+## 21. Release DoD
 
 - [ ] 所有公共接口有 godoc 注释
 - [ ] 所有公共类型有示例代码
@@ -646,7 +628,7 @@ Then 返回 nil 且不 panic
 
 ---
 
-## 23. Open Questions
+## 22. Open Questions
 
 - 是否需要支持 ClickHouse 的异步 insert（`async_insert`）模式？当前设计使用同步 batch insert。
 - Decimal 类型使用哪个 Go 库？`shopspring/decimal` 还是标准库 `math/big`？
@@ -654,3 +636,11 @@ Then 返回 nil 且不 panic
 - 连接池是否需要支持动态扩缩容？
 - 是否需要支持 ClickHouse 的分布式表查询（跨分片聚合）？
 - 批量写入失败时是否需要支持部分重试？
+
+
+## 23. 变更历史
+
+| 日期       | 版本   | 变更内容   | 作者    |
+| ---------- | ------ | ---------- | ------- |
+| 2026-06-07 | v1.0.0 | 初始版本                                                              | ZoneCNH |
+| 2026-06-14 | v1.0.1 | 完整追溯矩阵（§1-§7）、AC 编号体系（AC-001~AC-026）、覆盖率 100%、Status → Approved | ZoneCNH |

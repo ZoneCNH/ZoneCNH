@@ -1,32 +1,17 @@
-# maestro 完整规格
-
-> 决策域 · 工作流编排引擎。DAG 工作流定义、策略管线编排、多阶段状态机、错误恢复和回滚。
-
-最后更新：2026-06-14
-
----
-
-## 1. Metadata
+# maestro 规格
 
 - Status: Review
 - Spec-Version: v1.0.0
 - Last-Updated: 2026-06-14
-- Owner: ZoneCNH
 - Layer: 决策域 · 工作流编排
-- Version: v0.1.0-draft
-- Repository: [github.com/ZoneCNH/maestro](https://github.com/ZoneCNH/maestro)
-- Related: [CONSTITUTION.md](../../CONSTITUTION.md), [ARCHITECTURE.md](../../ARCHITECTURE.md)
+- Module-Version: v0.1.0-draft
+- Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `strategyx`, `riskx`, `orderx`
+
+> 公开投影 caveat：Status=Review 与矩阵覆盖证据不等同于 factory-grade；四源评分通过前机器事实层保持 factory=false。
 
 ---
 
-### 1.1 变更历史
-
-| 日期       | 版本         | 变更内容 | 作者    |
-| ---------- | ------------ | -------- | ------- |
-| 2026-06-14 | v0.1.0-draft | 初始版本 | ZoneCNH |
-| 2026-06-14 | v0.1.0-draft | FR-010 Module Identity (README H1 + go.mod 校验) | ZoneCNH |
-
-## 2. Summary
+## 1. 摘要
 
 `maestro` 是决策域的工作流编排引擎，负责定义和执行多阶段交易工作流。它将分析域（因子）、决策域（策略生成信号）和执行域（风控 → 订单）编排为可组合、可观测、可恢复的 DAG 工作流。maestro 是策略执行的"指挥家"，不计算因子、不判断信号、不下达订单——它只协调这些步骤的执行顺序、错误处理和状态管理。
 
@@ -40,7 +25,7 @@ backtestx 验证"决策是否正确"
 
 ---
 
-## 3. Problem
+## 2. Problem
 
 量化交易系统中有多个独立模块（factor-engine、strategyx、riskx、orderx、positionx），但缺少统一的编排层：
 
@@ -52,7 +37,7 @@ backtestx 验证"决策是否正确"
 
 ---
 
-## 4. Goals
+## 3. Goals
 
 - DAG 工作流定义：节点（Task）和边（依赖关系）
 - 任务类型：Strategy（策略信号）、Risk（风控检查）、Order（订单提交）、Wait（等待）、Condition（条件分支）、Parallel（并行执行）
@@ -64,7 +49,7 @@ backtestx 验证"决策是否正确"
 
 ---
 
-## 5. Non-goals
+## 4. Non-goals
 
 - 不做因子计算（→ factor-engine）
 - 不做策略决策（→ strategyx）
@@ -75,7 +60,7 @@ backtestx 验证"决策是否正确"
 
 ---
 
-## 6. Consumers
+## 5. Consumers
 
 | 消费者       | 使用方式                              |
 | ------------ | ------------------------------------- |
@@ -87,7 +72,7 @@ backtestx 验证"决策是否正确"
 
 ---
 
-## 7. Functional Requirements
+## 6. Functional Requirements
 
 ### FR-001: Workflow DAG
 
@@ -204,7 +189,7 @@ THEN it MUST be `module github.com/ZoneCNH/maestro`
 | AC-MAE-010 | FR-009 | Workflow 注册名称全局唯一；运行时注册/更新不影响已运行实例；List/Get/Delete 操作正确返回 |
 | AC-MAE-011 | FR-010 | README H1 为 `# maestro`；Go module path 为 `github.com/ZoneCNH/maestro`；go.mod 声明 `module github.com/ZoneCNH/maestro` |
 
-## 8. Business Rules
+## 7. Business Rules
 
 | 编号   | 规则                                   | 违反后果 |
 | ------ | -------------------------------------- | -------- |
@@ -217,7 +202,7 @@ THEN it MUST be `module github.com/ZoneCNH/maestro`
 
 ---
 
-## 9. Interface Contract
+## 8. Interface Contract
 
 ```go
 type Orchestrator interface {
@@ -254,7 +239,7 @@ type WorkflowResult struct {
 
 ---
 
-## 10. Data Model
+## 9. Data Model
 
 | 模型              | 字段 |
 | ----------------- | ---- |
@@ -270,7 +255,7 @@ type WorkflowResult struct {
 
 ---
 
-## 11. Config Schema
+## 10. Config Schema
 
 ```yaml
 maestro:
@@ -291,7 +276,7 @@ maestro:
 
 ---
 
-## 12. Error Handling
+## 11. Error Handling
 
 | 错误                  | 处理方式                           |
 | --------------------- | ---------------------------------- |
@@ -304,7 +289,7 @@ maestro:
 
 ---
 
-## 13. Edge Cases
+## 12. Edge Cases
 
 | 场景                       | 预期行为                           |
 | -------------------------- | ---------------------------------- |
@@ -316,7 +301,7 @@ maestro:
 
 ---
 
-## 14. Directory Structure
+## 13. Directory Structure
 
 ```text
 maestro/
@@ -343,7 +328,7 @@ maestro/
 
 ---
 
-## 15. Dependencies
+## 14. Dependencies
 
 | 可以依赖                             | 禁止依赖                     |
 | ------------------------------------ | ---------------------------- |
@@ -356,7 +341,7 @@ maestro/
 
 ---
 
-## 16. Testing
+## 15. Testing
 
 | 测试场景            | 验证点                           |
 | ------------------- | -------------------------------- |
@@ -370,7 +355,7 @@ maestro/
 
 ---
 
-## 17. Performance Budget
+## 16. Performance Budget
 
 | 操作                      | 目标     |
 | ------------------------- | -------- |
@@ -381,7 +366,7 @@ maestro/
 
 ---
 
-## 18. Observability
+## 17. Observability
 
 | 信号   | 指标                                    |
 | ------ | --------------------------------------- |
@@ -394,7 +379,7 @@ maestro/
 
 ---
 
-## 19. Security
+## 18. Security
 
 | 要求               | 实现方式                         |
 | ------------------ | -------------------------------- |
@@ -403,7 +388,7 @@ maestro/
 
 ---
 
-## 20. CI Gate
+## 19. CI Gate
 
 | Gate   | 命令                               | 阻塞条件       |
 | ------ | ---------------------------------- | -------------- |
@@ -414,7 +399,7 @@ maestro/
 
 ---
 
-## 21. Upgrade Compatibility
+## 20. Upgrade Compatibility
 
 | 变更类型             | 版本升级 |
 | -------------------- | -------- |
@@ -424,7 +409,7 @@ maestro/
 
 ---
 
-## 22. Release DoD
+## 21. Release DoD
 
 - [ ] Orchestrator 接口完整实现
 - [ ] 全部 6 种 Node 类型实现并测试
@@ -435,9 +420,17 @@ maestro/
 
 ---
 
-## 23. Open Questions
+## 22. Open Questions
 
 - 是否需要支持子工作流（SubWorkflow Node）？
 - 是否需要可视化 DAG 编辑器？
 - 工作流定义是否支持 YAML/JSON 声明式加载？
 - 是否需要定时触发器（cron workflow）？
+
+
+## 23. 变更历史
+
+| 日期       | 版本         | 变更内容 | 作者    |
+| ---------- | ------------ | -------- | ------- |
+| 2026-06-14 | v0.1.0-draft | 初始版本 | ZoneCNH |
+| 2026-06-14 | v0.1.0-draft | FR-010 Module Identity (README H1 + go.mod 校验) | ZoneCNH |

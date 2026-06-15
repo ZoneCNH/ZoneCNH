@@ -1,31 +1,17 @@
-# testkitx 完整规格
-
-> Foundation L1 test-only。fake/fixture/golden/contract/boundary 工具包。禁止生产导入。
-
-最后更新：2026-06-14
-
----
-
-## 1. Metadata
+# testkitx 规格
 
 - Status: Review
 - Spec-Version: v0.7.3
 - Last-Updated: 2026-06-14
-- Owner: ZoneCNH
-- Layer: L1 test-only
-- Version: v0.7.3
-- Repository: [github.com/ZoneCNH/testkitx](https://github.com/ZoneCNH/testkitx)
-- Related: [CONSTITUTION.md](../../CONSTITUTION.md), [ARCHITECTURE.md](../../ARCHITECTURE.md)
+- Layer: 基座 · 测试期证据
+- Module-Version: v0.7.3
+- Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `kernel`
+
+> 公开投影 caveat：Status=Review 与矩阵覆盖证据不等同于 factory-grade；四源评分通过前机器事实层保持 factory=false。
 
 ---
 
-### 1.1 变更历史
-
-| 日期       | 版本   | 变更内容   | 作者    |
-| ---------- | ------ | ---------- | ------- |
-| 2026-06-07 | v1.0.0 | 初始版本   | ZoneCNH |
-
-## 2. Summary
+## 1. 摘要
 
 `testkitx` 是测试基础设施，提供 fake 实现、fixture 加载、golden 测试、contract 测试、边界扫描等工具，帮助各模块稳定验证边界、错误路径和集成行为。禁止进入生产依赖图。
 
@@ -42,7 +28,7 @@
 
 ---
 
-## 3. Problem
+## 2. Problem
 
 各模块测试中重复实现 fake、fixture、assert 逻辑，导致：
 
@@ -55,7 +41,7 @@
 
 ---
 
-## 4. Goals
+## 3. Goals
 
 - 统一 fake 实现：FakeConfig / FakeLogger / FakeMeter / FakeTracer / FakeClock / FakeBreaker
 - 编译期接口检查（`var _ Interface = (*FakeImpl)(nil)`）
@@ -67,7 +53,7 @@
 
 ---
 
-## 5. Non-goals
+## 4. Non-goals
 
 - 不进入生产二进制或生产依赖图（生产代码由各模块自身维护，testkitx 仅供 `go test` 使用；BR-005 + CI Gate `no-production-import` 强制执行）
 - 不定义交易、行情、风控、订单、仓位等业务域模型（业务模型由 `contracts` 和各业务域模块负责，testkitx 的 fake 类型只镜像 L1 基础设施接口）
@@ -76,7 +62,7 @@
 
 ---
 
-## 6. Consumers
+## 5. Consumers
 
 | 消费者            | 使用方式                                      |
 | ----------------- | --------------------------------------------- |
@@ -89,7 +75,7 @@
 
 ---
 
-## 7. Functional Requirements
+## 6. Functional Requirements
 
 ### FR-001: FakeConfig
 
@@ -200,7 +186,7 @@ THEN 测试通过
 
 ---
 
-## 8. Business Rules
+## 7. Business Rules
 
 | 编号 | 规则 | 违反时 |
 | --- | --- | --- |
@@ -214,7 +200,7 @@ THEN 测试通过
 
 ---
 
-## 9. Interface Contract
+## 8. Interface Contract
 
 ### 9.1 Fake 实现
 
@@ -295,7 +281,7 @@ func GoroutineLeakCheck(t *testing.T)
 
 ---
 
-## 10. Data Model
+## 9. Data Model
 
 ### 10.1 公共错误
 
@@ -309,7 +295,7 @@ var (
 
 ---
 
-## 11. Config Schema
+## 10. Config Schema
 
 testkitx 不读取配置。行为通过环境变量控制：
 
@@ -319,7 +305,7 @@ GOLDEN_UPDATE=1    # 更新 golden 文件
 
 ---
 
-## 12. Error Handling
+## 11. Error Handling
 
 | 错误                   | 调用方处理                      |
 | ---------------------- | ------------------------------- |
@@ -331,7 +317,7 @@ GOLDEN_UPDATE=1    # 更新 golden 文件
 
 ---
 
-## 13. Edge Cases
+## 12. Edge Cases
 
 | 场景                        | 预期行为                              |
 | --------------------------- | ------------------------------------- |
@@ -344,7 +330,7 @@ GOLDEN_UPDATE=1    # 更新 golden 文件
 
 ---
 
-## 14. Directory Structure
+## 13. Directory Structure
 
 ```text
 testkitx/
@@ -390,7 +376,7 @@ testkitx/
 
 ---
 
-## 15. Dependencies
+## 14. Dependencies
 
 ### 15.1 go.mod
 
@@ -417,7 +403,7 @@ testkitx 是唯一允许依赖所有 Foundation L1 模块的包，但仅在 `go 
 
 ---
 
-## 16. Testing
+## 15. Testing
 
 ### 16.1 单元测试
 
@@ -517,7 +503,7 @@ Then 报告泄漏并失败
 
 ---
 
-## 17. Performance Budget
+## 16. Performance Budget
 
 | 操作        | 目标   | 测量方式                   |
 | ----------- | ------ | -------------------------- |
@@ -526,7 +512,7 @@ Then 报告泄漏并失败
 
 ---
 
-## 18. Observability
+## 17. Observability
 
 testkitx 不 emit 生产可观测数据。它提供 fake exporter 用于测试验证：
 
@@ -540,7 +526,7 @@ exporter.AssertSpanCount(3)
 
 ---
 
-## 19. Security
+## 18. Security
 
 | 要求                     | 实现方式                                |
 | ------------------------ | --------------------------------------- |
@@ -549,7 +535,7 @@ exporter.AssertSpanCount(3)
 
 ---
 
-## 20. CI Gate
+## 19. CI Gate
 
 ### 20.1 通用 Gate
 
@@ -574,7 +560,7 @@ exporter.AssertSpanCount(3)
 
 ---
 
-## 21. Upgrade Compatibility
+## 20. Upgrade Compatibility
 
 | 变更类型          | 版本升级                                    |
 | ----------------- | ------------------------------------------- |
@@ -585,7 +571,7 @@ exporter.AssertSpanCount(3)
 
 ---
 
-## 22. Release DoD
+## 21. Release DoD
 
 - [ ] 所有公共接口有 godoc 注释
 - [ ] 所有公共类型有示例代码
@@ -606,7 +592,7 @@ exporter.AssertSpanCount(3)
 
 ---
 
-## 23. Open Questions
+## 22. Open Questions
 
 
 ### Non-blocking
@@ -617,3 +603,10 @@ exporter.AssertSpanCount(3)
 | OQ-002 | fixture loader 是否需要支持 YAML/TOML 格式（当前仅 JSON/golden）？ | 待评估 |
 | OQ-003 | contract test 是否需要覆盖 schedulex.Scheduler 接口？ | 待评估 |
 | OQ-004 | BoundaryCheck 是否需要支持白名单（允许特定测试包依赖 testkitx）？ | 待评估 |
+
+
+## 23. 变更历史
+
+| 日期       | 版本   | 变更内容   | 作者    |
+| ---------- | ------ | ---------- | ------- |
+| 2026-06-07 | v1.0.0 | 初始版本   | ZoneCNH |

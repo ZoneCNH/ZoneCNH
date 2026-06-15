@@ -1,38 +1,23 @@
-# positionx 完整规格
-
-> 执行域 · 仓位管理器。实时仓位追踪、PnL 计算、敞口监控、多账户持仓核对。
-
-最后更新：2026-06-14
-
----
-
-## 1. Metadata
+# positionx 规格
 
 - Status: Review
 - Spec-Version: v1.0.0
 - Last-Updated: 2026-06-14
-- Owner: ZoneCNH
 - Layer: 执行域 · 仓位管理
-- Version: v0.1.0-draft
-- Repository: [github.com/ZoneCNH/positionx](https://github.com/ZoneCNH/positionx)
-- Related: [CONSTITUTION.md](../../CONSTITUTION.md), [ARCHITECTURE.md](../../ARCHITECTURE.md)
+- Module-Version: v0.1.0-draft
+- Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `orderx`, `riskx`
+
+> 公开投影 caveat：Status=Review 与矩阵覆盖证据不等同于 factory-grade；四源评分通过前机器事实层保持 factory=false。
 
 ---
 
-### 1.1 变更历史
-
-| 日期       | 版本         | 变更内容 | 作者    |
-| ---------- | ------------ | -------- | ------- |
-| 2026-06-14 | v0.1.0-draft | 初始版本 | ZoneCNH |
-| 2026-06-14 | v0.1.0-draft | FR-008 Module Identity (README H1 + go.mod 校验) | ZoneCNH |
-
-## 2. Summary
+## 1. 摘要
 
 `positionx` 是执行域的仓位管理器，负责跨交易所、跨账户的实时仓位追踪、PnL 计算、风险敞口监控和持仓核对。它接收执行引擎的成交事件（fill events），更新仓位状态，并向 riskx 和 observex 输出仓位快照。
 
 ---
 
-## 3. Problem
+## 2. Problem
 
 多交易所、多账户交易场景中，仓位信息分散在各交易所的 API 和本地数据库中：
 
@@ -44,7 +29,7 @@
 
 ---
 
-## 4. Goals
+## 3. Goals
 
 - 统一仓位视图：跨交易所、跨账户的净持仓
 - 实时仓位更新：fill event → position update（< 10ms）
@@ -55,7 +40,7 @@
 
 ---
 
-## 5. Non-goals
+## 4. Non-goals
 
 - 不做交易所 API 对接（→ market-data）
 - 不做风控决策（→ riskx）
@@ -65,7 +50,7 @@
 
 ---
 
-## 6. Consumers
+## 5. Consumers
 
 | 消费者       | 使用方式                            |
 | ------------ | ----------------------------------- |
@@ -77,7 +62,7 @@
 
 ---
 
-## 7. Functional Requirements
+## 6. Functional Requirements
 
 ### FR-001: Position Update
 
@@ -157,7 +142,7 @@ THEN it MUST be `module github.com/ZoneCNH/positionx`
 | AC-POS-007 | FR-007 | PositionHistory 返回指定时间段仓位变更事件列表（timestamp/fill_id/deltaQty/price/reason） |
 | AC-POS-008 | FR-008 | README H1 为 `# positionx`；Go module path 为 `github.com/ZoneCNH/positionx`；go.mod 声明 `module github.com/ZoneCNH/positionx` |
 
-## 8. Business Rules
+## 7. Business Rules
 
 | 编号   | 规则                                   | 违反后果 |
 | ------ | -------------------------------------- | -------- |
@@ -169,7 +154,7 @@ THEN it MUST be `module github.com/ZoneCNH/positionx`
 
 ---
 
-## 9. Interface Contract
+## 8. Interface Contract
 
 ```go
 type PositionManager interface {
@@ -190,7 +175,7 @@ type PnLCalculator interface {
 
 ---
 
-## 10. Data Model
+## 9. Data Model
 
 | 模型                 | 字段 |
 | -------------------- | ---- |
@@ -203,7 +188,7 @@ type PnLCalculator interface {
 
 ---
 
-## 11. Config Schema
+## 10. Config Schema
 
 ```yaml
 positionx:
@@ -216,7 +201,7 @@ positionx:
 
 ---
 
-## 12. Error Handling
+## 11. Error Handling
 
 | 错误                   | 处理方式                         |
 | ---------------------- | -------------------------------- |
@@ -227,7 +212,7 @@ positionx:
 
 ---
 
-## 13. Edge Cases
+## 12. Edge Cases
 
 | 场景                       | 预期行为                               |
 | -------------------------- | -------------------------------------- |
@@ -238,7 +223,7 @@ positionx:
 
 ---
 
-## 14. Directory Structure
+## 13. Directory Structure
 
 ```text
 positionx/
@@ -259,7 +244,7 @@ positionx/
 
 ---
 
-## 15. Dependencies
+## 14. Dependencies
 
 | 可以依赖                             | 禁止依赖                     |
 | ------------------------------------ | ---------------------------- |
@@ -269,7 +254,7 @@ positionx/
 
 ---
 
-## 16. Testing
+## 15. Testing
 
 | 测试场景            | 验证点                               |
 | ------------------- | ------------------------------------ |
@@ -281,7 +266,7 @@ positionx/
 
 ---
 
-## 17. Performance Budget
+## 16. Performance Budget
 
 | 操作              | 目标     |
 | ----------------- | -------- |
@@ -292,7 +277,7 @@ positionx/
 
 ---
 
-## 18. Observability
+## 17. Observability
 
 | 信号   | 指标                                    |
 | ------ | --------------------------------------- |
@@ -304,7 +289,7 @@ positionx/
 
 ---
 
-## 19. Security
+## 18. Security
 
 | 要求               | 实现方式                       |
 | ------------------ | ------------------------------ |
@@ -313,7 +298,7 @@ positionx/
 
 ---
 
-## 20. CI Gate
+## 19. CI Gate
 
 | Gate   | 命令                                   | 阻塞条件       |
 | ------ | -------------------------------------- | -------------- |
@@ -325,7 +310,7 @@ positionx/
 
 ---
 
-## 21. Upgrade Compatibility
+## 20. Upgrade Compatibility
 
 | 变更类型             | 版本升级 |
 | -------------------- | -------- |
@@ -335,7 +320,7 @@ positionx/
 
 ---
 
-## 22. Release DoD
+## 21. Release DoD
 
 - [ ] PositionManager 接口完整实现
 - [ ] PnL 计算所有口径验证
@@ -345,8 +330,16 @@ positionx/
 
 ---
 
-## 23. Open Questions
+## 22. Open Questions
 
 - 是否需要支持组合保证金（portfolio margin）？
 - 是否需要支持跨交易所净额结算视角？
 - markPrice 是否应接入独立的价格预言机？
+
+
+## 23. 变更历史
+
+| 日期       | 版本         | 变更内容 | 作者    |
+| ---------- | ------------ | -------- | ------- |
+| 2026-06-14 | v0.1.0-draft | 初始版本 | ZoneCNH |
+| 2026-06-14 | v0.1.0-draft | FR-008 Module Identity (README H1 + go.mod 校验) | ZoneCNH |

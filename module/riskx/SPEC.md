@@ -1,38 +1,23 @@
-# riskx 完整规格
-
-> 执行域 · 风控引擎。事前风控检查、仓位限额、回撤控制、熔断机制、风险指标计算。
-
-最后更新：2026-06-14
-
----
-
-## 1. Metadata
+# riskx 规格
 
 - Status: Review
 - Spec-Version: v1.0.0
 - Last-Updated: 2026-06-14
-- Owner: ZoneCNH
-- Layer: 执行域 · 风控引擎
-- Version: v0.1.0-draft
-- Repository: [github.com/ZoneCNH/riskx](https://github.com/ZoneCNH/riskx)
-- Related: [CONSTITUTION.md](../../CONSTITUTION.md), [ARCHITECTURE.md](../../ARCHITECTURE.md)
+- Layer: 决策域 · 风控引擎
+- Module-Version: v0.1.0-draft
+- Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `orderx`, `strategyx`
+
+> 公开投影 caveat：Status=Review 与矩阵覆盖证据不等同于 factory-grade；四源评分通过前机器事实层保持 factory=false。
 
 ---
 
-### 1.1 变更历史
-
-| 日期       | 版本         | 变更内容 | 作者    |
-| ---------- | ------------ | -------- | ------- |
-| 2026-06-14 | v0.1.0-draft | 初始版本 | ZoneCNH |
-| 2026-06-14 | v0.1.0-draft | FR-008 Module Identity (README H1 + go.mod 校验) | ZoneCNH |
-
-## 2. Summary
+## 1. 摘要
 
 `riskx` 是执行域的风控引擎，负责对所有订单进行事前风控检查、执行仓位限额控制、监控回撤和触发熔断。它是订单进入交易所前的最后一道门禁，架构规则明确：策略只能通过 riskx 提交订单。
 
 ---
 
-## 3. Problem
+## 2. Problem
 
 量化交易中的风控挑战：
 
@@ -44,7 +29,7 @@
 
 ---
 
-## 4. Goals
+## 3. Goals
 
 - 统一风控门禁：所有订单必须通过 riskx 检查
 - 事前风控：下单前检查仓位限额、单笔限额、频率限制
@@ -54,7 +39,7 @@
 
 ---
 
-## 5. Non-goals
+## 4. Non-goals
 
 - 不做仓位管理（→ positionx）
 - 不做订单执行（→ orderx）
@@ -64,7 +49,7 @@
 
 ---
 
-## 6. Consumers
+## 5. Consumers
 
 | 消费者       | 使用方式                              |
 | ------------ | ------------------------------------- |
@@ -76,7 +61,7 @@
 
 ---
 
-## 7. Functional Requirements
+## 6. Functional Requirements
 
 ### FR-001: Pre-Trade Risk Check
 
@@ -156,7 +141,7 @@ THEN it MUST be `module github.com/ZoneCNH/riskx`
 | AC-RSK-007 | FR-007 | 风控 PASS/REJECT 均记录审计事件（timestamp/account/symbol/side/qty/price/result/reason/rule_id）；审计事件不可删除 |
 | AC-RSK-008 | FR-008 | README H1 为 `# riskx`；Go module path 为 `github.com/ZoneCNH/riskx`；go.mod 声明 `module github.com/ZoneCNH/riskx` |
 
-## 8. Business Rules
+## 7. Business Rules
 
 | 编号   | 规则                                   | 违反后果 |
 | ------ | -------------------------------------- | -------- |
@@ -168,7 +153,7 @@ THEN it MUST be `module github.com/ZoneCNH/riskx`
 
 ---
 
-## 9. Interface Contract
+## 8. Interface Contract
 
 ```go
 type RiskEngine interface {
@@ -197,7 +182,7 @@ type RiskMetrics struct {
 
 ---
 
-## 10. Data Model
+## 9. Data Model
 
 | 模型              | 字段 |
 | ----------------- | ---- |
@@ -208,7 +193,7 @@ type RiskMetrics struct {
 
 ---
 
-## 11. Config Schema
+## 10. Config Schema
 
 ```yaml
 riskx:
@@ -227,7 +212,7 @@ riskx:
 
 ---
 
-## 12. Error Handling
+## 11. Error Handling
 
 | 错误                  | 处理方式                         |
 | --------------------- | -------------------------------- |
@@ -237,7 +222,7 @@ riskx:
 
 ---
 
-## 13. Edge Cases
+## 12. Edge Cases
 
 | 场景                       | 预期行为                         |
 | -------------------------- | -------------------------------- |
@@ -248,7 +233,7 @@ riskx:
 
 ---
 
-## 14. Directory Structure
+## 13. Directory Structure
 
 ```text
 riskx/
@@ -270,7 +255,7 @@ riskx/
 
 ---
 
-## 15. Dependencies
+## 14. Dependencies
 
 | 可以依赖                             | 禁止依赖                   |
 | ------------------------------------ | -------------------------- |
@@ -281,7 +266,7 @@ riskx/
 
 ---
 
-## 16. Testing
+## 15. Testing
 
 | 测试场景            | 验证点                           |
 | ------------------- | -------------------------------- |
@@ -292,7 +277,7 @@ riskx/
 
 ---
 
-## 17. Performance Budget
+## 16. Performance Budget
 
 | 操作              | 目标     |
 | ----------------- | -------- |
@@ -302,7 +287,7 @@ riskx/
 
 ---
 
-## 18. Observability
+## 17. Observability
 
 | 信号   | 指标                                      |
 | ------ | ----------------------------------------- |
@@ -314,7 +299,7 @@ riskx/
 
 ---
 
-## 19. Security
+## 18. Security
 
 | 要求               | 实现方式                       |
 | ------------------ | ------------------------------ |
@@ -323,7 +308,7 @@ riskx/
 
 ---
 
-## 20. CI Gate
+## 19. CI Gate
 
 | Gate   | 命令                                   | 阻塞条件       |
 | ------ | -------------------------------------- | -------------- |
@@ -334,7 +319,7 @@ riskx/
 
 ---
 
-## 21. Upgrade Compatibility
+## 20. Upgrade Compatibility
 
 | 变更类型             | 版本升级 |
 | -------------------- | -------- |
@@ -344,7 +329,7 @@ riskx/
 
 ---
 
-## 22. Release DoD
+## 21. Release DoD
 
 - [ ] CheckOrder 全规则链路通过
 - [ ] KillSwitch + 恢复流程验证
@@ -353,8 +338,16 @@ riskx/
 
 ---
 
-## 23. Open Questions
+## 22. Open Questions
 
 - 是否需要支持多级风控（账户级 + 策略级 + 全局级）？
 - 是否需要接入实时波动率动态调整仓位限额？
 - 风控规则是否支持用户自定义 DSL？
+
+
+## 23. 变更历史
+
+| 日期       | 版本         | 变更内容 | 作者    |
+| ---------- | ------------ | -------- | ------- |
+| 2026-06-14 | v0.1.0-draft | 初始版本 | ZoneCNH |
+| 2026-06-14 | v0.1.0-draft | FR-008 Module Identity (README H1 + go.mod 校验) | ZoneCNH |

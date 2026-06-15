@@ -1,38 +1,23 @@
-# strategyx 完整规格
-
-> 决策域 · 策略工厂。策略定义 DSL、策略注册表、参数优化、策略版本管理、信号生成规则。
-
-最后更新：2026-06-14
-
----
-
-## 1. Metadata
+# strategyx 规格
 
 - Status: Review
 - Spec-Version: v1.0.0
 - Last-Updated: 2026-06-14
-- Owner: ZoneCNH
 - Layer: 决策域 · 策略工厂
-- Version: v0.1.0-draft
-- Repository: [github.com/ZoneCNH/strategyx](https://github.com/ZoneCNH/strategyx)
-- Related: [CONSTITUTION.md](../../CONSTITUTION.md), [ARCHITECTURE.md](../../ARCHITECTURE.md)
+- Module-Version: v0.1.0-draft
+- Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `backtestx`, `signal-factory`, `orderx`
+
+> 公开投影 caveat：Status=Review 与矩阵覆盖证据不等同于 factory-grade；四源评分通过前机器事实层保持 factory=false。
 
 ---
 
-### 1.1 变更历史
-
-| 日期       | 版本         | 变更内容 | 作者    |
-| ---------- | ------------ | -------- | ------- |
-| 2026-06-14 | v0.1.0-draft | 初始版本 | ZoneCNH |
-| 2026-06-14 | v0.1.0-draft | FR-008 Module Identity (README H1 + go.mod 校验) | ZoneCNH |
-
-## 2. Summary
+## 1. 摘要
 
 `strategyx` 是决策域的策略工厂，负责策略定义、注册、版本管理、参数优化和信号生成规则。它将因子输入转化为交易信号，是分析域（因子）到执行域（订单）之间的决策桥梁。
 
 ---
 
-## 3. Problem
+## 2. Problem
 
 量化策略开发中的痛点：
 
@@ -44,7 +29,7 @@
 
 ---
 
-## 4. Goals
+## 3. Goals
 
 - 统一策略接口：所有策略实现相同的 Strategy 接口
 - 策略注册表：按名称发现和加载策略
@@ -55,7 +40,7 @@
 
 ---
 
-## 5. Non-goals
+## 4. Non-goals
 
 - 不做因子计算（→ factor-engine）
 - 不做回测执行（→ backtestx）
@@ -65,7 +50,7 @@
 
 ---
 
-## 6. Consumers
+## 5. Consumers
 
 | 消费者       | 使用方式                              |
 | ------------ | ------------------------------------- |
@@ -76,7 +61,7 @@
 
 ---
 
-## 7. Functional Requirements
+## 6. Functional Requirements
 
 ### FR-001: Strategy Interface
 
@@ -170,7 +155,7 @@ THEN it MUST be `module github.com/ZoneCNH/strategyx`
 | AC-STX-007 | FR-007 | WarmUp 完成后进入 Ready 状态；WarmUp 超时标记为 Degraded |
 | AC-STX-008 | FR-008 | README H1 为 `# strategyx`；Go module path 为 `github.com/ZoneCNH/strategyx`；go.mod 声明 `module github.com/ZoneCNH/strategyx` |
 
-## 8. Business Rules
+## 7. Business Rules
 
 | 编号   | 规则                                     | 违反后果 |
 | ------ | ---------------------------------------- | -------- |
@@ -182,7 +167,7 @@ THEN it MUST be `module github.com/ZoneCNH/strategyx`
 
 ---
 
-## 9. Interface Contract
+## 8. Interface Contract
 
 ```go
 type Strategy interface {
@@ -221,7 +206,7 @@ type Signal struct {
 
 ---
 
-## 10. Data Model
+## 9. Data Model
 
 | 模型            | 字段 |
 | --------------- | ---- |
@@ -234,7 +219,7 @@ type Signal struct {
 
 ---
 
-## 11. Config Schema
+## 10. Config Schema
 
 ```yaml
 strategyx:
@@ -250,7 +235,7 @@ strategyx:
 
 ---
 
-## 12. Error Handling
+## 11. Error Handling
 
 | 错误                  | 处理方式                     |
 | --------------------- | ---------------------------- |
@@ -261,7 +246,7 @@ strategyx:
 
 ---
 
-## 13. Edge Cases
+## 12. Edge Cases
 
 | 场景                       | 预期行为                         |
 | -------------------------- | -------------------------------- |
@@ -272,7 +257,7 @@ strategyx:
 
 ---
 
-## 14. Directory Structure
+## 13. Directory Structure
 
 ```text
 strategyx/
@@ -294,7 +279,7 @@ strategyx/
 
 ---
 
-## 15. Dependencies
+## 14. Dependencies
 
 | 可以依赖                             | 禁止依赖                   |
 | ------------------------------------ | -------------------------- |
@@ -304,7 +289,7 @@ strategyx/
 
 ---
 
-## 16. Testing
+## 15. Testing
 
 | 测试场景            | 验证点                           |
 | ------------------- | -------------------------------- |
@@ -316,7 +301,7 @@ strategyx/
 
 ---
 
-## 17. Performance Budget
+## 16. Performance Budget
 
 | 操作              | 目标     |
 | ----------------- | -------- |
@@ -326,7 +311,7 @@ strategyx/
 
 ---
 
-## 18. Observability
+## 17. Observability
 
 | 信号   | 指标                                  |
 | ------ | ------------------------------------- |
@@ -338,7 +323,7 @@ strategyx/
 
 ---
 
-## 19. Security
+## 18. Security
 
 | 要求               | 实现方式                     |
 | ------------------ | ---------------------------- |
@@ -347,7 +332,7 @@ strategyx/
 
 ---
 
-## 20. CI Gate
+## 19. CI Gate
 
 | Gate   | 命令                               | 阻塞条件       |
 | ------ | ---------------------------------- | -------------- |
@@ -357,7 +342,7 @@ strategyx/
 
 ---
 
-## 21. Upgrade Compatibility
+## 20. Upgrade Compatibility
 
 | 变更类型             | 版本升级 |
 | -------------------- | -------- |
@@ -367,7 +352,7 @@ strategyx/
 
 ---
 
-## 22. Release DoD
+## 21. Release DoD
 
 - [ ] Strategy 接口完整定义
 - [ ] Registry 注册/发现/卸载完整实现
@@ -377,8 +362,17 @@ strategyx/
 
 ---
 
-## 23. Open Questions
+## 22. Open Questions
 
 - 是否需要支持策略热加载（plugin 模式）？
 - 是否需要策略市场（策略模板库）？
 - 信号是否应包含建议的止损/止盈价格？
+
+---
+
+## 23. 变更历史
+
+| 日期       | 版本         | 变更内容 | 作者    |
+| ---------- | ------------ | -------- | ------- |
+| 2026-06-14 | v0.1.0-draft | 初始版本 | ZoneCNH |
+| 2026-06-14 | v0.1.0-draft | FR-008 Module Identity (README H1 + go.mod 校验) | ZoneCNH |

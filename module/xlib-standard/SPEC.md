@@ -1,20 +1,24 @@
-# xlib-standard SPEC
+# xlib-standard 规格
 
-## 1. Metadata
-Status: Approved
-Owner: ZoneCNH
-Version: v1.0.0
-Updated: 2026-06-12
+- Status: Approved
+- Spec-Version: v1.0.0
+- Last-Updated: 2026-06-12
+- Layer: 基座 · 标准事实源
+- Module-Version: v1.0.0
+- Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `xlib-evidence`, `xlib-harness`, `xlibgate`
 
-本规格定义 `xlib-standard` 五类职责中后四类的可执行交付规格——Go Reference Template、Generator、Harness Gate 和 Evidence Runtime。第一类职责（Standard Source / 标准事实源）的文档规范定义见 goal.md。本规格约束公共 API、模板生成、验证 gate、release manifest 与最终验收，不承载业务域实现。
+> 公开投影 caveat：Status=Approved 与 100.0% 覆盖证据不等同于 factory-grade；机器事实层保持 factory=false。
 
-## 2. Summary
-`xlib-standard` 提供 xlib 体系的唯一标准源：标准文档（`docs/standard/`）、可编译可渲染可验证的 Go Reference Template、Generator（`render_template.sh`）、17 个 CI Gate 和 Evidence Runtime（release manifest + checksum + goalcli 证据 CLI）。本 SPEC 聚焦后四类的可执行交付细节。交付物包括模板源码、渲染脚本、边界检查、合约检查、安全检查、CI gate、release manifest、goalcli 证据工具和最终发布检查。
+---
 
-## 3. Problem
+## 1. 摘要
+
+本规格定义 `xlib-standard` 五类职责中后四类的可执行交付规格——Go Reference Template、Generator、Harness Gate 和 Evidence Runtime。第一类职责（Standard Source / 标准事实源）的文档规范定义见 goal.md。`xlib-standard` 提供 xlib 体系的唯一标准源：标准文档（`docs/standard/`）、可编译可渲染可验证的 Go Reference Template、Generator（`render_template.sh`）、17 个 CI Gate 和 Evidence Runtime（release manifest + checksum + goalcli 证据 CLI）。本 SPEC 聚焦后四类的可执行交付细节，不承载业务域实现。
+
+## 2. Problem
 当前基础库模块容易出现公共 API 不一致、模板渲染后仍残留模板名、gate 命令不稳定、release 证据不可复现等问题。缺少统一标准会导致下游模块在初始化阶段重复修补配置、错误、健康检查、指标和发布流程。
 
-## 4. Goals
+## 3. Goals
 | Goal | Description                                                           | Trace              |
 | ---- | --------------------------------------------------------------------- | ------------------ |
 | G-0  | 定义 xlib 体系标准事实源（文档规范）。见 goal.md。                    | Standard Source    |
@@ -24,14 +28,14 @@ Updated: 2026-06-12
 | G-4  | 定义最小 CI gate 与边界检查。                                         | Gates              |
 | G-5  | 生成 release manifest，并用最终检查锁定发布证据。                     | Evidence Runtime   |
 
-## 5. Non-Goals
+## 4. Non-Goals
 - 不承载业务运行（不实现任何业务域逻辑、交易逻辑、行情逻辑或风控逻辑）。标准事实源的文档规范定义见 `goal.md`。
 - 不替代下游模块的业务测试、集成测试或生产配置。
 - 不引入数据库、消息队列、外部网络调用或运行时平台依赖。
 - 不提供跨语言模板；本版本仅覆盖 Go module。
 - 不承载业务域运行时逻辑（交易、行情、风控）。标准源自身的可执行交付物（模板代码、渲染脚本、CI 门禁、发布证据生成）属于标准源职责，不属于业务运行时。
 
-## 6. Consumers
+## 5. Consumers
 | Consumer     | Need                                                 |
 | ------------ | ---------------------------------------------------- |
 | 新基础库模块 | 使用统一模板快速生成可测试仓库骨架。                 |
@@ -39,7 +43,7 @@ Updated: 2026-06-12
 | 评分管线     | 从规格、矩阵、任务、计划、提示词到代码阶段闭合追溯。 |
 | CI 系统      | 执行确定性命令，输出可审查证据。                     |
 
-## 7. Functional Requirements
+## 6. Functional Requirements
 ### FR-001: Config 标准
 
 - WHEN 调用 `Config.Validate` 且必填字段缺失 THEN 返回 validation kind 错误。
@@ -140,7 +144,7 @@ Updated: 2026-06-12
 - WHEN Generator 渲染 L2 仓库骨架 THEN 必须包含 `.agent/`（证据 gates + capabilities）、`.github/workflows/`（CI 模板）、`test/`（契约/集成/benchmark/chaos）、`docker-compose.test.yml`、`Makefile`。
 - WHEN 检查 L2 模板完整性 THEN 12 个模板文件必须全部存在且可渲染。
 
-## 8. Business Rules
+## 7. Business Rules
 ### BR-001: 配置显式传入
 
 库不得读取隐式环境配置；调用方必须显式传入配置结构。
@@ -169,10 +173,10 @@ Updated: 2026-06-12
 
 脱敏必须覆盖 secret、token、key、password 类字段，并保留非敏感配置用于诊断。
 
-## 9. Interface Contract
+## 8. Interface Contract
 公共接口包括 `Config.Validate`、`Config.Sanitize`、`New(ctx, cfg, ...opts)`、`Client.Close(ctx)`、`HealthCheck(ctx)`、`Metrics`、`NoopMetrics`、`WithMetrics(metrics)`、`Option`、`NewError`、`WrapError`、`IsKind`、`VersionInfo`。接口必须保持小表面积，测试应优先断言 kind、状态和结构字段。
 
-## 10. Data Model
+## 9. Data Model
 | Model           | Fields                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------- |
 | Config          | Name、Timeout、Secret                                                                                   |
@@ -181,13 +185,13 @@ Updated: 2026-06-12
 | VersionInfo     | ModuleName、Version                                                                                     |
 | ReleaseManifest | module_path、package_name、version、commit、tree_sha、go_version、contracts_sha256、gates、generated_at |
 
-## 11. Config Schema
+## 10. Config Schema
 配置必须由调用方显式传入。模板生成参数仅允许 module path、package name、输出目录和可选 module name。脚本不得从生产环境文件、私有 secret 目录或隐式 runtime 配置读取默认值。
 
-## 12. Error Handling
+## 11. Error Handling
 所有公共错误必须返回给调用方，不得直接退出进程。validation、timeout、unavailable、internal 等 kind 必须稳定。包装错误必须保留 cause，便于 `errors.Is`、`errors.As` 和 kind 匹配。
 
-## 13. Edge Cases
+## 12. Edge Cases
 - nil context 创建客户端或健康检查。
 - 已取消 context 创建客户端。
 - 负数 timeout、retry 或空 module path。
@@ -196,7 +200,7 @@ Updated: 2026-06-12
 - 生成库包含模板仓库名、旧包名或非法边界引用。
 - release manifest 已存在但 checksum 不匹配。
 
-## 14. Directory Structure
+## 13. Directory Structure
 ```text
 xlib-standard/
 ├── go.mod
@@ -254,7 +258,7 @@ xlib-standard/
 └── testkit/
 ```
 
-## 15. Dependencies
+## 14. Dependencies
 ### 外部依赖
 
 模板优先使用 Go 标准库。允许使用本仓库已有脚本、Makefile 和 GitHub Actions。不得为模板生成、边界检查或 release manifest 引入新的外部运行时依赖，除非后续规格显式批准。
@@ -280,7 +284,7 @@ xlib-standard/
 - `docker-compose.test.yml` — 容器化测试环境
 - `Makefile` — 下游仓库构建入口
 
-## 16. Testing
+## 15. Testing
 
 ### 16.1 Acceptance Criteria
 | AC     | Acceptance                                                          | 验证命令                                                                                                           | 代码位置                                                  |
@@ -365,19 +369,19 @@ xlib-standard/
 ### 16.3 Testing Strategy
 测试分三层：公共 API 单元测试、模板仓库集成测试、生成库 smoke test。最小验证命令包括 `GOWORK=off go test ./...`、`GOWORK=off go test -race ./...`、`GOWORK=off make ci`、`GOWORK=off make release-check` 和 `GOWORK=off make release-final-check`。
 
-## 17. Performance Budget
+## 16. Performance Budget
 模板库初始化必须轻量，不做网络调用。`NoopMetrics`、kind 匹配和健康状态构造应为常数级操作。`make ci` 适合作为本地开发 gate，渲染 smoke test 不应依赖外部服务。
 
-## 18. Observability
+## 17. Observability
 模板仅定义 metrics 接口和 no-op 实现，不强制具体后端。P0 指标名必须稳定，label 必须低基数。Release manifest 是发布可观测证据，记录 gate 结果和生成时间。
 
-## 19. Security
+## 18. Security
 脚本和模板不得提交 secret、API key、账户 ID、私有端点或生产配置。安全检查必须扫描常见凭证模式。`Sanitize` 必须避免泄露敏感字段，同时保留足够诊断信息。
 
-## 20. CI Gate
+## 19. CI Gate
 CI 必须运行 `GOWORK=off make ci` 和 `GOWORK=off make release-check`。`make ci` 的最小 gate 为 doctor-hooks-local、fmt、vet、lint、test、race、boundary、architecture、domain、secret-check、security、security-debt、contracts、governance-check、debt、score、rules-verify。任何 gate 失败时 CI 必须失败。
 
-## 21. Upgrade Compatibility
+## 20. Upgrade Compatibility
 
 破坏性接口变更（ErrorKind 增删、Config 字段类型变更、Metrics label 变更）必须：
 
@@ -390,10 +394,10 @@ CI 必须运行 `GOWORK=off make ci` 和 `GOWORK=off make release-check`。`make
 
 归档说明：本 SPEC.md 为 v1.0.0 可执行交付整理稿的历史视图，不再作为 xlib-standard 快照分析的可执行规格；当前快照审计入口为 README.md、ANALYSIS.md、FR-DETAIL.md 和 TRACEABILITY.md。
 
-## 22. Release DoD
+## 21. Release DoD
 发布前必须满足：模板测试通过、生成库测试通过、边界检查通过、合约检查通过、安全检查通过、release manifest 生成、checksum 校验通过、最终检查通过。发布证据必须可复现并可由 CI 重新生成。
 
-## 23. Open Questions
+## 22. Open Questions
 ### Non-blocking
 
 | ID | 问题 | 状态 |
@@ -406,6 +410,14 @@ CI 必须运行 `GOWORK=off make ci` 和 `GOWORK=off make release-check`。`make
 | ID | 问题 | 状态 |
 |----|------|------|
 | OQ-003 | goalcli 是否需要支持 CI 集成插件模式？ | 待评估 |
+
+## 23. 变更历史
+
+| 日期 | 版本 | 变更内容 | 作者 |
+|------|------|----------|------|
+| 2026-06-12 | v1.0.0 | 初始版本：52 FR，17 CI Gate，Go Reference Template | ZoneCNH |
+
+---
 
 ## Appendix: Constitution Compliance
 | 条款            | 要求                                        | 遵循方式                                                                                                     |

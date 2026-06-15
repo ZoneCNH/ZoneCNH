@@ -1,37 +1,23 @@
-# schedulex 完整规格
-
-> Foundation L1 运行时调度。cron/interval/delay job、misfire、overlap、jitter、并发控制和优雅停机。
-
-最后更新：2026-06-14
-
----
-
-## 1. Metadata
+# schedulex 规格
 
 - Status: Review
 - Spec-Version: v1.0.0
 - Last-Updated: 2026-06-14
-- Owner: ZoneCNH
 - Layer: L1 基础能力
-- Version: v0.7.3
-- Repository: [github.com/ZoneCNH/schedulex](https://github.com/ZoneCNH/schedulex)
-- Related: [CONSTITUTION.md](../../CONSTITUTION.md), [ARCHITECTURE.md](../../ARCHITECTURE.md)
+- Module-Version: v0.7.3
+- Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `kernel`
+
+> 公开投影 caveat：Status=Review 与矩阵覆盖证据不等同于 factory-grade；四源评分通过前机器事实层保持 factory=false。
 
 ---
 
-### 1.1 变更历史
-
-| 日期       | 版本   | 变更内容   | 作者    |
-| ---------- | ------ | ---------- | ------- |
-| 2026-06-07 | v1.0.0 | 初始版本   | ZoneCNH |
-
-## 2. Summary
+## 1. 摘要
 
 `schedulex` 是调度运行时，负责可靠地在指定时间触发任务，并管理并发、错过执行和停机语义。支持 cron/interval/delay 三种触发方式，提供 overlap 和 misfire 策略，可选分布式锁。
 
 ---
 
-## 3. Problem
+## 2. Problem
 
 量化交易系统有多种定时任务（行情拉取、因子计算、风控检查、报表生成），没有统一调度器会导致：
 
@@ -43,7 +29,7 @@
 
 ---
 
-## 4. Goals
+## 3. Goals
 
 - 统一 cron / interval / delay 任务调度
 - 明确的 overlap 策略：Skip / Queue / Replace
@@ -55,7 +41,7 @@
 
 ---
 
-## 5. Non-goals
+## 4. Non-goals
 
 - 不负责业务为什么触发（不内置策略调仓、行情拉取等逻辑）
 - 不替代 Kafka/NATS 等消息队列
@@ -64,7 +50,7 @@
 
 ---
 
-## 6. Consumers
+## 5. Consumers
 
 | 消费者           | 使用方式                             |
 | ---------------- | ------------------------------------ |
@@ -77,7 +63,7 @@
 
 ---
 
-## 7. Functional Requirements
+## 6. Functional Requirements
 
 ### FR-001: Schedule
 
@@ -183,7 +169,7 @@ THEN 所有调度基于 FakeClock，不调用 time.Now（测试确定性）
 
 ---
 
-## 8. Business Rules
+## 7. Business Rules
 
 | 编号   | 规则                                                         | 违反后果                                       |
 | ------ | ------------------------------------------------------------ | ---------------------------------------------- |
@@ -198,7 +184,7 @@ THEN 所有调度基于 FakeClock，不调用 time.Now（测试确定性）
 
 ---
 
-## 9. Interface Contract
+## 8. Interface Contract
 
 ### 9.1 Scheduler
 
@@ -322,7 +308,7 @@ var (
 
 ---
 
-## 10. Data Model
+## 9. Data Model
 
 ### 10.1 配置结构
 
@@ -339,7 +325,7 @@ type SchedulerConfig struct {
 
 ---
 
-## 11. Config Schema
+## 10. Config Schema
 
 ```yaml
 schedulex:
@@ -360,7 +346,7 @@ schedulex:
 
 ---
 
-## 12. Error Handling
+## 11. Error Handling
 
 | 错误                 | 调用方处理                                |
 | -------------------- | ----------------------------------------- |
@@ -375,7 +361,7 @@ schedulex:
 
 ---
 
-## 13. Edge Cases
+## 12. Edge Cases
 
 | 场景                        | 预期行为                              |
 | --------------------------- | ------------------------------------- |
@@ -392,7 +378,7 @@ schedulex:
 
 ---
 
-## 14. Directory Structure
+## 13. Directory Structure
 
 ```text
 schedulex/
@@ -429,7 +415,7 @@ schedulex/
 
 ---
 
-## 15. Dependencies
+## 14. Dependencies
 
 ### 15.1 go.mod
 
@@ -451,7 +437,7 @@ go 1.23
 
 ---
 
-## 16. Acceptance Criteria Registry
+## 15. Acceptance Criteria Registry
 
 | 编号   | 描述                                    | 关联 FR   | 验证方式   |
 | ------ | --------------------------------------- | --------- | ---------- |
@@ -480,7 +466,7 @@ go 1.23
 
 ---
 
-## 17. Testing
+## 16. Testing
 
 ### 17.1 单元测试
 
@@ -568,7 +554,7 @@ Then 返回 ErrDuplicateJob
 
 ---
 
-## 18. Performance Budget
+## 17. Performance Budget
 
 | 操作                   | 目标             | 测量方式         |
 | ---------------------- | ---------------- | ---------------- |
@@ -578,7 +564,7 @@ Then 返回 ErrDuplicateJob
 
 ---
 
-## 19. Observability
+## 18. Observability
 
 | 类型   | 名称                      | 说明                                                   |
 | ------ | ------------------------- | ------------------------------------------------------ |
@@ -600,7 +586,7 @@ Then 返回 ErrDuplicateJob
 
 ---
 
-## 20. Security
+## 19. Security
 
 | 要求                  | 实现方式                                                |
 | --------------------- | ------------------------------------------------------- |
@@ -609,7 +595,7 @@ Then 返回 ErrDuplicateJob
 
 ---
 
-## 21. CI Gate
+## 20. CI Gate
 
 ### 21.1 通用 Gate
 
@@ -636,7 +622,7 @@ Then 返回 ErrDuplicateJob
 
 ---
 
-## 22. Release DoD
+## 21. Release DoD
 
 - [ ] 所有公共接口有 godoc 注释
 - [ ] 所有公共类型有示例代码
@@ -661,7 +647,7 @@ Then 返回 ErrDuplicateJob
 
 ---
 
-## 23. Open Questions
+## 22. Open Questions
 
 ### Non-blocking
 
@@ -672,6 +658,12 @@ Then 返回 ErrDuplicateJob
 | OQ-003 | 分布式锁是否需要支持 Redis 以外的后端（PostgreSQL Advisory Lock）？ | 待评估 |
 | OQ-004 | misfire CatchUp 策略是否有上限（最多补执行 N 次）？ | 待评估 |
 
+
+## 23. 变更历史
+
+| 日期       | 版本   | 变更内容   | 作者    |
+| ---------- | ------ | ---------- | ------- |
+| 2026-06-07 | v1.0.0 | 初始版本   | ZoneCNH |
 
 ---
 
@@ -684,5 +676,3 @@ Then 返回 ErrDuplicateJob
 | 新增可选配置字段                   | patch / minor         |
 | 新增必填配置字段                   | **minor**（带默认值） |
 | 修复 bug                           | **patch**             |
-
----

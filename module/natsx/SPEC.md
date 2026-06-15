@@ -1,40 +1,17 @@
-# natsx 完整规格
-
-> 消息扩展层 / NATS 轻量消息与服务通信。NATS 内部通信封装，提供统一的发布/订阅、请求/响应、JetStream 和可观测集成。
-
-最后更新：2026-06-14
-
----
-
-## 1. Metadata
+# natsx 规格
 
 - Status: Review
 - Spec-Version: v1.0.0
 - Last-Updated: 2026-06-14
-- Owner: ZoneCNH
-- Layer: 消息扩展层 / NATS 轻量消息与服务通信
-- Version: v1.0.0
-- Module Scope: `/home/ZoneCNH/module/natsx`
-- Target Repository Identity: `github.com/ZoneCNH/natsx`
-- Related: [CONSTITUTION.md](../../CONSTITUTION.md), [ARCHITECTURE.md](../../ARCHITECTURE.md)
+- Layer: 基座 · 存储扩展
+- Module-Version: v1.0.0
+- Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `kernel`
 
-### 1.0 Repair Review Status
-
-- Approved for release: **No**. This specification remains the 1.0 target contract; `/home/natsx/pkg/natsx` now has repair-slice executable evidence for lifecycle, delivery, config aliasing, redacted auth live integration, canonical metrics, and secret-safe error/log evidence, but formal release approval still requires the four-source arbiter and production gates.
-- Evidence refreshed on 2026-06-13: `/home/natsx` commit `393d148`, embedded Core NATS / JetStream tests, subscription Drain, reconnect/degraded health, JetStream max-deliveries advisory, runnable `pkg/natsx` examples, publish/request/JetStream publish benchmark evidence, redacted local auth live integration, canonical `foundationx_nats_*` metric assertions, secret-safe error/log assertions, and `TRACEABILITY.md`.
-- Release promotion remains blocked until the formal four-source arbiter, production TLS endpoint, production benchmark threshold gates, and higher-level consumer integration gates are complete.
+> 公开投影 caveat：Status=Review 与矩阵覆盖证据不等同于 factory-grade；四源评分通过前机器事实层保持 factory=false。
 
 ---
 
-### 1.1 变更历史
-
-| 日期 | 版本 | 变更内容 | 作者 |
-|------|------|----------|------|
-| 2026-06-13 | v1.0.0-draft | 对齐 natsx 全分修复证据：canonical metrics、secret-safe error/live evidence、redacted auth live test 与矩阵 20/20 repair-slice score | Codex |
-| 2026-06-12 | v1.0.0-draft | 记录 natsx 生命周期/投递修复基线与剩余发布阻塞项 | Codex |
-| 2026-06-07 | v1.0.0 | 初始版本 | ZoneCNH |
-
-## 2. Summary
+## 1. 摘要
 
 Scope note: 本规格描述 `/home/ZoneCNH/module/natsx` 的 1.0 目标，不单独批准或覆盖 `/home/natsx` 仓库的发布身份。
 
@@ -42,7 +19,7 @@ Scope note: 本规格描述 `/home/ZoneCNH/module/natsx` 的 1.0 目标，不单
 
 ---
 
-## 3. Problem
+## 2. Problem
 
 70+ 模块之间需要低延迟的内部通信机制，各自封装 NATS 客户端会导致：
 
@@ -54,7 +31,7 @@ Scope note: 本规格描述 `/home/ZoneCNH/module/natsx` 的 1.0 目标，不单
 
 ---
 
-## 4. Goals
+## 3. Goals
 
 - 提供统一的 NATS 客户端封装，覆盖 Core NATS 和 JetStream
 - Core NATS：Publish / Subscribe / Request-Reply（低延迟，at-most-once）
@@ -67,7 +44,7 @@ Scope note: 本规格描述 `/home/ZoneCNH/module/natsx` 的 1.0 目标，不单
 
 ---
 
-## 5. Non-goals
+## 4. Non-goals
 
 - 不做 NATS 集群管理（由运维配置）
 - 不做消息路由（业务层决定 subject）
@@ -77,7 +54,7 @@ Scope note: 本规格描述 `/home/ZoneCNH/module/natsx` 的 1.0 目标，不单
 
 ---
 
-## 6. Consumers
+## 5. Consumers
 
 | 消费者          | 使用方式                                         |
 | --------------- | ------------------------------------------------ |
@@ -90,7 +67,7 @@ Scope note: 本规格描述 `/home/ZoneCNH/module/natsx` 的 1.0 目标，不单
 
 ---
 
-## 7. Functional Requirements
+## 6. Functional Requirements
 
 ### FR-001: Publish（Core NATS）
 
@@ -196,7 +173,7 @@ THEN 返回 HealthStatus{Ready: false, Live: true, Message: "jetstream unavailab
 | AC-008 | Health | NATS 可用时 Health() 返回 Ready=true/Live=true；不可达时 Ready=false/Live=false；JetStream 不可用时 Ready=false/Live=true | TC-005, unit test | ✅ Healthy, disconnected, nil, canceled, closed, reconnect, and degraded health paths covered |
 
 
-## 8. Business Rules
+## 7. Business Rules
 
 | 编号 | 规则 | 违反时 |
 | --- | --- | --- |
@@ -212,7 +189,7 @@ THEN 返回 HealthStatus{Ready: false, Live: true, Message: "jetstream unavailab
 
 ---
 
-## 9. Interface Contract
+## 8. Interface Contract
 
 公开 API 命名以 `goal.md` 的 1.0 逻辑接口基线为准：`NatsPubSubClient`、`NatsRequestClient`、`JetStreamClientX`、`NatsMessageEnvelope` 和 `SubjectBuilder`。实现可以保留内部适配器，但 Public API 不再暴露泛化的 `Client`/`JetStream` 命名作为 1.0 稳定契约。
 
@@ -301,7 +278,7 @@ fmt.Printf("stored in stream %s, seq %d\n", ack.Stream, ack.Sequence)
 
 ---
 
-## 10. Data Model
+## 9. Data Model
 
 ### 10.1 公共错误
 
@@ -330,7 +307,7 @@ type Codec interface {
 
 ---
 
-## 11. Config Schema
+## 10. Config Schema
 
 配置命名以 `foundationx.nats.*` 为稳定前缀，避免与其它消息模块冲突。环境变量使用 `FOUNDATIONX_NATS_*` 作为 canonical 输入，旧的 `NATS_*` 变量仅作为兼容回退；当两者同时存在时，`FOUNDATIONX_NATS_*` 必须优先生效。
 
@@ -364,7 +341,7 @@ Executable repair evidence (2026-06-13): `ConfigFromEnv` / `LoadConfigFromEnv` �
 
 ---
 
-## 12. Error Handling
+## 11. Error Handling
 
 | 错误                   | 调用方处理                                      |
 | ---------------------- | ----------------------------------------------- |
@@ -383,7 +360,7 @@ Executable repair evidence (2026-06-13): `ConfigFromEnv` / `LoadConfigFromEnv` �
 
 ---
 
-## 13. Edge Cases
+## 12. Edge Cases
 
 | 场景 | 预期行为 |
 |------|----------|
@@ -403,7 +380,7 @@ Executable repair evidence (2026-06-13): `ConfigFromEnv` / `LoadConfigFromEnv` �
 
 ---
 
-## 14. Directory Structure
+## 13. Directory Structure
 
 ```text
 natsx/
@@ -434,7 +411,7 @@ natsx/
 
 ---
 
-## 15. Dependencies
+## 14. Dependencies
 
 ### 15.1 go.mod
 
@@ -457,7 +434,7 @@ go 1.23
 
 ---
 
-## 16. Testing
+## 15. Testing
 
 ### 16.1 单元测试
 
@@ -536,7 +513,7 @@ Then 输出 MUST NOT 包含 secret/token/password 明文
 
 ---
 
-## 17. Performance Budget
+## 16. Performance Budget
 
 | 操作                  | 目标    | 测量方式       |
 | --------------------- | ------- | -------------- |
@@ -551,7 +528,7 @@ Executable repair evidence (2026-06-13): embedded CI assertions now enforce gene
 
 ---
 
-## 18. Observability
+## 17. Observability
 
 | 类型 | 名称 | 说明 |
 |------|------|------|
@@ -572,7 +549,7 @@ Executable repair evidence (2026-06-13): `/home/natsx` commit `393d148` records 
 
 ---
 
-## 19. Security
+## 18. Security
 
 | 要求                   | 实现方式                            |
 | ---------------------- | ----------------------------------- |
@@ -585,7 +562,7 @@ Production TLS evidence is a release-blocking governance artifact, not a local-d
 
 ---
 
-## 20. CI Gate
+## 19. CI Gate
 
 ### 20.1 通用 Gate
 
@@ -612,7 +589,7 @@ Production TLS evidence is a release-blocking governance artifact, not a local-d
 
 ---
 
-## 21. Upgrade Compatibility
+## 20. Upgrade Compatibility
 
 | 变更类型 | 版本升级 |
 |----------|----------|
@@ -627,7 +604,7 @@ Production TLS evidence is a release-blocking governance artifact, not a local-d
 
 ---
 
-## 22. Release DoD
+## 21. Release DoD
 
 - [ ] 所有公共接口有 godoc 注释
 - [ ] 所有公共类型有示例代码
@@ -646,10 +623,19 @@ Production TLS evidence is a release-blocking governance artifact, not a local-d
 
 ---
 
-## 23. Open Questions
+## 22. Open Questions
 
 - 是否需要支持 NATS Leaf Node 连接（跨集群通信）？
 - JetStream 是否需要支持 KV Store（NATS 内置 KV 抽象）？
 - 是否需要支持 Object Store（NATS 内置对象存储）？
 - Core NATS 消息丢失是否可接受（at-most-once），还是需要全部走 JetStream？
 - 是否需要支持消息压缩（per-message gzip/snappy）？
+
+
+## 23. 变更历史
+
+| 日期 | 版本 | 变更内容 | 作者 |
+|------|------|----------|------|
+| 2026-06-13 | v1.0.0-draft | 对齐 natsx 全分修复证据：canonical metrics、secret-safe error/live evidence、redacted auth live test 与矩阵 20/20 repair-slice score | Codex |
+| 2026-06-12 | v1.0.0-draft | 记录 natsx 生命周期/投递修复基线与剩余发布阻塞项 | Codex |
+| 2026-06-07 | v1.0.0 | 初始版本 | ZoneCNH |

@@ -1,41 +1,23 @@
-# kafkax 完整规格
-
-> 基座 · 存储扩展。Kafka 客户端封装，提供统一的生产者、消费者、消息模型、序列化、健康检查和可观测集成。
-
-最后更新：2026-06-14
-
----
-
-## 1. Metadata
+# kafkax 规格
 
 - Status: Review
-- Governance-Status: 等待四源评分
 - Spec-Version: v1.0.0
 - Last-Updated: 2026-06-14
-- Owner: ZoneCNH
-- Version: v0.7.3
 - Layer: 基座 · 存储扩展
-- Implementation-Version: v0.7.3
-- Baseline: 1.0 候选规格；非发布批准状态
-- Repository: [github.com/ZoneCNH/kafkax](https://github.com/ZoneCNH/kafkax)
-- Related: [CONSTITUTION.md](../../CONSTITUTION.md), [ARCHITECTURE.md](../../ARCHITECTURE.md), [goal.md](./goal.md), [TRACEABILITY.md](./TRACEABILITY.md)
+- Module-Version: v0.7.3
+- Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `kernel`
+
+> 公开投影 caveat：Status=Review 与矩阵覆盖证据不等同于 factory-grade；四源评分通过前机器事实层保持 factory=false。
 
 ---
 
-### 1.1 变更历史
-
-| 日期 | 版本 | 变更内容 | 作者 |
-|------|------|----------|------|
-| 2026-06-07 | v1.0.0 | 初始版本 | ZoneCNH |
-| 2026-06-12 | v1.0.0-candidate | 对齐 1.0 候选基线、BR 处理、接口上下文与追溯要求 | ZoneCNH |
-
-## 2. Summary
+## 1. 摘要
 
 `kafkax` 封装 Kafka 客户端，提供统一的生产者（同步发送和批量发送）、消费者（消费组、offset 管理）、序列化/反序列化、健康检查和可观测集成。与 kernel 生命周期集成，保证连接随应用启停。异步发送、事务、Schema Registry、手动 partition assign、深度失败重试/转储编排属于后续候选或非目标，不作为 1.0 候选基线。
 
 ---
 
-## 3. Problem
+## 2. Problem
 
 70+ 模块中有多个需要使用 Kafka（事件流、日志采集、跨域消息），各自封装会导致：
 
@@ -48,7 +30,7 @@
 
 ---
 
-## 4. Goals
+## 3. Goals
 
 - 提供统一的 `Producer` 封装，支持同步单条发送和批量发送。
 - 提供统一的 `Consumer` 封装，支持消费组、轮询和手动 offset 管理。
@@ -61,7 +43,7 @@
 
 ---
 
-## 5. Non-goals
+## 4. Non-goals
 
 - 不做 Kafka 集群管理（由运维配置）
 - 不做消息路由（业务层决定 topic）
@@ -76,7 +58,7 @@
 
 ---
 
-## 6. Consumers
+## 5. Consumers
 
 | 消费者 | 使用方式 |
 |--------|----------|
@@ -88,7 +70,7 @@
 
 ---
 
-## 7. Functional Requirements
+## 6. Functional Requirements
 
 ### FR-001: Producer.Send
 
@@ -167,7 +149,7 @@ THEN 返回 HealthStatus{Ready: false, Live: false, Message: "..."}
 
 ---
 
-## 8. Business Rules
+## 7. Business Rules
 
 | 编号 | 规则 | 违反时 |
 | --- | --- | --- |
@@ -183,7 +165,7 @@ THEN 返回 HealthStatus{Ready: false, Live: false, Message: "..."}
 
 ---
 
-## 9. Interface Contract
+## 8. Interface Contract
 
 ```go
 type Producer interface {
@@ -297,7 +279,7 @@ for {
 
 ---
 
-## 10. Data Model
+## 9. Data Model
 
 ### 10.1 Message
 
@@ -338,7 +320,7 @@ type Codec interface {
 
 ---
 
-## 11. Config Schema
+## 10. Config Schema
 
 ```yaml
 kafkax:
@@ -368,7 +350,7 @@ kafkax:
 
 ---
 
-## 12. Error Handling
+## 11. Error Handling
 
 | 错误 | 调用方处理 | 模块处理 |
 |------|-----------|----------|
@@ -388,7 +370,7 @@ kafkax:
 
 ---
 
-## 13. Edge Cases
+## 12. Edge Cases
 
 | 场景 | 预期行为 |
 |------|----------|
@@ -415,7 +397,7 @@ kafkax:
 
 ---
 
-## 14. Directory Structure
+## 13. Directory Structure
 
 ```
 kafkax/
@@ -445,7 +427,7 @@ kafkax/
 
 ---
 
-## 15. Dependencies
+## 14. Dependencies
 
 ### 15.1 go.mod
 
@@ -466,7 +448,7 @@ go 1.23
 
 ---
 
-## 16. Testing
+## 15. Testing
 
 ### 16.1 单元测试
 
@@ -581,7 +563,7 @@ Then 错误、日志和 trace 标签不包含完整 payload 或敏感片段。
 
 ---
 
-## 17. Performance Budget
+## 16. Performance Budget
 
 | 操作                   | 目标      | 测量方式         |
 | ---------------------- | --------- | ---------------- |
@@ -593,7 +575,7 @@ Then 错误、日志和 trace 标签不包含完整 payload 或敏感片段。
 
 ---
 
-## 18. Observability
+## 17. Observability
 
 | 类型 | 名称 | 说明 |
 |------|------|------|
@@ -622,7 +604,7 @@ Then 错误、日志和 trace 标签不包含完整 payload 或敏感片段。
 
 ---
 
-## 19. Security
+## 18. Security
 
 | 要求 | 实现方式 |
 |------|----------|
@@ -634,7 +616,7 @@ Then 错误、日志和 trace 标签不包含完整 payload 或敏感片段。
 
 ---
 
-## 20. CI Gate
+## 19. CI Gate
 
 ### 20.1 通用 Gate
 
@@ -659,7 +641,7 @@ Then 错误、日志和 trace 标签不包含完整 payload 或敏感片段。
 
 ---
 
-## 21. Upgrade Compatibility
+## 20. Upgrade Compatibility
 
 | 变更类型 | 版本升级 |
 |----------|----------|
@@ -674,7 +656,7 @@ Then 错误、日志和 trace 标签不包含完整 payload 或敏感片段。
 
 ---
 
-## 22. Release DoD
+## 21. Release DoD
 
 - [ ] 所有公共接口有 godoc 注释。
 - [ ] 所有公共类型有示例代码。
@@ -693,7 +675,7 @@ Then 错误、日志和 trace 标签不包含完整 payload 或敏感片段。
 
 ---
 
-## 23. Open Questions
+## 22. Open Questions
 
 ### 23.1 1.0 候选基线非阻断确认
 
@@ -712,6 +694,17 @@ Then 错误、日志和 trace 标签不包含完整 payload 或敏感片段。
 
 - 业务事件模型、业务 schema 治理和业务幂等存储不由 `kafkax` 1.0 定义。
 - Kafka 集群运维、Kafka Connect 和跨系统消息路由不由 `kafkax` 负责。
+
+---
+
+## 23. 变更历史
+
+| 日期 | 版本 | 变更内容 | 作者 |
+|------|------|----------|------|
+| 2026-06-07 | v1.0.0 | 初始版本 | ZoneCNH |
+| 2026-06-12 | v1.0.0-candidate | 对齐 1.0 候选基线、BR 处理、接口上下文与追溯要求 | ZoneCNH |
+
+---
 
 ## Appendix A: Acceptance Criteria Registry
 

@@ -1,38 +1,23 @@
-# resiliencx 完整规格
-
-> Foundation L1 运行时策略库。timeout/retry/circuit/bulkhead/rate limit/fallback。
-
-最后更新：2026-06-12
-
----
-
-## 1. Metadata
+# resiliencx 规格
 
 - Status: Approved
 - Spec-Version: v1.0.1
 - Last-Updated: 2026-06-12
-- Owner: ZoneCNH
 - Layer: L1 基础能力
-- Version: v0.7.3
-- Repository: [github.com/ZoneCNH/resiliencx](https://github.com/ZoneCNH/resiliencx)
-- Related: [CONSTITUTION.md](../../CONSTITUTION.md), [ARCHITECTURE.md](../../ARCHITECTURE.md)
+- Module-Version: v0.7.3
+- Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `kernel`
+
+> 公开投影 caveat：Status=Approved 与 100.0% 覆盖证据不等同于 factory-grade；BLK-007 关闭前机器事实层保持 factory=false。
 
 ---
 
-### 1.1 变更历史
-
-| 日期       | 版本   | 变更内容                                                       | 作者       |        |
-| ---------- | ------ | -------------------------------------------------------------- | ---------- | ------ |
-| 2026-06-12 | v1.0.1 | kernel 依赖修正、BR 违反后果补全、AC 标签显式化、Security 补强 | ZoneCNH    |        |
-| 2026-06-07 | v1.0.0 | 初始版本                                                       | ZoneCNH    |        |
-
-## 2. Summary
+## 1. 摘要
 
 `resiliencx` 是策略库，提供 timeout、retry、circuit breaker、bulkhead、rate limiter、fallback 等弹性原语。策略由业务模块在运行时组装，不提供 harness 或自动注入。
 
 ---
 
-## 3. Problem
+## 2. Problem
 
 分布式系统中，网络调用、交易所接口、消息队列都会面对超时或失败场景。没有统一的弹性策略，会导致：
 
@@ -43,7 +28,7 @@
 
 ---
 
-## 4. Goals
+## 3. Goals
 
 - 提供声明式弹性原语：timeout / retry / circuit breaker / bulkhead / rate limiter / fallback
 - 支持策略组合（嵌套执行）
@@ -53,7 +38,7 @@
 
 ---
 
-## 5. Non-goals
+## 4. Non-goals
 
 - 不做应用生命周期管理（→ `kernel`）
 - 不做日志实现（→ `observex`）
@@ -64,7 +49,7 @@
 
 ---
 
-## 6. Consumers
+## 5. Consumers
 
 | 消费者          | 使用方式                                                |
 | --------------- | ------------------------------------------------------- |
@@ -76,7 +61,7 @@
 
 ---
 
-## 7. Functional Requirements
+## 6. Functional Requirements
 
 ### FR-001: Timeout
 > AC-RES-001: timeout 正常完成 / 超时 / ctx 取消
@@ -167,7 +152,7 @@ THEN 执行 secondary，返回 secondary 的结果
 
 ---
 
-## 8. Business Rules
+## 7. Business Rules
 
 | 编号 | 规则 | 违反后果 |
 |------|------|----------|
@@ -182,7 +167,7 @@ THEN 执行 secondary，返回 secondary 的结果
 
 ---
 
-## 9. Interface Contract
+## 8. Interface Contract
 
 ### 9.1 策略接口
 
@@ -265,7 +250,7 @@ err := resiliencx.Timeout(ctx, 5*time.Second, func(ctx context.Context) error {
 
 ---
 
-## 10. Data Model
+## 9. Data Model
 
 ### 10.1 公共错误
 
@@ -296,7 +281,7 @@ type BulkheadConfig struct {
 
 ---
 
-## 11. Config Schema
+## 10. Config Schema
 
 ```yaml
 resiliencx:
@@ -320,7 +305,7 @@ resiliencx:
 
 ---
 
-## 12. Error Handling
+## 11. Error Handling
 
 | 错误              | 调用方处理                                           |
 | ----------------- | ---------------------------------------------------- |
@@ -335,7 +320,7 @@ resiliencx:
 
 ---
 
-## 13. Edge Cases
+## 12. Edge Cases
 
 | 场景                                   | 预期行为                     |
 | -------------------------------------- | ---------------------------- |
@@ -351,7 +336,7 @@ resiliencx:
 
 ---
 
-## 14. Directory Structure
+## 13. Directory Structure
 
 ```text
 resiliencx/
@@ -381,7 +366,7 @@ resiliencx/
 
 ---
 
-## 15. Dependencies
+## 14. Dependencies
 
 ### 15.1 go.mod
 
@@ -403,7 +388,7 @@ go 1.23
 
 ---
 
-## 16. Testing
+## 15. Testing
 
 ### 16.1 单元测试
 
@@ -484,7 +469,7 @@ Then 外层策略按声明顺序包装内层策略，整体返回最外层结果
 
 ---
 
-## 17. Performance Budget
+## 16. Performance Budget
 
 | 操作                            | 目标    | 测量方式       |            |
 | ------------------------------- | ------- | -------------- | ---------- |
@@ -495,7 +480,7 @@ Then 外层策略按声明顺序包装内层策略，整体返回最外层结果
 
 ---
 
-## 18. Observability
+## 17. Observability
 
 | 类型   | 名称                              | 说明                                               |        |
 | ------ | --------------------------------- | -------------------------------------------------- | ------ |
@@ -511,7 +496,7 @@ Then 外层策略按声明顺序包装内层策略，整体返回最外层结果
 
 ---
 
-## 19. Security
+## 18. Security
 
 | 要求                   | 实现方式                                                                |
 | ---------------------- | ----------------------------------------------------------------------- |
@@ -524,7 +509,7 @@ Then 外层策略按声明顺序包装内层策略，整体返回最外层结果
 
 ---
 
-## 20. CI Gate
+## 19. CI Gate
 
 ### 20.1 通用 Gate
 
@@ -548,7 +533,7 @@ Then 外层策略按声明顺序包装内层策略，整体返回最外层结果
 
 ---
 
-## 21. Upgrade Compatibility
+## 20. Upgrade Compatibility
 
 | 变更类型                | 版本升级                  |
 | ----------------------- | ------------------------- |
@@ -560,7 +545,7 @@ Then 外层策略按声明顺序包装内层策略，整体返回最外层结果
 
 ---
 
-## 22. Release DoD
+## 21. Release DoD
 
 - [ ] 所有公共接口有 godoc 注释
 - [ ] 所有公共类型有示例代码
@@ -578,9 +563,18 @@ Then 外层策略按声明顺序包装内层策略，整体返回最外层结果
 
 ---
 
-## 23. Open Questions
+## 22. Open Questions
 
 - 是否需要支持自适应 retry（根据历史成功率动态调整策略）？
 - 是否需要支持分布式 circuit breaker（多实例共享熔断状态）？
 - rate limiter 是否需要支持多维度限流（per-endpoint, per-user）？
 - 策略配置是否需要支持运行时动态更新？
+
+---
+
+## 23. 变更历史
+
+| 日期       | 版本   | 变更内容                                                       | 作者       |
+| ---------- | ------ | -------------------------------------------------------------- | ---------- |
+| 2026-06-12 | v1.0.1 | kernel 依赖修正、BR 违反后果补全、AC 标签显式化、Security 补强 | ZoneCNH    |
+| 2026-06-07 | v1.0.0 | 初始版本                                                       | ZoneCNH    |
