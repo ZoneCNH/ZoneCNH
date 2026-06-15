@@ -58,6 +58,18 @@ xlib-standard 同时承载声明式标准定义（Standard Source / Go Reference
 | BR-002 | check 不得修改被检模块的任何文件 |
 | BR-003 | check 失败退出码必须非零 |
 
+
+### Acceptance Criteria Registry
+
+| AC ID | FR/BR Ref | Criterion |
+|-------|-----------|----------|
+| AC-001 | FR-001 | TC-001 | `xlib-harness generate test-module && ls module/test-module/` | ✅ | |
+| AC-002 | FR-002 | TC-002 | `xlib-harness check  --profile spec` | ✅ | |
+| AC-003 | FR-003 | TC-003 | `xlib-harness check  --profile boundary` | ✅ | |
+| AC-004 | FR-004 | TC-004 | `xlib-harness validate --template` | ✅ | |
+| AC-005 | FR-005 | TC-005 | `xlib-harness check  --profile spec` | ✅ | |
+| AC-006 | FR-006 | TC-006 | `xlib-harness check  --profile full` | ✅ | |
+
 ## 8. 接口契约
 
 ```go

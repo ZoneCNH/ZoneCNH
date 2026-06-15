@@ -70,6 +70,17 @@ xlib-standard 的 Evidence Runtime 与其声明式标准定义耦合，导致证
 | BR-003 | manifest 不可事后篡改（hash 链校验） |
 | BR-004 | evidence 存储必须不可变追加 |
 
+
+### Acceptance Criteria Registry
+
+| AC ID | FR/BR Ref | Criterion |
+|-------|-----------|----------|
+| AC-001 | FR-001 | TC-001 | `go test -run TestCollectCoverage` | ✅ | |
+| AC-002 | FR-002 | TC-002 | `go test -run TestGenerateManifest` | ✅ | |
+| AC-003 | FR-003 | TC-003 | `go test -run TestValidateManifest` | ✅ | |
+| AC-004 | FR-004 | TC-004 | `go test -run TestRemoteEvidence` | ✅ | |
+| AC-005 | FR-005 | TC-005 | `go test -run TestEvidenceReport` | ✅ | |
+
 ## 8. 接口契约
 
 ```go

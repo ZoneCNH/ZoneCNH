@@ -99,6 +99,19 @@
 | BR-MKT-005 | stale/future 数据 fail-closed，DegradeReason + metrics 暴露，不可靠数据不静默进入策略 |
 | BR-MKT-006 | domain-market 仅表达行情语义，订单生命周期语义归 domainx |
 
+
+### Acceptance Criteria Registry
+
+| AC ID | FR/BR Ref | Criterion |
+|-------|-----------|----------|
+| AC-MKT-001 | FR-MKT-001 | TC-MKT-001 | `go vet` + `staticcheck` | |
+| AC-MKT-002 | FR-MKT-002 | TC-MKT-002 | `go test -run TestTick` | |
+| AC-MKT-004 | FR-MKT-006 | TC-MKT-004 | `go test -run TestInstrument` | |
+| AC-MKT-005 | FR-MKT-007 | TC-MKT-005 | `go test -run "TestFunding\|TestOI\|TestLSR"` | |
+| AC-MKT-003 | FR-MKT-008 | TC-MKT-004 | `go test -run TestMarketEventEnvelope` | |
+| AC-MKT-006 | FR-MKT-010 | TC-MKT-005 | `staticcheck` boundary scan | |
+| AC-MKT-007 | FR-MKT-014 | TC-MKT-006 | `compile smoke` + ADR | |
+
 ## 9. 接口契约
 
 ```go

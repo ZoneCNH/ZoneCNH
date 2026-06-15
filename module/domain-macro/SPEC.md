@@ -92,6 +92,20 @@
 | BR-MAC-005 | DataFreshnessSec 规则：无可见点时返回 -1 或特殊值；未来数据拒绝 |
 | BR-MAC-006 | provider DTO 不得污染 domain Public API |
 
+
+### Acceptance Criteria Registry
+
+| AC ID | FR/BR Ref | Criterion |
+|-------|-----------|----------|
+| AC-MAC-001 | FR-MAC-001 | TC-MAC-001 | - | 🔲 | |
+| AC-MAC-002 | FR-MAC-002 | TC-MAC-003 | - | 🔲 | |
+| AC-MAC-003 | FR-MAC-003 | TC-MAC-001, TC-MAC-002, TC-MAC-005 | - | 🔲 | |
+| AC-MAC-004 | FR-MAC-004 | TC-MAC-004, TC-MAC-006 | - | 🔲 | |
+| AC-MAC-005 | FR-MAC-005 | TC-MAC-003, TC-MAC-005 | - | 🔲 | |
+| AC-MAC-006 | FR-MAC-006 | TC-MAC-003 | - | 🔲 | |
+| AC-MAC-007 | FR-MAC-007 | - | - | 🔲 | |
+| AC-MAC-008 | FR-MAC-008 | TC-MAC-007 | - | 🔲 | |
+
 ## 9. 接口契约
 
 ```go
