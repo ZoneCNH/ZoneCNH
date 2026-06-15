@@ -184,6 +184,32 @@ THEN 所有调度基于 FakeClock，不调用 time.Now（测试确定性）
 
 ---
 
+
+### Acceptance Criteria Registry
+
+| AC ID | FR/BR Ref | Criterion |
+|-------|-----------|----------|
+| AC-001 | FR-001 | 合法 cron job 返回 JobID |
+| AC-002 | FR-001 | cron 语法错误 → ErrInvalidTrigger |
+| AC-004 | FR-001 | 重复 JobID → ErrDuplicateJob |
+| AC-005 | FR-002 | cron 到达调度时间调用 handler |
+| AC-006 | FR-002 | interval 到期调用 handler |
+| AC-007 | FR-002 | Delay 后首次触发 |
+| AC-008 | FR-003 | Skip → 上次未完成时跳过 |
+| AC-009 | FR-003 | Queue → 排队等待 |
+| AC-010 | FR-003 | Replace → 取消旧的启动新的 |
+| AC-011 | FR-004 | Skip → 跳过错过的触发 |
+| AC-012 | FR-004 | RunOnce → 补执行一次 |
+| AC-013 | FR-004 | CatchUp → 补执行所有错过次数 |
+| AC-014 | FR-005 | 存在的 job 取消返回 nil |
+| AC-015 | FR-005 | 不存在返回 ErrJobNotFound |
+| AC-016 | FR-006 | 等待正在执行的 job 完成 |
+| AC-017 | FR-006 | 超时强制取消 → ErrShutdownTimeout |
+| AC-018 | FR-007 | trigger/start/complete/fail/misfire 事件输出 |
+| AC-019 | FR-008 | 锁获取成功 → 执行 job |
+| AC-020 | FR-008 | 锁获取失败 → 跳过本次 |
+| AC-022 | FR-009 | FakeClock 注入后调度基于 FakeClock |
+
 ## 8. 接口契约
 
 ### 8.1 Scheduler

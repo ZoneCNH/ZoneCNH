@@ -438,6 +438,31 @@ JSON 输出必须包含 machine-readable 的 status 字段（pass/fail/error）�
 
 ---
 
+
+### Acceptance Criteria Registry
+
+| AC ID | FR/BR Ref | Criterion |
+|-------|-----------|----------|
+| AC-001 | FR-001 | TC-001 | TASK-XLIBGATE-002 | ✅ | |
+| AC-002 | FR-002 | TC-002 | TASK-XLIBGATE-003 | ✅ | |
+| AC-003 | FR-003 | TC-003 | TASK-XLIBGATE-004 | ✅ | |
+| AC-004 | FR-004 | TC-006 | TASK-XLIBGATE-005 | ✅ | |
+| AC-005 | FR-005 | TC-004, TC-005, TC-008 | TASK-XLIBGATE-006 | ✅ | |
+| AC-006 | FR-006 | TC-007 | TASK-XLIBGATE-006 | ✅ | |
+| AC-010 | FR-007 | TC-009 | TASK-XLIBGATE-009 (TBD) | ✅ | |
+| AC-011 | FR-008 | TC-010 | TASK-XLIBGATE-009 (TBD) | ✅ | |
+| AC-012 | FR-009 | TC-011 | TASK-XLIBGATE-009 (TBD) | ✅ | |
+| AC-013 | FR-010 | TC-012 | TASK-XLIBGATE-009 (TBD) | ✅ | |
+| AC-014 | FR-011 | TC-013 | TASK-XLIBGATE-009 (TBD) | ✅ | |
+| AC-015 | FR-012 | TC-014, TC-015 | TASK-XLIBGATE-011 | ❌ | |
+| AC-016 | FR-013 | TC-016, TC-017 | TASK-XLIBGATE-012 | ❌ | |
+| AC-017 | FR-014 | TC-018, TC-019 | TASK-XLIBGATE-013 | ❌ | |
+| AC-018 | FR-015 | TC-020, TC-021 | TASK-XLIBGATE-014 | ❌ | |
+| AC-019 | FR-016 | TC-022, TC-023 | TASK-XLIBGATE-015 | ❌ | |
+| AC-020 | FR-017 | TC-024, TC-025 | TASK-XLIBGATE-016 | ❌ | |
+| AC-021 | FR-018 | TC-026, TC-027 | TASK-XLIBGATE-017 | ❌ | |
+| AC-022 | FR-019 | TC-028, TC-029 | TASK-XLIBGATE-018 | ❌ | |
+
 ## 8. 接口契约
 
 ### 8.1 CLI 命令

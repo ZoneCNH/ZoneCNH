@@ -201,6 +201,16 @@ THEN 使用 NoopMetrics（零开销空实现）
 
 ---
 
+
+### Acceptance Criteria Registry
+
+| AC     | 所属 FR/BR                 | Task        | 验收条件摘要                                    |
+| ------ | -------------------------- | ----------- | ----------------------------------------------- |
+| AC-001 | FR-002~005, BR-001         | 002/003/004 | Loader+Source 正确加载合并，LastWins 语义       |
+| AC-002 | FR-006, BR-007             | 005         | StrictDecode 拒绝未知字段/重复key/类型错误      |
+| AC-003 | FR-007/008/011, BR-005/006 | 010         | SecretString + SecretPolicy + SanitizedManifest |
+| AC-004 | FR-009/010/012             | 006         | Provenance + Hash + HealthCheck                 |
+| AC-005 | FR-001/013, BR-008~011     | 000/001/009 | Client 生命周期 + Metrics + CI Gate             |
 ## 8. 接口契约
 
 ### 8.1 Client — 配置客户端

@@ -99,6 +99,24 @@
 | BR-EXC-006 | Registry 重复注册返回错误，不允许覆盖 |
 | BR-EXC-007 | WS channel 关闭规则：ctx cancel 后 channel 可预测关闭；不允许 goroutine leak |
 
+
+### Acceptance Criteria Registry
+
+| AC ID | FR/BR Ref | Criterion |
+|-------|-----------|----------|
+| AC-EXC-001 | FR-EXC-001 | TC-EXC-001 | `GOWORK=off go test ./...` | |
+| AC-EXC-002 | FR-EXC-002 | TC-EXC-001 | `GOWORK=off go test -race ./...` | |
+| AC-EXC-003 | FR-EXC-003 | TC-EXC-001 | `GOWORK=off go test ./...` | |
+| AC-EXC-004 | FR-EXC-004 | TC-EXC-001 | `GOWORK=off go test ./...` | |
+| AC-EXC-005 | FR-EXC-005 | TC-EXC-002 | `GOWORK=off go test -race ./...` | |
+| AC-EXC-006 | FR-EXC-006 | TC-EXC-001 | `GOWORK=off go test ./...` | |
+| AC-EXC-007 | FR-EXC-007 | TC-EXC-003 | `GOWORK=off go test ./...` | |
+| AC-EXC-008 | FR-EXC-008 | TC-EXC-003 | `GOWORK=off go test ./...` | |
+| AC-EXC-009 | FR-EXC-009 | TC-EXC-004 | `GOWORK=off go test -race ./...` | |
+| AC-EXC-010 | FR-EXC-010 | TC-EXC-007 | `GOWORK=off go test ./...` | |
+| AC-EXC-011 | FR-EXC-011 | TC-EXC-005, TC-EXC-006 | `GOWORK=off go test -race ./...` | |
+| AC-EXC-012 | FR-EXC-012 | TC-EXC-007 | `GOWORK=off go test ./...` | |
+
 ## 9. 接口契约
 
 ```go

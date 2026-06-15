@@ -95,6 +95,21 @@
 | BR-DEC-006 | `Money` 跨币种运算必须失败——防止隐式汇率假设 |
 | BR-DEC-007 | rounding mode 语义一旦冻结不可在 minor 版本内变更 |
 
+
+### Acceptance Criteria Registry
+
+| AC ID | FR/BR Ref | Criterion |
+|-------|-----------|----------|
+| AC-DEC-001 | FR-DEC-001 | TC-DEC-001, TC-DEC-007 | `go test -race ./...` | |
+| AC-DEC-002 | FR-DEC-002 | TC-DEC-002 | `go test -run TestParse -fuzz=FuzzParse` | |
+| AC-DEC-003 | FR-DEC-003 | TC-DEC-003 | `go test -run TestString` | |
+| AC-DEC-004 | FR-DEC-004 | TC-DEC-005 | `go test -run TestArithmetic` | |
+| AC-DEC-009 | FR-DEC-006 | TC-DEC-008 | `go test -run TestRounding` | |
+| AC-DEC-005 | FR-DEC-007 | TC-DEC-003 | `go test -run TestJSON -fuzz=FuzzJSON` | |
+| AC-DEC-006 | FR-DEC-008 | TC-DEC-004 | `go test -run TestSQLScan` | |
+| AC-DEC-007 | FR-DEC-009 | TC-DEC-006 | `go test -run TestMoney` | |
+| AC-DEC-008 | FR-DEC-010 | TC-DEC-008 | `go test -run TestErrors` | |
+
 ## 9. 接口契约
 
 ```go
