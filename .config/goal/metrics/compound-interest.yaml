@@ -62,7 +62,7 @@ L4_prerequisites:
   kernel_gates_all_pass: true
   gc_agent_zero_critical_3x: true
   rsi_auto_propose: true
-next_actions: &id001
+next_actions:
 - 选择 1 个下游仓库作为 L5 试点（推荐 kernel — 最成熟）
 - 在 kernel repo 部署 .config/goal/ + Agent 配置
 - 验证 kernel 70%+ task 自动化执行
@@ -80,8 +80,12 @@ L5_objectives:
     auto_degradation: Agent 能自动检测异常状态并降级
   current_assessment:
     docs_hub_automation: 高 — 本会话 10 PR 全部 Agent 驱动
-    downstream_70_repos: 未开始 — 需逐仓库验证 Goal 框架采纳
+    downstream_70_repos: '进行中 — kernel (1/70) 已部署 Goal 框架，PR #23 merged'
     auto_context_recovery: 部分 — 有 SessionStart hook 但未全自动
     auto_research: 未实现
     auto_degradation: 部分 — RSI hook 可检测 FAIL 但降级需人工
-  next_actions: *id001
+  next_actions:
+  - 'kernel: 验证 Agent 自主 Task 执行率 (target 70%+)'
+  - '选择第 2 个下游试点 (推荐: configx 或 redisx)'
+  - AutoResearch hook 实现
+  - 'L5 度量: agent_auto_task_rate 追踪仪表盘'
