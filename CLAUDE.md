@@ -85,6 +85,35 @@
 - 工作完成后通过 PR 或 merge 合入 main，随后清理 worktree 和 feature branch。
 - 仅 `git merge`/`git rebase`/`git pull` 和紧急 hotfix 允许在 main 上执行。
 
+### 分支保护（2026-06-15 worktree 会话复盘）
+
+> **O2 修复**：Hook 自动切换到 main 并删除 feature branch 导致未合并提交丢失，需从 reflog 恢复。
+
+- **禁止自动删除未合并分支**。Stop/SessionEnd hook 在 `git checkout main` 前必须验证：
+  ```bash
+  # 检查是否有未合并到 main 的提交
+  git log origin/main..HEAD --oneline | wc -l  # >0 则禁止删除
+  # 或检查 PR 是否已合并
+  gh pr list --head "$BRANCH" --state merged --json number | python3 -c "import sys,json; exit(0 if len(json.load(sys.stdin))>0 else 1)"
+  ```
+- **分支恢复协议**：若分支被误删，通过 `git reflog` 定位最后 commit SHA → `git checkout -b <branch> <sha>` 恢复。
+
+### 提交批处理（2026-06-15 worktree 会话复盘）
+
+> **O3 修复**：本会话 5 个独立 commit 实为 1 个逻辑变更（worktree 治理对齐），每个 commit 触发完整 CI 管线。
+
+- **同一逻辑变更聚合为 1 个 commit**。禁止每个 `Edit`/`Write` 后立即 commit。
+- **批处理窗口**：连续编辑多个文件后，待所有变更完成并 audit PASS 后一次性 `git add` + `git commit`。
+- **版本 bump 必须在最后**：bump commit 是 PR 的最后一个 commit，不在中间执行。
+- **OMX team auto-checkpoint** 不得打断批处理窗口。若检测到连续的 Write/Edit 操作流，延迟 checkpoint 至用户确认或 5 分钟空闲后。
+
+### OMX Team 分支隔离
+
+> **O1 修复**：多 session/worker 共享同一 feature branch 导致 commit 交织（本会话 4 个外部 session + 2 个 auto-checkpoint 注入同一分支）。
+
+- **OMX team worker 必须使用子分支**：`{parent-branch}/worker-{N}`，禁止直接 commit 到 parent branch。
+- **主 session 持 parent branch**，worker 完成后通过 PR 或 cherry-pick 合入。
+
 ## 工作流规则（2026-06-12 / 2026-06-14 / 2026-06-15 三场会话复盘）
 
 > 基于三场会话复盘（14 PR / $89 + 3 PR / $49.52 + 58 PR / STATUS.md 全量审计），制定以下编辑纪律、验证门禁和效率规则。
