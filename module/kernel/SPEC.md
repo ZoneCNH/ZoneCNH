@@ -368,7 +368,7 @@ THEN 测试通过
 
 ## 8. 接口契约
 
-### 9.1 lifecycx
+### 8.1 lifecycx
 
 ```go
 type Starter interface {
@@ -393,7 +393,7 @@ func (m *Manager) Start(ctx context.Context) error
 func (m *Manager) Stop(ctx context.Context) error
 ```
 
-### 9.2 errx
+### 8.2 errx
 
 ```go
 type ErrorKind string
@@ -443,7 +443,7 @@ func IsKind(err error, kind ErrorKind) bool
 func AsError(err error) (*Error, bool)
 ```
 
-### 9.3 healthx
+### 8.3 healthx
 
 ```go
 type HealthStatusValue string
@@ -475,7 +475,7 @@ func Aggregate(name string, statuses ...HealthStatus) HealthStatus
 func AggregateWithClock(name string, clock timex.Clock, statuses ...HealthStatus) HealthStatus
 ```
 
-### 9.4 obsx
+### 8.4 obsx
 
 ```go
 type Field struct {
@@ -520,7 +520,7 @@ func (s SecretString) Sanitize() string
 func (s SecretString) Reveal() string
 ```
 
-### 9.5 retryx
+### 8.5 retryx
 
 ```go
 type RetryPolicy struct {
@@ -536,7 +536,7 @@ func (p RetryPolicy) DelayWithJitter(attempt int, ratio float64, fraction float6
 func ShouldRetry(err error) bool
 ```
 
-### 9.6 shutdownx
+### 8.6 shutdownx
 
 ```go
 type Hook interface {
@@ -562,7 +562,7 @@ func (m *Manager) Hooks() []Hook
 func NotifyContext(parent context.Context, signals ...os.Signal) (context.Context, context.CancelFunc)
 ```
 
-### 9.7 timex
+### 8.7 timex
 
 ```go
 type Clock interface{ Now() time.Time }
@@ -581,7 +581,7 @@ func (c *FakeClock) Now() time.Time
 func (c *FakeClock) Advance(d time.Duration)
 ```
 
-### 9.8 validx
+### 8.8 validx
 
 ```go
 func Precondition(ok bool, op string, message string) error
@@ -589,7 +589,7 @@ func Invariant(ok bool, op string, message string) error
 func RequireNonEmpty(op string, name string, value string) error
 ```
 
-### 9.9 versionx
+### 8.9 versionx
 
 ```go
 type BuildInfo struct {
@@ -612,7 +612,7 @@ type Compatibility struct {
 func (c Compatibility) CompatibleWith(info BuildInfo) bool
 ```
 
-### 9.10 contextx
+### 8.10 contextx
 
 ```go
 type Key[T any] struct { /* unexported */ }
@@ -626,7 +626,7 @@ func IsDone(ctx context.Context) bool
 func CancelCause(ctx context.Context) error
 ```
 
-### 9.11 syncx
+### 8.11 syncx
 
 ```go
 type Limiter interface {
@@ -649,7 +649,7 @@ func (g *WorkerGroup) TryGo(fn func(context.Context) error) bool
 func (g *WorkerGroup) Wait() error
 ```
 
-### 9.12 contracttest
+### 8.12 contracttest
 
 ```go
 func AssertJSONFields(t testing.TB, value any, fields ...string)
@@ -657,7 +657,7 @@ func AssertErrorKind(t testing.TB, got error, want errx.ErrorKind)
 func AssertHealthStatus(t testing.TB, got healthx.HealthStatus, want healthx.HealthStatusValue)
 ```
 
-### 9.13 internal/testutil
+### 8.13 internal/testutil
 
 ```go
 func RequireEqual[T comparable](t testing.TB, got T, want T)
@@ -667,7 +667,7 @@ func RequireEqual[T comparable](t testing.TB, got T, want T)
 
 ## 9. 数据模型
 
-### 10.1 errx.Error
+### 9.1 errx.Error
 
 ```go
 type Error struct {
@@ -681,7 +681,7 @@ type Error struct {
 }
 ```
 
-### 10.2 healthx.HealthStatus
+### 9.2 healthx.HealthStatus
 
 ```go
 type HealthStatus struct {
@@ -694,7 +694,7 @@ type HealthStatus struct {
 }
 ```
 
-### 10.3 retryx.RetryPolicy
+### 9.3 retryx.RetryPolicy
 
 ```go
 type RetryPolicy struct {
@@ -704,7 +704,7 @@ type RetryPolicy struct {
 }
 ```
 
-### 10.4 versionx.BuildInfo
+### 9.4 versionx.BuildInfo
 
 ```go
 type BuildInfo struct {
@@ -716,7 +716,7 @@ type BuildInfo struct {
 }
 ```
 
-### 10.5 versionx.Compatibility
+### 9.5 versionx.Compatibility
 
 ```go
 type Compatibility struct {
@@ -926,7 +926,7 @@ kernel/
 
 ## 14. 依赖
 
-### 15.1 go.mod
+### 14.1 go.mod
 
 ```text
 module github.com/ZoneCNH/kernel
@@ -934,7 +934,7 @@ module github.com/ZoneCNH/kernel
 go 1.23
 ```
 
-### 15.2 依赖方向
+### 14.2 依赖方向
 
 | 可以依赖                                                                                                           | 禁止依赖                                                                         |
 | ------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------- |
@@ -943,7 +943,7 @@ go 1.23
 |                                                                                                                    | 所有 L2.5 领域共享层                                                             |
 |                                                                                                                    | 所有存储/中间件扩展                                                              |
 
-### 15.3 内部依赖图
+### 14.3 内部依赖图
 
 ```text
 errx      → stdlib
@@ -960,7 +960,7 @@ versionx  → stdlib
 contracttest → stdlib, errx, healthx
 ```
 
-### 15.4 特殊说明
+### 14.4 特殊说明
 
 kernel 是 stdlib-only 的 L0 原语层。各子包独立可用，互不强制绑定。内部交叉引用（如 `healthx`→`timex`、`retryx`→`errx`、`contracttest`→`errx`+`healthx`）仅限于 kernel 仓库内部，不引入任何第三方依赖。上层模块可按需引入单个子包：
 
@@ -975,7 +975,7 @@ import (
 
 ## 15. 测试
 
-### 16.1 单元测试覆盖
+### 15.1 单元测试覆盖
 
 | 子包              | 测试文件             | 覆盖重点                                             |
 | ----------------- | -------------------- | ---------------------------------------------------- |
@@ -993,7 +993,7 @@ import (
 | contracttest      | contracttest_test.go | JSON 字段断言、ErrorKind 断言                        |
 | internal/testutil | testutil_test.go     | RequireEqual 泛型断言                                |
 
-### 16.2 验收标准（AC）
+### 15.2 验收标准（AC）
 
 | AC 编号   | 对应 FR   | 验收条件                                                                           |
 | --------- | --------- | ---------------------------------------------------------------------------------- |
@@ -1016,7 +1016,7 @@ import (
 | AC-017    | FR-012    | contracttest 断言函数在匹配/不匹配时行为正确                                       |
 | AC-018    | BR-009    | stdlib-only gate：`go list -deps` 无非 stdlib 依赖                                 |
 
-### 16.3 Given/When/Then 用例
+### 15.3 Given/When/Then 用例
 
 | TC     | Type   | Scenario                | Expected                                        |
 | ------ | ------ | ----------------------- | ----------------------------------------------- |
@@ -1039,7 +1039,7 @@ import (
 | TC-017 | Unit   | versionx Compatibility  | CompatibleWith 模块/版本匹配正确                |
 | TC-018 | Unit   | contracttest            | 断言匹配通过，不匹配时 Fatalf                   |
 
-### 16.4 详细 Given/When/Then（全 18 用例）
+### 15.4 详细 Given/When/Then（全 18 用例）
 
 **TC-001: lifecycx 正常启动停止**
 Given 注册 Component A、B（按 A, B 顺序）
@@ -1190,7 +1190,7 @@ kernel 本身通过 `obsx` 子包定义可观测接口，不触发具体观测�
 
 ## 19. CI 门禁
 
-### 20.1 通用 Gate
+### 19.1 通用 Gate
 
 | Gate        | 命令                                                                           | 阻塞条件                 |
 | ----------- | ------------------------------------------------------------------------------ | ------------------------ |
@@ -1203,7 +1203,7 @@ kernel 本身通过 `obsx` 子包定义可观测接口，不触发具体观测�
 | Secret 扫描 | `gitleaks detect --no-git`                                                     | 泄露 secret              |
 | Benchmark   | `go test -bench=. -benchmem -count=3 ./...`                                    | 结果附在 PR comment      |
 
-### 20.2 kernel 专属 Gate
+### 19.2 kernel 专属 Gate
 
 | Gate                | 命令                              | 阻塞条件                    |                                        |                    |
 | ------------------- | --------------------------------- | --------------------------- |                                        |                    |

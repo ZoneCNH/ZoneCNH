@@ -172,7 +172,7 @@ func (c *Client) WithTx(ctx context.Context, fn TxFunc) error
 func (c *Client) WithTxOptions(ctx context.Context, opts TxOptions, fn TxFunc) error
 ```
 
-### 9.1 Config
+### 8.1 Config
 
 ```go
 type Config struct {
@@ -197,7 +197,7 @@ func (c Config) RedactedDSN() string
 
 默认值：port 5432、sslmode disable、max open 10、min idle 1、connection lifetime 1h、idle timeout 30m、connect timeout 5s、health timeout 2s。
 
-### 9.2 Query Interfaces
+### 8.2 Query Interfaces
 
 ```go
 type Queryer interface {
@@ -218,7 +218,7 @@ type Rows interface {
 }
 ```
 
-### 9.3 Transactions
+### 8.3 Transactions
 
 ```go
 type Tx interface {
@@ -233,7 +233,7 @@ type TxOptions struct {
 }
 ```
 
-### 9.4 Migrations
+### 8.4 Migrations
 
 ```go
 type Migration struct {
@@ -251,7 +251,7 @@ func (r *MigrationRunner) Up(ctx context.Context, source MigrationSource) error
 func (r *MigrationRunner) Applied(ctx context.Context) ([]AppliedMigration, error)
 ```
 
-### 9.5 Options
+### 8.5 Options
 
 ```go
 type Option func(*options)
@@ -264,11 +264,11 @@ func WithClock(clock Clock) Option
 旧文档中提到的 DSN option、环境变量式 DSN 配置和无参构造器均不属于当前基线。
 
 ## 9. 数据模型
-### 10.1 Client
+### 9.1 Client
 
 `Client` 封装 `pgxpool.Pool`，管理连接池生命周期。
 
-### 10.2 Config
+### 9.2 Config
 
 | 字段 | 类型 | 默认值 | 说明 |
 |------|------|--------|------|
@@ -286,7 +286,7 @@ func WithClock(clock Clock) Option
 | HealthTimeout | Duration | 2s | 健康检查超时 |
 | ApplicationName | string | — | 应用名称 |
 
-### 10.3 公共错误
+### 9.3 公共错误
 
 - `ErrClosed` — Client 已关闭
 - `ErrInvalidConfig` — Config 校验失败

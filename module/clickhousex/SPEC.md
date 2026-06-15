@@ -194,7 +194,7 @@ THEN 返回列类型信息切片，包含列名、ClickHouse 类型、Nullable �
 
 ## 8. 接口契约
 
-### 9.1 Client / Rows
+### 8.1 Client / Rows
 
 ```go
 type Client interface {
@@ -226,7 +226,7 @@ type HealthStatus struct {
 }
 ```text
 
-### 9.2 Config
+### 8.2 Config
 
 ```go
 type Config struct {
@@ -240,7 +240,7 @@ type Config struct {
 }
 ```text
 
-### 9.3 用法示例
+### 8.3 用法示例
 
 ```go
 client, err := clickhousex.NewClient(clickhousex.Config{
@@ -287,7 +287,7 @@ for rs.Next() {
 
 ## 9. 数据模型
 
-### 10.1 公共错误
+### 9.1 公共错误
 
 ```go
 var (
@@ -301,7 +301,7 @@ var (
 )
 ```text
 
-### 10.2 类型映射表
+### 9.2 类型映射表
 
 | ClickHouse 类型     | Go 类型                         |
 | ------------------- | ------------------------------- |
@@ -404,7 +404,7 @@ clickhousex/
 
 ## 14. 依赖
 
-### 15.1 go.mod
+### 14.1 go.mod
 
 ```text
 module github.com/ZoneCNH/clickhousex
@@ -412,7 +412,7 @@ module github.com/ZoneCNH/clickhousex
 go 1.23
 ```text
 
-### 15.2 依赖方向
+### 14.2 依赖方向
 
 | 可以依赖                         | 禁止依赖                       |
 | -------------------------------- | ------------------------------ |
@@ -422,7 +422,7 @@ go 1.23
 | decimal 库（shopspring/decimal） | 其他存储扩展（taosx, ossx 等） |
 | stdlib                           |                                |
 
-### 15.3 特殊说明
+### 14.3 特殊说明
 
 clickhousex 通过接口接收 `observex.Logger` / `observex.Meter` / `observex.Tracer`，但只 import interface 定义所在的包。具体实现在 `x.go` 组装时注入。
 
@@ -430,7 +430,7 @@ clickhousex 通过接口接收 `observex.Logger` / `observex.Meter` / `observex.
 
 ## 15. 测试
 
-### 16.1 单元测试
+### 15.1 单元测试
 
 | AC     | 测试场景               | 验证点                        |
 | ------ | ---------------------- | ----------------------------- |
@@ -461,7 +461,7 @@ clickhousex 通过接口接收 `observex.Logger` / `observex.Meter` / `observex.
 | AC-025 | 可观测指标标签完整     | table/query 标签正确          |
 | AC-026 | Decimal 类型映射       | Decimal → decimal.Decimal     |
 
-### 16.2 Given/When/Then 用例
+### 15.2 Given/When/Then 用例
 
 **TC-001: 正常写入和查询**
 Given ClickHouse 可用，表已创建
@@ -502,7 +502,7 @@ Given client 已关闭
 When 再次调用 Close
 Then 返回 nil 且不 panic
 
-### 16.3 Benchmark
+### 15.3 Benchmark
 
 | 场景                 | 目标    |
 | -------------------- | ------- |
@@ -511,7 +511,7 @@ Then 返回 nil 且不 panic
 | Query 返回 10000 行  | < 500ms |
 | 连接池获取连接       | < 1ms   |
 
-### 16.4 集成测试
+### 15.4 集成测试
 
 | 场景                  | 验证点                              |
 | --------------------- | ----------------------------------- |
@@ -572,7 +572,7 @@ Then 返回 nil 且不 panic
 
 ## 19. CI 门禁
 
-### 20.1 通用 Gate
+### 19.1 通用 Gate
 
 | Gate        | 命令                                                                                                               | 阻塞条件                 |
 | ----------- | ------------------------------------------------------------------------------------------------------------------ | ------------------------ |
@@ -585,7 +585,7 @@ Then 返回 nil 且不 panic
 | Secret 扫描 | `gitleaks detect --no-git`                                                                                         | 泄露 secret              |
 | Benchmark   | `go test -bench=. -benchmem -count=3 ./...`                                                                        | 结果附在 PR comment      |
 
-### 20.2 clickhousex 专属 Gate
+### 19.2 clickhousex 专属 Gate
 
 | Gate               | 命令                              | 阻塞条件                                 |                  |
 | ------------------ | --------------------------------- | ---------------------------------------- |                  |

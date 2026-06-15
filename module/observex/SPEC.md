@@ -15,7 +15,7 @@
 
 `observex` 是可观测底座，统一日志、指标、追踪和跨模块观测上下文。vendor-neutral 设计，通过接口契约屏蔽底层实现（OTel、Prometheus、Zap 等）。
 
-### 2.1 核心职责
+### 1.1 核心职责
 
 - 提供 Logger / Meter / Tracer / Exporter / Health 五类 vendor-neutral 接口抽象
 - 实现结构化日志输出、level 过滤、With 不变性、并发安全
@@ -192,7 +192,7 @@ THEN 对应 component 的 live 字段为 false，整体 ready 为 false，但不
 
 ## 8. 接口契约
 
-### 9.1 Logger
+### 8.1 Logger
 
 ```go
 type Logger interface {
@@ -210,7 +210,7 @@ type Field struct {
 }
 ```
 
-### 9.2 Meter
+### 8.2 Meter
 
 ```go
 type Meter interface {
@@ -226,7 +226,7 @@ type Gauge interface{ Set(ctx context.Context, value float64, attrs ...Attr) }
 type Attr struct{ Key, Value string }
 ```
 
-### 9.3 Tracer
+### 8.3 Tracer
 
 ```go
 type Tracer interface {
@@ -247,7 +247,7 @@ type SpanConfig struct {
 }
 ```
 
-### 9.4 Exporter
+### 8.4 Exporter
 
 ```go
 type Exporter interface {
@@ -258,7 +258,7 @@ type Exporter interface {
 }
 ```
 
-### 9.5 Label Policy
+### 8.5 Label Policy
 
 ```go
 // 指标命名前缀
@@ -281,7 +281,7 @@ var ForbiddenLabels = []string{
 
 ## 9. 数据模型
 
-### 10.1 公共错误
+### 9.1 公共错误
 
 ```go
 var (
@@ -292,7 +292,7 @@ var (
 )
 ```
 
-### 10.2 标准字段常量
+### 9.2 标准字段常量
 
 ```go
 const (
@@ -305,7 +305,7 @@ const (
 )
 ```
 
-### 10.3 LogEntry
+### 9.3 LogEntry
 
 | 字段      | 类型        | 必填   | 说明                              |
 | --------- | ----------- | ------ | --------------------------------- |
@@ -316,7 +316,7 @@ const (
 | TraceID   | `string`    | 否     | 关联 trace_id                     |
 | SpanID    | `string`    | 否     | 关联 span_id                      |
 
-### 10.4 MetricPoint
+### 9.4 MetricPoint
 
 | 字段      | 类型        | 必填   | 说明                                                 |
 | --------- | ----------- | ------ | ---------------------------------------------------- |
@@ -326,7 +326,7 @@ const (
 | Attrs     | `[]Attr`    | 否     | label 属性和值                                       |
 | Timestamp | `time.Time` | 是     | 采集时间                                             |
 
-### 10.5 SpanData
+### 9.5 SpanData
 
 | 字段         | 类型        | 必填   | 说明                                             |
 | ------------ | ----------- | ------ | ------------------------------------------------ |
@@ -340,7 +340,7 @@ const (
 | Attrs        | `[]Attr`    | 否     | span 属性                                        |
 | Status       | `string`    | 否     | ok / error                                       |
 
-### 10.6 HealthStatus
+### 9.6 HealthStatus
 
 | 字段       | 类型                | 必填   | 说明                                             |
 | ---------- | ------------------- | ------ | ------------------------------------------------ |
@@ -503,7 +503,7 @@ observex/
 
 ## 14. 依赖
 
-### 15.1 go.mod
+### 14.1 go.mod
 
 ```text
 module github.com/ZoneCNH/observex
@@ -511,7 +511,7 @@ module github.com/ZoneCNH/observex
 go 1.23
 ```
 
-### 15.2 依赖方向
+### 14.2 依赖方向
 
 | 可以依赖          | 禁止依赖                       |
 | ----------------- | ------------------------------ |
@@ -519,7 +519,7 @@ go 1.23
 | stdlib            | testkitx（仅 test）            |
 | OTel SDK（可选）  | 所有业务域实现                 |
 
-### 15.3 foundationx 兼容
+### 14.3 foundationx 兼容
 
 - v0.4 已完成 foundationx 解耦：`internal/foundationx` 已物理删除，contract tests 已重写
 - 所有 foundationx 类型已迁移到 kernel 原语（`errx.Kind`、`healthx.Status`）
@@ -529,7 +529,7 @@ go 1.23
 
 ## 15. 测试
 
-### 16.1 单元测试
+### 15.1 单元测试
 
 | 测试场景           | 验证点                                        |
 | ------------------ | --------------------------------------------- |
@@ -544,7 +544,7 @@ go 1.23
 | label policy       | forbidden label 被拒绝，allowed label 通过    |
 | health schema      | 输出符合 JSON schema；未初始化时输出默认状态  |
 
-### 16.2 验收标准（AC）
+### 15.2 验收标准（AC）
 
 | AC 编号   | 对应需求        | 验收条件                                                                                                    |
 | --------- | --------------- | ----------------------------------------------------------------------------------------------------------- |
@@ -565,7 +565,7 @@ go 1.23
 | AC-015    | §8 BR-008       | import graph 中无直接 Prometheus/Otel/Zap 绑定；CI Gate import check 通过                                   |
 
 
-### 16.3 Given/When/Then 用例
+### 15.3 Given/When/Then 用例
 
 **TC-001: Logger.With 不变性**
 Given 原始 logger `l1`
@@ -642,7 +642,7 @@ Given label 名在 ForbiddenLabels 中
 When 调用 `labelpolicy.Check("order_id")`
 Then 返回 false
 
-### 16.4 Benchmark
+### 15.4 Benchmark
 
 | 场景                              | 目标                    |
 | --------------------------------- | ----------------------- |
@@ -650,7 +650,7 @@ Then 返回 false
 | metrics 记录（counter/histogram） | < 1μs                   |
 | span 创建 + 结束                  | < 2μs                   |
 
-### 16.5 集成测试
+### 15.5 集成测试
 
 | 场景                     | 验证点                                          |
 | ------------------------ | ----------------------------------------------- |
@@ -706,7 +706,7 @@ Then 返回 false
 
 ## 19. CI 门禁
 
-### 20.1 通用 Gate
+### 19.1 通用 Gate
 
 | Gate        | 命令                                                                                                               | 阻塞条件                 |
 | ----------- | ------------------------------------------------------------------------------------------------------------------ | ------------------------ |
@@ -719,7 +719,7 @@ Then 返回 false
 | Secret 扫描 | `gitleaks detect --no-git`                                                                                         | 泄露 secret              |
 | Benchmark   | `go test -bench=. -benchmem -count=3 ./...`                                                                        | 结果附在 PR comment      |
 
-### 20.2 observex 专属 Gate
+### 19.2 observex 专属 Gate
 
 | Gate                 | 命令                                  | 阻塞条件                                             |
 | -------------------- | ------------------------------------- | ---------------------------------------------------- |

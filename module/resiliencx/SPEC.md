@@ -169,7 +169,7 @@ THEN 执行 secondary，返回 secondary 的结果
 
 ## 8. 接口契约
 
-### 9.1 策略接口
+### 8.1 策略接口
 
 ```go
 // Timeout
@@ -225,7 +225,7 @@ type Policies struct {
 }
 ```text
 
-### 9.2 用法示例
+### 8.2 用法示例
 
 ```go
 // 策略组合：timeout + retry + circuit breaker
@@ -252,7 +252,7 @@ err := resiliencx.Timeout(ctx, 5*time.Second, func(ctx context.Context) error {
 
 ## 9. 数据模型
 
-### 10.1 公共错误
+### 9.1 公共错误
 
 ```go
 var (
@@ -264,7 +264,7 @@ var (
 )
 ```text
 
-### 10.2 配置结构
+### 9.2 配置结构
 
 ```go
 type CircuitConfig struct {
@@ -368,7 +368,7 @@ resiliencx/
 
 ## 14. 依赖
 
-### 15.1 go.mod
+### 14.1 go.mod
 
 ```text
 module github.com/ZoneCNH/resiliencx
@@ -376,7 +376,7 @@ module github.com/ZoneCNH/resiliencx
 go 1.23
 ```text
 
-### 15.2 依赖方向
+### 14.2 依赖方向
 
 | 可以依赖                  | 禁止依赖            |
 | ------------------------- | ------------------- |
@@ -390,7 +390,7 @@ go 1.23
 
 ## 15. 测试
 
-### 16.1 单元测试
+### 15.1 单元测试
 
 | 测试场景             | 验证点                                     |
 | -------------------- | ------------------------------------------ |
@@ -409,7 +409,7 @@ go 1.23
 | 策略组合             | timeout + retry + circuit breaker 正确嵌套 |
 | 并发安全             | -race 测试通过                             |
 
-### 16.2 Given/When/Then 用例
+### 15.2 Given/When/Then 用例
 
 **TC-001: timeout + retry 组合**
 Given timeout=1s，retry max_retries=3
@@ -449,7 +449,7 @@ Given timeout、retry 与 fallback 以装饰器方式组合
 When 调用组合后的策略
 Then 外层策略按声明顺序包装内层策略，整体返回最外层结果
 
-### 16.3 Benchmark
+### 15.3 Benchmark
 
 | 场景                        | 目标             |            |
 | --------------------------- | ---------------- | ---------- |
@@ -459,7 +459,7 @@ Then 外层策略按声明顺序包装内层策略，整体返回最外层结果
 | rate limiter Allow()        | < 100ns          |            |
 | 策略组合（5 层嵌套）        | < 1μs 额外开销   |            |
 
-### 16.4 集成测试
+### 15.4 集成测试
 
 | 场景           | 验证点                           |
 | -------------- | -------------------------------- |
@@ -511,7 +511,7 @@ Then 外层策略按声明顺序包装内层策略，整体返回最外层结果
 
 ## 19. CI 门禁
 
-### 20.1 通用 Gate
+### 19.1 通用 Gate
 
 | Gate        | 命令                                                                                                               | 阻塞条件                 |            |
 | ----------- | ------------------------------------------------------------------------------------------------------------------ | ------------------------ | ---------- |
@@ -524,7 +524,7 @@ Then 外层策略按声明顺序包装内层策略，整体返回最外层结果
 | Secret 扫描 | `gitleaks detect --no-git`                                                                                         | 泄露 secret              |            |
 | Benchmark   | `go test -bench=. -benchmem -count=3 ./...`                                                                        | 结果附在 PR comment      |            |
 
-### 20.2 resiliencx 专属 Gate
+### 19.2 resiliencx 专属 Gate
 
 | Gate            | 命令                   | 阻塞条件         |               |
 | --------------- | ---------------------- | ---------------- | ------------- |

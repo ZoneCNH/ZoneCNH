@@ -159,7 +159,7 @@ THEN 返回 HealthStatus{Ready: false, Live: true, Message: "jetstream unavailab
 
 ---
 
-### 7.1 Acceptance Criteria Registry
+### 6.1 Acceptance Criteria Registry
 
 | AC-ID | 功能 | 验收标准 | 验证方式 | 判定结果 |
 |-------|---------|----------|----------|----------|
@@ -231,7 +231,7 @@ type SubjectBuilder interface {
 
 Header / Trace 传播要求：`traceId`、`messageId`、`schemaVersion` 必须在 `NatsMessageEnvelope` 与 NATS Header 间双向映射；已有上游 Header 不得被无故丢弃，冲突字段以 Envelope 显式字段为准并记录诊断事件。
 
-### 9.1 Option 模式
+### 8.1 Option 模式
 
 ```go
 type Option func(*config)
@@ -245,7 +245,7 @@ func WithJetStreamEnabled(enabled bool) Option
 func WithCodec(codec Codec) Option
 ```
 
-### 9.2 用法示例
+### 8.2 用法示例
 
 ```go
 subjects := natsx.NewSubjectBuilder()
@@ -280,7 +280,7 @@ fmt.Printf("stored in stream %s, seq %d\n", ack.Stream, ack.Sequence)
 
 ## 9. 数据模型
 
-### 10.1 公共错误
+### 9.1 公共错误
 
 ```go
 var (
@@ -296,7 +296,7 @@ var (
 )
 ```
 
-### 10.2 Codec 接口
+### 9.2 Codec 接口
 
 ```go
 type Codec interface {
@@ -413,7 +413,7 @@ natsx/
 
 ## 14. 依赖
 
-### 15.1 go.mod
+### 14.1 go.mod
 
 ```text
 module github.com/ZoneCNH/natsx
@@ -421,7 +421,7 @@ module github.com/ZoneCNH/natsx
 go 1.23
 ```
 
-### 15.2 依赖方向
+### 14.2 依赖方向
 
 | 可以依赖 | 禁止依赖 |
 |----------|----------|
@@ -436,7 +436,7 @@ go 1.23
 
 ## 15. 测试
 
-### 16.1 单元测试
+### 15.1 单元测试
 
 | 测试场景 | 验证点 |
 |----------|--------|
@@ -458,7 +458,7 @@ go 1.23
 | Codec 序列化/反序列化 | JSON / msgpack 正确 |
 | 并发安全 | -race 测试通过 |
 
-### 16.2 Given/When/Then 用例
+### 15.2 Given/When/Then 用例
 
 **TC-001: Core NATS Pub/Sub**
 Given 连接正常
@@ -491,7 +491,7 @@ Given NATS 配置、错误或审计证据包含敏感字段
 When natsx 输出日志、错误或发布证据
 Then 输出 MUST NOT 包含 secret/token/password 明文
 
-### 16.3 Benchmark
+### 15.3 Benchmark
 
 | 场景                        | 目标   |
 | --------------------------- | ------ |
@@ -501,7 +501,7 @@ Then 输出 MUST NOT 包含 secret/token/password 明文
 | JetStream 单条消费          | < 2ms  |
 | 序列化/反序列化（1KB JSON） | < 10μs |
 
-### 16.4 集成测试
+### 15.4 集成测试
 
 | 场景               | 验证点                                     |
 | ------------------ | ------------------------------------------ |
@@ -564,7 +564,7 @@ Production TLS evidence is a release-blocking governance artifact, not a local-d
 
 ## 19. CI 门禁
 
-### 20.1 通用 Gate
+### 19.1 通用 Gate
 
 | Gate        | 命令                                                                                                               | 阻塞条件                 |
 | ----------- | ------------------------------------------------------------------------------------------------------------------ | ------------------------ |
@@ -577,7 +577,7 @@ Production TLS evidence is a release-blocking governance artifact, not a local-d
 | Secret 扫描 | `gitleaks detect --no-git`                                                                                         | 泄露 secret              |
 | Benchmark   | `go test -bench=. -benchmem -count=3 ./...`                                                                        | 结果附在 PR comment      |
 
-### 20.2 natsx 专属 Gate
+### 19.2 natsx 专属 Gate
 
 | Gate | 命令 | 阻塞条件 |
 | ---- | ---- | -------- |
