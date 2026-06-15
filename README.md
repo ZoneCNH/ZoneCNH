@@ -38,7 +38,7 @@ L1 运行时: configx / observex / resiliencx / schedulex
 L1 测试: testkitx (test-only)
       │
       ▼
-基座扩展: redisx / kafkax / natsx / postgresx / taosx / ossx / clickhousex / contracts / transportx / domainx
+基座扩展: redisx / kafkax / natsx / postgresx / taosx / ossx / clickhousex / contracts / transportx
       │
       ▼
 L2.5: decimalx / domain-market / domain-macro / domainx / domain-exchange (v1.0.0 执行计划)
@@ -187,7 +187,7 @@ L2.5: decimalx / domain-market / domain-macro / domainx / domain-exchange (v1.0.
 - [x.go](https://github.com/ZoneCNH/x.go) — 组合根，负责启动、配置加载与引擎组装 `私有`
 - [module](./module/README.md) — 项目技术规范、接口定义与 Goal 适配模块索引
 - [docs/governance](./docs/governance/README.md) — Spec → Code 交付治理、模板、门禁与评分规则
-- [docs/sre/foundation-cicd-plan.md](./docs/sre/foundation-cicd-plan.md) — 基座层 20 模块 CI/CD 部署执行方案（SRE 机器池 4 阶段）
+- [docs/sre/foundation-cicd-plan.md](./docs/sre/foundation-cicd-plan.md) — 基座层 19 模块 + L2.5 领域共享 CI/CD 部署执行方案（SRE 机器池 4 阶段）
 - [docs/RSI_SG_001_complete_standard_v1.1_zh.md](./docs/RSI_SG_001_complete_standard_v1.1_zh.md) — RSI 递归自我改进完整标准中文版 v1.1
 
 ## 📊 GitHub 统计
