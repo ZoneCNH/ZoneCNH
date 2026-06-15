@@ -80,14 +80,14 @@
     },
     {
       "id": "BLK-007",
-      "severity": "medium",
+      "severity": "low",
       "module": "taosx",
-      "title": "SPEC 评分 ~85 (从 77 再改善 +8，距 ≥98 仍有差距)",
+      "title": "SPEC 评分 ~88 (自 67 累计 +21，四源仲裁待跑)",
       "status": "open",
       "category": "spec-quality",
-      "detail": "taosx SPEC 已补全全部标准模板章节：10 FR 含 20 对 WHEN/THEN、10 项 AC、19 个 TC 引用、6 条 BR、6 条 Non-goals、7 消费方、12 边界场景、9 项性能预算、14 门禁 checklist、目录结构。当前评分 ~85/100 (从 77 改善 +8)。剩余缺口：TRACEABILITY.md 中 8 项空 TC 列、18 行无效 Status 格式、非标准节名。",
-      "evidence": "SPEC §4-§23 全部补全; spec-lint 23/23 ✅; Consumers §4; CI Gate §8; Edge Cases §10; Performance Budget §13; Directory Structure §17",
-      "action": "修复 TRACEABILITY.md TC 列 + Status 格式 → 四源评分 ≥98 → tasks 更新"
+      "detail": "taosx SPEC 全部内容缺口已闭合：10 FR 含 20 对 WHEN/THEN、10 AC、19 TC、6 BR、6 Non-goals、7 Consumers、12 Edge Cases、9 项 Perf Budget、14 CI Gates、Directory Structure。TRACEABILITY.md Status/TC 列已补齐。spec-lint 23/23 ✅、traceability-check 10/10 ✅。剩余为节名风格差异（摘要→范围 等），不影响追溯性。当前手工评分 ~88/100 (从 67 累计 +21)。",
+      "evidence": "spec-lint: 23/23 ✅; traceability-check: 10/10 FRs 0 empty TC 0 invalid Status ✅; SPEC §1-§23 全齐; TRACEABILITY §1-§5 全列",
+      "action": "运行四源评分 (claude/codex/copilot/rules) → arbiter verdict ≥98 → 关闭 BLK-007"
     },
     {
       "id": "BLK-008",
