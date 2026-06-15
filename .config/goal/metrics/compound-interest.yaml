@@ -1,0 +1,87 @@
+schema_version: '2026-06-16'
+baseline:
+  established_at: '2026-06-16'
+  initial_maturity: L3
+  target_maturity: L4
+retrospective_cycle:
+  total_retrospectives: 3
+  cycles:
+  - id: RETRO-001
+    date: '2026-06-10'
+    goal: GOAL-20260608-001 (Goal Delivery OS bootstrap)
+    patches_applied: 5
+    patches:
+    - CLAUDE.md 复盘元规则
+    - 评分纪律 R0-R3
+    - 分支保护规则
+    - 数量验证门禁
+    - 编辑纪律
+    audit_after: 52 PASS / 0 FAIL
+  - id: RETRO-002
+    date: '2026-06-16'
+    goal: GOAL-KERNEL-20260609-001 (kernel gates) + 治理审计
+    patches_applied: 4
+    patches:
+    - 'P1: goals.yaml Registry↔Pipeline 漂移修复'
+    - 'P2: CLAUDE.md 成熟度 L3→✅'
+    - 'P2: tasks.yaml code_ref 标注'
+    - kernel GK-6~GK-11 gate evaluation (NOT_STARTED→PASS)
+    audit_after: 52 PASS / 0 FAIL
+  - id: RETRO-003
+    date: '2026-06-15'
+    goal: 全量治理审计 + L3→L4 Phase 4a-4c
+    patches_applied: 6
+    patches:
+    - 'P1: goals.yaml Registry↔Pipeline 漂移修复'
+    - 'P2: CLAUDE.md 成熟度更新 + tasks.yaml code_ref 标注'
+    - kernel GK-6~GK-11 gate evaluation (NOT_STARTED→PASS)
+    - '24/24 gates: 0 FAIL/BLOCKED/NOT_STARTED'
+    - GC Agent 连续 3 次 0 critical 基线建立
+    - 'RSI auto-propose hook: .claude/hooks/rsi-trigger.mjs'
+    audit_after: 52 PASS / 0 FAIL (incl. --network)
+gate_health_trend:
+- date: '2026-06-09'
+  canonical_pass: 12
+  kernel_pass: 6
+  total_fail_blocked: 1
+- date: '2026-06-16'
+  canonical_pass: 12
+  kernel_pass: 12
+  total_fail_blocked: 0
+- date: '2026-06-15'
+  canonical_pass: 12
+  kernel_pass: 12
+  total_fail_blocked: 0
+rule_improvement_pipeline:
+  active_rules: 85
+  expired_rules: 0
+  merged_rules: 3
+  quarterly_review_due: '2026-09-16'
+L4_prerequisites:
+  retrospectives_3plus: true
+  kernel_gates_all_pass: true
+  gc_agent_zero_critical_3x: true
+  rsi_auto_propose: true
+next_actions: &id001
+- 选择 1 个下游仓库作为 L5 试点（推荐 kernel — 最成熟）
+- 在 kernel repo 部署 .config/goal/ + Agent 配置
+- 验证 kernel 70%+ task 自动化执行
+- 实现 AutoResearch hook
+- 建立 L5 度量仪表盘
+target_maturity: L5
+L5_objectives:
+  goal: Agent 自动执行大部分流程，人类只在审批点介入
+  requirements:
+    agent_auto_task_rate: 70%+ Task 由 Agent 自动完成
+    human_intervention_rate: < 30% 人类介入
+    agent_output_quality: Agent 输出质量不低于人工
+    auto_context_recovery: Agent 能自动完成 Context Recovery→Task→Evidence→Review
+    auto_research: Agent 能自动触发 AutoResearch
+    auto_degradation: Agent 能自动检测异常状态并降级
+  current_assessment:
+    docs_hub_automation: 高 — 本会话 10 PR 全部 Agent 驱动
+    downstream_70_repos: 未开始 — 需逐仓库验证 Goal 框架采纳
+    auto_context_recovery: 部分 — 有 SessionStart hook 但未全自动
+    auto_research: 未实现
+    auto_degradation: 部分 — RSI hook 可检测 FAIL 但降级需人工
+  next_actions: *id001
