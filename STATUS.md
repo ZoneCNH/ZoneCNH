@@ -156,34 +156,34 @@
 
 | 组件                                                  | 版本 | 进度     | 覆盖率要求 | 说明           |
 | ----------------------------------------------------- | ---- | -------- | ---------- | -------------- |
-| [fred](https://github.com/ZoneCNH/fred)               | -    | ███░ 80% | 100%       | 美联储 FRED    |
-| [treasury](https://github.com/ZoneCNH/treasury)       | -    | ███░ 80% | 100%       | 美国财政部     |
-| [yield-curve](https://github.com/ZoneCNH/yield-curve) | -    | ███░ 80% | 100%       | 收益率曲线     |
-| [bea](https://github.com/ZoneCNH/bea)                 | -    | ███░ 80% | 100%       | 美国经济分析局 |
-| [ecb](https://github.com/ZoneCNH/ecb)                 | -    | ███░ 80% | 100%       | 欧洲央行       |
-| [uk-cb](https://github.com/ZoneCNH/uk-cb)             | -    | ███░ 80% | 100%       | 英国央行       |
-| [japan-cb](https://github.com/ZoneCNH/japan-cb)       | -    | ███░ 80% | 100%       | 日本央行       |
-| [eastmoney](https://github.com/ZoneCNH/eastmoney)     | -    | ███░ 80% | 100%       | 东方财富 A 股  |
-| [jinshi](https://github.com/ZoneCNH/jinshi)           | -    | ███░ 80% | 100%       | 金十快讯       |
-| [jin10](https://github.com/ZoneCNH/jin10)             | -    | ███░ 80% | 100%       | 金十行情       |
-| [yahoo](https://github.com/ZoneCNH/yahoo)             | -    | ███░ 80% | 100%       | Yahoo Finance  |
+| [fred](https://github.com/ZoneCNH/fred)               | v0.1.1 | ███░ 80% | 100%       | 美联储 FRED    |
+| [treasury](https://github.com/ZoneCNH/treasury)       | v0.1.1 | ███░ 80% | 100%       | 美国财政部     |
+| [yield-curve](https://github.com/ZoneCNH/yield-curve) | v0.1.1 | ███░ 80% | 100%       | 收益率曲线     |
+| [bea](https://github.com/ZoneCNH/bea)                 | v0.1.1 | ███░ 80% | 100%       | 美国经济分析局 |
+| [ecb](https://github.com/ZoneCNH/ecb)                 | v0.1.1 | ███░ 80% | 100%       | 欧洲央行       |
+| [uk-cb](https://github.com/ZoneCNH/uk-cb)             | v0.1.1 | ███░ 80% | 100%       | 英国央行       |
+| [japan-cb](https://github.com/ZoneCNH/japan-cb)       | v0.1.1 | ███░ 80% | 100%       | 日本央行       |
+| [eastmoney](https://github.com/ZoneCNH/eastmoney)     | v0.1.1 | ███░ 80% | 100%       | 东方财富 A 股  |
+| [jinshi](https://github.com/ZoneCNH/jinshi)           | v0.1.1 | ███░ 80% | 100%       | 金十快讯       |
+| [jin10](https://github.com/ZoneCNH/jin10)             | v0.1.1 | ███░ 80% | 100%       | 金十行情       |
+| [yahoo](https://github.com/ZoneCNH/yahoo)             | v0.1.1 | ███░ 80% | 100%       | Yahoo Finance  |
 
 <details>
 <summary>📊 数据域 · 宏观多维成熟度展开（点击展开）</summary>
 
 | 模块        | SPEC | IMPL | RELEASE | LIVE INT | EXT CI | ADOPT | SOAK | FACTORY | 备注                  |
 | ----------- | :--: | :--: | :-----: | :------: | :----: | :---: | :--: | :-----: | --------------------- |
-| fred        |  ✅  |  ✅  |   ❌    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | 80%；美联储 FRED 数据 |
-| treasury    |  ✅  |  ✅  |   ❌    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | 80%；美国财政部数据   |
-| yield-curve |  ✅  |  ✅  |   ❌    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | 80%；收益率曲线       |
-| bea         |  ✅  |  ✅  |   ❌    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | 80%；美国经济分析局   |
-| ecb         |  ✅  |  ✅  |   ❌    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | 80%；欧洲央行         |
-| uk-cb       |  ✅  |  ✅  |   ❌    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | 80%；英国央行         |
-| japan-cb    |  ✅  |  ✅  |   ❌    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | 80%；日本央行         |
-| eastmoney   |  ✅  |  ✅  |   ❌    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | 80%；东方财富 A 股    |
-| jinshi      |  ✅  |  ✅  |   ❌    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | 80%；金十快讯         |
-| jin10       |  ✅  |  ✅  |   ❌    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | 80%；金十行情         |
-| yahoo       |  ✅  |  ✅  |   ❌    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | 80%；Yahoo Finance    |
+| fred        |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | 80%；v0.1.1；美联储 FRED 数据 |
+| treasury    |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | 80%；v0.1.1；美国财政部数据   |
+| yield-curve |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | 80%；v0.1.1；收益率曲线       |
+| bea         |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | 80%；v0.1.1；美国经济分析局   |
+| ecb         |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | 80%；v0.1.1；欧洲央行         |
+| uk-cb       |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | 80%；v0.1.1；英国央行         |
+| japan-cb    |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | 80%；v0.1.1；日本央行         |
+| eastmoney   |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | 80%；v0.1.1；东方财富 A 股    |
+| jinshi      |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | 80%；v0.1.1；金十快讯         |
+| jin10       |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | 80%；v0.1.1；金十行情         |
+| yahoo       |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | 80%；v0.1.1；Yahoo Finance    |
 
 > **维度说明**：SPEC=规格完成 | IMPL=实现完成 | RELEASE=tag/release/manifest 一致 | LIVE INT=真实服务集成（非 mock） | EXT CI=外部 CI artifact | ADOPT=下游模块真实采用 | SOAK=生产或类生产长时间运行 | FACTORY=factory_grade_allowed（最高综合等级）
 
@@ -359,14 +359,14 @@
 ### 🟢 数据域 · 行情（健康）
 
 - SDK：13 个交易所适配器，全部 80%，无版本号
-- Provider：5 个 Kline/Ticker Provider，全部 v0.1.0，进度 80%
-- **待确认**：SDK 全部无版本号，是否已通过生产验证？
+- Provider：5 个 Kline/Ticker Provider，全部 v0.1.1，进度 80%
+- **待确认**：SDK 全部 v0.1.1 tagged release，已通过生产验证？
 
 ### 🟡 数据域 · 宏观（注意）
 
-- 组件：11 个，全部 80%，无版本号
+- 组件：11 个，全部 80%，全部 v0.1.1 tagged release
 - 6 个央行数据源结构高度相似（fred / treasury / bea / ecb / uk-cb / japan-cb）
-- **风险**：同质化严重，是否考虑合并为统一适配器？
+- **评估结论（2026-06-16）**：各模块保持独立架构，不合并；建议在 contracts 中提取共享 DataSource 接口统一契约
 
 ### 🔴 数据域 · 另类（阻塞）
 
@@ -418,8 +418,8 @@
 | #   | 风险                                    | 影响                              | 建议                                                                   |
 | --- | --------------------------------------- | --------------------------------- | ---------------------------------------------------------------------- |
 | R3  | x.go 2.8MB 体量异常                     | 可能违反组合根边界                | 按 ARCHITECTURE.md 的组合根守卫核实，剥离业务逻辑                      |
-| R4  | 13 个交易所 SDK 全部无版本号            | 无法追踪 API 兼容性               | 建立版本化发布机制                                                     |
-| R5  | 宏观数据源 6 个央行适配器同质化         | 维护成本高                        | 考虑合并为统一适配器                                                   |
+| R4  | ~~13 个交易所 SDK 全部无版本号~~        | ~~无法追踪 API 兼容性~~           | ✅ 已版本化：18 仓库 v0.1.1 tagged release（2026-06-16）               |
+| R5  | ~~宏观数据源 6 个央行适配器同质化~~     | ~~维护成本高~~                    | ✅ 已评估 — 各模块保持独立，已统一打 v0.1.1（2026-06-16）              |
 | R7  | observex 双重归属（基座+横切）          | 职责边界模糊                      | ✅ 已记录 ADR：`module/observex/ADR-dual-attribution.md`（2026-06-12） |
 | R10 | ~~`.omc/state/sessions` 已入库~~        | ~~可能泄露 prompt/会话/环境信息~~ | ✅ 已修复：`git rm -r --cached .omc`（2026-06-07）                     |
 | R11 | ~~公开 README 含 `127.0.0.1` 本地链接~~ | ~~外部无法访问，降低专业度~~      | ✅ 已修复：批量移除所有本地链接（2026-06-07）                          |
@@ -446,7 +446,7 @@
 1. **聚焦 Phase 1**：先固化 MarketDataProvider / FactorInput / FactorOutput，再实现 factor-engine → feature-store → factor-eval
 2. **核实 x.go**：确认只包含配置加载、依赖 wiring 和生命周期控制，必要时剥离业务逻辑
 3. ~~**版本化 SDK**~~：✅ 已完成 — 18 仓库 v0.1.1 tagged release（2026-06-16）
-4. **统一宏观适配器**：评估 6 个央行数据源合并可行性
+4. ~~**统一宏观适配器**~~：✅ 已评估 — 保持独立模块架构，11 仓库全部 v0.1.1 tagged release（2026-06-16）
 5. ~~**清理仓库卫生**（R10）~~：✅ 已完成（2026-06-07）
 6. ~~**移除本地链接**（R11）~~：✅ 已完成（2026-06-07）
 7. **重整仓库命名**（R12）：评估按 `foundation-*`/`adapter-*`/`engine-*`/`lab-*` 前缀重命名的可行性
