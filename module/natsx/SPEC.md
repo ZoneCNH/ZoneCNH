@@ -581,6 +581,8 @@ Executable repair evidence (2026-06-13): `/home/natsx` commit `393d148` records 
 | 凭证不写日志           | 日志中对凭证路径脱敏                |
 | 错误消息不泄露消息内容 | 错误消息只包含 subject，不包含 data |
 
+Production TLS evidence is a release-blocking governance artifact, not a local-dev substitute. The repair-slice live integration may use redacted local/dev credentials to prove secret-safe loading, but release promotion requires an archived production TLS packet covering authorized endpoint provenance, good-CA success, bad-CA failure, mTLS evidence when applicable, SLO threshold results, secret-safe logs, artifact hashes, and release-governance/SRE signoff. The current required packet is recorded in `release/trust/foundation-maturity-evidence-matrix-20260615.md#blk-002-natsx-production-tls-closure-packet`; until that packet exists, `BLK-002` remains open.
+
 ---
 
 ## 20. CI Gate
@@ -606,6 +608,7 @@ Executable repair evidence (2026-06-13): `/home/natsx` commit `393d148` records 
 | vet | `GOWORK=off go vet ./pkg/natsx` | 任何 vet 错误 |
 | live gate default | `GOWORK=off go test ./pkg/natsx -run TestLiveNATSIntegration -count=1` | gate unset 时应 skip/pass |
 | live local integration | `NATSX_LIVE_INTEGRATION=1 FOUNDATIONX_NATS_URL=<redacted-local-or-dev-url> FOUNDATIONX_NATS_USERNAME=<redacted> FOUNDATIONX_NATS_PASSWORD=<redacted> GOWORK=off go test ./pkg/natsx -run TestLiveNATSIntegration -count=1 -v` | 仅允许显式授权的 dev/test 端点；凭据来自授权的 local/dev NATS config，测试输出不得打印凭据 |
+| production TLS closure packet | `NATSX_LIVE_INTEGRATION=1 FOUNDATIONX_NATS_URL=<redacted-production-tls-url> FOUNDATIONX_NATS_CA_FILE=<authorized-ca-file> GOWORK=off go test ./pkg/natsx -run TestLiveNATSIntegration -count=1 -v` plus archived TLS profile/SLO/signoff evidence | 仅允许授权生产环境执行；必须归档 good CA、bad CA、mTLS（如适用）、SLO 阈值、脱敏日志、artifact hashes、SRE/release-governance signoff；缺失时 `BLK-002` 不得关闭 |
 
 ---
 
@@ -639,6 +642,7 @@ Executable repair evidence (2026-06-13): `/home/natsx` commit `393d148` records 
 - [ ] 公共 API 无破坏性变更（或已 bump major）
 - [ ] 所有 Functional Requirements 有对应测试
 - [ ] 所有 Edge Cases 有对应测试
+- [ ] Production TLS closure packet archived and linked from release trust evidence before closing `BLK-002`
 
 ---
 

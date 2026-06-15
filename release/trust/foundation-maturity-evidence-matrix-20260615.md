@@ -37,6 +37,34 @@ Source of truth: `/home/ZoneCNH/.omx/context/foundation-maturity-green-20260615T
 
 Decision: preserve `factory=false` for `natsx`, `postgresx`, `taosx`, and `ossx`; do not edit `.foundationx/status/index.json`, `.foundationx/blockers.json`, `STATUS.md`, or `foundation-bom.yaml` for this lane. The only local change is this closure-packet evidence record so future work can close the blockers with concrete artifacts rather than inferred green status.
 
+### `BLK-002` natsx production TLS closure packet
+
+Governance decision: keep `BLK-002` open until the production TLS packet below is archived. The existing `/home/natsx` live-dev smoke proves redacted auth loading and secret-safe test output only; it is not production TLS evidence and must not be used to flip release/factory projections.
+
+Required archive before closure:
+
+- Authorized endpoint provenance: production NATS URL class, environment owner, collection timestamp, and approver; store only redacted endpoint details when hostnames are sensitive.
+- Good CA profile: successful TLS connection using the approved CA bundle, with TLS version/cipher, certificate SAN/issuer/expiry summary, and secret-safe command output.
+- Bad CA profile: failed connection using an intentionally untrusted CA bundle, proving certificate verification is enforced.
+- mTLS profile: client-certificate success/failure evidence when mTLS is part of the production profile, with certificate paths and subjects redacted as needed.
+- SLO threshold results: explicit publish/request/JetStream threshold results from the same authorized profile, linked to the natsx benchmark/SLO gate.
+- Governance signoff: release-governance reviewer, SRE/environment approver, artifact paths, and hashes for all logs; logs must exclude credentials, tokens, payloads, and credential-bearing endpoints.
+
+Suggested safe command shape for the good-CA smoke:
+
+```sh
+NATSX_LIVE_INTEGRATION=1 \
+FOUNDATIONX_NATS_URL=<redacted-production-tls-url> \
+FOUNDATIONX_NATS_USERNAME=<redacted-or-empty> \
+FOUNDATIONX_NATS_PASSWORD=<redacted-or-empty> \
+FOUNDATIONX_NATS_TOKEN=<redacted-or-empty> \
+FOUNDATIONX_NATS_NKEY=<redacted-or-empty> \
+FOUNDATIONX_NATS_CA_FILE=<authorized-ca-file> \
+GOWORK=off go test ./pkg/natsx -run TestLiveNATSIntegration -count=1 -v
+```
+
+Run this command only from an authorized environment with approved credentials. Store the resulting redacted log in the release evidence archive and cross-link it from `module/natsx/TRACEABILITY.md`; until then, no local documentation edit closes `BLK-002`.
+
 ## Minimal evidence matrix
 
 | Claim / dimension | Fact source paths | Safe local command | Local result | What this proves | What it does not prove |
