@@ -74,8 +74,8 @@ Foundation 由 70+ 个 Go 模块组成，模块间的依赖关系、import 边�
 ## 5. Non-goals
 
 - 不参与运行时（纯 CLI 工具，不被任何模块 import）
-- 不是库或框架
-- 不承载业务逻辑
+- 不做 Go 源码解析或 AST 分析框架（依赖关系数据通过 `go list`、`go mod graph` 等标准工具获取，xlibgate 只做规则匹配和结果聚合，不构建自有代码分析引擎）
+- 不做交易、行情、风控、订单或仓位等任何业务域计算（xlibgate 是纯 CI 门禁工具，只验证结构和合规性，不参与业务数据流或状态变更）
 - 不替代 CI 平台本身（只提供检查能力，不管理流水线）
 - 不替代 `xlib-standard`（标准定义在 xlib-standard，机器执行在 xlibgate）
 - 不做代码格式化（→ `gofmt` / `goimports`）

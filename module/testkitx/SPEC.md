@@ -69,10 +69,10 @@
 
 ## 5. Non-goals
 
-- 不进入生产依赖路径
-- 不承载业务模型
-- 不把领域 fixture 变成公共模型
-- 不替代 L2/L3/chaos/soak 测试
+- 不进入生产二进制或生产依赖图（生产代码由各模块自身维护，testkitx 仅供 `go test` 使用；BR-005 + CI Gate `no-production-import` 强制执行）
+- 不定义交易、行情、风控、订单、仓位等业务域模型（业务模型由 `contracts` 和各业务域模块负责，testkitx 的 fake 类型只镜像 L1 基础设施接口）
+- 不承担各模块领域 fixture 的集中维护（领域 fixture 由各模块在自身 `testdata/` 下维护，testkitx 只提供 fixture loader 工具和 golden file 辅助函数）
+- 不替代集成测试 (L2)、系统测试 (L3)、混沌工程和长稳测试（这些测试层由各模块自行组织或由 `xlib-harness` / `xlibgate` 在 CI 管线中协调，testkitx 只覆盖单元测试期的 fake、fixture、golden、contract、boundary 工具）
 
 ---
 

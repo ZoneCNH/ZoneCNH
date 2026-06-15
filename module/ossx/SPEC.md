@@ -31,10 +31,10 @@ HAI services need object storage without coupling business code to cloud SDKs, p
 
 ## 5. Non-goals
 
-- Do not implement business-domain upload workflows.
-- Do not expose cloud SDK types from public ossx interfaces.
-- Do not directly import `configx` or other storage extension modules.
-- Do not provide cross-cloud migration orchestration in this module.
+- 不做业务领域的上传工作流编排（由各业务服务自行实现）
+- 不在公开 API 暴露云厂商 SDK 类型（provider SDK 类型封装在 `adapters/s3/` 等 adapter/internal 层）
+- 不做配置加载或配置解析（Config 由调用方 / composition root 构造后传入）
+- 不做跨云迁移编排（由平台运维层或独立迁移工具负责）
 
 ## 6. Consumers
 
