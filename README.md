@@ -16,7 +16,7 @@ Go 🐹 (主要) · Rust 🦀 (底层) · Python 🐍 (脚本/数据) · TypeScr
 >
 > 🗺️ 六阶段交付路线图、任务编号与验收标准 → **[ROADMAP.md](./ROADMAP.md)**
 >
-> 🧱 Foundation v1 规格、依赖矩阵、执行跟踪与 ADR → **[module/](./module/)**
+> 🧱 Foundation 公开规格、依赖矩阵、执行跟踪与 ADR → **[module/](./module/)**
 >
 > 📋 20 个基座模块规格 → **[module/](./module/)**
 >
@@ -71,7 +71,7 @@ L2.5: decimalx / domain-market / domain-exchange / domain-macro
 
 > **公开投影口径**：版本 / release / factory 状态以 `.foundationx/status/index.json` + `.foundationx/blockers.json` 为准；当前 BLK-001/002/003/006/007/008 open，因此 README 不声明 Foundation 单一 100% 或 factory-grade。
 >
-> `configx` v0.1.4、`observex` v0.3.1、`testkitx` v0.4.0、`resiliencx` v0.4.9 已发布；此前 v1.0.x 误标已修正。
+> `configx` v1.0.0、`observex` v0.3.1、`testkitx` v0.4.0、`resiliencx` v0.4.9 已发布；此前版本误标已修正。
 
 ### 基座 · 存储与中间件
 
