@@ -15,30 +15,30 @@
 
 ### 基座
 
-| 组件 | 版本 | Spec→Code 投影 | 覆盖率要求 | 仓库大小 | 说明 |
-| ---- | ---- | ---- | ---------- | -------- | ---- |
-| [xlib-standard](https://github.com/ZoneCNH/xlib-standard) | v1.0.0 | Spec→Code 完成 | 100% | spec=100 mat=98 tsk=100 pln=100 prm=100 cod=100 | 标准事实源 / Go Reference Template；Generator/Harness/Evidence 已拆分至 xlib-harness / xlib-evidence；✅ .repo-contract.yaml (is_standard_source)；✅ GitHub Release v1.0.0 已发布|
-| [xlib-harness](https://github.com/ZoneCNH/xlib-harness) | - | Spec→Code 完成 | 100% | spec=98 mat=100 tsk=98 pln=100 prm=100 cod=100 | 模块生成器与门禁执行器：generate/scaffold、spec-lint、boundary-check、traceability-gate；✅ CI 已部署；⚠️ git tag + GitHub Release 缺失 |
-| [xlib-evidence](https://github.com/ZoneCNH/xlib-evidence) | - | Spec→Code 完成 | 100% | spec=98 mat=100 tsk=100 pln=100 prm=100 cod=100 | 证据收集与发布运行时：collect-coverage、generate-manifest、validate-manifest、report；✅ CI 已部署；⚠️ git tag + GitHub Release 缺失 |
-| [xlibgate](https://github.com/ZoneCNH/xlibgate) | v1.0.0 | Spec→Code 完成 | 100% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | check/l2/trust 三组门禁；✅ .repo-contract.yaml，v1.0.0 已对齐（此前误标 v1.1.1）；trust CLI 已实现 |
-| [kernel](https://github.com/ZoneCNH/kernel) | v1.0.0 | Spec→Code 完成 | 100% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | L0 原语 / 12 子包 / stdlib-only；✅ .repo-contract.yaml，v1.0.0 已对齐，建议 API 冻结 |
-| [configx](https://github.com/ZoneCNH/configx) | v1.0.0 | Spec→Code 完成 | 100% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | 配置管理；✅ v1.0.0 GitHub Release 已发布；此前误标 v0.1.4 已修正；✅ .repo-contract.yaml |
-| [observex](https://github.com/ZoneCNH/observex) | v0.3.1 | Spec→Code 完成 | 100% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | 可观测性；✅ v0.3.1 GitHub Release 已发布；此前误标 v1.0.0 已修正 |
-| [testkitx](https://github.com/ZoneCNH/testkitx) | v0.4.0 | Spec→Code 完成 | 100% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | Fake / Fixture / Golden / Contract / Leak / Boundary / Manifest 测试工具包；✅ v0.4.0 GitHub Release 已发布；test-only；factory grade 不适用 |
-| [resiliencx](https://github.com/ZoneCNH/resiliencx) | v0.4.9 | Spec→Code 完成 | 100% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | 弹性策略（timeout / retry / circuit / bulkhead / rate / fallback）；✅ v0.4.9 GitHub Release 已发布；此前误标 v1.0.1 已修正 |
-| [schedulex](https://github.com/ZoneCNH/schedulex) | v1.0.0 | Spec→Code 完成 | 100% | spec=98 mat=100 tsk=100 pln=100 prm=100 cod=100 | cron/interval/delay 调度；✅ .repo-contract.yaml，v1.0.0 已对齐；98.2% 覆盖，下游 smoke 通过 |
-| [redisx](https://github.com/ZoneCNH/redisx) | v1.0.1 | Spec→Code 完成 | 100% | spec=98 mat=100 tsk=100 pln=100 prm=100 cod=100 | Redis L2 adapter；✅ .repo-contract.yaml，v1.0.1；此前误标 v1.0.0（tag 超前于表格）；Docker-backed Redis 验证通过 |
-| [kafkax](https://github.com/ZoneCNH/kafkax) | v1.0.2 | Spec→Code 完成 | 100% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | Kafka L2 adapter；✅ .repo-contract.yaml，v1.0.2；此前误标 v1.0.0（tag 超前于表格）；真实 broker gates 已验证 |
-| [natsx](https://github.com/ZoneCNH/natsx) | v1.0.0 | Spec→Code 完成 | 100% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | NATS L2 adapter；✅ .repo-contract.yaml；真实 dev auth live gate 已验证；正式四源 98+ arbiter 与生产 TLS gate 未闭合（BLK-001/BLK-002）；非 factory |
-| [postgresx](https://github.com/ZoneCNH/postgresx) | v1.0.0 | Spec→Code 完成 | 100% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | PostgreSQL；✅ .repo-contract.yaml；live integration 通过；单元测试 52.4% + Docker integration skip（BLK-006）；非 factory |
-| [taosx](https://github.com/ZoneCNH/taosx) | v1.0.1 | Spec→Code 完成 | 100% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | TDengine L2 adapter；真实 taosWS WebSocket 集成已验证；SPEC 评分 67（BLK-007）；非 factory until blocker closed |
-| [ossx](https://github.com/ZoneCNH/ossx) | v1.0.1 | Spec→Code 完成 | 100% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | Aliyun OSS L2 adapter；✅ .repo-contract.yaml，v1.0.1 已对齐；race/vet/build/release-check 已通过；BLK-008 open：API 文档 / integration evidence / quickstart / release manifest 未归档；非 factory |
-| [clickhousex](https://github.com/ZoneCNH/clickhousex) | v1.0.1 | Spec→Code 完成 | 100% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | ClickHouse；SPEC+TRACEABILITY+TASKS 完成；公开 GitHub Release 未发布（BLK-003）；RELEASE pending；非 factory |
-| [contracts](https://github.com/ZoneCNH/contracts) | v1.0.1-spec | Spec→Code 完成 | 100% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | 跨域稳定端口/事件/DTO 契约；spec-only；无公开 GitHub Release / git tag 对齐；非 factory until release |
-| [transportx](https://github.com/ZoneCNH/transportx) | v1.1.1-spec | Spec→Code 完成 | 100% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | 应用通信底座规格基线；spec-only；无公开 GitHub Release / git tag 对齐；production_import_allowed=false；非 factory until release |
+| 组件 | 版本 | 阶段投影 | 门禁口径 | 仓库大小 | 说明 |
+| ---- | ---- | ---- | ------ | -------- | ---- |
+| [xlib-standard](https://github.com/ZoneCNH/xlib-standard) | v1.0.0 | spec/code/release | factory-ready | spec=100 mat=98 tsk=100 pln=100 prm=100 cod=100 | 标准事实源 / Go Reference Template；Generator/Harness/Evidence 已拆分至 xlib-harness / xlib-evidence；✅ .repo-contract.yaml (is_standard_source)；✅ GitHub Release v1.0.0 已发布|
+| [xlib-harness](https://github.com/ZoneCNH/xlib-harness) | - | spec/code/gate | gate-only | spec=98 mat=100 tsk=98 pln=100 prm=100 cod=100 | 模块生成器与门禁执行器：generate/scaffold、spec-lint、boundary-check、traceability-gate；✅ CI 已部署；⚠️ git tag + GitHub Release 缺失 |
+| [xlib-evidence](https://github.com/ZoneCNH/xlib-evidence) | - | spec/code/gate | gate-only | spec=98 mat=100 tsk=100 pln=100 prm=100 cod=100 | 证据收集与发布运行时：collect-coverage、generate-manifest、validate-manifest、report；✅ CI 已部署；⚠️ git tag + GitHub Release 缺失 |
+| [xlibgate](https://github.com/ZoneCNH/xlibgate) | v1.0.0 | spec/code/release | factory-ready | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | check/l2/trust 三组门禁；✅ .repo-contract.yaml，v1.0.0 已对齐（此前误标 v1.1.1）；trust CLI 已实现 |
+| [kernel](https://github.com/ZoneCNH/kernel) | v1.0.0 | spec/code/release | factory-ready | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | L0 原语 / 12 子包 / stdlib-only；✅ .repo-contract.yaml，v1.0.0 已对齐，建议 API 冻结 |
+| [configx](https://github.com/ZoneCNH/configx) | v1.0.0 | spec/code/release | factory-ready | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | 配置管理；✅ v1.0.0 GitHub Release 已发布；此前误标 v0.1.4 已修正；✅ .repo-contract.yaml |
+| [observex](https://github.com/ZoneCNH/observex) | v0.3.1 | spec/code/release | factory-ready | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | 可观测性；✅ v0.3.1 GitHub Release 已发布；此前误标 v1.0.0 已修正 |
+| [testkitx](https://github.com/ZoneCNH/testkitx) | v0.4.0 | spec/code/test-only | test-only | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | Fake / Fixture / Golden / Contract / Leak / Boundary / Manifest 测试工具包；✅ v0.4.0 GitHub Release 已发布；test-only；factory grade 不适用 |
+| [resiliencx](https://github.com/ZoneCNH/resiliencx) | v0.4.9 | spec/code/release | factory-ready | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | 弹性策略（timeout / retry / circuit / bulkhead / rate / fallback）；✅ v0.4.9 GitHub Release 已发布；此前误标 v1.0.1 已修正 |
+| [schedulex](https://github.com/ZoneCNH/schedulex) | v1.0.0 | spec/code/release | factory-ready | spec=98 mat=100 tsk=100 pln=100 prm=100 cod=100 | cron/interval/delay 调度；✅ .repo-contract.yaml，v1.0.0 已对齐；98.2% 覆盖，下游 smoke 通过 |
+| [redisx](https://github.com/ZoneCNH/redisx) | v1.0.1 | spec/code/live | live-ready | spec=98 mat=100 tsk=100 pln=100 prm=100 cod=100 | Redis L2 adapter；✅ .repo-contract.yaml，v1.0.1；此前误标 v1.0.0（tag 超前于表格）；Docker-backed Redis 验证通过 |
+| [kafkax](https://github.com/ZoneCNH/kafkax) | v1.0.2 | spec/code/live | live-ready | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | Kafka L2 adapter；✅ .repo-contract.yaml，v1.0.2；此前误标 v1.0.0（tag 超前于表格）；真实 broker gates 已验证 |
+| [natsx](https://github.com/ZoneCNH/natsx) | v1.0.0 | spec/code/live | live-blocked | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | NATS L2 adapter；✅ .repo-contract.yaml；真实 dev auth live gate 已验证；正式四源 98+ arbiter 与生产 TLS gate 未闭合（BLK-001/BLK-002）；非 factory |
+| [postgresx](https://github.com/ZoneCNH/postgresx) | v1.0.0 | spec/code/live | live-blocked | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | PostgreSQL；✅ .repo-contract.yaml；live integration 通过；单元测试 52.4% + Docker integration skip（BLK-006）；非 factory |
+| [taosx](https://github.com/ZoneCNH/taosx) | v1.0.1 | spec/code/live | live-blocked | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | TDengine L2 adapter；真实 taosWS WebSocket 集成已验证；SPEC 评分 67（BLK-007）；非 factory until blocker closed |
+| [ossx](https://github.com/ZoneCNH/ossx) | v1.0.1 | spec/code/live | live-blocked | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | Aliyun OSS L2 adapter；✅ .repo-contract.yaml，v1.0.1 已对齐；race/vet/build/release-check 已通过；BLK-008 open：API 文档 / integration evidence / quickstart / release manifest 未归档；非 factory |
+| [clickhousex](https://github.com/ZoneCNH/clickhousex) | v1.0.1 | spec/code/release | release-blocked | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | ClickHouse；SPEC+TRACEABILITY+TASKS 完成；公开 GitHub Release 未发布（BLK-003）；RELEASE pending；非 factory |
+| [contracts](https://github.com/ZoneCNH/contracts) | v1.0.1-spec | spec-only | spec-only | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | 跨域稳定端口/事件/DTO 契约；spec-only；无公开 GitHub Release / git tag 对齐；非 factory until release |
+| [transportx](https://github.com/ZoneCNH/transportx) | v1.1.1-spec | spec-only | spec-only | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | 应用通信底座规格基线；spec-only；无公开 GitHub Release / git tag 对齐；production_import_allowed=false；非 factory until release |
 > ⚠️ **版本 / release 注记**：公开文档是投影层；版本、release 与 factory 状态以 `.foundationx/status/index.json` + `.foundationx/blockers.json` 为准。当前多维成熟度表中 14/19 已发布 GitHub Release；公开投影仍有 BLK-001/002/003/006/007/008 open，不声明 Foundation 整体 factory grade。
 
-> **成熟度语义说明（2026-06-14 v2 Trust Alignment）**：上表"进度"反映本仓库 Spec 管线评分（spec→code），不代表可投产等级（factory grade）。下表提供多维度成熟度视图；RELEASE=❌ 或存在 open blocker 的模块不得投影为 FACTORY=✅。
+> **成熟度语义说明（2026-06-14 v2 Trust Alignment）**：上表 `阶段投影` 反映本仓库 Spec 管线评分（spec→code），`门禁口径` 只描述粗粒度可放行状态，不代表可投产等级（factory grade）。下表提供多维度成熟度视图；RELEASE=❌ 或存在 open blocker 的模块不得投影为 FACTORY=✅。
 
 <details>
 <summary>📊 基座多维成熟度展开（点击展开）</summary>
