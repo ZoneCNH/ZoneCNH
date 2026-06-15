@@ -96,7 +96,7 @@
 | 组件 | 版本 | 进度 | 覆盖率要求 | 说明 |
 | ---- | ---- | ---- | ---------- | ---- |
 | [decimalx](https://github.com/ZoneCNH/decimalx) | v0.1.0 | ███░ 80% | 100% | 高精度十进制类型 |
-| [domainx](https://github.com/ZoneCNH/domainx) | v1.0.0 | ███░ 80% | 100% | 执行域共享值对象：Order / Position / Trade / Portfolio / ExecutionReport |
+| [domainx](https://github.com/ZoneCNH/domainx) | v1.0.0 | ███░ 80% | 100% | 领域共享值对象：Order / Position / Trade / Portfolio / ExecutionReport |
 | [domain-market](https://github.com/ZoneCNH/domain-market) | v0.1.0 | ███░ 80% | 100% | 市场数据域模型 |
 | [domain-macro](https://github.com/ZoneCNH/domain-macro) | v0.1.0 | ███░ 80% | 100% | 宏观数据域模型 |
 | [domain-exchange](https://github.com/ZoneCNH/domain-exchange) | v0.1.0 | ███░ 80% | 100% | 交易域模型 |

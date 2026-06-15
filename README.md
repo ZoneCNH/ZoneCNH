@@ -41,7 +41,7 @@ L1 测试: testkitx (test-only)
 基座扩展: redisx / kafkax / natsx / postgresx / taosx / ossx / clickhousex / contracts / transportx
       │
       ▼
-L2.5: decimalx / domain-market / domain-macro / domain-exchange (v1.0.0 执行计划；设计基线可用，release / factory-grade 待补证)
+L2.5: domainx / decimalx / domain-market / domain-macro / domain-exchange (v1.0.0 执行计划；设计基线可用，release / factory-grade 待补证)
       │
       ▼
 业务流: 数据域 → 分析域 ↔ 决策域 → 执行域
@@ -60,7 +60,7 @@ L2.5: decimalx / domain-market / domain-macro / domain-exchange (v1.0.0 执行�
 | 模块 | 当前版本 | 目标版本 | 状态 | 模块文档 |
 | --- | --- | --- | --- | --- |
 | `decimalx` | v0.2.0 | v1.0.0 | API freeze / 精度门禁待落地 | [module/decimalx](module/decimalx/goal.md) |
-| `domainx` | v1.0.0 | v1.0.0 | 执行域共享值对象基线；订单、成交、持仓与敞口语义统一 | [module/domainx](module/domainx/goal.md) |
+| `domainx` | v1.0.0 | v1.0.0 | 领域共享值对象基线；订单、成交、持仓与敞口语义统一 | [module/domainx](module/domainx/goal.md) |
 | `domain-market` | v0.1.0 | v1.0.0 | 市场数据语义与质量门禁待冻结 | [module/domain-market](module/domain-market/goal.md) |
 | `domain-macro` | v0.1.0 | v1.0.0 | no-lookahead 与精度 ADR 待冻结 | [module/domain-macro](module/domain-macro/goal.md) |
 | `domain-exchange` | v0.1.0 | v1.0.0 | Exchange SPI 待在上游共享模型后冻结 | [module/domain-exchange](module/domain-exchange/goal.md) |
@@ -105,7 +105,7 @@ L2.5: decimalx / domain-market / domain-macro / domain-exchange (v1.0.0 执行�
 ### L2.5 · 领域共享层
 
 - [decimalx](https://github.com/ZoneCNH/decimalx) — 高精度十进制类型（Decimal/Price/Qty/Ratio/Money） `公开`
-- [domainx](https://github.com/ZoneCNH/domainx) — 执行域共享值对象：Order/Position/Trade/Portfolio/ExecutionReport 枚举与类型 `公开`
+- [domainx](https://github.com/ZoneCNH/domainx) — 领域共享值对象：Order/Position/Trade/Portfolio/ExecutionReport 枚举与类型 `公开`
 - [domain-market](https://github.com/ZoneCNH/domain-market) — 市场数据域模型（Tick/Quote/Bar/OrderBook） `公开`
 - [domain-macro](https://github.com/ZoneCNH/domain-macro) — 宏观经济领域共享模型：国家/地区/指标/发布日历、MacroPoint/MacroState `公开`
 - [domain-exchange](https://github.com/ZoneCNH/domain-exchange) — 交易域模型（VenueAdapter 13 方法接口） `公开`
