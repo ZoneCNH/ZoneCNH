@@ -1,12 +1,15 @@
-# decimalx v1.0.0 Spec
+# decimalx 规格
 
 - Status: Approved
 - Spec-Version: v1.0.0
-Module-Version: v0.2.0 -> v1.0.0
-Layer: L2.5 领域共享
-Repository: https://github.com/ZoneCNH/decimalx
-Source-Plan: /home/zone/Downloads/0615/ZoneCNH-v1.0.0-goal-execution-plans/decimalx-v1.0.0-goal-execution-plan.md
 - Last-Updated: 2026-06-15
+- Layer: L2.5 领域共享
+- Module-Version: v1.0.0
+- Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `kernel`
+
+> 公开投影 caveat：Status=Approved 与 100.0% 覆盖证据不等同于 factory-grade；机器事实层保持 factory=false。
+
+---
 
 ## 1. 范围
 
@@ -304,3 +307,13 @@ module/decimalx/
 - 是否需要更多 rounding modes（Ceiling、Floor、AwayFromZero）？
 - ISO-4217 currency minor unit table 是否纳入 v1.1？
 - decimal serialization schema registry 是否纳入 v1.1？
+
+---
+
+---
+
+**变更历史**
+
+| 日期 | 版本 | 变更内容 | 作者 |
+|------|------|----------|------|
+| 2026-06-15 | v1.0.0 | 初始版本：L2.5 数值语义根，Decimal/Money/Currency 值对象 | ZoneCNH |

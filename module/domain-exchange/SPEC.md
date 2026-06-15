@@ -1,12 +1,15 @@
-# domain-exchange v1.0.0 Spec
+# domain-exchange 规格
 
 - Status: Approved
 - Spec-Version: v1.0.0
-Module-Version: v0.1.0 -> v1.0.0
-Layer: L2.5 领域共享
-Repository: https://github.com/ZoneCNH/domain-exchange
-Source-Plan: /home/zone/Downloads/0615/ZoneCNH-v1.0.0-goal-execution-plans/domain-exchange-v1.0.0-goal-execution-plan.md
 - Last-Updated: 2026-06-15
+- Layer: L2.5 领域共享
+- Module-Version: v1.0.0
+- Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `kernel`, `decimalx`, `domain-market`, `domainx`
+
+> 公开投影 caveat：Status=Approved 与 100.0% 覆盖证据不等同于 factory-grade；机器事实层保持 factory=false。
+
+---
 
 ## 1. 范围
 
@@ -338,3 +341,13 @@ module/domain-exchange/
 - domainexchange.Order 的 deprecated alias 保留到 v1.x 还是 v2？
 - WS stream gap/reconnect 完整语义是否推迟到 infra 层？
 - Adapter certification suite 是否纳入 v1.1？
+
+---
+
+---
+
+**变更历史**
+
+| 日期 | 版本 | 变更内容 | 作者 |
+|------|------|----------|------|
+| 2026-06-15 | v1.0.0 | 初始版本：L2.5 交易所领域接口与 adapter SPI | ZoneCNH |
