@@ -105,7 +105,7 @@
   # 验证 GitHub Release 是否存在
   gh api repos/ZoneCNH/<module>/releases | python3 -c "import sys,json; print(len(json.load(sys.stdin)))"
   ```
-- **同步检查表维护**：`STATUS.md` 文档同步检查表（≈L330-343）的 README/ARCHITECTURE/STATUS 三列必须与各文档 `grep -oP 'github\.com/ZoneCNH/[a-zA-Z0-9_.-]+' | sort -u | wc -l` 的实际 unique repo 数一致。STATUS 列因含 stdlib.rs 比 README/ARCH 多 1；该差异需在表注中说明。STATUS 按域统计 domain-sum（80）与 unique（78）的差异来自 observex 双归属和 stdlib.rs/module 独立计数。
+- **同步检查表维护**：`STATUS.md` 文档同步检查表（≈L330-343）的 README/ARCHITECTURE/STATUS 三列必须与各文档 `grep -oP 'github\.com/ZoneCNH/[a-zA-Z0-9_.-]+' | sort -u | wc -l` 的实际 unique repo 数一致。STATUS 按域统计 domain-sum（79）与 unique（77）的差异来自 observex 双归属和 module 独立计数。
 - **Dashboard 同步**：按域统计表合计行（总数/已有/已创建/平均进度/有版本号）变更时，必须同步更新仪表盘的 `组件总数/已有/已创建/平均进度` 和进度分布条目的计数与百分比。
 - **有版本号/无版本号 合计必须等于组件总数**：用 `awk -F'|'` 逐行查 version 列，非空且非 `-` 即计入有版本号，其余计无版本号，两者之和必须等于该域总数。
 - **CountGuard hook 已部署**：`.claude/hooks/count-guard.mjs`。Write/Edit 到上述三文件时自动扫描内容中的数量模式。BLOCK 级（exit 2）：组件总数/平均进度/有版本号；WARN 级（exit 0）：X/Y 分数/百分比/已有/已创建。`COUNT_GUARD_STRICT=false` 降级为全告警模式。告警不可忽略——必须实际跑验证命令确认数量正确后方可 commit。
