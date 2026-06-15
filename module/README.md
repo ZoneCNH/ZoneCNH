@@ -1,6 +1,6 @@
 # Foundation 模块规格索引
 
-> 19 个基座模块与 5 个 L2.5 领域共享模块 的独立完整规格，按架构层级组织。`x.go` 组合根不再作为 `module/` 下的模块规格维护。
+> 20 个基座模块与 4 个 L2.5 领域共享模块的独立完整规格，按架构层级组织。`x.go` 组合根不再作为 `module/` 下的模块规格维护。
 
 最后更新：2026-06-15
 
@@ -13,10 +13,9 @@
 | `decimalx` | v0.2.0 | v1.0.0 | 高精度 Decimal / Money / Currency 数值基础 | [Goal](decimalx/goal.md) / [Spec](decimalx/SPEC.md) / [Traceability](decimalx/TRACEABILITY.md) / [Plan](decimalx/IMPLEMENTATION-PLAN.md) |
 | `domain-market` | v0.1.0 | v1.0.0 | Tick / Quote / Bar / OrderBook / Instrument / quality gate 市场语义 | [Goal](domain-market/goal.md) / [Spec](domain-market/SPEC.md) / [Traceability](domain-market/TRACEABILITY.md) / [Plan](domain-market/IMPLEMENTATION-PLAN.md) |
 | `domain-macro` | v0.1.0 | v1.0.0 | MacroPoint / MacroInformationSet / no-lookahead 宏观语义 | [Goal](domain-macro/goal.md) / [Spec](domain-macro/SPEC.md) / [Traceability](domain-macro/TRACEABILITY.md) / [Plan](domain-macro/IMPLEMENTATION-PLAN.md) |
-| `domainx` | v0.1.0 | v1.0.0 | Order / Trade / Position / Portfolio / ExecutionReport 交易域共享模型 | [Goal](domainx/goal.md) / [Spec](domainx/SPEC.md) / [Traceability](domainx/TRACEABILITY.md) / [Plan](domainx/V1-GOAL-EXECUTION-PLAN.md) |
 | `domain-exchange` | v0.1.0 | v1.0.0 | Exchange SPI / VenueCapability / RateLimitPolicy / ExchangeError | [Goal](domain-exchange/goal.md) / [Spec](domain-exchange/SPEC.md) / [Traceability](domain-exchange/TRACEABILITY.md) / [Plan](domain-exchange/IMPLEMENTATION-PLAN.md) |
 
-依赖顺序：`decimalx` -> `domain-market` / `domain-macro` / `domainx` -> `domain-exchange`。上述目标版本表示文档 / 执行计划基线，用于对齐目标范围与依赖顺序；不代表对应模块仓库已经完成 API freeze、CI release gate、v1.0.0 git tag 或 GitHub Release。
+依赖顺序：`decimalx` -> `domain-market` / `domain-macro` -> `domain-exchange`。上述目标版本表示文档 / 执行计划基线，用于对齐目标范围与依赖顺序；不代表对应模块仓库已经完成 API freeze、CI release gate、v1.0.0 git tag 或 GitHub Release。`domainx` 已归入基座共享值对象边界，不计入 L2.5 v1.0.0 执行计划。
 
 ## 同步口径
 
@@ -152,9 +151,9 @@ test-only，不参与生产运行时。
 
 ---
 
-## 领域共享（5 个）
+## 基座共享值对象（1 个）
 
-Foundation 目录内的 L2.5 领域共享规格，用于执行域订单、成交、持仓和组合语义；业务域仍通过 `contracts` / `transportx` 保持跨域边界。
+Foundation 目录内的执行域共享值对象规格，用于订单、成交、持仓和组合语义；归入基座统计，业务域仍通过 `contracts` / `transportx` 保持跨域边界。
 
 | 模块    | 规格                                                                                                                | 核心职责                                                                                                                    |
 | ------- | ------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
@@ -335,7 +334,7 @@ Draft → Review → Approved → Implemented → Changed → Deprecated
 | [`module/FOUNDATION-SPEC.md`](./FOUNDATION-SPEC.md)                 | How & Check — 接口签名和 CI gate           |
 | [`module/FOUNDATION-DEPS.yaml`](./FOUNDATION-DEPS.yaml)             | 机器可读依赖矩阵                           |
 | [`module/FOUNDATION-V1.md`](./FOUNDATION-V1.md)                     | v1 路线图                                  |
-| [`docs/sre/foundation-cicd-plan.md`](../docs/sre/foundation-cicd-plan.md) | SRE CI/CD — 基座层 19 模块 + L2.5 领域共享部署执行方案                              |
+| [`docs/sre/foundation-cicd-plan.md`](../docs/sre/foundation-cicd-plan.md) | SRE CI/CD — 基座层 20 模块 + L2.5 领域共享 4 模块部署执行方案                              |
 
 ---
 
