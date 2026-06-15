@@ -17,7 +17,10 @@
     "maturity_dimensions",
     "projection_guards",
     "trust_hardening",
-    "claim_model"
+    "claim_model",
+    "maturity_state_model",
+    "api_freeze_governance",
+    "identity_guards"
   ],
   "properties": {
     "schema_version": {
@@ -250,6 +253,117 @@
           "minItems": 1
         },
         "factory_grade_requires": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1
+        }
+      }
+    },
+    "maturity_state_model": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "purpose",
+        "states",
+        "claim_rules"
+      ],
+      "properties": {
+        "purpose": {
+          "type": "string"
+        },
+        "states": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "claim_rules": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1
+        }
+      }
+    },
+    "api_freeze_governance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "purpose",
+        "status",
+        "applies_to",
+        "required_before_factory_grade",
+        "required_evidence",
+        "invariants"
+      ],
+      "properties": {
+        "purpose": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "applies_to": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "required_before_factory_grade": {
+          "type": "boolean"
+        },
+        "required_evidence": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1
+        },
+        "invariants": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1
+        }
+      }
+    },
+    "identity_guards": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "purpose",
+        "canonical_xlibgate_gates",
+        "blocking_conditions",
+        "public_projection_rules"
+      ],
+      "properties": {
+        "purpose": {
+          "type": "string"
+        },
+        "canonical_xlibgate_gates": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "blocking_conditions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1
+        },
+        "public_projection_rules": {
           "type": "array",
           "items": {
             "type": "string"

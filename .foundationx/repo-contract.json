@@ -1,7 +1,7 @@
 {
   "schema_version": "foundation.repo-contract/v1",
-  "contract_version": "v0.5.1-foundation-v2",
-  "updated": "2026-06-14",
+  "contract_version": "v0.5.2-foundation-v2",
+  "updated": "2026-06-15",
   "repo": {
     "name": "ZoneCNH",
     "path": "github.com/ZoneCNH/ZoneCNH",
@@ -123,6 +123,63 @@
       "open blocker review",
       "projection guard",
       "xlibgate trust evidence"
+    ]
+  },
+  "maturity_state_model": {
+    "purpose": "separates pipeline completion, release evidence, adoption, and factory-grade claims",
+    "states": [
+      "spec",
+      "implementation",
+      "release",
+      "live_integration",
+      "external_ci",
+      "downstream_adoption",
+      "production_soak",
+      "factory_gate"
+    ],
+    "claim_rules": [
+      "spec or implementation completion does not imply release",
+      "release evidence does not imply factory-grade",
+      "open blockers force factory_gate=false for affected modules",
+      "public aggregate maturity must be derived from fact sources, not manual tables"
+    ]
+  },
+  "api_freeze_governance": {
+    "purpose": "records API freeze as a governed claim rather than a readiness shortcut",
+    "status": "policy_defined_pending_gate_artifact",
+    "applies_to": [
+      "kernel",
+      "configx",
+      "observex",
+      "resiliencx",
+      "schedulex"
+    ],
+    "required_before_factory_grade": true,
+    "required_evidence": [
+      "api freeze decision record",
+      "compatibility or downstream smoke evidence",
+      "xlibgate api-freeze-check result"
+    ],
+    "invariants": [
+      "api freeze recommendations are not release or factory-grade evidence",
+      "factory-grade projection must fail when required freeze evidence is absent"
+    ]
+  },
+  "identity_guards": {
+    "purpose": "prevents template, repo identity, and release evidence drift from becoming public claims",
+    "canonical_xlibgate_gates": [
+      "trust identity",
+      "trust template-residue",
+      "trust release-consistency"
+    ],
+    "blocking_conditions": [
+      "repo identity mismatch",
+      "template residue in shipped metadata",
+      "release manifest or trust index inconsistency"
+    ],
+    "public_projection_rules": [
+      "identity and template checks must pass before publishing aggregate trust claims",
+      "release consistency must pass before publishing release-backed maturity claims"
     ]
   }
 }

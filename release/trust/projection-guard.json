@@ -1,6 +1,6 @@
 {
   "source": ".foundationx/repo-contract.json",
-  "contract_version": "v0.5.1-foundation-v2",
+  "contract_version": "v0.5.2-foundation-v2",
   "public_docs": [
     "README.md",
     "ARCHITECTURE.md",
