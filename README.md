@@ -18,7 +18,7 @@ Go 🐹 (主要) · Rust 🦀 (底层) · Python 🐍 (脚本/数据) · TypeScr
 >
 > 🧱 Foundation 公开规格、依赖矩阵、执行跟踪与 ADR → **[module/](./module/)**
 >
-> 📋 20 个基座模块规格 + 4 个 L2.5 领域共享规格 → **[module/](./module/)**
+> 📋 20 个 Foundation 模块规格，另含 4 个 L2.5 领域共享规划/基线规格（不作 release/factory 声明） → **[module/](./module/)**
 >
 > 🧭 Spec 治理模板、生命周期、追溯与评分规则 → **[docs/governance/](./docs/governance/)**
 >
