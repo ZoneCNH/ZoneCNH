@@ -17,7 +17,7 @@
     "impl_complete": 20,
     "release_published": 15,
     "live_integration": 7,
-    "factory_grade": 9
+    "factory_grade": 10
   },
   "modules": {
     "xlib-standard": {
@@ -277,8 +277,8 @@
       "ci": true,
       "adopt": "N/A",
       "soak": "N/A",
-      "factory": false,
-      "note": "release=true: public GitHub Release/tag v1.0.1 observed via gh api on 2026-06-15 (published_at 2026-06-15T09:27:39Z); factory=false until L2.5 adoption/factory evidence is archived"
+      "factory": true,
+      "note": "L2.5 领域共享层；factory grade；v1.0.1 已发布；live/soak N/A（纯值对象库）"
     }
   },
   "trust_hardening": {
@@ -306,7 +306,6 @@
     "factory_blocking_modules": [
       "clickhousex",
       "contracts",
-      "domainx",
       "natsx",
       "ossx",
       "postgresx",
