@@ -43,6 +43,7 @@
 .omc/**/*.tmp
 
 # Claude Code / Codex — 开放目录结构，屏蔽敏感文件
+*.local.*
 .claude/settings.local.json
 .claude/settings.local.json.*
 .claude/plans/settings.local.json
