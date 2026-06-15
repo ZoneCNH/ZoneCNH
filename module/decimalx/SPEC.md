@@ -39,7 +39,16 @@ Source-Plan: /home/zone/Downloads/0615/ZoneCNH-v1.0.0-goal-execution-plans/decim
 - 可迁移：v1.0.0 后公共 API 破坏性变更必须进入新主版本。
 - 可验证：核心算术、格式化、JSON、SQL、Money/Currency 均需 golden 或 property 测试。
 
-## 5. v1.0.0 发布门禁
+## 5. Non-Goals 与 v1.0.0 发布门禁
+
+- 不实现交易所精度规则（price tick、lot size 等由 domain-market/domain-exchange 负责）
+- 不实现账本、税务或估值计算（由上层业务域负责）
+- 不实现策略计算或指标公式（由因子引擎和策略域负责）
+- 不提供通用数学 DSL 或统计分析库（只做精确十进制算术）
+- 不依赖任何业务域模块（domain-market、domain-exchange、domain-macro、domainx）
+- 不依赖 transport 层（HTTP、gRPC、Kafka）或存储层（Redis、Postgres、TDengine）
+
+### v1.0.0 发布门禁
 
 | 门禁 | 要求 |
 | --- | --- |

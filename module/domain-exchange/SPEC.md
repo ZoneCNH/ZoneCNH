@@ -40,7 +40,17 @@ Source-Plan: /home/zone/Downloads/0615/ZoneCNH-v1.0.0-goal-execution-plans/domai
 - Fail-closed：未知能力、未知错误和不安全重试必须默认失败。
 - 可测试：所有能力、错误和 retry/idempotency 语义必须可用 fake exchange 验证。
 
-## 5. 发布门禁
+## 5. Non-Goals 与发布门禁
+
+- 不实现真实交易所客户端（Binance/OKX adapter 属于独立实现层）
+- 不管理订单状态 SSOT（Order/ExecutionReport 归 domainx；domain-exchange 仅通过 SPI 传递）
+- 不定义市场数据值对象（Kline/OrderBook/Funding 归 domain-market；domain-exchange 通过 MarketReader 返回 domain-market 类型）
+- 不实现策略、风控或账本逻辑（由策略域和风控域负责）
+- 不直接依赖 transport 层（HTTP client、WebSocket client 属于 adapter 实现）
+- 不操作存储层（Redis/Postgres/TDengine）
+- 不持有 API key/secret（由 adapter/infra 层管理）
+
+### 发布门禁
 
 | 门禁 | 要求 |
 | --- | --- |

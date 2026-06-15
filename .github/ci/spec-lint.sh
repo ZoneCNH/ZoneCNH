@@ -186,7 +186,7 @@ check_spec() {
   local non_goals
   non_goals=$(awk '
     /^## [0-9]+\. / {
-      in_section = ($0 ~ /(Non-goals|非目标|不做什么)/)
+      in_section = (tolower($0) ~ /(non-goals|非目标|不做什么)/)
       next
     }
     /^## / {

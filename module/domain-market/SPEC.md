@@ -39,7 +39,17 @@ Source-Plan: /home/zone/Downloads/0615/ZoneCNH-v1.0.0-goal-execution-plans/domai
 - 领域纯净：公共模型中不得出现 transport、persistence 或 vendor schema tag。
 - 下游稳定：v1.0.0 后公共字段含义和时间语义需保持兼容。
 
-## 5. 发布门禁
+## 5. Non-Goals 与发布门禁
+
+- 不实现 transport adapter（HTTP、WebSocket、Kafka 生产者/消费者）
+- 不定义 provider DTO 或 vendor schema（Binance/OKX 响应格式属于 adapter/internal 层）
+- 不承载持久化 tag（json/db/yaml/kafka tag 由 DTO 层添加，domain struct 禁止携带）
+- 不实现策略、因子或回测逻辑（由上层策略域和回测引擎负责）
+- 不管理订单生命周期语义（OrderType/OrderSide/OrderState 归 domainx）
+- 不连接远程服务、不读取密钥、不操作存储层（Redis/Postgres/TDengine）
+- 不实现数据采集调度或 provider 注册逻辑（由数据采集层负责）
+
+### 发布门禁
 
 | 门禁 | 要求 |
 | --- | --- |
