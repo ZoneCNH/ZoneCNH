@@ -15,27 +15,27 @@
 
 ### 基座
 
-| 组件 | 版本 | Spec→Code 投影 | 覆盖率要求 | 仓库大小 | 说明 |
-| ---- | ---- | ---- | ---------- | -------- | ---- |
-| [xlib-standard](https://github.com/ZoneCNH/xlib-standard) | v1.0.0 | Spec→Code 完成 | 100% | spec=100 mat=98 tsk=100 pln=100 prm=100 cod=100 | 标准事实源 / Go Reference Template；Generator/Harness/Evidence 已拆分至 xlib-harness / xlib-evidence；✅ .repo-contract.yaml (is_standard_source)；✅ GitHub Release v1.0.0 已发布|
-| [xlib-harness](https://github.com/ZoneCNH/xlib-harness) | - | Spec→Code 完成 | 100% | spec=98 mat=100 tsk=98 pln=100 prm=100 cod=100 | 模块生成器与门禁执行器：generate/scaffold、spec-lint、boundary-check、traceability-gate；✅ CI 已部署；⚠️ git tag + GitHub Release 缺失 |
-| [xlib-evidence](https://github.com/ZoneCNH/xlib-evidence) | - | Spec→Code 完成 | 100% | spec=98 mat=100 tsk=100 pln=100 prm=100 cod=100 | 证据收集与发布运行时：collect-coverage、generate-manifest、validate-manifest、report；✅ CI 已部署；⚠️ git tag + GitHub Release 缺失 |
-| [xlibgate](https://github.com/ZoneCNH/xlibgate) | v1.0.0 | Spec→Code 完成 | 100% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | check/l2/trust 三组门禁；✅ .repo-contract.yaml，v1.0.0 已对齐（此前误标 v1.1.1）；trust CLI 已实现 |
-| [kernel](https://github.com/ZoneCNH/kernel) | v1.0.0 | Spec→Code 完成 | 100% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | L0 原语 / 12 子包 / stdlib-only；✅ .repo-contract.yaml，v1.0.0 已对齐，建议 API 冻结 |
-| [configx](https://github.com/ZoneCNH/configx) | v1.0.0 | Spec→Code 完成 | 100% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | 配置管理；✅ v1.0.0 GitHub Release 已发布；此前误标 v0.1.4 已修正；✅ .repo-contract.yaml |
-| [observex](https://github.com/ZoneCNH/observex) | v0.3.1 | Spec→Code 完成 | 100% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | 可观测性；✅ v0.3.1 GitHub Release 已发布；此前误标 v1.0.0 已修正 |
-| [testkitx](https://github.com/ZoneCNH/testkitx) | v0.4.0 | Spec→Code 完成 | 100% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | Fake / Fixture / Golden / Contract / Leak / Boundary / Manifest 测试工具包；✅ v0.4.0 GitHub Release 已发布；test-only；factory grade 不适用 |
-| [resiliencx](https://github.com/ZoneCNH/resiliencx) | v0.4.9 | Spec→Code 完成 | 100% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | 弹性策略（timeout / retry / circuit / bulkhead / rate / fallback）；✅ v0.4.9 GitHub Release 已发布；此前误标 v1.0.1 已修正 |
-| [schedulex](https://github.com/ZoneCNH/schedulex) | v1.0.0 | Spec→Code 完成 | 100% | spec=98 mat=100 tsk=100 pln=100 prm=100 cod=100 | cron/interval/delay 调度；✅ .repo-contract.yaml，v1.0.0 已对齐；98.2% 覆盖，下游 smoke 通过 |
-| [redisx](https://github.com/ZoneCNH/redisx) | v1.0.1 | Spec→Code 完成 | 100% | spec=98 mat=100 tsk=100 pln=100 prm=100 cod=100 | Redis L2 adapter；✅ .repo-contract.yaml，v1.0.1；此前误标 v1.0.0（tag 超前于表格）；Docker-backed Redis 验证通过 |
-| [kafkax](https://github.com/ZoneCNH/kafkax) | v1.0.2 | Spec→Code 完成 | 100% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | Kafka L2 adapter；✅ .repo-contract.yaml，v1.0.2；此前误标 v1.0.0（tag 超前于表格）；真实 broker gates 已验证 |
-| [natsx](https://github.com/ZoneCNH/natsx) | v1.0.0 | Spec→Code 完成 | 100% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | NATS L2 adapter；✅ .repo-contract.yaml；真实 dev auth live gate 已验证；正式四源 98+ arbiter 与生产 TLS gate 未闭合（BLK-001/BLK-002）；非 factory |
-| [postgresx](https://github.com/ZoneCNH/postgresx) | v1.0.0 | Spec→Code 完成 | 100% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | PostgreSQL；✅ .repo-contract.yaml；live integration 通过；单元测试 52.4% + Docker integration skip（BLK-006）；非 factory |
-| [taosx](https://github.com/ZoneCNH/taosx) | v1.0.1 | Spec→Code 完成 | 100% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | TDengine L2 adapter；真实 taosWS WebSocket 集成已验证；SPEC 评分 67（BLK-007）；非 factory until blocker closed |
-| [ossx](https://github.com/ZoneCNH/ossx) | v1.0.1 | Spec→Code 完成 | 100% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | Aliyun OSS L2 adapter；✅ .repo-contract.yaml，v1.0.1 已对齐；race/vet/build/release-check 已通过；BLK-008 open：API 文档 / integration evidence / quickstart / release manifest 未归档；非 factory |
-| [clickhousex](https://github.com/ZoneCNH/clickhousex) | v1.0.1 | Spec→Code 完成 | 100% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | ClickHouse；SPEC+TRACEABILITY+TASKS 完成；公开 GitHub Release 未发布（BLK-003）；RELEASE pending；非 factory |
-| [contracts](https://github.com/ZoneCNH/contracts) | v1.0.1-spec | Spec→Code 完成 | 100% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | 跨域稳定端口/事件/DTO 契约；spec-only；无公开 GitHub Release / git tag 对齐；非 factory until release |
-| [transportx](https://github.com/ZoneCNH/transportx) | v1.1.1-spec | Spec→Code 完成 | 100% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | 应用通信底座规格基线；spec-only；无公开 GitHub Release / git tag 对齐；production_import_allowed=false；非 factory until release |
+| 组件 | 版本 | 阶段投影 | 门禁口径 | 子维度投影 | 说明 |
+| ---- | ---- | ---- | ---- | ---- | ---- |
+| [xlib-standard](https://github.com/ZoneCNH/xlib-standard) | v1.0.0 | spec/code/release | factory-ready | spec=100 mat=98 tsk=100 pln=100 prm=100 cod=100 | 标准事实源 / Go Reference Template；Generator/Harness/Evidence 已拆分至 xlib-harness / xlib-evidence；✅ .repo-contract.yaml (is_standard_source)；✅ GitHub Release v1.0.0 已发布|
+| [xlib-harness](https://github.com/ZoneCNH/xlib-harness) | - | spec/code | release-pending | spec=98 mat=100 tsk=98 pln=100 prm=100 cod=100 | 模块生成器与门禁执行器：generate/scaffold、spec-lint、boundary-check、traceability-gate；✅ CI 已部署；⚠️ git tag + GitHub Release 缺失 |
+| [xlib-evidence](https://github.com/ZoneCNH/xlib-evidence) | - | spec/code | release-pending | spec=98 mat=100 tsk=100 pln=100 prm=100 cod=100 | 证据收集与发布运行时：collect-coverage、generate-manifest、validate-manifest、report；✅ CI 已部署；⚠️ git tag + GitHub Release 缺失 |
+| [xlibgate](https://github.com/ZoneCNH/xlibgate) | v1.0.0 | spec/code/release | factory-ready | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | check/l2/trust 三组门禁；✅ .repo-contract.yaml，v1.0.0 已对齐（此前误标 v1.1.1）；trust CLI 已实现 |
+| [kernel](https://github.com/ZoneCNH/kernel) | v1.0.0 | spec/code/release | factory-ready | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | L0 原语 / 12 子包 / stdlib-only；✅ .repo-contract.yaml，v1.0.0 已对齐，建议 API 冻结 |
+| [configx](https://github.com/ZoneCNH/configx) | v1.0.0 | spec/code/release | factory-ready | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | 配置管理；✅ v1.0.0 GitHub Release 已发布；此前误标 v0.1.4 已修正；✅ .repo-contract.yaml |
+| [observex](https://github.com/ZoneCNH/observex) | v0.3.1 | spec/code/release | factory-ready | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | 可观测性；✅ v0.3.1 GitHub Release 已发布；此前误标 v1.0.0 已修正 |
+| [testkitx](https://github.com/ZoneCNH/testkitx) | v0.4.0 | spec/code/release | test-only | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | Fake / Fixture / Golden / Contract / Leak / Boundary / Manifest 测试工具包；✅ v0.4.0 GitHub Release 已发布；test-only；factory grade 不适用 |
+| [resiliencx](https://github.com/ZoneCNH/resiliencx) | v0.4.9 | spec/code/release | factory-ready | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | 弹性策略（timeout / retry / circuit / bulkhead / rate / fallback）；✅ v0.4.9 GitHub Release 已发布；此前误标 v1.0.1 已修正 |
+| [schedulex](https://github.com/ZoneCNH/schedulex) | v1.0.0 | spec/code/release | factory-ready | spec=98 mat=100 tsk=100 pln=100 prm=100 cod=100 | cron/interval/delay 调度；✅ .repo-contract.yaml，v1.0.0 已对齐；98.2% 覆盖，下游 smoke 通过 |
+| [redisx](https://github.com/ZoneCNH/redisx) | v1.0.1 | spec/code/release/live | live-ready | spec=98 mat=100 tsk=100 pln=100 prm=100 cod=100 | Redis L2 adapter；✅ .repo-contract.yaml，v1.0.1；此前误标 v1.0.0（tag 超前于表格）；Docker-backed Redis 验证通过 |
+| [kafkax](https://github.com/ZoneCNH/kafkax) | v1.0.2 | spec/code/release/live | live-ready | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | Kafka L2 adapter；✅ .repo-contract.yaml，v1.0.2；此前误标 v1.0.0（tag 超前于表格）；真实 broker gates 已验证 |
+| [natsx](https://github.com/ZoneCNH/natsx) | v1.0.0 | spec/code/release/live | factory-blocked | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | NATS L2 adapter；✅ .repo-contract.yaml；真实 dev auth live gate 已验证；正式四源 98+ arbiter 与生产 TLS gate 未闭合（BLK-001/BLK-002）；非 factory |
+| [postgresx](https://github.com/ZoneCNH/postgresx) | v1.0.0 | spec/code/release/live | factory-blocked | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | PostgreSQL；✅ .repo-contract.yaml；live integration 通过；单元测试 52.4% + Docker integration skip（BLK-006）；非 factory |
+| [taosx](https://github.com/ZoneCNH/taosx) | v1.0.1 | spec/code/release/live | factory-blocked | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | TDengine L2 adapter；真实 taosWS WebSocket 集成已验证；SPEC 评分 67（BLK-007）；非 factory until blocker closed |
+| [ossx](https://github.com/ZoneCNH/ossx) | v1.0.1 | spec/code/release/live | factory-blocked | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | Aliyun OSS L2 adapter；✅ .repo-contract.yaml，v1.0.1 已对齐；race/vet/build/release-check 已通过；BLK-008 open：API 文档 / integration evidence / quickstart / release manifest 未归档；非 factory |
+| [clickhousex](https://github.com/ZoneCNH/clickhousex) | v1.0.1 | spec/code/live | release-blocked | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | ClickHouse；SPEC+TRACEABILITY+TASKS 完成；公开 GitHub Release 未发布（BLK-003）；RELEASE pending；非 factory |
+| [contracts](https://github.com/ZoneCNH/contracts) | v1.0.1-spec | spec/code | release-pending | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | 跨域稳定端口/事件/DTO 契约；spec-only；无公开 GitHub Release / git tag 对齐；非 factory until release |
+| [transportx](https://github.com/ZoneCNH/transportx) | v1.1.1-spec | spec/code | release-pending | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | 应用通信底座规格基线；spec-only；无公开 GitHub Release / git tag 对齐；production_import_allowed=false；非 factory until release |
 > ⚠️ **版本 / release 注记**：公开文档是投影层；版本、release 与 factory 状态以 `.foundationx/status/index.json` + `.foundationx/blockers.json` 为准。当前多维成熟度表中 14/19 已发布 GitHub Release；公开投影仍有 BLK-001/002/003/006/007/008 open，不声明 Foundation 整体 factory grade。
 
 > **成熟度语义说明（2026-06-14 v2 Trust Alignment）**：上表"进度"反映本仓库 Spec 管线评分（spec→code），不代表可投产等级（factory grade）。下表提供多维度成熟度视图；RELEASE=❌ 或存在 open blocker 的模块不得投影为 FACTORY=✅。
@@ -102,6 +102,21 @@
 | [domain-macro](https://github.com/ZoneCNH/domain-macro) | v0.1.0 | ███░ 80% | 100% | 宏观数据域模型 |
 | [domain-exchange](https://github.com/ZoneCNH/domain-exchange) | v0.1.0 | ███░ 80% | 100% | 交易域模型 |
 
+<details>
+<summary>📊 L2.5 领域共享层多维成熟度展开（点击展开）</summary>
+
+| 模块 | SPEC | IMPL | RELEASE | LIVE INT | EXT CI | ADOPT | SOAK | FACTORY | 备注 |
+|------|:----:|:----:|:-------:|:--------:|:------:|:-----:|:----:|:-------:|------|
+| decimalx | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | v0.1.0；80%；高精度十进制类型 |
+| domainx | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | v1.0.0；80%；领域共享值对象：Order/Position/Trade/Portfolio/ExecutionReport |
+| domain-market | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | v0.1.0；80%；市场数据域模型 |
+| domain-macro | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | v0.1.0；80%；宏观数据域模型 |
+| domain-exchange | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | v0.1.0；80%；交易域模型 |
+
+> **维度说明**：SPEC=规格完成 | IMPL=实现完成 | RELEASE=tag/release/manifest 一致 | LIVE INT=真实服务集成（非 mock） | EXT CI=外部 CI artifact | ADOPT=下游模块真实采用 | SOAK=生产或类生产长时间运行 | FACTORY=factory_grade_allowed（最高综合等级）
+
+</details>
+
 ### 数据域 · 行情
 
 | 组件 | 类型 | 版本 | 进度 | 覆盖率要求 | 说明 |
@@ -125,6 +140,34 @@
 | [okx-market](https://github.com/ZoneCNH/okx-market) | Provider | v0.1.0 | ███░ 80% | 100% | OKX Kline/Ticker |
 | [coinbase-market](https://github.com/ZoneCNH/coinbase-market) | Provider | v0.1.0 | ███░ 80% | 100% | Coinbase Kline/Ticker |
 
+<details>
+<summary>📊 数据域 · 行情多维成熟度展开（点击展开）</summary>
+
+| 模块 | SPEC | IMPL | RELEASE | LIVE INT | EXT CI | ADOPT | SOAK | FACTORY | 备注 |
+|------|:----:|:----:|:-------:|:--------:|:------:|:-----:|:----:|:-------:|------|
+| binance | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | SDK；80%；Binance CEX |
+| okx | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | SDK；80%；OKX CEX |
+| bybit | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | SDK；80%；Bybit CEX |
+| bitget | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | SDK；80%；Bitget CEX |
+| kucoin | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | SDK；80%；KuCoin CEX |
+| gate | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | SDK；80%；Gate CEX |
+| mexc | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | SDK；80%；MEXC CEX |
+| htx | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | SDK；80%；HTX CEX |
+| coinbase | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | SDK；80%；Coinbase CEX |
+| hyperliquid | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | SDK；80%；Hyperliquid DEX |
+| lighter | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | SDK；80%；Lighter DEX |
+| upbit | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | SDK；80%；Upbit CEX |
+| coinglass | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | SDK；80%；衍生品聚合数据 |
+| binance-market | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | Provider v0.1.0；80%；Kline/Ticker |
+| bybit-market | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | Provider v0.1.0；80%；Kline/Ticker |
+| bitget-market | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | Provider v0.1.0；80%；Kline/Ticker |
+| okx-market | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | Provider v0.1.0；80%；Kline/Ticker |
+| coinbase-market | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | Provider v0.1.0；80%；Kline/Ticker |
+
+> **维度说明**：SPEC=规格完成 | IMPL=实现完成 | RELEASE=tag/release/manifest 一致 | LIVE INT=真实服务集成（非 mock） | EXT CI=外部 CI artifact | ADOPT=下游模块真实采用 | SOAK=生产或类生产长时间运行 | FACTORY=factory_grade_allowed（最高综合等级）
+
+</details>
+
 ### 数据域 · 宏观
 
 | 组件 | 版本 | 进度 | 覆盖率要求 | 说明 |
@@ -141,11 +184,43 @@
 | [jin10](https://github.com/ZoneCNH/jin10) | - | ███░ 80% | 100% | 金十行情 |
 | [yahoo](https://github.com/ZoneCNH/yahoo) | - | ███░ 80% | 100% | Yahoo Finance |
 
+<details>
+<summary>📊 数据域 · 宏观多维成熟度展开（点击展开）</summary>
+
+| 模块 | SPEC | IMPL | RELEASE | LIVE INT | EXT CI | ADOPT | SOAK | FACTORY | 备注 |
+|------|:----:|:----:|:-------:|:--------:|:------:|:-----:|:----:|:-------:|------|
+| fred | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | 80%；美联储 FRED 数据 |
+| treasury | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | 80%；美国财政部数据 |
+| yield-curve | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | 80%；收益率曲线 |
+| bea | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | 80%；美国经济分析局 |
+| ecb | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | 80%；欧洲央行 |
+| uk-cb | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | 80%；英国央行 |
+| japan-cb | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | 80%；日本央行 |
+| eastmoney | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | 80%；东方财富 A 股 |
+| jinshi | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | 80%；金十快讯 |
+| jin10 | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | 80%；金十行情 |
+| yahoo | ✅ | ✅ | ❌ | N/A | N/A | N/A | N/A | ❌ | 80%；Yahoo Finance |
+
+> **维度说明**：SPEC=规格完成 | IMPL=实现完成 | RELEASE=tag/release/manifest 一致 | LIVE INT=真实服务集成（非 mock） | EXT CI=外部 CI artifact | ADOPT=下游模块真实采用 | SOAK=生产或类生产长时间运行 | FACTORY=factory_grade_allowed（最高综合等级）
+
+</details>
+
 ### 数据域 · 另类
 
 | 组件 | 版本 | 进度 | 覆盖率要求 | 说明 |
 | ---- | ---- | ---- | ---------- | ---- |
 | [alternative-data](https://github.com/ZoneCNH/alternative-data) | - | ░░░░ 5% | 100% | 链上、社交情绪、新闻 NLP |
+
+<details>
+<summary>📊 数据域 · 另类多维成熟度展开（点击展开）</summary>
+
+| 模块 | SPEC | IMPL | RELEASE | LIVE INT | EXT CI | ADOPT | SOAK | FACTORY | 备注 |
+|------|:----:|:----:|:-------:|:--------:|:------:|:-----:|:----:|:-------:|------|
+| alternative-data | ❌ | ❌ | N/A | N/A | N/A | N/A | N/A | ❌ | 5%；链上数据、社交情绪、新闻 NLP 均未开始 |
+
+> **维度说明**：SPEC=规格完成 | IMPL=实现完成 | RELEASE=tag/release/manifest 一致 | LIVE INT=真实服务集成（非 mock） | EXT CI=外部 CI artifact | ADOPT=下游模块真实采用 | SOAK=生产或类生产长时间运行 | FACTORY=factory_grade_allowed（最高综合等级）
+
+</details>
 
 ### 分析域
 
@@ -160,6 +235,24 @@
 | [regime-engine](https://github.com/ZoneCNH/regime-engine) | v0.1.0 | ██░░ 25% | 100% | M×S 联合决策引擎（M+S → action/risk/permission），骨架完成，30+ 测试通过 |
 | [flowx](https://github.com/ZoneCNH/flowx) | v0.1.0-draft | ░░░░ 5% | 100% | 数据流管线引擎 — 流式 ETL、窗口聚合、背压控制（7 FR, SPEC draft） |
 
+<details>
+<summary>📊 分析域多维成熟度展开（点击展开）</summary>
+
+| 模块 | SPEC | IMPL | RELEASE | LIVE INT | EXT CI | ADOPT | SOAK | FACTORY | 备注 |
+|------|:----:|:----:|:-------:|:--------:|:------:|:-----:|:----:|:-------:|------|
+| factor-engine | ❌ | ❌ | N/A | N/A | N/A | N/A | N/A | ❌ | 5%；仅创建，无实现 |
+| feature-store | ❌ | ❌ | N/A | N/A | N/A | N/A | N/A | ❌ | 5%；仅创建，无实现 |
+| factor-eval | ❌ | ❌ | N/A | N/A | N/A | N/A | N/A | ❌ | 5%；仅创建，无实现 |
+| market_regime | ❌ | ❌ | N/A | N/A | N/A | N/A | N/A | ❌ | 5%；仅创建，无实现 |
+| macro_regime | ❌ | ❌ | N/A | N/A | N/A | N/A | N/A | ❌ | 5%；仅创建，无实现 |
+| ms_brain | ❌ | ❌ | N/A | N/A | N/A | N/A | N/A | ❌ | 5%；仅创建，无实现 |
+| regime-engine | ❌ | ⚠️ | ❌ | N/A | N/A | N/A | N/A | ❌ | v0.1.0；25% 骨架完成，30+ 测试通过 |
+| flowx | ❌ | ❌ | N/A | N/A | N/A | N/A | N/A | ❌ | v0.1.0-draft；7 FR，SPEC draft |
+
+> **维度说明**：SPEC=规格完成 | IMPL=实现完成 | RELEASE=tag/release/manifest 一致 | LIVE INT=真实服务集成（非 mock） | EXT CI=外部 CI artifact | ADOPT=下游模块真实采用 | SOAK=生产或类生产长时间运行 | FACTORY=factory_grade_allowed（最高综合等级）
+
+</details>
+
 ### 决策域
 
 | 组件 | 版本 | 进度 | 覆盖率要求 | 说明 |
@@ -170,6 +263,22 @@
 | [backtestx](https://github.com/ZoneCNH/backtestx) | v0.1.0-draft | ░░░░ 5% | 100% | 回测引擎 — 事件驱动回测、Walk-Forward、蒙特卡洛（7 FR, SPEC draft） |
 | [strategyx](https://github.com/ZoneCNH/strategyx) | v0.1.0-draft | ░░░░ 5% | 100% | 策略工厂 — 策略注册、参数管理、信号组合（7 FR, SPEC draft） |
 | [maestro](https://github.com/ZoneCNH/maestro) | v0.1.0-draft | ░░░░ 5% | 100% | 工作流编排引擎 — DAG 工作流、状态机、错误恢复（9 FR, SPEC draft） |
+
+<details>
+<summary>📊 决策域多维成熟度展开（点击展开）</summary>
+
+| 模块 | SPEC | IMPL | RELEASE | LIVE INT | EXT CI | ADOPT | SOAK | FACTORY | 备注 |
+|------|:----:|:----:|:-------:|:--------:|:------:|:-----:|:----:|:-------:|------|
+| signal-factory | ❌ | ❌ | N/A | N/A | N/A | N/A | N/A | ❌ | 5%；仅创建，无实现 |
+| backtest-engine | ❌ | ❌ | N/A | N/A | N/A | N/A | N/A | ❌ | 5%；仅创建，无实现 |
+| optimizer | ❌ | ❌ | N/A | N/A | N/A | N/A | N/A | ❌ | 5%；仅创建，无实现 |
+| backtestx | ❌ | ❌ | N/A | N/A | N/A | N/A | N/A | ❌ | v0.1.0-draft；7 FR，SPEC draft |
+| strategyx | ❌ | ❌ | N/A | N/A | N/A | N/A | N/A | ❌ | v0.1.0-draft；7 FR，SPEC draft |
+| maestro | ❌ | ❌ | N/A | N/A | N/A | N/A | N/A | ❌ | v0.1.0-draft；9 FR，SPEC draft |
+
+> **维度说明**：SPEC=规格完成 | IMPL=实现完成 | RELEASE=tag/release/manifest 一致 | LIVE INT=真实服务集成（非 mock） | EXT CI=外部 CI artifact | ADOPT=下游模块真实采用 | SOAK=生产或类生产长时间运行 | FACTORY=factory_grade_allowed（最高综合等级）
+
+</details>
 
 ### 执行域
 
@@ -182,6 +291,23 @@
 | [riskx](https://github.com/ZoneCNH/riskx) | v0.1.0-draft | ░░░░ 5% | 100% | 风控引擎 — 事前风控、回撤控制、熔断机制（7 FR, SPEC draft） |
 | [orderx](https://github.com/ZoneCNH/orderx) | v0.1.0-draft | ░░░░ 5% | 100% | 订单管理器 — 订单生命周期、SOR、状态机（7 FR, SPEC draft） |
 | [positionx](https://github.com/ZoneCNH/positionx) | v0.1.0-draft | ░░░░ 5% | 100% | 仓位管理器 — 实时仓位追踪、PnL、敞口监控（7 FR, SPEC draft） |
+
+<details>
+<summary>📊 执行域多维成熟度展开（点击展开）</summary>
+
+| 模块 | SPEC | IMPL | RELEASE | LIVE INT | EXT CI | ADOPT | SOAK | FACTORY | 备注 |
+|------|:----:|:----:|:-------:|:--------:|:------:|:-----:|:----:|:-------:|------|
+| risk-engine | ❌ | ❌ | N/A | N/A | N/A | N/A | N/A | ❌ | 5%；仅创建，无实现 |
+| order-engine | ❌ | ❌ | N/A | N/A | N/A | N/A | N/A | ❌ | 5%；仅创建，无实现 |
+| portfolio-engine | ❌ | ❌ | N/A | N/A | N/A | N/A | N/A | ❌ | 5%；仅创建，无实现 |
+| settlement | ❌ | ❌ | N/A | N/A | N/A | N/A | N/A | ❌ | 5%；仅创建，无实现 |
+| riskx | ❌ | ❌ | N/A | N/A | N/A | N/A | N/A | ❌ | v0.1.0-draft；7 FR，SPEC draft |
+| orderx | ❌ | ❌ | N/A | N/A | N/A | N/A | N/A | ❌ | v0.1.0-draft；7 FR，SPEC draft |
+| positionx | ❌ | ❌ | N/A | N/A | N/A | N/A | N/A | ❌ | v0.1.0-draft；7 FR，SPEC draft |
+
+> **维度说明**：SPEC=规格完成 | IMPL=实现完成 | RELEASE=tag/release/manifest 一致 | LIVE INT=真实服务集成（非 mock） | EXT CI=外部 CI artifact | ADOPT=下游模块真实采用 | SOAK=生产或类生产长时间运行 | FACTORY=factory_grade_allowed（最高综合等级）
+
+</details>
 
 ### 入口 · 横切 · Rust
 
