@@ -79,7 +79,7 @@
       "STATUS.md",
       "module/README.md"
     ],
-    "release_manifest": "release/manifest/v0.5.1-foundation-v2.json",
+    "release_manifest": "release/manifest/latest.json",
     "fact_sources": [
       ".foundationx/status/index.json",
       ".foundationx/blockers.json"
@@ -103,6 +103,26 @@
       "open blocker forces factory=false for that module",
       "open release blocker forces release=false for that module",
       "public projections must not overstate the fact layer"
+    ]
+  },
+  "claim_model": {
+    "purpose": "projection consistency guard only; not factory-grade proof",
+    "required_inputs": [
+      ".foundationx/status/index.json",
+      ".foundationx/blockers.json",
+      ".foundationx/repo-contract.json",
+      "release/trust/index.json"
+    ],
+    "invariants": [
+      "release_manifest must point at release/manifest/latest.json",
+      "public_docs must stay bounded to public release docs",
+      "factory-grade claims require open blocker review and trust evidence"
+    ],
+    "factory_grade_requires": [
+      "foundation status summary",
+      "open blocker review",
+      "projection guard",
+      "xlibgate trust evidence"
     ]
   }
 }

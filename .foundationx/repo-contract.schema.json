@@ -16,7 +16,8 @@
     "reason_codes",
     "maturity_dimensions",
     "projection_guards",
-    "trust_hardening"
+    "trust_hardening",
+    "claim_model"
   ],
   "properties": {
     "schema_version": {
@@ -213,6 +214,42 @@
           "type": "string"
         },
         "policy_rules": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1
+        }
+      }
+    },
+    "claim_model": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "purpose",
+        "required_inputs",
+        "invariants",
+        "factory_grade_requires"
+      ],
+      "properties": {
+        "purpose": {
+          "type": "string"
+        },
+        "required_inputs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1
+        },
+        "invariants": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1
+        },
+        "factory_grade_requires": {
           "type": "array",
           "items": {
             "type": "string"
