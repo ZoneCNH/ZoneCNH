@@ -10,16 +10,16 @@
 
 | FR | Description | Acceptance Criteria | Test Case | Task | Status |
 |----|-------------|---------------------|-----------|------|--------|
-| FR-001 | Workflow DAG：Nodes + Edges 定义；唯一 Start/End 节点；循环检测 | AC-MAE-001, AC-MAE-002 | TC-MAE-001, TC-MAE-002 | - | ✅ |
-| FR-002 | Task Types：STRATEGY/RISK_CHECK/ORDER_SUBMIT/WAIT/CONDITION/PARALLEL 6 种 | AC-MAE-003 | TC-MAE-003 | - | ✅ |
-| FR-003 | Workflow Execution：拓扑排序执行；超时策略；返回 WorkflowResult | AC-MAE-004 | TC-MAE-004 | - | ✅ |
-| FR-004 | State Machine：PENDING→RUNNING→SUCCEEDED/FAILED/CANCELLED；FAILED→RETRYING→RUNNING；状态变更 emit 事件 | AC-MAE-005 | TC-MAE-005 | - | ✅ |
-| FR-005 | Error Recovery：retryPolicy 重试；fallback 策略（FAIL_WORKFLOW/SKIP_NODE/RUN_FALLBACK）；逆拓扑回滚 compensable 节点 | AC-MAE-006 | TC-MAE-006 | - | ✅ |
-| FR-006 | Checkpoint and Resume：持久化 completedNodes/intermediateOutputs/timestamp；从最后 Checkpoint 恢复；已完成节点不重复 | AC-MAE-007 | TC-MAE-007 | - | ✅ |
-| FR-007 | Conditional Branching：CONDITION 节点评估表达式走 thenBranch/elseBranch；分支汇聚 | AC-MAE-008 | TC-MAE-008 | - | ✅ |
-| FR-008 | Parallel Execution：并发执行子节点；failFast 立即终止；maxConcurrency 限制 | AC-MAE-009 | TC-MAE-009 | - | ✅ |
-| FR-009 | Workflow Registry：名称全局唯一；运行时注册/更新不影响已运行实例；List/Get/Delete | AC-MAE-010 | TC-MAE-010 | - | ✅ |
-| FR-010 | Module Identity：README H1 为 `# maestro`；Go module path 为 `github.com/ZoneCNH/maestro` | AC-MAE-011 | TC-MAE-011 | - | ✅ |
+| FR-001 | Workflow DAG：Nodes + Edges 定义；唯一 Start/End 节点；循环检测 | AC-MAE-001, AC-MAE-002 | TC-MAE-001, TC-MAE-002 | - | 🔲 |
+| FR-002 | Task Types：STRATEGY/RISK_CHECK/ORDER_SUBMIT/WAIT/CONDITION/PARALLEL 6 种 | AC-MAE-003 | TC-MAE-003 | - | 🔲 |
+| FR-003 | Workflow Execution：拓扑排序执行；超时策略；返回 WorkflowResult | AC-MAE-004 | TC-MAE-004 | - | 🔲 |
+| FR-004 | State Machine：PENDING→RUNNING→SUCCEEDED/FAILED/CANCELLED；FAILED→RETRYING→RUNNING；状态变更 emit 事件 | AC-MAE-005 | TC-MAE-005 | - | 🔲 |
+| FR-005 | Error Recovery：retryPolicy 重试；fallback 策略（FAIL_WORKFLOW/SKIP_NODE/RUN_FALLBACK）；逆拓扑回滚 compensable 节点 | AC-MAE-006 | TC-MAE-006 | - | 🔲 |
+| FR-006 | Checkpoint and Resume：持久化 completedNodes/intermediateOutputs/timestamp；从最后 Checkpoint 恢复；已完成节点不重复 | AC-MAE-007 | TC-MAE-007 | - | 🔲 |
+| FR-007 | Conditional Branching：CONDITION 节点评估表达式走 thenBranch/elseBranch；分支汇聚 | AC-MAE-008 | TC-MAE-008 | - | 🔲 |
+| FR-008 | Parallel Execution：并发执行子节点；failFast 立即终止；maxConcurrency 限制 | AC-MAE-009 | TC-MAE-009 | - | 🔲 |
+| FR-009 | Workflow Registry：名称全局唯一；运行时注册/更新不影响已运行实例；List/Get/Delete | AC-MAE-010 | TC-MAE-010 | - | 🔲 |
+| FR-010 | Module Identity：README H1 为 `# maestro`；Go module path 为 `github.com/ZoneCNH/maestro` | AC-MAE-011 | TC-MAE-011 | - | 🔲 |
 
 ---
 
@@ -27,12 +27,12 @@
 
 | BR | Description | 违反后果 | 验证方式 | Task | Status |
 |----|-------------|----------|----------|------|--------|
-| BR-001 | DAG 必须有且仅有一个 Start 和一个 End | TC-MAE-001 | TC-MAE-001 Start/End 唯一性断言 | ✅ | |
-| BR-002 | DAG 不得包含循环依赖 | TC-MAE-001 | TC-MAE-001 循环检测断言 | ✅ | |
-| BR-003 | 节点重试耗尽后必须执行 fallback 策略 | TC-MAE-006 | TC-MAE-006 fallback 执行验证 | ✅ | |
-| BR-004 | Checkpoint 必须持久化（不可仅内存） | TC-MAE-007 | TC-MAE-007 持久化验证 | ✅ | |
-| BR-005 | 回滚仅适用于 compensable 节点 | TC-MAE-006 | TC-MAE-006 compensable 过滤断言 | ✅ | |
-| BR-006 | 工作流定义变更不影响已运行实例 | TC-MAE-010 | TC-MAE-010 运行时注册/更新不影响已运行实例 | ✅ | |
+| BR-001 | DAG 必须有且仅有一个 Start 和一个 End | 创建失败 | TC-MAE-001 Start/End 唯一性断言 | - | 🔲 |
+| BR-002 | DAG 不得包含循环依赖 | 创建失败 + 返回环路径 | TC-MAE-001 循环检测断言 | - | 🔲 |
+| BR-003 | 节点重试耗尽后必须执行 fallback 策略 | 工作流状态卡在 RETRYING | TC-MAE-006 fallback 执行验证 | - | 🔲 |
+| BR-004 | Checkpoint 必须持久化（不可仅内存） | 重启后无法恢复 | TC-MAE-007 持久化验证 | - | 🔲 |
+| BR-005 | 回滚仅适用于 compensable 节点 | 非补偿节点跳过回滚 | TC-MAE-006 compensable 过滤断言 | - | 🔲 |
+| BR-006 | 工作流定义变更不影响已运行实例 | 用旧定义完成，新实例用新定义 | TC-MAE-010 运行时注册/更新不影响已运行实例 | - | 🔲 |
 
 ---
 
@@ -40,12 +40,12 @@
 
 | NFR | Description | 目标值 | 验证方式 | Task | Status |
 |-----|-------------|--------|----------|------|--------|
-| NFR-001 | DAG 校验 (50 节点) 性能 | < 10ms | Benchmark | - | ✅ |
-| NFR-002 | 节点调度延迟 | < 1ms | Benchmark | - | ✅ |
-| NFR-003 | Checkpoint 写入延迟 | < 50ms | Benchmark | - | ✅ |
-| NFR-004 | 工作流恢复延迟 | < 100ms | Benchmark | - | ✅ |
-| NFR-005 | 测试覆盖率 | >= 80% | `go tool cover -func` | - | ✅ |
-| NFR-006 | 无硬编码密钥 | 全仓扫描零命中 | `gitleaks detect --no-git` | - | ✅ |
+| NFR-001 | DAG 校验 (50 节点) 性能 | < 10ms | Benchmark | - | 🔲 |
+| NFR-002 | 节点调度延迟 | < 1ms | Benchmark | - | 🔲 |
+| NFR-003 | Checkpoint 写入延迟 | < 50ms | Benchmark | - | 🔲 |
+| NFR-004 | 工作流恢复延迟 | < 100ms | Benchmark | - | 🔲 |
+| NFR-005 | 测试覆盖率 | >= 80% | `go tool cover -func` | - | 🔲 |
+| NFR-006 | 无硬编码密钥 | 全仓扫描零命中 | `gitleaks detect --no-git` | - | 🔲 |
 
 ---
 

@@ -11,15 +11,16 @@ Source: SPEC.md v1.0.0 | Tasks: TASK-SCHEDULEX-000 ~ TASK-SCHEDULEX-011
 
 | Requirement   | Description                          | Acceptance Criteria                                                                                                                                                | Test Case      | Task     | Status   |
 | ------------- | ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------- | -------- | -------- |
-| FR-001        | Schedule：注册 job + 参数校验        | AC-001: 合法 cron job 返回 JobID<br>AC-002: cron 语法错误 → ErrInvalidTrigger<br>AC-003: interval <= 0 → ErrInvalidTrigger<br>AC-004: 重复 JobID → ErrDuplicateJob | TC-001, TC-009 | TASK-002 | ⬜        | ✅ |
-| FR-002        | Trigger：cron/interval/delay 触发    | AC-005: cron 到达调度时间调用 handler<br>AC-006: interval 到期调用 handler<br>AC-007: Delay 后首次触发                                                             | TC-001         | TASK-002 | ⬜        | ✅ |
-| FR-003        | Overlap Policy：Skip/Queue/Replace   | AC-008: Skip → 上次未完成时跳过<br>AC-009: Queue → 排队等待<br>AC-010: Replace → 取消旧的启动新的                                                                  | TC-002         | TASK-003 | ⬜        | ✅ |
-| FR-004        | Misfire Policy：Skip/RunOnce/CatchUp | AC-011: Skip → 跳过错过的触发<br>AC-012: RunOnce → 补执行一次<br>AC-013: CatchUp → 补执行所有错过次数                                                              | TC-003         | TASK-004 | ⬜        | ✅ |
-| FR-005        | Cancel：取消 job                     | AC-014: 存在的 job 取消返回 nil<br>AC-015: 不存在返回 ErrJobNotFound                                                                                               | TC-005         | TASK-002 | ⬜        | ✅ |
-| FR-006        | Stop：graceful shutdown              | AC-016: 等待正在执行的 job 完成<br>AC-017: 超时强制取消 → ErrShutdownTimeout                                                                                       | TC-006         | TASK-005 | ⬜        | ✅ |
-| FR-007        | EventSink：生命周期事件回调          | AC-018: trigger/start/complete/fail/misfire 事件输出                                                                                                               | TC-007         | TASK-006 | ⬜        | ✅ |
-| FR-008        | Locker：分布式锁                     | AC-019: 锁获取成功 → 执行 job<br>AC-020: 锁获取失败 → 跳过本次<br>AC-021: TTL < 执行时间 → 配置错误                                                                | TC-004         | TASK-007 | ⬜        | ✅ |
-| FR-009        | Clock：可注入时钟                    | AC-022: FakeClock 注入后调度基于 FakeClock                                                                                                                         | TC-008         | TASK-008 | ⬜        | ✅ |
+| FR-001        | Schedule：注册 job + 参数校验        | AC-001: 合法 cron job 返回 JobID<br>AC-002: cron 语法错误 → ErrInvalidTrigger<br>AC-003: interval <= 0 → ErrInvalidTrigger<br>AC-004: 重复 JobID → ErrDuplicateJob | TC-001, TC-009 | TASK-002 | ⬜        |
+| FR-002        | Trigger：cron/interval/delay 触发    | AC-005: cron 到达调度时间调用 handler<br>AC-006: interval 到期调用 handler<br>AC-007: Delay 后首次触发                                                             | TC-001         | TASK-002 | ⬜        |
+| FR-003        | Overlap Policy：Skip/Queue/Replace   | AC-008: Skip → 上次未完成时跳过<br>AC-009: Queue → 排队等待<br>AC-010: Replace → 取消旧的启动新的                                                                  | TC-002         | TASK-003 | ⬜        |
+| FR-004        | Misfire Policy：Skip/RunOnce/CatchUp | AC-011: Skip → 跳过错过的触发<br>AC-012: RunOnce → 补执行一次<br>AC-013: CatchUp → 补执行所有错过次数                                                              | TC-003         | TASK-004 | ⬜        |
+| FR-005        | Cancel：取消 job                     | AC-014: 存在的 job 取消返回 nil<br>AC-015: 不存在返回 ErrJobNotFound                                                                                               | TC-005         | TASK-002 | ⬜        |
+| FR-006        | Stop：graceful shutdown              | AC-016: 等待正在执行的 job 完成<br>AC-017: 超时强制取消 → ErrShutdownTimeout                                                                                       | TC-006         | TASK-005 | ⬜        |
+| FR-007        | EventSink：生命周期事件回调          | AC-018: trigger/start/complete/fail/misfire 事件输出                                                                                                               | TC-007         | TASK-006 | ⬜        |
+| FR-008        | Locker：分布式锁                     | AC-019: 锁获取成功 → 执行 job<br>AC-020: 锁获取失败 → 跳过本次<br>AC-021: TTL < 执行时间 → 配置错误                                                                | TC-004         | TASK-007 | ⬜        |
+| FR-009        | Clock：可注入时钟                    | AC-022: FakeClock 注入后调度基于 FakeClock                                                                                                                         | TC-008         | TASK-008 | ⬜        |
+
 ---
 
 ## §2 业务规则追溯（BR）
