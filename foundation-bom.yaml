@@ -150,7 +150,7 @@ modules:
     release_model: spec_tag
     kind: spec
     production_import_allowed: false
-    factory_grade_allowed: true
+    factory_grade_allowed: false
     blocking_findings: []
     public_code_verified: true
     status_renderable: true
@@ -158,7 +158,7 @@ modules:
     release_model: spec_tag
     kind: spec
     production_import_allowed: false
-    factory_grade_allowed: true
+    factory_grade_allowed: false
     blocking_findings: []
     public_code_verified: true
     status_renderable: true

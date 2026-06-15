@@ -1,8 +1,8 @@
 {
   "version": "v1.0.1",
-  "commit": "22df4440ef0ee2343d4dd1c4dc0b234ab210764d",
-  "commit_short": "22df444",
-  "generated_at": "2026-06-15T01:43:07Z",
+  "commit": "768c83ff9717a5e475b9efc22dfbee3ea8dffb21",
+  "commit_short": "768c83f",
+  "generated_at": "2026-06-15T01:59:58Z",
   "stats": {
     "total_components": 70,
     "existing": 54,
@@ -85,7 +85,7 @@
       ],
       "release_manifest": "release/manifest/latest.json",
       "reason_code": "policy_contract_projection_drift",
-      "reason_present": false
+      "reason_present": true
     },
     "claim_policy": {
       "audit_status_factory_grade_proof": false,

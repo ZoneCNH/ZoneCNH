@@ -9,5 +9,5 @@
   ],
   "release_manifest": "release/manifest/latest.json",
   "reason_code": "policy_contract_projection_drift",
-  "reason_present": false
+  "reason_present": true
 }
