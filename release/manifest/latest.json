@@ -1,102 +1,102 @@
 {
-    "version": "v1.4.4",
-    "commit": "9cb609f46a7934c3b0364f8fc2b3f55d72dfa247",
-    "commit_short": "9cb609f",
-    "generated_at": "2026-06-15T21:24:07Z",
-    "stats": {
-        "total_components": 70,
-        "existing": 54,
-        "planned": 16,
-        "average_progress": 49,
-        "versioned": 24,
-        "repo_count": 67,
-        "markdown_files": 518,
-        "markdown_total_lines": 96833
+  "version": "v1.4.5",
+  "commit": "9cb609f46a7934c3b0364f8fc2b3f55d72dfa247",
+  "commit_short": "9cb609f",
+  "generated_at": "2026-06-15T21:29:52Z",
+  "stats": {
+    "total_components": 70,
+    "existing": 54,
+    "planned": 16,
+    "average_progress": 49,
+    "versioned": 24,
+    "repo_count": 67,
+    "markdown_files": 518,
+    "markdown_total_lines": 96833
+  },
+  "sources": {
+    "status": "STATUS.md",
+    "readme": "README.md",
+    "architecture": "ARCHITECTURE.md",
+    "foundation_status": ".foundationx/status/index.json",
+    "foundation_blockers": ".foundationx/blockers.json",
+    "foundation_contract": ".foundationx/repo-contract.json"
+  },
+  "foundation_trust": {
+    "source_manifest": "release/manifest/latest.json",
+    "available": true,
+    "summary": {
+      "spec_complete": 20,
+      "impl_complete": 20,
+      "release_published": 15,
+      "live_integration": 7,
+      "factory_grade": 10
     },
-    "sources": {
-        "status": "STATUS.md",
-        "readme": "README.md",
-        "architecture": "ARCHITECTURE.md",
-        "foundation_status": ".foundationx/status/index.json",
-        "foundation_blockers": ".foundationx/blockers.json",
-        "foundation_contract": ".foundationx/repo-contract.json"
+    "open_blockers": {
+      "source": ".foundationx/blockers.json",
+      "total": 6,
+      "by_severity": {
+        "critical": 2,
+        "high": 1,
+        "medium": 3
+      },
+      "by_module": {
+        "natsx": [
+          "BLK-001",
+          "BLK-002"
+        ],
+        "clickhousex": [
+          "BLK-003"
+        ],
+        "postgresx": [
+          "BLK-006"
+        ],
+        "taosx": [
+          "BLK-007"
+        ],
+        "ossx": [
+          "BLK-008"
+        ]
+      },
+      "by_category": {
+        "governance": 1,
+        "security": 1,
+        "release": 1,
+        "quality": 1,
+        "spec-quality": 1,
+        "evidence": 1
+      },
+      "ids": [
+        "BLK-001",
+        "BLK-002",
+        "BLK-003",
+        "BLK-006",
+        "BLK-007",
+        "BLK-008"
+      ]
     },
-    "foundation_trust": {
-        "source_manifest": "release/manifest/latest.json",
-        "available": true,
-        "summary": {
-            "spec_complete": 20,
-            "impl_complete": 20,
-            "release_published": 15,
-            "live_integration": 7,
-            "factory_grade": 10
-        },
-        "open_blockers": {
-            "source": ".foundationx/blockers.json",
-            "total": 6,
-            "by_severity": {
-                "critical": 2,
-                "high": 1,
-                "medium": 3
-            },
-            "by_module": {
-                "natsx": [
-                    "BLK-001",
-                    "BLK-002"
-                ],
-                "clickhousex": [
-                    "BLK-003"
-                ],
-                "postgresx": [
-                    "BLK-006"
-                ],
-                "taosx": [
-                    "BLK-007"
-                ],
-                "ossx": [
-                    "BLK-008"
-                ]
-            },
-            "by_category": {
-                "governance": 1,
-                "security": 1,
-                "release": 1,
-                "quality": 1,
-                "spec-quality": 1,
-                "evidence": 1
-            },
-            "ids": [
-                "BLK-001",
-                "BLK-002",
-                "BLK-003",
-                "BLK-006",
-                "BLK-007",
-                "BLK-008"
-            ]
-        },
-        "projection_guard": {
-            "source": ".foundationx/repo-contract.json",
-            "contract_version": "v0.5.2-foundation-v2",
-            "public_docs": [
-                "README.md",
-                "ARCHITECTURE.md",
-                "STATUS.md",
-                "module/README.md"
-            ],
-            "release_manifest": "release/manifest/latest.json",
-            "reason_code": "policy_contract_projection_drift",
-            "reason_present": true
-        },
-        "claim_policy": {
-            "audit_status_factory_grade_proof": false,
-            "audit_status_role": "projection consistency guard only; not factory-grade proof",
-            "factory_grade_requires": [
-                "foundation status summary",
-                "open blocker review",
-                "projection guard",
-                "xlibgate trust evidence"
-            ]
-        },
-        "missing_sources": []
-    }
+    "projection_guard": {
+      "source": ".foundationx/repo-contract.json",
+      "contract_version": "v0.5.2-foundation-v2",
+      "public_docs": [
+        "README.md",
+        "ARCHITECTURE.md",
+        "STATUS.md",
+        "module/README.md"
+      ],
+      "release_manifest": "release/manifest/latest.json",
+      "reason_code": "policy_contract_projection_drift",
+      "reason_present": true
+    },
+    "claim_policy": {
+      "audit_status_factory_grade_proof": false,
+      "audit_status_role": "projection consistency guard only; not factory-grade proof",
+      "factory_grade_requires": [
+        "foundation status summary",
+        "open blocker review",
+        "projection guard",
+        "xlibgate trust evidence"
+      ]
+    },
+    "missing_sources": []
+  }
 }
