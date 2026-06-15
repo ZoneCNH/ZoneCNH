@@ -1,39 +1,17 @@
-# redisx 完整规格
-
-> 基座 · Redis 基础能力封装。提供统一 Key、连接生命周期、KV/TTL、缓存、基础数据结构、Pub/Sub、Pipeline、分布式锁、计数限流、Codec、Health 和观测 hooks。
-
-最后更新：2026-06-14
-
----
-
-
-
-## 1. Metadata
+# redisx 规格
 
 - Status: Review
 - Spec-Version: v1.0.0
 - Last-Updated: 2026-06-14
-- Owner: ZoneCNH
 - Layer: 基座 · 存储扩展
-- Repository: [github.com/ZoneCNH/redisx](https://github.com/ZoneCNH/redisx)
-- Branch: redisx-spec-100
-- Goal: [goal.md](./goal.md)
-- Traceability: [TRACEABILITY.md](./TRACEABILITY.md)
-- Task Specs: [tasks/](./tasks/)
-- Governance: [CONSTITUTION.md](../../CONSTITUTION.md), [DEVELOPMENT-WORKFLOW.md](../../docs/governance/DEVELOPMENT-WORKFLOW.md)
-- Review-Gate: 等待四源评分与 `pipeline-arbiter` 翻转为 Approved
+- Module-Version: v0.7.3
+- Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `kernel`
+
+> 公开投影 caveat：Status=Review 与矩阵覆盖证据不等同于 factory-grade；四源评分通过前机器事实层保持 factory=false。
 
 ---
 
-### 1.1 变更历史
-
-| 日期 | 版本 | 变更内容 | 作者 |
-| --- | --- | --- | --- |
-| 2026-06-12 | v1.0.0 | 对齐 12 FR、10 BR、4 NFR、10 个任务和依赖边界 | Codex |
-
----
-
-## 2. Summary
+## 1. 摘要
 
 `redisx` 是 Redis 的标准化访问和治理封装。它提供统一 KeyBuilder、typed Options、连接生命周期、KV/TTL、cache-aside、Hash/List、Pub/Sub、Pipeline、token owner 分布式锁、Counter、fixed-window RateLimitHelper、JSON 默认 Codec、自定义 Codec SPI、Health、pool stats 和低基数观测 hooks。
 
@@ -41,7 +19,7 @@
 
 ---
 
-## 3. Problem
+## 2. Problem
 
 多个模块需要 Redis 支撑缓存、锁、计数、限流、Pub/Sub 和状态存储。如果各模块各自封装，会产生以下问题：
 
@@ -53,7 +31,7 @@
 
 ---
 
-## 4. Goals
+## 3. Goals
 
 - 稳定 Redis 存储扩展的 1.0 公共能力边界，覆盖 Key、Options、KV/TTL、Cache、Hash/List、Pub/Sub、Pipeline、Locker、Counter/RateLimit、Codec 与 Health。
 
@@ -71,7 +49,7 @@
 
 ---
 
-## 5. Non-goals
+## 4. Non-goals
 
 - 不封装 Redis 的全部命令集合，只稳定 1.0 明确列出的能力。
 - 不管理 Redis Cluster、Sentinel、备份、扩缩容、认证轮换或运维拓扑。
@@ -83,7 +61,7 @@
 
 ---
 
-## 6. Consumers
+## 5. Consumers
 
 | 消费者 | 使用方式 | 关键约束 |
 | --- | --- | --- |
@@ -96,7 +74,7 @@
 
 ---
 
-## 7. Functional Requirements
+## 6. Functional Requirements
 
 | ID | Requirement Statement | Acceptance Criteria | Test Case | Task |
 | --- | --- | --- | --- | --- |
@@ -115,7 +93,7 @@
 
 ---
 
-## 8. Business Rules
+## 7. Business Rules
 
 | ID | Rule | Acceptance Criteria | Test Case | Task |
 | --- | --- | --- | --- | --- |
@@ -132,7 +110,7 @@
 
 ---
 
-## 9. Non-Functional Requirements
+## 8. Non-Functional Requirements
 
 | ID | Requirement | Acceptance Criteria | Test Case | Task |
 | --- | --- | --- | --- | --- |
@@ -143,7 +121,7 @@
 
 ---
 
-## 10. Interface Contract
+## 9. Interface Contract
 
 ```go
 type Options struct {
@@ -251,7 +229,7 @@ func NewRateLimitHelper(counter Counter) RateLimitHelper
 
 ---
 
-## 11. Data Model
+## 10. Data Model
 
 | 数据对象 | 字段 | 语义 |
 | --- | --- | --- |
@@ -297,7 +275,7 @@ func NewRateLimitHelper(counter Counter) RateLimitHelper
 
 ---
 
-## 12. Config Schema
+## 11. Config Schema
 
 `redisx` 不读取配置源，只接受 typed `Options`。上层可以把以下外部投影解码后传入：
 
@@ -374,7 +352,7 @@ func DefaultConfig() Config {
 
 ---
 
-## 13. Error Handling
+## 12. Error Handling
 
 | 错误 | 场景 | 处理要求 |
 | --- | --- | --- |
@@ -392,7 +370,7 @@ func DefaultConfig() Config {
 
 ---
 
-## 14. Edge Cases
+## 13. Edge Cases
 
 | Edge Case | 预期行为 |
 | --- | --- |
@@ -412,7 +390,7 @@ func DefaultConfig() Config {
 
 ---
 
-## 15. Directory Structure
+## 14. Directory Structure
 ```text
 redisx/
 ├── go.mod
@@ -448,7 +426,7 @@ redisx/
 └── benchmark_test.go
 ```
 
-## 16. Testing
+## 15. Testing
 
 | Test Case | 覆盖 | 类型 | 任务 |
 | --- | --- | --- | --- |
@@ -500,7 +478,7 @@ redisx/
 
 ---
 
-## 17. Performance Budget
+## 16. Performance Budget
 
 | 场景 | 预算 | 验证 |
 | --- | --- | --- |
@@ -516,7 +494,7 @@ redisx/
 
 ---
 
-## 18. Observability
+## 17. Observability
 
 `redisx` 通过本地 hooks 输出事件，上层 adapter 可以转接到日志、metrics 或 trace 系统。生产代码不得直接 import `observex`。
 
@@ -536,7 +514,7 @@ redisx/
 
 ---
 
-## 19. Security
+## 18. Security
 
 - 连接地址、用户名、密码、完整 Key、payload 内容不得写入日志、metric label 或 trace tag。
 - `KeyBuilder.Pattern` 是观测唯一允许使用的 Key 表示。
@@ -547,7 +525,7 @@ redisx/
 
 ---
 
-## 20. CI Gate
+## 19. CI Gate
 
 最小门禁：
 
@@ -561,7 +539,7 @@ redisx/
 
 ---
 
-## 21. Upgrade Compatibility
+## 20. Upgrade Compatibility
 1. 先发布 `Options`、`KeyBuilder`、`Codec`、错误模型和只读 Health，冻结公共契约。
 2. 迁移下游缓存调用到 KeyBuilder 和 KV/TTL API，禁止继续裸 Key。
 3. 迁移分布式锁到 token owner Locker，并保留旧锁 key 的 TTL 过渡窗口。
@@ -604,7 +582,7 @@ Rollback 策略：
 
 ---
 
-## 22. Release DoD
+## 21. Release DoD
 
 - `goal.md`、`SPEC.md`、`TRACEABILITY.md`、10 个 task spec 和 `module/README.md` 的 12 FR、10 BR、4 NFR、10 task 映射一致。
 - 每个 FR 至少有 AC、TC、Task，且 task 文件存在。
@@ -616,7 +594,7 @@ Rollback 策略：
 
 Open Questions: none blocking.
 
-## 23. Open Questions
+## 22. Open Questions
 ### Current
 
 无阻塞性问题。
@@ -628,6 +606,16 @@ Open Questions: none blocking.
 | OQ-001 | 是否需要支持 Redis Cluster 模式？ | 待评估 |
 | OQ-002 | Pipeline 是否需要支持原子事务（MULTI/EXEC）？ | 待评估 |
 | OQ-003 | 是否需要 Redis Stream 封装？ | 待评估 |
+
+---
+
+## 23. 变更历史
+
+| 日期 | 版本 | 变更内容 | 作者 |
+| --- | --- | --- | --- |
+| 2026-06-12 | v1.0.0 | 对齐 12 FR、10 BR、4 NFR、10 个任务和依赖边界 | Codex |
+
+---
 
 ## Appendix A: Risks & Mitigations
 
@@ -641,7 +629,7 @@ Open Questions: none blocking.
 | 直接依赖治理模块 | 破坏 foundation deps | 依赖守卫和 task 非目标约束 |
 | 集成测试依赖 Redis 环境 | CI 不稳定 | 短测默认跳过真实 Redis，集成由显式 env 开启 |
 
-### 21.1 Breaking Change 迁移指南
+### Breaking Change 迁移指南
 
 | 变更类型 | 迁移步骤 |
 |----------|----------|
@@ -649,5 +637,3 @@ Open Questions: none blocking.
 | Pipeline 接口变更 | 同 Client 接口流程 |
 | Locker 接口变更 | 同 Client 接口流程 |
 | 默认 codec 变更 | 1) MINOR 版本 bump；2) CHANGELOG 中说明序列化兼容性影响；3) 消费者可通过 `WithCodec()` 显式覆盖回旧 codec |
-
----

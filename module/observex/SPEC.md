@@ -1,36 +1,17 @@
-# observex 完整规格
-
-> Foundation L1 运行时契约。vendor-neutral 日志、指标、追踪、健康与脱敏契约。
-
-最后更新：2026-06-14
-
----
-
-## 1. Metadata
+# observex 规格
 
 - Status: Approved
 - Spec-Version: v1.0.1
 - Last-Updated: 2026-06-14
-- Owner: ZoneCNH
 - Layer: L1 基础能力
-- Version: v0.7.3 <!-- 模块发布版本；Spec-Version 为本文档自身版本 -->
-- Repository: [github.com/ZoneCNH/observex](https://github.com/ZoneCNH/observex)
-- Related: [CONSTITUTION.md](../../CONSTITUTION.md), [ARCHITECTURE.md](../../ARCHITECTURE.md)
+- Module-Version: v0.7.3
+- Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `kernel`
+
+> 公开投影 caveat：Status=Approved 与 100.0% 覆盖证据不等同于 factory-grade；BLK-007 关闭前机器事实层保持 factory=false。
 
 ---
 
-### 1.1 变更历史
-
-| 日期 | 版本 | 变更内容 | 作者 |
-|------|------|----------|------|
-| 2026-06-07 | v1.0.0 | 初始版本 | ZoneCNH |
-| 2026-06-12 | v1.0.1 | 结构修复：BR违反时列、Data Model补充、FR异常路径、Open Questions分类、配置表格化 | ZoneCNH |
-| 2026-06-12 | v1.0.1 | 状态 Draft → Review（Claude 99 + Rules 100，两源评分通过，待 Codex/Copilot 凑齐四源） | ZoneCNH |
-| 2026-06-12 | v1.0.1 | 结构修复续：Spec-Version对齐、Non-goals补全、config prefix与BR-006对齐、新增EC-010/TC-008、FR-005嵌套脱敏 | ZoneCNH |
-| 2026-06-12 | v1.0.1 | 结构修复续：FR-003/FR-004 异常路径补充、版本号语义说明 | ZoneCNH |
-| 2026-06-12 | v1.0.1 | TC-014 补充：Exporter Shutdown 超时测试用例 | ZoneCNH |
-
-## 2. Summary
+## 1. 摘要
 
 `observex` 是可观测底座，统一日志、指标、追踪和跨模块观测上下文。vendor-neutral 设计，通过接口契约屏蔽底层实现（OTel、Prometheus、Zap 等）。
 
@@ -46,7 +27,7 @@
 
 ---
 
-## 3. Problem
+## 2. Problem
 
 70+ 模块各自接入可观测框架，接口不统一、字段不规范、脱敏缺失，导致：
 
@@ -58,7 +39,7 @@
 
 ---
 
-## 4. Goals
+## 3. Goals
 
 - 统一 Logger / Meter / Tracer 抽象，vendor-neutral，通过 Exporter 适配任意观测平台
 - 标准字段规范：trace_id、span_id、component、module、operation、error_code
@@ -70,7 +51,7 @@
 
 ---
 
-## 5. Non-goals
+## 4. Non-goals
 
 - 不做告警升级（→ `alertx`）
 - 不做业务判断或风控放行
@@ -80,7 +61,7 @@
 
 ---
 
-## 6. Consumers
+## 5. Consumers
 
 | 消费者             | 使用方式                                                    |
 | ------------------ | ----------------------------------------------------------- |
@@ -92,7 +73,7 @@
 
 ---
 
-## 7. Functional Requirements
+## 6. Functional Requirements
 
 ### FR-001: Logger
 
@@ -194,7 +175,7 @@ THEN 对应 component 的 live 字段为 false，整体 ready 为 false，但不
 
 ---
 
-## 8. Business Rules
+## 7. Business Rules
 
 | 编号   | 规则                                                     | 违反时                                                                                                   |
 | ------ | -------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
@@ -209,7 +190,7 @@ THEN 对应 component 的 live 字段为 false，整体 ready 为 false，但不
 
 ---
 
-## 9. Interface Contract
+## 8. Interface Contract
 
 ### 9.1 Logger
 
@@ -298,7 +279,7 @@ var ForbiddenLabels = []string{
 
 ---
 
-## 10. Data Model
+## 9. Data Model
 
 ### 10.1 公共错误
 
@@ -379,7 +360,7 @@ const (
 
 ---
 
-## 11. Config Schema
+## 10. Config Schema
 
 ```yaml
 observex:
@@ -448,7 +429,7 @@ func (c *Config) Validate() error {
 
 ---
 
-## 12. Error Handling
+## 11. Error Handling
 
 | 错误                | 错误码                    | 调用方处理                                         |
 | ------------------- | ------------------------- | -------------------------------------------------- |
@@ -462,7 +443,7 @@ func (c *Config) Validate() error {
 
 ---
 
-## 13. Edge Cases
+## 12. Edge Cases
 
 - exporter 不可达（EC-001）：静默降级，丢弃遥测数据，不影响业务；递增 `observex.exporter.errors` counter
 - 日志写入失败（EC-002）：降级到 stderr
@@ -477,7 +458,7 @@ func (c *Config) Validate() error {
 
 ---
 
-## 14. Directory Structure
+## 13. Directory Structure
 
 ```text
 observex/
@@ -520,7 +501,7 @@ observex/
 
 ---
 
-## 15. Dependencies
+## 14. Dependencies
 
 ### 15.1 go.mod
 
@@ -546,7 +527,7 @@ go 1.23
 
 ---
 
-## 16. Testing
+## 15. Testing
 
 ### 16.1 单元测试
 
@@ -679,7 +660,7 @@ Then 返回 false
 
 ---
 
-## 17. Performance Budget
+## 16. Performance Budget
 
 | 操作                              | 目标                    | 条件                                          | 测量方式                                     |
 | --------------------------------- | ----------------------- | --------------------------------------------- | -------------------------------------------- |
@@ -690,7 +671,7 @@ Then 返回 false
 
 ---
 
-## 18. Observability
+## 17. Observability
 
 | 类型   | 名称                             | 说明                                  |
 | ------ | -------------------------------- | ------------------------------------- |
@@ -705,7 +686,7 @@ Then 返回 false
 
 ---
 
-## 19. Security
+## 18. Security
 
 | 要求                   | 实现方式                                                            |
 | ---------------------- | ------------------------------------------------------------------- |
@@ -723,7 +704,7 @@ Then 返回 false
 
 ---
 
-## 20. CI Gate
+## 19. CI Gate
 
 ### 20.1 通用 Gate
 
@@ -749,7 +730,7 @@ Then 返回 false
 
 ---
 
-## 21. Upgrade Compatibility
+## 20. Upgrade Compatibility
 
 | 变更类型                               | 版本升级              | 迁移方式                                                                                                           |
 | -------------------------------------- | --------------------- | ------------------------------------------------------------------------------------------------------------------ |
@@ -761,7 +742,7 @@ Then 返回 false
 
 ---
 
-## 22. Release DoD
+## 21. Release DoD
 
 - [ ] 所有公共接口有 godoc 注释
 - [ ] 所有公共类型有示例代码（`example_test.go`）
@@ -782,7 +763,7 @@ Then 返回 false
 
 ---
 
-## 23. Open Questions
+## 22. Open Questions
 
 ### Blocking（阻塞开发）
 
@@ -803,3 +784,16 @@ Then 返回 false
 | ID     | 问题                                                    | 状态   | 负责人   |
 | ------ | ------------------------------------------------------- | ------ | -------- |
 | OQ-004 | 是否需要支持 metrics 聚合上报（批量发送减少网络开销）？ | 待评估 | —        |
+
+---
+
+## 23. 变更历史
+
+| 日期 | 版本 | 变更内容 | 作者 |
+|------|------|----------|------|
+| 2026-06-07 | v1.0.0 | 初始版本 | ZoneCNH |
+| 2026-06-12 | v1.0.1 | 结构修复：BR违反时列、Data Model补充、FR异常路径、Open Questions分类、配置表格化 | ZoneCNH |
+| 2026-06-12 | v1.0.1 | 状态 Draft → Review（Claude 99 + Rules 100，两源评分通过，待 Codex/Copilot 凑齐四源） | ZoneCNH |
+| 2026-06-12 | v1.0.1 | 结构修复续：Spec-Version对齐、Non-goals补全、config prefix与BR-006对齐、新增EC-010/TC-008、FR-005嵌套脱敏 | ZoneCNH |
+| 2026-06-12 | v1.0.1 | 结构修复续：FR-003/FR-004 异常路径补充、版本号语义说明 | ZoneCNH |
+| 2026-06-12 | v1.0.1 | TC-014 补充：Exporter Shutdown 超时测试用例 | ZoneCNH |
