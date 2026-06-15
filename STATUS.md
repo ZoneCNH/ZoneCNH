@@ -18,8 +18,8 @@
 | 组件                                                      | 版本        | 阶段投影               | 门禁口径        | 子维度投影                                       | 说明                                                                                                                                                                                                |
 | --------------------------------------------------------- | ----------- | ---------------------- | --------------- | ------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | [xlib-standard](https://github.com/ZoneCNH/xlib-standard) | v1.0.0      | spec/code/release      | factory-ready   | spec=100 mat=98 tsk=100 pln=100 prm=100 cod=100  | 标准事实源 / Go Reference Template；Generator/Harness/Evidence 已拆分至 xlib-harness / xlib-evidence；✅ .repo-contract.yaml (is_standard_source)；✅ GitHub Release v1.0.0 已发布                  |
-| [xlib-harness](https://github.com/ZoneCNH/xlib-harness)   | -           | spec/code              | release-pending | spec=98 mat=100 tsk=98 pln=100 prm=100 cod=100   | 模块生成器与门禁执行器：generate/scaffold、spec-lint、boundary-check、traceability-gate；✅ CI 已部署；⚠️ git tag + GitHub Release 缺失                                                             |
-| [xlib-evidence](https://github.com/ZoneCNH/xlib-evidence) | -           | spec/code              | release-pending | spec=98 mat=100 tsk=100 pln=100 prm=100 cod=100  | 证据收集与发布运行时：collect-coverage、generate-manifest、validate-manifest、report；✅ CI 已部署；⚠️ git tag + GitHub Release 缺失                                                                |
+| [xlib-harness](https://github.com/ZoneCNH/xlib-harness)   | v0.1.0      | spec/code/release      | release-pending | spec=98 mat=100 tsk=98 pln=100 prm=100 cod=100   | 模块生成器与门禁执行器：generate/scaffold、spec-lint、boundary-check、traceability-gate；✅ CI 已部署；✅ git tag v0.1.0；⚠️ GitHub Release 待创建                                                    |
+| [xlib-evidence](https://github.com/ZoneCNH/xlib-evidence) | v0.1.0      | spec/code/release      | release-pending | spec=98 mat=100 tsk=100 pln=100 prm=100 cod=100  | 证据收集与发布运行时：collect-coverage、generate-manifest、validate-manifest、report；✅ CI 已部署；✅ git tag v0.1.0；⚠️ GitHub Release 待创建                                                       |
 | [xlibgate](https://github.com/ZoneCNH/xlibgate)           | v1.0.0      | spec/code/release      | factory-ready   | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | check/l2/trust 三组门禁；✅ .repo-contract.yaml，v1.0.0 已对齐（此前误标 v1.1.1）；trust CLI 已实现                                                                                                 |
 | [kernel](https://github.com/ZoneCNH/kernel)               | v1.0.0      | spec/code/release      | factory-ready   | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | L0 原语 / 12 子包 / stdlib-only；✅ .repo-contract.yaml，v1.0.0 已对齐，建议 API 冻结                                                                                                               |
 | [configx](https://github.com/ZoneCNH/configx)             | v1.0.0      | spec/code/release      | factory-ready   | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | 配置管理；✅ v1.0.0 GitHub Release 已发布；此前误标 v0.1.4 已修正；✅ .repo-contract.yaml                                                                                                           |
@@ -47,8 +47,8 @@
 | 模块                          |     SPEC      |               IMPL                |             RELEASE              |        LIVE INT         |         EXT CI         |            ADOPT            |                     SOAK                      | FACTORY | 备注                                                                                                                                                       |
 | ----------------------------- | :-----------: | :-------------------------------: | :------------------------------: | :---------------------: | :--------------------: | :-------------------------: | :-------------------------------------------: | :-----: | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | xlib-standard                 |      ✅       |                ✅                 |                ✅                |           N/A           |           ✅           |             N/A             |                      N/A                      |   ✅    | v1.0.0; GitHub Release 已发布; 9 CI workflows                                                                                                              |
-| xlib-harness                  |      ✅       |                ✅                 |                ❌                |           N/A           |           ✅           |             N/A             |                      N/A                      |   ❌    | CI 已部署; generate/scaffold/spec-lint/boundary/traceability; ⚠️ git tag + GitHub Release 缺失                                                             |
-| xlib-evidence                 |      ✅       |                ✅                 |                ❌                |           N/A           |           ✅           |             N/A             |                      N/A                      |   ❌    | CI 已部署; evidence collect/generate/validate/report; ⚠️ git tag + GitHub Release 缺失                                                                     |
+| xlib-harness                  |      ✅       |                ✅                 |                ❌                |           N/A           |           ✅           |             N/A             |                      N/A                      |   ❌    | CI 已部署; generate/scaffold/spec-lint/boundary/traceability; ✅ git tag v0.1.0; ⚠️ GitHub Release 待创建                                                   |
+| xlib-evidence                 |      ✅       |                ✅                 |                ❌                |           N/A           |           ✅           |             N/A             |                      N/A                      |   ❌    | CI 已部署; evidence collect/generate/validate/report; ✅ git tag v0.1.0; ⚠️ GitHub Release 待创建                                                           |
 | xlibgate                      |      ✅       |                ✅                 |                ✅                |           N/A           |           ✅           |             N/A             |                      N/A                      |   ✅    | v1.0.0; CI 已部署; 8 workflows; 此前误标 v1.1.1                                                                                                            |
 | kernel                        |      ✅       |                ✅                 |                ✅                |           N/A           |           ✅           |             ✅              |                      N/A                      |   ✅    | v1.0.0; 4 CI workflows; 13 下游消费者; API 冻结建议                                                                                                        |
 | configx                       |      ✅       |                ✅                 |                ✅                |           N/A           |           ✅           |             ✅              |                      N/A                      |   ✅    | v1.0.0; GitHub Release 已发布; 4 CI workflows; 2 下游消费者; 此前误标 v0.1.4 已修正                                                                        |
@@ -193,7 +193,7 @@
 
 | 组件                                                            | 版本 | 进度    | 覆盖率要求 | 说明                     |
 | --------------------------------------------------------------- | ---- | ------- | ---------- | ------------------------ |
-| [alternative-data](https://github.com/ZoneCNH/alternative-data) | -    | ░░░░ 5% | 100%       | 链上、社交情绪、新闻 NLP |
+| [alternative-data](https://github.com/ZoneCNH/alternative-data) | v0.1.0 | ░░░░ 5% | 100%       | 链上、社交情绪、新闻 NLP |
 
 <details>
 <summary>📊 数据域 · 另类多维成熟度展开（点击展开）</summary>
@@ -210,12 +210,12 @@
 
 | 组件                                                      | 版本         | 进度     | 覆盖率要求 | 说明                                                                     |
 | --------------------------------------------------------- | ------------ | -------- | ---------- | ------------------------------------------------------------------------ |
-| [factor-engine](https://github.com/ZoneCNH/factor-engine) | -            | ░░░░ 5%  | 100%       | 因子计算引擎                                                             |
-| [feature-store](https://github.com/ZoneCNH/feature-store) | -            | ░░░░ 5%  | 100%       | 特征存储与版本管理                                                       |
-| [factor-eval](https://github.com/ZoneCNH/factor-eval)     | -            | ░░░░ 5%  | 100%       | 因子评估                                                                 |
-| [market_regime](https://github.com/ZoneCNH/market_regime) | -            | ░░░░ 5%  | 100%       | 市场状态识别                                                             |
-| [macro_regime](https://github.com/ZoneCNH/macro_regime)   | -            | ░░░░ 5%  | 100%       | 宏观经济体制识别（M1-M7）                                                |
-| [ms_brain](https://github.com/ZoneCNH/ms_brain)           | -            | ░░░░ 5%  | 100%       | M×S 系统架构分析体系                                                     |
+| [factor-engine](https://github.com/ZoneCNH/factor-engine) | v0.1.0       | ░░░░ 5%  | 100%       | 因子计算引擎                                                             |
+| [feature-store](https://github.com/ZoneCNH/feature-store) | v0.1.0       | ░░░░ 5%  | 100%       | 特征存储与版本管理                                                       |
+| [factor-eval](https://github.com/ZoneCNH/factor-eval)     | v0.1.0       | ░░░░ 5%  | 100%       | 因子评估                                                                 |
+| [market_regime](https://github.com/ZoneCNH/market_regime) | 空仓库       | ░░░░ 5%  | 100%       | 市场状态识别；空仓库，待初始化                                           |
+| [macro_regime](https://github.com/ZoneCNH/macro_regime)   | 空仓库       | ░░░░ 5%  | 100%       | 宏观经济体制识别（M1-M7）；空仓库，待初始化                               |
+| [ms_brain](https://github.com/ZoneCNH/ms_brain)           | v1.6.6       | ░░░░ 5%  | 100%       | M×S 系统架构分析体系                                                     |
 | [regime-engine](https://github.com/ZoneCNH/regime-engine) | v0.1.0       | ██░░ 25% | 100%       | M×S 联合决策引擎（M+S → action/risk/permission），骨架完成，30+ 测试通过 |
 | [flowx](https://github.com/ZoneCNH/flowx)                 | v0.1.0-draft | ░░░░ 5%  | 100%       | 数据流管线引擎 — 流式 ETL、窗口聚合、背压控制（7 FR, SPEC draft）        |
 
@@ -241,9 +241,9 @@
 
 | 组件                                                          | 版本         | 进度    | 覆盖率要求 | 说明                                                                |
 | ------------------------------------------------------------- | ------------ | ------- | ---------- | ------------------------------------------------------------------- |
-| [signal-factory](https://github.com/ZoneCNH/signal-factory)   | -            | ░░░░ 5% | 100%       | 信号生成与组合                                                      |
-| [backtest-engine](https://github.com/ZoneCNH/backtest-engine) | -            | ░░░░ 5% | 100%       | 事件驱动回测                                                        |
-| [optimizer](https://github.com/ZoneCNH/optimizer)             | -            | ░░░░ 5% | 100%       | 参数优化                                                            |
+| [signal-factory](https://github.com/ZoneCNH/signal-factory)   | v0.1.0       | ░░░░ 5% | 100%       | 信号生成与组合                                                      |
+| [backtest-engine](https://github.com/ZoneCNH/backtest-engine) | v0.1.0       | ░░░░ 5% | 100%       | 事件驱动回测                                                        |
+| [optimizer](https://github.com/ZoneCNH/optimizer)             | v0.1.0       | ░░░░ 5% | 100%       | 参数优化                                                            |
 | [backtestx](https://github.com/ZoneCNH/backtestx)             | v0.1.0-draft | ░░░░ 5% | 100%       | 回测引擎 — 事件驱动回测、Walk-Forward、蒙特卡洛（7 FR, SPEC draft） |
 | [strategyx](https://github.com/ZoneCNH/strategyx)             | v0.1.0-draft | ░░░░ 5% | 100%       | 策略工厂 — 策略注册、参数管理、信号组合（7 FR, SPEC draft）         |
 | [maestro](https://github.com/ZoneCNH/maestro)                 | v0.1.0-draft | ░░░░ 5% | 100%       | 工作流编排引擎 — DAG 工作流、状态机、错误恢复（9 FR, SPEC draft）   |
@@ -268,10 +268,10 @@
 
 | 组件                                                            | 版本         | 进度    | 覆盖率要求 | 说明                                                         |
 | --------------------------------------------------------------- | ------------ | ------- | ---------- | ------------------------------------------------------------ |
-| [risk-engine](https://github.com/ZoneCNH/risk-engine)           | -            | ░░░░ 5% | 100%       | 风险管理引擎                                                 |
-| [order-engine](https://github.com/ZoneCNH/order-engine)         | -            | ░░░░ 5% | 100%       | 订单执行引擎                                                 |
-| [portfolio-engine](https://github.com/ZoneCNH/portfolio-engine) | -            | ░░░░ 5% | 100%       | 投资组合管理                                                 |
-| [settlement](https://github.com/ZoneCNH/settlement)             | -            | ░░░░ 5% | 100%       | 结算与对账                                                   |
+| [risk-engine](https://github.com/ZoneCNH/risk-engine)           | v0.1.0       | ░░░░ 5% | 100%       | 风险管理引擎                                                 |
+| [order-engine](https://github.com/ZoneCNH/order-engine)         | v0.1.0       | ░░░░ 5% | 100%       | 订单执行引擎                                                 |
+| [portfolio-engine](https://github.com/ZoneCNH/portfolio-engine) | v0.1.0       | ░░░░ 5% | 100%       | 投资组合管理                                                 |
+| [settlement](https://github.com/ZoneCNH/settlement)             | v0.1.0       | ░░░░ 5% | 100%       | 结算与对账                                                   |
 | [riskx](https://github.com/ZoneCNH/riskx)                       | v0.1.0-draft | ░░░░ 5% | 100%       | 风控引擎 — 事前风控、回撤控制、熔断机制（7 FR, SPEC draft）  |
 | [orderx](https://github.com/ZoneCNH/orderx)                     | v0.1.0-draft | ░░░░ 5% | 100%       | 订单管理器 — 订单生命周期、SOR、状态机（7 FR, SPEC draft）   |
 | [positionx](https://github.com/ZoneCNH/positionx)               | v0.1.0-draft | ░░░░ 5% | 100%       | 仓位管理器 — 实时仓位追踪、PnL、敞口监控（7 FR, SPEC draft） |
@@ -298,9 +298,9 @@
 | 组件                                              | 域   | 版本   | 进度                            | 覆盖率要求 | 说明                                                      |
 | ------------------------------------------------- | ---- | ------ | ------------------------------- | ---------- | --------------------------------------------------------- |
 | [x.go](https://github.com/ZoneCNH/x.go)           | 入口 | v0.0.1 | ███░ 80%                        | 100%       | 组合根，2.8MB/33 项                                       |
-| [alertx](https://github.com/ZoneCNH/alertx)       | 横切 | -      | ░░░░ 5%                         | 100%       | 告警引擎                                                  |
+| [alertx](https://github.com/ZoneCNH/alertx)       | 横切 | v0.1.0 | ░░░░ 5%                         | 100%       | 告警引擎                                                  |
 | [observex](https://github.com/ZoneCNH/observex)   | 横切 | v0.3.1 | 全管线 --force pass (spec→code) | 100%       | 可观测性（同时归属基座）；✅ v0.3.1 GitHub Release 已发布 |
-| [stdlib.rs](https://github.com/ZoneCNH/stdlib.rs) | Rust | -      | -                               | 100%       | Rust 标准库                                               |
+| [stdlib.rs](https://github.com/ZoneCNH/stdlib.rs) | Rust | v0.1.1 | -                               | 100%       | Rust 标准库                                               |
 | [module](./module/README.md)                      | 独立 | -      | -                               | 100%       | 项目技术规范与接口定义                                    |
 
 ---
@@ -316,27 +316,27 @@
   ░░░░  5%  ████████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  22 个 (28%)
   未标注    ██░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   2 个 ( 3%)
 
-版本覆盖: 有版本号 37 个 (46%)    无版本号 43 个 (54%)
+版本覆盖: 有版本号 77 个 (96%)    无版本号 3 个 (4%)
 ```
 
 ### 按域统计
 
 | 域                     | 总数   | 已有   | 已创建 | 平均进度                           | 有版本号                                              |
 | ---------------------- | ------ | ------ | ------ | ---------------------------------- | ----------------------------------------------------- |
-| 基座                   | 19     | 19     | 0      | Spec→Code 投影完成；factory 未闭合 | 17                                                    |
+| 基座                   | 19     | 19     | 0      | Spec→Code 投影完成；factory 未闭合 | 19                                                    |
 | L2.5 领域共享层        | 5      | 5      | 0      | 100%                               | 5 (全部 5/5 factory grade；live/soak N/A)            |
-| 数据域 · 行情 SDK      | 13     | 13     | 0      | 80%                                | 0                                                     |
-| 数据域 · 行情 Provider | 5      | 5      | 0      | 80%                                | 5 (全部)                                              |
-| 数据域 · 宏观          | 11     | 11     | 0      | 80%                                | 0                                                     |
-| 数据域 · 另类          | 1      | 0      | 1      | 5%                                 | 0                                                     |
-| 分析域                 | 8      | 1      | 7      | 8%                                 | 2 (regime-engine, flowx)                              |
-| 决策域                 | 6      | 0      | 6      | 5%                                 | 3 (backtestx, strategyx, maestro)                     |
-| 执行域                 | 7      | 0      | 7      | 5%                                 | 3 (riskx, orderx, positionx)                          |
+| 数据域 · 行情 SDK      | 13     | 13     | 0      | 80%                                | 13 (全部 v0.1.1)                                      |
+| 数据域 · 行情 Provider | 5      | 5      | 0      | 80%                                | 5 (全部 v0.1.1)                                       |
+| 数据域 · 宏观          | 11     | 11     | 0      | 80%                                | 11 (全部 v0.1.1)                                      |
+| 数据域 · 另类          | 1      | 0      | 1      | 5%                                 | 1 (v0.1.0)                                            |
+| 分析域                 | 8      | 1      | 7      | 8%                                 | 6 (含 ms_brain v1.6.6；market_regime/macro_regime 空仓库) |
+| 决策域                 | 6      | 0      | 6      | 5%                                 | 6 (全部 v0.1.0+)                                      |
+| 执行域                 | 7      | 0      | 7      | 5%                                 | 7 (全部 v0.1.0+)                                      |
 | 入口                   | 1      | 1      | 0      | 80%                                | 1 (x.go)                                              |
-| 横切                   | 2      | 1      | 1      | 53%                                | 1 (observex)                                          |
-| Rust                   | 1      | 1      | 0      | -                                  | 0                                                     |
+| 横切                   | 2      | 1      | 1      | 53%                                | 2 (observex, alertx)                                  |
+| Rust                   | 1      | 1      | 0      | -                                  | 1 (stdlib.rs v0.1.1)                                  |
 | 独立                   | 1      | 1      | 0      | -                                  | 0                                                     |
-| **合计**               | **80** | **58** | **22** | **62%**                            | **37**                                                |
+| **合计**               | **80** | **58** | **22** | **62%**                            | **77**                                                |
 
 ---
 
@@ -358,7 +358,7 @@
 
 ### 🟢 数据域 · 行情（健康）
 
-- SDK：13 个交易所适配器，全部 80%，无版本号
+- SDK：13 个交易所适配器，全部 v0.1.1，进度 80%
 - Provider：5 个 Kline/Ticker Provider，全部 v0.1.1，进度 80%
 - **待确认**：SDK 全部 v0.1.1 tagged release，已通过生产验证？
 
