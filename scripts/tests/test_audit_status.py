@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from pathlib import Path
+import ast
 import subprocess
 import sys
 
@@ -66,6 +66,64 @@ def test_public_projection_guardrails_remain_explicit_in_docs():
         assert "domainx" in text
         assert "公开投影" in text
         assert "factory-grade" in text or "factory grade" in text
+
+
+def load_audit_status_namespace():
+    source = (ROOT / "scripts" / "audit-status.py").read_text()
+    tree = ast.parse(source, filename=str(ROOT / "scripts" / "audit-status.py"))
+    allowed = (ast.Import, ast.ImportFrom, ast.FunctionDef)
+    module = ast.Module(body=[node for node in tree.body if isinstance(node, allowed)], type_ignores=[])
+    namespace: dict[str, object] = {}
+    exec(compile(module, str(ROOT / "scripts" / "audit-status.py"), "exec"), namespace)
+    return namespace
+
+
+def test_compare_multidimensional_projection_detects_drift_and_overclaims():
+    ns = load_audit_status_namespace()
+    compare = ns["compare_multidimensional_projection"]
+
+    status_rows = {
+        "alpha": {
+            "spec": "✅",
+            "impl": "✅",
+            "release": "❌",
+            "live": "N/A",
+            "ext_ci": "N/A",
+            "adopt": "N/A",
+            "soak": "N/A",
+            "factory": "✅",
+            "note": "drift",
+        },
+        "beta": {
+            "spec": "✅",
+            "impl": "✅",
+            "release": "✅",
+            "live": "N/A",
+            "ext_ci": "N/A",
+            "adopt": "N/A",
+            "soak": "N/A",
+            "factory": "N/A",
+            "note": "boundary",
+        },
+    }
+    modules = {
+        "alpha": {"release": True, "factory": False},
+        "gamma": {"release": False, "factory": True},
+    }
+    blockers_doc = {
+        "factory_blocking_modules": ["alpha"],
+        "blockers": [{"module": "alpha", "status": "open"}],
+    }
+
+    projection = compare(status_rows, modules, blockers_doc)
+
+    assert projection["missing_status_rows"] == ["gamma"]
+    assert projection["extra_status_rows"] == ["beta"]
+    assert projection["release_yes"] == 1
+    assert projection["release_mismatches"] == ["alpha (STATUS ❌ != fact-layer ✅)"]
+    assert projection["factory_mismatches"] == ["alpha (STATUS ✅ != fact-layer ❌)"]
+    assert projection["factory_na"] == 1
+    assert projection["factory_overclaims"] == ["alpha"]
 
 
 def test_audit_status_full_mode_runs_clean():
