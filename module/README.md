@@ -117,7 +117,7 @@ test-only，不参与生产运行时。
 
 基础设施客户端封装。均为可选，按需引入。
 
-> **投影口径**：`module/` 是规格 SSOT；release/factory 公共成熟度由 `.foundationx/status/index.json` + `.foundationx/blockers.json` 投影。存在公开 release 缺口或 BLK-001/002/003/006/007 open 时，不声明 Foundation 单一 100% 或 factory-grade。
+> **投影口径**：`module/` 是规格 SSOT；release/factory 公共成熟度由 `.foundationx/status/index.json` + `.foundationx/blockers.json` 投影。存在公开 release 缺口或 BLK-001/002/003/006/007/008 open 时，不声明 Foundation 单一 100% 或 factory-grade。
 
 | 模块        | 规格                                                    | 封装目标                                                                                             |
 | ----------- | ------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
@@ -126,7 +126,7 @@ test-only，不参与生产运行时。
 | natsx       | [SPEC.md](./natsx/SPEC.md) · [TRACEABILITY.md](./natsx/TRACEABILITY.md) | NATS — 内部通信、JetStream（v1.0.0 已发布；真实 dev auth live gate 已验证；正式四源 98+ arbiter 与生产 TLS gate 待补，BLK-001/BLK-002 open；非 factory） |
 | postgresx   | [SPEC.md](./postgresx/SPEC.md) · [TRACEABILITY.md](./postgresx/TRACEABILITY.md) · [goal.md](./postgresx/goal.md) · [tasks/](./postgresx/tasks/) | PostgreSQL — 关系型存储、事务、迁移（v1.0.0 已发布，release-final-check + live integration 通过；单元测试 52.4% + Docker integration skip，BLK-006 open；非 factory） |
 | taosx       | [SPEC.md](./taosx/SPEC.md) · [TRACEABILITY.md](./taosx/TRACEABILITY.md) · [goal.md](./taosx/goal.md) | TDengine L2 adapter contract（pkg/taosx v1.0.1；真实 taosWS WebSocket 集成已验证；SPEC 67，BLK-007 open；非 factory） |
-| ossx        | [SPEC.md](./ossx/SPEC.md) · [TRACEABILITY.md](./ossx/TRACEABILITY.md) · [goal.md](./ossx/goal.md) · [IMPLEMENTATION-PLAN.md](./ossx/IMPLEMENTATION-PLAN.md) · [tasks/](./ossx/tasks/) · [prompt/](./ossx/prompt/) | Aliyun OSS 对象存储 L2 adapter（v1.0.1 已发布；真实 Aliyun OSS 集成、race、vet、build、release-check 与 100.0% 覆盖已验证（仅覆盖验证口径，不等同于 factory-ready）；S3/MinIO/Azure/GCS Provider 仅保留扩展位） |
+| ossx        | [SPEC.md](./ossx/SPEC.md) · [TRACEABILITY.md](./ossx/TRACEABILITY.md) · [goal.md](./ossx/goal.md) · [IMPLEMENTATION-PLAN.md](./ossx/IMPLEMENTATION-PLAN.md) · [tasks/](./ossx/tasks/) · [prompt/](./ossx/prompt/) | Aliyun OSS 对象存储 L2 adapter（v1.0.1 已发布；真实 Aliyun OSS 集成、race、vet、build、release-check 与 100.0% 覆盖已验证（仅覆盖验证口径，不等同于 factory-ready）；BLK-008 open：API 文档 / integration evidence / quickstart / release manifest 未归档；非 factory；S3/MinIO/Azure/GCS Provider 仅保留扩展位） |
 | clickhousex | [SPEC.md](./clickhousex/SPEC.md) · [TRACEABILITY.md](./clickhousex/TRACEABILITY.md) · [goal.md](./clickhousex/goal.md) · [tasks/](./clickhousex/tasks/) | ClickHouse — OLAP 查询、批量写入（v1.0.1；完整 SPEC + TRACEABILITY §1-§7 + 7 Tasks；公开 GitHub Release 未发布，BLK-003 open；非 factory）                                                                     |
 
 ---
