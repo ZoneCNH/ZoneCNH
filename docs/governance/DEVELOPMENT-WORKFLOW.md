@@ -9,6 +9,8 @@
 ## 分支创建纪律
 
 > 本节操作约束优先级等同于 `CONSTITUTION.md` §0.2。所有 Agent 和人类贡献者必须遵守。
+>
+> **适用范围**：含源码的模块仓库**必须**使用 `git worktree add` 隔离；纯文档仓库（如 ZoneCNH/ZoneCNH）允许 feature branch 替代 worktree（参见 `CONSTITUTION.md` §0.2.1）。
 
 ### 规则
 
