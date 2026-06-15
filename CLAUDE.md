@@ -83,7 +83,6 @@
 - **所有分支必须从 `main` HEAD 创建**。创建前必须先 `git fetch origin && git rebase origin/main` 确保本地 main 为最新。禁止从其他 feature branch 或旧 commit 拉取新分支。
 - 所有开发工作必须通过 `git worktree` 或 feature branch 进行。
 - 工作完成后通过 PR 或 merge 合入 main，随后清理 worktree 和 feature branch。
-- 隔离工作区统一使用 `.worktree/`（项目根），已通过 `.gitignore` 排除。禁止使用 `.worktrees/`（复数）或 `.claude/worktrees/` 等其他路径。
 - 仅 `git merge`/`git rebase`/`git pull` 和紧急 hotfix 允许在 main 上执行。
 
 ## 工作流规则（2026-06-12 / 2026-06-14 / 2026-06-15 三场会话复盘）
