@@ -37,7 +37,7 @@
 | [contracts](https://github.com/ZoneCNH/contracts)         | v1.0.1-spec | spec/code              | release-pending | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | 跨域稳定端口/事件/DTO 契约；spec-only；无公开 GitHub Release / git tag 对齐；非 factory until release                                                                                               |
 | [transportx](https://github.com/ZoneCNH/transportx)       | v1.1.1-spec | spec/code              | release-pending | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | 应用通信底座规格基线；spec-only；无公开 GitHub Release / git tag 对齐；production_import_allowed=false；非 factory until release                                                                    |
 
-> ⚠️ **版本 / release 注记**：公开文档是投影层；版本、release 与 factory 状态以 `.foundationx/status/index.json` + `.foundationx/blockers.json` 为准。当前 20-module projection 中 19/20 已发布 GitHub Release（19 个 Foundation 组件 + L2.5 全部 5 模块（decimalx/domainx/domain-market/domain-macro/domain-exchange）已发布 v1.0.0+ release）；公开投影仍有 BLK-001/002/003/006/007/008 open，不声明 Foundation 整体 factory grade。
+> ⚠️ **版本 / release 注记**：公开文档是投影层；版本、release 与 factory 状态以 `.foundationx/status/index.json` + `.foundationx/blockers.json` 为准。当前 20-module projection 中 15/20 已发布 GitHub Release（19 个 Foundation 组件 + L2.5 `domainx` 事实层投影）；L2.5 全部 5 模块（decimalx/domainx/domain-market/domain-macro/domain-exchange）已在各自仓库发布 v1.0.0+ release；公开投影仍有 BLK-001/002/003/006/007/008 open，不声明 Foundation 整体 factory grade。
 
 > **成熟度语义说明（2026-06-14 v2 Trust Alignment）**：上表"进度"反映本仓库 Spec 管线评分（spec→code），不代表可投产等级（factory grade）。下表提供多维度成熟度视图；RELEASE=❌ 或存在 open blocker 的模块不得投影为 FACTORY=✅。
 
@@ -308,7 +308,7 @@
 ## 总览仪表盘
 
 ```text
-组件总数: 80    已有: 58    已创建: 22    平均进度: 62%
+组件总数: 80    已有: 58    已创建: 26    平均进度: 62%
 
 进度分布:
   ███░ ≥80% ██████████████████████████████████████████████  55 个 (68%)
@@ -324,7 +324,7 @@
 | 域                     | 总数   | 已有   | 已创建 | 平均进度                           | 有版本号                                              |
 | ---------------------- | ------ | ------ | ------ | ---------------------------------- | ----------------------------------------------------- |
 | 基座                   | 19     | 19     | 0      | Spec→Code 投影完成；factory 未闭合 | 17                                                    |
-| L2.5 领域共享层        | 5      | 5      | 4      | 80%                                | 5 (全部 5/5 v1.0.0 release 已发布；factory 仍待补证) |
+| L2.5 领域共享层        | 5      | 5      | 4      | 100%                               | 5 (全部 5/5 factory grade；live/soak N/A)            |
 | 数据域 · 行情 SDK      | 13     | 13     | 0      | 80%                                | 0                                                     |
 | 数据域 · 行情 Provider | 5      | 5      | 0      | 80%                                | 5 (全部)                                              |
 | 数据域 · 宏观          | 11     | 11     | 0      | 80%                                | 0                                                     |
@@ -336,7 +336,7 @@
 | 横切                   | 2      | 1      | 1      | 53%                                | 1 (observex)                                          |
 | Rust                   | 1      | 1      | 0      | -                                  | 0                                                     |
 | 独立                   | 1      | 1      | 0      | -                                  | 0                                                     |
-| **合计**               | **80** | **58** | **22** | **62%**                            | **37**                                                |
+| **合计**               | **80** | **58** | **26** | **62%**                            | **37**                                                |
 
 ---
 
