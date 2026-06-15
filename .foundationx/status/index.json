@@ -239,7 +239,7 @@
       "adopt": "N/A",
       "soak": false,
       "factory": false,
-      "note": "release=false: no public GitHub release; BLK-003 open; trust hardening requires factory=false until release evidence and Docker integration close"
+      "note": "release=false: public tag v1.0.1 exists, but no public GitHub Release or release/manifest closure packet; BLK-003 open; trust hardening requires factory=false until release evidence and Docker integration close"
     },
     "contracts": {
       "layer": "contracts",
@@ -252,7 +252,7 @@
       "adopt": true,
       "soak": "N/A",
       "factory": false,
-      "note": ".repo-contract.yaml all_aligned=false and no git tag; release=false/factory=false until aligned public release evidence exists"
+      "note": "release=false: public tag v1.0.1-spec exists, but source repo remains all_aligned=false and has no public GitHub Release or release/manifest closure packet; factory=false until aligned public release evidence exists"
     },
     "transportx": {
       "layer": "contracts",
@@ -265,7 +265,7 @@
       "adopt": "N/A",
       "soak": "N/A",
       "factory": false,
-      "note": ".repo-contract.yaml all_aligned=false and no git tag; release=false/factory=false until aligned public release evidence exists"
+      "note": "release=false: public tag v1.1.1-spec exists, but source repo remains all_aligned=false and has no public GitHub Release or release/manifest closure packet; factory=false until aligned public release evidence exists"
     },
     "domainx": {
       "layer": "L2.5",
