@@ -17,7 +17,7 @@
 
 ---
 
-## 2. Problem
+## 2. 问题与背景
 
 量化策略开发中的回测挑战：
 
@@ -29,7 +29,7 @@
 
 ---
 
-## 3. Goals
+## 3. 目标
 
 - 事件驱动回测：按历史行情时间序列逐 tick/bar 驱动
 - 与实盘共享代码：回测和实盘使用相同的因子、信号、风控模块
@@ -40,7 +40,7 @@
 
 ---
 
-## 4. Non-goals
+## 4. 非目标
 
 - 不做因子计算（→ factor-engine）
 - 不做信号生成（→ strategyx）
@@ -50,7 +50,7 @@
 
 ---
 
-## 5. Consumers
+## 5. 消费者
 
 | 消费者       | 使用方式                              |
 | ------------ | ------------------------------------- |
@@ -61,7 +61,7 @@
 
 ---
 
-## 6. Functional Requirements
+## 6. 功能需求
 
 ### FR-001: Event-Driven Simulation
 
@@ -149,7 +149,7 @@ THEN it MUST be `module github.com/ZoneCNH/backtestx`
 | AC-BTX-007 | FR-007 | 滑点模型（固定+比例）和手续费模型（maker/taker）正确应用；支持自定义滑点和手续费函数 |
 | AC-BTX-008 | FR-008 | README H1 为 `# backtestx`；Go module path 为 `github.com/ZoneCNH/backtestx`；go.mod 声明 `module github.com/ZoneCNH/backtestx` |
 
-## 7. Business Rules
+## 7. 行为约束
 
 | 编号   | 规则                                   | 违反后果 |
 | ------ | -------------------------------------- | -------- |
@@ -161,7 +161,7 @@ THEN it MUST be `module github.com/ZoneCNH/backtestx`
 
 ---
 
-## 8. Interface Contract
+## 8. 接口契约
 
 ```go
 type BacktestEngine interface {
@@ -184,7 +184,7 @@ type DataFeed interface {
 
 ---
 
-## 9. Data Model
+## 9. 数据模型
 
 | 模型              | 字段 |
 | ----------------- | ---- |
@@ -198,7 +198,7 @@ type DataFeed interface {
 
 ---
 
-## 10. Config Schema
+## 10. 配置模式
 
 ```yaml
 backtestx:
@@ -215,7 +215,7 @@ backtestx:
 
 ---
 
-## 11. Error Handling
+## 11. 错误处理
 
 | 错误                  | 处理方式                       |
 | --------------------- | ------------------------------ |
@@ -226,7 +226,7 @@ backtestx:
 
 ---
 
-## 12. Edge Cases
+## 12. 边界情况
 
 | 场景                       | 预期行为                         |
 | -------------------------- | -------------------------------- |
@@ -237,7 +237,7 @@ backtestx:
 
 ---
 
-## 13. Directory Structure
+## 13. 目录结构
 
 ```text
 backtestx/
@@ -259,7 +259,7 @@ backtestx/
 
 ---
 
-## 14. Dependencies
+## 14. 依赖
 
 | 可以依赖                             | 禁止依赖                     |
 | ------------------------------------ | ---------------------------- |
@@ -271,7 +271,7 @@ backtestx/
 
 ---
 
-## 15. Testing
+## 15. 测试
 
 | 测试场景            | 验证点                           |
 | ------------------- | -------------------------------- |
@@ -283,7 +283,7 @@ backtestx/
 
 ---
 
-## 16. Performance Budget
+## 16. 性能预算
 
 | 操作                  | 目标       |
 | --------------------- | ---------- |
@@ -294,7 +294,7 @@ backtestx/
 
 ---
 
-## 17. Observability
+## 17. 可观测性
 
 | 信号   | 指标                                  |
 | ------ | ------------------------------------- |
@@ -305,7 +305,7 @@ backtestx/
 
 ---
 
-## 18. Security
+## 18. 安全
 
 | 要求               | 实现方式                         |
 | ------------------ | -------------------------------- |
@@ -314,7 +314,7 @@ backtestx/
 
 ---
 
-## 19. CI Gate
+## 19. CI 门禁
 
 | Gate   | 命令                               | 阻塞条件       |
 | ------ | ---------------------------------- | -------------- |
@@ -324,7 +324,7 @@ backtestx/
 
 ---
 
-## 20. Upgrade Compatibility
+## 20. 升级兼容性
 
 | 变更类型             | 版本升级 |
 | -------------------- | -------- |
@@ -334,7 +334,7 @@ backtestx/
 
 ---
 
-## 21. Release DoD
+## 21. 发布 DoD
 
 - [ ] 事件驱动回测引擎完整实现
 - [ ] 10+ 项绩效指标全部计算
@@ -345,7 +345,7 @@ backtestx/
 
 ---
 
-## 22. Open Questions
+## 22. 待解决问题
 
 - 是否支持多资产组合回测（basket backtest）？
 - 是否需要支持 Tick 级回测（非 bar 级）？

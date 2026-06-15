@@ -17,7 +17,7 @@
 
 ---
 
-## 2. Problem
+## 2. 问题与背景
 
 量化交易系统由多个领域组成（数据域、分析域、决策域、执行域），域间通信如果没有统一契约，会导致：
 
@@ -29,7 +29,7 @@
 
 ---
 
-## 3. Goals
+## 3. 目标
 
 - 定义跨域稳定端口：`MarketDataProvider`、`MacroDataProvider` 等核心接口
 - 定义事件协议：统一的 Event 接口和 Topic 常量
@@ -41,7 +41,7 @@
 
 ---
 
-## 4. Non-goals
+## 4. 非目标
 
 ### 5.1 What contracts OWNS
 
@@ -91,7 +91,7 @@
 
 ---
 
-## 5. Consumers
+## 5. 消费者
 
 | 消费者             | 使用方式                                     |
 | ------------------ | -------------------------------------------- |
@@ -106,7 +106,7 @@
 
 ---
 
-## 6. Functional Requirements
+## 6. 功能需求
 
 ### FR-001: MarketDataProvider
 
@@ -203,7 +203,7 @@ THEN it MUST be `module github.com/ZoneCNH/contracts`
 
 ---
 
-## 7. Business Rules
+## 7. 行为约束
 
 | 编号   | 规则                                                           | 违反后果 |
 | ------ | -------------------------------------------------------------- | -------- |
@@ -220,7 +220,7 @@ THEN it MUST be `module github.com/ZoneCNH/contracts`
 
 ---
 
-## 8. Interface Contract
+## 8. 接口契约
 
 ### 9.1 数据输入端口
 
@@ -336,7 +336,7 @@ type MacroHistoryRequest struct {
 
 ---
 
-## 9. Data Model
+## 9. 数据模型
 
 ### 10.1 公共错误
 
@@ -390,7 +390,7 @@ var TopicEventTypes = map[string]reflect.Type{
 
 ---
 
-## 10. Config Schema
+## 10. 配置模式
 
 `contracts` 自身不加载配置。它的 Go 类型定义是其他模块的编译时依赖。
 
@@ -405,7 +405,7 @@ events:
 
 ---
 
-## 11. Error Handling
+## 11. 错误处理
 
 | 错误                   | 调用方处理                             |
 | ---------------------- | -------------------------------------- |
@@ -422,7 +422,7 @@ events:
 
 ---
 
-## 12. Edge Cases
+## 12. 边界情况
 
 | 场景                             | 预期行为                                     |
 | -------------------------------- | -------------------------------------------- |
@@ -439,7 +439,7 @@ events:
 
 ---
 
-## 13. Directory Structure
+## 13. 目录结构
 
 ```text
 contracts/
@@ -473,7 +473,7 @@ contracts/
 
 ---
 
-## 14. Dependencies
+## 14. 依赖
 
 ### 15.1 go.mod
 
@@ -497,7 +497,7 @@ go 1.23
 
 ---
 
-## 15. Testing
+## 15. 测试
 
 ### 16.1 单元测试
 
@@ -572,7 +572,7 @@ AND `go.mod` 声明 `module github.com/ZoneCNH/contracts`
 
 ---
 
-## 16. Performance Budget
+## 16. 性能预算
 
 | 操作                 | 目标    | 测量方式                          |
 | -------------------- | ------- | --------------------------------- |
@@ -584,7 +584,7 @@ AND `go.mod` 声明 `module github.com/ZoneCNH/contracts`
 
 ---
 
-## 17. Observability
+## 17. 可观测性
 
 | 类型   | 名称                          | 说明                                   |
 | ------ | ----------------------------- | -------------------------------------- |
@@ -597,7 +597,7 @@ AND `go.mod` 声明 `module github.com/ZoneCNH/contracts`
 
 ---
 
-## 18. Security
+## 18. 安全
 
 | 要求               | 实现方式                                  |
 | ------------------ | ----------------------------------------- |
@@ -607,7 +607,7 @@ AND `go.mod` 声明 `module github.com/ZoneCNH/contracts`
 
 ---
 
-## 19. CI Gate
+## 19. CI 门禁
 
 ### 20.1 通用 Gate
 
@@ -633,7 +633,7 @@ AND `go.mod` 声明 `module github.com/ZoneCNH/contracts`
 
 ---
 
-## 20. Upgrade Compatibility
+## 20. 升级兼容性
 
 | 变更类型                     | 版本升级                  |
 | ---------------------------- | ------------------------- |
@@ -649,7 +649,7 @@ AND `go.mod` 声明 `module github.com/ZoneCNH/contracts`
 
 ---
 
-## 21. Release DoD
+## 21. 发布 DoD
 
 - [ ] 所有端口接口有 godoc 注释
 - [ ] 所有 DTO 有 JSON tag（snake_case）
@@ -672,7 +672,7 @@ AND `go.mod` 声明 `module github.com/ZoneCNH/contracts`
 
 ---
 
-## 22. Open Questions
+## 22. 待解决问题
 
 - 端口接口是否需要支持批量操作（如 `Subscribe` 一次订阅多个 topic 的子集）？
 - 是否需要支持请求-响应模式的 RPC 端口（除了事件推送）？

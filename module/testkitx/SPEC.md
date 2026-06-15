@@ -28,7 +28,7 @@
 
 ---
 
-## 2. Problem
+## 2. 问题与背景
 
 各模块测试中重复实现 fake、fixture、assert 逻辑，导致：
 
@@ -41,7 +41,7 @@
 
 ---
 
-## 3. Goals
+## 3. 目标
 
 - 统一 fake 实现：FakeConfig / FakeLogger / FakeMeter / FakeTracer / FakeClock / FakeBreaker
 - 编译期接口检查（`var _ Interface = (*FakeImpl)(nil)`）
@@ -53,7 +53,7 @@
 
 ---
 
-## 4. Non-goals
+## 4. 非目标
 
 - 不进入生产二进制或生产依赖图（生产代码由各模块自身维护，testkitx 仅供 `go test` 使用；BR-005 + CI Gate `no-production-import` 强制执行）
 - 不定义交易、行情、风控、订单、仓位等业务域模型（业务模型由 `contracts` 和各业务域模块负责，testkitx 的 fake 类型只镜像 L1 基础设施接口）
@@ -62,7 +62,7 @@
 
 ---
 
-## 5. Consumers
+## 5. 消费者
 
 | 消费者            | 使用方式                                      |
 | ----------------- | --------------------------------------------- |
@@ -75,7 +75,7 @@
 
 ---
 
-## 6. Functional Requirements
+## 6. 功能需求
 
 ### FR-001: FakeConfig
 
@@ -186,7 +186,7 @@ THEN 测试通过
 
 ---
 
-## 7. Business Rules
+## 7. 行为约束
 
 | 编号 | 规则 | 违反时 |
 | --- | --- | --- |
@@ -200,7 +200,7 @@ THEN 测试通过
 
 ---
 
-## 8. Interface Contract
+## 8. 接口契约
 
 ### 9.1 Fake 实现
 
@@ -281,7 +281,7 @@ func GoroutineLeakCheck(t *testing.T)
 
 ---
 
-## 9. Data Model
+## 9. 数据模型
 
 ### 10.1 公共错误
 
@@ -295,7 +295,7 @@ var (
 
 ---
 
-## 10. Config Schema
+## 10. 配置模式
 
 testkitx 不读取配置。行为通过环境变量控制：
 
@@ -305,7 +305,7 @@ GOLDEN_UPDATE=1    # 更新 golden 文件
 
 ---
 
-## 11. Error Handling
+## 11. 错误处理
 
 | 错误                   | 调用方处理                      |
 | ---------------------- | ------------------------------- |
@@ -317,7 +317,7 @@ GOLDEN_UPDATE=1    # 更新 golden 文件
 
 ---
 
-## 12. Edge Cases
+## 12. 边界情况
 
 | 场景                        | 预期行为                              |
 | --------------------------- | ------------------------------------- |
@@ -330,7 +330,7 @@ GOLDEN_UPDATE=1    # 更新 golden 文件
 
 ---
 
-## 13. Directory Structure
+## 13. 目录结构
 
 ```text
 testkitx/
@@ -376,7 +376,7 @@ testkitx/
 
 ---
 
-## 14. Dependencies
+## 14. 依赖
 
 ### 15.1 go.mod
 
@@ -403,7 +403,7 @@ testkitx 是唯一允许依赖所有 Foundation L1 模块的包，但仅在 `go 
 
 ---
 
-## 15. Testing
+## 15. 测试
 
 ### 16.1 单元测试
 
@@ -503,7 +503,7 @@ Then 报告泄漏并失败
 
 ---
 
-## 16. Performance Budget
+## 16. 性能预算
 
 | 操作        | 目标   | 测量方式                   |
 | ----------- | ------ | -------------------------- |
@@ -512,7 +512,7 @@ Then 报告泄漏并失败
 
 ---
 
-## 17. Observability
+## 17. 可观测性
 
 testkitx 不 emit 生产可观测数据。它提供 fake exporter 用于测试验证：
 
@@ -526,7 +526,7 @@ exporter.AssertSpanCount(3)
 
 ---
 
-## 18. Security
+## 18. 安全
 
 | 要求                     | 实现方式                                |
 | ------------------------ | --------------------------------------- |
@@ -535,7 +535,7 @@ exporter.AssertSpanCount(3)
 
 ---
 
-## 19. CI Gate
+## 19. CI 门禁
 
 ### 20.1 通用 Gate
 
@@ -560,7 +560,7 @@ exporter.AssertSpanCount(3)
 
 ---
 
-## 20. Upgrade Compatibility
+## 20. 升级兼容性
 
 | 变更类型          | 版本升级                                    |
 | ----------------- | ------------------------------------------- |
@@ -571,7 +571,7 @@ exporter.AssertSpanCount(3)
 
 ---
 
-## 21. Release DoD
+## 21. 发布 DoD
 
 - [ ] 所有公共接口有 godoc 注释
 - [ ] 所有公共类型有示例代码
@@ -592,7 +592,7 @@ exporter.AssertSpanCount(3)
 
 ---
 
-## 22. Open Questions
+## 22. 待解决问题
 
 
 ### Non-blocking

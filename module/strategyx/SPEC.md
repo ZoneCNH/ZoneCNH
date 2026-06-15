@@ -17,7 +17,7 @@
 
 ---
 
-## 2. Problem
+## 2. 问题与背景
 
 量化策略开发中的痛点：
 
@@ -29,7 +29,7 @@
 
 ---
 
-## 3. Goals
+## 3. 目标
 
 - 统一策略接口：所有策略实现相同的 Strategy 接口
 - 策略注册表：按名称发现和加载策略
@@ -40,7 +40,7 @@
 
 ---
 
-## 4. Non-goals
+## 4. 非目标
 
 - 不做因子计算（→ factor-engine）
 - 不做回测执行（→ backtestx）
@@ -50,7 +50,7 @@
 
 ---
 
-## 5. Consumers
+## 5. 消费者
 
 | 消费者       | 使用方式                              |
 | ------------ | ------------------------------------- |
@@ -61,7 +61,7 @@
 
 ---
 
-## 6. Functional Requirements
+## 6. 功能需求
 
 ### FR-001: Strategy Interface
 
@@ -155,7 +155,7 @@ THEN it MUST be `module github.com/ZoneCNH/strategyx`
 | AC-STX-007 | FR-007 | WarmUp 完成后进入 Ready 状态；WarmUp 超时标记为 Degraded |
 | AC-STX-008 | FR-008 | README H1 为 `# strategyx`；Go module path 为 `github.com/ZoneCNH/strategyx`；go.mod 声明 `module github.com/ZoneCNH/strategyx` |
 
-## 7. Business Rules
+## 7. 行为约束
 
 | 编号   | 规则                                     | 违反后果 |
 | ------ | ---------------------------------------- | -------- |
@@ -167,7 +167,7 @@ THEN it MUST be `module github.com/ZoneCNH/strategyx`
 
 ---
 
-## 8. Interface Contract
+## 8. 接口契约
 
 ```go
 type Strategy interface {
@@ -206,7 +206,7 @@ type Signal struct {
 
 ---
 
-## 9. Data Model
+## 9. 数据模型
 
 | 模型            | 字段 |
 | --------------- | ---- |
@@ -219,7 +219,7 @@ type Signal struct {
 
 ---
 
-## 10. Config Schema
+## 10. 配置模式
 
 ```yaml
 strategyx:
@@ -235,7 +235,7 @@ strategyx:
 
 ---
 
-## 11. Error Handling
+## 11. 错误处理
 
 | 错误                  | 处理方式                     |
 | --------------------- | ---------------------------- |
@@ -246,7 +246,7 @@ strategyx:
 
 ---
 
-## 12. Edge Cases
+## 12. 边界情况
 
 | 场景                       | 预期行为                         |
 | -------------------------- | -------------------------------- |
@@ -257,7 +257,7 @@ strategyx:
 
 ---
 
-## 13. Directory Structure
+## 13. 目录结构
 
 ```text
 strategyx/
@@ -279,7 +279,7 @@ strategyx/
 
 ---
 
-## 14. Dependencies
+## 14. 依赖
 
 | 可以依赖                             | 禁止依赖                   |
 | ------------------------------------ | -------------------------- |
@@ -289,7 +289,7 @@ strategyx/
 
 ---
 
-## 15. Testing
+## 15. 测试
 
 | 测试场景            | 验证点                           |
 | ------------------- | -------------------------------- |
@@ -301,7 +301,7 @@ strategyx/
 
 ---
 
-## 16. Performance Budget
+## 16. 性能预算
 
 | 操作              | 目标     |
 | ----------------- | -------- |
@@ -311,7 +311,7 @@ strategyx/
 
 ---
 
-## 17. Observability
+## 17. 可观测性
 
 | 信号   | 指标                                  |
 | ------ | ------------------------------------- |
@@ -323,7 +323,7 @@ strategyx/
 
 ---
 
-## 18. Security
+## 18. 安全
 
 | 要求               | 实现方式                     |
 | ------------------ | ---------------------------- |
@@ -332,7 +332,7 @@ strategyx/
 
 ---
 
-## 19. CI Gate
+## 19. CI 门禁
 
 | Gate   | 命令                               | 阻塞条件       |
 | ------ | ---------------------------------- | -------------- |
@@ -342,7 +342,7 @@ strategyx/
 
 ---
 
-## 20. Upgrade Compatibility
+## 20. 升级兼容性
 
 | 变更类型             | 版本升级 |
 | -------------------- | -------- |
@@ -352,7 +352,7 @@ strategyx/
 
 ---
 
-## 21. Release DoD
+## 21. 发布 DoD
 
 - [ ] Strategy 接口完整定义
 - [ ] Registry 注册/发现/卸载完整实现
@@ -362,7 +362,7 @@ strategyx/
 
 ---
 
-## 22. Open Questions
+## 22. 待解决问题
 
 - 是否需要支持策略热加载（plugin 模式）？
 - 是否需要策略市场（策略模板库）？

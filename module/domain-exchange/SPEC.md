@@ -43,7 +43,7 @@
 - Fail-closed：未知能力、未知错误和不安全重试必须默认失败。
 - 可测试：所有能力、错误和 retry/idempotency 语义必须可用 fake exchange 验证。
 
-## 5. Non-Goals 与发布门禁
+## 5. 非目标与发布门禁
 
 - 不实现真实交易所客户端（Binance/OKX adapter 属于独立实现层）
 - 不管理订单状态 SSOT（Order/ExecutionReport 归 domainx；domain-exchange 仅通过 SPI 传递）
@@ -62,7 +62,7 @@
 | 错误门禁 | retry/idempotency/rate limit 有明确测试。 |
 | 下游门禁 | fake exchange 与至少一个 downstream smoke 通过。 |
 
-## 6. Consumers
+## 6. 消费者
 
 - `order-engine`：通过 Exchange SPI 下单/撤单/查询
 - `risk-engine`：通过 AccountReader 查询余额，通过 OrderPlacer 提交订单
@@ -70,7 +70,7 @@
 - 回测引擎：使用 fake exchange 模拟交易
 - `domain-exchange` 的 Registry 供 kernel 启动时注册可用 venue
 
-## 7. Functional Requirements
+## 7. 功能需求
 
 | ID | 需求 | WHEN | THEN |
 |----|------|------|------|
@@ -87,7 +87,7 @@
 | FR-EXC-011 | stream-lifecycle | ctx cancel 或 stream 关闭 | Channel 可预测关闭；不支持 WS 的 venue 返回 ErrUnsupportedCapability |
 | FR-EXC-012 | order-type-alignment | 返回订单/成交 | 使用 domainx.Order/ExecutionReport 或标注 deprecated alias |
 
-## 8. Business Rules
+## 8. 行为约束
 
 | ID | 规则 |
 |----|------|
@@ -99,7 +99,7 @@
 | BR-EXC-006 | Registry 重复注册返回错误，不允许覆盖 |
 | BR-EXC-007 | WS channel 关闭规则：ctx cancel 后 channel 可预测关闭；不允许 goroutine leak |
 
-## 9. Interface Contract
+## 9. 接口契约
 
 ```go
 // 基础身份与能力
@@ -153,7 +153,7 @@ type Exchange interface {
 }
 ```
 
-## 10. Data Model
+## 10. 数据模型
 
 ```go
 type PlaceOrderRequest struct {
@@ -202,7 +202,7 @@ type VenueProfile struct {
 }
 ```
 
-## 11. Config Schema
+## 11. 配置模式
 
 ```yaml
 domain_exchange:
@@ -221,7 +221,7 @@ domain_exchange:
       time_sync: true
 ```
 
-## 12. Error Handling
+## 12. 错误处理
 
 | 错误 | 含义 | 调用方处理 |
 |------|------|-----------|
@@ -235,7 +235,7 @@ domain_exchange:
 | ErrClockSkew | 时间偏差过大 | 同步本地时钟 |
 | ErrStreamClosed | WS stream 已关闭 | 重新订阅或检查连接状态 |
 
-## 13. Edge Cases
+## 13. 边界情况
 
 - 交易所返回未知错误码：ExchangeError 包装原始 venue code，调用方可 errors.Is 判断已知类型
 - WS stream 断连重连：adapter 层可重连，但 domain-exchange 必须暴露错误/质量信号
@@ -244,7 +244,7 @@ domain_exchange:
 - ctx cancel 后 WS channel 未关闭：需 leak test 保证无 goroutine leak
 - ClientID 空字符串在 prod/paper 模式：Validate() 必须拒绝
 
-## 14. Directory Structure
+## 14. 目录结构
 
 ```text
 module/domain-exchange/
@@ -255,7 +255,7 @@ module/domain-exchange/
   tasks/
 ```
 
-## 15. Dependencies
+## 15. 依赖
 
 - 允许：`kernel`（errors、contracts、lifecycle）
 - 允许：`decimalx`（Price/Qty/金额）
@@ -265,7 +265,7 @@ module/domain-exchange/
 - 禁止：存储层（Redis、Postgres、TDengine）
 - 禁止：策略/风控/因子模块
 
-## 16. Testing
+## 16. 测试
 
 - 单元测试：每个 SPI 接口独立可测
 - 集成测试：PlaceOrder → CancelOrder → QueryOrder 端到端
@@ -283,7 +283,7 @@ module/domain-exchange/
 **TC-EXC-006:** ctx cancel 后 WS channel 关闭可预测，无 goroutine leak。
 **TC-EXC-007:** 返回订单/成交语义对齐 domainx 类型。
 
-## 17. Performance Budget
+## 17. 性能预算
 
 | 指标 | 目标 |
 |------|------|
@@ -291,20 +291,20 @@ module/domain-exchange/
 | PlaceOrderValidate | < 10μs |
 | Error 分类 | < 1μs |
 
-## 18. Observability
+## 18. 可观测性
 
 - 无运行时指标（领域接口层）
 - ExchangeError 包含 venue code 可被上层 observex 包装
 - VenueProfile 描述静态能力，供监控面板读取
 
-## 19. Security
+## 19. 安全
 
 - 不存储 API key/secret（由 adapter/infra 管理）
 - 不连接远程服务（SPI 定义层不含网络调用）
 - ClientID 幂等防止重复下单
 - RateLimitPolicy 防止误操作导致限频
 
-## 20. CI Gate
+## 20. CI 门禁
 
 - `GOWORK=off go test ./...`
 - `GOWORK=off go test -race ./...`
@@ -314,14 +314,14 @@ module/domain-exchange/
 - `GOWORK=off make adoption-check`（如接入 xlib-standard）
 - `GOWORK=off make release-check`
 
-## 21. Upgrade Compatibility
+## 21. 升级兼容性
 
 - v1 SPI 接口名称和签名保持稳定
 - 新增 Capability 常量为追加，不删除旧常量
 - ExchangeError 子类型只可追加，不可删除或改语义
 - domainexchange.Order deprecated alias 保留到 v2，迁移路径写入 MIGRATION.md
 
-## 22. Release DoD
+## 22. 发布 DoD
 
 - [ ] SPEC Approved
 - [ ] 所有 FR 实现并测试
@@ -335,7 +335,7 @@ module/domain-exchange/
 - [ ] Version 更新为 v1.0.0
 - [ ] CHANGELOG.md、MIGRATION.md、release manifest 齐全
 
-## 23. Open Questions
+## 23. 待解决问题
 
 - 旧 Exchange 大接口是否保留为兼容 facade？
 - domainexchange.Order 的 deprecated alias 保留到 v1.x 还是 v2？

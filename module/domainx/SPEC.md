@@ -17,7 +17,7 @@
 
 ---
 
-## 2. Problem
+## 2. 问题与背景
 
 交易系统的订单、持仓和成交数据跨越多个域（决策域发信号 → 执行域下单 → 成交回报 → 风控域更新持仓）。当前缺少统一的订单-持仓域值对象：
 
@@ -29,7 +29,7 @@
 
 ---
 
-## 3. Goals
+## 3. 目标
 
 - 定义 Order 值对象：order_id、symbol、side、type、quantity、price、state、timestamps
 - 定义 Position 值对象：symbol、quantity、avg_price、unrealized_pnl、realized_pnl
@@ -41,7 +41,7 @@
 
 ---
 
-## 4. Non-Goals
+## 4. 非目标
 
 - 不做订单状态机引擎或生命周期管理（由 order-engine 负责）
 - 不做仓位计算逻辑（由 risk-engine 根据 Trade 流计算 Position）
@@ -53,7 +53,7 @@
 
 ---
 
-## 5. Consumers
+## 5. 消费者
 
 | 消费者 | 使用方式 |
 |--------|----------|
@@ -66,7 +66,7 @@
 
 ---
 
-## 6. Functional Requirements
+## 6. 功能需求
 
 ### FR-001: Order 值对象
 
@@ -158,7 +158,7 @@ THEN 无公开 setter，所有修改操作返回新实例（copy-on-write），�
 
 ---
 
-## 7. Business Rules
+## 7. 行为约束
 
 | 编号 | 规则 | 违反时 |
 | --- | --- | --- |
@@ -175,7 +175,7 @@ THEN 无公开 setter，所有修改操作返回新实例（copy-on-write），�
 
 ---
 
-## 8. Interface Contract
+## 8. 接口契约
 
 L2.5 值对象模块不定义接口。domainx 提供纯值对象类型和枚举。
 
@@ -210,7 +210,7 @@ const (
 
 ---
 
-## 9. Data Model
+## 9. 数据模型
 
 ### Order
 
@@ -294,13 +294,13 @@ const (
 
 ---
 
-## 10. Config Schema
+## 10. 配置模式
 
 domainx 作为 L2.5 值对象模块，不加载运行时配置。类型定义是编译时依赖。
 
 ---
 
-## 11. Error Handling
+## 11. 错误处理
 
 | 错误 | 触发条件 | 处理方式 |
 |------|----------|----------|
@@ -318,7 +318,7 @@ domainx 作为 L2.5 值对象模块，不加载运行时配置。类型定义是
 
 ---
 
-## 12. Edge Cases
+## 12. 边界情况
 
 | 场景 | 预期行为 |
 |------|----------|
@@ -337,7 +337,7 @@ domainx 作为 L2.5 值对象模块，不加载运行时配置。类型定义是
 
 ---
 
-## 13. Directory Structure
+## 13. 目录结构
 
 ```text
 domainx/
@@ -358,13 +358,13 @@ domainx/
 
 ---
 
-## 14. Dependencies
+## 14. 依赖
 
 只依赖 stdlib + `github.com/ZoneCNH/decimalx`。禁止依赖任何 L1 运行时模块、存储扩展、业务域实现、其他 L2.5 模块。
 
 ---
 
-## 15. Testing
+## 15. 测试
 
 ### 16.1 Acceptance Criteria
 
@@ -447,7 +447,7 @@ Then a new value object is returned and no setter is exposed
 
 ---
 
-## 16. Performance Budget
+## 16. 性能预算
 
 | 操作 | 目标 | 测量方式 |
 |------|------|----------|
@@ -458,13 +458,13 @@ Then a new value object is returned and no setter is exposed
 
 ---
 
-## 17. Observability
+## 17. 可观测性
 
 纯值对象模块，不直接产生可观测输出。由调用方（risk-engine、order-engine）通过 observex 集成。
 
 ---
 
-## 18. Security
+## 18. 安全
 
 - 不硬编码 secret/API key/密码
 - 日志不记录敏感数据
@@ -474,14 +474,14 @@ Then a new value object is returned and no setter is exposed
 
 ---
 
-## 19. CI Gate
+## 19. CI 门禁
 
 通用：build / test -race / coverage≥80% / vet / lint / go mod tidy / gitleaks
 专属：TestNew / TestJSONRoundTrip / TestImmutability / TestOrderStateTransition
 
 ---
 
-## 20. Upgrade Compatibility
+## 20. 升级兼容性
 
 | 变更类型 | 兼容性 | 迁移 |
 |----------|--------|------|
@@ -493,7 +493,7 @@ Then a new value object is returned and no setter is exposed
 
 ---
 
-## 21. Release DoD
+## 21. 发布 DoD
 
 - [x] 所有值对象有 godoc
 - [x] 所有枚举有文档
@@ -511,7 +511,7 @@ Then a new value object is returned and no setter is exposed
 
 ---
 
-## 22. Open Questions
+## 22. 待解决问题
 
 ### Non-blocking
 

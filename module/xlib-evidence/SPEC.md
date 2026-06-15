@@ -26,11 +26,11 @@ xlib-evidence 是 Foundation 的**证据收集与发布运行时**——收集�
 
 testkitx 与 xlib-evidence 的分工链：testkitx 在 `go test` 过程中生成 golden/contract/boundary/leak 等原始证据 → xlib-evidence 在 CI pipeline 中收集这些证据，结合 coverage 和 gate 结果，生成发布期 manifest 和统一报告。
 
-## 2. Problem
+## 2. 问题与背景
 
 xlib-standard 的 Evidence Runtime 与其声明式标准定义耦合，导致证据收集逻辑和标准定义无法独立演进。证据运行时是一个独立的观测/报告系统，应有自己的发布周期。
 
-## 3. Goals
+## 3. 目标
 
 - 收集各模块覆盖率报告（`go test -cover`）
 - 收集门禁结果（spec-lint / boundary-check / traceability-gate 输出）
@@ -38,20 +38,20 @@ xlib-standard 的 Evidence Runtime 与其声明式标准定义耦合，导致证
 - 支持远程证据查询和验证
 - 输出统一证据报告供 CI 消费
 
-## 4. Non-goals
+## 4. 非目标
 
 - 不定义标准（那是 xlib-standard）
 - 不执行门禁检查（那是 xlib-harness / xlibgate）
 - 不生成模块骨架（那是 xlib-harness）
 - 不参与业务运行时
 
-## 5. Consumers
+## 5. 消费者
 
 - CI 管线：收集证据作为 gate 输入
 - xlibgate：发布就绪检查需要 evidence manifest
 - 审计/治理：证据可追溯、可验证
 
-## 6. Functional Requirements
+## 6. 功能需求
 
 | ID | 需求 | WHEN | THEN |
 |----|------|------|------|
@@ -61,7 +61,7 @@ xlib-standard 的 Evidence Runtime 与其声明式标准定义耦合，导致证
 | FR-004 | remote-evidence | 远程查询模块证据 | 返回结构化证据（覆盖率、门禁历史、manifest） |
 | FR-005 | evidence-report | 聚合多模块证据 | 生成跨模块统一报告 |
 
-## 7. Business Rules
+## 7. 行为约束
 
 | ID | 规则 |
 |----|------|
@@ -70,7 +70,7 @@ xlib-standard 的 Evidence Runtime 与其声明式标准定义耦合，导致证
 | BR-003 | manifest 不可事后篡改（hash 链校验） |
 | BR-004 | evidence 存储必须不可变追加 |
 
-## 8. Interface Contract
+## 8. 接口契约
 
 ```go
 type EvidenceCollector interface {
@@ -87,7 +87,7 @@ type ManifestValidator interface {
 }
 ```
 
-## 9. Data Model
+## 9. 数据模型
 
 ```go
 type CoverageReport struct {
@@ -113,7 +113,7 @@ type EvidenceBundle struct {
 }
 ```
 
-## 10. Config Schema
+## 10. 配置模式
 
 ```yaml
 xlib_evidence:
@@ -125,7 +125,7 @@ xlib_evidence:
     endpoint: ""
 ```
 
-## 11. Error Handling
+## 11. 错误处理
 
 | 错误 | 含义 | 调用方处理 |
 |------|------|-----------|
@@ -133,14 +133,14 @@ xlib_evidence:
 | ErrGateNotPassed | 门禁未全绿 | 修复后重试 |
 | ErrManifestTampered | manifest hash 不匹配 | 重新生成或调查篡改 |
 
-## 12. Edge Cases
+## 12. 边界情况
 
 - 覆盖率恰好 80.00%（边界值）
 - manifest 文件被手动修改
 - 多个 CI job 并发生成同一模块 manifest
 - 远程 evidence endpoint 不可用时的降级
 
-## 13. Directory Structure
+## 13. 目录结构
 
 ```text
 module/xlib-evidence/
@@ -151,14 +151,14 @@ module/xlib-evidence/
   tasks/
 ```
 
-## 14. Dependencies
+## 14. 依赖
 
 - 允许：kernel（time/errors）
 - 禁止：observex、configx、resiliencx、schedulex
 - 禁止：任何存储/网络后端（不连接 Redis/Postgres）
 - 允许：读取文件系统上的覆盖率报告和门禁输出
 
-## 15. Testing
+## 15. 测试
 
 - 单元测试：manifest 生成/验证独立可测
 - 集成测试：collect → generate → validate 端到端
@@ -172,42 +172,42 @@ module/xlib-evidence/
 **TC-004:** HTTP endpoint 返回 JSON 证据。
 **TC-005:** 3 模块输入 → 统合报告列出全部状态。
 
-## 16. Performance Budget
+## 16. 性能预算
 
 | 指标 | 目标 |
 |------|------|
 | manifest 生成 | < 1s |
 | 多模块报告聚合（20 模块） | < 5s |
 
-## 17. Observability
+## 17. 可观测性
 
 - 无运行时指标（不参与业务运行）
 - 证据报告格式：JSON
 
-## 18. Security
+## 18. 安全
 
 - manifest hash 用于完整性校验
 - 不读取密钥
 - 不连接远程服务（remote evidence 为可选）
 
-## 19. CI Gate
+## 19. CI 门禁
 
 - `make test`
 - `make vet`
 
-## 20. Upgrade Compatibility
+## 20. 升级兼容性
 
 - manifest 格式 v1 保持稳定
 - 新字段为追加，不删除旧字段
 
-## 21. Release DoD
+## 21. 发布 DoD
 
 - [ ] SPEC Approved
 - [ ] 所有 FR 实现并测试
 - [ ] collect → generate → validate 闭环
 - [ ] 文档齐全
 
-## 22. Open Questions
+## 22. 待解决问题
 
 - remote evidence 是否需要签名？
 - 证据存储是否需要支持 SQLite/文件双后端？

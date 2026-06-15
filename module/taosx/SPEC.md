@@ -38,7 +38,7 @@ v1.0.1 保持 `pkg/taosx` 为公共运行时 API：默认驱动仍显式不可�
 - 不直接依赖 `configx`、`observex`、`resiliencx` 等横切模块；这些能力由调用方在边界外组合。
 - 不保证原始 SQL 的注入安全；`taosx` 只拒绝空 SQL，参数化和 SQL DSL 属于上层或具体驱动职责。
 
-## 4. Consumers
+## 4. 消费者
 
 - `market-data` 采集层：通过 `WriteBatch`/`SchemalessWrite` 将 Tick/Bar/Kline 等行情数据写入 TDengine 超级表，利用高频写入吞吐优势。
 - `order-engine`：通过 `Exec`/`Query` 持久化订单执行报告和成交记录，支持历史订单查询。
@@ -225,7 +225,7 @@ if err != nil {
 defer rows.Close()
 ```
 
-## 8. CI Gate
+## 8. CI 门禁
 
 | 门禁 | 命令 / 检查 | 阻断条件 |
 |------|-------------|----------|
@@ -254,7 +254,7 @@ defer rows.Close()
 
 错误必须带操作名、分类和可脱敏上下文。配置错误归类为 validation，默认驱动错误归类为 unavailable，关闭后的操作归类为 closed，驱动透传错误必须保留原始 cause 供调用方诊断。
 
-## 10. Edge Cases
+## 10. 边界情况
 
 - **空 SQL/Query/Batch**：`Exec(ctx, "")`、`Query(ctx, "")`、`WriteBatch(ctx, empty)` → 返回 validation error，不委托给驱动。
 - **驱动未注入时调用操作**：`Exec`/`Query`/`WriteBatch`/`SchemalessWrite` → 返回 unavailable 错误；`Health` → 返回 degraded 状态。
@@ -277,7 +277,7 @@ defer rows.Close()
 
 `Client` 构造后可被并发调用。`Close` 必须幂等；关闭过程中不得产生 panic。关闭完成后，执行、查询、批量写入、schemaless 写入和健康检查必须返回可分类状态。
 
-## 13. Performance Budget
+## 13. 性能预算
 
 | 指标 | 目标 | 测量方法 |
 |------|------|----------|
@@ -305,7 +305,7 @@ defer rows.Close()
 
 核心包直接 Zone 依赖仅允许 `kernel`。真实 TDengine driver、指标后端、配置中心和重试组件都必须通过端口注入或测试边界接入。
 
-## 17. Directory Structure
+## 17. 目录结构
 
 ```text
 module/taosx/

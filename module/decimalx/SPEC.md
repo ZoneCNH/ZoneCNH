@@ -42,7 +42,7 @@
 - 可迁移：v1.0.0 后公共 API 破坏性变更必须进入新主版本。
 - 可验证：核心算术、格式化、JSON、SQL、Money/Currency 均需 golden 或 property 测试。
 
-## 5. Non-Goals 与 v1.0.0 发布门禁
+## 5. 非目标与发布门禁
 
 - 不实现交易所精度规则（price tick、lot size 等由 domain-market/domain-exchange 负责）
 - 不实现账本、税务或估值计算（由上层业务域负责）
@@ -60,7 +60,7 @@
 | 下游门禁 | `domain-market`、`domain-exchange`、`domain-macro`、`domainx` 可编译采用。 |
 | CI 门禁 | 单元测试、race、fuzz/property、staticcheck、govulncheck 通过。 |
 
-## 6. Consumers
+## 6. 消费者
 
 - `domain-market`：Tick/Quote/Bar 的 Price/Qty 字段
 - `domain-exchange`：PlaceOrderRequest 的 Price/Qty、Balance 的 Free/Locked
@@ -68,7 +68,7 @@
 - `domainx`：Order/Position/ExecutionReport 金额字段
 - `order-engine`、`risk-engine`、`factor-engine`：策略与执行层全部金融数值
 
-## 7. Functional Requirements
+## 7. 功能需求
 
 | ID | 需求 | WHEN | THEN |
 |----|------|------|------|
@@ -83,7 +83,7 @@
 | FR-DEC-009 | money-currency | 跨币种 Add/Sub | 返回错误，不允许跨币种运算 |
 | FR-DEC-010 | error-identity | 调用方使用 `errors.Is`/`errors.As` | typed errors 可识别，错误码可被 transport 层映射 |
 
-## 8. Business Rules
+## 8. 行为约束
 
 | ID | 规则 |
 |----|------|
@@ -95,7 +95,7 @@
 | BR-DEC-006 | `Money` 跨币种运算必须失败——防止隐式汇率假设 |
 | BR-DEC-007 | rounding mode 语义一旦冻结不可在 minor 版本内变更 |
 
-## 9. Interface Contract
+## 9. 接口契约
 
 ```go
 // Decimal 是不可变定点十进制数。
@@ -145,7 +145,7 @@ type Qty = Decimal
 type Ratio = Decimal
 ```
 
-## 10. Data Model
+## 10. 数据模型
 
 ```go
 // Decimal 内部表示：coefficient * 10^(-scale)
@@ -174,7 +174,7 @@ type CurrencyPolicy struct {
 }
 ```
 
-## 11. Config Schema
+## 11. 配置模式
 
 ```yaml
 decimalx:
@@ -185,7 +185,7 @@ decimalx:
   rounding_default: RoundHalfEven
 ```
 
-## 12. Error Handling
+## 12. 错误处理
 
 | 错误 | 含义 | 调用方处理 |
 |------|------|-----------|
@@ -198,7 +198,7 @@ decimalx:
 | ErrFloatScanRejected | SQL Scan 收到 float32/float64 | 确保数据库列使用 DECIMAL/STRING 类型 |
 | ErrCurrencyMismatch | Money 跨币种运算 | 先转换币种或拒绝运算 |
 
-## 13. Edge Cases
+## 13. 边界情况
 
 - Parse 空字符串、`".1"`、`"1."`、`"+1"`、`"1e3"`、`"NaN"`、`"Inf"` 均须拒绝或按 grammar 规则处理
 - scale 为负数时的 String/CanonicalString 输出（如 coeff=123, scale=-2 → "12300"）
@@ -207,7 +207,7 @@ decimalx:
 - `Coeff()` 返回的 `*big.Int` 被调用方修改不影响原 Decimal
 - JSON 反序列化时遇到无引号 number（如 `1.23` 而非 `"1.23"`）必须失败
 
-## 14. Directory Structure
+## 14. 目录结构
 
 ```text
 module/decimalx/
@@ -218,7 +218,7 @@ module/decimalx/
   tasks/
 ```
 
-## 15. Dependencies
+## 15. 依赖
 
 - 允许：`kernel`（errors、contracts）
 - 允许：Go 标准库 `math/big`、`strconv`、`encoding/json`、`database/sql`、`fmt`
@@ -226,7 +226,7 @@ module/decimalx/
 - 禁止：transport 层（HTTP、gRPC、Kafka）
 - 禁止：存储层（Redis、Postgres、TDengine）
 
-## 16. Testing
+## 16. 测试
 
 - 单元测试：Parse/String/CanonicalString/FixedString table tests
 - 算术测试：Add/Sub 精确性；QuoExact 非终止拒绝；QuoScale rounding
@@ -246,7 +246,7 @@ module/decimalx/
 **TC-DEC-007:** 并发读取 Decimal 无 data race。
 **TC-DEC-008:** v1 golden snapshot 行为一致。
 
-## 17. Performance Budget
+## 17. 性能预算
 
 | 指标 | 目标 |
 |------|------|
@@ -256,18 +256,18 @@ module/decimalx/
 | JSON Marshal/Unmarshal | < 2μs |
 | QuoScale | < 1μs |
 
-## 18. Observability
+## 18. 可观测性
 
 - 无运行时指标（纯计算库）
 - 错误通过 typed errors 和错误码暴露，可被上层 observex 包装
 
-## 19. Security
+## 19. 安全
 
 - `DefaultLimits` 防止资源滥用（超长精度/超大 scale 拒绝）
 - `ParseUnlimited` 仅允许 trusted boundary 使用，需 lint/文档约束
 - 不读取密钥、不连接网络、不操作文件系统
 
-## 20. CI Gate
+## 20. CI 门禁
 
 - `GOWORK=off go test ./...`
 - `GOWORK=off go test -race ./...`
@@ -278,14 +278,14 @@ module/decimalx/
 - `GOWORK=off make adoption-check`（如接入 xlib-standard）
 - `GOWORK=off make release-check`
 
-## 21. Upgrade Compatibility
+## 21. 升级兼容性
 
 - v1 Public API freeze 后字段删除、重命名、语义反转必须进入 v2
 - 新增 rounding mode 属于向后兼容（新增常量不破坏现有代码）
 - 错误类型只可追加，不可删除或改语义
 - Money/Currency 若 v1 后拆出为 `moneyx`，须在 MIGRATION.md 写明迁移路径
 
-## 22. Release DoD
+## 22. 发布 DoD
 
 - [ ] SPEC Approved
 - [ ] 所有 FR 实现并测试
@@ -301,7 +301,7 @@ module/decimalx/
 - [ ] Version 更新为 v1.0.0
 - [ ] CHANGELOG.md、MIGRATION.md、release manifest 齐全
 
-## 23. Open Questions
+## 23. 待解决问题
 
 - Money/Currency 是否保留在 decimalx v1 Public API，或拆出新模块 moneyx？
 - 是否需要更多 rounding modes（Ceiling、Floor、AwayFromZero）？

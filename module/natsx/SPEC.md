@@ -19,7 +19,7 @@ Scope note: 本规格描述 `/home/ZoneCNH/module/natsx` 的 1.0 目标，不单
 
 ---
 
-## 2. Problem
+## 2. 问题与背景
 
 70+ 模块之间需要低延迟的内部通信机制，各自封装 NATS 客户端会导致：
 
@@ -31,7 +31,7 @@ Scope note: 本规格描述 `/home/ZoneCNH/module/natsx` 的 1.0 目标，不单
 
 ---
 
-## 3. Goals
+## 3. 目标
 
 - 提供统一的 NATS 客户端封装，覆盖 Core NATS 和 JetStream
 - Core NATS：Publish / Subscribe / Request-Reply（低延迟，at-most-once）
@@ -44,7 +44,7 @@ Scope note: 本规格描述 `/home/ZoneCNH/module/natsx` 的 1.0 目标，不单
 
 ---
 
-## 4. Non-goals
+## 4. 非目标
 
 - 不做 NATS 集群管理（由运维配置）
 - 不做消息路由（业务层决定 subject）
@@ -54,7 +54,7 @@ Scope note: 本规格描述 `/home/ZoneCNH/module/natsx` 的 1.0 目标，不单
 
 ---
 
-## 5. Consumers
+## 5. 消费者
 
 | 消费者          | 使用方式                                         |
 | --------------- | ------------------------------------------------ |
@@ -67,7 +67,7 @@ Scope note: 本规格描述 `/home/ZoneCNH/module/natsx` 的 1.0 目标，不单
 
 ---
 
-## 6. Functional Requirements
+## 6. 功能需求
 
 ### FR-001: Publish（Core NATS）
 
@@ -173,7 +173,7 @@ THEN 返回 HealthStatus{Ready: false, Live: true, Message: "jetstream unavailab
 | AC-008 | Health | NATS 可用时 Health() 返回 Ready=true/Live=true；不可达时 Ready=false/Live=false；JetStream 不可用时 Ready=false/Live=true | TC-005, unit test | ✅ Healthy, disconnected, nil, canceled, closed, reconnect, and degraded health paths covered |
 
 
-## 7. Business Rules
+## 7. 行为约束
 
 | 编号 | 规则 | 违反时 |
 | --- | --- | --- |
@@ -189,7 +189,7 @@ THEN 返回 HealthStatus{Ready: false, Live: true, Message: "jetstream unavailab
 
 ---
 
-## 8. Interface Contract
+## 8. 接口契约
 
 公开 API 命名以 `goal.md` 的 1.0 逻辑接口基线为准：`NatsPubSubClient`、`NatsRequestClient`、`JetStreamClientX`、`NatsMessageEnvelope` 和 `SubjectBuilder`。实现可以保留内部适配器，但 Public API 不再暴露泛化的 `Client`/`JetStream` 命名作为 1.0 稳定契约。
 
@@ -278,7 +278,7 @@ fmt.Printf("stored in stream %s, seq %d\n", ack.Stream, ack.Sequence)
 
 ---
 
-## 9. Data Model
+## 9. 数据模型
 
 ### 10.1 公共错误
 
@@ -307,7 +307,7 @@ type Codec interface {
 
 ---
 
-## 10. Config Schema
+## 10. 配置模式
 
 配置命名以 `foundationx.nats.*` 为稳定前缀，避免与其它消息模块冲突。环境变量使用 `FOUNDATIONX_NATS_*` 作为 canonical 输入，旧的 `NATS_*` 变量仅作为兼容回退；当两者同时存在时，`FOUNDATIONX_NATS_*` 必须优先生效。
 
@@ -341,7 +341,7 @@ Executable repair evidence (2026-06-13): `ConfigFromEnv` / `LoadConfigFromEnv` �
 
 ---
 
-## 11. Error Handling
+## 11. 错误处理
 
 | 错误                   | 调用方处理                                      |
 | ---------------------- | ----------------------------------------------- |
@@ -360,7 +360,7 @@ Executable repair evidence (2026-06-13): `ConfigFromEnv` / `LoadConfigFromEnv` �
 
 ---
 
-## 12. Edge Cases
+## 12. 边界情况
 
 | 场景 | 预期行为 |
 |------|----------|
@@ -380,7 +380,7 @@ Executable repair evidence (2026-06-13): `ConfigFromEnv` / `LoadConfigFromEnv` �
 
 ---
 
-## 13. Directory Structure
+## 13. 目录结构
 
 ```text
 natsx/
@@ -411,7 +411,7 @@ natsx/
 
 ---
 
-## 14. Dependencies
+## 14. 依赖
 
 ### 15.1 go.mod
 
@@ -434,7 +434,7 @@ go 1.23
 
 ---
 
-## 15. Testing
+## 15. 测试
 
 ### 16.1 单元测试
 
@@ -513,7 +513,7 @@ Then 输出 MUST NOT 包含 secret/token/password 明文
 
 ---
 
-## 16. Performance Budget
+## 16. 性能预算
 
 | 操作                  | 目标    | 测量方式       |
 | --------------------- | ------- | -------------- |
@@ -528,7 +528,7 @@ Executable repair evidence (2026-06-13): embedded CI assertions now enforce gene
 
 ---
 
-## 17. Observability
+## 17. 可观测性
 
 | 类型 | 名称 | 说明 |
 |------|------|------|
@@ -549,7 +549,7 @@ Executable repair evidence (2026-06-13): `/home/natsx` commit `393d148` records 
 
 ---
 
-## 18. Security
+## 18. 安全
 
 | 要求                   | 实现方式                            |
 | ---------------------- | ----------------------------------- |
@@ -562,7 +562,7 @@ Production TLS evidence is a release-blocking governance artifact, not a local-d
 
 ---
 
-## 19. CI Gate
+## 19. CI 门禁
 
 ### 20.1 通用 Gate
 
@@ -589,7 +589,7 @@ Production TLS evidence is a release-blocking governance artifact, not a local-d
 
 ---
 
-## 20. Upgrade Compatibility
+## 20. 升级兼容性
 
 | 变更类型 | 版本升级 |
 |----------|----------|
@@ -604,7 +604,7 @@ Production TLS evidence is a release-blocking governance artifact, not a local-d
 
 ---
 
-## 21. Release DoD
+## 21. 发布 DoD
 
 - [ ] 所有公共接口有 godoc 注释
 - [ ] 所有公共类型有示例代码
@@ -623,7 +623,7 @@ Production TLS evidence is a release-blocking governance artifact, not a local-d
 
 ---
 
-## 22. Open Questions
+## 22. 待解决问题
 
 - 是否需要支持 NATS Leaf Node 连接（跨集群通信）？
 - JetStream 是否需要支持 KV Store（NATS 内置 KV 抽象）？

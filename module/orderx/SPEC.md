@@ -17,7 +17,7 @@
 
 ---
 
-## 2. Problem
+## 2. 问题与背景
 
 多交易所交易场景中的订单管理挑战：
 
@@ -29,7 +29,7 @@
 
 ---
 
-## 3. Goals
+## 3. 目标
 
 - 统一订单状态机：NEW → PENDING → PARTIAL → FILLED / CANCELLED / REJECTED / EXPIRED
 - 订单路由：根据 symbol、exchange、liquidity 选择最优执行场所
@@ -39,7 +39,7 @@
 
 ---
 
-## 4. Non-goals
+## 4. 非目标
 
 - 不做风控决策（→ riskx）
 - 不做策略决策（→ strategyx）
@@ -49,7 +49,7 @@
 
 ---
 
-## 5. Consumers
+## 5. 消费者
 
 | 消费者       | 使用方式                            |
 | ------------ | ----------------------------------- |
@@ -61,7 +61,7 @@
 
 ---
 
-## 6. Functional Requirements
+## 6. 功能需求
 
 ### FR-001: Order Lifecycle
 
@@ -153,7 +153,7 @@ THEN it MUST be `module github.com/ZoneCNH/orderx`
 | AC-ORD-007 | FR-007 | 订单状态变更记录 OrderAuditEvent；审计事件不可删除 |
 | AC-ORD-008 | FR-008 | README H1 为 `# orderx`；Go module path 为 `github.com/ZoneCNH/orderx`；go.mod 声明 `module github.com/ZoneCNH/orderx` |
 
-## 7. Business Rules
+## 7. 行为约束
 
 | 编号   | 规则                                   | 违反后果 |
 | ------ | -------------------------------------- | -------- |
@@ -165,7 +165,7 @@ THEN it MUST be `module github.com/ZoneCNH/orderx`
 
 ---
 
-## 8. Interface Contract
+## 8. 接口契约
 
 ```go
 type OrderManager interface {
@@ -202,7 +202,7 @@ type OrderReceipt struct {
 
 ---
 
-## 9. Data Model
+## 9. 数据模型
 
 | 模型             | 字段 |
 | ---------------- | ---- |
@@ -214,7 +214,7 @@ type OrderReceipt struct {
 
 ---
 
-## 10. Config Schema
+## 10. 配置模式
 
 ```yaml
 orderx:
@@ -231,7 +231,7 @@ orderx:
 
 ---
 
-## 11. Error Handling
+## 11. 错误处理
 
 | 错误                | 处理方式                         |
 | ------------------- | -------------------------------- |
@@ -243,7 +243,7 @@ orderx:
 
 ---
 
-## 12. Edge Cases
+## 12. 边界情况
 
 | 场景                       | 预期行为                           |
 | -------------------------- | ---------------------------------- |
@@ -254,7 +254,7 @@ orderx:
 
 ---
 
-## 13. Directory Structure
+## 13. 目录结构
 
 ```text
 orderx/
@@ -276,7 +276,7 @@ orderx/
 
 ---
 
-## 14. Dependencies
+## 14. 依赖
 
 | 可以依赖                             | 禁止依赖                     |
 | ------------------------------------ | ---------------------------- |
@@ -288,7 +288,7 @@ orderx/
 
 ---
 
-## 15. Testing
+## 15. 测试
 
 | 测试场景            | 验证点                           |
 | ------------------- | -------------------------------- |
@@ -300,7 +300,7 @@ orderx/
 
 ---
 
-## 16. Performance Budget
+## 16. 性能预算
 
 | 操作              | 目标     |
 | ----------------- | -------- |
@@ -310,7 +310,7 @@ orderx/
 
 ---
 
-## 17. Observability
+## 17. 可观测性
 
 | 信号   | 指标                                  |
 | ------ | ------------------------------------- |
@@ -322,7 +322,7 @@ orderx/
 
 ---
 
-## 18. Security
+## 18. 安全
 
 | 要求               | 实现方式                       |
 | ------------------ | ------------------------------ |
@@ -331,7 +331,7 @@ orderx/
 
 ---
 
-## 19. CI Gate
+## 19. CI 门禁
 
 | Gate   | 命令                                   | 阻塞条件       |
 | ------ | -------------------------------------- | -------------- |
@@ -342,7 +342,7 @@ orderx/
 
 ---
 
-## 20. Upgrade Compatibility
+## 20. 升级兼容性
 
 | 变更类型             | 版本升级 |
 | -------------------- | -------- |
@@ -352,7 +352,7 @@ orderx/
 
 ---
 
-## 21. Release DoD
+## 21. 发布 DoD
 
 - [ ] 订单状态机完整实现 + 所有转换测试
 - [ ] 路由策略全部实现
@@ -362,7 +362,7 @@ orderx/
 
 ---
 
-## 22. Open Questions
+## 22. 待解决问题
 
 - 是否支持算法订单（TWAP/VWAP/Iceberg）？
 - 是否需要订单执行质量报告（slippage, fill ratio）？
