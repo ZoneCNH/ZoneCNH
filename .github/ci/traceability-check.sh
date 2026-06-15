@@ -156,7 +156,8 @@ check_module() {
       req=req_id($2)
       tc=$5
       if (req !~ /^(FR|BR)-[0-9]+$/) next
-      while (match(tc, /TC-[^, \t|；：、]+/)) {
+      gsub(/[；：、]/, " ", tc)
+      while (match(tc, /TC-[^, \t|]+/)) {
         token=substr(tc, RSTART, RLENGTH)
         if (token !~ /^TC-([A-Z][A-Z][A-Z][A-Z]*-)?[0-9][0-9][0-9]$/) print token
         tc=substr(tc, RSTART + RLENGTH)
@@ -182,6 +183,7 @@ check_module() {
         req=req_id($2)
         tc=$5
         if (req !~ /^(FR|BR)-[0-9]+$/) next
+        gsub(/[；：、]/, " ", tc)
         while (match(tc, /TC-([A-Z][A-Z][A-Z][A-Z]*-)?[0-9][0-9][0-9]/)) {
           print substr(tc, RSTART, RLENGTH)
           tc=substr(tc, RSTART + RLENGTH)
