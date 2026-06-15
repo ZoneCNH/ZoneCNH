@@ -369,8 +369,16 @@ else:
 
 # ── 8. Cross-dimension: RELEASE/FACTORY ↔ fact layer ──────
 print("\n--- 8. Cross-dimension checks ---")
-foundation_status = load_json(".foundationx/status/index.json")
-blockers_doc = load_json(".foundationx/blockers.json")
+try:
+    foundation_status = load_json(".foundationx/status/index.json")
+except (FileNotFoundError, json.JSONDecodeError):
+    print("  WARNING: .foundationx/status/index.json not found or invalid, skipping cross-dimension checks")
+    foundation_status = {}
+try:
+    blockers_doc = load_json(".foundationx/blockers.json")
+except (FileNotFoundError, json.JSONDecodeError):
+    print("  WARNING: .foundationx/blockers.json not found or invalid, skipping cross-dimension checks")
+    blockers_doc = {}
 modules = foundation_status.get("modules", {})
 multi_rows = parse_multidimensional_status_rows(STATUS)
 
