@@ -22,7 +22,7 @@
 | [xlib-evidence](https://github.com/ZoneCNH/xlib-evidence) | - | Spec→Code 完成 | 100% | spec=98 mat=100 tsk=100 pln=100 prm=100 cod=100 | 证据收集与发布运行时：collect-coverage、generate-manifest、validate-manifest、report；✅ CI 已部署；⚠️ git tag + GitHub Release 缺失 |
 | [xlibgate](https://github.com/ZoneCNH/xlibgate) | v1.0.0 | Spec→Code 完成 | 100% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | check/l2/trust 三组门禁；✅ .repo-contract.yaml，v1.0.0 已对齐（此前误标 v1.1.1）；trust CLI 已实现 |
 | [kernel](https://github.com/ZoneCNH/kernel) | v1.0.0 | Spec→Code 完成 | 100% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | L0 原语 / 12 子包 / stdlib-only；✅ .repo-contract.yaml，v1.0.0 已对齐，建议 API 冻结 |
-| [configx](https://github.com/ZoneCNH/configx) | v0.1.4 | Spec→Code 完成 | 100% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | 配置管理；✅ v0.1.4 GitHub Release 已发布；此前误标 v1.0.0 已修正；✅ .repo-contract.yaml |
+| [configx](https://github.com/ZoneCNH/configx) | v1.0.0 | Spec→Code 完成 | 100% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | 配置管理；✅ v1.0.0 GitHub Release 已发布；此前误标 v0.1.4 已修正；✅ .repo-contract.yaml |
 | [observex](https://github.com/ZoneCNH/observex) | v0.3.1 | Spec→Code 完成 | 100% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | 可观测性；✅ v0.3.1 GitHub Release 已发布；此前误标 v1.0.0 已修正 |
 | [testkitx](https://github.com/ZoneCNH/testkitx) | v0.4.0 | Spec→Code 完成 | 100% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | Fake / Fixture / Golden / Contract / Leak / Boundary / Manifest 测试工具包；✅ v0.4.0 GitHub Release 已发布；test-only；factory grade 不适用 |
 | [resiliencx](https://github.com/ZoneCNH/resiliencx) | v0.4.9 | Spec→Code 完成 | 100% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | 弹性策略（timeout / retry / circuit / bulkhead / rate / fallback）；✅ v0.4.9 GitHub Release 已发布；此前误标 v1.0.1 已修正 |
@@ -52,7 +52,7 @@
 | xlib-evidence | ✅ | ✅ | ❌ | N/A | ✅ | N/A | N/A | ❌ | CI 已部署; evidence collect/generate/validate/report; ⚠️ git tag + GitHub Release 缺失 |
 | xlibgate | ✅ | ✅ | ✅ | N/A | ✅ | N/A | N/A | ✅ | v1.0.0; CI 已部署; 8 workflows; 此前误标 v1.1.1 |
 | kernel | ✅ | ✅ | ✅ | N/A | ✅ | ✅ | N/A | ✅ | v1.0.0; 4 CI workflows; 13 下游消费者; API 冻结建议 |
-| configx | ✅ | ✅ | ✅ | N/A | ✅ | ✅ | N/A | ✅ | v0.1.4; GitHub Release 已发布; 4 CI workflows; 2 下游消费者; 此前误标 v1.0.0 已修正 |
+| configx | ✅ | ✅ | ✅ | N/A | ✅ | ✅ | N/A | ✅ | v1.0.0; GitHub Release 已发布; 4 CI workflows; 2 下游消费者; 此前误标 v0.1.4 已修正 |
 | observex | ✅ | ✅ | ✅ | N/A | ✅ | ✅ | N/A | ✅ | v0.3.1; GitHub Release 已发布; 4 CI workflows; 2 下游消费者; 此前误标 v1.0.0 已修正 |
 | testkitx | ✅ | ✅ | ✅ | N/A | ✅ | N/A | N/A | N/A | v0.4.0; GitHub Release 已发布; 4 CI workflows; test-only — factory grade 不适用 |
 | resiliencx | ✅ | ✅ | ✅ | N/A | ✅ | ✅ | N/A | ✅ | v0.4.9; GitHub Release 已发布; 9 CI workflows; 2 下游消费者; 此前误标 v1.0.1 已修正 |
