@@ -13,6 +13,8 @@ spec_ref:
 fr_ref: FR-MKT-004
 ac_ref: AC-MKT-004
 tc_ref: TC-MKT-004
+acceptance_criteria:
+  - "AC-MKT-004: Instrument 精度与状态语义稳定"
 status: pending
 priority: P0
 estimated_effort: "1.5h"

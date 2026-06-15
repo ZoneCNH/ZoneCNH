@@ -20,10 +20,17 @@
 
 ## PR 类别
 
-| 类别 | 目的 |
-| --- | --- |
-| docs-v1-contract | 补齐 SPEC、TRACEABILITY、MIGRATION、CHANGELOG |
-| api-v1-freeze | 冻结行情值对象、质量门禁和 provider contract |
-| invariant-tests | 覆盖价格、数量、时间、质量和边界不变量 |
-| ci-release-gates | 加入 staticcheck/govulncheck/adoption/boundary scan |
-| release-v1.0.0 | 发布 tag、release notes 与 manifest |
+| 类别 | 目的 | 关联里程碑 |
+| --- | --- | --- |
+| docs-v1-contract | 补齐 SPEC、TRACEABILITY、MIGRATION、CHANGELOG | M0 |
+| api-v1-freeze | 冻结 DataProvider 接口、值对象、MarketEventEnvelope 签名 | M0 |
+| decimal-precision | 替换公开 float64 为 decimalx.Decimal | M1 |
+| validator-impl | Tick/Quote/Bar/OrderBook/Instrument/Funding/OpenInterest/LongShortRatio Validate | M1 |
+| domainx-boundary | 迁出 OrderType/OrderSide/OrderState，保留 Side | M1 |
+| quality-gate-tests | fail-closed、stale/future/recovered gate 测试 | M2 |
+| fuzz-race-golden | fuzz、race、golden 回归测试 | M2 |
+| domain-lint | struct 禁止 transport tag、price/qty 禁止 float64 | M2 |
+| provider-contract | DataProvider 返回纯领域模型、fake provider | M3 |
+| adoption-smoke | domain-exchange adoption check | M3 |
+| ci-release-gates | staticcheck/govulncheck/race/adoption gate | M4 |
+| release-v1.0.0 | tag、release notes、manifest、CHANGELOG、MIGRATION | M4 |

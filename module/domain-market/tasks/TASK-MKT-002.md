@@ -16,6 +16,8 @@ spec_ref:
 fr_ref: FR-MKT-002
 ac_ref: AC-MKT-002
 tc_ref: TC-MKT-002
+acceptance_criteria:
+  - "AC-MKT-002: 核心行情对象验证 symbol/time/price/qty"
 status: pending
 priority: P0
 estimated_effort: "3h"

@@ -16,6 +16,8 @@ spec_ref:
 fr_ref: FR-MKT-003
 ac_ref: AC-MKT-003
 tc_ref: TC-MKT-003
+acceptance_criteria:
+  - "AC-MKT-003: quality gate fail-closed"
 status: pending
 priority: P0
 estimated_effort: "2h"

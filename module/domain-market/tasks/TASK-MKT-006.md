@@ -14,6 +14,8 @@ spec_ref:
 fr_ref: FR-MKT-006
 ac_ref: AC-MKT-006
 tc_ref: TC-MKT-006
+acceptance_criteria:
+  - "AC-MKT-006: provider contract 不泄漏 transport/vendor DTO"
 status: pending
 priority: P0
 estimated_effort: "2h"

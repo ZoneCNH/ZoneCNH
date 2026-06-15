@@ -13,6 +13,8 @@ spec_ref:
 fr_ref: FR-MKT-007
 ac_ref: AC-MKT-007
 tc_ref: TC-MKT-007
+acceptance_criteria:
+  - "AC-MKT-007: 订单枚举与 domainx 单一归属"
 status: pending
 priority: P0
 estimated_effort: "1.5h"

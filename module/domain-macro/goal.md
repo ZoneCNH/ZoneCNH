@@ -7,7 +7,7 @@
 | 仓库 | <https://github.com/ZoneCNH/domain-macro> |
 | 当前版本 | v0.1.0 |
 | 目标版本 | v1.0.0 |
-| 状态 | v1.0.0 执行计划待落地 |
+| 状态 | v1.0.0 执行计划已落地 |
 | 计划来源 | `/home/zone/Downloads/0615/ZoneCNH-v1.0.0-goal-execution-plans/domain-macro-v1.0.0-goal-execution-plan.md` |
 | 最后更新 | 2026-06-15 |
 
@@ -33,7 +33,6 @@
 
 | 优先级 | 阻塞项 | 处理方向 |
 | --- | --- | --- |
-| P0 | 当前版本仍为 v0.1.0 | 补齐 v1 spec、traceability 与 release gate |
-| P0 | `MacroPoint.Value` / `IndicatorValue.Value` 仍可能为 float64 | 通过精度 ADR 决定迁移策略 |
-| P0 | `yahoo_models` 边界不清 | 迁出 provider DTO 或标记 internal |
-| P1 | MacroState validate 与 copy-on-write 证据不足 | 增加 validator 与 information set 测试 |
+| P0 | `MacroPoint.Value` / `IndicatorValue.Value` 仍可能为 float64 | 通过精度 ADR 决定迁移策略（TASK-MAC-007） |
+| P0 | `yahoo_models` 边界不清 | 迁出 provider DTO 或标记 internal（M3 里程碑） |
+| P1 | MacroState validate 与 copy-on-write 证据不足 | 增加 validator 与 information set 测试（TASK-MAC-004/006） |

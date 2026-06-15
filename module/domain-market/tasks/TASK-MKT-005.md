@@ -13,6 +13,8 @@ spec_ref:
 fr_ref: FR-MKT-005
 ac_ref: AC-MKT-005
 tc_ref: TC-MKT-005
+acceptance_criteria:
+  - "AC-MKT-005: 衍生品指标具备来源与时间语义"
 status: pending
 priority: P1
 estimated_effort: "1.5h"

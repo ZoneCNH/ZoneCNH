@@ -13,6 +13,8 @@ spec_ref:
 fr_ref: FR-MKT-001
 ac_ref: AC-MKT-001
 tc_ref: TC-MKT-001
+acceptance_criteria:
+  - "AC-MKT-001: public 金融字段采用 decimalx.Decimal"
 status: pending
 priority: P0
 estimated_effort: "1h"
