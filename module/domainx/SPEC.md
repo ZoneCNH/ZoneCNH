@@ -2,7 +2,7 @@
 
 > 基座 · L2.5 领域共享层。订单、持仓、成交和投资组合的领域值对象与枚举定义。
 
-最后更新：2026-06-14
+最后更新：2026-06-15
 
 ---
 
@@ -10,10 +10,11 @@
 
 - Status: Approved
 - Spec-Version: v1.0.0
-- Last-Updated: 2026-06-14
+- Last-Updated: 2026-06-15
 - Owner: ZoneCNH
 - Layer: L2.5 领域共享层
-- Version: v0.1.0
+- Version: v1.0.1
+- Release-Evidence: https://github.com/ZoneCNH/domainx/releases/tag/v1.0.1
 - Repository: [github.com/ZoneCNH/domainx](https://github.com/ZoneCNH/domainx)
 - Related: [CONSTITUTION.md](../../CONSTITUTION.md), [ARCHITECTURE.md](../../ARCHITECTURE.md), [contracts](../contracts/SPEC.md), [decimalx](https://github.com/ZoneCNH/decimalx)
 
@@ -23,6 +24,7 @@
 
 | 日期 | 版本 | 变更内容 | 作者 |
 |------|------|----------|------|
+| 2026-06-15 | v1.0.1 | 公开 patch release，补齐 L2.5 下游采用与验证证据 | Codex |
 | 2026-06-14 | v1.0.0 | 初始规格：Order/Position/Trade/Portfolio/ExecutionReport 值对象 + OrderState/OrderType/OrderSide 枚举 | Claude |
 
 ## 2. Summary

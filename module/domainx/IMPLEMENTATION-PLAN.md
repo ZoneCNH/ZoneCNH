@@ -114,7 +114,7 @@ TASK-DOMAINX-001 (Order + Enums + Errors) ────────────�
 
 | 风险 | 概率 | 影响 | 缓解 |
 |------|------|------|------|
-| decimalx 依赖未就绪 | Low | High（阻塞所有任务） | 确认 decimalx v1.0.0 已发布；若未发布，先 stubs |
+| 外部依赖版本漂移 | Low | Medium | decimalx v1.0.0 已发布并由 release 证据锁定；后续只接受兼容 patch |
 | OrderStatus 六态争议（OQ-002） | Medium | Low（enum 常量易改） | 当前定义六态，如争议改为 string alias |
 | 命名变更（OQ-001：domainx → domain-*） | Low | Medium（需 rename） | 在 Phase 1 前确认；如未确认，继续用 domainx |
 | 并发安全测试漏检 | Low | Medium | TASK-005 显式包含 `go test -race` TC-014 |
@@ -134,6 +134,15 @@ TASK-DOMAINX-001 (Order + Enums + Errors) ────────────�
 | gitleaks | Phase 4 | secret 泄露 |
 | benchmark | Phase 4 | 性能回退 > 10% |
 
+## 7. 发布证据
+
+| 证据 | 值 |
+| --- | --- |
+| GitHub Release | <https://github.com/ZoneCNH/domainx/releases/tag/v1.0.1> |
+| Tag target | `eae81f17ea70f1312bdbd3e1946f57bf2f825ccb` |
+| 本地验证 | `GOPRIVATE=github.com/ZoneCNH GONOSUMDB=github.com/ZoneCNH GOWORK=off go test -count=1 ./...` |
+| 结果 | 通过 |
+
 ## 5. 风险与回滚
 
 | 风险 | 级别 | 缓解 | 回滚 |
@@ -141,4 +150,3 @@ TASK-DOMAINX-001 (Order + Enums + Errors) ────────────�
 | API 破坏性变更 | LOW | 已有可工作实现，向后兼容 | `git revert` |
 | 外部依赖不可用 | MEDIUM | 健康检查 + 降级策略 | 回退到上一稳定版本 |
 | 配置兼容性回归 | LOW | 已有 canonical+legacy 测试覆盖 | 回退配置变更 |
-

@@ -3,7 +3,7 @@
 | 字段 | 值 |
 | --- | --- |
 | 模块 | `domain-market` |
-| 当前版本 | v0.1.0 |
+| 当前版本 | v1.0.1 |
 | 目标版本 | v1.0.0 |
 | 依赖顺序 | `decimalx` API freeze 后；`domain-exchange` 之前 |
 | 最后更新 | 2026-06-15 |
@@ -16,7 +16,7 @@
 | M1 Validators | Tick/Quote/Bar/OrderBook/Instrument 验证器 | invalid cases 全覆盖 |
 | M2 Quality gate | dirty/stale/time-invalid fail-closed | quality gate 测试通过 |
 | M3 Provider contract | DataProvider/HistoricalBarsRequest 返回纯领域模型 | 静态边界扫描无 transport 泄漏 |
-| M4 Release gates | CI、docs、migration、release manifest | tag v1.0.0 前门禁通过 |
+| M4 Release gates | CI、docs、migration、release manifest | GitHub Release v1.0.1 已发布，本地验证通过 |
 
 ## PR 类别
 
@@ -27,3 +27,12 @@
 | invariant-tests | 覆盖价格、数量、时间、质量和边界不变量 |
 | ci-release-gates | 加入 staticcheck/govulncheck/adoption/boundary scan |
 | release-v1.0.0 | 发布 tag、release notes 与 manifest |
+
+## 发布证据
+
+| 证据 | 值 |
+| --- | --- |
+| GitHub Release | <https://github.com/ZoneCNH/domain-market/releases/tag/v1.0.1> |
+| Tag target | `7bf9d6c311ba9bff9241440fcf1337691d80d02c` |
+| 本地验证 | `go test -count=1 ./...` |
+| 结果 | 通过 |

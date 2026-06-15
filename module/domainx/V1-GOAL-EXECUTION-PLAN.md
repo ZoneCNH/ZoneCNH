@@ -1,13 +1,13 @@
-# domainx v1.0.0 Goal Execution Alignment
+# domainx v1.0.1 Goal Execution Alignment
 
 | 字段 | 值 |
 | --- | --- |
 | 模块 | `domainx` |
 | 层级 | L2.5 领域共享 |
 | 仓库 | <https://github.com/ZoneCNH/domainx> |
-| 目标版本 | v1.0.0 |
-| 状态 | 已有 `goal.md` / `SPEC.md` / `TRACEABILITY.md`，本页补充外部执行计划对齐 |
-| 计划来源 | `/home/zone/Downloads/0615/ZoneCNH-v1.0.0-goal-execution-plans/domainx-v1.0.0-goal-execution-plan.md` |
+| 目标版本 | v1.0.1 |
+| 状态 | v1.0.0 基线与 v1.0.1 patch 已公开发布，本页记录执行计划对齐 |
+| 发布证据 | <https://github.com/ZoneCNH/domainx/releases/tag/v1.0.1> |
 | 最后更新 | 2026-06-15 |
 
 ## v1.0.0 边界
@@ -37,4 +37,13 @@
 | M1 Public model freeze | Order/Trade/Position/Portfolio/ExecutionReport API 冻结 | 兼容测试和示例完成 |
 | M2 Invariants | 订单状态机、成交归属、持仓方向、组合聚合不变量 | invariant tests 完成 |
 | M3 Adoption | `domain-exchange` 返回或兼容 `domainx` 类型 | downstream smoke 通过 |
-| M4 Release | CHANGELOG、MIGRATION、release manifest、tag v1.0.0 | 所有门禁通过 |
+| M4 Release | CHANGELOG、MIGRATION、release manifest、tag v1.0.1 | GitHub Release v1.0.1 已发布，本地验证通过 |
+
+## 发布证据
+
+| 证据 | 值 |
+| --- | --- |
+| GitHub Release | <https://github.com/ZoneCNH/domainx/releases/tag/v1.0.1> |
+| Tag target | `eae81f17ea70f1312bdbd3e1946f57bf2f825ccb` |
+| 本地验证 | `GOPRIVATE=github.com/ZoneCNH GONOSUMDB=github.com/ZoneCNH GOWORK=off go test -count=1 ./...` |
+| 结果 | 通过 |

@@ -5,10 +5,10 @@
 | 模块 | `domain-exchange` |
 | 层级 | L2.5 领域共享 |
 | 仓库 | <https://github.com/ZoneCNH/domain-exchange> |
-| 当前版本 | v0.1.0 |
+| 当前版本 | v1.0.0 |
 | 目标版本 | v1.0.0 |
-| 状态 | v1.0.0 执行计划待落地 |
-| 计划来源 | `/home/zone/Downloads/0615/ZoneCNH-v1.0.0-goal-execution-plans/domain-exchange-v1.0.0-goal-execution-plan.md` |
+| 状态 | v1.0.0 已公开发布 |
+| 发布证据 | <https://github.com/ZoneCNH/domain-exchange/releases/tag/v1.0.0> |
 | 最后更新 | 2026-06-15 |
 
 ## 目标
@@ -30,11 +30,12 @@
 - VenueCapability、RateLimitPolicy、VenueProfile 与 Registry 线程安全且可测试。
 - 返回 `domainx.Order` / `domainx.ExecutionReport` 与 `domain-market` 行情模型，避免重复 SSOT。
 
-## 当前阻塞
+## 发布证据
 
-| 优先级 | 阻塞项 | 处理方向 |
-| --- | --- | --- |
-| P0 | 当前 Order/Balance/PlaceOrderRequest 与 `domainx` 重叠 | 迁移为 SPI request/response 或兼容 alias |
-| P0 | Exchange interface 过宽 | 拆分读写能力接口与组合接口 |
-| P0 | retry/idempotency/rate limit 语义不足 | 在请求和错误模型中冻结 |
-| P1 | registry concurrency 与 capability 表达不足 | 增加 fake exchange 与并发测试 |
+| 证据 | 值 |
+| --- | --- |
+| GitHub Release | <https://github.com/ZoneCNH/domain-exchange/releases/tag/v1.0.0> |
+| Tag target | `9c11c421ef643768690eb45c88f7b89dbda3afc8` |
+| 本地验证 | `go test -count=1 ./...` |
+| 公开依赖 | `decimalx v1.0.0` / `domain-market v1.0.1` / `domainx v1.0.1` |
+| 结果 | 通过 |

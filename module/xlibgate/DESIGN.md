@@ -625,7 +625,7 @@ const (
 
 - 输入：release/evidence/ 目录下的所有文本文件
 - 密钥检测正则：`(?i)(api_key|secret_key|access_key|password|token|dsn)\s*[=:]\s*\S+`
-- 私有端点检测：IPv4 私有地址范围（127., 10., 172.16-31., 192.168.）+ localhost
+- 私有端点检测：loopback、本机域名和 RFC1918 私有 IPv4 网段
 - 脱敏输出：仅输出匹配类型（如 "AWS_SECRET_ACCESS_KEY"），绝不输出值
 - 开发上下文豁免：文件路径含 test/、testdata/、*_test.go；.md 中 `dev-only` 代码块
 - 符号链接：跟踪但限制深度 max 3 层
@@ -681,4 +681,3 @@ fleet-status 聚合可在此之后运行（消费各模块独立检查结果）�
 | 边界测试 | SPEC §13 10 个 trust Edge Cases | 异常输入 + 边界条件 |
 | Benchmark | SPEC §17 9 个 trust 性能目标 | go test -bench |
 | 集成测试 | TASK-XLIBGATE-019 | fleet-status 全链路 |
-

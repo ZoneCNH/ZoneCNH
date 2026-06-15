@@ -104,7 +104,7 @@
 
 - **`.worktree/` 临时文件 TTL = 24h**。PreCompact 或 PostToolUse hook 自动清理超过 24h 的 stale 文件。
 - **OMX team worker 子目录**：worker 完成合并后，其 `.worktree/omx-team/{worker}/` 在下一个 SessionStart 时自动 `rm -rf`。
-- **例外**：`note.md`、`v2.md`（手动工作文件）不自动清理——仅清理 `.omx/` 下的日志和 state。
+- **例外**：`note.md`、`v2.md`（手动工作文件）不自动清理——仅清理 OMX 运行态目录下的日志和 state。
 
 ### 提交批处理（2026-06-15 worktree 会话复盘）
 

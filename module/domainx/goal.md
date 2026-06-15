@@ -3,11 +3,11 @@
 | 字段 | 内容 |
 |------|------|
 | 模块名 | `domainx` |
-| 发布版本 | 1.0.0 |
+| 发布版本 | 1.0.1 |
 | 所属层级 | L2.5 领域共享层 / 执行域值对象 |
 | 稳定级别 | Public API Stable；SPI N/A（纯值对象，无接口）；Internal 可演进 |
-| 文档状态 | v1.0.0 规格基线（SPEC + TRACEABILITY §1-§7，覆盖率 100%） |
-| 发布日期基准 | 2026-06-14 |
+| 文档状态 | v1.0.0 基线与 v1.0.1 patch 已公开发布 |
+| 发布日期基准 | 2026-06-15 |
 
 ## 术语约定
 
@@ -92,10 +92,19 @@
 
 ## 6. Release DoD
 
-- [ ] 6 个 FR 全部实现，14 个 TC 全部通过
-- [ ] SPEC.md Status 更新为 Approved
-- [ ] TRACEABILITY.md 所有 FR 标记 Done
-- [ ] 覆盖率 ≥ 80%
-- [ ] CHANGELOG.md 记录 v1.0.0
-- [ ] README.md 含类型概览和快速开始
-- [ ] 所有公开类型有 godoc 注释
+- [x] 6 个 FR 全部实现，14 个 TC 全部通过
+- [x] SPEC.md Status 更新为 Approved
+- [x] TRACEABILITY.md 所有 FR 标记 Done
+- [x] 覆盖率 ≥ 80%
+- [x] CHANGELOG.md 记录 v1.0.0
+- [x] README.md 含类型概览和快速开始
+- [x] 所有公开类型有 godoc 注释
+
+## 7. 发布证据
+
+| 证据 | 值 |
+| --- | --- |
+| GitHub Release | <https://github.com/ZoneCNH/domainx/releases/tag/v1.0.1> |
+| Tag target | `eae81f17ea70f1312bdbd3e1946f57bf2f825ccb` |
+| 本地验证 | `GOPRIVATE=github.com/ZoneCNH GONOSUMDB=github.com/ZoneCNH GOWORK=off go test -count=1 ./...` |
+| 结果 | 通过 |

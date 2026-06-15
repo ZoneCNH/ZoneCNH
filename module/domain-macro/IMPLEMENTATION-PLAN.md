@@ -3,7 +3,7 @@
 | 字段 | 值 |
 | --- | --- |
 | 模块 | `domain-macro` |
-| 当前版本 | v0.1.0 |
+| 当前版本 | v1.0.0 |
 | 目标版本 | v1.0.0 |
 | 依赖顺序 | `decimalx` API freeze 后，与 `domain-market` / `domainx` 可并行 |
 | 最后更新 | 2026-06-15 |
@@ -16,7 +16,7 @@
 | M1 MacroPoint / InformationSet | 时间、可见性、copy-on-write、不变量 | no-lookahead 测试通过 |
 | M2 Revision / As-of | revision ordering、preliminary/confirmed、as-of 查询 | revision 测试通过 |
 | M3 Provider DTO boundary | `yahoo_models` 迁出或 internal 化 | static boundary scan 通过 |
-| M4 Release | docs、CI、migration、release manifest | tag v1.0.0 前门禁通过 |
+| M4 Release | docs、CI、migration、release manifest | GitHub Release v1.0.0 已发布，本地验证通过 |
 
 ## PR 类别
 
@@ -27,3 +27,12 @@
 | invariant-tests | 覆盖 visibility、revision、copy-on-write、state validate |
 | ci-release-gates | 加入 staticcheck/govulncheck/boundary/adoption gate |
 | release-v1.0.0 | 发布 tag、release notes 与 manifest |
+
+## 发布证据
+
+| 证据 | 值 |
+| --- | --- |
+| GitHub Release | <https://github.com/ZoneCNH/domain-macro/releases/tag/v1.0.0> |
+| Tag target | `9a7415e44f2a37933cff70a058b28c0f3c27e0ad` |
+| 本地验证 | `GOWORK=off go test -count=1 ./...` |
+| 结果 | 通过 |

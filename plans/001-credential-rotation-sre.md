@@ -27,7 +27,7 @@
 
 ## Current state
 
-- `sre/` 是独立 git 仓库：`sre/.git` 存在，`git rev-parse --show-toplevel` 在 sre/ 内返回 `/home/ZoneCNH/sre`
+- `sre/` 是独立 git 仓库：`sre/.git` 存在，`git rev-parse --show-toplevel` 在 sre/ 内返回仓库工作区下的 `sre` 路径
 - `sre/secrets/.env:3` — GitHub PAT，格式 `GITHUB_TOKEN=ghp_...`
 - `sre/secrets/env/dev.md:8,182,190,258` — dev 环境 API key、Qdrant key、ClickHouse 密码
 - `sre/secrets/env/prod.md:194,202` — 生产环境 Qdrant API key、AccessKey secret

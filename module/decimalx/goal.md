@@ -5,10 +5,10 @@
 | 模块 | `decimalx` |
 | 层级 | L2.5 领域共享 |
 | 仓库 | <https://github.com/ZoneCNH/decimalx> |
-| 当前版本 | v0.2.0 |
+| 当前版本 | v1.0.0 |
 | 目标版本 | v1.0.0 |
-| 状态 | v1.0.0 执行计划待落地 |
-| 计划来源 | `/home/zone/Downloads/0615/ZoneCNH-v1.0.0-goal-execution-plans/decimalx-v1.0.0-goal-execution-plan.md` |
+| 状态 | GitHub Release v1.0.0 已公开发布 |
+| 发布证据 | <https://github.com/ZoneCNH/decimalx/releases/tag/v1.0.0> |
 | 最后更新 | 2026-06-15 |
 
 ## 目标
@@ -31,14 +31,14 @@
 - `Money` 跨币种 `Add` / `Sub` fail-closed。
 - 错误类型支持 `errors.Is`，并纳入 API 兼容测试。
 
-## 当前阻塞
+## 发布证据
 
-| 优先级 | 阻塞项 | 处理方向 |
-| --- | --- | --- |
-| P0 | 当前发布仍为 v0.2.0 | 完成 API freeze 后再 tag v1.0.0 |
-| P0 | `Money` / `Currency` 归属需要冻结 | 明确由 `decimalx` 负责公共值对象 |
-| P0 | 公开 API 兼容测试不足 | 增加 compile-time、golden、fuzz/property 覆盖 |
-| P1 | rounding mode 与 context 证据不足 | 补充 benchmark 与资源边界说明 |
+| 证据 | 值 |
+| --- | --- |
+| GitHub Release | <https://github.com/ZoneCNH/decimalx/releases/tag/v1.0.0> |
+| Tag target | `fb6080682796ece69c16f396ec37c23f56a50b02` |
+| 本地验证 | `GOWORK=off go test -count=1 ./...` |
+| 结果 | 通过 |
 
 ## 下游采用门禁
 

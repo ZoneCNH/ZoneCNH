@@ -313,7 +313,7 @@ func WithClock(clock Clock) Option
 
 ```yaml
 postgresx:
-  host: localhost
+  host: postgres.service
   port: 5432
   database: app
   user: app

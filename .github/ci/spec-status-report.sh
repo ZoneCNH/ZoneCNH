@@ -32,9 +32,9 @@ for spec_file in "$SPEC_DIR"/*/SPEC.md; do
   module=$(basename "$(dirname "$spec_file")")
   content=$(cat "$spec_file")
 
-  section_count=$(echo "$content" | grep -cP "^## \d+\." || true)
-  fr_count=$(echo "$content" | grep -oP "FR-\d+" | sort -u | wc -l)
-  br_count=$(echo "$content" | grep -oP "BR-\d+" | sort -u | wc -l)
+  section_count=$(printf '%s\n' "$content" | grep -cP "^## \d+\." || true)
+  fr_count=$({ printf '%s\n' "$content" | grep -oP "FR-\d+" || true; } | sort -u | wc -l | xargs)
+  br_count=$({ printf '%s\n' "$content" | grep -oP "BR-\d+" || true; } | sort -u | wc -l | xargs)
 
   if [[ $section_count -eq 23 ]]; then
     status="✅"

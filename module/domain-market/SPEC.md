@@ -1,12 +1,12 @@
 # domain-market v1.0.0 Spec
 
-Status: Draft
-Spec-Version: v1.0.0-plan
-Module-Version: v0.1.0 -> v1.0.0
-Layer: L2.5 领域共享
-Repository: https://github.com/ZoneCNH/domain-market
-Source-Plan: /home/zone/Downloads/0615/ZoneCNH-v1.0.0-goal-execution-plans/domain-market-v1.0.0-goal-execution-plan.md
-Last-Updated: 2026-06-15
+- Status: Implemented
+- Spec-Version: v1.0.0
+- Module-Version: v1.0.0 (latest patch v1.0.1)
+- Layer: L2.5 领域共享
+- Repository: https://github.com/ZoneCNH/domain-market
+- Release-Evidence: https://github.com/ZoneCNH/domain-market/releases/tag/v1.0.1
+- Last-Updated: 2026-06-15
 
 ## 1. 范围
 

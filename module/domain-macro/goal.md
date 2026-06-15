@@ -5,10 +5,10 @@
 | 模块 | `domain-macro` |
 | 层级 | L2.5 领域共享 |
 | 仓库 | <https://github.com/ZoneCNH/domain-macro> |
-| 当前版本 | v0.1.0 |
+| 当前版本 | v1.0.0 |
 | 目标版本 | v1.0.0 |
-| 状态 | v1.0.0 执行计划待落地 |
-| 计划来源 | `/home/zone/Downloads/0615/ZoneCNH-v1.0.0-goal-execution-plans/domain-macro-v1.0.0-goal-execution-plan.md` |
+| 状态 | GitHub Release v1.0.0 已公开发布 |
+| 发布证据 | <https://github.com/ZoneCNH/domain-macro/releases/tag/v1.0.0> |
 | 最后更新 | 2026-06-15 |
 
 ## 目标
@@ -29,11 +29,11 @@
 - `MacroState` / `MacroRegimeCard` 的枚举和校验语义稳定。
 - 宏观数值精度必须通过 ADR 冻结：推荐迁移到 `decimalx.Decimal`，或保留 float64 仅作为派生值并增加 raw/decimal 字段。
 
-## 当前阻塞
+## 发布证据
 
-| 优先级 | 阻塞项 | 处理方向 |
-| --- | --- | --- |
-| P0 | 当前版本仍为 v0.1.0 | 补齐 v1 spec、traceability 与 release gate |
-| P0 | `MacroPoint.Value` / `IndicatorValue.Value` 仍可能为 float64 | 通过精度 ADR 决定迁移策略 |
-| P0 | `yahoo_models` 边界不清 | 迁出 provider DTO 或标记 internal |
-| P1 | MacroState validate 与 copy-on-write 证据不足 | 增加 validator 与 information set 测试 |
+| 证据 | 值 |
+| --- | --- |
+| GitHub Release | <https://github.com/ZoneCNH/domain-macro/releases/tag/v1.0.0> |
+| Tag target | `9a7415e44f2a37933cff70a058b28c0f3c27e0ad` |
+| 本地验证 | `GOWORK=off go test -count=1 ./...` |
+| 结果 | 通过 |

@@ -336,7 +336,7 @@ THEN 输出 JSON `{check: "secret-redaction", repo, status: "pass", reason_code:
 WHEN 检测到 secrets（API keys、passwords、tokens、DSN with credentials）
 THEN 输出 findings 含文件路径、行号和脱敏后的匹配类型（不输出密钥原文），reason_code=SECRET_LEAK，exit code 1
 
-WHEN 检测到私有端点（127.0.0.1、localhost、10.x.x.x、172.16-31.x.x、192.168.x.x），但以下开发上下文豁免：文件路径含 `test/`、`testdata/`、`_test.go`、`.md` 中的示例代码块标记为 `dev-only`、`README.md` 的本地开发章节
+WHEN 检测到私有端点（loopback、本机域名、RFC1918 私有 IPv4 网段），但以下开发上下文豁免：文件路径含 `test/`、`testdata/`、`_test.go`、`.md` 中的示例代码块标记为 `dev-only`、`README.md` 的本地开发章节
 THEN 输出 findings 含文件路径、行号和端点地址，reason_code=PRIVATE_ENDPOINT_LEAK，exit code 1
 
 WHEN 扫描路径下无 release/evidence 目录

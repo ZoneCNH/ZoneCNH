@@ -20,7 +20,7 @@
 ## Agent Team 执行证据
 
 - 运行前检查：`tmux 3.6` 可用，`$TMUX` 存在，`omx --version` 为 `oh-my-codex v0.17.3`。
-- 团队上下文：已创建 `.omx/context/foundation-module-list-analysis-20260613T213233Z.md`。
+- 团队上下文：已创建 OMX context 运行态文件并用于团队分析。
 - 团队配置：`omx-context-foundatio-8a1af4ef`，`3:explore`，`workspace_mode=worktree`。
 - 任务拆分：
   - worker-1：核对 `module/foundation-modules.md`、`module/FOUNDATION-DEPS.yaml`、`module/FOUNDATION-TRACKER.md`。
@@ -210,7 +210,7 @@
 
 ## 风险与边界
 
-- 本次分析只基于 `/home/ZoneCNH` 仓库内文档和规格制品，没有进入 `/home/{module}` 独立代码仓库复核实现代码。
+- 本次分析只基于本仓库内文档和规格制品，没有进入 `/home/{module}` 独立代码仓库复核实现代码。
 - 因用户目标是“深度分析”和“报告保存文档”，本次没有直接修复 `README.md`、`ARCHITECTURE.md`、`STATUS.md` 或 YAML；整改应作为后续独立 PR 执行。
 - `worker-3` 原 pane 未正常完成任务启动，但对应根文档分析面已由 leader 按同一任务范围完成并通过 team API 入账；团队最终任务计数为 3/3 完成。
 
