@@ -172,8 +172,8 @@ market-data 文档使用 camelCase 风格描述字段语义；在下游实现中
 
 | 门禁 | 要求 | 当前状态 |
 | --- | --- | --- |
-| Contract Gate | `module/contracts` 批准对应 wire schema（§8.4 ingestion contract）或明确无需跨进程 wire schema。 | Pending — contracts SPEC §8.4 待补充 |
-| Domain Gate | `module/domain-market` 批准 `ProductLine`、`InstrumentKey`、`MarketEventEnvelope`、quality 语义。 | Pending — domain-market 类型定义待补充 |
+| Contract Gate | `module/contracts` 批准对应 wire schema（§8.4 ingestion contract）或明确无需跨进程 wire schema。 | Docs baseline present — contracts §8.4 已补充（docs-only），运行时 wire schema 待后续批准 |
+| Domain Gate | `module/domain-market` 批准 `ProductLine`、`InstrumentKey`、`MarketEventEnvelope`、quality 语义。 | Docs baseline present — domain-market 已定义 ProductLine/InstrumentKey/MarketFactEnvelope（docs-only），运行时冻结待后续批准 |
 | Adapter Gate | `module/binance` SPEC 引用本 dispatch port，且不再将下游交付语义留空。 | 形式上已引用，但 binance OQ-002 仍标"待确认" |
 | Reject Mapping Gate | binance-native reject classification 到 market-data §4.4.1 的映射规则已文档化。 | Baseline Published（本次新增） |
 | Naming Mapping Gate | 跨模块字段命名映射表（§4.2.1）已纳入 SPEC。 | Baseline Published（本次新增） |
@@ -186,7 +186,7 @@ market-data 文档使用 camelCase 风格描述字段语义；在下游实现中
 | DownstreamDispatchPort docs baseline | Published | 本 SPEC 已定义端口语义、输入字段、outcome、reject reason、FR/BR/NFR/AC 与后续实现门禁。 |
 | Receiving-side SPEC baseline | Published | 接收侧 fail-closed、idempotency、ordering、quality gate、batch outcome 与 observability 语义已可被 `module/binance` 引用。 |
 | Runtime implementation | Pending | 本次不新增 Go 源码、依赖、wire schema、存储表、队列 topic 或运行时测试声明。 |
-| Canonical domain dependency | External / Pending | `ProductLine`、`InstrumentKey`、`MarketEventEnvelope` 语义由 `module/domain-market` 拥有，但对应类型定义尚未就绪（参见 Domain Gate）。 |
+| Canonical domain dependency | External / Docs baseline present | `ProductLine`、`InstrumentKey`、`MarketEventEnvelope`（= `MarketFactEnvelope`）语义由 `module/domain-market` 拥有，docs-only 类型定义已补充；运行时冻结待 domain-market 发布。 |
 | Cross-module naming alignment | Baseline Published | §4.2.1 已建立跨模块字段命名映射表。 |
 | Binance reject mapping | Baseline Published | §4.4.1 已建立 binance-native → market-data reject 映射规则。 |
 
