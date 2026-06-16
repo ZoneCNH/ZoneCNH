@@ -220,7 +220,9 @@ PR-005 (binance runtime impl)     ← 全部依赖就绪
 ### 7.4 market-data 模块新增
 
 原分析报告指出的"隐式 MarketDataService Server"架构空白已通过以下方式填补：
-- `module/market-data/SPEC.md` v1.0.0：DownstreamDispatchPort、12 字段输入契约、8 种拒绝原因、跨模块字段命名映射
-- `module/market-data/TRACEABILITY.md`：8 FR + 6 BR + 4 NFR，全追溯链闭合
-- `module/market-data/goal.md` / `IMPLEMENTATION-PLAN.md`：6-PR 执行序列
-- README/ARCHITECTURE：市场数据组件计数拆分为 14（1 dispatch + 12 SDK + 1 C/S Module）
+- `module/market-data/SPEC.md` v0.1.1：DownstreamDispatchPort 语义、12 字段输入契约、8 种拒绝原因（含 binance-native 映射规则 §4.4.1）、跨模块字段命名映射表 §4.2.1
+- `module/market-data/TRACEABILITY.md`：8 FR + 6 BR + 4 NFR + 9 TC + 6 AC，全追溯链闭合
+- `module/market-data/goal.md`：边界定义、实现门禁（Contract/Domain/Adapter/Reject/Naming/Test）
+- `module/market-data/IMPLEMENTATION-PLAN.md`：6-PR 执行序列（PR-000 docs ✅ → PR-006 contract tests）
+- §10.1 门禁：Contract/Domain/Adapter 三门禁 docs baseline 已通过 ✅；Reject/Naming Mapping 已基线发布；Test Gate 待 runtime
+- README.md/ARCHITECTURE.md：市场数据拆分为 14 组件（1 dispatch + 12 SDK + 1 C/S Module）
