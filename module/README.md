@@ -2,7 +2,7 @@
 
 > 19 个基座模块与 5 个 L2.5 领域共享规划/基线模块的独立规格，按架构层级组织。`x.go` 组合根不再作为 `module/` 下的模块规格维护。
 
-最后更新：2026-06-15
+最后更新：2026-06-17
 
 ---
 
@@ -12,7 +12,7 @@
 | --- | --- | --- | --- | --- |
 | `decimalx` | v0.2.0 | v1.0.0 | 高精度 Decimal / Money / Currency 数值基础 | [Goal](decimalx/goal.md) / [Spec](decimalx/SPEC.md) / [Traceability](decimalx/TRACEABILITY.md) / [Plan](decimalx/IMPLEMENTATION-PLAN.md) |
 | `domainx` | v1.0.0 | v1.0.0 | 执行域共享值对象：Order / Position / Trade / Portfolio / ExecutionReport | [Goal](domainx/goal.md) / [Spec](domainx/SPEC.md) / [Traceability](domainx/TRACEABILITY.md) / [Plan](domainx/IMPLEMENTATION-PLAN.md) |
-| `domain-market` | v0.1.0 | v1.0.0 | Tick / Quote / Bar / OrderBook / Instrument / quality gate 市场语义 | [Goal](domain-market/goal.md) / [Spec](domain-market/SPEC.md) / [Traceability](domain-market/TRACEABILITY.md) / [Plan](domain-market/IMPLEMENTATION-PLAN.md) |
+| `domain-market` | v1.1.0 | v1.1.0 | ProductLine/InstrumentKey/MarketFactEnvelope + Tick/Quote/Bar/OrderBook 市场语义 + Binance C/S ingestion canonical types | [Goal](domain-market/goal.md) / [Spec](domain-market/SPEC.md) / [Traceability](domain-market/TRACEABILITY.md) / [Plan](domain-market/IMPLEMENTATION-PLAN.md) |
 | `domain-macro` | v0.1.0 | v1.0.0 | MacroPoint / MacroInformationSet / no-lookahead 宏观语义 | [Goal](domain-macro/goal.md) / [Spec](domain-macro/SPEC.md) / [Traceability](domain-macro/TRACEABILITY.md) / [Plan](domain-macro/IMPLEMENTATION-PLAN.md) |
 | `domain-exchange` | v0.1.0 | v1.0.0 | Exchange SPI / VenueCapability / RateLimitPolicy / ExchangeError | [Goal](domain-exchange/goal.md) / [Spec](domain-exchange/SPEC.md) / [Traceability](domain-exchange/TRACEABILITY.md) / [Plan](domain-exchange/IMPLEMENTATION-PLAN.md) |
 
