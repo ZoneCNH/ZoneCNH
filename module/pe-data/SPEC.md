@@ -108,7 +108,7 @@ THEN 自动恢复 `Freshness = CURRENT`
 | ID | 规则 |
 | --- | --- |
 | BR-001 | 免费数据源爬取必须遵守 rate limit，不得触发 IP ban |
-| BR-002 | PE 数据不得直接写入 factor-engine 或 signal-factory（必须通过 alternative-data 分发） |
+| BR-002 | PE 数据通过 `AlternativeDataProvider` 接口暴露，下游只通过接口消费，不直接依赖数据源实现 |
 | BR-003 | 季频数据缺失时不得填零——标记为 NaN，由下游决定处理方式 |
 | BR-004 | 内部人交易数据仅用公开申报，不得抓取非公开信息 |
 
