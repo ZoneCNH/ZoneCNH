@@ -164,8 +164,7 @@
 | [uk-cb](https://github.com/ZoneCNH/uk-cb)             | v0.1.1 | ███░ 80% | 100%       | 英国央行       |
 | [japan-cb](https://github.com/ZoneCNH/japan-cb)       | v0.1.1 | ███░ 80% | 100%       | 日本央行       |
 | [eastmoney](https://github.com/ZoneCNH/eastmoney)     | v0.1.1 | ███░ 80% | 100%       | 东方财富 A 股  |
-| [jinshi](https://github.com/ZoneCNH/jinshi)           | v0.1.1 | ███░ 80% | 100%       | 金十快讯       |
-| [jin10](https://github.com/ZoneCNH/jin10)             | v0.1.1 | ███░ 80% | 100%       | 金十行情       |
+| [jin10](https://github.com/ZoneCNH/jin10)             | v0.2.0 | ███░ 80% | 100%       | 金十数据 SDK：openapi（宏观数据）+ flash（实时快讯） |
 | [yahoo](https://github.com/ZoneCNH/yahoo)             | v0.1.1 | ███░ 80% | 100%       | Yahoo Finance  |
 
 <details>
@@ -181,8 +180,7 @@
 | uk-cb       |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | 80%；v0.1.1；英国央行         |
 | japan-cb    |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | 80%；v0.1.1；日本央行         |
 | eastmoney   |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | 80%；v0.1.1；东方财富 A 股    |
-| jinshi      |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | 80%；v0.1.1；金十快讯         |
-| jin10       |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | 80%；v0.1.1；金十行情         |
+| jin10       |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | 80%；v0.2.0；金十数据 SDK：openapi + flash |
 | yahoo       |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | 80%；v0.1.1；Yahoo Finance    |
 
 > **维度说明**：SPEC=规格完成 | IMPL=实现完成 | RELEASE=tag/release/manifest 一致 | LIVE INT=真实服务集成（非 mock） | EXT CI=外部 CI artifact | ADOPT=下游模块真实采用 | SOAK=生产或类生产长时间运行 | FACTORY=factory_grade_allowed（最高综合等级）

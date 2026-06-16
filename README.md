@@ -45,7 +45,7 @@ L2.5: domainx / decimalx / domain-market / domain-macro / domain-exchange (5/5 v
       │
       ▼
 业务流: 数据域 → 分析域 ↔ 决策域 → 执行域
-数据域: market-data (18) / macro-data (11) / alternative-data
+数据域: market-data (18) / macro-data (10) / alternative-data
 分析域: factor-engine / feature-store / factor-eval / market_regime / macro_regime / regime-engine / ms_brain / flowx
        三引擎: market_engine(market facts → S state) / macro_engine(macro facts → M state) / regime_engine(M+S → action/risk/permission)
 决策域: signal-factory / backtest-engine / optimizer / backtestx / strategyx / maestro
@@ -148,8 +148,7 @@ L2.5: domainx / decimalx / domain-market / domain-macro / domain-exchange (5/5 v
 - [uk-cb](https://github.com/ZoneCNH/uk-cb) — 英国央行 `公开`
 - [japan-cb](https://github.com/ZoneCNH/japan-cb) — 日本央行 `公开`
 - [eastmoney](https://github.com/ZoneCNH/eastmoney) — 东方财富 `公开`
-- [jinshi](https://github.com/ZoneCNH/jinshi) — 金十快讯 `公开`
-- [jin10](https://github.com/ZoneCNH/jin10) — 金十行情 `公开`
+- [jin10](https://github.com/ZoneCNH/jin10) — 金十数据 SDK（开放 API + Flash 快讯） `公开`
 - [yahoo](https://github.com/ZoneCNH/yahoo) — Yahoo Finance `公开`
 
 ### 数据域 · alternative-data
