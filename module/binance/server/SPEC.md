@@ -548,7 +548,7 @@ server 必须通过 contracts 定义的 server-side contract tests：
 | gRPC wire contract（contracts §8.4）新增 optional 字段 | 向后兼容 | 无需迁移 |
 | gRPC wire contract（contracts §8.4）删除/重命名字段 | Breaking | contracts 版本 bump + server 同步升级 |
 | 新增 Idempotency store backend | 向后兼容 | 通过 config 切换 |
-| 修改 RejectClass 枚举 | Breaking | client 需同步更新分类处理逻辑 |
+| 修改 RejectCode 枚举（contracts §8.4） | Breaking | client 需同步更新分类处理逻辑 |
 | 新增 admin endpoint | 向后兼容 | 无需迁移 |
 | 修改 ACK 结构 | Breaking | contracts 版本 bump |
 

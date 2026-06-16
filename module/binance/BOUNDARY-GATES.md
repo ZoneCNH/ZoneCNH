@@ -166,6 +166,38 @@ module/binance owns proto compatibility policy
 module/binance defines canonical wire enum source of truth
 ```
 
+Suggested check:
+
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+
+# 6a: No local proto directory
+if [ -d "module/binance/proto" ]; then
+  echo "FAIL: module/binance/proto/ directory exists — proto ownership belongs to module/contracts"
+  exit 1
+fi
+
+# 6b: No local .proto files in binance tree
+proto_files="$(find module/binance -name '*.proto' 2>/dev/null || true)"
+if [ -n "$proto_files" ]; then
+  echo "FAIL: .proto files found under module/binance — wire schema belongs to module/contracts"
+  echo "$proto_files"
+  exit 1
+fi
+
+# 6c: No ownership language claiming proto or wire enum SSOT
+ownership_hits="$(grep -R -n -E 'Owns.*proto|owns.*proto compatibility|defines canonical wire|canonical wire enum' \
+  module/binance \
+  --include='*.md' || true)"
+if [ -n "$ownership_hits" ]; then
+  echo "FAIL: module/binance claims proto/wire enum ownership — belongs to module/contracts"
+  echo "$ownership_hits"
+  exit 1
+fi
+
+echo "PASS: Contracts gate — no local proto, no wire SSOT claim"
+
 ## 7. Gate: Domain-Market Is Semantic Source
 
 `module/binance` must not define canonical market semantics independently.

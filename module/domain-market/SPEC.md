@@ -518,7 +518,7 @@ module/domain-market/
 - [ ] DataProvider 契约稳定，fake provider 可复用
 - [ ] 与 domainx 无执行枚举重复归属（ADR + compile smoke）
 - [ ] 发布 manifest 含 CI 证据
-- [ ] Version 更新为 v1.0.0
+- [ ] Version 更新为 v1.1.0
 - [ ] CHANGELOG.md、MIGRATION.md、release manifest 齐全
 
 ## 23. 待解决问题
@@ -536,4 +536,5 @@ module/domain-market/
 |------|------|----------|------|
 | 2026-06-15 | v1.0.0 | 初始版本：L2.5 市场数据领域模型与质量门禁 | ZoneCNH |
 | 2026-06-17 | v1.0.1 | 审计修复：补充 ProductLine、InstrumentKey、MarketFactEnvelope（MarketEventEnvelope 别名）类型定义 | ZoneCNH |
+| 2026-06-17 | v1.1.0 | canonical 类型规范化：ProductLine 枚举 spot/um_perp/cm_perp/option；InstrumentKey 13维+Validate；MarketFactEnvelope canonical wrapper+时间语义；§10.1 Binance C/S ingestion 语义；FR-MKT-017/BR-MKT-008/AC/TC 补齐 | ZoneCNH |
 | 2026-06-17 | v1.1.0 | canonical 类型重构：ProductLine 枚举值对齐跨模块规范（um_perp/cm_perp/option 替代 usdm_futures/coinm_futures/options）；新增 IsValid()；InstrumentKey 重构为 Venue/InstrumentType 维度矩阵；新增 BR-MKT-008 exchange-neutral 命名约束 | ZoneCNH |
