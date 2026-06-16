@@ -2,7 +2,7 @@
 
 - Status: Approved
 - Spec-Version: v1.1.0
-- Last-Updated: 2026-06-14
+- Last-Updated: 2026-06-17
 - Layer: 基座 · 跨域接口契约
 - Module-Version: v1.1.0-spec
 - Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `kernel`, `transportx`
