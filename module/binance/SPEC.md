@@ -278,35 +278,36 @@ Binance 行情集成面临以下问题：
 ### MarketDataService (defined by module/contracts)
 
 ```go
-// MarketDataService defines the gRPC ingest contract.
+// MarketDataService receives normalized upstream market-data ingestion requests.
+// Defined in module/contracts/SPEC.md §8.4 (v1.2.0-spec).
 // Implemented by module/binance/server.
 // Called by module/binance/client.
 //
 // THIS INTERFACE IS OWNED BY module/contracts — reproduced here for spec clarity only.
 type MarketDataService interface {
-    // Ingest accepts a bidirectional stream of market data events.
-    // Client sends IngestRequest; server responds with IngestAck.
-    Ingest(stream MarketData_IngestServer) error
+	// Ingest accepts a bidirectional stream of IngestRequest and returns per-request outcomes.
+	// Each IngestRequest returns exactly one IngestResult (Ack or Reject).
+	Ingest(stream IngestRequest) (stream IngestResult, error)
 }
 ```
 
-### Wire Protocol
+**Wire DTOs** (全部由 `module/contracts` §8.4 拥有)：
 
-```go
-// MarketDataService receives normalized upstream market-data ingestion requests.
-// Defined in module/contracts/SPEC.md §8.4.
-// Each IngestRequest returns exactly one IngestResult (Ack or Reject).
-type MarketDataService interface {
-    Ingest(stream IngestRequest) (stream IngestResult, error)
-}
-```
+| DTO | 字段/值 | 说明 |
+|-----|---------|------|
+| `IngestRequest` | 10 required + 2 optional（request_id, source, product_line, instrument_key, event_type, event_time, received_at, schema_version, payload, source_metadata；+ sequence, ordering_key 可选） | adapter 提交的归一化事件 |
+| `IngestResult` | `Ack *IngestAck` 或 `Reject *IngestReject`（exactly one non-nil） | 逐请求的终端结果 |
+| `IngestAck` | request_id, instrument_key, accepted_at, durable | 确认事件已接收 |
+| `IngestReject` | request_id, reject_code, reason, details | 拒绝原因与上下文 |
+| `RejectCode` | 9 码枚举：retryable / terminal_validation / terminal_conflict / unauthorized / rate_limited / server_unavailable / contract_violation / quality_gate / ordering_violation | 供 adapter retry policy 决策 |
 
-- Client 发送 `IngestRequest`（canonical market event envelope + idempotency key + source metadata）
-- Server 对每个 `IngestRequest` 返回一个 `IngestResult`，其中 exactly one of `Ack` or `Reject` is non-nil
+- Client 发送 `IngestRequest`，携带 canonical market fact envelope + idempotency key + source metadata
+- Server 对每个 `IngestRequest` 返回一个 `IngestResult`，exactly one of Ack or Reject is non-nil
+- RejectCode 9 码覆盖 binance §9 全部 6 种 native 分类 + 3 种 market-data 门禁分类
 
 ### Downstream Dispatch Port
 
-Server 通过 exchange-neutral downstream port 将 accepted events 分发给 `module/market-data`。该 port 的具体接口由 `module/market-data` 定义；server 只做 handoff 适配。
+Server 通过 exchange-neutral downstream port 将 accepted events 分发给 `module/market-data`。该 port 的具体接口由 `module/market-data` SPEC v1.0.0 §4 定义（`Dispatch(ctx, AcceptedMarketEvent) → DispatchOutcome`，12 字段输入，8 种 reject reason，binance-native 6→8 映射规则 §4.4.1）；server 只做 handoff 适配。
 
 ---
 
