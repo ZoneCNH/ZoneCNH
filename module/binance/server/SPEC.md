@@ -169,7 +169,13 @@ Binance 行情接入需要服务端边界确保数据质量和可靠性。直接
 **THEN** 通过 exchange-neutral downstream port 将 event 分发到 `module/market-data`
 
 **WHEN** downstream dispatch 失败
-**THEN** 记录失败 metric，取决于实现策略：retry dispatch 或 undo acceptance（回滚幂等记录）
+**THEN** 采用 retry-first + dead-letter 策略：
+  1. 立即重试 dispatch（最多 3 次，指数退避 100ms/200ms/400ms）
+  2. 重试耗尽后写入 dead-letter spool，触发 `alertx` 告警，不阻塞后续事件
+  3. 不回滚幂等记录：ACK 已发送，client checkpoint 已推进，回滚代价大于收益
+  4. Dead-letter 事件可通过 `/admin/dead-letter` 端点查看、重放或丢弃
+
+**设计理由**: durable acceptance 成功后，幂等记录已持久化且 ACK 已返回 client。回滚（rollback-first）需撤销幂等记录 + 通知 client 撤回 ACK，显著增加复杂度和延迟，且收益有限——idempotency 层本身已防止重复。retry-first + dead-letter 在保障数据不丢失的同时保持 pipeline 简洁。
 
 ### FR-008: Admin HTTP Endpoints
 
@@ -581,7 +587,7 @@ server 必须通过 contracts 定义的 server-side contract tests：
 | ID | 问题 | 状态 | 负责人 |
 |----|------|------|--------|
 | OQ-001 | idempotency store 首选实现：in-memory 还是 Redis？ | 待解决 | ZoneCNH |
-| OQ-002 | downstream dispatch 失败策略：retry-first 还是 rollback-first？ | 待解决 | ZoneCNH |
+| OQ-002 | downstream dispatch 失败策略：retry-first 还是 rollback-first？ | 已解决：retry-first + dead-letter（FR-007）。重试 3 次指数退避后写入死信队列并告警，不回滚幂等记录（2026-06-17） | ZoneCNH |
 | OQ-003 | proto 定义是否已在 `module/contracts` 中可用？ | 已解决：`module/contracts/SPEC.md` §8.4 已定义全部 wire types（2026-06-17） | ZoneCNH |
 
 ### Non-blocking（不阻塞开发）
