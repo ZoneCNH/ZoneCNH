@@ -109,7 +109,7 @@ market-data 文档使用 camelCase 风格描述字段语义；在下游实现中
 | unsupported_channel | channel 尚未纳入 `market-data` 接收侧支持矩阵。 | terminal_validation（子类） |
 | unauthorized | adapter 凭证无效或权限不足；由上游 adapter 验证并映射，本层收到后直接拒绝。 | unauthorized |
 | rate_limited | 上游 adapter 或接收侧自身频率超限；adapter 应按退避策略重试，不属于无限重试。 | rate_limited |
-| server_unavailable | 接收侧内部依赖（持久化、队列）不可用；adapter 应退避重试（与 DispatchFailure 的区别：本分类表示已知的临时不可用，DispatchFailure 表示未知的内部错误）。 | server_unavailable |
+| server_unavailable | 接收侧内部依赖（持久化、队列）不可用；adapter 应退避重试。<br/>**产出: DispatchFailure（非 DispatchReject），可重试。** 与 generic DispatchFailure 的区别：本分类表示已知的临时不可用原因，方便监控和告警分类。 | server_unavailable |
 
 > 以上共 8 种 reject reason。binance adapter 的 dispatch 适配层负责将 binance-native 6 种分类映射为上述 8 种中的对应项（`retryable` 根据 context 转 `DispatchFailure`）。映射规则见 §4.4.1。
 
@@ -118,7 +118,7 @@ market-data 文档使用 camelCase 风格描述字段语义；在下游实现中
 | binance §9 分类 | market-data outcome / reason | 说明 |
 | --- | --- | --- |
 | retryable | DispatchFailure | 不映射到 reject reason；转 failure 让 adapter 重试 |
-| terminal_validation | DispatchReject / contract_violation 或 quality_rejected | 按具体子类细分 |
+| terminal_validation | DispatchReject（子类: contract_violation / quality_rejected / ordering_violation / unsupported_channel） | 按具体子类细分，共 4 种 market-data reject reason 对应 binance terminal_validation |
 | terminal_conflict | DispatchReject / idempotency_conflict | 直接映射 |
 | unauthorized | DispatchReject / unauthorized | 直接映射 |
 | rate_limited | DispatchReject / rate_limited | 直接映射 |
