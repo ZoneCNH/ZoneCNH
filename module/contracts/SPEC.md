@@ -1,6 +1,6 @@
 # contracts 规格
 
-- Status: Approved
+- Status: Docs Baseline Approved / Runtime Pending
 - Spec-Version: v1.2.0
 - Last-Updated: 2026-06-17
 - Layer: 基座 · 跨域接口契约
