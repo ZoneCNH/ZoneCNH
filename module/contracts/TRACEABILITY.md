@@ -17,9 +17,8 @@ Source: module/contracts/SPEC.md
 | FR-006 | Breaking Change 检测 — 接口/DTO 变更感知与版本升级 | AC-FR-005: breaking change 检测通过 | TC-003 | TASK-CONTRACTS-003 | Pending |
 | FR-007 | Module Identity — README H1 与 go.mod module path 必须为 contracts | AC-007: Module Identity | TC-008 | TASK-CONTRACTS-005 | Pending |
 
-## §2 业务规则追溯（BR）
 
-| Requirement | Description | Acceptance Criteria | Verification | Task | Status |
+| Requirement | Description | Acceptance Criteria | TC ID(s) | Task | Status |
 | --- | --- | --- | --- | --- | --- |
 | BR-001 | 所有跨域 DTO 必须在 contracts 中定义 | AC-FR-004: DTO集中定义 | TC-002 (JSON round-trip) | TASK-CONTRACTS-002 | Pending |
 | BR-002 | 新增契约必须说明消费方、生产方和稳定期 | AC-BR-002: 契约三方说明 | CI Gate: PR 审查 (新增契约审查) | TASK-CONTRACTS-004 | Pending |

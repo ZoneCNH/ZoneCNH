@@ -21,9 +21,8 @@
 
 ---
 
-## §2 业务规则追溯（BR）
 
-| BR | Rule | 违反后果 | Verification Method | Task | Status |
+| BR | Rule | 违反后果 | TC ID(s) | Task | Status |
 |----|------|----------|---------------------|------|--------|
 | BR-001 | 订单必须先通过 riskx 才能提交交易所 | 拒绝下单 | TC-ORD-002 riskx 调用断言 | - | 🔲 |
 | BR-002 | 终态订单不可再修改（FILLED/CANCELLED/REJECTED/EXPIRED） | 拒绝操作 | TC-ORD-001 终态转换拒绝断言 | - | 🔲 |

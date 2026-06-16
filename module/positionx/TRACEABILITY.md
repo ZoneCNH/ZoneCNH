@@ -21,9 +21,8 @@
 
 ---
 
-## §2 业务规则追溯（BR）
 
-| BR | Rule | 违反后果 | Verification Method | Task | Status |
+| BR | Rule | 违反后果 | TC ID(s) | Task | Status |
 |----|------|----------|---------------------|------|--------|
 | BR-001 | 同一 fill_id 不可重复更新仓位 | 拒绝重复 + emit warning | TC-POS-009 重复 fill_id 拒绝断言 | - | 🔲 |
 | BR-002 | long 和 short 不可同时非零 | 交易系统保证（净持仓模式） | TC-POS-001 净持仓模式断言 | - | 🔲 |

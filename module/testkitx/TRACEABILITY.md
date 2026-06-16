@@ -24,9 +24,8 @@ Source: module/testkitx/SPEC.md v1.0.0
 
 ---
 
-## §2 业务规则追溯 (BR)
 
-| Requirement   | Description                                                                 | 违反后果                                | 验证方式                                                     | Task                                                                                          | Status   |
+| Requirement   | Description                                                                 | 违反后果                                | TC ID(s) | Task                                                                                          | Status   |
 | ------------- | --------------------------------------------------------------------------- | --------------------------------------- | ------------------------------------------------------------ | --------------------------------------------------------------------------------------------- | -------- |
 | BR-001        | 所有 fake 必须实现对应接口，编译期检查 `var _ Interface = (*FakeImpl)(nil)` | fake 与真实接口脱节，contract test 失败 | CI Gate: `go build ./...`                                    | TASK-TESTKITX-001, TASK-TESTKITX-002, TASK-TESTKITX-003, TASK-TESTKITX-004, TASK-TESTKITX-005 | ⬜        |
 | BR-002        | fake 行为必须确定性，不引入 `time.Now()` 或 `math.Rand()`                   | 测试不稳定，CI 随机失败                 | CI Gate: `go test -race -count=1 ./...`                      | TASK-TESTKITX-005                                                                             | ⬜        |

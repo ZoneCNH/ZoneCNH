@@ -7,7 +7,7 @@
 
 ## Functional Traceability
 
-| Requirement | Description | Type | Source | Acceptance Criteria | Test Case | Task | Status |
+| Requirement | Description | Type | Source | Acceptance Criteria | TC ID(s) | Task | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | FR-001 | Envelope Schema — 创建包含id/type/version/source/endpoint/tenant/timestamp/deadline/trace/idempotency key/headers/payloadRef的标准信封 | Functional | SPEC §7 | AC-001 | TC-001 | TASK-TRANSPORTX-001 | Pending |
 | FR-002 | Payload Limits — 载荷/Header超限时拒绝并返回TX_PAYLOAD_LIMIT_EXCEEDED或TX_HEADER_LIMIT_EXCEEDED | Functional | SPEC §7 | AC-002 | TC-002 | TASK-TRANSPORTX-001, TASK-TRANSPORTX-006 | Pending |

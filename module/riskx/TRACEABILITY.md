@@ -21,9 +21,8 @@
 
 ---
 
-## §2 业务规则追溯（BR）
 
-| BR | Rule | 违反后果 | Verification Method | Task | Status |
+| BR | Rule | 违反后果 | TC ID(s) | Task | Status |
 |----|------|----------|---------------------|------|--------|
 | BR-001 | 所有订单必须通过 riskx 检查后才能提交交易所 | orderx 拒绝下单 | TC-RSK-001 风控调用链路断言 | - | 🔲 |
 | BR-002 | KillSwitch 状态必须持久化 | 重启后恢复风控状态 | TC-RSK-003 持久化+重启恢复断言 | - | 🔲 |
