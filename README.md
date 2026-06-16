@@ -112,7 +112,7 @@ L2.5: domainx / decimalx / domain-market / domain-macro / domain-exchange (5/5 v
 - [domain-macro](https://github.com/ZoneCNH/domain-macro) — 宏观经济领域共享模型：国家/地区/指标/发布日历、MacroPoint/MacroState；v1.0.0 GitHub Release 已发布 `公开`
 - [domain-exchange](https://github.com/ZoneCNH/domain-exchange) — 交易域模型（VenueAdapter 13 方法接口）；v1.0.0 GitHub Release 已发布 `公开`
 
-### 数据域 · market-data（SDK 13 + Provider 5）
+### 数据域 · market-data（SDK 13）
 
 **交易所 SDK：**
 
@@ -129,14 +129,6 @@ L2.5: domainx / decimalx / domain-market / domain-macro / domain-exchange (5/5 v
 - [lighter](https://github.com/ZoneCNH/lighter) — Lighter `公开`
 - [upbit](https://github.com/ZoneCNH/upbit) — Upbit `公开`
 - [coinglass](https://github.com/ZoneCNH/coinglass) — Coinglass 加密货币数据 `公开`
-
-**Kline/Ticker Provider：**
-
-- [binance-market](https://github.com/ZoneCNH/binance-market) — Binance `公开`
-- [bybit-market](https://github.com/ZoneCNH/bybit-market) — Bybit `公开`
-- [bitget-market](https://github.com/ZoneCNH/bitget-market) — Bitget SPOT `公开`
-- [okx-market](https://github.com/ZoneCNH/okx-market) — OKX `公开`
-- [coinbase-market](https://github.com/ZoneCNH/coinbase-market) — Coinbase `公开`
 
 ### 数据域 · macro-data
 
