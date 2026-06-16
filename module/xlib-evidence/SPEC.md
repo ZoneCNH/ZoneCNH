@@ -1,6 +1,6 @@
 # xlib-evidence 规格
 
-- Status: Review
+Status: Approved
 - Spec-Version: v1.0.0
 - Last-Updated: 2026-06-14
 - Layer: 基座 · CI 证据运行时
