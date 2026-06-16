@@ -56,7 +56,7 @@ market-data (18) ──────────────► market_regime ─
   domain-market (Bar/Tick/OB)     S1-S7 状态     │
   质量门禁 → 特征 → 分类器       bias/permission  │
                                                ├──► regime-engine ──► DecisionCard
-macro-data (11) ───────────────► macro_regime ──┘     M×S 融合        action A-E
+macro-data (10) ───────────────► macro_regime ──┘     M×S 融合        action A-E
   domain-macro (MacroPoint)      M1-M7 状态           冲突门           profile
   LGIP 四因子                    LGIP 得分            风险放大          risk_tier
                                                                       position_caps
@@ -128,7 +128,7 @@ flowx ──► strategyx ──► maestro ──► riskx ──► orderx ─
 | ------ | ----------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 基座   | 标准源、生成器、证据运行时、L0 原语、L1 运行时横切能力、测试期证据、存储扩展、稳定契约与传输契约                                         | xlib-standard, xlib-harness, xlib-evidence, kernel, configx, observex, testkitx, resiliencx, schedulex, xlibgate, redisx, kafkax, natsx, postgresx, taosx, ossx, clickhousex, contracts, transportx |
 | L2.5   | 领域共享值对象和语义模型，上层统一依赖                                                                                        | domainx, decimalx, domain-market, domain-exchange, domain-macro                                                                                         |
-| 数据域 | 行情、宏观、另类数据采集                                                                                                      | market-data (13 SDK + 5 Provider), macro-data (11), alternative-data                                                                                       |
+| 数据域 | 行情、宏观、另类数据采集                                                                                                      | market-data (13 SDK + 5 Provider), macro-data (10), alternative-data                                                                                       |
 | 分析域 | 因子计算、特征存储、因子评估、市场/宏观环境分类、数据流管线、M×S 联合决策（三引擎：market_engine→S / macro_engine→M / regime_engine→M+S） | factor-engine, feature-store, factor-eval, market_regime, macro_regime, regime-engine, ms_brain, flowx                                                              |
 | 决策域 | 信号生成、历史回测、参数优化、策略工厂、工作流编排（并行协作）                                                                  | signal-factory, backtest-engine, optimizer, backtestx, strategyx, maestro                                                                          |
 | 执行域 | 风险管理、订单执行、仓位管理、结算                                                                                              | risk-engine, order-engine, portfolio-engine, settlement, riskx, orderx, positionx                                                                              |
@@ -378,8 +378,7 @@ Foundation 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中在 
 | 数据域                | [uk-cb](https://github.com/ZoneCNH/uk-cb)                       | -      | ✅ 已有   | ███░ 80% | 英国央行                                                                                  |
 | 数据域                | [japan-cb](https://github.com/ZoneCNH/japan-cb)                 | -      | ✅ 已有   | ███░ 80% | 日本央行                                                                                  |
 | 数据域                | [eastmoney](https://github.com/ZoneCNH/eastmoney)               | -      | ✅ 已有   | ███░ 80% | 东方财富 A 股                                                                             |
-| 数据域                | [jinshi](https://github.com/ZoneCNH/jinshi)                     | -      | ✅ 已有   | ███░ 80% | 金十快讯                                                                                  |
-| 数据域                | [jin10](https://github.com/ZoneCNH/jin10)                       | -      | ✅ 已有   | ███░ 80% | 金十行情                                                                                  |
+| 数据域                | [jin10](https://github.com/ZoneCNH/jin10)                       | v0.2.0 | ✅ 已有   | ███░ 80% | 金十数据 SDK：openapi（宏观数据）+ flash（实时快讯）                                      |
 | 数据域                | [yahoo](https://github.com/ZoneCNH/yahoo)                       | -      | ✅ 已有   | ███░ 80% | Yahoo Finance                                                                             |
 | **数据域 · 另类**     |                                                                 |        |           |          |                                                                                           |
 | 数据域                | [alternative-data](https://github.com/ZoneCNH/alternative-data) | -      | 🔨 已创建 | ░░░░ 5%  | 链上、社交情绪、新闻 NLP                                                                  |
@@ -468,7 +467,6 @@ Foundation 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中在 
 | 数据域            | uk-cb                                                                                                     | `/home/uk-cb/`                              |
 | 数据域            | japan-cb                                                                                                  | `/home/japan-cb/`                           |
 | 数据域            | eastmoney                                                                                                 | `/home/eastmoney/`                          |
-| 数据域            | jinshi                                                                                                    | `/home/jinshi/`                             |
 | 数据域            | jin10                                                                                                     | `/home/jin10/`                              |
 | 数据域            | yahoo                                                                                                     | `/home/yahoo/`                              |
 | 数据域            | yield-curve                                                                                               | `/home/yield-curve/`                        |

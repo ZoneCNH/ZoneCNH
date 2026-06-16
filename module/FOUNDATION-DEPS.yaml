@@ -200,7 +200,6 @@ forbidden_deps:
   - github.com/ZoneCNH/uk-cb
   - github.com/ZoneCNH/japan-cb
   - github.com/ZoneCNH/eastmoney
-  - github.com/ZoneCNH/jinshi
   - github.com/ZoneCNH/jin10
   - github.com/ZoneCNH/yahoo
   - github.com/ZoneCNH/alternative-data
