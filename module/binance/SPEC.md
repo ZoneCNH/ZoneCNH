@@ -76,7 +76,7 @@ Binance 行情集成面临以下问题：
 
 | 消费者 | 使用方式 | 状态 |
 |--------|----------|------|
-| `module/market-data` | 通过 server downstream dispatch port 接收 canonical market events | 待实现 |
+| `module/market-data` | 通过 server downstream dispatch port 接收 canonical market events | SPEC Approved (v1.0.0-spec), runtime integration pending |
 | `module/binance/client` | 通过 contracts-defined gRPC 调用 `module/binance/server` 的 `MarketDataService.Ingest` | 待实现 |
 | `module/binance/server` | 接收 client 发送的 `IngestRequest` 流 | 待实现 |
 | Operator / SRE | 通过 client/server Gin admin 端点监控和管理 | 待实现 |
