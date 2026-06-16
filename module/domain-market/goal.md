@@ -5,7 +5,7 @@
 | 模块 | `domain-market` |
 | 层级 | L2.5 领域共享 |
 | 仓库 | <https://github.com/ZoneCNH/domain-market> |
-| 当前版本 | v0.1.0 |
+| 当前版本 | v1.0.1 |
 | 目标版本 | v1.0.0 |
 | 状态 | v1.0.0 执行计划已落地 |
 | 计划来源 | `/home/zone/Downloads/0615/ZoneCNH-v1.0.0-goal-execution-plans/domain-market-v1.0.0-goal-execution-plan.md` |
@@ -33,7 +33,7 @@
 
 | 优先级 | 阻塞项 | 处理方向 |
 | --- | --- | --- |
-| P0 | 当前版本仍为 v0.1.0 | 建立 v1 API freeze 与 release gate |
+| P0 | 当前版本仍为 v0.1.0 | 已解决 — v1.0.1 已补充 ProductLine/InstrumentKey/MarketFactEnvelope canonical 类型 |
 | P0 | 缺少模块级 SPEC / TRACEABILITY | 本目录补齐规划基线，代码仓库继续落地 |
 | P0 | validator 与质量门禁证据不足 | 增加 invalid time、dirty data、zero/negative value 测试 |
 | P0 | 与 `domainx` 的 enum overlap | 保留 market side，迁出订单语义 |
