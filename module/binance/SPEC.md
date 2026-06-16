@@ -1,6 +1,6 @@
 # module/binance SPEC
 
-- Status: Docs Baseline Approved
+- Status: Review
 - Spec-Version: v1.0.0
 - Last-Updated: 2026-06-17
 - Owner: ZoneCNH
@@ -212,18 +212,30 @@ Binance 行情集成面临以下问题：
 
 **违反时**：CI gate 失败，PR 不可合并。
 
-### BR-002: Client/Server Boundary
+### BR-002: Client Must Not Import Server Internals
 
-**规则**：client 不得 import server internal 包，server 不得 import client internal 包。
+**规则**：client 不得 import server internal 包。
 
 **约束**：
 - `module/binance/client` → 禁止 import `module/binance/server/*`
+- Runtime: `internal/client` 与 `cmd/binance-client` → 禁止 import `internal/server/*`
+- 允许：client → `module/contracts` 生成的 gRPC client、`module/domain-market` 语义类型、shared config/observability
+
+**违反时**：CI boundary gate（`BOUNDARY-GATES.md` §3）失败。
+
+### BR-003: Server Must Not Import Client Internals
+
+**规则**：server 不得 import client internal 包。
+
+**约束**：
 - `module/binance/server` → 禁止 import `module/binance/client/*`
-- Runtime: `internal/client` → 禁止 import `internal/server`，反之亦然
+- Runtime: `internal/server` 与 `cmd/binance-server` → 禁止 import `internal/client/*`
+- 特别禁止：server → spot/usdm/coinm/options connector、client spool、client checkpoint
+- 允许：server → `module/contracts` 生成的 gRPC server、`module/domain-market` 语义类型、`module/market-data` downstream port、shared config/observability
 
-**违反时**：CI boundary gate 失败。
+**违反时**：CI boundary gate（`BOUNDARY-GATES.md` §4）失败。
 
-### BR-003: Checkpoint Requires ACK
+### BR-004: Checkpoint Requires ACK
 
 **规则**：client checkpoint 仅可在 server 返回 durable ACK 后推进。
 
@@ -231,7 +243,7 @@ Binance 行情集成面临以下问题：
 
 **违反时**：spool 状态机拒绝 transition；重启后 checkpoint 回退到上一个 durable ACK 位置。
 
-### BR-004: No Domain Ownership
+### BR-005: No Domain Ownership
 
 **规则**：`module/binance` 不得定义 canonical domain semantics 的 source of truth。
 
@@ -239,7 +251,7 @@ Binance 行情集成面临以下问题：
 
 **违反时**：CI ownership gate 失败。
 
-### BR-005: No Storage/Query/Strategy Ownership
+### BR-006: No Storage/Query/Strategy Ownership
 
 **规则**：`module/binance` 不得拥有 storage engine、query API 或 strategy API。
 
@@ -247,7 +259,7 @@ Binance 行情集成面临以下问题：
 
 **违反时**：CI ownership gate 失败。
 
-### BR-006: Wire Contract Externality
+### BR-007: Wire Contract Externality
 
 **规则**：`module/binance` 不得定义自己的 proto 文件或 wire schema。
 
@@ -255,7 +267,7 @@ Binance 行情集成面临以下问题：
 
 **违反时**：CI gate 失败。
 
-### BR-007: Idempotency Key Stability
+### BR-008: Idempotency Key Stability
 
 **规则**：client 生成的 idempotency key 必须在 retry 场景下稳定。
 
@@ -263,7 +275,7 @@ Binance 行情集成面临以下问题：
 
 **违反时**：retry 时 server 无法识别重复，产生 duplicate downstream effect。
 
-### BR-008: Admin Boundary
+### BR-009: Admin Boundary
 
 **规则**：client admin 仅可变更 client-local state，server admin 仅可变更 server-local state。
 
@@ -642,10 +654,10 @@ github.com/ZoneCNH/binance/
 - [ ] root/client/server TRACEABILITY.md 完成，所有需求可追溯
 - [ ] client/server task sets 独立可执行
 - [ ] Delivery semantics 明确为 at-least-once + idempotent acceptance（FR-004, FR-005）
-- [ ] ACK/checkpoint semantics 已定义且 testable（BR-003）
+- [ ] ACK/checkpoint semantics 已定义且 testable（BR-004）
 - [ ] ProductLine 和 InstrumentKey 碰撞 case 已文档化（FR-002, §9 Data Model）
 - [ ] Boundary gates 可在 CI 执行（FR-007, BOUNDARY-GATES.md）
-- [ ] Runtime mapping 未将 storage/query/strategy ownership 放在 Binance 内（BR-005）
+- [ ] Runtime mapping 未将 storage/query/strategy ownership 放在 Binance 内（BR-006）
 - [ ] 所有 FR 实现完成，所有 AC 验证通过
 - [ ] 覆盖率 ≥ 80%
 - [ ] CI Gate 全部通过（通用 + 模块专属）

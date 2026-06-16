@@ -4,7 +4,7 @@
 >
 > 规范来源：`docs/governance/TRACEABILITY.md`
 
-- Matrix-Version: v1.1.0
+- Matrix-Version: v1.2.0
 - Last-Updated: 2026-06-17
 - Spec-Reference: `module/binance/SPEC.md` v1.0.0
 
@@ -28,18 +28,19 @@
 
 ## §2 BR 追溯表
 
-> BR 编号与 SPEC §7 一致（BR-001 ~ BR-008）。
+> BR 编号与 SPEC §7 一致（BR-001 ~ BR-009）。BR-002/BR-003 已拆分为 client→server 与 server→client 各自独立 BR，对应 BOUNDARY-GATES §3/§4 的两个独立 CI gate。
 
 | BR ID | 业务规则 | 验证方式 | Task | 实现状态 |
 |-------|----------|----------|------|----------|
 | BR-001 | No binance-market：禁止在 active architecture 中引用 `binance-market` | CI Gate: BOUNDARY-GATES.md §2 (`grep -R -E 'module/binance-market\|github.com/ZoneCNH/binance-market'` — 零匹配除 `docs/migrations/` 和 `CHANGELOG.md`) | TASK-BINANCE-ROOT-000 | Pending |
-| BR-002 | Client/Server Boundary：client 不得 import server internal 包，反之亦然 | CI Gate: BOUNDARY-GATES.md §3, §4 boundary-check scripts | TASK-BINANCE-ROOT-002, TASK-BINANCE-ROOT-003, TASK-BINANCE-ROOT-007 | Pending |
-| BR-003 | Checkpoint Requires ACK：client checkpoint 仅可在 server 返回 durable ACK 后推进 | CI Gate: BOUNDARY-GATES.md §9 + TC-005（ACK 语义单元测试） | TASK-BINANCE-ROOT-002, TASK-BINANCE-ROOT-007 | Pending |
-| BR-004 | No Domain Ownership：模块不得定义 canonical domain semantics SSOT，必须引用 `module/domain-market` | CI Gate: BOUNDARY-GATES.md §7 (canonical enum 定义检查) | TASK-BINANCE-ROOT-004, TASK-BINANCE-ROOT-007 | Pending |
-| BR-005 | No Storage/Query/Strategy Ownership：模块不得拥有存储引擎、query API、strategy API | CI Gate: BOUNDARY-GATES.md §5 (ownership 关键字检查) | TASK-BINANCE-ROOT-001, TASK-BINANCE-ROOT-007 | Pending |
-| BR-006 | Wire Contract Externality：模块不得定义自己的 proto 或 wire schema，必须引用 `module/contracts` | CI Gate: BOUNDARY-GATES.md §6 (无本地 proto 文件 + 无 wire SSOT 声明) | TASK-BINANCE-ROOT-005, TASK-BINANCE-ROOT-007 | Pending |
-| BR-007 | Idempotency Key Stability：client 生成的 idempotency key 在 retry 场景下稳定 | TC-007（同 key 两次发送验证）+ FR-005 WHEN/THEN 行为引用 | TASK-BINANCE-ROOT-002, TASK-BINANCE-ROOT-007 | Pending |
-| BR-008 | Admin Boundary：client admin 仅变更 client-local state，server admin 仅变更 server-local state | CI Gate: BOUNDARY-GATES.md §8 (admin 跨边界访问检查) + TC-009 | TASK-BINANCE-ROOT-002, TASK-BINANCE-ROOT-003, TASK-BINANCE-ROOT-007 | Pending |
+| BR-002 | Client Must Not Import Server Internals：client 不得 import server internal 包 | CI Gate: BOUNDARY-GATES.md §3 boundary-check script | TASK-BINANCE-ROOT-002, TASK-BINANCE-ROOT-007 | Pending |
+| BR-003 | Server Must Not Import Client Internals：server 不得 import client internal 包 | CI Gate: BOUNDARY-GATES.md §4 boundary-check script | TASK-BINANCE-ROOT-003, TASK-BINANCE-ROOT-007 | Pending |
+| BR-004 | Checkpoint Requires ACK：client checkpoint 仅可在 server 返回 durable ACK 后推进 | CI Gate: BOUNDARY-GATES.md §9 + TC-005（ACK 语义单元测试） | TASK-BINANCE-ROOT-002, TASK-BINANCE-ROOT-007 | Pending |
+| BR-005 | No Domain Ownership：模块不得定义 canonical domain semantics SSOT，必须引用 `module/domain-market` | CI Gate: BOUNDARY-GATES.md §7 (canonical enum 定义检查) | TASK-BINANCE-ROOT-004, TASK-BINANCE-ROOT-007 | Pending |
+| BR-006 | No Storage/Query/Strategy Ownership：模块不得拥有存储引擎、query API、strategy API | CI Gate: BOUNDARY-GATES.md §5 (ownership 关键字检查) | TASK-BINANCE-ROOT-001, TASK-BINANCE-ROOT-007 | Pending |
+| BR-007 | Wire Contract Externality：模块不得定义自己的 proto 或 wire schema，必须引用 `module/contracts` | CI Gate: BOUNDARY-GATES.md §6 (无本地 proto 文件 + 无 wire SSOT 声明) | TASK-BINANCE-ROOT-005, TASK-BINANCE-ROOT-007 | Pending |
+| BR-008 | Idempotency Key Stability：client 生成的 idempotency key 在 retry 场景下稳定 | TC-007（同 key 两次发送验证）+ FR-005 WHEN/THEN 行为引用 | TASK-BINANCE-ROOT-002, TASK-BINANCE-ROOT-007 | Pending |
+| BR-009 | Admin Boundary：client admin 仅变更 client-local state，server admin 仅变更 server-local state | CI Gate: BOUNDARY-GATES.md §8 (admin 跨边界访问检查) + TC-009 | TASK-BINANCE-ROOT-002, TASK-BINANCE-ROOT-003, TASK-BINANCE-ROOT-007 | Pending |
 
 ---
 
@@ -68,17 +69,17 @@
 | TC ID | 覆盖 FR(s) | 覆盖 BR(s) | 测试类型 | 状态 |
 |-------|------------|------------|----------|------|
 | TC-001 | FR-001 | — | 集成测试（Binance testnet） | Pending |
-| TC-002 | FR-002 | BR-004 | 单元测试 | Pending |
-| TC-003 | FR-002 | BR-004 | 单元测试 | Pending |
-| TC-004 | FR-003 | BR-006 | 契约测试（gRPC mock server） | Pending |
-| TC-005 | FR-004 | BR-003, BR-007 | 集成测试 | Pending |
-| TC-006 | FR-005 | BR-007 | 集成测试 | Pending |
-| TC-007 | FR-005 | BR-007 | 集成测试 | Pending |
+| TC-002 | FR-002 | BR-005 | 单元测试 | Pending |
+| TC-003 | FR-002 | BR-005 | 单元测试 | Pending |
+| TC-004 | FR-003 | BR-007 | 契约测试（gRPC mock server） | Pending |
+| TC-005 | FR-004 | BR-004, BR-008 | 集成测试 | Pending |
+| TC-006 | FR-005 | BR-008 | 集成测试 | Pending |
+| TC-007 | FR-005 | BR-008 | 集成测试 | Pending |
 | TC-008 | FR-006 | — | 单元测试（HTTP endpoint） | Pending |
-| TC-009 | FR-006 | BR-008 | 集成测试（HTTP endpoint） | Pending |
-| TC-010 | FR-007 | BR-002 | CI gate（client→server import 检查） | Pending |
+| TC-009 | FR-006 | BR-009 | 集成测试（HTTP endpoint） | Pending |
+| TC-010 | FR-007 | BR-002, BR-003 | CI gate（双向 import 边界检查） | Pending |
 | TC-011 | FR-007 | BR-001 | CI gate（no-legacy 引用检查） | Pending |
-| TC-012 | FR-007 | BR-005 | CI gate（ownership 关键字检查） | Pending |
+| TC-012 | FR-007 | BR-006 | CI gate（ownership 关键字检查） | Pending |
 
 ---
 
@@ -117,13 +118,13 @@
 | 指标 | 总数 | 已覆盖 | 覆盖率 | 说明 |
 |------|------|--------|--------|------|
 | 功能需求 (FR) | 7 | 7 | 100% | FR-001 ~ FR-007 全部有 AC + TC |
-| 业务规则 (BR) | 8 | 8 | 100% | BR-001 ~ BR-008 全部有 CI Gate 或 TC 验证（编号与 SPEC §7 严格一致） |
+| 业务规则 (BR) | 9 | 9 | 100% | BR-001 ~ BR-009 全部有 CI Gate 或 TC 验证（BR-002/BR-003 client/server 边界各自独立） |
 | 非功能需求 (NFR) | 13 | 13 | 100% | NFR-001 ~ NFR-013 全部有验证方式 |
 | 测试用例 (TC) | 12 | 12 | 100% | TC-001 ~ TC-012 全部有对应 FR/BR |
 | 验收标准 (AC) | 23 | 23 | 100% | AC-001 ~ AC-023 全部有验证方式（FR-007 边界强制现已覆盖 AC-021~023） |
 | 任务 (Task) | 8 | — | — | TASK-BINANCE-ROOT-000 ~ 007 |
 | FR→TC 覆盖率 | — | 7/7 | 100% | 每个 FR 至少 1 个 TC |
-| BR→验证覆盖率 | — | 8/8 | 100% | 每个 BR 至少 1 个 CI Gate 或 TC |
+| BR→验证覆盖率 | — | 9/9 | 100% | 每个 BR 至少 1 个 CI Gate 或 TC |
 | AC→验证覆盖率 | — | 23/23 | 100% | 每个 AC 有明确验证方式 |
 | 实现状态 | — | 0/7 FR | 0% | 全部 FR 为 Pending，代码尚未实现 |
 
@@ -135,3 +136,4 @@
 |------|------|----------|------|
 | 2026-06-16 | v1.0.0 | 从零创建 §1-§7 标准追溯矩阵；从 SPEC.md v1.0.0 提取 FR-001~007、BR-001~011、TC-001~009、NFR-001~013、AC-001~020；映射 TASK-BINANCE-ROOT-000~007 | ZoneCNH |
 | 2026-06-17 | v1.1.0 | **修复 FR/BR/AC 错位**：(1) §1 FR 描述与 SPEC §6 标题对齐，AC 引用按语义重新分配（FR-002↔身份, FR-004↔交付, FR-005↔幂等, FR-006↔admin, FR-007↔边界）；(2) §2 BR 编号统一为 SPEC §7 的 8 条（移除越权的 BR-009/010/011，将其概念归入对应 BR 验证条目）；(3) §5 新增 AC-021/022/023 覆盖 FR-007 边界强制；(4) §4 TC 扩展至 12 条以支撑边界 gate 验证；(5) §6 仪表盘对齐新计数 | ZoneCNH |
+| 2026-06-17 | v1.2.0 | **BR-002/BR-003 拆分 + Status 标准化**：原 BR-002 (Client/Server Boundary) 双向约束拆为 BR-002 (Client→Server, BOUNDARY-GATES §3) + BR-003 (Server→Client, BOUNDARY-GATES §4)，原 BR-003~008 顺移至 BR-004~009；§4 TC-010 BR 引用扩展为 BR-002, BR-003；§6 仪表盘 BR 总数 8→9；同步 SPEC §7 BR 拆分；root SPEC Status 从非标 `Docs Baseline Approved` 标准化为 `Review` | ZoneCNH |
