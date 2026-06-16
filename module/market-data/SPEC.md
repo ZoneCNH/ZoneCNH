@@ -5,9 +5,9 @@
 - Last-Updated: 2026-06-17
 - Layer: L3 行情摄取与分发
 - Module-Version: v0.0.0
-- Related: `module/binance`, `module/domain-market`, `module/contracts`, `.omx/context/binance-upstream-contract-closure-20260616T142533Z.md`
+- Related: `module/binance`, `module/domain-market`, `module/contracts`
 
-> 本文件发布 downstream dispatch port / receiving-side SPEC 的文档基线，不引入运行时代码、依赖或 wire schema。`market-data` 的运行时实现仍为 Pending，必须等待 `module/domain-market` 与 `module/contracts` 的对应契约稳定后再落地。
+> 本文件发布 downstream dispatch port / receiving-side SPEC 的文档基线，不引入运行时代码、依赖或 wire schema。`market-data` 的运行时实现仍为 Pending；上游 `module/domain-market` 与 `module/contracts` 的 docs-only 契约基线已补充完毕（ProductLine/InstrumentKey/MarketFactEnvelope + §8.4 Ingestion Contract），运行时冻结待各模块发布。
 
 ---
 
