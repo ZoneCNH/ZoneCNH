@@ -105,7 +105,7 @@
 
 | 组件                                                          | 类型     | 版本   | 进度     | 覆盖率要求 | 说明                  |
 | ------------------------------------------------------------- | -------- | ------ | -------- | ---------- | --------------------- |
-| [binance](https://github.com/ZoneCNH/binance)                 | SDK      | v0.1.1 | ███░ 80% | 100%       | Binance CEX           |
+| [binance](https://github.com/ZoneCNH/binance)                 | C/S Module | v1.0.0-spec | ███░ 80% | 100%       | Market Data C/S (client+server)；4产品线 |
 | [okx](https://github.com/ZoneCNH/okx)                         | SDK      | v0.1.1 | ███░ 80% | 100%       | OKX CEX               |
 | [bybit](https://github.com/ZoneCNH/bybit)                     | SDK      | v0.1.1 | ███░ 80% | 100%       | Bybit CEX             |
 | [bitget](https://github.com/ZoneCNH/bitget)                   | SDK      | v0.1.1 | ███░ 80% | 100%       | Bitget CEX            |
@@ -124,7 +124,7 @@
 
 | 模块            | SPEC | IMPL | RELEASE | LIVE INT | EXT CI | ADOPT | SOAK | FACTORY | 备注                               |
 | --------------- | :--: | :--: | :-----: | :------: | :----: | :---: | :--: | :-----: | ---------------------------------- |
-| binance         |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | SDK；80%；Binance CEX              |
+| binance         |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | C/S Module；v1.0.0-spec；4产品线     |
 | okx             |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | SDK；80%；OKX CEX                  |
 | bybit           |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | SDK；80%；Bybit CEX                |
 | bitget          |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | SDK；80%；Bitget CEX               |
