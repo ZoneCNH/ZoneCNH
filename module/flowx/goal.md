@@ -4,10 +4,10 @@
 
 | 字段 | 值 |
 | --- | --- |
-| Target | v0.1.0-draft |
-| Layer | 执行域 · 工作流引擎 |
-| Status | Review |
-| Last-Updated | 2026-06-16 |
+| Target | v0.1.0 |
+| Layer | 分析域 · 数据流管线引擎 |
+| Status | Docs Baseline Published |
+| Last-Updated | 2026-06-17 |
 | Source | [SPEC.md](./SPEC.md) |
 
 ## 目标
