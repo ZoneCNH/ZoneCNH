@@ -200,7 +200,7 @@ market-data 文档使用 camelCase 风格描述字段语义；在下游实现中
 - [ ] **Reject Mapping 验证**: `module/binance` 的 dispatch 适配层可引用 §4.4.1 映射规则实现 reject 转换。
 - [ ] **Naming Mapping 验证**: 跨模块字段命名无残余矛盾；Go 代码中 struct 字段来自 domain-market import，JSON 序列化遵循 contracts BR-009 snake_case。
 - [ ] **Test Gate 通过**: TC-MD-003 至 TC-MD-008 的运行时测试已实现并通过。
-- [ ] `module/binance` 不再将 `module/contracts`、`module/domain-market`、`module/market-data` 列为 Blocking。
+- [x] `module/binance` 不再将 `module/contracts`、`module/domain-market`、`module/market-data` 列为 Blocking（§22 已重命名为 Resolved (was Blocking)，OQ-001/OQ-002 已关闭）。
 
 > 以上全部满足后，本模块状态可推进为 `Published`。
 
