@@ -24,8 +24,8 @@ Initial scope:
 
 ## Acceptance Criteria
 
-- connector annotates events with ProductLine USDⓈ-M.
-- `BTCUSDT` USDⓈ-M does not collide with Spot `BTCUSDT`.
+- connector annotates events with ProductLine `um_perp`（USDⓈ-M）.
+- `BTCUSDT` `um_perp` USDⓈ-M does not collide with Spot `BTCUSDT`.
 - perpetual and dated contracts can be represented.
 - connector preserves exchange sequence/update ids where available.
 - connector does not own canonical ProductLine definition.
