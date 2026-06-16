@@ -153,8 +153,9 @@ Binance 行情接入需要服务端边界确保数据质量和可靠性。直接
 **THEN** 返回 reject，类别为 `retryable`，不标记 event 为已接受
 
 **Idempotency Store 后端选择**:
-- 默认实现：in-memory（sync.Map + TTL GC），适用于单实例部署和本地开发
-- 生产可选：Redis（通过 `IdempotencyStore` 接口切换），适用于多实例共享和跨重启持久化
+- 生产默认：Redis（SCADA-redis 共享实例，TTL 24h + Lua CAS 原子操作），适用于多实例共享和跨重启持久化
+- 开发/测试：in-memory（sync.Map + TTL GC），通过 `IdempotencyStore` 接口切换，仅用于本地单实例场景
+- 接口抽象：`CheckAndSet(ctx, key, payloadHash) -> (accepted bool, conflict bool, err error)`
 - 接口抽象：`CheckAndSet(ctx, key, payloadHash) -> (accepted bool, conflict bool, err error)`
 
 ### FR-006: ACK Generation
