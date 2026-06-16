@@ -63,10 +63,13 @@ macro-data (10) ───────────────► macro_regime �
 factor-engine ◄──► feature-store ◄──► factor-eval                     template
               │                         ▲
               ▼                         │
-  flowx ──► signal-factory ◄── backtest-engine ─┘   ◄── DecisionCard (action/risk/template)
-              │    ▲                        ▲
-              ▼    │                        │
-         strategyx ─► optimizer ────────────┘
+  flowx ──► signal-factory          backtest-engine ─┐
+              │                         ▲             │
+              ▼                         │             │
+         strategyx ─────────────────────┘             │
+              │         ▲                             │
+              │         │  (回测结果 → 参数优化)       │
+              │    optimizer ◄─── backtest-engine ────┘
               │
               ▼
          maestro ──► riskx ──► orderx ──► positionx
