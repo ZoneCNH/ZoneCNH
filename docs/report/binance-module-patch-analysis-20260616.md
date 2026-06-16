@@ -181,3 +181,45 @@ PR-005 (binance runtime impl)     ← 全部依赖就绪
 | 21  | `docs/services/binance-market-client-svc.md`                       | 56   | 服务描述       |
 | 22  | `scripts/check-binance-boundaries.sh`                              | 41   | CI 脚本        |
 | 23  | `repo-skeleton/README.md`                                          | 21   | 仓库骨架       |
+
+---
+
+## 七、现状更新 (2026-06-17)
+
+> 自原分析报告以来，所有 6 项发现均已在 2026-06-16 至 2026-06-17 期间通过 PR #539-#557 解决。
+
+### 7.1 解决方案总结
+
+| # | 原发现 | 严重度 | 解决方案 | 涉及 PR |
+|---|--------|--------|----------|---------|
+| 1 | `binance` vs `binance-market` 关系未澄清 | HIGH | `binance-market` 已从 ARCHITECTURE.md/STATUS.md 完全移除。binance SPEC Non-goals："不做旧 binance-market 遗留模块迁移或兼容" | #539, #540 |
+| 2 | MarketDataService 服务端无人认领 | HIGH | binance/server 定义为 gRPC ingest server；market-data 定义为 downstream dispatch port。完整链路：client → contracts §8.4 gRPC → server → market-data DownstreamDispatchPort | #543, #545, #548 |
+| 3 | domain-market 升级范围未细化 | MEDIUM | v1.1.0 新增 ProductLine（um_perp/cm_perp）、InstrumentKey（Venue/ProductLine + Validate()）、MarketFactEnvelope 完整结构体（事件时间语义 + Validate()）、§10.1 Binance C/S ingestion canonical 语义 | #549, #554 |
+| 4 | `rg` 依赖 | LOW | 脚本未纳入合并；边界门禁通过 BOUNDARY-GATES.md 文档形式落地 | #543 |
+| 5 | 缺少 goal.md | LOW | module/binance/goal.md 已创建；client OQ-001 标记为已解决 | #554 |
+| 6 | SPEC Owns 列出实现路径 | LOW | client/server SPEC 明确划分职责边界 | #543, #554 |
+
+### 7.2 原始合并顺序 vs 实际执行
+
+| 原始建议 | 实际 | 状态 |
+|----------|------|------|
+| PR-001: binance spec | ✅ 已合并 | Done |
+| PR-003: contracts proto | ✅ contracts §8.4 docs-only 基线已定义 | Done |
+| PR-002: domain-market upgrade | ✅ v1.1.0 canonical 类型已落地 | Done |
+| PR-004: transportx policy | ⏸️ 推迟 — contracts §8.4 + binance server SPEC 覆盖 | Deferred |
+| PR-005: binance runtime impl | ⏸️ 阻塞 — 等待 OQ-002 决策 | Blocked |
+
+### 7.3 剩余未解决
+
+| 项目 | 状态 | 阻塞因素 |
+|------|------|----------|
+| OQ-002（binance/server）| 待解决 | downstream dispatch failure strategy: retry-first vs rollback-first |
+| binance runtime implementation | Pending | 依赖 OQ-002 + domain-market/contracts 运行时冻结 |
+
+### 7.4 market-data 模块新增
+
+原分析报告指出的"隐式 MarketDataService Server"架构空白已通过以下方式填补：
+- `module/market-data/SPEC.md` v1.0.0：DownstreamDispatchPort、12 字段输入契约、8 种拒绝原因、跨模块字段命名映射
+- `module/market-data/TRACEABILITY.md`：8 FR + 6 BR + 4 NFR，全追溯链闭合
+- `module/market-data/goal.md` / `IMPLEMENTATION-PLAN.md`：6-PR 执行序列
+- README/ARCHITECTURE：市场数据组件计数拆分为 14（1 dispatch + 12 SDK + 1 C/S Module）
