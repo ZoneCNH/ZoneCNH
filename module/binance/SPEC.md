@@ -1,8 +1,8 @@
 # module/binance SPEC
 
-- Status: Approved
+- Status: Docs Baseline Approved / Runtime Pending
 - Spec-Version: v1.0.0
-- Last-Updated: 2026-06-16
+- Last-Updated: 2026-06-17
 - Owner: ZoneCNH
 - Layer: 数据域 · 行情
 - Module-Version: v1.0.0-spec
@@ -10,6 +10,23 @@
 - Related: [CONSTITUTION.md](../../CONSTITUTION.md), [ARCHITECTURE.md](../../ARCHITECTURE.md), `module/domain-market`, `module/contracts`, `module/market-data`, `module/transportx`
 
 > 子模块规格：`module/binance/client/SPEC.md`、`module/binance/server/SPEC.md`
+
+---
+
+## 0. Upstream Contract Gate
+
+在从 docs baseline 推进到运行时实现前，必须逐项验证以下上游契约链闭合条件：
+
+| # | Gate | 验证 | 状态 |
+|---|------|------|:----:|
+| G0-1 | `module/contracts` §8.4 `MarketDataService` + `IngestRequest`(12字段)/`IngestResult`/`IngestAck`/`IngestReject` + `RejectCode`(9码) | contracts SPEC v1.2.0 | ✅ |
+| G0-2 | `module/domain-market` `ProductLine`(4值)/`InstrumentKey`(12维)/`MarketFactEnvelope` canonical 类型 | domain-market SPEC v1.0.1 §10 | ✅ |
+| G0-3 | `module/market-data` DownstreamDispatchPort + 12 输入字段 + 8 种 reject reason + §4.4.1 binance reject 映射 | market-data SPEC v0.1.1 §4 | ✅ |
+| G0-4 | binance OQ-001（contracts wire 就绪？） | 已确认 (2026-06-17) | ✅ |
+| G0-5 | binance OQ-002（market-data dispatch port 就绪？） | 已确认 (2026-06-17) | ✅ |
+| G0-6 | BOUNDARY-GATES.md 全部 9 门禁有 CI 脚本 | 9/9 (2026-06-17) | ✅ |
+
+> **6/6 通过** — 上游契约链闭合。本 SPEC 处于 Docs Baseline Approved 状态，可进入运行时实现阶段（PR-007）。实现时必须严格遵循 contracts §8.4 wire types、domain-market §10 canonical semantics、market-data §4 dispatch port 契约。
 
 ---
 

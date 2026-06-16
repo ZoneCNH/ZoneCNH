@@ -16,6 +16,21 @@ Before runtime implementation:
 6. `module/market-data` owns downstream exchange-neutral processing.
 7. Delivery semantics are at-least-once + idempotent acceptance.
 
+### Phase 0: Upstream Contract Closure Gate (2026-06-17 验证通过)
+
+在进入运行时实现前，必须先验证三条上游契约链闭合：
+
+| Gate | 验证项 | 验证方式 | 状态 |
+|------|--------|----------|:----:|
+| G0-1 | `module/contracts` §8.4 已定义 `MarketDataService` + `IngestRequest`/`IngestResult`/`IngestAck`/`IngestReject`/`RejectCode` | `grep -c "IngestRequest\|IngestResult\|RejectCode" module/contracts/SPEC.md` ≥ 10 | ✅ |
+| G0-2 | `module/domain-market` 已定义 `ProductLine`(4值)/`InstrumentKey`(12维)/`MarketFactEnvelope`(canonical wrapper) | `grep -c "ProductLine\|InstrumentKey\|MarketFactEnvelope" module/domain-market/SPEC.md` ≥ 15 | ✅ |
+| G0-3 | `module/market-data` downstream dispatch port SPEC 已发布 + binance reject 映射规则已文档化 | `ls module/market-data/SPEC.md` + `grep -c "binance.*reject\|RejectCode" module/market-data/SPEC.md` ≥ 5 | ✅ |
+| G0-4 | `module/binance` OQ-001（contracts wire 就绪？）已闭合 | SPEC §22 OQ-001 状态为已确认 | ✅ |
+| G0-5 | `module/binance` OQ-002（market-data dispatch port 就绪？）已闭合 | SPEC §22 OQ-002 状态为已确认 | ✅ |
+| G0-6 | BOUNDARY-GATES.md 全部 9 门禁有可执行 CI 脚本 | `grep -c "Suggested check:" module/binance/BOUNDARY-GATES.md` ≥ 7 | ✅ |
+
+> **6/6 通过** — 上游契约链闭合，binance 可从 Draft 推进到运行时实现。PR-004（domain-market dependency）和 PR-005（contracts dependency）的 docs baseline 已就绪，后续 PR 只需引用已稳定的 SPEC 定义。
+
 ## 3. Recommended PR Sequence
 
 ```text
@@ -105,6 +120,8 @@ Required external concepts:
 - `MarketFactEnvelope`
 - `decision_time`
 
+> **Docs baseline**: 以上全部类型已在 `module/domain-market/SPEC.md` v1.0.1 §10 中定义（ProductLine=4 值枚举, InstrumentKey=12 字段, MarketFactEnvelope=canonical wrapper with time semantics）。运行时实现时直接 import domain-market Go 类型，不需要在 binance 侧重新定义。
+
 Acceptance from Binance perspective:
 
 - Spot/Futures/Options identity collisions are impossible
@@ -121,6 +138,8 @@ Required external protocol:
 - `IngestReject`
 - canonical event envelope wire representation
 - enum compatibility policy
+
+> **Docs baseline**: 以上全部接口和 DTO 已在 `module/contracts/SPEC.md` v1.2.0 §8.4 中定义（MarketDataService Go 接口 + IngestRequest(12字段)/IngestResult/IngestAck/IngestReject + RejectCode(9码) + 跨层命名映射表）。运行时 proto 编译与 gRPC code generation 待后续阶段执行。
 
 Acceptance from Binance perspective:
 
