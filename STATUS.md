@@ -82,7 +82,7 @@
 | ------------------------------------------------------------- | ------ | -------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | [decimalx](https://github.com/ZoneCNH/decimalx)               | v1.0.0 | ████ 100% | 100%       | 高精度十进制类型；v1.0.0 GitHub Release 已发布，8 FR Done；factory grade；live/soak N/A（纯值对象库）                                                                   |
 | [domainx](https://github.com/ZoneCNH/domainx)                 | v1.0.1 | ████ 100% | 100%       | 领域共享值对象：Order / Position / Trade / Portfolio / ExecutionReport；公开 v1.0.1 release/tag 已观测并完成 trust 对账；factory grade；live/soak N/A（纯值对象库） |
-| [domain-market](https://github.com/ZoneCNH/domain-market)     | v1.0.0 | ████ 100% | 100%       | 市场数据域模型；v1.0.0 GitHub Release 已发布，7 FR Done；factory grade；live/soak N/A（纯值对象库）                                                                       |
+| [domain-market](https://github.com/ZoneCNH/domain-market)     | v1.0.1 | ████ 100% | 100%       | 市场数据域模型 + ProductLine/InstrumentKey/MarketFactEnvelope/MarketEventEnvelope 类型；7 FR Done；factory grade；live/soak N/A（纯值对象库）                           |
 | [domain-macro](https://github.com/ZoneCNH/domain-macro)       | v1.0.0 | ████ 100% | 100%       | 宏观数据域模型；v1.0.0 GitHub Release 已发布，7 FR Done；factory grade；live/soak N/A（纯值对象库）                                                                       |
 | [domain-exchange](https://github.com/ZoneCNH/domain-exchange) | v1.0.0 | ████ 100% | 100%       | 交易域模型；v1.0.0 GitHub Release 已发布，7 FR Done；factory grade；live/soak N/A（纯值对象库）                                                                           |
 
@@ -93,7 +93,7 @@
 | --------------- | :--: | :--: | :-----: | :------: | :----: | :---: | :--: | :-----: | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | decimalx        |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ✅    | v1.0.0；100%；v1.0.0 GitHub Release 已发布，8 FR Done；factory grade；live/soak N/A（纯值对象库）                                                          |
 | domainx         |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ✅    | v1.0.1；100%；领域共享值对象：Order/Position/Trade/Portfolio/ExecutionReport；公开 v1.0.1 release/tag 已观测并完成 trust 对账；factory grade；live/soak N/A（纯值对象库） |
-| domain-market   |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ✅    | v1.0.0；100%；v1.0.0 GitHub Release 已发布，7 FR Done；factory grade；live/soak N/A（纯值对象库）                                                          |
+| domain-market   |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ✅    | v1.0.1；100%；ProductLine/InstrumentKey/MarketFactEnvelope/MarketEventEnvelope 类型定义；7 FR Done；factory grade；live/soak N/A（纯值对象库） |
 | domain-macro    |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ✅    | v1.0.0；100%；v1.0.0 GitHub Release 已发布，7 FR Done；factory grade；live/soak N/A（纯值对象库）                                                          |
 | domain-exchange |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ✅    | v1.0.0；100%；v1.0.0 GitHub Release 已发布，7 FR Done；factory grade；live/soak N/A（纯值对象库）                                                          |
 
@@ -105,7 +105,8 @@
 
 | 组件                                                          | 类型     | 版本   | 进度     | 覆盖率要求 | 说明                  |
 | ------------------------------------------------------------- | -------- | ------ | -------- | ---------- | --------------------- |
-| [binance](https://github.com/ZoneCNH/binance)                 | C/S Module | v1.0.0-spec | ███░ 80% | 100%       | Market Data C/S (client+server)；4产品线 |
+| [binance](https://github.com/ZoneCNH/binance)                 | C/S Module | v1.0.0-spec | ░░░░  5% | 100%       | Market Data C/S (client+server)；Spec-Only；4产品线 |
+| [market-data](https://github.com/ZoneCNH/market-data)         | Dispatch | v0.1.0 | ██░░ 30% | 100%       | downstream dispatch port 接收侧 SPEC 基线（FR-MD-001~008）；runtime pending |
 | [okx](https://github.com/ZoneCNH/okx)                         | SDK      | v0.1.1 | ███░ 80% | 100%       | OKX CEX               |
 | [bybit](https://github.com/ZoneCNH/bybit)                     | SDK      | v0.1.1 | ███░ 80% | 100%       | Bybit CEX             |
 | [bitget](https://github.com/ZoneCNH/bitget)                   | SDK      | v0.1.1 | ███░ 80% | 100%       | Bitget CEX            |
@@ -124,7 +125,7 @@
 
 | 模块            | SPEC | IMPL | RELEASE | LIVE INT | EXT CI | ADOPT | SOAK | FACTORY | 备注                               |
 | --------------- | :--: | :--: | :-----: | :------: | :----: | :---: | :--: | :-----: | ---------------------------------- |
-| binance         |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | C/S Module；v1.0.0-spec；4产品线     |
+| binance         |  ✅  |  ❌  |   ❌    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | C/S Module；v1.0.0-spec；Spec-Only；4产品线     |
 | okx             |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | SDK；80%；OKX CEX                  |
 | bybit           |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | SDK；80%；Bybit CEX                |
 | bitget          |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | SDK；80%；Bitget CEX               |
@@ -295,7 +296,7 @@
 ## 总览仪表盘
 
 ```text
-组件总数: 78    已有: 56    已创建: 22    平均进度: 62%
+组件总数: 79    已有: 57    已创建: 22    平均进度: 62%
 
 进度分布:
   ███░ ≥80% ██████████████████████████████████████████████  54 个 (69%)
@@ -312,7 +313,8 @@
 | ---------------------- | ------ | ------ | ------ | ---------------------------------- | ----------------------------------------------------- |
 | 基座                   | 19     | 19     | 0      | Spec→Code 投影完成；factory 未闭合 | 19                                                    |
 | L2.5 领域共享层        | 5      | 5      | 0      | 100%                               | 5 (全部 5/5 factory grade；live/soak N/A)            |
-| 数据域 · 行情 SDK      | 13     | 13     | 0      | 80%                                | 13 (全部 v0.1.1)                                      |
+| 数据域 · 行情 SDK      | 12     | 12     | 0      | 80%                                | 12 (全部 v0.1.1)                                      |
+| 数据域 · 行情 C/S Module | 1     | 0      | 1      | 5%                                 | 1 (v1.0.0-spec；Spec-Only)                           |
 | 数据域 · 行情 Provider | 5      | 5      | 0      | 80%                                | 5 (全部 v0.1.1)                                       |
 | 数据域 · 宏观          | 10     | 10     | 0      | 80%                                | 10 (全部 v0.1.1)                                      |
 | 数据域 · 另类          | 1      | 0      | 1      | 5%                                 | 1 (v0.1.0)                                            |
@@ -322,7 +324,7 @@
 | 入口                   | 1      | 1      | 0      | 80%                                | 1 (x.go)                                              |
 | 横切                   | 2      | 1      | 1      | 53%                                | 2 (observex, alertx)                                  |
 | 独立                   | 1      | 1      | 0      | -                                  | 0                                                     |
-| **合计**               | **78** | **56** | **22** | **62%**                            | **75**                                                |
+| **合计**               | **79** | **57** | **22** | **62%**                            | **75**                                                |
 
 ---
 
@@ -343,7 +345,8 @@
 
 ### 🟢 数据域 · 行情（健康）
 
-- SDK：13 个交易所适配器，全部 v0.1.1，进度 80%
+- SDK：12 个交易所适配器，全部 v0.1.1，进度 80%
+- C/S Module：1 个（binance），v1.0.0-spec，Spec-Only，0% 实现
 - **待确认**：SDK 全部 v0.1.1 tagged release，已通过生产验证？
 
 ### 🟡 数据域 · 宏观（注意）

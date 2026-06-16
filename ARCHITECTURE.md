@@ -52,7 +52,7 @@ x.go ───────────────► 基座运行时 / L2.5 / �
 ### 业务流与反馈
 
 ```text
-market-data (13) ──────────────► market_regime ──┐
+market-data (14) ──────────────► market_regime ──┐
   domain-market (Bar/Tick/OB)     S1-S7 状态     │
   质量门禁 → 特征 → 分类器       bias/permission  │
                                                ├──► regime-engine ──► DecisionCard
@@ -128,7 +128,7 @@ flowx ──► strategyx ──► maestro ──► riskx ──► orderx ─
 | ------ | ----------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 基座   | 标准源、生成器、证据运行时、L0 原语、L1 运行时横切能力、测试期证据、存储扩展、稳定契约与传输契约                                         | xlib-standard, xlib-harness, xlib-evidence, kernel, configx, observex, testkitx, resiliencx, schedulex, xlibgate, redisx, kafkax, natsx, postgresx, taosx, ossx, clickhousex, contracts, transportx |
 | L2.5   | 领域共享值对象和语义模型，上层统一依赖                                                                                        | domainx, decimalx, domain-market, domain-exchange, domain-macro                                                                                         |
-| 数据域 | 行情、宏观、另类数据采集                                                                                                      | market-data (13 SDK), macro-data (10), alternative-data                                                                                       |
+| 数据域 | 行情、宏观、另类数据采集                                                                                                      | market-data (14: 1 dispatch + 12 SDK + 1 C/S Module), macro-data (10), alternative-data                                                                                       |
 | 分析域 | 因子计算、特征存储、因子评估、市场/宏观环境分类、数据流管线、M×S 联合决策（三引擎：market_engine→S / macro_engine→M / regime_engine→M+S） | factor-engine, feature-store, factor-eval, market_regime, macro_regime, regime-engine, ms_brain, flowx                                                              |
 | 决策域 | 信号生成、历史回测、参数优化、策略工厂、工作流编排（并行协作）                                                                  | signal-factory, backtest-engine, optimizer, backtestx, strategyx, maestro                                                                          |
 | 执行域 | 风险管理、订单执行、仓位管理、结算                                                                                              | risk-engine, order-engine, portfolio-engine, settlement, riskx, orderx, positionx                                                                              |
@@ -347,11 +347,11 @@ Foundation 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中在 
 | **L2.5 · 领域共享层** |                                                                 |        |           |          |                                                                                           |
 | L2.5                  | [domainx](https://github.com/ZoneCNH/domainx)                   | v1.0.1 | ✅ 已有   | Spec→Code 完成 | 领域共享值对象基线：Order/Position/Trade/Portfolio/ExecutionReport 与 OrderState/OrderType/OrderSide 枚举（8 FR，8 TC，6 tasks）；公开 v1.0.1 GitHub Release/tag 已观测并完成 release 对账；factory grade；live/soak N/A（纯值对象库） |
 | L2.5                  | [decimalx](https://github.com/ZoneCNH/decimalx)                 | v1.0.0 | ✅ 已有   | Spec→Code 完成 | 高精度十进制类型（Decimal/Price/Qty/Ratio/Money）；v1.0.0 GitHub Release 已发布；8 FR Done；factory grade；live/soak N/A（纯值对象库） |
-| L2.5                  | [domain-market](https://github.com/ZoneCNH/domain-market)       | v1.0.0 | ✅ 已有   | Spec→Code 完成 | 市场数据域模型（Tick/Quote/Bar/OrderBook）；v1.0.0 GitHub Release 已发布；7 FR Done；factory grade；live/soak N/A（纯值对象库）        |
+| L2.5                  | [domain-market](https://github.com/ZoneCNH/domain-market)       | v1.0.1 | ✅ 已有   | Spec→Code 完成 | 市场数据域模型（Tick/Quote/Bar/OrderBook）+ ProductLine/InstrumentKey/MarketFactEnvelope/MarketEventEnvelope 类型；v1.0.1；factory grade；live/soak N/A（纯值对象库） |
 | L2.5                  | [domain-exchange](https://github.com/ZoneCNH/domain-exchange)   | v1.0.0 | ✅ 已有   | Spec→Code 完成 | 交易域模型（VenueAdapter 13 方法接口）；v1.0.0 GitHub Release 已发布；7 FR Done；factory grade；live/soak N/A（纯值对象库）            |
 | L2.5                  | [domain-macro](https://github.com/ZoneCNH/domain-macro)         | v1.0.0 | ✅ 已有   | Spec→Code 完成 | 宏观数据域模型（MacroPoint/MacroState）；v1.0.0 GitHub Release 已发布；7 FR Done；factory grade；live/soak N/A（纯值对象库）           |
 | **数据域 · 行情**     |                                                                 |        |           |          |                                                                                           |
-| 数据域                | [binance](https://github.com/ZoneCNH/binance)                   | v1.0.0-spec | ✅ 已有 | ███░ 80% | Binance Market Data C/S Module (client+server)；4产品线；spec v1.0.0                       |
+| 数据域                | [binance](https://github.com/ZoneCNH/binance)                   | v1.0.0-spec | ✅ 已有 | ░░░░  5% | Binance Market Data C/S Module (client+server)；Spec-Only；4产品线；spec v1.0.0                       |
 | 数据域                | [okx](https://github.com/ZoneCNH/okx)                           | -      | ✅ 已有   | ███░ 80% | OKX CEX SDK                                                                               |
 | 数据域                | [bybit](https://github.com/ZoneCNH/bybit)                       | -      | ✅ 已有   | ███░ 80% | Bybit CEX SDK                                                                             |
 | 数据域                | [bitget](https://github.com/ZoneCNH/bitget)                     | -      | ✅ 已有   | ███░ 80% | Bitget CEX SDK                                                                            |
