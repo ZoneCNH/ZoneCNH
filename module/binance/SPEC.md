@@ -21,7 +21,7 @@
 |---|------|------|:----:|
 | G0-1 | `module/contracts` §8.4 `MarketDataService` + `IngestRequest`(12字段)/`IngestResult`/`IngestAck`/`IngestReject` + `RejectCode`(9码) | contracts SPEC v1.2.0 | ✅ |
 | G0-2 | `module/domain-market` `ProductLine`(4值)/`InstrumentKey`(12维)/`MarketFactEnvelope` canonical 类型 | domain-market SPEC v1.0.1 §10 | ✅ |
-| G0-3 | `module/market-data` DownstreamDispatchPort + 12 输入字段 + 8 种 reject reason + §4.4.1 binance reject 映射 | market-data SPEC v0.1.1 §4 | ✅ |
+| G0-3 | `module/market-data` DownstreamDispatchPort + 12 输入字段 + 8 种 reject reason + §4.4.1 binance reject 映射 | market-data SPEC v1.0.0 §4 | ✅ |
 | G0-4 | binance OQ-001（contracts wire 就绪？） | 已确认 (2026-06-17) | ✅ |
 | G0-5 | binance OQ-002（market-data dispatch port 就绪？） | 已确认 (2026-06-17) | ✅ |
 | G0-6 | BOUNDARY-GATES.md 全部 9 门禁有 CI 脚本 | 9/9 (2026-06-17) | ✅ |
