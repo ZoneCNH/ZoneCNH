@@ -251,6 +251,15 @@ type MacroDataProvider interface {
 }
 ```text
 
+### 8.1b AlternativeDataProvider
+
+```go
+type AlternativeDataProvider interface {
+    GetLatest(ctx context.Context, category, symbol string) (*AltDataPoint, error)
+    GetHistory(ctx context.Context, req AltHistoryRequest) ([]AltDataPoint, error)
+}
+```text
+
 ### 8.2 事件协议
 
 ```go
