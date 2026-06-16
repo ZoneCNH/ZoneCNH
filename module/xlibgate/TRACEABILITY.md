@@ -37,7 +37,7 @@
 ---
 
 
-| BR | Description | 违反后果 | 验证方式 | Task | Status |
+| BR | Description | 违反后果 | TC ID(s) | Task | Status |
 |----|-------------|----------|----------|------|--------|
 | BR-001 | 标准化 exit code：0=pass, 1=fail, 2=error | CI 无法正确判断门禁结果 | TC-004, TC-005 | TASK-XLIBGATE-006 | ✅ |
 | BR-002 | import 规则从 deps.yaml 读取，不硬编码 | 规则变更需改代码重新编译 | FR-001 WHEN/THEN `--config` 参数覆盖 | TASK-XLIBGATE-002 | ✅ |

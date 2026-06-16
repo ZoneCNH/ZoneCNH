@@ -24,7 +24,7 @@
 ---
 
 
-| BR | Description | 违反后果 | 验证方式 | Task | Status |
+| BR | Description | 违反后果 | TC ID(s) | Task | Status |
 |----|-------------|----------|----------|------|--------|
 | BR-001 | Source 节点必须声明输出数据类型 | 编译失败 | TC-FLX-002 OutputType() 非空断言 | - | 🔲 |
 | BR-002 | 至少一个 Sink 必须标注为 primary | Pipeline 创建失败 | TC-FLX-005 primary Sink 存在性检查 | - | 🔲 |

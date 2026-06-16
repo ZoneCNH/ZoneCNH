@@ -24,7 +24,7 @@
 ---
 
 
-| BR | Description | 违反后果 | 验证方式 | Task | Status |
+| BR | Description | 违反后果 | TC ID(s) | Task | Status |
 |----|-------------|----------|----------|------|--------|
 | BR-001 | DAG 必须有且仅有一个 Start 和一个 End | 创建失败 | TC-MAE-001 Start/End 唯一性断言 | - | 🔲 |
 | BR-002 | DAG 不得包含循环依赖 | 创建失败 + 返回环路径 | TC-MAE-001 循环检测断言 | - | 🔲 |

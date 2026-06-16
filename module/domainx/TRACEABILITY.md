@@ -19,7 +19,7 @@ Source: `module/domainx/SPEC.md`
 | FR-008 | 不可变性 — 无公开 setter、copy-on-write 与并发读安全 | AC-008 | TC-008 | TASK-DOMAINX-005 | Done |
 
 
-| Requirement | Description | 违反后果 | 验证方式 | Task | Status |
+| Requirement | Description | 违反后果 | TC ID(s) | Task | Status |
 | --- | --- | --- | --- | --- | --- |
 | BR-001 | 所有金额/价格字段使用 decimal.Decimal，不得使用 float64 | 编译失败：类型不匹配 | go test ./... | TASK-DOMAINX-006 | Done |
 | BR-002 | Order.quantity > 0 且限价单 price >= 0（市价单 price 可为 0） | 返回 ErrInvalidQuantity 或 ErrInvalidPrice | TC-001 | TASK-DOMAINX-001 | Done |

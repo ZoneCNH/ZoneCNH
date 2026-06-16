@@ -25,7 +25,7 @@
 ---
 
 
-| BR | Description | 违反后果 | 验证方式 | Task | Status |
+| BR | Description | 违反后果 | TC ID(s) | Task | Status |
 |----|-------------|----------|----------|------|--------|
 | BR-001 | 连接池大小默认 10，最大 100，通过 Config 配置 | 连接资源浪费或不足 | AC-018, Config.Validate() | TASK-CLICKHOUSEX-001 | ⬜ |
 | BR-002 | 批量写入使用原生 batch insert 协议，不使用拼接 SQL | 写入性能差、SQL 注入风险 | AC-019, TC-003 | TASK-CLICKHOUSEX-004 | ⬜ |
