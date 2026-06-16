@@ -659,8 +659,8 @@ github.com/ZoneCNH/binance/
 
 | ID | 问题 | 状态 | 负责人 |
 |----|------|------|--------|
-| OQ-001 | `MarketDataService` proto 的 final wire 定义是否已在 `module/contracts` 中完成？ | 已确认 — contracts §8.4 已提供 docs-only wire contract 基线（IngestRequest/IngestResult），运行时 proto 编译待后续阶段 | contracts owner |
-| OQ-002 | `module/market-data` 的 downstream dispatch port 接口是否已定义？ | 已确认 — market-data SPEC v0.1.1 已定义 DownstreamDispatchPort 语义、12 项输入字段、8 种 reject reason 和 binance reject 映射规则 | market-data owner |
+| OQ-001 | `MarketDataService` proto 的 final wire 定义是否已在 `module/contracts` 中完成？ | 已确认 — contracts SPEC v1.2.0-spec §8.4 已定义 `MarketDataService` 接口（`Ingest(stream IngestRequest) (stream IngestResult, error)`）、`IngestRequest`（10 required + 2 optional 字段）、`IngestResult`（Ack/Reject 二选一）、`IngestAck`、`IngestReject` 和 `RejectCode`（9 码枚举：retryable / terminal_validation / terminal_conflict / unauthorized / rate_limited / server_unavailable / contract_violation / quality_gate / ordering_violation） | contracts owner |
+| OQ-002 | `module/market-data` 的 downstream dispatch port 接口是否已定义？ | 已确认 — market-data SPEC v1.0.0 §4 已定义 `DownstreamDispatchPort` 语义（`Dispatch(ctx, AcceptedMarketEvent) → DispatchOutcome`）、12 项输入字段（§4.2）、8 种 reject reason（§4.4）和 binance-native → market-data reject 映射规则（§4.4.1，6→8 映射表） | market-data owner |
 
 ### Non-blocking
 
