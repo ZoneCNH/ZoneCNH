@@ -24,9 +24,9 @@ Initial scope:
 
 ## Acceptance Criteria
 
-- connector annotates events with ProductLine COIN-M.
+- connector annotates events with ProductLine `cm_perp`（COIN-M）.
 - settlement asset is represented.
-- COIN-M `BTCUSD` does not collide with Spot or USDⓈ-M instruments.
+- `cm_perp` COIN-M `BTCUSD` does not collide with Spot or USDⓈ-M instruments.
 - connector preserves contract code/expiry when present.
 - connector does not implement server acceptance logic.
 
