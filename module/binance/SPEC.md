@@ -371,7 +371,7 @@ server_unavailable
 |--------|------|--------|------|
 | `binance.endpoints.rest` | `string` | `https://api.binance.com` | Binance REST API base URL |
 | `binance.endpoints.ws` | `string` | `wss://stream.binance.com:9443` | Binance WebSocket base URL |
-| `binance.product_lines` | `[]string` | `[]` | 启用的产品线：spot/usdm/coinm/options |
+| `binance.product_lines` | `[]string` | `[]` | 启用的产品线：spot/um_perp/cm_perp/options（canonical domain-market ProductLine 值） |
 | `binance.symbols.allow` | `[]string` | `[]` | 白名单 symbol（空=全部） |
 | `binance.symbols.deny` | `[]string` | `[]` | 黑名单 symbol |
 | `grpc.target` | `string` | `localhost:9090` | server gRPC 地址 |
@@ -457,7 +457,7 @@ github.com/ZoneCNH/binance/
     binance-client/main.go
     binance-server/main.go
   internal/
-    client/     # app/config/catalog/parser/spot/usdm/coinm/options/normalize/mapper/idempotency/spool/checkpoint/sender/admin/observability
+    client/     # app/config/catalog/parser/spot/um_perp/cm_perp/options/normalize/mapper/idempotency/spool/checkpoint/sender/admin/observability
     server/     # app/config/ingest/validation/idempotency/ack/dispatch/admin/observability
   pkg/
     config/
