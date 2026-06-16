@@ -155,7 +155,10 @@ Binance 行情接入需要服务端边界确保数据质量和可靠性。直接
 **Idempotency Store 后端选择**:
 - 生产默认：Redis（SCADA-redis 共享实例，TTL 24h + Lua CAS 原子操作），适用于多实例共享和跨重启持久化
 - 开发/测试：in-memory（sync.Map + TTL GC），通过 `IdempotencyStore` 接口切换，仅用于本地单实例场景
+<<<<<<< HEAD
 - 接口抽象：`CheckAndSet(ctx, key, payloadHash) -> (accepted bool, conflict bool, err error)`
+=======
+>>>>>>> 11cd891 (docs(binance): Idempotency Store 后端选择对齐 OQ-001 — Redis-primary)
 - 接口抽象：`CheckAndSet(ctx, key, payloadHash) -> (accepted bool, conflict bool, err error)`
 
 ### FR-006: ACK Generation
