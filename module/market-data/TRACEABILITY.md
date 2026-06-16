@@ -13,7 +13,7 @@ Status semantics: `Approved` 表示 SPEC 已通过审计、跨模块契约引用
 | FR ID | 功能需求 | AC | TC ID(s) | 实现状态 |
 | --- | --- | --- | --- | --- |
 | FR-MD-001 | dispatch-port：Binance adapter 完成事件归一化后提交事件 | AC-MD-001 | TC-MD-001 | Approved |
-| FR-MD-002 | canonical-input：接收侧输入必须引用 domain-market canonical `MarketEventEnvelope` 语义，不允许 Binance 原始 DTO 泄漏 | AC-MD-002 | TC-MD-002 | Approved |
+| FR-MD-002 | canonical-input：接收侧输入必须引用 domain-market canonical `MarketFactEnvelope` 语义，不允许 Binance 原始 DTO 泄漏 | AC-MD-002 | TC-MD-002 | Approved |
 | FR-MD-003 | idempotency：同一 idempotencyKey 相同 payload 返回幂等 ack，不同 payload 返回 reject | AC-MD-003 | TC-MD-003 | Approved |
 | FR-MD-004 | ordering：同一 orderingKey 下检测 sequence 倒退、跳跃和重复 | AC-MD-003 | TC-MD-004 | Approved |
 | FR-MD-005 | quality-gate：eventTime/receivedAt/quality 不合法时 fail-closed | AC-MD-004 | TC-MD-005 | Approved |
@@ -60,7 +60,7 @@ Status semantics: `Approved` 表示 SPEC 已通过审计、跨模块契约引用
 | AC ID | 所属 FR/BR | AC 描述 | 验证方式 | 状态 |
 | --- | --- | --- | --- | --- |
 | AC-MD-001 | FR-MD-001, BR-MD-001 | Binance SPEC 可明确以 downstream dispatch port 作为行情事件交付边界，禁止直写下游 | 文档引用检查 | Approved |
-| AC-MD-002 | FR-MD-002, BR-MD-002 | 接收侧输入字段只引用 `ProductLine`、`InstrumentKey`、`MarketEventEnvelope` canonical 语义，不包含 Binance DTO 名称或原始响应字段 | 边界扫描 | Approved |
+| AC-MD-002 | FR-MD-002, BR-MD-002 | 接收侧输入字段只引用 `ProductLine`、`InstrumentKey`、`MarketFactEnvelope` canonical 语义，不包含 Binance DTO 名称或原始响应字段 | 边界扫描 | Approved |
 | AC-MD-003 | FR-MD-003, FR-MD-004 | 幂等键与排序键规则已形成后续单元测试基线 | TC-MD-003, TC-MD-004 | Approved |
 | AC-MD-004 | FR-MD-005, FR-MD-006, BR-MD-004 | reject/failure 分类清晰区分 retryable | TC-MD-005, TC-MD-006 | Approved |
 | AC-MD-005 | FR-MD-007, FR-MD-008, NFR-MD-001, NFR-MD-003 | 批量 outcome 与观测维度覆盖 venue/productLine/channel/outcome/reason | TC-MD-007, TC-MD-008 | Approved |
