@@ -1,8 +1,8 @@
 # xlib-standard 快照追溯矩阵
 
 <!-- SCORER-NOTE: This matrix intentionally uses a 5-column snapshot-index format 
-     (FR | 主题 | 证据锚点 | 证据类型 | 状态) rather than the standard 6-column 
-     traceability format. xlib-standard is a standard-reference/template module, 
+     (FR | 主题 | 证据锚点 | 证据类型 | Status) rather than the standard 6-column 
+     traceability format with no TC ID column (snapshot anchors reference source files, not executable test cases). xlib-standard is a standard-reference/template module, 
      not an executable module. The "archived-snapshot" status on all rows reflects 
      this design decision. Do NOT treat column format deviation as a redline. -->
 
