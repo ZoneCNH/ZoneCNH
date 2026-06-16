@@ -266,6 +266,7 @@ type Event interface {
 const (
     TopicMarketData  = "market.data"
     TopicMacroData   = "macro.data"
+    TopicAltData     = "alt.data"
     TopicSignal      = "signal.generated"
     TopicOrder       = "order.submitted"
     TopicExecution   = "execution.filled"
