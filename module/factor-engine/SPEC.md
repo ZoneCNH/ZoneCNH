@@ -1,13 +1,13 @@
 # factor-engine 规格
 
-- Status: Draft
-- Spec-Version: v0.1.0-draft
+- Status: Docs Baseline Approved / Runtime Pending
+- Spec-Version: v1.0.0
 - Last-Updated: 2026-06-17
 - Layer: 分析域 · 因子计算引擎
-- Module-Version: v0.1.0-draft
+- Module-Version: v1.0.0-spec
 - Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/market-data`, `module/domain-market`, `module/feature-store`
 
-> 本文件发布 factor-engine 文档基线。运行时实现为 Pending，等待 upstream market-data 和 domain-market 契约稳定。
+> 本文件发布 factor-engine 文档基线。运行时实现为 Pending。上游契约已闭合：market-data SPEC v1.0.0（Approved）、domain-market SPEC v1.1.0（ProductLine/InstrumentKey/MarketFactEnvelope 已冻结）。
 
 ---
 
