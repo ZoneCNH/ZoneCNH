@@ -60,22 +60,26 @@ macro-data (10) ───────────────► macro_regime �
   domain-macro (MacroPoint)      M1-M7 状态           冲突门           profile
   LGIP 四因子                    LGIP 得分            风险放大          risk_tier
                                                                       position_caps
-factor-engine ◄──► feature-store ◄──► factor-eval                     template
-              │                         ▲  ▲
-              ▼                         │  │
-  flowx ──► signal-factory ─────────────┘  │  (因子评估 + DecisionCard)
-              │    │                        │
-              │    │     regime-engine ─────┘
-              │    │
-              │    ├──► riskx ──► orderx ──► positionx  (实盘路径)
-              │    │      ▲         ▲           │
-              │    │      │         │           ▼
-              │    │      └─ fills ─┘   决策域 ◄── positions/PnL
-              │    │
-              │    └──► backtestx ──► optimizer ──► strategyx  (回测→反馈)
-              │                                        ▲
-              │                                        │
-              └──► maestro ────────────────────────────┘  (编排注入)
+factor-engine ◄──► feature-store ◄──► factor-eval
+              │      ▲                  ▲  ▲
+              ▼      │                  │  │
+            flowx ───┘                  │  │  (因子评估 + DecisionCard)
+              (ETL)                     │  │
+              │                         │  │
+              │           regime-engine─┘  │
+              │                │           │
+              │                ▼           │
+              │          signal-factory ◄──┘
+              │                │
+              │                ├──► riskx ──► orderx ──► positionx  (实盘路径)
+              │                │      ▲         ▲           │
+              │                │      │         │           ▼
+              │                │      └─ fills ─┘   决策域 ◄── positions/PnL
+              │                │
+              │                └──► backtestx ──► optimizer ──► strategyx  (回测→反馈)
+              │                                                      ▲
+              │                                                      │
+              └──► maestro ──────────────────────────────────────────┘  (编排注入)
 ```text
 
 ### 运行时组装
