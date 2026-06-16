@@ -2,7 +2,7 @@
 
 > 模块级追溯矩阵。治理规范见 [docs/governance/TRACEABILITY.md](../../docs/governance/TRACEABILITY.md)。
 
-Last-Updated: 2026-06-14
+Last-Updated: 2026-06-17
 Source: module/contracts/SPEC.md
 
 ## §1 功能需求追溯（FR）
@@ -16,6 +16,7 @@ Source: module/contracts/SPEC.md
 | FR-005 | DTO 契约 — JSON tag snake_case、不可变、版本演进 | AC-FR-004: JSON round-trip + 不可变性 | TC-002, TC-007 | TASK-CONTRACTS-002 | Pending |
 | FR-006 | Breaking Change 检测 — 接口/DTO 变更感知与版本升级 | AC-FR-005: breaking change 检测通过 | TC-003 | TASK-CONTRACTS-003 | Pending |
 | FR-007 | Module Identity — README H1 与 go.mod module path 必须为 contracts | AC-007: Module Identity | TC-008 | TASK-CONTRACTS-005 | Pending |
+| FR-008 | Ingestion Contract — MarketDataService / IngestRequest / IngestResult 文档基线 | AC-FR-008: docs-only ingestion contract 可被 binance 引用 | TC-009 | TASK-CONTRACTS-005 | Pending |
 
 
 | Requirement | Description | Acceptance Criteria | TC ID(s) | Task | Status |
@@ -30,6 +31,7 @@ Source: module/contracts/SPEC.md
 | BR-008 | contracts 只依赖 L2.5 领域共享层和 stdlib | AC-BR-008: 依赖纯洁 | CI Gate: `go mod tidy` + 依赖检查 | TASK-CONTRACTS-000 | Pending |
 | BR-009 | DTO 的 JSON tag 必须使用 snake_case | AC-FR-004: JSON tag snake_case | TC-002 (JSON round-trip) | TASK-CONTRACTS-002 | Pending |
 | BR-010 | 契约版本遵循 semver（breaking change → major） | AC-FR-005: semver版本策略 | TC-003 | TASK-CONTRACTS-003 | Pending |
+| BR-011 | Ingestion DTO 的 JSON tag 使用 snake_case，遵循 BR-009 和 §8.4 定义 | AC-FR-008: JSON tag 合规 | TC-009 | TASK-CONTRACTS-005 | Pending |
 
 ## §3 非功能需求追溯（NFR）
 
@@ -56,6 +58,7 @@ Source: module/contracts/SPEC.md
 | TC-006 | BR-004 | 单元测试 | 端口接口方法数检查（3-5 方法） |
 | TC-007 | FR-005, BR-005 | 单元测试 | DTO 不可变性检查 |
 | TC-008 | FR-007 | 单元测试 | Module Identity（README H1 与 go.mod module 声明） |
+| TC-009 | FR-008, BR-011 | 单元测试 | Ingestion Contract 文档基线 |
 
 ## §5 全局 AC 注册表
 
@@ -77,16 +80,17 @@ Source: module/contracts/SPEC.md
 | AC-NFR-006 | NFR-006 | CI Gate (benchmark 对比) | Pending |
 | AC-NFR-007 | NFR-007 | Documentation evidence | Pending |
 | AC-NFR-008 | NFR-008 | TC-002 + CI Gate (错误格式检查: `"contracts: <desc>"`) | Pending |
+| AC-FR-008 | FR-008, BR-011 | TC-009 (Ingestion Contract 文档基线) | Pending |
 
 ## §6 覆盖率仪表盘
 
 | 类别 | 总数 | 已覆盖 | 覆盖率 | 状态 |
 | --- | --- | --- | --- | --- |
-| FR | 7 | 7 | 100% | ✅ |
-| BR | 10 | 10 | 100% | ✅ |
+| FR | 8 | 8 | 100% | ✅ |
+| BR | 11 | 11 | 100% | ✅ |
 | NFR | 8 | 8 | 100% | ✅ |
-| TC | 8 | 8 | 100% | ✅ |
-| AC | 16 | 16 | 100% | ✅ |
+| TC | 9 | 9 | 100% | ✅ |
+| AC | 17 | 17 | 100% | ✅ |
 | Task | 5 | 5 | — | All Pending |
 
 ## §7 变更历史

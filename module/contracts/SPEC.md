@@ -336,6 +336,69 @@ type MacroHistoryRequest struct {
 
 ---
 
+
+
+### 8.4 Ingestion Contract (docs-only baseline)
+
+> **状态**: Docs Baseline Published / Runtime Pending。本节定义 Binance C/S ingestion 的文档级 wire contract，不声明 Go 源码或 proto 编译已就绪。运行时实现在 domain-market canonical 类型冻结后启动。
+
+#### 8.4.1 MarketDataService
+
+```go
+// MarketDataService 定义行情采集端与受理端之间的双向流摄入契约。
+// 由 module/binance/server 实现，module/binance/client 调用。
+type MarketDataService interface {
+    // Ingest 接受行情事件的请求流，逐条返回处理结果。
+    Ingest(ctx context.Context, requests <-chan IngestRequest) (<-chan IngestResult, error)
+}
+```
+
+#### 8.4.2 IngestRequest
+
+```go
+// IngestRequest 行情事件摄入请求
+type IngestRequest struct {
+    StreamID       string          `json:"stream_id"`       // gRPC stream 标识
+    IdempotencyKey string          `json:"idempotency_key"` // 稳定去重键，retry 时不变
+    ProductLine    string          `json:"product_line"`    // spot / usdm_futures / coinm_futures / options
+    InstrumentKey  string          `json:"instrument_key"`  // canonical instrument 标识
+    EventType      string          `json:"event_type"`      // trade / kline / bookTicker / depth / funding
+    EventTime      time.Time       `json:"event_time"`      // 交易所事件时间
+    ReceivedAt     time.Time       `json:"received_at"`     // adapter 接收时间
+    SourceSequence int64           `json:"source_sequence,omitempty"` // 源序列号
+    Payload        json.RawMessage `json:"payload"`         // canonical MarketEventEnvelope 载荷
+    Quality        json.RawMessage `json:"quality"`         // MarketDataQuality 序列化
+}
+```
+
+#### 8.4.3 IngestResult / IngestAck / IngestReject
+
+```go
+// IngestResult 单条摄入结果，Ack 和 Reject 二选一
+type IngestResult struct {
+    Ack    *IngestAck    `json:"ack,omitempty"`
+    Reject *IngestReject `json:"reject,omitempty"`
+}
+
+// IngestAck 确认接受
+type IngestAck struct {
+    StreamID       string `json:"stream_id"`
+    IdempotencyKey string `json:"idempotency_key"`
+    Durable        bool   `json:"durable"`
+}
+
+// IngestReject 拒绝
+type IngestReject struct {
+    StreamID       string `json:"stream_id"`
+    IdempotencyKey string `json:"idempotency_key"`
+    Reason         string `json:"reason"`    // market-data §4.4 定义的 reject reason
+    Retryable      bool   `json:"retryable"`
+}
+```text
+
+
+---
+
 ## 9. 数据模型
 
 ### 9.1 公共错误

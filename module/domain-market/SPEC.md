@@ -19,7 +19,7 @@
 
 | 类型 | 说明 |
 | --- | --- |
-| Owns | Tick、Quote、Bar、OrderBook、Instrument、Funding、OpenInterest、LongShortRatio、DataProvider、MarketDataQuality |
+| Owns | Tick、Quote、Bar、OrderBook、Instrument、InstrumentKey、ProductLine、Funding、OpenInterest、LongShortRatio、DataProvider、MarketDataQuality、MarketEventEnvelope（aka MarketFactEnvelope） |
 | Depends on | `kernel`、`decimalx` |
 | Excludes | transport adapter、provider DTO、数据库 tag、策略/因子/回测逻辑、订单生命周期语义 |
 | Boundary with domainx | `domainx` 拥有 OrderType、OrderSide、OrderState；`domain-market` 仅表达市场事件与行情侧方向语义 |
@@ -87,6 +87,8 @@
 | FR-MKT-012 | future-gate | EventTime 晚于 ReceivedAt/DecisionTime | 在容忍窗口外拒绝 |
 | FR-MKT-013 | domain-no-transport | 定义 domain struct | 不含 json/db/yaml/kafka tag；transport schema 属 DTO 层 |
 | FR-MKT-014 | domainx-boundary | 与 domainx 枚举归属 | Side 表达市场事件方向可保留；OrderType/OrderSide/OrderState 归 domainx |
+| FR-MKT-015 | product-line-enum | 引用 ProductLine | 只能使用 canonical 枚举值：spot / usdm_futures / coinm_futures / options |
+| FR-MKT-016 | instrument-key-identity | 构造 InstrumentKey | Exchange / ProductLine / Symbol 必填；Options 产品线额外需要 Expiry / Strike / OptionType |
 
 ## 8. 行为约束
 
@@ -233,6 +235,37 @@ type LongShortRatio struct {
     Timestamp time.Time
     Quality   MarketDataQuality
 }
+
+
+// ProductLine 产品线枚举，跨模块 canonical 值
+type ProductLine string
+
+const (
+	ProductLineSpot    ProductLine = "spot"
+	ProductLineUSDsM   ProductLine = "usdm_futures"
+	ProductLineCOINM   ProductLine = "coinm_futures"
+	ProductLineOptions ProductLine = "options"
+)
+
+// InstrumentKey 跨产品线无碰撞的 canonical 标的标识
+// 最小维度矩阵参见 module/binance/SPEC.md §9 Instrument Identity Dimensions
+type InstrumentKey struct {
+	Exchange        string
+	ProductLine     ProductLine
+	Symbol          string
+	BaseAsset       string
+	QuoteAsset      string
+	MarginAsset     string
+	SettlementAsset string
+	ContractCode    string
+	Expiry          time.Time
+	Strike          decimalx.Decimal
+	OptionType      string // "call" / "put"
+}
+
+// MarketFactEnvelope 是 MarketEventEnvelope 的跨模块别名
+// market-data SPEC 使用 MarketFactEnvelope 引用此类型
+type MarketFactEnvelope = MarketEventEnvelope
 
 type MarketDataQuality struct {
     Channel       string
@@ -392,3 +425,4 @@ module/domain-market/
 | 日期 | 版本 | 变更内容 | 作者 |
 |------|------|----------|------|
 | 2026-06-15 | v1.0.0 | 初始版本：L2.5 市场数据领域模型与质量门禁 | ZoneCNH |
+| 2026-06-17 | v1.0.1 | 审计修复：补充 ProductLine、InstrumentKey、MarketFactEnvelope（MarketEventEnvelope 别名）类型定义 | ZoneCNH |
