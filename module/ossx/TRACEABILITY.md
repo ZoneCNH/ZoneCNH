@@ -10,7 +10,7 @@ Scope: Matrix repair for current `FR/BR -> AC -> TC -> Task -> Evidence -> Statu
 
 ## 1. Requirement Traceability Matrix
 
-| Requirement | Description | Acceptance Criteria | Test Case | Task | Evidence | Status |
+| Requirement | Description | Acceptance Criteria | TC ID(s) | Task | Evidence | Status |
 |-------------|-------------|---------------------|-----------|------|----------|--------|
 | FR-001 | Construct BlobStore from module-owned config, adapter, and hooks without direct configx coupling | AC-001 | TC-001, TC-002 | TASK-OSSX-000 | SPEC §7 FR-001, §11 Config Schema, §15 Dependencies | Pending |
 | FR-002 | Normalize object identity, metadata, content type, tags, and checksum fields | AC-002 | TC-003 | TASK-OSSX-001 | SPEC §7 FR-002, §10 Data Model | Pending |
@@ -57,7 +57,7 @@ Scope: Matrix repair for current `FR/BR -> AC -> TC -> Task -> Evidence -> Statu
 
 ## 3. Test Case Reverse Trace
 
-| Test Case | Validates Requirements | Primary Acceptance Criteria | Task | Evidence Source |
+| TC ID(s) | Validates Requirements | Primary Acceptance Criteria | Task | Evidence Source |
 |-----------|------------------------|-----------------------------|------|-----------------|
 | TC-001 | FR-001, BR-002, BR-005 | AC-001 | TASK-OSSX-000 | SPEC §16 dependency guard |
 | TC-002 | FR-001 | AC-001 | TASK-OSSX-000 | SPEC §16 config validation |

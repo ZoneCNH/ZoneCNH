@@ -7,7 +7,7 @@ Source: [SPEC.md](./SPEC.md), [goal.md](./goal.md), `/home/postgresx`
 
 ## Requirement Matrix
 
-| Requirement | Description | Acceptance Criteria | Test / Evidence | Task | Status |
+| Requirement | Description | Acceptance Criteria | TC ID(s) | Task | Status |
 | ----------- | ----------- | ------------------- | --------------- | ---- | ------ |
 | FR-001 | Config 与连接池生命周期 | `New` / `Open` 校验配置、填充默认值、初始 Ping 失败关闭池，`Close` 幂等 | TC-001, TC-008, `/home/postgresx/pkg/postgresx/client.go` | [TASK-PG-001](./tasks/TASK-PG-001.md) | Done |
 | FR-002 | SQL 执行接口 | `Exec`、`Query`、`QueryRow` 保留 context 语义，`Rows` 暴露 `Close` 和 `Err` | TC-002, `/home/postgresx/pkg/postgresx/query.go` | [TASK-PG-001](./tasks/TASK-PG-001.md) | Done |
