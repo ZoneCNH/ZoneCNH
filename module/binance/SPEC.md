@@ -1,6 +1,6 @@
 # module/binance SPEC
 
-- Status: Docs Baseline Approved / Runtime Pending
+- Status: Docs Baseline Approved
 - Spec-Version: v1.0.0
 - Last-Updated: 2026-06-17
 - Owner: ZoneCNH
