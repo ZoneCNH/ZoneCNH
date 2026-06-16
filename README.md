@@ -41,7 +41,7 @@ L1 测试: testkitx (test-only)
 基座扩展: redisx / kafkax / natsx / postgresx / taosx / ossx / clickhousex / contracts / transportx
       │
       ▼
-L2.5: domainx / decimalx / domain-market / domain-macro / domain-exchange (5/5 已发布；domain-market v1.0.1，其余 v1.0.0+；5/5 GitHub Release 已观测对账；5/5 factory grade；live/soak N/A)
+L2.5: domainx / decimalx / domain-market / domain-macro / domain-exchange (5/5 已发布；domain-market v1.1.0，其余 v1.0.0+；5/5 GitHub Release 已观测对账；5/5 factory grade；live/soak N/A)
       │
       ▼
 业务流: 数据域 → 分析域 ↔ 决策域 → 执行域
@@ -65,7 +65,7 @@ L2.5: domainx / decimalx / domain-market / domain-macro / domain-exchange (5/5 �
 | `domain-macro` | v1.0.0 | v1.0.0 | v1.0.0 GitHub Release 已发布；no-lookahead 冻结 | [module/domain-macro](module/domain-macro/goal.md) |
 | `domain-exchange` | v1.0.0 | v1.0.0 | v1.0.0 GitHub Release 已发布；Exchange SPI 冻结 | [module/domain-exchange](module/domain-exchange/goal.md) |
 
-成熟度口径：5/5 已发布 v1.0.0+ GitHub Release（decimalx v1.0.0/domain-market v1.0.1/domain-macro v1.0.0/domain-exchange v1.0.0/domainx v1.0.1）；5/5 factory grade；live/soak N/A（纯值对象库，无运行时服务不需 EXT CI/adoption/soak 证据）。
+成熟度口径：5/5 已发布 v1.0.0+ GitHub Release（decimalx v1.0.0/domain-market v1.1.0/domain-macro v1.0.0/domain-exchange v1.0.0/domainx v1.0.1）；5/5 factory grade；live/soak N/A（纯值对象库，无运行时服务不需 EXT CI/adoption/soak 证据）。
 
 依赖顺序：`decimalx` -> `domainx` -> `domain-market` / `domain-macro` -> `domain-exchange`。v1.0.0 是各模块的发布版本，GitHub Release/tag 已观测并对账。5/5 factory grade；live/soak N/A（纯值对象库）。
 
