@@ -106,7 +106,7 @@
 | 组件                                                          | 类型     | 版本   | 进度     | 覆盖率要求 | 说明                  |
 | ------------------------------------------------------------- | -------- | ------ | -------- | ---------- | --------------------- |
 | [binance](https://github.com/ZoneCNH/binance)                 | C/S Module | v1.0.0-spec | ░░░░  5% | 100%       | Market Data C/S (client+server)；Spec-Only；4产品线 |
-| [market-data](https://github.com/ZoneCNH/market-data)         | Dispatch | v0.1.0 | ██░░ 30% | 100%       | downstream dispatch port 接收侧 SPEC 基线（FR-MD-001~008）；runtime pending |
+| [market-data](https://github.com/ZoneCNH/market-data)         | Dispatch | v0.1.1 | ██░░ 30% | 100%       | downstream dispatch port 接收侧 SPEC 基线（FR-MD-001~008）；runtime pending |
 | [okx](https://github.com/ZoneCNH/okx)                         | SDK      | v0.1.1 | ███░ 80% | 100%       | OKX CEX               |
 | [bybit](https://github.com/ZoneCNH/bybit)                     | SDK      | v0.1.1 | ███░ 80% | 100%       | Bybit CEX             |
 | [bitget](https://github.com/ZoneCNH/bitget)                   | SDK      | v0.1.1 | ███░ 80% | 100%       | Bitget CEX            |

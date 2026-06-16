@@ -321,6 +321,68 @@ type MarketDataQuality struct {
 }
 ```
 
+### 10.1 Binance C/S ingestion canonical 语义
+
+本节定义 Binance C/S ingestion 链路必须使用的 canonical 语义。
+
+#### ProductLine 映射
+
+| Binance 产品线 | canonical | 说明 |
+|---|---|---|
+| Spot | `spot` | 现货 |
+| USDⓈ-M Perpetual | `um_perp` | U 本位永续 |
+| COIN-M Perpetual | `cm_perp` | 币本位永续 |
+| Options | `option` | 期权 |
+
+Adapter 不得使用 `usdm_futures`/`coinm_futures` 等非 canonical 命名。
+
+#### InstrumentKey 最小维度
+
+| 维度 | Spot | UMPerp | CMPerp | Options |
+|---|---|---|---|---|
+| venue | ✅ | ✅ | ✅ | ✅ |
+| product_line | ✅ | ✅ | ✅ | ✅ |
+| instrument_type | ✅ | ✅ | ✅ | ✅ |
+| symbol | ✅ | ✅ | ✅ | ✅ |
+| base_asset | ✅ | ✅ | ✅ | ✅ |
+| quote_asset | ✅ | ✅ | ✅ | ✅ |
+| margin_asset | — | ✅ | ✅ | ✅ |
+| settlement_asset | — | ✅ | ✅ | ✅ |
+| contract_code | — | ✅ | ✅ | ✅ |
+| expiry | — | — | — | ✅ |
+| strike | — | — | — | ✅ |
+| option_type | — | — | — | ✅ |
+
+`symbol` 不是全局唯一键。缺必需维度时 adapter 必须拒绝或降级为 dirty。
+
+**碰撞示例**：Spot `BTCUSDT` (spot) vs USDⓈ-M `BTCUSDT` (um_perp) → product_line 不同，不碰撞。
+
+#### MarketFactEnvelope 事件类型映射
+
+| Binance Stream | EventType | Payload |
+|---|---|---|
+| `aggTrade`/`trade` | `trade` | Tick |
+| `kline_*` | `kline` | Bar |
+| `depthUpdate` | `depthUpdate` | OrderBook |
+| `bookTicker` | `bookTicker` | Quote |
+| `markPrice` | `markPrice` | Funding |
+| `fundingRate` | `fundingRate` | Funding |
+| `openInterest` | `openInterest` | OpenInterest |
+| `longShortRatio` | `longShortRatio` | LongShortRatio |
+
+canonical event type 使用 exchange-neutral 命名（BR-MKT-008）。vendor stream 名称仅保留为 source metadata。
+
+#### 时间语义
+
+| 字段 | 语义 | 来源 |
+|---|---|---|
+| EventTime | 交易所事件时间 | Binance `E` 字段 |
+| ReceivedAt | adapter 接收时间 | `time.Now()` on arrival |
+| AvailableAt | quality gate 后可消费时间 | domain-market gate |
+| DecisionTime | 策略决策时间点 | 回测引擎设置 |
+
+质量规则：`InstrumentKey`/`EventType`/`EventTime`/`ReceivedAt`/`Source`/`Quality` 缺失时 `Validate` fail-closed。
+
 ## 11. 配置模式
 
 ```yaml
@@ -400,6 +462,9 @@ module/domain-market/
 **TC-MKT-006:** 与 domainx 无执行枚举重复归属。
 **TC-MKT-007:** stale data 被 fail-closed 拒绝。
 **TC-MKT-008:** future data 在容忍窗口外被拒绝。
+**TC-MKT-009:** ProductLine IsValid 对合法产品线返回 true，其他值返回 false。
+**TC-MKT-010:** InstrumentKey Validate 各维度组合正确拒绝或通过。
+**TC-MKT-011:** MarketFactEnvelope Validate 缺失必填字段 fail-closed。
 
 ## 17. 性能预算
 
