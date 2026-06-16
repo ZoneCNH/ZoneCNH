@@ -65,7 +65,7 @@ kafkax / natsx 是"用什么传"
 | factor-engine   | 消费管线输出的因子数据             |
 | feature-store   | 消费管线输出的特征数据             |
 | market-regime   | 消费管线输出的市场环境分类数据     |
-| signal-factory  | 消费管线输出的预处理信号           |
+| signal-factory  | （已移除 — signal-factory 输入来自 factor-eval + regime-engine，不走 flowx 管道） |
 | observex        | 消费管线 metrics 和 traces         |
 
 ---
