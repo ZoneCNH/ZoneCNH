@@ -101,7 +101,7 @@ L2.5: domainx / decimalx / domain-market / domain-macro / domain-exchange (5/5 �
 
 ### 基座 · 契约与传输
 
-- [contracts](https://github.com/ZoneCNH/contracts) — 跨域稳定端口、事件协议与 DTO 契约；✅ v1.0.1-spec GitHub Release 已发布 `公开`
+- [contracts](https://github.com/ZoneCNH/contracts) — 跨域稳定端口、事件协议与 DTO 契约（含 §8.4 Binance C/S ingestion contract）；✅ v1.2.0 GitHub Release 已发布 `公开`
 - [transportx](https://github.com/ZoneCNH/transportx) — 应用通信底座规格基线（Envelope/Endpoint、ServiceIdentity、QoS、Codec、RPC、EventBus、Stream、Outbox/Inbox、Audit Plane、Data Classification、SchemaRegistry 与 conformance gates）；✅ v1.1.1-spec GitHub Release 已发布 `公开`
 
 ### L2.5 · 领域共享层
