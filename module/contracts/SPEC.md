@@ -95,7 +95,8 @@
 
 | 消费者             | 使用方式                                     |
 | ------------------ | -------------------------------------------- |
-| `market-data`      | 实现 `MarketDataProvider` 接口，发布行情事件 |
+| `market-data`      | 实现 `MarketDataProvider` 接口，发布行情事件；消费端实现 `DownstreamDispatchPort` 接收侧 |
+| `module/binance`    | 通过 `MarketDataService.Ingest`（§8.4）摄入行情事件 |
 | `macro-data`       | 实现 `MacroDataProvider` 接口，发布宏观事件  |
 | `factor-engine`    | 消费 `MarketDataProvider` 获取行情数据       |
 | `signal-engine`    | 消费因子数据，发布信号事件                   |
