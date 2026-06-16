@@ -306,9 +306,9 @@ POST /admin/drain
 | `IngestResult` | 返回：per-request 终端结果，exactly one of `Ack` or `Reject` non-nil |
 | `IngestAck` | 接受确认：stream_id + accepted_count + duplicate_count + durable indicator |
 | `IngestReject` | 拒绝说明：reject_code（RejectCode 枚举）+ reason + retryable flag |
-| `RejectCode` | 9 个机器可读拒绝码：retryable / terminal_validation / terminal_conflict / unauthorized / rate_limited / server_unavailable / contract_violation / quality_gate / ordering_violation |
+| `RejectCode` | 10 个机器可读拒绝码：retryable / terminal_validation / terminal_conflict / unauthorized / rate_limited / server_unavailable / contract_violation / quality_rejected / ordering_violation / unsupported_channel |
 
-**server 必须处理全部 9 个 RejectCode 路径**。`contract_violation`、`quality_gate`、`ordering_violation` 为 contracts §8.4 新增码（此前 SPEC 仅列 3 个），server validation 层和 idempotency 层需覆盖。
+**server 必须处理全部 10 个 RejectCode 路径**。`contract_violation`、`quality_rejected`、`ordering_violation`、`unsupported_channel` 为 contracts §8.4 新增码（此前 SPEC 仅列 3 个，本次同步至 contracts v1.2.0 的 10 码定义），server validation 层和 idempotency 层需全部覆盖。
 
 ---
 

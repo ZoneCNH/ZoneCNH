@@ -19,7 +19,7 @@
 
 | # | Gate | 验证 | 状态 |
 |---|------|------|:----:|
-| G0-1 | `module/contracts` §8.4 `MarketDataService` + `IngestRequest`(10 required + 2 optional)/`IngestResult`/`IngestAck`/`IngestReject` + `RejectCode`(9码) | contracts SPEC v1.2.0 | ✅ |
+| G0-1 | `module/contracts` §8.4 `MarketDataService` + `IngestRequest`(10 required + 2 optional)/`IngestResult`/`IngestAck`/`IngestReject` + `RejectCode`(10码) | contracts SPEC v1.2.0 | ✅ |
 | G0-2 | `module/domain-market` `ProductLine`(4值)/`InstrumentKey`(12维)/`MarketFactEnvelope` canonical 类型 | domain-market SPEC v1.0.1 §10 | ✅ |
 | G0-3 | `module/market-data` DownstreamDispatchPort + 12 输入字段 + 8 种 reject reason + §4.4.1 binance reject 映射 | market-data SPEC v1.0.0 §4 | ✅ |
 | G0-4 | binance OQ-001（contracts wire 就绪？） | 已确认 (2026-06-17) | ✅ |
@@ -299,11 +299,11 @@ type MarketDataService interface {
 | `IngestResult` | `Ack *IngestAck` 或 `Reject *IngestReject`（exactly one non-nil） | 逐请求的终端结果 |
 | `IngestAck` | request_id, instrument_key, accepted_at, durable | 确认事件已接收 |
 | `IngestReject` | request_id, reject_code, reason, details | 拒绝原因与上下文 |
-| `RejectCode` | 9 码枚举：retryable / terminal_validation / terminal_conflict / unauthorized / rate_limited / server_unavailable / contract_violation / quality_gate / ordering_violation | 供 adapter retry policy 决策 |
+| `RejectCode` | 10 码枚举：retryable / terminal_validation / terminal_conflict / unauthorized / rate_limited / server_unavailable / contract_violation / quality_rejected / ordering_violation / unsupported_channel | 供 adapter retry policy 决策 |
 
 - Client 发送 `IngestRequest`，携带 canonical market fact envelope + idempotency key + source metadata
 - Server 对每个 `IngestRequest` 返回一个 `IngestResult`，exactly one of Ack or Reject is non-nil
-- RejectCode 9 码覆盖 binance §9 全部 6 种 native 分类 + 3 种 market-data 门禁分类
+- RejectCode 10 码覆盖 binance §9 全部 6 种 native 分类 + 4 种 market-data 门禁分类
 
 ### Downstream Dispatch Port
 

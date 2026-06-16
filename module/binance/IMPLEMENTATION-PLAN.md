@@ -139,7 +139,7 @@ Required external protocol:
 - canonical event envelope wire representation
 - enum compatibility policy
 
-> **Docs baseline**: 以上全部接口和 DTO 已在 `module/contracts/SPEC.md` v1.2.0 §8.4 中定义（MarketDataService Go 接口 + IngestRequest(12字段)/IngestResult/IngestAck/IngestReject + RejectCode(9码) + 跨层命名映射表）。运行时 proto 编译与 gRPC code generation 待后续阶段执行。
+> **Docs baseline**: 以上全部接口和 DTO 已在 `module/contracts/SPEC.md` v1.2.0 §8.4 中定义（MarketDataService Go 接口 + IngestRequest(12字段)/IngestResult/IngestAck/IngestReject + RejectCode(10码) + 跨层命名映射表）。运行时 proto 编译与 gRPC code generation 待后续阶段执行。
 
 Acceptance from Binance perspective:
 
