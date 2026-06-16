@@ -591,7 +591,7 @@ server 必须通过 contracts 定义的 server-side contract tests：
 
 | ID | 问题 | 状态 | 负责人 |
 |----|------|------|--------|
-| OQ-001 | idempotency store 首选实现：in-memory 还是 Redis？ | 已解决：默认 in-memory（sync.Map + TTL GC），通过 `IdempotencyStore` 接口可切换至 Redis（2026-06-17） | ZoneCNH |
+| OQ-001 | idempotency store 首选实现：in-memory 还是 Redis？ | 已解决：Redis 为主（SCADA-redis 共享实例，TTL 24h + Lua CAS），`IdempotencyStore` 接口保留 in-memory 实现仅用于本地开发/测试（2026-06-17） | ZoneCNH |
 | OQ-002 | downstream dispatch 失败策略：retry-first 还是 rollback-first？ | 已解决：retry-first + dead-letter（FR-007）。重试 3 次指数退避后写入死信队列并告警，不回滚幂等记录（2026-06-17） | ZoneCNH |
 | OQ-003 | proto 定义是否已在 `module/contracts` 中可用？ | 已解决：`module/contracts/SPEC.md` §8.4 已定义全部 wire types（2026-06-17） | ZoneCNH |
 
