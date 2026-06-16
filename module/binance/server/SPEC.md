@@ -241,7 +241,7 @@ Binance 行情接入需要服务端边界确保数据质量和可靠性。直接
 
 **规则**: server 禁止 import `module/binance/client` 的任何 internal 包或类型。
 
-**约束**: server 与 client 之间仅通过 `contracts` 中定义的 gRPC proto 类型通信。
+**约束**: server 与 client 之间仅通过 `contracts` §8.4 中定义的 gRPC wire contract 类型通信。
 
 **违反时**: 编译失败（依赖方向违反 ARCHITECTURE.md 数据域边界）。
 
@@ -249,15 +249,17 @@ Binance 行情接入需要服务端边界确保数据质量和可靠性。直接
 
 ## 9. Interface Contract
 
-### 9.1 gRPC Service（由 contracts 定义）
+### 9.1 gRPC Service（由 contracts §8.4 定义）
 
-```proto
-service MarketDataService {
-  rpc Ingest(stream IngestRequest) returns (stream IngestAck);
+```go
+// MarketDataService receives normalized upstream market-data ingestion requests.
+// Defined in module/contracts/SPEC.md §8.4.
+type MarketDataService interface {
+    Ingest(stream IngestRequest) (stream IngestResult, error)
 }
 ```
 
-server 负责实现该接口的 server 端。
+server 负责实现该接口的 server 端。每个 `IngestRequest` 返回一个 `IngestResult`，其中 exactly one of `Ack` or `Reject` is non-nil。
 
 ### 9.2 Downstream Port（exchange-neutral）
 
@@ -283,44 +285,19 @@ POST /admin/drain
 
 ## 10. Data Model
 
-### IngestRequest（输入，由 contracts 定义）
+### IngestRequest / IngestResult / IngestAck / IngestReject / RejectCode（由 contracts §8.4 定义）
 
-| 字段 | 类型 | 必填 | 说明 |
-|------|------|------|------|
-| product_line | string | ✅ | 产品线（如 spot、futures） |
-| instrument | Instrument | ✅ | 交易对标识 |
-| event_type | string | ✅ | 事件类型 |
-| event_time | timestamp | ✅ | 事件发生时间 |
-| idempotency_key | string | ✅ | 幂等键 |
-| source_metadata | map<string,string> | ✅ | 来源元数据 |
-| payload | bytes | ✅ | 事件负载 |
+权威定义见 `module/contracts/SPEC.md` §8.4。以下为 server 视角的关键语义摘要：
 
-### IngestAck（输出，由 contracts 定义）
+| contracts §8.4 类型 | server 侧语义 |
+|---|---|
+| `IngestRequest` | 接收：12 字段（request_id/source/product_line/instrument_key/event_type/event_time/received_at/schema_version/payload/sequence/ordering_key/source_metadata）。`request_id` 即幂等键 |
+| `IngestResult` | 返回：per-request 终端结果，exactly one of `Ack` or `Reject` non-nil |
+| `IngestAck` | 接受确认：stream_id + accepted_count + duplicate_count + durable indicator |
+| `IngestReject` | 拒绝说明：reject_code（RejectCode 枚举）+ reason + retryable flag |
+| `RejectCode` | 9 个机器可读拒绝码：retryable / terminal_validation / terminal_conflict / unauthorized / rate_limited / server_unavailable / contract_violation / quality_gate / ordering_violation |
 
-| 字段 | 类型 | 必填 | 说明 |
-|------|------|------|------|
-| stream_id | string | ✅ | 流标识 |
-| accepted_keys | []string | ❌ | 已接受的幂等键 |
-| accepted_count | int64 | ✅ | 累计验收数 |
-| duplicate_count | int64 | ✅ | 累计重复数 |
-| rejects | []RejectDetail | ❌ | 拒绝详情列表 |
-| durable | bool | ✅ | 是否已持久化验收 |
-
-### RejectDetail
-
-| 字段 | 类型 | 必填 | 说明 |
-|------|------|------|------|
-| idempotency_key | string | ✅ | 被拒绝的幂等键 |
-| classification | RejectClass | ✅ | 拒绝分类 |
-| message | string | ✅ | 拒绝原因 |
-
-### RejectClass（枚举）
-
-```text
-retryable           — 临时错误，可重试
-terminal_validation — 校验失败，不可重试
-terminal_conflict   — 幂等冲突，不可重试
-```
+**server 必须处理全部 9 个 RejectCode 路径**。`contract_violation`、`quality_gate`、`ordering_violation` 为 contracts §8.4 新增码（此前 SPEC 仅列 3 个），server validation 层和 idempotency 层需覆盖。
 
 ---
 
@@ -411,7 +388,7 @@ binance-server/
 
 | 依赖 | 用途 | 来源 |
 |------|------|------|
-| `module/contracts` | gRPC proto 定义、`MarketDataService` 接口、Domain types | FoundationX 基座 |
+| `module/contracts` | gRPC wire contract（§8.4）：`MarketDataService` 接口 + `IngestRequest`/`IngestResult`/`IngestAck`/`IngestReject`/`RejectCode` DTO | FoundationX 基座 |
 | `module/domain-market` | 领域值对象（Instrument、ProductLine 等） | L2.5 领域共享层 |
 | `module/market-data` downstream port | 已验收事件的分发目标（仅通过 port interface） | 数据域 |
 | `google.golang.org/grpc` | gRPC server runtime | 第三方（标准选择） |
@@ -568,8 +545,8 @@ server 必须通过 contracts 定义的 server-side contract tests：
 
 | 变更类型 | 兼容性 | 迁移方式 |
 |----------|--------|----------|
-| gRPC proto 新增 optional 字段 | 向后兼容 | 无需迁移 |
-| gRPC proto 删除/重命名字段 | Breaking | contracts 版本 bump + server 同步升级 |
+| gRPC wire contract（contracts §8.4）新增 optional 字段 | 向后兼容 | 无需迁移 |
+| gRPC wire contract（contracts §8.4）删除/重命名字段 | Breaking | contracts 版本 bump + server 同步升级 |
 | 新增 Idempotency store backend | 向后兼容 | 通过 config 切换 |
 | 修改 RejectClass 枚举 | Breaking | client 需同步更新分类处理逻辑 |
 | 新增 admin endpoint | 向后兼容 | 无需迁移 |
@@ -605,7 +582,7 @@ server 必须通过 contracts 定义的 server-side contract tests：
 |----|------|------|--------|
 | OQ-001 | idempotency store 首选实现：in-memory 还是 Redis？ | 待解决 | ZoneCNH |
 | OQ-002 | downstream dispatch 失败策略：retry-first 还是 rollback-first？ | 待解决 | ZoneCNH |
-| OQ-003 | proto 定义是否已在 `module/contracts` 中可用？ | 待确认 | ZoneCNH |
+| OQ-003 | proto 定义是否已在 `module/contracts` 中可用？ | 已解决：`module/contracts/SPEC.md` §8.4 已定义全部 wire types（2026-06-17） | ZoneCNH |
 
 ### Non-blocking（不阻塞开发）
 

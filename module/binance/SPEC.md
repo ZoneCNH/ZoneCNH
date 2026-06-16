@@ -275,14 +275,17 @@ type MarketDataService interface {
 
 ### Wire Protocol
 
-```proto
-service MarketDataService {
-  rpc Ingest(stream IngestRequest) returns (stream IngestAck);
+```go
+// MarketDataService receives normalized upstream market-data ingestion requests.
+// Defined in module/contracts/SPEC.md §8.4.
+// Each IngestRequest returns exactly one IngestResult (Ack or Reject).
+type MarketDataService interface {
+    Ingest(stream IngestRequest) (stream IngestResult, error)
 }
 ```
 
 - Client 发送 `IngestRequest`（canonical market event envelope + idempotency key + source metadata）
-- Server 响应 `IngestAck`（stream_id + accepted keys/ranges + reject list + durable indicator + retry hint）
+- Server 对每个 `IngestRequest` 返回一个 `IngestResult`，其中 exactly one of `Ack` or `Reject` is non-nil
 
 ### Downstream Dispatch Port
 

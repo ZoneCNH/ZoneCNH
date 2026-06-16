@@ -533,7 +533,7 @@ client/
 | 依赖 | 用途 | 来源 |
 |------|------|------|
 | stdlib | Go 标准库 | 标准库 |
-| `module/contracts` | gRPC proto 定义、跨域 DTO | FoundationX |
+| `module/contracts` | gRPC wire contract（§8.4）：`MarketDataService` + `IngestRequest`/`IngestResult`/`IngestAck`/`IngestReject`/`RejectCode` DTO | FoundationX |
 | `module/domain-market` | 规范行情类型定义 | FoundationX L2.5 |
 | `module/domain-exchange` | 交易所领域值对象 | FoundationX L2.5 |
 | `module/decimalx` | 高精度数值 | FoundationX L2.5 |
@@ -714,7 +714,7 @@ module/binance/server
 |----------|--------|----------|
 | 新增产品线 connector | 向后兼容 | 更新配置启用即可 |
 | spool schema 变更 | Breaking | 提供迁移脚本，旧 spool 事件需重放或丢弃（以 checkpoint 为界） |
-| gRPC proto 变更（contracts 侧） | Breaking（如有字段删除/重命名） | 同步更新 contracts 版本，client 适配新 proto |
+| gRPC wire contract 变更（contracts §8.4 侧） | Breaking（如有字段删除/重命名） | 同步更新 contracts 版本，client 适配新 DTO |
 | checkpoint 格式变更 | Breaking | 提供 checkpoint 迁移工具；若不可迁移，清空 checkpoint 从当前 spool 位置重建 |
 | admin 端点路径变更 | Breaking | 更新监控和运维脚本 |
 | 配置项新增 | 向后兼容 | 新配置有默认值，无需手动迁移 |
@@ -750,7 +750,7 @@ module/binance/server
 
 | ID | 问题 | 状态 | 负责人 |
 |----|------|------|--------|
-| OQ-001 | proto 定义是否已在 contracts 中确定？gRPC 流定义（`IngestRequest` 格式）需要 contracts 侧确认 | 待解决 | ZoneCNH |
+| OQ-001 | proto 定义是否已在 contracts 中确定？gRPC 流定义（`IngestRequest` 格式）需要 contracts 侧确认 | 已解决：`module/contracts/SPEC.md` §8.4 已定义全部 wire types（2026-06-17） | ZoneCNH |
 
 ### Non-blocking（不阻塞开发）
 

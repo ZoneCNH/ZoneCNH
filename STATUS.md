@@ -82,7 +82,7 @@
 | ------------------------------------------------------------- | ------ | -------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | [decimalx](https://github.com/ZoneCNH/decimalx)               | v1.0.0 | ████ 100% | 100%       | 高精度十进制类型；v1.0.0 GitHub Release 已发布，8 FR Done；factory grade；live/soak N/A（纯值对象库）                                                                   |
 | [domainx](https://github.com/ZoneCNH/domainx)                 | v1.0.1 | ████ 100% | 100%       | 领域共享值对象：Order / Position / Trade / Portfolio / ExecutionReport；公开 v1.0.1 release/tag 已观测并完成 trust 对账；factory grade；live/soak N/A（纯值对象库） |
-| [domain-market](https://github.com/ZoneCNH/domain-market)     | v1.0.1 | ████ 100% | 100%       | 市场数据域模型 + ProductLine/InstrumentKey/MarketFactEnvelope/MarketEventEnvelope 类型；7 FR Done；factory grade；live/soak N/A（纯值对象库）                           |
+| [domain-market](https://github.com/ZoneCNH/domain-market)     | v1.1.0 | ████ 100% | 100%       | 市场数据域模型 + ProductLine/InstrumentKey/MarketFactEnvelope/MarketEventEnvelope canonical 类型 + IsValid() + exchange-neutral 命名；7 FR Done；factory grade；live/soak N/A（纯值对象库）                           |
 | [domain-macro](https://github.com/ZoneCNH/domain-macro)       | v1.0.0 | ████ 100% | 100%       | 宏观数据域模型；v1.0.0 GitHub Release 已发布，7 FR Done；factory grade；live/soak N/A（纯值对象库）                                                                       |
 | [domain-exchange](https://github.com/ZoneCNH/domain-exchange) | v1.0.0 | ████ 100% | 100%       | 交易域模型；v1.0.0 GitHub Release 已发布，7 FR Done；factory grade；live/soak N/A（纯值对象库）                                                                           |
 
@@ -93,7 +93,7 @@
 | --------------- | :--: | :--: | :-----: | :------: | :----: | :---: | :--: | :-----: | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | decimalx        |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ✅    | v1.0.0；100%；v1.0.0 GitHub Release 已发布，8 FR Done；factory grade；live/soak N/A（纯值对象库）                                                          |
 | domainx         |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ✅    | v1.0.1；100%；领域共享值对象：Order/Position/Trade/Portfolio/ExecutionReport；公开 v1.0.1 release/tag 已观测并完成 trust 对账；factory grade；live/soak N/A（纯值对象库） |
-| domain-market   |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ✅    | v1.0.1；100%；ProductLine/InstrumentKey/MarketFactEnvelope/MarketEventEnvelope 类型定义；7 FR Done；factory grade；live/soak N/A（纯值对象库） |
+| domain-market   |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ✅    | v1.1.0；100%；ProductLine/InstrumentKey/MarketFactEnvelope/MarketEventEnvelope canonical 类型；7 FR Done；factory grade；live/soak N/A（纯值对象库） |
 | domain-macro    |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ✅    | v1.0.0；100%；v1.0.0 GitHub Release 已发布，7 FR Done；factory grade；live/soak N/A（纯值对象库）                                                          |
 | domain-exchange |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ✅    | v1.0.0；100%；v1.0.0 GitHub Release 已发布，7 FR Done；factory grade；live/soak N/A（纯值对象库）                                                          |
 
@@ -106,7 +106,7 @@
 | 组件                                                          | 类型     | 版本   | 进度     | 覆盖率要求 | 说明                  |
 | ------------------------------------------------------------- | -------- | ------ | -------- | ---------- | --------------------- |
 | [binance](https://github.com/ZoneCNH/binance)                 | C/S Module | v1.0.0-spec | ░░░░  5% | 100%       | Market Data C/S (client+server)；Spec-Only；4产品线 |
-| [market-data](https://github.com/ZoneCNH/market-data)         | Dispatch | v0.1.0 | ██░░ 30% | 100%       | downstream dispatch port 接收侧 SPEC 基线（FR-MD-001~008）；runtime pending |
+| [market-data](https://github.com/ZoneCNH/market-data)         | Dispatch | v0.1.1 | ██░░ 30% | 100%       | downstream dispatch port 接收侧 SPEC 基线（FR-MD-001~008）；runtime pending |
 | [okx](https://github.com/ZoneCNH/okx)                         | SDK      | v0.1.1 | ███░ 80% | 100%       | OKX CEX               |
 | [bybit](https://github.com/ZoneCNH/bybit)                     | SDK      | v0.1.1 | ███░ 80% | 100%       | Bybit CEX             |
 | [bitget](https://github.com/ZoneCNH/bitget)                   | SDK      | v0.1.1 | ███░ 80% | 100%       | Bitget CEX            |

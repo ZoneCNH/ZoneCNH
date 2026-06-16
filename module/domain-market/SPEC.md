@@ -35,6 +35,9 @@
 | FR-MKT-005 | Funding、OpenInterest、LongShortRatio 必须有明确时间语义与数据来源。 |
 | FR-MKT-006 | DataProvider contract 必须返回领域模型，不暴露 HTTP/WS/DB/vendor DTO。 |
 | FR-MKT-007 | 与 `domainx` 重叠的订单枚举必须迁出或废弃，避免双 SSOT。 |
+| FR-MKT-015 | ProductLine 枚举必须覆盖 spot、um_perp、cm_perp、option 四产品线，提供 IsValid 校验。 |
+| FR-MKT-016 | InstrumentKey 必须提供无碰撞标的身份，Symbol 不是全局唯一键。 |
+| FR-MKT-017 | MarketFactEnvelope 必须定义 canonical wrapper 与时间语义。 |
 
 ## 4. 非功能需求
 
@@ -87,8 +90,9 @@
 | FR-MKT-012 | future-gate | EventTime 晚于 ReceivedAt/DecisionTime | 在容忍窗口外拒绝 |
 | FR-MKT-013 | domain-no-transport | 定义 domain struct | 不含 json/db/yaml/kafka tag；transport schema 属 DTO 层 |
 | FR-MKT-014 | domainx-boundary | 与 domainx 枚举归属 | Side 表达市场事件方向可保留；OrderType/OrderSide/OrderState 归 domainx |
-| FR-MKT-015 | product-line-enum | 引用 ProductLine | 只能使用 canonical 枚举值：spot / usdm_futures / coinm_futures / options |
-| FR-MKT-016 | instrument-key-identity | 构造 InstrumentKey | Exchange / ProductLine / Symbol 必填；Options 产品线额外需要 Expiry / Strike / OptionType |
+| FR-MKT-015 | product-line-canonical | 构造或校验 ProductLine | IsValid 对 spot/um_perp/cm_perp/option 返回 true，其他值返回 false |
+| FR-MKT-016 | instrument-key-canonical | 构造或校验 InstrumentKey | Venue/ProductLine/Symbol 必填；期权须提供 Expiry/Strike/OptionType |
+| FR-MKT-017 | market-fact-envelope | 构造或校验 MarketFactEnvelope | InstrumentKey/EventType/EventTime/ReceivedAt/Source/Quality 必填，缺失时 fail-closed |
 
 ## 8. 行为约束
 
@@ -100,6 +104,7 @@
 | BR-MKT-004 | 策略层不直接消费 Bar/Tick 原始结构体，必须通过 MarketEventEnvelope |
 | BR-MKT-005 | stale/future 数据 fail-closed，DegradeReason + metrics 暴露，不可靠数据不静默进入策略 |
 | BR-MKT-006 | domain-market 仅表达行情语义，订单生命周期语义归 domainx |
+| BR-MKT-008 | canonical event type 使用 exchange-neutral 命名；vendor stream 名称不得成为领域事件枚举 |
 
 
 ### Acceptance Criteria Registry
@@ -113,6 +118,9 @@
 | AC-MKT-003 | FR-MKT-008 | TC-MKT-004 | `go test -run TestMarketEventEnvelope` | |
 | AC-MKT-006 | FR-MKT-010 | TC-MKT-005 | `staticcheck` boundary scan | |
 | AC-MKT-007 | FR-MKT-014 | TC-MKT-006 | `compile smoke` + ADR | |
+| AC-MKT-008 | FR-MKT-015 | TC-MKT-009 | `go test -run TestProductLine` | |
+| AC-MKT-009 | FR-MKT-016 | TC-MKT-010 | `go test -run TestInstrumentKey` | |
+| AC-MKT-010 | FR-MKT-017 | TC-MKT-011 | `go test -run TestMarketFactEnvelope` | |
 
 ## 9. 接口契约
 
@@ -133,16 +141,8 @@ type HistoricalBarsRequest struct {
 
 func (r HistoricalBarsRequest) Validate() error
 
-type MarketEventEnvelope struct {
-    Event      interface{}   // Bar 或 Tick 二选一
-    EventTime  time.Time
-    ReceivedAt time.Time
-    Symbol     string
-    Venue      Venue
-    Quality    MarketDataQuality
-}
-
-func (e MarketEventEnvelope) Validate() error
+// MarketEventEnvelope is deprecated; use MarketFactEnvelope.
+type MarketEventEnvelope = MarketFactEnvelope
 ```
 
 ## 10. 数据模型
@@ -237,35 +237,80 @@ type LongShortRatio struct {
 }
 
 
-// ProductLine 产品线枚举，跨模块 canonical 值
+// ProductLine canonical 产品线枚举
 type ProductLine string
 
 const (
-	ProductLineSpot    ProductLine = "spot"
-	ProductLineUSDsM   ProductLine = "usdm_futures"
-	ProductLineCOINM   ProductLine = "coinm_futures"
-	ProductLineOptions ProductLine = "options"
+	ProductLineSpot   ProductLine = "spot"
+	ProductLineUMPerp ProductLine = "um_perp"
+	ProductLineCMPerp ProductLine = "cm_perp"
+	ProductLineOption ProductLine = "option"
 )
 
-// InstrumentKey 跨产品线无碰撞的 canonical 标的标识
-// 最小维度矩阵参见 module/binance/SPEC.md §9 Instrument Identity Dimensions
+func (p ProductLine) IsValid() bool {
+	switch p {
+	case ProductLineSpot, ProductLineUMPerp, ProductLineCMPerp, ProductLineOption:
+		return true
+	default:
+		return false
+	}
+}
+
+// InstrumentKey 无碰撞标的身份
 type InstrumentKey struct {
-	Exchange        string
+	Venue           string            // "binance"
 	ProductLine     ProductLine
-	Symbol          string
+	InstrumentType  string            // spot/perpetual/future/option
+	Symbol          string            // "BTCUSDT"
 	BaseAsset       string
 	QuoteAsset      string
 	MarginAsset     string
 	SettlementAsset string
 	ContractCode    string
-	Expiry          time.Time
-	Strike          decimalx.Decimal
-	OptionType      string // "call" / "put"
+	Expiry          *time.Time
+	Strike          *decimalx.Decimal
+	OptionType      string            // "call"/"put"
 }
 
-// MarketFactEnvelope 是 MarketEventEnvelope 的跨模块别名
-// market-data SPEC 使用 MarketFactEnvelope 引用此类型
-type MarketFactEnvelope = MarketEventEnvelope
+func (k InstrumentKey) Validate() error {
+	if k.Venue == "" || k.Symbol == "" {
+		return fmt.Errorf("domain-market: InstrumentKey Venue/Symbol required")
+	}
+	if !k.ProductLine.IsValid() {
+		return fmt.Errorf("domain-market: invalid ProductLine: %s", k.ProductLine)
+	}
+	if k.ProductLine == ProductLineOption && (k.Expiry == nil || k.Strike == nil || k.OptionType == "") {
+		return fmt.Errorf("domain-market: options require Expiry/Strike/OptionType")
+	}
+	return nil
+}
+
+// MarketFactEnvelope canonical normalized market fact wrapper
+type MarketFactEnvelope struct {
+	EventID      string
+	InstrumentKey InstrumentKey
+	EventType    string            // trade/kline/bookTicker/depthUpdate/markPrice/fundingRate/openInterest/longShortRatio
+	EventTime    time.Time
+	ReceivedAt   time.Time
+	AvailableAt  time.Time
+	DecisionTime time.Time
+	Payload      interface{}
+	Quality      MarketDataQuality
+	Source       string
+}
+
+func (e MarketFactEnvelope) Validate() error {
+	if e.InstrumentKey.Venue == "" || e.EventType == "" || e.Source == "" {
+		return fmt.Errorf("domain-market: MarketFactEnvelope required fields missing")
+	}
+	if e.EventTime.IsZero() || e.ReceivedAt.IsZero() {
+		return fmt.Errorf("domain-market: MarketFactEnvelope time fields required")
+	}
+	return nil
+}
+
+// MarketEventEnvelope deprecated alias for MarketFactEnvelope
+type MarketEventEnvelope = MarketFactEnvelope
 
 type MarketDataQuality struct {
     Channel       string
@@ -275,6 +320,68 @@ type MarketDataQuality struct {
     DegradeReason string
 }
 ```
+
+### 10.1 Binance C/S ingestion canonical 语义
+
+本节定义 Binance C/S ingestion 链路必须使用的 canonical 语义。
+
+#### ProductLine 映射
+
+| Binance 产品线 | canonical | 说明 |
+|---|---|---|
+| Spot | `spot` | 现货 |
+| USDⓈ-M Perpetual | `um_perp` | U 本位永续 |
+| COIN-M Perpetual | `cm_perp` | 币本位永续 |
+| Options | `option` | 期权 |
+
+Adapter 不得使用 `usdm_futures`/`coinm_futures` 等非 canonical 命名。
+
+#### InstrumentKey 最小维度
+
+| 维度 | Spot | UMPerp | CMPerp | Options |
+|---|---|---|---|---|
+| venue | ✅ | ✅ | ✅ | ✅ |
+| product_line | ✅ | ✅ | ✅ | ✅ |
+| instrument_type | ✅ | ✅ | ✅ | ✅ |
+| symbol | ✅ | ✅ | ✅ | ✅ |
+| base_asset | ✅ | ✅ | ✅ | ✅ |
+| quote_asset | ✅ | ✅ | ✅ | ✅ |
+| margin_asset | — | ✅ | ✅ | ✅ |
+| settlement_asset | — | ✅ | ✅ | ✅ |
+| contract_code | — | ✅ | ✅ | ✅ |
+| expiry | — | — | — | ✅ |
+| strike | — | — | — | ✅ |
+| option_type | — | — | — | ✅ |
+
+`symbol` 不是全局唯一键。缺必需维度时 adapter 必须拒绝或降级为 dirty。
+
+**碰撞示例**：Spot `BTCUSDT` (spot) vs USDⓈ-M `BTCUSDT` (um_perp) → product_line 不同，不碰撞。
+
+#### MarketFactEnvelope 事件类型映射
+
+| Binance Stream | EventType | Payload |
+|---|---|---|
+| `aggTrade`/`trade` | `trade` | Tick |
+| `kline_*` | `kline` | Bar |
+| `depthUpdate` | `depthUpdate` | OrderBook |
+| `bookTicker` | `bookTicker` | Quote |
+| `markPrice` | `markPrice` | Funding |
+| `fundingRate` | `fundingRate` | Funding |
+| `openInterest` | `openInterest` | OpenInterest |
+| `longShortRatio` | `longShortRatio` | LongShortRatio |
+
+canonical event type 使用 exchange-neutral 命名（BR-MKT-008）。vendor stream 名称仅保留为 source metadata。
+
+#### 时间语义
+
+| 字段 | 语义 | 来源 |
+|---|---|---|
+| EventTime | 交易所事件时间 | Binance `E` 字段 |
+| ReceivedAt | adapter 接收时间 | `time.Now()` on arrival |
+| AvailableAt | quality gate 后可消费时间 | domain-market gate |
+| DecisionTime | 策略决策时间点 | 回测引擎设置 |
+
+质量规则：`InstrumentKey`/`EventType`/`EventTime`/`ReceivedAt`/`Source`/`Quality` 缺失时 `Validate` fail-closed。
 
 ## 11. 配置模式
 
@@ -355,6 +462,9 @@ module/domain-market/
 **TC-MKT-006:** 与 domainx 无执行枚举重复归属。
 **TC-MKT-007:** stale data 被 fail-closed 拒绝。
 **TC-MKT-008:** future data 在容忍窗口外被拒绝。
+**TC-MKT-009:** ProductLine IsValid 对合法产品线返回 true，其他值返回 false。
+**TC-MKT-010:** InstrumentKey Validate 各维度组合正确拒绝或通过。
+**TC-MKT-011:** MarketFactEnvelope Validate 缺失必填字段 fail-closed。
 
 ## 17. 性能预算
 
@@ -426,3 +536,4 @@ module/domain-market/
 |------|------|----------|------|
 | 2026-06-15 | v1.0.0 | 初始版本：L2.5 市场数据领域模型与质量门禁 | ZoneCNH |
 | 2026-06-17 | v1.0.1 | 审计修复：补充 ProductLine、InstrumentKey、MarketFactEnvelope（MarketEventEnvelope 别名）类型定义 | ZoneCNH |
+| 2026-06-17 | v1.1.0 | canonical 类型重构：ProductLine 枚举值对齐跨模块规范（um_perp/cm_perp/option 替代 usdm_futures/coinm_futures/options）；新增 IsValid()；InstrumentKey 重构为 Venue/InstrumentType 维度矩阵；新增 BR-MKT-008 exchange-neutral 命名约束 | ZoneCNH |
