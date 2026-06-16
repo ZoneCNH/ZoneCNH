@@ -7,7 +7,7 @@
 - Module-Version: v0.1.0-draft
 - Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/contracts`, `module/domain-market`, `module/alternative-data`
 
-> 本文件发布 pe-data 文档基线。运行时实现为 Pending，等待 `module/contracts` 定义 `AlternativeDataProvider` 接口。
+> 本文件发布 pe-data 文档基线。`AlternativeDataProvider` 接口已由 `module/contracts` §8.1b 定义（`GetLatest` / `GetHistory`）。运行时实现为 Pending，阻塞依赖：`module/alternative-data` hub 模块尚未创建。
 
 ---
 
