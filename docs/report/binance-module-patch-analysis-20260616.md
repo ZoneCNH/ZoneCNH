@@ -181,3 +181,48 @@ PR-005 (binance runtime impl)     ← 全部依赖就绪
 | 21  | `docs/services/binance-market-client-svc.md`                       | 56   | 服务描述       |
 | 22  | `scripts/check-binance-boundaries.sh`                              | 41   | CI 脚本        |
 | 23  | `repo-skeleton/README.md`                                          | 21   | 仓库骨架       |
+
+---
+
+## 七、现状更新 (2026-06-17)
+
+> 以下记录自原分析报告以来已解决的所有发现。
+
+### 7.1 发现解决方案总结
+
+| # | 原发现 | 严重度 | 解决方案 | 涉及 PR |
+|---|--------|--------|----------|---------|
+| 1 | `binance` vs `binance-market` 关系未澄清 | HIGH | `binance-market` 已从 ARCHITECTURE.md/STATUS.md 中完全移除（0 条残留引用）。binance SPEC §4 Non-goals 明确声明："不做旧 binance-market 遗留模块迁移或兼容" | #539, #540 |
+| 2 | MarketDataService 服务端无人认领 | HIGH | `module/binance/server` 已定义为 gRPC ingest server，`module/market-data` 已定义为 downstream dispatch port 接收侧模块。完整链路：binance/client → contracts §8.4 gRPC → binance/server → market-data DownstreamDispatchPort | #543, #545, #548 |
+| 3 | `domain-market` 升级范围未细化 | MEDIUM | domain-market SPEC v1.1.0 新增：ProductLine 枚举（um_perp/cm_perp canonical 命名）、InstrumentKey（Venue/ProductLine/InstrumentType + Validate()）、MarketFactEnvelope 完整规范结构体（含 EventTime/ReceivedAt/AvailableAt/DecisionTime 时间语义 + Validate()）、§10.1 Binance C/S ingestion canonical 语义（产品线映射、身份维度、事件类型映射、时间语义）。MarketEventEnvelope 降级为废弃别名 | #549, #554 |
+| 4 | `scripts/check-binance-boundaries.sh` 依赖 `rg` | LOW | 脚本未纳入最终合并（边界门禁已通过 `BOUNDARY-GATES.md` 的 6 个可执行门禁以文档形式落地） | #543 |
+| 5 | 缺少 `module/binance/GOAL.md` | LOW | `module/binance/goal.md` 已创建；`module/binance/client/SPEC.md` OQ-001 已标记为已解决（contracts §8.4 wire types 已定义） | #554 |
+| 6 | SPEC §3 "Owns" 列出具体实现路径 | LOW | binance/client SPEC 的 Non-goals 已明确区分 client/server/market-data/domain-market/contracts 职责边界 | #543, #554 |
+
+### 7.2 原始建议合并顺序 vs 实际执行
+
+| 原始顺序 | 实际执行 | 状态 |
+|----------|----------|------|
+| PR-001: module/binance spec | ✅ 已合并（#543） | Done |
+| PR-003: contracts proto | ✅ contracts §8.4 wire contract 已定义（#545）；docs-only 基线 | Done |
+| PR-002: domain-market upgrade | ✅ domain-market v1.1.0 canonical 类型已落地（#549, #554） | Done |
+| PR-004: transportx policy | ⏸️ 未执行 — gRPC/Gin 策略声明由 contracts §8.4 + binance server SPEC 覆盖 | Deferred |
+| PR-005: binance runtime impl | ⏸️ 未执行 — 等待 downstream dispatch failure strategy (OQ-002) 决策 | Blocked |
+
+### 7.3 剩余未解决
+
+| 项目 | 状态 | 阻塞因素 |
+|------|------|----------|
+| OQ-002（binance/server）| 待解决 | downstream dispatch 失败策略：retry-first vs rollback-first — 属于设计决策，非文档任务 |
+| binance runtime implementation（PR-005）| Pending | 依赖 OQ-002 关闭 + domain-market/contracts 运行时冻结 |
+| transportx policy（PR-004）| Deferred | 当前 contracts §8.4 docs-only 基线足够，运行时传输策略待 PR-005 前完成 |
+
+### 7.4 market-data 模块新增
+
+原分析报告提到"隐式引入 MarketDataService Server"，该空白已通过以下方式填补：
+
+- `module/market-data/SPEC.md` v0.1.1：DownstreamDispatchPort 语义、12 字段输入契约、8 种拒绝原因（含 binance-native 映射）、跨模块字段命名映射表
+- `module/market-data/TRACEABILITY.md`：8 FR + 6 BR + 4 NFR，全追溯链闭合
+- `module/market-data/goal.md`：边界定义、实现门禁（Contract/Domain/Adapter/Reject Mapping/Naming Mapping/Test）
+- `module/market-data/IMPLEMENTATION-PLAN.md`：6-PR 执行序列（PR-000 文档基线 → PR-006 合约测试）
+- README.md/ARCHITECTURE.md：市场数据拆分为 14 组件（1 dispatch + 12 SDK + 1 C/S Module）
