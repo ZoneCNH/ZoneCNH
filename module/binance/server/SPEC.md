@@ -152,6 +152,11 @@ Binance 行情接入需要服务端边界确保数据质量和可靠性。直接
 **WHEN** durable acceptance 失败（存储不可用、队列满）
 **THEN** 返回 reject，类别为 `retryable`，不标记 event 为已接受
 
+**Idempotency Store 后端选择**:
+- 默认实现：in-memory（sync.Map + TTL GC），适用于单实例部署和本地开发
+- 生产可选：Redis（通过 `IdempotencyStore` 接口切换），适用于多实例共享和跨重启持久化
+- 接口抽象：`CheckAndSet(ctx, key, payloadHash) -> (accepted bool, conflict bool, err error)`
+
 ### FR-006: ACK Generation
 
 **WHEN** event 通过 durable acceptance
@@ -586,7 +591,7 @@ server 必须通过 contracts 定义的 server-side contract tests：
 
 | ID | 问题 | 状态 | 负责人 |
 |----|------|------|--------|
-| OQ-001 | idempotency store 首选实现：in-memory 还是 Redis？ | 待解决 | ZoneCNH |
+| OQ-001 | idempotency store 首选实现：in-memory 还是 Redis？ | 已解决：默认 in-memory（sync.Map + TTL GC），通过 `IdempotencyStore` 接口可切换至 Redis（2026-06-17） | ZoneCNH |
 | OQ-002 | downstream dispatch 失败策略：retry-first 还是 rollback-first？ | 已解决：retry-first + dead-letter（FR-007）。重试 3 次指数退避后写入死信队列并告警，不回滚幂等记录（2026-06-17） | ZoneCNH |
 | OQ-003 | proto 定义是否已在 `module/contracts` 中可用？ | 已解决：`module/contracts/SPEC.md` §8.4 已定义全部 wire types（2026-06-17） | ZoneCNH |
 
