@@ -1,10 +1,10 @@
 # domain-market 规格
 
 - Status: Approved
-- Spec-Version: v1.0.0
-- Last-Updated: 2026-06-15
+- Spec-Version: v1.1.0
+- Last-Updated: 2026-06-17
 - Layer: L2.5 领域共享
-- Module-Version: v1.0.1
+- Module-Version: v1.1.0
 - Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `kernel`, `decimalx`
 
 > 公开投影 caveat：Status=Approved 与 100.0% 覆盖证据不等同于 factory-grade；机器事实层保持 factory=false。
