@@ -756,9 +756,9 @@ module/binance/server
 
 | ID | 问题 | 状态 | 负责人 |
 |----|------|------|--------|
-| OQ-002 | spool 清理策略：acked 事件是定时清理还是按大小阈值？ | 待解决 | ZoneCNH |
-| OQ-003 | connector 是否需要支持 Binance 多 endpoint 负载均衡？ | 待解决 | - |
-| OQ-004 | admin 是否需要认证（即使仅绑定 localhost）？ | 待解决 | - |
+| OQ-002 | spool 清理策略：acked 事件是定时清理还是按大小阈值？ | 已解决：双重策略 — 时间 TTL 7 天为主，1GB 大小上限为辅（2026-06-17） | ZoneCNH |
+| OQ-003 | connector 是否需要支持 Binance 多 endpoint 负载均衡？ | 已解决：v1 默认单 endpoint；多 endpoint 轮询/故障切换作为 v1.1 增强；通过配置 `endpoints[]` 启用（2026-06-17） | - |
+| OQ-004 | admin 是否需要认证（即使仅绑定 localhost）？ | 已解决：v1 默认 localhost-only 无需认证；生产环境通过反向代理（nginx/Caddy）添加认证；v1.1 可考虑内置 API key（2026-06-17） | - |
 
 ### Future（未来考虑）
 
