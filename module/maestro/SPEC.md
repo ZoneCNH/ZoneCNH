@@ -62,13 +62,15 @@ backtestx 验证"决策是否正确"
 
 ## 5. 消费者
 
-| 消费者       | 使用方式                              |
-| ------------ | ------------------------------------- |
-| x.go         | 启动时加载工作流定义并注入到 maestro  |
-| strategyx    | 作为 Task 节点被 maestro 调用          |
-| riskx        | 作为 Task 节点被 maestro 调用          |
-| orderx       | 作为 Task 节点被 maestro 调用          |
-| observex     | 消费工作流 metrics 和 traces          |
+| 消费者       | 使用方式                              | 数据流向 |
+| ------------ | ------------------------------------- | -------- |
+| x.go         | 启动时加载工作流定义并注入到 maestro  | x.go → maestro（配置注入） |
+| strategyx    | 作为 Task 节点被 maestro **调用**      | strategyx → maestro（策略信号作为 Task 返回值流回 maestro） |
+| riskx        | 作为 Task 节点被 maestro **调用**      | maestro → riskx → 风控结果 |
+| orderx       | 作为 Task 节点被 maestro **调用**      | maestro → orderx → 成交回报 |
+| observex     | 消费工作流 metrics 和 traces          | maestro → observex（指标推送） |
+
+> **代码依赖 vs 数据流**：上表"消费者"表示谁**调用/依赖** maestro。数据流方向与之相反——例如 strategyx 被 maestro 调用（代码依赖 maestro → strategyx），但策略信号从 strategyx **流回** maestro（数据流 strategyx → maestro）。ARCHITECTURE.md 业务流图使用数据流箭头，不表示代码依赖。
 
 ---
 
