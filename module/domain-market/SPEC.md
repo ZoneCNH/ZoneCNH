@@ -35,6 +35,9 @@
 | FR-MKT-005 | Funding、OpenInterest、LongShortRatio 必须有明确时间语义与数据来源。 |
 | FR-MKT-006 | DataProvider contract 必须返回领域模型，不暴露 HTTP/WS/DB/vendor DTO。 |
 | FR-MKT-007 | 与 `domainx` 重叠的订单枚举必须迁出或废弃，避免双 SSOT。 |
+| FR-MKT-015 | ProductLine 枚举必须覆盖 spot、um_perp、cm_perp、option 四产品线，提供 IsValid 校验。 |
+| FR-MKT-016 | InstrumentKey 必须提供无碰撞标的身份，Symbol 不是全局唯一键。 |
+| FR-MKT-017 | MarketFactEnvelope 必须定义 canonical wrapper 与时间语义。 |
 
 ## 4. 非功能需求
 
@@ -87,8 +90,9 @@
 | FR-MKT-012 | future-gate | EventTime 晚于 ReceivedAt/DecisionTime | 在容忍窗口外拒绝 |
 | FR-MKT-013 | domain-no-transport | 定义 domain struct | 不含 json/db/yaml/kafka tag；transport schema 属 DTO 层 |
 | FR-MKT-014 | domainx-boundary | 与 domainx 枚举归属 | Side 表达市场事件方向可保留；OrderType/OrderSide/OrderState 归 domainx |
-| FR-MKT-015 | product-line-enum | 引用 ProductLine | 只能使用 canonical 枚举值：spot / usdm_futures / coinm_futures / options |
-| FR-MKT-016 | instrument-key-identity | 构造 InstrumentKey | Exchange / ProductLine / Symbol 必填；Options 产品线额外需要 Expiry / Strike / OptionType |
+| FR-MKT-015 | product-line-canonical | 构造或校验 ProductLine | IsValid 对 spot/um_perp/cm_perp/option 返回 true，其他值返回 false |
+| FR-MKT-016 | instrument-key-canonical | 构造或校验 InstrumentKey | Venue/ProductLine/Symbol 必填；期权须提供 Expiry/Strike/OptionType |
+| FR-MKT-017 | market-fact-envelope | 构造或校验 MarketFactEnvelope | InstrumentKey/EventType/EventTime/ReceivedAt/Source/Quality 必填，缺失时 fail-closed |
 
 ## 8. 行为约束
 
@@ -100,6 +104,7 @@
 | BR-MKT-004 | 策略层不直接消费 Bar/Tick 原始结构体，必须通过 MarketEventEnvelope |
 | BR-MKT-005 | stale/future 数据 fail-closed，DegradeReason + metrics 暴露，不可靠数据不静默进入策略 |
 | BR-MKT-006 | domain-market 仅表达行情语义，订单生命周期语义归 domainx |
+| BR-MKT-008 | canonical event type 使用 exchange-neutral 命名；vendor stream 名称不得成为领域事件枚举 |
 
 
 ### Acceptance Criteria Registry
@@ -426,3 +431,4 @@ module/domain-market/
 |------|------|----------|------|
 | 2026-06-15 | v1.0.0 | 初始版本：L2.5 市场数据领域模型与质量门禁 | ZoneCNH |
 | 2026-06-17 | v1.0.1 | 审计修复：补充 ProductLine、InstrumentKey、MarketFactEnvelope（MarketEventEnvelope 别名）类型定义 | ZoneCNH |
+| 2026-06-17 | v1.1.0 | canonical 类型重构：ProductLine 枚举值对齐跨模块规范（um_perp/cm_perp/option 替代 usdm_futures/coinm_futures/options）；新增 IsValid()；InstrumentKey 重构为 Venue/InstrumentType 维度矩阵；新增 BR-MKT-008 exchange-neutral 命名约束 | ZoneCNH |

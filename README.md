@@ -112,9 +112,13 @@ L2.5: domainx / decimalx / domain-market / domain-macro / domain-exchange (5/5 �
 - [domain-macro](https://github.com/ZoneCNH/domain-macro) — 宏观经济领域共享模型：国家/地区/指标/发布日历、MacroPoint/MacroState；v1.0.0 GitHub Release 已发布 `公开`
 - [domain-exchange](https://github.com/ZoneCNH/domain-exchange) — 交易域模型（VenueAdapter 13 方法接口）；v1.0.0 GitHub Release 已发布 `公开`
 
-### 数据域 · market-data（SDK 13）
+### 数据域 · market-data（14: 1 dispatch + 12 SDK + 1 C/S Module）
 
-**交易所 SDK：**
+**行情接收与分发：**
+
+- [market-data](https://github.com/ZoneCNH/market-data) — Downstream Dispatch Port 接收侧模块；接收 adapter 归一化事件，执行校验、幂等、排序和分发 `公开`
+
+**交易所 SDK / C/S Module：**
 
 - [binance](https://github.com/ZoneCNH/binance) — 币安 Binance Market Data C/S Module (Spot/USDⓈ-M/COIN-M/Options)；spec v1.0.0 `公开`
 - [okx](https://github.com/ZoneCNH/okx) — OKX `公开`
