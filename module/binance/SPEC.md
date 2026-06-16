@@ -1,5 +1,7 @@
 # module/binance SPEC
 
+## 1. Metadata
+
 - Status: Review
 - Spec-Version: v1.0.0
 - Last-Updated: 2026-06-17
@@ -13,24 +15,7 @@
 
 ---
 
-## 0. Upstream Contract Gate
-
-在从 docs baseline 推进到运行时实现前，必须逐项验证以下上游契约链闭合条件：
-
-| # | Gate | 验证 | 状态 |
-|---|------|------|:----:|
-| G0-1 | `module/contracts` §8.4 `MarketDataService` + `IngestRequest`(10 required + 2 optional)/`IngestResult`/`IngestAck`/`IngestReject` + `RejectCode`(10码) | contracts SPEC v1.2.0 | ✅ |
-| G0-2 | `module/domain-market` `ProductLine`(4值)/`InstrumentKey`(12维)/`MarketFactEnvelope` canonical 类型 | domain-market SPEC v1.0.1 §10 | ✅ |
-| G0-3 | `module/market-data` DownstreamDispatchPort + 12 输入字段 + 8 种 reject reason + §4.4.1 binance reject 映射 | market-data SPEC v1.0.0 §4 | ✅ |
-| G0-4 | binance OQ-001（contracts wire 就绪？） | 已确认 (2026-06-17) | ✅ |
-| G0-5 | binance OQ-002（market-data dispatch port 就绪？） | 已确认 (2026-06-17) | ✅ |
-| G0-6 | BOUNDARY-GATES.md 全部 9 门禁有 CI 脚本 | 9/9 (2026-06-17) | ✅ |
-
-> **6/6 通过** — 上游契约链闭合。本 SPEC 处于 Docs Baseline Approved 状态，可进入运行时实现阶段（PR-007）。实现时必须严格遵循 contracts §8.4 wire types、domain-market §10 canonical semantics、market-data §4 dispatch port 契约。
-
----
-
-## 1. Summary
+## 2. Summary
 
 `module/binance` 是 Binance 专属 Market Data C/S Module，定义 Binance 行情数据从交易所采集到 ZoneCNH 内部摄入的完整边界。它从被动 SDK / 旧式 Provider 模型升级为显式 client/server 双端架构：
 
@@ -48,7 +33,7 @@ module/market-data             ← 交易所中立的后续管线
 
 ---
 
-## 2. Problem
+## 3. Problem
 
 Binance 行情集成面临以下问题：
 
@@ -60,7 +45,7 @@ Binance 行情集成面临以下问题：
 
 ---
 
-## 3. Goals
+## 4. Goals
 
 - 定义 client/server 双端架构，client 拥有交易所侧采集，server 拥有摄入受理
 - 支持 Binance 四产品线：Spot、USDⓈ-M Futures、COIN-M Futures、Options
@@ -72,7 +57,7 @@ Binance 行情集成面临以下问题：
 
 ---
 
-## 4. Non-goals
+## 5. Non-goals
 
 `module/binance` 明确不做以下事情：
 
@@ -89,7 +74,7 @@ Binance 行情集成面临以下问题：
 
 ---
 
-## 5. Consumers
+## 6. Consumers
 
 | 消费者 | 使用方式 | 状态 |
 |--------|----------|------|
@@ -101,7 +86,7 @@ Binance 行情集成面临以下问题：
 
 ---
 
-## 6. Functional Requirements
+## 7. Functional Requirements
 
 ### FR-001: Product-Line Support
 
@@ -202,7 +187,7 @@ Binance 行情集成面临以下问题：
 
 ---
 
-## 7. Business Rules
+## 8. Business Rules
 
 ### BR-001: No binance-market
 
@@ -285,7 +270,7 @@ Binance 行情集成面临以下问题：
 
 ---
 
-## 8. Interface Contract
+## 9. Interface Contract
 
 ### MarketDataService (defined by module/contracts)
 
@@ -315,7 +300,7 @@ type MarketDataService interface {
 
 - Client 发送 `IngestRequest`，携带 canonical market fact envelope + idempotency key + source metadata
 - Server 对每个 `IngestRequest` 返回一个 `IngestResult`，exactly one of Ack or Reject is non-nil
-- RejectCode 10 码覆盖 binance §9 全部 6 种 native 分类 + 4 种 market-data 门禁分类
+- RejectCode 10 码覆盖 binance §10 全部 6 种 native 分类 + 4 种 market-data 门禁分类
 
 ### Downstream Dispatch Port
 
@@ -323,7 +308,7 @@ Server 通过 exchange-neutral downstream port 将 accepted events 分发给 `mo
 
 ---
 
-## 9. Data Model
+## 10. Data Model
 
 ### Canonical Event Concepts (owned by module/domain-market)
 
@@ -377,7 +362,7 @@ server_unavailable
 
 ---
 
-## 10. Config Schema
+## 11. Config Schema
 
 | 配置项 | 类型 | 默认值 | 说明 |
 |--------|------|--------|------|
@@ -399,7 +384,7 @@ server_unavailable
 
 ---
 
-## 11. Error Handling
+## 12. Error Handling
 
 | 错误 | 触发条件 | 处理方式 | 错误码 |
 |------|----------|----------|--------|
@@ -414,7 +399,7 @@ server_unavailable
 
 ---
 
-## 12. Edge Cases
+## 13. Edge Cases
 
 | 场景 | 输入/状态 | 预期行为 |
 |------|-----------|----------|
@@ -430,7 +415,7 @@ server_unavailable
 
 ---
 
-## 13. Directory Structure
+## 14. Directory Structure
 
 ### Documentation (`module/binance/`)
 
@@ -483,7 +468,7 @@ github.com/ZoneCNH/binance/
 
 ---
 
-## 14. Dependencies
+## 15. Dependencies
 
 ### Allowed Dependencies
 
@@ -506,7 +491,7 @@ github.com/ZoneCNH/binance/
 
 ---
 
-## 15. Testing
+## 16. Testing
 
 ### Test Matrix
 
@@ -531,7 +516,7 @@ github.com/ZoneCNH/binance/
 
 ---
 
-## 16. Performance Budget
+## 17. Performance Budget
 
 | 操作 | 指标 | 目标 | 测量方式 |
 |------|------|------|----------|
@@ -546,7 +531,7 @@ github.com/ZoneCNH/binance/
 
 ---
 
-## 17. Observability
+## 18. Observability
 
 ### Metrics
 
@@ -592,7 +577,7 @@ github.com/ZoneCNH/binance/
 
 ---
 
-## 18. Security
+## 19. Security
 
 - 禁止硬编码 API key、secret、signature
 - 所有 secret 从环境变量注入，不在 config 文件中存储
@@ -605,7 +590,7 @@ github.com/ZoneCNH/binance/
 
 ---
 
-## 19. CI Gate
+## 20. CI Gate
 
 ### 通用 Gate
 
@@ -632,7 +617,7 @@ github.com/ZoneCNH/binance/
 
 ---
 
-## 20. Upgrade Compatibility
+## 21. Upgrade Compatibility
 
 | 变更类型 | 兼容性 | 迁移方式 |
 |----------|--------|----------|
@@ -645,7 +630,7 @@ github.com/ZoneCNH/binance/
 
 ---
 
-## 21. Release DoD
+## 22. Release DoD
 
 `module/binance` v1.0.0 发布完成标准：
 
@@ -655,7 +640,7 @@ github.com/ZoneCNH/binance/
 - [ ] client/server task sets 独立可执行
 - [ ] Delivery semantics 明确为 at-least-once + idempotent acceptance（FR-004, FR-005）
 - [ ] ACK/checkpoint semantics 已定义且 testable（BR-004）
-- [ ] ProductLine 和 InstrumentKey 碰撞 case 已文档化（FR-002, §9 Data Model）
+- [ ] ProductLine 和 InstrumentKey 碰撞 case 已文档化（FR-002, §10 Data Model）
 - [ ] Boundary gates 可在 CI 执行（FR-007, BOUNDARY-GATES.md）
 - [ ] Runtime mapping 未将 storage/query/strategy ownership 放在 Binance 内（BR-006）
 - [ ] 所有 FR 实现完成，所有 AC 验证通过
@@ -666,7 +651,7 @@ github.com/ZoneCNH/binance/
 
 ---
 
-## 22. Open Questions
+## 23. Open Questions
 
 ### Resolved (was Blocking)
 
@@ -776,3 +761,24 @@ Binance Exchange (REST/WebSocket)
     │   pipeline)       │
     └──────────────────┘
 ```
+
+## Appendix D: Upstream Contract Gate Closure
+
+> 本节是 PR-007 运行时实现前的上游契约链闭合验证记录，原以 §0 形式置于文档前部，现按 23 节模板规整为附录 D。原内容完整保留，仅顶层标题变更。
+
+
+在从 docs baseline 推进到运行时实现前，必须逐项验证以下上游契约链闭合条件：
+
+| # | Gate | 验证 | 状态 |
+|---|------|------|:----:|
+| G0-1 | `module/contracts` §8.4 `MarketDataService` + `IngestRequest`(10 required + 2 optional)/`IngestResult`/`IngestAck`/`IngestReject` + `RejectCode`(10码) | contracts SPEC v1.2.0 | ✅ |
+| G0-2 | `module/domain-market` `ProductLine`(4值)/`InstrumentKey`(12维)/`MarketFactEnvelope` canonical 类型 | domain-market SPEC v1.0.1 §10 | ✅ |
+| G0-3 | `module/market-data` DownstreamDispatchPort + 12 输入字段 + 8 种 reject reason + §4.4.1 binance reject 映射 | market-data SPEC v1.0.0 §4 | ✅ |
+| G0-4 | binance OQ-001（contracts wire 就绪？） | 已确认 (2026-06-17) | ✅ |
+| G0-5 | binance OQ-002（market-data dispatch port 就绪？） | 已确认 (2026-06-17) | ✅ |
+| G0-6 | BOUNDARY-GATES.md 全部 9 门禁有 CI 脚本 | 9/9 (2026-06-17) | ✅ |
+
+> **6/6 通过** — 上游契约链闭合。本 SPEC 处于 Docs Baseline Approved 状态，可进入运行时实现阶段（PR-007）。实现时必须严格遵循 contracts §8.4 wire types、domain-market §10 canonical semantics、market-data §4 dispatch port 契约。
+
+---
+
