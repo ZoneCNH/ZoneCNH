@@ -56,8 +56,9 @@
 | ------------ | ------------------------------------- |
 | maestro      | 编排 workflow 中加载和运行策略        |
 | backtestx    | 加载策略进行回测                     |
-| signal-factory | 消费策略生成的信号                  |
 | optimizer    | 读取策略参数进行优化                 |
+
+> **不包含 signal-factory**：signal-factory 的输入来自 factor-eval（因子评估）和 regime-engine（DecisionCard），不由 strategyx 提供。strategyx 定义策略配方（权重方案、regime 响应规则），由 maestro 运行时注入 signal-factory，不反向消费 signal-factory 输出。
 
 ---
 
