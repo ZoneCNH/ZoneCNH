@@ -5,24 +5,22 @@
 - Last-Updated: 2026-06-17
 - Layer: 数据域 · 另类数据
 - Module-Version: v0.1.0-draft
-- Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/contracts`, `module/domain-market`, `module/alternative-data`
+- Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/contracts`, `module/domain-market`
 
-> 本文件发布 pe-data 文档基线。`AlternativeDataProvider` 接口已由 `module/contracts` §8.1b 定义（`GetLatest` / `GetHistory`）。运行时实现为 Pending，阻塞依赖：`module/alternative-data` hub 模块尚未创建。
+> `AlternativeDataProvider` 接口已由 `module/contracts` §8.1b 定义。pe-data 直接实现该接口，下游通过 `GetLatest(category, symbol)` 消费，不经过中间 hub 层。
 
 ---
 
 ## 1. 摘要
 
-`module/pe-data` 是 PE（私募股权/内部交易/机构持仓）另类数据采集模块。爬取 SEC EDGAR 13F、内部交易申报、机构持仓变化等公开数据源，归一化为 canonical 另类数据结构，通过 `AlternativeDataProvider` 接口（由 `module/contracts` 定义）注入下游分析链路。
+`module/pe-data` 是 PE 另类数据采集模块，直接实现 `contracts.AlternativeDataProvider` 接口。爬取 SEC EDGAR 13F / Form 4 / 机构持仓变化等公开数据源，归一化为 `AltDataPoint`，下游（signal-factory / backtestx）通过接口直接消费。
 
 ```text
 SEC EDGAR / WhaleWisdom / OpenInsider
   ↓
-module/pe-data (爬取 → 归一化 → 映射)
-  ↓ AlternativeDataProvider (contracts-defined)
-module/alternative-data (接收/校验/分发)
+module/pe-data → 实现 AlternativeDataProvider
   ↓
-signal-factory / backtestx / factor-eval
+signal-factory / backtestx (直接消费)
 ```
 
 ---
@@ -31,10 +29,10 @@ signal-factory / backtestx / factor-eval
 
 | 类型 | 说明 |
 | --- | --- |
-| Owns | PE 数据源爬取、13F/内部交易/机构持仓归一化逻辑、数据时效性管理（季度更新容错） |
-| Depends on | `module/contracts`（`AlternativeDataProvider` 接口定义）、`module/domain-market`（canonical InstrumentKey/ProductLine 类型） |
-| Consumed by | `module/alternative-data`（接收并分发给下游）、`module/signal-factory`（PE 信号）、`module/backtestx`（回测验证） |
-| Excludes | PE 数据存储引擎（→ alternative-data）、PE 信号生成（→ signal-factory）、PE 策略（→ strategyx）、支付/认证（→ 配置密钥管理） |
+| Owns | PE 数据源爬取、13F/内部交易/机构持仓归一化逻辑、数据时效性管理（季度更新容错）、`AlternativeDataProvider` 接口实现 |
+| Depends on | `module/contracts`（`AlternativeDataProvider` 接口 + `AltDataPoint` DTO）、`module/domain-market`（canonical InstrumentKey/ProductLine 类型） |
+| Consumed by | `module/signal-factory`（PE 信号）、`module/backtestx`（回测验证）、`module/factor-eval`（PE 因子评估） |
+| Excludes | PE 信号生成（→ signal-factory）、PE 策略（→ strategyx）、数据持久化（pe-data 只做采集+归一化，不存储历史）、支付/认证（→ 配置密钥管理） |
 
 ---
 
