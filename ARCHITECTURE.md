@@ -61,21 +61,21 @@ macro-data (10) ───────────────► macro_regime �
   LGIP 四因子                    LGIP 得分            风险放大          risk_tier
                                                                       position_caps
 factor-engine ◄──► feature-store ◄──► factor-eval                     template
-              │                         ▲
-              ▼                         │
-  flowx ──► signal-factory          backtest-engine ─┐
-              │                         ▲             │
-              ▼                         │             │
-         strategyx ─────────────────────┘             │
-              │         ▲                             │
-              │         │  (回测结果 → 参数优化)       │
-              │    optimizer ◄─── backtest-engine ────┘
-              │
-              ▼
-         maestro ──► riskx ──► orderx ──► positionx
-                      ▲           ▲           │
-                      │           │           ▼
-                      └─ fills ──┘   决策域 ◄── positions/PnL/exposure
+              │                         ▲  ▲
+              ▼                         │  │
+  flowx ──► signal-factory ─────────────┘  │  (因子评估 + DecisionCard)
+              │    │                        │
+              │    │     regime-engine ─────┘
+              │    │
+              │    ├──► riskx ──► orderx ──► positionx  (实盘路径)
+              │    │      ▲         ▲           │
+              │    │      │         │           ▼
+              │    │      └─ fills ─┘   决策域 ◄── positions/PnL
+              │    │
+              │    └──► backtestx ──► optimizer ──► strategyx  (回测→反馈)
+              │                                        ▲
+              │                                        │
+              └──► maestro ────────────────────────────┘  (编排注入)
 ```text
 
 ### 运行时组装
