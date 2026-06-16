@@ -639,8 +639,8 @@ github.com/ZoneCNH/binance/
 
 | ID | 问题 | 状态 | 负责人 |
 |----|------|------|--------|
-| OQ-001 | `MarketDataService` proto 的 final wire 定义是否已在 `module/contracts` 中完成？ | 待确认 | contracts owner |
-| OQ-002 | `module/market-data` 的 downstream dispatch port 接口是否已定义？ | 待确认 | market-data owner |
+| OQ-001 | `MarketDataService` proto 的 final wire 定义是否已在 `module/contracts` 中完成？ | 已确认 — contracts §8.4 已提供 docs-only wire contract 基线（IngestRequest/IngestResult），运行时 proto 编译待后续阶段 | contracts owner |
+| OQ-002 | `module/market-data` 的 downstream dispatch port 接口是否已定义？ | 已确认 — market-data SPEC v0.1.1 已定义 DownstreamDispatchPort 语义、12 项输入字段、8 种 reject reason 和 binance reject 映射规则 | market-data owner |
 
 ### Non-blocking
 
