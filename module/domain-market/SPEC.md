@@ -118,6 +118,9 @@
 | AC-MKT-003 | FR-MKT-008 | TC-MKT-004 | `go test -run TestMarketEventEnvelope` | |
 | AC-MKT-006 | FR-MKT-010 | TC-MKT-005 | `staticcheck` boundary scan | |
 | AC-MKT-007 | FR-MKT-014 | TC-MKT-006 | `compile smoke` + ADR | |
+| AC-MKT-008 | FR-MKT-015 | TC-MKT-009 | `go test -run TestProductLine` | |
+| AC-MKT-009 | FR-MKT-016 | TC-MKT-010 | `go test -run TestInstrumentKey` | |
+| AC-MKT-010 | FR-MKT-017 | TC-MKT-011 | `go test -run TestMarketFactEnvelope` | |
 
 ## 9. 接口契约
 
@@ -138,16 +141,8 @@ type HistoricalBarsRequest struct {
 
 func (r HistoricalBarsRequest) Validate() error
 
-type MarketEventEnvelope struct {
-    Event      interface{}   // Bar 或 Tick 二选一
-    EventTime  time.Time
-    ReceivedAt time.Time
-    Symbol     string
-    Venue      Venue
-    Quality    MarketDataQuality
-}
-
-func (e MarketEventEnvelope) Validate() error
+// MarketEventEnvelope is deprecated; use MarketFactEnvelope.
+type MarketEventEnvelope = MarketFactEnvelope
 ```
 
 ## 10. 数据模型
@@ -242,35 +237,80 @@ type LongShortRatio struct {
 }
 
 
-// ProductLine 产品线枚举，跨模块 canonical 值
+// ProductLine canonical 产品线枚举
 type ProductLine string
 
 const (
-	ProductLineSpot    ProductLine = "spot"
-	ProductLineUSDsM   ProductLine = "usdm_futures"
-	ProductLineCOINM   ProductLine = "coinm_futures"
-	ProductLineOptions ProductLine = "options"
+	ProductLineSpot   ProductLine = "spot"
+	ProductLineUMPerp ProductLine = "um_perp"
+	ProductLineCMPerp ProductLine = "cm_perp"
+	ProductLineOption ProductLine = "option"
 )
 
-// InstrumentKey 跨产品线无碰撞的 canonical 标的标识
-// 最小维度矩阵参见 module/binance/SPEC.md §9 Instrument Identity Dimensions
+func (p ProductLine) IsValid() bool {
+	switch p {
+	case ProductLineSpot, ProductLineUMPerp, ProductLineCMPerp, ProductLineOption:
+		return true
+	default:
+		return false
+	}
+}
+
+// InstrumentKey 无碰撞标的身份
 type InstrumentKey struct {
-	Exchange        string
+	Venue           string            // "binance"
 	ProductLine     ProductLine
-	Symbol          string
+	InstrumentType  string            // spot/perpetual/future/option
+	Symbol          string            // "BTCUSDT"
 	BaseAsset       string
 	QuoteAsset      string
 	MarginAsset     string
 	SettlementAsset string
 	ContractCode    string
-	Expiry          time.Time
-	Strike          decimalx.Decimal
-	OptionType      string // "call" / "put"
+	Expiry          *time.Time
+	Strike          *decimalx.Decimal
+	OptionType      string            // "call"/"put"
 }
 
-// MarketFactEnvelope 是 MarketEventEnvelope 的跨模块别名
-// market-data SPEC 使用 MarketFactEnvelope 引用此类型
-type MarketFactEnvelope = MarketEventEnvelope
+func (k InstrumentKey) Validate() error {
+	if k.Venue == "" || k.Symbol == "" {
+		return fmt.Errorf("domain-market: InstrumentKey Venue/Symbol required")
+	}
+	if !k.ProductLine.IsValid() {
+		return fmt.Errorf("domain-market: invalid ProductLine: %s", k.ProductLine)
+	}
+	if k.ProductLine == ProductLineOption && (k.Expiry == nil || k.Strike == nil || k.OptionType == "") {
+		return fmt.Errorf("domain-market: options require Expiry/Strike/OptionType")
+	}
+	return nil
+}
+
+// MarketFactEnvelope canonical normalized market fact wrapper
+type MarketFactEnvelope struct {
+	EventID      string
+	InstrumentKey InstrumentKey
+	EventType    string            // trade/kline/bookTicker/depthUpdate/markPrice/fundingRate/openInterest/longShortRatio
+	EventTime    time.Time
+	ReceivedAt   time.Time
+	AvailableAt  time.Time
+	DecisionTime time.Time
+	Payload      interface{}
+	Quality      MarketDataQuality
+	Source       string
+}
+
+func (e MarketFactEnvelope) Validate() error {
+	if e.InstrumentKey.Venue == "" || e.EventType == "" || e.Source == "" {
+		return fmt.Errorf("domain-market: MarketFactEnvelope required fields missing")
+	}
+	if e.EventTime.IsZero() || e.ReceivedAt.IsZero() {
+		return fmt.Errorf("domain-market: MarketFactEnvelope time fields required")
+	}
+	return nil
+}
+
+// MarketEventEnvelope deprecated alias for MarketFactEnvelope
+type MarketEventEnvelope = MarketFactEnvelope
 
 type MarketDataQuality struct {
     Channel       string
