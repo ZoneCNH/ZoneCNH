@@ -36,7 +36,7 @@ Last-Updated: 2026-06-09
 
 推荐所有模块使用以下最小列集。已有模块可以增加 `Evidence`、`Owner`、`Source` 等列，但不得删除核心列。
 
-| Requirement   | Description          | Acceptance Criteria   | Test Case        | Task     | Status   |
+| Requirement   | Description          | Acceptance Criteria   | Test Case / TC ID(s) | Task     | Status   |
 | ------------- | -------------------- | --------------------- | ---------------- | -------- | -------- |
 | FR-001        | 用户可观察的功能需求 | AC-001                | TC-001           | TASK-001 | Pending  |
 | BR-001        | 业务约束或工程规则   | AC-010                | CI Gate / TC-010 | TASK-002 | Pending  |
