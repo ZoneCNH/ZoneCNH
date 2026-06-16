@@ -14,7 +14,7 @@ Bind the client implementation to the now-closed upstream contracts and domain s
 - Generate/import contracts-owned `MarketDataService` client bindings from `module/contracts/SPEC.md` §8.4.
 - Emit `IngestRequest` 12 fields: `request_id`, `source`, `product_line`, `instrument_key`, `event_type`, `event_time`, `received_at`, `schema_version`, `payload`, `sequence`, `ordering_key`, `source_metadata`.
 - Map Binance-native product lines and symbols to domain-market `InstrumentKey` (12 dimensions) and `MarketFactEnvelope` (time semantics: EventTime/ReceivedAt/AvailableAt/DecisionTime).
-- Use contract-defined `RejectCode` enum (9 codes) for error classification.
+- Use contract-defined `RejectCode` enum (10 codes) for error classification.
 - Preserve ACK-only checkpoint advancement per BOUNDARY-GATES §9.
 
 ## Acceptance Criteria
@@ -24,4 +24,4 @@ Bind the client implementation to the now-closed upstream contracts and domain s
 3. Idempotency keys include `exchange + product_line + instrument_key + event_type + event_time + source_sequence + payload_fingerprint` dimensions (§7 BR-007).
 4. Checkpoint advances only on durable accepted/duplicate ACK per BOUNDARY-GATES §9.
 5. RejectCode `retryable` → exponential backoff retry; `terminal_validation`/`terminal_conflict` → logged + skipped.
-6. Server `contract_violation`/`quality_gate`/`ordering_violation` rejects are surfaced in client observability.
+6. Server `contract_violation`/`quality_rejected`/`ordering_violation`/`unsupported_channel` rejects are surfaced in client observability.
