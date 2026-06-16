@@ -198,7 +198,7 @@ market-data 文档使用 camelCase 风格描述字段语义；在下游实现中
 - [x] **Domain Gate 通过**: `module/domain-market/SPEC.md` v1.0.1 已定义 `ProductLine`(spot/um_perp/cm_perp/option)、`InstrumentKey`(11字段)、`MarketFactEnvelope`(=MarketEventEnvelope) 类型，语义已补充（docs baseline）；运行时冻结待 domain-market 发布。
 - [x] **Adapter Gate 通过**: `module/binance/SPEC.md` 的 OQ-001（contracts wire 就绪？）已关闭（contracts §8.4）；OQ-002（market-data dispatch port 就绪？）已关闭（market-data SPEC v1.0.0 DownstreamDispatchPort 语义 + 12 字段 + 8 种 reject reason + binance reject 映射规则）。
 - [x] **Reject Mapping 验证**: `MapBinanceReject` 已存在于 `github.com/ZoneCNH/market-data`（dispatch.go），6 种 binance code 转换规则已实现。`terminal_validation` 子类细分待后续补全。
-- [ ] **Naming Mapping 验证**: 当前实现使用 string/interface{} 占位，尚未 import `domain-market` canonical 类型（ProductLine/InstrumentKey/MarketFactEnvelope）。待 domain-market Go 模块发布后引入。
+- [x] **Naming Mapping 验证**: `dispatch.go` 已 import `github.com/ZoneCNH/domain-market`，ProductLine 使用 `domainmarket.ProductLine`，InstrumentKey 使用 `domainmarket.InstrumentKey`。Payload 仍为 `interface{}`（domain-market 尚未在 Go 中实现 MarketFactEnvelope struct）。
 - [ ] **Test Gate 通过**: 0 个 `_test.go`。待 TC-MD-003~008 实现。CI 配置已就绪（`go test -race`）。
 - [x] `module/binance` 不再将 `module/contracts`、`module/domain-market`、`module/market-data` 列为 Blocking（§22 已重命名为 Resolved (was Blocking)，OQ-001/OQ-002 已关闭）。
 
