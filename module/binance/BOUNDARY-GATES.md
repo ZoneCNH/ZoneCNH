@@ -4,7 +4,7 @@
 
 Boundary gates prevent `module/binance` from expanding beyond its intended ownership.
 
-They must be executable in CI.
+This document provides suggested, CI-ready check snippets. They are not evidence that repository CI already executes them; a later implementation PR must copy them into versioned scripts or workflow jobs before claiming executable CI coverage.
 
 ## 2. Gate: No Legacy binance-market
 

@@ -1,3 +1,18 @@
+---
+task_id: TASK-BINANCE-SERVER-006
+related_requirements:
+  - FR-008
+scope: >
+  Endpoints:
+acceptance_criteria:
+  - "`/healthz` reports process liveness."
+  - "`/readyz` verifies ingest server and downstream dispatch readiness."
+  - "`/debug/*` is read-only."
+  - "`/admin/*` mutates server-local state only."
+  - "admin cannot mutate client connector state."
+  - "admin cannot bypass idempotency."
+  - "no endpoint exposes secrets."
+---
 # TASK-BINANCE-SERVER-006 Gin Admin
 
 ## Objective
@@ -14,6 +29,12 @@ Endpoints:
 /debug/*
 /admin/*
 ```
+
+
+## Non-scope
+
+- Does not change behavior outside `module/binance/server`.
+- Does not import or modify client internals.
 
 ## Deliverables
 

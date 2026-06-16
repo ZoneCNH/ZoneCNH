@@ -1,3 +1,17 @@
+---
+task_id: TASK-BINANCE-CLIENT-010
+related_requirements:
+  - FR-010
+scope: >
+  Endpoints:
+acceptance_criteria:
+  - "`/healthz` reports process liveness."
+  - "`/readyz` verifies client config, spool availability, and sender readiness."
+  - "`/debug/*` is read-only."
+  - "`/admin/*` mutates client-local state only."
+  - "no endpoint exposes API keys, secrets, signatures, or private config."
+  - "admin cannot mutate server state."
+---
 # TASK-BINANCE-CLIENT-010 Gin Admin
 
 ## Objective
@@ -14,6 +28,12 @@ Endpoints:
 /debug/*
 /admin/*
 ```
+
+
+## Non-scope
+
+- Does not change behavior outside `module/binance/client`.
+- Does not define canonical domain source of truth or server persistence semantics.
 
 ## Deliverables
 

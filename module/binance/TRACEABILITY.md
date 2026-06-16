@@ -5,7 +5,7 @@
 > 规范来源：`docs/governance/TRACEABILITY.md`
 
 - Matrix-Version: v1.0.0
-- Last-Updated: 2026-06-16
+- Last-Updated: 2026-06-17
 - Spec-Reference: `module/binance/SPEC.md` v1.0.0
 
 ---
@@ -14,13 +14,13 @@
 
 | FR ID | 功能需求 | AC | TC ID(s) | Task | 实现状态 |
 |-------|----------|-----|----------|------|----------|
-| FR-001 | Binance 数据采集：Client REST/WebSocket 采集全产品线行情数据 | AC-001, AC-002, AC-003 | TC-001 | TASK-BINANCE-ROOT-001, TASK-BINANCE-ROOT-002, TASK-BINANCE-ROOT-007 | Pending |
-| FR-002 | Canonical 事件映射：Binance 原生事件 → canonical MarketFactEnvelope | AC-004, AC-005 | TC-002 | TASK-BINANCE-ROOT-002, TASK-BINANCE-ROOT-004, TASK-BINANCE-ROOT-007 | Pending |
-| FR-003 | gRPC 流式投递：Bidirectional stream 向 server 投递 canonical events | AC-006, AC-007, AC-008 | TC-003 | TASK-BINANCE-ROOT-002, TASK-BINANCE-ROOT-005, TASK-BINANCE-ROOT-006, TASK-BINANCE-ROOT-007 | Pending |
-| FR-004 | 幂等接收：Server 对重复 event 执行幂等处理，不产生下游重复 | AC-009, AC-010, AC-011 | TC-004 | TASK-BINANCE-ROOT-003, TASK-BINANCE-ROOT-007 | Pending |
-| FR-005 | Checkpoint 推进：Client 仅在 durable ACK 后推进 checkpoint | AC-012, AC-013, AC-014 | TC-005, TC-006 | TASK-BINANCE-ROOT-002, TASK-BINANCE-ROOT-007 | Pending |
-| FR-006 | 产品线标识：Events 携带无碰撞 ProductLine 和 InstrumentKey | AC-015, AC-016 | TC-007 | TASK-BINANCE-ROOT-002, TASK-BINANCE-ROOT-004, TASK-BINANCE-ROOT-007 | Pending |
-| FR-007 | 管理端点：Client/Server 各自暴露 Gin admin HTTP 端点 | AC-017, AC-018, AC-019, AC-020 | TC-008, TC-009 | TASK-BINANCE-ROOT-002, TASK-BINANCE-ROOT-003, TASK-BINANCE-ROOT-007 | Pending |
+| FR-001 | Binance 数据采集：Client REST/WebSocket 采集全产品线行情数据 | AC-001, AC-002, AC-003 | TC-001 | TASK-BINANCE-001, TASK-BINANCE-003, TASK-BINANCE-008 | Pending |
+| FR-002 | Canonical 事件映射：Binance 原生事件 → canonical MarketFactEnvelope | AC-004, AC-005 | TC-002 | TASK-BINANCE-003, TASK-BINANCE-005, TASK-BINANCE-008 | Pending |
+| FR-003 | gRPC 流式投递：Bidirectional stream 向 server 投递 canonical events | AC-006, AC-007, AC-008 | TC-003 | TASK-BINANCE-003, TASK-BINANCE-006, TASK-BINANCE-007, TASK-BINANCE-008, TASK-BINANCE-009 | Pending |
+| FR-004 | 幂等接收：Server 对重复 event 执行幂等处理，不产生下游重复 | AC-009, AC-010, AC-011 | TC-004 | TASK-BINANCE-004, TASK-BINANCE-009 | Pending |
+| FR-005 | Checkpoint 推进：Client 仅在 durable ACK 后推进 checkpoint | AC-012, AC-013, AC-014 | TC-005, TC-006 | TASK-BINANCE-003, TASK-BINANCE-008 | Pending |
+| FR-006 | 产品线标识：Events 携带无碰撞 ProductLine 和 InstrumentKey | AC-015, AC-016 | TC-007 | TASK-BINANCE-003, TASK-BINANCE-005, TASK-BINANCE-008 | Pending |
+| FR-007 | 管理端点：Client/Server 各自暴露 Gin admin HTTP 端点 | AC-017, AC-018, AC-019, AC-020 | TC-008, TC-009 | TASK-BINANCE-003, TASK-BINANCE-004, TASK-BINANCE-010 | Pending |
 
 ---
 
@@ -28,17 +28,17 @@
 
 | BR ID | 业务规则 | 验证方式 | Task | 实现状态 |
 |-------|----------|----------|------|----------|
-| BR-001 | 禁止引用旧 `binance-market` 代码或模块 | CI Gate: `grep -r "binance-market" . --include="*.go"` — 零匹配 | TASK-BINANCE-ROOT-000 | Pending |
-| BR-002 | Client 不得 import server 内部包 | CI Gate: `go build ./client/...` + 边界门禁测试 `TestBoundaryGates` | TASK-BINANCE-ROOT-002, TASK-BINANCE-ROOT-007 | Pending |
-| BR-003 | Server 不得 import client 内部包 | CI Gate: `go build ./server/...` + 边界门禁测试 `TestBoundaryGates` | TASK-BINANCE-ROOT-003, TASK-BINANCE-ROOT-007 | Pending |
-| BR-004 | Client/server 通信必须使用 `contracts` 定义的 gRPC | CI Gate: proto 导入路径检查 + `go build` 编译验证 | TASK-BINANCE-ROOT-005, TASK-BINANCE-ROOT-007 | Pending |
-| BR-005 | Domain 语义必须来自 `module/domain-market` | CI Gate: import 路径检查 — 禁止自行定义 InstrumentKey / ProductLine / MarketFactEnvelope 等类型 | TASK-BINANCE-ROOT-004, TASK-BINANCE-ROOT-007 | Pending |
-| BR-006 | Wire protocol 必须来自 `module/contracts` | CI Gate: proto 导入路径检查 — 禁止自行定义 proto | TASK-BINANCE-ROOT-005, TASK-BINANCE-ROOT-007 | Pending |
-| BR-007 | Product line × instrument 组合必须全局无碰撞 | TC-007: 跨 product line 同 symbol 的 InstrumentKey 不相等 | TASK-BINANCE-ROOT-004, TASK-BINANCE-ROOT-007 | Pending |
-| BR-008 | Secrets（API Key / Secret）不得出现在 log、debug 端点、admin 端点输出中 | CI Gate: `gitleaks detect --no-git` + 代码审查 | TASK-BINANCE-ROOT-007 | Pending |
-| BR-009 | Client 不得在收到 `durable_acceptance=true` 前推进 checkpoint | TC-005, TC-006: ACK 语义单元测试 | TASK-BINANCE-ROOT-002, TASK-BINANCE-ROOT-007 | Pending |
-| BR-010 | `module/binance` 不得拥有 storage / query / strategy 逻辑 | CI Gate: import 路径检查 — 禁止导入 storage/query/strategy 相关包 | TASK-BINANCE-ROOT-001, TASK-BINANCE-ROOT-007 | Pending |
-| BR-011 | Admin 端点对外暴露时必须认证 | TC-009 + admin auth 集成测试: 无认证访问 `/admin/*` → 401 | TASK-BINANCE-ROOT-002, TASK-BINANCE-ROOT-003, TASK-BINANCE-ROOT-007 | Pending |
+| BR-001 | 禁止引用旧 `binance-market` 代码或模块 | CI Gate: `grep -r "binance-market" . --include="*.go"` — 零匹配 | TASK-BINANCE-000 | Pending |
+| BR-002 | Client 不得 import server 内部包 | CI Gate: `go build ./client/...` + 边界门禁测试 `TestBoundaryGates` | TASK-BINANCE-003, TASK-BINANCE-008, TASK-BINANCE-010 | Pending |
+| BR-003 | Server 不得 import client 内部包 | CI Gate: `go build ./server/...` + 边界门禁测试 `TestBoundaryGates` | TASK-BINANCE-004, TASK-BINANCE-009, TASK-BINANCE-010 | Pending |
+| BR-004 | Client/server 通信必须使用 `contracts` 定义的 gRPC | CI Gate: proto 导入路径检查 + `go build` 编译验证 | TASK-BINANCE-006, TASK-BINANCE-008, TASK-BINANCE-009 | Pending |
+| BR-005 | Domain 语义必须来自 `module/domain-market` | CI Gate: import 路径检查 — 禁止自行定义 InstrumentKey / ProductLine / MarketFactEnvelope 等类型 | TASK-BINANCE-005, TASK-BINANCE-008, TASK-BINANCE-009 | Pending |
+| BR-006 | Wire protocol 必须来自 `module/contracts` | CI Gate: proto 导入路径检查 — 禁止自行定义 proto | TASK-BINANCE-006, TASK-BINANCE-008, TASK-BINANCE-009 | Pending |
+| BR-007 | Product line × instrument 组合必须全局无碰撞 | TC-007: 跨 product line 同 symbol 的 InstrumentKey 不相等 | TASK-BINANCE-005, TASK-BINANCE-008 | Pending |
+| BR-008 | Secrets（API Key / Secret）不得出现在 log、debug 端点、admin 端点输出中 | CI Gate: `gitleaks detect --no-git` + 代码审查 | TASK-BINANCE-010 | Pending |
+| BR-009 | Client 不得在收到 `durable_acceptance=true` 前推进 checkpoint | TC-005, TC-006: ACK 语义单元测试 | TASK-BINANCE-003, TASK-BINANCE-008 | Pending |
+| BR-010 | `module/binance` 不得拥有 storage / query / strategy 逻辑 | CI Gate: import 路径检查 — 禁止导入 storage/query/strategy 相关包 | TASK-BINANCE-001, TASK-BINANCE-010 | Pending |
+| BR-011 | Admin 端点对外暴露时必须认证 | TC-009 + admin auth 集成测试: 无认证访问 `/admin/*` → 401 | TASK-BINANCE-003, TASK-BINANCE-004, TASK-BINANCE-010 | Pending |
 
 ---
 
@@ -114,7 +114,7 @@
 | 非功能需求 (NFR) | 13 | 13 | 100% | NFR-001 ~ NFR-013 全部有验证方式 |
 | 测试用例 (TC) | 9 | 9 | 100% | TC-001 ~ TC-009 全部有对应 FR/BR |
 | 验收标准 (AC) | 20 | 20 | 100% | AC-001 ~ AC-020 全部有验证方式 |
-| 任务 (Task) | 8 | — | — | TASK-BINANCE-ROOT-000 ~ 007 |
+| 任务 (Task) | 11 | — | — | TASK-BINANCE-000 ~ 010 |
 | FR→TC 覆盖率 | — | 7/7 | 100% | 每个 FR 至少 1 个 TC |
 | BR→验证覆盖率 | — | 11/11 | 100% | 每个 BR 至少 1 个 CI Gate 或 TC |
 | AC→验证覆盖率 | — | 20/20 | 100% | 每个 AC 有明确验证方式 |
@@ -126,4 +126,4 @@
 
 | 日期 | 版本 | 变更内容 | 作者 |
 |------|------|----------|------|
-| 2026-06-16 | v1.0.0 | 从零创建 §1-§7 标准追溯矩阵；从 SPEC.md v1.0.0 提取 FR-001~007、BR-001~011、TC-001~009、NFR-001~013、AC-001~020；映射 TASK-BINANCE-ROOT-000~007 | ZoneCNH |
+| 2026-06-17 | v1.0.0 | 从零创建 §1-§7 标准追溯矩阵；从 SPEC.md v1.0.0 提取 FR-001~007、BR-001~011、TC-001~009、NFR-001~013、AC-001~020；映射 TASK-BINANCE-000~010 | ZoneCNH |

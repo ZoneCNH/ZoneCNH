@@ -1,3 +1,19 @@
+---
+task_id: TASK-BINANCE-SERVER-009
+related_requirements:
+  - FR-001
+  - FR-002
+  - FR-003
+  - FR-004
+  - FR-005
+  - FR-006
+  - FR-007
+  - FR-008
+scope: >
+  Implement contracts-generated `MarketDataService.Ingest` server from `module/contracts/SPEC.md` §8.4.
+acceptance_criteria:
+  - "Scorer-compatible task acceptance remains traceable to the linked requirement IDs."
+---
 # TASK-BINANCE-SERVER-009 Implementation Readiness — Dispatch Binding
 
 - Status: Ready
@@ -17,6 +33,12 @@ Bind the server implementation to contracts-owned ingest types and market-data-o
 - Dispatch accepted facts through `market-data.DownstreamDispatchPort` per `module/market-data/SPEC.md` §4.
 - Map binance-native reject classifications to market-data unified reasons per market-data §4.4.1.
 - Emit durable ACK only after receiver `DispatchAck` / idempotent ack result or durable server outbox write.
+
+
+## Non-scope
+
+- Does not change behavior outside `module/binance/server`.
+- Does not import or modify client internals.
 
 ## Acceptance Criteria
 

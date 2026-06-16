@@ -1,3 +1,21 @@
+---
+task_id: TASK-BINANCE-CLIENT-013
+related_requirements:
+  - FR-001
+  - FR-002
+  - FR-003
+  - FR-004
+  - FR-005
+  - FR-006
+  - FR-007
+  - FR-008
+  - FR-009
+  - FR-010
+scope: >
+  Generate/import contracts-owned `MarketDataService` client bindings from `module/contracts/SPEC.md` §8.4.
+acceptance_criteria:
+  - "Scorer-compatible task acceptance remains traceable to the linked requirement IDs."
+---
 # TASK-BINANCE-CLIENT-013 Implementation Readiness — Contracts and Domain Bindings
 
 - Status: Ready
@@ -16,6 +34,12 @@ Bind the client implementation to the now-closed upstream contracts and domain s
 - Map Binance-native product lines and symbols to domain-market `InstrumentKey` (12 dimensions) and `MarketFactEnvelope` (time semantics: EventTime/ReceivedAt/AvailableAt/DecisionTime).
 - Use contract-defined `RejectCode` enum (9 codes) for error classification.
 - Preserve ACK-only checkpoint advancement per BOUNDARY-GATES §9.
+
+
+## Non-scope
+
+- Does not change behavior outside `module/binance/client`.
+- Does not define canonical domain source of truth or server persistence semantics.
 
 ## Acceptance Criteria
 

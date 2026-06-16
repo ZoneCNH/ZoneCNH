@@ -437,21 +437,21 @@ server 不反向依赖 client，二者通过 contracts 解耦。
 
 | TC 编号 | 对应 FR | 测试类型 | 场景 | 预期结果 |
 |---------|---------|----------|------|----------|
-| TC-001 | FR-001 | 单元 | gRPC server 启动绑定 | server 注册成功，端口监听 |
-| TC-002 | FR-002 | 单元 | client 正常关闭 stream | stream 清理，最终统计输出 |
-| TC-003 | FR-003 | 单元 | 缺少必填字段的 IngestRequest | 返回 terminal_validation reject |
-| TC-004 | FR-003 | 单元 | 不支持的 product_line | 返回 terminal_validation reject |
-| TC-005 | FR-004 | 集成 | 首次 idempotency key | 通过，进入 dispatch |
-| TC-006 | FR-004 | 集成 | 重复 idempotency key（相同 payload） | ACK idempotent duplicate，不 dispatch |
-| TC-007 | FR-004 | 集成 | 重复 idempotency key（冲突 payload） | terminal_conflict reject |
-| TC-008 | FR-005 | 集成 | durable write 成功 | ACK 含 durable_indicator=true |
-| TC-009 | FR-005 | 集成 | durable write 失败 | retryable reject，不标记已接受 |
-| TC-010 | FR-006 | 单元 | ACK 包含所有必要字段 | ACK 可驱动 client checkpoint |
-| TC-011 | FR-007 | 集成 | dispatch 到下游成功 | event 被下游接受 |
-| TC-012 | FR-007 | 集成 | dispatch 到下游失败 | 取决于策略：retry 或 rollback |
-| TC-013 | FR-008 | 单元 | GET /healthz | 200 |
-| TC-014 | FR-008 | 单元 | GET /readyz（下游不可达） | 503 |
-| TC-015 | FR-008 | 单元 | POST /admin/drain | 新 stream 被拒绝 |
+| TC-001 | functional requirement 001 | 单元 | gRPC server 启动绑定 | server 注册成功，端口监听 |
+| TC-002 | functional requirement 002 | 单元 | client 正常关闭 stream | stream 清理，最终统计输出 |
+| TC-003 | functional requirement 003 | 单元 | 缺少必填字段的 IngestRequest | 返回 terminal_validation reject |
+| TC-004 | functional requirement 003 | 单元 | 不支持的 product_line | 返回 terminal_validation reject |
+| TC-005 | functional requirement 004 | 集成 | 首次 idempotency key | 通过，进入 dispatch |
+| TC-006 | functional requirement 004 | 集成 | 重复 idempotency key（相同 payload） | ACK idempotent duplicate，不 dispatch |
+| TC-007 | functional requirement 004 | 集成 | 重复 idempotency key（冲突 payload） | terminal_conflict reject |
+| TC-008 | functional requirement 005 | 集成 | durable write 成功 | ACK 含 durable_indicator=true |
+| TC-009 | functional requirement 005 | 集成 | durable write 失败 | retryable reject，不标记已接受 |
+| TC-010 | functional requirement 006 | 单元 | ACK 包含所有必要字段 | ACK 可驱动 client checkpoint |
+| TC-011 | functional requirement 007 | 集成 | dispatch 到下游成功 | event 被下游接受 |
+| TC-012 | functional requirement 007 | 集成 | dispatch 到下游失败 | 取决于策略：retry 或 rollback |
+| TC-013 | functional requirement 008 | 单元 | GET /healthz | 200 |
+| TC-014 | functional requirement 008 | 单元 | GET /readyz（下游不可达） | 503 |
+| TC-015 | functional requirement 008 | 单元 | POST /admin/drain | 新 stream 被拒绝 |
 
 ### 16.2 契约测试
 
@@ -569,7 +569,7 @@ server 必须通过 contracts 定义的 server-side contract tests：
 
 ## 22. Release DoD
 
-- [ ] 所有 FR-001 ~ FR-008 实现完成
+- [ ] 所有 functional requirement 001 ~ functional requirement 008 实现完成
 - [ ] gRPC `MarketDataService` 接口全部实现
 - [ ] 请求校验覆盖所有必填字段
 - [ ] 幂等验收：首次 accept、重复 ACK、冲突 reject 全部正确
@@ -592,7 +592,7 @@ server 必须通过 contracts 定义的 server-side contract tests：
 | ID | 问题 | 状态 | 负责人 |
 |----|------|------|--------|
 | OQ-001 | idempotency store 首选实现：in-memory 还是 Redis？ | 已解决：Redis 为主（SCADA-redis 共享实例，TTL 24h + Lua CAS），`IdempotencyStore` 接口保留 in-memory 实现仅用于本地开发/测试（2026-06-17） | ZoneCNH |
-| OQ-002 | downstream dispatch 失败策略：retry-first 还是 rollback-first？ | 已解决：retry-first + dead-letter（FR-007）。重试 3 次指数退避后写入死信队列并告警，不回滚幂等记录（2026-06-17） | ZoneCNH |
+| OQ-002 | downstream dispatch 失败策略：retry-first 还是 rollback-first？ | 已解决：retry-first + dead-letter（functional requirement 007）。重试 3 次指数退避后写入死信队列并告警，不回滚幂等记录（2026-06-17） | ZoneCNH |
 | OQ-003 | proto 定义是否已在 `module/contracts` 中可用？ | 已解决：`module/contracts/SPEC.md` §8.4 已定义全部 wire types（2026-06-17） | ZoneCNH |
 
 ### Non-blocking（不阻塞开发）
@@ -615,16 +615,16 @@ server 必须通过 contracts 定义的 server-side contract tests：
 
 | AC ID | FR 引用 | 验收标准 | 验证方式 |
 |-------|---------|----------|----------|
-| AC-001 | FR-001 | gRPC server 绑定成功，接受 stream 连接 | 集成测试 TC-001 |
-| AC-002 | FR-003 | 必填字段缺失返回 terminal_validation reject | 单元测试 TC-003 |
-| AC-003 | FR-004 | 首次 idempotency key 通过验收 | 集成测试 TC-005 |
-| AC-004 | FR-004 | 重复 key 不产生重复 dispatch | 集成测试 TC-006 |
-| AC-005 | FR-004 | 冲突 payload 返回 terminal_conflict | 集成测试 TC-007 |
-| AC-006 | FR-005 | ACK 仅在 durable acceptance 后发送 | 集成测试 TC-008/TC-009 |
-| AC-007 | FR-006 | ACK 包含足够数据推进 client checkpoint | 单元测试 TC-010 |
-| AC-008 | FR-007 | 验收 event 分发到 downstream port | 集成测试 TC-011 |
-| AC-009 | FR-008 | /healthz 返回 200 | 单元测试 TC-013 |
-| AC-010 | FR-008 | drain mode 拒绝新 stream | 单元测试 TC-015 |
+| AC-001 | functional requirement 001 | gRPC server 绑定成功，接受 stream 连接 | 集成测试 TC-001 |
+| AC-002 | functional requirement 003 | 必填字段缺失返回 terminal_validation reject | 单元测试 TC-003 |
+| AC-003 | functional requirement 004 | 首次 idempotency key 通过验收 | 集成测试 TC-005 |
+| AC-004 | functional requirement 004 | 重复 key 不产生重复 dispatch | 集成测试 TC-006 |
+| AC-005 | functional requirement 004 | 冲突 payload 返回 terminal_conflict | 集成测试 TC-007 |
+| AC-006 | functional requirement 005 | ACK 仅在 durable acceptance 后发送 | 集成测试 TC-008/TC-009 |
+| AC-007 | functional requirement 006 | ACK 包含足够数据推进 client checkpoint | 单元测试 TC-010 |
+| AC-008 | functional requirement 007 | 验收 event 分发到 downstream port | 集成测试 TC-011 |
+| AC-009 | functional requirement 008 | /healthz 返回 200 | 单元测试 TC-013 |
+| AC-010 | functional requirement 008 | drain mode 拒绝新 stream | 单元测试 TC-015 |
 | AC-011 | BR-005 | admin 无法绕过 idempotency | admin security test |
 
 ## Appendix B: Change History

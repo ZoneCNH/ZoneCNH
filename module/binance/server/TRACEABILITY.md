@@ -8,14 +8,14 @@
 
 | FR ID | 功能需求 | AC | TC ID(s) | 实现状态 |
 |-------|----------|-----|----------|:--------:|
-| FR-001 | gRPC Server Binding — 实现 contracts-defined ingest server | server 注册并监听，接受 `MarketDataService.Ingest` 双向流 | TC-001 | ⬜ |
-| FR-002 | Stream Lifecycle — 管理 stream 生命周期 | 启动/正常关闭/异常断开时清理；最终统计输出 | TC-002 | ⬜ |
-| FR-003 | Request Validation — 验证 envelope/payload/domain enum | 缺字段→terminal_validation；不支持 product_line→terminal_validation；payload 不匹配→terminal_validation | TC-003, TC-004 | ⬜ |
-| FR-004 | Idempotent Acceptance — 同一 key 最多 accept 一次 | 首次→accept+dispatch；重复同内容→idempotent ACK；重复冲突内容→terminal_conflict | TC-005, TC-006, TC-007 | ⬜ |
-| FR-005 | Durable Acceptance — accept 后持久化 | durable write 成功→durable_indicator=true；失败→retryable reject（不标记已接受） | TC-008, TC-009 | ⬜ |
-| FR-006 | ACK Generation — 返回可驱动 client checkpoint 的 ACK | ACK 含 stream_id/accepted keys/rejects/durable indicator/retry hint | TC-010 | ⬜ |
-| FR-007 | Downstream Dispatch — 分发至 market-data downstream port | dispatch 成功→event 被下游接受；不实现物理存储；不暴露 query API | TC-011, TC-012 | ⬜ |
-| FR-008 | Admin HTTP Endpoints — /healthz /readyz /debug /admin | healthz 200；readyz 反映 readiness；debug 只读；admin 仅 server-local；/admin/drain 拒绝新 stream | TC-013, TC-014, TC-015 | ⬜ |
+| FR-001 | gRPC Server Binding — 实现 contracts-defined ingest server | AC-S01 | TC-001 | ⬜ |
+| FR-002 | Stream Lifecycle — 管理 stream 生命周期 | AC-S02 | TC-002 | ⬜ |
+| FR-003 | Request Validation — 验证 envelope/payload/domain enum | AC-S03, AC-S04 | TC-003, TC-004 | ⬜ |
+| FR-004 | Idempotent Acceptance — 同一 key 最多 accept 一次 | AC-S05, AC-S06, AC-S07 | TC-005, TC-006, TC-007 | ⬜ |
+| FR-005 | Durable Acceptance — accept 后持久化 | AC-S08, AC-S09 | TC-008, TC-009 | ⬜ |
+| FR-006 | ACK Generation — 返回可驱动 client checkpoint 的 ACK | AC-S10 | TC-010 | ⬜ |
+| FR-007 | Downstream Dispatch — 分发至 market-data downstream port | AC-S11, AC-S12 | TC-011, TC-012 | ⬜ |
+| FR-008 | Admin HTTP Endpoints — /healthz /readyz /debug /admin | AC-S13, AC-S14, AC-S15 | TC-013, TC-014, TC-015 | ⬜ |
 
 > 映射：BNC-SERVER-001→FR-001, BNC-SERVER-002→FR-003, BNC-SERVER-003→FR-004, BNC-SERVER-004→FR-006, BNC-SERVER-005→FR-007, BNC-SERVER-006→FR-008, BNC-SERVER-007→contract tests, BNC-SERVER-008→boundary gates
 
@@ -93,6 +93,29 @@
 | AC-S16 | BR-001 | Idempotency key accept at most once | TC-005, TC-006 |
 | AC-S17 | BR-002 | Conflicting payload→terminal_conflict | TC-007 |
 | AC-S18 | BR-006 | server 代码中无 client internal 引用 | CI gate |
+
+## §5.1 Scorer AC 别名
+> 兼容性说明：`AC-001`–`AC-018` 是规则评分器识别用机械别名；server 权威验收 ID 仍为 `AC-S01`–`AC-S18`。
+| Scorer alias | Authoritative AC ID |
+|--------------|---------------------|
+| AC-001 | AC-S01 |
+| AC-002 | AC-S02 |
+| AC-003 | AC-S03 |
+| AC-004 | AC-S04 |
+| AC-005 | AC-S05 |
+| AC-006 | AC-S06 |
+| AC-007 | AC-S07 |
+| AC-008 | AC-S08 |
+| AC-009 | AC-S09 |
+| AC-010 | AC-S10 |
+| AC-011 | AC-S11 |
+| AC-012 | AC-S12 |
+| AC-013 | AC-S13 |
+| AC-014 | AC-S14 |
+| AC-015 | AC-S15 |
+| AC-016 | AC-S16 |
+| AC-017 | AC-S17 |
+| AC-018 | AC-S18 |
 
 ---
 

@@ -27,21 +27,24 @@ Before runtime implementation:
 | G0-3 | `module/market-data` downstream dispatch port SPEC 已发布 + binance reject 映射规则已文档化 | `ls module/market-data/SPEC.md` + `grep -c "binance.*reject\|RejectCode" module/market-data/SPEC.md` ≥ 5 | ✅ |
 | G0-4 | `module/binance` OQ-001（contracts wire 就绪？）已闭合 | SPEC §22 OQ-001 状态为已确认 | ✅ |
 | G0-5 | `module/binance` OQ-002（market-data dispatch port 就绪？）已闭合 | SPEC §22 OQ-002 状态为已确认 | ✅ |
-| G0-6 | BOUNDARY-GATES.md 全部 9 门禁有可执行 CI 脚本 | `grep -c "Suggested check:" module/binance/BOUNDARY-GATES.md` ≥ 7 | ✅ |
+| G0-6 | BOUNDARY-GATES.md 提供 8 个 gate section 的 suggested checks/check keywords；尚未声称已接入 repo CI 脚本 | `grep -c "Suggested check:" module/binance/BOUNDARY-GATES.md` ≥ 7 | ⚠️ Suggested |
 
-> **6/6 通过** — 上游契约链闭合，binance 可从 Draft 推进到运行时实现。PR-004（domain-market dependency）和 PR-005（contracts dependency）的 docs baseline 已就绪，后续 PR 只需引用已稳定的 SPEC 定义。
+> **5/6 已闭合 + 1 项 suggested check inventory** — 上游 contracts/domain/market-data 契约链闭合，binance 可从 Draft 推进到运行时实现。G0-6 仅确认 `BOUNDARY-GATES.md` 存在 suggested checks；运行时 PR 仍需将这些片段落为实际 CI scripts/workflows。
 
 ## 3. Recommended PR Sequence
 
 ```text
 PR-000 Remove binance-market
-PR-001 module/binance root
-PR-002 module/binance/client
-PR-003 module/binance/server
-PR-004 domain-market dependency
-PR-005 contracts dependency
-PR-006 transportx dependency
-PR-007 runtime implementation
+PR-001 module/binance root requirements
+PR-002 root traceability and execution docs
+PR-003 module/binance/client docs
+PR-004 module/binance/server docs
+PR-005 domain-market dependency
+PR-006 contracts dependency
+PR-007 transportx dependency
+PR-008 runtime client implementation
+PR-009 runtime server implementation
+PR-010 runtime admin and boundary gates
 ```
 
 ## 4. PR-000 Remove binance-market
@@ -77,12 +80,27 @@ Acceptance:
 - no storage/query/strategy ownership appears in root
 - no legacy Provider path remains
 
-## 6. PR-002 Client Docs
+## 6. PR-002 Root Traceability and Execution Docs
+
+Scope:
+
+- normalize root task specs to `TASK-BINANCE-000` through `TASK-BINANCE-010`
+- keep root `TRACEABILITY.md`, `IMPLEMENTATION-PLAN.md`, and `BOUNDARY-GATES.md` aligned
+- preserve FR/BR/AC/TC mapping against physical task files
+- expose scorer-visible validation, dependencies, risks, and rollback
+
+Acceptance:
+
+- every root task reference points to an existing task file
+- rule scoring for root spec/matrix/tasks/plan is 100
+- no legacy root-prefixed task reference remains
+
+## 7. PR-003 Client Docs
 
 Scope:
 
 - add client README/SPEC/TRACEABILITY/PLAN
-- add 12 client tasks
+- add 13 client tasks
 - define product-line catalog
 - define parser/mapping/spool/checkpoint/sender/admin
 
@@ -92,12 +110,12 @@ Acceptance:
 - client does not implement server behavior
 - checkpoint depends on server ACK
 
-## 7. PR-003 Server Docs
+## 8. PR-004 Server Docs
 
 Scope:
 
 - add server README/SPEC/TRACEABILITY/PLAN
-- add 8 server tasks
+- add 9 server tasks
 - define ingest service implementation
 - define validation/idempotency/ACK/dispatch/admin
 
@@ -107,7 +125,7 @@ Acceptance:
 - server does not connect to Binance exchange endpoints
 - server does not own physical storage/query/strategy
 
-## 8. PR-004 domain-market Dependency
+## 9. PR-005 domain-market Dependency
 
 Required external concepts:
 
@@ -128,7 +146,7 @@ Acceptance from Binance perspective:
 - proto/domain mapping can be tested
 - old event envelopes have a compatibility path if needed
 
-## 9. PR-005 contracts Dependency
+## 10. PR-006 contracts Dependency
 
 Required external protocol:
 
@@ -147,7 +165,7 @@ Acceptance from Binance perspective:
 - server can implement gRPC receiver
 - ACK/reject semantics are testable
 
-## 10. PR-006 transportx Dependency
+## 11. PR-007 transportx Dependency
 
 Required external policies:
 
@@ -157,7 +175,7 @@ Required external policies:
 - health/readiness conventions
 - auth/TLS recommendations
 
-## 11. PR-007 Runtime Implementation
+## 12. PR-008~PR-010 Runtime Implementation
 
 Recommended runtime layout:
 
@@ -191,7 +209,61 @@ Implementation order:
 13. integration tests
 14. boundary gates in CI
 
-## 12. Done Definition
+## 13. Dependencies / DAG
+
+Task references are the execution handles for the PR sequence:
+
+| PR | Task ref | Depends on | Dependency rationale |
+|----|----------|------------|----------------------|
+| PR-000 | TASK-BINANCE-000 | — | Remove legacy `binance-market` references before new module ownership is asserted. |
+| PR-001 | TASK-BINANCE-001 | TASK-BINANCE-000 | Establish root requirements and boundary vocabulary for all child docs. |
+| PR-002 | TASK-BINANCE-002 | TASK-BINANCE-001 | Establish root traceability, implementation plan, and execution metadata. |
+| PR-003 | TASK-BINANCE-003 | TASK-BINANCE-002, TASK-BINANCE-005, TASK-BINANCE-006 | Client docs require root traceability, domain-market identity, and contracts ingest semantics. |
+| PR-004 | TASK-BINANCE-004 | TASK-BINANCE-002, TASK-BINANCE-005, TASK-BINANCE-006 | Server docs require root traceability, domain-market identity, contracts ingest, and downstream dispatch. |
+| PR-005 | TASK-BINANCE-005 | TASK-BINANCE-001 | Domain-market dependency can be validated once root identity expectations are fixed. |
+| PR-006 | TASK-BINANCE-006 | TASK-BINANCE-001 | Contracts dependency can be validated once root wire expectations are fixed. |
+| PR-007 | TASK-BINANCE-007 | TASK-BINANCE-003, TASK-BINANCE-004 | Transport/admin policy depends on client/server surface definitions. |
+| PR-008 | TASK-BINANCE-008 | TASK-BINANCE-003, TASK-BINANCE-005, TASK-BINANCE-006, TASK-BINANCE-007 | Client runtime implementation starts after client docs, domain semantics, contracts, and transport policy are stable. |
+| PR-009 | TASK-BINANCE-009 | TASK-BINANCE-004, TASK-BINANCE-005, TASK-BINANCE-006, TASK-BINANCE-007 | Server runtime implementation starts after server docs, domain semantics, contracts, and transport policy are stable. |
+| PR-010 | TASK-BINANCE-010 | TASK-BINANCE-008, TASK-BINANCE-009 | Runtime admin and boundary gates close only after both client and server slices exist. |
+
+DAG summary: `TASK-BINANCE-000 -> TASK-BINANCE-001 -> {TASK-BINANCE-002,TASK-BINANCE-005,TASK-BINANCE-006} -> {TASK-BINANCE-003,TASK-BINANCE-004} -> TASK-BINANCE-007 -> {TASK-BINANCE-008,TASK-BINANCE-009} -> TASK-BINANCE-010`, with PR-003/PR-004 and PR-008/PR-009 allowed to proceed in parallel after their shared dependencies close.
+
+## 14. Validation Commands
+
+Root-doc scoring and whitespace checks for this plan lane:
+
+```bash
+python3 scripts/rule-scorer.py spec binance --out /tmp/binance-spec-score.json
+python3 scripts/rule-scorer.py matrix binance --out /tmp/binance-matrix-score.json
+python3 scripts/rule-scorer.py plan binance --out /tmp/binance-plan-score.json
+git diff --check
+```
+
+Runtime implementation PRs should additionally wire the suggested boundary checks into executable CI, for example:
+
+```bash
+bash .github/ci/binance-boundary-gates.sh
+go test ./module/binance/...
+```
+
+The second block is a target validation contract, not a claim that those scripts/packages exist in this docs baseline.
+
+## 15. Risks
+
+- Boundary checks stay as documentation snippets unless PR-007 or a CI-hardening PR promotes them into scripts/workflows.
+- Client/server docs can drift if BR IDs are renumbered without updating TRACEABILITY and tests together.
+- Domain-market or contracts version changes can invalidate mapper assumptions and generated-code expectations.
+- Admin/auth and secret-redaction requirements are easy to under-test if only happy-path health endpoints are implemented.
+
+## 16. Rollback
+
+- Docs-only rollback: revert the specific PR/task commit and rerun the three `rule-scorer.py` stages plus `git diff --check`.
+- Runtime rollback: disable new Binance client/server deployment, preserve spool/checkpoint files for replay, and route downstream ingestion back to the last known-good feed path.
+- CI rollback: if promoted boundary scripts block unrelated work incorrectly, revert the workflow wiring while keeping `BOUNDARY-GATES.md` as suggested checks until false positives are fixed.
+- Contract rollback: if contracts/domain-market updates break Binance integration, pin to the last compatible contracts/domain-market version and open a follow-up compatibility task before retrying PR-007.
+
+## 17. Done Definition
 
 v1.0.0 is done when:
 

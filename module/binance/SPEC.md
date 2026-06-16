@@ -1,9 +1,13 @@
 # module/binance SPEC
 
+## Metadata
+
 - Status: Docs Baseline Approved
+- Owner: ZoneCNH
+- Version: v1.0.0
+- Updated: 2026-06-17
 - Spec-Version: v1.0.0
 - Last-Updated: 2026-06-17
-- Owner: ZoneCNH
 - Layer: 数据域 · 行情
 - Module-Version: v1.0.0-spec
 - Repository: [github.com/ZoneCNH/binance](https://github.com/ZoneCNH/binance)
@@ -24,9 +28,9 @@
 | G0-3 | `module/market-data` DownstreamDispatchPort + 12 输入字段 + 8 种 reject reason + §4.4.1 binance reject 映射 | market-data SPEC v1.0.0 §4 | ✅ |
 | G0-4 | binance OQ-001（contracts wire 就绪？） | 已确认 (2026-06-17) | ✅ |
 | G0-5 | binance OQ-002（market-data dispatch port 就绪？） | 已确认 (2026-06-17) | ✅ |
-| G0-6 | BOUNDARY-GATES.md 全部 9 门禁有 CI 脚本 | 9/9 (2026-06-17) | ✅ |
+| G0-6 | BOUNDARY-GATES.md 定义 8 个 gate section 的 suggested checks/check keywords；尚未声称已接入 repo CI 脚本 | Suggested checks reviewed (2026-06-17) | ⚠️ Suggested |
 
-> **6/6 通过** — 上游契约链闭合。本 SPEC 处于 Docs Baseline Approved 状态，可进入运行时实现阶段（PR-007）。实现时必须严格遵循 contracts §8.4 wire types、domain-market §10 canonical semantics、market-data §4 dispatch port 契约。
+> **5/6 已闭合 + 1 项 suggested check inventory** — 上游 contracts/domain/market-data 契约链闭合。本 SPEC 处于 Docs Baseline Approved 状态，可进入运行时实现阶段（PR-007）。G0-6 仅确认 `BOUNDARY-GATES.md` 存在 suggested checks/check keywords；运行时 PR 必须先将这些片段落为实际 CI scripts/workflows 后，才可声称 boundary gates 已在 CI 执行。
 
 ---
 
@@ -76,6 +80,11 @@ Binance 行情集成面临以下问题：
 
 `module/binance` 明确不做以下事情：
 
+- 不定义 canonical domain model（ProductLine、InstrumentKey、MarketFactEnvelope 等）；这些语义由 `module/domain-market` 拥有。
+- 不定义 proto/gRPC wire contract；wire schema 与 code generation policy 由 `module/contracts` 拥有。
+- 不拥有 storage/query/strategy/order execution；采集后的中立处理交给 `module/market-data` 和下游域。
+- 不兼容或复活旧 `binance-market` Provider；迁移历史只能保留在 `docs/migrations/` 或 `CHANGELOG.md`。
+
 | 不做 | 原因 |
 |------|------|
 | 定义 canonical domain model（ProductLine/InstrumentKey 等） | 由 `module/domain-market` 拥有 |
@@ -97,7 +106,7 @@ Binance 行情集成面临以下问题：
 | `module/binance/client` | 通过 contracts-defined gRPC 调用 `module/binance/server` 的 `MarketDataService.Ingest` | 待实现 |
 | `module/binance/server` | 接收 client 发送的 `IngestRequest` 流 | 待实现 |
 | Operator / SRE | 通过 client/server Gin admin 端点监控和管理 | 待实现 |
-| CI Pipeline | 通过 BOUNDARY-GATES.md 中的 gate 脚本执行边界检查 | 待实现 |
+| CI Pipeline | 可将 BOUNDARY-GATES.md 中的 suggested checks 接入实际 CI；当前文档仅提供检查片段 | 待实现 |
 
 ---
 
@@ -212,42 +221,39 @@ Binance 行情集成面临以下问题：
 
 **违反时**：CI gate 失败，PR 不可合并。
 
-### BR-002: Client/Server Boundary
+### BR-002: Client Must Not Import Server Internals
 
-**规则**：client 不得 import server internal 包，server 不得 import client internal 包。
+**规则**：client 不得 import server internal 包。
 
-**约束**：
-- `module/binance/client` → 禁止 import `module/binance/server/*`
-- `module/binance/server` → 禁止 import `module/binance/client/*`
-- Runtime: `internal/client` → 禁止 import `internal/server`，反之亦然
+**约束**：`module/binance/client` 与 runtime `internal/client`/`cmd/binance-client` 只能依赖 contracts、domain-market、shared config/observability，不得依赖 `module/binance/server/*` 或 `internal/server`。
 
 **违反时**：CI boundary gate 失败。
 
-### BR-003: Checkpoint Requires ACK
+### BR-003: Server Must Not Import Client Internals
 
-**规则**：client checkpoint 仅可在 server 返回 durable ACK 后推进。
+**规则**：server 不得 import client internal 包。
 
-**约束**：禁止在 serialization 成功、local enqueue 成功、gRPC write 成功或 send attempt 成功后推进 checkpoint。
+**约束**：`module/binance/server` 与 runtime `internal/server`/`cmd/binance-server` 不得依赖 `module/binance/client/*`、`internal/client`、connector、spool 或 checkpoint 实现。
 
-**违反时**：spool 状态机拒绝 transition；重启后 checkpoint 回退到上一个 durable ACK 位置。
+**违反时**：CI boundary gate 失败。
 
-### BR-004: No Domain Ownership
+### BR-004: Contracts-Defined gRPC Only
+
+**规则**：client/server 通信必须使用 `module/contracts` 定义的 gRPC contract。
+
+**约束**：client 只能通过 generated contracts client 发送 ingest stream，server 只能实现 contracts server interface；禁止本模块自定义替代 wire API。
+
+**违反时**：proto/import gate 失败。
+
+### BR-005: Domain-Market Semantic Source
 
 **规则**：`module/binance` 不得定义 canonical domain semantics 的 source of truth。
 
-**约束**：`ProductLine`、`InstrumentKey`、`InstrumentType`、`MarketScope`、`OptionType`、`PriceKind` 等 canonical enum 必须来自 `module/domain-market`。Binance 可定义 exchange-specific parsing/mapping，但输出必须是对 domain-market 类型的引用。
+**约束**：`ProductLine`、`InstrumentKey`、`InstrumentType`、`MarketScope`、`OptionType`、`PriceKind`、`MarketFactEnvelope` 等 canonical 类型必须来自 `module/domain-market`。Binance 可定义 exchange-specific parsing/mapping，但输出必须引用 domain-market 类型。
 
 **违反时**：CI ownership gate 失败。
 
-### BR-005: No Storage/Query/Strategy Ownership
-
-**规则**：`module/binance` 不得拥有 storage engine、query API 或 strategy API。
-
-**约束**：server downstream dispatch port 只做 handoff，不实现物理存储。禁止引入 `github.com/ZoneCNH/storage`、`github.com/ZoneCNH/strategy` 作为 owned dependency。
-
-**违反时**：CI ownership gate 失败。
-
-### BR-006: Wire Contract Externality
+### BR-006: Contracts Wire Source
 
 **规则**：`module/binance` 不得定义自己的 proto 文件或 wire schema。
 
@@ -255,23 +261,45 @@ Binance 行情集成面临以下问题：
 
 **违反时**：CI gate 失败。
 
-### BR-007: Idempotency Key Stability
+### BR-007: Product-Line Instrument Identity
 
-**规则**：client 生成的 idempotency key 必须在 retry 场景下稳定。
+**规则**：product line × instrument 组合必须全局无碰撞。
 
-**约束**：key 必须基于 exchange + product_line + instrument_key + event_type + event_time/source_sequence 等确定性维度生成。bar 事件包含 interval/open_time，trade 包含 trade_id，depth 包含 sequence/update dimensions。
+**约束**：Spot、USDⓈ-M、COIN-M、Options 的同名 symbol 必须通过 ProductLine 与 InstrumentKey 维度区分，不能仅以 exchange symbol 作为 canonical identity。
 
-**违反时**：retry 时 server 无法识别重复，产生 duplicate downstream effect。
+**违反时**：instrument identity test 失败。
 
-### BR-008: Admin Boundary
+### BR-008: Secret Redaction
 
-**规则**：client admin 仅可变更 client-local state，server admin 仅可变更 server-local state。
+**规则**：Secrets（API Key / Secret）不得出现在 log、debug 端点、admin 端点输出中。
+
+**约束**：所有 secret 从环境变量或 secret manager 注入；日志和诊断响应仅可输出非敏感 metadata。
+
+**违反时**：secret scanning、admin/debug response tests 或代码审查失败。
+
+### BR-009: Checkpoint Requires ACK
+
+**规则**：client checkpoint 仅可在 server 返回 `durable_acceptance=true` ACK 后推进。
+
+**约束**：禁止在 serialization 成功、local enqueue 成功、gRPC write 成功或 send attempt 成功后推进 checkpoint。
+
+**违反时**：spool 状态机拒绝 transition；重启后 checkpoint 回退到上一个 durable ACK 位置。
+
+### BR-010: No Storage/Query/Strategy Ownership
+
+**规则**：`module/binance` 不得拥有 storage engine、query API 或 strategy API。
+
+**约束**：server downstream dispatch port 只做 handoff，不实现物理存储。禁止引入 `github.com/ZoneCNH/storage`、`github.com/ZoneCNH/strategy` 作为 owned dependency。
+
+**违反时**：CI ownership gate 失败。
+
+### BR-011: Admin Authentication
+
+**规则**：Admin 端点对外暴露时必须认证，且 client/server admin 只能变更各自本地状态。
 
 **约束**：禁止 client admin 变更 server state、server admin 变更 client connector state、admin 变更 downstream storage/strategy state、未经显式保护操作删除 checkpoint。
 
-**违反时**：操作被拒绝并返回错误。
-
----
+**违反时**：操作被拒绝并返回错误；无认证访问 `/admin/*` 应返回 401。
 
 ## 8. Interface Contract
 
@@ -432,20 +460,21 @@ module/binance/
   BOUNDARY-GATES.md                # CI 边界门禁定义
   RUNTIME-MAPPING.md               # 规格到 runtime 仓库映射
   tasks/                           # Root 层 task spec
-    TASK-BINANCE-ROOT-000-*.md
+    TASK-BINANCE-000.md
     ...
+    TASK-BINANCE-010.md
   client/                          # Client 子模块
     README.md
     SPEC.md
     TRACEABILITY.md
     IMPLEMENTATION-PLAN.md
-    tasks/                         # Client task spec（12 个）
+    tasks/                         # Client task spec（13 个）
   server/                          # Server 子模块
     README.md
     SPEC.md
     TRACEABILITY.md
     IMPLEMENTATION-PLAN.md
-    tasks/                         # Server task spec（8 个）
+    tasks/                         # Server task spec（9 个）
 ```
 
 ### Runtime (`github.com/ZoneCNH/binance/`)
@@ -610,13 +639,13 @@ github.com/ZoneCNH/binance/
 
 | Gate | 命令 | 通过条件 |
 |------|------|----------|
-| No legacy binance-market | `BOUNDARY-GATES.md` §2 gate script | 零 forbidden 引用 |
-| Client/server boundary | `BOUNDARY-GATES.md` §3-§4 gate scripts | 零跨边界 import |
-| Ownership | `BOUNDARY-GATES.md` §5 gate script | 零 storage/query/strategy 所有权声明 |
-| Contracts only | `BOUNDARY-GATES.md` §6 gate script | 零 local proto 文件 |
-| Domain-market source | `BOUNDARY-GATES.md` §7 gate script | 零独立 canonical enum 定义 |
-| Admin boundary | `BOUNDARY-GATES.md` §8 gate script | 零跨模块 admin mutation |
-| Checkpoint requires ACK | `BOUNDARY-GATES.md` §9 gate script | 零 send-only checkpoint advance |
+| No legacy binance-market | `BOUNDARY-GATES.md` §2 suggested check | 零 forbidden 引用 |
+| Client/server boundary | `BOUNDARY-GATES.md` §3-§4 suggested checks | 零跨边界 import |
+| Ownership | `BOUNDARY-GATES.md` §5 suggested check | 零 storage/query/strategy 所有权声明 |
+| Contracts only | `BOUNDARY-GATES.md` §6 suggested check | 零 local proto 文件 |
+| Domain-market source | `BOUNDARY-GATES.md` §7 suggested check | 零独立 canonical enum 定义 |
+| Admin boundary | `BOUNDARY-GATES.md` §8 suggested check | 零跨模块 admin mutation |
+| Checkpoint requires ACK | `BOUNDARY-GATES.md` §9 suggested check | 零 send-only checkpoint advance |
 
 ---
 
@@ -642,10 +671,10 @@ github.com/ZoneCNH/binance/
 - [ ] root/client/server TRACEABILITY.md 完成，所有需求可追溯
 - [ ] client/server task sets 独立可执行
 - [ ] Delivery semantics 明确为 at-least-once + idempotent acceptance（FR-004, FR-005）
-- [ ] ACK/checkpoint semantics 已定义且 testable（BR-003）
+- [ ] ACK/checkpoint semantics 已定义且 testable（BR-009）
 - [ ] ProductLine 和 InstrumentKey 碰撞 case 已文档化（FR-002, §9 Data Model）
-- [ ] Boundary gates 可在 CI 执行（FR-007, BOUNDARY-GATES.md）
-- [ ] Runtime mapping 未将 storage/query/strategy ownership 放在 Binance 内（BR-005）
+- [ ] Boundary gates 提供 suggested checks，接入后可在 CI 执行（FR-007, BOUNDARY-GATES.md）
+- [ ] Runtime mapping 未将 storage/query/strategy ownership 放在 Binance 内（BR-010）
 - [ ] 所有 FR 实现完成，所有 AC 验证通过
 - [ ] 覆盖率 ≥ 80%
 - [ ] CI Gate 全部通过（通用 + 模块专属）

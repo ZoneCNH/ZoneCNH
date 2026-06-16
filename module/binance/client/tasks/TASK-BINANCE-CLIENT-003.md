@@ -1,3 +1,16 @@
+---
+task_id: TASK-BINANCE-CLIENT-003
+related_requirements:
+  - FR-003
+scope: >
+  Initial scope:
+acceptance_criteria:
+  - "connector annotates events with ProductLine Spot."
+  - "connector preserves exchange event time."
+  - "connector records local receive time."
+  - "connector handles reconnect without changing canonical identity."
+  - "connector does not emit canonical events directly; mapper owns canonical conversion."
+---
 # TASK-BINANCE-CLIENT-003 Spot Connector
 
 ## Objective
@@ -12,6 +25,12 @@ Initial scope:
 - trade
 - kline/bar
 - depth/update events where applicable
+
+
+## Non-scope
+
+- Does not change behavior outside `module/binance/client`.
+- Does not define canonical domain source of truth or server persistence semantics.
 
 ## Deliverables
 

@@ -1,3 +1,17 @@
+---
+task_id: TASK-BINANCE-SERVER-002
+related_requirements:
+  - FR-003
+scope: >
+  Validation covers:
+acceptance_criteria:
+  - "missing idempotency key is rejected."
+  - "unknown product line is rejected."
+  - "malformed instrument identity is rejected."
+  - "payload mismatch is rejected."
+  - "validation rejects do not dispatch downstream."
+  - "reject reason is machine-readable."
+---
 # TASK-BINANCE-SERVER-002 Validation
 
 ## Objective
@@ -16,6 +30,12 @@ Validation covers:
 - idempotency key
 - source metadata
 - payload shape
+
+
+## Non-scope
+
+- Does not change behavior outside `module/binance/server`.
+- Does not import or modify client internals.
 
 ## Deliverables
 
