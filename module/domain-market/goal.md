@@ -5,11 +5,11 @@
 | 模块 | `domain-market` |
 | 层级 | L2.5 领域共享 |
 | 仓库 | <https://github.com/ZoneCNH/domain-market> |
-| 当前版本 | v1.0.1 |
-| 目标版本 | v1.0.0 |
-| 状态 | v1.0.0 执行计划已落地 |
+| 当前版本 | v1.1.0 |
+| 目标版本 | v1.1.0 |
+| 状态 | v1.1.0 SPEC Approved (canonical types aligned with cross-module contracts) |
 | 计划来源 | `/home/zone/Downloads/0615/ZoneCNH-v1.0.0-goal-execution-plans/domain-market-v1.0.0-goal-execution-plan.md` |
-| 最后更新 | 2026-06-16 |
+| 最后更新 | 2026-06-17 |
 
 ## 目标
 
