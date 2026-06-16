@@ -102,8 +102,11 @@ x.go
 在此次推演之前，分析/决策/执行域仅有早期占位仓库（factor-engine、backtest-engine、risk-engine 等），缺乏规范化规格和接口契约。本次以 23 节 SPEC 结构为每个域创建了具名模块（X 后缀），形成从数据到执行的完整链路：
 
 ```text
-flowx ──► signal-factory ──► strategyx ──► maestro ──► riskx ──► orderx ──► positionx
-(数据管线) (信号生成)       (策略工厂)  (工作流)     (风控)     (订单)     (仓位)
+factor-eval ──► signal-factory ──► riskx ──► orderx ──► positionx   (实盘)
+(因子评估)     (信号生成)         (风控)    (订单)    (仓位)
+
+backtestx ──► optimizer ──► strategyx ──► maestro                  (反馈→编排)
+(回测验证)    (参数优化)   (策略工厂)    (工作流)
 ```
 
 ### 命名约定：为什么是 X 后缀
