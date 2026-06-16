@@ -118,11 +118,6 @@
 | [lighter](https://github.com/ZoneCNH/lighter)                 | SDK      | v0.1.1 | ███░ 80% | 100%       | Lighter DEX           |
 | [upbit](https://github.com/ZoneCNH/upbit)                     | SDK      | v0.1.1 | ███░ 80% | 100%       | Upbit CEX             |
 | [coinglass](https://github.com/ZoneCNH/coinglass)             | SDK      | v0.1.1 | ███░ 80% | 100%       | 衍生品聚合数据        |
-| [binance-market](https://github.com/ZoneCNH/binance-market)   | Provider | v0.1.1 | ███░ 80% | 100%       | Binance Kline/Ticker  |
-| [bybit-market](https://github.com/ZoneCNH/bybit-market)       | Provider | v0.1.1 | ███░ 80% | 100%       | Bybit Kline/Ticker    |
-| [bitget-market](https://github.com/ZoneCNH/bitget-market)     | Provider | v0.1.1 | ███░ 80% | 100%       | Bitget Kline/Ticker   |
-| [okx-market](https://github.com/ZoneCNH/okx-market)           | Provider | v0.1.1 | ███░ 80% | 100%       | OKX Kline/Ticker      |
-| [coinbase-market](https://github.com/ZoneCNH/coinbase-market) | Provider | v0.1.1 | ███░ 80% | 100%       | Coinbase Kline/Ticker |
 
 <details>
 <summary>📊 数据域 · 行情多维成熟度展开（点击展开）</summary>
@@ -142,11 +137,6 @@
 | lighter         |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | SDK；80%；Lighter DEX              |
 | upbit           |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | SDK；80%；Upbit CEX                |
 | coinglass       |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | SDK；80%；衍生品聚合数据           |
-| binance-market  |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | Provider v0.1.1；80%；Kline/Ticker |
-| bybit-market    |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | Provider v0.1.1；80%；Kline/Ticker |
-| bitget-market   |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | Provider v0.1.1；80%；Kline/Ticker |
-| okx-market      |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | Provider v0.1.1；80%；Kline/Ticker |
-| coinbase-market |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | Provider v0.1.1；80%；Kline/Ticker |
 
 > **维度说明**：SPEC=规格完成 | IMPL=实现完成 | RELEASE=tag/release/manifest 一致 | LIVE INT=真实服务集成（非 mock） | EXT CI=外部 CI artifact | ADOPT=下游模块真实采用 | SOAK=生产或类生产长时间运行 | FACTORY=factory_grade_allowed（最高综合等级）
 
@@ -354,7 +344,6 @@
 ### 🟢 数据域 · 行情（健康）
 
 - SDK：13 个交易所适配器，全部 v0.1.1，进度 80%
-- Provider：5 个 Kline/Ticker Provider，全部 v0.1.1，进度 80%
 - **待确认**：SDK 全部 v0.1.1 tagged release，已通过生产验证？
 
 ### 🟡 数据域 · 宏观（注意）
@@ -453,7 +442,7 @@
 | 检查项           | README | ARCHITECTURE | STATUS    | 一致性 |
 | ---------------- | ------ | ------------ | --------- | ------ |
 | 组件总数         | 76     | 76           | 78        | ✅     |
-| market-data 数量 | 18     | 18 (13+5)    | 18 (13+5) | ✅     |
+| market-data 数量 | 13     | 13          | 13        | ✅     |
 | macro-data 数量  | 10     | 10           | 10        | ✅     |
 | L2.5 组件        | 5      | 5            | 5         | ✅     |
 | 分析域组件       | 8      | 8            | 8         | ✅     |

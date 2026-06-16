@@ -1,0 +1,540 @@
+# Project Filetree
+
+_Auto-maintained by `/filetree:update`. Content hashes live in the sidecar `FILETREE.hash.json`; do not edit it by hand._
+
+- .codex
+  - agents
+    - `code-structural-score.toml`: Codex 平台的 code 阶段产物结构评分子代理配置，根据 RUBRIC-code.md 打分并输出红线和扣分账本
+    - `goal-evidence.toml`: Goal Delivery OS 的 Evidence 收集与验证代理配置，维护证据束并强制 No Evidence No Done 原则
+    - `goal-matrix.toml`: Goal Delivery OS 的横向追溯矩阵代理配置，维护 canonical 边图并执行覆盖、孤儿和发布关键边检查
+    - `goal-prompt-builder.toml`: Goal Delivery OS 的 Context Package 构建代理配置，为单个 Task 生成可执行、可验证的编码输入 Prompt
+    - `goal-reviewer.toml`: Goal Delivery OS 的 Gate/Review/Release 对抗性审查代理配置，阻断缺证据或绕过 Gate 的交付
+    - `goal-spec.toml`: Goal Delivery OS 的制品编写代理配置，在不绕过 Gate 的前提下起草和修订 Goal/Spec/Design/Plan/Task
+    - `matrix-structural-score.toml`: Codex 平台的 matrix 阶段产物结构评分子代理配置，根据 RUBRIC-matrix.md 打分并输出红线和扣分账本
+    - `matrix.toml`: 项目 Matrix 子代理配置，在 Spec Approved 后生成或审查需求追溯矩阵并闭合 FR/BR/AC/TC 覆盖链条
+    - `meta-arbiter.toml`: 元仲裁器配置，读取 outer-metrics 依据宪法 §14.4 诊断 Goodhart 信号并输出 RSI 建议
+    - `pipeline-arbiter.toml`: 四源评分仲裁器配置，汇总 claude/codex/copilot/rules 评分并按 ARBITER-PROTOCOL 执行门禁判定
+    - `plan-structural-score.toml`: Codex 平台的 plan 阶段产物结构评分子代理配置，根据 RUBRIC-plan.md 打分并输出红线和扣分账本
+    - `prompt-builder.toml`: 项目 Prompt 子代理配置，为单个 Task 生成 Context Packet、Plan Prompt 和 Implementation Prompt
+    - `prompt-structural-score.toml`: Codex 平台的 prompt 阶段产物结构评分子代理配置，根据 RUBRIC-prompt.md 打分并输出红线和扣分账本
+    - `spec-review.toml`: Spec Review 子代理配置，对抗性审查 SPEC.md 的完整性、治理合规性和追溯链，给出 Go/No-Go 风险判断
+    - `spec-structural-score.toml`: Spec 结构评分子代理配置，只读扫描 SPEC.md 结构问题、追溯断点和治理红线，输出评分与修复优先级
+    - `spec.toml`: Spec 编写子代理配置，基于用户意图和 SPEC-TEMPLATE 起草 23 节结构化的模块规格文档
+    - `task-executor.toml`: Code 子代理配置，按单个 Task 和 Prompt 编写代码与测试，严格遵守文件边界和 Spec Drift 协议
+    - `task-planner.toml`: Plan 子代理配置，为已拆分 Task 生成实现顺序、依赖、验证命令和停止条件，不写代码
+    - `task-split.toml`: Tasks 子代理配置，将 Approved Spec 拆分为可执行 Task Spec 并维护需求到任务的追溯映射
+    - `tasks-structural-score.toml`: Codex 平台的 tasks 阶段产物结构评分子代理配置，根据 RUBRIC-tasks.md 打分并输出红线和扣分账本
+  - skills
+    - spec-code-pipeline
+      - `SKILL.md`: Spec 到 Code 六阶段开发管线技能，定义团队评分、仲裁门禁和修复路由规则
+  - `AGENTS.md`: FoundationX 文档仓库的 Codex 代理配置索引，列出执行、评分和仲裁三类代理及其模型与职责
+  - `hooks.json`: Codex 平台的 Stop hook 配置，会话结束时自动执行 auto-deliver-on-complete.sh 脚本完成交付
+- .config
+  - goal
+    - eval
+      - rsi-proposals
+        - `RSI-PROPOSAL-20260611-213410.md`: RSI 改进提案，基于 Scorecard 综合分数触发，包含改进方向和 R0-R9 Gate 预检清单
+      - `eval-dataset.yaml`: Goal Delivery OS 评估数据集基线（100 案例），覆盖 Gate 一致性、矩阵覆盖、证据完整性和跨平台漂移等维度
+      - `scorecard.yaml`: RSI 评估记分卡，定义五维度评分（影响力/风险/可验证性/维护成本/安全保持）与自动触发阈值
+    - evidence
+      - 2026-06-08
+        - TASK-GOAL-20260608-001-001
+          - `EVID-TEST-TASK-GOAL-20260608-001-001-001-001.md`: 规则单一源漂移检查证据，验证 rule-drift-check.py 与 rules.yaml 一致性
+        - TASK-GOAL-20260608-001-002
+          - `EVID-TEST-TASK-GOAL-20260608-001-002-001-001.md`: Matrix 追溯验证证据，证明 matrix-gen.py --check-only 能将需求追溯到测试和证据
+        - TASK-GOAL-20260608-001-003
+          - `EVID-TEST-TASK-GOAL-20260608-001-003-001-001.md`: Gate 检查证据，验证 gate-check.sh 对齐 G0-G11 Gate 规则与 Evidence 目录结构
+          - `EVID-TEST-TASK-GOAL-20260608-001-003-002-001.md`: Lint 与 Evidence 采集脚本验证证据，证明 lint-goal.sh 和 evidence-collect.sh 语法有效
+          - `EVID-TEST-TASK-GOAL-20260608-001-003-003-001.md`: CI 集成与最终报告证据，验证 goal-ci.yml 接入规则漂移检查且报告覆盖所有变更
+      - 2026-06-09
+        - TASK-XLIB-000
+          - `EVID-TEST-TASK-XLIB-000-001.md`: xlib-standard 仓库结构验证证据，检查目录不存在与必含目录/文件存在性
+        - TASK-XLIB-001
+          - `EVID-TEST-TASK-XLIB-001-001.md`: xlib-standard Spec 23 节覆盖验证证据，统计 SPEC.md 行数与章节数
+        - TASK-XLIB-002
+          - `EVID-TEST-TASK-XLIB-002-001.md`: xlib-standard 构建/lint/测试靶验证证据（PARTIAL），检查 Makefile targets 和 lint 脚本
+        - TASK-XLIB-003
+          - `EVID-TEST-TASK-XLIB-003-001.md`: xlib-standard 核心 go test 验证证据（PARTIAL），运行 go test 与 race detector
+        - TASK-XLIB-003A
+          - `EVID-TEST-TASK-XLIB-003A-001.md`: xlib-standard templatex 配置模块单元测试证据（PARTIAL），验证配置加载与 race 安全
+        - TASK-XLIB-003B
+          - `EVID-TEST-TASK-XLIB-003B-001.md`: xlib-standard templatex 错误/客户端模块单元测试证据（PARTIAL），覆盖 10 个 AC
+        - TASK-XLIB-003C
+          - `EVID-TEST-TASK-XLIB-003C-001.md`: xlib-standard templatex 健康检查/指标模块单元测试证据（PARTIAL），覆盖 7 个 AC
+        - TASK-XLIB-003D
+          - `EVID-TEST-TASK-XLIB-003D-001.md`: xlib-standard examples/testkit 校验证据（PARTIAL），运行 go vet、全量测试和 race 检测
+        - TASK-XLIB-004
+          - `EVID-TEST-TASK-XLIB-004-001.md`: xlib-standard 构建与测试验证证据（PARTIAL），运行 go build 和全量 race 测试
+        - TASK-XLIB-005
+          - `EVID-TEST-TASK-XLIB-005-001.md`: xlib-standard 发布终检验证证据（PARTIAL），运行代码搜索和 release-final-check
+      - bundle-20260612-044520
+        - `RELEASE-BUNDLE.md`: Release 证据包，聚合 Matrix 摘要、G0-G11 Gate 状态、风险登记与验证器结果
+      - drill-RBD-20260612-045043
+        - `report.md`: 回滚演练报告，检测当前分支缺少回滚方案并记录 GAP 判定
+      - drill-RBD-20260612-045056
+        - `report.md`: 回滚演练报告，确认主分支可达且回滚验证命令明确但缺少回滚计划
+      - drill-RBD-20260612-053135
+        - `report.md`: 回滚演练报告，检测 docs/goal-deep-analysis-v2-fixes 分支缺少回滚方案
+      - `incident-template-20260612-045755.md`: 事故响应模板，定义 P0/P1/P2 严重级别分级、响应步骤和升级联系人框架
+      - `incident-template-20260612-053136.md`: 事故响应模板，包含回滚命令、验证链路和事后复盘检查清单
+      - `metrics-window-20260612-045755.md`: 发布后指标观察窗口检查，确认 Release Manifest 存在且满足 24 小时窗口要求
+    - `.gitignore`: Goal 配置中心的 gitignore 文件，排除 bundle-* 临时构建目录
+    - `README.md`: Goal 配置中心目录说明，定义 Registry 边界、Git 提交策略和各 Agent 写入边界
+- docs
+  - governance
+    - improvements
+      - 20260609-auto-delivery-hook
+        - `SPEC.md`: 自动化提交合并 Hook 改进规格，定义 Stop hook 触发自动交付的门禁、提交规范、清理策略和失败模式
+      - 20260612-matrix-scoring-methodology
+        - `SPEC.md`: Matrix 评分方法论修正的 RSI 改进规格，将措辞强度分级、跨表走查、辅助数据排除固化为评分前置规则
+      - 20260614-cross-stage-gate-integrity
+        - `SPEC.md`: 跨阶段门禁完整性改进规格，修复 matrix/plan 阶段 false gate pass 导致缺陷流入下游的问题
+      - 20260614-pipeline-infrastructure
+        - `SPEC.md`: 管线基础设施系统化提升的 ISA Full 规格，修复 arbiter 缺源消耗配额、字段名不一致、外仓模块误报等问题
+      - 20260614-spec-ref-substance-over-form
+        - `SPEC.md`: spec_ref 实质优先于形式的改进规格，将 rubric 红线从'无 spec_ref 字段'改为'无法追溯至 Spec 的 FR/BR/AC'
+      - 20260614-xlibgate-trust-session
+        - `SESSION.md`: xlibgate Trust Alignment 全管线交付会话复盘，记录 Linter 回退、分支纪律、PROMPT 合并等 8 项经验教训
+    - scoring
+      - `ARBITER-PROTOCOL.md`: 四源评分仲裁协议，定义门禁判定算法（综合分≥98、无红线、置信度、分差、异构一致性）和自动路由规则
+      - `README.md`: 评分协议索引，列出所有 rubric 文件、仲裁协议和评分 JSON schema 的用途与位置
+      - `RUBRIC-code.md`: Code 阶段评分表（100 分制），评估 Task scope 符合度、FR/AC 覆盖、测试覆盖、代码质量和安全边界
+      - `RUBRIC-design.md`: Design 阶段评分表（100 分制），评估架构方案清晰性、Spec 对齐、接口定义、数据模型和风险识别
+      - `RUBRIC-matrix.md`: Matrix 阶段评分表（100 分制），评估 TRACEABILITY.md 的表结构完整性、FR/AC/TC 闭合和反向追溯
+      - `RUBRIC-plan.md`: Plan 阶段评分表（100 分制），评估执行顺序合理性、依赖完整性、风险识别、回滚策略和 Spec 一致性
+      - `RUBRIC-prompt.md`: Prompt 阶段评分表（100 分制），评估 Task 聚焦度、上下文引用完整性、验收标准和验证命令清晰性
+      - `RUBRIC-release.md`: Release 阶段评分表（100 分制），评估发布清单、回滚方案、监控告警、文档同步和上线验证计划
+      - `RUBRIC-retrospective.md`: Retrospective 阶段评分表（100 分制），评估 Goal 达成、根因分析、改进项具体性和经验沉淀
+      - `RUBRIC-review.md`: Review 阶段评分表（100 分制），评估 Goal 回溯、Spec 覆盖、代码质量、安全审查和变更影响
+      - `RUBRIC-spec.md`: Spec 阶段评分表（100 分制），评估 23 节结构完整性、FR/BR 行为规格、追溯链闭合和治理合规性
+    - `SPEC-DRIFT-PROTOCOL.md`: 代码与规格不一致时的处理协议，定义三种情况（代码错/Spec有问题/需求变）的修正流程和漂移检测方法
+    - `SPEC-TEMPLATE.md`: FoundationX 模块规格 23 节标准模板，新建模块 SPEC.md 时复制使用，定义每节的必填内容与校验规则
+    - `STRUCTURAL-SCORING.md`: 管线各阶段产物的统一评分方法、四源并行评分（三 LLM + 一套规则引擎）、仲裁门禁与有界失败循环的完整体系定义
+    - `TASK-TEMPLATE.md`: AI 代理任务拆分的标准 YAML 格式模板，定义 Task 结构、字段、拆分规则和校验规则，连接 Spec 到代码实现
+    - `TESTING-STRATEGY.md`: 从 Spec 生成测试的策略指南，定义测试优先级（P0-P3）、类型比例（70/20/8/2）、格式模板和验收流程
+    - `TRACEABILITY.md`: 模块级追溯矩阵规范，定义 FR/BR→AC→TC→Task→Status 最小表结构、字段规则、覆盖规则和验证命令
+    - `VERSIONING.md`: FoundationX 文档体系的语义化版本管理规范，定义 MAJOR/MINOR/PATCH 触发条件、发布流程和 Tag 命名规则
+    - `anti-requirements.md`: 全局反需求清单，定义所有模块中禁止的行为（依赖管理、进程控制、配置、安全、架构、测试、代码质量等维度）
+- module
+  - contracts
+    - tasks
+      - `TASK-CONTRACTS-000.md`: contracts 项目骨架任务，创建 go.mod 和 doc.go 并定义包结构
+      - `TASK-CONTRACTS-001.md`: 定义 MarketDataProvider 和 MacroDataProvider 两个数据端口接口及其编译期检查
+      - `TASK-CONTRACTS-002.md`: 定义 Event 接口、Topic 常量和跨域 DTO 契约，含 JSON round-trip 和不可变性验证
+      - `TASK-CONTRACTS-003.md`: 实现 Breaking Change 检测工具，比较接口版本差异并按 semver 判定升级策略
+      - `TASK-CONTRACTS-004.md`: 创建 README 和 CHANGELOG，验证 Release Definition of Done 全部门禁通过
+    - `IMPLEMENTATION-PLAN.md`: contracts 模块的实现计划，定义依赖 DAG、两阶段实现顺序及每个任务的范围与工期
+    - `SPEC.md`: contracts 模块规格，定义跨域端口接口、事件协议和 DTO 契约，是域间通信的唯一合法通道
+    - `TRACEABILITY.md`: contracts 模块的需求追溯矩阵，覆盖功能需求、业务规则和非功能需求的 AC/TC/Task 全链路映射
+    - `goal.md`: contracts 模块的 Goal 定位，阐述跨域契约体系的发布判定原则和 v1.0 范围
+  - decimalx
+    - tasks
+      - `TASK-DEC-001.md`: Decimal 不可变性实现任务，确保系数导出为副本且外部修改不影响原值
+      - `TASK-DEC-002.md`: Parse 语法解析实现任务，仅接受普通十进制字符串，拒绝空白和指数记法
+      - `TASK-DEC-003.md`: 字符串输出实现任务，区分规范输出、固定精度输出与调试输出三种格式
+      - `TASK-DEC-004.md`: 精确运算与舍入实现任务，加减乘必须精确，除法和量化必须显式携带 rounding 参数
+      - `TASK-DEC-005.md`: JSON 编码使用带引号十进制字符串，SQL scan 拒绝 float 输入，Money 跨币种运算必须失败
+      - `TASK-DEC-006.md`: 错误类型识别实现任务，公开错误必须可用 errors.Is 识别并保持兼容
+      - `TASK-DEC-007.md`: CI 门禁和 golden/benchmark 基础设施任务，确保 v1.0.0 行为可审计可复现
+      - `TASK-DEC-008.md`: 下游模块 adoption 检查和 v1.0.0 release 任务，确保所有消费方可编译采用
+    - `IMPLEMENTATION-PLAN.md`: decimalx 从 v0.2.0 到 v1.0.0 的实现计划，含 API freeze、核心不变量、验证资产和下游采用四个里程碑
+    - `SPEC.md`: decimalx 模块规格，定义 L2.5 层定点十进制与货币值对象，服务金融域数值计算
+    - `TRACEABILITY.md`: decimalx 模块的需求追溯矩阵，10 项 FR 全部通过 go test/race/fuzz 验证且状态为已完成
+    - `goal.md`: decimalx 模块的 Goal 定位，目标为 ZoneCNH 所有金融域提供唯一的高精度定点数值基础
+  - domain-exchange
+    - tasks
+      - `TASK-EXC-001.md`: Exchange SPI 接口拆分任务：将大接口拆为 7 个独立能力接口与 1 个组合接口
+      - `TASK-EXC-002.md`: 下单/撤单/查询请求类型定义任务：含幂等性语义、ClientID 验证与 decimalx 字段
+      - `TASK-EXC-003.md`: Exchange 错误分类任务：区分临时/永久/限速等错误类型并支持重试判断
+      - `TASK-EXC-004.md`: 交易所能力常量与限频策略任务：静态声明 VenueCapability、RateLimitPolicy 与 YAML 配置
+      - `TASK-EXC-005.md`: 线程安全 Exchange 注册表任务：支持注册/查询/列表与可脚本化 fake exchange 注入
+      - `TASK-EXC-006.md`: MarketReader 边界验证任务：确保接口返回 domain-market 类型不引入本地重复行情模型
+      - `TASK-EXC-007.md`: domainx 类型采纳任务：确保 Order/ExecutionReport 返回使用 domainx 类型避免双 SSOT
+    - `IMPLEMENTATION-PLAN.md`: domain-exchange 从 v0.1.0 到 v1.0.0 的实现计划，含 SPI Freeze、核心接口、验证资产和 Adapter Smoke 四个里程碑
+    - `SPEC.md`: domain-exchange 模块规格，定义交易所领域接口和 adapter SPI，承接下单、撤单、查询和能力语义
+    - `TRACEABILITY.md`: domain-exchange 模块的需求追溯矩阵，覆盖 FR/BR/NFR 到 TC 和验证机制的完整映射
+    - `goal.md`: domain-exchange 模块的 Goal 定位，定义交易所适配 SPI 以统一不同交易所的 API 和语义映射
+  - domain-macro
+    - tasks
+      - `TASK-MAC-001.md`: MacroPoint 三类时间语义实现：ObservedAt/ReleasedAt/AvailableAt 字段与 Validate 校验
+      - `TASK-MAC-002.md`: MacroPoint 修订版本与来源审计：RevisionVersion 非负校验与 preliminary/source 可追溯性
+      - `TASK-MAC-003.md`: IsVisibleAt fail-closed 可见性规则：缺失时间或晚于决策时间的数据拒绝可见
+      - `TASK-MAC-004.md`: MacroInformationSet 与 copy-on-write：信息集过滤、getter 返回副本与并发安全
+      - `TASK-MAC-005.md`: 修订版本选择与去重：同一数据点多 revision 的 deterministic 排序与 final 优先规则
+      - `TASK-MAC-006.md`: MacroState/MacroRegimeCard 枚举定义：四状态常量、IsValid 校验与 IndicatorValue 结构
+      - `TASK-MAC-007.md`: 精度 ADR 与 decimalx 采用决策：冻结宏观值精度策略并编写迁移指南
+    - `IMPLEMENTATION-PLAN.md`: domain-macro v1.0.0 五里程碑实现计划：从精度 ADR、核心不变量到发布门禁
+    - `SPEC.md`: domain-macro 模块规格：定义宏观数据点、信息集、修订版本和 no-lookahead 可见性规则
+    - `TRACEABILITY.md`: domain-macro 需求追溯矩阵：覆盖 8 FR、6 BR、6 NFR、7 TC 的全链路映射
+    - `goal.md`: domain-macro v1.0.0 目标定义：可复现、无前视偏差的宏观数据领域模型与当前阻塞项
+  - domain-market
+    - tasks
+      - `TASK-MKT-001.md`: 精度替换任务：审计并替换所有公开金融字段为 decimalx.Decimal，禁止 public float64
+      - `TASK-MKT-002.md`: 核心行情对象校验任务：为 Tick/Quote/Bar/OrderBook 实现 Validate 不变量检查
+      - `TASK-MKT-003.md`: 质量门禁 fail-closed 任务：拒绝脏数据、过期数据、未来数据进入策略层
+      - `TASK-MKT-004.md`: 定义 Instrument 交易品种标识、价格/数量精度校验与 InstrumentStatus 枚举的任务规格
+      - `TASK-MKT-005.md`: 定义衍生品指标 Funding/OpenInterest/LongShortRatio 的时间语义与数据来源校验规则
+      - `TASK-MKT-006.md`: 定义 DataProvider 接口契约：返回纯领域模型，禁止泄漏 HTTP/WS/DB/vendor DTO
+      - `TASK-MKT-007.md`: 与 domainx 划清订单枚举边界，消除 OrderType/OrderSide/OrderState 双 SSOT 归属
+    - `IMPLEMENTATION-PLAN.md`: domain-market v1.0.0 五里程碑实现计划：从 API 冻结、核心不变量到质量门禁与发布
+    - `SPEC.md`: domain-market 模块规格：定义 Tick/Bar/OrderBook 等行情值对象、质量门禁与 DataProvider 契约
+    - `TRACEABILITY.md`: domain-market 需求追溯矩阵：覆盖 14 FR、6 BR、3 NFR、8 TC 的全链路验证映射
+    - `goal.md`: domain-market v1.0.0 目标定义：统一行情数据语义源与 decimalx 精度、domainx 边界清晰
+  - domainx
+    - tasks
+      - `TASK-DOMAINX-001.md`: 实现 Order 值对象、NewOrder 构造函数、Side/OrderType/OrderStatus 枚举与 6 个 sentinel 错误
+      - `TASK-DOMAINX-002.md`: 实现 Fill 值对象及其构造函数：校验 quantity/price/fee，关联 OrderID 但不引入 Order 类型
+      - `TASK-DOMAINX-003.md`: 实现 Position 值对象：MarketValue() 与 UnrealizedPnL() 使用 decimal 精确运算，不缓存结果
+      - `TASK-DOMAINX-004.md`: 实现 Exposure 值对象：NetExposureRatio() 含除零保护，netPosition 允许负值表示空头
+      - `TASK-DOMAINX-005.md`: 验证所有值对象 JSON round-trip 精度保持、缺失字段错误处理与 100 goroutine 并发读安全
+      - `TASK-DOMAINX-006.md`: 配置 go.mod 仅依赖 stdlib+decimalx，编写 Benchmark、godoc、README、CHANGELOG 与 LICENSE
+      - `TASK-DOMAINX-008.md`: FR-007 序列化兼容与 FR-008 不可变性的基线覆盖任务，验证 snake_case JSON 与并发安全
+    - `IMPLEMENTATION-PLAN.md`: domainx 模块四阶段实现计划：含依赖 DAG、文件交付矩阵、CI Gate 与风险评估
+    - `SPEC.md`: domainx L2.5 领域共享层完整规格：定义 Order/Position/Trade/ExecutionReport/Portfolio 不可变值对象
+    - `TASK-DOMAINX-001-PROMPT.md`: TASK-001 的 Context Packet：Order 值对象 + 枚举常量 + 错误定义的完整实现上下文
+    - `TASK-DOMAINX-002-PROMPT.md`: TASK-002 的 Context Packet：Fill 值对象构造、校验与 FillSide 枚举的完整实现上下文
+    - `TASK-DOMAINX-003-PROMPT.md`: TASK-003 的 Context Packet：Position 值对象及 MarketValue/UnrealizedPnL 方法的实现上下文
+    - `TASK-DOMAINX-004-PROMPT.md`: TASK-004 的 Context Packet：Exposure 值对象及 NetExposureRatio 除零保护的实现上下文
+    - `TASK-DOMAINX-005-PROMPT.md`: TASK-005 的 Context Packet：所有值对象 JSON snake_case round-trip 与不可变性验证的实现上下文
+    - `TASK-DOMAINX-006-PROMPT.md`: TASK-006 的 Context Packet：go.mod 配置、Benchmark 测试、CI 门禁与文档生成的实现上下文
+    - `TRACEABILITY.md`: domainx 模块级需求追溯矩阵：8 FR + 10 BR + 10 NFR + 8 TC + 11 AC 全覆盖映射
+    - `V1-GOAL-EXECUTION-PLAN.md`: domainx v1.0.0 外部执行计划对齐文档：含里程碑 M0-M4、依赖顺序与 downstream smoke 要求
+    - `ci-workflow.yaml`: domainx 的 CI/CD 工作流参考模板：含 test/lint/boundary-check/trust-alignment/secret-scan 五门禁
+    - `goal.md`: domainx 模块 Goal 定位文件：定义 1.0 发布判定原则、核心场景、边界与 Release DoD
+  - flowx
+    - `SPEC.md`: flowx 分析域数据流管线引擎规格：定义 Pipeline DAG、窗口聚合、背压策略与热更新机制
+    - `TRACEABILITY.md`: flowx 模块需求追溯矩阵：10 FR + 5 BR + 7 NFR + 10 TC + 10 AC 全覆盖映射，全部待实现
+    - `goal.md`: flowx 工作流引擎目标文档，定义 DAG 数据流管线、窗口类型、背压策略和热更新等核心能力目标。
+  - kafkax
+    - tasks
+      - `TASK-KAFKAX-001.md`: kafkax Producer 接口实现任务，覆盖 Send 单条发送、SendBatch 批量发送和重试策略。
+      - `TASK-KAFKAX-002.md`: kafkax Consumer 接口实现任务，覆盖 Subscribe 消费组加入和 Poll 阻塞拉取。
+      - `TASK-KAFKAX-003.md`: kafkax 手动 offset 提交和 Close 边界处理任务，确保无自动提交的默认安全行为。
+      - `TASK-KAFKAX-004.md`: kafkax 幂等 Health 检查与脱敏错误消息实现任务，覆盖 broker 可达性检测。
+      - `TASK-KAFKAX-005.md`: kafkax Consumer 配置校验任务，覆盖 max_poll_records、session_timeout 和 heartbeat_interval 合法性检测。
+      - `TASK-KAFKAX-006.md`: kafkax CI 与发布任务，配置 go.mod、测试体系、benchmark、README 和 CHANGELOG。
+    - `IMPLEMENTATION-PLAN.md`: kafkax 实现计划，含三阶段任务依赖 DAG、CI Gate 矩阵、风险与回滚策略。
+    - `SPEC.md`: kafkax Kafka 客户端封装规格 v1.0.0，定义 Producer/Consumer 接口、消息模型、配置模式和 23 节完整测试用例。
+    - `TRACEABILITY.md`: kafkax 需求追溯矩阵，含 6 FR + 9 BR + 10 NFR 的完整追溯链和 TC 反向映射。
+    - `goal.md`: kafkax 1.0 目标规格基线，定义必须能力、非目标边界、配置契约和可观测契约。
+  - kernel
+    - analysis-records
+      - `SESSION-CLOSE.md`: kernel tasks 结构评分会话终局报告，含三阶段评分历程、全管线矩阵和系统性缺陷诊断。
+      - `claude.json`: kernel tasks 阶段 Claude 最终评分数据，84 分 0 红线 11 项扣分全部含 SPEC 节号追溯。
+      - `claude_80.json`: kernel tasks 阶段严格复评记录，80 分含 1 红线 12 项扣分，触发 TASK-016 拆分为子任务。
+      - `claude_91.json`: kernel tasks 阶段初评记录，91 分含 1 红线 6 项扣分，TASK-015 文件数超限触发首次拆分。
+      - `cross-stage-analysis.md`: kernel 全管线融合评估报告，含跨阶段追溯断裂诊断、修复优先级和可进入 Plan 阶段判定。
+      - `cross-stage-assessment.md`: kernel 六阶段跨阶段综合评估，含各阶段 Claude/Rules 扣分详情和规则引擎根本缺陷分析。
+      - `merge-analysis-report.md`: kernel 三份分析报告合并版，含全管线评估、跨阶段诊断和 rule-scorer.py 9 项修复清单。
+      - `meta-analysis.md`: kernel Spec/Matrix/Tasks 三阶段融合分析，含 Spec 结构完整性评估和 Rules 引擎修复成就。
+      - `rules.json`: kernel tasks 阶段 Rules 引擎评分记录，100 分 0 红线无扣分，9 项修复后达到满分。
+    - prompt
+      - `PROMPT-KERNEL-000.md`: kernel 项目骨架的开发提示词，指导创建 go.mod、Makefile、README.md 和 LICENSE，确立 stdlib-only 基线。
+      - `PROMPT-KERNEL-001.md`: errx 结构化错误模型子包的开发提示词，定义 ErrorKind 分类、Error 结构体、链式构造与遍历方法。
+      - `PROMPT-KERNEL-002.md`: timex 时钟抽象子包的开发提示词，定义 Clock 接口及 RealClock、FixedClock、FakeClock 三种可注入实现。
+      - `PROMPT-KERNEL-003.md`: obsx 可观测抽象子包的开发提示词，定义无供应商绑定的 Logger/Metrics/Tracer/Span 接口与 Noop 零值实现及 SecretString 脱敏。
+      - `PROMPT-KERNEL-004.md`: syncx 并发控制子包的开发提示词，实现上下文感知的 SemaphoreLimiter 信号量和 WorkerGroup 错误收集。
+      - `PROMPT-KERNEL-005.md`: lifecycx 组件生命周期子包的开发提示词，管理 Component 有序启动、逆序停止和启动失败自动回滚。
+      - `PROMPT-KERNEL-006.md`: shutdownx 优雅停机子包的开发提示词，管理 LIFO 顺序的关闭钩子和基于 signal.NotifyContext 的 OS 信号处理。
+      - `PROMPT-KERNEL-007.md`: versionx 版本信息子包的开发提示词，提供 BuildInfo 构建元数据结构和 Compatibility 兼容性判断逻辑。
+      - `PROMPT-KERNEL-008.md`: validx 前置条件校验子包的开发提示词，封装 Precondition、Invariant 和 RequireNonEmpty 断言并返回结构化 errx 错误。
+      - `PROMPT-KERNEL-009.md`: retryx 重试策略原语子包的开发提示词，提供 RetryPolicy 校验、指数退避延迟计算和基于 errx 的可重试判断。
+      - `PROMPT-KERNEL-010.md`: contextx 类型安全上下文子包的开发提示词，基于泛型 Key[T] 提供零分配的 context 键值存取和 DeadlineRemaining 查询。
+      - `PROMPT-KERNEL-011.md`: healthx 健康检查子包的开发提示词，定义 HealthStatus 值类型和基于 unhealthy > degraded > healthy 优先级的聚合规则。
+      - `PROMPT-KERNEL-012.md`: contracttest 契约测试辅助子包的开发提示词，提供 AssertJSONFields、AssertErrorKind 和 AssertHealthStatus 三个断言函数。
+      - `PROMPT-KERNEL-013.md`: internal/testutil 内部测试工具的开发提示词，提供泛型 RequireEqual 断言供 kernel 内部子包使用。
+      - `PROMPT-KERNEL-014.md`: kernel 契约验证层的开发提示词，包含 public API 快照对比、Golden 行为回归和消费者最小导入路径测试。
+      - `PROMPT-KERNEL-015.md`: kernel 12 子包可运行示例程序的开发提示词，每个子包对应一个独立可运行的 main.go，输出稳定用于 CI golden 对比。
+      - `PROMPT-KERNEL-016.md`: kernel 发布前文档与 CI 门禁的开发提示词，包含 CHANGELOG、ADR、设计文档、API 快照脚本和 release-preflight 目标。
+    - tasks
+      - `TASK-KERNEL-000.md`: kernel 项目骨架的原子任务定义，创建 stdlib-only 的 go.mod、Makefile、README.md 和 MIT LICENSE。
+      - `TASK-KERNEL-001.md`: errx 结构化错误模型的原子任务定义，实现 12 种 ErrorKind、Error 结构体及链遍历方法，stdlib-only 无依赖。
+      - `TASK-KERNEL-002.md`: timex 时钟抽象的原子任务定义，实现 Clock 接口及 RealClock、FixedClock、FakeClock 三种实现。
+      - `TASK-KERNEL-003.md`: obsx 可观测抽象的原子任务定义，定义 Logger/Metrics/Tracer/Span 接口、Noop 零值实现和 SecretString 脱敏。
+      - `TASK-KERNEL-004.md`: syncx 并发控制原语的原子任务定义，实现 SemaphoreLimiter 信号量和 WorkerGroup 错误收集与取消传播。
+      - `TASK-KERNEL-005.md`: lifecycx 组件生命周期的原子任务定义，实现按序启动、逆序停止和启动失败时逆序回滚已启动组件。
+      - `TASK-KERNEL-006.md`: shutdownx 优雅停机的原子任务定义，实现 LIFO 顺序的 Hook 管理器和基于 signal.NotifyContext 的 OS 信号处理。
+    - `DESIGN.md`: kernel 12 子包架构设计文档，含各子包接口决策、6 项 ADR 记录和内部依赖图。
+    - `IMPLEMENTATION-PLAN.md`: kernel 17 任务实现计划，含依赖 DAG、分阶段并行策略、回滚方案和总工时估算。
+    - `SPEC.md`: kernel L0 原语层规格 v2.0.0，定义 12 子包的 WHEN/THEN 行为规格、接口契约和 18 条测试用例。
+    - `TRACEABILITY.md`: kernel 需求追溯矩阵 v2.2，覆盖 12 FR + 12 BR + 8 NFR 的全链路追溯，含覆盖率仪表盘。
+    - `goal.md`: kernel 模块 1.0 发布版本的 Goal 定位与实现标准，定义 12 子包能力范围、量化目标、核心接口基线和验收清单。
+  - redisx
+    - tasks
+      - `TASK-REDISX-006.md`: Redis 分布式锁 Locker 实现任务：涵盖 Acquire/Renew/Lua guarded Release 与 holder token 校验
+      - `TASK-REDISX-007.md`: Counter 原子计数器与 fixed-window RateLimitHelper 限流器实现任务
+      - `TASK-REDISX-008.md`: redisx 健康检查、连接池统计、低基数 Hook 事件与静态依赖守卫实现任务
+      - `TASK-REDISX-009.md`: redisx 集成测试、性能基准、README/CHANGELOG 与发布 DoD 证据补齐任务
+  - resiliencx
+    - tasks
+      - `TASK-RESILIENCX-000.md`: resiliencx 项目骨架初始化任务：创建 go.mod、doc.go 及公共错误变量
+      - `TASK-RESILIENCX-001.md`: 定义 CircuitBreaker、Bulkhead、RateLimiter 接口及 Option 类型的任务
+      - `TASK-RESILIENCX-002.md`: 实现 Timeout 超时策略函数：覆盖正常完成、超时返回 ErrTimeout、ctx 取消三种场景
+      - `TASK-RESILIENCX-003.md`: 实现 Retry 指数退避重试策略，支持 max_retries 上限和 context 取消传播
+      - `TASK-RESILIENCX-004.md`: 实现 CircuitBreaker 熔断器三态转换（Closed/Open/Half-Open）与并发安全
+      - `TASK-RESILIENCX-005.md`: 实现 Bulkhead 舱壁并发控制：信号量限流、等待队列与 Available 槽位查询
+      - `TASK-RESILIENCX-006.md`: 实现 RateLimiter 令牌桶限流器：Allow/Wait 方法与并发安全令牌补充
+      - `TASK-RESILIENCX-007.md`: 实现 Fallback 降级策略：primary 成功返回结果，失败时执行 secondary 兜底
+      - `TASK-RESILIENCX-008.md`: 实现弹性策略组合：以装饰器模式嵌套执行 timeout/retry/circuit breaker 等多策略
+      - `TASK-RESILIENCX-009.md`: resiliencx 集成测试与性能基准任务：验证端到端场景、策略调用开销与 race 检测
+      - `TASK-RESILIENCX-010.md`: resiliencx 文档与发布 DoD 任务：创建 README、CHANGELOG、示例代码并验证覆盖率与 race
+    - `IMPLEMENTATION-PLAN.md`: resiliencx 弹性策略库分阶段实现计划，含 11 个任务的依赖 DAG 与 CI Gate 矩阵
+    - `SPEC.md`: resiliencx 弹性策略库规格：定义 timeout/retry/circuit breaker/bulkhead/rate limiter/fallback 原语
+    - `TRACEABILITY.md`: resiliencx 需求追溯矩阵：6 FR + 8 BR + 4 NFR 到 AC/TC 的完整验证链路
+    - `goal.md`: resiliencx 1.0 版 Goal 定位文档，定义弹性治理能力范围、发布验收清单与 v1.2+ 演进方向
+  - riskx
+    - `SPEC.md`: riskx 风控引擎规格：定义事前风控检查、回撤熔断、KillSwitch 和风险指标计算
+    - `TRACEABILITY.md`: riskx 需求追溯矩阵：8 FR + 5 BR + 5 NFR 到 8 AC/TC 的标准化 §1-§7 追溯结构
+    - `goal.md`: riskx 风控引擎 Goal 目标文件：定义 v0.1.0-draft 版本定位、统一风控门禁与成功标准
+  - schedulex
+    - tasks
+      - `TASK-SCHEDULEX-000.md`: schedulex 项目骨架任务，创建 go.mod、doc.go、errors.go 和公共错误变量定义
+      - `TASK-SCHEDULEX-001.md`: 定义 Scheduler 接口、Job 结构体和 Trigger 类型，支持 cron/interval/delay 三种触发方式
+      - `TASK-SCHEDULEX-002.md`: 实现 Scheduler 的 Schedule、Cancel、Start 方法，包含任务注册、参数校验和调度循环启动
+      - `TASK-SCHEDULEX-003.md`: 实现 OverlapPolicy 策略（Skip/Queue/Replace），处理任务重叠执行的并发控制
+      - `TASK-SCHEDULEX-004.md`: 实现 MisfirePolicy 策略（Skip/RunOnce/CatchUp），处理错过触发的补偿执行
+      - `TASK-SCHEDULEX-005.md`: 实现 Stop 方法的优雅停机，支持等待正在执行的任务完成或超时强制取消
+      - `TASK-SCHEDULEX-006.md`: 实现 EventSink 生命周期事件回调，支持 job 触发、开始、完成、失败和 misfire 事件通知
+      - `TASK-SCHEDULEX-007.md`: 实现 Locker 分布式锁接口，支持锁获取、TTL 校验和 NoopLocker 默认实现
+      - `TASK-SCHEDULEX-008.md`: 实现 Clock 可注入时钟抽象，支持 RealClock 和 MockClock，便于确定性测试
+      - `TASK-SCHEDULEX-009.md`: schedulex 集成测试与性能基准，覆盖全流程端到端验证和 Schedule 注册开销测量
+      - `TASK-SCHEDULEX-010.md`: schedulex 文档与 Release DoD 验证任务，创建 README、CHANGELOG、示例，确保覆盖率 ≥ 80%
+      - `TASK-SCHEDULEX-011.md`: 定义 OverlapPolicy、MisfirePolicy 枚举和 EventSink、Locker、Clock 辅助接口
+    - `IMPLEMENTATION-PLAN.md`: schedulex 调度器分阶段实现计划：12 个任务分 Foundation/Features/Quality 三阶段执行
+    - `SPEC.md`: schedulex 调度运行时规格：支持 cron/interval/delay 触发、overlap/misfire 策略与分布式锁
+    - `TRACEABILITY.md`: schedulex 需求追溯矩阵：9 FR + 8 BR + 6 NFR 到 9 TC 与 22 AC 的完整追溯链路
+    - `goal.md`: schedulex 模块 1.0 发布目标定位，定义统一任务调度运行时的 MUST/SHOULD/MAY 能力、职责边界与发布验收标准
+  - strategyx
+    - `SPEC.md`: strategyx 策略工厂规格 v1.0.0，定义策略接口、注册表、参数管理、版本管理、信号输出和策略组合的完整技术规范
+    - `TRACEABILITY.md`: strategyx 需求追溯矩阵 v1.1，追踪 8 条 FR、5 条 BR、5 条 NFR 与测试用例和验收标准的完整链路
+    - `goal.md`: strategyx 模块目标定位，定义统一策略接口、注册表、参数管理、版本管理和策略组合六大核心目标
+  - taosx
+    - tasks
+      - `TASK-TAOSX-001.md`: taosx 基础任务，实现 Config 归一化与校验、NewClient 工厂函数和 driver 注入机制
+      - `TASK-TAOSX-002.md`: taosx SQL 执行接口任务，实现 Exec 和 Query 的非空校验、context 传播和 Rows 迭代
+      - `TASK-TAOSX-003.md`: taosx 批量写入任务，实现 WriteBatch 的字段校验和 SchemalessWrite 协议处理
+      - `TASK-TAOSX-004.md`: taosx 健康检查与生命周期任务，实现 Health 检查、幂等 Close 和 degraded 状态管理
+      - `TASK-TAOSX-005.md`: taosx 可观测性任务，实现 taosx_client_* 指标、noop 默认实现和日志脱敏
+      - `TASK-TAOSX-006.md`: taosx 模块 CI 与发布阶段任务：定义 go.mod、单元测试、集成测试、benchmark、README 和 CHANGELOG 的完成要求
+    - `IMPLEMENTATION-PLAN.md`: taosx 实现计划，定义三阶段依赖 DAG、六项任务拆分、CI Gate 矩阵和风险回滚策略
+    - `SPEC.md`: taosx TDengine 存储适配器规格 v1.0.1，定义 Client/Driver 契约、配置归一化、SQL 执行、批量写入和健康检查
+    - `TRACEABILITY.md`: taosx 追溯矩阵，追踪 10 条 FR、8 条 BR、6 条 NFR 与 19 个测试用例和 10 个验收标准的完整链路
+    - `goal.md`: taosx v1.0.1 目标定位，定义可审计、可测试、可替换驱动的 TDengine 存储适配器契约目标与成功标准
+  - testkitx
+    - plan
+      - `PLAN-TESTKITX-000.md`: testkitx 项目骨架实现计划：创建 go.mod、doc.go、errors.go、testkitx.go，定义包结构和公共错误
+      - `PLAN-TESTKITX-001.md`: FakeConfig 实现计划：基于内存 map 的配置源，实现 configx.Reader 接口，含并发安全和边界测试
+      - `PLAN-TESTKITX-002.md`: FakeLogger 实现计划：将日志记录到内存 slice，实现 observex.Logger 接口和断言方法
+      - `PLAN-TESTKITX-003.md`: FakeMeter 实现计划：将 metrics 记录到内存 map，实现 observex.Meter 接口和 Counter/Histogram/Gauge 断言
+      - `PLAN-TESTKITX-004.md`: FakeTracer 实现计划：将 spans 记录到内存，实现 observex.Tracer 接口和 contract test harness
+      - `PLAN-TESTKITX-005.md`: FakeClock 与 FakeBreaker 实现计划：确定性可控时钟（不调用 time.Now）和可控熔断状态切换
+      - `PLAN-TESTKITX-006.md`: Eventually 与 assert API 实现计划：轮询条件断言函数，使用 testing.T 而非 panic，超时输出清晰诊断
+      - `PLAN-TESTKITX-007.md`: GoldenUpdate 与 fixture loader 实现计划：环境变量控制的 golden file 更新、JSON fixture 加载和 secret 检查
+      - `PLAN-TESTKITX-008.md`: BoundaryCheck 实现计划：基于 go list 的生产包 import 边界扫描，防止 testkitx 进入生产依赖图
+      - `PLAN-TESTKITX-009.md`: GoroutineLeakCheck 实现计划：基于 runtime.Stack 的 goroutine 泄漏检测，通过 t.Cleanup 自动注册
+      - `PLAN-TESTKITX-010.md`: testkitx Release DoD 实现计划：创建 README、CHANGELOG、示例代码、benchmark 并验证全量 CI 门禁通过
+      - `PLAN-TESTKITX-OVERVIEW.md`: testkitx 实现总览：架构拓扑、11 个 Task 的 DAG 依赖图、四阶段里程碑和需求覆盖矩阵汇总
+    - prompt
+      - scores
+        - `claude.md`: testkitx Prompt 阶段评分报告，Claude 评分 95/100 含扣分明细
+      - `PROMPT-TESTKITX-000.md`: testkitx 项目骨架编码 Prompt：创建 go.mod、doc.go、errors.go、Makefile、LICENSE 等基础文件
+      - `PROMPT-TESTKITX-001.md`: FakeConfig 编码 Prompt：基于内存 map 实现 configx.Reader 接口，包含 Gherkin 行为规范和验证命令
+      - `PROMPT-TESTKITX-002.md`: FakeLogger 编码 Prompt：实现 observex.Logger 接口，提供 AssertLogged/AssertNoErrors 断言能力
+      - `PROMPT-TESTKITX-003.md`: FakeMeter 编码 Prompt：实现 observex.Meter 接口，提供 Counter/Histogram/Gauge 内存记录与断言
+      - `PROMPT-TESTKITX-004.md`: FakeTracer 编码 Prompt：实现 observex.Tracer 接口，记录 spans 到内存并提供 AssertSpanCount/AssertTraceID
+      - `PROMPT-TESTKITX-005.md`: FakeClock 与 FakeBreaker 编码 Prompt：确定性时钟和可控熔断器，强制执行 BR-002 不得调用 time.Now
+      - `PROMPT-TESTKITX-006.md`: Eventually 编码 Prompt：轮询断言函数实现，要求使用 testing.T 而非 panic，超时输出清晰诊断信息
+      - `PROMPT-TESTKITX-007.md`: GoldenUpdate 编码 Prompt：golden file 管理工具实现，环境变量控制更新开关，CI 中禁止设置 GOLDEN_UPDATE=1
+      - `PROMPT-TESTKITX-008.md`: BoundaryCheck 开发提示词，通过 go list 验证生产包不含 testkitx 依赖
+      - `PROMPT-TESTKITX-009.md`: GoroutineLeakCheck 开发提示词，检测测试中 goroutine 泄漏并输出堆栈
+      - `PROMPT-TESTKITX-010.md`: testkitx 文档与 Release DoD 提示词，验证 16 项发布就绪条件
+    - tasks
+      - `TASK-TESTKITX-000.md`: testkitx 项目骨架任务，创建 go.mod 和 doc.go 定义包结构
+      - `TASK-TESTKITX-001.md`: FakeConfig 实现任务，内存配置源实现 configx.Reader 接口
+      - `TASK-TESTKITX-002.md`: FakeLogger 实现任务，内存日志记录器实现 observex.Logger 接口
+      - `TASK-TESTKITX-003.md`: FakeMeter 实现任务，内存 metrics 记录器支持 Counter/Histogram/Gauge
+      - `TASK-TESTKITX-004.md`: FakeTracer 实现任务，内存 span 记录器实现 observex.Tracer 接口
+      - `TASK-TESTKITX-005.md`: FakeClock + FakeBreaker 实现任务，可控制时间和熔断状态
+      - `TASK-TESTKITX-006.md`: Eventually 实现任务，轮询条件断言直到满足或超时
+      - `TASK-TESTKITX-007.md`: GoldenUpdate 实现任务，通过 GOLDEN_UPDATE 环境变量控制 golden file 更新
+      - `TASK-TESTKITX-008.md`: BoundaryCheck 实现任务，扫描生产 import graph 防 testkitx 泄露
+      - `TASK-TESTKITX-009.md`: GoroutineLeakCheck 实现任务，检测测试中 goroutine 泄漏
+      - `TASK-TESTKITX-010.md`: testkitx 文档与 Release DoD 任务，验证覆盖率及 CI Gate
+    - `IMPLEMENTATION-PLAN.md`: testkitx 整体实现计划：展示三阶段依赖 DAG（骨架→核心 Fake→辅助工具→质量门禁），总工时 22h
+    - `SPEC.md`: testkitx 23 节完整规格：定义 Fake/Eventually/Golden/Boundary/Leak 等测试基础设施的 FR、BR、接口契约和 CI 门禁
+    - `TRACEABILITY.md`: testkitx 需求追溯矩阵 v1.1：覆盖 10 FR、7 BR、5 NFR、10 AC 的全链路 TC→FR 反向映射
+    - `goal.md`: testkitx 1.0 发布目标文档：定义测试基础设施的核心价值、能力边界、契约规范和发布验收清单
+  - transportx
+    - tasks
+      - `TASK-TRANSPORTX-001.md`: Envelope Schema + Payload Limits 实现任务，定义信封结构与限制校验
+      - `TASK-TRANSPORTX-002.md`: Endpoint Model + Registry 实现任务，定义端点结构与注册表接口
+      - `TASK-TRANSPORTX-003.md`: ServiceIdentity 实现任务，定义含 scopes/tenant 的服务身份结构
+      - `TASK-TRANSPORTX-004.md`: Runtime Lifecycle + Drain 实现任务，定义运行时状态机与 Drain 语义
+      - `TASK-TRANSPORTX-005.md`: DeliveryReceipt 实现任务，定义回执结构含状态/延迟/重试决策
+      - `TASK-TRANSPORTX-006.md`: Error Taxonomy 实现任务，13 个核心传输错误码与重试分类映射
+      - `TASK-TRANSPORTX-006b.md`: transportx 错误分类子任务：定义认证错误、截止时间错误和重试/DLQ 错误的错误码与测试用例
+      - `TASK-TRANSPORTX-006c.md`: transportx 错误分类子任务：定义 QoS 违规错误和模式违规错误的错误码与测试用例
+      - `TASK-TRANSPORTX-007.md`: transportx QoS 分类任务：实现 5 级 QoS 枚举及硬规则校验，禁止关键事件使用尽力投递
+      - `TASK-TRANSPORTX-008.md`: transportx 编解码接口任务：定义 Codec 接口并提供默认 JSON 实现，支持按端点插拔编解码器
+      - `TASK-TRANSPORTX-009.md`: transportx 主题注册中心任务：实现 TopicRegistry 接口，支持主题注册、解析和重复检测
+      - `TASK-TRANSPORTX-010.md`: transportx 方法注册中心任务：实现 MethodRegistry 接口，支持方法注册与重试分类（只读/幂等/不安全）
+      - `TASK-TRANSPORTX-011.md`: transportx Schema 注册中心任务：实现 SchemaRegistry 接口，支持版本管理、兼容性检查和变更分类
+      - `TASK-TRANSPORTX-012.md`: transportx 中间件链任务：实现 14 个中间件按强制顺序执行，脱敏必须在日志和追踪之前完成
+      - `TASK-TRANSPORTX-013.md`: transportx 控制面任务：实现 ControlPlane 接口，支持 kill switch、暂停、恢复、镜像和金丝雀操作
+      - `TASK-TRANSPORTX-014.md`: transportx 背压与舱壁任务：实现背压策略（阻塞/丢弃/快速失败/溢出磁盘）和舱壁并发限制
+      - `TASK-TRANSPORTX-015.md`: transportx 重试与死信任务：实现有界重试机制和死信队列路由，保留追踪上下文和失败元数据
+      - `TASK-TRANSPORTX-016.md`: transportx 授权中间件任务：校验 ServiceIdentity 作用域，拒绝未授权访问且不泄露端点密钥
+      - `TASK-TRANSPORTX-017.md`: transportx 截止时间与时钟偏差任务：实现截止时间执行和单调时钟偏差检测，返回不同错误码
+      - `TASK-TRANSPORTX-018.md`: transportx 幂等性中间件任务：基于幂等键防重复发布，不同摘要冲突时返回幂等冲突错误
+      - `TASK-TRANSPORTX-019.md`: transportx 执行模式任务：实现四种执行模式（实盘/纸单/回放/干跑）的门禁执行逻辑
+      - `TASK-TRANSPORTX-020.md`: transportx 发件箱/收件箱 SPI 任务：定义 Outbox 和 Inbox 接口，仅定义 SPI 不含业务编排
+      - `TASK-TRANSPORTX-021.md`: transportx 审计面任务：定义 AuditSink 和 ReplaySource 接口，审计记录不可变且不含机密数据
+      - `TASK-TRANSPORTX-022.md`: transportx 数据分级与脱敏任务：实现四级数据分级（公开/内部/机密/绝密），机密级以上强制脱敏
+      - `TASK-TRANSPORTX-023.md`: transportx Schema 兼容性任务：实现兼容性检查和破坏性变更检测，破坏性变更需主版本号升级
+      - `TASK-TRANSPORTX-024.md`: transportx 一致性测试套件任务：实现涵盖全部 25 个测试用例的统一一致性测试执行和报告
+      - `TASK-TRANSPORTX-025.md`: transportx CI 门禁与发布证据任务：配置 12 个 CI 门禁，生成 changelog、标签和一致性报告
+    - `IMPLEMENTATION-PLAN.md`: transportx 实现计划，27 个任务三阶段依赖 DAG 与 CI Gate 矩阵
+    - `SPEC.md`: transportx 规格文档，定义统一通信层的 26 项 FR 与六通信平面
+    - `TRACEABILITY.md`: transportx 追溯矩阵，FR/BR/NFR 到 AC/TC/Task 的完整映射链路
+    - `goal.md`: transportx 目标文档，定义传输契约的分层定位与成功标准
+  - xlib-evidence
+    - tasks
+      - `TASK-XLIBEVIDENCE-001.md`: xlib-evidence 模块 FR-001 功能的实现任务规格，定义范围、非范围和验收标准。
+      - `TASK-XLIBEVIDENCE-002.md`: xlib-evidence 模块 FR-002 功能的实现任务规格，定义范围、非范围和验收标准。
+      - `TASK-XLIBEVIDENCE-003.md`: xlib-evidence 模块 FR-004 功能的实现任务规格，定义范围、非范围和验收标准。
+      - `TASK-XLIBEVIDENCE-003b.md`: xlib-evidence 模块 FR-003 功能的实现任务规格，定义范围和非范围。
+      - `TASK-XLIBEVIDENCE-004.md`: xlib-evidence 模块 FR-005 功能的实现任务规格，定义范围、非范围和验收标准。
+      - `TASK-XLIBEVIDENCE-005.md`: xlib-evidence 模块 FR-001 功能的实现任务规格，定义范围、非范围和验收标准。
+    - `IMPLEMENTATION-PLAN.md`: xlib-evidence 模块实现计划，分三阶段：覆盖率收集、验证报告、远程证据查询
+    - `SPEC.md`: xlib-evidence 模块规格，定义证据收集与发布运行时的完整 23 节结构和接口契约
+    - `TRACEABILITY.md`: xlib-evidence 追溯矩阵，5 条功能需求、4 条业务规则和 5 条非功能需求的全链路闭环验证
+    - `ci-workflow.yaml`: xlib-evidence 的 CI/CD 工作流参考模板，含测试、门禁、证据清单验证和密钥扫描
+    - `goal.md`: xlib-evidence 模块的目标定义文档，声明证据收集与发布运行时的边界、对外契约和验收标准。
+  - xlib-harness
+    - tasks
+      - `TASK-XLIBHARNESS-001.md`: xlib-harness 模块 FR-001 功能的实现任务规格，定义范围、非范围和验收标准。
+      - `TASK-XLIBHARNESS-002.md`: xlib-harness 模块 FR-002 功能的实现任务规格，定义范围、非范围和验收标准。
+      - `TASK-XLIBHARNESS-003.md`: xlib-harness 模块 FR-003 功能的实现任务规格，定义范围、非范围和验收标准。
+      - `TASK-XLIBHARNESS-004.md`: xlib-harness 模块 FR-004 功能的实现任务规格，定义范围、非范围和验收标准。
+      - `TASK-XLIBHARNESS-005.md`: xlib-harness 模块 FR-005 功能的实现任务规格，定义范围、非范围和验收标准。
+    - `IMPLEMENTATION-PLAN.md`: xlib-harness 模块的实现计划，分阶段描述核心生成器、门禁检查和边界自举的任务编排与验证命令。
+    - `SPEC.md`: xlib-harness 模块的可执行规格文档，定义生成器与门禁执行器的功能需求、接口契约、数据模型和 CI 门禁。
+    - `TRACEABILITY.md`: xlib-harness 模块的追溯矩阵，记录 FR/BR/NFR 到 AC 和 TC 的全链路映射以及反向追溯表。
+    - `ci-workflow.yaml`: xlib-harness 仓库的 CI/CD 工作流参考模板，定义测试、lint、信任对齐和密钥扫描四项作业。
+    - `goal.md`: xlib-harness 模块的目标定义文档，声明生成器与门禁执行器的发布定位、边界、对外契约和验收标准。
+  - xlib-standard
+    - analysis
+      - `governance.md`: 治理维度分析，整理分支治理、下游登记和仓库角色等治理来源与使用边界。
+      - `rules.md`: 规则维度分析，整理债务治理、安全策略和 AI 审查自动化等规则来源与迁移风险。
+      - `runtime.md`: 运行时维度分析，索引 harness 配置、goalcli 运行时和证据协议等 gate 契约。
+      - `template.md`: 模板维度分析，记录模板生成契约和模块边界要求及独立验证边界。
+    - evidence
+      - `EVID-XLIB-000.md`: TASK-XLIB-000 验证证据，记录治理运行时与冗余目录删除的 PASS 验收结果。
+      - `EVID-XLIB-001.md`: TASK-XLIB-001 验证证据，记录 SPEC.md 23 节结构和 goal.md 文档对齐的 PASS 状态。
+      - `EVID-XLIB-002.md`: TASK-XLIB-002 验证证据，记录 Makefile、CI 和脚本骨架构建的 PENDING 待实现状态。
+      - `EVID-XLIB-003.md`: TASK-XLIB-003 验证证据，记录 pkg/templatex 核心包实现的 PENDING 待执行状态。
+      - `EVID-XLIB-004.md`: TASK-XLIB-004 验证证据，记录 release 标准实现和兼容性矩阵的 PENDING 状态。
+      - `EVID-XLIB-005.md`: TASK-XLIB-005 验证证据，记录生成库验收和集成验证的 PENDING 待执行状态。
+    - plan
+      - `PLAN.md`: 归档的历史执行计划，描述 5 个 PR 执行顺序、子任务依赖拓扑和验收命令。
+    - prompt
+      - `PROMPT-XLIB-000.md`: TASK-XLIB-000 上下文包，指导删除治理运行时与冗余目录的 PR-1 执行范围与验证。
+      - `PROMPT-XLIB-001.md`: TASK-XLIB-001 上下文包，指导重写 README、standard.md、INDEX.md 三文档的 PR-2 执行。
+      - `PROMPT-XLIB-002.md`: TASK-XLIB-002 上下文包，指导 Makefile、lint 脚本和 CI 配置的 PR-3 骨架代码执行。
+      - `PROMPT-XLIB-003.md`: TASK-XLIB-003 上下文包，指导 pkg/templatex 核心包和 contracts/examples 的 PR-4 实现。
+      - `PROMPT-XLIB-004.md`: TASK-XLIB-004 上下文包，指导 release manifest 生成和 semver 兼容矩阵的 PR-5 执行。
+      - `PROMPT-XLIB-005.md`: TASK-XLIB-005 上下文包，指导生成库验收、100 次自检和最终 gate 的验证流程。
+      - `PROMPT-XLIB-006.md`: TASK-XLIB-006 上下文包，指导 9 种 ErrorKind 和 Client New/Close 的 PR-4b 子任务执行。
+      - `PROMPT-XLIB-007.md`: TASK-XLIB-007 上下文包，指导 HealthCheck 和 NoopMetrics 5 个 P0 指标的 PR-4c 子任务执行。
+      - `PROMPT-XLIB-008.md`: TASK-XLIB-008 的编码上下文包，指导实现公共 API 模板、最小示例和 testkit 辅助包
+    - retrospective
+      - `RETRO.md`: xlib-standard 模块完整复盘报告，记录目标达成、经验教训和后续改进任务
+    - tasks
+      - `TASK-XLIB-000.md`: 清理 xlib-standard 仓库中治理运行时、冗余目录和历史文件的任务规格
+      - `TASK-XLIB-001.md`: 重写 xlib-standard 的 README 和 docs 目录以对齐五类标准库职责的任务规格
+      - `TASK-XLIB-002.md`: 重写 xlib-standard 的 Makefile、Gate 脚本和 CI 配置的任务规格
+      - `TASK-XLIB-003.md`: 实现 xlib-standard Config 结构体、Validate 和 Sanitize 方法及版本 API 的任务规格
+      - `TASK-XLIB-004.md`: 实现 xlib-standard 的 release manifest 生成和语义化版本兼容矩阵的任务规格
+      - `TASK-XLIB-005.md`: xlib-standard 最终验收任务：生成库验证、100 次自检脚本和 tag v1.0.0
+      - `TASK-XLIB-006.md`: 实现 xlib-standard 的 8 种 ErrorKind 和 Client New/Close 接口的任务规格
+      - `TASK-XLIB-007.md`: 实现 xlib-standard 的 HealthCheck 和 5 个 P0 Metrics 指标的任务规格
+      - `TASK-XLIB-008.md`: 实现 xlib-standard 公共 API 模板、basic 示例和 testkit 辅助包的任务规格
+    - `ANALYSIS.md`: xlib-standard 上游仓库的本地分析快照，记录标准结构、需求提取方法和证据边界，作为架构索引的输入。
+    - `CONFLICT-LEDGER.md`: xlib-standard 冲突账本，记录本地快照与上游标准之间的冲突处理结论和取舍依据。
+    - `COVERAGE-MANIFEST.md`: xlib-standard 本地分析的输入覆盖清单，声明 154 个输入文件的数量范围和关键工件列表。
+    - `FR-DETAIL.md`: xlib-standard 的功能需求明细索引，从上游快照抽取 52 条 FR 的非可执行追溯锚点记录。
+    - `IMPLEMENTATION-PLAN.md`: xlib-standard 模块的实现计划，定义任务 DAG、实现顺序、CI Gate 矩阵和风险回滚策略。
+    - `INDEX.md`: xlib-standard 上游 SSOT 索引，列出 27 个标准文档、9 个 ADR 和 harness.yaml gate 列表的映射关系。
+    - `PLAN.md`: xlib-standard 的实现计划，覆盖 Go 参考模板、生成器、门禁和证据运行时四类职责的任务分解。
+    - `README.md`: xlib-standard 目录的分析索引文档，定义模块五类职责、上游引用、当前权威工件和三级阅读规则。
+    - `REMOTE-EVIDENCE.md`: 记录远端证据引用口径，声明需由远端 API 或 artifact 重新证明的治理状态。
+    - `REVIEW-VERDICT.md`: 本地快照审查结论，评定快照结构完整可作为架构索引和迁移评审输入。
+    - `SNAPSHOT-BOUNDARY.md`: 定义 xlib-standard 本地快照的包含与不包含范围及更新同步条件。
+    - `SPEC.md`: xlib-standard 模块完整规格，定义 16 个 FR、BR、接口契约、测试策略和 CI 门禁。
+    - `TRACEABILITY.md`: 快照追溯矩阵，用 5 列格式记录 52 个 FR 的证据锚点与 archived-snapshot 状态。
+    - `goal.md`: xlib-standard v1.0 发布目标定位，定义五类职责、1.0 发布标准和完整验收清单。
+  - xlibgate
+    - tasks
+      - `TASK-XLIBGATE-000.md`: 创建 xlibgate 项目骨架（go.mod、CLI 入口 main.go、公共错误变量）的任务规格
+      - `TASK-XLIBGATE-001.md`: 实现 xlibgate CLI 子命令框架和 flag 参数绑定（check imports/gomod/baseline/release/all）
+      - `TASK-XLIBGATE-002.md`: 实现 xlibgate check imports 命令（依赖矩阵配置解析与 import 边界扫描）的任务规格
+      - `TASK-XLIBGATE-003.md`: 实现 xlibgate check gomod 命令（go mod tidy 整洁度检查）的任务规格
+      - `TASK-XLIBGATE-004.md`: 实现 xlibgate check baseline 命令（Go 版本一致性检查）的任务规格
+      - `TASK-XLIBGATE-005.md`: 实现 xlibgate check release 命令（release evidence 完整性校验）的任务规格
+      - `TASK-XLIBGATE-006.md`: 实现 xlibgate check all 聚合命令和统一 JSON/human-readable 输出格式的任务规格
+      - `TASK-XLIBGATE-007.md`: xlibgate 端到端集成测试任务，验证全部子命令的 exit code 和输出格式正确性
+      - `TASK-XLIBGATE-008.md`: xlibgate 模块的文档与 Release DoD 任务规格，定义 README/CHANGELOG 创建及发布门禁验证标准
+      - `TASK-XLIBGATE-009.md`: xlibgate l2 子命令组任务规格，覆盖 manifest 校验、契约检查、证据验证和发布就绪判定
+      - `TASK-XLIBGATE-010.md`: xlibgate trust 子命令框架任务规格，定义统一 JSON 输出 schema 和 reason_code 枚举
+      - `TASK-XLIBGATE-011.md`: xlibgate trust identity 任务规格，定义五源身份比对检查器的实现标准
+      - `TASK-XLIBGATE-012.md`: xlibgate trust template-residue 任务规格，定义下游仓库模板残留短语扫描的实现标准
+      - `TASK-XLIBGATE-013.md`: xlibgate trust release-consistency 任务规格，定义七源版本一致性校验的实现标准
+      - `TASK-XLIBGATE-014.md`: xlibgate trust maturity 任务规格，定义 11 维工厂级成熟度判定检查器的实现标准
+      - `TASK-XLIBGATE-015.md`: xlibgate trust import-boundary 任务规格，定义基于 FOUNDATION-DEPS.yaml 的导入边界检查器实现标准
+      - `TASK-XLIBGATE-016.md`: xlibgate trust testkit-prod-import 任务规格，定义生产代码中 testkitx 导入检测的实现标准
+      - `TASK-XLIBGATE-017.md`: xlibgate trust secret-redaction 任务规格，定义文档密钥和私有端点扫描器的实现标准
+      - `TASK-XLIBGATE-018.md`: xlibgate trust fleet-status 任务规格，定义 20 模块舰队状态聚合检查器的实现标准
+      - `TASK-XLIBGATE-019.md`: xlibgate trust 集成测试与文档任务规格，定义 trust 子命令组的集成测试和文档更新标准
+      - `TASK-XLIBGATE-TRUST-PROMPT.md`: xlibgate Trust Alignment 子命令组的上下文包，汇总 TASK-010 至 TASK-019 的实现约束和验收标准
+    - `DESIGN.md`: xlibgate CLI 门禁工具的架构设计方案，包含组件设计、ADR 和 Trust Alignment 架构
+    - `IMPLEMENTATION-PLAN.md`: xlibgate check 子命令组的实现计划，含依赖 DAG、任务并行策略和风险评估
+    - `PLAN.md`: xlibgate trust 子命令组的实现计划，含 8 个 Trust 检查器的并行开发策略和里程碑
+    - `SPEC.md`: xlibgate 完整功能规格 v1.1.2，定义 check/l2/trust 三组子命令的 FR/BR/NFR 和 TC
+    - `TRACEABILITY.md`: xlibgate 需求追溯矩阵 v1.5，覆盖 19 条 FR、10 条 BR、18 条 NFR 的全链路映射
+    - `goal.md`: xlibgate 1.0 发布目标定位文档，定义能力范围、契约边界和发布验收标准
+  - `foundation-modules.md`: 六大基础模块定位与边界文档，描述 kernel/configx/observex/testkitx/resiliencx/schedulex 的职责、依赖矩阵和建设顺序。
+- plans
+  - `001-credential-rotation-sre.md`: sre 子仓库硬编码凭据轮换实施计划，包含分步操作指南、验证命令和停止条件
+  - `002-fix-audit-status-crash.md`: 修复 audit-status.py 全模式崩溃 bug 的实施计划，为缺失的 .foundationx JSON 文件增加错误处理
+  - `003-fix-or-short-circuit.md`: 修复 audit-status.py 中 Python `or` 短路导致空列表被误判的实施计划
+  - `004-rebuild-release-manifest.md`: 重建 release/manifest/latest.json 过期统计数据的实施计划，使其与 STATUS.md 一致
+  - `005-remove-duplicate-test-code.md`: 删除 test_audit_status.py 中重复函数定义的实施计划，消除 copy-paste 产物
+  - `README.md`: 实施计划索引文档，列出所有 Plan 的执行顺序、优先级、依赖关系和当前状态
+- release
+  - manifest
+    - `latest.json`: 项目发布清单最新快照，记录组件总数、版本统计、阻塞项等供 CI 消费的仪表盘数据
+    - `template.json`: 发布清单模板文件，定义 manifest JSON 的零点 schema 结构供新项目初始化使用
+  - trust
+    - `foundation-maturity-evidence-matrix-20260615.md`: Foundation 成熟度证据矩阵，记录各模块 release/factory 状态、开放阻塞项和可本地验证的证据边界
+    - `index.json`: Trust 对齐索引文件，聚合模块成熟度摘要、开放阻塞项统计和投影守卫状态
+    - `open-blockers.json`: 开放阻塞项清单，按模块和严重级别列出当前 6 个未解决的 Foundation 阻塞项
+    - `projection-guard.json`: 投影守卫配置文件，记录公共文档投影一致性合约版本和漂移检测原因码
+    - `summary.json`: 信任发布摘要快照，汇总 spec/impl/release/live/factory 五维完成计数
+- scripts
+  - tests
+    - `test_arbiter.py`: arbiter.py 端到端测试，覆盖通过/缺失/红线/分差/异构分歧/预算耗尽等仲裁场景
+    - `test_audit_status.py`: audit-status.py 回归测试，验证跨文档一致性、多维成熟度投影、fact-layer 不变量与信任快照
+    - `test_pipeline.py`: pipeline.py 测试，覆盖 status/next 命令及 claude/codex/copilot 多运行时状态管理
+    - `test_rule_scorer.py`: rule-scorer.py 单元测试，覆盖 spec/matrix/tasks/plan/prompt/code 全部六阶段的评分逻辑
+  - `arbiter.py`: 确定性评分仲裁器，按四源协议合并多平台评分并产出 verdict 与 next_action
+  - `audit-status.py`: 跨文档一致性检查器，验证 STATUS/README/ARCHITECTURE 与 FoundationX fact-layer 的一致性和不变量
+  - `auto-deliver-on-complete.sh`: 自动交付脚本，在 task_complete 事件后自动提交、密钥扫描、验证并合并到 main 分支
+  - `check.mjs`: Harness 健康检查器，验证 CLAUDE.md、hooks、LSP、skills 等基础设施文件完整性与注册状态
+  - `gc-scan.mjs`: Harness GC 扫描器，对仓库执行 8 维确定性健康检查并输出终端或 JSON 格式报告
+  - `outer-metrics-eval.sh`: 外部质量指标评估器，计算 scorer 评分与真实质量指数的相关系数并触发 Goodhart 信号
+  - `outer-metrics-from-git.sh`: 从 git 历史机械计算模块真实质量指标（rework/override 计数等）并写入运行时状态文件
+  - `outer-metrics-validate.sh`: CI 守卫脚本，拒绝 LLM agent 对 outer-metrics 目录的未授权写入以符合宪法 §14.2
+  - `pipeline.py`: 管线驱动器 CLI，提供 status/arbitrate/next/reset 命令管理评分管线阶段状态
+  - `rule-scorer.py`: 纯规则评分引擎，作为独立于 LLM 的第 4 评分源对 6 个管线阶段进行确定性评估
+  - `score-validate.py`: Scorer 输出 JSON schema 校验器，确保各平台评分数据符合规范后 arbiter 才可接受
+  - `version-bump.sh`: 语义化版本自动递增工具，支持 manifest 和 trust 双目标的 patch/minor/major bump 及 JSON 镜像同步

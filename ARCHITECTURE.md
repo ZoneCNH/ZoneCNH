@@ -52,7 +52,7 @@ x.go ───────────────► 基座运行时 / L2.5 / �
 ### 业务流与反馈
 
 ```text
-market-data (18) ──────────────► market_regime ──┐
+market-data (13) ──────────────► market_regime ──┐
   domain-market (Bar/Tick/OB)     S1-S7 状态     │
   质量门禁 → 特征 → 分类器       bias/permission  │
                                                ├──► regime-engine ──► DecisionCard
@@ -128,7 +128,7 @@ flowx ──► strategyx ──► maestro ──► riskx ──► orderx ─
 | ------ | ----------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 基座   | 标准源、生成器、证据运行时、L0 原语、L1 运行时横切能力、测试期证据、存储扩展、稳定契约与传输契约                                         | xlib-standard, xlib-harness, xlib-evidence, kernel, configx, observex, testkitx, resiliencx, schedulex, xlibgate, redisx, kafkax, natsx, postgresx, taosx, ossx, clickhousex, contracts, transportx |
 | L2.5   | 领域共享值对象和语义模型，上层统一依赖                                                                                        | domainx, decimalx, domain-market, domain-exchange, domain-macro                                                                                         |
-| 数据域 | 行情、宏观、另类数据采集                                                                                                      | market-data (13 SDK + 5 Provider), macro-data (10), alternative-data                                                                                       |
+| 数据域 | 行情、宏观、另类数据采集                                                                                                      | market-data (13 SDK), macro-data (10), alternative-data                                                                                       |
 | 分析域 | 因子计算、特征存储、因子评估、市场/宏观环境分类、数据流管线、M×S 联合决策（三引擎：market_engine→S / macro_engine→M / regime_engine→M+S） | factor-engine, feature-store, factor-eval, market_regime, macro_regime, regime-engine, ms_brain, flowx                                                              |
 | 决策域 | 信号生成、历史回测、参数优化、策略工厂、工作流编排（并行协作）                                                                  | signal-factory, backtest-engine, optimizer, backtestx, strategyx, maestro                                                                          |
 | 执行域 | 风险管理、订单执行、仓位管理、结算                                                                                              | risk-engine, order-engine, portfolio-engine, settlement, riskx, orderx, positionx                                                                              |
@@ -364,11 +364,6 @@ Foundation 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中在 
 | 数据域                | [lighter](https://github.com/ZoneCNH/lighter)                   | -      | ✅ 已有   | ███░ 80% | Lighter DEX SDK                                                                           |
 | 数据域                | [upbit](https://github.com/ZoneCNH/upbit)                       | -      | ✅ 已有   | ███░ 80% | Upbit CEX SDK                                                                             |
 | 数据域                | [coinglass](https://github.com/ZoneCNH/coinglass)               | -      | ✅ 已有   | ███░ 80% | 衍生品聚合数据                                                                            |
-| 数据域                | [binance-market](https://github.com/ZoneCNH/binance-market)     | v0.1.0 | ✅ P0     | ███░ 80% | Binance Kline/Ticker Provider                                                             |
-| 数据域                | [bybit-market](https://github.com/ZoneCNH/bybit-market)         | v0.1.0 | ✅ P0     | ███░ 80% | Bybit Kline/Ticker Provider                                                               |
-| 数据域                | [bitget-market](https://github.com/ZoneCNH/bitget-market)       | v0.1.0 | ✅ P0     | ███░ 80% | Bitget Kline/Ticker Provider                                                              |
-| 数据域                | [okx-market](https://github.com/ZoneCNH/okx-market)             | v0.1.0 | ✅ P0     | ███░ 80% | OKX Kline/Ticker Provider                                                                 |
-| 数据域                | [coinbase-market](https://github.com/ZoneCNH/coinbase-market)   | v0.1.0 | ✅ P0     | ███░ 80% | Coinbase Kline/Ticker Provider                                                            |
 | **数据域 · 宏观**     |                                                                 |        |           |          |                                                                                           |
 | 数据域                | [fred](https://github.com/ZoneCNH/fred)                         | -      | ✅ 已有   | ███░ 80% | 美联储 FRED                                                                               |
 | 数据域                | [treasury](https://github.com/ZoneCNH/treasury)                 | -      | ✅ 已有   | ███░ 80% | 美国财政部                                                                                |
@@ -446,11 +441,11 @@ Foundation 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中在 
 | L2.5              | domain-exchange                                                                                           | `/home/domain-exchange/`                    |
 | L2.5              | domain-macro                                                                                              | `/home/domain-macro/`                       |
 | **数据域 · 行情** |                                                                                                           |                                             |
-| 数据域            | binance, binance-market                                                                                   | `/home/binance/`, `/home/binance-market/`   |
-| 数据域            | okx, okx-market                                                                                           | `/home/okx/`, `/home/okx-market/`           |
-| 数据域            | bybit, bybit-market                                                                                       | `/home/bybit/`, `/home/bybit-market/`       |
-| 数据域            | bitget, bitget-market                                                                                     | `/home/bitget/`, `/home/bitget-market/`     |
-| 数据域            | coinbase, coinbase-market                                                                                 | `/home/coinbase/`, `/home/coinbase-market/` |
+| 数据域            | binance                                                                                                   | `/home/binance/`                            |
+| 数据域            | okx                                                                                                       | `/home/okx/`                                |
+| 数据域            | bybit                                                                                                     | `/home/bybit/`                              |
+| 数据域            | bitget                                                                                                    | `/home/bitget/`                             |
+| 数据域            | coinbase                                                                                                  | `/home/coinbase/`                           |
 | 数据域            | gate                                                                                                      | `/home/gate/`                               |
 | 数据域            | kucoin                                                                                                    | `/home/kucoin/`                             |
 | 数据域            | mexc                                                                                                      | `/home/mexc/`                               |
