@@ -1,10 +1,10 @@
 # contracts 规格
 
 - Status: Approved
-- Spec-Version: v1.1.0
+- Spec-Version: v1.2.0
 - Last-Updated: 2026-06-17
 - Layer: 基座 · 跨域接口契约
-- Module-Version: v1.1.0-spec
+- Module-Version: v1.2.0-spec
 - Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `kernel`, `transportx`
 
 > 公开投影 caveat：Status=Approved 与 100.0% 覆盖证据不等同于 factory-grade；机器事实层保持 factory=false。
@@ -201,6 +201,16 @@ AND MUST NOT use `github.com/ZoneCNH/xlib-standard`
 WHEN `go.mod` declares the module name
 THEN it MUST be `module github.com/ZoneCNH/contracts`
 
+### FR-008: Binance C/S ingestion contract
+
+WHEN exchange adapter (e.g. module/binance) sends normalized market data to the ingestion pipeline
+THEN contracts MUST define `MarketDataService` interface with `Ingest(stream IngestRequest) (stream IngestResult, error)` method signature
+AND MUST define `IngestRequest`, `IngestAck`, `IngestReject`, `IngestResult`, and `RejectCode` DTOs
+AND all DTO fields MUST have snake_case JSON tags (BR-009)
+AND `IngestResult` MUST carry exactly one of `Ack` or `Reject`
+AND `RejectCode` MUST cover all documented failure scenarios (retryable, terminal_validation, terminal_conflict, unauthorized, rate_limited, server_unavailable, contract_violation, quality_gate, ordering_violation)
+AND `IngestRequest` fields `request_id`, `source`, `product_line`, `instrument_key`, `event_type`, `event_time`, `received_at`, `schema_version`, `payload`, and `source_metadata` MUST be required
+
 ---
 
 ## 7. 行为约束
@@ -336,66 +346,175 @@ type MacroHistoryRequest struct {
 
 ---
 
+### 8.4 Binance C/S ingestion wire contract
 
+`MarketDataService` is a logical gRPC service contract for upstream exchange adapters. `contracts` owns the DTO shapes, method signatures, and wire semantics only. Transport binding (proto generation, gRPC server registration, TLS, deadlines, retries, persistence) remains outside this module per §4.2 and §4.3 governance boundaries.
 
-### 8.4 Ingestion Contract (docs-only baseline)
+> **命名约定（Naming Convention）**：本 §8.4 中所有 DTO 的 JSON tag 遵循 snake_case（BR-009）。domain-market 层使用 Go PascalCase struct 字段（无 JSON tag，BR-MKT-002）。market-data 接收侧使用 camelCase 文档字段名。以下映射表声明跨层命名等价关系，实现层负责转换：
 
-> **状态**: Docs Baseline Published / Runtime Pending。本节定义 Binance C/S ingestion 的文档级 wire contract，不声明 Go 源码或 proto 编译已就绪。运行时实现在 domain-market canonical 类型冻结后启动。
-
-#### 8.4.1 MarketDataService
+| contracts (JSON tag) | domain-market (Go field) | market-data (doc field) | 语义 |
+|---|---|---|---|
+| `source` | `Venue` | `venue` | 交易所/来源场所标识 |
+| `product_line` | `ProductLine` | `productLine` | canonical 产品线枚举 |
+| `instrument_key` | `InstrumentKey` | `instrumentKey` | canonical 标的身份 |
+| `event_type` | `EventType` | `eventType` | canonical 事件类型 |
+| `event_time` | `EventTime` | `eventTime` | 交易所事件时间 |
+| `received_at` | `ReceivedAt` | `receivedAt` | adapter 本地接收时间 |
+| `schema_version` | — | `schemaVersion` | 契约 schema 版本 |
+| `sequence` | — | `sourceSequence` | 来源序列号 |
 
 ```go
-// MarketDataService 定义行情采集端与受理端之间的双向流摄入契约。
-// 由 module/binance/server 实现，module/binance/client 调用。
+// MarketDataService receives normalized upstream market-data ingestion requests
+// from exchange adapters (e.g. module/binance).
+// Transport: gRPC bidirectional stream.
+// Producer: module/binance client.
+// Consumer: module/binance server → module/market-data downstream dispatch.
 type MarketDataService interface {
-    // Ingest 接受行情事件的请求流，逐条返回处理结果。
-    Ingest(ctx context.Context, requests <-chan IngestRequest) (<-chan IngestResult, error)
+    // Ingest accepts a stream of IngestRequest and returns per-request outcomes.
+    Ingest(stream IngestRequest) (stream IngestResult, error)
 }
-```
 
-#### 8.4.2 IngestRequest
-
-```go
-// IngestRequest 行情事件摄入请求
+// IngestRequest is an immutable item submitted by an exchange adapter.
+// All fields are required unless marked optional.
 type IngestRequest struct {
-    StreamID       string          `json:"stream_id"`       // gRPC stream 标识
-    IdempotencyKey string          `json:"idempotency_key"` // 稳定去重键，retry 时不变
-    ProductLine    string          `json:"product_line"`    // spot / usdm_futures / coinm_futures / options
-    InstrumentKey  string          `json:"instrument_key"`  // canonical instrument 标识
-    EventType      string          `json:"event_type"`      // trade / kline / bookTicker / depth / funding
-    EventTime      time.Time       `json:"event_time"`      // 交易所事件时间
-    ReceivedAt     time.Time       `json:"received_at"`     // adapter 接收时间
-    SourceSequence int64           `json:"source_sequence,omitempty"` // 源序列号
-    Payload        json.RawMessage `json:"payload"`         // canonical MarketEventEnvelope 载荷
-    Quality        json.RawMessage `json:"quality"`         // MarketDataQuality 序列化
+    // RequestID is a unique client-generated identifier for this request.
+    // Server uses it for idempotency dedup and ACK correlation.
+    RequestID string `json:"request_id"`
+
+    // Source identifies the upstream producer (e.g. "binance").
+    // Must not include secrets, host paths, or environment-specific tokens.
+    Source string `json:"source"`
+
+    // ProductLine is the canonical product line from domain-market.
+    // Allowed values: "spot", "um_perp", "cm_perp", "option".
+    ProductLine string `json:"product_line"`
+
+    // InstrumentKey carries the canonical instrument identity as defined by domain-market.
+    // Must include venue, product_line, instrument_type, symbol and
+    // contract/option dimensions sufficient for collision-free identity.
+    InstrumentKey json.RawMessage `json:"instrument_key"`
+
+    // EventType is the canonical event type from domain-market.
+    // Examples: "trade", "kline", "bookTicker", "depthUpdate", "markPrice",
+    // "fundingRate", "openInterest", "longShortRatio".
+    EventType string `json:"event_type"`
+
+    // EventTime is the exchange-assigned event timestamp.
+    // Must be non-zero. Server rejects events where EventTime is far in the future
+    // or too stale relative to ReceivedAt.
+    EventTime time.Time `json:"event_time"`
+
+    // ReceivedAt is the adapter-local time when the event was received.
+    // Used for latency calculation, stale-gate, and future-gate checks.
+    ReceivedAt time.Time `json:"received_at"`
+
+    // SchemaVersion identifies the IngestRequest schema version (semver).
+    // Server uses it to detect mismatches before deserializing payload.
+    SchemaVersion string `json:"schema_version"`
+
+    // Payload carries the serialized canonical market fact.
+    // Must deserialize to domain-market MarketFactEnvelope.
+    Payload json.RawMessage `json:"payload"`
+
+    // Sequence is an optional monotonic sequence number from the source stream.
+    // When present, server uses it for gap and out-of-order detection.
+    Sequence int64 `json:"sequence,omitempty"`
+
+    // OrderingKey is an optional partition key for ordered processing.
+    // Format: "{source}:{product_line}:{instrument}:{channel}".
+    OrderingKey string `json:"ordering_key,omitempty"`
+
+    // SourceMetadata carries adapter-specific metadata (stream_id, connector_version, etc.).
+    // Must not contain secrets.
+    SourceMetadata map[string]string `json:"source_metadata"`
 }
-```
 
-#### 8.4.3 IngestResult / IngestAck / IngestReject
-
-```go
-// IngestResult 单条摄入结果，Ack 和 Reject 二选一
+// IngestResult is a terminal outcome for exactly one request_id.
+// Exactly one of Ack or Reject is non-nil.
 type IngestResult struct {
-    Ack    *IngestAck    `json:"ack,omitempty"`
-    Reject *IngestReject `json:"reject,omitempty"`
+    RequestID string        `json:"request_id"`
+    Ack       *IngestAck    `json:"ack,omitempty"`
+    Reject    *IngestReject `json:"reject,omitempty"`
 }
 
-// IngestAck 确认接受
+// IngestAck confirms the receiver accepted one request into the downstream dispatch boundary.
 type IngestAck struct {
+    RequestID      string `json:"request_id"`
     StreamID       string `json:"stream_id"`
-    IdempotencyKey string `json:"idempotency_key"`
+    AcceptedCount  int32  `json:"accepted_count"`
+    DuplicateCount int32  `json:"duplicate_count"`
     Durable        bool   `json:"durable"`
 }
 
-// IngestReject 拒绝
+// IngestReject explains why one request was not accepted.
 type IngestReject struct {
-    StreamID       string `json:"stream_id"`
-    IdempotencyKey string `json:"idempotency_key"`
-    Reason         string `json:"reason"`    // market-data §4.4 定义的 reject reason
-    Retryable      bool   `json:"retryable"`
+    RequestID    string     `json:"request_id"`
+    RejectCode   RejectCode `json:"reject_code"`
+    Reason       string     `json:"reason"`
+    Retryable    bool       `json:"retryable"`
 }
-```text
 
+// RejectCode classifies rejection reasons for adapter retry policy decisions.
+type RejectCode string
+
+const (
+    // RejectRetryable: temporary unavailability; caller should retry with backoff.
+    RejectRetryable RejectCode = "retryable"
+
+    // RejectTerminalValidation: request fails validation; retry won't help.
+    RejectTerminalValidation RejectCode = "terminal_validation"
+
+    // RejectTerminalConflict: duplicate request_id with conflicting payload; retry won't help.
+    RejectTerminalConflict RejectCode = "terminal_conflict"
+
+    // RejectUnauthorized: caller lacks credentials or permissions.
+    RejectUnauthorized RejectCode = "unauthorized"
+
+    // RejectRateLimited: caller exceeded rate limit; should back off.
+    RejectRateLimited RejectCode = "rate_limited"
+
+    // RejectServerUnavailable: server cannot accept due to internal state; retryable.
+    RejectServerUnavailable RejectCode = "server_unavailable"
+
+    // RejectContractViolation: request violates wire contract (missing fields, wrong enum, type mismatch).
+    RejectContractViolation RejectCode = "contract_violation"
+
+    // RejectQualityGate: event fails quality gate (stale, future, dirty, unreliable source).
+    RejectQualityGate RejectCode = "quality_gate"
+
+    // RejectOrderingViolation: sequence gap, reversal, or ordering_key mismatch detected.
+    RejectOrderingViolation RejectCode = "ordering_violation"
+)
+```
+
+#### 8.4.1 字段约束表
+
+| 字段 | 必填 | 说明 |
+|---|---|---|
+| `request_id` | 是 | 客户端生成的唯一标识；server 用于幂等去重和 ACK 关联 |
+| `source` | 是 | 稳定上游生产方标识如 `"binance"`；不得包含密钥或主机路径 |
+| `product_line` | 是 | domain-market ProductLine canonical 枚举值：`"spot"` / `"um_perp"` / `"cm_perp"` / `"option"` |
+| `instrument_key` | 是 | domain-market InstrumentKey JSON 序列化；包含 venue/product_line/instrument_type/symbol 及合约/期权维度 |
+| `event_type` | 是 | domain-market canonical event type |
+| `event_time` | 是 | 交易所事件时间；不得为零值 |
+| `received_at` | 是 | adapter 本地接收时间；用于延迟计算和时序门禁 |
+| `schema_version` | 是 | semver 格式；server 先校验 schema 兼容性再解析 payload |
+| `payload` | 是 | 必须可反序列化为 domain-market MarketFactEnvelope |
+| `sequence` | 否 | 来源序列号；存在时 server 必须检测 gap 和乱序 |
+| `ordering_key` | 否 | 分区内排序键；存在时 server 保证同 key 内顺序 |
+| `source_metadata` | 是 | 至少包含 stream_id 和 connector_version |
+
+#### 8.4.2 生产者/消费者
+
+- **Producer**: `module/binance` client 及未来 exchange adapter
+- **Consumer**: `module/binance` server → `module/market-data` downstream dispatch port
+- **Stability**: v1.x DTO 字段名和 JSON tag 稳定；字段删除/重命名为 breaking change，需 major version bump
+
+#### 8.4.3 与 MarketDataProvider 的关系
+
+`MarketDataService`（§8.4）是 ingestion 入口契约，用于 adapter → server → market-data 的北向数据流。
+`MarketDataProvider`（§8.1）是行情消费端口，用于 market-data → 策略/回测/因子引擎的南向数据流。
+两者服务不同的消费者，不互相替代。
 
 ---
 
@@ -617,6 +736,11 @@ When 读取 H1 标题和 `go.mod` module 声明
 Then H1 为 `# contracts`（非 `# xlib-standard`）
 AND `go.mod` 声明 `module github.com/ZoneCNH/contracts`
 
+**TC-009: Binance C/S ingestion contract**
+Given `MarketDataService`, `IngestRequest`, `IngestAck`, `IngestReject`, and `IngestResult` are defined
+When contract tests serialize/deserialize representative Binance spot, USDⓈ-M perpetual, COIN-M perpetual, and options ingestion requests
+Then all DTO fields are populated, JSON tags are stable, and reject codes cover all documented failure scenarios
+
 ### 15.3 Benchmark
 
 | 场景              | 目标    |
@@ -716,6 +840,7 @@ AND `go.mod` 声明 `module github.com/ZoneCNH/contracts`
 
 - [ ] 所有端口接口有 godoc 注释
 - [ ] 所有 DTO 有 JSON tag（snake_case）
+- [ ] Binance C/S ingestion contract defined (§8.4)
 - [ ] 所有 Event 实现满足 Event 接口
 - [ ] CHANGELOG.md 已更新（含 breaking changes）
 - [ ] breaking change 测试通过
@@ -761,6 +886,7 @@ AND `go.mod` 声明 `module github.com/ZoneCNH/contracts`
 | AC-005 | FR-005 | 验收标准 TC-005 | unit test |
 | AC-006 | FR-006 | 验收标准 TC-006 | unit test |
 | AC-007 | FR-007 | 验收标准 TC-008 | unit test |
+| AC-008 | FR-008 | 验收标准 TC-009 | unit test |
 
 | 日期       | 版本   | 变更内容   | 作者    |
 | ---------- | ------ | ---------- | ------- |
@@ -768,3 +894,4 @@ AND `go.mod` 声明 `module github.com/ZoneCNH/contracts`
 | 2026-06-14 | v1.0.1-spec | FR-006去测试化+BR违反后果列 | ZoneCNH |
 | 2026-06-14 | v1.0.1 | TRACEABILITY §1-§7 完整重建（6 FR + 10 BR + 8 NFR + 7 TC + 15 AC），对齐文档同步，版本升至 v1.0.1-spec | ZoneCNH |
 | 2026-06-14 | v1.1.0-spec | §5 边界声明重构（OWN/MUST NOT OWN/governance boundary）+ FR-007 Module Identity | ZoneCNH |
+| 2026-06-17 | v1.2.0-spec | §8.4 Binance C/S ingestion wire contract（MarketDataService + IngestRequest + IngestAck + IngestReject + RejectCode），FR-008，TC-009，DoD 条目 | ZoneCNH |

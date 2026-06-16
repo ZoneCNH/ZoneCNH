@@ -16,7 +16,7 @@ Source: module/contracts/SPEC.md
 | FR-005 | DTO 契约 — JSON tag snake_case、不可变、版本演进 | AC-FR-004: JSON round-trip + 不可变性 | TC-002, TC-007 | TASK-CONTRACTS-002 | Pending |
 | FR-006 | Breaking Change 检测 — 接口/DTO 变更感知与版本升级 | AC-FR-005: breaking change 检测通过 | TC-003 | TASK-CONTRACTS-003 | Pending |
 | FR-007 | Module Identity — README H1 与 go.mod module path 必须为 contracts | AC-007: Module Identity | TC-008 | TASK-CONTRACTS-005 | Pending |
-| FR-008 | Ingestion Contract — MarketDataService / IngestRequest / IngestResult 文档基线 | AC-FR-008: docs-only ingestion contract 可被 binance 引用 | TC-009 | TASK-CONTRACTS-005 | Pending |
+| FR-008 | Binance C/S ingestion contract — MarketDataService + IngestRequest + IngestAck + IngestReject + RejectCode DTOs | AC-008: Binance C/S ingestion contract | TC-009 | TASK-CONTRACTS-006 | Pending |
 
 
 | Requirement | Description | Acceptance Criteria | TC ID(s) | Task | Status |
@@ -31,7 +31,6 @@ Source: module/contracts/SPEC.md
 | BR-008 | contracts 只依赖 L2.5 领域共享层和 stdlib | AC-BR-008: 依赖纯洁 | CI Gate: `go mod tidy` + 依赖检查 | TASK-CONTRACTS-000 | Pending |
 | BR-009 | DTO 的 JSON tag 必须使用 snake_case | AC-FR-004: JSON tag snake_case | TC-002 (JSON round-trip) | TASK-CONTRACTS-002 | Pending |
 | BR-010 | 契约版本遵循 semver（breaking change → major） | AC-FR-005: semver版本策略 | TC-003 | TASK-CONTRACTS-003 | Pending |
-| BR-011 | Ingestion DTO 的 JSON tag 使用 snake_case，遵循 BR-009 和 §8.4 定义 | AC-FR-008: JSON tag 合规 | TC-009 | TASK-CONTRACTS-005 | Pending |
 
 ## §3 非功能需求追溯（NFR）
 
@@ -58,7 +57,7 @@ Source: module/contracts/SPEC.md
 | TC-006 | BR-004 | 单元测试 | 端口接口方法数检查（3-5 方法） |
 | TC-007 | FR-005, BR-005 | 单元测试 | DTO 不可变性检查 |
 | TC-008 | FR-007 | 单元测试 | Module Identity（README H1 与 go.mod module 声明） |
-| TC-009 | FR-008, BR-011 | 单元测试 | Ingestion Contract 文档基线 |
+| TC-009 | FR-008 | 单元测试 | Binance C/S ingestion contract（DTO serialization/deserialization + RejectCode coverage） |
 
 ## §5 全局 AC 注册表
 
@@ -69,6 +68,7 @@ Source: module/contracts/SPEC.md
 | AC-FR-003 | FR-004, BR-006 | TC-004 (Topic 唯一性) | Pending |
 | AC-FR-004 | FR-005, BR-001, BR-005, BR-009 | TC-002 + TC-007 (JSON round-trip + 不可变性) | Pending |
 | AC-FR-005 | FR-006, BR-003, BR-010 | TC-003 (Breaking change 检测) | Pending |
+| AC-FR-006 | FR-008 | TC-009 (Binance C/S ingestion contract) | Pending |
 | AC-BR-002 | BR-002 | CI Gate (PR 审查: 消费方/生产方/稳定期说明) | Pending |
 | AC-BR-004 | BR-004 | TC-006 (端口方法数 3-5) | Pending |
 | AC-BR-008 | BR-008 | CI Gate (go mod tidy + 依赖检查) | Pending |
@@ -80,14 +80,13 @@ Source: module/contracts/SPEC.md
 | AC-NFR-006 | NFR-006 | CI Gate (benchmark 对比) | Pending |
 | AC-NFR-007 | NFR-007 | Documentation evidence | Pending |
 | AC-NFR-008 | NFR-008 | TC-002 + CI Gate (错误格式检查: `"contracts: <desc>"`) | Pending |
-| AC-FR-008 | FR-008, BR-011 | TC-009 (Ingestion Contract 文档基线) | Pending |
 
 ## §6 覆盖率仪表盘
 
 | 类别 | 总数 | 已覆盖 | 覆盖率 | 状态 |
 | --- | --- | --- | --- | --- |
 | FR | 8 | 8 | 100% | ✅ |
-| BR | 11 | 11 | 100% | ✅ |
+| BR | 10 | 10 | 100% | ✅ |
 | NFR | 8 | 8 | 100% | ✅ |
 | TC | 9 | 9 | 100% | ✅ |
 | AC | 17 | 17 | 100% | ✅ |
@@ -100,6 +99,7 @@ Source: module/contracts/SPEC.md
 | 2026-06-09 | 初始版本（迁移前全局矩阵） | ZoneCNH |
 | 2026-06-14 | 完整重建：补全 BR-001/002/007/008/009/010 + NFR §1-§8 + TC→FR §4 + AC §5 + 仪表盘 §6 | ZoneCNH |
 | 2026-06-14 | 修复：FR行AC列改用AC ID引用、BR行AC列引用AC ID、补充AC-NFR-008（AC总数 15→16）、仪表盘更新 | ZoneCNH |
+| 2026-06-17 | 新增 FR-008 + TC-009 + AC-FR-006，修复 Acceptance Criteria Linkage 中 AC-008 映射（FR-003→FR-008），仪表盘更新（FR 7→8, TC 8→9, AC 16→17） | ZoneCNH |
 
 ## Acceptance Criteria Linkage
 
@@ -112,4 +112,4 @@ Source: module/contracts/SPEC.md
 | AC-005 | FR-005 | TC-005 | Covered by TC-005 test evidence |
 | AC-006 | FR-006 | TC-003 | Covered by TC-003 test evidence |
 | AC-007 | FR-007 | TC-008 | Covered by TC-008 test evidence |
-| AC-008 | FR-003 | TC-005 | Covered by TC-005 test evidence |
+| AC-008 | FR-008 | TC-009 | Covered by TC-009 test evidence |
