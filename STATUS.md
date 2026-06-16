@@ -345,6 +345,7 @@
 
 ### 🟢 数据域 · 行情（健康）
 
+- Dispatch：1 个（market-data），v0.1.1，runtime pending，进度 30%
 - SDK：12 个交易所适配器，全部 v0.1.1，进度 80%
 - C/S Module：1 个（binance），v1.0.0-spec，Spec-Only，0% 实现
 - **待确认**：SDK 全部 v0.1.1 tagged release，已通过生产验证？
