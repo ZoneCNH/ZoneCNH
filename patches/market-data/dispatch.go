@@ -127,13 +127,21 @@ func (r RejectReason) IsTerminal() bool {
 // ---- Binance Reject Mapping (§4.4.1) ----
 
 // MapBinanceReject maps binance-native reject codes to market-data outcomes.
+// For terminal_validation, the caller must supply the specific sub-reason
+// (contract_violation, quality_rejected, ordering_violation, unsupported_channel)
+// determined by the adapter's validation context.
 // Returns (outcome, reason) for dispatch response.
-func MapBinanceReject(binanceCode string) (DispatchOutcome, RejectReason) {
+func MapBinanceReject(binanceCode string, subReason RejectReason) (DispatchOutcome, RejectReason) {
 	switch binanceCode {
 	case "retryable":
 		return DispatchFailure{}, ""
 	case "terminal_validation":
-		return DispatchReject{}, RejectContractViolation
+		// Binance §9 terminal_validation maps to 4 market-data sub-categories (§4.4.1).
+		// Caller (binance adapter) determines the specific sub-reason from validation context.
+		if subReason == "" {
+			subReason = RejectContractViolation // safe default
+		}
+		return DispatchReject{}, subReason
 	case "terminal_conflict":
 		return DispatchReject{}, RejectIdempotencyConflict
 	case "unauthorized":
