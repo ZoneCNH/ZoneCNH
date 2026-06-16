@@ -518,7 +518,7 @@ module/domain-market/
 - [ ] DataProvider 契约稳定，fake provider 可复用
 - [ ] 与 domainx 无执行枚举重复归属（ADR + compile smoke）
 - [ ] 发布 manifest 含 CI 证据
-- [ ] Version 更新为 v1.0.0
+- [ ] Version 更新为 v1.1.0
 - [ ] CHANGELOG.md、MIGRATION.md、release manifest 齐全
 
 ## 23. 待解决问题
