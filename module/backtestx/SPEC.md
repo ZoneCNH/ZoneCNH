@@ -52,12 +52,14 @@
 
 ## 5. 消费者
 
-| 消费者       | 使用方式                              |
-| ------------ | ------------------------------------- |
-| strategyx    | 提交策略进行回测评估                 |
-| factor-eval  | 消费回测结果评估因子有效性           |
-| optimizer    | 使用回测结果进行参数优化             |
-| maestro      | 编排 workflow 中触发批量回测         |
+| 消费者       | 使用方式                              | 数据流向 |
+| ------------ | ------------------------------------- | -------- |
+| strategyx    | 提交策略进行回测评估                 | strategyx → backtestx（策略输入） |
+| factor-eval  | 消费回测结果评估因子有效性           | backtestx → factor-eval（回测报告） |
+| optimizer    | 使用回测结果进行参数优化             | backtestx → optimizer（指标/曲线） |
+| maestro      | 编排 workflow 中触发批量回测         | maestro → backtestx（触发）→ 结果流回 |
+
+> **代码依赖 vs 数据流**：上表"消费者"表示谁**调用/依赖** backtestx。数据流方向与之相反——例如 optimizer 消费回测结果（代码依赖 optimizer → backtestx），但回测数据从 backtestx **流向** optimizer（数据流 backtestx → optimizer）。ARCHITECTURE.md 业务流图使用数据流箭头。
 
 ---
 
