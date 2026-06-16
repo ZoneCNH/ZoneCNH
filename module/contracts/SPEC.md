@@ -209,7 +209,7 @@ THEN contracts MUST define `MarketDataService` interface with `Ingest(stream Ing
 AND MUST define `IngestRequest`, `IngestAck`, `IngestReject`, `IngestResult`, and `RejectCode` DTOs
 AND all DTO fields MUST have snake_case JSON tags (BR-009)
 AND `IngestResult` MUST carry exactly one of `Ack` or `Reject`
-AND `RejectCode` MUST cover all documented failure scenarios (retryable, terminal_validation, terminal_conflict, unauthorized, rate_limited, server_unavailable, contract_violation, quality_gate, ordering_violation)
+AND `RejectCode` MUST cover all documented failure scenarios (retryable, terminal_validation, terminal_conflict, unauthorized, rate_limited, server_unavailable, contract_violation, quality_rejected, ordering_violation, unsupported_channel)
 AND `IngestRequest` fields `request_id`, `source`, `product_line`, `instrument_key`, `event_type`, `event_time`, `received_at`, `schema_version`, `payload`, and `source_metadata` MUST be required
 
 ---
@@ -481,10 +481,13 @@ const (
     RejectContractViolation RejectCode = "contract_violation"
 
     // RejectQualityGate: event fails quality gate (stale, future, dirty, unreliable source).
-    RejectQualityGate RejectCode = "quality_gate"
+    RejectQualityRejected RejectCode = "quality_rejected"
 
     // RejectOrderingViolation: sequence gap, reversal, or ordering_key mismatch detected.
     RejectOrderingViolation RejectCode = "ordering_violation"
+
+	// RejectUnsupportedChannel: channel not in receiver support matrix.
+	RejectUnsupportedChannel RejectCode = "unsupported_channel"
 )
 ```
 
