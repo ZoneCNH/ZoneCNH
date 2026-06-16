@@ -635,7 +635,7 @@ github.com/ZoneCNH/binance/
 
 ## 22. Open Questions
 
-### Blocking
+### Resolved (was Blocking)
 
 | ID | 问题 | 状态 | 负责人 |
 |----|------|------|--------|
