@@ -4,7 +4,7 @@
 >
 > 规范来源：`docs/governance/TRACEABILITY.md`
 
-- Matrix-Version: v1.2.0
+- Matrix-Version: v1.3.0
 - Last-Updated: 2026-06-17
 - Spec-Reference: `module/binance/SPEC.md` v1.0.0
 
@@ -12,7 +12,7 @@
 
 ## §1 FR 追溯表
 
-> FR 描述与 SPEC §6 标题对齐；AC 编号与 §5 注册表对齐。
+> FR 描述与 SPEC §7 标题对齐；AC 编号与 §5 注册表对齐。
 
 | FR ID | 功能需求 | AC | TC ID(s) | Task | 实现状态 |
 |-------|----------|-----|----------|------|----------|
@@ -28,7 +28,7 @@
 
 ## §2 BR 追溯表
 
-> BR 编号与 SPEC §7 一致（BR-001 ~ BR-009）。BR-002/BR-003 已拆分为 client→server 与 server→client 各自独立 BR，对应 BOUNDARY-GATES §3/§4 的两个独立 CI gate。
+> BR 编号与 SPEC §8 一致（BR-001 ~ BR-009）。BR-002/BR-003 已拆分为 client→server 与 server→client 各自独立 BR，对应 BOUNDARY-GATES §3/§4 的两个独立 CI gate。
 
 | BR ID | 业务规则 | 验证方式 | Task | 实现状态 |
 |-------|----------|----------|------|----------|
@@ -48,19 +48,19 @@
 
 | NFR ID | 非功能需求 | 来源 (SPEC §) | 验证方式 |
 |--------|------------|---------------|----------|
-| NFR-001 | Client event normalization 延迟 P99 < 1ms | §16 性能预算 | `go test -bench BenchmarkNormalize` |
-| NFR-002 | Canonical mapping 延迟 P99 < 100μs | §16 性能预算 | `go test -bench BenchmarkCanonicalMapping` |
-| NFR-003 | Spool 写入延迟 P99 < 5ms | §16 性能预算 | `go test -bench BenchmarkSpoolWrite` |
-| NFR-004 | gRPC 单 event 投递延迟 P99 < 10ms | §16 性能预算 | integration test |
-| NFR-005 | Server validation 延迟 P99 < 100μs | §16 性能预算 | `go test -bench BenchmarkValidation` |
-| NFR-006 | Server idempotency check 延迟 P99 < 1ms | §16 性能预算 | `go test -bench BenchmarkIdempotencyCheck` |
-| NFR-007 | ACK lag (server receive → ACK send) P99 < 100ms | §16 性能预算 | integration test: client→server→client RTT 测量 |
-| NFR-008 | Client restart recovery 时间 < 10s | §16 性能预算 | integration test |
-| NFR-009 | 13 个 Prometheus metrics 正确暴露（按 product_line / reason 分组） | §17.1 Metrics | `GET /metrics` 端点检查 + `promtool` 校验 |
-| NFR-010 | 7 种 logging 事件正确分级（info/warn/debug/error） | §17.2 Logging | 日志级别检查 + 结构化字段验证 |
-| NFR-011 | API Key / Secret 从环境变量读取，不硬编码 | §18 安全 | CI Gate: `gitleaks detect --no-git` + 代码审查 |
-| NFR-012 | Secrets 不出现于 log、debug、admin 端点输出 | §18 安全 | CI Gate: `gitleaks detect --no-git` + AC-019 验证 |
-| NFR-013 | Admin 端点对外暴露时必须认证（mTLS 或反向代理）| §18 安全 | TC-009 + admin auth 集成测试 |
+| NFR-001 | Client event normalization 延迟 P99 < 1ms | §17 性能预算 | `go test -bench BenchmarkNormalize` |
+| NFR-002 | Canonical mapping 延迟 P99 < 100μs | §17 性能预算 | `go test -bench BenchmarkCanonicalMapping` |
+| NFR-003 | Spool 写入延迟 P99 < 5ms | §17 性能预算 | `go test -bench BenchmarkSpoolWrite` |
+| NFR-004 | gRPC 单 event 投递延迟 P99 < 10ms | §17 性能预算 | integration test |
+| NFR-005 | Server validation 延迟 P99 < 100μs | §17 性能预算 | `go test -bench BenchmarkValidation` |
+| NFR-006 | Server idempotency check 延迟 P99 < 1ms | §17 性能预算 | `go test -bench BenchmarkIdempotencyCheck` |
+| NFR-007 | ACK lag (server receive → ACK send) P99 < 100ms | §17 性能预算 | integration test: client→server→client RTT 测量 |
+| NFR-008 | Client restart recovery 时间 < 10s | §17 性能预算 | integration test |
+| NFR-009 | 13 个 Prometheus metrics 正确暴露（按 product_line / reason 分组） | §18.1 Metrics | `GET /metrics` 端点检查 + `promtool` 校验 |
+| NFR-010 | 7 种 logging 事件正确分级（info/warn/debug/error） | §18.2 Logging | 日志级别检查 + 结构化字段验证 |
+| NFR-011 | API Key / Secret 从环境变量读取，不硬编码 | §19 安全 | CI Gate: `gitleaks detect --no-git` + 代码审查 |
+| NFR-012 | Secrets 不出现于 log、debug、admin 端点输出 | §19 安全 | CI Gate: `gitleaks detect --no-git` + AC-019 验证 |
+| NFR-013 | Admin 端点对外暴露时必须认证（mTLS 或反向代理）| §19 安全 | TC-009 + admin auth 集成测试 |
 
 ---
 
@@ -135,5 +135,6 @@
 | 日期 | 版本 | 变更内容 | 作者 |
 |------|------|----------|------|
 | 2026-06-16 | v1.0.0 | 从零创建 §1-§7 标准追溯矩阵；从 SPEC.md v1.0.0 提取 FR-001~007、BR-001~011、TC-001~009、NFR-001~013、AC-001~020；映射 TASK-BINANCE-ROOT-000~007 | ZoneCNH |
-| 2026-06-17 | v1.1.0 | **修复 FR/BR/AC 错位**：(1) §1 FR 描述与 SPEC §6 标题对齐，AC 引用按语义重新分配（FR-002↔身份, FR-004↔交付, FR-005↔幂等, FR-006↔admin, FR-007↔边界）；(2) §2 BR 编号统一为 SPEC §7 的 8 条（移除越权的 BR-009/010/011，将其概念归入对应 BR 验证条目）；(3) §5 新增 AC-021/022/023 覆盖 FR-007 边界强制；(4) §4 TC 扩展至 12 条以支撑边界 gate 验证；(5) §6 仪表盘对齐新计数 | ZoneCNH |
-| 2026-06-17 | v1.2.0 | **BR-002/BR-003 拆分 + Status 标准化**：原 BR-002 (Client/Server Boundary) 双向约束拆为 BR-002 (Client→Server, BOUNDARY-GATES §3) + BR-003 (Server→Client, BOUNDARY-GATES §4)，原 BR-003~008 顺移至 BR-004~009；§4 TC-010 BR 引用扩展为 BR-002, BR-003；§6 仪表盘 BR 总数 8→9；同步 SPEC §7 BR 拆分；root SPEC Status 从非标 `Docs Baseline Approved` 标准化为 `Review` | ZoneCNH |
+| 2026-06-17 | v1.1.0 | **修复 FR/BR/AC 错位**：(1) §1 FR 描述与 SPEC §7 标题对齐，AC 引用按语义重新分配（FR-002↔身份, FR-004↔交付, FR-005↔幂等, FR-006↔admin, FR-007↔边界）；(2) §2 BR 编号统一为 SPEC §7 的 8 条（移除越权的 BR-009/010/011，将其概念归入对应 BR 验证条目）；(3) §5 新增 AC-021/022/023 覆盖 FR-007 边界强制；(4) §4 TC 扩展至 12 条以支撑边界 gate 验证；(5) §6 仪表盘对齐新计数 | ZoneCNH |
+| 2026-06-17 | v1.2.0 | **BR-002/BR-003 拆分 + Status 标准化**：原 BR-002 (Client/Server Boundary) 双向约束拆为 BR-002 (Client→Server, BOUNDARY-GATES §3) + BR-003 (Server→Client, BOUNDARY-GATES §4)，原 BR-003~008 顺移至 BR-004~009；§4 TC-010 BR 引用扩展为 BR-002, BR-003；§6 仪表盘 BR 总数 8→9；同步 SPEC §8 BR 拆分；root SPEC Status 从非标 `Docs Baseline Approved` 标准化为 `Review` | ZoneCNH |
+| 2026-06-17 | v1.3.0 | **SPEC 23 节模板对齐**：(1) root SPEC 新增 §1 Metadata 标准节（包裹 frontmatter）；(2) 原 §0 Upstream Contract Gate 移至 Appendix D（保留全部内容，标题改名）；(3) 章节倒序重编号 §1~22 → §2~23（22 个 sed 操作）；(4) 内部自引用更新（§9 Data Model → §10）；(5) TRACEABILITY 同步：NFR 来源引用 §16/§17/§18 → §17/§18/§19（§17.X observability 子节随之），SPEC §6/§7 引用 → §7/§8 | ZoneCNH |
