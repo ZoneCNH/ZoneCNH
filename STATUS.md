@@ -82,7 +82,7 @@
 | ------------------------------------------------------------- | ------ | -------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | [decimalx](https://github.com/ZoneCNH/decimalx)               | v1.0.0 | ████ 100% | 100%       | 高精度十进制类型；v1.0.0 GitHub Release 已发布，8 FR Done；factory grade；live/soak N/A（纯值对象库）                                                                   |
 | [domainx](https://github.com/ZoneCNH/domainx)                 | v1.0.1 | ████ 100% | 100%       | 领域共享值对象：Order / Position / Trade / Portfolio / ExecutionReport；公开 v1.0.1 release/tag 已观测并完成 trust 对账；factory grade；live/soak N/A（纯值对象库） |
-| [domain-market](https://github.com/ZoneCNH/domain-market)     | v1.0.0 | ████ 100% | 100%       | 市场数据域模型；v1.0.0 GitHub Release 已发布，7 FR Done；factory grade；live/soak N/A（纯值对象库）                                                                       |
+| [domain-market](https://github.com/ZoneCNH/domain-market)     | v1.1.0 | ████ 100% | 100%       | 市场数据域模型 + canonical 类型（ProductLine/InstrumentKey/MarketFactEnvelope）+ Binance C/S ingestion 语义；7 FR Done；factory grade；live/soak N/A（纯值对象库） |
 | [domain-macro](https://github.com/ZoneCNH/domain-macro)       | v1.0.0 | ████ 100% | 100%       | 宏观数据域模型；v1.0.0 GitHub Release 已发布，7 FR Done；factory grade；live/soak N/A（纯值对象库）                                                                       |
 | [domain-exchange](https://github.com/ZoneCNH/domain-exchange) | v1.0.0 | ████ 100% | 100%       | 交易域模型；v1.0.0 GitHub Release 已发布，7 FR Done；factory grade；live/soak N/A（纯值对象库）                                                                           |
 
@@ -93,7 +93,7 @@
 | --------------- | :--: | :--: | :-----: | :------: | :----: | :---: | :--: | :-----: | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | decimalx        |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ✅    | v1.0.0；100%；v1.0.0 GitHub Release 已发布，8 FR Done；factory grade；live/soak N/A（纯值对象库）                                                          |
 | domainx         |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ✅    | v1.0.1；100%；领域共享值对象：Order/Position/Trade/Portfolio/ExecutionReport；公开 v1.0.1 release/tag 已观测并完成 trust 对账；factory grade；live/soak N/A（纯值对象库） |
-| domain-market   |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ✅    | v1.0.0；100%；v1.0.0 GitHub Release 已发布，7 FR Done；factory grade；live/soak N/A（纯值对象库）                                                          |
+| domain-market   |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ✅    | v1.1.0；100%；新增 ProductLine/InstrumentKey/MarketFactEnvelope canonical 类型与 §10.1 Binance C/S ingestion 语义；7 FR Done；factory grade；live/soak N/A（纯值对象库） |
 | domain-macro    |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ✅    | v1.0.0；100%；v1.0.0 GitHub Release 已发布，7 FR Done；factory grade；live/soak N/A（纯值对象库）                                                          |
 | domain-exchange |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ✅    | v1.0.0；100%；v1.0.0 GitHub Release 已发布，7 FR Done；factory grade；live/soak N/A（纯值对象库）                                                          |
 

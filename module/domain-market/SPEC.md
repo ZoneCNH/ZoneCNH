@@ -569,3 +569,4 @@ module/domain-market/
 | 日期 | 版本 | 变更内容 | 作者 |
 |------|------|----------|------|
 | 2026-06-15 | v1.0.0 | 初始版本：L2.5 市场数据领域模型与质量门禁 | ZoneCNH |
+| 2026-06-17 | v1.1.0 | 新增 ProductLine/InstrumentKey/MarketFactEnvelope canonical 类型与 §10.1 Binance C/S ingestion 语义 | ZoneCNH |
