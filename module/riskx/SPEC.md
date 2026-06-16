@@ -15,9 +15,18 @@
 
 `riskx` 是执行域的风控引擎，负责对所有订单进行事前风控检查、执行仓位限额控制、监控回撤和触发熔断。它是订单进入交易所前的最后一道门禁，架构规则明确：策略只能通过 riskx 提交订单。
 
+## 2. 边界
+
+| 类型 | 说明 |
+| --- | --- |
+| Owns | 事前风控检查（CheckOrder）、仓位限额、回撤控制、熔断触发、风控事件日志 |
+| Depends on | `module/signal-factory`（接收 Signal 进行风控判断）、`module/positionx`（实时仓位查询）、`module/domain-market`（canonical 类型） |
+| Consumed by | `module/orderx`（通过风控后调用 Submit）、`module/maestro`（编排 workflow 中插入风控节点）、`module/observex`（风控事件告警） |
+| Excludes | 信号生成（→ signal-factory）、订单执行（→ orderx）、策略决策（→ strategyx）、仓位计算（→ positionx） |
+
 ---
 
-## 2. 问题与背景
+## 3. 问题与背景
 
 量化交易中的风控挑战：
 
