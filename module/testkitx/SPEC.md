@@ -1,6 +1,6 @@
 # testkitx 规格
 
-- Status: Review
+Status: Approved
 - Spec-Version: v0.7.3
 - Last-Updated: 2026-06-14
 - Layer: 基座 · 测试期证据
