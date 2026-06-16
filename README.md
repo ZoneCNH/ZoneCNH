@@ -41,11 +41,11 @@ L1 测试: testkitx (test-only)
 基座扩展: redisx / kafkax / natsx / postgresx / taosx / ossx / clickhousex / contracts / transportx
       │
       ▼
-L2.5: domainx / decimalx / domain-market / domain-macro / domain-exchange (5/5 v1.0.0 已发布；5/5 GitHub Release 已观测对账；5/5 factory grade；live/soak N/A)
+L2.5: domainx / decimalx / domain-market / domain-macro / domain-exchange (5/5 已发布；domain-market v1.0.1，其余 v1.0.0+；5/5 GitHub Release 已观测对账；5/5 factory grade；live/soak N/A)
       │
       ▼
 业务流: 数据域 → 分析域 ↔ 决策域 → 执行域
-数据域: market-data (18) / macro-data (10) / alternative-data
+数据域: market-data (19) / macro-data (10) / alternative-data
 分析域: factor-engine / feature-store / factor-eval / market_regime / macro_regime / regime-engine / ms_brain / flowx
        三引擎: market_engine(market facts → S state) / macro_engine(macro facts → M state) / regime_engine(M+S → action/risk/permission)
 决策域: signal-factory / backtest-engine / optimizer / backtestx / strategyx / maestro
@@ -61,11 +61,11 @@ L2.5: domainx / decimalx / domain-market / domain-macro / domain-exchange (5/5 v
 | --- | --- | --- | --- | --- |
 | `decimalx` | v1.0.0 | v1.0.0 | v1.0.0 GitHub Release 已发布；API freeze 完成 | [module/decimalx](module/decimalx/goal.md) |
 | `domainx` | v1.0.1 | v1.0.1 | 领域共享值对象基线；v1.0.1 GitHub Release 已发布 | [module/domainx](module/domainx/goal.md) |
-| `domain-market` | v1.0.0 | v1.0.0 | v1.0.0 GitHub Release 已发布；市场数据语义冻结 | [module/domain-market](module/domain-market/goal.md) |
+| `domain-market` | v1.0.1 | v1.0.1 | 市场数据域模型 + canonical 类型（ProductLine/InstrumentKey/MarketFactEnvelope）+ Binance C/S ingestion 语义 | [module/domain-market](module/domain-market/goal.md) |
 | `domain-macro` | v1.0.0 | v1.0.0 | v1.0.0 GitHub Release 已发布；no-lookahead 冻结 | [module/domain-macro](module/domain-macro/goal.md) |
 | `domain-exchange` | v1.0.0 | v1.0.0 | v1.0.0 GitHub Release 已发布；Exchange SPI 冻结 | [module/domain-exchange](module/domain-exchange/goal.md) |
 
-成熟度口径：5/5 已发布 v1.0.0+ GitHub Release（decimalx v1.0.0/domain-market v1.0.0/domain-macro v1.0.0/domain-exchange v1.0.0/domainx v1.0.1）；5/5 factory grade；live/soak N/A（纯值对象库，无运行时服务不需 EXT CI/adoption/soak 证据）。
+成熟度口径：5/5 已发布 v1.0.0+ GitHub Release（decimalx v1.0.0/domain-market v1.0.1/domain-macro v1.0.0/domain-exchange v1.0.0/domainx v1.0.1）；5/5 factory grade；live/soak N/A（纯值对象库，无运行时服务不需 EXT CI/adoption/soak 证据）。
 
 依赖顺序：`decimalx` -> `domainx` -> `domain-market` / `domain-macro` -> `domain-exchange`。v1.0.0 是各模块的发布版本，GitHub Release/tag 已观测并对账。5/5 factory grade；live/soak N/A（纯值对象库）。
 
@@ -108,7 +108,7 @@ L2.5: domainx / decimalx / domain-market / domain-macro / domain-exchange (5/5 v
 
 - [decimalx](https://github.com/ZoneCNH/decimalx) — 高精度十进制类型（Decimal/Price/Qty/Ratio/Money）；v1.0.0 GitHub Release 已发布 `公开`
 - [domainx](https://github.com/ZoneCNH/domainx) — 领域共享值对象：Order/Position/Trade/Portfolio/ExecutionReport 枚举与类型；L2.5 design baseline；公开 v1.0.1 GitHub Release/tag 已观测并已对账为 release=true；factory grade；live/soak N/A（纯值对象库） `公开`
-- [domain-market](https://github.com/ZoneCNH/domain-market) — 市场数据域模型（Tick/Quote/Bar/OrderBook）；v1.0.0 GitHub Release 已发布 `公开`
+- [domain-market](https://github.com/ZoneCNH/domain-market) — 市场数据域模型（Tick/Quote/Bar/OrderBook）+ canonical 类型（ProductLine/InstrumentKey/MarketFactEnvelope）+ Binance C/S ingestion 语义；v1.0.1 `公开`
 - [domain-macro](https://github.com/ZoneCNH/domain-macro) — 宏观经济领域共享模型：国家/地区/指标/发布日历、MacroPoint/MacroState；v1.0.0 GitHub Release 已发布 `公开`
 - [domain-exchange](https://github.com/ZoneCNH/domain-exchange) — 交易域模型（VenueAdapter 13 方法接口）；v1.0.0 GitHub Release 已发布 `公开`
 
