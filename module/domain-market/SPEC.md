@@ -1,8 +1,8 @@
 # domain-market 规格
 
 - Status: Approved
-- Spec-Version: v1.0.0
-- Last-Updated: 2026-06-15
+- Spec-Version: v1.0.1
+- Last-Updated: 2026-06-17
 - Layer: L2.5 领域共享
 - Module-Version: v1.0.1
 - Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `kernel`, `decimalx`
