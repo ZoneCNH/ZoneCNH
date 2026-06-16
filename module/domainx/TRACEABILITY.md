@@ -18,7 +18,6 @@ Source: `module/domainx/SPEC.md`
 | FR-007 | 序列化兼容 — snake_case、decimal 字符串与 RFC3339 时间 | AC-007 | TC-003 | TASK-DOMAINX-005 | Done |
 | FR-008 | 不可变性 — 无公开 setter、copy-on-write 与并发读安全 | AC-008 | TC-008 | TASK-DOMAINX-005 | Done |
 
-## §2 业务规则追溯（BR）
 
 | Requirement | Description | 违反后果 | 验证方式 | Task | Status |
 | --- | --- | --- | --- | --- | --- |

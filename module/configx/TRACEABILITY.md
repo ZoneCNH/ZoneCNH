@@ -26,9 +26,8 @@
 
 ---
 
-## 2. 业务规则追溯（BR）
 
-| BR     | Description                | Acceptance Criteria                   | Test Case                  | Task             | Status   |
+| BR     | Description                | Acceptance Criteria                   | TC ID(s) | Task             | Status   |
 | ------ | -------------------------- | ------------------------------------- | -------------------------- | ---------------- | -------- |
 | BR-001 | LastWins 合并策略          | 后加载 Source 覆盖先加载的同名 key    | TC-001                     | - | TASK-CONFIGX-003 | ✅        |
 | BR-002 | Config.Name 必须非空       | Validate 时检查 Name                  | TC-008                     | - | TASK-CONFIGX-005 | ✅        |

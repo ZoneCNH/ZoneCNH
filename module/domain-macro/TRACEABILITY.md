@@ -21,9 +21,8 @@
 
 ---
 
-## §2 业务规则追溯（BR）
 
-| BR | Rule | 违反后果 | Verification Method | Task | Status |
+| BR | Rule | 违反后果 | TC ID(s) | Task | Status |
 |----|------|----------|---------------------|------|--------|
 | BR-MAC-001 | IsVisibleAt 必须 fail-closed：缺失 AvailableAt 的点不可见 | 前视偏差，回测结果不可信 | TC-MAC-001 缺失 AvailableAt 拒绝断言；TC-MAC-002 IsVisibleAt 返回 false | - | 🔲 |
 | BR-MAC-002 | FilterMacroPointsForBacktest 必须拒绝缺失 AvailableAt 的点，避免前视偏差 | 回测引入未来信息，策略评估失真 | TC-MAC-001 Validate 失败拒绝；Property 测试随机时间组合验证 | - | 🔲 |

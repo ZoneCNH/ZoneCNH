@@ -23,9 +23,8 @@ Source: SPEC.md v1.0.0 | Tasks: TASK-SCHEDULEX-000 ~ TASK-SCHEDULEX-011
 
 ---
 
-## §2 业务规则追溯（BR）
 
-| Requirement   | Description                                                  | Acceptance Criteria                                     | Test Case         | Task     | Status   |
+| Requirement   | Description                                                  | Acceptance Criteria                                     | TC ID(s) | Task     | Status   |
 | ------------- | ------------------------------------------------------------ | ------------------------------------------------------- | ----------------- | -------- | -------- |
 | BR-001        | Schedule 必须校验 trigger 合法性（cron 语法 / interval > 0） | 非法 trigger → ErrInvalidTrigger，不注册 job            | TC-001            | TASK-002 | ⬜        |
 | BR-002        | 同一 JobID 重复注册返回 ErrDuplicateJob                      | 重复 Schedule 同一 ID → ErrDuplicateJob                 | TC-009            | TASK-002 | ⬜        |
