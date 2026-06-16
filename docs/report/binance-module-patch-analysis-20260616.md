@@ -207,14 +207,15 @@ PR-005 (binance runtime impl)     ← 全部依赖就绪
 | PR-003: contracts proto | ✅ contracts §8.4 docs-only 基线已定义 | Done |
 | PR-002: domain-market upgrade | ✅ v1.1.0 canonical 类型已落地 | Done |
 | PR-004: transportx policy | ⏸️ 推迟 — contracts §8.4 + binance server SPEC 覆盖 | Deferred |
-| PR-005: binance runtime impl | ⏸️ 阻塞 — 等待 OQ-002 决策 | Blocked |
+| PR-005: binance runtime impl | ⏸️ 阻塞 — 等待 domain-market/contracts 运行时冻结（OQ-002 已关闭：market-data dispatch port 接口已定义） | Blocked |
 
 ### 7.3 剩余未解决
 
 | 项目 | 状态 | 阻塞因素 |
 |------|------|----------|
-| OQ-002（binance/server）| 待解决 | downstream dispatch failure strategy: retry-first vs rollback-first |
-| binance runtime implementation | Pending | 依赖 OQ-002 + domain-market/contracts 运行时冻结 |
+| OQ-002（binance/server）| ✅ 已确认 | binance SPEC OQ-002="dispatch port 接口是否已定义？" → market-data SPEC v0.1.1 已定义 DownstreamDispatchPort（12 字段 + 8 reject reasons + binance reject 映射）。dispatch 失败策略为 PR-005 设计决策 |
+| binance runtime implementation | Pending | 依赖 domain-market/contracts 运行时冻结（docs baseline 已就绪） |
+| market-data §10.1 Contract/Domain/Adapter Gate | ✅ docs baseline 通过 | Test Gate 待 runtime 实现 |
 
 ### 7.4 market-data 模块新增
 
