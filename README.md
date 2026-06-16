@@ -75,8 +75,8 @@ L2.5: domainx / decimalx / domain-market / domain-macro / domain-exchange (5/5 �
 
 ### 基座 · 基础设施
 - [xlib-standard](https://github.com/ZoneCNH/xlib-standard) — 标准事实源、Go Reference Template（Generator/Harness/Evidence 已拆分至 xlib-harness / xlib-evidence）；不作为运行时 import 依赖 `公开`
-- [xlib-harness](https://github.com/ZoneCNH/xlib-harness) — 模块生成器与门禁执行器：generate/scaffold、spec-lint、boundary-check、traceability-gate；release=false/factory=false：未发公开 git tag / GitHub Release `公开`
-- [xlib-evidence](https://github.com/ZoneCNH/xlib-evidence) — 证据收集与发布运行时：collect-coverage、generate-manifest、validate-manifest、report；release=false/factory=false：未发公开 git tag / GitHub Release `公开`
+- [xlib-harness](https://github.com/ZoneCNH/xlib-harness) — 模块生成器与门禁执行器：generate/scaffold、spec-lint、boundary-check、traceability-gate；✅ v0.1.0 GitHub Release 已发布 `公开`
+- [xlib-evidence](https://github.com/ZoneCNH/xlib-evidence) — 证据收集与发布运行时：collect-coverage、generate-manifest、validate-manifest、report；✅ v0.1.0 GitHub Release 已发布 `公开`
 - [kernel](https://github.com/ZoneCNH/kernel) — L0 标准库扩展原语（error/time/context/lifecycle/health/sync） `公开`
 - [configx](https://github.com/ZoneCNH/configx) — 显式配置加载、多源合并、StrictDecode、SecretString 脱敏、Provenance 追踪与 EffectiveConfigHash `公开`
 - [observex](https://github.com/ZoneCNH/observex) — vendor-neutral 日志、指标、追踪、健康与脱敏契约 `公开`
@@ -101,7 +101,7 @@ L2.5: domainx / decimalx / domain-market / domain-macro / domain-exchange (5/5 �
 
 ### 基座 · 契约与传输
 
-- [contracts](https://github.com/ZoneCNH/contracts) — 跨域稳定端口、事件协议与 DTO 契约；release=false/factory=false：源仓库仍需 cross-repo PR / git tag / GitHub Release 证据 `公开`
+- [contracts](https://github.com/ZoneCNH/contracts) — 跨域稳定端口、事件协议与 DTO 契约；✅ v1.0.1-spec GitHub Release 已发布 `公开`
 - [transportx](https://github.com/ZoneCNH/transportx) — 应用通信底座规格基线（Envelope/Endpoint、ServiceIdentity、QoS、Codec、RPC、EventBus、Stream、Outbox/Inbox、Audit Plane、Data Classification、SchemaRegistry 与 conformance gates）；release=false/factory=false：source repo 尚待 cross-repo PR / git tag / GitHub Release 证据 `公开`
 
 ### L2.5 · 领域共享层
