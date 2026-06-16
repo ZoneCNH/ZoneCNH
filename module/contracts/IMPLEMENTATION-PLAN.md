@@ -1,7 +1,7 @@
 # contracts 实现计划
 
 > 来源：[SPEC.md](./SPEC.md)
-> 生成日期：2026-06-14
+> 生成日期：2026-06-17
 
 ---
 
@@ -12,6 +12,7 @@ TASK-CONTRACTS-000 (Phase 1: foundation)
 ├── TASK-CONTRACTS-001
 ├── TASK-CONTRACTS-002
 ├── TASK-CONTRACTS-003
+├── TASK-CONTRACTS-005 (Phase 3: §8.4 ingestion contract)
 ├── TASK-CONTRACTS-004
 ```
 
@@ -31,7 +32,11 @@ TASK-CONTRACTS-000 (Phase 1: foundation)
 | TASK-CONTRACTS-002 | Feature implementation | 2h |
 | TASK-CONTRACTS-003 | Feature implementation | 2h |
 
-### Phase 3: Quality Gates (1 task)
+### Phase 3: Ingestion Contract (1 task)
+
+| TASK-CONTRACTS-005 | §8.4 Ingestion Contract (MarketDataService/IngestRequest/IngestResult/RejectCode) | 2h |
+
+### Phase 4: Quality Gates (1 task)
 
 | TASK-CONTRACTS-004 | CI/Benchmark/Docs | 2h |
 
@@ -42,8 +47,9 @@ TASK-CONTRACTS-000 (Phase 1: foundation)
 |-------|-------|--------|
 | Foundation | 2 | 4h |
 | Features | 2 | 4h |
+| Ingestion | 1 | 2h |
 | Quality | 1 | 2h |
-| **Total** | **5** | **10h** |
+| **Total** | **6** | **12h** |
 
 ## 4. CI Gate 矩阵
 
