@@ -241,7 +241,7 @@ Binance 行情接入需要服务端边界确保数据质量和可靠性。直接
 
 **规则**: server 禁止 import `module/binance/client` 的任何 internal 包或类型。
 
-**约束**: server 与 client 之间仅通过 `contracts` 中定义的 gRPC proto 类型通信。
+**约束**: server 与 client 之间仅通过 `contracts` §8.4 中定义的 gRPC wire contract 类型通信。
 
 **违反时**: 编译失败（依赖方向违反 ARCHITECTURE.md 数据域边界）。
 
@@ -249,15 +249,17 @@ Binance 行情接入需要服务端边界确保数据质量和可靠性。直接
 
 ## 9. Interface Contract
 
-### 9.1 gRPC Service（由 contracts 定义）
+### 9.1 gRPC Service（由 contracts §8.4 定义）
 
-```proto
-service MarketDataService {
-  rpc Ingest(stream IngestRequest) returns (stream IngestAck);
+```go
+// MarketDataService receives normalized upstream market-data ingestion requests.
+// Defined in module/contracts/SPEC.md §8.4.
+type MarketDataService interface {
+    Ingest(stream IngestRequest) (stream IngestResult, error)
 }
 ```
 
-server 负责实现该接口的 server 端。
+server 负责实现该接口的 server 端。每个 `IngestRequest` 返回一个 `IngestResult`，其中 exactly one of `Ack` or `Reject` is non-nil。
 
 ### 9.2 Downstream Port（exchange-neutral）
 
