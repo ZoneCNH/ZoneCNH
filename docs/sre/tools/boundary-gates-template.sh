@@ -98,10 +98,11 @@ gate_no_xlib_standard() {
   ! grep -q 'xlib-standard' go.mod
 }
 
-# §9 no-storage-adapter: go.mod 无 L2 存储适配器（adapter 零存储）
+# §9 no-storage-adapter: go.mod 无直接（非 indirect）L2 存储适配器 require（adapter 零存储）
+# indirect 传递依赖（经 bootstrap）允许——adapter 自己不 import 存储适配器。
 gate_no_storage_adapter() {
   if [ ! -f go.mod ]; then return 0; fi
-  ! grep -qE 'ZoneCNH/(taosx|postgresx|redisx|kafkax|natsx|ossx|clickhousex)' go.mod
+  ! grep -E 'ZoneCNH/(taosx|postgresx|redisx|kafkax|natsx|ossx|clickhousex)' go.mod | grep -qv '// indirect'
 }
 
 # ============ 运行 ============
