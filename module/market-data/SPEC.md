@@ -4,7 +4,7 @@
 - Spec-Version: v1.0.0
 - Last-Updated: 2026-06-17
 - Layer: L3 行情摄取与分发
-- Module-Version: v1.0.0-spec
+- Version: v1.0.0-spec
 - Related: `module/binance`, `module/domain-market`, `module/contracts`
 
 > 本文件发布 downstream dispatch port / receiving-side SPEC 的文档基线，不引入运行时代码、依赖或 wire schema。上游 `module/domain-market` 与 `module/contracts` 的 docs-only 契约基线已补充完毕（ProductLine/InstrumentKey/MarketFactEnvelope + §8.4 Ingestion Contract）。运行时代码实现与 TC-MD-003~008 测试进入后续阶段。

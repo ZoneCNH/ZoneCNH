@@ -4,7 +4,7 @@
 - Spec-Version: v1.0.0
 - Last-Updated: 2026-06-12
 - Layer: 基座 · 标准事实源
-- Module-Version: v1.0.0
+- Version: v1.0.0
 - Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `xlib-evidence`, `xlib-harness`, `xlibgate`
 
 > 公开投影 caveat：Status=Approved 与 100.0% 覆盖证据不等同于 factory-grade；机器事实层保持 factory=false。

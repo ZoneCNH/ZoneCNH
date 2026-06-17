@@ -4,7 +4,7 @@
 - Spec-Version: v1.0.0
 - Last-Updated: 2026-06-14
 - Layer: 执行域 · 工作流引擎
-- Module-Version: v0.1.0-draft
+- Version: v0.1.0-draft
 - Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `orderx`, `positionx`, `riskx`
 
 > 公开投影 caveat：Status=Review 与矩阵覆盖证据不等同于 factory-grade；四源评分通过前机器事实层保持 factory=false。

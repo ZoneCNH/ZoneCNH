@@ -4,7 +4,7 @@
 - Spec-Version: v0.1.0-draft
 - Last-Updated: 2026-06-17
 - Layer: 决策域 · 参数优化
-- Module-Version: v0.1.0-draft
+- Version: v0.1.0-draft
 - Related: `CONSTITUTION.md`, `../factor-engine/`, `../domain-market/`
 
 > 本文档发布 optimizer 基线。运行时实现为 Pending。

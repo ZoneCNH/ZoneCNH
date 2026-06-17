@@ -4,7 +4,7 @@
 - Spec-Version: v1.0.1
 - Last-Updated: 2026-06-14
 - Layer: L1 基础能力
-- Module-Version: v1.0.0
+- Version: v1.0.0
 - Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `kernel`
 
 > 公开投影 caveat：Status=Approved 与 100.0% 覆盖证据不等同于 factory-grade；BLK-007 关闭前机器事实层保持 factory=false。

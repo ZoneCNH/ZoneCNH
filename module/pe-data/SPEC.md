@@ -4,7 +4,7 @@
 - Spec-Version: v0.1.0-draft
 - Last-Updated: 2026-06-17
 - Layer: 数据域 · 另类数据
-- Module-Version: v0.1.0-draft
+- Version: v0.1.0-draft
 - Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/contracts`, `module/domain-market`
 
 > `AlternativeDataProvider` 接口已由 `module/contracts` §8.1b 定义。pe-data 直接实现该接口，下游通过 `GetLatest(category, symbol)` 消费，不经过中间 hub 层。

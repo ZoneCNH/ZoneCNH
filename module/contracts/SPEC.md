@@ -4,7 +4,7 @@
 - Spec-Version: v1.2.0
 - Last-Updated: 2026-06-17
 - Layer: 基座 · 跨域接口契约
-- Module-Version: v1.2.0-spec
+- Version: v1.2.0-spec
 - Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `kernel`, `transportx`
 
 > 公开投影 caveat：Status=Approved 与 100.0% 覆盖证据不等同于 factory-grade；机器事实层保持 factory=false。
