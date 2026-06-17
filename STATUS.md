@@ -115,7 +115,7 @@
 
 | 组件                                                          | 类型     | 版本   | 进度     | 覆盖率要求 | 说明                  |
 | ------------------------------------------------------------- | -------- | ------ | -------- | ---------- | --------------------- |
-| [binance](https://github.com/ZoneCNH/binance)                 | C/S Module | v0.1.0      | ░░░░  5% | 100%       | Market Data C/S (client+server)；Spec-Only；4产品线 |
+| [binance](https://github.com/ZoneCNH/binance)                 | C/S Module | v0.1.0      | ░░░░  5% | 100%       | Market Data C/S (client+server)；Spec Approved；4产品线 |
 | [market-data](https://github.com/ZoneCNH/market-data)         | Dispatch | v1.0.0 | ██░░ 30% | 100%       | downstream dispatch port 接收侧 SPEC 基线（FR-MD-001~008）；runtime pending |
 | [okx](https://github.com/ZoneCNH/okx)                         | SDK      | v0.1.1 | ███░ 80% | 100%       | OKX CEX               |
 | [bybit](https://github.com/ZoneCNH/bybit)                     | SDK      | v0.1.1 | ███░ 80% | 100%       | Bybit CEX             |
@@ -135,7 +135,7 @@
 
 | 模块            | SPEC | IMPL | RELEASE | LIVE INT | EXT CI | ADOPT | SOAK | FACTORY | 备注                               |
 | --------------- | :--: | :--: | :-----: | :------: | :----: | :---: | :--: | :-----: | ---------------------------------- |
-| binance         |  ✅  |  ❌  |   ❌    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | C/S Module；v0.1.0；Spec-Only；4产品线          |
+| binance         |  ✅  |  ❌  |   ❌    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | C/S Module；v0.1.0；Spec Approved；4产品线          |
 | okx             |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | SDK；80%；OKX CEX                  |
 | bybit           |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | SDK；80%；Bybit CEX                |
 | bitget          |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | SDK；80%；Bitget CEX               |
@@ -325,7 +325,7 @@
 | 基座                   | 19     | 19     | 0      | Spec→Code 投影完成；factory 未闭合 | 19                                                    |
 | L2.5 领域共享层        | 5      | 5      | 0      | 100%                               | 5 (全部 5/5 factory grade；live/soak N/A)            |
 | 数据域 · 行情 SDK      | 12     | 12     | 0      | 80%                                | 12 (全部 v0.1.1)                                      |
-| 数据域 · 行情 C/S Module | 1     | 0      | 1      | 5%                                 | 1 (v0.1.0；Spec-Only)                                |
+| 数据域 · 行情 C/S Module | 1     | 0      | 1      | 5%                                 | 1 (v0.1.0；Spec Approved)                                |
 | 数据域 · 行情 Dispatch  | 1      | 1      | 0      | 30%                                | 1 (v1.0.0；runtime pending)                      |
 | 数据域 · 行情 Provider | 5      | 5      | 0      | 80%                                | 5 (全部 v0.1.1)                                       |
 | 数据域 · 宏观          | 10     | 10     | 0      | 80%                                | 10 (全部 v0.1.1)                                      |
@@ -359,7 +359,7 @@
 
 - Dispatch：1 个（market-data），v1.0.0，runtime pending，进度 30%
 - SDK：12 个交易所适配器，全部 v0.1.1，进度 80%
-- C/S Module：1 个（binance），v0.1.0，Spec-Only，0% 实现
+- C/S Module：1 个（binance），v0.1.0，Spec Approved，0% 实现
 - **待确认**：SDK 全部 v0.1.1 tagged release，已通过生产验证？
 
 ### 🟡 数据域 · 宏观（注意）
