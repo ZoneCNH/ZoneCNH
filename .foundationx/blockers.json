@@ -1,6 +1,6 @@
 {
   "schema_version": "blockers/v1",
-  "generated_at": "2026-06-18T02:00:00Z",
+  "generated_at": "2026-06-18T03:00:00Z",
   "source": ".foundationx/blockers.json",
   "total_blockers": 10,
   "by_severity": {
@@ -102,12 +102,12 @@
       "id": "BLK-009",
       "severity": "medium",
       "module": "bootstrap",
-      "title": "Stores!=None 路径未实现 + foundationx 过渡依赖未清零",
+      "title": "bootstrap Stores!=None 未实现 + postgresx v1.0.0 公开 API foundationx.SecretString 传染",
       "status": "open",
       "category": "implementation",
-      "detail": "v0.1.0 runtime 仅 Stores=None 端到端就绪；Stores!=None 返回 ErrUnsupportedStore；pkg/bootstrap/stores.go 直 import foundationx.SecretString 与 ADR-foundationx-exit 冲突",
-      "evidence": "module/bootstrap/SPEC.md §22 v0.2.0 准入项；远端 README.md 首版明确不做",
-      "action": "v0.1.x patch 优先；不晚于 v0.2.0"
+      "detail": "两层阻塞：(a) v0.1.0 runtime 仅 Stores=None 端到端就绪，Stores!=None 返回 ErrUnsupportedStore；(b) bootstrap pkg/bootstrap/stores.go:217 import foundationx.SecretString 包 PG_PASSWORD，但实测此非 bootstrap 主动选择——postgresx@v1.0.0 公开 API Config.Password 字段类型本身就是 foundationx.SecretString，bootstrap 必须传该类型才能构造 postgresx.Config。彻底清零 foundationx 需先发 postgresx v1.1.0 改 Config.Password 为本地类型。",
+      "evidence": "gh api ZoneCNH/postgresx/v1.0.0 + GOMODCACHE postgresx@v1.0.0/pkg/postgresx/config.go: `Password foundationx.SecretString \"json:password\"`；同时 postgresx Validate 用 foundationx.NewError/ErrorKindConfig；ADR-foundationx-exit 当前迁移表仅列 configx/observex，未识别 postgresx 传染",
+      "action": "分阶段：(a) bootstrap stores.go 加注释说明 foundationx 是间接传染（已在本 PR 完成）；(b) 上游路径——postgresx v1.1.0 改 Config.Password 为本地 SecretString 类型，Validate 错误改 kernel/errx；(c) bootstrap v0.1.1 跟进升级。三步全完成才算 BLK-009 关闭。"
     },
     {
       "id": "BLK-010",
