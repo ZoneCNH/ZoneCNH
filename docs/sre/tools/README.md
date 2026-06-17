@@ -1,52 +1,78 @@
-# SRE Tools
 
-数据域配置注入工具集。
+## boundary-gates-template.sh — 通用 9 道边界门禁模板
 
-## gen-env.sh — 从 dev.md 生成本地 .env
-
-从 `sre/secrets/env/dev.md` 的 per-provider 凭据自动生成 adapter 的 `.env`（含真值，不进 git）或 `.env.example`（无真值，可提交）。
+参数化的 CI 边界门禁模板，供 20 个 adapter 复制使用。
 
 ### 用法
 
 ```bash
-# 生成 /home/fred/.env（含真值，自动确保 .gitignore 排除）
-./docs/sre/tools/gen-env.sh fred
+# 复制到 {module}/scripts/ 并替换模块名
+sed 's/{module}/fred/' docs/sre/tools/boundary-gates-template.sh > /home/fred/scripts/boundary-gates.sh
+chmod +x /home/fred/scripts/boundary-gates.sh
 
-# 生成 /home/binance/.env.example（无真值，可提交）
-./docs/sre/tools/gen-env.sh binance --example
+# 如有迁移历史（legacy name），额外设置 LEGACY_NAME
+sed -e 's/{module}/binance/' -e 's/^LEGACY_NAME=""/LEGACY_NAME="binance-market"/' \
+  docs/sre/tools/boundary-gates-template.sh > /home/binance/scripts/boundary-gates.sh
 
-# 输出到 stdout（不写文件，适合检查）
-./docs/sre/tools/gen-env.sh okx --stdout
+# 运行
+./scripts/boundary-gates.sh
 ```
 
-### 生成的 .env 格式
+### 9 道门禁
 
-统一 `XGO_{MODULE}_*` 前缀，对齐 bootstrap configx EnvSource（报告 §七 / SOP §七）：
+| § | 门禁 | 说明 |
+| --- | --- | --- |
+| §2 | no-legacy | 无遗留模块引用（迁移历史） |
+| §3 | client-no-server | client 不 import server |
+| §4a | server-no-client | server 不 import client |
+| §4b | server-cmd-no-client | server cmd 不 import client |
+| §5 | no-storage-query-strategy | 不 import 其他业务域 |
+| §6 | no-local-proto | 无 .proto（wire schema 归 contracts） |
+| §7 | no-canonical-ssot | 不声明自己是 canonical SSOT |
+| §8 | no-xlib-standard | go.mod 无 xlib-standard |
+| §9 | no-storage-adapter | go.mod 无 L2 存储适配器（adapter 零存储） |
+
+不存在的结构（如无 internal/client）自动跳过对应门禁。
+
+### 部署状态
+
+20 adapter 全部已部署并合并到各自 main（P5 完成）。
+
+## boundary-gates-template.sh — 通用 9 道边界门禁模板
+
+参数化的 CI 边界门禁模板，供 20 个 adapter 复制使用。
+
+### 用法
 
 ```bash
-# ---- Provider API ----
-XGO_FRED_API_KEY=<dev.md FRED key>     # 仅 fred 模块
-XGO_BINANCE_API_KEY=                    # 行情模块（公共行情通常不需要）
-XGO_BINANCE_API_SECRET=
-XGO_BINANCE_MODE=testnet
+# 复制到 {module}/scripts/ 并替换模块名
+sed 's/{module}/fred/' docs/sre/tools/boundary-gates-template.sh > /home/fred/scripts/boundary-gates.sh
+chmod +x /home/fred/scripts/boundary-gates.sh
 
-# ---- Dispatch 目标 ----
-XGO_{MODULE}_DISPATCH_TARGET=market-data   # 行情 → market-data；宏观 → macro-data
-XGO_{MODULE}_DISPATCH_ADDR=:9090
+# 如有迁移历史（legacy name），额外设置 LEGACY_NAME
+sed -e 's/{module}/binance/' -e 's/^LEGACY_NAME=""/LEGACY_NAME="binance-market"/' \
+  docs/sre/tools/boundary-gates-template.sh > /home/binance/scripts/boundary-gates.sh
 
-# ---- 可观测（bootstrap 统一加载）----
-XGO_{MODULE}_LOG_LEVEL=info
-XGO_{MODULE}_METRICS_ADDR=:9091
+# 运行
+./scripts/boundary-gates.sh
 ```
 
-### 关键设计
+### 9 道门禁
 
-- **adapter 零存储**：`.env` 不含 PG/TD/Redis/Kafka/OSS/CH 凭据——这些属于聚合层（market-data/macro-data）
-- **自动分类**：脚本根据 module 名自动识别行情（`market_*` 库）/宏观（`macro_*` 库）
-- **库名变体**：自动处理 dev.md 库名差异（jin10→jinshi、japan-cb→japan_cb、yield-curve→yield_curve）
-- **安全**：`--write` 模式生成的 `.env` 含明文密码，自动确保在 `.gitignore` 中
+| § | 门禁 | 说明 |
+| --- | --- | --- |
+| §2 | no-legacy | 无遗留模块引用（迁移历史） |
+| §3 | client-no-server | client 不 import server |
+| §4a | server-no-client | server 不 import client |
+| §4b | server-cmd-no-client | server cmd 不 import client |
+| §5 | no-storage-query-strategy | 不 import 其他业务域 |
+| §6 | no-local-proto | 无 .proto（wire schema 归 contracts） |
+| §7 | no-canonical-ssot | 不声明自己是 canonical SSOT |
+| §8 | no-xlib-standard | go.mod 无 xlib-standard |
+| §9 | no-storage-adapter | go.mod 无 L2 存储适配器（adapter 零存储） |
 
-### 关联
+不存在的结构（如无 internal/client）自动跳过对应门禁。
 
-- [基础架构报告 §七](../../docs/report/data-domain-infrastructure-20260617.md)
-- [Bootstrap SOP §七](../../docs/sre/data-domain-bootstrap.md)
+### 部署状态
+
+20 adapter 全部已部署并合并到各自 main（P5 完成）。
