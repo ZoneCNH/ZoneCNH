@@ -3,34 +3,29 @@
 > 追溯矩阵 §1–§7，符合 `docs/governance/TRACEABILITY.md` 标准格式。
 > 数据来源：`module/binance/client/SPEC.md` v1.0.0（23 节）。
 
-Last-Updated: 2026-06-16
+Last-Updated: 2026-06-17
 
 ---
 
 ## §1 FR 追溯表
 
-| FR ID | 功能需求 | SPEC §7 Ref | AC | TC ID(s) | 实现状态 |
-|-------|----------|-------------|-----|----------|:--------:|
-| BNC-CLIENT-001 | Product-line catalog：维护 Binance 四条产品线目录，每条可独立启停，支持热重载 | FR-001 | 启动加载全部四条产品线完整条目（18 字段）；每条独立启用/禁用；热重载不中断活跃连接 | TC-001 | ⬜ Pending |
-| BNC-CLIENT-002 | Instrument parser：解析 Binance 原生 symbol 为规范身份组件，消除跨产品线身份碰撞 | FR-002 | 区分 Spot/USDⓈ-M/COIN-M/Options 五种身份；不可解析 symbol 返回错误（无歧义映射）；输出供 domain-market 类型消费 | TC-002, TC-003, TC-004 | ⬜ Pending |
-| BNC-CLIENT-003 | Spot connector：建立 Spot 产品线 WS 连接，输出统一格式内部事件流 | FR-003 | 启用后启动连接采集；断线自动重连恢复订阅；限速感知恢复；捕获原始 payload + 本地时间戳 + product_line 标注；禁用时优雅关闭 | TC-005, TC-006 | ⬜ Pending |
-| BNC-CLIENT-004 | USDⓈ-M connector：建立 USDⓈ-M Futures 产品线连接，输出统一格式内部事件流 | FR-003 | 同 BNC-CLIENT-003，product_line=usdm_futures | TC-005, TC-006 | ⬜ Pending |
-| BNC-CLIENT-005 | COIN-M connector：建立 COIN-M Futures 产品线连接，输出统一格式内部事件流 | FR-003 | 同 BNC-CLIENT-003，product_line=coinm_futures | TC-005, TC-006 | ⬜ Pending |
-| BNC-CLIENT-006 | Options connector：建立 Options 产品线连接，输出统一格式内部事件流 | FR-003 | 同 BNC-CLIENT-003，product_line=options | TC-005, TC-006 | ⬜ Pending |
-| BNC-CLIENT-007 | Canonical mapper：将规范化事件映射为 domain-market 规范行情事件 | FR-005 | 映射输出使用 `*domain_market.MarketEvent` 类型；不可识别 event type 返回错误（不生成半规范事件） | TC-008 | ⬜ Pending |
-| BNC-CLIENT-008 | gRPC sender：流式发送 IngestRequest 到 server，处理重连/背压/部分 ACK/reject 分类/spool 清理 | FR-009 | 流式发送到 server；断线自动重连并恢复流；背压减速不丢事件；部分 ACK 仅确认对应事件；reject 分 retryable/terminal 处理；ACK 后按策略回收 spool | TC-015, TC-016 | ⬜ Pending |
-| BNC-CLIENT-009 | Spool：SQLite 发送前持久化，支持进程重启恢复，强制状态机约束 | FR-007 | 事件发送前写入 spool（state=pending）；正常路径 pending→sending→acked；非法状态转换被拦截；重启恢复 pending/failed_retryable 事件 | TC-011, TC-012 | ⬜ Pending |
-| BNC-CLIENT-010 | Checkpoint：仅在 server 持久 ACK 后推进，重启从 checkpoint 恢复 | FR-008 | 收到 ACK 后 checkpoint 推进；序列化/入队/gRPC 写/发送尝试成功均不推进；重启从 checkpoint 位置恢复 | TC-013, TC-014 | ⬜ Pending |
-| BNC-CLIENT-011 | Admin surface：Gin HTTP 端点，仅操作本地状态 | FR-010 | /healthz 返回进程健康；/readyz 返回就绪；/debug/* 暴露 pprof；/admin/* 提供本地管理操作（list/pause/resume/stats/reload）；变更不跨模块 | TC-017, TC-018 | ⬜ Pending |
-| BNC-CLIENT-012 | Raw event normalization：将原始事件规范化为内部 NormalizedEvent，保留完整溯源 | FR-004 | 规范化事件保留 product_line/source stream/raw symbol/event type/exchange event time/local receive time/raw payload/sequence-ids 共 10 字段；规范化后进入 mapping 阶段 | TC-007 | ⬜ Pending |
-| BNC-CLIENT-013 | Idempotency key generation：生成跨重试稳定的幂等键，按 event type 选择策略 | FR-006 | 同一事件两次生成相同 key；不同 event type 使用不同策略（bar 含 interval/open_time、trade 含 trade_id、depth 含 update_id_range 等） | TC-009, TC-010 | ⬜ Pending |
-| BNC-CLIENT-014 | C/S contract tested：client/server 间 gRPC 合约通过集成测试验证 | — | sender→mock server 发送/重连/幂等路径全部通过 | TC-015, TC-016 | ⬜ Pending |
-| BNC-CLIENT-015 | Boundary gates：CI 边界检查阻断 server internals 和 storage/query/strategy import | BR-003, BR-004 | `go list -deps` 零匹配 server/storage/query/strategy 路径 | CI Gate: boundary-check (server), boundary-check (storage) | ⬜ Pending |
+> FR ID 与 SPEC §7 对齐（FR-001 ~ FR-010）。Task 列引用 `module/binance/client/tasks/TASK-BINANCE-CLIENT-NNN`。FR-003 (Product-Line Connectors) 涵盖 4 个 connector 实现单元，对应 4 个 task。
 
-> **ID 说明**：BNC-CLIENT-001~013 继承自 v0 原始需求 ID 映射，BNC-CLIENT-014~015 为 §1 对齐 SPEC §7 时补全。
-> **AC 编号**：AC-001 ~ AC-038，完整定义见 §5 AC 注册表。
+| FR ID | 功能需求 | AC | TC ID(s) | Task | 实现状态 |
+|-------|----------|-----|----------|------|:--------:|
+| FR-001 | Product-Line Catalog：维护 Binance 四产品线目录，每条独立启停，支持热重载 | AC-001~004 | TC-001 | TASK-BINANCE-CLIENT-001 | ⬜ Pending |
+| FR-002 | Instrument Parser：解析 Binance 原生 symbol 为规范身份组件，消除跨产品线身份碰撞 | AC-005~007 | TC-002, TC-003, TC-004 | TASK-BINANCE-CLIENT-002 | ⬜ Pending |
+| FR-003 | Product-Line Connectors：Spot/USDⓈ-M/COIN-M/Options 4 个 connector，统一格式内部事件流，断线重连/限速感知/优雅关闭 | AC-008~012 | TC-005, TC-006 | TASK-BINANCE-CLIENT-003, 004, 005, 006 | ⬜ Pending |
+| FR-004 | Raw Event Normalization：规范化原始事件，保留完整溯源（10 字段：product_line/symbol/event type/times/sequence-ids 等） | AC-013, AC-014 | TC-007 | TASK-BINANCE-CLIENT-007 | ⬜ Pending |
+| FR-005 | Canonical Mapping：映射规范化事件为 domain-market 类型，无法识别 event type 返回错误 | AC-015, AC-016 | TC-008 | TASK-BINANCE-CLIENT-007 | ⬜ Pending |
+| FR-006 | Idempotency Key Generation：跨重试稳定，按 event type 差异化策略 | AC-017, AC-018 | TC-009, TC-010 | TASK-BINANCE-CLIENT-007 | ⬜ Pending |
+| FR-007 | Spool：SQLite 发送前持久化 + 状态机约束 + 重启恢复 | AC-019~024 | TC-011, TC-012 | TASK-BINANCE-CLIENT-009 | ⬜ Pending |
+| FR-008 | Checkpoint：仅 server 持久 ACK 后推进，重启从 checkpoint 恢复 | AC-025~027 | TC-013, TC-014 | TASK-BINANCE-CLIENT-009 | ⬜ Pending |
+| FR-009 | gRPC Sender：流式发送 IngestRequest，处理重连/背压/部分 ACK/reject 分类/spool 清理 | AC-028~033 | TC-015, TC-016 | TASK-BINANCE-CLIENT-008 | ⬜ Pending |
+| FR-010 | Admin Surface：Gin HTTP 端点（healthz/readyz/debug/admin），仅操作本地状态 | AC-034~038 | TC-017, TC-018 | TASK-BINANCE-CLIENT-010 | ⬜ Pending |
 
----
+> 历史 BNC-CLIENT-### 命名空间已废弃（v0 遗留）。原 BNC-CLIENT-014 (C/S contract tested) 与 BNC-CLIENT-015 (Boundary gates) 是测试覆盖与 BR 验证项，非 FR — 已分别归入 §4 TC-015/016 与 §2 BR-003/004 验证条目。
+> AC 完整定义见 §5 AC 注册表（按 FR 分组，AC-001~038 共 38 条）。
 
 ## §2 BR 追溯表
 
@@ -216,8 +211,7 @@ Last-Updated: 2026-06-16
 
 | 指标 | 计数 | 覆盖率 |
 |------|:----:|:------:|
-| FR 总数（§1 BNC-CLIENT-*） | 15 | — |
-| FR 对应 SPEC §7 功能需求 | 10 | — |
+| FR 总数（§1，与 SPEC §7 对齐） | 10 | — |
 | BR 总数（§2） | 5 | — |
 | NFR 总数（§3） | 18 | — |
 | 性能 NFR | 9 | — |
@@ -226,7 +220,7 @@ Last-Updated: 2026-06-16
 | TC 总数（§4） | 18 | — |
 | CI Gate 专用验证（§4.1） | 5 | — |
 | AC 总数（§5） | 38 | — |
-| FR→TC 映射率 | 15 / 15 | 100% |
+| FR→TC 映射率 | 10 / 10 | 100% |
 | BR→验证映射率 | 5 / 5 | 100% |
 | TC→FR 回溯率 | 18 / 18 | 100% |
 | AC→验证映射率 | 38 / 38 | 100% |
@@ -239,3 +233,4 @@ Last-Updated: 2026-06-16
 | 日期 | 版本 | 变更内容 | 作者 |
 |------|------|---------|------|
 | 2026-06-16 | v1.0.0 | 初始版本：从 client SPEC.md v1.0.0（23 节）提取全部 FR/BR/NFR/TC/AC，按 `docs/governance/TRACEABILITY.md` 标准格式重写为 §1–§7。保留 v0 BNC-CLIENT-001~013 ID 作为主键，补全原缺失的 FR-004（BNC-CLIENT-012）和 FR-006（BNC-CLIENT-013）行，新增 BNC-CLIENT-014~015 覆盖 C/S contract test 和 boundary gates。修正 TC 总数 16→18（补 TC-017/TC-018 覆盖 FR-010 全部 admin 端点）。 | ZoneCNH |
+| 2026-06-17 | v1.1.0 | **§1 FR 命名空间统一**：(1) 主键从 BNC-CLIENT-001~015 改为 FR-001~010，与 SPEC §7 严格对齐；(2) 删除孤儿 BNC-CLIENT-014/015（非 FR — 是测试覆盖与 BR 验证项，已归入 §4 TC-015/016 与 §2 BR-003/004 验证）；(3) FR-003 涵盖 4 个 connector 实现，Task 列引用 4 个 task；(4) §6 仪表盘 FR 总数 15→10，删除冗余 "FR 对应 SPEC §7 功能需求" 行 | ZoneCNH |
