@@ -4,7 +4,7 @@ Status: Approved
 - Spec-Version: v1.0.0
 - Last-Updated: 2026-06-14
 - Layer: 基座 · 存储扩展
-- Module-Version: v1.0.2
+- Version: v1.0.2
 - Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `kernel`
 
 > 公开投影 caveat：Status=Review 与矩阵覆盖证据不等同于 factory-grade；四源评分通过前机器事实层保持 factory=false。

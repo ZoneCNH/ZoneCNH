@@ -4,7 +4,7 @@
 - Spec-Version: v0.1.0-draft
 - Last-Updated: 2026-06-17
 - Layer: 执行域 · 风险管理
-- Module-Version: v0.1.0-draft
+- Version: v0.1.0-draft
 - Related: `CONSTITUTION.md`
 
 > 本文档发布 risk-engine 基线。运行时实现为 Pending。
