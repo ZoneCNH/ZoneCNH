@@ -1,10 +1,10 @@
 # bootstrap 规格
 
 - Status: Draft
-- Spec-Version: v0.1.3
+- Spec-Version: v0.1.4
 - Last-Created: 2026-06-18
 - Layer: L1 基础能力
-- Version: v0.1.0-runtime / v0.1.3-spec
+- Version: v0.1.0-runtime / v0.1.4-spec
 - Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `kernel`, `configx`, `observex`, `resiliencx`
 
 > 本文件发布 bootstrap L1 进程启动组装层的规格基线，不引入运行时代码。后续实现进入独立仓库 `github.com/ZoneCNH/bootstrap`。对齐 [数据域基础架构报告 §十三](../../docs/report/data-domain-infrastructure-20260617.md) 与 [Bootstrap SOP](../../docs/sre/data-domain-bootstrap.md)。
@@ -181,8 +181,8 @@ import (
     "github.com/ZoneCNH/redisx"
     "github.com/ZoneCNH/kafkax"
     "github.com/ZoneCNH/natsx"
-    "github.com/ZoneCNH/ossx"
     "github.com/ZoneCNH/clickhousex"
+    // OSS：ossx 仓库当前 0 pkg 源码，不 import；OSS 位预留待 ossx 补源码后启用
 )
 
 // Spec 描述一个进程的标准组件清单。
@@ -225,7 +225,7 @@ type Stores struct {
     Redis *redisx.Client
     Kafka *kafkax.Client
     NATS  *natsx.Client
-    OSS   *ossx.Client
+    OSS   interface{}        // 占位：ossx 仓库当前 0 pkg 源码，OSS 位运行时永远 nil；待 ossx 补源码后改为 *ossx.Client
     CH    *clickhousex.Client
 }
 ```
@@ -362,7 +362,7 @@ require (
     github.com/ZoneCNH/redisx        v1.0.1
     github.com/ZoneCNH/kafkax        v1.0.2
     github.com/ZoneCNH/natsx         v1.0.0
-    github.com/ZoneCNH/ossx          v1.0.1   // ⚠️ 当前 0 源码，Stores.OSS 永远 nil
+    github.com/ZoneCNH/ossx          v1.0.1   // ⚠️ 暂不 require：ossx 仓库当前 0 pkg 源码（仅 docs/scripts/.repo-contract.yaml），go.mod 不引入；待 ossx 补 pkg/ossx 源码并发新 release 后接入
     github.com/ZoneCNH/clickhousex   v1.0.1
 )
 ```
@@ -432,6 +432,7 @@ bootstrap (L1)
 | 禁 transport 实体 | 源码无 `net.Listen` | grep 零命中 |
 | 依赖方向 | 只向下依赖 kernel/configx/observex/resiliencx/存储 | 依赖图扫描 |
 | 组件可插拔 | Stores 位掩码控制 | TC-BS-004 |
+| foundationx 退出（白名单+计时） | 仅 `pkg/bootstrap/stores.go` 允许 import `foundationx`；其他文件零命中；TODO 不晚于 v0.1.x patch 完全清零（OQ-004） | `grep -rn "foundationx" --include="*.go" \| grep -v "^pkg/bootstrap/stores.go:"` 零命中
 
 ## 21. 升级兼容性
 
@@ -486,3 +487,4 @@ bootstrap (L1)
 | 2026-06-17 | v0.1.1 | 实现前核实修正：确认 OQ-001（基座 Client 无业务 getter）/ OQ-003（存储适配器未实现 Component）；§9.3 改为 closerComponent wrapper 方案；App.Observe 标注仅供 Close | ZoneCNH |
 | 2026-06-17 | v0.1.2 | 文档-代码漂移收口：§6 FR-004 标注 v0.1.0 stub 实现状态；§15.1 补声明 foundationx v0.1.1（runtime 实测）+ ossx 显式行 + ADR-foundationx-exit 迁移注记；§22 拆分 v0.1.0 已完成 / v0.2.0 准入；§23 OQ-002 翻 ✅ + 新增 OQ-004（foundationx 迁移） | ZoneCNH |
 | 2026-06-18 | v0.1.3 | 7 项微调：§6 FR-001 删 metrics 鸡蛋问题；FR-004 加 v0.1.0 stub 行内注解；§9.1 StoreSet 改显式位号；§9.1 Stores 字段改强类型；§13 删 nil panic 措辞；§22/§23 OQ-004 提前到 v0.1.x；与 BLK-009 配对登记 | ZoneCNH |
+| 2026-06-18 | v0.1.4 | SPEC↔runtime 远程仓库实测对账：§9.1 import 删 ossx（远程 bootstrap go.mod 不含 ossx）；§9.1 Stores.OSS 改 interface{} 占位（ossx 仓库 0 pkg 源码）；§15.1 ossx require 行注释为"暂不 require"；§20 CI Gate 新增 foundationx 白名单+计时规则（仅 stores.go 允许，其他文件零命中） | ZoneCNH |
