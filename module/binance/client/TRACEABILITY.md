@@ -234,3 +234,4 @@ Last-Updated: 2026-06-17
 |------|------|---------|------|
 | 2026-06-16 | v1.0.0 | 初始版本：从 client SPEC.md v1.0.0（23 节）提取全部 FR/BR/NFR/TC/AC，按 `docs/governance/TRACEABILITY.md` 标准格式重写为 §1–§7。保留 v0 BNC-CLIENT-001~013 ID 作为主键，补全原缺失的 FR-004（BNC-CLIENT-012）和 FR-006（BNC-CLIENT-013）行，新增 BNC-CLIENT-014~015 覆盖 C/S contract test 和 boundary gates。修正 TC 总数 16→18（补 TC-017/TC-018 覆盖 FR-010 全部 admin 端点）。 | ZoneCNH |
 | 2026-06-17 | v1.1.0 | **§1 FR 命名空间统一**：(1) 主键从 BNC-CLIENT-001~015 改为 FR-001~010，与 SPEC §7 严格对齐；(2) 删除孤儿 BNC-CLIENT-014/015（非 FR — 是测试覆盖与 BR 验证项，已归入 §4 TC-015/016 与 §2 BR-003/004 验证）；(3) FR-003 涵盖 4 个 connector 实现，Task 列引用 4 个 task；(4) §6 仪表盘 FR 总数 15→10，删除冗余 "FR 对应 SPEC §7 功能需求" 行 | ZoneCNH |
+| 2026-06-17 | v1.2.0 | **同步 SPEC v1.0.1 Status 晋升**：跟随 client SPEC Status Review → Approved 晋升。本版仅同步 SPEC 引用版本号与状态，FR/BR/AC/TC 主体未变，覆盖率保持 100% | ZoneCNH |

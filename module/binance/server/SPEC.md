@@ -5,8 +5,8 @@
 | 字段 | 值 |
 |------|-----|
 | Module | `module/binance/server` |
-| Status | Review |
-| Spec-Version | v1.0.1 |
+| Status | Approved |
+| Spec-Version | v1.0.2 |
 | Last-Updated | 2026-06-17 |
 | Owner | ZoneCNH |
 | Layer | 数据域 · 行情接入层 |

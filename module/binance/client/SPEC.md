@@ -2,8 +2,8 @@
 
 ## 1. Metadata
 
-- Status: Review
-- Spec-Version: v1.0.0
+- Status: Approved
+- Spec-Version: v1.0.1
 - Last-Updated: 2026-06-17
 - Owner: ZoneCNH
 - Layer: 数据域 · Binance 交易所接入

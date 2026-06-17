@@ -120,3 +120,4 @@
 | 2026-06-16 | v1.0.0 | 初始版本：§1-§7 标准追溯矩阵，基于 server SPEC.md v1.0.0 (23节) 生成 |
 | 2026-06-17 | v1.1.0 | **R7 AC 命名空间统一**：AC-S01~AC-S18 → AC-001~AC-018（18 处），消除评分器期望的 AC-### 格式偏差。注：§5.1 别名表已在更早的清理中删除，本 PR 仅完成 §1/§5 中 AC 主键与引用的最终统一 | ZoneCNH |
 | 2026-06-17 | v1.1.1 | **同步 server SPEC v1.0.1 修订**：跟随 server SPEC §1 Metadata 字段统一（删除头部重复 metadata + Repository 修正为 monorepo `github.com/ZoneCNH/binance` + §14 重写为 `internal/server/` 布局）。本次仅同步 SPEC 引用版本号，FR/BR/AC/TC 主体未变，覆盖率保持 100% | ZoneCNH |
+| 2026-06-17 | v1.1.2 | **同步 SPEC v1.0.2 Status 晋升**：跟随 server SPEC Status Review → Approved 晋升。本版仅同步 SPEC 引用版本号与状态，FR/BR/AC/TC 主体未变，覆盖率保持 100% | ZoneCNH |
