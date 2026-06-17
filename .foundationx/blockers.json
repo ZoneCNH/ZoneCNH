@@ -1,13 +1,13 @@
 {
   "schema_version": "blockers/v1",
-  "generated_at": "2026-06-18T00:00:00Z",
+  "generated_at": "2026-06-18T01:00:00Z",
   "source": ".foundationx/blockers.json",
-  "total_blockers": 8,
+  "total_blockers": 9,
   "by_severity": {
     "critical": 2,
     "high": 3,
     "low": 1,
-    "medium": 2
+    "medium": 3
   },
   "blockers": [
     {
@@ -97,9 +97,23 @@
       "detail": "CI 已部署，真实 Aliyun OSS 集成已验证",
       "evidence": "STATUS.md §基座多维成熟度",
       "action": "已完成"
+    },
+    {
+      "id": "BLK-009",
+      "severity": "medium",
+      "module": "bootstrap",
+      "title": "Stores!=None 路径未实现 + foundationx 过渡依赖未清零",
+      "status": "open",
+      "category": "implementation",
+      "detail": "v0.1.0 runtime 仅 Stores=None 端到端就绪；Stores!=None 返回 ErrUnsupportedStore；pkg/bootstrap/stores.go 直 import foundationx.SecretString 与 ADR-foundationx-exit 冲突",
+      "evidence": "module/bootstrap/SPEC.md §22 v0.2.0 准入项；远端 README.md 首版明确不做",
+      "action": "v0.1.x patch 优先；不晚于 v0.2.0"
     }
   ],
   "by_module": {
+    "bootstrap": [
+      "BLK-009"
+    ],
     "clickhousex": [
       "BLK-003"
     ],
@@ -127,9 +141,13 @@
     "note": "全部阻塞项已通过治理流程闭合（2026-06-16）",
     "items": []
   },
-  "open_blockers": 0,
+  "open_blockers": 1,
   "resolved_blockers": 8,
-  "open_by_severity": {},
-  "factory_blocking_modules": [],
+  "open_by_severity": {
+    "medium": 1
+  },
+  "factory_blocking_modules": [
+    "bootstrap"
+  ],
   "release_blocking_modules": []
 }

@@ -1,10 +1,10 @@
 # bootstrap 规格
 
 - Status: Draft
-- Spec-Version: v0.1.2
-- Last-Created: 2026-06-17
+- Spec-Version: v0.1.3
+- Last-Created: 2026-06-18
 - Layer: L1 基础能力
-- Version: v0.1.0-runtime / v0.1.2-spec
+- Version: v0.1.0-runtime / v0.1.3-spec
 - Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `kernel`, `configx`, `observex`, `resiliencx`
 
 > 本文件发布 bootstrap L1 进程启动组装层的规格基线，不引入运行时代码。后续实现进入独立仓库 `github.com/ZoneCNH/bootstrap`。对齐 [数据域基础架构报告 §十三](../../docs/report/data-domain-infrastructure-20260617.md) 与 [Bootstrap SOP](../../docs/sre/data-domain-bootstrap.md)。
@@ -80,7 +80,6 @@ app.Run(ctx)
 
 WHEN 调用 `Build(ctx, Spec)` 且 ctx 有效、Spec.Module 非空
 THEN 返回初始化的 `*App`，内部完成：configx 加载 → observex 初始化 → stores 构造（按 Stores 位掩码）→ resiliencx 默认策略 → lifecycx.Manager 创建
-AND metrics 计数 `bootstrap_build_total{module}` +1
 
 WHEN 调用 `Build(ctx, Spec)` 且 Spec.Module 为空
 THEN 返回 validation error
@@ -104,6 +103,8 @@ THEN 必须使用 `observex.New(ctx, Config)` 创建 Client，注入统一 label
 AND App.Observe 暴露 Logger/Metrics/Tracer/Health 供服务使用
 
 ### FR-004: stores 可选构造
+
+> **v0.1.0 实现状态**：runtime 仅 `Stores=None` 路径端到端就绪；任何非 None 位都返回 `ErrUnsupportedStore`。FR-004 完整目标态在 v0.2.0 准入（详见 §22）。下列 WHEN/THEN 描述目标态，与 §22 v0.2.0 准入项绑定。
 
 WHEN Spec.Stores 含 TD 位
 THEN 构造 `taosx` adapter，注册进 Lifecycle，`App.Stores.TD` 可用
@@ -175,6 +176,13 @@ import (
     "github.com/ZoneCNH/kernel/lifecycx"
     "github.com/ZoneCNH/observex"
     "github.com/ZoneCNH/resiliencx"
+    "github.com/ZoneCNH/taosx"
+    "github.com/ZoneCNH/postgresx"
+    "github.com/ZoneCNH/redisx"
+    "github.com/ZoneCNH/kafkax"
+    "github.com/ZoneCNH/natsx"
+    "github.com/ZoneCNH/ossx"
+    "github.com/ZoneCNH/clickhousex"
 )
 
 // Spec 描述一个进程的标准组件清单。
@@ -188,15 +196,15 @@ type Spec struct {
 type StoreSet uint8
 
 const (
-    None   StoreSet = 0
-    TD     StoreSet = 1 << iota  // taosx
-    PG                            // postgresx
-    Redis                         // redisx
-    Kafka                         // kafkax
-    NATS                          // natsx
-    OSS                           // ossx
-    CH                            // clickhousex
-    All    StoreSet = TD | PG | Redis | Kafka | NATS | OSS | CH
+    None  StoreSet = 0
+    TD    StoreSet = 1 << 0  // taosx
+    PG    StoreSet = 1 << 1  // postgresx
+    Redis StoreSet = 1 << 2  // redisx
+    Kafka StoreSet = 1 << 3  // kafkax
+    NATS  StoreSet = 1 << 4  // natsx
+    OSS   StoreSet = 1 << 5  // ossx
+    CH    StoreSet = 1 << 6  // clickhousex
+    All   StoreSet = TD | PG | Redis | Kafka | NATS | OSS | CH
 )
 
 // App 是组装后的运行时句柄。
@@ -210,8 +218,15 @@ type App struct {
 }
 
 // Stores 持有启用的存储适配器（nil 字段表示未启用）。
+// 字段为对应 adapter 的强类型 *Client，避免消费者 type assert。
 type Stores struct {
-    TD, PG, Redis, Kafka, NATS, OSS, CH interface{} // 各为对应 adapter 的 *Client
+    TD    *taosx.Client
+    PG    *postgresx.Client
+    Redis *redisx.Client
+    Kafka *kafkax.Client
+    NATS  *natsx.Client
+    OSS   *ossx.Client
+    CH    *clickhousex.Client
 }
 ```
 
@@ -298,7 +313,7 @@ XGO_{MODULE}_TD_HOST=...
 | 情况 | 处理 |
 | --- | --- |
 | ctx 为 nil | Build 返回 validation error |
-| Spec.Stores = None + 服务试图访问 App.Stores | App.Stores 为 nil，服务访问会 nil panic（设计意图：adapter 不应访问存储） |
+| Spec.Stores = None + 服务试图访问 App.Stores | App.Stores 为 nil；调用方需在访问前检查 `app.Stores != nil`；BR-005 通过 Build 入口 Spec.Module allowlist 校验保证 adapter 进程不持有 Stores |
 | 重复 Shutdown | 幂等，第二次返回 nil |
 | SIGTERM 在 Build 期间 | Build 应检查 ctx.Err()，提前返回 |
 | Stores 位掩码含未实现的存储 | 构造时返回 ErrUnsupportedStore |
@@ -438,7 +453,7 @@ bootstrap (L1)
 ### v0.2.0 准入项（含 SPEC Approved）
 
 - [ ] `Stores=All` 与位组合端到端冒烟（market-data 接入验证）
-- [ ] foundationx 依赖移除（替换为 kernel/configx 原生脱敏，对齐 ADR-foundationx-exit）
+- [ ] foundationx 依赖移除（v0.1.x patch 优先，不晚于 v0.2.0；替换为 kernel/configx 原生脱敏，对齐 ADR-foundationx-exit）
 - [ ] binance 接入验证（main.go ≤10 行）
 - [ ] SPEC 经四源 ≥98 分门禁，状态从 Draft 转 Approved
 
@@ -449,7 +464,7 @@ bootstrap (L1)
 | OQ-001 | observex Client logger/metrics/tracer 私有无 getter | ✅ 已确认（2026-06-17） | configx/observex/resiliencx Client **均无业务 getter**（只有 Close/HealthCheck）。bootstrap 不暴露内部 logger，服务自行 observex.New。无需改基座。 |
 | OQ-002 | 是否需要登记 FOUNDATION-DEPS.yaml？ | ✅ 已登记（2026-06-17） | bootstrap 已登记进 `module/FOUNDATION-DEPS.yaml` modules 与 allowed_deps 节，依赖方向：kernel/configx/observex/resiliencx + 6 存储。 |
 | OQ-003 | 存储适配器是否已实现 lifecycx.Component？ | ✅ 已确认（2026-06-17） | 7 存储 adapter **未实现 Component**（有 Close 无 Start/Name）。bootstrap 用 `closerComponent` wrapper 适配，不改已发布适配器。 |
-| OQ-004 | bootstrap 直 import foundationx 与 ADR-foundationx-exit 冲突 | Open（v0.2.0 修复） | `pkg/bootstrap/stores.go` 直接 import `foundationx.SecretString`。v0.2.0 必须迁移到 `kernel/errx.RedactedString` 或 configx 本地脱敏（详见 §15.1 迁移注记）。 |
+| OQ-004 | bootstrap 直 import foundationx 与 ADR-foundationx-exit 冲突 | Open（v0.1.x patch 优先） | `pkg/bootstrap/stores.go` 直接 import `foundationx.SecretString`。v0.2.0 必须迁移到 `kernel/errx.RedactedString` 或 configx 本地脱敏（详见 §15.1 迁移注记）。 |
 
 ---
 
@@ -470,3 +485,4 @@ bootstrap (L1)
 | 2026-06-17 | v0.1.0 | 初始 SPEC：Build/Run/Shutdown + Spec/StoreSet/App + 7 存储 Component 适配 + 5 道边界门禁；基于 configx/observex/kernel 真实 API 对接 | ZoneCNH |
 | 2026-06-17 | v0.1.1 | 实现前核实修正：确认 OQ-001（基座 Client 无业务 getter）/ OQ-003（存储适配器未实现 Component）；§9.3 改为 closerComponent wrapper 方案；App.Observe 标注仅供 Close | ZoneCNH |
 | 2026-06-17 | v0.1.2 | 文档-代码漂移收口：§6 FR-004 标注 v0.1.0 stub 实现状态；§15.1 补声明 foundationx v0.1.1（runtime 实测）+ ossx 显式行 + ADR-foundationx-exit 迁移注记；§22 拆分 v0.1.0 已完成 / v0.2.0 准入；§23 OQ-002 翻 ✅ + 新增 OQ-004（foundationx 迁移） | ZoneCNH |
+| 2026-06-18 | v0.1.3 | 7 项微调：§6 FR-001 删 metrics 鸡蛋问题；FR-004 加 v0.1.0 stub 行内注解；§9.1 StoreSet 改显式位号；§9.1 Stores 字段改强类型；§13 删 nil panic 措辞；§22/§23 OQ-004 提前到 v0.1.x；与 BLK-009 配对登记 | ZoneCNH |

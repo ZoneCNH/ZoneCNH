@@ -38,7 +38,7 @@
 | [contracts](https://github.com/ZoneCNH/contracts)         | v1.2.0 | spec/code/release       | factory-ready   | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | 跨域稳定端口/事件/DTO 契约（含 §8.4 Binance C/S ingestion contract）；spec-only；✅ GitHub Release v1.2.0 已发布                                                                                                                       |
 | [transportx](https://github.com/ZoneCNH/transportx)       | v1.1.1-spec | spec/code/release       | factory-ready   | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | 应用通信底座规格基线；spec-only；✅ GitHub Release v1.1.1-spec 已发布                                                                                                                            |
 
-> ✅ **版本 / release 注记**：公开文档是投影层；版本、release 与 factory 状态以 `.foundationx/status/index.json` + `.foundationx/blockers.json` 为准。当前 20-module projection 中 20/20 已发布 GitHub Release，0 open blockers，Foundation 整体 factory grade。
+> ✅ **版本 / release 注记**：公开文档是投影层；版本、release 与 factory 状态以 `.foundationx/status/index.json` + `.foundationx/blockers.json` 为准。当前 21-module projection 中 21/21 已发布 GitHub Release，1 open blocker（BLK-009 bootstrap），Foundation 整体非 factory grade（bootstrap v0.1.0 stub）。
 
 > **成熟度语义说明（2026-06-14 v2 Trust Alignment）**：上表"进度"反映本仓库 Spec 管线评分（spec→code），不代表可投产等级（factory grade）。下表提供多维度成熟度视图；RELEASE=❌ 或存在 open blocker 的模块不得投影为 FACTORY=✅。
 
@@ -57,6 +57,7 @@
 | testkitx                      |      ✅       |                ✅                 |                ✅                |           N/A           |           ✅           |             N/A             |                      N/A                      |   N/A   | v0.4.0; GitHub Release 已发布; 4 CI workflows; test-only — factory grade 不适用                                                                            |
 | resiliencx                    |      ✅       |                ✅                 |                ✅                |           N/A           |           ✅           |             ✅              |                      N/A                      |   ✅    | v0.4.9; GitHub Release 已发布; 9 CI workflows; 2 下游消费者; 此前误标 v1.0.1 已修正                                                                        |
 | schedulex                     |      ✅       |                ✅                 |                ✅                |           N/A           |           ✅           |             ✅              |                      N/A                      |   ✅    | v1.0.0; 6 CI workflows; 下游 smoke 通过; 1 下游消费者                                                                                                      |
+| bootstrap                     |      ✅       |                ✅                 |                ✅                |           N/A           |           ✅           |             N/A             |                      N/A                      |   ❌    | v0.1.0; GitHub Release 已发布; L1 通用进程组装层; 仅 Stores=None 路径就绪; BLK-009 open（Stores!=None 未实现 + foundationx 依赖）; 非 factory                  |
 | redisx                        |      ✅       |                ✅                 |                ✅                |           ✅            |           ✅           |             N/A             |                      N/A                      |   ✅    | v1.0.1; 9 CI workflows; Docker-backed Redis 验证通过                                                                                                       |
 | kafkax                        |      ✅       |                ✅                 |                ✅                |           ✅            |           ✅           |             N/A             |                      N/A                      |   ✅    | v1.0.2; 8 CI workflows; 真实 broker gates 已验证                                                                                                           |
 | natsx                         |      ✅       |                ✅                 |                ✅                |           ✅            |           ✅           |             N/A             |                      N/A                      |   ✅    | v1.0.0; GitHub Release 已发布; 6 CI workflows; dev auth live gate 已验证                                                               |
@@ -337,9 +338,9 @@
 
 - 组件：19 个（不含 L2.5；机器事实层另将 `domainx` 作为 L2.5 模块计入 20-module projection）；
   Spec→Code 管线投影已闭合，但不等于 Foundation 整体 factory grade。
- - 核心模块全部 20/20 GitHub Release 已发布，0 open blockers，Foundation 整体 factory grade。
+ - 核心模块全部 21/21 GitHub Release 已发布，1 open blocker（BLK-009 bootstrap），Foundation 整体非 factory grade（bootstrap v0.1.0 stub）。
  - 存储层全部模块 GitHub Release 已发布、CI 已部署、live integration 已验证。
- - **阻塞项**：无 — 全部 8 项 BLK 已于 2026-06-16 闭合。
+ - **阻塞项**：BLK-009 open（bootstrap Stores!=None 未实现 + foundationx 依赖）；8 项历史 BLK 已于 2026-06-16 闭合，待 v0.1.x patch 修复 BLK-009。
 
 ### 🟢 L2.5 领域共享层（健康）
 

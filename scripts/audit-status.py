@@ -164,7 +164,7 @@ def parse_multidimensional_status_rows(text):
 def parse_status_release_projection_count(text):
     """Extract the prose GitHub Release count from STATUS.md's projection note."""
     match = re.search(
-        r"当前\s+20-module projection\s+中\s+(\d+)/20\s+已发布 GitHub Release",
+        r"当前\s+\d+-module projection\s+中\s+(\d+)/\d+\s+已发布 GitHub Release",
         text,
     )
     return int(match.group(1)) if match else None

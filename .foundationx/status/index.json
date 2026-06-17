@@ -1,9 +1,9 @@
 {
   "schema_version": "fleet-status/v1",
-  "generated_at": "2026-06-18T00:00:00Z",
+  "generated_at": "2026-06-18T01:00:00Z",
   "generated_by": "xlibgate fleet-status",
   "source": ".foundationx/status/index.json",
-  "total_modules": 20,
+  "total_modules": 21,
   "verified_against": {
     "STATUS.md": "2026-06-14",
     "FOUNDATION-DEPS.yaml": "v1.2 (2026-06-14)",
@@ -13,9 +13,9 @@
     "SOAK": "STATUS.md + .repo-contract.yaml evidence (2026-06-14)"
   },
   "summary": {
-    "spec_complete": 20,
-    "impl_complete": 20,
-    "release_published": 20,
+    "spec_complete": 21,
+    "impl_complete": 21,
+    "release_published": 21,
     "live_integration": 7,
     "factory_grade": 19
   },
@@ -266,6 +266,19 @@
       "soak": "N/A",
       "factory": true,
       "note": "release=false: public tag v1.1.1-spec exists, but source repo remains all_aligned=false and has no public GitHub Release or release/manifest closure packet; factory=false until aligned public release evidence exists"
+    },
+    "bootstrap": {
+      "layer": "L1",
+      "version": "v0.1.0",
+      "spec": true,
+      "impl": true,
+      "release": true,
+      "live": "N/A",
+      "ci": true,
+      "adopt": "N/A",
+      "soak": "N/A",
+      "factory": false,
+      "note": "L1 通用进程组装层；v0.1.0 GitHub Release 已发布；非 factory：v0.1.0 仅 Stores=None 端到端就绪，Stores!=None 路径与 foundationx 依赖清零待 v0.1.x patch（BLK-009 open）"
     },
     "domainx": {
       "layer": "L2.5",
