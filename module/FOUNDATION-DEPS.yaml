@@ -53,6 +53,12 @@ modules:
     stdlib_only: false
     description: "测试专用能力库，生产禁止 import"
 
+  bootstrap:
+    path: github.com/ZoneCNH/bootstrap
+    layer: L1
+    stdlib_only: false
+    description: "L1 通用进程组装层：configx/observex/lifecycx 统一组装 + 存储适配器可选构造"
+
   # 标准源 / 门禁（不参与运行时依赖）
   xlib-standard:
     path: github.com/ZoneCNH/xlib-standard
@@ -154,6 +160,7 @@ allowed_deps:
   resiliencx:    [kernel]                              # 观测通过本地接口或 adapter 接入
   schedulex:     [kernel]                              # 不直接依赖 resiliencx/observex
   testkitx:      [kernel, configx, observex, resiliencx, schedulex]  # 测试所有
+  bootstrap:     [kernel, configx, observex, resiliencx, taosx, postgresx, redisx, kafkax, natsx, clickhousex]  # L1 组装层，依赖全部基座
   xlib-standard: []                                    # 标准源，无运行时依赖
   xlib-harness:  []                                    # 工具运行器，无 Foundation 运行时依赖
   xlib-evidence: []                                    # evidence runtime，无 Foundation 运行时依赖
