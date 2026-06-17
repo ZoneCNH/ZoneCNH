@@ -1,6 +1,6 @@
 {
   "schema_version": "fleet-status/v1",
-  "generated_at": "2026-06-18T01:00:00Z",
+  "generated_at": "2026-06-18T02:00:00Z",
   "generated_by": "xlibgate fleet-status",
   "source": ".foundationx/status/index.json",
   "total_modules": 21,
@@ -14,10 +14,10 @@
   },
   "summary": {
     "spec_complete": 21,
-    "impl_complete": 21,
+    "impl_complete": 20,
     "release_published": 21,
     "live_integration": 7,
-    "factory_grade": 19
+    "factory_grade": 18
   },
   "modules": {
     "xlib-standard": {
@@ -219,14 +219,14 @@
       "layer": "L2",
       "version": "v1.0.1",
       "spec": true,
-      "impl": true,
+      "impl": false,
       "release": true,
       "live": true,
       "ci": true,
       "adopt": "N/A",
       "soak": false,
-      "factory": true,
-      "note": "Aliyun OSS L2 adapter; release/live/CI 仍记录为 true，但 BLK-008 已因公开证据不足重新打开：API 文档、集成测试证据、quickstart、release manifest 尚未在事实层归档；factory=false 直到证据闭环。"
+      "factory": false,
+      "note": "Aliyun OSS L2 adapter；远程仓库 0 pkg 源码（54KB，仅 docs/scripts/.repo-contract.yaml/.env.example/LICENSE/README）；release v1.0.1 tag 存在但实测无可 import 包；BLK-010 open（impl=false 重置事实）；factory=false 直到 pkg/ossx 源码补齐 + integration evidence 归档。"
     },
     "clickhousex": {
       "layer": "L2",
