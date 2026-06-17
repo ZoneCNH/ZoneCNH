@@ -13,11 +13,20 @@
 
 ## 1. 摘要
 
-`orderx` 是执行域的订单管理器，负责订单全生命周期管理、订单路由、智能订单路由（SOR）、订单状态机和订单簿维护。它接收 strategyx 或 maestro 的订单请求，通过 riskx 进行风控检查，然后路由到交易所执行。架构规则明确：策略只能通过 riskx 提交订单，riskx 通过 orderx 执行。
+`orderx` 是执行域的订单管理器，负责订单全生命周期管理、订单路由（SOR）、订单状态机和成交维护。接收 `signal-factory` 生成的交易信号（经 `riskx` 风控通过后），由 `maestro` 编排调用，路由到交易所执行。实盘执行链：signal-factory → riskx → orderx → positionx。
+
+## 2. 边界
+
+| 类型 | 说明 |
+| --- | --- |
+| Owns | 订单生命周期、SOR 路由、订单状态机、成交/审计追踪 |
+| Depends on | `module/signal-factory`（接收 Signal）、`module/riskx`（风控通过后调用）、`module/domain-market`（canonical 类型） |
+| Consumed by | `module/positionx`（成交更新仓位）、`module/maestro`（编排调用）、`module/observex`（订单事件） |
+| Excludes | 信号生成（→ signal-factory）、风控判断（→ riskx）、仓位计算（→ positionx） |
 
 ---
 
-## 2. 问题与背景
+## 3. 问题与背景
 
 多交易所交易场景中的订单管理挑战：
 
