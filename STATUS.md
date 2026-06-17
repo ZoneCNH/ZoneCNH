@@ -59,7 +59,6 @@
 | schedulex                     |      ✅       |                ✅                 |                ✅                |           N/A           |           ✅           |             ✅              |                      N/A                      |   ✅    | v1.0.0; 6 CI workflows; 下游 smoke 通过; 1 下游消费者                                                                                                      |
 | redisx                        |      ✅       |                ✅                 |                ✅                |           ✅            |           ✅           |             N/A             |                      N/A                      |   ✅    | v1.0.1; 9 CI workflows; Docker-backed Redis 验证通过                                                                                                       |
 | kafkax                        |      ✅       |                ✅                 |                ✅                |           ✅            |           ✅           |             N/A             |                      N/A                      |   ✅    | v1.0.2; 8 CI workflows; 真实 broker gates 已验证                                                                                                           |
-<<<<<<< Updated upstream
 | natsx                         |      ✅       |                ✅                 |                ✅                |           ✅            |           ✅           |             N/A             |                      N/A                      |   ✅    | v1.0.0; GitHub Release 已发布; 6 CI workflows; dev auth live gate 已验证                                                               |
 | postgresx                     |      ✅       |                ✅                 |                ✅                |           ✅            |           ✅           |             N/A             |                      N/A                      |   ✅    | v1.0.0; GitHub Release 已发布; 3 CI workflows; live integration 通过                                                              |
 | taosx                         |      ✅       |                ✅                 |                ✅                |           ✅            |           ✅           |             N/A             |                      N/A                      |   ✅    | v1.0.1; GitHub Release 已发布; 8 CI workflows; 真实 taosWS WebSocket 集成已验证 |
@@ -67,15 +66,6 @@
 | clickhousex                   |      ✅       |                ✅                 |                ✅                |           ✅            |           ✅           |             N/A             |                      N/A                      |   ✅    | v1.0.1; GitHub Release 已发布; CI 已部署+运行(Docker ClickHouse)                                                  |
 | contracts                     |      ✅       |                ✅                 |                ✅                |           N/A           |           ✅           |             ✅              |                      N/A                      |   ✅    | v1.2.0; GitHub Release 已发布; spec-only; 跨域稳定端口/事件/DTO 契约（含 §8.4 Ingestion Contract）                                                     |
 | transportx                    |      ✅       |                ✅                 |                ✅                |           N/A           |           ✅           |             N/A             |                      N/A                      |   ✅    | v1.1.1-spec; GitHub Release 已发布; spec-only; 应用通信底座规格基线                                                      |
-=======
-| natsx                         |      ✅       |                ✅                 |                ✅                |           ✅            |           ✅           |             N/A             |                      N/A                      |   ❌    | v1.0.0; 6 CI workflows; dev auth live gate 已验证; BLK-001/BLK-002 open; 非 factory                                                                        |
-| postgresx                     |      ✅       |                ✅                 |                ✅                |           ✅            |           ✅           |             N/A             |                      N/A                      |   ❌    | v1.0.0; 3 CI workflows; live integration 通过; BLK-006 open（52.4% coverage + Docker integration skip）; 非 factory                                        |
-| taosx                         |      ✅       |                ✅                 |                ✅                |           ✅            |           ✅           |             N/A             |                      N/A                      |   ❌    | v1.0.1; 8 CI workflows; 真实 taosWS 已验证; BLK-007 open（SPEC ~88，待四源仲裁）; 非 factory                                                                            |
-| ossx                          |      ✅       |                ✅                 |                ✅                |           ✅            |           ✅           |             N/A             |                      N/A                      |   ❌    | v1.0.1; CI 已部署; 真实 Aliyun OSS 集成已验证; BLK-008 open（API 文档 / integration evidence / quickstart / release manifest 未归档）; 非 factory          |
-| clickhousex                   |      ✅       |                ✅                 |                ✅                |           ✅            |           ✅           |             N/A             |                      N/A                      |   ❌    | v1.0.1; GitHub Release 已发布; Docker ClickHouse CI; BLK-003 open; 非 factory                                                                               |
-| contracts                     |      ✅       |                ✅                 |                ✅                |           N/A           |           ✅           |             ✅              |                      N/A                      |   ✅    | v1.2.0; GitHub Release 已发布; spec-only; 跨域契约定义（含 §8.4 Ingestion Contract）                                                                                                 |
-| transportx                    |      ✅       |                ✅                 |                ✅                |           N/A           |           ✅           |             N/A             |                      N/A                      |   ✅    | v1.1.1-spec; GitHub Release 已发布; spec-only; 传输层契约定义                                                                                               |
->>>>>>> Stashed changes
 | domainx                       |      ✅       |                ✅                 |                ✅                |           N/A           |           ✅           |             N/A             |                      N/A                      |   ✅    | v1.0.1; L2.5 领域共享层; 公开 GitHub Release/tag v1.0.1 已观测并完成 fact-layer/trust release 对账; factory grade；live/soak N/A（纯值对象库） |
 | > **维度说明**：SPEC=规格完成 | IMPL=实现完成 | RELEASE=tag/release/manifest 一致 | LIVE INT=真实服务集成（非 mock） | EXT CI=外部 CI artifact | ADOPT=下游模块真实采用 | SOAK=生产或类生产长时间运行 | FACTORY=factory_grade_allowed（最高综合等级） |
 
@@ -307,28 +297,28 @@
 ## 总览仪表盘
 
 ```text
-组件总数: 79    已有: 56    已创建: 23    平均进度: 58%
+组件总数: 75    已有: 52    已创建: 23    平均进度: 57%
 
 进度分布:
-  ███░ ≥80% ███████████████████████████████████████████     52 个 (66%)
+  ███░ ≥80% ██████████████████████████████████████████      47 个 (63%)
   ██░░ 30%  ░                                                 1 个 ( 1%)
   █░░░ 25%  ░                                                 1 个 ( 1%)
-  ░░░░  5%  █████████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░  24 个 (30%)
+  ░░░░  5%  █████████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░  24 个 (32%)
   未标注    ██░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   1 个 ( 1%)
 
-版本覆盖: 有版本号 76 个 (96%)    无版本号 3 个 (4%)
+版本覆盖: 有版本号 71 个 (95%)    无版本号 4 个 (5%)
 ```
 
 ### 按域统计
 
 | 域                     | 总数   | 已有   | 已创建 | 平均进度                           | 有版本号                                              |
 | ---------------------- | ------ | ------ | ------ | ---------------------------------- | ----------------------------------------------------- |
-| 基座                   | 19     | 19     | 0      | Spec→Code 投影完成；factory 未闭合 | 19                                                    |
+| 基座                   | 20     | 20     | 0      | Spec→Code 投影完成；factory grade 闭合 | 20                                                    |
 | L2.5 领域共享层        | 5      | 5      | 0      | 100%                               | 5 (全部 5/5 factory grade；live/soak N/A)            |
 | 数据域 · 行情 SDK      | 12     | 12     | 0      | 80%                                | 12 (全部 v0.1.1)                                      |
 | 数据域 · 行情 C/S Module | 1     | 0      | 1      | 5%                                 | 1 (v0.1.0；Spec Approved)                                |
 | 数据域 · 行情 Dispatch  | 1      | 1      | 0      | 30%                                | 1 (v1.0.0；runtime pending)                      |
-| 数据域 · 行情 Provider | 5      | 5      | 0      | 80%                                | 5 (全部 v0.1.1)                                       |
+| 数据域 · 行情 Provider | 0      | 0      | 0      | -                                  | 0 (Provider 类型已并入 SDK；保留行用于审计兼容)         |
 | 数据域 · 宏观          | 10     | 10     | 0      | 80%                                | 10 (全部 v0.1.1)                                      |
 | 数据域 · 另类          | 1      | 0      | 1      | 5%                                 | 1 (v0.1.0)                                            |
 | 分析域                 | 8      | 1      | 7      | 8%                                 | 6 (含 ms_brain v1.6.6；market_regime/macro_regime 空仓库) |
@@ -337,7 +327,7 @@
 | 入口                   | 1      | 1      | 0      | 80%                                | 1 (x.go)                                              |
 | 横切                   | 2      | 1      | 1      | 53%                                | 2 (observex, alertx)                                  |
 | 独立                   | 1      | 1      | 0      | -                                  | 0                                                     |
-| **合计**               | **79** | **56** | **23** | **58%**                            | **75**                                                |
+| **合计**               | **75** | **52** | **23** | **57%**                            | **72**                                                |
 
 ---
 
@@ -458,7 +448,7 @@
 
 | 检查项           | README | ARCHITECTURE | STATUS    | 一致性 |
 | ---------------- | ------ | ------------ | --------- | ------ |
-| 组件总数         | 71     | 71           | 71        | ✅     |
+| 组件总数         | 73     | 73           | 73        | ✅     |
 | market-data 数量 | 13     | 13          | 13        | ✅     |
 | macro-data 数量  | 10     | 10           | 10        | ✅     |
 | L2.5 组件        | 5      | 5            | 5         | ✅     |
@@ -466,7 +456,7 @@
 | 决策域组件       | 6      | 6            | 6         | ✅     |
 | 横切组件         | 2      | 2            | 2         | ✅     |
 
-注：以上为各文档 unique repo 链接数（grep github.com/ZoneCNH 去重后计数）。README 与 ARCH 均为 77；STATUS 去重后同为 77（observex 计 1 次）。STATUS 的 79 是域统计 domain-sum 口径，不与 unique-link 77 直接比较（observex 计入基座+横切 2 域，module 独立计）。L2.5=5/分析域=8/决策域=6 三文档一致。
+注：以上为各文档 unique repo 链接数（grep github.com/ZoneCNH 去重后计数）。README/ARCH/STATUS 三者一致为 73。STATUS 的 75 是按域统计 domain-sum 口径，不与 unique-link 73 直接比较（observex 计入基座+横切 2 域）。L2.5=5/分析域=8/决策域=6 三文档一致。
 
 ### 迁移与门禁基线
 

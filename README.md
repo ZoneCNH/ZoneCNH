@@ -82,10 +82,11 @@ L2.5: domainx / decimalx / domain-market / domain-macro / domain-exchange (5/5 �
 - [observex](https://github.com/ZoneCNH/observex) — vendor-neutral 日志、指标、追踪、健康与脱敏契约 `公开`
 - [resiliencx](https://github.com/ZoneCNH/resiliencx) — 运行时弹性策略（timeout/retry/circuit/bulkhead/rate/fallback） `公开`
 - [schedulex](https://github.com/ZoneCNH/schedulex) — 任务调度运行时（cron/interval/delay、Overlap/Misfire 策略、Locker 扩展点、Clock 注入、v1.0.0 已发布，98.2% 覆盖） `公开`
+- [bootstrap](https://github.com/ZoneCNH/bootstrap) — L1 通用进程组装层：configx/observex/resiliencx + lifecycx 统一组装 + 6 存储 adapter 可选构造（StoreSet 位掩码）；✅ v0.1.0 GitHub Release 已发布 `公开`
 - [testkitx](https://github.com/ZoneCNH/testkitx) — 测试专用 evidence/golden/fixture/boundary 工具包 `公开`
 - [xlibgate](https://github.com/ZoneCNH/xlibgate) — import 边界、go.mod、Go baseline、release evidence、Trust Alignment 门禁 `公开`
 
-> **公开投影口径**：版本 / release / factory 状态以 `.foundationx/status/index.json` + `.foundationx/blockers.json` 为准；当前 BLK-001/002/003/006/007/008 open，因此 README 不声明 Foundation 单一 100% 或 factory-grade。
+> **公开投影口径**：版本 / release / factory 状态以 `.foundationx/status/index.json` + `.foundationx/blockers.json` 为准；BLK-001~008 全部已 resolved（2026-06-16 闭合），20-module projection 已声明 factory grade（除 testkitx test-only N/A 外）。
 >
 > `configx` v1.0.0、`observex` v0.3.1、`testkitx` v0.4.0、`resiliencx` v0.4.9 已发布；此前版本误标已修正。
 

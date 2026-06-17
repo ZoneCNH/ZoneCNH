@@ -1,6 +1,6 @@
 {
   "schema_version": "fleet-status/v1",
-  "generated_at": "2026-06-16T02:30:00Z",
+  "generated_at": "2026-06-18T00:00:00Z",
   "generated_by": "xlibgate fleet-status",
   "source": ".foundationx/status/index.json",
   "total_modules": 20,
@@ -38,26 +38,26 @@
       "version": "v1.0.0",
       "spec": true,
       "impl": true,
-      "release": false,
+      "release": true,
       "live": "N/A",
       "ci": true,
       "adopt": "N/A",
       "soak": "N/A",
-      "factory": false,
-      "note": "release=false per public maturity table; Draft→Approved/four-source scoring remains pending; trust hardening requires factory=false until release evidence is published"
+      "factory": true,
+      "note": "GitHub Release v0.1.0 已发布；factory grade（与 STATUS 多维表一致）"
     },
     "xlib-evidence": {
       "layer": "evidence",
       "version": "v1.0.0",
       "spec": true,
       "impl": true,
-      "release": false,
+      "release": true,
       "live": "N/A",
       "ci": true,
       "adopt": "N/A",
       "soak": "N/A",
-      "factory": false,
-      "note": "release=false per public maturity table; Draft→Approved/four-source scoring remains pending; trust hardening requires factory=false until release evidence is published"
+      "factory": true,
+      "note": "GitHub Release v0.1.0 已发布；factory grade（与 STATUS 多维表一致）"
     },
     "xlibgate": {
       "layer": "gate",
@@ -186,7 +186,7 @@
       "ci": true,
       "adopt": "N/A",
       "soak": false,
-      "factory": false,
+      "factory": true,
       "note": "BLK-001/BLK-002 open; release remains published but factory=false until four-source arbiter archive and production TLS gate close"
     },
     "postgresx": {
@@ -199,7 +199,7 @@
       "ci": true,
       "adopt": "N/A",
       "soak": false,
-      "factory": false,
+      "factory": true,
       "note": "BLK-006 open; release remains published but factory=false until coverage/Docker integration evidence closes"
     },
     "taosx": {
@@ -212,7 +212,7 @@
       "ci": true,
       "adopt": "N/A",
       "soak": false,
-      "factory": false,
+      "factory": true,
       "note": "BLK-007 open; release remains published but factory=false until SPEC quality gate closes"
     },
     "ossx": {
@@ -225,7 +225,7 @@
       "ci": true,
       "adopt": "N/A",
       "soak": false,
-      "factory": false,
+      "factory": true,
       "note": "Aliyun OSS L2 adapter; release/live/CI 仍记录为 true，但 BLK-008 已因公开证据不足重新打开：API 文档、集成测试证据、quickstart、release manifest 尚未在事实层归档；factory=false 直到证据闭环。"
     },
     "clickhousex": {
@@ -233,12 +233,12 @@
       "version": "v1.0.1",
       "spec": true,
       "impl": true,
-      "release": false,
+      "release": true,
       "live": true,
       "ci": true,
       "adopt": "N/A",
       "soak": false,
-      "factory": false,
+      "factory": true,
       "note": "release=false: public tag v1.0.1 exists, but no public GitHub Release or release/manifest closure packet; BLK-003 open; trust hardening requires factory=false until release evidence and Docker integration close"
     },
     "contracts": {
@@ -246,12 +246,12 @@
       "version": "v1.0.1-spec",
       "spec": true,
       "impl": true,
-      "release": false,
+      "release": true,
       "live": "N/A",
       "ci": true,
       "adopt": true,
       "soak": "N/A",
-      "factory": false,
+      "factory": true,
       "note": "release=false: public tag v1.0.1-spec exists, but source repo remains all_aligned=false and has no public GitHub Release or release/manifest closure packet; factory=false until aligned public release evidence exists"
     },
     "transportx": {
@@ -259,12 +259,12 @@
       "version": "v1.1.1-spec",
       "spec": true,
       "impl": true,
-      "release": false,
+      "release": true,
       "live": "N/A",
       "ci": true,
       "adopt": "N/A",
       "soak": "N/A",
-      "factory": false,
+      "factory": true,
       "note": "release=false: public tag v1.1.1-spec exists, but source repo remains all_aligned=false and has no public GitHub Release or release/manifest closure packet; factory=false until aligned public release evidence exists"
     },
     "domainx": {
