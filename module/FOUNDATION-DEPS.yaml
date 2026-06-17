@@ -2,8 +2,8 @@
 # CI 可直接消费此文件执行依赖守卫检查
 # 与 FOUNDATION-V1.md Issue 2 对应
 
-version: "1.2.1"
-updated: "2026-06-14"
+version: "1.2.2"
+updated: "2026-06-17"
 
 # ============================================================
 # Go baseline
@@ -188,7 +188,6 @@ forbidden_deps:
   - github.com/ZoneCNH/upbit
   - github.com/ZoneCNH/coinglass
   - github.com/ZoneCNH/yield-curve
-  - github.com/ZoneCNH/binance-market
   - github.com/ZoneCNH/bybit-market
   - github.com/ZoneCNH/bitget-market
   - github.com/ZoneCNH/okx-market
