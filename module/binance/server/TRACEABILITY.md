@@ -75,24 +75,24 @@
 
 | AC ID | 所属 FR/BR | AC 描述 | 验证方式 |
 |-------|-----------|---------|----------|
-| AC-S01 | FR-001 | gRPC server 绑定端口成功 | TC-001 |
-| AC-S02 | FR-002 | 正常关闭 stream 时清理资源 | TC-002 |
-| AC-S03 | FR-003 | 缺必填字段→terminal_validation reject | TC-003 |
-| AC-S04 | FR-003 | 不支持 product_line→terminal_validation reject | TC-004 |
-| AC-S05 | FR-004 | 首次 key→accept+dispatch | TC-005 |
-| AC-S06 | FR-004 | 重复 key+相同 payload→idempotent ACK，不 dispatch | TC-006 |
-| AC-S07 | FR-004 | 重复 key+冲突 payload→terminal_conflict | TC-007 |
-| AC-S08 | FR-005 | durable write 成功→durable_indicator=true | TC-008 |
-| AC-S09 | FR-005 | durable write 失败→retryable reject | TC-009 |
-| AC-S10 | FR-006 | ACK 含所有必要字段，可驱动 checkpoint | TC-010 |
-| AC-S11 | FR-007 | dispatch 成功→event 被下游接受 | TC-011 |
-| AC-S12 | FR-007 | dispatch 失败→retry 或 rollback | TC-012 |
-| AC-S13 | FR-008 | /healthz 返回 200 | TC-013 |
-| AC-S14 | FR-008 | /readyz（下游不可达）返回 503 | TC-014 |
-| AC-S15 | FR-008 | /admin/drain 拒绝新 stream | TC-015 |
-| AC-S16 | BR-001 | Idempotency key accept at most once | TC-005, TC-006 |
-| AC-S17 | BR-002 | Conflicting payload→terminal_conflict | TC-007 |
-| AC-S18 | BR-006 | server 代码中无 client internal 引用 | CI gate |
+| AC-001 | FR-001 | gRPC server 绑定端口成功 | TC-001 |
+| AC-002 | FR-002 | 正常关闭 stream 时清理资源 | TC-002 |
+| AC-003 | FR-003 | 缺必填字段→terminal_validation reject | TC-003 |
+| AC-004 | FR-003 | 不支持 product_line→terminal_validation reject | TC-004 |
+| AC-005 | FR-004 | 首次 key→accept+dispatch | TC-005 |
+| AC-006 | FR-004 | 重复 key+相同 payload→idempotent ACK，不 dispatch | TC-006 |
+| AC-007 | FR-004 | 重复 key+冲突 payload→terminal_conflict | TC-007 |
+| AC-008 | FR-005 | durable write 成功→durable_indicator=true | TC-008 |
+| AC-009 | FR-005 | durable write 失败→retryable reject | TC-009 |
+| AC-010 | FR-006 | ACK 含所有必要字段，可驱动 checkpoint | TC-010 |
+| AC-011 | FR-007 | dispatch 成功→event 被下游接受 | TC-011 |
+| AC-012 | FR-007 | dispatch 失败→retry 或 rollback | TC-012 |
+| AC-013 | FR-008 | /healthz 返回 200 | TC-013 |
+| AC-014 | FR-008 | /readyz（下游不可达）返回 503 | TC-014 |
+| AC-015 | FR-008 | /admin/drain 拒绝新 stream | TC-015 |
+| AC-016 | BR-001 | Idempotency key accept at most once | TC-005, TC-006 |
+| AC-017 | BR-002 | Conflicting payload→terminal_conflict | TC-007 |
+| AC-018 | BR-006 | server 代码中无 client internal 引用 | CI gate |
 
 ---
 
@@ -118,3 +118,4 @@
 | 日期 | 版本 | 变更内容 |
 |------|------|----------|
 | 2026-06-16 | v1.0.0 | 初始版本：§1-§7 标准追溯矩阵，基于 server SPEC.md v1.0.0 (23节) 生成 |
+| 2026-06-17 | v1.1.0 | **R7 AC 命名空间统一**：AC-S01~AC-S18 → AC-001~AC-018（18 处），消除评分器期望的 AC-### 格式偏差。注：§5.1 别名表已在更早的清理中删除，本 PR 仅完成 §1/§5 中 AC 主键与引用的最终统一 | ZoneCNH |
