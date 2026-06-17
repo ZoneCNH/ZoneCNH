@@ -1,6 +1,6 @@
 # module/binance/server SPEC
 
-- Status: Draft
+- Status: Review
 - Spec-Version: v1.0.0
 - Last-Updated: 2026-06-17
 - Owner: ZoneCNH
@@ -599,8 +599,8 @@ server 必须通过 contracts 定义的 server-side contract tests：
 
 | ID | 问题 | 状态 | 负责人 |
 |----|------|------|--------|
-| OQ-004 | idempotency store 是否需要支持跨实例共享（Redis cluster）？ | 待解决 | ZoneCNH |
-| OQ-005 | admin endpoint 是否需要认证（API key / JWT）？ | 待解决 | ZoneCNH |
+| OQ-004 | idempotency store 是否需要支持跨实例共享（Redis cluster）？ | 已解决 (2026-06-17)：见 §7 FR-005 Idempotency Store 后端选择 — Redis 为生产默认（含 Cluster/Sentinel HA 模式），server 应用层无感；多实例共享与跨重启持久化由 Redis 自身能力承担 | ZoneCNH |
+| OQ-005 | admin endpoint 是否需要认证（API key / JWT）？ | 已解决 (2026-06-17)：见 §19 Security — v1 默认 localhost-only 无需认证；生产环境通过反向代理（nginx/Caddy）或 mTLS 添加认证；v1.1 可考虑内置 API key（沿用 client OQ-004 决策模式） | ZoneCNH |
 
 ### Future（未来考虑）
 
