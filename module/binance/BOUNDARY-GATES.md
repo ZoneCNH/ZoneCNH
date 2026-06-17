@@ -22,6 +22,8 @@ Allowed only in:
 ```text
 docs/migrations/remove-binance-market.md
 CHANGELOG.md
+module/binance/          （自引用：SPEC 历史描述、Task 文件名、追踪矩阵）
+docs/report/             （历史审计/审查报告）
 ```
 
 Suggested check:
@@ -30,7 +32,7 @@ Suggested check:
 #!/usr/bin/env bash
 set -euo pipefail
 
-allow_re='docs/migrations/remove-binance-market.md|CHANGELOG.md'
+allow_re='docs/migrations/remove-binance-market.md|CHANGELOG.md|module/binance/|docs/report/'
 forbidden_re='module/binance-market|github.com/ZoneCNH/binance-market|binance-market|docs/services/binance-market-client-svc.md'
 
 hits="$(grep -R -n -E "$forbidden_re" . \
