@@ -1,27 +1,22 @@
 # module/binance/server SPEC
 
-- Status: Review
-- Spec-Version: v1.0.0
-- Last-Updated: 2026-06-17
-- Owner: ZoneCNH
-- Layer: 数据域
-- Version: v0.1.0
-- Repository: [github.com/ZoneCNH/binance-server](https://github.com/ZoneCNH/binance-server)
-- Related: [CONSTITUTION.md](../../CONSTITUTION.md), [ARCHITECTURE.md](../../ARCHITECTURE.md), [module/contracts](../../contracts/), [module/domain-market](../../domain-market/), [module/market-data](../../market-data/)
-
----
-
 ## 1. Metadata
 
 | 字段 | 值 |
 |------|-----|
 | Module | `module/binance/server` |
-| Go Module Path | `github.com/ZoneCNH/binance-server` |
+| Status | Review |
+| Spec-Version | v1.0.1 |
+| Last-Updated | 2026-06-17 |
+| Owner | ZoneCNH |
 | Layer | 数据域 · 行情接入层 |
 | Role | Binance 行情数据的 gRPC ingest server |
 | Port Interface | `contracts.MarketDataService` (gRPC streaming) |
 | Language | Go |
-| Status | Draft |
+| Version | v0.1.0 |
+| Repository | [github.com/ZoneCNH/binance](https://github.com/ZoneCNH/binance)（server/ 子目录） |
+| Go Module Path | `github.com/ZoneCNH/binance`（monorepo，server 端通过 `cmd/binance-server` + `internal/server` 提供） |
+| Related | [CONSTITUTION.md](../../../CONSTITUTION.md), [ARCHITECTURE.md](../../../ARCHITECTURE.md), [module/binance/SPEC.md](../SPEC.md), [module/contracts](../../contracts/), [module/domain-market](../../domain-market/), [module/market-data](../../market-data/) |
 
 ---
 
@@ -364,32 +359,40 @@ POST /admin/drain
 
 ## 14. Directory Structure
 
+### Documentation (`module/binance/server/`)
+
 ```text
-binance-server/
+module/binance/server/
+├── README.md
+├── SPEC.md                  # 本文件
+├── TRACEABILITY.md
+├── IMPLEMENTATION-PLAN.md
+└── tasks/                   # Server task spec（9 个）
+```
+
+### Runtime（monorepo `github.com/ZoneCNH/binance/`，server 端目录）
+
+```text
+github.com/ZoneCNH/binance/
 ├── go.mod
 ├── go.sum
-├── README.md
-├── SPEC.md
-├── server.go                  # gRPC server 绑定、stream handler 主循环
-├── server_test.go             # server 核心逻辑测试
-├── validate.go                # 请求校验
-├── validate_test.go
-├── idempotency.go             # 幂等检查与 idempotency store 接口
-├── idempotency_test.go
-├── idempotency_memory.go      # 内存 idempotency store 实现
-├── idempotency_redis.go       # Redis idempotency store 实现
-├── dispatch.go                # 下游 dispatch 逻辑
-├── dispatch_test.go
-├── ack.go                     # ACK/reject 构造
-├── admin.go                   # Gin admin HTTP handler
-├── admin_test.go
-├── metrics.go                 # observex metrics 注册
-├── errors.go                  # 公共错误变量
-├── options.go                 # Option 模式配置
-├── testdata/
-│   └── *.golden               # 测试数据
-└── contract_test.go           # 服务端契约测试（与 contracts 对齐）
+├── cmd/
+│   └── binance-server/main.go      # ingest acceptance 进程入口
+└── internal/server/
+    ├── app/                        # 顶层组装与生命周期
+    ├── config/                     # configx 集成
+    ├── ingest/                     # gRPC server 绑定 + stream handler
+    ├── validation/                 # IngestRequest 信封校验
+    ├── idempotency/                # IdempotencyStore 接口 + memory/redis 实现 + check-and-set
+    ├── ack/                        # IngestAck/IngestReject 构造
+    ├── dispatch/                   # exchange-neutral downstream port
+    ├── admin/                      # Gin admin handler（healthz/readyz/debug/admin/streams/admin/drain）
+    ├── observability/              # observex metrics/logging/tracing
+    ├── errors.go                   # 公共错误变量
+    └── *_test.go                   # 各子目录单元测试 + contract 测试
 ```
+
+> **monorepo 边界约束**：`internal/server/*` 不得 import `internal/client/*`，对应 BR-006 + BOUNDARY-GATES §4 CI gate。`internal/server` 仅通过 `module/contracts` 生成的 gRPC server 类型与 `module/binance/client` 跨进程通信。
 
 ---
 
@@ -632,3 +635,4 @@ server 必须通过 contracts 定义的 server-side contract tests：
 | 日期 | 版本 | 变更内容 | 作者 |
 |------|------|----------|------|
 | 2026-06-16 | v1.0.0 | 从 12 节格式迁移至 23 节标准格式 | ZoneCNH |
+| 2026-06-17 | v1.0.1 | **Repository 字段 monorepo 对齐**：(1) 删除文档头部重复的简版 metadata 区块，全部字段并入 §1 Metadata 表格（消除 Status `Review` vs `Draft` 字段冲突）；(2) Repository 从 `github.com/ZoneCNH/binance-server`（不存在仓库，违反 CLAUDE.md 模块-仓库强制对应）改为 `github.com/ZoneCNH/binance`（server/ 子目录），与 root SPEC + RUNTIME-MAPPING + IMPLEMENTATION-PLAN 描述的 monorepo 路线一致；(3) Go Module Path 同步改为 `github.com/ZoneCNH/binance`（monorepo，server 端通过 `cmd/binance-server` + `internal/server` 提供）；(4) §14 Directory Structure 由独立 `binance-server/` 仓库布局重写为 monorepo `internal/server/` 子目录布局，与 RUNTIME-MAPPING §5 一致 | ZoneCNH |
