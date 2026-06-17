@@ -89,7 +89,7 @@ require (
 | 无统一基座组装层（configx/observex/7 存储适配器如何注入未定义） | 23 个子模块         | 高         |
 | 7 种持久化在子模块间职责未分层                                  | 全域                | 高         |
 | `dev.md` 明文凭据缺安全注入路径                                 | 全域                | 高（安全） |
-| `contracts` 缺 `MacroDataProvider` 端口                         | 10 宏观模块         | 中         |
+| ~~`contracts` 缺 `MacroDataProvider` 端口~~ ✅ 已定义（§8.1）   | —                  | —（已解决） |
 
 ### 2.3 dev.md 凭据与库结构（精确统计）
 
@@ -249,7 +249,7 @@ require (
 | 领域模型 | `domain-market.{Tick,Quote,Bar,OrderBook,Funding}` | `domain-macro.{MacroPoint,MacroInformationSet}` |
 | 高频存储 | TDengine 实时写（kline/trades）                    | TDengine 批量写时序点                           |
 | 修订语义 | 无（行情无修订）                                   | 有（RevisionVersion / IsPreliminary，防前视）   |
-| 对外端口 | `contracts.MarketDataProvider`                     | `contracts.MacroDataProvider`（待新增）         |
+| 对外端口 | `contracts.MarketDataProvider`                     | `contracts.MacroDataProvider`（**已定义** §8.1） |
 | 边界门禁 | client↔server 隔离 + 跨模块禁 import               | 同左 + no-lookahead gate                        |
 
 ---
@@ -458,7 +458,7 @@ func Wire(app *bootstrap.App, moduleName string) (*Service, error) {
 
 | 阶段                           | 工作                                                                                                               | 退出条件                               | 预估         |
 | ------------------------------ | ------------------------------------------------------------------------------------------------------------------ | -------------------------------------- | ------------ |
-| **P0 基座就绪**                | 7 持久化适配器全部发布（已 ✅）；contracts 补 `MacroDataProvider` 端口                                             | contracts v1.3 含宏观端口 + AC/TC      | 1 个端口规格 |
+| **P0 基座就绪**                | 7 持久化适配器全部发布（已 ✅）；~~contracts 补 `MacroDataProvider` 端口~~ ✅ 已定义 | ~~contracts v1.3~~ → contracts v1.2 已含；重心转 macro-data SPEC | — |
 | **P1 模板固化**                | 把 binance C/S 骨架 + `internal/infra` 抽成可复制模板；编写 `docs/sre/data-domain-bootstrap.md`                    | 1 个模板 + 文档，新模块 `cp -r` 即用   | 1 份 SOP     |
 | **P1.5 bootstrap 基座（新增）** | 新建 `bootstrap`（L1 薄胶水层）：Spec→Code 走四源 98 分门禁；实现 Build/Run/Shutdown + 7 存储 Component 适配        | bootstrap v0.1.0 发布，binance 接入验证 | 1 个基座模块 |
 | **P2 旧模块迁移**              | fred 等 10 宏观模块从 `xlib-standard` 迁到 `domain-macro` + 细粒度基座；行情模块统一补 `internal/infra`            | 23 个 go.mod 全部符合 §六模板          | 23 次迁移    |
@@ -500,7 +500,7 @@ P0 是硬前置（宏观模块无对外端口）；P1.5 是 P2/P4 的硬前置�
 | 23 服务 × 7 存储 = 161 条连接，资源压力大   | 中         | 每服务按需连存储（宏观模块可不用 Kafka 高频）；连接池 + health gate           |
 | 旧模块迁移工作量（23 个 go.mod）            | 中         | P1 模板固化后 `cp -r` 批量；按 P2 分批迁移                                    |
 | Kafka 与 NATS 职责漂移                      | 中         | D3 明确分工 + boundary-gates 校验业务数据不进 NATS                            |
-| contracts 缺 MacroDataProvider 阻塞宏观模块 | 中         | P0 优先补端口，作为 P1 硬前置                                                 |
+| ~~contracts 缺 MacroDataProvider 阻塞宏观模块~~ ✅ 端口已定义 | —（已解决） | 真正缺口是 macro-data 接收侧 SPEC（§十七）                                    |
 | TDengine vs ClickHouse 双写一致性           | 中         | ClickHouse 经 Kafka 物化视图异步灌入，接受最终一致；回测读 CH 不要求强一致    |
 | bootstrap 范围蔓延成第二个 x.go              | 中         | §13.5 五道边界门禁锁死：禁业务/禁采集/禁 transport 实体/只向下依赖/组件可插拔 |
 
@@ -977,14 +977,22 @@ NATS 控制面订阅 `svc.{module}.health`，编排层（x.go）聚合 23 服务
 
 ## 十七、宏观聚合层缺口（macro-data 待建）
 
-> 经查 `module/`，行情侧有 `market-data`（L3 接收侧聚合），但**宏观侧没有对应的 `macro-data` 聚合层**。这是一个需补齐的真实架构缺口。
+> 经查 `module/`：行情侧有 `market-data`（L3 接收侧聚合 spec）；宏观侧 **`macro-data` 聚合层 SPEC 缺失**。
+>
+> ⚠️ **核实修正**：`contracts` 已完整定义 `MacroDataProvider` 端口（SPEC §8.1 / FR-002，三方法签名齐全），**端口无需补**。真正的缺口是 `macro-data` 模块的**接收侧 SPEC 文档**（镜像 market-data）。
 
-### 17.1 缺口
+### 17.1 核实后的缺口矩阵
+
+| 模块 | SPEC 文档 | 运行时代码 | 端口（contracts） | 状态 |
+| --- | --- | --- | --- | --- |
+| `contracts` | ✅ v1.2.0 | spec-only（仅 go.mod） | ✅ MacroDataProvider **已定义**（§8.1） | 端口就绪，待实现 |
+| `market-data` | ✅ v1.0.0（DownstreamDispatchPort） | spec-only（无 /home/market-data） | ✅ MarketDataProvider 已定义 | 接收侧规格就绪，待实现 |
+| `macro-data` | **❌ 不存在**（module/macro-data/ 无） | — | ✅ 端口已在 contracts，**无接收侧实现者** | **聚合层 SPEC 缺失** |
 
 | 域 | 采集 adapter | 接收侧聚合层 | 状态 |
 | --- | --- | --- | --- |
 | 行情 | binance/okx/…（13） | `market-data`（DownstreamDispatchPort） | ✅ Docs Baseline |
-| 宏观 | fred/bea/ecb/…（10） | **`macro-data`（缺失）** | ❌ 不存在 |
+| 宏观 | fred/bea/ecb/…（10） | **`macro-data`（SPEC 缺失）** | ❌ 待建 SPEC |
 
 ### 17.2 影响
 
@@ -1004,7 +1012,7 @@ NATS 控制面订阅 `svc.{module}.health`，编排层（x.go）聚合 23 服务
 | 排序键 | symbol+ts+seq | seriesCode+observedAt+revisionVersion |
 | 落库 | TD+Kafka+PG+Redis | 同（per-provider macro_* 库） |
 
-这应纳入 P0 前置（与 contracts 补 MacroDataProvider 并列），否则宏观 adapter 无法按统一架构落地。
+这应纳入 P0 前置（contracts 端口已就绪，只差 macro-data 接收侧 SPEC），否则宏观 adapter 无法按统一架构落地。
 
 ### 17.4 修正后的完整模块清单
 
@@ -1023,7 +1031,7 @@ NATS 控制面订阅 `svc.{module}.health`，编排层（x.go）聚合 23 服务
 ### 18.1 修正后的落地顺序（P0-P6 + P1.5）
 
 ```
-P0  contracts 补 MacroDataProvider 端口 + macro-data 聚合层规格（§十七）
+P0  contracts 端口已就绪（MacroDataProvider §8.1）；macro-data 接收侧聚合层 SPEC（§十七）
  │
  ├─► P1  CS 模板固化（adapter 骨架 + internal/infra 瘦身版）
  │
@@ -1046,7 +1054,7 @@ P0  contracts 补 MacroDataProvider 端口 + macro-data 聚合层规格（§十�
 
 | 阶段 | 门禁 | 验证方式 |
 | --- | --- | --- |
-| P0 | contracts v1.3 含 MacroDataProvider；macro-data SPEC Approved | 四源评分 ≥98 + arbiter pass |
+| P0 | MacroDataProvider 已在 contracts v1.2（✅ 就绪）；macro-data 接收侧 SPEC Approved | 四源评分 ≥98 + arbiter pass |
 | P1 | CS 模板可 `cp -r` 新建模块，boundary-gates 全绿 | 新建 1 个空壳模块跑通门禁 |
 | P1.5 | bootstrap v0.1.0 发布，binance 接入后 main ≤10 行 | bootstrap 5 道边界门禁全绿 |
 | P2 | 23 个 go.mod 零 `xlib-standard`，全依赖 v1.0+ | `grep xlib-standard` 零命中 |
@@ -1099,7 +1107,7 @@ Spec → Matrix → Tasks → Plan → Prompt → Code
 | 治理权威     | `CONSTITUTION.md`                          | §0 分支纪律、设计原则、CRI                                    |
 | 依赖矩阵     | `module/FOUNDATION-DEPS.yaml`              | 机器可读依赖边守卫                                            |
 | **数据流**   | **`DATAFLOW.md`**                          | **分析域→决策域→执行域下游流（本报告 §十四 补齐数据域上游）** |
-| 跨域契约     | `module/contracts/SPEC.md`                 | MarketDataProvider 端口（MacroDataProvider 待补）             |
+| 跨域契约     | `module/contracts/SPEC.md`                 | MarketDataProvider + **MacroDataProvider 已定义**（§8.1）     |
 | **行情聚合** | **`module/market-data/SPEC.md`**           | **DownstreamDispatchPort 接收侧（唯一写存储者，§十五）**      |
 | **宏观聚合** | **`module/macro-data/`（待建，§十七）**    | **宏观接收侧聚合层缺口**                                      |
 | 配置约定     | `module/configx/SPEC.md`                   | SecretString / EnvSource / Provenance                         |
@@ -1112,4 +1120,4 @@ Spec → Matrix → Tasks → Plan → Prompt → Code
 
 ---
 
-_报告结束（19 节）。下一步建议优先级：**P0**（contracts 补 MacroDataProvider 端口 + macro-data 聚合层规格）→ **P1**（CS 模板）→ **P1.5**（bootstrap 薄胶水层）→ P2-P6。每阶段走 Spec→Code 四源 98 分门禁。_
+_报告结束（19 节）。下一步建议优先级：**P0**（macro-data 接收侧聚合层 SPEC；contracts 端口已就绪）→ **P1**（CS 模板）→ **P1.5**（bootstrap 薄胶水层）→ P2-P6。每阶段走 Spec→Code 四源 98 分门禁。_
