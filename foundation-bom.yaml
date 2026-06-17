@@ -1,5 +1,5 @@
 schema_version: foundation-bom/v1
-generated_at: '2026-06-17T23:37:57Z'
+generated_at: '2026-06-17T23:45:46Z'
 source: .foundationx/status/index.json
 modules:
   xlib-standard:
@@ -129,8 +129,7 @@ modules:
     kind: skeleton
     production_import_allowed: false
     factory_grade_allowed: false
-    blocking_findings:
-    - BLK-010
+    blocking_findings: []
     public_code_verified: true
     status_renderable: true
   clickhousex:

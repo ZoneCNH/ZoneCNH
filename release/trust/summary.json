@@ -2,7 +2,7 @@
   "source": ".foundationx/status/index.json",
   "summary": {
     "spec_complete": 21,
-    "impl_complete": 20,
+    "impl_complete": 21,
     "release_published": 21,
     "live_integration": 7,
     "factory_grade": 18

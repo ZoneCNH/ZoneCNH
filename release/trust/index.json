@@ -3,32 +3,27 @@
   "available": true,
   "summary": {
     "spec_complete": 21,
-    "impl_complete": 20,
+    "impl_complete": 21,
     "release_published": 21,
     "live_integration": 7,
     "factory_grade": 18
   },
   "open_blockers": {
     "source": ".foundationx/blockers.json",
-    "total": 2,
+    "total": 1,
     "by_severity": {
-      "medium": 1,
-      "high": 1
+      "medium": 1
     },
     "by_module": {
       "bootstrap": [
         "BLK-009"
-      ],
-      "ossx": [
-        "BLK-010"
       ]
     },
     "by_category": {
-      "implementation": 2
+      "implementation": 1
     },
     "ids": [
-      "BLK-009",
-      "BLK-010"
+      "BLK-009"
     ]
   },
   "projection_guard": {

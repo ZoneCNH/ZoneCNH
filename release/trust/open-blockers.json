@@ -1,23 +1,18 @@
 {
   "source": ".foundationx/blockers.json",
-  "total": 2,
+  "total": 1,
   "by_severity": {
-    "medium": 1,
-    "high": 1
+    "medium": 1
   },
   "by_module": {
     "bootstrap": [
       "BLK-009"
-    ],
-    "ossx": [
-      "BLK-010"
     ]
   },
   "by_category": {
-    "implementation": 2
+    "implementation": 1
   },
   "ids": [
-    "BLK-009",
-    "BLK-010"
+    "BLK-009"
   ]
 }
