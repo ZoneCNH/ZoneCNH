@@ -7,7 +7,7 @@
 - Last-Updated: 2026-06-17
 - Owner: ZoneCNH
 - Layer: 数据域 · Binance 交易所接入
-- Module-Version: v0.1.0-spec
+- Version: v0.1.0
 - Repository: [github.com/ZoneCNH/binance](https://github.com/ZoneCNH/binance)（client/ 子目录）
 - Related: [CONSTITUTION.md](../../../CONSTITUTION.md), [ARCHITECTURE.md](../../../ARCHITECTURE.md), [module/binance/SPEC.md](../SPEC.md), [module/contracts/SPEC.md](../../contracts/SPEC.md), [module/domain-market](../../domain-market/)
 

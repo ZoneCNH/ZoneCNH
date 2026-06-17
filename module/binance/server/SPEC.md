@@ -5,7 +5,7 @@
 - Last-Updated: 2026-06-17
 - Owner: ZoneCNH
 - Layer: 数据域
-- Module-Version: v0.1.0-spec
+- Version: v0.1.0
 - Repository: [github.com/ZoneCNH/binance-server](https://github.com/ZoneCNH/binance-server)
 - Related: [CONSTITUTION.md](../../CONSTITUTION.md), [ARCHITECTURE.md](../../ARCHITECTURE.md), [module/contracts](../../contracts/), [module/domain-market](../../domain-market/), [module/market-data](../../market-data/)
 
