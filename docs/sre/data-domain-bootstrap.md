@@ -27,7 +27,7 @@
 
 | 角色 | 模块 | 状态 |
 | --- | --- | --- |
-| **参照实现** | `binance`（行情 C/S Module） | ✅ 可运行骨架 v0.1.0 |
+| **参照实现** | `binance`（行情 C/S Module） | ✅ 完整可编译 v0.2.0（bootstrap 接入 + build/test/gates 全通过） |
 | **行情聚合层** | `market-data`（DownstreamDispatchPort 接收侧） | ✅ Docs Baseline v1.0.0 |
 | **宏观聚合层** | `macro-data`（MacroDispatchPort 接收侧） | ✅ Docs Baseline v0.1.0 |
 | **跨域端口** | `contracts`（MarketDataProvider + MacroDataProvider §8.1） | ✅ v1.2.0 已定义 |
@@ -149,7 +149,7 @@ func main() {
 }
 ```
 
-**与 binance 现状的差异**：binance main.go 当前是裸 `signal.NotifyContext`（v0.1.0 骨架，bootstrap P1.5 前）。bootstrap 发布后，所有 adapter（含 binance）迁移到此形态。
+**binance 已接入 bootstrap**（v0.2.0）：main.go 使用 `bootstrap.Build(Stores=None)` + `app.Run(ctx)`。其余 22 adapter 已批量接入同形态。binance 是 golden path 参照（PR #7 + #8）。
 
 > bootstrap 发布前（P1.5 前）的过渡方案：adapter main.go 仍可用裸 `signal.NotifyContext`，但 configx + observex 的加载逻辑应集中在 `internal/infra/config.go`（临时），bootstrap 发布后上提。
 

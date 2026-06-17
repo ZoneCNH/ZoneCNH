@@ -64,20 +64,23 @@
 抽样两个代表模块的 `go.mod`：
 
 ```go
-// /home/binance/go.mod — 已迁移到细粒度基座 ✅
+// /home/binance/go.mod — 已迁移到细粒度基座 + bootstrap ✅
 require (
-    github.com/ZoneCNH/decimalx       v0.1.0   // 应升 v1.0.0
-    github.com/ZoneCNH/domain-exchange v0.1.0  // 应升 v1.0.0
-    github.com/ZoneCNH/domain-market  v0.1.0   // 应升 v1.1.0
+    github.com/ZoneCNH/bootstrap        v0.1.0   // P1.5 进程组装层
+    github.com/ZoneCNH/decimalx         v1.0.0   // ✅ 已升级
+    github.com/ZoneCNH/domain-exchange  v1.0.0   // ✅ 已升级
+    github.com/ZoneCNH/domain-market    v1.1.0   // ✅ 已升级
     github.com/binance/binance-connector-go v0.8.0
 )
-// ❌ 缺 configx/observex/7×存储适配器 import（尚未组装持久化层）
+// ✅ bootstrap 接入完成（Stores=None），adapter 零存储，全量 build+test 通过
 
-// /home/fred/go.mod — 仍依赖旧标准源 ❌
+// /home/fred/go.mod — 已迁移到细粒度基座 ✅（P2 完成）
 require (
-    github.com/ZoneCNH/decimalx      v0.1.0   // 应升 v1.0.0
-    github.com/ZoneCNH/xlib-standard v0.4.14  // ❌ 应替换为 domain-macro + 细粒度基座
+    github.com/ZoneCNH/bootstrap     v0.1.0   // P1.5 进程组装层
+    github.com/ZoneCNH/decimalx      v1.0.0   // ✅ 已升级
+    github.com/ZoneCNH/observex      v0.3.1   // ✅ xlib-standard → observex
 )
+// ✅ P2 迁移完成 + P6 bootstrap 接入完成
 ```
 
 **差距汇总：**
@@ -1116,7 +1119,7 @@ Spec → Matrix → Tasks → Plan → Prompt → Code
 | 行情领域     | `module/domain-market/SPEC.md`             | Tick/Quote/Bar SSOT                                           |
 | 宏观领域     | `module/domain-macro/SPEC.md`              | MacroPoint / no-lookahead 语义                                |
 | C/S 模板     | `/home/binance/`（cmd/internal/pkg）       | 已落地的行情 CS 参考实现                                      |
-| 宏观参考     | `/home/fred/`                              | 宏观模块结构（待迁移）                                        |
+| 宏观参考     | `/home/fred/`                              | 宏观模块结构（✅ P2 迁移 + bootstrap 接入完成）                 |
 
 ---
 
