@@ -171,6 +171,7 @@ Foundation 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中在 
 |               | observex      | [`module/observex/SPEC.md`](./module/observex/SPEC.md)           |
 |               | resiliencx    | [`module/resiliencx/SPEC.md`](./module/resiliencx/SPEC.md)       |
 |               | schedulex     | [`module/schedulex/SPEC.md`](./module/schedulex/SPEC.md)         |
+|               | bootstrap     | [`module/bootstrap/SPEC.md`](./module/bootstrap/SPEC.md)         |
 | **L1 测试**   | testkitx      | [`module/testkitx/SPEC.md`](./module/testkitx/SPEC.md)           |
 | **门禁**      | xlib-standard | [`module/xlib-standard/SPEC.md`](./module/xlib-standard/SPEC.md) |
 |               | xlibgate      | [`module/xlibgate/SPEC.md`](./module/xlibgate/SPEC.md)           |
@@ -341,7 +342,7 @@ Foundation 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中在 
 | 基座                  | [testkitx](https://github.com/ZoneCNH/testkitx)                 | v0.4.0 | ✅ 已发布 | Spec→Code 完成 | Fake / Fixture / Golden / Contract / Leak / Boundary / Manifest 测试工具包；test-only；禁止生产导入；factory grade 不适用 |
 | 基座                  | [resiliencx](https://github.com/ZoneCNH/resiliencx)             | v0.4.9 | ✅ 已发布 | Spec→Code 完成 | 运行时弹性策略库：timeout/retry/circuit/bulkhead/rate/fallback；此前误标 v1.0.1 已修正 |
 | 基座                  | [schedulex](https://github.com/ZoneCNH/schedulex)               | v1.0.0 | ✅ 已发布 | Spec→Code 完成 | cron/interval/delay 调度、OverlapPolicy（Skip/Queue/Replace）、MisfirePolicy（Skip/RunOnce/CatchUp）、EventSink、Locker、Clock 注入；98.2% 覆盖，release-check 通过 |
-| 基座                  | [bootstrap](https://github.com/ZoneCNH/bootstrap)               | v0.1.0 | ✅ 已发布 | Spec→Code 完成 | L1 通用进程组装层：configx/observex/lifecycx 统一组装 + 6 存储 adapter 可选构造（StoreSet 位掩码）+ 信号捕获；✅ GitHub Release v0.1.0 已发布；非 factory（SPEC Draft，运行时骨架） |
+| 基座                  | [bootstrap](https://github.com/ZoneCNH/bootstrap)               | v0.1.0 | ✅ 已发布 | Spec→Code 进行中（SPEC Draft，runtime 骨架已发布） | L1 通用进程组装层：configx/observex/lifecycx 统一组装 + 6 存储 adapter 可选构造（StoreSet 位掩码）+ 信号捕获；✅ GitHub Release v0.1.0 已发布；非 factory；Stores=All/位组合 v0.1.0 为 stub，仅 Stores=None 路径端到端就绪 |
 | 基座                  | [xlibgate](https://github.com/ZoneCNH/xlibgate)                 | v1.0.0 | ✅ 已发布 | Spec→Code 完成 | check / l2 / trust 三组门禁；全管线评分 100 |
 | 基座                  | [xlib-standard](https://github.com/ZoneCNH/xlib-standard)       | v1.0.0 | ✅ 已发布 | Spec→Code 完成 | 标准事实源、Go Reference Template；Generator/Harness/Evidence 已拆分，不参与运行时 import |
 | 基座                  | [xlib-harness](https://github.com/ZoneCNH/xlib-harness)         | v0.1.0 | ✅ 已发布 | Spec→Code 完成 | 模块生成器与门禁执行器：generate/scaffold、spec-lint、boundary-check、traceability-gate；✅ GitHub Release v0.1.0 已发布 |

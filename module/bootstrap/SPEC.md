@@ -1,10 +1,10 @@
 # bootstrap 规格
 
 - Status: Draft
-- Spec-Version: v0.1.0
+- Spec-Version: v0.1.2
 - Last-Created: 2026-06-17
 - Layer: L1 基础能力
-- Version: v0.1.0-spec
+- Version: v0.1.0-runtime / v0.1.2-spec
 - Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `kernel`, `configx`, `observex`, `resiliencx`
 
 > 本文件发布 bootstrap L1 进程启动组装层的规格基线，不引入运行时代码。后续实现进入独立仓库 `github.com/ZoneCNH/bootstrap`。对齐 [数据域基础架构报告 §十三](../../docs/report/data-domain-infrastructure-20260617.md) 与 [Bootstrap SOP](../../docs/sre/data-domain-bootstrap.md)。
@@ -339,16 +339,22 @@ require (
     github.com/ZoneCNH/configx       v1.0.0
     github.com/ZoneCNH/observex      v0.3.1
     github.com/ZoneCNH/resiliencx    v0.4.9
+    // 过渡期依赖（见下方 ADR-foundationx-exit 迁移注记）
+    github.com/ZoneCNH/foundationx   v0.1.1   // ⚠️ 仅 stores.go 用 SecretString 包 PG_PASSWORD
     // 存储适配器（按 Stores 位掩码构造，全部 require）
     github.com/ZoneCNH/taosx         v1.0.1
     github.com/ZoneCNH/postgresx     v1.0.0
     github.com/ZoneCNH/redisx        v1.0.1
     github.com/ZoneCNH/kafkax        v1.0.2
     github.com/ZoneCNH/natsx         v1.0.0
-    github.com/ZoneCNH/ossx          v1.0.1
+    github.com/ZoneCNH/ossx          v1.0.1   // ⚠️ 当前 0 源码，Stores.OSS 永远 nil
     github.com/ZoneCNH/clickhousex   v1.0.1
 )
 ```
+
+> **ADR-foundationx-exit 迁移注记**（OQ-004）：
+> bootstrap 当前 `pkg/bootstrap/stores.go` 直接 import `github.com/ZoneCNH/foundationx/pkg/foundationx` 用 `SecretString` 脱敏 `XGO_<MODULE>_PG_PASSWORD`。这与本仓库 `module/ADR-foundationx-exit.md` 决定（foundationx 是过渡性依赖、新原语放 kernel）冲突。
+> 迁移路径：v0.2.0 前必须把 `foundationx.SecretString` 替换为 `kernel/errx.RedactedString` 或 `configx` 本地脱敏类型，`go mod tidy` 后 go.mod 不再含 foundationx。CI 中已有规则 `grep -rn "foundationx" --include="*.go"` 不应新增 — bootstrap 是该规则的当前破例方，需在 v0.2.0 修复。
 
 ### 15.2 依赖方向
 
@@ -420,20 +426,30 @@ bootstrap (L1)
 
 ## 22. Release DoD
 
-- [ ] go build ./... 通过
-- [ ] go test ./... -race -count=1 全过
-- [ ] boundary-gates.sh 5 道全过
+### v0.1.0（已发布 2026-06-17）
+
+- [x] go build ./... 通过
+- [x] go test ./... -race -count=1 全过（10 测试）
+- [x] boundary-gates.sh 5 道全过
+- [x] CHANGELOG + README
+- [x] GitHub Release v0.1.0
+- [x] `Stores=None` 路径端到端就绪（adapter 23 接入）
+
+### v0.2.0 准入项（含 SPEC Approved）
+
+- [ ] `Stores=All` 与位组合端到端冒烟（market-data 接入验证）
+- [ ] foundationx 依赖移除（替换为 kernel/configx 原生脱敏，对齐 ADR-foundationx-exit）
 - [ ] binance 接入验证（main.go ≤10 行）
-- [ ] CHANGELOG + README
-- [ ] 经四源 98 分门禁
+- [ ] SPEC 经四源 ≥98 分门禁，状态从 Draft 转 Approved
 
 ## 23. 开放问题
 
 | OQ | 问题 | 状态 | 结论 |
 | --- | --- | --- | --- |
 | OQ-001 | observex Client logger/metrics/tracer 私有无 getter | ✅ 已确认（2026-06-17） | configx/observex/resiliencx Client **均无业务 getter**（只有 Close/HealthCheck）。bootstrap 不暴露内部 logger，服务自行 observex.New。无需改基座。 |
-| OQ-002 | 是否需要登记 FOUNDATION-DEPS.yaml？ | Open | bootstrap 是新 L1 模块，需登记进依赖矩阵 |
+| OQ-002 | 是否需要登记 FOUNDATION-DEPS.yaml？ | ✅ 已登记（2026-06-17） | bootstrap 已登记进 `module/FOUNDATION-DEPS.yaml` modules 与 allowed_deps 节，依赖方向：kernel/configx/observex/resiliencx + 6 存储。 |
 | OQ-003 | 存储适配器是否已实现 lifecycx.Component？ | ✅ 已确认（2026-06-17） | 7 存储 adapter **未实现 Component**（有 Close 无 Start/Name）。bootstrap 用 `closerComponent` wrapper 适配，不改已发布适配器。 |
+| OQ-004 | bootstrap 直 import foundationx 与 ADR-foundationx-exit 冲突 | Open（v0.2.0 修复） | `pkg/bootstrap/stores.go` 直接 import `foundationx.SecretString`。v0.2.0 必须迁移到 `kernel/errx.RedactedString` 或 configx 本地脱敏（详见 §15.1 迁移注记）。 |
 
 ---
 
@@ -453,3 +469,4 @@ bootstrap (L1)
 | --- | --- | --- | --- |
 | 2026-06-17 | v0.1.0 | 初始 SPEC：Build/Run/Shutdown + Spec/StoreSet/App + 7 存储 Component 适配 + 5 道边界门禁；基于 configx/observex/kernel 真实 API 对接 | ZoneCNH |
 | 2026-06-17 | v0.1.1 | 实现前核实修正：确认 OQ-001（基座 Client 无业务 getter）/ OQ-003（存储适配器未实现 Component）；§9.3 改为 closerComponent wrapper 方案；App.Observe 标注仅供 Close | ZoneCNH |
+| 2026-06-17 | v0.1.2 | 文档-代码漂移收口：§6 FR-004 标注 v0.1.0 stub 实现状态；§15.1 补声明 foundationx v0.1.1（runtime 实测）+ ossx 显式行 + ADR-foundationx-exit 迁移注记；§22 拆分 v0.1.0 已完成 / v0.2.0 准入；§23 OQ-002 翻 ✅ + 新增 OQ-004（foundationx 迁移） | ZoneCNH |
