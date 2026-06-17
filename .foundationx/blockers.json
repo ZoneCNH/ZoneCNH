@@ -1,13 +1,13 @@
 {
   "schema_version": "blockers/v1",
-  "generated_at": "2026-06-16T02:30:00Z",
+  "generated_at": "2026-06-18T00:00:00Z",
   "source": ".foundationx/blockers.json",
   "total_blockers": 8,
   "by_severity": {
-    "critical": 0,
-    "high": 0,
-    "low": 0,
-    "medium": 0
+    "critical": 2,
+    "high": 3,
+    "low": 1,
+    "medium": 2
   },
   "blockers": [
     {
@@ -100,13 +100,28 @@
     }
   ],
   "by_module": {
-    "clickhousex": ["BLK-003"],
-    "contracts": ["BLK-004"],
-    "natsx": ["BLK-001", "BLK-002"],
-    "ossx": ["BLK-008"],
-    "postgresx": ["BLK-006"],
-    "taosx": ["BLK-007"],
-    "transportx": ["BLK-005"]
+    "clickhousex": [
+      "BLK-003"
+    ],
+    "contracts": [
+      "BLK-004"
+    ],
+    "natsx": [
+      "BLK-001",
+      "BLK-002"
+    ],
+    "ossx": [
+      "BLK-008"
+    ],
+    "postgresx": [
+      "BLK-006"
+    ],
+    "taosx": [
+      "BLK-007"
+    ],
+    "transportx": [
+      "BLK-005"
+    ]
   },
   "resolved_in_repo": {
     "note": "全部阻塞项已通过治理流程闭合（2026-06-16）",
@@ -114,12 +129,7 @@
   },
   "open_blockers": 0,
   "resolved_blockers": 8,
-  "open_by_severity": {
-    "critical": 0,
-    "high": 0,
-    "low": 0,
-    "medium": 0
-  },
+  "open_by_severity": {},
   "factory_blocking_modules": [],
   "release_blocking_modules": []
 }
