@@ -1,6 +1,6 @@
 {
   "schema_version": "blockers/v1",
-  "generated_at": "2026-06-18T03:00:00Z",
+  "generated_at": "2026-06-18T04:00:00Z",
   "source": ".foundationx/blockers.json",
   "total_blockers": 10,
   "by_severity": {
@@ -102,12 +102,12 @@
       "id": "BLK-009",
       "severity": "medium",
       "module": "bootstrap",
-      "title": "bootstrap Stores!=None 未实现 + postgresx v1.0.0 公开 API foundationx.SecretString 传染",
+      "title": "bootstrap pkg/bootstrap/stores.go:217 仍 import foundationx.SecretString（postgresx 已独立无需联动）",
       "status": "open",
       "category": "implementation",
-      "detail": "两层阻塞：(a) v0.1.0 runtime 仅 Stores=None 端到端就绪，Stores!=None 返回 ErrUnsupportedStore；(b) bootstrap pkg/bootstrap/stores.go:217 import foundationx.SecretString 包 PG_PASSWORD，但实测此非 bootstrap 主动选择——postgresx@v1.0.0 公开 API Config.Password 字段类型本身就是 foundationx.SecretString，bootstrap 必须传该类型才能构造 postgresx.Config。彻底清零 foundationx 需先发 postgresx v1.1.0 改 Config.Password 为本地类型。",
-      "evidence": "gh api ZoneCNH/postgresx/v1.0.0 + GOMODCACHE postgresx@v1.0.0/pkg/postgresx/config.go: `Password foundationx.SecretString \"json:password\"`；同时 postgresx Validate 用 foundationx.NewError/ErrorKindConfig；ADR-foundationx-exit 当前迁移表仅列 configx/observex，未识别 postgresx 传染",
-      "action": "分阶段：(a) bootstrap stores.go 加注释说明 foundationx 是间接传染（已在本 PR 完成）；(b) 上游路径——postgresx v1.1.0 改 Config.Password 为本地 SecretString 类型，Validate 错误改 kernel/errx；(c) bootstrap v0.1.1 跟进升级。三步全完成才算 BLK-009 关闭。"
+      "detail": "实测核实（2026-06-18 v3）：postgresx@v1.0.0 已完成 foundationx 退出——Config.Password 类型为本地 `postgresx.SecretString`（pkg/postgresx/secret.go），Validate 用本地 NewError/ErrorKindConfig（pkg/postgresx/error.go），go.mod 不含 foundationx。bootstrap stores.go:217 import foundationx 是历史遗留单点：仅需 `foundationx.SecretString(...)` → `postgresx.SecretString(...)` 一行替换 + go.mod 移除 foundationx require。v0.1.0 runtime Stores!=None 路径未实现是另一独立子项（BLK-009b）。",
+      "evidence": "postgresx 实测：grep -n foundationx pkg/postgresx/*.go 零命中；secret.go 定义 type SecretString string；error.go 定义 ErrorKind/ErrorKindConfig/NewError 三者均本地。bootstrap 实测：grep -n foundationx pkg/bootstrap/stores.go = 行 23 import + 行 217 SecretString 一处用法。",
+      "action": "分两子项：(a) 1 行替换 stores.go:217 + 1 行移除 go.mod foundationx require + go mod tidy + bootstrap v0.1.1 release（已可在本会话完成）；(b) Stores!=None 路径实现（BLK-009b）属 v0.2.0 范围，独立处理。"
     },
     {
       "id": "BLK-010",
