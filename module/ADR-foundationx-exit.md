@@ -1,7 +1,7 @@
 # ADR: foundationx Compatibility Exit
 
-> 状态：Active（v2 — 2026-06-18 补 postgresx 真实瓶颈）
-> 日期：2026-06-07（v1） / 2026-06-18（v2 修订）
+> 状态：Active（v3 — 2026-06-18 实测纠错：postgresx 已独立）
+> 日期：2026-06-07（v1） / 2026-06-18（v2 误判 postgresx 传染） / 2026-06-18（v3 实测纠错）
 > 决策者：ZoneCNH
 > 关联：`FOUNDATION-V1.md` Issue 4；`.foundationx/blockers.json` BLK-009
 
@@ -9,12 +9,14 @@
 
 Foundation 模块早期以 `foundationx` 作为共享基础包，包含 `SecretString`、`ErrorKind`、`HealthStatus` 等通用类型。随着 Foundation 架构收敛，`kernel` 已成为 L0 原语底座，`foundationx` 的角色应被替代。
 
-当前依赖状态：
+当前依赖状态（v3 实测，2026-06-18）：
 
 | 模块       | foundationx 版本 | 依赖方式                              | 说明                          |
 | ---------- | ---------------- | ------------------------------------- | ----------------------------- |
 | `configx`  | v0.0.0           | 本地 replace `./internal/foundationx` | 用于 SecretString 等类型      |
 | `observex` | v0.1.0           | 远程依赖                              | 用于 ErrorKind / HealthStatus |
+| `postgresx` | -                | ✅ 已完成迁移                          | v1.0.0 实测：本地 `SecretString`（pkg/postgresx/secret.go）+ 本地 `NewError`/`ErrorKindConfig`（pkg/postgresx/error.go）；go.mod 不含 foundationx |
+| `bootstrap` | v0.1.1（待发）   | 历史遗留单点                           | `pkg/bootstrap/stores.go:217 foundationx.SecretString(...)` 一行残留；v0.1.1 替换为 `postgresx.SecretString(...)` 即可清零 |
 
 ## 决策
 
@@ -41,21 +43,23 @@ Foundation 模块早期以 `foundationx` 作为共享基础包，包含 `SecretS
 | `foundationx.HealthStatus` | `kernel/healthx.Status` | 健康状态枚举 |
 | 其他 foundationx 类型      | kernel 对应原语         | 逐个评估     |
 
-### postgresx（v1.1.0 准入项 — BLK-009 真实瓶颈）
+### postgresx（v3 实测：已完成迁移，无需新版本）
 
-| 当前使用（v1.0.0 公开 API） | 迁移目标（v1.1.0）                                          | 说明                                     |
-| --------------------------- | ----------------------------------------------------------- | ---------------------------------------- |
-| `Config.Password foundationx.SecretString` | `Config.Password postgresx.SecretString`（本地 type alias 或 type SecretString string + Sanitize 方法） | 公开 API 类型传染下游所有 import 方     |
-| `foundationx.NewError(foundationx.ErrorKindConfig, op, msg)` | `errors.New` + `kernel/errx.Wrap` 或本地 `*ConfigError` | Validate() 内部错误，可 internal 重写   |
-| `foundationx.ErrorKindConfig` 等枚举 | `kernel/errx.KindConfig`                                    | 错误分类枚举迁移到 kernel               |
+| 当前 v1.0.0 实测 | 状态 | 说明 |
+| ---------------- | ---- | ---- |
+| `Config.Password postgresx.SecretString`（本地） | ✅ 已迁移 | pkg/postgresx/secret.go: `type SecretString string` + `NewSecretString` |
+| `NewError(ErrorKindConfig, op, msg)` 本地 | ✅ 已迁移 | pkg/postgresx/error.go 定义 ErrorKind 全枚举 + NewError |
+| `go.mod` foundationx | ✅ 不含 | grep "foundationx" go.mod 零命中 |
 
-**优先级**：postgresx v1.1.0 是 bootstrap foundationx 清零的**前置依赖**；不动 postgresx 则 bootstrap 永远不能彻底移除 foundationx import。
+**v2 误判更正**：v2 当时基于 `GOMODCACHE/postgresx@v1.0.0/pkg/postgresx/config.go` 看到 `foundationx.SecretString`，但该缓存可能是 module 重命名前的旧版本快照——实际 GitHub ZoneCNH/postgresx@v1.0.0 tag 已是本地化版本。
 
-### bootstrap（postgresx v1.1.0 后跟进）
+### bootstrap（v0.1.1 1 行替换即可清零）
 
-| 当前用法                                          | 迁移目标（v1.1.0+）                          | 说明                          |
-| ------------------------------------------------- | -------------------------------------------- | ----------------------------- |
-| `foundationx.SecretString(envOr("PG_PASSWORD"))` | `postgresx.SecretString(...)` 或 `kernel/errx.RedactedString(...)` | 一行替换，等 postgresx v1.1.0 |
+| 当前用法（v0.1.0）                                          | 替换目标                                    | 工作量             |
+| ----------------------------------------------------------- | ------------------------------------------ | ------------------ |
+| `pkg/bootstrap/stores.go:23 import "github.com/ZoneCNH/foundationx/pkg/foundationx"` | 删除该 import | 1 行 |
+| `pkg/bootstrap/stores.go:217 foundationx.SecretString(envOr(prefix+"PG_PASSWORD", ""))` | `postgresx.SecretString(envOr(prefix+"PG_PASSWORD", ""))` | 1 行 |
+| `go.mod` foundationx require | `go mod tidy` | 自动 |
 
 ## 时间线
 
@@ -64,8 +68,8 @@ Foundation 模块早期以 `foundationx` 作为共享基础包，包含 `SecretS
 | 冻结            | 立即                 | 不再新增 `foundationx` usage                      |
 | configx 迁移    | configx v0.3 之前    | go.mod 中无 foundationx 依赖                      |
 | observex 迁移   | observex v0.4 之前   | go.mod 中无 foundationx 依赖                      |
-| **postgresx 迁移**  | **postgresx v1.1.0** | **Config.Password 改本地 SecretString；Validate 改 kernel/errx；go.mod 无 foundationx**（BLK-009 前置） |
-| **bootstrap 跟进** | **bootstrap v0.1.1** | **stores.go 替换 foundationx.SecretString 为 postgresx 本地类型；go.mod 无 foundationx**（BLK-009 关闭条件） |
+| ~~postgresx 迁移~~  | ~~postgresx v1.1.0~~ | ✅ **v3 纠错**：postgresx@v1.0.0 实测已完成（pkg/postgresx/secret.go + error.go），无需新版本 |
+| **bootstrap 跟进** | **bootstrap v0.1.1** | 1 行替换 stores.go:217（`foundationx.SecretString` → `postgresx.SecretString`）+ go.mod 清理；BLK-009a 关闭条件 |
 | 清理            | 上述全部迁移完成后   | 删除 `internal/foundationx` 目录                  |
 
 ## 约束
