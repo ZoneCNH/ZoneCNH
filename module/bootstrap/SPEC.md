@@ -201,12 +201,12 @@ const (
 
 // App 是组装后的运行时句柄。
 type App struct {
-    Config     *configx.Client
-    Observe    *observex.Client
+    Config     *configx.Client    // 仅供 Shutdown 时 Close；无业务 getter
+    Observe    *observex.Client   // 仅供 Shutdown 时 Close；服务取 logger 自行 observex.New
     Stores     *Stores            // 按 Spec.Stores 启用的子集；None 时为 nil
-    Resilience *resiliencx.Client
-    Lifecycle  *lifecycx.Manager
-    ConfigHash string             // configx EffectiveConfigHash
+    Resilience *resiliencx.Client // 仅供 Shutdown 时 Close
+    Lifecycle  *lifecycx.Manager  // 统一 Start/Stop 编排
+    ConfigHash string             // configx EffectiveConfigHash（启动日志用）
 }
 
 // Stores 持有启用的存储适配器（nil 字段表示未启用）。
@@ -240,7 +240,13 @@ bootstrap 内部调用以下**真实存在**的基座 API（非假设）：
 | resiliencx | `resiliencx.New(ctx, Config, opts...) (*Client, error)` | `github.com/ZoneCNH/resiliencx` (`pkg/resiliencx/`) |
 | kernel lifecycx | `lifecycx.NewManager(components...)`, `Manager.Start/Stop(ctx)` | `github.com/ZoneCNH/kernel/lifecycx` |
 
-> **已查实约束**：observex Client 的 logger/metrics/tracer 是私有字段，通过 `Option` 注入。bootstrap 在构造 observex 时通过 Option 注入 NoopLogger/NoopMetrics/NoopTracer（或服务提供的真实实现），并在 App.Observe 暴露 `*observex.Client` 供服务经 Option 链获取。
+> **已查实约束（OQ-001/OQ-003 已确认，2026-06-17）**：
+>
+> 1. **configx/observex/resiliencx Client 均无业务 getter**：三者 Client 只有 `Close(ctx)` + `HealthCheck(ctx)`，**没有** `Logger()`/`Metrics()`/`Tracer()` getter。因此 bootstrap **不试图从 Client 暴露内部 logger/metrics**——服务要可观测，自行 `observex.New`。bootstrap 只持有 Client 句柄做统一 Close。
+>
+> 2. **7 存储适配器未实现 `lifecycx.Component`**：全部有 `Close(ctx) error`，但都没有 `Start(ctx)` / `Name() string`。bootstrap 内部用 `closerComponent` wrapper 把 `*Client` + `Close` 适配成 `Component`（`Start` = no-op，`Stop` = `Close`），不改已发布的 7 个适配器。
+>
+> 3. **App 不暴露 Observe.Logger()**（取不到）。App 持有 `*observex.Client` 仅供 Shutdown 时 Close，不供服务取 logger。
 
 ## 10. 数据模型
 
@@ -423,11 +429,11 @@ bootstrap (L1)
 
 ## 23. 开放问题
 
-| OQ | 问题 | 状态 |
-| --- | --- | --- |
-| OQ-001 | observex Client logger/metrics/tracer 私有无 getter——bootstrap 是否需要 observex 补公开 getter？ | Open — 当前方案经 Option 链获取，但可能需要 observex 暴露 `Client.Logger()` 等 getter |
-| OQ-002 | 是否需要在 build 仓库登记 FOUNDATION-DEPS.yaml？ | Open — bootstrap 是新 L1 模块，需登记进依赖矩阵 |
-| OQ-003 | 存储适配器的 Component 适配（Start/Stop）是否已在各 adapter 实现 lifecycx.Component？ | Open — 需核实 7 存储 adapter 是否已实现 Component 接口 |
+| OQ | 问题 | 状态 | 结论 |
+| --- | --- | --- | --- |
+| OQ-001 | observex Client logger/metrics/tracer 私有无 getter | ✅ 已确认（2026-06-17） | configx/observex/resiliencx Client **均无业务 getter**（只有 Close/HealthCheck）。bootstrap 不暴露内部 logger，服务自行 observex.New。无需改基座。 |
+| OQ-002 | 是否需要登记 FOUNDATION-DEPS.yaml？ | Open | bootstrap 是新 L1 模块，需登记进依赖矩阵 |
+| OQ-003 | 存储适配器是否已实现 lifecycx.Component？ | ✅ 已确认（2026-06-17） | 7 存储 adapter **未实现 Component**（有 Close 无 Start/Name）。bootstrap 用 `closerComponent` wrapper 适配，不改已发布适配器。 |
 
 ---
 
@@ -446,3 +452,4 @@ bootstrap (L1)
 | 日期 | 版本 | 变更内容 | 作者 |
 | --- | --- | --- | --- |
 | 2026-06-17 | v0.1.0 | 初始 SPEC：Build/Run/Shutdown + Spec/StoreSet/App + 7 存储 Component 适配 + 5 道边界门禁；基于 configx/observex/kernel 真实 API 对接 | ZoneCNH |
+| 2026-06-17 | v0.1.1 | 实现前核实修正：确认 OQ-001（基座 Client 无业务 getter）/ OQ-003（存储适配器未实现 Component）；§9.3 改为 closerComponent wrapper 方案；App.Observe 标注仅供 Close | ZoneCNH |
