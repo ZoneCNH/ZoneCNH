@@ -685,6 +685,12 @@ github.com/ZoneCNH/binance/
 | 2026-06-16 | 移除 `binance-market` | 统一到 client/server，消除 ambiguous split |
 | 2026-06-16 | gRPC bidirectional stream 作为传输协议 | client 需要 per-event ACK 以驱动 checkpoint |
 | 2026-06-16 | At-least-once + idempotent acceptance 交付语义 | 不声称 exactly-once（client 端不可实现），但保证 downstream 无重复 |
+| 2026-06-17 | **骨架首版采用自包含契约层 `internal/cs`**（ADR-skeleton-1） | 探查确认 contracts §8.4 的 `MarketDataService`/`IngestRequest`/`RejectCode` 在代码层尚未落地（仅 SPEC 文档 + 未应用 patches）。为不阻塞 binance 落地，首版在 binance 仓库内本地定义最小契约类型（IngestRequest/IngestResult/IngestAck/IngestReject/ProductLine/EventType/RejectCode 9 码）。contracts 落地后整体替换为 import |
+| 2026-06-17 | **骨架首版用原生 Go 接口替代 gRPC**（ADR-skeleton-2） | 全项目零 gRPC 基础设施（无 protoc/proto/.pb.go）。client/server 经 `IngestClient` interface + `ingestAdapter` 直接调用。gRPC bidi stream 升级留后续，届时 cs 类型替换为 contracts 生成的 wire types |
+| 2026-06-17 | **骨架首版 in-memory spool + idempotency**（ADR-skeleton-3） | 避免引入 SQLite/Redis 依赖。可靠性语义（状态机、CheckAndSet、durable ACK→checkpoint）已完整实现并测试，但进程重启数据丢失。SQLite spool + Redis idempotency 留后续迭代 |
+| 2026-06-17 | **骨架首版仅 Spot 单产品线**（ADR-skeleton-4） | 聚焦端到端闭环可验证性。mapper 复用真实 `domainmarket.Tick/Quote/Bar`（已发布）。USDⓈ-M/COIN-M/Options connector 留后续；parser/connector 已为多产品线预留扩展位 |
+| 2026-06-17 | **RejectCode 采用 9 码**（ADR-skeleton-5） | 对齐 `patches/contracts/ingestion.go` 实际定义的 9 个常量（retryable/terminal_validation/terminal_conflict/unauthorized/rate_limited/server_unavailable/contract_violation/quality_gate/ordering_violation），而非本 SPEC §9 文字描述的 10 码。以可运行代码为准；contracts 正式落地时统一码集 |
+| 2026-06-17 | **`cmd/binance-smoke` 作为同进程冒烟特例**（ADR-skeleton-6） | binance-smoke 同进程 wire client+server 用于本地端到端验证，是边界纪律的有意特例（同时 import 双方）。生产路径用独立 `binance-client`/`binance-server` 进程经网络通信 |
 
 ## Appendix B: Reference — Removed Legacy Module
 
