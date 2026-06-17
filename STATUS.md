@@ -27,6 +27,7 @@
 | [testkitx](https://github.com/ZoneCNH/testkitx)           | v0.4.0      | spec/code/release      | test-only       | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | Fake / Fixture / Golden / Contract / Leak / Boundary / Manifest 测试工具包；✅ v0.4.0 GitHub Release 已发布；test-only；factory grade 不适用                                                        |
 | [resiliencx](https://github.com/ZoneCNH/resiliencx)       | v0.4.9      | spec/code/release      | factory-ready   | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | 弹性策略（timeout / retry / circuit / bulkhead / rate / fallback）；✅ v0.4.9 GitHub Release 已发布；此前误标 v1.0.1 已修正                                                                         |
 | [schedulex](https://github.com/ZoneCNH/schedulex)         | v1.0.0      | spec/code/release      | factory-ready   | spec=98 mat=100 tsk=100 pln=100 prm=100 cod=100  | cron/interval/delay 调度；✅ .repo-contract.yaml，v1.0.0 已对齐；98.2% 覆盖，下游 smoke 通过                                                                                                        |
+| [bootstrap](https://github.com/ZoneCNH/bootstrap)         | v0.1.0      | spec/code/release      | non-factory     | spec=~90 mat=N/A tsk=N/A pln=N/A prm=N/A cod=N/A | L1 通用进程组装层：configx/observex/resiliencx + lifecycx 统一组装 + 6 存储 adapter 可选构造（StoreSet 位掩码）；✅ GitHub Release v0.1.0；SPEC Draft（待四源评分），存储构造 v0.1.0 仅 None 路径已实现，All/位组合为 stub                       |
 | [redisx](https://github.com/ZoneCNH/redisx)               | v1.0.1      | spec/code/release/live | live-ready      | spec=98 mat=100 tsk=100 pln=100 prm=100 cod=100  | Redis L2 adapter；✅ .repo-contract.yaml，v1.0.1；此前误标 v1.0.0（tag 超前于表格）；Docker-backed Redis 验证通过                                                                                   |
 | [kafkax](https://github.com/ZoneCNH/kafkax)               | v1.0.2      | spec/code/release/live | live-ready      | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | Kafka L2 adapter；✅ .repo-contract.yaml，v1.0.2；此前误标 v1.0.0（tag 超前于表格）；真实 broker gates 已验证                                                                                       |
 | [natsx](https://github.com/ZoneCNH/natsx)                 | v1.0.0      | spec/code/release/live | factory-ready   | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | NATS L2 adapter；✅ .repo-contract.yaml；真实 dev auth live gate 已验证；GitHub Release 已发布                                                                          |
@@ -497,6 +498,7 @@
 | redisx        |  98  |  100   |  100  | 100  |  100   | 100  |
 | resiliencx    | 100  |  100   |  100  | 100  |  100   | 100  |
 | schedulex     |  98  |  100   |  100  | 100  |  100   | 100  |
+| bootstrap     | ~90  |  N/A   |  N/A  | N/A  |  N/A   | N/A  |
 | taosx         | ~88  |  100   | ~88   | 100  |  100   | 100  |
 | testkitx      | 100  |  100   |  100  | 100  |  100   | 100  |
 | transportx    |  84  |  100   |  100  | 100  |  100   | 100  |
