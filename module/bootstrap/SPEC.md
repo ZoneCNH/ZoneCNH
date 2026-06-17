@@ -1,10 +1,10 @@
 # bootstrap 规格
 
 - Status: Draft
-- Spec-Version: v0.1.4
+- Spec-Version: v0.1.5
 - Last-Created: 2026-06-18
 - Layer: L1 基础能力
-- Version: v0.1.0-runtime / v0.1.4-spec
+- Version: v0.1.0-runtime / v0.1.5-spec
 - Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `kernel`, `configx`, `observex`, `resiliencx`
 
 > 本文件发布 bootstrap L1 进程启动组装层的规格基线，不引入运行时代码。后续实现进入独立仓库 `github.com/ZoneCNH/bootstrap`。对齐 [数据域基础架构报告 §十三](../../docs/report/data-domain-infrastructure-20260617.md) 与 [Bootstrap SOP](../../docs/sre/data-domain-bootstrap.md)。
@@ -367,9 +367,12 @@ require (
 )
 ```
 
-> **ADR-foundationx-exit 迁移注记**（OQ-004）：
-> bootstrap 当前 `pkg/bootstrap/stores.go` 直接 import `github.com/ZoneCNH/foundationx/pkg/foundationx` 用 `SecretString` 脱敏 `XGO_<MODULE>_PG_PASSWORD`。这与本仓库 `module/ADR-foundationx-exit.md` 决定（foundationx 是过渡性依赖、新原语放 kernel）冲突。
-> 迁移路径：v0.2.0 前必须把 `foundationx.SecretString` 替换为 `kernel/errx.RedactedString` 或 `configx` 本地脱敏类型，`go mod tidy` 后 go.mod 不再含 foundationx。CI 中已有规则 `grep -rn "foundationx" --include="*.go"` 不应新增 — bootstrap 是该规则的当前破例方，需在 v0.2.0 修复。
+> **ADR-foundationx-exit 迁移注记**（OQ-004，2026-06-18 v2 修订）：
+> bootstrap 当前 `pkg/bootstrap/stores.go:217` import `github.com/ZoneCNH/foundationx/pkg/foundationx` 用 `SecretString` 包 `PG_PASSWORD`，但**实测此非 bootstrap 主动选择**：
+> `postgresx@v1.0.0` 公开 API `Config.Password` 字段类型本身就是 `foundationx.SecretString`，且 `Config.Validate` 用 `foundationx.NewError/ErrorKindConfig`。bootstrap 必须传该类型才能构造 postgresx.Config。
+> **真实清零路径**：先发 `postgresx v1.1.0` 改 `Config.Password` 为本地 `postgresx.SecretString`、Validate 错误改 `kernel/errx`，再发 `bootstrap v0.1.1` 跟进替换 import。
+> 在此之前，bootstrap stores.go 的 foundationx import 是 ADR-foundationx-exit v2 显式标注的**传染依赖白名单**（详见 `module/ADR-foundationx-exit.md` 时间线 + `.foundationx/blockers.json` BLK-009）。
+> CI 规则 `grep -rn "foundationx" --include="*.go"` 在 bootstrap 仓库内**仅 stores.go 允许**，其他文件零命中。
 
 ### 15.2 依赖方向
 
@@ -465,7 +468,7 @@ bootstrap (L1)
 | OQ-001 | observex Client logger/metrics/tracer 私有无 getter | ✅ 已确认（2026-06-17） | configx/observex/resiliencx Client **均无业务 getter**（只有 Close/HealthCheck）。bootstrap 不暴露内部 logger，服务自行 observex.New。无需改基座。 |
 | OQ-002 | 是否需要登记 FOUNDATION-DEPS.yaml？ | ✅ 已登记（2026-06-17） | bootstrap 已登记进 `module/FOUNDATION-DEPS.yaml` modules 与 allowed_deps 节，依赖方向：kernel/configx/observex/resiliencx + 6 存储。 |
 | OQ-003 | 存储适配器是否已实现 lifecycx.Component？ | ✅ 已确认（2026-06-17） | 7 存储 adapter **未实现 Component**（有 Close 无 Start/Name）。bootstrap 用 `closerComponent` wrapper 适配，不改已发布适配器。 |
-| OQ-004 | bootstrap 直 import foundationx 与 ADR-foundationx-exit 冲突 | Open（v0.1.x patch 优先） | `pkg/bootstrap/stores.go` 直接 import `foundationx.SecretString`。v0.2.0 必须迁移到 `kernel/errx.RedactedString` 或 configx 本地脱敏（详见 §15.1 迁移注记）。 |
+| OQ-004 | bootstrap 直 import foundationx — 实测为 postgresx v1.0.0 公开 API 传染（非 bootstrap 主动选择） | Open（待 postgresx v1.1.0 解锁） | `pkg/bootstrap/stores.go:217` 必须传 `foundationx.SecretString` 类型才能构造 `postgresx.Config{Password: ...}`，因 postgresx v1.0.0 公开 API 字段类型即 `foundationx.SecretString`。彻底清零路径：(1) postgresx v1.1.0 改 Config.Password 为本地 SecretString + Validate 改 kernel/errx；(2) bootstrap v0.1.1 跟进 import 替换。详见 ADR-foundationx-exit v2（2026-06-18）+ BLK-009。 |
 
 ---
 
@@ -488,3 +491,4 @@ bootstrap (L1)
 | 2026-06-17 | v0.1.2 | 文档-代码漂移收口：§6 FR-004 标注 v0.1.0 stub 实现状态；§15.1 补声明 foundationx v0.1.1（runtime 实测）+ ossx 显式行 + ADR-foundationx-exit 迁移注记；§22 拆分 v0.1.0 已完成 / v0.2.0 准入；§23 OQ-002 翻 ✅ + 新增 OQ-004（foundationx 迁移） | ZoneCNH |
 | 2026-06-18 | v0.1.3 | 7 项微调：§6 FR-001 删 metrics 鸡蛋问题；FR-004 加 v0.1.0 stub 行内注解；§9.1 StoreSet 改显式位号；§9.1 Stores 字段改强类型；§13 删 nil panic 措辞；§22/§23 OQ-004 提前到 v0.1.x；与 BLK-009 配对登记 | ZoneCNH |
 | 2026-06-18 | v0.1.4 | SPEC↔runtime 远程仓库实测对账：§9.1 import 删 ossx（远程 bootstrap go.mod 不含 ossx）；§9.1 Stores.OSS 改 interface{} 占位（ossx 仓库 0 pkg 源码）；§15.1 ossx require 行注释为"暂不 require"；§20 CI Gate 新增 foundationx 白名单+计时规则（仅 stores.go 允许，其他文件零命中） | ZoneCNH |
+| 2026-06-18 | v0.1.5 | C 阶段实测发现 OQ-004 真实根因：foundationx 不是 bootstrap 主动选择，而是 postgresx@v1.0.0 公开 API 传染（Config.Password foundationx.SecretString）。§15.1 迁移注记 v2 修订；§23 OQ-004 状态从"v0.1.x patch 优先"改为"待 postgresx v1.1.0 解锁"；BLK-009 重写为分阶段三步关闭条件；与 ADR-foundationx-exit v2 联动登记 postgresx 真实瓶颈 | ZoneCNH |
