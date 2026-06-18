@@ -2,6 +2,8 @@
 
 > 配置加载：YAML/TOML/JSON 解析器、格式自动检测
 
+> ⚠️ **实现偏差注解（2026-06-18）**：本文档中引用的 `ErrInvalidFormat` 等 sentinel 变量在运行时未实现；实际错误模型为 `ErrorKind` 枚举 + `*Error`（见 [SPEC.md §9.5](../SPEC.md#95-公共错误) 与 [§11](../SPEC.md#11-错误处理)）。本任务文档保留原始任务下达记录。
+
 ---
 
 ```yaml

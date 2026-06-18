@@ -146,7 +146,7 @@ THEN IsSecret 返回 true（CustomMatcher 与 Pattern 匹配并行）
 
 ### FR-009: Provenance 来源追踪
 
-WHEN 配置加载完成后调用 `Provenance.Entries()`
+WHEN 配置加载完成后调用 `Provenance.Snapshot()`（或 `Get(key)` 查单个 key）
 THEN 每个 key 返回其 Source、Priority、OverrideEntry 链路
 
 WHEN 同一个 key 被多个 Source 覆盖
@@ -188,16 +188,20 @@ THEN 使用 NoopMetrics（零开销空实现）
 | 编号 | 规则 | 违反时 |
 | --- | --- | --- |
 | BR-001 | 合并策略：LastWins — 后加载的 Source 覆盖先加载的同名 key | 合并覆盖排序错误视为 bug |
-| BR-002 | Config.Name 必须非空（Validate 时检查） | 返回 `ErrValidationFailed`，含字段路径 name |
-| BR-003 | Config.Timeout 必须 ≥ 0（负数拒绝） | 返回 `ErrValidationFailed`，含字段路径 timeout |
-| BR-004 | 配置加载显式：调用方必须显式添加每个 Source，无隐式发现 | CI Gate：静态分析检测隐式配置发现调用 |
+| BR-002 | Config.Name 必须非空（Validate 时检查） | 返回 `*Error{Kind: validation}`，Op=`Config.Validate`，Message 含字段 name |
+| BR-003 | Config.Timeout 必须 ≥ 0（负数拒绝） | 返回 `*Error{Kind: validation}`，Op=`Config.Validate`，Message 含字段 timeout |
+| BR-004 | 配置加载显式：调用方必须显式 AddSource 每个 Source，无隐式文件扫描/约定目录发现 | `TestNoImplicitConfigDiscovery` 单测验证——任何隐式发现路径即测试失败 |
 | BR-005 | SecretString 在所有格式化输出中自动脱敏（String/JSON/GoString/Text） | TC-003 验证——任何格式化输出出现原始值即测试失败 |
 | BR-006 | SecretPolicy 默认匹配 7 种模式，支持 CustomMatcher 扩展 | TC-005 验证——自定义匹配器不生效即测试失败 |
 | BR-007 | StrictDecode 默认拒绝未知字段和重复 key | 返回解码错误，包含未知字段名——TC-002 验证 |
-| BR-008 | 公共错误变量使用 `configx:` 前缀命名空间 | CI Gate：`golangci-lint` 检测错误字符串前缀 |
-| BR-009 | 无全局状态：无进程级 config singleton（NoGlobalStateGate CI 门禁） | NoGlobalStateGate CI 门禁阻断合并 |
+| BR-008 | 公共错误使用 `*Error` 结构体 + `ErrorKind` 枚举（不使用 sentinel var），`Error()` 输出含 Kind 语义前缀 | `errors.As(err, &*Error{})` 可提取 Kind/Op/Cause——单测验证 |
+| BR-009 | 无全局状态：无包级 `var Client` / 无进程级 config singleton / 无 init() 副作用 | 源码静态检查：`grep -nE "var .*(Client|config|Config)\b" pkg/configx/*.go` 无可变包级单例；单测 `TestNoImplicitConfigDiscovery` 覆盖 |
 | BR-010 | Release 制品通过全部 CI Gate（编译/测试/覆盖率/vet/lint/secret） | CI Gate 任一失败阻断发布 |
-| BR-011 | context.Context 必须非 nil 且未过期（所有公开 API 强制检查） | 返回 validation error——TC-008 验证 |
+| BR-011 | context.Context 必须非 nil 且未过期（所有公开 API 强制检查） | 返回 `*Error`（ctx nil→validation，超时→timeout）——TC-008 验证 |
+
+> **注（BR-004 / BR-009 修订）**：此前两行均引用虚构的 `NoGlobalStateGate CI 门禁`，该门禁在运行时仓库无对应 CI 步骤。已拆分语义：BR-004 聚焦「显式 AddSource」由 `TestNoImplicitConfigDiscovery` 验证；BR-009 聚焦「无可变包级单例」由源码静态检查验证。若未来引入真实 NoGlobalStateGate analyzer，可在此登记。
+>
+> **注（BR-008 修订）**：此前要求「错误变量使用 `configx:` 字面前缀」，但运行时 `errors.go` 实际采用 `ErrorKind` 枚举 + `*Error` 结构，`Error()` 输出形如 `"validation: configx.New: ..."`，前缀是 Kind 名而非 `configx:` 字面量。本条已按运行时事实重述。
 
 ---
 
@@ -356,24 +360,73 @@ func (sp *SecretPolicy) IsSecret(key string) bool
 ### 9.4 Provenance
 
 ```go
-type Provenance struct { /* 内部 map */ }
+type Provenance struct { /* 内部 map，sync.RWMutex 保护 */ }
 
 func NewProvenance() *Provenance
 func (p *Provenance) Record(key, source string, priority int)
-func (p *Provenance) RecordOverride(key, source, oldValue, newValue string)
-func (p *Provenance) Entries() map[string]ProvenanceEntry
+func (p *Provenance) RecordOverride(key, newSource string, priority int, oldValue, newValue string)
+func (p *Provenance) Get(key string) (ProvenanceEntry, bool)
+func (p *Provenance) Snapshot() map[string]ProvenanceEntry  // 全量拷贝，按 key
+func (p *Provenance) Keys() []string                         // 排序后的 key 列表
+func (p *Provenance) Reset()
 ```
+
+> **实现提示**：`Loader.Load()` 返回的 `LoadResult` 当前**不自动内嵌** Provenance；调用方如需来源链路，需自行持有一个 `*Provenance` 并在加载后调用 `Record/RecordOverride`。把 Provenance 接入 LoadResult 属于待办增强（与 FR-009「每个 key 自动记录来源」的完整闭合相关）。
 
 ### 9.5 公共错误
 
+configx **不使用** sentinel `ErrXxx` 变量，而是采用 `ErrorKind` 枚举 + `*Error` 结构体模式，支持 `errors.As` / `errors.Is` 标准库语义。
+
 ```go
-var (
-    ErrInvalidFormat    = errors.New("configx: invalid format")
-    ErrValidationFailed = errors.New("configx: validation failed")
-    ErrKeyNotFound      = errors.New("configx: key not found")
-    ErrTypeMismatch     = errors.New("configx: type mismatch")
-    ErrAlreadyLoaded    = errors.New("configx: already loaded")
+type ErrorKind string
+
+const (
+    ErrorKindConfig        ErrorKind = "config"
+    ErrorKindValidation    ErrorKind = "validation"
+    ErrorKindConnection    ErrorKind = "connection"
+    ErrorKindUnavailable   ErrorKind = "unavailable"
+    ErrorKindTimeout       ErrorKind = "timeout"
+    ErrorKindAuth          ErrorKind = "auth"
+    ErrorKindConflict      ErrorKind = "conflict"
+    ErrorKindRateLimit     ErrorKind = "rate_limit"
+    ErrorKindCanceled      ErrorKind = "canceled"
+    ErrorKindNotFound      ErrorKind = "not_found"
+    ErrorKindAlreadyExists ErrorKind = "already_exists"
+    ErrorKindInternal      ErrorKind = "internal"
 )
+
+type Error struct {
+    Kind      ErrorKind
+    Op        string   // 操作名，如 "configx.New"
+    Message   string
+    Cause     error
+    Retryable bool
+}
+
+// 构造与判别 API
+func NewError(kind ErrorKind, op string, message string, retryable bool) *Error
+func WrapError(kind ErrorKind, op string, message string, retryable bool, cause error) *Error
+func (e *Error) Error() string   // 输出 "<kind>: <op>: <message>"
+func (e *Error) Unwrap() error   // 返回 Cause，支持 errors.Unwrap 链
+func IsKind(err error, kind ErrorKind) bool  // 类型安全的 Kind 判别
+```
+
+**典型使用：**
+
+```go
+client, err := configx.New(ctx, cfg)
+var e *configx.Error
+if errors.As(err, &e) {
+    switch e.Kind {
+    case configx.ErrorKindValidation:
+        // 配置非法，检查字段
+    case configx.ErrorKindTimeout, configx.ErrorKindUnavailable:
+        // ctx 超时或取消，可重试（e.Retryable == true）
+    }
+}
+if configx.IsKind(err, configx.ErrorKindValidation) {
+    // 等价的类型安全判别
+}
 ```
 
 ---
@@ -393,17 +446,21 @@ config:
 
 ## 11. 错误处理
 
-| 错误                  | 调用方处理                     |
-| --------------------- | ------------------------------ |
-| `ErrInvalidFormat`    | 检查文件格式和内容，修复后重试 |
-| `ErrValidationFailed` | 检查具体字段，修复配置         |
-| `ErrKeyNotFound`      | 检查 key 拼写                  |
-| `ErrTypeMismatch`     | 检查值类型是否匹配             |
-| `ErrAlreadyLoaded`    | 不要重复加载                   |
+configx 错误统一为 `*Error`（见 §9.5）。调用方通过 `errors.As` 或 `IsKind` 判别 `ErrorKind` 后选择处理策略：
 
-**错误消息格式：** `"configx: <operation>: <detail>"`
-**Validation 错误包含：** 字段路径 + 预期值 + 实际值
-**上下文错误：** ctx 为 nil 或已取消时返回明确错误，包含操作名
+| ErrorKind              | 典型触发场景                                   | 调用方处理                                       |
+| ---------------------- | ---------------------------------------------- | ------------------------------------------------ |
+| `validation`           | Config.Name 空、Timeout<0、ctx nil、Decode 失败 | 检查具体字段路径，修复配置后重试（不可重试）     |
+| `timeout`              | ctx.DeadlineExceeded                            | 检查上游超时设置，可重试（Retryable=true）       |
+| `unavailable`          | ctx.Canceled、Source 不可达                     | 检查 ctx 取消原因或重试加载                      |
+| `config`               | 配置文件格式非法、StrictDecode 拒绝未知字段     | 检查文件格式和内容，修复后重试                   |
+| `not_found`            | key 不存在                                      | 检查 key 拼写或补充 Source                        |
+| `internal`             | 未分类错误（兜底 Kind）                         | 记录日志并上报，联系维护者                       |
+
+**错误消息格式：** `"<kind>: <op>: <message>"`（如 `"validation: configx.New: name is required"`）
+**Validation 错误：** `Op` 含操作名（如 `Config.Validate`），`Message` 含字段与原因
+**上下文错误：** ctx nil → `validation`；ctx 超时 → `timeout`（Retryable=true）；ctx 取消 → `unavailable`
+**Retryable 字段：** 调用方可读取 `e.Retryable` 决定是否重试，无需硬编码 Kind 列表
 
 ---
 
@@ -626,7 +683,7 @@ type NoopMetrics struct{}  // 零开销空实现
 | 依赖安全扫描        | CI 运行 `govulncheck ./...` 扫描已知漏洞                                                              |
 | 静态凭证扫描        | CI Gate `gitleaks detect --no-git` 阻塞任何硬编码凭证                                                 |
 | 不可信输入校验      | StrictDecode 默认拒绝未知字段；所有 Source 输入通过 schema 校验                                       |
-| 无全局状态          | NoGlobalStateGate CI 门禁防止引入进程级 config singleton                                              |
+| 无全局状态          | 源码无可变包级单例 / 无 init() 副作用；`TestNoImplicitConfigDiscovery` 单测 + 源码静态检查覆盖          |
 
 ---
 
@@ -647,10 +704,11 @@ type NoopMetrics struct{}  // 零开销空实现
 
 ### 19.2 configx 专属 Gate
 
-| Gate          | 命令                   | 阻塞条件                    |             |
-| ------------- | ---------------------- | --------------------------- |             |
-| 不依赖 kernel | `go list -deps ./... \ | grep "kernel"`              | 依赖 kernel |
-| 无全局状态    | NoGlobalStateGate      | 引入进程级 config singleton |             |
+| Gate          | 命令                                                              | 阻塞条件                    |
+| ------------- | ----------------------------------------------------------------- | --------------------------- |
+| 不依赖 kernel | `go list -deps ./... \| grep "kernel"`                            | 依赖 kernel                 |
+| 无全局状态    | 源码静态检查：无可变包级 `var Client` / 无 init() 副作用          | 引入进程级 config singleton |
+| 显式加载      | `TestNoImplicitConfigDiscovery` 单测                              | 出现隐式配置发现路径        |
 
 ---
 

@@ -2,12 +2,14 @@
 
 - Status: Generated from current module SSOT
 - Last-Updated: 2026-06-18
-- Module-Version: v1.0.0
-- Module-State: 已发布
-- Layer: L0 配置
+- Module-Version: v0.1.4（运行时 version.go 实测 v0.1.3、CHANGELOG 最新 v0.1.4；git tag v1.0.0 已存在但 version.go 尚未对齐，见下方说明）
+- Module-State: 显式加载基线已交付（对应 git tag v1.0.0）；goal.md §2 的 v1.0 完整 MUST（热更新 / RemoteSource SPI / bind / ConfigSnapshot）未交付，划入 v1.1 路线
+- Layer: L1 基础能力
 - Runtime-Repo: /home/configx
 - Source: goal.md, SPEC.md, DESIGN.md, TRACEABILITY.md, IMPLEMENTATION-PLAN.md, tasks/
 
+> 版本基线说明：本目录投影文档此前登记 `Module-Version: v1.0.0 / 已发布`，但运行时仓库 `/home/configx` 的 `pkg/configx/version.go` 实测为 `v0.1.3`、CHANGELOG 最新为 `v0.1.4`、git tag 含 `v1.0.0`。三者不一致属发布治理缺陷；本清单按运行时事实层登记为 `v0.1.4`，并把 goal.md 的 v1.0 完整目标明确推迟到 v1.1，避免把「计划」当作「已发布」。
+>
 > 本清单用于验收 configx 是否达到可发布、可追溯、可复验状态。除非条目明确记录为已通过，默认需要在运行时代码仓库重新执行验证并补充证据。
 
 ## 1. 验收命令清单
@@ -66,12 +68,12 @@
 | BR-001 | LastWins 合并策略 | 后加载 Source 覆盖先加载的同名 key / TC-001 / - / TASK-CONFIGX-003 | ✅ | TRACEABILITY.md |
 | BR-002 | Config.Name 必须非空 | Validate 时检查 Name / TC-008 / - / TASK-CONFIGX-005 | ✅ | TRACEABILITY.md |
 | BR-003 | Config.Timeout ≥ 0 | 负数拒绝 / TC-008 / - / TASK-CONFIGX-005 | ✅ | TRACEABILITY.md |
-| BR-004 | 显式加载（无隐式发现） | 调用方必须显式 AddSource / CI Gate: NoGlobalStateGate / - / TASK-CONFIGX-009 | ✅ | TRACEABILITY.md |
+| BR-004 | 显式加载（无隐式发现） | 调用方必须显式 AddSource / TestNoImplicitConfigDiscovery / - / TASK-CONFIGX-009 | ✅ | TRACEABILITY.md |
 | BR-005 | SecretString 全路径脱敏 | String/JSON/GoString/Text 均返回 *** / TC-003 / - / TASK-CONFIGX-010 | ✅ | TRACEABILITY.md |
 | BR-006 | SecretPolicy 可配置模式 | 默认 7 模式 + CustomMatcher / TC-005 / - / TASK-CONFIGX-010 | ✅ | TRACEABILITY.md |
 | BR-007 | StrictDecode 默认严格 | 拒绝未知字段和重复 key / TC-002 / - / TASK-CONFIGX-005 | ✅ | TRACEABILITY.md |
-| BR-008 | 公共错误 configx: 前缀 | 所有错误变量使用 configx: 前缀 / CI Gate: go vet / - / TASK-CONFIGX-000 | ✅ | TRACEABILITY.md |
-| BR-009 | 无全局状态 | 无进程级 config singleton / CI Gate: NoGlobalStateGate / - / TASK-CONFIGX-009 | ✅ | TRACEABILITY.md |
+| BR-008 | 公共错误 *Error + ErrorKind | errors.As 可提取 Kind/Op/Cause / 源码静态检查 + 单测 / - / TASK-CONFIGX-000 | ✅ | TRACEABILITY.md |
+| BR-009 | 无全局状态 | 无可变包级单例 / 源码静态检查 + TestNoImplicitConfigDiscovery / - / TASK-CONFIGX-009 | ✅ | TRACEABILITY.md |
 | BR-010 | Release 通过全部 CI Gate | 编译/测试/覆盖率/vet/lint/secret/vuln / TC-009 / - / TASK-CONFIGX-009 | ✅ | TRACEABILITY.md |
 | BR-011 | context.Context 必须非 nil | 所有公开 API 强制 ctx 检查 / TC-008 / - / TASK-CONFIGX-001 | ✅ | TRACEABILITY.md |
 | NFR-001 | 测试覆盖率 ≥ 80% | 实际 97.1% / CI Gate: go test -coverprofile / TASK-CONFIGX-009 | ✅ | TRACEABILITY.md |

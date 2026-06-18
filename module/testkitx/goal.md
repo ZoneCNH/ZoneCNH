@@ -1,12 +1,28 @@
 # testkitx 发布版本 1.0 Goal 定位与实现标准
 
+> **⚠️ 范围收窄声明（2026-06-18）**
+>
+> 本 goal.md 最初按「宽测试平台」定位编写，覆盖集成测试环境（Redis/Kafka/NATS/PostgreSQL/ClickHouse/TAOS/OSS）、故障注入、证据采集与发布期证据包。经架构评审，testkitx 的权威范围已收窄为「**L0 测试期证据 / 单进程 `go test` 工具**」（详见 [SPEC.md](./SPEC.md) §1、§4）。
+>
+> 本文件**保留作历史与诉求记录**，但下列能力已**迁移或标记为 superseded**，不再由 testkitx 实现：
+>
+> | 原 goal.md 能力 | 处置 |
+> | --- | --- |
+> | 容器化集成测试环境（Redis/Kafka/...） | 迁移至 `xlib-harness`（CI 期集成测试协调） |
+> | 证据收集、验证、发布为统一报告 | 归属 `xlib-evidence`（CI/发布期证据） |
+> | FaultInjector 故障注入 | 迁移至 `xlib-harness`（CI/集成阶段） |
+> | TestContext / TestResource / EvidenceReport 抽象 | 由 `xlib-harness` + `xlib-evidence` 承接 |
+> | `contract/` L2 provider 行为契约 | 运行时仓库 `/home/testkitx/contract/` 已实现，定位为 **provider 行为契约套件**，非 SPEC FR-004 的 fake 接口 contract test |
+>
+> **以 SPEC.md 为准**。当本文件与 SPEC.md 冲突时，以 SPEC.md 为准。本文件 §2 MUST 中已被 superseded 的条目不再构成 testkitx 1.0 发布门禁。
+
 | 字段         | 内容                                           |
 | ------------ | ---------------------------------------------- |
 | 模块名       | `testkitx`                                     |
 | 发布版本     | 1.0.0                                          |
 | 所属层级     | 测试期证据层 / 质量闭环                        |
 | 稳定级别     | Public API Stable；SPI Stable；Internal 可演进 |
-| 文档状态     | 1.0 发布基线文档                               |
+| 文档状态     | 1.0 发布基线文档（范围收窄；宽平台部分 superseded） |
 | 发布日期基准 | 2026-06-09                                     |
 
 ## 术语约定

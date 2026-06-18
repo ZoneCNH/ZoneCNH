@@ -1,5 +1,13 @@
 # configx 设计方案
 
+> ⚠️ **本文档部分过时（2026-06-18 校准）**：本 DESIGN.md 的 §2「核心设计」与 §4「生命周期状态机」基于一套**已被废弃的 API 设计**（`Reader` / `Config` 接口、`Load(path)` / `WithEnvOverride` / `Watch` 方法、`map[string]interface{}` 内部存储）。运行时仓库 `/home/configx` **未实现**这些 API——真实实现是 `Client + Loader + Source + Decode(LoadResult, &target)` 模式，权威契约见 [SPEC.md](./SPEC.md) §8。
+>
+> - **§2.1 Reader 接口、§2.2 Config 接口、§2.3 覆盖层级、§4 生命周期状态机**：描述的是未落地的早期设计，仅供历史参考，**不要据此编写代码**。
+> - **§2.4 Option 模式、§2.5 测试策略、§3 ADR、§5 依赖关系、§6 技术风险**：其中的设计原则（fail-fast、不可变、显式加载、脱敏）仍有效，但具体 API 名称需以 SPEC.md 为准。
+> - **ADR-001~004** 的「决策」精神（接口分离、fail-fast、不可变、脱敏）被运行时继承，但「实现形态」已变——见下方各 ADR 的「⚠️ 实现偏差」注解。
+>
+> 后续应以 SPEC.md v1.0.0 §8（接口契约）为唯一 API 权威；本文档需在 v1.1 周期内基于真实实现重写。
+
 > Design ID: DESIGN-configx-v1
 > Source Spec: [SPEC.md](./SPEC.md) v1.0.0
 > Version Mapping: 本文档描述 v1.0.0 已实现能力；[goal.md](./goal.md) 定义 v1.0 完整目标。详见 §1.2。
@@ -132,6 +140,7 @@ func WithStrictMode(bool) Option
   - *方案 C: Config 和 Reader 完全独立的两个 interface（无嵌入）* — 类型冗余，Get 方法需在两处声明
 - **选择理由**：嵌入（embedding）兼顾类型安全和代码复用，Go 接口组合惯用法
 - **后果**：业务模块仅 import Reader 接口
+- **⚠️ 实现偏差（2026-06-18）**：运行时**未实现** `Reader` / `Config` 接口。实际 API 是 `*Client`（持有已加载配置）+ `Loader.AddSource().Load(ctx)` 返回 `LoadResult` + `Decode(LoadResult, &target)` 解码到调用方 struct。「只读视图」的设计精神通过「LoadResult 不可变 + 调用方拥有自己的 struct」间接实现，但形态与本文描述不同。见 SPEC.md §8。
 
 ### ADR-002: Fail-fast 校验
 - **决策**：启动时强制 schema 校验，失败阻断启动
@@ -150,6 +159,7 @@ func WithStrictMode(bool) Option
   - *方案 C: 细粒度锁 + 可变配置* — 灵活但引入锁竞争和死锁风险
 - **选择理由**：v1.0.0 以显式加载为核心场景，不可变设计最简单安全
 - **后果**：Watch 为可选特性（FR-005），非核心路径；v1.0 将引入 ConfigSnapshot 支持安全热更新
+- **⚠️ 实现偏差（2026-06-18）**：运行时**未实现** `Watch` / `ConfigSnapshot` / `ConfigChangeEvent` / 回滚。`LoadResult` 在 `Load(ctx)` 后即不可变（满足「不可变」决策），但热更新整条链路属于 goal.md v1.1 路线，当前版本无任何运行时配置修改能力。
 
 ### ADR-004: 敏感字段脱敏
 - **决策**：password/token/secret/key/accessKey/secretKey 字段自动脱敏
@@ -186,6 +196,8 @@ func WithStrictMode(bool) Option
 | 初始化 | `New(opts...)`            | 创建空 Config，应用 Option | ✅ 可重建                      | Option 冲突时 panic（设计时约束）         |
 | 加载   | `Load(path)`              | data 填充，来源标记为 FILE | ❌ 不可逆（ErrAlreadyLoaded）  | 文件不存在/格式无效→返回 error，data 不变 |
 | 覆盖   | `WithEnvOverride(prefix)` | env→key 映射写入覆盖层     | ✅ 返回新 Config（原实例不变） | 类型转换失败→返回 ErrTypeMismatch         |
+
+> ⚠️ **上表为未落地的早期设计**（见文首声明）。运行时无 `Load(path)` / `WithEnvOverride` 方法，也无 `ErrAlreadyLoaded` / `ErrTypeMismatch` sentinel（实际用 `ErrorKind` 枚举，见 SPEC §9.5）。
 | 校验   | `Validate()`              | 校验状态标记为 VALIDATED   | ✅ 可重复调用                  | 校验失败→返回错误列表，不阻断后续 Get     |
 | 运行   | `Reader.Get*(key)`        | 只读访问，无状态变更       | —                             | key 不存在→返回 nil/零值，不 panic        |
 | 关闭   | 进程退出                  | Config 实例随进程销毁      | —                             | 无资源需清理（无连接池/文件句柄）         |

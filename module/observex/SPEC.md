@@ -7,7 +7,9 @@
 - Version: v1.0.0
 - Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `kernel`
 
-> 公开投影 caveat：Status=Approved 与 100.0% 覆盖证据不等同于 factory-grade；BLK-007 关闭前机器事实层保持 factory=false。
+> 公开投影 caveat：Status=Approved 与覆盖率证据不等同于 factory-grade；模块尚未达到 v1.0.0 发布（运行时仍在 v0.3.1），发布 DoD 全部达成并推进 runtime tag 至 v1.0.0 前，机器事实层保持 factory=false。
+>
+> 注：BLK-007 实际归属 `taosx` 模块（权威注册表 `.foundationx/blockers.json`，状态 resolved），与本模块无关；本 caveat 不引用 BLK-007。
 
 ---
 
@@ -673,16 +675,20 @@ Then 返回 false
 
 ## 17. 可观测性
 
-| 类型   | 名称                             | 说明                                  |
-| ------ | -------------------------------- | ------------------------------------- |
-| metric | `observex.exporter.errors`       | counter，exporter 发送失败次数        |
-| metric | `observex.exporter.queue.size`   | gauge，待发送队列大小                 |
-| metric | `observex.span.dropped`          | counter，因采样或队列满丢弃的 span 数 |
-| metric | `observex.buffer.dropped`        | counter，因 buffer 满丢弃的数据条目   |
-| metric | `observex.label.forbidden`       | counter，label policy 拒绝次数        |
-| log    | `observex.exporter.connected`    | info，exporter 连接成功               |
-| log    | `observex.exporter.disconnected` | warn，exporter 连接断开               |
-| log    | `observex.exporter.fallback`     | warn，降级到备用 exporter             |
+> **命名规范对齐（BR-006）：** 本节自观测指标统一采用 `foundationx_<module>_<operation>_<measure>` 格式（module=`observex`），与 §8 BR-006 命名规范一致。运行时仓库当前尚未落地这些自观测指标（运行时实际使用 `client_*` 裸名），属待实现项，登记于 §22 Non-blocking。
+
+| 类型   | 名称                                          | 说明                                  |
+| ------ | --------------------------------------------- | ------------------------------------- |
+| metric | `foundationx_observex_exporter_errors`        | counter，exporter 发送失败次数        |
+| metric | `foundationx_observex_exporter_queue_size`    | gauge，待发送队列大小                 |
+| metric | `foundationx_observex_span_dropped`           | counter，因采样或队列满丢弃的 span 数 |
+| metric | `foundationx_observex_buffer_dropped`         | counter，因 buffer 满丢弃的数据条目   |
+| metric | `foundationx_observex_label_forbidden`        | counter，label policy 拒绝次数        |
+| log    | `observex.exporter.connected`                 | info，exporter 连接成功               |
+| log    | `observex.exporter.disconnected`              | warn，exporter 连接断开               |
+| log    | `observex.exporter.fallback`                  | warn，降级到备用 exporter             |
+
+> 注：log 事件名沿用 `observex.<component>.<event>` 点分层级命名（与 metric 的下划线命名规范属不同命名空间，不冲突）。
 
 ---
 
@@ -778,6 +784,7 @@ Then 返回 false
 | OQ-001 | 是否需要支持自定义 redaction 模式（用户自定义 secret 正则）？ | 待评估 | ZoneCNH  |
 | OQ-002 | tracing 采样率是否需要支持运行时动态调整？                    | 待评估 | ZoneCNH  |
 | OQ-003 | health JSON schema 是否需要支持自定义字段扩展？               | 待评估 | ZoneCNH  |
+| OQ-005 | §17 自观测指标（`foundationx_observex_*`）尚未在运行时落地，运行时实际使用 `client_*` 裸名；需对齐命名规范并实现 | 待实现 | ZoneCNH  |
 
 ### Future（未来考虑）
 
@@ -797,3 +804,16 @@ Then 返回 false
 | 2026-06-12 | v1.0.1 | 结构修复续：Spec-Version对齐、Non-goals补全、config prefix与BR-006对齐、新增EC-010/TC-008、FR-005嵌套脱敏 | ZoneCNH |
 | 2026-06-12 | v1.0.1 | 结构修复续：FR-003/FR-004 异常路径补充、版本号语义说明 | ZoneCNH |
 | 2026-06-12 | v1.0.1 | TC-014 补充：Exporter Shutdown 超时测试用例 | ZoneCNH |
+| 2026-06-18 | v1.0.1 | 跨文档一致性修复：NFR 阈值对齐 §16、BLK-007 错误引用修正、§17 自指标命名对齐 BR-006、版本轴映射表 | ZoneCNH |
+
+### 版本轴映射
+
+本模块存在三个独立版本轴，关系如下，避免与运行时 git tag 混淆：
+
+| 版本轴          | 当前值  | 含义                                       | 来源                                  |
+| --------------- | ------- | ------------------------------------------ | ------------------------------------- |
+| Spec-Version    | v1.0.1  | 本规格文档版本                             | 本文件头部                            |
+| Version（模块） | v1.0.0  | 模块发布目标版本（API 冻结目标，尚未达成） | 本文件头部、goal.md                   |
+| Runtime Tag     | v0.3.1  | 运行时仓库已发布 git tag（实证事实层）     | `/home/observex`、ARCHITECTURE.md     |
+
+> Spec-Version v1.0.1 描述当前规格状态；模块尚未达到 v1.0.0 发布（Runtime 仍在 v0.3.1）。发布 DoD 全部达成且 Runtime tag 推进到 v1.0.0 后，三轴对齐。

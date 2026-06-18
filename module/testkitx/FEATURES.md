@@ -2,11 +2,11 @@
 
 - Status: Generated from current module SSOT
 - Last-Updated: 2026-06-18
-- Module-Version: v0.4.0
-- Module-State: 已发布
+- Module-Version: v1.0.0
+- Module-State: Release Candidate（门禁未达 98，factory=false；见 SPEC caveat）
 - Layer: L0 测试工具
 - Runtime-Repo: /home/testkitx
-- Source: goal.md, SPEC.md, TRACEABILITY.md, IMPLEMENTATION-PLAN.md, tasks/, prompt/
+- Source: goal.md, SPEC.md, TRACEABILITY.md, tasks/, prompt/
 
 > 本清单用于约束 testkitx 的完整实现范围。条目来自本目录已有 Spec、Traceability、Plan、Task 等文档；若运行时代码状态与本文不一致，以相应模块仓库的最新验证证据补充更新本文。
 
@@ -74,10 +74,10 @@
 
 | 文档 | 状态 | 路径 |
 | --- | --- | --- |
-| goal.md | 存在 | module/testkitx/goal.md |
+| goal.md | 存在（宽平台部分 superseded） | module/testkitx/goal.md |
 | SPEC.md | 存在 | module/testkitx/SPEC.md |
 | TRACEABILITY.md | 存在 | module/testkitx/TRACEABILITY.md |
-| IMPLEMENTATION-PLAN.md | 存在 | module/testkitx/IMPLEMENTATION-PLAN.md |
+| plan/ | 1 个 OVERVIEW + 11 个 PLAN 文件 | module/testkitx/plan |
 | tasks/ | 11 个 Markdown 文件 | module/testkitx/tasks |
 | prompt/ | 11 个 Markdown 文件 | module/testkitx/prompt |
 

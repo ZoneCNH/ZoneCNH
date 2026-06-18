@@ -34,7 +34,8 @@ Go 🐹 (主要) · Rust 🦀 (底层) · Python 🐍 (脚本/数据) · TypeScr
 L0: kernel (stdlib-only primitives)
       │
       ▼
-L1 运行时: configx / observex / resiliencx / schedulex
+L1 primitives: configx / observex / resiliencx / schedulex
+L1 Assembly: bootstrap (process assembly below x.go)
 L1 测试: testkitx (test-only)
       │
       ▼
@@ -82,7 +83,7 @@ L2.5: domainx / decimalx / domain-market / domain-macro / domain-exchange (5/5 �
 - [observex](https://github.com/ZoneCNH/observex) — vendor-neutral 日志、指标、追踪、健康与脱敏契约 `公开`
 - [resiliencx](https://github.com/ZoneCNH/resiliencx) — 运行时弹性策略（timeout/retry/circuit/bulkhead/rate/fallback） `公开`
 - [schedulex](https://github.com/ZoneCNH/schedulex) — 任务调度运行时（cron/interval/delay、Overlap/Misfire 策略、Locker 扩展点、Clock 注入、v1.0.0 已发布，98.2% 覆盖） `公开`
-- [bootstrap](https://github.com/ZoneCNH/bootstrap) — L1 通用进程组装层：configx/observex/resiliencx + lifecycx 统一组装 + 6 存储 adapter 可选构造（StoreSet 位掩码）；✅ v0.1.0 GitHub Release 已发布 `公开`
+- [bootstrap](https://github.com/ZoneCNH/bootstrap) — L1 Assembly 通用进程组装层（位于 L1 primitives 之上、x.go 入口之下）：configx/observex/resiliencx + lifecycx 统一组装 + 7 存储 adapter 可选构造（StoreSet 位掩码）；不承载业务语义 / service listener / domain contracts；✅ v0.1.0 GitHub Release 已发布，规格 v0.1.7 `公开`
 - [testkitx](https://github.com/ZoneCNH/testkitx) — 测试专用 evidence/golden/fixture/boundary 工具包 `公开`
 - [xlibgate](https://github.com/ZoneCNH/xlibgate) — import 边界、go.mod、Go baseline、release evidence、Trust Alignment 门禁 `公开`
 

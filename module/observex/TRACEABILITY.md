@@ -41,8 +41,8 @@
 | ------ | -------- | ----------- | ------------ | ------ |
 | NFR-001 | 性能 | 结构化日志写入延迟 < 5us | Benchmark | ✅ |
 | NFR-002 | 性能 | metrics 记录延迟 < 1us | Benchmark | ✅ |
-| NFR-003 | 性能 | trace span 创建+传播 < 10us | Benchmark | ✅ |
-| NFR-004 | 性能 | 常驻内存（noop 模式）< 1MB | Profiling | ✅ |
+| NFR-003 | 性能 | span 创建+结束 < 2us | Benchmark | ✅ |
+| NFR-004 | 性能 | 常驻内存（全量 exporter + 100 goroutine 并发写入）< 10MB | Profiling | ✅ |
 | NFR-005 | 质量 | 单元测试覆盖率 >= 80% | `go tool cover` | ✅ |
 | NFR-006 | 安全 | race 检测通过（零 data race） | `go test -race` | ✅ |
 | NFR-007 | 质量 | vet 检查通过（零警告） | `go vet` | ✅ |
