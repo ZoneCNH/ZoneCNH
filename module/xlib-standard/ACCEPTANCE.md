@@ -160,13 +160,13 @@
 | FR-050 | 上游标准快照契约 50快照锚点 | module/xlib-standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
 | FR-051 | 上游标准快照契约 51快照锚点 | module/xlib-standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
 | FR-052 | 上游标准快照契约 52快照锚点 | module/xlib-standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
-| BR-001 | 配置显式传入 | - | - | SPEC.md |
-| BR-002 | 错误消息格式 | - | - | SPEC.md |
-| BR-003 | Metrics label 低基数 | - | - | SPEC.md |
-| BR-004 | 模板占位符完整性 | - | - | SPEC.md |
-| BR-005 | 生成库独立性 | - | - | SPEC.md |
-| BR-006 | 库中禁止退出进程 | - | - | SPEC.md |
-| BR-007 | Sanitize 脱敏范围 | - | - | SPEC.md |
+| BR-001 | 配置显式传入：库不得读取隐式环境配置；调用方必须显式传入配置结构 | `grep -RnE "os.Getenv\|os.LookupEnv" pkg/templatex/` 返回 0 | ✅ | SPEC.md §7 BR-001 |
+| BR-002 | 错误消息格式：公共错误消息稳定、短句化；优先断言 kind | AC-004..008 / `go test ./pkg/templatex/ -run "TestNewError\|TestWrapError\|TestIsKind\|TestContextError"` | ✅ | SPEC.md §7 BR-002 |
+| BR-003 | Metrics label 低基数（仅允许 op/kind/status） | AC-013 / `go test ./pkg/templatex/ -run TestMetricsLabels` | ✅ | SPEC.md §7 BR-003 |
+| BR-004 | 模板占位符完整性：渲染脚本必须替换所有模板占位符；缺少必要参数时必须失败 | AC-022/023 / `bash scripts/render_template.sh ... && bash scripts/check_rendered_template.sh /tmp/out` | ✅ | SPEC.md §7 BR-004 |
+| BR-005 | 生成库独立性：生成库必须可脱离标准模板仓库独立构建、测试和发布 | AC-023/024 / `bash scripts/check_rendered_template.sh /tmp/out && cd /tmp/out && go vet ./... && go test ./...` | ✅ | SPEC.md §7 BR-005 |
+| BR-006 | 库中禁止退出进程（log.Fatal/os.Exit） | `grep -RnE "log\.Fatal\|os\.Exit" pkg/templatex/` 返回 0 / boundary gate | ✅ | SPEC.md §7 BR-006 |
+| BR-007 | Sanitize 脱敏覆盖 secret、token、key、password 类字段，并保留非敏感配置 | AC-003 / `go test ./pkg/templatex/ -run TestConfigSanitize -count=1` | ✅ | SPEC.md §7 BR-007 |
 
 ## 5. 发布 DoD 清单
 
