@@ -1,0 +1,127 @@
+# xlib-standard 完整实现清单
+
+- Status: Generated from current module SSOT
+- Last-Updated: 2026-06-18
+- Module-Version: v1.0.0
+- Module-State: 已发布
+- Layer: L1 工程标准
+- Runtime-Repo: /home/xlib-standard
+- Source: goal.md, SPEC.md, TRACEABILITY.md, IMPLEMENTATION-PLAN.md, README.md, tasks/, prompt/
+
+> 本清单用于约束 xlib-standard 的完整实现范围。条目来自本目录已有 Spec、Traceability、Plan、Task 等文档；若运行时代码状态与本文不一致，以相应模块仓库的最新验证证据补充更新本文。
+
+## 1. 模块边界清单
+
+| 项目 | 要求 |
+| --- | --- |
+| 模块职责 | Go 工程标准、目录约束、依赖边界与质量门禁 |
+| 文档目录 | module/xlib-standard |
+| 运行时代码目录 | /home/xlib-standard |
+| Go 基线 | 1.23 |
+| 允许依赖 | 无 |
+| 禁止依赖 | 禁止越过 FOUNDATION-DEPS.yaml 登记边界依赖上层业务域或未授权基座模块 |
+| 对外承诺 | API、配置、错误、观测、测试与证据口径必须与本目录追溯文档闭合 |
+
+## 2. 功能实现清单（FR）
+
+| ID | 完整实现项 | 验收/测试/任务挂钩 | 当前登记状态 | 来源 |
+| --- | --- | --- | --- | --- |
+| FR-001 | Config 标准快照锚点 | module/xlib-standard/SPEC.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-002 | Error 标准快照锚点 | module/xlib-standard/SPEC.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-003 | Health 标准快照锚点 | module/xlib-standard/SPEC.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-004 | Metrics 标准快照锚点 | module/xlib-standard/SPEC.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-005 | Client 标准快照锚点 | module/xlib-standard/SPEC.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-006 | Version 标准快照锚点 | module/xlib-standard/SPEC.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-007 | 公共 API 模板快照锚点 | module/xlib-standard/SPEC.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-008 | 模板可编译快照锚点 | module/xlib-standard/SPEC.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-009 | render_template.sh 渲染快照锚点 | module/xlib-standard/SPEC.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-010 | 生成库无模板残留快照锚点 | module/xlib-standard/SPEC.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-011 | CI gate快照锚点 | module/xlib-standard/SPEC.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-012 | boundary gate快照锚点 | module/xlib-standard/SPEC.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-013 | release manifest快照锚点 | module/xlib-standard/SPEC.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-014 | release final check快照锚点 | module/xlib-standard/SPEC.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-015 | Evidence Runtime CLI快照锚点 | module/xlib-standard/SPEC.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-016 | L2 下游仓库模板快照锚点 | module/xlib-standard/SPEC.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-017 | 上游标准快照契约 17快照锚点 | module/xlib-standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-018 | 上游标准快照契约 18快照锚点 | module/xlib-standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-019 | 上游标准快照契约 19快照锚点 | module/xlib-standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-020 | 上游标准快照契约 20快照锚点 | module/xlib-standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-021 | 上游标准快照契约 21快照锚点 | module/xlib-standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-022 | 上游标准快照契约 22快照锚点 | module/xlib-standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-023 | 上游标准快照契约 23快照锚点 | module/xlib-standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-024 | 上游标准快照契约 24快照锚点 | module/xlib-standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-025 | 上游标准快照契约 25快照锚点 | module/xlib-standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-026 | 上游标准快照契约 26快照锚点 | module/xlib-standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-027 | 上游标准快照契约 27快照锚点 | module/xlib-standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-028 | 上游标准快照契约 28快照锚点 | module/xlib-standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-029 | 上游标准快照契约 29快照锚点 | module/xlib-standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-030 | 上游标准快照契约 30快照锚点 | module/xlib-standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-031 | 上游标准快照契约 31快照锚点 | module/xlib-standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-032 | 上游标准快照契约 32快照锚点 | module/xlib-standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-033 | 上游标准快照契约 33快照锚点 | module/xlib-standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-034 | 上游标准快照契约 34快照锚点 | module/xlib-standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-035 | 上游标准快照契约 35快照锚点 | module/xlib-standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-036 | 上游标准快照契约 36快照锚点 | module/xlib-standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-037 | 上游标准快照契约 37快照锚点 | module/xlib-standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-038 | 上游标准快照契约 38快照锚点 | module/xlib-standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-039 | 上游标准快照契约 39快照锚点 | module/xlib-standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-040 | 上游标准快照契约 40快照锚点 | module/xlib-standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-041 | 上游标准快照契约 41快照锚点 | module/xlib-standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-042 | 上游标准快照契约 42快照锚点 | module/xlib-standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-043 | 上游标准快照契约 43快照锚点 | module/xlib-standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-044 | 上游标准快照契约 44快照锚点 | module/xlib-standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-045 | 上游标准快照契约 45快照锚点 | module/xlib-standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-046 | 上游标准快照契约 46快照锚点 | module/xlib-standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-047 | 上游标准快照契约 47快照锚点 | module/xlib-standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-048 | 上游标准快照契约 48快照锚点 | module/xlib-standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-049 | 上游标准快照契约 49快照锚点 | module/xlib-standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-050 | 上游标准快照契约 50快照锚点 | module/xlib-standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-051 | 上游标准快照契约 51快照锚点 | module/xlib-standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-052 | 上游标准快照契约 52快照锚点 | module/xlib-standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
+
+## 3. 行为与非功能实现清单
+
+| ID | 完整实现项 | 验收/测试/任务挂钩 | 当前登记状态 | 来源 |
+| --- | --- | --- | --- | --- |
+| BR-001 | 配置显式传入 | - | - | SPEC.md |
+| BR-002 | 错误消息格式 | - | - | SPEC.md |
+| BR-003 | Metrics label 低基数 | - | - | SPEC.md |
+| BR-004 | 模板占位符完整性 | - | - | SPEC.md |
+| BR-005 | 生成库独立性 | - | - | SPEC.md |
+| BR-006 | 库中禁止退出进程 | - | - | SPEC.md |
+| BR-007 | Sanitize 脱敏范围 | - | - | SPEC.md |
+
+## 4. 任务交付清单
+
+| ID | 交付项 | 文件/挂钩 | 当前登记状态 | 来源 |
+| --- | --- | --- | --- | --- |
+| TASK-XLIB-000 | TASK-XLIB-000 | module/xlib-standard/tasks/TASK-XLIB-000.md | - | tasks/TASK-XLIB-000.md |
+| TASK-XLIB-001 | TASK-XLIB-001 | module/xlib-standard/tasks/TASK-XLIB-001.md | - | tasks/TASK-XLIB-001.md |
+| TASK-XLIB-002 | TASK-XLIB-002 | module/xlib-standard/tasks/TASK-XLIB-002.md | - | tasks/TASK-XLIB-002.md |
+| TASK-XLIB-003 | TASK-XLIB-003 | module/xlib-standard/tasks/TASK-XLIB-003.md | - | tasks/TASK-XLIB-003.md |
+| TASK-XLIB-004 | TASK-XLIB-004 | module/xlib-standard/tasks/TASK-XLIB-004.md | - | tasks/TASK-XLIB-004.md |
+| TASK-XLIB-005 | TASK-XLIB-005 | module/xlib-standard/tasks/TASK-XLIB-005.md | - | tasks/TASK-XLIB-005.md |
+| TASK-XLIB-006 | TASK-XLIB-006 | module/xlib-standard/tasks/TASK-XLIB-006.md | - | tasks/TASK-XLIB-006.md |
+| TASK-XLIB-007 | TASK-XLIB-007 | module/xlib-standard/tasks/TASK-XLIB-007.md | - | tasks/TASK-XLIB-007.md |
+| TASK-XLIB-008 | TASK-XLIB-008 | module/xlib-standard/tasks/TASK-XLIB-008.md | - | tasks/TASK-XLIB-008.md |
+
+## 5. 文档资产清单
+
+| 文档 | 状态 | 路径 |
+| --- | --- | --- |
+| goal.md | 存在 | module/xlib-standard/goal.md |
+| SPEC.md | 存在 | module/xlib-standard/SPEC.md |
+| TRACEABILITY.md | 存在 | module/xlib-standard/TRACEABILITY.md |
+| IMPLEMENTATION-PLAN.md | 存在 | module/xlib-standard/IMPLEMENTATION-PLAN.md |
+| README.md | 存在 | module/xlib-standard/README.md |
+| tasks/ | 9 个 Markdown 文件 | module/xlib-standard/tasks |
+| prompt/ | 9 个 Markdown 文件 | module/xlib-standard/prompt |
+
+## 6. 实现完成判定
+
+- [ ] 所有 FR 条目均有运行时代码、单元测试或契约测试覆盖。
+- [ ] 所有 BR/NFR 条目均有测试、静态检查或人工可审计证据覆盖。
+- [ ] 所有任务文档均能追溯到 FR、BR/NFR、AC 或 TC。
+- [ ] 依赖边界符合 FOUNDATION-DEPS.yaml，不引入未授权运行时依赖。
+- [ ] 运行时代码仓库 /home/xlib-standard 的 lint、typecheck、test、race、coverage 验证证据已归档。
+- [ ] 发布说明、版本标签与本目录登记状态一致。

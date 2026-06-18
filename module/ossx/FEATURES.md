@@ -1,4 +1,4 @@
-# ossx 完整实现功能清单
+# ossx 完整实现清单
 
 - Status: Implemented（远程 `github.com/ZoneCNH/ossx` v1.1.0 已发布）
 - Last-Updated: 2026-06-18
