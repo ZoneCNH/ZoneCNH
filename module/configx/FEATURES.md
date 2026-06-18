@@ -2,8 +2,8 @@
 
 - Status: Generated from current module SSOT
 - Last-Updated: 2026-06-18
-- Module-Version: v0.1.4（运行时 version.go 实测 v0.1.3、CHANGELOG 最新 v0.1.4；git tag v1.0.0 已存在但 version.go 尚未对齐，见 ACCEPTANCE.md 版本基线说明）
-- Module-State: 显式加载基线已交付（对应 git tag v1.0.0）；goal.md §2 的 v1.0 完整 MUST（热更新 / RemoteSource SPI / bind / ConfigSnapshot）未交付，划入 v1.1 路线
+- Module-Version: v1.1.0（运行时 version.go = v1.1.0、CHANGELOG 最新 = v1.1.0、git tag = v1.1.0、GitHub Release 已发布）
+- Module-State: v1.0 路线 5 项 MUST 已全部交付（ArgsSource / RemoteSource SPI / Bind / ConfigSnapshot+ChangeEvent+Watch+Rollback / DocGen），详见 ACCEPTANCE.md 版本基线说明
 - Layer: L1 基础能力
 - Runtime-Repo: /home/configx
 - Source: goal.md, SPEC.md, DESIGN.md, TRACEABILITY.md, IMPLEMENTATION-PLAN.md, tasks/
