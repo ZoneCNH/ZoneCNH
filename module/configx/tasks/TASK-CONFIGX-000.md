@@ -2,6 +2,8 @@
 
 > 项目骨架：go.mod、doc.go、errors.go（公共错误变量）
 
+> ⚠️ **实现偏差注解（2026-06-18 校准）**：本任务规格要求「定义 5 个 `ErrXxx` sentinel 变量，错误格式 `configx: <描述>`」，但运行时实现已演进——实际 `errors.go` 采用 `ErrorKind` 枚举 + `*Error` 结构体 + `NewError/WrapError/IsKind` API，`Error()` 输出 `<kind>: <op>: <message>`。权威契约见 [SPEC.md §9.5](../SPEC.md#95-公共错误)。本任务文档保留原始任务下达记录，**不要据此编写代码**。
+
 ---
 
 ```yaml

@@ -3,6 +3,8 @@
 > 来源：[SPEC.md](./SPEC.md) v1.0.1 | 任务数量：10（TASK-CONFIGX-000 ~ 010，008 已合并）
 > 更新：2026-06-12（v3.0 — 修复红线：per-task 验证命令 + 风险识别 + 回滚策略 + 里程碑 + DAG 修正）
 
+> ⚠️ **文件名列说明（2026-06-18 校准）**：下表 `Files` 列反映**计划阶段**的文件名设想，与运行时实际文件结构有出入。运行时实际文件以 [SPEC.md §13 目录结构](./SPEC.md#13-目录结构) 为准——例如计划中的 `reader.go` 实际未创建（无 Reader 接口），脱敏逻辑落在 `secret.go` + `secretpolicy.go` + `manifest.go`，校验落在 `schema.go` + `validation` 内联函数，Watch（TASK-007）未实现。本 Plan 的核心价值在 DAG 依赖、工时估算、风险识别与回滚策略；文件名列仅供历史追溯。
+
 ## 1. 依赖 DAG
 
 ```text

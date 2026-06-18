@@ -196,6 +196,8 @@ func WithStrictMode(bool) Option
 | 初始化 | `New(opts...)`            | 创建空 Config，应用 Option | ✅ 可重建                      | Option 冲突时 panic（设计时约束）         |
 | 加载   | `Load(path)`              | data 填充，来源标记为 FILE | ❌ 不可逆（ErrAlreadyLoaded）  | 文件不存在/格式无效→返回 error，data 不变 |
 | 覆盖   | `WithEnvOverride(prefix)` | env→key 映射写入覆盖层     | ✅ 返回新 Config（原实例不变） | 类型转换失败→返回 ErrTypeMismatch         |
+
+> ⚠️ **上表为未落地的早期设计**（见文首声明）。运行时无 `Load(path)` / `WithEnvOverride` 方法，也无 `ErrAlreadyLoaded` / `ErrTypeMismatch` sentinel（实际用 `ErrorKind` 枚举，见 SPEC §9.5）。
 | 校验   | `Validate()`              | 校验状态标记为 VALIDATED   | ✅ 可重复调用                  | 校验失败→返回错误列表，不阻断后续 Get     |
 | 运行   | `Reader.Get*(key)`        | 只读访问，无状态变更       | —                             | key 不存在→返回 nil/零值，不 panic        |
 | 关闭   | 进程退出                  | Config 实例随进程销毁      | —                             | 无资源需清理（无连接池/文件句柄）         |

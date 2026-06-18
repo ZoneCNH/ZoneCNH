@@ -146,7 +146,7 @@ THEN IsSecret 返回 true（CustomMatcher 与 Pattern 匹配并行）
 
 ### FR-009: Provenance 来源追踪
 
-WHEN 配置加载完成后调用 `Provenance.Entries()`
+WHEN 配置加载完成后调用 `Provenance.Snapshot()`（或 `Get(key)` 查单个 key）
 THEN 每个 key 返回其 Source、Priority、OverrideEntry 链路
 
 WHEN 同一个 key 被多个 Source 覆盖
@@ -683,7 +683,7 @@ type NoopMetrics struct{}  // 零开销空实现
 | 依赖安全扫描        | CI 运行 `govulncheck ./...` 扫描已知漏洞                                                              |
 | 静态凭证扫描        | CI Gate `gitleaks detect --no-git` 阻塞任何硬编码凭证                                                 |
 | 不可信输入校验      | StrictDecode 默认拒绝未知字段；所有 Source 输入通过 schema 校验                                       |
-| 无全局状态          | NoGlobalStateGate CI 门禁防止引入进程级 config singleton                                              |
+| 无全局状态          | 源码无可变包级单例 / 无 init() 副作用；`TestNoImplicitConfigDiscovery` 单测 + 源码静态检查覆盖          |
 
 ---
 
@@ -704,10 +704,11 @@ type NoopMetrics struct{}  // 零开销空实现
 
 ### 19.2 configx 专属 Gate
 
-| Gate          | 命令                   | 阻塞条件                    |             |
-| ------------- | ---------------------- | --------------------------- |             |
-| 不依赖 kernel | `go list -deps ./... \ | grep "kernel"`              | 依赖 kernel |
-| 无全局状态    | NoGlobalStateGate      | 引入进程级 config singleton |             |
+| Gate          | 命令                                                              | 阻塞条件                    |
+| ------------- | ----------------------------------------------------------------- | --------------------------- |
+| 不依赖 kernel | `go list -deps ./... \| grep "kernel"`                            | 依赖 kernel                 |
+| 无全局状态    | 源码静态检查：无可变包级 `var Client` / 无 init() 副作用          | 引入进程级 config singleton |
+| 显式加载      | `TestNoImplicitConfigDiscovery` 单测                              | 出现隐式配置发现路径        |
 
 ---
 
