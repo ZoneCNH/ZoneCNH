@@ -1,14 +1,16 @@
 # postgresx 完整实现清单
 
 - Status: Generated from current module SSOT
-- Last-Updated: 2026-06-18
-- Module-Version: v1.0.0
-- Module-State: 已发布
+- Last-Updated: 2026-06-19
+- Module-Version: v1.1.0 runtime target / v1.0.0 published snapshot
+- Module-State: 复验中（发布证据阻断）
 - Layer: L2 基础设施适配器
 - Runtime-Repo: /home/postgresx
 - Source: goal.md, SPEC.md, TRACEABILITY.md, IMPLEMENTATION-PLAN.md, tasks/
 
 > 本清单用于约束 postgresx 的完整实现范围。条目来自本目录已有 Spec、Traceability、Plan、Task 等文档；若运行时代码状态与本文不一致，以相应模块仓库的最新验证证据补充更新本文。
+>
+> 2026-06-19 复验结论：`/home/postgresx` 运行时已切到 `v1.1.0` 默认版本，`go test`、`go test -race` 与 `go vet` 可在 `GOWORK=off` 下通过；但 `release/manifest/v1.1.0.json` 与 `docs/RELEASE_MANIFEST-v1.1.0.md` 尚不存在，覆盖率门槛和 lint 仍阻断发布，因此本目录不再登记为已发布完成态。
 
 ## 1. 模块边界清单
 
@@ -48,18 +50,18 @@
 | BR-008 | 健康检查幂等且安全 | 不输出密码、完整 DSN 或 SQL 参数 / TC-005, TC-007 / TASK-PG-002a | Done | TRACEABILITY.md |
 | BR-009 | 指标适配不泄露敏感信息且命名一致 | 代码和 contract 采用同一指标命名规范 / TC-007, TC-009 / TASK-PG-003 | Done | TRACEABILITY.md |
 | BR-010 | PostgreSQL 错误码映射稳定 | SQLSTATE 到 foundationx kind 和 retryability 的映射有测试 / TC-006 / TASK-PG-002b | Done | TRACEABILITY.md |
-| BR-011 | 发布证据支持 GOWORK=off | go test、go vet、release evidence 不依赖 workspace / TC-008, /home/postgresx/docs/EVIDENCE-20260601.md, /home/postgresx/docs/RELEASE_MANIFEST-v1.0.0.md, /home/postgresx/release/manifest/v1.0.0.json / TASK-PG-001 | Done | TRACEABILITY.md |
-| BR-012 | 版本、API 和文档一致 | go.mod、版本矩阵、contract、SPEC 同步 / TC-009 / TASK-PG-003 | Done | TRACEABILITY.md |
+| BR-011 | 发布证据支持 GOWORK=off | `GOWORK=off go test ./...`、`go test ./... -race -count=1`、`go vet ./...` 已于 2026-06-19 通过；`make release-blockers VERSION=v1.1.0` 因缺少 `release/manifest/v1.1.0.json` 阻断 / TC-008 / TASK-PG-001 | Blocked (release evidence) | TRACEABILITY.md |
+| BR-012 | 版本、API 和文档一致 | `VERSION`/Makefile/runtime 代码为 `v1.1.0`；`.repo-contract.yaml`、CHANGELOG 与发布 manifest 仍保留 `v1.0.0` 发布快照 / TC-009 / TASK-PG-003 | Blocked (version surfaces) | TRACEABILITY.md |
 | NFR-001 | 单次 Exec 性能 | < 10ms / Benchmark / - / Deferred (v1.x) | - | TRACEABILITY.md |
 | NFR-002 | InsertBatch 100行 | < 50ms / Benchmark / - / Deferred (v1.x) | - | TRACEABILITY.md |
 | NFR-003 | 单次 Query 性能 | < 10ms / Benchmark / - / Deferred (v1.x) | - | TRACEABILITY.md |
 | NFR-004 | 连接池获取性能 | < 1ms / Benchmark / - / Deferred (v1.x) | - | TRACEABILITY.md |
 | NFR-005 | 常驻内存（空闲） | < 5MB / Profiling / - / Deferred (v1.x) | - | TRACEABILITY.md |
-| NFR-006 | 单元测试覆盖率 | >= 80% / go tool cover / TASK-PG-001 | Done | TRACEABILITY.md |
-| NFR-007 | race 检测通过 | 零 data race / go test -race / TASK-PG-001 | Done | TRACEABILITY.md |
-| NFR-008 | vet 检查通过 | 零警告 / go vet / TASK-PG-001 | Done | TRACEABILITY.md |
-| NFR-009 | lint 检查通过 | 零错误 / golangci-lint / TASK-PG-001 | Done | TRACEABILITY.md |
-| NFR-010 | Secret 扫描通过 | 零命中 / gitleaks / TASK-PG-001 | Done | TRACEABILITY.md |
+| NFR-006 | 单元测试覆盖率 | 2026-06-19 `GOWORK=off go test ./... -covermode=atomic -coverprofile=/tmp/postgresx.cover` 总覆盖率 60.1%；`make coverage` 因 `COVERAGE_MIN=100` 失败 / TASK-PG-001 | Blocked (60.1% < 100%) | TRACEABILITY.md |
+| NFR-007 | race 检测通过 | 2026-06-19 `GOWORK=off go test ./... -race -count=1` 通过 / TASK-PG-001 | Done | TRACEABILITY.md |
+| NFR-008 | vet 检查通过 | 2026-06-19 `GOWORK=off go vet ./...` 通过 / TASK-PG-001 | Done | TRACEABILITY.md |
+| NFR-009 | lint 检查通过 | 2026-06-19 `golangci-lint run ./...` 报告 3 个 `usetesting` 问题 / TASK-PG-001 | Blocked (lint) | TRACEABILITY.md |
+| NFR-010 | Secret 扫描通过 | 2026-06-19 本地环境未安装 `gitleaks`；不得登记为已通过 / TASK-PG-001 | Needs evidence | TRACEABILITY.md |
 
 ## 4. 任务交付清单
 
@@ -87,5 +89,5 @@
 - [ ] 所有 BR/NFR 条目均有测试、静态检查或人工可审计证据覆盖。
 - [ ] 所有任务文档均能追溯到 FR、BR/NFR、AC 或 TC。
 - [ ] 依赖边界符合 FOUNDATION-DEPS.yaml，不引入未授权运行时依赖。
-- [ ] 运行时代码仓库 /home/postgresx 的 lint、typecheck、test、race、coverage 验证证据已归档。
-- [ ] 发布说明、版本标签与本目录登记状态一致。
+- [ ] 运行时代码仓库 /home/postgresx 的 lint、typecheck、test、race、coverage 验证证据已归档（test/race/vet 已通过；coverage/lint/release evidence 阻断）。
+- [ ] 发布说明、版本标签与本目录登记状态一致（v1.1.0 manifest/release doc 缺失，v1.0.0 发布快照保持不可变）。

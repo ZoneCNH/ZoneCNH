@@ -1,14 +1,16 @@
 # postgresx 完整验收清单
 
 - Status: Generated from current module SSOT
-- Last-Updated: 2026-06-18
-- Module-Version: v1.0.0
-- Module-State: 已发布
+- Last-Updated: 2026-06-19
+- Module-Version: v1.1.0 runtime target / v1.0.0 published snapshot
+- Module-State: 复验中（发布证据阻断）
 - Layer: L2 基础设施适配器
 - Runtime-Repo: /home/postgresx
 - Source: goal.md, SPEC.md, TRACEABILITY.md, IMPLEMENTATION-PLAN.md, tasks/
 
 > 本清单用于验收 postgresx 是否达到可发布、可追溯、可复验状态。除非条目明确记录为已通过，默认需要在运行时代码仓库重新执行验证并补充证据。
+>
+> 2026-06-19 复验结论：`/home/postgresx` 本地 `GOWORK=off` test/race/vet 通过；发布验收仍阻断于 v1.1.0 manifest/release doc 缺失、覆盖率门槛未达成、lint 未清零和 secret 扫描工具缺失。
 
 ## 1. 验收命令清单
 
@@ -16,11 +18,13 @@
 | --- | --- | --- |
 | 文档存在性 | cd /home/ZoneCNH && test -f module/postgresx/FEATURES.md && test -f module/postgresx/ACCEPTANCE.md | FEATURES.md 与 ACCEPTANCE.md 均存在 |
 | 文档格式 | cd /home/ZoneCNH && git diff --check -- module/postgresx | 无尾随空格或补丁格式错误 |
-| 运行时测试 | cd /home/postgresx && go test ./... | 所有包测试通过 |
-| 竞态检查 | cd /home/postgresx && go test ./... -race -count=1 | 无 data race，测试稳定通过 |
-| 静态检查 | cd /home/postgresx && go vet ./... | 无 vet 问题 |
-| 覆盖率证据 | cd /home/postgresx && go test ./... -coverprofile=coverage.out | 覆盖率文件生成并满足模块 Spec 门槛 |
-| 依赖边界 | cd /home/postgresx && go list -deps ./... | 依赖不越过 FOUNDATION-DEPS.yaml 登记边界 |
+| 运行时测试 | cd /home/postgresx && GOWORK=off go test ./... | 所有包测试通过 |
+| 竞态检查 | cd /home/postgresx && GOWORK=off go test ./... -race -count=1 | 无 data race，测试稳定通过 |
+| 静态检查 | cd /home/postgresx && GOWORK=off go vet ./... | 无 vet 问题 |
+| 覆盖率证据 | cd /home/postgresx && GOWORK=off go test ./... -covermode=atomic -coverprofile=/tmp/postgresx.cover && go tool cover -func=/tmp/postgresx.cover | 覆盖率文件生成并满足模块 Spec/Makefile 门槛 |
+| 依赖边界 | cd /home/postgresx && GOWORK=off go list -deps ./... | 依赖不越过 FOUNDATION-DEPS.yaml 登记边界 |
+| 发布阻断 | cd /home/postgresx && GOWORK=off make release-blockers VERSION=v1.1.0 | v1.1.0 release manifest 存在且无 blocker |
+| 发布证据文档 | cd /home/postgresx && GOWORK=off make docs-check VERSION=v1.1.0 | v1.1.0 release evidence 文档与 manifest 齐备 |
 
 ## 2. AC 验收登记
 
@@ -76,30 +80,33 @@
 | BR-008 | 健康检查幂等且安全 | 不输出密码、完整 DSN 或 SQL 参数 / TC-005, TC-007 / TASK-PG-002a | Done | TRACEABILITY.md |
 | BR-009 | 指标适配不泄露敏感信息且命名一致 | 代码和 contract 采用同一指标命名规范 / TC-007, TC-009 / TASK-PG-003 | Done | TRACEABILITY.md |
 | BR-010 | PostgreSQL 错误码映射稳定 | SQLSTATE 到 foundationx kind 和 retryability 的映射有测试 / TC-006 / TASK-PG-002b | Done | TRACEABILITY.md |
-| BR-011 | 发布证据支持 GOWORK=off | go test、go vet、release evidence 不依赖 workspace / TC-008, /home/postgresx/docs/EVIDENCE-20260601.md, /home/postgresx/docs/RELEASE_MANIFEST-v1.0.0.md, /home/postgresx/release/manifest/v1.0.0.json / TASK-PG-001 | Done | TRACEABILITY.md |
-| BR-012 | 版本、API 和文档一致 | go.mod、版本矩阵、contract、SPEC 同步 / TC-009 / TASK-PG-003 | Done | TRACEABILITY.md |
+| BR-011 | 发布证据支持 GOWORK=off | 2026-06-19 `GOWORK=off go test ./...`、`go test ./... -race -count=1`、`go vet ./...` 通过；`make release-blockers VERSION=v1.1.0` 因缺少 `release/manifest/v1.1.0.json` 失败 / TC-008 / TASK-PG-001 | Blocked (release evidence) | TRACEABILITY.md |
+| BR-012 | 版本、API 和文档一致 | 运行时代码与 Makefile 默认 `v1.1.0`；`.repo-contract.yaml`、CHANGELOG、release manifest 仍登记 `v1.0.0` 快照 / TC-009 / TASK-PG-003 | Blocked (version surfaces) | TRACEABILITY.md |
 | NFR-001 | 单次 Exec 性能 | < 10ms / Benchmark / - / Deferred (v1.x) | - | TRACEABILITY.md |
 | NFR-002 | InsertBatch 100行 | < 50ms / Benchmark / - / Deferred (v1.x) | - | TRACEABILITY.md |
 | NFR-003 | 单次 Query 性能 | < 10ms / Benchmark / - / Deferred (v1.x) | - | TRACEABILITY.md |
 | NFR-004 | 连接池获取性能 | < 1ms / Benchmark / - / Deferred (v1.x) | - | TRACEABILITY.md |
 | NFR-005 | 常驻内存（空闲） | < 5MB / Profiling / - / Deferred (v1.x) | - | TRACEABILITY.md |
-| NFR-006 | 单元测试覆盖率 | >= 80% / go tool cover / TASK-PG-001 | Done | TRACEABILITY.md |
-| NFR-007 | race 检测通过 | 零 data race / go test -race / TASK-PG-001 | Done | TRACEABILITY.md |
-| NFR-008 | vet 检查通过 | 零警告 / go vet / TASK-PG-001 | Done | TRACEABILITY.md |
-| NFR-009 | lint 检查通过 | 零错误 / golangci-lint / TASK-PG-001 | Done | TRACEABILITY.md |
-| NFR-010 | Secret 扫描通过 | 零命中 / gitleaks / TASK-PG-001 | Done | TRACEABILITY.md |
+| NFR-006 | 单元测试覆盖率 | 2026-06-19 总覆盖率 60.1%；`make coverage` 以 `COVERAGE_MIN=100` 失败 / TASK-PG-001 | Blocked (60.1% < 100%) | TRACEABILITY.md |
+| NFR-007 | race 检测通过 | 2026-06-19 `GOWORK=off go test ./... -race -count=1` 通过 / TASK-PG-001 | Done | TRACEABILITY.md |
+| NFR-008 | vet 检查通过 | 2026-06-19 `GOWORK=off go vet ./...` 通过 / TASK-PG-001 | Done | TRACEABILITY.md |
+| NFR-009 | lint 检查通过 | 2026-06-19 `golangci-lint run ./...` 报告 3 个 `usetesting` 问题 / TASK-PG-001 | Blocked (lint) | TRACEABILITY.md |
+| NFR-010 | Secret 扫描通过 | 2026-06-19 本地环境未安装 `gitleaks`；需要 CI 或已安装工具复验 / TASK-PG-001 | Needs evidence | TRACEABILITY.md |
 
 ## 5. 发布 DoD 清单
 
 - [ ] FEATURES.md 的 FR、BR/NFR、任务清单与 SPEC/TRACEABILITY 当前登记一致。
 - [ ] ACCEPTANCE.md 的 AC、TC 与运行时代码测试名、证据文件或 CI 记录一致。
-- [ ] 运行时代码仓库 /home/postgresx 通过 go test、go test -race、go vet 与覆盖率门槛。
+- [ ] 运行时代码仓库 /home/postgresx 通过 go test、go test -race、go vet 与覆盖率门槛（test/race/vet 已通过；coverage 60.1% 未过 100% 门槛）。
 - [ ] 所有外部服务依赖有本地可重复的测试替身或明确 live-gate 证据。
-- [ ] 安全检查确认没有凭证、私有端点、账户 ID 或实盘配置进入公开文档与代码。
-- [ ] 版本号、发布标签、CHANGELOG 或 release note 与本目录状态一致。
+- [ ] 安全检查确认没有凭证、私有端点、账户 ID 或实盘配置进入公开文档与代码（本地 `gitleaks` 缺失，需 CI/工具复验）。
+- [ ] 版本号、发布标签、CHANGELOG 或 release note 与本目录状态一致（v1.1.0 release manifest/doc 缺失，v1.0.0 快照保持不可变）。
 
 ## 6. 当前缺口登记
 
 - 当前文档只记录验收口径，不替代运行时代码仓库的最新 CI 结果。
+- 2026-06-19 本地复验通过项：`GOWORK=off go test ./...`、`GOWORK=off go test ./... -race -count=1`、`GOWORK=off go vet ./...`。
+- 2026-06-19 本地阻断项：`make coverage` 总覆盖率 60.1%，低于 `COVERAGE_MIN=100`；`golangci-lint run ./...` 有 3 个 `usetesting` 问题；`gitleaks` 未安装，secret scan 不能登记通过。
+- 发布证据阻断项：`GOWORK=off make release-blockers VERSION=v1.1.0` 缺少 `release/manifest/v1.1.0.json`；`GOWORK=off make docs-check VERSION=v1.1.0` 缺少 `docs/RELEASE_MANIFEST-v1.1.0.md`。
+- 版本一致性阻断项：运行时 `VERSION`/Makefile 为 `v1.1.0`，但 `.repo-contract.yaml`、CHANGELOG 与发布 manifest 仍以 `v1.0.0` 快照为准。
 - 若上表存在 Pending、Draft、Blocked、Open 或未登记状态，发布前必须补充证据或在模块追溯矩阵中登记豁免理由。
-- SPEC/TRACEABILITY 已登记 AC/TC 主链路；当前主要缺口是 /home/postgresx 最新复验证据、下游接入成熟度证据与发布状态一致性需要归档。
