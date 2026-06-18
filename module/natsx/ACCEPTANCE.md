@@ -34,7 +34,6 @@
 | AC-006 | FR-006 | TC-003 / Embedded AddStream create/idempotency/conflict covered | - | TRACEABILITY.md |
 | AC-007 | FR-007 | TC-003 / Embedded AddConsumer create/idempotency/conflict covered | - | TRACEABILITY.md |
 | AC-008 | FR-008 | TC-005 / Healthy, disconnected, nil, canceled, closed, reconnect, and degraded health paths covered | - | TRACEABILITY.md |
-| AC-ID | 功能 | 验收标准 / 验证方式 / 判定结果 | - | SPEC.md |
 
 ## 3. TC 测试验收登记
 

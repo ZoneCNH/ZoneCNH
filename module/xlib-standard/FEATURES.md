@@ -83,13 +83,13 @@
 
 | ID | 完整实现项 | 验收/测试/任务挂钩 | 当前登记状态 | 来源 |
 | --- | --- | --- | --- | --- |
-| BR-001 | 配置显式传入 | - | - | SPEC.md |
-| BR-002 | 错误消息格式 | - | - | SPEC.md |
-| BR-003 | Metrics label 低基数 | - | - | SPEC.md |
-| BR-004 | 模板占位符完整性 | - | - | SPEC.md |
-| BR-005 | 生成库独立性 | - | - | SPEC.md |
-| BR-006 | 库中禁止退出进程 | - | - | SPEC.md |
-| BR-007 | Sanitize 脱敏范围 | - | - | SPEC.md |
+| BR-001 | 配置显式传入：库不得读取隐式环境配置；调用方必须显式传入配置结构 | `pkg/templatex/config.go` 显式构造 + boundary gate | ✅ | SPEC.md §7 BR-001 |
+| BR-002 | 错误消息格式：公共错误消息稳定、短句化；错误 kind 比错误文本更适合作为断言对象 | `pkg/templatex/errors.go` + AC-004/005/006/007/008 | ✅ | SPEC.md §7 BR-002 |
+| BR-003 | Metrics label 低基数：label 不得包含 ID、路径、用户输入、动态 module path | AC-013 / `pkg/templatex/metrics.go:15-19` | ✅ | SPEC.md §7 BR-003 |
+| BR-004 | 模板占位符完整性：渲染脚本必须替换所有模板占位符；缺少必要参数时必须失败 | AC-022/023 / `scripts/render_template.sh` + `scripts/check_rendered_template.sh` | ✅ | SPEC.md §7 BR-004 |
+| BR-005 | 生成库独立性：生成库必须可脱离标准模板仓库独立构建、测试和发布 | AC-023/024 / boundary gate + `make ci` | ✅ | SPEC.md §7 BR-005 |
+| BR-006 | 库中禁止退出进程：库代码不得调用 `log.Fatal`、`os.Exit` 或等价退出进程逻辑 | boundary gate `scripts/check_boundary.sh` | ✅ | SPEC.md §7 BR-006 |
+| BR-007 | Sanitize 脱敏范围：覆盖 secret、token、key、password 类字段，并保留非敏感配置用于诊断 | AC-003 / `pkg/templatex/config.go:34-39` | ✅ | SPEC.md §7 BR-007 |
 
 ## 4. 任务交付清单
 
