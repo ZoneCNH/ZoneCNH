@@ -297,49 +297,67 @@ err := timeout.Do(ctx, 5*time.Second, func(ctx context.Context) error {
 
 ## 9. 数据模型
 
-### 9.1 公共错误
+### 9.1 实际 sentinel error（按子包分散定义）
+
+> v1.0.0/v1.0.1 描述的包根聚合 sentinel（`resiliencx.ErrTimeout` 等 5 个）**在代码中不存在**。实际 sentinel 按子包就近定义，且不完整（见下表"缺失"行）。
+
+| sentinel | 定义位置 | 触发场景 |
+| -------- | -------- | -------- |
+| `context.DeadlineExceeded` | stdlib | `timeout.Do` 超时（`ctx.Err()`），消费者用 `errors.Is(err, context.DeadlineExceeded)` |
+| `circuit.ErrOpen` | `pkg/resiliencx/circuit/circuit.go:21` | 熔断器 Open 状态拒绝调用 |
+| `circuit.ErrHalfOpen` | `pkg/resiliencx/circuit/circuit.go:22` | HalfOpen 已有试探在飞，拒绝并发试探 |
+| `bulkhead.ErrFull` | `pkg/resiliencx/bulkhead/bulkhead.go:9` | `TryAcquire` 无空闲槽位 |
+| `bulkhead` ctx 错误 | stdlib | `Acquire`/`Do` 等待槽位时 ctx 取消，返回 `ctx.Err()` |
+| `resiliencx.ErrAlreadyExecuted` | `pkg/resiliencx/idempotency.go:6` | 幂等守卫命中重复 key |
+| **`ErrTimeout`**（专属） | — | **缺失**，超时复用 `context.DeadlineExceeded` |
+| **`ErrCircuitOpen`**（包根） | — | **缺失**，使用子包 `circuit.ErrOpen` |
+| **`ErrBulkheadFull`**（包根） | — | **缺失**，使用子包 `bulkhead.ErrFull` |
+| **`ErrRateLimited`** | — | **缺失**，`ratelimit.Limiter.Allow()` 仅返回 `bool`，无错误形态 |
+| **`ErrMaxRetries`** | — | **缺失**，`retry.Do` 耗尽后返回最后一次 `fn` 错误，不包装 |
+
+包根另有一套结构化 `Error` 类型（`ErrorKind` + `Retryable`），用于客户端生命周期管理（见 §8.2），与上述策略 sentinel 是**并行的两套错误模型**。
+
+### 9.2 实际配置结构
+
+> v1.0.0/v1.0.1 的 `CircuitConfig`/`BulkheadConfig`（带 yaml tag）**在代码中不存在**。运行时无 yaml 配置 struct；策略参数通过构造函数位置参数或 `retry.Policy` 字面量传入。
 
 ```go
-var (
-    ErrTimeout       = errors.New("resiliencx: timeout")
-    ErrCircuitOpen   = errors.New("resiliencx: circuit breaker open")
-    ErrBulkheadFull  = errors.New("resiliencx: bulkhead full")
-    ErrRateLimited   = errors.New("resiliencx: rate limited")
-    ErrMaxRetries    = errors.New("resiliencx: max retries exceeded")
-)
-```text
-
-### 9.2 配置结构
-
-```go
-type CircuitConfig struct {
-    FailureThreshold int           `yaml:"failure_threshold"` // 连续失败次数触发熔断
-    RecoveryTimeout  time.Duration `yaml:"recovery_timeout"`  // 熔断恢复超时
-    HalfOpenMax      int           `yaml:"half_open_max"`     // Half-Open 状态最大试探次数
+// 实际存在的配置类型（包根 resiliencx）
+type Config struct {
+    Name    string        // 客户端名，必填
+    Timeout time.Duration // 客户端默认超时，>=0
+    Secret  string        // 可选，会被 Sanitize 脱敏
 }
+func (c Config) Validate() error
+func (c Config) Sanitize() SanitizedConfig
 
-type BulkheadConfig struct {
-    MaxConcurrent int           `yaml:"max_concurrent"` // 最大并发数
-    MaxWait       time.Duration `yaml:"max_wait"`       // 最大等待时间
-}
-```text
+// 策略参数：直接用构造函数参数或 Policy struct
+circuit.New(threshold int, cooldown time.Duration)        // 无 yaml tag
+bulkhead.New(maxConcurrent int)                           // 无 MaxWait（改为 ctx 控制）
+ratelimit.New(rate float64, max float64)                  // max = burst/桶容量
+retry.Policy{ MaxAttempts, InitialWait, MaxWait, Multiplier }
+```
+
+§10 的 yaml 配置模式属于**目标/参考形态**，运行时尚无对应 struct 解析；消费者需自行把 yaml 读入后构造上述参数。
 
 ---
 
-## 10. 配置模式
+## 10. 配置模式（参考形态，非运行时已实现）
+
+> 以下 yaml 表达了推荐的外部配置口径，对应 §9.2 的构造参数。当前运行时代码**不自带 yaml 解析**；消费者通过 `configx` 读取后传入构造函数。`max_retries` 在 yaml 层沿用旧名，映射到代码 `retry.Policy.MaxAttempts`（`MaxAttempts = max_retries + 1`）。
 
 ```yaml
 resiliencx:
   default_timeout: 5s
   default_retry:
-    max_retries: 3
+    max_retries: 3          # 映射 retry.Policy.MaxAttempts = 4
     initial_wait: 100ms
     max_wait: 2s
     multiplier: 2.0
   circuit_breaker:
-    failure_threshold: 5
-    recovery_timeout: 30s
-    half_open_max: 1
+    failure_threshold: 5    # circuit.New 的第一个参数（连续失败次数）
+    recovery_timeout: 30s   # circuit.New 的第二个参数（cooldown）
+    # half_open_max 未实现，HalfOpen 固定单次试探
   bulkhead:
     max_concurrent: 10
     max_wait: 5s
