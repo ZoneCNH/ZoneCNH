@@ -82,8 +82,8 @@
       "ci": true,
       "adopt": true,
       "soak": "N/A",
-      "factory": false,
-      "note": "L0 原语 / 12 子包 / stdlib-only; implementation/release candidate passed; Factory blocked by BLK-011 until evidence package + Goal Matrix Verified + four-source 98+ arbiter archive close"
+      "factory": true,
+      "note": "L0 原语 / 12 子包 / stdlib-only; v1.1.0 release; Factory closed 2026-06-18: Goal Matrix 23 edges Verified (evidence_id=kernel-acceptance-20260618) + four-source arbiter 6 stages gate=pass + coverage 100% + evidence package archived; BLK-011 resolved"
     },
     "configx": {
       "layer": "L1",

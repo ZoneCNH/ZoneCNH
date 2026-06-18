@@ -87,7 +87,7 @@ L2.5: domainx / decimalx / domain-market / domain-macro / domain-exchange (5/5 �
 - [testkitx](https://github.com/ZoneCNH/testkitx) — 测试专用 evidence/golden/fixture/boundary 工具包 `公开`
 - [xlibgate](https://github.com/ZoneCNH/xlibgate) — import 边界、go.mod、Go baseline、release evidence、Trust Alignment 门禁 `公开`
 
-> **公开投影口径**：版本 / release / factory 状态以 `.foundationx/status/index.json` + `.foundationx/blockers.json` 为准；BLK-001~008 历史项已 resolved，BLK-009 / BLK-010 / BLK-011 仍 open；Foundation 整体维持 non-factory 投影。
+> **公开投影口径**：版本 / release / factory 状态以 `.foundationx/status/index.json` + `.foundationx/blockers.json` 为准；BLK-001~008 + BLK-011 已 resolved，BLK-009 / BLK-010 仍 open；Foundation 整体维持 non-factory 投影。
 >
 > `configx` v1.1.0、`observex` v0.3.1、`testkitx` v0.4.0、`resiliencx` v0.4.9 已发布；此前版本误标已修正。
 

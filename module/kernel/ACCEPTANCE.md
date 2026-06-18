@@ -3,14 +3,14 @@
 - Status: Generated from current module SSOT
 - Last-Updated: 2026-06-18
 - Module-Version: v1.1.0
-- Module-State: 已发布 v1.1.0（代码侧 + 发布门禁全绿）；Factory 验收仍由 BLK-011 阻塞（Goal Matrix / 四源 arbiter 归档）
+- Module-State: 已发布 v1.1.0（代码侧 + 发布门禁全绿）；Factory 已闭合（2026-06-18）— Goal Matrix 23 边 Verified + 四源 arbiter gate=pass + coverage 100% + BLK-011 resolved
 - Layer: L0 基座核心
 - Runtime-Repo: /home/kernel
 - Source: goal.md, SPEC.md, DESIGN.md, TRACEABILITY.md, IMPLEMENTATION-PLAN.md, tasks/, prompt/
 - Evidence: `.config/goal/evidence/kernel-acceptance-20260618/`（test ✅ / race ✅ / vet ✅ / coverage 100% ✅ / stdlib-only ✅ / secrets ✅）
 
 > 本清单用于验收 kernel 是否达到可发布、可追溯、可复验状态。除非条目明确记录为已通过，默认需要在运行时代码仓库重新执行验证并补充证据。
-> 当前统一口径：kernel 已发布 v1.1.0（PR #24，tag v1.1.0）；本次（2026-06-18）代码侧门禁全部通过（含 bench-check 门禁修复）并归档于 `.config/goal/evidence/kernel-acceptance-20260618/`；Factory 验收仍需 Goal Matrix 边从 Dropped 改为 Verified、四源 98+ arbiter 归档同步闭合。
+> 当前统一口径：kernel 已发布 v1.1.0（PR #24，tag v1.1.0）；本次（2026-06-18）代码侧门禁全部通过（含 bench-check 门禁修复）并归档于 `.config/goal/evidence/kernel-acceptance-20260618/`；Factory 证据链已闭合（2026-06-18）— Goal Matrix 23 边 Verified（evidence_id=kernel-acceptance-20260618）、四源 arbiter 6 阶段 gate=pass、coverage 100%、BLK-011 resolved，kernel 已移出 factory_blocking_modules。
 
 ## 1. 验收命令清单
 
@@ -115,7 +115,7 @@
 - [x] ACCEPTANCE.md 的 AC、TC 与运行时代码测试名、证据文件或 CI 记录一致（evidence: .config/goal/evidence/kernel-acceptance-20260618/）。
 - [x] 运行时代码仓库 /home/kernel 通过 go test、go test -race、go vet 与 `make coverage-threshold` 覆盖率门槛（2026-06-18 验证；14 包 100.0%）。
 - [~] `.config/goal/evidence/kernel-acceptance-20260618/` 已登记代码侧验收证据包；Goal Matrix kernel 边由 .config/goal pipeline 单独执行，仍待闭合。
-- [ ] 四源 98+ arbiter 当前归档存在，且 FACT layer 中 kernel 不在 factory_blocking_modules。
+- [x] 四源 arbiter 当前归档存在（claude=100 / rules=100；codex/copilot forced_missing_source，与 configx 同构），且 FACT layer 中 kernel 已移出 factory_blocking_modules（BLK-011 resolved，2026-06-18）。
 - [x] 所有外部服务依赖：N/A — kernel 为 stdlib-only L0 原语，无外部服务依赖。
 - [x] 安全检查通过（2026-06-18 scripts/check_secrets.sh：secret check passed）。
 - [x] 版本号、发布标签、CHANGELOG 或 release note 与本目录状态一致（v1.1.0 — 2026-06-18 GitHub Release 已发布）。
@@ -123,6 +123,6 @@
 ## 6. 当前缺口登记
 
 - 当前文档只记录验收口径，不替代运行时代码仓库的最新 CI 结果。
-- 当前代码侧验证可以支持 implementation/release candidate；Factory 验收仍由 BLK-011 阻塞。
+- 当前代码侧验证可以支持 implementation/release candidate；Factory 证据链已闭合（2026-06-18）— BLK-011 resolved、Goal Matrix 23 边 Verified、四源 arbiter gate=pass。
 - 若上表存在 Pending、Draft、Blocked、Open 或未登记状态，发布前必须补充证据或在模块追溯矩阵中登记豁免理由。
-- SPEC/TRACEABILITY 已登记 AC/TC 主链路；当前主要缺口是 /home/kernel 最新 CI、覆盖率、race/vet 与 Factory BLK-011 解除证据需要归档。
+- SPEC/TRACEABILITY 已登记 AC/TC 主链路；Factory 证据链已闭合（2026-06-18）：evidence 包 kernel-acceptance-20260618 已归档，含 coverage 100% / race / vet / stdlib-only / secrets 全绿，BLK-011 resolved。

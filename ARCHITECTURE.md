@@ -340,7 +340,7 @@ Foundation 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中在 
 
 ## 状态总览
 
-> **公开投影口径**：架构矩阵中的进度是 Spec→Code 管线投影；release/factory 以 `.foundationx/status/index.json` + `.foundationx/blockers.json` 为准。存在 RELEASE=❌ 或 open blocker 时，不投影为 Foundation factory grade；当前 BLK-009 / BLK-010 / BLK-011 仍 open。
+> **公开投影口径**：架构矩阵中的进度是 Spec→Code 管线投影；release/factory 以 `.foundationx/status/index.json` + `.foundationx/blockers.json` 为准。存在 RELEASE=❌ 或 open blocker 时，不投影为 Foundation factory grade；当前 BLK-009 / BLK-010 仍 open（BLK-011 已 resolved）。
 
 | 域                    | 组件                                                            | 版本   | 状态      | Spec→Code 投影 | 说明                                                                                      |
 | --------------------- | --------------------------------------------------------------- | ------ | --------- | -------- | ----------------------------------------------------------------------------------------- |

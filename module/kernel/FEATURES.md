@@ -3,14 +3,14 @@
 - Status: Generated from current module SSOT
 - Last-Updated: 2026-06-18
 - Module-Version: v1.1.0
-- Module-State: 已发布（代码侧）；代码侧验收 2026-06-18 全部通过；Factory 验收仍由 BLK-011 阻塞
+- Module-State: 已发布（代码侧）；代码侧验收 2026-06-18 全部通过；Factory 已闭合（2026-06-18）— Goal Matrix 23 边 Verified + 四源 arbiter gate=pass + coverage 100% + BLK-011 resolved
 - Layer: L0 基座核心
 - Runtime-Repo: /home/kernel
 - Source: goal.md, SPEC.md, DESIGN.md, TRACEABILITY.md, IMPLEMENTATION-PLAN.md, tasks/, prompt/
 - Evidence: `.config/goal/evidence/kernel-acceptance-20260618/`（test ✅ / race ✅ / vet ✅ / coverage 100% ✅ / stdlib-only ✅ / secrets ✅）
 
 > 本清单用于约束 kernel 的完整实现范围。条目来自本目录已有 Spec、Traceability、Plan、Task 等文档；若运行时代码状态与本文不一致，以相应模块仓库的最新验证证据补充更新本文。
-> 当前统一口径：本清单表示代码侧 implementation/release candidate 范围；本次（2026-06-18）代码侧验收全部通过并归档于 `.config/goal/evidence/kernel-acceptance-20260618/`；Factory 验收仍需 Goal Matrix Verified、四源 98+ arbiter 归档闭合。
+> 当前统一口径：本清单表示代码侧 implementation/release candidate 范围；本次（2026-06-18）代码侧验收全部通过并归档于 `.config/goal/evidence/kernel-acceptance-20260618/`；Factory 证据链已闭合（2026-06-18）— Goal Matrix 23 边 Verified、四源 arbiter 6 阶段 gate=pass、coverage 100%、BLK-011 resolved，kernel 已移出 factory_blocking_modules。
 
 ## 1. 模块边界清单
 
@@ -113,5 +113,5 @@
 - [x] 所有任务文档均能追溯到 FR、BR/NFR、AC 或 TC（TRACEABILITY.md v2.3）。
 - [x] 依赖边界符合 FOUNDATION-DEPS.yaml，不引入未授权运行时依赖（stdlib-only check passed）。
 - [x] 运行时代码仓库 /home/kernel 的 lint、typecheck、test、race、`make coverage-threshold` 验证证据已归档（.config/goal/evidence/kernel-acceptance-20260618/）。
-- [~] `.config/goal/evidence/kernel-acceptance-20260618/` 已归档代码侧证据；Goal Matrix Verified 与四源 98+ arbiter 仍由 .config/goal pipeline 单独执行（BLK-011 open）。
+- [x] `.config/goal/evidence/kernel-acceptance-20260618/` 已归档代码侧证据；Factory 证据链已闭合（2026-06-18）— Goal Matrix 23 边 Verified、四源 arbiter 6 阶段 gate=pass（BLK-011 resolved）。
 - [x] 发布说明、版本标签与本目录登记状态一致（v1.1.0 — 2026-06-18 GitHub Release）。
