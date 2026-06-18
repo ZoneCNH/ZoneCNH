@@ -5,9 +5,9 @@ Status: Approved
 - Last-Updated: 2026-06-14
 - Layer: 基座 · CI 证据运行时
 - Version: v0.1.0
-- Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `xlib-standard`
+- Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `github.com/ZoneCNH/xlib-evidence`, `github.com/ZoneCNH/xlib-standard`（标准/治理参考，不承载运行时代码）
 
-> 公开投影 caveat：Status=Review 与矩阵覆盖证据不等同于 factory-grade；四源评分通过前机器事实层保持 factory=false。
+> 公开投影说明：本规格已按 /home/xlib-evidence 的独立 Go module 验收证据更新；xlib-standard 仅作为标准/治理参考，不承载本模块运行时代码。
 
 ---
 
@@ -73,13 +73,13 @@ xlib-standard 的 Evidence Runtime 与其声明式标准定义耦合，导致证
 
 ### Acceptance Criteria Registry
 
-| AC ID | FR/BR Ref | Criterion |
-|-------|-----------|----------|
-| AC-001 | FR-001 | TC-001 | `go test -run TestCollectCoverage` | ✅ | |
-| AC-002 | FR-002 | TC-002 | `go test -run TestGenerateManifest` | ✅ | |
-| AC-003 | FR-003 | TC-003 | `go test -run TestValidateManifest` | ✅ | |
-| AC-004 | FR-004 | TC-004 | `go test -run TestRemoteEvidence` | ✅ | |
-| AC-005 | FR-005 | TC-005 | `go test -run TestEvidenceReport` | ✅ | |
+| AC ID | FR/BR Ref | Criterion | Verification | Status |
+|-------|-----------|-----------|--------------|--------|
+| AC-001 | FR-001 / BR-002 | 覆盖率数据被结构化收集；覆盖率低于 80% 拒绝发布 | `go test -run 'Test(ParseGoCoverageProfile|CoverageValidateRejectsThresholdAndPercentTamper|NewCoverageNormalizesTime)'` | ✅ |
+| AC-002 | FR-002 / BR-001 | 门禁全绿时生成 manifest，包含 version/commit/gates/coverage/hash | `go test -run TestNewManifestNormalizesSortsAndValidates` | ✅ |
+| AC-003 | FR-003 / BR-003 | manifest hash 校验通过；篡改检测失败 | `go test -run TestManifestValidateRejectsFailedGateLowCoverageAndTamper` | ✅ |
+| AC-004 | FR-004 | 远程查询返回结构化 evidence manifest | `go test -run 'Test(ClientFetchManifest|ManifestHandler)'` | ✅ |
+| AC-005 | FR-005 / BR-004 | evidence 报告可渲染；存储不可变追加 | `go test -run 'Test(ReportsRenderValidatedManifest|StoreAppendEnforcesHashChain)'` | ✅ |
 
 ## 8. 接口契约
 
@@ -164,10 +164,10 @@ module/xlib-evidence/
 
 ## 14. 依赖
 
-- 允许：kernel（time/errors）
-- 禁止：observex、configx、resiliencx、schedulex
+- 允许：Go 标准库
+- 禁止：kernel、observex、configx、resiliencx、schedulex 等未授权运行时模块依赖
 - 禁止：任何存储/网络后端（不连接 Redis/Postgres）
-- 允许：读取文件系统上的覆盖率报告和门禁输出
+- 允许：通过显式配置的 HTTP endpoint 查询远程 evidence；默认不连接远程服务
 
 ## 15. 测试
 
@@ -203,8 +203,11 @@ module/xlib-evidence/
 
 ## 19. CI 门禁
 
-- `make test`
-- `make vet`
+- `go test ./...`
+- `go test ./... -race -count=1`
+- `go vet ./...`
+- `go test ./... -coverprofile=coverage.out` 且 total coverage >= 80.0%
+- `go list -deps ./...` 与 `go list -m all` 依赖边界审计
 
 ## 20. 升级兼容性
 
@@ -213,10 +216,10 @@ module/xlib-evidence/
 
 ## 21. 发布 DoD
 
-- [ ] SPEC Approved
-- [ ] 所有 FR 实现并测试
-- [ ] collect → generate → validate 闭环
-- [ ] 文档齐全
+- [x] SPEC Approved
+- [x] 所有 FR 实现并测试
+- [x] collect → generate → validate 闭环
+- [x] 文档齐全
 
 ## 22. 待解决问题
 
@@ -228,4 +231,5 @@ module/xlib-evidence/
 
 | 日期 | 版本 | 变更内容 | 作者 |
 |------|------|----------|------|
+| 2026-06-18 | v1.0.1 | 对齐独立 Go module 验收、实际测试名、依赖边界与 CI 门禁 | Codex |
 | 2026-06-14 | v1.0.0 | 初始版本，从 xlib-standard 拆分 | ZoneCNH |
