@@ -136,7 +136,7 @@ backtestx ──► optimizer ──► strategyx ──► maestro             
 
 | 域     | 职责                                                                                                                          | 组件                                                                                                                                                       |
 | ------ | ----------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 基座   | 标准源、生成器、证据运行时、L0 原语、L1 运行时横切能力、L1 进程组装层、测试期证据、存储扩展、稳定契约与传输契约 | xlib-standard, xlib-harness, xlib-evidence, kernel, configx, observex, testkitx, resiliencx, schedulex, bootstrap, xlibgate, redisx, kafkax, natsx, postgresx, taosx, ossx, clickhousex, contracts, transportx |
+| 基座   | 标准源、生成器、证据运行时、L0 原语、L1 primitives、L1 Assembly 进程组装层、测试期证据、存储扩展、稳定契约与传输契约 | xlib-standard, xlib-harness, xlib-evidence, kernel, configx, observex, testkitx, resiliencx, schedulex, bootstrap, xlibgate, redisx, kafkax, natsx, postgresx, taosx, ossx, clickhousex, contracts, transportx |
 | L2.5   | 领域共享值对象和语义模型，上层统一依赖                                                                                        | domainx, decimalx, domain-market, domain-exchange, domain-macro                                                                                         |
 | 数据域 | 行情、宏观、另类数据采集                                                                                                      | market-data (14: 1 dispatch + 12 SDK + 1 C/S Module), macro-data (10), alternative-data                                                                                       |
 | 分析域 | 因子计算、特征存储、因子评估、市场/宏观环境分类、数据流管线、M×S 联合决策（三引擎：market_engine→S / macro_engine→M / regime_engine→M+S） | factor-engine, feature-store, factor-eval, market_regime, macro_regime, regime-engine, ms_brain, flowx                                                              |
@@ -167,11 +167,11 @@ Foundation 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中在 
 | 层级          | 模块          | 完整规格                                                         |
 | ------------- | ------------- | ---------------------------------------------------------------- |
 | **L0 原语**   | kernel        | [`module/kernel/SPEC.md`](./module/kernel/SPEC.md)               |
-| **L1 运行时** | configx       | [`module/configx/SPEC.md`](./module/configx/SPEC.md)             |
+| **L1 primitives** | configx       | [`module/configx/SPEC.md`](./module/configx/SPEC.md)             |
 |               | observex      | [`module/observex/SPEC.md`](./module/observex/SPEC.md)           |
 |               | resiliencx    | [`module/resiliencx/SPEC.md`](./module/resiliencx/SPEC.md)       |
 |               | schedulex     | [`module/schedulex/SPEC.md`](./module/schedulex/SPEC.md)         |
-|               | bootstrap     | [`module/bootstrap/SPEC.md`](./module/bootstrap/SPEC.md)         |
+| **L1 Assembly** | bootstrap     | [`module/bootstrap/SPEC.md`](./module/bootstrap/SPEC.md)         |
 | **L1 测试**   | testkitx      | [`module/testkitx/SPEC.md`](./module/testkitx/SPEC.md)           |
 | **门禁**      | xlib-standard | [`module/xlib-standard/SPEC.md`](./module/xlib-standard/SPEC.md) |
 |               | xlibgate      | [`module/xlibgate/SPEC.md`](./module/xlibgate/SPEC.md)           |
@@ -211,7 +211,7 @@ Foundation 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中在 
 
 ## Foundation 第一阶段闭环
 
-这 6 个基础模块可以构成第一阶段最小闭环：`kernel` 提供 L0 原语，`configx` / `observex` / `resiliencx` / `schedulex` 提供 L1 运行时横切能力，`testkitx` 只服务测试期。
+这 6 个基础模块可以构成第一阶段最小闭环：`kernel` 提供 L0 原语，`configx` / `observex` / `resiliencx` / `schedulex` 提供 L1 primitives 横切能力，`testkitx` 只服务测试期。`bootstrap` 位于这些 primitives 之上，是面向进程入口的 L1 Assembly，不并入 primitives 闭环。
 
 `xlib-standard` 是独立 Go module，承担标准事实源和 Go Reference Template 二类职责（Generator/Harness/Evidence 已拆分至 `xlib-harness` / `xlib-evidence`），不作为其他模块的运行时 import 依赖。
 
@@ -219,10 +219,10 @@ Foundation 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中在 
 | --------------- | ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
 | `xlib-standard` | 标准源        | 标准事实源、Go Reference Template（Generator/Harness/Evidence 已拆分至 xlib-harness / xlib-evidence）                          | 业务运行、运行时 import 依赖、模块实现身份                 |
 | `kernel`        | L0 原语       | 12 子包轻量工具集：lifecycx/errx/healthx/obsx/retryx/shutdownx/syncx/timex/validx/versionx/contextx/contracttest（stdlib-only）                          | 配置解析、观测后端、存储、网络、业务 DTO、全局可变单例     |
-| `configx`       | L1 运行时     | explicit source、merge、decode、validate、sanitize、provenance、config hash                                                                              | secret backend、全局配置中心、自动发现、业务配置结构体     |
-| `observex`      | L1 运行时契约 | logger、metrics、tracer、field、redactor、label policy、health schema、noop、memory recorder                                                             | Prometheus/Otel/Zap 直接绑定、alert routing、业务监控规则  |
-| `resiliencx`    | L1 运行时策略 | timeout、retry、circuit breaker、bulkhead、rate limiter、fallback、Policies 组合（budget/classifier/idempotency hint 为 v1.2+ 演进）                     | 交易风控、订单风险、交易所 SDK、调度、存储后端             |
-| `schedulex`     | L1 运行时调度 | cron/interval/delay trigger、OverlapPolicy（Skip/Queue/Replace）、MisfirePolicy（Skip/RunOnce/CatchUp）、jitter、EventSink、Locker interface、Clock 注入 | 分布式锁实现、exactly-once、业务任务语义                   |
+| `configx`       | L1 primitive     | explicit source、merge、decode、validate、sanitize、provenance、config hash                                                                              | secret backend、全局配置中心、自动发现、业务配置结构体     |
+| `observex`      | L1 primitive 契约 | logger、metrics、tracer、field、redactor、label policy、health schema、noop、memory recorder                                                             | Prometheus/Otel/Zap 直接绑定、alert routing、业务监控规则  |
+| `resiliencx`    | L1 primitive 策略 | timeout、retry、circuit breaker、bulkhead、rate limiter、fallback、Policies 组合（budget/classifier/idempotency hint 为 v1.2+ 演进）                     | 交易风控、订单风险、交易所 SDK、调度、存储后端             |
+| `schedulex`     | L1 primitive 调度 | cron/interval/delay trigger、OverlapPolicy（Skip/Queue/Replace）、MisfirePolicy（Skip/RunOnce/CatchUp）、jitter、EventSink、Locker interface、Clock 注入 | 分布式锁实现、exactly-once、业务任务语义                   |
 | `testkitx`      | L1 test-only  | FakeConfig/FakeLogger/FakeMeter/FakeTracer/FakeClock/FakeBreaker、Eventually、GoldenUpdate、BoundaryCheck、GoroutineLeakCheck、contract test             | production import、真实外部系统、L2/L3/chaos/soak 测试替代 |
 
 ### `resiliencx` 身份修复
@@ -260,7 +260,7 @@ Foundation 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中在 
 | --------------------------------------------------- | ---------------------------------------------------------------------------- | ------------------------------------------------ |
 | `xlib-standard`                                     | 标准事实源、Go Reference Template（Generator/Harness/Evidence 已拆分至 xlib-harness / xlib-evidence） | 运行时业务依赖、具体弹性策略实现                 |
 | `kernel`                                            | 最小稳定原语和 stdlib-only 基础能力                                          | 配置解析、观测后端、业务 DTO、存储/网络适配器    |
-| `configx` / `observex` / `resiliencx` / `schedulex` | L1 横切运行时能力，彼此通过窄接口协作                                        | 业务模型、组合根职责、对彼此的强耦合反向依赖     |
+| `configx` / `observex` / `resiliencx` / `schedulex` | L1 primitives 横切运行时能力，彼此通过窄接口协作                              | 业务模型、组合根职责、对彼此的强耦合反向依赖     |
 | `testkitx`                                          | 测试、golden、contract、fixture、harness、boundary evidence                  | production import graph、真实外部系统入口        |
 | `L2.5`                                              | 多个业务域共享的领域值对象、枚举、语义模型                                   | Provider 实现、策略逻辑、执行策略                |
 | `contracts`                                         | 跨域稳定端口、事件协议、DTO 契约                                             | 域内接口、临时适配器、通用工具函数、领域模型全集 |
@@ -342,7 +342,7 @@ Foundation 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中在 
 | 基座                  | [testkitx](https://github.com/ZoneCNH/testkitx)                 | v0.4.0 | ✅ 已发布 | Spec→Code 完成 | Fake / Fixture / Golden / Contract / Leak / Boundary / Manifest 测试工具包；test-only；禁止生产导入；factory grade 不适用 |
 | 基座                  | [resiliencx](https://github.com/ZoneCNH/resiliencx)             | v0.4.9 | ✅ 已发布 | Spec→Code 完成 | 运行时弹性策略库：timeout/retry/circuit/bulkhead/rate/fallback；此前误标 v1.0.1 已修正 |
 | 基座                  | [schedulex](https://github.com/ZoneCNH/schedulex)               | v1.0.0 | ✅ 已发布 | Spec→Code 完成 | cron/interval/delay 调度、OverlapPolicy（Skip/Queue/Replace）、MisfirePolicy（Skip/RunOnce/CatchUp）、EventSink、Locker、Clock 注入；98.2% 覆盖，release-check 通过 |
-| 基座                  | [bootstrap](https://github.com/ZoneCNH/bootstrap)               | v0.1.0 | ✅ 已发布 | Spec→Code 进行中（SPEC Draft，runtime 骨架已发布） | L1 通用进程组装层：configx/observex/lifecycx 统一组装 + 6 存储 adapter 可选构造（StoreSet 位掩码）+ 信号捕获；✅ GitHub Release v0.1.0 已发布；非 factory；Stores=All/位组合 v0.1.0 为 stub，仅 Stores=None 路径端到端就绪 |
+| 基座                  | [bootstrap](https://github.com/ZoneCNH/bootstrap)               | v0.1.0 | ✅ 已发布 | Spec→Code 进行中（SPEC Draft，runtime 骨架已发布） | L1 Assembly 通用进程组装层：位于 L1 primitives 之上、`x.go` 入口之下，统一组装 configx/observex/resiliencx/lifecycx + 7 存储 adapter 可选构造（StoreSet 位掩码）+ 信号捕获；不承载业务语义、service listener、domain contracts；✅ GitHub Release v0.1.0 已发布；规格 v0.1.7；非 factory；Stores=All/位组合 v0.1.0 为 stub，仅 Stores=None 路径端到端就绪 |
 | 基座                  | [xlibgate](https://github.com/ZoneCNH/xlibgate)                 | v1.0.0 | ✅ 已发布 | Spec→Code 完成 | check / l2 / trust 三组门禁；全管线评分 100 |
 | 基座                  | [xlib-standard](https://github.com/ZoneCNH/xlib-standard)       | v1.0.0 | ✅ 已发布 | Spec→Code 完成 | 标准事实源、Go Reference Template；Generator/Harness/Evidence 已拆分，不参与运行时 import |
 | 基座                  | [xlib-harness](https://github.com/ZoneCNH/xlib-harness)         | v0.1.0 | ✅ 已发布 | Spec→Code 完成 | 模块生成器与门禁执行器：generate/scaffold、spec-lint、boundary-check、traceability-gate；✅ GitHub Release v0.1.0 已发布 |

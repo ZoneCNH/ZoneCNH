@@ -2,11 +2,11 @@
 
 - Status: Generated from current module SSOT
 - Last-Updated: 2026-06-18
-- Module-Version: v0.4.0
-- Module-State: 已发布
+- Module-Version: v1.0.0
+- Module-State: Release Candidate（门禁未达 98，factory=false；见 SPEC caveat）
 - Layer: L0 测试工具
 - Runtime-Repo: /home/testkitx
-- Source: goal.md, SPEC.md, TRACEABILITY.md, IMPLEMENTATION-PLAN.md, tasks/, prompt/
+- Source: goal.md, SPEC.md, TRACEABILITY.md, tasks/, prompt/
 
 > 本清单用于验收 testkitx 是否达到可发布、可追溯、可复验状态。除非条目明确记录为已通过，默认需要在运行时代码仓库重新执行验证并补充证据。
 

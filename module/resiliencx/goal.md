@@ -4,10 +4,13 @@
 | ------------ | ---------------------------------------------- |
 | 模块名       | `resiliencx`                                   |
 | 发布版本     | 1.0.1                                          |
-| 所属层级     | L1 运行时横切能力 / 弹性治理                   |
+| 所属层级     | L1 基础能力（弹性治理；与 SPEC §3 / FOUNDATION-DEPS.yaml 一致） |
 | 稳定级别     | Public API Stable；SPI Stable；Internal 可演进 |
-| 文档状态     | 与 SPEC.md v1.0.1 对齐                         |
+| 文档状态     | 与 SPEC.md v1.0.2 对齐（contract-corrected）   |
+| 运行时基线   | v0.4.9（`/home/resiliencx`，覆盖率 98.1%）     |
 | 发布日期基准 | 2026-06-12                                     |
+
+> **v1.0.2 契约纠正同步**：本 goal 的能力范围与 v1.2+ 演进方向（§7、§15）保持不变；运行时对外 API 以子包形式提供（`timeout.Do`/`retry.Do`/`circuit.New`/`bulkhead.New`/`ratelimit.New`/`fallback.Do`），而非早期设想的包级聚合函数。SPEC v1.0.2 已据此纠正 §8/§9 契约。
 
 ## 术语约定
 
@@ -108,15 +111,15 @@
 
 ### 7.1 公开能力面
 
-| 契约               | 定位             | 1.0 现状                                                 |
-| ------------------ | ---------------- | -------------------------------------------------------- |
-| ResilienceExecutor | 统一策略执行入口 | v1.2+（v1.0: 各策略函数独立调用，通过函数嵌套组合）      |
-| PolicyRegistry     | 策略注册和选择   | v1.2+（v1.0: 直接实例化策略对象）                        |
-| RetryPolicy        | 重试策略         | v1.0 已实现（RetryPolicy struct + Retry 函数）           |
-| CircuitBreaker     | 熔断器状态机     | v1.0 已实现（CircuitBreaker interface）                  |
-| RateLimiter        | 限流抽象         | v1.0 已实现（RateLimiter interface）                     |
-| Bulkhead           | 并发舱壁         | v1.0 已实现（Bulkhead interface）                        |
-| FallbackHandler    | 降级处理器       | v1.2+（v1.0: Fallback 函数，primary + secondary 简单链） |
+| 契约               | 定位             | 1.0 现状（实际符号）                                        |
+| ------------------ | ---------------- | ----------------------------------------------------------- |
+| ResilienceExecutor | 统一策略执行入口 | v1.2+（v1.0: 各策略函数独立调用，通过函数嵌套组合）         |
+| PolicyRegistry     | 策略注册和选择   | v1.2+（v1.0: 直接实例化策略对象）                           |
+| RetryPolicy        | 重试策略         | v1.0 已实现（`retry.Policy` struct + `retry.Do` 函数）      |
+| CircuitBreaker     | 熔断器状态机     | v1.0 已实现（`circuit.Breaker` struct，`circuit.New` 构造） |
+| RateLimiter        | 限流抽象         | v1.0 已实现（`ratelimit.Limiter` struct，`ratelimit.New`）  |
+| Bulkhead           | 并发舱壁         | v1.0 已实现（`bulkhead.Bulkhead` struct，`bulkhead.New`）   |
+| FallbackHandler    | 降级处理器       | v1.2+（v1.0: `fallback.Do` 函数，primary + fallbacks 链）   |
 
 ### 7.2 1.2+ 逻辑接口基线（演进目标）
 

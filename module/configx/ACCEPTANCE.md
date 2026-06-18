@@ -68,12 +68,12 @@
 | BR-001 | LastWins 合并策略 | 后加载 Source 覆盖先加载的同名 key / TC-001 / - / TASK-CONFIGX-003 | ✅ | TRACEABILITY.md |
 | BR-002 | Config.Name 必须非空 | Validate 时检查 Name / TC-008 / - / TASK-CONFIGX-005 | ✅ | TRACEABILITY.md |
 | BR-003 | Config.Timeout ≥ 0 | 负数拒绝 / TC-008 / - / TASK-CONFIGX-005 | ✅ | TRACEABILITY.md |
-| BR-004 | 显式加载（无隐式发现） | 调用方必须显式 AddSource / CI Gate: NoGlobalStateGate / - / TASK-CONFIGX-009 | ✅ | TRACEABILITY.md |
+| BR-004 | 显式加载（无隐式发现） | 调用方必须显式 AddSource / TestNoImplicitConfigDiscovery / - / TASK-CONFIGX-009 | ✅ | TRACEABILITY.md |
 | BR-005 | SecretString 全路径脱敏 | String/JSON/GoString/Text 均返回 *** / TC-003 / - / TASK-CONFIGX-010 | ✅ | TRACEABILITY.md |
 | BR-006 | SecretPolicy 可配置模式 | 默认 7 模式 + CustomMatcher / TC-005 / - / TASK-CONFIGX-010 | ✅ | TRACEABILITY.md |
 | BR-007 | StrictDecode 默认严格 | 拒绝未知字段和重复 key / TC-002 / - / TASK-CONFIGX-005 | ✅ | TRACEABILITY.md |
-| BR-008 | 公共错误 configx: 前缀 | 所有错误变量使用 configx: 前缀 / CI Gate: go vet / - / TASK-CONFIGX-000 | ✅ | TRACEABILITY.md |
-| BR-009 | 无全局状态 | 无进程级 config singleton / CI Gate: NoGlobalStateGate / - / TASK-CONFIGX-009 | ✅ | TRACEABILITY.md |
+| BR-008 | 公共错误 *Error + ErrorKind | errors.As 可提取 Kind/Op/Cause / 源码静态检查 + 单测 / - / TASK-CONFIGX-000 | ✅ | TRACEABILITY.md |
+| BR-009 | 无全局状态 | 无可变包级单例 / 源码静态检查 + TestNoImplicitConfigDiscovery / - / TASK-CONFIGX-009 | ✅ | TRACEABILITY.md |
 | BR-010 | Release 通过全部 CI Gate | 编译/测试/覆盖率/vet/lint/secret/vuln / TC-009 / - / TASK-CONFIGX-009 | ✅ | TRACEABILITY.md |
 | BR-011 | context.Context 必须非 nil | 所有公开 API 强制 ctx 检查 / TC-008 / - / TASK-CONFIGX-001 | ✅ | TRACEABILITY.md |
 | NFR-001 | 测试覆盖率 ≥ 80% | 实际 97.1% / CI Gate: go test -coverprofile / TASK-CONFIGX-009 | ✅ | TRACEABILITY.md |

@@ -1,19 +1,19 @@
 # bootstrap 规格
 
 - Status: Draft
-- Spec-Version: v0.1.6
-- Last-Created: 2026-06-18
-- Layer: L1 基础能力
-- Version: v0.1.0-runtime / v0.1.6-spec
+- Spec-Version: v0.1.7
+- Last-Updated: 2026-06-18
+- Layer: L1 Assembly（基座进程组装层）
+- Version: v0.1.0-runtime / v0.1.7-spec
 - Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `kernel`, `configx`, `observex`, `resiliencx`
 
-> 本文件发布 bootstrap L1 进程启动组装层的规格基线，不引入运行时代码。后续实现进入独立仓库 `github.com/ZoneCNH/bootstrap`。对齐 [数据域基础架构报告 §十三](../../docs/report/data-domain-infrastructure-20260617.md) 与 [Bootstrap SOP](../../docs/sre/data-domain-bootstrap.md)。
+> 本文件发布 bootstrap L1 Assembly 进程启动组装层的规格基线，不引入运行时代码。后续实现进入独立仓库 `github.com/ZoneCNH/bootstrap`。对齐 [数据域基础架构报告 §十三](../../docs/report/data-domain-infrastructure-20260617.md) 与 [Bootstrap SOP](../../docs/sre/data-domain-bootstrap.md)。
 
 ---
 
 ## 1. 摘要
 
-`bootstrap` 是 L1 通用进程组装层。它封装所有数据域进程（23 adapter + 2 聚合层 + 未来分析域/决策域）共有的 **configx 加载 + observex 初始化 + lifecycx 生命周期编排**，存储适配器作为聚合层的可选件按位掩码启用。
+`bootstrap` 是 L1 Assembly 通用进程组装层，位于 L1 primitives 之上、具体入口 `x.go` 之下。它封装所有数据域进程（23 adapter + 2 聚合层 + 未来分析域/决策域）共有的 **configx 加载 + observex 初始化 + resiliencx 初始化 + lifecycx 生命周期编排**，存储适配器作为聚合层的可选件按位掩码启用。
 
 服务 main 从 ~150 行裸胶水（裸 `signal.NotifyContext` + 手动 config 加载 + 手动 lifecycle）降到 **5-8 行**：
 
@@ -64,7 +64,7 @@ app.Run(ctx)
 
 ### 4.3 Governance boundary
 
-`bootstrap` 是 L1 横切能力，与 configx/observex/resiliencx 平级。它只向下依赖基座（kernel/configx/observex/resiliencx + L2 存储适配器），不向上穿透到 L2.5 领域层或业务域。
+`bootstrap` 是 Foundation 内的 L1 Assembly 横切能力，不是 configx/observex/resiliencx 的原子能力替代，而是位于这些 primitives 之上、具体入口 `x.go` 之下。它只向下组合基座能力（kernel/configx/observex/resiliencx + 受控 L2 存储适配器），不向上穿透到 L2.5 领域层、业务域或 `x.go`，也不承载 service listener、领域模型或业务拓扑。
 
 ## 5. 消费者
 
@@ -147,7 +147,7 @@ THEN `App.ConfigHash` 暴露 configx EffectiveConfigHash（SHA-256），用于�
 | BR-001 | bootstrap 不得 import domain-market/domain-macro/domainx/contracts（禁业务语义） |
 | BR-002 | bootstrap 不得 import 任何数据域子模块（binance/fred/…）（禁采集逻辑） |
 | BR-003 | bootstrap 不得起 HTTP/gRPC server（源码无 `net.Listen`） |
-| BR-004 | bootstrap 只向下依赖 kernel/configx/observex/resiliencx/存储适配器，不向上 |
+| BR-004 | bootstrap 是 L1 Assembly，只向下依赖 kernel/configx/observex/resiliencx/存储适配器，不依赖 L2.5、业务域或 x.go |
 | BR-005 | adapter 进程的 Spec.Stores 必须为 None；App.Stores 为 nil |
 | BR-006 | 仅聚合层（market-data/macro-data）的 Spec.Stores 可非 None |
 | BR-007 | Spec.Stores 位掩码控制；未启用的存储不构造不连接 |
@@ -376,15 +376,15 @@ require (
 ### 15.2 依赖方向
 
 ```
-bootstrap (L1)
+bootstrap (Foundation L1 Assembly)
   ├─► kernel (L0): lifecycx, shutdownx
-  ├─► configx (L1): NewLoader, Source, New
-  ├─► observex (L1): New
-  ├─► resiliencx (L1): New
+  ├─► configx (L1 primitive): NewLoader, Source, New
+  ├─► observex (L1 primitive): New
+  ├─► resiliencx (L1 primitive): New
   └─► L2 存储适配器: taosx/postgresx/redisx/kafkax/natsx/ossx/clickhousex
 ```
 
-**禁止向上依赖**：不得 import domain-*、contracts、任何业务域模块。
+**禁止向上依赖**：不得 import domain-*、contracts、任何业务域模块或 `x.go`。
 
 ## 16. 测试
 
@@ -465,23 +465,23 @@ bootstrap (L1)
 | OQ | 问题 | 状态 | 结论 |
 | --- | --- | --- | --- |
 | OQ-001 | observex Client logger/metrics/tracer 私有无 getter | ✅ 已确认（2026-06-17） | configx/observex/resiliencx Client **均无业务 getter**（只有 Close/HealthCheck）。bootstrap 不暴露内部 logger，服务自行 observex.New。无需改基座。 |
-| OQ-002 | 是否需要登记 FOUNDATION-DEPS.yaml？ | ✅ 已登记（2026-06-17） | bootstrap 已登记进 `module/FOUNDATION-DEPS.yaml` modules 与 allowed_deps 节，依赖方向：kernel/configx/observex/resiliencx + 6 存储。 |
+| OQ-002 | 是否需要登记 FOUNDATION-DEPS.yaml？ | ✅ 已登记（2026-06-17） | bootstrap 已登记进 `module/FOUNDATION-DEPS.yaml` modules 与 allowed_deps 节，依赖方向：kernel/configx/observex/resiliencx + 7 存储 adapter；定位为 L1 Assembly，不属于 L1 primitive。 |
 | OQ-003 | 存储适配器是否已实现 lifecycx.Component？ | ✅ 已确认（2026-06-17） | 7 存储 adapter **未实现 Component**（有 Close 无 Start/Name）。bootstrap 用 `closerComponent` wrapper 适配，不改已发布适配器。 |
 | OQ-004 | bootstrap 直 import foundationx — v3 实测：postgresx 已独立，仅 bootstrap 自身遗留 1 行 | Open（bootstrap v0.1.1 简单替换） | `pkg/bootstrap/stores.go:217` 残留 foundationx.SecretString 是历史遗留单点。postgresx@v1.0.0 实测已用本地 SecretString（pkg/postgresx/secret.go）+ 本地 NewError/ErrorKindConfig（pkg/postgresx/error.go）。清零路径：bootstrap v0.1.1 替换 `foundationx.SecretString(...)` 为 `postgresx.SecretString(...)` + go.mod 清理。详见 ADR-foundationx-exit v3（2026-06-18）+ BLK-009 v3。 |
 
 ---
 
-## 发布状态
+## Appendix A: 发布状态
 
 | 项目 | 状态 | 说明 |
 | --- | --- | --- |
 | SPEC | Draft | 本文件，待四源评分后转 Approved |
-| Runtime implementation | Pending | 独立仓库 github.com/ZoneCNH/bootstrap，SPEC Approved 后进入 |
-| FOUNDATION-DEPS 登记 | Pending | 需登记为 L1 模块 |
+| Runtime implementation | Released | 独立仓库 github.com/ZoneCNH/bootstrap 已发布 v0.1.0；Stores=None 路径就绪，Stores=All/位组合仍待 v0.2.0 冒烟 |
+| FOUNDATION-DEPS 登记 | Done | 已登记为 L1 Assembly 模块，依赖边限定为 L0/L1 primitives 与受控 L2 adapter |
 
 ---
 
-## 变更历史
+## Appendix B: 变更历史
 
 | 日期 | 版本 | 变更内容 | 作者 |
 | --- | --- | --- | --- |
@@ -492,3 +492,4 @@ bootstrap (L1)
 | 2026-06-18 | v0.1.4 | SPEC↔runtime 远程仓库实测对账：§9.1 import 删 ossx（远程 bootstrap go.mod 不含 ossx）；§9.1 Stores.OSS 改 interface{} 占位（ossx 仓库 0 pkg 源码）；§15.1 ossx require 行注释为"暂不 require"；§20 CI Gate 新增 foundationx 白名单+计时规则（仅 stores.go 允许，其他文件零命中） | ZoneCNH |
 | 2026-06-18 | v0.1.5 | C 阶段实测发现 OQ-004 真实根因：foundationx 不是 bootstrap 主动选择，而是 postgresx@v1.0.0 公开 API 传染（Config.Password foundationx.SecretString）。§15.1 迁移注记 v2 修订；§23 OQ-004 状态从"v0.1.x patch 优先"改为"待 postgresx v1.1.0 解锁"；BLK-009 重写为分阶段三步关闭条件；与 ADR-foundationx-exit v2 联动登记 postgresx 真实瓶颈 | ZoneCNH |
 | 2026-06-18 | v0.1.6 | v3 实测纠错（取代 v2 误判）：实测 postgresx@v1.0.0 已完成 foundationx 退出（pkg/postgresx/secret.go 本地 SecretString + pkg/postgresx/error.go 本地 NewError，go.mod 无 foundationx）。v2 当时基于 GOMODCACHE 旧快照判断为"postgresx 传染"是错误。§15.1 迁移注记 v3 + §23 OQ-004 + ADR v3 时间线全部更正；BLK-009 重写为单一一行替换任务；bootstrap v0.1.1 1 行替换即可关闭 BLK-009a | ZoneCNH |
+| 2026-06-18 | v0.1.7 | 明确 bootstrap 定位为 Foundation L1 Assembly：位于 L1 primitives 之上、`x.go` 入口之下，只做进程组装、生命周期和可选 adapter 构造。 | ZoneCNH |

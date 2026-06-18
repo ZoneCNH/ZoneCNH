@@ -166,8 +166,8 @@ THEN 返回配置错误
 
 ### FR-009: Clock
 
-WHEN 注入 FakeClock
-THEN 所有调度基于 FakeClock，不调用 time.Now（测试确定性）
+WHEN 注入 StaticClock（NewStaticClock）
+THEN 所有调度基于 StaticClock，不调用 time.Now（测试确定性）
 
 > AC: AC-022
 
@@ -193,26 +193,26 @@ THEN 所有调度基于 FakeClock，不调用 time.Now（测试确定性）
 
 | AC ID | FR/BR Ref | Criterion |
 |-------|-----------|----------|
-| AC-001 | FR-001 | 合法 cron job 返回 JobID |
-| AC-002 | FR-001 | cron 语法错误 → ErrInvalidTrigger |
-| AC-004 | FR-001 | 重复 JobID → ErrDuplicateJob |
-| AC-005 | FR-002 | cron 到达调度时间调用 handler |
-| AC-006 | FR-002 | interval 到期调用 handler |
-| AC-007 | FR-002 | Delay 后首次触发 |
+| AC-001 | FR-001 | 合法 job 经 AddJob 返回 nil |
+| AC-002 | FR-001 | trigger 不合法 → ErrInvalidJob |
+| AC-004 | FR-001 | 重复 Job name → ErrJobExists |
+| AC-005 | FR-002 | cron 到达调度时间调用 Job.Run |
+| AC-006 | FR-002 | interval 到期调用 Job.Run |
+| AC-007 | FR-002 | Delay 后首次触发（v1.1 缺口） |
 | AC-008 | FR-003 | Skip → 上次未完成时跳过 |
-| AC-009 | FR-003 | Queue → 排队等待 |
-| AC-010 | FR-003 | Replace → 取消旧的启动新的 |
+| AC-009 | FR-003 | QueueOne → 至多排队一个 |
+| AC-010 | FR-003 | Replace → 取消旧的启动新的（v1.1 缺口） |
 | AC-011 | FR-004 | Skip → 跳过错过的触发 |
 | AC-012 | FR-004 | RunOnce → 补执行一次 |
 | AC-013 | FR-004 | CatchUp → 补执行所有错过次数 |
-| AC-014 | FR-005 | 存在的 job 取消返回 nil |
-| AC-015 | FR-005 | 不存在返回 ErrJobNotFound |
-| AC-016 | FR-006 | 等待正在执行的 job 完成 |
-| AC-017 | FR-006 | 超时强制取消 → ErrShutdownTimeout |
-| AC-018 | FR-007 | trigger/start/complete/fail/misfire 事件输出 |
+| AC-014 | FR-005 | 存在的 job 取消返回 nil（v1.1 缺口） |
+| AC-015 | FR-005 | 不存在返回错误（v1.1 缺口） |
+| AC-016 | FR-006 | Shutdown 等待正在执行的 job 完成 |
+| AC-017 | FR-006 | 超时返回 ctx.Err()（v1.1：专属 ErrShutdownTimeout） |
+| AC-018 | FR-007 | scheduled/started/succeeded/failed/misfire 等事件输出到 EventSink |
 | AC-019 | FR-008 | 锁获取成功 → 执行 job |
 | AC-020 | FR-008 | 锁获取失败 → 跳过本次 |
-| AC-022 | FR-009 | FakeClock 注入后调度基于 FakeClock |
+| AC-022 | FR-009 | StaticClock 注入后调度基于 StaticClock |
 
 ## 8. 接口契约
 
@@ -480,16 +480,16 @@ defer s.Shutdown(ctx)
 
 | 场景                        | 预期行为                              |
 | --------------------------- | ------------------------------------- |
-| cron 表达式语法错误         | 返回 ErrInvalidTrigger，不注册 job    |
-| interval = 0                | 返回 ErrInvalidTrigger                |
+| cron 表达式语法错误         | 返回 ErrInvalidJob（trigger 校验），不注册 job |
+| interval = 0                | 返回 ErrInvalidJob                |
 | DST 切换（春/秋）           | 触发时间正确，不跳过或重复            |
 | job panic                   | catch panic，记录日志，不影响其他 job |
 | 停机时 job 正在执行         | 等待完成或超时后 force cancel         |
 | 分布式锁获取失败            | 跳过本次，等待下一个调度周期          |
-| lock TTL < job 执行时间     | 返回配置错误                          |
-| 0 个 job 注册后 Start       | 正常启动，等待 Stop                   |
-| 时区为 UTC+0 与本地时区差异 | 按配置时区计算触发时间                |
-| 并发 Schedule + Cancel      | 需要加锁，保证并发安全                |
+| lock TTL < job 执行时间     | 返回配置错误（v1.1：运行时尚未校验）  |
+| 0 个 job 注册后 Start       | 正常启动，等待 Shutdown              |
+| 时区为 UTC+0 与本地时区差异 | 按构造器传入 loc 计算触发时间        |
+| 并发 AddJob + Shutdown      | 需要加锁，保证并发安全                |
 
 ---
 
@@ -599,18 +599,18 @@ go 1.23
 | 停机等待         | `Stop` 等待正在执行的 job           |
 | 停机超时         | job 超时 → force cancel             |
 | job panic 隔离   | panic 被 catch → 不影响其他 job     |
-| trigger 验证     | cron 语法错误 → `ErrInvalidTrigger` |
-| 重复注册         | 同一 JobID → `ErrDuplicateJob`      |
+| trigger 验证     | cron 语法错误 → `ErrInvalidJob`     |
+| 重复注册         | 同一 Job name → `ErrJobExists`      |
 | DST 切换         | 夏令时切换时触发时间正确            |
-| 触发确定性       | 相同 FakeClock → 相同 next time     |
-| event hook       | 事件正确输出到 hook                 |
+| 触发确定性       | 相同 StaticClock → 相同 next time   |
+| event hook       | 事件正确输出到 EventSink            |
 
 ### 16.2 Given/When/Then 用例
 
 **TC-001: 正常 cron 触发**
 Given 注册 cron job `*/1 * * * *`
-When FakeClock 推进到下一分钟
-Then JobHandler 被调用一次
+When StaticClock 推进到下一分钟
+Then Job.Run 被调用一次
 
 **TC-002: OverlapSkip 跳过**
 Given OverlapPolicy = Skip，job 执行需 10s
@@ -619,23 +619,23 @@ Then 第二次触发被跳过
 
 **TC-003: MisfireRunOnce 补执行**
 Given MisfirePolicy = RunOnce，调度间隔 1s
-When FakeClock 推进 5s（跳过 5 次触发）
+When StaticClock 推进 5s（跳过 5 次触发）
 Then 补执行 1 次
 
 **TC-004: 分布式锁失败跳过**
-Given Locker.Acquire 返回 false
+Given Locker.TryLock 返回 ErrLockUnavailable
 When 到达触发时间
 Then 跳过本次执行，等待下一个调度周期
 
-**TC-005: Cancel job**
-Given 已注册 JobID `daily`
+**TC-005: Cancel job（v1.1 缺口）**
+Given 已注册 Job name `daily`
 When 调用 Cancel("daily")
 Then 后续触发周期不再执行该 job
 
-**TC-006: Stop 等待与 panic 隔离**
+**TC-006: Shutdown 等待与 panic 隔离**
 Given job 正在执行且另一个 job panic
-When 调用 Stop
-Then panic 被捕获，Stop 等待运行中 job 结束或超时
+When 调用 Shutdown
+Then panic 被捕获，Shutdown 等待运行中 job 结束或 ctx 超时
 
 **TC-007: EventSink 输出**
 Given 配置了 EventSink
@@ -643,14 +643,14 @@ When job 触发、成功或失败
 Then EventSink 收到对应生命周期事件
 
 **TC-008: Clock 与 DST**
-Given FakeClock 位于 DST 切换边界
+Given StaticClock 位于 DST 切换边界
 When 计算下一次触发时间
 Then 结果符合目标时区的 cron 语义
 
-**TC-009: 重复 JobID**
-Given JobID `daily` 已注册
+**TC-009: 重复 Job name**
+Given Job name `daily` 已注册
 When 再次注册同名 job
-Then 返回 ErrDuplicateJob
+Then 返回 ErrJobExists
 
 ### 16.3 Benchmark
 

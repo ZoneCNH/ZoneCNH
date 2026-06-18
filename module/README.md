@@ -2,7 +2,7 @@
 
 > 19 个基座模块与 5 个 L2.5 领域共享规划/基线模块的独立规格，按架构层级组织。`x.go` 组合根不再作为 `module/` 下的模块规格维护。
 
-最后更新：2026-06-17
+最后更新：2026-06-18
 
 ---
 
@@ -32,19 +32,19 @@
 ## 分层总览
 
 ```text
-标准源 ──→ 门禁校验 ──→ L0 原语 ──→ L1 运行时 / 测试 ──→ 存储扩展 / 契约 / 传输 / 领域共享
- xlib-standard    xlibgate       kernel    configx            redisx        contracts
- xlib-harness     (CI gate)               observex            kafkax
- xlib-evidence                            resiliencx          natsx
-                                          schedulex           postgresx
-                                          testkitx            taosx
-                                                              ossx
-                                                              clickhousex
-                                                              transportx
+标准源 ──→ 门禁校验 ──→ L0 原语 ──→ L1 primitives / 测试 ──→ L1 Assembly ──→ 存储扩展 / 契约 / 传输 / 领域共享
+ xlib-standard    xlibgate       kernel    configx                  bootstrap       redisx        contracts
+ xlib-harness     (CI gate)               observex                                  kafkax
+ xlib-evidence                            resiliencx                                natsx
+                                          schedulex                                 postgresx
+                                          testkitx                                  taosx
+                                                                                    ossx
+                                                                                    clickhousex
+                                                                                    transportx
 
 ```
 
-依赖方向：自上而下。同层模块平级协作，不存在编译期依赖。
+依赖方向：自左向右。L1 primitives/testkitx 仍按依赖矩阵控制；bootstrap 是 L1 Assembly 特例，可向下组合 L0/L1 primitives 与受控 L2 adapter，但不得依赖 L2.5、业务域或 `x.go`。
 
 ---
 
@@ -89,9 +89,9 @@ stdlib-only 基础原语。所有上层模块的根依赖。
 
 ---
 
-## L1 运行时（4 个）
+## L1 primitives（4 个）
 
-共享横切能力。可选依赖，按需引入。
+共享横切运行时原子能力。除依赖矩阵明确允许外，保持低耦合，不把进程组装职责放入 primitives。
 
 | 模块       | 规格                                                                                                                                                | 核心职责                                                                                                                                                                              |
 | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -99,6 +99,16 @@ stdlib-only 基础原语。所有上层模块的根依赖。
 | observex   | [SPEC.md](./observex/SPEC.md) · [tasks/](./observex/tasks/)                                                                                         | Logger/Meter/Tracer/Exporter、Redaction、Label Policy、Health（7 FR，11 tasks）                                                                                                       |
 | resiliencx | [SPEC.md](./resiliencx/SPEC.md) · [goal.md](./resiliencx/goal.md) · [TRACEABILITY.md](./resiliencx/TRACEABILITY.md) · [tasks/](./resiliencx/tasks/) | Timeout/Retry/CircuitBreaker/Bulkhead/RateLimiter/Fallback、策略组合（6 FR，8 BR，10 tasks，v1.0.1 Approved）                                                                         |
 | schedulex  | [SPEC.md](./schedulex/SPEC.md) · [tasks/](./schedulex/tasks/)                                                                                       | Scheduler/Trigger/OverlapPolicy/MisfirePolicy/EventSink/Locker/Clock（9 FR，12 tasks，v1.0.1）                                                                                        |
+
+---
+
+## L1 Assembly（1 个）
+
+位于 L1 primitives 之上、具体入口 `x.go` 之下的进程组装层。它可向下组合 L0/L1 primitives 与受控 L2 adapter，只做启动、生命周期和可选 adapter 构造，不承载业务语义、service listener、领域模型或具体业务拓扑。
+
+| 模块 | 规格 | 核心职责 |
+| --- | --- | --- |
+| bootstrap | [SPEC.md](./bootstrap/SPEC.md) | configx/observex/resiliencx + lifecycx 统一组装；StoreSet 位掩码可选构造 storage adapter；signal / shutdown 标准化；adapter 默认 Stores=None，聚合层按需启用。 |
 
 ---
 

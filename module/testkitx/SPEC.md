@@ -68,7 +68,7 @@
 | ----------------- | --------------------------------------------- |
 | `kernel` 测试     | 使用 FakeLogger / FakeMeter 验证模块生命周期  |
 | `configx` 测试    | 使用 FakeConfig 提供测试配置                  |
-| `observex` 测试   | 使用 FakeExporter 验证遥测输出                |
+| `observex` 测试   | 使用 FakeMeter/FakeTracer 验证遥测输出        |
 | `resiliencx` 测试 | 使用 FakeClock 控制时间、FakeBreaker 模拟熔断 |
 | `schedulex` 测试  | 使用 FakeClock 控制调度时间                   |
 | 业务域模块测试    | 使用 fake + fixture + golden 验证业务逻辑     |
@@ -478,16 +478,16 @@ testkitx 依赖 kernel/configx/observex/resiliencx/schedulex（§14.2），而�
 
 ### 15.3 Contract 测试
 
-| Contract                              | 验证内容                                     |
+> 位置：`pkg/testkitx/fake/contract_test.go`（package `fake`）。注意运行时测试名统一带 `Fake` 前缀，与早期 SPEC 版本不同。此处的 contract test 指 **fake 接口契约**，与顶层 `contract/` 目录的 **L2 provider 行为契约套件**（§13）无关。
+
+| Contract（运行时实际测试名）          | 验证内容                                     |
 | ------------------------------------- | -------------------------------------------- |
-| `TestContract_Logger_Interface`       | FakeLogger 实现 observex.Logger 所有方法     |
-| `TestContract_Meter_Interface`        | FakeMeter 实现 observex.Meter 所有方法       |
-| `TestContract_Tracer_Interface`       | FakeTracer 实现 observex.Tracer 所有方法     |
-| `TestContract_Config_Reader`          | FakeConfig 实现 configx.Reader 所有方法      |
-| `TestContract_Breaker_Interface`      | FakeBreaker 实现 resiliencx.Breaker 所有方法 |
-| `TestContract_Logger_Concurrent`      | FakeLogger 并发安全（-race 通过）            |
-| `TestContract_Meter_LabelCardinality` | FakeMeter 拒绝高基数 label                   |
-| `TestContract_Config_Fingerprint`     | FakeConfig fingerprint 稳定性                |
+| `TestContract_FakeMeter_Interface`    | FakeMeter 实现 observex.Meter 所有方法       |
+| `TestContract_FakeTracer_Interface`   | FakeTracer 实现 observex.Tracer 所有方法     |
+| `TestContract_FakeConfig_Reader`      | FakeConfig 实现 configx.Reader 所有方法      |
+| `TestContract_FakeBreaker_Interface`  | FakeBreaker 实现 resiliencx.Breaker 所有方法 |
+| `TestContract_FakeLogger_Concurrent`  | FakeLogger 并发安全（-race 通过）            |
+| `TestContract_FakeConfig_Fingerprint` | FakeConfig fingerprint 稳定性                |
 
 ### 15.4 Given/When/Then 用例
 
