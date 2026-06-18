@@ -12,16 +12,8 @@ environment:
   version: v1.0.0
 
 runner_pools:
-  ci:
-    - self-hosted
-    - Linux
-    - X64
-    - sre/foundation-l1
-  release:
-    - self-hosted
-    - Linux
-    - X64
-    - sre/deploy
+  ci: ubuntu-latest
+  release: ubuntu-latest
 
 required_status_checks:
   - ci
@@ -45,10 +37,18 @@ workflows:
       contents: read
     jobs:
       - id: ci
-        runner: reusable
-        uses: ZoneCNH/sre/.github/workflows/go-p0-core.yml@main
+        runner: ci
+        preflight:
+          - add_go_bin_to_path
+          - install_golangci_lint
+          - install_govulncheck
+        command: GOWORK=off make ci
       - id: release-check
         runner: ci
+        preflight:
+          - add_go_bin_to_path
+          - install_golangci_lint
+          - install_govulncheck
         command: GOWORK=off make release-check VERSION="${VERSION}"
 
   goal_gates:
@@ -93,8 +93,8 @@ workflows:
         command: GOWORK=off make release-check VERSION="${VERSION}"
         evidence:
           - release/manifest/latest.json
-          - release/manifest/latest.sha256
-          - release artifact uploaded from RUNNER_TEMP
+          - release/manifest/latest.json.sha256
+          - release artifact release-manifest-${RUN_ID}
         publish:
           command: gh release create_or_edit "${VERSION}" --verify-tag
 
