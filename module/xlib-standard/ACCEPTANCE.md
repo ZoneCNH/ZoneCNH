@@ -26,7 +26,7 @@
 
 | ID | 验收项 | 关联要求/测试/任务 | 当前登记状态 | 来源 |
 | --- | --- | --- | --- | --- |
-| AC-000 | 管线基线清理完成，模块文档和任务入口可被规则评分器发现。 | python3 scripts/rule-scorer.py spec xlib-standard --check / module/xlib-standard/SPEC.md | - | SPEC.md |
+| AC-000 | 管线基线清理完成，模块文档和任务入口可被规则评分器发现。 | python3 scripts/rule-scorer.py spec xlib-standard / module/xlib-standard/SPEC.md | - | SPEC.md |
 | AC-001 | 必填字段缺失时配置校验返回 validation kind 错误。 | GOWORK=off go test ./pkg/templatex/ -run TestConfigValidate/Required -count=1 / pkg/templatex/config.go:23-32 | - | SPEC.md |
 | AC-002 | 负数 timeout 配置返回 validation kind 错误。 | GOWORK=off go test ./pkg/templatex/ -run TestConfigValidate/Negative -count=1 / pkg/templatex/config.go:28-31 | - | SPEC.md |
 | AC-003 | 配置脱敏后 secret 类字段显示为 ***。 | GOWORK=off go test ./pkg/templatex/ -run TestConfigSanitize -count=1 / pkg/templatex/config.go:34-39 | - | SPEC.md |
@@ -46,7 +46,7 @@
 | AC-017 | 有效参数创建 *Client。 | GOWORK=off go test ./pkg/templatex/ -run TestNew/Valid -count=1 / pkg/templatex/client.go:38-39 | - | SPEC.md |
 | AC-018 | Close 多次调用幂等且不 panic。 | GOWORK=off go test ./pkg/templatex/ -run TestClose/Idempotent -count=1 / pkg/templatex/client.go:45-68 | - | SPEC.md |
 | AC-019 | 版本信息包含 module name 和 version。 | GOWORK=off go test ./pkg/templatex/ -run TestVersion -count=1 / pkg/templatex/version.go:6-7 | - | SPEC.md |
-| AC-020 | 模板 go vet 零警告。 | GOWORK=off go vet ./pkg/templatex/... / pkg/templatex/*.go | - | SPEC.md |
+| AC-020 | 模板 go vet 零警告。 | GOWORK=off go vet ./pkg/templatex/... / pkg/templatex/... | - | SPEC.md |
 | AC-021 | 模板 go test 全部通过。 | GOWORK=off go test ./pkg/templatex/... -count=1 / pkg/templatex/*_test.go | - | SPEC.md |
 | AC-022 | 渲染输出目录结构完整。 | out_dir="$(mktemp -d)" && bash scripts/render_template.sh --module-name testlib --module-path example.com/testlib --package-name testlib --out "$out_dir" && test -f "$out_dir/go.mod" / scripts/render_template.sh | - | SPEC.md |
 | AC-023 | 生成库无模板名和标准库名残留。 | out_dir="$(mktemp -d)" && bash scripts/render_template.sh --module-name testlib --module-path example.com/testlib --package-name testlib --out "$out_dir" && bash scripts/check_rendered_template.sh "$out_dir" testlib example.com/testlib testlib / scripts/check_rendered_template.sh | - | SPEC.md |
