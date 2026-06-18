@@ -9,10 +9,10 @@ import (
 
 // MarketDataService receives normalized upstream market-data ingestion requests
 // from exchange adapters (e.g. module/binance).
-// Transport: gRPC bidirectional stream.
+// Transport adapters may expose this method through gRPC, HTTP, or in-process calls.
 type MarketDataService interface {
-	// Ingest accepts a stream of IngestRequest and returns per-request outcomes.
-	Ingest(stream IngestRequest) (stream IngestResult, error)
+	// Ingest accepts one IngestRequest and returns its terminal outcome.
+	Ingest(req IngestRequest) (IngestResult, error)
 }
 
 // IngestRequest is an immutable item submitted by an exchange adapter.

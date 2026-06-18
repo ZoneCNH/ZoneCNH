@@ -3,8 +3,6 @@ package domainmarket
 import (
 	"fmt"
 	"time"
-
-	"github.com/ZoneCNH/decimalx"
 )
 
 // ---- Canonical Types (SPEC v1.1.0) ----
@@ -13,10 +11,10 @@ import (
 type ProductLine string
 
 const (
-	ProductLineSpot    ProductLine = "spot"
-	ProductLineUMPerp  ProductLine = "um_perp"
-	ProductLineCMPerp  ProductLine = "cm_perp"
-	ProductLineOption  ProductLine = "option"
+	ProductLineSpot   ProductLine = "spot"
+	ProductLineUMPerp ProductLine = "um_perp"
+	ProductLineCMPerp ProductLine = "cm_perp"
+	ProductLineOption ProductLine = "option"
 )
 
 func (p ProductLine) IsValid() bool {
@@ -34,11 +32,17 @@ func (p ProductLine) IsDerivative() bool {
 
 func (p ProductLine) String() string { return string(p) }
 
+// Decimal is a dependency-free decimal representation for canonical values.
+// It preserves exact text form without pulling in a third-party decimal package.
+type Decimal string
+
+func (d Decimal) String() string { return string(d) }
+
 // InstrumentKey 无碰撞标的身份
 type InstrumentKey struct {
 	Venue           string
 	ProductLine     ProductLine
-	InstrumentType  string            // spot, perpetual, future, option
+	InstrumentType  string // spot, perpetual, future, option
 	Symbol          string
 	BaseAsset       string
 	QuoteAsset      string
@@ -46,8 +50,8 @@ type InstrumentKey struct {
 	SettlementAsset string
 	ContractCode    string
 	Expiry          *time.Time
-	Strike          *decimalx.Decimal
-	OptionType      string            // "call" / "put"
+	Strike          *Decimal
+	OptionType      string // "call" / "put"
 }
 
 func (k InstrumentKey) Validate() error {
@@ -101,6 +105,14 @@ func (e EventType) IsValid() bool {
 	default:
 		return false
 	}
+}
+
+// MarketDataQuality carries source quality metadata.
+type MarketDataQuality struct {
+	Latency       time.Duration
+	IsReliable    bool
+	IsRecovered   bool
+	DegradeReason string
 }
 
 // MarketFactEnvelope canonical normalized market fact wrapper
