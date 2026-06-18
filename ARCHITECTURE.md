@@ -30,9 +30,10 @@ x.go ───────────────► 基座运行时 / L2.5 / �
    ├───────────────► transportx
    │                  跨 runtime / adapter 传输契约
    │
-   └───────────────► 基座运行时 Foundation (19)
+   └───────────────► 基座运行时 Foundation
                       L0: kernel
-                      L1 runtime: configx · observex · resiliencx · schedulex
+                      L1 primitives: configx · observex · resiliencx · schedulex
+                      L1 assembly: bootstrap（进程入口组装，位于 primitives 之上）
                       L1 test-only: testkitx
                       扩展: redisx · kafkax · natsx · postgresx · taosx · ossx · clickhousex
                       契约: contracts · transportx
@@ -47,7 +48,7 @@ x.go ───────────────► 基座运行时 / L2.5 / �
 横切关注点：
   alertx   ─── 策略异常、风控触发告警
   observex ─── 统一 metrics / tracing / logging（同时作为基座组件提供底层能力）
-```text
+```
 
 ### 业务流与反馈
 
@@ -80,20 +81,28 @@ factor-engine ◄──► feature-store ◄──► factor-eval
               │                                                      ▲
               │                                                      │
               └──► maestro ──────────────────────────────────────────┘  (编排注入)
-```text
+```
 
 ### 运行时组装
 
 ```text
-x.go
-  ├── load config
-  ├── init observability / alerting
-  ├── create data providers
-  ├── wire analytics engines
-  ├── wire decision engines
-  ├── wire execution engines
-  └── run lifecycle / graceful shutdown
-```text
+x.go / service main
+  └── bootstrap.Build(ctx, Spec{Module, Stores, Hooks})
+      ├── validate module/context
+      ├── configx: .env + XGO_{MODULE}_*
+      ├── observex: logger / metrics / tracing / health
+      ├── StoreSet（可选，仅聚合进程）
+      │   ├── None: adapter 默认，不构造存储
+      │   └── TD / PG / Redis / Kafka / NATS / CH（OSS 预留）
+      ├── resiliencx: 默认运行时弹性策略
+      ├── lifecycx.Manager: 注册基础组件与 closerComponent
+      └── App{Config, Observe, Resilience, Lifecycle, ConfigHash}
+          ├── service main 注册业务组件
+          ├── App.Run(ctx): Lifecycle.Start + shutdownx.NotifyContext
+          └── App.Shutdown(ctx): Lifecycle.Stop / 幂等清理
+```
+
+`bootstrap` 只组装进程入口，不承载业务语义、domain/contracts、HTTP/gRPC listener 或跨进程编排；跨进程 composer 属于上层入口职责。Adapter 进程使用 `Stores=None`，`market-data` / `macro-data` 聚合进程可使用 `Stores=All` 或位组合。
 
 ## 思路推演 — 2026-06-14 业务域模块化决策
 
@@ -524,4 +533,4 @@ Phase 4: 平台化   ← settlement + alertx + alternative-data
 
 Phase 5: 入口验收 ← x.go
          只补最终 wiring 和生命周期，验证完整闭环，不新增业务逻辑
-```text
+```
