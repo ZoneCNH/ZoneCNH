@@ -97,3 +97,4 @@
 - 当前文档只记录验收口径，不替代运行时代码仓库的最新 CI 结果。
 - 若上表存在 Pending、Draft、Blocked、Open 或未登记状态，发布前必须补充证据或在模块追溯矩阵中登记豁免理由。
 - SPEC/TRACEABILITY 已登记 AC/TC 主链路；2026-06-18 已归档：所有 AC/TC 标 ✅，DoD 6 项已完成；release/manifest/latest.json checks 全 passed。
+- 2026-06-18 FEATURES.md §4 任务交付清单已同步：12 个 task 中 11 个 ✅ 已交付，TASK-CONFIGX-007 (Watch) 显式推迟到 v1.1（与 goal.md §文首状态戳一致）；§6 实现完成判定 6 项全部勾选并附实测证据。
