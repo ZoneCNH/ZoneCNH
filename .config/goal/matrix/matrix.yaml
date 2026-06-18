@@ -390,6 +390,7 @@ matrix:
     updated_at: "2026-06-09"
 
   # === kernel traceability ===
+  # 当前统一验收目标：这些 Dropped 边在 .config/goal/evidence 证据包登记并通过四源 98+ arbiter 前，不得解释为 Factory 通过。
   # Goal → Spec
   - source_id: GOAL-KERNEL-20260609-001
     target_id: SPEC-kernel-v1

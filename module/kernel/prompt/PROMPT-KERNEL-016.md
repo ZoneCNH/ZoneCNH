@@ -68,7 +68,7 @@
 
 完成后提交到 `docs/evidence/2026-06-12/TASK-KERNEL-016/`：
 1. `make release-preflight` 完整输出
-2. 覆盖率报告（`go tool cover -func=coverage.out`）
+2. 覆盖率报告（`make coverage-threshold` 输出 + 核心库包 `go tool cover -func=coverage.out` 汇总）
 3. Benchmark 结果
 4. stdlib-only 检查输出
 5. gitleaks 扫描结果

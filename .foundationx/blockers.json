@@ -2,10 +2,10 @@
   "schema_version": "blockers/v1",
   "generated_at": "2026-06-18T04:00:00Z",
   "source": ".foundationx/blockers.json",
-  "total_blockers": 10,
+  "total_blockers": 11,
   "by_severity": {
     "critical": 2,
-    "high": 4,
+    "high": 5,
     "low": 1,
     "medium": 3
   },
@@ -119,6 +119,24 @@
       "detail": "ZoneCNH/ossx 仓库 54KB，无 pkg/ossx 目录，无 Go 源码；release v1.0.1 tag 存在但实测 import 失败；fact-layer 此前误标 impl=true/factory=true",
       "evidence": "gh api repos/ZoneCNH/ossx/contents 2026-06-18 实测：根目录仅 .env.example/.gitignore/.repo-contract.yaml/LICENSE/README.md 与 docs/scripts/.github 目录",
       "action": "v1.0.2 patch：写 pkg/ossx New/Close/PutObject/GetObject/DeleteObject + integration test"
+    },
+    {
+      "id": "BLK-011",
+      "module": "kernel",
+      "severity": "high",
+      "status": "open",
+      "title": "Factory 验收目标未统一闭合",
+      "detail": "kernel 已达到代码侧 implementation/release candidate，但模块验收 / Factory 仍缺 .config/goal/evidence 证据包登记、Goal Matrix kernel 边从 Dropped/empty evidence 改为 Verified、四源 98+ arbiter 归档，以及按 Makefile 核心库包分母的 coverage-threshold 证据归档。代码门禁通过不得单独解释为 factory-grade。",
+      "evidence": [
+        "module/kernel/SPEC.md",
+        "module/kernel/goal.md",
+        "module/kernel/TRACEABILITY.md",
+        ".config/goal/matrix/matrix.yaml",
+        ".config/goal/gates/state.yaml"
+      ],
+      "first_seen": "2026-06-18",
+      "blocking_factory": true,
+      "blocking_release": false
     }
   ],
   "by_module": {
@@ -130,6 +148,9 @@
     ],
     "contracts": [
       "BLK-004"
+    ],
+    "kernel": [
+      "BLK-011"
     ],
     "natsx": [
       "BLK-001",
@@ -153,14 +174,15 @@
     "note": "全部阻塞项已通过治理流程闭合（2026-06-16）",
     "items": []
   },
-  "open_blockers": 2,
+  "open_blockers": 3,
   "resolved_blockers": 8,
   "open_by_severity": {
-    "high": 1,
+    "high": 2,
     "medium": 1
   },
   "factory_blocking_modules": [
     "bootstrap",
+    "kernel",
     "ossx"
   ],
   "release_blocking_modules": []

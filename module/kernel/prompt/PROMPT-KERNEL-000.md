@@ -41,7 +41,7 @@ go 1.23
 | ------------------- | ------------------------------------------------------------------------------------ |                  |                                         |
 | `build`             | `go build ./...`                                                                     |                  |                                         |
 | `test`              | `go test -race -count=1 ./...`                                                       |                  |                                         |
-| `cover`             | `go test -race -coverprofile=coverage.out ./... && go tool cover -func=coverage.out` |                  |                                         |
+| `cover`             | `make coverage-threshold`（核心库包分母，排除 examples/scripts）                     |                  |                                         |
 | `bench`             | `go test -bench=. -benchmem -count=3 ./...`                                          |                  |                                         |
 | `lint`              | `golangci-lint run`                                                                  |                  |                                         |
 | `vet`               | `go vet ./...`                                                                       |                  |                                         |

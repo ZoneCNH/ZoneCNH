@@ -17,7 +17,7 @@
     "impl_complete": 20,
     "release_published": 21,
     "live_integration": 7,
-    "factory_grade": 18
+    "factory_grade": 17
   },
   "modules": {
     "xlib-standard": {
@@ -82,8 +82,8 @@
       "ci": true,
       "adopt": true,
       "soak": "N/A",
-      "factory": true,
-      "note": "L0 原语 / 12 子包 / stdlib-only; .repo-contract.yaml aligned; API 冻结建议"
+      "factory": false,
+      "note": "L0 原语 / 12 子包 / stdlib-only; implementation/release candidate passed; Factory blocked by BLK-011 until evidence package + Goal Matrix Verified + four-source 98+ arbiter archive close"
     },
     "configx": {
       "layer": "L1",
@@ -311,6 +311,7 @@
     ],
     "open_blocker_modules": [
       "clickhousex",
+      "kernel",
       "natsx",
       "ossx",
       "postgresx",
@@ -319,6 +320,7 @@
     "factory_blocking_modules": [
       "clickhousex",
       "contracts",
+      "kernel",
       "natsx",
       "ossx",
       "postgresx",

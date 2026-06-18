@@ -2,12 +2,13 @@
 
 - Status: Approved
 - Spec-Version: v2.0.0
-- Last-Updated: 2026-06-12
+- Last-Updated: 2026-06-18
 - Layer: L0 原语
 - Version: v1.0.0
 - Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`
 
 > 公开投影 caveat：Status=Approved 与 100.0% 覆盖证据不等同于 factory-grade；机器事实层保持 factory=false。
+> 当前统一验收目标（2026-06-18）：`kernel` 保持 v1.0.0 implementation/release candidate；模块验收 / Factory 只有在三项同时闭合后为 true：`.config/goal/evidence` 证据包登记并把 Goal Matrix 从 Dropped 改为 Verified、四源 98+ arbiter 归档通过、核心库包覆盖率按 Makefile 分母门禁归档通过。代码侧本地门禁通过不单独构成 factory-grade。
 
 ---
 
@@ -1196,7 +1197,7 @@ kernel 本身通过 `obsx` 子包定义可观测接口，不触发具体观测�
 | ----------- | ------------------------------------------------------------------------------ | ------------------------ |
 | 编译        | `go build ./...`                                                               | 编译失败                 |
 | 测试        | `go test ./... -race -count=1`                                                 | 任何测试失败或 data race |
-| 覆盖率      | `go test ./... -coverprofile=coverage.out && go tool cover -func=coverage.out` | 总覆盖率 < 100%          |
+| 覆盖率      | `make coverage-threshold`                                                     | 核心库包覆盖率 < 100%；examples/scripts 由独立 gate 验证 |
 | vet         | `go vet ./...`                                                                 | 任何 vet 错误            |
 | lint        | `golangci-lint run`                                                            | 任何 lint 错误           |
 | 依赖检查    | `go mod tidy && git diff --exit-code go.mod go.sum`                            | go.mod 不整洁            |
@@ -1205,11 +1206,12 @@ kernel 本身通过 `obsx` 子包定义可观测接口，不触发具体观测�
 
 ### 19.2 kernel 专属 Gate
 
-| Gate                | 命令                              | 阻塞条件                    |                                        |                    |
-| ------------------- | --------------------------------- | --------------------------- |                                        |                    |
-| stdlib-only         | `go list -deps ./... \            | grep -v "^std" \            | grep -v "^github.com/ZoneCNH/kernel$"` | 任何非 stdlib 依赖 |
-| public-api-snapshot | contracts 中的 API 快照对比       | 公共 API 签名变更未更新快照 |                                        |                    |
-| golden-behavior     | contracts/golden_behavior_test.go | 契约行为发生变化            |                                        |                    |
+| Gate                | 命令                              | 阻塞条件                    |
+| ------------------- | --------------------------------- | --------------------------- |
+| stdlib-only         | `scripts/check-stdlib-only.sh`    | 任何非 stdlib 依赖          |
+| public-api-snapshot | contracts 中的 API 快照对比       | 公共 API 签名变更未更新快照 |
+| golden-behavior     | contracts/golden_behavior_test.go | 契约行为发生变化            |
+| examples            | `make examples`                   | example 命令失败或输出漂移  |
 
 ---
 
@@ -1231,7 +1233,7 @@ kernel 本身通过 `obsx` 子包定义可观测接口，不触发具体观测�
 - [ ] 每个子包有 example_test.go 示例
 - [ ] CHANGELOG.md 已更新
 - [ ] README.md 包含：模块定位、子包清单、验证命令
-- [ ] 单元测试覆盖率 ≥ 100%
+- [ ] 核心库包单元测试覆盖率 ≥ 100%（覆盖率分母排除 examples/scripts；examples 由独立 gate 验证）
 - [ ] `-race` 测试通过
 - [ ] Benchmark 结果无 > 10% 回退
 - [ ] `go vet` 无警告
@@ -1265,6 +1267,7 @@ kernel 本身通过 `obsx` 子包定义可观测接口，不触发具体观测�
 
 | 日期       | 版本   | 变更内容                                                                                                                                                                                                                                                                      | 作者    |
 | ---------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
+| 2026-06-18 | v2.0.2 | 统一验收目标：区分 implementation/release candidate 与 Factory 验收；覆盖率门禁改为 Makefile 的核心库包分母，examples/scripts 由独立 gate 验证。                                                                                                                              | Codex   |
 | 2026-06-12 | v2.0.1 | 深度分析修复：§20 CI Gate 覆盖 80%→100%（对齐 CONSTITUTION §16 L0 层）；§16.4 TC-003 顺序修正；删除冗余 TASK-001-PROMPT.md；补全 PROMPT-KERNEL-000                                                                                                                            | ZoneCNH |
 | 2026-06-12 | v2.0.0 | 全部重写：基于实际代码，从集中式 App/Module/Deps 框架改为 12 子包轻量工具集                                                                                                                                                                                                   | ZoneCNH |
 | 2026-06-08 | v1.1.0 | 对抗性审查修复：重写 §9.1 Deps 为 kernel 内接口；修正 §18 metric 命名；§22 覆盖率提至 90%；补充 FR-001/FR-002/FR-003 WHEN/THEN；BR-004~BR-009 补充违反处理；§16 补充 AC/TC 追溯链；§13 扩充至 18 条；§19 增加安全要求；§23 分类整理；FR-005 返回 GraphView；Health() 增加 ctx | ZoneCNH |

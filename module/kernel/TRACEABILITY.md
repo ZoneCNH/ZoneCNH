@@ -1,8 +1,9 @@
 # kernel 需求追溯矩阵
 
-> 更新：2026-06-12（Matrix v2.1 — 完整 7 列矩阵）
+> 更新：2026-06-18（Matrix v2.3 — 统一验收目标与覆盖率分母）
 > 来源：module/kernel/SPEC.md v2.0.0
 > 规范：docs/governance/TRACEABILITY.md
+> 当前口径：本矩阵的 ✅ 表示 Spec/Task 追溯与本地实现候选闭合；模块验收 / Factory 仍需 `.config/goal/evidence` 证据包、四源 98+ arbiter 归档和 `make coverage-threshold` 证据同时闭合。闭合前，Factory 由 BLK-011 阻塞。
 
 ---
 
@@ -52,7 +53,7 @@
 | NFR-003 | healthx.Aggregate 10元素  | < 10μs                | Benchmark `BenchmarkAggregate`  | TASK-KERNEL-011               | ✅        |
 | NFR-004 | retryx.Delay 计算性能     | < 100ns               | Benchmark `BenchmarkDelay`      | TASK-KERNEL-009               | ✅        |
 | NFR-005 | 常驻内存（全子包导入）    | < 5MB                 | Profiling `go test -memprofile` | TASK-KERNEL-016（执行: 016c） | ✅        |
-| NFR-006 | 测试覆盖率                | ≥ 100%                | `go tool cover -func`           | TASK-KERNEL-016（执行: 016c） | ✅        |
+| NFR-006 | 核心库包测试覆盖率        | ≥ 100%（排除 examples/scripts） | `make coverage-threshold`       | TASK-KERNEL-016（执行: 016c） | ✅（待证据归档） |
 | NFR-007 | 敏感数据不泄露到日志      | SecretString 三层保护 | TC-009 String/JSON/gob 脱敏     | TASK-KERNEL-003               | ✅        |
 | NFR-008 | 无硬编码密钥              | 全仓扫描零命中        | `gitleaks detect --no-git`      | TASK-KERNEL-016（执行: 016c） | ✅        |
 
@@ -131,6 +132,7 @@
 
 | 日期       | 版本   | 变更                                                                                                |
 | ---------- | ------ | --------------------------------------------------------------------------------------------------- |
+| 2026-06-18 | v2.3   | 统一验收目标：将追溯闭合与 Factory 验收分离，覆盖率验证改为 Makefile 核心库包分母。                 |
 | 2026-06-12 | v2.2   | 覆盖率 100% 对齐 CONSTITUTION §16 + ShouldRetry 归属修正 + PROMPT-KERNEL-000 补全 + TC-003 顺序修正 |
 | 2026-06-12 | v2.1   | 完整重写：7列矩阵 + BR行 + NFR行 + TC反向追溯 + AC注册表 + 覆盖率仪表盘                             |
 | 2026-06-12 | v2.0   | 从旧集中式 FR 重写为 12 子包 FR                                                                     |

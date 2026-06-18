@@ -14,6 +14,10 @@
 
 本文档中的 **MUST / 必须** 表示 1.0 发布阻断项；**SHOULD / 应该** 表示 1.0 推荐项，允许带明确理由延期；**MAY / 可以** 表示可选能力，不影响 1.0 发布。
 
+## 当前统一验收口径（2026-06-18）
+
+`kernel` 的代码侧可保持 v1.0.0 implementation/release candidate；模块验收 / Factory 不以本地测试通过单独判定，必须同时满足：`.config/goal/evidence` 证据包登记并把 Goal Matrix kernel 边从 Dropped 改为 Verified、四源 98+ arbiter 归档通过、核心库包覆盖率按 `make coverage-threshold` 归档通过。上述证据未闭合前，Goal Gate / Factory 状态按 blocked-by-evidence 处理。
+
 ## 1.0 发布判定原则
 
 1. **稳定优先**：公开 API、类型签名、错误码一旦进入 1.0，默认需要向后兼容。
@@ -70,7 +74,7 @@
 
 | 指标                      | 基线   | 目标值                   | 验证方式                |
 | ------------------------- | ------ | ------------------------ | ----------------------- |
-| 单元测试覆盖率            | 0%     | ≥ 100%                   | `go tool cover`         |
+| 核心库包单元测试覆盖率    | 0%     | ≥ 100%（分母排除 examples/scripts） | `make coverage-threshold` |
 | errx.NewError 构造        | —      | < 100ns                  | Benchmark               |
 | errx.IsKind 5 层链遍历    | —      | < 1μs                    | Benchmark               |
 | healthx.Aggregate 10 元素 | —      | < 10μs                   | Benchmark               |
@@ -268,7 +272,7 @@ kernel 本身不需要配置。各子包通过构造函数参数或结构体字�
 
 | 测试类型     | 必须覆盖内容                                       | 发布门禁                  |
 | ------------ | -------------------------------------------------- | ------------------------- |
-| 单元测试     | 每个子包的核心逻辑（构造、状态转换、边界场景）     | MUST 通过，覆盖率 ≥ 100%  |
+| 单元测试     | 每个子包的核心逻辑（构造、状态转换、边界场景）     | MUST 通过，核心库包覆盖率 ≥ 100% |
 | Example 测试 | 每个子包有 example_test.go                         | MUST 通过，输出稳定       |
 | 并发测试     | syncx.SemaphoreLimiter、syncx.WorkerGroup 并发安全 | MUST 通过 `-race`         |
 | 依赖检查     | stdlib-only gate                                   | MUST 通过 `go list -deps` |
