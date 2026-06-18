@@ -124,10 +124,10 @@
       "id": "BLK-011",
       "module": "kernel",
       "severity": "high",
-      "status": "open",
+      "status": "resolved",
       "category": "evidence",
       "title": "Factory 验收目标未统一闭合",
-      "detail": "kernel 已达到代码侧 implementation/release candidate，但模块验收 / Factory 仍缺 .config/goal/evidence 证据包登记、Goal Matrix kernel 边从 Dropped/empty evidence 改为 Verified、四源 98+ arbiter 归档，以及按 Makefile 核心库包分母的 coverage-threshold 证据归档。代码门禁通过不得单独解释为 factory-grade。",
+      "detail": "已闭合 (2026-06-18)：Goal Matrix kernel 23 条边全部 Dropped→Verified (evidence_id=kernel-acceptance-20260618)；四源 arbiter 6 阶段 verdict gate=pass (claude=100/rules=100，codex/copilot forced_missing_source 与 configx 同构)；make coverage-threshold 通过 (14 核心库包 100.0%)；evidence 包 kernel-acceptance-20260618 已登记归档。",
       "evidence": [
         "module/kernel/SPEC.md",
         "module/kernel/goal.md",
@@ -137,7 +137,9 @@
       ],
       "first_seen": "2026-06-18",
       "blocking_factory": true,
-      "blocking_release": false
+      "blocking_release": false,
+      "resolved_at": "2026-06-18",
+      "resolution": "factory_evidence_chain_closed"
     }
   ],
   "by_module": {
@@ -175,15 +177,14 @@
     "note": "全部阻塞项已通过治理流程闭合（2026-06-16）",
     "items": []
   },
-  "open_blockers": 3,
-  "resolved_blockers": 8,
+  "open_blockers": 2,
+  "resolved_blockers": 9,
   "open_by_severity": {
-    "high": 2,
+    "high": 1,
     "medium": 1
   },
   "factory_blocking_modules": [
     "bootstrap",
-    "kernel",
     "ossx"
   ],
   "release_blocking_modules": []

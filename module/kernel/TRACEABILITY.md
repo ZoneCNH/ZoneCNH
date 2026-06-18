@@ -3,7 +3,7 @@
 > 更新：2026-06-18（Matrix v2.3 — 统一验收目标与覆盖率分母）
 > 来源：module/kernel/SPEC.md v2.0.0
 > 规范：docs/governance/TRACEABILITY.md
-> 当前口径：本矩阵的 ✅ 表示 Spec/Task 追溯与本地实现候选闭合；模块验收 / Factory 仍需 `.config/goal/evidence` 证据包、四源 98+ arbiter 归档和 `make coverage-threshold` 证据同时闭合。闭合前，Factory 由 BLK-011 阻塞。
+> 当前口径：本矩阵的 ✅ 表示 Spec/Task 追溯与本地实现候选闭合；Factory 证据链已闭合（2026-06-18）— Goal Matrix 23 边 Verified（evidence_id=kernel-acceptance-20260618）、四源 arbiter 6 阶段 gate=pass（claude=100/rules=100；codex/copilot forced_missing_source，与 configx 同构）、`make coverage-threshold` 通过（14 核心库包 100.0%）、BLK-011 resolved，kernel 已移出 factory_blocking_modules。
 
 ---
 

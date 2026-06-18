@@ -16,7 +16,7 @@
 
 ## 当前统一验收口径（2026-06-18）
 
-`kernel` 已发布 v1.1.0（PR #24，tag v1.1.0）；代码侧发布门禁全绿。模块验收 / Factory 不以本地测试通过单独判定，必须同时满足：`.config/goal/evidence` 证据包登记并把 Goal Matrix kernel 边从 Dropped 改为 Verified、四源 98+ arbiter 归档通过、核心库包覆盖率按 `make coverage-threshold` 归档通过。上述证据未闭合前，Goal Gate / Factory 状态按 blocked-by-evidence 处理。
+`kernel` 已发布 v1.1.0（PR #24，tag v1.1.0）；代码侧发布门禁全绿。模块验收 / Factory 不以本地测试通过单独判定，必须同时满足：`.config/goal/evidence` 证据包登记并把 Goal Matrix kernel 边从 Dropped 改为 Verified、四源 98+ arbiter 归档通过、核心库包覆盖率按 `make coverage-threshold` 归档通过。**Factory 证据链已闭合（2026-06-18）：Goal Matrix 23 边全部 Verified（evidence_id=kernel-acceptance-20260618）、四源 arbiter 6 阶段 verdict gate=pass（claude=100/rules=100；codex/copilot forced_missing_source，与 configx 同构）、`make coverage-threshold` 通过（14 核心库包 100.0%）、BLK-011 已 resolved、evidence 包 kernel-acceptance-20260618 已归档，kernel 已移出 factory_blocking_modules（剩 bootstrap/ossx）。**
 
 ## 1.0 发布判定原则
 

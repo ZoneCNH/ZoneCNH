@@ -395,232 +395,209 @@ matrix:
   - source_id: GOAL-KERNEL-20260609-001
     target_id: SPEC-kernel-v1
     relation: decomposes_to
-    status: Dropped
-    evidence_id: ""
-    drop_reason: "kernel 导入快照尚无 .config/goal/evidence 证据包；保留为带原因例外终态，待证据登记后重新链接"
+    status: Verified
+    evidence_id: "kernel-acceptance-20260618"
     gate_id: G1
     owner: zone
-    updated_at: "2026-06-09"
+    updated_at: "2026-06-18"
 
   # Spec → FR
   - source_id: SPEC-kernel-v1
     target_id: FR-KERNEL-001
     relation: contains
-    status: Dropped
-    evidence_id: ""
-    drop_reason: "kernel 导入快照尚无 .config/goal/evidence 证据包；保留为带原因例外终态，待证据登记后重新链接"
+    status: Verified
+    evidence_id: "kernel-acceptance-20260618"
     gate_id: G2
     owner: zone
-    updated_at: "2026-06-09"
+    updated_at: "2026-06-18"
 
   - source_id: SPEC-kernel-v1
     target_id: FR-KERNEL-002
     relation: contains
-    status: Dropped
-    evidence_id: ""
-    drop_reason: "kernel 导入快照尚无 .config/goal/evidence 证据包；保留为带原因例外终态，待证据登记后重新链接"
+    status: Verified
+    evidence_id: "kernel-acceptance-20260618"
     gate_id: G2
     owner: zone
-    updated_at: "2026-06-09"
+    updated_at: "2026-06-18"
 
   - source_id: SPEC-kernel-v1
     target_id: FR-KERNEL-003
     relation: contains
-    status: Dropped
-    evidence_id: ""
-    drop_reason: "kernel 导入快照尚无 .config/goal/evidence 证据包；保留为带原因例外终态，待证据登记后重新链接"
+    status: Verified
+    evidence_id: "kernel-acceptance-20260618"
     gate_id: G2
     owner: zone
-    updated_at: "2026-06-09"
+    updated_at: "2026-06-18"
 
   - source_id: SPEC-kernel-v1
     target_id: FR-KERNEL-004
     relation: contains
-    status: Dropped
-    evidence_id: ""
-    drop_reason: "kernel 导入快照尚无 .config/goal/evidence 证据包；保留为带原因例外终态，待证据登记后重新链接"
+    status: Verified
+    evidence_id: "kernel-acceptance-20260618"
     gate_id: G2
     owner: zone
-    updated_at: "2026-06-09"
+    updated_at: "2026-06-18"
 
   - source_id: SPEC-kernel-v1
     target_id: FR-KERNEL-005
     relation: contains
-    status: Dropped
-    evidence_id: ""
-    drop_reason: "kernel 导入快照尚无 .config/goal/evidence 证据包；保留为带原因例外终态，待证据登记后重新链接"
+    status: Verified
+    evidence_id: "kernel-acceptance-20260618"
     gate_id: G2
     owner: zone
-    updated_at: "2026-06-09"
+    updated_at: "2026-06-18"
 
   # FR → AC
   - source_id: FR-KERNEL-001
     target_id: AC-KERNEL-001
     relation: accepted_by
-    status: Dropped
-    evidence_id: ""
-    drop_reason: "kernel 导入快照尚无 .config/goal/evidence 证据包；保留为带原因例外终态，待证据登记后重新链接"
+    status: Verified
+    evidence_id: "kernel-acceptance-20260618"
     gate_id: G2
     owner: zone
-    updated_at: "2026-06-09"
+    updated_at: "2026-06-18"
 
   - source_id: FR-KERNEL-002
     target_id: AC-KERNEL-002
     relation: accepted_by
-    status: Dropped
-    evidence_id: ""
-    drop_reason: "kernel 导入快照尚无 .config/goal/evidence 证据包；保留为带原因例外终态，待证据登记后重新链接"
+    status: Verified
+    evidence_id: "kernel-acceptance-20260618"
     gate_id: G2
     owner: zone
-    updated_at: "2026-06-09"
+    updated_at: "2026-06-18"
 
   - source_id: FR-KERNEL-003
     target_id: AC-KERNEL-003
     relation: accepted_by
-    status: Dropped
-    evidence_id: ""
-    drop_reason: "kernel 导入快照尚无 .config/goal/evidence 证据包；保留为带原因例外终态，待证据登记后重新链接"
+    status: Verified
+    evidence_id: "kernel-acceptance-20260618"
     gate_id: G2
     owner: zone
-    updated_at: "2026-06-09"
+    updated_at: "2026-06-18"
 
   - source_id: FR-KERNEL-003
     target_id: AC-KERNEL-004
     relation: accepted_by
-    status: Dropped
-    evidence_id: ""
-    drop_reason: "kernel 导入快照尚无 .config/goal/evidence 证据包；保留为带原因例外终态，待证据登记后重新链接"
+    status: Verified
+    evidence_id: "kernel-acceptance-20260618"
     gate_id: G2
     owner: zone
-    updated_at: "2026-06-09"
+    updated_at: "2026-06-18"
 
   - source_id: FR-KERNEL-004
     target_id: AC-KERNEL-005
     relation: accepted_by
-    status: Dropped
-    evidence_id: ""
-    drop_reason: "kernel 导入快照尚无 .config/goal/evidence 证据包；保留为带原因例外终态，待证据登记后重新链接"
+    status: Verified
+    evidence_id: "kernel-acceptance-20260618"
     gate_id: G2
     owner: zone
-    updated_at: "2026-06-09"
+    updated_at: "2026-06-18"
 
   - source_id: FR-KERNEL-005
     target_id: AC-KERNEL-006
     relation: accepted_by
-    status: Dropped
-    evidence_id: ""
-    drop_reason: "kernel 导入快照尚无 .config/goal/evidence 证据包；保留为带原因例外终态，待证据登记后重新链接"
+    status: Verified
+    evidence_id: "kernel-acceptance-20260618"
     gate_id: G2
     owner: zone
-    updated_at: "2026-06-09"
+    updated_at: "2026-06-18"
 
   - source_id: FR-KERNEL-001
     target_id: AC-KERNEL-007
     relation: accepted_by
-    status: Dropped
-    evidence_id: ""
-    drop_reason: "kernel 导入快照尚无 .config/goal/evidence 证据包；保留为带原因例外终态，待证据登记后重新链接"
+    status: Verified
+    evidence_id: "kernel-acceptance-20260618"
     gate_id: G2
     owner: zone
-    updated_at: "2026-06-09"
+    updated_at: "2026-06-18"
 
   - source_id: FR-KERNEL-002
     target_id: AC-KERNEL-008
     relation: accepted_by
-    status: Dropped
-    evidence_id: ""
-    drop_reason: "kernel 导入快照尚无 .config/goal/evidence 证据包；保留为带原因例外终态，待证据登记后重新链接"
+    status: Verified
+    evidence_id: "kernel-acceptance-20260618"
     gate_id: G2
     owner: zone
-    updated_at: "2026-06-09"
+    updated_at: "2026-06-18"
 
   # AC → TASK
   - source_id: AC-KERNEL-001
     target_id: TASK-KERNEL-001
     relation: implemented_by
-    status: Dropped
-    evidence_id: ""
-    drop_reason: "kernel 导入快照尚无 .config/goal/evidence 证据包；保留为带原因例外终态，待证据登记后重新链接"
+    status: Verified
+    evidence_id: "kernel-acceptance-20260618"
     gate_id: G5
     owner: zone
-    updated_at: "2026-06-09"
+    updated_at: "2026-06-18"
 
   - source_id: AC-KERNEL-001
     target_id: TASK-KERNEL-003
     relation: implemented_by
-    status: Dropped
-    evidence_id: ""
-    drop_reason: "kernel 导入快照尚无 .config/goal/evidence 证据包；保留为带原因例外终态，待证据登记后重新链接"
+    status: Verified
+    evidence_id: "kernel-acceptance-20260618"
     gate_id: G5
     owner: zone
-    updated_at: "2026-06-09"
+    updated_at: "2026-06-18"
 
   - source_id: AC-KERNEL-002
     target_id: TASK-KERNEL-002
     relation: implemented_by
-    status: Dropped
-    evidence_id: ""
-    drop_reason: "kernel 导入快照尚无 .config/goal/evidence 证据包；保留为带原因例外终态，待证据登记后重新链接"
+    status: Verified
+    evidence_id: "kernel-acceptance-20260618"
     gate_id: G5
     owner: zone
-    updated_at: "2026-06-09"
+    updated_at: "2026-06-18"
 
   - source_id: AC-KERNEL-003
     target_id: TASK-KERNEL-004
     relation: implemented_by
-    status: Dropped
-    evidence_id: ""
-    drop_reason: "kernel 导入快照尚无 .config/goal/evidence 证据包；保留为带原因例外终态，待证据登记后重新链接"
+    status: Verified
+    evidence_id: "kernel-acceptance-20260618"
     gate_id: G5
     owner: zone
-    updated_at: "2026-06-09"
+    updated_at: "2026-06-18"
 
   - source_id: AC-KERNEL-004
     target_id: TASK-KERNEL-005
     relation: implemented_by
-    status: Dropped
-    evidence_id: ""
-    drop_reason: "kernel 导入快照尚无 .config/goal/evidence 证据包；保留为带原因例外终态，待证据登记后重新链接"
+    status: Verified
+    evidence_id: "kernel-acceptance-20260618"
     gate_id: G5
     owner: zone
-    updated_at: "2026-06-09"
+    updated_at: "2026-06-18"
 
   - source_id: AC-KERNEL-005
     target_id: TASK-KERNEL-006
     relation: implemented_by
-    status: Dropped
-    evidence_id: ""
-    drop_reason: "kernel 导入快照尚无 .config/goal/evidence 证据包；保留为带原因例外终态，待证据登记后重新链接"
+    status: Verified
+    evidence_id: "kernel-acceptance-20260618"
     gate_id: G5
     owner: zone
-    updated_at: "2026-06-09"
+    updated_at: "2026-06-18"
 
   - source_id: AC-KERNEL-006
     target_id: TASK-KERNEL-007
     relation: implemented_by
-    status: Dropped
-    evidence_id: ""
-    drop_reason: "kernel 导入快照尚无 .config/goal/evidence 证据包；保留为带原因例外终态，待证据登记后重新链接"
+    status: Verified
+    evidence_id: "kernel-acceptance-20260618"
     gate_id: G5
     owner: zone
-    updated_at: "2026-06-09"
+    updated_at: "2026-06-18"
 
   - source_id: AC-KERNEL-007
     target_id: TASK-KERNEL-008
     relation: implemented_by
-    status: Dropped
-    evidence_id: ""
-    drop_reason: "kernel 导入快照尚无 .config/goal/evidence 证据包；保留为带原因例外终态，待证据登记后重新链接"
+    status: Verified
+    evidence_id: "kernel-acceptance-20260618"
     gate_id: G5
     owner: zone
-    updated_at: "2026-06-09"
+    updated_at: "2026-06-18"
 
   - source_id: AC-KERNEL-008
     target_id: TASK-KERNEL-000
     relation: implemented_by
-    status: Dropped
-    evidence_id: ""
-    drop_reason: "kernel 导入快照尚无 .config/goal/evidence 证据包；保留为带原因例外终态，待证据登记后重新链接"
+    status: Verified
+    evidence_id: "kernel-acceptance-20260618"
     gate_id: G5
     owner: zone
-    updated_at: "2026-06-09"
+    updated_at: "2026-06-18"
