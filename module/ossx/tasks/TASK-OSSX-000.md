@@ -31,7 +31,7 @@ validation:
 ## Non-scope
 
 - Do not implement BlobStore behavior, adapter logic, multipart operations, presign policy, or observability hooks.
-- Do not introduce provider SDK types, global config loading, or direct configx dependencies into public ossx APIs.
+- Do not introduce Aliyun OSS SDK types, global config loading, or direct configx dependencies into public ossx APIs.
 - Do not mark `module/ossx/SPEC.md` as Approved or write arbiter approval evidence.
 
 ## Prompt

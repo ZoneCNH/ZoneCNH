@@ -1,6 +1,6 @@
 {
   "schema_version": "fleet-status/v1",
-  "generated_at": "2026-06-18T02:00:00Z",
+  "generated_at": "2026-06-17T23:45:29Z",
   "generated_by": "xlibgate fleet-status",
   "source": ".foundationx/status/index.json",
   "total_modules": 21,
@@ -14,7 +14,7 @@
   },
   "summary": {
     "spec_complete": 21,
-    "impl_complete": 20,
+    "impl_complete": 21,
     "release_published": 21,
     "live_integration": 7,
     "factory_grade": 17
@@ -217,16 +217,16 @@
     },
     "ossx": {
       "layer": "L2",
-      "version": "v1.0.1",
+      "version": "v1.0.2-alpha",
       "spec": true,
-      "impl": false,
+      "impl": true,
       "release": true,
       "live": true,
       "ci": true,
       "adopt": "N/A",
       "soak": false,
       "factory": false,
-      "note": "Aliyun OSS L2 adapter；远程仓库 0 pkg 源码（54KB，仅 docs/scripts/.repo-contract.yaml/.env.example/LICENSE/README）；release v1.0.1 tag 存在但实测无可 import 包；BLK-010 open（impl=false 重置事实）；factory=false 直到 pkg/ossx 源码补齐 + integration evidence 归档。"
+      "note": "Aliyun OSS L2 adapter；v1.0.2-alpha 已交付 pkg/ossx 源码（8 文件/34KB/12 测试/stdlib-only/import 可编译 github.com/ZoneCNH/ossx/pkg/ossx）；BLK-010 resolved（2026-06-18 联网复核：前提\"0 pkg 源码\"被推翻）；impl=true 重置事实；factory=false 保持（真实 Aliyun adapter adapters/aliyun + 真实 OSS integration evidence 仍缺，由 TASK-OSSX-005 跟踪）；InMemoryAdapter 已实现，multipart/presign 部分 ErrNotImplemented。"
     },
     "clickhousex": {
       "layer": "L2",

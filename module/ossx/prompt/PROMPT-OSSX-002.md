@@ -17,7 +17,7 @@ Implement core BlobStore operations, streaming semantics, and typed error mappin
 
 - Keep changes inside `module/ossx` unless the task is explicitly widened by maintainers.
 - Do not import `configx` from ossx packages.
-- Do not expose provider SDK types in public ossx APIs.
+- Do not expose Aliyun OSS SDK types in public ossx APIs.
 - Prefer small tests that prove the acceptance criteria before broad implementation.
 
 ## Done when

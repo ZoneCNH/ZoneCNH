@@ -22,7 +22,7 @@ files:
 acceptance_criteria:
   - Unsafe keys and oversized metadata are rejected.
   - Checksum and policy validation return typed errors.
-  - Metadata round trips without provider-specific headers.
+  - Metadata round trips without Aliyun OSS-specific headers.
 validation:
   - go test ./module/ossx/... -run "Test(Key|Metadata|Checksum|Policy)"
 ```
@@ -30,7 +30,7 @@ validation:
 ## Non-scope
 
 - Do not implement BlobStore IO methods, streaming, multipart upload, presign URLs, or concrete storage adapters.
-- Do not expose provider-specific headers, SDK structs, or credential material in object metadata and policy APIs.
+- Do not expose Aliyun OSS-specific headers, SDK structs, or credential material in object metadata and policy APIs.
 - Do not change dependency guard, release evidence, or module approval status.
 
 ## Prompt

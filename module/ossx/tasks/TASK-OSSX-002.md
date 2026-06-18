@@ -29,8 +29,8 @@ validation:
 
 ## Non-scope
 
-- Do not implement multipart lifecycle, presign policy, concrete S3-compatible adapters, or observability release gates.
-- Do not add provider SDK types to public BlobStore interfaces or bypass adapter error translation.
+- Do not implement multipart lifecycle, presign policy, the concrete Aliyun adapter, or observability release gates.
+- Do not add Aliyun OSS SDK types to public BlobStore interfaces or bypass adapter error translation.
 - Do not expand the task to production credentials, external buckets, or implementation tasks outside the listed files.
 
 ## Prompt
