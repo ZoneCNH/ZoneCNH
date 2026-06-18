@@ -432,13 +432,13 @@ gates:
     details:
     - check: 23 节结构完整
       status: PASS
-      evidence: SPEC-kernel-v1.1.0.md 23 节全覆盖
-    - check: 5 FR / 9 BR / 8 AC / 18 TC
+      evidence: module/kernel/SPEC.md v2.0.0 23 节全覆盖
+    - check: 12 FR / 12 BR / 18 AC / 18 TC
       status: PASS
       evidence: TRACEABILITY.md 全部列出
     - check: Spec Approved
       status: PASS
-      evidence: 'status: Approved, version: v1.1.0'
+      evidence: 'status: Approved, version: v2.0.0'
 - gate_id: GK-3
   gate_name: Design Gate
   type: Semantic
@@ -483,10 +483,10 @@ gates:
     details:
     - check: DAG 完整
       status: PASS
-      evidence: IMPLEMENTATION-PLAN.md 9 阶段 11 任务
+      evidence: IMPLEMENTATION-PLAN.md 覆盖 TASK-KERNEL-000~016（含 015a-c、016a-c）
     - check: 关键路径清晰
       status: PASS
-      evidence: 000→001→002/003→004→005→007→009→010
+      evidence: 000→核心子包→015/016 收口门禁
 - gate_id: GK-5
   gate_name: Task Gate
   type: Executable
@@ -505,9 +505,9 @@ gates:
     score: 95
     threshold: 90
     details:
-    - check: 11 个 TASK 文件存在
+    - check: 23 个 TASK 文件存在
       status: PASS
-      evidence: TASK-KERNEL-000~010.md
+      evidence: TASK-KERNEL-000~016.md（含 015a-c、016a-c）
     - check: DAG 依赖一致
       status: PASS
       evidence: depends_on 与 IMPLEMENTATION-PLAN.md 一致
@@ -541,9 +541,9 @@ gates:
     - check: 4 CI workflows (ci/release/security/sync-watch)
       status: PASS
       evidence: .github/workflows/
-    - check: 22 Task 文档存在
+    - check: 23 Task 文档存在
       status: PASS
-      evidence: module/kernel/tasks/ (22 files)
+      evidence: module/kernel/tasks/ (23 files)
 - gate_id: GK-7
   gate_name: Test Gate
   type: Executable
@@ -575,26 +575,32 @@ gates:
   gate_name: Evidence Gate
   type: Executable
   blocking: true
-  status: PASS
+  status: BLOCKED
   checked_at: '2026-06-15T21:21:47Z'
   checked_by: goal-governance
   goal_id: GOAL-KERNEL-20260609-001
   threshold:
-    pass: 90
-    pass_with_risk_min: 85
-    pass_with_risk_max: 89
-  allow_pass_with_risk: true
+    pass: 98
+    pass_with_risk_min: null
+    pass_with_risk_max: null
+  allow_pass_with_risk: false
   result:
-    verdict: PASS
-    score: 95
-    threshold: 90
+    verdict: BLOCKED
+    score: 0
+    threshold: 98
     details:
-    - check: SPEC.md (56k, Approved)
+    - check: SPEC.md (Approved)
       status: PASS
       evidence: 'module/kernel/SPEC.md status: Approved'
     - check: TRACEABILITY.md 完整 7 列矩阵
       status: PASS
       evidence: module/kernel/TRACEABILITY.md (12 FR, BR, AC, TC)
+    - check: Goal Matrix kernel edges linked to evidence
+      status: BLOCKED
+      evidence: ".config/goal/matrix/matrix.yaml: kernel edges are Dropped with empty evidence_id"
+    - check: .config/goal/evidence evidence package registered
+      status: BLOCKED
+      evidence: missing kernel evidence package for current acceptance target
     - check: GitHub Release manifest
       status: PASS
       evidence: release/manifest/latest.json (kernel repo)
@@ -605,19 +611,19 @@ gates:
   gate_name: Review Gate
   type: Semantic
   blocking: true
-  status: PASS
+  status: BLOCKED
   checked_at: '2026-06-15T21:21:47Z'
   checked_by: goal-governance
   goal_id: GOAL-KERNEL-20260609-001
   threshold:
-    pass: 90
-    pass_with_risk_min: 85
-    pass_with_risk_max: 89
-  allow_pass_with_risk: true
+    pass: 98
+    pass_with_risk_min: null
+    pass_with_risk_max: null
+  allow_pass_with_risk: false
   result:
-    verdict: PASS
-    score: 95
-    threshold: 90
+    verdict: BLOCKED
+    score: 0
+    threshold: 98
     details:
     - check: SPEC Approved
       status: PASS
@@ -625,29 +631,32 @@ gates:
     - check: GitHub 0 open issues
       status: PASS
       evidence: github.com/ZoneCNH/kernel issues=0
-    - check: 'FACT layer: factory=true, no blockers'
-      status: PASS
-      evidence: .foundationx/status/index.json
+    - check: 四源 98+ arbiter 归档
+      status: BLOCKED
+      evidence: module/kernel/analysis-records/ 只有历史分析；缺少当前 claude/codex/copilot/rules + arbiter pass 归档
+    - check: FACT layer factory=false until BLK-011 closes
+      status: BLOCKED
+      evidence: .foundationx/status/index.json / .foundationx/blockers.json
     - check: 4 个 retrospective analysis 文档
       status: PASS
-      evidence: module/kernel/analysis-records/
+      evidence: module/kernel/analysis-records/（历史参考，不构成当前 Gate pass）
 - gate_id: GK-10
   gate_name: Release Gate
   type: Hybrid
   blocking: true
-  status: PASS
+  status: BLOCKED
   checked_at: '2026-06-15T21:21:47Z'
   checked_by: goal-governance
   goal_id: GOAL-KERNEL-20260609-001
   threshold:
-    pass: 90
+    pass: 98
     pass_with_risk_min: null
     pass_with_risk_max: null
   allow_pass_with_risk: false
   result:
-    verdict: PASS
-    score: 96
-    threshold: 90
+    verdict: BLOCKED
+    score: 0
+    threshold: 98
     details:
     - check: GitHub Release v1.0.0 已发布
       status: PASS
@@ -655,11 +664,11 @@ gates:
     - check: release CI workflow
       status: PASS
       evidence: kernel .github/workflows/release.yml
-    - check: 无 release_blocking 风险
-      status: PASS
-      evidence: '.foundationx/blockers.json: kernel not in factory_blocking_modules'
-    - check: 'FACT layer: spec/impl/release/factory all true'
-      status: PASS
+    - check: 无 factory_blocking 风险
+      status: BLOCKED
+      evidence: '.foundationx/blockers.json: kernel in factory_blocking_modules via BLK-011'
+    - check: 'FACT layer: spec/impl/release true, factory false'
+      status: BLOCKED
       evidence: .foundationx/status/index.json
 - gate_id: GK-11
   gate_name: Retrospective Gate
