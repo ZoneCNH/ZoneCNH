@@ -124,4 +124,4 @@
 - 当前文档只记录验收口径，不替代运行时代码仓库的最新 CI 结果。
 - 当前代码侧验证可以支持 implementation/release candidate；Factory 验收仍由 BLK-011 阻塞。
 - 若上表存在 Pending、Draft、Blocked、Open 或未登记状态，发布前必须补充证据或在模块追溯矩阵中登记豁免理由。
-- 若 SPEC/TRACEABILITY 缺少 AC 或 TC，必须先补齐追溯矩阵，再执行发布验收。
+- SPEC/TRACEABILITY 已登记 AC/TC 主链路；当前主要缺口是 /home/kernel 最新 CI、覆盖率、race/vet 与 Factory BLK-011 解除证据需要归档。
