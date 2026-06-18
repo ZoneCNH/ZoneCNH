@@ -2,15 +2,15 @@
 
 - Status: Generated from current module SSOT
 - Last-Updated: 2026-06-18
-- Module-Version: v1.0.0
-- Module-State: 已发布（代码侧）；代码侧验收 2026-06-18 全部通过；Factory 验收仍由 BLK-011 阻塞（Goal Matrix / 四源 arbiter 归档）
+- Module-Version: v1.1.0
+- Module-State: 已发布 v1.1.0（代码侧 + 发布门禁全绿）；Factory 验收仍由 BLK-011 阻塞（Goal Matrix / 四源 arbiter 归档）
 - Layer: L0 基座核心
 - Runtime-Repo: /home/kernel
 - Source: goal.md, SPEC.md, DESIGN.md, TRACEABILITY.md, IMPLEMENTATION-PLAN.md, tasks/, prompt/
 - Evidence: `.config/goal/evidence/kernel-acceptance-20260618/`（test ✅ / race ✅ / vet ✅ / coverage 100% ✅ / stdlib-only ✅ / secrets ✅）
 
 > 本清单用于验收 kernel 是否达到可发布、可追溯、可复验状态。除非条目明确记录为已通过，默认需要在运行时代码仓库重新执行验证并补充证据。
-> 当前统一口径：kernel 可作为 v1.0.0 implementation/release candidate；本次（2026-06-18）代码侧门禁全部通过并归档于 `.config/goal/evidence/kernel-acceptance-20260618/`；Factory 验收仍需 Goal Matrix 边从 Dropped 改为 Verified、四源 98+ arbiter 归档同步闭合。
+> 当前统一口径：kernel 已发布 v1.1.0（PR #24，tag v1.1.0）；本次（2026-06-18）代码侧门禁全部通过（含 bench-check 门禁修复）并归档于 `.config/goal/evidence/kernel-acceptance-20260618/`；Factory 验收仍需 Goal Matrix 边从 Dropped 改为 Verified、四源 98+ arbiter 归档同步闭合。
 
 ## 1. 验收命令清单
 
@@ -118,7 +118,7 @@
 - [ ] 四源 98+ arbiter 当前归档存在，且 FACT layer 中 kernel 不在 factory_blocking_modules。
 - [x] 所有外部服务依赖：N/A — kernel 为 stdlib-only L0 原语，无外部服务依赖。
 - [x] 安全检查通过（2026-06-18 scripts/check_secrets.sh：secret check passed）。
-- [x] 版本号、发布标签、CHANGELOG 或 release note 与本目录状态一致（v1.0.0 — 2026-06-12 GitHub Release 已发布）。
+- [x] 版本号、发布标签、CHANGELOG 或 release note 与本目录状态一致（v1.1.0 — 2026-06-18 GitHub Release 已发布）。
 
 ## 6. 当前缺口登记
 

@@ -2,7 +2,7 @@
 
 - Status: Generated from current module SSOT
 - Last-Updated: 2026-06-18
-- Module-Version: v1.0.0
+- Module-Version: v1.1.0
 - Module-State: 已发布（代码侧）；代码侧验收 2026-06-18 全部通过；Factory 验收仍由 BLK-011 阻塞
 - Layer: L0 基座核心
 - Runtime-Repo: /home/kernel
@@ -114,4 +114,4 @@
 - [x] 依赖边界符合 FOUNDATION-DEPS.yaml，不引入未授权运行时依赖（stdlib-only check passed）。
 - [x] 运行时代码仓库 /home/kernel 的 lint、typecheck、test、race、`make coverage-threshold` 验证证据已归档（.config/goal/evidence/kernel-acceptance-20260618/）。
 - [~] `.config/goal/evidence/kernel-acceptance-20260618/` 已归档代码侧证据；Goal Matrix Verified 与四源 98+ arbiter 仍由 .config/goal pipeline 单独执行（BLK-011 open）。
-- [x] 发布说明、版本标签与本目录登记状态一致（v1.0.0 — 2026-06-12 GitHub Release）。
+- [x] 发布说明、版本标签与本目录登记状态一致（v1.1.0 — 2026-06-18 GitHub Release）。
