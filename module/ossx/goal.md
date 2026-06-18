@@ -1,12 +1,12 @@
 # ossx 目标文档（Goal）
 
-> 状态：Review
-> 最近更新：2026-06-12
+> 状态：Implemented
+> 最近更新：2026-06-18
 > 适用模块：`module/ossx`
 
 ## 1. 模块定位
 
-`ossx` 是 HAI 平台的对象存储扩展模块，负责提供 Blob/Object 存储抽象、流式读写、分片上传、预签名 URL、校验和、生命周期策略与审计观测能力。模块面向业务层提供稳定接口，屏蔽底层 S3 兼容存储或本地测试适配器差异。
+`ossx` 是 HAI 平台的 **Aliyun OSS 专用 adapter**，负责提供 BlobStore 抽象、流式读写、分片上传、预签名 URL、校验和、生命周期策略与审计观测能力。模块面向业务层提供稳定接口，屏蔽底层 Aliyun OSS SDK 差异（测试用 InMemoryAdapter，生产用 adapters/aliyun）。
 
 ## 2. 核心目标
 
@@ -21,7 +21,7 @@
 
 - 不实现业务领域对象、租户业务规则或 L2.5 应用服务。
 - 不直接提供数据库、消息队列或缓存能力。
-- 不在公共 API 暴露 S3、MinIO、云厂商 SDK 类型。
+- 不在公共 API 暴露 Aliyun OSS SDK 类型（SDK 隔离在 adapters/aliyun）。
 - 不直接依赖或导入 `configx`；配置装配由上层组合根完成。
 - 不依赖其他存储扩展模块，例如 `natsx`、`kafkax` 或 `redisx`。
 
@@ -29,7 +29,7 @@
 
 - 平台服务：需要对象存储能力的 L2/L3 服务。
 - 后台作业：需要流式上传、分片上传、清理过期分片或校验对象完整性的任务。
-- 测试与示例：需要 fake adapter 或 S3 兼容 adapter 的契约测试。
+- 测试与示例：需要 InMemoryAdapter（fake）或真实 Aliyun adapter 的契约测试。
 
 ## 5. 边界与依赖规则
 

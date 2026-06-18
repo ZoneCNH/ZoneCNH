@@ -1,13 +1,17 @@
 # ossx 规格
 
-- Status: Approved
-- Spec-Version: v1.0.0
-- Last-Updated: 2026-06-14
+- Status: Implemented
+- Spec-Version: v1.2.0
+- Last-Updated: 2026-06-18
 - Layer: 基座 · 对象存储扩展
-- Version: v1.0.1
+- Version: v1.1.0（远程 `github.com/ZoneCNH/ossx` 已发布）
+- Module-Identity: Aliyun OSS 专用 adapter（单 provider；非通用对象存储抽象 / adapter SPI / S3-compatible）
 - Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `kernel`
 
-> 公开投影 caveat：Status=Approved 与 100.0% 覆盖证据不等同于 factory-grade；机器事实层保持 factory=false。
+> 身份收敛（2026-06-18）：本模块为 Aliyun OSS 专用 adapter，对接 `github.com/ZoneCNH/ossx`。先前的 adapter SPI / S3-compatible / 多 provider 措辞已收敛删除。
+> 实现状态（2026-06-18）：远程 `github.com/ZoneCNH/ossx` 已发布 **v1.1.0**——真实 Aliyun adapter（`adapters/aliyun/`）+ 流式 SPI + 完整 multipart + 真实 presign + 策略校验 + retry/circuit + observex 兼容 hooks。24 单元测试 + 5 集成测试（真实 bucket `x-go`，TC-010）全过。
+> `factory=false` 保持：公开 evidence archive（BLK-008）仍待归档；真实 adapter + 集成证据已齐备。
+> Status=Implemented：FR-001..FR-010 全部实现并通过 TC。尚未通过 pipeline-arbiter 四源 98 分门禁（治理门禁，非实现门禁）。
 
 ---
 
@@ -362,4 +366,6 @@ Public API changes after first implementation require a compatibility note, migr
 
 | 日期 | 版本 | 变更内容 | 作者 |
 |------|------|----------|------|
+| 2026-06-18 | v1.2.0 | 实现 Status=Implemented：远程 ossx v1.1.0 已发布——真实 Aliyun adapter + 流式 SPI + 完整 multipart + 真实 presign + 策略 + retry/circuit + observex hooks。24 单测 + 5 集成测试（真 bucket x-go，TC-010）全过。新增 FEATURES.md + ACCEPTANCE.md | ZoneCNH |
+| 2026-06-18 | v1.1.0 | 身份收敛为 Aliyun OSS 专用 adapter：移除 adapter SPI / S3-compatible / 多 provider 措辞；FR-008 重写为 Aliyun adapter 隔离；adapters/s3→adapters/aliyun；Status Approved→Review | ZoneCNH |
 | 2026-06-14 | v1.0.0 | 初始版本 | ZoneCNH |
