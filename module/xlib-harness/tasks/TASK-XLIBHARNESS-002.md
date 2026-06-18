@@ -5,9 +5,12 @@ spec_ref:
 acceptance_criteria:
   - "FR-002 baseline coverage"
 files:
-  - "TBD"
+  - "/home/xlib-harness/internal/harness/harness.go"
+  - "/home/xlib-harness/internal/harness/harness_test.go"
+  - "/home/xlib-harness/fixtures/compliant-module/SPEC.md"
+  - "/home/xlib-harness/fixtures/broken-module/SPEC.md"
 priority: P1
-status: pending
+status: completed
 ---
 
 # TASK-XLIBHARNESS-002: FR-002
@@ -22,4 +25,8 @@ FR-002 实现与验证
 
 ## Acceptance
 
-- [ ] FR-002 baseline coverage
+- [x] FR-002 baseline coverage
+
+## Evidence
+
+- /home/xlib-harness@335eef9：`go test ./...`、`go test ./... -race -count=1`、`go vet ./...`、coverage、benchmark 与 CLI smoke 均 PASS。

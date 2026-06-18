@@ -2,13 +2,14 @@
 
 - Status: Generated from current module SSOT
 - Last-Updated: 2026-06-18
-- Module-Version: v0.1.0
+- Module-Version: v0.1.1
 - Module-State: 已发布
 - Layer: L1 执行器
 - Runtime-Repo: /home/xlib-harness
+- Acceptance-Baseline: /home/xlib-harness@335eef9
 - Source: goal.md, SPEC.md, TRACEABILITY.md, IMPLEMENTATION-PLAN.md, tasks/
 
-> 本清单用于验收 xlib-harness 是否达到可发布、可追溯、可复验状态。除非条目明确记录为已通过，默认需要在运行时代码仓库重新执行验证并补充证据。
+> 本清单用于验收 xlib-harness 是否达到可发布、可追溯、可复验状态。未明确标记为 ✅ 的条目发布前不得视为通过。
 
 ## 1. 验收命令清单
 
@@ -37,12 +38,12 @@
 
 | ID | 测试项 | 关联要求/验收/任务 | 当前登记状态 | 来源 |
 | --- | --- | --- | --- | --- |
-| TC-001 | FR-001 | xlib-harness generate test-module --output /tmp/harness-test && diff <(ls /tmp/harness-test/module/test-module/) <(echo -e "SPEC.md\nTRACEABILITY.md\ngoal.md\ntasks/\nIMPLEMENTATION-PLAN.md") | - | TRACEABILITY.md |
-| TC-002 | FR-002 | xlib-harness check fixtures/compliant-module --profile spec（expect pass）; xlib-harness check fixtures/broken-module --profile spec（expect itemized failures） | - | TRACEABILITY.md |
-| TC-003 | FR-003 | xlib-harness check fixtures/module-with-bad-dep --profile boundary（expect dependency violation reported） | - | TRACEABILITY.md |
-| TC-004 | FR-004 | xlib-harness validate --template（expect xlib-standard template passes all checks） | - | TRACEABILITY.md |
-| TC-005 | FR-005 | xlib-harness check fixtures/format-issues --profile spec（expect format issues itemized） | - | TRACEABILITY.md |
-| TC-006 | FR-006 | xlib-harness check fixtures/broken-trace --profile full（expect broken FR→AC→TC chain reported with gap details） | - | TRACEABILITY.md |
+| TC-001 | FR-001 | xlib-harness generate test-module --output /tmp/harness-test && diff <(ls /tmp/harness-test/module/test-module/) <(echo -e "SPEC.md\nTRACEABILITY.md\ngoal.md\ntasks/\nIMPLEMENTATION-PLAN.md") | ✅ | TRACEABILITY.md |
+| TC-002 | FR-002 | xlib-harness check fixtures/compliant-module --profile spec（expect pass）; xlib-harness check fixtures/broken-module --profile spec（expect itemized failures） | ✅ | TRACEABILITY.md |
+| TC-003 | FR-003 | xlib-harness check fixtures/module-with-bad-dep --profile boundary（expect dependency violation reported） | ✅ | TRACEABILITY.md |
+| TC-004 | FR-004 | xlib-harness validate --template（expect xlib-standard template passes all checks） | ✅ | TRACEABILITY.md |
+| TC-005 | FR-005 | xlib-harness check fixtures/format-issues --profile spec（expect format issues itemized） | ✅ | TRACEABILITY.md |
+| TC-006 | FR-006 | xlib-harness check fixtures/broken-trace --profile full（expect broken FR→AC→TC chain reported with gap details） | ✅ | TRACEABILITY.md |
 
 ## 4. 覆盖闭合验收
 
@@ -62,17 +63,28 @@
 | NFR-003 | Security | generate 写入路径限制在 module/ 下；不读取密钥；不执行远程代码 / path traversal test: xlib-harness generate ../escape 应拒绝 | ✅ | TRACEABILITY.md |
 | NFR-004 | Dependency Boundary | 允许只读 xlib-standard 模板；禁止 github.com/ZoneCNH/xlib-standard Go import/module dependency，并禁止 observex/configx/resiliencx/schedulex/业务域模块 / dependency graph analysis: go list -deps/go list -m + boundary allow/deny list | ✅ | TRACEABILITY.md |
 
-## 5. 发布 DoD 清单
+## 5. 验收证据归档
 
-- [ ] FEATURES.md 的 FR、BR/NFR、任务清单与 SPEC/TRACEABILITY 当前登记一致。
-- [ ] ACCEPTANCE.md 的 AC、TC 与运行时代码测试名、证据文件或 CI 记录一致。
-- [ ] 运行时代码仓库 /home/xlib-harness 通过 go test、go test -race、go vet 与覆盖率门槛。
-- [ ] 所有外部服务依赖有本地可重复的测试替身或明确 live-gate 证据。
-- [ ] 安全检查确认没有凭证、私有端点、账户 ID 或实盘配置进入公开文档与代码。
-- [ ] 版本号、发布标签、CHANGELOG 或 release note 与本目录状态一致。
+| 证据 | 命令/场景 | 结果 |
+| --- | --- | --- |
+| 单元测试 | `cd /home/xlib-harness && go test ./...` | PASS |
+| 竞态检查 | `cd /home/xlib-harness && go test ./... -race -count=1` | PASS |
+| 静态检查 | `cd /home/xlib-harness && go vet ./...` | PASS |
+| 覆盖率 | `cd /home/xlib-harness && go test ./... -coverprofile=coverage.out && go tool cover -func=coverage.out` | PASS；total `88.8%`，核心包 `89.2%` |
+| 性能基线 | `cd /home/xlib-harness && go test -bench=. ./...` | PASS；`BenchmarkGenerate` 约 `220281 ns/op`，`BenchmarkCheckFullProfile` 约 `223926 ns/op` |
+| CLI smoke | build、dependency-boundary、template-validate、generate、check-full、readonly、negative-gates、explicit-xlib-standard-rejected、security-boundary | 全部 PASS |
+| 安全扫描 | secret pattern scan | PASS |
 
-## 6. 当前缺口登记
+## 6. 发布 DoD 清单
 
-- 当前文档只记录验收口径，不替代运行时代码仓库的最新 CI 结果。
-- 若上表存在 Pending、Draft、Blocked、Open 或未登记状态，发布前必须补充证据或在模块追溯矩阵中登记豁免理由。
-- SPEC/TRACEABILITY 已登记 AC/TC 主链路；当前主要缺口是 /home/xlib-harness 最新测试、race/vet/lint、覆盖率与 harness 集成证据需要复验归档。
+- [x] FEATURES.md 的 FR、BR/NFR、任务清单与 SPEC/TRACEABILITY 当前登记一致。
+- [x] ACCEPTANCE.md 的 AC、TC 与运行时代码测试名、证据文件或 CI 记录一致。
+- [x] 运行时代码仓库 /home/xlib-harness 通过 go test、go test -race、go vet 与覆盖率门槛。
+- [x] 所有外部服务依赖有本地可重复的测试替身或明确 live-gate 证据。
+- [x] 安全检查确认没有凭证、私有端点、账户 ID 或实盘配置进入公开文档与代码。
+- [x] 版本号、发布标签、CHANGELOG 或 release note 与本目录状态一致。
+
+## 7. 当前缺口登记
+
+- 无开放发布缺口。
+- 远端 GitHub Actions 结果作为 v0.1.1 发布后的补充信号；当前发布判定以 /home/xlib-harness 本地可复验命令与 release notes 为准。
