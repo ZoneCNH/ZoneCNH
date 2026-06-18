@@ -31,7 +31,7 @@ TASK-SCHEDULEX-000 (Phase 1: foundation)
 | TASK-SCHEDULEX-000 | Core implementation | 2h |
 | TASK-SCHEDULEX-001 | Core implementation | 2h |
 
-### Phase 2: Features (10 tasks)
+### Phase 2: Features (9 tasks)
 
 | Task | Scope | Effort |
 |------|-------|--------|

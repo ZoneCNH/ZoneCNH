@@ -242,3 +242,12 @@ Locker
 - 支持暂停/恢复（pause/resume）和手动触发（triggerNow）。
 - 支持幂等 key（idempotencyKey）。
 - 支持 TaskStore SPI 实现状态持久化。
+- **v1.1 运行时对齐缺口**（基于运行时 v1.0.0 实测，对应 SPEC §22 OQ-005~010）：
+  - 支持 `Cancel(id)` 单 job 取消 API（对应 FR-005 / AC-014/015，v1.0 运行时无此方法）。
+  - 支持 `OverlapPolicy = Replace` 策略（对应 FR-003 / AC-010，v1.0 仅 Skip/QueueOne/Allow）。
+  - 新增 `ErrShutdownTimeout` 专属停机超时错误（对应 FR-006 / AC-017，v1.0 Shutdown 返回 ctx.Err()）。
+  - 提供完整 `JobStatus{State, RunCount, ErrorCount, ...}` + `JobState` 枚举查询能力（对应 SPEC §8.3，v1.0 仅有 Snapshot）。
+  - 集成 metrics / 结构化 log / trace span（对应 NFR-O01，v1.0 仅有 EventSink，无 metric/log/span）。
+  - 增加 Locker TTL ≥ job timeout 的配置校验（对应 NFR-S01 / BR-006 / AC-021，v1.0 未做校验）。
+  - 增加 `Delay` 首次延迟触发器（对应 FR-002 / AC-007，v1.0 需用 Once/DailyAt 替代）。
+  - 提供 YAML `SchedulerConfig` 与 functional options 的桥接（对应 SPEC §9/§10，v1.0 仅 functional options）。
