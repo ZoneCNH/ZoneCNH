@@ -89,7 +89,7 @@ L2.5: domainx / decimalx / domain-market / domain-macro / domain-exchange (5/5 �
 
 > **公开投影口径**：版本 / release / factory 状态以 `.foundationx/status/index.json` + `.foundationx/blockers.json` 为准；BLK-001~008 + BLK-011 已 resolved，BLK-009 / BLK-010 仍 open；Foundation 整体维持 non-factory 投影。
 >
-> `configx` v1.1.0、`observex` v0.3.1、`testkitx` v0.4.0、`resiliencx` v0.4.9 已发布；此前版本误标已修正。
+> `configx` v1.1.0、`observex` v0.3.3、`testkitx` v0.4.0、`resiliencx` v0.4.9 已发布；此前版本误标已修正。
 
 ### 基座 · 存储与中间件
 
