@@ -34,8 +34,8 @@ status: pending
 
 | Requirement | Description      | Acceptance Criteria            |
 | ----------- | ---------------- | ------------------------------ |
-| §9.6        | 公共错误变量定义 | 错误变量均为 `errors.New` 创建 |
-| §15.1       | go.mod 依赖声明  | 仅必要依赖                     |
+| §8.6        | 公共错误变量定义 | 错误变量均为 `errors.New` 创建 |
+| §14.1       | go.mod 依赖声明  | 仅必要依赖                     |
 
 ## Test Plan
 
@@ -45,7 +45,7 @@ status: pending
 
 ## Implementation Notes
 
-- 错误变量：`ErrInvalidTrigger`、`ErrDuplicateJob`、`ErrJobNotFound`、`ErrShutdownTimeout`、`ErrLockFailed`
+- 错误变量：`ErrSchedulerClosed`、`ErrJobExists`、`ErrInvalidJob`、`ErrInvalidOption`、`ErrLockUnavailable`
 
 ## Implementation Plan
 
@@ -57,6 +57,6 @@ status: pending
 
 ### Risk Assessment
 
-| Risk         | Probability | Impact | Mitigation        |
-| ------------ | ----------- | ------ | ----------------- |
-| 错误变量遗漏 | Low         | Low    | 对照 §10 列表核对 |
+| Risk         | Probability | Impact | Mitigation             |
+| ------------ | ----------- | ------ | ---------------------- |
+| 错误变量遗漏 | Low         | Low    | 对照 §8.6 列表核对     |

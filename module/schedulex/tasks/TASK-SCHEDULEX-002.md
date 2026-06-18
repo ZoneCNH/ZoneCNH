@@ -17,12 +17,12 @@ files:
   - "scheduler_impl.go"
   - "scheduler_test.go"
 acceptance_criteria:
-  - "Schedule 注册 job 并返回 JobID"
-  - "cron 语法错误时返回 ErrInvalidTrigger"
-  - "interval <= 0 时返回 ErrInvalidTrigger"
-  - "重复 JobID 返回 ErrDuplicateJob"
-  - "Cancel 取消存在的 job"
-  - "Cancel 不存在的 job 返回 ErrJobNotFound"
+  - "AddJob 注册 job 并返回 nil（job 标识为 Job.Name()）"
+  - "trigger 不合法时返回 ErrInvalidJob"
+  - "interval <= 0 时返回 ErrInvalidJob"
+  - "重复 Job name 返回 ErrJobExists"
+  - "Cancel 取消存在的 job（v1.1 缺口，运行时未实现）"
+  - "Cancel 不存在的 job 返回错误（v1.1 缺口）"
   - "Start 启动调度循环"
 depends_on:
   - "TASK-SCHEDULEX-001"
@@ -50,11 +50,11 @@ status: pending
 
 | Test Case | Type | Description                            |
 | --------- | ---- | -------------------------------------- |
-| TC-001    | Unit | Schedule 合法 cron job：返回 JobID     |
-| TC-009    | Unit | Schedule 重复 ID：ErrDuplicateJob      |
-| TC-001    | Unit | Schedule 合法 interval job：返回 JobID |
-| TC-005    | Unit | Cancel 存在的 job：返回 nil            |
-| TC-005    | Unit | Cancel 不存在的 job：ErrJobNotFound    |
+| TC-001    | Unit | AddJob 合法 cron job：返回 nil         |
+| TC-009    | Unit | AddJob 重复 name：ErrJobExists         |
+| TC-001    | Unit | AddJob 合法 interval job：返回 nil     |
+| TC-005    | Unit | Cancel 存在的 job：返回 nil（v1.1 缺口） |
+| TC-005    | Unit | Cancel 不存在的 job：错误（v1.1 缺口）  |
 | —         | Unit | Start 后 job 按时触发                  |
 
 ## Implementation Notes
@@ -68,9 +68,9 @@ status: pending
 | Step | Description                                              | Deliverables        | Verification          |
 | ---- | -------------------------------------------------------- | ------------------- | --------------------- |
 | 1    | 实现 `schedulerImpl` 结构体（jobs map, mu, ctx, cancel） | `scheduler_impl.go` | `go build ./...` 通过 |
-| 2    | 实现 `Schedule`：校验 trigger → 注册 job → 返回 ID       | `scheduler_impl.go` | §7.1 全部通过         |
-| 3    | 实现 `Cancel`：查找 job → 取消 → 从 map 移除             | `scheduler_impl.go` | §7.5 全部通过         |
-| 4    | 实现 `Start`：主循环 → 计算下次时间 → 触发 handler       | `scheduler_impl.go` | 触发测试通过          |
+| 2    | 实现 `AddJob`：校验 trigger → 注册 job → 返回 nil        | `scheduler_impl.go` | §8.1 全部通过         |
+| 3    | 实现 `Cancel`：查找 job → 取消 → 从 map 移除（v1.1 缺口） | `scheduler_impl.go` | §8.1 全部通过         |
+| 4    | 实现 `Start`：主循环 → 计算下次时间 → 触发 Job.Run       | `scheduler_impl.go` | 触发测试通过          |
 
 ### Risk Assessment
 
