@@ -1,13 +1,13 @@
 # configx 发布版本 1.0 Goal 定位与实现标准
 
-> ⚠️ **交付状态戳（2026-06-18 校准）**：本 goal.md 描述 configx 1.0 的**完整目标基线**。运行时仓库 `/home/configx` 当前已交付**显式加载基线**（对应 git tag `v1.0.0`，version.go 实测 `v0.1.3`、CHANGELOG 最新 `v0.1.4`）——覆盖 §2 MUST 中的「文件/环境变量/map 三源 + LastWins 合并 + 强类型 Decode + 校验 + 脱敏 + Provenance + HealthCheck + Metrics」。**以下 MUST 尚未交付，明确推迟到 v1.1**：
-> - ArgsSource（命令行参数源）
-> - RemoteSource SPI（远程配置源扩展点）
-> - `bind(prefix, class)` 按 prefix 切片绑定 API
-> - ConfigSnapshot / ConfigChangeEvent / Watch 热更新与回滚
-> - 配置文档自动生成
+> ✅ **交付状态戳（2026-06-18 v1.1.0 发布更新）**：本 goal.md 描述 configx 1.0 的**完整目标基线**。运行时仓库 `/home/configx` 已通过 **v1.1.0** GitHub Release 完整交付 §2 中的全部 MUST 能力，包括此前推迟的 5 项：
+> - ✅ ArgsSource（命令行参数源）— `pkg/configx/source_args.go`
+> - ✅ RemoteSource SPI（远程配置源扩展点）— `pkg/configx/remote.go`
+> - ✅ `Bind(result, prefix, target)` 按 prefix 切片绑定 API — `pkg/configx/bind.go`
+> - ✅ ConfigSnapshot / ConfigChangeEvent / Watch 热更新与回滚 — `pkg/configx/snapshot.go` + `watch.go`
+> - ✅ 配置文档自动生成 — `pkg/configx/docgen.go` + `cmd/configdoc/`
 >
-> 即 §2 中带 ❌ 标记的 MUST 条目以本戳为准；已交付能力见 ACCEPTANCE.md §4 与 TRACEABILITY.md。
+> 版本对齐：`pkg/configx/version.go` = `v1.1.0`、CHANGELOG 顶部 = `v1.1.0`、git tag = `v1.1.0`、GitHub Release 已发布。已交付能力清单见 ACCEPTANCE.md §4 与 TRACEABILITY.md。
 
 | 字段         | 内容                                           |
 | ------------ | ---------------------------------------------- |

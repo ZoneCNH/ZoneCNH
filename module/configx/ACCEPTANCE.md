@@ -2,13 +2,13 @@
 
 - Status: Generated from current module SSOT
 - Last-Updated: 2026-06-18
-- Module-Version: v0.1.4（运行时 version.go 实测 v0.1.3、CHANGELOG 最新 v0.1.4；git tag v1.0.0 已存在但 version.go 尚未对齐，见下方说明）
-- Module-State: 显式加载基线已交付（对应 git tag v1.0.0）；goal.md §2 的 v1.0 完整 MUST（热更新 / RemoteSource SPI / bind / ConfigSnapshot）未交付，划入 v1.1 路线
+- Module-Version: v1.1.0（运行时 version.go = v1.1.0、CHANGELOG 最新 = v1.1.0、git tag = v1.1.0、GitHub Release 已发布；版本号已完全对齐）
+- Module-State: v1.0 路线 5 项 MUST 已全部交付（ArgsSource / RemoteSource SPI / Bind / ConfigSnapshot+ChangeEvent+Watch+Rollback / DocGen）
 - Layer: L1 基础能力
 - Runtime-Repo: /home/configx
 - Source: goal.md, SPEC.md, DESIGN.md, TRACEABILITY.md, IMPLEMENTATION-PLAN.md, tasks/
 
-> 版本基线说明：本目录投影文档此前登记 `Module-Version: v1.0.0 / 已发布`，但运行时仓库 `/home/configx` 的 `pkg/configx/version.go` 实测为 `v0.1.3`、CHANGELOG 最新为 `v0.1.4`、git tag 含 `v1.0.0`。三者不一致属发布治理缺陷；本清单按运行时事实层登记为 `v0.1.4`，并把 goal.md 的 v1.0 完整目标明确推迟到 v1.1，避免把「计划」当作「已发布」。
+> 版本基线说明：v1.1.0（2026-06-18 发布）完整交付 goal.md §文首状态戳列出的 v1.0 路线 5 项 MUST：ArgsSource、RemoteSource SPI、Bind()、ConfigSnapshot/ChangeEvent/Watch/Rollback、配置文档自动生成。运行时 `pkg/configx/version.go` = `v1.1.0`、CHANGELOG 顶部 = `v1.1.0`、git tag = `v1.1.0`、GitHub Release 已发布；之前 v1.0.0 git tag 与 version.go=v0.1.3 的版本漂移已修复，此后 version.go / CHANGELOG / git tag 严格保持同步。
 >
 > 本清单用于验收 configx 是否达到可发布、可追溯、可复验状态。除非条目明确记录为已通过，默认需要在运行时代码仓库重新执行验证并补充证据。
 
