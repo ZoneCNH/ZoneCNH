@@ -1,13 +1,13 @@
 # testkitx 规格
 
-Status: Approved
-- Spec-Version: v0.7.3
-- Last-Updated: 2026-06-14
+- Status: Approved
+- Spec-Version: v1.0.0
+- Last-Updated: 2026-06-18
 - Layer: 基座 · 测试期证据
 - Version: v1.0.0
 - Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `kernel`
 
-> 公开投影 caveat：Status=Review 与矩阵覆盖证据不等同于 factory-grade；四源评分通过前机器事实层保持 factory=false。
+> 公开投影 caveat：Status=Approved 与追溯矩阵覆盖证据不等同于 factory-grade；四源评分通过前机器事实层保持 factory=false。本 SPEC 仅描述 testkitx 的**窄定位**（L0 测试期证据 / 单进程 `go test` 工具）；goal.md 中的集成测试环境、故障注入、发布期证据包等「宽测试平台」能力已 superseded，详见 [goal.md](./goal.md) 顶部声明。
 
 ---
 
@@ -204,15 +204,19 @@ THEN 测试通过
 
 ### 8.1 Fake 实现
 
+> 注：以下签名对齐运行时 `/home/testkitx/pkg/testkitx/fake/` 的实际导出。实现类型一律命名 `Fake*Impl`（clock 例外，类型名为 `FakeClock`）；构造函数的「带/不带 `Fake` 前缀」与运行时一致。
+
 ```go
-func FakeConfig(values map[string]any) configx.Reader
-func FakeLogger() (*FakeLoggerImpl, observex.Logger)
-func FakeMeter() (*FakeMeterImpl, observex.Meter)
-func FakeTracer() (*FakeTracerImpl, observex.Tracer)
-func FakeClock(at time.Time) *FakeClock
-func FakeBreaker(initial resiliencx.BreakerState) resiliencx.Breaker
-func FakeExporter() *FakeExporterImpl
-```text
+// 构造函数均位于子包 testkitx/fake（运行时为 pkg/testkitx/fake）。
+func FakeConfig(values map[string]any) fake.Reader          // 实现 configx.Reader 契约
+func FakeLogger() *FakeLoggerImpl                           // 实现 observex.Logger
+func FakeMeter() *FakeMeterImpl                             // 实现 observex.Meter
+func FakeTracer() *FakeTracerImpl                           // 实现 observex.Tracer
+func Clock(at time.Time) *FakeClock                         // 注意：构造函数名为 Clock，非 FakeClock
+func FakeBreaker(initial fake.BreakerState) fake.Breaker    // 返回 Breaker 接口
+```
+
+> **已撤销的虚构 API**：早期 SPEC 列出的 `FakeExporter() / FakeExporterImpl` 在运行时**未实现**（全仓 grep `FakeExporter` 零匹配）。遥测导出的测试验证改由 fake logger / fake meter / fake tracer 的断言方法覆盖。原 §8.6 `FakeExporterImpl` 小节已删除。
 
 ### 8.2 FakeLoggerImpl
 
@@ -222,7 +226,7 @@ type FakeLoggerImpl struct{ /* ... */ }
 func (l *FakeLoggerImpl) AssertLogged(level LogLevel, contains string)
 func (l *FakeLoggerImpl) AssertNoErrors()
 func (l *FakeLoggerImpl) Entries() []LogEntry
-```text
+```
 
 ### 8.3 FakeMeterImpl
 
@@ -231,7 +235,7 @@ type FakeMeterImpl struct{ /* ... */ }
 
 func (m *FakeMeterImpl) AssertCounterValue(name string, expected float64)
 func (m *FakeMeterImpl) AssertHistogramRecorded(name string)
-```text
+```
 
 ### 8.4 FakeTracerImpl
 
@@ -240,7 +244,7 @@ type FakeTracerImpl struct{ /* ... */ }
 
 func (t *FakeTracerImpl) AssertSpanCount(expected int)
 func (t *FakeTracerImpl) AssertTraceID propagated
-```text
+```
 
 ### 8.5 FakeClock
 
@@ -250,24 +254,18 @@ type FakeClock struct{ /* ... */ }
 func (c *FakeClock) Now() time.Time
 func (c *FakeClock) Advance(d time.Duration)
 func (c *FakeClock) Set(t time.Time)
-```text
+```
 
-### 8.6 FakeExporterImpl
+### 8.6 ~~FakeExporterImpl~~（已撤销）
 
-```go
-type FakeExporterImpl struct{ /* ... */ }
-
-func (e *FakeExporterImpl) AssertSpanCount(expected int)
-func (e *FakeExporterImpl) AssertMetricRecorded(name string)
-func (e *FakeExporterImpl) AssertLogContains(contains string)
-```text
+> 本节原定义的 `FakeExporterImpl` 在运行时未实现，已删除。参见 §8.1 的撤销说明。遥测断言改用 `FakeLoggerImpl.AssertLogged` / `FakeMeterImpl.AssertCounterValue` / `FakeTracerImpl.AssertSpanCount`。
 
 ### 8.7 辅助函数
 
 ```go
 func Eventually(t *testing.T, fn func() bool, timeout, interval time.Duration)
 func GoldenUpdate() bool // 环境变量 GOLDEN_UPDATE=1 时更新 golden 文件
-```text
+```
 
 ### 8.8 边界扫描
 
@@ -277,7 +275,7 @@ func BoundaryCheck(t *testing.T, module string)
 
 // GoroutineLeakCheck 检查测试结束后是否有 goroutine 泄漏
 func GoroutineLeakCheck(t *testing.T)
-```text
+```
 
 ---
 
@@ -291,7 +289,7 @@ var (
     ErrGoroutineLeak     = errors.New("testkitx: goroutine leak detected")
     ErrGoldenMismatch    = errors.New("testkitx: golden file mismatch")
 )
-```text
+```
 
 ---
 
@@ -301,7 +299,7 @@ testkitx 不读取配置。行为通过环境变量控制：
 
 ```bash
 GOLDEN_UPDATE=1    # 更新 golden 文件
-```text
+```
 
 ---
 
@@ -332,47 +330,82 @@ GOLDEN_UPDATE=1    # 更新 golden 文件
 
 ## 13. 目录结构
 
-```text
-testkitx/
-├── go.mod
+```
+testkitx/                              # 运行时仓库 github.com/ZoneCNH/testkitx
+├── go.mod                             # module github.com/ZoneCNH/testkitx, go 1.23
 ├── go.sum
 ├── README.md
 ├── CHANGELOG.md
 ├── LICENSE
-├── doc.go
-├── testkitx.go                 # 顶层导出
-├── errors.go
-├── fake_config.go              # FakeConfig
-├── fake_logger.go              # FakeLoggerImpl
-├── fake_meter.go               # FakeMeterImpl
-├── fake_tracer.go              # FakeTracerImpl
-├── fake_clock.go               # FakeClock
-├── fake_breaker.go             # FakeBreaker
-├── fake_exporter.go            # FakeExporterImpl
-├── assert.go                   # 统一 assert API
-├── eventually.go               # Eventually helper
-├── golden.go                   # GoldenUpdate helper
-├── fixture.go                  # fixture loader
-├── boundary.go                 # production import boundary scanner
-├── leak.go                     # goroutine leak checker
-├── contract.go                 # contract test harness
-├── hash.go                     # contract hash helper
-├── internal/
-│   └── spy/                    # spy 实现
-├── contract/
-│   ├── logger_test.go          # TestContract_Logger_Interface
-│   ├── meter_test.go           # TestContract_Meter_Interface
-│   ├── tracer_test.go          # TestContract_Tracer_Interface
-│   ├── config_test.go          # TestContract_Config_Reader
-│   ├── breaker_test.go         # TestContract_Breaker_Interface
-│   ├── concurrent_test.go      # TestContract_Logger_Concurrent
-│   ├── cardinality_test.go     # TestContract_Meter_LabelCardinality
-│   └── fingerprint_test.go     # TestContract_Config_Fingerprint
-├── testdata/
-│   └── *.golden
-├── example_test.go
-└── benchmark_test.go
-```text
+├── Dockerfile, docker-compose.yml
+├── .golangci.yml, .repo-contract.yaml
+│
+├── pkg/testkitx/                      # 主包：L1 测试 helper
+│   ├── doc.go                         # 包文档
+│   ├── client.go                      # Client + New(ctx,cfg,opts) / Close —— 测试编排入口
+│   ├── config.go                      # Config / SanitizedConfig + Validate / Sanitize
+│   ├── errors.go                      # ErrorKind / Error / NewError / WrapError / IsKind
+│   ├── health.go                      # HealthStatus + (*Client).HealthCheck
+│   ├── metrics.go                     # Metrics 接口 + NoopMetrics
+│   ├── options.go                     # Option 函数式选项
+│   ├── eventually.go                  # Eventually（FR-007）
+│   └── version.go                     # ModuleName / Version 常量
+│
+├── pkg/testkitx/fake/                 # ★ Fake 实现（FR-001~006）—— 注意：子包，非顶层文件
+│   ├── config.go                      # FakeConfig(values) Reader        —— FR-001
+│   ├── logger.go                      # FakeLogger() *FakeLoggerImpl     —— FR-002
+│   ├── meter.go                       # FakeMeter() *FakeMeterImpl       —— FR-003
+│   ├── tracer.go                      # FakeTracer() *FakeTracerImpl     —— FR-004
+│   ├── clock.go                       # Clock(at) *FakeClock              —— FR-005（构造函数名 Clock）
+│   ├── breaker.go                     # FakeBreaker(initial) Breaker      —— FR-006
+│   ├── contract_test.go               # fake 接口 contract test（见 §15.3）
+│   └── *_test.go                      # 各 fake 单元测试
+│
+├── pkg/testkitx/golden/               # ★ FR-008 GoldenUpdate（注意：子包）
+│   └── golden.go                      # GoldenUpdate() / Assert / AssertBytes / CheckBytes / AssertJSON / WriteGolden
+│
+├── pkg/testkitx/boundarytest/         # ★ FR-009 BoundaryCheck（注意：子包）
+│   └── boundarytest.go                # BoundaryCheck(tt, module) / Scan / ScanProductionImports / Violation
+│
+├── pkg/testkitx/leaktest/             # ★ FR-010 GoroutineLeakCheck（注意：子包）
+│   ├── leak_checker.go                # CheckLeak(t, ignorePatterns...) / IgnoreGoroutines
+│   └── leaktest.go                    # GoroutineLeakCheck(tt) / Capture / Snapshot / RequireNoLeak
+│
+├── pkg/testkitx/fixture/              # fixture loader（goal 遗产，非 FR 主线）
+├── pkg/testkitx/contract/             # fake 内部 contract hash helper（hash.go 等）
+├── pkg/testkitx/manifesttest/         # manifest 测试辅助
+├── pkg/testkitx/repotest/             # 仓库结构测试辅助
+├── pkg/testkitx/obstest/              # 可观测 recorder
+├── pkg/testkitx/harness/              # 命令运行 harness
+├── pkg/testkitx/clocktest/            # 另一个 clock helper（与 fake/clock.go 并存）
+├── pkg/testkitx/assertx/              # 泛型断言 Equal/NoError/Eventually/Contains
+│
+├── testkit/                           # 便利薄封装包（package testkit）
+│
+├── contract/                          # ⚠️ L2 provider 行为契约套件（非 fake 接口 contract test）
+│   ├── common/                        # 通用契约：config/error/factory/lifecycle/observability/resilience/secret
+│   ├── kv/  sql/  pubsub/             # provider Run* runner
+│   ├── eventlog/  objectstore/
+│   ├── columnstore/  timeseries/
+│   └── provider_guard_test.go         # 验证 capability runner 不引入 provider 特定 import
+│
+├── contracts/                         # JSON schema（config/error/health/docker-toolchain/...）
+├── requirex/                          # 断言原语（TestingT / Equal / NoError / Eventually / NoGoroutineLeak）
+├── servicex/                          # 服务生命周期（Service / Compose / WaitUntil）—— goal 遗产
+├── evidence/                          # 证据结构（Report/Case/Check/Marshal）—— goal 遗产
+├── examples/                          # basic/ config/ health/ 示例
+├── testdata/                          # fixtures/ 等测试数据
+├── release/                           # docker/ + manifest/（latest.json + sha256）
+└── docs/                              # adr/ + l2/
+```
+
+**关键说明：**
+
+1. **运行时无顶层 `.go` 文件**；所有代码在 `pkg/testkitx/` 子包或根级独立包（`requirex`/`servicex`/`evidence`/`testkit`/`contract`/`contracts`）。
+2. **Fake 实现在 `pkg/testkitx/fake/` 子包**（非 SPEC 早期版本的顶层 `fake_*.go`）。构造函数的命名遵循运行时实际：`Clock(at)` 不带 `Fake` 前缀，其余带。
+3. **`contract/`（顶层，非 pkg）是 L2 provider 行为契约套件**，导出 `Run*` runner（如 `kv.RunBasic`、`sql.RunPool`），与 §15.3 的 **fake 接口 contract test**（位于 `pkg/testkitx/fake/contract_test.go`）是两回事，勿混淆。
+4. **`FakeExporter` 未实现**（§8.1 已撤销）；遥测断言由 fake logger/meter/tracer 承接。
+5. **`requirex`/`servicex`/`evidence`/`contract`(L2)/`contracts`(schema) 属 goal.md 宽平台遗产**，SPEC 仅描述 testkitx 窄定位（FR-001~010），这些包的存在不构成 SPEC 追溯对象，定位见 goal.md superseded 声明。
 
 ---
 
@@ -380,11 +413,11 @@ testkitx/
 
 ### 14.1 go.mod
 
-```text
+```
 module github.com/ZoneCNH/testkitx
 
 go 1.23
-```text
+```
 
 ### 14.2 依赖方向
 
@@ -400,6 +433,19 @@ go 1.23
 ### 14.3 特殊说明
 
 testkitx 是唯一允许依赖所有 Foundation L1 模块的包，但仅在 `go test` 中使用。生产 import graph 中不能出现 testkitx。
+
+### 14.4 循环依赖破环策略
+
+testkitx 依赖 kernel/configx/observex/resiliencx/schedulex（§14.2），而这些 L1 模块的测试又依赖 testkitx（§5），构成潜在环。Go 对**编译期 import 环**零容忍，因此破环策略如下：
+
+| 手段 | 适用场景 | 说明 |
+| --- | --- | --- |
+| **test-only 依赖不进编译图** | L1 模块在 `*_test.go` 或 `internal/` 下引用 testkitx | `go build` 不编译 `*_test.go`，生产 import graph 不含 testkitx，BR-005 / `no-production-import` gate 自动成立 |
+| **separate test module** | 若 L1 模块的 test 依赖必须出现在 `go.mod` | 用独立 `go.mod`（如 `<module>_test`）隔离 test 依赖，主 module 的 `go.mod` 不出现 testkitx |
+| **interface mirror，不反向 import** | fake 实现需要镜像 L1 接口签名 | fake 包**自己定义等价接口**（如 `fake.Reader` / `fake.Logger`），不 import L1 的具体类型，避免编译期环 |
+| **CI gate 双向校验** | 防止误入环 | `no-production-import`（testkitx 不进生产图）+ `go mod graph` 无 cycle + `go vet` 无 import cycle 报错 |
+
+当前运行时实现采用「test-only 依赖不进编译图 + interface mirror」组合：`pkg/testkitx/fake/` 自定义 `Reader`/`Logger`/`Meter`/`Tracer`/`Breaker` 接口，不直接 import L1 具体类型，从根上避免环。
 
 ---
 
@@ -514,15 +560,17 @@ Then 报告泄漏并失败
 
 ## 17. 可观测性
 
-testkitx 不 emit 生产可观测数据。它提供 fake exporter 用于测试验证：
+testkitx 不 emit 生产可观测数据。它提供 fake logger / meter / tracer，用于在测试中断言被测模块的遥测输出（无独立的 FakeExporter，参见 §8.1 撤销说明）：
 
 ```go
-exporter := testkitx.NewFakeExporter()
+logger, _ := testkitx.FakeLogger()   // 或 fake 子包构造
+meter := testkitx.FakeMeter()
+tracer := testkitx.FakeTracer()
 // 测试中可以断言：
-exporter.AssertMetricRecorded("resiliencx.retry.attempts")
-exporter.AssertLogContains("kernel.module.start_failed")
-exporter.AssertSpanCount(3)
-```text
+meter.AssertCounterValue("resiliencx.retry.attempts", 3)
+logger.AssertLogged(observex.LevelError, "kernel.module.start_failed")
+tracer.AssertSpanCount(3)
+```
 
 ---
 

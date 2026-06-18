@@ -366,14 +366,58 @@ func (p *Provenance) Entries() map[string]ProvenanceEntry
 
 ### 9.5 公共错误
 
+configx **不使用** sentinel `ErrXxx` 变量，而是采用 `ErrorKind` 枚举 + `*Error` 结构体模式，支持 `errors.As` / `errors.Is` 标准库语义。
+
 ```go
-var (
-    ErrInvalidFormat    = errors.New("configx: invalid format")
-    ErrValidationFailed = errors.New("configx: validation failed")
-    ErrKeyNotFound      = errors.New("configx: key not found")
-    ErrTypeMismatch     = errors.New("configx: type mismatch")
-    ErrAlreadyLoaded    = errors.New("configx: already loaded")
+type ErrorKind string
+
+const (
+    ErrorKindConfig        ErrorKind = "config"
+    ErrorKindValidation    ErrorKind = "validation"
+    ErrorKindConnection    ErrorKind = "connection"
+    ErrorKindUnavailable   ErrorKind = "unavailable"
+    ErrorKindTimeout       ErrorKind = "timeout"
+    ErrorKindAuth          ErrorKind = "auth"
+    ErrorKindConflict      ErrorKind = "conflict"
+    ErrorKindRateLimit     ErrorKind = "rate_limit"
+    ErrorKindCanceled      ErrorKind = "canceled"
+    ErrorKindNotFound      ErrorKind = "not_found"
+    ErrorKindAlreadyExists ErrorKind = "already_exists"
+    ErrorKindInternal      ErrorKind = "internal"
 )
+
+type Error struct {
+    Kind      ErrorKind
+    Op        string   // 操作名，如 "configx.New"
+    Message   string
+    Cause     error
+    Retryable bool
+}
+
+// 构造与判别 API
+func NewError(kind ErrorKind, op string, message string, retryable bool) *Error
+func WrapError(kind ErrorKind, op string, message string, retryable bool, cause error) *Error
+func (e *Error) Error() string   // 输出 "<kind>: <op>: <message>"
+func (e *Error) Unwrap() error   // 返回 Cause，支持 errors.Unwrap 链
+func IsKind(err error, kind ErrorKind) bool  // 类型安全的 Kind 判别
+```
+
+**典型使用：**
+
+```go
+client, err := configx.New(ctx, cfg)
+var e *configx.Error
+if errors.As(err, &e) {
+    switch e.Kind {
+    case configx.ErrorKindValidation:
+        // 配置非法，检查字段
+    case configx.ErrorKindTimeout, configx.ErrorKindUnavailable:
+        // ctx 超时或取消，可重试（e.Retryable == true）
+    }
+}
+if configx.IsKind(err, configx.ErrorKindValidation) {
+    // 等价的类型安全判别
+}
 ```
 
 ---
@@ -393,17 +437,21 @@ config:
 
 ## 11. 错误处理
 
-| 错误                  | 调用方处理                     |
-| --------------------- | ------------------------------ |
-| `ErrInvalidFormat`    | 检查文件格式和内容，修复后重试 |
-| `ErrValidationFailed` | 检查具体字段，修复配置         |
-| `ErrKeyNotFound`      | 检查 key 拼写                  |
-| `ErrTypeMismatch`     | 检查值类型是否匹配             |
-| `ErrAlreadyLoaded`    | 不要重复加载                   |
+configx 错误统一为 `*Error`（见 §9.5）。调用方通过 `errors.As` 或 `IsKind` 判别 `ErrorKind` 后选择处理策略：
 
-**错误消息格式：** `"configx: <operation>: <detail>"`
-**Validation 错误包含：** 字段路径 + 预期值 + 实际值
-**上下文错误：** ctx 为 nil 或已取消时返回明确错误，包含操作名
+| ErrorKind              | 典型触发场景                                   | 调用方处理                                       |
+| ---------------------- | ---------------------------------------------- | ------------------------------------------------ |
+| `validation`           | Config.Name 空、Timeout<0、ctx nil、Decode 失败 | 检查具体字段路径，修复配置后重试（不可重试）     |
+| `timeout`              | ctx.DeadlineExceeded                            | 检查上游超时设置，可重试（Retryable=true）       |
+| `unavailable`          | ctx.Canceled、Source 不可达                     | 检查 ctx 取消原因或重试加载                      |
+| `config`               | 配置文件格式非法、StrictDecode 拒绝未知字段     | 检查文件格式和内容，修复后重试                   |
+| `not_found`            | key 不存在                                      | 检查 key 拼写或补充 Source                        |
+| `internal`             | 未分类错误（兜底 Kind）                         | 记录日志并上报，联系维护者                       |
+
+**错误消息格式：** `"<kind>: <op>: <message>"`（如 `"validation: configx.New: name is required"`）
+**Validation 错误：** `Op` 含操作名（如 `Config.Validate`），`Message` 含字段与原因
+**上下文错误：** ctx nil → `validation`；ctx 超时 → `timeout`（Retryable=true）；ctx 取消 → `unavailable`
+**Retryable 字段：** 调用方可读取 `e.Retryable` 决定是否重试，无需硬编码 Kind 列表
 
 ---
 

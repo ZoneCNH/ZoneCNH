@@ -1,8 +1,8 @@
 # schedulex 规格
 
 Status: Approved
-- Spec-Version: v1.0.0
-- Last-Updated: 2026-06-14
+- Spec-Version: v1.0.1
+- Last-Updated: 2026-06-18
 - Layer: L1 基础能力
 - Version: v1.0.0
 - Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `kernel`
@@ -67,45 +67,47 @@ Status: Approved
 
 ### FR-001: Schedule
 
-WHEN 调用 `Schedule(job Job)` 且 trigger 合法
-THEN 注册 job，返回 JobID
+WHEN 调用 `AddJob(job Job, trigger Trigger, opts ...JobOption)` 且 trigger 合法
+THEN 注册 job，返回 nil（job 标识为 `Job.Name()`）
 
-WHEN 调用 `Schedule(job Job)` 且 cron 语法错误
-THEN 返回 `ErrInvalidTrigger`
+WHEN 调用 `AddJob(...)` 且 cron 语法错误 / trigger 不合法
+THEN 返回 `ErrInvalidJob`
 
-WHEN 调用 `Schedule(job Job)` 且 interval <= 0
-THEN 返回 `ErrInvalidTrigger`
+WHEN 调用 `AddJob(...)` 且 interval <= 0
+THEN 返回 `ErrInvalidJob`
 
-WHEN 调用 `Schedule(job Job)` 且 JobID 已存在
-THEN 返回 `ErrDuplicateJob`
+WHEN 调用 `AddJob(...)` 且 Job name 已存在
+THEN 返回 `ErrJobExists`
 
 > AC: AC-001, AC-002, AC-003, AC-004
 
 ### FR-002: Trigger
 
 WHEN job 使用 cron 触发且到达调度时间
-THEN 调用 JobHandler
+THEN 调用 `Job.Run(ctx)`
 
 WHEN job 使用 interval 触发且间隔到期
-THEN 调用 JobHandler
+THEN 调用 `Job.Run(ctx)`
 
 WHEN job 设置 Delay 首次延迟
 THEN 等待 Delay 后首次触发
 
 > AC: AC-005, AC-006, AC-007
+> 注：运行时无独立 `Delay` 字段（见 §8.2b），需用 `Once`/`DailyAt` 表达；AC-007 为 v1.1 缺口（§22 OQ-010 关联）。
 
 ### FR-003: Overlap Policy
 
 WHEN OverlapPolicy = Skip 且上次执行未完成
 THEN 跳过本次触发
 
-WHEN OverlapPolicy = Queue 且上次执行未完成
-THEN 排队等待上次完成后执行
+WHEN OverlapPolicy = QueueOne 且上次执行未完成
+THEN 至多排队一个，等上次完成后执行
 
 WHEN OverlapPolicy = Replace 且上次执行未完成
 THEN 取消旧的执行，启动新的
 
 > AC: AC-008, AC-009, AC-010
+> 注：运行时仅实现 Skip/QueueOne/Allow，无 `Allow` 之外的并发策略与 `Replace`（见 §22 OQ-006）；AC-010 (Replace) 为 v1.1 缺口。
 
 ### FR-004: Misfire Policy
 
@@ -129,21 +131,23 @@ WHEN 调用 `Cancel(id)` 且 job 不存在
 THEN 返回 `ErrJobNotFound`
 
 > AC: AC-014, AC-015
+> **运行时未实现**：v1.0.0 无 `Cancel` 方法（见 §8.1、§22 OQ-005）。AC-014/015 为 v1.1 缺口。
 
 ### FR-006: Stop
 
-WHEN 调用 `Stop(ctx)`
-THEN 等待正在执行的 job 完成或超时
+WHEN 调用 `Shutdown(ctx)`
+THEN 等待正在执行的 job 完成，直到 ctx 超时
 
-WHEN Stop 期间 job 超过 deadline
-THEN 强制取消，返回 `ErrShutdownTimeout`
+WHEN Shutdown 期间 job 超过 ctx deadline
+THEN 强制取消，返回 `ctx.Err()`
 
 > AC: AC-016, AC-017
+> 注：运行时方法名为 `Shutdown`（非 `Stop`），超时返回 `ctx.Err()`，**无 `ErrShutdownTimeout`**（见 §22 OQ-007）。AC-017 (专属超时错误) 为 v1.1 缺口。
 
 ### FR-007: EventSink
 
 WHEN job 触发、开始、完成、失败或 misfire
-THEN 调用注册的 JobEvent 回调
+THEN 调用注册的 EventSink.OnEvent 回调（见 §8.4）
 
 > AC: AC-018
 
@@ -174,7 +178,7 @@ THEN 所有调度基于 FakeClock，不调用 time.Now（测试确定性）
 | 编号   | 规则                                                         | 违反后果                                       |
 | ------ | ------------------------------------------------------------ | ---------------------------------------------- |
 | BR-001 | Schedule 必须校验 trigger 合法性（cron 语法 / interval > 0） | 非法 trigger 被接受，运行时 panic 或行为不确定 |
-| BR-002 | 同一 JobID 重复注册返回 ErrDuplicateJob                      | 同名 job 被覆盖，旧任务丢失，调度混乱          |
+| BR-002 | 同一 Job name 重复注册返回 ErrJobExists                       | 同名 job 被覆盖，旧任务丢失，调度混乱          |
 | BR-003 | Stop 必须等待正在执行的 job 完成或超时                       | job 被强杀，数据不一致或资源泄漏               |
 | BR-004 | overlap 行为由 OverlapPolicy 决定，不内置隐式策略            | 行为不可预测，不同部署表现不一致               |
 | BR-005 | job panic 被 catch，不影响其他 job                           | panic 传播导致调度器崩溃，所有 job 停止        |
@@ -215,172 +219,257 @@ THEN 所有调度基于 FakeClock，不调用 time.Now（测试确定性）
 ### 8.1 Scheduler
 
 ```go
-type Scheduler interface {
-    Schedule(job Job) (JobID, error)
-    Cancel(id JobID) error
-    List() []JobStatus
-    Start(ctx context.Context) error
-    Stop(ctx context.Context) error
-}
+func NewScheduler(opts ...Option) (*Scheduler, error)
 
-type JobID string
-```text
+method (*Scheduler).AddJob(job Job, trigger Trigger, opts ...JobOption) error
+method (*Scheduler).Start(ctx context.Context) error
+method (*Scheduler).Shutdown(ctx context.Context) error
+method (*Scheduler).Snapshot() Snapshot
+```
+
+- `Scheduler` 是具体类型（非 interface），由 `NewScheduler(opts ...Option)` 构造。
+- 注册方法叫 `AddJob`，返回 `error`（**不**返回 `(JobID, error)`）。
+- **无独立 `JobID` 类型**——job 标识用 `Job.Name()`。
+- **无 `Cancel`、无 `List`**：单 job 取消未实现（见 §22 OQ-005）；查询用 `Snapshot()`；全局停机用 `Shutdown(ctx)`。
+- `Stop` 实际名为 `Shutdown`，超时返回 `ctx.Err()`，**无 `ErrShutdownTimeout`**（见 §22 OQ-007）。
 
 ### 8.2 Job
 
 ```go
-type Job struct {
-    ID         JobID
-    Name       string
-    Trigger    Trigger
-    Handler    JobHandler
-    Timeout    time.Duration
-    MaxRetries int
-    Overlap    OverlapPolicy
-    Misfire    MisfirePolicy
+type Job interface {
+    Name() string
+    Run(context.Context) error
 }
 
-type JobHandler func(ctx context.Context) error
-
-type Trigger struct {
-    Cron     string        // cron 表达式（与 Interval 二选一）
-    Interval time.Duration // 固定间隔
-    Delay    time.Duration // 首次延迟
+// JobFunc 是把普通函数适配为 Job 的便捷类型。
+type JobFunc struct {
+    NameValue string
+    RunFunc   func(context.Context) error
 }
+func (j JobFunc) Name() string
+func (j JobFunc) Run(ctx context.Context) error
+```
 
-type OverlapPolicy int
-const (
-    OverlapSkip    OverlapPolicy = iota // 上次未完成 → 跳过本次
-    OverlapQueue                        // 上次未完成 → 排队等待
-    OverlapReplace                      // 上次未完成 → 取消旧的，执行新的
-)
+- Job 是 **interface**（非 struct）。**无独立 `JobHandler` 类型**——执行函数即 `Job.Run`。
+- 无 `ID / Trigger / Handler / Timeout / MaxRetries / Overlap / Misfire` 字段；这些通过 `AddJob(job, trigger, opts ...JobOption)` 参数与 `JobOption` 传入（见 §9）。
 
-type MisfirePolicy int
-const (
-    MisfireSkip    MisfirePolicy = iota // 错过触发 → 跳过
-    MisfireRunOnce                      // 错过触发 → 补执行一次
-    MisfireCatchUp                      // 错过触发 → 补执行所有错过的
-)
-```text
-
-### 8.3 JobStatus
+#### Policy 枚举（string，非 iota int）
 
 ```go
-type JobStatus struct {
-    ID         JobID
-    Name       string
-    State      JobState
-    LastRun    time.Time
-    NextRun    time.Time
-    RunCount   int64
-    ErrorCount int64
-    LastError  string
+type OverlapPolicy string
+const (
+    OverlapSkip     OverlapPolicy = "skip"      // 上次未完成 → 跳过本次
+    OverlapQueueOne OverlapPolicy = "queue_one" // 上次未完成 → 至多排队一个
+    OverlapAllow    OverlapPolicy = "allow"     // 允许并发执行
+)
+
+type MisfirePolicy string
+const (
+    MisfireSkip    MisfirePolicy = "skip"     // 错过触发 → 跳过
+    MisfireRunOnce MisfirePolicy = "run_once" // 错过触发 → 补执行一次
+    MisfireCatchUp MisfirePolicy = "catch_up" // 错过触发 → 补执行所有错过的
+)
+```
+
+- 策略载体是 **string**，不是 `int`/`iota`。
+- Overlap 运行时只有 `Skip / QueueOne / Allow`；旧草案的 `Replace` **未实现**（见 §22 OQ-006）。
+- `Queue` → `QueueOne`（最多排一个）；`Allow` = 允许并发。
+
+### 8.2b Trigger
+
+```go
+type Trigger interface {
+    Next(after time.Time) (time.Time, bool)
 }
 
-type JobState int
-const (
-    JobPending   JobState = iota
-    JobRunning
-    JobCompleted
-    JobFailed
-    JobCancelled
-)
-```text
+func Once(at time.Time) Trigger
+func Every(d time.Duration, opts ...TriggerOption) Trigger
+func DailyAt(hour, minute int, loc *time.Location, opts ...TriggerOption) Trigger
+func Cron(expr string, loc *time.Location, opts ...TriggerOption) (Trigger, error)
+```
+
+- Trigger 是 **interface**（非 `struct{Cron string; Interval; Delay}`）。调度器通过 `Next(after)` 询问下一次触发时间，第二个返回值 `false` 表示无更多触发。
+- 构造器覆盖三种触发模式：`Once`（一次性）、`Every`（固定间隔）、`DailyAt`（每日定时，带时区）、`Cron`（cron 表达式，带时区）。
+- **Delay 首次延迟未实现**——用 `Once` 或 `DailyAt` 表达“首次延迟”语义（见 §22；对应旧 FR-002 Delay 缺口）。
+- `Cron` 仅支持 **5 字段** 表达式；minute/hour 支持 `*`、`*/N`、固定整数；**day/month/week 必须为 `*`**。非法表达式返回 `error`。
+
+### 8.3 JobStatus / Snapshot
+
+```go
+type Snapshot struct {
+    Version string
+    Now     time.Time
+    Started, Running, Closed, Shutdown bool
+    JobCount int
+    Jobs     []JobSnapshot
+}
+
+type JobSnapshot struct {
+    ID, Name       string
+    Next           time.Time
+    HasNext        bool
+    MisfirePolicy  MisfirePolicy
+    OverlapPolicy  OverlapPolicy
+    Running, Queued bool
+}
+```
+
+- 查询视图是 `Snapshot`（调度器级）/ `JobSnapshot`（单 job），通过 `Scheduler.Snapshot()` 获取，**替代旧 `List() []JobStatus`**。
+- **无 `JobState` 枚举**（pending/running/completed/failed/cancelled）；**无 `RunCount / ErrorCount / LastError / LastRun`** 字段。
+- 运行态只能从 `Running` / `Queued` 两个 bool 推断；历史执行统计未实现（见 §22 OQ-008）。查询能力弱于原草案。
 
 ### 8.4 EventSink
 
 ```go
-type JobEvent func(event JobEventData)
-
-type JobEventData struct {
-    ID        JobID
-    Type      JobEventType
-    Timestamp time.Time
-    Duration  time.Duration
-    Error     error
+type EventSink interface {
+    OnEvent(context.Context, Event)
 }
+type EventSinkFunc func(context.Context, Event)
+func (f EventSinkFunc) OnEvent(ctx context.Context, e Event)
 
-type JobEventType int
+type EventType string
 const (
-    EventTriggered  JobEventType = iota
-    EventStarted
-    EventCompleted
-    EventFailed
-    EventMisfired
-    EventSkipped
+    EventScheduled   EventType = "scheduled"
+    EventStarted     EventType = "started"
+    EventSucceeded   EventType = "succeeded"
+    EventFailed      EventType = "failed"
+    EventSkipped     EventType = "skipped"
+    EventShutdown    EventType = "shutdown"
+    EventMisfire     EventType = "misfire"
+    EventLockSkipped EventType = "lock_skipped"
+    EventLockFailed  EventType = "lock_failed"
 )
-```text
+
+type Event struct {
+    Type                                   EventType
+    JobID, JobName                         string
+    At, ScheduledAt, StartedAt, FinishedAt time.Time
+    Lag, Duration                          time.Duration
+    Attempt                                int
+    Reason, Err                            string
+    Attributes                             map[string]string
+}
+```
+
+- EventSink 是 **interface**（非 `func(JobEventData)`）；`EventSinkFunc` 提供函数适配。
+- EventType 共 **9 个**：基础生命周期 `scheduled/started/succeeded/failed/skipped`、系统 `shutdown`、misfire `misfire`、锁 `lock_skipped/lock_failed`。
+- 旧草案的 `Triggered/Completed/Misfired` 在运行时分别对应 `Scheduled/Succeeded/Misfire`。
+- EventSink 通过 `WithEventSink`（scheduler 级）或 `WithJobEventSink`（per-job）注入（见 §9）。
 
 ### 8.5 Locker
 
 ```go
 type Locker interface {
-    Acquire(ctx context.Context, key string, ttl time.Duration) (bool, error)
-    Release(ctx context.Context, key string) error
+    TryLock(ctx context.Context, key string, ttl time.Duration) (Lease, error)
 }
-```text
+type Lease interface {
+    Release(ctx context.Context) error
+}
+```
+
+- 锁 SPI 为 `TryLock(...) (Lease, error)`，成功返回 `Lease` 对象（由调用方 `Release(ctx)`），**非** `Acquire(...) (bool, error)` + `Release(ctx, key)`。
+- 锁失败语义：
+  - 返回 `ErrLockUnavailable` → emit `EventLockSkipped`（跳过本次，等下一周期）。
+  - 返回其他 `error` → emit `EventLockFailed`。
+- Locker 通过 per-job option `WithLocker` / `WithLockKey` / `WithLockTTL` 注入（见 §9）。
 
 ### 8.6 公共错误
 
 ```go
 var (
-    ErrDuplicateJob    = errors.New("schedulex: duplicate job ID")
-    ErrInvalidTrigger  = errors.New("schedulex: invalid trigger")
-    ErrJobNotFound     = errors.New("schedulex: job not found")
-    ErrShutdownTimeout = errors.New("schedulex: shutdown timeout")
-    ErrLockAcquire     = errors.New("schedulex: lock acquire failed")
+    ErrSchedulerClosed = errors.New("schedulex: scheduler closed")
+    ErrJobExists       = errors.New("schedulex: job already exists")
+    ErrInvalidJob      = errors.New("schedulex: job name and trigger are required")
+    ErrInvalidOption   = errors.New("schedulex: invalid option")
+    ErrLockUnavailable = errors.New("schedulex: lock unavailable")
 )
-```text
+```
+
+**下游迁移映射（旧 SPEC 名 → 运行时实际）：**
+
+| 旧 SPEC 名 | 运行时实际 | 说明 |
+| --- | --- | --- |
+| `ErrDuplicateJob` | `ErrJobExists` | 重命名 |
+| `ErrInvalidTrigger` | `ErrInvalidJob` | trigger/Job 校验合并 |
+| `ErrJobNotFound` | **不存在** | 无 `Cancel`，无此错误（见 §22 OQ-005） |
+| `ErrShutdownTimeout` | **不存在** | `Shutdown` 返回 `ctx.Err()`（见 §22 OQ-007） |
+| `ErrLockAcquire` | `ErrLockUnavailable` | 重命名 |
 
 ---
 
 ## 9. 数据模型
 
-### 9.1 配置结构
+### 9.1 配置方式（functional options）
+
+运行时**无 `SchedulerConfig` struct、无 YAML 解析**。所有配置通过 functional options 传入 `NewScheduler` 与 `AddJob`。
 
 ```go
-type SchedulerConfig struct {
-    Timezone        string        `yaml:"timezone"`
-    OverlapPolicy   OverlapPolicy `yaml:"overlap_policy"`
-    MisfirePolicy   MisfirePolicy `yaml:"misfire_policy"`
-    MaxConcurrency  int           `yaml:"max_concurrency"`
-    DefaultTimeout  time.Duration `yaml:"default_timeout"`
-    ShutdownTimeout time.Duration `yaml:"shutdown_timeout"`
+// Scheduler 级 Option
+func WithClock(Clock) Option          // 注入时钟（测试确定性）
+func WithEventSink(EventSink) Option  // 全局事件回调
+func WithMaxConcurrent(int) Option    // 最大并发 job 数
+
+// Per-job JobOption
+func WithMisfirePolicy(MisfirePolicy) JobOption
+func WithOverlapPolicy(OverlapPolicy) JobOption
+func WithJitter(JitterPolicy) JobOption
+func WithLocker(Locker) JobOption
+func WithLockKey(string) JobOption
+func WithLockTTL(time.Duration) JobOption
+func WithJobEventSink(EventSink) JobOption
+
+type JitterPolicy struct {
+    Max  time.Duration
+    Seed int64
 }
-```text
+```
+
+- `Clock` 接口为可注入时钟（`NewRealClock` / `NewStaticClock`），`WithClock` 用于测试确定性。
+- 锁相关 option（`WithLocker/WithLockKey/WithLockTTL`）对应 §8.5 Locker SPI。
 
 ---
 
 ## 10. 配置模式
 
-```yaml
-schedulex:
-  timezone: UTC
-  overlap_policy: skip        # skip / queue / replace
-  misfire_policy: skip        # skip / run_once / catch_up
-  max_concurrency: 10
-  default_timeout: 5m
-  shutdown_timeout: 30s
-  distributed_lock:
-    enabled: false
-    backend: redis             # redis / postgres
-    ttl: 30s
-  jitter:
-    enabled: true
-    max: 5s
-```text
+> **运行时无 YAML 解析。** 下游编排若使用 YAML，仅为部署/组合层的约定，不由 schedulex 自身消费；schedulex 在代码层通过 functional options 构造。YAML→option 的桥接属 v1.1 路线（见 §22 OQ-010）。
+
+```go
+s, err := schedulex.NewScheduler(
+    schedulex.WithClock(schedulex.NewRealClock()),
+    schedulex.WithEventSink(schedulex.EventSinkFunc(mySink)),
+    schedulex.WithMaxConcurrent(10),
+)
+if err != nil { /* ... */ }
+
+trigger, err := schedulex.Cron("*/5 * * * *", time.UTC)
+if err != nil { /* ... */ }
+
+err = s.AddJob(
+    schedulex.JobFunc{NameValue: "market-data", RunFunc: pullMarketData},
+    trigger,
+    schedulex.WithOverlapPolicy(schedulex.OverlapSkip),
+    schedulex.WithMisfirePolicy(schedulex.MisfireRunOnce),
+    schedulex.WithLocker(myRedisLocker),
+    schedulex.WithLockKey("market-data"),
+    schedulex.WithLockTTL(30*time.Second),
+)
+if err != nil { /* ... */ }
+
+if err := s.Start(ctx); err != nil { /* ... */ }
+defer s.Shutdown(ctx)
+```
 
 ---
 
 ## 11. 错误处理
 
-| 错误                 | 调用方处理                                |
-| -------------------- | ----------------------------------------- |
-| `ErrDuplicateJob`    | 检查 JobID 是否重复，使用不同 ID          |
-| `ErrInvalidTrigger`  | 检查 cron 语法或 interval 值              |
-| `ErrJobNotFound`     | 检查 JobID 拼写，确认 job 已注册          |
-| `ErrShutdownTimeout` | 增加 shutdown_timeout 或检查 job 是否阻塞 |
-| `ErrLockAcquire`     | 检查锁后端连通性，等待下一个调度周期      |
+| 错误 | 调用方处理 |
+| --- | --- |
+| `ErrSchedulerClosed` | 调度器已停机，停止注册新 job / 不再 `Start` |
+| `ErrJobExists` | job name 已注册（`AddJob` 幂等性拒绝），改名或先停机 |
+| `ErrInvalidJob` | job name 或 trigger 为空 / trigger 不合法，检查 `Job.Name()` 与 trigger 构造 |
+| `ErrInvalidOption` | functional option 参数非法（如负 MaxConcurrent），修正 option 入参 |
+| `ErrLockUnavailable` | 分布式锁被占用（正常竞争），Locker 会 emit `lock_skipped`，等下一周期 |
 
 **错误消息格式：** `"schedulex: <operation>: <detail>"`
 **错误包装：** 使用 `%w` 保留底层错误链
@@ -467,28 +556,28 @@ go 1.23
 
 | 编号   | 描述                                    | 关联 FR   | 验证方式   |
 | ------ | --------------------------------------- | --------- | ---------- |
-| AC-001 | Schedule 注册合法 job 返回 JobID        | FR-001    | TC-001     |
-| AC-002 | cron 语法错误返回 ErrInvalidTrigger     | FR-001    | Unit       |
-| AC-003 | interval <= 0 返回 ErrInvalidTrigger    | FR-001    | Unit       |
-| AC-004 | 重复 JobID 返回 ErrDuplicateJob         | FR-001    | TC-009     |
-| AC-005 | cron 触发时调用 JobHandler              | FR-002    | TC-001     |
-| AC-006 | interval 触发时调用 JobHandler          | FR-002    | Unit       |
-| AC-007 | Delay 首次延迟后触发                    | FR-002    | Unit       |
+| AC-001 | AddJob 注册合法 job 返回 nil            | FR-001    | TC-001     |
+| AC-002 | trigger 不合法返回 ErrInvalidJob        | FR-001    | Unit       |
+| AC-003 | interval <= 0 返回 ErrInvalidJob        | FR-001    | Unit       |
+| AC-004 | 重复 Job name 返回 ErrJobExists         | FR-001    | TC-009     |
+| AC-005 | cron 触发时调用 Job.Run                 | FR-002    | TC-001     |
+| AC-006 | interval 触发时调用 Job.Run             | FR-002    | Unit       |
+| AC-007 | Delay 首次延迟后触发（v1.1 缺口）       | FR-002    | Unit       |
 | AC-008 | Overlap Skip 跳过本次触发               | FR-003    | TC-002     |
-| AC-009 | Overlap Queue 排队等待                  | FR-003    | Unit       |
-| AC-010 | Overlap Replace 取消旧的执行新的        | FR-003    | Unit       |
+| AC-009 | Overlap QueueOne 至多排队一个           | FR-003    | Unit       |
+| AC-010 | Overlap Replace 取消旧的执行新的（v1.1 缺口） | FR-003    | Unit       |
 | AC-011 | Misfire Skip 跳过本次                   | FR-004    | Unit       |
 | AC-012 | Misfire RunOnce 补执行一次              | FR-004    | TC-003     |
 | AC-013 | Misfire CatchUp 补执行所有              | FR-004    | Unit       |
-| AC-014 | Cancel 已存在 job 返回 nil              | FR-005    | TC-005     |
-| AC-015 | Cancel 不存在 job 返回 ErrJobNotFound   | FR-005    | Unit       |
-| AC-016 | Stop 等待正在执行的 job 完成或超时      | FR-006    | TC-006     |
-| AC-017 | Stop 超时返回 ErrShutdownTimeout        | FR-006    | Unit       |
+| AC-014 | Cancel 已存在 job 返回 nil（v1.1 缺口） | FR-005    | TC-005     |
+| AC-015 | Cancel 不存在 job 返回错误（v1.1 缺口） | FR-005    | Unit       |
+| AC-016 | Shutdown 等待正在执行的 job 完成        | FR-006    | TC-006     |
+| AC-017 | Shutdown 超时返回 ctx.Err()（v1.1：专属 ErrShutdownTimeout） | FR-006    | Unit       |
 | AC-018 | EventSink 收到生命周期事件              | FR-007    | TC-007     |
 | AC-019 | 锁获取成功执行 job                      | FR-008    | Unit       |
 | AC-020 | 锁获取失败跳过本次                      | FR-008    | TC-004     |
-| AC-021 | lock TTL < job 最大执行时间返回配置错误 | FR-008    | Unit       |
-| AC-022 | FakeClock 注入后调度基于 FakeClock      | FR-009    | TC-008     |
+| AC-021 | lock TTL < job 最大执行时间返回配置错误（v1.1 缺口） | FR-008    | Unit       |
+| AC-022 | StaticClock 注入后调度基于 StaticClock  | FR-009    | TC-008     |
 
 ---
 
@@ -592,6 +681,10 @@ Then 返回 ErrDuplicateJob
 
 ## 18. 可观测性
 
+> **运行时现状（v1.0.0）：尚未内置 metrics 输出、结构化日志和 trace span。** 当前可观测能力完全通过 `EventSink` 回调（§8.4）暴露，下游可基于 Event 自行聚合 metrics/log/trace。下表为**规划目标**，实际 metrics/log/span 集成在 v1.1 路线（见 §22 OQ-009）。
+>
+> **NFR-O01 当前状态 = 缺口**：metrics/log/span 三类信号在运行时均未实现，仅 Event 回调可用。
+
 | 类型   | 名称                      | 说明                                                   |
 | ------ | ------------------------- | ------------------------------------------------------ |
 | metric | `schedulex.job.triggered` | counter，job 触发次数，label: job_id                   |
@@ -683,6 +776,12 @@ Then 返回 ErrDuplicateJob
 | OQ-002 | 是否需要支持 job 优先级（高优先级 job 可抢占低优先级的执行槽）？ | 待评估 |
 | OQ-003 | 分布式锁是否需要支持 Redis 以外的后端（PostgreSQL Advisory Lock）？ | 待评估 |
 | OQ-004 | misfire CatchUp 策略是否有上限（最多补执行 N 次）？ | 待评估 |
+| OQ-005 | `Cancel(id)` 单 job 取消 API（FR-005 缺失，运行时无单 job 取消，仅全局 `Shutdown`） | v1.1 候选 |
+| OQ-006 | `OverlapPolicy = Replace` 策略（FR-003 第三策略，运行时仅 Skip/QueueOne/Allow） | v1.1 候选 |
+| OQ-007 | `ErrShutdownTimeout` 专属停机超时错误（运行时 `Shutdown` 返回 `ctx.Err()`） | v1.1 候选 |
+| OQ-008 | `JobState` 枚举与 `RunCount/ErrorCount/LastError` 完整 JobStatus（运行时仅 Snapshot） | v1.1 候选 |
+| OQ-009 | metrics（含 log/trace）集成（§18 规划目标，运行时仅 EventSink 回调） | v1.1 候选 |
+| OQ-010 | YAML `SchedulerConfig` 与运行时 functional option 桥接（运行时无 YAML 解析） | v1.1 候选 |
 
 
 ## 23. 变更历史
@@ -690,6 +789,7 @@ Then 返回 ErrDuplicateJob
 | 日期       | 版本   | 变更内容   | 作者    |
 | ---------- | ------ | ---------- | ------- |
 | 2026-06-07 | v1.0.0 | 初始版本   | ZoneCNH |
+| 2026-06-18 | v1.0.1 | 接口契约章节（§8–§11、§18、§22）反向对齐运行时 v1.0.0 canonical API | Agent A |
 
 ---
 

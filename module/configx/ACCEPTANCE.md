@@ -2,12 +2,14 @@
 
 - Status: Generated from current module SSOT
 - Last-Updated: 2026-06-18
-- Module-Version: v1.0.0
-- Module-State: 已发布
-- Layer: L0 配置
+- Module-Version: v0.1.4（运行时 version.go 实测 v0.1.3、CHANGELOG 最新 v0.1.4；git tag v1.0.0 已存在但 version.go 尚未对齐，见下方说明）
+- Module-State: 显式加载基线已交付（对应 git tag v1.0.0）；goal.md §2 的 v1.0 完整 MUST（热更新 / RemoteSource SPI / bind / ConfigSnapshot）未交付，划入 v1.1 路线
+- Layer: L1 基础能力
 - Runtime-Repo: /home/configx
 - Source: goal.md, SPEC.md, DESIGN.md, TRACEABILITY.md, IMPLEMENTATION-PLAN.md, tasks/
 
+> 版本基线说明：本目录投影文档此前登记 `Module-Version: v1.0.0 / 已发布`，但运行时仓库 `/home/configx` 的 `pkg/configx/version.go` 实测为 `v0.1.3`、CHANGELOG 最新为 `v0.1.4`、git tag 含 `v1.0.0`。三者不一致属发布治理缺陷；本清单按运行时事实层登记为 `v0.1.4`，并把 goal.md 的 v1.0 完整目标明确推迟到 v1.1，避免把「计划」当作「已发布」。
+>
 > 本清单用于验收 configx 是否达到可发布、可追溯、可复验状态。除非条目明确记录为已通过，默认需要在运行时代码仓库重新执行验证并补充证据。
 
 ## 1. 验收命令清单

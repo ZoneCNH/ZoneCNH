@@ -2,9 +2,9 @@
 
 - Status: Generated from current module SSOT
 - Last-Updated: 2026-06-18
-- Module-Version: v1.0.0
-- Module-State: 已发布
-- Layer: L0 配置
+- Module-Version: v0.1.4（运行时 version.go 实测 v0.1.3、CHANGELOG 最新 v0.1.4；git tag v1.0.0 已存在但 version.go 尚未对齐，见 ACCEPTANCE.md 版本基线说明）
+- Module-State: 显式加载基线已交付（对应 git tag v1.0.0）；goal.md §2 的 v1.0 完整 MUST（热更新 / RemoteSource SPI / bind / ConfigSnapshot）未交付，划入 v1.1 路线
+- Layer: L1 基础能力
 - Runtime-Repo: /home/configx
 - Source: goal.md, SPEC.md, DESIGN.md, TRACEABILITY.md, IMPLEMENTATION-PLAN.md, tasks/
 
@@ -14,12 +14,12 @@
 
 | 项目 | 要求 |
 | --- | --- |
-| 模块职责 | 配置加载、覆盖、校验、快照、热更新与安全红线 |
+| 模块职责 | 配置加载、覆盖、校验、安全红线（热更新/快照属 v1.1 路线，见 goal.md） |
 | 文档目录 | module/configx |
 | 运行时代码目录 | /home/configx |
 | Go 基线 | 1.23 |
-| 允许依赖 | kernel |
-| 禁止依赖 | 禁止越过 FOUNDATION-DEPS.yaml 登记边界依赖上层业务域或未授权基座模块 |
+| 允许依赖 | stdlib + `gopkg.in/yaml.v3` + `github.com/pelletier/go-toml/v2`（实测 go.mod；不依赖 kernel，见 NFR-005） |
+| 禁止依赖 | 禁止越过 FOUNDATION-DEPS.yaml 登记边界依赖 kernel、observex、resiliencx、schedulex、testkitx 或上层业务域 |
 | 对外承诺 | API、配置、错误、观测、测试与证据口径必须与本目录追溯文档闭合 |
 
 ## 2. 功能实现清单（FR）

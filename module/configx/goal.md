@@ -1,13 +1,22 @@
 # configx 发布版本 1.0 Goal 定位与实现标准
 
+> ⚠️ **交付状态戳（2026-06-18 校准）**：本 goal.md 描述 configx 1.0 的**完整目标基线**。运行时仓库 `/home/configx` 当前已交付**显式加载基线**（对应 git tag `v1.0.0`，version.go 实测 `v0.1.3`、CHANGELOG 最新 `v0.1.4`）——覆盖 §2 MUST 中的「文件/环境变量/map 三源 + LastWins 合并 + 强类型 Decode + 校验 + 脱敏 + Provenance + HealthCheck + Metrics」。**以下 MUST 尚未交付，明确推迟到 v1.1**：
+> - ArgsSource（命令行参数源）
+> - RemoteSource SPI（远程配置源扩展点）
+> - `bind(prefix, class)` 按 prefix 切片绑定 API
+> - ConfigSnapshot / ConfigChangeEvent / Watch 热更新与回滚
+> - 配置文档自动生成
+>
+> 即 §2 中带 ❌ 标记的 MUST 条目以本戳为准；已交付能力见 ACCEPTANCE.md §4 与 TRACEABILITY.md。
+
 | 字段         | 内容                                           |
 | ------------ | ---------------------------------------------- |
 | 模块名       | `configx`                                      |
-| 发布版本     | 1.0.0                                          |
+| 发布版本     | 1.0.0（goal 基线；运行时已交付显式加载子集，version.go=v0.1.3） |
 | 所属层级     | L1 运行时横切能力 / 配置管理                   |
 | 稳定级别     | Public API Stable；SPI Stable；Internal 可演进 |
-| 文档状态     | 1.0 发布基线文档（✅ v1.0.0 已发布）            |
-| 发布日期基准 | 2026-06-09                                     |
+| 文档状态     | 1.0 目标基线（显式加载子集已交付，对应 git tag v1.0.0；完整 MUST 见文首状态戳，推迟 v1.1） |
+| 发布日期基准 | 2026-06-09（git tag v1.0.0 创建日）            |
 
 ## 术语约定
 
