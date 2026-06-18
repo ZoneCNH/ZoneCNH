@@ -1,6 +1,6 @@
-# CI/CD Workflow 参考模板 — domainx
+# CI/CD Workflow 参考模板 — domain-exchange
 #
-# 将此文件复制到 github.com/ZoneCNH/domainx/.github/workflows/ci.yml。
+# 将此文件复制到 github.com/ZoneCNH/domain-exchange/.github/workflows/ci.yml。
 # 所有 CI 与 CD job 必须使用 sre/ 机器池；禁止回退 GitHub-hosted runner。
 # CI 机器池: sre/l2-5；CD 机器池: sre/deploy。
 
@@ -179,7 +179,7 @@ jobs:
           mkdir -p "${{ env.EVIDENCE_DIR }}"
           cat > "${{ env.EVIDENCE_DIR }}/ci-manifest.json" <<'JSON'
           {
-            "module": "domainx",
+            "module": "domain-exchange",
             "ci_pool": "sre/l2-5",
             "deploy_pool": "sre/deploy",
             "runner_namespace": "sre/",
@@ -285,7 +285,7 @@ jobs:
           cat > "${{ env.EVIDENCE_DIR }}/rollback-plan.md" <<'PLAN'
           # Rollback Plan
 
-          - Module: domainx
+          - Module: domain-exchange
           - Requested rollback ref: ${{ inputs.rollback_ref }}
           - Runner pool: sre/deploy
           - Action: validate target ref and prepare manual release reversal evidence.

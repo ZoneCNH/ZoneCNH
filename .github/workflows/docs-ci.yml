@@ -13,6 +13,8 @@ on:
       - "docs/**/*.md"
       - "module/**/*.md"
       - "module/**/*.md"
+      - "module/**/*.yaml"
+      - "module/**/*.yml"
       - ".github/workflows/*.yml"
       - ".github/ci/**"
       - ".markdownlint.json"
@@ -24,6 +26,8 @@ on:
       - "docs/**/*.md"
       - "module/**/*.md"
       - "module/**/*.md"
+      - "module/**/*.yaml"
+      - "module/**/*.yml"
       - ".github/workflows/*.yml"
       - ".github/ci/**"
       - ".markdownlint.json"
@@ -107,6 +111,17 @@ jobs:
 
       - name: 校验全局 CI/CD workflow 策略
         run: bash .github/ci/workflow-policy-guard.sh
+
+  # ── 4b. 模块 CI/CD 契约守卫 ─────────────────────────────────
+  module-cicd-contract:
+    name: Module CI/CD Contract
+    runs-on: [self-hosted, Linux, X64, homepage]
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 校验模块 CI/CD workflow 使用 sre/ 机器池
+        run: bash .github/ci/module-cicd-check.sh
 
   # ── 5. 状态一致性校验 ────────────────────────────────────────
   status-consistency:
