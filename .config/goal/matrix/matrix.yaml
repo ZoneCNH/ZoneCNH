@@ -390,236 +390,533 @@ matrix:
     updated_at: "2026-06-09"
 
   # === kernel traceability ===
+  # 2026-06-18 refresh: kernel edges are active and linked to the current 12-package v2 spec.
+  # Factory remains blocked by BLK-011; the referenced evidence package is PARTIAL and indexes gaps.
+  # Do not treat these edges as Verified until current four-source 98+ arbiter, strict validator,
+  # Matrix check-only, rollback, and gate archives exist.
   # Goal → Spec
   - source_id: GOAL-KERNEL-20260609-001
-    target_id: SPEC-kernel-v1
+    target_id: SPEC-kernel-v2
     relation: decomposes_to
-    status: Dropped
-    evidence_id: ""
-    drop_reason: "kernel 导入快照尚无 .config/goal/evidence 证据包；保留为带原因例外终态，待证据登记后重新链接"
+    status: Linked
+    evidence_id: EVID-KERNEL-BLK-011-EVIDENCE-PACKAGE-001
     gate_id: G1
-    owner: zone
-    updated_at: "2026-06-09"
+    owner: goal-matrix
+    updated_at: "2026-06-18"
 
   # Spec → FR
-  - source_id: SPEC-kernel-v1
-    target_id: FR-KERNEL-001
+  - source_id: SPEC-kernel-v2
+    target_id: FR-001
     relation: contains
-    status: Dropped
-    evidence_id: ""
-    drop_reason: "kernel 导入快照尚无 .config/goal/evidence 证据包；保留为带原因例外终态，待证据登记后重新链接"
+    status: Linked
+    evidence_id: EVID-KERNEL-BLK-011-EVIDENCE-PACKAGE-001
     gate_id: G2
-    owner: zone
-    updated_at: "2026-06-09"
+    owner: goal-matrix
+    updated_at: "2026-06-18"
 
-  - source_id: SPEC-kernel-v1
-    target_id: FR-KERNEL-002
+  - source_id: SPEC-kernel-v2
+    target_id: FR-002
     relation: contains
-    status: Dropped
-    evidence_id: ""
-    drop_reason: "kernel 导入快照尚无 .config/goal/evidence 证据包；保留为带原因例外终态，待证据登记后重新链接"
+    status: Linked
+    evidence_id: EVID-KERNEL-BLK-011-EVIDENCE-PACKAGE-001
     gate_id: G2
-    owner: zone
-    updated_at: "2026-06-09"
+    owner: goal-matrix
+    updated_at: "2026-06-18"
 
-  - source_id: SPEC-kernel-v1
-    target_id: FR-KERNEL-003
+  - source_id: SPEC-kernel-v2
+    target_id: FR-003
     relation: contains
-    status: Dropped
-    evidence_id: ""
-    drop_reason: "kernel 导入快照尚无 .config/goal/evidence 证据包；保留为带原因例外终态，待证据登记后重新链接"
+    status: Linked
+    evidence_id: EVID-KERNEL-BLK-011-EVIDENCE-PACKAGE-001
     gate_id: G2
-    owner: zone
-    updated_at: "2026-06-09"
+    owner: goal-matrix
+    updated_at: "2026-06-18"
 
-  - source_id: SPEC-kernel-v1
-    target_id: FR-KERNEL-004
+  - source_id: SPEC-kernel-v2
+    target_id: FR-004
     relation: contains
-    status: Dropped
-    evidence_id: ""
-    drop_reason: "kernel 导入快照尚无 .config/goal/evidence 证据包；保留为带原因例外终态，待证据登记后重新链接"
+    status: Linked
+    evidence_id: EVID-KERNEL-BLK-011-EVIDENCE-PACKAGE-001
     gate_id: G2
-    owner: zone
-    updated_at: "2026-06-09"
+    owner: goal-matrix
+    updated_at: "2026-06-18"
 
-  - source_id: SPEC-kernel-v1
-    target_id: FR-KERNEL-005
+  - source_id: SPEC-kernel-v2
+    target_id: FR-005
     relation: contains
-    status: Dropped
-    evidence_id: ""
-    drop_reason: "kernel 导入快照尚无 .config/goal/evidence 证据包；保留为带原因例外终态，待证据登记后重新链接"
+    status: Linked
+    evidence_id: EVID-KERNEL-BLK-011-EVIDENCE-PACKAGE-001
     gate_id: G2
-    owner: zone
-    updated_at: "2026-06-09"
+    owner: goal-matrix
+    updated_at: "2026-06-18"
+
+  - source_id: SPEC-kernel-v2
+    target_id: FR-006
+    relation: contains
+    status: Linked
+    evidence_id: EVID-KERNEL-BLK-011-EVIDENCE-PACKAGE-001
+    gate_id: G2
+    owner: goal-matrix
+    updated_at: "2026-06-18"
+
+  - source_id: SPEC-kernel-v2
+    target_id: FR-007
+    relation: contains
+    status: Linked
+    evidence_id: EVID-KERNEL-BLK-011-EVIDENCE-PACKAGE-001
+    gate_id: G2
+    owner: goal-matrix
+    updated_at: "2026-06-18"
+
+  - source_id: SPEC-kernel-v2
+    target_id: FR-008
+    relation: contains
+    status: Linked
+    evidence_id: EVID-KERNEL-BLK-011-EVIDENCE-PACKAGE-001
+    gate_id: G2
+    owner: goal-matrix
+    updated_at: "2026-06-18"
+
+  - source_id: SPEC-kernel-v2
+    target_id: FR-009
+    relation: contains
+    status: Linked
+    evidence_id: EVID-KERNEL-BLK-011-EVIDENCE-PACKAGE-001
+    gate_id: G2
+    owner: goal-matrix
+    updated_at: "2026-06-18"
+
+  - source_id: SPEC-kernel-v2
+    target_id: FR-010
+    relation: contains
+    status: Linked
+    evidence_id: EVID-KERNEL-BLK-011-EVIDENCE-PACKAGE-001
+    gate_id: G2
+    owner: goal-matrix
+    updated_at: "2026-06-18"
+
+  - source_id: SPEC-kernel-v2
+    target_id: FR-011
+    relation: contains
+    status: Linked
+    evidence_id: EVID-KERNEL-BLK-011-EVIDENCE-PACKAGE-001
+    gate_id: G2
+    owner: goal-matrix
+    updated_at: "2026-06-18"
+
+  - source_id: SPEC-kernel-v2
+    target_id: FR-012
+    relation: contains
+    status: Linked
+    evidence_id: EVID-KERNEL-BLK-011-EVIDENCE-PACKAGE-001
+    gate_id: G2
+    owner: goal-matrix
+    updated_at: "2026-06-18"
 
   # FR → AC
-  - source_id: FR-KERNEL-001
-    target_id: AC-KERNEL-001
+  - source_id: FR-001
+    target_id: AC-001
     relation: accepted_by
-    status: Dropped
-    evidence_id: ""
-    drop_reason: "kernel 导入快照尚无 .config/goal/evidence 证据包；保留为带原因例外终态，待证据登记后重新链接"
-    gate_id: G2
-    owner: zone
-    updated_at: "2026-06-09"
+    status: Linked
+    evidence_id: EVID-KERNEL-BLK-011-EVIDENCE-PACKAGE-001
+    gate_id: G3
+    owner: goal-matrix
+    updated_at: "2026-06-18"
 
-  - source_id: FR-KERNEL-002
-    target_id: AC-KERNEL-002
+  - source_id: FR-001
+    target_id: AC-002
     relation: accepted_by
-    status: Dropped
-    evidence_id: ""
-    drop_reason: "kernel 导入快照尚无 .config/goal/evidence 证据包；保留为带原因例外终态，待证据登记后重新链接"
-    gate_id: G2
-    owner: zone
-    updated_at: "2026-06-09"
+    status: Linked
+    evidence_id: EVID-KERNEL-BLK-011-EVIDENCE-PACKAGE-001
+    gate_id: G3
+    owner: goal-matrix
+    updated_at: "2026-06-18"
 
-  - source_id: FR-KERNEL-003
-    target_id: AC-KERNEL-003
+  - source_id: FR-002
+    target_id: AC-003
     relation: accepted_by
-    status: Dropped
-    evidence_id: ""
-    drop_reason: "kernel 导入快照尚无 .config/goal/evidence 证据包；保留为带原因例外终态，待证据登记后重新链接"
-    gate_id: G2
-    owner: zone
-    updated_at: "2026-06-09"
+    status: Linked
+    evidence_id: EVID-KERNEL-BLK-011-EVIDENCE-PACKAGE-001
+    gate_id: G3
+    owner: goal-matrix
+    updated_at: "2026-06-18"
 
-  - source_id: FR-KERNEL-003
-    target_id: AC-KERNEL-004
+  - source_id: FR-002
+    target_id: AC-004
     relation: accepted_by
-    status: Dropped
-    evidence_id: ""
-    drop_reason: "kernel 导入快照尚无 .config/goal/evidence 证据包；保留为带原因例外终态，待证据登记后重新链接"
-    gate_id: G2
-    owner: zone
-    updated_at: "2026-06-09"
+    status: Linked
+    evidence_id: EVID-KERNEL-BLK-011-EVIDENCE-PACKAGE-001
+    gate_id: G3
+    owner: goal-matrix
+    updated_at: "2026-06-18"
 
-  - source_id: FR-KERNEL-004
-    target_id: AC-KERNEL-005
+  - source_id: FR-003
+    target_id: AC-005
     relation: accepted_by
-    status: Dropped
-    evidence_id: ""
-    drop_reason: "kernel 导入快照尚无 .config/goal/evidence 证据包；保留为带原因例外终态，待证据登记后重新链接"
-    gate_id: G2
-    owner: zone
-    updated_at: "2026-06-09"
+    status: Linked
+    evidence_id: EVID-KERNEL-BLK-011-EVIDENCE-PACKAGE-001
+    gate_id: G3
+    owner: goal-matrix
+    updated_at: "2026-06-18"
 
-  - source_id: FR-KERNEL-005
-    target_id: AC-KERNEL-006
+  - source_id: FR-004
+    target_id: AC-006
     relation: accepted_by
-    status: Dropped
-    evidence_id: ""
-    drop_reason: "kernel 导入快照尚无 .config/goal/evidence 证据包；保留为带原因例外终态，待证据登记后重新链接"
-    gate_id: G2
-    owner: zone
-    updated_at: "2026-06-09"
+    status: Linked
+    evidence_id: EVID-KERNEL-BLK-011-EVIDENCE-PACKAGE-001
+    gate_id: G3
+    owner: goal-matrix
+    updated_at: "2026-06-18"
 
-  - source_id: FR-KERNEL-001
-    target_id: AC-KERNEL-007
+  - source_id: FR-004
+    target_id: AC-007
     relation: accepted_by
-    status: Dropped
-    evidence_id: ""
-    drop_reason: "kernel 导入快照尚无 .config/goal/evidence 证据包；保留为带原因例外终态，待证据登记后重新链接"
-    gate_id: G2
-    owner: zone
-    updated_at: "2026-06-09"
+    status: Linked
+    evidence_id: EVID-KERNEL-BLK-011-EVIDENCE-PACKAGE-001
+    gate_id: G3
+    owner: goal-matrix
+    updated_at: "2026-06-18"
 
-  - source_id: FR-KERNEL-002
-    target_id: AC-KERNEL-008
+  - source_id: FR-005
+    target_id: AC-008
     relation: accepted_by
-    status: Dropped
-    evidence_id: ""
-    drop_reason: "kernel 导入快照尚无 .config/goal/evidence 证据包；保留为带原因例外终态，待证据登记后重新链接"
-    gate_id: G2
-    owner: zone
-    updated_at: "2026-06-09"
+    status: Linked
+    evidence_id: EVID-KERNEL-BLK-011-EVIDENCE-PACKAGE-001
+    gate_id: G3
+    owner: goal-matrix
+    updated_at: "2026-06-18"
 
-  # AC → TASK
-  - source_id: AC-KERNEL-001
-    target_id: TASK-KERNEL-001
-    relation: implemented_by
-    status: Dropped
-    evidence_id: ""
-    drop_reason: "kernel 导入快照尚无 .config/goal/evidence 证据包；保留为带原因例外终态，待证据登记后重新链接"
-    gate_id: G5
-    owner: zone
-    updated_at: "2026-06-09"
+  - source_id: FR-006
+    target_id: AC-009
+    relation: accepted_by
+    status: Linked
+    evidence_id: EVID-KERNEL-BLK-011-EVIDENCE-PACKAGE-001
+    gate_id: G3
+    owner: goal-matrix
+    updated_at: "2026-06-18"
 
-  - source_id: AC-KERNEL-001
-    target_id: TASK-KERNEL-003
-    relation: implemented_by
-    status: Dropped
-    evidence_id: ""
-    drop_reason: "kernel 导入快照尚无 .config/goal/evidence 证据包；保留为带原因例外终态，待证据登记后重新链接"
-    gate_id: G5
-    owner: zone
-    updated_at: "2026-06-09"
+  - source_id: FR-006
+    target_id: AC-010
+    relation: accepted_by
+    status: Linked
+    evidence_id: EVID-KERNEL-BLK-011-EVIDENCE-PACKAGE-001
+    gate_id: G3
+    owner: goal-matrix
+    updated_at: "2026-06-18"
 
-  - source_id: AC-KERNEL-002
-    target_id: TASK-KERNEL-002
-    relation: implemented_by
-    status: Dropped
-    evidence_id: ""
-    drop_reason: "kernel 导入快照尚无 .config/goal/evidence 证据包；保留为带原因例外终态，待证据登记后重新链接"
-    gate_id: G5
-    owner: zone
-    updated_at: "2026-06-09"
+  - source_id: FR-007
+    target_id: AC-011
+    relation: accepted_by
+    status: Linked
+    evidence_id: EVID-KERNEL-BLK-011-EVIDENCE-PACKAGE-001
+    gate_id: G3
+    owner: goal-matrix
+    updated_at: "2026-06-18"
 
-  - source_id: AC-KERNEL-003
-    target_id: TASK-KERNEL-004
-    relation: implemented_by
-    status: Dropped
-    evidence_id: ""
-    drop_reason: "kernel 导入快照尚无 .config/goal/evidence 证据包；保留为带原因例外终态，待证据登记后重新链接"
-    gate_id: G5
-    owner: zone
-    updated_at: "2026-06-09"
+  - source_id: FR-008
+    target_id: AC-012
+    relation: accepted_by
+    status: Linked
+    evidence_id: EVID-KERNEL-BLK-011-EVIDENCE-PACKAGE-001
+    gate_id: G3
+    owner: goal-matrix
+    updated_at: "2026-06-18"
 
-  - source_id: AC-KERNEL-004
+  - source_id: FR-009
+    target_id: AC-013
+    relation: accepted_by
+    status: Linked
+    evidence_id: EVID-KERNEL-BLK-011-EVIDENCE-PACKAGE-001
+    gate_id: G3
+    owner: goal-matrix
+    updated_at: "2026-06-18"
+
+  - source_id: FR-010
+    target_id: AC-014
+    relation: accepted_by
+    status: Linked
+    evidence_id: EVID-KERNEL-BLK-011-EVIDENCE-PACKAGE-001
+    gate_id: G3
+    owner: goal-matrix
+    updated_at: "2026-06-18"
+
+  - source_id: FR-011
+    target_id: AC-015
+    relation: accepted_by
+    status: Linked
+    evidence_id: EVID-KERNEL-BLK-011-EVIDENCE-PACKAGE-001
+    gate_id: G3
+    owner: goal-matrix
+    updated_at: "2026-06-18"
+
+  - source_id: FR-011
+    target_id: AC-016
+    relation: accepted_by
+    status: Linked
+    evidence_id: EVID-KERNEL-BLK-011-EVIDENCE-PACKAGE-001
+    gate_id: G3
+    owner: goal-matrix
+    updated_at: "2026-06-18"
+
+  - source_id: FR-012
+    target_id: AC-017
+    relation: accepted_by
+    status: Linked
+    evidence_id: EVID-KERNEL-BLK-011-EVIDENCE-PACKAGE-001
+    gate_id: G3
+    owner: goal-matrix
+    updated_at: "2026-06-18"
+
+  # AC → Task
+  - source_id: AC-001
     target_id: TASK-KERNEL-005
     relation: implemented_by
-    status: Dropped
-    evidence_id: ""
-    drop_reason: "kernel 导入快照尚无 .config/goal/evidence 证据包；保留为带原因例外终态，待证据登记后重新链接"
+    status: Linked
+    evidence_id: EVID-KERNEL-BLK-011-EVIDENCE-PACKAGE-001
     gate_id: G5
-    owner: zone
-    updated_at: "2026-06-09"
+    owner: goal-matrix
+    updated_at: "2026-06-18"
 
-  - source_id: AC-KERNEL-005
+  - source_id: AC-002
+    target_id: TASK-KERNEL-005
+    relation: implemented_by
+    status: Linked
+    evidence_id: EVID-KERNEL-BLK-011-EVIDENCE-PACKAGE-001
+    gate_id: G5
+    owner: goal-matrix
+    updated_at: "2026-06-18"
+
+  - source_id: AC-003
+    target_id: TASK-KERNEL-001
+    relation: implemented_by
+    status: Linked
+    evidence_id: EVID-KERNEL-BLK-011-EVIDENCE-PACKAGE-001
+    gate_id: G5
+    owner: goal-matrix
+    updated_at: "2026-06-18"
+
+  - source_id: AC-004
+    target_id: TASK-KERNEL-001
+    relation: implemented_by
+    status: Linked
+    evidence_id: EVID-KERNEL-BLK-011-EVIDENCE-PACKAGE-001
+    gate_id: G5
+    owner: goal-matrix
+    updated_at: "2026-06-18"
+
+  - source_id: AC-005
+    target_id: TASK-KERNEL-011
+    relation: implemented_by
+    status: Linked
+    evidence_id: EVID-KERNEL-BLK-011-EVIDENCE-PACKAGE-001
+    gate_id: G5
+    owner: goal-matrix
+    updated_at: "2026-06-18"
+
+  - source_id: AC-006
+    target_id: TASK-KERNEL-003
+    relation: implemented_by
+    status: Linked
+    evidence_id: EVID-KERNEL-BLK-011-EVIDENCE-PACKAGE-001
+    gate_id: G5
+    owner: goal-matrix
+    updated_at: "2026-06-18"
+
+  - source_id: AC-007
+    target_id: TASK-KERNEL-003
+    relation: implemented_by
+    status: Linked
+    evidence_id: EVID-KERNEL-BLK-011-EVIDENCE-PACKAGE-001
+    gate_id: G5
+    owner: goal-matrix
+    updated_at: "2026-06-18"
+
+  - source_id: AC-008
+    target_id: TASK-KERNEL-009
+    relation: implemented_by
+    status: Linked
+    evidence_id: EVID-KERNEL-BLK-011-EVIDENCE-PACKAGE-001
+    gate_id: G5
+    owner: goal-matrix
+    updated_at: "2026-06-18"
+
+  - source_id: AC-009
     target_id: TASK-KERNEL-006
     relation: implemented_by
-    status: Dropped
-    evidence_id: ""
-    drop_reason: "kernel 导入快照尚无 .config/goal/evidence 证据包；保留为带原因例外终态，待证据登记后重新链接"
+    status: Linked
+    evidence_id: EVID-KERNEL-BLK-011-EVIDENCE-PACKAGE-001
     gate_id: G5
-    owner: zone
-    updated_at: "2026-06-09"
+    owner: goal-matrix
+    updated_at: "2026-06-18"
 
-  - source_id: AC-KERNEL-006
-    target_id: TASK-KERNEL-007
+  - source_id: AC-010
+    target_id: TASK-KERNEL-006
     relation: implemented_by
-    status: Dropped
-    evidence_id: ""
-    drop_reason: "kernel 导入快照尚无 .config/goal/evidence 证据包；保留为带原因例外终态，待证据登记后重新链接"
+    status: Linked
+    evidence_id: EVID-KERNEL-BLK-011-EVIDENCE-PACKAGE-001
     gate_id: G5
-    owner: zone
-    updated_at: "2026-06-09"
+    owner: goal-matrix
+    updated_at: "2026-06-18"
 
-  - source_id: AC-KERNEL-007
+  - source_id: AC-011
+    target_id: TASK-KERNEL-002
+    relation: implemented_by
+    status: Linked
+    evidence_id: EVID-KERNEL-BLK-011-EVIDENCE-PACKAGE-001
+    gate_id: G5
+    owner: goal-matrix
+    updated_at: "2026-06-18"
+
+  - source_id: AC-012
     target_id: TASK-KERNEL-008
     relation: implemented_by
-    status: Dropped
-    evidence_id: ""
-    drop_reason: "kernel 导入快照尚无 .config/goal/evidence 证据包；保留为带原因例外终态，待证据登记后重新链接"
+    status: Linked
+    evidence_id: EVID-KERNEL-BLK-011-EVIDENCE-PACKAGE-001
     gate_id: G5
-    owner: zone
-    updated_at: "2026-06-09"
+    owner: goal-matrix
+    updated_at: "2026-06-18"
 
-  - source_id: AC-KERNEL-008
-    target_id: TASK-KERNEL-000
+  - source_id: AC-013
+    target_id: TASK-KERNEL-007
     relation: implemented_by
-    status: Dropped
-    evidence_id: ""
-    drop_reason: "kernel 导入快照尚无 .config/goal/evidence 证据包；保留为带原因例外终态，待证据登记后重新链接"
+    status: Linked
+    evidence_id: EVID-KERNEL-BLK-011-EVIDENCE-PACKAGE-001
     gate_id: G5
-    owner: zone
-    updated_at: "2026-06-09"
+    owner: goal-matrix
+    updated_at: "2026-06-18"
+
+  - source_id: AC-014
+    target_id: TASK-KERNEL-010
+    relation: implemented_by
+    status: Linked
+    evidence_id: EVID-KERNEL-BLK-011-EVIDENCE-PACKAGE-001
+    gate_id: G5
+    owner: goal-matrix
+    updated_at: "2026-06-18"
+
+  - source_id: AC-015
+    target_id: TASK-KERNEL-004
+    relation: implemented_by
+    status: Linked
+    evidence_id: EVID-KERNEL-BLK-011-EVIDENCE-PACKAGE-001
+    gate_id: G5
+    owner: goal-matrix
+    updated_at: "2026-06-18"
+
+  - source_id: AC-016
+    target_id: TASK-KERNEL-004
+    relation: implemented_by
+    status: Linked
+    evidence_id: EVID-KERNEL-BLK-011-EVIDENCE-PACKAGE-001
+    gate_id: G5
+    owner: goal-matrix
+    updated_at: "2026-06-18"
+
+  - source_id: AC-017
+    target_id: TASK-KERNEL-012
+    relation: implemented_by
+    status: Linked
+    evidence_id: EVID-KERNEL-BLK-011-EVIDENCE-PACKAGE-001
+    gate_id: G5
+    owner: goal-matrix
+    updated_at: "2026-06-18"
+
+  # Spec → support/release tasks
+  - source_id: SPEC-kernel-v2
+    target_id: TASK-KERNEL-000
+    relation: planned_by
+    status: Linked
+    evidence_id: EVID-KERNEL-BLK-011-EVIDENCE-PACKAGE-001
+    gate_id: G5
+    owner: goal-matrix
+    updated_at: "2026-06-18"
+
+  - source_id: SPEC-kernel-v2
+    target_id: TASK-KERNEL-013
+    relation: planned_by
+    status: Linked
+    evidence_id: EVID-KERNEL-BLK-011-EVIDENCE-PACKAGE-001
+    gate_id: G5
+    owner: goal-matrix
+    updated_at: "2026-06-18"
+
+  - source_id: SPEC-kernel-v2
+    target_id: TASK-KERNEL-014
+    relation: planned_by
+    status: Linked
+    evidence_id: EVID-KERNEL-BLK-011-EVIDENCE-PACKAGE-001
+    gate_id: G5
+    owner: goal-matrix
+    updated_at: "2026-06-18"
+
+  - source_id: SPEC-kernel-v2
+    target_id: TASK-KERNEL-015
+    relation: planned_by
+    status: Linked
+    evidence_id: EVID-KERNEL-BLK-011-EVIDENCE-PACKAGE-001
+    gate_id: G5
+    owner: goal-matrix
+    updated_at: "2026-06-18"
+
+  - source_id: SPEC-kernel-v2
+    target_id: TASK-KERNEL-015a
+    relation: planned_by
+    status: Linked
+    evidence_id: EVID-KERNEL-BLK-011-EVIDENCE-PACKAGE-001
+    gate_id: G5
+    owner: goal-matrix
+    updated_at: "2026-06-18"
+
+  - source_id: SPEC-kernel-v2
+    target_id: TASK-KERNEL-015b
+    relation: planned_by
+    status: Linked
+    evidence_id: EVID-KERNEL-BLK-011-EVIDENCE-PACKAGE-001
+    gate_id: G5
+    owner: goal-matrix
+    updated_at: "2026-06-18"
+
+  - source_id: SPEC-kernel-v2
+    target_id: TASK-KERNEL-015c
+    relation: planned_by
+    status: Linked
+    evidence_id: EVID-KERNEL-BLK-011-EVIDENCE-PACKAGE-001
+    gate_id: G5
+    owner: goal-matrix
+    updated_at: "2026-06-18"
+
+  - source_id: SPEC-kernel-v2
+    target_id: TASK-KERNEL-016
+    relation: planned_by
+    status: Linked
+    evidence_id: EVID-KERNEL-BLK-011-EVIDENCE-PACKAGE-001
+    gate_id: G5
+    owner: goal-matrix
+    updated_at: "2026-06-18"
+
+  - source_id: SPEC-kernel-v2
+    target_id: TASK-KERNEL-016a
+    relation: planned_by
+    status: Linked
+    evidence_id: EVID-KERNEL-BLK-011-EVIDENCE-PACKAGE-001
+    gate_id: G5
+    owner: goal-matrix
+    updated_at: "2026-06-18"
+
+  - source_id: SPEC-kernel-v2
+    target_id: TASK-KERNEL-016b
+    relation: planned_by
+    status: Linked
+    evidence_id: EVID-KERNEL-BLK-011-EVIDENCE-PACKAGE-001
+    gate_id: G5
+    owner: goal-matrix
+    updated_at: "2026-06-18"
+
+  - source_id: SPEC-kernel-v2
+    target_id: TASK-KERNEL-016c
+    relation: planned_by
+    status: Linked
+    evidence_id: EVID-KERNEL-BLK-011-EVIDENCE-PACKAGE-001
+    gate_id: G5
+    owner: goal-matrix
+    updated_at: "2026-06-18"

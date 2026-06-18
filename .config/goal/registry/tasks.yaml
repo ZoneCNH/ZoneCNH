@@ -223,30 +223,30 @@ tasks:
   created: '2026-06-09'
   code_ref: N/A (doc-only task)
 - task_id: TASK-KERNEL-000
-  document_version: '2026-06-09'
+  document_version: '2026-06-12'
   goal_id: GOAL-KERNEL-20260609-001
-  spec_id: SPEC-kernel-v1
-  title: 项目骨架：go.mod、doc.go、errors.go
+  spec_id: SPEC-kernel-v2
+  title: 项目骨架：go.mod、Makefile、README.md、LICENSE
   status: Pending
   owner: zone
   priority: P0
   change_level: CL1
   execution_mode: Lite
-  created_at: '2026-06-09'
-  updated_at: '2026-06-09'
+  created_at: '2026-06-12'
+  updated_at: '2026-06-18'
   dod:
-  - 创建 go.mod（stdlib-only）
-  - 创建 doc.go（包级文档）
-  - 创建 errors.go（10 个公共错误变量）
-  - go build 通过、go vet 无警告
+  - 创建 go.mod、Makefile、README.md、LICENSE
+  - 仅允许 Go 标准库依赖
+  - make check-stdlib、go build、go test 通过
+  - 不实现任何子包业务代码
   evidence:
   - module/kernel/tasks/TASK-KERNEL-000.md
   code_ref: N/A (doc-only task)
 - task_id: TASK-KERNEL-001
-  document_version: '2026-06-09'
+  document_version: '2026-06-12'
   goal_id: GOAL-KERNEL-20260609-001
-  spec_id: SPEC-kernel-v1
-  title: 接口定义：Module、Deps、HealthStatus、GraphView、App
+  spec_id: SPEC-kernel-v2
+  title: errx：结构化错误原语
   status: Pending
   owner: zone
   priority: P0
@@ -254,161 +254,239 @@ tasks:
   execution_mode: Standard
   depends_on:
   - TASK-KERNEL-000
-  created_at: '2026-06-09'
-  updated_at: '2026-06-09'
+  created_at: '2026-06-12'
+  updated_at: '2026-06-18'
   dod:
-  - Module 接口 5 个方法
-  - Deps 结构体 6 个字段
-  - GraphView 接口 3 个方法
-  - App 接口 5 个方法
-  - kernel 内最小接口（Logger、Meter 等）
-  - go build 通过
+  - 实现 errx 包的 ErrorKind、Error、Wrap、IsKind、Cause
+  - 支持 errors.Is / errors.As / Unwrap 语义
+  - 提供 GoDoc 和示例测试
+  - go test ./errx 通过
   evidence:
   - module/kernel/tasks/TASK-KERNEL-001.md
   code_ref: N/A (doc-only task)
 - task_id: TASK-KERNEL-002
-  document_version: '2026-06-09'
+  document_version: '2026-06-12'
   goal_id: GOAL-KERNEL-20260609-001
-  spec_id: SPEC-kernel-v1
-  title: 依赖图：DAG、环检测、拓扑排序
+  spec_id: SPEC-kernel-v2
+  title: timex：时钟与时间原语
   status: Pending
   owner: zone
   priority: P0
   change_level: CL2
   execution_mode: Standard
   depends_on:
-  - TASK-KERNEL-001
-  created_at: '2026-06-09'
-  updated_at: '2026-06-09'
+  - TASK-KERNEL-000
+  created_at: '2026-06-12'
+  updated_at: '2026-06-18'
   dod:
-  - GraphView 实现（Nodes、Edges、TopologicalOrder）
-  - 环检测返回 ErrCycleDetected
-  - 拓扑排序正确
-  - 深依赖链 50+ 层测试通过
-  - graph_test.go 通过
+  - 实现 Clock、SystemClock、FakeClock
+  - FakeClock 支持 Advance、Set、Now
+  - SleepContext 尊重 context 取消和超时
+  - go test ./timex 通过
   evidence:
   - module/kernel/tasks/TASK-KERNEL-002.md
   code_ref: N/A (doc-only task)
 - task_id: TASK-KERNEL-003
-  document_version: '2026-06-09'
+  document_version: '2026-06-12'
   goal_id: GOAL-KERNEL-20260609-001
-  spec_id: SPEC-kernel-v1
-  title: 注册表：并发安全模块注册
+  spec_id: SPEC-kernel-v2
+  title: obsx：观测接口与 noop 实现
   status: Pending
   owner: zone
   priority: P0
   change_level: CL2
   execution_mode: Standard
   depends_on:
-  - TASK-KERNEL-001
-  created_at: '2026-06-09'
-  updated_at: '2026-06-09'
+  - TASK-KERNEL-000
+  created_at: '2026-06-12'
+  updated_at: '2026-06-18'
   dod:
-  - Register nil 返回 ErrNilModule
-  - Register 重复返回 ErrAlreadyRegistered
-  - Register 新模块返回 nil
-  - 并发 Register 安全（-race 通过）
-  - registry_test.go 通过
+  - 定义 Logger、Meter、Tracer、Span 最小接口
+  - 提供 NoopLogger、NoopMeter、NoopTracer
+  - SecretString 默认脱敏
+  - go test ./obsx 通过
   evidence:
   - module/kernel/tasks/TASK-KERNEL-003.md
   code_ref: N/A (doc-only task)
 - task_id: TASK-KERNEL-004
-  document_version: '2026-06-09'
+  document_version: '2026-06-12'
   goal_id: GOAL-KERNEL-20260609-001
-  spec_id: SPEC-kernel-v1
-  title: 启动：拓扑序启动、fail-fast、ctx 取消
+  spec_id: SPEC-kernel-v2
+  title: syncx：并发同步原语
   status: Pending
   owner: zone
   priority: P0
   change_level: CL2
   execution_mode: Standard
   depends_on:
-  - TASK-KERNEL-002
-  - TASK-KERNEL-003
-  created_at: '2026-06-09'
-  updated_at: '2026-06-09'
+  - TASK-KERNEL-000
+  created_at: '2026-06-12'
+  updated_at: '2026-06-18'
   dod:
-  - Run 按拓扑序调用 Init→Start
-  - Init 失败不进入 Start
-  - Start 失败已 Start 模块被 Stop
-  - ctx 取消中断启动
-  - lifecycle_test.go 通过
+  - 实现 OnceValue、Closer、WaitGroup 包装
+  - 并发场景下保证幂等和竞态安全
+  - go test -race ./syncx 通过
   evidence:
   - module/kernel/tasks/TASK-KERNEL-004.md
   code_ref: N/A (doc-only task)
 - task_id: TASK-KERNEL-005
-  document_version: '2026-06-09'
+  document_version: '2026-06-12'
   goal_id: GOAL-KERNEL-20260609-001
-  spec_id: SPEC-kernel-v1
-  title: 停机：反序停止、超时 force、幂等
+  spec_id: SPEC-kernel-v2
+  title: lifecycx：生命周期组件与管理器
   status: Pending
   owner: zone
   priority: P0
   change_level: CL2
   execution_mode: Standard
   depends_on:
-  - TASK-KERNEL-004
-  created_at: '2026-06-09'
-  updated_at: '2026-06-09'
+  - TASK-KERNEL-000
+  created_at: '2026-06-12'
+  updated_at: '2026-06-18'
   dod:
-  - Shutdown 按反序调用 Stop
-  - 超时返回 ErrShutdownTimeout
-  - 幂等返回 nil
-  - shutdown_test.go 通过
+  - 定义 Component、Starter、Stopper、Manager
+  - Start 失败时按已启动组件反序 rollback
+  - Stop 幂等并聚合错误
+  - go test ./lifecycx 通过
   evidence:
   - module/kernel/tasks/TASK-KERNEL-005.md
   code_ref: N/A (doc-only task)
 - task_id: TASK-KERNEL-006
-  document_version: '2026-06-09'
+  document_version: '2026-06-12'
   goal_id: GOAL-KERNEL-20260609-001
-  spec_id: SPEC-kernel-v1
-  title: 健康检查：ModuleHealth 查询
+  spec_id: SPEC-kernel-v2
+  title: shutdownx：有序停机钩子
   status: Pending
   owner: zone
   priority: P0
   change_level: CL2
   execution_mode: Standard
   depends_on:
-  - TASK-KERNEL-001
-  - TASK-KERNEL-003
-  created_at: '2026-06-09'
-  updated_at: '2026-06-09'
+  - TASK-KERNEL-000
+  created_at: '2026-06-12'
+  updated_at: '2026-06-18'
   dod:
-  - ModuleHealth 返回 HealthStatus
-  - 未注册模块返回 ErrModuleNotFound
-  - 幂等无副作用
-  - health_test.go 通过
+  - 实现 Hook、HookFunc、Manager
+  - 按 LIFO 顺序运行停机钩子
+  - 支持 NotifyContext 与超时取消
+  - go test ./shutdownx 通过
   evidence:
   - module/kernel/tasks/TASK-KERNEL-006.md
   code_ref: N/A (doc-only task)
 - task_id: TASK-KERNEL-007
-  document_version: '2026-06-09'
+  document_version: '2026-06-12'
   goal_id: GOAL-KERNEL-20260609-001
-  spec_id: SPEC-kernel-v1
-  title: panic 隔离：Init/Start/Stop panic 捕获
+  spec_id: SPEC-kernel-v2
+  title: versionx：版本与兼容性信息
   status: Pending
   owner: zone
   priority: P0
   change_level: CL2
   execution_mode: Standard
   depends_on:
-  - TASK-KERNEL-004
-  - TASK-KERNEL-005
-  created_at: '2026-06-09'
-  updated_at: '2026-06-09'
+  - TASK-KERNEL-000
+  created_at: '2026-06-12'
+  updated_at: '2026-06-18'
   dod:
-  - Start panic 捕获转换为 ErrStartupFailed
-  - Stop panic 捕获记录日志继续
-  - Init panic 捕获返回 ErrStartupFailed
-  - panic 隔离测试通过
+  - 实现 BuildInfo、Compatibility、VersionInfo
+  - 支持版本字符串与兼容性判断
+  - go test ./versionx 通过
   evidence:
   - module/kernel/tasks/TASK-KERNEL-007.md
   code_ref: N/A (doc-only task)
 - task_id: TASK-KERNEL-008
-  document_version: '2026-06-09'
+  document_version: '2026-06-12'
   goal_id: GOAL-KERNEL-20260609-001
-  spec_id: SPEC-kernel-v1
-  title: 配置选项：Option 模式配置
+  spec_id: SPEC-kernel-v2
+  title: validx：前置条件与不变量校验
+  status: Pending
+  owner: zone
+  priority: P0
+  change_level: CL2
+  execution_mode: Standard
+  depends_on:
+  - TASK-KERNEL-000
+  - TASK-KERNEL-001
+  created_at: '2026-06-12'
+  updated_at: '2026-06-18'
+  dod:
+  - 实现 Precondition、Invariant、RequireNonEmpty
+  - 校验失败返回 errx 类型错误
+  - go test ./validx 通过
+  evidence:
+  - module/kernel/tasks/TASK-KERNEL-008.md
+  code_ref: N/A (doc-only task)
+- task_id: TASK-KERNEL-009
+  document_version: '2026-06-12'
+  goal_id: GOAL-KERNEL-20260609-001
+  spec_id: SPEC-kernel-v2
+  title: retryx：重试策略与退避计算
+  status: Pending
+  owner: zone
+  priority: P0
+  change_level: CL2
+  execution_mode: Standard
+  depends_on:
+  - TASK-KERNEL-000
+  - TASK-KERNEL-001
+  created_at: '2026-06-12'
+  updated_at: '2026-06-18'
+  dod:
+  - 实现 RetryPolicy、Validate、Delay、DelayWithJitter、ShouldRetry
+  - 支持最大次数、最大延迟和错误分类
+  - go test ./retryx 通过
+  evidence:
+  - module/kernel/tasks/TASK-KERNEL-009.md
+  code_ref: N/A (doc-only task)
+- task_id: TASK-KERNEL-010
+  document_version: '2026-06-12'
+  goal_id: GOAL-KERNEL-20260609-001
+  spec_id: SPEC-kernel-v2
+  title: contextx：类型安全 context 工具
+  status: Pending
+  owner: zone
+  priority: P0
+  change_level: CL2
+  execution_mode: Standard
+  depends_on:
+  - TASK-KERNEL-000
+  - TASK-KERNEL-002
+  created_at: '2026-06-12'
+  updated_at: '2026-06-18'
+  dod:
+  - 实现 Key[T]、WithValue、Value、HasDeadline
+  - 支持 DeadlineRemaining、IsDone、CancelCause
+  - go test ./contextx 通过
+  evidence:
+  - module/kernel/tasks/TASK-KERNEL-010.md
+  code_ref: N/A (doc-only task)
+- task_id: TASK-KERNEL-011
+  document_version: '2026-06-12'
+  goal_id: GOAL-KERNEL-20260609-001
+  spec_id: SPEC-kernel-v2
+  title: healthx：健康状态与聚合
+  status: Pending
+  owner: zone
+  priority: P0
+  change_level: CL2
+  execution_mode: Standard
+  depends_on:
+  - TASK-KERNEL-000
+  - TASK-KERNEL-002
+  created_at: '2026-06-12'
+  updated_at: '2026-06-18'
+  dod:
+  - 实现 HealthStatusValue、HealthStatus、HealthChecker
+  - 支持 Aggregate 与 AggregateWithClock
+  - go test ./healthx 通过
+  evidence:
+  - module/kernel/tasks/TASK-KERNEL-011.md
+  code_ref: N/A (doc-only task)
+- task_id: TASK-KERNEL-012
+  document_version: '2026-06-12'
+  goal_id: GOAL-KERNEL-20260609-001
+  spec_id: SPEC-kernel-v2
+  title: contracttest：共享契约测试工具
   status: Pending
   owner: zone
   priority: P1
@@ -416,60 +494,253 @@ tasks:
   execution_mode: Standard
   depends_on:
   - TASK-KERNEL-001
-  created_at: '2026-06-09'
-  updated_at: '2026-06-09'
+  - TASK-KERNEL-011
+  created_at: '2026-06-12'
+  updated_at: '2026-06-18'
   dod:
-  - WithStartupTimeout、WithShutdownTimeout 等 Option
-  - options_test.go 通过
+  - 实现 AssertJSONFields、AssertErrorKind、AssertHealthStatus
+  - 工具仅依赖 testing 与标准库
+  - go test ./contracttest 通过
   evidence:
-  - module/kernel/tasks/TASK-KERNEL-008.md
+  - module/kernel/tasks/TASK-KERNEL-012.md
   code_ref: N/A (doc-only task)
-- task_id: TASK-KERNEL-009
-  document_version: '2026-06-09'
+- task_id: TASK-KERNEL-013
+  document_version: '2026-06-12'
   goal_id: GOAL-KERNEL-20260609-001
-  spec_id: SPEC-kernel-v1
-  title: 集成测试 + Benchmark
-  status: Pending
-  owner: zone
-  priority: P0
-  change_level: CL2
-  execution_mode: Standard
-  depends_on:
-  - TASK-KERNEL-004
-  - TASK-KERNEL-005
-  - TASK-KERNEL-006
-  - TASK-KERNEL-007
-  - TASK-KERNEL-008
-  created_at: '2026-06-09'
-  updated_at: '2026-06-09'
-  dod:
-  - 完整启动-运行-停止集成测试
-  - 启动失败回滚集成测试
-  - Benchmark 50 模块 < 10ms
-  - 覆盖率 >= 90%
-  evidence:
-  - module/kernel/tasks/TASK-KERNEL-009.md
-  code_ref: N/A (doc-only task)
-- task_id: TASK-KERNEL-010
-  document_version: '2026-06-09'
-  goal_id: GOAL-KERNEL-20260609-001
-  spec_id: SPEC-kernel-v1
-  title: 文档 + 示例
+  spec_id: SPEC-kernel-v2
+  title: internal/testutil：测试辅助工具
   status: Pending
   owner: zone
   priority: P1
   change_level: CL1
   execution_mode: Lite
   depends_on:
-  - TASK-KERNEL-009
-  created_at: '2026-06-09'
-  updated_at: '2026-06-09'
+  - TASK-KERNEL-000
+  created_at: '2026-06-12'
+  updated_at: '2026-06-18'
   dod:
-  - README.md 完成
-  - example_test.go 通过
-  - godoc 注释完整
+  - 实现 RequireEqual 泛型断言
+  - 仅供仓库内部测试使用
+  - go test ./internal/testutil 通过
   evidence:
-  - module/kernel/tasks/TASK-KERNEL-010.md
+  - module/kernel/tasks/TASK-KERNEL-013.md
+  code_ref: N/A (doc-only task)
+- task_id: TASK-KERNEL-014
+  document_version: '2026-06-12'
+  goal_id: GOAL-KERNEL-20260609-001
+  spec_id: SPEC-kernel-v2
+  title: contracts：API 快照与行为契约层
+  status: Pending
+  owner: zone
+  priority: P1
+  change_level: CL2
+  execution_mode: Standard
+  depends_on:
+  - TASK-KERNEL-001
+  - TASK-KERNEL-002
+  - TASK-KERNEL-003
+  - TASK-KERNEL-004
+  - TASK-KERNEL-005
+  - TASK-KERNEL-006
+  - TASK-KERNEL-007
+  - TASK-KERNEL-008
+  - TASK-KERNEL-009
+  - TASK-KERNEL-010
+  - TASK-KERNEL-011
+  - TASK-KERNEL-012
+  created_at: '2026-06-12'
+  updated_at: '2026-06-18'
+  dod:
+  - 覆盖 API snapshot、golden behavior、consumer import、public_api
+  - 验证 12 个公开包导入与契约稳定性
+  - go test ./contracts/... 通过
+  evidence:
+  - module/kernel/tasks/TASK-KERNEL-014.md
+  code_ref: N/A (doc-only task)
+- task_id: TASK-KERNEL-015
+  document_version: '2026-06-12'
+  goal_id: GOAL-KERNEL-20260609-001
+  spec_id: SPEC-kernel-v2
+  title: examples：12 包示例补齐
+  status: Pending
+  owner: zone
+  priority: P2
+  change_level: CL1
+  execution_mode: Lite
+  depends_on:
+  - TASK-KERNEL-001
+  - TASK-KERNEL-002
+  - TASK-KERNEL-003
+  - TASK-KERNEL-004
+  - TASK-KERNEL-005
+  - TASK-KERNEL-006
+  - TASK-KERNEL-007
+  - TASK-KERNEL-008
+  - TASK-KERNEL-009
+  - TASK-KERNEL-010
+  - TASK-KERNEL-011
+  - TASK-KERNEL-012
+  created_at: '2026-06-12'
+  updated_at: '2026-06-18'
+  dod:
+  - TASK-KERNEL-015a、015b、015c 覆盖全部示例组
+  - 示例作为 Go test example 执行
+  - 不引入外部依赖
+  evidence:
+  - module/kernel/tasks/TASK-KERNEL-015.md
+  code_ref: N/A (doc-only task)
+- task_id: TASK-KERNEL-015a
+  document_version: '2026-06-12'
+  goal_id: GOAL-KERNEL-20260609-001
+  spec_id: SPEC-kernel-v2
+  title: examples A：lifecycx、errx、healthx、obsx
+  status: Pending
+  owner: zone
+  priority: P2
+  change_level: CL1
+  execution_mode: Lite
+  depends_on:
+  - TASK-KERNEL-001
+  - TASK-KERNEL-003
+  - TASK-KERNEL-005
+  - TASK-KERNEL-011
+  created_at: '2026-06-12'
+  updated_at: '2026-06-18'
+  dod:
+  - 补齐 lifecycx、errx、healthx、obsx 示例
+  - 示例测试通过并展示最小用法
+  evidence:
+  - module/kernel/tasks/TASK-KERNEL-015a.md
+  code_ref: N/A (doc-only task)
+- task_id: TASK-KERNEL-015b
+  document_version: '2026-06-12'
+  goal_id: GOAL-KERNEL-20260609-001
+  spec_id: SPEC-kernel-v2
+  title: examples B：retryx、shutdownx、syncx、timex
+  status: Pending
+  owner: zone
+  priority: P2
+  change_level: CL1
+  execution_mode: Lite
+  depends_on:
+  - TASK-KERNEL-002
+  - TASK-KERNEL-004
+  - TASK-KERNEL-006
+  - TASK-KERNEL-009
+  created_at: '2026-06-12'
+  updated_at: '2026-06-18'
+  dod:
+  - 补齐 retryx、shutdownx、syncx、timex 示例
+  - 示例测试通过并展示最小用法
+  evidence:
+  - module/kernel/tasks/TASK-KERNEL-015b.md
+  code_ref: N/A (doc-only task)
+- task_id: TASK-KERNEL-015c
+  document_version: '2026-06-12'
+  goal_id: GOAL-KERNEL-20260609-001
+  spec_id: SPEC-kernel-v2
+  title: examples C：validx、versionx、contextx、contracttest
+  status: Pending
+  owner: zone
+  priority: P2
+  change_level: CL1
+  execution_mode: Lite
+  depends_on:
+  - TASK-KERNEL-007
+  - TASK-KERNEL-008
+  - TASK-KERNEL-010
+  - TASK-KERNEL-012
+  created_at: '2026-06-12'
+  updated_at: '2026-06-18'
+  dod:
+  - 补齐 validx、versionx、contextx、contracttest 示例
+  - 示例测试通过并展示最小用法
+  evidence:
+  - module/kernel/tasks/TASK-KERNEL-015c.md
+  code_ref: N/A (doc-only task)
+- task_id: TASK-KERNEL-016
+  document_version: '2026-06-12'
+  goal_id: GOAL-KERNEL-20260609-001
+  spec_id: SPEC-kernel-v2
+  title: release preflight：文档、CI 与发布门禁
+  status: Pending
+  owner: zone
+  priority: P1
+  change_level: CL1
+  execution_mode: Lite
+  depends_on:
+  - TASK-KERNEL-014
+  - TASK-KERNEL-015a
+  - TASK-KERNEL-015b
+  - TASK-KERNEL-015c
+  created_at: '2026-06-12'
+  updated_at: '2026-06-18'
+  dod:
+  - TASK-KERNEL-016a、016b、016c 完成发布前置工作
+  - stdlib-only gate、契约测试、release-preflight 全部通过
+  evidence:
+  - module/kernel/tasks/TASK-KERNEL-016.md
+  code_ref: N/A (doc-only task)
+- task_id: TASK-KERNEL-016a
+  document_version: '2026-06-12'
+  goal_id: GOAL-KERNEL-20260609-001
+  spec_id: SPEC-kernel-v2
+  title: docs：ADR、设计、治理与标准文档
+  status: Pending
+  owner: zone
+  priority: P1
+  change_level: CL1
+  execution_mode: Lite
+  depends_on:
+  - TASK-KERNEL-014
+  created_at: '2026-06-12'
+  updated_at: '2026-06-18'
+  dod:
+  - ADR、design、governance、spec、standard 文档补齐
+  - 文档与当前 L0 stdlib-only 范围一致
+  evidence:
+  - module/kernel/tasks/TASK-KERNEL-016a.md
+  code_ref: N/A (doc-only task)
+- task_id: TASK-KERNEL-016b
+  document_version: '2026-06-12'
+  goal_id: GOAL-KERNEL-20260609-001
+  spec_id: SPEC-kernel-v2
+  title: scripts：CI 与 release preflight
+  status: Pending
+  owner: zone
+  priority: P1
+  change_level: CL1
+  execution_mode: Lite
+  depends_on:
+  - TASK-KERNEL-014
+  created_at: '2026-06-12'
+  updated_at: '2026-06-18'
+  dod:
+  - 补齐 CI/preflight 脚本
+  - 脚本验证 stdlib-only、测试、契约与发布前检查
+  evidence:
+  - module/kernel/tasks/TASK-KERNEL-016b.md
+  code_ref: N/A (doc-only task)
+- task_id: TASK-KERNEL-016c
+  document_version: '2026-06-12'
+  goal_id: GOAL-KERNEL-20260609-001
+  spec_id: SPEC-kernel-v2
+  title: release：CHANGELOG 与最终发布门禁
+  status: Pending
+  owner: zone
+  priority: P1
+  change_level: CL1
+  execution_mode: Lite
+  depends_on:
+  - TASK-KERNEL-016a
+  - TASK-KERNEL-016b
+  created_at: '2026-06-12'
+  updated_at: '2026-06-18'
+  dod:
+  - CHANGELOG 与 Makefile release-preflight 补齐
+  - 最终发布门禁证据可追溯
+  evidence:
+  - module/kernel/tasks/TASK-KERNEL-016c.md
   code_ref: N/A (doc-only task)
 - task_id: TASK-XLIB-003D
   goal_id: GOAL-XLIB-STD-001
