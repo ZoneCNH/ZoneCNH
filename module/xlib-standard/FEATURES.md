@@ -1,14 +1,26 @@
 # xlib-standard 完整实现清单
 
-- Status: Generated from current module SSOT
+- Status: Release-synced from v1.0.1 acceptance evidence
 - Last-Updated: 2026-06-18
-- Module-Version: v1.0.0
+- Module-Version: v1.0.1
 - Module-State: 已发布
 - Layer: L1 工程标准
 - Runtime-Repo: /home/xlib-standard
 - Source: goal.md, SPEC.md, TRACEABILITY.md, IMPLEMENTATION-PLAN.md, README.md, tasks/, prompt/
 
 > 本清单用于约束 xlib-standard 的完整实现范围。条目来自本目录已有 Spec、Traceability、Plan、Task 等文档；若运行时代码状态与本文不一致，以相应模块仓库的最新验证证据补充更新本文。
+
+## 0. v1.0.1 发布证据快照
+
+| 项目 | 证据 |
+| --- | --- |
+| GitHub Release | https://github.com/ZoneCNH/xlib-standard/releases/tag/v1.0.1 |
+| PR / main commit | https://github.com/ZoneCNH/xlib-standard/pull/121 / `26792dc01317794fb337a0dc81bd732285e49100` |
+| Release tag | `v1.0.1` -> `26792dc01317794fb337a0dc81bd732285e49100` |
+| 本地发布验收 | `/home/xlib-standard`: `PATH="$HOME/go/bin:$PATH" GOWORK=off VERSION=v1.0.1 make release-preflight` 通过 |
+| 证据 hash | `2128ea63daf0a1686bf7479ac586298ee45b5a271acab3b379f0137e053aef60` |
+| main 检查 | CI `27759151619`、Docker Contract `27759151517`、Worktree Guard `27759151561`、adoption-check `27759151566` 均通过 |
+| 发布补偿 | Auto Patch Release `27759151550` 已创建 tag；仅 GitHub Release 发布步骤因 runner 缺少 `gh` 失败，已用 `gh release create --verify-tag` 补建 Release |
 
 ## 1. 模块边界清单
 
@@ -119,9 +131,9 @@
 
 ## 6. 实现完成判定
 
-- [ ] 所有 FR 条目均有运行时代码、单元测试或契约测试覆盖。
-- [ ] 所有 BR/NFR 条目均有测试、静态检查或人工可审计证据覆盖。
-- [ ] 所有任务文档均能追溯到 FR、BR/NFR、AC 或 TC。
-- [ ] 依赖边界符合 FOUNDATION-DEPS.yaml，不引入未授权运行时依赖。
-- [ ] 运行时代码仓库 /home/xlib-standard 的 lint、typecheck、test、race、coverage 验证证据已归档。
-- [ ] 发布说明、版本标签与本目录登记状态一致。
+- [x] 所有 FR 条目均有运行时代码、单元测试或契约测试覆盖（`make ci` 与 `make release-preflight` 覆盖模板、fact、traceability 与 release gates）。
+- [x] 所有 BR/NFR 条目均有测试、静态检查或人工可审计证据覆盖（boundary、security、contracts、docs-check、cli-contract、adoption 与 evidence gates 通过）。
+- [x] 所有任务文档均能追溯到 FR、BR/NFR、AC 或 TC（traceability gate 与 `goalcli traceability-check` 在 release-preflight 中通过）。
+- [x] 依赖边界符合 FOUNDATION-DEPS.yaml，不引入未授权运行时依赖（boundary gate 与 `GOWORK=off go list -deps ./...` 相关检查通过）。
+- [x] 运行时代码仓库 /home/xlib-standard 的 lint、typecheck、test、race、coverage 验证证据已归档（`make ci`、`release-check`、`release-final-check` 与 main `release-preflight` 均通过）。
+- [x] 发布说明、版本标签与本目录登记状态一致（GitHub Release/tag `v1.0.1` 指向 main commit `26792dc01317794fb337a0dc81bd732285e49100`）。

@@ -40,7 +40,7 @@ x.go ───────────────► 基座运行时 / L2.5 / �
                       
 
 标准与门禁：
-  xlib-standard ─── 标准事实源 / Go Reference Template，不参与业务运行
+  xlib-standard ─── 标准事实源 / Go Reference Template，v1.0.1 发布验收通过，不参与业务运行
   xlib-harness  ─── 模块生成器（generate）与门禁执行器（spec-lint / boundary / traceability / format-check）
   xlib-evidence ─── 证据收集与发布运行时（coverage / manifest / remote evidence / report）
   xlibgate      ─── import 边界、go.mod、Go baseline、release evidence、L2 发布就绪、Trust Alignment 机器门禁
@@ -240,7 +240,7 @@ Foundation 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中在 
 
 `risk-engine` 才负责 trading risk，二者不能混用。
 
-`xlib-standard` v1.0.0 已发布（tag v1.0.0, PR #115），标准源和 Go Reference Template 职责已完整落地。Generator / Harness Gate / Evidence Runtime 职责已于 PR #233 拆分至 `xlib-harness` 和 `xlib-evidence`。`resiliencx` 已围绕 timeout、retry、circuit、bulkhead、rate limit、fallback 和 policy event 完成身份修复，测试覆盖率 100%。
+`xlib-standard` v1.0.1 已发布（tag v1.0.1, PR #121），标准源和 Go Reference Template 职责已完整落地。Generator / Harness Gate / Evidence Runtime 职责已于 PR #233 拆分至 `xlib-harness` 和 `xlib-evidence`。`resiliencx` 已围绕 timeout、retry、circuit、bulkhead、rate limit、fallback 和 policy event 完成身份修复，测试覆盖率 100%。
 
 | 边界     | `kernel.retryx`                        | `resiliencx`                                      |
 | -------- | -------------------------------------- | ------------------------------------------------- |
@@ -353,7 +353,7 @@ Foundation 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中在 
 | 基座                  | [schedulex](https://github.com/ZoneCNH/schedulex)               | v1.0.0 | ✅ 已发布 | Spec→Code 完成 | cron/interval/delay 调度、OverlapPolicy（Skip/Queue/Replace）、MisfirePolicy（Skip/RunOnce/CatchUp）、EventSink、Locker、Clock 注入；98.2% 覆盖，release-check 通过 |
 | 基座                  | [bootstrap](https://github.com/ZoneCNH/bootstrap)               | v0.1.0 | ✅ 已发布 | Spec→Code 进行中（SPEC Draft，runtime 骨架已发布） | L1 Assembly 通用进程组装层：位于 L1 primitives 之上、`x.go` 入口之下，统一组装 configx/observex/resiliencx/lifecycx + 7 存储 adapter 可选构造（StoreSet 位掩码）+ 信号捕获；不承载业务语义、service listener、domain contracts；✅ GitHub Release v0.1.0 已发布；规格 v0.1.7；非 factory；Stores=All/位组合 v0.1.0 为 stub，仅 Stores=None 路径端到端就绪 |
 | 基座                  | [xlibgate](https://github.com/ZoneCNH/xlibgate)                 | v1.0.0 | ✅ 已发布 | Spec→Code 完成 | check / l2 / trust 三组门禁；全管线评分 100 |
-| 基座                  | [xlib-standard](https://github.com/ZoneCNH/xlib-standard)       | v1.0.0 | ✅ 已发布 | Spec→Code 完成 | 标准事实源、Go Reference Template；Generator/Harness/Evidence 已拆分，不参与运行时 import |
+| 基座                  | [xlib-standard](https://github.com/ZoneCNH/xlib-standard)       | v1.0.1 | ✅ 已发布 | Spec→Code 完成 | 标准事实源、Go Reference Template；Generator/Harness/Evidence 已拆分；v1.0.1 GitHub Release 与 release-preflight 已通过，不参与运行时 import |
 | 基座                  | [xlib-harness](https://github.com/ZoneCNH/xlib-harness)         | v0.1.1 | ✅ 已发布 | Spec→Code 完成 | 模块生成器与门禁执行器：generate/scaffold、spec-lint、boundary-check、traceability-gate；✅ v0.1.1 发布基线已通过 go test/race/vet/coverage/benchmark/CLI smoke 验收 |
 | 基座                  | [xlib-evidence](https://github.com/ZoneCNH/xlib-evidence)       | v0.2.0 | ✅ 已发布 | Spec→Code 完成 | 证据收集与发布运行时：collect-coverage、generate-manifest、validate-manifest、remote-evidence、report；/home/xlib-evidence 本地 go test/race/vet/coverage 89.8% 通过；✅ GitHub Release v0.2.0 已发布 |
 | 基座                  | [redisx](https://github.com/ZoneCNH/redisx)                     | v1.0.1 | ✅ 已发布 | Spec→Code 完成 | Redis L2 adapter：KV/TTL/Hash/List/Pipeline/Cache-aside/Lock/RateLimit/Pool/Persistence restart recovery；Docker-backed Redis 验证通过 |

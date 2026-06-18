@@ -22,7 +22,7 @@
   "modules": {
     "xlib-standard": {
       "layer": "standard-source",
-      "version": "v1.0.0",
+      "version": "v1.0.1",
       "spec": true,
       "impl": true,
       "release": true,
@@ -31,7 +31,7 @@
       "adopt": "N/A",
       "soak": "N/A",
       "factory": true,
-      "note": "标准事实源 / Go Reference Template (Generator/Harness/Evidence 已拆分); .repo-contract.yaml aligned; GitHub release confirmation pending"
+      "note": "标准事实源 / Go Reference Template (Generator/Harness/Evidence 已拆分); v1.0.1 release/preflight passed; release https://github.com/ZoneCNH/xlib-standard/releases/tag/v1.0.1"
     },
     "xlib-harness": {
       "layer": "harness",
