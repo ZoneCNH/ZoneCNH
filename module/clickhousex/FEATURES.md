@@ -45,7 +45,7 @@
 | BR-004 | 连接断开后自动重试 3 次（指数退避），超过后返回 ErrConnectionLost | 临时故障导致服务不可用 / AC-021, TC-002 / TASK-CLICKHOUSEX-002 / ⬜ | - | TRACEABILITY.md |
 | BR-005 | Health() 必须是幂等的、无副作用的 | 健康检查自身影响系统状态 / AC-022, TC-006 / TASK-CLICKHOUSEX-005 / ⬜ | - | TRACEABILITY.md |
 | BR-006 | 所有操作必须接受 context.Context，支持取消和超时 | 操作无法被取消，goroutine 泄漏 / AC-023, FR-002/FR-003/FR-004 WHEN ctx 取消 / TASK-CLICKHOUSEX-002 / ⬜ | - | TRACEABILITY.md |
-| BR-007 | 错误消息格式："clickhousex: : " | 错误不可定位，跨模块排查困难 / AC-024, go test 错误消息断言 / TASK-CLICKHOUSEX-002 / ⬜ | - | TRACEABILITY.md |
+| BR-007 | 错误消息格式："clickhousex: <operation>: <detail>" | 错误不可定位，跨模块排查困难 / AC-024, go test 错误消息断言 / TASK-CLICKHOUSEX-002 / ⬜ | - | TRACEABILITY.md |
 | BR-008 | 可观测指标必须包含 table 标签（写入操作）或 query 标签（查询操作） | 指标不可区分，监控失效 / AC-025, metrics 测试 / TASK-CLICKHOUSEX-006 / ⬜ | - | TRACEABILITY.md |
 | BR-009 | Close() 必须是幂等的，多次调用不 panic | 重复关闭导致 panic / AC-015, TC-007 / TASK-CLICKHOUSEX-005 / ⬜ | - | TRACEABILITY.md |
 | BR-010 | InsertBatch 不自动建表，表不存在时返回明确错误 | 意外建表、写入到错误表 / AC-011, FR-004 WHEN table 不存在 / TASK-CLICKHOUSEX-004 / ⬜ | - | TRACEABILITY.md |

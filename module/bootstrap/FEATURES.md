@@ -6,7 +6,7 @@
 - Module-State: 已发布
 - Layer: L1 启动装配
 - Runtime-Repo: /home/bootstrap
-- Source: SPEC.md
+- Source: SPEC.md, TRACEABILITY.md, goal.md
 
 > 本清单用于约束 bootstrap 的完整实现范围。条目来自本目录已有 Spec、Traceability、Plan、Task 等文档；若运行时代码状态与本文不一致，以相应模块仓库的最新验证证据补充更新本文。
 
@@ -26,32 +26,32 @@
 
 | ID | 完整实现项 | 验收/测试/任务挂钩 | 当前登记状态 | 来源 |
 | --- | --- | --- | --- | --- |
-| FR-001 | Build 入口 | - | - | SPEC.md |
-| FR-002 | configx 加载 | - | - | SPEC.md |
-| FR-003 | observex 初始化 | - | - | SPEC.md |
-| FR-004 | stores 可选构造 | - | - | SPEC.md |
-| FR-005 | lifecycle 编排 | - | - | SPEC.md |
-| FR-006 | 组件注册 | - | - | SPEC.md |
-| FR-007 | 信号捕获 | - | - | SPEC.md |
-| FR-008 | EffectiveConfigHash 暴露 | - | - | SPEC.md |
+| FR-001 | Build 入口 | AC-BS-001 / TC-BS-001, TC-BS-003 / TASK-BS-001 | v0.1.0 Stores=None 已发布；需运行时代码复验 | TRACEABILITY.md §1 |
+| FR-002 | configx 加载 | AC-BS-002 / TC-BS-001 / TASK-BS-002 | 已登记，需单测或人工审查证据 | TRACEABILITY.md §1 |
+| FR-003 | observex 初始化 | AC-BS-003 / TC-BS-005..TC-BS-007 / TASK-BS-003 | v0.1.0 已发布，需 lifecycle 测试与 CI 证据复验 | TRACEABILITY.md §1 |
+| FR-004 | stores 可选构造 | AC-BS-004 / TC-BS-002, TC-BS-004 / TASK-BS-001, TASK-BS-005 | Stores=None 已发布；非 None 存储为 v0.2.0 准入 | TRACEABILITY.md §1 |
+| FR-005 | lifecycle 编排 | AC-BS-003 / TC-BS-005..TC-BS-007 / TASK-BS-003 | 已登记，需运行时复验 | TRACEABILITY.md §1 |
+| FR-006 | 组件注册 | AC-BS-003 / TC-BS-005, TC-BS-006 / TASK-BS-003 | 已登记，需运行时复验 | TRACEABILITY.md §1 |
+| FR-007 | 信号捕获 | AC-BS-003 / TC-BS-005 / TASK-BS-003 | 已登记，需运行时复验 | TRACEABILITY.md §1 |
+| FR-008 | EffectiveConfigHash 暴露 | AC-BS-002 / TC-BS-001 / TASK-BS-002 | 已登记，需单测或人工审查证据 | TRACEABILITY.md §1 |
 
 ## 3. 行为与非功能实现清单
 
 | ID | 完整实现项 | 验收/测试/任务挂钩 | 当前登记状态 | 来源 |
 | --- | --- | --- | --- | --- |
-| BR-001 | bootstrap 不得 import domain-market/domain-macro/domainx/contracts（禁业务语义） | - | - | SPEC.md |
-| BR-002 | bootstrap 不得 import 任何数据域子模块（binance/fred/…）（禁采集逻辑） | - | - | SPEC.md |
-| BR-003 | bootstrap 不得起 HTTP/gRPC server（源码无 net.Listen） | - | - | SPEC.md |
-| BR-004 | bootstrap 只向下依赖 kernel/configx/observex/resiliencx/存储适配器，不向上 | - | - | SPEC.md |
-| BR-005 | adapter 进程的 Spec.Stores 必须为 None；App.Stores 为 nil | - | - | SPEC.md |
-| BR-006 | 仅聚合层（market-data/macro-data）的 Spec.Stores 可非 None | - | - | SPEC.md |
-| BR-007 | Spec.Stores 位掩码控制；未启用的存储不构造不连接 | - | - | SPEC.md |
-| BR-008 | 文档批准前不得新增运行时代码或依赖 | - | - | SPEC.md |
-| NFR-001 | 职责单一 | 只做组装，不做业务/采集/领域逻辑 | - | SPEC.md |
-| NFR-002 | 稳定性 | v0.1.0 后 Build/Run/Shutdown 签名不破坏性变更 | - | SPEC.md |
-| NFR-003 | 边界纯净 | public API 不暴露 domain DTO / transport tag / storage tag | - | SPEC.md |
-| NFR-004 | 可观测 | Build/Shutdown 记录 observex metrics + 日志 | - | SPEC.md |
-| NFR-005 | 零存储默认 | Stores 默认 None；必须显式启用才连存储 | - | SPEC.md |
+| BR-001 | bootstrap 不得 import domain-market/domain-macro/domainx/contracts（禁业务语义） | AC-BS-005 / TC-BS-008, boundary-gates.sh / TASK-BS-004 | v0.1.0 boundary gate 已通过；需复验脚本证据 | TRACEABILITY.md §2 |
+| BR-002 | bootstrap 不得 import 任何数据域子模块（binance/fred/…）（禁采集逻辑） | AC-BS-005 / TC-BS-008, boundary-gates.sh / TASK-BS-004 | v0.1.0 boundary gate 已通过；需复验脚本证据 | TRACEABILITY.md §2 |
+| BR-003 | bootstrap 不得起 HTTP/gRPC server（源码无 net.Listen） | AC-BS-005 / boundary-gates.sh / TASK-BS-004 | v0.1.0 boundary gate 已通过；需复验脚本证据 | TRACEABILITY.md §2 |
+| BR-004 | bootstrap 只向下依赖 kernel/configx/observex/resiliencx/存储适配器，不向上 | AC-BS-005 / go list, dependency scan / TASK-BS-004 | 已登记，需复验 | TRACEABILITY.md §2 |
+| BR-005 | adapter 进程的 Spec.Stores 必须为 None；App.Stores 为 nil | AC-BS-004, AC-BS-005 / TC-BS-001, TC-BS-009 / TASK-BS-001, TASK-BS-004 | v0.1.0 Stores=None 已发布；需复验 | TRACEABILITY.md §2 |
+| BR-006 | 仅聚合层（market-data/macro-data）的 Spec.Stores 可非 None | AC-BS-004 / TC-BS-002, TC-BS-004 / TASK-BS-001, TASK-BS-005 | v0.2.0 准入 | TRACEABILITY.md §2 |
+| BR-007 | Spec.Stores 位掩码控制；未启用的存储不构造不连接 | AC-BS-004 / TC-BS-004 / TASK-BS-001 | v0.2.0 准入 | TRACEABILITY.md §2 |
+| BR-008 | 文档批准前不得新增运行时代码或依赖 | AC-BS-005 / 文档状态与 diff 审查 / TASK-BS-004 | SPEC 仍为 Draft；禁止扩大运行时代码 | TRACEABILITY.md §2 |
+| NFR-001 | 职责单一 | AC-BS-005 / boundary review / TASK-BS-004 | 已登记，需复验 | TRACEABILITY.md §2 |
+| NFR-002 | 稳定性 | AC-BS-001, AC-BS-003, AC-BS-004 / API review / TASK-BS-001, TASK-BS-003 | 已登记，需复验 | TRACEABILITY.md §2 |
+| NFR-003 | 边界纯净 | AC-BS-002, AC-BS-005 / static review / TASK-BS-002, TASK-BS-004 | 已登记，需复验 | TRACEABILITY.md §2 |
+| NFR-004 | 可观测 | AC-BS-003 / observability review / TASK-BS-003 | 已登记，需补充指标证据 | TRACEABILITY.md §2 |
+| NFR-005 | 零存储默认 | AC-BS-004 / TC-BS-001, TC-BS-009 / TASK-BS-001 | v0.1.0 已发布；需复验 | TRACEABILITY.md §2 |
 
 ## 4. 任务交付清单
 
@@ -68,6 +68,8 @@
 | 文档 | 状态 | 路径 |
 | --- | --- | --- |
 | SPEC.md | 存在 | module/bootstrap/SPEC.md |
+| TRACEABILITY.md | 存在 | module/bootstrap/TRACEABILITY.md |
+| goal.md | 存在 | module/bootstrap/goal.md |
 
 ## 6. 实现完成判定
 
