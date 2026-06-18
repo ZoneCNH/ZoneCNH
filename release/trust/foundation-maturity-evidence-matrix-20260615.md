@@ -1,7 +1,7 @@
 # Foundation Maturity Evidence Matrix — release evidence reconciliation
 
 Generated: 2026-06-15T09:57Z
-Updated: 2026-06-15T12:54Z
+Updated: 2026-06-18T02:28Z
 Scope: safe local validation commands for proving current FoundationX maturity claims; only evidence-backed local release reconciliation is allowed, while open blockers and external proof dimensions stay non-✅.
 
 ## Governance boundary
@@ -10,6 +10,14 @@ Scope: safe local validation commands for proving current FoundationX maturity c
 - No edits on `main`, no push, no GitHub release publication, no external-repo edits, no credential-gated actions.
 - `release=false` implies `factory=false`; `factory_blocking_modules` enumerates all `factory=false` modules; open blockers force `factory=false`; open release blockers force `release=false`.
 - `scripts/audit-status.py` is a projection consistency guard only; `release/trust/index.json` explicitly says `claim_policy.audit_status_factory_grade_proof=false`.
+- Worker-2 evidence package `EVID-KERNEL-BLK-011-EVIDENCE-PACKAGE-001` is referenced here only as a no-overclaim guard for BLK-011 evidence traceability; it is not a Factory/GK pass, and it does not verify BLK-011, GK-9, or GK-10 without current gate artifacts.
+
+## Worker-2 BLK-011 evidence package guard — 2026-06-18T02:28Z
+
+- Matrix guard package: `EVID-KERNEL-BLK-011-EVIDENCE-PACKAGE-001`.
+- Allowed interpretation: the package identifies the evidence boundary that must be reviewed before changing BLK-011, Factory, GK-9, or GK-10 status.
+- Disallowed interpretation: the package must not be cited as proof that BLK-011 is closed, Factory is green, or GK-9/GK-10 passed unless the corresponding current gate artifacts are present and reviewed.
+- Current task decision: no fact-layer promotion is made in this matrix update; `.foundationx/status/index.json`, `release/trust/index.json`, `release/manifest/latest.json`, and public status documents are not changed by this evidence-package reference.
 
 ## Worker-2 release evidence reconciliation — 2026-06-15T10:45Z
 
@@ -79,7 +87,8 @@ Run this command only from an authorized environment with approved credentials. 
 | Traceability gate | `.github/ci/traceability-check.sh`, `module/*/TRACEABILITY.md` | `TRACEABILITY_STRICT=1 bash .github/ci/traceability-check.sh` | exit 0; all 24 modules OK, including zero-FR modules | Strict repo-wide FR/BR/AC/TC traceability now passes locally | External evidence freshness or remote CI execution |
 | Deployment boundary | `.github/ci/deploy-policy-guard.sh`, `docs/ci-deployment.md`, `docs/governance/DEPLOYMENT.md` | `bash .github/ci/deploy-policy-guard.sh` | exit 0; `deployment_workflows=0` | Business repo has no inline deployment workflow and preserves SRE boundary | Real deployment, environment approval, runner/secrets success |
 | Audit-status unit tests | `scripts/tests/test_audit_status.py`, `scripts/audit-status.py` | `python3 -m pytest scripts/tests/test_audit_status.py -q` | `13 passed` | Projection guard behavior is covered by the focused test suite | Full repository test coverage outside this script |
-| Release trust package | `release/trust/index.json`, `release/trust/open-blockers.json`, `release/trust/projection-guard.json`, `release/trust/summary.json` | `jq '{summary,open_blockers,projection_guard,claim_policy,missing_sources}' release/trust/index.json` | summary matches fact layer; `missing_sources=[]`; `reason_present=true`; `audit_status_factory_grade_proof=false` | Trust package records projection guard and the no-overclaim policy | Public release/tag publication or external evidence closure |
+| Release trust package | `release/trust/index.json`, `release/trust/open-blockers.json`, `release/trust/projection-guard.json`, `release/trust/summary.json` | `jq '{summary,open_blockers,projection_guard,claim_policy,missing_sources}' release/trust/index.json` | `missing_sources=[]`; `reason_present=true`; `audit_status_factory_grade_proof=false` | Trust package records projection guard and the no-overclaim policy | Public release/tag publication, external evidence closure, or Factory/GK pass |
+| BLK-011 evidence package guard | `release/trust/foundation-maturity-evidence-matrix-20260615.md`; `EVID-KERNEL-BLK-011-EVIDENCE-PACKAGE-001` | `rg -n 'EVID-KERNEL-BLK-011-EVIDENCE-PACKAGE-001|BLK-011|GK-9|GK-10|Factory/GK' release/trust/foundation-maturity-evidence-matrix-20260615.md` | package identifier present with explicit no-overclaim language | Matrix is linked to the BLK-011 evidence package boundary and preserves the requirement to review current gate artifacts before status changes | BLK-011 closure, Factory green status, GK-9 pass, or GK-10 pass |
 
 ## Current machine snapshot
 
