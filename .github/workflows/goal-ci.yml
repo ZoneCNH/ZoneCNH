@@ -4,36 +4,12 @@
 
 name: Goal CI
 
+# NOTE: self-hosted runner 已下线（zone-runner unregistered 2026-06-18），仅保留 workflow_dispatch 防止 queued 堆积。
+# 仅保留 workflow_call/workflow_dispatch（被 release.yml 引用）。
+# 重装 runner 后恢复 push/pull_request trigger。
 on:
   workflow_call:
-  push:
-    branches: [main]
-    paths:
-      - '.config/goal/**'
-      - 'docs/goal/**'
-      - 'docs/report/goal-*'
-      - '.claude/agents/goal-*.md'
-      - '.codex/agents/goal-*'
-      - '.copilot/agents/goal-*'
-      - 'AGENTS.md'
-      - '.github/workflows/goal-ci.yml'
-      - '.github/workflows/release.yml'
-      - '.github/ci/goal-release-gate.sh'
-      - '.github/ci/generate-release-manifest.sh'
-  pull_request:
-    branches: [main]
-    paths:
-      - '.config/goal/**'
-      - 'docs/goal/**'
-      - 'docs/report/goal-*'
-      - '.claude/agents/goal-*.md'
-      - '.codex/agents/goal-*'
-      - '.copilot/agents/goal-*'
-      - 'AGENTS.md'
-      - '.github/workflows/goal-ci.yml'
-      - '.github/workflows/release.yml'
-      - '.github/ci/goal-release-gate.sh'
-      - '.github/ci/generate-release-manifest.sh'
+  workflow_dispatch:
 
 env:
   GOAL_CI_RUNNER_CLASS: self-hosted

@@ -1,5 +1,8 @@
 name: Harness Check
-on: [push, pull_request]
+# NOTE: self-hosted runner 已下线（zone-runner unregistered 2026-06-18），仅保留 workflow_dispatch 防止 queued 堆积。
+# 重装 runner 后恢复 push/pull_request trigger。
+on:
+  workflow_dispatch:
 
 jobs:
   check:

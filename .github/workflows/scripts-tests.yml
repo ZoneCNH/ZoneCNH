@@ -5,18 +5,9 @@
 
 name: Scripts Tests
 
+# NOTE: self-hosted runner 已下线（zone-runner unregistered 2026-06-18），仅保留 workflow_dispatch 防止 queued 堆积。
+# 重装 runner 后恢复 pull_request/push trigger。
 on:
-  pull_request:
-    paths:
-      - "scripts/**"
-      - "docs/governance/scoring/**"
-      - ".github/workflows/scripts-tests.yml"
-  push:
-    branches: [main]
-    paths:
-      - "scripts/**"
-      - "docs/governance/scoring/**"
-      - ".github/workflows/scripts-tests.yml"
   workflow_dispatch:
 
 permissions:
