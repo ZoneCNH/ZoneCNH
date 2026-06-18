@@ -1,15 +1,18 @@
 # ossx 规格
 
 - Status: Review
-- Spec-Version: v1.1.0
+- Spec-Version: v1.1.1
 - Last-Updated: 2026-06-18
 - Layer: 基座 · 对象存储扩展
 - Version: v1.0.1
 - Module-Identity: Aliyun OSS 专用 adapter（单 provider；非通用对象存储抽象）
 - Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `kernel`
 
-> 身份收敛（2026-06-18）：本模块为 Aliyun OSS 专用 adapter，对接 `github.com/ZoneCNH/ossx`（远程仓库 pkg/ossx 源码待补，BLK-010 open）。先前的 adapter SPI / S3-compatible / 多 provider 措辞已收敛删除。
-> Status=Review：尚未通过 pipeline-arbiter 四源 98 分门禁；机器事实层 factory=false（impl=false，远程仓库 0 pkg 源码）。
+> 身份收敛（2026-06-18）：本模块为 Aliyun OSS 专用 adapter，对接 `github.com/ZoneCNH/ossx`。先前的 adapter SPI / S3-compatible / 多 provider 措辞已收敛删除。
+> 实现状态（2026-06-18 联网复核）：远程仓库 `pkg/ossx` 已交付 v1.0.2-alpha 骨架（8 .go / 12 测试 / stdlib-only / import 可编译），**BLK-010 resolved**，机器事实层 `impl=true`。
+> `factory=false` 保持：真实 Aliyun adapter（`adapters/aliyun`）+ 真实 OSS integration evidence 仍缺，由 TASK-OSSX-005 跟踪；multipart/presign 为 ErrNotImplemented 占位。
+> Status=Review：尚未通过 pipeline-arbiter 四源 98 分门禁。
+> 注：本地 `/home/ossx` 是 2026-06-14 陈旧 clone（无 pkg/ossx），不代表远程权威；以 `gh api repos/ZoneCNH/ossx/contents/pkg/ossx` 为准。
 
 ---
 
@@ -364,5 +367,6 @@ Public API changes after first implementation require a compatibility note, migr
 
 | 日期 | 版本 | 变更内容 | 作者 |
 |------|------|----------|------|
+| 2026-06-18 | v1.1.1 | §0 元数据事实修正：远程 pkg/ossx v1.0.2-alpha 骨架已交付（8 .go/12 测试/stdlib-only），BLK-010 resolved，`impl=true`；`factory=false` 保持（真实 Aliyun adapter 由 TASK-OSSX-005 跟踪）。修正先前"0 pkg 源码/impl=false/BLK-010 open"措辞（源于本地陈旧 clone 误判）。新增 FEATURES.md 完整实现清单 | ZoneCNH |
 | 2026-06-18 | v1.1.0 | 身份收敛为 Aliyun OSS 专用 adapter：移除 adapter SPI / S3-compatible / 多 provider 措辞；FR-008 重写为 Aliyun adapter 隔离；BR-011/TC-009/TC-010 具体化为 Aliyun OSS SDK；adapters/s3→adapters/aliyun；Status Approved→Review（未通过 arbiter 门禁） | ZoneCNH |
 | 2026-06-14 | v1.0.0 | 初始版本 | ZoneCNH |

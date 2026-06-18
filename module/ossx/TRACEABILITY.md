@@ -3,7 +3,7 @@
 > 模块级追溯矩阵。治理规范见 [docs/governance/TRACEABILITY.md](../../docs/governance/TRACEABILITY.md)。
 
 Last-Updated: 2026-06-18
-Source: [module/ossx/SPEC.md](./SPEC.md) v1.1.0
+Source: [module/ossx/SPEC.md](./SPEC.md) v1.1.1
 Scope: Matrix repair for current `FR/BR -> AC -> TC -> Task -> Evidence -> Status` closure.
 
 > 身份收敛（2026-06-18）：本矩阵随 SPEC v1.1.0 收敛为 Aliyun OSS 专用 adapter。FR-008/BR-011/AC-OSS-008/TC-009/TC-010/NFR-010 的措辞已具体化；adapter SPI / S3-compatible / 多 provider 语义已删除。
@@ -127,6 +127,7 @@ Scope: Matrix repair for current `FR/BR -> AC -> TC -> Task -> Evidence -> Statu
 
 | Date | Version | Change |
 |------|---------|--------|
+| 2026-06-18 | 3.1 | Source 版本号同步至 SPEC v1.1.1。矩阵 Status=Pending 语义澄清：指"完整实现 + 真实 Aliyun adapter（TASK-OSSX-005）+ arbiter 门禁"未完成，与 `.foundationx/status/index.json` 的 `impl=true`（v1.0.2-alpha 骨架已交付、BLK-010 resolved）不矛盾——骨架非完整实现。 |
 | 2026-06-18 | 3.0 | 身份收敛为 Aliyun OSS 专用 adapter；AC 命名统一为 AC-OSS-xxx（与 SPEC §6 对齐，删除无 SPEC 对应的 AC-011，BR-012 改由 TC-013 验证）；证据列 SPEC 节号对齐 v1.1.0（FR→§6, BR→§7, 测试→§15 等）；FR-008/BR-011/AC-OSS-008/TC-009/TC-010/NFR-010 措辞 Aliyun 化。 |
 | 2026-06-12 | 2.1 | Replaced stale 8-FR matrix with current 10-FR/12-BR/13-TC/7-task handoff traceability. |
 | 2026-06-12 | 2.0 | Repaired ossx matrix to cover every SPEC FR/BR with AC, TC, Task, Evidence and closed Status. |
