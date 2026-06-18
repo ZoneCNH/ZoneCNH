@@ -1,23 +1,24 @@
 # ossx 规格
 
 - Status: Implemented
-- Spec-Version: v1.2.0
+- Spec-Version: v1.2.1
 - Last-Updated: 2026-06-18
 - Layer: 基座 · 对象存储扩展
 - Version: v1.1.0（远程 `github.com/ZoneCNH/ossx` 已发布）
-- Module-Identity: Aliyun OSS 专用 adapter（单 provider；非通用对象存储抽象 / adapter SPI / S3-compatible）
+- Module-Identity: Aliyun OSS 专用 adapter（单 provider；非通用对象存储抽象；不提供 adapter SPI / S3-compatible 多后端框架）
 - Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `kernel`
 
-> 身份收敛（2026-06-18）：本模块为 Aliyun OSS 专用 adapter，对接 `github.com/ZoneCNH/ossx`。先前的 adapter SPI / S3-compatible / 多 provider 措辞已收敛删除。
-> 实现状态（2026-06-18）：远程 `github.com/ZoneCNH/ossx` 已发布 **v1.1.0**——真实 Aliyun adapter（`adapters/aliyun/`）+ 流式 SPI + 完整 multipart + 真实 presign + 策略校验 + retry/circuit + observex 兼容 hooks。24 单元测试 + 5 集成测试（真实 bucket `x-go`，TC-010）全过。
-> `factory=false` 保持：公开 evidence archive（BLK-008）仍待归档；真实 adapter + 集成证据已齐备。
-> Status=Implemented：FR-001..FR-010 全部实现并通过 TC。尚未通过 pipeline-arbiter 四源 98 分门禁（治理门禁，非实现门禁）。
+> 身份收敛（2026-06-18）：本模块为 Aliyun OSS 专用 adapter，对接 `github.com/ZoneCNH/ossx`。先前的 adapter SPI / S3-compatible / 多 provider 措辞已收敛为非目标。
+> 实现状态（2026-06-18）：远程 `github.com/ZoneCNH/ossx` 已发布 **v1.1.0**——真实 Aliyun adapter（`adapters/aliyun/`）+ 流式 BlobStore + 完整 multipart + 真实 presign + 策略校验 + retry/circuit + observex 兼容 hooks。本地可复现门禁已通过：`go test ./... -race`、`go vet ./...`、`go build ./...`、`golangci-lint run ./...`、secret scope 检查、禁止 infra 依赖扫描，`pkg/ossx` 覆盖率 83.9%。
+> live Aliyun 集成状态：`go test -tags integration ./adapters/aliyun/` 在未设置 `OSSX_LIVE_INTEGRATION=1` 与密钥时按设计 skip 5 项；真实 live 通过证据仍需凭证环境执行后归档。
+> `factory=false` 保持：公开 evidence archive（BLK-008）与 live integration evidence 仍待归档；本地实现门禁已闭合。
+> Status=Implemented：FR-001..FR-010 本地可验证实现已闭合。尚未通过 pipeline-arbiter 四源 98 分门禁（治理门禁，非实现门禁）。
 
 ---
 
 ## 1. 摘要
 
-`ossx` provides the platform object-storage extension. It defines a stable BlobStore API, object metadata model, streaming semantics, multipart lifecycle, presigned URL policy, adapter SPI, and observability hooks while keeping storage-provider SDKs outside the public API.
+`ossx` provides the platform object-storage extension. It defines a stable BlobStore API, object metadata model, streaming semantics, multipart lifecycle, presigned URL policy, Aliyun OSS adapter contract, and observability hooks while keeping storage-provider SDKs outside the public API.
 
 ## 2. 问题与背景
 
@@ -33,7 +34,7 @@ HAI services need object storage without coupling business code to cloud SDKs, p
 ## 4. 非目标
 
 - 不做业务领域的上传工作流编排（由各业务服务自行实现）
-- 不在公开 API 暴露云厂商 SDK 类型（provider SDK 类型封装在 `adapters/s3/` 等 adapter/internal 层）
+- 不在公开 API 暴露云厂商 SDK 类型（provider SDK 类型仅封装在 `adapters/aliyun` adapter/internal 层）
 - 不做配置加载或配置解析（Config 由调用方 / composition root 构造后传入）
 - 不做跨云迁移编排（由平台运维层或独立迁移工具负责）
 
@@ -41,14 +42,14 @@ HAI services need object storage without coupling business code to cloud SDKs, p
 
 - L2/L3 services that need BlobStore operations.
 - Background jobs that need streaming or multipart upload.
-- Platform adapters that bind S3-compatible storage to ossx contracts.
+- Platform bindings that connect Aliyun OSS to ossx contracts.
 - Tests and examples that use fake adapters for deterministic validation.
 
 ## 6. 功能需求
 
 ### FR-001: Construction and configuration
 
-WHEN a caller constructs `NewBlobStore(cfg Config, adapter ObjectStorageAdapter, hooks Hooks)`, THEN ossx MUST validate module-owned configuration, accept nil hooks as no-op hooks, and avoid importing or requiring `configx`.
+WHEN a caller constructs `NewBlobStore(cfg Config, adapter StoreAdapter, hooks Hooks)`, THEN ossx MUST validate module-owned configuration, accept nil hooks as no-op hooks, and avoid importing or requiring `configx`.
 
 Acceptance criteria:
 - Invalid endpoint, bucket, region, checksum, or TTL settings return typed configuration errors.
@@ -109,13 +110,13 @@ Acceptance criteria:
 - Lifecycle windows and retention settings reject negative or contradictory values.
 - Permission policy validation runs before presign and write operations.
 
-### FR-008: Adapter SPI and S3-compatible adapter
+### FR-008: Aliyun OSS adapter isolation
 
-WHEN an adapter is implemented, THEN it MUST satisfy the module SPI without leaking SDK types, and the S3-compatible adapter MUST isolate provider-specific behavior inside `adapters/s3`.
+WHEN the Aliyun OSS adapter is implemented, THEN it MUST satisfy the ossx StoreAdapter contract without leaking SDK types, and Aliyun-specific behavior MUST remain inside `adapters/aliyun`.
 
 Acceptance criteria:
 - Public ossx interfaces use only ossx, standard library, kernel, or observex-interface types.
-- S3-compatible adapter tests cover MinIO-compatible behavior with fake or integration-gated clients.
+- Aliyun adapter tests cover fake-backed behavior and an `OSSX_LIVE_INTEGRATION`-gated live backend.
 - Provider errors are translated at the adapter boundary.
 
 ### FR-009: Observability and audit hooks
@@ -147,7 +148,7 @@ Acceptance criteria:
 | AC-OSS-005 | FR-005 | Part number/size/ETag/checksum 校验通过；Abort 幂等且部分失败安全；Complete 验证所有必需 part 后发布对象 |
 | AC-OSS-006 | FR-006 | TTL 不超过 15 分钟；仅已配置操作可 presign；凭据/签名/token 在日志和 trace 中脱敏 |
 | AC-OSS-007 | FR-007 | 不支持的 checksum 算法上传前失败；lifecycle/retention 负值或矛盾值被拒绝；权限策略在 presign 和 write 前校验 |
-| AC-OSS-008 | FR-008 | 公共接口仅使用 ossx/stdlib/kernel/observex 类型；S3 适配器隔离在 adapters/s3；provider 错误在适配器边界转换 |
+| AC-OSS-008 | FR-008 | 公共接口仅使用 ossx/stdlib/kernel/observex 类型；Aliyun 适配器隔离在 adapters/aliyun；provider 错误在适配器边界转换 |
 | AC-OSS-009 | FR-009 | 操作名/结果/延迟/对象大小/sanitized key 可观测；secret/签名URL/凭据/原始 metadata 不被记录；hook 失败不破坏操作结果（除非 fail-closed 策略） |
 | AC-OSS-010 | FR-010 | 健康检查区分配置错误/provider 不可达/降级状态；Close 幂等并排空 in-flight multipart；readiness 可无写操作测试 |
 
@@ -165,7 +166,7 @@ Acceptance criteria:
 | BR-008 | Presigned URL TTL MUST default to at most 15 minutes and operations MUST be allowlisted. | 安全风险 → 超额 TTL 或未授权操作 → Presign 校验拒绝 |
 | BR-009 | Secrets, credentials, signatures, and tokens MUST never be logged or traced. | 凭据泄露 → CI Gate gitleaks 或 secret scan 阻断 |
 | BR-010 | Checksum mismatch MUST return a typed error and clean temporary state when safe. | 数据损坏 → 返回 typed checksum error；临时对象残留 |
-| BR-011 | Adapter-specific SDK types MUST NOT appear in public ossx APIs. | SDK 类型泄露 → TC-009 adapter SPI 测试失败 |
+| BR-011 | Adapter-specific SDK types MUST NOT appear in public ossx APIs. | SDK 类型泄露 → TC-009 adapter boundary 测试失败 |
 | BR-012 | Every acceptance check MUST have a validation command or evidence note. | 验收证据缺失 → CI Gate traceability check 阻断 |
 
 
@@ -266,7 +267,7 @@ module/ossx/
   adapter.go
   observability.go
   health.go
-  adapters/s3/
+  adapters/aliyun/
   internal/
   tasks/
   prompt/
@@ -280,7 +281,7 @@ Allowed dependencies:
 - Standard library.
 - `module/kernel` for approved lifecycle, context, and typed error conventions.
 - `module/observex` interface contracts or minimal local interfaces compatible with observex.
-- Provider SDKs only inside adapter implementation packages such as `adapters/s3`.
+- Provider SDKs only inside adapter implementation packages such as `adapters/aliyun`.
 
 Forbidden dependencies:
 
@@ -299,8 +300,8 @@ Forbidden dependencies:
 - **TC-006:** Multipart tests cover initiate, upload part, list parts, complete, abort, and stale cleanup.
 - **TC-007:** Presign tests enforce TTL, operation allowlist, checksum constraints, and secret masking.
 - **TC-008:** Policy validation tests cover checksum, lifecycle, retention, and permission errors.
-- **TC-009:** Adapter SPI tests prove public APIs do not expose provider SDK types.
-- **TC-010:** S3-compatible adapter contract tests run with fake or gated MinIO-compatible backends.
+- **TC-009:** Aliyun adapter boundary tests prove public APIs do not expose provider SDK types.
+- **TC-010:** Aliyun OSS adapter contract tests run with fake-backed checks and `OSSX_LIVE_INTEGRATION`-gated live backends.
 - **TC-011:** Observability tests verify metrics, traces, audit events, and no-op hook behavior.
 - **TC-012:** Health and close tests verify readiness states and idempotent shutdown.
 - **TC-013:** Traceability validation checks Goal -> Spec -> Matrix -> Task -> Evidence closure.
@@ -332,11 +333,17 @@ git diff --check
 bash .github/ci/spec-lint.sh
 TRACEABILITY_STRICT=1 bash .github/ci/traceability-check.sh
 bash .github/ci/task-spec-validate.sh
-go test ./module/ossx/...
-go list -deps ./module/ossx/... | grep -v configx
+
+cd /home/ossx
+GOWORK=off go test ./... -race -count=1
+GOWORK=off go vet ./...
+GOWORK=off go build ./...
+GOWORK=off golangci-lint run ./...
+bash scripts/secret-scope-check.sh
+! rg "github\.com/ZoneCNH/(configx|redisx|kafkax|natsx|postgresx|taosx|clickhousex)" --glob '!*vendor*' --glob '!go.sum'
 ```
 
-If implementation code does not exist yet, Go checks may be recorded as not applicable with evidence. Once code exists, Go checks are required for release.
+Go checks target the implementation repository at `/home/ossx`.
 
 ## 20. 升级兼容性
 
@@ -356,7 +363,7 @@ Public API changes after first implementation require a compatibility note, migr
 
 | ID | 问题 | 状态 |
 | --- | --- | --- |
-| OQ-001 | Which S3-compatible backend will be the first integration target for gated tests? | 待确认 |
+| OQ-001 | Which Aliyun live integration evidence archive should be treated as the factory gate source of truth? | 待归档 |
 | OQ-002 | Should checksum verification be mandatory for all reads or configurable per bucket policy? | 待确认 |
 | OQ-003 | Which observex hook shape should become the shared interface once observex stabilizes? | 待确认 |
 
@@ -366,6 +373,7 @@ Public API changes after first implementation require a compatibility note, migr
 
 | 日期 | 版本 | 变更内容 | 作者 |
 |------|------|----------|------|
-| 2026-06-18 | v1.2.0 | 实现 Status=Implemented：远程 ossx v1.1.0 已发布——真实 Aliyun adapter + 流式 SPI + 完整 multipart + 真实 presign + 策略 + retry/circuit + observex hooks。24 单测 + 5 集成测试（真 bucket x-go，TC-010）全过。新增 FEATURES.md + ACCEPTANCE.md | ZoneCNH |
+| 2026-06-18 | v1.2.1 | 验收证据修正：本地门禁闭合（race/vet/build/lint/secret/import/coverage 83.9%），live Aliyun 集成改为凭证门禁，不再声称本地已取得 live 通过证据。 | ZoneCNH |
+| 2026-06-18 | v1.2.0 | 实现 Status=Implemented：远程 ossx v1.1.0 已发布——真实 Aliyun adapter + 流式 BlobStore + 完整 multipart + 真实 presign + 策略 + retry/circuit + observex hooks。新增 FEATURES.md + ACCEPTANCE.md | ZoneCNH |
 | 2026-06-18 | v1.1.0 | 身份收敛为 Aliyun OSS 专用 adapter：移除 adapter SPI / S3-compatible / 多 provider 措辞；FR-008 重写为 Aliyun adapter 隔离；adapters/s3→adapters/aliyun；Status Approved→Review | ZoneCNH |
 | 2026-06-14 | v1.0.0 | 初始版本 | ZoneCNH |
