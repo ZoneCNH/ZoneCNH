@@ -5,36 +5,11 @@
 
 name: Docs CI
 
+# NOTE: self-hosted runner 已下线（zone-runner unregistered 2026-06-18），仅保留 workflow_dispatch 防止 queued 堆积。
+# 仅保留 workflow_call/workflow_dispatch（被 release.yml 与 foundation-release.yml 引用）。
+# 重装 runner 后恢复 pull_request/push/schedule trigger。
 on:
   workflow_call:
-  pull_request:
-    paths:
-      - "*.md"
-      - "docs/**/*.md"
-      - "module/**/*.md"
-      - "module/**/*.md"
-      - "module/**/*.yaml"
-      - "module/**/*.yml"
-      - ".github/workflows/*.yml"
-      - ".github/ci/**"
-      - ".markdownlint.json"
-      - ".lycheeignore"
-  push:
-    branches: [main]
-    paths:
-      - "*.md"
-      - "docs/**/*.md"
-      - "module/**/*.md"
-      - "module/**/*.md"
-      - "module/**/*.yaml"
-      - "module/**/*.yml"
-      - ".github/workflows/*.yml"
-      - ".github/ci/**"
-      - ".markdownlint.json"
-      - ".lycheeignore"
-  schedule:
-    # 每周一 09:17 UTC（北京时间 17:17）巡检
-    - cron: "17 9 * * 1"
   workflow_dispatch:
 
 permissions:

@@ -5,10 +5,15 @@
 
 name: Release
 
+# NOTE: self-hosted runner 已下线（zone-runner unregistered 2026-06-18），仅保留 workflow_dispatch 防止 queued 堆积。
+# 删除 tag push trigger 防止 queued 堆积。重装 runner 后恢复 push tags trigger。
 on:
-  push:
-    tags:
-      - "v*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag to publish (e.g. v1.2.3)"
+        required: true
+        type: string
 
 permissions:
   contents: write
