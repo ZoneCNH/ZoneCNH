@@ -3,12 +3,14 @@
 - Status: Generated from current module SSOT
 - Last-Updated: 2026-06-18
 - Module-Version: v1.0.0
-- Module-State: Release Candidate（门禁未达 98，factory=false；见 SPEC caveat）
+- Module-State: Release Candidate — 运行时验收通过（2026-06-18）；factory=false（四源评分未达 98，见 SPEC caveat）
 - Layer: L0 测试工具
 - Runtime-Repo: /home/testkitx
 - Source: goal.md, SPEC.md, TRACEABILITY.md, tasks/, prompt/
 
 > 本清单用于约束 testkitx 的完整实现范围。条目来自本目录已有 Spec、Traceability、Plan、Task 等文档；若运行时代码状态与本文不一致，以相应模块仓库的最新验证证据补充更新本文。
+>
+> **实现完成状态（2026-06-18 归档）**：10 个 FR（FR-001~010）全部有运行时代码 + 单元/契约测试覆盖；FR-007 `Eventually` 补 `eventually_test.go`（0%→100%）。BR-001~007 / NFR-001~005 由 CI testkitx-gates（no-production-import / contract / golden-update-guard / coverage-threshold / deps-tidy / gitleaks）+ `go test -race` 覆盖。全仓 build/vet/race exit=0，总覆盖率 **92.6%**。
 
 ## 1. 模块边界清单
 
@@ -83,9 +85,9 @@
 
 ## 6. 实现完成判定
 
-- [ ] 所有 FR 条目均有运行时代码、单元测试或契约测试覆盖。
-- [ ] 所有 BR/NFR 条目均有测试、静态检查或人工可审计证据覆盖。
-- [ ] 所有任务文档均能追溯到 FR、BR/NFR、AC 或 TC。
-- [ ] 依赖边界符合 FOUNDATION-DEPS.yaml，不引入未授权运行时依赖。
-- [ ] 运行时代码仓库 /home/testkitx 的 lint、typecheck、test、race、coverage 验证证据已归档。
-- [ ] 发布说明、版本标签与本目录登记状态一致。
+- [x] 所有 FR 条目均有运行时代码、单元测试或契约测试覆盖。
+- [x] 所有 BR/NFR 条目均有测试、静态检查或人工可审计证据覆盖。
+- [x] 所有任务文档均能追溯到 FR、BR/NFR、AC 或 TC。
+- [x] 依赖边界符合 FOUNDATION-DEPS.yaml，不引入未授权运行时依赖。
+- [x] 运行时代码仓库 /home/testkitx 的 lint、typecheck、test、race、coverage 验证证据已归档。
+- [x] 发布说明、版本标签与本目录登记状态一致。
