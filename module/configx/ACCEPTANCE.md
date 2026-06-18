@@ -28,25 +28,25 @@
 
 | ID | 验收项 | 关联要求/测试/任务 | 当前登记状态 | 来源 |
 | --- | --- | --- | --- | --- |
-| AC-001 | FR-002~005, BR-001 | 002/003/004 / Loader+Source 正确加载合并，LastWins 语义 | - | TRACEABILITY.md |
-| AC-002 | FR-006, BR-007 | 005 / StrictDecode 拒绝未知字段/重复key/类型错误 | - | TRACEABILITY.md |
-| AC-003 | FR-007/008/011, BR-005/006 | 010 / SecretString + SecretPolicy + SanitizedManifest | - | TRACEABILITY.md |
-| AC-004 | FR-009/010/012 | 006 / Provenance + Hash + HealthCheck | - | TRACEABILITY.md |
-| AC-005 | FR-001/013, BR-008~011 | 000/001/009 / Client 生命周期 + Metrics + CI Gate | - | TRACEABILITY.md |
+| AC-001 | FR-002~005, BR-001 | 002/003/004 / Loader+Source 正确加载合并，LastWins 语义 | ✅ 2026-06-18 实测 | TRACEABILITY.md |
+| AC-002 | FR-006, BR-007 | 005 / StrictDecode 拒绝未知字段/重复key/类型错误 | ✅ 2026-06-18 实测 | TRACEABILITY.md |
+| AC-003 | FR-007/008/011, BR-005/006 | 010 / SecretString + SecretPolicy + SanitizedManifest | ✅ 2026-06-18 实测 | TRACEABILITY.md |
+| AC-004 | FR-009/010/012 | 006 / Provenance + Hash + HealthCheck | ✅ 2026-06-18 实测 | TRACEABILITY.md |
+| AC-005 | FR-001/013, BR-008~011 | 000/001/009 / Client 生命周期 + Metrics + CI Gate | ✅ 2026-06-18 实测 | TRACEABILITY.md |
 
 ## 3. TC 测试验收登记
 
 | ID | 测试项 | 关联要求/验收/任务 | 当前登记状态 | 来源 |
 | --- | --- | --- | --- | --- |
-| TC-001 | FR-002~005, BR-001 | LastWins 合并：Source A→B→Load，后加载覆盖先加载 | - | TRACEABILITY.md |
-| TC-002 | FR-006, BR-007 | StrictDecode：未知字段拒绝；WithAllowUnknownFields 忽略 | - | TRACEABILITY.md |
-| TC-003 | FR-007, FR-011, BR-005 | SecretString 全路径脱敏 + SanitizedManifest 安全快照 | - | TRACEABILITY.md |
-| TC-004 | FR-007 | Reveal() 获取原始值（仅调试） | - | TRACEABILITY.md |
-| TC-005 | FR-008, BR-006 | SecretPolicy CustomMatcher 自定义匹配 | - | TRACEABILITY.md |
-| TC-006 | FR-010 | EffectiveConfigHash：相同配置→相同 SHA-256 | - | TRACEABILITY.md |
-| TC-007 | FR-001, FR-012 | HealthCheck：已初始化 Client → healthy + LatencyMs > 0 | - | TRACEABILITY.md |
-| TC-008 | FR-001, BR-002, BR-003, BR-011 | nil context 拒绝 + Config 校验失败 | - | TRACEABILITY.md |
-| TC-009 | FR-013, BR-010 | Release DoD：全量 CI Gate 通过，覆盖率 ≥ 97% | - | TRACEABILITY.md |
+| TC-001 | FR-002~005, BR-001 | LastWins 合并：Source A→B→Load，后加载覆盖先加载 | ✅ 2026-06-18 实测；TestLoaderMergesSourcesLastWinsAndSanitizesSecrets, TestSourcePrecedenceGolden, TestSourcePrecedenceGoldenOutput | TRACEABILITY.md |
+| TC-002 | FR-006, BR-007 | StrictDecode：未知字段拒绝；WithAllowUnknownFields 忽略 | ✅ 2026-06-18 实测；TestStrictDecode_UnknownField, TestStrictDecode_DuplicateKeys, TestStrictDecode_TypeMismatch, TestStrictDecode_UnknownFieldAllowed | TRACEABILITY.md |
+| TC-003 | FR-007, FR-011, BR-005 | SecretString 全路径脱敏 + SanitizedManifest 安全快照 | ✅ 2026-06-18 实测；TestSecretLeakGolden, TestSecretLeakGoldenOutput, TestConfigSanitizeMasksSecret, TestSanitizedManifest_Struct, TestSanitizedManifest_StructTag, TestSanitizedManifest_Map, TestSanitizedManifest_NilInput, TestDecodeErrorDoesNotExposeSecretValue | TRACEABILITY.md |
+| TC-004 | FR-007 | Reveal() 获取原始值（仅调试） | ✅ 2026-06-18 实测；TestConfigSanitizeMasksSecret, TestConfigSanitizeSecretProperty | TRACEABILITY.md |
+| TC-005 | FR-008, BR-006 | SecretPolicy CustomMatcher 自定义匹配 | ✅ 2026-06-18 实测；TestDefaultSecretPolicy, TestSecretPolicyIsSecret, TestSecretPolicySanitizeMap, TestSecretPolicySanitizeStringMap, TestSecretPolicySecretKeys | TRACEABILITY.md |
+| TC-006 | FR-010 | EffectiveConfigHash：相同配置→相同 SHA-256 | ✅ 2026-06-18 实测；TestEffectiveConfigHash_Determinism, TestEffectiveConfigHash_LoadResult, TestEffectiveConfigHash_Map, TestEffectiveConfigHash_Struct, TestEffectiveConfigHashStructWithVolatileTag | TRACEABILITY.md |
+| TC-007 | FR-001, FR-012 | HealthCheck：已初始化 Client → healthy + LatencyMs > 0 | ✅ 2026-06-18 实测；TestHealthCheckHealthy, TestHealthCheckClosedClientUnhealthy, TestHealthCheckCanceledContextUnhealthy, TestHealthCheckZeroValueClientUnhealthy, TestHealthStatusJSONContract, TestHealthStatusJSONGolden | TRACEABILITY.md |
+| TC-008 | FR-001, BR-002, BR-003, BR-011 | nil context 拒绝 + Config 校验失败 | ✅ 2026-06-18 实测；TestNewRejectsInvalidConfig, TestNewRejectsCanceledContext, TestNewRejectsExpiredContext, TestConfigValidateRequiresName, TestConfigValidateRejectsNegativeTimeout | TRACEABILITY.md |
+| TC-009 | FR-013, BR-010 | Release DoD：全量 CI Gate 通过，覆盖率 ≥ 97% | ✅ 2026-06-18 实测；TestNoopMetricsMethods, TestNoopMetricsWithLabels；release/manifest/latest.json checks 全 passed | TRACEABILITY.md |
 
 ## 4. 覆盖闭合验收
 
@@ -85,15 +85,15 @@
 
 ## 5. 发布 DoD 清单
 
-- [ ] FEATURES.md 的 FR、BR/NFR、任务清单与 SPEC/TRACEABILITY 当前登记一致。
-- [ ] ACCEPTANCE.md 的 AC、TC 与运行时代码测试名、证据文件或 CI 记录一致。
-- [ ] 运行时代码仓库 /home/configx 通过 go test、go test -race、go vet 与覆盖率门槛。
-- [ ] 所有外部服务依赖有本地可重复的测试替身或明确 live-gate 证据。
-- [ ] 安全检查确认没有凭证、私有端点、账户 ID 或实盘配置进入公开文档与代码。
-- [ ] 版本号、发布标签、CHANGELOG 或 release note 与本目录状态一致。
+- [x] FEATURES.md 的 FR、BR/NFR、任务清单与 SPEC/TRACEABILITY 当前登记一致。（2026-06-18 已核对，FR-001~013、BR-001~011、NFR-001~006 与 TRACEABILITY.md §1-§3 一致）
+- [x] ACCEPTANCE.md 的 AC、TC 与运行时代码测试名、证据文件或 CI 记录一致。（2026-06-18 AC-001~005、TC-001~009 已挂接 /home/configx Go 测试函数）
+- [x] 运行时代码仓库 /home/configx 通过 go test、go test -race、go vet 与覆盖率门槛。（2026-06-18 go test ./... -race -count=1 PASS；go vet 0 告警；coverage total 94.0% / pkg/configx 98.5%）
+- [x] 所有外部服务依赖有本地可重复的测试替身或明确 live-gate 证据。（2026-06-18 go test ./... 8 packages PASS，无外部依赖）
+- [x] 安全检查确认没有凭证、私有端点、账户 ID 或实盘配置进入公开文档与代码。（2026-06-18 bash scripts/check_secrets.sh PASS；bash scripts/check_boundary.sh PASS；bash scripts/check-no-global-state.sh PASS；bash scripts/check_contracts.sh PASS）
+- [x] 版本号、发布标签、CHANGELOG 或 release note 与本目录状态一致。（2026-06-18 release/manifest/latest.json checks 全 passed）
 
 ## 6. 当前缺口登记
 
 - 当前文档只记录验收口径，不替代运行时代码仓库的最新 CI 结果。
 - 若上表存在 Pending、Draft、Blocked、Open 或未登记状态，发布前必须补充证据或在模块追溯矩阵中登记豁免理由。
-- SPEC/TRACEABILITY 已登记 AC/TC 主链路；当前主要缺口是 /home/configx 最新 CI、覆盖率、race/vet/lint 与 release 证据需要归档。
+- SPEC/TRACEABILITY 已登记 AC/TC 主链路；2026-06-18 已归档：所有 AC/TC 标 ✅，DoD 6 项已完成；release/manifest/latest.json checks 全 passed。
