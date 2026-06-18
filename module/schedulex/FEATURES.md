@@ -20,7 +20,7 @@
 | 运行时代码目录 | `/home/schedulex` |
 | Go 基线 | Go 1.23 |
 | 运行时依赖 | 标准库 only；生产代码不依赖 `x.go`、L2 或业务域 |
-| CI/CD 约束 | `GOWORK=off`；SRE self-hosted runner；release gate 必须通过 `make release-check VERSION=v1.0.0` |
+| CI/CD 约束 | `GOWORK=off`；GitHub hosted `ubuntu-latest` runner；release gate 必须通过 `make release-check VERSION=v1.0.0` |
 | 对外承诺 | 公共 API、错误、策略、事件、锁接口、测试、证据与 release manifest 可复验 |
 
 ## 2. 已验收功能
@@ -59,8 +59,8 @@
 | Required status checks | `ci`、`release-check`、`security`、`integration`、`gates`、`worktree-check` |
 | Main 保护 | required status checks + required signatures |
 | Release tag 保护 | `v*` tag + required signatures |
-| CI runner | `[self-hosted, Linux, X64, sre/foundation-l1]` |
-| Release runner | `[self-hosted, Linux, X64, sre/deploy]` |
+| CI runner | `ubuntu-latest` |
+| Release runner | `ubuntu-latest` |
 | 核心 CI 命令 | `GOWORK=off make release-check VERSION="${VERSION}"` |
 | Release 触发 | push `v*` tag 后执行 release workflow，生成 manifest 并发布 GitHub Release |
 
@@ -84,5 +84,5 @@
 - [x] 已通过 `GOWORK=off make release-check VERSION=v1.0.0`。
 - [x] 已通过 integration、governance、p1、p2、score 与 release preflight。
 - [x] 已确认生产代码保持标准库 only 与 L1 基座边界。
-- [x] 已同步 CI/CD required checks、runner pool、release gate 与文档登记。
+- [x] 已同步 CI/CD required checks、hosted runner、release gate 与文档登记。
 - [ ] tag 发布后的网络 downstream smoke 需等待 `v1.0.0` 对外可解析后执行。

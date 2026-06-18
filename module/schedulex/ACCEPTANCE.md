@@ -48,7 +48,7 @@
 | AC-009 | EventSink | 调度器级与 job 级事件可注入，事件合约通过测试 | contracts、unit tests | PASS |
 | AC-010 | Locker | `Locker`/`Lease` 接口与 job lock 选项可编译、可测试；锁失败按契约跳过或上报 | `lock-interface-check` | PASS |
 | AC-011 | 边界与安全 | 标准库 only，无上层域依赖、无 secret、无代码可达漏洞 | `boundary`、`security` | PASS |
-| AC-012 | CI/CD 与发布 | required checks、runner pool、release manifest、score 与 release preflight 全部闭合 | `governance-check`、`release-check` | PASS |
+| AC-012 | CI/CD 与发布 | required checks、hosted runner、release manifest、score 与 release preflight 全部闭合 | `governance-check`、`release-check` | PASS |
 
 ## 4. TC 验收登记
 
