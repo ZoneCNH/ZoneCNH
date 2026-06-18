@@ -5,7 +5,7 @@
 - Last-Updated: 2026-06-18
 - Layer: L1 基础能力（与 `module/FOUNDATION-DEPS.yaml` 登记一致；ACCEPTANCE/FEATURES/goal 同步对齐为 L1）
 - Version: v1.0.0
-- Runtime-Version: v0.4.9（运行时代码仓库 `/home/resiliencx` 实测基线）
+- Runtime-Version: v0.4.14（运行时代码仓库 `/home/resiliencx` 实测基线）
 - Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `kernel`
 
 > 公开投影 caveat：Status=Approved 与运行时覆盖率 98.1% 不等同于 factory-grade；BLK-007 关闭前机器事实层保持 factory=false。
@@ -576,6 +576,8 @@ Then 外层按声明顺序包装内层，整体返回最外层结果
 > 运行时通过**本地 `Metrics` interface**（`pkg/resiliencx/metrics.go`）+ 事件 `Sink` 暴露，由调用方注入 `observex` adapter。实际定义的 metric 常量集中在**客户端生命周期**层（非策略层），与 v1.0.1 表格的 `resiliencx.timeout.count` 等命名**完全不同**。三套命名差异见下。
 
 ### 17.1 实际 metric 常量（`pkg/resiliencx/metrics.go`）
+
+> **权威指标面**：以下常量与运行时契约文件 `/home/resiliencx/contracts/metrics.md` 一致，该文件是 `pkg/resiliencx` 暴露给调用方的最小可观测面的冻结定义。
 
 | 常量 | 名称 | 说明 |
 | ---- | ---- | ---- |

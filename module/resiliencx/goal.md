@@ -4,10 +4,13 @@
 | ------------ | ---------------------------------------------- |
 | 模块名       | `resiliencx`                                   |
 | 发布版本     | 1.0.1                                          |
-| 所属层级     | L1 运行时横切能力 / 弹性治理                   |
+| 所属层级     | L1 基础能力（弹性治理；与 SPEC §3 / FOUNDATION-DEPS.yaml 一致） |
 | 稳定级别     | Public API Stable；SPI Stable；Internal 可演进 |
-| 文档状态     | 与 SPEC.md v1.0.1 对齐                         |
+| 文档状态     | 与 SPEC.md v1.0.2 对齐（contract-corrected）   |
+| 运行时基线   | v0.4.14（`/home/resiliencx`，覆盖率 98.1%）    |
 | 发布日期基准 | 2026-06-12                                     |
+
+> **v1.0.2 契约纠正同步**：本 goal 的能力范围与 v1.2+ 演进方向（§7、§15）保持不变；运行时对外 API 以子包形式提供（`timeout.Do`/`retry.Do`/`circuit.New`/`bulkhead.New`/`ratelimit.New`/`fallback.Do`），而非早期设想的包级聚合函数。SPEC v1.0.2 已据此纠正 §8/§9 契约。
 
 ## 术语约定
 
@@ -71,11 +74,13 @@
 | -------- | -------------------------------------------------------------- | ---------------- |
 | 超时     | 同步/异步调用超时、deadline 继承、取消传播                     | 超时测试通过     |
 | 重试     | 固定间隔、指数退避、jitter、最大次数、错误分类                 | 重试安全测试通过 |
-| 熔断     | 关闭/打开/半开状态、滑动窗口、失败率阈值                       | 状态转换测试通过 |
+| 熔断     | 关闭/打开/半开状态、滑动窗口、失败率阈值（注：运行时仅连续失败阈值，见 §4 caveat） | 状态转换测试通过 |
 | 限流     | 令牌桶、漏桶或固定窗口抽象、按 key 限流                        | 高并发测试通过   |
 | 隔离     | 并发舱壁、队列长度、拒绝策略                                   | 资源隔离测试通过 |
 | 降级     | fallback、默认值、缓存兜底、快速失败                           | 降级路径测试通过 |
 | 策略编排 | 函数嵌套组合（装饰器模式）；v1.2+ 目标：PolicyChain 统一执行链 | 组合策略测试通过 |
+
+> **运行时达成度 caveat（对齐 SPEC v1.0.2）**：上表为 1.0 能力目标。运行时 v0.4.14 实际达成：超时 ✅、重试（指数退避+最大次数+错误分类 ✅；**jitter ❌ 未实现**）、熔断（三态+连续失败阈值 ✅；**滑动窗口/失败率阈值 ❌ 未实现**，见 SPEC §6 FR-003）、限流（令牌桶 ✅；**漏桶/按 key 限流 ❌ 未实现**）、隔离（并发舱壁+TryAcquire 拒绝 ✅；**队列长度 ❌ 未实现**）、降级（fallback 链 ✅）、策略编排（函数嵌套 ✅；compose.go 辅助/TestCompose ❌ 未实现，见 TRACEABILITY TC-008）。未达成项归入 SPEC §22 待解决问题。
 
 ## 5. 职责边界
 
@@ -112,11 +117,11 @@
 | ------------------ | ---------------- | -------------------------------------------------------- |
 | ResilienceExecutor | 统一策略执行入口 | v1.2+（v1.0: 各策略函数独立调用，通过函数嵌套组合）      |
 | PolicyRegistry     | 策略注册和选择   | v1.2+（v1.0: 直接实例化策略对象）                        |
-| RetryPolicy        | 重试策略         | v1.0 已实现（RetryPolicy struct + Retry 函数）           |
-| CircuitBreaker     | 熔断器状态机     | v1.0 已实现（CircuitBreaker interface）                  |
-| RateLimiter        | 限流抽象         | v1.0 已实现（RateLimiter interface）                     |
-| Bulkhead           | 并发舱壁         | v1.0 已实现（Bulkhead interface）                        |
-| FallbackHandler    | 降级处理器       | v1.2+（v1.0: Fallback 函数，primary + secondary 简单链） |
+| RetryPolicy        | 重试策略         | v1.0 已实现（`retry.Policy` struct + `retry.Do` 函数）    |
+| CircuitBreaker     | 熔断器状态机     | v1.0 已实现（`circuit.Breaker` struct，`circuit.New` 构造） |
+| RateLimiter        | 限流抽象         | v1.0 已实现（`ratelimit.Limiter` struct，`ratelimit.New`） |
+| Bulkhead           | 并发舱壁         | v1.0 已实现（`bulkhead.Bulkhead` struct，`bulkhead.New`）  |
+| FallbackHandler    | 降级处理器       | v1.2+（v1.0: `fallback.Do` 函数，primary + fallbacks 链）  |
 
 ### 7.2 1.2+ 逻辑接口基线（演进目标）
 
@@ -170,10 +175,10 @@ RejectPolicy
 | -------------------------------------------- | ---------------- | ------------- | ------ |
 | resiliencx.enabled                           | 是否启用弹性治理 | true          | Stable |
 | resiliencx.default_timeout                   | 默认超时         | 5s            | Stable |
-| resiliencx.default_retry.max_retries         | 默认重试次数     | 0，默认不重试 | Stable |
+| resiliencx.default_retry.max_retries         | 配置层默认重试次数（未配置时 0；编程式 `retry.DefaultPolicy()` 为 MaxAttempts=3） | 0，默认不重试 | Stable |
 | resiliencx.default_retry.initial_wait        | 默认退避         | 100ms         | Stable |
-| resiliencx.circuit_breaker.failure_threshold | 熔断失败率阈值   | 5             | Stable |
-| resiliencx.circuit_breaker.recovery_timeout  | 熔断恢复超时     | 30s           | Stable |
+| resiliencx.circuit_breaker.failure_threshold | 熔断**连续失败次数**阈值（非失败率；运行时为单条件熔断，见 SPEC §6 FR-003） | 5             | Stable |
+| resiliencx.circuit_breaker.recovery_timeout  | 熔断恢复超时（cooldown） | 30s           | Stable |
 | resiliencx.bulkhead.max_concurrent           | 默认并发隔离数   | 10            | Stable |
 | resiliencx.rate_limiter.rate                 | 每秒请求数限额   | disabled      | Stable |
 
