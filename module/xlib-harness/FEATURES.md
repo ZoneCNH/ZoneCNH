@@ -2,10 +2,11 @@
 
 - Status: Generated from current module SSOT
 - Last-Updated: 2026-06-18
-- Module-Version: v0.1.0
+- Module-Version: v0.1.1
 - Module-State: 已发布
 - Layer: L1 执行器
 - Runtime-Repo: /home/xlib-harness
+- Acceptance-Baseline: /home/xlib-harness@335eef9
 - Source: goal.md, SPEC.md, TRACEABILITY.md, IMPLEMENTATION-PLAN.md, tasks/
 
 > 本清单用于约束 xlib-harness 的完整实现范围。条目来自本目录已有 Spec、Traceability、Plan、Task 等文档；若运行时代码状态与本文不一致，以相应模块仓库的最新验证证据补充更新本文。
@@ -43,23 +44,23 @@
 | NFR-001 | Performance | generate 延迟 < 5s；check 延迟（单模块） < 10s / benchmark: go test -bench=. ./... | ✅ | TRACEABILITY.md |
 | NFR-002 | Observability | 门禁结果输出为结构化 JSON / output format validation: xlib-harness check --json \ / jq . | ✅ | TRACEABILITY.md |
 | NFR-003 | Security | generate 写入路径限制在 module/ 下；不读取密钥；不执行远程代码 / path traversal test: xlib-harness generate ../escape 应拒绝 | ✅ | TRACEABILITY.md |
-| NFR-004 | Dependency Boundary | 允许只读 xlib-standard 模板；禁止 observex/configx/resiliencx/schedulex/业务域模块 / dependency graph analysis: go list -deps + boundary allow/deny list | ✅ | TRACEABILITY.md |
+| NFR-004 | Dependency Boundary | 允许只读 xlib-standard 模板；禁止 github.com/ZoneCNH/xlib-standard Go import/module dependency，并禁止 observex/configx/resiliencx/schedulex/业务域模块 / dependency graph analysis: go list -deps/go list -m + boundary allow/deny list | ✅ | TRACEABILITY.md |
 
 ## 4. 任务交付清单
 
 | ID | 交付项 | 文件/挂钩 | 当前登记状态 | 来源 |
 | --- | --- | --- | --- | --- |
-| TASK-HARNESS-001 | 实现 generate 命令 | FR-001 / AC-001 | - | IMPLEMENTATION-PLAN.md |
-| TASK-HARNESS-002 | 实现 spec-lint 检查 | FR-002 / AC-002 | - | IMPLEMENTATION-PLAN.md |
-| TASK-HARNESS-003 | 实现 boundary-check 检查 | FR-003 / AC-003 | - | IMPLEMENTATION-PLAN.md |
-| TASK-HARNESS-004 | 实现 template-validate 自举 | FR-004 / AC-004 | - | IMPLEMENTATION-PLAN.md |
-| TASK-HARNESS-005 | 实现 format-check | FR-005 / AC-005 | - | IMPLEMENTATION-PLAN.md |
-| TASK-HARNESS-006 | 实现 traceability-gate | FR-006 / AC-006 | - | IMPLEMENTATION-PLAN.md |
-| TASK-XLIBHARNESS-001 | TASK-XLIBHARNESS-001: FR-001 | module/xlib-harness/tasks/TASK-XLIBHARNESS-001.md | - | tasks/TASK-XLIBHARNESS-001.md |
-| TASK-XLIBHARNESS-002 | TASK-XLIBHARNESS-002: FR-002 | module/xlib-harness/tasks/TASK-XLIBHARNESS-002.md | - | tasks/TASK-XLIBHARNESS-002.md |
-| TASK-XLIBHARNESS-003 | TASK-XLIBHARNESS-003: FR-003 | module/xlib-harness/tasks/TASK-XLIBHARNESS-003.md | - | tasks/TASK-XLIBHARNESS-003.md |
-| TASK-XLIBHARNESS-004 | TASK-XLIBHARNESS-004: FR-004 | module/xlib-harness/tasks/TASK-XLIBHARNESS-004.md | - | tasks/TASK-XLIBHARNESS-004.md |
-| TASK-XLIBHARNESS-005 | TASK-XLIBHARNESS-005: FR-005 | module/xlib-harness/tasks/TASK-XLIBHARNESS-005.md | - | tasks/TASK-XLIBHARNESS-005.md |
+| TASK-HARNESS-001 | 实现 generate 命令 | FR-001 / AC-001 | ✅ | IMPLEMENTATION-PLAN.md |
+| TASK-HARNESS-002 | 实现 spec-lint 检查 | FR-002 / AC-002 | ✅ | IMPLEMENTATION-PLAN.md |
+| TASK-HARNESS-003 | 实现 boundary-check 检查 | FR-003 / AC-003 | ✅ | IMPLEMENTATION-PLAN.md |
+| TASK-HARNESS-004 | 实现 template-validate 自举 | FR-004 / AC-004 | ✅ | IMPLEMENTATION-PLAN.md |
+| TASK-HARNESS-005 | 实现 format-check | FR-005 / AC-005 | ✅ | IMPLEMENTATION-PLAN.md |
+| TASK-HARNESS-006 | 实现 traceability-gate | FR-006 / AC-006 | ✅ | IMPLEMENTATION-PLAN.md |
+| TASK-XLIBHARNESS-001 | TASK-XLIBHARNESS-001: FR-001 | module/xlib-harness/tasks/TASK-XLIBHARNESS-001.md | ✅ | tasks/TASK-XLIBHARNESS-001.md |
+| TASK-XLIBHARNESS-002 | TASK-XLIBHARNESS-002: FR-002 | module/xlib-harness/tasks/TASK-XLIBHARNESS-002.md | ✅ | tasks/TASK-XLIBHARNESS-002.md |
+| TASK-XLIBHARNESS-003 | TASK-XLIBHARNESS-003: FR-003 | module/xlib-harness/tasks/TASK-XLIBHARNESS-003.md | ✅ | tasks/TASK-XLIBHARNESS-003.md |
+| TASK-XLIBHARNESS-004 | TASK-XLIBHARNESS-004: FR-004 | module/xlib-harness/tasks/TASK-XLIBHARNESS-004.md | ✅ | tasks/TASK-XLIBHARNESS-004.md |
+| TASK-XLIBHARNESS-005 | TASK-XLIBHARNESS-005: FR-005 | module/xlib-harness/tasks/TASK-XLIBHARNESS-005.md | ✅ | tasks/TASK-XLIBHARNESS-005.md |
 
 ## 5. 文档资产清单
 
@@ -73,9 +74,9 @@
 
 ## 6. 实现完成判定
 
-- [ ] 所有 FR 条目均有运行时代码、单元测试或契约测试覆盖。
-- [ ] 所有 BR/NFR 条目均有测试、静态检查或人工可审计证据覆盖。
-- [ ] 所有任务文档均能追溯到 FR、BR/NFR、AC 或 TC。
-- [ ] 依赖边界符合 FOUNDATION-DEPS.yaml，不引入未授权运行时依赖。
-- [ ] 运行时代码仓库 /home/xlib-harness 的 lint、typecheck、test、race、coverage 验证证据已归档。
-- [ ] 发布说明、版本标签与本目录登记状态一致。
+- [x] 所有 FR 条目均有运行时代码、单元测试或契约测试覆盖。
+- [x] 所有 BR/NFR 条目均有测试、静态检查或人工可审计证据覆盖。
+- [x] 所有任务文档均能追溯到 FR、BR/NFR、AC 或 TC。
+- [x] 依赖边界符合 FOUNDATION-DEPS.yaml，不引入未授权运行时依赖。
+- [x] 运行时代码仓库 /home/xlib-harness 的 lint、typecheck、test、race、coverage 验证证据已归档。
+- [x] 发布说明、版本标签与本目录登记状态一致。

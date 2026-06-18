@@ -6,24 +6,34 @@
     "impl_complete": 21,
     "release_published": 21,
     "live_integration": 7,
-    "factory_grade": 18
+    "factory_grade": 17
   },
   "open_blockers": {
     "source": ".foundationx/blockers.json",
-    "total": 1,
+    "total": 3,
     "by_severity": {
-      "medium": 1
+      "medium": 1,
+      "high": 2
     },
     "by_module": {
       "bootstrap": [
         "BLK-009"
+      ],
+      "ossx": [
+        "BLK-010"
+      ],
+      "kernel": [
+        "BLK-011"
       ]
     },
     "by_category": {
-      "implementation": 1
+      "implementation": 2,
+      "evidence": 1
     },
     "ids": [
-      "BLK-009"
+      "BLK-009",
+      "BLK-010",
+      "BLK-011"
     ]
   },
   "projection_guard": {

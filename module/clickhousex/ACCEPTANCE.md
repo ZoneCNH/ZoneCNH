@@ -49,7 +49,7 @@
 | AC-021 | BR-004 | 002 / 连接断开后自动重试 3 次（指数退避），超过后返回 ErrConnectionLost | - | TRACEABILITY.md |
 | AC-022 | BR-005 | 005 / Health() 多次调用结果一致，无副作用 | - | TRACEABILITY.md |
 | AC-023 | BR-006 | 002 / ctx 取消/超时时操作中断，返回 ctx.Err() | - | TRACEABILITY.md |
-| AC-024 | BR-007 | 002 / 错误消息格式为 "clickhousex: : " | - | TRACEABILITY.md |
+| AC-024 | BR-007 | 002 / 错误消息格式为 "clickhousex: <operation>: <detail>" | - | TRACEABILITY.md |
 | AC-025 | BR-008 | 006 / metrics 包含 table 标签（写入）或 query 标签（查询） | - | TRACEABILITY.md |
 | AC-026 | BR-012 | 003 / Decimal 类型映射到 decimal.Decimal，无精度丢失 | - | TRACEABILITY.md |
 
@@ -83,7 +83,7 @@
 | BR-004 | 连接断开后自动重试 3 次（指数退避），超过后返回 ErrConnectionLost | 临时故障导致服务不可用 / AC-021, TC-002 / TASK-CLICKHOUSEX-002 / ⬜ | - | TRACEABILITY.md |
 | BR-005 | Health() 必须是幂等的、无副作用的 | 健康检查自身影响系统状态 / AC-022, TC-006 / TASK-CLICKHOUSEX-005 / ⬜ | - | TRACEABILITY.md |
 | BR-006 | 所有操作必须接受 context.Context，支持取消和超时 | 操作无法被取消，goroutine 泄漏 / AC-023, FR-002/FR-003/FR-004 WHEN ctx 取消 / TASK-CLICKHOUSEX-002 / ⬜ | - | TRACEABILITY.md |
-| BR-007 | 错误消息格式："clickhousex: : " | 错误不可定位，跨模块排查困难 / AC-024, go test 错误消息断言 / TASK-CLICKHOUSEX-002 / ⬜ | - | TRACEABILITY.md |
+| BR-007 | 错误消息格式："clickhousex: <operation>: <detail>" | 错误不可定位，跨模块排查困难 / AC-024, go test 错误消息断言 / TASK-CLICKHOUSEX-002 / ⬜ | - | TRACEABILITY.md |
 | BR-008 | 可观测指标必须包含 table 标签（写入操作）或 query 标签（查询操作） | 指标不可区分，监控失效 / AC-025, metrics 测试 / TASK-CLICKHOUSEX-006 / ⬜ | - | TRACEABILITY.md |
 | BR-009 | Close() 必须是幂等的，多次调用不 panic | 重复关闭导致 panic / AC-015, TC-007 / TASK-CLICKHOUSEX-005 / ⬜ | - | TRACEABILITY.md |
 | BR-010 | InsertBatch 不自动建表，表不存在时返回明确错误 | 意外建表、写入到错误表 / AC-011, FR-004 WHEN table 不存在 / TASK-CLICKHOUSEX-004 / ⬜ | - | TRACEABILITY.md |
@@ -121,4 +121,4 @@
 
 - 当前文档只记录验收口径，不替代运行时代码仓库的最新 CI 结果。
 - 若上表存在 Pending、Draft、Blocked、Open 或未登记状态，发布前必须补充证据或在模块追溯矩阵中登记豁免理由。
-- 若 SPEC/TRACEABILITY 缺少 AC 或 TC，必须先补齐追溯矩阵，再执行发布验收。
+- SPEC/TRACEABILITY 已登记 AC/TC 主链路；当前主要缺口是运行时代码测试、CI 记录、覆盖率、race/vet/lint 与集成证据需要在 /home/clickhousex 复验后归档。

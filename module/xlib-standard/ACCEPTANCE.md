@@ -16,17 +16,17 @@
 | --- | --- | --- |
 | 文档存在性 | cd /home/ZoneCNH && test -f module/xlib-standard/FEATURES.md && test -f module/xlib-standard/ACCEPTANCE.md | FEATURES.md 与 ACCEPTANCE.md 均存在 |
 | 文档格式 | cd /home/ZoneCNH && git diff --check -- module/xlib-standard | 无尾随空格或补丁格式错误 |
-| 运行时测试 | cd /home/xlib-standard && go test ./... | 所有包测试通过 |
-| 竞态检查 | cd /home/xlib-standard && go test ./... -race -count=1 | 无 data race，测试稳定通过 |
-| 静态检查 | cd /home/xlib-standard && go vet ./... | 无 vet 问题 |
-| 覆盖率证据 | cd /home/xlib-standard && go test ./... -coverprofile=coverage.out | 覆盖率文件生成并满足模块 Spec 门槛 |
-| 依赖边界 | cd /home/xlib-standard && go list -deps ./... | 依赖不越过 FOUNDATION-DEPS.yaml 登记边界 |
+| 运行时测试 | cd /home/xlib-standard && GOWORK=off go test ./... | 所有包测试通过 |
+| 竞态检查 | cd /home/xlib-standard && GOWORK=off go test ./... -race -count=1 | 无 data race，测试稳定通过 |
+| 静态检查 | cd /home/xlib-standard && GOWORK=off go vet ./... | 无 vet 问题 |
+| 覆盖率证据 | cd /home/xlib-standard && GOWORK=off go test ./... -coverprofile=/tmp/xlib-standard-coverage.out && test -s /tmp/xlib-standard-coverage.out | 覆盖率文件生成并满足模块 Spec 门槛 |
+| 依赖边界 | cd /home/xlib-standard && GOWORK=off go list -deps ./... | 依赖不越过 FOUNDATION-DEPS.yaml 登记边界 |
 
 ## 2. AC 验收登记
 
 | ID | 验收项 | 关联要求/测试/任务 | 当前登记状态 | 来源 |
 | --- | --- | --- | --- | --- |
-| AC-000 | 管线基线清理完成，模块文档和任务入口可被规则评分器发现。 | python3 scripts/rule-scorer.py spec xlib-standard --check / module/xlib-standard/SPEC.md | - | SPEC.md |
+| AC-000 | 管线基线清理完成，模块文档和任务入口可被规则评分器发现。 | python3 scripts/rule-scorer.py spec xlib-standard / module/xlib-standard/SPEC.md | - | SPEC.md |
 | AC-001 | 必填字段缺失时配置校验返回 validation kind 错误。 | GOWORK=off go test ./pkg/templatex/ -run TestConfigValidate/Required -count=1 / pkg/templatex/config.go:23-32 | - | SPEC.md |
 | AC-002 | 负数 timeout 配置返回 validation kind 错误。 | GOWORK=off go test ./pkg/templatex/ -run TestConfigValidate/Negative -count=1 / pkg/templatex/config.go:28-31 | - | SPEC.md |
 | AC-003 | 配置脱敏后 secret 类字段显示为 ***。 | GOWORK=off go test ./pkg/templatex/ -run TestConfigSanitize -count=1 / pkg/templatex/config.go:34-39 | - | SPEC.md |
@@ -46,23 +46,23 @@
 | AC-017 | 有效参数创建 *Client。 | GOWORK=off go test ./pkg/templatex/ -run TestNew/Valid -count=1 / pkg/templatex/client.go:38-39 | - | SPEC.md |
 | AC-018 | Close 多次调用幂等且不 panic。 | GOWORK=off go test ./pkg/templatex/ -run TestClose/Idempotent -count=1 / pkg/templatex/client.go:45-68 | - | SPEC.md |
 | AC-019 | 版本信息包含 module name 和 version。 | GOWORK=off go test ./pkg/templatex/ -run TestVersion -count=1 / pkg/templatex/version.go:6-7 | - | SPEC.md |
-| AC-020 | 模板 go vet 零警告。 | GOWORK=off go vet ./pkg/templatex/ / pkg/templatex/*.go | - | SPEC.md |
-| AC-021 | 模板 go test 全部通过。 | GOWORK=off go test ./pkg/templatex/ -count=1 / pkg/templatex/*_test.go | - | SPEC.md |
-| AC-022 | 渲染输出目录结构完整。 | bash scripts/render_template.sh --module-path test --package-name test --out /tmp/out && test -f /tmp/out/go.mod / scripts/render_template.sh | - | SPEC.md |
-| AC-023 | 生成库无模板名和标准库名残留。 | bash scripts/check_rendered_template.sh /tmp/out / scripts/check_rendered_template.sh | - | SPEC.md |
+| AC-020 | 模板 go vet 零警告。 | GOWORK=off go vet ./pkg/templatex/... / pkg/templatex/... | - | SPEC.md |
+| AC-021 | 模板 go test 全部通过。 | GOWORK=off go test ./pkg/templatex/... -count=1 / pkg/templatex/*_test.go | - | SPEC.md |
+| AC-022 | 渲染输出目录结构完整。 | out_dir="$(mktemp -d)" && bash scripts/render_template.sh --module-name testlib --module-path example.com/testlib --package-name testlib --out "$out_dir" && test -f "$out_dir/go.mod" / scripts/render_template.sh | - | SPEC.md |
+| AC-023 | 生成库无模板名和标准库名残留。 | out_dir="$(mktemp -d)" && bash scripts/render_template.sh --module-name testlib --module-path example.com/testlib --package-name testlib --out "$out_dir" && bash scripts/check_rendered_template.sh "$out_dir" testlib example.com/testlib testlib / scripts/check_rendered_template.sh | - | SPEC.md |
 | AC-024 | make ci 的 17 个 gate 全部通过。 | GOWORK=off make ci / Makefile (ci: target) | - | SPEC.md |
 | AC-025 | boundary gate 检查 6 类非法引用。 | bash scripts/check_boundary.sh / scripts/check_boundary.sh | - | SPEC.md |
 | AC-026 | release manifest 生成且字段完整。 | GOWORK=off make release-check / Makefile (release-check) + scripts/generate_manifest.sh | - | SPEC.md |
 | AC-027 | release final check 校验 manifest checksum。 | GOWORK=off make release-final-check / Makefile (release-final-check) | - | SPEC.md |
-| AC-028 | goalcli audit 输出 G0-G11 gate 状态审计报告。 | GOWORK=off go run ./cmd/goalcli audit / cmd/goalcli/audit_goal.go | - | SPEC.md |
-| AC-029 | goalcli dashboard 生成符合 goalcli-dashboard schema 的仪表盘 JSON。 | GOWORK=off go run ./cmd/goalcli dashboard --out /tmp/dashboard.json / cmd/goalcli/dashboard_generate.go | - | SPEC.md |
-| AC-030 | goalcli fact 执行事实检查并输出 fact-audit 证据。 | GOWORK=off go run ./cmd/goalcli fact / cmd/goalcli/fact.go | - | SPEC.md |
-| AC-031 | goalcli schema-check 校验 contracts/ 中所有 schema 有效性。 | GOWORK=off go run ./cmd/goalcli schema-check / cmd/goalcli/schema_check.go | - | SPEC.md |
-| AC-032 | goalcli traceability 生成 FR→Code 追溯矩阵。 | GOWORK=off go run ./cmd/goalcli traceability / cmd/goalcli/traceability.go | - | SPEC.md |
-| AC-033 | goalcli governance 输出远端治理检查结果。 | GOWORK=off go run ./cmd/goalcli governance / cmd/goalcli/governance.go | - | SPEC.md |
-| AC-034 | goalcli debt 扫描技术债务并输出债务报告。 | GOWORK=off go run ./cmd/goalcli debt / cmd/goalcli/debt.go | - | SPEC.md |
-| AC-035 | goalcli adoption 检查下游采纳状态。 | GOWORK=off go run ./cmd/goalcli adoption / cmd/goalcli/adoption_check.go | - | SPEC.md |
-| AC-036 | goalcli selfimproving 触发受控递归自改进流程。 | GOWORK=off go run ./cmd/goalcli selfimproving / cmd/goalcli/selfimproving.go | - | SPEC.md |
+| AC-028 | goalcli audit 输出 G0-G11 gate 状态审计报告。 | GOWORK=off go run ./cmd/goalcli audit-goal --json / cmd/goalcli/audit_goal.go | - | SPEC.md |
+| AC-029 | goalcli dashboard 生成符合 goalcli-dashboard schema 的仪表盘 JSON。 | GOWORK=off go run ./cmd/goalcli dashboard-generate --format json > /tmp/xlib-standard-dashboard.json && test -s /tmp/xlib-standard-dashboard.json / cmd/goalcli/dashboard_generate.go | - | SPEC.md |
+| AC-030 | goalcli fact 执行事实检查并输出 fact-audit 证据。 | GOWORK=off go run ./cmd/goalcli fact audit --strict --json / cmd/goalcli/fact.go | - | SPEC.md |
+| AC-031 | goalcli schema-check 校验 contracts/ 中所有 schema 有效性。 | GOWORK=off go run ./cmd/goalcli schema-check --all --report /tmp/xlib-standard-schema-check.json --json / cmd/goalcli/schema_check.go | - | SPEC.md |
+| AC-032 | goalcli traceability 生成 FR→Code 追溯矩阵。 | GOWORK=off go run ./cmd/goalcli traceability-check --json / cmd/goalcli/traceability.go | - | SPEC.md |
+| AC-033 | goalcli governance 输出远端治理检查结果。 | GOWORK=off go run ./cmd/goalcli github-governance / cmd/goalcli/governance.go | - | SPEC.md |
+| AC-034 | goalcli debt 扫描技术债务并输出债务报告。 | GOWORK=off go run ./cmd/goalcli debt --output json / cmd/goalcli/debt.go | - | SPEC.md |
+| AC-035 | goalcli adoption 检查下游采纳状态。 | GOWORK=off go run ./cmd/goalcli adoption-check --verify --json / cmd/goalcli/adoption_check.go | - | SPEC.md |
+| AC-036 | goalcli selfimproving 触发受控递归自改进流程。 | GOWORK=off go run ./cmd/goalcli self-improving-check --strict / cmd/goalcli/selfimproving.go | - | SPEC.md |
 | AC-037 | templates/l2/ 12 个模板文件全部存在且可渲染。 | bash scripts/check_l2_templates.sh / templates/l2/ | - | SPEC.md |
 
 ## 3. TC 测试验收登记
@@ -163,8 +163,8 @@
 | BR-001 | 配置显式传入：库不得读取隐式环境配置；调用方必须显式传入配置结构 | `grep -RnE "os.Getenv\|os.LookupEnv" pkg/templatex/` 返回 0 | ✅ | SPEC.md §7 BR-001 |
 | BR-002 | 错误消息格式：公共错误消息稳定、短句化；优先断言 kind | AC-004..008 / `go test ./pkg/templatex/ -run "TestNewError\|TestWrapError\|TestIsKind\|TestContextError"` | ✅ | SPEC.md §7 BR-002 |
 | BR-003 | Metrics label 低基数（仅允许 op/kind/status） | AC-013 / `go test ./pkg/templatex/ -run TestMetricsLabels` | ✅ | SPEC.md §7 BR-003 |
-| BR-004 | 模板占位符完整性：渲染脚本必须替换所有模板占位符；缺少必要参数时必须失败 | AC-022/023 / `bash scripts/render_template.sh ... && bash scripts/check_rendered_template.sh /tmp/out` | ✅ | SPEC.md §7 BR-004 |
-| BR-005 | 生成库独立性：生成库必须可脱离标准模板仓库独立构建、测试和发布 | AC-023/024 / `bash scripts/check_rendered_template.sh /tmp/out && cd /tmp/out && go vet ./... && go test ./...` | ✅ | SPEC.md §7 BR-005 |
+| BR-004 | 模板占位符完整性：渲染脚本必须替换所有模板占位符；缺少必要参数时必须失败 | AC-022/023 / `out_dir="$(mktemp -d)" && bash scripts/render_template.sh --module-name testlib --module-path example.com/testlib --package-name testlib --out "$out_dir" && bash scripts/check_rendered_template.sh "$out_dir" testlib example.com/testlib testlib` | ✅ | SPEC.md §7 BR-004 |
+| BR-005 | 生成库独立性：生成库必须可脱离标准模板仓库独立构建、测试和发布 | AC-023/024 / `out_dir="$(mktemp -d)" && bash scripts/render_template.sh --module-name testlib --module-path example.com/testlib --package-name testlib --out "$out_dir" && bash scripts/check_rendered_template.sh "$out_dir" testlib example.com/testlib testlib && cd "$out_dir" && GOWORK=off go vet ./... && GOWORK=off go test ./...` | ✅ | SPEC.md §7 BR-005 |
 | BR-006 | 库中禁止退出进程（log.Fatal/os.Exit） | `grep -RnE "log\.Fatal\|os\.Exit" pkg/templatex/` 返回 0 / boundary gate | ✅ | SPEC.md §7 BR-006 |
 | BR-007 | Sanitize 脱敏覆盖 secret、token、key、password 类字段，并保留非敏感配置 | AC-003 / `go test ./pkg/templatex/ -run TestConfigSanitize -count=1` | ✅ | SPEC.md §7 BR-007 |
 
@@ -181,4 +181,4 @@
 
 - 当前文档只记录验收口径，不替代运行时代码仓库的最新 CI 结果。
 - 若上表存在 Pending、Draft、Blocked、Open 或未登记状态，发布前必须补充证据或在模块追溯矩阵中登记豁免理由。
-- 若 SPEC/TRACEABILITY 缺少 AC 或 TC，必须先补齐追溯矩阵，再执行发布验收。
+- SPEC/TRACEABILITY 已登记 AC/TC 主链路；当前主要缺口是 /home/xlib-standard 最新测试、race/vet、覆盖率、release manifest 与模板生成库复验证据需要归档。

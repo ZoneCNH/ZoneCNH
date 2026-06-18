@@ -3,11 +3,12 @@
 > 模块级追溯矩阵。治理规范见 [docs/governance/TRACEABILITY.md](../../docs/governance/TRACEABILITY.md)。
 
 Last-Updated: 2026-06-18
-Source: [module/ossx/SPEC.md](./SPEC.md) v1.1.1
-Scope: Matrix repair for current `FR/BR -> AC -> TC -> Task -> Evidence -> Status` closure.
+Source: [module/ossx/SPEC.md](./SPEC.md) v1.2.0
+Scope: Matrix reconciliation for current `FR/BR -> AC -> TC -> Task -> Evidence -> Status` closure and v1.1.0 implementation evidence.
 
 > 身份收敛（2026-06-18）：本矩阵随 SPEC v1.1.0 收敛为 Aliyun OSS 专用 adapter。FR-008/BR-011/AC-OSS-008/TC-009/TC-010/NFR-010 的措辞已具体化；adapter SPI / S3-compatible / 多 provider 语义已删除。
 > 节号对齐：证据列的 SPEC 节号已对齐 v1.1.0 实际章节（FR→§6, BR→§7, 接口→§8, 数据模型→§9, 配置→§10, 错误→§11, 测试→§15, 性能→§16, 可观测性→§17, 安全→§18, CI→§19, 依赖→§14）。
+> 实现状态收敛（2026-06-18）：FR/BR/TC/Task 状态按 FEATURES.md 与 ACCEPTANCE.md 中 v1.1.0 发布证据同步为 Complete；BLK-008 仅影响 factory 翻转与公开证据归档。
 
 ---
 
@@ -15,28 +16,28 @@ Scope: Matrix repair for current `FR/BR -> AC -> TC -> Task -> Evidence -> Statu
 
 | Requirement | Description | Acceptance Criteria | TC ID(s) | Task | Evidence | Status |
 |-------------|-------------|---------------------|-----------|------|----------|--------|
-| FR-001 | Construct BlobStore from module-owned config and hooks, internally constructing the Aliyun OSS adapter without direct configx coupling | AC-OSS-001 | TC-001, TC-002 | TASK-OSSX-000 | SPEC §6 FR-001, §10 配置模式, §14 依赖 | Pending |
-| FR-002 | Normalize object identity, metadata, content type, tags, and checksum fields | AC-OSS-002 | TC-003 | TASK-OSSX-001 | SPEC §6 FR-002, §9 数据模型 | Pending |
-| FR-003 | Provide Put/Get/Delete/Copy/Head/Exists/List with context cancellation and typed errors | AC-OSS-003 | TC-004 | TASK-OSSX-002 | SPEC §6 FR-003, §8 接口契约, §11 错误处理 | Pending |
-| FR-004 | Support streaming upload/download without whole-object buffering | AC-OSS-004 | TC-005 | TASK-OSSX-002 | SPEC §6 FR-004, §16 性能预算 | Pending |
-| FR-005 | Support multipart initiate, part upload, list, complete, abort, and stale cleanup | AC-OSS-005 | TC-006 | TASK-OSSX-003 | SPEC §6 FR-005, §16 性能预算 | Pending |
-| FR-006 | Enforce presigned URL operation allowlists, TTL, checksum constraints, and audit masking | AC-OSS-006 | TC-007 | TASK-OSSX-004 | SPEC §6 FR-006, §18 安全 | Pending |
-| FR-007 | Validate checksum, lifecycle, retention, and permission policies before adapter calls | AC-OSS-007 | TC-008 | TASK-OSSX-001, TASK-OSSX-004 | SPEC §6 FR-007, §11 错误处理, §18 安全 | Pending |
-| FR-008 | Isolate Aliyun OSS SDK behavior inside the adapter package (`adapters/aliyun`) and translate Aliyun OSS errors at the boundary | AC-OSS-008 | TC-009, TC-010 | TASK-OSSX-005 | SPEC §6 FR-008, §14 依赖 | Pending |
-| FR-009 | Emit metrics, traces, and audit events through injected observex-compatible hooks | AC-OSS-009 | TC-011 | TASK-OSSX-006 | SPEC §6 FR-009, §17 可观测性 | Pending |
-| FR-010 | Provide health, readiness, and idempotent close semantics using approved lifecycle conventions | AC-OSS-010 | TC-012 | TASK-OSSX-006 | SPEC §6 FR-010, §19 CI 门禁 | Pending |
-| BR-001 | Every public operation MUST accept context.Context or be construction-only | AC-OSS-003, AC-OSS-004, AC-OSS-010 | TC-004, TC-005, TC-012 | TASK-OSSX-002, TASK-OSSX-006 | SPEC §7 BR-001, §8 接口契约 | Pending |
-| BR-002 | ossx MUST NOT directly import or depend on configx | AC-OSS-001 | TC-001 | TASK-OSSX-000 | SPEC §7 BR-002, §10 配置模式, §14 依赖 | Pending |
-| BR-003 | ossx MAY use kernel lifecycle and error primitives only at approved boundaries | AC-OSS-010 | TC-012 | TASK-OSSX-000, TASK-OSSX-006 | SPEC §7 BR-003, §14 依赖 | Pending |
-| BR-004 | ossx MAY use observex only through interface-oriented hooks and contracts | AC-OSS-009 | TC-011 | TASK-OSSX-006 | SPEC §7 BR-004, §17 可观测性 | Pending |
-| BR-005 | ossx MUST NOT depend on business domains, L2.5 application code, or other storage extensions | AC-OSS-001, AC-OSS-008 | TC-001, TC-009 | TASK-OSSX-000, TASK-OSSX-005 | SPEC §7 BR-005, §14 依赖 | Pending |
-| BR-006 | List operations MUST enforce bounded page sizes and stable continuation tokens | AC-OSS-003 | TC-004 | TASK-OSSX-002 | SPEC §7 BR-006, §6 FR-003 | Pending |
-| BR-007 | Multipart abort MUST be idempotent and part validation MUST happen before complete | AC-OSS-005 | TC-006 | TASK-OSSX-003 | SPEC §7 BR-007, §6 FR-005 | Pending |
-| BR-008 | Presigned URL TTL MUST default to at most 15 minutes and operations MUST be allowlisted | AC-OSS-006 | TC-007 | TASK-OSSX-004 | SPEC §7 BR-008, §6 FR-006 | Pending |
-| BR-009 | Secrets, credentials, signatures, and tokens MUST never be logged or traced | AC-OSS-006, AC-OSS-009 | TC-007, TC-011 | TASK-OSSX-004, TASK-OSSX-006 | SPEC §7 BR-009, §17 可观测性, §18 安全 | Pending |
-| BR-010 | Checksum mismatch MUST return a typed error and clean temporary state when safe | AC-OSS-007 | TC-008 | TASK-OSSX-001, TASK-OSSX-004 | SPEC §7 BR-010, §11 错误处理 | Pending |
-| BR-011 | Aliyun OSS SDK types MUST NOT appear in public ossx APIs | AC-OSS-008 | TC-009 | TASK-OSSX-005 | SPEC §7 BR-011, §6 FR-008, §14 依赖 | Pending |
-| BR-012 | Every acceptance check MUST have a validation command or evidence note | (traceability closure, no dedicated AC row) | TC-013 | TASK-OSSX-006 | SPEC §7 BR-012, §19 CI 门禁, evidence/2026-06-12-validation.md | Pending |
+| FR-001 | Construct BlobStore from module-owned config and hooks, internally constructing the Aliyun OSS adapter without direct configx coupling | AC-OSS-001 | TC-001, TC-002 | TASK-OSSX-000 | SPEC §6 FR-001, §10 配置模式, §14 依赖 | Complete |
+| FR-002 | Normalize object identity, metadata, content type, tags, and checksum fields | AC-OSS-002 | TC-003 | TASK-OSSX-001 | SPEC §6 FR-002, §9 数据模型 | Complete |
+| FR-003 | Provide Put/Get/Delete/Copy/Head/Exists/List with context cancellation and typed errors | AC-OSS-003 | TC-004 | TASK-OSSX-002 | SPEC §6 FR-003, §8 接口契约, §11 错误处理 | Complete |
+| FR-004 | Support streaming upload/download without whole-object buffering | AC-OSS-004 | TC-005 | TASK-OSSX-002 | SPEC §6 FR-004, §16 性能预算 | Complete |
+| FR-005 | Support multipart initiate, part upload, list, complete, abort, and stale cleanup | AC-OSS-005 | TC-006 | TASK-OSSX-003 | SPEC §6 FR-005, §16 性能预算 | Complete |
+| FR-006 | Enforce presigned URL operation allowlists, TTL, checksum constraints, and audit masking | AC-OSS-006 | TC-007 | TASK-OSSX-004 | SPEC §6 FR-006, §18 安全 | Complete |
+| FR-007 | Validate checksum, lifecycle, retention, and permission policies before adapter calls | AC-OSS-007 | TC-008 | TASK-OSSX-001, TASK-OSSX-004 | SPEC §6 FR-007, §11 错误处理, §18 安全 | Complete |
+| FR-008 | Isolate Aliyun OSS SDK behavior inside the adapter package (`adapters/aliyun`) and translate Aliyun OSS errors at the boundary | AC-OSS-008 | TC-009, TC-010 | TASK-OSSX-005 | SPEC §6 FR-008, §14 依赖 | Complete |
+| FR-009 | Emit metrics, traces, and audit events through injected observex-compatible hooks | AC-OSS-009 | TC-011 | TASK-OSSX-006 | SPEC §6 FR-009, §17 可观测性 | Complete |
+| FR-010 | Provide health, readiness, and idempotent close semantics using approved lifecycle conventions | AC-OSS-010 | TC-012 | TASK-OSSX-006 | SPEC §6 FR-010, §19 CI 门禁 | Complete |
+| BR-001 | Every public operation MUST accept context.Context or be construction-only | AC-OSS-003, AC-OSS-004, AC-OSS-010 | TC-004, TC-005, TC-012 | TASK-OSSX-002, TASK-OSSX-006 | SPEC §7 BR-001, §8 接口契约 | Complete |
+| BR-002 | ossx MUST NOT directly import or depend on configx | AC-OSS-001 | TC-001 | TASK-OSSX-000 | SPEC §7 BR-002, §10 配置模式, §14 依赖 | Complete |
+| BR-003 | ossx MAY use kernel lifecycle and error primitives only at approved boundaries | AC-OSS-010 | TC-012 | TASK-OSSX-000, TASK-OSSX-006 | SPEC §7 BR-003, §14 依赖 | Complete |
+| BR-004 | ossx MAY use observex only through interface-oriented hooks and contracts | AC-OSS-009 | TC-011 | TASK-OSSX-006 | SPEC §7 BR-004, §17 可观测性 | Complete |
+| BR-005 | ossx MUST NOT depend on business domains, L2.5 application code, or other storage extensions | AC-OSS-001, AC-OSS-008 | TC-001, TC-009 | TASK-OSSX-000, TASK-OSSX-005 | SPEC §7 BR-005, §14 依赖 | Complete |
+| BR-006 | List operations MUST enforce bounded page sizes and stable continuation tokens | AC-OSS-003 | TC-004 | TASK-OSSX-002 | SPEC §7 BR-006, §6 FR-003 | Complete |
+| BR-007 | Multipart abort MUST be idempotent and part validation MUST happen before complete | AC-OSS-005 | TC-006 | TASK-OSSX-003 | SPEC §7 BR-007, §6 FR-005 | Complete |
+| BR-008 | Presigned URL TTL MUST default to at most 15 minutes and operations MUST be allowlisted | AC-OSS-006 | TC-007 | TASK-OSSX-004 | SPEC §7 BR-008, §6 FR-006 | Complete |
+| BR-009 | Secrets, credentials, signatures, and tokens MUST never be logged or traced | AC-OSS-006, AC-OSS-009 | TC-007, TC-011 | TASK-OSSX-004, TASK-OSSX-006 | SPEC §7 BR-009, §17 可观测性, §18 安全 | Complete |
+| BR-010 | Checksum mismatch MUST return a typed error and clean temporary state when safe | AC-OSS-007 | TC-008 | TASK-OSSX-001, TASK-OSSX-004 | SPEC §7 BR-010, §11 错误处理 | Complete |
+| BR-011 | Aliyun OSS SDK types MUST NOT appear in public ossx APIs | AC-OSS-008 | TC-009 | TASK-OSSX-005 | SPEC §7 BR-011, §6 FR-008, §14 依赖 | Complete |
+| BR-012 | Every acceptance check MUST have a validation command or evidence note | (traceability closure, no dedicated AC row) | TC-013 | TASK-OSSX-006 | SPEC §7 BR-012, §19 CI 门禁, evidence/2026-06-12-validation.md | Complete |
 
 ---
 
@@ -81,17 +82,17 @@ Scope: Matrix repair for current `FR/BR -> AC -> TC -> Task -> Evidence -> Statu
 
 ## 4. Task Closure Registry
 
-> `module/ossx/tasks/` 当前包含 7 个物理任务文件。以下状态表示实现交付状态；当前分支完成治理闭合与身份收敛，代码实现仍待后续任务执行。
+> `module/ossx/tasks/` 当前包含 7 个物理任务文件。以下状态表示 v1.1.0 实现交付状态；factory 翻转仍受 BLK-008 公开证据归档约束。
 
 | Task | Closure Scope | Covered Requirements | Verification Evidence | Status |
 |------|---------------|----------------------|-----------------------|--------|
-| TASK-OSSX-000 | Skeleton, construction, config validation, dependency guards | FR-001, BR-002, BR-003, BR-005, BR-012 | tasks/TASK-OSSX-000.md, prompt/PROMPT-OSSX-000.md, TC-001, TC-002 | Pending |
-| TASK-OSSX-001 | Object identity, metadata, checksum, and policy model validation | FR-002, FR-007, BR-010 | tasks/TASK-OSSX-001.md, prompt/PROMPT-OSSX-001.md, TC-003, TC-008 | Pending |
-| TASK-OSSX-002 | BlobStore basic operations, streaming, list bounds, context propagation | FR-003, FR-004, BR-001, BR-006 | tasks/TASK-OSSX-002.md, prompt/PROMPT-OSSX-002.md, TC-004, TC-005 | Pending |
-| TASK-OSSX-003 | Multipart lifecycle, validation, completion, abort, stale cleanup | FR-005, BR-007 | tasks/TASK-OSSX-003.md, prompt/PROMPT-OSSX-003.md, TC-006 | Pending |
-| TASK-OSSX-004 | Presigned URL and permission policy enforcement with sanitized audit evidence | FR-006, FR-007, BR-008, BR-009, BR-010 | tasks/TASK-OSSX-004.md, prompt/PROMPT-OSSX-004.md, TC-007, TC-008 | Pending |
-| TASK-OSSX-005 | Aliyun OSS adapter isolation (SDK types behind ossx typed contracts) | FR-008, BR-005, BR-011 | tasks/TASK-OSSX-005.md, prompt/PROMPT-OSSX-005.md, TC-009, TC-010 | Pending |
-| TASK-OSSX-006 | Observability, health, close, release evidence, and traceability closure | FR-009, FR-010, BR-001, BR-003, BR-004, BR-009, BR-012 | tasks/TASK-OSSX-006.md, prompt/PROMPT-OSSX-006.md, TC-011, TC-012, TC-013 | Pending |
+| TASK-OSSX-000 | Skeleton, construction, config validation, dependency guards | FR-001, BR-002, BR-003, BR-005, BR-012 | tasks/TASK-OSSX-000.md, prompt/PROMPT-OSSX-000.md, TC-001, TC-002 | Complete |
+| TASK-OSSX-001 | Object identity, metadata, checksum, and policy model validation | FR-002, FR-007, BR-010 | tasks/TASK-OSSX-001.md, prompt/PROMPT-OSSX-001.md, TC-003, TC-008 | Complete |
+| TASK-OSSX-002 | BlobStore basic operations, streaming, list bounds, context propagation | FR-003, FR-004, BR-001, BR-006 | tasks/TASK-OSSX-002.md, prompt/PROMPT-OSSX-002.md, TC-004, TC-005 | Complete |
+| TASK-OSSX-003 | Multipart lifecycle, validation, completion, abort, stale cleanup | FR-005, BR-007 | tasks/TASK-OSSX-003.md, prompt/PROMPT-OSSX-003.md, TC-006 | Complete |
+| TASK-OSSX-004 | Presigned URL and permission policy enforcement with sanitized audit evidence | FR-006, FR-007, BR-008, BR-009, BR-010 | tasks/TASK-OSSX-004.md, prompt/PROMPT-OSSX-004.md, TC-007, TC-008 | Complete |
+| TASK-OSSX-005 | Aliyun OSS adapter isolation (SDK types behind ossx typed contracts) | FR-008, BR-005, BR-011 | tasks/TASK-OSSX-005.md, prompt/PROMPT-OSSX-005.md, TC-009, TC-010 | Complete |
+| TASK-OSSX-006 | Observability, health, close, release evidence, and traceability closure | FR-009, FR-010, BR-001, BR-003, BR-004, BR-009, BR-012 | tasks/TASK-OSSX-006.md, prompt/PROMPT-OSSX-006.md, TC-011, TC-012, TC-013 | Complete |
 
 ---
 
@@ -110,6 +111,8 @@ Scope: Matrix repair for current `FR/BR -> AC -> TC -> Task -> Evidence -> Statu
 
 ## §3 非功能需求追溯（NFR）
 
+> NFR 表保留独立性能/质量预算追踪；未在 v1.1.0 验收证据中闭合的性能预算保持 Pending，不覆盖 FR/BR/AC/TC 的实现完成状态。
+
 | Requirement | Description | 目标值 | 验证方式 | Task | Status |
 | --- | --- | --- | --- | --- | --- |
 | NFR-001 | Put/Get 延迟（1MB） | < 50ms | Benchmark | - | Pending |
@@ -127,7 +130,8 @@ Scope: Matrix repair for current `FR/BR -> AC -> TC -> Task -> Evidence -> Statu
 
 | Date | Version | Change |
 |------|---------|--------|
-| 2026-06-18 | 3.1 | Source 版本号同步至 SPEC v1.1.1。矩阵 Status=Pending 语义澄清：指"完整实现 + 真实 Aliyun adapter（TASK-OSSX-005）+ arbiter 门禁"未完成，与 `.foundationx/status/index.json` 的 `impl=true`（v1.0.2-alpha 骨架已交付、BLK-010 resolved）不矛盾——骨架非完整实现。 |
+| 2026-06-18 | 3.2 | 按 FEATURES.md / ACCEPTANCE.md 的 v1.1.0 发布证据同步 FR/BR/Task 状态为 Complete；BLK-008 保留为 factory 归档条件，NFR 性能预算继续独立追踪。 |
+| 2026-06-18 | 3.1 | Source 版本号同步至 SPEC v1.1.1；当时矩阵 Pending 用作实现交付待闭合标记，后续 v3.2 已按 v1.1.0 发布证据收敛。 |
 | 2026-06-18 | 3.0 | 身份收敛为 Aliyun OSS 专用 adapter；AC 命名统一为 AC-OSS-xxx（与 SPEC §6 对齐，删除无 SPEC 对应的 AC-011，BR-012 改由 TC-013 验证）；证据列 SPEC 节号对齐 v1.1.0（FR→§6, BR→§7, 测试→§15 等）；FR-008/BR-011/AC-OSS-008/TC-009/TC-010/NFR-010 措辞 Aliyun 化。 |
 | 2026-06-12 | 2.1 | Replaced stale 8-FR matrix with current 10-FR/12-BR/13-TC/7-task handoff traceability. |
 | 2026-06-12 | 2.0 | Repaired ossx matrix to cover every SPEC FR/BR with AC, TC, Task, Evidence and closed Status. |

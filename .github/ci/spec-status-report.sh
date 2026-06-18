@@ -33,8 +33,8 @@ for spec_file in "$SPEC_DIR"/*/SPEC.md; do
   content=$(cat "$spec_file")
 
   section_count=$(echo "$content" | grep -cP "^## \d+\." || true)
-  fr_count=$(echo "$content" | grep -oP "FR-\d+" | sort -u | wc -l)
-  br_count=$(echo "$content" | grep -oP "BR-\d+" | sort -u | wc -l)
+  fr_count=$({ echo "$content" | grep -oP "FR-\d+" || true; } | sort -u | wc -l)
+  br_count=$({ echo "$content" | grep -oP "BR-\d+" || true; } | sort -u | wc -l)
 
   if [[ $section_count -eq 23 ]]; then
     status="✅"

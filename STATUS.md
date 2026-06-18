@@ -21,7 +21,7 @@
 | [xlib-harness](https://github.com/ZoneCNH/xlib-harness)   | v0.1.0      | spec/code/release      | factory-ready   | spec=98 mat=100 tsk=98 pln=100 prm=100 cod=100   | 模块生成器与门禁执行器：generate/scaffold、spec-lint、boundary-check、traceability-gate；✅ CI 已部署；✅ GitHub Release v0.1.0 已发布                                                    |
 | [xlib-evidence](https://github.com/ZoneCNH/xlib-evidence) | v0.1.0      | spec/code/release      | factory-ready   | spec=98 mat=100 tsk=100 pln=100 prm=100 cod=100  | 证据收集与发布运行时：collect-coverage、generate-manifest、validate-manifest、report；✅ CI 已部署；✅ GitHub Release v0.1.0 已发布                                                       |
 | [xlibgate](https://github.com/ZoneCNH/xlibgate)           | v1.0.0      | spec/code/release      | factory-ready   | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | check/l2/trust 三组门禁；✅ .repo-contract.yaml，v1.0.0 已对齐（此前误标 v1.1.1）；trust CLI 已实现                                                                                                 |
-| [kernel](https://github.com/ZoneCNH/kernel)               | v1.0.0      | spec/code/release      | factory-ready   | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | L0 原语 / 12 子包 / stdlib-only；✅ .repo-contract.yaml，v1.0.0 已对齐，建议 API 冻结                                                                                                               |
+| [kernel](https://github.com/ZoneCNH/kernel)               | v1.0.0      | spec/code/release      | non-factory     | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | L0 原语 / 12 子包 / stdlib-only；✅ .repo-contract.yaml，v1.0.0 已对齐；BLK-011 open，factory evidence 尚未闭合                                                                                     |
 | [configx](https://github.com/ZoneCNH/configx)             | v1.0.0      | spec/code/release      | factory-ready   | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | 配置管理；✅ v1.0.0 GitHub Release 已发布；此前误标 v0.1.4 已修正；✅ .repo-contract.yaml                                                                                                           |
 | [observex](https://github.com/ZoneCNH/observex)           | v0.3.1      | spec/code/release      | factory-ready   | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | 可观测性；✅ v0.3.1 GitHub Release 已发布；此前误标 v1.0.0 已修正                                                                                                                                   |
 | [testkitx](https://github.com/ZoneCNH/testkitx)           | v0.4.0      | spec/code/release      | test-only       | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | Fake / Fixture / Golden / Contract / Leak / Boundary / Manifest 测试工具包；✅ v0.4.0 GitHub Release 已发布；test-only；factory grade 不适用                                                        |
@@ -33,12 +33,12 @@
 | [natsx](https://github.com/ZoneCNH/natsx)                 | v1.0.0      | spec/code/release/live | factory-ready   | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | NATS L2 adapter；✅ .repo-contract.yaml；真实 dev auth live gate 已验证；GitHub Release 已发布                                                                          |
 | [postgresx](https://github.com/ZoneCNH/postgresx)         | v1.0.0      | spec/code/release/live | factory-ready   | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | PostgreSQL；✅ .repo-contract.yaml；live integration 通过；GitHub Release 已发布                                                                                         |
 | [taosx](https://github.com/ZoneCNH/taosx)                 | v1.0.1      | spec/code/release/live | factory-ready   | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | TDengine L2 adapter；真实 taosWS WebSocket 集成已验证；GitHub Release 已发布                                                                                              |
-| [ossx](https://github.com/ZoneCNH/ossx)                   | v1.0.2-alpha | spec/code/release      | non-factory     | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | Aliyun OSS L2 adapter；v1.0.2-alpha 已交付 pkg/ossx 源码（8 文件/34KB/12 测试/stdlib-only/import 可编译）；BLK-010 resolved（2026-06-18 联网复核：前提"0 pkg 源码"被推翻）；非 factory（真实 Aliyun adapter + integration evidence 仍缺，由 TASK-OSSX-005 跟踪） |
+| [ossx](https://github.com/ZoneCNH/ossx)                   | v1.0.2-alpha | spec/code/release      | non-factory     | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | Aliyun OSS L2 adapter；v1.0.2-alpha 已交付 pkg/ossx 源码（8 文件/34KB/12 测试/stdlib-only/import 可编译）；BLK-010 open；非 factory（真实 Aliyun adapter + integration evidence 仍缺，由 TASK-OSSX-005 跟踪） |
 | [clickhousex](https://github.com/ZoneCNH/clickhousex)     | v1.0.1      | spec/code/release/live  | factory-ready   | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | ClickHouse；OLAP 查询、批量写入；GitHub Release 已发布；CI 已部署+运行(Docker ClickHouse)                                                                                  |
 | [contracts](https://github.com/ZoneCNH/contracts)         | v1.2.0 | spec/code/release       | factory-ready   | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | 跨域稳定端口/事件/DTO 契约（含 §8.4 Binance C/S ingestion contract）；spec-only；✅ GitHub Release v1.2.0 已发布                                                                                                                       |
 | [transportx](https://github.com/ZoneCNH/transportx)       | v1.1.1-spec | spec/code/release       | factory-ready   | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | 应用通信底座规格基线；spec-only；✅ GitHub Release v1.1.1-spec 已发布                                                                                                                            |
 
-> ✅ **版本 / release 注记**：公开文档是投影层；版本、release 与 factory 状态以 `.foundationx/status/index.json` + `.foundationx/blockers.json` 为准。当前 21-module projection 中 21/21 已发布 GitHub Release tag，21/21 impl；1 open blocker（BLK-009 bootstrap），Foundation 整体非 factory grade（ossx factory=false 保持，真实 Aliyun adapter 待补）。
+> ✅ **版本 / release 注记**：公开文档是投影层；版本、release 与 factory 状态以 `.foundationx/status/index.json` + `.foundationx/blockers.json` 为准。当前 21-module projection 中 21/21 已发布 GitHub Release tag，21/21 impl；3 open blockers（BLK-009 bootstrap、BLK-010 ossx、BLK-011 kernel），Foundation 整体 non-factory。
 
 > **成熟度语义说明（2026-06-14 v2 Trust Alignment）**：上表"进度"反映本仓库 Spec 管线评分（spec→code），不代表可投产等级（factory grade）。下表提供多维度成熟度视图；RELEASE=❌ 或存在 open blocker 的模块不得投影为 FACTORY=✅。
 
@@ -51,7 +51,7 @@
 | xlib-harness                  |      ✅       |                ✅                 |                ✅                |           N/A           |           ✅           |             N/A             |                      N/A                      |   ✅    | v0.1.0; GitHub Release 已发布; generate/scaffold/spec-lint/boundary/traceability; CI 已部署                                                                  |
 | xlib-evidence                 |      ✅       |                ✅                 |                ✅                |           N/A           |           ✅           |             N/A             |                      N/A                      |   ✅    | v0.1.0; GitHub Release 已发布; evidence collect/generate/validate/report; CI 已部署                                                                          |
 | xlibgate                      |      ✅       |                ✅                 |                ✅                |           N/A           |           ✅           |             N/A             |                      N/A                      |   ✅    | v1.0.0; CI 已部署; 8 workflows; 此前误标 v1.1.1                                                                                                            |
-| kernel                        |      ✅       |                ✅                 |                ✅                |           N/A           |           ✅           |             ✅              |                      N/A                      |   ✅    | v1.0.0; 4 CI workflows; 13 下游消费者; API 冻结建议                                                                                                        |
+| kernel                        |      ✅       |                ✅                 |                ✅                |           N/A           |           ✅           |             ✅              |                      N/A                      |   ❌    | v1.0.0; 4 CI workflows; 13 下游消费者; BLK-011 open，factory evidence 尚未闭合                                                                             |
 | configx                       |      ✅       |                ✅                 |                ✅                |           N/A           |           ✅           |             ✅              |                      N/A                      |   ✅    | v1.0.0; GitHub Release 已发布; 4 CI workflows; 2 下游消费者; 此前误标 v0.1.4 已修正                                                                        |
 | observex                      |      ✅       |                ✅                 |                ✅                |           N/A           |           ✅           |             ✅              |                      N/A                      |   ✅    | v0.3.1; GitHub Release 已发布; 4 CI workflows; 2 下游消费者; 此前误标 v1.0.0 已修正                                                                        |
 | testkitx                      |      ✅       |                ✅                 |                ✅                |           N/A           |           ✅           |             N/A             |                      N/A                      |   N/A   | v0.4.0; GitHub Release 已发布; 4 CI workflows; test-only — factory grade 不适用                                                                            |
@@ -63,7 +63,7 @@
 | natsx                         |      ✅       |                ✅                 |                ✅                |           ✅            |           ✅           |             N/A             |                      N/A                      |   ✅    | v1.0.0; GitHub Release 已发布; 6 CI workflows; dev auth live gate 已验证                                                               |
 | postgresx                     |      ✅       |                ✅                 |                ✅                |           ✅            |           ✅           |             N/A             |                      N/A                      |   ✅    | v1.0.0; GitHub Release 已发布; 3 CI workflows; live integration 通过                                                              |
 | taosx                         |      ✅       |                ✅                 |                ✅                |           ✅            |           ✅           |             N/A             |                      N/A                      |   ✅    | v1.0.1; GitHub Release 已发布; 8 CI workflows; 真实 taosWS WebSocket 集成已验证 |
-| ossx                          |      ✅       |                ✅                 |                ✅                |           ❌            |           ✅           |             N/A             |                      N/A                      |   ❌    | v1.0.2-alpha; pkg/ossx 源码已交付(8文件/34KB/12测试/import可编译); BLK-010 resolved; 非 factory(真实 Aliyun adapter 待补)                |
+| ossx                          |      ✅       |                ✅                 |                ✅                |           ❌            |           ✅           |             N/A             |                      N/A                      |   ❌    | v1.0.2-alpha; pkg/ossx 源码已交付(8文件/34KB/12测试/import可编译); BLK-010 open; 非 factory(真实 Aliyun adapter 与 integration evidence 待补) |
 | clickhousex                   |      ✅       |                ✅                 |                ✅                |           ✅            |           ✅           |             N/A             |                      N/A                      |   ✅    | v1.0.1; GitHub Release 已发布; CI 已部署+运行(Docker ClickHouse)                                                  |
 | contracts                     |      ✅       |                ✅                 |                ✅                |           N/A           |           ✅           |             ✅              |                      N/A                      |   ✅    | v1.2.0; GitHub Release 已发布; spec-only; 跨域稳定端口/事件/DTO 契约（含 §8.4 Ingestion Contract）                                                     |
 | transportx                    |      ✅       |                ✅                 |                ✅                |           N/A           |           ✅           |             N/A             |                      N/A                      |   ✅    | v1.1.1-spec; GitHub Release 已发布; spec-only; 应用通信底座规格基线                                                      |
@@ -301,20 +301,20 @@
 组件总数: 75    已有: 52    已创建: 23    平均进度: 57%
 
 进度分布:
-  ███░ ≥80% ██████████████████████████████████████████      47 个 (63%)
+  ███░ ≥80% ██████████████████████████████████████████      48 个 (64%)
   ██░░ 30%  ░                                                 1 个 ( 1%)
   █░░░ 25%  ░                                                 1 个 ( 1%)
   ░░░░  5%  █████████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░  24 个 (32%)
   未标注    ██░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   1 个 ( 1%)
 
-版本覆盖: 有版本号 71 个 (95%)    无版本号 4 个 (5%)
+版本覆盖: 有版本号 72 个 (96%)    无版本号 3 个 (4%)
 ```
 
 ### 按域统计
 
 | 域                     | 总数   | 已有   | 已创建 | 平均进度                           | 有版本号                                              |
 | ---------------------- | ------ | ------ | ------ | ---------------------------------- | ----------------------------------------------------- |
-| 基座                   | 20     | 20     | 0      | Spec→Code 投影完成；factory grade 闭合 | 20                                                    |
+| 基座                   | 20     | 20     | 0      | Spec→Code 投影完成；Foundation 整体非 factory | 20                                                    |
 | L2.5 领域共享层        | 5      | 5      | 0      | 100%                               | 5 (全部 5/5 factory grade；live/soak N/A)            |
 | 数据域 · 行情 SDK      | 12     | 12     | 0      | 80%                                | 12 (全部 v0.1.1)                                      |
 | 数据域 · 行情 C/S Module | 1     | 0      | 1      | 5%                                 | 1 (v0.1.0；Spec Approved)                                |
@@ -338,9 +338,9 @@
 
 - 组件：19 个（不含 L2.5；机器事实层另将 `domainx` 作为 L2.5 模块计入 20-module projection）；
   Spec→Code 管线投影已闭合，但不等于 Foundation 整体 factory grade。
- - 核心模块全部 21/21 GitHub Release tag 已发布，21/21 impl，1 open blocker（BLK-009 bootstrap），Foundation 整体非 factory grade（ossx factory=false 保持，真实 Aliyun adapter 待补）。
+ - 核心模块全部 21/21 GitHub Release tag 已发布，21/21 impl，3 open blockers（BLK-009 bootstrap、BLK-010 ossx、BLK-011 kernel），Foundation 整体 non-factory。
  - 存储层全部模块 GitHub Release 已发布、CI 已部署、live integration 已验证。
- - **阻塞项**：BLK-009 open（bootstrap）；BLK-010 已于 2026-06-18 resolved（ossx v1.0.2-alpha 源码已交付）；9 项历史 BLK 已闭合。剩余非阻塞工作：ossx 真实 Aliyun adapter（TASK-OSSX-005）。
+ - **阻塞项**：BLK-009 open（bootstrap）；BLK-010 open（ossx 真实 Aliyun adapter 与 integration evidence）；BLK-011 open（kernel factory evidence）。BLK-001~008 历史项已闭合。
 
 ### 🟢 L2.5 领域共享层（健康）
 
@@ -450,7 +450,7 @@
 | 检查项           | README | ARCHITECTURE | STATUS    | 一致性 |
 | ---------------- | ------ | ------------ | --------- | ------ |
 | 组件总数         | 73     | 73           | 73        | ✅     |
-| market-data 数量 | 13     | 13          | 13        | ✅     |
+| market-data 数量 | 14     | 14          | 14        | ✅     |
 | macro-data 数量  | 10     | 10           | 10        | ✅     |
 | L2.5 组件        | 5      | 5            | 5         | ✅     |
 | 分析域组件       | 8      | 8            | 8         | ✅     |
