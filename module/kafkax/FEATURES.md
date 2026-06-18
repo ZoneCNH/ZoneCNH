@@ -1,8 +1,8 @@
 # kafkax 完整实现清单
 
 - Status: Generated from current module SSOT
-- Last-Updated: 2026-06-18
-- Module-Version: v1.0.2
+- Last-Updated: 2026-06-19
+- Module-Version: v1.1.0
 - Module-State: 已发布
 - Layer: L2 基础设施适配器
 - Runtime-Repo: /home/kafkax
@@ -61,12 +61,12 @@
 
 | ID | 交付项 | 文件/挂钩 | 当前登记状态 | 来源 |
 | --- | --- | --- | --- | --- |
-| TASK-KAFKAX-001 | TASK-KAFKAX-001: Producer Send/SendBatch + acks + retry | module/kafkax/tasks/TASK-KAFKAX-001.md | - | tasks/TASK-KAFKAX-001.md |
-| TASK-KAFKAX-002 | TASK-KAFKAX-002: Consumer Subscribe/Poll + ctx | module/kafkax/tasks/TASK-KAFKAX-002.md | - | tasks/TASK-KAFKAX-002.md |
-| TASK-KAFKAX-003 | TASK-KAFKAX-003: 手动 offset 提交 + Close 边界 + 无自动提交 | module/kafkax/tasks/TASK-KAFKAX-003.md | - | tasks/TASK-KAFKAX-003.md |
-| TASK-KAFKAX-004 | TASK-KAFKAX-004: 幂等 Health + sanitized errors | module/kafkax/tasks/TASK-KAFKAX-004.md | - | tasks/TASK-KAFKAX-004.md |
-| TASK-KAFKAX-005 | TASK-KAFKAX-005: Consumer 配置校验 | module/kafkax/tasks/TASK-KAFKAX-005.md | - | tasks/TASK-KAFKAX-005.md |
-| TASK-KAFKAX-006 | TASK-KAFKAX-006: CI + Release 基线 | module/kafkax/tasks/TASK-KAFKAX-006.md | - | tasks/TASK-KAFKAX-006.md |
+| TASK-KAFKAX-001 | TASK-KAFKAX-001: Producer Send/SendBatch + acks + retry | module/kafkax/tasks/TASK-KAFKAX-001.md | ✅ | tasks/TASK-KAFKAX-001.md |
+| TASK-KAFKAX-002 | TASK-KAFKAX-002: Consumer Subscribe/Poll + ctx | module/kafkax/tasks/TASK-KAFKAX-002.md | ✅ | tasks/TASK-KAFKAX-002.md |
+| TASK-KAFKAX-003 | TASK-KAFKAX-003: 手动 offset 提交 + Close 边界 + 无自动提交 | module/kafkax/tasks/TASK-KAFKAX-003.md | ✅ | tasks/TASK-KAFKAX-003.md |
+| TASK-KAFKAX-004 | TASK-KAFKAX-004: 幂等 Health + sanitized errors | module/kafkax/tasks/TASK-KAFKAX-004.md | ✅ | tasks/TASK-KAFKAX-004.md |
+| TASK-KAFKAX-005 | TASK-KAFKAX-005: Consumer 配置校验 | module/kafkax/tasks/TASK-KAFKAX-005.md | ✅ | tasks/TASK-KAFKAX-005.md |
+| TASK-KAFKAX-006 | TASK-KAFKAX-006: CI + Release 基线 | module/kafkax/tasks/TASK-KAFKAX-006.md | ✅ v1.1.0 (PR#16) | tasks/TASK-KAFKAX-006.md |
 
 ## 5. 文档资产清单
 
@@ -80,9 +80,9 @@
 
 ## 6. 实现完成判定
 
-- [ ] 所有 FR 条目均有运行时代码、单元测试或契约测试覆盖。
-- [ ] 所有 BR/NFR 条目均有测试、静态检查或人工可审计证据覆盖。
-- [ ] 所有任务文档均能追溯到 FR、BR/NFR、AC 或 TC。
-- [ ] 依赖边界符合 FOUNDATION-DEPS.yaml，不引入未授权运行时依赖。
-- [ ] 运行时代码仓库 /home/kafkax 的 lint、typecheck、test、race、coverage 验证证据已归档。
-- [ ] 发布说明、版本标签与本目录登记状态一致。
+- [x] 所有 FR 条目均有运行时代码、单元测试或契约测试覆盖（pkg/kafkax 94.5% 覆盖）。
+- [x] 所有 BR/NFR 条目均有测试、静态检查或人工可审计证据覆盖（lint 0 issues / secret scan passed）。
+- [x] 所有任务文档均能追溯到 FR、BR/NFR、AC 或 TC。
+- [x] 依赖边界符合 FOUNDATION-DEPS.yaml（pkg/kafkax 仅 stdlib + segmentio/kafka-go）。
+- [x] 运行时代码仓库 /home/kafkax 的 lint、vet、test、race、coverage 验证证据已归档（v1.1.0, 2026-06-18）。
+- [x] 发布说明、版本标签与本目录登记状态一致（GitHub release v1.1.0）。
