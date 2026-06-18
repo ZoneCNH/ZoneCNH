@@ -131,7 +131,7 @@ test-only，不参与生产运行时。
 | xlib-standard | [SPEC.md](./xlib-standard/SPEC.md) · [tasks/](./xlib-standard/tasks/) | 标准事实源、Go Reference Template（声明式标准定义，15 FR + goalcli，12 tasks）                                                                   |
 | xlib-harness  | [SPEC.md](./xlib-harness/SPEC.md) · [goal.md](./xlib-harness/goal.md) · [TRACEABILITY.md](./xlib-harness/TRACEABILITY.md) · [tasks/](./xlib-harness/tasks/) | 模块生成器与门禁执行器：generate/scaffold、spec-lint、boundary-check、format-check、traceability-gate、template-validate（6 FR，6 TC） |
 | xlib-evidence | [SPEC.md](./xlib-evidence/SPEC.md) · [goal.md](./xlib-evidence/goal.md) · [TRACEABILITY.md](./xlib-evidence/TRACEABILITY.md) · [tasks/](./xlib-evidence/tasks/) | 证据收集与发布运行时：collect-coverage、generate-manifest、validate-manifest、remote-evidence、evidence-report（5 FR，5 TC） |
-| xlibgate      | [SPEC.md](./xlibgate/SPEC.md) · [tasks/](./xlibgate/tasks/)           | check imports/gomod/baseline/release/all、输出格式、l2 validate-manifest/plan/check-contracts/check-evidence/release-check（11 FR，10 tasks） |
+| xlibgate      | [goal.md](./xlibgate/goal.md) · [SPEC.md](./xlibgate/SPEC.md) · [FEATURES.md](./xlibgate/FEATURES.md) · [ACCEPTANCE.md](./xlibgate/ACCEPTANCE.md) · [TRACEABILITY.md](./xlibgate/TRACEABILITY.md) · [tasks/](./xlibgate/tasks/) | check/l2/trust 三组门禁：imports/gomod/baseline/release/all、l2 validate/plan/contracts/evidence/release-check、trust identity/template-residue/release-consistency/maturity/import-boundary/testkit-prod-import/secret-redaction/fleet-status（19 FR，10 BR，18 NFR，22 AC，29 TC，19 tasks；/home/xlibgate@98529ca 对齐 v1.0.0） |
 
 ---
 

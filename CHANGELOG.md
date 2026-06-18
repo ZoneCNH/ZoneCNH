@@ -17,6 +17,7 @@
 ### Changed
 
 - 固化模块级 Goal 文档路径为 `module/{module}/goal.md`，禁止 `goal/` 目录和 `goal/1.md` 槽位。
+- xlibgate 发布同步文档对齐 `/home/xlibgate@98529ca` 证据快照：公开状态表、模块索引、实现清单、验收清单与追溯矩阵统一投影 v1.0.0 release-preflight/manifest template 状态；trust gate FR/BR 标记为已实现，NFR benchmark 缺口保留为待验证。
 - **STATUS.md / README.md / ARCHITECTURE.md 三文档全量交叉审计闭合**（52 PRs, #385-#439）。审计日期 2026-06-15，最终 audit-status.py (v2 cross-dimension) 24/24 PASS，78 repos 0 404。详情见 `docs/solutions/three-doc-audit-20260615.md`。
 
   > 验证：`gh pr list --repo ZoneCNH/ZoneCNH --state merged --json number --jq '[.[] | select(.number >= 385 and .number <= 439)] | length'` → 52
