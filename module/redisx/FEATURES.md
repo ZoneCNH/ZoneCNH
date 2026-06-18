@@ -2,13 +2,13 @@
 
 - Status: Generated from current module SSOT
 - Last-Updated: 2026-06-18
-- Module-Version: v1.0.1
+- Module-Version: v1.0.2
 - Module-State: 已发布
 - Layer: L2 基础设施适配器
 - Runtime-Repo: /home/redisx
 - Source: goal.md, SPEC.md, TRACEABILITY.md, IMPLEMENTATION-PLAN.md, tasks/
 
-> 本清单用于约束 redisx 的完整实现范围。条目来自本目录已有 Spec、Traceability、Plan、Task 等文档；若运行时代码状态与本文不一致，以相应模块仓库的最新验证证据补充更新本文。
+> 本清单用于约束 redisx 的完整实现范围。条目来自本目录已有 Spec、Traceability、Plan、Task 等文档；截至 2026-06-18，运行时代码仓库 `/home/redisx` 已以 v1.0.2 本地验收、Docker 发布门禁、L2-T2 证据和强制安全扫描补充闭合。
 
 ## 1. 模块边界清单
 
@@ -62,16 +62,16 @@
 
 | ID | 交付项 | 文件/挂钩 | 当前登记状态 | 来源 |
 | --- | --- | --- | --- | --- |
-| TASK-REDISX-000 | TASK-REDISX-000 | module/redisx/tasks/TASK-REDISX-000.md | - | tasks/TASK-REDISX-000.md |
-| TASK-REDISX-001 | TASK-REDISX-001 | module/redisx/tasks/TASK-REDISX-001.md | - | tasks/TASK-REDISX-001.md |
-| TASK-REDISX-002 | TASK-REDISX-002 | module/redisx/tasks/TASK-REDISX-002.md | - | tasks/TASK-REDISX-002.md |
-| TASK-REDISX-003 | TASK-REDISX-003 | module/redisx/tasks/TASK-REDISX-003.md | - | tasks/TASK-REDISX-003.md |
-| TASK-REDISX-004 | TASK-REDISX-004 | module/redisx/tasks/TASK-REDISX-004.md | - | tasks/TASK-REDISX-004.md |
-| TASK-REDISX-005 | TASK-REDISX-005 | module/redisx/tasks/TASK-REDISX-005.md | - | tasks/TASK-REDISX-005.md |
-| TASK-REDISX-006 | TASK-REDISX-006 | module/redisx/tasks/TASK-REDISX-006.md | - | tasks/TASK-REDISX-006.md |
-| TASK-REDISX-007 | TASK-REDISX-007 | module/redisx/tasks/TASK-REDISX-007.md | - | tasks/TASK-REDISX-007.md |
-| TASK-REDISX-008 | TASK-REDISX-008 | module/redisx/tasks/TASK-REDISX-008.md | - | tasks/TASK-REDISX-008.md |
-| TASK-REDISX-009 | TASK-REDISX-009 | module/redisx/tasks/TASK-REDISX-009.md | - | tasks/TASK-REDISX-009.md |
+| TASK-REDISX-000 | TASK-REDISX-000 | module/redisx/tasks/TASK-REDISX-000.md | ✅ | tasks/TASK-REDISX-000.md |
+| TASK-REDISX-001 | TASK-REDISX-001 | module/redisx/tasks/TASK-REDISX-001.md | ✅ | tasks/TASK-REDISX-001.md |
+| TASK-REDISX-002 | TASK-REDISX-002 | module/redisx/tasks/TASK-REDISX-002.md | ✅ | tasks/TASK-REDISX-002.md |
+| TASK-REDISX-003 | TASK-REDISX-003 | module/redisx/tasks/TASK-REDISX-003.md | ✅ | tasks/TASK-REDISX-003.md |
+| TASK-REDISX-004 | TASK-REDISX-004 | module/redisx/tasks/TASK-REDISX-004.md | ✅ | tasks/TASK-REDISX-004.md |
+| TASK-REDISX-005 | TASK-REDISX-005 | module/redisx/tasks/TASK-REDISX-005.md | ✅ | tasks/TASK-REDISX-005.md |
+| TASK-REDISX-006 | TASK-REDISX-006 | module/redisx/tasks/TASK-REDISX-006.md | ✅ | tasks/TASK-REDISX-006.md |
+| TASK-REDISX-007 | TASK-REDISX-007 | module/redisx/tasks/TASK-REDISX-007.md | ✅ | tasks/TASK-REDISX-007.md |
+| TASK-REDISX-008 | TASK-REDISX-008 | module/redisx/tasks/TASK-REDISX-008.md | ✅ | tasks/TASK-REDISX-008.md |
+| TASK-REDISX-009 | TASK-REDISX-009 | module/redisx/tasks/TASK-REDISX-009.md | ✅ | tasks/TASK-REDISX-009.md |
 
 ## 5. 文档资产清单
 
@@ -83,11 +83,21 @@
 | IMPLEMENTATION-PLAN.md | 存在 | module/redisx/IMPLEMENTATION-PLAN.md |
 | tasks/ | 10 个 Markdown 文件 | module/redisx/tasks |
 
-## 6. 实现完成判定
+## 6. v1.0.2 验收证据摘要
 
-- [ ] 所有 FR 条目均有运行时代码、单元测试或契约测试覆盖。
-- [ ] 所有 BR/NFR 条目均有测试、静态检查或人工可审计证据覆盖。
-- [ ] 所有任务文档均能追溯到 FR、BR/NFR、AC 或 TC。
-- [ ] 依赖边界符合 FOUNDATION-DEPS.yaml，不引入未授权运行时依赖。
-- [ ] 运行时代码仓库 /home/redisx 的 lint、typecheck、test、race、coverage 验证证据已归档。
-- [ ] 发布说明、版本标签与本目录登记状态一致。
+| 证据面 | 运行仓库证据 |
+| --- | --- |
+| 版本与发布 | `/home/redisx` 的 `pkg/redisx/version.go`、`.repo-contract.yaml`、`release/manifest/template.json` 与 `CHANGELOG.md` 均对齐 v1.0.2 |
+| 质量门禁 | `GOWORK=off go test ./...`、`GOWORK=off go vet ./...`、`GOWORK=off go test ./... -race -count=1`、`GOWORK=off go test ./... -coverprofile=coverage.out`、`GOWORK=off make lint` 均通过 |
+| L2/契约门禁 | `GOWORK=off make l2-check` 输出 `release_ready=true`、`score=100`、`target=L2-T2`；`GOWORK=off make test-contract`、`GOWORK=off make contracts`、`GOWORK=off make score-check` 均通过 |
+| 集成与 Docker | `GOWORK=off make integration`、`GOWORK=off REDISX_INTEGRATION_DOCKER=1 make test-integration`、`GOWORK=off REDISX_PERSISTENCE_INTEGRATION=1 make test-persistence-integration`、`VERSION=v1.0.2 GOWORK=off XLIB_CONTEXT=release_verify make docker-release-check` 均通过 |
+| 安全与 CI/CD | `go-redis` 升级到 v9.7.3；强制 `govulncheck` 安全扫描通过；CI 工作流已配置 read-only permissions、关键 actions SHA pinning、Goal/L2/Security fail-closed gates |
+
+## 7. 实现完成判定
+
+- [x] 所有 FR 条目均有运行时代码、单元测试或契约测试覆盖。
+- [x] 所有 BR/NFR 条目均有测试、静态检查或人工可审计证据覆盖。
+- [x] 所有任务文档均能追溯到 FR、BR/NFR、AC 或 TC。
+- [x] 依赖边界符合 FOUNDATION-DEPS.yaml，不引入未授权运行时依赖。
+- [x] 运行时代码仓库 /home/redisx 的 lint、typecheck、test、race、coverage 验证证据已归档。
+- [x] 发布说明、版本标签与本目录登记状态一致。
