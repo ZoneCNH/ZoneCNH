@@ -1,13 +1,16 @@
 # resiliencx 规格
 
-- Status: Approved
-- Spec-Version: v1.0.1
-- Last-Updated: 2026-06-12
-- Layer: L1 基础能力
+- Status: Approved (contract-corrected)
+- Spec-Version: v1.0.2
+- Last-Updated: 2026-06-18
+- Layer: L1 基础能力（与 `module/FOUNDATION-DEPS.yaml` 登记一致；ACCEPTANCE/FEATURES/goal 同步对齐为 L1）
 - Version: v1.0.0
+- Runtime-Version: v0.4.9（运行时代码仓库 `/home/resiliencx` 实测基线）
 - Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `kernel`
 
-> 公开投影 caveat：Status=Approved 与 100.0% 覆盖证据不等同于 factory-grade；BLK-007 关闭前机器事实层保持 factory=false。
+> 公开投影 caveat：Status=Approved 与运行时覆盖率 98.1% 不等同于 factory-grade；BLK-007 关闭前机器事实层保持 factory=false。
+>
+> **v1.0.2 契约纠正说明**：本版本依据运行时代码仓库（`github.com/ZoneCNH/resiliencx`）实测重写 §8/§9/§10/§13/§16/§17，使 SSOT 与机器事实一致。v1.0.0/v1.0.1 中描述的包级 API（`resiliencx.Timeout` 等）与 sentinel error（`resiliencx.ErrTimeout` 等）在代码中**从未存在**，实际对外契约以本版本子包 API（`timeout.Do` / `retry.Do` / `circuit.New` / `bulkhead.New` / `ratelimit.New` / `fallback.Do`）为准。原投影造成的下游集成风险见 §23 变更历史。
 
 ---
 
