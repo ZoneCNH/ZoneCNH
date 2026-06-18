@@ -3,13 +3,14 @@
 - Status: Generated from current module SSOT
 - Last-Updated: 2026-06-18
 - Module-Version: v1.0.0
-- Module-State: 已发布（代码侧）；Factory 验收被 BLK-011 阻塞
+- Module-State: 已发布（代码侧）；代码侧验收 2026-06-18 全部通过；Factory 验收仍由 BLK-011 阻塞（Goal Matrix / 四源 arbiter 归档）
 - Layer: L0 基座核心
 - Runtime-Repo: /home/kernel
 - Source: goal.md, SPEC.md, DESIGN.md, TRACEABILITY.md, IMPLEMENTATION-PLAN.md, tasks/, prompt/
+- Evidence: `.config/goal/evidence/kernel-acceptance-20260618/`（test ✅ / race ✅ / vet ✅ / coverage 100% ✅ / stdlib-only ✅ / secrets ✅）
 
 > 本清单用于验收 kernel 是否达到可发布、可追溯、可复验状态。除非条目明确记录为已通过，默认需要在运行时代码仓库重新执行验证并补充证据。
-> 当前统一口径：kernel 可作为 v1.0.0 implementation/release candidate；Factory 验收必须等待 `.config/goal/evidence` 证据包、Goal Matrix Verified、四源 98+ arbiter 归档和 `make coverage-threshold` 证据全部闭合。
+> 当前统一口径：kernel 可作为 v1.0.0 implementation/release candidate；本次（2026-06-18）代码侧门禁全部通过并归档于 `.config/goal/evidence/kernel-acceptance-20260618/`；Factory 验收仍需 Goal Matrix 边从 Dropped 改为 Verified、四源 98+ arbiter 归档同步闭合。
 
 ## 1. 验收命令清单
 
@@ -29,47 +30,47 @@
 
 | ID | 验收项 | 关联要求/测试/任务 | 当前登记状态 | 来源 |
 | --- | --- | --- | --- | --- |
-| AC-001 | FR-001 | 005 / Manager.Start按序启动/失败回滚，Stop幂等 | - | TRACEABILITY.md |
-| AC-002 | FR-001 | 005 / 启动失败errors.Join含所有回滚错误 | - | TRACEABILITY.md |
-| AC-003 | FR-002 | 001 / NewError/WrapError字段完整，Error()格式正确 | - | TRACEABILITY.md |
-| AC-004 | FR-002 | 001 / Unwrap/IsKind/AsError全链路+errors.Join | - | TRACEABILITY.md |
-| AC-005 | FR-003 | 011 / HealthStatus构造/IsHealthy/Aggregate逻辑 | - | TRACEABILITY.md |
-| AC-006 | FR-004 | 003 / Noop*所有方法静默成功不panic / TC-009 (AC-006/007 合并验证) | - | TRACEABILITY.md |
-| AC-007 | FR-004 | 003 / SecretString公开方法返回"***" / TC-009 | - | TRACEABILITY.md |
-| AC-008 | FR-005 | 009 / Delay指数退避+Jitter+溢出保护 | - | TRACEABILITY.md |
-| AC-009 | FR-006 | 006 / Shutdown Hook LIFO顺序+并发安全 | - | TRACEABILITY.md |
-| AC-010 | FR-006 | 006 / NotifyContext OS signal→cancel | - | TRACEABILITY.md |
-| AC-011 | FR-007 | 002 / FakeClock Advance后Now正确 | - | TRACEABILITY.md |
-| AC-012 | FR-008 | 008 / Precondition/Invariant/RequireNonEmpty返回正确 | - | TRACEABILITY.md |
-| AC-013 | FR-009 | 007 / Compatibility模块/版本匹配 | - | TRACEABILITY.md |
-| AC-014 | FR-010 | 010 / Key唯一性+零值Key panic | - | TRACEABILITY.md |
-| AC-015 | FR-011 | 004 / SemaphoreLimiter Acquire/Release并发安全 | - | TRACEABILITY.md |
-| AC-016 | FR-011 | 004 / WorkerGroup错误收集+cancel传播 | - | TRACEABILITY.md |
-| AC-017 | FR-012 | 012 / 断言匹配/不匹配行为正确 | - | TRACEABILITY.md |
-| AC-018 | BR-009 | 016 / stdlib-only gate通过 | - | TRACEABILITY.md |
+| AC-001 | FR-001 | 005 / Manager.Start按序启动/失败回滚，Stop幂等 | ✅ Verified 2026-06-18 | TRACEABILITY.md |
+| AC-002 | FR-001 | 005 / 启动失败errors.Join含所有回滚错误 | ✅ Verified 2026-06-18 | TRACEABILITY.md |
+| AC-003 | FR-002 | 001 / NewError/WrapError字段完整，Error()格式正确 | ✅ Verified 2026-06-18 | TRACEABILITY.md |
+| AC-004 | FR-002 | 001 / Unwrap/IsKind/AsError全链路+errors.Join | ✅ Verified 2026-06-18 | TRACEABILITY.md |
+| AC-005 | FR-003 | 011 / HealthStatus构造/IsHealthy/Aggregate逻辑 | ✅ Verified 2026-06-18 | TRACEABILITY.md |
+| AC-006 | FR-004 | 003 / Noop*所有方法静默成功不panic / TC-009 (AC-006/007 合并验证) | ✅ Verified 2026-06-18 | TRACEABILITY.md |
+| AC-007 | FR-004 | 003 / SecretString公开方法返回"***" / TC-009 | ✅ Verified 2026-06-18 | TRACEABILITY.md |
+| AC-008 | FR-005 | 009 / Delay指数退避+Jitter+溢出保护 | ✅ Verified 2026-06-18 | TRACEABILITY.md |
+| AC-009 | FR-006 | 006 / Shutdown Hook LIFO顺序+并发安全 | ✅ Verified 2026-06-18 | TRACEABILITY.md |
+| AC-010 | FR-006 | 006 / NotifyContext OS signal→cancel | ✅ Verified 2026-06-18 | TRACEABILITY.md |
+| AC-011 | FR-007 | 002 / FakeClock Advance后Now正确 | ✅ Verified 2026-06-18 | TRACEABILITY.md |
+| AC-012 | FR-008 | 008 / Precondition/Invariant/RequireNonEmpty返回正确 | ✅ Verified 2026-06-18 | TRACEABILITY.md |
+| AC-013 | FR-009 | 007 / Compatibility模块/版本匹配 | ✅ Verified 2026-06-18 | TRACEABILITY.md |
+| AC-014 | FR-010 | 010 / Key唯一性+零值Key panic | ✅ Verified 2026-06-18 | TRACEABILITY.md |
+| AC-015 | FR-011 | 004 / SemaphoreLimiter Acquire/Release并发安全 | ✅ Verified 2026-06-18 | TRACEABILITY.md |
+| AC-016 | FR-011 | 004 / WorkerGroup错误收集+cancel传播 | ✅ Verified 2026-06-18 | TRACEABILITY.md |
+| AC-017 | FR-012 | 012 / 断言匹配/不匹配行为正确 | ✅ Verified 2026-06-18 | TRACEABILITY.md |
+| AC-018 | BR-009 | 016 / stdlib-only gate通过 | ✅ Verified 2026-06-18 | TRACEABILITY.md |
 
 ## 3. TC 测试验收登记
 
 | ID | 测试项 | 关联要求/验收/任务 | 当前登记状态 | 来源 |
 | --- | --- | --- | --- | --- |
-| TC-001 | FR-001 | lifecycx / 正常启动停止：A.Start→B.Start→B.Stop→A.Stop | - | TRACEABILITY.md |
-| TC-002 | FR-001 | lifecycx / 启动失败回滚：B.Start失败→A.Stop回滚→errors.Join | - | TRACEABILITY.md |
-| TC-003 | FR-001 | lifecycx / 未启动时Stop：返回nil（幂等） | - | TRACEABILITY.md |
-| TC-004 | FR-002 | errx / 错误链遍历：IsKind(KindTimeout)穿透双层wrap | - | TRACEABILITY.md |
-| TC-005 | FR-002 | errx / errors.Join多链：IsKind匹配Join中任一条 | - | TRACEABILITY.md |
-| TC-006 | FR-005 | retryx / 指数退避：Delay(3)≈BaseDelay×2² | - | TRACEABILITY.md |
-| TC-007 | FR-003 | healthx / Aggregate聚合：优先级unhealthy>degraded>healthy | - | TRACEABILITY.md |
-| TC-008 | FR-006 | shutdownx / LIFO顺序：后注册Hook先执行 | - | TRACEABILITY.md |
-| TC-009 | FR-004 | obsx / SecretString脱敏：String()/JSON()返回"***" | - | TRACEABILITY.md |
-| TC-010 | FR-010 | contextx / Key唯一性：同名字不同NewKey不冲突 | - | TRACEABILITY.md |
-| TC-011 | FR-008 | validx / 前置条件：RequireNonEmpty空值返回validation错误 | - | TRACEABILITY.md |
-| TC-012 | BR-009 | CI / stdlib-only gate：go list -deps无外部依赖 | - | TRACEABILITY.md |
-| TC-013 | FR-011 | syncx / SemaphoreLimiter：Acquire/Release并发安全 | - | TRACEABILITY.md |
-| TC-014 | FR-011 | syncx / WorkerGroup：错误收集+cancel传播 | - | TRACEABILITY.md |
-| TC-015 | FR-007 | timex / FakeClock：Advance(d)后Now()前进d | - | TRACEABILITY.md |
-| TC-016 | FR-006 | shutdownx / NotifyContext：SIGTERM→cancel传播 | - | TRACEABILITY.md |
-| TC-017 | FR-009 | versionx / Compatibility：模块/版本匹配正确 | - | TRACEABILITY.md |
-| TC-018 | FR-012 | contracttest / 断言匹配通过，不匹配Fatalf | - | TRACEABILITY.md |
+| TC-001 | FR-001 | lifecycx / 正常启动停止：A.Start→B.Start→B.Stop→A.Stop | ✅ Verified 2026-06-18 | TRACEABILITY.md |
+| TC-002 | FR-001 | lifecycx / 启动失败回滚：B.Start失败→A.Stop回滚→errors.Join | ✅ Verified 2026-06-18 | TRACEABILITY.md |
+| TC-003 | FR-001 | lifecycx / 未启动时Stop：返回nil（幂等） | ✅ Verified 2026-06-18 | TRACEABILITY.md |
+| TC-004 | FR-002 | errx / 错误链遍历：IsKind(KindTimeout)穿透双层wrap | ✅ Verified 2026-06-18 | TRACEABILITY.md |
+| TC-005 | FR-002 | errx / errors.Join多链：IsKind匹配Join中任一条 | ✅ Verified 2026-06-18 | TRACEABILITY.md |
+| TC-006 | FR-005 | retryx / 指数退避：Delay(3)≈BaseDelay×2² | ✅ Verified 2026-06-18 | TRACEABILITY.md |
+| TC-007 | FR-003 | healthx / Aggregate聚合：优先级unhealthy>degraded>healthy | ✅ Verified 2026-06-18 | TRACEABILITY.md |
+| TC-008 | FR-006 | shutdownx / LIFO顺序：后注册Hook先执行 | ✅ Verified 2026-06-18 | TRACEABILITY.md |
+| TC-009 | FR-004 | obsx / SecretString脱敏：String()/JSON()返回"***" | ✅ Verified 2026-06-18 | TRACEABILITY.md |
+| TC-010 | FR-010 | contextx / Key唯一性：同名字不同NewKey不冲突 | ✅ Verified 2026-06-18 | TRACEABILITY.md |
+| TC-011 | FR-008 | validx / 前置条件：RequireNonEmpty空值返回validation错误 | ✅ Verified 2026-06-18 | TRACEABILITY.md |
+| TC-012 | BR-009 | CI / stdlib-only gate：go list -deps无外部依赖 | ✅ Verified 2026-06-18 | TRACEABILITY.md |
+| TC-013 | FR-011 | syncx / SemaphoreLimiter：Acquire/Release并发安全 | ✅ Verified 2026-06-18 | TRACEABILITY.md |
+| TC-014 | FR-011 | syncx / WorkerGroup：错误收集+cancel传播 | ✅ Verified 2026-06-18 | TRACEABILITY.md |
+| TC-015 | FR-007 | timex / FakeClock：Advance(d)后Now()前进d | ✅ Verified 2026-06-18 | TRACEABILITY.md |
+| TC-016 | FR-006 | shutdownx / NotifyContext：SIGTERM→cancel传播 | ✅ Verified 2026-06-18 | TRACEABILITY.md |
+| TC-017 | FR-009 | versionx / Compatibility：模块/版本匹配正确 | ✅ Verified 2026-06-18 | TRACEABILITY.md |
+| TC-018 | FR-012 | contracttest / 断言匹配通过，不匹配Fatalf | ✅ Verified 2026-06-18 | TRACEABILITY.md |
 
 ## 4. 覆盖闭合验收
 
@@ -104,20 +105,20 @@
 | NFR-003 | healthx.Aggregate 10元素 | < 10μs / Benchmark BenchmarkAggregate / TASK-KERNEL-011 | ✅ | TRACEABILITY.md |
 | NFR-004 | retryx.Delay 计算性能 | < 100ns / Benchmark BenchmarkDelay / TASK-KERNEL-009 | ✅ | TRACEABILITY.md |
 | NFR-005 | 常驻内存（全子包导入） | < 5MB / Profiling go test -memprofile / TASK-KERNEL-016（执行: 016c） | ✅ | TRACEABILITY.md |
-| NFR-006 | 核心库包测试覆盖率 | ≥ 100% / make coverage-threshold（排除 examples/scripts） / TASK-KERNEL-016（执行: 016c） | ✅（待证据归档） | TRACEABILITY.md |
+| NFR-006 | 核心库包测试覆盖率 | ≥ 100% / make coverage-threshold（排除 examples/scripts） / TASK-KERNEL-016（执行: 016c） | ✅ | TRACEABILITY.md |
 | NFR-007 | 敏感数据不泄露到日志 | SecretString 三层保护 / TC-009 String/JSON/gob 脱敏 / TASK-KERNEL-003 | ✅ | TRACEABILITY.md |
 | NFR-008 | 无硬编码密钥 | 全仓扫描零命中 / gitleaks detect --no-git / TASK-KERNEL-016（执行: 016c） | ✅ | TRACEABILITY.md |
 
 ## 5. 发布 DoD 清单
 
-- [ ] FEATURES.md 的 FR、BR/NFR、任务清单与 SPEC/TRACEABILITY 当前登记一致。
-- [ ] ACCEPTANCE.md 的 AC、TC 与运行时代码测试名、证据文件或 CI 记录一致。
-- [ ] 运行时代码仓库 /home/kernel 通过 go test、go test -race、go vet 与 `make coverage-threshold` 覆盖率门槛。
-- [ ] `.config/goal/evidence` 已登记 kernel 当前验收证据包，Goal Matrix kernel 边从 Dropped/empty evidence 改为 Verified。
+- [x] FEATURES.md 的 FR、BR/NFR、任务清单与 SPEC/TRACEABILITY 当前登记一致（2026-06-18 同步）。
+- [x] ACCEPTANCE.md 的 AC、TC 与运行时代码测试名、证据文件或 CI 记录一致（evidence: .config/goal/evidence/kernel-acceptance-20260618/）。
+- [x] 运行时代码仓库 /home/kernel 通过 go test、go test -race、go vet 与 `make coverage-threshold` 覆盖率门槛（2026-06-18 验证；14 包 100.0%）。
+- [~] `.config/goal/evidence/kernel-acceptance-20260618/` 已登记代码侧验收证据包；Goal Matrix kernel 边由 .config/goal pipeline 单独执行，仍待闭合。
 - [ ] 四源 98+ arbiter 当前归档存在，且 FACT layer 中 kernel 不在 factory_blocking_modules。
-- [ ] 所有外部服务依赖有本地可重复的测试替身或明确 live-gate 证据。
-- [ ] 安全检查确认没有凭证、私有端点、账户 ID 或实盘配置进入公开文档与代码。
-- [ ] 版本号、发布标签、CHANGELOG 或 release note 与本目录状态一致。
+- [x] 所有外部服务依赖：N/A — kernel 为 stdlib-only L0 原语，无外部服务依赖。
+- [x] 安全检查通过（2026-06-18 scripts/check_secrets.sh：secret check passed）。
+- [x] 版本号、发布标签、CHANGELOG 或 release note 与本目录状态一致（v1.0.0 — 2026-06-12 GitHub Release 已发布）。
 
 ## 6. 当前缺口登记
 
