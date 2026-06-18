@@ -3,7 +3,7 @@
 | 字段         | 内容                                           |
 | ------------ | ---------------------------------------------- |
 | 模块名       | `kernel`                                       |
-| 发布版本     | 1.0.0                                          |
+| 发布版本     | 1.1.0                                          |
 | 所属层级     | L0 原语层 / 最小稳定核心                       |
 | 稳定级别     | Public API Stable；SPI Stable；Internal 可演进 |
 | 文档状态     | 1.0 发布基线文档                               |
@@ -16,7 +16,7 @@
 
 ## 当前统一验收口径（2026-06-18）
 
-`kernel` 的代码侧可保持 v1.0.0 implementation/release candidate；模块验收 / Factory 不以本地测试通过单独判定，必须同时满足：`.config/goal/evidence` 证据包登记并把 Goal Matrix kernel 边从 Dropped 改为 Verified、四源 98+ arbiter 归档通过、核心库包覆盖率按 `make coverage-threshold` 归档通过。上述证据未闭合前，Goal Gate / Factory 状态按 blocked-by-evidence 处理。
+`kernel` 已发布 v1.1.0（PR #24，tag v1.1.0）；代码侧发布门禁全绿。模块验收 / Factory 不以本地测试通过单独判定，必须同时满足：`.config/goal/evidence` 证据包登记并把 Goal Matrix kernel 边从 Dropped 改为 Verified、四源 98+ arbiter 归档通过、核心库包覆盖率按 `make coverage-threshold` 归档通过。上述证据未闭合前，Goal Gate / Factory 状态按 blocked-by-evidence 处理。
 
 ## 1.0 发布判定原则
 
