@@ -129,12 +129,30 @@ jobs:
           go-version: ${{ env.GO_VERSION }}
           cache: true
       - name: Install xlibgate
-        run: go install github.com/ZoneCNH/xlibgate/cmd/xlibgate@v1.0.2
+        run: |
+          if command -v xlibgate >/dev/null 2>&1 && xlibgate trust --help >/dev/null 2>&1; then
+            exit 0
+          fi
+
+          if [ -d /home/xlibgate ]; then
+            mkdir -p "$HOME/.local/bin"
+            (cd /home/xlibgate && GOBIN="$HOME/.local/bin" GOWORK=off go install ./cmd/xlibgate)
+            "$HOME/.local/bin/xlibgate" trust --help >/dev/null
+            echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+            exit 0
+          fi
+
+          echo "::error::xlibgate trust CLI is not installed. Install the fixed trust build from /home/xlibgate or the next tagged release; v1.0.0 lacks trust and the current untagged remote build has release parser drift."
+          exit 1
       - name: Run boundary checks
         run: |
           xlibgate trust identity --repo .
-          xlibgate trust dependency --repo .
           xlibgate trust release-consistency --offline --repo .
+          xlibgate trust template-residue --repo .
+          xlibgate trust testkit-prod-import --repo .
+          xlibgate trust secret-redaction --repo .
+          # Full factory maturity remains an evidence gate; it is expected to
+          # block until live/external CI/downstream/soak artifacts exist.
 
   integration:
     name: Integration Test

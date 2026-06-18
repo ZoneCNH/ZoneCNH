@@ -11,7 +11,7 @@
 > 身份收敛（2026-06-18）：本模块为 Aliyun OSS 专用 adapter，对接 `github.com/ZoneCNH/ossx`。先前的 adapter SPI / S3-compatible / 多 provider 措辞已收敛为非目标。
 > 实现状态（2026-06-18）：远程 `github.com/ZoneCNH/ossx` 已发布 **v1.1.0**——真实 Aliyun adapter（`adapters/aliyun/`）+ 流式 BlobStore + 完整 multipart + 真实 presign + 策略校验 + retry/circuit + observex 兼容 hooks。本地可复现门禁已通过：`go test ./... -race`、`go vet ./...`、`go build ./...`、`golangci-lint run ./...`、secret scope 检查、禁止 infra 依赖扫描，`pkg/ossx` 覆盖率 83.9%。
 > live Aliyun 集成状态：`go test -tags integration ./adapters/aliyun/` 在未设置 `OSSX_LIVE_INTEGRATION=1` 与密钥时按设计 skip 5 项；真实 live 通过证据仍需凭证环境执行后归档。
-> `factory=false` 保持：公开 evidence archive（BLK-008）与 live integration evidence 仍待归档；本地实现门禁已闭合。
+> `factory=false` 保持：公开 evidence archive（BLK-008）、live integration evidence、external CI artifacts、downstream adoption、production soak 仍待归档；本地实现门禁已闭合。
 > Status=Implemented：FR-001..FR-010 本地可验证实现已闭合。尚未通过 pipeline-arbiter 四源 98 分门禁（治理门禁，非实现门禁）。
 
 ---

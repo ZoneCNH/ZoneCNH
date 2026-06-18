@@ -12,8 +12,9 @@
 > 当前实现事实（2026-06-18）：远程 `github.com/ZoneCNH/ossx` 已发布 **v1.1.0**，FR-001..FR-010 **全部实现**。
 > - pkg/ossx：流式 BlobStore + 完整 multipart + presign + 策略 + retry/circuit + observex hooks（stdlib + 本地接口，无 configx）
 > - adapters/aliyun：真实 Aliyun OSS adapter（aliyun-oss-go-sdk v3.0.2，SDK 隔离）
-> - 24 单元测试 + 5 集成测试（真实 bucket `x-go`，TC-010）全过；61.2% 覆盖
-> - `factory=false` 保持：公开 evidence archive（BLK-008）仍待归档
+> - 本地单元/契约验收通过；pkg/ossx 覆盖率 83.9%
+> - Aliyun live integration 为 build tag + 环境变量双层门禁；未配置凭证时 5 项按设计 SKIP
+> - `factory=false` 保持：公开 evidence archive（BLK-008）、live integration evidence、external CI artifacts、downstream adoption、production soak 仍待归档
 
 勾选图例：`[ ]` 待实现 · `[x]` 已实现并通过对应 TC · `[~]` 部分实现（备注列注明缺口）
 
@@ -102,7 +103,7 @@
 - [x] Aliyun 错误在边界翻译为 typed `*Error`（`translateError`/`mapServiceError`）
 - [x] 公共接口仅使用 ossx/stdlib 类型
 - [x] `InMemoryAdapter` + 集成测试 fake/integration-gated 真实 Aliyun
-- [x] TC-009（`TestSPISurface`）、TC-010（集成测试 5/5）通过
+- [x] TC-009（`TestSPISurface`）通过；TC-010 live integration gate 已实现，真实 Aliyun pass 待凭证环境归档
 
 ### FR-009 可观测性与审计 ✅
 
@@ -159,7 +160,7 @@
 | TC-007 | presign TTL/allowlist/脱敏 | ✅ | `TestPresign` + 集成 `TestIntegrationPresign` |
 | TC-008 | 策略校验 checksum/lifecycle/retention/permission | ✅ | `TestPermissionPolicy*`/`TestRetentionPolicy*`/`TestConfigValidateLifecycle*` |
 | TC-009 | 公开 API 无 SDK 类型 | ✅ | `TestSPISurface` |
-| TC-010 | Aliyun adapter 契约 | ✅ | 集成测试 5/5（真 bucket x-go） |
+| TC-010 | Aliyun adapter 契约 | ⏳ evidence | build tag + 环境变量门禁已实现；真实 Aliyun pass 待凭证环境归档 |
 | TC-011 | 可观测性 metrics/traces/audit + no-op | ✅ | `TestHooksHistogramEmitted`/`TestHooksNilSafe`/`TestPresignAuditMasked` |
 | TC-012 | 健康 + 幂等关闭 | ✅ | `TestHealthAndClose` + 集成 `TestIntegrationHealth` |
 | TC-013 | 追溯闭合 Goal→Spec→Matrix→Task→Evidence | ✅ | `TestTraceabilityClosure` |
@@ -171,11 +172,11 @@
 | 维度 | 状态 |
 | ---- | ---- |
 | SPEC | Implemented（v1.2.0） |
-| 远程实现 | v1.1.0 已发布（pkg/ossx + adapters/aliyun，22 文件 +3206 行） |
-| Factory | **false**（公开 evidence archive BLK-008 仍待归档；真实 adapter + 集成证据已齐备） |
+| 远程实现 | v1.1.0 已发布（pkg/ossx + adapters/aliyun） |
+| Factory | **false**（公开 evidence archive、live integration、external CI、downstream adoption、production soak 证据待归档） |
 | FR 进度 | FR-001..FR-010 **全部 ✅** |
-| TC 进度 | TC-001..TC-013 **全部 ✅**（24 单测 + 5 集成） |
-| 覆盖率 | 61.2% statements（pkg/ossx） |
-| 阻塞 | 无 open 实现阻塞；BLK-008（evidence archive）待归档 |
+| TC 进度 | TC-001..TC-009/TC-011..TC-013 本地通过；TC-010 live integration 凭证门禁，未配置时 5 项 SKIP |
+| 覆盖率 | 83.9% statements（pkg/ossx） |
+| 阻塞 | 无 open 实现阻塞；factory evidence archive、live integration evidence、external CI artifacts、downstream adoption、production soak 待归档 |
 
-> v1.1.0 是完整实现里程碑。剩余 factory 翻转条件：归档公开 API docs + quickstart + integration evidence + release manifest（BLK-008）。
+> v1.1.0 是完整实现里程碑。剩余 factory 翻转条件：归档公开 evidence archive、真实 Aliyun live integration、外部 CI artifact、downstream adoption 与 production soak 证据。
