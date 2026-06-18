@@ -3,13 +3,14 @@
 - Status: Generated from current module SSOT
 - Last-Updated: 2026-06-18
 - Module-Version: v1.0.0
-- Module-State: 已发布（代码侧）；Factory 验收被 BLK-011 阻塞
+- Module-State: 已发布（代码侧）；代码侧验收 2026-06-18 全部通过；Factory 验收仍由 BLK-011 阻塞
 - Layer: L0 基座核心
 - Runtime-Repo: /home/kernel
 - Source: goal.md, SPEC.md, DESIGN.md, TRACEABILITY.md, IMPLEMENTATION-PLAN.md, tasks/, prompt/
+- Evidence: `.config/goal/evidence/kernel-acceptance-20260618/`（test ✅ / race ✅ / vet ✅ / coverage 100% ✅ / stdlib-only ✅ / secrets ✅）
 
 > 本清单用于约束 kernel 的完整实现范围。条目来自本目录已有 Spec、Traceability、Plan、Task 等文档；若运行时代码状态与本文不一致，以相应模块仓库的最新验证证据补充更新本文。
-> 当前统一口径：本清单表示代码侧 implementation/release candidate 范围；Factory 验收仍需 BLK-011 要求的证据包、Goal Matrix Verified、四源 98+ arbiter 归档和 `make coverage-threshold` 证据闭合。
+> 当前统一口径：本清单表示代码侧 implementation/release candidate 范围；本次（2026-06-18）代码侧验收全部通过并归档于 `.config/goal/evidence/kernel-acceptance-20260618/`；Factory 验收仍需 Goal Matrix Verified、四源 98+ arbiter 归档闭合。
 
 ## 1. 模块边界清单
 
@@ -61,7 +62,7 @@
 | NFR-003 | healthx.Aggregate 10元素 | < 10μs / Benchmark BenchmarkAggregate / TASK-KERNEL-011 | ✅ | TRACEABILITY.md |
 | NFR-004 | retryx.Delay 计算性能 | < 100ns / Benchmark BenchmarkDelay / TASK-KERNEL-009 | ✅ | TRACEABILITY.md |
 | NFR-005 | 常驻内存（全子包导入） | < 5MB / Profiling go test -memprofile / TASK-KERNEL-016（执行: 016c） | ✅ | TRACEABILITY.md |
-| NFR-006 | 核心库包测试覆盖率 | ≥ 100% / make coverage-threshold（排除 examples/scripts） / TASK-KERNEL-016（执行: 016c） | ✅（待证据归档） | TRACEABILITY.md |
+| NFR-006 | 核心库包测试覆盖率 | ≥ 100% / make coverage-threshold（排除 examples/scripts） / TASK-KERNEL-016（执行: 016c） | ✅ | TRACEABILITY.md |
 | NFR-007 | 敏感数据不泄露到日志 | SecretString 三层保护 / TC-009 String/JSON/gob 脱敏 / TASK-KERNEL-003 | ✅ | TRACEABILITY.md |
 | NFR-008 | 无硬编码密钥 | 全仓扫描零命中 / gitleaks detect --no-git / TASK-KERNEL-016（执行: 016c） | ✅ | TRACEABILITY.md |
 
@@ -69,29 +70,29 @@
 
 | ID | 交付项 | 文件/挂钩 | 当前登记状态 | 来源 |
 | --- | --- | --- | --- | --- |
-| TASK-KERNEL-000 | TASK-KERNEL-000 | module/kernel/tasks/TASK-KERNEL-000.md | - | tasks/TASK-KERNEL-000.md |
-| TASK-KERNEL-001 | TASK-KERNEL-001 | module/kernel/tasks/TASK-KERNEL-001.md | - | tasks/TASK-KERNEL-001.md |
-| TASK-KERNEL-002 | TASK-KERNEL-002 | module/kernel/tasks/TASK-KERNEL-002.md | - | tasks/TASK-KERNEL-002.md |
-| TASK-KERNEL-003 | TASK-KERNEL-003 | module/kernel/tasks/TASK-KERNEL-003.md | - | tasks/TASK-KERNEL-003.md |
-| TASK-KERNEL-004 | TASK-KERNEL-004 | module/kernel/tasks/TASK-KERNEL-004.md | - | tasks/TASK-KERNEL-004.md |
-| TASK-KERNEL-005 | TASK-KERNEL-005 | module/kernel/tasks/TASK-KERNEL-005.md | - | tasks/TASK-KERNEL-005.md |
-| TASK-KERNEL-006 | TASK-KERNEL-006 | module/kernel/tasks/TASK-KERNEL-006.md | - | tasks/TASK-KERNEL-006.md |
-| TASK-KERNEL-007 | TASK-KERNEL-007 | module/kernel/tasks/TASK-KERNEL-007.md | - | tasks/TASK-KERNEL-007.md |
-| TASK-KERNEL-008 | TASK-KERNEL-008 | module/kernel/tasks/TASK-KERNEL-008.md | - | tasks/TASK-KERNEL-008.md |
-| TASK-KERNEL-009 | TASK-KERNEL-009 | module/kernel/tasks/TASK-KERNEL-009.md | - | tasks/TASK-KERNEL-009.md |
-| TASK-KERNEL-010 | TASK-KERNEL-010 | module/kernel/tasks/TASK-KERNEL-010.md | - | tasks/TASK-KERNEL-010.md |
-| TASK-KERNEL-011 | TASK-KERNEL-011 | module/kernel/tasks/TASK-KERNEL-011.md | - | tasks/TASK-KERNEL-011.md |
-| TASK-KERNEL-012 | TASK-KERNEL-012 | module/kernel/tasks/TASK-KERNEL-012.md | - | tasks/TASK-KERNEL-012.md |
-| TASK-KERNEL-013 | TASK-KERNEL-013 | module/kernel/tasks/TASK-KERNEL-013.md | - | tasks/TASK-KERNEL-013.md |
-| TASK-KERNEL-014 | TASK-KERNEL-014 | module/kernel/tasks/TASK-KERNEL-014.md | - | tasks/TASK-KERNEL-014.md |
-| TASK-KERNEL-015 | TASK-KERNEL-015 | module/kernel/tasks/TASK-KERNEL-015.md | - | tasks/TASK-KERNEL-015.md |
-| TASK-KERNEL-015A | TASK-KERNEL-015a | module/kernel/tasks/TASK-KERNEL-015a.md | - | tasks/TASK-KERNEL-015a.md |
-| TASK-KERNEL-015B | TASK-KERNEL-015b | module/kernel/tasks/TASK-KERNEL-015b.md | - | tasks/TASK-KERNEL-015b.md |
-| TASK-KERNEL-015C | TASK-KERNEL-015c | module/kernel/tasks/TASK-KERNEL-015c.md | - | tasks/TASK-KERNEL-015c.md |
-| TASK-KERNEL-016 | TASK-KERNEL-016 | module/kernel/tasks/TASK-KERNEL-016.md | - | tasks/TASK-KERNEL-016.md |
-| TASK-KERNEL-016A | TASK-KERNEL-016a | module/kernel/tasks/TASK-KERNEL-016a.md | - | tasks/TASK-KERNEL-016a.md |
-| TASK-KERNEL-016B | TASK-KERNEL-016b | module/kernel/tasks/TASK-KERNEL-016b.md | - | tasks/TASK-KERNEL-016b.md |
-| TASK-KERNEL-016C | TASK-KERNEL-016c | module/kernel/tasks/TASK-KERNEL-016c.md | - | tasks/TASK-KERNEL-016c.md |
+| TASK-KERNEL-000 | TASK-KERNEL-000 | module/kernel/tasks/TASK-KERNEL-000.md | ✅ Delivered | tasks/TASK-KERNEL-000.md |
+| TASK-KERNEL-001 | TASK-KERNEL-001 | module/kernel/tasks/TASK-KERNEL-001.md | ✅ Delivered | tasks/TASK-KERNEL-001.md |
+| TASK-KERNEL-002 | TASK-KERNEL-002 | module/kernel/tasks/TASK-KERNEL-002.md | ✅ Delivered | tasks/TASK-KERNEL-002.md |
+| TASK-KERNEL-003 | TASK-KERNEL-003 | module/kernel/tasks/TASK-KERNEL-003.md | ✅ Delivered | tasks/TASK-KERNEL-003.md |
+| TASK-KERNEL-004 | TASK-KERNEL-004 | module/kernel/tasks/TASK-KERNEL-004.md | ✅ Delivered | tasks/TASK-KERNEL-004.md |
+| TASK-KERNEL-005 | TASK-KERNEL-005 | module/kernel/tasks/TASK-KERNEL-005.md | ✅ Delivered | tasks/TASK-KERNEL-005.md |
+| TASK-KERNEL-006 | TASK-KERNEL-006 | module/kernel/tasks/TASK-KERNEL-006.md | ✅ Delivered | tasks/TASK-KERNEL-006.md |
+| TASK-KERNEL-007 | TASK-KERNEL-007 | module/kernel/tasks/TASK-KERNEL-007.md | ✅ Delivered | tasks/TASK-KERNEL-007.md |
+| TASK-KERNEL-008 | TASK-KERNEL-008 | module/kernel/tasks/TASK-KERNEL-008.md | ✅ Delivered | tasks/TASK-KERNEL-008.md |
+| TASK-KERNEL-009 | TASK-KERNEL-009 | module/kernel/tasks/TASK-KERNEL-009.md | ✅ Delivered | tasks/TASK-KERNEL-009.md |
+| TASK-KERNEL-010 | TASK-KERNEL-010 | module/kernel/tasks/TASK-KERNEL-010.md | ✅ Delivered | tasks/TASK-KERNEL-010.md |
+| TASK-KERNEL-011 | TASK-KERNEL-011 | module/kernel/tasks/TASK-KERNEL-011.md | ✅ Delivered | tasks/TASK-KERNEL-011.md |
+| TASK-KERNEL-012 | TASK-KERNEL-012 | module/kernel/tasks/TASK-KERNEL-012.md | ✅ Delivered | tasks/TASK-KERNEL-012.md |
+| TASK-KERNEL-013 | TASK-KERNEL-013 | module/kernel/tasks/TASK-KERNEL-013.md | ✅ Delivered | tasks/TASK-KERNEL-013.md |
+| TASK-KERNEL-014 | TASK-KERNEL-014 | module/kernel/tasks/TASK-KERNEL-014.md | ✅ Delivered | tasks/TASK-KERNEL-014.md |
+| TASK-KERNEL-015 | TASK-KERNEL-015 | module/kernel/tasks/TASK-KERNEL-015.md | ✅ Delivered | tasks/TASK-KERNEL-015.md |
+| TASK-KERNEL-015A | TASK-KERNEL-015a | module/kernel/tasks/TASK-KERNEL-015a.md | ✅ Delivered | tasks/TASK-KERNEL-015a.md |
+| TASK-KERNEL-015B | TASK-KERNEL-015b | module/kernel/tasks/TASK-KERNEL-015b.md | ✅ Delivered | tasks/TASK-KERNEL-015b.md |
+| TASK-KERNEL-015C | TASK-KERNEL-015c | module/kernel/tasks/TASK-KERNEL-015c.md | ✅ Delivered | tasks/TASK-KERNEL-015c.md |
+| TASK-KERNEL-016 | TASK-KERNEL-016 | module/kernel/tasks/TASK-KERNEL-016.md | ✅ Delivered | tasks/TASK-KERNEL-016.md |
+| TASK-KERNEL-016A | TASK-KERNEL-016a | module/kernel/tasks/TASK-KERNEL-016a.md | ✅ Delivered | tasks/TASK-KERNEL-016a.md |
+| TASK-KERNEL-016B | TASK-KERNEL-016b | module/kernel/tasks/TASK-KERNEL-016b.md | ✅ Delivered | tasks/TASK-KERNEL-016b.md |
+| TASK-KERNEL-016C | TASK-KERNEL-016c | module/kernel/tasks/TASK-KERNEL-016c.md | ✅ Delivered | tasks/TASK-KERNEL-016c.md |
 
 ## 5. 文档资产清单
 
@@ -107,10 +108,10 @@
 
 ## 6. 实现完成判定
 
-- [ ] 所有 FR 条目均有运行时代码、单元测试或契约测试覆盖。
-- [ ] 所有 BR/NFR 条目均有测试、静态检查或人工可审计证据覆盖。
-- [ ] 所有任务文档均能追溯到 FR、BR/NFR、AC 或 TC。
-- [ ] 依赖边界符合 FOUNDATION-DEPS.yaml，不引入未授权运行时依赖。
-- [ ] 运行时代码仓库 /home/kernel 的 lint、typecheck、test、race、`make coverage-threshold` 验证证据已归档。
-- [ ] `.config/goal/evidence`、Goal Matrix Verified、四源 98+ arbiter 和 FACT layer factory=true 已闭合。
-- [ ] 发布说明、版本标签与本目录登记状态一致。
+- [x] 所有 FR 条目均有运行时代码、单元测试或契约测试覆盖（2026-06-18 14 个核心库包 100.0%）。
+- [x] 所有 BR/NFR 条目均有测试、静态检查或人工可审计证据覆盖（go test -race / go vet / check_secrets / stdlib-only gate）。
+- [x] 所有任务文档均能追溯到 FR、BR/NFR、AC 或 TC（TRACEABILITY.md v2.3）。
+- [x] 依赖边界符合 FOUNDATION-DEPS.yaml，不引入未授权运行时依赖（stdlib-only check passed）。
+- [x] 运行时代码仓库 /home/kernel 的 lint、typecheck、test、race、`make coverage-threshold` 验证证据已归档（.config/goal/evidence/kernel-acceptance-20260618/）。
+- [~] `.config/goal/evidence/kernel-acceptance-20260618/` 已归档代码侧证据；Goal Matrix Verified 与四源 98+ arbiter 仍由 .config/goal pipeline 单独执行（BLK-011 open）。
+- [x] 发布说明、版本标签与本目录登记状态一致（v1.0.0 — 2026-06-12 GitHub Release）。
