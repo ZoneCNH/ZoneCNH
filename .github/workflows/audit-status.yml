@@ -1,25 +1,9 @@
 name: Audit STATUS.md consistency
 
+# NOTE: self-hosted runner 已下线（zone-runner unregistered 2026-06-18），仅保留 workflow_dispatch 防止 queued 堆积。
+# 重装 runner 后恢复 pull_request/push trigger。
 on:
-  pull_request:
-    paths:
-      - STATUS.md
-      - README.md
-      - ARCHITECTURE.md
-      - .foundationx/**
-      - scripts/audit-status.py
-      - .github/ci/status-consistency-check.sh
-      - .github/workflows/audit-status.yml
-  push:
-    branches: [main]
-    paths:
-      - STATUS.md
-      - README.md
-      - ARCHITECTURE.md
-      - .foundationx/**
-      - scripts/audit-status.py
-      - .github/ci/status-consistency-check.sh
-      - .github/workflows/audit-status.yml
+  workflow_dispatch:
 
 jobs:
   audit:

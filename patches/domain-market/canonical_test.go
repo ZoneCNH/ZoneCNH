@@ -3,8 +3,6 @@ package domainmarket
 import (
 	"testing"
 	"time"
-
-	"github.com/ZoneCNH/decimalx"
 )
 
 func TestProductLine_IsValid(t *testing.T) {
@@ -55,7 +53,7 @@ func TestInstrumentKey_Validate(t *testing.T) {
 	now := time.Now()
 	optKey := InstrumentKey{
 		Venue: "binance", ProductLine: ProductLineOption, Symbol: "BTC-1231-50000-C",
-		Expiry: &now, Strike: ptrDecimal(decimalx.NewFromInt(50000)), OptionType: "call",
+		Expiry: &now, Strike: ptrDecimal(Decimal("50000")), OptionType: "call",
 	}
 	if err := optKey.Validate(); err != nil {
 		t.Errorf("valid option key should pass: %v", err)
@@ -80,9 +78,9 @@ func TestEventType_IsValid(t *testing.T) {
 func TestMarketFactEnvelope_Validate(t *testing.T) {
 	now := time.Now()
 	e := MarketFactEnvelope{
-		EventID: "evt-001",
+		EventID:       "evt-001",
 		InstrumentKey: InstrumentKey{Venue: "binance", ProductLine: ProductLineSpot, Symbol: "BTCUSDT"},
-		EventType: EventTypeTrade, EventTime: now.Add(-100 * time.Millisecond),
+		EventType:     EventTypeTrade, EventTime: now.Add(-100 * time.Millisecond),
 		ReceivedAt: now, AvailableAt: now, Source: "binance",
 	}
 	if err := e.Validate(); err != nil {
@@ -115,4 +113,4 @@ func TestMarketFactEnvelope_EventAge(t *testing.T) {
 	}
 }
 
-func ptrDecimal(d decimalx.Decimal) *decimalx.Decimal { return &d }
+func ptrDecimal(d Decimal) *Decimal { return &d }

@@ -19,8 +19,7 @@
 cd domain-market
 cp ../patches/domain-market/canonical.go pkg/domainmarket/
 cp ../patches/domain-market/canonical_test.go pkg/domainmarket/
-# 添加 decimalx 依赖
-go get github.com/ZoneCNH/decimalx@latest
+# stdlib-only: no third-party Go dependency is required.
 go mod tidy
 # 构建 + 测试
 go build ./...
@@ -72,3 +71,4 @@ market-data (dispatch port) ← binance (server implementation)
 - 日期: 2026-06-17
 - 来源: ZoneCNH/ZoneCNH docs hub SPEC v0.1.1 ~ v1.1.0
 - 语言: Go 1.23
+- Patch harness: `cd patches && go test ./...`

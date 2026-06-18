@@ -2,9 +2,9 @@
 
 Status: Approved
 - Spec-Version: v1.0.0
-- Last-Updated: 2026-06-14
+- Last-Updated: 2026-06-18
 - Layer: 基座 · 模块生成器与门禁执行器
-- Version: v0.1.0
+- Version: v0.1.1
 - Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `xlib-standard`
 
 > 公开投影 caveat：Status=Review 与矩阵覆盖证据不等同于 factory-grade；四源评分通过前机器事实层保持 factory=false。
@@ -208,10 +208,10 @@ module/xlib-harness/
 
 ## 21. 发布 DoD
 
-- [ ] SPEC Approved
-- [ ] 所有 FR 实现并测试
-- [ ] generate → check 自举闭环
-- [ ] 文档齐全
+- [x] SPEC Approved
+- [x] 所有 FR 实现并测试
+- [x] generate → check 自举闭环
+- [x] 文档齐全
 
 ## 22. 待解决问题
 
@@ -223,4 +223,5 @@ module/xlib-harness/
 
 | 日期 | 版本 | 变更内容 | 作者 |
 |------|------|----------|------|
+| 2026-06-18 | v0.1.1 | 补齐验收证据、性能基线与发布文档同步 | ZoneCNH |
 | 2026-06-14 | v1.0.0 | 初始版本，从 xlib-standard 拆分 | ZoneCNH |

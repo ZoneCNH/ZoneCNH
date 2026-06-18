@@ -340,7 +340,7 @@ Foundation 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中在 
 
 ## 状态总览
 
-> **公开投影口径**：架构矩阵中的进度是 Spec→Code 管线投影；release/factory 以 `.foundationx/status/index.json` + `.foundationx/blockers.json` 为准。存在 RELEASE=❌ 或 BLK-001/002/003/006/007/008 open 时，不投影为 Foundation factory grade。
+> **公开投影口径**：架构矩阵中的进度是 Spec→Code 管线投影；release/factory 以 `.foundationx/status/index.json` + `.foundationx/blockers.json` 为准。存在 RELEASE=❌ 或 open blocker 时，不投影为 Foundation factory grade；当前 BLK-009 / BLK-010 / BLK-011 仍 open。
 
 | 域                    | 组件                                                            | 版本   | 状态      | Spec→Code 投影 | 说明                                                                                      |
 | --------------------- | --------------------------------------------------------------- | ------ | --------- | -------- | ----------------------------------------------------------------------------------------- |
@@ -354,14 +354,14 @@ Foundation 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中在 
 | 基座                  | [bootstrap](https://github.com/ZoneCNH/bootstrap)               | v0.1.0 | ✅ 已发布 | Spec→Code 进行中（SPEC Draft，runtime 骨架已发布） | L1 Assembly 通用进程组装层：位于 L1 primitives 之上、`x.go` 入口之下，统一组装 configx/observex/resiliencx/lifecycx + 7 存储 adapter 可选构造（StoreSet 位掩码）+ 信号捕获；不承载业务语义、service listener、domain contracts；✅ GitHub Release v0.1.0 已发布；规格 v0.1.7；非 factory；Stores=All/位组合 v0.1.0 为 stub，仅 Stores=None 路径端到端就绪 |
 | 基座                  | [xlibgate](https://github.com/ZoneCNH/xlibgate)                 | v1.0.0 | ✅ 已发布 | Spec→Code 完成 | check / l2 / trust 三组门禁；全管线评分 100 |
 | 基座                  | [xlib-standard](https://github.com/ZoneCNH/xlib-standard)       | v1.0.0 | ✅ 已发布 | Spec→Code 完成 | 标准事实源、Go Reference Template；Generator/Harness/Evidence 已拆分，不参与运行时 import |
-| 基座                  | [xlib-harness](https://github.com/ZoneCNH/xlib-harness)         | v0.1.0 | ✅ 已发布 | Spec→Code 完成 | 模块生成器与门禁执行器：generate/scaffold、spec-lint、boundary-check、traceability-gate；✅ GitHub Release v0.1.0 已发布 |
-| 基座                  | [xlib-evidence](https://github.com/ZoneCNH/xlib-evidence)       | v0.1.0 | ✅ 已发布 | Spec→Code 完成 | 证据收集与发布运行时：collect-coverage、generate-manifest、validate-manifest、report；✅ GitHub Release v0.1.0 已发布 |
+| 基座                  | [xlib-harness](https://github.com/ZoneCNH/xlib-harness)         | v0.1.1 | ✅ 已发布 | Spec→Code 完成 | 模块生成器与门禁执行器：generate/scaffold、spec-lint、boundary-check、traceability-gate；✅ v0.1.1 发布基线已通过 go test/race/vet/coverage/benchmark/CLI smoke 验收 |
+| 基座                  | [xlib-evidence](https://github.com/ZoneCNH/xlib-evidence)       | v0.2.0 | ✅ 已发布 | Spec→Code 完成 | 证据收集与发布运行时：collect-coverage、generate-manifest、validate-manifest、remote-evidence、report；/home/xlib-evidence 本地 go test/race/vet/coverage 89.8% 通过；✅ GitHub Release v0.2.0 已发布 |
 | 基座                  | [redisx](https://github.com/ZoneCNH/redisx)                     | v1.0.1 | ✅ 已发布 | Spec→Code 完成 | Redis L2 adapter：KV/TTL/Hash/List/Pipeline/Cache-aside/Lock/RateLimit/Pool/Persistence restart recovery；Docker-backed Redis 验证通过 |
 | 基座                  | [kafkax](https://github.com/ZoneCNH/kafkax)                     | v1.0.2 | ✅ 已发布 | Spec→Code 完成 | Kafka L2 adapter — 消息队列、事件流（v1.0.0 已发布，driver-neutral API + kafka-go 生产驱动，真实 broker gates） |
 | 基座                  | [natsx](https://github.com/ZoneCNH/natsx)                       | v1.0.0 | ✅ 已发布 | Spec→Code 完成 | NATS L2 adapter：Core NATS / JetStream、Drain/reconnect/degraded health、canonical `FOUNDATIONX_NATS_*` 配置和真实 dev auth live gate 已验证；repair-slice 20/20；正式四源 98+ arbiter 与生产 TLS gate 待补（BLK-001/BLK-002）；非 factory |
 | 基座                  | [postgresx](https://github.com/ZoneCNH/postgresx)               | v1.0.0 | ✅ 已发布 | Spec→Code 完成 | PostgreSQL — 关系型存储、事务、迁移；live integration 通过；BLK-006 open（52.4% coverage + Docker integration skip）；非 factory |
 | 基座                  | [taosx](https://github.com/ZoneCNH/taosx)                       | v1.0.1 | ✅ 已发布 | Spec→Code 完成 | TDengine L2 adapter contract；真实 taosWS WebSocket 集成测试已通过；BLK-007 open（SPEC 67）；非 factory |
-| 基座                  | [ossx](https://github.com/ZoneCNH/ossx)                         | v1.1.0 | ✅ 已发布 | Spec→Code 完成 | Aliyun OSS 专用对象存储 L2 adapter；v1.1.0 已发布真实 Aliyun adapter（adapters/aliyun）、流式 SPI、完整 multipart、真实 presign、策略校验、retry/circuit 与 observex hooks；24 单元测试 + 5 集成测试通过；factory=false 仅因公开 API docs / quickstart / integration evidence / release manifest 归档 BLK-008 未完成 |
+| 基座                  | [ossx](https://github.com/ZoneCNH/ossx)                         | v1.0.2-alpha | ✅ 已发布 | Spec→Code 完成 | Aliyun OSS L2 adapter；pkg/ossx 源码已交付（8 文件/12 测试/import 可编译）；BLK-010 open，真实 Aliyun adapter、integration evidence、API docs、quickstart 与 release manifest 归档待补；非 factory |
 | 基座                  | [clickhousex](https://github.com/ZoneCNH/clickhousex)           | v1.0.1 | ✅ 已发布 | Spec→Code 完成 | ClickHouse — OLAP 查询、批量写入；✅ GitHub Release v1.0.1 已发布；BLK-003 open；非 factory |
 | 基座                  | [contracts](https://github.com/ZoneCNH/contracts)               | v1.2.0 | ✅ 已发布 | Spec→Code 完成 | 跨域稳定端口/事件/DTO 契约（含 §8.4 Binance C/S ingestion contract）；spec-only；✅ GitHub Release v1.2.0 已发布 |
 | 基座                  | [transportx](https://github.com/ZoneCNH/transportx)             | v1.1.1-spec | ✅ 已发布 | Spec→Code 完成 | 应用通信底座规格基线；✅ GitHub Release v1.1.1-spec 已发布 |
@@ -430,7 +430,7 @@ Foundation 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中在 
 | 横切                  | [observex](https://github.com/ZoneCNH/observex)                 | v0.3.1 | ✅ 已发布 | █████ 100% | 可观测性（同时归属基座，提供底层 metrics/tracing/logging）                                |
 | **独立**              |                                                                 |        |           |          |                                                                                           |
 | 独立                  | [module](./module/README.md)                                    | -      | ✅ 已有   | -        | 项目技术规范、接口定义与 Goal 适配模块索引                                                |
-| 独立                  | [docs/governance](./docs/governance/README.md)                  | -      | ✅ 已有   | -        | Spec → Code 交付治理、模板、门禁与评分规则                                                |
+| 治理                  | [docs/governance](./docs/governance/README.md)                  | -      | ✅ 已有   | -        | Spec → Code 交付治理、模板、门禁与评分规则                                                |
 
 ## 本地开发路径
 

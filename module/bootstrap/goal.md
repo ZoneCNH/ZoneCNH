@@ -15,11 +15,11 @@ bootstrap 的目标是把服务入口重复胶水收敛为一个可审计、可�
 
 | ID | 成功标准 | 追溯 |
 | --- | --- | --- |
-| G-BS-001 | adapter 进程可以用 `Build(ctx, Spec{Stores: None})` 获得可运行 App，且默认不构造任何存储连接 | FR-001, FR-004, BR-005, NFR-005, AC-BS-001, AC-BS-004 |
-| G-BS-002 | configx、observex、resiliencx 与 lifecycx 的入口初始化口径统一，暴露可审计的 ConfigHash | FR-002, FR-003, FR-005, FR-006, FR-007, FR-008, AC-BS-002, AC-BS-003 |
-| G-BS-003 | bootstrap 不依赖 domain、contracts、数据域子模块或 server listener，依赖方向只向下 | BR-001, BR-002, BR-003, BR-004, AC-BS-005 |
-| G-BS-004 | 存储位掩码明确表达 None、All 与部分组合；非 None 仅供聚合进程使用 | FR-004, BR-006, BR-007, AC-BS-004 |
-| G-BS-005 | v0.1.1/v0.2.0 前关闭 foundationx 遗留依赖，并为非 None 存储组合补足测试证据 | OQ-004, TASK-BS-005, AC-BS-006 |
+| G-BS-001 | adapter 进程可以用 `Build(ctx, Spec{Stores: None})` 获得可运行 App，且默认不构造任何存储连接 | FR-001, FR-004, BR-005, NFR-005, AC-001, AC-004 |
+| G-BS-002 | configx、observex、resiliencx 与 lifecycx 的入口初始化口径统一，暴露可审计的 ConfigHash | FR-002, FR-003, FR-005, FR-006, FR-007, FR-008, AC-002, AC-003 |
+| G-BS-003 | bootstrap 不依赖 domain、contracts、数据域子模块或 server listener，依赖方向只向下 | BR-001, BR-002, BR-003, BR-004, AC-005 |
+| G-BS-004 | 存储位掩码明确表达 None、All 与部分组合；非 None 仅供聚合进程使用 | FR-004, BR-006, BR-007, AC-004 |
+| G-BS-005 | v0.1.1/v0.2.0 前关闭 foundationx 遗留依赖，并为非 None 存储组合补足测试证据 | OQ-004, TASK-BS-005, AC-006 |
 
 ## 3. 非目标
 

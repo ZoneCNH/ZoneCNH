@@ -1,4 +1,8 @@
-# xlib-harness v1.0 Goal
+# xlib-harness Goal
+
+- 当前发布版本：v0.1.1
+- 代码验收基线：/home/xlib-harness@335eef9
+- 验收日期：2026-06-18
 
 ## 发布定位
 
@@ -24,6 +28,6 @@ xlib-harness 是 Foundation 模块的生成器与门禁执行器。从 xlib-stan
 
 ## DoD
 
-- [ ] 6 FR 全部实现并通过 SPEC.md FR-001..006 的 WHEN/THEN 验证
-- [ ] generate → check 自举闭环可跑通
-- [ ] 测试覆盖率 >= 80%
+- [x] 6 FR 全部实现并通过 SPEC.md FR-001..006 的 WHEN/THEN 验证
+- [x] generate → check 自举闭环可跑通
+- [x] 测试覆盖率 >= 80%

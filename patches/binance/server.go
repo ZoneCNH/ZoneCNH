@@ -43,6 +43,20 @@ func DefaultServerConfig() ServerConfig {
 	}
 }
 
+// ---- Ingestion DTO ----
+
+// IngestRequest is the stdlib-only request envelope consumed by this server patch.
+type IngestRequest struct {
+	RequestID     string
+	Source        string
+	ProductLine   string
+	EventType     string
+	EventTime     time.Time
+	ReceivedAt    time.Time
+	SchemaVersion string
+	Payload       []byte
+}
+
 // ---- Request Validation ----
 
 // RequestValidator validates incoming IngestRequest envelopes.

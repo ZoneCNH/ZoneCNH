@@ -189,10 +189,10 @@ def test_release_and_factory_closure_invariants_remain_evidence_backed():
     )
 
     # 当前事实（2026-06-18 联网复核：21/21 模块 GitHub Release 实测存在 → release 全 true）：
-    # 仅 bootstrap 与 ossx factory=false（分别由 BLK-009 / BLK-010 open 阻塞）。
+    # bootstrap / kernel / ossx factory=false（分别由 BLK-009 / BLK-011 / BLK-010 open 阻塞）。
     # release_false_modules 与 factory_false_modules 直接对齐 status 权威源，不再硬编码快照。
     assert release_false_modules == []
-    assert factory_false_modules == ["bootstrap", "ossx"]
+    assert factory_false_modules == sorted(blockers["factory_blocking_modules"])
     assert blockers["factory_blocking_modules"] == factory_false_modules
     assert set(open_blocker_modules).issubset(blockers["factory_blocking_modules"])
     assert blockers["release_blocking_modules"] == []

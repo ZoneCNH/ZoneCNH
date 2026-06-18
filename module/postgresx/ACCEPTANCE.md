@@ -102,4 +102,4 @@
 
 - 当前文档只记录验收口径，不替代运行时代码仓库的最新 CI 结果。
 - 若上表存在 Pending、Draft、Blocked、Open 或未登记状态，发布前必须补充证据或在模块追溯矩阵中登记豁免理由。
-- 若 SPEC/TRACEABILITY 缺少 AC 或 TC，必须先补齐追溯矩阵，再执行发布验收。
+- SPEC/TRACEABILITY 已登记 AC/TC 主链路；当前主要缺口是 /home/postgresx 最新复验证据、下游接入成熟度证据与发布状态一致性需要归档。
