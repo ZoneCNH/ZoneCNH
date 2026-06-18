@@ -1,14 +1,14 @@
 # redisx 完整验收清单
 
 - Status: Generated from current module SSOT
-- Last-Updated: 2026-06-18
-- Module-Version: v1.0.2
+- Last-Updated: 2026-06-19
+- Module-Version: v1.0.3
 - Module-State: 已发布
 - Layer: L2 基础设施适配器
 - Runtime-Repo: /home/redisx
 - Source: goal.md, SPEC.md, TRACEABILITY.md, IMPLEMENTATION-PLAN.md, tasks/
 
-> 本清单用于验收 redisx 是否达到可发布、可追溯、可复验状态。截至 2026-06-18，`/home/redisx` v1.0.2 已完成本地质量门禁、L2-T2、Docker 发布门禁、Redis 集成门禁和强制安全扫描。
+> 本清单用于验收 redisx 是否达到可发布、可追溯、可复验状态。截至 2026-06-19，`/home/redisx` 分支 `redisx` 已对齐 v1.0.3，并通过 `GOWORK=off make fmt vet lint test race coverage-check`；Redis 运行时/API 可发布面 100% 覆盖率门禁已通过。Docker Redis、L2-T2、强制安全扫描等 live/release 证据沿用 v1.0.2 历史闭合证据，v1.0.3 标签发布仍以合入 main 后 clean-main `release-preflight` 为准。
 
 ## 1. 验收命令清单
 
@@ -16,16 +16,14 @@
 | --- | --- | --- |
 | 文档存在性 | cd /home/ZoneCNH && test -f module/redisx/FEATURES.md && test -f module/redisx/ACCEPTANCE.md | FEATURES.md 与 ACCEPTANCE.md 均存在 |
 | 文档格式 | cd /home/ZoneCNH && git diff --check -- module/redisx | 无尾随空格或补丁格式错误 |
-| 运行时测试 | cd /home/redisx && GOWORK=off go test ./... | 所有包测试通过 |
-| 竞态检查 | cd /home/redisx && GOWORK=off go test ./... -race -count=1 | 无 data race，测试稳定通过 |
-| 静态检查 | cd /home/redisx && GOWORK=off go vet ./... | 无 vet 问题 |
-| 覆盖率证据 | cd /home/redisx && GOWORK=off go test ./... -coverprofile=coverage.out | 覆盖率文件生成并满足模块 Spec 门槛 |
+| 运行时质量门禁 | cd /home/redisx && GOWORK=off make fmt vet lint test race coverage-check | fmt、vet、lint、go test ./...、race 与覆盖率门禁全部通过 |
+| 覆盖率证据 | cd /home/redisx && GOWORK=off make coverage-check | 8 个 Redis 运行时/API 可发布包均为 100.0%，总覆盖率满足 100.0% |
 | L2 证据 | cd /home/redisx && GOWORK=off make l2-check | `release_ready=true`、`score=100`、`target=L2-T2` |
 | 契约与评分 | cd /home/redisx && GOWORK=off make test-contract && GOWORK=off make contracts && GOWORK=off make score-check | 契约、schema 与评分门禁通过 |
 | 文档门禁 | cd /home/redisx && GOWORK=off make docs-check | 文档检查通过 |
 | 安全扫描 | cd /home/redisx && GOTOOLCHAIN=go1.26.4+auto GOWORK=off XLIB_ENABLE_VULNCHECK=1 XLIB_FORCE_VULNCHECK=1 make security | 强制 govulncheck 与 secret check 通过 |
 | Redis 集成 | cd /home/redisx && GOWORK=off REDISX_INTEGRATION_DOCKER=1 make test-integration && GOWORK=off REDISX_PERSISTENCE_INTEGRATION=1 make test-persistence-integration | Docker Redis 与持久化集成测试通过 |
-| Docker 发布门禁 | cd /home/redisx && VERSION=v1.0.2 GOWORK=off XLIB_CONTEXT=release_verify make docker-release-check | Docker toolchain/build/CI/integration/release gate 全部通过 |
+| 发布预检 | cd /home/redisx && VERSION=v1.0.3 GOWORK=off XLIB_CONTEXT=release_verify make release-preflight | 仅允许在干净且与 origin/main 对齐的 main 分支发布；feature branch 不发布标签 |
 
 ## 2. AC 验收登记
 
@@ -106,16 +104,18 @@
 | NFR-003 | 性能 | 性能基线记录 KV、Pipeline、Locker、RateLimit 的 benchmark 预算，超预算需说明 / go test -bench . ./... | ✅ | TRACEABILITY.md |
 | NFR-004 | 文档 | README、配置投影说明、迁移说明和发布证据齐全 / Documentation evidence | ✅ | TRACEABILITY.md |
 
-## 5. v1.0.2 验收证据登记
+## 5. v1.0.3 验收证据登记
 
 | 证据项 | 当前结果 |
 | --- | --- |
-| 本地质量门禁 | `GOWORK=off go test ./...`、`GOWORK=off go vet ./...`、`GOWORK=off go test ./... -race -count=1`、`GOWORK=off go test ./... -coverprofile=coverage.out`、`GOWORK=off make lint` 通过 |
-| L2-T2 与契约 | `GOWORK=off make l2-check` 输出 `release_ready=true`、`score=100`、`target=L2-T2`；`make test-contract`、`make contracts`、`make score-check` 通过 |
-| 集成验收 | `GOWORK=off make integration`、`REDISX_INTEGRATION_DOCKER=1 make test-integration`、`REDISX_PERSISTENCE_INTEGRATION=1 make test-persistence-integration` 通过 |
-| Docker 发布验收 | `VERSION=v1.0.2 GOWORK=off XLIB_CONTEXT=release_verify make docker-release-check` 通过 |
-| 安全验收 | `GOTOOLCHAIN=go1.26.4+auto GOWORK=off XLIB_ENABLE_VULNCHECK=1 XLIB_FORCE_VULNCHECK=1 make security` 通过，输出包含 `No vulnerabilities found.` 与 `secret check passed` |
-| CI/CD 配置 | Goal/L2/Security 工作流 fail-closed；非发布工作流 read-only permissions；关键官方 actions SHA pinning；security schedule/manual 强制 govulncheck |
+| 本地质量门禁 | `GOWORK=off make fmt vet lint test race coverage-check` 通过 |
+| 100% 覆盖率门禁 | `pkg/redisx`、`internal/provider`、`internal/provider/goredis`、`internal/sanitize`、`testkit`、`examples/basic`、`examples/config`、`examples/health` 均为 100.0%，总覆盖率满足 100.0% |
+| L2-T2 与契约 | v1.0.2 历史证据通过；v1.0.3 发布前通过 clean-main `release-preflight` 复验 |
+| 集成验收 | v1.0.2 历史证据通过：`GOWORK=off make integration`、`REDISX_INTEGRATION_DOCKER=1 make test-integration`、`REDISX_PERSISTENCE_INTEGRATION=1 make test-persistence-integration` |
+| Docker 发布验收 | v1.0.2 历史证据通过：`VERSION=v1.0.2 GOWORK=off XLIB_CONTEXT=release_verify make docker-release-check` |
+| 安全验收 | v1.0.2 历史证据通过：`GOTOOLCHAIN=go1.26.4+auto GOWORK=off XLIB_ENABLE_VULNCHECK=1 XLIB_FORCE_VULNCHECK=1 make security`，输出包含 `No vulnerabilities found.` 与 `secret check passed` |
+| CI/CD 配置 | `coverage-check` 已纳入 Makefile、registry、harness 与 release gate；`release-auto-patch` lint action 版本已固定到可用版本；`worktree-guard` 已修正为 PR 源分支门禁 |
+| 治理与发布 | 提交 `139cf07` 已在 `/home/redisx/.worktree/workspaces/redisx-verify-20260619` 通过 `GOWORK=off make governance-check` 与 `GOWORK=off make p1-governance-check`；release preflight 已尝试，因 main-only 发布策略阻塞：`ERROR: release preflight must run on main; current branch is HEAD`。v1.0.3 tag/release 等待合入 main 后执行 |
 
 ## 6. 发布 DoD 清单
 
@@ -124,9 +124,11 @@
 - [x] 运行时代码仓库 /home/redisx 通过 go test、go test -race、go vet 与覆盖率门槛。
 - [x] 所有外部服务依赖有本地可重复的测试替身或明确 live-gate 证据。
 - [x] 安全检查确认没有凭证、私有端点、账户 ID 或实盘配置进入公开文档与代码。
-- [x] 版本号、发布标签、CHANGELOG 或 release note 与本目录状态一致。
+- [x] 版本号、CHANGELOG 与 v1.0.3 working tree 状态一致。
+- [ ] v1.0.3 发布标签已在 clean main 分支通过 `release-preflight` 后创建。
 
 ## 7. 当前缺口登记
 
-- 当前 `/home/redisx` v1.0.2 本地验收、Docker release gate、L2-T2 evidence 和强制安全扫描已通过。
-- 发布标签仍必须在 `/home/redisx` 合入 main 后，于干净且与 `origin/main` 对齐的 main 分支执行 `VERSION=v1.0.2 GOWORK=off XLIB_CONTEXT=release_verify make release-preflight` 后创建；feature branch 不绕过该门禁。
+- 当前 `/home/redisx` v1.0.3 本地质量门禁、Redis 运行时/API 可发布面 100% 覆盖率门禁、`governance-check` 与 `p1-governance-check` 均已通过。
+- v1.0.3 尚未打 tag 或发布；已在 worker worktree 尝试 `VERSION=v1.0.3 GOWORK=off XLIB_CONTEXT=release_verify make release-preflight`，阻塞于 `ERROR: release preflight must run on main; current branch is HEAD`。
+- 必须在 `/home/redisx` 合入 main 后，于干净且与 `origin/main` 对齐的 main 分支重新执行 release preflight，再创建和推送 tag/release。

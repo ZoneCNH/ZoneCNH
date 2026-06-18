@@ -2,12 +2,12 @@
 
 Status: Approved
 - Spec-Version: v1.0.0
-- Last-Updated: 2026-06-14
+- Last-Updated: 2026-06-19
 - Layer: 基座 · 存储扩展
-- Version: v1.0.1
+- Version: v1.0.3
 - Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `kernel`
 
-> 公开投影 caveat：Status=Review 与矩阵覆盖证据不等同于 factory-grade；四源评分通过前机器事实层保持 factory=false。
+> 公开投影 caveat：Status=Approved 表示需求追溯已闭合；发布标签仍以 `/home/redisx` 的 clean-main `release-preflight` 为准。
 
 ---
 
