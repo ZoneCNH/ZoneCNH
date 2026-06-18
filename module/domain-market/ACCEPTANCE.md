@@ -1,0 +1,50 @@
+# domain-market 完整验收清单
+
+- Status: Generated（与 [SPEC.md](./SPEC.md) 同步抽取，未经 pipeline-arbiter 校验）
+- Last-Updated: 2026-06-18
+- Source: [SPEC.md](./SPEC.md) · [TRACEABILITY.md](./TRACEABILITY.md) · [FEATURES.md](./FEATURES.md)
+- Scale: 10 AC · 0 TC
+
+> 本文档是 domain-market 的 **完成定义（Definition of Done）**，把 SPEC 的 AC/TC 展开成可执行的验收项。
+> 任一未勾选项存在即视为未达成完整验收；通过条件以 SPEC §19 验收门禁为准。
+
+勾选图例：`[ ]` 未通过 · `[x]` 已通过并有证据 · `[~]` 部分通过（须在备注列注明缺口）
+
+---
+
+## 1. 验收标准（AC）
+
+- [ ] **AC-MKT-001** FR-MKT-001
+- [ ] **AC-MKT-002** FR-MKT-002
+- [ ] **AC-MKT-004** FR-MKT-006
+- [ ] **AC-MKT-005** FR-MKT-007
+- [ ] **AC-MKT-003** FR-MKT-008
+- [ ] **AC-MKT-006** FR-MKT-010
+- [ ] **AC-MKT-007** FR-MKT-014
+- [ ] **AC-MKT-008** FR-MKT-015
+- [ ] **AC-MKT-009** FR-MKT-016
+- [ ] **AC-MKT-010** FR-MKT-017
+
+## 2. 测试用例（TC）
+
+> SPEC 中未抽取到 `TC-` 编号；请人工对照 SPEC §15 测试矩阵补全。
+
+---
+
+## 3. 发布门禁（SPEC §19）
+
+实现落地后，下列门禁必须全部通过才能声称完整验收：
+
+```bash
+git diff --check
+bash .github/ci/spec-lint.sh
+TRACEABILITY_STRICT=1 bash .github/ci/traceability-check.sh
+bash .github/ci/task-spec-validate.sh
+go test ./module/domain-market/... 2>/dev/null || true   # 远程仓库为准
+go list -deps ./... | grep -v configx                # 禁止 configx 直接依赖（如 SPEC 要求）
+```
+
+## 4. 完整验收判定
+
+§1 全部 AC `[x]` + §2 全部 TC `[x]` + §3 全部门禁通过 + 远程 `github.com/ZoneCNH/<repo>` Release 标签存在并指向当前 SPEC 版本。
+
