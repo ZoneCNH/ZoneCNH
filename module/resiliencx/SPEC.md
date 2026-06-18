@@ -172,84 +172,126 @@ THEN 执行 secondary，返回 secondary 的结果
 
 ## 8. 接口契约
 
-### 8.1 策略接口
+> 以下 API 均为运行时代码仓库 `github.com/ZoneCNH/resiliencx` 实测签名（`pkg/resiliencx/`）。六大策略以**独立子包**形式提供，按需 import，不通过包级聚合函数暴露。组合通过函数嵌套（装饰器模式）实现，v1.0 不提供统一执行链或 `Policies` 聚合 struct（见 goal.md §7，`ResilienceExecutor`/`PolicyChain` 为 v1.2+ 演进目标）。
+
+### 8.1 策略接口（子包级）
 
 ```go
-// Timeout
-func Timeout(ctx context.Context, d time.Duration, fn func(ctx context.Context) error) error
+// timeout 子包：函数调用超时控制
+import "github.com/ZoneCNH/resiliencx/pkg/resiliencx/timeout"
+func Do(ctx context.Context, d time.Duration, fn func(context.Context) error) error
+// 超时返回 ctx.Err()（即 context.DeadlineExceeded）；ctx 超前取消返回 ctx.Err()。
 
-// Retry
-type RetryPolicy struct {
-    MaxRetries  int
+// retry 子包：可配置指数退避重试
+import "github.com/ZoneCNH/resiliencx/pkg/resiliencx/retry"
+type Policy struct {
+    MaxAttempts int           // 总尝试次数（1 = 不重试）；注意非 v1.0.1 文档误写的 MaxRetries
     InitialWait time.Duration
     MaxWait     time.Duration
-    Multiplier  float64
+    Multiplier  float64       // <= 0 时内部回退为默认值 2
 }
-func Retry(ctx context.Context, policy RetryPolicy, fn func(ctx context.Context) error) error
+func DefaultPolicy() Policy  // {MaxAttempts:3, InitialWait:100ms, MaxWait:5s, Multiplier:2}
+func Do(ctx context.Context, p Policy, fn func(context.Context) error) error
+// 耗尽后返回最后一次非 nil 错误；ctx 取消立即返回 ctx.Err()。
 
-// CircuitBreaker
-type CircuitBreaker interface {
-    Execute(fn func() error) error
-    State() CircuitState
-}
-type CircuitState int
+// circuit 子包：三态熔断器
+import "github.com/ZoneCNH/resiliencx/pkg/resiliencx/circuit"
+type State int
 const (
-    CircuitClosed   CircuitState = iota
-    CircuitOpen
-    CircuitHalfOpen
+    Closed   State = iota // 正常
+    Open                  // 拒绝调用
+    HalfOpen              // 允许单次试探
 )
-func NewCircuitBreaker(opts ...CircuitOption) CircuitBreaker
+func New(threshold int, cooldown time.Duration) *Breaker
+func (b *Breaker) Do(fn func() error) error   // 非 Execute
+func (b *Breaker) State() State
+func (b *Breaker) Reset()
+// 仅以"连续失败次数 >= threshold"单条件熔断；未实现失败率维度（见 §22 待解决问题）。
 
-// Bulkhead
-type Bulkhead interface {
-    Execute(fn func() error) error
-    Available() int
-}
-func NewBulkhead(maxConcurrent int, opts ...BulkheadOption) Bulkhead
+// bulkhead 子包：信号量并发限制
+import "github.com/ZoneCNH/resiliencx/pkg/resiliencx/bulkhead"
+func New(maxConcurrent int) *Bulkhead
+func (b *Bulkhead) Acquire(ctx context.Context) error
+func (b *Bulkhead) TryAcquire() error
+func (b *Bulkhead) Release()
+func (b *Bulkhead) Do(ctx context.Context, fn func() error) error
+func (b *Bulkhead) Available() int
 
-// RateLimiter
-type RateLimiter interface {
-    Allow() bool
-    Wait(ctx context.Context) error
-    Rate() float64
-}
-func NewRateLimiter(rate float64, burst int) RateLimiter
+// ratelimit 子包：令牌桶限流
+import "github.com/ZoneCNH/resiliencx/pkg/resiliencx/ratelimit"
+func New(rate float64, max float64) *Limiter   // max 即桶容量/burst
+func (l *Limiter) Allow() bool                  // = AllowN(1)
+func (l *Limiter) AllowN(n float64) bool
+func (l *Limiter) Reserve(n float64) time.Duration  // 返回需等待时长，预扣令牌
 
-// Fallback
-func Fallback(primary func() error, fallbacks ...func() error) error
+// fallback 子包：主逻辑 + 降级链
+import "github.com/ZoneCNH/resiliencx/pkg/resiliencx/fallback"
+func Do(ctx context.Context, fn func(context.Context) error, fallbacks ...func(context.Context) error) error
+// primary 成功返回 nil；全失败返回最后一个错误。
+```
 
-// Policies 组合（传给模块的可选依赖）
-type Policies struct {
-    Timeout    time.Duration
-    Retry      RetryPolicy
-    Circuit    CircuitBreaker
-    Bulkhead   Bulkhead
-    RateLimit  RateLimiter
-}
-```text
-
-### 8.2 用法示例
+### 8.2 包根辅助能力（非 SPEC §13 列出，但代码已实现）
 
 ```go
-// 策略组合：timeout + retry + circuit breaker
-cb := resiliencx.NewCircuitBreaker(
-    resiliencx.WithFailureThreshold(5),
-    resiliencx.WithRecoveryTimeout(30*time.Second),
+import resiliencx "github.com/ZoneCNH/resiliencx/pkg/resiliencx"
+
+// 错误分类（DefaultClassifier: Canceled→Fatal, DeadlineExceeded→Retryable, 其他→NonRetryable）
+type RetryClass int  // Retryable | NonRetryable | Fatal
+type Classifier func(err error) RetryClass
+func DefaultClassifier() Classifier
+
+// 错误模型（ErrorKind: config/validation/connection/unavailable/timeout/auth/conflict/rate_limit/internal）
+type Error struct { Kind ErrorKind; Op string; Message string; Cause error; Retryable bool }
+func NewError(...) / WrapError(...) / IsKind(err, kind)
+
+// 幂等守卫（防止非幂等操作被自动重试）
+type IdempotencyGuard struct{}
+func NewIdempotencyGuard() *IdempotencyGuard
+func (g *IdempotencyGuard) Check(key string) error  // 已执行返回 ErrAlreadyExecuted
+func (g *IdempotencyGuard) Mark(key string)
+
+// 事件 Sink（策略事件回调，默认 NoopSink；测试用 SliceSink）
+type Event struct { Type EventType; Time time.Time; Attempt int; Err error; Duration time.Duration; Metadata map[string]any }
+type Sink interface { Emit(event Event) }
+
+// 策略层全局配置（Option 模式）
+type ResilienceConfig struct { Classifier Classifier; Sink Sink }
+func NewResilienceConfig(opts ...ResilienceOption) ResilienceConfig
+
+// 客户端生命周期（可选使用，非策略核心）
+type Config struct { Name string; Timeout time.Duration; Secret string }
+func New(ctx context.Context, cfg Config, opts ...Option) (*Client, error)
+func (c *Client) Close(ctx context.Context) error
+```
+
+### 8.3 用法示例
+
+```go
+import (
+    "context"
+    "time"
+
+    "github.com/ZoneCNH/resiliencx/pkg/resiliencx/timeout"
+    "github.com/ZoneCNH/resiliencx/pkg/resiliencx/retry"
+    "github.com/ZoneCNH/resiliencx/pkg/resiliencx/circuit"
 )
 
-err := resiliencx.Timeout(ctx, 5*time.Second, func(ctx context.Context) error {
-    return resiliencx.Retry(ctx, resiliencx.RetryPolicy{
-        MaxRetries:  3,
+// 策略组合：timeout + retry + circuit breaker（函数嵌套 / 装饰器模式）
+cb := circuit.New(5, 30*time.Second) // 连续失败 5 次熔断，30 秒后半开
+
+err := timeout.Do(ctx, 5*time.Second, func(ctx context.Context) error {
+    return retry.Do(ctx, retry.Policy{
+        MaxAttempts: 3,
         InitialWait: 100 * time.Millisecond,
         MaxWait:     2 * time.Second,
         Multiplier:  2.0,
     }, func(ctx context.Context) error {
-        return cb.Execute(func() error {
+        return cb.Do(func() error {
             return exchangeClient.GetTicker(ctx, "BTCUSDT")
         })
     })
 })
-```text
+```
 
 ---
 
