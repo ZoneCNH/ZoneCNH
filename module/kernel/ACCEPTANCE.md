@@ -101,7 +101,7 @@ scripts/check_release_evidence.sh
 治理仓库侧验证：
 
 ```bash
-cd <kernel-governance-evidence-worktree>
+cd <governance-repo-root>
 python3 docs/goal/tools/matrix-gen.py --check-only --matrix .config/goal/matrix/matrix.yaml
 四源 claude/codex/copilot/rules scorer
 pipeline-arbiter
