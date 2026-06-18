@@ -130,10 +130,11 @@ status_constraints:
     - Verified
     - Dropped
   drift_meta:
-    - Drifted
-    - Stale
-    - Blocked
-    - Changed
+    states:
+      - Drifted
+      - Stale
+      - Blocked
+      - Changed
     note: "漂移元状态不是完成终态，必须回到 Linked 后重新验证或转为 Dropped"
 
 # 风险等级
