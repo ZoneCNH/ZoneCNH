@@ -66,18 +66,18 @@
 
 | ID | 交付项 | 文件/挂钩 | 当前登记状态 | 来源 |
 | --- | --- | --- | --- | --- |
-| TASK-CONFIGX-000 | TASK-CONFIGX-000 | module/configx/tasks/TASK-CONFIGX-000.md | - | tasks/TASK-CONFIGX-000.md |
-| TASK-CONFIGX-001 | TASK-CONFIGX-001 | module/configx/tasks/TASK-CONFIGX-001.md | - | tasks/TASK-CONFIGX-001.md |
-| TASK-CONFIGX-002 | TASK-CONFIGX-002 | module/configx/tasks/TASK-CONFIGX-002.md | - | tasks/TASK-CONFIGX-002.md |
-| TASK-CONFIGX-003 | TASK-CONFIGX-003 | module/configx/tasks/TASK-CONFIGX-003.md | - | tasks/TASK-CONFIGX-003.md |
-| TASK-CONFIGX-004 | TASK-CONFIGX-004 | module/configx/tasks/TASK-CONFIGX-004.md | - | tasks/TASK-CONFIGX-004.md |
-| TASK-CONFIGX-005 | TASK-CONFIGX-005 | module/configx/tasks/TASK-CONFIGX-005.md | - | tasks/TASK-CONFIGX-005.md |
-| TASK-CONFIGX-006 | TASK-CONFIGX-006 | module/configx/tasks/TASK-CONFIGX-006.md | - | tasks/TASK-CONFIGX-006.md |
-| TASK-CONFIGX-007 | TASK-CONFIGX-007 | module/configx/tasks/TASK-CONFIGX-007.md | - | tasks/TASK-CONFIGX-007.md |
-| TASK-CONFIGX-009 | TASK-CONFIGX-009 | module/configx/tasks/TASK-CONFIGX-009.md | - | tasks/TASK-CONFIGX-009.md |
-| TASK-CONFIGX-010 | TASK-CONFIGX-010 | module/configx/tasks/TASK-CONFIGX-010.md | - | tasks/TASK-CONFIGX-010.md |
-| TASK-CONFIGX-011 | TASK-CONFIGX-011: FR-006 through FR-010 | module/configx/tasks/TASK-CONFIGX-011.md | - | tasks/TASK-CONFIGX-011.md |
-| TASK-CONFIGX-012 | TASK-CONFIGX-012 | module/configx/tasks/TASK-CONFIGX-012.md | - | tasks/TASK-CONFIGX-012.md |
+| TASK-CONFIGX-000 | 项目骨架（go.mod / doc.go / errors.go） | module/configx/tasks/TASK-CONFIGX-000.md | ✅ 2026-06-18 已交付（实现演进为 ErrorKind 枚举 + *Error，见 SPEC §9.5） | tasks/TASK-CONFIGX-000.md |
+| TASK-CONFIGX-001 | 接口定义（Client / Config / Option） | module/configx/tasks/TASK-CONFIGX-001.md | ✅ 2026-06-18 已交付（Client + Loader + Source 模式，见 SPEC §8） | tasks/TASK-CONFIGX-001.md |
+| TASK-CONFIGX-002 | 配置加载（YAML/TOML/JSON/.env Source） | module/configx/tasks/TASK-CONFIGX-002.md | ✅ 2026-06-18 已交付（FR-003，TC-001 实测） | tasks/TASK-CONFIGX-002.md |
+| TASK-CONFIGX-003 | LastWins 合并策略 | module/configx/tasks/TASK-CONFIGX-003.md | ✅ 2026-06-18 已交付（BR-001，TC-001 实测） | tasks/TASK-CONFIGX-003.md |
+| TASK-CONFIGX-004 | EnvSource 环境变量覆盖 | module/configx/tasks/TASK-CONFIGX-004.md | ✅ 2026-06-18 已交付（FR-004，TC-001 实测） | tasks/TASK-CONFIGX-004.md |
+| TASK-CONFIGX-005 | StrictDecode + Validate | module/configx/tasks/TASK-CONFIGX-005.md | ✅ 2026-06-18 已交付（FR-006/BR-002/BR-003/BR-007，TC-002/TC-008 实测） | tasks/TASK-CONFIGX-005.md |
+| TASK-CONFIGX-006 | Provenance / Hash / HealthCheck | module/configx/tasks/TASK-CONFIGX-006.md | ✅ 2026-06-18 已交付（FR-009/010/012，TC-006/TC-007 实测） | tasks/TASK-CONFIGX-006.md |
+| TASK-CONFIGX-007 | Watch 文件监控（可选） | module/configx/tasks/TASK-CONFIGX-007.md | ⏸️ 推迟到 v1.1（goal.md §文首状态戳明确未交付） | tasks/TASK-CONFIGX-007.md |
+| TASK-CONFIGX-009 | 文档 + Release DoD | module/configx/tasks/TASK-CONFIGX-009.md | ✅ 2026-06-18 已交付（BR-004/009/010，TC-009 + release/manifest/latest.json checks 全 passed） | tasks/TASK-CONFIGX-009.md |
+| TASK-CONFIGX-010 | SecretString / SecretPolicy / SanitizedManifest | module/configx/tasks/TASK-CONFIGX-010.md | ✅ 2026-06-18 已交付（FR-007/008/011, BR-005/006，TC-003/TC-005 实测） | tasks/TASK-CONFIGX-010.md |
+| TASK-CONFIGX-011 | FR-006 through FR-010 coverage | module/configx/tasks/TASK-CONFIGX-011.md | ✅ 2026-06-18 已交付（FR-006~010 全部 ✅，pkg/configx 98.5% 覆盖率） | tasks/TASK-CONFIGX-011.md |
+| TASK-CONFIGX-012 | FR-011 / FR-012 / FR-013 coverage | module/configx/tasks/TASK-CONFIGX-012.md | ✅ 2026-06-18 已交付（FR-011~013 全部 ✅，TC-003/TC-007/TC-009 实测） | tasks/TASK-CONFIGX-012.md |
 
 ## 5. 文档资产清单
 
@@ -92,9 +92,9 @@
 
 ## 6. 实现完成判定
 
-- [ ] 所有 FR 条目均有运行时代码、单元测试或契约测试覆盖。
-- [ ] 所有 BR/NFR 条目均有测试、静态检查或人工可审计证据覆盖。
-- [ ] 所有任务文档均能追溯到 FR、BR/NFR、AC 或 TC。
-- [ ] 依赖边界符合 FOUNDATION-DEPS.yaml，不引入未授权运行时依赖。
-- [ ] 运行时代码仓库 /home/configx 的 lint、typecheck、test、race、coverage 验证证据已归档。
-- [ ] 发布说明、版本标签与本目录登记状态一致。
+- [x] 所有 FR 条目均有运行时代码、单元测试或契约测试覆盖。（2026-06-18 FR-001~013 全部 ✅，TRACEABILITY.md §1 实测）
+- [x] 所有 BR/NFR 条目均有测试、静态检查或人工可审计证据覆盖。（2026-06-18 BR-001~011、NFR-001~006 全部 ✅，TRACEABILITY.md §2/§3 实测）
+- [x] 所有任务文档均能追溯到 FR、BR/NFR、AC 或 TC。（2026-06-18 §4 任务交付清单已挂接 FR/BR/TC，TASK-CONFIGX-007 显式标记推迟 v1.1）
+- [x] 依赖边界符合 FOUNDATION-DEPS.yaml，不引入未授权运行时依赖。（2026-06-18 `go list -deps` 无 kernel；`scripts/check_boundary.sh` PASS）
+- [x] 运行时代码仓库 /home/configx 的 lint、typecheck、test、race、coverage 验证证据已归档。（2026-06-18 go test ./... -race -count=1 PASS；vet 0 告警；coverage total 94.0% / pkg/configx 98.5%）
+- [x] 发布说明、版本标签与本目录登记状态一致。（2026-06-18 release/manifest/latest.json checks 全 passed；STATUS.md / README.md / ARCHITECTURE.md 已对齐 v1.0.0 (tag) / v0.1.4 (runtime)）
