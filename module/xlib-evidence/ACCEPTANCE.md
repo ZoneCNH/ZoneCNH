@@ -2,8 +2,8 @@
 
 - Status: Generated from current module SSOT
 - Last-Updated: 2026-06-18
-- Module-Version: v0.1.0
-- Module-State: 本地验收通过，待发布
+- Module-Version: v0.2.0
+- Module-State: 已发布，GitHub Release v0.2.0 与本地验收证据对齐
 - Layer: L1 证据
 - Runtime-Repo: /home/xlib-evidence
 - Source: goal.md, SPEC.md, TRACEABILITY.md, IMPLEMENTATION-PLAN.md, tasks/
@@ -68,11 +68,13 @@
 - [x] 运行时代码仓库 /home/xlib-evidence 通过 go test、go test -race、go vet 与覆盖率门槛。
 - [x] 所有外部服务依赖有本地可重复的测试替身或明确 live-gate 证据。
 - [x] 安全检查确认没有凭证、私有端点、账户 ID 或实盘配置进入公开文档与代码。
-- [ ] v0.1.0 tag/release 待 runtime 源码提交后重建，当前未作为已发布证据。
+- [x] v0.2.0 tag/release 已发布，当前发布判定以本地可复验命令与 GitHub Release 记录为准。
 
 ## 6. 当前验收证据
 
 - 2026-06-18 本地验收已执行：go test ./...、go test ./... -race -count=1、go vet ./... 全部通过。
-- 覆盖率 total 89.8% >= 80.0%；BenchmarkManifestGen 8845 ns/op，BenchmarkMultiModuleAggregate 209324 ns/op。
+- 覆盖率 total 89.8% >= 80.0%；BenchmarkManifestGen 12223 ns/op，BenchmarkMultiModuleAggregate 413913 ns/op。
 - go list -m all 仅返回 github.com/ZoneCNH/xlib-evidence；禁止依赖扫描与凭证/外部服务关键字扫描无匹配。
-- README 与 CI workflow 已对齐本地验收口径；release workflow 与 v0.1.0 tag/release 待 runtime 源码提交后重建。
+- GitHub Release v0.2.0 已发布：https://github.com/ZoneCNH/xlib-evidence/releases/tag/v0.2.0 。
+- 远端 release workflow run `27749385556` 当前仍处于 queued，原因是 workflow 绑定 `[self-hosted, Linux, X64, sre/deploy]` 且仓库当前 self-hosted runner 库存为 0；该远端 run 作为发布后的补充信号，不替代本地验收门禁。
+- README、ARCHITECTURE 与本验收清单已对齐 v0.2.0 发布口径。
