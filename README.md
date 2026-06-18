@@ -81,7 +81,7 @@ L2.5: domainx / decimalx / domain-market / domain-macro / domain-exchange (5/5 �
 - [kernel](https://github.com/ZoneCNH/kernel) — L0 标准库扩展原语（error/time/context/lifecycle/health/sync） `公开`
 - [configx](https://github.com/ZoneCNH/configx) — 显式配置加载、多源合并（File/Env/Map/Args）、StrictDecode、SecretString 脱敏、Provenance 追踪、EffectiveConfigHash、Bind() 强类型绑定、ConfigSnapshot 热更新与回滚、RemoteSource SPI、配置文档自动生成 `公开`
 - [observex](https://github.com/ZoneCNH/observex) — vendor-neutral 日志、指标、追踪、健康与脱敏契约 `公开`
-- [resiliencx](https://github.com/ZoneCNH/resiliencx) — 运行时弹性策略（timeout/retry/circuit/bulkhead/rate/fallback） `公开`
+- [resiliencx](https://github.com/ZoneCNH/resiliencx) — 运行时弹性策略（timeout/retry/circuit/bulkhead/rate/fallback、Compose、InstrumentStrategy、panic recovery）；v1.0.2 GitHub Release 已发布，Release Check 27777166525 通过 `公开`
 - [schedulex](https://github.com/ZoneCNH/schedulex) — 任务调度运行时（cron/interval/delay、Overlap/Misfire 策略、Locker 扩展点、Clock 注入、v1.0.0 已发布，98.2% 覆盖） `公开`
 - [bootstrap](https://github.com/ZoneCNH/bootstrap) — L1 Assembly 通用进程组装层（位于 L1 primitives 之上、x.go 入口之下）：configx/observex/resiliencx + lifecycx 统一组装 + 7 存储 adapter 可选构造（StoreSet 位掩码）；不承载业务语义 / service listener / domain contracts；✅ v0.1.0 GitHub Release 已发布，规格 v0.1.7 `公开`
 - [testkitx](https://github.com/ZoneCNH/testkitx) — 测试专用 evidence/golden/fixture/boundary 工具包 `公开`
@@ -89,7 +89,7 @@ L2.5: domainx / decimalx / domain-market / domain-macro / domain-exchange (5/5 �
 
 > **公开投影口径**：版本 / release / factory 状态以 `.foundationx/status/index.json` + `.foundationx/blockers.json` 为准；BLK-001~008 + BLK-011 已 resolved，BLK-009 / BLK-010 仍 open；Foundation 整体维持 non-factory 投影。
 >
-> `configx` v1.1.0、`observex` v0.3.1、`testkitx` v0.4.0、`resiliencx` v0.4.9 已发布；此前版本误标已修正。
+> `configx` v1.1.0、`observex` v0.3.1、`testkitx` v0.4.0、`resiliencx` v1.0.2 已发布；resiliencx Release Check 27777166525 通过，此前版本误标已修正。
 
 ### 基座 · 存储与中间件
 

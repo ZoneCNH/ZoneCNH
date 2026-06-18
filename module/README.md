@@ -2,7 +2,7 @@
 
 > 19 个基座模块与 5 个 L2.5 领域共享规划/基线模块的独立规格，按架构层级组织。`x.go` 组合根不再作为 `module/` 下的模块规格维护。
 
-最后更新：2026-06-18
+最后更新：2026-06-19
 
 ---
 
@@ -97,7 +97,7 @@ stdlib-only 基础原语。所有上层模块的根依赖。
 | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | configx    | [SPEC.md](./configx/SPEC.md) · [DESIGN.md](./configx/DESIGN.md) · [TRACEABILITY.md](./configx/TRACEABILITY.md) · [tasks/](./configx/tasks/)         | Client/Loader/Source 模式、多源合并（YAML/TOML/JSON/.env/Env/Map）、StrictDecode、SecretString 脱敏、SecretPolicy、Provenance、Hash、HealthCheck、Metrics（13 FR，11 BR，97.1% 覆盖） |
 | observex   | [SPEC.md](./observex/SPEC.md) · [tasks/](./observex/tasks/)                                                                                         | Logger/Meter/Tracer/Exporter、Redaction、Label Policy、Health（7 FR，11 tasks）                                                                                                       |
-| resiliencx | [SPEC.md](./resiliencx/SPEC.md) · [goal.md](./resiliencx/goal.md) · [TRACEABILITY.md](./resiliencx/TRACEABILITY.md) · [tasks/](./resiliencx/tasks/) | Timeout/Retry/CircuitBreaker/Bulkhead/RateLimiter/Fallback、策略组合（6 FR，8 BR，10 tasks，v1.0.1 Approved）                                                                         |
+| resiliencx | [SPEC.md](./resiliencx/SPEC.md) · [goal.md](./resiliencx/goal.md) · [TRACEABILITY.md](./resiliencx/TRACEABILITY.md) · [tasks/](./resiliencx/tasks/) | Timeout/Retry/CircuitBreaker/Bulkhead/RateLimiter/Fallback、Compose、InstrumentStrategy、recovered panic（6 FR，8 BR，10 tasks，v1.0.2 已发布）                                      |
 | schedulex  | [SPEC.md](./schedulex/SPEC.md) · [tasks/](./schedulex/tasks/)                                                                                       | Scheduler/Trigger/OverlapPolicy/MisfirePolicy/EventSink/Locker/Clock（9 FR，12 tasks，v1.0.1）                                                                                        |
 
 ---
