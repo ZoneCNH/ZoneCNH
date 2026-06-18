@@ -20,7 +20,7 @@
 | 竞态检查 | cd /home/xlib-harness && go test ./... -race -count=1 | 无 data race，测试稳定通过 |
 | 静态检查 | cd /home/xlib-harness && go vet ./... | 无 vet 问题 |
 | 覆盖率证据 | cd /home/xlib-harness && go test ./... -coverprofile=coverage.out | 覆盖率文件生成并满足模块 Spec 门槛 |
-| 依赖边界 | cd /home/xlib-harness && go list -deps ./... | 依赖不越过 FOUNDATION-DEPS.yaml 登记边界 |
+| 依赖边界 | cd /home/xlib-harness && go list -deps ./... && go list -m all | 依赖不越过 FOUNDATION-DEPS.yaml 登记边界，且不出现 github.com/ZoneCNH/xlib-standard import/module dependency |
 
 ## 2. AC 验收登记
 
@@ -60,7 +60,7 @@
 | NFR-001 | Performance | generate 延迟 < 5s；check 延迟（单模块） < 10s / benchmark: go test -bench=. ./... | ✅ | TRACEABILITY.md |
 | NFR-002 | Observability | 门禁结果输出为结构化 JSON / output format validation: xlib-harness check --json \ / jq . | ✅ | TRACEABILITY.md |
 | NFR-003 | Security | generate 写入路径限制在 module/ 下；不读取密钥；不执行远程代码 / path traversal test: xlib-harness generate ../escape 应拒绝 | ✅ | TRACEABILITY.md |
-| NFR-004 | Dependency Boundary | 允许只读 xlib-standard 模板；禁止 observex/configx/resiliencx/schedulex/业务域模块 / dependency graph analysis: go list -deps + boundary allow/deny list | ✅ | TRACEABILITY.md |
+| NFR-004 | Dependency Boundary | 允许只读 xlib-standard 模板；禁止 github.com/ZoneCNH/xlib-standard Go import/module dependency，并禁止 observex/configx/resiliencx/schedulex/业务域模块 / dependency graph analysis: go list -deps/go list -m + boundary allow/deny list | ✅ | TRACEABILITY.md |
 
 ## 5. 发布 DoD 清单
 
