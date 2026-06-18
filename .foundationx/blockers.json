@@ -1,6 +1,6 @@
 {
   "schema_version": "blockers/v1",
-  "generated_at": "2026-06-18T04:00:00Z",
+  "generated_at": "2026-06-17T23:45:06Z",
   "source": ".foundationx/blockers.json",
   "total_blockers": 10,
   "by_severity": {
@@ -114,11 +114,11 @@
       "severity": "high",
       "module": "ossx",
       "title": "公开 release v1.0.1 但仓库 0 pkg 源码（仅文档/脚本）",
-      "status": "open",
+      "status": "resolved",
       "category": "implementation",
-      "detail": "ZoneCNH/ossx 仓库 54KB，无 pkg/ossx 目录，无 Go 源码；release v1.0.1 tag 存在但实测 import 失败；fact-layer 此前误标 impl=true/factory=true",
-      "evidence": "gh api repos/ZoneCNH/ossx/contents 2026-06-18 实测：根目录仅 .env.example/.gitignore/.repo-contract.yaml/LICENSE/README.md 与 docs/scripts/.github 目录",
-      "action": "v1.0.2 patch：写 pkg/ossx New/Close/PutObject/GetObject/DeleteObject + integration test"
+      "detail": "v1.0.2-alpha 已交付 pkg/ossx 源码（8 文件 ~34KB：blobstore/config/errors/inmemory/multipart/object/doc + blobstore_test），11 个测试函数覆盖 TC-002/003/004/006/007/009/011/012，stdlib-only（BR-002 合规），import 路径 github.com/ZoneCNH/ossx/pkg/ossx 实测可编译。BLK-010 字面前提（0 pkg 源码/import 失败）已被推翻。",
+      "evidence": "gh api repos/ZoneCNH/ossx/contents/pkg/ossx 2026-06-18 实测：8 个 .go 文件；go get github.com/ZoneCNH/ossx@v1.0.2-alpha + import pkg/ossx BUILD 成功；CHANGELOG v1.0.2-alpha 记录 go test -race 通过。剩余：真实 Aliyun adapter（adapters/aliyun）+ 真实 OSS integration test 由 TASK-OSSX-005 跟踪，factory 保持 false。",
+      "action": "已完成（v1.0.2-alpha 骨架 + InMemoryAdapter + 测试）；真实 Aliyun adapter 属 TASK-OSSX-005 范畴"
     }
   ],
   "by_module": {
@@ -153,10 +153,9 @@
     "note": "全部阻塞项已通过治理流程闭合（2026-06-16）",
     "items": []
   },
-  "open_blockers": 2,
-  "resolved_blockers": 8,
+  "open_blockers": 1,
+  "resolved_blockers": 9,
   "open_by_severity": {
-    "high": 1,
     "medium": 1
   },
   "factory_blocking_modules": [
