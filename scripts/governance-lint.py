@@ -15,7 +15,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-STALE_PREFIX = "/home/ZoneCNH-kernel-governance-evidence"
+STALE_PREFIX = "/home/" + "ZoneCNH-kernel-governance-evidence"
 EXPECTED_RUNTIME_ROOTS = {
     "claude": ".omc/state/pipeline",
     "codex": ".omx/state/pipeline",
