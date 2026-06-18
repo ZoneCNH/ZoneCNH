@@ -56,7 +56,7 @@ rollback validator
 
 ## Environment
 
-- **Evidence workspace**: `/home/ZoneCNH-kernel-governance-evidence`
+- **Evidence workspace**: `<kernel-governance-evidence-worktree>` (current governance repo checkout; historical local absolute paths are not canonical)
 - **Shell**: `zsh`
 - **Date / timezone**: `2026-06-18`, `Asia/Shanghai`
 - **Governance branch**: `docs/kernel-governance-evidence-20260618...origin/main`
@@ -159,7 +159,7 @@ Do not delete failure evidence or gaps from this package. Future evidence may ap
 To reproduce the evidence index checks:
 
 ```bash
-cd /home/ZoneCNH-kernel-governance-evidence
+cd <kernel-governance-evidence-worktree>
 find .config/goal/evidence -maxdepth 4 -type f | sort
 git status --short --branch
 git rev-parse HEAD
