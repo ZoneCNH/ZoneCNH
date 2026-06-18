@@ -101,13 +101,20 @@ scripts/check_release_evidence.sh
 治理仓库侧验证：
 
 ```bash
-cd /home/ZoneCNH-kernel-governance-evidence
+cd <kernel-governance-evidence-worktree>
 python3 docs/goal/tools/matrix-gen.py --check-only --matrix .config/goal/matrix/matrix.yaml
 四源 claude/codex/copilot/rules scorer
 pipeline-arbiter
 rollback validator
 GK-9 / GK-10 gate validator
 ```
+
+治理侧路径、运行态与证据晋级规则：
+
+- `<kernel-governance-evidence-worktree>` 是当前 checkout 的治理证据仓库 worktree；不得使用历史本机绝对路径作为规范路径。
+- `/home/kernel` 是内核运行态验证 checkout，只能提供当前运行命令输出；不得等同于治理证据仓库或 release manifest。
+- `task_id`、worker runtime status、team worktree 路径和 `.omx/state/` 仅是执行期线索；只有归档的命令输出、matrix、scorer、arbiter、rollback 与 gate validator 结果可晋级为 `Verified`。
+- 证据晋级必须保留稳定 ID、当前 status、来源命令和时间；不得用历史状态文件、人工描述或 team runtime 成功状态替代。
 
 ## 当前证据状态
 

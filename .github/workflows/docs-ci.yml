@@ -97,6 +97,17 @@ jobs:
       - name: 运行 grep 守卫脚本
         run: bash .github/ci/grep-guard.sh
 
+  # ── 4. Kernel governance 证据守卫 ─────────────────────────────
+  kernel-governance-lint:
+    name: Kernel Governance Lint
+    runs-on: [self-hosted, Linux, X64, homepage]
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 校验 kernel governance 路径、运行态与证据晋级口径
+        run: bash .github/ci/kernel-governance-lint.sh
+
   # ── 4. Workflow 策略守卫 ──────────────────────────────────────
   workflow-policy-guard:
     name: Workflow Policy Guard
