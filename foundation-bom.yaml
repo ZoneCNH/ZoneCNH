@@ -40,8 +40,9 @@ modules:
     release_model: runtime
     kind: core
     production_import_allowed: true
-    factory_grade_allowed: true
-    blocking_findings: []
+    factory_grade_allowed: false
+    blocking_findings:
+    - BLK-011
     public_code_verified: true
     status_renderable: true
   configx:
