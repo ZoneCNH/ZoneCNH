@@ -2,7 +2,7 @@
 
 - Status: Generated from current module SSOT
 - Last-Updated: 2026-06-18
-- Module-Version: v1.0.1
+- Module-Version: v1.0.2
 - Module-State: 已发布
 - Layer: L2 基础设施适配器
 - Runtime-Repo: /home/natsx
@@ -99,9 +99,9 @@
 - 若上表存在 Pending、Draft、Blocked、Open 或未登记状态，发布前必须补充证据或在模块追溯矩阵中登记豁免理由。
 - SPEC/TRACEABILITY 已登记 AC/TC 主链路；当前主要缺口是四源 98+ 仲裁、生产 benchmark 阈值、BLK-002 生产 TLS 闭环与上层 consumer lifecycle/API 集成证据需要归档。
 
-## 7. v1.0.1 验收实测证据（/home/natsx commit 9e849ed）
+## 7. v1.0.2 验收实测证据（/home/natsx commit 20f801f）
 
-> 2026-06-18 在 /home/natsx（main @ 9e849ed）实测全部 §1 验收命令，结果如下。CI/CD 已路由至 `sre/*` 机器池（CI: sre/storage-light；CD: sre/deploy）。
+> 2026-06-19 在 /home/natsx（main @ 20f801f）实测全部 §1 验收命令，结果如下。CI/CD 已路由至 `sre/*` 机器池（CI: sre/storage-light；CD: sre/deploy）。
 
 | 命令 | 实测结果 |
 | --- | --- |
@@ -111,10 +111,10 @@
 | `GOWORK=off go vet ./...` | ✅ clean |
 | `GOWORK=off go test ./...` | ✅ 全 ok |
 | `GOWORK=off go test ./... -race -count=1` | ✅ 全 ok，无竞态 |
-| 总覆盖率（`go test ./... -coverprofile`） | ✅ **80.4%** ≥ 80% gate（v1.0.0 时为 79.2%） |
-| pkg/natsx 包覆盖率 | 73.3%（v1.0.0 时为 68.0%，仍待提升至包级 80%） |
+| 总覆盖率（`go test ./... -coverprofile`） | ✅ **84.2%** ≥ 80% gate |
+| pkg/natsx 包级覆盖率（`go test ./pkg/natsx -cover`） | ✅ **90.0%** ≥ 80% DoD（v1.0.1 时为 73.3%，v1.0.2 补 streamConfigMatches 完整表驱动 + 错误路径后达标） |
 | 依赖边界（`go list -deps` 禁止域过滤） | ✅ clean，无 kafkax / 上层域依赖 |
 | CI/CD 机器池 | ✅ 6 个 workflow 全部 `sre/*`（commit 66656aa） |
 
-- v1.0.1 变更：CICD SRE 机器池路由（66656aa）+ pkg/natsx 覆盖率补强（14916d3，client/jetstream/errors 三组测试 +722 行）。
-- 包级覆盖率 73.3% 仍低于 80%，但 SPEC §门禁（L573）以**总覆盖率 ≥80%** 为卡点，已满足；包级提升列为后续 follow-up。
+- v1.0.1 变更：CICD SRE 机器池路由（66656aa）+ pkg/natsx 覆盖率补强（14916d3，client/jetstream/errors 三组测试 +722 行），总覆盖率 79.2% → 80.4%。
+- v1.0.2 变更：pkg/natsx 包级覆盖率补强（coverage_phase2_test.go，+794 行），streamConfigMatches 7.2% → 100%、WithNATSOptions 0% → 100% 及 core/client/envelope/config/env/jetstream 错误路径；**pkg/natsx 包级 73.3% → 90.0%，首次满足 SPEC §DoD 单元测试覆盖率 ≥80%**。
