@@ -1,9 +1,9 @@
 # kafkax 完整验收清单
 
 - Status: Generated from current module SSOT
-- Last-Updated: 2026-06-18
-- Module-Version: v1.0.2
-- Module-State: 已发布
+- Last-Updated: 2026-06-19
+- Module-Version: v1.1.0
+- Module-State: 已发布（v1.1.0）
 - Layer: L2 基础设施适配器
 - Runtime-Repo: /home/kafkax
 - Source: goal.md, SPEC.md, TRACEABILITY.md, IMPLEMENTATION-PLAN.md, tasks/
@@ -83,15 +83,16 @@
 
 ## 5. 发布 DoD 清单
 
-- [ ] FEATURES.md 的 FR、BR/NFR、任务清单与 SPEC/TRACEABILITY 当前登记一致。
-- [ ] ACCEPTANCE.md 的 AC、TC 与运行时代码测试名、证据文件或 CI 记录一致。
-- [ ] 运行时代码仓库 /home/kafkax 通过 go test、go test -race、go vet 与覆盖率门槛。
-- [ ] 所有外部服务依赖有本地可重复的测试替身或明确 live-gate 证据。
-- [ ] 安全检查确认没有凭证、私有端点、账户 ID 或实盘配置进入公开文档与代码。
-- [ ] 版本号、发布标签、CHANGELOG 或 release note 与本目录状态一致。
+- [x] FEATURES.md 的 FR、BR/NFR、任务清单与 SPEC/TRACEABILITY 当前登记一致。
+- [x] ACCEPTANCE.md 的 AC、TC 与运行时代码测试名、证据文件或 CI 记录一致。
+- [x] 运行时代码仓库 /home/kafkax 通过 go test、go test -race、go vet 与覆盖率门槛（pkg/kafkax 94.5%）。
+- [x] 所有外部服务依赖有本地可重复的测试替身或明确 live-gate 证据（testkit + integration workflow）。
+- [x] 安全检查确认没有凭证、私有端点、账户 ID 或实盘配置进入公开文档与代码（goalcli secret scan passed）。
+- [x] 版本号、发布标签、CHANGELOG 或 release note 与本目录状态一致（GitHub release v1.1.0）。
 
 ## 6. 当前缺口登记
 
-- 当前文档只记录验收口径，不替代运行时代码仓库的最新 CI 结果。
-- 若上表存在 Pending、Draft、Blocked、Open 或未登记状态，发布前必须补充证据或在模块追溯矩阵中登记豁免理由。
-- SPEC/TRACEABILITY 已登记 AC/TC 主链路；当前主要缺口是 /home/kafkax 最新测试、race/vet/lint、覆盖率与 Kafka 集成/发布证据需要归档。
+- v1.1.0 运行时验收已于 2026-06-18 在 /home/kafkax 执行并归档：go build/vet/test/race 全 exit 0、零 data race、golangci-lint 0 issues、go mod tidy clean、secret scan passed、pkg/kafkax 覆盖率 94.5%。
+- 集成测试（make integration / 真实 broker gates）由 integration workflow 在 SRE 池执行，Kafka 不可达时按 SPEC §19.2 skip，不阻塞发布。
+- 依赖边界：pkg/kafkax 仅依赖 stdlib + segmentio/kafka-go，未越过 FOUNDATION-DEPS.yaml。
+- 发布证据：GitHub release v1.1.0（PR #16, squash a357c9c）。
