@@ -1,9 +1,9 @@
 # configx 实现计划
 
-> 来源：[SPEC.md](./SPEC.md) v1.0.1 | 任务数量：10（TASK-CONFIGX-000 ~ 010，008 已合并）
-> 更新：2026-06-12（v3.0 — 修复红线：per-task 验证命令 + 风险识别 + 回滚策略 + 里程碑 + DAG 修正）
+> 来源：[SPEC.md](./SPEC.md) v1.1.0 | 任务数量：12（v1.0 阶段 TASK-CONFIGX-000~012，008 已合并；v1.1 阶段 5 项 MUST 通过新增模块文件直接交付，TRACEABILITY.md v3.1 登记为 TASK-CONFIGX-013~017 占位）
+> 更新：2026-06-18（v3.1 — v1.1.0 发布对齐：状态戳更新，TASK-007 已交付）
 
-> ⚠️ **文件名列说明（2026-06-18 校准）**：下表 `Files` 列反映**计划阶段**的文件名设想，与运行时实际文件结构有出入。运行时实际文件以 [SPEC.md §13 目录结构](./SPEC.md#13-目录结构) 为准——例如计划中的 `reader.go` 实际未创建（无 Reader 接口），脱敏逻辑落在 `secret.go` + `secretpolicy.go` + `manifest.go`，校验落在 `schema.go` + `validation` 内联函数，Watch（TASK-007）未实现。本 Plan 的核心价值在 DAG 依赖、工时估算、风险识别与回滚策略；文件名列仅供历史追溯。
+> ⚠️ **文件名列说明（2026-06-18 v1.1.0 校准）**：下表 `Files` 列反映**计划阶段**的文件名设想。运行时实际文件以 [SPEC.md §13 目录结构](./SPEC.md#13-目录结构) 为准——v1.0 阶段的 `reader.go` 演进为 `client.go` + `result.go`，脱敏落在 `secret.go` + `secretpolicy.go` + `manifest.go`，校验落在 `validation.go`。**v1.1.0 已交付 5 项 MUST**：ArgsSource (`source_args.go`)、RemoteSource SPI (`remote.go`)、Bind (`bind.go`)、ConfigSnapshot+Watch+Rollback (`snapshot.go` + `watch.go`)、配置文档生成 (`docgen.go` + `cmd/configdoc/`)。本 Plan 的核心价值在 DAG 依赖、工时估算、风险识别与回滚策略；v1.0 时期标记 TASK-007 (Watch) "未实现" 已不再适用。
 
 ## 1. 依赖 DAG
 
