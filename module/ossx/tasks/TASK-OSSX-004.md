@@ -28,8 +28,8 @@ validation:
 
 ## Non-scope
 
-- Do not implement BlobStore core IO, multipart upload, concrete S3-compatible adapters, or release evidence closure.
-- Do not log, persist, or expose raw signatures, tokens, credentials, or provider SDK request objects.
+- Do not implement BlobStore core IO, multipart upload, the concrete Aliyun adapter, or release evidence closure.
+- Do not log, persist, or expose raw signatures, tokens, credentials, or Aliyun OSS SDK request objects.
 - Do not widen presign operations or TTL limits beyond the spec and traceability matrix.
 
 ## Prompt
