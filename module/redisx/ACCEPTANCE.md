@@ -2,13 +2,13 @@
 
 - Status: Generated from current module SSOT
 - Last-Updated: 2026-06-18
-- Module-Version: v1.0.1
+- Module-Version: v1.0.2
 - Module-State: 已发布
 - Layer: L2 基础设施适配器
 - Runtime-Repo: /home/redisx
 - Source: goal.md, SPEC.md, TRACEABILITY.md, IMPLEMENTATION-PLAN.md, tasks/
 
-> 本清单用于验收 redisx 是否达到可发布、可追溯、可复验状态。除非条目明确记录为已通过，默认需要在运行时代码仓库重新执行验证并补充证据。
+> 本清单用于验收 redisx 是否达到可发布、可追溯、可复验状态。截至 2026-06-18，`/home/redisx` v1.0.2 已完成本地质量门禁、L2-T2、Docker 发布门禁、Redis 集成门禁和强制安全扫描。
 
 ## 1. 验收命令清单
 
@@ -16,11 +16,16 @@
 | --- | --- | --- |
 | 文档存在性 | cd /home/ZoneCNH && test -f module/redisx/FEATURES.md && test -f module/redisx/ACCEPTANCE.md | FEATURES.md 与 ACCEPTANCE.md 均存在 |
 | 文档格式 | cd /home/ZoneCNH && git diff --check -- module/redisx | 无尾随空格或补丁格式错误 |
-| 运行时测试 | cd /home/redisx && go test ./... | 所有包测试通过 |
-| 竞态检查 | cd /home/redisx && go test ./... -race -count=1 | 无 data race，测试稳定通过 |
-| 静态检查 | cd /home/redisx && go vet ./... | 无 vet 问题 |
-| 覆盖率证据 | cd /home/redisx && go test ./... -coverprofile=coverage.out | 覆盖率文件生成并满足模块 Spec 门槛 |
-| 依赖边界 | cd /home/redisx && go list -deps ./... | 依赖不越过 FOUNDATION-DEPS.yaml 登记边界 |
+| 运行时测试 | cd /home/redisx && GOWORK=off go test ./... | 所有包测试通过 |
+| 竞态检查 | cd /home/redisx && GOWORK=off go test ./... -race -count=1 | 无 data race，测试稳定通过 |
+| 静态检查 | cd /home/redisx && GOWORK=off go vet ./... | 无 vet 问题 |
+| 覆盖率证据 | cd /home/redisx && GOWORK=off go test ./... -coverprofile=coverage.out | 覆盖率文件生成并满足模块 Spec 门槛 |
+| L2 证据 | cd /home/redisx && GOWORK=off make l2-check | `release_ready=true`、`score=100`、`target=L2-T2` |
+| 契约与评分 | cd /home/redisx && GOWORK=off make test-contract && GOWORK=off make contracts && GOWORK=off make score-check | 契约、schema 与评分门禁通过 |
+| 文档门禁 | cd /home/redisx && GOWORK=off make docs-check | 文档检查通过 |
+| 安全扫描 | cd /home/redisx && GOTOOLCHAIN=go1.26.4+auto GOWORK=off XLIB_ENABLE_VULNCHECK=1 XLIB_FORCE_VULNCHECK=1 make security | 强制 govulncheck 与 secret check 通过 |
+| Redis 集成 | cd /home/redisx && GOWORK=off REDISX_INTEGRATION_DOCKER=1 make test-integration && GOWORK=off REDISX_PERSISTENCE_INTEGRATION=1 make test-persistence-integration | Docker Redis 与持久化集成测试通过 |
+| Docker 发布门禁 | cd /home/redisx && VERSION=v1.0.2 GOWORK=off XLIB_CONTEXT=release_verify make docker-release-check | Docker toolchain/build/CI/integration/release gate 全部通过 |
 
 ## 2. AC 验收登记
 
@@ -57,18 +62,18 @@
 
 | ID | 测试项 | 关联要求/验收/任务 | 当前登记状态 | 来源 |
 | --- | --- | --- | --- | --- |
-| TC-001 | FR-001, BR-001 | go test ./... -run TestKeyBuilder | - | TRACEABILITY.md |
-| TC-002 | FR-002, BR-002, BR-007, BR-010, NFR-001 | go test ./... -run TestOptions | - | TRACEABILITY.md |
-| TC-003 | FR-003, BR-003, NFR-002 | go test ./... -run TestKV | - | TRACEABILITY.md |
-| TC-004 | FR-004, BR-004 | go test ./... -run TestTTL | - | TRACEABILITY.md |
-| TC-005 | FR-005, BR-004, BR-007 | go test ./... -run TestCache | - | TRACEABILITY.md |
-| TC-006 | FR-006, BR-003 | go test ./... -run TestHashList | - | TRACEABILITY.md |
-| TC-007 | FR-007, NFR-002 | go test ./... -run TestPubSub | - | TRACEABILITY.md |
-| TC-008 | FR-008, BR-003, BR-006 | go test ./... -run TestPipeline | - | TRACEABILITY.md |
-| TC-009 | FR-009, BR-005, BR-007, NFR-002 | go test ./... -run TestLocker | - | TRACEABILITY.md |
-| TC-010 | FR-010, BR-003, BR-004, NFR-002 | go test ./... -run TestRateLimit | - | TRACEABILITY.md |
-| TC-011 | FR-011, NFR-001 | go test ./... -run TestCodec | - | TRACEABILITY.md |
-| TC-012 | FR-012, BR-008, BR-009, BR-010 | go test ./... -run TestHealth | - | TRACEABILITY.md |
+| TC-001 | FR-001, BR-001 | go test ./... -run TestKeyBuilder | ✅ | TRACEABILITY.md |
+| TC-002 | FR-002, BR-002, BR-007, BR-010, NFR-001 | go test ./... -run TestOptions | ✅ | TRACEABILITY.md |
+| TC-003 | FR-003, BR-003, NFR-002 | go test ./... -run TestKV | ✅ | TRACEABILITY.md |
+| TC-004 | FR-004, BR-004 | go test ./... -run TestTTL | ✅ | TRACEABILITY.md |
+| TC-005 | FR-005, BR-004, BR-007 | go test ./... -run TestCache | ✅ | TRACEABILITY.md |
+| TC-006 | FR-006, BR-003 | go test ./... -run TestHashList | ✅ | TRACEABILITY.md |
+| TC-007 | FR-007, NFR-002 | go test ./... -run TestPubSub | ✅ | TRACEABILITY.md |
+| TC-008 | FR-008, BR-003, BR-006 | go test ./... -run TestPipeline | ✅ | TRACEABILITY.md |
+| TC-009 | FR-009, BR-005, BR-007, NFR-002 | go test ./... -run TestLocker | ✅ | TRACEABILITY.md |
+| TC-010 | FR-010, BR-003, BR-004, NFR-002 | go test ./... -run TestRateLimit | ✅ | TRACEABILITY.md |
+| TC-011 | FR-011, NFR-001 | go test ./... -run TestCodec | ✅ | TRACEABILITY.md |
+| TC-012 | FR-012, BR-008, BR-009, BR-010 | go test ./... -run TestHealth | ✅ | TRACEABILITY.md |
 
 ## 4. 覆盖闭合验收
 
@@ -101,17 +106,27 @@
 | NFR-003 | 性能 | 性能基线记录 KV、Pipeline、Locker、RateLimit 的 benchmark 预算，超预算需说明 / go test -bench . ./... | ✅ | TRACEABILITY.md |
 | NFR-004 | 文档 | README、配置投影说明、迁移说明和发布证据齐全 / Documentation evidence | ✅ | TRACEABILITY.md |
 
-## 5. 发布 DoD 清单
+## 5. v1.0.2 验收证据登记
 
-- [ ] FEATURES.md 的 FR、BR/NFR、任务清单与 SPEC/TRACEABILITY 当前登记一致。
-- [ ] ACCEPTANCE.md 的 AC、TC 与运行时代码测试名、证据文件或 CI 记录一致。
-- [ ] 运行时代码仓库 /home/redisx 通过 go test、go test -race、go vet 与覆盖率门槛。
-- [ ] 所有外部服务依赖有本地可重复的测试替身或明确 live-gate 证据。
-- [ ] 安全检查确认没有凭证、私有端点、账户 ID 或实盘配置进入公开文档与代码。
-- [ ] 版本号、发布标签、CHANGELOG 或 release note 与本目录状态一致。
+| 证据项 | 当前结果 |
+| --- | --- |
+| 本地质量门禁 | `GOWORK=off go test ./...`、`GOWORK=off go vet ./...`、`GOWORK=off go test ./... -race -count=1`、`GOWORK=off go test ./... -coverprofile=coverage.out`、`GOWORK=off make lint` 通过 |
+| L2-T2 与契约 | `GOWORK=off make l2-check` 输出 `release_ready=true`、`score=100`、`target=L2-T2`；`make test-contract`、`make contracts`、`make score-check` 通过 |
+| 集成验收 | `GOWORK=off make integration`、`REDISX_INTEGRATION_DOCKER=1 make test-integration`、`REDISX_PERSISTENCE_INTEGRATION=1 make test-persistence-integration` 通过 |
+| Docker 发布验收 | `VERSION=v1.0.2 GOWORK=off XLIB_CONTEXT=release_verify make docker-release-check` 通过 |
+| 安全验收 | `GOTOOLCHAIN=go1.26.4+auto GOWORK=off XLIB_ENABLE_VULNCHECK=1 XLIB_FORCE_VULNCHECK=1 make security` 通过，输出包含 `No vulnerabilities found.` 与 `secret check passed` |
+| CI/CD 配置 | Goal/L2/Security 工作流 fail-closed；非发布工作流 read-only permissions；关键官方 actions SHA pinning；security schedule/manual 强制 govulncheck |
 
-## 6. 当前缺口登记
+## 6. 发布 DoD 清单
 
-- 当前文档只记录验收口径，不替代运行时代码仓库的最新 CI 结果。
-- 若上表存在 Pending、Draft、Blocked、Open 或未登记状态，发布前必须补充证据或在模块追溯矩阵中登记豁免理由。
-- SPEC/TRACEABILITY 已登记 AC/TC 主链路；当前主要缺口是 /home/redisx 最新测试、race/vet/lint、覆盖率与 Redis 集成/发布证据需要归档。
+- [x] FEATURES.md 的 FR、BR/NFR、任务清单与 SPEC/TRACEABILITY 当前登记一致。
+- [x] ACCEPTANCE.md 的 AC、TC 与运行时代码测试名、证据文件或 CI 记录一致。
+- [x] 运行时代码仓库 /home/redisx 通过 go test、go test -race、go vet 与覆盖率门槛。
+- [x] 所有外部服务依赖有本地可重复的测试替身或明确 live-gate 证据。
+- [x] 安全检查确认没有凭证、私有端点、账户 ID 或实盘配置进入公开文档与代码。
+- [x] 版本号、发布标签、CHANGELOG 或 release note 与本目录状态一致。
+
+## 7. 当前缺口登记
+
+- 当前 `/home/redisx` v1.0.2 本地验收、Docker release gate、L2-T2 evidence 和强制安全扫描已通过。
+- 发布标签仍必须在 `/home/redisx` 合入 main 后，于干净且与 `origin/main` 对齐的 main 分支执行 `VERSION=v1.0.2 GOWORK=off XLIB_CONTEXT=release_verify make release-preflight` 后创建；feature branch 不绕过该门禁。
