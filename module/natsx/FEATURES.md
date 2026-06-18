@@ -2,7 +2,7 @@
 
 - Status: Generated from current module SSOT
 - Last-Updated: 2026-06-18
-- Module-Version: v1.0.0
+- Module-Version: v1.0.1
 - Module-State: 已发布
 - Layer: L2 基础设施适配器
 - Runtime-Repo: /home/natsx

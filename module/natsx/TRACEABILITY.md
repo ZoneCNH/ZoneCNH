@@ -3,7 +3,7 @@
 > 模块级追溯矩阵。治理规范见 [docs/governance/TRACEABILITY.md](../../docs/governance/TRACEABILITY.md)。本矩阵记录 repair-slice complete evidence；formal release approval 仍需独立批准，不得替代发布批准。
 
 Last-Updated: 2026-06-13
-Source: `goal.md` 1.0 发布基线 + `SPEC.md` Draft v1.0.0 + `/home/natsx` commit `393d148`
+Source: `goal.md` 1.0 发布基线 + `SPEC.md` Draft v1.0.0 + `/home/natsx` commit `9e849ed`
 
 ## Forward Coverage
 
@@ -66,7 +66,7 @@ Source: `goal.md` 1.0 发布基线 + `SPEC.md` Draft v1.0.0 + `/home/natsx` comm
 | TC-011 | NFR-001, NFR-002, BR-008 | `/home/natsx/pkg/natsx/config_test.go::TestConfigValidateDefaultsAndSanitize`; `/home/natsx/pkg/natsx/env_test.go::TestConfigFromEnvRejectsInvalidValuesWithoutSecretLeak`; `/home/natsx/pkg/natsx/live_integration_test.go`; local auth live test passed with `FOUNDATIONX_NATS_URL`, `FOUNDATIONX_NATS_USERNAME`, and `FOUNDATIONX_NATS_PASSWORD` sourced from local NATS config without printing credentials |
 | TC-012 | NFR-003 | `/home/natsx/pkg/natsx/benchmark_test.go::BenchmarkEmbeddedNATSPublish`; `/home/natsx/pkg/natsx/benchmark_test.go::BenchmarkEmbeddedNATSRequest`; `/home/natsx/pkg/natsx/benchmark_test.go::BenchmarkEmbeddedNATSJetStreamPublish`; `/home/natsx/pkg/natsx/embedded_nats_test.go` adds request, JetStream publish/fetch SLO assertions and handler latency evidence |
 | TC-013 | NFR-004 | `/home/natsx$ GOWORK=off go list -deps ./pkg/natsx ./examples/...` plus forbidden-domain filter returned `dependency boundary clean` |
-| TC-014 | NFR-005 | `/home/natsx` commit `393d148`; this matrix refresh; formal four-source arbiter still pending |
+| TC-014 | NFR-005 | `/home/natsx` commit `9e849ed`; this matrix refresh; formal four-source arbiter still pending |
 
 ## Task Coverage
 
@@ -84,7 +84,7 @@ Source: `goal.md` 1.0 发布基线 + `SPEC.md` Draft v1.0.0 + `/home/natsx` comm
 | TASK-NATSX-011 | NFR-001, NFR-002, BR-008 | Complete repair-slice sanitize/config evidence plus local auth live integration passed with redacted local config; production TLS closure packet remains separate release blocker `BLK-002` in `release/trust/foundation-maturity-evidence-matrix-20260615.md` |
 | TASK-NATSX-012 | NFR-003 | Complete repair-slice SLO assertions for embedded request, JetStream publish/fetch, and handler latency; production benchmark gate still separate |
 | TASK-NATSX-013 | NFR-004 | Dependency boundary check passed for forbidden ZoneCNH messaging/storage modules |
-| TASK-NATSX-014 | NFR-005 | Release evidence + CI gate: `README.md` quickstart/API overview, `CHANGELOG.md` v1.0.0, CI gate (build/test/vet/lint/secret scan), coverage >=80%, benchmark regression guard; `/home/natsx` evidence pinned to commit `393d148` |
+| TASK-NATSX-014 | NFR-005 | Release evidence + CI gate: `README.md` quickstart/API overview, `CHANGELOG.md` v1.0.0, CI gate (build/test/vet/lint/secret scan), coverage >=80%, benchmark regression guard; `/home/natsx` evidence pinned to commit `9e849ed` |
 
 ## Documentation Evidence Inventory
 
@@ -110,7 +110,7 @@ Source: `goal.md` 1.0 发布基线 + `SPEC.md` Draft v1.0.0 + `/home/natsx` comm
 - Module directory coverage in `/home/ZoneCNH/module/natsx`: documentation only; no local Go source or executable tests.
 - Repair-slice score: **20 / 20** (module self-assessment of repair completeness).
 - Structural matrix score: **100 / 100** (Claude rubric scoring, 2026-06-14, post D1/D2/D3 repair). Formal release approval remains **Not Approved** until the four-source 98+ arbiter, production benchmark thresholds, and production TLS endpoint gates run.
-- Code evidence commit: `/home/natsx` `393d148` (`Document inherited template metrics outside natsx namespace`; includes `8b67fc6` release config/live gates).
+- Code evidence commit: `/home/natsx` `9e849ed` (`Document inherited template metrics outside natsx namespace`; includes `8b67fc6` release config/live gates).
 - Verification commands for this refresh:
   - `/home/natsx$ GOWORK=off go test ./pkg/natsx -run TestEmbeddedNATSJetStreamMaxDeliverAdvisory -count=1 -v`
   - `/home/natsx$ GOWORK=off go test ./pkg/natsx -count=1`
