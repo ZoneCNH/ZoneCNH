@@ -1,13 +1,15 @@
 # configx 规格
 
 - Status: Approved
-- Spec-Version: v1.0.0
-- Last-Updated: 2026-06-12
+- Spec-Version: v1.1.0
+- Last-Updated: 2026-06-18
 - Layer: L1 基础能力
-- Version: v1.0.0
+- Version: v1.1.0
 - Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `kernel`
 
-> 公开投影 caveat：Status=Approved 与 100.0% 覆盖证据不等同于 factory-grade；机器事实层保持 factory=false。
+> v1.1.0（2026-06-18 发布）完整交付 goal.md §文首状态戳列出的 v1.0 路线 5 项 MUST：ArgsSource、RemoteSource SPI、Bind()、ConfigSnapshot/ChangeEvent/Watch/Rollback、配置文档自动生成。本 SPEC 通过 TRACEABILITY.md v3.1 追加 FR-014~018、BR-012、NFR-007、TC-010~014、AC-006~010 完整登记 v1.1 新能力；现有 FR-001~013/BR-001~011 保持不变以维持向后兼容。
+
+> 公开投影 caveat：Status=Approved 与 96.5% 覆盖证据不等同于 factory-grade；机器事实层保持 factory=false。
 
 ---
 

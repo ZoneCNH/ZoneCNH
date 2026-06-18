@@ -1,17 +1,16 @@
 # configx 设计方案
 
-> ⚠️ **本文档部分过时（2026-06-18 校准）**：本 DESIGN.md 的 §2「核心设计」与 §4「生命周期状态机」基于一套**已被废弃的 API 设计**（`Reader` / `Config` 接口、`Load(path)` / `WithEnvOverride` / `Watch` 方法、`map[string]interface{}` 内部存储）。运行时仓库 `/home/configx` **未实现**这些 API——真实实现是 `Client + Loader + Source + Decode(LoadResult, &target)` 模式，权威契约见 [SPEC.md](./SPEC.md) §8。
+> ✅ **状态戳（2026-06-18 v1.1.0 发布更新）**：v1.1.0 已通过 5 项新模块（ArgsSource / RemoteSource SPI / Bind / ConfigSnapshot+Watch+Rollback / DocGen）完整覆盖本文 §1.2 表格中标记为 v1.0 计划/未实现的能力。
 >
-> - **§2.1 Reader 接口、§2.2 Config 接口、§2.3 覆盖层级、§4 生命周期状态机**：描述的是未落地的早期设计，仅供历史参考，**不要据此编写代码**。
-> - **§2.4 Option 模式、§2.5 测试策略、§3 ADR、§5 依赖关系、§6 技术风险**：其中的设计原则（fail-fast、不可变、显式加载、脱敏）仍有效，但具体 API 名称需以 SPEC.md 为准。
-> - **ADR-001~004** 的「决策」精神（接口分离、fail-fast、不可变、脱敏）被运行时继承，但「实现形态」已变——见下方各 ADR 的「⚠️ 实现偏差」注解。
->
-> 后续应以 SPEC.md v1.0.0 §8（接口契约）为唯一 API 权威；本文档需在 v1.1 周期内基于真实实现重写。
+> - **§1.2 版本映射表** 中带 ❌ 的能力均已 ✅ 交付，详见 [SPEC.md](./SPEC.md) §6（FR-014~018）与 [TRACEABILITY.md](./TRACEABILITY.md) v3.1。
+> - **§2.1~§2.3 与 §4 生命周期状态机** 仍基于早期 `Reader/Config/Load(path)/WithEnvOverride` API 设想，**与运行时不一致**。真实实现是 `Client + Loader + Source + Decode(LoadResult, &target)` + `SnapshotStore + Watcher`。**不要据此编写代码**——以 SPEC.md §8 为唯一 API 权威。
+> - **§3 ADR-001~004** 的「决策」精神（接口分离、fail-fast、不可变、脱敏）已在 v1.1.0 中以新形态完整体现：ADR-001 由 LoadResult 不可变 + Bind() 强类型绑定实现；ADR-003 由 ConfigSnapshot + atomic.Pointer + SnapshotStore.Rollback 实现。
+> - **§5 依赖关系、§6 技术风险** 仍有效。
 
-> Design ID: DESIGN-configx-v1
-> Source Spec: [SPEC.md](./SPEC.md) v1.0.0
-> Version Mapping: 本文档描述 v1.0.0 已实现能力；[goal.md](./goal.md) 定义 v1.0 完整目标。详见 §1.2。
-> 生成日期：2026-06-12
+> Design ID: DESIGN-configx-v1.1
+> Source Spec: [SPEC.md](./SPEC.md) v1.1.0
+> Version Mapping: 本文档 §1.2 描述 v1.0.0~v1.1.0 演进；[goal.md](./goal.md) 定义完整目标。详见 §1.2。
+> 生成日期：2026-06-12，v1.1.0 状态戳更新：2026-06-18
 
 ## 1. 架构概述
 
