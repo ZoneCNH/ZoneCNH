@@ -25,7 +25,21 @@ fields:
   source_type:
     type: string
     required: false
-    enum: [Goal, Spec, AcceptanceCriteria, Task, Prompt, Code, Test, Evidence, Risk, Gate, Design, Plan, Release, Retrospective]
+    enum:
+      - Goal
+      - Spec
+      - AcceptanceCriteria
+      - Task
+      - Prompt
+      - Code
+      - Test
+      - Evidence
+      - Risk
+      - Gate
+      - Design
+      - Plan
+      - Release
+      - Retrospective
     description: "来源节点类型"
 
   source_id:
@@ -36,7 +50,21 @@ fields:
   target_type:
     type: string
     required: false
-    enum: [Goal, Spec, AcceptanceCriteria, Task, Prompt, Code, Test, Evidence, Risk, Gate, Design, Plan, Release, Retrospective]
+    enum:
+      - Goal
+      - Spec
+      - AcceptanceCriteria
+      - Task
+      - Prompt
+      - Code
+      - Test
+      - Evidence
+      - Risk
+      - Gate
+      - Design
+      - Plan
+      - Release
+      - Retrospective
     description: "目标节点类型"
 
   target_id:
