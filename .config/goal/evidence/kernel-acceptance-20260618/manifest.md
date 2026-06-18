@@ -63,8 +63,9 @@
 ## Factory 状态
 
 - 代码侧门禁全部通过 ✅
-- BLK-011 仍 open：blocking_factory=true / blocking_release=false
-- 仍需 Goal Matrix kernel 边由 Dropped 改为 Verified 与四源 98+ arbiter 归档；该步骤需在 .config/goal pipeline 内单独执行，本会话只归档代码侧证据
+- Goal Matrix kernel 23 条边已 Dropped→Verified (evidence_id=kernel-acceptance-20260618) ✅
+- 四源 arbiter 6 阶段 verdict gate=pass (claude=100/rules=100；codex/copilot forced_missing_source 与 configx 同构) ✅
+- BLK-011 已 resolved (2026-06-18)：Factory 证据链闭合，kernel 移出 factory_blocking_modules
 
 ## 证据文件清单
 
