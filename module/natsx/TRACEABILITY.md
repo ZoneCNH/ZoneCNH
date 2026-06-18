@@ -130,7 +130,7 @@ Source: `goal.md` 1.0 发布基线 + `SPEC.md` Draft v1.0.0 + `/home/natsx` comm
   - `/home/natsx$ GOWORK=off go test ./... -count=1`
   - `/home/natsx$ NATSX_LIVE_INTEGRATION=1 FOUNDATIONX_NATS_URL=<redacted-dev-url> FOUNDATIONX_NATS_USERNAME=<redacted> FOUNDATIONX_NATS_PASSWORD=<redacted> GOWORK=off go test ./pkg/natsx -run TestLiveNATSIntegration -count=1 -v` => PASS; no credentials printed
   - `/home/natsx$ git diff --check`
-  - `/home/ZoneCNH/.worktree/workspaces/natsx$ git diff --check`
+  - `<repo-root>/.worktree/workspaces/natsx$ git diff --check`
 
 ## Known Risks / Blockers
 

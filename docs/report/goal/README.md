@@ -77,7 +77,7 @@
 | tracked                  | `docs/report/goal/goal-docs-fix-verification-20260609.md` | 修复验收报告已在跟踪面内。                                                                                           |
 | not ignored              | `.config/goal/schema/rules.yaml`                          | `git check-ignore -v .config/goal/schema/rules.yaml` 无输出，符合控制面可审查边界。                                  |
 | ignored                  | `.config/goal/runtime/cache.json`                         | 被 `.gitignore:30:.config/goal/**/runtime/` 忽略；runtime 缓存保持忽略符合预期。                                     |
-| ignored local            | `/home/ZoneCNH/.worktree/todo.md`                         | `git -C /home/ZoneCNH check-ignore -v .worktree/todo.md` 命中 `.gitignore:38:.worktree/`；本地执行 TODO 保持不入库。 |
+| ignored local            | `<repo-root>/.worktree/todo.md`                         | `git -C <repo-root> check-ignore -v .worktree/todo.md` 命中 `.gitignore:38:.worktree/`；本地执行 TODO 保持不入库。 |
 
 ## 文件生命周期
 

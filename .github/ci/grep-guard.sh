@@ -6,6 +6,7 @@
 #   2. .omc/ .omx/ 运行时目录（.claude/ .codex/ 已公开跟踪，不检查）
 #   3. 127.0.0.1 / localhost / 0.0.0.0 本地地址
 #   4. 本地绝对路径（/home/xxx, /Users/xxx, C:\xxx）
+#   5. ZoneCNH 治理仓库历史本地根路径（即使出现在允许记录路径中）
 
 set -euo pipefail
 
@@ -92,13 +93,13 @@ check_pattern_excluding() {
 }
 
 # ── 1. 敏感凭据 ──────────────────────────────────────────
-echo "[1/4] 敏感凭据扫描"
+echo "[1/5] 敏感凭据扫描"
 check_pattern "API Key / Secret / Token / Password" \
   '(api[_-]?key|secret[_-]?key|access[_-]?token|private[_-]?key|password)\s*[:=]\s*["\x27]?[A-Za-z0-9+/=_-]{8,}'
 
 # ── 2. 运行时目录 ────────────────────────────────────────
 # 排除合法引用 .omc/.omx/.copilot/state 的架构文档和 agent 配置
-echo "[2/4] 运行时目录检查"
+echo "[2/5] 运行时目录检查"
 check_pattern_excluding ".omc / .omx 运行时目录" \
   '(\.omc/|\.omx/|\.omc\b|\.omx\b)' \
   'AGENTS\.md' \
@@ -115,12 +116,12 @@ check_pattern_excluding ".omc / .omx 运行时目录" \
   '\.omc/'
 
 # ── 3. 本地地址 ──────────────────────────────────────────
-echo "[3/4] 本地地址检查"
+echo "[3/5] 本地地址检查"
 check_pattern "127.0.0.1 / localhost / 0.0.0.0" \
   '(127\.0\.0\.1|localhost|0\.0\.0\.0|::1)'
 
 # ── 4. 本地绝对路径 ──────────────────────────────────────
-echo "[4/4] 本地绝对路径检查"
+echo "[4/5] 本地绝对路径检查"
 check_pattern_excluding "/home/xxx 或 /Users/xxx 或 C:\\xxx" \
   '(/home/[a-zA-Z0-9_-]+/|/Users/[a-zA-Z0-9_-]+/|[A-Z]:\\\\)' \
   'AGENTS\.md' \
@@ -131,6 +132,12 @@ check_pattern_excluding "/home/xxx 或 /Users/xxx 或 C:\\xxx" \
   'docs/report/' \
   'docs/spec/' \
   'module/'
+
+# ── 5. ZoneCNH stale root / runtime path ─────────────────
+# 这些路径曾因 worktree/runtime 迁移而陈旧，不能继续藏在泛化本地路径白名单中。
+echo "[5/5] ZoneCNH stale root / runtime path 检查"
+check_pattern "ZoneCNH stale governance/worktree/runtime roots" \
+  '(/home/ZoneCNH-kernel-governance-evidence|/home/ZoneCNH/\.worktree/|/home/ZoneCNH/\.omx/)'
 
 # ── 结果 ─────────────────────────────────────────────────
 echo "=== 结果 ==="

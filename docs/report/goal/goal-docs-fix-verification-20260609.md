@@ -55,7 +55,7 @@ git check-ignore -v .config/goal/schema/rules.yaml
 git check-ignore -v .config/goal/runtime/cache.json
 git ls-files --error-unmatch docs/goal/00-authority-map.md .config/goal/schema/rules.yaml docs/report/goal/README.md docs/report/goal/goal-docs-fix-verification-20260609.md
 git diff --cached --name-only
-git -C /home/ZoneCNH check-ignore -v .worktree/todo.md
+git -C <repo-root> check-ignore -v .worktree/todo.md
 git -C /home/ZoneCNH status --ignored --short .worktree/todo.md
 rg -n "GOAL_DRAFTING|SPEC_REVIEWING|PROMPTING|CODING|TESTING|PAUSED|CANCELLED|P-XXX|docs/goals|docs/module" docs/goal .config/goal
 ```
@@ -77,7 +77,7 @@ rg -n "GOAL_DRAFTING|SPEC_REVIEWING|PROMPTING|CODING|TESTING|PAUSED|CANCELLED|P-
 | `.config/goal/runtime/cache.json` ignore 检查 | 被 `.gitignore:30:.config/goal/**/runtime/` 忽略                                                                                                                                                                              |
 | `git ls-files --error-unmatch ...`            | `00-authority-map.md`、控制面 schema 与报告文件均在 Git 跟踪面内                                                                                                                                                              |
 | `git diff --cached --name-only`               | 无输出，没有暂存内容                                                                                                                                                                                                          |
-| `/home/ZoneCNH/.worktree/todo.md` ignore 检查 | `git -C /home/ZoneCNH check-ignore -v .worktree/todo.md` 命中 `.gitignore:38:.worktree/`，本地执行 TODO 保持忽略                                                                                                              |
+| `<repo-root>/.worktree/todo.md` ignore 检查 | `git -C <repo-root> check-ignore -v .worktree/todo.md` 命中 `.gitignore:38:.worktree/`，本地执行 TODO 保持忽略                                                                                                              |
 | stale literal `rg`                            | 退出码 1，预期无命中                                                                                                                                                                                                          |
 
 ## 6. 复评分
