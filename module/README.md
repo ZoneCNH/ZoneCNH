@@ -336,6 +336,8 @@ Draft → Review → Approved → Implemented → Changed → Deprecated
 | [`module/foundation-modules.md`](./foundation-modules.md)           | Why & What — 模块定位和能力需求            |
 | [`module/FOUNDATION-SPEC.md`](./FOUNDATION-SPEC.md)                 | How & Check — 接口签名和 CI gate           |
 | [`module/FOUNDATION-DEPS.yaml`](./FOUNDATION-DEPS.yaml)             | 机器可读依赖矩阵                           |
+| [`module/FOUNDATION-RULES.yaml`](./FOUNDATION-RULES.yaml)           | 基座行为/安全/身份/CI 门禁规则机器 SSOT（CI / xlibgate 消费，schema `.foundationx/foundation-rules.schema.json` 校验） |
+| [`docs/governance/FOUNDATION-RULES.md`](../docs/governance/FOUNDATION-RULES.md) | 基座规则矩阵人类投影 + 编写规范（YAML 的人类可读视图） |
 | [`module/FOUNDATION-V1.md`](./FOUNDATION-V1.md)                     | v1 路线图                                  |
 | [`docs/sre/foundation-cicd-plan.md`](../docs/sre/foundation-cicd-plan.md) | SRE CI/CD — 基座层 19 模块 + L2.5 领域共享 5 模块部署执行方案                              |
 

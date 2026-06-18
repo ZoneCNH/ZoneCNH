@@ -1,6 +1,8 @@
 # Foundation 依赖矩阵 — 机器可读
 # CI 可直接消费此文件执行依赖守卫检查
 # 与 FOUNDATION-V1.md Issue 2 对应
+# 行为/安全/身份/CI 门禁规则见 FOUNDATION-RULES.yaml（constraints 块规则已迁移并真正可执行）
+# 人类投影见 docs/governance/FOUNDATION-RULES.md
 
 version: "1.2.2"
 updated: "2026-06-17"

@@ -37,6 +37,7 @@
 | [DEPLOYMENT.md](DEPLOYMENT.md)                 | 发布与部署规则         |
 | [BOM-FREEZE-GOVERNANCE.md](BOM-FREEZE-GOVERNANCE.md) | BOM 与 freeze 声明边界 |
 | [anti-requirements.md](anti-requirements.md)   | 反需求与范围约束       |
+| [FOUNDATION-RULES.md](FOUNDATION-RULES.md)       | 基座模块规则矩阵 — 行为/安全/身份/CI 门禁规则（YAML 的人类投影） |
 
 ## 路径边界
 

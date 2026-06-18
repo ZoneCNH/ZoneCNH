@@ -1,0 +1,1112 @@
+# Foundation 基座模块规则矩阵 — 机器可读
+# CI / xlibgate / 文档投影可直接消费此文件
+# 与 FOUNDATION-DEPS.yaml(管"依赖")分工:本文件管"行为/安全/身份/CI 门禁"规则
+
+version: "1.0.0"
+updated: "2026-06-18"
+ssot_note: >
+  本文件是 19 基座模块行为/安全/身份/CI 门禁规则的机器可读 SSOT。
+  依赖方向规则(allowed_deps/forbidden_deps/forbidden_foundation_edges)仍归 FOUNDATION-DEPS.yaml,
+  本文件不重复这些规则,只通过 source 字段互引。
+  FOUNDATION-DEPS.yaml 的 constraints 块(5 条规则)在本文件重新编码并真正可执行
+  (原 constraints 块从未被任何 CI 消费,见 docs/governance/improvements/20260618-foundation-rules/SPEC.md)。
+  每条规则的 evidence 字段标注执行者:非空 = machine-enforced(由该 CI 脚本/xlibgate 执行),
+  空 = document-only(仅 SPEC/RULES.md 约束,待后续 task 接入机器门禁)。
+
+# ============================================================
+# 通用规则(所有基座模块必须满足)
+# ============================================================
+common_rules:
+  - id: CO-001-go-baseline
+    dimension: toolchain
+    check: "go.mod 声明 go 版本 == 1.23"
+    fail_condition: "go.mod 中 go 版本 != 1.23"
+    reason_code: GO_BASELINE_MISMATCH
+    exit_code: 1
+    evidence: ".github/ci/foundation-deps-full-check.sh"
+    source: "CONSTITUTION §3; FOUNDATION-DEPS.yaml go_baseline"
+
+  - id: CO-002-no-business-import
+    dimension: boundary
+    check: "生产包不 import 任何业务域模块"
+    fail_condition: "pkg/ 下 .go 文件 import github.com/ZoneCNH/{binance,okx,bybit,bitget,kucoin,gate,mexc,htx,coinbase,hyperliquid,lighter,upbit,coinglass,yield-curve,fred,treasury,bea,ecb,uk-cb,japan-cb,eastmoney,jin10,yahoo,alternative-data,factor-engine,feature-store,factor-eval,market_regime,macro_regime,regime-engine,ms_brain,flowx,signal-factory,backtest-engine,optimizer,backtestx,strategyx,maestro,risk-engine,riskx,order-engine,orderx,portfolio-engine,positionx,settlement,alertx}"
+    reason_code: BUSINESS_IMPORT_IN_FOUNDATION
+    exit_code: 1
+    evidence: ".github/ci/foundation-boundary-check.sh"
+    source: "FOUNDATION-DEPS.yaml forbidden_deps"
+
+  - id: CO-003-no-xgo-reverse-dep
+    dimension: boundary
+    check: "基座不反向依赖 x.go 组合根"
+    fail_condition: "基座模块 import github.com/ZoneCNH/x.go"
+    reason_code: REVERSE_DEP_TO_COMPOSITION_ROOT
+    exit_code: 1
+    evidence: ".github/ci/foundation-boundary-check.sh"
+    source: "FOUNDATION-DEPS.yaml forbidden_deps; CONSTITUTION §3"
+
+  - id: CO-004-no-secret-in-metrics-label
+    dimension: observability
+    check: "metrics label 仅允许低基数非敏感字段(module/component/operation/status/error_kind)"
+    fail_condition: "metrics label 含 order_id/user_id/account_id/api_key/secret/token/trace_id/symbol(未白名单)/exchange(未白名单)"
+    reason_code: HIGH_CARDINALITY_OR_SENSITIVE_LABEL
+    exit_code: 1
+    evidence: ".github/ci/anti-requirement-scan.sh"
+    source: "observex SPEC §7 BR; foundation-modules.md 观测输出策略"
+
+  - id: CO-005-secret-redaction-leak-test
+    dimension: security
+    check: "日志/health/manifest/recorder 覆盖 secret 脱敏 leak test"
+    fail_condition: "脱敏测试缺失或未覆盖日志/health/manifest 四处"
+    reason_code: SECRET_REDACTION_LEAK_TEST_MISSING
+    exit_code: 1
+    evidence: ""
+    source: "observex SPEC §18; configx SPEC §18 (document-only,待 FOLLOWUP-2)"
+
+  - id: CO-006-no-log-fatal-in-library
+    dimension: security
+    check: "库代码不调用 log.Fatal / os.Exit / panic(除显式不可恢复初始化)"
+    fail_condition: "pkg/ 下非 _test.go 文件含 log.Fatal|os.Exit|panic(无 //safe-exit 注释)"
+    reason_code: LIBRARY_PROCESS_CONTROL_VIOLATION
+    exit_code: 1
+    evidence: ".github/ci/anti-requirement-scan.sh"
+    source: "anti-requirements.md §2.2"
+
+  - id: CO-007-no-unsafe
+    dimension: security
+    check: "不使用 unsafe 包"
+    fail_condition: 'pkg/ 下 .go 文件 import "unsafe"'
+    reason_code: UNSAFE_USAGE
+    exit_code: 1
+    evidence: ".github/ci/anti-requirement-scan.sh"
+    source: "anti-requirements.md §2.2"
+
+  - id: CO-008-no-hardcoded-secret
+    dimension: security
+    check: "源码无硬编码凭据"
+    fail_condition: "源码含 AWS key / API key / password 等模式(gitleaks + grep-guard)"
+    reason_code: HARDCODED_SECRET
+    exit_code: 1
+    evidence: ".github/ci/grep-guard.sh; xlibgate trust secret-redaction"
+    source: "anti-requirements.md §2.4"
+
+  - id: CO-009-no-hardcoded-address-port
+    dimension: security
+    check: "无硬编码地址端口"
+    fail_condition: "源码含硬编码 127.0.0.1:6379 等本地地址端口"
+    reason_code: HARDCODED_ADDRESS_PORT
+    exit_code: 1
+    evidence: ".github/ci/anti-requirement-scan.sh; .github/ci/grep-guard.sh"
+    source: "anti-requirements.md §2.2"
+
+  - id: CO-010-go-mod-tidy
+    dimension: toolchain
+    check: "go.mod 处于 tidy 状态"
+    fail_condition: "go mod tidy 产生 diff"
+    reason_code: GO_MOD_NOT_TIDY
+    exit_code: 1
+    evidence: ".github/ci/foundation-deps-full-check.sh; xlibgate check gomod"
+    source: "xlibgate SPEC FR-003"
+
+  - id: CO-011-module-identity-consistency
+    dimension: identity
+    check: "README H1 == go.mod module == repo name"
+    fail_condition: "README H1 / go.mod module / GitHub repo name 三者不一致"
+    reason_code: IDENTITY_MISMATCH
+    exit_code: 1
+    evidence: "xlibgate trust identity"
+    source: "xlibgate SPEC FR-011; CONSTITUTION §2"
+
+  - id: CO-012-release-evidence-required
+    dimension: release
+    check: "release 声明时须有完整 release evidence"
+    fail_condition: "release=true 但 evidence 缺失或未通过"
+    reason_code: RELEASE_EVIDENCE_MISSING
+    exit_code: 1
+    evidence: "xlibgate check release; xlibgate l2 release-check"
+    source: "xlibgate SPEC FR-005; FOUNDATION-DEPS.yaml trust_hardening"
+
+# ============================================================
+# 逐模块规则(19 张规则卡)
+# ============================================================
+modules:
+  kernel:
+    layer: L0
+    rules:
+      - id: KERNEL-001-stdlib-only
+        dimension: dependency
+        check: "go list -deps 无非 stdlib 依赖"
+        fail_condition: "任何非 stdlib 依赖存在"
+        reason_code: KERNEL_NON_STDLIB
+        exit_code: 1
+        evidence: ".github/ci/foundation-boundary-check.sh"
+        source: "FOUNDATION-DEPS.yaml constraints[stdlib-only]"
+
+      - id: KERNEL-002-no-hidden-goroutine
+        dimension: concurrency
+        check: "生产代码无未文档化 goroutine"
+        fail_condition: '生产 .go 文件含 "go func" 且无 //goroutine: 文档注释'
+        reason_code: KERNEL_HIDDEN_GOROUTINE
+        exit_code: 1
+        evidence: ""
+        source: "FOUNDATION-DEPS.yaml constraints[no-hidden-goroutine] (document-only,待 FOLLOWUP-2)"
+
+      - id: KERNEL-003-no-global-mutable-singleton
+        dimension: state
+        check: "不持有包级全局可变单例"
+        fail_condition: "包级 var 为 map/slice/mutex/*Client 且非 init-safe"
+        reason_code: KERNEL_GLOBAL_MUTABLE_STATE
+        exit_code: 1
+        evidence: ""
+        source: "kernel SPEC §7 BR; foundation-modules.md (document-only)"
+
+      - id: KERNEL-004-retryx-is-l0-primitive-only
+        dimension: boundary
+        check: "retryx 仅含 backoff/retry marker/轻量 retry loop,不含完整 timeout/circuit/bulkhead"
+        fail_condition: "kernel.retryx 出现 CircuitBreaker/Bulkhead/RateLimiter 类型"
+        reason_code: KERNEL_RETRYX_SCOPE_CREEP
+        exit_code: 1
+        evidence: ""
+        source: "kernel SPEC §7 BR; foundation-modules.md retryx 边界表 (document-only)"
+
+      - id: KERNEL-005-obsx-is-minimal-interface
+        dimension: boundary
+        check: "obsx 仅是极简 no-vendor interface,不替代 observex"
+        fail_condition: "kernel.obsx 引入 vendor SDK 或实现完整 logger/meter"
+        reason_code: KERNEL_OBSX_SCOPE_CREEP
+        exit_code: 1
+        evidence: ""
+        source: "kernel SPEC §7 BR (document-only)"
+
+  configx:
+    layer: L1
+    rules:
+      - id: CONFIGX-001-no-foundationx-new-usage
+        dimension: freeze
+        check: "不新增 foundationx import"
+        fail_condition: "非 _test.go / 非 internal/foundationx 文件新增 github.com/.../foundationx import"
+        reason_code: CONFIGX_FOUNDATIONX_REGRESSION
+        exit_code: 1
+        evidence: ""
+        source: "FOUNDATION-DEPS.yaml constraints[no-foundationx-new-usage] (document-only,foundationx 已完全退出)"
+
+      - id: CONFIGX-002-no-secret-backend
+        dimension: boundary
+        check: "核心包不直连 Vault/KMS/K8s Secret/云 Secret Manager"
+        fail_condition: "pkg/configx 硬 import hashicorp/vault / cloud kms sdk"
+        reason_code: CONFIGX_SECRET_BACKEND_BOUNDARY
+        exit_code: 1
+        evidence: ""
+        source: "configx SPEC §5 Non-goals (document-only)"
+
+      - id: CONFIGX-003-no-global-singleton
+        dimension: state
+        check: "不创建全局 Config 单例"
+        fail_condition: "存在包级 var DefaultConfig / 全局 Config 实例"
+        reason_code: CONFIGX_GLOBAL_SINGLETON
+        exit_code: 1
+        evidence: ""
+        source: "configx SPEC §7 NoGlobalStateGate (document-only)"
+
+      - id: CONFIGX-004-no-watch-reload-in-core
+        dimension: boundary
+        check: "核心包不在后台启动 watch/reload goroutine"
+        fail_condition: "pkg/configx 非 reload 子包启动后台 goroutine"
+        reason_code: CONFIGX_HIDDEN_WATCH_GOROUTINE
+        exit_code: 1
+        evidence: ""
+        source: "configx SPEC §5 Non-goals (document-only)"
+
+      - id: CONFIGX-005-provenance-mandatory
+        dimension: test
+        check: "provenance 是强制输出,非可选调试"
+        fail_condition: "effective config 无 provenance 字段或测试缺失"
+        reason_code: CONFIGX_PROVENANCE_NOT_MANDATORY
+        exit_code: 1
+        evidence: ""
+        source: "configx SPEC §21 DoD (document-only)"
+
+      - id: CONFIGX-006-stable-config-hash
+        dimension: test
+        check: "相同输入产生稳定 manifest hash"
+        fail_condition: "相同输入两次加载 manifest hash 不一致"
+        reason_code: CONFIGX_UNSTABLE_HASH
+        exit_code: 1
+        evidence: ""
+        source: "configx SPEC §21 DoD (document-only)"
+
+  observex:
+    layer: L1
+    rules:
+      - id: OBSERVEX-001-no-foundationx-new-usage
+        dimension: freeze
+        check: "不新增 foundationx import"
+        fail_condition: "非 _test.go 文件新增 github.com/.../foundationx import"
+        reason_code: OBSERVEX_FOUNDATIONX_REGRESSION
+        exit_code: 1
+        evidence: ""
+        source: "FOUNDATION-DEPS.yaml constraints[no-foundationx-new-usage] (document-only,foundationx 已完全退出)"
+
+      - id: OBSERVEX-002-no-vendor-sdk-in-core
+        dimension: boundary
+        check: "核心包不硬绑定具体日志/指标/追踪供应商 SDK"
+        fail_condition: "pkg/observex 硬 import zap/prometheus/otel 直接依赖"
+        reason_code: OBSERVEX_VENDOR_LOCK_IN
+        exit_code: 1
+        evidence: ""
+        source: "observex SPEC §5 Non-goals (document-only)"
+
+      - id: OBSERVEX-003-no-config-read
+        dimension: boundary
+        check: "核心包不读取配置文件"
+        fail_condition: "pkg/observex import configx 或直接读 YAML/ENV"
+        reason_code: OBSERVEX_READS_CONFIG
+        exit_code: 1
+        evidence: ""
+        source: "observex SPEC §5 Non-goals (document-only)"
+
+      - id: OBSERVEX-004-no-global-client
+        dimension: state
+        check: "不创建全局 logger/meter/tracer"
+        fail_condition: "存在包级全局 logger/meter/tracer 实例"
+        reason_code: OBSERVEX_GLOBAL_CLIENT
+        exit_code: 1
+        evidence: ""
+        source: "observex SPEC §5 Non-goals (document-only)"
+
+      - id: OBSERVEX-005-label-policy-checker
+        dimension: observability
+        check: "label policy checker 拦截高基数和敏感 label"
+        fail_condition: "无 label policy checker 或未拦截 order_id/api_key 等"
+        reason_code: OBSERVEX_NO_LABEL_POLICY_CHECKER
+        exit_code: 1
+        evidence: ""
+        source: "observex SPEC §21 DoD (document-only)"
+
+      - id: OBSERVEX-006-noop-safe-without-injection
+        dimension: test
+        check: "noop 实现未注入时安全运行不 panic"
+        fail_condition: "未注入 logger/meter/tracer 时 panic 或 nil deref"
+        reason_code: OBSERVEX_NOOP_UNSAFE
+        exit_code: 1
+        evidence: ""
+        source: "observex SPEC §21 DoD (document-only)"
+
+  resiliencx:
+    layer: L1
+    rules:
+      - id: RESILIENCX-001-no-hard-observex-core-import
+        dimension: boundary
+        check: "核心包不硬 import observex"
+        fail_condition: "pkg/resiliencx 非 adapter 包 import github.com/ZoneCNH/observex"
+        reason_code: RESILIENCX_HARD_OBSERVEX_IMPORT
+        exit_code: 1
+        evidence: ""
+        source: "FOUNDATION-DEPS.yaml constraints[no-hard-observex-core-import] (document-only)"
+
+      - id: RESILIENCX-002-identity-is-runtime-resilience
+        dimension: identity
+        check: "README/身份为 runtime resilience policy library,无 Standard Source/Generator/Harness 残留"
+        fail_condition: 'README/docs 含 "Standard Source"|"Go Reference Template"|"Generator"|"Harness" 主身份叙事'
+        reason_code: RESILIENCX_IDENTITY_REGRESSION
+        exit_code: 1
+        evidence: "xlibgate trust template-residue"
+        source: "CONSTITUTION §1 P3; FOUNDATION-TRACKER Issue 1"
+
+      - id: RESILIENCX-003-no-trading-risk
+        dimension: boundary
+        check: "不做交易风控/仓位控制/order risk decision"
+        fail_condition: "出现 VaR/stopLoss/positionLimit/maxDrawdown 业务语义"
+        reason_code: RESILIENCX_TRADING_RISK_SCOPE_CREEP
+        exit_code: 1
+        evidence: ""
+        source: "CONSTITUTION §1 P3; foundation-modules.md (document-only)"
+
+      - id: RESILIENCX-004-no-exchange-sdk-import
+        dimension: boundary
+        check: "不直接 import exchange SDK"
+        fail_condition: "import 任何交易所 SDK"
+        reason_code: RESILIENCX_EXCHANGE_SDK_IMPORT
+        exit_code: 1
+        evidence: ""
+        source: "resiliencx SPEC §5 Non-goals (document-only)"
+
+      - id: RESILIENCX-005-idempotency-guard
+        dimension: concurrency
+        check: "非幂等操作默认禁止自动 retry"
+        fail_condition: "无 idempotency hint 或非幂等请求被 retry"
+        reason_code: RESILIENCX_NON_IDEMPOTENT_RETRY
+        exit_code: 1
+        evidence: ""
+        source: "resiliencx SPEC §7 BR (document-only)"
+
+  schedulex:
+    layer: L1
+    rules:
+      - id: SCHEDULEX-001-no-hard-observex-or-resiliencx-core-import
+        dimension: boundary
+        check: "核心包不硬 import observex 或 resiliencx"
+        fail_condition: "pkg/schedulex 非 adapter 包 import github.com/ZoneCNH/(observex|resiliencx)"
+        reason_code: SCHEDULEX_HARD_CROSS_IMPORT
+        exit_code: 1
+        evidence: ""
+        source: "FOUNDATION-DEPS.yaml constraints[no-hard-observex-or-resiliencx-core-import] (document-only)"
+
+      - id: SCHEDULEX-002-no-distributed-lock-impl
+        dimension: boundary
+        check: "不内置 Redis/Postgres 分布式锁实现"
+        fail_condition: "pkg/schedulex 硬 import redis/postgres 客户端实现 Locker"
+        reason_code: SCHEDULEX_EMBEDDED_LOCK_IMPL
+        exit_code: 1
+        evidence: ""
+        source: "schedulex SPEC §5 Non-goals (document-only)"
+
+      - id: SCHEDULEX-003-no-exactly-once-claim
+        dimension: boundary
+        check: "不保证 exactly-once"
+        fail_condition: "文档/代码声称 exactly-once 语义"
+        reason_code: SCHEDULEX_EXACTLY_ONCE_CLAIM
+        exit_code: 1
+        evidence: ""
+        source: "schedulex SPEC §5 Non-goals (document-only)"
+
+      - id: SCHEDULEX-004-clock-injection
+        dimension: test
+        check: "所有调度决策通过 clock 注入,可确定性测试"
+        fail_condition: "调度逻辑直接用 time.Now 而非注入 clock"
+        reason_code: SCHEDULEX_NO_CLOCK_INJECTION
+        exit_code: 1
+        evidence: ""
+        source: "schedulex SPEC §7 BR (document-only)"
+
+      - id: SCHEDULEX-005-dst-golden-test
+        dimension: test
+        check: "timezone/DST golden test 防每日任务漂移"
+        fail_condition: "无 DST golden test 或场景覆盖不全"
+        reason_code: SCHEDULEX_NO_DST_GOLDEN
+        exit_code: 1
+        evidence: ""
+        source: "schedulex SPEC §21 DoD (document-only)"
+
+  testkitx:
+    layer: L1-test
+    rules:
+      - id: TESTKITX-001-test-only-boundary
+        dimension: boundary
+        check: "生产包不 import testkitx"
+        fail_condition: "非 _test.go 文件 import github.com/ZoneCNH/testkitx"
+        reason_code: TESTKITX_PROD_IMPORT
+        exit_code: 1
+        evidence: ".github/ci/foundation-boundary-check.sh; xlibgate trust testkit-prod-import"
+        source: "FOUNDATION-DEPS.yaml constraints[no-production-import]"
+
+      - id: TESTKITX-002-no-real-external-system
+        dimension: boundary
+        check: "不启动真实 Redis/Postgres/Kafka/交易所连接"
+        fail_condition: "testkitx 代码直连真实外部系统"
+        reason_code: TESTKITX_REAL_EXTERNAL_SYSTEM
+        exit_code: 1
+        evidence: ""
+        source: "testkitx SPEC §5 Non-goals (document-only)"
+
+      - id: TESTKITX-003-no-prod-env-read
+        dimension: security
+        check: "不读取真实生产环境变量或密钥"
+        fail_condition: "testkitx 代码读取生产 ENV/密钥文件"
+        reason_code: TESTKITX_PROD_ENV_READ
+        exit_code: 1
+        evidence: ""
+        source: "testkitx SPEC §18 (document-only)"
+
+      - id: TESTKITX-004-deterministic-no-flake
+        dimension: test
+        check: "测试路径 deterministic,避免 flake"
+        fail_condition: "测试依赖时间/random/网络导致间歇失败"
+        reason_code: TESTKITX_NON_DETERMINISTIC
+        exit_code: 1
+        evidence: ""
+        source: "testkitx SPEC §17 (document-only)"
+
+  bootstrap:
+    layer: L1
+    rules:
+      - id: BOOTSTRAP-001-downward-only-dep
+        dimension: dependency
+        check: "仅向下依赖基座(kernel/configx/observex/resiliencx + L2 存储),不穿透到 L2.5/业务域"
+        fail_condition: "bootstrap import domain-market/domain-macro 或任何业务域模块"
+        reason_code: BOOTSTRAP_UPWARD_DEP
+        exit_code: 1
+        evidence: ".github/ci/foundation-boundary-check.sh"
+        source: "bootstrap SPEC §4.3 Governance boundary; FOUNDATION-DEPS.yaml allowed_deps"
+
+      - id: BOOTSTRAP-002-no-http-grpc-server
+        dimension: boundary
+        check: "不起 HTTP/gRPC server,仅组装 Component"
+        fail_condition: "bootstrap 代码调用 net.Listen / http.ListenAndServe / grpc.NewServer"
+        reason_code: BOOTSTRAP_STARTS_SERVER
+        exit_code: 1
+        evidence: ""
+        source: "bootstrap SPEC §4.2 (document-only)"
+
+      - id: BOOTSTRAP-003-no-business-domain-import
+        dimension: boundary
+        check: "不 import 业务域模块(binance/fred/...)"
+        fail_condition: "bootstrap import 任何业务域模块"
+        reason_code: BOOTSTRAP_BUSINESS_IMPORT
+        exit_code: 1
+        evidence: ".github/ci/foundation-boundary-check.sh"
+        source: "bootstrap SPEC §4.2; FOUNDATION-DEPS.yaml forbidden_deps"
+
+      - id: BOOTSTRAP-004-no-domain-semantics
+        dimension: boundary
+        check: "不承载领域语义(domain-market/domain-macro 归 L2.5)"
+        fail_condition: "bootstrap 定义 Tick/Quote/MacroPoint 等领域值对象"
+        reason_code: BOOTSTRAP_DOMAIN_SEMANTICS
+        exit_code: 1
+        evidence: ""
+        source: "bootstrap SPEC §4.2 (document-only)"
+
+      - id: BOOTSTRAP-005-stores-bitmask
+        dimension: boundary
+        check: "存储适配器通过 StoreSet 位掩码按需启用,非全量硬连"
+        fail_condition: "Stores=None 路径仍初始化存储 Component"
+        reason_code: BOOTSTRAP_STORES_BITMASK_VIOLATION
+        exit_code: 1
+        evidence: ""
+        source: "bootstrap SPEC §6 FR-001 (document-only)"
+
+  xlib-standard:
+    layer: standard-source
+    rules:
+      - id: XLIBSTANDARD-001-no-runtime-import
+        dimension: dependency
+        check: "不 import 任何运行时模块"
+        fail_condition: "xlib-standard import kernel/configx/observex/.../业务域"
+        reason_code: XLIBSTANDARD_RUNTIME_IMPORT
+        exit_code: 1
+        evidence: ".github/ci/foundation-boundary-check.sh"
+        source: "FOUNDATION-DEPS.yaml forbidden_foundation_edges; CONSTITUTION §1 P2"
+
+      - id: XLIBSTANDARD-002-not-runtime-dependency
+        dimension: identity
+        check: "声明 runtime_dependency: false,不承载业务运行"
+        fail_condition: "被声明为运行时依赖或含业务运行逻辑"
+        reason_code: XLIBSTANDARD_RUNTIME_DEPENDENCY_CLAIM
+        exit_code: 1
+        evidence: ""
+        source: "CONSTITUTION §1 P2; FOUNDATION-DEPS.yaml modules.xlib-standard.runtime_dependency (document-only)"
+
+      - id: XLIBSTANDARD-003-standard-source-and-template-only
+        dimension: identity
+        check: "职责仅标准事实源 + Go Reference Template(Generator/Harness/Evidence 已拆分)"
+        fail_condition: "xlib-standard 含 generate/scaffold/spec-lint/boundary-check/evidence 实现逻辑"
+        reason_code: XLIBSTANDARD_SCOPE_CREEP
+        exit_code: 1
+        evidence: ""
+        source: "CONSTITUTION §1 P2; FOUNDATION-TRACKER (document-only)"
+
+  xlib-harness:
+    layer: harness
+    rules:
+      - id: XLIBHARNESS-001-no-runtime-import
+        dimension: dependency
+        check: "不 import 任何运行时模块"
+        fail_condition: "xlib-harness import kernel/configx/observex/.../业务域"
+        reason_code: XLIBHARNESS_RUNTIME_IMPORT
+        exit_code: 1
+        evidence: ".github/ci/foundation-boundary-check.sh"
+        source: "FOUNDATION-DEPS.yaml forbidden_foundation_edges"
+
+      - id: XLIBHARNESS-002-generator-scaffold-only
+        dimension: identity
+        check: "职责仅 generate/scaffold/spec-lint/boundary-check/format-check/traceability-gate/template-validate"
+        fail_condition: "含业务运行或运行时依赖逻辑"
+        reason_code: XLIBHARNESS_SCOPE_CREEP
+        exit_code: 1
+        evidence: ""
+        source: "xlib-harness SPEC §6 (document-only)"
+
+      - id: XLIBHARNESS-003-gate-executor-not-policy
+        dimension: boundary
+        check: "仅执行门禁,不定义评分策略(策略在 docs/governance/scoring/)"
+        fail_condition: "xlib-harness 硬编码评分阈值或红线规则"
+        reason_code: XLIBHARNESS_EMBEDS_SCORING_POLICY
+        exit_code: 1
+        evidence: ""
+        source: "xlib-harness SPEC §5 (document-only)"
+
+  xlib-evidence:
+    layer: evidence
+    rules:
+      - id: XLIBEVIDENCE-001-no-runtime-import
+        dimension: dependency
+        check: "不 import 任何运行时模块"
+        fail_condition: "xlib-evidence import kernel/configx/observex/.../业务域"
+        reason_code: XLIBEVIDENCE_RUNTIME_IMPORT
+        exit_code: 1
+        evidence: ".github/ci/foundation-boundary-check.sh"
+        source: "FOUNDATION-DEPS.yaml forbidden_foundation_edges"
+
+      - id: XLIBEVIDENCE-002-evidence-runtime-only
+        dimension: identity
+        check: "职责仅 collect-coverage/generate-manifest/validate-manifest/remote-evidence/evidence-report"
+        fail_condition: "含业务运行或门禁执行逻辑"
+        reason_code: XLIBEVIDENCE_SCOPE_CREEP
+        exit_code: 1
+        evidence: ""
+        source: "xlib-evidence SPEC §6 (document-only)"
+
+      - id: XLIBEVIDENCE-003-no-secret-in-evidence
+        dimension: security
+        check: "release evidence 不含 secret"
+        fail_condition: "evidence JSON 含 api_key/password/token 字段值"
+        reason_code: XLIBEVIDENCE_SECRET_LEAK
+        exit_code: 1
+        evidence: "xlibgate trust secret-redaction"
+        source: "xlib-evidence SPEC §18"
+
+  xlibgate:
+    layer: gate
+    rules:
+      - id: XLIBGATE-001-no-runtime-import
+        dimension: dependency
+        check: "不 import 任何运行时模块"
+        fail_condition: "xlibgate import kernel/configx/observex/.../业务域"
+        reason_code: XLIBGATE_RUNTIME_IMPORT
+        exit_code: 1
+        evidence: ".github/ci/foundation-boundary-check.sh"
+        source: "FOUNDATION-DEPS.yaml forbidden_foundation_edges"
+
+      - id: XLIBGATE-002-stable-exit-codes
+        dimension: release
+        check: "exit code 语义稳定:0=pass,1=fail,2=error"
+        fail_condition: "exit code 偏离 0/1/2 语义"
+        reason_code: XLIBGATE_UNSTABLE_EXIT_CODE
+        exit_code: 2
+        evidence: ""
+        source: "FOUNDATION-DEPS.yaml trust_hardening invariants; repo-contract.json (document-only)"
+
+      - id: XLIBGATE-003-stable-reason-codes
+        dimension: release
+        check: "reason_code 值稳定,供 CI 和 release evidence 消费者使用"
+        fail_condition: "reason_code 值变更未走版本化"
+        reason_code: XLIBGATE_UNSTABLE_REASON_CODE
+        exit_code: 1
+        evidence: ""
+        source: "FOUNDATION-DEPS.yaml trust_hardening invariants (document-only)"
+
+      - id: XLIBGATE-004-factory-grade-requires-evidence
+        dimension: release
+        check: "factory-grade 声明须有 release evidence + blocker review + projection guard + trust evidence"
+        fail_condition: "factory=true 但缺 release evidence / 有 open blocker / projection drift"
+        reason_code: FACTORY_GATE_BLOCKED
+        exit_code: 1
+        evidence: "xlibgate trust maturity --factory"
+        source: "FOUNDATION-DEPS.yaml trust_hardening.rules; repo-contract.json"
+
+      - id: XLIBGATE-005-projection-drift-detection
+        dimension: release
+        check: "公共投影与 release manifest trust evidence 须匹配 FoundationX fact sources"
+        fail_condition: "STATUS/README/ARCHITECTURE/module-README/manifest 与 .foundationx 事实层漂移"
+        reason_code: PROJECTION_DRIFT
+        exit_code: 1
+        evidence: "scripts/audit-status.py --foundationx-only; xlibgate trust fleet-status"
+        source: "FOUNDATION-DEPS.yaml trust_hardening.rules[projection-drift]"
+
+  redisx:
+    layer: storage
+    rules:
+      - id: REDISX-001-kernel-only-runtime-dep
+        dimension: dependency
+        check: "直接生产依赖限定为 kernel + Redis 客户端库"
+        fail_condition: "pkg/redisx 硬 import configx/observex/resiliencx/contracts"
+        reason_code: REDISX_EXCESS_RUNTIME_DEP
+        exit_code: 1
+        evidence: ".github/ci/foundation-boundary-check.sh"
+        source: "redisx SPEC §1 摘要; FOUNDATION-DEPS.yaml allowed_deps"
+
+      - id: REDISX-002-no-cross-storage-engine
+        dimension: boundary
+        check: "不跨越存储引擎边界(import 其他 storage 模块)"
+        fail_condition: "redisx import kafkax/natsx/postgresx/taosx/ossx/clickhousex"
+        reason_code: REDISX_CROSS_STORAGE_ENGINE
+        exit_code: 1
+        evidence: ".github/ci/foundation-boundary-check.sh"
+        source: "FOUNDATION-DEPS.yaml forbidden_foundation_edges"
+
+      - id: REDISX-003-context-on-network-ops
+        dimension: concurrency
+        check: "网络操作支持 context cancel/deadline"
+        fail_condition: "Get/Set/Del 等网络操作无 ctx 参数或不响应 cancel"
+        reason_code: REDISX_NO_CONTEXT_ON_NETWORK
+        exit_code: 1
+        evidence: ""
+        source: "redisx SPEC §7 BR-003 (document-only)"
+
+      - id: REDISX-004-lock-token-owner-guard
+        dimension: concurrency
+        check: "Lock release 校验 token owner,防误释放"
+        fail_condition: "Lock release 不校验 token 或允许跨 owner 释放"
+        reason_code: REDISX_LOCK_NO_TOKEN_GUARD
+        exit_code: 1
+        evidence: ""
+        source: "redisx SPEC §7 BR-005 (document-only)"
+
+      - id: REDISX-005-deps-chapter-present
+        dimension: identity
+        check: "SPEC.md 须含独立 ## 依赖 章节(当前缺失,待 FOLLOWUP-3)"
+        fail_condition: "redisx SPEC 无独立 ## 依赖 章节"
+        reason_code: REDISX_NO_DEPS_CHAPTER
+        exit_code: 1
+        evidence: ""
+        source: "improvements/20260618-foundation-rules FOLLOWUP-3 (document-only,已知缺口)"
+
+  kafkax:
+    layer: storage
+    rules:
+      - id: KAFKAX-001-kernel-only-runtime-dep
+        dimension: dependency
+        check: "仅依赖 kernel + Kafka 客户端库"
+        fail_condition: "pkg/kafkax 硬 import configx/observex/resiliencx/contracts"
+        reason_code: KAFKAX_EXCESS_RUNTIME_DEP
+        exit_code: 1
+        evidence: ".github/ci/foundation-boundary-check.sh"
+        source: "FOUNDATION-DEPS.yaml allowed_deps"
+
+      - id: KAFKAX-002-no-cross-storage-engine
+        dimension: boundary
+        check: "不跨越存储引擎边界"
+        fail_condition: "kafkax import redisx/natsx/postgresx/taosx/ossx/clickhousex"
+        reason_code: KAFKAX_CROSS_STORAGE_ENGINE
+        exit_code: 1
+        evidence: ".github/ci/foundation-boundary-check.sh"
+        source: "FOUNDATION-DEPS.yaml forbidden_foundation_edges"
+
+      - id: KAFKAX-003-driver-neutral-api
+        dimension: boundary
+        check: "对外 API 是 driver-neutral,生产驱动(kafka-go)在 adapter"
+        fail_condition: "公开 API 暴露 kafka-go 特定类型"
+        reason_code: KAFKAX_DRIVER_LEAK
+        exit_code: 1
+        evidence: ""
+        source: "kafkax SPEC §1 (document-only)"
+
+      - id: KAFKAX-004-context-on-network-ops
+        dimension: concurrency
+        check: "生产/消费网络操作支持 context cancel/deadline"
+        fail_condition: "Producer/Consumer 操作无 ctx 或不响应 cancel"
+        reason_code: KAFKAX_NO_CONTEXT_ON_NETWORK
+        exit_code: 1
+        evidence: ""
+        source: "kafkax SPEC §7 (document-only)"
+
+  natsx:
+    layer: storage
+    rules:
+      - id: NATSX-001-kernel-only-runtime-dep
+        dimension: dependency
+        check: "仅依赖 kernel + NATS 客户端库"
+        fail_condition: "pkg/natsx 硬 import configx/observex/resiliencx/contracts"
+        reason_code: NATSX_EXCESS_RUNTIME_DEP
+        exit_code: 1
+        evidence: ".github/ci/foundation-boundary-check.sh"
+        source: "FOUNDATION-DEPS.yaml allowed_deps"
+
+      - id: NATSX-002-no-cross-storage-engine
+        dimension: boundary
+        check: "不跨越存储引擎边界"
+        fail_condition: "natsx import redisx/kafkax/postgresx/taosx/ossx/clickhousex"
+        reason_code: NATSX_CROSS_STORAGE_ENGINE
+        exit_code: 1
+        evidence: ".github/ci/foundation-boundary-check.sh"
+        source: "FOUNDATION-DEPS.yaml forbidden_foundation_edges"
+
+      - id: NATSX-003-drain-reconnect-degraded-health
+        dimension: concurrency
+        check: "支持 Drain/reconnect/degraded health"
+        fail_condition: "无 Drain 或 reconnect 或 degraded health 处理"
+        reason_code: NATSX_NO_GRACEFUL_DEGRADATION
+        exit_code: 1
+        evidence: ""
+        source: "natsx SPEC §7 (document-only)"
+
+      - id: NATSX-004-canonical-config-prefix
+        dimension: identity
+        check: "配置使用 canonical FOUNDATIONX_NATS_* 前缀"
+        fail_condition: "配置 key 非 FOUNDATIONX_NATS_* 前缀"
+        reason_code: NATSX_NON_CANONICAL_CONFIG
+        exit_code: 1
+        evidence: ""
+        source: "natsx SPEC §11 (document-only)"
+
+  postgresx:
+    layer: storage
+    rules:
+      - id: POSTGRESX-001-kernel-only-runtime-dep
+        dimension: dependency
+        check: "仅依赖 kernel + Postgres 客户端库"
+        fail_condition: "pkg/postgresx 硬 import configx/observex/resiliencx/contracts"
+        reason_code: POSTGRESX_EXCESS_RUNTIME_DEP
+        exit_code: 1
+        evidence: ".github/ci/foundation-boundary-check.sh"
+        source: "FOUNDATION-DEPS.yaml allowed_deps"
+
+      - id: POSTGRESX-002-no-cross-storage-engine
+        dimension: boundary
+        check: "不跨越存储引擎边界"
+        fail_condition: "postgresx import redisx/kafkax/natsx/taosx/ossx/clickhousex"
+        reason_code: POSTGRESX_CROSS_STORAGE_ENGINE
+        exit_code: 1
+        evidence: ".github/ci/foundation-boundary-check.sh"
+        source: "FOUNDATION-DEPS.yaml forbidden_foundation_edges"
+
+      - id: POSTGRESX-003-transaction-support
+        dimension: test
+        check: "支持事务( BEGIN/COMMIT/ROLLBACK)"
+        fail_condition: "无事务封装或事务未正确回滚"
+        reason_code: POSTGRESX_NO_TRANSACTION_SUPPORT
+        exit_code: 1
+        evidence: ""
+        source: "postgresx SPEC §7 (document-only)"
+
+      - id: POSTGRESX-004-migration-support
+        dimension: test
+        check: "支持迁移(migration)"
+        fail_condition: "无迁移机制或迁移不可版本化"
+        reason_code: POSTGRESX_NO_MIGRATION
+        exit_code: 1
+        evidence: ""
+        source: "postgresx SPEC §7 (document-only)"
+
+      - id: POSTGRESX-005-no-foundationx-residual
+        dimension: freeze
+        check: "foundationx 依赖完全移除(FOUNDATION-TRACKER Issue 6 已闭环)"
+        fail_condition: "重新引入 foundationx import"
+        reason_code: POSTGRESX_FOUNDATIONX_REGRESSION
+        exit_code: 1
+        evidence: ""
+        source: "FOUNDATION-TRACKER Issue 6 (document-only)"
+
+  taosx:
+    layer: storage
+    rules:
+      - id: TAOSX-001-kernel-only-runtime-dep
+        dimension: dependency
+        check: "仅依赖 kernel + TDengine 客户端库"
+        fail_condition: "pkg/taosx 硬 import configx/observex/resiliencx/contracts"
+        reason_code: TAOSX_EXCESS_RUNTIME_DEP
+        exit_code: 1
+        evidence: ".github/ci/foundation-boundary-check.sh"
+        source: "FOUNDATION-DEPS.yaml allowed_deps"
+
+      - id: TAOSX-002-no-cross-storage-engine
+        dimension: boundary
+        check: "不跨越存储引擎边界"
+        fail_condition: "taosx import redisx/kafkax/natsx/postgresx/ossx/clickhousex"
+        reason_code: TAOSX_CROSS_STORAGE_ENGINE
+        exit_code: 1
+        evidence: ".github/ci/foundation-boundary-check.sh"
+        source: "FOUNDATION-DEPS.yaml forbidden_foundation_edges"
+
+      - id: TAOSX-003-l2-adapter-contract
+        dimension: identity
+        check: "定位为 TDengine L2 adapter contract"
+        fail_condition: "含非 contract 的完整 ORM 或业务语义"
+        reason_code: TAOSX_SCOPE_CREEP
+        exit_code: 1
+        evidence: ""
+        source: "taosx SPEC §1 (document-only)"
+
+      - id: TAOSX-004-spec-67-completion
+        dimension: release
+        check: "SPEC 完整度对齐标准 23 节(BLK-007 跟踪 SPEC 67 偏低)"
+        fail_condition: "SPEC 章节 < 23 或规则章节偏薄"
+        reason_code: TAOSX_SPEC_INCOMPLETE
+        exit_code: 1
+        evidence: ""
+        source: "ARCHITECTURE.md BLK-007; improvements/20260618-foundation-rules FOLLOWUP-3 (document-only)"
+
+  ossx:
+    layer: storage
+    rules:
+      - id: OSSX-001-aliyun-oss-identity
+        dimension: identity
+        check: "定位为 Aliyun OSS 对象存储 L2 adapter(非通用 OSS)"
+        fail_condition: "身份漂移为通用 OSS 或其他云厂商"
+        reason_code: OSSX_IDENTITY_DRIFT
+        exit_code: 1
+        evidence: "xlibgate trust identity"
+        source: "ossx SPEC §1; ARCHITECTURE.md"
+
+      - id: OSSX-002-kernel-only-runtime-dep
+        dimension: dependency
+        check: "仅依赖 kernel + Aliyun OSS 客户端库"
+        fail_condition: "pkg/ossx 硬 import configx/observex/resiliencx/contracts"
+        reason_code: OSSX_EXCESS_RUNTIME_DEP
+        exit_code: 1
+        evidence: ".github/ci/foundation-boundary-check.sh"
+        source: "FOUNDATION-DEPS.yaml allowed_deps"
+
+      - id: OSSX-003-no-cross-storage-engine
+        dimension: boundary
+        check: "不跨越存储引擎边界"
+        fail_condition: "ossx import redisx/kafkax/natsx/postgresx/taosx/clickhousex"
+        reason_code: OSSX_CROSS_STORAGE_ENGINE
+        exit_code: 1
+        evidence: ".github/ci/foundation-boundary-check.sh"
+        source: "FOUNDATION-DEPS.yaml forbidden_foundation_edges"
+
+      - id: OSSX-004-stdlib-only-pkg-ossx
+        dimension: dependency
+        check: "pkg/ossx 当前为 stdlib-only(v1.0.2-alpha 交付基线)"
+        fail_condition: "pkg/ossx 引入非 stdlib 依赖"
+        reason_code: OSSX_PKG_NON_STDLIB
+        exit_code: 1
+        evidence: ""
+        source: "ossx FEATURES.md; BLK-010 resolved (document-only)"
+
+      - id: OSSX-005-real-aliyun-adapter-pending
+        dimension: release
+        check: "真实 Aliyun adapter + integration evidence(TASK-OSSX-005 跟踪,当前非 factory)"
+        fail_condition: "声称 factory-grade 但缺真实 adapter + integration evidence"
+        reason_code: OSSX_FACTORY_CLAIM_WITHOUT_ADAPTER
+        exit_code: 1
+        evidence: ""
+        source: "ossx IMPLEMENTATION-PLAN.md TASK-OSSX-005 (document-only)"
+
+  clickhousex:
+    layer: storage
+    rules:
+      - id: CLICKHOUSEX-001-kernel-only-runtime-dep
+        dimension: dependency
+        check: "仅依赖 kernel + ClickHouse 客户端库"
+        fail_condition: "pkg/clickhousex 硬 import configx/observex/resiliencx/contracts"
+        reason_code: CLICKHOUSEX_EXCESS_RUNTIME_DEP
+        exit_code: 1
+        evidence: ".github/ci/foundation-boundary-check.sh"
+        source: "FOUNDATION-DEPS.yaml allowed_deps"
+
+      - id: CLICKHOUSEX-002-no-cross-storage-engine
+        dimension: boundary
+        check: "不跨越存储引擎边界"
+        fail_condition: "clickhousex import redisx/kafkax/natsx/postgresx/taosx/ossx"
+        reason_code: CLICKHOUSEX_CROSS_STORAGE_ENGINE
+        exit_code: 1
+        evidence: ".github/ci/foundation-boundary-check.sh"
+        source: "FOUNDATION-DEPS.yaml forbidden_foundation_edges"
+
+      - id: CLICKHOUSEX-003-olap-query-batch-write
+        dimension: identity
+        check: "职责为 OLAP 查询 + 批量写入"
+        fail_condition: "含 OLTP 事务语义或行级 CRUD"
+        reason_code: CLICKHOUSEX_SCOPE_CREEP
+        exit_code: 1
+        evidence: ""
+        source: "clickhousex SPEC §1 (document-only)"
+
+      - id: CLICKHOUSEX-004-public-release-pending
+        dimension: release
+        check: "公开 GitHub Release 未发布(BLK-003 open),非 factory"
+        fail_condition: "声称 factory-grade 但无公开 Release"
+        reason_code: CLICKHOUSEX_FACTORY_WITHOUT_RELEASE
+        exit_code: 1
+        evidence: ""
+        source: "ARCHITECTURE.md BLK-003 (document-only)"
+
+  contracts:
+    layer: contracts
+    rules:
+      - id: CONTRACTS-001-spec-only-no-runtime-impl
+        dimension: identity
+        check: "spec-only,跨域稳定端口/事件/DTO,无运行时实现"
+        fail_condition: "contracts 含业务逻辑实现而非接口/DTO 定义"
+        reason_code: CONTRACTS_RUNTIME_IMPL
+        exit_code: 1
+        evidence: ""
+        source: "contracts SPEC §1; CONSTITUTION §1 P7 (document-only)"
+
+      - id: CONTRACTS-002-no-foundation-runtime-dep
+        dimension: dependency
+        check: "不依赖任何模块实现"
+        fail_condition: "contracts import kernel/configx/observex/.../业务域实现"
+        reason_code: CONTRACTS_RUNTIME_DEPENDENCY
+        exit_code: 1
+        evidence: ".github/ci/foundation-boundary-check.sh"
+        source: "FOUNDATION-DEPS.yaml forbidden_foundation_edges"
+
+      - id: CONTRACTS-003-dto-immutable
+        dimension: boundary
+        check: "DTO 创建后字段不可修改"
+        fail_condition: "DTO 暴露可变内部 slice/map 或公开 setter"
+        reason_code: CONTRACTS_MUTABLE_DTO
+        exit_code: 1
+        evidence: ""
+        source: "contracts SPEC §7 TC-007 (document-only)"
+
+      - id: CONTRACTS-004-topic-uniqueness
+        dimension: boundary
+        check: "事件 topic 常量唯一"
+        fail_condition: "存在重复 topic 值"
+        reason_code: CONTRACTS_DUPLICATE_TOPIC
+        exit_code: 1
+        evidence: ""
+        source: "contracts SPEC §7 TC-004 (document-only)"
+
+      - id: CONTRACTS-005-json-snake-case-tag
+        dimension: boundary
+        check: "所有 DTO 字段有 snake_case JSON tag"
+        fail_condition: "DTO 字段缺 json tag 或非 snake_case"
+        reason_code: CONTRACTS_NO_JSON_TAG
+        exit_code: 1
+        evidence: ""
+        source: "contracts SPEC §7 (document-only)"
+
+      - id: CONTRACTS-006-port-method-count
+        dimension: boundary
+        check: "端口接口方法数 3-5"
+        fail_condition: "端口接口方法 > 5 或 < 3"
+        reason_code: CONTRACTS_PORT_METHOD_COUNT
+        exit_code: 1
+        evidence: ""
+        source: "contracts SPEC §7 TC-006 (document-only)"
+
+  transportx:
+    layer: contracts
+    rules:
+      - id: TRANSPORTX-001-spec-only-baseline
+        dimension: identity
+        check: "应用通信底座规格基线(spec-only,production_import_allowed=false)"
+        fail_condition: "声称可生产运行但无运行时实现"
+        reason_code: TRANSPORTX_RUNTIME_CLAIM
+        exit_code: 1
+        evidence: ""
+        source: "transportx SPEC §1; foundation-bom.yaml (document-only)"
+
+      - id: TRANSPORTX-002-no-broker-client-dep
+        dimension: boundary
+        check: "不依赖具体 broker/client/协议 SDK"
+        fail_condition: "transportx import 具体 broker 客户端或协议 SDK"
+        reason_code: TRANSPORTX_BROKER_CLIENT_DEP
+        exit_code: 1
+        evidence: ""
+        source: "transportx SPEC §5; FOUNDATION-DEPS.yaml forbidden_foundation_edges (document-only)"
+
+      - id: TRANSPORTX-003-no-domain-model
+        dimension: boundary
+        check: "不定义领域模型全集(业务 DTO 归 contracts)"
+        fail_condition: "transportx 定义 MarketEvent/OrderCommand 等业务对象"
+        reason_code: TRANSPORTX_DOMAIN_MODEL
+        exit_code: 1
+        evidence: ""
+        source: "ARCHITECTURE.md 边界与接口职责 (document-only)"
+
+      - id: TRANSPORTX-004-conformance-gate-present
+        dimension: test
+        check: "含 conformance gate(Envelope/QoS/Codec/RPC/EventBus/Stream/Outbox/Inbox/Audit/SchemaRegistry)"
+        fail_condition: "conformance gate 维度缺失"
+        reason_code: TRANSPORTX_CONFORMANCE_GATE_MISSING
+        exit_code: 1
+        evidence: ""
+        source: "transportx SPEC §19 TX-GATE (document-only)"
+
+      - id: TRANSPORTX-005-allowed-upstream-contracts
+        dimension: dependency
+        check: "可依赖 contracts/configx/observex/resiliencx 公开接口"
+        fail_condition: "依赖非白名单模块或实现包"
+        reason_code: TRANSPORTX_DISALLOWED_UPSTREAM
+        exit_code: 1
+        evidence: ".github/ci/foundation-boundary-check.sh"
+        source: "FOUNDATION-DEPS.yaml allowed_deps"
+
+  domainx:
+    layer: L2.5
+    rules:
+      - id: DOMAINX-001-kernel-only-dep
+        dimension: dependency
+        check: "领域共享原语只依赖 kernel"
+        fail_condition: "domainx import configx/observex/.../业务域"
+        reason_code: DOMAINX_EXCESS_DEP
+        exit_code: 1
+        evidence: ".github/ci/foundation-boundary-check.sh"
+        source: "FOUNDATION-DEPS.yaml allowed_deps"
+
+      - id: DOMAINX-002-value-object-only
+        dimension: identity
+        check: "仅含执行域共享值对象(Order/Position/Trade/Portfolio/ExecutionReport + 枚举)"
+        fail_condition: "含业务逻辑或行为方法"
+        reason_code: DOMAINX_BEHAVIOR_SCOPE_CREEP
+        exit_code: 1
+        evidence: ""
+        source: "domainx SPEC §1 (document-only)"
+
+      - id: DOMAINX-003-l25-shared-semantics
+        dimension: boundary
+        check: "归入 L2.5 统计,业务域通过 contracts/transportx 保持跨域边界"
+        fail_condition: "domainx 被当作基座计入 19 模块统计或独立运行"
+        reason_code: DOMAINX_LAYER_MISCLASSIFICATION
+        exit_code: 1
+        evidence: ""
+        source: "module/README.md; ARCHITECTURE.md (document-only)"
+
+# ============================================================
+# 规则维度枚举(约束 rule.dimension 取值)
+# ============================================================
+dimensions:
+  - dependency      # 依赖边界(谁可 import 谁)
+  - boundary        # 进程/包/职责边界(如 testkitx 隔离、跨存储引擎)
+  - concurrency     # 并发安全(context、goroutine、锁)
+  - state           # 全局状态(单例、可变全局)
+  - freeze          # 冻结(foundationx 退出、身份不回流)
+  - observability   # 观测脱敏、低基数 label
+  - security        # 密钥、输入校验、unsafe、进程控制
+  - toolchain       # Go baseline、go mod tidy、lint
+  - test            # 测试覆盖、contract、golden、deterministic
+  - release         # 发布门禁、evidence、factory-grade
+  - identity        # 模块身份(README H1、go.mod、职责不漂移)
+
+# ============================================================
+# 与现有门禁的关系(非冲突,明确分工)
+# ============================================================
+consumers:
+  ci_scripts:
+    - path: ".github/ci/foundation-boundary-check.sh"
+      consumes: [CO-002, CO-003, "modules.*.rules.dimension=dependency|boundary"]
+      note: "Python+PyYAML 解析,clone 真实源码做 import 扫描;读 FOUNDATION-DEPS.yaml 的 modules/allowed_deps/forbidden_deps/forbidden_foundation_edges"
+    - path: ".github/ci/foundation-deps-full-check.sh"
+      consumes: [CO-001, CO-010]
+      note: "go.mod module 身份、Go baseline、Makefile boundary、check_secrets"
+    - path: ".github/ci/anti-requirement-scan.sh"
+      consumes: [CO-004, CO-006, CO-007, CO-009]
+      note: "扫 SPEC 代码块的 anti-requirements 2.2-2.4"
+    - path: ".github/ci/grep-guard.sh"
+      consumes: [CO-008, CO-009]
+      note: "敏感凭据、本地地址端口扫描"
+    - path: "scripts/audit-status.py"
+      consumes: [CO-012]
+      note: "fact-layer guard,投影一致性"
+  xlibgate:
+    - command: "check imports / check all"
+      consumes: [CO-002, CO-003, "modules.*.rules.dimension=dependency"]
+      note: "Go yaml.v3 解析 FOUNDATION-DEPS.yaml;注意 boundary.go 的 source/targets vs from/to 漂移(FOLLOWUP-1)"
+    - command: "check gomod"
+      consumes: [CO-010]
+    - command: "check baseline"
+      consumes: [CO-001]
+    - command: "check release / l2 release-check"
+      consumes: [CO-012, "modules.*.rules.dimension=release"]
+    - command: "trust identity"
+      consumes: [CO-011, "modules.*.rules.dimension=identity"]
+    - command: "trust template-residue"
+      consumes: [RESILIENCX-002, XLIBSTANDARD-003]
+    - command: "trust maturity --factory"
+      consumes: [XLIBGATE-004, XLIBGATE-005, CO-012]
+    - command: "trust testkit-prod-import"
+      consumes: [TESTKITX-001]
+    - command: "trust secret-redaction"
+      consumes: [CO-008, XLIBEVIDENCE-003]
+    - command: "trust fleet-status"
+      consumes: [XLIBGATE-005]
+  handoff_to_foundation_deps:
+    note: >
+      依赖方向规则(allowed_deps/forbidden_deps/forbidden_foundation_edges/go_baseline)仍归 FOUNDATION-DEPS.yaml。
+      本文件只编码 FOUNDATION-DEPS.yaml 未覆盖或未执行(constraints 块)的行为/安全/身份/CI 门禁规则。
+      两文件通过每条规则的 source 字段互引,不构成双 SSOT。

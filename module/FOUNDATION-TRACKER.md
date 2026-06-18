@@ -46,7 +46,7 @@
 - [x] CI 中增加 `check-deps.sh` 脚本（已完成，deps-matrix.yml）（从 yaml 解析）
 - [x] CI 中增加 kernel stdlib-only 检查（`/home/kernel/scripts/check-stdlib-only.sh`）
 - [x] CI 中增加 testkitx production import 检查（`pkg/testkitx/boundarytest/`）
-- [x] CI 中增加反向依赖检查（`deps-matrix.yml` + `FOUNDATION-DEPS.yaml` constraints）
+- [~] CI 中增加反向依赖检查（`deps-matrix.yml` + `FOUNDATION-DEPS.yaml` constraints） — ⚠️ 失真修正(2026-06-18):constraints 块从未被任何 CI 消费,规则已迁移至 `FOUNDATION-RULES.yaml` 并真正可执行,见 `docs/governance/improvements/20260618-foundation-rules/SPEC.md`
 - [x] README 或 AGENTS 中引用此矩阵（已添加到 AGENTS.md 关键文档表）
 
 ### Issue 3：Go baseline alignment ✅
@@ -77,7 +77,7 @@
 - [x] `observex`：列出所有 foundationx 用法和替代方案（`docs/foundationx-compatibility.md` 已于 2026-06-12 创建，含兼容范围/不可变边界/升级规则）
 - [x] `configx`：冻结，不再新增 foundationx usage（`scripts/check-foundationx-freeze.sh` 基线对比门禁已部署 — 1 文件基线；CI 门禁已就位防止新增用法）
 - [x] `observex`：冻结，不再新增 foundationx usage（`scripts/check-foundationx-freeze.sh` 基线对比门禁已部署 — 4 文件基线；CI 门禁已就位防止新增用法）
-- [x] CI 中增加 foundationx 新增用法检查（`FOUNDATION-DEPS.yaml` constraints: no-foundationx-new-usage）
+- [~] CI 中增加 foundationx 新增用法检查（`FOUNDATION-DEPS.yaml` constraints: no-foundationx-new-usage） — ⚠️ 失真修正(2026-06-18):constraints 块从未被任何 CI 消费;foundationx 已完全退出,规则以 CONFIGX-001/OBSERVEX-001 形式迁移至 `FOUNDATION-RULES.yaml` 防回归,见 `docs/governance/improvements/20260618-foundation-rules/SPEC.md`
 - [x] `configx` v0.3 前完成迁移（✅ 完全解耦 — SecretString 原生化 + internal/foundationx 已删除 + contract tests 已重写）
 - [x] `observex` v0.4 前完成生产解耦（✅ ErrorKind + Sanitizer 原生化，零 foundationx import；contract tests 重写 + internal/foundationx 删除 → v0.4）
 - [x] `configx` 迁移完成删除 `internal/foundationx`（✅ contract tests 已重写，go.mod replace 已移除，internal/foundationx 已物理删除）
@@ -93,7 +93,7 @@
 
 - [x] public API snapshot 文件（`contracts/public_api/kernel_v0.schema.json`）
 - [x] stdlib-only CI check（`scripts/check-stdlib-only.sh`）
-- [x] no-hidden-goroutine CI check（`scripts/check-no-goroutine.sh`）
+- [~] no-hidden-goroutine CI check（`scripts/check-no-goroutine.sh`） — ⚠️ 失真修正(2026-06-18):`scripts/check-no-goroutine.sh` 实际不存在;规则以 KERNEL-002 形式迁移至 `FOUNDATION-RULES.yaml`(document-only,待 FOLLOWUP-2 编写执行器),见 `docs/governance/improvements/20260618-foundation-rules/SPEC.md`
 - [x] 12 子包核心实现：errx / timex / obsx / syncx / lifecycx / shutdownx / versionx / validx / retryx / contextx / healthx / contracttest
 - [x] 核心库 100% 测试覆盖率，-race 清零
 - [x] 15 项 CI 门禁全部通过（含 benchmark 回归）
