@@ -62,11 +62,12 @@ ZoneCNH 的 `FoundationX` 量化交易基础设施文档枢纽，也是 `ZoneCNH
 - **禁止自动删除未合并分支**。Stop/SessionEnd hook 切换 main 前必须验证：`git log origin/main..HEAD --oneline | wc -l`（>0 则禁止删除）或 PR 已合并
 - **分支恢复**：误删时 `git reflog` 定位 SHA → `git checkout -b <branch> <sha>`
 
-### 工作区 GC
+### 工作区 GC（> 取代: 2026-06-19 §空头 GC 文档）
 
-- **`.worktree/` 临时文件 TTL = 24h**。PreCompact/PostToolUse hook 自动清理超 24h 的 stale 文件
-- OMX team worker 子目录在下一个 SessionStart 时自动 `rm -rf`
-- 例外：`note.md`、`v2.md` 不自动清理
+- **`.worktree/` 孤儿目录 TTL = 24h**。SessionStart hook（`.claude/hooks/session-context.mjs`）扫描 `.worktree/` 下已被 `git worktree forget` 的孤儿目录（不在 `git worktree list` 中）
+- **默认 dry-run**：仅报告 >24h 孤儿，不删除。设 `WORKTREE_GC_CLEAN=1` 才真删
+- **白名单**：直接含 `note.md` 或 `v2.md` 的目录不清理；活跃 worktree 及其祖先/内部目录不清理
+- git 元数据清理用 `git worktree prune`（仅清 `.git/worktrees/<name>`，不清文件系统目录）
 
 ### 提交批处理
 
