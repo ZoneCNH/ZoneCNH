@@ -166,6 +166,19 @@ if (existsSync(worktreeBase)) {
     }
   };
 
+  // 护栏：worktree 残骸检测。被 `git worktree forget` 的工作区仍保留 `.git` 文件
+  // （主仓库 .git 是目录；worktree 工作区的 .git 是文件，内容 `gitdir: ...`）。
+  // 真删时跳过此类孤儿，避免丢失工作区里未 commit 的改动（已 commit 的提交在
+  // 分支 ref 上，不随目录删除丢失；仅未提交工作区改动会丢）。
+  const hasWorktreeRemnant = (dir) => {
+    try {
+      const g = join(dir, ".git");
+      return existsSync(g) && statSync(g).isFile();
+    } catch {
+      return false;
+    }
+  };
+
   const now = Date.now();
   const orphans = candidates
     .filter((c) => classify(c) === "ORPHAN")
@@ -175,18 +188,24 @@ if (existsSync(worktreeBase)) {
     .sort((a, b) => b.ageMs - a.ageMs);
 
   if (orphans.length > 0) {
+    // 预分类：哪些是 worktree 残骸（真删时受护栏保护）
+    const tagged = orphans.map((o) => ({ ...o, remnant: hasWorktreeRemnant(o.path) }));
+    const remnantCount = tagged.filter((o) => o.remnant).length;
     lines.push("---");
-    lines.push("🧹 Worktree 孤儿 GC（" + (cleanMode ? "✅ CLEAN 模式" : "dry-run，设 WORKTREE_GC_CLEAN=1 真删") + "）：发现 " + orphans.length + " 个 >24h 孤儿");
-    for (const o of orphans.slice(0, 15)) {
-      lines.push("   " + Math.floor(o.ageMs / 3600000) + "h  " + relative(projectRoot, o.path));
+    lines.push("🧹 Worktree 孤儿 GC（" + (cleanMode ? "✅ CLEAN 模式" : "dry-run，设 WORKTREE_GC_CLEAN=1 真删") + "）：发现 " + orphans.length + " 个 >24h 孤儿" + (remnantCount > 0 ? "（其中 " + remnantCount + " 个 worktree 残骸将受保护）" : ""));
+    for (const o of tagged.slice(0, 15)) {
+      lines.push("   " + Math.floor(o.ageMs / 3600000) + "h  " + relative(projectRoot, o.path) + (o.remnant ? "  🛡️ 残骸受保护" : ""));
     }
-    if (orphans.length > 15) lines.push("   ... 还有 " + (orphans.length - 15) + " 个");
+    if (tagged.length > 15) lines.push("   ... 还有 " + (tagged.length - 15) + " 个");
     if (cleanMode) {
       let removed = 0;
-      for (const o of orphans) {
+      let guarded = 0;
+      for (const o of tagged) {
+        // 护栏：跳过 worktree 残骸，保护其工作区未提交改动
+        if (o.remnant) { guarded++; continue; }
         try { rmSync(o.path, { recursive: true, force: true }); removed++; } catch {}
       }
-      lines.push("   已删除 " + removed + "/" + orphans.length + " 个");
+      lines.push("   已删除 " + removed + "/" + orphans.length + " 个" + (guarded > 0 ? "，保护 " + guarded + " 个 worktree 残骸" : ""));
     }
   }
 }
