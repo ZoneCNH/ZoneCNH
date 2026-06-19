@@ -7,7 +7,7 @@ Close the ossx documentation and implementation handoff chain so Goal -> Spec ->
 ## Constraints
 
 - Scope is `module/ossx`.
-- ossx is the Aliyun OSS adapter (single provider); no adapter SPI or S3-compatible / multi-provider abstraction.
+- ossx is the Aliyun OSS adapter (single provider); split adapter SPI exists only as the provider implementation boundary, not as a business-facing multi-provider abstraction.
 - ossx must not directly depend on `configx`.
 - ossx may depend on `kernel` and observex interface contracts only.
 - Other storage extensions and unrelated worktrees are out of scope.
@@ -38,11 +38,11 @@ Implement tasks in numeric order unless the Aliyun adapter task (TASK-OSSX-005) 
 
 | 风险 | 级别 | 缓解 | 回滚 |
 |------|------|------|------|
-| API 破坏性变更 | LOW | 当前为首次实现（远程仓库 0 pkg 源码），尚无下游消费者 | `git revert` |
+| API 破坏性变更 | LOW | v1.2.1 已完成公共接口拆分；仍需下游接入验证后再声明稳定生产 API | `git revert` |
 | 外部依赖不可用（Aliyun OSS） | MEDIUM | 健康检查 + 降级策略；测试用 fake adapter | 回退到上一稳定版本 |
 | 配置兼容性回归 | LOW | canonical + legacy 测试覆盖 | 回退配置变更 |
 
-> 注：远程仓库 `github.com/ZoneCNH/ossx` 当前 0 pkg 源码（BLK-010 open），本计划描述的是首次实现，不存在"已有可工作实现"。
+> 注：本计划是早期实现切片记录。当前 `/home/ossx` 已具备 v1.2.1 本地生产候选实现；完整生产放行仍以后续 release/live/downstream/soak 证据为准。
 
 ## Phased Rollout
 
