@@ -1,227 +1,282 @@
 # xlib-harness 规格
 
 Status: Approved
-- Spec-Version: v1.1.0
-- Last-Updated: 2026-06-18
+- Spec-Version: v1.2.0
+- Last-Updated: 2026-06-19
 - Layer: 基座 · 模块生成器与门禁执行器
-- Version: v0.1.1
-- Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `xlib-standard`
+- Version: v0.1.2
+- Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `xlibgate`
 
-> 公开投影 caveat：Status=Review 与矩阵覆盖证据不等同于 factory-grade；四源评分通过前机器事实层保持 factory=false。
+> 公开投影说明：v0.1.2 已由 `/home/xlib-harness@aa83306685a9` 的本地验收证据支撑；远端 GitHub Actions 与 GitHub Release 需在推送 branch/tag 后补充执行证据。
 
 ---
 
 ## 1. 摘要
 
-xlib-harness 是 Foundation 模块的**生成器与门禁执行器**——从标准模板生成新模块骨架，并对已有模块执行机器化合规检查。
+`xlib-harness` 是 Foundation 模块的生成器与门禁执行器。它生成标准模块文档集合，并对已有模块执行规格结构、追踪闭环、运行时依赖边界、Markdown 格式和 CI/CD 引用检查。
 
 ## 2. 问题与背景
 
-xlib-standard 同时承载声明式标准定义（Standard Source / Go Reference Template）和主动执行工具（Generator / Harness Gate），导致 52 FR 和 25+ 个文件耦合在一个模块中。Generator 和 Harness 是执行工具而非标准定义，应独立为可演进、可独立测试的模块。
+Foundation 20 模块需要统一的可机器验证规格资产。手工复制模板会带来结构漂移、追踪断链和边界规则遗漏，因此需要一个独立、标准库依赖、可在本地与 CI 中重复执行的 harness。
 
 ## 3. 目标
 
-- 提供 `xlib-harness generate <module>` 从标准模板生成新模块骨架
-- 提供 `xlib-harness check <module>` 对已有模块执行合规门禁
-- 与 xlibgate（CI 管线门禁）互补：xlibgate 检查编译/依赖/发布，xlib-harness 检查规格结构/模板/格式
-- 读取 xlib-standard 的模板和 schema 作为输入
+- 提供 `xlib-harness generate <module>` 生成标准模块文档集合。
+- 提供 `xlib-harness check <module>` 对模块执行可组合门禁。
+- 以 fixture 锁定 compliant、bad-dependency、broken-trace 三类行为。
+- 保持 Go 运行时 stdlib-only，不把业务模块或横切工具作为运行时依赖。
+- 让 harness 自身达到 100% Go 覆盖率，并通过 `make ci`。
 
 ## 4. 非目标
 
-- 不定义标准（那是 xlib-standard）
-- 不收集/存储证据（那是 xlib-evidence）
-- 不执行 CI 管线流程（那是 xlibgate）
-- 不参与生产运行时
+- 不定义 Foundation 标准本身。
+- 不替代 `xlibgate` 的编译、发布和外部信任门禁。
+- 不参与业务运行时。
+- 不连接交易所、账户、凭证或生产环境。
+- 不引入第三方 Go 运行时依赖。
 
 ## 5. 消费者
 
-- 模块开发者：生成新模块骨架
-- CI 管线：门禁检查
-- xlib-standard：被读取，不作为运行时依赖
+- 模块开发者：生成新模块文档骨架。
+- CI 管线：执行合规门禁。
+- 根仓库投影：同步模块状态、验收证据和发布版本。
+- 代码审查者：用结构化 JSON 输出定位失败项。
 
 ## 6. 功能需求
 
-| ID | 需求 | WHEN | THEN |
-|----|------|------|------|
-| FR-001 | generate-module | 用户执行 `generate <module>` | 从 xlib-standard 模板生成完整模块骨架（SPEC.md / TRACEABILITY.md / goal.md / tasks/ / IMPLEMENTATION-PLAN.md） |
-| FR-002 | spec-lint | 对模块执行 spec lint | 检查 23 节结构完整性、FR WHEN/THEN 格式、AC 可验证性 |
-| FR-003 | boundary-check | 对模块执行边界检查 | 验证允许/禁止依赖、production-import-testkitx 禁止、stdlib-only gate |
-| FR-004 | template-validate | 对模板执行 validate | 验证 xlib-standard 模板自举——模板自身符合模板定义 |
-| FR-005 | format-check | 对文档执行格式检查 | 检查 Markdown 结构、链接有效性、表格对齐 |
-| FR-006 | traceability-gate | 对 TRACEABILITY.md 执行闭合检查 | FR → AC → TC 链路全闭合 |
+| ID | Requirement | Given | When | Then |
+| --- | --- | --- | --- | --- |
+| FR-001 | generate-module | 给定模块路径和可选 `--force` | 用户执行 `generate <module>` | 生成 `README.md`、`SPEC.md`、`TRACEABILITY.md`、`IMPLEMENTATION-PLAN.md`、`ACCEPTANCE.md`、`FEATURES.md` |
+| FR-002 | spec-lint | 给定模块 `SPEC.md` | 用户执行 `check <module> --profile spec` | 检查 23 节结构、FR Given/When/Then、AC/TC 可验证性 |
+| FR-003 | boundary-check | 给定模块 `go.mod` 和 Go 源码 | 用户执行 `check <module> --profile boundary` | 拒绝 `observex`、`configx`、`resiliencx`、`schedulex`、`testkitx`、`xlib-standard` 运行时引用 |
+| FR-004 | ci-reference-check | 给定模块 CI/CD 文件和 Makefile | 用户执行 `check <module> --profile full` | 验证 CI/CD 关键引用、`make ci` 和 release workflow 存在 |
+| FR-005 | format-check | 给定模块 Markdown 文档 | 用户执行 `check <module> --profile full` | 检查尾随空格、空 Markdown 链接和表格列漂移 |
+| FR-006 | traceability-gate | 给定 `TRACEABILITY.md` 与规格 FR/AC/TC | 用户执行 `check <module> --profile full` | 验证每个 FR 都闭合到 AC 和 TC，且 AC/TC 被矩阵引用 |
 
 ## 7. 行为约束
 
-| ID | 规则 |
-|----|------|
-| BR-001 | generate 必须在 5 秒内完成骨架生成 |
-| BR-002 | check 不得修改被检模块的任何文件 |
-| BR-003 | check 失败退出码必须非零 |
-
+| ID | Rule | Verification |
+| --- | --- | --- |
+| BR-001 | `generate` 应在 5 秒内完成标准文档集合生成 | benchmark 与 smoke test |
+| BR-002 | `check` 不得修改被检模块文件 | 单元测试与只读实现 |
+| BR-003 | `check` 失败退出码必须非零 | CLI 负例测试 |
+| BR-004 | `--json` 输出必须可被自动化消费 | JSON 单元测试与 CLI smoke |
 
 ### Acceptance Criteria Registry
 
-| AC ID | FR/BR Ref | Criterion |
-|-------|-----------|----------|
-| AC-001 | FR-001 | TC-001 | `xlib-harness generate test-module && ls module/test-module/` | ✅ | |
-| AC-002 | FR-002 | TC-002 | `xlib-harness check  --profile spec` | ✅ | |
-| AC-003 | FR-003 | TC-003 | `xlib-harness check  --profile boundary` | ✅ | |
-| AC-004 | FR-004 | TC-004 | `xlib-harness validate --template` | ✅ | |
-| AC-005 | FR-005 | TC-005 | `xlib-harness check  --profile spec` | ✅ | |
-| AC-006 | FR-006 | TC-006 | `xlib-harness check  --profile full` | ✅ | |
+| AC ID | FR/BR Ref | TC Ref | Criterion | Verification | Status |
+| --- | --- | --- | --- | --- | --- |
+| AC-001 | FR-001 | TC-001 | 生成 6 个标准模块资产 | `xlib-harness generate /tmp/xlib-harness-smoke --force` | PASS |
+| AC-002 | FR-002 | TC-002 | compliant fixture 通过 spec profile | `xlib-harness check fixtures/compliant-module --profile spec` | PASS |
+| AC-003 | FR-003 | TC-003 | bad-dependency fixture 被 boundary profile 拒绝 | `xlib-harness check fixtures/bad-dependency --profile boundary` | PASS |
+| AC-004 | FR-004 | TC-004 | compliant fixture 通过 full profile CI/CD 引用检查 | `xlib-harness check fixtures/compliant-module --profile full` | PASS |
+| AC-005 | FR-005 | TC-005 | Markdown 格式问题被报告 | Go unit tests | PASS |
+| AC-006 | FR-006 | TC-006 | broken-trace fixture 被 full profile 拒绝 | `xlib-harness check fixtures/broken-trace --profile full` | PASS |
 
 ## 8. 接口契约
 
 ```go
+type GateProfile string
+
+const (
+    ProfileSpec     GateProfile = "spec"
+    ProfileBoundary GateProfile = "boundary"
+    ProfileFull     GateProfile = "full"
+)
+
 type Generator interface {
     Generate(module string, opts ...GenerateOption) (*GenerateResult, error)
 }
 
 type HarnessGate interface {
-    Check(module string, profile GateProfile) (*CheckResult, error)
+    Check(modulePath string, profile GateProfile) CheckResult
 }
-
-type GateProfile string
-
-const (
-    ProfileFull     GateProfile = "full"
-    ProfileSpec     GateProfile = "spec"
-    ProfileBoundary GateProfile = "boundary"
-)
 ```
 
 ## 9. 数据模型
 
 ```go
 type GenerateResult struct {
-    FilesCreated []string
-    Warnings     []string
+    Module       string   `json:"module"`
+    Root         string   `json:"root"`
+    FilesCreated []string `json:"files_created"`
+    Warnings     []string `json:"warnings,omitempty"`
 }
 
 type CheckResult struct {
-    Module  string
-    Passed  bool
-    Checks  []CheckItem
-    Summary string
+    Module  string      `json:"module"`
+    Profile string      `json:"profile"`
+    Passed  bool        `json:"passed"`
+    Checks  []CheckItem `json:"checks"`
+    Summary string      `json:"summary"`
 }
 
 type CheckItem struct {
-    Name    string
-    Passed  bool
-    Detail  string
+    Name   string `json:"name"`
+    Passed bool   `json:"passed"`
+    Detail string `json:"detail"`
 }
 ```
 
 ## 10. 配置模式
 
+默认配置由 CLI 参数和内嵌标准模板决定，不读取远端模板目录：
+
 ```yaml
 xlib_harness:
-  template_source: "../xlib-standard/templates/"
+  template_source: embedded-stdlib
   profiles:
-    full:
-      - spec-lint
-      - boundary-check
-      - format-check
-      - traceability-gate
     spec:
-      - spec-lint
-      - format-check
+      - required-assets
+      - spec-section-depth
+      - spec-23-section-structure
+      - spec-fr-when-then
+      - spec-ac-verifiability
+      - spec-test-commands
     boundary:
-      - boundary-check
+      - forbidden-dependencies
+    full:
+      - spec
+      - boundary
+      - traceability-closure
+      - format-check
+      - ci-reference-check
 ```
 
 ## 11. 错误处理
 
-| 错误 | 含义 | 调用方处理 |
-|------|------|-----------|
-| ErrModuleExists | 目标模块已存在 | 使用 --force 覆盖或选择不同名称 |
-| ErrTemplateNotFound | xlib-standard 模板路径无效 | 检查 template_source 配置 |
-| ErrCheckFailed | 门禁检查未通过 | 查看 CheckResult.Checks 逐项修复 |
+| Failure | Meaning | Caller Handling |
+| --- | --- | --- |
+| 目标路径已存在且未传 `--force` | generate 防止覆盖已有资产 | 传入 `--force` 或选择新路径 |
+| 模块路径无效或不可读取 | check 无法读取目标模块 | 修复路径或权限 |
+| 门禁检查未通过 | `CheckResult.Passed=false` 且 CLI 非零退出 | 查看 `checks[].detail` 并修复模块 |
+| JSON 编码失败 | 输出流异常 | 重试或检查调用方管道 |
 
 ## 12. 边界情况
 
-- 模块名包含特殊字符（路径遍历攻击）
-- xlib-standard 模板目录不存在
-- 生成时目标目录已存在部分文件
-- 门禁检查超大 TRACEABILITY 文件
+- 模块路径包含路径遍历或非法字符。
+- 目标目录存在部分文件，且未显式 `--force`。
+- `SPEC.md` 缺少 23 节或缺少 FR/AC/TC 链条。
+- `go.mod` 或 Go imports 引入禁止依赖。
+- Markdown 表格存在列数漂移。
+- `TRACEABILITY.md` 引用不存在的 AC/TC 或遗漏 FR。
 
 ## 13. 目录结构
 
 ```text
 module/xlib-harness/
-  SPEC.md
   goal.md
+  SPEC.md
   TRACEABILITY.md
   IMPLEMENTATION-PLAN.md
+  ACCEPTANCE.md
+  FEATURES.md
+  ci-workflow.yaml
   tasks/
+    TASK-XLIBHARNESS-001.md
+    TASK-XLIBHARNESS-002.md
+    TASK-XLIBHARNESS-003.md
+    TASK-XLIBHARNESS-004.md
+    TASK-XLIBHARNESS-005.md
+    TASK-XLIBHARNESS-006.md
 ```
+
+Module implementation lives in `/home/xlib-harness`; this root repository only stores governance projection documents.
 
 ## 14. 依赖
 
-- 允许：xlib-standard（只读模板文件，非 import 依赖）
-- 禁止：observex、configx、resiliencx、schedulex
-- 禁止：业务域任何模块
+- Runtime: Go standard library only.
+- CI tooling: `xlibgate@v1.0.2`, gitleaks, GitHub CLI release step.
+- Forbidden runtime refs: `observex`、`configx`、`resiliencx`、`schedulex`、`testkitx`、`xlib-standard`。
+- Forbidden scope: business-domain modules, credentials, exchange endpoints, live trading config。
 
 ## 15. 测试
 
-- 单元测试：每个 check 独立可测
-- 集成测试：generate → check 端到端（生成后立即检查）
-- 基准测试：generate 性能 < 5s
+- 单元测试：CLI 参数、JSON 输出、各门禁 helper、错误路径。
+- 集成测试：generate → check，compliant fixture full profile。
+- 负例测试：bad-dependency、broken-trace、format issue。
+- 覆盖率测试：`go test ./... -coverprofile=coverage.out -covermode=count && go tool cover -func=coverage.out`，要求 total 100.0%。
+- 基准测试：`go test -bench=. ./...`。
 
 ### 15.1 Traceability Test Cases
 
-**TC-001:** 空目录执行 generate 后文件齐全。
-**TC-002:** 合规模块通过；不合规模块逐项报告。
-**TC-003:** 违规依赖被检出。
-**TC-004:** 模板自举验证通过。
-**TC-005:** 格式问题逐项输出。
-**TC-006:** 断开 FR → AC → TC 链路被检出并报告缺口。
+| TC ID | Scenario | Command | Expected |
+| --- | --- | --- | --- |
+| TC-001 | Generate module docs | `go run . generate /tmp/xlib-harness-smoke --force` | 6 个资产创建成功 |
+| TC-002 | Spec gate accepts compliant module | `go run . check fixtures/compliant-module --profile spec` | 规格检查全部通过 |
+| TC-003 | Boundary gate rejects forbidden dependency | `go run . check fixtures/bad-dependency --profile boundary` | 非零退出并报告禁止依赖 |
+| TC-004 | Full gate accepts compliant module | `go run . check fixtures/compliant-module --profile full` | 14 项检查全部通过 |
+| TC-005 | Format checks detect markdown issues | Go unit tests | trailing whitespace、空链接、表格漂移均被覆盖 |
+| TC-006 | Trace gate rejects incomplete matrix | `go run . check fixtures/broken-trace --profile full` | 非零退出并报告追踪断链 |
 
 ## 16. 性能预算
 
-| 指标 | 目标 |
-|------|------|
-| generate 延迟 | < 5s |
-| check 延迟（单模块） | < 10s |
+| Metric | Target | Current Evidence |
+| --- | --- | --- |
+| Generate latency | < 5s | `BenchmarkGenerate-16` 113809 ns/op |
+| Full profile check latency | < 10s | `BenchmarkCheckFullProfile-16` 733850 ns/op |
+| Coverage | 100.0% | `go tool cover -func=coverage.out` total 100.0% |
 
 ## 17. 可观测性
 
-- 无运行时指标（不参与业务运行）
-- 门禁结果输出为结构化 JSON
+- CLI text 输出展示逐项门禁结果。
+- `--json` 输出 `CheckResult`，供 CI 和审查工具消费。
+- 不暴露业务运行时指标，不持久化证据数据库。
 
 ## 18. 安全
 
-- 不读取密钥
-- generate 写入路径必须限制在 module/ 下
-- 不执行远程代码
+- 不读取、存储或输出凭证。
+- 不执行远程代码。
+- 不连接外部生产服务。
+- 路径处理通过标准库文件 API，生成路径需显式传入。
+- CI secret scan 使用 gitleaks；本地 secret pattern scan 无真实凭证命中。
 
 ## 19. CI 门禁
 
-- `make test`
-- `make vet`
-- `make boundary`
+Required local gates:
+
+- `go build ./...`
+- `go test ./...`
+- `go test ./... -race -count=1`
+- `go vet ./...`
+- `go test ./... -coverprofile=coverage.out -covermode=count`
+- `go tool cover -func=coverage.out`
+- `go test -bench=. ./...`
+- `make ci`
+- `git diff --check`
+
+GitHub Actions:
+
+- `.github/workflows/ci.yml`: docs contract、Go validation、trust alignment、secret scan。
+- `.github/workflows/release.yml`: tag-triggered release with `make ci` and `xlibgate@v1.0.2`。
 
 ## 20. 升级兼容性
 
-- v1 门禁 profile 名称保持稳定
-- check 输出格式向后兼容
+- `spec`、`boundary`、`full` profile names remain stable for v0.x。
+- `CheckResult` JSON field names are stable for automation consumers。
+- New checks may be added to `full` only when fixtures and root projection are updated together。
 
 ## 21. 发布 DoD
 
-- [x] SPEC Approved
-- [x] 所有 FR 实现并测试
-- [x] generate → check 自举闭环
-- [x] 文档齐全
+- [x] SPEC Approved。
+- [x] 所有 FR 实现并测试。
+- [x] compliant fixture full profile 通过。
+- [x] bad-dependency 与 broken-trace 负例稳定失败。
+- [x] 覆盖率 total 100.0%。
+- [x] `make ci` 通过。
+- [x] CI/CD workflow 配置完成。
+- [x] 本地 release tag `v0.1.2` 创建。
 
 ## 22. 待解决问题
 
-- generate 应支持哪些模板变体（仅 SPEC / 完整骨架）？
-- check 是否应集成到 xlibgate 的统一入口？
-- 门禁 profile 是否应允许用户自定义组合？
+- 远端 GitHub Actions 结果需要在 branch/tag push 后补充。
+- 是否把 root 投影检查纳入统一 `xlibgate` 门禁，留待下一版本评估。
+- 是否允许用户自定义 profile 组合，留待已有 profile 稳定后评估。
 
 ## 23. 变更历史
 
 | 日期 | 版本 | 变更内容 | 作者 |
-|------|------|----------|------|
+| --- | --- | --- | --- |
+| 2026-06-19 | v0.1.2 | 生产级门禁、100% 覆盖率、CI/CD、release tag 与根投影同步 | ZoneCNH |
 | 2026-06-18 | v0.1.1 | 补齐验收证据、性能基线与发布文档同步 | ZoneCNH |
-| 2026-06-14 | v1.0.0 | 初始版本，从 xlib-standard 拆分 | ZoneCNH |
+| 2026-06-14 | v1.0.0 | 初始版本，从标准模板拆分 harness 目标 | ZoneCNH |

@@ -4,11 +4,11 @@
 
 | FR ID | Requirement | AC ID(s) | TC ID(s) | Verification | Status |
 |-------|-------------|----------|----------|-------------|--------|
-| FR-001 | collect-coverage: 模块执行`go test -cover`→覆盖率报告被收集并结构化存储 | AC-001 | TC-001 | `go test -run 'Test(ParseGoCoverageProfile|CoverageValidateRejectsThresholdAndPercentTamper|NewCoverageNormalizesTime)'` | ✅ |
+| FR-001 | collect-coverage: 模块执行`go test -cover`→覆盖率报告被收集并结构化存储 | AC-001 | TC-001 | `go test -run 'Test(ParseGoCoverageProfile|CoverageValidateRejectsThresholdAndPercentTamper|NewCoverageNormalizesTime|MeetsThresholdBoundary)'` | ✅ |
 | FR-002 | generate-manifest: 模块通过所有门禁→生成Release Manifest(version/commitSHA/gates/coverage) | AC-002 | TC-002 | `go test -run TestNewManifestNormalizesSortsAndValidates` | ✅ |
 | FR-003 | validate-manifest: CI检查manifest→验证完整性/签名/内容一致性 | AC-003 | TC-003 | `go test -run TestManifestValidateRejectsFailedGateLowCoverageAndTamper` | ✅ |
 | FR-004 | remote-evidence: 远程查询模块证据→返回结构化证据(覆盖率/门禁历史/manifest) | AC-004 | TC-004 | `go test -run 'Test(ClientFetchManifest|ManifestHandler)'` | ✅ |
-| FR-005 | evidence-report: 聚合多模块证据→生成跨模块统一报告 | AC-005 | TC-005 | `go test -run 'Test(ReportsRenderValidatedManifest|StoreAppendEnforcesHashChain)'` | ✅ |
+| FR-005 | evidence-report: 聚合多模块证据→生成跨模块统一报告 | AC-005 | TC-005 | `go test -run 'Test(ReportsRenderValidatedManifest|StoreAppendEnforcesHashChain|StoreReturnsImmutableManifests)'` | ✅ |
 
 ## §2 BR Traceability
 
@@ -33,18 +33,18 @@
 
 | TC ID | Covers FR(s) | Command |
 |-------|-------------|---------|
-| TC-001 | FR-001 | `go test -run 'Test(ParseGoCoverageProfile|CoverageValidateRejectsThresholdAndPercentTamper|NewCoverageNormalizesTime)'` — 覆盖率解析、80%边界和时间归一化 |
+| TC-001 | FR-001 | `go test -run 'Test(ParseGoCoverageProfile|CoverageValidateRejectsThresholdAndPercentTamper|NewCoverageNormalizesTime|MeetsThresholdBoundary)'` — 覆盖率解析、80%边界和时间归一化 |
 | TC-002 | FR-002, BR-001 | `go test -run TestNewManifestNormalizesSortsAndValidates` — 全部门禁通过→manifest生成且hash有效 |
 | TC-003 | FR-003, BR-003 | `go test -run TestManifestValidateRejectsFailedGateLowCoverageAndTamper` — 合法manifest通过; 篡改manifest拒绝 |
 | TC-004 | FR-004 | `go test -run 'Test(ClientFetchManifest|ManifestHandler)'` — HTTP endpoint返回JSON证据 |
-| TC-005 | FR-005, BR-004 | `go test -run 'Test(ReportsRenderValidatedManifest|StoreAppendEnforcesHashChain)'` — 报告渲染且 evidence 追加不可变 |
+| TC-005 | FR-005, BR-004 | `go test -run 'Test(ReportsRenderValidatedManifest|StoreAppendEnforcesHashChain|StoreReturnsImmutableManifests)'` — 报告渲染且 evidence 追加不可变 |
 
 ## §5 AC Registry
 
 | AC ID | FR/BR Ref | Criterion | Verification | Status |
 |-------|-----------|-----------|-------------|--------|
-| AC-001 | FR-001 / BR-002 | 覆盖率数据被结构化收集; 覆盖率<80%拒绝发布 | `go test -run 'Test(ParseGoCoverageProfile|CoverageValidateRejectsThresholdAndPercentTamper|NewCoverageNormalizesTime)'` | ✅ |
+| AC-001 | FR-001 / BR-002 | 覆盖率数据被结构化收集; 覆盖率<80%拒绝发布 | `go test -run 'Test(ParseGoCoverageProfile|CoverageValidateRejectsThresholdAndPercentTamper|NewCoverageNormalizesTime|MeetsThresholdBoundary)'` | ✅ |
 | AC-002 | FR-002 / BR-001 | 门禁全绿时生成manifest,含version/commitSHA/gates/coverage | `go test -run TestNewManifestNormalizesSortsAndValidates` | ✅ |
 | AC-003 | FR-003 / BR-003 | manifest hash校验通过; 篡改检测失败 | `go test -run TestManifestValidateRejectsFailedGateLowCoverageAndTamper` | ✅ |
 | AC-004 | FR-004 | 远程查询返回结构化证据(覆盖率/门禁历史/manifest) | `go test -run 'Test(ClientFetchManifest|ManifestHandler)'` | ✅ |
-| AC-005 | FR-005 / BR-004 | 多模块聚合报告含全部模块状态; evidence不可变追加 | `go test -run 'Test(ReportsRenderValidatedManifest|StoreAppendEnforcesHashChain)'` | ✅ |
+| AC-005 | FR-005 / BR-004 | 多模块聚合报告含全部模块状态; evidence不可变追加 | `go test -run 'Test(ReportsRenderValidatedManifest|StoreAppendEnforcesHashChain|StoreReturnsImmutableManifests)'` | ✅ |
