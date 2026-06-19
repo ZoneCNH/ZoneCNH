@@ -249,8 +249,8 @@ bootstrap.Build 内部完成（adapter 无需自写 config 加载）。所有 `*
 ### Step 1 — 复制骨架
 
 ```bash
-cp -r /home/binance /home/{module}        # 复制结构（不含 .git）
-cd /home/{module}
+cp -r <workspace>/binance <workspace>/{module}        # 复制结构（不含 .git）
+cd <workspace>/{module}
 ```
 
 ### Step 2 — 全局替换标识
@@ -344,9 +344,9 @@ go test ./... -race -count=1
 
 | 文件 | 用途 |
 | --- | --- |
-| `/home/binance/` | 已落地的行情 C/S 参照实现（2971 行） |
-| `/home/binance/scripts/boundary-gates.sh` | 9 道边界门禁参照脚本 |
-| `/home/binance/internal/cs/types.go` | 临时自包含契约层参照 |
+| `<workspace>/binance/` | 已落地的行情 C/S 参照实现（2971 行） |
+| `<workspace>/binance/scripts/boundary-gates.sh` | 9 道边界门禁参照脚本 |
+| `<workspace>/binance/internal/cs/types.go` | 临时自包含契约层参照 |
 | `module/market-data/SPEC.md` | 行情聚合层 DownstreamDispatchPort |
 | `module/macro-data/SPEC.md` | 宏观聚合层 MacroDispatchPort |
 | `../report/data-domain-infrastructure-20260617.md` | 数据域基础架构报告（§五骨架/§六go.mod/§七配置/§十三bootstrap/§十五聚合层） |

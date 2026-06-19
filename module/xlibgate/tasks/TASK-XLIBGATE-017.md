@@ -43,7 +43,7 @@ status: pending
 | 类型         | 检测内容                                           |
 | ------------ | -------------------------------------------------- |
 | Secrets      | API keys, passwords, tokens, DSN with credentials  |
-| 私有端点     | 127.0.0.1, localhost, 10.x.x.x, 172.16-31.x.x, 192.168.x.x |
+| 私有端点     | IPv4 loopback, loopback hostname, 10.x.x.x, 172.16-31.x.x, 192.168.x.x |
 
 ## 开发上下文豁免
 

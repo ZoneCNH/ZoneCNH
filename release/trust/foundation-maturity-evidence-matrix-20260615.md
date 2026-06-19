@@ -6,7 +6,7 @@ Scope: safe local validation commands for proving current FoundationX maturity c
 
 ## Governance boundary
 
-- Read constraints from `/home/ZoneCNH/.omx/context/foundation-maturity-green-20260615T100835Z.md`, `AGENTS.md`, and `CONSTITUTION.md`.
+- Read constraints from local OMX runtime context packet `foundation-maturity-green-20260615T100835Z.md`, `AGENTS.md`, and `CONSTITUTION.md`.
 - No edits on `main`, no push, no GitHub release publication, no external-repo edits, no credential-gated actions.
 - `release=false` implies `factory=false`; `factory_blocking_modules` enumerates all `factory=false` modules; open blockers force `factory=false`; open release blockers force `release=false`.
 - `scripts/audit-status.py` is a projection consistency guard only; `release/trust/index.json` explicitly says `claim_policy.audit_status_factory_grade_proof=false`.
@@ -26,7 +26,7 @@ Scope: safe local validation commands for proving current FoundationX maturity c
 
 ## Worker-2 factory blocker closure packets — 2026-06-15T11:10Z
 
-Source of truth: `/home/ZoneCNH/.omx/context/foundation-maturity-green-20260615T110330Z.md`, `.foundationx/status/index.json`, `.foundationx/blockers.json`, `foundation-bom.yaml`, `STATUS.md`, and local module probes under `/home/{module}`. This packet records the exact remaining proof needed to close Worker-2's factory blockers without changing the authoritative fact layer.
+Source of truth: local OMX runtime context packet `foundation-maturity-green-20260615T110330Z.md`, `.foundationx/status/index.json`, `.foundationx/blockers.json`, `foundation-bom.yaml`, `STATUS.md`, and local module probes under `<module-worktree>`. This packet records the exact remaining proof needed to close Worker-2's factory blockers without changing the authoritative fact layer.
 
 | Blocker | Local evidence inspected | Closure decision | Required closure packet before `factory=true` |
 | --- | --- | --- | --- |

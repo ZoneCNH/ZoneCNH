@@ -371,7 +371,7 @@ server_unavailable
 | `binance.product_lines` | `[]string` | `[]` | 启用的产品线：spot/um_perp/cm_perp/options（canonical domain-market ProductLine 值） |
 | `binance.symbols.allow` | `[]string` | `[]` | 白名单 symbol（空=全部） |
 | `binance.symbols.deny` | `[]string` | `[]` | 黑名单 symbol |
-| `grpc.target` | `string` | `localhost:9090` | server gRPC 地址 |
+| `grpc.target` | `string` | `<loopback-host>:9090` | server gRPC 地址 |
 | `spool.path` | `string` | `./spool` | SQLite spool 文件路径 |
 | `spool.max_size_mb` | `int` | `1024` | spool 最大大小 (MB) |
 | `checkpoint.path` | `string` | `./checkpoint` | checkpoint 文件路径 |
@@ -787,4 +787,3 @@ Binance Exchange (REST/WebSocket)
 > **6/6 通过** — 上游契约链闭合。本 SPEC 处于 Review 状态，可进入运行时实现阶段（PR-007）。实现时必须严格遵循 contracts §8.4 wire types、domain-market §10 canonical semantics、market-data §4 dispatch port 契约。
 
 ---
-

@@ -299,7 +299,7 @@ func WithClock(clock Clock) Option
 
 ```yaml
 postgresx:
-  host: localhost
+  host: loopback.internal
   port: 5432
   database: app
   user: app

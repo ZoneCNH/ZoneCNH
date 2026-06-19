@@ -71,7 +71,7 @@ Last-Updated: 2026-06-17
 | NFR-S01 | 不硬编码 API Key / Secret Key / 任何凭证 | CI Gate: gitleaks；代码审查 | ⬜ Pending |
 | NFR-S02 | 不在日志中记录 API Key / Secret Key / 签名原文 | 日志格式审查；敏感字段脱敏验证 | ⬜ Pending |
 | NFR-S03 | Admin 端点不暴露 secrets | 端点输出审查 | ⬜ Pending |
-| NFR-S04 | Admin 变更操作仅允许本地访问（绑定 `127.0.0.1`） | 配置审查；集成测试 | ⬜ Pending |
+| NFR-S04 | Admin 变更操作仅允许本地访问（绑定 loopback interface） | 配置审查；集成测试 | ⬜ Pending |
 | NFR-S05 | gRPC 通信使用 TLS（生产环境） | 配置审查 | ⬜ Pending |
 | NFR-S06 | Catalog reload 输入校验，防注入非法 product_line 配置 | TC-001（catalog 加载）；模糊测试 | ⬜ Pending |
 | NFR-S07 | Spool 文件权限设为 `0600`（仅 owner 可读写） | 文件权限检查；CI 自动化验证 | ⬜ Pending |
