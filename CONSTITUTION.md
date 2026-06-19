@@ -615,7 +615,7 @@ AI 代理在生成或审查代码时：
 模块详情 (module/foundation-modules.md, FOUNDATION-SPEC.md)
   ↓
 其他文档
-```text
+```
 
 ### 13.2 适用范围
 
