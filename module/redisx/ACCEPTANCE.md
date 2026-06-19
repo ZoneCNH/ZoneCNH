@@ -2,13 +2,13 @@
 
 - Status: Generated from current module SSOT
 - Last-Updated: 2026-06-19
-- Module-Version: v1.0.3
+- Module-Version: v1.0.4
 - Module-State: 已发布
 - Layer: L2 基础设施适配器
 - Runtime-Repo: /home/redisx
 - Source: goal.md, SPEC.md, TRACEABILITY.md, IMPLEMENTATION-PLAN.md, tasks/
 
-> 本清单用于验收 redisx 是否达到可发布、可追溯、可复验状态。截至 2026-06-19，`/home/redisx` 分支 `redisx` 已对齐 v1.0.3，并通过 `GOWORK=off make fmt vet lint test race coverage-check`；Redis 运行时/API 可发布面 100% 覆盖率门禁已通过。提交 `271fd18` 已使用 `/home/ZoneCNH/sre/secrets/env/dev.md` 的 Redis 配置运行真实 Redis 集成测试，证据写入 `.agent/evidence/l2/integration-report.json`，且只记录 `REDISX_REDIS_*` 键名、不记录具体配置值。Docker Redis、L2-T2、强制安全扫描等 release 证据已在 main 合入后的自动发布门禁复验；v1.0.3 已由 Auto Patch Release run `27798039527` 发布为正式 GitHub Release。
+> 本清单用于验收 redisx 是否达到可发布、可追溯、可复验状态。截至 2026-06-19，`/home/redisx` 已完成 v1.0.4 发布对齐。发布分支 `redisx-v1.0.4-20260619` 提交 `421cb4a` 通过版本、release manifest 与全量 Go 测试；PR #18 已合入 main（merge commit `b0f74016b6bb56091b504afb31b802bb067db16c`）。真实 Redis 集成测试已使用 `/home/ZoneCNH/sre/secrets/env/dev.md` 的 Redis 配置完成，证据只记录 `REDISX_REDIS_*` 键名、不记录具体配置值。Docker Contract、Integration、L2 Gates、Security 与 Auto Patch Release 均在 v1.0.4 发布链路通过；v1.0.4 已由 Auto Patch Release run `27799464374` 发布为正式 GitHub Release。
 
 ## 1. 验收命令清单
 
@@ -23,7 +23,7 @@
 | 文档门禁 | cd /home/redisx && GOWORK=off make docs-check | 文档检查通过 |
 | 安全扫描 | cd /home/redisx && GOTOOLCHAIN=go1.26.4+auto GOWORK=off XLIB_ENABLE_VULNCHECK=1 XLIB_FORCE_VULNCHECK=1 make security | 强制 govulncheck 与 secret check 通过 |
 | Redis 集成 | cd /home/redisx && 从 /home/ZoneCNH/sre/secrets/env/dev.md 导出 `REDISX_REDIS_ADDR`、`REDISX_REDIS_USERNAME`、`REDISX_REDIS_PASSWORD`、`REDISX_REDIS_DB` 后执行 `GOWORK=off REDISX_INTEGRATION=1 make test-integration` | 真实 Redis 集成测试通过；证据文件不包含具体配置值 |
-| 发布预检 | GitHub Actions: Auto Patch Release run `27798039527` | main 合入后 `release-final-check`、tag 创建、GitHub Release 发布与验证全部成功 |
+| 发布预检 | GitHub Actions: Auto Patch Release run `27799464374` | main 合入后 `release-final-check`、tag 创建、GitHub Release 发布与验证全部成功 |
 
 ## 2. AC 验收登记
 
@@ -104,18 +104,18 @@
 | NFR-003 | 性能 | 性能基线记录 KV、Pipeline、Locker、RateLimit 的 benchmark 预算，超预算需说明 / go test -bench . ./... | ✅ | TRACEABILITY.md |
 | NFR-004 | 文档 | README、配置投影说明、迁移说明和发布证据齐全 / Documentation evidence | ✅ | TRACEABILITY.md |
 
-## 5. v1.0.3 验收证据登记
+## 5. v1.0.4 验收证据登记
 
 | 证据项 | 当前结果 |
 | --- | --- |
-| 本地质量门禁 | `GOWORK=off make fmt vet lint test race coverage-check` 通过 |
-| 100% 覆盖率门禁 | `pkg/redisx`、`internal/provider`、`internal/provider/goredis`、`internal/sanitize`、`testkit`、`examples/basic`、`examples/config`、`examples/health` 均为 100.0%，总覆盖率满足 100.0% |
-| L2-T2 与契约 | v1.0.2 历史证据通过；v1.0.3 已在 main 自动发布流程中通过 `release-final-check` 复验 |
-| 集成验收 | 提交 `271fd18` 已使用 `/home/ZoneCNH/sre/secrets/env/dev.md` 的 Redis 配置通过 `GOWORK=off REDISX_INTEGRATION=1 make test-integration`；`.agent/evidence/l2/integration-report.json` 记录 `status=pass`、`score=100`、`profile=integration`，并仅记录 `REDISX_REDIS_*` 键名 |
-| Docker 发布验收 | v1.0.2 历史证据通过：`VERSION=v1.0.2 GOWORK=off XLIB_CONTEXT=release_verify make docker-release-check` |
-| 安全验收 | v1.0.2 历史证据通过：`GOTOOLCHAIN=go1.26.4+auto GOWORK=off XLIB_ENABLE_VULNCHECK=1 XLIB_FORCE_VULNCHECK=1 make security`，输出包含 `No vulnerabilities found.` 与 `secret check passed` |
-| CI/CD 配置 | `coverage-check` 已纳入 Makefile、registry、harness 与 release gate；`release-auto-patch` lint action 版本已固定到可用版本；`worktree-guard` 已修正为 PR 源分支门禁；Auto Patch Release run `27798039527` 已完成打 tag、发布和验证 |
-| 治理与发布 | 提交 `139cf07` 已在 `/home/redisx/.worktree/workspaces/redisx-verify-20260619` 通过 `GOWORK=off make governance-check` 与 `GOWORK=off make p1-governance-check`；提交 `271fd18` 补充 dev Redis 集成证据；PR #17 已合入 main（merge commit `acd68b4`），Auto Patch Release run `27798039527` 已通过 `release-final-check`、创建 tag `v1.0.3`、发布并验证 GitHub Release（published_at `2026-06-19T00:39:15Z`） |
+| 本地质量门禁 | v1.0.4 发布分支通过 `GOWORK=off go test ./pkg/redisx ./cmd/goalcli`、`GOWORK=off go run ./cmd/goalcli version --json`、`GOWORK=off go test ./internal/tools/releasemanifest`、`git diff --check` 与 `GOWORK=off go test ./...` |
+| 100% 覆盖率门禁 | v1.0.4 未改变 Redis 运行时实现；`pkg/redisx`、`internal/provider`、`internal/provider/goredis`、`internal/sanitize`、`testkit`、`examples/basic`、`examples/config`、`examples/health` 的 100.0% 覆盖率基线继续有效 |
+| L2-T2 与契约 | v1.0.4 PR #18 的 CI run `27799136387`、Docker Contract run `27799136401` 与 L2 Gates run `27799136404` 均为 success；main 自动发布流程通过 `release-final-check` 复验 |
+| 集成验收 | 已使用 `/home/ZoneCNH/sre/secrets/env/dev.md` 的 Redis 配置通过 `GOWORK=off REDISX_INTEGRATION=1 make test-integration`；`.agent/evidence/l2/integration-report.json` 记录 `status=pass`、`score=100`、`profile=integration`，并仅记录 `REDISX_REDIS_*` 键名；v1.0.4 PR #18 的 Integration run `27799136393` 为 success |
+| Docker 发布验收 | v1.0.4 PR #18 的 Docker Contract run `27799136401` 为 success；发布链路的 Auto Patch Release run `27799464374` 已完成验证 |
+| 安全验收 | v1.0.4 PR #18 的 Security run `27799136385` 为 success；公开文档仅保留配置文件路径与 `REDISX_REDIS_*` 键名，不写入具体连接串、用户名、密码或 DB 值 |
+| CI/CD 配置 | `coverage-check` 已纳入 Makefile、registry、harness 与 release gate；`release-auto-patch` lint action 版本已固定到可用版本；`worktree-guard` 已修正为 PR 源分支门禁；Auto Patch Release run `27799464374` 已完成打 tag、发布和验证 |
+| 治理与发布 | v1.0.4 发布分支提交 `421cb4a` 补齐版本、manifest 与发布文档对齐；PR #18 已合入 main（merge commit `b0f74016b6bb56091b504afb31b802bb067db16c`），Auto Patch Release run `27799464374` 已通过 `release-final-check`、创建 tag `v1.0.4`、发布并验证 GitHub Release（published_at `2026-06-19T01:22:35Z`） |
 
 ## 6. 发布 DoD 清单
 
@@ -124,11 +124,11 @@
 - [x] 运行时代码仓库 /home/redisx 通过 go test、go test -race、go vet 与覆盖率门槛。
 - [x] 所有外部服务依赖有本地可重复的测试替身或明确 live-gate 证据。
 - [x] 安全检查确认没有凭证、私有端点、账户 ID 或实盘配置进入公开文档与代码。
-- [x] 版本号、CHANGELOG 与 v1.0.3 working tree 状态一致。
-- [x] v1.0.3 发布标签已由 Auto Patch Release run `27798039527` 在 main 合入后创建并验证。
+- [x] 版本号、CHANGELOG 与 v1.0.4 working tree 状态一致。
+- [x] v1.0.4 发布标签已由 Auto Patch Release run `27799464374` 在 main 合入后创建并验证。
 
 ## 7. 完成状态登记
 
-- 当前 `/home/redisx` v1.0.3 本地质量门禁、Redis 运行时/API 可发布面 100% 覆盖率门禁、dev Redis 集成测试、`governance-check` 与 `p1-governance-check` 均已通过。
-- PR #17 已合入 main，Auto Patch Release run `27798039527` 已完成 `release-final-check`、tag 创建、GitHub Release 发布与验证。
-- 已确认 `v1.0.3` 为正式 GitHub Release：`https://github.com/ZoneCNH/redisx/releases/tag/v1.0.3`。
+- 当前 `/home/redisx` v1.0.4 发布分支质量门禁、Redis 运行时/API 可发布面覆盖率基线、dev Redis 集成测试、PR #18 CI/Integration/Docker Contract/L2 Gates/Security 与 Auto Patch Release 均已通过。
+- PR #18 已合入 main，Auto Patch Release run `27799464374` 已完成 `release-final-check`、tag 创建、GitHub Release 发布与验证。
+- 已确认 `v1.0.4` 为正式 GitHub Release：`https://github.com/ZoneCNH/redisx/releases/tag/v1.0.4`。
