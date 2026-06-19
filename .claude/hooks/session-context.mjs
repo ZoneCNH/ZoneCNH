@@ -1,4 +1,4 @@
-import { execSync } from "child_process";
+import { execSync, execFileSync } from "child_process";
 import { readdirSync, readFileSync, existsSync, statSync, rmSync } from "fs";
 import { join, dirname, relative } from "path";
 import { fileURLToPath } from "url";
@@ -12,6 +12,16 @@ const run = (cmd) => {
     return execSync(cmd, { encoding: "utf-8", timeout: 3000 }).trim();
   } catch {
     return "";
+  }
+};
+
+// ISC-3c: 分支名来自 git 输出（可能含特殊字符），用 execFileSync 传单参数数组防 shell 注入
+const isAncestor = (br) => {
+  try {
+    execFileSync("git", ["merge-base", "--is-ancestor", br, "main"], { stdio: "ignore", timeout: 3000 });
+    return true; // exit 0 = br 是 main 的祖先（已合入）
+  } catch {
+    return false;
   }
 };
 
@@ -206,6 +216,52 @@ if (existsSync(worktreeBase)) {
         try { rmSync(o.path, { recursive: true, force: true }); removed++; } catch {}
       }
       lines.push("   已删除 " + removed + "/" + orphans.length + " 个" + (guarded > 0 ? "，保护 " + guarded + " 个 worktree 残骸" : ""));
+    }
+  }
+
+  // === ISC-1~4: 「已合入可清理」类别（与 ORPHAN 正交）===
+  // 这些 worktree 仍被 git worktree list 管理，但其分支已合入 main。合入即报告，不受 TTL_MS 约束。
+  // 默认仅报告（给 git worktree remove 提示）；WORKTREE_GC_CLEAN=1 时 git worktree remove --force（非 rmSync，
+  // 避免裸删目录留 .git/worktrees 元数据残留）。尊重 note.md/v2.md 白名单。
+  {
+    // ISC-1: 解析 porcelain 的 branch 行，按 worktree 块聚合 path → branch 映射
+    const wtPorcelain = run("git worktree list --porcelain 2>/dev/null");
+    const pathToBranch = new Map();
+    let curPath = null;
+    for (const line of wtPorcelain.split("\n")) {
+      if (line.startsWith("worktree ")) {
+        curPath = line.slice("worktree ".length).trim();
+      } else if (line.startsWith("branch ")) {
+        const bn = line.slice("branch ".length).trim().replace(/^refs\/heads\//, "");
+        if (curPath) pathToBranch.set(curPath, bn);
+      } else if (line === "") {
+        curPath = null; // ISC-3b: detached HEAD 块无 branch 行，自然不入 map
+      }
+    }
+
+    const mergedStale = [];
+    for (const [wtPath, wtBranch] of pathToBranch) {
+      if (wtPath === projectRoot) continue; // ISC-3a: 主 worktree 过滤
+      if (hasProtectedFile(wtPath)) continue; // ISC-4: 尊重 PROTECT 白名单
+      if (isAncestor(wtBranch)) mergedStale.push({ path: wtPath, branch: wtBranch }); // ISC-2/3c
+    }
+
+    if (mergedStale.length > 0) {
+      lines.push("---");
+      lines.push("♻️ 已合入可清理（分支已合入 main）：" + mergedStale.length + " 个" + (cleanMode ? "（CLEAN：git worktree remove）" : "（dry-run）"));
+      for (const m of mergedStale.slice(0, 15)) {
+        lines.push("   " + relative(projectRoot, m.path) + "  ← " + m.branch);
+      }
+      if (mergedStale.length > 15) lines.push("   ... 还有 " + (mergedStale.length - 15) + " 个");
+      if (!cleanMode) {
+        lines.push("   提示：git worktree remove \"" + mergedStale[0].path + "\"");
+      } else {
+        let removed = 0;
+        for (const m of mergedStale) {
+          try { execFileSync("git", ["worktree", "remove", "--force", m.path], { stdio: "ignore", timeout: 5000 }); removed++; } catch {}
+        }
+        lines.push("   已 git worktree remove " + removed + "/" + mergedStale.length + " 个");
+      }
     }
   }
 }
