@@ -1,7 +1,7 @@
 # ossx Spec
 
 - Status: Implemented Locally
-- Spec-Version: v1.2.1
+- Spec-Version: v1.3.0
 - Last-Updated: 2026-06-19
 - Layer: 基座 · 对象存储扩展
 - Version: v1.2.1 local-production-candidate（代码位于 `/home/ossx` branch `ossx`；远端 release/tag 待归档）

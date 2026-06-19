@@ -1,7 +1,7 @@
 # schedulex 规格
 
 Status: Approved
-- Spec-Version: v1.0.1
+- Spec-Version: v1.1.0
 - Last-Updated: 2026-06-18
 - Layer: L1 基础能力
 - Version: v1.0.0

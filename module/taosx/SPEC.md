@@ -1,7 +1,7 @@
 # taosx 规格
 
 - Status: Approved
-- Spec-Version: v1.0.3
+- Spec-Version: v1.1.0
 - Last-Updated: 2026-06-19
 - Layer: L2 存储适配器
 - Version: v1.0.3

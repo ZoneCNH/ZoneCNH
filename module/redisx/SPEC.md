@@ -1,7 +1,7 @@
 # redisx 规格
 
 Status: Approved
-- Spec-Version: v1.0.0
+- Spec-Version: v1.2.0
 - Last-Updated: 2026-06-19
 - Layer: 基座 · 存储扩展
 - Version: v1.1.0

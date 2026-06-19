@@ -1,7 +1,7 @@
 # kernel 规格
 
 - Status: Approved
-- Spec-Version: v2.0.0
+- Spec-Version: v2.1.0
 - Last-Updated: 2026-06-18
 - Layer: L0 原语
 - Version: v1.0.0
