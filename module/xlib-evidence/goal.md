@@ -1,4 +1,4 @@
-# xlib-evidence v1.0 Goal
+# xlib-evidence Goal
 
 ## 发布定位
 
@@ -20,12 +20,12 @@ xlib-evidence 是 Foundation 的证据收集与发布运行时。从 xlib-standa
 ## 测试证据
 
 - manifest 生成 → 验证 闭环 golden 测试
-- 覆盖率 < 80% 拒绝发布
+- 覆盖率 < 100% 拒绝发布
 - manifest 篡改检测
-- 2026-06-18 本地验收：`go test ./...`、`go test ./... -race -count=1`、`go vet ./...` 通过；覆盖率 total 89.8% >= 80%
+- 2026-06-19 本地验收：`go test ./...`、`go test ./... -race -count=1`、`go vet ./...` 通过；覆盖率 total 100.0% >= 100.0%
 
 ## DoD
 
 - [x] 5 FR 全部实现并通过 SPEC.md FR-001..005 的 WHEN/THEN 验证
 - [x] collect → generate → validate 端到端可跑通
-- [x] 测试覆盖率 >= 80%
+- [x] 测试覆盖率 = 100.0%

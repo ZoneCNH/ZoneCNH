@@ -1,10 +1,10 @@
 # xlib-evidence 规格
 
 Status: Approved
-- Spec-Version: v1.1.0
-- Last-Updated: 2026-06-14
+- Spec-Version: v1.2.0
+- Last-Updated: 2026-06-19
 - Layer: 基座 · CI 证据运行时
-- Version: v0.1.0
+- Version: v0.2.2
 - Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `github.com/ZoneCNH/xlib-evidence`, `github.com/ZoneCNH/xlib-standard`（标准/治理参考，不承载运行时代码）
 
 > 公开投影说明：本规格已按 /home/xlib-evidence 的独立 Go module 验收证据更新；xlib-standard 仅作为标准/治理参考，不承载本模块运行时代码。
@@ -66,7 +66,7 @@ xlib-standard 的 Evidence Runtime 与其声明式标准定义耦合，导致证
 | ID | 规则 |
 |----|------|
 | BR-001 | manifest 必须包含门禁全绿证据 |
-| BR-002 | 覆盖率低于 80% 不得发布 |
+| BR-002 | 覆盖率低于 100% 不得发布 |
 | BR-003 | manifest 不可事后篡改（hash 链校验） |
 | BR-004 | evidence 存储必须不可变追加 |
 
@@ -75,7 +75,7 @@ xlib-standard 的 Evidence Runtime 与其声明式标准定义耦合，导致证
 
 | AC ID | FR/BR Ref | Criterion | Verification | Status |
 |-------|-----------|-----------|--------------|--------|
-| AC-001 | FR-001 / BR-002 | 覆盖率数据被结构化收集；覆盖率低于 80% 拒绝发布 | `go test -run 'Test(ParseGoCoverageProfile|CoverageValidateRejectsThresholdAndPercentTamper|NewCoverageNormalizesTime)'` | ✅ |
+| AC-001 | FR-001 / BR-002 | 覆盖率数据被结构化收集；覆盖率低于 100% 拒绝发布 | `go test -run 'Test(ParseGoCoverageProfile|CoverageValidateRejectsThresholdAndPercentTamper|NewCoverageNormalizesTime)'` | ✅ |
 | AC-002 | FR-002 / BR-001 | 门禁全绿时生成 manifest，包含 version/commit/gates/coverage/hash | `go test -run TestNewManifestNormalizesSortsAndValidates` | ✅ |
 | AC-003 | FR-003 / BR-003 | manifest hash 校验通过；篡改检测失败 | `go test -run TestManifestValidateRejectsFailedGateLowCoverageAndTamper` | ✅ |
 | AC-004 | FR-004 | 远程查询返回结构化 evidence manifest | `go test -run 'Test(ClientFetchManifest|ManifestHandler)'` | ✅ |
@@ -206,7 +206,7 @@ module/xlib-evidence/
 - `go test ./...`
 - `go test ./... -race -count=1`
 - `go vet ./...`
-- `go test ./... -coverprofile=coverage.out` 且 total coverage >= 80.0%
+- `go test ./... -coverprofile=coverage.out` 且 total coverage >= 100.0%
 - `go list -deps ./...` 与 `go list -m all` 依赖边界审计
 
 ## 20. 升级兼容性
@@ -231,5 +231,6 @@ module/xlib-evidence/
 
 | 日期 | 版本 | 变更内容 | 作者 |
 |------|------|----------|------|
+| 2026-06-19 | v1.2.0 | 对齐 v0.2.2 发布、100% 覆盖率门槛与 CI 门禁 | ZoneCNH |
 | 2026-06-18 | v1.0.1 | 对齐独立 Go module 验收、实际测试名、依赖边界与 CI 门禁 | Codex |
 | 2026-06-14 | v1.0.0 | 初始版本，从 xlib-standard 拆分 | ZoneCNH |
