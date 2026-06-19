@@ -4,7 +4,7 @@
 
 - Status: Approved
 - Owner: ZoneCNH
-- Spec-Version: v1.0.0
+- Spec-Version: v1.1.0
 - Last-Updated: 2026-06-18
 - Updated: 2026-06-18
 - Layer: 基座 · 标准事实源
