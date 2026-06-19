@@ -47,6 +47,29 @@ if (tool === "Write" || tool === "Edit") {
   }
 }
 
+// ISC-5: 分支命名 lint（不受 tweak/design 模式豁免，放在危险命令拦截块之外）
+// CONSTITUTION §0.2.2 要求 {type}/{module}-{描述}；违规 block:true 并给改名建议
+if (tool === "Bash" || tool === "PowerShell") {
+  const cmd = args.command || "";
+  let branchName = null;
+  const c1 = cmd.match(/\bgit\s+(?:checkout\s+-b|switch\s+-c)\s+(\S+)/);
+  if (c1) branchName = c1[1];
+  if (!branchName) {
+    const c2 = cmd.match(/\bgit\s+worktree\s+add\b[^\n]*?\s+-b\s+(\S+)/);
+    if (c2) branchName = c2[1];
+  }
+  if (branchName) {
+    const ALLOWED_BRANCH = /^(docs|feat|feature|fix|test|refactor|chore|governance|benchmark)\//;
+    if (!ALLOWED_BRANCH.test(branchName)) {
+      process.stdout.write(JSON.stringify({
+        block: true,
+        reason: `🏷️ 分支命名违规：\`${branchName}\` 缺少 type/ 前缀（CONSTITUTION §0.2.2 要求 {type}/{module}-{描述}）。\n   → 建议改名：docs/${branchName}-<描述>\n   → 合法前缀：docs/feat/feature/fix/test/refactor/chore/governance/benchmark\n   → 示例：git checkout -b docs/${branchName}-<描述>`,
+      }));
+      process.exit(0);
+    }
+  }
+}
+
 // 危险命令拦截（tweak/design 模式下放行）
 if (!isTweak && !isDesign) {
   const DANGEROUS_COMMANDS = [
