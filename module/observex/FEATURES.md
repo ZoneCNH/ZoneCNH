@@ -2,7 +2,7 @@
 
 - Status: Generated from current module SSOT
 - Last-Updated: 2026-06-18
-- Module-Version: v0.3.1
+- Module-Version: v0.3.3
 - Module-State: 已发布
 - Layer: L0 观测
 - Runtime-Repo: /home/observex
