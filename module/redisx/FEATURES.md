@@ -1,14 +1,14 @@
 # redisx 完整实现清单
 
 - Status: Generated from current module SSOT
-- Last-Updated: 2026-06-18
-- Module-Version: v1.0.2
+- Last-Updated: 2026-06-19
+- Module-Version: v1.0.3
 - Module-State: 已发布
 - Layer: L2 基础设施适配器
 - Runtime-Repo: /home/redisx
 - Source: goal.md, SPEC.md, TRACEABILITY.md, IMPLEMENTATION-PLAN.md, tasks/
 
-> 本清单用于约束 redisx 的完整实现范围。条目来自本目录已有 Spec、Traceability、Plan、Task 等文档；截至 2026-06-18，运行时代码仓库 `/home/redisx` 已以 v1.0.2 本地验收、Docker 发布门禁、L2-T2 证据和强制安全扫描补充闭合。
+> 本清单用于约束 redisx 的完整实现范围。条目来自本目录已有 Spec、Traceability、Plan、Task 等文档；截至 2026-06-19，运行时代码仓库 `/home/redisx` 分支 `redisx` 已对齐 v1.0.3，并通过 `GOWORK=off make fmt vet lint test race coverage-check`；Redis 运行时/API 可发布面 100% 覆盖率门禁已通过。提交 `271fd18` 已使用 `/home/ZoneCNH/sre/secrets/env/dev.md` 的 Redis 配置运行真实 Redis 集成测试，证据写入 `.agent/evidence/l2/integration-report.json`，且只记录 `REDISX_REDIS_*` 键名、不记录具体配置值。Docker Redis、L2-T2、强制安全扫描等 release 证据已在 main 合入后的自动发布门禁复验；v1.0.3 已由 Auto Patch Release run `27798039527` 发布为正式 GitHub Release。
 
 ## 1. 模块边界清单
 
@@ -83,15 +83,17 @@
 | IMPLEMENTATION-PLAN.md | 存在 | module/redisx/IMPLEMENTATION-PLAN.md |
 | tasks/ | 10 个 Markdown 文件 | module/redisx/tasks |
 
-## 6. v1.0.2 验收证据摘要
+## 6. v1.0.3 验收证据摘要
 
 | 证据面 | 运行仓库证据 |
 | --- | --- |
-| 版本与发布 | `/home/redisx` 的 `pkg/redisx/version.go`、`.repo-contract.yaml`、`release/manifest/template.json` 与 `CHANGELOG.md` 均对齐 v1.0.2 |
-| 质量门禁 | `GOWORK=off go test ./...`、`GOWORK=off go vet ./...`、`GOWORK=off go test ./... -race -count=1`、`GOWORK=off go test ./... -coverprofile=coverage.out`、`GOWORK=off make lint` 均通过 |
-| L2/契约门禁 | `GOWORK=off make l2-check` 输出 `release_ready=true`、`score=100`、`target=L2-T2`；`GOWORK=off make test-contract`、`GOWORK=off make contracts`、`GOWORK=off make score-check` 均通过 |
-| 集成与 Docker | `GOWORK=off make integration`、`GOWORK=off REDISX_INTEGRATION_DOCKER=1 make test-integration`、`GOWORK=off REDISX_PERSISTENCE_INTEGRATION=1 make test-persistence-integration`、`VERSION=v1.0.2 GOWORK=off XLIB_CONTEXT=release_verify make docker-release-check` 均通过 |
-| 安全与 CI/CD | `go-redis` 升级到 v9.7.3；强制 `govulncheck` 安全扫描通过；CI 工作流已配置 read-only permissions、关键 actions SHA pinning、Goal/L2/Security fail-closed gates |
+| 版本与发布 | `/home/redisx` 的 `pkg/redisx/version.go`、`cmd/goalcli/governance.go`、`release/manifest/template.json`、`docs/release.md`、`docs/api.md` 与 `CHANGELOG.md` 均对齐 v1.0.3；PR #17 已合入 main（merge commit `acd68b4`），Auto Patch Release run `27798039527` 已通过 `release-final-check`、创建 tag `v1.0.3` 并发布正式 GitHub Release：`https://github.com/ZoneCNH/redisx/releases/tag/v1.0.3` |
+| 质量门禁 | `GOWORK=off make fmt vet lint test race coverage-check` 通过 |
+| 100% 覆盖率门禁 | `pkg/redisx`、`internal/provider`、`internal/provider/goredis`、`internal/sanitize`、`testkit`、`examples/basic`、`examples/config`、`examples/health` 均为 100.0%，总覆盖率满足 100.0% |
+| 治理门禁 | 提交 `139cf07` 已在 `/home/redisx/.worktree/workspaces/redisx-verify-20260619` 通过 `GOWORK=off make governance-check` 与 `GOWORK=off make p1-governance-check` |
+| L2/契约门禁 | v1.0.2 历史证据通过；v1.0.3 已在 main 自动发布流程中通过 `release-final-check` 复验 |
+| 集成与 Docker | 提交 `271fd18` 已使用 `/home/ZoneCNH/sre/secrets/env/dev.md` 的 Redis 配置通过 `GOWORK=off REDISX_INTEGRATION=1 make test-integration`，证据 `.agent/evidence/l2/integration-report.json` 记录 `status=pass`、`score=100`、`profile=integration`，且仅记录 `REDISX_REDIS_*` 键名；Docker、持久化与发布镜像验收沿用 v1.0.2 历史闭合证据：`GOWORK=off REDISX_INTEGRATION_DOCKER=1 make test-integration`、`GOWORK=off REDISX_PERSISTENCE_INTEGRATION=1 make test-persistence-integration`、`VERSION=v1.0.2 GOWORK=off XLIB_CONTEXT=release_verify make docker-release-check` |
+| 安全与 CI/CD | 强制 `govulncheck` 安全扫描沿用 v1.0.2 历史证据；`coverage-check` 已纳入 Makefile、registry、harness 与 release gate；`release-auto-patch` lint action 版本已固定到可用版本；`worktree-guard` 已修正为 PR 源分支门禁；Auto Patch Release run `27798039527` 已完成打 tag、发布和验证 |
 
 ## 7. 实现完成判定
 
@@ -100,4 +102,5 @@
 - [x] 所有任务文档均能追溯到 FR、BR/NFR、AC 或 TC。
 - [x] 依赖边界符合 FOUNDATION-DEPS.yaml，不引入未授权运行时依赖。
 - [x] 运行时代码仓库 /home/redisx 的 lint、typecheck、test、race、coverage 验证证据已归档。
-- [x] 发布说明、版本标签与本目录登记状态一致。
+- [x] 发布说明与版本文件已对齐 v1.0.3。
+- [x] v1.0.3 发布标签已由 Auto Patch Release run `27798039527` 创建并验证。

@@ -37,7 +37,7 @@ test_plan:
 depends_on: []
 estimated_effort: "1d"
 priority: P0
-status: pending
+status: done
 ```
 
 ---
