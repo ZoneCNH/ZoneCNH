@@ -1,6 +1,6 @@
 import { execSync } from "child_process";
-import { readdirSync, readFileSync, existsSync } from "fs";
-import { join, dirname } from "path";
+import { readdirSync, readFileSync, existsSync, statSync, rmSync } from "fs";
+import { join, dirname, relative } from "path";
 import { fileURLToPath } from "url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -113,6 +113,81 @@ if (existsSync(claudeMdPath)) {
   const claudeContent = readFileSync(claudeMdPath, "utf-8");
   if (claudeContent.includes("【待填写")) {
     lines.push("---", "⚠️ CLAUDE.md 还有占位符未替换，请对 AI 说：帮我初始化 Harness");
+  }
+}
+
+// === Worktree 孤儿 GC（保守：dry-run 默认，WORKTREE_GC_CLEAN=1 才真删）===
+// 实现 CLAUDE.md §工作区 GC：扫描 .worktree/ 下已 git-forget 的孤儿目录，
+// 仅在 mtime > 24h 且非白名单时报告；显式 WORKTREE_GC_CLEAN=1 才真正删除。
+const worktreeBase = join(projectRoot, ".worktree");
+if (existsSync(worktreeBase)) {
+  const cleanMode = process.env.WORKTREE_GC_CLEAN === "1";
+  const TTL_MS = 24 * 3600 * 1000;
+  const PROTECT = new Set(["note.md", "v2.md"]);
+
+  // 注册的 worktree 路径（git worktree list）
+  const registered = new Set(
+    run("git worktree list --porcelain 2>/dev/null")
+      .split("\n")
+      .filter(l => l.startsWith("worktree "))
+      .map(l => l.slice("worktree ".length).trim())
+  );
+  // 排除主 worktree，避免其路径作为 .worktree/* 的前缀污染判定
+  const regSub = new Set([...registered].filter(r => r !== projectRoot));
+
+  // 候选：.worktree/<top> 与 .worktree/<top>/<sub>
+  const candidates = [];
+  for (const top of readdirSync(worktreeBase, { withFileTypes: true })) {
+    if (!top.isDirectory()) continue;
+    const tp = join(worktreeBase, top.name);
+    candidates.push(tp);
+    for (const sub of readdirSync(tp, { withFileTypes: true })) {
+      if (sub.isDirectory()) candidates.push(join(tp, sub.name));
+    }
+  }
+
+  const classify = (c) => {
+    if (registered.has(c)) return "self";
+    for (const r of regSub) {
+      if (c === r) return "self";
+      if (c.startsWith(r + "/")) return "inside-active";
+      if (r.startsWith(c + "/")) return "active-container";
+    }
+    return "ORPHAN";
+  };
+
+  // 白名单：目录直接含 note.md / v2.md 文件则保护
+  const hasProtectedFile = (dir) => {
+    try {
+      return readdirSync(dir, { withFileTypes: true })
+        .some(e => e.isFile() && PROTECT.has(e.name));
+    } catch {
+      return false;
+    }
+  };
+
+  const now = Date.now();
+  const orphans = candidates
+    .filter((c) => classify(c) === "ORPHAN")
+    .filter((c) => !hasProtectedFile(c))
+    .map((c) => ({ path: c, ageMs: now - statSync(c).mtimeMs }))
+    .filter((o) => o.ageMs > TTL_MS)
+    .sort((a, b) => b.ageMs - a.ageMs);
+
+  if (orphans.length > 0) {
+    lines.push("---");
+    lines.push("🧹 Worktree 孤儿 GC（" + (cleanMode ? "✅ CLEAN 模式" : "dry-run，设 WORKTREE_GC_CLEAN=1 真删") + "）：发现 " + orphans.length + " 个 >24h 孤儿");
+    for (const o of orphans.slice(0, 15)) {
+      lines.push("   " + Math.floor(o.ageMs / 3600000) + "h  " + relative(projectRoot, o.path));
+    }
+    if (orphans.length > 15) lines.push("   ... 还有 " + (orphans.length - 15) + " 个");
+    if (cleanMode) {
+      let removed = 0;
+      for (const o of orphans) {
+        try { rmSync(o.path, { recursive: true, force: true }); removed++; } catch {}
+      }
+      lines.push("   已删除 " + removed + "/" + orphans.length + " 个");
+    }
   }
 }
 
