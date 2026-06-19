@@ -81,7 +81,7 @@ L2.5: domainx / decimalx / domain-market / domain-macro / domain-exchange (5/5 �
 - [kernel](https://github.com/ZoneCNH/kernel) — L0 标准库扩展原语（error/time/context/lifecycle/health/sync） `公开`
 - [configx](https://github.com/ZoneCNH/configx) — 显式配置加载、多源合并（File/Env/Map/Args）、StrictDecode、SecretString 脱敏、Provenance 追踪、EffectiveConfigHash、Bind() 强类型绑定、ConfigSnapshot 热更新与回滚、RemoteSource SPI、配置文档自动生成 `公开`
 - [observex](https://github.com/ZoneCNH/observex) — vendor-neutral 日志、指标、追踪、健康与脱敏契约 `公开`
-- [resiliencx](https://github.com/ZoneCNH/resiliencx) — 运行时弹性策略（timeout/retry/circuit/bulkhead/rate/fallback） `公开`
+- [resiliencx](https://github.com/ZoneCNH/resiliencx) — 运行时弹性策略（timeout/retry/circuit/bulkhead/rate/fallback、Compose、InstrumentStrategy、panic recovery）；v1.0.2 GitHub Release 已发布，Release Check 27777166525 通过 `公开`
 - [schedulex](https://github.com/ZoneCNH/schedulex) — 任务调度运行时（cron/interval/delay、Overlap/Misfire 策略、Locker 扩展点、Clock 注入、v1.0.0 已发布，98.2% 覆盖） `公开`
 - [bootstrap](https://github.com/ZoneCNH/bootstrap) — L1 Assembly 通用进程组装层（位于 L1 primitives 之上、x.go 入口之下）：configx/observex/resiliencx + lifecycx 统一组装 + 7 存储 adapter 可选构造（StoreSet 位掩码）；不承载业务语义 / service listener / domain contracts；✅ v0.1.0 GitHub Release 已发布，规格 v0.1.7 `公开`
 - [testkitx](https://github.com/ZoneCNH/testkitx) — 测试专用 evidence/golden/fixture/boundary 工具包 `公开`
@@ -89,16 +89,16 @@ L2.5: domainx / decimalx / domain-market / domain-macro / domain-exchange (5/5 �
 
 > **公开投影口径**：版本 / release / factory 状态以 `.foundationx/status/index.json` + `.foundationx/blockers.json` 为准；BLK-001~008 + BLK-011 已 resolved，BLK-009 / BLK-010 仍 open；Foundation 整体维持 non-factory 投影。
 >
-> `configx` v1.1.0、`observex` v0.3.3、`testkitx` v0.4.0、`resiliencx` v0.4.9 已发布；此前版本误标已修正。
+> `configx` v1.1.0、`observex` v0.3.3、`testkitx` v0.4.0、`resiliencx` v1.0.2 已发布；resiliencx Release Check 27777166525 通过，此前版本误标已修正。
 
 ### 基座 · 存储与中间件
 
 - [postgresx](https://github.com/ZoneCNH/postgresx) — PostgreSQL — 关系型存储、事务、迁移（v1.0.0 已发布；live integration 通过；factory_grade_allowed=false；单元测试 52.4% + Docker integration skip，BLK-006 open） `公开`
 - [redisx](https://github.com/ZoneCNH/redisx) — Redis L2 adapter（v1.0.1 已发布；KV/TTL、Hash/List、Pipeline、Cache-aside、Lock/RateLimit、Pool、Persistence restart recovery；Docker-backed Redis 验证通过） `公开`
-- [clickhousex](https://github.com/ZoneCNH/clickhousex) — ClickHouse — OLAP 查询、批量写入（v1.0.1 GitHub Release 已发布；Docker ClickHouse CI 已部署；BLK-003 open；非 factory） `公开`
-- [taosx](https://github.com/ZoneCNH/taosx) — TDengine L2 adapter contract（pkg/taosx v1.0.1；真实 taosWS WebSocket 集成已验证；SPEC 评分 67，BLK-007 open；非 factory） `公开`
-- [kafkax](https://github.com/ZoneCNH/kafkax) — Kafka — 消息队列、事件流（v1.0.2 已发布；真实 broker gates 已验证） `公开`
-- [natsx](https://github.com/ZoneCNH/natsx) — NATS 内部通信模块（v1.0.0 已发布；Core NATS / JetStream、Drain/reconnect/degraded health、canonical `FOUNDATIONX_NATS_*` 配置和真实 dev auth live gate 已验证；正式四源 98+ arbiter 与生产 TLS gate 待补，BLK-001/BLK-002 open；非 factory） `公开`
+- [clickhousex](https://github.com/ZoneCNH/clickhousex) — ClickHouse — OLAP 查询、批量写入（v1.0.3 GitHub Release 已发布；branch/tag GitHub Actions quality/lint/integration/secret-scan/trust/release-check 已通过；foundation gate 与版本元数据已对齐；BLK-003 open；非 factory） `公开`
+- [taosx](https://github.com/ZoneCNH/taosx) — TDengine L2 adapter contract（pkg/taosx v1.0.3 本地发布候选；CI/release 已加入 taosx-coverage-check，pkg/taosx 100.0% 覆盖；TDengine dev live gate 已通过且保持显式 opt-in；未执行外部 tag/GitHub Release；非 factory） `公开`
+- [kafkax](https://github.com/ZoneCNH/kafkax) — Kafka — 消息队列、事件流（v1.1.0 已发布；真实 broker gates 已验证） `公开`
+- [natsx](https://github.com/ZoneCNH/natsx) — NATS 内部通信模块（v1.0.3 已发布；Core NATS / JetStream、Drain/reconnect/degraded health、canonical `FOUNDATIONX_NATS_*` 配置和真实 dev auth live gate 已验证；正式四源 98+ arbiter 与生产 TLS gate 待补，BLK-001/BLK-002 open；非 factory） `公开`
 - [ossx](https://github.com/ZoneCNH/ossx) — Aliyun OSS 对象存储 L2 adapter（v1.0.2-alpha 已交付 pkg/ossx 源码/8文件/12测试/import 可编译；BLK-010 open；非 factory：真实 Aliyun adapter 与 integration evidence 待补 TASK-OSSX-005） `公开`
 
 ### 基座 · 契约与传输

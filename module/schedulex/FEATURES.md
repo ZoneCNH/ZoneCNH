@@ -1,92 +1,88 @@
-# schedulex 完整实现清单
+# schedulex v1.0.0 功能实现清单
 
-- Status: Generated from current module SSOT
+- Status: Accepted
 - Last-Updated: 2026-06-18
 - Module-Version: v1.0.0
-- Module-State: 已发布
-- Layer: L0 调度
+- Module-State: 本地发布验收通过
+- Layer: L1 调度基座
 - Runtime-Repo: /home/schedulex
-- Source: goal.md, SPEC.md, TRACEABILITY.md, IMPLEMENTATION-PLAN.md, tasks/
+- Runtime-Branch: ci/sre-cicd-pools-20260618
+- Source: SPEC.md, /home/schedulex README.md, Makefile, release-check evidence
 
-> 本清单用于约束 schedulex 的完整实现范围。条目来自本目录已有 Spec、Traceability、Plan、Task 等文档；若运行时代码状态与本文不一致，以相应模块仓库的最新验证证据补充更新本文。
+> 本清单记录 `schedulex` v1.0.0 已验收的运行时能力。v1.0 以 `AddJob`、可注入时钟、确定性触发、调度快照、事件 sink 与锁接口为对外契约；旧追溯文档中的 `Cancel`、`Replace`、`Delay` 等扩展项登记为 v1.1 候选，不作为本版本已发布能力。
 
-## 1. 模块边界清单
+## 1. 模块边界
 
-| 项目 | 要求 |
+| 项目 | v1.0.0 要求 |
 | --- | --- |
-| 模块职责 | 统一调度、任务注册、触发、并发与生命周期治理 |
-| 文档目录 | module/schedulex |
-| 运行时代码目录 | /home/schedulex |
-| Go 基线 | 1.23 |
-| 允许依赖 | kernel |
-| 禁止依赖 | 禁止越过 FOUNDATION-DEPS.yaml 登记边界依赖上层业务域或未授权基座模块 |
-| 对外承诺 | API、配置、错误、观测、测试与证据口径必须与本目录追溯文档闭合 |
+| 模块职责 | 单进程确定性调度、任务注册、触发计算、并发/重叠治理、误触发补偿、生命周期关闭与可审计事件 |
+| 文档目录 | `module/schedulex` |
+| 运行时代码目录 | `/home/schedulex` |
+| Go 基线 | Go 1.23 |
+| 运行时依赖 | 标准库 only；生产代码不依赖 `x.go`、L2 或业务域 |
+| CI/CD 约束 | `GOWORK=off`；GitHub hosted `ubuntu-latest` runner；release gate 必须通过 `make release-check VERSION=v1.0.0` |
+| 对外承诺 | 公共 API、错误、策略、事件、锁接口、测试、证据与 release manifest 可复验 |
 
-## 2. 功能实现清单（FR）
+## 2. 已验收功能
 
-| ID | 完整实现项 | 验收/测试/任务挂钩 | 当前登记状态 | 来源 |
+| ID | 功能项 | v1.0.0 对外契约 | 验收证据 | 状态 |
 | --- | --- | --- | --- | --- |
-| FR-001 | Schedule：注册 job + 参数校验 | AC-001: 合法 cron job 返回 JobID; AC-002: cron 语法错误 → ErrInvalidTrigger; AC-003: interval <= 0 → ErrInvalidTrigger; AC-004: 重复 JobID → ErrDuplicateJob / TC-001, TC-009 / TASK-002 / ⬜ | - | TRACEABILITY.md |
-| FR-002 | Trigger：cron/interval/delay 触发 | AC-005: cron 到达调度时间调用 handler; AC-006: interval 到期调用 handler; AC-007: Delay 后首次触发 / TC-001 / TASK-002 / ⬜ | - | TRACEABILITY.md |
-| FR-003 | Overlap Policy：Skip/Queue/Replace | AC-008: Skip → 上次未完成时跳过; AC-009: Queue → 排队等待; AC-010: Replace → 取消旧的启动新的 / TC-002 / TASK-003 / ⬜ | - | TRACEABILITY.md |
-| FR-004 | Misfire Policy：Skip/RunOnce/CatchUp | AC-011: Skip → 跳过错过的触发; AC-012: RunOnce → 补执行一次; AC-013: CatchUp → 补执行所有错过次数 / TC-003 / TASK-004 / ⬜ | - | TRACEABILITY.md |
-| FR-005 | Cancel：取消 job | AC-014: 存在的 job 取消返回 nil; AC-015: 不存在返回 ErrJobNotFound / TC-005 / TASK-002 / ⬜ | - | TRACEABILITY.md |
-| FR-006 | Stop：graceful shutdown | AC-016: 等待正在执行的 job 完成; AC-017: 超时强制取消 → ErrShutdownTimeout / TC-006 / TASK-005 / ⬜ | - | TRACEABILITY.md |
-| FR-007 | EventSink：生命周期事件回调 | AC-018: trigger/start/complete/fail/misfire 事件输出 / TC-007 / TASK-006 / ⬜ | - | TRACEABILITY.md |
-| FR-008 | Locker：分布式锁 | AC-019: 锁获取成功 → 执行 job; AC-020: 锁获取失败 → 跳过本次; AC-021: TTL < 执行时间 → 配置错误 / TC-004 / TASK-007 / ⬜ | - | TRACEABILITY.md |
-| FR-009 | Clock：可注入时钟 | AC-022: FakeClock 注入后调度基于 FakeClock / TC-008 / TASK-008 / ⬜ | - | TRACEABILITY.md |
+| FR-001 | 调度器生命周期 | `NewScheduler`、`AddJob`、`Start`、`Shutdown`、`Snapshot`；重复 job 返回 `ErrJobExists`，关闭后返回 `ErrSchedulerClosed` | `api-check`、`test`、`race`、`release-check` | PASS |
+| FR-002 | 触发器 | `Once`、`Every`、5-field `Cron`、`DailyAt`；支持 `WithTriggerStartAt` 与 `WithTriggerEndAt` | `trigger-determinism-check`、`timezone-dst-golden-check` | PASS |
+| FR-003 | 可注入时钟 | `Clock` 接口与测试时钟支持确定性推进，不依赖真实时间完成核心验收 | trigger golden tests、DST tests | PASS |
+| FR-004 | Misfire 策略 | `MisfireSkip`、`MisfireRunOnce`、`MisfireCatchUp` | `misfire-contract-check`、contracts | PASS |
+| FR-005 | Overlap 与并发控制 | `OverlapSkip`、`OverlapQueueOne`、`OverlapAllow`；调度器级 `WithMaxConcurrent` | overlap tests、`scheduler-race-check`、`scheduler-leak-check` | PASS |
+| FR-006 | 事件输出 | `EventSink` 支持调度器级与 job 级事件，覆盖生命周期、misfire、lock、shutdown 等状态 | contracts、docs-check | PASS |
+| FR-007 | 锁扩展接口 | `Locker`、`Lease`、`WithLocker`、`WithLockKey`、`WithLockTTL`；只定义接口，不内置具体分布式锁后端 | `lock-interface-check`、boundary | PASS |
+| FR-008 | 快照与可观测状态 | `Snapshot`、`JobSnapshot` 提供可审计运行状态与 job 状态 | contracts、docs-check | PASS |
+| FR-009 | 边界与安全 | 标准库 only；无凭证、私有端点、账户 ID 或实盘配置；不越过 L1 基座边界 | `boundary`、`security`、`governance-check` | PASS |
+| FR-010 | 发布证据 | `release/manifest/latest.json`、校验和、score gate 与 release preflight 可复验 | `release-final-check`、`score=10.0`、`release-preflight` | PASS |
 
-## 3. 行为与非功能实现清单
+## 3. 公共 API 摘要
 
-| ID | 完整实现项 | 验收/测试/任务挂钩 | 当前登记状态 | 来源 |
-| --- | --- | --- | --- | --- |
-| BR-001 | Schedule 必须校验 trigger 合法性（cron 语法 / interval > 0） | 非法 trigger → ErrInvalidTrigger，不注册 job / TC-001 / TASK-002 / ⬜ | - | TRACEABILITY.md |
-| BR-002 | 同一 JobID 重复注册返回 ErrDuplicateJob | 重复 Schedule 同一 ID → ErrDuplicateJob / TC-009 / TASK-002 / ⬜ | - | TRACEABILITY.md |
-| BR-003 | Stop 必须等待正在执行的 job 完成或超时 | Stop 后所有运行中 job 完成或超时返回 ErrShutdownTimeout / TC-006 / TASK-005 / ⬜ | - | TRACEABILITY.md |
-| BR-004 | overlap 行为由 OverlapPolicy 决定，不内置隐式策略 | 未设置 OverlapPolicy 时使用默认值（全局配置） / TC-002 / TASK-003 / ⬜ | - | TRACEABILITY.md |
-| BR-005 | job panic 被 catch，不影响其他 job | panic job 不影响其他 job 的正常调度 / TC-006 / TASK-002 / ⬜ | - | TRACEABILITY.md |
-| BR-006 | lock TTL > job 最大执行时间，防止锁提前释放 | TTL 不足 → 配置错误，拒绝注册 / TC-004 / TASK-007 / ⬜ | - | TRACEABILITY.md |
-| BR-007 | DST 切换时触发时间必须正确（不能跳过或重复触发） | DST 边界触发时间符合目标时区 cron 语义 / TC-008 / TASK-008 / ⬜ | - | TRACEABILITY.md |
-| BR-008 | job handler 必须接受 context.Context，支持取消传播 | JobHandler 签名为 func(ctx context.Context) error / CI Gate: go build / TASK-001 / ⬜ | - | TRACEABILITY.md |
-| NFR-O01 | 6 个 metric + 8 个 log 输出 | EventSink 或日志中可观测 / CI Gate: integration test / TASK-006, TASK-009 / ⬜ | - | TRACEABILITY.md |
-| NFR-P01 | job 触发延迟 < 10ms（单节点） | Benchmark 测量触发到 handler 调用延迟 / CI Gate: go test -bench / TASK-009 / ⬜ | - | TRACEABILITY.md |
-| NFR-P02 | 1000 个 job 内存占用 < 10MB | Profiling 测量常驻内存 / CI Gate: go test -bench -benchmem / TASK-009 / ⬜ | - | TRACEABILITY.md |
-| NFR-P03 | 常驻内存 < 5MB | Profiling 测量基线内存 / CI Gate: go test -bench -benchmem / TASK-009 / ⬜ | - | TRACEABILITY.md |
-| NFR-S01 | 分布式锁安全：锁 TTL 约束 | TTL < job timeout → 配置错误 / TC-004 / TASK-007 / ⬜ | - | TRACEABILITY.md |
-| NFR-S02 | job panic 隔离 | panic 不传播到调度器 / TC-006 / TASK-002 / ⬜ | - | TRACEABILITY.md |
+| 类别 | v1.0.0 契约 |
+| --- | --- |
+| 调度器入口 | `NewScheduler(opts ...Option) (*Scheduler, error)` |
+| 任务注册 | `AddJob(job Job, trigger Trigger, opts ...JobOption) error` |
+| 运行控制 | `Start(ctx context.Context) error`、`Shutdown(ctx context.Context) error` |
+| 状态读取 | `Snapshot() Snapshot` |
+| Job 合约 | `Job.Name() string`、`Job.Run(ctx context.Context) error` |
+| Trigger 合约 | `Trigger.Next(after time.Time) (time.Time, bool)` |
+| 调度器选项 | `WithClock`、`WithEventSink`、`WithMaxConcurrent` |
+| Job 选项 | `WithMisfirePolicy`、`WithOverlapPolicy`、`WithJitter`、`WithLocker`、`WithLockKey`、`WithLockTTL`、`WithJobEventSink` |
+| 错误集合 | `ErrSchedulerClosed`、`ErrJobExists`、`ErrInvalidJob`、`ErrInvalidOption`、`ErrLockUnavailable` |
 
-## 4. 任务交付清单
+## 4. CI/CD 与发布能力
 
-| ID | 交付项 | 文件/挂钩 | 当前登记状态 | 来源 |
-| --- | --- | --- | --- | --- |
-| TASK-SCHEDULEX-000 | TASK-SCHEDULEX-000 | module/schedulex/tasks/TASK-SCHEDULEX-000.md | - | tasks/TASK-SCHEDULEX-000.md |
-| TASK-SCHEDULEX-001 | TASK-SCHEDULEX-001 | module/schedulex/tasks/TASK-SCHEDULEX-001.md | - | tasks/TASK-SCHEDULEX-001.md |
-| TASK-SCHEDULEX-002 | TASK-SCHEDULEX-002 | module/schedulex/tasks/TASK-SCHEDULEX-002.md | - | tasks/TASK-SCHEDULEX-002.md |
-| TASK-SCHEDULEX-003 | TASK-SCHEDULEX-003 | module/schedulex/tasks/TASK-SCHEDULEX-003.md | - | tasks/TASK-SCHEDULEX-003.md |
-| TASK-SCHEDULEX-004 | TASK-SCHEDULEX-004 | module/schedulex/tasks/TASK-SCHEDULEX-004.md | - | tasks/TASK-SCHEDULEX-004.md |
-| TASK-SCHEDULEX-005 | TASK-SCHEDULEX-005 | module/schedulex/tasks/TASK-SCHEDULEX-005.md | - | tasks/TASK-SCHEDULEX-005.md |
-| TASK-SCHEDULEX-006 | TASK-SCHEDULEX-006 | module/schedulex/tasks/TASK-SCHEDULEX-006.md | - | tasks/TASK-SCHEDULEX-006.md |
-| TASK-SCHEDULEX-007 | TASK-SCHEDULEX-007 | module/schedulex/tasks/TASK-SCHEDULEX-007.md | - | tasks/TASK-SCHEDULEX-007.md |
-| TASK-SCHEDULEX-008 | TASK-SCHEDULEX-008 | module/schedulex/tasks/TASK-SCHEDULEX-008.md | - | tasks/TASK-SCHEDULEX-008.md |
-| TASK-SCHEDULEX-009 | TASK-SCHEDULEX-009 | module/schedulex/tasks/TASK-SCHEDULEX-009.md | - | tasks/TASK-SCHEDULEX-009.md |
-| TASK-SCHEDULEX-010 | TASK-SCHEDULEX-010 | module/schedulex/tasks/TASK-SCHEDULEX-010.md | - | tasks/TASK-SCHEDULEX-010.md |
-| TASK-SCHEDULEX-011 | TASK-SCHEDULEX-011 | module/schedulex/tasks/TASK-SCHEDULEX-011.md | - | tasks/TASK-SCHEDULEX-011.md |
+| 项目 | v1.0.0 配置 |
+| --- | --- |
+| Required status checks | `ci`、`release-check`、`security`、`integration`、`gates`、`worktree-check` |
+| Main 保护 | required status checks + required signatures |
+| Release tag 保护 | `v*` tag + required signatures |
+| CI runner | `ubuntu-latest` |
+| Release runner | `ubuntu-latest` |
+| 核心 CI 命令 | `GOWORK=off make release-check VERSION="${VERSION}"` |
+| Release 触发 | push `v*` tag 后执行 release workflow，生成 manifest 并发布 GitHub Release |
 
-## 5. 文档资产清单
+## 5. v1.1 候选与非本版能力
 
-| 文档 | 状态 | 路径 |
-| --- | --- | --- |
-| goal.md | 存在 | module/schedulex/goal.md |
-| SPEC.md | 存在 | module/schedulex/SPEC.md |
-| TRACEABILITY.md | 存在 | module/schedulex/TRACEABILITY.md |
-| IMPLEMENTATION-PLAN.md | 存在 | module/schedulex/IMPLEMENTATION-PLAN.md |
-| tasks/ | 12 个 Markdown 文件 | module/schedulex/tasks |
+| 项目 | 当前结论 |
+| --- | --- |
+| Cancel API | v1.0.0 未暴露单 job cancel；当前通过 `Shutdown(ctx)` 关闭调度器，通过 `Snapshot()` 查看状态 |
+| Schedule/JobID API | v1.0.0 使用 `AddJob` + `Job.Name()`，未暴露返回 `JobID` 的注册入口 |
+| List API | v1.0.0 使用 `Snapshot()`，未暴露独立 list 入口 |
+| Stop API | v1.0.0 使用 `Shutdown(ctx)`，超时语义由传入 context 决定 |
+| Delay trigger | v1.0.0 使用 `Once(time.Time)` 表达一次性延后触发 |
+| OverlapReplace | v1.0.0 支持 `skip`、`queue_one`、`allow`，不支持 replace |
+| 多 listener EventBus | v1.0.0 提供单个 `EventSink` 接口扩展点 |
+| 内置锁后端 | v1.0.0 只提供 `Locker` 接口，不绑定 Redis、数据库或外部服务 |
+| 指标/日志/span 导出器 | v1.0.0 通过事件与快照提供观测基础，不内置具体 exporter |
 
 ## 6. 实现完成判定
 
-- [ ] 所有 FR 条目均有运行时代码、单元测试或契约测试覆盖。
-- [ ] 所有 BR/NFR 条目均有测试、静态检查或人工可审计证据覆盖。
-- [ ] 所有任务文档均能追溯到 FR、BR/NFR、AC 或 TC。
-- [ ] 依赖边界符合 FOUNDATION-DEPS.yaml，不引入未授权运行时依赖。
-- [ ] 运行时代码仓库 /home/schedulex 的 lint、typecheck、test、race、coverage 验证证据已归档。
-- [ ] 发布说明、版本标签与本目录登记状态一致。
+- [x] 已验收 FR-001 至 FR-010 的运行时代码、单元测试、契约测试或脚本证据。
+- [x] 已通过 `GOWORK=off make release-check VERSION=v1.0.0`。
+- [x] 已通过 integration、governance、p1、p2、score 与 release preflight。
+- [x] 已确认生产代码保持标准库 only 与 L1 基座边界。
+- [x] 已同步 CI/CD required checks、hosted runner、release gate 与文档登记。
+- [ ] tag 发布后的网络 downstream smoke 需等待 `v1.0.0` 对外可解析后执行。

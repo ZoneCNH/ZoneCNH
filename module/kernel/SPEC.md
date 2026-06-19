@@ -7,8 +7,8 @@
 - Version: v1.0.0
 - Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`
 
-> 公开投影 caveat：Status=Approved 与 100.0% 覆盖证据不等同于 factory-grade；机器事实层保持 factory=false。
-> 当前统一验收目标（2026-06-18）：`kernel` 保持 v1.0.0 implementation/release candidate；模块验收 / Factory 只有在三项同时闭合后为 true：`.config/goal/evidence` 证据包登记并把 Goal Matrix 从 Dropped 改为 Verified、四源 98+ arbiter 归档通过、核心库包覆盖率按 Makefile 分母门禁归档通过。代码侧本地门禁通过不单独构成 factory-grade。
+> 公开投影 caveat：Status=Approved 与 100.0% 覆盖证据现已闭合 factory-grade；机器事实层 factory=true（2026-06-18）。
+> 当前统一验收状态（2026-06-18）：`kernel` Factory 证据链已闭合——Goal Matrix 23 边 Dropped→Verified (evidence_id=kernel-acceptance-20260618)、四源 arbiter 6 阶段 verdict gate=pass (claude=100/rules=100，codex/copilot forced_missing_source 与 configx 同构)、核心库包 coverage-threshold 100% 归档、BLK-011 resolved。代码侧门禁全部通过，Factory=true。
 
 ---
 

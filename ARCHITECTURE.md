@@ -230,7 +230,7 @@ Foundation 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中在 
 | `kernel`        | L0 原语       | 12 子包轻量工具集：lifecycx/errx/healthx/obsx/retryx/shutdownx/syncx/timex/validx/versionx/contextx/contracttest（stdlib-only）                          | 配置解析、观测后端、存储、网络、业务 DTO、全局可变单例     |
 | `configx`       | L1 primitive     | explicit source、merge、decode、validate、sanitize、provenance、config hash                                                                              | secret backend、全局配置中心、自动发现、业务配置结构体     |
 | `observex`      | L1 primitive 契约 | logger、metrics、tracer、field、redactor、label policy、health schema、noop、memory recorder                                                             | Prometheus/Otel/Zap 直接绑定、alert routing、业务监控规则  |
-| `resiliencx`    | L1 primitive 策略 | timeout、retry、circuit breaker、bulkhead、rate limiter、fallback、Policies 组合（budget/classifier/idempotency hint 为 v1.2+ 演进）                     | 交易风控、订单风险、交易所 SDK、调度、存储后端             |
+| `resiliencx`    | L1 primitive 策略 | timeout、retry、circuit breaker、bulkhead、rate limiter、fallback、Compose、InstrumentStrategy、recovered panic（budget/classifier/idempotency hint 为 v1.2+ 演进） | 交易风控、订单风险、交易所 SDK、调度、存储后端             |
 | `schedulex`     | L1 primitive 调度 | cron/interval/delay trigger、OverlapPolicy（Skip/Queue/Replace）、MisfirePolicy（Skip/RunOnce/CatchUp）、jitter、EventSink、Locker interface、Clock 注入 | 分布式锁实现、exactly-once、业务任务语义                   |
 | `testkitx`      | L1 test-only  | FakeConfig/FakeLogger/FakeMeter/FakeTracer/FakeClock/FakeBreaker、Eventually、GoldenUpdate、BoundaryCheck、GoroutineLeakCheck、contract test             | production import、真实外部系统、L2/L3/chaos/soak 测试替代 |
 
@@ -240,7 +240,9 @@ Foundation 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中在 
 
 `risk-engine` 才负责 trading risk，二者不能混用。
 
-`xlib-standard` v1.0.1 已发布（tag v1.0.1, PR #121），标准源和 Go Reference Template 职责已完整落地。Generator / Harness Gate / Evidence Runtime 职责已于 PR #233 拆分至 `xlib-harness` 和 `xlib-evidence`。`resiliencx` 已围绕 timeout、retry、circuit、bulkhead、rate limit、fallback 和 policy event 完成身份修复，测试覆盖率 100%。
+`xlib-standard` v1.0.1 已发布（tag v1.0.1, PR #121），标准源和 Go Reference Template 职责已完整落地。Generator / Harness Gate / Evidence Runtime 职责已于 PR #233 拆分至 `xlib-harness` 和 `xlib-evidence`。
+
+`resiliencx` v1.0.2 已发布，围绕 timeout、retry、circuit、bulkhead、rate limit、fallback、Compose、InstrumentStrategy 和 recovered panic 完成运行时契约校准；GitHub Release Check 27777166525 与本地 release-check / release-final-check 均通过。
 
 | 边界     | `kernel.retryx`                        | `resiliencx`                                      |
 | -------- | -------------------------------------- | ------------------------------------------------- |
@@ -291,7 +293,7 @@ Foundation 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中在 
 | ----------------- | ----------------------------------------------------------------- | -------------------------------------------------------------------------------------------- | ----------------------------------------- |
 | Foundation 矩阵   | L0/L1/runtime/test-only 依赖符合 Foundation 依赖矩阵              | 反向依赖、运行时导入 `testkitx`、L1 模块彼此强耦合                                           | `xlibgate` 或 import graph 检查           |
 | Go baseline       | Foundation 模块共享 Go toolchain baseline                         | `testkitx` 单独拉高下游测试工具链，或 `configx` / `observex` 长期停留 `foundationx` 兼容垫片 | `go.mod` 扫描与 release evidence          |
-| `resiliencx` 身份 | timeout/retry/circuit/bulkhead/rate/fallback/policy event         | Standard Source、Generator、Harness 主身份回流到 `resiliencx`                                | README/docs 一致性 gate + contract tests  |
+| `resiliencx` 身份 | timeout/retry/circuit/bulkhead/rate/fallback/Compose/InstrumentStrategy/panic recovery | Standard Source、Generator、Harness 主身份回流到 `resiliencx`                                | README/docs 一致性 gate + contract tests  |
 | `testkitx` 边界   | 仅测试包、测试 fixture、harness、boundary evidence 导入           | production Go 文件导入 `testkitx`                                                            | `make boundary-testkit` 或 import scan    |
 | 可观测脱敏        | 低基数、非敏感 label；secret redaction 覆盖日志、health、manifest | `order_id`、`account_id`、`api_key`、trace id 等进入普通 metrics label                       | schema/golden + secret leak test          |
 | 业务域依赖        | 数据域/分析域/决策域/执行域导入 L2.5、contracts 和基座            | 业务域互相导入实现包，尤其执行域反向导入决策域                                               | `go list` 或依赖图中无业务域实现包反向边  |
@@ -349,7 +351,7 @@ Foundation 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中在 
 | 基座                  | [configx](https://github.com/ZoneCNH/configx)                   | v1.1.0 | ✅ 已发布 | Spec→Code 完成 | 显式配置加载、多源合并（YAML/TOML/JSON/.env/Env/Map/Args）、StrictDecode、SecretString 脱敏、SecretPolicy、Provenance、EffectiveConfigHash、SanitizedManifest、HealthCheck、Metrics、Bind() 强类型绑定、ConfigSnapshot/ChangeEvent/Watch 热更新与回滚、RemoteSource SPI、配置文档自动生成；96.5% 覆盖率；v1.1.0 GitHub Release 已发布，version.go 与 git tag 与 CHANGELOG 已对齐 |
 | 基座                  | [observex](https://github.com/ZoneCNH/observex)                 | v0.3.3 | ✅ 已发布 | Spec→Code 完成 | vendor-neutral 日志、指标、追踪、健康、字段和 label policy 契约；v1.0.0 误置 tag/Release 已清理（2026-06-19） |
 | 基座                  | [testkitx](https://github.com/ZoneCNH/testkitx)                 | v0.4.0 | ✅ 已发布 | Spec→Code 完成 | Fake / Fixture / Golden / Contract / Leak / Boundary / Manifest 测试工具包；test-only；禁止生产导入；factory grade 不适用 |
-| 基座                  | [resiliencx](https://github.com/ZoneCNH/resiliencx)             | v0.4.9 | ✅ 已发布 | Spec→Code 完成 | 运行时弹性策略库：timeout/retry/circuit/bulkhead/rate/fallback；此前误标 v1.0.1 已修正 |
+| 基座                  | [resiliencx](https://github.com/ZoneCNH/resiliencx)             | v1.0.2 | ✅ 已发布 | Spec→Code 完成 | 运行时弹性策略库：timeout/retry/circuit/bulkhead/rate/fallback、Compose、InstrumentStrategy、panic recovery；v1.0.2 GitHub Release 已发布，Release Check 27777166525 通过 |
 | 基座                  | [schedulex](https://github.com/ZoneCNH/schedulex)               | v1.0.0 | ✅ 已发布 | Spec→Code 完成 | cron/interval/delay 调度、OverlapPolicy（Skip/Queue/Replace）、MisfirePolicy（Skip/RunOnce/CatchUp）、EventSink、Locker、Clock 注入；98.2% 覆盖，release-check 通过 |
 | 基座                  | [bootstrap](https://github.com/ZoneCNH/bootstrap)               | v0.1.0 | ✅ 已发布 | Spec→Code 进行中（SPEC Draft，runtime 骨架已发布） | L1 Assembly 通用进程组装层：位于 L1 primitives 之上、`x.go` 入口之下，统一组装 configx/observex/resiliencx/lifecycx + 7 存储 adapter 可选构造（StoreSet 位掩码）+ 信号捕获；不承载业务语义、service listener、domain contracts；✅ GitHub Release v0.1.0 已发布；规格 v0.1.7；非 factory；Stores=All/位组合 v0.1.0 为 stub，仅 Stores=None 路径端到端就绪 |
 | 基座                  | [xlibgate](https://github.com/ZoneCNH/xlibgate)                 | v1.0.0 | ✅ 已发布 | Spec→Code 完成 | check / l2 / trust 三组门禁；全管线评分 100 |
@@ -357,12 +359,12 @@ Foundation 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中在 
 | 基座                  | [xlib-harness](https://github.com/ZoneCNH/xlib-harness)         | v0.1.1 | ✅ 已发布 | Spec→Code 完成 | 模块生成器与门禁执行器：generate/scaffold、spec-lint、boundary-check、traceability-gate；✅ v0.1.1 发布基线已通过 go test/race/vet/coverage/benchmark/CLI smoke 验收 |
 | 基座                  | [xlib-evidence](https://github.com/ZoneCNH/xlib-evidence)       | v0.2.0 | ✅ 已发布 | Spec→Code 完成 | 证据收集与发布运行时：collect-coverage、generate-manifest、validate-manifest、remote-evidence、report；/home/xlib-evidence 本地 go test/race/vet/coverage 89.8% 通过；✅ GitHub Release v0.2.0 已发布 |
 | 基座                  | [redisx](https://github.com/ZoneCNH/redisx)                     | v1.0.1 | ✅ 已发布 | Spec→Code 完成 | Redis L2 adapter：KV/TTL/Hash/List/Pipeline/Cache-aside/Lock/RateLimit/Pool/Persistence restart recovery；Docker-backed Redis 验证通过 |
-| 基座                  | [kafkax](https://github.com/ZoneCNH/kafkax)                     | v1.0.2 | ✅ 已发布 | Spec→Code 完成 | Kafka L2 adapter — 消息队列、事件流（v1.0.0 已发布，driver-neutral API + kafka-go 生产驱动，真实 broker gates） |
-| 基座                  | [natsx](https://github.com/ZoneCNH/natsx)                       | v1.0.0 | ✅ 已发布 | Spec→Code 完成 | NATS L2 adapter：Core NATS / JetStream、Drain/reconnect/degraded health、canonical `FOUNDATIONX_NATS_*` 配置和真实 dev auth live gate 已验证；repair-slice 20/20；正式四源 98+ arbiter 与生产 TLS gate 待补（BLK-001/BLK-002）；非 factory |
+| 基座                  | [kafkax](https://github.com/ZoneCNH/kafkax)                     | v1.1.0 | ✅ 已发布 | Spec→Code 完成 | Kafka L2 adapter — 消息队列、事件流（v1.0.0 已发布，driver-neutral API + kafka-go 生产驱动，真实 broker gates） |
+| 基座                  | [natsx](https://github.com/ZoneCNH/natsx)                       | v1.0.3 | ✅ 已发布 | Spec→Code 完成 | NATS L2 adapter：Core NATS / JetStream、Drain/reconnect/degraded health、canonical `FOUNDATIONX_NATS_*` 配置和真实 dev auth live gate 已验证；repair-slice 20/20；正式四源 98+ arbiter 与生产 TLS gate 待补（BLK-001/BLK-002）；非 factory |
 | 基座                  | [postgresx](https://github.com/ZoneCNH/postgresx)               | v1.0.0 | ✅ 已发布 | Spec→Code 完成 | PostgreSQL — 关系型存储、事务、迁移；live integration 通过；BLK-006 open（52.4% coverage + Docker integration skip）；非 factory |
-| 基座                  | [taosx](https://github.com/ZoneCNH/taosx)                       | v1.0.1 | ✅ 已发布 | Spec→Code 完成 | TDengine L2 adapter contract；真实 taosWS WebSocket 集成测试已通过；BLK-007 open（SPEC 67）；非 factory |
+| 基座                  | [taosx](https://github.com/ZoneCNH/taosx)                       | v1.0.3 | 🟡 候选 | Spec→Code 完成 | TDengine L2 adapter contract；本地发布候选已通过 release-check、integration 与 taosx-coverage-check 100.0%；TDengine dev live gate 已通过且保持显式 opt-in；未执行外部 tag/GitHub Release；非 factory |
 | 基座                  | [ossx](https://github.com/ZoneCNH/ossx)                         | v1.0.2-alpha | ✅ 已发布 | Spec→Code 完成 | Aliyun OSS L2 adapter；pkg/ossx 源码已交付（8 文件/12 测试/import 可编译）；BLK-010 open，真实 Aliyun adapter、integration evidence、API docs、quickstart 与 release manifest 归档待补；非 factory |
-| 基座                  | [clickhousex](https://github.com/ZoneCNH/clickhousex)           | v1.0.1 | ✅ 已发布 | Spec→Code 完成 | ClickHouse — OLAP 查询、批量写入；✅ GitHub Release v1.0.1 已发布；BLK-003 open；非 factory |
+| 基座                  | [clickhousex](https://github.com/ZoneCNH/clickhousex)           | v1.0.3 | ✅ 已发布 | Spec→Code 完成 | ClickHouse — OLAP 查询、批量写入；v1.0.3 GitHub Release 已发布；branch/tag Actions quality/lint/integration/secret-scan/trust/release-check 已通过；foundation gate 与版本元数据已对齐；BLK-003 open；非 factory |
 | 基座                  | [contracts](https://github.com/ZoneCNH/contracts)               | v1.2.0 | ✅ 已发布 | Spec→Code 完成 | 跨域稳定端口/事件/DTO 契约（含 §8.4 Binance C/S ingestion contract）；spec-only；✅ GitHub Release v1.2.0 已发布 |
 | 基座                  | [transportx](https://github.com/ZoneCNH/transportx)             | v1.1.1-spec | ✅ 已发布 | Spec→Code 完成 | 应用通信底座规格基线；✅ GitHub Release v1.1.1-spec 已发布 |
 | **L2.5 · 领域共享层** |                                                                 |        |           |          |                                                                                           |

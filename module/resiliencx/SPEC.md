@@ -2,15 +2,15 @@
 
 - Status: Approved (contract-corrected)
 - Spec-Version: v1.0.2
-- Last-Updated: 2026-06-18
+- Last-Updated: 2026-06-19
 - Layer: L1 基础能力（与 `module/FOUNDATION-DEPS.yaml` 登记一致；ACCEPTANCE/FEATURES/goal 同步对齐为 L1）
-- Version: v1.0.0
-- Runtime-Version: v0.4.9（运行时代码仓库 `/home/resiliencx` 实测基线）
+- Version: v1.0.2
+- Runtime-Version: v1.0.2（运行时代码仓库 `/home/resiliencx` tag `v1.0.2`，commit `1aaa0dc`）
 - Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `kernel`
 
-> 公开投影 caveat：Status=Approved 与运行时覆盖率 98.1% 不等同于 factory-grade；BLK-007 关闭前机器事实层保持 factory=false。
+> 公开投影 caveat：Status=Approved 与 v1.0.2 发布通过不等同于 Foundation factory-grade；BLK-007 关闭前机器事实层保持 factory=false。
 >
-> **v1.0.2 契约纠正说明**：本版本依据运行时代码仓库（`github.com/ZoneCNH/resiliencx`）实测重写 §6/§8/§9/§10/§11/§12/§13/§16/§17/§18/§19，使 SSOT 与机器事实一致。v1.0.0/v1.0.1 中描述的包级 API（`resiliencx.Timeout` 等）与 sentinel error（`resiliencx.ErrTimeout` 等）在代码中**从未存在**，实际对外契约以本版本子包 API（`timeout.Do` / `retry.Do` / `circuit.New` / `bulkhead.New` / `ratelimit.New` / `fallback.Do`）为准。
+> **v1.0.2 契约纠正说明**：本版本依据运行时代码仓库（`github.com/ZoneCNH/resiliencx`）实测重写 §6/§8/§9/§10/§11/§12/§13/§16/§17/§18/§19，使 SSOT 与机器事实一致。v1.0.0/v1.0.1 中描述的包级 API（`resiliencx.Timeout` 等）与 sentinel error（`resiliencx.ErrTimeout` 等）在代码中**从未存在**，实际对外契约以本版本子包 API（`timeout.Do` / `retry.Do` / `circuit.New` / `bulkhead.New` / `ratelimit.New` / `fallback.Do`）为准；runtime tag `v1.0.2` / GitHub Release Check `27777166525` / release-check 与 release-final-check 均已通过。
 
 ---
 
@@ -406,7 +406,7 @@ resiliencx:
 | 策略组合嵌套过深（>10 层） | 函数嵌套，无显式深度限制 | ✅ 正常执行 |
 | 并发调用 circuit breaker | `sync.Mutex` 保护状态变更 | ✅ 并发安全，`-race` 通过 |
 | ctx 在 retry 等待期间取消 | `select` 命中 `<-ctx.Done()`，立即返回 `ctx.Err()` | ✅ 符合预期 |
-| fn panic | **未 recover**，panic 直接传播 | ⚠️ 偏差：SPEC 期望被 catch（P2） |
+| fn panic | `Compose` / `InstrumentStrategy` 捕获为 recovered-panic 错误，保留原 panic payload | ✅ 符合预期；`IsRecoveredPanic` 可识别 |
 | `timeout.Do` 超时后 fn 仍在运行 | fn goroutine 继续执行至完成（潜在泄漏） | ⚠️ fn 收到带 deadline 的 ctx，需 fn 自身尊重 ctx |
 
 ---
@@ -437,6 +437,8 @@ resiliencx/                                  # github.com/ZoneCNH/resiliencx
 │       ├── metrics.go / *_test.go           # Metrics interface + NoopMetrics
 │       ├── health.go / *_test.go            # 客户端健康检查
 │       ├── noop.go / *_test.go              # NoopStrategy
+│       ├── compose.go / compose_test.go     # 策略组合与 recovered panic
+│       ├── benchmark_test.go                # Compose / InstrumentStrategy 基准
 │       ├── testdata/
 │       ├── timeout/{timeout.go, timeout_test.go}
 │       ├── retry/{retry.go, retry_test.go}
@@ -449,9 +451,10 @@ resiliencx/                                  # github.com/ZoneCNH/resiliencx
 ├── examples/                                # basic/config/health 示例
 ├── testkit/
 └── scripts/
+    └── run_integration_test.go
 ```
 
-> **未实现的文件**（v1.0.1 §13 承诺但代码缺失）：`policies.go`、`example_test.go`、`benchmark_test.go`、`integration_test.go`、`internal/atomic/`。策略组合辅助（`compose.go`/`TestCompose`）亦未实现，见 §22 与 TRACEABILITY TC-008。
+> **v1.0.2 文件状态**：`compose.go` / `compose_test.go` / `benchmark_test.go` / `scripts/run_integration_test.go` 已落地并纳入 release-check；`example_test.go` 仍未提供，但不阻断 v1.0.2 发布。`policies.go`、`internal/atomic/` 属于旧 v1.0.1 目标或 v1.2+ 演进项，不作为当前运行时契约。
 
 ---
 
@@ -529,26 +532,24 @@ Given primary 返回错误，fallback 可用
 When 调用 `fallback.Do`
 Then 返回 fallback 的结果（nil）
 
-**TC-008: 策略组合**（⚠️ 当前无 `TestCompose` 自动化承载，见 §22）
-Given timeout、retry、fallback 以函数嵌套方式组合
+**TC-008: 策略组合**（✅ `TestCompose` / `TestComposePanicRecovery` 自动化承载）
+Given `Compose` 组合 timeout、retry、fallback 或测试策略
 When 调用组合后的策略
-Then 外层按声明顺序包装内层，整体返回最外层结果
+Then 外层按声明顺序包装内层，整体返回最外层结果，并将 panic 转为 recovered-panic 错误
 
 ### 15.3 Benchmark
 
-> ⚠️ 运行时**未实现任何 `Benchmark` 函数**（`benchmark_test.go` 不存在）。下表为 v1.0.1 声明的目标值，当前**无实测证据**（NFR-001 应降级，见 TRACEABILITY）。
+> v1.0.2 已实现 `pkg/resiliencx/benchmark_test.go`，`GOWORK=off go test -bench=Benchmark -benchmem ./pkg/resiliencx/...` 通过。
 
-| 场景 | 目标（未验证） |
-| ---- | -------------- |
-| 单次 timeout 调用（无超时） | < 100ns 额外开销 |
-| 单次 retry 调用（无重试） | < 200ns 额外开销 |
-| circuit breaker 状态检查 | < 50ns |
-| rate limiter Allow() | < 100ns |
-| 策略组合（5 层嵌套） | < 1μs 额外开销 |
+| 场景 | 实测 / 目标 |
+| ---- | ----------- |
+| `BenchmarkComposeOneStrategy` | 9.096 ns/op（目标 < 1μs） |
+| `BenchmarkComposeFiveStrategies` | 20.44 ns/op（目标 < 1μs） |
+| `BenchmarkInstrumentStrategy` | 664.0 ns/op（目标 < 1μs） |
 
 ### 15.4 集成测试
 
-> ⚠️ 运行时**无 `integration_test.go`**。下表为设计意图，未实现。
+> v1.0.2 使用 `scripts/run_integration_test.go` 承载轻量集成检查；`GOWORK=off go run ./scripts/run_integration_test.go` 已纳入 release-check。
 
 | 场景 | 验证点 |
 | ---- | ------ |
@@ -560,20 +561,20 @@ Then 外层按声明顺序包装内层，整体返回最外层结果
 
 ## 16. 性能预算
 
-> ⚠️ 下表为**目标值**，运行时无 Benchmark 实测证据（见 §15.3）。NFR-001 应标记为"目标未验证"。
+> v1.0.2 已有 benchmark 实测；当前预算均通过。内存 profiling 尚未作为发布阻断项。
 
 | 操作 | 目标 | 测量方式 | 状态 |
 | ---- | ---- | -------- | ---- |
-| 单策略调用开销 | < 200ns | benchmark test | ⚠️ 未实现 benchmark |
-| 5 层嵌套策略开销 | < 1μs | benchmark test | ⚠️ 未实现 |
-| circuit breaker 状态检查 | < 50ns | benchmark test | ⚠️ 未实现 |
-| 常驻内存（per circuit breaker） | < 1KB | profiling | ⚠️ 未实现 |
+| 单策略调用开销 | < 200ns | `BenchmarkComposeOneStrategy` | ✅ 9.096 ns/op |
+| 5 层嵌套策略开销 | < 1μs | `BenchmarkComposeFiveStrategies` | ✅ 20.44 ns/op |
+| 策略观测包装 | < 1μs | `BenchmarkInstrumentStrategy` | ✅ 664.0 ns/op |
+| 常驻内存（per circuit breaker） | < 1KB | profiling | 非 v1.0.2 阻断项 |
 
 ---
 
 ## 17. 可观测性
 
-> 运行时通过**本地 `Metrics` interface**（`pkg/resiliencx/metrics.go`）+ 事件 `Sink` 暴露，由调用方注入 `observex` adapter。实际定义的 metric 常量集中在**客户端生命周期**层（非策略层），与 v1.0.1 表格的 `resiliencx.timeout.count` 等命名**完全不同**。三套命名差异见下。
+> 运行时通过本地 `Metrics` interface（`pkg/resiliencx/metrics.go`）、事件 `Sink` 与 `InstrumentStrategy` 暴露可观测入口，由调用方注入 `observex` adapter。v1.0.2 不直接依赖 observex；策略级耗时/错误/panic 通过包装器上报，客户端生命周期 metric 常量仍保持 `client_*` 系列。
 
 ### 17.1 实际 metric 常量（`pkg/resiliencx/metrics.go`）
 
@@ -589,15 +590,15 @@ Then 外层按声明顺序包装内层，整体返回最外层结果
 | `MetricClientRetriesTotal` | `client_retries_total` | 重试计数 |
 | `MetricClientInflight` | `client_inflight` | 在飞请求 gauge |
 
-### 17.2 三套命名差异（治理债务）
+### 17.2 命名差异与 v1.0.2 收敛口径
 
 | 来源 | 命名风格 | 覆盖维度 |
 | ---- | -------- | -------- |
-| SPEC v1.0.1 §17（旧） | `resiliencx.timeout.count` / `resiliencx.circuit.state` 等 | 策略层（**代码未实现**） |
-| goal.md §9.2 | `resiliencx.calls.total` / `resiliencx.duration.ms` 等 | 统一执行链（v1.2+ 目标，**未实现**） |
-| 代码 metrics.go（实际） | `client_*` 系列 | 客户端生命周期（**已实现**） |
+| SPEC v1.0.1 §17（旧） | `resiliencx.timeout.count` / `resiliencx.circuit.state` 等 | 旧命名，不作为 v1.0.2 运行时契约 |
+| goal.md §9.2 | `resiliencx.calls.total` / `resiliencx.duration.ms` 等 | 统一执行链（v1.2+ 目标） |
+| 代码 metrics.go + InstrumentStrategy（实际） | `client_*` 系列 + 注入式策略 metrics | 客户端生命周期与策略包装观测（**已实现**） |
 
-> 治理结论：策略层 metric（`resiliencx.timeout.count` 等）**当前不存在**；BR-006/NFR-002 的"通过 observex.Meter 采集"应理解为"通过本地 Metrics interface 由调用方接入 observex"，而非运行时直接依赖 observex。
+> 治理结论：v1.0.2 的 BR-006/NFR-002 以 `Metrics` interface + `EventSink` + `InstrumentStrategy` 为发布契约；旧 `resiliencx.timeout.count` 等硬编码 metric 名不作为当前稳定 API。
 
 ---
 
@@ -610,24 +611,27 @@ Then 外层按声明顺序包装内层，整体返回最外层结果
 | 输入校验 | ✅ 部分 | `Config.Validate` 校验 Name/Timeout；策略参数范围校验（≤10000）**未实现** |
 | 资源防护 | ✅ | goroutine 并发受 bulkhead 限制 |
 | 配置脱敏 | ✅ | `sanitize.Secret` 脱敏；敏感参数建议环境变量注入 |
-| panic 恢复 | ❌ | **未实现 `recover()`**，fn panic 直接传播（与 v1.0.1 描述不符，见 §12） |
+| panic 恢复 | ✅ | `Compose` / `InstrumentStrategy` 使用 recovered-panic 包装，`IsRecoveredPanic` 可识别；panic payload 不吞失 |
 
 ---
 
 ## 19. CI 门禁
 
-### 19.1 通用 Gate（实测基线）
+### 19.1 通用 Gate（v1.0.2 实测基线）
 
 | Gate | 命令 | 阻塞条件 | 实测状态 |
 | ---- | ---- | -------- | -------- |
 | 编译 | `go build ./...` | 编译失败 | ✅ 通过 |
 | 测试 | `go test ./... -race -count=1` | 任何测试失败或 data race | ✅ 全绿，无 race |
-| 覆盖率 | `go test ./... -coverprofile=cover.out && go tool cover -func=cover.out` | 总覆盖率 < 80% | ✅ **98.1%** |
+| 覆盖率 | `go test ./... -coverprofile=cover.out && go tool cover -func=cover.out` | 总覆盖率 < 80% | ✅ release-check / release-final-check score=10.00 |
 | vet | `go vet ./...` | 任何 vet 错误 | ✅ 无警告 |
 | lint | `golangci-lint run` | 任何 lint 错误 | （由 ci-workflow.yaml 承载） |
 | 依赖检查 | `go mod tidy && git diff --exit-code go.mod go.sum` | go.mod 不整洁 | ✅ 无外部依赖 |
 | Secret 扫描 | `gitleaks detect --no-git` | 泄露 secret | （由 ci-workflow.yaml 承载） |
-| Benchmark | `go test -bench=. -benchmem -count=3 ./...` | 结果附在 PR comment | ⚠️ 无 benchmark 函数，gate 实际无输出 |
+| Benchmark | `go test -bench=. -benchmem -count=3 ./...` | 结果附在 PR comment | ✅ Compose/InstrumentStrategy benchmark 通过 |
+| Release Check | `GOWORK=off XLIB_CONTEXT=ci_pull_request make release-check` | 任一发布 gate 失败 | ✅ score=10.00，hash `d2556ba0605e0b4c24a8b3f82a50ef7ede47309282d038ece810905f006c6781` |
+| Final Check | `GOWORK=off XLIB_CONTEXT=release_verify make release-final-check` | 任一最终发布 gate 失败 | ✅ score=10.00，hash `18ba39ad95d66126679b05d38d4221b6bb1f0e6401849bc5ffc1adbfe83e5a32` |
+| GitHub Release Check | GitHub Actions run `27777166525` | release workflow 失败 | ✅ passed |
 
 ### 19.2 resiliencx 专属 Gate
 
@@ -658,13 +662,13 @@ Then 外层按声明顺序包装内层，整体返回最外层结果
 - [ ] 所有公共类型有示例代码（`example_test.go` 未实现）
 - [x] CHANGELOG.md 已更新
 - [x] README.md 包含：模块定位、快速开始、API 概览
-- [x] 单元测试覆盖率 ≥ 80%（实测 98.1%）
+- [x] 单元测试覆盖率 ≥ 80%（release-check / release-final-check score=10.00）
 - [x] `-race` 测试通过
-- [ ] Benchmark 结果无 > 10% 回退（无 benchmark，无法验证）
+- [x] Benchmark 结果无 > 10% 回退（Compose 9.096 ns/op；5 层 Compose 20.44 ns/op；InstrumentStrategy 664.0 ns/op）
 - [x] `go vet` 无警告
 - [x] 公共 API 与本 SPEC v1.0.2 契约一致
 - [x] 所有 Functional Requirements 有对应测试
-- [ ] 所有 Edge Cases 有对应测试（`bulkhead.New(0)`/panic recover 等 P2 项未覆盖）
+- [ ] 所有 Edge Cases 有对应测试（`retry.Policy{MaxAttempts:0}` / `bulkhead.New(0)` 等 P2 项未覆盖；panic recovery 已覆盖）
 
 ---
 
@@ -675,8 +679,7 @@ Then 外层按声明顺序包装内层，整体返回最外层结果
 - rate limiter 是否需要支持多维度限流（per-endpoint, per-user）？
 - 策略配置是否需要支持运行时动态更新？
 - circuit breaker 是否需要补充"失败率"维度（当前仅连续失败次数）？
-- 是否需要实现策略组合辅助（`compose.go`/`TestCompose`，闭合 TC-008）？
-- 是否需要补充策略层 metric（`resiliencx.timeout.count` 等，统一三套命名）？
+- 是否需要补充 `example_test.go`，把 README 快速开始固化为可编译示例？
 
 ---
 
@@ -684,6 +687,7 @@ Then 外层按声明顺序包装内层，整体返回最外层结果
 
 | 日期 | 版本 | 变更内容 | 作者 |
 | ---- | ---- | -------- | ---- |
+| 2026-06-19 | v1.0.2 | **发布证据同步**：同步 runtime tag v1.0.2 / GitHub Release Check 27777166525 / release-check 和 release-final-check score=10.00；补齐 Compose、InstrumentStrategy、benchmark、integration runner 与 recovered panic 的已发布事实 | ZoneCNH |
 | 2026-06-18 | v1.0.2 | **契约纠正**：依据运行时代码实测重写 §6/§8/§9/§10/§11/§12/§13/§14/§15/§16/§17/§18/§19/§20/§21；修正包级 API→子包 API、sentinel error 命名、目录结构、依赖边界、性能/benchmark 状态、metric 三套命名差异、安全 panic 项；记录 P2 代码补强项 | ZoneCNH |
 | 2026-06-12 | v1.0.1 | kernel 依赖修正、BR 违反后果补全、AC 标签显式化、Security 补强 | ZoneCNH |
 | 2026-06-07 | v1.0.0 | 初始版本 | ZoneCNH |

@@ -2,7 +2,7 @@
 
 > 19 个基座模块与 5 个 L2.5 领域共享规划/基线模块的独立规格，按架构层级组织。`x.go` 组合根不再作为 `module/` 下的模块规格维护。
 
-最后更新：2026-06-18
+最后更新：2026-06-19
 
 ---
 
@@ -97,7 +97,7 @@ stdlib-only 基础原语。所有上层模块的根依赖。
 | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | configx    | [SPEC.md](./configx/SPEC.md) · [DESIGN.md](./configx/DESIGN.md) · [TRACEABILITY.md](./configx/TRACEABILITY.md) · [tasks/](./configx/tasks/)         | Client/Loader/Source 模式、多源合并（YAML/TOML/JSON/.env/Env/Map）、StrictDecode、SecretString 脱敏、SecretPolicy、Provenance、Hash、HealthCheck、Metrics（13 FR，11 BR，97.1% 覆盖） |
 | observex   | [SPEC.md](./observex/SPEC.md) · [tasks/](./observex/tasks/)                                                                                         | Logger/Meter/Tracer/Exporter、Redaction、Label Policy、Health（7 FR，11 tasks）                                                                                                       |
-| resiliencx | [SPEC.md](./resiliencx/SPEC.md) · [goal.md](./resiliencx/goal.md) · [TRACEABILITY.md](./resiliencx/TRACEABILITY.md) · [tasks/](./resiliencx/tasks/) | Timeout/Retry/CircuitBreaker/Bulkhead/RateLimiter/Fallback、策略组合（6 FR，8 BR，10 tasks，v1.0.1 Approved）                                                                         |
+| resiliencx | [SPEC.md](./resiliencx/SPEC.md) · [goal.md](./resiliencx/goal.md) · [TRACEABILITY.md](./resiliencx/TRACEABILITY.md) · [tasks/](./resiliencx/tasks/) | Timeout/Retry/CircuitBreaker/Bulkhead/RateLimiter/Fallback、Compose、InstrumentStrategy、recovered panic（6 FR，8 BR，10 tasks，v1.0.2 已发布）                                      |
 | schedulex  | [SPEC.md](./schedulex/SPEC.md) · [tasks/](./schedulex/tasks/)                                                                                       | Scheduler/Trigger/OverlapPolicy/MisfirePolicy/EventSink/Locker/Clock（9 FR，12 tasks，v1.0.1）                                                                                        |
 
 ---
@@ -147,9 +147,9 @@ test-only，不参与生产运行时。
 | kafkax      | [SPEC.md](./kafkax/SPEC.md) · [TRACEABILITY.md](./kafkax/TRACEABILITY.md) · [goal.md](./kafkax/goal.md) | Kafka — 消息队列、事件流                                                                             |
 | natsx       | [SPEC.md](./natsx/SPEC.md) · [TRACEABILITY.md](./natsx/TRACEABILITY.md) | NATS — 内部通信、JetStream（v1.0.0 已发布；真实 dev auth live gate 已验证；正式四源 98+ arbiter 与生产 TLS gate 待补，BLK-001/BLK-002 open；非 factory） |
 | postgresx   | [SPEC.md](./postgresx/SPEC.md) · [TRACEABILITY.md](./postgresx/TRACEABILITY.md) · [goal.md](./postgresx/goal.md) · [tasks/](./postgresx/tasks/) | PostgreSQL — 关系型存储、事务、迁移（v1.0.0 已发布，release-final-check + live integration 通过；单元测试 52.4% + Docker integration skip，BLK-006 open；非 factory） |
-| taosx       | [SPEC.md](./taosx/SPEC.md) · [TRACEABILITY.md](./taosx/TRACEABILITY.md) · [goal.md](./taosx/goal.md) | TDengine L2 adapter contract（pkg/taosx v1.0.1；真实 taosWS WebSocket 集成已验证；SPEC 67，BLK-007 open；非 factory） |
+| taosx       | [SPEC.md](./taosx/SPEC.md) · [TRACEABILITY.md](./taosx/TRACEABILITY.md) · [goal.md](./taosx/goal.md) | TDengine L2 adapter contract（pkg/taosx v1.0.3 本地发布候选；CI/release 已加入 taosx-coverage-check，pkg/taosx 100.0% 覆盖；TDengine dev live gate 已通过且保持显式 opt-in；未执行外部 tag/GitHub Release；非 factory） |
 | ossx        | [SPEC.md](./ossx/SPEC.md) · [TRACEABILITY.md](./ossx/TRACEABILITY.md) · [goal.md](./ossx/goal.md) · [FEATURES.md](./ossx/FEATURES.md) · [ACCEPTANCE.md](./ossx/ACCEPTANCE.md) · [IMPLEMENTATION-PLAN.md](./ossx/IMPLEMENTATION-PLAN.md) · [tasks/](./ossx/tasks/) · [prompt/](./ossx/prompt/) | Aliyun OSS 专用 adapter（v1.1.0 已发布：真实 adapters/aliyun + 流式 SPI + 完整 multipart + 真实 presign + 策略 + retry/circuit + observex hooks；24 单测 + 5 集成测试真 bucket x-go 全过；61.2% 覆盖；非 factory：BLK-008 evidence archive 待归档） |
-| clickhousex | [SPEC.md](./clickhousex/SPEC.md) · [TRACEABILITY.md](./clickhousex/TRACEABILITY.md) · [goal.md](./clickhousex/goal.md) · [tasks/](./clickhousex/tasks/) | ClickHouse — OLAP 查询、批量写入（v1.0.1；完整 SPEC + TRACEABILITY §1-§7 + 7 Tasks；公开 GitHub Release 未发布，BLK-003 open；非 factory）                                                                     |
+| clickhousex | [SPEC.md](./clickhousex/SPEC.md) · [TRACEABILITY.md](./clickhousex/TRACEABILITY.md) · [goal.md](./clickhousex/goal.md) · [FEATURES.md](./clickhousex/FEATURES.md) · [ACCEPTANCE.md](./clickhousex/ACCEPTANCE.md) · [tasks/](./clickhousex/tasks/) | ClickHouse — OLAP 查询、批量写入（v1.0.3 GitHub Release 已发布；branch/tag Actions quality/lint/integration/secret-scan/trust/release-check 已通过；完整客户端能力仍待 Exec/Query/InsertBatch/Rows 与性能/tracing 证据；BLK-003 open；非 factory）                                                                     |
 
 ---
 

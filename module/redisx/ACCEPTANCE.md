@@ -1,14 +1,14 @@
 # redisx 完整验收清单
 
 - Status: Generated from current module SSOT
-- Last-Updated: 2026-06-18
-- Module-Version: v1.0.1
+- Last-Updated: 2026-06-19
+- Module-Version: v1.0.4
 - Module-State: 已发布
 - Layer: L2 基础设施适配器
 - Runtime-Repo: /home/redisx
 - Source: goal.md, SPEC.md, TRACEABILITY.md, IMPLEMENTATION-PLAN.md, tasks/
 
-> 本清单用于验收 redisx 是否达到可发布、可追溯、可复验状态。除非条目明确记录为已通过，默认需要在运行时代码仓库重新执行验证并补充证据。
+> 本清单用于验收 redisx 是否达到可发布、可追溯、可复验状态。截至 2026-06-19，`/home/redisx` 已完成 v1.0.4 发布对齐。发布分支 `redisx-v1.0.4-20260619` 提交 `421cb4a` 通过版本、release manifest 与全量 Go 测试；PR #18 已合入 main（merge commit `b0f74016b6bb56091b504afb31b802bb067db16c`）。真实 Redis 集成测试已使用 `/home/ZoneCNH/sre/secrets/env/dev.md` 的 Redis 配置完成，证据只记录 `REDISX_REDIS_*` 键名、不记录具体配置值。Docker Contract、Integration、L2 Gates、Security 与 Auto Patch Release 均在 v1.0.4 发布链路通过；v1.0.4 已由 Auto Patch Release run `27799464374` 发布为正式 GitHub Release。
 
 ## 1. 验收命令清单
 
@@ -16,11 +16,14 @@
 | --- | --- | --- |
 | 文档存在性 | cd /home/ZoneCNH && test -f module/redisx/FEATURES.md && test -f module/redisx/ACCEPTANCE.md | FEATURES.md 与 ACCEPTANCE.md 均存在 |
 | 文档格式 | cd /home/ZoneCNH && git diff --check -- module/redisx | 无尾随空格或补丁格式错误 |
-| 运行时测试 | cd /home/redisx && go test ./... | 所有包测试通过 |
-| 竞态检查 | cd /home/redisx && go test ./... -race -count=1 | 无 data race，测试稳定通过 |
-| 静态检查 | cd /home/redisx && go vet ./... | 无 vet 问题 |
-| 覆盖率证据 | cd /home/redisx && go test ./... -coverprofile=coverage.out | 覆盖率文件生成并满足模块 Spec 门槛 |
-| 依赖边界 | cd /home/redisx && go list -deps ./... | 依赖不越过 FOUNDATION-DEPS.yaml 登记边界 |
+| 运行时质量门禁 | cd /home/redisx && GOWORK=off make fmt vet lint test race coverage-check | fmt、vet、lint、go test ./...、race 与覆盖率门禁全部通过 |
+| 覆盖率证据 | cd /home/redisx && GOWORK=off make coverage-check | 8 个 Redis 运行时/API 可发布包均为 100.0%，总覆盖率满足 100.0% |
+| L2 证据 | cd /home/redisx && GOWORK=off make l2-check | `release_ready=true`、`score=100`、`target=L2-T2` |
+| 契约与评分 | cd /home/redisx && GOWORK=off make test-contract && GOWORK=off make contracts && GOWORK=off make score-check | 契约、schema 与评分门禁通过 |
+| 文档门禁 | cd /home/redisx && GOWORK=off make docs-check | 文档检查通过 |
+| 安全扫描 | cd /home/redisx && GOTOOLCHAIN=go1.26.4+auto GOWORK=off XLIB_ENABLE_VULNCHECK=1 XLIB_FORCE_VULNCHECK=1 make security | 强制 govulncheck 与 secret check 通过 |
+| Redis 集成 | cd /home/redisx && 从 /home/ZoneCNH/sre/secrets/env/dev.md 导出 `REDISX_REDIS_ADDR`、`REDISX_REDIS_USERNAME`、`REDISX_REDIS_PASSWORD`、`REDISX_REDIS_DB` 后执行 `GOWORK=off REDISX_INTEGRATION=1 make test-integration` | 真实 Redis 集成测试通过；证据文件不包含具体配置值 |
+| 发布预检 | GitHub Actions: Auto Patch Release run `27799464374` | main 合入后 `release-final-check`、tag 创建、GitHub Release 发布与验证全部成功 |
 
 ## 2. AC 验收登记
 
@@ -57,18 +60,18 @@
 
 | ID | 测试项 | 关联要求/验收/任务 | 当前登记状态 | 来源 |
 | --- | --- | --- | --- | --- |
-| TC-001 | FR-001, BR-001 | go test ./... -run TestKeyBuilder | - | TRACEABILITY.md |
-| TC-002 | FR-002, BR-002, BR-007, BR-010, NFR-001 | go test ./... -run TestOptions | - | TRACEABILITY.md |
-| TC-003 | FR-003, BR-003, NFR-002 | go test ./... -run TestKV | - | TRACEABILITY.md |
-| TC-004 | FR-004, BR-004 | go test ./... -run TestTTL | - | TRACEABILITY.md |
-| TC-005 | FR-005, BR-004, BR-007 | go test ./... -run TestCache | - | TRACEABILITY.md |
-| TC-006 | FR-006, BR-003 | go test ./... -run TestHashList | - | TRACEABILITY.md |
-| TC-007 | FR-007, NFR-002 | go test ./... -run TestPubSub | - | TRACEABILITY.md |
-| TC-008 | FR-008, BR-003, BR-006 | go test ./... -run TestPipeline | - | TRACEABILITY.md |
-| TC-009 | FR-009, BR-005, BR-007, NFR-002 | go test ./... -run TestLocker | - | TRACEABILITY.md |
-| TC-010 | FR-010, BR-003, BR-004, NFR-002 | go test ./... -run TestRateLimit | - | TRACEABILITY.md |
-| TC-011 | FR-011, NFR-001 | go test ./... -run TestCodec | - | TRACEABILITY.md |
-| TC-012 | FR-012, BR-008, BR-009, BR-010 | go test ./... -run TestHealth | - | TRACEABILITY.md |
+| TC-001 | FR-001, BR-001 | go test ./... -run TestKeyBuilder | ✅ | TRACEABILITY.md |
+| TC-002 | FR-002, BR-002, BR-007, BR-010, NFR-001 | go test ./... -run TestOptions | ✅ | TRACEABILITY.md |
+| TC-003 | FR-003, BR-003, NFR-002 | go test ./... -run TestKV | ✅ | TRACEABILITY.md |
+| TC-004 | FR-004, BR-004 | go test ./... -run TestTTL | ✅ | TRACEABILITY.md |
+| TC-005 | FR-005, BR-004, BR-007 | go test ./... -run TestCache | ✅ | TRACEABILITY.md |
+| TC-006 | FR-006, BR-003 | go test ./... -run TestHashList | ✅ | TRACEABILITY.md |
+| TC-007 | FR-007, NFR-002 | go test ./... -run TestPubSub | ✅ | TRACEABILITY.md |
+| TC-008 | FR-008, BR-003, BR-006 | go test ./... -run TestPipeline | ✅ | TRACEABILITY.md |
+| TC-009 | FR-009, BR-005, BR-007, NFR-002 | go test ./... -run TestLocker | ✅ | TRACEABILITY.md |
+| TC-010 | FR-010, BR-003, BR-004, NFR-002 | go test ./... -run TestRateLimit | ✅ | TRACEABILITY.md |
+| TC-011 | FR-011, NFR-001 | go test ./... -run TestCodec | ✅ | TRACEABILITY.md |
+| TC-012 | FR-012, BR-008, BR-009, BR-010 | go test ./... -run TestHealth | ✅ | TRACEABILITY.md |
 
 ## 4. 覆盖闭合验收
 
@@ -101,17 +104,31 @@
 | NFR-003 | 性能 | 性能基线记录 KV、Pipeline、Locker、RateLimit 的 benchmark 预算，超预算需说明 / go test -bench . ./... | ✅ | TRACEABILITY.md |
 | NFR-004 | 文档 | README、配置投影说明、迁移说明和发布证据齐全 / Documentation evidence | ✅ | TRACEABILITY.md |
 
-## 5. 发布 DoD 清单
+## 5. v1.0.4 验收证据登记
 
-- [ ] FEATURES.md 的 FR、BR/NFR、任务清单与 SPEC/TRACEABILITY 当前登记一致。
-- [ ] ACCEPTANCE.md 的 AC、TC 与运行时代码测试名、证据文件或 CI 记录一致。
-- [ ] 运行时代码仓库 /home/redisx 通过 go test、go test -race、go vet 与覆盖率门槛。
-- [ ] 所有外部服务依赖有本地可重复的测试替身或明确 live-gate 证据。
-- [ ] 安全检查确认没有凭证、私有端点、账户 ID 或实盘配置进入公开文档与代码。
-- [ ] 版本号、发布标签、CHANGELOG 或 release note 与本目录状态一致。
+| 证据项 | 当前结果 |
+| --- | --- |
+| 本地质量门禁 | v1.0.4 发布分支通过 `GOWORK=off go test ./pkg/redisx ./cmd/goalcli`、`GOWORK=off go run ./cmd/goalcli version --json`、`GOWORK=off go test ./internal/tools/releasemanifest`、`git diff --check` 与 `GOWORK=off go test ./...` |
+| 100% 覆盖率门禁 | v1.0.4 未改变 Redis 运行时实现；`pkg/redisx`、`internal/provider`、`internal/provider/goredis`、`internal/sanitize`、`testkit`、`examples/basic`、`examples/config`、`examples/health` 的 100.0% 覆盖率基线继续有效 |
+| L2-T2 与契约 | v1.0.4 PR #18 的 CI run `27799136387`、Docker Contract run `27799136401` 与 L2 Gates run `27799136404` 均为 success；main 自动发布流程通过 `release-final-check` 复验 |
+| 集成验收 | 已使用 `/home/ZoneCNH/sre/secrets/env/dev.md` 的 Redis 配置通过 `GOWORK=off REDISX_INTEGRATION=1 make test-integration`；`.agent/evidence/l2/integration-report.json` 记录 `status=pass`、`score=100`、`profile=integration`，并仅记录 `REDISX_REDIS_*` 键名；v1.0.4 PR #18 的 Integration run `27799136393` 为 success |
+| Docker 发布验收 | v1.0.4 PR #18 的 Docker Contract run `27799136401` 为 success；发布链路的 Auto Patch Release run `27799464374` 已完成验证 |
+| 安全验收 | v1.0.4 PR #18 的 Security run `27799136385` 为 success；公开文档仅保留配置文件路径与 `REDISX_REDIS_*` 键名，不写入具体连接串、用户名、密码或 DB 值 |
+| CI/CD 配置 | `coverage-check` 已纳入 Makefile、registry、harness 与 release gate；`release-auto-patch` lint action 版本已固定到可用版本；`worktree-guard` 已修正为 PR 源分支门禁；Auto Patch Release run `27799464374` 已完成打 tag、发布和验证 |
+| 治理与发布 | v1.0.4 发布分支提交 `421cb4a` 补齐版本、manifest 与发布文档对齐；PR #18 已合入 main（merge commit `b0f74016b6bb56091b504afb31b802bb067db16c`），Auto Patch Release run `27799464374` 已通过 `release-final-check`、创建 tag `v1.0.4`、发布并验证 GitHub Release（published_at `2026-06-19T01:22:35Z`） |
 
-## 6. 当前缺口登记
+## 6. 发布 DoD 清单
 
-- 当前文档只记录验收口径，不替代运行时代码仓库的最新 CI 结果。
-- 若上表存在 Pending、Draft、Blocked、Open 或未登记状态，发布前必须补充证据或在模块追溯矩阵中登记豁免理由。
-- SPEC/TRACEABILITY 已登记 AC/TC 主链路；当前主要缺口是 /home/redisx 最新测试、race/vet/lint、覆盖率与 Redis 集成/发布证据需要归档。
+- [x] FEATURES.md 的 FR、BR/NFR、任务清单与 SPEC/TRACEABILITY 当前登记一致。
+- [x] ACCEPTANCE.md 的 AC、TC 与运行时代码测试名、证据文件或 CI 记录一致。
+- [x] 运行时代码仓库 /home/redisx 通过 go test、go test -race、go vet 与覆盖率门槛。
+- [x] 所有外部服务依赖有本地可重复的测试替身或明确 live-gate 证据。
+- [x] 安全检查确认没有凭证、私有端点、账户 ID 或实盘配置进入公开文档与代码。
+- [x] 版本号、CHANGELOG 与 v1.0.4 working tree 状态一致。
+- [x] v1.0.4 发布标签已由 Auto Patch Release run `27799464374` 在 main 合入后创建并验证。
+
+## 7. 完成状态登记
+
+- 当前 `/home/redisx` v1.0.4 发布分支质量门禁、Redis 运行时/API 可发布面覆盖率基线、dev Redis 集成测试、PR #18 CI/Integration/Docker Contract/L2 Gates/Security 与 Auto Patch Release 均已通过。
+- PR #18 已合入 main，Auto Patch Release run `27799464374` 已完成 `release-final-check`、tag 创建、GitHub Release 发布与验证。
+- 已确认 `v1.0.4` 为正式 GitHub Release：`https://github.com/ZoneCNH/redisx/releases/tag/v1.0.4`。

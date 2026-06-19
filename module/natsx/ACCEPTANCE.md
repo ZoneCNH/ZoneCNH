@@ -2,7 +2,7 @@
 
 - Status: Generated from current module SSOT
 - Last-Updated: 2026-06-18
-- Module-Version: v1.0.0
+- Module-Version: v1.0.3
 - Module-State: 已发布
 - Layer: L2 基础设施适配器
 - Runtime-Repo: /home/natsx
@@ -98,3 +98,48 @@
 - 当前文档只记录验收口径，不替代运行时代码仓库的最新 CI 结果。
 - 若上表存在 Pending、Draft、Blocked、Open 或未登记状态，发布前必须补充证据或在模块追溯矩阵中登记豁免理由。
 - SPEC/TRACEABILITY 已登记 AC/TC 主链路；当前主要缺口是四源 98+ 仲裁、生产 benchmark 阈值、BLK-002 生产 TLS 闭环与上层 consumer lifecycle/API 集成证据需要归档。
+
+## 7. v1.0.3 验收实测证据（/home/natsx PR #13 / tag v1.0.3）
+
+> 2026-06-19 在 /home/natsx 分支 `test/natsx-coverage-100-20260619`（commit b5adee9）实测。pkg/natsx 包级覆盖率 90.0%（v1.0.2）→ **97.1%**。
+
+| 命令 | 实测结果 |
+| --- | --- |
+| `GOWORK=off go build ./...` | ✅ rc=0 |
+| `GOWORK=off go vet ./...` | ✅ clean |
+| `GOWORK=off go test ./... -race -count=1` | ✅ 全 ok，无竞态 |
+| pkg/natsx 包级覆盖率（`go tool cover -func` total） | ✅ **97.1%** ≥ 80% DoD（v1.0.1=73.3% → v1.0.2=90.0% → v1.0.3=97.1%） |
+| 测试新增 | coverage_phase2/3/4_test.go：Wrap options 循环、Publish 的 PublishMsg 错误路径（MaxPayload 受限内嵌服务器）、core/client/jetstream/config/env/subject 防御与错误分支 |
+| 生产代码（行为等价） | 移除 `Config.Validate` 永不可达的 `if len(endpoints)==0` 死分支（`withDefaults()` 已保证 URL 非空，`endpoints()` 恒返回 ≥1 端点）；覆盖率 97.0% → 97.1% |
+
+### 7.1 覆盖率 100% 不可达登记（剩余 ~20 条语句）
+
+经源码级分析为**确定性不可达**（不动生产代码、不写 flaky 测试）：
+
+- **client.go L77-82 / L115-117**：依赖 `conn.JetStream()` 报错；本 nats.go 版本在非-JS 内嵌服务器上**不报错**（unavailable 检查发生在 API 调用时）——实测确认。
+- **client.go L136-138**：`Drain()` 返回 `ErrConnectionClosed` 仅当 status==CLOSED，但 L132 `IsClosed()` 已先行拦截；单线程确定性不可达。
+- **core.go L27-31 / L52-56**：`FlushWithContext`/Request 内部 deadline 与 `ready()` 同源 ctx；L130 `ctx.Err()` 先捕获，L52-56 仅在 race 窗口可达。
+- **jetstream.go L44-46**：服务器对 same-config 执行静默 update（走 L38-40），conflict 配置必然 mismatch（走 L47），故 L45 match 分支不可达。
+- **jetstream.go L105-114**：AddConsumer 后置 `ErrConsumerNameAlreadyInUse` 是 pre-check（L90 ConsumerInfo）与 `j.js.AddConsumer`（L101）之间的 TOCTOU 防御，单客户端确定性不可达。
+
+100% 字面覆盖率需写 flaky race 测试（违反本仓"避免 flaky timeout 断言"规则）或删改生产防御代码（改变行为契约），二者均不可取，故以 **97.1% race-clean** 收尾。
+
+## 7. v1.0.2 验收实测证据（/home/natsx commit 20f801f）
+
+> 2026-06-19 在 /home/natsx（main @ 20f801f）实测全部 §1 验收命令，结果如下。CI/CD 已路由至 `sre/*` 机器池（CI: sre/storage-light；CD: sre/deploy）。
+
+| 命令 | 实测结果 |
+| --- | --- |
+| 文档存在性（FEATURES.md + ACCEPTANCE.md） | ✅ 存在 |
+| `git diff --check -- module/natsx` | ✅ 无格式错误 |
+| `GOWORK=off go build ./pkg/natsx` | ✅ rc=0 |
+| `GOWORK=off go vet ./...` | ✅ clean |
+| `GOWORK=off go test ./...` | ✅ 全 ok |
+| `GOWORK=off go test ./... -race -count=1` | ✅ 全 ok，无竞态 |
+| 总覆盖率（`go test ./... -coverprofile`） | ✅ **84.2%** ≥ 80% gate |
+| pkg/natsx 包级覆盖率（`go test ./pkg/natsx -cover`） | ✅ **90.0%** ≥ 80% DoD（v1.0.1 时为 73.3%，v1.0.2 补 streamConfigMatches 完整表驱动 + 错误路径后达标） |
+| 依赖边界（`go list -deps` 禁止域过滤） | ✅ clean，无 kafkax / 上层域依赖 |
+| CI/CD 机器池 | ✅ 6 个 workflow 全部 `sre/*`（commit 66656aa） |
+
+- v1.0.1 变更：CICD SRE 机器池路由（66656aa）+ pkg/natsx 覆盖率补强（14916d3，client/jetstream/errors 三组测试 +722 行），总覆盖率 79.2% → 80.4%。
+- v1.0.2 变更：pkg/natsx 包级覆盖率补强（coverage_phase2_test.go，+794 行），streamConfigMatches 7.2% → 100%、WithNATSOptions 0% → 100% 及 core/client/envelope/config/env/jetstream 错误路径；**pkg/natsx 包级 73.3% → 90.0%，首次满足 SPEC §DoD 单元测试覆盖率 ≥80%**。

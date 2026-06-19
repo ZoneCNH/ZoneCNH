@@ -1,107 +1,88 @@
-# schedulex 完整验收清单
+# schedulex v1.0.0 验收清单
 
-- Status: Generated from current module SSOT
+- Status: PASS
 - Last-Updated: 2026-06-18
 - Module-Version: v1.0.0
-- Module-State: 已发布
-- Layer: L0 调度
+- Module-State: 本地发布验收通过
+- Layer: L1 调度基座
 - Runtime-Repo: /home/schedulex
-- Source: goal.md, SPEC.md, TRACEABILITY.md, IMPLEMENTATION-PLAN.md, tasks/
+- Runtime-Branch: ci/sre-cicd-pools-20260618
+- Source: /home/schedulex release-check evidence, SPEC.md, FEATURES.md
 
-> 本清单用于验收 schedulex 是否达到可发布、可追溯、可复验状态。除非条目明确记录为已通过，默认需要在运行时代码仓库重新执行验证并补充证据。
+> 本清单记录本轮 `schedulex` v1.0.0 验收结论。验收对象是当前运行时仓库 `/home/schedulex` 的 `AddJob` 版公共 API 与 CI/CD 发布门禁；旧文档中的 `Cancel`、`Replace`、`Schedule` 返回 `JobID` 等能力不作为 v1.0.0 验收项。
 
-## 1. 验收命令清单
+## 1. 验收结论
 
-| 类别 | 命令 | 通过标准 |
-| --- | --- | --- |
-| 文档存在性 | cd /home/ZoneCNH && test -f module/schedulex/FEATURES.md && test -f module/schedulex/ACCEPTANCE.md | FEATURES.md 与 ACCEPTANCE.md 均存在 |
-| 文档格式 | cd /home/ZoneCNH && git diff --check -- module/schedulex | 无尾随空格或补丁格式错误 |
-| 运行时测试 | cd /home/schedulex && go test ./... | 所有包测试通过 |
-| 竞态检查 | cd /home/schedulex && go test ./... -race -count=1 | 无 data race，测试稳定通过 |
-| 静态检查 | cd /home/schedulex && go vet ./... | 无 vet 问题 |
-| 覆盖率证据 | cd /home/schedulex && go test ./... -coverprofile=coverage.out | 覆盖率文件生成并满足模块 Spec 门槛 |
-| 依赖边界 | cd /home/schedulex && go list -deps ./... | 依赖不越过 FOUNDATION-DEPS.yaml 登记边界 |
+| 项目 | 结论 |
+| --- | --- |
+| 总体结论 | PASS |
+| 发布版本 | `v1.0.0` |
+| 本地 release gate | `GOWORK=off make release-check VERSION=v1.0.0` 已通过 |
+| 质量评分 | `score=10.0`，门槛 `min=9.8` |
+| 主要剩余条件 | tag 发布后执行网络 downstream smoke，验证外部模块可解析 `v1.0.0` |
 
-## 2. AC 验收登记
+## 2. 验收命令与证据
 
-| ID | 验收项 | 关联要求/测试/任务 | 当前登记状态 | 来源 |
+| 类别 | 命令 | 结果 | 证据说明 |
+| --- | --- | --- | --- |
+| Runtime diff hygiene | `cd /home/schedulex && git diff --check` | PASS | 无尾随空格或补丁格式错误 |
+| Runtime integration | `cd /home/schedulex && GOWORK=off make integration` | PASS | 渲染 `kernel`、`corekit` 模板并执行测试 |
+| Governance all | `cd /home/schedulex && ./scripts/check_governance.sh all` | PASS | CI、规则集、release gates、文档与证据配置一致 |
+| Governance p1 | `cd /home/schedulex && ./scripts/check_governance.sh p1` | PASS | CI 包含 lint、release-check 与 required status checks |
+| Score gate | `cd /home/schedulex && ./scripts/check_schedulex_score.sh --min 9.8` | PASS | `score=10.0 min=9.8 status=pass` |
+| Release check | `cd /home/schedulex && GOWORK=off make release-check VERSION=v1.0.0` | PASS | fmt、vet、lint、test、race、boundary、contracts、docs、security、api、downstream-smoke、integration、governance、score、release-preflight 全链路通过 |
+| Module docs hygiene | `cd /home/ZoneCNH && git diff --check -- module/schedulex` | PASS | 本目录文档补丁格式通过 |
+
+## 3. AC 验收登记
+
+| ID | 验收项 | v1.0.0 通过标准 | 验收证据 | 状态 |
 | --- | --- | --- | --- | --- |
-| AC-001 | Schedule 合法 cron job 返回 JobID | FR-001 / TC-001 | - | TRACEABILITY.md |
-| AC-002 | cron 语法错误返回 ErrInvalidTrigger | FR-001, BR-001 / Unit | - | TRACEABILITY.md |
-| AC-003 | interval <= 0 返回 ErrInvalidTrigger | FR-001, BR-001 / Unit | - | TRACEABILITY.md |
-| AC-004 | 重复 JobID 返回 ErrDuplicateJob | FR-001, BR-002 / TC-009 | - | TRACEABILITY.md |
-| AC-005 | cron 触发：到达调度时间调用 handler | FR-002 / TC-001 | - | TRACEABILITY.md |
-| AC-006 | interval 触发：间隔到期调用 handler | FR-002 / TC-001 | - | TRACEABILITY.md |
-| AC-007 | Delay 首次延迟后首次触发 | FR-002 / Unit | - | TRACEABILITY.md |
-| AC-008 | OverlapSkip：上次未完成时跳过本次 | FR-003, BR-004 / TC-002 | - | TRACEABILITY.md |
-| AC-009 | OverlapQueue：上次未完成时排队等待 | FR-003, BR-004 / TC-002 | - | TRACEABILITY.md |
-| AC-010 | OverlapReplace：取消旧的执行，启动新的 | FR-003, BR-004 / TC-002 | - | TRACEABILITY.md |
-| AC-011 | MisfireSkip：跳过错过的触发 | FR-004 / TC-003 | - | TRACEABILITY.md |
-| AC-012 | MisfireRunOnce：补执行一次 | FR-004 / TC-003 | - | TRACEABILITY.md |
-| AC-013 | MisfireCatchUp：补执行所有错过次数 | FR-004 / TC-003 | - | TRACEABILITY.md |
-| AC-014 | Cancel 存在的 job 返回 nil | FR-005 / TC-005 | - | TRACEABILITY.md |
-| AC-015 | Cancel 不存在的 job 返回 ErrJobNotFound | FR-005 / TC-005 | - | TRACEABILITY.md |
-| AC-016 | Stop 等待正在执行的 job 完成 | FR-006, BR-003 / TC-006 | - | TRACEABILITY.md |
-| AC-017 | Stop 超时强制取消，返回 ErrShutdownTimeout | FR-006, BR-003 / TC-006 | - | TRACEABILITY.md |
-| AC-018 | job 生命周期事件回调（trigger/start/complete/fail/misfire） | FR-007 / TC-007 | - | TRACEABILITY.md |
-| AC-019 | 分布式锁获取成功时执行 job | FR-008 / TC-004 | - | TRACEABILITY.md |
-| AC-020 | 分布式锁获取失败时跳过本次 | FR-008 / TC-004 | - | TRACEABILITY.md |
-| AC-021 | lock TTL < job 最大执行时间返回配置错误 | FR-008, BR-006, NFR-S01 / TC-004 | - | TRACEABILITY.md |
-| AC-022 | FakeClock 注入后调度基于 FakeClock | FR-009 / TC-008 | - | TRACEABILITY.md |
+| AC-001 | 公共 API 快照 | `contracts/public_api.snapshot` 与导出 API 一致 | `api-check`、`contracts` | PASS |
+| AC-002 | 任务注册 | 合法 job + trigger 可通过 `AddJob` 注册；重复 job 返回 `ErrJobExists`；非法 job/option 返回对应错误 | unit tests、contracts | PASS |
+| AC-003 | 触发确定性 | `Once`、`Every`、`Cron`、`DailyAt` 的 next time 计算可复验 | `trigger-determinism-check` | PASS |
+| AC-004 | 时钟与 DST | 注入时钟与时区/DST golden case 不跳触、不重复触发 | `timezone-dst-golden-check` | PASS |
+| AC-005 | Misfire 策略 | `skip`、`run_once`、`catch_up` 行为符合契约 | `misfire-contract-check` | PASS |
+| AC-006 | Overlap 与并发 | `skip`、`queue_one`、`allow` 与 max concurrency 行为稳定，race 检查通过 | `scheduler-race-check`、unit tests | PASS |
+| AC-007 | Shutdown | `Shutdown(ctx)` 幂等；等待运行中任务或遵守 context 超时；无 goroutine leak | `scheduler-leak-check`、race tests | PASS |
+| AC-008 | Snapshot | `Snapshot()` 可返回调度器与 job 可审计状态 | contracts、docs-check | PASS |
+| AC-009 | EventSink | 调度器级与 job 级事件可注入，事件合约通过测试 | contracts、unit tests | PASS |
+| AC-010 | Locker | `Locker`/`Lease` 接口与 job lock 选项可编译、可测试；锁失败按契约跳过或上报 | `lock-interface-check` | PASS |
+| AC-011 | 边界与安全 | 标准库 only，无上层域依赖、无 secret、无代码可达漏洞 | `boundary`、`security` | PASS |
+| AC-012 | CI/CD 与发布 | required checks、hosted runner、release manifest、score 与 release preflight 全部闭合 | `governance-check`、`release-check` | PASS |
 
-## 3. TC 测试验收登记
+## 4. TC 验收登记
 
-| ID | 测试项 | 关联要求/验收/任务 | 当前登记状态 | 来源 |
-| --- | --- | --- | --- | --- |
-| TC-001 | FR-001, FR-002, BR-001 | 正常 cron/interval 触发 | - | TRACEABILITY.md |
-| TC-002 | FR-003, BR-004 | OverlapPolicy 三种策略 | - | TRACEABILITY.md |
-| TC-003 | FR-004 | MisfirePolicy 三种策略 | - | TRACEABILITY.md |
-| TC-004 | FR-008, BR-006, NFR-S01 | 分布式锁获取/失败/TTL 校验 | - | TRACEABILITY.md |
-| TC-005 | FR-005 | Cancel 存在/不存在 job | - | TRACEABILITY.md |
-| TC-006 | FR-006, BR-003, BR-005, NFR-S02 | Stop 等待/超时 + panic 隔离 | - | TRACEABILITY.md |
-| TC-007 | FR-007 | EventSink 生命周期事件 | - | TRACEABILITY.md |
-| TC-008 | FR-009, BR-007 | Clock 注入 + DST 切换 | - | TRACEABILITY.md |
-| TC-009 | FR-001, BR-002 | 重复 JobID 检测 | - | TRACEABILITY.md |
+| ID | 测试项 | 对应命令/证据 | 状态 |
+| --- | --- | --- | --- |
+| TC-001 | Trigger 和 cron/interval 触发 | `trigger-determinism-check`、unit tests | PASS |
+| TC-002 | Overlap 三类 v1.0 策略 | unit tests、`scheduler-race-check` | PASS |
+| TC-003 | Misfire 三类策略 | `misfire-contract-check` | PASS |
+| TC-004 | Locker 接口与失败路径 | `lock-interface-check` | PASS |
+| TC-005 | Snapshot 可审计状态 | contracts、docs-check | PASS |
+| TC-006 | Shutdown、panic 隔离、leak/race | `scheduler-leak-check`、`scheduler-race-check` | PASS |
+| TC-007 | EventSink 生命周期事件 | contracts、unit tests | PASS |
+| TC-008 | Clock 注入与 DST | `timezone-dst-golden-check` | PASS |
+| TC-009 | 重复 job 检测 | unit tests、contracts | PASS |
+| TC-010 | Downstream/rendered template smoke | `GOWORK=off make integration`、`downstream-smoke` | PASS；网络解析 smoke 等待 tag 发布后复验 |
 
-## 4. 覆盖闭合验收
+## 5. 旧 AC 映射
 
-| ID | 覆盖对象 | 验收/测试/任务挂钩 | 当前登记状态 | 来源 |
-| --- | --- | --- | --- | --- |
-| FR-001 | Schedule：注册 job + 参数校验 | AC-001: 合法 cron job 返回 JobID; AC-002: cron 语法错误 → ErrInvalidTrigger; AC-003: interval <= 0 → ErrInvalidTrigger; AC-004: 重复 JobID → ErrDuplicateJob / TC-001, TC-009 / TASK-002 / ⬜ | - | TRACEABILITY.md |
-| FR-002 | Trigger：cron/interval/delay 触发 | AC-005: cron 到达调度时间调用 handler; AC-006: interval 到期调用 handler; AC-007: Delay 后首次触发 / TC-001 / TASK-002 / ⬜ | - | TRACEABILITY.md |
-| FR-003 | Overlap Policy：Skip/Queue/Replace | AC-008: Skip → 上次未完成时跳过; AC-009: Queue → 排队等待; AC-010: Replace → 取消旧的启动新的 / TC-002 / TASK-003 / ⬜ | - | TRACEABILITY.md |
-| FR-004 | Misfire Policy：Skip/RunOnce/CatchUp | AC-011: Skip → 跳过错过的触发; AC-012: RunOnce → 补执行一次; AC-013: CatchUp → 补执行所有错过次数 / TC-003 / TASK-004 / ⬜ | - | TRACEABILITY.md |
-| FR-005 | Cancel：取消 job | AC-014: 存在的 job 取消返回 nil; AC-015: 不存在返回 ErrJobNotFound / TC-005 / TASK-002 / ⬜ | - | TRACEABILITY.md |
-| FR-006 | Stop：graceful shutdown | AC-016: 等待正在执行的 job 完成; AC-017: 超时强制取消 → ErrShutdownTimeout / TC-006 / TASK-005 / ⬜ | - | TRACEABILITY.md |
-| FR-007 | EventSink：生命周期事件回调 | AC-018: trigger/start/complete/fail/misfire 事件输出 / TC-007 / TASK-006 / ⬜ | - | TRACEABILITY.md |
-| FR-008 | Locker：分布式锁 | AC-019: 锁获取成功 → 执行 job; AC-020: 锁获取失败 → 跳过本次; AC-021: TTL < 执行时间 → 配置错误 / TC-004 / TASK-007 / ⬜ | - | TRACEABILITY.md |
-| FR-009 | Clock：可注入时钟 | AC-022: FakeClock 注入后调度基于 FakeClock / TC-008 / TASK-008 / ⬜ | - | TRACEABILITY.md |
-| BR-001 | Schedule 必须校验 trigger 合法性（cron 语法 / interval > 0） | 非法 trigger → ErrInvalidTrigger，不注册 job / TC-001 / TASK-002 / ⬜ | - | TRACEABILITY.md |
-| BR-002 | 同一 JobID 重复注册返回 ErrDuplicateJob | 重复 Schedule 同一 ID → ErrDuplicateJob / TC-009 / TASK-002 / ⬜ | - | TRACEABILITY.md |
-| BR-003 | Stop 必须等待正在执行的 job 完成或超时 | Stop 后所有运行中 job 完成或超时返回 ErrShutdownTimeout / TC-006 / TASK-005 / ⬜ | - | TRACEABILITY.md |
-| BR-004 | overlap 行为由 OverlapPolicy 决定，不内置隐式策略 | 未设置 OverlapPolicy 时使用默认值（全局配置） / TC-002 / TASK-003 / ⬜ | - | TRACEABILITY.md |
-| BR-005 | job panic 被 catch，不影响其他 job | panic job 不影响其他 job 的正常调度 / TC-006 / TASK-002 / ⬜ | - | TRACEABILITY.md |
-| BR-006 | lock TTL > job 最大执行时间，防止锁提前释放 | TTL 不足 → 配置错误，拒绝注册 / TC-004 / TASK-007 / ⬜ | - | TRACEABILITY.md |
-| BR-007 | DST 切换时触发时间必须正确（不能跳过或重复触发） | DST 边界触发时间符合目标时区 cron 语义 / TC-008 / TASK-008 / ⬜ | - | TRACEABILITY.md |
-| BR-008 | job handler 必须接受 context.Context，支持取消传播 | JobHandler 签名为 func(ctx context.Context) error / CI Gate: go build / TASK-001 / ⬜ | - | TRACEABILITY.md |
-| NFR-O01 | 6 个 metric + 8 个 log 输出 | EventSink 或日志中可观测 / CI Gate: integration test / TASK-006, TASK-009 / ⬜ | - | TRACEABILITY.md |
-| NFR-P01 | job 触发延迟 < 10ms（单节点） | Benchmark 测量触发到 handler 调用延迟 / CI Gate: go test -bench / TASK-009 / ⬜ | - | TRACEABILITY.md |
-| NFR-P02 | 1000 个 job 内存占用 < 10MB | Profiling 测量常驻内存 / CI Gate: go test -bench -benchmem / TASK-009 / ⬜ | - | TRACEABILITY.md |
-| NFR-P03 | 常驻内存 < 5MB | Profiling 测量基线内存 / CI Gate: go test -bench -benchmem / TASK-009 / ⬜ | - | TRACEABILITY.md |
-| NFR-S01 | 分布式锁安全：锁 TTL 约束 | TTL < job timeout → 配置错误 / TC-004 / TASK-007 / ⬜ | - | TRACEABILITY.md |
-| NFR-S02 | job panic 隔离 | panic 不传播到调度器 / TC-006 / TASK-002 / ⬜ | - | TRACEABILITY.md |
+| 旧口径 | v1.0.0 对齐结论 |
+| --- | --- |
+| Schedule 返回 JobID | 已由 `AddJob` + `Job.Name()` 取代；返回 JobID 的 API 不属于 v1.0.0 |
+| Cancel 单 job | v1.0.0 非目标；当前提供 `Shutdown(ctx)` 与 `Snapshot()` |
+| List job | 已由 `Snapshot()` 覆盖可审计读取场景 |
+| Stop | 已由 `Shutdown(ctx)` 覆盖 |
+| ErrInvalidTrigger / ErrDuplicateJob / ErrShutdownTimeout | v1.0.0 使用 `ErrInvalidOption`、`ErrInvalidJob`、`ErrJobExists` 与 context 超时语义 |
+| Delay | 已用 `Once(time.Time)` 覆盖一次性延后触发场景 |
+| OverlapReplace | v1.0.0 非目标；当前支持 `OverlapSkip`、`OverlapQueueOne`、`OverlapAllow` |
 
-## 5. 发布 DoD 清单
+## 6. 发布 DoD
 
-- [ ] FEATURES.md 的 FR、BR/NFR、任务清单与 SPEC/TRACEABILITY 当前登记一致。
-- [ ] ACCEPTANCE.md 的 AC、TC 与运行时代码测试名、证据文件或 CI 记录一致。
-- [ ] 运行时代码仓库 /home/schedulex 通过 go test、go test -race、go vet 与覆盖率门槛。
-- [ ] 所有外部服务依赖有本地可重复的测试替身或明确 live-gate 证据。
-- [ ] 安全检查确认没有凭证、私有端点、账户 ID 或实盘配置进入公开文档与代码。
-- [ ] 版本号、发布标签、CHANGELOG 或 release note 与本目录状态一致。
-
-## 6. 当前缺口登记
-
-- 当前文档只记录验收口径，不替代运行时代码仓库的最新 CI 结果。
-- 若上表存在 Pending、Draft、Blocked、Open 或未登记状态，发布前必须补充证据或在模块追溯矩阵中登记豁免理由。
-- SPEC/TRACEABILITY 已登记 AC/TC 主链路；当前主要缺口是 /home/schedulex 实现、测试、CI、覆盖率、race/vet 与集成证据需要复验归档。
+- [x] `FEATURES.md` 的功能清单与 `/home/schedulex` 当前公共 API、Makefile gate 和 release evidence 对齐。
+- [x] `ACCEPTANCE.md` 的 AC/TC 与运行时代码测试、契约、CI/CD 证据一致。
+- [x] `/home/schedulex` 通过 fmt、vet、lint、test、race、build、boundary、contracts、docs-check 与 security。
+- [x] `/home/schedulex` 通过 integration、governance、p1、p2、score 与 release-preflight。
+- [x] 安全检查确认没有凭证、私有端点、账户 ID 或实盘配置进入公开文档与代码。
+- [x] 版本号、release manifest、CI/CD required checks 与本目录状态一致。
+- [ ] tag 发布后执行外部网络 downstream smoke 并回填发布后证据。

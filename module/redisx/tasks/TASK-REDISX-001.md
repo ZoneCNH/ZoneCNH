@@ -33,7 +33,7 @@ depends_on:
   - "TASK-REDISX-000"
 estimated_effort: "1d"
 priority: P0
-status: pending
+status: done
 ```
 
 ---
