@@ -66,6 +66,7 @@ ZoneCNH 的 `FoundationX` 量化交易基础设施文档枢纽，也是 `ZoneCNH
 
 - **`.worktree/` 孤儿目录 TTL = 24h**。SessionStart hook（`.claude/hooks/session-context.mjs`）扫描 `.worktree/` 下已被 `git worktree forget` 的孤儿目录（不在 `git worktree list` 中）
 - **默认 dry-run**：仅报告 >24h 孤儿，不删除。设 `WORKTREE_GC_CLEAN=1` 才真删
+- **真删护栏**：`WORKTREE_GC_CLEAN=1` 时跳过含 worktree 残骸（`.git` 文件）的孤儿目录，保护其工作区未提交改动（已 commit 的提交在分支 ref 上不丢，仅未提交改动会丢）；dry-run 透明标记受保护孤儿
 - **白名单**：直接含 `note.md` 或 `v2.md` 的目录不清理；活跃 worktree 及其祖先/内部目录不清理
 - git 元数据清理用 `git worktree prune`（仅清 `.git/worktrees/<name>`，不清文件系统目录）
 
