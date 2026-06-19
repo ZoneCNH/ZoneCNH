@@ -53,7 +53,7 @@ TASK-TAOSX-001 (Phase 1: foundation)
 |------|-------|------|
 | go build | All | 零错误 |
 | go test -race | All | 全部通过 |
-| coverage >= 80% | Final | 覆盖率达标 |
+| coverage = 100.0% | Final | `GOWORK=off make taosx-coverage-check` 通过 |
 | go vet | Final | 零警告 |
 | golangci-lint | Final | 零错误 |
 | gitleaks | Final | 零命中 |
@@ -65,4 +65,3 @@ TASK-TAOSX-001 (Phase 1: foundation)
 | API 破坏性变更 | LOW | 已有可工作实现，向后兼容 | `git revert` |
 | 外部依赖不可用 | MEDIUM | 健康检查 + 降级策略 | 回退到上一稳定版本 |
 | 配置兼容性回归 | LOW | 已有 canonical+legacy 测试覆盖 | 回退配置变更 |
-
