@@ -1,8 +1,8 @@
 # xlibgate 完整实现清单
 
 - Status: Generated from current module SSOT
-- Last-Updated: 2026-06-18
-- Module-Version: v1.0.0
+- Last-Updated: 2026-06-20
+- Module-Version: v1.1.0
 - Module-State: 已发布
 - Layer: L1 门禁
 - Runtime-Repo: /home/xlibgate
