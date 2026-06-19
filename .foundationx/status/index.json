@@ -152,7 +152,7 @@
     },
     "redisx": {
       "layer": "L2",
-      "version": "v1.0.1",
+      "version": "v1.1.0",
       "spec": true,
       "impl": true,
       "release": true,
@@ -161,7 +161,7 @@
       "adopt": "N/A",
       "soak": false,
       "factory": true,
-      "note": "Redis L2 adapter; KV/TTL/Hash/List/Pipeline/Cache-aside/Lock/RateLimit/Pool/Persistence; Docker-backed Redis 验证; 此前误标 v1.0.0 (tag 超前于表格)"
+      "note": "Redis L2 adapter; KV/TTL/Hash/List/Pipeline/Cache-aside/Lock/RateLimit/Pool/Persistence; GitHub Release v1.1.0 已发布; release-preflight、PR checks、Docker-backed 与 dev Redis 集成验证通过"
     },
     "kafkax": {
       "layer": "L2",

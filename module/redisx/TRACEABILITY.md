@@ -1,7 +1,7 @@
 # redisx 需求追溯矩阵
 
 > 更新：2026-06-19
-> 来源：module/redisx/SPEC.md v1.0.3
+> 来源：module/redisx/SPEC.md v1.1.0
 > 规范：docs/governance/TRACEABILITY.md
 
 ---
