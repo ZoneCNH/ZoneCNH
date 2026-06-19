@@ -8,7 +8,7 @@
 - Runtime-Repo: /home/redisx
 - Source: goal.md, SPEC.md, TRACEABILITY.md, IMPLEMENTATION-PLAN.md, tasks/
 
-> 本清单用于验收 redisx 是否达到可发布、可追溯、可复验状态。截至 2026-06-19，`/home/redisx` 分支 `redisx` 已对齐 v1.0.3，并通过 `GOWORK=off make fmt vet lint test race coverage-check`；Redis 运行时/API 可发布面 100% 覆盖率门禁已通过。Docker Redis、L2-T2、强制安全扫描等 live/release 证据沿用 v1.0.2 历史闭合证据，v1.0.3 标签发布仍以合入 main 后 clean-main `release-preflight` 为准。
+> 本清单用于验收 redisx 是否达到可发布、可追溯、可复验状态。截至 2026-06-19，`/home/redisx` 分支 `redisx` 已对齐 v1.0.3，并通过 `GOWORK=off make fmt vet lint test race coverage-check`；Redis 运行时/API 可发布面 100% 覆盖率门禁已通过。提交 `271fd18` 已使用 `/home/ZoneCNH/sre/secrets/env/dev.md` 的 Redis 配置运行真实 Redis 集成测试，证据写入 `.agent/evidence/l2/integration-report.json`，且只记录 `REDISX_REDIS_*` 键名、不记录具体配置值。Docker Redis、L2-T2、强制安全扫描等 release 证据沿用 v1.0.2 历史闭合证据，v1.0.3 标签发布仍以合入 main 后 clean-main `release-preflight` 为准。
 
 ## 1. 验收命令清单
 
@@ -22,7 +22,7 @@
 | 契约与评分 | cd /home/redisx && GOWORK=off make test-contract && GOWORK=off make contracts && GOWORK=off make score-check | 契约、schema 与评分门禁通过 |
 | 文档门禁 | cd /home/redisx && GOWORK=off make docs-check | 文档检查通过 |
 | 安全扫描 | cd /home/redisx && GOTOOLCHAIN=go1.26.4+auto GOWORK=off XLIB_ENABLE_VULNCHECK=1 XLIB_FORCE_VULNCHECK=1 make security | 强制 govulncheck 与 secret check 通过 |
-| Redis 集成 | cd /home/redisx && GOWORK=off REDISX_INTEGRATION_DOCKER=1 make test-integration && GOWORK=off REDISX_PERSISTENCE_INTEGRATION=1 make test-persistence-integration | Docker Redis 与持久化集成测试通过 |
+| Redis 集成 | cd /home/redisx && 从 /home/ZoneCNH/sre/secrets/env/dev.md 导出 `REDISX_REDIS_ADDR`、`REDISX_REDIS_USERNAME`、`REDISX_REDIS_PASSWORD`、`REDISX_REDIS_DB` 后执行 `GOWORK=off REDISX_INTEGRATION=1 make test-integration` | 真实 Redis 集成测试通过；证据文件不包含具体配置值 |
 | 发布预检 | cd /home/redisx && VERSION=v1.0.3 GOWORK=off XLIB_CONTEXT=release_verify make release-preflight | 仅允许在干净且与 origin/main 对齐的 main 分支发布；feature branch 不发布标签 |
 
 ## 2. AC 验收登记
@@ -111,11 +111,11 @@
 | 本地质量门禁 | `GOWORK=off make fmt vet lint test race coverage-check` 通过 |
 | 100% 覆盖率门禁 | `pkg/redisx`、`internal/provider`、`internal/provider/goredis`、`internal/sanitize`、`testkit`、`examples/basic`、`examples/config`、`examples/health` 均为 100.0%，总覆盖率满足 100.0% |
 | L2-T2 与契约 | v1.0.2 历史证据通过；v1.0.3 发布前通过 clean-main `release-preflight` 复验 |
-| 集成验收 | v1.0.2 历史证据通过：`GOWORK=off make integration`、`REDISX_INTEGRATION_DOCKER=1 make test-integration`、`REDISX_PERSISTENCE_INTEGRATION=1 make test-persistence-integration` |
+| 集成验收 | 提交 `271fd18` 已使用 `/home/ZoneCNH/sre/secrets/env/dev.md` 的 Redis 配置通过 `GOWORK=off REDISX_INTEGRATION=1 make test-integration`；`.agent/evidence/l2/integration-report.json` 记录 `status=pass`、`score=100`、`profile=integration`，并仅记录 `REDISX_REDIS_*` 键名 |
 | Docker 发布验收 | v1.0.2 历史证据通过：`VERSION=v1.0.2 GOWORK=off XLIB_CONTEXT=release_verify make docker-release-check` |
 | 安全验收 | v1.0.2 历史证据通过：`GOTOOLCHAIN=go1.26.4+auto GOWORK=off XLIB_ENABLE_VULNCHECK=1 XLIB_FORCE_VULNCHECK=1 make security`，输出包含 `No vulnerabilities found.` 与 `secret check passed` |
 | CI/CD 配置 | `coverage-check` 已纳入 Makefile、registry、harness 与 release gate；`release-auto-patch` lint action 版本已固定到可用版本；`worktree-guard` 已修正为 PR 源分支门禁 |
-| 治理与发布 | 提交 `139cf07` 已在 `/home/redisx/.worktree/workspaces/redisx-verify-20260619` 通过 `GOWORK=off make governance-check` 与 `GOWORK=off make p1-governance-check`；release preflight 已尝试，因 main-only 发布策略阻塞：`ERROR: release preflight must run on main; current branch is HEAD`。v1.0.3 tag/release 等待合入 main 后执行 |
+| 治理与发布 | 提交 `139cf07` 已在 `/home/redisx/.worktree/workspaces/redisx-verify-20260619` 通过 `GOWORK=off make governance-check` 与 `GOWORK=off make p1-governance-check`；提交 `271fd18` 补充 dev Redis 集成证据。release preflight 已尝试，因 main-only 发布策略阻塞：`ERROR: release preflight must run on main; current branch is HEAD`。v1.0.3 tag/release 等待合入 main 后执行 |
 
 ## 6. 发布 DoD 清单
 
@@ -129,6 +129,6 @@
 
 ## 7. 当前缺口登记
 
-- 当前 `/home/redisx` v1.0.3 本地质量门禁、Redis 运行时/API 可发布面 100% 覆盖率门禁、`governance-check` 与 `p1-governance-check` 均已通过。
+- 当前 `/home/redisx` v1.0.3 本地质量门禁、Redis 运行时/API 可发布面 100% 覆盖率门禁、dev Redis 集成测试、`governance-check` 与 `p1-governance-check` 均已通过。
 - v1.0.3 尚未打 tag 或发布；已在 worker worktree 尝试 `VERSION=v1.0.3 GOWORK=off XLIB_CONTEXT=release_verify make release-preflight`，阻塞于 `ERROR: release preflight must run on main; current branch is HEAD`。
 - 必须在 `/home/redisx` 合入 main 后，于干净且与 `origin/main` 对齐的 main 分支重新执行 release preflight，再创建和推送 tag/release。
