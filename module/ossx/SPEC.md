@@ -1,178 +1,101 @@
-# ossx 规格
+# ossx Specification
 
-- Status: Implemented
-- Spec-Version: v1.2.0
-- Last-Updated: 2026-06-18
-- Layer: 基座 · 对象存储扩展
-- Version: v1.1.0（远程 `github.com/ZoneCNH/ossx` 已发布）
-- Module-Identity: Aliyun OSS 专用 adapter（单 provider；非通用对象存储抽象 / adapter SPI / S3-compatible）
-- Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `kernel`
+- Status: Implemented / Local Production Candidate
+- Spec-Version: v1.2.1
+- Last-Updated: 2026-06-19
+- Module: `ossx`
+- Version: v1.2.1 local candidate（`/home/ossx` branch `ossx`；远端 tag/release 证据待归档）
+- Module-Identity: Aliyun OSS 专用 adapter（单 provider；非通用对象存储抽象；非 S3-compatible）
+- Public Package: `github.com/ZoneCNH/ossx/pkg/ossx`
 
-> 身份收敛（2026-06-18）：本模块为 Aliyun OSS 专用 adapter，对接 `github.com/ZoneCNH/ossx`。先前的 adapter SPI / S3-compatible / 多 provider 措辞已收敛删除。
-> 实现状态（2026-06-18）：远程 `github.com/ZoneCNH/ossx` 已发布 **v1.1.0**——真实 Aliyun adapter（`adapters/aliyun/`）+ 流式 SPI + 完整 multipart + 真实 presign + 策略校验 + retry/circuit + observex 兼容 hooks。24 单元测试 + 5 集成测试（真实 bucket `x-go`，TC-010）全过。
-> `factory=false` 保持：公开 evidence archive（BLK-008）仍待归档；真实 adapter + 集成证据已齐备。
-> Status=Implemented：FR-001..FR-010 全部实现并通过 TC。尚未通过 pipeline-arbiter 四源 98 分门禁（治理门禁，非实现门禁）。
+> v1.2.1 的关键变化是接口治理收敛：调用方公共能力拆为 `BlobStore` + capability interfaces，adapter SPI 拆为 `StoreAdapter` / `MultipartAdapter` / `PresignAdapter` / `AdapterLifecycle`。本地门禁支持生产候选结论；完整生产放行仍依赖外部 release、live integration、downstream adoption、soak 和四源评分证据。
 
----
+## 1. 背景
 
-## 1. 摘要
+`ossx` 为 ZoneCNH 架构中的 L1 存储基础模块，负责把 Aliyun OSS 暴露为统一、类型化、可测试、可观测的对象存储能力。它不是 S3/MinIO 多 provider 抽象，也不直接承担业务配置、密钥管理或生产编排。
 
-`ossx` provides the platform object-storage extension. It defines a stable BlobStore API, object metadata model, streaming semantics, multipart lifecycle, presigned URL policy, adapter SPI, and observability hooks while keeping storage-provider SDKs outside the public API.
+历史上该模块文档存在 S3-compatible、多 provider、旧 `ObjectStorageAdapter` 与 11-method `BlobStore` 残留。v1.2.1 以当前 `/home/ossx` 实现为准，收敛为 Aliyun-only identity 与 split-interface governance。
 
-## 2. 问题与背景
+## 2. 目标
 
-HAI services need object storage without coupling business code to cloud SDKs, provider-specific errors, ad hoc checksum handling, or direct configuration loaders. Existing documentation did not fully close Goal -> Spec -> Matrix -> Task traceability and contained dependency wording that could permit direct `configx` usage.
+- 提供 Aliyun OSS 单 provider 的 object store core API。
+- 支持流式读写，避免全对象内存缓冲。
+- 支持 multipart、presign、lifecycle/retention/permission policy、health、close、observability hooks。
+- 保持 provider SDK 类型不穿透公共 API。
+- 保持公共接口可维护：单个 caller-facing interface 不超过 7 个方法。
+- 提供可复现本地验收证据，并明确外部生产放行缺口。
 
-## 3. 目标
+## 3. 非目标
 
-- Provide a small storage API that covers common object and multipart operations.
-- Preserve Constitution layering by depending only on `kernel` and `observex` interface contracts.
-- Accept configuration as module-owned structs or options supplied by the composition root.
-- Capture every requirement in traceability, task, prompt, and evidence artifacts.
+- 不提供 S3-compatible 或 MinIO-compatible adapter。
+- 不提供多云 provider 选择、fallback、迁移或复制编排。
+- 不直接依赖 `configx`、数据库、消息队列或业务服务。
+- 不在日志、metrics、trace、release evidence 中暴露真实凭证、endpoint、AK/SK 或 signed URL。
+- 不把本地门禁通过等同于 production release。
 
-## 4. 非目标
+## 4. 范围
 
-- 不做业务领域的上传工作流编排（由各业务服务自行实现）
-- 不在公开 API 暴露云厂商 SDK 类型（provider SDK 类型封装在 `adapters/s3/` 等 adapter/internal 层）
-- 不做配置加载或配置解析（Config 由调用方 / composition root 构造后传入）
-- 不做跨云迁移编排（由平台运维层或独立迁移工具负责）
+In scope：
 
-## 5. 消费者
+- `pkg/ossx` public API 与 adapter SPI。
+- `adapters/aliyun` Aliyun OSS adapter。
+- 本地 acceptance、coverage、race、lint、build、secret-scope、dependency isolation。
+- release manifest 与 local acceptance evidence。
 
-- L2/L3 services that need BlobStore operations.
-- Background jobs that need streaming or multipart upload.
-- Platform adapters that bind S3-compatible storage to ossx contracts.
-- Tests and examples that use fake adapters for deterministic validation.
+Out of scope：
+
+- 其他 provider adapter。
+- 生产凭证管理与部署编排。
+- 下游业务模块改造。
+- 真实 production traffic soak。
+
+## 5. 使用者
+
+| 使用者 | 需求 |
+| --- | --- |
+| 业务模块 | 通过窄接口依赖对象存储能力，避免 provider SDK 泄漏 |
+| 平台/组合根 | 构造 `Store`，注入 Aliyun adapter、hooks、policy |
+| 测试代码 | 使用 `InMemoryAdapter` 或 fake adapter 验证行为 |
+| SRE/Release | 读取 manifest、evidence、CI artifact 判定放行状态 |
 
 ## 6. 功能需求
 
-### FR-001: Construction and configuration
-
-WHEN a caller constructs `NewBlobStore(cfg Config, adapter ObjectStorageAdapter, hooks Hooks)`, THEN ossx MUST validate module-owned configuration, accept nil hooks as no-op hooks, and avoid importing or requiring `configx`.
-
-Acceptance criteria:
-- Invalid endpoint, bucket, region, checksum, or TTL settings return typed configuration errors.
-- Configuration can be supplied by plain structs or options from the composition root.
-- A dependency guard proves no ossx package imports `configx`.
-
-### FR-002: Object identity and metadata
-
-WHEN a caller passes object keys, metadata, content type, tags, and checksum fields, THEN ossx MUST normalize keys, reject unsafe keys, preserve user metadata, and represent checksum algorithms explicitly.
-
-Acceptance criteria:
-- Empty keys, absolute paths, traversal segments, and oversized metadata are rejected.
-- Metadata round trips without leaking provider-specific headers.
-- Checksum algorithms are enumerated and validation is deterministic.
-
-### FR-003: Basic object operations
-
-WHEN a caller invokes Put, Get, Delete, Copy, Head, Exists, or List, THEN ossx MUST translate the operation to the adapter, apply context cancellation, and return typed module errors.
-
-Acceptance criteria:
-- Not-found, conflict, permission, validation, timeout, and provider errors map to stable errors.
-- List returns bounded pages and continuation tokens.
-- Delete is idempotent for missing objects unless policy requires strict delete.
-
-### FR-004: Streaming upload and download
-
-WHEN a caller uploads or downloads using streams, THEN ossx MUST avoid buffering whole objects, close streams deterministically, propagate cancellation, and surface partial-write or partial-read errors.
-
-Acceptance criteria:
-- Upload streams do not read beyond context cancellation.
-- Download readers expose close errors when the provider reports them.
-- Tests verify large stream behavior without allocating whole payloads.
-
-### FR-005: Multipart lifecycle
-
-WHEN a caller performs multipart upload, THEN ossx MUST support initiate, upload part, list parts, complete, abort, and stale multipart cleanup semantics.
-
-Acceptance criteria:
-- Part numbers, part sizes, ETags, and checksums are validated.
-- Abort is idempotent and safe after partial failure.
-- Complete verifies all required parts before publishing the object.
-
-### FR-006: Presigned URL policy
-
-WHEN a caller requests a presigned GET or PUT URL, THEN ossx MUST enforce operation allowlists, max TTL, checksum constraints, and audit logging without exposing secrets.
-
-Acceptance criteria:
-- TTL cannot exceed 15 minutes unless a future spec explicitly changes the limit.
-- Only configured operations can be presigned.
-- Credentials, signatures, and tokens are masked in logs and traces.
-
-### FR-007: Checksum, lifecycle, and permission policy validation
-
-WHEN a caller configures checksum, lifecycle, retention, or permission policies, THEN ossx MUST validate them before adapter calls and return actionable typed errors.
-
-Acceptance criteria:
-- Unsupported checksum algorithms fail before upload.
-- Lifecycle windows and retention settings reject negative or contradictory values.
-- Permission policy validation runs before presign and write operations.
-
-### FR-008: Adapter SPI and S3-compatible adapter
-
-WHEN an adapter is implemented, THEN it MUST satisfy the module SPI without leaking SDK types, and the S3-compatible adapter MUST isolate provider-specific behavior inside `adapters/s3`.
-
-Acceptance criteria:
-- Public ossx interfaces use only ossx, standard library, kernel, or observex-interface types.
-- S3-compatible adapter tests cover MinIO-compatible behavior with fake or integration-gated clients.
-- Provider errors are translated at the adapter boundary.
-
-### FR-009: Observability and audit hooks
-
-WHEN ossx performs an operation, THEN it MUST emit metrics, traces, and audit events through injected observex-compatible interfaces while supporting no-op defaults.
-
-Acceptance criteria:
-- Operation name, result, latency, object size, and sanitized key scope are observable.
-- Secrets, signed URLs, credentials, and raw metadata values are not logged.
-- Hook failures do not corrupt object operation results unless policy says fail-closed.
-
-### FR-010: Health, lifecycle, and graceful close
-
-WHEN a service starts, checks readiness, or shuts down, THEN ossx MUST provide health and close semantics that use kernel lifecycle conventions and adapter capabilities.
-
-Acceptance criteria:
-- Health checks distinguish configuration errors, provider unreachability, and degraded adapter state.
-- Close is idempotent and drains in-flight multipart bookkeeping where possible.
-- Readiness can be tested without writing objects unless configured to perform active probes.
-
-### Acceptance Criteria Registry
-
-| AC 编号 | 对应 FR | 验收条件 |
-| ------- | ------- | -------- |
-| AC-OSS-001 | FR-001 | 无效 endpoint/bucket/region/checksum/TTL 返回类型化配置错误；可通过纯 struct 或 options 传入配置；依赖守卫证明无 ossx 包导入 configx |
-| AC-OSS-002 | FR-002 | 空 key/绝对路径/遍历段/超大 metadata 被拒绝；metadata round trip 不泄露 provider 头部；checksum 枚举确定且校验确定性 |
-| AC-OSS-003 | FR-003 | not-found/conflict/permission/validation/timeout/provider 错误映射为稳定错误；List 返回有界分页+continuation token；Delete 对缺失对象幂等 |
-| AC-OSS-004 | FR-004 | 上传流不超出 context 取消边界；下载流暴露 close 错误；大流测试不分配完整 payload |
-| AC-OSS-005 | FR-005 | Part number/size/ETag/checksum 校验通过；Abort 幂等且部分失败安全；Complete 验证所有必需 part 后发布对象 |
-| AC-OSS-006 | FR-006 | TTL 不超过 15 分钟；仅已配置操作可 presign；凭据/签名/token 在日志和 trace 中脱敏 |
-| AC-OSS-007 | FR-007 | 不支持的 checksum 算法上传前失败；lifecycle/retention 负值或矛盾值被拒绝；权限策略在 presign 和 write 前校验 |
-| AC-OSS-008 | FR-008 | 公共接口仅使用 ossx/stdlib/kernel/observex 类型；S3 适配器隔离在 adapters/s3；provider 错误在适配器边界转换 |
-| AC-OSS-009 | FR-009 | 操作名/结果/延迟/对象大小/sanitized key 可观测；secret/签名URL/凭据/原始 metadata 不被记录；hook 失败不破坏操作结果（除非 fail-closed 策略） |
-| AC-OSS-010 | FR-010 | 健康检查区分配置错误/provider 不可达/降级状态；Close 幂等并排空 in-flight multipart；readiness 可无写操作测试 |
-
-## 7. 行为约束
-
-| 编号 | 规则 | 违反时 |
+| ID | Requirement | Acceptance |
 | --- | --- | --- |
-| BR-001 | Every public operation MUST accept `context.Context` or be construction-only. | 编译失败——接口签名不含 context.Context；TC-004 测试失败 |
-| BR-002 | ossx MUST NOT directly import or depend on `configx`. | CI Gate: go list -deps 检测到 configx import → 阻断 |
-| BR-003 | ossx MAY use `kernel` lifecycle and error primitives only at approved boundaries. | 超出批准边界 → 代码审查拒绝 |
-| BR-004 | ossx MAY use `observex` only through interface-oriented hooks and contracts. | 直接依赖 observex 实现 → CI Gate import check 阻断 |
-| BR-005 | ossx MUST NOT depend on business domains, L2.5 application code, or other storage extensions. | 循环依赖或层级破坏 → CI Gate dependency guard 阻断 |
-| BR-006 | List operations MUST enforce bounded page sizes and stable continuation tokens. | 无界列表 → 内存溢出或超时 |
-| BR-007 | Multipart abort MUST be idempotent and part validation MUST happen before complete. | 部分上传残留 → 存储泄漏；非幂等 abort → 资源无法清理 |
-| BR-008 | Presigned URL TTL MUST default to at most 15 minutes and operations MUST be allowlisted. | 安全风险 → 超额 TTL 或未授权操作 → Presign 校验拒绝 |
-| BR-009 | Secrets, credentials, signatures, and tokens MUST never be logged or traced. | 凭据泄露 → CI Gate gitleaks 或 secret scan 阻断 |
-| BR-010 | Checksum mismatch MUST return a typed error and clean temporary state when safe. | 数据损坏 → 返回 typed checksum error；临时对象残留 |
-| BR-011 | Adapter-specific SDK types MUST NOT appear in public ossx APIs. | SDK 类型泄露 → TC-009 adapter SPI 测试失败 |
-| BR-012 | Every acceptance check MUST have a validation command or evidence note. | 验收证据缺失 → CI Gate traceability check 阻断 |
+| FR-001 | 构造入口 | `NewBlobStore(cfg Config, adapter StoreAdapter, hooks Hooks) (*Store, error)` 校验配置与 adapter capability，nil hooks 为 no-op |
+| FR-002 | Key 与 metadata | Key、prefix、metadata、tags、checksum 类型化并校验 |
+| FR-003 | Core object ops | 支持 Put/Get/Delete/Copy/Head/Exists/List |
+| FR-004 | Streaming | Put/Get 使用 `io.Reader` / `io.ReadCloser`，adapter 不全量缓冲对象 |
+| FR-005 | Multipart | 支持 initiate/upload/list/complete/abort，校验 part number、ETag、part count |
+| FR-006 | Presign | 支持受限 operation、TTL 上限、checksum/content constraints、audit masking |
+| FR-007 | Policy | lifecycle、retention、permission policy 在构造、write、delete、presign 前执行 |
+| FR-008 | Aliyun adapter isolation | Provider SDK 限定在 `adapters/aliyun`；provider error 在边界转换为 typed `*Error` |
+| FR-009 | Observability | metrics/tracer/logger/audit hooks 兼容 observex 风格接口并脱敏 |
+| FR-010 | Health/Close | health 区分 ready/unreachable/config_error/degraded/closed；close 幂等且 race-safe |
 
+## 7. 边界需求
 
-## 8. 接口契约
+| ID | Boundary Requirement |
+| --- | --- |
+| BR-001 | `ossx` 不直接依赖 `configx` |
+| BR-002 | `ossx` 不依赖 Redis/MySQL/Postgres/NATS/Kafka 等业务基础设施 |
+| BR-003 | Provider SDK 类型不得出现在 `pkg/ossx` public API |
+| BR-004 | Adapter 负责 provider error translation，store 层对外只返回 typed `*Error` 或 wrapped typed error |
+| BR-005 | List 必须分页并有 max bound |
+| BR-006 | Multipart complete 必须校验 part 顺序与数量 |
+| BR-007 | Presigned URL 不得进入日志、metrics、trace label |
+| BR-008 | Delete strict mode 对缺失对象返回 `ErrNotFound`，不得被 provider 幂等删除吞掉 |
+| BR-009 | Close 后操作返回 closed typed error |
+| BR-010 | public interface governance：单个 caller-facing interface 不超过 7 methods |
+
+## 8. 公共接口
 
 ```go
-package ossx
+type Store struct {
+    // unexported fields
+}
+
+func NewBlobStore(cfg Config, adapter StoreAdapter, hooks Hooks) (*Store, error)
 
 type BlobStore interface {
     Put(ctx context.Context, key Key, body io.Reader, opts PutOptions) (ObjectInfo, error)
@@ -182,190 +105,195 @@ type BlobStore interface {
     Head(ctx context.Context, key Key) (ObjectInfo, error)
     Exists(ctx context.Context, key Key) (bool, error)
     List(ctx context.Context, prefix Prefix, opts ListOptions) (ListPage, error)
-    Multipart(ctx context.Context) MultipartSession
+}
+
+type MultipartStarter interface {
+    Multipart(ctx context.Context) (MultipartSession, error)
+}
+
+type Presigner interface {
     Presign(ctx context.Context, key Key, op PresignOperation, opts PresignOptions) (PresignedURL, error)
+}
+
+type HealthChecker interface {
     Health(ctx context.Context) HealthReport
+}
+
+type StoreCloser interface {
     Close(ctx context.Context) error
 }
 ```
 
-The exact names may change during implementation, but the implemented API must preserve these semantics and trace any naming change back to this section.
+`Store` 实现上述所有 caller-facing capability。业务调用方应依赖其实际需要的最小接口；组合根可持有 `*Store`。
 
-## 9. 数据模型
+## 9. Adapter SPI
 
-Core models:
+```go
+type StoreAdapter interface {
+    Name() string
+    PutObject(ctx context.Context, key string, body io.Reader, size int64, opts PutAdapterOptions) (ObjectInfo, error)
+    GetObject(ctx context.Context, key string) (io.ReadCloser, ObjectInfo, error)
+    HeadObject(ctx context.Context, key string) (ObjectInfo, error)
+    DeleteObject(ctx context.Context, key string, strict bool) error
+    CopyObject(ctx context.Context, source, target string, opts CopyAdapterOptions) (ObjectInfo, error)
+    ListObjects(ctx context.Context, prefix string, max int, continuation string) (ListPage, error)
+}
 
-- `Config`: endpoint, region, bucket, addressing style, TLS policy, checksum policy, timeout policy, multipart limits, presign policy, and health-check policy.
-- `Key` and `Prefix`: normalized object path values with traversal protection.
-- `ObjectInfo`: key, size, content type, user metadata, tags, checksum, ETag, storage class, version, and timestamps.
-- `ObjectReader`: `io.ReadCloser` plus metadata and checksum verification result.
-- `MultipartUpload`: upload ID, key, initiated time, policy, uploaded parts, and expiration.
-- `AuditEvent`: operation, result, sanitized key scope, actor fields supplied by caller, and correlation IDs.
+type MultipartAdapter interface {
+    InitiateMultipart(ctx context.Context, key string, opts PutAdapterOptions) (UploadID, error)
+    UploadPart(ctx context.Context, id UploadID, partNumber int, body io.Reader, size int64) (PartETag, error)
+    ListParts(ctx context.Context, id UploadID) ([]PartETag, error)
+    CompleteMultipart(ctx context.Context, id UploadID, parts []PartETag) (ObjectInfo, error)
+    AbortMultipart(ctx context.Context, id UploadID) error
+}
 
-## 10. 配置模式
+type PresignAdapter interface {
+    PresignURL(ctx context.Context, key string, op PresignOperation, ttlSeconds int64, opts PresignAdapterOptions) (PresignedURL, error)
+}
 
-```yaml
-foundationx:
-  oss:
-    endpoint: "https://storage.example.internal"
-    region: "us-east-1"
-    bucket: "hai-artifacts"
-    path_style: false
-    timeouts:
-      connect: "5s"
-      operation: "30s"
-    checksum:
-      required: true
-      algorithms: ["sha256"]
-    multipart:
-      min_part_size: "8MiB"
-      max_parts: 10000
-    presign:
-      max_ttl: "15m"
-      allowed_operations: ["GET", "PUT"]
+type AdapterLifecycle interface {
+    Health(ctx context.Context) error
+    Close(ctx context.Context) error
+}
 ```
 
-The external namespace is `foundationx.oss` only at the composition-root configuration boundary. Only the composition root outside `module/ossx` may use an external configuration loader such as `configx`; it must project those values into `ossx.Config` or constructor options before calling ossx. The ossx module itself must not import `configx`, configuration-loader packages, or repository-global config registries.
+Adapter SPI 为 provider adapter 与组合根服务，不是业务层抽象。`NewBlobStore` 会验证 adapter 具备完整 capability，缺失时返回 config typed error。
 
-## 11. 错误处理
+## 10. 数据模型
 
-| 错误类型 | 触发条件 | 处理方式 |
-| --- | --- | --- |
-| `ErrInvalidConfig` | endpoint/bucket/region 为空或非法 | 构造时拒绝，不访问存储 |
-| `ErrNotFound` | 对象不存在 | 可处理状态，调用方决定重试或跳过 |
-| `ErrConflict` | 对象已存在或版本冲突 | 返回冲突错误，含对象 key |
-| `ErrPermission` | 权限不足 | 返回权限错误，不重试 |
-| `ErrChecksumMismatch` | 校验和不匹配 | 返回 typed error，清理临时状态 |
-| `ErrTimeout` | context deadline 或操作超时 | 返回超时错误 |
-| `ErrCancelled` | context 取消 | 返回取消错误，清理进行中操作 |
-| `ErrProviderFailure` | 后端存储不可达 | 适配器翻译后返回 |
-| `ErrClosed` | BlobStore 已关闭 | 返回稳定错误，幂等 |
+核心类型包括 `Key`、`Prefix`、`ObjectInfo`、`PutOptions`、`GetOptions`、`DeleteOptions`、`CopyOptions`、`ListOptions`、`ListPage`、`ObjectReader`、`MultipartSession`、`UploadID`、`PartETag`、`PresignedURL`、`PresignOptions`、`HealthReport`、`Hooks`。
 
-Provider 特定错误由适配器在公开边界前翻译为 typed ossx 错误。
+数据模型必须使用 stdlib 与 `ossx` 自有类型；不得暴露 Aliyun SDK 类型。
 
-## 12. 边界情况
+## 11. 配置
 
-| 场景 | 预期行为 |
-| --- | --- |
-| 空 payload / 零字节对象 | 策略允许时有效 |
-| 超大对象 | 必须使用 streaming 或 multipart 路径 |
-| multipart complete 期间取消 | 保留足够状态以重试或 abort |
-| 重复 delete/abort/close/health | 安全幂等 |
-| Unicode key 遍历歧义 | 一致规范化并拒绝歧义路径 |
+`Config` 由模块自有结构承载。`ConfigFromEnv()` 可读取 `FOUNDATIONX_OSSX_*` 约定变量作为组合根便利函数，但模块不得直接依赖 `configx`。
+
+关键配置包括 bucket/region/endpoint、timeout、retry、circuit breaker、policy、presign max TTL、list max page size、checksum behavior。
+
+## 12. 错误模型
+
+对外错误使用 typed `*Error` 与 `ErrorKind`，覆盖 config、key、metadata、checksum、not_found、conflict、permission、timeout、cancelled、provider_failure、closed、unavailable、rate_limit 等类别。
+
+Provider error 必须在 adapter 边界转换；retry classification 依赖 `ErrorKind` 与 `Retryable` 标记。
 
 ## 13. 目录结构
 
 ```text
-module/ossx/
-  doc.go
-  config.go
-  blobstore.go
-  object.go
-  multipart.go
-  presign.go
-  adapter.go
-  observability.go
-  health.go
-  adapters/s3/
-  internal/
-  tasks/
-  prompt/
-  evidence/
+ossx/
+  pkg/ossx/
+    blobstore.go
+    store.go
+    multipart.go
+    presign.go
+    config.go
+    errors.go
+    observability.go
+    retry.go
+    inmemory.go
+  adapters/aliyun/
+    oss.go
+    oss_integration_test.go
+  release/
+    manifest/latest.json
+    evidence/local-acceptance.md
 ```
 
-## 14. 依赖
+## 14. 依赖策略
 
-Allowed dependencies:
+- `pkg/ossx` 可依赖 Go stdlib 与模块内包。
+- Aliyun SDK 只能出现在 `adapters/aliyun`。
+- 禁止 `pkg/ossx` 依赖 `configx` 或业务基础设施模块。
+- 禁止引入 AWS/S3 SDK 作为当前版本依赖。
 
-- Standard library.
-- `module/kernel` for approved lifecycle, context, and typed error conventions.
-- `module/observex` interface contracts or minimal local interfaces compatible with observex.
-- Provider SDKs only inside adapter implementation packages such as `adapters/s3`.
+## 15. 测试矩阵
 
-Forbidden dependencies:
+| ID | Test Case | Status |
+| --- | --- | --- |
+| TC-001 | config validation 与 nil hooks | 本地通过 |
+| TC-002 | key/metadata/checksum validation | 本地通过 |
+| TC-003 | Put/Get streaming core path | 本地通过 |
+| TC-004 | Delete strict missing object | 本地通过 |
+| TC-005 | Copy/Head/Exists/List pagination | 本地通过 |
+| TC-006 | Multipart lifecycle | 本地通过 |
+| TC-007 | Presign validation 与 audit masking | 本地通过 |
+| TC-008 | Policy enforcement | 本地通过 |
+| TC-009 | Adapter provider error translation | 本地通过 |
+| TC-010 | Aliyun adapter gated integration | 编译/无凭证 skip；真实 artifact 待归档 |
+| TC-011 | Retry/circuit behavior | 本地通过 |
+| TC-012 | Health/Close lifecycle | 本地通过 |
+| TC-013 | Public interface governance | 本地通过 |
 
-- Direct `configx` imports from any ossx package.
-- Business-domain, L2.5, UI, or workflow modules.
-- Other storage extensions such as natsx, kafkax, redisx, mysqlx, or pgx.
-- Provider SDK types in public ossx APIs.
+## 16. 性能与可靠性
 
-## 15. 测试
-
-- **TC-001:** Dependency guard verifies ossx does not import configx or other storage extensions.
-- **TC-002:** Config validation covers endpoint, bucket, region, timeout, checksum, multipart, and presign settings.
-- **TC-003:** Key and metadata validation rejects unsafe paths and oversized metadata.
-- **TC-004:** Basic object operation contract covers Put/Get/Delete/Copy/Head/Exists/List with typed errors.
-- **TC-005:** Streaming tests cover cancellation, close errors, and large payload behavior.
-- **TC-006:** Multipart tests cover initiate, upload part, list parts, complete, abort, and stale cleanup.
-- **TC-007:** Presign tests enforce TTL, operation allowlist, checksum constraints, and secret masking.
-- **TC-008:** Policy validation tests cover checksum, lifecycle, retention, and permission errors.
-- **TC-009:** Adapter SPI tests prove public APIs do not expose provider SDK types.
-- **TC-010:** S3-compatible adapter contract tests run with fake or gated MinIO-compatible backends.
-- **TC-011:** Observability tests verify metrics, traces, audit events, and no-op hook behavior.
-- **TC-012:** Health and close tests verify readiness states and idempotent shutdown.
-- **TC-013:** Traceability validation checks Goal -> Spec -> Matrix -> Task -> Evidence closure.
-
-## 16. 性能预算
-
-- Put/Get streaming paths must not buffer complete objects in memory.
-- List operations must cap page size and avoid unbounded result accumulation.
-- Multipart upload must respect configured part-size and concurrency limits.
-- Hook emission must add bounded overhead and fail safely according to policy.
+- Put/Get 必须保持 streaming-first。
+- Retry 与 circuit breaker 仅重试 timeout、connection、unavailable、rate_limit 等可恢复错误。
+- Strict delete 必须先 Head 缺失对象，确保语义可见。
+- 当前版本缺少 production soak 与真实故障注入归档，因此可靠性只能判定为本地候选。
 
 ## 17. 可观测性
 
-Metrics, traces, and audit events MUST include operation, result, latency, payload size where available, adapter name, and sanitized key scope. They MUST exclude raw secrets, signatures, credentials, full signed URLs, and unrestricted metadata values.
+Hooks 包括 metrics、tracer、logger、audit。所有 label 与字段必须脱敏，不记录 signed URL、AK/SK、真实 credential 或未净化 key。
 
 ## 18. 安全
 
-- Presigned URL generation must be least-privilege by operation and TTL.
-- Credentials must be supplied by adapter configuration and never returned from public APIs.
-- Object keys must be sanitized before logging.
-- Checksum and permission policy failures must fail closed.
+- `.env.example` 仅允许占位符。
+- secret-scope check 阻止真实凭证进入仓库。
+- Gitleaks/xlibgate 外部 artifact 是生产放行必要证据。
+- Release evidence 不得包含真实 endpoint、AK/SK 或 signed URL。
 
-## 19. CI 门禁
+## 19. CI 与质量门禁
 
-Required checks:
+本地生产候选门禁：
 
-```bash
-git diff --check
-bash .github/ci/spec-lint.sh
-TRACEABILITY_STRICT=1 bash .github/ci/traceability-check.sh
-bash .github/ci/task-spec-validate.sh
-go test ./module/ossx/...
-go list -deps ./module/ossx/... | grep -v configx
+```text
+scripts/secret-scope-check.sh
+GOWORK=off go test ./pkg/ossx -run 'TestPublicInterfacesStayWithinGovernanceLimit|TestNewBlobStoreRejectsMissingAdapterCapabilities|TestSPISurface' -count=1
+GOWORK=off go test -race ./... -count=1
+GOWORK=off go test ./pkg/ossx -count=1 -covermode=atomic -coverprofile=/tmp/ossx-pkg.cover
+go tool cover -func=/tmp/ossx-pkg.cover
+GOWORK=off go vet ./...
+GOWORK=off go build ./...
+golangci-lint run --allow-parallel-runners ./...
 ```
 
-If implementation code does not exist yet, Go checks may be recorded as not applicable with evidence. Once code exists, Go checks are required for release.
+生产放行还需要 release-tag CI artifact。
 
-## 20. 升级兼容性
+## 20. Release 与证据
 
-Public API changes after first implementation require a compatibility note, migration guidance, and traceability updates. Adapter-only changes may remain internal if public behavior and error contracts are unchanged.
+`release/manifest/latest.json` 与 `release/evidence/local-acceptance.md` 记录本地候选证据。`factory=false` 必须保持，直到以下证据补齐：
 
-## 21. 发布 DoD
+- `v1.2.1` tag + GitHub Release。
+- GitHub Actions release-tag 全绿。
+- Gitleaks/xlibgate artifact。
+- 真实 Aliyun integration artifact。
+- 下游接入与 production soak artifact。
+- 四源 scorer + arbiter `composite_score >= 98`。
 
-- Goal, SPEC, TRACEABILITY, PLAN, tasks, prompts, and evidence are present.
-- All FR and BR rows map to TC and task IDs.
-- Dependency guard prevents direct configx imports.
-- Targeted tests and CI gates pass or have documented pre-implementation not-applicable evidence.
-- Release notes identify adapter support and known limitations.
+## 21. Rollout
 
-## 22. 待解决问题
+推荐顺序：
 
-### Non-blocking
+1. 作为本地候选进入受控预发布环境。
+2. 以非生产凭证跑真实 Aliyun integration artifact。
+3. 接入一个下游模块验证 API ergonomics。
+4. 补 production soak 与 failure profile。
+5. 归档 release-tag CI 与四源评分后再翻转生产结论。
+
+## 22. 风险与开放问题
 
 | ID | 问题 | 状态 |
 | --- | --- | --- |
-| OQ-001 | Which S3-compatible backend will be the first integration target for gated tests? | 待确认 |
-| OQ-002 | Should checksum verification be mandatory for all reads or configurable per bucket policy? | 待确认 |
-| OQ-003 | Which observex hook shape should become the shared interface once observex stabilizes? | 待确认 |
-
----
+| OQ-001 | release-tag CI artifact 尚未归档 | Open |
+| OQ-002 | Gitleaks/xlibgate artifact 尚未归档 | Open |
+| OQ-003 | live Aliyun integration artifact 尚未归档 | Open |
+| OQ-004 | downstream adoption 与 soak 缺失 | Open |
+| OQ-005 | observex 正式接口是否需要替换当前 compatible hooks | Open |
 
 ## 23. 变更历史
 
-| 日期 | 版本 | 变更内容 | 作者 |
-|------|------|----------|------|
-| 2026-06-18 | v1.2.0 | 实现 Status=Implemented：远程 ossx v1.1.0 已发布——真实 Aliyun adapter + 流式 SPI + 完整 multipart + 真实 presign + 策略 + retry/circuit + observex hooks。24 单测 + 5 集成测试（真 bucket x-go，TC-010）全过。新增 FEATURES.md + ACCEPTANCE.md | ZoneCNH |
-| 2026-06-18 | v1.1.0 | 身份收敛为 Aliyun OSS 专用 adapter：移除 adapter SPI / S3-compatible / 多 provider 措辞；FR-008 重写为 Aliyun adapter 隔离；adapters/s3→adapters/aliyun；Status Approved→Review | ZoneCNH |
-| 2026-06-14 | v1.0.0 | 初始版本 | ZoneCNH |
+| Date | Version | Change | Author |
+| --- | --- | --- | --- |
+| 2026-06-19 | v1.2.1 | 收敛为本地生产候选：拆分 public capability interfaces 与 adapter SPI；去除 S3/旧 11-method 接口残留；明确外部生产证据缺口 | ZoneCNH |
+| 2026-06-19 | v1.2.0 | release-grade test hardening、CI/CD pipeline 与 local evidence 初版 | ZoneCNH |
+| 2026-06-18 | v1.1.0 | 身份收敛为 Aliyun OSS 专用 adapter；完成真实 Aliyun adapter、multipart、presign、policy、retry/circuit、hooks | ZoneCNH |
