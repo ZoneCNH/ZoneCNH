@@ -1,12 +1,12 @@
 # ossx 完整验收清单
 
-- Status: Passed（v1.1.0 实现已交付并通过全部验收）
+- Status: Passed（v1.2.0 实现已交付并通过全部验收）
 - Last-Updated: 2026-06-18
 - Source: [SPEC.md](./SPEC.md) v1.2.0 · [TRACEABILITY.md](./TRACEABILITY.md) · [FEATURES.md](./FEATURES.md)
-- Remote: `github.com/ZoneCNH/ossx` v1.1.0（tag + GitHub Release）
+- Remote: `github.com/ZoneCNH/ossx` v1.2.0（tag + GitHub Release）
 
-> 本文档是 ossx v1.1.0 的**完整验收清单**——逐条对应 SPEC §6 AC-OSS-001..010 与 §15 TC-001..013，给出验收命令与通过证据。
-> 它回答"v1.1.0 是否达到完整 OSS 功能的验收标准"。所有条目 ✅ Passed。
+> 本文档是 ossx v1.2.0 的**完整验收清单**——逐条对应 SPEC §6 AC-OSS-001..010 与 §15 TC-001..013，给出验收命令与通过证据。
+> 它回答"v1.2.0 是否达到完整 OSS 功能的验收标准"。所有条目 ✅ Passed。
 
 ---
 
@@ -25,7 +25,7 @@ go build ./...
 
 # 覆盖率
 go test -cover ./pkg/ossx/
-# 期望: coverage: 61.2% of statements
+# 期望: coverage: 100.0% of statements
 
 # 集成测试（真实 bucket x-go，需密钥）
 set -a; . /home/ZoneCNH/sre/secrets/env/ossx.env; set +a
@@ -102,20 +102,20 @@ go list -deps ./... | grep -i configx || echo "✓ 无 configx"
 | 所有 FR/BR 映射到 TC 和 Task                            | ✅   | TRACEABILITY.md + 本文档 §2/§3/§4 |
 | 依赖守卫阻止 configx                                    | ✅   | `go list -deps`；TC-001           |
 | 目标测试 + CI 门禁通过或有 pre-impl N/A 证据            | ✅   | 24 单测 + 5 集成全过；race 过     |
-| Release notes 标注 Aliyun OSS 后端 + 已知限制           | ✅   | CHANGELOG v1.1.0；README          |
+| Release notes 标注 Aliyun OSS 后端 + 已知限制           | ✅   | CHANGELOG v1.2.0；README          |
 
 ---
 
-## 6. factory 翻转剩余条件（非 v1.1.0 验收范围）
+## 6. factory 翻转剩余条件（非 v1.2.0 验收范围）
 
 `factory=false` 当前理由及翻转条件：
 
 | 条件                          | 状态      | 说明                   |
 | ----------------------------- | --------- | ---------------------- |
-| 真实 Aliyun adapter           | ✅ 已满足 | adapters/aliyun v1.1.0 |
+| 真实 Aliyun adapter           | ✅ 已满足 | adapters/aliyun v1.2.0 |
 | 真实 OSS integration evidence | ✅ 已满足 | TC-010 集成测试 5/5    |
 | 公开 API docs 归档            | ⏳ 待归档 | BLK-008                |
 | quickstart evidence           | ⏳ 待归档 | BLK-008                |
 | release manifest 归档         | ⏳ 待归档 | BLK-008                |
 
-> v1.1.0 已满足"完整 OSS 功能"的全部实现验收。factory 翻转属独立治理制品归档（BLK-008），不在本验收清单范围。
+> v1.2.0 已满足"完整 OSS 功能"的全部实现验收。factory 翻转属独立治理制品归档（BLK-008），不在本验收清单范围。
