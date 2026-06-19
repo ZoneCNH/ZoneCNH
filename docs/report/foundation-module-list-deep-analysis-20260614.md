@@ -20,7 +20,7 @@
 ## Agent Team 执行证据
 
 - 运行前检查：`tmux 3.6` 可用，`$TMUX` 存在，`omx --version` 为 `oh-my-codex v0.17.3`。
-- 团队上下文：已创建 `.omx/context/foundation-module-list-analysis-20260613T213233Z.md`。
+- 团队上下文：已创建本地运行态 context packet `foundation-module-list-analysis-20260613T213233Z.md`。
 - 团队配置：`omx-context-foundatio-8a1af4ef`，`3:explore`，`workspace_mode=worktree`。
 - 任务拆分：
   - worker-1：核对 `module/foundation-modules.md`、`module/FOUNDATION-DEPS.yaml`、`module/FOUNDATION-TRACKER.md`。

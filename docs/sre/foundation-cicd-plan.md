@@ -340,7 +340,7 @@ jobs:
         with: { go-version: '1.23' }
       - run: go test -race -tags=integration -coverprofile=integration.out ./...
         env:
-          REDISX_REDIS_ADDR: localhost:6379
+          REDISX_REDIS_ADDR: loopback.internal:6379
 ```
 
 ---

@@ -42,7 +42,7 @@ THEN 按 instrument/venue/product_line 维度汇总净敞口
 | BR-002 | 输出不可变，下游只读 |
 | BR-003 | No lookahead |
 
-## 变更历史
+## 版本记录
 
 | 日期 | 版本 | 变更 | 作者 |
 | --- | --- | --- | --- |

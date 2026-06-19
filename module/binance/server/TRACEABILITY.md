@@ -45,7 +45,7 @@
 | NFR-S05 | Logs 含 stream_id/product_line/instrument_key/idempotency_key/ack status/reject reason | Observability | log inspection |
 | NFR-S06 | No hardcoded secrets | Security | gitleaks |
 | NFR-S07 | /debug/* 和 /admin/* 不暴露 secrets | Security | secret redaction test |
-| NFR-S08 | Admin auth when exposed outside localhost | Security | auth test |
+| NFR-S08 | Admin auth when exposed outside loopback-only mode | Security | auth test |
 
 ---
 

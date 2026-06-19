@@ -426,7 +426,7 @@ const (
 | `client.spool_path` | `string` | `./spool/client.db` | SQLite spool 文件路径 |
 | `client.spool_max_size_mb` | `int` | `1024` | spool 文件最大大小（MB） |
 | `client.checkpoint_path` | `string` | `./spool/checkpoint.db` | checkpoint 文件路径 |
-| `client.grpc_server_addr` | `string` | `localhost:50051` | gRPC server 地址 |
+| `client.grpc_server_addr` | `string` | `<loopback-host>:50051` | gRPC server 地址 |
 | `client.grpc_max_retry` | `int` | `10` | gRPC 最大重试次数 |
 | `client.grpc_retry_backoff_ms` | `int` | `1000` | gRPC 重试退避基数（ms） |
 | `client.max_retry_per_event` | `int` | `5` | 单事件最大重试次数 |
@@ -674,7 +674,7 @@ module/binance/server
 - 不硬编码 Binance API Key、Secret Key、或任何凭证
 - 不在日志中记录 API Key、Secret Key、或签名原文
 - admin 端点不暴露 secrets
-- admin 变更操作（pause/resume）仅允许本地访问（绑定 `127.0.0.1`）
+- admin 变更操作（pause/resume）仅允许本地访问（绑定 loopback interface）
 - gRPC 通信使用 TLS（生产环境）
 - catalog reload 的输入必须校验，防止注入非法 product_line 配置
 - spool 文件权限设为 `0600`（仅 owner 可读写）
@@ -758,7 +758,7 @@ module/binance/server
 |----|------|------|--------|
 | OQ-002 | spool 清理策略：acked 事件是定时清理还是按大小阈值？ | 已解决：双重策略 — 时间 TTL 7 天为主，1GB 大小上限为辅（2026-06-17） | ZoneCNH |
 | OQ-003 | connector 是否需要支持 Binance 多 endpoint 负载均衡？ | 已解决：v1 默认单 endpoint；多 endpoint 轮询/故障切换作为 v1.1 增强；通过配置 `endpoints[]` 启用（2026-06-17） | - |
-| OQ-004 | admin 是否需要认证（即使仅绑定 localhost）？ | 已解决：v1 默认 localhost-only 无需认证；生产环境通过反向代理（nginx/Caddy）添加认证；v1.1 可考虑内置 API key（2026-06-17） | - |
+| OQ-004 | admin 是否需要认证（即使仅绑定 loopback interface）？ | 已解决：v1 默认 loopback-only 无需认证；生产环境通过反向代理（nginx/Caddy）添加认证；v1.1 可考虑内置 API key（2026-06-17） | - |
 
 ### Future（未来考虑）
 

@@ -355,33 +355,33 @@ sre/secrets/env/dev.md  ──(人工映射,明文)──►  本地 .env / .env
 
 ```bash
 # {module} 服务（行情）—— 仅填 dev.md 中 market_{module} 那一行
-XGO_{MODULE}_PG_HOST=127.0.0.1
+XGO_{MODULE}_PG_HOST=<loopback-host>
 XGO_{MODULE}_PG_PORT=5432
 XGO_{MODULE}_PG_DB=market_{module}
 XGO_{MODULE}_PG_USER=market_{module}
 XGO_{MODULE}_PG_PASSWORD=<dev.md market_{module} 密码>
 
-XGO_{MODULE}_TD_HOST=127.0.0.1
+XGO_{MODULE}_TD_HOST=<loopback-host>
 XGO_{MODULE}_TD_PORT=6041
 XGO_{MODULE}_TD_DB=market_{module}
 XGO_{MODULE}_TD_USER=market_{module}
 XGO_{MODULE}_TD_PASSWORD=<dev.md TD market_{module} 密码>
 
-XGO_{MODULE}_REDIS_ADDR=127.0.0.1:6379
+XGO_{MODULE}_REDIS_ADDR=<loopback-host>:6379
 XGO_{MODULE}_REDIS_PASSWORD=<dev.md Redis 密码>
 
-XGO_{MODULE}_KAFKA_BROKERS=127.0.0.1:9092
+XGO_{MODULE}_KAFKA_BROKERS=<loopback-host>:9092
 XGO_{MODULE}_KAFKA_USER=admin
 XGO_{MODULE}_KAFKA_PASSWORD=<dev.md Kafka 密码>
 XGO_{MODULE}_KAFKA_SASL=SASL_PLAINTEXT
 
-XGO_{MODULE}_NATS_URL=nats://127.0.0.1:4222
+XGO_{MODULE}_NATS_URL=nats://<loopback-host>:4222
 XGO_{MODULE}_OSS_ENDPOINT=oss-ap-northeast-1.aliyuncs.com
 XGO_{MODULE}_OSS_BUCKET=x-go
 XGO_{MODULE}_OSS_ACCESS_KEY=<dev.md OSS AK>
 XGO_{MODULE}_OSS_ACCESS_SECRET=<dev.md OSS SK>
 
-XGO_{MODULE}_CH_HOST=127.0.0.1:9000
+XGO_{MODULE}_CH_HOST=<loopback-host>:9000
 XGO_{MODULE}_CH_DATABASE=market_analytics
 ```
 

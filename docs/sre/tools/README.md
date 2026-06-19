@@ -7,12 +7,12 @@
 
 ```bash
 # 复制到 {module}/scripts/ 并替换模块名
-sed 's/{module}/fred/' docs/sre/tools/boundary-gates-template.sh > /home/fred/scripts/boundary-gates.sh
-chmod +x /home/fred/scripts/boundary-gates.sh
+sed 's/{module}/fred/' docs/sre/tools/boundary-gates-template.sh > <workspace>/fred/scripts/boundary-gates.sh
+chmod +x <workspace>/fred/scripts/boundary-gates.sh
 
 # 如有迁移历史（legacy name），额外设置 LEGACY_NAME
 sed -e 's/{module}/binance/' -e 's/^LEGACY_NAME=""/LEGACY_NAME="binance-market"/' \
-  docs/sre/tools/boundary-gates-template.sh > /home/binance/scripts/boundary-gates.sh
+  docs/sre/tools/boundary-gates-template.sh > <workspace>/binance/scripts/boundary-gates.sh
 
 # 运行
 ./scripts/boundary-gates.sh
@@ -46,12 +46,12 @@ sed -e 's/{module}/binance/' -e 's/^LEGACY_NAME=""/LEGACY_NAME="binance-market"/
 
 ```bash
 # 复制到 {module}/scripts/ 并替换模块名
-sed 's/{module}/fred/' docs/sre/tools/boundary-gates-template.sh > /home/fred/scripts/boundary-gates.sh
-chmod +x /home/fred/scripts/boundary-gates.sh
+sed 's/{module}/fred/' docs/sre/tools/boundary-gates-template.sh > <workspace>/fred/scripts/boundary-gates.sh
+chmod +x <workspace>/fred/scripts/boundary-gates.sh
 
 # 如有迁移历史（legacy name），额外设置 LEGACY_NAME
 sed -e 's/{module}/binance/' -e 's/^LEGACY_NAME=""/LEGACY_NAME="binance-market"/' \
-  docs/sre/tools/boundary-gates-template.sh > /home/binance/scripts/boundary-gates.sh
+  docs/sre/tools/boundary-gates-template.sh > <workspace>/binance/scripts/boundary-gates.sh
 
 # 运行
 ./scripts/boundary-gates.sh

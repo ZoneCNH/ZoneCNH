@@ -106,7 +106,7 @@
 | AC-017 | FR-006 | GET /healthz → 返回 200 及进程存活状态 | TC-008: HTTP 集成测试 |
 | AC-018 | FR-006 | GET /readyz → 返回模块就绪状态（不检查下游业务正确性，server 未就绪 → 503）| TC-008: HTTP 集成测试 |
 | AC-019 | FR-006 | GET /debug/* → 返回只读调试信息，不暴露 secrets | 集成测试: 检查响应不含 API Key/Secret |
-| AC-020 | FR-006 | POST /admin/* 无认证访问 → 返回 401（生产模式 + 非 localhost 时） | TC-009: 集成测试验证 401 |
+| AC-020 | FR-006 | POST /admin/* 无认证访问 → 返回 401（生产模式 + 非 loopback-only 时） | TC-009: 集成测试验证 401 |
 | AC-021 | FR-007 | Client 代码 import server internal 包时 CI boundary gate 失败（exit 1） | TC-010: BOUNDARY-GATES.md §3, §4 gate script |
 | AC-022 | FR-007 | 任何代码 reintroduce `binance-market` 引用（除 `docs/migrations/` 和 `CHANGELOG.md`）时 CI no-legacy gate 失败 | TC-011: BOUNDARY-GATES.md §2 gate script |
 | AC-023 | FR-007 | 模块内声明 storage / query / strategy 所有权关键字时 CI ownership gate 失败 | TC-012: BOUNDARY-GATES.md §5 gate script |

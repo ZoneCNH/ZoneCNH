@@ -7,7 +7,7 @@
 - Version: v1.0.0
 - Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `kernel`
 
-> 公开投影 caveat：Status=Approved 与追溯矩阵覆盖证据不等同于 factory-grade；四源评分通过前机器事实层保持 factory=false。本 SPEC 仅描述 testkitx 的**窄定位**（L0 测试期证据 / 单进程 `go test` 工具）；goal.md 中的集成测试环境、故障注入、发布期证据包等「宽测试平台」能力已 superseded，详见 [goal.md](./goal.md) 顶部声明。
+> 公开投影 caveat：Status=Approved 与追溯矩阵覆盖证据不等同于 factory-grade；四源评分通过前机器事实层保持 factory=false。本 SPEC 仅描述 testkitx 的**窄定位**（L0 测试期证据 / 单进程 `go test` 工具）；goal.md 中的集成测试环境、故障注入、发布期证据包等「宽测试平台」能力已由 [goal.md](./goal.md) 顶部声明收口。
 
 ---
 
@@ -405,7 +405,7 @@ testkitx/                              # 运行时仓库 github.com/ZoneCNH/test
 2. **Fake 实现在 `pkg/testkitx/fake/` 子包**（非 SPEC 早期版本的顶层 `fake_*.go`）。构造函数的命名遵循运行时实际：`Clock(at)` 不带 `Fake` 前缀，其余带。
 3. **`contract/`（顶层，非 pkg）是 L2 provider 行为契约套件**，导出 `Run*` runner（如 `kv.RunBasic`、`sql.RunPool`），与 §15.3 的 **fake 接口 contract test**（位于 `pkg/testkitx/fake/contract_test.go`）是两回事，勿混淆。
 4. **`FakeExporter` 未实现**（§8.1 已撤销）；遥测断言由 fake logger/meter/tracer 承接。
-5. **`requirex`/`servicex`/`evidence`/`contract`(L2)/`contracts`(schema) 属 goal.md 宽平台遗产**，SPEC 仅描述 testkitx 窄定位（FR-001~010），这些包的存在不构成 SPEC 追溯对象，定位见 goal.md superseded 声明。
+5. **`requirex`/`servicex`/`evidence`/`contract`(L2)/`contracts`(schema) 属 goal.md 宽平台遗产**，SPEC 仅描述 testkitx 窄定位（FR-001~010），这些包的存在不构成 SPEC 追溯对象，定位见 goal.md 定位声明。
 
 ---
 
@@ -653,7 +653,7 @@ tracer.AssertSpanCount(3)
 | OQ-004 | BoundaryCheck 是否需要支持白名单（允许特定测试包依赖 testkitx）？ | 待评估 |
 
 
-## 23. 变更历史
+## 23. 版本记录
 
 | 日期       | 版本   | 变更内容   | 作者    |
 | ---------- | ------ | ---------- | ------- |

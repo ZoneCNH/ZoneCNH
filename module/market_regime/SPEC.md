@@ -47,7 +47,7 @@ THEN 输出 bias(+1/0/-1) 和 permission(ALLOW/REDUCE/DENY)
 | BR-002 | 输出不可变，下游只读 |
 | BR-003 | No lookahead |
 
-## 变更历史
+## 版本记录
 
 | 日期 | 版本 | 变更 | 作者 |
 | --- | --- | --- | --- |
