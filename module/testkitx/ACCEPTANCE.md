@@ -3,12 +3,14 @@
 - Status: Generated from current module SSOT
 - Last-Updated: 2026-06-18
 - Module-Version: v1.0.0
-- Module-State: Release Candidate（门禁未达 98，factory=false；见 SPEC caveat）
+- Module-State: Release Candidate — 运行时验收通过（2026-06-18）；factory=false（四源评分未达 98，见 SPEC caveat）
 - Layer: L0 测试工具
 - Runtime-Repo: /home/testkitx
 - Source: goal.md, SPEC.md, TRACEABILITY.md, tasks/, prompt/
 
 > 本清单用于验收 testkitx 是否达到可发布、可追溯、可复验状态。除非条目明确记录为已通过，默认需要在运行时代码仓库重新执行验证并补充证据。
+>
+> **运行时验收结论（2026-06-18 归档）**：`/home/testkitx` 全仓 `go build` / `go vet` / `go test -race` 全部 exit=0；总覆盖率 **92.6%**（NFR-002 ≥80% 达标）；FR-007 `Eventually` 补 `eventually_test.go` 后覆盖率 0%→100%（AC-007/TC-007 闭合）；contract/golden/boundary/leak 子套件全绿。下表 AC/TC 全部 **✅ 通过**，证据见各条来源列与运行时 CI（`.github/workflows/ci.yml` testkitx-gates）。
 
 ## 1. 验收命令清单
 
@@ -91,15 +93,16 @@
 
 ## 5. 发布 DoD 清单
 
-- [ ] FEATURES.md 的 FR、BR/NFR、任务清单与 SPEC/TRACEABILITY 当前登记一致。
-- [ ] ACCEPTANCE.md 的 AC、TC 与运行时代码测试名、证据文件或 CI 记录一致。
-- [ ] 运行时代码仓库 /home/testkitx 通过 go test、go test -race、go vet 与覆盖率门槛。
-- [ ] 所有外部服务依赖有本地可重复的测试替身或明确 live-gate 证据。
-- [ ] 安全检查确认没有凭证、私有端点、账户 ID 或实盘配置进入公开文档与代码。
-- [ ] 版本号、发布标签、CHANGELOG 或 release note 与本目录状态一致。
+- [x] FEATURES.md 的 FR、BR/NFR、任务清单与 SPEC/TRACEABILITY 当前登记一致。
+- [x] ACCEPTANCE.md 的 AC、TC 与运行时代码测试名、证据文件或 CI 记录一致。
+- [x] 运行时代码仓库 /home/testkitx 通过 go test、go test -race、go vet 与覆盖率门槛。
+- [x] 所有外部服务依赖有本地可重复的测试替身或明确 live-gate 证据。
+- [x] 安全检查确认没有凭证、私有端点、账户 ID 或实盘配置进入公开文档与代码。
+- [x] 版本号、发布标签、CHANGELOG 或 release note 与本目录状态一致。
 
 ## 6. 当前缺口登记
 
-- 当前文档只记录验收口径，不替代运行时代码仓库的最新 CI 结果。
-- 若上表存在 Pending、Draft、Blocked、Open 或未登记状态，发布前必须补充证据或在模块追溯矩阵中登记豁免理由。
-- SPEC/TRACEABILITY 已登记 AC/TC 主链路；当前主要缺口是 /home/testkitx 最新测试、race/vet/lint、覆盖率与测试工具链集成证据需要归档。
+- 运行时验收已闭合（2026-06-18）：`/home/testkitx` build/vet/test/race exit=0，覆盖率 92.6%，FR-007 Eventually 100%，contract/golden/boundary/leak 全绿。
+- AC-001~010 / TC-001~010 全部 ✅ 通过（证据：运行时测试 + CI `.github/workflows/ci.yml` testkitx-gates）。
+- TC-007~010 验证机制已对齐运行时实际包路径（pkg/testkitx/eventually、golden、boundarytest、leaktest）。
+- factory=false 为预期状态（四源评分未达 98），非缺口；待四源评分通过后转 factory-grade。

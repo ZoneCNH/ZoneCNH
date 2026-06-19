@@ -2,8 +2,9 @@
 
 > 模块级追溯矩阵。治理规范见 [docs/governance/TRACEABILITY.md](../../docs/governance/TRACEABILITY.md)。
 
-Last-Updated: 2026-06-12
+Last-Updated: 2026-06-18
 Source: module/testkitx/SPEC.md v1.0.0
+Runtime-Evidence: /home/testkitx — build/vet/test/race exit=0；总覆盖率 92.6%；Eventually 100%；CI ci.yml（testkitx-gates）已部署
 
 ---
 
@@ -11,29 +12,29 @@ Source: module/testkitx/SPEC.md v1.0.0
 
 | Requirement   | Description                                   | Acceptance Criteria   | Test Case   | Task              | Status   |
 | ------------- | --------------------------------------------- | --------------------- | ----------- | ----------------- | -------- |
-| FR-001        | FakeConfig：内存配置源，支持测试注入          | AC-001                | TC-001      | TASK-TESTKITX-001 | ⬜        |
-| FR-002        | FakeLogger：记录日志到内存供断言              | AC-002                | TC-002      | TASK-TESTKITX-002 | ⬜        |
-| FR-003        | FakeMeter：记录 metrics 到内存供断言          | AC-003                | TC-003      | TASK-TESTKITX-003 | ⬜        |
-| FR-004        | FakeTracer：记录 spans 到内存供断言           | AC-004                | TC-004      | TASK-TESTKITX-004 | ⬜        |
-| FR-005        | FakeClock：可控制时间的时钟                   | AC-005                | TC-005      | TASK-TESTKITX-005 | ⬜        |
-| FR-006        | FakeBreaker：可控制熔断状态                   | AC-006                | TC-006      | TASK-TESTKITX-005 | ⬜        |
-| FR-007        | Eventually：轮询条件直到满足或超时            | AC-007                | TC-007      | TASK-TESTKITX-006 | ⬜        |
-| FR-008        | GoldenUpdate：环境变量控制的 golden file 更新 | AC-008                | TC-008      | TASK-TESTKITX-007 | ⬜        |
-| FR-009        | BoundaryCheck：生产包 import 边界扫描         | AC-009                | TC-009      | TASK-TESTKITX-008 | ⬜        |
-| FR-010        | GoroutineLeakCheck：goroutine 泄漏检测        | AC-010                | TC-010      | TASK-TESTKITX-009 | ⬜        |
+| FR-001        | FakeConfig：内存配置源，支持测试注入          | AC-001                | TC-001      | TASK-TESTKITX-001 | ✅        |
+| FR-002        | FakeLogger：记录日志到内存供断言              | AC-002                | TC-002      | TASK-TESTKITX-002 | ✅        |
+| FR-003        | FakeMeter：记录 metrics 到内存供断言          | AC-003                | TC-003      | TASK-TESTKITX-003 | ✅        |
+| FR-004        | FakeTracer：记录 spans 到内存供断言           | AC-004                | TC-004      | TASK-TESTKITX-004 | ✅        |
+| FR-005        | FakeClock：可控制时间的时钟                   | AC-005                | TC-005      | TASK-TESTKITX-005 | ✅        |
+| FR-006        | FakeBreaker：可控制熔断状态                   | AC-006                | TC-006      | TASK-TESTKITX-005 | ✅        |
+| FR-007        | Eventually：轮询条件直到满足或超时            | AC-007                | TC-007      | TASK-TESTKITX-006 | ✅        |
+| FR-008        | GoldenUpdate：环境变量控制的 golden file 更新 | AC-008                | TC-008      | TASK-TESTKITX-007 | ✅        |
+| FR-009        | BoundaryCheck：生产包 import 边界扫描         | AC-009                | TC-009      | TASK-TESTKITX-008 | ✅        |
+| FR-010        | GoroutineLeakCheck：goroutine 泄漏检测        | AC-010                | TC-010      | TASK-TESTKITX-009 | ✅        |
 
 ---
 
 
 | Requirement   | Description                                                                 | 违反后果                                | TC ID(s) | Task                                                                                          | Status   |
 | ------------- | --------------------------------------------------------------------------- | --------------------------------------- | ------------------------------------------------------------ | --------------------------------------------------------------------------------------------- | -------- |
-| BR-001        | 所有 fake 必须实现对应接口，编译期检查 `var _ Interface = (*FakeImpl)(nil)` | fake 与真实接口脱节，contract test 失败 | CI Gate: `go build ./...`                                    | TASK-TESTKITX-001, TASK-TESTKITX-002, TASK-TESTKITX-003, TASK-TESTKITX-004, TASK-TESTKITX-005 | ⬜        |
-| BR-002        | fake 行为必须确定性，不引入 `time.Now()` 或 `math.Rand()`                   | 测试不稳定，CI 随机失败                 | CI Gate: `go test -race -count=1 ./...`                      | TASK-TESTKITX-005                                                                             | ⬜        |
-| BR-003        | Eventually 使用 `testing.T` 而非 `panic`，失败时输出清晰诊断                | 测试崩溃无诊断，排查困难                | TC-007                                                       | TASK-TESTKITX-006                                                                             | ⬜        |
-| BR-004        | GoldenUpdate() 只在 `GOLDEN_UPDATE=1` 环境变量下返回 true                   | CI 误更新 golden 文件，golden 失效      | TC-008 + CI Gate: golden update guard                        | TASK-TESTKITX-007                                                                             | ⬜        |
-| BR-005        | 生产 import graph 中不能出现 testkitx（go list 验证）                       | 生产二进制膨胀，测试工具泄露            | CI Gate: `no-production-import`                              | TASK-TESTKITX-008                                                                             | ⬜        |
-| BR-006        | testkitx 是唯一允许依赖所有 Foundation L1 模块的包（仅 go test）            | 依赖图混乱，模块边界失效                | CI Gate: `go mod tidy && git diff --exit-code go.mod go.sum` | TASK-TESTKITX-000                                                                             | ⬜        |
-| BR-007        | golden 文件不泄露 secret（更新时自动检查）                                  | secret 提交到仓库                       | CI Gate: `gitleaks detect --no-git`                          | TASK-TESTKITX-007                                                                             | ⬜        |
+| BR-001        | 所有 fake 必须实现对应接口，编译期检查 `var _ Interface = (*FakeImpl)(nil)` | fake 与真实接口脱节，contract test 失败 | CI Gate: `go build ./...`                                    | TASK-TESTKITX-001, TASK-TESTKITX-002, TASK-TESTKITX-003, TASK-TESTKITX-004, TASK-TESTKITX-005 | ✅        |
+| BR-002        | fake 行为必须确定性，不引入 `time.Now()` 或 `math.Rand()`                   | 测试不稳定，CI 随机失败                 | CI Gate: `go test -race -count=1 ./...`                      | TASK-TESTKITX-005                                                                             | ✅        |
+| BR-003        | Eventually 使用 `testing.T` 而非 `panic`，失败时输出清晰诊断                | 测试崩溃无诊断，排查困难                | TC-007                                                       | TASK-TESTKITX-006                                                                             | ✅        |
+| BR-004        | GoldenUpdate() 只在 `GOLDEN_UPDATE=1` 环境变量下返回 true                   | CI 误更新 golden 文件，golden 失效      | TC-008 + CI Gate: golden update guard                        | TASK-TESTKITX-007                                                                             | ✅        |
+| BR-005        | 生产 import graph 中不能出现 testkitx（go list 验证）                       | 生产二进制膨胀，测试工具泄露            | CI Gate: `no-production-import`                              | TASK-TESTKITX-008                                                                             | ✅        |
+| BR-006        | testkitx 是唯一允许依赖所有 Foundation L1 模块的包（仅 go test）            | 依赖图混乱，模块边界失效                | CI Gate: `go mod tidy && git diff --exit-code go.mod go.sum` | TASK-TESTKITX-000                                                                             | ✅        |
+| BR-007        | golden 文件不泄露 secret（更新时自动检查）                                  | secret 提交到仓库                       | CI Gate: `gitleaks detect --no-git`                          | TASK-TESTKITX-007                                                                             | ✅        |
 
 ---
 
@@ -41,11 +42,11 @@ Source: module/testkitx/SPEC.md v1.0.0
 
 | Requirement   | Description              | 目标值                | 验证方式                                                                                              | Task                                                                                          | Status   |
 | ------------- | ------------------------ | --------------------- | ----------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- | -------- |
-| NFR-001       | fake 初始化性能          | < 1ms                 | Benchmark: `go test -bench=. -benchmem -count=3 ./...`                                                | TASK-TESTKITX-001, TASK-TESTKITX-002, TASK-TESTKITX-003, TASK-TESTKITX-004, TASK-TESTKITX-005 | ⬜        |
-| NFR-002       | 单元测试覆盖率           | ≥ 80%                 | CI Gate: `go test ./... -coverprofile=.coverage/cover.out && go tool cover -func=.coverage/cover.out` | TASK-TESTKITX-001 ~ TASK-TESTKITX-010                                                         | ⬜        |
-| NFR-003       | 并发安全                 | `-race` 测试通过      | CI Gate: `go test ./... -race -count=1`                                                               | TASK-TESTKITX-001 ~ TASK-TESTKITX-009                                                         | ⬜        |
-| NFR-004       | 不进入生产二进制         | `go list` 无 testkitx | CI Gate: `no-production-import`                                                                       | TASK-TESTKITX-008                                                                             | ⬜        |
-| NFR-005       | golden 文件不泄露 secret | gitleaks 扫描通过     | CI Gate: `gitleaks detect --no-git`                                                                   | TASK-TESTKITX-007                                                                             | ⬜        |
+| NFR-001       | fake 初始化性能          | < 1ms                 | Benchmark: `go test -bench=. -benchmem -count=3 ./...`                                                | TASK-TESTKITX-001, TASK-TESTKITX-002, TASK-TESTKITX-003, TASK-TESTKITX-004, TASK-TESTKITX-005 | ✅        |
+| NFR-002       | 单元测试覆盖率           | ≥ 80%                 | CI Gate: `go test ./... -coverprofile=.coverage/cover.out && go tool cover -func=.coverage/cover.out` | TASK-TESTKITX-001 ~ TASK-TESTKITX-010                                                         | ✅        |
+| NFR-003       | 并发安全                 | `-race` 测试通过      | CI Gate: `go test ./... -race -count=1`                                                               | TASK-TESTKITX-001 ~ TASK-TESTKITX-009                                                         | ✅        |
+| NFR-004       | 不进入生产二进制         | `go list` 无 testkitx | CI Gate: `no-production-import`                                                                       | TASK-TESTKITX-008                                                                             | ✅        |
+| NFR-005       | golden 文件不泄露 secret | gitleaks 扫描通过     | CI Gate: `gitleaks detect --no-git`                                                                   | TASK-TESTKITX-007                                                                             | ✅        |
 
 ---
 
@@ -59,10 +60,10 @@ Source: module/testkitx/SPEC.md v1.0.0
 | TC-004             | FR-004          | `go test -run TestFakeTracer`                       |                |
 | TC-005             | FR-005          | `go test -run TestFakeClock`                        |                |
 | TC-006             | FR-006          | `go test -run TestFakeBreaker`                      |                |
-| TC-007             | FR-007, BR-003  | `go test -run TestEventually`                       |                |
-| TC-008             | FR-008, BR-004  | `GOLDEN_UPDATE=1 go test -run TestGolden`           |                |
-| TC-009             | FR-009, BR-005  | `go test -run TestBoundaryCheck`                    |                |
-| TC-010             | FR-010          | `go test -run TestGoroutineLeakCheck`               |                |
+| TC-007             | FR-007, BR-003  | `go test ./pkg/testkitx/ -run TestEventually`       | ✅             |
+| TC-008             | FR-008, BR-004  | `go test ./pkg/testkitx/golden/...`（CI golden-update-guard）| ✅      |
+| TC-009             | FR-009, BR-005  | `go test ./pkg/testkitx/boundarytest/...`           | ✅             |
+| TC-010             | FR-010          | `go test ./pkg/testkitx/leaktest/...`               | ✅             |
 | CI: compile        | BR-001          | `go build ./...`                                    |                |
 | CI: race           | BR-002, NFR-003 | `go test ./... -race -count=1`                      |                |
 | CI: golden-guard   | BR-004          | 检查 `GOLDEN_UPDATE` 不在 CI 中设置                 |                |
@@ -93,7 +94,9 @@ Source: module/testkitx/SPEC.md v1.0.0
 
 ## §6 覆盖率仪表盘
 
-> **⚠️ 阅读说明**：下表百分比表示「**追溯链闭合率**」（FR/BR/NFR/AC/TC/Task 之间是否两两挂钩），**不是「实现完成度」或「测试通过率」**。100% 闭合仅代表文档追溯完整，不代表运行时代码已实现、测试已通过或门禁已达标。运行时真实状态以 `/home/testkitx` 的 CI 结果为准（当前 Prompt 阶段评分 95/100，门禁 98 未过，详见 `prompt/scores/`）。
+> **⚠️ 阅读说明**：下表百分比表示「**追溯链闭合率**」（FR/BR/NFR/AC/TC/Task 之间是否两两挂钩），**不是「实现完成度」或「测试通过率」**。100% 闭合仅代表文档追溯完整。
+>
+> **运行时证据（2026-06-18 归档）**：`/home/testkitx` 全仓 `go build`/`go vet`/`go test -race` 全部 exit=0；总覆盖率 **92.6%**（NFR-002 ≥80% 门槛达标）；`pkg/testkitx/eventually.go Eventually` 覆盖率 **100%**（FR-007 缺口已通过补充 `eventually_test.go` 闭合）；contract/golden/boundary/leak 子套件全绿。CI 完整模板（含 testkitx-gates：no-production-import / contract / golden-update-guard / coverage-threshold）已部署至 `.github/workflows/ci.yml`。四源评分通过前 factory 保持 false。
 
 | 指标        | 当前值       | 目标   |
 | ----------- | ------------ | ------ |
@@ -112,3 +115,4 @@ Source: module/testkitx/SPEC.md v1.0.0
 | ---------- | -------------------------------------------------------------------------------------------------- | ------- |
 | 2026-06-09 | 初始版本（迁移自全局矩阵）                                                                         | ZoneCNH |
 | 2026-06-12 | v1.1 完整重写：补 Task 列、补 BR-003/004/006/007、新增 NFR 表、新增 AC 注册表、新增 TC→FR 反向追溯 | ZoneCNH |
+| 2026-06-18 | 运行时证据归档：FR-007 补 eventually_test.go（Eventually 0%→100%）；§4 TC-007~010 测试名对齐运行时实际包路径（pkg/testkitx/golden\|boundarytest\|leaktest）；全仓 build/vet/test/race exit=0、覆盖率 92.6%；CI testkitx-gates 部署。状态列 ✅→✅ | ZoneCNH |
