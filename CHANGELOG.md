@@ -16,6 +16,7 @@
 
 ### Changed
 
+- 同步 `redisx` v1.1.0 发布投影：更新根级状态/架构/README、模块索引、验收证据与 `.foundationx` 状态快照。
 - 固化模块级 Goal 文档路径为 `module/{module}/goal.md`，禁止 `goal/` 目录和 `goal/1.md` 槽位。
 - **STATUS.md / README.md / ARCHITECTURE.md 三文档全量交叉审计闭合**（52 PRs, #385-#439）。审计日期 2026-06-15，最终 audit-status.py (v2 cross-dimension) 24/24 PASS，78 repos 0 404。详情见 `docs/solutions/three-doc-audit-20260615.md`。
 

@@ -94,7 +94,7 @@ L2.5: domainx / decimalx / domain-market / domain-macro / domain-exchange (5/5 �
 ### 基座 · 存储与中间件
 
 - [postgresx](https://github.com/ZoneCNH/postgresx) — PostgreSQL — 关系型存储、事务、迁移（v1.0.0 已发布；live integration 通过；factory_grade_allowed=false；单元测试 52.4% + Docker integration skip，BLK-006 open） `公开`
-- [redisx](https://github.com/ZoneCNH/redisx) — Redis L2 adapter（v1.0.1 已发布；KV/TTL、Hash/List、Pipeline、Cache-aside、Lock/RateLimit、Pool、Persistence restart recovery；Docker-backed Redis 验证通过） `公开`
+- [redisx](https://github.com/ZoneCNH/redisx) — Redis L2 adapter（v1.1.0 已发布；KV/TTL、Hash/List、Pipeline、Cache-aside、Lock/RateLimit、Pool、Persistence restart recovery；PR #19、release-preflight、GitHub Release 与 dev Redis 集成验证通过） `公开`
 - [clickhousex](https://github.com/ZoneCNH/clickhousex) — ClickHouse — OLAP 查询、批量写入（v1.0.3 GitHub Release 已发布；branch/tag GitHub Actions quality/lint/integration/secret-scan/trust/release-check 已通过；foundation gate 与版本元数据已对齐；BLK-003 open；非 factory） `公开`
 - [taosx](https://github.com/ZoneCNH/taosx) — TDengine L2 adapter contract（pkg/taosx v1.0.3 本地发布候选；CI/release 已加入 taosx-coverage-check，pkg/taosx 100.0% 覆盖；TDengine dev live gate 已通过且保持显式 opt-in；未执行外部 tag/GitHub Release；非 factory） `公开`
 - [kafkax](https://github.com/ZoneCNH/kafkax) — Kafka — 消息队列、事件流（v1.1.0 已发布；真实 broker gates 已验证） `公开`

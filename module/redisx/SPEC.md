@@ -4,7 +4,7 @@ Status: Approved
 - Spec-Version: v1.0.0
 - Last-Updated: 2026-06-19
 - Layer: 基座 · 存储扩展
-- Version: v1.0.3
+- Version: v1.1.0
 - Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `kernel`
 
 > 公开投影 caveat：Status=Approved 表示需求追溯已闭合；发布标签仍以 `/home/redisx` 的 clean-main `release-preflight` 为准。
