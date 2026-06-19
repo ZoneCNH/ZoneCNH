@@ -75,7 +75,7 @@
 - 2026-06-19 本地验收已执行：go test ./...、go test ./... -count=1、go test ./... -race -count=1、go vet ./... 全部通过。
 - 覆盖率 total 100.0%；go tool cover -func=coverage.out 显示全部函数 100.0%。BenchmarkManifestGen 7924 ns/op，BenchmarkMultiModuleAggregate 194823 ns/op。
 - go list -m all 仅返回 github.com/ZoneCNH/xlib-evidence；禁止依赖扫描与凭证/外部服务关键字扫描无匹配。
-- v0.2.2 tag 已推送，GitHub Release 待远端 release.yml 发布：https://github.com/ZoneCNH/xlib-evidence/releases/tag/v0.2.2 。
+- GitHub Release v0.2.2 已发布（Latest，publishedAt 2026-06-19T23:20:57Z）：https://github.com/ZoneCNH/xlib-evidence/releases/tag/v0.2.2 。
 - runtime main 已快进并推送到 cf1943c9497e0ae23bdc7fc293acde27a6ae9076；v0.2.2 tag 已推送。
-- 远端 release workflow（v0.2.2 tag 触发）当前仍处于 queued；该远端 run 作为发布后的补充信号，不替代本地验收门禁。
+- 远端 release.yml run 因 self-hosted runner 离线长期 queued，已 cancel（v0.2.1/v0.2.2 两条）；GitHub Release v0.2.2 由本地验收（100.0% 覆盖率、test/race/vet 全绿）通过后手动发布，与 release.yml `gh release create` 产出一致。
 - FEATURES.md、ACCEPTANCE.md 与 runtime v0.2.2 发布口径已对齐。
