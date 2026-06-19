@@ -8,7 +8,7 @@
 - Runtime-Repo: /home/redisx
 - Source: goal.md, SPEC.md, TRACEABILITY.md, IMPLEMENTATION-PLAN.md, tasks/
 
-> 本清单用于约束 redisx 的完整实现范围。条目来自本目录已有 Spec、Traceability、Plan、Task 等文档；截至 2026-06-19，运行时代码仓库 `/home/redisx` 分支 `redisx` 已对齐 v1.0.3，并通过 `GOWORK=off make fmt vet lint test race coverage-check`；Redis 运行时/API 可发布面 100% 覆盖率门禁已通过。提交 `271fd18` 已使用 `/home/ZoneCNH/sre/secrets/env/dev.md` 的 Redis 配置运行真实 Redis 集成测试，证据写入 `.agent/evidence/l2/integration-report.json`，且只记录 `REDISX_REDIS_*` 键名、不记录具体配置值。Docker Redis、L2-T2、强制安全扫描等 release 证据沿用 v1.0.2 历史闭合证据，v1.0.3 标签发布仍以合入 main 后 clean-main `release-preflight` 为准。
+> 本清单用于约束 redisx 的完整实现范围。条目来自本目录已有 Spec、Traceability、Plan、Task 等文档；截至 2026-06-19，运行时代码仓库 `/home/redisx` 分支 `redisx` 已对齐 v1.0.3，并通过 `GOWORK=off make fmt vet lint test race coverage-check`；Redis 运行时/API 可发布面 100% 覆盖率门禁已通过。提交 `271fd18` 已使用 `/home/ZoneCNH/sre/secrets/env/dev.md` 的 Redis 配置运行真实 Redis 集成测试，证据写入 `.agent/evidence/l2/integration-report.json`，且只记录 `REDISX_REDIS_*` 键名、不记录具体配置值。Docker Redis、L2-T2、强制安全扫描等 release 证据已在 main 合入后的自动发布门禁复验；v1.0.3 已由 Auto Patch Release run `27798039527` 发布为正式 GitHub Release。
 
 ## 1. 模块边界清单
 
@@ -87,13 +87,13 @@
 
 | 证据面 | 运行仓库证据 |
 | --- | --- |
-| 版本与发布 | `/home/redisx` 的 `pkg/redisx/version.go`、`cmd/goalcli/governance.go`、`release/manifest/template.json`、`docs/release.md`、`docs/api.md` 与 `CHANGELOG.md` 均对齐 v1.0.3；release preflight 已尝试，因 main-only 发布策略阻塞于 `ERROR: release preflight must run on main; current branch is HEAD`，发布 tag 待合入 main 后创建 |
+| 版本与发布 | `/home/redisx` 的 `pkg/redisx/version.go`、`cmd/goalcli/governance.go`、`release/manifest/template.json`、`docs/release.md`、`docs/api.md` 与 `CHANGELOG.md` 均对齐 v1.0.3；PR #17 已合入 main（merge commit `acd68b4`），Auto Patch Release run `27798039527` 已通过 `release-final-check`、创建 tag `v1.0.3` 并发布正式 GitHub Release：`https://github.com/ZoneCNH/redisx/releases/tag/v1.0.3` |
 | 质量门禁 | `GOWORK=off make fmt vet lint test race coverage-check` 通过 |
 | 100% 覆盖率门禁 | `pkg/redisx`、`internal/provider`、`internal/provider/goredis`、`internal/sanitize`、`testkit`、`examples/basic`、`examples/config`、`examples/health` 均为 100.0%，总覆盖率满足 100.0% |
 | 治理门禁 | 提交 `139cf07` 已在 `/home/redisx/.worktree/workspaces/redisx-verify-20260619` 通过 `GOWORK=off make governance-check` 与 `GOWORK=off make p1-governance-check` |
-| L2/契约门禁 | v1.0.2 历史证据通过；v1.0.3 发布前通过 clean-main `release-preflight` 复验 |
+| L2/契约门禁 | v1.0.2 历史证据通过；v1.0.3 已在 main 自动发布流程中通过 `release-final-check` 复验 |
 | 集成与 Docker | 提交 `271fd18` 已使用 `/home/ZoneCNH/sre/secrets/env/dev.md` 的 Redis 配置通过 `GOWORK=off REDISX_INTEGRATION=1 make test-integration`，证据 `.agent/evidence/l2/integration-report.json` 记录 `status=pass`、`score=100`、`profile=integration`，且仅记录 `REDISX_REDIS_*` 键名；Docker、持久化与发布镜像验收沿用 v1.0.2 历史闭合证据：`GOWORK=off REDISX_INTEGRATION_DOCKER=1 make test-integration`、`GOWORK=off REDISX_PERSISTENCE_INTEGRATION=1 make test-persistence-integration`、`VERSION=v1.0.2 GOWORK=off XLIB_CONTEXT=release_verify make docker-release-check` |
-| 安全与 CI/CD | 强制 `govulncheck` 安全扫描沿用 v1.0.2 历史证据；`coverage-check` 已纳入 Makefile、registry、harness 与 release gate；`release-auto-patch` lint action 版本已固定到可用版本；`worktree-guard` 已修正为 PR 源分支门禁 |
+| 安全与 CI/CD | 强制 `govulncheck` 安全扫描沿用 v1.0.2 历史证据；`coverage-check` 已纳入 Makefile、registry、harness 与 release gate；`release-auto-patch` lint action 版本已固定到可用版本；`worktree-guard` 已修正为 PR 源分支门禁；Auto Patch Release run `27798039527` 已完成打 tag、发布和验证 |
 
 ## 7. 实现完成判定
 
@@ -103,4 +103,4 @@
 - [x] 依赖边界符合 FOUNDATION-DEPS.yaml，不引入未授权运行时依赖。
 - [x] 运行时代码仓库 /home/redisx 的 lint、typecheck、test、race、coverage 验证证据已归档。
 - [x] 发布说明与版本文件已对齐 v1.0.3。
-- [ ] v1.0.3 发布标签待 clean-main `release-preflight` 后创建。
+- [x] v1.0.3 发布标签已由 Auto Patch Release run `27798039527` 创建并验证。
