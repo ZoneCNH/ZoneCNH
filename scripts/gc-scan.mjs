@@ -10,7 +10,7 @@
 import { readFileSync, existsSync, readdirSync, statSync, writeFileSync, mkdirSync } from "fs";
 import { join, dirname, resolve, relative } from "path";
 import { fileURLToPath } from "url";
-import { execSync } from "child_process";
+import { execSync, execFileSync } from "child_process";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const projectRoot = resolve(__dirname, "..");
@@ -157,6 +157,69 @@ if (existsSync(lspPath)) {
   }
 } else {
   addFinding("missing_file", "warning", ".lsp.json", 0, ".lsp.json 缺失", "LSP 不可用");
+}
+
+// 9. Worktree 残留巡检（P3：让确定性扫描器独立发现 worktree 孤儿/已合入残留，
+//    弥补 GC 仅在 Claude SessionStart 触发的局限。只报告，不删除）
+if (gitRoot) {
+  const isAncestor = (br) => {
+    try {
+      execFileSync("git", ["merge-base", "--is-ancestor", br, "main"], { stdio: "ignore", timeout: 3000 });
+      return true; // exit 0 = br 是 main 祖先（已合入）
+    } catch { return false; }
+  };
+
+  const worktreeBase = join(projectRoot, ".worktree");
+  if (existsSync(worktreeBase)) {
+    // ORPHAN：.worktree/ 下不在 git worktree list 的目录（与 session-context.mjs 轨道 A 同源）
+    const registered = new Set(
+      run("git worktree list --porcelain 2>/dev/null")
+        .split("\n")
+        .filter(l => l.startsWith("worktree "))
+        .map(l => l.slice("worktree ".length).trim())
+    );
+    const regSub = new Set([...registered].filter(r => r !== projectRoot));
+    const candidates = [];
+    for (const top of readdirSync(worktreeBase, { withFileTypes: true })) {
+      if (!top.isDirectory()) continue;
+      const tp = join(worktreeBase, top.name);
+      candidates.push(tp);
+      try {
+        for (const sub of readdirSync(tp, { withFileTypes: true })) {
+          if (sub.isDirectory()) candidates.push(join(tp, sub.name));
+        }
+      } catch {}
+    }
+    const orphanCands = candidates.filter((c) => {
+      if (registered.has(c)) return false;
+      for (const r of regSub) {
+        if (c === r || c.startsWith(r + "/") || r.startsWith(c + "/")) return false;
+      }
+      return true;
+    });
+    // 只报叶子孤儿：排除是其他孤儿父目录的容器（如 .worktree/workspaces 容器 → 只报其下叶子）
+    for (const c of orphanCands) {
+      if (orphanCands.some((other) => other.startsWith(c + "/"))) continue;
+      addFinding("worktree_orphan", "info", relative(projectRoot, c), 0,
+        "Worktree 孤儿目录（不在 git worktree list）", relative(projectRoot, c));
+    }
+  }
+
+  // 已合入可清理：在 git worktree list 但分支已合入 main（与 session-context.mjs 轨道 B 同源）
+  let curPath = null;
+  const pathToBranch = new Map();
+  for (const line of run("git worktree list --porcelain 2>/dev/null").split("\n")) {
+    if (line.startsWith("worktree ")) curPath = line.slice("worktree ".length).trim();
+    else if (line.startsWith("branch ") && curPath) pathToBranch.set(curPath, line.slice("branch ".length).trim().replace(/^refs\/heads\//, ""));
+    else if (line === "") curPath = null;
+  }
+  for (const [wtPath, wtBranch] of pathToBranch) {
+    if (wtPath === projectRoot) continue;
+    if (isAncestor(wtBranch)) {
+      addFinding("worktree_merged", "info", relative(projectRoot, wtPath), 0,
+        "已合入 main 的 worktree 可清理: " + wtBranch, relative(projectRoot, wtPath));
+    }
+  }
 }
 
 // ── 汇总 ──────────────────────────────────
