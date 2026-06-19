@@ -1,8 +1,7 @@
 # CI/CD Workflow 参考模板 — resiliencx
 #
-# 将此文件复制到 github.com/ZoneCNH/resiliencx/.github/workflows/ci.yml。
-# 所有 CI 与 CD job 必须使用 sre/ 机器池；禁止回退 GitHub-hosted runner。
-# CI 机器池: sre/foundation-l1；CD 机器池: sre/deploy。
+# v1.0.2 投影自 github.com/ZoneCNH/resiliencx/.github/workflows/{ci,release}.yml。
+# 所有 CI 与 CD job 使用 GitHub-hosted ubuntu-latest runner，与已发布 release check 一致。
 
 name: CI/CD
 
@@ -29,14 +28,12 @@ concurrency:
 
 env:
   GO_VERSION: "1.23"
-  SRE_CI_POOL: "sre/foundation-l1"
-  SRE_DEPLOY_POOL: "sre/deploy"
   EVIDENCE_DIR: "release/evidence"
 
 jobs:
   ci-preflight:
     name: CI Preflight
-    runs-on: [self-hosted, Linux, X64, sre/foundation-l1]
+    runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       - name: Checkout
@@ -48,12 +45,6 @@ jobs:
         with:
           go-version: ${{ env.GO_VERSION }}
           cache: true
-      - name: Verify SRE machine pool
-        run: |
-          case "${{ env.SRE_CI_POOL }}" in
-            sre/*) ;;
-            *) echo "ERROR: CI must run on sre/ machine pool"; exit 1 ;;
-          esac
       - name: Download modules
         run: go mod download
       - name: Verify module metadata
@@ -65,7 +56,7 @@ jobs:
   build:
     name: Build
     needs: ci-preflight
-    runs-on: [self-hosted, Linux, X64, sre/foundation-l1]
+    runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
@@ -79,7 +70,7 @@ jobs:
   test:
     name: Unit Test
     needs: ci-preflight
-    runs-on: [self-hosted, Linux, X64, sre/foundation-l1]
+    runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
@@ -102,7 +93,7 @@ jobs:
   lint:
     name: Lint
     needs: ci-preflight
-    runs-on: [self-hosted, Linux, X64, sre/foundation-l1]
+    runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
@@ -120,7 +111,7 @@ jobs:
   boundary:
     name: Boundary And Trust Gates
     needs: ci-preflight
-    runs-on: [self-hosted, Linux, X64, sre/foundation-l1]
+    runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
@@ -139,7 +130,7 @@ jobs:
   integration:
     name: Integration Test
     needs: ci-preflight
-    runs-on: [self-hosted, Linux, X64, sre/foundation-l1]
+    runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
@@ -158,7 +149,7 @@ jobs:
   secret-scan:
     name: Secret Scan
     needs: ci-preflight
-    runs-on: [self-hosted, Linux, X64, sre/foundation-l1]
+    runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
@@ -170,7 +161,7 @@ jobs:
   evidence:
     name: Evidence Package
     needs: [build, test, lint, boundary, integration, secret-scan]
-    runs-on: [self-hosted, Linux, X64, sre/foundation-l1]
+    runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
@@ -180,9 +171,8 @@ jobs:
           cat > "${{ env.EVIDENCE_DIR }}/ci-manifest.json" <<'JSON'
           {
             "module": "resiliencx",
-            "ci_pool": "sre/foundation-l1",
-            "deploy_pool": "sre/deploy",
-            "runner_namespace": "sre/",
+            "runner": "ubuntu-latest",
+            "runner_type": "github-hosted",
             "required_jobs": [
               "ci-preflight",
               "build",
@@ -205,7 +195,7 @@ jobs:
     name: Release Preflight
     needs: evidence
     if: startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch'
-    runs-on: [self-hosted, Linux, X64, sre/deploy]
+    runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
@@ -215,12 +205,6 @@ jobs:
         with:
           go-version: ${{ env.GO_VERSION }}
           cache: true
-      - name: Verify release machine pool
-        run: |
-          case "${{ env.SRE_DEPLOY_POOL }}" in
-            sre/*) ;;
-            *) echo "ERROR: CD must run on sre/ machine pool"; exit 1 ;;
-          esac
       - name: Validate release ref
         run: |
           if [[ "${{ github.ref }}" == refs/tags/v* ]]; then
@@ -235,7 +219,7 @@ jobs:
     name: Publish Release
     needs: release-preflight
     if: startsWith(github.ref, 'refs/tags/v')
-    runs-on: [self-hosted, Linux, X64, sre/deploy]
+    runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
       contents: write
@@ -255,7 +239,7 @@ jobs:
     name: Post Release Smoke
     needs: release-publish
     if: startsWith(github.ref, 'refs/tags/v')
-    runs-on: [self-hosted, Linux, X64, sre/deploy]
+    runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
       contents: read
@@ -266,12 +250,11 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh release view "${{ github.ref_name }}"
-          test "${{ env.SRE_DEPLOY_POOL }}" = "sre/deploy"
 
   rollback-drill:
     name: Rollback Drill
     if: github.event_name == 'workflow_dispatch' && inputs.rollback_ref != ''
-    runs-on: [self-hosted, Linux, X64, sre/deploy]
+    runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
       contents: read
@@ -287,7 +270,7 @@ jobs:
 
           - Module: resiliencx
           - Requested rollback ref: ${{ inputs.rollback_ref }}
-          - Runner pool: sre/deploy
+          - Runner: GitHub-hosted ubuntu-latest
           - Action: validate target ref and prepare manual release reversal evidence.
           PLAN
           git rev-parse --verify "${{ inputs.rollback_ref }}^{commit}"

@@ -1,16 +1,16 @@
-# resiliencx 发布版本 1.0 Goal 定位与实现标准
+# resiliencx 发布版本 1.0.2 Goal 定位与实现标准
 
 | 字段         | 内容                                           |
 | ------------ | ---------------------------------------------- |
 | 模块名       | `resiliencx`                                   |
-| 发布版本     | 1.0.1                                          |
+| 发布版本     | 1.0.2                                          |
 | 所属层级     | L1 基础能力（弹性治理；与 SPEC §3 / FOUNDATION-DEPS.yaml 一致） |
 | 稳定级别     | Public API Stable；SPI Stable；Internal 可演进 |
-| 文档状态     | 与 SPEC.md v1.0.2 对齐（contract-corrected）   |
-| 运行时基线   | v0.4.9（`/home/resiliencx`，覆盖率 98.1%）     |
-| 发布日期基准 | 2026-06-12                                     |
+| 文档状态     | 已发布，与 SPEC.md v1.0.2 / runtime tag v1.0.2 对齐 |
+| 运行时基线   | v1.0.2（`/home/resiliencx`，tag `v1.0.2`；release-check / release-final-check 通过） |
+| 发布日期基准 | 2026-06-18                                     |
 
-> **v1.0.2 契约纠正同步**：本 goal 的能力范围与 v1.2+ 演进方向（§7、§15）保持不变；运行时对外 API 以子包形式提供（`timeout.Do`/`retry.Do`/`circuit.New`/`bulkhead.New`/`ratelimit.New`/`fallback.Do`），而非早期设想的包级聚合函数。SPEC v1.0.2 已据此纠正 §8/§9 契约。
+> **v1.0.2 发布同步**：本 goal 的能力范围与 v1.2+ 演进方向（§7、§15）保持不变；运行时对外 API 以子包形式提供（`timeout.Do`、`retry.Do`、`circuit.New`、`bulkhead.New`、`ratelimit.New`、`fallback.Do` 与根包 `Compose` / `InstrumentStrategy`）。运行时代码已发布 tag `v1.0.2` -> `1aaa0dc`，GitHub Release Check `27777166525` passed；本地 `release-check` 与 `release-final-check` 均通过。SPEC v1.0.2 已据此纠正 §8/§9 契约。
 
 ## 术语约定
 
