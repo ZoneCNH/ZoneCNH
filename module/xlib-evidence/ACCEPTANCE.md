@@ -1,9 +1,9 @@
 # xlib-evidence 完整验收清单
 
 - Status: Generated from current module SSOT
-- Last-Updated: 2026-06-18
-- Module-Version: v0.2.0
-- Module-State: 已发布，GitHub Release v0.2.0 与本地验收证据对齐
+- Last-Updated: 2026-06-19
+- Module-Version: v0.2.1
+- Module-State: 已发布，GitHub Release v0.2.1、runtime main 5f00b6c 与本地 100% 覆盖率验收证据对齐
 - Layer: L1 证据
 - Runtime-Repo: /home/xlib-evidence
 - Source: goal.md, SPEC.md, TRACEABILITY.md, IMPLEMENTATION-PLAN.md, tasks/
@@ -19,7 +19,7 @@
 | 运行时测试 | cd /home/xlib-evidence && go test ./... | 所有包测试通过 |
 | 竞态检查 | cd /home/xlib-evidence && go test ./... -race -count=1 | 无 data race，测试稳定通过 |
 | 静态检查 | cd /home/xlib-evidence && go vet ./... | 无 vet 问题 |
-| 覆盖率证据 | cd /home/xlib-evidence && go test ./... -coverprofile=coverage.out | 覆盖率文件生成并满足模块 Spec 门槛 |
+| 覆盖率证据 | cd /home/xlib-evidence && go test ./... -coverprofile=coverage.out | 覆盖率文件生成且 total = 100.0%，满足 v0.2.1 CI/CD 门槛 |
 | 依赖边界 | cd /home/xlib-evidence && go list -deps ./... | 依赖不越过 FOUNDATION-DEPS.yaml 登记边界 |
 
 ## 2. AC 验收登记
@@ -68,13 +68,14 @@
 - [x] 运行时代码仓库 /home/xlib-evidence 通过 go test、go test -race、go vet 与覆盖率门槛。
 - [x] 所有外部服务依赖有本地可重复的测试替身或明确 live-gate 证据。
 - [x] 安全检查确认没有凭证、私有端点、账户 ID 或实盘配置进入公开文档与代码。
-- [x] v0.2.0 tag/release 已发布，当前发布判定以本地可复验命令与 GitHub Release 记录为准。
+- [x] v0.2.1 tag/release 已发布，runtime main 已快进到 5f00b6c，当前发布判定以本地可复验命令与 GitHub Release 记录为准。
 
 ## 6. 当前验收证据
 
-- 2026-06-18 本地验收已执行：go test ./...、go test ./... -race -count=1、go vet ./... 全部通过。
-- 覆盖率 total 89.8% >= 80.0%；BenchmarkManifestGen 12223 ns/op，BenchmarkMultiModuleAggregate 413913 ns/op。
+- 2026-06-19 本地验收已执行：go test ./...、go test ./... -count=1、go test ./... -race -count=1、go vet ./... 全部通过。
+- 覆盖率 total 100.0%；go tool cover -func=coverage.out 显示全部函数 100.0%。BenchmarkManifestGen 7924 ns/op，BenchmarkMultiModuleAggregate 194823 ns/op。
 - go list -m all 仅返回 github.com/ZoneCNH/xlib-evidence；禁止依赖扫描与凭证/外部服务关键字扫描无匹配。
-- GitHub Release v0.2.0 已发布：https://github.com/ZoneCNH/xlib-evidence/releases/tag/v0.2.0 。
-- 远端 release workflow run `27749385556` 当前仍处于 queued，原因是 workflow 绑定 `[self-hosted, Linux, X64, sre/deploy]` 且仓库当前 self-hosted runner 库存为 0；该远端 run 作为发布后的补充信号，不替代本地验收门禁。
-- README、ARCHITECTURE 与本验收清单已对齐 v0.2.0 发布口径。
+- GitHub Release v0.2.1 已发布：https://github.com/ZoneCNH/xlib-evidence/releases/tag/v0.2.1 。
+- runtime main 已快进并推送到 5f00b6c0ee67a02a4b2cceebb3981b87330f39a3；v0.2.1 tag 已推送。
+- 远端 release workflow run `27823927928` 当前仍处于 queued；该远端 run 作为发布后的补充信号，不替代本地验收门禁。
+- FEATURES.md、ACCEPTANCE.md 与 runtime v0.2.1 发布口径已对齐。

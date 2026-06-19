@@ -1,9 +1,9 @@
 # xlib-evidence 完整实现清单
 
 - Status: Generated from current module SSOT
-- Last-Updated: 2026-06-18
-- Module-Version: v0.1.0
-- Module-State: 本地验收通过，待发布
+- Last-Updated: 2026-06-19
+- Module-Version: v0.2.1
+- Module-State: 已发布，GitHub Release v0.2.1、runtime main 5f00b6c 与 100% 覆盖率验收证据对齐
 - Layer: L1 证据
 - Runtime-Repo: /home/xlib-evidence
 - Source: goal.md, SPEC.md, TRACEABILITY.md, IMPLEMENTATION-PLAN.md, tasks/
@@ -79,4 +79,4 @@
 - [x] 所有任务文档均能追溯到 FR、BR/NFR、AC 或 TC。
 - [x] 依赖边界符合 FOUNDATION-DEPS.yaml，不引入未授权运行时依赖。
 - [x] 运行时代码仓库 /home/xlib-evidence 的 lint、typecheck、test、race、coverage 验证证据已归档。
-- [ ] v0.1.0 发布标签与 GitHub Release 待 runtime 源码提交后重建；当前仅记录本地验收通过证据。
+- [x] v0.2.1 tag、GitHub Release 与 runtime main 5f00b6c 已发布/合并；当前记录本地 100% 覆盖率验收与远端 release workflow queued 证据。
