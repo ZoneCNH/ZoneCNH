@@ -189,6 +189,19 @@ if (existsSync(worktreeBase)) {
     }
   };
 
+  // 护栏：未提交改动检测（与轨道 A hasWorktreeRemnant 对称）。
+  // 轨道 B 用 `git worktree remove --force`，--force 会丢弃工作区未提交改动；
+  // 故 remove 前先 status --porcelain，输出非空即 dirty → 跳过保护。
+  // ISC-3c 同源：路径来自 git 输出，用 execFileSync 数组形式防注入。
+  const hasUncommittedChanges = (dir) => {
+    try {
+      const out = execFileSync("git", ["-C", dir, "status", "--porcelain"], { encoding: "utf-8", timeout: 3000 });
+      return out.trim().length > 0;
+    } catch {
+      return false;
+    }
+  };
+
   const now = Date.now();
   const orphans = candidates
     .filter((c) => classify(c) === "ORPHAN")
@@ -247,20 +260,26 @@ if (existsSync(worktreeBase)) {
     }
 
     if (mergedStale.length > 0) {
+      // 预检测 dirty：与轨道 A 残骸保护对称，--force 会丢弃未提交改动，故提前标记
+      const tagged = mergedStale.map((m) => ({ ...m, dirty: hasUncommittedChanges(m.path) }));
+      const dirtyCount = tagged.filter((m) => m.dirty).length;
       lines.push("---");
-      lines.push("♻️ 已合入可清理（分支已合入 main）：" + mergedStale.length + " 个" + (cleanMode ? "（CLEAN：git worktree remove）" : "（dry-run）"));
-      for (const m of mergedStale.slice(0, 15)) {
-        lines.push("   " + relative(projectRoot, m.path) + "  ← " + m.branch);
+      lines.push("♻️ 已合入可清理（分支已合入 main）：" + mergedStale.length + " 个" + (cleanMode ? "（CLEAN：git worktree remove）" : "（dry-run）") + (dirtyCount > 0 ? "（其中 " + dirtyCount + " 个 🛡️ 有未提交改动" + (cleanMode ? "，将跳过" : "") + "）" : ""));
+      for (const m of tagged.slice(0, 15)) {
+        lines.push("   " + relative(projectRoot, m.path) + "  ← " + m.branch + (m.dirty ? "  🛡️ 有未提交改动" : ""));
       }
-      if (mergedStale.length > 15) lines.push("   ... 还有 " + (mergedStale.length - 15) + " 个");
+      if (tagged.length > 15) lines.push("   ... 还有 " + (tagged.length - 15) + " 个");
       if (!cleanMode) {
-        lines.push("   提示：git worktree remove \"" + mergedStale[0].path + "\"");
+        lines.push("   提示：git worktree remove \"" + tagged[0].path + "\"" + (tagged[0].dirty ? "  ⚠️ 该工作区有未提交改动，remove --force 会丢弃" : ""));
       } else {
         let removed = 0;
-        for (const m of mergedStale) {
+        let guarded = 0;
+        for (const m of tagged) {
+          // 护栏：跳过 dirty 工作区，保护其未提交改动（与轨道 A 残骸保护对称）
+          if (m.dirty) { guarded++; continue; }
           try { execFileSync("git", ["worktree", "remove", "--force", m.path], { stdio: "ignore", timeout: 5000 }); removed++; } catch {}
         }
-        lines.push("   已 git worktree remove " + removed + "/" + mergedStale.length + " 个");
+        lines.push("   已 git worktree remove " + removed + "/" + mergedStale.length + " 个" + (guarded > 0 ? "，保护 " + guarded + " 个有未提交改动的工作区" : ""));
       }
     }
   }

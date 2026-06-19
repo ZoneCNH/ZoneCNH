@@ -82,6 +82,10 @@
                     {
                         "type": "command",
                         "command": "node .claude/hooks/version-guard.mjs"
+                    },
+                    {
+                        "type": "command",
+                        "command": "node .claude/hooks/branch-protect.mjs"
                     }
                 ]
             }
