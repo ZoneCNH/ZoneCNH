@@ -12,7 +12,8 @@
 
 ## 0. v1.0.2 验证结论
 
-- `/home/clickhousex` 的 `clickhousex` 分支已完成 foundation release 证据：`go test ./...`、`go test ./... -race -count=1`、`go vet ./...`、`go build ./...`、`golangci-lint run ./...`、`go test ./... -coverprofile=coverage.out` 与 `go tool cover -func=coverage.out` 总覆盖率 100.0%。
+- `/home/clickhousex` 的 `clickhousex` 分支已完成 foundation release 证据，并已推送远端 `v1.0.2` tag/release（commit `bd4b991`）：`go test ./...`、`go test ./... -race -count=1`、`go vet ./...`、`go build ./...`、`golangci-lint run ./...`、`go test ./... -coverprofile=coverage.out` 与 `go tool cover -func=coverage.out` 总覆盖率 100.0%。
+- GitHub Release 已发布：https://github.com/ZoneCNH/clickhousex/releases/tag/v1.0.2。
 - CI/CD 已在 `/home/clickhousex/.github/workflows/ci.yml` 配置 quality、lint、integration、trust-alignment、secret-scan 与 tag release-check gate。
 - 依赖与 API 边界已复验：`go list -deps ./...` 未包含 `configx`；`git grep` 未发现新增 `Exec`、`Query`、`InsertBatch`、`Rows` 对外 API。
 - 本版本只闭合 foundation API：`New`、`Close`、`Ping`、`HealthCheck`、`Config`、`Error`、`Metrics` 与 `Version`。完整 ClickHouse 客户端能力仍按未通过或部分通过登记。

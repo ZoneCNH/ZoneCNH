@@ -12,7 +12,8 @@
 
 ## 0. v1.0.2 验收结论
 
-- `/home/clickhousex` 的 `clickhousex` 分支已复验 foundation API，并将 runtime 版本提升到 `v1.0.2`。
+- `/home/clickhousex` 的 `clickhousex` 分支已复验 foundation API，将 runtime 版本提升到 `v1.0.2`，并已发布远端 `v1.0.2` tag/release（commit `bd4b991`）。
+- GitHub Release 已发布：https://github.com/ZoneCNH/clickhousex/releases/tag/v1.0.2。
 - 已通过本地命令：`go test ./...`、`go test ./... -race -count=1`、`go vet ./...`、`go build ./...`、`golangci-lint run ./...`、`go test ./... -coverprofile=coverage.out` 与 `go tool cover -func=coverage.out` 总覆盖率 100.0%。
 - 已配置 CI/CD：quality、lint、integration、trust-alignment、secret-scan 与 tag release-check gate。
 - 已确认无 `configx` 依赖，且本次未扩展 `Exec`、`Query`、`InsertBatch`、`Rows` 对外 API；完整客户端 AC/TC 仍保持未通过或部分通过。
@@ -130,6 +131,6 @@
 
 ## 6. 当前缺口登记
 
-- 当前文档记录 v1.0.2 foundation 本地验收口径，不替代 GitHub Actions 的远端 CI 结果。
+- 当前文档记录 v1.0.2 foundation 发布事实与本地验收口径；GitHub Actions 远端运行结果仍以对应 workflow run 为准。
 - 若上表存在 Pending、Draft、Blocked、Open 或未登记状态，发布前必须补充证据或在模块追溯矩阵中登记豁免理由。
 - SPEC/TRACEABILITY 已登记完整客户端 AC/TC 主链路；当前主要缺口是 `Exec`、`Query`、`InsertBatch`、`Rows`、live ClickHouse 集成、性能与 tracing 证据。
