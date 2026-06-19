@@ -2,7 +2,7 @@
 
 - Status: Generated from current module SSOT
 - Last-Updated: 2026-06-19
-- Module-Version: v1.0.2
+- Module-Version: v1.0.3
 - Module-State: foundation 已验证；完整客户端仍待实现
 - Layer: L2 基础设施适配器
 - Runtime-Repo: /home/clickhousex
@@ -10,14 +10,15 @@
 
 > 本清单用于验收 clickhousex 是否达到可发布、可追溯、可复验状态。除非条目明确记录为已通过，默认需要在运行时代码仓库重新执行验证并补充证据。
 
-## 0. v1.0.2 验收结论
+## 0. v1.0.3 验收结论
 
-- `/home/clickhousex` 的 `clickhousex` 分支已复验 foundation API，将 runtime 版本提升到 `v1.0.2`，并已发布远端 `v1.0.2` tag/release（commit `bd4b991`）。
-- GitHub Release 已发布：https://github.com/ZoneCNH/clickhousex/releases/tag/v1.0.2。
+- `/home/clickhousex` 的 `clickhousex` 分支已复验 foundation API，将 runtime 版本提升到 `v1.0.3`，并已发布远端 `v1.0.3` tag/release（commit `a3c5343381a5b0f7dc03b3f1c6bec6b27859c894`）。
+- GitHub Release 已发布：https://github.com/ZoneCNH/clickhousex/releases/tag/v1.0.3。
 - 已通过本地命令：`go test ./...`、`go test ./... -race -count=1`、`go vet ./...`、`go build ./...`、`golangci-lint run ./...`、`go test ./... -coverprofile=coverage.out` 与 `go tool cover -func=coverage.out` 总覆盖率 100.0%。
-- 已配置 CI/CD：quality、lint、integration、trust-alignment、secret-scan 与 tag release-check gate。
+- 已对齐版本元数据：`VERSION`、`.repo-contract.yaml`、`pkg/clickhousex/version.go`、`CHANGELOG.md` 与 `release/manifest/latest.json` 均登记 `v1.0.3`。
+- 已通过远端 GitHub Actions：branch run `27798632120` 的 quality、lint、integration、secret-scan 与 trust-alignment 均 success；tag run `27798632216` 的 quality、lint、integration、secret-scan、trust-alignment 与 release-check 均 success。
+- 已通过 Trust Alignment：`xlibgate trust identity`、`xlibgate trust template-residue`、`xlibgate trust secret-redaction --path release/evidence` 均通过。
 - 已确认无 `configx` 依赖，且本次未扩展 `Exec`、`Query`、`InsertBatch`、`Rows` 对外 API；完整客户端 AC/TC 仍保持未通过或部分通过。
-- 本地未运行 `gitleaks`（工具未安装）与 live ClickHouse 集成验收；这些检查保留为 CI/live-gate 证据。
 
 ## 1. 验收命令清单
 
@@ -31,8 +32,13 @@
 | 编译检查 | cd /home/clickhousex && go build ./... | 所有包编译通过 |
 | Lint 检查 | cd /home/clickhousex && golangci-lint run ./... | 零 lint issue |
 | 覆盖率证据 | cd /home/clickhousex && go test ./... -coverprofile=coverage.out && go tool cover -func=coverage.out | foundation 总覆盖率 100.0% |
+| 版本元数据一致性 | cd /home/clickhousex && test "$(cat VERSION)" = "v1.0.3" && rg -n "v1.0.3" .repo-contract.yaml pkg/clickhousex/version.go CHANGELOG.md release/manifest/latest.json | runtime 版本源、契约、CHANGELOG 与 release manifest 均指向 v1.0.3 |
 | 依赖边界 | cd /home/clickhousex && go list -deps ./... | 输出不包含 `configx` |
 | API 边界 | cd /home/clickhousex && git grep -nE '\b(Exec|Query|InsertBatch|Rows)\b' -- '*.go' | foundation release 未新增完整客户端 API |
+| Trust Alignment | cd /home/clickhousex && GOWORK=off xlibgate trust identity --repo . && GOWORK=off xlibgate trust template-residue --repo . && GOWORK=off xlibgate trust secret-redaction --repo . --path release/evidence | identity/template-residue/secret-redaction 均 pass |
+| GitHub Actions branch gate | gh run view 27798632120 --repo ZoneCNH/clickhousex --json conclusion,status,jobs | branch run completed success；quality/lint/integration/secret-scan/trust-alignment success |
+| GitHub Actions tag gate | gh run view 27798632216 --repo ZoneCNH/clickhousex --json conclusion,status,jobs | tag run completed success；quality/lint/integration/secret-scan/trust-alignment/release-check success |
+| Release 对账 | gh release view v1.0.3 --repo ZoneCNH/clickhousex --json tagName,targetCommitish,publishedAt | tagName=v1.0.3，targetCommitish=a3c5343381a5b0f7dc03b3f1c6bec6b27859c894 |
 
 ## 2. AC 验收登记
 
@@ -113,24 +119,24 @@
 | NFR-010 | race 检测通过 | 零 data race / go test -race ./... / TASK-CLICKHOUSEX-007 / ⬜ | 通过：`go test ./... -race -count=1` | TRACEABILITY.md |
 | NFR-011 | vet 检查通过 | 零警告 / go vet ./... / TASK-CLICKHOUSEX-007 / ⬜ | 通过：`go vet ./...` | TRACEABILITY.md |
 | NFR-012 | lint 检查通过 | 零错误 / golangci-lint run / TASK-CLICKHOUSEX-007 / ⬜ | 通过：`golangci-lint run ./...` | TRACEABILITY.md |
-| NFR-013 | Secret 扫描通过 | 零命中 / gitleaks detect --no-git / TASK-CLICKHOUSEX-007 / ⬜ | CI 已配置；本地未测（`gitleaks` 未安装） | TRACEABILITY.md |
+| NFR-013 | Secret 扫描通过 | 零命中 / gitleaks detect --no-git / TASK-CLICKHOUSEX-007 / ⬜ | 通过：GitHub Actions branch run `27798632120` 与 tag run `27798632216` 的 secret-scan job 均 success；本地 `gitleaks` 未安装 | TRACEABILITY.md |
 | NFR-014 | DSN 不泄露到日志 | 密码用 *** 替代 / review 日志输出格式 / TASK-CLICKHOUSEX-001 / ⬜ | 部分通过：sanitize 单测覆盖；日志链路待实现 | TRACEABILITY.md |
 | NFR-015 | 无直接依赖 configx | `go list -deps ./...` 输出不包含 configx / TASK-CLICKHOUSEX-007 / ⬜ | 通过：`go list -deps ./...` 未包含 `configx` | TRACEABILITY.md |
 | NFR-016 | metrics 指标输出正确 | histogram/counter/gauge 类型正确 / metrics 测试 / TASK-CLICKHOUSEX-006 / ⬜ | 部分通过：Noop counter/histogram/gauge 接口覆盖；业务指标标签待实现 | TRACEABILITY.md |
 | NFR-017 | tracing span 传播正确 | exec/query/insert_batch span / tracing 测试 / TASK-CLICKHOUSEX-006 / ⬜ | - | TRACEABILITY.md |
-| NFR-018 | 集成测试 ClickHouse 不可达时 skip | go test -tags=integration / 集成测试 CI gate / TASK-CLICKHOUSEX-007 / ⬜ | CI 已配置 integration job；本地未跑 live ClickHouse | TRACEABILITY.md |
+| NFR-018 | 集成测试 ClickHouse 不可达时 skip | go test -tags=integration / 集成测试 CI gate / TASK-CLICKHOUSEX-007 / ⬜ | 通过：GitHub Actions branch run `27798632120` 与 tag run `27798632216` 的 integration job 均 success；完整客户端 live 语义仍待 Exec/Query/InsertBatch/Rows 实现后补齐 | TRACEABILITY.md |
 
 ## 5. 发布 DoD 清单
 
 - [x] FEATURES.md 的 FR、BR/NFR、任务清单与 SPEC/TRACEABILITY 当前登记一致。
 - [x] ACCEPTANCE.md 的 AC、TC 与运行时代码测试名、证据文件或 CI 记录一致。
 - [x] 运行时代码仓库 /home/clickhousex 通过 go test、go test -race、go vet 与覆盖率门槛。
-- [ ] 所有外部服务依赖有本地可重复的测试替身或明确 live-gate 证据。
-- [ ] 安全检查确认没有凭证、私有端点、账户 ID 或实盘配置进入公开文档与代码。
+- [x] 所有外部服务依赖有本地可重复的测试替身或明确 live-gate 证据；GitHub Actions integration job 已通过，完整客户端 live 语义仍随未实现 API 保留缺口。
+- [x] 安全检查确认没有凭证、私有端点、账户 ID 或实盘配置进入公开文档与代码；branch/tag secret-scan 与 xlibgate secret-redaction 均通过。
 - [x] 版本号、发布标签、CHANGELOG 或 release note 与本目录状态一致。
 
 ## 6. 当前缺口登记
 
-- 当前文档记录 v1.0.2 foundation 发布事实与本地验收口径；GitHub Actions 远端运行结果仍以对应 workflow run 为准。
+- 当前文档记录 v1.0.3 foundation 发布事实，本地验收、远端 branch/tag Actions 与 GitHub Release 对账均已闭合。
 - 若上表存在 Pending、Draft、Blocked、Open 或未登记状态，发布前必须补充证据或在模块追溯矩阵中登记豁免理由。
-- SPEC/TRACEABILITY 已登记完整客户端 AC/TC 主链路；当前主要缺口是 `Exec`、`Query`、`InsertBatch`、`Rows`、live ClickHouse 集成、性能与 tracing 证据。
+- SPEC/TRACEABILITY 已登记完整客户端 AC/TC 主链路；当前主要缺口是 `Exec`、`Query`、`InsertBatch`、`Rows`、性能 benchmark、tracing span 与完整 live 语义证据；BLK-003 / factory 状态仍保持 open。

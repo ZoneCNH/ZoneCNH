@@ -2,7 +2,7 @@
 
 - Status: Generated from current module SSOT
 - Last-Updated: 2026-06-19
-- Module-Version: v1.0.2
+- Module-Version: v1.0.3
 - Module-State: foundation 已验证；完整客户端仍待实现
 - Layer: L2 基础设施适配器
 - Runtime-Repo: /home/clickhousex
@@ -10,14 +10,15 @@
 
 > 本清单用于约束 clickhousex 的完整实现范围。条目来自本目录已有 Spec、Traceability、Plan、Task 等文档；若运行时代码状态与本文不一致，以相应模块仓库的最新验证证据补充更新本文。
 
-## 0. v1.0.2 验证结论
+## 0. v1.0.3 验证结论
 
-- `/home/clickhousex` 的 `clickhousex` 分支已完成 foundation release 证据，并已推送远端 `v1.0.2` tag/release（commit `bd4b991`）：`go test ./...`、`go test ./... -race -count=1`、`go vet ./...`、`go build ./...`、`golangci-lint run ./...`、`go test ./... -coverprofile=coverage.out` 与 `go tool cover -func=coverage.out` 总覆盖率 100.0%。
-- GitHub Release 已发布：https://github.com/ZoneCNH/clickhousex/releases/tag/v1.0.2。
-- CI/CD 已在 `/home/clickhousex/.github/workflows/ci.yml` 配置 quality、lint、integration、trust-alignment、secret-scan 与 tag release-check gate。
+- `/home/clickhousex` 的 `clickhousex` 分支已完成 v1.0.3 foundation release 证据，并已推送远端 `v1.0.3` tag/release（commit `a3c5343381a5b0f7dc03b3f1c6bec6b27859c894`）：`go test ./...`、`go test ./... -race -count=1`、`go vet ./...`、`go build ./...`、`golangci-lint run ./...`、`go test ./... -coverprofile=coverage.out` 与 `go tool cover -func=coverage.out` 总覆盖率 100.0%。
+- GitHub Release 已发布：https://github.com/ZoneCNH/clickhousex/releases/tag/v1.0.3。
+- 版本元数据已对齐：`VERSION`、`.repo-contract.yaml`、`pkg/clickhousex/version.go`、`CHANGELOG.md` 与 `release/manifest/latest.json` 均登记 `v1.0.3`。
+- GitHub Actions 已完成远端复验：branch run `27798632120` 的 quality、lint、integration、secret-scan 与 trust-alignment 均 success；tag run `27798632216` 的 quality、lint、integration、secret-scan、trust-alignment 与 release-check 均 success。
+- Trust Alignment 已复验：`xlibgate trust identity`、`xlibgate trust template-residue`、`xlibgate trust secret-redaction --path release/evidence` 均通过。
 - 依赖与 API 边界已复验：`go list -deps ./...` 未包含 `configx`；`git grep` 未发现新增 `Exec`、`Query`、`InsertBatch`、`Rows` 对外 API。
 - 本版本只闭合 foundation API：`New`、`Close`、`Ping`、`HealthCheck`、`Config`、`Error`、`Metrics` 与 `Version`。完整 ClickHouse 客户端能力仍按未通过或部分通过登记。
-- 本地未执行 `gitleaks`（工具未安装）和 live ClickHouse 集成验收；对应 gate 已配置在 CI 或保留为后续 live-gate。
 
 ## 1. 模块边界清单
 
@@ -72,12 +73,12 @@
 | NFR-010 | race 检测通过 | 零 data race / go test -race ./... / TASK-CLICKHOUSEX-007 / ⬜ | 通过：`go test ./... -race -count=1` | TRACEABILITY.md |
 | NFR-011 | vet 检查通过 | 零警告 / go vet ./... / TASK-CLICKHOUSEX-007 / ⬜ | 通过：`go vet ./...` | TRACEABILITY.md |
 | NFR-012 | lint 检查通过 | 零错误 / golangci-lint run / TASK-CLICKHOUSEX-007 / ⬜ | 通过：`golangci-lint run ./...` | TRACEABILITY.md |
-| NFR-013 | Secret 扫描通过 | 零命中 / gitleaks detect --no-git / TASK-CLICKHOUSEX-007 / ⬜ | CI 已配置；本地未测（`gitleaks` 未安装） | TRACEABILITY.md |
+| NFR-013 | Secret 扫描通过 | 零命中 / gitleaks detect --no-git / TASK-CLICKHOUSEX-007 / ⬜ | 通过：GitHub Actions branch run `27798632120` 与 tag run `27798632216` 的 secret-scan job 均 success；本地 `gitleaks` 未安装 | TRACEABILITY.md |
 | NFR-014 | DSN 不泄露到日志 | 密码用 *** 替代 / review 日志输出格式 / TASK-CLICKHOUSEX-001 / ⬜ | 部分通过：sanitize 单测覆盖；日志链路待实现 | TRACEABILITY.md |
 | NFR-015 | 无直接依赖 configx | `go list -deps ./...` 输出不包含 configx / TASK-CLICKHOUSEX-007 / ⬜ | 通过：`go list -deps ./...` 未包含 `configx` | TRACEABILITY.md |
 | NFR-016 | metrics 指标输出正确 | histogram/counter/gauge 类型正确 / metrics 测试 / TASK-CLICKHOUSEX-006 / ⬜ | 部分通过：Noop counter/histogram/gauge 接口覆盖；业务指标标签待实现 | TRACEABILITY.md |
 | NFR-017 | tracing span 传播正确 | exec/query/insert_batch span / tracing 测试 / TASK-CLICKHOUSEX-006 / ⬜ | - | TRACEABILITY.md |
-| NFR-018 | 集成测试 ClickHouse 不可达时 skip | go test -tags=integration / 集成测试 CI gate / TASK-CLICKHOUSEX-007 / ⬜ | CI 已配置 integration job；本地未跑 live ClickHouse | TRACEABILITY.md |
+| NFR-018 | 集成测试 ClickHouse 不可达时 skip | go test -tags=integration / 集成测试 CI gate / TASK-CLICKHOUSEX-007 / ⬜ | 通过：GitHub Actions branch run `27798632120` 与 tag run `27798632216` 的 integration job 均 success；完整客户端 live 语义仍待 Exec/Query/InsertBatch/Rows 实现后补齐 | TRACEABILITY.md |
 
 ## 4. 任务交付清单
 
@@ -107,5 +108,5 @@
 - [ ] 所有 BR/NFR 条目均有测试、静态检查或人工可审计证据覆盖。
 - [ ] 所有任务文档均能追溯到 FR、BR/NFR、AC 或 TC。
 - [x] 依赖边界符合 FOUNDATION-DEPS.yaml，不引入未授权运行时依赖。
-- [x] 运行时代码仓库 /home/clickhousex 的 lint、typecheck、test、race、coverage 验证证据已归档。
+- [x] 运行时代码仓库 /home/clickhousex 的 lint、typecheck、test、race、coverage、Actions 与 Trust Alignment 验证证据已归档。
 - [x] 发布说明、版本标签与本目录登记状态一致。
