@@ -1,6 +1,6 @@
 # ossx 完整实现清单
 
-- Status: Implemented（远程 `github.com/ZoneCNH/ossx` v1.1.0 已发布）
+- Status: Implemented（远程 `github.com/ZoneCNH/ossx` v1.2.0 已发布）
 - Last-Updated: 2026-06-18
 - Source: [module/ossx/SPEC.md](./SPEC.md) v1.2.0 · [TRACEABILITY.md](./TRACEABILITY.md) · [ACCEPTANCE.md](./ACCEPTANCE.md)
 - Layer: 基座 · 对象存储扩展
@@ -9,10 +9,10 @@
 > 本文档是 ossx **要完整实现的、可勾选的功能清单**，把 SPEC 的 FR/BR 展开成具体的、可验收的功能点。
 > 它不是 Why（[goal.md](./goal.md)）、不是规格（[SPEC.md](./SPEC.md)）、不是追溯矩阵（[TRACEABILITY.md](./TRACEABILITY.md)）、不是阶段计划（[IMPLEMENTATION-PLAN.md](./IMPLEMENTATION-PLAN.md)）。
 >
-> 当前实现事实（2026-06-18）：远程 `github.com/ZoneCNH/ossx` 已发布 **v1.1.0**，FR-001..FR-010 **全部实现**。
+> 当前实现事实（2026-06-18）：远程 `github.com/ZoneCNH/ossx` 已发布 **v1.2.0**，FR-001..FR-010 **全部实现**。
 > - pkg/ossx：流式 BlobStore + 完整 multipart + presign + 策略 + retry/circuit + observex hooks（stdlib + 本地接口，无 configx）
 > - adapters/aliyun：真实 Aliyun OSS adapter（aliyun-oss-go-sdk v3.0.2，SDK 隔离）
-> - 24 单元测试 + 5 集成测试（真实 bucket `x-go`，TC-010）全过；61.2% 覆盖
+> - 本地单元测试 + 5 集成测试（真实 bucket `x-go`，TC-010）全过；pkg/ossx **100.0%** 覆盖
 > - `factory=false` 保持：公开 evidence archive（BLK-008）仍待归档
 
 勾选图例：`[ ]` 待实现 · `[x]` 已实现并通过对应 TC · `[~]` 部分实现（备注列注明缺口）
@@ -142,7 +142,7 @@
 | `pkg/ossx/doc.go` | Aliyun-only 包文档 | ✅ |
 | `adapters/aliyun/oss.go` | 真实 Aliyun adapter | ✅ |
 | `adapters/aliyun/oss_integration_test.go` | 双层门禁集成测试 | ✅ |
-| `README.md` / `CHANGELOG.md` | Aliyun-only + v1.1.0 | ✅ |
+| `README.md` / `CHANGELOG.md` | Aliyun-only + v1.2.0 | ✅ |
 
 ---
 
@@ -171,11 +171,11 @@
 | 维度 | 状态 |
 | ---- | ---- |
 | SPEC | Implemented（v1.2.0） |
-| 远程实现 | v1.1.0 已发布（pkg/ossx + adapters/aliyun，22 文件 +3206 行） |
+| 远程实现 | v1.2.0 已发布（pkg/ossx + adapters/aliyun，19 文件 / 5531 行） |
 | Factory | **false**（公开 evidence archive BLK-008 仍待归档；真实 adapter + 集成证据已齐备） |
 | FR 进度 | FR-001..FR-010 **全部 ✅** |
 | TC 进度 | TC-001..TC-013 **全部 ✅**（24 单测 + 5 集成） |
-| 覆盖率 | 61.2% statements（pkg/ossx） |
+| 覆盖率 | 100.0% statements（pkg/ossx） |
 | 阻塞 | 无 open 实现阻塞；BLK-008（evidence archive）待归档 |
 
-> v1.1.0 是完整实现里程碑。剩余 factory 翻转条件：归档公开 API docs + quickstart + integration evidence + release manifest（BLK-008）。
+> v1.2.0 是完整实现里程碑。剩余 factory 翻转条件：归档公开 API docs + quickstart + integration evidence + release manifest（BLK-008）。
