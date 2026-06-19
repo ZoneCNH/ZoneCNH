@@ -1,7 +1,7 @@
 # ossx 完整验收清单
 
 - Status: Passed（v1.2.0 实现已交付并通过全部验收）
-- Last-Updated: 2026-06-18
+- Last-Updated: 2026-06-19
 - Source: [SPEC.md](./SPEC.md) v1.2.0 · [TRACEABILITY.md](./TRACEABILITY.md) · [FEATURES.md](./FEATURES.md)
 - Remote: `github.com/ZoneCNH/ossx` v1.2.0（tag + GitHub Release）
 
@@ -101,7 +101,7 @@ go list -deps ./... | grep -i configx || echo "✓ 无 configx"
 | Goal/SPEC/TRACEABILITY/PLAN/tasks/prompts/evidence 齐备 | ✅   | module/ossx/ 全套文档             |
 | 所有 FR/BR 映射到 TC 和 Task                            | ✅   | TRACEABILITY.md + 本文档 §2/§3/§4 |
 | 依赖守卫阻止 configx                                    | ✅   | `go list -deps`；TC-001           |
-| 目标测试 + CI 门禁通过或有 pre-impl N/A 证据            | ✅   | 24 单测 + 5 集成全过；race 过     |
+| 目标测试 + CI 门禁通过或有 pre-impl N/A 证据            | ✅   | 58 单测 + 5 集成全过；race 过     |
 | Release notes 标注 Aliyun OSS 后端 + 已知限制           | ✅   | CHANGELOG v1.2.0；README          |
 
 ---
