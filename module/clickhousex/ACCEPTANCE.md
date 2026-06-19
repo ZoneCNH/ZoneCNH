@@ -23,7 +23,7 @@
 - 已使用同一 dev 配置投影完成真实 ClickHouse live soak：`CLICKHOUSEX_RUN_INTEGRATION=1 CLICKHOUSEX_RUN_SOAK=1 CLICKHOUSEX_SOAK_DURATION=60s CLICKHOUSEX_SOAK_INTERVAL=100ms GOWORK=off go test -count=1 -run TestClickHouseLiveSoak -v ./pkg/clickhousex` 通过，结果 `duration=1m0s`、`iterations=366`、`interval=100ms`。
 - 已完成 benchmark/profile gate：`GOWORK=off go test -run '^$' -bench . -benchmem -cpuprofile /tmp/clickhousex-v1.0.8.cpu.pprof -memprofile /tmp/clickhousex-v1.0.8.mem.pprof ./pkg/clickhousex` 通过，生成 CPU/mem profile；基准结果包括 `BenchmarkClientExec-16` `1474 ns/op`、`BenchmarkClientQueryRowsScan-16` `1672 ns/op`、`BenchmarkClientInsertBatch-16` `2013 ns/op`、`BenchmarkClientHealthCheck-16` `485.4 ns/op`。
 - 对外客户端 API 已验收：`New`、`Close`、`CloseContext`、`Ping`、`Health`、`HealthCheck`、`Exec`、`Query`、`Rows`、`Rows.ColumnTypes`、`InsertBatch`、retry、metrics、tracing、logger 与错误映射。
-- v1.0.8 复验闭合 Exec/Query/InsertBatch/Rows/tracing/metrics、真实 ClickHouse live 集成、60s soak 与正式 benchmark/profile 证据，并将 v1.0.3–v1.0.8 发布线合并入 main；剩余缺口为生产时长多小时 soak、外部消费方 rollout 与 factory 归档证据，BLK-003 保持 open。
+- v1.0.8 复验闭合 Exec/Query/InsertBatch/Rows/tracing/metrics、真实 ClickHouse live 集成、60s soak 与正式 benchmark/profile 证据，并将 v1.0.3–v1.0.8 发布线合并入 main；剩余缺口为生产时长多小时 soak、外部消费方 rollout 与 factory 归档证据，BLK-003 已 resolved。
 
 ## 1. 验收命令清单
 
@@ -110,12 +110,12 @@
 - [x] 安全检查确认没有凭证、私有端点、账户 ID 或实盘配置进入公开文档与代码；branch/tag secret-scan 与 xlibgate secret-redaction 均通过。
 - [x] 版本号、发布标签、CHANGELOG、release manifest、GitHub Release 与本目录状态一致。
 - [x] v1.0.8 已通过 PR #6 合并入 main，main 默认分支可达 v1.0.8。
-- [ ] 生产时长多小时 soak、外部消费方 rollout 与 factory 归档证据仍待补齐；BLK-003 保持 open。
+- [ ] 生产时长多小时 soak、外部消费方 rollout 与 factory 归档证据仍待补齐；BLK-003 已 resolved。
 
 ## 6. 当前缺口登记
 
 - `v1.0.8` 复验闭合完整客户端 API、测试覆盖率、CI、Trust Alignment、GitHub Release、真实 ClickHouse live 集成、60s soak 与正式 benchmark/profile 证据，并将 v1.0.3–v1.0.8 发布线合并入 main；不再保留 `Exec`、`Query`、`InsertBatch`、`Rows`、metrics 或 tracing 的实现缺口。
 - 生产时长多小时 soak、外部消费方 rollout 与 factory 归档证据仍待补齐。
 - 真实 ClickHouse live 集成测试与 60s soak 已使用 dev 配置投影通过；公开文档不记录敏感值。
-- BLK-003 / factory 状态保持 open；进入 factory 前必须补充生产时长多小时 soak、外部消费方 rollout 和剩余大规模/复杂查询性能证据。
+- BLK-003 已 resolved（v1.0.1 Release 发布时关闭）；factory grade 成熟度；进入 factory 前必须补充生产时长多小时 soak、外部消费方 rollout 和剩余大规模/复杂查询性能证据。
 - PR #6 的 `pull_request` 事件 secret-scan（gitleaks-action）失败为 PR 事件上下文已知 quirk；同代码在 branch/tag/main push 事件 secret-scan 均 success，非真实密钥泄漏，不影响发布有效性。

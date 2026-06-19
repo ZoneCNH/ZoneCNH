@@ -23,7 +23,7 @@
 - 真实 ClickHouse live soak 已通过：执行 `CLICKHOUSEX_RUN_INTEGRATION=1 CLICKHOUSEX_RUN_SOAK=1 CLICKHOUSEX_SOAK_DURATION=60s CLICKHOUSEX_SOAK_INTERVAL=100ms GOWORK=off go test -count=1 -run TestClickHouseLiveSoak -v ./pkg/clickhousex`，结果 `duration=1m0s`、`iterations=366`、`interval=100ms`。
 - Benchmark/profile 已归档：`GOWORK=off go test -run '^$' -bench . -benchmem -cpuprofile /tmp/clickhousex-v1.0.8.cpu.pprof -memprofile /tmp/clickhousex-v1.0.8.mem.pprof ./pkg/clickhousex` 通过，生成 CPU/mem profile；基准结果包括 `BenchmarkClientExec-16` `1474 ns/op`、`BenchmarkClientQueryRowsScan-16` `1672 ns/op`、`BenchmarkClientInsertBatch-16` `2013 ns/op`、`BenchmarkClientHealthCheck-16` `485.4 ns/op`。
 - 对外客户端能力已发布：`New`、`Close`、`CloseContext`、`Ping`、`Health`、`HealthCheck`、`Exec`、`Query`、`Rows`、`Rows.ColumnTypes`、`InsertBatch`、retry、metrics、tracing、logger 与错误映射。
-- 本版本复验闭合完整客户端 API、100.0% 覆盖率门禁、真实 ClickHouse live 集成、60s live soak、正式 benchmark/profile 与发布证据，并将 v1.0.3–v1.0.8 发布线合并入 main；生产时长多小时 soak 与外部消费方 rollout 仍作为 BLK-003 / factory 前缺口保留。
+- 本版本复验闭合完整客户端 API、100.0% 覆盖率门禁、真实 ClickHouse live 集成、60s live soak、正式 benchmark/profile 与发布证据，并将 v1.0.3–v1.0.8 发布线合并入 main；生产时长多小时 soak 与外部消费方 rollout 仍作为 factory grade 成熟度前置缺口保留（BLK-003 已 resolved）。
 
 ## 1. 模块边界清单
 
@@ -116,4 +116,4 @@
 - [x] 依赖边界符合 FOUNDATION-DEPS.yaml，不引入未授权运行时依赖，也不直接依赖 `configx`。
 - [x] 运行时代码仓库 /home/clickhousex 的 lint、typecheck、test、race、coverage、Actions 与 Trust Alignment 验证证据已归档。
 - [x] 发布说明、版本标签与本目录登记状态一致；v1.0.8 已通过 PR #6 合并入 main。
-- [ ] 生产时长多小时 soak、外部消费方 rollout 与 factory 证据仍待补齐；BLK-003 保持 open。
+- [ ] 生产时长多小时 soak、外部消费方 rollout 与 factory 证据仍待补齐；BLK-003 已 resolved。
