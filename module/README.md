@@ -1,6 +1,6 @@
 # Foundation 模块规格索引
 
-> 19 个基座模块与 5 个 L2.5 领域共享规划/基线模块的独立规格，按架构层级组织。`x.go` 组合根不再作为 `module/` 下的模块规格维护。
+> 20 个基座模块与 5 个 L2.5 领域共享规划/基线模块的独立规格，按架构层级组织。`x.go` 组合根不再作为 `module/` 下的模块规格维护。
 
 最后更新：2026-06-19
 
@@ -21,6 +21,7 @@
 ## 同步口径
 
 - `module/` 是当前仓库的模块规格制品 SSOT：承载 `module/*/SPEC.md`、`module/*/TRACEABILITY.md`、`module/*/tasks/` 和模块实现计划；`docs/governance/` 是 Spec → Code 治理、模板、门禁和评分规则 SSOT。
+- [PRODUCTION-STANDARD-COVERAGE.md](./PRODUCTION-STANDARD-COVERAGE.md) 记录生产标准到 `module/` 文档五件套的覆盖矩阵、缺口优先级和本地 / 生产证据口径。
 - 模块级 Goal 文档固定为 `module/{module}/goal.md`；禁止使用 `module/{module}/goal/` 目录、`module/{module}/goal/1.md` 或 `goal/*.md` 多文件槽位。
 - `module/{module}/` 只保存 Goal、Spec、Traceability、Task、Plan、Prompt、Evidence 等交付制品；对应模块代码仓库的本地工作目录统一为 `/home/{module}`。
 - `docs/goal/` 是 Goal 驱动交付规则 SSOT；`.config/goal/` 是 Goal 运行状态、Registry、Gate、Evidence 和 Prompt 版本的 SSOT。
