@@ -1,23 +1,23 @@
 # taosx 规格
 
 - Status: Approved
-- Spec-Version: v1.0.1
-- Last-Updated: 2026-06-16
+- Spec-Version: v1.0.3
+- Last-Updated: 2026-06-19
 - Layer: L2 存储适配器
-- Version: v1.0.1
+- Version: v1.0.3
 - Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `kernel`
 
-> 公开投影 caveat：Status=Approved 与 100.0% 覆盖证据不等同于 factory-grade；BLK-007（SPEC ~77 / tasks 76）关闭前机器事实层保持 factory=false。
+> 公开投影 caveat：Status=Approved、100.0% 覆盖证据与 dev live gate 通过不等同于 factory-grade；外部 tag/GitHub Release/远端 CI/发布制品证据补齐前保持非 factory 声明。
 
 ---
 
 ## 1. 摘要
 
-`taosx` 是 TDengine 的 L2 存储适配器契约模块。v1.0.1 在保持 v1.0.0 公共 API 与适配器边界不变的前提下，交付 Go 侧可审计的配置归一化与脱敏、SQL 执行与查询契约、批量写入与 schemaless 写入契约、健康检查、可注入驱动端口和可选指标端口。
+`taosx` 是 TDengine 的 L2 存储适配器契约模块。v1.0.3 在保持 v1.0.0 公共 API 与适配器边界不变的前提下，交付 Go 侧可审计的配置归一化与脱敏、SQL 执行与查询契约、批量写入与 schemaless 写入契约、健康检查、可注入驱动端口和可选指标端口。
 
 **时序存储边界：taosx vs clickhousex** — taosx 面向 **IoT 时序存储**场景（高频传感器/行情数据写入、时间窗口查询、设备监控），基于 TDengine 的超级表（supertable）模型优化写入吞吐，适合每秒数万点的高频写入和简单时间窗口聚合（如 `INTERVAL(1m)` 均值/最大/最小）。clickhousex 面向 **OLAP 分析查询**场景（复杂聚合、多维分析、即席查询），适合需要对历史数据进行灵活 SQL 分析的分析工作负载。选型指南：高频写入 + 固定窗口查询 → taosx；复杂聚合 + 灵活多维分析 → clickhousex。两者不重叠，按场景组合使用。
 
-v1.0.1 保持 `pkg/taosx` 为公共运行时 API：默认驱动仍显式不可用，真实 TDengine 通过 `WithDriver` 注入或测试适配器接入。发布验证已使用官方 `taosWS` WebSocket driver 在本地 dev 环境执行真实 `SHOW TABLES` 集成测试，并补齐 batch rows / schemaless lines 指标语义与 `pkg/taosx` 100.0% 覆盖证据；核心包仍不内置连接池、STMT 批量写入实现或自动重试策略。
+v1.0.3 保持 `pkg/taosx` 为公共运行时 API：默认驱动仍显式不可用，真实 TDengine 通过 `WithDriver` 注入或测试适配器接入。本地发布候选已把 `taosx-coverage-check` 接入 CI/release 门禁并验证 `pkg/taosx` 100.0% 覆盖率；官方 `taosWS` WebSocket 集成仍是 `integration` tag + `TAOSX_INTEGRATION=1` 显式 opt-in gate，2026-06-19 已使用受控 dev 配置完成 live run；证据只登记脱敏命令、数据库名和 PASS 结果。核心包仍不内置连接池、STMT 批量写入实现或自动重试策略。
 
 ## 2. 目标
 
@@ -27,7 +27,7 @@ v1.0.1 保持 `pkg/taosx` 为公共运行时 API：默认驱动仍显式不可�
 - 提供 `Rows` 抽象，允许驱动实现按行扫描、返回列信息和关闭查询结果。
 - 提供 `Metrics` 端口与 no-op 默认实现，让上层 observability 适配器可以在不引入直接依赖的前提下接入。
 - 通过契约测试锁定校验、错误分类、指标回调、健康状态和关闭幂等性。
-- 提供显式 opt-in 的 TDengine WebSocket 集成测试，验证官方 `taosWS` driver 可经 `WithDriver` 接入且失败输出不泄漏凭据。
+- 提供显式 opt-in 的 TDengine WebSocket 集成测试边界，验证官方 `taosWS` driver 可经 `WithDriver` 接入；live 运行必须由 `TAOSX_INTEGRATION=1` 与外部凭据显式开启，失败输出不得泄漏凭据。
 
 ## 3. 非目标
 
@@ -50,7 +50,7 @@ v1.0.1 保持 `pkg/taosx` 为公共运行时 API：默认驱动仍显式不可�
 
 ## 5. 功能需求
 
-以下功能需求定义 v1.0.1 必须稳定交付的 TDengine 适配器公共能力。每条 FR 包含 WHEN/THEN 行为规格和对应的验收标准 (AC) 与测试用例 (TC) 映射。
+以下功能需求定义 v1.0.3 必须稳定交付的 TDengine 适配器公共能力。每条 FR 包含 WHEN/THEN 行为规格和对应的验收标准 (AC) 与测试用例 (TC) 映射。
 
 ### FR-001: Config.Normalize 默认值补齐
 
@@ -164,7 +164,9 @@ v1.0.1 保持 `pkg/taosx` 为公共运行时 API：默认驱动仍显式不可�
 | BR-003 | 错误必须可分类且可脱敏。 | 操作名使用 `taosx.<Operation>`，日志/DSN/状态不得暴露密码。 |
 | BR-004 | `MaxRetries` 是配置契约保留字段，不代表核心 client 自动重试。 | 重试策略应由驱动适配器或上层 resilience 组合实现。 |
 | BR-005 | 默认驱动必须显式不可用。 | 避免误导用户以为默认构造能连接真实 TDengine。 |
-| BR-006 | 真实集成测试必须显式 opt-in 且凭据脱敏。 | 只在 `TAOSX_INTEGRATION=1` 与 `integration` build tag 同时存在时运行；失败输出不得泄漏 DSN 或密码。 |
+| BR-006 | 原始 SQL 只做空值校验，不声明注入防护。 | 参数化与 SQL DSL 属于上层或具体 driver adapter 职责。 |
+| BR-007 | 真实集成测试不得进入默认测试路径，失败输出不得包含 DSN/用户名/密码。 | 未设置 `TAOSX_INTEGRATION=1` 时 integration tag 测试必须 pass 并 skip。 |
+| BR-008 | 官方 `taosWS` WebSocket 集成测试必须显式 opt-in、环境变量配置且凭据脱敏。 | 只在 `TAOSX_INTEGRATION=1` 与 `integration` build tag 同时存在时运行；具备 live 环境时失败阻塞外部 release。 |
 
 ## 7. 公共 API 契约与使用示例
 
@@ -204,10 +206,10 @@ type Config struct {
 
 ```go
 cfg := taosx.Config{
-	Endpoint: "tdengine.example.internal:6041",
-	Database: "market",
-	Username: "root",
-	Password: os.Getenv("TAOSX_PASSWORD"),
+	Endpoint: "<configured-endpoint>",
+	Database: "<configured-database>",
+	Username: os.Getenv("TAOSX_TDENGINE_USER"),
+	Password: os.Getenv("TAOSX_TDENGINE_PASSWORD"),
 }
 
 client, err := taosx.New(ctx, cfg, taosx.WithDriver(driver))
@@ -231,16 +233,18 @@ defer rows.Close()
 |------|-------------|----------|
 | 单元测试 | `go test ./pkg/taosx` | 任一测试失败 |
 | Race 检测 | `go test -race ./pkg/taosx ./contracts` | data race 检出 |
-| 覆盖率门禁 | `go test ./pkg/taosx -coverprofile=/tmp/taosx.cover` → `go tool cover -func=/tmp/taosx.cover` | `pkg/taosx` 覆盖率 < 100.0% |
+| 覆盖率门禁 | `GOWORK=off make taosx-coverage-check` | `pkg/taosx` 覆盖率 < 100.0% |
 | 契约测试 | `go test ./contracts` | 契约违反 |
 | 示例测试 | `go test ./examples/...` | 示例不可运行 |
 | 全量测试 | `go test ./...` | 任一包失败 |
+| 本地发布候选 | `GOWORK=off make release-check` | 任一 release gate 失败 |
 | 静态分析 | `staticcheck ./...` | staticcheck 报错 |
 | 漏洞扫描 | `govulncheck ./...` | 已知漏洞检出 |
 | 边界检查 | `./scripts/check_boundary.sh` | 未批准 Zone 模块依赖引入 |
 | 契约合规 | `./scripts/check_contracts.sh` | 契约不符合 |
 | 依赖差异 | `./scripts/check_dependency_diff.sh` | 依赖漂移 |
-| 集成测试 (opt-in) | `TAOSX_INTEGRATION=1 go test -tags=integration ./pkg/taosx -run TestTDengineWebSocketIntegration -count=1` | env-gated，失败阻塞 release |
+| 集成测试默认防护 | `GOWORK=off go test -tags=integration ./pkg/taosx -run TestTDengineWebSocketIntegration -count=1 -v` | 未 opt-in 时未 pass/skip |
+| 集成测试 (live opt-in) | `TAOSX_INTEGRATION=1 go test -tags=integration ./pkg/taosx -run TestTDengineWebSocketIntegration -count=1` | 具备 live 环境时失败阻塞外部 release |
 | 格式检查 | `git diff --check` | 空白/格式违规 |
 | 凭据泄漏 | grep password/secret/token 失败输出 | 凭据泄露 |
 
@@ -332,17 +336,17 @@ module/taosx/
 
 ### 兼容性
 
-v1.0.1 不改变 v1.0.0 的公共构造入口和核心接口语义。新增字段、方法或错误分类必须保留旧调用方的编译兼容性，破坏性变更必须进入后续 major 版本。
+v1.0.3 不改变 v1.0.0 的公共构造入口和核心接口语义。新增字段、方法或错误分类必须保留旧调用方的编译兼容性，破坏性变更必须进入后续 major 版本。
 
 ### 迁移策略
 
-从 v1.0.0 升级到 v1.0.1 的调用方只需重新运行验证命令。已注入自定义 driver、metrics 或测试适配器的项目不需要调整构造方式。
+从 v1.0.2 升级到 v1.0.3 的调用方只需重新运行验证命令。已注入自定义 driver、metrics 或测试适配器的项目不需要调整构造方式。
 
 ## 19. 发布证据与测试矩阵
 
 ### 发布证据
 
-发布证据必须包含单元测试、契约测试、示例测试、race 检查、覆盖率报告、边界检查、依赖差异检查、Docker 或本地 TDengine 集成测试、`git diff --check` 输出和无凭据泄漏检查。
+v1.0.3 本地发布候选证据必须包含单元测试、契约测试、示例测试、race 检查、覆盖率报告、边界检查、依赖差异检查、`GOWORK=off make release-check`、`GOWORK=off make taosx-coverage-check` 100.0% 结果、`GOWORK=off make integration`、integration tag 默认 skip 证据、`git diff --check` 输出和无凭据泄漏检查；当前源码证据锚定 `/home/taosx/.worktree/workspaces/taosx-20260619` branch `taosx` @ `d46af01`，release evidence hash `c78f9de861cf83434140fc0e0e051e91af71736ec2d22f0ce1c0cf74c9a87f61`。dev live TDengine opt-in 运行证据已在 2026-06-19 补齐；对外发布、GitHub Release 或 factory-grade 声明还必须补充外部发布/远端 CI/发布制品证据。
 
 ### 测试矩阵
 
@@ -350,7 +354,7 @@ v1.0.1 不改变 v1.0.0 的公共构造入口和核心接口语义。新增字�
 
 ## 20. 回滚策略
 
-如 v1.0.1 发布后出现回归，调用方可回退到 v1.0.0 tag。回滚不需要数据迁移，因为核心包不持久化状态、不写 schema、不管理连接池。
+如 v1.0.3 发布后出现回归，调用方可回退到上一已验证候选或已发布 tag（当前上一候选为 v1.0.2）。回滚不需要数据迁移，因为核心包不持久化状态、不写 schema、不管理连接池。
 
 ## 21. 运行手册
 
@@ -358,7 +362,7 @@ v1.0.1 不改变 v1.0.0 的公共构造入口和核心接口语义。新增字�
 
 ## 22. 验收状态
 
-本规格状态为 Approved。进入 release_ready 前，必须确认 TRACEABILITY 中 FR-001 到 FR-010 与 BR-001 到 BR-006 的测试证据均为通过状态。
+本规格状态为 Approved。进入 release_ready 前，必须确认 TRACEABILITY 中 FR-001 到 FR-010 与 BR-001 到 BR-008 的测试证据均为通过状态；BR-008 live dev 证据已在 2026-06-19 补齐，但外部发布与 factory-grade 声明仍需单独发布证据。
 
 ## 23. 开放问题
 

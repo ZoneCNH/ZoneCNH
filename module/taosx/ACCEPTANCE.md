@@ -1,11 +1,11 @@
 # taosx 完整验收清单
 
 - Status: Generated from current module SSOT
-- Last-Updated: 2026-06-18
-- Module-Version: v1.0.1
-- Module-State: 已发布
+- Last-Updated: 2026-06-19
+- Module-Version: v1.0.3
+- Module-State: 本地发布候选
 - Layer: L2 基础设施适配器
-- Runtime-Repo: /home/taosx
+- Runtime-Repo: /home/taosx/.worktree/workspaces/taosx-20260619
 - Source: goal.md, SPEC.md, TRACEABILITY.md, IMPLEMENTATION-PLAN.md, tasks/
 
 > 本清单用于验收 taosx 是否达到可发布、可追溯、可复验状态。除非条目明确记录为已通过，默认需要在运行时代码仓库重新执行验证并补充证据。
@@ -14,13 +14,15 @@
 
 | 类别 | 命令 | 通过标准 |
 | --- | --- | --- |
-| 文档存在性 | cd /home/ZoneCNH && test -f module/taosx/FEATURES.md && test -f module/taosx/ACCEPTANCE.md | FEATURES.md 与 ACCEPTANCE.md 均存在 |
-| 文档格式 | cd /home/ZoneCNH && git diff --check -- module/taosx | 无尾随空格或补丁格式错误 |
-| 运行时测试 | cd /home/taosx && go test ./... | 所有包测试通过 |
-| 竞态检查 | cd /home/taosx && go test ./... -race -count=1 | 无 data race，测试稳定通过 |
-| 静态检查 | cd /home/taosx && go vet ./... | 无 vet 问题 |
-| 覆盖率证据 | cd /home/taosx && go test ./... -coverprofile=coverage.out | 覆盖率文件生成并满足模块 Spec 门槛 |
-| 依赖边界 | cd /home/taosx && go list -deps ./... | 依赖不越过 FOUNDATION-DEPS.yaml 登记边界 |
+| 文档存在性 | cd /home/ZoneCNH/.worktree/workspaces/taosx-20260619 && test -f module/taosx/FEATURES.md && test -f module/taosx/ACCEPTANCE.md | FEATURES.md 与 ACCEPTANCE.md 均存在 |
+| 文档格式 | cd /home/ZoneCNH/.worktree/workspaces/taosx-20260619 && git diff --check -- README.md ARCHITECTURE.md module/README.md module/taosx | 无尾随空格或补丁格式错误 |
+| 发布门禁 | cd /home/taosx/.worktree/workspaces/taosx-20260619 && GOWORK=off make release-check | release 本地门禁通过，manifest 生成并可验证 |
+| 覆盖率证据 | cd /home/taosx/.worktree/workspaces/taosx-20260619 && GOWORK=off make taosx-coverage-check | `pkg/taosx` 覆盖率 total 等于 `100.0%` |
+| 模板集成 | cd /home/taosx/.worktree/workspaces/taosx-20260619 && GOWORK=off make integration | kernel/configx/redisx 渲染下游通过，score=10 |
+| TDengine opt-in guard | cd /home/taosx/.worktree/workspaces/taosx-20260619 && GOWORK=off go test -tags=integration ./pkg/taosx -run TestTDengineWebSocketIntegration -count=1 -v | 未设置 `TAOSX_INTEGRATION=1` 时 pass 且 skip，不连接外部 TDengine |
+| TDengine live gate | cd /home/taosx/.worktree/workspaces/taosx-20260619 && TAOSX_INTEGRATION=1 GOWORK=off go test -tags=integration ./pkg/taosx -run TestTDengineWebSocketIntegration -count=1 -v | 2026-06-19 使用 `sre/secrets/env/dev.md` 的 `market_binance` dev 配置时 pass；`TestTDengineWebSocketIntegration` PASS，package result `ok github.com/ZoneCNH/taosx/pkg/taosx 0.020s`；输出不记录 endpoint、用户名、密码或完整 DSN |
+| 渲染回归 | cd /home/taosx/.worktree/workspaces/taosx-20260619 && bash -n scripts/render_template.sh scripts/check_rendered_template.sh scripts/run_integration.sh && GOWORK=off go test ./scripts -run TestRenderTemplateRewritesSourceModuleIdentity -count=1 | 脚本语法与嵌套渲染回归通过 |
+| 源码格式 | cd /home/taosx/.worktree/workspaces/taosx-20260619 && git diff --check | 无尾随空格或补丁格式错误 |
 
 ## 2. AC 验收登记
 
@@ -41,25 +43,25 @@
 
 | ID | 测试项 | 关联要求/验收/任务 | 当前登记状态 | 来源 |
 | --- | --- | --- | --- | --- |
-| TC-001 | FR-001 | go test ./pkg/taosx -run TestConfigNormalize | - | TRACEABILITY.md |
-| TC-002 | FR-002 | go test ./pkg/taosx -run TestConfigValidate | - | TRACEABILITY.md |
-| TC-003 | FR-002 | go test ./pkg/taosx -run TestConfigRedact | - | TRACEABILITY.md |
-| TC-004 | FR-003 | go test ./pkg/taosx -run TestDefaultUnavailable | - | TRACEABILITY.md |
-| TC-005 | FR-003 | go test ./pkg/taosx -run TestDriverInject | - | TRACEABILITY.md |
-| TC-006 | FR-004 | go test ./pkg/taosx -run TestExecEmpty | - | TRACEABILITY.md |
-| TC-007 | FR-004 | go test ./pkg/taosx -run TestExecDelegate | - | TRACEABILITY.md |
-| TC-008 | FR-005 | go test ./pkg/taosx -run TestQueryEmpty | - | TRACEABILITY.md |
-| TC-009 | FR-005 | go test ./pkg/taosx -run TestRowsIter | - | TRACEABILITY.md |
-| TC-010 | FR-006 | go test ./pkg/taosx -run TestWriteBatchEmpty | - | TRACEABILITY.md |
-| TC-011 | FR-006 | go test ./pkg/taosx -run TestWriteBatchPartial | - | TRACEABILITY.md |
-| TC-012 | FR-007 | go test ./pkg/taosx -run TestSchemalessEmpty | - | TRACEABILITY.md |
-| TC-013 | FR-007 | go test ./pkg/taosx -run TestSchemalessProtocol | - | TRACEABILITY.md |
-| TC-014 | FR-008 | go test ./pkg/taosx -run TestHealthDegraded | - | TRACEABILITY.md |
-| TC-015 | FR-008 | go test ./pkg/taosx -run TestHealthDelegate | - | TRACEABILITY.md |
-| TC-016 | FR-009 | go test ./pkg/taosx -run TestCloseIdempotent | - | TRACEABILITY.md |
-| TC-017 | FR-009 | go test ./pkg/taosx -run TestCloseRejectsOps | - | TRACEABILITY.md |
-| TC-018 | FR-010 | go test ./pkg/taosx -run TestMetricsNoop | - | TRACEABILITY.md |
-| TC-019 | FR-010 | go test ./pkg/taosx -run TestMetricsRecord | - | TRACEABILITY.md |
+| TC-001 | FR-001 | go test ./pkg/taosx -run TestConfigNormalize | ✅ | TRACEABILITY.md |
+| TC-002 | FR-002 | go test ./pkg/taosx -run TestConfigValidate | ✅ | TRACEABILITY.md |
+| TC-003 | FR-002 | go test ./pkg/taosx -run TestConfigRedact | ✅ | TRACEABILITY.md |
+| TC-004 | FR-003 | go test ./pkg/taosx -run TestDefaultUnavailable | ✅ | TRACEABILITY.md |
+| TC-005 | FR-003 | go test ./pkg/taosx -run TestDriverInject | ✅ | TRACEABILITY.md |
+| TC-006 | FR-004 | go test ./pkg/taosx -run TestExecEmpty | ✅ | TRACEABILITY.md |
+| TC-007 | FR-004 | go test ./pkg/taosx -run TestExecDelegate | ✅ | TRACEABILITY.md |
+| TC-008 | FR-005 | go test ./pkg/taosx -run TestQueryEmpty | ✅ | TRACEABILITY.md |
+| TC-009 | FR-005 | go test ./pkg/taosx -run TestRowsIter | ✅ | TRACEABILITY.md |
+| TC-010 | FR-006 | go test ./pkg/taosx -run TestWriteBatchEmpty | ✅ | TRACEABILITY.md |
+| TC-011 | FR-006 | go test ./pkg/taosx -run TestWriteBatchPartial | ✅ | TRACEABILITY.md |
+| TC-012 | FR-007 | go test ./pkg/taosx -run TestSchemalessEmpty | ✅ | TRACEABILITY.md |
+| TC-013 | FR-007 | go test ./pkg/taosx -run TestSchemalessProtocol | ✅ | TRACEABILITY.md |
+| TC-014 | FR-008 | go test ./pkg/taosx -run TestHealthDegraded | ✅ | TRACEABILITY.md |
+| TC-015 | FR-008 | go test ./pkg/taosx -run TestHealthDelegate | ✅ | TRACEABILITY.md |
+| TC-016 | FR-009 | go test ./pkg/taosx -run TestCloseIdempotent | ✅ | TRACEABILITY.md |
+| TC-017 | FR-009 | go test ./pkg/taosx -run TestCloseRejectsOps | ✅ | TRACEABILITY.md |
+| TC-018 | FR-010 | go test ./pkg/taosx -run TestMetricsNoop | ✅ | TRACEABILITY.md |
+| TC-019 | FR-010 | go test ./pkg/taosx -run TestMetricsRecord | ✅ | TRACEABILITY.md |
 
 ## 4. 覆盖闭合验收
 
@@ -81,26 +83,26 @@
 | BR-004 | MaxRetries 是配置契约保留字段，不代表核心 client 自动重试 | — / go test ./contracts | ✅ | TRACEABILITY.md |
 | BR-005 | 默认驱动必须显式不可用，避免零配置被误认为真实 TDengine 连接 | TC-004 / go test ./pkg/taosx -run TestDefaultUnavailable | ✅ | TRACEABILITY.md |
 | BR-006 | 原始 SQL 只做空值校验，不声明注入防护 | TC-006 / go test ./pkg/taosx -run TestSQL | ✅ | TRACEABILITY.md |
-| BR-007 | 真实集成测试不得进入默认测试路径，失败输出不得包含 DSN/用户名/密码 | — / TAOSX_INTEGRATION=1 go test -tags=integration ./pkg/taosx -run TestTDengineWebSocketIntegration -count=1 | ✅ | TRACEABILITY.md |
-| BR-008 | 官方 taosWS WebSocket 集成测试必须显式 opt-in、环境变量配置且凭据脱敏 | — / TAOSX_INTEGRATION=1 go test -tags=integration ./pkg/taosx -run TestTDengineWebSocketIntegration -count=1 | ✅ | TRACEABILITY.md |
+| BR-007 | 真实集成测试不得进入默认测试路径，失败输出不得包含 DSN/用户名/密码 | — / go test -tags=integration ./pkg/taosx -run TestTDengineWebSocketIntegration -count=1 -v；TAOSX_INTEGRATION=1 时执行 live gate | ✅ | TRACEABILITY.md |
+| BR-008 | 官方 taosWS WebSocket 集成测试必须显式 opt-in、环境变量配置且凭据脱敏 | — / TAOSX_INTEGRATION=1 GOWORK=off go test -tags=integration ./pkg/taosx -run TestTDengineWebSocketIntegration -count=1 -v | ✅ | TRACEABILITY.md |
 | NFR-001 | Config | Config 归一化仅补齐安全默认值，不连接外部系统；校验拒绝非法输入 / go test ./pkg/taosx -run TestConfig -count=1 | ✅ | TRACEABILITY.md |
 | NFR-002 | Concurrency | Client 构造后可被并发调用；Close 必须幂等，关闭过程中不得 panic / go test -race ./pkg/taosx ./contracts | ✅ | TRACEABILITY.md |
 | NFR-003 | Observability | 指标端口只记录低基数标签；默认 no-op 零配置可用；健康状态不含明文密码 / go test ./pkg/taosx -run TestMetrics + go test ./pkg/taosx -run TestHealth | ✅ | TRACEABILITY.md |
 | NFR-004 | Security | 错误/状态/日志/测试输出/示例均不得暴露真实密码、API key、私有 endpoint / ./scripts/check_contracts.sh | ✅ | TRACEABILITY.md |
 | NFR-005 | Dependency | 核心包直接 Zone 依赖仅允许 kernel；驱动/指标/配置通过端口注入 / ./scripts/check_boundary.sh + ./scripts/check_dependency_diff.sh | ✅ | TRACEABILITY.md |
-| NFR-006 | Compatibility | v1.0.1 不改变 v1.0.0 公共构造入口和核心接口语义；破坏性变更进后续 major / go test ./... | ✅ | TRACEABILITY.md |
+| NFR-006 | Compatibility | v1.0.3 不改变 v1.0.0 公共构造入口和核心接口语义；破坏性变更进后续 major / GOWORK=off make taosx-coverage-check + GOWORK=off make release-check | ✅ | TRACEABILITY.md |
 
 ## 5. 发布 DoD 清单
 
-- [ ] FEATURES.md 的 FR、BR/NFR、任务清单与 SPEC/TRACEABILITY 当前登记一致。
-- [ ] ACCEPTANCE.md 的 AC、TC 与运行时代码测试名、证据文件或 CI 记录一致。
-- [ ] 运行时代码仓库 /home/taosx 通过 go test、go test -race、go vet 与覆盖率门槛。
-- [ ] 所有外部服务依赖有本地可重复的测试替身或明确 live-gate 证据。
-- [ ] 安全检查确认没有凭证、私有端点、账户 ID 或实盘配置进入公开文档与代码。
-- [ ] 版本号、发布标签、CHANGELOG 或 release note 与本目录状态一致。
+- [x] FEATURES.md 的 FR、BR/NFR、任务清单与 SPEC/TRACEABILITY 当前登记一致。
+- [x] ACCEPTANCE.md 的 AC、TC 与运行时代码测试名、证据文件或 CI 记录一致。
+- [x] 运行时代码仓库 /home/taosx 通过 go test、go test -race、go vet 与覆盖率门槛。
+- [x] 所有外部服务依赖有本地可重复的测试替身或明确 live-gate 证据。
+- [x] 安全检查确认没有凭证、私有端点、账户 ID 或实盘配置进入公开文档与代码。
+- [x] 版本号、发布标签、CHANGELOG 或 release note 与本目录状态一致。
 
 ## 6. 当前缺口登记
 
-- 当前文档只记录验收口径，不替代运行时代码仓库的最新 CI 结果。
-- 若上表存在 Pending、Draft、Blocked、Open 或未登记状态，发布前必须补充证据或在模块追溯矩阵中登记豁免理由。
-- SPEC/TRACEABILITY 已登记 AC/TC 主链路；当前主要缺口是 /home/taosx 最新测试、race/vet/lint、覆盖率与 TDengine 集成/发布证据需要归档。
+- 默认 release/coverage/integration 门禁已在源码 worktree `taosx` @ `d46af01` 通过；release evidence hash `c78f9de861cf83434140fc0e0e051e91af71736ec2d22f0ce1c0cf74c9a87f61`。
+- live TDengine WebSocket run 已在 2026-06-19 使用 `sre/secrets/env/dev.md` 的 `market_binance` dev 配置通过：`TestTDengineWebSocketIntegration` PASS，package result `ok github.com/ZoneCNH/taosx/pkg/taosx 0.020s`。
+- 未执行外部 push/tag/GitHub Release；当前状态是本地发布候选。
