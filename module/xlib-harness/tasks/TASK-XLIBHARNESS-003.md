@@ -29,4 +29,4 @@ FR-003 实现与验证
 
 ## Evidence
 
-- /home/xlib-harness@335eef9：`go test ./...`、`go test ./... -race -count=1`、`go vet ./...`、coverage、benchmark 与 CLI smoke 均 PASS。
+- /home/xlib-harness@aa83306685a9：`make ci`、`go test -bench=. ./...`、`git diff --check`、secret pattern scan 均 PASS；coverage total 100.0%。

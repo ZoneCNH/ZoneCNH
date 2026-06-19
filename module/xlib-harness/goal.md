@@ -1,33 +1,62 @@
 # xlib-harness Goal
 
-- 当前发布版本：v0.1.1
-- 代码验收基线：/home/xlib-harness@335eef9
-- 验收日期：2026-06-18
+> Goal-Version: v1.2.0
+> Last-Updated: 2026-06-19
+> Module-State: 已发布
+> Release-Version: v0.1.2
+> Implementation-Baseline: `/home/xlib-harness@aa83306685a9`
 
-## 发布定位
+## 背景
 
-xlib-harness 是 Foundation 模块的生成器与门禁执行器。从 xlib-standard 拆分而来，独立承担 Generator 和 Harness Gate 两类执行职责。
+Foundation 20 模块需要一个独立的最小合规脚手架与验收门禁，用于在尚未接入完整业务代码前先建立统一的规格、追踪矩阵、任务拆分、验收文档和 CI/CD 边界。
 
-## 边界
+`xlib-harness` 的目标不是业务库，而是一个标准库依赖的 harness 工具。它生成模块级规格资产，并对这些资产执行规格结构、追踪闭环、运行时依赖边界、Markdown 格式和 CI/CD 引用门禁。
 
-- **拥有**：模块骨架生成、spec-lint 门禁、boundary 检查、traceability 闭合检查
-- **不拥有**：标准定义（xlib-standard）、证据收集与报告（xlib-evidence）、CI 管线流程（xlibgate）
+## 业务目标
 
-## 契约
+1. 生成标准模块文档集合：`README.md`、`SPEC.md`、`TRACEABILITY.md`、`IMPLEMENTATION-PLAN.md`、`ACCEPTANCE.md`、`FEATURES.md`。
+2. 提供可脚本化 CLI：`xlib-harness generate` 与 `xlib-harness check`。
+3. 保证 harness 自身不依赖业务模块或横切库，运行时只使用 Go 标准库。
+4. 让 compliant fixture 通过完整门禁，让 broken fixture 稳定失败。
+5. 让工具自身达到 100% Go 覆盖率，并纳入 `make ci` 与 GitHub Actions。
 
-| 契约 | 消费者 | 说明 |
-|------|--------|------|
-| `generate` | 模块开发者 | 从模板生成新模块骨架 |
-| `check` | CI 管线 | 对单个模块执行合规门禁 |
+## 成功标准
 
-## 测试证据
+| ID | 标准 | 验收方式 | 状态 |
+| --- | --- | --- | --- |
+| G-001 | 生成 6 个模块文档资产 | `go run . generate /tmp/xlib-harness-smoke --force` | PASS |
+| G-002 | 规格门禁覆盖 23 节结构、FR/AC/TC 可验证性 | `go run . check fixtures/compliant-module --profile spec` | PASS |
+| G-003 | 边界门禁禁止 `observex`、`configx`、`resiliencx`、`schedulex`、`testkitx`、`xlib-standard` 运行时引用 | `go run . check fixtures/bad-dependency --profile boundary` 预期失败 | PASS |
+| G-004 | 追踪矩阵门禁能发现未闭合 FR/AC/TC | `go run . check fixtures/broken-trace --profile full` 预期失败 | PASS |
+| G-005 | harness 自身质量门禁完整通过 | `make ci` | PASS |
+| G-006 | Go 覆盖率达到 100% | `go test ./... -coverprofile=coverage.out -covermode=count && go tool cover -func=coverage.out` | PASS |
 
-- `generate` 生成后立即 `check` 自举验证
-- 每个 check 独立单元测试
-- 门禁 profile 全覆盖（full / spec / boundary）
+## 范围
 
-## DoD
+### In Scope
 
-- [x] 6 FR 全部实现并通过 SPEC.md FR-001..006 的 WHEN/THEN 验证
-- [x] generate → check 自举闭环可跑通
-- [x] 测试覆盖率 >= 80%
+- CLI 参数解析、文本输出和 JSON 输出。
+- 文档生成模板。
+- 规格、追踪、边界、格式、CI/CD 引用检查。
+- compliant、bad-dependency、broken-trace fixture。
+- Makefile 与 GitHub Actions CI/CD 配置。
+- 根仓库 `module/xlib-harness` 的 Spec、Traceability、Task、Acceptance、Features 投影。
+
+### Out of Scope
+
+- 业务模块实现。
+- 远端发布推送或 GitHub Release 人工审批。
+- 引入第三方 CLI 依赖作为 harness 运行时依赖。
+- 替代 `xlibgate` 的外部信任门禁。
+
+## 当前证据
+
+- `/home/xlib-harness@aa83306685a9`
+- 本地 release tag：`v0.1.2`
+- `make ci`：PASS
+- `go test ./...`：PASS
+- `go test ./... -race -count=1`：PASS
+- `go vet ./...`：PASS
+- `go test ./... -coverprofile=coverage.out -covermode=count && go tool cover -func=coverage.out`：PASS，total 100.0%
+- `go test -bench=. ./...`：PASS
+- `git diff --check`：PASS

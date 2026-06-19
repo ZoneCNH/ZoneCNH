@@ -1,45 +1,71 @@
-# xlib-harness IMPLEMENTATION-PLAN
+# xlib-harness Implementation Plan
 
-## Phase 1: 核心生成器
+> Module: `xlib-harness`
+> Version: v0.1.2
+> Last-Updated: 2026-06-19
+> Implementation-Baseline: `/home/xlib-harness@aa83306685a9`
 
-- FR-001: 实现 generate 命令
-- 从 xlib-standard/templates/ 读取模板
-- 渲染 SPEC.md / TRACEABILITY.md / goal.md / tasks/ / IMPL-PLAN
+## Delivery Strategy
 
-## Phase 2: 门禁检查
+`xlib-harness` is delivered as a standalone Go CLI and library API. The runtime remains stdlib-only; external trust tooling is invoked only from CI/CD workflows and local verification commands.
 
-- FR-002: spec-lint（23 节结构、WHEN/THEN 格式）
-- FR-005: format-check（Markdown 结构、链接有效性）
-- FR-006: traceability-gate（FR → AC → TC 闭合）
+## Implementation Tasks
 
-## Phase 3: 边界与自举
+| Task | Scope | Files | Status |
+| --- | --- | --- | --- |
+| `TASK-XLIBHARNESS-001` | CLI generation path and six-asset output | `/home/xlib-harness/main.go`, `/home/xlib-harness/internal/harness/harness.go` | Completed |
+| `TASK-XLIBHARNESS-002` | 23-section spec template and spec profile checks | `/home/xlib-harness/internal/harness/harness.go`, compliant fixture | Completed |
+| `TASK-XLIBHARNESS-003` | Runtime dependency boundary checks for `go.mod` and Go imports | `/home/xlib-harness/internal/harness/harness.go`, bad-dependency fixture | Completed |
+| `TASK-XLIBHARNESS-004` | Makefile and CI/CD reference gates | `/home/xlib-harness/Makefile`, `.github/workflows/ci.yml`, `.github/workflows/release.yml` | Completed |
+| `TASK-XLIBHARNESS-005` | Markdown format checks | `/home/xlib-harness/internal/harness/harness.go`, unit tests | Completed |
+| `TASK-XLIBHARNESS-006` | FR/AC/TC trace closure checks | `/home/xlib-harness/internal/harness/harness.go`, broken-trace fixture | Completed |
 
-- FR-003: boundary-check（依赖矩阵、testkitx 禁止）
-- FR-004: template-validate（xlib-standard 模板自举）
+## Boundary Rules
 
-## Task 列表
+The harness rejects runtime references to:
 
-| ID | 标题 | FR | AC |
-|----|------|----|----|
-| TASK-HARNESS-001 | 实现 generate 命令 | FR-001 | AC-001 |
-| TASK-HARNESS-002 | 实现 spec-lint 检查 | FR-002 | AC-002 |
-| TASK-HARNESS-003 | 实现 boundary-check 检查 | FR-003 | AC-003 |
-| TASK-HARNESS-004 | 实现 template-validate 自举 | FR-004 | AC-004 |
-| TASK-HARNESS-005 | 实现 format-check | FR-005 | AC-005 |
-| TASK-HARNESS-006 | 实现 traceability-gate | FR-006 | AC-006 |
+- `observex`
+- `configx`
+- `resiliencx`
+- `schedulex`
+- `testkitx`
+- `xlib-standard`
 
-## 5. 风险与回滚
+The implementation checks both `go.mod` module references and parsed Go imports. CI may call external tools such as `xlibgate`, but the shipped Go runtime stays on the standard library.
 
-| 风险 | 级别 | 缓解 | 回滚 |
-|------|------|------|------|
-| API 破坏性变更 | LOW | 已有可工作实现，向后兼容 | `git revert` |
-| 外部依赖不可用 | MEDIUM | 健康检查 + 降级策略 | 回退到上一稳定版本 |
-| 配置兼容性回归 | LOW | 已有 canonical+legacy 测试覆盖 | 回退配置变更 |
+## Validation Plan
 
+Run the following before release or merge:
 
-## Validation Commands
+```bash
+cd /home/xlib-harness
+go build ./...
+go test ./...
+go test ./... -race -count=1
+go vet ./...
+go test ./... -coverprofile=coverage.out -covermode=count
+go tool cover -func=coverage.out
+go test -bench=. ./...
+make ci
+git diff --check
+```
 
-| Task | Verify Command |
-|------|---------------|
-| All | `go test ./... -count=1` |
-| All | `go vet ./...` |
+Required coverage threshold: 100.0%.
+
+## Release Plan
+
+1. Keep feature work on branch `xlib-harness`.
+2. Validate local gates with `make ci`, coverage, benchmark, secret scan, and diff hygiene.
+3. Commit implementation using Lore trailers.
+4. Tag the module release as `v0.1.2`.
+5. Merge `xlib-harness` to module `main`.
+6. Merge root documentation branch `xlib-harness` to root `main`.
+
+## Current Evidence
+
+- `/home/xlib-harness@aa83306685a9`
+- `make ci`: PASS
+- `go test -bench=. ./...`: PASS
+- coverage total: 100.0%
+- `git diff --check`: PASS
+- local tag: `v0.1.2`
