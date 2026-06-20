@@ -450,7 +450,7 @@
 
 | 检查项           | README | ARCHITECTURE | STATUS    | 一致性 |
 | ---------------- | ------ | ------------ | --------- | ------ |
-| 组件总数         | 73     | 73           | 73        | ✅     |
+| 组件总数         | 74     | 74           | 74        | ✅     |
 | market_data 数量 | 14     | 14          | 14        | ✅     |
 | macro_data 数量  | 10     | 10           | 10        | ✅     |
 | L2.5 组件        | 5      | 5            | 5         | ✅     |
@@ -458,7 +458,7 @@
 | 决策域组件       | 6      | 6            | 6         | ✅     |
 | 横切组件         | 2      | 2            | 2         | ✅     |
 
-注：以上为各文档 unique repo 链接数（grep github.com/ZoneCNH 去重后计数）。README/ARCH/STATUS 三者一致为 73。STATUS 的 75 是按域统计 domain-sum 口径，不与 unique-link 73 直接比较（observex 计入基座+横切 2 域）。L2.5=5/分析域=8/决策域=6 三文档一致。
+注：以上为各文档 unique repo 链接数（grep github.com/ZoneCNH 去重后计数）。README/ARCH/STATUS 三者一致为 74（含 composer 入口模块，2026-06-21 对齐）。STATUS 的 76 是按域统计 domain-sum 口径，不与 unique-link 74 直接比较（observex 计入基座+横切 2 域）。L2.5=5/分析域=8/决策域=6 三文档一致。
 
 ### 迁移与门禁基线
 
