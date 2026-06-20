@@ -6,7 +6,7 @@
 
 ---
 
-## 一、🔴 ~~致命问题：核心业务链路完全断裂~~ → 🟡 契约已就绪，实现待启动
+## 一、✅ 已完成：核心业务链路 P0 全链路打通（2026-06-21）
 
 > **2026-06-20 更新**：contracts P0 DTO 已全部固化（PR #10），市场/宏观/决策链路的数据契约障碍已清除。  
 > 当前状态：contracts ✅ → market_regime v0.2.0（BarWindow+Subscriber）+ macro_regime v0.2.0（mapper+ClassifyFromSet）+ regime_engine v1.0.0（P0 桥接）全链路消费者层已就绪。
@@ -42,7 +42,7 @@ macro-data(dispatch) ✅ ─────────────── MacroRegi
 | Macro Data  | 1      | 1/1 有代码                                                   | ~100%    |
 | **分析域**  | 8      | 3/8（market_regime v0.2.0；macro_regime v0.2.0；regime_engine v1.0.0） | **~40%** |
 | **决策域**  | 6      | 1/6（signal_factory v0.1.0 骨架）                            | **~5%**  |
-| **执行域**  | 7      | **0/7**（全部仅 README）                                     | **0%**   |
+| **执行域**  | 7      | 1/7（riskx v0.1.0 最小实现：仓位检查+熔断）                 | **~10%** |
 
 ### P0 契约缺失 → ✅ 已解决（2026-06-20，contracts PR #10）
 
@@ -128,7 +128,7 @@ lifecycle × 7       ← 单 client Close() 保留本地（符合 non-goal）
 
 ---
 
-## 六、🔴 高风险：Composition Root 不存在（已核实，2026-06-20）
+## 六、✅ 已解决：Composition Root 已建立（composer v0.2.0，2026-06-21）
 
 > **核实结果**：`github.com/ZoneCNH/x.go`（2.8MB）是 **治理/工具 CLI 仓库**，不是 Composition Root。
 
@@ -141,9 +141,9 @@ lifecycle × 7       ← 单 client Close() 保留本地（符合 non-goal）
 
 **影响（已缓解 2026-06-21）**：~~全系统没有运行时服务入口，所有已完成的消费者层（market_regime.Subscriber / macro_regime.ClassifyFromSet / regime_engine / signal_factory）无法在真实环境中串联运行，违反 P13（x.go 只做编排）~~。`composer` 独立服务已承担数据域组合根职责（v0.1.0）。
 
-**状态（2026-06-21）**：✅ `composer` v0.1.0 完成：
+**状态（2026-06-21 最终）**：✅ `composer` v0.2.0 全部完成：
 1. ✅ market-data / macro-data dispatch → SinkPort 适配器（MarketRegimeSink/MacroRegimeSink）
-2. ⚠️ **RegimeCoordinator 缺失**（新增，2026-06-21 核实）：SinkPort 适配器调用 `Subscriber.Push` / `ClassifyFromSet` 后，返回的 `RegimeSnapshot` / `RegimeCard` 被 `_, _ =` 丢弃，`regime_engine.Run(MState, SState)` **从未被调用**。需在 composer 中实现 RegimeCoordinator——缓存最新 `(RegimeSnapshot, RegimeCard)`，任一更新时触发 `regime_engine.Run → signal_factory.Generate`。
+2. ~~⚠️ **RegimeCoordinator 缺失**~~ ✅ **已解决（2026-06-21，composer v0.2.0 PR #6，6 tests PASS）**：RegimeCoordinator 缓存最新 `(RegimeSnapshot, RegimeCard)`，任一更新时触发 `regime_engine.Run → signal_factory.Generate → []SignalIntent 写入 out channel`
 3. ✅ HTTP health endpoint（/health + /live + /ready）
 
 ---
@@ -181,11 +181,17 @@ lab-*         → ms_brain / alternative_data ...
 | ---------- | ------------------------------------------------------------------------------------------- | -------------------------------- | ---------------------------------- |
 | **P0**     | ~~contracts P0 DTO 未固化~~                                                                 | ~~分析域/决策域/执行域无法开始~~ | ✅ **已解决 2026-06-20**（PR #10） |
 | **P0**     | ~~分析域三引擎消费者接入层完成~~ | ~~核心业务闭环~~ | ✅ **已解决 2026-06-20**（market_regime/macro_regime v0.2.0；Subscriber+mapper+ClassifyFromSet）
-| **P0-next** | ~~① 创建 `composer` 服务入口~~✅（composer v0.1.0，PR #5）~~② dispatch→regime SinkPort 适配器~~✅（MarketRegimeSink/MacroRegimeSink，14 tests）~~③-a **RegimeCoordinator**~~✅（composer v0.2.0，PR #6，6 tests）~~③-b **signal_factory 集成**~~✅（Coordinator→Generate→channel）~~③-c **riskx 最小实现**~~✅（v0.1.0，7 tests，仓位+熔断）~~③-d **SignalIntent 升入 contracts**~~✅（v1.5.0，PR #12） | ✅ **端到端交易闭环 P0 全部完成** |
+| **P0-next** | ~~① 创建 `composer` 服务入口~~✅（composer v0.1.0，PR #5）~
+                  ~② dispatch→regime SinkPort 适配器~~✅（MarketRegimeSink/MacroRegimeSink，14 tests）~~
+                  ③-a **RegimeCoordinator**~~✅（composer v0.2.0，PR #6，6 tests）~~
+                  ③-b **signal_factory 集成**~~✅（Coordinator→Generate→channel）~~
+                  ③-c **riskx 最小实现**~~✅（v0.1.0，7 tests，仓位+熔断）~~
+                  ③-d **SignalIntent 升入 contracts**~~✅（v1.5.0，PR #12） | ✅ **端到端交易闭环 P0 全部完成** |
 | **P1**     | ~~BLK-009 bootstrap 遗留依赖~~                                                              | ~~Foundation factory 闭合~~      | ✅ **已解决 2026-06-20**（v0.2.0） |
 | **P1**     | ~~BLK-010 ossx 无源码~~                                                                     | ~~Foundation factory 闭合~~      | ✅ **已解决 2026-06-20**（v1.2.1） |
 | ~~**P1**~~ | ~~双轨模块废弃路线不明~~                                                                    | ~~开发者认知统一~~               | ✅ **已解决 2026-06-20**           |
 | **P2**     | ~~7 模块横切重复收敛~~                                                                      | ~~维护成本降低~~                 | ✅ **已解决 2026-06-20**（P0-P4）  |
+| **P1-next** | `orderx` 最小实现：消费 `riskx.ApprovedIntent`，生成 `ExecutionOrder`，接入 paper trade / 虚拟撮合 | 链路最后一公里（orderx → positionx → 闭环） |
 | **P2**     | 管线 6 模块评分未达 98（xlib_standard/evidence/harness/transportx/natsx/configx）           | 治理一致性                       |
 | ~~**P3**~~ | ~~x.go 体量核实~~ | ~~架构守卫~~ | ✅ **已核实 2026-06-20**：x.go = 治理 CLI 工具库，非 Composition Root，见第六节 |
 | **P3**     | 75 仓库命名统一                                                                             | 长期可维护性                     |
@@ -221,6 +227,7 @@ lab-*         → ms_brain / alternative_data ...
 13. ~~**③-b signal_factory 结果传出**：`Generate` 已有实现，需要在 composer 中接收 `[]SignalIntent` 并路由到 riskx（channel/callback）~~ ✅ **已完成（2026-06-21）**：Coordinator out channel
 14. ~~**③-c riskx 最小实现**：消费 `signal_factory.SignalIntent`，实现仓位检查 + 熔断逻辑~~ ✅ **已完成（2026-06-21）**：riskx v0.1.0，7 tests PASS
 15. ~~**③-d SignalIntent 升入 contracts**：固化 P1 信号接口，防止 signal_factory 本地 DTO 漂移~~ ✅ **已完成（2026-06-21）**：contracts v1.5.0，PR #12
+16. **orderx 最小实现**（P1-next）：消费 `riskx.ApprovedIntent` → 生成 `ExecutionOrder` → paper trade / 虚拟撮合；同步实现 `positionx` 仓位追踪
 
 ---
 
@@ -261,8 +268,7 @@ lab-*         → ms_brain / alternative_data ...
 | composer | ❌ 不存在 | ✅ v0.1.0（25 进程编排 + HTTP health + Docker Compose） | v0.1.0 |
 | MarketRegimeSink | ❌ 不存在 | ✅ market-data SinkPort → market_regime.Subscriber.Push（7 tests PASS） | composer PR #5 |
 | MacroRegimeSink | ❌ 不存在 | ✅ macro-data SinkPort → macro_regime.ClassifyFromSet（6 tests PASS） | composer PR #5 |
-| RegimeCoordinator | ❌ 缺失（新发现） | ⚠️ 待实现：RegimeSnapshot/RegimeCard 分类结果目前被丢弃，regime_engine.Run 从未被调用 | — |
-| RegimeCoordinator（更新） | ⚠️ 待实现 | ✅ v0.2.0 已实现（composer PR #6，6 tests PASS）：缓存(Snapshot,Card)，触发 regime_engine.Run→signal_factory.Generate，[]SignalIntent 写入 channel | composer v0.2.0 |
+| RegimeCoordinator | ❌ 缺失（新发现） | ✅ v0.2.0 已实现（composer PR #6，6 tests PASS）：缓存(Snapshot,Card)，触发 regime_engine.Run→signal_factory.Generate，[]SignalIntent 写入 channel | composer v0.2.0 |
 | contracts SignalIntent | 本地 DTO（signal_factory） | ✅ v1.5.0 升入 contracts P1 DTO（PR #12） | v1.5.0 |
 | riskx 最小实现 | v0.1.0-draft（5%） | ✅ v0.1.0（7 tests PASS）：仓位上限/最大持仓/熔断门禁，消费 contracts.SignalIntent | v0.1.0 |
 | dispatch→signal 全链路 | ❌ 断链（RegimeCoordinator 缺失） | ✅ dispatch→regime→engine→signal_factory→riskx 端到端链路完整 | — |
