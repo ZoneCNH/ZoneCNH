@@ -202,3 +202,17 @@ lab-*         → ms_brain / alternative_data ...
 | 契约固化清单           | `docs/architecture/08-contracts.md`                          |
 | Blocker 列表           | `.foundationx/blockers.json`                                 |
 | Factory 状态           | `.foundationx/status/index.json`                             |
+
+---
+
+## 状态更新（2026-06-20）
+
+> 本报告编写后，以下问题已在当天完成修复：
+
+| 项目 | 原状态 | 当前状态 | PR/Tag |
+| ---- | ------ | -------- | ------ |
+| market_regime | ❌ 空仓库 | ✅ v0.1.0 S引擎骨架（5D特征+规则分类器，5 tests PASS） | main |
+| macro_regime | ❌ 空仓库 | ✅ v0.1.0 M引擎骨架（LGIP四因子+分类器，5 tests PASS） | main |
+| regime_engine | ⚠️ v0.1.0 骨架（25%）| ✅ v1.0.0 P0 DTO 桥接完成（M×S→DecisionCard，13 tests PASS） | v1.0.0 |
+| contracts P0 DTO | ❌ 路径错误 | ✅ v1.4.0（github.com/ZoneCNH/contracts，P0 DTO 完整） | PR #11 |
+| 分析域三引擎数据流 | ❌ 断链 | ✅ market_data→S / macro_data→M / regime_engine→DecisionCard 全链路打通 | — |
