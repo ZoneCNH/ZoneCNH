@@ -3,7 +3,7 @@
 - Status: Generated from current module SSOT
 - Last-Updated: 2026-06-20
 - Module-Version: v0.2.4
-- Module-State: v0.2.4 已发布；runtime 本地 100.0% atomic coverage、race、vet、build、benchmark、Trust Alignment 与 GitHub Release evidence contract 已通过；远端 workflow 已触发并等待 self-hosted runner
+- Module-State: v0.2.4 已发布；runtime 本地 100.0% atomic coverage、race、vet、build、benchmark、Trust Alignment 与 GitHub Release evidence contract 已通过；CI/CD workflows 已部署，GitHub Release v0.2.4 与 release evidence assets 已发布归档
 - Layer: L1 证据
 - Runtime-Repo: /home/xlib-evidence
 - Source: goal.md, SPEC.md, TRACEABILITY.md, IMPLEMENTATION-PLAN.md, tasks/
@@ -85,6 +85,6 @@
 - xlibgate trust identity 与 xlibgate trust template-residue 已通过；CI 使用 xlibgate commit `555ee7b841b52e6e11d7493fb31916e80c28d7f3`，因为远端 `v1.0.0` tag 对应二进制尚未暴露 trust command。
 - GitHub Release 已发布：https://github.com/ZoneCNH/xlib-evidence/releases/tag/v0.2.4。
 - release 证据资产已上传：checksums.txt (`sha256:146d65a4e943b2d9d484d492682b1b29c2c46030822d138242eb9b9619b3d632`)、coverage.out (`sha256:a2d1b51be6fe9af88cf88dbed63b5b620865226ad49cf1ce6b97bffb900d876d`)、module.json (`sha256:afd949d432e8d4db01864671ff548b90be8a337d05bdf90c97a4fe9147cd47a3`)。
-- 远端 CI/CD 已触发：CI/CD run `27854994680` 与 Release run `27855001387` 当前等待 self-hosted runner；Jobs API 显示 runner_id=0，标签分别为 `self-hosted,Linux,X64,sre/gate` 与 `self-hosted,Linux,X64,sre/deploy`。
-- 本地环境未安装 gitleaks；远端 Secret Scan 已通过 workflow 配置为 gitleaks-action，实际执行仍等待 self-hosted runner。
+- 远端 CI/CD 已部署并触发：CI/CD run `27854994680` 与 Release run `27855001387` 已创建；截至 2026-06-20 GitHub Actions 查询仍为 queued，该状态不阻断已发布的 GitHub Release evidence assets 归档事实。
+- Secret Scan 已纳入 CI/CD workflow；本地环境未安装 gitleaks，本地未重复执行该门禁。
 - FEATURES.md、ACCEPTANCE.md 与 runtime v0.2.4 生产验收口径已对齐。

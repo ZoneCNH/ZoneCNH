@@ -3,7 +3,7 @@
 - Status: Generated from current module SSOT
 - Last-Updated: 2026-06-20
 - Module-Version: v0.2.4
-- Module-State: v0.2.4 已发布；runtime 本地 100.0% 覆盖率、并发 Store 防护、仓库身份契约、CI/CD 证据门禁与 GitHub Release 资产已闭合
+- Module-State: v0.2.4 已发布；runtime 本地 100.0% 覆盖率、并发 Store 防护、仓库身份契约、CI/CD workflow 已部署，GitHub Release v0.2.4 与 release evidence assets 已闭合
 - Layer: L1 证据
 - Runtime-Repo: /home/xlib-evidence
 - Source: goal.md, SPEC.md, TRACEABILITY.md, IMPLEMENTATION-PLAN.md, tasks/
