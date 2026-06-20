@@ -267,14 +267,14 @@ module/*/SPEC.md → outer-metrics-from-git.sh → outer-metrics-eval.sh
 
 **文件**：`.github/workflows/release.yml`
 
-**触发条件**：推送 `v*` 格式的 tag
+**触发条件**：`workflow_dispatch`（当前仅保留手动触发；`push` tag 触发已禁用，待自托管 runner 恢复后再恢复）
 
 **权限**：`contents: write`
 
 **流程**：
 
 ```text
-tag push (v*)
+workflow_dispatch
     ↓
 quality-gate (复用 docs-ci.yml 全部 14 个检查)
     + goal-control-plane (复用 goal-ci.yml 全部 12 个检查)
@@ -314,11 +314,10 @@ bash .github/ci/spec-lint.sh
 bash .github/ci/generate-release-manifest.sh
 bash .github/ci/deploy-contract-preflight.sh
 
-# 3. 创建 tag
-git tag v0.5.0
-
-# 4. 推送 tag 触发 Release
-git push origin v0.5.0
+# 3. 通过 workflow_dispatch 手动触发 Release
+#    - 在 GitHub Actions 页面选择 release.yml
+#    - ref 选定要发布的 tag 或对应提交
+#    - 运行 workflow
 ```
 
 **Changelog 自动生成规则**：
