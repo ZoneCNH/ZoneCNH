@@ -347,7 +347,7 @@ if FOUNDATIONX_ONLY:
 
 STATUS = load("STATUS.md")
 README = load("README.md")
-ARCH   = load("ARCHITECTURE.md")
+ARCH   = "\n".join(f.read_text() for f in sorted((ROOT / "docs" / "architecture").rglob("*.md")))  # migrated from ARCHITECTURE.md
 
 print("=== audit-status.py ===")
 print()
@@ -414,7 +414,8 @@ chk("BaseVer", str(bv), num)
 # ── 5. Stale references ────────────────────────────────────
 print("\n--- 5. Stale references ---")
 refs = [l.strip()[:80] for l in (STATUS+"\n"+README+"\n"+ARCH).splitlines()
-        if "strategies" in l.lower() and "strategyx" not in l.lower()]
+        if "strategies" in l.lower() and "strategyx" not in l.lower()
+        and "strategies-removal" not in l.lower()]  # ADR-404-compliance-strategies-removal is exempt
 if refs: no(f"{len(refs)} stale 'strategies' references"); [print(f"    {r}") for r in refs[:5]]
 else: ok("No stale 'strategies' references")
 

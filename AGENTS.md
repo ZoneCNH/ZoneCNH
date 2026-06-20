@@ -9,7 +9,7 @@
 本仓库是 `ZoneCNH/ZoneCNH` 个人主页与架构索引，不是应用模块。根目录应保持精简，并以文档为主：
 
 - `README.md` 展示公开简介、技术栈、分层架构摘要和核心项目链接。
-- `ARCHITECTURE.md` 是架构图、依赖拓扑、模块状态表和建议实现顺序的权威文档。
+- `ARCHITECTURE.md` 是向后兼容重定向存根；架构内容已拆分迁移至 `docs/architecture/`（01-overview / 02-domain-layers / 03-boundaries / 04-principles / 05-foundation / 06-dataflow / 07-three-engines / 08-contracts / adr）。
 - `kernel`、`market-data`、`factor-engine`、`x.go` 等模块位于独立 GitHub 仓库；不要把它们的源码树加入本仓库。
 - 模块代码的本地工作目录统一为 `/home/{module}`，其中 `{module}` 与 GitHub 仓库名一致；本仓库只引用这些路径，不复制或收纳模块源码。
 
@@ -17,18 +17,18 @@
 
 本仓库仅包含文档，没有本地构建系统。提交前使用轻量检查：
 
-- `rg "market-data|risk-engine" README.md ARCHITECTURE.md` 查找受影响的架构引用。
+- `rg "market-data|risk-engine" README.md docs/architecture/01-overview.md docs/architecture/05-foundation.md` 查找受影响的架构引用。
 - `git diff --check` 检查尾随空格和补丁格式问题。
 - `git status --short` 确认只修改了预期文档文件。
 - `git log -5 --pretty=format:%s` 查看最近提交标题风格。
 
-如本地已有 Markdown linter，可对 `README.md`、`ARCHITECTURE.md` 和 `AGENTS.md` 运行检查；不要仅为 lint 引入包管理器或新依赖。
+如本地已有 Markdown linter，可对 `README.md`、`docs/architecture/` 下文档和 `AGENTS.md` 运行检查；不要仅为 lint 引入包管理器或新依赖。
 
 ## 编写风格与命名规范
 
 所有回复和文档默认使用中文。Markdown 应使用清晰标题、紧凑表格和短说明。保留英文模块名与技术名词，例如 `domain-market`、`order-engine`，项目名统一使用 kebab-case。域标签保持一致：基座、数据域、分析域、决策域、执行域、入口、横切。
 
-编辑表格时，除非能同时提升 `README.md` 和 `ARCHITECTURE.md` 的可读性，否则保持列顺序稳定。
+编辑表格时，除非能同时提升 `README.md` 和 `docs/architecture/` 文档的可读性，否则保持列顺序稳定。
 
 ## 测试规范
 
@@ -36,7 +36,7 @@
 
 跨仓库、跨文档同步状态时，必须先区分“事实字段”和“投影字段”：release tag、CI run、覆盖率、发布日期等只能来自权威仓库或 GitHub Release；阶段投影、factory 版本、治理状态等不得因 release tag 变化而顺手改写。修改前后必须用 grep 或结构化检查确认旧事实无残留、新事实只出现在语义正确的位置；字段含义不确定时保守不改并在结果中说明。
 
-大规模表格修改后，使用 `git diff -- README.md ARCHITECTURE.md` 对比前后内容。
+大规模表格修改后，使用 `git diff -- README.md docs/architecture/` 对比前后内容。
 
 ## 提交与合并请求规范
 
