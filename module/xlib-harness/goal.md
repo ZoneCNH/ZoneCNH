@@ -3,8 +3,8 @@
 > Goal-Version: v1.3.0
 > Last-Updated: 2026-06-20
 > Module-State: 已发布
-> Release-Version: v0.1.4
-> Implementation-Baseline: `/home/xlib-harness@fb097be5eff4`
+> Release-Version: v0.1.6
+> Implementation-Baseline: `/home/xlib-harness@d90b35124701`
 
 ## 背景
 
@@ -40,6 +40,7 @@ Foundation 20 模块需要一个独立的最小合规脚手架与验收门禁，
 - 规格、追踪、边界、格式、CI/CD 引用检查。
 - compliant、module-with-bad-dep、broken-trace fixture。
 - Makefile 与 GitHub Actions CI/CD 配置。
+- 代码仓库 `FEATURES.md`、`ACCEPTANCE.md` 与发布文档契约。
 - 根仓库 `module/xlib-harness` 的 Spec、Traceability、Task、Acceptance、Features 投影。
 
 ### Out of Scope
@@ -51,10 +52,11 @@ Foundation 20 模块需要一个独立的最小合规脚手架与验收门禁，
 
 ## 当前证据
 
-- `/home/xlib-harness@fb097be5eff4`
-- 本地 release tag：`v0.1.4`
-- GitHub Actions Release run `27854835195`：PASS
-- GitHub Release：<https://github.com/ZoneCNH/xlib-harness/releases/tag/v0.1.4>
+- `/home/xlib-harness@d90b35124701`
+- 本地 release tag：`v0.1.6`
+- GitHub Actions Release run `27855366871`：PASS
+- GitHub Actions main CI run `27855396013`：PASS
+- GitHub Release：<https://github.com/ZoneCNH/xlib-harness/releases/tag/v0.1.6>
 - `make ci`：PASS
 - `go test ./...`：PASS
 - `go test ./... -race -count=1`：PASS
@@ -63,3 +65,4 @@ Foundation 20 模块需要一个独立的最小合规脚手架与验收门禁，
 - `go test -bench=. ./...`：PASS
 - `git diff --check`：PASS
 - `xlibgate@v1.0.0` imports/gomod/baseline：PASS
+- pinned open-source `gitleaks` CLI secret scan：PASS

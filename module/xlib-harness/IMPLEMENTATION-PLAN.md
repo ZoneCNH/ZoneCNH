@@ -1,9 +1,9 @@
 # xlib-harness Implementation Plan
 
 > Module: `xlib-harness`
-> Version: v0.1.4
+> Version: v0.1.6
 > Last-Updated: 2026-06-20
-> Implementation-Baseline: `/home/xlib-harness@fb097be5eff4`
+> Implementation-Baseline: `/home/xlib-harness@d90b35124701`
 
 ## Delivery Strategy
 
@@ -19,6 +19,7 @@
 | `TASK-XLIBHARNESS-004` | Makefile and CI/CD reference gates | `/home/xlib-harness/Makefile`, `.github/workflows/ci.yml`, `.github/workflows/release.yml` | Completed |
 | `TASK-XLIBHARNESS-005` | Markdown format checks | `/home/xlib-harness/internal/harness/harness.go`, unit tests | Completed |
 | `TASK-XLIBHARNESS-006` | FR/AC/TC trace closure checks | `/home/xlib-harness/internal/harness/harness.go`, broken-trace fixture | Completed |
+| `TASK-XLIBHARNESS-007` | Code-repository feature and acceptance docs plus license-free secret scan | `/home/xlib-harness/FEATURES.md`, `/home/xlib-harness/ACCEPTANCE.md`, `.github/workflows/ci.yml`, `.github/workflows/release.yml` | Completed |
 
 ## Boundary Rules
 
@@ -57,18 +58,20 @@ Required coverage threshold: 100.0%.
 1. Keep feature work on branch `xlib-harness`.
 2. Validate local gates with `make ci`, coverage, benchmark, secret scan, and diff hygiene.
 3. Commit implementation using Lore trailers.
-4. Tag the module release as `v0.1.4`.
+4. Tag the module release as `v0.1.6`.
 5. Merge `xlib-harness` to module `main`.
 6. Merge root documentation branch `xlib-harness` to root `main`.
 
 ## Current Evidence
 
-- `/home/xlib-harness@fb097be5eff4`
+- `/home/xlib-harness@d90b35124701`
 - `make ci`: PASS
 - `go test -bench=. ./...`: PASS
 - coverage total: 100.0%
 - `git diff --check`: PASS
 - `xlibgate@v1.0.0` imports/gomod/baseline: PASS
-- release tag: `v0.1.4`
-- GitHub Actions Release run `27854835195`: PASS
-- GitHub Release: <https://github.com/ZoneCNH/xlib-harness/releases/tag/v0.1.4>
+- pinned open-source `gitleaks` CLI secret scan: PASS
+- release tag: `v0.1.6`
+- GitHub Actions Release run `27855366871`: PASS
+- GitHub Actions main CI run `27855396013`: PASS
+- GitHub Release: <https://github.com/ZoneCNH/xlib-harness/releases/tag/v0.1.6>

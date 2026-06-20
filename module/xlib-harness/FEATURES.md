@@ -1,9 +1,9 @@
 # xlib-harness Features
 
 > Module: `xlib-harness`
-> Version: v0.1.4
+> Version: v0.1.6
 > Last-Updated: 2026-06-20
-> Implementation-Baseline: `/home/xlib-harness@fb097be5eff4`
+> Implementation-Baseline: `/home/xlib-harness@d90b35124701`
 
 ## Feature Summary
 
@@ -43,6 +43,7 @@
 | NFR-002 | JSON 输出可由自动化消费 | `xlib-harness check <module> --json \| jq .` |
 | NFR-003 | fixture 可重复验收 | `make ci` |
 | NFR-004 | 100% Go 覆盖率 | `go tool cover -func=coverage.out` total 100.0% |
+| NFR-005 | 发布门禁验证公开文档与免许可证 secret scan | `FEATURES.md`、`ACCEPTANCE.md`、Release run `27855366871`、main CI run `27855396013`、pinned `gitleaks` CLI |
 
 ## Task Coverage
 
@@ -54,8 +55,31 @@
 | `TASK-XLIBHARNESS-004` | CI/CD 引用与 Makefile 门禁 | Completed |
 | `TASK-XLIBHARNESS-005` | Markdown 格式门禁 | Completed |
 | `TASK-XLIBHARNESS-006` | 追踪矩阵闭环门禁 | Completed |
+| `TASK-XLIBHARNESS-007` | 代码仓库 `FEATURES.md`/`ACCEPTANCE.md` 与免许可证 secret scan 发布门禁 | Completed |
+
+## Overall Score
+
+| Dimension | Score | Evidence |
+| --- | --- | --- |
+| Functional coverage | 100/100 | FR-001 到 FR-006 均有 CLI、fixture 或单元测试证据 |
+| Test coverage | 100/100 | `go tool cover -func=/tmp/xlib-harness-v016.cover` total 100.0%，所有函数 100.0% |
+| CI/CD | 100/100 | Release run `27855366871` 与 main CI run `27855396013` 均 PASS |
+| Documentation sync | 100/100 | `/home/xlib-harness` 与根仓库 `module/xlib-harness` 的 FEATURES/ACCEPTANCE/SPEC 投影已同步到 `v0.1.6` |
+| Overall | 100/100 | 无已知阻断缺陷 |
 
 ## Release Notes
+
+### v0.1.6
+
+- 将 CI secret scan 从需要商业许可的 GitHub Action 替换为 pinned open-source CLI：`github.com/zricethezav/gitleaks/v8@v8.30.1`。
+- 发布门禁和 main CI 均验证 `README.md`、`FEATURES.md`、`ACCEPTANCE.md` 与 workflow 文件存在且非空。
+- 重新验收 `make ci`、race、vet、coverage、benchmark、xlibgate imports/gomod/baseline、gitleaks CLI 与 diff hygiene；coverage total 100.0%。
+- 发布 GitHub Release `v0.1.6`，Release run `27855366871` 与 main CI run `27855396013` 均通过。
+
+### v0.1.5
+
+- 在代码仓库补齐 `FEATURES.md` 与 `ACCEPTANCE.md`，并将其纳入发布文档契约。
+- GitHub Release `v0.1.5` 已发布，但 main CI 暴露 secret-scan action license gate；该问题由 `v0.1.6` 修复。
 
 ### v0.1.4
 
