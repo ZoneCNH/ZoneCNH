@@ -6,14 +6,14 @@
 
 ```yaml
 task_id: TASK-XLIB-007
-module: xlib-standard
+module: xlib_standard
 scope: "实现 HealthCheck 和 Metrics 5 个 P0 指标，覆盖 FR-003 和 FR-004"
 spec_ref:
-  - "module/xlib-standard/SPEC.md#7"
-  - "module/xlib-standard/SPEC.md#9"
-  - "module/xlib-standard/SPEC.md#10"
-  - "module/xlib-standard/goal.md#7"
-  - "module/xlib-standard/goal.md#8"
+  - "module/xlib_standard/SPEC.md#7"
+  - "module/xlib_standard/SPEC.md#9"
+  - "module/xlib_standard/SPEC.md#10"
+  - "module/xlib_standard/goal.md#7"
+  - "module/xlib_standard/goal.md#8"
 files:
   - "pkg/templatex/health.go"
   - "pkg/templatex/health_test.go"

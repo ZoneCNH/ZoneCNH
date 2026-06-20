@@ -15,14 +15,14 @@
 
 | 条款 | 含义                                                               | 涉及模块                |
 | ---- | ------------------------------------------------------------------ | ----------------------- |
-| P1   | Foundation 先边界后功能                                            | xlib-standard, xlibgate |
-| P2   | xlib-standard 不是运行时依赖，是标准事实源/模板/Gate/Evidence 输入 | xlib-standard           |
+| P1   | Foundation 先边界后功能                                            | xlib_standard, xlibgate |
+| P2   | xlib_standard 不是运行时依赖，是标准事实源/模板/Gate/Evidence 输入 | xlib_standard           |
 | P3   | resiliencx 只做运行时弹性                                          | resiliencx              |
 | P4   | testkitx 只能 test-only                                            | testkitx                |
 
-## xlib-standard 五角色定义（权威参考）
+## xlib_standard 五角色定义（权威参考）
 
-经过 2026-06-11 文档矛盾修复和对齐，xlib-standard 的权威定义为五类职责：
+经过 2026-06-11 文档矛盾修复和对齐，xlib_standard 的权威定义为五类职责：
 
 | 角色                      | 职责                               | 交付物                                                           |
 | ------------------------- | ---------------------------------- | ---------------------------------------------------------------- |
@@ -32,7 +32,7 @@
 | **Harness Gate**          | CI 门禁与边界检查                  | make ci（9 gate）+ boundary/contracts check                      |
 | **Evidence Runtime**      | release manifest 与发布证据生成    | release_check.sh → latest.json + .sha256                         |
 
-**关键区分**：xlib-standard 不承载**业务运行**，但它有可执行交付物（模板代码、生成器脚本、gate 命令、evidence manifest）。"没有业务运行时代码" ≠ "纯文档"。
+**关键区分**：xlib_standard 不承载**业务运行**，但它有可执行交付物（模板代码、生成器脚本、gate 命令、evidence manifest）。"没有业务运行时代码" ≠ "纯文档"。
 
 引用此定义时：
 
@@ -73,7 +73,7 @@ module/{module}/
 
 每个模块的 `goal.md` 和 `SPEC.md` 中的定位描述必须与 CONSTITUTION.md §1.1 的对应条款一致：
 
-- **xlib-standard**：五类职责（见上文），不承载业务运行
+- **xlib_standard**：五类职责（见上文），不承载业务运行
 - **xlibgate**：机器门禁，check imports/gomod/baseline/release/all
 - **kernel**：L0 原语，stdlib-only，Module/App/Lifecycle
 - **resiliencx**：L1 运行时弹性，timeout/retry/circuit/bulkhead/rate/fallback
@@ -82,7 +82,7 @@ module/{module}/
 ### 模块间引用
 
 - 引用其他模块时，使用 `https://github.com/ZoneCNH/{module}` 格式
-- 引用 xlib-standard 时，应指向其五角色定义而非过时的 "4 项职责" 模型
+- 引用 xlib_standard 时，应指向其五角色定义而非过时的 "4 项职责" 模型
 - 跨域依赖必须符合 `FOUNDATION-DEPS.yaml` 中声明的允许依赖边
 
 ## 文档同步规则
@@ -99,7 +99,7 @@ module/{module}/
 
 ### 组件计数一致性
 
-`ARCHITECTURE.md` 中的组件数量标注（如 `market-data (19)`）必须与实际表格行数一致。修改后运行：
+`ARCHITECTURE.md` 中的组件数量标注（如 `market_data (19)`）必须与实际表格行数一致。修改后运行：
 
 ```bash
 .github/ci/status-consistency-check.sh
@@ -129,8 +129,8 @@ module/{module}/
 
 | 陷阱                                  | 正确做法                         |
 | ------------------------------------- | -------------------------------- |
-| 描述 xlib-standard 为 "4 项职责"      | 使用 "五类职责" / "五角色"       |
-| 声称 xlib-standard "不提供运行时代码" | "不承载业务运行，有可执行交付物" |
+| 描述 xlib_standard 为 "4 项职责"      | 使用 "五类职责" / "五角色"       |
+| 声称 xlib_standard "不提供运行时代码" | "不承载业务运行，有可执行交付物" |
 | 将 Evidence Runtime 列为 non-goal     | Evidence Runtime 是五角色之一    |
 | 从非 main 分支创建新分支              | 必须从 main HEAD 创建            |
 | 在 main 上直接编辑                    | 使用 worktree 或 feature branch  |

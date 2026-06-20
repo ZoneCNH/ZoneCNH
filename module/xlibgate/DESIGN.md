@@ -127,10 +127,10 @@ xlibgate 是 Foundation L0 基座层的**单体 CLI 工具**，负责在 CI 和�
 
 **核心文件**：
 - `collector.go`：从文件路径或 CI artifact 收集 evidence 数据
-- `validator.go`：根据 xlib-standard 定义的 Evidence schema 校验 evidence 项
+- `validator.go`：根据 xlib_standard 定义的 Evidence schema 校验 evidence 项
 
 **设计决策**：
-- evidence schema 定义由 xlib-standard 维护，xlibgate 在运行时校验。
+- evidence schema 定义由 xlib_standard 维护，xlibgate 在运行时校验。
 - 支持的 evidence 项：`test_coverage >= 80%`、`race_test_pass`、`secret_scan_pass`、`gomod_tidy`、`vet_clean`。
 - 无效 JSON 返回 `ErrEvidenceInvalid`，缺失必需项返回 `ErrEvidenceMissing`。
 
@@ -392,7 +392,7 @@ const (
 | AST 解析大项目耗时超预算                 | Low    | Medium | Benchmark 验证 50 模块 < 10s，跳过 vendor 目录              |
 | `go mod tidy` 网络依赖导致超时           | Medium | Medium | 设置合理超时（context.WithTimeout），超时标记 error 不阻塞  |
 | gitleaks 未安装导致 secret_scan 跳过     | Medium | Low    | 检查 gitleaks 可用性，不可用时标记 error 并提示安装         |
-| xlib-standard evidence schema 升级不兼容 | Low    | High   | evidence 校验前做 schema 版本检查，不匹配时输出明确错误     |
+| xlib_standard evidence schema 升级不兼容 | Low    | High   | evidence 校验前做 schema 版本检查，不匹配时输出明确错误     |
 | CI 环境无 color 导致输出乱码             | Low    | Low    | 自动检测 tty，非 tty 时输出纯文本                           |
 | 并发多个 xlibgate 实例冲突               | Low    | Low    | 各实例独立工作（无共享状态），artifact 文件路径由调用方指定 |
 
@@ -458,7 +458,7 @@ go test -bench=. -benchmem -count=3 ./scanner/ ./...
 
 ### 12.1 架构概述
 
-trust 子命令组是 xlibgate 的 v2 Trust Alignment 门禁，负责 Foundation 70+ 模块的信任对齐验证。与 check 组不同，trust 组消费 xlib-standard 定义的标准文件（.repo-contract.yaml、FOUNDATION-DEPS.yaml）而非 xlibgate 自身配置文件。
+trust 子命令组是 xlibgate 的 v2 Trust Alignment 门禁，负责 Foundation 70+ 模块的信任对齐验证。与 check 组不同，trust 组消费 xlib_standard 定义的标准文件（.repo-contract.yaml、FOUNDATION-DEPS.yaml）而非 xlibgate 自身配置文件。
 
 ```text
 ┌─────────────────────────────────────────────────────────────────────────┐
@@ -509,7 +509,7 @@ trust 子命令组是 xlibgate 的 v2 Trust Alignment 门禁，负责 Foundation
 
 | 维度 | check | trust |
 |------|-------|-------|
-| 配置来源 | xlibgate.yaml（项目本地） | xlib-standard 标准文件（跨仓库） |
+| 配置来源 | xlibgate.yaml（项目本地） | xlib_standard 标准文件（跨仓库） |
 | 扫描范围 | 单模块源码 | 单模块源码 + 跨模块聚合（fleet-status） |
 | 输出格式 | 汇总 JSON（checks[]） | 统一 per-check JSON（§9.3.1） |
 | 外部依赖 | gitleaks 二进制 | FOUNDATION-DEPS.yaml、.repo-contract.yaml |
@@ -579,7 +579,7 @@ const (
 
 - 输入：仓库中所有 .md/.yaml/.go/.txt/.json 文本文件
 - 算法：对 BR-010 中 5 条短语逐一执行 `strings.Contains` 精确匹配
-- xlib-standard 自跳：通过 `--repo` 路径判断，若 repo 名 == `xlib-standard` 则 skip
+- xlib_standard 自跳：通过 `--repo` 路径判断，若 repo 名 == `xlib_standard` 则 skip
 - 二进制跳过：文件扩展名判断（.png/.so/.exe 等跳过）
 - 复杂度：O(files × phrases × avg_line_length)，50 模块 < 15s
 

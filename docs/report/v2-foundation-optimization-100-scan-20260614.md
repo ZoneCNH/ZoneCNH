@@ -24,9 +24,9 @@
 | 证据主题 | 本地证据 |
 | --- | --- |
 | 当前基座模块数 | `module/README.md:3`、`README.md:21` 与 `ARCHITECTURE.md:123` 均声明当前规格库是 20 个基座模块；`STATUS.md:117-136` 给出 20 项基座明细。 |
-| xlib-standard 拆分事实 | `README.md:31`、`README.md:61-63`、`ARCHITECTURE.md:173` 与 `ARCHITECTURE.md:445` 均显示 `xlib-standard` 已拆出 `xlib-harness` 与 `xlib-evidence`。 |
-| 新增模块投影 | `module/README.md:25-32`、`module/README.md:110-111`、`module/README.md:149`、`ARCHITECTURE.md:135-146` 覆盖 `xlib-harness`、`xlib-evidence` 与 `domainx` 的当前公开投影。 |
-| FOUNDATION-DEPS 漂移 | `module/FOUNDATION-DEPS.yaml:20` 之后的模块清单仍停留在旧口径；`module/FOUNDATION-DEPS.yaml:137-138` 的允许依赖仍只显式列出 `testkitx` 与 `xlib-standard`，未覆盖新拆分模块。 |
+| xlib_standard 拆分事实 | `README.md:31`、`README.md:61-63`、`ARCHITECTURE.md:173` 与 `ARCHITECTURE.md:445` 均显示 `xlib_standard` 已拆出 `xlib_harness` 与 `xlib_evidence`。 |
+| 新增模块投影 | `module/README.md:25-32`、`module/README.md:110-111`、`module/README.md:149`、`ARCHITECTURE.md:135-146` 覆盖 `xlib_harness`、`xlib_evidence` 与 `domainx` 的当前公开投影。 |
+| FOUNDATION-DEPS 漂移 | `module/FOUNDATION-DEPS.yaml:20` 之后的模块清单仍停留在旧口径；`module/FOUNDATION-DEPS.yaml:137-138` 的允许依赖仍只显式列出 `testkitx` 与 `xlib_standard`，未覆盖新拆分模块。 |
 | xlibgate 当前契约 | `module/xlibgate/SPEC.md:64`、`module/xlibgate/SPEC.md:85`、`module/xlibgate/SPEC.md:89`、`module/xlibgate/SPEC.md:146-164`、`module/xlibgate/SPEC.md:217-221` 说明现有 `check all`、`secret_scan` 与 `l2 release-check` 能力。 |
 | xlibgate 兼容约束 | `module/xlibgate/SPEC.md:323`、`module/xlibgate/SPEC.md:338` 与 `module/xlibgate/SPEC.md:344` 固化了当前 CLI 用法与 0/1/2 退出码语义，因此 v2 的扩展退出码应落到 JSON `reason_code`，不能破坏旧契约。 |
 | 成熟度语义风险 | `ARCHITECTURE.md:287`、`ARCHITECTURE.md:294-313`、`STATUS.md:54-55`、`STATUS.md:121-136` 大量使用 100% 或完成口径，必须拆成 spec、implementation、release、integration、external CI、downstream adoption、production soak、factory grade。 |
@@ -37,7 +37,7 @@
 
 `.worktree/v2.md` 的主张是正确的：FoundationX 下一步不应继续扩大功能面，而应先做 `Trust Alignment`，把公开叙述、规格、依赖矩阵、发布证据、成熟度口径和机器门禁收敛到一个可信事实源。
 
-但 v2 的方案生成时间早于当前仓库的部分事实。当前项目已经进入 20 个基座模块视角：`xlib-standard` 已拆出 `xlib-harness` 与 `xlib-evidence`，新增 `domainx`，并且 `module/README.md` 明确自己是模块规格库 SSOT。优化方案必须以当前 20 模块事实为基准，而不是回到 v2 早期的 17/18 模块假设。
+但 v2 的方案生成时间早于当前仓库的部分事实。当前项目已经进入 20 个基座模块视角：`xlib_standard` 已拆出 `xlib_harness` 与 `xlib_evidence`，新增 `domainx`，并且 `module/README.md` 明确自己是模块规格库 SSOT。优化方案必须以当前 20 模块事实为基准，而不是回到 v2 早期的 17/18 模块假设。
 
 最重要的落地点不是再写一组 Markdown 状态表，而是建立：
 
@@ -51,10 +51,10 @@
 | 扫描面 | 当前事实 | 对 v2 的修正 |
 | --- | --- | --- |
 | 模块数量 | `module/README.md` 声明当前基座规格库为 20 个模块，且 `rg --files module -g 'SPEC.md'` 也返回 20 个规格。 | v2 中的 17/18 模块口径必须升级为 20 模块口径。 |
-| xlib-standard | `README.md` 与 `ARCHITECTURE.md` 已把 Generator、Harness、Evidence 拆到 `xlib-harness` 与 `xlib-evidence`。 | v2 中对 xlib-standard 的“标准+模板+门禁+证据”合体叙述必须拆分。 |
+| xlib_standard | `README.md` 与 `ARCHITECTURE.md` 已把 Generator、Harness、Evidence 拆到 `xlib_harness` 与 `xlib_evidence`。 | v2 中对 xlib_standard 的“标准+模板+门禁+证据”合体叙述必须拆分。 |
 | xlibgate | `module/xlibgate/SPEC.md` 已有 `check` 与 `l2` 命令组，退出码当前定义为 0/1/2。 | v2 的 0-4 退出码不能直接替换，应保持兼容并把细分原因放到 JSON `reason_code`。 |
 | domainx | `module/domainx/SPEC.md` 已成为 L2.5 共享领域模型层。 | v2 的 contracts/transportx 边界方案应加入 domainx，否则 contracts 会承载过多领域模型职责。 |
-| FOUNDATION-DEPS | `module/FOUNDATION-DEPS.yaml` 仍含旧 xlib-standard 职责与缺失模块。 | 这是当前最优先修复的本仓库事实漂移点。 |
+| FOUNDATION-DEPS | `module/FOUNDATION-DEPS.yaml` 仍含旧 xlib_standard 职责与缺失模块。 | 这是当前最优先修复的本仓库事实漂移点。 |
 | 状态语义 | `STATUS.md` 与根文档仍大量使用 100% 或完成状态。 | 需要按 spec、implementation、release、live integration、external CI、downstream adoption、production soak、factory grade 拆分成熟度。 |
 | 治理门禁 | `CONSTITUTION.md` 与治理文档要求分支纪律、Spec 管线、四源评分与可追溯证据。 | v2 优化必须作为文档/门禁收敛工程推进，不能绕过 Spec -> Matrix -> Tasks -> Plan -> Prompt -> Code。 |
 
@@ -68,7 +68,7 @@
 | 4 | 仓库性质 | 本仓库是个人主页、架构索引和规格库，不是模块源码仓库。 | 报告只规划本仓库事实源、投影与跨仓库执行顺序。 |
 | 5 | v2 主线 | v2 主题是 Trust Alignment，不是功能扩张。 | 将优化目标定义为可信化收敛。 |
 | 6 | v2 风险 | v2 多次指出公开事实、README、release、manifest、evidence、maturity 漂移。 | 建立机器事实源和门禁。 |
-| 7 | v2 不变量 | xlib-standard/xlibgate 到 kernel 到 L1/L2 的方向必须保持。 | 依赖矩阵先修正，再让 xlibgate 检查。 |
+| 7 | v2 不变量 | xlib_standard/xlibgate 到 kernel 到 L1/L2 的方向必须保持。 | 依赖矩阵先修正，再让 xlibgate 检查。 |
 | 8 | v2 文件格式 | v2 早期提 `.repo-contract.yaml`，后期转为 `.foundationx/repo-contract.json`。 | 采用 JSON 作为 Go stdlib 友好的默认契约。 |
 | 9 | v2 输出 | v2 要求 status、blockers、evidence、release manifest 可机器读取。 | 定义 contract、blockers、evidence-index、status.generated 四类文件。 |
 | 10 | v2 stop condition | v2 的停止条件是事实一致并可由机器阻断漂移。 | 把最终验收定义为 xlibgate 和生成投影同时通过。 |
@@ -77,25 +77,25 @@
 | 13 | ARCHITECTURE | 架构文档也列出 20 个模块和新分层。 | 优化方案以 ARCHITECTURE 当前分层为架构基准。 |
 | 14 | STATUS | STATUS 的基座表也是 20 项。 | 生成状态时优先保持 20 项完整性。 |
 | 15 | module/README | module/README 声明自己是模块规格 SSOT。 | 根 README/ARCH/STATUS 应作为投影，而非并列事实源。 |
-| 16 | FOUNDATION-DEPS | 依赖矩阵仍是 18 模块级别。 | P0 必须补齐 xlib-harness、xlib-evidence、domainx。 |
+| 16 | FOUNDATION-DEPS | 依赖矩阵仍是 18 模块级别。 | P0 必须补齐 xlib_harness、xlib_evidence、domainx。 |
 | 17 | FOUNDATION-SPEC | Foundation 旧 spec 是六模块初始规划。 | 标注历史或阶段一，避免被误当当前完整事实。 |
 | 18 | FOUNDATION-V1 | Foundation V1 已声明自己是初始规划文档。 | 保留为历史，但不能驱动当前模块清单。 |
 | 19 | FOUNDATION-TRACKER | Tracker 声称 20/20 完成。 | 用来校准完成事实，但仍需和 DEPS/STATUS 自动一致。 |
-| 20 | foundation-modules | 旧模块说明仍带六模块和旧 xlib-standard 口径。 | 修正文档定位与 Markdown code fence。 |
-| 21 | xlib-standard | 当前应只承载标准、模板、约束和参考事实。 | 删除 generator、harness gate、evidence runtime 职责语言。 |
-| 22 | xlib-harness | 当前为 Draft，负责生成与脚手架/格式/traceability gate。 | 通过评分门禁升为 Approved 后纳入 release lane。 |
-| 23 | xlib-evidence | 当前为 Draft，负责证据运行时和 release manifest。 | 补齐 manifest/hash-chain/evidence-index 规格与任务。 |
+| 20 | foundation-modules | 旧模块说明仍带六模块和旧 xlib_standard 口径。 | 修正文档定位与 Markdown code fence。 |
+| 21 | xlib_standard | 当前应只承载标准、模板、约束和参考事实。 | 删除 generator、harness gate、evidence runtime 职责语言。 |
+| 22 | xlib_harness | 当前为 Draft，负责生成与脚手架/格式/traceability gate。 | 通过评分门禁升为 Approved 后纳入 release lane。 |
+| 23 | xlib_evidence | 当前为 Draft，负责证据运行时和 release manifest。 | 补齐 manifest/hash-chain/evidence-index 规格与任务。 |
 | 24 | xlibgate | 当前已有 check/l2 基线，但缺少 v2 的身份与模板残留检查。 | 在 v1.0.2 上增量加 check identity/template-residue/release-consistency。 |
 | 25 | xlibgate CLI | 当前退出码 0/1/2 是已批准契约。 | 不直接采用 v2 0-4；新增 JSON status code 兼容扩展。 |
 | 26 | xlibgate JSON | v2 需要机器报告。 | 每个 check 输出统一 schema：status、findings、reason_code、evidence。 |
 | 27 | xlibgate offline | v2 强调 release consistency 可 offline。 | release 检查默认读取本地 manifest/tag projection，不依赖网络。 |
 | 28 | xlibgate fleet | v2 需要 fleet status generation。 | 增加 `xlibgate fleet status` 或 `xlibgate check all --fleet` 方案。 |
-| 29 | xlib-harness 边界 | harness 不执行 evidence，不定义 standard。 | 与 xlib-standard/xlib-evidence 的边界写入 DEPS。 |
-| 30 | xlib-evidence 边界 | evidence 不执行 gate，只收集与验证证据。 | xlibgate 负责判定，xlib-evidence 负责证据包。 |
+| 29 | xlib_harness 边界 | harness 不执行 evidence，不定义 standard。 | 与 xlib_standard/xlib_evidence 的边界写入 DEPS。 |
+| 30 | xlib_evidence 边界 | evidence 不执行 gate，只收集与验证证据。 | xlibgate 负责判定，xlib_evidence 负责证据包。 |
 | 31 | kernel | kernel 是基础抽象层，不能反向依赖 L1/L2。 | import-boundary gate 把 kernel 反向依赖列为红线。 |
 | 32 | configx | configx 属 L1 配置基础设施。 | 允许上层读取配置，不允许 configx 了解业务域。 |
 | 33 | observex | observex 应保持 vendor-neutral interface。 | 禁止写死 provider 或把观测语义变成业务逻辑。 |
-| 34 | resiliencx | 当前 docs 允许 operational runtime 角色。 | 明确它不是 risk-engine，不能承载交易决策。 |
+| 34 | resiliencx | 当前 docs 允许 operational runtime 角色。 | 明确它不是 risk_engine，不能承载交易决策。 |
 | 35 | schedulex | 调度基础设施应保持通用。 | 禁止和交易周期/策略语义耦合。 |
 | 36 | testkitx | testkitx 是测试专用。 | xlibgate 检查生产代码 import testkitx 为阻断项。 |
 | 37 | contracts | contracts 是跨域稳定契约。 | 保持 DTO/event/port，避免传输实现和业务流程。 |
@@ -172,14 +172,14 @@
 交付物：
 
 - 新增或规划 `.foundationx/repo-contract.json` schema，字段至少包括 `repo`、`identity`、`release`、`maturity`、`boundaries`、`known_gaps`、`evidence`。
-- 修复 `module/FOUNDATION-DEPS.yaml`：补齐 `xlib-harness`、`xlib-evidence`、`domainx`；修正 `xlib-standard` 职责；移除或更新 testkitx Go baseline 与 foundationx compatibility 的陈旧备注。
+- 修复 `module/FOUNDATION-DEPS.yaml`：补齐 `xlib_harness`、`xlib_evidence`、`domainx`；修正 `xlib_standard` 职责；移除或更新 testkitx Go baseline 与 foundationx compatibility 的陈旧备注。
 - 给 `module/FOUNDATION-SPEC.md`、`module/FOUNDATION-V1.md`、`module/foundation-modules.md` 加历史/阶段一定位，避免它们与当前 20 模块事实竞争。
 - 将 `STATUS.md` 中的单一完成度拆成成熟度维度：spec、implementation、release、live integration、external CI、downstream adoption、production soak、factory grade。
 
 验收：
 
 - 20 个模块在 module 索引、DEPS、STATUS、README、ARCHITECTURE 中数量一致。
-- `xlib-standard` 不再被描述为 generator/harness/evidence 的合体。
+- `xlib_standard` 不再被描述为 generator/harness/evidence 的合体。
 - 旧文档明确标注历史状态，不再被下游误用为当前 SSOT。
 
 ### P1：扩展 xlibgate 为可信化门禁
@@ -212,9 +212,9 @@
 
 | 模块 | 优先动作 | 验收口径 |
 | --- | --- | --- |
-| xlib-standard | 固化标准、模板、schema、governance 事实源职责。 | 不再包含 generator/harness/evidence runtime。 |
-| xlib-harness | Draft -> Approved；补 Matrix/Tasks；明确 generate/check 边界。 | 通过四源评分且无 runtime 依赖。 |
-| xlib-evidence | Draft -> Approved；固化 manifest、hash-chain、evidence-index。 | 能被 xlibgate release/factory gate 消费。 |
+| xlib_standard | 固化标准、模板、schema、governance 事实源职责。 | 不再包含 generator/harness/evidence runtime。 |
+| xlib_harness | Draft -> Approved；补 Matrix/Tasks；明确 generate/check 边界。 | 通过四源评分且无 runtime 依赖。 |
+| xlib_evidence | Draft -> Approved；固化 manifest、hash-chain、evidence-index。 | 能被 xlibgate release/factory gate 消费。 |
 | xlibgate | 实现 v2 trust checks 与 fleet status。 | check/l2/fleet 统一 JSON 输出并保留退出码兼容。 |
 | kernel | 校验反向依赖与基础抽象边界。 | 无 L1/L2 反向依赖。 |
 | configx | 校验配置边界与 current release fact。 | 不包含业务域逻辑。 |
@@ -274,7 +274,7 @@ README.md / ARCHITECTURE.md / STATUS.md generated blocks
 - 最后对 factory gate 启用 blocking mode；
 - natsx 优先处理正式四源仲裁与生产 TLS gate；
 - postgresx、ossx、clickhousex 的真实集成证据作为样板；
-- downstream smoke 覆盖 x.go、foundation-example、关键 L2 消费链。
+- downstream smoke 覆盖 x.go、foundation_example、关键 L2 消费链。
 
 验收：
 
@@ -308,9 +308,9 @@ README.md / ARCHITECTURE.md / STATUS.md generated blocks
 
 | PR | 主题 | 主要文件 | 验收 |
 | --- | --- | --- | --- |
-| PR-1 | 本仓库事实源校准 | `module/FOUNDATION-DEPS.yaml`、历史 Foundation 文档、`STATUS.md` | 20 模块一致，旧 xlib-standard 职责清除。 |
+| PR-1 | 本仓库事实源校准 | `module/FOUNDATION-DEPS.yaml`、历史 Foundation 文档、`STATUS.md` | 20 模块一致，旧 xlib_standard 职责清除。 |
 | PR-2 | xlibgate trust check spec | `module/xlibgate/SPEC.md`、TRACEABILITY、TASKS | 新 check 有 FR/AC/TC，退出码兼容。 |
-| PR-3 | xlib-harness / xlib-evidence 升级 | 两个模块的 SPEC/MATRIX/TASKS | Draft -> Approved，边界闭合。 |
+| PR-3 | xlib_harness / xlib_evidence 升级 | 两个模块的 SPEC/MATRIX/TASKS | Draft -> Approved，边界闭合。 |
 | PR-4 | generated status 方案 | `.foundationx/*` schema、生成脚本或 xlibgate fleet spec | status.generated 可稳定产生。 |
 | PR-5 | L2 release consistency | storage/messaging/object 模块投影与 evidence | manifest/tag/status 一致。 |
 | PR-6 | production hardening | natsx、postgresx、downstream smoke | blocker 清零，soak/adoption 维度明确。 |
@@ -328,7 +328,7 @@ README.md / ARCHITECTURE.md / STATUS.md generated blocks
 本轮优化全部完成的 stop condition：
 
 - 20 模块清单在所有公开投影中一致；
-- `xlib-standard`、`xlib-harness`、`xlib-evidence`、`xlibgate` 四者职责无重叠；
+- `xlib_standard`、`xlib_harness`、`xlib_evidence`、`xlibgate` 四者职责无重叠；
 - `module/FOUNDATION-DEPS.yaml` 与每模块 contract 均能被 xlibgate 消费；
 - release、maturity、evidence、blocker 均有机器可读表示；
 - `xlibgate check all --release` 阻断身份、模板、发布、依赖、secret 漂移；

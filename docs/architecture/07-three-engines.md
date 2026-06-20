@@ -2,7 +2,7 @@
 
 ### 1. market_engine → S State
 
-**输入源**：`domain-market`（经 `MarketEventEnvelope` 质量门禁）
+**输入源**：`domain_market`（经 `MarketEventEnvelope` 质量门禁）
 
 | 数据类型   | 字段                       | 说明      |
 | ---------- | -------------------------- | --------- |
@@ -62,7 +62,7 @@
 
 ### 2. macro_engine → M State
 
-**输入源**：`domain-macro`（经 PIT 防泄露过滤）
+**输入源**：`domain_macro`（经 PIT 防泄露过滤）
 
 | 数据类型   | 字段                                  | 说明           |
 | ---------- | ------------------------------------- | -------------- |
@@ -108,7 +108,7 @@
 | `confidence`     | float64 [0,1]      | 分类置信度              |
 | `timestamp`      | time.Time          | 计算时间                |
 | `data_freshness` | time.Time          | 数据新鲜度              |
-| `input_source`   | string             | macro-data-py 数据产品来源 |
+| `input_source`   | string             | macro_data_py 数据产品来源 |
 
 **黄金案例校验**：
 
@@ -193,13 +193,13 @@
 
 | 字段                             | 类型   | 值域                                              | 下游消费者                     |
 | -------------------------------- | ------ | ------------------------------------------------- | ------------------------------ |
-| `action`                         | enum   | A/B/C/D/E                                         | signal-factory（信号强度调制） |
-| `profile`                        | enum   | aggressive/moderate/conservative/defensive/flat   | signal-factory（策略模板选择） |
-| `risk_tier`                      | int    | 1-5                                               | risk-engine（风险阈值）        |
-| `template`                       | enum   | trend_following/range_trading/breakout/hedge/cash | signal-factory（策略模板）     |
-| `position_caps.max_leverage`     | float  | —                                                 | risk-engine（杠杆上限）        |
-| `position_caps.max_position_pct` | float  | —                                                 | risk-engine（仓位上限）        |
-| `risk_multiplier`                | float  | 0.3-1.0                                           | risk-engine（风险乘数）        |
+| `action`                         | enum   | A/B/C/D/E                                         | signal_factory（信号强度调制） |
+| `profile`                        | enum   | aggressive/moderate/conservative/defensive/flat   | signal_factory（策略模板选择） |
+| `risk_tier`                      | int    | 1-5                                               | risk_engine（风险阈值）        |
+| `template`                       | enum   | trend_following/range_trading/breakout/hedge/cash | signal_factory（策略模板）     |
+| `position_caps.max_leverage`     | float  | —                                                 | risk_engine（杠杆上限）        |
+| `position_caps.max_position_pct` | float  | —                                                 | risk_engine（仓位上限）        |
+| `risk_multiplier`                | float  | 0.3-1.0                                           | risk_engine（风险乘数）        |
 | `conflict`                       | bool   | —                                                 | 审计/监控                      |
 | `explain`                        | string | —                                                 | 人类可读决策解释               |
 

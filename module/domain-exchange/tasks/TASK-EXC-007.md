@@ -6,12 +6,12 @@
 
 ```yaml
 task_id: TASK-EXC-007
-module: domain-exchange
+module: domain_exchange
 scope: "确保 Order 相关返回使用 domainx.Order/ExecutionReport 或短期兼容 alias，不建立第二套订单 SSOT"
 spec_ref:
-  - "module/domain-exchange/SPEC.md#FR-EXC-007"
-  - "module/domain-exchange/SPEC.md#§2"
-  - "module/domain-exchange/SPEC.md#§21"
+  - "module/domain_exchange/SPEC.md#FR-EXC-007"
+  - "module/domain_exchange/SPEC.md#§2"
+  - "module/domain_exchange/SPEC.md#§21"
 files:
   - "exchange.go"
   - "alias.go"

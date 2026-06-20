@@ -147,11 +147,11 @@ Allowed by role:
 
 | Runtime Area | Allowed External Modules |
 |---|---|
-| client mapper | `module/domain-market`, `module/contracts` generated types |
+| client mapper | `module/domain_market`, `module/contracts` generated types |
 | client sender | `module/contracts` generated gRPC client |
 | server ingest | `module/contracts` generated gRPC server |
-| server validation | `module/domain-market` |
-| server dispatch | `module/market-data` downstream port |
+| server validation | `module/domain_market` |
+| server dispatch | `module/market_data` downstream port |
 | admin | `module/transportx` conventions, Gin |
 | observability | approved logging/metrics/tracing libraries |
 

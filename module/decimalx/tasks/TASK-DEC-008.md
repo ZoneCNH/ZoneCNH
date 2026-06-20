@@ -15,7 +15,7 @@
 
 ## 验收标准
 
-- `domain-market`、`domain-exchange`、`domain-macro`、`domainx` 可编译采用
+- `domain_market`、`domain_exchange`、`domain_macro`、`domainx` 可编译采用
 - Version 更新为 v1.0.0
 - CHANGELOG.md、MIGRATION.md、release manifest 齐全
 - SPEC Approved 标记确认
@@ -31,6 +31,6 @@
 
 ## 测试要求
 
-- 下游模块 smoke 通过（domain-market、domain-exchange、domain-macro、domainx）
+- 下游模块 smoke 通过（domain_market、domain_exchange、domain_macro、domainx）
 - 全部 Release DoD 检查项通过
 - 版本号验证

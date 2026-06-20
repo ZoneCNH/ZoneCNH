@@ -1,7 +1,7 @@
-# xlib-standard 结构性问题诊断报告
+# xlib_standard 结构性问题诊断报告
 
 > 分析时间：2026-06-08 05:30 +08:00
-> 分析范围：`module/xlib-standard/` 全部 6 个文件 + archive/ 目录
+> 分析范围：`module/xlib_standard/` 全部 6 个文件 + archive/ 目录
 > 综合评分：**5.2 / 10**
 
 ---
@@ -29,7 +29,7 @@
 
 **建议**：
 >
-- FR 细节拆到 `module/xlib-standard/FR-DETAIL.md`，SPEC.md 只保留 FR 摘要表
+- FR 细节拆到 `module/xlib_standard/FR-DETAIL.md`，SPEC.md 只保留 FR 摘要表
 - 参考资料 C/E 拆到独立文件或删除（信息与主规格重叠）
 - 状态说明收敛为当前状态 + 一个链接指向变更日志
 
@@ -117,7 +117,7 @@
 
 ## 问题 6：COVERAGE-MANIFEST.md 绝对路径（严重度：MEDIUM）
 
-**现状**：154 个文件清单使用占位符 `<upstream:xlib-standard>/...`，但复算命令仍含 `/home/xlib-standard` 绝对路径（L33-38）。
+**现状**：154 个文件清单使用占位符 `<upstream:xlib_standard>/...`，但复算命令仍含 `/home/xlib_standard` 绝对路径（L33-38）。
 
 **问题**：其他 reviewer 无法直接复算。README.md 也承认"跨机器复现仍需要 source pack、路径映射或重新生成覆盖清单"。
 
@@ -163,7 +163,7 @@
 
 **问题**：即使标注了"不得作为当前规格引用"，它们仍在目录中占位，增加心智负担。新读者会困惑"该看哪个"。
 
-**建议**：要么移到 `module/xlib-standard-archive/` 顶层目录，要么删除（git history 已保存）。
+**建议**：要么移到 `module/xlib_standard-archive/` 顶层目录，要么删除（git history 已保存）。
 
 ---
 
@@ -223,9 +223,9 @@ REMOTE-EVIDENCE.md ← 远端治理证据（独立且清晰）
 
 | 报告                                                       | 时间      | 内容                              |
 | ---------------------------------------------------------- | --------- | --------------------------------- |
-| `xlib-standard-structural-issues-20260608-0341.md`         | 03:41     | 首次结构问题发现                  |
-| `xlib-standard-structural-deep-analysis-20260608-0446.md`  | 04:46     | 深度分析（导致 Spec 回退 Review） |
-| `xlib-standard-structural-fix-completion-20260608-0459.md` | 04:59     | 修复完成（commit/tree sha pin）   |
-| `xlib-standard-structural-fix-final-20260608-0513.md`      | 05:13     | 最终修复（行级覆盖 100%）         |
-| `xlib-standard-specs-structural-review-20260608.md`        | —         | Specs 结构审查                    |
+| `xlib_standard-structural-issues-20260608-0341.md`         | 03:41     | 首次结构问题发现                  |
+| `xlib_standard-structural-deep-analysis-20260608-0446.md`  | 04:46     | 深度分析（导致 Spec 回退 Review） |
+| `xlib_standard-structural-fix-completion-20260608-0459.md` | 04:59     | 修复完成（commit/tree sha pin）   |
+| `xlib_standard-structural-fix-final-20260608-0513.md`      | 05:13     | 最终修复（行级覆盖 100%）         |
+| `xlib_standard-specs-structural-review-20260608.md`        | —         | Specs 结构审查                    |
 | **本报告**                                                 | **05:30** | **全面结构性诊断 + 评分**         |

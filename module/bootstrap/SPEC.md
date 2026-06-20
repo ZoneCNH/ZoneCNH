@@ -58,7 +58,7 @@ app.Run(ctx)
 - ❌ 不内置 admin HTTP server / metrics endpoint（各服务自己的事）
 - ❌ 不内置 graceful shutdown 编排策略（用 kernel.shutdownx）
 - ❌ 不内置连接池管理（kafkax/natsx 各自管理）
-- ❌ 不承载领域语义（domain-market/domain-macro 归 L2.5）
+- ❌ 不承载领域语义（domain_market/domain_macro 归 L2.5）
 - ❌ 不 import 业务域模块（binance/fred/…）
 - ❌ 不起 HTTP/gRPC server（仅组装 Component，不起 `net.Listen`）
 
@@ -71,7 +71,7 @@ app.Run(ctx)
 | 消费者 | 使用方式 | Stores |
 | --- | --- | --- |
 | 数据域 adapter（23） | `Build(Spec{Stores: None})` | 零存储 |
-| 数据域聚合层（market-data/macro-data，2） | `Build(Spec{Stores: All})` | 全存储 |
+| 数据域聚合层（market_data/macro_data，2） | `Build(Spec{Stores: All})` | 全存储 |
 | 未来分析域/决策域服务 | `Build(Spec{Stores: 按需})` | 按需 |
 
 ## 6. 功能需求
@@ -144,12 +144,12 @@ THEN `App.ConfigHash` 暴露 configx EffectiveConfigHash（SHA-256），用于�
 
 | ID | 规则 |
 | --- | --- |
-| BR-001 | bootstrap 不得 import domain-market/domain-macro/domainx/contracts（禁业务语义） |
+| BR-001 | bootstrap 不得 import domain_market/domain_macro/domainx/contracts（禁业务语义） |
 | BR-002 | bootstrap 不得 import 任何数据域子模块（binance/fred/…）（禁采集逻辑） |
 | BR-003 | bootstrap 不得起 HTTP/gRPC server（源码无 `net.Listen`） |
 | BR-004 | bootstrap 是 L1 Assembly，只向下依赖 kernel/configx/observex/resiliencx/存储适配器，不依赖 L2.5、业务域或 x.go |
 | BR-005 | adapter 进程的 Spec.Stores 必须为 None；App.Stores 为 nil |
-| BR-006 | 仅聚合层（market-data/macro-data）的 Spec.Stores 可非 None |
+| BR-006 | 仅聚合层（market_data/macro_data）的 Spec.Stores 可非 None |
 | BR-007 | Spec.Stores 位掩码控制；未启用的存储不构造不连接 |
 | BR-008 | 文档批准前不得新增运行时代码或依赖 |
 
@@ -187,7 +187,7 @@ import (
 
 // Spec 描述一个进程的标准组件清单。
 type Spec struct {
-    Module    string          // 进程名，如 "binance" / "market-data"
+    Module    string          // 进程名，如 "binance" / "market_data"
     Stores    StoreSet        // 位掩码；adapter 传 None，聚合层传 All
     Hooks     []func(*App) error  // 可选 hook（注册自定义组件）
 }
@@ -397,7 +397,7 @@ bootstrap (Foundation L1 Assembly)
 | TC-BS-005 | FR-005 | Run 收到 SIGTERM → 逆序 Stop | `go test -run TestRunShutdown` |
 | TC-BS-006 | FR-005 | Component Start 失败 → 回滚 | `go test -run TestStartRollback` |
 | TC-BS-007 | FR-005 | Shutdown 幂等（二次返回 nil） | `go test -run TestShutdownIdempotent` |
-| TC-BS-008 | BR-001 | go.mod 无 domain-market/contracts | boundary-gate |
+| TC-BS-008 | BR-001 | go.mod 无 domain_market/contracts | boundary-gate |
 | TC-BS-009 | BR-005 | adapter Spec.Stores=None 编译期约束 | `go test -run TestAdapterZeroStore` |
 
 ## 17. 性能预算
@@ -429,7 +429,7 @@ bootstrap (Foundation L1 Assembly)
 
 | 门禁 | 规则 | 校验 |
 | --- | --- | --- |
-| 禁业务语义 | go.mod 无 domain-market/domain-macro/domainx/contracts | `grep` 零命中 |
+| 禁业务语义 | go.mod 无 domain_market/domain_macro/domainx/contracts | `grep` 零命中 |
 | 禁采集逻辑 | go.mod 无数据域子模块（binance/fred/…） | `grep` 零命中 |
 | 禁 transport 实体 | 源码无 `net.Listen` | grep 零命中 |
 | 依赖方向 | 只向下依赖 kernel/configx/observex/resiliencx/存储 | 依赖图扫描 |
@@ -455,7 +455,7 @@ bootstrap (Foundation L1 Assembly)
 
 ### v0.2.0 准入项（含 SPEC Approved）
 
-- [ ] `Stores=All` 与位组合端到端冒烟（market-data 接入验证）
+- [ ] `Stores=All` 与位组合端到端冒烟（market_data 接入验证）
 - [ ] foundationx 依赖移除（v0.1.x patch 优先，不晚于 v0.2.0；替换为 kernel/configx 原生脱敏，对齐 ADR-foundationx-exit）
 - [ ] binance 接入验证（main.go ≤10 行）
 - [ ] SPEC 经四源 ≥98 分门禁，状态从 Draft 转 Approved

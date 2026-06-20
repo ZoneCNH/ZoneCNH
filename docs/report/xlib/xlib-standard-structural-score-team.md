@@ -1,15 +1,15 @@
-# xlib-standard 结构性评估报告（Team Analysis）
+# xlib_standard 结构性评估报告（Team Analysis）
 
 > 评估日期：2026-06-10
-> 评估对象：`module/xlib-standard/`（14 个 .md 文件，含 analysis/ 子目录）
-> 上游快照：`ZoneCNH/xlib-standard@93753b30`（v0.6.5，pinned 2026-06-08）
+> 评估对象：`module/xlib_standard/`（14 个 .md 文件，含 analysis/ 子目录）
+> 上游快照：`ZoneCNH/xlib_standard@93753b30`（v0.6.5，pinned 2026-06-08）
 > Analysis-Version：v3.1.0
 
 ---
 
 ## 一、摘要
 
-`module/xlib-standard/` 是上游仓库 `xlib-standard` 的本地结构分析快照。目录包含 14 个 Markdown 文件（10 个顶级 + 4 个 analysis/ 子分析），总计 2676 行。整体结构成熟、分工清晰，具备完善的覆盖率声明、冲突管理和证据链机制。主要扣分点集中在交叉引用不一致、部分内容重复、以及 COVERAGE-MANIFEST 文件可读性问题。
+`module/xlib_standard/` 是上游仓库 `xlib_standard` 的本地结构分析快照。目录包含 14 个 Markdown 文件（10 个顶级 + 4 个 analysis/ 子分析），总计 2676 行。整体结构成熟、分工清晰，具备完善的覆盖率声明、冲突管理和证据链机制。主要扣分点集中在交叉引用不一致、部分内容重复、以及 COVERAGE-MANIFEST 文件可读性问题。
 
 **总体评分：83 / 100**
 
@@ -129,7 +129,7 @@
 - `COVERAGE-MANIFEST.md` 记录 154 个输入文件的完整清单。
 - 每个文件有 sha256 前缀校验（16 hex chars）。
 - 提供了详细的 pinning procedure（5 步）和 reviewer 复算命令。
-- 使用路径占位符（`<upstream:xlib-standard>` 等）提升可移植性。
+- 使用路径占位符（`<upstream:xlib_standard>` 等）提升可移植性。
 - 明确声明"1000-pass 只证明集合稳定，不证明语义审查"。
 
 **❌ 严重问题** — 无

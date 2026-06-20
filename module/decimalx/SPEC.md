@@ -44,11 +44,11 @@
 
 ## 5. 非目标与发布门禁
 
-- 不实现交易所精度规则（price tick、lot size 等由 domain-market/domain-exchange 负责）
+- 不实现交易所精度规则（price tick、lot size 等由 domain_market/domain_exchange 负责）
 - 不实现账本、税务或估值计算（由上层业务域负责）
 - 不实现策略计算或指标公式（由因子引擎和策略域负责）
 - 不提供通用数学 DSL 或统计分析库（只做精确十进制算术）
-- 不依赖任何业务域模块（domain-market、domain-exchange、domain-macro、domainx）
+- 不依赖任何业务域模块（domain_market、domain_exchange、domain_macro、domainx）
 - 不依赖 transport 层（HTTP、gRPC、Kafka）或存储层（Redis、Postgres、TDengine）
 
 ### v1.0.0 发布门禁
@@ -57,16 +57,16 @@
 | --- | --- |
 | API freeze | 公共 API、错误类型、序列化语义完成兼容测试。 |
 | 精度门禁 | 不允许 float64 参与公共 decimal/money 输入输出。 |
-| 下游门禁 | `domain-market`、`domain-exchange`、`domain-macro`、`domainx` 可编译采用。 |
+| 下游门禁 | `domain_market`、`domain_exchange`、`domain_macro`、`domainx` 可编译采用。 |
 | CI 门禁 | 单元测试、race、fuzz/property、staticcheck、govulncheck 通过。 |
 
 ## 6. 消费者
 
-- `domain-market`：Tick/Quote/Bar 的 Price/Qty 字段
-- `domain-exchange`：PlaceOrderRequest 的 Price/Qty、Balance 的 Free/Locked
-- `domain-macro`：MacroPoint 的 Value 字段（精度 ADR 决策后）
+- `domain_market`：Tick/Quote/Bar 的 Price/Qty 字段
+- `domain_exchange`：PlaceOrderRequest 的 Price/Qty、Balance 的 Free/Locked
+- `domain_macro`：MacroPoint 的 Value 字段（精度 ADR 决策后）
 - `domainx`：Order/Position/ExecutionReport 金额字段
-- `order-engine`、`risk-engine`、`factor-engine`：策略与执行层全部金融数值
+- `order_engine`、`risk_engine`、`factor_engine`：策略与执行层全部金融数值
 
 ## 7. 功能需求
 
@@ -237,7 +237,7 @@ module/decimalx/
 
 - 允许：`kernel`（errors、contracts）
 - 允许：Go 标准库 `math/big`、`strconv`、`encoding/json`、`database/sql`、`fmt`
-- 禁止：任何业务域模块（domain-market、domain-exchange、domain-macro、domainx）
+- 禁止：任何业务域模块（domain_market、domain_exchange、domain_macro、domainx）
 - 禁止：transport 层（HTTP、gRPC、Kafka）
 - 禁止：存储层（Redis、Postgres、TDengine）
 
@@ -290,7 +290,7 @@ module/decimalx/
 - `GOWORK=off go test ./... -bench=. -run '^$'`
 - `staticcheck ./...`
 - `govulncheck ./...`
-- `GOWORK=off make adoption-check`（如接入 xlib-standard）
+- `GOWORK=off make adoption-check`（如接入 xlib_standard）
 - `GOWORK=off make release-check`
 
 ## 21. 升级兼容性
@@ -312,7 +312,7 @@ module/decimalx/
 - [ ] Quo/Quantize 必须显式 rounding/context
 - [ ] Money 跨币种 Add/Sub 失败
 - [ ] v1 behavior snapshot 固化（golden files）
-- [ ] 下游模块 smoke 通过（domain-market、domain-exchange、domain-macro、domainx）
+- [ ] 下游模块 smoke 通过（domain_market、domain_exchange、domain_macro、domainx）
 - [ ] Version 更新为 v1.0.0
 - [ ] CHANGELOG.md、MIGRATION.md、release manifest 齐全
 

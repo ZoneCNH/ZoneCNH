@@ -1,8 +1,8 @@
-# module/feature-store IMPLEMENTATION PLAN
+# module/feature_store IMPLEMENTATION PLAN
 
 ## 1. Goal
 
-Deliver `module/feature-store` v1.0.0 as the analysis-domain feature storage with PIT queries and lineage tracking.
+Deliver `module/feature_store` v1.0.0 as the analysis-domain feature storage with PIT queries and lineage tracking.
 
 ## 2. Current State
 
@@ -11,12 +11,12 @@ Deliver `module/feature-store` v1.0.0 as the analysis-domain feature storage wit
 - goal.md: present
 - TRACEABILITY.md / IMPLEMENTATION-PLAN.md: this PR
 - Runtime: Pending
-- Upstream: factor-engine SPEC v1.0.0 (Docs Baseline Approved)
+- Upstream: factor_engine SPEC v1.0.0 (Docs Baseline Approved)
 
 ## 3. PR Sequence
 
 ```text
-PR-000 module/feature-store root docs (this PR)               ← DONE
+PR-000 module/feature_store root docs (this PR)               ← DONE
 PR-001 runtime: FeatureStore interface + write path
 PR-002 runtime: version management + PIT query
 PR-003 runtime: lineage tracking
@@ -32,7 +32,7 @@ Scope: SPEC.md status promotion (Draft → Docs Baseline Approved), IMPLEMENTATI
 
 Acceptance:
 - [x] SPEC.md status promoted
-- [x] Upstream caveat updated (factor-engine v1.0.0)
+- [x] Upstream caveat updated (factor_engine v1.0.0)
 - [x] IMPLEMENTATION-PLAN.md created (this file)
 
 ## 5. PR-001 Write Path
@@ -95,7 +95,7 @@ Scope: Metrics, end-to-end tests, race detection.
 
 Acceptance:
 - Metrics: write_latency, query_latency, gc_duration, expired_count
-- Integration test: factor-engine → feature-store → factor-eval (mock) chain
+- Integration test: factor_engine → feature_store → factor_eval (mock) chain
 - Coverage >= 80%
 - Race detector clean
 

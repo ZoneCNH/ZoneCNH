@@ -1,4 +1,4 @@
-# feature-store Goal
+# feature_store Goal
 
 ## 元数据
 
@@ -12,7 +12,7 @@
 
 ## 定位
 
-feature-store 是分析域的特征存储模块。接收 FactorOutput，特征版本化存储、回测时点查询、特征血缘追踪。
+feature_store 是分析域的特征存储模块。接收 FactorOutput，特征版本化存储、回测时点查询、特征血缘追踪。
 
 ## 目标
 
@@ -25,6 +25,6 @@ feature-store 是分析域的特征存储模块。接收 FactorOutput，特征�
 | 类型 | 说明 |
 | --- | --- |
 | Owns | Feature存储接口/特征版本管理/血缘追踪/point-in-time查询 |
-| Depends on | factor-engine, domain-market, decimalx |
-| Consumed by | factor-eval, signal-factory, backtestx |
-| Excludes | 因子计算(→factor-engine)、数据库实现(→postgresx/taosx) |
+| Depends on | factor_engine, domain_market, decimalx |
+| Consumed by | factor_eval, signal_factory, backtestx |
+| Excludes | 因子计算(→factor_engine)、数据库实现(→postgresx/taosx) |

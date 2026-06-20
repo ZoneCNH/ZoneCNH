@@ -186,7 +186,7 @@ check imports / check gomod / check baseline / check release 四个检查器全�
 | check all 提前退出（违反 BR-006）               | 15%    | High   | 0.45     | TASK-XLIBGATE-006 | Phase 3 明确顺序执行 + 继续语义     | 回退到上一 Tag 版本，hotfix 分支修复 BR-006 语义后重新发布                          | TC-005 验证                   |
 | AST 解析性能不达标                              | 10%    | Medium | 0.20     | TASK-XLIBGATE-002 | 仅解析 import 声明，不展开完整 AST  | 优化 AST 遍历逻辑，benchmark 回归验证 < 10s                                         | benchmark < 10s               |
 | go.mod 路径处理跨平台差异                       | 10%    | Medium | 0.20     | TASK-XLIBGATE-003 | `filepath` 包统一路径处理           | 在受影响平台修复路径处理逻辑，重新验证 CI matrix                                    | Windows/Linux/macOS CI matrix |
-| release evidence schema 与 xlib-standard 不一致 | 15%    | Medium | 0.30     | TASK-XLIBGATE-005 | Phase 3 前同步 xlib-standard schema | 代码回滚至与当前 xlib-standard schema 兼容的版本，同步升级 xlib-standard 后重新联调 | JSON schema 校验              |
+| release evidence schema 与 xlib_standard 不一致 | 15%    | Medium | 0.30     | TASK-XLIBGATE-005 | Phase 3 前同步 xlib_standard schema | 代码回滚至与当前 xlib_standard schema 兼容的版本，同步升级 xlib_standard 后重新联调 | JSON schema 校验              |
 | config.yaml 解析边界情况                        | 10%    | Low    | 0.10     | TASK-XLIBGATE-002 | 空配置/仅注释/格式错误全覆盖测试    | 修复 config 解析逻辑后回归测试全部 edge case                                        | 单元测试覆盖全部 edge case    |
 
 ---

@@ -19,7 +19,7 @@ acceptance_criteria:
   - "AC-011: 五源一致 → exit 0, reason_code=\"\""
   - "AC-011: README H1 不匹配 → exit 1, reason_code=IDENTITY_MISMATCH"
   - "AC-011: go.mod module 不匹配 → exit 1, reason_code=IDENTITY_MISMATCH"
-  - "AC-011: 下游仓库声称 xlib-standard 身份 → exit 1, reason_code=IDENTITY_MISMATCH"
+  - "AC-011: 下游仓库声称 xlib_standard 身份 → exit 1, reason_code=IDENTITY_MISMATCH"
   - "AC-011: 缺少 public_package → exit 1, reason_code=IDENTITY_MISMATCH"
   - "AC-011: .repo-contract.yaml 缺失 → exit 2, reason_code=CONTRACT_PARSE_ERROR"
 depends_on:

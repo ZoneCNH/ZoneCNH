@@ -6,7 +6,7 @@
 
 ## Related Spec
 
-`module/domain-macro/SPEC.md` §7 FR-MAC-004, §8 BR-MAC-003/004/005, §9 Interface Contract, §10 Data Model, §12 Error Handling, §13 Edge Cases
+`module/domain_macro/SPEC.md` §7 FR-MAC-004, §8 BR-MAC-003/004/005, §9 Interface Contract, §10 Data Model, §12 Error Handling, §13 Edge Cases
 
 ## Related Requirements
 
@@ -66,7 +66,7 @@
 ## Validation Commands
 
 ```bash
-cd /home/domain-macro
+cd /home/domain_macro
 go build ./...
 go test ./... -race -count=1
 go vet ./...

@@ -10,8 +10,8 @@ goal_id: GOAL-XLIB-STD-001
 date: "2026-06-09"
 status: PENDING
 files_changed:
-  - module/xlib-standard/tasks/TASK-XLIB-002.md
-  - module/xlib-standard/prompt/PROMPT-XLIB-002.md
+  - module/xlib_standard/tasks/TASK-XLIB-002.md
+  - module/xlib_standard/prompt/PROMPT-XLIB-002.md
 commands_run:
   - "make -n build && make -n test && make -n lint"
   - "test -x scripts/spec-lint.sh"
@@ -27,4 +27,4 @@ commands_run:
 
 ## 说明
 
-Task spec 和 Prompt 已生成。实际骨架代码需在上游 xlib-standard 仓库的 `feat/xlib-v1-build` 分支实现。
+Task spec 和 Prompt 已生成。实际骨架代码需在上游 xlib_standard 仓库的 `feat/xlib-v1-build` 分支实现。

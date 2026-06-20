@@ -42,13 +42,13 @@
 | BR-001 | 标准化 exit code：0=pass, 1=fail, 2=error | CI 无法正确判断门禁结果 | TC-004, TC-005 | TASK-XLIBGATE-006 | ✅ |
 | BR-002 | import 规则从 deps.yaml 读取，不硬编码 | 规则变更需改代码重新编译 | FR-001 WHEN/THEN `--config` 参数覆盖 | TASK-XLIBGATE-002 | ✅ |
 | BR-003 | baseline 从配置或 `--expected` 参数获取，不硬编码 | 版本升级需改代码 | FR-003 WHEN/THEN 参数和配置 fallback | TASK-XLIBGATE-004 | ✅ |
-| BR-004 | evidence schema 与 xlib-standard 定义的 Evidence 标准一致 | 跨工具 evidence 不可互操作 | FR-004 schema 验证（JSON 格式 + 必需字段） | TASK-XLIBGATE-005 | ✅ |
+| BR-004 | evidence schema 与 xlib_standard 定义的 Evidence 标准一致 | 跨工具 evidence 不可互操作 | FR-004 schema 验证（JSON 格式 + 必需字段） | TASK-XLIBGATE-005 | ✅ |
 | BR-005 | secret 扫描使用 gitleaks 作为底层工具 | 自研扫描器漏报 | TC-008, check all 中 gitleaks 集成调用 | TASK-XLIBGATE-006 | ✅ |
 | BR-006 | check all 必须执行所有子检查，即使前面检查已失败 | 部分检查被跳过，门禁不完整 | TC-004, TC-005 | TASK-XLIBGATE-006 | ✅ |
 | BR-007 | JSON 输出必须包含 machine-readable 的 status 字段 | CI 解析失败 | TC-007 | TASK-XLIBGATE-006 | ✅ |
 | BR-008 | human-readable 输出必须包含文件路径和行号 | 开发者无法定位违规位置 | TC-001, TC-002, TC-008 | TASK-XLIBGATE-002 | ✅ |
-| BR-009 | 依赖矩阵文件 `FOUNDATION-DEPS.yaml` schema 与 xlib-standard 定义一致 | deps.yaml 解析失败 | FR-001 config 加载（YAML 解析 + schema 校验）+ Config.Validate() | TASK-XLIBGATE-002 | ✅ |
-| BR-010 | 禁止模板身份短语：仅 xlib-standard 可含 5 条模板身份短语 | 模块身份定义冲突 | TC-016, TC-017 + template-residue 精确字符串匹配 | TASK-XLIBGATE-012 | ❌ |
+| BR-009 | 依赖矩阵文件 `FOUNDATION-DEPS.yaml` schema 与 xlib_standard 定义一致 | deps.yaml 解析失败 | FR-001 config 加载（YAML 解析 + schema 校验）+ Config.Validate() | TASK-XLIBGATE-002 | ✅ |
+| BR-010 | 禁止模板身份短语：仅 xlib_standard 可含 5 条模板身份短语 | 模块身份定义冲突 | TC-016, TC-017 + template-residue 精确字符串匹配 | TASK-XLIBGATE-012 | ❌ |
 
 > Status 说明：✅=已完成, ⚠️=部分完成/需修复, ❌=未按 SPEC 实现
 
@@ -140,7 +140,7 @@
 | AC-013 | FR-010      | 009    | 所有必需证据文件存在时输出 present/missing 计数，exit 0；存在缺失时输出缺失列表，exit 1                                                                                                                |
 | AC-014 | FR-011      | 009    | 所有硬性门禁通过且综合评分 ≥ 80 时输出 status=pass/score/hard_failures=0，exit 0；硬失败 >0 时输出 fail 状态和 hard_failures 列表，exit 1                                                              |
 | AC-015 | FR-012      | 011    | 五源身份一致 → exit 0；任一不匹配 → exit 1, reason_code=IDENTITY_MISMATCH；.repo-contract.yaml 缺失 → exit 2, CONTRACT_PARSE_ERROR                                                                     |
-| AC-016 | FR-013, BR-010 | 012 | 下游仓库无禁止短语 → exit 0；含禁止短语 → exit 1, reason_code=TEMPLATE_RESIDUE；xlib-standard 自身 → exit 0, TEMPLATE_RESIDUE_SELF_SKIP                                                               |
+| AC-016 | FR-013, BR-010 | 012 | 下游仓库无禁止短语 → exit 0；含禁止短语 → exit 1, reason_code=TEMPLATE_RESIDUE；xlib_standard 自身 → exit 0, TEMPLATE_RESIDUE_SELF_SKIP                                                               |
 | AC-017 | FR-014      | 013    | 七源版本一致 → exit 0；不一致 → exit 1, reason_code=RELEASE_DRIFT；VERSION/CHANGELOG 缺失 → exit 1；--online 查询 GitHub API                                                                            |
 | AC-018 | FR-015      | 014    | 11 维全 true → exit 0；任一维度 false → exit 1, reason_code=FACTORY_GATE_BLOCKED；单百分比拒绝 → exit 1；maturity 节缺失 → exit 2, CONTRACT_PARSE_ERROR                                               |
 | AC-019 | FR-016      | 015    | import 合规 → exit 0；违反 forbidden edge → exit 1, reason_code=IMPORT_BOUNDARY_VIOLATION；kernel 导入非 stdlib → 标记 kernel_stdlib_violation；FOUNDATION-DEPS.yaml 缺失 → exit 2                     |

@@ -17,7 +17,7 @@ Last-Updated: 2026-06-17
 | FR-002 | Instrument Parser：解析 Binance 原生 symbol 为规范身份组件，消除跨产品线身份碰撞 | AC-005~007 | TC-002, TC-003, TC-004 | TASK-BINANCE-CLIENT-002 | ⬜ Pending |
 | FR-003 | Product-Line Connectors：Spot/USDⓈ-M/COIN-M/Options 4 个 connector，统一格式内部事件流，断线重连/限速感知/优雅关闭 | AC-008~012 | TC-005, TC-006 | TASK-BINANCE-CLIENT-003, 004, 005, 006 | ⬜ Pending |
 | FR-004 | Raw Event Normalization：规范化原始事件，保留完整溯源（10 字段：product_line/symbol/event type/times/sequence-ids 等） | AC-013, AC-014 | TC-007 | TASK-BINANCE-CLIENT-007 | ⬜ Pending |
-| FR-005 | Canonical Mapping：映射规范化事件为 domain-market 类型，无法识别 event type 返回错误 | AC-015, AC-016 | TC-008 | TASK-BINANCE-CLIENT-007 | ⬜ Pending |
+| FR-005 | Canonical Mapping：映射规范化事件为 domain_market 类型，无法识别 event type 返回错误 | AC-015, AC-016 | TC-008 | TASK-BINANCE-CLIENT-007 | ⬜ Pending |
 | FR-006 | Idempotency Key Generation：跨重试稳定，按 event type 差异化策略 | AC-017, AC-018 | TC-009, TC-010 | TASK-BINANCE-CLIENT-007 | ⬜ Pending |
 | FR-007 | Spool：SQLite 发送前持久化 + 状态机约束 + 重启恢复 | AC-019~024 | TC-011, TC-012 | TASK-BINANCE-CLIENT-009 | ⬜ Pending |
 | FR-008 | Checkpoint：仅 server 持久 ACK 后推进，重启从 checkpoint 恢复 | AC-025~027 | TC-013, TC-014 | TASK-BINANCE-CLIENT-009 | ⬜ Pending |
@@ -89,7 +89,7 @@ Last-Updated: 2026-06-17
 | TC-005 | FR-003 | — | 集成 | Spot connector 连接并接收事件，验证 product_line=spot | ⬜ Pending |
 | TC-006 | FR-003 | — | 集成 | Connector 断开后自动重连，事件流继续 | ⬜ Pending |
 | TC-007 | FR-004 | — | 单元 | 规范化原始 trade 事件，验证输出包含完整溯源字段 | ⬜ Pending |
-| TC-008 | FR-005 | — | 单元 | 映射规范化事件到 domain-market 类型，输出 `*domain_market.MarketEvent` | ⬜ Pending |
+| TC-008 | FR-005 | — | 单元 | 映射规范化事件到 domain_market 类型，输出 `*domain_market.MarketEvent` | ⬜ Pending |
 | TC-009 | FR-006 | — | 单元 | 同一事件两次生成幂等键，验证两次 key 相同 | ⬜ Pending |
 | TC-010 | FR-006 | — | 单元 | 不同 event type 使用不同 key 策略，验证 key 格式符合各 type 预期 | ⬜ Pending |
 | TC-011 | FR-007 | BR-002 | 单元 | 写入 spool → 状态 pending；重启恢复 pending/failed_retryable 事件 | ⬜ Pending |
@@ -130,7 +130,7 @@ Last-Updated: 2026-06-17
 |-------|---------|----------|
 | AC-005 | Parser 区分 BTCUSDT Spot / BTCUSDT USDⓈ-M Perpetual / BTCUSD COIN-M Perpetual / BTC-YYYYMMDD-STRIKE-C / BTC-YYYYMMDD-STRIKE-P 五种身份 | TC-002, TC-003, TC-004 |
 | AC-006 | 不可解析 symbol 返回错误，不产生歧义映射 | TC-002 |
-| AC-007 | Parser 输出作为 domain-market 规范类型输入，不自定义规范枚举 | TC-008 |
+| AC-007 | Parser 输出作为 domain_market 规范类型输入，不自定义规范枚举 | TC-008 |
 
 ### FR-003 / BNC-CLIENT-003~006: Product-Line Connectors
 
@@ -153,7 +153,7 @@ Last-Updated: 2026-06-17
 
 | AC ID | 验收标准 | 验证方式 |
 |-------|---------|----------|
-| AC-015 | Mapper 输出 `*domain_market.MarketEvent`，类型系统完全依赖 domain-market | TC-008 |
+| AC-015 | Mapper 输出 `*domain_market.MarketEvent`，类型系统完全依赖 domain_market | TC-008 |
 | AC-016 | 映射遇到无法识别 event type 时返回错误，不生成半规范事件 | TC-008 |
 
 ### FR-006 / BNC-CLIENT-013: Idempotency Key Generation

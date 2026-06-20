@@ -1,25 +1,25 @@
-# xlib-harness Implementation Plan
+# xlib_harness Implementation Plan
 
-> Module: `xlib-harness`
+> Module: `xlib_harness`
 > Version: v0.1.6
 > Last-Updated: 2026-06-20
-> Implementation-Baseline: `/home/xlib-harness@d90b35124701`
+> Implementation-Baseline: `/home/xlib_harness@d90b35124701`
 
 ## Delivery Strategy
 
-`xlib-harness` is delivered as a standalone Go CLI and library API. The runtime remains stdlib-only; external trust tooling is invoked only from CI/CD workflows and local verification commands.
+`xlib_harness` is delivered as a standalone Go CLI and library API. The runtime remains stdlib-only; external trust tooling is invoked only from CI/CD workflows and local verification commands.
 
 ## Implementation Tasks
 
 | Task | Scope | Files | Status |
 | --- | --- | --- | --- |
-| `TASK-XLIBHARNESS-001` | CLI generation path and ten-asset output | `/home/xlib-harness/main.go`, `/home/xlib-harness/internal/harness/harness.go` | Completed |
-| `TASK-XLIBHARNESS-002` | 23-section spec template and spec profile checks | `/home/xlib-harness/internal/harness/harness.go`, compliant fixture | Completed |
-| `TASK-XLIBHARNESS-003` | Runtime dependency boundary checks for `go.mod` and Go imports | `/home/xlib-harness/internal/harness/harness.go`, bad-dependency fixture | Completed |
-| `TASK-XLIBHARNESS-004` | Makefile and CI/CD reference gates | `/home/xlib-harness/Makefile`, `.github/workflows/ci.yml`, `.github/workflows/release.yml` | Completed |
-| `TASK-XLIBHARNESS-005` | Markdown format checks | `/home/xlib-harness/internal/harness/harness.go`, unit tests | Completed |
-| `TASK-XLIBHARNESS-006` | FR/AC/TC trace closure checks | `/home/xlib-harness/internal/harness/harness.go`, broken-trace fixture | Completed |
-| `TASK-XLIBHARNESS-007` | Code-repository feature and acceptance docs plus license-free secret scan | `/home/xlib-harness/FEATURES.md`, `/home/xlib-harness/ACCEPTANCE.md`, `.github/workflows/ci.yml`, `.github/workflows/release.yml` | Completed |
+| `TASK-XLIBHARNESS-001` | CLI generation path and ten-asset output | `/home/xlib_harness/main.go`, `/home/xlib_harness/internal/harness/harness.go` | Completed |
+| `TASK-XLIBHARNESS-002` | 23-section spec template and spec profile checks | `/home/xlib_harness/internal/harness/harness.go`, compliant fixture | Completed |
+| `TASK-XLIBHARNESS-003` | Runtime dependency boundary checks for `go.mod` and Go imports | `/home/xlib_harness/internal/harness/harness.go`, bad-dependency fixture | Completed |
+| `TASK-XLIBHARNESS-004` | Makefile and CI/CD reference gates | `/home/xlib_harness/Makefile`, `.github/workflows/ci.yml`, `.github/workflows/release.yml` | Completed |
+| `TASK-XLIBHARNESS-005` | Markdown format checks | `/home/xlib_harness/internal/harness/harness.go`, unit tests | Completed |
+| `TASK-XLIBHARNESS-006` | FR/AC/TC trace closure checks | `/home/xlib_harness/internal/harness/harness.go`, broken-trace fixture | Completed |
+| `TASK-XLIBHARNESS-007` | Code-repository feature and acceptance docs plus license-free secret scan | `/home/xlib_harness/FEATURES.md`, `/home/xlib_harness/ACCEPTANCE.md`, `.github/workflows/ci.yml`, `.github/workflows/release.yml` | Completed |
 
 ## Boundary Rules
 
@@ -30,7 +30,7 @@ The harness rejects runtime references to:
 - `resiliencx`
 - `schedulex`
 - `testkitx`
-- `xlib-standard`
+- `xlib_standard`
 
 The implementation checks both `go.mod` module references and parsed Go imports. CI may call external tools such as `xlibgate`, but the shipped Go runtime stays on the standard library.
 
@@ -39,7 +39,7 @@ The implementation checks both `go.mod` module references and parsed Go imports.
 Run the following before release or merge:
 
 ```bash
-cd /home/xlib-harness
+cd /home/xlib_harness
 go build ./...
 go test ./...
 go test ./... -race -count=1
@@ -55,16 +55,16 @@ Required coverage threshold: 100.0%.
 
 ## Release Plan
 
-1. Keep feature work on branch `xlib-harness`.
+1. Keep feature work on branch `xlib_harness`.
 2. Validate local gates with `make ci`, coverage, benchmark, secret scan, and diff hygiene.
 3. Commit implementation using Lore trailers.
 4. Tag the module release as `v0.1.6`.
-5. Merge `xlib-harness` to module `main`.
-6. Merge root documentation branch `xlib-harness` to root `main`.
+5. Merge `xlib_harness` to module `main`.
+6. Merge root documentation branch `xlib_harness` to root `main`.
 
 ## Current Evidence
 
-- `/home/xlib-harness@d90b35124701`
+- `/home/xlib_harness@d90b35124701`
 - `make ci`: PASS
 - `go test -bench=. ./...`: PASS
 - coverage total: 100.0%
@@ -74,4 +74,4 @@ Required coverage threshold: 100.0%.
 - release tag: `v0.1.6`
 - GitHub Actions Release run `27855366871`: PASS
 - GitHub Actions main CI run `27855396013`: PASS
-- GitHub Release: <https://github.com/ZoneCNH/xlib-harness/releases/tag/v0.1.6>
+- GitHub Release: <https://github.com/ZoneCNH/xlib_harness/releases/tag/v0.1.6>

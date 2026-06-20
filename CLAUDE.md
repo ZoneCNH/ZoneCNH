@@ -26,14 +26,14 @@ ZoneCNH 的 `FoundationX` 量化交易基础设施文档枢纽，也是 `ZoneCNH
 - **版本号变更必须同步**更新 `ARCHITECTURE.md` 状态表和 `STATUS.md` 组件明细表。先确认 GitHub 实际 release 再改文档
 - **组件增删必须同步**更新三文档的表格、域统计、仪表盘进度分布、域健康度描述、风险清单、同步检查表
 - **`STATUS.md` 文档同步检查表**是交叉验证的快速入口，其自身计数也必须与实际一致
-- 图中组件数量（如 `market-data (18)`）必须与实际表格行数一致。`ARCHITECTURE.md` 状态表是版本/状态/进度的事实来源
+- 图中组件数量（如 `market_data (18)`）必须与实际表格行数一致。`ARCHITECTURE.md` 状态表是版本/状态/进度的事实来源
 
 ## 模块-仓库强制对应
 
 - **每个列出 GitHub 链接的模块，必须有对应的公开仓库。** 新增模块时必须同时创建对应仓库。文档链接禁止指向 404
 - **全量 404 扫描**：`grep -oPh 'github\.com/ZoneCNH/[a-zA-Z0-9_.-]+' STATUS.md README.md ARCHITECTURE.md | sort -u | while read u; do repo=${u#ZoneCNH/}; gh api "repos/ZoneCNH/$repo" >/dev/null 2>&1 || echo "404: $repo"; done`
 - CI 检查 `repo-existence-check.sh` 验证 HTTP 200
-- 例外：`contracts` / `transportx` / `xlib-harness` / `xlib-evidence` 共享 `xlib-standard` Go module，但各自拥有独立仓库
+- 例外：`contracts` / `transportx` / `xlib_harness` / `xlib_evidence` 共享 `xlib_standard` Go module，但各自拥有独立仓库
 
 ## 当前架构模型
 
@@ -41,12 +41,12 @@ ZoneCNH 的 `FoundationX` 量化交易基础设施文档枢纽，也是 `ZoneCNH
 基座 → 数据域 → 分析域 ⇄ 决策域 → 执行域 → x.go
 ```
 
-- **基座**：`kernel`、`configx`、`observex`、`contracts`、`redisx`、`kafkax` 等 + L2.5 共享层 `decimalx`、`domain-market`、`domain-exchange`、`domain-macro`
-- **数据域**：market-data、macro-data、alternative-data 采集器
+- **基座**：`kernel`、`configx`、`observex`、`contracts`、`redisx`、`kafkax` 等 + L2.5 共享层 `decimalx`、`domain_market`、`domain_exchange`、`domain_macro`
+- **数据域**：market_data、macro_data、alternative_data 采集器
 - **分析域 ⇄ 决策域**：唯一双向关系；因子驱动信号生成，回测反馈因子评估
 - **横切**：`alertx` 和 `observex` 贯穿所有领域
 
-编辑时必须保留九条核心设计原则：策略只通过 `risk-engine` 提交订单；回测与实盘共享因子/信号/风控代码；`contracts` 定义跨域接口；数据不跨域；`order-engine` 抽象交易所差异；`x.go` 只做编排；域内模块平级协作；反馈通过事件表达；领域语义沉到 L2.5。
+编辑时必须保留九条核心设计原则：策略只通过 `risk_engine` 提交订单；回测与实盘共享因子/信号/风控代码；`contracts` 定义跨域接口；数据不跨域；`order_engine` 抽象交易所差异；`x.go` 只做编排；域内模块平级协作；反馈通过事件表达；领域语义沉到 L2.5。
 
 ## 分支纪律（最高优先级）
 
@@ -210,6 +210,25 @@ PR 标题遵循 Conventional Commits（不含模块名，模块名放 body 首�
 - **规格标准**：模块规格遵循 `CONSTITUTION.md` 第四条，23 节结构。模板见 `module/README.md`。追溯矩阵规范见 `docs/governance/TRACEABILITY.md`
 - **Goal 文档**：修改 `docs/goal/` 后同步 `CHANGELOG.md`；提交前运行 `lint-goal.sh && lint-goal.sh --spec`
 - **安全**：禁止提交凭证/API key/账户 ID/私有端点/实盘交易配置
+
+## 仓库命名规则（全局强制）
+
+> 所有 ZoneCNH 仓库统一使用 **snake_case**（下划线）命名，禁止 kebab-case（连字符）、PascalCase 和 camelCase。
+
+| 模式 | 示例 | 状态 |
+|---|---|---|
+| `snake_case` | `market_data`、`domain_market`、`xlib_standard` | ✅ 唯一合法格式 |
+| `kebab-case` | `market-data`、`domain-market` | ❌ 禁止 |
+| `PascalCase` | `MarketData` | ❌ 禁止 |
+| `camelCase` | `marketData` | ❌ 禁止 |
+
+**例外（仅限以下两个特殊仓库）**：
+- `x.go`（Composition Root，点号为设计标识）
+- `binance.rs`（Rust 实现，语言后缀惯例）
+
+**Go module 路径同步规则**：新建或重命名仓库时，`go.mod` 中的 `module` 声明必须与仓库名保持一致，即 `module github.com/ZoneCNH/{snake_case_name}`。
+
+**新建仓库时**：命名必须符合 snake_case，否则 AI agent 应拒绝创建并提示修正。
 
 # Harness 自动化
 

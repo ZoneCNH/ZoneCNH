@@ -261,11 +261,11 @@ WHEN Envelope, Endpoint, Receipt or method schema is registered, THEN SchemaRegi
 
 WHEN downstream consumer reads `transportx` `README.md`
 THEN the H1 heading MUST be `# transportx`
-AND MUST NOT be `# xlib-standard`
+AND MUST NOT be `# xlib_standard`
 
 WHEN module documentation references the `transportx` Go module path
 THEN it MUST use `github.com/ZoneCNH/transportx`
-AND MUST NOT use `github.com/ZoneCNH/xlib-standard`
+AND MUST NOT use `github.com/ZoneCNH/xlib_standard`
 
 WHEN `go.mod` declares the module name
 THEN it MUST be `module github.com/ZoneCNH/transportx`
@@ -494,7 +494,7 @@ Multi-module layout: root `go.mod` (core), each `adapters/*/go.mod` separate mod
 | AC-023 | FR-023 | AuditSink Append succeeds; Replay replays matching records in order. | `go test ./conformance/... -run TestAuditPlane` |
 | AC-024 | FR-024 | CONFIDENTIAL and SECRET data redacted before logging; SECRET absent from audit and receipt. | `go test ./middleware/... -run TestDataClassRedaction` |
 | AC-025 | FR-025 | SchemaRegistry rejects unknown version; breaking change returns incompatible classification. | `go test ./registry/... -run TestSchemaCompatibility` |
-| AC-026 | FR-026 | README.md H1 is `# transportx` (not `# xlib-standard`); go.mod declares `module github.com/ZoneCNH/transportx`. | `grep '^# transportx$$' README.md && grep 'module github.com/ZoneCNH/transportx' go.mod` |
+| AC-026 | FR-026 | README.md H1 is `# transportx` (not `# xlib_standard`); go.mod declares `module github.com/ZoneCNH/transportx`. | `grep '^# transportx$$' README.md && grep 'module github.com/ZoneCNH/transportx' go.mod` |
 
 ### 15.2 Test Matrix
 

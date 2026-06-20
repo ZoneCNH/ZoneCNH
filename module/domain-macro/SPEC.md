@@ -1,4 +1,4 @@
-# domain-macro 规格
+# domain_macro 规格
 
 - Status: Approved
 - Spec-Version: v1.0.0
@@ -13,7 +13,7 @@
 
 ## 1. 摘要
 
-`domain-macro` 定义宏观数据点、宏观状态、宏观信息集、修订版本和 no-lookahead 可见性规则。
+`domain_macro` 定义宏观数据点、宏观状态、宏观信息集、修订版本和 no-lookahead 可见性规则。
 
 ## 2. 边界
 
@@ -230,7 +230,7 @@ domain_macro:
 ## 14. 目录结构
 
 ```text
-module/domain-macro/
+module/domain_macro/
   SPEC.md
   goal.md
   TRACEABILITY.md
@@ -295,7 +295,7 @@ module/domain-macro/
 - `staticcheck ./...`
 - `govulncheck ./...`
 - Lint：domain 原始值不得新增未决策的 float64 财务/宏观值
-- `GOWORK=off make adoption-check`（如接入 xlib-standard）
+- `GOWORK=off make adoption-check`（如接入 xlib_standard）
 
 ## 21. 升级兼容性
 

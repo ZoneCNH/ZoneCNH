@@ -26,5 +26,5 @@ Server-specific gates:
 - CI fails when server references `binance-market` outside allowlist.
 - CI fails when server owns exchange connector code.
 - CI fails when server owns storage/query/strategy.
-- CI allows contracts/domain-market/market-data downstream port dependencies.
+- CI allows contracts/domain_market/market_data downstream port dependencies.
 - gate does not require `rg`; POSIX `grep` is sufficient.

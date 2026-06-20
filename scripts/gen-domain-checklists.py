@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """为 5 个 L2.5 领域共享模块生成 FEATURES.md 与 ACCEPTANCE.md。
 
-适用：domainx、decimalx、domain-market、domain-exchange、domain-macro
+适用：domainx、decimalx、domain_market、domain_exchange、domain_macro
 读 module/{m}/SPEC.md 抽取 FR/BR/NFR/TC/AC 编号；
 写 module/{m}/FEATURES.md（实现清单）与 module/{m}/ACCEPTANCE.md（验收清单）。
 
@@ -11,7 +11,7 @@ import re
 from pathlib import Path
 from datetime import date
 
-MODULES = ["domainx", "decimalx", "domain-market", "domain-exchange", "domain-macro"]
+MODULES = ["domainx", "decimalx", "domain_market", "domain_exchange", "domain_macro"]
 
 TODAY = date.today().isoformat()
 ROOT = Path(__file__).resolve().parent.parent

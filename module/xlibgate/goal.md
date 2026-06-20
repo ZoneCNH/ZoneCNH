@@ -16,16 +16,16 @@
 ## 1.0 发布判定原则
 
 1. **稳定优先**：CLI 命令结构、exit code 语义、JSON 输出格式、配置 schema 一旦进入 1.0，默认需要向后兼容。
-2. **边界清晰**：xlibgate 只做机器门禁检查，不侵入业务域，不替代 xlib-standard 的标准定义角色。
+2. **边界清晰**：xlibgate 只做机器门禁检查，不侵入业务域，不替代 xlib_standard 的标准定义角色。
 3. **证据完整**：每个 MUST 能力都必须有单元测试、集成测试或 benchmark 证明。
 4. **零运行时依赖**：不依赖任何 Foundation 运行时模块（kernel、configx、observex、resiliencx 等），仅依赖 stdlib + yaml.v3 + Go AST + gitleaks 外部命令。
 5. **可演进**：1.0 允许保留扩展点（如自定义检查插件），但不得把未稳定能力包装成稳定承诺。
 
 ## 1. Goal 定位
 
-`xlibgate` 的 Goal 是作为 Foundation 的机器可执行门禁 CLI 工具，在 CI 中验证依赖矩阵、import 边界、Go baseline 和 release evidence。它消费 `xlib-standard` 定义的 Gate 和 Evidence 标准，输出标准化的 pass/fail 结果。
+`xlibgate` 的 Goal 是作为 Foundation 的机器可执行门禁 CLI 工具，在 CI 中验证依赖矩阵、import 边界、Go baseline 和 release evidence。它消费 `xlib_standard` 定义的 Gate 和 Evidence 标准，输出标准化的 pass/fail 结果。
 
-**与 xlib-standard 的关系**：xlib-standard 定义标准（规范文档、Gate 定义、Evidence schema），xlibgate 机器执行（扫描代码、校验合规、输出结果）。两者互补：标准归 xlib-standard，执行归 xlibgate。
+**与 xlib_standard 的关系**：xlib_standard 定义标准（规范文档、Gate 定义、Evidence schema），xlibgate 机器执行（扫描代码、校验合规、输出结果）。两者互补：标准归 xlib_standard，执行归 xlibgate。
 
 ### 1.1 为什么需要这个模块
 
@@ -112,7 +112,7 @@
 - 不是 API Gateway，不处理 HTTP 路由或流量转发。
 - 不承载业务逻辑。
 - 不替代 CI 平台本身（只提供检查能力，不管理流水线）。
-- 不替代 `xlib-standard`（标准定义在 xlib-standard，机器执行在 xlibgate）。
+- 不替代 `xlib_standard`（标准定义在 xlib_standard，机器执行在 xlibgate）。
 - 不做代码格式化（→ `gofmt` / `goimports`）。
 - 不做代码审查（→ human review + AI reviewer）。
 
@@ -123,7 +123,7 @@
 | 上游依赖 | 仅依赖 stdlib + `gopkg.in/yaml.v3`（配置解析）+ Go AST 标准库（`go/parser`、`go/ast`）+ `gitleaks`（作为外部命令调用）。禁止依赖所有 Foundation 运行时模块（kernel、configx、observex、resiliencx、schedulex 等）和所有业务域实现。 |
 | 下游依赖 | 不被任何模块 import。xlibgate 是纯 CLI 工具，只扫描其他模块的代码，不产生运行时依赖。                                                                                                                                               |
 | 分层约束 | L0 基座 — 门禁。xlibgate 只读取和检查其他模块，不向任何模块提供 API 或库函数。                                                                                                                                                      |
-| 契约依赖 | 消费 `xlib-standard` 定义的 Gate 定义、Evidence schema 和 `FOUNDATION-DEPS.yaml` 格式。不向 `contracts` 登记运行时 API（因为无运行时 API）。                                                                                        |
+| 契约依赖 | 消费 `xlib_standard` 定义的 Gate 定义、Evidence schema 和 `FOUNDATION-DEPS.yaml` 格式。不向 `contracts` 登记运行时 API（因为无运行时 API）。                                                                                        |
 
 ## 7. 对外契约
 

@@ -52,10 +52,10 @@
 
 ### 1.3 目标用户
 
-- 数据域模块（market-data、macro-data）—— 实现端口接口
-- 分析域模块（factor-engine、signal-engine）—— 消费端口接口和 DTO
-- 决策域模块（risk-engine）—— 消费信号/仓位事件
-- 执行域模块（order-engine、execution-engine）—— 发布订单/执行事件
+- 数据域模块（market_data、macro_data）—— 实现端口接口
+- 分析域模块（factor_engine、signal-engine）—— 消费端口接口和 DTO
+- 决策域模块（risk_engine）—— 消费信号/仓位事件
+- 执行域模块（order_engine、execution-engine）—— 发布订单/执行事件
 - x.go —— 组装端口实现并注入各域
 
 ## 2. v1.0 核心能力
@@ -80,7 +80,7 @@
 | 事件发布     | 信号引擎发布 SignalEvent               | Topic 常量匹配，Event 接口完整实现          |
 | 版本升级     | DTO 新增可选字段                       | breaking change 测试通过，minor 版本升级    |
 | 破坏性检测   | 端口接口删除方法                       | breaking change 测试失败，阻断发布          |
-| 跨域数据流   | market-data → contracts DTO → factor-engine | 数据通过 contracts DTO 传输，无紧耦合     |
+| 跨域数据流   | market_data → contracts DTO → factor_engine | 数据通过 contracts DTO 传输，无紧耦合     |
 
 ## 4. 职责边界
 
@@ -98,7 +98,7 @@
 - 不包含域内接口（留在各域内部）。
 - 不包含临时适配器。
 - 不包含通用工具函数（→ `x` 工具包）。
-- 不包含领域模型全集（领域值对象在 L2.5 领域共享层：`decimalx`、`domain-market`、`domain-exchange`、`domain-macro`）。
+- 不包含领域模型全集（领域值对象在 L2.5 领域共享层：`decimalx`、`domain_market`、`domain_exchange`、`domain_macro`）。
 - 不承载业务逻辑实现。
 - 不做消息队列实现（→ `kafkax`）。
 - 不做存储实现（→ `redisx`、存储扩展）。
@@ -108,7 +108,7 @@
 
 | 依赖类型 | 约束                                                                                       |
 | -------- | ------------------------------------------------------------------------------------------ |
-| 上游依赖 | stdlib + L2.5 领域共享层（`decimalx`、`domain-market`、`domain-exchange`、`domain-macro`） |
+| 上游依赖 | stdlib + L2.5 领域共享层（`decimalx`、`domain_market`、`domain_exchange`、`domain_macro`） |
 | 下游依赖 | 数据域、分析域、决策域、执行域模块 import contracts 获取端口接口和 DTO 定义                |
 | 分层约束 | contracts 处于依赖拓扑上层，只被 import，不 import 任何 L1 运行时模块或存储/中间件扩展     |
 

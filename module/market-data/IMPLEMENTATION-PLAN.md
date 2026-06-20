@@ -1,8 +1,8 @@
-# module/market-data IMPLEMENTATION PLAN
+# module/market_data IMPLEMENTATION PLAN
 
 ## 1. Goal
 
-Deliver `module/market-data` v1.0.0 as the exchange-neutral downstream dispatch receiving module.
+Deliver `module/market_data` v1.0.0 as the exchange-neutral downstream dispatch receiving module.
 
 ## 2. Current State
 
@@ -10,12 +10,12 @@ Deliver `module/market-data` v1.0.0 as the exchange-neutral downstream dispatch 
 - SPEC.md: merged to main and promoted to Approved v1.0.0-spec (audit fix: naming alignment, reject mapping, ingestion contract; PRs #545, #556, #569, #582, #586)
 - TRACEABILITY.md / goal.md / IMPLEMENTATION-PLAN.md: PR-000 root docs (this PR)
 - Runtime: Pending (SPEC Approved v1.0.0-spec)
-- Upstream dependencies: module/domain-market canonical types, module/contracts wire contract (§8.4)
+- Upstream dependencies: module/domain_market canonical types, module/contracts wire contract (§8.4)
 
 ## 3. PR Sequence
 
 ```text
-PR-000 module/market-data root docs                              ← DONE (SPEC v1.0.0 Approved + TRACEABILITY/goal/IMPL-PLAN/tasks)
+PR-000 module/market_data root docs                              ← DONE (SPEC v1.0.0 Approved + TRACEABILITY/goal/IMPL-PLAN/tasks)
 PR-001 runtime: dispatch port interface + no-op implementation
 PR-002 runtime: idempotency store
 PR-003 runtime: quality gate
@@ -26,7 +26,7 @@ PR-006 runtime: contract tests + integration tests
 
 ## 4. PR-000 Root Docs
 
-Scope: Create `module/market-data/` with SPEC.md, TRACEABILITY.md, goal.md, IMPLEMENTATION-PLAN.md.
+Scope: Create `module/market_data/` with SPEC.md, TRACEABILITY.md, goal.md, IMPLEMENTATION-PLAN.md.
 
 Phase 0 Acceptance (all complete):
 - [x] SPEC.md published (v1.0.0, merged via PR #545) — includes 10-section format, §4.2.1 cross-module naming mapping, §4.4.1 binance-native reject mapping, §9 implementation gates, §10.1 runtime checklist
@@ -39,9 +39,9 @@ Phase 0 Acceptance (all complete):
 
 Runtime implementation starts when:
 - [x] module/contracts provides approved IngestRequest/IngestResult types (§8.4 merged via #545)
-- [x] module/domain-market provides approved, consumable ProductLine/InstrumentKey/MarketFactEnvelope types (v1.0.1, canonical types + §10.1 Binance C/S ingestion semantics frozen)
+- [x] module/domain_market provides approved, consumable ProductLine/InstrumentKey/MarketFactEnvelope types (v1.0.1, canonical types + §10.1 Binance C/S ingestion semantics frozen)
 - [x] module/binance server OQ-001 (contracts wire ready?) closed — contracts §8.4 defines all wire types
-- [x] module/binance server OQ-002 (market-data dispatch port ready?) closed — market-data SPEC v1.0.0 defines DownstreamDispatchPort semantics, 12 input fields, 8 reject reasons with binance reject mapping
+- [x] module/binance server OQ-002 (market_data dispatch port ready?) closed — market_data SPEC v1.0.0 defines DownstreamDispatchPort semantics, 12 input fields, 8 reject reasons with binance reject mapping
 - [ ] All SPEC §9 implementation gates pass
 
 ## 6. DoD

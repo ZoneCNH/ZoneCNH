@@ -6,11 +6,11 @@
 
 ```yaml
 task_id: TASK-XLIB-000
-module: xlib-standard
+module: xlib_standard
 scope: "删除 governance-runtime、evidence-runtime、debt-governance、adrs、internal 等非目标目录和文件"
 spec_ref:
-  - "module/xlib-standard/SPEC.md#5"
-  - "module/xlib-standard/goal.md#4"
+  - "module/xlib_standard/SPEC.md#5"
+  - "module/xlib_standard/goal.md#4"
 files:
   - ".agent/ (删除)"
   - ".codex/ (删除)"
@@ -71,9 +71,9 @@ status: pending
 
 ## Scope
 
-- 删除 xlib-standard 目标边界之外的治理运行时、agent runtime、债务治理、Docker 与历史模板目录。
+- 删除 xlib_standard 目标边界之外的治理运行时、agent runtime、债务治理、Docker 与历史模板目录。
 - 保留 `README.md`、`docs/`、`templates/`、`scripts/`、`contracts/`、`pkg/templatex/` 等标准库交付所需资产。
-- 更新残留引用，使公开文档只描述 xlib-standard 标准库职责。
+- 更新残留引用，使公开文档只描述 xlib_standard 标准库职责。
 
 ## Non-scope
 

@@ -1,9 +1,9 @@
-# xlib-standard Implementation Plan
+# xlib_standard Implementation Plan
 
-> 本 Plan 覆盖 xlib-standard 五类职责中后四类的实现任务：Go Reference Template、Generator、Harness Gate、Evidence Runtime。
+> 本 Plan 覆盖 xlib_standard 五类职责中后四类的实现任务：Go Reference Template、Generator、Harness Gate、Evidence Runtime。
 > 标准事实源（文档规范）的完整定义见 `goal.md`，其验证通过分析管线（`ANALYSIS.md` / `FR-DETAIL.md` / `TRACEABILITY.md`）完成，不在此 Plan 中重复。
 >
-> Root-level plan for the Spec -> Code scorer. Detailed historical planning remains in `module/xlib-standard/plan/PLAN.md`.
+> Root-level plan for the Spec -> Code scorer. Detailed historical planning remains in `module/xlib_standard/plan/PLAN.md`.
 
 ## Steps
 
@@ -34,12 +34,12 @@
 Run scorer checks for the local governance artifacts before code execution:
 
 ```bash
-python3 scripts/rule-scorer.py spec xlib-standard --runtime codex --out /tmp/xlib-standard-spec-rules.json
-python3 scripts/rule-scorer.py matrix xlib-standard --runtime codex --out /tmp/xlib-standard-matrix-rules.json
-python3 scripts/rule-scorer.py tasks xlib-standard --runtime codex --out /tmp/xlib-standard-tasks-rules.json
-python3 scripts/rule-scorer.py plan xlib-standard --runtime codex --out /tmp/xlib-standard-plan-rules.json
-python3 scripts/rule-scorer.py prompt xlib-standard --runtime codex --out /tmp/xlib-standard-prompt-rules.json
-python3 scripts/rule-scorer.py code xlib-standard --runtime codex --out /tmp/xlib-standard-code-rules.json
+python3 scripts/rule-scorer.py spec xlib_standard --runtime codex --out /tmp/xlib_standard-spec-rules.json
+python3 scripts/rule-scorer.py matrix xlib_standard --runtime codex --out /tmp/xlib_standard-matrix-rules.json
+python3 scripts/rule-scorer.py tasks xlib_standard --runtime codex --out /tmp/xlib_standard-tasks-rules.json
+python3 scripts/rule-scorer.py plan xlib_standard --runtime codex --out /tmp/xlib_standard-plan-rules.json
+python3 scripts/rule-scorer.py prompt xlib_standard --runtime codex --out /tmp/xlib_standard-prompt-rules.json
+python3 scripts/rule-scorer.py code xlib_standard --runtime codex --out /tmp/xlib_standard-code-rules.json
 ```
 
 Run target-repository checks after the implementation files exist:
@@ -58,6 +58,6 @@ bash scripts/check_contracts.sh
 
 ## Rollback
 
-- Revert `module/xlib-standard/SPEC.md`, `module/xlib-standard/TRACEABILITY.md`, root `PLAN.md`, root `TASK-*-PROMPT.md`, and `module/xlib-standard/tasks/TASK-*.md` changes if scorer evidence regresses.
+- Revert `module/xlib_standard/SPEC.md`, `module/xlib_standard/TRACEABILITY.md`, root `PLAN.md`, root `TASK-*-PROMPT.md`, and `module/xlib_standard/tasks/TASK-*.md` changes if scorer evidence regresses.
 - Restore the previous task split only if the scorer contract is changed to allow non-numeric suffixes again.
 - Keep generated target-repository code rollback separate from governance artifact rollback.

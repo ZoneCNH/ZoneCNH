@@ -1,7 +1,7 @@
 # xlibgate
 
 ## 1. 模块定位
-xlibgate 是 Foundation 的**机器可执行门禁 CLI 工具**，提供三组子命令：`check`（CI 中验证依赖矩阵/import 边界/Go baseline/secret 扫描/release evidence）、`l2`（L2 发布就绪门禁：能力清单校验、契约测试计划、证据完整性、发布评分）、`trust`（v2 Trust Alignment 门禁：身份对齐/模板残留/发布一致性/成熟度工厂/import 边界/testkitx 隔离/secret 脱敏/舰队状态）。Status=Approved（SPEC v1.1.2），模块版本 v1.0.0，Layer=基座·CI 门禁（L1）。消费 xlib-standard 的 Gate/Evidence 标准，纯 CLI 工具不被任何模块 import。
+xlibgate 是 Foundation 的**机器可执行门禁 CLI 工具**，提供三组子命令：`check`（CI 中验证依赖矩阵/import 边界/Go baseline/secret 扫描/release evidence）、`l2`（L2 发布就绪门禁：能力清单校验、契约测试计划、证据完整性、发布评分）、`trust`（v2 Trust Alignment 门禁：身份对齐/模板残留/发布一致性/成熟度工厂/import 边界/testkitx 隔离/secret 脱敏/舰队状态）。Status=Approved（SPEC v1.1.2），模块版本 v1.0.0，Layer=基座·CI 门禁（L1）。消费 xlib_standard 的 Gate/Evidence 标准，纯 CLI 工具不被任何模块 import。
 
 ## 2. 生产职责
 - FR-001 check imports（依赖矩阵/import 边界违规，输出文件路径行号）
@@ -18,7 +18,7 @@ xlibgate 是 Foundation 的**机器可执行门禁 CLI 工具**，提供三组�
 - 标准化 exit code：0=pass，1=fail，2=error（BR-001，语义不可互换）
 - import 规则从 `deps.yaml` 读取，不硬编码（BR-002）
 - Go baseline 从配置或 `--expected` 获取（BR-003）
-- evidence schema 与 xlib-standard 一致（BR-004）
+- evidence schema 与 xlib_standard 一致（BR-004）
 - secret 扫描使用 gitleaks（BR-005）
 - check all 必须执行所有子检查（BR-006）
 
@@ -27,11 +27,11 @@ xlibgate 是 Foundation 的**机器可执行门禁 CLI 工具**，提供三组�
 - 不做 Go 源码 AST 分析框架（用 `go list`/`go mod graph` 标准工具）
 - 不做交易/行情/风控/订单/仓位业务域计算
 - 不替代 CI 平台本身
-- 不替代 xlib-standard（标准定义 vs 机器执行）
+- 不替代 xlib_standard（标准定义 vs 机器执行）
 - 不做代码格式化（→ gofmt）/代码审查（→ human+AI review）
 
 ## 5. 架构位置
-基座层（L1 门禁），消费 xlib-standard 的 Gate/Evidence 标准但不 import 它。依赖方向：仅允许 stdlib（`go/parser`/`go/ast`/`os/exec`/`encoding/json`/`flag`）、`gopkg.in/yaml.v3`、`gitleaks`（外部命令）。禁止依赖所有 Foundation 运行时模块、业务域实现、L2.5 领域共享层。入口：`main.go` → cmd/（root/check/trust）→ scanner/（imports/gomod/baseline/trust/*）→ evidence/ + report.go。
+基座层（L1 门禁），消费 xlib_standard 的 Gate/Evidence 标准但不 import 它。依赖方向：仅允许 stdlib（`go/parser`/`go/ast`/`os/exec`/`encoding/json`/`flag`）、`gopkg.in/yaml.v3`、`gitleaks`（外部命令）。禁止依赖所有 Foundation 运行时模块、业务域实现、L2.5 领域共享层。入口：`main.go` → cmd/（root/check/trust）→ scanner/（imports/gomod/baseline/trust/*）→ evidence/ + report.go。
 
 ## 6. 生命周期
 短生命周期 CLI 工具，无运行时生命周期管理。每次执行：config loaded → 各子检查 started → completed（含 status 和 duration_ms）→ failed/error 日志 → exit 0/1/2。exit code 即为健康信号，无健康检查端点。
@@ -104,7 +104,7 @@ CLI 命令结构变更/JSON 字段新增/配置 schema 新增可选字段/新增
 fleet-status 生成 `.foundationx/status/index.json`，含 20 模块各自身份/发布/成熟度/边界/阻断项/证据索引状态，是舰队级信任审计核心产物。release-consistency 七源比对（.repo-contract.yaml versions/go.mod/VERSION/CHANGELOG/git tag/release manifest/GitHub release）。maturity 11 维工厂级判定全部审计。trust 统一 JSON 输出的 `evidence` 字段（projection: release/factory/open_blockers）供仲裁审计。per-check JSON 含 reason_code 机器可读。
 
 ## 26. 熵减规则
-- BR-010：仅 xlib-standard 可含 5 条模板身份短语，下游仓库含任一即 TEMPLATE_RESIDUE（精确字符串匹配）
+- BR-010：仅 xlib_standard 可含 5 条模板身份短语，下游仓库含任一即 TEMPLATE_RESIDUE（精确字符串匹配）
 - maturity 拒绝单个百分比替代 11 维明细（FACTORY_GATE_BLOCKED）
 - JSON 输出 status 枚举稳定（pass/fail/error），不允许空字符串
 - reason_code 枚举稳定（10 种），机器可读

@@ -27,7 +27,7 @@ backtestx 验证"决策是否正确"
 
 ## 2. 问题与背景
 
-量化交易系统中有多个独立模块（factor-engine、strategyx、riskx、orderx、positionx），但缺少统一的编排层：
+量化交易系统中有多个独立模块（factor_engine、strategyx、riskx、orderx、positionx），但缺少统一的编排层：
 
 - 各模块调用顺序硬编码在启动脚本中，无法灵活组合
 - 工作流错误处理散落在各模块，无统一重试/回滚策略
@@ -51,7 +51,7 @@ backtestx 验证"决策是否正确"
 
 ## 4. 非目标
 
-- 不做因子计算（→ factor-engine）
+- 不做因子计算（→ factor_engine）
 - 不做策略决策（→ strategyx）
 - 不做风控（→ riskx）
 - 不做订单管理（→ orderx）
@@ -166,11 +166,11 @@ AND 注册表支持 List、Get、Delete
 
 WHEN downstream consumer reads `maestro` `README.md`
 THEN the H1 heading MUST be `# maestro`
-AND MUST NOT be `# xlib-standard`
+AND MUST NOT be `# xlib_standard`
 
 WHEN module documentation references the `maestro` Go module path
 THEN it MUST use `github.com/ZoneCNH/maestro`
-AND MUST NOT use `github.com/ZoneCNH/xlib-standard`
+AND MUST NOT use `github.com/ZoneCNH/xlib_standard`
 
 WHEN `go.mod` declares the module name
 THEN it MUST be `module github.com/ZoneCNH/maestro`
@@ -334,7 +334,7 @@ maestro/
 
 | 可以依赖                             | 禁止依赖                     |
 | ------------------------------------ | ---------------------------- |
-| kernel, configx, observex, contracts | 因子计算（→ factor-engine） |
+| kernel, configx, observex, contracts | 因子计算（→ factor_engine） |
 | strategyx (Strategy 接口)            | 具体策略实现               |
 | riskx (CheckOrder 接口)              |                            |
 | orderx (Submit 接口)                 |                            |

@@ -44,8 +44,8 @@
 
 | 缺失模块      | module/ 目录 | goal.md | SPEC.md | TRACEABILITY | tasks/ |
 | ------------- | ------------ | ------- | ------- | ------------ | ------ |
-| xlib-harness  | ✅           | ✅      | ✅      | ✅           | ✅     |
-| xlib-evidence | ✅           | ✅      | ✅      | ✅           | ✅     |
+| xlib_harness  | ✅           | ✅      | ✅      | ✅           | ✅     |
+| xlib_evidence | ✅           | ✅      | ✅      | ✅           | ✅     |
 
 **缺失位置清单**：
 
@@ -59,7 +59,7 @@
 
 ```
 17 模块 → f4678b0: CI 数组新增 domainx，17→18
-18 模块 → c464d53: ARCHITECTURE 拓扑 18→20（xlib-standard → standard+harness+evidence）
+18 模块 → c464d53: ARCHITECTURE 拓扑 18→20（xlib_standard → standard+harness+evidence）
 当前   → STATUS/CI 停在 18，拓扑为 20，矛盾持续
 ```
 
@@ -68,13 +68,13 @@
 已完成：
 
 - ✅ ARCHITECTURE.md 拓扑图更新为 20
-- ✅ module/README.md 更新为 20（含 xlib-harness、xlib-evidence goal 索引）
-- ✅ module/ 目录已创建 xlib-harness/ 和 xlib-evidence/
+- ✅ module/README.md 更新为 20（含 xlib_harness、xlib_evidence goal 索引）
+- ✅ module/ 目录已创建 xlib_harness/ 和 xlib_evidence/
 - ✅ 两个新模块的 SPEC.md、TRACEABILITY.md、goal.md、tasks/ 已产出
 
 未完成：
 
-- ❌ STATUS.md 补充 xlib-harness / xlib-evidence 行
+- ❌ STATUS.md 补充 xlib_harness / xlib_evidence 行
 - ❌ ARCHITECTURE.md 状态总览表补充两个模块行
 - ❌ CI FOUNDATION_MODULES 数组补充两个模块（18→20）
 - ❌ STATUS.md 域统计 "基座 18" 改为 "基座 20"
@@ -82,7 +82,7 @@
 
 ### 1.4 L2.5 归属矛盾
 
-| 文档位置           | decimalx | domain-market | domain-exchange | domain-macro |
+| 文档位置           | decimalx | domain_market | domain_exchange | domain_macro |
 | ------------------ | -------- | ------------- | --------------- | ------------ |
 | 各域说明表         | L2.5     | L2.5          | L2.5            | L2.5         |
 | 状态总览表         | L2.5     | L2.5          | L2.5            | L2.5         |
@@ -94,7 +94,7 @@
 ### 1.5 domainx 描述矛盾
 
 - ARCHITECTURE.md "各域说明" 表：domainx 列为基座组件，描述为"执行域共享值对象"
-- 业务流图中：domainx 在 risk-engine 下方标注为"执行域共享值对象（归属基座）"
+- 业务流图中：domainx 在 risk_engine 下方标注为"执行域共享值对象（归属基座）"
 - domainx SPEC.md 职责：Order/Position/Trade/Portfolio/ExecutionReport — 纯粹的执行域语义
 
 **🟡 WARNING**：domainx 的内容是执行域语义，归属是基座。这在逻辑上不矛盾（L2.5 共享值对象，归属基座管理），但描述容易造成混淆。建议在所有位置统一标注为"执行域共享值对象（L2.5 领域共享，归属基座）"。
@@ -113,7 +113,7 @@
 | 弹性策略     | resiliencx                          | v1.0.1 发布               | ★★★  |
 | 任务调度     | schedulex                           | v1.0.0 发布               | ★★★  |
 | 测试支持     | testkitx                            | SPEC 完整，代码阶段进行中 | ★★☆  |
-| 标准/门禁    | xlib-standard/harness/evidence/gate | 3/4 完整，gate 零实现     | ★★☆  |
+| 标准/门禁    | xlib_standard/harness/evidence/gate | 3/4 完整，gate 零实现     | ★★☆  |
 | KV/缓存      | redisx                              | v1.0.0 发布               | ★★★  |
 | 消息队列     | kafkax                              | v1.0.0 发布               | ★★★  |
 | 内部通信     | natsx                               | v1.0.0 发布               | ★★★  |
@@ -144,16 +144,16 @@
 | 原则                              | 承担模块                           | 覆盖度             |
 | --------------------------------- | ---------------------------------- | ------------------ |
 | P1: Foundation 先边界后功能       | xlibgate + FOUNDATION-DEPS.yaml    | ✅                 |
-| P2: xlib-standard 不是运行时依赖  | xlib-standard                      | ✅                 |
-| P3: resiliencx 只做运行时弹性     | resiliencx + risk-engine           | ✅                 |
+| P2: xlib_standard 不是运行时依赖  | xlib_standard                      | ✅                 |
+| P3: resiliencx 只做运行时弹性     | resiliencx + risk_engine           | ✅                 |
 | P4: testkitx 只能 test-only       | testkitx + xlibgate boundary check | ✅                 |
-| P5: 风控是独立引擎                | risk-engine                        | 非基座职责         |
-| P6: 回测与实盘共享代码            | factor-engine/signal-factory       | 非基座职责         |
+| P5: 风控是独立引擎                | risk_engine                        | 非基座职责         |
+| P6: 回测与实盘共享代码            | factor_engine/signal_factory       | 非基座职责         |
 | P7: contracts 只定义跨域稳定契约  | contracts                          | ✅                 |
 | P8: transportx 只定义通信底座契约 | transportx                         | ✅                 |
 | P9: 领域语义沉到 L2.5             | decimalx/domain-\*                 | ✅                 |
 | P10: 数据职责不跨域               | (架构约束)                         | ✅                 |
-| P11: 执行抽象交易所差异           | order-engine                       | 非基座职责         |
+| P11: 执行抽象交易所差异           | order_engine                       | 非基座职责         |
 | P12: 反馈通过事件表达             | contracts (事件协议)               | ✅                 |
 | P13: x.go 只做组合根              | x.go                               | 待核实（体量异常） |
 
@@ -168,17 +168,17 @@
 | 模块对                                       | 重叠度 | 边界清晰度 | 建议                                                                                                                                                                                                            |
 | -------------------------------------------- | ------ | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | kernel.retryx ↔ resiliencx                   | Low    | Clear      | ✅ 保持分离。L0 primitive vs L1 policy，文档已明确                                                                                                                                                              |
-| xlibgate ↔ xlib-harness                      | Low    | Clear      | ✅ 互补关系。harness 做 spec/boundary/traceability/format 门禁，gate 做 imports/gomod/baseline/release 门禁                                                                                                     |
-| xlib-standard ↔ xlib-harness ↔ xlib-evidence | Low    | Clear      | ✅ 拆分合理。standard=标准源+模板，harness=生成+门禁执行，evidence=证据收集+发布                                                                                                                                |
+| xlibgate ↔ xlib_harness                      | Low    | Clear      | ✅ 互补关系。harness 做 spec/boundary/traceability/format 门禁，gate 做 imports/gomod/baseline/release 门禁                                                                                                     |
+| xlib_standard ↔ xlib_harness ↔ xlib_evidence | Low    | Clear      | ✅ 拆分合理。standard=标准源+模板，harness=生成+门禁执行，evidence=证据收集+发布                                                                                                                                |
 | contracts ↔ transportx                       | Low    | Clear      | ✅ contracts 是业务契约（DTO/事件协议），transportx 是通信契约（RPC/EventBus/Codec）                                                                                                                            |
 | redisx ↔ natsx                               | Medium | Clear      | ✅ 不同用途：redisx 做缓存/KV，natsx 做内部通信。natsx JetStream 的 KV 功能有概念重叠但实际场景不同                                                                                                             |
 | postgresx ↔ clickhousex                      | Low    | Clear      | ✅ postgresx 做 OLTP，clickhousex 做 OLAP                                                                                                                                                                       |
 | taosx ↔ clickhousex                          | Low    | Fuzzy      | 🟡 两者都做时序数据。taosx 面向 IoT 时序（TDengine），clickhousex 面向分析查询。建议在各自 SPEC 中明确使用场景边界                                                                                              |
-| testkitx ↔ xlib-evidence                     | Medium | Fuzzy      | 🟡 testkitx 有 golden/contract/boundary/manifest evidence，xlib-evidence 做 coverage/manifest/remote evidence/report。manifest 功能重叠。建议明确：testkitx 是**测试期**证据，xlib-evidence 是**CI/发布期**证据 |
+| testkitx ↔ xlib_evidence                     | Medium | Fuzzy      | 🟡 testkitx 有 golden/contract/boundary/manifest evidence，xlib_evidence 做 coverage/manifest/remote evidence/report。manifest 功能重叠。建议明确：testkitx 是**测试期**证据，xlib_evidence 是**CI/发布期**证据 |
 
 ### 3.2 L2.5 归属争议
 
-**发现**：本地开发路径表将 decimalx/domain-market/domain-exchange/domain-macro 错误归入基座域。
+**发现**：本地开发路径表将 decimalx/domain_market/domain_exchange/domain_macro 错误归入基座域。
 
 **建议**：在本地开发路径表中为 L2.5 创建独立分区，与"各域说明"表和 STATUS 域统计保持一致。
 
@@ -187,9 +187,9 @@
 domainx 当前归属基座，但其内容（Order/Position/Trade/Portfolio/ExecutionReport）是纯粹的执行域语义。不矛盾但需注意：
 
 - 如果 domainx 被所有上层域依赖 → 正确归属基座
-- 如果只有执行域使用 → 应该移到执行域或与 domain-exchange 合并
+- 如果只有执行域使用 → 应该移到执行域或与 domain_exchange 合并
 
-从 ARCHITECTURE.md 业务流图看，domainx 确实被 risk-engine/order-engine/portfolio-engine/settlement 共享，归属基座合理。
+从 ARCHITECTURE.md 业务流图看，domainx 确实被 risk_engine/order_engine/portfolio_engine/settlement 共享，归属基座合理。
 
 ---
 
@@ -206,9 +206,9 @@ domainx 当前归属基座，但其内容（Order/Position/Trade/Portfolio/Execu
 | 5   | resiliencx    | 100%           | **100%** | v1.0.1      | 无                                                          | 🟢   |
 | 6   | schedulex     | 100%           | **100%** | v1.0.0      | 无                                                          | 🟢   |
 | 7   | xlibgate      | 无进度条       | **30%**  | v1.0.2      | **全部 10 个 tasks 未勾选！** 仅有 SPEC                     | 🔴   |
-| 8   | xlib-standard | 100%           | **100%** | v1.0.0      | 无（拆分后标准源职责清晰）                                  | 🟢   |
-| 9   | xlib-harness  | **不在状态表** | **100%** | -           | 缺失于 STATUS/CI 数组                                       | 🔴   |
-| 10  | xlib-evidence | **不在状态表** | **100%** | -           | 缺失于 STATUS/CI 数组                                       | 🔴   |
+| 8   | xlib_standard | 100%           | **100%** | v1.0.0      | 无（拆分后标准源职责清晰）                                  | 🟢   |
+| 9   | xlib_harness  | **不在状态表** | **100%** | -           | 缺失于 STATUS/CI 数组                                       | 🔴   |
+| 10  | xlib_evidence | **不在状态表** | **100%** | -           | 缺失于 STATUS/CI 数组                                       | 🔴   |
 | 11  | redisx        | 100%           | **100%** | v1.0.0      | 无                                                          | 🟢   |
 | 12  | kafkax        | 100%           | **100%** | v1.0.0      | 无                                                          | 🟢   |
 | 13  | natsx         | 100%           | **95%**  | v1.0.0      | 四源 98+ arbiter 与生产 TLS gate 待补                       | 🟡   |
@@ -232,7 +232,7 @@ domainx 当前归属基座，但其内容（Order/Position/Trade/Portfolio/Execu
    - 实际是一个只有规格、零实现的模块
    - STATUS.md 应标注为 "🔨 已创建" 或至少降级进度
 
-3. **xlib-harness / xlib-evidence：未跟踪**
+3. **xlib_harness / xlib_evidence：未跟踪**
    - 原因：完全缺失于状态监控体系
    - 两个模块的 SPEC + TRACEABILITY + goal + tasks 均已产出，但无人知道它们"存在"
 
@@ -262,8 +262,8 @@ domainx 当前归属基座，但其内容（Order/Position/Trade/Portfolio/Execu
 
 | 修复项 | 具体操作                                         | 文件                                        |
 | ------ | ------------------------------------------------ | ------------------------------------------- |
-| F1     | 补充 xlib-harness 和 xlib-evidence 到状态表      | ARCHITECTURE.md §状态总览                   |
-| F2     | 补充 xlib-harness 和 xlib-evidence 到组件明细表  | STATUS.md §组件明细表                       |
+| F1     | 补充 xlib_harness 和 xlib_evidence 到状态表      | ARCHITECTURE.md §状态总览                   |
+| F2     | 补充 xlib_harness 和 xlib_evidence 到组件明细表  | STATUS.md §组件明细表                       |
 | F3     | FOUNDATION_MODULES 数组 18→20                    | .github/ci/status-consistency-check.sh      |
 | F4     | 域统计 "基座 18"→"基座 20"，重算平均进度         | STATUS.md §按域统计                         |
 | F5     | 修复 L2.5 模块在本地路径表中的错误归属           | ARCHITECTURE.md §本地开发路径               |
@@ -279,7 +279,7 @@ domainx 当前归属基座，但其内容（Order/Position/Trade/Portfolio/Execu
 | O2     | 推进 testkitx code 阶段                          | 解锁下游模块统一测试                                   | 2-3 天  |
 | O3     | 为 domainx 添加版本号（至少 v0.1.0）             | 版本覆盖从 18/20 提升到 19/20                          | 30 分钟 |
 | O4     | taosx 与 clickhousex 的时序边界文档化            | 在各自 SPEC.md §2 Summary 明确使用场景差异             | 1 小时  |
-| O5     | testkitx 与 xlib-evidence 的 evidence 边界文档化 | 明确：testkitx=测试期证据，xlib-evidence=CI/发布期证据 | 1 小时  |
+| O5     | testkitx 与 xlib_evidence 的 evidence 边界文档化 | 明确：testkitx=测试期证据，xlib_evidence=CI/发布期证据 | 1 小时  |
 | O6     | postgresx foundationx 依赖迁移（Issue 6）        | 完成 foundationx exit plan 最后一块                    | 1-2 天  |
 
 ### 5.3 中期建议（3 个月内）
@@ -288,7 +288,7 @@ domainx 当前归属基座，但其内容（Order/Position/Trade/Portfolio/Execu
 | ---- | ------------------------------------------------------------------------------------------------------------------------------- |
 | M1   | **不建议新增模块**。当前 20 个模块覆盖面充分，核心缺失（服务发现/API Gateway/Auth）不是基座层职责，应放在上层或独立域           |
 | M2   | **不建议合并模块**。存储层模块（7 个）各有明确的使用场景差异，合并会破坏单一职责                                                |
-| M3   | 评估 domainx 是否应和 domain-exchange 统一管理。两者共享执行域语义，分开维护可能增加认知负担                                    |
+| M3   | 评估 domainx 是否应和 domain_exchange 统一管理。两者共享执行域语义，分开维护可能增加认知负担                                    |
 | M4   | 建立模块清单自动化审计 CI。将本报告的检查项编码为 CI gate：数量一致性（topology=status=ci=module/ dir）、归属一致性、进度一致性 |
 | M5   | natsx 四源评分和 TLS gate 补齐后，整个基座层可声明 Production Ready                                                             |
 
@@ -296,9 +296,9 @@ domainx 当前归属基座，但其内容（Order/Position/Trade/Portfolio/Execu
 
 ```
 标准与门禁（4）：
-  xlib-standard ─── 标准事实源 / Go Reference Template
-  xlib-harness  ─── 模块生成器 + 门禁执行器
-  xlib-evidence ─── 证据收集与发布运行时
+  xlib_standard ─── 标准事实源 / Go Reference Template
+  xlib_harness  ─── 模块生成器 + 门禁执行器
+  xlib_evidence ─── 证据收集与发布运行时
   xlibgate      ─── CI 机器门禁 CLI
 
 L0 原语（1）：
@@ -339,8 +339,8 @@ L1 测试（1）：
 | 检查项             | README  | ARCHITECTURE 拓扑 | ARCHITECTURE 状态表 | STATUS   | module/README | CI 脚本 |
 | ------------------ | ------- | ----------------- | ------------------- | -------- | ------------- | ------- |
 | 基座模块数         | -       | 20 ✅             | 18 ❌               | 18 ❌    | 20 ✅         | 18 ❌   |
-| xlib-harness 存在  | -       | ✅                | ❌                  | ❌       | ✅            | ❌      |
-| xlib-evidence 存在 | -       | ✅                | ❌                  | ❌       | ✅            | ❌      |
+| xlib_harness 存在  | -       | ✅                | ❌                  | ❌       | ✅            | ❌      |
+| xlib_evidence 存在 | -       | ✅                | ❌                  | ❌       | ✅            | ❌      |
 | L2.5 归属          | L2.5 ✅ | L2.5 ✅           | L2.5 ✅             | L2.5 ✅  | N/A           | N/A     |
 | 本地路径 L2.5      | -       | 基座 ❌           | -                   | -        | -             | -       |
 | testkitx 进度      | -       | 100%              | 100%                | 100%     | 100%          | -       |
@@ -365,7 +365,7 @@ L1 测试（1）：
 
 F1-F8（立即修复）→ ARCHITECTURE.md + STATUS.md + CI 脚本
 O1-O2（代码推进）→ xlibgate + testkitx 代码仓库
-O3-O6（小修小补）→ domainx/taosx/clickhousex/testkitx/xlib-evidence SPEC
+O3-O6（小修小补）→ domainx/taosx/clickhousex/testkitx/xlib_evidence SPEC
 M1-M5（中期建议）→ 独立规划文档
 ```
 
@@ -384,7 +384,7 @@ _下一步：O1 (xlibgate 代码) / O2 (testkitx code 阶段) / O6 (postgresx fo
 | 修复 | PR | 内容 |
 |------|----|------|
 | F1-F8 | [#235](https://github.com/ZoneCNH/ZoneCNH/pull/235) | 状态表 18→20、CI 对齐、进度校准、L2.5 修正 |
-| 五类职责 | [#236](https://github.com/ZoneCNH/ZoneCNH/pull/236) | xlib-standard 五类→二类职责 ×6 |
+| 五类职责 | [#236](https://github.com/ZoneCNH/ZoneCNH/pull/236) | xlib_standard 五类→二类职责 ×6 |
 | README | [#237](https://github.com/ZoneCNH/ZoneCNH/pull/237) | README 17→20 + 缺失模块条目 |
 | O3+O5 | [#238](https://github.com/ZoneCNH/ZoneCNH/pull/238) | domainx v0.1.0 + evidence 边界文档化 |
 | O4 | [#239](https://github.com/ZoneCNH/ZoneCNH/pull/239) | taosx/clickhousex 时序存储边界 |
@@ -399,9 +399,9 @@ _下一步：O1 (xlibgate 代码) / O2 (testkitx code 阶段) / O6 (postgresx fo
 
 | 遗漏 | 发现方式 | PR |
 |------|----------|----|
-| xlib-harness/xlib-evidence/domainx 仓库 404 | 第三轮深度排查 | [#241](https://github.com/ZoneCNH/ZoneCNH/pull/241) |
+| xlib_harness/xlib_evidence/domainx 仓库 404 | 第三轮深度排查 | [#241](https://github.com/ZoneCNH/ZoneCNH/pull/241) |
 | README.md 基座列表仅 17 个 | 第三轮深度排查 | [#237](https://github.com/ZoneCNH/ZoneCNH/pull/237) |
-| xlib-standard 五类职责描述 6 处过时 | 第二轮深度排查 | [#236](https://github.com/ZoneCNH/ZoneCNH/pull/236) |
+| xlib_standard 五类职责描述 6 处过时 | 第二轮深度排查 | [#236](https://github.com/ZoneCNH/ZoneCNH/pull/236) |
 
 ### ~~未完成~~ — 全部闭环 ✅
 

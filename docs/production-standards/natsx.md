@@ -22,7 +22,7 @@
 - 配置解析（→ configx）
 
 ## 5. 架构位置
-L2 基础设施适配器（存储扩展）。消费者：market-data（Core NATS 实时行情）、signal-engine（Core NATS 因子信号）、order-engine（JetStream 订单事件）、risk-engine（JetStream 风控事件）、schedulerx（Request-Reply 分布式协调）。go.mod：`github.com/ZoneCNH/natsx`，go 1.23。
+L2 基础设施适配器（存储扩展）。消费者：market_data（Core NATS 实时行情）、signal-engine（Core NATS 因子信号）、order_engine（JetStream 订单事件）、risk_engine（JetStream 风控事件）、schedulerx（Request-Reply 分布式协调）。go.mod：`github.com/ZoneCNH/natsx`，go 1.23。
 
 ## 6. 生命周期
 - Client 与 kernel 应用生命周期集成，应用启停时创建与关闭

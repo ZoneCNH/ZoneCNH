@@ -2,7 +2,7 @@
 
 `module/coinglass` is the Coinglass-specific Market Data C/S Module for ZoneCNH.
 
-它接入加密衍生品**聚合数据源** Coinglass，是本架构中唯一**非交易所**的数据域 · 行情模块——但仍统一采用 C/S Module 范式，以保证下游 `module/market-data` 的输入面**对来源不敏感**。
+它接入加密衍生品**聚合数据源** Coinglass，是本架构中唯一**非交易所**的数据域 · 行情模块——但仍统一采用 C/S Module 范式，以保证下游 `module/market_data` 的输入面**对来源不敏感**。
 
 ```text
 module/coinglass/client
@@ -13,9 +13,9 @@ module/coinglass/server
 
 `module/coinglass` owns Coinglass-specific data acquisition into ZoneCNH.
 
-- Canonical semantics → `module/domain-market`（衍生品聚合事件类型扩展）
+- Canonical semantics → `module/domain_market`（衍生品聚合事件类型扩展）
 - Wire protocol → `module/contracts`
-- Downstream storage / query / fanout → `module/market-data` 及下游分析域 `factor-engine`
+- Downstream storage / query / fanout → `module/market_data` 及下游分析域 `factor_engine`
 
 ## Submodules
 

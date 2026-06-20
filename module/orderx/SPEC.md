@@ -13,16 +13,16 @@
 
 ## 1. 摘要
 
-`orderx` 是执行域的订单管理器，负责订单全生命周期管理、订单路由（SOR）、订单状态机和成交维护。接收 `signal-factory` 生成的交易信号（经 `riskx` 风控通过后），由 `maestro` 编排调用，路由到交易所执行。实盘执行链：signal-factory → riskx → orderx → positionx。
+`orderx` 是执行域的订单管理器，负责订单全生命周期管理、订单路由（SOR）、订单状态机和成交维护。接收 `signal_factory` 生成的交易信号（经 `riskx` 风控通过后），由 `maestro` 编排调用，路由到交易所执行。实盘执行链：signal_factory → riskx → orderx → positionx。
 
 ## 2. 边界
 
 | 类型 | 说明 |
 | --- | --- |
 | Owns | 订单生命周期、SOR 路由、订单状态机、成交/审计追踪 |
-| Depends on | `module/signal-factory`（接收 Signal）、`module/riskx`（风控通过后调用）、`module/domain-market`（canonical 类型） |
+| Depends on | `module/signal_factory`（接收 Signal）、`module/riskx`（风控通过后调用）、`module/domain_market`（canonical 类型） |
 | Consumed by | `module/positionx`（成交更新仓位）、`module/maestro`（编排调用）、`module/observex`（订单事件） |
-| Excludes | 信号生成（→ signal-factory）、风控判断（→ riskx）、仓位计算（→ positionx） |
+| Excludes | 信号生成（→ signal_factory）、风控判断（→ riskx）、仓位计算（→ positionx） |
 
 ---
 
@@ -140,11 +140,11 @@ AND 审计事件不可删除
 
 WHEN downstream consumer reads `orderx` `README.md`
 THEN the H1 heading MUST be `# orderx`
-AND MUST NOT be `# xlib-standard`
+AND MUST NOT be `# xlib_standard`
 
 WHEN module documentation references the `orderx` Go module path
 THEN it MUST use `github.com/ZoneCNH/orderx`
-AND MUST NOT use `github.com/ZoneCNH/xlib-standard`
+AND MUST NOT use `github.com/ZoneCNH/xlib_standard`
 
 WHEN `go.mod` declares the module name
 THEN it MUST be `module github.com/ZoneCNH/orderx`

@@ -2,7 +2,7 @@ schema_version: foundation-bom/v1
 generated_at: '2026-06-17T23:45:46Z'
 source: .foundationx/status/index.json
 modules:
-  xlib-standard:
+  xlib_standard:
     release_model: standard
     kind: standards
     production_import_allowed: true
@@ -10,7 +10,7 @@ modules:
     blocking_findings: []
     public_code_verified: true
     status_renderable: true
-  xlib-harness:
+  xlib_harness:
     release_model: inherited
     kind: tooling
     production_import_allowed: false
@@ -18,8 +18,8 @@ modules:
     blocking_findings: []
     public_code_verified: true
     status_renderable: true
-    inherited_from: xlib-standard
-  xlib-evidence:
+    inherited_from: xlib_standard
+  xlib_evidence:
     release_model: inherited
     kind: tooling
     production_import_allowed: false
@@ -27,7 +27,7 @@ modules:
     blocking_findings: []
     public_code_verified: true
     status_renderable: true
-    inherited_from: xlib-standard
+    inherited_from: xlib_standard
   xlibgate:
     release_model: gate
     kind: policy

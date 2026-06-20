@@ -6,12 +6,12 @@
 
 ```yaml
 task_id: TASK-XLIB-008
-module: xlib-standard
+module: xlib_standard
 scope: "实现公共 API 模板、examples/basic、testkit，覆盖 FR-007 和 FR-008"
 spec_ref:
-  - "module/xlib-standard/SPEC.md#7"
-  - "module/xlib-standard/goal.md#7"
-  - "module/xlib-standard/goal.md#10"
+  - "module/xlib_standard/SPEC.md#7"
+  - "module/xlib_standard/goal.md#7"
+  - "module/xlib_standard/goal.md#10"
 files:
   - "examples/basic/main.go"
   - "testkit/metrics.go"

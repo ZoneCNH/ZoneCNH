@@ -34,8 +34,8 @@ x.go → 基座(L0/L1) → L2.5(域共享) → 数据域 → 分析域 ↔ 决�
 
 ### 三引擎数据流
 ```text
-market-data → market_engine → S State ─┐
-macro-data  → macro_engine  → M State  ├─► regime_engine → DecisionCard
+market_data → market_engine → S State ─┐
+macro_data  → macro_engine  → M State  ├─► regime_engine → DecisionCard
 ```
 → 详见 [06-dataflow.md](./06-dataflow.md) · [07-three-engines.md](./07-three-engines.md)
 

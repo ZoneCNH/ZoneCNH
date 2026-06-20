@@ -15,7 +15,7 @@
 | 维度        | 平均分         | 高分模块                                 | 低分模块                                        |
 | ----------- | -------------- | ---------------------------------------- | ----------------------------------------------- |
 | 综合        | **82.4 / 100** | kernel (93), configx (91), xlibgate (89) | bootstrap (68), postgresx (70), transportx (73) |
-| Spec 完整性 | 21.0 / 25      | kernel, xlibgate, contracts              | ossx, xlib-harness, xlib-evidence               |
+| Spec 完整性 | 21.0 / 25      | kernel, xlibgate, contracts              | ossx, xlib_harness, xlib_evidence               |
 | 追溯链路    | 19.5 / 25      | xlibgate, redisx, kernel                 | resiliencx, taosx, ossx                         |
 | 任务拆分    | 11.5 / 15      | natsx (26), transportx (27), kernel (23) | bootstrap (0), postgresx (4), kafkax (6)        |
 | 验收状态    | 16.0 / 20      | configx, ossx, taosx                     | transportx, postgresx, contracts                |
@@ -24,14 +24,14 @@
 
 **关键结构性问题（按影响面排序）：**
 
-1. **AC SSOT 漂移（严重）** — 4 个模块（`resiliencx` / `taosx` / `ossx` / `xlib-standard`）将 AC 仅写在 `ACCEPTANCE.md` 中，未在 `TRACEABILITY.md` 注册，违反 §第四条 23 节中 §22 全局 AC 注册表的要求。
+1. **AC SSOT 漂移（严重）** — 4 个模块（`resiliencx` / `taosx` / `ossx` / `xlib_standard`）将 AC 仅写在 `ACCEPTANCE.md` 中，未在 `TRACEABILITY.md` 注册，违反 §第四条 23 节中 §22 全局 AC 注册表的要求。
 2. **Frontmatter 缺失（普遍）** — 14/20 模块 SPEC 文件头 10 行内缺少 `Status:` 字段；`Version` / `Last-Updated` / `Layer` 也存在散乱填法。
 3. **bootstrap 任务空缺（孤例）** — `module/bootstrap/tasks/` 0 个 TASK 文件；与 SPEC v0.1.7、`AC=27/TC=14` 不对应，无法形成 Goal→Spec→Plan→Tasks 闭环。
-4. **TC ↔ AC 数量错配（共性）** — `clickhousex AC=48/TC=22`、`xlib-standard AC=38/TC=0`、`schedulex AC=31/TC=46`、`taosx AC=0/TC=33`、`ossx AC=0/TC=33`；要么 TC 超额（多对一无主），要么 TC 缺位（AC 无验证机制注册）。
+4. **TC ↔ AC 数量错配（共性）** — `clickhousex AC=48/TC=22`、`xlib_standard AC=38/TC=0`、`schedulex AC=31/TC=46`、`taosx AC=0/TC=33`、`ossx AC=0/TC=33`；要么 TC 超额（多对一无主），要么 TC 缺位（AC 无验证机制注册）。
 5. **NFR 缺位（schedulex）** — TRC 表 NFR=0；schedulex 至少应承诺触发延迟 P99 / 调度抖动等运行时约束。
 6. **Pending 比例过高的 spec-only 模块** — `contracts pending=44`、`transportx pending=58`；属于设计阶段自然态，但需要在 `release-blocking` / `production_import_allowed=false` 上明确门禁文案，避免被误读为"未做工作"。
 7. **postgresx 验收倒挂** — `pass=11 / fail=16 / pending=6 / blockers=0`；这是 20 模块中唯一 fail > pass 的，且无显式 BLK 记录承接，治理可见度不足。
-8. **xlib-standard 无 frontmatter Status / 无 BR-NFR-AC-TC** — 作为标准源头反而缺少自身的版本标记和完整追溯维度（仅 52 个 FR + 0 BR/NFR/AC/TC 在 TRC 中）；与其"标准事实源"角色不匹配。
+8. **xlib_standard 无 frontmatter Status / 无 BR-NFR-AC-TC** — 作为标准源头反而缺少自身的版本标记和完整追溯维度（仅 52 个 FR + 0 BR/NFR/AC/TC 在 TRC 中）；与其"标准事实源"角色不匹配。
 
 ---
 
@@ -72,9 +72,9 @@
 
 | 模块          | SPEC L | TRC L | ACC L | Plan L | Tasks# | 23节 | Front Status | TRC: FR/BR/NFR/AC/TC | ACC: PASS/FAIL/Pend/BLK |
 | ------------- | -----: | ----: | ----: | -----: | -----: | :--: | :----------: | :------------------: | :---------------------: |
-| xlib-standard |    452 |    64 |   201 |     74 |      9 |  ✓   |      —       |      52/0/0/0/0      |        25/7/0/0         |
-| xlib-harness  |    227 |    51 |    90 |     45 |      5 |  ✓   |   Approved   |     18/3/4/12/12     |        37/5/0/0         |
-| xlib-evidence |    235 |    50 |    80 |     34 |      6 |  ✓   |   Approved   |    15/11/5/10/15     |        30/6/0/0         |
+| xlib_standard |    452 |    64 |   201 |     74 |      9 |  ✓   |      —       |      52/0/0/0/0      |        25/7/0/0         |
+| xlib_harness  |    227 |    51 |    90 |     45 |      5 |  ✓   |   Approved   |     18/3/4/12/12     |        37/5/0/0         |
+| xlib_evidence |    235 |    50 |    80 |     34 |      6 |  ✓   |   Approved   |    15/11/5/10/15     |        30/6/0/0         |
 | xlibgate      |   1303 |   180 |   151 |    203 |     21 |  ✓   |  Approved¹   |    78/28/26/46/59    |       50/39/13/0        |
 | kernel        |   1274 |   139 |   128 |    277 |     23 |  ✓   |      —¹      |    47/16/9/33/46     |        79/10/2/5        |
 | configx       |    791 |   130 |   100 |    154 |     12 |  ✓   |      —¹      |    45/28/11/12/46    |        54/1/1/0         |
@@ -114,10 +114,10 @@
 |  9   | **kafkax**        |   21    |   20    |   10    |   17    |  10   |     4     |  **82**  |  B   |
 |  10  | **schedulex**     |   22    |   19    |   13    |   16    |   7   |     4     |  **81**  |  B   |
 |  11  | **resiliencx**    |   22    |   17    |   12    |   15    |  10   |     5     |  **81**  |  B   |
-|  12  | **xlib-evidence** |   18    |   19    |   11    |   17    |  10   |     4     |  **79**  |  B   |
-|  13  | **xlib-harness**  |   18    |   18    |   10    |   17    |  10   |     4     |  **77**  |  B   |
+|  12  | **xlib_evidence** |   18    |   19    |   11    |   17    |  10   |     4     |  **79**  |  B   |
+|  13  | **xlib_harness**  |   18    |   18    |   10    |   17    |  10   |     4     |  **77**  |  B   |
 |  14  | **taosx**         |   19    |   17    |   10    |   17    |  10   |     4     |  **77**  |  B   |
-|  15  | **xlib-standard** |   21    |   14    |   11    |   16    |  10   |     4     |  **76**  |  B   |
+|  15  | **xlib_standard** |   21    |   14    |   11    |   16    |  10   |     4     |  **76**  |  B   |
 |  16  | **ossx**          |   17    |   17    |   10    |   18    |  10   |     4     |  **76**  |  B   |
 |  17  | **contracts**     |   23    |   21    |   10    |   10    |  10   |     2     |  **76**  |  B   |
 |  18  | **transportx**    |   22    |   19    |   14    |    6    |  10   |     2     |  **73**  |  C   |
@@ -176,11 +176,11 @@ SPEC 718 行但 Tasks 仅 6 个，任务粒度偏粗。
 v1.0.2 已发布；但 **TRC AC=0**，完全把 AC 放在 ACCEPTANCE.md 中。  
 **问题**：① 命中 R5 边缘（TRC AC=0），违反 §第四条 23 节中"每条 AC 必须可追溯"的硬约束；② `retry.Policy{MaxAttempts:0}` 边界测试未在 ACC 显式登记。
 
-**xlib-evidence — 79 / B**  
+**xlib_evidence — 79 / B**  
 SPEC 仅 235 行，远低于其他证据载体的描述需求。  
 **问题**：① 本地成熟度 vs 外部 release/security/兼容性证据未在 §3 拆分；② SPEC 体量与其在管线中的地位不匹配。
 
-**xlib-harness — 77 / B**  
+**xlib_harness — 77 / B**  
 SPEC 仅 227 行；FR=18 但仅 5 个 TASK，任务粒度过粗。  
 **问题**：① FR-003（边界控制）与 FR-005（兼容性检查）的可执行证据粒度不足；② SPEC 体量与 21 模块上游门禁角色不匹配。
 
@@ -188,7 +188,7 @@ SPEC 仅 227 行；FR=18 但仅 5 个 TASK，任务粒度过粗。
 v1.0.3 本地候选；覆盖率 100%。  
 **问题**：① **TRC AC=0** 命中 R4/R5 边缘；② 外部 tag / GitHub Release 未归档；③ SPEC 仅 371 行，与 23 节结构相比偏轻。
 
-**xlib-standard — 76 / B**  
+**xlib_standard — 76 / B**  
 **作为标准事实源，自身 FR=52 但 BR/NFR/AC/TC 全为 0**。这是治理上的"纸糊门禁"风险。  
 **问题**：① 命中 R5；② 标准源缺少自身的 release evidence 命名一致性证据；③ 没有显式 Status frontmatter，与 v1.0.1 release 状态不对账。
 
@@ -220,7 +220,7 @@ SPEC 910 行（最详尽之一），但 ACC pending=44 占主导（合理：spec
 
 ### 4.1 P0：AC SSOT 漂移（4 模块）
 
-`resiliencx` / `taosx` / `ossx` / `xlib-standard` 在 `TRACEABILITY.md` 中 AC 计数为 0；其 AC 仅出现在 `ACCEPTANCE.md` 中。  
+`resiliencx` / `taosx` / `ossx` / `xlib_standard` 在 `TRACEABILITY.md` 中 AC 计数为 0；其 AC 仅出现在 `ACCEPTANCE.md` 中。  
 **违反**：`docs/governance/TRACEABILITY.md` "全局 AC 注册表"要求每条 AC 必须在 §22（或 §5 注册表）登记并绑定到 FR/BR。  
 **修复**：在各自 TRACEABILITY.md 中补齐 §5 全局 AC 注册表，把 ACCEPTANCE.md 中的逐条 AC 反向注册回追溯矩阵。  
 **预期收益**：4 个模块 §B 维度均可恢复 4–6 分。
@@ -242,7 +242,7 @@ SPEC 910 行（最详尽之一），但 ACC pending=44 占主导（合理：spec
 | 模块          |  AC |  TC | 错配方向                   |
 | ------------- | --: | --: | -------------------------- |
 | clickhousex   |  48 |  22 | TC 不足（AC 无验证）       |
-| xlib-standard |   0 |   0 | 双 0（标准源应有自治追溯） |
+| xlib_standard |   0 |   0 | 双 0（标准源应有自治追溯） |
 | schedulex     |  31 |  46 | TC 过剩（多对一无主）      |
 | natsx         |   8 |  48 | TC 过剩                    |
 | taosx         |   0 |  33 | AC 缺位                    |
@@ -253,7 +253,7 @@ SPEC 910 行（最详尽之一），但 ACC pending=44 占主导（合理：spec
 ### 4.5 P1：Frontmatter Status 缺失（14 模块）
 
 **违反**：23 节结构 §1 摘要应在文件头部（前 15 行）声明 `Status` / `Spec-Version` / `Last-Updated` / `Layer` 元数据。  
-**当前**：仅 `xlib-harness` / `xlib-evidence` / `schedulex` / `redisx` / `kafkax` / `natsx` 在 head -10 内可被 grep 抓到 `Status:`。  
+**当前**：仅 `xlib_harness` / `xlib_evidence` / `schedulex` / `redisx` / `kafkax` / `natsx` 在 head -10 内可被 grep 抓到 `Status:`。  
 `xlibgate` / `bootstrap` / `ossx` 用列表 `- Status: ...` 写法，与其他不一致。  
 其余 11 个完全不在头部声明。
 
@@ -267,7 +267,7 @@ SPEC 910 行（最详尽之一），但 ACC pending=44 占主导（合理：spec
 2. SPEC §16 风险/门禁：列出 release-blocking 列表；
 3. ACCEPTANCE.md 表头：把所有 pending 项分组到 release-blocking / non-blocking 两组。
 
-### 4.7 P2：xlib-standard 自身的元数据空缺
+### 4.7 P2：xlib_standard 自身的元数据空缺
 
 作为 21 个模块的标准源，自身 SPEC：
 
@@ -307,7 +307,7 @@ TRC NFR=0；ci-workflow 仅 141L（其他 280+L）。Schedule 至少应承诺：
 | 最多 |       natsx 26 |     640 |      4.06 |
 | 最少 |    bootstrap 0 |     495 |      0.00 |
 | 最少 |    postgresx 4 |     519 |      0.77 |
-| 最少 | xlib-harness 5 |     227 |      2.20 |
+| 最少 | xlib_harness 5 |     227 |      2.20 |
 | 最少 |       kafkax 6 |     718 |      0.84 |
 
 差异跨度 0–4.07，缺乏粒度基线。建议在 `module/_template/SPEC.md` 中规定"每 100 行 SPEC 至少 1 个 TASK，且 TASK 数 ≥ FR 数的 60%"作为软基线。
@@ -319,7 +319,7 @@ TRC NFR=0；ci-workflow 仅 141L（其他 280+L）。Schedule 至少应承诺：
 ### 5.1 一次性硬底线修复（P0，本周内）
 
 1. **bootstrap 任务拆分**：补 ≥8 个 TASK-BOOTSTRAP-NNN，关联 27 个 AC。
-2. **AC SSOT 反向注册**：`resiliencx` / `taosx` / `ossx` / `xlib-standard` 在 TRACEABILITY.md §5 全局 AC 注册表中登记现有 ACCEPTANCE 中的 AC。
+2. **AC SSOT 反向注册**：`resiliencx` / `taosx` / `ossx` / `xlib_standard` 在 TRACEABILITY.md §5 全局 AC 注册表中登记现有 ACCEPTANCE 中的 AC。
 3. **postgresx 验收倒挂处置**：16 个 fail 三分类 + 至少 6 个补丁 TASK。
 
 ### 5.2 二阶段对齐（P1，两周内）
@@ -330,7 +330,7 @@ TRC NFR=0；ci-workflow 仅 141L（其他 280+L）。Schedule 至少应承诺：
 
 ### 5.3 三阶段治理增强（P2，月内）
 
-7. `xlib-standard` 标准源自身的 BR/NFR/AC/TC 建模。
+7. `xlib_standard` 标准源自身的 BR/NFR/AC/TC 建模。
 8. `schedulex` NFR 表补齐与 CI 强化。
 9. `configx` / `kernel` / `xlibgate` 的 FR-AC 比值复核。
 10. 所有 spec-only 模块的 production_import_allowed gate 显式表达。
@@ -455,7 +455,7 @@ head -10 module/{m}/SPEC.md | grep -iE '^(Status|Version|Last-Updated|Layer|Owne
 
 - `xlibgate` 的 trust 组实现（FR-012~019 仍需补齐）
 - 各模块的代码实现质量审计（属于 `code-reviewer` 职责）
-- 生产 release artifact 与 security gate 闭环（属于 `xlib-evidence` 职责）
+- 生产 release artifact 与 security gate 闭环（属于 `xlib_evidence` 职责）
 
 ---
 

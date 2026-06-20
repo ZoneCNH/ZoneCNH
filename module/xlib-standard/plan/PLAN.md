@@ -1,13 +1,13 @@
 > **⚠️ 归档警告**：本文件是 2026-06-09 的历史执行计划，仅保留供溯源比对。
 > 其中"4 项职责"描述基于旧模型，当前权威定义为 CONSTITUTION.md §1.1 P2 和 ARCHITECTURE.md §161 中的**五类职责**：
 > Standard Source / Go Reference Template / Generator / Harness Gate / Evidence Runtime。
-> 当前执行入口见 `module/xlib-standard/PLAN.md`（根级 PLAN），规格定义见 `module/xlib-standard/goal.md` 和 `module/xlib-standard/SPEC.md`。
+> 当前执行入口见 `module/xlib_standard/PLAN.md`（根级 PLAN），规格定义见 `module/xlib_standard/goal.md` 和 `module/xlib_standard/SPEC.md`。
 > 本文件不得作为当前分析、任务拆分或门禁事实引用。
 
-# xlib-standard v1.0.0 执行计划
+# xlib_standard v1.0.0 执行计划
 
 > ⚠️ 本文件为上游仓库 Path A 历史执行计划（2026-06-09）。
-> 当前 xlib-standard 五类职责（标准事实源、Go Reference Template、Generator、Harness Gate、Evidence Runtime）的完整定位见 `../goal.md`、`../SPEC.md` 和 CONSTITUTION.md P2。
+> 当前 xlib_standard 五类职责（标准事实源、Go Reference Template、Generator、Harness Gate、Evidence Runtime）的完整定位见 `../goal.md`、`../SPEC.md` 和 CONSTITUTION.md P2。
 > 本文件描述的 4 项职责是该历史时期的执行范围划分，不代表当前模块定位。
 >
 > 路径 A：极简方案
@@ -19,7 +19,7 @@
 
 ## 目标
 
-将 xlib-standard 收敛为最小 Go 基座库模板标准源，只保留 4 项职责：
+将 xlib_standard 收敛为最小 Go 基座库模板标准源，只保留 4 项职责：
 
 1. 定义标准（standard.md）
 2. 提供可编译的 Go 参考模板（pkg/templatex/）
@@ -239,14 +239,14 @@ cd worktree/xlib-v1-xxx
 make lint && make test
 
 # 5. 提交
-git add -A && git commit -m "feat(xlib-standard): PR-N 描述"
+git add -A && git commit -m "feat(xlib_standard): PR-N 描述"
 
 # 6. 推送 & PR
 git push -u origin feat/xlib-v1-xxx
-gh pr create --base main --head feat/xlib-v1-xxx --title "feat(xlib-standard): PR-N 描述"
+gh pr create --base main --head feat/xlib-v1-xxx --title "feat(xlib_standard): PR-N 描述"
 
 # 7. 合并后清理
-cd /home/xlib-standard
+cd /home/xlib_standard
 git worktree remove worktree/xlib-v1-xxx
 git branch -d feat/xlib-v1-xxx
 ```

@@ -6,11 +6,11 @@
 
 ```yaml
 task_id: TASK-XLIB-002
-module: xlib-standard
+module: xlib_standard
 scope: "重写 Makefile、scripts/、.github/，确保只有最小 gate 集和标准脚本"
 spec_ref:
-  - "module/xlib-standard/SPEC.md#20"
-  - "module/xlib-standard/goal.md#6"
+  - "module/xlib_standard/SPEC.md#20"
+  - "module/xlib_standard/goal.md#6"
 files:
   - "Makefile"
   - "scripts/render_template.sh"
@@ -36,7 +36,7 @@ acceptance_criteria:
   - "AC-001: Makefile 包含 fmt/vet/lint/test/race/contracts/boundary/render-smoke/security/ci/release-check/release-final-check targets"
   - "AC-002: scripts/ 目录只有 7 个脚本"
   - "AC-003: render_template.sh 只接受 --module-path/--package-name/--out/--module-name 参数"
-  - "AC-004: check_boundary.sh 检查 6 项（x.go/internal、/home/k8s/secrets/env、foundationx、baselib-template、templatex、xlib-standard）"
+  - "AC-004: check_boundary.sh 检查 6 项（x.go/internal、/home/k8s/secrets/env、foundationx、baselib-template、templatex、xlib_standard）"
   - "AC-005: CI workflow 执行 GOWORK=off make ci 和 GOWORK=off make release-check"
 depends_on:
   - "TASK-XLIB-000"

@@ -13,7 +13,7 @@
 
 ## 1. 摘要
 
-`flowx` 是分析域的数据流管线引擎，负责实时流式数据处理、因子计算编排、窗口聚合、数据路由和背压控制。它是连接数据域（market-data、macro-data）与分析域（factor-engine、feature-store）的数据管道层。
+`flowx` 是分析域的数据流管线引擎，负责实时流式数据处理、因子计算编排、窗口聚合、数据路由和背压控制。它是连接数据域（market_data、macro_data）与分析域（factor_engine、feature_store）的数据管道层。
 
 定位三角：
 
@@ -52,9 +52,9 @@ kafkax / natsx 是"用什么传"
 
 - 不替代 Kafka Streams / Flink 等通用流处理框架
 - 不实现分布式流处理集群（单进程内管线）
-- 不定义因子计算公式（→ factor-engine）
+- 不定义因子计算公式（→ factor_engine）
 - 不存储历史数据（→ taosx / clickhousex）
-- 不定义数据采集协议（→ market-data）
+- 不定义数据采集协议（→ market_data）
 
 ---
 
@@ -62,10 +62,10 @@ kafkax / natsx 是"用什么传"
 
 | 消费者          | 使用方式                           |
 | --------------- | ---------------------------------- |
-| factor-engine   | 消费管线输出的因子数据             |
-| feature-store   | 消费管线输出的特征数据             |
-| market-regime   | 消费管线输出的市场环境分类数据     |
-| signal-factory  | （已移除 — signal-factory 输入来自 factor-eval + regime-engine，不走 flowx 管道） |
+| factor_engine   | 消费管线输出的因子数据             |
+| feature_store   | 消费管线输出的特征数据             |
+| market_regime   | 消费管线输出的市场环境分类数据     |
+| signal_factory  | （已移除 — signal_factory 输入来自 factor_eval + regime_engine，不走 flowx 管道） |
 | observex        | 消费管线 metrics 和 traces         |
 
 ---
@@ -138,11 +138,11 @@ AND 热更新期间数据不丢不重（通过 offset checkpoint）
 
 WHEN downstream consumer reads `flowx` `README.md`
 THEN the H1 heading MUST be `# flowx`
-AND MUST NOT be `# xlib-standard`
+AND MUST NOT be `# xlib_standard`
 
 WHEN module documentation references the `flowx` Go module path
 THEN it MUST use `github.com/ZoneCNH/flowx`
-AND MUST NOT use `github.com/ZoneCNH/xlib-standard`
+AND MUST NOT use `github.com/ZoneCNH/xlib_standard`
 
 WHEN `go.mod` declares the module name
 THEN it MUST be `module github.com/ZoneCNH/flowx`
@@ -299,7 +299,7 @@ flowx/
 
 | 可以依赖                             | 禁止依赖                         |
 | ------------------------------------ | -------------------------------- |
-| kernel, configx, observex, contracts | 业务域实现（factor-engine 等）   |
+| kernel, configx, observex, contracts | 业务域实现（factor_engine 等）   |
 | kafkax, natsx (adapter 接口)         | 具体交易所 SDK                   |
 | stdlib                               | 因子计算逻辑                     |
 

@@ -6,7 +6,7 @@
 
 ## Related Spec
 
-`module/domain-macro/SPEC.md` §7 FR-MAC-007, §5 发布门禁, §15 Dependencies, §21 Upgrade Compatibility, §22 Release DoD
+`module/domain_macro/SPEC.md` §7 FR-MAC-007, §5 发布门禁, §15 Dependencies, §21 Upgrade Compatibility, §22 Release DoD
 
 ## Related Requirements
 
@@ -60,7 +60,7 @@
 ## Validation Commands
 
 ```bash
-cd /home/domain-macro
+cd /home/domain_macro
 go build ./...
 go test ./... -race -count=1
 GOWORK=off make adoption-check

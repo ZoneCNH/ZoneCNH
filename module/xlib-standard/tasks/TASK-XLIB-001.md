@@ -6,12 +6,12 @@
 
 ```yaml
 task_id: TASK-XLIB-001
-module: xlib-standard
+module: xlib_standard
 scope: "重写 README.md 和 docs/ 目录，确保只描述 xlib 标准源职责（Standard Source / Go Reference Template / Generator / Harness Gate / Evidence Runtime），docs 只保留 9 个文件"
 spec_ref:
-  - "module/xlib-standard/SPEC.md#2"
-  - "module/xlib-standard/SPEC.md#4"
-  - "module/xlib-standard/goal.md#5"
+  - "module/xlib_standard/SPEC.md#2"
+  - "module/xlib_standard/SPEC.md#4"
+  - "module/xlib_standard/goal.md#5"
 files:
   - "README.md"
   - "docs/standard.md"
@@ -52,7 +52,7 @@ status: pending
 
 ## Scope
 
-- 重写 `README.md`、`INDEX.md` 和 `docs/*.md`，描述 xlib-standard 的五类职责（标准事实源、Go Reference Template、Generator、Harness Gate、Evidence Runtime）。
+- 重写 `README.md`、`INDEX.md` 和 `docs/*.md`，描述 xlib_standard 的五类职责（标准事实源、Go Reference Template、Generator、Harness Gate、Evidence Runtime）。
 - 将 `docs/standard.md` 对齐为 12 章结构。
 - 将 `docs/generation.md` 限定为 4 个生成参数。
 

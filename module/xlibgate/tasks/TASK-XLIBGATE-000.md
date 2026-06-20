@@ -31,7 +31,7 @@ status: pending
 | Requirement | Description                                       | Acceptance Criteria               |
 | ----------- | ------------------------------------------------- | --------------------------------- |
 | NFR-010     | 无 Foundation 运行时依赖                          | go list -deps 零命中 ZoneCNH 模块 |
-| BR-009      | FOUNDATION-DEPS.yaml schema 与 xlib-standard 一致 | go.mod 仅声明授权依赖             |
+| BR-009      | FOUNDATION-DEPS.yaml schema 与 xlib_standard 一致 | go.mod 仅声明授权依赖             |
 
 ## Non-scope
 

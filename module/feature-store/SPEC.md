@@ -1,34 +1,34 @@
-# feature-store 规格
+# feature_store 规格
 
 - Status: Draft
 - Spec-Version: v0.1.0-draft
 - Last-Updated: 2026-06-17
 - Layer: 分析域 · 特征存储
 - Version: v0.1.0-draft
-- Related: `CONSTITUTION.md`, `module/factor-engine`, `module/domain-market`, `module/factor-eval`
+- Related: `CONSTITUTION.md`, `module/factor_engine`, `module/domain_market`, `module/factor_eval`
 
-> 本文件发布 feature-store 文档基线。运行时实现为 Pending。
+> 本文件发布 feature_store 文档基线。运行时实现为 Pending。
 
 ---
 
 ## 1. 摘要
 
-`feature-store` 是分析域的特征存储与版本管理模块。接收 `factor-engine` 输出的 `FactorOutput`，提供特征版本化存储、回测时点查询（point-in-time correct）和特征血缘追踪。它是因子计算与因子评估之间的持久化桥梁。
+`feature_store` 是分析域的特征存储与版本管理模块。接收 `factor_engine` 输出的 `FactorOutput`，提供特征版本化存储、回测时点查询（point-in-time correct）和特征血缘追踪。它是因子计算与因子评估之间的持久化桥梁。
 
 ## 2. 边界
 
 | 类型 | 说明 |
 | --- | --- |
 | Owns | Feature 存储接口、特征版本管理、回测时点查询、特征血缘追踪（lineage）、TTL 过期策略 |
-| Depends on | `module/factor-engine`（FactorOutput 输入）、`module/domain-market`（canonical 类型）、`module/decimalx` |
-| Consumed by | `module/factor-eval`（特征评估）、`module/signal-factory`（信号生成）、`module/backtestx`（回测特征查询） |
-| Excludes | 因子计算（→ factor-engine）、因子评估（→ factor-eval）、数据库实现（→ postgresx/taosx/clickhousex）、策略逻辑 |
+| Depends on | `module/factor_engine`（FactorOutput 输入）、`module/domain_market`（canonical 类型）、`module/decimalx` |
+| Consumed by | `module/factor_eval`（特征评估）、`module/signal_factory`（信号生成）、`module/backtestx`（回测特征查询） |
+| Excludes | 因子计算（→ factor_engine）、因子评估（→ factor_eval）、数据库实现（→ postgresx/taosx/clickhousex）、策略逻辑 |
 
 ## 3. 术语
 
 | 术语 | 定义 |
 | --- | --- |
-| Feature | 一个带时间戳和版本的因子值，由 factor-engine 产生 |
+| Feature | 一个带时间戳和版本的因子值，由 factor_engine 产生 |
 | Point-in-Time (PIT) | 回测时只使用该时点之前已知的特征值，杜绝未来信息泄漏 |
 | FeatureVersion | 同一 feature_name 在同一 instrument_key 上的不可变版本序列 |
 | Lineage | 特征血缘：记录特征的计算来源、输入数据范围、因子版本和计算时间 |
@@ -38,8 +38,8 @@
 
 ### FR-001: Feature 写入
 
-WHEN factor-engine 输出 FactorOutput
-THEN feature-store 必须接收并持久化
+WHEN factor_engine 输出 FactorOutput
+THEN feature_store 必须接收并持久化
 AND 写入包含：factor_name、value、timestamp、instrument_key、product_line、event_type、compute_metadata
 AND 同 factor_name + instrument_key + timestamp 的重复写入必须幂等（返回已有 version）
 
@@ -78,9 +78,9 @@ AND 缺失值标记为 NaN（不填充零）
 
 ### FR-007: Module Identity
 
-WHEN 下游模块引用 feature-store
-THEN Go module path 必须为 `github.com/ZoneCNH/feature-store`
-AND README H1 必须为 `# feature-store`
+WHEN 下游模块引用 feature_store
+THEN Go module path 必须为 `github.com/ZoneCNH/feature_store`
+AND README H1 必须为 `# feature_store`
 
 ## 5. 行为约束
 
@@ -168,7 +168,7 @@ feature_store:
 | GC 进行中查询 | 不阻塞，过期数据可能短暂可见 |
 | 特征矩阵中部分 instrument 无数据 | NaN 填充 |
 
-## 12-23. 略（结构同 factor-engine SPEC §12-§23）
+## 12-23. 略（结构同 factor_engine SPEC §12-§23）
 
 ## 变更历史
 

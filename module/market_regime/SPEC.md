@@ -18,8 +18,8 @@ market_regime 是分析域的 S 引擎，分析市场微观结构特征，输出
 | 类型 | 说明 |
 | --- | --- |
 | Owns | S1-S7 市场状态分类器、微观结构特征提取（波动率/流动性/相关性）、bias 计算、permission gate |
-| Depends on | market-data（MarketEventEnvelope）、domain-market、flowx（数据管线） |
-| Consumed by | regime-engine（S 分类输入）、factor-engine（状态感知因子） |
+| Depends on | market_data（MarketEventEnvelope）、domain_market、flowx（数据管线） |
+| Consumed by | regime_engine（S 分类输入）、factor_engine（状态感知因子） |
 
 ## 3. 功能需求
 

@@ -6,7 +6,7 @@
 
 ## Related Spec
 
-`module/domain-macro/SPEC.md` §7 FR-MAC-003, §8 BR-MAC-001/002/005, §9 Interface Contract, §13 Edge Cases
+`module/domain_macro/SPEC.md` §7 FR-MAC-003, §8 BR-MAC-001/002/005, §9 Interface Contract, §13 Edge Cases
 
 ## Related Requirements
 
@@ -64,7 +64,7 @@
 ## Validation Commands
 
 ```bash
-cd /home/domain-macro
+cd /home/domain_macro
 go build ./...
 go test ./... -race -count=1
 go test ./... -count=100  # property test

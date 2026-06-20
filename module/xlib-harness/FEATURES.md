@@ -1,24 +1,24 @@
-# xlib-harness Features
+# xlib_harness Features
 
-> Module: `xlib-harness`
+> Module: `xlib_harness`
 > Version: v0.1.6
 > Last-Updated: 2026-06-20
-> Implementation-Baseline: `/home/xlib-harness@d90b35124701`
+> Implementation-Baseline: `/home/xlib_harness@d90b35124701`
 
 ## Feature Summary
 
-`xlib-harness` 提供一个标准库依赖的模块脚手架与验收门禁。它生成 Foundation 模块的基础文档集合，并在本地和 CI 中检查规格结构、追踪闭环、运行时依赖边界、Markdown 格式和 CI/CD 引用。
+`xlib_harness` 提供一个标准库依赖的模块脚手架与验收门禁。它生成 Foundation 模块的基础文档集合，并在本地和 CI 中检查规格结构、追踪闭环、运行时依赖边界、Markdown 格式和 CI/CD 引用。
 
 ## Functional Features
 
 | Feature ID | Capability | CLI / Artifact | Status |
 | --- | --- | --- | --- |
-| FR-001 | 生成模块资产 | `xlib-harness generate <module> --force` | Implemented |
-| FR-002 | 规格结构门禁 | `xlib-harness check <module> --profile spec` | Implemented |
-| FR-003 | 运行时边界门禁 | `xlib-harness check <module> --profile boundary` | Implemented |
-| FR-004 | CI/CD 引用门禁 | `xlib-harness check <module> --profile full` | Implemented |
-| FR-005 | Markdown 格式门禁 | `xlib-harness check <module> --profile full` | Implemented |
-| FR-006 | 追踪闭环门禁 | `xlib-harness check <module> --profile full` | Implemented |
+| FR-001 | 生成模块资产 | `xlib_harness generate <module> --force` | Implemented |
+| FR-002 | 规格结构门禁 | `xlib_harness check <module> --profile spec` | Implemented |
+| FR-003 | 运行时边界门禁 | `xlib_harness check <module> --profile boundary` | Implemented |
+| FR-004 | CI/CD 引用门禁 | `xlib_harness check <module> --profile full` | Implemented |
+| FR-005 | Markdown 格式门禁 | `xlib_harness check <module> --profile full` | Implemented |
+| FR-006 | 追踪闭环门禁 | `xlib_harness check <module> --profile full` | Implemented |
 
 ## Generated Assets
 
@@ -40,7 +40,7 @@
 | NFR ID | Capability | Evidence |
 | --- | --- | --- |
 | NFR-001 | 标准库运行时依赖 | `go list -deps ./...` 与边界 fixture 验证 |
-| NFR-002 | JSON 输出可由自动化消费 | `xlib-harness check <module> --json \| jq .` |
+| NFR-002 | JSON 输出可由自动化消费 | `xlib_harness check <module> --json \| jq .` |
 | NFR-003 | fixture 可重复验收 | `make ci` |
 | NFR-004 | 100% Go 覆盖率 | `go tool cover -func=coverage.out` total 100.0% |
 | NFR-005 | 发布门禁验证公开文档与免许可证 secret scan | `FEATURES.md`、`ACCEPTANCE.md`、Release run `27855366871`、main CI run `27855396013`、pinned `gitleaks` CLI |
@@ -62,9 +62,9 @@
 | Dimension | Score | Evidence |
 | --- | --- | --- |
 | Functional coverage | 100/100 | FR-001 到 FR-006 均有 CLI、fixture 或单元测试证据 |
-| Test coverage | 100/100 | `go tool cover -func=/tmp/xlib-harness-v016.cover` total 100.0%，所有函数 100.0% |
+| Test coverage | 100/100 | `go tool cover -func=/tmp/xlib_harness-v016.cover` total 100.0%，所有函数 100.0% |
 | CI/CD | 100/100 | Release run `27855366871` 与 main CI run `27855396013` 均 PASS |
-| Documentation sync | 100/100 | `/home/xlib-harness` 与根仓库 `module/xlib-harness` 的 FEATURES/ACCEPTANCE/SPEC 投影已同步到 `v0.1.6` |
+| Documentation sync | 100/100 | `/home/xlib_harness` 与根仓库 `module/xlib_harness` 的 FEATURES/ACCEPTANCE/SPEC 投影已同步到 `v0.1.6` |
 | Overall | 100/100 | 无已知阻断缺陷 |
 
 ## Release Notes
@@ -92,6 +92,6 @@
 
 - 将 harness 提升到可发布状态，CLI、公开 API、fixture 和 CI/CD 均由 `make ci` 覆盖。
 - 覆盖率门禁提升到 100.0%。
-- 边界门禁解析 `go.mod` 与 Go imports，禁止 `observex`、`configx`、`resiliencx`、`schedulex`、`testkitx`、`xlib-standard` 运行时引用。
+- 边界门禁解析 `go.mod` 与 Go imports，禁止 `observex`、`configx`、`resiliencx`、`schedulex`、`testkitx`、`xlib_standard` 运行时引用。
 - 规格门禁覆盖 23 节结构、FR Given/When/Then、AC/TC 可验证性。
 - 增加 `v0.1.3` 本地 release tag。

@@ -10,7 +10,7 @@ TASK-XLIB-000: 删除治理运行时与冗余目录
 
 ## Related Spec
 
-- module/xlib-standard/SPEC.md (§14 目录结构)
+- module/xlib_standard/SPEC.md (§14 目录结构)
 
 ## Related Requirements
 
@@ -76,4 +76,4 @@ test -f Makefile && echo "Makefile preserved"
 
 ## Test Case Reference
 
-参见 `module/xlib-standard/TRACEABILITY.md`。本 task 为治理清理，无特定 TC，验证通过目录删除和 git status 确认。
+参见 `module/xlib_standard/TRACEABILITY.md`。本 task 为治理清理，无特定 TC，验证通过目录删除和 git status 确认。

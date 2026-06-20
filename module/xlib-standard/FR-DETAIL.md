@@ -1,6 +1,6 @@
-# xlib-standard FR 快照明细
+# xlib_standard FR 快照明细
 
-> 归档说明：本文件是从上游 xlib-standard 快照抽取的非可执行追溯索引，不定义当前仓库实现范围。当前审计入口为 README.md、ANALYSIS.md、FR-DETAIL.md 和 TRACEABILITY.md。
+> 归档说明：本文件是从上游 xlib_standard 快照抽取的非可执行追溯索引，不定义当前仓库实现范围。当前审计入口为 README.md、ANALYSIS.md、FR-DETAIL.md 和 TRACEABILITY.md。
 
 ### FR-001: Config 标准快照锚点
 

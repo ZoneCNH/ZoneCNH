@@ -1,11 +1,11 @@
-# domain-exchange 规格
+# domain_exchange 规格
 
 - Status: Approved
 - Spec-Version: v1.0.0
 - Last-Updated: 2026-06-15
 - Layer: L2.5 领域共享
 - Version: v1.0.0
-- Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `kernel`, `decimalx`, `domain-market`, `domainx`
+- Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `kernel`, `decimalx`, `domain_market`, `domainx`
 
 > 公开投影 caveat：Status=Approved 与 100.0% 覆盖证据不等同于 factory-grade；机器事实层保持 factory=false。
 
@@ -13,17 +13,17 @@
 
 ## 1. 摘要
 
-`domain-exchange` 定义交易所领域接口和 adapter SPI，承接 venue capability、request、error、rate limit、registry 和 streaming 语义。
+`domain_exchange` 定义交易所领域接口和 adapter SPI，承接 venue capability、request、error、rate limit、registry 和 streaming 语义。
 
 ## 2. 边界
 
 | 类型 | 说明 |
 | --- | --- |
 | Owns | Exchange SPI、Place/Cancel/Query request、VenueCapability、RateLimitPolicy、ExchangeError、Registry |
-| Depends on | `kernel`、`decimalx`、`domain-market`、`domainx` |
+| Depends on | `kernel`、`decimalx`、`domain_market`、`domainx` |
 | Excludes | 真实交易所客户端、订单状态 SSOT、市场数据值对象、策略/风控/账本逻辑 |
 | Boundary with domainx | `domainx` 拥有 Order、Trade、Position、Portfolio、ExecutionReport、OrderSide/Type/State |
-| Boundary with domain-market | `domain-market` 拥有 Kline/OrderBook/Funding/OpenInterest 等行情模型 |
+| Boundary with domain_market | `domain_market` 拥有 Kline/OrderBook/Funding/OpenInterest 等行情模型 |
 
 ## 3. 功能需求
 
@@ -34,7 +34,7 @@
 | FR-EXC-003 | ExchangeError 必须区分临时错误、永久错误、限速、认证、余额、精度和不支持能力。 |
 | FR-EXC-004 | VenueCapability、RateLimitPolicy、VenueProfile 必须可静态描述并可测试。 |
 | FR-EXC-005 | Registry 必须线程安全，支持 fake exchange 注入。 |
-| FR-EXC-006 | MarketReader 必须返回 `domain-market` 类型，不重复定义行情模型。 |
+| FR-EXC-006 | MarketReader 必须返回 `domain_market` 类型，不重复定义行情模型。 |
 | FR-EXC-007 | Order 相关返回必须采用 `domainx` 类型或短期兼容 alias，不建立第二套订单 SSOT。 |
 
 ## 4. 非功能需求
@@ -46,8 +46,8 @@
 ## 5. 非目标与发布门禁
 
 - 不实现真实交易所客户端（Binance/OKX adapter 属于独立实现层）
-- 不管理订单状态 SSOT（Order/ExecutionReport 归 domainx；domain-exchange 仅通过 SPI 传递）
-- 不定义市场数据值对象（Kline/OrderBook/Funding 归 domain-market；domain-exchange 通过 MarketReader 返回 domain-market 类型）
+- 不管理订单状态 SSOT（Order/ExecutionReport 归 domainx；domain_exchange 仅通过 SPI 传递）
+- 不定义市场数据值对象（Kline/OrderBook/Funding 归 domain_market；domain_exchange 通过 MarketReader 返回 domain_market 类型）
 - 不实现策略、风控或账本逻辑（由策略域和风控域负责）
 - 不直接依赖 transport 层（HTTP client、WebSocket client 属于 adapter 实现）
 - 不操作存储层（Redis/Postgres/TDengine）
@@ -57,18 +57,18 @@
 
 | 门禁 | 要求 |
 | --- | --- |
-| 边界门禁 | 不重复拥有 `domainx` 和 `domain-market` 的公共模型。 |
+| 边界门禁 | 不重复拥有 `domainx` 和 `domain_market` 的公共模型。 |
 | SPI 门禁 | 接口拆分后下游 adapter 可按能力实现。 |
 | 错误门禁 | retry/idempotency/rate limit 有明确测试。 |
 | 下游门禁 | fake exchange 与至少一个 downstream smoke 通过。 |
 
 ## 6. 消费者
 
-- `order-engine`：通过 Exchange SPI 下单/撤单/查询
-- `risk-engine`：通过 AccountReader 查询余额，通过 OrderPlacer 提交订单
+- `order_engine`：通过 Exchange SPI 下单/撤单/查询
+- `risk_engine`：通过 AccountReader 查询余额，通过 OrderPlacer 提交订单
 - `binance`/`okx` 等 adapter：实现 Exchange SPI 接口
 - 回测引擎：使用 fake exchange 模拟交易
-- `domain-exchange` 的 Registry 供 kernel 启动时注册可用 venue
+- `domain_exchange` 的 Registry 供 kernel 启动时注册可用 venue
 
 ## 7. 功能需求
 
@@ -83,7 +83,7 @@
 | FR-EXC-007 | error-classification | 交易所返回错误 | ExchangeError 区分临时/永久/限速/认证/余额/精度/不支持 |
 | FR-EXC-008 | retry-semantics | 调用方收到错误 | IsRetryable/RetryAfter/IsIdempotentSafe 可判断重试策略 |
 | FR-EXC-009 | registry-safe | 并发注册/查询 Exchange | Registry 线程安全；重复注册返回错误；列表排序 deterministic |
-| FR-EXC-010 | market-reader | 调用 MarketReader | 返回 domain-market 类型（Kline/TickerPrice/OrderBook），不重复定义 |
+| FR-EXC-010 | market-reader | 调用 MarketReader | 返回 domain_market 类型（Kline/TickerPrice/OrderBook），不重复定义 |
 | FR-EXC-011 | stream-lifecycle | ctx cancel 或 stream 关闭 | Channel 可预测关闭；不支持 WS 的 venue 返回 ErrUnsupportedCapability |
 | FR-EXC-012 | order-type-alignment | 返回订单/成交 | 使用 domainx.Order/ExecutionReport 或标注 deprecated alias |
 
@@ -256,7 +256,7 @@ domain_exchange:
 ## 13. 边界情况
 
 - 交易所返回未知错误码：ExchangeError 包装原始 venue code，调用方可 errors.Is 判断已知类型
-- WS stream 断连重连：adapter 层可重连，但 domain-exchange 必须暴露错误/质量信号
+- WS stream 断连重连：adapter 层可重连，但 domain_exchange 必须暴露错误/质量信号
 - 并发注册同一 venue 到 Registry：第二次注册返回错误
 - partial fill 场景：fake exchange 必须支持脚本化 partial fill 响应
 - ctx cancel 后 WS channel 未关闭：需 leak test 保证无 goroutine leak
@@ -265,7 +265,7 @@ domain_exchange:
 ## 14. 目录结构
 
 ```text
-module/domain-exchange/
+module/domain_exchange/
   SPEC.md
   goal.md
   TRACEABILITY.md
@@ -277,7 +277,7 @@ module/domain-exchange/
 
 - 允许：`kernel`（errors、contracts、lifecycle）
 - 允许：`decimalx`（Price/Qty/金额）
-- 允许：`domain-market`（Kline/Quote/OrderBook/Funding/OpenInterest/Tick）
+- 允许：`domain_market`（Kline/Quote/OrderBook/Funding/OpenInterest/Tick）
 - 允许：`domainx`（Order/ExecutionReport/OrderSide/OrderType/OrderState）
 - 禁止：transport 层直接依赖（HTTP client、WS client）
 - 禁止：存储层（Redis、Postgres、TDengine）
@@ -329,7 +329,7 @@ module/domain-exchange/
 - `GOWORK=off go test ./... -count=100`
 - `staticcheck ./...`
 - `govulncheck ./...`
-- `GOWORK=off make adoption-check`（如接入 xlib-standard）
+- `GOWORK=off make adoption-check`（如接入 xlib_standard）
 - `GOWORK=off make release-check`
 
 ## 21. 升级兼容性
@@ -349,7 +349,7 @@ module/domain-exchange/
 - [ ] 错误可分类为 retryable / non-retryable / auth / rate limit
 - [ ] Registry 并发安全且 deterministic
 - [ ] Fake exchange 覆盖成功、拒单、限频、partial fill、stream close
-- [ ] 下游 order-engine/risk-engine 可基于 v1 smoke
+- [ ] 下游 order_engine/risk_engine 可基于 v1 smoke
 - [ ] Version 更新为 v1.0.0
 - [ ] CHANGELOG.md、MIGRATION.md、release manifest 齐全
 

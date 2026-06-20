@@ -66,9 +66,9 @@ Status: Approved
 | 消费者 | 使用方式 | 关键约束 |
 | --- | --- | --- |
 | `schedulex` | 通过 `Locker` 实现分布式任务锁 | 必须使用 token owner 和 TTL |
-| `market-data` | 缓存最新行情快照和热点对象 | 必须使用 KeyBuilder、TTL、Codec |
+| `market_data` | 缓存最新行情快照和热点对象 | 必须使用 KeyBuilder、TTL、Codec |
 | `signal-engine` | 缓存因子计算中间结果 | 禁止记录完整业务 Key |
-| `risk-engine` | 存储风控状态、阈值和计数 | context 超时必须可控 |
+| `risk_engine` | 存储风控状态、阈值和计数 | context 超时必须可控 |
 | 业务域模块 | 使用 `Client`、`CacheClient`、`Counter`、`RateLimitHelper` | 不直接依赖 Redis 客户端细节 |
 | 平台 adapter | 将外部配置、观测、弹性策略投影为 redisx Options/hooks | adapter 在模块外实现 |
 

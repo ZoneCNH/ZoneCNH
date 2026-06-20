@@ -2,15 +2,15 @@
 
 ## 1. Goal
 
-Deliver `module/hyperliquid` v1.0.0 as Hyperliquid-specific DEX market-data C/S module。硬切替换旧 passive `hyperliquid` SDK，并引入 onchain origin metadata + wallet signature 鉴权 + chain reorg 兼容机制。
+Deliver `module/hyperliquid` v1.0.0 as Hyperliquid-specific DEX market_data C/S module。硬切替换旧 passive `hyperliquid` SDK，并引入 onchain origin metadata + wallet signature 鉴权 + chain reorg 兼容机制。
 
 ## 2. Required Preflight Decisions
 
 1. 旧 passive SDK 在 active code 中清除
 2. `module/hyperliquid/client` 与 `server` 文档就绪
-3. canonical domain 由 `module/domain-market` 拥有；onchain metadata 通过 `source_metadata` 扩展（不在 canonical core 中新增字段）
+3. canonical domain 由 `module/domain_market` 拥有；onchain metadata 通过 `source_metadata` 扩展（不在 canonical core 中新增字段）
 4. wire contract 由 `module/contracts` §8.4 拥有
-5. downstream dispatch 经 `module/market-data` 中转，下游需感知 onchain metadata
+5. downstream dispatch 经 `module/market_data` 中转，下游需感知 onchain metadata
 6. delivery 语义：at-least-once + idempotent acceptance + ACK-driven checkpoint + reorg-tolerant idempotency key
 7. wallet signature 优先使用外部 signer endpoint，避免私钥进入应用进程
 8. confirmation_threshold 默认 3 blocks（约 6 秒延迟）
@@ -20,8 +20,8 @@ Deliver `module/hyperliquid` v1.0.0 as Hyperliquid-specific DEX market-data C/S 
 | Gate | 验证项 | 状态 |
 |------|--------|:---:|
 | G0-1 | contracts §8.4 全部 wire types | ✅ |
-| G0-2 | domain-market `source_metadata` map 字段支持任意 key/value | ✅ |
-| G0-3 | market-data DownstreamDispatchPort 接受含 onchain metadata 的事件 | ✅（源不敏感） |
+| G0-2 | domain_market `source_metadata` map 字段支持任意 key/value | ✅ |
+| G0-3 | market_data DownstreamDispatchPort 接受含 onchain metadata 的事件 | ✅（源不敏感） |
 | G0-4 | binance C/S Module 模板已稳定 | ✅ |
 | G0-5 | hyperliquid 旧 SDK 清单整理 | 🔧 PR-000 |
 | G0-6 | BOUNDARY-GATES（继承 binance + 钱包安全 gate） 可执行 | ✅ |
@@ -33,7 +33,7 @@ PR-000  legacy hyperliquid SDK cleanup
 PR-001  module/hyperliquid root
 PR-002  module/hyperliquid/client SPEC + tasks
 PR-003  module/hyperliquid/server SPEC + tasks
-PR-004  domain-market source_metadata 扩展验证
+PR-004  domain_market source_metadata 扩展验证
 PR-005  contracts dependency 验证
 PR-006  transportx dependency 验证
 PR-007  runtime implementation（github.com/ZoneCNH/hyperliquid 改造）
@@ -80,7 +80,7 @@ Acceptance:
 
 | PR | 范围 |
 |----|------|
-| PR-004 | domain-market source_metadata 字段验证 |
+| PR-004 | domain_market source_metadata 字段验证 |
 | PR-005 | contracts dependency stub |
 | PR-006 | transportx dependency stub |
 | PR-007 | github.com/ZoneCNH/hyperliquid runtime 改造（含 chain RPC 与 signer 集成） |

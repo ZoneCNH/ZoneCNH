@@ -6,12 +6,12 @@
 
 ```yaml
 task_id: TASK-EXC-004
-module: domain-exchange
+module: domain_exchange
 scope: "定义 VenueCapability 常量、RateLimitPolicy 结构、VenueProfile 静态描述，确保可测试且可配置"
 spec_ref:
-  - "module/domain-exchange/SPEC.md#FR-EXC-004"
-  - "module/domain-exchange/SPEC.md#§10"
-  - "module/domain-exchange/SPEC.md#§11"
+  - "module/domain_exchange/SPEC.md#FR-EXC-004"
+  - "module/domain_exchange/SPEC.md#§10"
+  - "module/domain_exchange/SPEC.md#§11"
 files:
   - "capability.go"
   - "capability_test.go"

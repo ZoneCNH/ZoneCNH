@@ -10,8 +10,8 @@ goal_id: GOAL-XLIB-STD-001
 date: "2026-06-09"
 status: PASS
 files_changed:
-  - module/xlib-standard/goal.md
-  - module/xlib-standard/SPEC.md
+  - module/xlib_standard/goal.md
+  - module/xlib_standard/SPEC.md
 commands_run:
   - "test ! -d .agent && test ! -d .codex && test ! -d .devcontainer"
   - "test ! -f Dockerfile && test ! -f docker-compose.yml"

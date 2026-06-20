@@ -26,11 +26,11 @@ backtestx   orderx   positionx   riskx   strategyx   flowx
 适用于：分析域、决策域、执行域模块，数据收集管线，契约库，工具库
 
 ```
-market-data   macro-data   alternative-data
-domain-market   domain-exchange   domain-macro
-regime-engine   factor-engine   signal-factory   feature-store
-xlib-evidence   xlib-harness   xlib-standard
-bootstrap   contracts   foundation-example   composer   maestro
+market_data   macro_data   alternative_data
+domain_market   domain_exchange   domain_macro
+regime_engine   factor_engine   signal_factory   feature_store
+xlib_evidence   xlib_harness   xlib_standard
+bootstrap   contracts   foundation_example   composer   maestro
 ```
 
 **命名格式**：`{名称}`（全小写，连字符分隔）
@@ -43,7 +43,7 @@ bootstrap   contracts   foundation-example   composer   maestro
 binance   okx   bybit   coinbase   bitget   gate   htx   hyperliquid
 kucoin   lighter   mexc   upbit
 fred   bea   ecb   eastmoney   coinglass   jin10   yahoo   treasury
-yield-curve   japan-cb   uk-cb
+yield_curve   japan_cb   uk_cb
 ```
 
 **命名格式**：官方名称全小写（连字符用于复合词）
@@ -64,10 +64,10 @@ yield-curve   japan-cb   uk-cb
 
 | 当前名称 | 主语言 | 问题 | 新名称 | 操作 |
 |---|---|---|---|---|
-| `market_regime` | — (空) | snake_case | `market-regime` | GitHub 重命名 |
-| `macro_regime` | — (空) | snake_case | `macro-regime` | GitHub 重命名 |
-| `ms_brain` | PLpgSQL | snake_case | `ms-brain` | GitHub 重命名 |
-| `macro_data` | Python | snake_case + 与 Go `macro-data` 语义重叠 | `macro-data-py` | GitHub 重命名 + 描述说明 |
+| `market_regime` | — (空) | snake_case | `market_regime` | GitHub 重命名 |
+| `macro_regime` | — (空) | snake_case | `macro_regime` | GitHub 重命名 |
+| `ms_brain` | PLpgSQL | snake_case | `ms_brain` | GitHub 重命名 |
+| `macro_data` | Python | snake_case + 与 Go `macro_data` 语义重叠 | `macro_data_py` | GitHub 重命名 + 描述说明 |
 | `GYM` | — (空) | PascalCase | `gym` | GitHub 重命名 |
 | `OneKey` | Shell | PascalCase | `onekey` | GitHub 重命名 |
 
@@ -79,7 +79,7 @@ yield-curve   japan-cb   uk-cb
 |---|---|---|---|---|
 | `xlibgate` | `github.com/ZoneCNH/xlibgate` | `xlib-gate` | 仅自身（0 外部依赖） | **低** |
 
-> `xlibgate` 是 xlib 家族唯一不一致成员：xlib-evidence / xlib-harness / xlib-standard 均已 kebab，只有 xlibgate 为 x 后缀风格。
+> `xlibgate` 是 xlib 家族唯一不一致成员：xlib_evidence / xlib_harness / xlib_standard 均已 kebab，只有 xlibgate 为 x 后缀风格。
 
 ### C 类：废弃旧占位仓库（双轨并存问题）
 
@@ -87,14 +87,14 @@ yield-curve   japan-cb   uk-cb
 
 | 旧仓库（占位） | 新规格模块 | 废弃行动 |
 |---|---|---|
-| `backtest-engine` | `backtestx` | 描述加 `[DEPRECATED → backtestx]`，README 加废弃声明 |
-| `risk-engine` | `riskx` | 同上 |
-| `order-engine` | `orderx` | 同上 |
-| `portfolio-engine` | `positionx` | 同上，注意职责语义也有变化（portfolio → position） |
+| `backtest_engine` | `backtestx` | 描述加 `[DEPRECATED → backtestx]`，README 加废弃声明 |
+| `risk_engine` | `riskx` | 同上 |
+| `order_engine` | `orderx` | 同上 |
+| `portfolio_engine` | `positionx` | 同上，注意职责语义也有变化（portfolio → position） |
 
 ### D 类：{exchange}-market 与 {exchange} 关系澄清
 
-当前并存 5 对：`binance` + `binance-market`，`bybit` + `bybit-market`，`coinbase` + `coinbase-market`，`okx` + `okx-market`，`bitget` + `bitget-market`
+当前并存 5 对：`binance` + `binance-market`，`bybit` + `bybit_market`，`coinbase` + `coinbase_market`，`okx` + `okx_market`，`bitget` + `bitget_market`
 
 | 问题 | 建议 |
 |---|---|
@@ -104,7 +104,7 @@ yield-curve   japan-cb   uk-cb
 ### E 类：保持现状（已建立约定）
 
 以下不需要变动：
-- xlib 家族（xlib-evidence / xlib-harness / xlib-standard）
+- xlib 家族（xlib_evidence / xlib_harness / xlib_standard）
 - Foundation x-suffix 模块（configx / observex / resiliencx ...）
 - 宏观/交易所裸名（fred / bea / binance / okx ...）
 - x.go（特殊：Composition Root，已成系统标志）
@@ -116,12 +116,12 @@ yield-curve   japan-cb   uk-cb
 ## 三、特殊注意：contracts / transportx 共享 Go module
 
 ```
-contracts/go.mod    → module github.com/ZoneCNH/xlib-standard
-transportx/go.mod   → module github.com/ZoneCNH/xlib-standard
-xlib-standard/go.mod → module github.com/ZoneCNH/xlib-standard
+contracts/go.mod    → module github.com/ZoneCNH/xlib_standard
+transportx/go.mod   → module github.com/ZoneCNH/xlib_standard
+xlib_standard/go.mod → module github.com/ZoneCNH/xlib_standard
 ```
 
-三个仓库共享同一 Go module `github.com/ZoneCNH/xlib-standard`，**这是已知设计决策，非命名问题**，无需变更。
+三个仓库共享同一 Go module `github.com/ZoneCNH/xlib_standard`，**这是已知设计决策，非命名问题**，无需变更。
 
 ---
 
@@ -133,10 +133,10 @@ xlib-standard/go.mod → module github.com/ZoneCNH/xlib-standard
 # 操作：GitHub 仓库重命名（Settings > Repository name）
 # 或 gh api
 
-gh api -X PATCH repos/ZoneCNH/market_regime -f name=market-regime
-gh api -X PATCH repos/ZoneCNH/macro_regime   -f name=macro-regime
-gh api -X PATCH repos/ZoneCNH/ms_brain       -f name=ms-brain
-gh api -X PATCH repos/ZoneCNH/macro_data     -f name=macro-data-py
+gh api -X PATCH repos/ZoneCNH/market_regime -f name=market_regime
+gh api -X PATCH repos/ZoneCNH/macro_regime   -f name=macro_regime
+gh api -X PATCH repos/ZoneCNH/ms_brain       -f name=ms_brain
+gh api -X PATCH repos/ZoneCNH/macro_data     -f name=macro_data_py
 gh api -X PATCH repos/ZoneCNH/GYM            -f name=gym
 gh api -X PATCH repos/ZoneCNH/OneKey         -f name=onekey
 ```
@@ -189,7 +189,7 @@ GitHub 描述加 `[DEPRECATED → {新仓库}]`
 
 | 文件 | 变更内容 |
 |---|---|
-| `STATUS.md` | 6 个模块链接：`market_regime` → `market-regime` 等 |
+| `STATUS.md` | 6 个模块链接：`market_regime` → `market_regime` 等 |
 | `README.md` | 分析域列表中的模块链接 |
 | `docs/architecture/02-domain-layers.md` | 域内模块命名 |
 | `docs/architecture/07-three-engines.md` | market_regime/macro_regime 引用 |
@@ -204,49 +204,49 @@ GitHub 描述加 `[DEPRECATED → {新仓库}]`
 kernel · configx · observex · resiliencx · schedulex · alertx · transportx · decimalx · domainx · bootstrap · contracts · redisx · kafkax · natsx · clickhousex · postgresx · taosx · ossx · testkitx
 
 ### L2.5 Domain Libraries（kebab，规范）
-domain-market · domain-exchange · domain-macro
+domain_market · domain_exchange · domain_macro
 
 ### 分析域（kebab，规范）
-factor-engine · factor-eval · feature-store · regime-engine
+factor_engine · factor_eval · feature_store · regime_engine
 
 ### 分析域（**需重命名**：snake → kebab）
-`market_regime` → **market-regime** · `macro_regime` → **macro-regime**
+`market_regime` → **market_regime** · `macro_regime` → **macro_regime**
 
 ### 决策域（x-suffix，规范）
 riskx · strategyx · backtestx
 
 ### 决策域（**需废弃**）
-~~risk-engine~~ · ~~backtest-engine~~
+~~risk_engine~~ · ~~backtest_engine~~
 
 ### 执行域（x-suffix，规范）
-orderx · positionx · flowx · signal-factory
+orderx · positionx · flowx · signal_factory
 
 ### 执行域（**需废弃**）
-~~order-engine~~ · ~~portfolio-engine~~
+~~order_engine~~ · ~~portfolio_engine~~
 
 ### 数据域（kebab，规范）
-market-data · macro-data · alternative-data · composer
+market_data · macro_data · alternative_data · composer
 
 ### xlib 工具（kebab，规范 + 1 个待修复）
-xlib-evidence · xlib-harness · xlib-standard · `xlibgate` → **xlib-gate**
+xlib_evidence · xlib_harness · xlib_standard · `xlibgate` → **xlib-gate**
 
 ### x.go（特殊，keep）
 x.go
 
 ### 交易所 SDK（裸名，规范）
-binance · okx · bybit · coinbase · bitget · gate · htx · hyperliquid · kucoin · lighter · mexc · upbit · binance-market · bybit-market · coinbase-market · okx-market · bitget-market
+binance · okx · bybit · coinbase · bitget · gate · htx · hyperliquid · kucoin · lighter · mexc · upbit · binance-market · bybit_market · coinbase_market · okx_market · bitget_market
 
 ### 宏观 SDK（裸名/kebab，规范）
-fred · bea · ecb · eastmoney · coinglass · jin10 · yahoo · treasury · yield-curve · japan-cb · uk-cb
+fred · bea · ecb · eastmoney · coinglass · jin10 · yahoo · treasury · yield_curve · japan_cb · uk_cb
 
 ### ML/研究（**需重命名**）
-`ms_brain` → **ms-brain** · `GYM` → **gym**
+`ms_brain` → **ms_brain** · `GYM` → **gym**
 
 ### Infra/运维（keep）
-sre · opsstack · wireguard · specs · composer · maestro · supergoal · foundation-example
+sre · opsstack · wireguard · specs · composer · maestro · supergoal · foundation_example
 
 ### Python 数据（**需重命名**）
-`macro_data` → **macro-data-py**
+`macro_data` → **macro_data_py**
 
 ### 特殊（**需重命名**）
 `OneKey` → **onekey**

@@ -1,27 +1,27 @@
-# factor-eval 规格
+# factor_eval 规格
 
 - Status: Draft
 - Spec-Version: v0.1.0-draft
 - Last-Updated: 2026-06-17
 - Layer: 分析域 · 因子评估
 - Version: v0.1.0-draft
-- Related: `CONSTITUTION.md`, `../factor-engine/`, `../domain-market/`
+- Related: `CONSTITUTION.md`, `../factor_engine/`, `../domain_market/`
 
-> 本文档发布 factor-eval 基线。运行时实现为 Pending。
+> 本文档发布 factor_eval 基线。运行时实现为 Pending。
 
 ---
 
 ## 1. 摘要
 
-factor-eval 是分析域的因子评估模块，对 factor-engine 产出的因子执行 IC/RankIC 分析、分层回测和稳定性评估。
+factor_eval 是分析域的因子评估模块，对 factor_engine 产出的因子执行 IC/RankIC 分析、分层回测和稳定性评估。
 
 ## 2. 边界
 
 | 类型 | 说明 |
 | --- | --- |
 | Owns | IC/RankIC 计算、分层回测（quantile portfolio）、因子换手率分析、因子衰减曲线、评估报告生成 |
-| Depends on | factor-engine（因子数据）、feature-store（PIT 特征查询）、domain-market |
-| Consumed by | signal-factory（信号权重参考）、backtestx（回测因子表现） |
+| Depends on | factor_engine（因子数据）、feature_store（PIT 特征查询）、domain_market |
+| Consumed by | signal_factory（信号权重参考）、backtestx（回测因子表现） |
 | Excludes | 见上下游模块职责边界 |
 
 ## 3. 功能需求

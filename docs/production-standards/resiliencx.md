@@ -26,7 +26,7 @@ resiliencx 是 FoundationX 弹性策略库（L3 Reliability 层），提供 time
 - 不提供 harness、自动注入或统一执行链（ResilienceExecutor / PolicyChain 为 v1.2+ 演进目标）
 
 ## 5. 架构位置
-L3 Reliability 层（SPEC §3 标注 L1 基础能力，与 FOUNDATION-DEPS.yaml 一致）。实际依赖仅 stdlib（比 SPEC 许可更严格）；SPEC 许可依赖 kernel / configx，但运行时 go list -deps 不含 kernel / configx / observex。消费者：market-data（timeout+retry+circuit）、risk-engine（rate limiter+fallback）、signal-engine（timeout）、order-engine（bulkhead+retry）、业务域模块按需 import 子包。
+L3 Reliability 层（SPEC §3 标注 L1 基础能力，与 FOUNDATION-DEPS.yaml 一致）。实际依赖仅 stdlib（比 SPEC 许可更严格）；SPEC 许可依赖 kernel / configx，但运行时 go list -deps 不含 kernel / configx / observex。消费者：market_data（timeout+retry+circuit）、risk_engine（rate limiter+fallback）、signal-engine（timeout）、order_engine（bulkhead+retry）、业务域模块按需 import 子包。
 
 ## 6. 生命周期
 - 策略本身无 bootstrap/init/running/draining 状态机，是无状态/单实例原语

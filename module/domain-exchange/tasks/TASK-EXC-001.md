@@ -6,11 +6,11 @@
 
 ```yaml
 task_id: TASK-EXC-001
-module: domain-exchange
+module: domain_exchange
 scope: "拆分 Exchange 大接口为 AccountReader、OrderPlacer、OrderCanceler、OrderQuerier、MarketReader、DerivativeReader、Streamer 能力接口及 Exchange 组合接口"
 spec_ref:
-  - "module/domain-exchange/SPEC.md#FR-EXC-001"
-  - "module/domain-exchange/SPEC.md#§9"
+  - "module/domain_exchange/SPEC.md#FR-EXC-001"
+  - "module/domain_exchange/SPEC.md#§9"
 files:
   - "exchange.go"
   - "exchange_test.go"

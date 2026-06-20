@@ -1,4 +1,4 @@
-# xlib-standard 覆盖清单
+# xlib_standard 覆盖清单
 
 本文件是本地分析快照的输入清单，不是可执行规格。
 
@@ -12,7 +12,7 @@
 
 ## 关键工件
 
-- `docs/standard/xlib-standard.md`
+- `docs/standard/xlib_standard.md`
 - `docs/standard/acceptance-matrix.md`
 - `docs/standard/branch-governance.md`
 - `docs/standard/evidence-protocol.md`

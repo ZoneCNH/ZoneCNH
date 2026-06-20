@@ -10,12 +10,12 @@ goal_id: GOAL-XLIB-STD-001
 date: "2026-06-09"
 status: PASS
 files_changed:
-  - module/xlib-standard/SPEC.md
-  - module/xlib-standard/goal.md
-  - module/xlib-standard/plan/PLAN.md
+  - module/xlib_standard/SPEC.md
+  - module/xlib_standard/goal.md
+  - module/xlib_standard/plan/PLAN.md
 commands_run:
-  - "wc -l module/xlib-standard/SPEC.md"
-  - "grep -c '## [0-9]' module/xlib-standard/SPEC.md"
+  - "wc -l module/xlib_standard/SPEC.md"
+  - "grep -c '## [0-9]' module/xlib_standard/SPEC.md"
 ```
 
 ## 验收结果

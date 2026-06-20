@@ -41,7 +41,7 @@
 
 - `module/foundation-modules.md:5` 将 Foundation 第一阶段定义为 6 个基础模块，`module/foundation-modules.md:34-41` 表格也只列出 `kernel`、`configx`、`observex`、`testkitx`、`resiliencx`、`schedulex`。
 - `module/README.md:3` 声明本目录维护 20 个基座模块独立规格，`module/README.md:45-66` 列出 20 个模块目标文档。
-- 本次复核 `module/` 一级目录，实际模块目录为 20 个：`xlib-standard`、`xlib-harness`、`xlib-evidence`、`kernel`、`configx`、`observex`、`testkitx`、`resiliencx`、`schedulex`、`xlibgate`、`redisx`、`kafkax`、`natsx`、`postgresx`、`taosx`、`ossx`、`clickhousex`、`contracts`、`transportx`、`domainx`。
+- 本次复核 `module/` 一级目录，实际模块目录为 20 个：`xlib_standard`、`xlib_harness`、`xlib_evidence`、`kernel`、`configx`、`observex`、`testkitx`、`resiliencx`、`schedulex`、`xlibgate`、`redisx`、`kafkax`、`natsx`、`postgresx`、`taosx`、`ossx`、`clickhousex`、`contracts`、`transportx`、`domainx`。
 - `README.md:19-21` 仍称 Foundation v1 规格为 17 个基座模块规格。
 - `ARCHITECTURE.md:33-45` 使用 Foundation (20) 口径，但 `ARCHITECTURE.md:121-144` 的规格索引仍称 18 个基座模块，并且表格只列 18 个。
 - `STATUS.md:30-45` 与 `STATUS.md:116-135` 使用 18 个模块口径。
@@ -63,7 +63,7 @@
 
 直接证据：
 
-- `module/FOUNDATION-DEPS.yaml:20-127` 覆盖核心模块、`xlib-standard`、`xlibgate`、7 个存储扩展、`contracts`、`transportx`，但没有覆盖 `xlib-harness`、`xlib-evidence`、`domainx`。
+- `module/FOUNDATION-DEPS.yaml:20-127` 覆盖核心模块、`xlib_standard`、`xlibgate`、7 个存储扩展、`contracts`、`transportx`，但没有覆盖 `xlib_harness`、`xlib_evidence`、`domainx`。
 - `module/FOUNDATION-DEPS.yaml:11-15` 仍写着 `testkitx` 当前 `go.mod` 是 1.24 且需要降级到 1.23；但 `module/FOUNDATION-TRACKER.md:52-66` 已将 Go baseline 整改标为完成，并写明 `testkitx` 已降级到 1.23。
 - `module/FOUNDATION-DEPS.yaml:208-256` 的约束主要覆盖第一阶段 6 个模块，没有针对 `postgresx` 的 `foundationx` 退出约束；而 `module/FOUNDATION-TRACKER.md:230-240` 明确记录 `postgresx` 仍存在 `foundationx` 依赖迁移问题。
 
@@ -74,7 +74,7 @@
 建议：
 
 - 为 `FOUNDATION-DEPS.yaml` 增加 `scope` 或拆分 section：`core_runtime`、`governance_gate`、`storage_extensions`、`contracts_transport`、`domain_boundary`、`spec_only_quality_artifacts`。
-- 对未纳入依赖检查的模块写明原因；如果 `xlib-harness`、`xlib-evidence`、`domainx` 属于 Foundation 规格模块，就应被矩阵显式包含，哪怕依赖边为空。
+- 对未纳入依赖检查的模块写明原因；如果 `xlib_harness`、`xlib_evidence`、`domainx` 属于 Foundation 规格模块，就应被矩阵显式包含，哪怕依赖边为空。
 - 将 `postgresx -> foundationx` 禁止项纳入矩阵或 gate 规则，避免 tracker 中的高优先级问题停留在人工说明层。
 - 清理 `testkitx` Go baseline 过期备注，让 YAML 与 tracker 保持同一事实。
 
@@ -86,7 +86,7 @@
 直接证据：
 
 - `module/FOUNDATION-TRACKER.md:131-149` 对 `testkitx` 有重复状态段：一处写“管线就绪，5 PRs 合入”但 `code/` 阶段仍未勾选，另一处写 PR #1 合入且 implementation/code 阶段已完成。
-- `module/FOUNDATION-TRACKER.md:182-199` 的 `xlibgate` CI Gate CLI 实现任务仍未勾选；但 `STATUS.md:118-119` 将 `xlib-standard` 与 `xlibgate` 都标为 100%。
+- `module/FOUNDATION-TRACKER.md:182-199` 的 `xlibgate` CI Gate CLI 实现任务仍未勾选；但 `STATUS.md:118-119` 将 `xlib_standard` 与 `xlibgate` 都标为 100%。
 - `STATUS.md:55` 和 `STATUS.md:132` 将 `clickhousex` 标为 v1.0.1、100%；但 `STATUS.md:57` 仍写 blocking issue 为 `clickhousex` 需要 implementation/release closure，`STATUS.md:259` 也保留同类风险描述。
 - `module/FOUNDATION-TRACKER.md:323-329` 统计 19 个 issue、16 个完成；`module/FOUNDATION-TRACKER.md:354-379` 的建议执行顺序又混合了已完成项与未完成项。
 
@@ -109,8 +109,8 @@
 
 - `module/README.md:9-16` 已明确 `module/` 为模块规格事实源，根文档只做全局索引。
 - 本次复核 20 个模块目录均存在 `goal.md`、`SPEC.md`、`TRACEABILITY.md`、`IMPLEMENTATION-PLAN.md`。
-- worker-2 复核发现：20 个模块均无 `tasks.md`，其中 18 个模块使用 `tasks/` 目录；`xlib-harness` 与 `xlib-evidence` 的 `tasks/` 链接目标缺失。
-- `ARCHITECTURE.md:125-144` 的规格索引表只列 18 个模块，遗漏 `xlib-harness` 与 `xlib-evidence`，但 `ARCHITECTURE.md:33-45` 已将它们纳入 Foundation (20) 叙述。
+- worker-2 复核发现：20 个模块均无 `tasks.md`，其中 18 个模块使用 `tasks/` 目录；`xlib_harness` 与 `xlib_evidence` 的 `tasks/` 链接目标缺失。
+- `ARCHITECTURE.md:125-144` 的规格索引表只列 18 个模块，遗漏 `xlib_harness` 与 `xlib_evidence`，但 `ARCHITECTURE.md:33-45` 已将它们纳入 Foundation (20) 叙述。
 
 判断：
 
@@ -119,7 +119,7 @@
 建议：
 
 - 选择一种任务制品约定：如果采用目录制，统一写 `tasks/`；不要在审查口径中再要求 `tasks.md`。
-- 为 `xlib-harness`、`xlib-evidence` 补齐任务目录，或在 `module/README.md` 明确它们当前没有任务拆分。
+- 为 `xlib_harness`、`xlib_evidence` 补齐任务目录，或在 `module/README.md` 明确它们当前没有任务拆分。
 - 用脚本或 gate 校验“module 目录列表、module/README 清单、ARCHITECTURE 表格、STATUS 表格”四者一致。
 
 ### 5. 文档格式与陈旧说明会放大误读
@@ -154,7 +154,7 @@
 - 在 `module/README.md` 固化 Foundation 模块分类表。
 - 将 `README.md` 的 17 模块说法改为当前有效口径。
 - 将 `ARCHITECTURE.md` 中 Foundation (20)、18 模块规格表和 SRE CI/CD 计划口径统一。
-- 将 `STATUS.md` 的 18 模块统计改成明确分类，或补入缺失的 `xlib-harness`、`xlib-evidence`。
+- 将 `STATUS.md` 的 18 模块统计改成明确分类，或补入缺失的 `xlib_harness`、`xlib_evidence`。
 - 清理 tracker 中 `testkitx`、`xlibgate`、`clickhousex` 的完成度冲突。
 
 验收条件：
@@ -169,7 +169,7 @@
 建议改动：
 
 - 在 YAML 中显式声明矩阵覆盖范围。
-- 纳入或显式排除 `xlib-harness`、`xlib-evidence`、`domainx`。
+- 纳入或显式排除 `xlib_harness`、`xlib_evidence`、`domainx`。
 - 同步 Go baseline 注释与 tracker 事实。
 - 增加 `postgresx` 的 `foundationx` 禁止约束或迁移验收项。
 
@@ -203,7 +203,7 @@
 建议规则：
 
 - `core_runtime`：第一阶段 6 个运行时基础模块。
-- `governance_quality`：`xlib-standard`、`xlibgate`、`xlib-harness`、`xlib-evidence`。
+- `governance_quality`：`xlib_standard`、`xlibgate`、`xlib_harness`、`xlib_evidence`。
 - `foundation_extensions`：存储与基础设施适配模块。
 - `boundary_contracts`：`contracts`、`transportx`。
 - `domain_shared`：`domainx`，需要明确它是 Foundation 扩展还是 L2.5 共享域。

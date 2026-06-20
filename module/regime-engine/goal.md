@@ -1,4 +1,4 @@
-# regime-engine Goal
+# regime_engine Goal
 
 ## 元数据
 
@@ -12,7 +12,7 @@
 
 ## 定位
 
-regime-engine 是分析域的M×S联合决策模块。融合M+S输出，生成DecisionCard(action/risk/permission)。
+regime_engine 是分析域的M×S联合决策模块。融合M+S输出，生成DecisionCard(action/risk/permission)。
 
 ## 目标
 
@@ -25,6 +25,6 @@ regime-engine 是分析域的M×S联合决策模块。融合M+S输出，生成De
 | 类型 | 说明 |
 | --- | --- |
 | Owns | M×S融合逻辑/DecisionCard/三元输出 |
-| Depends on | market_regime, macro_regime, domain-market |
-| Consumed by | signal-factory, riskx |
+| Depends on | market_regime, macro_regime, domain_market |
+| Consumed by | signal_factory, riskx |
 | Excludes | 单引擎分类、交易执行、订单路由 |

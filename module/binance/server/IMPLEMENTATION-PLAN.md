@@ -29,7 +29,7 @@
 
 ## Phase 5: Downstream Dispatch
 
-- implement downstream market-data port adapter
+- implement downstream market_data port adapter
 - dispatch accepted events
 - ensure duplicate accepted events do not duplicate dispatch
 

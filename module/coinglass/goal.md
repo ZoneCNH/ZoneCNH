@@ -2,7 +2,7 @@
 
 ## Purpose
 
-`module/coinglass` defines the Coinglass-specific market-data ingest module for ZoneCNH.
+`module/coinglass` defines the Coinglass-specific market_data ingest module for ZoneCNH.
 
 它提供加密衍生品**聚合数据**（funding rate、open interest、liquidation、long-short ratio 等），与 CEX/DEX 不同：Coinglass 不是交易所，**没有自营订单簿**，只对外暴露多家交易所聚合后的衍生品市场结构数据。
 
@@ -17,7 +17,7 @@ Pattern owner: see [`module/_template/cex-cs-module/README.md`](../_template/cex
 
 ## Primary Goal
 
-Provide a reliable, canonical, Coinglass-specific market-data ingestion path for:
+Provide a reliable, canonical, Coinglass-specific market_data ingestion path for:
 
 - Funding rate（资金费率，跨交易所）
 - Open interest（持仓量，跨交易所）
@@ -31,9 +31,9 @@ Provide a reliable, canonical, Coinglass-specific market-data ingestion path for
 
 `module/coinglass` does not own:
 
-- 通用 market-data 语义（→ `module/domain-market`）
+- 通用 market_data 语义（→ `module/domain_market`）
 - wire protocol（→ `module/contracts`）
-- Coinglass 数据的 storage / query / dashboard（属于下游分析域 `factor-engine` / 决策域）
+- Coinglass 数据的 storage / query / dashboard（属于下游分析域 `factor_engine` / 决策域）
 - 跨数据源的衍生品聚合算法（如本仓库自营聚合，应另立模块）
 - 旧 Coinglass SDK 兼容（硬切）
 

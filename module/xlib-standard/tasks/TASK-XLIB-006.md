@@ -6,16 +6,16 @@
 
 ```yaml
 task_id: TASK-XLIB-006
-module: xlib-standard
+module: xlib_standard
 scope: "实现 ErrorKind 8 种、Error 结构体、Client New/Close，覆盖 FR-002 和 FR-005"
 spec_ref:
-  - "module/xlib-standard/SPEC.md#7"
-  - "module/xlib-standard/SPEC.md#9"
-  - "module/xlib-standard/SPEC.md#10"
-  - "module/xlib-standard/SPEC.md#12"
-  - "module/xlib-standard/goal.md#7"
-  - "module/xlib-standard/goal.md#8"
-  - "module/xlib-standard/goal.md#9"
+  - "module/xlib_standard/SPEC.md#7"
+  - "module/xlib_standard/SPEC.md#9"
+  - "module/xlib_standard/SPEC.md#10"
+  - "module/xlib_standard/SPEC.md#12"
+  - "module/xlib_standard/goal.md#7"
+  - "module/xlib_standard/goal.md#8"
+  - "module/xlib_standard/goal.md#9"
 files:
   - "pkg/templatex/errors.go"
   - "pkg/templatex/errors_test.go"

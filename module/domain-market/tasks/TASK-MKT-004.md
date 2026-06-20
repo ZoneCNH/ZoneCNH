@@ -6,10 +6,10 @@
 
 ```yaml
 task_id: TASK-MKT-004
-module: domain-market
+module: domain_market
 version: v1.0.0
 spec_ref:
-  - "module/domain-market/SPEC.md#FR-MKT-006"
+  - "module/domain_market/SPEC.md#FR-MKT-006"
 fr_ref: FR-MKT-004
 ac_ref: AC-MKT-004
 tc_ref: TC-MKT-004

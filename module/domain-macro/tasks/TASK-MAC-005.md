@@ -6,7 +6,7 @@
 
 ## Related Spec
 
-`module/domain-macro/SPEC.md` §7 FR-MAC-005, §8 BR-MAC-004, §13 Edge Cases, §16.1 TC-MAC-003/005
+`module/domain_macro/SPEC.md` §7 FR-MAC-005, §8 BR-MAC-004, §13 Edge Cases, §16.1 TC-MAC-003/005
 
 ## Related Requirements
 
@@ -63,7 +63,7 @@
 ## Validation Commands
 
 ```bash
-cd /home/domain-macro
+cd /home/domain_macro
 go build ./...
 go test ./... -race -count=1
 go vet ./...

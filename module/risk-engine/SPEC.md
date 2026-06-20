@@ -1,4 +1,4 @@
-# risk-engine 规格
+# risk_engine 规格
 
 - Status: Draft
 - Spec-Version: v0.1.0-draft
@@ -7,19 +7,19 @@
 - Version: v0.1.0-draft
 - Related: `CONSTITUTION.md`
 
-> 本文档发布 risk-engine 基线。运行时实现为 Pending。
+> 本文档发布 risk_engine 基线。运行时实现为 Pending。
 
 ## 1. 摘要
 
-risk-engine 是执行域的风控引擎。所有策略订单必须通过 risk-engine 风控检查后才能提交到 order-engine。
+risk_engine 是执行域的风控引擎。所有策略订单必须通过 risk_engine 风控检查后才能提交到 order_engine。
 
 ## 2. 边界
 
 | 类型 | 说明 |
 | --- | --- |
 | Owns | 事前风控规则、回撤控制、熔断机制、风险限额、仓位约束 |
-| Depends on | signal-factory（信号）、portfolio-engine（组合敞口）、domainx |
-| Consumed by | order-engine（风控通过后提交订单） |
+| Depends on | signal_factory（信号）、portfolio_engine（组合敞口）、domainx |
+| Consumed by | order_engine（风控通过后提交订单） |
 
 ## 3. 功能需求
 

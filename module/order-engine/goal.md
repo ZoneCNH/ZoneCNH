@@ -1,4 +1,4 @@
-# order-engine Goal
+# order_engine Goal
 
 ## 元数据
 
@@ -12,7 +12,7 @@
 
 ## 定位
 
-order-engine 是执行域的订单执行模块。抽象交易所差异，订单生命周期管理、SOR智能路由。
+order_engine 是执行域的订单执行模块。抽象交易所差异，订单生命周期管理、SOR智能路由。
 
 ## 目标
 
@@ -25,6 +25,6 @@ order-engine 是执行域的订单执行模块。抽象交易所差异，订单�
 | 类型 | 说明 |
 | --- | --- |
 | Owns | 订单生命周期/订单路由SOR/执行算法/Exchange适配 |
-| Depends on | risk-engine, domain-exchange, contracts |
-| Consumed by | portfolio-engine, settlement |
-| Excludes | 风控规则(→risk-engine)、交易所适配器实现 |
+| Depends on | risk_engine, domain_exchange, contracts |
+| Consumed by | portfolio_engine, settlement |
+| Excludes | 风控规则(→risk_engine)、交易所适配器实现 |

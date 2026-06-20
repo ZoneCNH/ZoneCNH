@@ -5,7 +5,7 @@
 - Last-Updated: 2026-06-17
 - Layer: 数据域 · 另类数据
 - Version: v0.1.0-draft
-- Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/contracts`, `module/domain-market`
+- Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/contracts`, `module/domain_market`
 
 > `AlternativeDataProvider` 接口已由 `module/contracts` §8.1b 定义。pe-data 直接实现该接口，下游通过 `GetLatest(category, symbol)` 消费，不经过中间 hub 层。
 
@@ -13,14 +13,14 @@
 
 ## 1. 摘要
 
-`module/pe-data` 是 PE 另类数据采集模块，直接实现 `contracts.AlternativeDataProvider` 接口。爬取 SEC EDGAR 13F / Form 4 / 机构持仓变化等公开数据源，归一化为 `AltDataPoint`，下游（signal-factory / backtestx）通过接口直接消费。
+`module/pe-data` 是 PE 另类数据采集模块，直接实现 `contracts.AlternativeDataProvider` 接口。爬取 SEC EDGAR 13F / Form 4 / 机构持仓变化等公开数据源，归一化为 `AltDataPoint`，下游（signal_factory / backtestx）通过接口直接消费。
 
 ```text
 SEC EDGAR / WhaleWisdom / OpenInsider
   ↓
 module/pe-data → 实现 AlternativeDataProvider
   ↓
-signal-factory / backtestx (直接消费)
+signal_factory / backtestx (直接消费)
 ```
 
 ---
@@ -30,9 +30,9 @@ signal-factory / backtestx (直接消费)
 | 类型 | 说明 |
 | --- | --- |
 | Owns | PE 数据源爬取、13F/内部交易/机构持仓归一化逻辑、数据时效性管理（季度更新容错）、`AlternativeDataProvider` 接口实现 |
-| Depends on | `module/contracts`（`AlternativeDataProvider` 接口 + `AltDataPoint` DTO）、`module/domain-market`（canonical InstrumentKey/ProductLine 类型） |
-| Consumed by | `module/signal-factory`（PE 信号）、`module/backtestx`（回测验证）、`module/factor-eval`（PE 因子评估） |
-| Excludes | PE 信号生成（→ signal-factory）、PE 策略（→ strategyx）、数据持久化（pe-data 只做采集+归一化，不存储历史）、支付/认证（→ 配置密钥管理） |
+| Depends on | `module/contracts`（`AlternativeDataProvider` 接口 + `AltDataPoint` DTO）、`module/domain_market`（canonical InstrumentKey/ProductLine 类型） |
+| Consumed by | `module/signal_factory`（PE 信号）、`module/backtestx`（回测验证）、`module/factor_eval`（PE 因子评估） |
+| Excludes | PE 信号生成（→ signal_factory）、PE 策略（→ strategyx）、数据持久化（pe-data 只做采集+归一化，不存储历史）、支付/认证（→ 配置密钥管理） |
 
 ---
 
@@ -57,7 +57,7 @@ signal-factory / backtestx (直接消费)
 WHEN 新季度 13F 申报发布
 THEN 爬取所有管理资产 >1亿美元的机构持仓
 AND 解析字段：filing_date、cik、fund_name、symbol、cusip、shares_held、market_value、change_from_prev_qtr
-AND 映射 `symbol` 到 canonical `InstrumentKey`（通过 domain-market）
+AND 映射 `symbol` 到 canonical `InstrumentKey`（通过 domain_market）
 AND 标记 `is_new_position`、`is_closed_position`、`pct_of_portfolio`
 
 ### FR-002: 内部人交易采集
@@ -134,7 +134,7 @@ pe_data:
     13f_stale_after: 100d   # 季度 + 45天延迟 + 缓冲
     form4_stale_after: 7d
   mapping:
-    symbol_resolution: domain-market  # 通过 InstrumentKey 映射
+    symbol_resolution: domain_market  # 通过 InstrumentKey 映射
 ```
 
 ---

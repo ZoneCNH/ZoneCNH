@@ -75,21 +75,21 @@ FoundationX 由基座层（19 个模块）、L2.5 领域共享层（5 个模块�
 
 | 编号 | 原则                           | 含义                                                                                                        |
 | ---- | ------------------------------ | ----------------------------------------------------------------------------------------------------------- |
-| P1   | Foundation 先边界后功能        | 先固化 `xlib-standard`、依赖矩阵、Go baseline 和 release gate，再扩大 L1 能力面                             |
-| P2   | `xlib-standard` 不是运行时依赖 | 它是标准事实源和 Go Reference Template 二类职责（Generator/Harness/Evidence 已拆分至 `xlib-harness` / `xlib-evidence`），不承载业务运行 |
-| P3   | `resiliencx` 只做运行时弹性    | timeout/retry/circuit/bulkhead/rate/fallback 属于它，交易风控属于 `risk-engine`                             |
+| P1   | Foundation 先边界后功能        | 先固化 `xlib_standard`、依赖矩阵、Go baseline 和 release gate，再扩大 L1 能力面                             |
+| P2   | `xlib_standard` 不是运行时依赖 | 它是标准事实源和 Go Reference Template 二类职责（Generator/Harness/Evidence 已拆分至 `xlib_harness` / `xlib_evidence`），不承载业务运行 |
+| P3   | `resiliencx` 只做运行时弹性    | timeout/retry/circuit/bulkhead/rate/fallback 属于它，交易风控属于 `risk_engine`                             |
 | P4   | `testkitx` 只能 test-only      | 生产 import graph 不允许出现测试工具包                                                                      |
 
 ### 1.2 领域原则
 
 | 编号 | 原则                           | 含义                                                                                             |
 | ---- | ------------------------------ | ------------------------------------------------------------------------------------------------ |
-| P5   | 风控是独立引擎                 | 策略只能通过 risk-engine 提交订单，不能直接调用 order-engine                                     |
-| P6   | 回测与实盘共享代码             | signal-factory / factor-engine / risk-engine 同一套，backtest-engine 只替换数据源和撮合/回放环境 |
+| P5   | 风控是独立引擎                 | 策略只能通过 risk_engine 提交订单，不能直接调用 order_engine                                     |
+| P6   | 回测与实盘共享代码             | signal_factory / factor_engine / risk_engine 同一套，backtest_engine 只替换数据源和撮合/回放环境 |
 | P7   | `contracts` 只定义跨域稳定契约 | 跨域端口、事件协议、DTO 放在 contracts；域内接口留在域内，领域值对象放在 L2.5                    |
 | P8   | 领域语义沉到 L2.5              | 多域共享的 Price/Qty/Tick/Quote/MacroPoint 等模型统一来自 decimalx / domain-\*，避免各域重复定义 |
 | P9   | 数据职责不跨域                 | 数据域只负责采集、标准化和存储，因子计算在分析域，策略逻辑在决策域                               |
-| P10  | 执行抽象交易所差异             | order-engine 对上层暴露统一接口，内部适配各交易所                                                |
+| P10  | 执行抽象交易所差异             | order_engine 对上层暴露统一接口，内部适配各交易所                                                |
 | P11  | 反馈通过事件表达               | 执行结果、仓位、PnL、风险暴露以事件反馈决策域，避免执行域反向调用决策内部实现                    |
 | P12  | x.go 只做组合根                | 不含业务逻辑，仅负责启动、配置加载、依赖组装和生命周期控制                                       |
 | P13  | 域内平级协作                   | 同域模块不编号、不分先后，按需协作                                                               |
@@ -112,8 +112,8 @@ FoundationX 由基座层（19 个模块）、L2.5 领域共享层（5 个模块�
 
 **Non-goals 质量要求：** 每项"不做什么"必须命名一项**具体的排除职责**并指明**由谁负责**（委派方）。
 
-- 有效：`不做因子计算（→ factor-engine）`——命名了排除项（因子计算），指明了委派方（factor-engine）。
-- 有效：`不替代 L2/L3/chaos/soak 测试（由各模块自行组织或由 xlib-harness / xlibgate 在 CI 管线中协调）`——命名了排除的测试层，指明了委派方。
+- 有效：`不做因子计算（→ factor_engine）`——命名了排除项（因子计算），指明了委派方（factor_engine）。
+- 有效：`不替代 L2/L3/chaos/soak 测试（由各模块自行组织或由 xlib_harness / xlibgate 在 CI 管线中协调）`——命名了排除的测试层，指明了委派方。
 - 无效：`不承载业务模型`——未命名具体模型，未指明由谁负责。等效于"不做其他模块的事"。
 - 无效：`不进入生产依赖路径`——未命名具体依赖，未指明生产代码由谁维护。
 
@@ -210,7 +210,7 @@ x.go ──→ 基座运行时 / L2.5 / 数据域 / 分析域 / 决策域 / 执�
 | L0            | kernel                                                     | stdlib only                       |
 | L1            | configx, observex, resiliencx, schedulex                   | kernel                            |
 | L1 test-only  | testkitx                                                   | kernel, observex (interface-only) |
-| 标准源 / 门禁 | xlib-standard, xlibgate                                    | 无运行时依赖                      |
+| 标准源 / 门禁 | xlib_standard, xlibgate                                    | 无运行时依赖                      |
 | 存储扩展      | redisx, kafkax, natsx, postgresx, taosx, ossx, clickhousex | kernel, observex (interface-only) |
 | 契约          | contracts                                                  | L2.5 领域共享层                   |
 
@@ -396,8 +396,8 @@ foundationx_<module>_<operation>_<measure>
 | 模式            | 说明          | 示例                               |
 | --------------- | ------------- | ---------------------------------- |
 | `<name>x`       | 基座扩展模块  | `redisx`, `kafkax`, `configx`      |
-| `domain-<name>` | L2.5 领域模型 | `domain-market`, `domain-exchange` |
-| `<name>-engine` | 分析/决策引擎 | `risk-engine`, `factor-engine`     |
+| `domain-<name>` | L2.5 领域模型 | `domain_market`, `domain_exchange` |
+| `<name>-engine` | 分析/决策引擎 | `risk_engine`, `factor_engine`     |
 | `<exchange>`    | 数据域采集器  | `binance`, `okx`                   |
 
 ### 7.3 文件命名
@@ -411,16 +411,16 @@ foundationx_<module>_<operation>_<measure>
 
 ### 7.4 数据域跨层命名
 
-| 层面 | 规范 | macro-data 示例 |
+| 层面 | 规范 | macro_data 示例 |
 | --- | --- | --- |
-| 模块 / 仓库 / 路径 / 公开文档链接 | kebab-case | `macro-data` |
+| 模块 / 仓库 / 路径 / 公开文档链接 | kebab-case | `macro_data` |
 | JSON / YAML / 配置 / Goal registry / 接收侧字段 | snake_case | `macro_data`, `series_code`, `available_at` |
 | Go 导出类型 / 接口 / 常量名 | PascalCase | `MacroDataProvider`, `TopicMacroData` |
 | Topic literal / 事件通道值 | dot.case | `macro.data` |
 
 规则：
 
-- `macro-data` 只表示模块、仓库、目录和公开文档链接，不得作为配置键或接收侧字段名。
+- `macro_data` 只表示模块、仓库、目录和公开文档链接，不得作为配置键或接收侧字段名。
 - `macro_data` 是宏观数据域在 JSON/YAML/config/registry/receiver 字段中的 canonical token；字段名使用 `series_code`、`observed_at`、`released_at`、`available_at`、`revision_version`、`is_preliminary`、`idempotency_key`、`ordering_key`。
 - Go 类型和导出标识保留 PascalCase；不得为了对齐 snake_case 而重命名 `MacroDataProvider`、`TopicMacroData` 等 Go symbol。
 - Topic 字符串保留 dot.case；`macro.data` 不得替换为 `macro_data`。
@@ -609,7 +609,7 @@ AI 代理在生成或审查代码时：
 | 2026-06-10 | §0.2    | 补充分支创建规则                         | 所有分支必须从 main HEAD 创建，禁止从 feature branch 拉新分支 |
 | 2026-06-12 | §2.4    | 新增本地代码目录条款                     | 模块代码统一存放于 /home/{module}，禁止内嵌源码树             |
 | 2026-06-12 | §5      | P0 修复 — resiliencx 测试覆盖率验证 100% | 验证全包通过，解除阻断                                        |
-| 2026-06-12 | §4.4    | xlib-standard SPEC Release 状态同步      | v1.0.0 已发布（tag v1.0.0），更新 Lifecycle State             |
+| 2026-06-12 | §4.4    | xlib_standard SPEC Release 状态同步      | v1.0.0 已发布（tag v1.0.0），更新 Lifecycle State             |
 | 2026-06-16 | §2.5    | 新增模块增殖约束（奥卡姆剃刀）           | 如无必要勿增实体；新增模块须满足必要性/唯一性/净收益三条件   |
 
 ---
@@ -910,10 +910,10 @@ AI 生成的代码必须经过：
 | L1 运行时      | resiliencx    | [SPEC](./module/resiliencx/SPEC.md)    | [resiliencx](https://github.com/ZoneCNH/resiliencx)       |
 | L1 运行时      | schedulex     | [SPEC](./module/schedulex/SPEC.md)     | [schedulex](https://github.com/ZoneCNH/schedulex)         |
 | L1 test-only   | testkitx      | [SPEC](./module/testkitx/SPEC.md)      | [testkitx](https://github.com/ZoneCNH/testkitx)           |
-| 标准源         | xlib-standard | [SPEC](./module/xlib-standard/SPEC.md) | [xlib-standard](https://github.com/ZoneCNH/xlib-standard) |
+| 标准源         | xlib_standard | [SPEC](./module/xlib_standard/SPEC.md) | [xlib_standard](https://github.com/ZoneCNH/xlib_standard) |
 | 门禁           | xlibgate      | [SPEC](./module/xlibgate/SPEC.md)      | [xlibgate](https://github.com/ZoneCNH/xlibgate)           |
-| 门禁           | xlib-harness  | [SPEC](./module/xlib-harness/SPEC.md)  | [xlib-harness](https://github.com/ZoneCNH/xlib-harness)   |
-| 门禁           | xlib-evidence | [SPEC](./module/xlib-evidence/SPEC.md) | [xlib-evidence](https://github.com/ZoneCNH/xlib-evidence) |
+| 门禁           | xlib_harness  | [SPEC](./module/xlib_harness/SPEC.md)  | [xlib_harness](https://github.com/ZoneCNH/xlib_harness)   |
+| 门禁           | xlib_evidence | [SPEC](./module/xlib_evidence/SPEC.md) | [xlib_evidence](https://github.com/ZoneCNH/xlib_evidence) |
 | 存储扩展       | redisx        | [SPEC](./module/redisx/SPEC.md)        | [redisx](https://github.com/ZoneCNH/redisx)               |
 | 存储扩展       | kafkax        | [SPEC](./module/kafkax/SPEC.md)        | [kafkax](https://github.com/ZoneCNH/kafkax)               |
 | 存储扩展       | natsx         | [SPEC](./module/natsx/SPEC.md)         | [natsx](https://github.com/ZoneCNH/natsx)                 |
@@ -946,9 +946,9 @@ AI 生成的代码必须经过：
 | 模块 | 归属边界 | 发布依赖 |
 | --- | --- | --- |
 | `decimalx` | Decimal、Money、Currency、rounding/context、JSON/SQL 数值边界 | 第一优先级 |
-| `domain-market` | Tick、Quote、Bar、OrderBook、Instrument、Funding、OpenInterest、LongShortRatio、MarketDataQuality | `decimalx` |
-| `domain-macro` | MacroPoint、MacroInformationSet、revision、freshness、no-lookahead visibility | `decimalx` 精度 ADR |
-| `domainx` | Order、Trade、Position、Portfolio、ExecutionReport、OrderSide、OrderType、OrderState | `decimalx`，并与 `domain-market` 边界对齐 |
-| `domain-exchange` | Exchange SPI、VenueCapability、RateLimitPolicy、ExchangeError、Registry | `decimalx`、`domain-market`、`domainx` |
+| `domain_market` | Tick、Quote、Bar、OrderBook、Instrument、Funding、OpenInterest、LongShortRatio、MarketDataQuality | `decimalx` |
+| `domain_macro` | MacroPoint、MacroInformationSet、revision、freshness、no-lookahead visibility | `decimalx` 精度 ADR |
+| `domainx` | Order、Trade、Position、Portfolio、ExecutionReport、OrderSide、OrderType、OrderState | `decimalx`，并与 `domain_market` 边界对齐 |
+| `domain_exchange` | Exchange SPI、VenueCapability、RateLimitPolicy、ExchangeError、Registry | `decimalx`、`domain_market`、`domainx` |
 
 L2.5 公共规则：公开金融数值字段不得使用 public `float64` 表示价格、数量、金额、费率或名义价值；领域共享层不得暴露 transport DTO、provider 原始响应、HTTP/WS/Kafka/TDengine 细节或数据库 ORM tag；跨模块重复语义必须收敛到唯一 SSOT。

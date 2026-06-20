@@ -42,9 +42,9 @@
 
 ## 4. 非目标
 
-- 不做因子计算（→ factor-engine）
+- 不做因子计算（→ factor_engine）
 - 不做信号生成（→ strategyx）
-- 不做实时数据采集（→ market-data）
+- 不做实时数据采集（→ market_data）
 - 不执行真实订单（纯模拟）
 - 不做参数优化算法研究
 
@@ -55,7 +55,7 @@
 | 消费者       | 使用方式                              | 数据流向 |
 | ------------ | ------------------------------------- | -------- |
 | strategyx    | 提交策略进行回测评估                 | strategyx → backtestx（策略输入） |
-| factor-eval  | 消费回测结果评估因子有效性           | backtestx → factor-eval（回测报告） |
+| factor_eval  | 消费回测结果评估因子有效性           | backtestx → factor_eval（回测报告） |
 | optimizer    | 使用回测结果进行参数优化             | backtestx → optimizer（指标/曲线） |
 | maestro      | 编排 workflow 中触发批量回测         | maestro → backtestx（触发）→ 结果流回 |
 
@@ -129,11 +129,11 @@ AND 支持自定义滑点和手续费函数
 
 WHEN downstream consumer reads `backtestx` `README.md`
 THEN the H1 heading MUST be `# backtestx`
-AND MUST NOT be `# xlib-standard`
+AND MUST NOT be `# xlib_standard`
 
 WHEN module documentation references the `backtestx` Go module path
 THEN it MUST use `github.com/ZoneCNH/backtestx`
-AND MUST NOT use `github.com/ZoneCNH/xlib-standard`
+AND MUST NOT use `github.com/ZoneCNH/xlib_standard`
 
 WHEN `go.mod` declares the module name
 THEN it MUST be `module github.com/ZoneCNH/backtestx`

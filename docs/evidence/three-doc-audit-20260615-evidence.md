@@ -38,16 +38,16 @@ domainx 位于 STATUS.md 基座组件表（第 39 行，transportx 之后），�
 
 | 模块 | ARCH 原值 | 修正值 |
 |------|:--------:|:-----:|
-| xlib-standard | `-` | v1.0.0 |
-| xlib-harness | v1.0.0 | `-` |
-| xlib-evidence | v1.0.0 | `-` |
+| xlib_standard | `-` | v1.0.0 |
+| xlib_harness | v1.0.0 | `-` |
+| xlib_evidence | v1.0.0 | `-` |
 | testkitx | v0.4.0, 90% | v1.0.0, 100% |
 | resiliencx | v1.0.1 | v1.0.0 |
 | xlibgate | 95% | 100% |
 | redisx | v1.0.0 | v1.0.1 |
 | postgresx | 90% | 100% |
 | decimalx | v0.2.0 | v0.1.0 |
-| regime-engine | `-`, 5% | v0.1.0, 25% |
+| regime_engine | `-`, 5% | v0.1.0, 25% |
 | observex (横切) | v0.3.1, 80% | v1.0.0, 100% |
 | contracts | 进度 -- | █████ 100% |
 
@@ -93,13 +93,13 @@ domainx 位于 STATUS.md 基座组件表（第 39 行，transportx 之后），�
 
 ## ISC-7: GitHub Release/tag 验证
 
-**命令**: `for r in xlib-standard ... domainx; do gh api repos/ZoneCNH/$r/releases | jq length; done`
+**命令**: `for r in xlib_standard ... domainx; do gh api repos/ZoneCNH/$r/releases | jq length; done`
 
 | 指标 | 集群 | 验证结果 |
 |------|:---:|------|
-| 有 GitHub Release | kernel, configx, observex, testkitx, resiliencx, schedulex, xlibgate, xlib-standard, redisx, kafkax, natsx, postgresx, taosx, ossx (14 个) | `gh release view` 逐一确认 |
+| 有 GitHub Release | kernel, configx, observex, testkitx, resiliencx, schedulex, xlibgate, xlib_standard, redisx, kafkax, natsx, postgresx, taosx, ossx (14 个) | `gh release view` 逐一确认 |
 | 仅 git tag | clickhousex (v1.0.1), contracts (v1.0.1-spec), transportx (v1.1.1-spec), domainx (v0.1.0) (4 个) | `gh api repos/ZoneCNH/$r/git/refs/tags` 存在 |
-| 全无 | xlib-harness, xlib-evidence (2 个) | 无 tag 无 release |
+| 全无 | xlib_harness, xlib_evidence (2 个) | 无 tag 无 release |
 
 **判定**: 14/20 Release, 18/20 tag, 2/20 全无。与 STATUS.md 版本列一致。
 
@@ -134,10 +134,10 @@ Results: 24 passed / 0 failed / 24 total
 **命令**: `awk -F'|'` 逐域计数
 
 ```
-基座     18  (xlib-harness/xlib-evidence 无版本)
-L2.5      4  (decimalx, domain-market, domain-exchange, domain-macro)
+基座     18  (xlib_harness/xlib_evidence 无版本)
+L2.5      4  (decimalx, domain_market, domain_exchange, domain_macro)
 Provider  5  (全部 v0.1.0)
-分析域    2  (regime-engine v0.1.0, flowx v0.1.0-draft)
+分析域    2  (regime_engine v0.1.0, flowx v0.1.0-draft)
 决策域    3  (backtestx, strategyx, maestro v0.1.0-draft)
 执行域    3  (riskx, orderx, positionx v0.1.0-draft)
 x.go      1  (v0.0.1)

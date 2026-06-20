@@ -4,11 +4,11 @@
 - Owner: `module/contracts`
 - Last-Updated: 2026-06-17
 - Blocks: `module/binance` runtime implementation (PR-007)
-- Depends-On: `module/domain-market` v1.1.0 §10; `module/market-data` v1.0.0 §4
+- Depends-On: `module/domain_market` v1.1.0 §10; `module/market_data` v1.0.0 §4
 
 ## Objective
 
-Publish the stable contracts-owned wire contract for Binance client/server market-data ingestion.
+Publish the stable contracts-owned wire contract for Binance client/server market_data ingestion.
 
 ## Scope
 
@@ -22,8 +22,8 @@ Publish the stable contracts-owned wire contract for Binance client/server marke
 ## Acceptance Criteria
 
 1. `module/contracts/SPEC.md` §8.4 exists and contains `MarketDataService` + `IngestRequest`(12 fields)/`IngestResult`/`IngestAck`/`IngestReject` + `RejectCode`(9 codes). ✅
-2. The contract explicitly states that domain semantics are owned by `module/domain-market` (§8.4 ownership table). ✅
-3. The contract explicitly states that durable downstream handoff is owned by `module/market-data` (§8.4 producer/consumer notes). ✅
+2. The contract explicitly states that domain semantics are owned by `module/domain_market` (§8.4 ownership table). ✅
+3. The contract explicitly states that durable downstream handoff is owned by `module/market_data` (§8.4 producer/consumer notes). ✅
 4. `module/binance` has no local proto/wire schema ownership after consuming this task (BOUNDARY-GATES §6). ✅
 5. Contract tests TBD cover valid accept, duplicate accept, conflict reject, validation reject, downstream backpressure, and post-crash retry — pending runtime proto compilation.
 

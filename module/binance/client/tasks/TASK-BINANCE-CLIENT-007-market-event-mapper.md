@@ -17,7 +17,7 @@ The mapper converts internal client normalized events into domain/contract-compa
 
 ## Acceptance Criteria
 
-- mapper uses `domain-market` canonical types.
+- mapper uses `domain_market` canonical types.
 - mapper does not define independent canonical enum source of truth.
 - idempotency keys are stable across retry.
 - bars include interval/open-time dimensions in idempotency key.
@@ -28,5 +28,5 @@ The mapper converts internal client normalized events into domain/contract-compa
 ## Dependencies
 
 - CLIENT-001 through CLIENT-006
-- `module/domain-market`
+- `module/domain_market`
 - `module/contracts`

@@ -40,10 +40,10 @@ v1.0.3 保持 `pkg/taosx` 为公共运行时 API：默认驱动仍显式不可�
 
 ## 4. 消费者
 
-- `market-data` 采集层：通过 `WriteBatch`/`SchemalessWrite` 将 Tick/Bar/Kline 等行情数据写入 TDengine 超级表，利用高频写入吞吐优势。
-- `order-engine`：通过 `Exec`/`Query` 持久化订单执行报告和成交记录，支持历史订单查询。
-- `risk-engine`：通过 `Query` 读取历史行情和风控指标，支持回测和实时风控分析。
-- `factor-engine`：通过 `WriteBatch` 存储因子计算结果，通过 `Query` 读取历史因子值用于回溯。
+- `market_data` 采集层：通过 `WriteBatch`/`SchemalessWrite` 将 Tick/Bar/Kline 等行情数据写入 TDengine 超级表，利用高频写入吞吐优势。
+- `order_engine`：通过 `Exec`/`Query` 持久化订单执行报告和成交记录，支持历史订单查询。
+- `risk_engine`：通过 `Query` 读取历史行情和风控指标，支持回测和实时风控分析。
+- `factor_engine`：通过 `WriteBatch` 存储因子计算结果，通过 `Query` 读取历史因子值用于回溯。
 - `backtestx`：通过 `Query` 读取回测所需的历史行情、因子和宏观数据。
 - `observex` 适配器层：通过注入 `Metrics` 实现采集 `taosx_client_*` 指标，不通过直接依赖接入。
 - 上层 orchestration（`x.go`/`maestro`）：在启动时构造 `taosx.Client`，注入 TDengine driver 并将其注入下游模块。

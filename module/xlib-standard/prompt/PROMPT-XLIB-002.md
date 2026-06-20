@@ -10,7 +10,7 @@ TASK-XLIB-002: 骨架代码 — Makefile、scripts、CI
 
 ## Related Spec
 
-- module/xlib-standard/SPEC.md (§11 错误处理, §19 CI Gate, §20 Release DoD)
+- module/xlib_standard/SPEC.md (§11 错误处理, §19 CI Gate, §20 Release DoD)
 
 ## Related Requirements
 

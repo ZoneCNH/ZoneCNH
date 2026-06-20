@@ -216,7 +216,7 @@
 
 | 文件                  | 格式   | 示例                       |
 | --------------------- | ------ | -------------------------- |
-| `07-id-system.md`     | `vN`   | `SPEC-market-data-v1`      |
+| `07-id-system.md`     | `vN`   | `SPEC-market_data-v1`      |
 | `12-operations.md`    | `vN.N` | `v0.1`, `v1.0`, `v2.0`     |
 | `09-templates.md`     | 混合   | `v1` 与 `v0.1` 并存        |
 | `matrix-gen.py` regex | `v\d+` | 只接受 `v1`，不接受 `v1.0` |

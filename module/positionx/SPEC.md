@@ -42,7 +42,7 @@
 
 ## 4. 非目标
 
-- 不做交易所 API 对接（→ market-data）
+- 不做交易所 API 对接（→ market_data）
 - 不做风控决策（→ riskx）
 - 不做订单管理（→ orderx）
 - 不做会计系统（不含税务计算）
@@ -120,11 +120,11 @@ AND 每条记录包含：timestamp, fill_id, deltaQty, price, reason
 
 WHEN downstream consumer reads `positionx` `README.md`
 THEN the H1 heading MUST be `# positionx`
-AND MUST NOT be `# xlib-standard`
+AND MUST NOT be `# xlib_standard`
 
 WHEN module documentation references the `positionx` Go module path
 THEN it MUST use `github.com/ZoneCNH/positionx`
-AND MUST NOT use `github.com/ZoneCNH/xlib-standard`
+AND MUST NOT use `github.com/ZoneCNH/xlib_standard`
 
 WHEN `go.mod` declares the module name
 THEN it MUST be `module github.com/ZoneCNH/positionx`

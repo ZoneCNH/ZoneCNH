@@ -14,7 +14,7 @@ observex 是 Foundation L1 运行时横切能力层中的可观测底座，提�
 ```text
 ┌──────────────────────────────────────────────────────────────┐
 │                    业务 / 领域模块（通过 Logger/Meter/Tracer） │
-│  factor-engine   risk-engine   order-engine   binance  ...    │
+│  factor_engine   risk_engine   order_engine   binance  ...    │
 └──────────┬──────────┬──────────┬──────────┬──────────────────┘
            │          │          │          │
            ▼          ▼          ▼          ▼
@@ -343,7 +343,7 @@ configx       resiliencx      schedulex (L1)
                     ↓
             redisx/kafkax/natsx/... (存储扩展)
                     ↓
-              业务域模块 (factor-engine/risk-engine/...)
+              业务域模块 (factor_engine/risk_engine/...)
 ```
 
 ---

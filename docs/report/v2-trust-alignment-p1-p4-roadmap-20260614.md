@@ -12,7 +12,7 @@
 
 ### 目标
 
-消除下游仓库 README 中的 xlib-standard 模板身份残留，对齐表格版本与公开 GitHub release。
+消除下游仓库 README 中的 xlib_standard 模板身份残留，对齐表格版本与公开 GitHub release。
 
 ### 逐仓库行动
 
@@ -20,19 +20,19 @@
 
 | 行动 | 详情 |
 |------|------|
-| README H1 | 改为 `# contracts`（当前是 `# xlib-standard`）|
-| README 身份 | "contracts 是 ZoneCNH 基础体系的跨域稳定契约仓库。遵循 xlib-standard 治理协议，但不是标准源、不是 generator。" |
+| README H1 | 改为 `# contracts`（当前是 `# xlib_standard`）|
+| README 身份 | "contracts 是 ZoneCNH 基础体系的跨域稳定契约仓库。遵循 xlib_standard 治理协议，但不是标准源、不是 generator。" |
 | 版本策略 | 新增 `docs/versioning.md`、`docs/compatibility.md`、`docs/event-envelope.md` |
 | 状态 | `spec-baseline`，`production_import_allowed=false`，`release_published=false` |
 | 仓库 | `/home/contracts` |
 
-**验证**：`xlibgate check identity` 通过，README H1 不再是 xlib-standard
+**验证**：`xlibgate check identity` 通过，README H1 不再是 xlib_standard
 
 #### 🔴 transportx（最高优先级）
 
 | 行动 | 详情 |
 |------|------|
-| README H1 | 改为 `# transportx`（当前是 `# xlib-standard`）|
+| README H1 | 改为 `# transportx`（当前是 `# xlib_standard`）|
 | README 身份 | "transportx 是通信抽象规格仓库。不承载业务 DTO，不替代 contracts。spec baseline，production_import_allowed=false。" |
 | 清理 | 移除 `pkg/templatex`、`templates/l2` 等标准模板资产残留 |
 | 状态 | `spec-baseline`，`production_import_allowed=false` |
@@ -55,7 +55,7 @@
 | 行动 | 详情 |
 |------|------|
 | README 身份 | 移除"承担五类职责：Standard Source、Generator、Harness、Evidence Runtime" |
-| 新身份 | "redisx 是 L2 Redis adapter。遵循 xlib-standard 治理协议，但不是标准源、不是 generator、不是模板仓库。" |
+| 新身份 | "redisx 是 L2 Redis adapter。遵循 xlib_standard 治理协议，但不是标准源、不是 generator、不是模板仓库。" |
 | 能力边界 | 明确 v1 支持（single-node/KV/TTL/Hash/List/Pipeline/Cache-aside/Lock/RateLimit/Pool/Health）和不承诺（Cluster/Sentinel/Streams） |
 | 仓库 | `/home/redisx` |
 
@@ -66,7 +66,7 @@
 | 行动 | 详情 |
 |------|------|
 | README 身份 | 移除模板生成叙事和 `pkg/<package-name>` 残留 |
-| 新身份 | "kafkax 是 L2 Kafka adapter。遵循 xlib-standard 治理协议，但不是标准源或 generator。" |
+| 新身份 | "kafkax 是 L2 Kafka adapter。遵循 xlib_standard 治理协议，但不是标准源或 generator。" |
 | Kafka 语义 | 新增 `docs/kafka-semantics.md`：producer ack policy、delivery guarantee、consumer rebalance、offset commit、handler panic、retry/dead-letter topic |
 | 仓库 | `/home/kafkax` |
 
@@ -254,7 +254,7 @@ README.md / ARCHITECTURE.md / STATUS.md generated blocks
   contracts → transportx → clickhousex → redisx → kafkax → ossx
 
 第 2 波（下周）：P1 Release 对齐
-  observex → testkitx → resiliencx → xlib-standard
+  observex → testkitx → resiliencx → xlib_standard
 
 第 3 波（2 周内）：P2 xlibgate 扩展
   identity → template-residue → release-consistency → maturity → boundary → secret → fleet
@@ -271,7 +271,7 @@ README.md / ARCHITECTURE.md / STATUS.md generated blocks
 当以下全部满足时，v2 Trust Alignment 完成：
 
 1. ✅ 所有仓库 README H1 和 repo/module identity 一致
-2. ✅ 所有下游仓库不再冒充 xlib-standard
+2. ✅ 所有下游仓库不再冒充 xlib_standard
 3. ✅ 表格版本、GitHub latest release、CHANGELOG、manifest 全部一致
 4. ✅ 未发布仓库不得写 v1.0.x 100%
 5. ✅ natsx/postgresx 明确标 factory_grade_allowed=false

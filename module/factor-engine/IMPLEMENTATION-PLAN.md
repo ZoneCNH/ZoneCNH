@@ -1,8 +1,8 @@
-# module/factor-engine IMPLEMENTATION PLAN
+# module/factor_engine IMPLEMENTATION PLAN
 
 ## 1. Goal
 
-Deliver `module/factor-engine` v1.0.0 as the analysis-domain factor computation engine.
+Deliver `module/factor_engine` v1.0.0 as the analysis-domain factor computation engine.
 
 ## 2. Current State
 
@@ -10,16 +10,16 @@ Deliver `module/factor-engine` v1.0.0 as the analysis-domain factor computation 
 - SPEC.md: Draft → Docs Baseline Approved / Runtime Pending (2026-06-17)
 - TRACEABILITY.md / goal.md: present
 - Runtime: Pending
-- Upstream dependencies: market-data SPEC v1.0.0 (Approved), domain-market SPEC v1.1.0 (canonical types frozen), feature-store SPEC (Draft, output target only)
+- Upstream dependencies: market_data SPEC v1.0.0 (Approved), domain_market SPEC v1.1.0 (canonical types frozen), feature_store SPEC (Draft, output target only)
 
 ## 3. PR Sequence
 
 ```text
-PR-000 module/factor-engine root docs (this PR)                  ← DONE
+PR-000 module/factor_engine root docs (this PR)                  ← DONE
 PR-001 runtime: Factor interface + FactorRegistry
 PR-002 runtime: ComputePipeline + input validation
 PR-003 runtime: built-in factors (momentum, volatility, volume)
-PR-004 runtime: feature-store write adapter
+PR-004 runtime: feature_store write adapter
 PR-005 runtime: observability metrics + traces
 PR-006 runtime: contract tests + integration tests
 ```
@@ -30,7 +30,7 @@ Scope: SPEC.md status promotion (Draft → Docs Baseline Approved), IMPLEMENTATI
 
 Acceptance:
 - [x] SPEC.md status promoted (Draft → Docs Baseline Approved / Runtime Pending)
-- [x] Upstream contract caveat removed (market-data + domain-market now stable)
+- [x] Upstream contract caveat removed (market_data + domain_market now stable)
 - [x] IMPLEMENTATION-PLAN.md created (this file)
 - [x] No runtime code introduced
 
@@ -77,12 +77,12 @@ Acceptance:
 ## 8. PR-004 Feature-Store Write Adapter
 
 Scope:
-- Implement FactorOutput → feature-store write path
+- Implement FactorOutput → feature_store write path
 - Retry with exponential backoff on write failure
 - Batch writes with configurable flush interval
 
 Acceptance:
-- FactorOutput correctly serialized to feature-store
+- FactorOutput correctly serialized to feature_store
 - Write failure → 3 retries → alert
 - Batch writes respect flush interval
 
@@ -103,7 +103,7 @@ Acceptance:
 
 Scope:
 - Contract tests: Factor interface compliance
-- Integration tests: market-data event → factor-engine → feature-store → factor-eval (mock)
+- Integration tests: market_data event → factor_engine → feature_store → factor_eval (mock)
 - Race detection: go test -race clean
 - Coverage: >= 80%
 
@@ -116,9 +116,9 @@ Acceptance:
 ## 11. Runtime Gate
 
 Runtime implementation starts when:
-- [x] module/market-data SPEC Approved (v1.0.0)
-- [x] module/domain-market canonical types frozen (v1.1.0)
-- [ ] module/feature-store SPEC stabilized (currently Draft)
+- [x] module/market_data SPEC Approved (v1.0.0)
+- [x] module/domain_market canonical types frozen (v1.1.0)
+- [ ] module/feature_store SPEC stabilized (currently Draft)
 - [ ] All PR-001~PR-006 gates pass
 
 ## 12. DoD

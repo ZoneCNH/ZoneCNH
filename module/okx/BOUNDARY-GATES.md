@@ -6,7 +6,7 @@
 
 - `binance` → `okx`
 - `Binance` → `OKX`（首字母大写，仅文档措辞）
-- `binance-market` → 不适用（OKX 历史不存在 `okx-market` legacy 模块）；§2 gate 改为：禁止 active code 引用旧 passive `okx` SDK v0.1.1 接口
+- `binance-market` → 不适用（OKX 历史不存在 `okx_market` legacy 模块）；§2 gate 改为：禁止 active code 引用旧 passive `okx` SDK v0.1.1 接口
 - `BNC-` 错误码前缀 → `OKX-`
 
 ## 9 项 Gate 简表

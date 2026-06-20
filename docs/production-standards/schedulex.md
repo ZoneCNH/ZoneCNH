@@ -34,7 +34,7 @@ schedulex 是 FoundationX 调度运行时（L1 调度基座），负责可靠地
 - v1.0.0 不绑定具体分布式锁后端（只提供 Locker 接口）
 
 ## 5. 架构位置
-L1 调度基座（SPEC §3 标注 L1 基础能力）。运行时依赖标准库 only；SPEC 许可依赖 kernel / observex（interface-only）/ resiliencx（可选 job wrapper），禁止依赖 configx / testkitx（仅 test）/ 所有业务域实现。消费者：x.go（组合根，创建 Scheduler 注册 job 调用 Start）、market-data（定时拉取行情）、factor-engine（定时计算因子）、risk-engine（定时风控检查）、report-engine（定时报表）。
+L1 调度基座（SPEC §3 标注 L1 基础能力）。运行时依赖标准库 only；SPEC 许可依赖 kernel / observex（interface-only）/ resiliencx（可选 job wrapper），禁止依赖 configx / testkitx（仅 test）/ 所有业务域实现。消费者：x.go（组合根，创建 Scheduler 注册 job 调用 Start）、market_data（定时拉取行情）、factor_engine（定时计算因子）、risk_engine（定时风控检查）、report-engine（定时报表）。
 
 ## 6. 生命周期
 - NewScheduler(opts) → Scheduler 实例

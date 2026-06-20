@@ -23,7 +23,7 @@
 
 - 各域各自定义 Order/Position 结构，字段命名和语义不一致
 - 订单状态流转散落在各模块，缺少统一枚举（PENDING→SUBMITTED→PARTIAL_FILLED→FILLED）
-- 成交回报/执行报告格式不统一，risk-engine 和 backtest-engine 各自解析
+- 成交回报/执行报告格式不统一，risk_engine 和 backtest_engine 各自解析
 - 持仓均价、未实现盈亏计算逻辑重复实现
 - 投资组合汇总缺少标准模型，风控和报表各自拼装
 
@@ -43,13 +43,13 @@
 
 ## 4. 非目标
 
-- 不做订单状态机引擎或生命周期管理（由 order-engine 负责）
-- 不做仓位计算逻辑（由 risk-engine 根据 Trade 流计算 Position）
-- 不做订单路由或执行逻辑（由 order-engine 负责）
-- 不做风控规则评估（由 risk-engine 负责）
+- 不做订单状态机引擎或生命周期管理（由 order_engine 负责）
+- 不做仓位计算逻辑（由 risk_engine 根据 Trade 流计算 Position）
+- 不做订单路由或执行逻辑（由 order_engine 负责）
+- 不做风控规则评估（由 risk_engine 负责）
 - 不做数据持久化（由存储扩展模块负责）
 - 不做网络通信或 RPC（由 contracts / transportx 负责）
-- 不做回测模拟撮合（由 backtest-engine 负责）
+- 不做回测模拟撮合（由 backtest_engine 负责）
 
 ---
 
@@ -57,10 +57,10 @@
 
 | 消费者 | 使用方式 |
 |--------|----------|
-| risk-engine | 引用 Position/Portfolio 计算风险敞口 |
-| order-engine | 引用 Order/OrderState/ExecutionReport 管理订单生命周期 |
+| risk_engine | 引用 Position/Portfolio 计算风险敞口 |
+| order_engine | 引用 Order/OrderState/ExecutionReport 管理订单生命周期 |
 | signal-engine | 引用 Order 值对象生成交易信号上下文 |
-| backtest-engine | 引用 Order/Trade/Position 记录回测结果 |
+| backtest_engine | 引用 Order/Trade/Position 记录回测结果 |
 | execution-engine | 引用 ExecutionReport/Trade 标准化成交回报 |
 | contracts | 引用 domainx 类型定义跨域 DTO 事件负载 |
 
@@ -460,7 +460,7 @@ Then a new value object is returned and no setter is exposed
 
 ## 17. 可观测性
 
-纯值对象模块，不直接产生可观测输出。由调用方（risk-engine、order-engine）通过 observex 集成。
+纯值对象模块，不直接产生可观测输出。由调用方（risk_engine、order_engine）通过 observex 集成。
 
 ---
 

@@ -10,8 +10,8 @@ goal_id: GOAL-XLIB-STD-001
 date: "2026-06-09"
 status: PENDING
 files_changed:
-  - module/xlib-standard/tasks/TASK-XLIB-003.md
-  - module/xlib-standard/prompt/PROMPT-XLIB-003.md
+  - module/xlib_standard/tasks/TASK-XLIB-003.md
+  - module/xlib_standard/prompt/PROMPT-XLIB-003.md
 commands_run:
   - "GOWORK=off go test ./..."
   - "GOWORK=off go test -race ./..."
@@ -27,4 +27,4 @@ commands_run:
 
 ## 说明
 
-Task spec 和 Prompt 已生成。核心包实现需在上游 xlib-standard 仓库的 `feat/xlib-v1-packages` 分支执行。
+Task spec 和 Prompt 已生成。核心包实现需在上游 xlib_standard 仓库的 `feat/xlib-v1-packages` 分支执行。

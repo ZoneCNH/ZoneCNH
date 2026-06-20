@@ -20,9 +20,9 @@
 | 类型 | 说明 |
 | --- | --- |
 | Owns | 事前风控检查（CheckOrder）、仓位限额、回撤控制、熔断触发、风控事件日志 |
-| Depends on | `module/signal-factory`（接收 Signal 进行风控判断）、`module/positionx`（实时仓位查询）、`module/domain-market`（canonical 类型） |
+| Depends on | `module/signal_factory`（接收 Signal 进行风控判断）、`module/positionx`（实时仓位查询）、`module/domain_market`（canonical 类型） |
 | Consumed by | `module/orderx`（通过风控后调用 Submit）、`module/maestro`（编排 workflow 中插入风控节点）、`module/observex`（风控事件告警） |
-| Excludes | 信号生成（→ signal-factory）、订单执行（→ orderx）、策略决策（→ strategyx）、仓位计算（→ positionx） |
+| Excludes | 信号生成（→ signal_factory）、订单执行（→ orderx）、策略决策（→ strategyx）、仓位计算（→ positionx） |
 
 ---
 
@@ -128,11 +128,11 @@ AND 审计事件不可删除
 
 WHEN downstream consumer reads `riskx` `README.md`
 THEN the H1 heading MUST be `# riskx`
-AND MUST NOT be `# xlib-standard`
+AND MUST NOT be `# xlib_standard`
 
 WHEN module documentation references the `riskx` Go module path
 THEN it MUST use `github.com/ZoneCNH/riskx`
-AND MUST NOT use `github.com/ZoneCNH/xlib-standard`
+AND MUST NOT use `github.com/ZoneCNH/xlib_standard`
 
 WHEN `go.mod` declares the module name
 THEN it MUST be `module github.com/ZoneCNH/riskx`

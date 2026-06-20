@@ -1,7 +1,7 @@
-# xlib-standard
+# xlib_standard
 
 ## 1. 模块定位
-xlib-standard 是 Foundation 的**标准事实源（Standard Source）**，承载 xlib 体系的唯一标准源：标准文档（`docs/standard/`）、可编译可渲染可验证的 Go Reference Template、Generator（`render_template.sh`）、17 个 CI Gate 和 Evidence Runtime（release manifest + goalcli 证据 CLI）。Status=Approved（SPEC v1.0.0），模块版本 v1.0.1（GitHub Release 已发布），Layer=基座·标准事实源（L1 工程标准）。解决下游基础库重复定义 Config/Error/Health/Metrics/Client/Version 导致的兼容性断裂问题。
+xlib_standard 是 Foundation 的**标准事实源（Standard Source）**，承载 xlib 体系的唯一标准源：标准文档（`docs/standard/`）、可编译可渲染可验证的 Go Reference Template、Generator（`render_template.sh`）、17 个 CI Gate 和 Evidence Runtime（release manifest + goalcli 证据 CLI）。Status=Approved（SPEC v1.0.0），模块版本 v1.0.1（GitHub Release 已发布），Layer=基座·标准事实源（L1 工程标准）。解决下游基础库重复定义 Config/Error/Health/Metrics/Client/Version 导致的兼容性断裂问题。
 
 ## 2. 生产职责
 - FR-001 Config 标准（Validate/Sanitize）
@@ -30,14 +30,14 @@ xlib-standard 是 Foundation 的**标准事实源（Standard Source）**，承�
 - 不提供跨语言模板（仅覆盖 Go module）
 
 ## 5. 架构位置
-基座层（L1 工程标准），是 xlib 体系的根。依赖方向：仅允许 Go 标准库，不得为模板生成/边界检查/release manifest 引入新外部运行时依赖。下游通过 Generator 生成 kernel/configx 等基础库骨架；xlibgate 消费其 Gate/Evidence 标准执行门禁。目录根：`xlib-standard/`（go.mod、pkg/templatex、cmd/goalcli、internal、templates/l2、scripts、contracts）。
+基座层（L1 工程标准），是 xlib 体系的根。依赖方向：仅允许 Go 标准库，不得为模板生成/边界检查/release manifest 引入新外部运行时依赖。下游通过 Generator 生成 kernel/configx 等基础库骨架；xlibgate 消费其 Gate/Evidence 标准执行门禁。目录根：`xlib_standard/`（go.mod、pkg/templatex、cmd/goalcli、internal、templates/l2、scripts、contracts）。
 
 ## 6. 生命周期
 Spec=Approved（2026-06-09），Plan=Approved（6 子任务），Code/Test=Completed，Release=Released（v1.0.1，tag 指向 main commit `26792dc`）。模板仓库不维护运行时状态，可生成状态只允许出现在渲染输出目录、release manifest 目录和临时测试目录。健康检查由 FR-003 定义（healthy/unhealthy/degraded），nil context 返回 unhealthy。
 
 ## 7. 标准目录结构
 ```text
-xlib-standard/
+xlib_standard/
 ├── go.mod / go.sum / README.md / SPEC.md / TRACEABILITY.md / Makefile / .golangci.yml
 ├── pkg/templatex/        # Go Reference Template（config/client/errors/health/metrics/version）
 ├── cmd/goalcli/          # Evidence Runtime CLI（audit/dashboard/fact/schema-check/traceability/governance/debt/adoption/selfimproving）
@@ -67,7 +67,7 @@ SPEC 未定义独立 Trace span 约定。模板通过 metrics 接口和健康状
 Client.Close 多次调用幂等且不 panic。New 收到 nil context 返回 validation 错误，canceled context 返回 unavailable 错误，无效 config 返回错误。模板初始化轻量，不做网络调用。kind 匹配和健康状态构造为常数级操作。无 retry/backpressure/circuit breaker 运行时逻辑（非业务运行时模块）。
 
 ## 14. Security
-脚本和模板不得提交 secret/API key/账户 ID/私有端点/生产配置。Sanitize 脱敏覆盖 secret/token/key/password 类字段，保留诊断信息。security gate 扫描常见凭证模式（secret-check）。boundary gate 拦截 `x.go/internal`、`/home/k8s/secrets/env`、`foundationx`、`baselib-template`、`templatex`、`xlib-standard` 非法引用。
+脚本和模板不得提交 secret/API key/账户 ID/私有端点/生产配置。Sanitize 脱敏覆盖 secret/token/key/password 类字段，保留诊断信息。security gate 扫描常见凭证模式（secret-check）。boundary gate 拦截 `x.go/internal`、`/home/k8s/secrets/env`、`foundationx`、`baselib-template`、`templatex`、`xlib_standard` 非法引用。
 
 ## 15. Performance SLO
 模板库初始化必须轻量，不做网络调用。NoopMetrics、kind 匹配、健康状态构造应为常数级操作。`make ci` 适合本地开发 gate，渲染 smoke test 不依赖外部服务。（SPEC 未定义具体 P99/availability 数值——本模块为标准源/工具，非在线服务）
@@ -88,10 +88,10 @@ SPEC 未定义 chaos 测试维度。本模块为标准源/CLI 工具集，无在
 DoD：模板测试通过、生成库测试通过、边界检查通过、合约检查通过、安全检查通过、release manifest 生成、checksum 校验通过、最终检查通过。发布证据必须可复现并可由 CI 重新生成。`make release-final-check` 校验 manifest checksum，并要求 `make ci` 与 release check 均已通过。
 
 ## 21. Versioning
-破坏性接口变更（ErrorKind 增删、Config 字段类型变更、Metrics label 变更）必须：①在兼容矩阵记录；②在 release manifest 体现版本 bump；③提供迁移脚本或回滚说明；④经下游消费者确认后合入。先修复 xlib-standard 标准源，再用于生成 kernel 等下游。当前已发布 v1.0.1（tag `v1.0.1`→`26792dc`）。
+破坏性接口变更（ErrorKind 增删、Config 字段类型变更、Metrics label 变更）必须：①在兼容矩阵记录；②在 release manifest 体现版本 bump；③提供迁移脚本或回滚说明；④经下游消费者确认后合入。先修复 xlib_standard 标准源，再用于生成 kernel 等下游。当前已发布 v1.0.1（tag `v1.0.1`→`26792dc`）。
 
 ## 22. 兼容性策略
-先修复并验证 xlib-standard 标准源，再用于生成下游基础库。每次下游采用前必须重新运行渲染 smoke test、边界检查、生成库测试。破坏性接口变更进入 semver 兼容矩阵并在 release manifest 体现。本 SPEC 为 v1.0.0 可执行交付整理稿留存视图；当前快照审计入口为 README/ANALYSIS/FR-DETAIL/TRACEABILITY。
+先修复并验证 xlib_standard 标准源，再用于生成下游基础库。每次下游采用前必须重新运行渲染 smoke test、边界检查、生成库测试。破坏性接口变更进入 semver 兼容矩阵并在 release manifest 体现。本 SPEC 为 v1.0.0 可执行交付整理稿留存视图；当前快照审计入口为 README/ANALYSIS/FR-DETAIL/TRACEABILITY。
 
 ## 23. Failover
 非业务运行时模块，无服务级 failover。失败模式表现为：渲染脚本失败（参数缺失）、boundary gate 命中非法引用、release manifest checksum 不匹配、release-final-check 阻断发布。处理方式为修复源因后重新跑 gate，无自动恢复语义。
@@ -103,7 +103,7 @@ DoD：模板测试通过、生成库测试通过、边界检查通过、合约�
 Release manifest 是发布审计核心证据，记录 module_path、package_name、version、commit、tree_sha、go_version、contracts_sha256、gates、generated_at；不得包含 goal runtime/score/debt/branch governance/agent review/downstream matrix/docker runtime 字段。goalcli audit 输出 G0-G11 gate 状态审计报告；goalcli fact 输出 fact-audit 证据；goalcli traceability 生成 FR→Code 追溯矩阵；goalcli governance 输出远端治理状态。
 
 ## 26. 熵减规则
-- 生成库不得残留 `templatex`、`xlib-standard`、`foundationx`、`baselib-template`（FR-010）
+- 生成库不得残留 `templatex`、`xlib_standard`、`foundationx`、`baselib-template`（FR-010）
 - boundary gate 拦截 6 类非法引用（FR-012）
 - metrics label 低基数（禁止 ID/路径/动态 module path）
 - 错误消息稳定短句化，禁止冗长散文式描述

@@ -1,4 +1,4 @@
-# xlib-standard 冲突账本
+# xlib_standard 冲突账本
 
 本文件记录本地快照内的冲突处理结论，不是可执行规格。
 

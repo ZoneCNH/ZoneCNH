@@ -16,7 +16,7 @@
 
 | FR ID | 功能需求 | AC | TC ID(s) | Task | 实现状态 |
 |-------|----------|-----|----------|------|----------|
-| FR-001 | Product-Line Support：Client 可独立采集 Spot / USDⓈ-M / COIN-M / Options 四产品线 | AC-001, AC-002, AC-003 | TC-001 | TASK-BINANCE-ROOT-001, TASK-BINANCE-ROOT-002, TASK-BINANCE-ROOT-007 | **Partial** — Spot connector 已实现（骨架 PR feat/market-data-cs-skeleton）；USDⓈ-M/COIN-M/Options connector 待后续迭代 |
+| FR-001 | Product-Line Support：Client 可独立采集 Spot / USDⓈ-M / COIN-M / Options 四产品线 | AC-001, AC-002, AC-003 | TC-001 | TASK-BINANCE-ROOT-001, TASK-BINANCE-ROOT-002, TASK-BINANCE-ROOT-007 | **Partial** — Spot connector 已实现（骨架 PR feat/market_data-cs-skeleton）；USDⓈ-M/COIN-M/Options connector 待后续迭代 |
 | FR-002 | Instrument Identity：四产品线 canonical instrument identity 跨 product_line 不碰撞 | AC-015, AC-016 | TC-002, TC-003 | TASK-BINANCE-ROOT-002, TASK-BINANCE-ROOT-004, TASK-BINANCE-ROOT-007 | **Partial** — spotParser 已实现 product_line 防碰撞（首版仅 Spot 解析器；mapper 复用 domainmarket.Tick/Quote/Bar）；USDM/COINM/Options parser 待后续 |
 | FR-003 | gRPC Ingestion：Client/Server 通过 contracts-defined `MarketDataService` bidi stream 通信 | AC-006, AC-007, AC-008 | TC-004 | TASK-BINANCE-ROOT-002, TASK-BINANCE-ROOT-005, TASK-BINANCE-ROOT-006, TASK-BINANCE-ROOT-007 | **Partial** — 首版用原生 Go 接口（internal/cs + IngestClient/ingestAdapter）替代 gRPC bidi stream（见 ADR：自包含契约层）；gRPC 升级留后续 |
 | FR-004 | At-Least-Once Delivery：Client 持久化 spool + ACK 后推进 checkpoint | AC-012, AC-013, AC-014 | TC-005 | TASK-BINANCE-ROOT-002, TASK-BINANCE-ROOT-007 | **Partial** — in-memory spool 状态机 + checkpoint（仅 durable ACK 后推进，含单测）已实现；SQLite 持久化留后续 |
@@ -36,7 +36,7 @@
 | BR-002 | Client Must Not Import Server Internals：client 不得 import server internal 包 | CI Gate: BOUNDARY-GATES.md §3 boundary-check script | TASK-BINANCE-ROOT-002, TASK-BINANCE-ROOT-007 | Pending |
 | BR-003 | Server Must Not Import Client Internals：server 不得 import client internal 包 | CI Gate: BOUNDARY-GATES.md §4 boundary-check script | TASK-BINANCE-ROOT-003, TASK-BINANCE-ROOT-007 | Pending |
 | BR-004 | Checkpoint Requires ACK：client checkpoint 仅可在 server 返回 durable ACK 后推进 | CI Gate: BOUNDARY-GATES.md §9 + TC-005（ACK 语义单元测试） | TASK-BINANCE-ROOT-002, TASK-BINANCE-ROOT-007 | Pending |
-| BR-005 | No Domain Ownership：模块不得定义 canonical domain semantics SSOT，必须引用 `module/domain-market` | CI Gate: BOUNDARY-GATES.md §7 (canonical enum 定义检查) | TASK-BINANCE-ROOT-004, TASK-BINANCE-ROOT-007 | Pending |
+| BR-005 | No Domain Ownership：模块不得定义 canonical domain semantics SSOT，必须引用 `module/domain_market` | CI Gate: BOUNDARY-GATES.md §7 (canonical enum 定义检查) | TASK-BINANCE-ROOT-004, TASK-BINANCE-ROOT-007 | Pending |
 | BR-006 | No Storage/Query/Strategy Ownership：模块不得拥有存储引擎、query API、strategy API | CI Gate: BOUNDARY-GATES.md §5 (ownership 关键字检查) | TASK-BINANCE-ROOT-001, TASK-BINANCE-ROOT-007 | Pending |
 | BR-007 | Wire Contract Externality：模块不得定义自己的 proto 或 wire schema，必须引用 `module/contracts` | CI Gate: BOUNDARY-GATES.md §6 (无本地 proto 文件 + 无 wire SSOT 声明) | TASK-BINANCE-ROOT-005, TASK-BINANCE-ROOT-007 | Pending |
 | BR-008 | Idempotency Key Stability：client 生成的 idempotency key 在 retry 场景下稳定 | TC-007（同 key 两次发送验证）+ FR-005 WHEN/THEN 行为引用 | TASK-BINANCE-ROOT-002, TASK-BINANCE-ROOT-007 | Pending |
@@ -126,7 +126,7 @@
 | FR→TC 覆盖率 | — | 7/7 | 100% | 每个 FR 至少 1 个 TC |
 | BR→验证覆盖率 | — | 9/9 | 100% | 每个 BR 至少 1 个 CI Gate 或 TC |
 | AC→验证覆盖率 | — | 23/23 | 100% | 每个 AC 有明确验证方式 |
-| 实现状态 | — | 5/7 FR（2 Implemented + 5 Partial） | 71% | FR-005/007 Implemented；FR-001/002/003/004/006 Partial（骨架 PR feat/market-data-cs-skeleton，Spot 单线 + in-memory + 原生 Go 接口） |
+| 实现状态 | — | 5/7 FR（2 Implemented + 5 Partial） | 71% | FR-005/007 Implemented；FR-001/002/003/004/006 Partial（骨架 PR feat/market_data-cs-skeleton，Spot 单线 + in-memory + 原生 Go 接口） |
 
 ---
 
@@ -139,4 +139,4 @@
 | 2026-06-17 | v1.2.0 | **BR-002/BR-003 拆分 + Status 标准化**：原 BR-002 (Client/Server Boundary) 双向约束拆为 BR-002 (Client→Server, BOUNDARY-GATES §3) + BR-003 (Server→Client, BOUNDARY-GATES §4)，原 BR-003~008 顺移至 BR-004~009；§4 TC-010 BR 引用扩展为 BR-002, BR-003；§6 仪表盘 BR 总数 8→9；同步 SPEC §8 BR 拆分；root SPEC Status 从非标 `Docs Baseline Approved` 标准化为 `Review` | ZoneCNH |
 | 2026-06-17 | v1.3.0 | **同步 SPEC v1.0.1 Status 晋升**：跟随 root SPEC Status Review → Approved 晋升。本版仅同步 SPEC 引用版本号与状态，FR/BR/AC/TC 主体未变，覆盖率保持 100% | ZoneCNH |
 | 2026-06-17 | v1.3.0 | **SPEC 23 节模板对齐**：(1) root SPEC 新增 §1 Metadata 标准节（包裹 frontmatter）；(2) 原 §0 Upstream Contract Gate 移至 Appendix D（保留全部内容，标题改名）；(3) 章节倒序重编号 §1~22 → §2~23（22 个 sed 操作）；(4) 内部自引用更新（§9 Data Model → §10）；(5) TRACEABILITY 同步：NFR 来源引用 §16/§17/§18 → §17/§18/§19（§17.X observability 子节随之），SPEC §6/§7 引用 → §7/§8 | ZoneCNH |
-| 2026-06-17 | v1.4.0 | **runtime 骨架落地（feat/market-data-cs-skeleton）**：(1) §1 FR 实现状态从全 Pending 更新为 2 Implemented（FR-005 幂等验收 + FR-007 边界门禁）+ 5 Partial（FR-001/002/003/004/006）；(2) §6 仪表盘实现状态 0% → 71%；(3) 首版取舍：Spot 单产品线、in-memory spool/idempotency、原生 Go 接口替代 gRPC、net/http 替代 gin、RejectCode 9 码（对齐 patches 实际值）；(4) 9 道 boundary-gates 脚本落地 scripts/boundary-gates.sh 全 PASS | ZoneCNH |
+| 2026-06-17 | v1.4.0 | **runtime 骨架落地（feat/market_data-cs-skeleton）**：(1) §1 FR 实现状态从全 Pending 更新为 2 Implemented（FR-005 幂等验收 + FR-007 边界门禁）+ 5 Partial（FR-001/002/003/004/006）；(2) §6 仪表盘实现状态 0% → 71%；(3) 首版取舍：Spot 单产品线、in-memory spool/idempotency、原生 Go 接口替代 gRPC、net/http 替代 gin、RejectCode 9 码（对齐 patches 实际值）；(4) 9 道 boundary-gates 脚本落地 scripts/boundary-gates.sh 全 PASS | ZoneCNH |

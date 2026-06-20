@@ -6,12 +6,12 @@
 
 ```yaml
 task_id: TASK-XLIB-004
-module: xlib-standard
+module: xlib_standard
 scope: "实现 release manifest 生成和 semver 兼容矩阵"
 spec_ref:
-  - "module/xlib-standard/SPEC.md#21"
-  - "module/xlib-standard/SPEC.md#22"
-  - "module/xlib-standard/goal.md#11"
+  - "module/xlib_standard/SPEC.md#21"
+  - "module/xlib_standard/SPEC.md#22"
+  - "module/xlib_standard/goal.md#11"
 files:
   - "release/manifest/ (目录)"
   - "SEMANTIC-VERSIONING.md"

@@ -7,7 +7,7 @@
 
 最后更新：2026-06-14
 
-> **范围说明（2026-06-14）**：本文是 Foundation v1 的**初始规划文档**，当时仅覆盖 6 个核心模块（kernel、configx、observex、testkitx、resiliencx、schedulex）。Foundation 此后已扩展至 20 个模块，涵盖门禁（xlib-standard、xlib-harness、xlib-evidence、xlibgate）、存储扩展（redisx、kafkax、natsx、postgresx、taosx、ossx、clickhousex）、契约与传输（contracts、transportx）和领域共享（domainx）。**模块规格、状态和追踪矩阵的权威索引见 [`module/README.md`](./README.md)**；本文的第 2 节"六个模块的产品需求级定义"和第 8 节"模块最终关系"仅反映 v1 收敛期的初始范围，不反映当前完整模块集合。
+> **范围说明（2026-06-14）**：本文是 Foundation v1 的**初始规划文档**，当时仅覆盖 6 个核心模块（kernel、configx、observex、testkitx、resiliencx、schedulex）。Foundation 此后已扩展至 20 个模块，涵盖门禁（xlib_standard、xlib_harness、xlib_evidence、xlibgate）、存储扩展（redisx、kafkax、natsx、postgresx、taosx、ossx、clickhousex）、契约与传输（contracts、transportx）和领域共享（domainx）。**模块规格、状态和追踪矩阵的权威索引见 [`module/README.md`](./README.md)**；本文的第 2 节"六个模块的产品需求级定义"和第 8 节"模块最终关系"仅反映 v1 收敛期的初始范围，不反映当前完整模块集合。
 
 ---
 
@@ -331,12 +331,12 @@ make evidence
 
 > **⚠️ 当前最不稳定的模块。**
 
-当前 README 写的是 Standard Source、Go Reference Template、Generator、Harness、Evidence Runtime，这和 `xlib-standard` 的职责高度重合，而不是真正的弹性容错运行时库。
+当前 README 写的是 Standard Source、Go Reference Template、Generator、Harness、Evidence Runtime，这和 `xlib_standard` 的职责高度重合，而不是真正的弹性容错运行时库。
 
 #### 身份重定义
 
 ```text
-xlib-standard = 标准源 / 模板 / generator / harness / evidence
+xlib_standard = 标准源 / 模板 / generator / harness / evidence
 resiliencx    = runtime resilience policy library
 ```text
 
@@ -406,7 +406,7 @@ type Event struct {
 
 ```text
 resiliencx = operational resilience
-risk-engine = trading risk
+risk_engine = trading risk
 ```text
 
 `resiliencx` **可以**判断：
@@ -555,7 +555,7 @@ x.go 或上层 job wrapper:
 
 ```go
 job := schedulex.JobFunc{
-    NameValue: "fetch-market-data",
+    NameValue: "fetch-market_data",
     RunFunc: func(ctx context.Context) error {
         return resilience.Do(ctx, op, func(ctx context.Context) error {
             return provider.Fetch(ctx)
@@ -622,7 +622,7 @@ Deadline:
 
 ### 4.1 xlibgate — 机器化边界执行器（优先级：高）
 
-`xlib-standard` 承担标准源、模板、generator、harness、evidence 等角色。下一步需要一个轻量 gate 执行器，把标准从文档变成机器检查。
+`xlib_standard` 承担标准源、模板、generator、harness、evidence 等角色。下一步需要一个轻量 gate 执行器，把标准从文档变成机器检查。
 
 **xlibgate 应该检查：**
 
@@ -640,7 +640,7 @@ Go version 是否符合 baseline
 是否有 contracts drift
 ```text
 
-可以先不新建 repo，先放在 `xlib-standard/cmd/xlibgate`，稳定后再独立。
+可以先不新建 repo，先放在 `xlib_standard/cmd/xlibgate`，稳定后再独立。
 
 ### 4.2 secrectx — 中期补，不要塞进 configx
 
@@ -658,12 +658,12 @@ local dev secret source
 
 `configx` 仍然只消费 source，不拥有 secret backend。
 
-### 4.3 foundation-example — 最小闭环样例仓库
+### 4.3 foundation_example — 最小闭环样例仓库
 
 比继续新建业务模块更重要。做一个很小的 repo 或 example：
 
 ```text
-foundation-example/
+foundation_example/
   cmd/demo/
   internal/app/
   configs/
@@ -711,7 +711,7 @@ release manifest 生成
 
 验收：
 - README 不再把 Standard Source / Generator / Harness 作为主身份
-- 明确 xlib-standard 是标准源
+- 明确 xlib_standard 是标准源
 - 新增 docs/identity.md、docs/boundary.md
 - 新增 policy/retry/circuit/bulkhead/ratelimit/fallback 最小 API
 - 删除或迁移模板叙事
@@ -825,7 +825,7 @@ release manifest 生成
 ### P2：Foundation example 闭环
 
 ```text
-标题：Add foundation-example vertical smoke
+标题：Add foundation_example vertical smoke
 
 验收：
 - demo app can start and shutdown
@@ -900,7 +900,7 @@ make lock-interface-check
 ## 8. 模块最终关系
 
 ```text
-xlib-standard
+xlib_standard
   标准源 / 模板 / generator / harness / evidence
   不作为普通运行时依赖
 
@@ -952,7 +952,7 @@ kernel 管生命周期、错误、时间、健康、关闭
 resiliencx 保护不稳定外部调用
 schedulex 管确定性任务
 testkitx 验证以上所有行为
-xlib-standard/xlibgate 负责标准和机器执法
+xlib_standard/xlibgate 负责标准和机器执法
 ```text
 
 ### 真正需要补的（按优先级）
@@ -965,7 +965,7 @@ xlib-standard/xlibgate 负责标准和机器执法
 5. config provenance/hash
 6. observability label/redaction gate
 7. schedulex DST/misfire/lock contract
-8. foundation-example 最小闭环
+8. foundation_example 最小闭环
 ```text
 
 > **现在不要再横向扩基础模块。先把这 6 个做成"可证明、可组合、可被 x.go 消费"的 Foundation v1。尤其先修 `resiliencx`，否则 Foundation 层会同时存在两个"标准源/模板仓库"，但缺一个真正的弹性容错运行时。**

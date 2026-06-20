@@ -58,10 +58,10 @@ Scope note: 本规格描述 `/home/ZoneCNH/module/natsx` 的 1.0 目标，不单
 
 | 消费者          | 使用方式                                         |
 | --------------- | ------------------------------------------------ |
-| `market-data`   | 通过 Core NATS 实时发布行情数据（at-most-once）  |
+| `market_data`   | 通过 Core NATS 实时发布行情数据（at-most-once）  |
 | `signal-engine` | 通过 Core NATS 订阅因子信号                      |
-| `order-engine`  | 通过 JetStream 发布订单事件（at-least-once）     |
-| `risk-engine`   | 通过 JetStream 消费风控事件（持久化）            |
+| `order_engine`  | 通过 JetStream 发布订单事件（at-least-once）     |
+| `risk_engine`   | 通过 JetStream 消费风控事件（持久化）            |
 | `schedulerx`    | 通过 Request-Reply 实现分布式协调                |
 | 业务域模块      | 按需选择 Core NATS（实时）或 JetStream（持久化） |
 
@@ -257,7 +257,7 @@ msg := natsx.NatsMessageEnvelope{
     MessageID:     uuid.NewString(),
     TraceID:       traceIDFromContext(ctx),
     SchemaVersion: "ticker.v1",
-    Headers:       map[string][]string{"source": []string{"market-data"}},
+    Headers:       map[string][]string{"source": []string{"market_data"}},
     Payload:       tickerJSON,
 }
 

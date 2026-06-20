@@ -6,13 +6,13 @@
 
 ```yaml
 task_id: TASK-MKT-002
-module: domain-market
+module: domain_market
 version: v1.0.0
 spec_ref:
-  - "module/domain-market/SPEC.md#FR-MKT-002"
-  - "module/domain-market/SPEC.md#FR-MKT-003"
-  - "module/domain-market/SPEC.md#FR-MKT-004"
-  - "module/domain-market/SPEC.md#FR-MKT-005"
+  - "module/domain_market/SPEC.md#FR-MKT-002"
+  - "module/domain_market/SPEC.md#FR-MKT-003"
+  - "module/domain_market/SPEC.md#FR-MKT-004"
+  - "module/domain_market/SPEC.md#FR-MKT-005"
 fr_ref: FR-MKT-002
 ac_ref: AC-MKT-002
 tc_ref: TC-MKT-002

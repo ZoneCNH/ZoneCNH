@@ -1,7 +1,7 @@
-# factor-eval 需求追溯矩阵
+# factor_eval 需求追溯矩阵
 
 > 更新：2026-06-17
-> 来源：module/factor-eval/SPEC.md
+> 来源：module/factor_eval/SPEC.md
 > 规范：docs/governance/TRACEABILITY.md
 
 ---

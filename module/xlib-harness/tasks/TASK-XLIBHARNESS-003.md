@@ -1,15 +1,15 @@
 ---
-module: xlib-harness
-scope: "xlib-harness FR-003 coverage"
+module: xlib_harness
+scope: "xlib_harness FR-003 coverage"
 spec_ref:
-  - "module/xlib-harness/SPEC.md#FR-003"
+  - "module/xlib_harness/SPEC.md#FR-003"
 acceptance_criteria:
   - "FR-003 baseline coverage"
 files:
-  - "/home/xlib-harness/internal/harness/harness.go"
-  - "/home/xlib-harness/internal/harness/harness_test.go"
-  - "/home/xlib-harness/fixtures/module-with-bad-dep/go.mod"
-  - "/home/xlib-harness/fixtures/module-with-bad-dep/bad.go"
+  - "/home/xlib_harness/internal/harness/harness.go"
+  - "/home/xlib_harness/internal/harness/harness_test.go"
+  - "/home/xlib_harness/fixtures/module-with-bad-dep/go.mod"
+  - "/home/xlib_harness/fixtures/module-with-bad-dep/bad.go"
 priority: P1
 status: completed
 ---
@@ -30,4 +30,4 @@ FR-003 实现与验证
 
 ## Evidence
 
-- /home/xlib-harness@d90b35124701：`make ci`、`go test -bench=. -run '^$' ./...`、`git diff --check`、pinned `gitleaks` CLI、`xlibgate@v1.0.0` imports/gomod/baseline 均 PASS；coverage total 100.0%；full profile 15 项通过；Release run `27855366871` 与 main CI run `27855396013` 均 PASS。
+- /home/xlib_harness@d90b35124701：`make ci`、`go test -bench=. -run '^$' ./...`、`git diff --check`、pinned `gitleaks` CLI、`xlibgate@v1.0.0` imports/gomod/baseline 均 PASS；coverage total 100.0%；full profile 15 项通过；Release run `27855366871` 与 main CI run `27855396013` 均 PASS。

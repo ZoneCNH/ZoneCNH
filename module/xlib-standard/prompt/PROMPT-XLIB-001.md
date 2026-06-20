@@ -10,7 +10,7 @@ TASK-XLIB-001: 文档对齐 — 重写 README、standard.md、INDEX.md
 
 ## Related Spec
 
-- module/xlib-standard/SPEC.md (§1 概述, §14 目录结构)
+- module/xlib_standard/SPEC.md (§1 概述, §14 目录结构)
 
 ## Related Requirements
 
@@ -79,4 +79,4 @@ test -f docs/INDEX.md && wc -l docs/INDEX.md | awk '{if ($1 > 50) exit 1}'
 
 ## Test Case Reference
 
-参见 `module/xlib-standard/TRACEABILITY.md` FR-007 对应 TC-019~TC-020。文档变更通过 grep 验证内容完整性。
+参见 `module/xlib_standard/TRACEABILITY.md` FR-007 对应 TC-019~TC-020。文档变更通过 grep 验证内容完整性。

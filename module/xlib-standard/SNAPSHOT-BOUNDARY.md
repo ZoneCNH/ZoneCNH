@@ -1,4 +1,4 @@
-# xlib-standard 快照边界
+# xlib_standard 快照边界
 
 本文件定义本地快照的可用范围，不是可执行规格。
 

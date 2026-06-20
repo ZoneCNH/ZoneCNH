@@ -11,8 +11,8 @@ Commands were run from the repository root on 2026-06-12 after the leader reconc
 | Command | Result | Notes |
 | --- | --- | --- |
 | `git diff --check` | PASS | Exit 0; no whitespace or patch-format errors. |
-| `bash .github/ci/spec-lint.sh` | PARTIAL | Repo-wide exit 1 due unrelated failures in `configx`, `schedulex`, and `xlib-standard`; `ossx` passed with `23/23 sections, 10 FRs, 10 WHEN clauses`. |
-| `TRACEABILITY_STRICT=1 bash .github/ci/traceability-check.sh` | PARTIAL | Repo-wide exit 1 due unrelated failures in `kernel`, `resiliencx`, `observex`, `xlibgate`, and `xlib-standard`; `ossx` passed with `10/10 FRs traced`. |
+| `bash .github/ci/spec-lint.sh` | PARTIAL | Repo-wide exit 1 due unrelated failures in `configx`, `schedulex`, and `xlib_standard`; `ossx` passed with `23/23 sections, 10 FRs, 10 WHEN clauses`. |
+| `TRACEABILITY_STRICT=1 bash .github/ci/traceability-check.sh` | PARTIAL | Repo-wide exit 1 due unrelated failures in `kernel`, `resiliencx`, `observex`, `xlibgate`, and `xlib_standard`; `ossx` passed with `10/10 FRs traced`. |
 | `bash .github/ci/task-spec-validate.sh` | PARTIAL | Repo-wide exit 1 due unrelated duplicate task IDs in `kernel` and `observex`; no `ossx` task errors were reported, and dependency topology sorted `119/119` tasks. |
 | `python3 scripts/rule-scorer.py spec ossx --runtime codex` | PASS | Rules score `100`, `redline: false`, confidence `high`, and no deductions. |
 | `python3 scripts/rule-scorer.py matrix ossx --runtime codex` | PASS | Rules score `100`, `redline: false`, confidence `high`, and no deductions. |

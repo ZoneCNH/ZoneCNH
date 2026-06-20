@@ -14,9 +14,9 @@
 
 ```
 标准源/门禁 (4) ——→ L0 原语 (1) ——→ L1 运行时 (4) ——→ 存储扩展 (7) ——→ 契约/传输 (2)
-xlib-standard         kernel           configx              redisx              contracts
-xlib-harness                            observex             kafkax              transportx
-xlib-evidence                           resiliencx           natsx
+xlib_standard         kernel           configx              redisx              contracts
+xlib_harness                            observex             kafkax              transportx
+xlib_evidence                           resiliencx           natsx
 xlibgate                                schedulex            postgresx
                                                              taosx
                   L1 test-only (1)                          ossx
@@ -28,7 +28,7 @@ xlibgate                                schedulex            postgresx
 
 | 层级 | 数量 | 模块 | 核心职责 |
 |------|:---:|------|----------|
-| 标准源/门禁 | 4 | xlib-standard、xlib-harness、xlib-evidence、xlibgate | 标准事实源、Go Template、模块生成器、证据收集与发布运行时、机器门禁。不参与运行时 |
+| 标准源/门禁 | 4 | xlib_standard、xlib_harness、xlib_evidence、xlibgate | 标准事实源、Go Template、模块生成器、证据收集与发布运行时、机器门禁。不参与运行时 |
 | L0 原语 | 1 | kernel | 12 子包 stdlib-only 工具集 |
 | L1 运行时 | 4 | configx、observex、resiliencx、schedulex | 配置加载与脱敏、可观测性契约、弹性策略、任务调度 |
 | L1 test-only | 1 | testkitx | 测试专用能力库。禁止生产导入 |
@@ -39,7 +39,7 @@ xlibgate                                schedulex            postgresx
 
 | 进度 | 数量 | 模块 |
 |------|:---:|------|
-| 100% 已发布 | 16 | kernel, configx, observex, resiliencx, schedulex, redisx, kafkax, natsx, taosx, ossx, clickhousex, contracts, transportx, xlib-standard, xlib-harness, xlib-evidence |
+| 100% 已发布 | 16 | kernel, configx, observex, resiliencx, schedulex, redisx, kafkax, natsx, taosx, ossx, clickhousex, contracts, transportx, xlib_standard, xlib_harness, xlib_evidence |
 | 90% 已有 | 3 | xlibgate, testkitx, postgresx |
 | L2.5 已有 | 1 | domainx |
 
@@ -47,9 +47,9 @@ xlibgate                                schedulex            postgresx
 
 | # | 模块 | 层级 | 版本 | 状态 | 进度 | 覆盖率 | 仓库 |
 |---|------|------|------|------|------|--------|------|
-| 1 | xlib-standard | 标准源 | v1.0.0 | 已发布 | 100% | - | ZoneCNH/xlib-standard |
-| 2 | xlib-harness | 门禁 | v1.0.0 | 已发布 | 100% | - | ZoneCNH/xlib-harness |
-| 3 | xlib-evidence | 门禁 | v1.0.0 | 已发布 | 100% | - | ZoneCNH/xlib-evidence |
+| 1 | xlib_standard | 标准源 | v1.0.0 | 已发布 | 100% | - | ZoneCNH/xlib_standard |
+| 2 | xlib_harness | 门禁 | v1.0.0 | 已发布 | 100% | - | ZoneCNH/xlib_harness |
+| 3 | xlib_evidence | 门禁 | v1.0.0 | 已发布 | 100% | - | ZoneCNH/xlib_evidence |
 | 4 | xlibgate | 门禁 | v1.0.2 | 已有 | 90% | - | ZoneCNH/xlibgate |
 | 5 | kernel | L0 原语 | v1.0.0 | 已发布 | 100% | 100% | ZoneCNH/kernel |
 | 6 | configx | L1 运行时 | v1.0.0 | 已发布 | 100% | 97.1% | ZoneCNH/configx |
@@ -77,7 +77,7 @@ xlibgate                                schedulex            postgresx
 ```
 x.go ——→ 基座运行时 / L2.5 / 数据域 / 分析域 / 决策域 / 执行域
 
-业务域 ——→ L2.5 Domain Shared (decimalx, domain-market, domain-exchange, domain-macro, domainx)
+业务域 ——→ L2.5 Domain Shared (decimalx, domain_market, domain_exchange, domain_macro, domainx)
      |
      +——→ contracts (跨域稳定端口、事件协议、DTO 契约)
      |
@@ -170,7 +170,7 @@ x.go ——→ 基座运行时 / L2.5 / 数据域 / 分析域 / 决策域 / 执�
 | sre/storage-heavy | postgresx, kafkax, clickhousex, taosx | 8C/16G | 是 |
 | sre/contracts | contracts, transportx | 2C/4G | - |
 | sre/l2-5 | domainx | 2C/4G | - |
-| sre/gate | xlib-standard, xlib-harness, xlib-evidence, xlibgate | 2C/4G | - |
+| sre/gate | xlib_standard, xlib_harness, xlib_evidence, xlibgate | 2C/4G | - |
 | sre/deploy | 所有 release job | 2C/4G | - |
 
 ---
@@ -185,7 +185,7 @@ x.go ——→ 基座运行时 / L2.5 / 数据域 / 分析域 / 决策域 / 执�
 
 ### Phase 1: L0/L1 + 门禁 CI/CD（Week 3-4）
 
-10 个模块（kernel, configx, observex, resiliencx, schedulex, testkitx, xlib-standard, xlib-harness, xlib-evidence, xlibgate）接入 CI/CD
+10 个模块（kernel, configx, observex, resiliencx, schedulex, testkitx, xlib_standard, xlib_harness, xlib_evidence, xlibgate）接入 CI/CD
 
 每模块 CI jobs：build / test-race / lint / boundary / secret-scan + 模块特定 golden/contract test
 
@@ -362,9 +362,9 @@ jobs:
     "resiliencx":    { "pool": "sre/foundation-l1",  "docker": false },
     "schedulex":     { "pool": "sre/foundation-l1",  "docker": false },
     "testkitx":      { "pool": "sre/foundation-l1",  "docker": false, "cd": false },
-    "xlib-standard": { "pool": "sre/gate",           "docker": false, "cd": false },
-    "xlib-harness":  { "pool": "sre/gate",           "docker": false, "cd": false },
-    "xlib-evidence": { "pool": "sre/gate",           "docker": false, "cd": false },
+    "xlib_standard": { "pool": "sre/gate",           "docker": false, "cd": false },
+    "xlib_harness":  { "pool": "sre/gate",           "docker": false, "cd": false },
+    "xlib_evidence": { "pool": "sre/gate",           "docker": false, "cd": false },
     "xlibgate":      { "pool": "sre/gate",           "docker": false, "cd": false },
     "redisx":        { "pool": "sre/storage-light",  "docker": true, "services": ["redis:7-alpine"] },
     "kafkax":        { "pool": "sre/storage-heavy",  "docker": true, "services": ["kafka", "zookeeper"] },
@@ -391,9 +391,9 @@ jobs:
 | resiliencx | Y | Y | Y | Y | Y | Y | Y | Y | - | 100% |
 | schedulex | Y | Y | Y | Y | Y | Y | Y | Y | - | 98% |
 | testkitx | Y | Y | Y | Y | Y | Y | Y | Y | - | 81% |
-| xlib-standard | Y | Y | Y | Y | - | Y | - | - | - | - |
-| xlib-harness | Y | Y | Y | Y | - | Y | - | - | - | - |
-| xlib-evidence | Y | Y | Y | Y | - | Y | - | - | - | - |
+| xlib_standard | Y | Y | Y | Y | - | Y | - | - | - | - |
+| xlib_harness | Y | Y | Y | Y | - | Y | - | - | - | - |
+| xlib_evidence | Y | Y | Y | Y | - | Y | - | - | - | - |
 | xlibgate | Y | Y | Y | Y | - | Y | - | - | - | - |
 | redisx | Y | Y | Y | Y | Y | Y | - | - | Redis | - |
 | kafkax | Y | Y | Y | Y | Y | Y | - | - | Kafka | - |
@@ -415,7 +415,7 @@ Week 1-2  Phase 0: SRE 基础设施
           SRE 仓库 + 机器池注册(3+ nodes, 8 标签池) + Docker 服务编排
 
 Week 3-4  Phase 1: L0/L1 + 门禁 CI/CD (10 模块)
-          kernel/configx/observex/resiliencx/schedulex/testkitx/xlib-standard/xlib-harness/xlib-evidence/xlibgate
+          kernel/configx/observex/resiliencx/schedulex/testkitx/xlib_standard/xlib_harness/xlib_evidence/xlibgate
 
 Week 5-6  Phase 2: 存储扩展 CI/CD (7 模块)
           redisx/kafkax/natsx/postgresx/taosx/ossx/clickhousex + Docker 集成测试

@@ -1,4 +1,4 @@
-# xlib-standard 历史深度分析报告（已归档）
+# xlib_standard 历史深度分析报告（已归档）
 
 Status: **archived**（2026-06-08 归档；非当前权威）
 
@@ -7,7 +7,7 @@ Status: **archived**（2026-06-08 归档；非当前权威）
 > 当前权威以 `../SPEC.md` 为准；冲突解释见 `../CONFLICT-LEDGER.md` §16。
 >
 > 分析时间：2026-06-07（v2 修正版）
-> 分析范围：`github.com/ZoneCNH/xlib-standard` 仓库 + `module/xlib-standard/SPEC.md` v2.0.0
+> 分析范围：`github.com/ZoneCNH/xlib_standard` 仓库 + `module/xlib_standard/SPEC.md` v2.0.0
 > 分析框架：Goal Runtime + Recursive Self-Improvement + Autoresearch + 六类债务
 > 修正说明：v1 版本存在事实性错误（ADR 缺失误判、gate 数量低估、版本号误报），本版基于仓库实际数据重写
 
@@ -228,7 +228,7 @@ Status: **archived**（2026-06-08 归档；非当前权威）
 
 | ADR              | 状态     | 核心决策                             |
 | ---------------- | -------- | ------------------------------------ |
-| ADR-20260602-001 | Accepted | xlib-standard 唯一主身份             |
+| ADR-20260602-001 | Accepted | xlib_standard 唯一主身份             |
 | ADR-20260602-002 | Accepted | 默认下游从 foundationx 迁移到 kernel |
 | ADR-20260602-003 | Accepted | Core Gate 五类检查                   |
 | ADR-20260603-001 | Accepted | goalcli 作为唯一执行面               |
@@ -273,7 +273,7 @@ Status: **archived**（2026-06-08 归档；非当前权威）
 ### 7.1 依赖清单
 
 ```text
-module github.com/ZoneCNH/xlib-standard
+module github.com/ZoneCNH/xlib_standard
 go 1.23
 // 零外部依赖
 ```text
@@ -339,7 +339,7 @@ go 1.23
 
 ### 9.1 递归自改进模式
 
-xlib-standard 已实现完整的 recursive self-improvement 循环：
+xlib_standard 已实现完整的 recursive self-improvement 循环：
 
 ```text
 gate 失败 → retrospective → patches (harness/prompt/rule) → gate 收紧 → 再验证

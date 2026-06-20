@@ -11,13 +11,13 @@ Status: Approved
 
 | 语义层 | 规范 | 示例 |
 | --- | --- | --- |
-| 模块 / 仓库 / 路径 / 公开文档链接 | kebab-case | `macro-data` |
+| 模块 / 仓库 / 路径 / 公开文档链接 | kebab-case | `macro_data` |
 | 配置 / JSON / YAML / Goal registry / 接收侧字段 | snake_case | `macro_data`, `series_code`, `available_at` |
 | Go 导出类型 / 接口 / 常量名 | PascalCase | `MacroDataProvider`, `TopicMacroData` |
 | Topic literal / 事件通道值 | dot.case | `macro.data` |
 | 禁用漂移写法 | 不使用 camelCase 或压缩小写表示模块名 | `macroData`, `macrodata`, `Macrodata` |
 
-`macro_data` 是宏观数据域在配置、契约字段、注册表和非 Go 内部标识中的 canonical token；`macro-data` 仅用于模块、仓库、路径和公开文档链接。
+`macro_data` 是宏观数据域在配置、契约字段、注册表和非 Go 内部标识中的 canonical token；`macro_data` 仅用于模块、仓库、路径和公开文档链接。
 
 ## 架构术语
 
@@ -26,7 +26,7 @@ Status: Approved
 - **英文名：** Domain Shared Layer
 - **中文名：** 领域共享层
 - **定义：** 位于 L1 运行时模块和 L2 业务域模块之间的共享层，提供跨域通用的类型和工具，避免业务域之间的直接依赖。
-- **所属模块：** `decimalx`、`domain-market`、`domain-exchange`、`domain-macro`
+- **所属模块：** `decimalx`、`domain_market`、`domain_exchange`、`domain_macro`
 
 ---
 
@@ -53,7 +53,7 @@ Status: Approved
 - **英文名：** Domain Shared Module
 - **中文名：** 领域共享模块
 - **定义：** L2.5 层的模块，提供跨域通用的领域类型（如价格精度、交易所枚举、市场元数据），消除业务域之间的耦合。
-- **所属模块：** `decimalx`、`domain-market`、`domain-exchange`、`domain-macro`
+- **所属模块：** `decimalx`、`domain_market`、`domain_exchange`、`domain_macro`
 
 ---
 
@@ -89,7 +89,7 @@ Status: Approved
 - **英文名：** Standard of Truth
 - **中文名：** 标准事实源
 - **定义：** 系统中权威的数据来源，定义某个数据域的唯一真实值。其他模块必须从此获取数据，不得自行维护副本。
-- **所属模块：** `xlib-standard`
+- **所属模块：** `xlib_standard`
 
 ---
 
@@ -109,7 +109,7 @@ Status: Approved
 - **英文名：** Factor
 - **中文名：** 因子
 - **定义：** 量化交易中用于预测资产未来收益的变量或指标，如动量因子、波动率因子。因子通过因子引擎计算和管理。
-- **所属模块：** `factor-engine`（待创建 spec）
+- **所属模块：** `factor_engine`（待创建 spec）
 
 ---
 
@@ -118,7 +118,7 @@ Status: Approved
 - **英文名：** Signal
 - **中文名：** 信号
 - **定义：** 由一个或多个因子组合生成的交易决策指示，表示买入、卖出或持有。信号是策略引擎的输出，风控引擎的输入。
-- **所属模块：** `signal-factory`（待创建 spec）
+- **所属模块：** `signal_factory`（待创建 spec）
 
 ---
 
@@ -136,7 +136,7 @@ Status: Approved
 - **英文名：** Regime
 - **中文名：** 市场状态
 - **定义：** 市场运行的状态分类。系统使用 S1-S7 描述微观结构状态（如趋势、震荡、突破），M1-M7 描述宏观环境状态（如牛市、熊市、高波动）。策略根据当前 Regime 调整参数。
-- **所属模块：** `factor-engine`、`signal-factory`
+- **所属模块：** `factor_engine`、`signal_factory`
 
 ---
 
@@ -145,7 +145,7 @@ Status: Approved
 - **英文名：** DecisionCard
 - **中文名：** 决策卡
 - **定义：** 信号工厂输出的标准化交易决策结构体，包含交易方向、目标仓位、置信度、来源因子、风控约束等字段。是信号工厂到风控引擎的传递载体。
-- **所属模块：** `signal-factory`
+- **所属模块：** `signal_factory`
 
 ---
 
@@ -154,7 +154,7 @@ Status: Approved
 - **英文名：** TradePermission
 - **中文名：** 交易许可
 - **定义：** 风控引擎对 DecisionCard 审批后的结果，包含是否允许交易、允许的仓位上限、附加条件（如止损线）。只有获得 TradePermission 的决策才能提交给订单引擎。
-- **所属模块：** `risk-engine`（待创建 spec）
+- **所属模块：** `risk_engine`（待创建 spec）
 
 ---
 
@@ -163,7 +163,7 @@ Status: Approved
 - **英文名：** PositionCaps
 - **中文名：** 仓位上限
 - **定义：** 风控引擎设定的单品种和组合层面的仓位限制，包括单品种最大持仓、行业集中度上限、总杠杆上限等。TradePermission 中的允许仓位不会超过 PositionCaps。
-- **所属模块：** `risk-engine`（待创建 spec）
+- **所属模块：** `risk_engine`（待创建 spec）
 
 ---
 
@@ -172,7 +172,7 @@ Status: Approved
 - **英文名：** Walk-forward Analysis
 - **中文名：** 滚动回测
 - **定义：** 将历史数据分为多个训练窗口和测试窗口，用训练窗口优化参数、测试窗口验证效果，逐段向前滚动。避免过拟合，是策略验证的标准方法。
-- **所属模块：** `backtest-engine`（待创建 spec）
+- **所属模块：** `backtest_engine`（待创建 spec）
 
 ---
 
@@ -181,7 +181,7 @@ Status: Approved
 - **英文名：** Information Coefficient / Information Ratio
 - **中文名：** 信息系数 / 信息比率
 - **定义：** IC 衡量因子预测值与实际收益的相关性（Rank IC 通常 > 0.03 为有效因子）。IR 是因子 IC 的均值与标准差之比，衡量因子预测的稳定性（IR > 0.5 为优秀因子）。
-- **所属模块：** `factor-eval`
+- **所属模块：** `factor_eval`
 
 ---
 
@@ -190,7 +190,7 @@ Status: Approved
 - **英文名：** Slippage
 - **中文名：** 滑点
 - **定义：** 预期成交价格与实际成交价格之间的差异。回测引擎使用滑点模型模拟真实交易成本，实盘通过 ExecutionReport 中的成交均价与决策价对比来度量实际滑点。
-- **所属模块：** `backtest-engine`（待创建 spec）、`order-engine`（待创建 spec）
+- **所属模块：** `backtest_engine`（待创建 spec）、`order_engine`（待创建 spec）
 
 ---
 
@@ -199,7 +199,7 @@ Status: Approved
 - **英文名：** Time-Weighted Average Price / Volume-Weighted Average Price
 - **中文名：** 时间加权均价 / 成交量加权均价
 - **定义：** TWAP 将大单拆分为等时间间隔的小单执行，VWAP 按历史成交量分布拆分。两者都是算法交易的执行策略，用于降低大单对市场的冲击成本。
-- **所属模块：** `order-engine`（待创建 spec）
+- **所属模块：** `order_engine`（待创建 spec）
 
 ---
 
@@ -208,7 +208,7 @@ Status: Approved
 - **英文名：** ExecutionReport
 - **中文名：** 成交回报
 - **定义：** 订单引擎从交易所收到的成交确认，包含成交价格、数量、手续费、时间戳等。通过事件发布到决策域，用于更新持仓和计算实际滑点。
-- **所属模块：** `order-engine`（待创建 spec）
+- **所属模块：** `order_engine`（待创建 spec）
 
 ---
 
@@ -217,7 +217,7 @@ Status: Approved
 - **英文名：** PortfolioTarget
 - **中文名：** 目标持仓
 - **定义：** 优化器输出的最优持仓组合，包含每个品种的目标权重或数量。与当前持仓对比后生成 OrderIntent，提交给风控引擎审批。
-- **所属模块：** `optimizer`（待创建 spec）、`portfolio-engine`（待创建 spec）
+- **所属模块：** `optimizer`（待创建 spec）、`portfolio_engine`（待创建 spec）
 
 ---
 
@@ -226,4 +226,4 @@ Status: Approved
 - **英文名：** FactorInput / FactorOutput
 - **中文名：** 因子输入 / 因子输出
 - **定义：** FactorInput 是因子计算所需的标准化输入结构（行情快照、时间戳、品种列表）。FactorOutput 是因子计算结果（因子值、置信度、元数据）。两者定义在 `contracts` 中，确保因子引擎与上下游解耦。
-- **所属模块：** `contracts`、`factor-engine`
+- **所属模块：** `contracts`、`factor_engine`

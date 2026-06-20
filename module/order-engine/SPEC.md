@@ -1,4 +1,4 @@
-# order-engine 规格
+# order_engine 规格
 
 - Status: Draft
 - Spec-Version: v0.1.0-draft
@@ -7,19 +7,19 @@
 - Version: v0.1.0-draft
 - Related: `CONSTITUTION.md`
 
-> 本文档发布 order-engine 基线。运行时实现为 Pending。
+> 本文档发布 order_engine 基线。运行时实现为 Pending。
 
 ## 1. 摘要
 
-order-engine 抽象交易所差异，管理订单从创建到成交/撤销的完整生命周期。
+order_engine 抽象交易所差异，管理订单从创建到成交/撤销的完整生命周期。
 
 ## 2. 边界
 
 | 类型 | 说明 |
 | --- | --- |
 | Owns | 订单生命周期、SOR 智能路由、执行算法（TWAP/VWAP）、Exchange 抽象适配 |
-| Depends on | risk-engine（风控通过）、domain-exchange（VenueAdapter）、contracts |
-| Consumed by | portfolio-engine（成交更新）、settlement（结算） |
+| Depends on | risk_engine（风控通过）、domain_exchange（VenueAdapter）、contracts |
+| Consumed by | portfolio_engine（成交更新）、settlement（结算） |
 
 ## 3. 功能需求
 

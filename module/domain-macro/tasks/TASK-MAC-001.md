@@ -6,7 +6,7 @@
 
 ## Related Spec
 
-`module/domain-macro/SPEC.md` §7 FR-MAC-001, §8 BR-MAC-001, §9 Interface Contract (MacroPoint), §10 Data Model, §12 Error Handling, §13 Edge Cases
+`module/domain_macro/SPEC.md` §7 FR-MAC-001, §8 BR-MAC-001, §9 Interface Contract (MacroPoint), §10 Data Model, §12 Error Handling, §13 Edge Cases
 
 ## Related Requirements
 
@@ -28,7 +28,7 @@
 - L2.5 模块：只依赖 stdlib + decimalx（按 ADR），禁止依赖 L1 运行时
 - 所有宏观数值字段使用 `decimalx.Decimal`（按 ADR 决策）
 - 值对象不可变：私有字段 + 公开 getter
-- 错误消息格式：`"domain-macro: <detail>"`
+- 错误消息格式：`"domain_macro: <detail>"`
 - 时间字段使用 UTC
 
 ## Scope
@@ -64,7 +64,7 @@
 ## Validation Commands
 
 ```bash
-cd /home/domain-macro
+cd /home/domain_macro
 go build ./...
 go test ./... -race -count=1
 go vet ./...

@@ -1,7 +1,7 @@
 # TASK-MARKET-DATA-002 Receiver SPEC
 
 - Status: Approved
-- Owner: `module/market-data`
+- Owner: `module/market_data`
 - Last-Updated: 2026-06-17
 
 ## Objective
@@ -17,4 +17,4 @@ Specify receiver-side validation, idempotency, conflict handling, durable handof
 5. Receiver returns `DispatchFailure` (retryable) when capacity is temporarily unavailable.
 6. Receiver writes accepted facts to a durable inbox/reliable queue before returning `DispatchAck`.
 7. Receiver exposes metrics/logs for all outcomes: venue, productLine, channel, outcome, reason (§4.3–§4.4).
-8. Receiver maps binance-native reject classifications to market-data unified reasons per §4.4.1.
+8. Receiver maps binance-native reject classifications to market_data unified reasons per §4.4.1.

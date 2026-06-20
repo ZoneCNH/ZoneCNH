@@ -63,7 +63,7 @@ server 校验幂等键必须包含相应窗口维度：
 
 ### 3.5 Downstream Dispatch
 
-dispatch 给 `module/market-data` 的事件保留：
+dispatch 给 `module/market_data` 的事件保留：
 - `aggregator=coinglass` 标注，下游可基于此与直采事件区分
 - 完整 window 维度，便于因子计算
 

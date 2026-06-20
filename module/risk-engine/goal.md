@@ -1,4 +1,4 @@
-# risk-engine Goal
+# risk_engine Goal
 
 ## 元数据
 
@@ -12,7 +12,7 @@
 
 ## 定位
 
-risk-engine 是执行域的风险管理模块。策略只通过risk-engine提交订单，执行事前风控、回撤控制、熔断机制。
+risk_engine 是执行域的风险管理模块。策略只通过risk_engine提交订单，执行事前风控、回撤控制、熔断机制。
 
 ## 目标
 
@@ -25,6 +25,6 @@ risk-engine 是执行域的风险管理模块。策略只通过risk-engine提交
 | 类型 | 说明 |
 | --- | --- |
 | Owns | 事前风控规则/回撤控制/熔断机制/风险限额 |
-| Depends on | signal-factory, portfolio-engine, domainx |
-| Consumed by | order-engine |
-| Excludes | 订单执行(→order-engine)、策略逻辑、仓位管理(→portfolio-engine) |
+| Depends on | signal_factory, portfolio_engine, domainx |
+| Consumed by | order_engine |
+| Excludes | 订单执行(→order_engine)、策略逻辑、仓位管理(→portfolio_engine) |

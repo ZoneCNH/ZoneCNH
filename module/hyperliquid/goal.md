@@ -2,7 +2,7 @@
 
 ## Purpose
 
-`module/hyperliquid` defines the Hyperliquid-specific market-data ingest module for ZoneCNH.
+`module/hyperliquid` defines the Hyperliquid-specific market_data ingest module for ZoneCNH.
 
 It replaces the legacy passive `hyperliquid` SDK with a single explicit C/S architecture:
 
@@ -15,7 +15,7 @@ Pattern owner: see [`module/_template/cex-cs-module/README.md`](../_template/cex
 
 ## Primary Goal
 
-Provide a reliable, canonical, Hyperliquid-specific market-data ingestion path for:
+Provide a reliable, canonical, Hyperliquid-specific market_data ingestion path for:
 
 - Perpetual（USDⓈ-margined，唯一产品线）
 - Spot（部分支持，按 venue capability）
@@ -31,9 +31,9 @@ Hyperliquid 是去中心化永续合约 DEX，与 CEX 在以下维度有显著�
 
 `module/hyperliquid` does not own:
 
-- 跨交易所 market-data 通用语义（→ `module/domain-market`）
+- 跨交易所 market_data 通用语义（→ `module/domain_market`）
 - wire protocol（→ `module/contracts`）
-- 链上交易签名 / 钱包管理（属于执行域 `order-engine` 与 wallet 模块）
+- 链上交易签名 / 钱包管理（属于执行域 `order_engine` 与 wallet 模块）
 - onchain query API（属于其他模块）
 - DEX 链上撮合机制（不是数据域职责）
 - 旧 hyperliquid SDK 兼容（硬切）

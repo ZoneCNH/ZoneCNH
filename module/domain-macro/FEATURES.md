@@ -1,11 +1,11 @@
-# domain-macro 完整实现功能清单
+# domain_macro 完整实现功能清单
 
 - Status: Generated（与 [SPEC.md](./SPEC.md) 同步抽取，未经 pipeline-arbiter 校验）
 - Last-Updated: 2026-06-18
 - Source: [SPEC.md](./SPEC.md) · [TRACEABILITY.md](./TRACEABILITY.md) · [goal.md](./goal.md)
 - Scale: 8 FR · 6 BR · 0 NFR
 
-> 本文档是 domain-macro **要完整实现的、可勾选的功能清单**，把 SPEC 的 FR/BR/NFR 展开成具体可验收的功能点。
+> 本文档是 domain_macro **要完整实现的、可勾选的功能清单**，把 SPEC 的 FR/BR/NFR 展开成具体可验收的功能点。
 > 它不是 Why（goal.md）、不是规格（SPEC.md）、不是追溯矩阵（TRACEABILITY.md）。
 > 实现状态以本清单勾选为准；任一未勾选项存在即视为未完整实现。
 
@@ -45,5 +45,5 @@
 
 ## 5. 明确不做
 
-参见 [SPEC.md](./SPEC.md) §4 非目标章节。domain-macro 只承担 SPEC 范围内的能力，不做范围外业务语义/集成编排/跨模块横切。
+参见 [SPEC.md](./SPEC.md) §4 非目标章节。domain_macro 只承担 SPEC 范围内的能力，不做范围外业务语义/集成编排/跨模块横切。
 

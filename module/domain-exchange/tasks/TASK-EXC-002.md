@@ -6,13 +6,13 @@
 
 ```yaml
 task_id: TASK-EXC-002
-module: domain-exchange
+module: domain_exchange
 scope: "定义 PlaceOrderRequest、CancelOrderRequest、QueryOrderRequest 请求类型，包含 Validate()、ClientID、idempotency 语义"
 spec_ref:
-  - "module/domain-exchange/SPEC.md#FR-EXC-002"
-  - "module/domain-exchange/SPEC.md#§10"
-  - "module/domain-exchange/SPEC.md#BR-EXC-002"
-  - "module/domain-exchange/SPEC.md#BR-EXC-004"
+  - "module/domain_exchange/SPEC.md#FR-EXC-002"
+  - "module/domain_exchange/SPEC.md#§10"
+  - "module/domain_exchange/SPEC.md#BR-EXC-002"
+  - "module/domain_exchange/SPEC.md#BR-EXC-004"
 files:
   - "request.go"
   - "request_test.go"

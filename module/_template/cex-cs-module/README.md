@@ -17,7 +17,7 @@ module/{exchange}/client          ← 交易所侧采集器
   ↓ contracts-defined gRPC (MarketDataService)
 module/{exchange}/server          ← 摄入受理服务器
   ↓ downstream dispatch port
-module/market-data                ← 交易所中立的后续管线
+module/market_data                ← 交易所中立的后续管线
 ```
 
 `client` 负责连接交易所、解析和规范化行情事件；`server` 负责验证、去重、ACK 和下游分发。
@@ -89,7 +89,7 @@ module/market-data                ← 交易所中立的后续管线
 - [ ] 若有 exchange-specific 配置（如 OKX 的 simulated / DEX 的 chain endpoint）→ 显式列出
 
 ### §15 Dependencies
-- [ ] 与 binance 同：`contracts` / `domain-market` / `market-data` / `transportx`
+- [ ] 与 binance 同：`contracts` / `domain_market` / `market_data` / `transportx`
 - [ ] 若依赖 exchange-specific 第三方 SDK → 显式列出
 
 ### §17 Performance Budget

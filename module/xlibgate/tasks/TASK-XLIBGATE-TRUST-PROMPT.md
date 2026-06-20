@@ -7,9 +7,9 @@
 
 ## Context
 
-Trust Alignment 是 xlibgate v2 新增的第三组子命令（check / l2 / trust），负责 Foundation 70+ 模块的信任对齐验证。8 个检查器消费 xlib-standard 定义的标准文件（.repo-contract.yaml、FOUNDATION-DEPS.yaml），输出统一的 per-check JSON 格式（§9.3.1）。
+Trust Alignment 是 xlibgate v2 新增的第三组子命令（check / l2 / trust），负责 Foundation 70+ 模块的信任对齐验证。8 个检查器消费 xlib_standard 定义的标准文件（.repo-contract.yaml、FOUNDATION-DEPS.yaml），输出统一的 per-check JSON 格式（§9.3.1）。
 
-**依赖**：xlib-standard Gate/Evidence 标准定义已完成。
+**依赖**：xlib_standard Gate/Evidence 标准定义已完成。
 **并行度**：8 个检查器完全独立，CI 中可并行执行。
 **测试覆盖**：TC-014~TC-029（16 条验收标准）。
 
@@ -64,7 +64,7 @@ type TrustResult struct {
 
 ### 012: trust template-residue（BR-010 短语扫描）
 - **Files**: cmd/trust_template.go, scanner/trust/template.go
-- **AC**: TC-016（pass）/ TC-017（TEMPLATE_RESIDUE）/ xlib-standard 自跳 / --summary 统计
+- **AC**: TC-016（pass）/ TC-017（TEMPLATE_RESIDUE）/ xlib_standard 自跳 / --summary 统计
 - **5 禁止短语**（精确字符串匹配）："承担五类职责：Standard Source..."，"本仓库不再把标准源与模板实现拆成两个角色"，"提供可编译参考包 pkg/templatex"，"渲染后会移动到 pkg/<package-name>"，"生成库包括 configx、observex、testkitx"
 - **Non-scope**: 不扫描二进制文件，不做模糊匹配
 

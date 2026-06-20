@@ -1,4 +1,4 @@
-# market-data 需求追溯矩阵
+# market_data 需求追溯矩阵
 
 - Spec-Version: v1.0.0
 - Last-Updated: 2026-06-17
@@ -13,7 +13,7 @@ Status semantics: `Approved` 表示 SPEC 已通过审计、跨模块契约引用
 | FR ID | 功能需求 | AC | TC ID(s) | 实现状态 |
 | --- | --- | --- | --- | --- |
 | FR-MD-001 | dispatch-port：Binance adapter 完成事件归一化后提交事件 | AC-MD-001 | TC-MD-001 | Approved |
-| FR-MD-002 | canonical-input：接收侧输入必须引用 domain-market canonical `MarketFactEnvelope` 语义，不允许 Binance 原始 DTO 泄漏 | AC-MD-002 | TC-MD-002 | Approved |
+| FR-MD-002 | canonical-input：接收侧输入必须引用 domain_market canonical `MarketFactEnvelope` 语义，不允许 Binance 原始 DTO 泄漏 | AC-MD-002 | TC-MD-002 | Approved |
 | FR-MD-003 | idempotency：同一 idempotencyKey 相同 payload 返回幂等 ack，不同 payload 返回 reject | AC-MD-003 | TC-MD-003 | Approved |
 | FR-MD-004 | ordering：同一 orderingKey 下检测 sequence 倒退、跳跃和重复 | AC-MD-003 | TC-MD-004 | Approved |
 | FR-MD-005 | quality-gate：eventTime/receivedAt/quality 不合法时 fail-closed | AC-MD-004 | TC-MD-005 | Approved |
@@ -26,7 +26,7 @@ Status semantics: `Approved` 表示 SPEC 已通过审计、跨模块契约引用
 | BR ID | 业务规则 | 验证方式 | 实现状态 |
 | --- | --- | --- | --- |
 | BR-MD-001 | 不拥有交易所 adapter；Binance 原始响应只能停留在 `module/binance` adapter 边界内 | CI import check + spec boundary scan | Approved |
-| BR-MD-002 | 不拥有 canonical market entity；领域语义归 `module/domain-market` | CI type/lint check | Approved |
+| BR-MD-002 | 不拥有 canonical market entity；领域语义归 `module/domain_market` | CI type/lint check | Approved |
 | BR-MD-003 | 不拥有跨进程 wire schema；protobuf/gRPC/REST schema 归 `module/contracts` | spec lint | Approved |
 | BR-MD-004 | 接收侧对 contract、quality、idempotency 与 ordering 问题 fail-closed，不做静默修正 | 测试用例 | Approved |
 | BR-MD-005 | adapter 不得将 DispatchFailure 当作成功；必须按 retry policy 或上游 backpressure 处理 | 测试用例 | Approved |

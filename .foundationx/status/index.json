@@ -20,7 +20,7 @@
     "factory_grade": 18
   },
   "modules": {
-    "xlib-standard": {
+    "xlib_standard": {
       "layer": "standard-source",
       "version": "v1.0.1",
       "spec": true,
@@ -31,9 +31,9 @@
       "adopt": "N/A",
       "soak": "N/A",
       "factory": true,
-      "note": "标准事实源 / Go Reference Template (Generator/Harness/Evidence 已拆分); v1.0.1 release/preflight passed; release https://github.com/ZoneCNH/xlib-standard/releases/tag/v1.0.1"
+      "note": "标准事实源 / Go Reference Template (Generator/Harness/Evidence 已拆分); v1.0.1 release/preflight passed; release https://github.com/ZoneCNH/xlib_standard/releases/tag/v1.0.1"
     },
-    "xlib-harness": {
+    "xlib_harness": {
       "layer": "harness",
       "version": "v1.0.0",
       "spec": true,
@@ -46,7 +46,7 @@
       "factory": true,
       "note": "GitHub Release v0.1.6 已发布；Release run 27855366871 与 main CI run 27855396013 通过；coverage 100.0%；pinned gitleaks CLI secret scan 已对齐；factory grade（与 STATUS 多维表一致）"
     },
-    "xlib-evidence": {
+    "xlib_evidence": {
       "layer": "evidence",
       "version": "v0.2.4",
       "spec": true,
@@ -303,7 +303,7 @@
       "open_release_blocker_implies_release_false"
     ],
     "release_false_modules": [
-      "xlib-harness",
+      "xlib_harness",
       "clickhousex",
       "contracts",
       "transportx"
@@ -325,7 +325,7 @@
       "postgresx",
       "taosx",
       "transportx",
-      "xlib-harness"
+      "xlib_harness"
     ]
   }
 }

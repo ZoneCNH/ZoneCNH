@@ -1,7 +1,7 @@
 ---
-scope: "xlib-evidence FR-003 coverage"
+scope: "xlib_evidence FR-003 coverage"
 spec_ref:
-  - "module/xlib-evidence/SPEC.md#FR-003"
+  - "module/xlib_evidence/SPEC.md#FR-003"
 acceptance_criteria:
   - "FR-003 baseline"
 priority: P2

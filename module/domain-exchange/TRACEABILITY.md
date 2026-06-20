@@ -1,9 +1,9 @@
-# domain-exchange 需求追溯矩阵
+# domain_exchange 需求追溯矩阵
 
 > 模块级追溯矩阵。治理规范见 [docs/governance/TRACEABILITY.md](../../docs/governance/TRACEABILITY.md)。
 
 Last-Updated: 2026-06-16
-Source: module/domain-exchange/SPEC.md
+Source: module/domain_exchange/SPEC.md
 
 ---
 
@@ -20,7 +20,7 @@ Source: module/domain-exchange/SPEC.md
 | FR-EXC-007 | error-classification: WHEN 交易所返回错误 THEN ExchangeError 区分临时/永久/限速/认证/余额/精度/不支持 | AC-EXC-007 | TC-EXC-003 | `GOWORK=off go test ./...` | ✅ |
 | FR-EXC-008 | retry-semantics: WHEN 调用方收到错误 THEN IsRetryable/RetryAfter/IsIdempotentSafe 可判断重试策略 | AC-EXC-008 | TC-EXC-003 | `GOWORK=off go test ./...` | ✅ |
 | FR-EXC-009 | registry-safe: WHEN 并发注册/查询 Exchange THEN Registry 线程安全；重复注册返回错误；列表排序 deterministic | AC-EXC-009 | TC-EXC-004 | `GOWORK=off go test -race ./...` | ✅ |
-| FR-EXC-010 | market-reader: WHEN 调用 MarketReader THEN 返回 domain-market 类型（Kline/TickerPrice/OrderBook），不重复定义 | AC-EXC-010 | TC-EXC-007 | `GOWORK=off go test ./...` | ✅ |
+| FR-EXC-010 | market-reader: WHEN 调用 MarketReader THEN 返回 domain_market 类型（Kline/TickerPrice/OrderBook），不重复定义 | AC-EXC-010 | TC-EXC-007 | `GOWORK=off go test ./...` | ✅ |
 | FR-EXC-011 | stream-lifecycle: WHEN ctx cancel 或 stream 关闭 THEN Channel 可预测关闭；不支持 WS 的 venue 返回 ErrUnsupportedCapability | AC-EXC-011 | TC-EXC-005, TC-EXC-006 | `GOWORK=off go test -race ./...` | ✅ |
 | FR-EXC-012 | order-type-alignment: WHEN 返回订单/成交 THEN 使用 domainx.Order/ExecutionReport 或标注 deprecated alias | AC-EXC-012 | TC-EXC-007 | `GOWORK=off go test ./...` | ✅ |
 
@@ -77,6 +77,6 @@ Source: module/domain-exchange/SPEC.md
 | AC-EXC-007 | FR-EXC-007, BR-EXC-003 | ExchangeError 可分类为 retryable / non-retryable / auth / rate-limit 且支持 errors.Is/As | (see TRACEABILITY.md §4) | ✅ |
 | AC-EXC-008 | FR-EXC-008 | IsRetryable / RetryAfter / IsIdempotentSafe 可判断重试策略 | (see TRACEABILITY.md §4) | ✅ |
 | AC-EXC-009 | FR-EXC-009, BR-EXC-006 | Registry 线程安全、重复注册返回错误、列表 deterministic | (see TRACEABILITY.md §4) | ✅ |
-| AC-EXC-010 | FR-EXC-010 | MarketReader 返回 domain-market 类型（Kline / TickerPrice / OrderBook），不重复定义行情模型 | (see TRACEABILITY.md §4) | ✅ |
+| AC-EXC-010 | FR-EXC-010 | MarketReader 返回 domain_market 类型（Kline / TickerPrice / OrderBook），不重复定义行情模型 | (see TRACEABILITY.md §4) | ✅ |
 | AC-EXC-011 | FR-EXC-011, BR-EXC-007 | ctx cancel 后 WS channel 可预测关闭，无 goroutine leak；不支持 WS 的 venue 返回 ErrUnsupportedCapability | (see TRACEABILITY.md §4) | ✅ |
 | AC-EXC-012 | FR-EXC-012 | 返回订单/成交使用 domainx.Order/ExecutionReport 或标注 deprecated alias | (see TRACEABILITY.md §4) | ✅ |

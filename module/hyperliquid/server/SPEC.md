@@ -46,7 +46,7 @@ onchain_l1 事件 server 校验幂等键必须包含 `block_height` + `tx_hash` 
 
 - server 视为新事件，accept + dispatch
 - 旧 key 的事件保留在 idempotency store（TTL 24h），不撤销
-- 下游 `module/market-data` 通过 dedup 策略决定是否合并
+- 下游 `module/market_data` 通过 dedup 策略决定是否合并
 
 server 不主动检测 reorg；reorg 检测在 client 侧（详见 client SPEC §3.4）。
 
@@ -91,4 +91,4 @@ server 验证 signature 后建立 trusted stream。鉴权失败 → gRPC `Unauth
 - [ ] Onchain metadata validation 通过 TC-016/017
 - [ ] Reorg tolerance 通过 TC-018
 - [ ] Idempotency TTL 调整为 48h 覆盖 reorg 窗口
-- [ ] dispatch 给 market-data 的事件保留 onchain metadata
+- [ ] dispatch 给 market_data 的事件保留 onchain metadata

@@ -17,14 +17,14 @@
 | 域   | 模块                                                                                                               | 数量 | 本地路径          | 角色                         |
 | ---- | ------------------------------------------------------------------------------------------------------------------ | ---- | ----------------- | ---------------------------- |
 | 行情 | binance / okx / bybit / bitget / kucoin / gate / mexc / htx / coinbase / hyperliquid / lighter / upbit / coinglass | 13   | `/home/{module}/` | CEX/DEX 行情 + 衍生品聚合    |
-| 宏观 | fred / treasury / yield-curve / bea / ecb / uk-cb / japan-cb / eastmoney / jin10 / yahoo                           | 10   | `/home/{module}/` | 央行/财政/经济/权益/另类宏观 |
+| 宏观 | fred / treasury / yield_curve / bea / ecb / uk_cb / japan_cb / eastmoney / jin10 / yahoo                           | 10   | `/home/{module}/` | 央行/财政/经济/权益/另类宏观 |
 
 **7 种持久化（用户指定）**：TDengine（`taosx`）、Kafka（`kafkax`）、PostgreSQL（`postgresx`）、Redis（`redisx`）、OSS（`ossx`）、NATS（`natsx`）、ClickHouse（`clickhousex`）。
 
 **核心结论**：
 
 1. 基座 19 模块 + L2.5 领域共享层**已全部发布**，数据域只需组装，不需重造。
-2. 23 个子模块必须采用**统一 CS 骨架 + 统一 `internal/infra` 组装层**，消除现状中依赖不统一（如 `fred` 仍依赖旧 `xlib-standard v0.4.14`）的差距。
+2. 23 个子模块必须采用**统一 CS 骨架 + 统一 `internal/infra` 组装层**，消除现状中依赖不统一（如 `fred` 仍依赖旧 `xlib_standard v0.4.14`）的差距。
 3. 7 种持久化职责必须**分层不重叠**：TDengine=时序 / PG=元数据 / Redis=幂等缓存 / Kafka=数据面 backbone / NATS=控制面 / OSS=归档 / ClickHouse=OLAP 回测。
 4. `dev.md` 含明文凭据，必须经 `configx EnvSource + SecretString` 脱敏注入，每个服务只读自己的 per-provider 库，做到**库级隔离**。
 5. 对下游（分析域）只暴露 `contracts.MarketDataProvider` / `contracts.MacroDataProvider` 端口，下游不直连存储。
@@ -54,9 +54,9 @@
 | L2 存储 | `clickhousex`     | v1.0.1 | ✅   | ClickHouse OLAP 批量写入/查询                                              |
 | 契约    | `contracts`       | v1.2.0 | ✅   | 跨域端口/事件/DTO（MarketDataProvider 已定义）                             |
 | L2.5    | `decimalx`        | v1.0.0 | ✅   | 高精度 Decimal/Price/Qty                                                   |
-| L2.5    | `domain-market`   | v1.1.0 | ✅   | Tick/Quote/Bar/OrderBook/Funding/Instrument 等 SSOT                        |
-| L2.5    | `domain-exchange` | v1.0.0 | ✅   | VenueAdapter 交易域模型                                                    |
-| L2.5    | `domain-macro`    | v1.0.0 | ✅   | MacroPoint/MacroInformationSet/MacroState                                  |
+| L2.5    | `domain_market`   | v1.1.0 | ✅   | Tick/Quote/Bar/OrderBook/Funding/Instrument 等 SSOT                        |
+| L2.5    | `domain_exchange` | v1.0.0 | ✅   | VenueAdapter 交易域模型                                                    |
+| L2.5    | `domain_macro`    | v1.0.0 | ✅   | MacroPoint/MacroInformationSet/MacroState                                  |
 | L2.5    | `domainx`         | v1.0.1 | ✅   | Order/Position/Trade 共享值对象                                            |
 
 ### 2.2 现有子模块依赖差距（需要迁移修正）
@@ -68,8 +68,8 @@
 require (
     github.com/ZoneCNH/bootstrap        v0.1.0   // P1.5 进程组装层
     github.com/ZoneCNH/decimalx         v1.0.0   // ✅ 已升级
-    github.com/ZoneCNH/domain-exchange  v1.0.0   // ✅ 已升级
-    github.com/ZoneCNH/domain-market    v1.1.0   // ✅ 已升级
+    github.com/ZoneCNH/domain_exchange  v1.0.0   // ✅ 已升级
+    github.com/ZoneCNH/domain_market    v1.1.0   // ✅ 已升级
     github.com/binance/binance-connector-go v0.8.0
 )
 // ✅ bootstrap 接入完成（Stores=None），adapter 零存储，全量 build+test 通过
@@ -78,7 +78,7 @@ require (
 require (
     github.com/ZoneCNH/bootstrap     v0.1.0   // P1.5 进程组装层
     github.com/ZoneCNH/decimalx      v1.0.0   // ✅ 已升级
-    github.com/ZoneCNH/observex      v0.3.1   // ✅ xlib-standard → observex
+    github.com/ZoneCNH/observex      v0.3.1   // ✅ xlib_standard → observex
 )
 // ✅ P2 迁移完成 + P6 bootstrap 接入完成
 ```
@@ -88,7 +88,7 @@ require (
 | 差距                                                            | 影响范围            | 严重度     |
 | --------------------------------------------------------------- | ------------------- | ---------- |
 | `go.mod` 依赖版本落后（v0.1.0 vs 已发布 v1.0.0+）               | 23 个子模块         | 高         |
-| 部分模块仍依赖 `xlib-standard` 而非细粒度基座                   | fred 等 10 宏观模块 | 高         |
+| 部分模块仍依赖 `xlib_standard` 而非细粒度基座                   | fred 等 10 宏观模块 | 高         |
 | 无统一基座组装层（configx/observex/7 存储适配器如何注入未定义） | 23 个子模块         | 高         |
 | 7 种持久化在子模块间职责未分层                                  | 全域                | 高         |
 | `dev.md` 明文凭据缺安全注入路径                                 | 全域                | 高（安全） |
@@ -133,13 +133,13 @@ require (
 │                                                                            │
 │  所有子模块只依赖 L2.5 + 基座，禁止互相 import                              │
 └───────────────┬────────────────────────────────┬───────────────────────────┘
-                │ domain-market                   │ domain-macro
+                │ domain_market                   │ domain_macro
                 │ (Tick/Quote/Bar/OB/Funding)     │ (MacroPoint/MacroInfoSet)
                 ▼                                 ▼
         ┌───────────────────────────────────────────────┐
         │  L2.5 领域共享层（SSOT 值对象，纯模型）          │
-        │  domainx · decimalx · domain-market           │
-        │  domain-exchange · domain-macro               │
+        │  domainx · decimalx · domain_market           │
+        │  domain_exchange · domain_macro               │
         └──────────────────────┬────────────────────────┘
                                │
         ┌──────────────────────▼────────────────────────┐
@@ -153,7 +153,7 @@ require (
 
 ### 3.2 设计原则（源自 CONSTITUTION + ARCHITECTURE.md）
 
-- **领域语义沉到 L2.5**（L302-313）：价格/数量统一来自 `decimalx`，行情模型来自 `domain-market`，宏观来自 `domain-macro`，各域不重复定义。
+- **领域语义沉到 L2.5**（L302-313）：价格/数量统一来自 `decimalx`，行情模型来自 `domain_market`，宏观来自 `domain_macro`，各域不重复定义。
 - **数据职责不跨域**：数据域只做采集 / 标准化 / 存储；因子计算在分析域，策略逻辑在决策域。
 - **contracts 只定义跨域稳定契约**：跨域端口、事件协议、DTO 放 `contracts`；域内接口留在域内。
 - **领域纯净**：公共 domain struct 不含 transport/persistence/vendor tag（BR-MKT-002 / BR-MAC-006）。
@@ -208,7 +208,7 @@ require (
                                                    │
                               contracts.MarketDataProvider / MacroDataProvider
                                                    │
-                                            分析域 factor-engine
+                                            分析域 factor_engine
 ```
 
 - **server** 验收后双写 TDengine + Kafka。
@@ -249,7 +249,7 @@ require (
 | 维度     | 行情 CS Module                                     | 宏观 MacroIngestor                              |
 | -------- | -------------------------------------------------- | ----------------------------------------------- |
 | 采集触发 | WS 长连接 + REST 拉取（`schedulex`）               | 定时 cron 拉取（`schedulex`）                   |
-| 领域模型 | `domain-market.{Tick,Quote,Bar,OrderBook,Funding}` | `domain-macro.{MacroPoint,MacroInformationSet}` |
+| 领域模型 | `domain_market.{Tick,Quote,Bar,OrderBook,Funding}` | `domain_macro.{MacroPoint,MacroInformationSet}` |
 | 高频存储 | TDengine 实时写（kline/trades）                    | TDengine 批量写时序点                           |
 | 修订语义 | 无（行情无修订）                                   | 有（RevisionVersion / IsPreliminary，防前视）   |
 | 对外端口 | `contracts.MarketDataProvider`                     | `contracts.MacroDataProvider`（**已定义** §8.1） |
@@ -259,7 +259,7 @@ require (
 
 ## 六、统一 go.mod 依赖模板（消除差距 2.2）
 
-所有 23 个子模块的 `go.mod` 必须是这套依赖，**禁止再依赖 `xlib-standard`**（fred 等旧模块需迁移）。
+所有 23 个子模块的 `go.mod` 必须是这套依赖，**禁止再依赖 `xlib_standard`**（fred 等旧模块需迁移）。
 
 ### 6.1 行情模块模板
 
@@ -289,8 +289,8 @@ require (
     // L2.5 领域 SSOT + 跨域契约
     github.com/ZoneCNH/decimalx        v1.0.0
     github.com/ZoneCNH/contracts       v1.2.0
-    github.com/ZoneCNH/domain-market   v1.1.0
-    github.com/ZoneCNH/domain-exchange v1.0.0
+    github.com/ZoneCNH/domain_market   v1.1.0
+    github.com/ZoneCNH/domain_exchange v1.0.0
 )
 ```
 
@@ -322,7 +322,7 @@ require (
     // L2.5 领域 SSOT + 跨域契约
     github.com/ZoneCNH/decimalx      v1.0.0
     github.com/ZoneCNH/contracts     v1.2.0
-    github.com/ZoneCNH/domain-macro  v1.0.0
+    github.com/ZoneCNH/domain_macro  v1.0.0
 )
 ```
 
@@ -333,7 +333,7 @@ require (
 | client↔server 隔离            | `internal/client/**` 不得 import `internal/server/**`，反之亦然 | `go list -deps` 反向边扫描           |
 | 跨模块禁止 import             | `{module}` 的 go.mod 不得出现其他子模块路径                     | `grep ZoneCNH/{other} go.mod` 零命中 |
 | domain 纯净                   | domain struct 不得携带 `json/db/yaml/kafka/bson` tag            | `grep` tag 扫描（参照 BR-MKT-002）   |
-| 禁止 xlib-standard 运行时依赖 | go.mod 不得出现 `xlib-standard`（标准源不参与运行时）           | `grep xlib-standard go.mod` 零命中   |
+| 禁止 xlib_standard 运行时依赖 | go.mod 不得出现 `xlib_standard`（标准源不参与运行时）           | `grep xlib_standard go.mod` 零命中   |
 | 冒烟特例                      | 仅 `cmd/{module}-smoke` 允许同时 import client+server           | 入口白名单                           |
 
 ---
@@ -461,13 +461,13 @@ func Wire(app *bootstrap.App, moduleName string) (*Service, error) {
 
 | 阶段                           | 工作                                                                                                               | 退出条件                               | 预估         |
 | ------------------------------ | ------------------------------------------------------------------------------------------------------------------ | -------------------------------------- | ------------ |
-| **P0 基座就绪**                | 7 持久化适配器全部发布（已 ✅）；~~contracts 补 `MacroDataProvider` 端口~~ ✅ 已定义 | ~~contracts v1.3~~ → contracts v1.2 已含；重心转 macro-data SPEC | — |
+| **P0 基座就绪**                | 7 持久化适配器全部发布（已 ✅）；~~contracts 补 `MacroDataProvider` 端口~~ ✅ 已定义 | ~~contracts v1.3~~ → contracts v1.2 已含；重心转 macro_data SPEC | — |
 | **P1 模板固化**                | 把 binance C/S 骨架 + `internal/infra` 抽成可复制模板；编写 `docs/sre/data-domain-bootstrap.md`                    | 1 个模板 + 文档，新模块 `cp -r` 即用   | 1 份 SOP     |
 | **P1.5 bootstrap 基座（新增）** | 新建 `bootstrap`（L1 薄胶水层）：Spec→Code 走四源 98 分门禁；实现 Build/Run/Shutdown + 7 存储 Component 适配        | bootstrap v0.1.0 发布，binance 接入验证 | 1 个基座模块 |
-| **P2 旧模块迁移**              | fred 等 10 宏观模块从 `xlib-standard` 迁到 `domain-macro` + 细粒度基座；行情模块统一补 `internal/infra`            | 23 个 go.mod 全部符合 §六模板          | 23 次迁移    |
+| **P2 旧模块迁移**              | fred 等 10 宏观模块从 `xlib_standard` 迁到 `domain_macro` + 细粒度基座；行情模块统一补 `internal/infra`            | 23 个 go.mod 全部符合 §六模板          | 23 次迁移    |
 | **P3 配置注入**                | 按每 per-provider 库生成 `.env`；bootstrap 内置 configx EnvSource + SecretString 接通；验证 23 服务各自只连自己的库 | 库隔离连通测试通过                     | 23 份 .env   |
 | **P4 持久化接通**              | 每服务 main 调 bootstrap.Build，7 适配器由 bootstrap 统一构造                                                        | per-service 存储健康检查全绿           | 23 服务      |
-| **P5 边界门禁**                | 每服务 `boundary-gates.sh`（client↔server 隔离 + 跨模块禁 import + domain 纯净 + 禁 xlib-standard）                | CI 全绿                                | 23 套 gate   |
+| **P5 边界门禁**                | 每服务 `boundary-gates.sh`（client↔server 隔离 + 跨模块禁 import + domain 纯净 + 禁 xlib_standard）                | CI 全绿                                | 23 套 gate   |
 | **P6 编排**                    | x.go 组合根统一拉起 23 服务，注入共享 configx/observex 实例                                                        | x.go 单进程可拉起全量                  | 1 个组合根   |
 
 ### 9.1 依赖关系
@@ -486,7 +486,7 @@ P0 是硬前置（宏观模块无对外端口）；P1.5 是 P2/P4 的硬前置�
 | #   | 决策                                                                  | 理由                                                                        |
 | --- | --------------------------------------------------------------------- | --------------------------------------------------------------------------- |
 | D1  | 23 子模块统一 `cmd/internal{cs,client,server,infra}/pkg` 骨架         | 消除现状差异，新增模块成本=采集器+配置，基座组装零差异                      |
-| D2  | 所有 go.mod 切细粒度基座 + L2.5，废弃 `xlib-standard` 运行时依赖      | 标准源不参与运行时 import（ARCHITECTURE.md L345）；避免单点升级影响 23 模块 |
+| D2  | 所有 go.mod 切细粒度基座 + L2.5，废弃 `xlib_standard` 运行时依赖      | 标准源不参与运行时 import（ARCHITECTURE.md L345）；避免单点升级影响 23 模块 |
 | D3  | 7 存储职责分层：TD时序/PG元/Redis幂等/Kafka流/NATS控制/OSS归档/CH回测 | 职责不重叠，Kafka=NATS 正交，TD=CH 互补                                     |
 | D4  | per-provider 库级隔离，每服务只连自己的库                             | 安全 + 故障隔离 + 审计清晰                                                  |
 | D5  | 凭据经 configx EnvSource + SecretString 注入，dev.md 不进代码仓库     | dev.md 已含明文密码，必须脱敏；configx 提供现成 StrictDecode + Provenance   |
@@ -503,7 +503,7 @@ P0 是硬前置（宏观模块无对外端口）；P1.5 是 P2/P4 的硬前置�
 | 23 服务 × 7 存储 = 161 条连接，资源压力大   | 中         | 每服务按需连存储（宏观模块可不用 Kafka 高频）；连接池 + health gate           |
 | 旧模块迁移工作量（23 个 go.mod）            | 中         | P1 模板固化后 `cp -r` 批量；按 P2 分批迁移                                    |
 | Kafka 与 NATS 职责漂移                      | 中         | D3 明确分工 + boundary-gates 校验业务数据不进 NATS                            |
-| ~~contracts 缺 MacroDataProvider 阻塞宏观模块~~ ✅ 端口已定义 | —（已解决） | 真正缺口是 macro-data 接收侧 SPEC（§十七）                                    |
+| ~~contracts 缺 MacroDataProvider 阻塞宏观模块~~ ✅ 端口已定义 | —（已解决） | 真正缺口是 macro_data 接收侧 SPEC（§十七）                                    |
 | TDengine vs ClickHouse 双写一致性           | 中         | ClickHouse 经 Kafka 物化视图异步灌入，接受最终一致；回测读 CH 不要求强一致    |
 | bootstrap 范围蔓延成第二个 x.go              | 中         | §13.5 五道边界门禁锁死：禁业务/禁采集/禁 transport 实体/只向下依赖/组件可插拔 |
 
@@ -515,7 +515,7 @@ P0 是硬前置（宏观模块无对外端口）；P1.5 是 P2/P4 的硬前置�
 
 - **CONSTITUTION §0 分支纪律**：报告在 feature branch `report/data-domain-infrastructure-20260617`（从 main HEAD `8b4869b`）撰写，不直接编辑 main。
 - **CONSTITUTION §设计原则**：领域语义沉到 L2.5、数据职责不跨域、contracts 只定义跨域稳定契约。
-- **AGENTS.md**：保留英文模块名/技术名词（`domain-market`、`taosx`），域标签一致（数据域/基座/L2.5），kebab-case 项目名。
+- **AGENTS.md**：保留英文模块名/技术名词（`domain_market`、`taosx`），域标签一致（数据域/基座/L2.5），kebab-case 项目名。
 - **ARCHITECTURE.md 依赖守卫**（L278-287）：业务域只依赖 L2.5 + contracts + 基座，不互相 import 实现包；本方案 `boundary-gates.sh` 落地该守卫。
 
 后续若要把本方案推进为正式 Spec→Code 管线，应按 AGENTS.md 的 Spec 开发管线走：Spec → Review → Approve → Matrix → Tasks → Plan → Prompt → Code → 验收 → Ship，每阶段经四源评分 98 分门禁。
@@ -582,7 +582,7 @@ package bootstrap
 
 // Spec 描述一个进程的标准组件清单。
 type Spec struct {
-    Module    string          // 进程名，如 "binance" / "market-data"
+    Module    string          // 进程名，如 "binance" / "market_data"
     Stores    StoreSet        // 位掩码；adapter 传 None（零存储），聚合层传 All
     Logger    observex.Logger // 可选注入，否则按 config 自建
     Hooks     []func(*App) error  // 可选 hook（注册自定义组件）
@@ -621,10 +621,10 @@ func main() {
     app.Run(ctx)
 }
 
-// 聚合层（market-data）— 全存储，唯一写存储者
+// 聚合层（market_data）— 全存储，唯一写存储者
 func main() {
     app, _ := bootstrap.Build(ctx, bootstrap.Spec{
-        Module: "market-data",
+        Module: "market_data",
         Stores: bootstrap.All,           // ★ 全存储
     })
     defer app.Shutdown(ctx)
@@ -643,12 +643,12 @@ bootstrap 层最大的风险是**范围蔓延**——一旦它开始「帮」服
 
 | 门禁              | 规则                                                                    | 校验                 |
 | ----------------- | ----------------------------------------------------------------------- | -------------------- |
-| 禁业务语义        | bootstrap 不得 import domain-market / domain-macro / domainx / contracts | `grep` go.mod 零命中 |
+| 禁业务语义        | bootstrap 不得 import domain_market / domain_macro / domainx / contracts | `grep` go.mod 零命中 |
 | 禁采集逻辑        | bootstrap 不得 import 任何数据域子模块（binance/fred/…）                 | go.mod 零命中        |
 | 禁 transport 实体 | bootstrap 不起 HTTP/gRPC server（仅组装 Component，不起监听）            | 源码无 `net.Listen`  |
 | 依赖方向          | bootstrap 只向下依赖 kernel/configx/observex/resiliencx/存储，不向上     | 依赖图扫描           |
 | adapter 零存储    | adapter 进程的 `Spec.Stores` 必须为 `None`；`app.Stores` 为 nil          | adapter 不碰存储（§十五） |
-| 聚合层独占存储    | 仅 market-data/macro-data 的 `Spec.Stores` 可非 None                     | 存储写入职责归聚合层 |
+| 聚合层独占存储    | 仅 market_data/macro_data 的 `Spec.Stores` 可非 None                     | 存储写入职责归聚合层 |
 | 组件可插拔        | Spec.Stores 位掩码控制，未启用的存储不构造不连接                        | 单测验证             |
 
 ### 13.6 在分层里的位置
@@ -700,7 +700,7 @@ bootstrap 层最大的风险是**范围蔓延**——一旦它开始「帮」服
 
 > `DATAFLOW.md` 已完整定义**分析域→决策域→执行域**的下游流（三引擎：market_engine→S / macro_engine→M / regime_engine→DecisionCard），但**数据域内部**（从交易所 API 到 contracts 端口）的端到端流仍是黑盒。本节补齐这一段。
 >
-> ⚠️ 本节经 §十五 修正：行情 adapter **不直写存储**，归一化事件经 DownstreamDispatchPort 交给 market-data 接收侧统一落库。
+> ⚠️ 本节经 §十五 修正：行情 adapter **不直写存储**，归一化事件经 DownstreamDispatchPort 交给 market_data 接收侧统一落库。
 
 ### 14.1 端到端数据流总图
 
@@ -716,8 +716,8 @@ bootstrap 层最大的风险是**范围蔓延**——一旦它开始「帮」服
 │      ↓                                                                         │
 │  ② parser     原始字节 → provider DTO（Binance JSON / FRED JSON）               │
 │      ↓                                                                         │
-│  ③ normalize  provider DTO → 领域模型（domain-market.Tick/Quote/Bar 或          │
-│              domain-macro.MacroPoint），含 Validate（fail-closed 质量门禁）      │
+│  ③ normalize  provider DTO → 领域模型（domain_market.Tick/Quote/Bar 或          │
+│              domain_macro.MacroPoint），含 Validate（fail-closed 质量门禁）      │
 │      ↓                                                                         │
 │  ④ mapper     幂等键生成（symbol+ts+seq）、产品线防碰撞                          │
 │      ↓                                                                         │
@@ -728,7 +728,7 @@ bootstrap 层最大的风险是**范围蔓延**——一旦它开始「帮」服
 └────────────────────────────────────────────────────────────────────────────────┘
                                               │ 归一化事件（Payload []byte）
                     ┌─────────────────────────▼──────────────────────────┐
-                    │  market-data / macro-data 接收侧（聚合层）★ 唯一写存储 │
+                    │  market_data / macro_data 接收侧（聚合层）★ 唯一写存储 │
                     │                                                     │
                     │  ⑦ validation    信封校验（symbol/ts/价格边界）       │
                     │      ↓                                              │
@@ -791,11 +791,11 @@ adapter dispatch 交付 → 聚合层(validation + idempotency + PG ACK) → 双
 | --- | --- | --- |
 | 触发 | WS 长连接推送 + REST 补齐 | schedulex cron 定时拉取 |
 | 频率 | 毫秒级（@trade 高频） | 分钟~天级（经济数据发布） |
-| normalize 目标 | `domain-market.{Tick,Quote,Bar,OrderBook,Funding}` | `domain-macro.MacroPoint`（含三时间 + 修订版本） |
+| normalize 目标 | `domain_market.{Tick,Quote,Bar,OrderBook,Funding}` | `domain_macro.MacroPoint`（含三时间 + 修订版本） |
 | 质量门禁 | stale/future gate、bid<ask 校验 | **no-lookahead gate**（IsVisibleAt / AvailableAt fail-closed） |
 | 幂等键 | symbol+ts+seq | seriesCode+observedAt+revisionVersion |
 | 修订语义 | 无（行情不可变） | 有（RevisionVersion / IsPreliminary，final 覆盖 preliminary） |
-| 聚合层 | market-data（已 spec） | macro-data（待建，§十七） |
+| 聚合层 | market_data（已 spec） | macro_data（待建，§十七） |
 | Kafka topic | `mkt.{venue}.{kind}` | `mac.{provider}.point` |
 
 ### 14.4 双写一致性与回放策略
@@ -824,8 +824,8 @@ aggregate.dispatch(event):
 | 层 | 存储 | 保留期 | 访问模式 | 消费者 |
 | --- | --- | --- | --- | --- |
 | 热 | Redis（最新报价）+ TDengine（近期时序） | 分钟~天 | 低延迟点查 | 在线监控、策略实时读 |
-| 温 | Kafka（可回放事件流） | 7~30 天（按 retention） | 顺序消费 | 分析域 factor-engine、ClickHouse ETL |
-| 冷 | ClickHouse（聚合 OLAP）+ OSS（原始归档） | 月~年 | 批量扫描 | 回测 backtest-engine、审计 |
+| 温 | Kafka（可回放事件流） | 7~30 天（按 retention） | 顺序消费 | 分析域 factor_engine、ClickHouse ETL |
+| 冷 | ClickHouse（聚合 OLAP）+ OSS（原始归档） | 月~年 | 批量扫描 | 回测 backtest_engine、审计 |
 
 > 对齐 `DATAFLOW.md` 决策日志存储策略（热 7 天 → 温 30 天 → 冷归档 365 天），数据域采用同样的三级分层。
 
@@ -849,20 +849,20 @@ macro_engine  输入: MacroPoint[] ◄──────────────
 
 ---
 
-## 十五、架构修正：market-data 接收侧聚合层
+## 十五、架构修正：market_data 接收侧聚合层
 
-> ⚠️ 本节修正 §十四 的一个架构事实。经查 `module/market-data/SPEC.md`，行情数据的接收侧存在一个**独立的 dispatch 聚合层**，13 个 adapter 不直写存储。
+> ⚠️ 本节修正 §十四 的一个架构事实。经查 `module/market_data/SPEC.md`，行情数据的接收侧存在一个**独立的 dispatch 聚合层**，13 个 adapter 不直写存储。
 
 ### 15.1 事实
 
-`module/market-data`（L3 行情摄取与分发，v1.0.0-spec Docs Baseline）定义了 **DownstreamDispatchPort**：
+`module/market_data`（L3 行情摄取与分发，v1.0.0-spec Docs Baseline）定义了 **DownstreamDispatchPort**：
 
-> `module/binance` 在采集 Binance 原始数据后，**不直接写入存储、队列或策略入口**；它必须通过 downstream dispatch port 将归一化事件交给 `market-data` 接收侧。
+> `module/binance` 在采集 Binance 原始数据后，**不直接写入存储、队列或策略入口**；它必须通过 downstream dispatch port 将归一化事件交给 `market_data` 接收侧。
 
 binance 已对齐该契约（`internal/server/server.go:136-137`）：
 
 ```go
-// DownstreamDispatcher sends accepted events to module/market-data.
+// DownstreamDispatcher sends accepted events to module/market_data.
 type DownstreamDispatcher interface {
     Dispatch(ctx context.Context, events []AcceptedMarketEvent) (DispatchOutcome, error)
 }
@@ -877,7 +877,7 @@ binance/okx/… adapter（13）
   client 采集 + server 验收（校验/幂等/排序键/ack-reject 分类）
      │
      ▼  DownstreamDispatchPort（归一化事件）
-market-data 接收侧（聚合层，唯一写存储者）
+market_data 接收侧（聚合层，唯一写存储者）
      │
      ├─► TDengine（时序双写）
      ├─► Kafka（流双写）
@@ -890,16 +890,16 @@ market-data 接收侧（聚合层，唯一写存储者）
 
 **关键变化**：
 - adapter 的 server 只做**接收侧校验**（validation/idempotency/排序键），不做最终落库。
-- 真正的 TD+Kafka 双写发生在 **market-data 接收侧**，由它统一执行。
-- 这保证 23 个 adapter 的落库逻辑**零差异**——全部委托给 market-data，adapter 不各自实现持久化。
+- 真正的 TD+Kafka 双写发生在 **market_data 接收侧**，由它统一执行。
+- 这保证 23 个 adapter 的落库逻辑**零差异**——全部委托给 market_data，adapter 不各自实现持久化。
 
 ### 15.3 对 §十四 同步路径的修正
 
 | 原 §14.2 表述 | 修正 |
 | --- | --- |
-| ⑩ dispatch-时序：TDengine，由 adapter server 双写 | TDengine 双写由 **market-data 接收侧**执行，adapter 只 Dispatch |
-| ⑩ dispatch-流：Kafka，由 adapter server 双写 | 同上，Kafka 双写在 market-data |
-| 同步关键路径 4 写全在 adapter | 4 写下沉到 market-data 接收侧；adapter 的同步路径止于 Dispatch 调用 |
+| ⑩ dispatch-时序：TDengine，由 adapter server 双写 | TDengine 双写由 **market_data 接收侧**执行，adapter 只 Dispatch |
+| ⑩ dispatch-流：Kafka，由 adapter server 双写 | 同上，Kafka 双写在 market_data |
+| 同步关键路径 4 写全在 adapter | 4 写下沉到 market_data 接收侧；adapter 的同步路径止于 Dispatch 调用 |
 
 ### 15.4 修正后的职责分层
 
@@ -907,10 +907,10 @@ market-data 接收侧（聚合层，唯一写存储者）
 | --- | --- | --- |
 | adapter client（13） | 采集、normalize、质量门禁、spool/checkpoint | ❌ |
 | adapter server（13） | 接收侧校验、幂等判定、排序键、ack/reject 分类 | ❌ |
-| **market-data 接收侧** | **唯一写存储者**：TD+Kafka 双写、PG 元数据、Redis 缓存 | ✅ |
+| **market_data 接收侧** | **唯一写存储者**：TD+Kafka 双写、PG 元数据、Redis 缓存 | ✅ |
 | contracts 端口 | 对下游（分析域）暴露 MarketDataProvider | ❌ |
 
-这是比 §十四更准确的架构——**采集与落库解耦**，adapter 不知道存储细节，market-data 不知道交易所细节。
+这是比 §十四更准确的架构——**采集与落库解耦**，adapter 不知道存储细节，market_data 不知道交易所细节。
 
 ---
 
@@ -974,40 +974,40 @@ NATS 控制面订阅 `svc.{module}.health`，编排层（x.go）聚合 23 服务
 
 ### 16.4 分布式追踪（observex Tracer）
 
-行情/宏观事件跨进程链路：`adapter client → adapter server → market-data 接收侧 → 存储`。trace_id 经 context 传播，确保一条 @trade 事件从交易所到落库可完整串联（解决 observex §2 描述的"跨 3 模块需人工拼接日志行"问题）。
+行情/宏观事件跨进程链路：`adapter client → adapter server → market_data 接收侧 → 存储`。trace_id 经 context 传播，确保一条 @trade 事件从交易所到落库可完整串联（解决 observex §2 描述的"跨 3 模块需人工拼接日志行"问题）。
 
 ---
 
-## 十七、宏观聚合层缺口（macro-data 待建）
+## 十七、宏观聚合层缺口（macro_data 待建）
 
-> 经查 `module/`：行情侧有 `market-data`（L3 接收侧聚合 spec）；宏观侧 **`macro-data` 聚合层 SPEC 缺失**。
+> 经查 `module/`：行情侧有 `market_data`（L3 接收侧聚合 spec）；宏观侧 **`macro_data` 聚合层 SPEC 缺失**。
 >
-> ⚠️ **核实修正**：`contracts` 已完整定义 `MacroDataProvider` 端口（SPEC §8.1 / FR-002，三方法签名齐全），**端口无需补**。真正的缺口是 `macro-data` 模块的**接收侧 SPEC 文档**（镜像 market-data）。
+> ⚠️ **核实修正**：`contracts` 已完整定义 `MacroDataProvider` 端口（SPEC §8.1 / FR-002，三方法签名齐全），**端口无需补**。真正的缺口是 `macro_data` 模块的**接收侧 SPEC 文档**（镜像 market_data）。
 
 ### 17.1 核实后的缺口矩阵
 
 | 模块 | SPEC 文档 | 运行时代码 | 端口（contracts） | 状态 |
 | --- | --- | --- | --- | --- |
 | `contracts` | ✅ v1.2.0 | spec-only（仅 go.mod） | ✅ MacroDataProvider **已定义**（§8.1） | 端口就绪，待实现 |
-| `market-data` | ✅ v1.0.0（DownstreamDispatchPort） | spec-only（无 /home/market-data） | ✅ MarketDataProvider 已定义 | 接收侧规格就绪，待实现 |
-| `macro-data` | **❌ 不存在**（module/macro-data/ 无） | — | ✅ 端口已在 contracts，**无接收侧实现者** | **聚合层 SPEC 缺失** |
+| `market_data` | ✅ v1.0.0（DownstreamDispatchPort） | spec-only（无 /home/market_data） | ✅ MarketDataProvider 已定义 | 接收侧规格就绪，待实现 |
+| `macro_data` | **❌ 不存在**（module/macro_data/ 无） | — | ✅ 端口已在 contracts，**无接收侧实现者** | **聚合层 SPEC 缺失** |
 
 | 域 | 采集 adapter | 接收侧聚合层 | 状态 |
 | --- | --- | --- | --- |
-| 行情 | binance/okx/…（13） | `market-data`（DownstreamDispatchPort） | ✅ Docs Baseline |
-| 宏观 | fred/bea/ecb/…（10） | **`macro-data`（SPEC 缺失）** | ❌ 待建 SPEC |
+| 行情 | binance/okx/…（13） | `market_data`（DownstreamDispatchPort） | ✅ Docs Baseline |
+| 宏观 | fred/bea/ecb/…（10） | **`macro_data`（SPEC 缺失）** | ❌ 待建 SPEC |
 
 ### 17.2 影响
 
-若不补 `macro-data`，10 个宏观 adapter 要么：
+若不补 `macro_data`，10 个宏观 adapter 要么：
 - (a) 各自直写存储 → 违反 §十五 的"采集与落库解耦"原则，10 份落库逻辑复制；或
-- (b) 复用行情的 `market-data` → 语义不符（MacroPoint ≠ MarketEvent，质量门禁不同：no-lookahead vs stale gate）。
+- (b) 复用行情的 `market_data` → 语义不符（MacroPoint ≠ MarketEvent，质量门禁不同：no-lookahead vs stale gate）。
 
 ### 17.3 建议
 
-新建 `macro-data`（L3 宏观摄取与分发），镜像 `market-data` 的接收侧设计：
+新建 `macro_data`（L3 宏观摄取与分发），镜像 `market_data` 的接收侧设计：
 
-| 维度 | market-data（行情） | macro-data（宏观，拟建） |
+| 维度 | market_data（行情） | macro_data（宏观，拟建） |
 | --- | --- | --- |
 | 端口 | DownstreamDispatchPort | MacroDispatchPort |
 | 事件 | AcceptedMarketEvent（Tick/Quote/Bar/OB） | AcceptedMacroEvent（MacroPoint） |
@@ -1015,16 +1015,16 @@ NATS 控制面订阅 `svc.{module}.health`，编排层（x.go）聚合 23 服务
 | 排序键 | symbol+ts+seq | seriesCode+observedAt+revisionVersion |
 | 落库 | TD+Kafka+PG+Redis | 同（per-provider macro_* 库） |
 
-这应纳入 P0 前置（contracts 端口已就绪，只差 macro-data 接收侧 SPEC），否则宏观 adapter 无法按统一架构落地。
+这应纳入 P0 前置（contracts 端口已就绪，只差 macro_data 接收侧 SPEC），否则宏观 adapter 无法按统一架构落地。
 
 ### 17.4 修正后的完整模块清单
 
 数据域实际是 **行情 13 adapter + 1 聚合 + 宏观 10 adapter + 1 聚合（待建）+ 另类**：
 
 ```
-行情：13 adapter（binance…coinglass） → market-data（1 聚合层）→ 存储
-宏观：10 adapter（fred…yahoo）       → macro-data（1 聚合层，待建）→ 存储
-另类：alternative-data（已规划）
+行情：13 adapter（binance…coinglass） → market_data（1 聚合层）→ 存储
+宏观：10 adapter（fred…yahoo）       → macro_data（1 聚合层，待建）→ 存储
+另类：alternative_data（已规划）
 ```
 
 ---
@@ -1034,19 +1034,19 @@ NATS 控制面订阅 `svc.{module}.health`，编排层（x.go）聚合 23 服务
 ### 18.1 修正后的落地顺序（P0-P6 + P1.5）
 
 ```
-P0  contracts 端口已就绪（MacroDataProvider §8.1）；macro-data 接收侧聚合层 SPEC（§十七）
+P0  contracts 端口已就绪（MacroDataProvider §8.1）；macro_data 接收侧聚合层 SPEC（§十七）
  │
  ├─► P1  CS 模板固化（adapter 骨架 + internal/infra 瘦身版）
  │
  ├─► P1.5  bootstrap 薄胶水层（§十三）
  │
- ├─► P2  旧模块迁移（23 go.mod 切细粒度基座，废弃 xlib-standard）
- │        ├─ 行情 13：迁 domain-market + 经 market-data dispatch
- │        └─ 宏观 10：迁 domain-macro + 待 macro-data 落地
+ ├─► P2  旧模块迁移（23 go.mod 切细粒度基座，废弃 xlib_standard）
+ │        ├─ 行情 13：迁 domain_market + 经 market_data dispatch
+ │        └─ 宏观 10：迁 domain_macro + 待 macro_data 落地
  │
  ├─► P3  配置注入（dev.md → .env → bootstrap configx EnvSource）
  │
- ├─► P4  持久化接通（market-data/macro-data 接收侧落库，非 adapter）
+ ├─► P4  持久化接通（market_data/macro_data 接收侧落库，非 adapter）
  │
  ├─► P5  边界门禁（23 套 boundary-gates.sh）
  │
@@ -1057,25 +1057,25 @@ P0  contracts 端口已就绪（MacroDataProvider §8.1）；macro-data 接收�
 
 | 阶段 | 门禁 | 验证方式 |
 | --- | --- | --- |
-| P0 | MacroDataProvider 已在 contracts v1.2（✅ 就绪）；macro-data 接收侧 SPEC Approved | 四源评分 ≥98 + arbiter pass |
+| P0 | MacroDataProvider 已在 contracts v1.2（✅ 就绪）；macro_data 接收侧 SPEC Approved | 四源评分 ≥98 + arbiter pass |
 | P1 | CS 模板可 `cp -r` 新建模块，boundary-gates 全绿 | 新建 1 个空壳模块跑通门禁 |
 | P1.5 | bootstrap v0.1.0 发布，binance 接入后 main ≤10 行 | bootstrap 5 道边界门禁全绿 |
-| P2 | 23 个 go.mod 零 `xlib-standard`，全依赖 v1.0+ | `grep xlib-standard` 零命中 |
+| P2 | 23 个 go.mod 零 `xlib_standard`，全依赖 v1.0+ | `grep xlib_standard` 零命中 |
 | P3 | 23 服务各自只连自己的 per-provider 库 | 库隔离连通测试（跨库连接被拒） |
-| P4 | market-data 接收侧 TD+Kafka 双写成功才 ACK | 双写一致性测试（§14.4 场景表） |
+| P4 | market_data 接收侧 TD+Kafka 双写成功才 ACK | 双写一致性测试（§14.4 场景表） |
 | P5 | 23 服务 boundary-gates CI 全绿 | client↔server 隔离 + 跨模块禁 import |
 | P6 | x.go 单进程拉起 23 服务，健康检查全 ready | /health 聚合 23 服务 status=ready |
 
 ### 18.3 与治理管线对齐
 
-本方案推进为正式实现时，每个模块（bootstrap / macro-data / 23 adapter 迁移）都必须走 AGENTS.md 的 Spec→Code 管线：
+本方案推进为正式实现时，每个模块（bootstrap / macro_data / 23 adapter 迁移）都必须走 AGENTS.md 的 Spec→Code 管线：
 
 ```
 Spec → Matrix → Tasks → Plan → Prompt → Code
 每阶段四源评分 composite_score = min(claude, codex, copilot, rules) ≥ 98 + 无红线
 ```
 
-`bootstrap` 和 `macro-data` 作为受保护的新基座/聚合层模块，其 SPEC/RUBRIC 改进还须遵守 CONSTITUTION §14（受控递归改进），进入 `docs/governance/improvements/{date}-{slug}/SPEC.md`。
+`bootstrap` 和 `macro_data` 作为受保护的新基座/聚合层模块，其 SPEC/RUBRIC 改进还须遵守 CONSTITUTION §14（受控递归改进），进入 `docs/governance/improvements/{date}-{slug}/SPEC.md`。
 
 ---
 
@@ -1084,7 +1084,7 @@ Spec → Matrix → Tasks → Plan → Prompt → Code
 | # | 决策 | 章节 |
 | --- | --- | --- |
 | D1 | 23 子模块统一 CS 骨架 | §五 |
-| D2 | go.mod 切细粒度基座，废弃 xlib-standard | §六 |
+| D2 | go.mod 切细粒度基座，废弃 xlib_standard | §六 |
 | D3 | 7 存储职责分层，Kafka=数据面/NATS=控制面正交，TD=CH 互补 | §四 |
 | D4 | per-provider 库级隔离 | §七 |
 | D5 | 凭据经 configx EnvSource + SecretString 注入 | §七 |
@@ -1093,10 +1093,10 @@ Spec → Matrix → Tasks → Plan → Prompt → Code
 | D8 | 新建 bootstrap（L1 薄胶水层），不做重型基座 | §十三 |
 | D9 | bootstrap 禁 import 业务域和领域层 | §十三 |
 | D10 | 每服务 internal/infra 保留但瘦身 | §十三 |
-| **D11** | **行情 adapter 经 market-data 接收侧落库，不直写存储（修正 §十四）** | **§十五** |
-| **D12** | **宏观侧需新建 macro-data 聚合层，镜像 market-data 设计** | **§十七** |
+| **D11** | **行情 adapter 经 market_data 接收侧落库，不直写存储（修正 §十四）** | **§十五** |
+| **D12** | **宏观侧需新建 macro_data 聚合层，镜像 market_data 设计** | **§十七** |
 | **D13** | **数据域标准指标 label 禁 symbol（高基数），kind 固定枚举** | **§十六** |
-| **D14** | **TD+Kafka 双写一致性由 market-data/macro-data 接收侧统一保证，非各 adapter** | **§十五** |
+| **D14** | **TD+Kafka 双写一致性由 market_data/macro_data 接收侧统一保证，非各 adapter** | **§十五** |
 
 
 ---
@@ -1111,16 +1111,16 @@ Spec → Matrix → Tasks → Plan → Prompt → Code
 | 依赖矩阵     | `module/FOUNDATION-DEPS.yaml`              | 机器可读依赖边守卫                                            |
 | **数据流**   | **`DATAFLOW.md`**                          | **分析域→决策域→执行域下游流（本报告 §十四 补齐数据域上游）** |
 | 跨域契约     | `module/contracts/SPEC.md`                 | MarketDataProvider + **MacroDataProvider 已定义**（§8.1）     |
-| **行情聚合** | **`module/market-data/SPEC.md`**           | **DownstreamDispatchPort 接收侧（唯一写存储者，§十五）**      |
-| **宏观聚合** | **`module/macro-data/`（待建，§十七）**    | **宏观接收侧聚合层缺口**                                      |
+| **行情聚合** | **`module/market_data/SPEC.md`**           | **DownstreamDispatchPort 接收侧（唯一写存储者，§十五）**      |
+| **宏观聚合** | **`module/macro_data/`（待建，§十七）**    | **宏观接收侧聚合层缺口**                                      |
 | 配置约定     | `module/configx/SPEC.md`                   | SecretString / EnvSource / Provenance                         |
 | 可观测       | `module/observex/SPEC.md`                  | Logger/Meter/Tracer/Health 接口（§十六）                      |
 | 生命周期     | `/home/kernel/lifecycx/lifecycx.go`        | Component/Manager（bootstrap 的编排基础，已存在）              |
-| 行情领域     | `module/domain-market/SPEC.md`             | Tick/Quote/Bar SSOT                                           |
-| 宏观领域     | `module/domain-macro/SPEC.md`              | MacroPoint / no-lookahead 语义                                |
+| 行情领域     | `module/domain_market/SPEC.md`             | Tick/Quote/Bar SSOT                                           |
+| 宏观领域     | `module/domain_macro/SPEC.md`              | MacroPoint / no-lookahead 语义                                |
 | C/S 模板     | `/home/binance/`（cmd/internal/pkg）       | 已落地的行情 CS 参考实现                                      |
 | 宏观参考     | `/home/fred/`                              | 宏观模块结构（✅ P2 迁移 + bootstrap 接入完成）                 |
 
 ---
 
-_报告结束（19 节）。下一步建议优先级：**P0**（macro-data 接收侧聚合层 SPEC；contracts 端口已就绪）→ **P1**（CS 模板）→ **P1.5**（bootstrap 薄胶水层）→ P2-P6。每阶段走 Spec→Code 四源 98 分门禁。_
+_报告结束（19 节）。下一步建议优先级：**P0**（macro_data 接收侧聚合层 SPEC；contracts 端口已就绪）→ **P1**（CS 模板）→ **P1.5**（bootstrap 薄胶水层）→ P2-P6。每阶段走 Spec→Code 四源 98 分门禁。_

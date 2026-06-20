@@ -42,7 +42,7 @@
 - 依赖报告：`go list -deps` 输出
 
 ### 11. `release/standard-sync/`
-- 标准同步：与 xlib-standard 的合规对照
+- 标准同步：与 xlib_standard 的合规对照
 
 ### 12. `Makefile` 更新
 - 添加 `release-preflight` 目标：build + test + vet + lint + stdlib-check + coverage + benchmark + gitleaks

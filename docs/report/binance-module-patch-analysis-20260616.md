@@ -46,19 +46,19 @@ Patch 大量引用 `MarketDataService` 作为 gRPC 服务端（接收 binance �
 - `module/contracts` 定义了 `MarketEvent` DTO 和 `MarketDataProvider` 接口（Go Port），但**没有 gRPC 服务定义**
 - Patch 的 PR-003 试图在 `module/contracts/proto` 中添加 proto 定义，但**谁实现 MarketDataService 服务端？**
 
-这暴露了一个架构空白：binance 向谁发数据？可能是 `market-data` 模块（当前已列出 18 个组件），但 patch 中未明确这个接收端的规格。
+这暴露了一个架构空白：binance 向谁发数据？可能是 `market_data` 模块（当前已列出 18 个组件），但 patch 中未明确这个接收端的规格。
 
 ### 2.3 依赖模块升级幅度
 
 | PR     | 目标模块                     | 变更量估算           | 风险                            |
 | ------ | ---------------------------- | -------------------- | ------------------------------- |
 | PR-001 | `module/binance/` 新建       | 全新 20 文件         | 🟢 纯增量                       |
-| PR-002 | `module/domain-market`       | 需新增 ~6 个类型     | 🟡 现有 API 可能需要兼容迁移    |
+| PR-002 | `module/domain_market`       | 需新增 ~6 个类型     | 🟡 现有 API 可能需要兼容迁移    |
 | PR-003 | `module/contracts`           | 新增 5 个 proto 文件 | 🟡 proto 生成代码管理策略需明确 |
 | PR-004 | `module/transportx`          | 补充策略声明         | 🟢 纯策略文本                   |
 | PR-005 | `github.com/ZoneCNH/binance` | 全量实现             | 🔴 依赖 PR-002/003/004 完成     |
 
-**PR-002 是最关键的阻塞项**：`domain-market` 当前 SPEC 定义的是 `MarketEventEnvelope`（包含 Bar/Tick），而 patch 需要的是 `InstrumentKey`、`ProductLine`、`PriceKind`、`InstrumentType`、`OptionType`、`MarketScope`、`MarketFactEnvelope`、`decision_time` —— 这些在当前 `domain-market/SPEC.md` 中**全都不存在**。
+**PR-002 是最关键的阻塞项**：`domain_market` 当前 SPEC 定义的是 `MarketEventEnvelope`（包含 Bar/Tick），而 patch 需要的是 `InstrumentKey`、`ProductLine`、`PriceKind`、`InstrumentType`、`OptionType`、`MarketScope`、`MarketFactEnvelope`、`decision_time` —— 这些在当前 `domain_market/SPEC.md` 中**全都不存在**。
 
 ### 2.4 与现有 STATE 的冲突
 
@@ -97,7 +97,7 @@ Patch 没有说明 `binance`（新 C/S Client）与 `binance-market`（旧 Provi
 | --- | ------------------------------------------------------------------------ | ------ | --------------------------------------------- |
 | 1   | `binance` vs `binance-market` 关系未澄清                                 | HIGH   | APPLY-GUIDE 中说明两模块的演进关系            |
 | 2   | MarketDataService 服务端无人认领                                         | HIGH   | 在 SPEC §7 或 ADR 中明确接收端是哪个模块      |
-| 3   | `domain-market` 升级范围未细化                                           | MEDIUM | PR-002 应附带具体的类型变更 diff 预览         |
+| 3   | `domain_market` 升级范围未细化                                           | MEDIUM | PR-002 应附带具体的类型变更 diff 预览         |
 | 4   | `scripts/check-binance-boundaries.sh` 依赖 `rg`                          | LOW    | 改为 POSIX `grep` 或声明 `ripgrep` 为 CI 依赖 |
 | 5   | 缺少 `module/binance/GOAL.md`                                            | LOW    | 按 ZoneCNH 约定，模块应包含 Goal 文件         |
 | 6   | SPEC §3 "Owns" 列出 22 项，但包含具体实现路径（`internal/binance/spot`） | LOW    | 这些是实现细节，应移到 IMPLEMENTATION-PLAN    |
@@ -132,16 +132,16 @@ Patch 后架构：
 
 1. **明确 Service 端归宿**：`MarketDataService` 由哪个模块实现？（建议在 ADR 或 SPEC §7 中注明）
 2. **澄清 binance vs binance-market**：替代还是共存？在 APPLY-GUIDE 中加一节
-3. **PR-002 domain-market 升级**：给出具体的新增类型清单和向后兼容策略
+3. **PR-002 domain_market 升级**：给出具体的新增类型清单和向后兼容策略
 
 ### 建议的合并顺序
 
 ```
 PR-001 (module/binance spec)      ← 先落地规格，不依赖其他变更
     ↓
-PR-003 (contracts proto)          ← 定义跨域契约，domain-market 可引用
+PR-003 (contracts proto)          ← 定义跨域契约，domain_market 可引用
     ↓
-PR-002 (domain-market upgrade)    ← 基于 proto 定义实现 Go 类型
+PR-002 (domain_market upgrade)    ← 基于 proto 定义实现 Go 类型
     ↓
 PR-004 (transportx policy)        ← 声明 gRPC/Gin 策略
     ↓
@@ -193,8 +193,8 @@ PR-005 (binance runtime impl)     ← 全部依赖就绪
 | # | 原发现 | 严重度 | 解决方案 | 涉及 PR |
 |---|--------|--------|----------|---------|
 | 1 | `binance` vs `binance-market` 关系未澄清 | HIGH | `binance-market` 已从 ARCHITECTURE.md/STATUS.md 完全移除。binance SPEC Non-goals："不做旧 binance-market 遗留模块迁移或兼容" | #539, #540 |
-| 2 | MarketDataService 服务端无人认领 | HIGH | binance/server 定义为 gRPC ingest server；market-data 定义为 downstream dispatch port。完整链路：client → contracts §8.4 gRPC → server → market-data DownstreamDispatchPort | #543, #545, #548 |
-| 3 | domain-market 升级范围未细化 | MEDIUM | v1.1.0 新增 ProductLine（um_perp/cm_perp）、InstrumentKey（Venue/ProductLine + Validate()）、MarketFactEnvelope 完整结构体（事件时间语义 + Validate()）、§10.1 Binance C/S ingestion canonical 语义 | #549, #554 |
+| 2 | MarketDataService 服务端无人认领 | HIGH | binance/server 定义为 gRPC ingest server；market_data 定义为 downstream dispatch port。完整链路：client → contracts §8.4 gRPC → server → market_data DownstreamDispatchPort | #543, #545, #548 |
+| 3 | domain_market 升级范围未细化 | MEDIUM | v1.1.0 新增 ProductLine（um_perp/cm_perp）、InstrumentKey（Venue/ProductLine + Validate()）、MarketFactEnvelope 完整结构体（事件时间语义 + Validate()）、§10.1 Binance C/S ingestion canonical 语义 | #549, #554 |
 | 4 | `rg` 依赖 | LOW | 脚本未纳入合并；边界门禁通过 BOUNDARY-GATES.md 文档形式落地 | #543 |
 | 5 | 缺少 goal.md | LOW | module/binance/goal.md 已创建；client OQ-001 标记为已解决 | #554 |
 | 6 | SPEC Owns 列出实现路径 | LOW | client/server SPEC 明确划分职责边界 | #543, #554 |
@@ -205,24 +205,24 @@ PR-005 (binance runtime impl)     ← 全部依赖就绪
 |----------|------|------|
 | PR-001: binance spec | ✅ 已合并 | Done |
 | PR-003: contracts proto | ✅ contracts §8.4 docs-only 基线已定义 | Done |
-| PR-002: domain-market upgrade | ✅ v1.1.0 canonical 类型已落地 | Done |
+| PR-002: domain_market upgrade | ✅ v1.1.0 canonical 类型已落地 | Done |
 | PR-004: transportx policy | ⏸️ 推迟 — contracts §8.4 + binance server SPEC 覆盖 | Deferred |
-| PR-005: binance runtime impl | ⏸️ 阻塞 — 等待 domain-market/contracts 运行时冻结（OQ-002 已关闭：market-data dispatch port 接口已定义） | Blocked |
+| PR-005: binance runtime impl | ⏸️ 阻塞 — 等待 domain_market/contracts 运行时冻结（OQ-002 已关闭：market_data dispatch port 接口已定义） | Blocked |
 
 ### 7.3 剩余未解决
 
 | 项目 | 状态 | 阻塞因素 |
 |------|------|----------|
-| OQ-002（binance/server）| ✅ 已确认 | binance SPEC OQ-002="dispatch port 接口是否已定义？" → market-data SPEC v0.1.1 已定义 DownstreamDispatchPort（12 字段 + 8 reject reasons + binance reject 映射）。dispatch 失败策略为 PR-005 设计决策 |
-| binance runtime implementation | Pending | 依赖 domain-market/contracts 运行时冻结（docs baseline 已就绪） |
-| market-data §10.1 Contract/Domain/Adapter Gate | ✅ docs baseline 通过 | Test Gate 待 runtime 实现 |
+| OQ-002（binance/server）| ✅ 已确认 | binance SPEC OQ-002="dispatch port 接口是否已定义？" → market_data SPEC v0.1.1 已定义 DownstreamDispatchPort（12 字段 + 8 reject reasons + binance reject 映射）。dispatch 失败策略为 PR-005 设计决策 |
+| binance runtime implementation | Pending | 依赖 domain_market/contracts 运行时冻结（docs baseline 已就绪） |
+| market_data §10.1 Contract/Domain/Adapter Gate | ✅ docs baseline 通过 | Test Gate 待 runtime 实现 |
 
-### 7.4 market-data 模块新增
+### 7.4 market_data 模块新增
 
 原分析报告指出的"隐式 MarketDataService Server"架构空白已通过以下方式填补：
-- `module/market-data/SPEC.md` v0.1.1：DownstreamDispatchPort 语义、12 字段输入契约、8 种拒绝原因（含 binance-native 映射规则 §4.4.1）、跨模块字段命名映射表 §4.2.1
-- `module/market-data/TRACEABILITY.md`：8 FR + 6 BR + 4 NFR + 9 TC + 6 AC，全追溯链闭合
-- `module/market-data/goal.md`：边界定义、实现门禁（Contract/Domain/Adapter/Reject/Naming/Test）
-- `module/market-data/IMPLEMENTATION-PLAN.md`：6-PR 执行序列（PR-000 docs ✅ → PR-006 contract tests）
+- `module/market_data/SPEC.md` v0.1.1：DownstreamDispatchPort 语义、12 字段输入契约、8 种拒绝原因（含 binance-native 映射规则 §4.4.1）、跨模块字段命名映射表 §4.2.1
+- `module/market_data/TRACEABILITY.md`：8 FR + 6 BR + 4 NFR + 9 TC + 6 AC，全追溯链闭合
+- `module/market_data/goal.md`：边界定义、实现门禁（Contract/Domain/Adapter/Reject/Naming/Test）
+- `module/market_data/IMPLEMENTATION-PLAN.md`：6-PR 执行序列（PR-000 docs ✅ → PR-006 contract tests）
 - §10.1 门禁：Contract/Domain/Adapter 三门禁 docs baseline 已通过 ✅；Reject/Naming Mapping 已基线发布；Test Gate 待 runtime
 - README.md/ARCHITECTURE.md：市场数据拆分为 14 组件（1 dispatch + 12 SDK + 1 C/S Module）

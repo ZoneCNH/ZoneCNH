@@ -1,7 +1,7 @@
-# order-engine 需求追溯矩阵
+# order_engine 需求追溯矩阵
 
 > 更新：2026-06-17
-> 来源：module/order-engine/SPEC.md
+> 来源：module/order_engine/SPEC.md
 > 规范：docs/governance/TRACEABILITY.md
 
 ---

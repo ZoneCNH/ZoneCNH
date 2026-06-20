@@ -1,7 +1,7 @@
-# `module/xlib-standard/` 结构性问题深度分析
+# `module/xlib_standard/` 结构性问题深度分析
 
 - 报告日期：2026-06-08
-- 分析对象：`module/xlib-standard/`（7 个 Markdown 工件，共 2,908 行）
+- 分析对象：`module/xlib_standard/`（7 个 Markdown 工件，共 2,908 行）
 - 分析方法：逐工件读取 + 交叉引用 + 数字一致性核对 + 角色边界审查
 - 结论概览：**总分 5.4 / 10（中低）**，结构问题集中在"多权威源并存、口径不统一、追溯弱、自我定位摇摆"四个方向
 
@@ -84,7 +84,7 @@
 
 ### S5【高】追溯表是章节级而非 rule 级，且不可机器消费
 
-`TRACEABILITY.md` 仅 62 行、约 25 条映射，全部是"模块身份 → docs/spec.md, docs/standard/xlib-standard.md, docs/standard/repository-roles.md"这种文件级锚点：
+`TRACEABILITY.md` 仅 62 行、约 25 条映射，全部是"模块身份 → docs/spec.md, docs/standard/xlib_standard.md, docs/standard/repository-roles.md"这种文件级锚点：
 
 - 无 rule-id（419 条 RULE-\*）到 file:line 的映射
 - 无 commit/tree-sha
@@ -136,11 +136,11 @@
 ### S9【中】本目录与上游真源仓库的角色边界未声明
 
 - 本仓库（`ZoneCNH/ZoneCNH`）按 `AGENTS.md` 是"个人主页与架构索引"，不应承载实现源码。
-- `module/xlib-standard/` 看似是上游 `github.com/ZoneCNH/xlib-standard` 的本地分析快照，但：
+- `module/xlib_standard/` 看似是上游 `github.com/ZoneCNH/xlib_standard` 的本地分析快照，但：
   - SPEC.md 标 `Status: Draft`，措辞像独立规格而非快照
   - 无 upstream commit ref / snapshot date 锚点
   - 自身保留 4 个工件类（主规格、追溯、冲突、清单），形似治理仓库
-- 当上游 xlib-standard/docs/standard/ 变更时，本目录与上游谁是 SSOT 没有规则。
+- 当上游 xlib_standard/docs/standard/ 变更时，本目录与上游谁是 SSOT 没有规则。
 
 **影响维度**：边界清晰度、SSOT
 
@@ -200,8 +200,8 @@ SSOT          ███░░░░░░░ 3
 
 ### P0（影响 SSOT，必须先做）
 
-1. **物理废止 MODULE-SPEC.md 与 DEEP-ANALYSIS.md**：移动到 `module/xlib-standard/archive/` 或彻底删除，README 中只保留 4 个当前工件（SPEC / TRACEABILITY / CONFLICT-LEDGER / COVERAGE-MANIFEST）。如保留，必须明确"非规格、仅历史"且在仓库 lint 检查中排除。
-2. **声明本目录与上游 `github.com/ZoneCNH/xlib-standard` 的关系**：是 snapshot 还是 fork？在 README 顶部记录 `Upstream: <repo>@<commit>` 锚点。
+1. **物理废止 MODULE-SPEC.md 与 DEEP-ANALYSIS.md**：移动到 `module/xlib_standard/archive/` 或彻底删除，README 中只保留 4 个当前工件（SPEC / TRACEABILITY / CONFLICT-LEDGER / COVERAGE-MANIFEST）。如保留，必须明确"非规格、仅历史"且在仓库 lint 检查中排除。
+2. **声明本目录与上游 `github.com/ZoneCNH/xlib_standard` 的关系**：是 snapshot 还是 fork？在 README 顶部记录 `Upstream: <repo>@<commit>` 锚点。
 
 ### P1（影响可追溯性 / 可机读性）
 
@@ -224,7 +224,7 @@ SSOT          ███░░░░░░░ 3
 
 ## 4. 风险与背书
 
-- 本评分基于本仓库本地工件静态分析。未访问上游 `github.com/ZoneCNH/xlib-standard` 源仓库，因此 S9 的"与上游边界"判断可能因上游已有同步规则而下调严重度。
+- 本评分基于本仓库本地工件静态分析。未访问上游 `github.com/ZoneCNH/xlib_standard` 源仓库，因此 S9 的"与上游边界"判断可能因上游已有同步规则而下调严重度。
 - 154 个输入文件未抽样核对内容；本报告假定 COVERAGE-MANIFEST 中文件存在性、内容由原作者保证。
 - 评分权重为分析者主观选择；如优先发布、可读性高于机器化，未加权平均分（4.0）也可作为参考下限。
 

@@ -1,26 +1,26 @@
-# backtest-engine 规格
+# backtest_engine 规格
 
 - Status: Draft
 - Spec-Version: v0.1.0-draft
 - Last-Updated: 2026-06-17
 - Layer: 决策域 · 回测引擎
 - Version: v0.1.0-draft
-- Related: `CONSTITUTION.md`, `../factor-engine/`, `../domain-market/`
+- Related: `CONSTITUTION.md`, `../factor_engine/`, `../domain_market/`
 
-> 本文档发布 backtest-engine 基线。运行时实现为 Pending。
+> 本文档发布 backtest_engine 基线。运行时实现为 Pending。
 
 ---
 
 ## 1. 摘要
 
-backtest-engine 是决策域的事件驱动回测引擎，消费 signal-factory 信号执行历史回测。
+backtest_engine 是决策域的事件驱动回测引擎，消费 signal_factory 信号执行历史回测。
 
 ## 2. 边界
 
 | 类型 | 说明 |
 | --- | --- |
 | Owns | 事件驱动回测循环、滑点/手续费模型、绩效指标（Sharpe/MaxDD/Calmar）、回测报告 |
-| Depends on | signal-factory（交易信号）、feature-store（PIT 特征）、domain-market |
+| Depends on | signal_factory（交易信号）、feature_store（PIT 特征）、domain_market |
 | Consumed by | optimizer（参数优化）、策略研发（回测分析） |
 | Excludes | 见上下游模块职责边界 |
 

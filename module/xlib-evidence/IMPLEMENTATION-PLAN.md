@@ -1,4 +1,4 @@
-# xlib-evidence IMPLEMENTATION-PLAN
+# xlib_evidence IMPLEMENTATION-PLAN
 
 ## Phase 1: 核心收集与生成
 

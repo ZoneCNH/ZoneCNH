@@ -122,7 +122,7 @@ def count_base_versions(text):
     return count
 
 def count_sdk_provider(text):
-    """Count SDK and Provider rows separately in market-data section."""
+    """Count SDK and Provider rows separately in market_data section."""
     sdk = prov = 0; in_market = False
     for line in text.splitlines():
         if "### 数据域 · 行情" in line: in_market = True; continue

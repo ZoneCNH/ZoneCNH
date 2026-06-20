@@ -1,9 +1,9 @@
-# xlib-harness Traceability
+# xlib_harness Traceability
 
-> Module: `xlib-harness`
+> Module: `xlib_harness`
 > Version: v0.1.6
 > Last-Updated: 2026-06-20
-> Implementation-Baseline: `/home/xlib-harness@d90b35124701`
+> Implementation-Baseline: `/home/xlib_harness@d90b35124701`
 
 ## Requirement Traceability Matrix
 
@@ -21,7 +21,7 @@
 | NFR ID | Requirement | Acceptance Criteria | Evidence | Status |
 | --- | --- | --- | --- | --- |
 | NFR-001 | harness 运行时只依赖 Go 标准库 | AC-003 | `go list -deps ./...` 与 `fixtures/module-with-bad-dep` | PASS |
-| NFR-002 | JSON 输出可由自动化消费 | AC-004 | `xlib-harness check <module> --json \| jq .` | PASS |
+| NFR-002 | JSON 输出可由自动化消费 | AC-004 | `xlib_harness check <module> --json \| jq .` | PASS |
 | NFR-003 | CI/CD 可重复执行 | AC-004 | `make ci` 与 GitHub Actions workflow | PASS |
 | NFR-004 | Go 覆盖率达到 100% | AC-006 | `go tool cover -func=coverage.out` total 100.0% | PASS |
 | NFR-005 | 代码仓库公开文档与 secret scan 可在发布门禁中重复验证 | AC-007 | `FEATURES.md`、`ACCEPTANCE.md`、Release run `27855366871`、main CI run `27855396013`、pinned `gitleaks` CLI | PASS |
@@ -30,7 +30,7 @@
 
 | TC ID | Scenario | Command | Expected |
 | --- | --- | --- | --- |
-| TC-001 | Generate module docs | `go run . generate /tmp/xlib-harness-smoke --force` | 10 个资产创建成功 |
+| TC-001 | Generate module docs | `go run . generate /tmp/xlib_harness-smoke --force` | 10 个资产创建成功 |
 | TC-002 | Spec gate accepts compliant module | `go run . check fixtures/compliant-module --profile spec` | 规格检查全部通过 |
 | TC-003 | Boundary gate rejects forbidden dependency | `go run . check fixtures/module-with-bad-dep --profile boundary` | 非零退出并报告禁止依赖 |
 | TC-004 | Full gate accepts compliant module | `go run . check fixtures/compliant-module --profile full` | 15 项检查全部通过 |

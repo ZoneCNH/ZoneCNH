@@ -1,4 +1,4 @@
-# portfolio-engine 规格
+# portfolio_engine 规格
 
 - Status: Draft
 - Spec-Version: v0.1.0-draft
@@ -7,19 +7,19 @@
 - Version: v0.1.0-draft
 - Related: `CONSTITUTION.md`
 
-> 本文档发布 portfolio-engine 基线。运行时实现为 Pending。
+> 本文档发布 portfolio_engine 基线。运行时实现为 Pending。
 
 ## 1. 摘要
 
-portfolio-engine 实时追踪所有持仓和 PnL，提供组合层面的风险敞口视图。
+portfolio_engine 实时追踪所有持仓和 PnL，提供组合层面的风险敞口视图。
 
 ## 2. 边界
 
 | 类型 | 说明 |
 | --- | --- |
 | Owns | 组合管理、PnL 实时计算、风险敞口监控、再平衡建议 |
-| Depends on | order-engine（成交）、settlement（结算）、domainx |
-| Consumed by | risk-engine（敞口数据）、observex（PnL 可观测） |
+| Depends on | order_engine（成交）、settlement（结算）、domainx |
+| Consumed by | risk_engine（敞口数据）、observex（PnL 可观测） |
 
 ## 3. 功能需求
 

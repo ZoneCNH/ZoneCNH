@@ -2,7 +2,7 @@
 
 ## Objective
 
-Collect Binance Spot market-data events and normalize them into client internal events.
+Collect Binance Spot market_data events and normalize them into client internal events.
 
 ## Scope
 

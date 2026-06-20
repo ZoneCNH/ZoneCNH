@@ -9,7 +9,7 @@
 - Layer: 数据域 · 行情
 - Version: v0.1.0
 - Repository: [github.com/ZoneCNH/binance](https://github.com/ZoneCNH/binance)
-- Related: [CONSTITUTION.md](../../CONSTITUTION.md), [ARCHITECTURE.md](../../ARCHITECTURE.md), `module/domain-market`, `module/contracts`, `module/market-data`, `module/transportx`
+- Related: [CONSTITUTION.md](../../CONSTITUTION.md), [ARCHITECTURE.md](../../ARCHITECTURE.md), `module/domain_market`, `module/contracts`, `module/market_data`, `module/transportx`
 
 > 子模块规格：`module/binance/client/SPEC.md`、`module/binance/server/SPEC.md`
 
@@ -26,7 +26,7 @@ module/binance/client          ← 交易所侧采集器
   ↓ contracts-defined gRPC
 module/binance/server          ← 摄入受理服务器
   ↓ downstream dispatch port
-module/market-data             ← 交易所中立的后续管线
+module/market_data             ← 交易所中立的后续管线
 ```
 
 子模块 `client` 负责连接 Binance、解析和规范化行情事件；`server` 负责验证、去重、ACK 和下游分发。`binance-market` 已移除。
@@ -63,14 +63,14 @@ Binance 行情集成面临以下问题：
 
 | 不做 | 原因 |
 |------|------|
-| 定义 canonical domain model（ProductLine/InstrumentKey 等） | 由 `module/domain-market` 拥有 |
+| 定义 canonical domain model（ProductLine/InstrumentKey 等） | 由 `module/domain_market` 拥有 |
 | 定义 proto/gRPC wire contract | 由 `module/contracts` 拥有 |
-| 拥有 market-data storage engine | 由 `module/market-data` 拥有 |
-| 暴露 query API | 属于 `module/market-data` 或下游模块 |
+| 拥有 market_data storage engine | 由 `module/market_data` 拥有 |
+| 暴露 query API | 属于 `module/market_data` 或下游模块 |
 | 实现 strategy API / trading decision | 属于分析域和决策域 |
 | 实现 order execution | 属于执行域 |
 | 兼容旧 `binance-market` Provider | 已移除，迁移历史详见 `docs/migrations/` |
-| 作为跨 CEX 通用 ingestion server | 本模块仅处理 Binance，通用部分在 `module/market-data` |
+| 作为跨 CEX 通用 ingestion server | 本模块仅处理 Binance，通用部分在 `module/market_data` |
 
 ---
 
@@ -78,7 +78,7 @@ Binance 行情集成面临以下问题：
 
 | 消费者 | 使用方式 | 状态 |
 |--------|----------|------|
-| `module/market-data` | 通过 server downstream dispatch port 接收 canonical market events | SPEC Approved (Spec-Version v1.0.0, Code v0.1.0), runtime integration pending |
+| `module/market_data` | 通过 server downstream dispatch port 接收 canonical market events | SPEC Approved (Spec-Version v1.0.0, Code v0.1.0), runtime integration pending |
 | `module/binance/client` | 通过 contracts-defined gRPC 调用 `module/binance/server` 的 `MarketDataService.Ingest` | 待实现 |
 | `module/binance/server` | 接收 client 发送的 `IngestRequest` 流 | 待实现 |
 | Operator / SRE | 通过 client/server Gin admin 端点监控和管理 | 待实现 |
@@ -204,7 +204,7 @@ Binance 行情集成面临以下问题：
 **约束**：
 - `module/binance/client` → 禁止 import `module/binance/server/*`
 - Runtime: `internal/client` 与 `cmd/binance-client` → 禁止 import `internal/server/*`
-- 允许：client → `module/contracts` 生成的 gRPC client、`module/domain-market` 语义类型、shared config/observability
+- 允许：client → `module/contracts` 生成的 gRPC client、`module/domain_market` 语义类型、shared config/observability
 
 **违反时**：CI boundary gate（`BOUNDARY-GATES.md` §3）失败。
 
@@ -216,7 +216,7 @@ Binance 行情集成面临以下问题：
 - `module/binance/server` → 禁止 import `module/binance/client/*`
 - Runtime: `internal/server` 与 `cmd/binance-server` → 禁止 import `internal/client/*`
 - 特别禁止：server → spot/usdm/coinm/options connector、client spool、client checkpoint
-- 允许：server → `module/contracts` 生成的 gRPC server、`module/domain-market` 语义类型、`module/market-data` downstream port、shared config/observability
+- 允许：server → `module/contracts` 生成的 gRPC server、`module/domain_market` 语义类型、`module/market_data` downstream port、shared config/observability
 
 **违反时**：CI boundary gate（`BOUNDARY-GATES.md` §4）失败。
 
@@ -232,7 +232,7 @@ Binance 行情集成面临以下问题：
 
 **规则**：`module/binance` 不得定义 canonical domain semantics 的 source of truth。
 
-**约束**：`ProductLine`、`InstrumentKey`、`InstrumentType`、`MarketScope`、`OptionType`、`PriceKind` 等 canonical enum 必须来自 `module/domain-market`。Binance 可定义 exchange-specific parsing/mapping，但输出必须是对 domain-market 类型的引用。
+**约束**：`ProductLine`、`InstrumentKey`、`InstrumentType`、`MarketScope`、`OptionType`、`PriceKind` 等 canonical enum 必须来自 `module/domain_market`。Binance 可定义 exchange-specific parsing/mapping，但输出必须是对 domain_market 类型的引用。
 
 **违反时**：CI ownership gate 失败。
 
@@ -275,7 +275,7 @@ Binance 行情集成面临以下问题：
 ### MarketDataService (defined by module/contracts)
 
 ```go
-// MarketDataService receives normalized upstream market-data ingestion requests.
+// MarketDataService receives normalized upstream market_data ingestion requests.
 // Defined in module/contracts/SPEC.md §8.4 (v1.2.0-spec).
 // Implemented by module/binance/server.
 // Called by module/binance/client.
@@ -300,28 +300,28 @@ type MarketDataService interface {
 
 - Client 发送 `IngestRequest`，携带 canonical market fact envelope + idempotency key + source metadata
 - Server 对每个 `IngestRequest` 返回一个 `IngestResult`，exactly one of Ack or Reject is non-nil
-- RejectCode 10 码覆盖 binance §10 全部 6 种 native 分类 + 4 种 market-data 门禁分类
+- RejectCode 10 码覆盖 binance §10 全部 6 种 native 分类 + 4 种 market_data 门禁分类
 
 ### Downstream Dispatch Port
 
-Server 通过 exchange-neutral downstream port 将 accepted events 分发给 `module/market-data`。该 port 的具体接口由 `module/market-data` SPEC v1.0.0 §4 定义（`Dispatch(ctx, AcceptedMarketEvent) → DispatchOutcome`，12 字段输入，8 种 reject reason，binance-native 6→8 映射规则 §4.4.1）；server 只做 handoff 适配。
+Server 通过 exchange-neutral downstream port 将 accepted events 分发给 `module/market_data`。该 port 的具体接口由 `module/market_data` SPEC v1.0.0 §4 定义（`Dispatch(ctx, AcceptedMarketEvent) → DispatchOutcome`，12 字段输入，8 种 reject reason，binance-native 6→8 映射规则 §4.4.1）；server 只做 handoff 适配。
 
 ---
 
 ## 10. Data Model
 
-### Canonical Event Concepts (owned by module/domain-market)
+### Canonical Event Concepts (owned by module/domain_market)
 
 | Concept | Purpose | Owned By |
 |---------|---------|----------|
-| `InstrumentKey` | Unique instrument identity across product lines | domain-market |
-| `ProductLine` | Spot / USDⓈ-M / COIN-M / Options | domain-market |
-| `InstrumentType` | Perpetual / Futures / Option / Spot | domain-market |
-| `OptionType` | Call / Put | domain-market |
-| `PriceKind` | Bid / Ask / Last / Mark / Index | domain-market |
-| `MarketScope` | Exchange-native liquidity scope | domain-market |
-| `MarketFactEnvelope` | Canonical event wrapper | domain-market |
-| `decision_time` | Exchange event time for strategy feed | domain-market |
+| `InstrumentKey` | Unique instrument identity across product lines | domain_market |
+| `ProductLine` | Spot / USDⓈ-M / COIN-M / Options | domain_market |
+| `InstrumentType` | Perpetual / Futures / Option / Spot | domain_market |
+| `OptionType` | Call / Put | domain_market |
+| `PriceKind` | Bid / Ask / Last / Mark / Index | domain_market |
+| `MarketScope` | Exchange-native liquidity scope | domain_market |
+| `MarketFactEnvelope` | Canonical event wrapper | domain_market |
+| `decision_time` | Exchange event time for strategy feed | domain_market |
 
 ### Instrument Identity Dimensions
 
@@ -368,7 +368,7 @@ server_unavailable
 |--------|------|--------|------|
 | `binance.endpoints.rest` | `string` | `https://api.binance.com` | Binance REST API base URL |
 | `binance.endpoints.ws` | `string` | `wss://stream.binance.com:9443` | Binance WebSocket base URL |
-| `binance.product_lines` | `[]string` | `[]` | 启用的产品线：spot/um_perp/cm_perp/options（canonical domain-market ProductLine 值） |
+| `binance.product_lines` | `[]string` | `[]` | 启用的产品线：spot/um_perp/cm_perp/options（canonical domain_market ProductLine 值） |
 | `binance.symbols.allow` | `[]string` | `[]` | 白名单 symbol（空=全部） |
 | `binance.symbols.deny` | `[]string` | `[]` | 黑名单 symbol |
 | `grpc.target` | `string` | `<loopback-host>:9090` | server gRPC 地址 |
@@ -411,7 +411,7 @@ server_unavailable
 | Idempotency key 冲突 | 同一 key 但不同 payload 到达 server | server 返回 `terminal_conflict` reject |
 | 无效 symbol | parser 收到未知 format 的 symbol | 返回结构化 `ErrInvalidSymbol`，不产生 canonical event |
 | 产品线禁用 | 配置中 product line 未启用 | connector 不订阅该 product line 的 stream |
-| Downstream dispatch 持续失败 | market-data 下游不可用 | 指数退避重试，超过阈值告警，不丢失已 accepted event |
+| Downstream dispatch 持续失败 | market_data 下游不可用 | 指数退避重试，超过阈值告警，不丢失已 accepted event |
 
 ---
 
@@ -474,9 +474,9 @@ github.com/ZoneCNH/binance/
 
 | 依赖 | 用途 | 消费方 |
 |------|------|--------|
-| `module/domain-market` | canonical 语义类型（InstrumentKey/ProductLine/MarketFactEnvelope 等） | client mapper, server validation |
+| `module/domain_market` | canonical 语义类型（InstrumentKey/ProductLine/MarketFactEnvelope 等） | client mapper, server validation |
 | `module/contracts` | proto/gRPC wire contract（MarketDataService/IngestRequest/IngestAck） | client sender, server ingest |
-| `module/market-data` | downstream exchange-neutral dispatch port | server dispatch |
+| `module/market_data` | downstream exchange-neutral dispatch port | server dispatch |
 | `module/transportx` | gRPC 流策略、retry/backoff 约定、Gin admin 约定 | client, server |
 
 ### Forbidden Dependencies
@@ -486,7 +486,7 @@ github.com/ZoneCNH/binance/
 | `module/binance/client/*` (在 server 中) | 违反 client/server 边界 |
 | `module/binance/server/*` (在 client 中) | 违反 client/server 边界 |
 | `github.com/ZoneCNH/binance-market` | legacy 模块已移除 |
-| `github.com/ZoneCNH/storage` (as owned) | storage ownership 属于 market-data |
+| `github.com/ZoneCNH/storage` (as owned) | storage ownership 属于 market_data |
 | `github.com/ZoneCNH/strategy` (as owned) | strategy ownership 属于分析/决策域 |
 
 ---
@@ -623,7 +623,7 @@ github.com/ZoneCNH/binance/
 |----------|--------|----------|
 | 新增 product line | 向后兼容 | 添加 connector + parser rule + catalog entry |
 | `IngestRequest` 或 `IngestAck` proto 变更 | 取决于 contracts 兼容策略 | 升级 contracts 版本，regenerate client/server |
-| Canonical domain type 变更 | 取决于 domain-market 兼容策略 | 更新 mapper，regenerate 测试 fixtures |
+| Canonical domain type 变更 | 取决于 domain_market 兼容策略 | 更新 mapper，regenerate 测试 fixtures |
 | Spool schema 变更 | 可能需要 migration | 提供 spool migration 工具或清空重建 |
 | Admin endpoint 新增 | 向后兼容 | 无迁移需求 |
 | 移除 `binance-market` references | Breaking（新模块无此 legacy） | `docs/migrations/remove-binance-market.md` |
@@ -658,7 +658,7 @@ github.com/ZoneCNH/binance/
 | ID | 问题 | 状态 | 负责人 |
 |----|------|------|--------|
 | OQ-001 | `MarketDataService` proto 的 final wire 定义是否已在 `module/contracts` 中完成？ | 已确认 — contracts SPEC v1.2.0-spec §8.4 已定义 `MarketDataService` 接口（`Ingest(stream IngestRequest) (stream IngestResult, error)`）、`IngestRequest`（10 required + 2 optional 字段）、`IngestResult`（Ack/Reject 二选一）、`IngestAck`、`IngestReject` 和 `RejectCode`（10 码枚举：retryable / terminal_validation / terminal_conflict / unauthorized / rate_limited / server_unavailable / contract_violation / quality_rejected / ordering_violation / unsupported_channel，共 10 码） | contracts owner |
-| OQ-002 | `module/market-data` 的 downstream dispatch port 接口是否已定义？ | 已确认 — market-data SPEC v1.0.0 §4 已定义 `DownstreamDispatchPort` 语义（`Dispatch(ctx, AcceptedMarketEvent) → DispatchOutcome`）、12 项输入字段（§4.2）、8 种 reject reason（§4.4）和 binance-native → market-data reject 映射规则（§4.4.1，6→8 映射表） | market-data owner |
+| OQ-002 | `module/market_data` 的 downstream dispatch port 接口是否已定义？ | 已确认 — market_data SPEC v1.0.0 §4 已定义 `DownstreamDispatchPort` 语义（`Dispatch(ctx, AcceptedMarketEvent) → DispatchOutcome`）、12 项输入字段（§4.2）、8 种 reject reason（§4.4）和 binance-native → market_data reject 映射规则（§4.4.1，6→8 映射表） | market_data owner |
 
 ### Non-blocking
 
@@ -731,7 +731,7 @@ Binance Exchange (REST/WebSocket)
     │  Normalizer       │
     ├──────────────────┤
     │  Canonical        │
-    │  Mapper           │ ◄── module/domain-market
+    │  Mapper           │ ◄── module/domain_market
     ├──────────────────┤
     │  Idempotency Key  │
     │  Generator        │
@@ -756,13 +756,13 @@ Binance Exchange (REST/WebSocket)
     │  ACK / Reject      │
     ├──────────────────┤
     │  Downstream        │
-    │  Dispatch          │ ◄── module/market-data downstream port
+    │  Dispatch          │ ◄── module/market_data downstream port
     └────────┬─────────┘
              │
              ▼
     ┌──────────────────┐
     │  module/          │
-    │  market-data      │
+    │  market_data      │
     │  (exchange-neutral│
     │   pipeline)       │
     └──────────────────┘
@@ -778,12 +778,12 @@ Binance Exchange (REST/WebSocket)
 | # | Gate | 验证 | 状态 |
 |---|------|------|:----:|
 | G0-1 | `module/contracts` §8.4 `MarketDataService` + `IngestRequest`(10 required + 2 optional)/`IngestResult`/`IngestAck`/`IngestReject` + `RejectCode`(10码) | contracts SPEC v1.2.0 | ✅ |
-| G0-2 | `module/domain-market` `ProductLine`(4值)/`InstrumentKey`(12维)/`MarketFactEnvelope` canonical 类型 | domain-market SPEC v1.0.1 §10 | ✅ |
-| G0-3 | `module/market-data` DownstreamDispatchPort + 12 输入字段 + 8 种 reject reason + §4.4.1 binance reject 映射 | market-data SPEC v1.0.0 §4 | ✅ |
+| G0-2 | `module/domain_market` `ProductLine`(4值)/`InstrumentKey`(12维)/`MarketFactEnvelope` canonical 类型 | domain_market SPEC v1.0.1 §10 | ✅ |
+| G0-3 | `module/market_data` DownstreamDispatchPort + 12 输入字段 + 8 种 reject reason + §4.4.1 binance reject 映射 | market_data SPEC v1.0.0 §4 | ✅ |
 | G0-4 | binance OQ-001（contracts wire 就绪？） | 已确认 (2026-06-17) | ✅ |
-| G0-5 | binance OQ-002（market-data dispatch port 就绪？） | 已确认 (2026-06-17) | ✅ |
+| G0-5 | binance OQ-002（market_data dispatch port 就绪？） | 已确认 (2026-06-17) | ✅ |
 | G0-6 | BOUNDARY-GATES.md 全部 9 门禁有 CI 脚本 | 9/9 (2026-06-17) | ✅ |
 
-> **6/6 通过** — 上游契约链闭合。本 SPEC 处于 Review 状态，可进入运行时实现阶段（PR-007）。实现时必须严格遵循 contracts §8.4 wire types、domain-market §10 canonical semantics、market-data §4 dispatch port 契约。
+> **6/6 通过** — 上游契约链闭合。本 SPEC 处于 Review 状态，可进入运行时实现阶段（PR-007）。实现时必须严格遵循 contracts §8.4 wire types、domain_market §10 canonical semantics、market_data §4 dispatch port 契约。
 
 ---

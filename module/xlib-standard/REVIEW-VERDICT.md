@@ -1,4 +1,4 @@
-# xlib-standard 审查结论
+# xlib_standard 审查结论
 
 本文件是本地快照审查结论，不是可执行规格。
 

@@ -1,4 +1,4 @@
-# factor-eval Goal
+# factor_eval Goal
 
 ## 元数据
 
@@ -12,7 +12,7 @@
 
 ## 定位
 
-factor-eval 是分析域的因子评估模块。IC/RankIC分析、分层回测、换手率、因子衰减评估。
+factor_eval 是分析域的因子评估模块。IC/RankIC分析、分层回测、换手率、因子衰减评估。
 
 ## 目标
 
@@ -25,6 +25,6 @@ factor-eval 是分析域的因子评估模块。IC/RankIC分析、分层回测�
 | 类型 | 说明 |
 | --- | --- |
 | Owns | IC计算/分层回测/换手率/衰减分析/评估报告 |
-| Depends on | factor-engine, feature-store, domain-market |
-| Consumed by | signal-factory, backtestx |
-| Excludes | 因子计算(→factor-engine)、策略回测(→backtestx) |
+| Depends on | factor_engine, feature_store, domain_market |
+| Consumed by | signal_factory, backtestx |
+| Excludes | 因子计算(→factor_engine)、策略回测(→backtestx) |

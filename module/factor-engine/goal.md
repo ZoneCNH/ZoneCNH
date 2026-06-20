@@ -1,4 +1,4 @@
-# factor-engine Goal
+# factor_engine Goal
 
 ## 元数据
 
@@ -12,7 +12,7 @@
 
 ## 定位
 
-factor-engine 是分析域的因子计算模块。消费 market-data MarketEventEnvelope，执行因子计算，输出到 feature-store。
+factor_engine 是分析域的因子计算模块。消费 market_data MarketEventEnvelope，执行因子计算，输出到 feature_store。
 
 ## 目标
 
@@ -25,6 +25,6 @@ factor-engine 是分析域的因子计算模块。消费 market-data MarketEvent
 | 类型 | 说明 |
 | --- | --- |
 | Owns | Factor接口/FactorRegistry/FactorOutput |
-| Depends on | market-data, domain-market, feature-store |
-| Consumed by | factor-eval, signal-factory |
-| Excludes | 特征存储(→feature-store)、因子评估(→factor-eval)、数据采集 |
+| Depends on | market_data, domain_market, feature_store |
+| Consumed by | factor_eval, signal_factory |
+| Excludes | 特征存储(→feature_store)、因子评估(→factor_eval)、数据采集 |

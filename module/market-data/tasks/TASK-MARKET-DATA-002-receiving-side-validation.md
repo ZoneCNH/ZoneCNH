@@ -4,7 +4,7 @@
 | --- | --- |
 | 状态 | Runtime Pending |
 | 优先级 | P0 |
-| 来源 | `module/market-data/SPEC.md` |
+| 来源 | `module/market_data/SPEC.md` |
 | 最后更新 | 2026-06-17 |
 
 ## 目标
@@ -16,7 +16,7 @@
 ## 前置条件
 
 - TASK-MARKET-DATA-001 已定义端口形态。
-- `domain-market` `MarketEventEnvelope`、quality 与时间语义已冻结。
+- `domain_market` `MarketEventEnvelope`、quality 与时间语义已冻结。
 
 ## 验收标准
 

@@ -25,6 +25,6 @@ optimizer 是决策域的参数优化模块。Walk-Forward优化、网格搜索�
 | 类型 | 说明 |
 | --- | --- |
 | Owns | Walk-Forward/网格搜索/贝叶斯优化/过拟合检测 |
-| Depends on | backtest-engine, signal-factory |
+| Depends on | backtest_engine, signal_factory |
 | Consumed by | strategyx, 策略研发 |
-| Excludes | 回测执行(→backtest-engine)、策略定义(→strategyx) |
+| Excludes | 回测执行(→backtest_engine)、策略定义(→strategyx) |

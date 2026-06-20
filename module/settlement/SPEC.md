@@ -18,7 +18,7 @@ settlement 负责交易后的资金对账和结算确认，确保交易所余额
 | 类型 | 说明 |
 | --- | --- |
 | Owns | 结算流程、资金对账、手续费核算、结算报告 |
-| Depends on | order-engine（成交记录）、portfolio-engine（持仓）、domainx |
+| Depends on | order_engine（成交记录）、portfolio_engine（持仓）、domainx |
 | Consumed by | observex（结算可观测） |
 
 ## 3. 功能需求

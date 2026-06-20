@@ -2,7 +2,7 @@
 
 ## 1. Goal
 
-Deliver `module/okx` v1.0.0 as a complete OKX-specific market-data C/S module，硬切替换旧 passive `okx` SDK。
+Deliver `module/okx` v1.0.0 as a complete OKX-specific market_data C/S module，硬切替换旧 passive `okx` SDK。
 
 ## 2. Required Preflight Decisions
 
@@ -10,9 +10,9 @@ Deliver `module/okx` v1.0.0 as a complete OKX-specific market-data C/S module，
 
 1. 旧 `okx` v0.1.1 SDK 接口在 active code 中清除（CI gate 接管）
 2. `module/okx/client` 和 `module/okx/server` 文档已就绪（本 PR 范围）
-3. canonical domain 仍由 `module/domain-market` 拥有（OKX 不重定义）
+3. canonical domain 仍由 `module/domain_market` 拥有（OKX 不重定义）
 4. wire contract 仍由 `module/contracts` §8.4 拥有（OKX 不重定义）
-5. downstream dispatch 经 `module/market-data` 中转
+5. downstream dispatch 经 `module/market_data` 中转
 6. delivery 语义：at-least-once + idempotent acceptance + ACK-driven checkpoint
 7. 5 product line 身份维度按 [`module/okx/SPEC.md`](./SPEC.md) §10 表格
 8. simulated/production environment 隔离按 §7 FR-008 强制
@@ -22,8 +22,8 @@ Deliver `module/okx` v1.0.0 as a complete OKX-specific market-data C/S module，
 | Gate | 验证项 | 状态 |
 |------|--------|:---:|
 | G0-1 | contracts §8.4 MarketDataService + IngestRequest/Result/Ack/Reject + RejectCode(10码) | ✅ |
-| G0-2 | domain-market ProductLine(4值)/InstrumentKey(12维)/MarketFactEnvelope | ✅（OKX 5 条产品线在 InstrumentKey 内通过 product_line + instrument_type 维度区分） |
-| G0-3 | market-data DownstreamDispatchPort + binance reject 映射规则 | ✅（OKX RejectCode 映射沿用 §4.4.1 规则） |
+| G0-2 | domain_market ProductLine(4值)/InstrumentKey(12维)/MarketFactEnvelope | ✅（OKX 5 条产品线在 InstrumentKey 内通过 product_line + instrument_type 维度区分） |
+| G0-3 | market_data DownstreamDispatchPort + binance reject 映射规则 | ✅（OKX RejectCode 映射沿用 §4.4.1 规则） |
 | G0-4 | OKX 旧 SDK 清单整理（确认要清除的 active references） | 🔧 PR-000 范围 |
 | G0-5 | binance C/S Module 模板已稳定（继承基线） | ✅ |
 | G0-6 | BOUNDARY-GATES.md（继承 binance）9 项 CI gate 可执行 | ✅（通过 stub 引用） |
@@ -35,7 +35,7 @@ PR-000  legacy okx SDK references cleanup
 PR-001  module/okx root（goal/README/SPEC/PLAN/TRACEABILITY/BOUNDARY-GATES/RUNTIME-MAPPING）
 PR-002  module/okx/client SPEC + tasks
 PR-003  module/okx/server SPEC + tasks
-PR-004  domain-market dependency 验证（无新增需求）
+PR-004  domain_market dependency 验证（无新增需求）
 PR-005  contracts dependency 验证（无新增需求）
 PR-006  transportx dependency 验证
 PR-007  runtime implementation（github.com/ZoneCNH/okx 改造）
@@ -87,7 +87,7 @@ Acceptance:
 
 | PR | 范围 | 触发时机 |
 |----|------|----------|
-| PR-004 | domain-market 依赖验证 | 无 SPEC 变化时 stub PR |
+| PR-004 | domain_market 依赖验证 | 无 SPEC 变化时 stub PR |
 | PR-005 | contracts 依赖验证 | 同上 |
 | PR-006 | transportx 依赖验证 | 同上 |
 | PR-007 | github.com/ZoneCNH/okx runtime 改造 | 本 PR 合并 + SPEC Approved 后 |

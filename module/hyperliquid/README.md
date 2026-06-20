@@ -13,11 +13,11 @@ Hyperliquid 是 ZoneCNH 接入的首个**去中心化交易所（DEX）**，与 
 
 ## Role
 
-`module/hyperliquid` owns Hyperliquid-specific market-data ingestion into ZoneCNH.
+`module/hyperliquid` owns Hyperliquid-specific market_data ingestion into ZoneCNH.
 
-- Canonical semantics → `module/domain-market`
+- Canonical semantics → `module/domain_market`
 - Wire protocol → `module/contracts`
-- Downstream storage / query / fanout → `module/market-data`
+- Downstream storage / query / fanout → `module/market_data`
 
 ## Submodules
 

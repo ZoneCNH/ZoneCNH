@@ -9,7 +9,7 @@ TASK-XLIB-006: ErrorKind 9 种、Error 结构体、Client New/Close
 
 ## Related Spec
 
-- module/xlib-standard/SPEC.md §7 Functional Requirements, §9 Interfaces, §10 Data Model, §12 Error Handling
+- module/xlib_standard/SPEC.md §7 Functional Requirements, §9 Interfaces, §10 Data Model, §12 Error Handling
 
 ## Related Requirements
 
@@ -83,4 +83,4 @@ grep -c "conflict" contracts/errors.schema.json
 
 ## Test Case Reference
 
-参见 `module/xlib-standard/TRACEABILITY.md` FR-002 / FR-005 对应 TC-004~TC-008, TC-014~TC-018。
+参见 `module/xlib_standard/TRACEABILITY.md` FR-002 / FR-005 对应 TC-004~TC-008, TC-014~TC-018。

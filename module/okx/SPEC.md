@@ -9,7 +9,7 @@
 - Layer: 数据域 · 行情
 - Module-Version: v1.0.0-spec
 - Repository: [github.com/ZoneCNH/okx](https://github.com/ZoneCNH/okx)
-- Related: [CONSTITUTION.md](../../CONSTITUTION.md), [ARCHITECTURE.md](../../ARCHITECTURE.md), [`module/binance`](../binance/), [`module/_template/cex-cs-module/README.md`](../_template/cex-cs-module/README.md), `module/domain-market`, `module/contracts`, `module/market-data`, `module/transportx`
+- Related: [CONSTITUTION.md](../../CONSTITUTION.md), [ARCHITECTURE.md](../../ARCHITECTURE.md), [`module/binance`](../binance/), [`module/_template/cex-cs-module/README.md`](../_template/cex-cs-module/README.md), `module/domain_market`, `module/contracts`, `module/market_data`, `module/transportx`
 
 > 子模块规格：`module/okx/client/SPEC.md`、`module/okx/server/SPEC.md`
 >
@@ -28,7 +28,7 @@ module/okx/client          ← 交易所侧采集器（5 product lines）
   ↓ contracts-defined gRPC (MarketDataService)
 module/okx/server          ← 摄入受理服务器
   ↓ downstream dispatch port
-module/market-data         ← 交易所中立的后续管线
+module/market_data         ← 交易所中立的后续管线
 ```
 
 OKX 与 Binance 在产品线编码上存在关键差异：OKX 单独区分 **Margin** 产品线（Binance 将 Margin 内嵌于 Spot），并使用 `-SWAP` 后缀显式标注永续合约（Binance 使用 USDⓈ-M / COIN-M 隐式区分）。
@@ -72,13 +72,13 @@ OKX 行情集成面临以下问题：
 
 | 不做 | 原因 |
 |------|------|
-| 定义 canonical domain model | 由 `module/domain-market` 拥有 |
+| 定义 canonical domain model | 由 `module/domain_market` 拥有 |
 | 定义 proto/gRPC wire contract | 由 `module/contracts` 拥有 |
-| 拥有 market-data storage engine | 由 `module/market-data` 拥有 |
+| 拥有 market_data storage engine | 由 `module/market_data` 拥有 |
 | 暴露 query API / strategy API | 不属于数据域 |
 | 实现 OKX 下单功能 | 属于执行域 |
 | 兼容旧 `okx` SDK passive 接口 | 已硬切移除 |
-| 处理跨 CEX 通用 ingestion | 本模块仅 OKX，通用部分在 `module/market-data` |
+| 处理跨 CEX 通用 ingestion | 本模块仅 OKX，通用部分在 `module/market_data` |
 | 模拟盘数据混入生产 | simulated endpoint 在 client config 层显式隔离 |
 
 ---
@@ -87,7 +87,7 @@ OKX 行情集成面临以下问题：
 
 | 消费者 | 使用方式 | 状态 |
 |--------|----------|------|
-| `module/market-data` | 通过 server downstream dispatch port 接收 canonical market events | SPEC v1.0.0 已就绪 |
+| `module/market_data` | 通过 server downstream dispatch port 接收 canonical market events | SPEC v1.0.0 已就绪 |
 | `module/okx/client` | 通过 contracts-defined gRPC 调用 `module/okx/server` 的 `MarketDataService.Ingest` | 待实现 |
 | `module/okx/server` | 接收 client 发送的 `IngestRequest` 流 | 待实现 |
 | Operator / SRE | 通过 client/server Gin admin 端点监控和管理 | 待实现 |
@@ -167,7 +167,7 @@ OKX 行情集成面临以下问题：
 ### BR-001 ~ BR-009 与 binance 范式一致
 
 > 详见 [`module/binance/SPEC.md`](../binance/SPEC.md) §8 BR-001 ~ BR-009：
-> - BR-001 No legacy SDK（适配为：`okx-market` legacy 不存在；改为禁止旧 passive SDK 接口）
+> - BR-001 No legacy SDK（适配为：`okx_market` legacy 不存在；改为禁止旧 passive SDK 接口）
 > - BR-002 Client Must Not Import Server Internals
 > - BR-003 Server Must Not Import Client Internals
 > - BR-004 Checkpoint Requires ACK
@@ -211,7 +211,7 @@ server 校验：缺失任一字段 → `terminal_validation` reject。
 
 ### Downstream Dispatch Port
 
-> 与 binance 一致。详见 [`module/market-data/SPEC.md`](../market-data/SPEC.md) v1.0.0 §4。
+> 与 binance 一致。详见 [`module/market_data/SPEC.md`](../market_data/SPEC.md) v1.0.0 §4。
 
 ---
 
@@ -219,7 +219,7 @@ server 校验：缺失任一字段 → `terminal_validation` reject。
 
 ### Canonical Event Concepts
 
-> 全部由 `module/domain-market` 拥有。详见 [`module/binance/SPEC.md`](../binance/SPEC.md) §10 Canonical Event Concepts 表。
+> 全部由 `module/domain_market` 拥有。详见 [`module/binance/SPEC.md`](../binance/SPEC.md) §10 Canonical Event Concepts 表。
 
 ### Instrument Identity Dimensions（OKX 5 条产品线）
 
@@ -318,7 +318,7 @@ Runtime 仓库 `github.com/ZoneCNH/okx/` 结构与 binance 一致（详见 `RUNT
 
 ## 15. Dependencies
 
-> 允许依赖与 binance §15 一致：`module/contracts` / `module/domain-market` / `module/market-data` / `module/transportx` / `module/configx` / `module/observex` + 第三方 `gin` / `grpc` / `sqlite3`。
+> 允许依赖与 binance §15 一致：`module/contracts` / `module/domain_market` / `module/market_data` / `module/transportx` / `module/configx` / `module/observex` + 第三方 `gin` / `grpc` / `sqlite3`。
 
 OKX 特异第三方：
 
@@ -399,7 +399,7 @@ OKX 特异第三方：
 | ID | 问题 | 状态 |
 |----|------|------|
 | OQ-001 | contracts §8.4 wire 是否就绪？ | ✅ 已确认（v1.2.0-spec） |
-| OQ-002 | market-data downstream port 是否就绪？ | ✅ 已确认（v1.0.0 §4） |
+| OQ-002 | market_data downstream port 是否就绪？ | ✅ 已确认（v1.0.0 §4） |
 
 ### Non-blocking
 

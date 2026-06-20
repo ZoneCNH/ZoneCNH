@@ -26,5 +26,5 @@ ms_brain 是分析域的M×S架构分析模块。M×S联合分析框架、可视
 | --- | --- |
 | Owns | M×S分析框架/架构可视化/决策推演 |
 | Depends on | market_regime, macro_regime |
-| Consumed by | regime-engine, 策略研发 |
+| Consumed by | regime_engine, 策略研发 |
 | Excludes | 在线分类(→market_regime/macro_regime)、交易执行 |
