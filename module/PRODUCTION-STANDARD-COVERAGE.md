@@ -38,16 +38,16 @@
 
 ### P2
 
-- `redisx`、`kafkax`、`taosx`、`resiliencx`、`configx`、`kernel`、`xlib-*` 需要统一 task -> AC -> TC -> evidence 的命名、证据 ID 和完成语义。
-- `xlib_harness` 需要更细粒度地区分本地成熟度、外部 release、安全门禁和兼容性证据；`xlib_evidence` 已在生产标准页闭合 v0.2.4 release、100.0% 覆盖率、release evidence assets 和 Trust Alignment 证据。
+- `redisx`、`kafkax`、`taosx`、`resiliencx`、`configx`、`kernel`、`xlib-*` 需要统一 task -> AC -> TC -> evidence 的命名、证据 ID 和完成语义；`xlib-evidence` 已闭合 v0.2.4 release、100.0% 覆盖率、release evidence assets 与 Trust Alignment 证据。
+- `xlib-harness` 需要更细粒度地区分本地成熟度、外部 release、安全门禁和兼容性证据。
 
 ## 模块矩阵
 
 | 模块 | 生产标准 | 层 / 边界 | `module/` 覆盖 | 当前信号 | 需补信息 |
 | --- | --- | --- | --- | --- | --- |
-| `xlib_standard` | [xlib_standard.md](../docs/production-standards/xlib_standard.md) | 标准源；不进入运行时 | 五件套 + 计划齐备 | v1.0.1 已发布，release-preflight 通过 | 校验 `goalcli`、`traceability-check` 和 release evidence 命名一致性。 |
-| `xlib_harness` | [xlib_harness.md](../docs/production-standards/xlib_harness.md) | 生成器 / 门禁执行器；不进入运行时 | 五件套 + 计划齐备 | scaffold、spec-lint、boundary-check、traceability-gate 基线已成型 | 补 `FR-003` 边界控制和 `FR-005` 兼容性检查的可执行证据粒度。 |
-| `xlib_evidence` | [xlib_evidence.md](../docs/production-standards/xlib_evidence.md) | 证据运行时；不承载业务运行时 | 五件套 + 计划齐备 | collect-coverage / generate-manifest / validate-manifest / remote-evidence / report；v0.2.4 已发布，100.0% 覆盖率与 release evidence assets 已归档 | 本地成熟度、外部 release、安全门禁、兼容性和 Trust Alignment 证据已在生产标准页分层闭合。 |
+| `xlib-standard` | [xlib-standard.md](../docs/production-standards/xlib-standard.md) | 标准源；不进入运行时 | 五件套 + 计划齐备 | v1.0.1 已发布，release-preflight 通过 | 校验 `goalcli`、`traceability-check` 和 release evidence 命名一致性。 |
+| `xlib-harness` | [xlib-harness.md](../docs/production-standards/xlib-harness.md) | 生成器 / 门禁执行器；不进入运行时 | 五件套 + 计划齐备 | scaffold、spec-lint、boundary-check、traceability-gate 基线已成型 | 补 `FR-003` 边界控制和 `FR-005` 兼容性检查的可执行证据粒度。 |
+| `xlib-evidence` | [xlib-evidence.md](../docs/production-standards/xlib-evidence.md) | 证据运行时；不承载业务运行时 | 五件套 + 计划齐备 | collect-coverage / generate-manifest / validate-manifest / remote-evidence / report；v0.2.4 已发布，100.0% 覆盖率与 release evidence assets 已归档 | release / Trust Alignment / CI-CD 证据已闭合；后续仅保持命名与证据 ID 投影一致。 |
 | `kernel` | [kernel.md](../docs/production-standards/kernel.md) | L0；stdlib-only 根原语 | 五件套 + 计划齐备 | 12 个 root primitive 为上层依赖根 | 补 Goal Matrix closure 和 evidence ID 对齐说明。 |
 | `configx` | [configx.md](../docs/production-standards/configx.md) | L1 primitive；只依赖 `kernel` | 五件套 + 计划齐备 | Client / Loader / Source / StrictDecode / SecretString 基线完整 | `Watch` / `TASK-CONFIGX-007` deferred 需要保持阻断语义与 proof boundary。 |
 | `observex` | [observex.md](../docs/production-standards/observex.md) | L1 primitive；只依赖 `kernel` | 五件套 + 计划齐备 | Logger / Meter / Tracer / Exporter / Redaction 基线完整 | 补 self-observation 指标、CI 证据和 redaction 回归证据。 |
