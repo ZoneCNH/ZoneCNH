@@ -1,7 +1,7 @@
 # FoundationX 架构问题深度分析报告
 
 **日期**: 2026-06-20  
-**范围**: 全系统 75 组件 / 70+ 仓库  
+**范围**: 全系统 76 组件 / 70+ 仓库  
 **数据来源**: `.foundationx/status/index.json`、`STATUS.md`、各模块 `/home/{module}/` 本地源码树、管线评分表
 
 ---
@@ -19,13 +19,18 @@
 > **2026-06-21 更新**：dispatch→regime SinkPort 适配器 ✅ 已完成（composer v0.1.0，PR #5 merged）。
 
 ```
-binance ✅ → market_data(dispatch) ✅ ─── MarketRegimeSink ✅ ──→ market_regime ✅ v0.2.0（~70%）→ regime_engine ✅ v1.0.0
-                                                                                                              ↓
-macro-data(dispatch) ✅ ─────────────── MacroRegimeSink ✅ ──→ macro_regime  ✅ v0.2.0（~70%）→        signal_factory ✅ v0.1.0 → riskx ❌ → orderx ❌
+binance ✅ → market_data(dispatch) ✅ ─── MarketRegimeSink ✅ ──→ market_regime ✅ v0.2.0 ──→ RegimeSnapshot
+                                                                                                     ↓ ❌ RegimeCoordinator 缺失
+macro-data(dispatch) ✅ ─────────────── MacroRegimeSink ✅ ──→ macro_regime  ✅ v0.2.0 ──→ RegimeCard
+                                                                                                     ↓
+                                                                                               regime_engine.Run(MState, SState) ❌ 从未调用
+                                                                                                     ↓
+                                                                                              signal_factory.Generate(card) ❌ → riskx ❌ → orderx ❌
 ```
 
 > `macro-data`（`github.com/ZoneCNH/macro_data`）是纯 Go dispatch 模块，非 Python 服务。
-> SinkPort 适配器已在 `composer/pkg/adapter/`（MarketRegimeSink/MacroRegimeSink，14 tests PASS）实现；剩余缺口：riskx 最小实现和 signal_factory→riskx→orderx 链路集成。
+> SinkPort 适配器已在 `composer/pkg/adapter/`（MarketRegimeSink/MacroRegimeSink，14 tests PASS）实现。
+> ⚠️ **新增缺口（2026-06-21 核实）**：`RegimeSnapshot`/`RegimeCard` 分类结果当前被丢弃（`_, _ =`），`regime_engine.Run` 从未被调用。剩余断点是 RegimeCoordinator + riskx 最小实现。
 
 ### 各域实际完成度
 
@@ -34,7 +39,7 @@ macro-data(dispatch) ✅ ─────────────── MacroRegi
 | Foundation  | 21     | 21/21 factory-ready                                          | ~100%    |
 | Market Data | 3      | 3/3 有代码                                                   | ~92%     |
 | Macro Data  | 1      | 1/1 有代码                                                   | ~100%    |
-| **分析域**  | 8      | 3/8（market_regime v0.2.0；macro_regime v0.2.0；regime_engine v1.0.0） | **~35%** |
+| **分析域**  | 8      | 3/8（market_regime v0.2.0；macro_regime v0.2.0；regime_engine v1.0.0） | **~40%** |
 | **决策域**  | 6      | 1/6（signal_factory v0.1.0 骨架）                            | **~5%**  |
 | **执行域**  | 7      | **0/7**（全部仅 README）                                     | **0%**   |
 
@@ -137,7 +142,7 @@ lifecycle × 7       ← 单 client Close() 保留本地（符合 non-goal）
 
 **状态（2026-06-21）**：✅ `composer` v0.1.0 完成：
 1. ✅ market-data / macro-data dispatch → SinkPort 适配器（MarketRegimeSink/MacroRegimeSink）
-2. ⚠️ regime_engine.Run → signal_factory.Generate → riskx 链路待集成
+2. ⚠️ **RegimeCoordinator 缺失**（新增，2026-06-21 核实）：SinkPort 适配器调用 `Subscriber.Push` / `ClassifyFromSet` 后，返回的 `RegimeSnapshot` / `RegimeCard` 被 `_, _ =` 丢弃，`regime_engine.Run(MState, SState)` **从未被调用**。需在 composer 中实现 RegimeCoordinator——缓存最新 `(RegimeSnapshot, RegimeCard)`，任一更新时触发 `regime_engine.Run → signal_factory.Generate`。
 3. ✅ HTTP health endpoint（/health + /live + /ready）
 
 ---
@@ -175,7 +180,7 @@ lab-*         → ms_brain / alternative_data ...
 | ---------- | ------------------------------------------------------------------------------------------- | -------------------------------- | ---------------------------------- |
 | **P0**     | ~~contracts P0 DTO 未固化~~                                                                 | ~~分析域/决策域/执行域无法开始~~ | ✅ **已解决 2026-06-20**（PR #10） |
 | **P0**     | ~~分析域三引擎消费者接入层完成~~ | ~~核心业务闭环~~ | ✅ **已解决 2026-06-20**（market_regime/macro_regime v0.2.0；Subscriber+mapper+ClassifyFromSet）
-| **P0-next** | ~~① 创建 `composer` 服务入口~~✅（composer v0.1.0，PR #5）~~② dispatch→regime SinkPort 适配器~~✅（MarketRegimeSink/MacroRegimeSink，14 tests）③ signal_factory→riskx→orderx 完整链路 | 端到端交易闭环 |
+| **P0-next** | ~~① 创建 `composer` 服务入口~~✅（composer v0.1.0，PR #5）~~② dispatch→regime SinkPort 适配器~~✅（MarketRegimeSink/MacroRegimeSink，14 tests）③-a **RegimeCoordinator**（缓存 Snapshot+Card，触发 regime_engine.Run）③-b **signal_factory 集成**（DecisionCard→SignalIntent 结果传出）③-c **riskx 最小实现**（消费 SignalIntent，仓位检查+熔断）③-d **SignalIntent 升入 contracts** | 端到端交易闭环 |
 | **P1**     | ~~BLK-009 bootstrap 遗留依赖~~                                                              | ~~Foundation factory 闭合~~      | ✅ **已解决 2026-06-20**（v0.2.0） |
 | **P1**     | ~~BLK-010 ossx 无源码~~                                                                     | ~~Foundation factory 闭合~~      | ✅ **已解决 2026-06-20**（v1.2.1） |
 | ~~**P1**~~ | ~~双轨模块废弃路线不明~~                                                                    | ~~开发者认知统一~~               | ✅ **已解决 2026-06-20**           |
@@ -211,8 +216,10 @@ lab-*         → ms_brain / alternative_data ...
 
 10. ~~**创建 `composer` 服务**（Composition Root）：加载 dispatch → SinkPort 适配器 → 三引擎 → signal_factory 完整 pipeline~~ ✅ **已完成（2026-06-21）**：composer v0.1.0，25 进程编排 + HTTP health + Docker Compose
 11. ~~**dispatch→regime SinkPort 适配器**（2个）：`market-data SinkPort` → `market_regime.Subscriber.Push`；`macro-data SinkPort` → `macro_regime.ClassifyFromSet`~~ ✅ **已完成（2026-06-21）**：MarketRegimeSink/MacroRegimeSink，composer PR #5，14 tests PASS
-12. **riskx 最小实现**：消费 `signal_factory.SignalIntent`，实现仓位检查 + 熔断逻辑
-13. **SignalIntent 升入 contracts**：固化 P1 信号接口，避免接口漂移
+12. **③-a RegimeCoordinator**（新增，2026-06-21 核实）：在 `composer` 中缓存最新 `RegimeSnapshot` + `RegimeCard`；任一更新时调用 `regime_engine.Run(MState, SState)` → `signal_factory.Generate(card, symbols)`；将 `[]SignalIntent` 传入 riskx
+13. **③-b signal_factory 结果传出**：`Generate` 已有实现，需要在 composer 中接收 `[]SignalIntent` 并路由到 riskx（channel/callback）
+14. **③-c riskx 最小实现**：消费 `signal_factory.SignalIntent`，实现仓位检查 + 熔断逻辑
+15. **③-d SignalIntent 升入 contracts**：固化 P1 信号接口，防止 signal_factory 本地 DTO 漂移
 
 ---
 
@@ -241,3 +248,16 @@ lab-*         → ms_brain / alternative_data ...
 | regime_engine      | ⚠️ v0.1.0 骨架（25%） | ✅ v1.0.0 P0 DTO 桥接完成（M×S→DecisionCard，13 tests PASS）            | v1.0.0 |
 | contracts P0 DTO   | ❌ 路径错误           | ✅ v1.4.0（github.com/ZoneCNH/contracts，P0 DTO 完整）                  | PR #11 |
 | 分析域三引擎数据流 | ❌ 断链               | ✅ market_data→S / macro_data→M / regime_engine→DecisionCard 全链路打通 | —      |
+
+---
+
+## 状态更新（2026-06-21）
+
+> 2026-06-21 新增修复与新发现：
+
+| 项目 | 原状态 | 当前状态 | PR/Tag |
+| --- | --- | --- | --- |
+| composer | ❌ 不存在 | ✅ v0.1.0（25 进程编排 + HTTP health + Docker Compose） | v0.1.0 |
+| MarketRegimeSink | ❌ 不存在 | ✅ market-data SinkPort → market_regime.Subscriber.Push（7 tests PASS） | composer PR #5 |
+| MacroRegimeSink | ❌ 不存在 | ✅ macro-data SinkPort → macro_regime.ClassifyFromSet（6 tests PASS） | composer PR #5 |
+| RegimeCoordinator | ❌ 缺失（新发现） | ⚠️ 待实现：RegimeSnapshot/RegimeCard 分类结果目前被丢弃，regime_engine.Run 从未被调用 | — |
