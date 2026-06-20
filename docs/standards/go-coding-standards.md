@@ -12,10 +12,14 @@
 3. [注释规范](#3-注释规范)
 4. [错误处理](#4-错误处理)
 5. [并发编程](#5-并发编程)
-6. [项目结构](#6-项目结构)
-7. [测试规范](#7-测试规范)
-8. [工具链](#8-工具链)
-9. [参考资料](#9-参考资料)
+6. [接口设计](#6-接口设计)
+7. [性能规范](#7-性能规范)
+8. [日志规范](#8-日志规范)
+9. [泛型使用](#9-泛型使用)
+10. [项目结构](#10-项目结构)
+11. [测试规范](#11-测试规范)
+12. [工具链](#12-工具链)
+13. [参考资料](#13-参考资料)
 
 ---
 
@@ -353,7 +357,321 @@ case <-ctx.Done():
 
 ---
 
-## 6. 项目结构
+## 6. 接口设计
+
+**目标**：设计小而专注的接口，提升可组合性和可测试性。
+
+### 小接口原则
+
+接口应尽量小，只包含必要的方法。`io.Reader`（1 个方法）优于臃肿的大接口。
+
+```go
+// Bad：大接口难以实现和测试
+type UserRepository interface {
+    GetByID(ctx context.Context, id int64) (*User, error)
+    Create(ctx context.Context, user *User) error
+    Update(ctx context.Context, user *User) error
+    Delete(ctx context.Context, id int64) error
+    List(ctx context.Context, filter Filter) ([]*User, error)
+    Count(ctx context.Context, filter Filter) (int, error)
+}
+
+// Good：按使用方需求拆分
+type UserReader interface {
+    GetByID(ctx context.Context, id int64) (*User, error)
+}
+
+type UserWriter interface {
+    Create(ctx context.Context, user *User) error
+    Update(ctx context.Context, user *User) error
+}
+```
+
+### 接口在消费方定义
+
+接口应由**使用方**定义，而非由实现方提前声明。这是 Go 最重要的设计哲学之一。
+
+```go
+// Bad：实现方提前定义接口（通常放在 service 包）
+// service/user.go
+type UserService interface { ... }
+type userServiceImpl struct { ... }
+
+// Good：消费方按需定义所需接口
+// handler/user.go
+type userFetcher interface {
+    GetByID(ctx context.Context, id int64) (*User, error)
+}
+
+type UserHandler struct {
+    fetcher userFetcher
+}
+```
+
+### 不要提前抽象
+
+只有在出现**第二个实现**（或需要 mock 测试）时，才提取接口。不要为"将来可能有多实现"而提前定义接口。
+
+### 接口组合
+
+利用 Go 接口嵌入实现接口组合：
+
+```go
+type ReadWriter interface {
+    io.Reader
+    io.Writer
+}
+```
+
+### 返回具体类型，接受接口
+
+函数参数接受接口（灵活），函数返回值优先返回具体类型（避免隐藏信息）。
+
+```go
+// 参数用接口，便于 mock
+func Process(r io.Reader) error { ... }
+
+// 返回具体类型，调用方可以获得完整信息
+func NewUserService(db *sql.DB) *UserService { ... }
+```
+
+---
+
+## 7. 性能规范
+
+**目标**：避免常见的性能陷阱，在关键路径上编写高效代码。
+
+### 字符串拼接
+
+多次拼接字符串时使用 `strings.Builder`，避免大量内存分配。
+
+```go
+// Bad：每次 + 都会分配新内存
+var s string
+for _, word := range words {
+    s += word + " "
+}
+
+// Good：Builder 复用底层缓冲区
+var b strings.Builder
+b.Grow(estimatedLen) // 预分配容量
+for _, word := range words {
+    b.WriteString(word)
+    b.WriteByte(' ')
+}
+result := b.String()
+```
+
+### defer 的性能影响
+
+`defer` 有一定运行时开销（约 30-100ns/次）。在**热路径**（高频调用的函数）中，如果函数极短，考虑显式调用替代 `defer`。
+
+```go
+// 非热路径：defer 是推荐写法，确保资源释放
+func readConfig(path string) ([]byte, error) {
+    f, err := os.Open(path)
+    if err != nil {
+        return nil, err
+    }
+    defer f.Close()
+    return io.ReadAll(f)
+}
+```
+
+### defer 在循环中的陷阱
+
+**不要**在循环中使用 `defer`，文件句柄会等到函数返回时才释放。
+
+```go
+// Bad：所有文件在函数返回前都不会关闭
+for _, path := range paths {
+    f, _ := os.Open(path)
+    defer f.Close() // 危险！
+    process(f)
+}
+
+// Good：用闭包或辅助函数包裹
+for _, path := range paths {
+    func() {
+        f, err := os.Open(path)
+        if err != nil { return }
+        defer f.Close()
+        process(f)
+    }()
+}
+```
+
+### nil slice vs empty slice
+
+`nil` slice 和空 slice 在大多数情况下行为相同，但 JSON 序列化结果不同。
+
+```go
+var s1 []int         // nil slice：json 序列化为 null
+s2 := []int{}        // empty slice：json 序列化为 []
+s3 := make([]int, 0) // empty slice：json 序列化为 []
+
+// 函数返回时，无数据返回 nil，有数据但空返回 empty
+func getItems() []Item {
+    if noData {
+        return nil      // 明确表示无数据
+    }
+    return []Item{}     // 表示有操作但结果为空
+}
+```
+
+### 避免 slice 内存泄漏
+
+对大 slice 取子切片时，底层数组不会被 GC 回收。
+
+```go
+// Bad：data 底层大数组一直存活
+func getFirst100(data []byte) []byte {
+    return data[:100]
+}
+
+// Good：copy 出新 slice，释放原始数据
+func getFirst100(data []byte) []byte {
+    result := make([]byte, 100)
+    copy(result, data[:100])
+    return result
+}
+```
+
+### map 的零值陷阱
+
+未初始化的 map 写入会 panic，读取返回零值。
+
+```go
+// Bad：写入 nil map 会 panic
+var m map[string]int
+m["key"] = 1 // panic: assignment to entry in nil map
+
+// Good
+m := make(map[string]int)
+m["key"] = 1
+```
+
+---
+
+## 8. 日志规范
+
+**目标**：统一日志格式，便于机器解析和问题排查。
+
+### 使用结构化日志
+
+禁止在生产代码中使用 `fmt.Println` 或 `log.Printf` 打印日志。使用结构化日志库（推荐 `go.uber.org/zap` 或 Go 1.21+ 内置的 `log/slog`）。
+
+```go
+// Bad
+fmt.Println("user login:", userID)
+log.Printf("request failed: %v", err)
+
+// Good（使用 zap）
+logger.Info("user login", zap.Int64("user_id", userID))
+logger.Error("request failed", zap.Error(err), zap.String("method", "POST"))
+
+// Good（使用 slog，Go 1.21+）
+slog.Info("user login", "user_id", userID)
+slog.Error("request failed", "err", err, "method", "POST")
+```
+
+### 日志级别
+
+| 级别 | 使用场景 |
+|------|---------|
+| `Debug` | 开发调试信息，生产环境关闭 |
+| `Info` | 关键业务事件（启动、登录、订单创建）|
+| `Warn` | 可恢复的异常（重试、降级、配置缺失）|
+| `Error` | 需要关注的错误，但程序仍可继续 |
+| `Fatal` | 不可恢复的错误，调用后程序退出 |
+
+### 日志内容规范
+
+- **不要**在日志中打印密码、Token、信用卡号等敏感信息。
+- 错误日志必须包含足够的上下文（请求 ID、用户 ID、关键参数）。
+- 使用 `logger.With(...)` 创建带上下文的子 logger，避免每条日志重复传字段。
+
+```go
+// 在请求处理开始时创建带上下文的 logger
+reqLogger := logger.With(
+    zap.String("request_id", requestID),
+    zap.Int64("user_id", userID),
+)
+// 后续调用 reqLogger，无需重复传字段
+reqLogger.Info("processing order")
+reqLogger.Error("payment failed", zap.Error(err))
+```
+
+### 日志初始化
+
+logger 应在应用入口初始化一次，通过参数或依赖注入传递，**不要**使用全局变量。
+
+---
+
+## 9. 泛型使用
+
+**目标**：在合适的场景使用泛型减少重复代码，避免过度使用。
+
+> 适用于 Go 1.18+
+
+### 何时使用泛型
+
+- 实现通用数据结构（栈、队列、集合）。
+- 编写对多种类型执行相同操作的工具函数（`Map`、`Filter`、`Reduce`）。
+- 减少相同逻辑对不同数值类型的重复实现。
+
+```go
+// 不用泛型：需要为每种类型写一遍
+func SumInts(nums []int) int { ... }
+func SumFloat64s(nums []float64) float64 { ... }
+
+// 使用泛型：一次实现，多类型复用
+func Sum[T int | int64 | float64](nums []T) T {
+    var total T
+    for _, n := range nums {
+        total += n
+    }
+    return total
+}
+```
+
+### 使用约束（Constraints）
+
+通过 `constraints` 包或自定义约束限制类型参数范围：
+
+```go
+import "golang.org/x/exp/constraints"
+
+func Min[T constraints.Ordered](a, b T) T {
+    if a < b {
+        return a
+    }
+    return b
+}
+```
+
+### 何时不使用泛型
+
+- **不要**为了"可能将来复用"而提前泛化。
+- 如果接口（`interface{}`/`any`）已经够用，不必引入泛型。
+- 泛型不适合替代 `interface` 来实现多态行为（方法分派仍用接口）。
+- 避免过度嵌套的泛型约束，会显著降低可读性。
+
+```go
+// Bad：过度泛化，可读性差
+func Process[T interface{ Validate() error; Save() error }](items []T) error
+
+// Good：直接用接口
+type Processor interface {
+    Validate() error
+    Save() error
+}
+func Process(items []Processor) error
+```
+
+---
+
+## 10. 项目结构
 
 **目标**：使项目组织清晰，便于理解和维护。
 
@@ -390,7 +708,7 @@ myproject/
 
 ---
 
-## 7. 测试规范
+## 11. 测试规范
 
 **目标**：通过测试保证代码质量，使代码易于重构。
 
@@ -458,7 +776,7 @@ func assertEqual(t *testing.T, got, want int) {
 
 ---
 
-## 8. 工具链
+## 12. 工具链
 
 **目标**：利用自动化工具保证代码质量。
 
@@ -506,7 +824,7 @@ linters-settings:
 
 ---
 
-## 9. 参考资料
+## 13. 参考资料
 
 | 文档 | 说明 |
 |------|------|
