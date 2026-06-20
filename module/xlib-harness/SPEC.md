@@ -4,10 +4,10 @@ Status: Approved
 - Spec-Version: v1.3.0
 - Last-Updated: 2026-06-20
 - Layer: 基座 · 模块生成器与门禁执行器
-- Version: v0.1.4
+- Version: v0.1.6
 - Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `xlibgate`
 
-> 公开投影说明：v0.1.4 已由 `/home/xlib-harness@fb097be5eff4` 的本地验收、GitHub Actions Release run `27854835195` 和 GitHub Release 证据支撑。
+> 公开投影说明：v0.1.6 已由 `/home/xlib-harness@d90b35124701` 的本地验收、GitHub Actions Release run `27855366871`、main CI run `27855396013` 和 GitHub Release 证据支撑。
 
 ---
 
@@ -26,6 +26,7 @@ Foundation 20 模块需要统一的可机器验证规格资产。手工复制模
 - 以 fixture 锁定 compliant、bad-dependency、broken-trace 三类行为。
 - 保持 Go 运行时 stdlib-only，不把业务模块或横切工具作为运行时依赖。
 - 让 harness 自身达到 100% Go 覆盖率，并通过 `make ci`。
+- 在代码仓库公开 `FEATURES.md` 与 `ACCEPTANCE.md`，并由 CI/CD 发布门禁验证。
 
 ## 4. 非目标
 
@@ -61,6 +62,7 @@ Foundation 20 模块需要统一的可机器验证规格资产。手工复制模
 | BR-002 | `check` 不得修改被检模块文件 | 单元测试与只读实现 |
 | BR-003 | `check` 失败退出码必须非零 | CLI 负例测试 |
 | BR-004 | `--json` 输出必须可被自动化消费 | JSON 单元测试与 CLI smoke |
+| BR-005 | 发布门禁必须验证公开功能/验收文档与免许可证 secret scan | GitHub Actions Release run 与 main CI run |
 
 ### Acceptance Criteria Registry
 
@@ -72,6 +74,7 @@ Foundation 20 模块需要统一的可机器验证规格资产。手工复制模
 | AC-004 | FR-004 | TC-004 | compliant fixture 通过 full profile CI/CD 引用检查 | `xlib-harness check fixtures/compliant-module --profile full` | PASS |
 | AC-005 | FR-005 | TC-005 | Markdown 格式问题被报告 | Go unit tests | PASS |
 | AC-006 | FR-006 | TC-006 | broken-trace fixture 被 full profile 拒绝 | `xlib-harness check fixtures/broken-trace --profile full` | PASS |
+| AC-007 | BR-005 | TC-007 | 代码仓库公开文档与 secret scan 被发布门禁验证 | GitHub Actions Release run `27855366871` and main CI run `27855396013` | PASS |
 
 ## 8. 接口契约
 
@@ -179,6 +182,7 @@ module/xlib-harness/
     TASK-XLIBHARNESS-004.md
     TASK-XLIBHARNESS-005.md
     TASK-XLIBHARNESS-006.md
+    TASK-XLIBHARNESS-007.md
 ```
 
 Module implementation lives in `/home/xlib-harness`; this root repository only stores governance projection documents.
@@ -186,7 +190,7 @@ Module implementation lives in `/home/xlib-harness`; this root repository only s
 ## 14. 依赖
 
 - Runtime: Go standard library only.
-- CI tooling: `xlibgate@v1.0.0`, gitleaks, GitHub CLI release step.
+- CI tooling: `xlibgate@v1.0.0`, pinned open-source `gitleaks` CLI, GitHub CLI release step.
 - Forbidden runtime refs: `observex`、`configx`、`resiliencx`、`schedulex`、`testkitx`、`xlib-standard`。
 - Forbidden scope: business-domain modules, credentials, exchange endpoints, live trading config。
 
@@ -197,6 +201,7 @@ Module implementation lives in `/home/xlib-harness`; this root repository only s
 - 负例测试：bad-dependency、broken-trace、format issue。
 - 覆盖率测试：`go test ./... -coverprofile=coverage.out -covermode=count && go tool cover -func=coverage.out`，要求 total 100.0%。
 - 基准测试：`go test -bench=. ./...`。
+- 发布文档契约：CI/CD 验证 `README.md`、`FEATURES.md`、`ACCEPTANCE.md` 和 workflow 文件存在且非空。
 
 ### 15.1 Traceability Test Cases
 
@@ -208,13 +213,14 @@ Module implementation lives in `/home/xlib-harness`; this root repository only s
 | TC-004 | Full gate accepts compliant module | `go run . check fixtures/compliant-module --profile full` | 15 项检查全部通过 |
 | TC-005 | Format checks detect markdown issues | Go unit tests | trailing whitespace、空链接、表格漂移均被覆盖 |
 | TC-006 | Trace gate rejects incomplete matrix | `go run . check fixtures/broken-trace --profile full` | 非零退出并报告追踪断链 |
+| TC-007 | Release docs and secret scan gates pass | GitHub Actions Release run `27855366871` and main CI run `27855396013` | `FEATURES.md`、`ACCEPTANCE.md` 与 pinned `gitleaks` CLI 均通过 |
 
 ## 16. 性能预算
 
 | Metric | Target | Current Evidence |
 | --- | --- | --- |
-| Generate latency | < 5s | `BenchmarkGenerate-16` 439979 ns/op |
-| Full profile check latency | < 10s | `BenchmarkCheckFullProfile-16` 4802818 ns/op |
+| Generate latency | < 5s | `BenchmarkGenerate-16` 462076 ns/op |
+| Full profile check latency | < 10s | `BenchmarkCheckFullProfile-16` 2468222 ns/op |
 | Coverage | 100.0% | `go tool cover -func=coverage.out` total 100.0% |
 
 ## 17. 可观测性
@@ -229,7 +235,7 @@ Module implementation lives in `/home/xlib-harness`; this root repository only s
 - 不执行远程代码。
 - 不连接外部生产服务。
 - 路径处理通过标准库文件 API，生成路径需显式传入。
-- CI secret scan 使用 gitleaks；本地 secret pattern scan 无真实凭证命中。
+- CI secret scan 使用 pinned open-source `gitleaks` CLI 扫描仓库历史；本地与 CI 均无真实凭证命中。
 
 ## 19. CI 门禁
 
@@ -247,8 +253,8 @@ Required local gates:
 
 GitHub Actions:
 
-- `.github/workflows/ci.yml`: docs contract、Go validation、trust alignment、secret scan。
-- `.github/workflows/release.yml`: tag-triggered release with `make ci` and `xlibgate@v1.0.0`。
+- `.github/workflows/ci.yml`: docs contract、Go validation、trust alignment、pinned CLI secret scan。
+- `.github/workflows/release.yml`: tag-triggered release with `make ci`、`xlibgate@v1.0.0` and release docs contract。
 
 ## 20. 升级兼容性
 
@@ -265,8 +271,9 @@ GitHub Actions:
 - [x] 覆盖率 total 100.0%。
 - [x] `make ci` 通过。
 - [x] CI/CD workflow 配置完成。
-- [x] 本地 release tag `v0.1.4` 创建。
-- [x] GitHub Release `v0.1.4` 发布并验证。
+- [x] 本地 release tag `v0.1.6` 创建。
+- [x] GitHub Release `v0.1.6` 发布并验证。
+- [x] GitHub Actions main CI run `27855396013` 通过。
 
 ## 22. 待解决问题
 
@@ -278,6 +285,8 @@ GitHub Actions:
 
 | 日期 | 版本 | 变更内容 | 作者 |
 | --- | --- | --- | --- |
+| 2026-06-20 | v0.1.6 | 将 secret scan 切换为免许可证 pinned CLI，补齐代码仓库 FEATURES/ACCEPTANCE 发布文档契约，Release 与 main CI 均通过 | ZoneCNH |
+| 2026-06-20 | v0.1.5 | 补齐代码仓库公开 FEATURES/ACCEPTANCE 文档；main CI 暴露外部 secret scan action license gate，后续由 v0.1.6 修复 | ZoneCNH |
 | 2026-06-20 | v0.1.4 | 修复 CI/CD trust tooling 可安装性，强化 Markdown fenced code 解析，重新验收 100% 覆盖率并发布 GitHub Release | ZoneCNH |
 | 2026-06-20 | v0.1.3 | 中间发布候选，补齐生产级门禁、100% 覆盖率与 CI/CD 雏形，后续由 v0.1.4 修复 trust tooling pin | ZoneCNH |
 | 2026-06-18 | v0.1.1 | 补齐验收证据、性能基线与发布文档同步 | ZoneCNH |

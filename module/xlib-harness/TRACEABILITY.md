@@ -1,9 +1,9 @@
 # xlib-harness Traceability
 
 > Module: `xlib-harness`
-> Version: v0.1.4
+> Version: v0.1.6
 > Last-Updated: 2026-06-20
-> Implementation-Baseline: `/home/xlib-harness@fb097be5eff4`
+> Implementation-Baseline: `/home/xlib-harness@d90b35124701`
 
 ## Requirement Traceability Matrix
 
@@ -24,6 +24,7 @@
 | NFR-002 | JSON 输出可由自动化消费 | AC-004 | `xlib-harness check <module> --json \| jq .` | PASS |
 | NFR-003 | CI/CD 可重复执行 | AC-004 | `make ci` 与 GitHub Actions workflow | PASS |
 | NFR-004 | Go 覆盖率达到 100% | AC-006 | `go tool cover -func=coverage.out` total 100.0% | PASS |
+| NFR-005 | 代码仓库公开文档与 secret scan 可在发布门禁中重复验证 | AC-007 | `FEATURES.md`、`ACCEPTANCE.md`、Release run `27855366871`、main CI run `27855396013`、pinned `gitleaks` CLI | PASS |
 
 ## Test Cases
 
@@ -35,6 +36,7 @@
 | TC-004 | Full gate accepts compliant module | `go run . check fixtures/compliant-module --profile full` | 15 项检查全部通过 |
 | TC-005 | Format checks detect markdown issues | Go unit tests | trailing whitespace、空链接、表格漂移均被覆盖 |
 | TC-006 | Trace gate rejects incomplete matrix | `go run . check fixtures/broken-trace --profile full` | 非零退出并报告追踪断链 |
+| TC-007 | Release docs and secret scan gates pass | GitHub Actions Release run `27855366871` and main CI run `27855396013` | `FEATURES.md`、`ACCEPTANCE.md` 与 pinned `gitleaks` CLI 均通过 |
 
 ## Closure
 

@@ -30,4 +30,4 @@ FR-002 实现与验证
 
 ## Evidence
 
-- /home/xlib-harness@fb097be5eff4：`make ci`、`go test -bench=. ./...`、`git diff --check`、secret pattern scan、`xlibgate@v1.0.0` imports/gomod/baseline 均 PASS；coverage total 100.0%；full profile 15 项通过。
+- /home/xlib-harness@d90b35124701：`make ci`、`go test -bench=. -run '^$' ./...`、`git diff --check`、pinned `gitleaks` CLI、`xlibgate@v1.0.0` imports/gomod/baseline 均 PASS；coverage total 100.0%；full profile 15 项通过；Release run `27855366871` 与 main CI run `27855396013` 均 PASS。
