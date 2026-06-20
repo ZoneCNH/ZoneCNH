@@ -115,11 +115,12 @@
       "severity": "high",
       "module": "ossx",
       "title": "公开 release v1.0.1 但仓库 0 pkg 源码（仅文档/脚本）",
-      "status": "open",
+      "status": "resolved",
       "category": "implementation",
       "detail": "ZoneCNH/ossx 仓库 54KB，无 pkg/ossx 目录，无 Go 源码；release v1.0.1 tag 存在但实测 import 失败；fact-layer 此前误标 impl=true/factory=true",
       "evidence": "gh api repos/ZoneCNH/ossx/contents 2026-06-18 实测：根目录仅 .env.example/.gitignore/.repo-contract.yaml/LICENSE/README.md 与 docs/scripts/.github 目录",
-      "action": "v1.0.2 patch：写 pkg/ossx New/Close/PutObject/GetObject/DeleteObject + integration test"
+      "action": "v1.0.2 patch：写 pkg/ossx New/Close/PutObject/GetObject/DeleteObject + integration test",
+      "resolution": "ossx v1.2.1 PR #8 已合并到 main；pkg/ossx 17个源文件 + adapters/aliyun 完整实现；go build + go test PASS；100% 覆盖率（2026-06-20）"
     },
     {
       "id": "BLK-011",
@@ -178,13 +179,9 @@
     "note": "全部阻塞项已通过治理流程闭合（2026-06-16）",
     "items": []
   },
-  "open_blockers": 1,
-  "resolved_blockers": 10,
-  "open_by_severity": {
-    "high": 1
-  },
-  "factory_blocking_modules": [
-    "ossx"
-  ],
+  "open_blockers": 0,
+  "resolved_blockers": 11,
+  "open_by_severity": {},
+  "factory_blocking_modules": [],
   "release_blocking_modules": []
 }
