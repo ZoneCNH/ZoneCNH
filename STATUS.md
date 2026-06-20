@@ -289,6 +289,7 @@
 | 组件                                              | 域   | 版本   | 进度                            | 覆盖率要求 | 说明                                                      |
 | ------------------------------------------------- | ---- | ------ | ------------------------------- | ---------- | --------------------------------------------------------- |
 | [x.go](https://github.com/ZoneCNH/x.go)           | 入口 | v0.0.1 | ███░ 80%                        | 100%       | 组合根，2.8MB/33 项                                       |
+| [composer](https://github.com/ZoneCNH/composer)   | 入口 | v0.1.0 | ███████░ 75%                    | 100%       | 数据域组合根：25 进程（23 adapter + market-data + macro-data）+ HTTP health + Docker Compose；✅ dispatch→regime SinkPort 适配器（MarketRegimeSink/MacroRegimeSink，14 tests PASS） |
 | [alertx](https://github.com/ZoneCNH/alertx)       | 横切 | v0.1.0 | ░░░░ 5%                         | 100%       | 告警引擎                                                  |
 | [observex](https://github.com/ZoneCNH/observex)   | 横切 | v0.3.4 | 全管线 --force pass (spec→code) | 100%       | 可观测性（同时归属基座）；✅ v0.3.4 GitHub Release 已发布；Labels type alias；redisx/kafkax/clickhousex 已对齐 |
 | [module](./module/README.md)                      | 独立 | -      | -                               | 100%       | 项目技术规范与接口定义                                    |
@@ -298,7 +299,7 @@
 ## 总览仪表盘
 
 ```text
-组件总数: 75    已有: 54    已创建: 21    平均进度: 57%
+组件总数: 76    已有: 55    已创建: 21    平均进度: 57%
 
 进度分布:
   ███░ ≥80% ██████████████████████████████████████████      48 个 (64%)
@@ -322,13 +323,13 @@
 | 数据域 · 行情 Provider | 0      | 0      | 0      | -                                  | 0 (Provider 类型已并入 SDK；保留行用于审计兼容)         |
 | 数据域 · 宏观          | 10     | 10     | 0      | 80%                                | 10 (全部 v0.1.1)                                      |
 | 数据域 · 另类          | 1      | 0      | 1      | 5%                                 | 1 (v0.1.0)                                            |
-| 分析域                 | 8      | 3      | 5      | 30%                                | 8 (market_regime/macro_regime v0.1.0；regime_engine v1.0.0) |
+| 分析域                 | 8      | 3      | 5      | 35%                                | 8 (market_regime/macro_regime v0.2.0；regime_engine v1.0.0；composer SinkPort ✅) |
 | 决策域                 | 6      | 0      | 6      | 5%                                 | 6 (全部 v0.1.0+)                                      |
 | 执行域                 | 7      | 0      | 7      | 5%                                 | 7 (全部 v0.1.0+)                                      |
-| 入口                   | 1      | 1      | 0      | 80%                                | 1 (x.go)                                              |
+| 入口                   | 2      | 2      | 0      | 78%                                | 2 (x.go v0.0.1；composer v0.1.0 ✅ SinkPort适配器)         |
 | 横切                   | 2      | 1      | 1      | 53%                                | 2 (observex, alertx)                                  |
 | 独立                   | 1      | 1      | 0      | -                                  | 0                                                     |
-| **合计**               | **75** | **54** | **21** | **57%**                            | **72**                                                |
+| **合计**               | **76** | **55** | **21** | **57%**                            | **73**                                                |
 
 ---
 
@@ -367,7 +368,7 @@
 
 ### 🔴 分析域（阻塞）
 
-- 组件：8 个，三引擎（market_regime/macro_regime v0.1.0，regime_engine v1.0.0）已完成 P0 桥接，5 个处于早期（5%）
+- 组件：8 个，三引擎（market_regime/macro_regime v0.2.0，regime_engine v1.0.0）已完成 P0 桥接；dispatch→regime SinkPort 适配器 ✅（composer v0.1.0，MarketRegimeSink/MacroRegimeSink，14 tests PASS），5 个处于早期（5%）
 - **阻塞项**：factor_engine / feature_store / factor_eval / ms_brain 均未实现到可用闭环；flowx SPEC 已创建（v0.1.0-draft）
 - **里程碑**：分析域三引擎 contracts v1.4.0 P0 DTO 接入完成，M×S→DecisionCard 链路打通
 
@@ -385,9 +386,9 @@
 
 ### 🟡 入口（注意）
 
-- x.go 已有（80%，v0.0.1），但 2.8MB/33 项体量异常大
-- **架构守卫**：x.go 应只承担组合根职责；需核实是否存在因子计算、信号判断、风控规则或订单路由
-- **待确认**：入口主逻辑是否能收敛为配置加载、依赖 wiring 和生命周期控制
+- x.go 已有（80%，v0.0.1）；2.8MB 体量已核实为治理/工具 CLI（goalcli+templatex），非 Composition Root
+- **composer v0.1.0** ✅（75%）：数据域组合根，25 进程（23 adapter + market-data + macro-data）+ HTTP health + Docker Compose；dispatch→regime SinkPort 适配器已完成（MarketRegimeSink/MacroRegimeSink）
+- **待完成**：regime_engine → signal_factory → riskx 完整链路集成
 
 ### 🟡 横切（注意）
 
@@ -409,7 +410,7 @@
 
 | #   | 风险                                    | 影响                              | 建议                                                                   |
 | --- | --------------------------------------- | --------------------------------- | ---------------------------------------------------------------------- |
-| R3  | x.go 2.8MB 体量异常                     | 可能违反组合根边界                | 按 ARCHITECTURE.md 的组合根守卫核实，剥离业务逻辑                      |
+| ~~R3~~  | ~~x.go 2.8MB 体量异常~~                 | ~~可能违反组合根边界~~            | ✅ **已核实**：x.go = 治理/工具 CLI（goalcli+templatex），非 Composition Root；composer 独立仓库承担数据域组合根 |
 | R4  | ~~13 个交易所 SDK 全部无版本号~~        | ~~无法追踪 API 兼容性~~           | ✅ 已版本化：18 仓库 v0.1.1 tagged release（2026-06-16）               |
 | R5  | ~~宏观数据源 6 个央行适配器同质化~~     | ~~维护成本高~~                    | ✅ 已评估 — 各模块保持独立，已统一打 v0.1.1（2026-06-16）              |
 | R7  | observex 双重归属（基座+横切）          | 职责边界模糊                      | ✅ 已记录 ADR：`module/observex/ADR-dual-attribution.md`（2026-06-12） |
@@ -431,7 +432,7 @@
 ### 当前阻塞项
 
 - [ ] Phase 1（分析域）未开始 → 阻塞 Phase 2/3/4/5
-- [ ] x.go 体量待核实 → 按组合根守卫确认并剥离业务逻辑
+- [x] ~~x.go 体量待核实~~ ✅ **已核实**：x.go = 治理 CLI，非组合根；composer v0.1.0 承担数据域组合根
 
 ### 下一步行动
 
