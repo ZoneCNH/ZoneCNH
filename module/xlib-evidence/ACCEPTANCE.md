@@ -1,9 +1,9 @@
 # xlib-evidence 完整验收清单
 
 - Status: Generated from current module SSOT
-- Last-Updated: 2026-06-19
-- Module-Version: v0.2.2
-- Module-State: 已发布，GitHub Release v0.2.2、runtime main cf1943c 与本地 100.0% 覆盖率验收证据对齐
+- Last-Updated: 2026-06-20
+- Module-Version: v0.2.3
+- Module-State: v0.2.3 已发布；runtime 本地 100.0% atomic coverage、race、vet、build、benchmark 与 GitHub Release evidence contract 已通过
 - Layer: L1 证据
 - Runtime-Repo: /home/xlib-evidence
 - Source: goal.md, SPEC.md, TRACEABILITY.md, IMPLEMENTATION-PLAN.md, tasks/
@@ -19,7 +19,9 @@
 | 运行时测试 | cd /home/xlib-evidence && go test ./... | 所有包测试通过 |
 | 竞态检查 | cd /home/xlib-evidence && go test ./... -race -count=1 | 无 data race，测试稳定通过 |
 | 静态检查 | cd /home/xlib-evidence && go vet ./... | 无 vet 问题 |
-| 覆盖率证据 | cd /home/xlib-evidence && go test ./... -coverprofile=coverage.out | 覆盖率文件生成且 total = 100.0%，满足 v0.2.2 CI/CD 门槛 |
+| 构建检查 | cd /home/xlib-evidence && go build ./... | 所有包可构建 |
+| 覆盖率证据 | cd /home/xlib-evidence && go test ./... -covermode=atomic -coverprofile=coverage.out | 覆盖率文件生成且 total = 100.0%，满足 v0.2.3 生产发布门槛 |
+| 性能基线 | cd /home/xlib-evidence && go test -bench='Benchmark(ManifestGen\|MultiModuleAggregate)$' -run '^$' ./... | manifest 生成 < 1s，20 模块聚合 < 5s |
 | 依赖边界 | cd /home/xlib-evidence && go list -deps ./... | 依赖不越过 FOUNDATION-DEPS.yaml 登记边界 |
 
 ## 2. AC 验收登记
@@ -30,7 +32,7 @@
 | AC-002 | FR-002 / BR-001 | 门禁全绿时生成 manifest，含 version/commit/gates/coverage/hash / TC-002: go test -run TestNewManifestNormalizesSortsAndValidates | ✅ | TRACEABILITY.md |
 | AC-003 | FR-003 / BR-003 | manifest hash 校验通过；篡改检测失败 / TC-003: go test -run TestManifestValidateRejectsFailedGateLowCoverageAndTamper | ✅ | TRACEABILITY.md |
 | AC-004 | FR-004 | 远程查询返回结构化 evidence manifest / TC-004: go test -run 'Test(ClientFetchManifest\|ManifestHandler)' | ✅ | TRACEABILITY.md |
-| AC-005 | FR-005 / BR-004 | evidence 报告可渲染；存储不可变追加 / TC-005: go test -run 'Test(ReportsRenderValidatedManifest\|StoreAppendEnforcesHashChain)' | ✅ | TRACEABILITY.md |
+| AC-005 | FR-005 / BR-004 | evidence 报告可渲染；存储不可变追加，并发读写保持一致快照 / TC-005: go test -run 'Test(ReportsRenderValidatedManifest\|StoreAppendEnforcesHashChain\|StoreAppendStoresImmutableManifest\|StoreSupportsConcurrentAppendAndReads)' | ✅ | TRACEABILITY.md |
 
 ## 3. TC 测试验收登记
 
@@ -40,7 +42,7 @@
 | TC-002 | FR-002, BR-001 | go test -run TestNewManifestNormalizesSortsAndValidates — 全部门禁通过→manifest 生成且 hash 有效 | ✅ | TRACEABILITY.md |
 | TC-003 | FR-003, BR-003 | go test -run TestManifestValidateRejectsFailedGateLowCoverageAndTamper — 合法 manifest 通过；篡改 manifest 拒绝 | ✅ | TRACEABILITY.md |
 | TC-004 | FR-004 | go test -run 'Test(ClientFetchManifest\|ManifestHandler)' — HTTP endpoint 返回 JSON 证据 | ✅ | TRACEABILITY.md |
-| TC-005 | FR-005, BR-004 | go test -run 'Test(ReportsRenderValidatedManifest\|StoreAppendEnforcesHashChain)' — 报告渲染且 evidence 追加不可变 | ✅ | TRACEABILITY.md |
+| TC-005 | FR-005, BR-004 | go test -run 'Test(ReportsRenderValidatedManifest\|StoreAppendEnforcesHashChain\|StoreAppendStoresImmutableManifest\|StoreSupportsConcurrentAppendAndReads)' — 报告渲染、evidence 追加不可变且 Store 并发读写一致 | ✅ | TRACEABILITY.md |
 
 ## 4. 覆盖闭合验收
 
@@ -50,11 +52,11 @@
 | FR-002 | generate-manifest: 模块通过所有门禁→生成 Release Manifest(version/commit/gates/coverage/hash) | AC-002 / TC-002 / go test -run TestNewManifestNormalizesSortsAndValidates | ✅ | TRACEABILITY.md |
 | FR-003 | validate-manifest: CI 检查 manifest→验证完整性、hash 与内容一致性 | AC-003 / TC-003 / go test -run TestManifestValidateRejectsFailedGateLowCoverageAndTamper | ✅ | TRACEABILITY.md |
 | FR-004 | remote-evidence: 远程查询模块证据→返回结构化 manifest JSON | AC-004 / TC-004 / go test -run 'Test(ClientFetchManifest\|ManifestHandler)' | ✅ | TRACEABILITY.md |
-| FR-005 | evidence-report: 聚合多模块证据→生成跨模块统一报告 | AC-005 / TC-005 / go test -run 'Test(ReportsRenderValidatedManifest\|StoreAppendEnforcesHashChain)' | ✅ | TRACEABILITY.md |
+| FR-005 | evidence-report: 聚合多模块证据→生成跨模块统一报告，并提供并发安全、追加不可变的证据 Store | AC-005 / TC-005 / go test -run 'Test(ReportsRenderValidatedManifest\|StoreAppendEnforcesHashChain\|StoreAppendStoresImmutableManifest\|StoreSupportsConcurrentAppendAndReads)' | ✅ | TRACEABILITY.md |
 | BR-001 | manifest必须包含门禁全绿证据 | TC-002 / TestNewManifestNormalizesSortsAndValidates | ✅ | TRACEABILITY.md |
 | BR-002 | 覆盖率低于80%不得发布 | TC-001 / 覆盖率边界测试(79.99%拒绝, 80.00%通过) | ✅ | TRACEABILITY.md |
 | BR-003 | manifest不可事后篡改(hash链校验) | TC-003 / TestManifestValidateRejectsFailedGateLowCoverageAndTamper | ✅ | TRACEABILITY.md |
-| BR-004 | evidence存储必须不可变追加 | TC-005 / TestStoreAppendEnforcesHashChain | ✅ | TRACEABILITY.md |
+| BR-004 | evidence存储必须不可变追加，并在并发读写时保持一致快照 | TC-005 / Test(StoreAppendEnforcesHashChain\|StoreAppendStoresImmutableManifest\|StoreSupportsConcurrentAppendAndReads) | ✅ | TRACEABILITY.md |
 | NFR-001 | Performance | manifest生成延迟 < 1s / benchmark: go test -bench=BenchmarkManifestGen -run '^$' | ✅ | TRACEABILITY.md |
 | NFR-002 | Performance | 20模块证据聚合 < 5s / benchmark: go test -bench=BenchmarkMultiModuleAggregate -run '^$' | ✅ | TRACEABILITY.md |
 | NFR-003 | Security | manifest hash完整性校验(防篡改) / TC-003: 篡改检测 | ✅ | TRACEABILITY.md |
@@ -65,17 +67,17 @@
 
 - [x] FEATURES.md 的 FR、BR/NFR、任务清单与 SPEC/TRACEABILITY 当前登记一致。
 - [x] ACCEPTANCE.md 的 AC、TC 与运行时代码测试名、证据文件或 CI 记录一致。
-- [x] 运行时代码仓库 /home/xlib-evidence 通过 go test、go test -race、go vet 与覆盖率门槛。
+- [x] 运行时代码仓库 /home/xlib-evidence 通过 go test、go test -race、go vet、go build、benchmark 与 100.0% atomic coverage 门槛。
 - [x] 所有外部服务依赖有本地可重复的测试替身或明确 live-gate 证据。
 - [x] 安全检查确认没有凭证、私有端点、账户 ID 或实盘配置进入公开文档与代码。
-- [x] v0.2.2 tag/release 已发布，runtime main 已快进到 cf1943c，当前发布判定以本地可复验命令与 GitHub Release 记录为准。
+- [x] v0.2.3 已通过本地可复验命令并发布；release workflow 已配置 `coverage.out`、`module.json`、`checksums.txt` 证据资产与 tag/version 合约。
 
 ## 6. 当前验收证据
 
-- 2026-06-19 本地验收已执行：go test ./...、go test ./... -count=1、go test ./... -race -count=1、go vet ./... 全部通过。
-- 覆盖率 total 100.0%；go tool cover -func=coverage.out 显示全部函数 100.0%。BenchmarkManifestGen 7924 ns/op，BenchmarkMultiModuleAggregate 194823 ns/op。
-- go list -m all 仅返回 github.com/ZoneCNH/xlib-evidence；禁止依赖扫描与凭证/外部服务关键字扫描无匹配。
-- GitHub Release v0.2.2 已发布（Latest，publishedAt 2026-06-19T23:20:57Z）：https://github.com/ZoneCNH/xlib-evidence/releases/tag/v0.2.2 。
-- runtime main 已快进并推送到 cf1943c9497e0ae23bdc7fc293acde27a6ae9076；v0.2.2 tag 已推送。
-- 远端 release.yml run 因 self-hosted runner 离线长期 queued，已 cancel（v0.2.1/v0.2.2 两条）；GitHub Release v0.2.2 由本地验收（100.0% 覆盖率、test/race/vet 全绿）通过后手动发布，与 release.yml `gh release create` 产出一致。
-- FEATURES.md、ACCEPTANCE.md 与 runtime v0.2.2 发布口径已对齐。
+- 2026-06-20 本地验收已执行：go test ./...、go test ./... -race -count=1、go vet ./...、go build ./... 全部通过。
+- 覆盖率使用 atomic mode 采集，total 100.0%；go tool cover -func=coverage.out 显示全部函数 100.0%。
+- BenchmarkManifestGen 17752 ns/op，BenchmarkMultiModuleAggregate 462711 ns/op，均显著低于 NFR 阈值。
+- go list -m all 仅返回 github.com/ZoneCNH/xlib-evidence；release/docs contract 本地校验通过，tag 为 v0.2.3。
+- GitHub Release 已发布：https://github.com/ZoneCNH/xlib-evidence/releases/tag/v0.2.3。
+- release workflow 已配置发布证据资产：release-evidence/coverage.out、release-evidence/module.json、release-evidence/checksums.txt，并在发布后验证 GitHub Release asset 名称。
+- FEATURES.md、ACCEPTANCE.md 与 runtime v0.2.3 生产验收口径已对齐。

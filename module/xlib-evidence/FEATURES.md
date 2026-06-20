@@ -1,9 +1,9 @@
 # xlib-evidence 完整实现清单
 
 - Status: Generated from current module SSOT
-- Last-Updated: 2026-06-19
-- Module-Version: v0.2.2
-- Module-State: 已发布，GitHub Release v0.2.2、runtime main cf1943c 与 100.0% 覆盖率验收证据对齐
+- Last-Updated: 2026-06-20
+- Module-Version: v0.2.3
+- Module-State: v0.2.3 已发布；runtime 本地 100.0% 覆盖率、并发 Store 防护、CI/CD 证据门禁与 GitHub Release 资产已闭合
 - Layer: L1 证据
 - Runtime-Repo: /home/xlib-evidence
 - Source: goal.md, SPEC.md, TRACEABILITY.md, IMPLEMENTATION-PLAN.md, tasks/
@@ -30,7 +30,7 @@
 | FR-002 | generate-manifest: 模块通过所有门禁→生成Release Manifest(version/commitSHA/gates/coverage) | AC-002 / TC-002 / `go test -run TestNewManifestNormalizesSortsAndValidates` | ✅ | TRACEABILITY.md |
 | FR-003 | validate-manifest: CI检查manifest→验证完整性/签名/内容一致性 | AC-003 / TC-003 / `go test -run TestManifestValidateRejectsFailedGateLowCoverageAndTamper` | ✅ | TRACEABILITY.md |
 | FR-004 | remote-evidence: 远程查询模块证据→返回结构化证据(覆盖率/门禁历史/manifest) | AC-004 / TC-004 / `go test -run 'Test(ClientFetchManifest|ManifestHandler)'` | ✅ | TRACEABILITY.md |
-| FR-005 | evidence-report: 聚合多模块证据→生成跨模块统一报告 | AC-005 / TC-005 / `go test -run 'Test(ReportsRenderValidatedManifest|StoreAppendEnforcesHashChain)'` | ✅ | TRACEABILITY.md |
+| FR-005 | evidence-report: 聚合多模块证据→生成跨模块统一报告，并提供并发安全、追加不可变的证据 Store | AC-005 / TC-005 / `go test -run 'Test(ReportsRenderValidatedManifest|StoreAppendEnforcesHashChain|StoreAppendStoresImmutableManifest|StoreSupportsConcurrentAppendAndReads)'` | ✅ | TRACEABILITY.md |
 
 ## 3. 行为与非功能实现清单
 
@@ -39,7 +39,7 @@
 | BR-001 | manifest必须包含门禁全绿证据 | TC-002 / `TestNewManifestNormalizesSortsAndValidates` | ✅ | TRACEABILITY.md |
 | BR-002 | 覆盖率低于80%不得发布 | TC-001 / 覆盖率边界测试(79.99%拒绝, 80.00%通过) | ✅ | TRACEABILITY.md |
 | BR-003 | manifest不可事后篡改(hash链校验) | TC-003 / `TestManifestValidateRejectsFailedGateLowCoverageAndTamper` | ✅ | TRACEABILITY.md |
-| BR-004 | evidence存储必须不可变追加 | TC-005 / `TestStoreAppendEnforcesHashChain` | ✅ | TRACEABILITY.md |
+| BR-004 | evidence存储必须不可变追加，并在并发读写时保持一致快照 | TC-005 / `Test(StoreAppendEnforcesHashChain|StoreAppendStoresImmutableManifest|StoreSupportsConcurrentAppendAndReads)` | ✅ | TRACEABILITY.md |
 | NFR-001 | Performance | manifest生成延迟 < 1s / benchmark: `go test -bench=BenchmarkManifestGen -run '^$'` | ✅ | TRACEABILITY.md |
 | NFR-002 | Performance | 20模块证据聚合 < 5s / benchmark: `go test -bench=BenchmarkMultiModuleAggregate -run '^$'` | ✅ | TRACEABILITY.md |
 | NFR-003 | Security | manifest hash完整性校验(防篡改) / TC-003: 篡改检测 | ✅ | TRACEABILITY.md |
@@ -60,7 +60,7 @@
 | TASK-XLIBEVIDENCE-003 | TASK-XLIBEVIDENCE-003: FR-004 | `remote.go` / `remote_test.go` | ✅ | tasks/TASK-XLIBEVIDENCE-003.md |
 | TASK-XLIBEVIDENCE-003B | TASK-XLIBEVIDENCE-003b: FR-003 | `manifest.go` / `manifest_test.go` | ✅ | tasks/TASK-XLIBEVIDENCE-003b.md |
 | TASK-XLIBEVIDENCE-004 | TASK-XLIBEVIDENCE-004: FR-005 | `report.go` / `report_test.go` | ✅ | tasks/TASK-XLIBEVIDENCE-004.md |
-| TASK-XLIBEVIDENCE-005 | TASK-XLIBEVIDENCE-005: FR-001 | `.github/workflows/ci.yml` / `.github/workflows/release.yml` | ✅ | tasks/TASK-XLIBEVIDENCE-005.md |
+| TASK-XLIBEVIDENCE-005 | TASK-XLIBEVIDENCE-005: FR-001 | `.github/workflows/ci.yml` / `.github/workflows/release.yml` / `FEATURES.md` / `ACCEPTANCE.md` | ✅ | tasks/TASK-XLIBEVIDENCE-005.md |
 
 ## 5. 文档资产清单
 
@@ -79,4 +79,4 @@
 - [x] 所有任务文档均能追溯到 FR、BR/NFR、AC 或 TC。
 - [x] 依赖边界符合 FOUNDATION-DEPS.yaml，不引入未授权运行时依赖。
 - [x] 运行时代码仓库 /home/xlib-evidence 的 lint、typecheck、test、race、coverage 验证证据已归档。
-- [x] v0.2.2 tag、GitHub Release（Latest，2026-06-19）与 runtime main cf1943c 已发布/合并；本地 100.0% 覆盖率验收通过，GitHub Release v0.2.2 已发布。
+- [x] v0.2.3 本地生产验收已通过并发布到 GitHub Release；runtime 发布包包含根级 `FEATURES.md`、`ACCEPTANCE.md`、CI docs contract 与 release evidence assets。
