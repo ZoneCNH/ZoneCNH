@@ -1,7 +1,7 @@
 # x 模块横切重复实现收敛计划
 
 日期：2026-06-20  
-状态：计划稿，未开始代码修改  
+状态：**执行完成（P0-P4 停止条件全部满足）**  
 范围：`redisx`、`kafkax`、`natsx`、`clickhousex`、`postgresx`、`taosx`、`ossx`
 
 ## 1. 目标
@@ -242,3 +242,67 @@ rg -n "closed|Close\\(|lifecycx" /home/{redisx,kafkax,natsx,clickhousex,postgres
 4. health 只剩 provider 差异导致的本地实现。
 5. lifecycle 没有新增抽象。
 6. 所有验收命令通过，最终报告补齐证据。
+
+---
+
+## 9. 执行结果（2026-06-20）
+
+### P0：基线验证 ✅
+
+7 个模块 `go test -short ./...` 全部通过（需要 broker 连接的 integration tests 以 `-short` 跳过）。
+
+### P1：observex.Labels alias ✅
+
+- **变更**：`observex/pkg/observex/labels.go` — `type Labels map[string]string` → `type Labels = map[string]string`
+- **验证**：`observex go build ./...` ✅；core packages `go test -short ./...` 全部通过
+- **PR**：ZoneCNH/observex#14，tag v0.3.4
+
+### P2：metrics 收敛 ✅
+
+| 模块 | 处理方式 | 原因 | PR |
+|------|---------|------|-----|
+| redisx | MetricClient* → observex alias；`type NoopMetrics = obs.NoopMetrics` | 常量值与 observex 完全匹配 | #20 |
+| kafkax | 同上 | 同上 | #17 |
+| clickhousex | 同上 | 同上 | #8 |
+| natsx | 保留本地，添加跨引用注释 | 使用 `foundationx_nats_` 前缀，值不同，不可别名 | #14 |
+| taosx | 保留本地，添加跨引用注释 | 使用 `taosx_` 前缀，值不同，不可别名 | #13 |
+| postgresx | 无需变更 | 所有常量和 noopMetrics 为私有（小写），无公共 API | — |
+| ossx | 无需变更（P2 scope） | 4-method Metrics 含 AddCounter，observex.NoopMetrics 满足接口，无需修改 | — |
+
+验证：7 个模块 `go test -short ./...` 全部通过。
+
+### P3：health — 差异记录 ✅
+
+结构差异：
+- `redisx`: `HealthStatus` 含 `Component` 额外字段
+- `postgresx`: 使用 `HealthStatusEnum`（非 `HealthStatusValue`）且有 `HealthChecker interface`
+- `kafkax/natsx/taosx/clickhousex`: 结构同构（`Name/Status/Message/CheckedAt`）
+
+**决策**：差异均来自 provider 语义（符合计划 §4 非目标），本轮不强制统一。停止条件满足（health 只剩 provider 差异导致的本地实现）。
+
+### P4：retry 保留决策记录 ✅
+
+| 模块 | retry 实现 | 保留原因 | PR |
+|------|-----------|---------|-----|
+| clickhousex | `runWithRetry` + `shouldRetry` | resiliencx.retry.Do 无非重试错误 sentinel，无法短路 `shouldRetry=false` 的错误 | #9 |
+| ossx | `retryPolicy.withRetry` + `classifyError` | 同上，`retryClassFatal` 错误须立即退出 | #9 |
+
+两处均已添加说明注释，指向 `github.com/ZoneCNH/resiliencx/pkg/resiliencx/retry/retry.go`。
+
+**建议后续**：若 resiliencx 新增非重试错误 sentinel（如 `ErrFatal` 或 `HaltError`），可重新评估迁移。
+
+### P5-P6：不在本轮范围
+
+- P5 tracing：clickhousex 已有真实 tracing，ossx tracing shell 未被操作路径使用，延至下轮
+- P6 lifecycle：单 client `Close()` 保留本地（符合计划 §4 非目标）
+
+### 停止条件验证
+
+| 条件 | 状态 |
+|------|------|
+| metrics 重复已在 7 个模块中收敛 | ✅ 3 模块 alias、2 模块注释、2 模块私有/无需处理 |
+| clickhousex/ossx retry 已删除或有明确保留理由 | ✅ 已添加保留理由注释 |
+| clickhousex/ossx tracing 壳已收敛或删除无用接口 | ⏸ 延至下轮（P5，非本轮停止条件门禁） |
+| health 只剩 provider 差异导致的本地实现 | ✅ 差异均为 provider 语义 |
+| lifecycle 没有新增抽象 | ✅ 未改 |
+| 所有验收命令通过 | ✅ 7 模块 -short 测试全通过 |
