@@ -30,13 +30,14 @@
 | 第十条：变更管理 | [`docs/constitution/10-change-management.md`](docs/constitution/10-change-management.md) | PATCH/MINOR/MAJOR 分类、Breaking Change 流程 |
 | 第十一条：代码审查 | [`docs/constitution/11-code-review.md`](docs/constitution/11-code-review.md) | 审查清单（9项）、严重性级别、AI 代理审查规则 |
 | 第十二条：修正程序 | [`docs/constitution/12-amendment-procedure.md`](docs/constitution/12-amendment-procedure.md) | 修正条件、流程、修正历史记录 |
-| 第十三条：最高条款 | [`docs/constitution/13-supreme-clause.md`](docs/constitution/13-supreme-clause.md) | 效力层级、适用范围（§1-§14 + §15-§19）、解释权 |
+| 第十三条：最高条款 | [`docs/constitution/13-supreme-clause.md`](docs/constitution/13-supreme-clause.md) | 效力层级、适用范围（§1-§14 + §15-§19 + §20）、解释权 |
 | 第十四条：管线自改约束 | [`docs/constitution/14-anti-goodhart.md`](docs/constitution/14-anti-goodhart.md) | 受保护文件清单、RSI 合法形式（fork/AB/outer/批准） |
 | 第十五条：交付管线 | [`docs/constitution/15-delivery-pipeline.md`](docs/constitution/15-delivery-pipeline.md) | 管线七律 D1-D7、变更传播链 |
 | 第十六条：追溯与门禁 | [`docs/constitution/16-traceability-gates.md`](docs/constitution/16-traceability-gates.md) | 制品 ID 前缀体系、覆盖要求、孤儿检测 |
 | 第十七条：AI 辅助交付 | [`docs/constitution/17-ai-assisted-delivery.md`](docs/constitution/17-ai-assisted-delivery.md) | Prompt 质量标准、代码边界、输出验证 |
 | 第十八条：制品完成层级 | [`docs/constitution/18-artifact-completion.md`](docs/constitution/18-artifact-completion.md) | 四级 Done L1-L4（Code/Test/Release/Goal） |
 | 第十九条：受控递归改进 | [`docs/constitution/19-cri.md`](docs/constitution/19-cri.md) | CRI 七原则 R1-R7、改进边界、风险分级审批 |
+| 第二十条：认识论标准 | [`docs/constitution/20-epistemic-standards.md`](docs/constitution/20-epistemic-standards.md) | 证据标签、置信度、FRAME→REALITY 禁止、反奉承红旗、自检要求 |
 | 附录 A / B / L2.5 | [`docs/constitution/appendix.md`](docs/constitution/appendix.md) | 模块清单（基座+L2.5）、与 CLAUDE.md 关系、L2.5 收口边界 |
 
 ---
@@ -44,7 +45,7 @@
 ## 与 CLAUDE.md 的关系
 
 `CLAUDE.md` 是 Claude Code 的工作指南，规定仓库级操作约定（文档同步、提交格式、安全红线）。
-本宪法是系统级治理文件，规定模块实现（§1-§14）和交付管线（§15-§19）的技术标准。
+本宪法是系统级治理文件，规定模块实现（§1-§14）、交付管线（§15-§19）和认识论标准（§20）的技术要求。
 
 当两者冲突时，`CLAUDE.md` 安全条款（不提交凭证等）优先；技术条款以本宪法为准。
 
@@ -56,6 +57,7 @@
 
 | 日期 | 变更摘要 |
 | ---- | -------- |
+| 2026-06-21 | 新增第二十条：认识论标准（§20）|
 | 2026-06-21 | 条款迁移至 `docs/constitution/`，本文件转为向后兼容存根 |
 | 2026-06-16 | 新增 §2.5 模块增殖约束（奥卡姆剃刀）|
 | 2026-06-12 | 新增 §2.4 本地代码目录；§5 P0 修复；§4.4 状态同步 |

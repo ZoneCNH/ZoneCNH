@@ -1,7 +1,7 @@
 > **效力声明**：本文件内容提取自 [`CONSTITUTION.md`](../../CONSTITUTION.md)（FoundationX 最高治理文件）。
 > 如本文件与根目录 `CONSTITUTION.md` 有差异，以 `CONSTITUTION.md` 为准。
 >
-> [← 上一节](18-artifact-completion.md) · [↑ 目录](README.md) · [下一节 →](appendix.md)
+> [← 上一节](18-artifact-completion.md) · [↑ 目录](README.md) · [下一节 →](20-epistemic-standards.md)
 
 ---
 
