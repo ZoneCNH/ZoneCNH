@@ -204,9 +204,9 @@
 | [factor-engine](https://github.com/ZoneCNH/factor-engine) | v0.1.0       | ░░░░ 5%  | 100%       | 因子计算引擎                                                             |
 | [feature-store](https://github.com/ZoneCNH/feature-store) | v0.1.0       | ░░░░ 5%  | 100%       | 特征存储与版本管理                                                       |
 | [factor-eval](https://github.com/ZoneCNH/factor-eval)     | v0.1.0       | ░░░░ 5%  | 100%       | 因子评估                                                                 |
-| [market_regime](https://github.com/ZoneCNH/market_regime) | 空仓库       | ░░░░ 5%  | 100%       | 市场状态识别；空仓库，待初始化                                           |
-| [macro_regime](https://github.com/ZoneCNH/macro_regime)   | 空仓库       | ░░░░ 5%  | 100%       | 宏观经济体制识别（M1-M7）；空仓库，待初始化                               |
-| [ms_brain](https://github.com/ZoneCNH/ms_brain)           | v1.6.6       | ░░░░ 5%  | 100%       | M×S 系统架构分析体系                                                     |
+| [market-regime](https://github.com/ZoneCNH/market-regime) | 空仓库       | ░░░░ 5%  | 100%       | 市场状态识别；空仓库，待初始化                                           |
+| [macro-regime](https://github.com/ZoneCNH/macro-regime)   | 空仓库       | ░░░░ 5%  | 100%       | 宏观经济体制识别（M1-M7）；空仓库，待初始化                               |
+| [ms-brain](https://github.com/ZoneCNH/ms-brain)           | v1.6.6       | ░░░░ 5%  | 100%       | M×S 系统架构分析体系                                                     |
 | [regime-engine](https://github.com/ZoneCNH/regime-engine) | v0.1.0       | ██░░ 25% | 100%       | M×S 联合决策引擎（M+S → action/risk/permission），骨架完成，30+ 测试通过 |
 | [flowx](https://github.com/ZoneCNH/flowx)                 | v0.1.0-draft | ░░░░ 5%  | 100%       | 数据流管线引擎 — 流式 ETL、窗口聚合、背压控制（7 FR, SPEC draft）        |
 
@@ -218,9 +218,9 @@
 | factor-engine |  ❌  |  ❌  |   N/A   |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | 5%；仅创建，无实现                 |
 | feature-store |  ❌  |  ❌  |   N/A   |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | 5%；仅创建，无实现                 |
 | factor-eval   |  ❌  |  ❌  |   N/A   |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | 5%；仅创建，无实现                 |
-| market_regime |  ❌  |  ❌  |   N/A   |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | 5%；仅创建，无实现                 |
-| macro_regime  |  ❌  |  ❌  |   N/A   |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | 5%；仅创建，无实现                 |
-| ms_brain      |  ❌  |  ❌  |   N/A   |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | 5%；仅创建，无实现                 |
+| market-regime |  ❌  |  ❌  |   N/A   |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | 5%；仅创建，无实现                 |
+| macro-regime  |  ❌  |  ❌  |   N/A   |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | 5%；仅创建，无实现                 |
+| ms-brain      |  ❌  |  ❌  |   N/A   |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | 5%；仅创建，无实现                 |
 | regime-engine |  ❌  |  ⚠️  |   ❌    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | v0.1.0；25% 骨架完成，30+ 测试通过 |
 | flowx         |  ❌  |  ❌  |   N/A   |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | v0.1.0-draft；7 FR，SPEC draft     |
 
@@ -322,7 +322,7 @@
 | 数据域 · 行情 Provider | 0      | 0      | 0      | -                                  | 0 (Provider 类型已并入 SDK；保留行用于审计兼容)         |
 | 数据域 · 宏观          | 10     | 10     | 0      | 80%                                | 10 (全部 v0.1.1)                                      |
 | 数据域 · 另类          | 1      | 0      | 1      | 5%                                 | 1 (v0.1.0)                                            |
-| 分析域                 | 8      | 1      | 7      | 8%                                 | 6 (含 ms_brain v1.6.6；market_regime/macro_regime 空仓库) |
+| 分析域                 | 8      | 1      | 7      | 8%                                 | 6 (含 ms-brain v1.6.6；market-regime/macro-regime 空仓库) |
 | 决策域                 | 6      | 0      | 6      | 5%                                 | 6 (全部 v0.1.0+)                                      |
 | 执行域                 | 7      | 0      | 7      | 5%                                 | 7 (全部 v0.1.0+)                                      |
 | 入口                   | 1      | 1      | 0      | 80%                                | 1 (x.go)                                              |
@@ -368,7 +368,7 @@
 ### 🔴 分析域（阻塞）
 
 - 组件：8 个，7 个处于早期（5%），regime-engine 骨架完成（25%）
-- **阻塞项**：factor-engine / feature-store / factor-eval / market_regime / macro_regime / ms_brain 均未实现到可用闭环；flowx SPEC 已创建（v0.1.0-draft）
+- **阻塞项**：factor-engine / feature-store / factor-eval / market-regime / macro-regime / ms-brain 均未实现到可用闭环；flowx SPEC 已创建（v0.1.0-draft）
 - **依赖**：需要数据域提供数据，L2.5 已就绪
 
 ### 🔴 决策域（阻塞）
