@@ -1,10 +1,10 @@
 # xlib-evidence 规格
 
 Status: Approved
-- Spec-Version: v1.2.0
-- Last-Updated: 2026-06-19
+- Spec-Version: v1.2.1
+- Last-Updated: 2026-06-20
 - Layer: 基座 · CI 证据运行时
-- Version: v0.2.2
+- Version: v0.2.4
 - Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `github.com/ZoneCNH/xlib-evidence`, `github.com/ZoneCNH/xlib-standard`（标准/治理参考，不承载运行时代码）
 
 > 公开投影说明：本规格已按 /home/xlib-evidence 的独立 Go module 验收证据更新；xlib-standard 仅作为标准/治理参考，不承载本模块运行时代码。
@@ -59,7 +59,7 @@ xlib-standard 的 Evidence Runtime 与其声明式标准定义耦合，导致证
 | FR-002 | generate-manifest | 模块通过所有门禁 | 生成 Release Manifest（版本号、commit SHA、门禁结果、覆盖率为证） |
 | FR-003 | validate-manifest | CI 或运维检查 manifest | 验证 manifest 完整性、签名、内容一致性 |
 | FR-004 | remote-evidence | 远程查询模块证据 | 返回结构化证据（覆盖率、门禁历史、manifest） |
-| FR-005 | evidence-report | 聚合多模块证据 | 生成跨模块统一报告 |
+| FR-005 | report | 聚合多模块证据 | 生成跨模块统一报告 |
 
 ## 7. 行为约束
 
@@ -130,7 +130,7 @@ type EvidenceBundle struct {
 xlib_evidence:
   storage_path: "./evidence/"
   manifest_path: "./manifest/"
-  coverage_threshold: 80.0
+  coverage_threshold: 100.0
   remote:
     enabled: false
     endpoint: ""
@@ -146,7 +146,7 @@ xlib_evidence:
 
 ## 12. 边界情况
 
-- 覆盖率恰好 80.00%（边界值）
+- 覆盖率恰好 100.00%（边界值）
 - manifest 文件被手动修改
 - 多个 CI job 并发生成同一模块 manifest
 - 远程 evidence endpoint 不可用时的降级
@@ -231,6 +231,6 @@ module/xlib-evidence/
 
 | 日期 | 版本 | 变更内容 | 作者 |
 |------|------|----------|------|
-| 2026-06-19 | v1.2.0 | 对齐 v0.2.2 发布、100% 覆盖率门槛与 CI 门禁 | ZoneCNH |
+| 2026-06-20 | v1.2.1 | 对齐 v0.2.4 发布、100% 覆盖率、CI/CD workflow、release evidence assets 与 Trust Alignment 证据 | ZoneCNH |
 | 2026-06-18 | v1.0.1 | 对齐独立 Go module 验收、实际测试名、依赖边界与 CI 门禁 | Codex |
 | 2026-06-14 | v1.0.0 | 初始版本，从 xlib-standard 拆分 | ZoneCNH |

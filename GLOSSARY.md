@@ -7,6 +7,18 @@ Status: Approved
 
 ---
 
+## 命名口径
+
+| 语义层 | 规范 | 示例 |
+| --- | --- | --- |
+| 模块 / 仓库 / 路径 / 公开文档链接 | kebab-case | `macro-data` |
+| 配置 / JSON / YAML / Goal registry / 接收侧字段 | snake_case | `macro_data`, `series_code`, `available_at` |
+| Go 导出类型 / 接口 / 常量名 | PascalCase | `MacroDataProvider`, `TopicMacroData` |
+| Topic literal / 事件通道值 | dot.case | `macro.data` |
+| 禁用漂移写法 | 不使用 camelCase 或压缩小写表示模块名 | `macroData`, `macrodata`, `Macrodata` |
+
+`macro_data` 是宏观数据域在配置、契约字段、注册表和非 Go 内部标识中的 canonical token；`macro-data` 仅用于模块、仓库、路径和公开文档链接。
+
 ## 架构术语
 
 ### L2.5（领域共享层）
