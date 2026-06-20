@@ -4,7 +4,7 @@
 
 ## 最高指令源
 
-当本文件与 `CONSTITUTION.md` 冲突时，以 `CONSTITUTION.md` 为准。`CONSTITUTION.md` 是系统级最高治理文件，定义了模块实现（§1-§14）和交付管线（§15-§19）的技术标准。本文件仅规定仓库级操作约定。
+当本文件与 `CONSTITUTION.md` 冲突时，以 `CONSTITUTION.md` 为准。`CONSTITUTION.md` 是系统级最高治理文件，定义了模块实现（§1-§14）、交付管线（§15-§19）和认识论标准（§20）的技术要求。本文件仅规定仓库级操作约定。
 
 ## 本仓库定位
 
@@ -12,7 +12,7 @@ ZoneCNH 的 `FoundationX` 量化交易基础设施文档枢纽，也是 `ZoneCNH
 
 - `README.md`：个人主页、技术栈、架构摘要和组件索引
 - `ARCHITECTURE.md`：依赖拓扑、领域职责、设计原则和状态表（权威来源）
-- `CONSTITUTION.md`：模块宪法 §0-§19（最高权威，向后兼容存根；章节视图见 `docs/constitution/`）
+- `CONSTITUTION.md`：模块宪法 §0-§20（最高权威，向后兼容存根；章节视图见 `docs/constitution/`）
 - `AGENTS.md` / `CLAUDE.md`：自动化代理和贡献者工作指南
 - `docs/goal/`：Goal 驱动交付体系规范
 
@@ -145,6 +145,18 @@ ZoneCNH 的 `FoundationX` 量化交易基础设施文档枢纽，也是 `ZoneCNH
 - **Simplicity First**：最小变更集，不做超出范围的修改
 - **Surgical Changes**：精准修改，不波及无关文件
 - **Goal-Driven**：所有变更必须追溯到明确目标
+
+## 认识论标准
+
+> **权威来源：** [`docs/constitution/20-epistemic-standards.md`](docs/constitution/20-epistemic-standards.md)（宪法 §20）。适用于所有判断、审查、推断和断言。
+
+- 证据标签强制：`[KNOWN]` / `[COMPUTED]` / `[INFERRED]` / `[COMMON]` / `[FRAME]` / `[GUESS]`
+- 置信度显式写出：`HIGH` ≥80% · `MED` 50–80% · `LOW` 20–50% · `VERY LOW` <20% · `UNKNOWN`
+- `[FRAME]` 和 `[GUESS]` 置信度上限为 `LOW`
+- 禁止 `FRAME → REALITY`：管线评分、治理状态 ≠ 代码正确或生产稳定
+- 反奉承红旗触发时：切掉具体细节 → 改标 `[GUESS]` → 或写"我不知道。"
+- 不知道时第一行必须写：`我不知道。`
+- 涉及判断、推断或事实断言的输出末尾必须附：`[RULES I BROKE]：...`
 
 ## 模块工作流规则（自动分支 + 对齐同步 + PR 闭环）
 
