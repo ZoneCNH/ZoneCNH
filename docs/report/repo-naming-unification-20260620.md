@@ -5,6 +5,8 @@
 **目标**: 对齐 `README.md`、`ARCHITECTURE.md`、`docs/architecture/`、`STATUS.md` 与 `module/README.md` 的当前命名事实，移除过时的 kebab/PascalCase 迁移假设，只保留经权威正文支持的残留项。
 
 > 说明：本文是同步与修正说明，不是 GitHub 重命名执行单。仓库名、目录名与文档投影以当前权威正文为准。
+>
+> 现实状态：`module/README.md` 仍保留 `domain-market` / `domain-macro` / `domain-exchange` 的历史路径投影；本文把“目标命名口径”和“当前文件投影”分开记录，避免把计划写成已完成事实。
 
 ---
 
@@ -70,7 +72,7 @@
 | `ms_brain` | 已对齐 | 同上 |
 | `regime_engine` | 已对齐 | 同上 |
 | `macro_data` | 已对齐 | 当前正文保留现名；`docs/architecture/07-three-engines.md` 的旧投影已回收 |
-| `L2.5` 目录命名口径 | 已完成 | 统一为 `snake_case`，不再保留 `domain-market` / `xlib-gate` 这类新投影 |
+| `L2.5` 目录命名口径 | 进行中 | 目标口径已固定为 `snake_case`；`module/README.md` 仍保留 `domain-market` / `domain-macro` / `domain-exchange` 的历史路径投影，待单独同步 |
 | `xlibgate` | 保留现名 | `module/README.md`、`README.md`、`ARCHITECTURE.md`、`STATUS.md` 均使用该名；如需更名须单独做 import / go.mod 影响评审 |
 | `backtest_engine` / `risk_engine` / `order_engine` / `portfolio_engine` | 历史占位 | 继续按 DEPRECATED 路线处理，不作为本轮仓库改名目标 |
 
@@ -102,7 +104,7 @@ xlib_standard/go.mod → module github.com/ZoneCNH/xlib_standard
 
 1. 确认 `docs/architecture/07-three-engines.md` 已回收 `macro_data_py`，正文统一为 `macro_data`，并把 `L2.5` 目录命名口径固定为 `snake_case`。
 2. 检查 `STATUS.md` 的投影块，确认没有把 `market_regime`、`macro_regime`、`ms_brain`、`regime_engine` 回写成旧名或 rename 目标。
-3. 复核 `module/README.md` 的索引表，确保 `xlibgate`、`market_regime`、`macro_regime`、`ms_brain`、`regime_engine` 的链接和描述一致。
+3. 复核 `module/README.md` 的索引表，分清 `xlibgate` 保留现名和 `domain-market` / `domain-macro` / `domain-exchange` 的历史路径投影，不把目录 rename 与文档说明混写。
 
 ### 阶段 3：单独处理真正的遗留项
 
@@ -116,7 +118,7 @@ xlib_standard/go.mod → module github.com/ZoneCNH/xlib_standard
 | 项目 | 状态 | 备注 |
 | ---- | ---- | ---- |
 | 已统一的现名 | `market_regime`, `macro_regime`, `ms_brain`, `regime_engine`, `macro_data`, `xlibgate` | 作为当前正文的稳定投影保留 |
-| `L2.5` 目录命名口径 | 已完成 | 当前正文投影与同步说明统一为 `snake_case` |
+| `L2.5` 目录命名口径 | 进行中 | 目标命名已统一为 `snake_case`，`module/README.md` 的历史路径投影仍待清零 |
 | 已回收文档投影 | `docs/architecture/07-three-engines.md` 的 `macro_data_py` | 已统一为 `macro_data` |
 | 需要独立专项 | `xlibgate` 更名（如未来要做） | 不在本轮同步内 |
 | 已移出本轮清单 | `GYM`, `OneKey`, `xlib-gate`, `macro_data_py` | 仅保留历史痕迹，不再作为执行目标 |
@@ -136,7 +138,7 @@ xlib_standard/go.mod → module github.com/ZoneCNH/xlib_standard
 | `docs/architecture/08-contracts.md` | `market_regime` / `macro_regime` / `regime_engine` 继续使用现名 |
 | `docs/report/architecture-structural-analysis-20260621.md` | 修复方案已固定 `L2.5` 命名基准为 `snake_case`，并将 `macro_data` / `market_data` 统一为数据域表述 |
 | `STATUS.md` | 维持现名投影，不再回写 rename 叙事 |
-| `module/README.md` | `xlibgate` 保持现名 |
+| `module/README.md` | `domain-market` / `domain-macro` / `domain-exchange` 仍为历史路径投影，`xlibgate` 保持现名 |
 
 ---
 
@@ -148,7 +150,7 @@ xlib_standard/go.mod → module github.com/ZoneCNH/xlib_standard
 `transportx` `decimalx` `testkitx` `xlib_standard` `xlib_harness` `xlib_evidence`
 `bootstrap` `contracts` `redisx` `kafkax` `natsx` `clickhousex` `postgresx` `taosx` `ossx` `xlibgate`
 
-### L2.5 Domain Libraries（snake_case，当前对齐）
+### L2.5 Domain Libraries（snake_case 目标口径，历史路径投影待清零）
 
 `domain_market` `domain_exchange` `domain_macro`
 
