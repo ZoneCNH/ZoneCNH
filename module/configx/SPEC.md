@@ -518,7 +518,7 @@ configx/
 │       ├── metrics.go         # Metrics interface, NoopMetrics, metric names
 │       ├── options.go         # Option, WithMetrics
 │       ├── errors.go          # 公共错误变量
-│       └── version.go         # Version = "v0.1.3"
+│       └── version.go         # Version = "v1.1.0"
 ├── internal/
 │   ├── runtime/               # 内部运行时辅助
 │   └── tools/                 # 内部工具

@@ -97,4 +97,4 @@
 - [x] 所有任务文档均能追溯到 FR、BR/NFR、AC 或 TC。（2026-06-18 §4 任务交付清单已挂接 FR/BR/TC，TASK-CONFIGX-007 显式标记推迟 v1.1）
 - [x] 依赖边界符合 FOUNDATION-DEPS.yaml，不引入未授权运行时依赖。（2026-06-18 `go list -deps` 无 kernel；`scripts/check_boundary.sh` PASS）
 - [x] 运行时代码仓库 /home/configx 的 lint、typecheck、test、race、coverage 验证证据已归档。（2026-06-18 go test ./... -race -count=1 PASS；vet 0 告警；coverage total 94.0% / pkg/configx 98.5%）
-- [x] 发布说明、版本标签与本目录登记状态一致。（2026-06-18 release/manifest/latest.json checks 全 passed；STATUS.md / README.md / ARCHITECTURE.md 已对齐 v1.0.0 (tag) / v0.1.4 (runtime)）
+- [x] 发布说明、版本标签与本目录登记状态一致。（2026-06-18 release/manifest/latest.json checks 全 passed；STATUS.md / README.md / ARCHITECTURE.md 已对齐 v1.1.0 (tag) / v1.1.0 (runtime)）
