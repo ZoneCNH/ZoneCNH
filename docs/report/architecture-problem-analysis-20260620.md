@@ -9,7 +9,7 @@
 ## 一、🔴 ~~致命问题：核心业务链路完全断裂~~ → 🟡 契约已就绪，实现待启动
 
 > **2026-06-20 更新**：contracts P0 DTO 已全部固化（PR #10），市场/宏观/决策链路的数据契约障碍已清除。  
-> 当前状态：contracts ✅ → market_regime/macro_regime/regime_engine 仍为空仓库（等待实现）。
+> 当前状态：contracts ✅ → market_regime v0.2.0（BarWindow+Subscriber）+ macro_regime v0.2.0（mapper+ClassifyFromSet）+ regime_engine v1.0.0（P0 桥接）全链路消费者层已就绪。
 
 这是整个架构的最大风险，且比文档记录的更严重。
 
@@ -18,37 +18,37 @@
 > **2026-06-20 更新**：三引擎均已有骨架实现（v0.1.0），regime_engine 已完成 P0 DTO 桥接（v1.0.0）。
 
 ```
-binance ✅ → market_data(dispatch) ✅ → market_regime ⚠️ v0.1.0骨架（~60%）→ regime_engine ✅ v1.0.0
-macro_data ✅                        → macro_regime  ⚠️ v0.1.0骨架（~60%）→ regime_engine ✅
+binance ✅ → market_data(dispatch) ✅ → market_regime ✅ v0.2.0（~70%）→ regime_engine ✅ v1.0.0
+macro_data ✅                        → macro_regime  ✅ v0.2.0（~70%）→ regime_engine ✅
                                                                 ↓
                                                     signal_factory ✅ v0.1.0 → riskx ❌ → orderx ❌
 ```
 
 ### 各域实际完成度
 
-| 域          | 模块数 | 实际有代码                                        | 完成度       |
-| ----------- | ------ | ------------------------------------------------- | ------------ |
-| Foundation  | 21     | 21/21 factory-ready                               | ~100%        |
-| Market Data | 3      | 3/3 有代码                                        | ~92%         |
-| Macro Data  | 1      | 1/1 有代码                                        | ~100%        |
-| **分析域**  | 8      | 3/8（market_regime/macro_regime 骨架；regime_engine v1.0.0） | **~25%** |
-| **决策域**  | 6      | 1/6（signal_factory v0.1.0 骨架）                 | **~5%**      |
-| **执行域**  | 7      | **0/7**（全部仅 README）                          | **0%**       |
+| 域          | 模块数 | 实际有代码                                                   | 完成度   |
+| ----------- | ------ | ------------------------------------------------------------ | -------- |
+| Foundation  | 21     | 21/21 factory-ready                                          | ~100%    |
+| Market Data | 3      | 3/3 有代码                                                   | ~92%     |
+| Macro Data  | 1      | 1/1 有代码                                                   | ~100%    |
+| **分析域**  | 8      | 3/8（market_regime v0.2.0；macro_regime v0.2.0；regime_engine v1.0.0） | **~35%** |
+| **决策域**  | 6      | 1/6（signal_factory v0.1.0 骨架）                            | **~5%**  |
+| **执行域**  | 7      | **0/7**（全部仅 README）                                     | **0%**   |
 
 ### P0 契约缺失 → ✅ 已解决（2026-06-20，contracts PR #10）
 
 ~~`contracts/pkg/contracts/` 只有 `contracts.go` + `ingestion.go`，**以下 P0 级 DTO 一条都未固化**：~~
 
-| 契约 | 数据流路径 | 优先级 | 状态 |
-| --- | --- | --- | --- |
-| `RegimeSnapshot` | market_regime → regime_engine | P0 | ✅ `regime_snapshot.go` |
-| `RegimeCard` | macro_regime → regime_engine | P0 | ✅ `regime_card.go` |
-| `DecisionCard` | regime_engine → signal_factory / risk_engine | P0 | ✅ `decision_card.go` |
-| `MarketDataProvider` | market_data → market_regime | P0 | ✅ `ports.go` |
-| `MacroDataProvider` | macro_data → macro_regime | P0 | ✅ `ports.go` |
-| `DecisionCardProvider` | regime_engine → signal_factory | P0 | ✅ `ports.go` |
-| `FactorInput` / `FactorOutput` | factor_engine 内部 | P1 | ⬜ 待实现 |
-| `SignalIntent` | signal_factory → orderx | P1 | ✅ 本地 DTO（signal_factory/contracts/provider.go），待升入 contracts |
+| 契约                           | 数据流路径                                   | 优先级 | 状态                                                                  |
+| ------------------------------ | -------------------------------------------- | ------ | --------------------------------------------------------------------- |
+| `RegimeSnapshot`               | market_regime → regime_engine                | P0     | ✅ `regime_snapshot.go`                                               |
+| `RegimeCard`                   | macro_regime → regime_engine                 | P0     | ✅ `regime_card.go`                                                   |
+| `DecisionCard`                 | regime_engine → signal_factory / risk_engine | P0     | ✅ `decision_card.go`                                                 |
+| `MarketDataProvider`           | market_data → market_regime                  | P0     | ✅ `ports.go`                                                         |
+| `MacroDataProvider`            | macro_data → macro_regime                    | P0     | ✅ `ports.go`                                                         |
+| `DecisionCardProvider`         | regime_engine → signal_factory               | P0     | ✅ `ports.go`                                                         |
+| `FactorInput` / `FactorOutput` | factor_engine 内部                           | P1     | ⬜ 待实现                                                             |
+| `SignalIntent`                 | signal_factory → orderx                      | P1     | ✅ 本地 DTO（signal_factory/contracts/provider.go），待升入 contracts |
 
 > ✅ **风险已消除**：P0 契约全部固化，上层三域可基于稳定接口开始实现，无接口漂移风险。
 
@@ -60,8 +60,8 @@ macro_data ✅                        → macro_regime  ⚠️ v0.1.0骨架（~6
 
 4 组模块"旧占位仓库 + 新规格模块"并存，~~没有明确废弃路线~~：
 
-| 旧仓库（占位约 5%） | 新模块（SPEC draft） | 职责变化                         | 状态 |
-| ------------------- | -------------------- | -------------------------------- | ---- |
+| 旧仓库（占位约 5%） | 新模块（SPEC draft） | 职责变化                         | 状态          |
+| ------------------- | -------------------- | -------------------------------- | ------------- |
 | `risk_engine`       | `riskx`              | 无（命名重构）                   | ✅ DEPRECATED |
 | `order_engine`      | `orderx`             | 无（命名重构）                   | ✅ DEPRECATED |
 | `portfolio_engine`  | `positionx`          | portfolio → position（语义收窄） | ✅ DEPRECATED |
@@ -77,9 +77,9 @@ macro_data ✅                        → macro_regime  ⚠️ v0.1.0骨架（~6
 
 > **2026-06-20 更新**：BLK-009 和 BLK-010 均已 resolved，Foundation 达成 21/21 factory-ready。
 
-| Blocker | 模块        | 严重性 | 原问题描述                                                                                        | 状态 |
-| ------- | ----------- | ------ | ----------------------------------------------------------------------------------------------- | ---- |
-| BLK-009 | `bootstrap` | medium | `stores.go:217` import `foundationx.SecretString`，遗留依赖未清除；Stores!=None 路径全部为 stub | ✅ resolved（v0.2.0，foundationx 依赖清零，Stores!=None 全部实现） |
+| Blocker | 模块        | 严重性 | 原问题描述                                                                                      | 状态                                                                         |
+| ------- | ----------- | ------ | ----------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| BLK-009 | `bootstrap` | medium | `stores.go:217` import `foundationx.SecretString`，遗留依赖未清除；Stores!=None 路径全部为 stub | ✅ resolved（v0.2.0，foundationx 依赖清零，Stores!=None 全部实现）           |
 | BLK-010 | `ossx`      | high   | 公开 release v1.0.1 但仓库 0 pkg 源码（仅文档/脚本），evidence archive 缺失                     | ✅ resolved（v1.2.1，真实 adapters/aliyun + 全功能实现，pkg/ossx 100% 覆盖） |
 
 Foundation 21/21 factory-ready ✅，0 open blockers（截至 2026-06-20）。
@@ -146,29 +146,30 @@ lab-*         → ms_brain / alternative_data ...
 
 ---
 
-## 八、🟡 中风险：数据域 binance 已实现但无消费者
+## 八、✅ 部分解决：binance 数据已有消费者接入层（2026-06-20）
 
-`binance` 已实现（v0.2.0，4 产品线，bootstrap 接入，domain_exchange 适配），但：
+`binance` 已实现（v0.2.0，4 产品线，bootstrap 接入，domain_exchange 适配）。消费者侧：
 
-- `market_regime` 完全为空，binance 输出的 domain_market 数据无处消费
+- ~~`market_regime` 完全为空~~ → ✅ **v0.2.0 消费者层完成**（BarWindow+Subscriber，Push(domainmarket.Bar) → RegimeSnapshot）
 - 其余 12 个 CEX/DEX SDK（okx/bybit/...）均停在约 80%，没有统一的 C/S Module 封装
-- `market_data` dispatch 的下游 receiver 不明确
+- `market_data` dispatch 下游 receiver → `market_regime.Subscriber` 接口已就绪，x.go wire-up 仍待推进
 
 ---
 
 ## 九、问题优先级矩阵
 
-| 优先级 | 问题                                                         | 阻塞目标                     |
-| ------ | ------------------------------------------------------------ | ---------------------------- |
-| **P0** | ~~contracts P0 DTO 未固化~~ | ~~分析域/决策域/执行域无法开始~~ | ✅ **已解决 2026-06-20**（PR #10） |
-| **P0** | 分析域三引擎骨架已建，待完整实现（market_regime/macro_regime ~60%，binance 数据未真正消费） | 核心业务闭环                 |
-| **P1** | ~~BLK-009 bootstrap 遗留依赖~~ | ~~Foundation factory 闭合~~ | ✅ **已解决 2026-06-20**（v0.2.0） |
-| **P1** | ~~BLK-010 ossx 无源码~~ | ~~Foundation factory 闭合~~ | ✅ **已解决 2026-06-20**（v1.2.1） |
-| ~~**P1**~~ | ~~双轨模块废弃路线不明~~                                     | ~~开发者认知统一~~           | ✅ **已解决 2026-06-20** |
-| **P2** | ~~7 模块横切重复收敛~~ | ~~维护成本降低~~ | ✅ **已解决 2026-06-20**（P0-P4） |
-| **P2** | 管线 6 模块评分未达 98（xlib_standard/evidence/harness/transportx/natsx/configx） | 治理一致性                   |
-| **P3** | x.go 体量核实（2.8MB/33项，本地无目录，待 GitHub 核查）      | 架构守卫                     |
-| **P3** | 75 仓库命名统一                                              | 长期可维护性                 |
+| 优先级     | 问题                                                                                        | 阻塞目标                         |
+| ---------- | ------------------------------------------------------------------------------------------- | -------------------------------- | ---------------------------------- |
+| **P0**     | ~~contracts P0 DTO 未固化~~                                                                 | ~~分析域/决策域/执行域无法开始~~ | ✅ **已解决 2026-06-20**（PR #10） |
+| **P0**     | ~~分析域三引擎消费者接入层完成~~ | ~~核心业务闭环~~ | ✅ **已解决 2026-06-20**（market_regime/macro_regime v0.2.0；Subscriber+mapper+ClassifyFromSet）
+| **P0-next** | market_regime/macro_regime 真实 Kafka/HTTP 流接入（x.go wire-up）；signal_factory→riskx→orderx 完整链路 | 端到端交易闭环 |
+| **P1**     | ~~BLK-009 bootstrap 遗留依赖~~                                                              | ~~Foundation factory 闭合~~      | ✅ **已解决 2026-06-20**（v0.2.0） |
+| **P1**     | ~~BLK-010 ossx 无源码~~                                                                     | ~~Foundation factory 闭合~~      | ✅ **已解决 2026-06-20**（v1.2.1） |
+| ~~**P1**~~ | ~~双轨模块废弃路线不明~~                                                                    | ~~开发者认知统一~~               | ✅ **已解决 2026-06-20**           |
+| **P2**     | ~~7 模块横切重复收敛~~                                                                      | ~~维护成本降低~~                 | ✅ **已解决 2026-06-20**（P0-P4）  |
+| **P2**     | 管线 6 模块评分未达 98（xlib_standard/evidence/harness/transportx/natsx/configx）           | 治理一致性                       |
+| **P3**     | x.go 体量核实（2.8MB/33项，本地无目录，待 GitHub 核查）                                     | 架构守卫                         |
+| **P3**     | 75 仓库命名统一                                                                             | 长期可维护性                     |
 
 ---
 
@@ -185,8 +186,8 @@ lab-*         → ms_brain / alternative_data ...
 
 ### 下两周（最小链路闭环）
 
-3. ~~`market_regime` 最小实现（依赖 domain_market ✅ + contracts P0 ✅）~~ ⚠️ **v0.1.0 骨架已建（2026-06-20）；5D 特征+规则分类器，5 tests PASS；完整消费 binance 输出仍待实现**
-4. ~~`macro_regime` 最小实现（依赖 domain_macro ✅ + contracts P0 ✅）~~ ⚠️ **v0.1.0 骨架已建（2026-06-20）；LGIP 四因子+分类器，5 tests PASS；完整消费 macro_data 输出仍待实现**
+3. ~~`market_regime` 最小实现~~ ✅ **v0.2.0 消费者层已完成（2026-06-20）；BarWindow+domain-market 适配器+Subscriber，12 tests PASS；x.go Kafka/stream wire-up 仍待推进**
+4. ~~`macro_regime` 最小实现~~ ✅ **v0.2.0 消费者层已完成（2026-06-20）；MacroInformationSet mapper+ClassifyFromSet，13 tests PASS；x.go 集成仍待推进**
 5. ~~为旧占位仓库（risk_engine / order_engine / portfolio_engine / backtest_engine）添加 DEPRECATED 标记~~ ✅ **已完成（2026-06-20）**
 
 ### 下一个月（架构收敛）
@@ -216,10 +217,10 @@ lab-*         → ms_brain / alternative_data ...
 
 > 本报告编写后，以下问题已在当天完成修复：
 
-| 项目 | 原状态 | 当前状态 | PR/Tag |
-| ---- | ------ | -------- | ------ |
-| market_regime | ❌ 空仓库 | ✅ v0.1.0 S引擎骨架（5D特征+规则分类器，5 tests PASS） | main |
-| macro_regime | ❌ 空仓库 | ✅ v0.1.0 M引擎骨架（LGIP四因子+分类器，5 tests PASS） | main |
-| regime_engine | ⚠️ v0.1.0 骨架（25%）| ✅ v1.0.0 P0 DTO 桥接完成（M×S→DecisionCard，13 tests PASS） | v1.0.0 |
-| contracts P0 DTO | ❌ 路径错误 | ✅ v1.4.0（github.com/ZoneCNH/contracts，P0 DTO 完整） | PR #11 |
-| 分析域三引擎数据流 | ❌ 断链 | ✅ market_data→S / macro_data→M / regime_engine→DecisionCard 全链路打通 | — |
+| 项目               | 原状态                | 当前状态                                                                | PR/Tag |
+| ------------------ | --------------------- | ----------------------------------------------------------------------- | ------ |
+| market_regime      | ❌ 空仓库             | ✅ v0.2.0 S引擎+消费者层（BarWindow+Subscriber+adapter，12 tests PASS） | v0.2.0 |
+| macro_regime       | ❌ 空仓库             | ✅ v0.2.0 M引擎+消费者层（mapper+ClassifyFromSet，13 tests PASS）        | v0.2.0 |
+| regime_engine      | ⚠️ v0.1.0 骨架（25%） | ✅ v1.0.0 P0 DTO 桥接完成（M×S→DecisionCard，13 tests PASS）            | v1.0.0 |
+| contracts P0 DTO   | ❌ 路径错误           | ✅ v1.4.0（github.com/ZoneCNH/contracts，P0 DTO 完整）                  | PR #11 |
+| 分析域三引擎数据流 | ❌ 断链               | ✅ market_data→S / macro_data→M / regime_engine→DecisionCard 全链路打通 | —      |
