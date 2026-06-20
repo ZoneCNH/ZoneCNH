@@ -113,10 +113,13 @@ m := make(map[string]int, 50)
 | 类型 | 风格 | 示例 |
 |------|------|------|
 | 变量 | `lowerCamelCase` | `userName`，循环变量用 `i`、`j` |
-| 常量 | `MixedCaps` | `MaxRetries`（不用全大写加下划线） |
+| 常量 | `MixedCaps` 为主 | `MaxRetries`、`DefaultTimeout` |
+| Topic / 事件通道常量 | `UPPER_SNAKE` 或 `PascalCase` | `TopicMarketData`、`TOPIC_MARKET_DATA` |
 | 函数/方法 | `MixedCaps`，动词或动词短语 | `GetUser`、`parseRequest` |
 | 类型（结构体/接口） | `UpperCamelCase`，名词 | `UserService`、`OrderManager` |
 | 单方法接口 | `-er` 后缀 | `Reader`、`Closer`、`Stringer` |
+
+> **FoundationX 补充（来自 CONSTITUTION.md §7.1）**：项目中 Topic 类常量允许使用 `UPPER_SNAKE`（如 `TOPIC_MARKET_DATA`）或 `PascalCase`（如 `TopicMarketData`），两种形式均合法，同一模块内保持一致即可。
 
 ### 接收器
 
@@ -217,13 +220,16 @@ if err != nil {
 - 错误信息应为**全小写**。
 - **不以标点符号结尾**。
 - 使用 `%w` 包装错误以保留调用链。
+- **FoundationX 补充（来自 CONSTITUTION.md §8.2）**：错误信息须包含模块名前缀，格式为 `"module: operation context"`。
 
 ```go
 // Bad
 return fmt.Errorf("Read file failed.")
+return fmt.Errorf("read config file: %w", err)  // 缺少模块名前缀
 
-// Good
-return fmt.Errorf("read config file: %w", err)
+// Good（含模块名前缀）
+return fmt.Errorf("redisx: get %q: %w", key, err)
+return fmt.Errorf("configx: load file %s: %w", path, err)
 ```
 
 ### 错误处理顺序
@@ -365,6 +371,8 @@ case <-ctx.Done():
 
 接口应尽量小，只包含必要的方法。`io.Reader`（1 个方法）优于臃肿的大接口。
 
+> **FoundationX 强制（来自 CONSTITUTION.md §4.1）**：每个接口 **3-5 个方法**，最多不超过 **7 个方法**。
+
 ```go
 // Bad：大接口难以实现和测试
 type UserRepository interface {
@@ -420,6 +428,35 @@ type UserHandler struct {
 type ReadWriter interface {
     io.Reader
     io.Writer
+}
+```
+
+### 编译期接口检查
+
+**FoundationX 强制（来自 CONSTITUTION.md §4.1）**：所有接口实现必须添加编译期断言，确保类型实现了目标接口，避免运行时才发现遗漏。
+
+```go
+// 在接口实现的 .go 文件顶部添加
+var _ UserReader = (*userRepository)(nil)
+var _ UserWriter = (*userRepository)(nil)
+```
+
+### 跨域 DTO 不可变
+
+**FoundationX 强制（来自 CONSTITUTION.md §4.1）**：跨域传输对象（DTO）字段只读，**不提供 setter 方法**。消费方应通过构造函数或 Builder 创建，而非逐字段修改。
+
+```go
+// Bad：提供 setter 导致 DTO 可变
+type OrderDTO struct { ID int64 }
+func (d *OrderDTO) SetID(id int64) { d.ID = id }
+
+// Good：只读字段，通过构造函数创建
+type OrderDTO struct {
+    ID     int64
+    Symbol string
+}
+func NewOrderDTO(id int64, symbol string) OrderDTO {
+    return OrderDTO{ID: id, Symbol: symbol}
 }
 ```
 
@@ -590,6 +627,15 @@ slog.Error("request failed", "err", err, "method", "POST")
 - **不要**在日志中打印密码、Token、信用卡号等敏感信息。
 - 错误日志必须包含足够的上下文（请求 ID、用户 ID、关键参数）。
 - 使用 `logger.With(...)` 创建带上下文的子 logger，避免每条日志重复传字段。
+- **FoundationX 强制（来自 CONSTITUTION.md §6.4）**：敏感字段必须使用 `observex.Redactor` 处理，禁止直接打印 API key、token、密码明文。
+
+```go
+// Bad：直接打印敏感字段
+logger.Info("connecting", zap.String("api_key", apiKey))
+
+// Good：使用 Redactor 脱敏
+logger.Info("connecting", zap.String("api_key", observex.Redact(apiKey)))
+```
 
 ```go
 // 在请求处理开始时创建带上下文的 logger
@@ -715,8 +761,21 @@ myproject/
 ### 文件与函数命名
 
 - 测试文件以 `_test.go` 结尾。
-- 测试函数以 `Test` 开头，如 `TestGetUser`。
+- 测试函数以 `Test` 开头，简单场景用 `TestFunctionName`，多场景用 `TestFunctionName_Scenario_ExpectedBehavior`。
 - Benchmark 函数以 `Benchmark` 开头。
+
+**FoundationX 强制（来自 CONSTITUTION.md §5.3）**：测试命名须遵循三段式格式：
+
+```go
+func TestGetByID_NotFound_ReturnsError(t *testing.T) {
+    // Arrange — 准备测试数据
+    // Act      — 执行被测函数
+    // Assert   — 验证结果
+}
+
+func TestGetByID_ValidID_ReturnsUser(t *testing.T) { ... }
+func TestConnect_Timeout_ReturnsTimeoutError(t *testing.T) { ... }
+```
 
 ### 表驱动测试
 
@@ -753,11 +812,20 @@ func TestAdd(t *testing.T) {
 
 ### 测试覆盖率
 
-追求合理的测试覆盖率，一般以 **80%** 以上为目标。
+**FoundationX 强制（来自 CONSTITUTION.md §5.1）**：覆盖率按模块层级要求：
+
+| 模块类型 | 最低覆盖率 | 说明 |
+|---------|-----------|------|
+| L0（kernel） | **100%** | 原语层必须高度可靠，零遗漏 |
+| L1 运行时 | **80%** | 标准覆盖率 |
+| 存储扩展 | **80%** | 单元测试 + 可选集成测试 |
+| 通用项目 | **80%** | 一般工程最低目标 |
+
+竞态测试必须始终运行且通过：
 
 ```bash
 go test ./... -cover
-go test ./... -coverprofile=coverage.out
+go test ./... -race -coverprofile=coverage.out
 go tool cover -html=coverage.out
 ```
 
