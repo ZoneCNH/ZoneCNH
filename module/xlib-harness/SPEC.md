@@ -1,13 +1,13 @@
 # xlib-harness 规格
 
 Status: Approved
-- Spec-Version: v1.2.0
-- Last-Updated: 2026-06-19
+- Spec-Version: v1.3.0
+- Last-Updated: 2026-06-20
 - Layer: 基座 · 模块生成器与门禁执行器
-- Version: v0.1.2
+- Version: v0.1.4
 - Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `xlibgate`
 
-> 公开投影说明：v0.1.2 已由 `/home/xlib-harness@aa83306685a9` 的本地验收证据支撑；远端 GitHub Actions 与 GitHub Release 需在推送 branch/tag 后补充执行证据。
+> 公开投影说明：v0.1.4 已由 `/home/xlib-harness@fb097be5eff4` 的本地验收、GitHub Actions Release run `27854835195` 和 GitHub Release 证据支撑。
 
 ---
 
@@ -46,7 +46,7 @@ Foundation 20 模块需要统一的可机器验证规格资产。手工复制模
 
 | ID | Requirement | Given | When | Then |
 | --- | --- | --- | --- | --- |
-| FR-001 | generate-module | 给定模块路径和可选 `--force` | 用户执行 `generate <module>` | 生成 `README.md`、`SPEC.md`、`TRACEABILITY.md`、`IMPLEMENTATION-PLAN.md`、`ACCEPTANCE.md`、`FEATURES.md` |
+| FR-001 | generate-module | 给定模块路径和可选 `--force` | 用户执行 `generate <module>` | 生成 `README.md`、`SPEC.md`、`TRACEABILITY.md`、`goal.md`、`IMPLEMENTATION-PLAN.md`、`ACCEPTANCE.md`、`FEATURES.md`、`tasks/TASK-001.md`、`Makefile`、`.github/workflows/ci.yml` |
 | FR-002 | spec-lint | 给定模块 `SPEC.md` | 用户执行 `check <module> --profile spec` | 检查 23 节结构、FR Given/When/Then、AC/TC 可验证性 |
 | FR-003 | boundary-check | 给定模块 `go.mod` 和 Go 源码 | 用户执行 `check <module> --profile boundary` | 拒绝 `observex`、`configx`、`resiliencx`、`schedulex`、`testkitx`、`xlib-standard` 运行时引用 |
 | FR-004 | ci-reference-check | 给定模块 CI/CD 文件和 Makefile | 用户执行 `check <module> --profile full` | 验证 CI/CD 关键引用、`make ci` 和 release workflow 存在 |
@@ -66,9 +66,9 @@ Foundation 20 模块需要统一的可机器验证规格资产。手工复制模
 
 | AC ID | FR/BR Ref | TC Ref | Criterion | Verification | Status |
 | --- | --- | --- | --- | --- | --- |
-| AC-001 | FR-001 | TC-001 | 生成 6 个标准模块资产 | `xlib-harness generate /tmp/xlib-harness-smoke --force` | PASS |
+| AC-001 | FR-001 | TC-001 | 生成 10 个标准模块资产 | `xlib-harness generate /tmp/xlib-harness-smoke --force` | PASS |
 | AC-002 | FR-002 | TC-002 | compliant fixture 通过 spec profile | `xlib-harness check fixtures/compliant-module --profile spec` | PASS |
-| AC-003 | FR-003 | TC-003 | bad-dependency fixture 被 boundary profile 拒绝 | `xlib-harness check fixtures/bad-dependency --profile boundary` | PASS |
+| AC-003 | FR-003 | TC-003 | bad-dependency fixture 被 boundary profile 拒绝 | `xlib-harness check fixtures/module-with-bad-dep --profile boundary` | PASS |
 | AC-004 | FR-004 | TC-004 | compliant fixture 通过 full profile CI/CD 引用检查 | `xlib-harness check fixtures/compliant-module --profile full` | PASS |
 | AC-005 | FR-005 | TC-005 | Markdown 格式问题被报告 | Go unit tests | PASS |
 | AC-006 | FR-006 | TC-006 | broken-trace fixture 被 full profile 拒绝 | `xlib-harness check fixtures/broken-trace --profile full` | PASS |
@@ -186,7 +186,7 @@ Module implementation lives in `/home/xlib-harness`; this root repository only s
 ## 14. 依赖
 
 - Runtime: Go standard library only.
-- CI tooling: `xlibgate@v1.0.2`, gitleaks, GitHub CLI release step.
+- CI tooling: `xlibgate@v1.0.0`, gitleaks, GitHub CLI release step.
 - Forbidden runtime refs: `observex`、`configx`、`resiliencx`、`schedulex`、`testkitx`、`xlib-standard`。
 - Forbidden scope: business-domain modules, credentials, exchange endpoints, live trading config。
 
@@ -202,10 +202,10 @@ Module implementation lives in `/home/xlib-harness`; this root repository only s
 
 | TC ID | Scenario | Command | Expected |
 | --- | --- | --- | --- |
-| TC-001 | Generate module docs | `go run . generate /tmp/xlib-harness-smoke --force` | 6 个资产创建成功 |
+| TC-001 | Generate module docs | `go run . generate /tmp/xlib-harness-smoke --force` | 10 个资产创建成功 |
 | TC-002 | Spec gate accepts compliant module | `go run . check fixtures/compliant-module --profile spec` | 规格检查全部通过 |
-| TC-003 | Boundary gate rejects forbidden dependency | `go run . check fixtures/bad-dependency --profile boundary` | 非零退出并报告禁止依赖 |
-| TC-004 | Full gate accepts compliant module | `go run . check fixtures/compliant-module --profile full` | 14 项检查全部通过 |
+| TC-003 | Boundary gate rejects forbidden dependency | `go run . check fixtures/module-with-bad-dep --profile boundary` | 非零退出并报告禁止依赖 |
+| TC-004 | Full gate accepts compliant module | `go run . check fixtures/compliant-module --profile full` | 15 项检查全部通过 |
 | TC-005 | Format checks detect markdown issues | Go unit tests | trailing whitespace、空链接、表格漂移均被覆盖 |
 | TC-006 | Trace gate rejects incomplete matrix | `go run . check fixtures/broken-trace --profile full` | 非零退出并报告追踪断链 |
 
@@ -213,8 +213,8 @@ Module implementation lives in `/home/xlib-harness`; this root repository only s
 
 | Metric | Target | Current Evidence |
 | --- | --- | --- |
-| Generate latency | < 5s | `BenchmarkGenerate-16` 113809 ns/op |
-| Full profile check latency | < 10s | `BenchmarkCheckFullProfile-16` 733850 ns/op |
+| Generate latency | < 5s | `BenchmarkGenerate-16` 439979 ns/op |
+| Full profile check latency | < 10s | `BenchmarkCheckFullProfile-16` 4802818 ns/op |
 | Coverage | 100.0% | `go tool cover -func=coverage.out` total 100.0% |
 
 ## 17. 可观测性
@@ -248,7 +248,7 @@ Required local gates:
 GitHub Actions:
 
 - `.github/workflows/ci.yml`: docs contract、Go validation、trust alignment、secret scan。
-- `.github/workflows/release.yml`: tag-triggered release with `make ci` and `xlibgate@v1.0.2`。
+- `.github/workflows/release.yml`: tag-triggered release with `make ci` and `xlibgate@v1.0.0`。
 
 ## 20. 升级兼容性
 
@@ -265,11 +265,12 @@ GitHub Actions:
 - [x] 覆盖率 total 100.0%。
 - [x] `make ci` 通过。
 - [x] CI/CD workflow 配置完成。
-- [x] 本地 release tag `v0.1.2` 创建。
+- [x] 本地 release tag `v0.1.4` 创建。
+- [x] GitHub Release `v0.1.4` 发布并验证。
 
 ## 22. 待解决问题
 
-- 远端 GitHub Actions 结果需要在 branch/tag push 后补充。
+- GitHub Actions 当前存在非阻断注解：actions Node.js 20 deprecation 提示，以及无 `go.sum` 时缓存恢复提示。
 - 是否把 root 投影检查纳入统一 `xlibgate` 门禁，留待下一版本评估。
 - 是否允许用户自定义 profile 组合，留待已有 profile 稳定后评估。
 
@@ -277,6 +278,7 @@ GitHub Actions:
 
 | 日期 | 版本 | 变更内容 | 作者 |
 | --- | --- | --- | --- |
-| 2026-06-19 | v0.1.2 | 生产级门禁、100% 覆盖率、CI/CD、release tag 与根投影同步 | ZoneCNH |
+| 2026-06-20 | v0.1.4 | 修复 CI/CD trust tooling 可安装性，强化 Markdown fenced code 解析，重新验收 100% 覆盖率并发布 GitHub Release | ZoneCNH |
+| 2026-06-20 | v0.1.3 | 中间发布候选，补齐生产级门禁、100% 覆盖率与 CI/CD 雏形，后续由 v0.1.4 修复 trust tooling pin | ZoneCNH |
 | 2026-06-18 | v0.1.1 | 补齐验收证据、性能基线与发布文档同步 | ZoneCNH |
 | 2026-06-14 | v1.0.0 | 初始版本，从标准模板拆分 harness 目标 | ZoneCNH |

@@ -1,9 +1,9 @@
 # xlib-harness Features
 
 > Module: `xlib-harness`
-> Version: v0.1.2
-> Last-Updated: 2026-06-19
-> Implementation-Baseline: `/home/xlib-harness@aa83306685a9`
+> Version: v0.1.4
+> Last-Updated: 2026-06-20
+> Implementation-Baseline: `/home/xlib-harness@fb097be5eff4`
 
 ## Feature Summary
 
@@ -27,9 +27,13 @@
 | `README.md` | 模块公开入口、命令摘要和状态说明 |
 | `SPEC.md` | 23 节规格文档 |
 | `TRACEABILITY.md` | FR/AC/TC 追踪矩阵 |
+| `goal.md` | 模块目标、范围和证据 |
 | `IMPLEMENTATION-PLAN.md` | 任务、风险和验证计划 |
 | `ACCEPTANCE.md` | 验收命令和证据 |
 | `FEATURES.md` | 功能清单 |
+| `tasks/TASK-001.md` | 首个可执行任务模板 |
+| `Makefile` | 本地构建、测试、覆盖率和门禁入口 |
+| `.github/workflows/ci.yml` | CI 引用 workflow |
 
 ## Quality Features
 
@@ -53,10 +57,17 @@
 
 ## Release Notes
 
-### v0.1.2
+### v0.1.4
+
+- 修复 CI/CD trust tooling pin，改用可安装的 `xlibgate@v1.0.0` imports/gomod/baseline 检查。
+- 强化 Markdown fenced code 解析，支持 backtick/tilde fence，并要求相同 marker 关闭。
+- 重新验收 `make ci`、race、vet、coverage、benchmark、secret scan 与 xlibgate trust checks；coverage total 100.0%，full profile 15 项通过。
+- 增加 `v0.1.4` release tag，并发布 GitHub Release。
+
+### v0.1.3
 
 - 将 harness 提升到可发布状态，CLI、公开 API、fixture 和 CI/CD 均由 `make ci` 覆盖。
 - 覆盖率门禁提升到 100.0%。
 - 边界门禁解析 `go.mod` 与 Go imports，禁止 `observex`、`configx`、`resiliencx`、`schedulex`、`testkitx`、`xlib-standard` 运行时引用。
 - 规格门禁覆盖 23 节结构、FR Given/When/Then、AC/TC 可验证性。
-- 增加 `v0.1.2` 本地 release tag。
+- 增加 `v0.1.3` 本地 release tag。

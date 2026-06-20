@@ -1,9 +1,9 @@
 # xlib-harness Implementation Plan
 
 > Module: `xlib-harness`
-> Version: v0.1.2
-> Last-Updated: 2026-06-19
-> Implementation-Baseline: `/home/xlib-harness@aa83306685a9`
+> Version: v0.1.4
+> Last-Updated: 2026-06-20
+> Implementation-Baseline: `/home/xlib-harness@fb097be5eff4`
 
 ## Delivery Strategy
 
@@ -13,7 +13,7 @@
 
 | Task | Scope | Files | Status |
 | --- | --- | --- | --- |
-| `TASK-XLIBHARNESS-001` | CLI generation path and six-asset output | `/home/xlib-harness/main.go`, `/home/xlib-harness/internal/harness/harness.go` | Completed |
+| `TASK-XLIBHARNESS-001` | CLI generation path and ten-asset output | `/home/xlib-harness/main.go`, `/home/xlib-harness/internal/harness/harness.go` | Completed |
 | `TASK-XLIBHARNESS-002` | 23-section spec template and spec profile checks | `/home/xlib-harness/internal/harness/harness.go`, compliant fixture | Completed |
 | `TASK-XLIBHARNESS-003` | Runtime dependency boundary checks for `go.mod` and Go imports | `/home/xlib-harness/internal/harness/harness.go`, bad-dependency fixture | Completed |
 | `TASK-XLIBHARNESS-004` | Makefile and CI/CD reference gates | `/home/xlib-harness/Makefile`, `.github/workflows/ci.yml`, `.github/workflows/release.yml` | Completed |
@@ -57,15 +57,18 @@ Required coverage threshold: 100.0%.
 1. Keep feature work on branch `xlib-harness`.
 2. Validate local gates with `make ci`, coverage, benchmark, secret scan, and diff hygiene.
 3. Commit implementation using Lore trailers.
-4. Tag the module release as `v0.1.2`.
+4. Tag the module release as `v0.1.4`.
 5. Merge `xlib-harness` to module `main`.
 6. Merge root documentation branch `xlib-harness` to root `main`.
 
 ## Current Evidence
 
-- `/home/xlib-harness@aa83306685a9`
+- `/home/xlib-harness@fb097be5eff4`
 - `make ci`: PASS
 - `go test -bench=. ./...`: PASS
 - coverage total: 100.0%
 - `git diff --check`: PASS
-- local tag: `v0.1.2`
+- `xlibgate@v1.0.0` imports/gomod/baseline: PASS
+- release tag: `v0.1.4`
+- GitHub Actions Release run `27854835195`: PASS
+- GitHub Release: <https://github.com/ZoneCNH/xlib-harness/releases/tag/v0.1.4>
