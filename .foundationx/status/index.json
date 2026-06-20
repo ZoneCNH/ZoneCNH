@@ -17,8 +17,8 @@
     "impl_complete": 21,
     "release_published": 21,
     "live_integration": 7,
-    "factory_grade": 19,
-    "open_blockers": 1
+    "factory_grade": 20,
+    "open_blockers": 0
   },
   "modules": {
     "xlib_standard": {
@@ -218,7 +218,7 @@
     },
     "ossx": {
       "layer": "L2",
-      "version": "v1.0.2-alpha",
+      "version": "v1.2.1",
       "spec": true,
       "impl": true,
       "release": true,
@@ -226,8 +226,8 @@
       "ci": true,
       "adopt": "N/A",
       "soak": false,
-      "factory": false,
-      "note": "Aliyun OSS L2 adapter；v1.0.2-alpha 已交付 pkg/ossx 源码（8 文件/34KB/12 测试/stdlib-only/import 可编译 github.com/ZoneCNH/ossx/pkg/ossx）；BLK-010 open：factory=false 保持（真实 Aliyun adapter adapters/aliyun + 真实 OSS integration evidence 仍缺，由 TASK-OSSX-005 跟踪）；InMemoryAdapter 已实现，multipart/presign 部分 ErrNotImplemented。"
+      "factory": true,
+      "note": "BLK-010 resolved; v1.2.1 merged; pkg/ossx 17 files; 100% coverage; go build+test PASS"
     },
     "clickhousex": {
       "layer": "L2",
