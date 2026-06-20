@@ -1,4 +1,5 @@
 ---
+module: xlib-harness
 scope: "xlib-harness FR-003 coverage"
 spec_ref:
   - "module/xlib-harness/SPEC.md#FR-003"
@@ -29,4 +30,4 @@ FR-003 实现与验证
 
 ## Evidence
 
-- /home/xlib-harness@aa83306685a9：`make ci`、`go test -bench=. ./...`、`git diff --check`、secret pattern scan 均 PASS；coverage total 100.0%。
+- /home/xlib-harness@fb097be5eff4：`make ci`、`go test -bench=. ./...`、`git diff --check`、secret pattern scan、`xlibgate@v1.0.0` imports/gomod/baseline 均 PASS；coverage total 100.0%；full profile 15 项通过。
