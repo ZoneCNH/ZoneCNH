@@ -131,7 +131,7 @@ test-only，不参与生产运行时。
 | ------------- | --------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
 | xlib-standard | [SPEC.md](./xlib-standard/SPEC.md) · [tasks/](./xlib-standard/tasks/) | 标准事实源、Go Reference Template（声明式标准定义，15 FR + goalcli，12 tasks；v1.0.1 已发布，release-preflight 通过）                          |
 | xlib-harness  | [SPEC.md](./xlib-harness/SPEC.md) · [goal.md](./xlib-harness/goal.md) · [TRACEABILITY.md](./xlib-harness/TRACEABILITY.md) · [tasks/](./xlib-harness/tasks/) | 模块生成器与门禁执行器：generate/scaffold、spec-lint、boundary-check、format-check、traceability-gate、template-validate（6 FR，6 TC） |
-| xlib-evidence | [SPEC.md](./xlib-evidence/SPEC.md) · [goal.md](./xlib-evidence/goal.md) · [TRACEABILITY.md](./xlib-evidence/TRACEABILITY.md) · [tasks/](./xlib-evidence/tasks/) | 证据收集与发布运行时：collect-coverage、generate-manifest、validate-manifest、remote-evidence、evidence-report（5 FR，5 TC） |
+| xlib-evidence | [SPEC.md](./xlib-evidence/SPEC.md) · [goal.md](./xlib-evidence/goal.md) · [TRACEABILITY.md](./xlib-evidence/TRACEABILITY.md) · [tasks/](./xlib-evidence/tasks/) | 证据收集与发布运行时：collect-coverage、generate-manifest、validate-manifest、remote-evidence、report；v0.2.4 已发布，100.0% 覆盖率与 release evidence assets 已归档 |
 | xlibgate      | [SPEC.md](./xlibgate/SPEC.md) · [tasks/](./xlibgate/tasks/)           | check imports/gomod/baseline/release/all、输出格式、l2 validate-manifest/plan/check-contracts/check-evidence/release-check（11 FR，10 tasks） |
 
 ---

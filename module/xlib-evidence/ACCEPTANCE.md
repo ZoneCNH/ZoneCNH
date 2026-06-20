@@ -32,7 +32,7 @@
 
 | ID | 验收项 | 关联要求/测试/任务 | 当前登记状态 | 来源 |
 | --- | --- | --- | --- | --- |
-| AC-001 | FR-001 / BR-002 | 覆盖率数据被结构化收集；覆盖率低于 80% 拒绝发布 / TC-001: go test -run 'Test(ParseGoCoverageProfile\|CoverageValidateRejectsThresholdAndPercentTamper\|NewCoverageNormalizesTime)' | ✅ | TRACEABILITY.md |
+| AC-001 | FR-001 / BR-002 | 覆盖率数据被结构化收集；覆盖率低于 100.0% 拒绝发布 / TC-001: go test -run 'Test(ParseGoCoverageProfile\|CoverageValidateRejectsThresholdAndPercentTamper\|NewCoverageNormalizesTime)' | ✅ | TRACEABILITY.md |
 | AC-002 | FR-002 / BR-001 | 门禁全绿时生成 manifest，含 version/commit/gates/coverage/hash / TC-002: go test -run TestNewManifestNormalizesSortsAndValidates | ✅ | TRACEABILITY.md |
 | AC-003 | FR-003 / BR-003 | manifest hash 校验通过；篡改检测失败 / TC-003: go test -run TestManifestValidateRejectsFailedGateLowCoverageAndTamper | ✅ | TRACEABILITY.md |
 | AC-004 | FR-004 | 远程查询返回结构化 evidence manifest / TC-004: go test -run 'Test(ClientFetchManifest\|ManifestHandler)' | ✅ | TRACEABILITY.md |
@@ -42,7 +42,7 @@
 
 | ID | 测试项 | 关联要求/验收/任务 | 当前登记状态 | 来源 |
 | --- | --- | --- | --- | --- |
-| TC-001 | FR-001 | go test -run 'Test(ParseGoCoverageProfile\|CoverageValidateRejectsThresholdAndPercentTamper\|NewCoverageNormalizesTime)' — 覆盖率解析、80% 边界和时间归一化 | ✅ | TRACEABILITY.md |
+| TC-001 | FR-001 | go test -run 'Test(ParseGoCoverageProfile\|CoverageValidateRejectsThresholdAndPercentTamper\|NewCoverageNormalizesTime)' — 覆盖率解析、100.0% 边界和时间归一化 | ✅ | TRACEABILITY.md |
 | TC-002 | FR-002, BR-001 | go test -run TestNewManifestNormalizesSortsAndValidates — 全部门禁通过→manifest 生成且 hash 有效 | ✅ | TRACEABILITY.md |
 | TC-003 | FR-003, BR-003 | go test -run TestManifestValidateRejectsFailedGateLowCoverageAndTamper — 合法 manifest 通过；篡改 manifest 拒绝 | ✅ | TRACEABILITY.md |
 | TC-004 | FR-004 | go test -run 'Test(ClientFetchManifest\|ManifestHandler)' — HTTP endpoint 返回 JSON 证据 | ✅ | TRACEABILITY.md |
@@ -56,9 +56,9 @@
 | FR-002 | generate-manifest: 模块通过所有门禁→生成 Release Manifest(version/commit/gates/coverage/hash) | AC-002 / TC-002 / go test -run TestNewManifestNormalizesSortsAndValidates | ✅ | TRACEABILITY.md |
 | FR-003 | validate-manifest: CI 检查 manifest→验证完整性、hash 与内容一致性 | AC-003 / TC-003 / go test -run TestManifestValidateRejectsFailedGateLowCoverageAndTamper | ✅ | TRACEABILITY.md |
 | FR-004 | remote-evidence: 远程查询模块证据→返回结构化 manifest JSON | AC-004 / TC-004 / go test -run 'Test(ClientFetchManifest\|ManifestHandler)' | ✅ | TRACEABILITY.md |
-| FR-005 | evidence-report: 聚合多模块证据→生成跨模块统一报告，并提供并发安全、追加不可变的证据 Store | AC-005 / TC-005 / go test -run 'Test(ReportsRenderValidatedManifest\|StoreAppendEnforcesHashChain\|StoreAppendStoresImmutableManifest\|StoreSupportsConcurrentAppendAndReads)' | ✅ | TRACEABILITY.md |
+| FR-005 | report: 聚合多模块证据→生成跨模块统一报告，并提供并发安全、追加不可变的证据 Store | AC-005 / TC-005 / go test -run 'Test(ReportsRenderValidatedManifest\|StoreAppendEnforcesHashChain\|StoreAppendStoresImmutableManifest\|StoreSupportsConcurrentAppendAndReads)' | ✅ | TRACEABILITY.md |
 | BR-001 | manifest必须包含门禁全绿证据 | TC-002 / TestNewManifestNormalizesSortsAndValidates | ✅ | TRACEABILITY.md |
-| BR-002 | 覆盖率低于80%不得发布 | TC-001 / 覆盖率边界测试(79.99%拒绝, 80.00%通过) | ✅ | TRACEABILITY.md |
+| BR-002 | 覆盖率低于100.0%不得发布 | TC-001 / 覆盖率边界测试(99.99%拒绝, 100.00%通过) | ✅ | TRACEABILITY.md |
 | BR-003 | manifest不可事后篡改(hash链校验) | TC-003 / TestManifestValidateRejectsFailedGateLowCoverageAndTamper | ✅ | TRACEABILITY.md |
 | BR-004 | evidence存储必须不可变追加，并在并发读写时保持一致快照 | TC-005 / Test(StoreAppendEnforcesHashChain\|StoreAppendStoresImmutableManifest\|StoreSupportsConcurrentAppendAndReads) | ✅ | TRACEABILITY.md |
 | NFR-001 | Performance | manifest生成延迟 < 1s / benchmark: go test -bench=BenchmarkManifestGen -run '^$' | ✅ | TRACEABILITY.md |

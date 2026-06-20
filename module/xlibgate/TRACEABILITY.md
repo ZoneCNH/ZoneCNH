@@ -1,7 +1,7 @@
 # xlibgate 需求追溯矩阵
 
-> 更新：2026-06-14（Matrix v1.5 — Trust Alignment 追溯：FR-012~FR-019、BR-010、TC-014~TC-029、AC-015~AC-022、NFR-011~NFR-018 注册，仪表盘同步更新）
-> 来源：module/xlibgate/SPEC.md v1.1.1
+> 更新：2026-06-20（Matrix v1.6 — Trust Alignment 实现状态回填：FR-012~FR-019 / BR-010 → ✅ 已实现；NFR-011~NFR-018 → ⚠️ 待 benchmark；对齐 xlibgate v1.1.0 发布）
+> 来源：module/xlibgate/SPEC.md v1.2.0
 > 规范：docs/governance/TRACEABILITY.md
 
 ---

@@ -22,10 +22,10 @@
 | 维度 | market-data（行情） | macro-data（宏观，本模块） |
 | --- | --- | --- |
 | 领域模型 | `domain-market` MarketFactEnvelope | `domain-macro` MacroPoint |
-| 质量门禁 | stale/future/bid<ask | **no-lookahead**（AvailableAt fail-closed） |
-| 幂等键 | venue+productLine+instrument+channel+eventTime+seq | provider+seriesCode+observedAt+revisionVersion |
-| 排序键 | venue+productLine+instrument+channel | provider+seriesCode（revisionVersion 单调） |
-| 修订语义 | 无（行情不可变） | 有（RevisionVersion / IsPreliminary） |
+| 质量门禁 | stale/future/bid<ask | **no-lookahead**（available_at fail-closed） |
+| 幂等键 | venue+productLine+instrument+channel+eventTime+seq | provider+series_code+observed_at+revision_version |
+| 排序键 | venue+productLine+instrument+channel | provider+series_code（revision_version 单调） |
+| 修订语义 | 无（行情不可变） | 有（revision_version / is_preliminary） |
 | 下游端口 | `contracts.MarketDataProvider` | `contracts.MacroDataProvider`（§8.1 已定义） |
 
 ## 2. 边界
@@ -46,9 +46,9 @@
 | DispatchAck | 接收侧确认事件已被接受，可由后续持久化/队列/消费链路处理。 |
 | DispatchReject | 接收侧拒绝事件；通常为不可重试的契约、质量、幂等冲突、排序或 no-lookahead 违规。 |
 | DispatchFailure | 接收侧暂时无法完成接收；调用方可按 retry policy 重试。 |
-| IdempotencyKey | 同一 provider、seriesCode、observedAt、revisionVersion 与 payload fingerprint 组合出的稳定去重键。 |
-| OrderingKey | 保证同一 provider + seriesCode 内 revision 单调递增约束的分区键。 |
-| NoLookaheadGate | macro-data 接收侧核心质量门禁：AvailableAt 缺失或晚于决策时间的事件必须被拒绝（fail-closed），防止前视偏差。对齐 `domain-macro` BR-MAC-001/002。 |
+| idempotency_key | 同一 provider、series_code、observed_at、revision_version 与 payload fingerprint 组合出的稳定去重键。 |
+| ordering_key | 保证同一 provider + series_code 内 revision 单调递增约束的分区键。 |
+| NoLookaheadGate | macro-data 接收侧核心质量门禁：available_at 缺失或晚于决策时间的事件必须被拒绝（fail-closed），防止前视偏差。对齐 `domain-macro` BR-MAC-001/002。 |
 | RejectReasonMapping | provider adapter 的 native reject 在 dispatch 适配层映射为 macro-data 统一分类的规则。映射由 adapter 负责，macro-data 接收侧只处理统一分类。 |
 
 ## 4. macro downstream dispatch port 契约
@@ -67,46 +67,46 @@ DispatchBatch(ctx, []AcceptedMacroEvent) -> []DispatchOutcome
 | 字段 | 必填 | 说明 |
 | --- | --- | --- |
 | provider | 是 | 宏观数据来源提供者，例如 FRED、ECB、BEA；取值归属由上游 contract 冻结。 |
-| seriesCode | 是 | 宏观序列标识（如 `GDP`、`CPIAUCSL`、`DGS10`）；不得使用 provider 私有内部 ID 作为唯一键，须经 adapter 归一化。 |
-| observedAt | 是 | 经济指标的观测时间点（数据所属时期）；`domain-macro` FR-MAC-001 三时间之一。 |
-| releasedAt | 是 | 数据发布时间（官方公布时间）；`domain-macro` FR-MAC-001 三时间之一。 |
-| availableAt | 是 | **数据可用时间**（可被回测/策略合法消费的时间）；`domain-macro` FR-MAC-001 三时间之一。**缺失或晚于决策时间时必须拒绝**（no-lookahead gate）。 |
-| revisionVersion | 是 | 修订版本号，非负整数；`domain-macro` FR-MAC-005。同一 seriesCode+observedAt 多版本用于 deterministic ordering。 |
-| isPreliminary | 是 | 是否初值（vs final）；`domain-macro` FR-MAC-002。preliminary 不得覆盖 final，除非 revisionVersion 更高且可见。 |
+| series_code | 是 | 宏观序列标识（如 `GDP`、`CPIAUCSL`、`DGS10`）；不得使用 provider 私有内部 ID 作为唯一键，须经 adapter 归一化。 |
+| observed_at | 是 | 经济指标的观测时间点（数据所属时期）；`domain-macro` FR-MAC-001 三时间之一。 |
+| released_at | 是 | 数据发布时间（官方公布时间）；`domain-macro` FR-MAC-001 三时间之一。 |
+| available_at | 是 | **数据可用时间**（可被回测/策略合法消费的时间）；`domain-macro` FR-MAC-001 三时间之一。**缺失或晚于决策时间时必须拒绝**（no-lookahead gate）。 |
+| revision_version | 是 | 修订版本号，非负整数；`domain-macro` FR-MAC-005。同一 series_code+observed_at 多版本用于 deterministic ordering。 |
+| is_preliminary | 是 | 是否初值（vs final）；`domain-macro` FR-MAC-002。preliminary 不得覆盖 final，除非 revision_version 更高且可见。 |
 | value | 是 | 指标数值；引用 `decimalx.Decimal` 语义（`domain-macro` FR-MAC-007 精度 ADR）。 |
 | payload | 是 | 引用 `domain-macro` canonical `MacroPoint` 语义的载荷，不允许 FRED/ECB 原始 DTO。 |
-| idempotencyKey | 是 | 稳定去重键；重复提交必须产生可审计 outcome。 |
-| orderingKey | 是 | 同一排序域内事件必须可串行化处理（provider+seriesCode）。 |
+| idempotency_key | 是 | 稳定去重键；重复提交必须产生可审计 outcome。 |
+| ordering_key | 是 | 同一排序域内事件必须可串行化处理（provider+series_code）。 |
 | source | 是 | 上游 adapter 标识（如 `"fred"`），用于指标分组、审计追踪和多 adapter 来源区分。 |
 
-> 以上共 12 个字段。与 market-data 的 12 字段一一对应，但宏观侧以 provider/seriesCode/三时间/revision 替代行情侧的 venue/productLine/instrument/channel/seq。
+> 以上共 12 个字段。与 market-data 的 12 字段一一对应，但宏观侧以 provider/series_code/三时间/revision 替代行情侧的 venue/productLine/instrument/channel/seq。
 
 #### 4.2.1 跨模块字段命名映射
 
-macro-data 文档使用 camelCase 风格描述字段语义；在下游实现中，字段命名必须与 `domain-macro` Go 类型、`contracts` JSON tag 保持一致。以下为各方命名对照：
+`macro_data` 接收侧字段使用 snake_case；在下游实现中，字段命名必须与 `domain-macro` Go 类型、`contracts` JSON tag 保持一致。以下为各方命名对照：
 
-| 概念 | macro-data (文档) | domain-macro (Go 字段) | contracts (JSON tag) | fred (示例 adapter) |
+| 概念 | macro_data (接收侧字段) | domain-macro (Go 字段) | contracts (JSON tag) | fred (示例 adapter) |
 | --- | --- | --- | --- | --- |
 | 数据提供者 | provider | (**domain-macro 内部**) | source (**MacroPoint.Source**) | provider |
-| 序列代码 | seriesCode | SeriesCode | indicator (**MacroPoint.Indicator**) | series_id |
-| 观测时间 | observedAt | ObservedAt | (**contracts MacroPoint.Timestamp**) | realtime_start |
-| 发布时间 | releasedAt | ReleasedAt | — | (**adapter 内部**) |
-| 可用时间 | availableAt | AvailableAt | — | (**adapter 设置**) |
-| 修订版本 | revisionVersion | RevisionVersion | — | (**adapter 设置**) |
-| 是否初值 | isPreliminary | IsPreliminary | — | (**adapter 设置**) |
+| 序列代码 | series_code | SeriesCode | indicator (**MacroPoint.Indicator**) | series_id |
+| 观测时间 | observed_at | ObservedAt | (**contracts MacroPoint.Timestamp**) | realtime_start |
+| 发布时间 | released_at | ReleasedAt | — | (**adapter 内部**) |
+| 可用时间 | available_at | AvailableAt | — | (**adapter 设置**) |
+| 修订版本 | revision_version | RevisionVersion | — | (**adapter 设置**) |
+| 是否初值 | is_preliminary | IsPreliminary | — | (**adapter 设置**) |
 | 指标数值 | value | Value | value (**MacroPoint.Value**) | value |
 | 事件载荷 | payload (MacroPoint) | MacroPoint | point (**MacroEvent.Point**) | MacroPoint |
-| 幂等键 | idempotencyKey | (**macro-data 内部**) | — | idempotency_key |
-| 排序键 | orderingKey | (**macro-data 内部**) | — | — |
+| 幂等键 | idempotency_key | (**macro-data 内部**) | — | idempotency_key |
+| 排序键 | ordering_key | (**macro-data 内部**) | — | — |
 | 来源适配器 | source | (**macro-data 内部**) | — | — |
 
-> **命名约束**: Go 代码中 struct 字段使用 PascalCase（domain-macro 拥有），JSON 序列化使用 snake_case（contracts BR-009 强制），文档表格使用 camelCase（本 SPEC 惯例）。实现时必须从 domain-macro import 对应类型，不得在 macro-data 内部重新定义同名类型。
+> **命名约束**: Go 代码中 struct 字段使用 PascalCase（domain-macro 拥有），JSON 序列化、配置、注册表和 `macro_data` 接收侧字段使用 snake_case；模块、仓库、目录和公开文档链接继续使用 `macro-data`；事件 topic literal 保留 `macro.data`。实现时必须从 domain-macro import 对应类型，不得在 macro-data 内部重新定义同名类型。
 
 ### 4.3 输出结果
 
 | Outcome | 可重试 | 语义 |
 | --- | --- | --- |
-| DispatchAck | 否 | 事件被接收侧接受；重复提交同一 idempotencyKey 可返回幂等 ack。 |
+| DispatchAck | 否 | 事件被接收侧接受；重复提交同一 idempotency_key 可返回幂等 ack。 |
 | DispatchReject | 否 | 事件违反契约、质量门禁、no-lookahead、幂等冲突或 revision 排序不可恢复；adapter 不得无限重试。 |
 | DispatchFailure | 是 | 接收侧内部暂时不可用、背压或下游依赖不可用；adapter 可按退避策略重试。 |
 
@@ -114,12 +114,12 @@ macro-data 文档使用 camelCase 风格描述字段语义；在下游实现中�
 
 | Reject Reason | 触发条件 | 对标 market-data |
 | --- | --- | --- |
-| contract_violation | 缺少必填字段、seriesCode 格式非法、payload 类型不匹配。 | contract_violation（同） |
-| quality_rejected | value 非法（NaN/Inf）、observedAt 为零、数据质量标签不可靠。 | quality_rejected（同） |
-| **lookahead_violation** | **availableAt 缺失、为零，或晚于决策时间（no-lookahead gate fail-closed）。** | ❌ **宏观独有**（行情无此门禁） |
-| idempotency_conflict | 同一 idempotencyKey 对应不同 payload fingerprint。 | idempotency_conflict（同） |
-| ordering_violation | 同一 orderingKey 下 revisionVersion 倒退、跳跃或 preliminary 非法覆盖 final。 | ordering_violation（同，但宏观侧是 revision 而非 sequence） |
-| unsupported_series | seriesCode 尚未纳入 `macro-data` 接收侧支持矩阵。 | unsupported_channel（行情侧叫 channel） |
+| contract_violation | 缺少必填字段、series_code 格式非法、payload 类型不匹配。 | contract_violation（同） |
+| quality_rejected | value 非法（NaN/Inf）、observed_at 为零、数据质量标签不可靠。 | quality_rejected（同） |
+| **lookahead_violation** | **available_at 缺失、为零，或晚于决策时间（no-lookahead gate fail-closed）。** | ❌ **宏观独有**（行情无此门禁） |
+| idempotency_conflict | 同一 idempotency_key 对应不同 payload fingerprint。 | idempotency_conflict（同） |
+| ordering_violation | 同一 ordering_key 下 revision_version 倒退、跳跃或 preliminary 非法覆盖 final。 | ordering_violation（同，但宏观侧是 revision 而非 sequence） |
+| unsupported_series | series_code 尚未纳入 `macro-data` 接收侧支持矩阵。 | unsupported_channel（行情侧叫 channel） |
 | unauthorized | adapter 凭证无效或权限不足；由上游 adapter 验证并映射。 | unauthorized（同） |
 | rate_limited | 上游 adapter 或接收侧自身频率超限。 | rate_limited（同） |
 | server_unavailable | 接收侧内部依赖（持久化、队列）不可用；adapter 应退避重试。**产出: DispatchFailure（非 DispatchReject），可重试。** | server_unavailable（同） |
@@ -132,7 +132,7 @@ macro-data 文档使用 camelCase 风格描述字段语义；在下游实现中�
 | --- | --- | --- |
 | retryable | DispatchFailure | 不映射到 reject reason；转 failure 让 adapter 重试 |
 | terminal_validation | DispatchReject（子类: contract_violation / quality_rejected / ordering_violation / unsupported_series） | 按具体子类细分 |
-| lookahead | DispatchReject / lookahead_violation | **宏观独有**：availableAt 缺失或未来数据 |
+| lookahead | DispatchReject / lookahead_violation | **宏观独有**：available_at 缺失或未来数据 |
 | terminal_conflict | DispatchReject / idempotency_conflict | 直接映射 |
 | unauthorized | DispatchReject / unauthorized | 直接映射（如 FRED api_key 无效） |
 | rate_limited | DispatchReject / rate_limited | 直接映射（FRED 120 req/min） |
@@ -146,13 +146,13 @@ macro-data 文档使用 camelCase 风格描述字段语义；在下游实现中�
 | --- | --- | --- | --- |
 | FR-MACD-001 | dispatch-port | provider adapter 完成事件归一化后提交事件 | 必须调用 macro downstream dispatch port，不得绕过 `macro-data` 直写存储、队列或策略入口。 |
 | FR-MACD-002 | canonical-input | 接收侧读取事件载荷 | 载荷必须引用 `domain-macro` canonical `MacroPoint` 语义（含 ObservedAt/ReleasedAt/AvailableAt 三时间 + RevisionVersion/IsPreliminary），不允许 FRED/ECB 原始 DTO 泄漏。 |
-| FR-MACD-003 | idempotency | 接收同一 idempotencyKey | 相同 payload fingerprint 返回幂等 ack；不同 fingerprint 返回 reject。 |
-| FR-MACD-004 | revision-ordering | 接收同一 orderingKey（provider+seriesCode）的带 revision 事件 | 必须检测 revisionVersion 倒退、跳跃和重复，并返回明确 outcome。preliminary 不得覆盖 final 除非 revision 更高。 |
-| FR-MACD-005 | no-lookahead-gate | availableAt 缺失、为零或晚于决策时间 | **必须 fail-closed，返回 lookahead_violation reject**，且记录原因。对齐 `domain-macro` BR-MAC-001/002。 |
-| FR-MACD-006 | quality-gate | observedAt、releasedAt、value 不合法 | 必须 fail-closed，返回 reject，且记录原因分类。 |
+| FR-MACD-003 | idempotency | 接收同一 idempotency_key | 相同 payload fingerprint 返回幂等 ack；不同 fingerprint 返回 reject。 |
+| FR-MACD-004 | revision-ordering | 接收同一 ordering_key（provider+series_code）的带 revision 事件 | 必须检测 revision_version 倒退、跳跃和重复，并返回明确 outcome。preliminary 不得覆盖 final 除非 revision 更高。 |
+| FR-MACD-005 | no-lookahead-gate | available_at 缺失、为零或晚于决策时间 | **必须 fail-closed，返回 lookahead_violation reject**，且记录原因。对齐 `domain-macro` BR-MAC-001/002。 |
+| FR-MACD-006 | quality-gate | observed_at、released_at、value 不合法 | 必须 fail-closed，返回 reject，且记录原因分类。 |
 | FR-MACD-007 | retry-classification | 接收侧无法完成处理 | 必须区分不可重试 reject 与可重试 failure。 |
 | FR-MACD-008 | batch-semantics | 批量提交事件 | 必须逐条返回 outcome，不允许整批成功掩盖单条失败。 |
-| FR-MACD-009 | observability | 任一 dispatch 调用完成 | 必须可按 provider/seriesCode/outcome/reason 统计。 |
+| FR-MACD-009 | observability | 任一 dispatch 调用完成 | 必须可按 provider/series_code/outcome/reason 统计。 |
 | FR-MACD-010 | downstream-port | 实现 `contracts.MacroDataProvider` | macro-data 是 MacroDataProvider 的唯一实现者，向下游（分析域 macro_engine）提供 GetLatest/GetHistory/Subscribe。 |
 
 ## 6. 行为约束
@@ -165,17 +165,17 @@ macro-data 文档使用 camelCase 风格描述字段语义；在下游实现中�
 | BR-MACD-004 | 接收侧对 contract、quality、**no-lookahead**、idempotency 与 revision ordering 问题 fail-closed，不做静默修正。 |
 | BR-MACD-005 | adapter 不得将 DispatchFailure 当作成功；必须按 retry policy 或上游 backpressure 处理。 |
 | BR-MACD-006 | 文档批准前不得新增运行时代码、依赖、存储表或队列 topic。 |
-| BR-MACD-007 | **no-lookahead 是宏观数据域的第一安全门禁**：任何缺失 AvailableAt 的点不得进入下游，违反则回测结果不可信（对齐 domain-macro BR-MAC-001）。 |
+| BR-MACD-007 | **no-lookahead 是宏观数据域的第一安全门禁**：任何缺失 available_at 的点不得进入下游，违反则回测结果不可信（对齐 domain-macro BR-MAC-001）。 |
 
 ## 7. 非功能需求
 
 | ID | 类别 | 需求 |
 | --- | --- | --- |
-| NFR-MACD-001 | 可审计性 | 每个 outcome 必须包含 outcome、reason、idempotencyKey、orderingKey、revisionVersion 与 retryable 分类。 |
+| NFR-MACD-001 | 可审计性 | 每个 outcome 必须包含 outcome、reason、idempotency_key、ordering_key、revision_version 与 retryable 分类。 |
 | NFR-MACD-002 | 稳定性 | v0.1.0 后 outcome 分类、幂等语义与 no-lookahead 规则不得破坏性变更；变更需迁移说明。 |
-| NFR-MACD-003 | 可观测性 | 指标维度至少包含 provider、seriesCode、outcome、reason。 |
+| NFR-MACD-003 | 可观测性 | 指标维度至少包含 provider、series_code、outcome、reason。 |
 | NFR-MACD-004 | 边界纯净 | 本模块文档与后续 public API 不得暴露 vendor DTO、transport tag 或 storage tag。 |
-| NFR-MACD-005 | 回测安全 | no-lookahead gate 必须有独立测试覆盖：availableAt 缺失/未来/等于决策时间的边界 case 全部 fail-closed。 |
+| NFR-MACD-005 | 回测安全 | no-lookahead gate 必须有独立测试覆盖：available_at 缺失/未来/等于决策时间的边界 case 全部 fail-closed。 |
 
 ## 8. Acceptance Criteria Registry
 
@@ -185,7 +185,7 @@ macro-data 文档使用 camelCase 风格描述字段语义；在下游实现中�
 | AC-MACD-002 | FR-MACD-002, BR-MACD-002 | 接收侧输入字段只引用 `MacroPoint` canonical 语义（三时间 + revision），不包含 FRED/ECB DTO 名称或原始响应字段。 | 边界扫描 | Baseline |
 | AC-MACD-003 | FR-MACD-003, FR-MACD-004 | 幂等键与 revision 排序键规则已形成后续单元测试基线。 | 任务基线检查 | Baseline |
 | AC-MACD-004 | FR-MACD-005, FR-MACD-006, BR-MACD-004, BR-MACD-007 | reject/failure 分类清晰区分 retryable；**no-lookahead gate 独立可测**。 | TRACEABILITY 检查 | Baseline |
-| AC-MACD-005 | FR-MACD-008, FR-MACD-009, NFR-MACD-001, NFR-MACD-003 | 批量 outcome 与观测维度覆盖 provider/seriesCode/outcome/reason。 | TRACEABILITY 检查 | Baseline |
+| AC-MACD-005 | FR-MACD-008, FR-MACD-009, NFR-MACD-001, NFR-MACD-003 | 批量 outcome 与观测维度覆盖 provider/series_code/outcome/reason。 | TRACEABILITY 检查 | Baseline |
 | AC-MACD-006 | FR-MACD-010 | macro-data 是 `contracts.MacroDataProvider`（§8.1 已定义）的唯一实现者。 | 编译期 `var _ contracts.MacroDataProvider` | Baseline |
 | AC-MACD-007 | BR-MACD-006 | 本次闭环只更新 markdown 文档，不新增运行时代码或依赖。 | `git diff --check` + 文件列表检查 | Baseline |
 
@@ -198,7 +198,7 @@ macro-data 文档使用 camelCase 风格描述字段语义；在下游实现中�
 | Adapter Gate | 各宏观 adapter SPEC（fred/bea/ecb/…）引用本 dispatch port。 | Pending — 待各 adapter SPEC 补充引用 |
 | Reject Mapping Gate | provider-native reject classification 到 macro-data §4.4.1 的映射规则已文档化。 | Baseline（fred 示例已给出；其他 provider 待补） |
 | Naming Mapping Gate | 跨模块字段命名映射表（§4.2.1）已纳入 SPEC。 | Baseline Published（本次新增） |
-| No-lookahead Test Gate | 后续实现必须覆盖 availableAt 缺失/未来/边界 case 的 fail-closed。 | Pending — 无运行时代码 |
+| No-lookahead Test Gate | 后续实现必须覆盖 available_at 缺失/未来/边界 case 的 fail-closed。 | Pending — 无运行时代码 |
 | Test Gate | 后续实现必须覆盖幂等、revision 排序、quality fail-closed、retry classification 与 batch partial failure。 | Pending — 无运行时代码 |
 
 ## 10. 发布状态与运行时边界
@@ -222,7 +222,7 @@ macro-data 文档使用 camelCase 风格描述字段语义；在下游实现中�
 - [ ] **Adapter Gate 通过**: 至少 1 个宏观 adapter（fred）SPEC 引用 macro downstream dispatch port，且不再将下游交付语义留空。
 - [ ] **Reject Mapping 验证**: fred-native → macro-data 9 种 reject 映射规则实现。
 - [ ] **Naming Mapping 验证**: dispatch 实现 import `domain-macro` MacroPoint 类型，不重新定义。
-- [ ] **No-lookahead Test Gate 通过**: availableAt 缺失/为零/晚于决策时间的 case 全部返回 lookahead_violation reject。
+- [ ] **No-lookahead Test Gate 通过**: available_at 缺失/为零/晚于决策时间的 case 全部返回 lookahead_violation reject。
 - [ ] **Test Gate 通过**: 幂等、revision 排序、quality、retry classification、batch partial failure 测试。
 
 > 以上全部满足后，本模块状态可推进为 `Published`。
@@ -238,11 +238,11 @@ macro-data 文档使用 camelCase 风格描述字段语义；在下游实现中�
 | L3 行情摄取与分发 | L3 宏观摄取与分发 | 同层 |
 | DownstreamDispatchPort | MacroDispatchPort | 端口镜像 |
 | AcceptedMarketEvent | AcceptedMacroEvent | 载荷镜像 |
-| 12 字段（venue/productLine/instrument/channel/eventTime/receivedAt/sourceSequence/payload/quality/idempotencyKey/orderingKey/source） | 12 字段（provider/seriesCode/observedAt/releasedAt/availableAt/revisionVersion/isPreliminary/value/payload/idempotencyKey/orderingKey/source） | 行情时间语义 → 宏观三时间 + revision |
+| 12 字段（venue/productLine/instrument/channel/eventTime/receivedAt/sourceSequence/payload/quality/idempotencyKey/orderingKey/source） | 12 字段（provider/series_code/observed_at/released_at/available_at/revision_version/is_preliminary/value/payload/idempotency_key/ordering_key/source） | 行情时间语义 → 宏观三时间 + revision |
 | 8 种 reject reason | 9 种 reject reason（多 `lookahead_violation`） | 宏观独有 no-lookahead 门禁 |
 | MarketFactEnvelope | MacroPoint | 领域载荷 |
-| stale/future gate | no-lookahead gate（AvailableAt fail-closed） | 核心质量门禁差异 |
-| sequence 排序 | revisionVersion 排序 | 排序语义差异 |
+| stale/future gate | no-lookahead gate（available_at fail-closed） | 核心质量门禁差异 |
+| sequence 排序 | revision_version 排序 | 排序语义差异 |
 | `contracts.MarketDataProvider` | `contracts.MacroDataProvider` | 下游端口（均已在 contracts §8.1 定义） |
 | Consumed by binance 等 13 adapter | Consumed by fred 等 10 adapter | 消费者 |
 
@@ -254,15 +254,15 @@ macro-data 文档使用 camelCase 风格描述字段语义；在下游实现中�
 
 ```
 宏观 provider（FRED/ECB/… 10 adapter）
-  采集 + normalize（MacroPoint）+ no-lookahead 标注（AvailableAt）
+  采集 + normalize（MacroPoint）+ no-lookahead 标注（available_at）
      │
      ▼  MacroDispatchPort（AcceptedMacroEvent）
 macro-data 接收侧（唯一写存储者）
      │
-     ├─► validation（seriesCode/三时间/value 校验）
-     ├─► no-lookahead gate（AvailableAt fail-closed）★ 宏观独有
-     ├─► idempotency（Redis CheckAndSet，key=seriesCode+observedAt+revisionVersion）
-     ├─► revision ordering（revisionVersion 单调，preliminary 不覆盖 final）
+     ├─► validation（series_code/三时间/value 校验）
+     ├─► no-lookahead gate（available_at fail-closed）★ 宏观独有
+     ├─► idempotency（Redis CheckAndSet，key=series_code+observed_at+revision_version）
+     ├─► revision ordering（revision_version 单调，preliminary 不覆盖 final）
      ├─► durable ACK（PG lineage/sync_status）
      └─► dispatch 双写
            ├─► TDengine（macro_{provider} 时序点）

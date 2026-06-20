@@ -30,14 +30,14 @@
 | FR-002 | generate-manifest: 模块通过所有门禁→生成Release Manifest(version/commitSHA/gates/coverage) | AC-002 / TC-002 / `go test -run TestNewManifestNormalizesSortsAndValidates` | ✅ | TRACEABILITY.md |
 | FR-003 | validate-manifest: CI检查manifest→验证完整性/签名/内容一致性 | AC-003 / TC-003 / `go test -run TestManifestValidateRejectsFailedGateLowCoverageAndTamper` | ✅ | TRACEABILITY.md |
 | FR-004 | remote-evidence: 远程查询模块证据→返回结构化证据(覆盖率/门禁历史/manifest) | AC-004 / TC-004 / `go test -run 'Test(ClientFetchManifest|ManifestHandler)'` | ✅ | TRACEABILITY.md |
-| FR-005 | evidence-report: 聚合多模块证据→生成跨模块统一报告，并提供并发安全、追加不可变的证据 Store | AC-005 / TC-005 / `go test -run 'Test(ReportsRenderValidatedManifest|StoreAppendEnforcesHashChain|StoreAppendStoresImmutableManifest|StoreSupportsConcurrentAppendAndReads)'` | ✅ | TRACEABILITY.md |
+| FR-005 | report: 聚合多模块证据→生成跨模块统一报告，并提供并发安全、追加不可变的证据 Store | AC-005 / TC-005 / `go test -run 'Test(ReportsRenderValidatedManifest|StoreAppendEnforcesHashChain|StoreAppendStoresImmutableManifest|StoreSupportsConcurrentAppendAndReads)'` | ✅ | TRACEABILITY.md |
 
 ## 3. 行为与非功能实现清单
 
 | ID | 完整实现项 | 验收/测试/任务挂钩 | 当前登记状态 | 来源 |
 | --- | --- | --- | --- | --- |
 | BR-001 | manifest必须包含门禁全绿证据 | TC-002 / `TestNewManifestNormalizesSortsAndValidates` | ✅ | TRACEABILITY.md |
-| BR-002 | 覆盖率低于80%不得发布 | TC-001 / 覆盖率边界测试(79.99%拒绝, 80.00%通过) | ✅ | TRACEABILITY.md |
+| BR-002 | 覆盖率低于100.0%不得发布 | TC-001 / 覆盖率边界测试(99.99%拒绝, 100.00%通过) | ✅ | TRACEABILITY.md |
 | BR-003 | manifest不可事后篡改(hash链校验) | TC-003 / `TestManifestValidateRejectsFailedGateLowCoverageAndTamper` | ✅ | TRACEABILITY.md |
 | BR-004 | evidence存储必须不可变追加，并在并发读写时保持一致快照 | TC-005 / `Test(StoreAppendEnforcesHashChain|StoreAppendStoresImmutableManifest|StoreSupportsConcurrentAppendAndReads)` | ✅ | TRACEABILITY.md |
 | NFR-001 | Performance | manifest生成延迟 < 1s / benchmark: `go test -bench=BenchmarkManifestGen -run '^$'` | ✅ | TRACEABILITY.md |
