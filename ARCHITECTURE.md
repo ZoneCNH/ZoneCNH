@@ -405,9 +405,9 @@ Foundation 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中在 
 | 分析域                | [factor_engine](https://github.com/ZoneCNH/factor_engine)       | -      | 🔨 已创建 | ░░░░ 5%  | 从原始数据计算 alpha 因子                                                                 |
 | 分析域                | [feature_store](https://github.com/ZoneCNH/feature_store)       | -      | 🔨 已创建 | ░░░░ 5%  | 因子版本管理、IC 评估                                                                     |
 | 分析域                | [factor_eval](https://github.com/ZoneCNH/factor_eval)           | -      | 🔨 已创建 | ░░░░ 5%  | IC/IR/换手率评估                                                                          |
-| 分析域                | [market_regime](https://github.com/ZoneCNH/market_regime)       | -      | 🔨 已创建 | ░░░░ 5%  | 市场状态识别（S1-S7：多头趋势/挤空/空头/踩踏/震荡/低波/压缩）                             |
-| 分析域                | [macro_regime](https://github.com/ZoneCNH/macro_regime)         | -      | 🔨 已创建 | ░░░░ 5%  | 宏观经济体制识别（M1-M7：流动牛市/再通复苏/软着繁荣/鹰派通胀/衰退降息/信用去杠/滞胀冲击） |
-| 分析域                | [regime_engine](https://github.com/ZoneCNH/regime_engine)       | v0.1.0 | 🔨 已创建 | ██░░ 25% | M×S 联合决策引擎（M+S → action/risk/permission），骨架完成，30+ 测试通过                 |
+| 分析域                | [market_regime](https://github.com/ZoneCNH/market_regime)       | v0.1.0 | 🔨 已创建 | ████ 40% | 市场状态识别（S1-S7：多头趋势/挤空/空头/踩踏/震荡/低波/压缩），5D特征+规则分类器             |
+| 分析域                | [macro_regime](https://github.com/ZoneCNH/macro_regime)         | v0.1.0 | 🔨 已创建 | ████ 40% | 宏观经济体制识别（M1-M7：流动牛市/再通复苏/软着繁荣/鹰派通胀/衰退降息/信用去杠/滞胀冲击），LGIP四因子 |
+| 分析域                | [regime_engine](https://github.com/ZoneCNH/regime_engine)       | v1.0.0 | 🔨 已创建 | ████ 60% | M×S 联合决策引擎，P0 DTO 桥接完成（RegimeSnapshot+RegimeCard→DecisionCard）              |
 | 分析域                | [ms_brain](https://github.com/ZoneCNH/ms_brain)                 | -      | ✅ 已有   | -        | M×S 系统架构分析体系                                                                      |
 | 分析域                | [flowx](https://github.com/ZoneCNH/flowx)                       | v0.1.0-draft | 🔨 已创建 | ░░░░ 5%  | 数据流管线引擎 — 实时流式 ETL、窗口聚合、背压控制（7 FR, SPEC draft）                    |
 | **决策域**            |                                                                 |        |           |          |                                                                                           |
