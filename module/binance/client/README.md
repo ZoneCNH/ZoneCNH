@@ -2,7 +2,7 @@
 
 `module/binance/client` is the Binance exchange-facing collector.
 
-It connects to Binance market-data endpoints, converts exchange-native events into canonical ZoneCNH market events, persists local delivery state, and sends events to `module/binance/server`.
+It connects to Binance market_data endpoints, converts exchange-native events into canonical ZoneCNH market events, persists local delivery state, and sends events to `module/binance/server`.
 
 ## Owns
 

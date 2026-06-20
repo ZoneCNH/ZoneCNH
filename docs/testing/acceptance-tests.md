@@ -35,10 +35,10 @@ Status: Approved
 | AT-014 | TDengine 时序数据写入与查询         | taosx                           | P2       |
 | AT-015 | OSS 对象存储操作                    | ossx                            | P2       |
 | AT-016 | Contracts 契约 Breaking Change 检测 | contracts, xlibgate             | P0       |
-| AT-017 | 采集器 → Kafka → 消费者链路         | market-data, kafkax, contracts  | P1       |
+| AT-017 | 采集器 → Kafka → 消费者链路         | market_data, kafkax, contracts  | P1       |
 | AT-018 | schedulex 定时任务触发              | schedulex, kernel, observex     | P1       |
 | AT-019 | testkitx 边界守卫                   | testkitx, kernel, observex      | P1       |
-| AT-020 | xlib-standard 门禁一致性            | xlib-standard, xlibgate         | P1       |
+| AT-020 | xlib_standard 门禁一致性            | xlib_standard, xlibgate         | P1       |
 
 ---
 
@@ -293,7 +293,7 @@ Status: Approved
 
 ### AT-017: 采集器 → Kafka → 消费者链路
 
-**Given：** market-data 采集器和消费者模块均已配置
+**Given：** market_data 采集器和消费者模块均已配置
 **When：** 采集器从交易所获取行情，通过 Kafka 发布
 **Then：**
 
@@ -347,10 +347,10 @@ Status: Approved
 
 ---
 
-### AT-020: xlib-standard 门禁一致性
+### AT-020: xlib_standard 门禁一致性
 
-**Given：** `xlib-standard` 定义了 Gate 清单（`gates/common.yaml`）和 Evidence schema（`evidence/schema.json`），`xlibgate` 消费这些定义
-**When：** 对比 `xlib-standard` 的 Gate 定义与 `xlibgate` 的实际检查配置，并验证各模块 CI artifact
+**Given：** `xlib_standard` 定义了 Gate 清单（`gates/common.yaml`）和 Evidence schema（`evidence/schema.json`），`xlibgate` 消费这些定义
+**When：** 对比 `xlib_standard` 的 Gate 定义与 `xlibgate` 的实际检查配置，并验证各模块 CI artifact
 **Then：**
 
 - `gates/common.yaml` 的 8 项 Gate（build、test、coverage、vet、lint、dependency、secret_scan、benchmark）与 `xlibgate.yaml` 完全匹配

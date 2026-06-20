@@ -8,9 +8,9 @@ Deliver `module/coinglass` v1.0.0 as Coinglass aggregated derivatives data C/S m
 
 1. 旧 passive SDK 在 active code 中清除
 2. `module/coinglass/client` 与 `server` 文档就绪
-3. canonical domain 由 `module/domain-market` 拥有；derivatives_aggregate 事件类型通过 `source_metadata.aggregator` 标注（domain-market v1.1 评估是否引入 first-class type）
+3. canonical domain 由 `module/domain_market` 拥有；derivatives_aggregate 事件类型通过 `source_metadata.aggregator` 标注（domain_market v1.1 评估是否引入 first-class type）
 4. wire contract 由 `module/contracts` §8.4 拥有
-5. downstream dispatch 经 `module/market-data` 中转
+5. downstream dispatch 经 `module/market_data` 中转
 6. delivery 语义：at-least-once + idempotent acceptance + ACK-driven checkpoint + window-overlap-tolerant idempotency
 7. venue 名称在 client 层规范化为 canonical exchange 值
 8. quota-aware scheduler 按 channel 优先级分配 API quota
@@ -20,8 +20,8 @@ Deliver `module/coinglass` v1.0.0 as Coinglass aggregated derivatives data C/S m
 | Gate | 验证项 | 状态 |
 |------|--------|:---:|
 | G0-1 | contracts §8.4 全部 wire types | ✅ |
-| G0-2 | domain-market 通过 `source_metadata.aggregator` 表达聚合源 | ✅（过渡期方案） |
-| G0-3 | market-data DownstreamDispatchPort 接受含 aggregator 标注的事件 | ✅（源不敏感） |
+| G0-2 | domain_market 通过 `source_metadata.aggregator` 表达聚合源 | ✅（过渡期方案） |
+| G0-3 | market_data DownstreamDispatchPort 接受含 aggregator 标注的事件 | ✅（源不敏感） |
 | G0-4 | binance C/S Module 模板已稳定 | ✅ |
 | G0-5 | coinglass 旧 SDK 清单整理 | 🔧 PR-000 |
 | G0-6 | BOUNDARY-GATES（继承 binance）可执行 | ✅ |
@@ -33,7 +33,7 @@ PR-000  legacy coinglass SDK cleanup
 PR-001  module/coinglass root
 PR-002  module/coinglass/client SPEC + tasks
 PR-003  module/coinglass/server SPEC + tasks
-PR-004  domain-market aggregator 字段验证（无新增 first-class type）
+PR-004  domain_market aggregator 字段验证（无新增 first-class type）
 PR-005  contracts dependency 验证
 PR-006  transportx dependency 验证
 PR-007  runtime implementation（github.com/ZoneCNH/coinglass 改造）
@@ -77,7 +77,7 @@ Acceptance:
 
 | PR | 范围 |
 |----|------|
-| PR-004 | domain-market aggregator 字段使用约定验证 |
+| PR-004 | domain_market aggregator 字段使用约定验证 |
 | PR-005 | contracts dependency stub |
 | PR-006 | transportx dependency stub |
 | PR-007 | github.com/ZoneCNH/coinglass runtime 改造（含 4 channel + scheduler + venue map） |

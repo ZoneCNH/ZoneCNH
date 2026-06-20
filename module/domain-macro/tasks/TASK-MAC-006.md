@@ -6,7 +6,7 @@
 
 ## Related Spec
 
-`module/domain-macro/SPEC.md` §7 FR-MAC-006, §9 Interface Contract, §10 Data Model, §16.1 TC-MAC-006, §21 Upgrade Compatibility
+`module/domain_macro/SPEC.md` §7 FR-MAC-006, §9 Interface Contract, §10 Data Model, §16.1 TC-MAC-006, §21 Upgrade Compatibility
 
 ## Related Requirements
 
@@ -59,7 +59,7 @@
 ## Validation Commands
 
 ```bash
-cd /home/domain-macro
+cd /home/domain_macro
 go build ./...
 go test ./... -race -count=1
 go vet ./...

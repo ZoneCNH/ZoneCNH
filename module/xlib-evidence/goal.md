@@ -1,13 +1,13 @@
-# xlib-evidence Goal
+# xlib_evidence Goal
 
 ## 发布定位
 
-xlib-evidence 是 Foundation 的证据收集与发布运行时。从 xlib-standard 拆分而来，独立承担 Evidence Runtime 职责。
+xlib_evidence 是 Foundation 的证据收集与发布运行时。从 xlib_standard 拆分而来，独立承担 Evidence Runtime 职责。
 
 ## 边界
 
 - **拥有**：覆盖率收集、门禁结果聚合、Release Manifest 生成与验证、远程证据查询
-- **不拥有**：标准定义（xlib-standard）、门禁执行（xlib-harness / xlibgate）、CI 管线编排
+- **不拥有**：标准定义（xlib_standard）、门禁执行（xlib_harness / xlibgate）、CI 管线编排
 
 ## 契约
 

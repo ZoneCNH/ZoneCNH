@@ -48,25 +48,25 @@ _Auto-maintained by `/filetree:update`. Content hashes live in the sidecar `FILE
           - `EVID-TEST-TASK-GOAL-20260608-001-003-003-001.md`: CI 集成与最终报告证据，验证 goal-ci.yml 接入规则漂移检查且报告覆盖所有变更
       - 2026-06-09
         - TASK-XLIB-000
-          - `EVID-TEST-TASK-XLIB-000-001.md`: xlib-standard 仓库结构验证证据，检查目录不存在与必含目录/文件存在性
+          - `EVID-TEST-TASK-XLIB-000-001.md`: xlib_standard 仓库结构验证证据，检查目录不存在与必含目录/文件存在性
         - TASK-XLIB-001
-          - `EVID-TEST-TASK-XLIB-001-001.md`: xlib-standard Spec 23 节覆盖验证证据，统计 SPEC.md 行数与章节数
+          - `EVID-TEST-TASK-XLIB-001-001.md`: xlib_standard Spec 23 节覆盖验证证据，统计 SPEC.md 行数与章节数
         - TASK-XLIB-002
-          - `EVID-TEST-TASK-XLIB-002-001.md`: xlib-standard 构建/lint/测试靶验证证据（PARTIAL），检查 Makefile targets 和 lint 脚本
+          - `EVID-TEST-TASK-XLIB-002-001.md`: xlib_standard 构建/lint/测试靶验证证据（PARTIAL），检查 Makefile targets 和 lint 脚本
         - TASK-XLIB-003
-          - `EVID-TEST-TASK-XLIB-003-001.md`: xlib-standard 核心 go test 验证证据（PARTIAL），运行 go test 与 race detector
+          - `EVID-TEST-TASK-XLIB-003-001.md`: xlib_standard 核心 go test 验证证据（PARTIAL），运行 go test 与 race detector
         - TASK-XLIB-003A
-          - `EVID-TEST-TASK-XLIB-003A-001.md`: xlib-standard templatex 配置模块单元测试证据（PARTIAL），验证配置加载与 race 安全
+          - `EVID-TEST-TASK-XLIB-003A-001.md`: xlib_standard templatex 配置模块单元测试证据（PARTIAL），验证配置加载与 race 安全
         - TASK-XLIB-003B
-          - `EVID-TEST-TASK-XLIB-003B-001.md`: xlib-standard templatex 错误/客户端模块单元测试证据（PARTIAL），覆盖 10 个 AC
+          - `EVID-TEST-TASK-XLIB-003B-001.md`: xlib_standard templatex 错误/客户端模块单元测试证据（PARTIAL），覆盖 10 个 AC
         - TASK-XLIB-003C
-          - `EVID-TEST-TASK-XLIB-003C-001.md`: xlib-standard templatex 健康检查/指标模块单元测试证据（PARTIAL），覆盖 7 个 AC
+          - `EVID-TEST-TASK-XLIB-003C-001.md`: xlib_standard templatex 健康检查/指标模块单元测试证据（PARTIAL），覆盖 7 个 AC
         - TASK-XLIB-003D
-          - `EVID-TEST-TASK-XLIB-003D-001.md`: xlib-standard examples/testkit 校验证据（PARTIAL），运行 go vet、全量测试和 race 检测
+          - `EVID-TEST-TASK-XLIB-003D-001.md`: xlib_standard examples/testkit 校验证据（PARTIAL），运行 go vet、全量测试和 race 检测
         - TASK-XLIB-004
-          - `EVID-TEST-TASK-XLIB-004-001.md`: xlib-standard 构建与测试验证证据（PARTIAL），运行 go build 和全量 race 测试
+          - `EVID-TEST-TASK-XLIB-004-001.md`: xlib_standard 构建与测试验证证据（PARTIAL），运行 go build 和全量 race 测试
         - TASK-XLIB-005
-          - `EVID-TEST-TASK-XLIB-005-001.md`: xlib-standard 发布终检验证证据（PARTIAL），运行代码搜索和 release-final-check
+          - `EVID-TEST-TASK-XLIB-005-001.md`: xlib_standard 发布终检验证证据（PARTIAL），运行代码搜索和 release-final-check
       - bundle-20260612-044520
         - `RELEASE-BUNDLE.md`: Release 证据包，聚合 Matrix 摘要、G0-G11 Gate 状态、风险登记与验证器结果
       - drill-RBD-20260612-045043
@@ -141,20 +141,20 @@ _Auto-maintained by `/filetree:update`. Content hashes live in the sidecar `FILE
     - `SPEC.md`: decimalx 模块规格，定义 L2.5 层定点十进制与货币值对象，服务金融域数值计算
     - `TRACEABILITY.md`: decimalx 模块的需求追溯矩阵，10 项 FR 全部通过 go test/race/fuzz 验证且状态为已完成
     - `goal.md`: decimalx 模块的 Goal 定位，目标为 ZoneCNH 所有金融域提供唯一的高精度定点数值基础
-  - domain-exchange
+  - domain_exchange
     - tasks
       - `TASK-EXC-001.md`: Exchange SPI 接口拆分任务：将大接口拆为 7 个独立能力接口与 1 个组合接口
       - `TASK-EXC-002.md`: 下单/撤单/查询请求类型定义任务：含幂等性语义、ClientID 验证与 decimalx 字段
       - `TASK-EXC-003.md`: Exchange 错误分类任务：区分临时/永久/限速等错误类型并支持重试判断
       - `TASK-EXC-004.md`: 交易所能力常量与限频策略任务：静态声明 VenueCapability、RateLimitPolicy 与 YAML 配置
       - `TASK-EXC-005.md`: 线程安全 Exchange 注册表任务：支持注册/查询/列表与可脚本化 fake exchange 注入
-      - `TASK-EXC-006.md`: MarketReader 边界验证任务：确保接口返回 domain-market 类型不引入本地重复行情模型
+      - `TASK-EXC-006.md`: MarketReader 边界验证任务：确保接口返回 domain_market 类型不引入本地重复行情模型
       - `TASK-EXC-007.md`: domainx 类型采纳任务：确保 Order/ExecutionReport 返回使用 domainx 类型避免双 SSOT
-    - `IMPLEMENTATION-PLAN.md`: domain-exchange 从 v0.1.0 到 v1.0.0 的实现计划，含 SPI Freeze、核心接口、验证资产和 Adapter Smoke 四个里程碑
-    - `SPEC.md`: domain-exchange 模块规格，定义交易所领域接口和 adapter SPI，承接下单、撤单、查询和能力语义
-    - `TRACEABILITY.md`: domain-exchange 模块的需求追溯矩阵，覆盖 FR/BR/NFR 到 TC 和验证机制的完整映射
-    - `goal.md`: domain-exchange 模块的 Goal 定位，定义交易所适配 SPI 以统一不同交易所的 API 和语义映射
-  - domain-macro
+    - `IMPLEMENTATION-PLAN.md`: domain_exchange 从 v0.1.0 到 v1.0.0 的实现计划，含 SPI Freeze、核心接口、验证资产和 Adapter Smoke 四个里程碑
+    - `SPEC.md`: domain_exchange 模块规格，定义交易所领域接口和 adapter SPI，承接下单、撤单、查询和能力语义
+    - `TRACEABILITY.md`: domain_exchange 模块的需求追溯矩阵，覆盖 FR/BR/NFR 到 TC 和验证机制的完整映射
+    - `goal.md`: domain_exchange 模块的 Goal 定位，定义交易所适配 SPI 以统一不同交易所的 API 和语义映射
+  - domain_macro
     - tasks
       - `TASK-MAC-001.md`: MacroPoint 三类时间语义实现：ObservedAt/ReleasedAt/AvailableAt 字段与 Validate 校验
       - `TASK-MAC-002.md`: MacroPoint 修订版本与来源审计：RevisionVersion 非负校验与 preliminary/source 可追溯性
@@ -163,11 +163,11 @@ _Auto-maintained by `/filetree:update`. Content hashes live in the sidecar `FILE
       - `TASK-MAC-005.md`: 修订版本选择与去重：同一数据点多 revision 的 deterministic 排序与 final 优先规则
       - `TASK-MAC-006.md`: MacroState/MacroRegimeCard 枚举定义：四状态常量、IsValid 校验与 IndicatorValue 结构
       - `TASK-MAC-007.md`: 精度 ADR 与 decimalx 采用决策：冻结宏观值精度策略并编写迁移指南
-    - `IMPLEMENTATION-PLAN.md`: domain-macro v1.0.0 五里程碑实现计划：从精度 ADR、核心不变量到发布门禁
-    - `SPEC.md`: domain-macro 模块规格：定义宏观数据点、信息集、修订版本和 no-lookahead 可见性规则
-    - `TRACEABILITY.md`: domain-macro 需求追溯矩阵：覆盖 8 FR、6 BR、6 NFR、7 TC 的全链路映射
-    - `goal.md`: domain-macro v1.0.0 目标定义：可复现、无前视偏差的宏观数据领域模型与当前阻塞项
-  - domain-market
+    - `IMPLEMENTATION-PLAN.md`: domain_macro v1.0.0 五里程碑实现计划：从精度 ADR、核心不变量到发布门禁
+    - `SPEC.md`: domain_macro 模块规格：定义宏观数据点、信息集、修订版本和 no-lookahead 可见性规则
+    - `TRACEABILITY.md`: domain_macro 需求追溯矩阵：覆盖 8 FR、6 BR、6 NFR、7 TC 的全链路映射
+    - `goal.md`: domain_macro v1.0.0 目标定义：可复现、无前视偏差的宏观数据领域模型与当前阻塞项
+  - domain_market
     - tasks
       - `TASK-MKT-001.md`: 精度替换任务：审计并替换所有公开金融字段为 decimalx.Decimal，禁止 public float64
       - `TASK-MKT-002.md`: 核心行情对象校验任务：为 Tick/Quote/Bar/OrderBook 实现 Validate 不变量检查
@@ -176,10 +176,10 @@ _Auto-maintained by `/filetree:update`. Content hashes live in the sidecar `FILE
       - `TASK-MKT-005.md`: 定义衍生品指标 Funding/OpenInterest/LongShortRatio 的时间语义与数据来源校验规则
       - `TASK-MKT-006.md`: 定义 DataProvider 接口契约：返回纯领域模型，禁止泄漏 HTTP/WS/DB/vendor DTO
       - `TASK-MKT-007.md`: 与 domainx 划清订单枚举边界，消除 OrderType/OrderSide/OrderState 双 SSOT 归属
-    - `IMPLEMENTATION-PLAN.md`: domain-market v1.0.0 五里程碑实现计划：从 API 冻结、核心不变量到质量门禁与发布
-    - `SPEC.md`: domain-market 模块规格：定义 Tick/Bar/OrderBook 等行情值对象、质量门禁与 DataProvider 契约
-    - `TRACEABILITY.md`: domain-market 需求追溯矩阵：覆盖 14 FR、6 BR、3 NFR、8 TC 的全链路验证映射
-    - `goal.md`: domain-market v1.0.0 目标定义：统一行情数据语义源与 decimalx 精度、domainx 边界清晰
+    - `IMPLEMENTATION-PLAN.md`: domain_market v1.0.0 五里程碑实现计划：从 API 冻结、核心不变量到质量门禁与发布
+    - `SPEC.md`: domain_market 模块规格：定义 Tick/Bar/OrderBook 等行情值对象、质量门禁与 DataProvider 契约
+    - `TRACEABILITY.md`: domain_market 需求追溯矩阵：覆盖 14 FR、6 BR、3 NFR、8 TC 的全链路验证映射
+    - `goal.md`: domain_market v1.0.0 目标定义：统一行情数据语义源与 decimalx 精度、domainx 边界清晰
   - domainx
     - tasks
       - `TASK-DOMAINX-001.md`: 实现 Order 值对象、NewOrder 构造函数、Side/OrderType/OrderStatus 枚举与 6 个 sentinel 错误
@@ -397,32 +397,32 @@ _Auto-maintained by `/filetree:update`. Content hashes live in the sidecar `FILE
     - `SPEC.md`: transportx 规格文档，定义统一通信层的 26 项 FR 与六通信平面
     - `TRACEABILITY.md`: transportx 追溯矩阵，FR/BR/NFR 到 AC/TC/Task 的完整映射链路
     - `goal.md`: transportx 目标文档，定义传输契约的分层定位与成功标准
-  - xlib-evidence
+  - xlib_evidence
     - tasks
-      - `TASK-XLIBEVIDENCE-001.md`: xlib-evidence 模块 FR-001 功能的实现任务规格，定义范围、非范围和验收标准。
-      - `TASK-XLIBEVIDENCE-002.md`: xlib-evidence 模块 FR-002 功能的实现任务规格，定义范围、非范围和验收标准。
-      - `TASK-XLIBEVIDENCE-003.md`: xlib-evidence 模块 FR-004 功能的实现任务规格，定义范围、非范围和验收标准。
-      - `TASK-XLIBEVIDENCE-003b.md`: xlib-evidence 模块 FR-003 功能的实现任务规格，定义范围和非范围。
-      - `TASK-XLIBEVIDENCE-004.md`: xlib-evidence 模块 FR-005 功能的实现任务规格，定义范围、非范围和验收标准。
-      - `TASK-XLIBEVIDENCE-005.md`: xlib-evidence 模块 FR-001 功能的实现任务规格，定义范围、非范围和验收标准。
-    - `IMPLEMENTATION-PLAN.md`: xlib-evidence 模块实现计划，分三阶段：覆盖率收集、验证报告、远程证据查询
-    - `SPEC.md`: xlib-evidence 模块规格，定义证据收集与发布运行时的完整 23 节结构和接口契约
-    - `TRACEABILITY.md`: xlib-evidence 追溯矩阵，5 条功能需求、4 条业务规则和 5 条非功能需求的全链路闭环验证
-    - `ci-workflow.yaml`: xlib-evidence 的 CI/CD 工作流参考模板，含测试、门禁、证据清单验证和密钥扫描
-    - `goal.md`: xlib-evidence 模块的目标定义文档，声明证据收集与发布运行时的边界、对外契约和验收标准。
-  - xlib-harness
+      - `TASK-XLIBEVIDENCE-001.md`: xlib_evidence 模块 FR-001 功能的实现任务规格，定义范围、非范围和验收标准。
+      - `TASK-XLIBEVIDENCE-002.md`: xlib_evidence 模块 FR-002 功能的实现任务规格，定义范围、非范围和验收标准。
+      - `TASK-XLIBEVIDENCE-003.md`: xlib_evidence 模块 FR-004 功能的实现任务规格，定义范围、非范围和验收标准。
+      - `TASK-XLIBEVIDENCE-003b.md`: xlib_evidence 模块 FR-003 功能的实现任务规格，定义范围和非范围。
+      - `TASK-XLIBEVIDENCE-004.md`: xlib_evidence 模块 FR-005 功能的实现任务规格，定义范围、非范围和验收标准。
+      - `TASK-XLIBEVIDENCE-005.md`: xlib_evidence 模块 FR-001 功能的实现任务规格，定义范围、非范围和验收标准。
+    - `IMPLEMENTATION-PLAN.md`: xlib_evidence 模块实现计划，分三阶段：覆盖率收集、验证报告、远程证据查询
+    - `SPEC.md`: xlib_evidence 模块规格，定义证据收集与发布运行时的完整 23 节结构和接口契约
+    - `TRACEABILITY.md`: xlib_evidence 追溯矩阵，5 条功能需求、4 条业务规则和 5 条非功能需求的全链路闭环验证
+    - `ci-workflow.yaml`: xlib_evidence 的 CI/CD 工作流参考模板，含测试、门禁、证据清单验证和密钥扫描
+    - `goal.md`: xlib_evidence 模块的目标定义文档，声明证据收集与发布运行时的边界、对外契约和验收标准。
+  - xlib_harness
     - tasks
-      - `TASK-XLIBHARNESS-001.md`: xlib-harness 模块 FR-001 功能的实现任务规格，定义范围、非范围和验收标准。
-      - `TASK-XLIBHARNESS-002.md`: xlib-harness 模块 FR-002 功能的实现任务规格，定义范围、非范围和验收标准。
-      - `TASK-XLIBHARNESS-003.md`: xlib-harness 模块 FR-003 功能的实现任务规格，定义范围、非范围和验收标准。
-      - `TASK-XLIBHARNESS-004.md`: xlib-harness 模块 FR-004 功能的实现任务规格，定义范围、非范围和验收标准。
-      - `TASK-XLIBHARNESS-005.md`: xlib-harness 模块 FR-005 功能的实现任务规格，定义范围、非范围和验收标准。
-    - `IMPLEMENTATION-PLAN.md`: xlib-harness 模块的实现计划，分阶段描述核心生成器、门禁检查和边界自举的任务编排与验证命令。
-    - `SPEC.md`: xlib-harness 模块的可执行规格文档，定义生成器与门禁执行器的功能需求、接口契约、数据模型和 CI 门禁。
-    - `TRACEABILITY.md`: xlib-harness 模块的追溯矩阵，记录 FR/BR/NFR 到 AC 和 TC 的全链路映射以及反向追溯表。
-    - `ci-workflow.yaml`: xlib-harness 仓库的 CI/CD 工作流参考模板，定义测试、lint、信任对齐和密钥扫描四项作业。
-    - `goal.md`: xlib-harness 模块的目标定义文档，声明生成器与门禁执行器的发布定位、边界、对外契约和验收标准。
-  - xlib-standard
+      - `TASK-XLIBHARNESS-001.md`: xlib_harness 模块 FR-001 功能的实现任务规格，定义范围、非范围和验收标准。
+      - `TASK-XLIBHARNESS-002.md`: xlib_harness 模块 FR-002 功能的实现任务规格，定义范围、非范围和验收标准。
+      - `TASK-XLIBHARNESS-003.md`: xlib_harness 模块 FR-003 功能的实现任务规格，定义范围、非范围和验收标准。
+      - `TASK-XLIBHARNESS-004.md`: xlib_harness 模块 FR-004 功能的实现任务规格，定义范围、非范围和验收标准。
+      - `TASK-XLIBHARNESS-005.md`: xlib_harness 模块 FR-005 功能的实现任务规格，定义范围、非范围和验收标准。
+    - `IMPLEMENTATION-PLAN.md`: xlib_harness 模块的实现计划，分阶段描述核心生成器、门禁检查和边界自举的任务编排与验证命令。
+    - `SPEC.md`: xlib_harness 模块的可执行规格文档，定义生成器与门禁执行器的功能需求、接口契约、数据模型和 CI 门禁。
+    - `TRACEABILITY.md`: xlib_harness 模块的追溯矩阵，记录 FR/BR/NFR 到 AC 和 TC 的全链路映射以及反向追溯表。
+    - `ci-workflow.yaml`: xlib_harness 仓库的 CI/CD 工作流参考模板，定义测试、lint、信任对齐和密钥扫描四项作业。
+    - `goal.md`: xlib_harness 模块的目标定义文档，声明生成器与门禁执行器的发布定位、边界、对外契约和验收标准。
+  - xlib_standard
     - analysis
       - `governance.md`: 治理维度分析，整理分支治理、下游登记和仓库角色等治理来源与使用边界。
       - `rules.md`: 规则维度分析，整理债务治理、安全策略和 AI 审查自动化等规则来源与迁移风险。
@@ -448,31 +448,31 @@ _Auto-maintained by `/filetree:update`. Content hashes live in the sidecar `FILE
       - `PROMPT-XLIB-007.md`: TASK-XLIB-007 上下文包，指导 HealthCheck 和 NoopMetrics 5 个 P0 指标的 PR-4c 子任务执行。
       - `PROMPT-XLIB-008.md`: TASK-XLIB-008 的编码上下文包，指导实现公共 API 模板、最小示例和 testkit 辅助包
     - retrospective
-      - `RETRO.md`: xlib-standard 模块完整复盘报告，记录目标达成、经验教训和后续改进任务
+      - `RETRO.md`: xlib_standard 模块完整复盘报告，记录目标达成、经验教训和后续改进任务
     - tasks
-      - `TASK-XLIB-000.md`: 清理 xlib-standard 仓库中治理运行时、冗余目录和历史文件的任务规格
-      - `TASK-XLIB-001.md`: 重写 xlib-standard 的 README 和 docs 目录以对齐五类标准库职责的任务规格
-      - `TASK-XLIB-002.md`: 重写 xlib-standard 的 Makefile、Gate 脚本和 CI 配置的任务规格
-      - `TASK-XLIB-003.md`: 实现 xlib-standard Config 结构体、Validate 和 Sanitize 方法及版本 API 的任务规格
-      - `TASK-XLIB-004.md`: 实现 xlib-standard 的 release manifest 生成和语义化版本兼容矩阵的任务规格
-      - `TASK-XLIB-005.md`: xlib-standard 最终验收任务：生成库验证、100 次自检脚本和 tag v1.0.0
-      - `TASK-XLIB-006.md`: 实现 xlib-standard 的 8 种 ErrorKind 和 Client New/Close 接口的任务规格
-      - `TASK-XLIB-007.md`: 实现 xlib-standard 的 HealthCheck 和 5 个 P0 Metrics 指标的任务规格
-      - `TASK-XLIB-008.md`: 实现 xlib-standard 公共 API 模板、basic 示例和 testkit 辅助包的任务规格
-    - `ANALYSIS.md`: xlib-standard 上游仓库的本地分析快照，记录标准结构、需求提取方法和证据边界，作为架构索引的输入。
-    - `CONFLICT-LEDGER.md`: xlib-standard 冲突账本，记录本地快照与上游标准之间的冲突处理结论和取舍依据。
-    - `COVERAGE-MANIFEST.md`: xlib-standard 本地分析的输入覆盖清单，声明 154 个输入文件的数量范围和关键工件列表。
-    - `FR-DETAIL.md`: xlib-standard 的功能需求明细索引，从上游快照抽取 52 条 FR 的非可执行追溯锚点记录。
-    - `IMPLEMENTATION-PLAN.md`: xlib-standard 模块的实现计划，定义任务 DAG、实现顺序、CI Gate 矩阵和风险回滚策略。
-    - `INDEX.md`: xlib-standard 上游 SSOT 索引，列出 27 个标准文档、9 个 ADR 和 harness.yaml gate 列表的映射关系。
-    - `PLAN.md`: xlib-standard 的实现计划，覆盖 Go 参考模板、生成器、门禁和证据运行时四类职责的任务分解。
-    - `README.md`: xlib-standard 目录的分析索引文档，定义模块五类职责、上游引用、当前权威工件和三级阅读规则。
+      - `TASK-XLIB-000.md`: 清理 xlib_standard 仓库中治理运行时、冗余目录和历史文件的任务规格
+      - `TASK-XLIB-001.md`: 重写 xlib_standard 的 README 和 docs 目录以对齐五类标准库职责的任务规格
+      - `TASK-XLIB-002.md`: 重写 xlib_standard 的 Makefile、Gate 脚本和 CI 配置的任务规格
+      - `TASK-XLIB-003.md`: 实现 xlib_standard Config 结构体、Validate 和 Sanitize 方法及版本 API 的任务规格
+      - `TASK-XLIB-004.md`: 实现 xlib_standard 的 release manifest 生成和语义化版本兼容矩阵的任务规格
+      - `TASK-XLIB-005.md`: xlib_standard 最终验收任务：生成库验证、100 次自检脚本和 tag v1.0.0
+      - `TASK-XLIB-006.md`: 实现 xlib_standard 的 8 种 ErrorKind 和 Client New/Close 接口的任务规格
+      - `TASK-XLIB-007.md`: 实现 xlib_standard 的 HealthCheck 和 5 个 P0 Metrics 指标的任务规格
+      - `TASK-XLIB-008.md`: 实现 xlib_standard 公共 API 模板、basic 示例和 testkit 辅助包的任务规格
+    - `ANALYSIS.md`: xlib_standard 上游仓库的本地分析快照，记录标准结构、需求提取方法和证据边界，作为架构索引的输入。
+    - `CONFLICT-LEDGER.md`: xlib_standard 冲突账本，记录本地快照与上游标准之间的冲突处理结论和取舍依据。
+    - `COVERAGE-MANIFEST.md`: xlib_standard 本地分析的输入覆盖清单，声明 154 个输入文件的数量范围和关键工件列表。
+    - `FR-DETAIL.md`: xlib_standard 的功能需求明细索引，从上游快照抽取 52 条 FR 的非可执行追溯锚点记录。
+    - `IMPLEMENTATION-PLAN.md`: xlib_standard 模块的实现计划，定义任务 DAG、实现顺序、CI Gate 矩阵和风险回滚策略。
+    - `INDEX.md`: xlib_standard 上游 SSOT 索引，列出 27 个标准文档、9 个 ADR 和 harness.yaml gate 列表的映射关系。
+    - `PLAN.md`: xlib_standard 的实现计划，覆盖 Go 参考模板、生成器、门禁和证据运行时四类职责的任务分解。
+    - `README.md`: xlib_standard 目录的分析索引文档，定义模块五类职责、上游引用、当前权威工件和三级阅读规则。
     - `REMOTE-EVIDENCE.md`: 记录远端证据引用口径，声明需由远端 API 或 artifact 重新证明的治理状态。
     - `REVIEW-VERDICT.md`: 本地快照审查结论，评定快照结构完整可作为架构索引和迁移评审输入。
-    - `SNAPSHOT-BOUNDARY.md`: 定义 xlib-standard 本地快照的包含与不包含范围及更新同步条件。
-    - `SPEC.md`: xlib-standard 模块完整规格，定义 16 个 FR、BR、接口契约、测试策略和 CI 门禁。
+    - `SNAPSHOT-BOUNDARY.md`: 定义 xlib_standard 本地快照的包含与不包含范围及更新同步条件。
+    - `SPEC.md`: xlib_standard 模块完整规格，定义 16 个 FR、BR、接口契约、测试策略和 CI 门禁。
     - `TRACEABILITY.md`: 快照追溯矩阵，用 5 列格式记录 52 个 FR 的证据锚点与 archived-snapshot 状态。
-    - `goal.md`: xlib-standard v1.0 发布目标定位，定义五类职责、1.0 发布标准和完整验收清单。
+    - `goal.md`: xlib_standard v1.0 发布目标定位，定义五类职责、1.0 发布标准和完整验收清单。
   - xlibgate
     - tasks
       - `TASK-XLIBGATE-000.md`: 创建 xlibgate 项目骨架（go.mod、CLI 入口 main.go、公共错误变量）的任务规格

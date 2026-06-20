@@ -56,10 +56,10 @@
 
 | 消费者          | 使用方式                                                |
 | --------------- | ------------------------------------------------------- |
-| `market-data`   | 对交易所 API 调用设置 timeout + retry + circuit breaker |
-| `risk-engine`   | 对下单接口设置 rate limiter + fallback                  |
+| `market_data`   | 对交易所 API 调用设置 timeout + retry + circuit breaker |
+| `risk_engine`   | 对下单接口设置 rate limiter + fallback                  |
 | `signal-engine` | 对因子计算设置 timeout                                  |
-| `order-engine`  | 对交易所 API 设置 bulkhead + retry                      |
+| `order_engine`  | 对交易所 API 设置 bulkhead + retry                      |
 | 业务域模块      | 按需 import 子包，通过函数嵌套组装策略                  |
 
 ---

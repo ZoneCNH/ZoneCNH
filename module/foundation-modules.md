@@ -11,7 +11,7 @@ Foundation 此后已扩展至 20 个基座模块（完整清单见 [`module/READ
 ## 总体分层（历史：第一阶段）
 
 ```text
-xlib-standard：标准事实源 / 模板 / Gate / Evidence，不进入业务运行时
+xlib_standard：标准事实源 / 模板 / Gate / Evidence，不进入业务运行时
     ↓
 kernel：L0 原语层，stdlib-only
     ↓
@@ -180,13 +180,13 @@ x.go：组合根，负责显式装配和生命周期 wiring
 
 ## `resiliencx`
 
-`resiliencx` 必须从“标准源/模板/generator/harness”叙事修回真实弹性容错库。标准事实源属于 `xlib-standard`；`resiliencx` 只负责 operational resilience。
+`resiliencx` 必须从“标准源/模板/generator/harness”叙事修回真实弹性容错库。标准事实源属于 `xlib_standard`；`resiliencx` 只负责 operational resilience。
 
 定位：
 
 ```text
 resiliencx = operational resilience
-risk-engine = trading risk
+risk_engine = trading risk
 ```text
 
 必需能力：
@@ -376,7 +376,7 @@ foundation:
 P0：
 
 1. 修正 `resiliencx` 身份：从标准模板叙事改成真实弹性容错库。
-2. 明确 `xlib-standard` 只做标准源、模板、gate、evidence。
+2. 明确 `xlib_standard` 只做标准源、模板、gate、evidence。
 3. `configx`、`observex` 从 `foundationx` 迁移到 `kernel`，或写清兼容期。
 4. 统一 Go baseline：全部 Go 1.23，等 CI 通过后再整体升级。
 5. 将 `FOUNDATION-DEPS.yaml` 的依赖矩阵接入 CI。
@@ -393,7 +393,7 @@ P1：
 P2：
 
 - 视真实需求新增 `secrectx`，不要塞进 `configx`。
-- 将依赖边界、go.mod、Go version、release evidence、secret scan 规则沉淀到 `xlibgate` 或 `xlib-standard/scripts`。
+- 将依赖边界、go.mod、Go version、release evidence、secret scan 规则沉淀到 `xlibgate` 或 `xlib_standard/scripts`。
 - 暂不单独拆 `ratelimitx`、`lockx`、`servicex/appx`，避免和 `resiliencx`、`schedulex`、`x.go` 重叠。
 
 结论：第一阶段 6 个模块已经能形成 Foundation 最小闭环；当前优先级不是扩模块，而是修正 `resiliencx` 身份、统一依赖边界和 Go baseline，并把这些规则机器化。

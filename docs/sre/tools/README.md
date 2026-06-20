@@ -29,7 +29,7 @@ sed -e 's/{module}/binance/' -e 's/^LEGACY_NAME=""/LEGACY_NAME="binance-market"/
 | §5 | no-storage-query-strategy | 不 import 其他业务域 |
 | §6 | no-local-proto | 无 .proto（wire schema 归 contracts） |
 | §7 | no-canonical-ssot | 不声明自己是 canonical SSOT |
-| §8 | no-xlib-standard | go.mod 无 xlib-standard |
+| §8 | no-xlib_standard | go.mod 无 xlib_standard |
 | §9 | no-storage-adapter | go.mod 无 L2 存储适配器（adapter 零存储） |
 
 不存在的结构（如无 internal/client）自动跳过对应门禁。
@@ -68,7 +68,7 @@ sed -e 's/{module}/binance/' -e 's/^LEGACY_NAME=""/LEGACY_NAME="binance-market"/
 | §5 | no-storage-query-strategy | 不 import 其他业务域 |
 | §6 | no-local-proto | 无 .proto（wire schema 归 contracts） |
 | §7 | no-canonical-ssot | 不声明自己是 canonical SSOT |
-| §8 | no-xlib-standard | go.mod 无 xlib-standard |
+| §8 | no-xlib_standard | go.mod 无 xlib_standard |
 | §9 | no-storage-adapter | go.mod 无 L2 存储适配器（adapter 零存储） |
 
 不存在的结构（如无 internal/client）自动跳过对应门禁。

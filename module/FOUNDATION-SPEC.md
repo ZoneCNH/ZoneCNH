@@ -6,7 +6,7 @@
 
 最后更新：2026-06-07
 
-> **范围说明（2026-06-14）**：本文是 Foundation 第一阶段的**初始可执行规格**，当时仅覆盖 6 个核心模块（xlib-standard、kernel、configx、observex、resiliencx、schedulex、testkitx）。Foundation 此后已扩展至 20 个基座模块，涵盖门禁（xlib-standard、xlib-harness、xlib-evidence、xlibgate）、L0 原语（kernel）、L1 运行时（configx、observex、resiliencx、schedulex）、L1 测试（testkitx）、存储扩展（redisx、kafkax、natsx、postgresx、taosx、ossx、clickhousex）、契约与传输（contracts、transportx）和领域共享（domainx）。**模块规格、状态和依赖矩阵的权威索引见 [`module/README.md`](./README.md) 与 [`FOUNDATION-DEPS.yaml`](./FOUNDATION-DEPS.yaml)**；本文的契约签名、目录形态和 CI gate 仅反映第一阶段初始范围，不反映当前完整 20 模块集合。
+> **范围说明（2026-06-14）**：本文是 Foundation 第一阶段的**初始可执行规格**，当时仅覆盖 6 个核心模块（xlib_standard、kernel、configx、observex、resiliencx、schedulex、testkitx）。Foundation 此后已扩展至 20 个基座模块，涵盖门禁（xlib_standard、xlib_harness、xlib_evidence、xlibgate）、L0 原语（kernel）、L1 运行时（configx、observex、resiliencx、schedulex）、L1 测试（testkitx）、存储扩展（redisx、kafkax、natsx、postgresx、taosx、ossx、clickhousex）、契约与传输（contracts、transportx）和领域共享（domainx）。**模块规格、状态和依赖矩阵的权威索引见 [`module/README.md`](./README.md) 与 [`FOUNDATION-DEPS.yaml`](./FOUNDATION-DEPS.yaml)**；本文的契约签名、目录形态和 CI gate 仅反映第一阶段初始范围，不反映当前完整 20 模块集合。
 
 ---
 
@@ -15,7 +15,7 @@
 Foundation 第一阶段只固化 6 个基础模块：
 
 ```text
-xlib-standard：标准事实源 / 模板 / Gate / Evidence，不进入业务运行时
+xlib_standard：标准事实源 / 模板 / Gate / Evidence，不进入业务运行时
     ↓
 kernel：L0 原语层，stdlib-only
     ↓
@@ -694,7 +694,7 @@ make evidence
 P0：
 
 1. 修正 `resiliencx` 身份：从标准模板仓库叙事改为 operational resilience runtime。
-2. 明确 `xlib-standard` 只做标准源、模板、gate、evidence。
+2. 明确 `xlib_standard` 只做标准源、模板、gate、evidence。
 3. 修正依赖矩阵：L1 模块只向下依赖 `kernel`，观测集成采用 interface-only。
 4. 统一 Go baseline 到 `1.23`，或全体升级前保持兼容声明。
 5. 建立 `make boundary` 和 `make contract` 的最小实现。
@@ -710,5 +710,5 @@ P1：
 P2：
 
 1. 评估是否新建 `secrectx`。
-2. 将稳定 gate 独立成 `xlibgate`，或保留在 `xlib-standard/scripts`。
+2. 将稳定 gate 独立成 `xlibgate`，或保留在 `xlib_standard/scripts`。
 3. 按真实需求增加 adapter 仓库，不污染核心模块。

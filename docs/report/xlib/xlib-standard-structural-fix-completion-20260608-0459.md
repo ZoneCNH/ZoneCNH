@@ -1,7 +1,7 @@
-# `module/xlib-standard/` 结构性修复完成报告
+# `module/xlib_standard/` 结构性修复完成报告
 
 - 报告日期：2026-06-08 04:59 (+08:00)
-- 修复来源：`docs/report/xlib-standard-structural-deep-analysis-20260608-0446.md`（v3 深度分析，综合评分 6.8/10）
+- 修复来源：`docs/report/xlib_standard-structural-deep-analysis-20260608-0446.md`（v3 深度分析，综合评分 6.8/10）
 - 修复轮次：两轮（04:51 P0 修复 + 04:59 P1/P2 修复 + 上游 pin）
 - **最终评分：8.4 / 10（较 v3 6.8 → +1.6）**
 
@@ -40,7 +40,7 @@
 ## 3. 最终结构
 
 ```text
-module/xlib-standard/SPEC.md (2030 行)
+module/xlib_standard/SPEC.md (2030 行)
 ├── 1. 元信息（基座 · Foundation Gate 治理子层）
 ├── 2. 概述
 │   ├── 2.0 使用边界（吸收自旧外挂节）
@@ -74,7 +74,7 @@ module/xlib-standard/SPEC.md (2030 行)
 ├── 参考资料 C. 文档清单（模板外）
 └── 参考资料 E. 关键数字与映射（模板外）
 
-module/xlib-standard/COVERAGE-MANIFEST.md (382 行)
+module/xlib_standard/COVERAGE-MANIFEST.md (382 行)
 ├── 上游 commit/tree sha 已 pin
 ├── 154 文件 sha256-prefix 全部落地
 └── 复算命令 inline，任何 reviewer 可重放
@@ -121,7 +121,7 @@ module/xlib-standard/COVERAGE-MANIFEST.md (382 行)
 
 ## 7. 引用
 
-- v3 深度分析：`docs/report/xlib-standard-structural-deep-analysis-20260608-0446.md`
-- v2 / v1 历史报告：`docs/report/xlib-standard-{specs-structural-review,structural-issues}-20260608*.md`
-- 修复后规格：`module/xlib-standard/{SPEC,README,TRACEABILITY,CONFLICT-LEDGER,COVERAGE-MANIFEST}.md`
+- v3 深度分析：`docs/report/xlib_standard-structural-deep-analysis-20260608-0446.md`
+- v2 / v1 历史报告：`docs/report/xlib_standard-{specs-structural-review,structural-issues}-20260608*.md`
+- 修复后规格：`module/xlib_standard/{SPEC,README,TRACEABILITY,CONFLICT-LEDGER,COVERAGE-MANIFEST}.md`
 - CI 自动化：`.github/ci/{spec-lint,spec-drift-guard,traceability-check,status-consistency-check}.sh`

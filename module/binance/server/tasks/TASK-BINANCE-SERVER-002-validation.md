@@ -2,7 +2,7 @@
 
 ## Objective
 
-Validate incoming Binance market-data ingest requests before acceptance.
+Validate incoming Binance market_data ingest requests before acceptance.
 
 ## Scope
 
@@ -36,5 +36,5 @@ Validation covers:
 ## Dependencies
 
 - SERVER-001
-- `module/domain-market`
+- `module/domain_market`
 - `module/contracts`

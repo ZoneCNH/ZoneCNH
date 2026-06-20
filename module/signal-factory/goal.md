@@ -1,4 +1,4 @@
-# signal-factory Goal
+# signal_factory Goal
 
 ## 元数据
 
@@ -12,7 +12,7 @@
 
 ## 定位
 
-signal-factory 是决策域的信号生成模块。消费因子评估+DecisionCard，生成交易信号。
+signal_factory 是决策域的信号生成模块。消费因子评估+DecisionCard，生成交易信号。
 
 ## 目标
 
@@ -25,6 +25,6 @@ signal-factory 是决策域的信号生成模块。消费因子评估+DecisionCa
 | 类型 | 说明 |
 | --- | --- |
 | Owns | 信号生成接口/信号组合/权重管理/Signal DTO |
-| Depends on | factor-eval, regime-engine, feature-store |
+| Depends on | factor_eval, regime_engine, feature_store |
 | Consumed by | backtestx, riskx, orderx |
-| Excludes | 因子计算(→factor-engine)、订单执行(→orderx) |
+| Excludes | 因子计算(→factor_engine)、订单执行(→orderx) |

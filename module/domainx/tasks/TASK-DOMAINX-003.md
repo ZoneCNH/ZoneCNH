@@ -34,7 +34,7 @@ status: done
 ## Non-scope
 
 - 不实现 Exposure（由 TASK-004 负责）
-- 不做组合级 Position 聚合（属于 portfolio-engine）
+- 不做组合级 Position 聚合（属于 portfolio_engine）
 
 ## Test Plan
 

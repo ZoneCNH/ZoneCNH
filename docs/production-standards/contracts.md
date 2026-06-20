@@ -17,13 +17,13 @@ contracts 是 Foundation L2.5 共享契约层，定义跨域稳定契约——�
 行为约束 BR-001 ~ BR-010：所有跨域 DTO 必须在 contracts 中定义；新增契约必须说明消费方/生产方/稳定期；契约变更是 breaking change → 需要版本升级；端口接口保持窄（3-5 方法）；事件 DTO 不可变（只读字段）；Topic 常量全局唯一点分命名；接口实现方必须有编译期检查（`var _ Interface = (*Impl)(nil)`）；contracts 只依赖 L2.5 领域共享层和 stdlib；DTO JSON tag 必须 snake_case；契约版本遵循 semver。
 
 ## 4. 不负责什么
-不拥有传输实现：不做 HTTP client / gRPC server / NATS publisher / Kafka consumer / Retry middleware（→ resiliencx）/ Timeout transport（→ transportx）/ Business workflow logic。治理边界：不是标准源（xlib-standard 定义编码规范）、不是 generator（不生成代码）、不是模板仓库。不包含域内接口、临时适配器、通用工具函数、领域模型全集、业务逻辑实现、消息队列实现（→ kafkax）、存储实现（→ redisx）。
+不拥有传输实现：不做 HTTP client / gRPC server / NATS publisher / Kafka consumer / Retry middleware（→ resiliencx）/ Timeout transport（→ transportx）/ Business workflow logic。治理边界：不是标准源（xlib_standard 定义编码规范）、不是 generator（不生成代码）、不是模板仓库。不包含域内接口、临时适配器、通用工具函数、领域模型全集、业务逻辑实现、消息队列实现（→ kafkax）、存储实现（→ redisx）。
 
 ## 5. 架构位置
-L2.5 共享契约层。依赖方向：可依赖 stdlib + L2.5 领域共享层（decimalx/domain-market/domain-exchange/domain-macro）；禁止依赖所有业务域实现（market-data/signal-engine 等）、Foundation L1 运行时模块（kernel/configx/observex 等）、所有存储/中间件扩展（redisx/kafkax 等）。处于依赖拓扑上层，只被业务域模块 import，不 import 任何 L1 运行时模块。
+L2.5 共享契约层。依赖方向：可依赖 stdlib + L2.5 领域共享层（decimalx/domain_market/domain_exchange/domain_macro）；禁止依赖所有业务域实现（market_data/signal-engine 等）、Foundation L1 运行时模块（kernel/configx/observex 等）、所有存储/中间件扩展（redisx/kafkax 等）。处于依赖拓扑上层，只被业务域模块 import，不 import 任何 L1 运行时模块。
 
 ## 6. 生命周期
-contracts 是纯类型定义模块（编译时依赖），自身无运行时生命周期。消费方（market-data/macro-data/factor-engine 等）实现 Provider 端口接口；x.go 组合根组装端口实现并注入到各域。Subscribe 返回 channel 持续推送事件直到 ctx 取消；GetSnapshot/GetHistory 为同步请求-响应模式。DTO 创建后不可变（只读字段）。
+contracts 是纯类型定义模块（编译时依赖），自身无运行时生命周期。消费方（market_data/macro_data/factor_engine 等）实现 Provider 端口接口；x.go 组合根组装端口实现并注入到各域。Subscribe 返回 channel 持续推送事件直到 ctx 取消；GetSnapshot/GetHistory 为同步请求-响应模式。DTO 创建后不可变（只读字段）。
 
 ## 7. 标准目录结构
 ```text
@@ -56,7 +56,7 @@ SPEC §17 定义 3 个 log 点：`contracts.subscribe.started`（info，订阅�
 SPEC §17 定义 3 个 metric：`contracts.event.count`（counter，事件发布数量按 topic 分组）、`contracts.event.size`（histogram，事件消息大小）、`contracts.subscribe.active`（gauge，活跃订阅数）。metrics 由消费方实现注入；contracts 自身不 emit 指标（纯类型定义层）。
 
 ## 12. Tracing
-SPEC 未定义独立 Tracing 接口。contracts 作为纯类型定义层无请求路径，不强制 trace span。事件流（Subscribe channel 推送）的 tracing 由消费方（market-data 等）通过 observex 实现。Event.EventID() 提供全局唯一标识可用于日志关联，但不等同于 trace span。
+SPEC 未定义独立 Tracing 接口。contracts 作为纯类型定义层无请求路径，不强制 trace span。事件流（Subscribe channel 推送）的 tracing 由消费方（market_data 等）通过 observex 实现。Event.EventID() 提供全局唯一标识可用于日志关联，但不等同于 trace span。
 
 ## 13. Reliability
 - BR-007：接口实现方必须有编译期检查（`var _ Interface = (*Impl)(nil)`），运行时 panic 风险前置到编译期
@@ -96,7 +96,7 @@ contracts 为纯类型定义层，无运行时进程/网络/存储交互，不�
 - §8.3 核心 DTO：MarketEvent/MarketSnapshot/Bar/HistoryRequest/MacroPoint/MacroEvent/MacroHistoryRequest
 - §8.4 Binance C/S ingestion wire contract：MarketDataService.Ingest(stream) + IngestRequest（11 必填字段）/IngestResult/IngestAck/IngestReject/RejectCode（10 值枚举）
 - §8.4.1 字段约束表 + §8.4.2 生产者/消费者 + §8.4.3 与 MarketDataProvider 关系
-- §8.4 命名约定：contracts JSON tag (snake_case) ↔ domain-market Go field (PascalCase) ↔ market-data doc field (camelCase)
+- §8.4 命名约定：contracts JSON tag (snake_case) ↔ domain_market Go field (PascalCase) ↔ market_data doc field (camelCase)
 
 ## 19. CI Gate
 通用 Gate：`go build ./...` / `go test ./... -race -count=1` / 覆盖率（`go test -coverprofile` ≥ 80%）/ `go vet ./...` / `golangci-lint run` / `go mod tidy && git diff --exit-code` / `gitleaks detect --no-git` / `go test -bench=. -benchmem -count=3`。
@@ -115,7 +115,7 @@ semver。module-version v1.2.0-spec（文档基线）。ContractVersion = "1.0.0
 contracts 为纯类型定义层，无运行时故障需 failover。Subscribe channel 关闭后读取返回零值（channel 关闭信号）。GetHistory 返回空 slice 不报错。reject 语义通过 RejectCode 分类（retryable/server_unavailable 允许重试；terminal_validation/terminal_conflict/unauthorized 不重试），供 adapter 决策重试策略。breaking change 检测阻止不兼容版本发布，保证消费方编译稳定性。
 
 ## 24. Backpressure
-contracts 为纯类型定义层，无持续流量需 backpressure。Subscribe channel 满时由实现方决定阻塞或丢弃最旧消息（SPEC §12 边界情况）。IngestRequest.OrderingKey（可选分区键 "{source}:{product_line}:{instrument}:{channel}"）供 server 保证同 key 内顺序。事件 DTO 不可变（BR-005）防止并发消费时数据竞争。具体 backpressure 策略由消费方实现（market-data/kafkax 等）。
+contracts 为纯类型定义层，无持续流量需 backpressure。Subscribe channel 满时由实现方决定阻塞或丢弃最旧消息（SPEC §12 边界情况）。IngestRequest.OrderingKey（可选分区键 "{source}:{product_line}:{instrument}:{channel}"）供 server 保证同 key 内顺序。事件 DTO 不可变（BR-005）防止并发消费时数据竞争。具体 backpressure 策略由消费方实现（market_data/kafkax 等）。
 
 ## 25. 审计要求
 Topic 常量全局唯一（BR-006 TC-004 验证）保证消息路由可审计。Event.EventID() 全局唯一标识 + Event.Source() 来源标识用于事件溯源。VersionInfo + Change 记录每次契约变更的类型/描述/影响范围（审计追踪）。RejectCode 分类拒绝原因供 adapter 审计。新增契约必须说明消费方/生产方/稳定期（BR-002 PR 审查 Gate）。Module Identity（FR-007）确保模块边界可审计（README H1 + go.mod module path）。

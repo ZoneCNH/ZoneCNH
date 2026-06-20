@@ -21,7 +21,7 @@ x.go ───────────────► 基座运行时 / L2.5 / �
 
 数据域 ─┐
 分析域 ─┼──────────► L2.5 Domain Shared
-决策域 ─┤             domainx · decimalx · domain-market · domain-exchange · domain-macro
+决策域 ─┤             domainx · decimalx · domain_market · domain_exchange · domain_macro
 执行域 ─┘
    │
    ├───────────────► contracts
@@ -40,9 +40,9 @@ x.go ───────────────► 基座运行时 / L2.5 / �
                       
 
 标准与门禁：
-  xlib-standard ─── 标准事实源 / Go Reference Template，v1.0.1 发布验收通过，不参与业务运行
-  xlib-harness  ─── 模块生成器（generate）与门禁执行器（spec-lint / boundary / traceability / format-check）
-  xlib-evidence ─── 证据收集与发布运行时（coverage / manifest / remote evidence / report）
+  xlib_standard ─── 标准事实源 / Go Reference Template，v1.0.1 发布验收通过，不参与业务运行
+  xlib_harness  ─── 模块生成器（generate）与门禁执行器（spec-lint / boundary / traceability / format-check）
+  xlib_evidence ─── 证据收集与发布运行时（coverage / manifest / remote evidence / report）
   xlibgate      ─── import 边界、go.mod、Go baseline、release evidence、L2 发布就绪、Trust Alignment 机器门禁
 
 横切关注点：
@@ -53,24 +53,24 @@ x.go ───────────────► 基座运行时 / L2.5 / �
 ### 业务流与反馈
 
 ```text
-market-data (14) ──────────────► market-regime ──┐
-  domain-market (Bar/Tick/OB)     S1-S7 状态     │
+market_data (14) ──────────────► market_regime ──┐
+  domain_market (Bar/Tick/OB)     S1-S7 状态     │
   质量门禁 → 特征 → 分类器       bias/permission  │
-                                               ├──► regime-engine ──► DecisionCard
-macro-data (10) ───────────────► macro-regime ──┘     M×S 融合        action A-E
-  domain-macro (MacroPoint)      M1-M7 状态           冲突门           profile
+                                               ├──► regime_engine ──► DecisionCard
+macro_data (10) ───────────────► macro_regime ──┘     M×S 融合        action A-E
+  domain_macro (MacroPoint)      M1-M7 状态           冲突门           profile
   LGIP 四因子                    LGIP 得分            风险放大          risk_tier
                                                                       position_caps
-factor-engine ◄──► feature-store ◄──► factor-eval
+factor_engine ◄──► feature_store ◄──► factor_eval
               │      ▲                  ▲  ▲
               ▼      │                  │  │
             flowx ───┘                  │  │  (因子评估 + DecisionCard)
               (ETL)                     │  │
               │                         │  │
-              │           regime-engine─┘  │
+              │           regime_engine─┘  │
               │                │           │
               │                ▼           │
-              │          signal-factory ◄──┘
+              │          signal_factory ◄──┘
               │                │
               │                ├──► riskx ──► orderx ──► positionx  (实盘路径)
               │                │      ▲         ▲           │
@@ -102,5 +102,5 @@ x.go / service main
           └── App.Shutdown(ctx): Lifecycle.Stop / 幂等清理
 ```
 
-`bootstrap` 只组装进程入口，不承载业务语义、domain/contracts、HTTP/gRPC listener 或跨进程编排；跨进程 composer 属于上层入口职责。Adapter 进程使用 `Stores=None`，`market-data` / `macro-data` 聚合进程可使用 `Stores=All` 或位组合。
+`bootstrap` 只组装进程入口，不承载业务语义、domain/contracts、HTTP/gRPC listener 或跨进程编排；跨进程 composer 属于上层入口职责。Adapter 进程使用 `Stores=None`，`market_data` / `macro_data` 聚合进程可使用 `Stores=All` 或位组合。
 

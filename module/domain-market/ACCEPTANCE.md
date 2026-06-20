@@ -1,11 +1,11 @@
-# domain-market 完整验收清单
+# domain_market 完整验收清单
 
 - Status: Generated（与 [SPEC.md](./SPEC.md) 同步抽取，未经 pipeline-arbiter 校验）
 - Last-Updated: 2026-06-18
 - Source: [SPEC.md](./SPEC.md) · [TRACEABILITY.md](./TRACEABILITY.md) · [FEATURES.md](./FEATURES.md)
 - Scale: 10 AC · 0 TC
 
-> 本文档是 domain-market 的 **完成定义（Definition of Done）**，把 SPEC 的 AC/TC 展开成可执行的验收项。
+> 本文档是 domain_market 的 **完成定义（Definition of Done）**，把 SPEC 的 AC/TC 展开成可执行的验收项。
 > 任一未勾选项存在即视为未达成完整验收；通过条件以 SPEC §19 验收门禁为准。
 
 勾选图例：`[ ]` 未通过 · `[x]` 已通过并有证据 · `[~]` 部分通过（须在备注列注明缺口）
@@ -40,7 +40,7 @@ git diff --check
 bash .github/ci/spec-lint.sh
 TRACEABILITY_STRICT=1 bash .github/ci/traceability-check.sh
 bash .github/ci/task-spec-validate.sh
-go test ./module/domain-market/... 2>/dev/null || true   # 远程仓库为准
+go test ./module/domain_market/... 2>/dev/null || true   # 远程仓库为准
 go list -deps ./... | grep -v configx                # 禁止 configx 直接依赖（如 SPEC 要求）
 ```
 

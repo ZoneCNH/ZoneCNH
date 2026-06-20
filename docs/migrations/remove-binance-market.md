@@ -32,8 +32,8 @@ Binance Exchange
 module/binance/client     ← 交易所侧采集（4 产品线 connector + parser + spool + checkpoint）
   ↓ contracts §8.4 gRPC bidi stream (MarketDataService.Ingest)
 module/binance/server     ← 摄入受理（验证 + 幂等 + durable ACK + dispatch）
-  ↓ market-data §4 DownstreamDispatchPort
-module/market-data        ← 交易所中立后续管线
+  ↓ market_data §4 DownstreamDispatchPort
+module/market_data        ← 交易所中立后续管线
 ```
 
 替代映射：
@@ -43,10 +43,10 @@ module/market-data        ← 交易所中立后续管线
 | Binance REST/WebSocket 采集 | `module/binance/client/connector/{spot,usdm_futures,coinm_futures,options}.go` |
 | Symbol 解析 | `module/binance/client/parser/parser.go` |
 | 事件规范化 | `module/binance/client/normalize/normalize.go` |
-| canonical 类型映射 | `module/binance/client/mapper/mapper.go`（依赖 `module/domain-market`） |
+| canonical 类型映射 | `module/binance/client/mapper/mapper.go`（依赖 `module/domain_market`） |
 | 下游传输 | `module/contracts` §8.4 `MarketDataService` gRPC bidi stream |
 | 摄入受理 | `module/binance/server/internal/server/{ingest,validation,idempotency,ack,dispatch}` |
-| 下游分发 | `module/binance/server/dispatch` → `module/market-data` §4 DownstreamDispatchPort |
+| 下游分发 | `module/binance/server/dispatch` → `module/market_data` §4 DownstreamDispatchPort |
 
 ## 3. 时间线
 
@@ -57,7 +57,7 @@ module/market-data        ← 交易所中立后续管线
 | 2026-06-16 | `module/binance` C/S Module spec v1.0.0 正式发布（root + client + server 三份 SPEC） |
 | 2026-06-16 | `STATUS.md` / `ARCHITECTURE.md` / `README.md` 中 `binance-market` 引用全部清除 |
 | 2026-06-16 | `binance-market` 仓库设为 **private**（不公开访问） |
-| 2026-06-17 | `module/binance` 上游 6/6 G0 Phase Gate 全部 PASS（contracts §8.4 + domain-market §10 + market-data §4） |
+| 2026-06-17 | `module/binance` 上游 6/6 G0 Phase Gate 全部 PASS（contracts §8.4 + domain_market §10 + market_data §4） |
 | 2026-06-17 | `binance-market` 仓库 **deleted**（彻底删除，不可恢复） |
 | 2026-06-17 | `module/FOUNDATION-DEPS.yaml` 移除 `github.com/ZoneCNH/binance-market` 依赖项（version 1.2.1 → 1.2.2） |
 | 2026-06-17 | 本迁移文档归档 |
@@ -78,8 +78,8 @@ active 文档中（除本文件 + `CHANGELOG.md`）任何对 `binance-market` �
 如外部仓库或下游模块仍存在对 `github.com/ZoneCNH/binance-market` 的依赖：
 
 1. **采集路径替换**：将 `binance-market` 客户端调用替换为 `module/binance/client` 的运行时实现（runtime 仓库 `github.com/ZoneCNH/binance` 的 `cmd/binance-client` 与 `internal/client` 子包）
-2. **接收路径替换**：原直接消费 `binance-market` 输出的下游模块，应通过 `module/contracts` §8.4 `MarketDataService` gRPC bidi stream 对接 `module/binance/server`，或通过 `module/market-data` §4 DownstreamDispatchPort 接收已验收事件
-3. **域类型替换**：原 `binance-market` 自定义的 ProductLine / InstrumentKey / MarketScope 等枚举与值对象，应改为 `module/domain-market` §10 中 canonical 类型
+2. **接收路径替换**：原直接消费 `binance-market` 输出的下游模块，应通过 `module/contracts` §8.4 `MarketDataService` gRPC bidi stream 对接 `module/binance/server`，或通过 `module/market_data` §4 DownstreamDispatchPort 接收已验收事件
+3. **域类型替换**：原 `binance-market` 自定义的 ProductLine / InstrumentKey / MarketScope 等枚举与值对象，应改为 `module/domain_market` §10 中 canonical 类型
 4. **wire 协议替换**：原 `binance-market` 自定义传输协议（HTTP/Kafka 等），应改为 `module/contracts` §8.4 定义的 gRPC `IngestRequest` / `IngestResult` 双向流
 
 ## 6. 不可恢复说明

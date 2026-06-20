@@ -2,7 +2,7 @@
 
 ## Purpose
 
-`module/okx` defines the OKX-specific market-data ingest module for ZoneCNH.
+`module/okx` defines the OKX-specific market_data ingest module for ZoneCNH.
 
 It replaces the legacy passive `okx` SDK with a single explicit C/S architecture:
 
@@ -15,7 +15,7 @@ Pattern owner: see [`module/_template/cex-cs-module/README.md`](../_template/cex
 
 ## Primary Goal
 
-Provide a reliable, canonical, OKX-specific market-data ingestion path for:
+Provide a reliable, canonical, OKX-specific market_data ingestion path for:
 
 - Spot
 - Margin
@@ -23,15 +23,15 @@ Provide a reliable, canonical, OKX-specific market-data ingestion path for:
 - Coin-margined Perpetual / Futures
 - Options
 
-OKX 五条产品线全部通过 `client/server` 链路统一进入下游 `module/market-data`。
+OKX 五条产品线全部通过 `client/server` 链路统一进入下游 `module/market_data`。
 
 ## Non-Goals
 
 `module/okx` does not own:
 
-- generic market-data domain semantics（由 `module/domain-market` 拥有）
-- cross-exchange market-data ingestion policy
-- market-data storage engine（由 `module/market-data` 拥有）
+- generic market_data domain semantics（由 `module/domain_market` 拥有）
+- cross-exchange market_data ingestion policy
+- market_data storage engine（由 `module/market_data` 拥有）
 - query / strategy / order execution APIs（属于其他域）
 - OKX trading 下单（本模块仅采集行情）
 - 旧 OKX SDK 兼容层（已硬切移除）

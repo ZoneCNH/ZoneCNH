@@ -5,7 +5,7 @@
 - Last-Updated: 2026-06-17
 - Layer: 决策域 · 参数优化
 - Version: v0.1.0-draft
-- Related: `CONSTITUTION.md`, `../factor-engine/`, `../domain-market/`
+- Related: `CONSTITUTION.md`, `../factor_engine/`, `../domain_market/`
 
 > 本文档发布 optimizer 基线。运行时实现为 Pending。
 
@@ -20,7 +20,7 @@ optimizer 是决策域的参数优化模块，对策略参数执行 Walk-Forward
 | 类型 | 说明 |
 | --- | --- |
 | Owns | Walk-Forward 优化、网格搜索/贝叶斯优化、参数稳定性分析、过拟合检测（CSCV/PBO） |
-| Depends on | backtest-engine（回测结果）、signal-factory（参数空间） |
+| Depends on | backtest_engine（回测结果）、signal_factory（参数空间） |
 | Consumed by | strategyx（参数注册）、策略研发 |
 | Excludes | 见上下游模块职责边界 |
 

@@ -3,7 +3,7 @@
 ## Phase 1: Contract and Domain Integration
 
 - consume generated contracts
-- consume `domain-market` semantic types
+- consume `domain_market` semantic types
 - define mapping adapters without owning canonical semantics
 
 ## Phase 2: Catalog and Parser

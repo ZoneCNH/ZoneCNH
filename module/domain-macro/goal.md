@@ -1,19 +1,19 @@
-# domain-macro Goal
+# domain_macro Goal
 
 | 字段 | 值 |
 | --- | --- |
-| 模块 | `domain-macro` |
+| 模块 | `domain_macro` |
 | 层级 | L2.5 领域共享 |
-| 仓库 | <https://github.com/ZoneCNH/domain-macro> |
+| 仓库 | <https://github.com/ZoneCNH/domain_macro> |
 | 当前版本 | v0.1.0 |
 | 目标版本 | v1.0.0 |
 | 状态 | v1.0.0 执行计划已落地 |
-| 计划来源 | `/home/zone/Downloads/0615/ZoneCNH-v1.0.0-goal-execution-plans/domain-macro-v1.0.0-goal-execution-plan.md` |
+| 计划来源 | `/home/zone/Downloads/0615/ZoneCNH-v1.0.0-goal-execution-plans/domain_macro-v1.0.0-goal-execution-plan.md` |
 | 最后更新 | 2026-06-15 |
 
 ## 目标
 
-`domain-macro` 定义可复现、无 look-ahead 的宏观数据领域模型和信息集。策略与回测只能看到在 DecisionTime 前已经 available 的宏观点，并能审计来源、修订、时效性与状态。
+`domain_macro` 定义可复现、无 look-ahead 的宏观数据领域模型和信息集。策略与回测只能看到在 DecisionTime 前已经 available 的宏观点，并能审计来源、修订、时效性与状态。
 
 ## 非目标
 

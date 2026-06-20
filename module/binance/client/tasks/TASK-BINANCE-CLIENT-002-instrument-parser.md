@@ -26,7 +26,7 @@ Parser covers:
 - COIN-M `BTCUSD` includes settlement/margin dimensions.
 - Options include expiry, strike, and call/put side.
 - parser emits structured errors for unknown formats.
-- parser output can be mapped into `domain-market` canonical identity.
+- parser output can be mapped into `domain_market` canonical identity.
 
 ## Dependencies
 

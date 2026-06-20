@@ -10,14 +10,14 @@
 
 - `README.md` 展示公开简介、技术栈、分层架构摘要和核心项目链接。
 - `ARCHITECTURE.md` 是向后兼容重定向存根；架构内容已拆分迁移至 `docs/architecture/`（01-overview / 02-domain-layers / 03-boundaries / 04-principles / 05-foundation / 06-dataflow / 07-three-engines / 08-contracts / adr）。
-- `kernel`、`market-data`、`factor-engine`、`x.go` 等模块位于独立 GitHub 仓库；不要把它们的源码树加入本仓库。
+- `kernel`、`market_data`、`factor_engine`、`x.go` 等模块位于独立 GitHub 仓库；不要把它们的源码树加入本仓库。
 - 模块代码的本地工作目录统一为 `/home/{module}`，其中 `{module}` 与 GitHub 仓库名一致；本仓库只引用这些路径，不复制或收纳模块源码。
 
 ## 构建、测试与开发命令
 
 本仓库仅包含文档，没有本地构建系统。提交前使用轻量检查：
 
-- `rg "market-data|risk-engine" README.md docs/architecture/01-overview.md docs/architecture/05-foundation.md` 查找受影响的架构引用。
+- `rg "market_data|risk_engine" README.md docs/architecture/01-overview.md docs/architecture/05-foundation.md` 查找受影响的架构引用。
 - `git diff --check` 检查尾随空格和补丁格式问题。
 - `git status --short` 确认只修改了预期文档文件。
 - `git log -5 --pretty=format:%s` 查看最近提交标题风格。
@@ -26,7 +26,9 @@
 
 ## 编写风格与命名规范
 
-所有回复和文档默认使用中文。Markdown 应使用清晰标题、紧凑表格和短说明。保留英文模块名与技术名词，例如 `domain-market`、`order-engine`，项目名统一使用 kebab-case。域标签保持一致：基座、数据域、分析域、决策域、执行域、入口、横切。
+所有回复和文档默认使用中文。Markdown 应使用清晰标题、紧凑表格和短说明。保留英文模块名与技术名词，例如 `domain_market`、`order_engine`，项目名统一使用 **snake_case**（禁止 kebab-case）。域标签保持一致：基座、数据域、分析域、决策域、执行域、入口、横切。
+
+**仓库命名强制规则**：所有 ZoneCNH 仓库使用 snake_case（下划线），禁止 kebab-case（连字符）、PascalCase、camelCase。例外：`x.go`、`binance.rs`。
 
 编辑表格时，除非能同时提升 `README.md` 和 `docs/architecture/` 文档的可读性，否则保持列顺序稳定。
 

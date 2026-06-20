@@ -16,13 +16,13 @@
 | Version | v0.1.0 |
 | Repository | [github.com/ZoneCNH/binance](https://github.com/ZoneCNH/binance)（server/ 子目录） |
 | Go Module Path | `github.com/ZoneCNH/binance`（monorepo，server 端通过 `cmd/binance-server` + `internal/server` 提供） |
-| Related | [CONSTITUTION.md](../../../CONSTITUTION.md), [ARCHITECTURE.md](../../../ARCHITECTURE.md), [module/binance/SPEC.md](../SPEC.md), [module/contracts](../../contracts/), [module/domain-market](../../domain-market/), [module/market-data](../../market-data/) |
+| Related | [CONSTITUTION.md](../../../CONSTITUTION.md), [ARCHITECTURE.md](../../../ARCHITECTURE.md), [module/binance/SPEC.md](../SPEC.md), [module/contracts](../../contracts/), [module/domain_market](../../domain_market/), [module/market_data](../../market_data/) |
 
 ---
 
 ## 2. Summary
 
-`module/binance/server` 是 Binance 行情数据的 gRPC 接入服务端。它接收来自 `module/binance/client` 的已规范化行情事件，执行校验、幂等去重、持久化验收，然后通过 exchange-neutral downstream port 将事件分发到 `module/market-data` 下游基础设施。服务端对外暴露 gRPC streaming ingest 接口和 Gin admin HTTP 端点。
+`module/binance/server` 是 Binance 行情数据的 gRPC 接入服务端。它接收来自 `module/binance/client` 的已规范化行情事件，执行校验、幂等去重、持久化验收，然后通过 exchange-neutral downstream port 将事件分发到 `module/market_data` 下游基础设施。服务端对外暴露 gRPC streaming ingest 接口和 Gin admin HTTP 端点。
 
 ---
 
@@ -44,7 +44,7 @@ Binance 行情接入需要服务端边界确保数据质量和可靠性。直接
 - 对每条 ingest request 执行完整信封校验
 - 基于 idempotency key 实现幂等验收，保证每条 key 最多被 dispatch 一次
 - 提供 durable acceptance 边界：ACK 返回前事件已持久化或进入可靠队列
-- 通过 exchange-neutral downstream port 将验收事件分发到 `module/market-data`
+- 通过 exchange-neutral downstream port 将验收事件分发到 `module/market_data`
 - 提供 Gin admin HTTP 端点（health、stats、drain）
 - 提供完整的可观测性指标（active streams、accepted/rejected/duplicate counts、latency）
 
@@ -57,8 +57,8 @@ Binance 行情接入需要服务端边界确保数据质量和可靠性。直接
 - 不做 client-side spool/checkpoint 管理（由 `module/binance/client` 负责）
 - 不做 canonical domain type 定义（由 `module/contracts` 负责）
 - 不做 proto 定义（由 `module/contracts` 负责）
-- 不做物理存储引擎实现（由 `module/market-data` 或存储扩展负责）
-- 不做 query API（由 `module/market-data` 负责）
+- 不做物理存储引擎实现（由 `module/market_data` 或存储扩展负责）
+- 不做 query API（由 `module/market_data` 负责）
 - 不做 strategy API（由决策域负责）
 - 不做跨交易所通用 ingest server（本模块仅 Binance）
 - 不做旧 `binance-market` 兼容
@@ -70,7 +70,7 @@ Binance 行情接入需要服务端边界确保数据质量和可靠性。直接
 | 消费者 | 使用方式 |
 |--------|----------|
 | `module/binance/client` | 通过 gRPC bidi stream 推送 `IngestRequest`，消费 `IngestAck` 推进 checkpoint |
-| `module/market-data` | 通过 downstream port 接收已验收的行情事件 |
+| `module/market_data` | 通过 downstream port 接收已验收的行情事件 |
 | `SRE / 运维` | 通过 Gin admin HTTP 端点查询流状态、触发排水 |
 
 ---
@@ -166,7 +166,7 @@ Binance 行情接入需要服务端边界确保数据质量和可靠性。直接
 ### FR-007: Downstream Dispatch
 
 **WHEN** event 通过 durable acceptance
-**THEN** 通过 exchange-neutral downstream port 将 event 分发到 `module/market-data`
+**THEN** 通过 exchange-neutral downstream port 将 event 分发到 `module/market_data`
 
 **WHEN** downstream dispatch 失败
 **THEN** 采用 retry-first + dead-letter 策略：
@@ -258,7 +258,7 @@ Binance 行情接入需要服务端边界确保数据质量和可靠性。直接
 ### 9.1 gRPC Service（由 contracts §8.4 定义）
 
 ```go
-// MarketDataService receives normalized upstream market-data ingestion requests.
+// MarketDataService receives normalized upstream market_data ingestion requests.
 // Defined in module/contracts/SPEC.md §8.4.
 type MarketDataService interface {
     Ingest(stream IngestRequest) (stream IngestResult, error)
@@ -348,7 +348,7 @@ POST /admin/drain
 |------|-----------|----------|
 | Stream 断连恢复 | client stream 网络中断后重连 | server 释放旧 stream 资源；client 新 stream 从未 ACK 的 event 继续推送；server 幂等检查保证不重复 dispatch |
 | Duplicate key + conflicting payload | idempotency key 已存在，payload hash 不同 | 返回 `terminal_conflict` reject；不 dispatch；不覆盖已有数据 |
-| Downstream dispatch 失败 | dispatch 到 `module/market-data` 超时或不可达 | 若策略为 rollback：撤销幂等记录，返回 `retryable` reject 让 client 重试；若策略为 retry：记录失败 metric，后台重试，ACK 已返回但 durable_indicator=false |
+| Downstream dispatch 失败 | dispatch 到 `module/market_data` 超时或不可达 | 若策略为 rollback：撤销幂等记录，返回 `retryable` reject 让 client 重试；若策略为 retry：记录失败 metric，后台重试，ACK 已返回但 durable_indicator=false |
 | Idempotency store 满 | 幂等记录达到 `max_entries` | 拒绝新 event，返回 `retryable` reject；告警触发 |
 | 并发推送同一 key | 两个 stream 同时推送相同 idempotency key | check-and-set 语义保证仅一个 stream 获得 accept，另一个返回 idempotent duplicate 或 terminal_conflict |
 | Payload 为空 | event_type 正确但 payload 为空 | 取决于 event type schema：若支持空 payload 则通过；否则返回 `terminal_validation` |
@@ -403,8 +403,8 @@ github.com/ZoneCNH/binance/
 | 依赖 | 用途 | 来源 |
 |------|------|------|
 | `module/contracts` | gRPC wire contract（§8.4）：`MarketDataService` 接口 + `IngestRequest`/`IngestResult`/`IngestAck`/`IngestReject`/`RejectCode` DTO | FoundationX 基座 |
-| `module/domain-market` | 领域值对象（Instrument、ProductLine 等） | L2.5 领域共享层 |
-| `module/market-data` downstream port | 已验收事件的分发目标（仅通过 port interface） | 数据域 |
+| `module/domain_market` | 领域值对象（Instrument、ProductLine 等） | L2.5 领域共享层 |
+| `module/market_data` downstream port | 已验收事件的分发目标（仅通过 port interface） | 数据域 |
 | `google.golang.org/grpc` | gRPC server runtime | 第三方（标准选择） |
 | `github.com/gin-gonic/gin` | Admin HTTP server | 第三方 |
 | `configx` | 配置管理 | FoundationX 基座 |
@@ -416,7 +416,7 @@ github.com/ZoneCNH/binance/
 |----------|------|
 | `module/binance/client` | client 与 server 之间仅通过 contracts proto 通信，禁止 import client internals |
 | 任何 exchange connector | exchange 连接由 client 负责，server 不应感知具体交易所 API |
-| storage engine 实现 | 存储由 `module/market-data` 或 storage 扩展负责 |
+| storage engine 实现 | 存储由 `module/market_data` 或 storage 扩展负责 |
 | query API 实现 | server 不暴露查询 API |
 | strategy / risk engine | 决策域模块不应被数据域 server 感知 |
 
@@ -427,7 +427,7 @@ contracts (proto 定义)
     ↓
 binance/server (实现 gRPC server 端)
     ↓ (通过 exchange-neutral port)
-market-data (下游消费)
+market_data (下游消费)
 ```
 
 server 不反向依赖 client，二者通过 contracts 解耦。

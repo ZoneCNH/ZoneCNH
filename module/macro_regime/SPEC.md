@@ -18,8 +18,8 @@ macro_regime 是分析域的 M 引擎，分析宏观数据流，输出 M1-M7 宏
 | 类型 | 说明 |
 | --- | --- |
 | Owns | M1-M7 宏观体制分类器、宏观指标管线、regime transition 检测 |
-| Depends on | macro-data（MacroPoint）、domain-macro、flowx（数据管线） |
-| Consumed by | regime-engine（M 分类输入） |
+| Depends on | macro_data（MacroPoint）、domain_macro、flowx（数据管线） |
+| Consumed by | regime_engine（M 分类输入） |
 
 ## 3. 功能需求
 

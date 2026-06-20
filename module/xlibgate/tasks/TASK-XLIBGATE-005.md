@@ -34,13 +34,13 @@ status: pending
 | Requirement | Description                           | Acceptance Criteria      |
 | ----------- | ------------------------------------- | ------------------------ |
 | FR-004      | check release：evidence 完整性校验    | 3 个 WHEN/THEN 场景      |
-| BR-004      | evidence schema 与 xlib-standard 一致 | JSON 格式 + 必需字段校验 |
+| BR-004      | evidence schema 与 xlib_standard 一致 | JSON 格式 + 必需字段校验 |
 
 ## Non-scope
 
 - 不实现 evidence 生成（只读取和校验）
 - 不修改 evidence.json 内容（只读检查）
-- 不实现与 xlib-standard 的动态 schema 同步
+- 不实现与 xlib_standard 的动态 schema 同步
 - 不实现 evidence 历史版本比较
 
 ## Test Plan
@@ -50,13 +50,13 @@ status: pending
 | TC-006    | Unit | evidence 完整且通过：exit 0                                         |
 | TC-006    | Unit | 缺失项：exit 1，输出缺失列表                                        |
 | TC-006    | Unit | 格式无效（非 JSON/缺必需字段）：exit 2                              |
-| BR-004    | Unit | evidence schema 与 xlib-standard 一致：JSON 格式校验 + 必需字段检查 |
+| BR-004    | Unit | evidence schema 与 xlib_standard 一致：JSON 格式校验 + 必需字段检查 |
 
 ## Implementation Notes
 
 - 解析 `evidence.json`，检查必需字段
 - evidence schema 定义必需项列表
-- BR-004 要求 evidence schema 与 xlib-standard 定义的 Evidence 标准一致
+- BR-004 要求 evidence schema 与 xlib_standard 定义的 Evidence 标准一致
 - evidence/collector.go 负责收集 evidence 项，evidence/validator.go 负责 schema 校验
 
 ## Implementation Plan

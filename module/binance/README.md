@@ -11,13 +11,13 @@ module/binance/server
 
 ## Role
 
-`module/binance` owns Binance-specific market-data ingestion into ZoneCNH.
+`module/binance` owns Binance-specific market_data ingestion into ZoneCNH.
 
-It does not define the canonical market domain itself. Canonical semantics are owned by `module/domain-market`.
+It does not define the canonical market domain itself. Canonical semantics are owned by `module/domain_market`.
 
 It does not define the wire protocol itself. Wire contracts are owned by `module/contracts`.
 
-It does not own downstream storage, query, or generic fanout. Those are owned by `module/market-data` and downstream modules.
+It does not own downstream storage, query, or generic fanout. Those are owned by `module/market_data` and downstream modules.
 
 ## Submodules
 
@@ -30,7 +30,7 @@ It does not own downstream storage, query, or generic fanout. Those are owned by
 
 `binance-market` is removed.
 
-New Binance market-data ingestion work must not target:
+New Binance market_data ingestion work must not target:
 
 ```text
 module/binance-market

@@ -733,15 +733,15 @@ goalctl CLI ──→ Engine 层 ──→ Data 层
 
 **结论**: 使用 Go 实现 Goal 程序化引擎，替代原计划的 Python 方案。
 
-**核心理由**: FoundationX 生态全栈 Go (kernel, x.go, xlib-standard, xlibgate)，Goal 引擎应作为一等公民而非 Python 异构依赖。
+**核心理由**: FoundationX 生态全栈 Go (kernel, x.go, xlib_standard, xlibgate)，Goal 引擎应作为一等公民而非 Python 异构依赖。
 
 ### 9.2 生态适配评估
 
 | 维度                   | 现状                                                         | Go 实现优势                                       |
 | ---------------------- | ------------------------------------------------------------ | ------------------------------------------------- |
-| **生态一致性**         | FoundationX 全栈 Go (kernel, x.go, xlib-standard, xlibgate)  | goalctl 成为一等公民，不引入 Python/Bash 异构依赖 |
+| **生态一致性**         | FoundationX 全栈 Go (kernel, x.go, xlib_standard, xlibgate)  | goalctl 成为一等公民，不引入 Python/Bash 异构依赖 |
 | **xlibgate 对口**      | xlibgate 已做 import 边界、go.mod、release evidence 机器门禁 | Gate Arbiter 直接复用 xlibgate 的门禁模式         |
-| **xlib-standard 对口** | 已承担 Harness Gate + Evidence Runtime                       | Engine 层可作为 xlib-standard 的扩展              |
+| **xlib_standard 对口** | 已承担 Harness Gate + Evidence Runtime                       | Engine 层可作为 xlib_standard 的扩展              |
 | **CLI 交付**           | 当前 6 个独立脚本                                            | 单二进制 `goalctl`，零依赖部署                    |
 | **类型安全**           | rules.yaml 的 schema 靠人工遵守                              | Go struct + enum 在编译期强制                     |
 | **并发验证**           | self-test.sh 串行执行                                        | goroutine 并行跑 Gate 检查、Matrix 校验           |
@@ -810,7 +810,7 @@ goalctl/                          # module github.com/ZoneCNH/goalctl
 │       ├── risk.go               #   risk 子命令
 │       ├── lint.go               #   lint 子命令
 │       └── report.go             #   report 子命令
-└── pkg/                          # 对外 SDK (供 xlib-standard 引用)
+└── pkg/                          # 对外 SDK (供 xlib_standard 引用)
     ├── types.go                  #   公共类型
     └── client.go                 #   编程式调用接口
 ```
@@ -820,7 +820,7 @@ goalctl/                          # module github.com/ZoneCNH/goalctl
 - `goalctl` 的生命周期独立于 x.go 发版
 - 可独立 CI/CD
 - 被 Agent 和人类同样调用
-- `xlib-standard` 和 `xlibgate` 可引用 `pkg/` 作为 SDK
+- `xlib_standard` 和 `xlibgate` 可引用 `pkg/` 作为 SDK
 
 ### 9.5 现有工具 Go 重写映射
 
@@ -947,7 +947,7 @@ Phase 1-2 的 Python 封装方案替换为 Go 实现：
 │  泛型 Collection[T] 统一处理 6 个 Registry              │
 └─────────────────────────────────────────────────────────┘
          ↑ 调用                          ↑ 调用
-    Claude Agent                    xlib-standard / xlibgate
+    Claude Agent                    xlib_standard / xlibgate
     (保持不变)                      (渐进集成)
 ```
 
@@ -1186,7 +1186,7 @@ MVP 代码量估算:
 | P5       | Report + Dashboard              | +1 天       | 可观测性           |
 | **总计** |                                 | **+4.5 天** |                    |
 
-### 9.8 渐进集成 xlib-standard / xlibgate
+### 9.8 渐进集成 xlib_standard / xlibgate
 
 goalctl 先独立实现，再渐进集成 FoundationX 生态：
 
@@ -1194,7 +1194,7 @@ goalctl 先独立实现，再渐进集成 FoundationX 生态：
 | -------------- | ------------------------------ | ---------------------------- |
 | Phase 1 (独立) | 无                             | goalctl 自包含               |
 | Phase 2 (引用) | xlibgate 门禁模式              | 复用 checker output protocol |
-| Phase 3 (引用) | xlib-standard Evidence Runtime | 调用其 API 替代自实现        |
+| Phase 3 (引用) | xlib_standard Evidence Runtime | 调用其 API 替代自实现        |
 | Phase 4 (嵌入) | x.go 组合根                    | goalctl 作为 x.go 的子命令   |
 
 ### 9.9 优化前后对比
@@ -1223,7 +1223,7 @@ Goal 体系的程序化不是从零开始 — **已有 ~60% 的基础设施**。
 3. **没有自动仲裁**: 制品检查有，判定没有 → 需要 Gate checker runner
 4. **没有 Agent 编排**: 10 个 Agent 各自独立 → 需要编排器
 
-**实现语言**: Go。与 FoundationX 全栈生态一致 (kernel, x.go, xlib-standard, xlibgate)，单二进制部署，类型安全，零 Python/Bash 运行时依赖。
+**实现语言**: Go。与 FoundationX 全栈生态一致 (kernel, x.go, xlib_standard, xlibgate)，单二进制部署，类型安全，零 Python/Bash 运行时依赖。
 
 **架构**: 三层 (types → engine → cmd)，声明式引擎 (规则在 YAML，代码是通用 runner)，泛型 Collection 统一 Registry 操作。
 

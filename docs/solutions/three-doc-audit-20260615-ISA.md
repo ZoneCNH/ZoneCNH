@@ -20,7 +20,7 @@ STATUS.md / README.md / ARCHITECTURE.md 三文档之间存在系统性数量漂�
 | 仪表盘已有/已创建 | 59/22 | 58/22 | domainx 从 L2.5 已有→基座已有，净变化 0 |
 | 同步检查表 | 5 处与 grep 不符 | 全部一致 | 自身就是错误源（最危险：误导后续 audit） |
 | 404 链接 | 1 (strategies) | 0 | 策略引用散落三文档 + DEPS.yaml + ROADMAP |
-| ARCHITECTURE 版本 | 12 处滞后 | 全部对齐 | testkitx v0.4.0, redisx v1.0.0, xlib-standard v- 等 |
+| ARCHITECTURE 版本 | 12 处滞后 | 全部对齐 | testkitx v0.4.0, redisx v1.0.0, xlib_standard v- 等 |
 | domainx 归属 | 三文档不一致 | 全部归基座 | README L2.5, ARCH 基座, STATUS L2.5 |
 | observex 横切段 | v0.3.1 | v1.0.0 | "修正"方向反了（实际 v1.0.0 是正确的） |
 | 合计行与分项和 | 不一致 | 一致 | 合计 81→80 后分项未同步 |

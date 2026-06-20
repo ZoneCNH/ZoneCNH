@@ -1,4 +1,4 @@
-# backtest-engine Goal
+# backtest_engine Goal
 
 ## 元数据
 
@@ -12,7 +12,7 @@
 
 ## 定位
 
-backtest-engine 是决策域的回测引擎模块。事件驱动回测、滑点/手续费模型、绩效报告。
+backtest_engine 是决策域的回测引擎模块。事件驱动回测、滑点/手续费模型、绩效报告。
 
 ## 目标
 
@@ -25,6 +25,6 @@ backtest-engine 是决策域的回测引擎模块。事件驱动回测、滑点/
 | 类型 | 说明 |
 | --- | --- |
 | Owns | 回测循环/滑点模型/绩效指标(Sharpe/MaxDD)/报告 |
-| Depends on | signal-factory, feature-store, domain-market |
+| Depends on | signal_factory, feature_store, domain_market |
 | Consumed by | optimizer, 策略研发 |
 | Excludes | 参数优化(→optimizer)、实时交易、信号生成 |

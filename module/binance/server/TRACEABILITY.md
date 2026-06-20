@@ -14,7 +14,7 @@
 | FR-004 | Idempotent Acceptance — 同一 key 最多 accept 一次 | 首次→accept+dispatch；重复同内容→idempotent ACK；重复冲突内容→terminal_conflict | TC-005, TC-006, TC-007 | ⬜ |
 | FR-005 | Durable Acceptance — accept 后持久化 | durable write 成功→durable_indicator=true；失败→retryable reject（不标记已接受） | TC-008, TC-009 | ⬜ |
 | FR-006 | ACK Generation — 返回可驱动 client checkpoint 的 ACK | ACK 含 stream_id/accepted keys/rejects/durable indicator/retry hint | TC-010 | ⬜ |
-| FR-007 | Downstream Dispatch — 分发至 market-data downstream port | dispatch 成功→event 被下游接受；不实现物理存储；不暴露 query API | TC-011, TC-012 | ⬜ |
+| FR-007 | Downstream Dispatch — 分发至 market_data downstream port | dispatch 成功→event 被下游接受；不实现物理存储；不暴露 query API | TC-011, TC-012 | ⬜ |
 | FR-008 | Admin HTTP Endpoints — /healthz /readyz /debug /admin | healthz 200；readyz 反映 readiness；debug 只读；admin 仅 server-local；/admin/drain 拒绝新 stream | TC-013, TC-014, TC-015 | ⬜ |
 
 > 映射：BNC-SERVER-001→FR-001, BNC-SERVER-002→FR-003, BNC-SERVER-003→FR-004, BNC-SERVER-004→FR-006, BNC-SERVER-005→FR-007, BNC-SERVER-006→FR-008, BNC-SERVER-007→contract tests, BNC-SERVER-008→boundary gates

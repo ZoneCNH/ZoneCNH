@@ -1,8 +1,8 @@
-# `module/xlib-standard/` 结构性问题深度分析（v3）
+# `module/xlib_standard/` 结构性问题深度分析（v3）
 
 - 报告日期：2026-06-08 04:46 (+08:00)
 - 报告作者：Copilot CLI（Claude Opus 4.7）
-- 分析对象：`module/xlib-standard/`
+- 分析对象：`module/xlib_standard/`
 - 对照基线：`docs/governance/SPEC-TEMPLATE.md`、`module/README.md`、`docs/governance/LIFECYCLE.md`、`docs/governance/DEFINITION-OF-READY.md`、`docs/governance/TRACEABILITY.md`、`CONSTITUTION.md`、`ARCHITECTURE.md`
 - 自动化证据：`bash .github/ci/spec-lint.sh`、`spec-drift-guard.sh`、`traceability-check.sh`、`status-consistency-check.sh`
 - 方法：模板节序对照 + 编号体系闭环扫描 + CI lint 实际运行 + 跨文档状态一致性核对 + 与前两版报告差异对比
@@ -34,9 +34,9 @@
 
 | 检查                          | 结果                                             | 关键告警                                                                                                                                  |
 | ----------------------------- | ------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| `spec-lint.sh`                | ⚠️ 通过有警告                                    | `xlib-standard` 存在 fuzzy word `可能`；脚本报 `Section 4 Non-goals is empty`（实际系前置 `## 使用边界` 节扰乱脚本节计数 — 仍是结构缺陷） |
+| `spec-lint.sh`                | ⚠️ 通过有警告                                    | `xlib_standard` 存在 fuzzy word `可能`；脚本报 `Section 4 Non-goals is empty`（实际系前置 `## 使用边界` 节扰乱脚本节计数 — 仍是结构缺陷） |
 | `spec-drift-guard.sh`         | ✅ 通过                                           | —                                                                                                                                         |
-| `traceability-check.sh`       | ⚠️ `xlib-standard: 5 requirements with empty TC` | 52/52 FR 已追溯到来源，但 5 条 FR 无对应 TC，与 §16.5 自述"P0 TC 只是样板，其余由 harness 间接证明"互证                                   |
+| `traceability-check.sh`       | ⚠️ `xlib_standard: 5 requirements with empty TC` | 52/52 FR 已追溯到来源，但 5 条 FR 无对应 TC，与 §16.5 自述"P0 TC 只是样板，其余由 harness 间接证明"互证                                   |
 | `status-consistency-check.sh` | ✅ 静默                                           | —                                                                                                                                         |
 
 这是 v3 报告与 v2 最大差异：v2 凭目视判断，v3 用脚本得出**两条硬性 CI 告警**，可在 PR 中直接复现。
@@ -63,7 +63,7 @@
 2. **`Approved-By` 是同一管线内的 sub-agent 自评**，非独立人工 reviewer，违反 `LIFECYCLE.md` Approved 状态语义（应由 `Owner` 或外部审查者签字）。
 3. **`Approved-Commit` 字面承认"后续补 N-1 修复 commit"** — Approved 状态不应携带"待补提交"的 footnote，否则 Approved 的契约（提交可追溯到唯一 commit）失效。
 
-**影响**：发布前置条件失真；下游模块无法把 `xlib-standard@Approved` 当作可消费基线。
+**影响**：发布前置条件失真；下游模块无法把 `xlib_standard@Approved` 当作可消费基线。
 
 **评分扣点**：−1.2
 
@@ -156,7 +156,7 @@ SPEC.md 的 H2 层级实际结构：
 
 未定义"门禁"层。FR-004 也借此引入 `门禁 → 基座 L0 → ...` 八元链，但其他 16 个模块 SPEC 均按 5 领域命名（已通过 `spec-drift-guard` 校验）。
 
-**建议**：要么把 `xlib-standard` 显式归入"基座/横切"，要么在 `ARCHITECTURE.md` 中正式新增"门禁"层并同步更新所有图与表。当前只在本模块单方面新建词项 = 域语义漂移。
+**建议**：要么把 `xlib_standard` 显式归入"基座/横切"，要么在 `ARCHITECTURE.md` 中正式新增"门禁"层并同步更新所有图与表。当前只在本模块单方面新建词项 = 域语义漂移。
 
 **评分扣点**：−0.4
 
@@ -262,8 +262,8 @@ SPEC §2 反复声明"419 条 RULE-* 规则"是整个标准的事实总量，但
 
 ## 7. 引用
 
-- `module/xlib-standard/{README,SPEC,TRACEABILITY,CONFLICT-LEDGER,COVERAGE-MANIFEST}.md`
+- `module/xlib_standard/{README,SPEC,TRACEABILITY,CONFLICT-LEDGER,COVERAGE-MANIFEST}.md`
 - `module/{SPEC-TEMPLATE,README,LIFECYCLE,TRACEABILITY,DEFINITION-OF-READY,DEFINITION-OF-DONE}.md`
 - `CONSTITUTION.md` §4 / `ARCHITECTURE.md` 领域模型
 - `.github/ci/{spec-lint,spec-drift-guard,traceability-check,status-consistency-check}.sh`（实际运行，证据见 §1）
-- 前两版报告：`docs/report/xlib-standard-structural-issues-20260608-0341.md`、`docs/report/xlib-standard-specs-structural-review-20260608.md`
+- 前两版报告：`docs/report/xlib_standard-structural-issues-20260608-0341.md`、`docs/report/xlib_standard-specs-structural-review-20260608.md`

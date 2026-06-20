@@ -1,4 +1,4 @@
-# xlib-standard 规格
+# xlib_standard 规格
 
 ## 1. Metadata
 
@@ -9,13 +9,13 @@
 - Updated: 2026-06-18
 - Layer: 基座 · 标准事实源
 - Version: v1.0.0
-- Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `xlib-evidence`, `xlib-harness`, `xlibgate`
+- Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `xlib_evidence`, `xlib_harness`, `xlibgate`
 
 > 公开投影 caveat：Status=Approved 与 100.0% 覆盖证据不等同于 factory-grade；机器事实层保持 factory=false。
 
 ## 2. Summary
 
-本规格定义 `xlib-standard` 五类职责中后四类的可执行交付规格——Go Reference Template、Generator、Harness Gate 和 Evidence Runtime。第一类职责（Standard Source / 标准事实源）的文档规范定义见 goal.md。`xlib-standard` 提供 xlib 体系的唯一标准源：标准文档（`docs/standard/`）、可编译可渲染可验证的 Go Reference Template、Generator（`render_template.sh`）、17 个 CI Gate 和 Evidence Runtime（release manifest + checksum + goalcli 证据 CLI）。本 SPEC 聚焦后四类的可执行交付细节，不承载业务域实现。
+本规格定义 `xlib_standard` 五类职责中后四类的可执行交付规格——Go Reference Template、Generator、Harness Gate 和 Evidence Runtime。第一类职责（Standard Source / 标准事实源）的文档规范定义见 goal.md。`xlib_standard` 提供 xlib 体系的唯一标准源：标准文档（`docs/standard/`）、可编译可渲染可验证的 Go Reference Template、Generator（`render_template.sh`）、17 个 CI Gate 和 Evidence Runtime（release manifest + checksum + goalcli 证据 CLI）。本 SPEC 聚焦后四类的可执行交付细节，不承载业务域实现。
 
 ## 3. Problem
 当前基础库模块容易出现公共 API 不一致、模板渲染后仍残留模板名、gate 命令不稳定、release 证据不可复现等问题。缺少统一标准会导致下游模块在初始化阶段重复修补配置、错误、健康检查、指标和发布流程。
@@ -108,7 +108,7 @@
 
 ### FR-010: 生成库无模板残留
 
-- WHEN 检查生成库 THEN 不得出现 `templatex`、`xlib-standard`、`foundationx` 或 `baselib-template` 残留。
+- WHEN 检查生成库 THEN 不得出现 `templatex`、`xlib_standard`、`foundationx` 或 `baselib-template` 残留。
 - WHEN 检查 go.mod 和包名 THEN 必须使用目标 module path 与 package name。
 
 ### FR-011: 17 个 CI gate
@@ -118,7 +118,7 @@
 
 ### FR-012: boundary gate 检查
 
-- WHEN 执行边界检查 THEN 必须拦截 `x.go/internal`、`/home/k8s/secrets/env`、`foundationx`、`baselib-template`、`templatex`、`xlib-standard` 非法引用。
+- WHEN 执行边界检查 THEN 必须拦截 `x.go/internal`、`/home/k8s/secrets/env`、`foundationx`、`baselib-template`、`templatex`、`xlib_standard` 非法引用。
 - WHEN 检查生成库 THEN 必须排除 `.git` 等非源码目录。
 
 ### FR-013: release manifest
@@ -142,7 +142,7 @@
 - WHEN 运行 `goalcli traceability` THEN 生成 FR→Code 追溯矩阵。
 - WHEN 运行 `goalcli governance` THEN 输出分支保护、ruleset、CI 状态等远端治理检查结果。
 - WHEN 运行 `goalcli debt` THEN 扫描技术债务（debtcheck）并输出债务报告。
-- WHEN 运行 `goalcli adoption` THEN 检查下游模块对 xlib-standard 的采纳状态。
+- WHEN 运行 `goalcli adoption` THEN 检查下游模块对 xlib_standard 的采纳状态。
 - WHEN 运行 `goalcli selfimproving` THEN 触发受控递归自改进流程。
 
 ### FR-016: L2 下游仓库模板（`templates/l2/`）
@@ -208,7 +208,7 @@
 
 ## 14. Directory Structure
 ```text
-xlib-standard/
+xlib_standard/
 ├── go.mod
 ├── go.sum
 ├── README.md
@@ -295,7 +295,7 @@ xlib-standard/
 ### 15.1 Acceptance Criteria
 | AC     | Acceptance                                                          | 验证命令                                                                                                           | 代码位置                                                  |
 | ------ | ------------------------------------------------------------------- |                                                                                                                    |                                                           |
-| AC-000 | 管线基线清理完成，模块文档和任务入口可被规则评分器发现。            | `python3 scripts/rule-scorer.py spec xlib-standard --check`                                                        | `module/xlib-standard/SPEC.md`                            |
+| AC-000 | 管线基线清理完成，模块文档和任务入口可被规则评分器发现。            | `python3 scripts/rule-scorer.py spec xlib_standard --check`                                                        | `module/xlib_standard/SPEC.md`                            |
 | AC-001 | 必填字段缺失时配置校验返回 validation kind 错误。                   | `GOWORK=off go test ./pkg/templatex/ -run TestConfigValidate/Required -count=1`                                    | `pkg/templatex/config.go:23-32`                           |
 | AC-002 | 负数 timeout 配置返回 validation kind 错误。                        | `GOWORK=off go test ./pkg/templatex/ -run TestConfigValidate/Negative -count=1`                                    | `pkg/templatex/config.go:28-31`                           |
 | AC-003 | 配置脱敏后 secret 类字段显示为 `***`。                              | `GOWORK=off go test ./pkg/templatex/ -run TestConfigSanitize -count=1`                                             | `pkg/templatex/config.go:34-39`                           |
@@ -396,9 +396,9 @@ CI 必须运行 `GOWORK=off make ci` 和 `GOWORK=off make release-check`。`make
 3. 提供迁移脚本或回滚说明。
 4. 经下游消费者确认后方可合入。
 
-先修复并验证 `xlib-standard` 标准源，再用于生成 `kernel` 等下游基础库。每次下游采用前必须重新运行渲染 smoke test、边界检查和生成库测试。破坏性接口变更必须进入 semver 兼容矩阵并在 release manifest 中体现。
+先修复并验证 `xlib_standard` 标准源，再用于生成 `kernel` 等下游基础库。每次下游采用前必须重新运行渲染 smoke test、边界检查和生成库测试。破坏性接口变更必须进入 semver 兼容矩阵并在 release manifest 中体现。
 
-归档说明：本 SPEC.md 为 v1.0.0 可执行交付整理稿的留存视图，不再作为 xlib-standard 快照分析的可执行规格；当前快照审计入口为 README.md、ANALYSIS.md、FR-DETAIL.md 和 TRACEABILITY.md。
+归档说明：本 SPEC.md 为 v1.0.0 可执行交付整理稿的留存视图，不再作为 xlib_standard 快照分析的可执行规格；当前快照审计入口为 README.md、ANALYSIS.md、FR-DETAIL.md 和 TRACEABILITY.md。
 
 ## 22. Release DoD
 发布前必须满足：模板测试通过、生成库测试通过、边界检查通过、合约检查通过、安全检查通过、release manifest 生成、checksum 校验通过、最终检查通过。发布证据必须可复现并可由 CI 重新生成。
@@ -408,7 +408,7 @@ CI 必须运行 `GOWORK=off make ci` 和 `GOWORK=off make release-check`。`make
 
 | ID | 问题 | 状态 |
 |----|------|------|
-| OQ-001 | 是否需要支持 xlib-standard 的多语言模板（非 Go）？ | 待评估 |
+| OQ-001 | 是否需要支持 xlib_standard 的多语言模板（非 Go）？ | 待评估 |
 | OQ-002 | Generator 是否需要支持交互式 prompt 选择模板？ | 待评估 |
 
 ### Future

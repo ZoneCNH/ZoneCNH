@@ -35,7 +35,7 @@
 `module/FOUNDATION-DEPS.yaml` 中还有标准、门禁、存储扩展和契约条目，因此 CI 的完整校验对象不是只看 6 个模块，而是：
 
 - 6 个第一阶段基础模块。
-- 2 个标准/门禁条目：`xlib-standard`、`xlibgate`。
+- 2 个标准/门禁条目：`xlib_standard`、`xlibgate`。
 - 7 个存储扩展条目：`redisx`、`kafkax`、`natsx`、`postgresx`、`taosx`、`ossx`、`clickhousex`。
 - 1 个契约条目：`contracts`。
 
@@ -72,7 +72,7 @@
 1. 发布级 SBOM、模块 build/test 摘要和 release evidence 仍需与模块仓 CI 产物打通。
 2. 6 个基础模块仓库还需要铺同构 `module-ci.yml` 和 evidence 输出。
 3. self-hosted runner 执行 PR 需要明确安全策略，避免未受信任 fork PR 接触内部机器和 secrets。
-4. 当前真实模块状态存在 drift：`/home/contracts` 的 `go.mod` 声明为 `github.com/ZoneCNH/xlib-standard`，与矩阵期望 `github.com/ZoneCNH/contracts` 不一致；`kafkax`、`natsx`、`ossx`、`postgresx` 的本地 Go baseline 也已被 evidence 标记为不匹配。
+4. 当前真实模块状态存在 drift：`/home/contracts` 的 `go.mod` 声明为 `github.com/ZoneCNH/xlib_standard`，与矩阵期望 `github.com/ZoneCNH/contracts` 不一致；`kafkax`、`natsx`、`ossx`、`postgresx` 的本地 Go baseline 也已被 evidence 标记为不匹配。
 5. 多个模块仓边界脚本仍需修正。当前已见问题包括 `observex` secret fixture 命中 `password=` 扫描、`resiliencx` boundary 目标引用缺失目录、`schedulex` 需要 `GOWORK=off`、`kafkax` 存在 internal 到 public 包导入。
    `testkitx` 仍命中 `pkg/testkitx/boundarytest/boundarytest.go:69` 的 `Position` 业务语义项。
 

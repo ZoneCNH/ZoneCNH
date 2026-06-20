@@ -1,14 +1,14 @@
-# xlib-standard 分析索引
+# xlib_standard 分析索引
 
-本目录是 `github.com/ZoneCNH/xlib-standard` 上游仓库在本仓库的 **本地分析快照**。汇总自 `.worktree/*.md`、`docs/**` 与外部规划文档的整理结果，作为本仓库（`ZoneCNH/ZoneCNH`）架构索引的一部分；它不是上游 SSOT，也不是可执行规格。
+本目录是 `github.com/ZoneCNH/xlib_standard` 上游仓库在本仓库的 **本地分析快照**。汇总自 `.worktree/*.md`、`docs/**` 与外部规划文档的整理结果，作为本仓库（`ZoneCNH/ZoneCNH`）架构索引的一部分；它不是上游 SSOT，也不是可执行规格。
 
-模块级文档 `goal.md` 和 `SPEC.md` 位于本目录根，定义 xlib-standard 的五类职责（标准事实源、Go Reference Template、Generator、Harness Gate、Evidence Runtime，引自 CONSTITUTION.md P2 / ARCHITECTURE.md）。分析快照文件（`ANALYSIS.md`、`FR-DETAIL.md` 等）是对上游仓库标准的本地整理，不替代模块级文档。
+模块级文档 `goal.md` 和 `SPEC.md` 位于本目录根，定义 xlib_standard 的五类职责（标准事实源、Go Reference Template、Generator、Harness Gate、Evidence Runtime，引自 CONSTITUTION.md P2 / ARCHITECTURE.md）。分析快照文件（`ANALYSIS.md`、`FR-DETAIL.md` 等）是对上游仓库标准的本地整理，不替代模块级文档。
 
 ## 上游引用
 
 | 字段            | 值                                                                                                                      |
 | --------------- | ----------------------------------------------------------------------------------------------------------------------- |
-| Upstream        | `github.com/ZoneCNH/xlib-standard`                                                                                      |
+| Upstream        | `github.com/ZoneCNH/xlib_standard`                                                                                      |
 | Snapshot Date   | 2026-06-08（原始快照）/ 2026-06-12（文档对齐更新）                                                                      |
 | Upstream Commit | `93753b30e6d01fb4a9b096acaa0d7d53a2fb231c`（= remote tag `v0.6.5`，tree `296e3b91…`，pinned 2026-06-08 04:59 +08:00）   |
 | Upstream HEAD   | `09c9ec2`（tag `v1.0.0`，2026-06-12 文档-代码对齐基准）                                                                 |
@@ -17,7 +17,7 @@
 
 ## 模块定位
 
-`xlib-standard` 是本仓库的本地分析快照目录，同步自上游 `github.com/ZoneCNH/xlib-standard`。模块承担五类职责：
+`xlib_standard` 是本仓库的本地分析快照目录，同步自上游 `github.com/ZoneCNH/xlib_standard`。模块承担五类职责：
 
 | 角色                  | 职责                               | 权威工件                  |
 | --------------------- | ---------------------------------- | ------------------------- |
@@ -51,13 +51,13 @@
 原 `archive/` 目录的历史文件已迁移至 `docs/report/`，旧 `SPEC.md` 23 节整理稿只保留归档说明；这些历史内容不再作为当前分析、lint 或 independent review verdict 的入口：
 
 - `SPEC.md`（旧 23 节整理稿）：已于 2026-06-12 去归档化恢复为可执行规格，当前权威入口见 `SPEC.md`（后四角色）和 `goal.md`（第一角色）。此条仅保留供溯源比对。
-- `docs/report/xlib-standard-module-spec-archived.md`：历史 20 节整理工件。
-- `docs/report/xlib-standard-deep-analysis-archived.md`：181 文件旧口径深度分析。
+- `docs/report/xlib_standard-module-spec-archived.md`：历史 20 节整理工件。
+- `docs/report/xlib_standard-deep-analysis-archived.md`：181 文件旧口径深度分析。
 - 历史工件 **不得** 作为当前分析、追溯、冲突取舍或门禁事实引用，仅供溯源比对。
 
 ## 阅读规则
 
-- `goal.md` 是本目录模块级权威定位文档，定义 xlib-standard 五类职责（引自 CONSTITUTION.md P2 / ARCHITECTURE.md）。
+- `goal.md` 是本目录模块级权威定位文档，定义 xlib_standard 五类职责（引自 CONSTITUTION.md P2 / ARCHITECTURE.md）。
 - `SPEC.md` 是本目录模块级可执行交付规格，覆盖后四类职责的 FR / AC / TC。
 - `ANALYSIS.md` 是本仓库分析入口；真正可执行标准位于上游 `docs/standard/**`、`docs/*.md`、`.agent/harness/harness.yaml` 与相关 runtime artifact。
 - `INDEX.md` 只索引上游裁决标准位置，不在本仓库声明 gate / No-Go / DoD 已通过。

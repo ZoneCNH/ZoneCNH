@@ -9,7 +9,7 @@
 - Layer: 数据域 · Binance 交易所接入
 - Version: v0.1.0
 - Repository: [github.com/ZoneCNH/binance](https://github.com/ZoneCNH/binance)（client/ 子目录）
-- Related: [CONSTITUTION.md](../../../CONSTITUTION.md), [ARCHITECTURE.md](../../../ARCHITECTURE.md), [module/binance/SPEC.md](../SPEC.md), [module/contracts/SPEC.md](../../contracts/SPEC.md), [module/domain-market](../../domain-market/)
+- Related: [CONSTITUTION.md](../../../CONSTITUTION.md), [ARCHITECTURE.md](../../../ARCHITECTURE.md), [module/binance/SPEC.md](../SPEC.md), [module/contracts/SPEC.md](../../contracts/SPEC.md), [module/domain_market](../../domain_market/)
 
 ---
 
@@ -35,10 +35,10 @@
 
 - 支持 Binance 全部 4 条产品线：Spot、USDⓈ-M Futures、COIN-M Futures、Options，每条可独立启停
 - 提供产品线目录，包含足够字段生成规范身份标识
-- 提供 Binance 符号解析器，区分 Spot/USDⓈ-M/COIN-M/Options 身份，输出 `domain-market` 兼容的身份组件
+- 提供 Binance 符号解析器，区分 Spot/USDⓈ-M/COIN-M/Options 身份，输出 `domain_market` 兼容的身份组件
 - 提供 product-line connector 模型，每条产品线暴露一致的内部事件流
 - 将交易所原生事件规范化为内部 client 事件，保留完整溯源信息
-- 将规范化事件映射为 `domain-market` 规范行情事件，不自定义规范枚举
+- 将规范化事件映射为 `domain_market` 规范行情事件，不自定义规范枚举
 - 生成跨重试稳定的幂等键
 - 提供 SQLite spool，发送前持久化事件，支持进程重启恢复
 - 提供 checkpoint 机制，仅在 server 持久 ACK 后推进
@@ -52,9 +52,9 @@
 
 - 不做 gRPC ingest server 实现（由 `module/binance/server` 负责）
 - 不做 server 侧幂等接受或持久 ACK 逻辑（由 server 负责）
-- 不做下游 dispatch（由 server → `module/market-data` 链路负责）
+- 不做下游 dispatch（由 server → `module/market_data` 链路负责）
 - 不做 storage/query/strategy（属于分析域和执行域职责）
-- 不做规范行情类型定义（由 `module/domain-market` 负责）
+- 不做规范行情类型定义（由 `module/domain_market` 负责）
 - 不做 proto 定义（由 `module/contracts` 负责）
 - 不做 `binance-market` 遗留模块迁移或兼容
 - 不做交易下单（本模块仅采集行情数据）
@@ -103,7 +103,7 @@
 **THEN** 返回错误，不产生歧义的身份映射
 
 **WHEN** parser 输出被 mapper 使用
-**THEN** 输出作为 `domain-market` 规范类型的输入，不定义独立的规范枚举
+**THEN** 输出作为 `domain_market` 规范类型的输入，不定义独立的规范枚举
 
 ### FR-003: Product-Line Connectors
 
@@ -136,13 +136,13 @@
 
 ### FR-005: Canonical Mapping
 
-**功能描述**：将规范化 client 事件转换为 domain-market 规范行情事件。
+**功能描述**：将规范化 client 事件转换为 domain_market 规范行情事件。
 
 **WHEN** 规范化事件就绪
-**THEN** mapper 使用 `module/domain-market` 领域语义转换
+**THEN** mapper 使用 `module/domain_market` 领域语义转换
 
 **WHEN** 映射完成
-**THEN** 输出规范行情事件，类型系统完全依赖 `domain-market`
+**THEN** 输出规范行情事件，类型系统完全依赖 `domain_market`
 
 **WHEN** 映射遇到无法识别的 event type
 **THEN** 返回错误，不生成半规范事件
@@ -534,8 +534,8 @@ client/
 |------|------|------|
 | stdlib | Go 标准库 | 标准库 |
 | `module/contracts` | gRPC wire contract（§8.4）：`MarketDataService` + `IngestRequest`/`IngestResult`/`IngestAck`/`IngestReject`/`RejectCode` DTO | FoundationX |
-| `module/domain-market` | 规范行情类型定义 | FoundationX L2.5 |
-| `module/domain-exchange` | 交易所领域值对象 | FoundationX L2.5 |
+| `module/domain_market` | 规范行情类型定义 | FoundationX L2.5 |
+| `module/domain_exchange` | 交易所领域值对象 | FoundationX L2.5 |
 | `module/decimalx` | 高精度数值 | FoundationX L2.5 |
 | `module/configx` | 配置管理 | FoundationX L1 |
 | `module/observex` | 可观测性（metrics/tracing/logging） | FoundationX L1 |
@@ -549,14 +549,14 @@ client/
 |----------|------|
 | `module/binance/server` | 违反 C/S 边界，client 不得引用 server 内部实现 |
 | `storage/query/strategy` | 超出 client 职责范围，client 仅做采集与投递 |
-| `module/market-data` | client 不直接对接 market-data，通过 server 中转 |
-| `module/factor-engine` 及所有分析域模块 | 跨域依赖 |
-| `module/risk-engine` 及所有决策域模块 | 跨域依赖 |
+| `module/market_data` | client 不直接对接 market_data，通过 server 中转 |
+| `module/factor_engine` 及所有分析域模块 | 跨域依赖 |
+| `module/risk_engine` 及所有决策域模块 | 跨域依赖 |
 
 ### 15.3 依赖方向
 
 ```text
-module/contracts → module/domain-market
+module/contracts → module/domain_market
        ↑                  ↑
        │                  │
 module/binance/client ─────┘
@@ -580,7 +580,7 @@ module/binance/server
 | TC-005 | FR-003 | 集成 | Spot connector 连接并接收事件 | 收到 NormalizedEvent，product_line=spot |
 | TC-006 | FR-003 | 集成 | connector 断开后自动重连 | 连接恢复，事件流继续 |
 | TC-007 | FR-004 | 单元 | 规范化原始 trade 事件 | 输出包含完整溯源字段 |
-| TC-008 | FR-005 | 单元 | 映射规范化事件到 domain-market 类型 | 输出 `*domain_market.MarketEvent` |
+| TC-008 | FR-005 | 单元 | 映射规范化事件到 domain_market 类型 | 输出 `*domain_market.MarketEvent` |
 | TC-009 | FR-006 | 单元 | 同一事件两次生成幂等键 | 两次 key 相同 |
 | TC-010 | FR-006 | 单元 | 不同 event type 使用不同 key 策略 | key 格式符合各 type 预期 |
 | TC-011 | FR-007 | 单元 | 写入 spool → 状态 pending | DB 中状态为 pending |
@@ -727,7 +727,7 @@ module/binance/server
 - [ ] 全部 4 条产品线 catalog 可加载
 - [ ] parser 区分 Spot/USDⓈ-M/COIN-M/Options 身份
 - [ ] 4 个 connector 均可产生规范化事件
-- [ ] mapper 使用 domain-market 类型输出规范事件
+- [ ] mapper 使用 domain_market 类型输出规范事件
 - [ ] 事件在发送前已 spool
 - [ ] checkpoint 仅在 server ACK 后推进
 - [ ] gRPC sender 重连时与 server 幂等配合无重复投递

@@ -2,7 +2,7 @@
 
 ## Purpose
 
-`module/binance` defines the Binance-specific market-data ingest module for ZoneCNH.
+`module/binance` defines the Binance-specific market_data ingest module for ZoneCNH.
 
 It replaces the previous ambiguous split between a passive `binance` SDK and a separate `binance-market` Provider with a single explicit C/S architecture:
 
@@ -13,7 +13,7 @@ module/binance/server
 
 ## Primary Goal
 
-Provide a reliable, canonical, Binance-specific market-data ingestion path for:
+Provide a reliable, canonical, Binance-specific market_data ingestion path for:
 
 - Spot
 - USDⓈ-M Futures
@@ -24,9 +24,9 @@ Provide a reliable, canonical, Binance-specific market-data ingestion path for:
 
 `module/binance` does not own:
 
-- generic market-data domain semantics
-- cross-exchange market-data ingestion policy
-- market-data storage engine
+- generic market_data domain semantics
+- cross-exchange market_data ingestion policy
+- market_data storage engine
 - query APIs
 - strategy APIs
 - trading decisions

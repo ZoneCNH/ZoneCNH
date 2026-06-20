@@ -9,7 +9,7 @@
 - Layer: 数据域 · 行情
 - Module-Version: v1.0.0-spec
 - Repository: [github.com/ZoneCNH/hyperliquid](https://github.com/ZoneCNH/hyperliquid)
-- Related: [CONSTITUTION.md](../../CONSTITUTION.md), [ARCHITECTURE.md](../../ARCHITECTURE.md), [`module/binance`](../binance/), [`module/_template/cex-cs-module/README.md`](../_template/cex-cs-module/README.md), `module/domain-market`, `module/contracts`, `module/market-data`
+- Related: [CONSTITUTION.md](../../CONSTITUTION.md), [ARCHITECTURE.md](../../ARCHITECTURE.md), [`module/binance`](../binance/), [`module/_template/cex-cs-module/README.md`](../_template/cex-cs-module/README.md), `module/domain_market`, `module/contracts`, `module/market_data`
 
 > 子模块规格：`module/hyperliquid/client/SPEC.md`、`module/hyperliquid/server/SPEC.md`
 >
@@ -28,7 +28,7 @@ module/hyperliquid/client    ← 链上+链下双源采集器（wallet-signed au
   ↓ contracts-defined gRPC (MarketDataService)
 module/hyperliquid/server    ← 摄入受理服务器（含链上 reorg 兼容）
   ↓ downstream dispatch port
-module/market-data
+module/market_data
 ```
 
 与 CEX C/S Module 关键差异：
@@ -69,12 +69,12 @@ Hyperliquid 集成面临以下问题：
 
 | 不做 | 原因 |
 |------|------|
-| 定义 canonical domain model | 由 `module/domain-market` 拥有 |
+| 定义 canonical domain model | 由 `module/domain_market` 拥有 |
 | 定义 proto/gRPC wire contract | 由 `module/contracts` 拥有 |
 | 拥有 storage / query / strategy | 不属于数据域 |
 | 实现 Hyperliquid 下单 | 属于执行域 |
 | 钱包密钥管理（多签 / hardware wallet） | 属于安全域 / wallet 模块 |
-| 链上事件回填（chain replay） | 由 `module/market-data` 或独立 backfill 模块负责 |
+| 链上事件回填（chain replay） | 由 `module/market_data` 或独立 backfill 模块负责 |
 | 旧 hyperliquid SDK 兼容 | 硬切移除 |
 
 ---
@@ -83,7 +83,7 @@ Hyperliquid 集成面临以下问题：
 
 | 消费者 | 使用方式 |
 |--------|----------|
-| `module/market-data` | 通过 server downstream dispatch port 接收 canonical events（含 onchain metadata） |
+| `module/market_data` | 通过 server downstream dispatch port 接收 canonical events（含 onchain metadata） |
 | `module/hyperliquid/client` | 通过 contracts gRPC 调用 server `MarketDataService.Ingest` |
 | `module/hyperliquid/server` | 接收 client 流 |
 | Operator | 通过 admin 端点监控钱包 health、链上 confirmation 状态 |
@@ -208,7 +208,7 @@ server 校验：onchain_l1 事件缺失 `block_height`/`tx_hash` → `terminal_v
 
 ### Downstream Dispatch Port
 
-> 与 binance 一致，但 dispatched event 携带 onchain metadata。下游 `module/market-data` 需感知此扩展（详见 market-data SPEC §4 binance reject 映射，类似规则适用）。
+> 与 binance 一致，但 dispatched event 携带 onchain metadata。下游 `module/market_data` 需感知此扩展（详见 market_data SPEC §4 binance reject 映射，类似规则适用）。
 
 ---
 
@@ -400,7 +400,7 @@ internal/client/
 | ID | 问题 | 状态 |
 |----|------|------|
 | OQ-001 | contracts §8.4 wire 是否就绪？ | ✅ 已确认 |
-| OQ-002 | market-data downstream port 是否就绪？ | ✅ 已确认 |
+| OQ-002 | market_data downstream port 是否就绪？ | ✅ 已确认 |
 | OQ-003 | onchain event metadata 是否在 contracts 中支持？ | 已确认通过 `source_metadata` map 字段（v1.2.0） |
 
 ### Non-blocking

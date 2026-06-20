@@ -58,6 +58,6 @@ Implementation steps (in order):
 - PR-001 (root docs established).
 - PR-002 (client docs and task specs in place).
 - PR-003 (server docs and task specs in place).
-- PR-004 (domain-market types available and verified).
+- PR-004 (domain_market types available and verified).
 - PR-005 (contracts types available and verified).
 - PR-006 (transportx policies available and verified).

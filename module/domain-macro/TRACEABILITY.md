@@ -1,7 +1,7 @@
-# domain-macro 需求追溯矩阵
+# domain_macro 需求追溯矩阵
 
 > 更新：2026-06-16
-> 来源：module/domain-macro/SPEC.md v1.0.0
+> 来源：module/domain_macro/SPEC.md v1.0.0
 > 规范：docs/governance/TRACEABILITY.md
 
 ---

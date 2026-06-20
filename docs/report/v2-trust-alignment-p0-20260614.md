@@ -22,7 +22,7 @@
 |------|------|------|
 | `module/FOUNDATION-SPEC.md` | 仍声称"第一阶段只固化 6 个基础模块"为当前状态 | 添加范围说明横幅，指向 `module/README.md` 作为当前 SSOT |
 | `module/foundation-modules.md` | 仍声称"第一阶段 6 个基础模块"为当前状态 | 添加范围说明横幅，指向 `module/README.md` 和 `FOUNDATION-DEPS.yaml` |
-| `module/FOUNDATION-V1.md` | 范围说明写"17 个模块"，缺少 xlib-harness/xlib-evidence/domainx | 更新为"20 个模块"，补齐缺失模块 |
+| `module/FOUNDATION-V1.md` | 范围说明写"17 个模块"，缺少 xlib_harness/xlib_evidence/domainx | 更新为"20 个模块"，补齐缺失模块 |
 
 ### ✅ 2. STATUS.md 多维成熟度
 
@@ -48,20 +48,20 @@
 | 检查项 | README | ARCHITECTURE | STATUS | module/README | DEPS | 结论 |
 |--------|:------:|:------------:|:------:|:-------------:|:----:|:----:|
 | 20 模块数量 | ✅ | ✅ | ✅ | ✅ | ✅ | 一致 |
-| xlib-standard 职责（无 generator/harness/evidence） | ✅ | ✅ | ✅ | ✅ | ✅ | 一致 |
-| xlib-harness 存在 | ✅ | ✅ | ✅ | ✅ | ✅ | 一致 |
-| xlib-evidence 存在 | ✅ | ✅ | ✅ | ✅ | ✅ | 一致 |
+| xlib_standard 职责（无 generator/harness/evidence） | ✅ | ✅ | ✅ | ✅ | ✅ | 一致 |
+| xlib_harness 存在 | ✅ | ✅ | ✅ | ✅ | ✅ | 一致 |
+| xlib_evidence 存在 | ✅ | ✅ | ✅ | ✅ | ✅ | 一致 |
 | domainx 存在 | ✅ | ✅ | ✅ | ✅ | ✅ | 一致 |
-| 禁止短语"五类职责"在非 xlib-standard 文档 | — | — | — | — | — | 清洁 |
+| 禁止短语"五类职责"在非 xlib_standard 文档 | — | — | — | — | — | 清洁 |
 
 ### ✅ 4. FOUNDATION-DEPS.yaml 验证
 
 `module/FOUNDATION-DEPS.yaml` 已包含全部 20 个模块，层级正确：
 - L0: kernel (stdlib-only)
 - L1: configx, observex, resiliencx, schedulex, testkitx
-- standard-source: xlib-standard
-- harness: xlib-harness
-- evidence: xlib-evidence
+- standard-source: xlib_standard
+- harness: xlib_harness
+- evidence: xlib_evidence
 - gate: xlibgate
 - storage: redisx, kafkax, natsx, postgresx, taosx, ossx, clickhousex
 - contracts: contracts, transportx
@@ -77,8 +77,8 @@
 
 | 仓库 | 问题 | 优先级 |
 |------|------|--------|
-| contracts | README H1 仍是 xlib-standard | 🔴 P0 |
-| transportx | README H1 仍是 xlib-standard | 🔴 P0 |
+| contracts | README H1 仍是 xlib_standard | 🔴 P0 |
+| transportx | README H1 仍是 xlib_standard | 🔴 P0 |
 | redisx | README 残留标准源模板叙事 | 🟡 P1 |
 | kafkax | README 残留模板生成叙事 | 🟡 P1 |
 | clickhousex | 公开 no releases published | 🔴 P0 |
@@ -119,8 +119,8 @@ module/*/SPEC.md + FOUNDATION-DEPS.yaml + .foundationx/repo-contract.json
 - [x] 所有历史文档指向 `module/README.md` 作为当前 SSOT
 - [x] STATUS.md 基座表有多维成熟度展开视图
 - [x] 5 个核心文档（README、ARCHITECTURE、STATUS、module/README、DEPS）20 模块数量一致
-- [x] xlib-standard 在所有文档中不再被描述为 generator/harness/evidence 合体
-- [x] xlib-harness、xlib-evidence、domainx 在所有文档中存在
+- [x] xlib_standard 在所有文档中不再被描述为 generator/harness/evidence 合体
+- [x] xlib_harness、xlib_evidence、domainx 在所有文档中存在
 - [x] FOUNDATION-DEPS.yaml 覆盖全部 20 模块
 
 ### 全局验收（跨仓库，待后续迭代）

@@ -11,11 +11,11 @@ module/okx/server
 
 ## Role
 
-`module/okx` owns OKX-specific market-data ingestion into ZoneCNH.
+`module/okx` owns OKX-specific market_data ingestion into ZoneCNH.
 
-- Canonical semantics → `module/domain-market`
+- Canonical semantics → `module/domain_market`
 - Wire protocol → `module/contracts`
-- Downstream storage / query / fanout → `module/market-data` 及下游模块
+- Downstream storage / query / fanout → `module/market_data` 及下游模块
 
 ## Submodules
 

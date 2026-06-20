@@ -1,6 +1,6 @@
-# xlib-standard 上游 SSOT 索引
+# xlib_standard 上游 SSOT 索引
 
-本文件是本地索引，不是可执行规格。上游事实以 `github.com/ZoneCNH/xlib-standard@93753b30e6d01fb4a9b096acaa0d7d53a2fb231c` 为准。
+本文件是本地索引，不是可执行规格。上游事实以 `github.com/ZoneCNH/xlib_standard@93753b30e6d01fb4a9b096acaa0d7d53a2fb231c` 为准。
 
 - Snapshot-Date: 2026-06-08
 - Upstream-Commit: `93753b30e6d01fb4a9b096acaa0d7d53a2fb231c` (v0.6.5)
@@ -36,13 +36,13 @@
 | 24   | `docs/standard/template-generation-contract.md` | `analysis/template.md` §3.2 / §3.5                          | 模板生成契约         |
 | 25   | `docs/standard/truth-state.md`                  | `analysis/governance.md` §4.2                               | truth-state          |
 | 26   | `docs/standard/versioning.md`                   | `analysis/runtime.md` §3.6                                  | 版本语义             |
-| 27   | `docs/standard/xlib-standard.md`                | `ANALYSIS.md` §2 / §7                                       | xlib-standard 主标准 |
+| 27   | `docs/standard/xlib_standard.md`                | `ANALYSIS.md` §2 / §7                                       | xlib_standard 主标准 |
 
 ## 2. ADR（9 个 Accepted）
 
 | #    | 上游文件                                               | 状态     | 核心决策                     |
 | ---: | ------------------------------------------------------ | -------- | ---------------------------- |
-| 1    | `docs/adr/ADR-20260602-001-xlib-standard-role.md`      | Accepted | xlib-standard 唯一主身份     |
+| 1    | `docs/adr/ADR-20260602-001-xlib_standard-role.md`      | Accepted | xlib_standard 唯一主身份     |
 | 2    | `docs/adr/ADR-20260602-002-kernel-rename.md`           | Accepted | 默认下游迁移到 kernel        |
 | 3    | `docs/adr/ADR-20260602-003-core-gate.md`               | Accepted | Core Gate 五类检查           |
 | 4    | `docs/adr/ADR-20260603-001-goalcli-runtime.md`         | Accepted | goalcli 唯一执行面           |

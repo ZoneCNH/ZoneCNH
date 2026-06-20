@@ -334,10 +334,10 @@ type IDFormat struct {
 
 var IDFormats = map[string]IDFormat{
     "GOAL":   {Name: "Goal", Pattern: regexp.MustCompile(`^GOAL-\d{8}-\d{3}$`), Example: "GOAL-20260608-001"},
-    "SPEC":   {Name: "Spec", Pattern: regexp.MustCompile(`^SPEC-[\w]+-v\d+$`), Example: "SPEC-market-data-v1"},
+    "SPEC":   {Name: "Spec", Pattern: regexp.MustCompile(`^SPEC-[\w]+-v\d+$`), Example: "SPEC-market_data-v1"},
     "REQ":    {Name: "Requirement", Pattern: regexp.MustCompile(`^REQ-SPEC-[\w]+-v\d+-\d{3}$`), Example: "REQ-SPEC-export-v1-001"},
     "AC":     {Name: "Acceptance Criteria", Pattern: regexp.MustCompile(`^AC-[\w]+-v\d+-\d{3}$`), Example: "AC-export-v1-001"},
-    "DESIGN": {Name: "Design", Pattern: regexp.MustCompile(`^DESIGN-[\w]+-v\d+$`), Example: "DESIGN-market-data-v1"},
+    "DESIGN": {Name: "Design", Pattern: regexp.MustCompile(`^DESIGN-[\w]+-v\d+$`), Example: "DESIGN-market_data-v1"},
     "ADR":    {Name: "ADR", Pattern: regexp.MustCompile(`^ADR-\d{8}-\d{3}$`), Example: "ADR-20260608-001"},
     "PLAN":   {Name: "Plan", Pattern: regexp.MustCompile(`^PLAN-GOAL-\d{8}-\d{3}-v\d+$`), Example: "PLAN-GOAL-20260608-001-v1"},
     "TASK":   {Name: "Task", Pattern: regexp.MustCompile(`^TASK-GOAL-\d{8}-\d{3}-\d{3}$`), Example: "TASK-GOAL-20260608-001-003"},
@@ -345,7 +345,7 @@ var IDFormats = map[string]IDFormat{
     "EVID":   {Name: "Evidence", Pattern: regexp.MustCompile(`^EVID-[\w]+-[\w]+-\d{3}-\d{3}$`), Example: "EVID-TEST-TASK-...-001"},
     "TEST":   {Name: "Test", Pattern: regexp.MustCompile(`^TEST-[\w]+-[\w]+-\d{3}-\d{3}$`), Example: "TEST-AC-export-v1-001-001"},
     "RISK":   {Name: "Risk", Pattern: regexp.MustCompile(`^RISK-GOAL-\d{8}-\d{3}-\d{3}$`), Example: "RISK-GOAL-20260608-001-001"},
-    "REL":    {Name: "Release", Pattern: regexp.MustCompile(`^REL-\d{8}-[\w]+$`), Example: "REL-20260608-market-data"},
+    "REL":    {Name: "Release", Pattern: regexp.MustCompile(`^REL-\d{8}-[\w]+$`), Example: "REL-20260608-market_data"},
     "DEC":    {Name: "Decision", Pattern: regexp.MustCompile(`^DEC-\d{8}-\d{3}$`), Example: "DEC-20260608-001"},
     "ISSUE":  {Name: "Issue", Pattern: regexp.MustCompile(`^#\d+$`), Example: "#1393"},
     "GATE":   {Name: "Gate", Pattern: regexp.MustCompile(`^G\d{1,2}$`), Example: "G5"},

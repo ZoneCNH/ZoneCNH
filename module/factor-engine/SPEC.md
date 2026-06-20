@@ -1,28 +1,28 @@
-# factor-engine 规格
+# factor_engine 规格
 
 - Status: Docs Baseline Approved / Runtime Pending
 - Spec-Version: v1.0.0
 - Last-Updated: 2026-06-17
 - Layer: 分析域 · 因子计算引擎
 - Version: v1.0.0-spec
-- Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/market-data`, `module/domain-market`, `module/feature-store`
+- Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/market_data`, `module/domain_market`, `module/feature_store`
 
-> 本文件发布 factor-engine 文档基线。运行时实现为 Pending。上游契约已闭合：market-data SPEC v1.0.0（Approved）、domain-market SPEC v1.1.0（ProductLine/InstrumentKey/MarketFactEnvelope 已冻结）。
+> 本文件发布 factor_engine 文档基线。运行时实现为 Pending。上游契约已闭合：market_data SPEC v1.0.0（Approved）、domain_market SPEC v1.1.0（ProductLine/InstrumentKey/MarketFactEnvelope 已冻结）。
 
 ---
 
 ## 1. 摘要
 
-`factor-engine` 是分析域的因子计算引擎。它消费 `market-data` 输出的 canonical `MarketEventEnvelope`，基于注册的因子定义执行因子计算，并将 `FactorOutput` 写入 `feature-store`。它是连接数据域与分析域的核心计算层。
+`factor_engine` 是分析域的因子计算引擎。它消费 `market_data` 输出的 canonical `MarketEventEnvelope`，基于注册的因子定义执行因子计算，并将 `FactorOutput` 写入 `feature_store`。它是连接数据域与分析域的核心计算层。
 
 ## 2. 边界
 
 | 类型 | 说明 |
 | --- | --- |
 | Owns | Factor 接口定义、FactorRegistry 注册/发现、因子计算编排管线、FactorOutput DTO、因子计算可观测性 |
-| Depends on | `module/market-data`（MarketEventEnvelope 输入）、`module/domain-market`（canonical ProductLine/InstrumentKey 类型）、`module/feature-store`（输出写入） |
-| Consumed by | `module/factor-eval`（因子评估）、`module/signal-factory`（信号生成） |
-| Excludes | 特征存储实现（→ feature-store）、因子评估/回测（→ factor-eval / backtestx）、数据采集（→ market-data）、信号生成（→ signal-factory） |
+| Depends on | `module/market_data`（MarketEventEnvelope 输入）、`module/domain_market`（canonical ProductLine/InstrumentKey 类型）、`module/feature_store`（输出写入） |
+| Consumed by | `module/factor_eval`（因子评估）、`module/signal_factory`（信号生成） |
+| Excludes | 特征存储实现（→ feature_store）、因子评估/回测（→ factor_eval / backtestx）、数据采集（→ market_data）、信号生成（→ signal_factory） |
 
 ## 3. 术语
 
@@ -58,7 +58,7 @@ THEN `Get(name string) (Factor, bool)` 返回因子实例和存在标志
 ### FR-003: ComputePipeline
 
 WHEN 启动因子计算管线
-THEN 按顺序执行：输入校验 → 因子选择（按配置的因子列表）→ 并行计算 → 结果聚合 → 输出写入 feature-store
+THEN 按顺序执行：输入校验 → 因子选择（按配置的因子列表）→ 并行计算 → 结果聚合 → 输出写入 feature_store
 AND 并行度由配置控制（默认 `GOMAXPROCS`）
 AND 单因子计算超时由 context deadline 控制
 
@@ -91,9 +91,9 @@ AND metrics 包含：compute_latency、compute_count、validation_reject_count�
 
 ### FR-008: Module Identity
 
-WHEN 下游模块引用 factor-engine
-THEN Go module path 必须为 `github.com/ZoneCNH/factor-engine`
-AND README H1 必须为 `# factor-engine`
+WHEN 下游模块引用 factor_engine
+THEN Go module path 必须为 `github.com/ZoneCNH/factor_engine`
+AND README H1 必须为 `# factor_engine`
 
 ## 5. 行为约束
 
@@ -102,7 +102,7 @@ AND README H1 必须为 `# factor-engine`
 | BR-001 | 因子 `Name()` 必须全局唯一 | `Register()` 返回 `ErrDuplicateFactor` |
 | BR-002 | 输入数据 `IsReliable=false` 时不得计算 | 拒绝并记录 `factor_engine.validation_reject` metric |
 | BR-003 | 因子计算不得修改输入 MarketEventEnvelope | 不可变约束，违反复核失败 |
-| BR-004 | 因子输出必须写入 feature-store（不得直接暴露给策略层） | 数据流边界违反 |
+| BR-004 | 因子输出必须写入 feature_store（不得直接暴露给策略层） | 数据流边界违反 |
 | BR-005 | 因子计算不得依赖未来数据（no lookahead） | 回测验证失败 |
 
 ## 6. 非功能需求
@@ -192,13 +192,13 @@ factor_engine:
 | 因子列表为空 | Pipeline 正常启动，无计算执行 |
 | 1000 因子并发 | 由 parallelism 控制并发度，不超过配置值 |
 | MarketEventEnvelope 为 nil | 校验拒绝，记录 metric |
-| feature-store 不可用 | 指数退避重试，不丢数据（缓存或阻塞） |
+| feature_store 不可用 | 指数退避重试，不丢数据（缓存或阻塞） |
 | 同一 symbol 多产品线 | 分别独立计算，不混合 |
 
 ## 12. 目录结构
 
 ```text
-factor-engine/
+factor_engine/
 ├── factor.go        # Factor 接口
 ├── registry.go      # FactorRegistry 实现
 ├── pipeline.go      # ComputePipeline
@@ -216,9 +216,9 @@ factor-engine/
 | 允许依赖 | 禁止依赖 |
 | --- | --- |
 | kernel, configx, observex, contracts | 交易所 SDK |
-| domain-market（canonical 类型） | 策略/回测引擎 |
-| feature-store（写入接口） | 数据库实现 |
-| market-data（MarketEventEnvelope） | vendor DTO |
+| domain_market（canonical 类型） | 策略/回测引擎 |
+| feature_store（写入接口） | 数据库实现 |
+| market_data（MarketEventEnvelope） | vendor DTO |
 
 ## 14. 测试
 
@@ -299,9 +299,9 @@ factor-engine/
 
 | 消费者 | 使用方式 |
 | --- | --- |
-| factor-eval | 消费 FactorOutput 进行 IC/分层回测评估 |
-| signal-factory | 消费 FactorOutput 生成交易信号 |
-| feature-store | 接收 FactorOutput 写入，管理版本和血缘 |
+| factor_eval | 消费 FactorOutput 进行 IC/分层回测评估 |
+| signal_factory | 消费 FactorOutput 生成交易信号 |
+| feature_store | 接收 FactorOutput 写入，管理版本和血缘 |
 
 ## 23. 变更历史
 

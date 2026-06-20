@@ -13,36 +13,36 @@
 ### 数据流现实
 
 ```
-binance ✅ → market-data(dispatch) ✅ → market_regime ❌空仓库 → regime-engine ❌空仓库
-macro-data ✅                        → macro_regime  ❌空仓库 → regime-engine ❌
+binance ✅ → market_data(dispatch) ✅ → market_regime ❌空仓库 → regime_engine ❌空仓库
+macro_data ✅                        → macro_regime  ❌空仓库 → regime_engine ❌
                                                                 ↓
-                                                    signal-factory ❌ → riskx ❌ → orderx ❌
+                                                    signal_factory ❌ → riskx ❌ → orderx ❌
 ```
 
 ### 各域实际完成度
 
-| 域 | 模块数 | 实际有代码 | 完成度 |
-|---|---|---|---|
-| Foundation | 21 | 18/21 factory | ~95% |
-| Market Data | 3 | 3/3 有代码 | ~92% |
-| Macro Data | 1 | 1/1 有代码 | ~100% |
-| **分析域** | 8 | **0/8**（regime-engine 无 pkg） | **~0%** |
-| **决策域** | 6 | **0/6**（全部仅 README） | **0%** |
-| **执行域** | 7 | **0/7**（全部仅 README） | **0%** |
+| 域          | 模块数 | 实际有代码                      | 完成度  |
+| ----------- | ------ | ------------------------------- | ------- |
+| Foundation  | 21     | 18/21 factory                   | ~95%    |
+| Market Data | 3      | 3/3 有代码                      | ~92%    |
+| Macro Data  | 1      | 1/1 有代码                      | ~100%   |
+| **分析域**  | 8      | **0/8**（regime_engine 无 pkg） | **~0%** |
+| **决策域**  | 6      | **0/6**（全部仅 README）        | **0%**  |
+| **执行域**  | 7      | **0/7**（全部仅 README）        | **0%**  |
 
 ### P0 契约缺失
 
 `contracts/pkg/contracts/` 只有 `contracts.go` + `ingestion.go`，**以下 P0 级 DTO 一条都未固化**：
 
-| 契约 | 数据流路径 | 优先级 |
-|---|---|---|
-| `RegimeSnapshot` | market_regime → regime-engine | P0 |
-| `RegimeCard` | macro_regime → regime-engine | P0 |
-| `DecisionCard` | regime-engine → signal-factory / risk-engine | P0 |
-| `MarketDataProvider` | market-data → market_regime | P0 |
-| `MacroDataProvider` | macro-data → macro_regime | P0 |
-| `FactorInput` / `FactorOutput` | factor-engine 内部 | P1 |
-| `SignalIntent` | signal-factory → orderx | P1 |
+| 契约                           | 数据流路径                                   | 优先级 |
+| ------------------------------ | -------------------------------------------- | ------ |
+| `RegimeSnapshot`               | market_regime → regime_engine                | P0     |
+| `RegimeCard`                   | macro_regime → regime_engine                 | P0     |
+| `DecisionCard`                 | regime_engine → signal_factory / risk_engine | P0     |
+| `MarketDataProvider`           | market_data → market_regime                  | P0     |
+| `MacroDataProvider`            | macro_data → macro_regime                    | P0     |
+| `FactorInput` / `FactorOutput` | factor_engine 内部                           | P1     |
+| `SignalIntent`                 | signal_factory → orderx                      | P1     |
 
 > **风险**：上层三个域在没有任何契约定义的情况下写代码，将来必然出现接口不兼容，重构成本极高。
 
@@ -52,12 +52,12 @@ macro-data ✅                        → macro_regime  ❌空仓库 → regime-
 
 4 组模块"旧占位仓库 + 新规格模块"并存，没有明确废弃路线：
 
-| 旧仓库（占位约 5%） | 新模块（SPEC draft） | 职责变化 |
-|---|---|---|
-| `risk-engine` | `riskx` | 无（命名重构） |
-| `order-engine` | `orderx` | 无（命名重构） |
-| `portfolio-engine` | `positionx` | portfolio → position（语义收窄） |
-| `backtest-engine` | `backtestx` | 无（命名重构） |
+| 旧仓库（占位约 5%） | 新模块（SPEC draft） | 职责变化                         |
+| ------------------- | -------------------- | -------------------------------- |
+| `risk_engine`       | `riskx`              | 无（命名重构）                   |
+| `order_engine`      | `orderx`             | 无（命名重构）                   |
+| `portfolio_engine`  | `positionx`          | portfolio → position（语义收窄） |
+| `backtest_engine`   | `backtestx`          | 无（命名重构）                   |
 
 **问题**：两者同时出现在 STATUS / README / ARCHITECTURE 中，外部消费者无法判断应该依赖哪个仓库。
 
@@ -67,10 +67,10 @@ macro-data ✅                        → macro_regime  ❌空仓库 → regime-
 
 ## 三、🔴 基座阻塞：2 个 Open Blocker 卡住 Foundation factory 闭合
 
-| Blocker | 模块 | 严重性 | 问题描述 |
-|---|---|---|---|
+| Blocker | 模块        | 严重性 | 问题描述                                                                                        |
+| ------- | ----------- | ------ | ----------------------------------------------------------------------------------------------- |
 | BLK-009 | `bootstrap` | medium | `stores.go:217` import `foundationx.SecretString`，遗留依赖未清除；Stores!=None 路径全部为 stub |
-| BLK-010 | `ossx` | high | 公开 release v1.0.1 但仓库 0 pkg 源码（仅文档/脚本），evidence archive 缺失 |
+| BLK-010 | `ossx`      | high   | 公开 release v1.0.1 但仓库 0 pkg 源码（仅文档/脚本），evidence archive 缺失                     |
 
 **后果**：Foundation 整体卡在 non-factory（18/21），下游业务域无法宣称依赖了一个 factory-grade 基座。
 
@@ -95,14 +95,14 @@ retry loop × 2      ← clickhousex + ossx 有独立实现，应接入 resilien
 
 ## 五、🟡 中风险：管线评分 6 个模块未达 98 分门禁
 
-| 模块 | 最低分项 | 评分 | 原因 |
-|---|---|---|---|
-| `xlib-standard` | spec & matrix | 80 | 快照格式特殊，23节结构不完整 |
-| `xlib-evidence` | spec | 83 | WHEN/THEN 章节不完整 |
-| `xlib-harness` | spec | 83 | 同上 |
-| `transportx` | spec | 84 | 23 节结构缺失 |
-| `natsx` | tasks | 92 | 任务追溯缺口 |
-| `configx` | tasks | 96 | 小幅缺口 |
+| 模块            | 最低分项      | 评分 | 原因                         |
+| --------------- | ------------- | ---- | ---------------------------- |
+| `xlib_standard` | spec & matrix | 80   | 快照格式特殊，23节结构不完整 |
+| `xlib_evidence` | spec          | 83   | WHEN/THEN 章节不完整         |
+| `xlib_harness`  | spec          | 83   | 同上                         |
+| `transportx`    | spec          | 84   | 23 节结构缺失                |
+| `natsx`         | tasks         | 92   | 任务追溯缺口                 |
+| `configx`       | tasks         | 96   | 小幅缺口                     |
 
 这 6 个模块均为已发布的 factory-ready 模块，但 Spec 管线形式上未闭合，影响治理体系一致性。
 
@@ -120,7 +120,7 @@ retry loop × 2      ← clickhousex + ossx 有独立实现，应接入 resilien
 
 ## 七、🟡 中风险：75 个仓库无统一命名前缀
 
-当前命名混杂 3 种风格：`configx`（x 后缀）/ `market-data`（kebab）/ `market_regime`（snake）/ `binance`（裸名）/ `x.go`（特殊）。
+当前命名混杂 3 种风格：`configx`（x 后缀）/ `market_data`（kebab）/ `market_regime`（snake）/ `binance`（裸名）/ `x.go`（特殊）。
 
 70+ 仓库增长后维护困难，外部访问时无法识别模块归属。
 
@@ -129,34 +129,35 @@ retry loop × 2      ← clickhousex + ossx 有独立实现，应接入 resilien
 ```
 foundation-*  → kernel / configx / observex / resiliencx ...
 adapter-*     → binance / okx / fred ...
-engine-*      → factor-engine / risk-engine ...
-lab-*         → ms_brain / alternative-data ...
+engine-*      → factor_engine / risk_engine ...
+lab-*         → ms_brain / alternative_data ...
 ```
 
 ---
 
 ## 八、🟡 中风险：数据域 binance 已实现但无消费者
 
-`binance` 已实现（v0.2.0，4 产品线，bootstrap 接入，domain-exchange 适配），但：
-- `market_regime` 完全为空，binance 输出的 domain-market 数据无处消费
+`binance` 已实现（v0.2.0，4 产品线，bootstrap 接入，domain_exchange 适配），但：
+
+- `market_regime` 完全为空，binance 输出的 domain_market 数据无处消费
 - 其余 12 个 CEX/DEX SDK（okx/bybit/...）均停在约 80%，没有统一的 C/S Module 封装
-- `market-data` dispatch 的下游 receiver 不明确
+- `market_data` dispatch 的下游 receiver 不明确
 
 ---
 
 ## 九、问题优先级矩阵
 
-| 优先级 | 问题 | 阻塞目标 |
-|---|---|---|
-| **P0** | contracts P0 DTO 未固化 | 分析域/决策域/执行域无法开始 |
-| **P0** | 分析域三引擎（market_regime/macro_regime/regime-engine）全空 | 核心业务闭环 |
-| **P1** | BLK-009 bootstrap 遗留依赖 | Foundation factory 闭合 |
-| **P1** | BLK-010 ossx 无源码 | Foundation factory 闭合 |
-| **P1** | 双轨模块废弃路线不明 | 开发者认知统一 |
-| **P2** | 7 模块横切重复收敛 | 维护成本降低 |
-| **P2** | 管线 6 模块评分未达 98 | 治理一致性 |
-| **P3** | x.go 体量核实 | 架构守卫 |
-| **P3** | 75 仓库命名统一 | 长期可维护性 |
+| 优先级 | 问题                                                         | 阻塞目标                     |
+| ------ | ------------------------------------------------------------ | ---------------------------- |
+| **P0** | contracts P0 DTO 未固化                                      | 分析域/决策域/执行域无法开始 |
+| **P0** | 分析域三引擎（market_regime/macro_regime/regime_engine）全空 | 核心业务闭环                 |
+| **P1** | BLK-009 bootstrap 遗留依赖                                   | Foundation factory 闭合      |
+| **P1** | BLK-010 ossx 无源码                                          | Foundation factory 闭合      |
+| **P1** | 双轨模块废弃路线不明                                         | 开发者认知统一               |
+| **P2** | 7 模块横切重复收敛                                           | 维护成本降低                 |
+| **P2** | 管线 6 模块评分未达 98                                       | 治理一致性                   |
+| **P3** | x.go 体量核实                                                | 架构守卫                     |
+| **P3** | 75 仓库命名统一                                              | 长期可维护性                 |
 
 ---
 
@@ -173,27 +174,27 @@ lab-*         → ms_brain / alternative-data ...
 
 ### 下两周（最小链路闭环）
 
-3. `market_regime` 最小实现（依赖 domain-market ✅ + contracts P0 ✅）
-4. `macro_regime` 最小实现（依赖 domain-macro ✅ + contracts P0 ✅）
-5. 为旧占位仓库（risk-engine / order-engine / portfolio-engine / backtest-engine）添加 DEPRECATED 标记
+3. `market_regime` 最小实现（依赖 domain_market ✅ + contracts P0 ✅）
+4. `macro_regime` 最小实现（依赖 domain_macro ✅ + contracts P0 ✅）
+5. 为旧占位仓库（risk_engine / order_engine / portfolio_engine / backtest_engine）添加 DEPRECATED 标记
 
 ### 下一个月（架构收敛）
 
 6. 执行 x 模块横切收敛计划（已有方案）
-7. `regime-engine` 最小实现 → DecisionCard 链路打通
-8. `signal-factory` 骨架（消费 DecisionCard）
+7. `regime_engine` 最小实现 → DecisionCard 链路打通
+8. `signal_factory` 骨架（消费 DecisionCard）
 9. 补齐 6 个模块 Spec 至 98 分
 
 ---
 
 ## 附：相关文档
 
-| 文档 | 路径 |
-|---|---|
-| x 模块横切去重计划 | `docs/report/x-modules-cross-cutting-dedup-plan-20260620.md` |
-| Foundation 20 模块评分 | `docs/report/foundation-20-modules-scoring-20260619.md` |
-| 架构总览 | `docs/architecture/01-overview.md` |
-| 三引擎规格 | `docs/architecture/07-three-engines.md` |
-| 契约固化清单 | `docs/architecture/08-contracts.md` |
-| Blocker 列表 | `.foundationx/blockers.json` |
-| Factory 状态 | `.foundationx/status/index.json` |
+| 文档                   | 路径                                                         |
+| ---------------------- | ------------------------------------------------------------ |
+| x 模块横切去重计划     | `docs/report/x-modules-cross-cutting-dedup-plan-20260620.md` |
+| Foundation 20 模块评分 | `docs/report/foundation-20-modules-scoring-20260619.md`      |
+| 架构总览               | `docs/architecture/01-overview.md`                           |
+| 三引擎规格             | `docs/architecture/07-three-engines.md`                      |
+| 契约固化清单           | `docs/architecture/08-contracts.md`                          |
+| Blocker 列表           | `.foundationx/blockers.json`                                 |
+| Factory 状态           | `.foundationx/status/index.json`                             |

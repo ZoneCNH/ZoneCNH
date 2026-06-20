@@ -12,7 +12,7 @@
 
 ## v1.0.0 边界
 
-`domainx` 是交易域共享模型 SSOT，拥有 `Order`、`Trade`、`Position`、`Portfolio`、`ExecutionReport`、`OrderSide`、`OrderType` 与 `OrderState`。`domain-exchange` 只能通过 SPI request/response、兼容 alias 或返回 `domainx` 类型来表达交易所交互结果，不应形成第二套订单生命周期模型。
+`domainx` 是交易域共享模型 SSOT，拥有 `Order`、`Trade`、`Position`、`Portfolio`、`ExecutionReport`、`OrderSide`、`OrderType` 与 `OrderState`。`domain_exchange` 只能通过 SPI request/response、兼容 alias 或返回 `domainx` 类型来表达交易所交互结果，不应形成第二套订单生命周期模型。
 
 ## 与现有文档的对齐要求
 
@@ -26,15 +26,15 @@
 | 顺序 | 依赖 | 说明 |
 | --- | --- | --- |
 | 1 | `decimalx` | 交易价格、数量、名义金额、费用等数值语义依赖 Decimal/Money。 |
-| 2 | `domain-market` | 行情语义与 trade side 边界需先明确。 |
-| 3 | `domain-exchange` | 交易所 SPI 应采用 `domainx` 订单与执行报告类型。 |
+| 2 | `domain_market` | 行情语义与 trade side 边界需先明确。 |
+| 3 | `domain_exchange` | 交易所 SPI 应采用 `domainx` 订单与执行报告类型。 |
 
 ## 里程碑
 
 | 里程碑 | 内容 | 退出条件 |
 | --- | --- | --- |
-| M0 Boundary ADR | 冻结 domainx vs domain-exchange/domain-market 边界 | ADR 与 SPEC 差异关闭 |
+| M0 Boundary ADR | 冻结 domainx vs domain_exchange/domain_market 边界 | ADR 与 SPEC 差异关闭 |
 | M1 Public model freeze | Order/Trade/Position/Portfolio/ExecutionReport API 冻结 | 兼容测试和示例完成 |
 | M2 Invariants | 订单状态机、成交归属、持仓方向、组合聚合不变量 | invariant tests 完成 |
-| M3 Adoption | `domain-exchange` 返回或兼容 `domainx` 类型 | downstream smoke 通过 |
+| M3 Adoption | `domain_exchange` 返回或兼容 `domainx` 类型 | downstream smoke 通过 |
 | M4 Release | CHANGELOG、MIGRATION、release manifest、tag v1.0.0 | 所有门禁通过 |

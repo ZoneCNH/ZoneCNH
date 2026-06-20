@@ -1,4 +1,4 @@
-# xlib-harness 规格
+# xlib_harness 规格
 
 Status: Approved
 - Spec-Version: v1.3.0
@@ -7,13 +7,13 @@ Status: Approved
 - Version: v0.1.6
 - Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `xlibgate`
 
-> 公开投影说明：v0.1.6 已由 `/home/xlib-harness@d90b35124701` 的本地验收、GitHub Actions Release run `27855366871`、main CI run `27855396013` 和 GitHub Release 证据支撑。
+> 公开投影说明：v0.1.6 已由 `/home/xlib_harness@d90b35124701` 的本地验收、GitHub Actions Release run `27855366871`、main CI run `27855396013` 和 GitHub Release 证据支撑。
 
 ---
 
 ## 1. 摘要
 
-`xlib-harness` 是 Foundation 模块的生成器与门禁执行器。它生成标准模块文档集合，并对已有模块执行规格结构、追踪闭环、运行时依赖边界、Markdown 格式和 CI/CD 引用检查。
+`xlib_harness` 是 Foundation 模块的生成器与门禁执行器。它生成标准模块文档集合，并对已有模块执行规格结构、追踪闭环、运行时依赖边界、Markdown 格式和 CI/CD 引用检查。
 
 ## 2. 问题与背景
 
@@ -21,8 +21,8 @@ Foundation 20 模块需要统一的可机器验证规格资产。手工复制模
 
 ## 3. 目标
 
-- 提供 `xlib-harness generate <module>` 生成标准模块文档集合。
-- 提供 `xlib-harness check <module>` 对模块执行可组合门禁。
+- 提供 `xlib_harness generate <module>` 生成标准模块文档集合。
+- 提供 `xlib_harness check <module>` 对模块执行可组合门禁。
 - 以 fixture 锁定 compliant、bad-dependency、broken-trace 三类行为。
 - 保持 Go 运行时 stdlib-only，不把业务模块或横切工具作为运行时依赖。
 - 让 harness 自身达到 100% Go 覆盖率，并通过 `make ci`。
@@ -49,7 +49,7 @@ Foundation 20 模块需要统一的可机器验证规格资产。手工复制模
 | --- | --- | --- | --- | --- |
 | FR-001 | generate-module | 给定模块路径和可选 `--force` | 用户执行 `generate <module>` | 生成 `README.md`、`SPEC.md`、`TRACEABILITY.md`、`goal.md`、`IMPLEMENTATION-PLAN.md`、`ACCEPTANCE.md`、`FEATURES.md`、`tasks/TASK-001.md`、`Makefile`、`.github/workflows/ci.yml` |
 | FR-002 | spec-lint | 给定模块 `SPEC.md` | 用户执行 `check <module> --profile spec` | 检查 23 节结构、FR Given/When/Then、AC/TC 可验证性 |
-| FR-003 | boundary-check | 给定模块 `go.mod` 和 Go 源码 | 用户执行 `check <module> --profile boundary` | 拒绝 `observex`、`configx`、`resiliencx`、`schedulex`、`testkitx`、`xlib-standard` 运行时引用 |
+| FR-003 | boundary-check | 给定模块 `go.mod` 和 Go 源码 | 用户执行 `check <module> --profile boundary` | 拒绝 `observex`、`configx`、`resiliencx`、`schedulex`、`testkitx`、`xlib_standard` 运行时引用 |
 | FR-004 | ci-reference-check | 给定模块 CI/CD 文件和 Makefile | 用户执行 `check <module> --profile full` | 验证 CI/CD 关键引用、`make ci` 和 release workflow 存在 |
 | FR-005 | format-check | 给定模块 Markdown 文档 | 用户执行 `check <module> --profile full` | 检查尾随空格、空 Markdown 链接和表格列漂移 |
 | FR-006 | traceability-gate | 给定 `TRACEABILITY.md` 与规格 FR/AC/TC | 用户执行 `check <module> --profile full` | 验证每个 FR 都闭合到 AC 和 TC，且 AC/TC 被矩阵引用 |
@@ -68,12 +68,12 @@ Foundation 20 模块需要统一的可机器验证规格资产。手工复制模
 
 | AC ID | FR/BR Ref | TC Ref | Criterion | Verification | Status |
 | --- | --- | --- | --- | --- | --- |
-| AC-001 | FR-001 | TC-001 | 生成 10 个标准模块资产 | `xlib-harness generate /tmp/xlib-harness-smoke --force` | PASS |
-| AC-002 | FR-002 | TC-002 | compliant fixture 通过 spec profile | `xlib-harness check fixtures/compliant-module --profile spec` | PASS |
-| AC-003 | FR-003 | TC-003 | bad-dependency fixture 被 boundary profile 拒绝 | `xlib-harness check fixtures/module-with-bad-dep --profile boundary` | PASS |
-| AC-004 | FR-004 | TC-004 | compliant fixture 通过 full profile CI/CD 引用检查 | `xlib-harness check fixtures/compliant-module --profile full` | PASS |
+| AC-001 | FR-001 | TC-001 | 生成 10 个标准模块资产 | `xlib_harness generate /tmp/xlib_harness-smoke --force` | PASS |
+| AC-002 | FR-002 | TC-002 | compliant fixture 通过 spec profile | `xlib_harness check fixtures/compliant-module --profile spec` | PASS |
+| AC-003 | FR-003 | TC-003 | bad-dependency fixture 被 boundary profile 拒绝 | `xlib_harness check fixtures/module-with-bad-dep --profile boundary` | PASS |
+| AC-004 | FR-004 | TC-004 | compliant fixture 通过 full profile CI/CD 引用检查 | `xlib_harness check fixtures/compliant-module --profile full` | PASS |
 | AC-005 | FR-005 | TC-005 | Markdown 格式问题被报告 | Go unit tests | PASS |
-| AC-006 | FR-006 | TC-006 | broken-trace fixture 被 full profile 拒绝 | `xlib-harness check fixtures/broken-trace --profile full` | PASS |
+| AC-006 | FR-006 | TC-006 | broken-trace fixture 被 full profile 拒绝 | `xlib_harness check fixtures/broken-trace --profile full` | PASS |
 | AC-007 | BR-005 | TC-007 | 代码仓库公开文档与 secret scan 被发布门禁验证 | GitHub Actions Release run `27855366871` and main CI run `27855396013` | PASS |
 
 ## 8. 接口契约
@@ -167,7 +167,7 @@ xlib_harness:
 ## 13. 目录结构
 
 ```text
-module/xlib-harness/
+module/xlib_harness/
   goal.md
   SPEC.md
   TRACEABILITY.md
@@ -185,13 +185,13 @@ module/xlib-harness/
     TASK-XLIBHARNESS-007.md
 ```
 
-Module implementation lives in `/home/xlib-harness`; this root repository only stores governance projection documents.
+Module implementation lives in `/home/xlib_harness`; this root repository only stores governance projection documents.
 
 ## 14. 依赖
 
 - Runtime: Go standard library only.
 - CI tooling: `xlibgate@v1.0.0`, pinned open-source `gitleaks` CLI, GitHub CLI release step.
-- Forbidden runtime refs: `observex`、`configx`、`resiliencx`、`schedulex`、`testkitx`、`xlib-standard`。
+- Forbidden runtime refs: `observex`、`configx`、`resiliencx`、`schedulex`、`testkitx`、`xlib_standard`。
 - Forbidden scope: business-domain modules, credentials, exchange endpoints, live trading config。
 
 ## 15. 测试
@@ -207,7 +207,7 @@ Module implementation lives in `/home/xlib-harness`; this root repository only s
 
 | TC ID | Scenario | Command | Expected |
 | --- | --- | --- | --- |
-| TC-001 | Generate module docs | `go run . generate /tmp/xlib-harness-smoke --force` | 10 个资产创建成功 |
+| TC-001 | Generate module docs | `go run . generate /tmp/xlib_harness-smoke --force` | 10 个资产创建成功 |
 | TC-002 | Spec gate accepts compliant module | `go run . check fixtures/compliant-module --profile spec` | 规格检查全部通过 |
 | TC-003 | Boundary gate rejects forbidden dependency | `go run . check fixtures/module-with-bad-dep --profile boundary` | 非零退出并报告禁止依赖 |
 | TC-004 | Full gate accepts compliant module | `go run . check fixtures/compliant-module --profile full` | 15 项检查全部通过 |

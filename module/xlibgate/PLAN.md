@@ -4,7 +4,7 @@
 > 范围说明：本计划覆盖 FR-012~FR-019（trust 子命令组）的全部 8 个 Trust Alignment 检查。
 > 生成日期：2026-06-14
 > 环境：本仓库仅含文档；实现计划描述 xlibgate Go 项目中 trust 子命令组的开发阶段。
-> 前置条件：xlib-standard 已完成 Gate 和 Evidence 标准定义（.repo-contract.yaml、FOUNDATION-DEPS.yaml schema）。
+> 前置条件：xlib_standard 已完成 Gate 和 Evidence 标准定义（.repo-contract.yaml、FOUNDATION-DEPS.yaml schema）。
 
 ---
 
@@ -61,7 +61,7 @@ TASK-XLIBGATE-010 (trust 子命令框架: trust.go, trust_identity.go, 统一 JS
 - JSON 输出符合 §9.3.1 schema
 - `--help` 输出参数说明
 - TASK-XLIBGATE-011：五源比对（README H1 / go.mod / .repo-contract.yaml / public_package / 身份声明）全部通过 ✓
-- TASK-XLIBGATE-012：BR-010 五条禁止短语全部检测，xlib-standard 自跳
+- TASK-XLIBGATE-012：BR-010 五条禁止短语全部检测，xlib_standard 自跳
 - TASK-XLIBGATE-013：七源版本一致性检测，--offline/--online 模式切换
 - TASK-XLIBGATE-014：11 维工厂级判定逐项验证，拒绝单个百分比
 - TASK-XLIBGATE-015：消费 FOUNDATION-DEPS.yaml，kernel stdlib-only 特殊检测
@@ -155,7 +155,7 @@ TASK-XLIBGATE-010 (trust 子命令框架: trust.go, trust_identity.go, 统一 JS
 
 | 风险                                         | 概率 | 影响   | 风险值 | 关联 Task | 缓解                                      | 检测方式                            |
 | -------------------------------------------- | :--: | :----: | :----: | :-------: | ----------------------------------------- | ----------------------------------- |
-| FOUNDATION-DEPS.yaml schema 不稳定           | 20%  | Medium | 0.40   | 015       | Phase 1 前与 xlib-standard 对齐 schema    | YAML schema 校验                    |
+| FOUNDATION-DEPS.yaml schema 不稳定           | 20%  | Medium | 0.40   | 015       | Phase 1 前与 xlib_standard 对齐 schema    | YAML schema 校验                    |
 | GitHub API 速率限制（release-consistency）   | 15%  | Low    | 0.15   | 013       | 默认 --offline 模式，--online 仅手动触发  | HTTP 403 检测 + 友好错误提示        |
 | 20 模块硬编码在 fleet-status                 | 10%  | Low    | 0.10   | 018       | Phase 2 前评估是否需要 --expected-count    | --repos-root 下实际模块数验证       |
 | .repo-contract.yaml 在部分模块中缺失         | 30%  | Medium | 0.60   | 011–018   | FR 中各检查均定义 CONTRACT_PARSE_ERROR 路径 | reason_code=CONTRACT_PARSE_ERROR     |
@@ -182,7 +182,7 @@ trust 子命令组独立于 check 和 l2，不与现有代码共享运行时状�
 
 | 关系 | 说明 |
 |------|------|
-| trust import-boundary vs check imports | trust 版消费 FOUNDATION-DEPS.yaml（xlib-standard 定义），check 版消费 xlibgate.yaml。两者独立实现，不共享扫描逻辑。 |
+| trust import-boundary vs check imports | trust 版消费 FOUNDATION-DEPS.yaml（xlib_standard 定义），check 版消费 xlibgate.yaml。两者独立实现，不共享扫描逻辑。 |
 | trust testkit-prod-import vs check imports（testkitx 规则） | trust 版有严格路径分类（生产/测试/示例）和 --strict 模式；check 版仅检查 deps.yaml 中的 testkitx 禁止规则。 |
 | trust secret-redaction vs check all（secret_scan） | trust 版扫描 release/evidence 文档中的明文密钥；check 版通过 gitleaks 扫描源码。互补不重叠。 |
 | trust fleet-status vs check all | check all 在单模块 CI 中运行；fleet-status 跨 20 模块聚合。两者输入粒度不同。 |

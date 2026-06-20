@@ -9,7 +9,7 @@ TASK-XLIB-007: HealthCheck 和 Metrics 5 个 P0 指标
 
 ## Related Spec
 
-- module/xlib-standard/SPEC.md §7 Functional Requirements, §9 Interfaces, §10 Data Model
+- module/xlib_standard/SPEC.md §7 Functional Requirements, §9 Interfaces, §10 Data Model
 
 ## Related Requirements
 
@@ -78,4 +78,4 @@ GOWORK=off go test -race ./pkg/templatex/
 
 ## Test Case Reference
 
-参见 `module/xlib-standard/TRACEABILITY.md` FR-003 / FR-004 对应 TC-009~TC-013。
+参见 `module/xlib_standard/TRACEABILITY.md` FR-003 / FR-004 对应 TC-009~TC-013。

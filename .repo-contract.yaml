@@ -20,10 +20,10 @@ foundation:
   - module/FOUNDATION-V1.md
   - module/foundation-modules.md
 xlib_roles:
-  xlib-standard: standards, schemas, templates, and reference facts only
-  xlib-harness: generator, scaffold, spec-lint, boundary, traceability, format, and
+  xlib_standard: standards, schemas, templates, and reference facts only
+  xlib_harness: generator, scaffold, spec-lint, boundary, traceability, format, and
     template gate runner
-  xlib-evidence: CI/release evidence manifest and report runtime
+  xlib_evidence: CI/release evidence manifest and report runtime
   xlibgate: machine policy gate for repo-contract, imports, go.mod, baseline, secrets,
     release evidence, and maturity claims
 exit_codes:

@@ -2,7 +2,7 @@
 
 ## Objective
 
-Collect Binance USDⓈ-M futures market-data events and normalize them.
+Collect Binance USDⓈ-M futures market_data events and normalize them.
 
 ## Scope
 

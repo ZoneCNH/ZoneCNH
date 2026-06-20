@@ -1,4 +1,4 @@
-# xlib-standard 复盘报告
+# xlib_standard 复盘报告
 
 > Goal: GOAL-20260608-001
 > 日期: 2026-06-09
@@ -54,4 +54,4 @@
 
 ---
 
-**结论**：xlib-standard 作为 Goal 驱动交付体系的首个完整案例，成功验证了 G0-G11 全链路。制品质量达标，工具链对齐延至 Phase 4。
+**结论**：xlib_standard 作为 Goal 驱动交付体系的首个完整案例，成功验证了 G0-G11 全链路。制品质量达标，工具链对齐延至 Phase 4。

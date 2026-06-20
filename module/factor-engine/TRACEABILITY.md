@@ -1,7 +1,7 @@
-# factor-engine 需求追溯矩阵
+# factor_engine 需求追溯矩阵
 
 > 更新：2026-06-17
-> 来源：module/factor-engine/SPEC.md
+> 来源：module/factor_engine/SPEC.md
 > 规范：docs/governance/TRACEABILITY.md
 
 ---
@@ -26,7 +26,7 @@
 | BR-001 | Name 唯一 | TC-FACTOR_ENGINE-009 | - | ⬜ |
 | BR-002 | IsReliable=false 拒算 | TC-FACTOR_ENGINE-010 | - | ⬜ |
 | BR-003 | 不可变输入 | TC-FACTOR_ENGINE-011 | - | ⬜ |
-| BR-004 | 输出入 feature-store | TC-FACTOR_ENGINE-012 | - | ⬜ |
+| BR-004 | 输出入 feature_store | TC-FACTOR_ENGINE-012 | - | ⬜ |
 | BR-005 | No lookahead | TC-FACTOR_ENGINE-013 | - | ⬜ |
 
 ## §3 NFR 追溯表

@@ -1,27 +1,27 @@
-# regime-engine 规格
+# regime_engine 规格
 
 - Status: Draft
 - Spec-Version: v0.1.0-draft
 - Last-Updated: 2026-06-17
 - Layer: 分析域 · M×S 联合决策
 - Version: v0.1.0-draft
-- Related: `CONSTITUTION.md`, `../factor-engine/`, `../domain-market/`
+- Related: `CONSTITUTION.md`, `../factor_engine/`, `../domain_market/`
 
-> 本文档发布 regime-engine 基线。运行时实现为 Pending。
+> 本文档发布 regime_engine 基线。运行时实现为 Pending。
 
 ---
 
 ## 1. 摘要
 
-regime-engine 是 M×S 联合决策引擎，融合 market_regime(S) 和 macro_regime(M) 输出，生成 DecisionCard(action/risk/permission)。
+regime_engine 是 M×S 联合决策引擎，融合 market_regime(S) 和 macro_regime(M) 输出，生成 DecisionCard(action/risk/permission)。
 
 ## 2. 边界
 
 | 类型 | 说明 |
 | --- | --- |
 | Owns | M×S 融合决策逻辑、DecisionCard 生成、三元输出（action/risk/permission） |
-| Depends on | market_regime（S1-S7）、macro_regime（M1-M7）、domain-market/domain-macro |
-| Consumed by | signal-factory（信号权重）、riskx（风控参数） |
+| Depends on | market_regime（S1-S7）、macro_regime（M1-M7）、domain_market/domain_macro |
+| Consumed by | signal_factory（信号权重）、riskx（风控参数） |
 | Excludes | 见上下游模块职责边界 |
 
 ## 3. 功能需求

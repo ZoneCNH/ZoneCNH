@@ -28,7 +28,7 @@ Go 🐹 (主要) · Rust 🦀 (底层) · Python 🐍 (脚本/数据) · TypeScr
 入口: x.go (Composition Root: 启动 / 配置 / 组装)
       │
       ▼
-标准: xlib-standard · xlib-harness · xlib-evidence · xlibgate（标准源、门禁生成/执行、证据收集、Trust Alignment，不参与运行时）
+标准: xlib_standard · xlib_harness · xlib_evidence · xlibgate（标准源、门禁生成/执行、证据收集、Trust Alignment，不参与运行时）
       │
       ▼
 L0: kernel (stdlib-only primitives)
@@ -42,17 +42,17 @@ L1 测试: testkitx (test-only)
 基座扩展: redisx / kafkax / natsx / postgresx / taosx / ossx / clickhousex / contracts / transportx
       │
       ▼
-L2.5: domainx / decimalx / domain-market / domain-macro / domain-exchange (5/5 已发布；domain-market v1.1.0，其余 v1.0.0+；5/5 GitHub Release 已观测对账；5/5 factory grade；live/soak N/A)
+L2.5: domainx / decimalx / domain_market / domain_macro / domain_exchange (5/5 已发布；domain_market v1.1.0，其余 v1.0.0+；5/5 GitHub Release 已观测对账；5/5 factory grade；live/soak N/A)
       │
       ▼
 业务流: 数据域 → 分析域 ↔ 决策域 → 执行域
-数据域: market-data (14) / macro-data (10) / alternative-data
-分析域: factor-engine / feature-store / factor-eval / market-regime / macro-regime / regime-engine / ms-brain / flowx
+数据域: market_data (14) / macro_data (10) / alternative_data
+分析域: factor_engine / feature_store / factor_eval / market_regime / macro_regime / regime_engine / ms_brain / flowx
        三引擎: market_engine(market facts → S state) / macro_engine(macro facts → M state) / regime_engine(M+S → action/risk/permission)
-决策域: signal-factory / backtest-engine / optimizer / backtestx / strategyx / maestro
-执行域: risk-engine → order-engine → portfolio-engine / settlement ; riskx / orderx / positionx
+决策域: signal_factory / backtest_engine / optimizer / backtestx / strategyx / maestro
+执行域: risk_engine → order_engine → portfolio_engine / settlement ; riskx / orderx / positionx
 
-反馈: backtest → factor-eval；fills / PnL / exposure events → 决策域
+反馈: backtest → factor_eval；fills / PnL / exposure events → 决策域
 横切: alertx (告警) / observex (可观测)
 ```
 
@@ -62,22 +62,22 @@ L2.5: domainx / decimalx / domain-market / domain-macro / domain-exchange (5/5 �
 | --- | --- | --- | --- | --- |
 | `decimalx` | v1.0.0 | v1.0.0 | v1.0.0 GitHub Release 已发布；API freeze 完成 | [module/decimalx](module/decimalx/goal.md) |
 | `domainx` | v1.0.1 | v1.0.1 | 领域共享值对象基线；v1.0.1 GitHub Release 已发布 | [module/domainx](module/domainx/goal.md) |
-| `domain-market` | v1.1.0 | v1.1.0 | 市场数据域模型 + canonical 类型（ProductLine/InstrumentKey/MarketFactEnvelope）+ Binance C/S ingestion 语义 | [module/domain-market](module/domain-market/goal.md) |
-| `domain-macro` | v1.0.0 | v1.0.0 | v1.0.0 GitHub Release 已发布；no-lookahead 冻结 | [module/domain-macro](module/domain-macro/goal.md) |
-| `domain-exchange` | v1.0.0 | v1.0.0 | v1.0.0 GitHub Release 已发布；Exchange SPI 冻结 | [module/domain-exchange](module/domain-exchange/goal.md) |
+| `domain_market` | v1.1.0 | v1.1.0 | 市场数据域模型 + canonical 类型（ProductLine/InstrumentKey/MarketFactEnvelope）+ Binance C/S ingestion 语义 | [module/domain_market](module/domain_market/goal.md) |
+| `domain_macro` | v1.0.0 | v1.0.0 | v1.0.0 GitHub Release 已发布；no-lookahead 冻结 | [module/domain_macro](module/domain_macro/goal.md) |
+| `domain_exchange` | v1.0.0 | v1.0.0 | v1.0.0 GitHub Release 已发布；Exchange SPI 冻结 | [module/domain_exchange](module/domain_exchange/goal.md) |
 
-成熟度口径：5/5 已发布 v1.0.0+ GitHub Release（decimalx v1.0.0/domain-market v1.1.0/domain-macro v1.0.0/domain-exchange v1.0.0/domainx v1.0.1）；5/5 factory grade；live/soak N/A（纯值对象库，无运行时服务不需 EXT CI/adoption/soak 证据）。
+成熟度口径：5/5 已发布 v1.0.0+ GitHub Release（decimalx v1.0.0/domain_market v1.1.0/domain_macro v1.0.0/domain_exchange v1.0.0/domainx v1.0.1）；5/5 factory grade；live/soak N/A（纯值对象库，无运行时服务不需 EXT CI/adoption/soak 证据）。
 
-依赖顺序：`decimalx` -> `domainx` -> `domain-market` / `domain-macro` -> `domain-exchange`。v1.0.0 是各模块的发布版本，GitHub Release/tag 已观测并对账。5/5 factory grade；live/soak N/A（纯值对象库）。
+依赖顺序：`decimalx` -> `domainx` -> `domain_market` / `domain_macro` -> `domain_exchange`。v1.0.0 是各模块的发布版本，GitHub Release/tag 已观测并对账。5/5 factory grade；live/soak N/A（纯值对象库）。
 
 `domainx` 已归入 L2.5 领域共享层；机器事实层将其作为 L2.5 模块单独计入 20-module projection，不并入 19 个基座组件数。
 
 ## 📦 核心项目
 
 ### 基座 · 基础设施
-- [xlib-standard](https://github.com/ZoneCNH/xlib-standard) — 标准事实源、Go Reference Template（Generator/Harness/Evidence 已拆分至 xlib-harness / xlib-evidence）；v1.0.1 GitHub Release 已发布，CI/Docker/Worktree/adoption 与本地 release-preflight 通过；不作为运行时 import 依赖 `公开`
-- [xlib-harness](https://github.com/ZoneCNH/xlib-harness) — 模块生成器与门禁执行器：generate/scaffold、spec-lint、boundary-check、traceability-gate、format-check；✅ v0.1.6 GitHub Release 已发布，Release run 27855366871 与 main CI run 27855396013 通过，覆盖率 100.0%，pinned gitleaks CLI secret scan 已对齐 `公开`
-- [xlib-evidence](https://github.com/ZoneCNH/xlib-evidence) — 证据收集与发布运行时：collect-coverage、generate-manifest、validate-manifest、remote-evidence、report；✅ v0.2.4 GitHub Release 已发布，release evidence assets 已归档，本地 Go runtime 验收通过（go test/race/vet/build/coverage 100.0%） `公开`
+- [xlib_standard](https://github.com/ZoneCNH/xlib_standard) — 标准事实源、Go Reference Template（Generator/Harness/Evidence 已拆分至 xlib_harness / xlib_evidence）；v1.0.1 GitHub Release 已发布，CI/Docker/Worktree/adoption 与本地 release-preflight 通过；不作为运行时 import 依赖 `公开`
+- [xlib_harness](https://github.com/ZoneCNH/xlib_harness) — 模块生成器与门禁执行器：generate/scaffold、spec-lint、boundary-check、traceability-gate、format-check；✅ v0.1.6 GitHub Release 已发布，Release run 27855366871 与 main CI run 27855396013 通过，覆盖率 100.0%，pinned gitleaks CLI secret scan 已对齐 `公开`
+- [xlib_evidence](https://github.com/ZoneCNH/xlib_evidence) — 证据收集与发布运行时：collect-coverage、generate-manifest、validate-manifest、remote-evidence、report；✅ v0.2.4 GitHub Release 已发布，release evidence assets 已归档，本地 Go runtime 验收通过（go test/race/vet/build/coverage 100.0%） `公开`
 - [kernel](https://github.com/ZoneCNH/kernel) — L0 标准库扩展原语（error/time/context/lifecycle/health/sync） `公开`
 - [configx](https://github.com/ZoneCNH/configx) — 显式配置加载、多源合并（File/Env/Map/Args）、StrictDecode、SecretString 脱敏、Provenance 追踪、EffectiveConfigHash、Bind() 强类型绑定、ConfigSnapshot 热更新与回滚、RemoteSource SPI、配置文档自动生成 `公开`
 - [observex](https://github.com/ZoneCNH/observex) — vendor-neutral 日志、指标、追踪、健康与脱敏契约 `公开`
@@ -110,15 +110,15 @@ L2.5: domainx / decimalx / domain-market / domain-macro / domain-exchange (5/5 �
 
 - [decimalx](https://github.com/ZoneCNH/decimalx) — 高精度十进制类型（Decimal/Price/Qty/Ratio/Money）；v1.0.0 GitHub Release 已发布 `公开`
 - [domainx](https://github.com/ZoneCNH/domainx) — 领域共享值对象：Order/Position/Trade/Portfolio/ExecutionReport 枚举与类型；L2.5 design baseline；公开 v1.0.1 GitHub Release/tag 已观测并已对账为 release=true；factory grade；live/soak N/A（纯值对象库） `公开`
-- [domain-market](https://github.com/ZoneCNH/domain-market) — 市场数据域模型（Tick/Quote/Bar/OrderBook）+ canonical 类型（ProductLine/InstrumentKey/MarketFactEnvelope）+ Binance C/S ingestion 语义；v1.1.0 `公开`
-- [domain-macro](https://github.com/ZoneCNH/domain-macro) — 宏观经济领域共享模型：国家/地区/指标/发布日历、MacroPoint/MacroState；v1.0.0 GitHub Release 已发布 `公开`
-- [domain-exchange](https://github.com/ZoneCNH/domain-exchange) — 交易域模型（VenueAdapter 13 方法接口）；v1.0.0 GitHub Release 已发布 `公开`
+- [domain_market](https://github.com/ZoneCNH/domain_market) — 市场数据域模型（Tick/Quote/Bar/OrderBook）+ canonical 类型（ProductLine/InstrumentKey/MarketFactEnvelope）+ Binance C/S ingestion 语义；v1.1.0 `公开`
+- [domain_macro](https://github.com/ZoneCNH/domain_macro) — 宏观经济领域共享模型：国家/地区/指标/发布日历、MacroPoint/MacroState；v1.0.0 GitHub Release 已发布 `公开`
+- [domain_exchange](https://github.com/ZoneCNH/domain_exchange) — 交易域模型（VenueAdapter 13 方法接口）；v1.0.0 GitHub Release 已发布 `公开`
 
-### 数据域 · market-data（14: 1 dispatch + 12 SDK + 1 C/S Module）
+### 数据域 · market_data（14: 1 dispatch + 12 SDK + 1 C/S Module）
 
 **行情接收与分发：**
 
-- [market-data](https://github.com/ZoneCNH/market-data) — Downstream Dispatch Port 接收侧模块；接收 adapter 归一化事件，执行校验、幂等、排序和分发 `公开`
+- [market_data](https://github.com/ZoneCNH/market_data) — Downstream Dispatch Port 接收侧模块；接收 adapter 归一化事件，执行校验、幂等、排序和分发 `公开`
 
 **交易所 SDK / C/S Module：**
 
@@ -136,38 +136,38 @@ L2.5: domainx / decimalx / domain-market / domain-macro / domain-exchange (5/5 �
 - [upbit](https://github.com/ZoneCNH/upbit) — Upbit `公开`
 - [coinglass](https://github.com/ZoneCNH/coinglass) — Coinglass 加密货币数据 `公开`
 
-### 数据域 · macro-data
+### 数据域 · macro_data
 
 - [fred](https://github.com/ZoneCNH/fred) — 美联储经济数据 (FRED) `公开`
 - [treasury](https://github.com/ZoneCNH/treasury) — 美国国债/财政数据 `公开`
-- [yield-curve](https://github.com/ZoneCNH/yield-curve) — 收益率曲线 `公开`
+- [yield_curve](https://github.com/ZoneCNH/yield_curve) — 收益率曲线 `公开`
 - [bea](https://github.com/ZoneCNH/bea) — 美国经济分析局 (BEA) `公开`
 - [ecb](https://github.com/ZoneCNH/ecb) — 欧洲央行 (ECB) `公开`
-- [uk-cb](https://github.com/ZoneCNH/uk-cb) — 英国央行 `公开`
-- [japan-cb](https://github.com/ZoneCNH/japan-cb) — 日本央行 `公开`
+- [uk_cb](https://github.com/ZoneCNH/uk_cb) — 英国央行 `公开`
+- [japan_cb](https://github.com/ZoneCNH/japan_cb) — 日本央行 `公开`
 - [eastmoney](https://github.com/ZoneCNH/eastmoney) — 东方财富 `公开`
 - [jin10](https://github.com/ZoneCNH/jin10) — 金十数据 SDK（开放 API + Flash 快讯） `公开`
 - [yahoo](https://github.com/ZoneCNH/yahoo) — Yahoo Finance `公开`
 
-### 数据域 · alternative-data
+### 数据域 · alternative_data
 
-- [alternative-data](https://github.com/ZoneCNH/alternative-data) — 链上数据、社交情绪、新闻 NLP `公开`
+- [alternative_data](https://github.com/ZoneCNH/alternative_data) — 链上数据、社交情绪、新闻 NLP `公开`
 
 ### 分析域
 
-- [factor-engine](https://github.com/ZoneCNH/factor-engine) — 因子计算引擎 `公开`
-- [feature-store](https://github.com/ZoneCNH/feature-store) — 特征存储与版本管理 `公开`
-- [factor-eval](https://github.com/ZoneCNH/factor-eval) — 因子评估 `公开`
-- [market-regime](https://github.com/ZoneCNH/market-regime) — 市场状态识别（S1-S7：多头趋势/挤空/空头/踩踏/震荡/低波/压缩） `私有`
-- [macro-regime](https://github.com/ZoneCNH/macro-regime) — 宏观经济体制识别（M1-M7：流动牛市/再通复苏/软着繁荣/鹰派通胀/衰退降息/信用去杠/滞胀冲击） `私有`
-- [regime-engine](https://github.com/ZoneCNH/regime-engine) — M×S 联合决策引擎（M state + S state → action A-E / risk_tier / position_caps / trade_permission） `私有`
-- [ms-brain](https://github.com/ZoneCNH/ms-brain) — M×S 系统架构分析体系 `私有`
+- [factor_engine](https://github.com/ZoneCNH/factor_engine) — 因子计算引擎 `公开`
+- [feature_store](https://github.com/ZoneCNH/feature_store) — 特征存储与版本管理 `公开`
+- [factor_eval](https://github.com/ZoneCNH/factor_eval) — 因子评估 `公开`
+- [market_regime](https://github.com/ZoneCNH/market_regime) — 市场状态识别（S1-S7：多头趋势/挤空/空头/踩踏/震荡/低波/压缩） `私有`
+- [macro_regime](https://github.com/ZoneCNH/macro_regime) — 宏观经济体制识别（M1-M7：流动牛市/再通复苏/软着繁荣/鹰派通胀/衰退降息/信用去杠/滞胀冲击） `私有`
+- [regime_engine](https://github.com/ZoneCNH/regime_engine) — M×S 联合决策引擎（M state + S state → action A-E / risk_tier / position_caps / trade_permission） `私有`
+- [ms_brain](https://github.com/ZoneCNH/ms_brain) — M×S 系统架构分析体系 `私有`
 - [flowx](https://github.com/ZoneCNH/flowx) — 数据流管线引擎（流式 ETL、窗口聚合、背压控制） `公开`
 
 ### 决策域
 
-- [signal-factory](https://github.com/ZoneCNH/signal-factory) — 信号生成与组合 `公开`
-- [backtest-engine](https://github.com/ZoneCNH/backtest-engine) — 事件驱动回测引擎 `公开`
+- [signal_factory](https://github.com/ZoneCNH/signal_factory) — 信号生成与组合 `公开`
+- [backtest_engine](https://github.com/ZoneCNH/backtest_engine) — 事件驱动回测引擎 `公开`
 - [optimizer](https://github.com/ZoneCNH/optimizer) — 参数优化 `公开`
 - [backtestx](https://github.com/ZoneCNH/backtestx) — 回测引擎（事件驱动、Walk-Forward、蒙特卡洛） `公开`
 - [strategyx](https://github.com/ZoneCNH/strategyx) — 策略工厂（策略注册、参数管理、信号组合） `公开`
@@ -175,9 +175,9 @@ L2.5: domainx / decimalx / domain-market / domain-macro / domain-exchange (5/5 �
 
 ### 执行域
 
-- [risk-engine](https://github.com/ZoneCNH/risk-engine) — 风险管理引擎 `公开`
-- [order-engine](https://github.com/ZoneCNH/order-engine) — 订单执行引擎 `公开`
-- [portfolio-engine](https://github.com/ZoneCNH/portfolio-engine) — 投资组合管理 `公开`
+- [risk_engine](https://github.com/ZoneCNH/risk_engine) — 风险管理引擎 `公开`
+- [order_engine](https://github.com/ZoneCNH/order_engine) — 订单执行引擎 `公开`
+- [portfolio_engine](https://github.com/ZoneCNH/portfolio_engine) — 投资组合管理 `公开`
 - [settlement](https://github.com/ZoneCNH/settlement) — 结算与对账 `公开`
 - [riskx](https://github.com/ZoneCNH/riskx) — 风控引擎（事前风控、回撤控制、熔断机制） `公开`
 - [orderx](https://github.com/ZoneCNH/orderx) — 订单管理器（订单生命周期、SOR、状态机） `公开`

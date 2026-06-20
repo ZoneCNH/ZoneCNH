@@ -26,7 +26,7 @@
 
 | ID | 约束摘要 | AC | TC/证据 | Task | 当前状态 |
 | --- | --- | --- | --- | --- | --- |
-| BR-001 | 禁止 import domain-market/domain-macro/domainx/contracts | AC-005 | TC-008, boundary-gates.sh | TASK-BS-004 | v0.1.0 boundary gate 已通过；需复验脚本证据 |
+| BR-001 | 禁止 import domain_market/domain_macro/domainx/contracts | AC-005 | TC-008, boundary-gates.sh | TASK-BS-004 | v0.1.0 boundary gate 已通过；需复验脚本证据 |
 | BR-002 | 禁止 import 数据域子模块 | AC-005 | TC-008, boundary-gates.sh | TASK-BS-004 | v0.1.0 boundary gate 已通过；需复验脚本证据 |
 | BR-003 | 禁止启动 HTTP/gRPC server 或 net.Listen | AC-005 | boundary-gates.sh | TASK-BS-004 | v0.1.0 boundary gate 已通过；需复验脚本证据 |
 | BR-004 | 只能向下依赖基座与存储适配器 | AC-005 | go list / dependency scan | TASK-BS-004 | 已登记；需复验 |

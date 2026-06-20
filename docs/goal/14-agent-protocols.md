@@ -48,8 +48,8 @@ Claude、Codex 和 Copilot 的 `goal-*` Agent 定义都是 `docs/goal/` 的平�
 
 ```text
 .worktrees/
-  issue-1393-market-data/
-  issue-1394-macro-data/
+  issue-1393-market_data/
+  issue-1394-macro_data/
   task-goal-20260531-001-003/
 ```
 
@@ -70,7 +70,7 @@ Claude、Codex 和 Copilot 的 `goal-*` Agent 定义都是 `docs/goal/` 的平�
 ```yaml
 locks:
   - file: internal/market_data/provider.go
-    owner: agent-market-data
+    owner: agent-market_data
     task: TASK-GOAL-20260531-001-003
     expires_at: 2026-06-01T12:00:00Z
 ```

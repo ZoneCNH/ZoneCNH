@@ -1,4 +1,4 @@
-# xlib-standard 规格结构修复终态报告（v6）
+# xlib_standard 规格结构修复终态报告（v6）
 
 Report-Date: 2026-06-08 05:13 +08:00
 Scope: 5 轮迭代（v3 基线 → v6 终态）的累积成果
@@ -106,15 +106,15 @@ CI 4/4 通过；唯一警告已在规格内显式解释。
 
 | 文件                                                                   | 起始         | 终态                 | 性质                                                                               |
 | ---------------------------------------------------------------------- | ------------ | -------------------- | ---------------------------------------------------------------------------------- |
-| `module/xlib-standard/SPEC.md`                                         | 2013 行      | **~2032 行**         | 23 节框架对齐 + 6 段时间戳状态说明 + BR/AC 编号 + RULE 映射 + 5 FR gate 替代覆盖表 |
-| `module/xlib-standard/TRACEABILITY.md`                                 | 块级 27%     | **行级 98% (51/52)** | 全 FR 锚定到源行号；远端治理已闭合                                                 |
-| `module/xlib-standard/COVERAGE-MANIFEST.md`                            | 占位 SHA     | **真 SHA 382 行**    | 154 文件 sha256-prefix 落地                                                        |
-| `module/xlib-standard/CONFLICT-LEDGER.md`                              | 5 处过期引用 | **0 处过期**         | §D → §22.6；§A.1 → §23.3；附录 E → 参考资料 E                                      |
-| `module/xlib-standard/README.md`                                       | Review 简述  | 同步多版本状态       | 加 REMOTE-EVIDENCE 索引                                                            |
-| `module/xlib-standard/REMOTE-EVIDENCE.md`                              | —            | **新增 4.7KB**       | branch protection / rulesets / release / CI 真证据                                 |
-| `docs/report/xlib-standard-structural-deep-analysis-20260608-0446.md`  | —            | 新增 v3 基线分析     |                                                                                    |
-| `docs/report/xlib-standard-structural-fix-completion-20260608-0459.md` | —            | 新增 v4 完成报告     |                                                                                    |
-| `docs/report/xlib-standard-structural-fix-final-20260608-0513.md`      | —            | **本报告 v6**        |                                                                                    |
+| `module/xlib_standard/SPEC.md`                                         | 2013 行      | **~2032 行**         | 23 节框架对齐 + 6 段时间戳状态说明 + BR/AC 编号 + RULE 映射 + 5 FR gate 替代覆盖表 |
+| `module/xlib_standard/TRACEABILITY.md`                                 | 块级 27%     | **行级 98% (51/52)** | 全 FR 锚定到源行号；远端治理已闭合                                                 |
+| `module/xlib_standard/COVERAGE-MANIFEST.md`                            | 占位 SHA     | **真 SHA 382 行**    | 154 文件 sha256-prefix 落地                                                        |
+| `module/xlib_standard/CONFLICT-LEDGER.md`                              | 5 处过期引用 | **0 处过期**         | §D → §22.6；§A.1 → §23.3；附录 E → 参考资料 E                                      |
+| `module/xlib_standard/README.md`                                       | Review 简述  | 同步多版本状态       | 加 REMOTE-EVIDENCE 索引                                                            |
+| `module/xlib_standard/REMOTE-EVIDENCE.md`                              | —            | **新增 4.7KB**       | branch protection / rulesets / release / CI 真证据                                 |
+| `docs/report/xlib_standard-structural-deep-analysis-20260608-0446.md`  | —            | 新增 v3 基线分析     |                                                                                    |
+| `docs/report/xlib_standard-structural-fix-completion-20260608-0459.md` | —            | 新增 v4 完成报告     |                                                                                    |
+| `docs/report/xlib_standard-structural-fix-final-20260608-0513.md`      | —            | **本报告 v6**        |                                                                                    |
 
 ---
 
@@ -136,7 +136,7 @@ CI 4/4 通过；唯一警告已在规格内显式解释。
 
 ## 8. 结论
 
-**xlib-standard 规格的结构性问题已全部消解；文档侧已饱和。** 当前所有可由 spec、CI 脚本、`gh api` 自动化证明的事项均已闭合并固定到真证据；唯一阻塞 Approved 的项是人工流程。
+**xlib_standard 规格的结构性问题已全部消解；文档侧已饱和。** 当前所有可由 spec、CI 脚本、`gh api` 自动化证明的事项均已闭合并固定到真证据；唯一阻塞 Approved 的项是人工流程。
 
 后续维护建议：
 

@@ -1,4 +1,4 @@
-# domain-market 规格
+# domain_market 规格
 
 - Status: Approved
 - Spec-Version: v1.1.0
@@ -13,7 +13,7 @@
 
 ## 1. 摘要
 
-`domain-market` 定义市场数据领域模型与质量门禁，是上层行情采集、研究、回测、策略和执行服务共享的市场语义 SSOT。
+`domain_market` 定义市场数据领域模型与质量门禁，是上层行情采集、研究、回测、策略和执行服务共享的市场语义 SSOT。
 
 ## 2. 边界
 
@@ -22,7 +22,7 @@
 | Owns | Tick、Quote、Bar、OrderBook、Instrument、ProductLine、InstrumentKey、MarketFactEnvelope、Funding、OpenInterest、LongShortRatio、DataProvider、MarketDataQuality、MarketEventEnvelope（MarketFactEnvelope 的 deprecated 别名） |
 | Depends on | `kernel`、`decimalx` |
 | Excludes | transport adapter、provider DTO、数据库 tag、策略/因子/回测逻辑、订单生命周期语义 |
-| Boundary with domainx | `domainx` 拥有 OrderType、OrderSide、OrderState；`domain-market` 仅表达市场事件与行情侧方向语义 |
+| Boundary with domainx | `domainx` 拥有 OrderType、OrderSide、OrderState；`domain_market` 仅表达市场事件与行情侧方向语义 |
 
 ## 3. 功能需求
 
@@ -62,14 +62,14 @@
 | 精度门禁 | public price/qty/money/rate fields 无 `float64`。 |
 | 边界门禁 | 不含 HTTP/WS/DB/Kafka/TDengine/vendor DTO 泄漏。 |
 | 质量门禁 | dirty/stale/time-invalid 数据有 fail-closed 测试。 |
-| 下游门禁 | `domain-exchange` 可采用 market data types。 |
+| 下游门禁 | `domain_exchange` 可采用 market data types。 |
 
 ## 6. 消费者
 
 - 策略/回测引擎：通过 MarketEventEnvelope 消费质量门禁后的市场数据
-- `domain-exchange`：MarketReader 返回 domain-market 行情类型
+- `domain_exchange`：MarketReader 返回 domain_market 行情类型
 - 因子引擎：基于 Tick/Bar/OrderBook 计算因子
-- 数据采集层（provider）：构造 domain-market 值对象并通过 DataProvider 暴露
+- 数据采集层（provider）：构造 domain_market 值对象并通过 DataProvider 暴露
 - 研究平台：查询历史 Bar/Tick 和 Instrument 信息
 
 ## 7. 功能需求
@@ -103,7 +103,7 @@
 | BR-MKT-003 | 非法数据默认拒绝，不做静默修正（fail-closed） |
 | BR-MKT-004 | 策略层不直接消费 Bar/Tick 原始结构体，必须通过 MarketEventEnvelope |
 | BR-MKT-005 | stale/future 数据 fail-closed，DegradeReason + metrics 暴露，不可靠数据不静默进入策略 |
-| BR-MKT-006 | domain-market 仅表达行情语义，订单生命周期语义归 domainx |
+| BR-MKT-006 | domain_market 仅表达行情语义，订单生命周期语义归 domainx |
 | BR-MKT-008 | canonical event type 使用 exchange-neutral 命名；vendor stream 名称不得成为领域事件枚举 |
 
 
@@ -274,13 +274,13 @@ type InstrumentKey struct {
 
 func (k InstrumentKey) Validate() error {
 	if k.Venue == "" || k.Symbol == "" {
-		return fmt.Errorf("domain-market: InstrumentKey Venue/Symbol required")
+		return fmt.Errorf("domain_market: InstrumentKey Venue/Symbol required")
 	}
 	if !k.ProductLine.IsValid() {
-		return fmt.Errorf("domain-market: invalid ProductLine: %s", k.ProductLine)
+		return fmt.Errorf("domain_market: invalid ProductLine: %s", k.ProductLine)
 	}
 	if k.ProductLine == ProductLineOption && (k.Expiry == nil || k.Strike == nil || k.OptionType == "") {
-		return fmt.Errorf("domain-market: options require Expiry/Strike/OptionType")
+		return fmt.Errorf("domain_market: options require Expiry/Strike/OptionType")
 	}
 	return nil
 }
@@ -301,10 +301,10 @@ type MarketFactEnvelope struct {
 
 func (e MarketFactEnvelope) Validate() error {
 	if e.InstrumentKey.Venue == "" || e.EventType == "" || e.Source == "" {
-		return fmt.Errorf("domain-market: MarketFactEnvelope required fields missing")
+		return fmt.Errorf("domain_market: MarketFactEnvelope required fields missing")
 	}
 	if e.EventTime.IsZero() || e.ReceivedAt.IsZero() {
-		return fmt.Errorf("domain-market: MarketFactEnvelope time fields required")
+		return fmt.Errorf("domain_market: MarketFactEnvelope time fields required")
 	}
 	return nil
 }
@@ -378,7 +378,7 @@ canonical event type 使用 exchange-neutral 命名（BR-MKT-008）。vendor str
 |---|---|---|
 | EventTime | 交易所事件时间 | Binance `E` 字段 |
 | ReceivedAt | adapter 接收时间 | `time.Now()` on arrival |
-| AvailableAt | quality gate 后可消费时间 | domain-market gate |
+| AvailableAt | quality gate 后可消费时间 | domain_market gate |
 | DecisionTime | 策略决策时间点 | 回测引擎设置 |
 
 质量规则：`InstrumentKey`/`EventType`/`EventTime`/`ReceivedAt`/`Source`/`Quality` 缺失时 `Validate` fail-closed。
@@ -425,7 +425,7 @@ domain_market:
 ## 14. 目录结构
 
 ```text
-module/domain-market/
+module/domain_market/
   SPEC.md
   goal.md
   TRACEABILITY.md
@@ -498,7 +498,7 @@ module/domain-market/
 - `staticcheck ./...`
 - `govulncheck ./...`
 - Lint：domain struct 禁止 tag；price/qty 禁止 float
-- `GOWORK=off make adoption-check`（如接入 xlib-standard）
+- `GOWORK=off make adoption-check`（如接入 xlib_standard）
 
 ## 21. 升级兼容性
 
@@ -523,7 +523,7 @@ module/domain-market/
 
 ## 23. 待解决问题
 
-- Side 枚举归属：domain-market 仅表达市场事件方向，还是统一到 domainx？
+- Side 枚举归属：domain_market 仅表达市场事件方向，还是统一到 domainx？
 - 交易所 interval 映射表是否纳入 v1.1？
 - 深度增量 merge helper 是否纳入 v1.1？
 - 数据质量指标 Prometheus adapter 是否在 adapter 层实现？

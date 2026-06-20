@@ -25,7 +25,7 @@ ZoneCNH 基座层 TDengine 时序存储适配器契约模块（Layer L2 存储�
 - 不保证原始 SQL 的注入安全；只拒绝空 SQL（BR-006）。
 
 ## 5. 架构位置
-基座层（L2 存储适配器）。依赖方向：仅 kernel。被 `market-data`采集层、`order-engine`、`risk-engine`、`factor-engine`、`backtestx`、`observex` 适配器层、`x.go`/`maestro` 上层编排消费。生产 driver 由调用方注入，核心包只负责端口契约。
+基座层（L2 存储适配器）。依赖方向：仅 kernel。被 `market_data`采集层、`order_engine`、`risk_engine`、`factor_engine`、`backtestx`、`observex` 适配器层、`x.go`/`maestro` 上层编排消费。生产 driver 由调用方注入，核心包只负责端口契约。
 
 ## 6. 生命周期
 - `New`：校验 ctx/config/options，默认驱动显式不可用，注入驱动后委托（FR-003）。

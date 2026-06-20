@@ -25,6 +25,6 @@ settlement 是执行域的结算对账模块。交易结算、资金对账、手
 | 类型 | 说明 |
 | --- | --- |
 | Owns | 结算流程/资金对账/手续费核算/结算报告 |
-| Depends on | order-engine, portfolio-engine, domainx |
+| Depends on | order_engine, portfolio_engine, domainx |
 | Consumed by | observex |
-| Excludes | 订单执行(→order-engine)、风控(→risk-engine) |
+| Excludes | 订单执行(→order_engine)、风控(→risk_engine) |

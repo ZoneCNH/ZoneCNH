@@ -33,7 +33,7 @@
 ## Out of Scope
 - 不做 Exposure（TASK-004）
 - 不做 JSON round-trip（TASK-005）
-- 不做多 Position 聚合（属于 portfolio-engine）
+- 不做多 Position 聚合（属于 portfolio_engine）
 
 ## Files to Modify
 

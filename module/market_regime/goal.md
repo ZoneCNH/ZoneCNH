@@ -25,6 +25,6 @@ market_regime 是分析域的市场状态(S引擎)模块。S1-S7市场状态分�
 | 类型 | 说明 |
 | --- | --- |
 | Owns | S1-S7分类器/微观结构特征/bias/permission |
-| Depends on | market-data, domain-market, flowx |
-| Consumed by | regime-engine, factor-engine |
-| Excludes | 宏观体制(→macro_regime)、联合决策(→regime-engine) |
+| Depends on | market_data, domain_market, flowx |
+| Consumed by | regime_engine, factor_engine |
+| Excludes | 宏观体制(→macro_regime)、联合决策(→regime_engine) |

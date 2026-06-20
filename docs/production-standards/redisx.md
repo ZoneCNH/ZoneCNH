@@ -28,7 +28,7 @@ Redis 标准化访问和治理封装。提供统一 KeyBuilder、typed Options�
 - 不把缓存一致性事件系统内建（与 kafkax/natsx 联动由上层实现）
 
 ## 5. 架构位置
-L2 基础设施适配器（存储扩展），位于基座层。消费者：schedulex（Locker 分布式任务锁）、market-data（行情快照缓存）、signal-engine（因子中间结果缓存）、risk-engine（风控状态/阈值/计数）、业务域模块（Client/CacheClient/Counter/RateLimitHelper）、平台 adapter（外部配置/观测/弹性投影为 redisx Options/hooks）。go.mod：`github.com/ZoneCNH/redisx`，go 1.23，默认 client `github.com/redis/go-redis/v9`。
+L2 基础设施适配器（存储扩展），位于基座层。消费者：schedulex（Locker 分布式任务锁）、market_data（行情快照缓存）、signal-engine（因子中间结果缓存）、risk_engine（风控状态/阈值/计数）、业务域模块（Client/CacheClient/Counter/RateLimitHelper）、平台 adapter（外部配置/观测/弹性投影为 redisx Options/hooks）。go.mod：`github.com/ZoneCNH/redisx`，go 1.23，默认 client `github.com/redis/go-redis/v9`。
 
 ## 6. 生命周期
 - `New(ctx, Options)` 创建 Client，集成 kernel 生命周期 hook（FR-002）

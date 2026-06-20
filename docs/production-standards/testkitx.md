@@ -1,7 +1,7 @@
 # testkitx
 
 ## 1. 模块定位
-testkitx 是 FoundationX 测试基础设施（L0 测试期证据），提供 fake 实现、fixture 加载、golden 测试、contract 测试、boundary 扫描、goroutine leak 检测等工具，帮助各模块稳定验证边界、错误路径和集成行为。**禁止进入生产依赖图**（BR-005 + CI Gate no-production-import 强制）。窄定位：仅单进程 `go test` 工具；宽测试平台（集成环境、故障注入、发布期证据包）由 xlib-evidence 承接。
+testkitx 是 FoundationX 测试基础设施（L0 测试期证据），提供 fake 实现、fixture 加载、golden 测试、contract 测试、boundary 扫描、goroutine leak 检测等工具，帮助各模块稳定验证边界、错误路径和集成行为。**禁止进入生产依赖图**（BR-005 + CI Gate no-production-import 强制）。窄定位：仅单进程 `go test` 工具；宽测试平台（集成环境、故障注入、发布期证据包）由 xlib_evidence 承接。
 
 ## 2. 生产职责
 - FR-001 FakeConfig：内存配置源，实现 configx.Reader
@@ -28,8 +28,8 @@ testkitx 是 FoundationX 测试基础设施（L0 测试期证据），提供 fak
 - 不进入生产二进制或生产依赖图
 - 不定义交易、行情、风控、订单、仓位等业务域模型（业务模型由 contracts 和业务域负责，fake 只镜像 L1 接口）
 - 不承担各模块领域 fixture 集中维护（领域 fixture 由各模块自身 testdata/ 维护）
-- 不替代集成测试 L2、系统测试 L3、混沌工程和长稳测试（由 xlib-harness / xlibgate 协调）
-- 不做证据收集、汇总或发布（属于 xlib-evidence）
+- 不替代集成测试 L2、系统测试 L3、混沌工程和长稳测试（由 xlib_harness / xlibgate 协调）
+- 不做证据收集、汇总或发布（属于 xlib_evidence）
 
 ## 5. 架构位置
 L0 测试期证据层（SPEC 标注「基座 · 测试期证据」/ FEATURES 标注 L0 测试工具）。可依赖 kernel、configx、observex、resiliencx、schedulex（全部仅 test）；禁止依赖所有业务域实现。是唯一允许依赖所有 Foundation L1 模块的包。消费者：kernel / configx / observex / resiliencx / schedulex 测试 + 业务域模块测试。
@@ -96,7 +96,7 @@ testkitx 本身不提供韧性原语（那属 resiliencx），但其工具支持
 - Benchmark：fake 初始化 < 1ms
 
 ## 17. Chaos
-testkitx 不直接做 chaos 注入（属 xlib-harness），但提供 chaos 测试支撑工具：
+testkitx 不直接做 chaos 注入（属 xlib_harness），但提供 chaos 测试支撑工具：
 - GoroutineLeakCheck（FR-010）：测试后检测 goroutine 泄漏，报告堆栈
 - BoundaryCheck（FR-009）：检测生产包意外依赖 testkitx
 - FakeClock：注入可控时间，模拟超时/延迟场景
@@ -185,4 +185,4 @@ testkitx 无生产 backpressure 职责。测试期资源控制：
 - OQ-003 评估 contract test 覆盖 schedulex.Scheduler 接口
 - OQ-004 评估 BoundaryCheck 支持白名单（允许特定测试包依赖 testkitx）
 - 四源评分通过后转 factory-grade
-- 宽测试平台能力（集成环境、故障注入、发布期证据包）由 xlib-evidence 承接
+- 宽测试平台能力（集成环境、故障注入、发布期证据包）由 xlib_evidence 承接

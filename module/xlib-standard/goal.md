@@ -1,8 +1,8 @@
-# xlib-standard 发布版本 1.0 Goal 定位与实现标准
+# xlib_standard 发布版本 1.0 Goal 定位与实现标准
 
 | 字段         | 内容                                                                                       |
 | ------------ | ------------------------------------------------------------------------------------------ |
-| 模块名       | `xlib-standard`                                                                            |
+| 模块名       | `xlib_standard`                                                                            |
 | 发布版本     | 1.0.0                                                                                      |
 | 所属层级     | 标准源层 / 规范基线                                                                        |
 | 稳定级别     | 标准文档 Stable；模板 API Stable；Generator Stable；Gate 定义 Stable；Evidence 格式 Stable |
@@ -23,7 +23,7 @@
 
 ## 1. Goal 定位
 
-`xlib-standard` 的 Goal 是成为 xlib 体系的唯一标准源。它承担五类职责：标准事实源（文档规范）、Go Reference Template（可编译参考模板）、Generator（模板渲染与代码生成）、Harness Gate（CI 门禁与边界检查）和 Evidence Runtime（release manifest 与发布证据生成）。它不承载业务运行，但通过 Go 参考模板、代码生成器、Harness Gate 和 Evidence Runtime 让这些标准可编译、可执行、可验证。它以 1.0 发布标准定义所有模块必须遵循的工程规则、接口规则、配置规则、错误规则、观测规则、测试规则、版本规则和扩展规则。它的价值在于让后续所有模块具备一致的设计语言、验收口径和演进边界，避免每个模块各自发明标准。
+`xlib_standard` 的 Goal 是成为 xlib 体系的唯一标准源。它承担五类职责：标准事实源（文档规范）、Go Reference Template（可编译参考模板）、Generator（模板渲染与代码生成）、Harness Gate（CI 门禁与边界检查）和 Evidence Runtime（release manifest 与发布证据生成）。它不承载业务运行，但通过 Go 参考模板、代码生成器、Harness Gate 和 Evidence Runtime 让这些标准可编译、可执行、可验证。它以 1.0 发布标准定义所有模块必须遵循的工程规则、接口规则、配置规则、错误规则、观测规则、测试规则、版本规则和扩展规则。它的价值在于让后续所有模块具备一致的设计语言、验收口径和演进边界，避免每个模块各自发明标准。
 
 ### 1.1 为什么需要这个模块
 
@@ -131,7 +131,7 @@
 | -------- | ----------------------------------------------------------------------------------------------------------------------- |
 | 上游依赖 | 不依赖其他 xlib 运行时模块；可引用组织级工程规范，但必须固化为 xlib 可执行规则                                          |
 | 模板依赖 | Go Reference Template 优先使用 Go stdlib；Generator / Gate / Evidence 工具允许使用 Makefile、shell 脚本、GitHub Actions |
-| 下游依赖 | 所有 xlib 模块在 1.0 发布时都必须声明符合 xlib-standard 的版本                                                          |
+| 下游依赖 | 所有 xlib 模块在 1.0 发布时都必须声明符合 xlib_standard 的版本                                                          |
 | 分层约束 | 标准源不能反向依赖具体实现；标准变更需要兼容性说明                                                                      |
 
 ## 7. 对外契约
@@ -273,7 +273,7 @@ Dockerfile              # 容器化标准环境
 
 ## 15. 1.0 后演进方向
 
-- 将 Generator / Gate / Evidence 工具独立为 `xlibgate` 独立 Go module（当前可先保留在 `xlib-standard/cmd/` 或 `xlib-standard/scripts/`）。
+- 将 Generator / Gate / Evidence 工具独立为 `xlibgate` 独立 Go module（当前可先保留在 `xlib_standard/cmd/` 或 `xlib_standard/scripts/`）。
 - 引入标准检查 CLI，自动扫描配置项、错误码和指标名。
 - 引入标准站点，支持版本化浏览。
 - 将发布门禁接入 CI/CD。

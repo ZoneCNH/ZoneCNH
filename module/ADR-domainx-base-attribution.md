@@ -56,7 +56,7 @@ domainx 提供执行域共享值对象（Order/Position/Trade/Portfolio/Executio
 
 ### 正面影响
 
-- 三文档 L2.5 统一为 4（decimalx, domain-market, domain-exchange, domain-macro），基座统一为 20
+- 三文档 L2.5 统一为 4（decimalx, domain_market, domain_exchange, domain_macro），基座统一为 20
 - 同步检查表 L2.5 行从 ⚠️ 变为 ✅
 - 域统计表、域健康度、仪表盘进度分布等所有引用基座/L2.5 计数的地方自动闭合
 - 后续新增领域共享模块有清晰的归属规则：语义属于 L2.5 ⇏ 文档归属必须是 L2.5

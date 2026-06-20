@@ -1,6 +1,6 @@
-# xlib-standard 结构性问题深度分析与评分
+# xlib_standard 结构性问题深度分析与评分
 
-分析对象：`module/xlib-standard/`
+分析对象：`module/xlib_standard/`
 分析时间：2026-06-08
 结论状态：`Changes requested`
 结构健康分：**68/100**
@@ -15,7 +15,7 @@
 | 可复现与审计封装     | 15   | 14   | commit/tree、文件清单和 sha 前缀较完整；缺口在外部下载包、原始远端 API 证据和完整 source pack。            |
 | 可维护性与分层边界   | 15   | 11   | 当前包把规范、发布状态、PR 包清单、目标运行时和审计账本压进同一主规格，维护成本偏高。                      |
 
-总体判断：`module/xlib-standard/` 已经不是早期松散草案，材料量、冲突账本和远端证据都比较充分；但它的结构性风险集中在“可渲染性、状态单一权威、追溯声明精度”三件事上。只要这些问题未修复，不宜把当前包标成 `Approved`。
+总体判断：`module/xlib_standard/` 已经不是早期松散草案，材料量、冲突账本和远端证据都比较充分；但它的结构性风险集中在“可渲染性、状态单一权威、追溯声明精度”三件事上。只要这些问题未修复，不宜把当前包标成 `Approved`。
 
 ## 主要结构性问题
 
@@ -23,8 +23,8 @@
 
 证据：
 
-- `module/xlib-standard/SPEC.md` 多处把闭合围栏写成带 info string 的形式，例如第 798/800 行成对出现 `text` 围栏，第 857/928 行从 `gotemplate` 开始但用 `text` 闭合，第 942/952、980/989、1013/1036、1594/1604、2049/2059 行也有同类问题。
-- `module/xlib-standard/COVERAGE-MANIFEST.md` 第 228/383 行也使用了带 `text` 的闭合围栏。
+- `module/xlib_standard/SPEC.md` 多处把闭合围栏写成带 info string 的形式，例如第 798/800 行成对出现 `text` 围栏，第 857/928 行从 `gotemplate` 开始但用 `text` 闭合，第 942/952、980/989、1013/1036、1594/1604、2049/2059 行也有同类问题。
+- `module/xlib_standard/COVERAGE-MANIFEST.md` 第 228/383 行也使用了带 `text` 的闭合围栏。
 
 影响：
 
@@ -41,12 +41,12 @@
 
 证据：
 
-- `module/xlib-standard/README.md` 第 17-21 行把 `TRACEABILITY.md` 描述为 52 条 FR 的 100% 行级覆盖。
-- `module/xlib-standard/TRACEABILITY.md` 第 13-16 行又声明它只是 clause-level source matrix，不是每条规则的 proof ledger。
+- `module/xlib_standard/README.md` 第 17-21 行把 `TRACEABILITY.md` 描述为 52 条 FR 的 100% 行级覆盖。
+- `module/xlib_standard/TRACEABILITY.md` 第 13-16 行又声明它只是 clause-level source matrix，不是每条规则的 proof ledger。
 - `TRACEABILITY.md` 第 103 行的 FR-008 证据是 `docs/adr/ADR-*.md` 和“10 个文件存在”。
 - `TRACEABILITY.md` 第 136 行的 FR-041 证据是 `.worktree/goal/` 目录与目标文件列表。
 - `TRACEABILITY.md` 第 141 行的 FR-046 证据是目录内 PR pack 数量与一个示例行，且把逐文件锚委托给 `goalcli pr-pack-check`。
-- `module/xlib-standard/REVIEW-VERDICT.md` 第 45-46 行仍把“line coverage claim false / not 100% line-level”列为 P0。
+- `module/xlib_standard/REVIEW-VERDICT.md` 第 45-46 行仍把“line coverage claim false / not 100% line-level”列为 P0。
 
 影响：
 
@@ -86,7 +86,7 @@
 证据：
 
 - `docs/governance/SPEC-TEMPLATE.md` 和相邻规格 `module/kernel/SPEC.md`、`module/configx/SPEC.md`、`module/xlibgate/SPEC.md` 都保持约 500-600 行。
-- `module/xlib-standard/SPEC.md` 当前约 2061 行，是相邻规格的 3-4 倍。
+- `module/xlib_standard/SPEC.md` 当前约 2061 行，是相邻规格的 3-4 倍。
 - `SPEC.md` 第 1889-1893 行在 `### 23.4` 下出现 `#### 28.4.1`。
 - `SPEC.md` 第 1957-1961 行在 `### 23.5` 下出现 `#### 28.5.1`。
 - `SPEC.md` 第 1965-1966 行仍写主 artifacts 合计 2,598 行、`SPEC.md` 2013 行，与当前文件行数不一致。

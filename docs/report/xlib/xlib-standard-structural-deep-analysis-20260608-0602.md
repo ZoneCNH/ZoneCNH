@@ -1,7 +1,7 @@
-# `module/xlib-standard/` 结构性深度分析与打分
+# `module/xlib_standard/` 结构性深度分析与打分
 
 - 报告日期：2026-06-08 06:02 +08:00
-- 分析范围：`module/xlib-standard/` 下 8 个工件（SPEC.md 1627 行、TRACEABILITY.md、CONFLICT-LEDGER.md、COVERAGE-MANIFEST.md、FR-DETAIL.md、REMOTE-EVIDENCE.md、REVIEW-VERDICT.md、README.md）
+- 分析范围：`module/xlib_standard/` 下 8 个工件（SPEC.md 1627 行、TRACEABILITY.md、CONFLICT-LEDGER.md、COVERAGE-MANIFEST.md、FR-DETAIL.md、REMOTE-EVIDENCE.md、REVIEW-VERDICT.md、README.md）
 - 上游 commit：`93753b30e6d01fb4a9b096acaa0d7d53a2fb231c`（v0.6.5，pinned 2026-06-08 04:59 +08:00）
 - 分析角度：spec 治理 / 单一职责 / 编号系统 / 追溯严密度 / 事实自洽 / 可执行性 / 生命周期 / 冗余 / 与 ARCHITECTURE+CONSTITUTION 对齐
 - 综合分：**4.7 / 10**
@@ -93,7 +93,7 @@ SPEC §9.1 已显式承认结构债 S4/S11，但只是用"对外/内部"约定�
 
 ### 10. TC 命名空间裸用
 
-- §17.5 表中 TC-001..017 是"xlib-standard 命名空间"，备注要求下游"必须加模块前缀（如 redisx-TC-001）"。
+- §17.5 表中 TC-001..017 是"xlib_standard 命名空间"，备注要求下游"必须加模块前缀（如 redisx-TC-001）"。
 - 但本 SPEC §14 EC 表的"对应 TC"列、§17.5 自身、TRACEABILITY 里全部用裸 `TC-NNN`，下游模块直接复制粘贴会立即冲突。建议本 SPEC 自己也用 `xlib-TC-001..017`。
 
 ### 11. 版本双轨

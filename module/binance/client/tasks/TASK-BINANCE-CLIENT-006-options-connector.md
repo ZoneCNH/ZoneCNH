@@ -2,7 +2,7 @@
 
 ## Objective
 
-Collect Binance Options market-data events and normalize them.
+Collect Binance Options market_data events and normalize them.
 
 ## Scope
 

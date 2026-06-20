@@ -41,7 +41,7 @@ status: pending
 | FR-001      | check imports：依赖矩阵校验                       | 4 个 WHEN/THEN 场景     |
 | BR-002      | import 规则从 deps.yaml 读取，不硬编码            | --config 参数覆盖       |
 | BR-008      | human-readable 输出含文件路径和行号               | 违规输出含位置信息      |
-| BR-009      | FOUNDATION-DEPS.yaml schema 与 xlib-standard 一致 | YAML 解析 + schema 校验 |
+| BR-009      | FOUNDATION-DEPS.yaml schema 与 xlib_standard 一致 | YAML 解析 + schema 校验 |
 
 ## Non-scope
 

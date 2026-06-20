@@ -1,7 +1,7 @@
 # TASK-MKT-008 Binance Product-Line / Instrument Identity / Envelope Alignment
 
 - Status: Approved
-- Owner: `module/domain-market`
+- Owner: `module/domain_market`
 - Last-Updated: 2026-06-17
 - Blocks: `module/binance` runtime implementation
 
@@ -11,7 +11,7 @@ Close the Binance upstream semantic gap by approving canonical product-line toke
 
 ## Deliverables
 
-- `module/domain-market/SPEC.md` §10 — ProductLine (spot/um_perp/cm_perp/option), InstrumentKey (12 dimensions), MarketFactEnvelope ✅
+- `module/domain_market/SPEC.md` §10 — ProductLine (spot/um_perp/cm_perp/option), InstrumentKey (12 dimensions), MarketFactEnvelope ✅
 - Product-line collision test requirements → **Done: §10.1 InstrumentKey dimension matrix + collision examples**
 - `MarketFactEnvelope` canonical naming decision → **Done: §10 MarketFactEnvelope = canonical wrapper; §9 MarketEventEnvelope deprecated alias**
 - Deprecated alias policy for `MarketEventEnvelope` → **Done: §9 `type MarketEventEnvelope = MarketFactEnvelope` + "Deprecated: v2 将移除此别名"**

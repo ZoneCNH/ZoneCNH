@@ -1,4 +1,4 @@
-# xlib-standard 远端证据边界
+# xlib_standard 远端证据边界
 
 本文件记录远端证据的引用口径，不是可执行规格。
 

@@ -42,7 +42,7 @@
 
 ## 4. 非目标
 
-- 不做因子计算（→ factor-engine）
+- 不做因子计算（→ factor_engine）
 - 不做回测执行（→ backtestx）
 - 不做风控（→ riskx）
 - 不做订单管理（→ orderx）
@@ -58,7 +58,7 @@
 | backtestx    | 加载策略进行回测                     |
 | optimizer    | 读取策略参数进行优化                 |
 
-> **不包含 signal-factory**：signal-factory 的输入来自 factor-eval（因子评估）和 regime-engine（DecisionCard），不由 strategyx 提供。strategyx 定义策略配方（权重方案、regime 响应规则），由 maestro 运行时注入 signal-factory，不反向消费 signal-factory 输出。
+> **不包含 signal_factory**：signal_factory 的输入来自 factor_eval（因子评估）和 regime_engine（DecisionCard），不由 strategyx 提供。strategyx 定义策略配方（权重方案、regime 响应规则），由 maestro 运行时注入 signal_factory，不反向消费 signal_factory 输出。
 
 ---
 
@@ -134,11 +134,11 @@ AND WarmUp 超时时标记为 Degraded
 
 WHEN downstream consumer reads `strategyx` `README.md`
 THEN the H1 heading MUST be `# strategyx`
-AND MUST NOT be `# xlib-standard`
+AND MUST NOT be `# xlib_standard`
 
 WHEN module documentation references the `strategyx` Go module path
 THEN it MUST use `github.com/ZoneCNH/strategyx`
-AND MUST NOT use `github.com/ZoneCNH/xlib-standard`
+AND MUST NOT use `github.com/ZoneCNH/xlib_standard`
 
 WHEN `go.mod` declares the module name
 THEN it MUST be `module github.com/ZoneCNH/strategyx`

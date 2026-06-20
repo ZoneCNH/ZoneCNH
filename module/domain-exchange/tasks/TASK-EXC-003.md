@@ -6,12 +6,12 @@
 
 ```yaml
 task_id: TASK-EXC-003
-module: domain-exchange
+module: domain_exchange
 scope: "定义 ExchangeError 类型体系，区分临时/永久/限速/认证/余额/精度/不支持能力，支持 IsRetryable/RetryAfter/IsIdempotentSafe"
 spec_ref:
-  - "module/domain-exchange/SPEC.md#FR-EXC-003"
-  - "module/domain-exchange/SPEC.md#§12"
-  - "module/domain-exchange/SPEC.md#BR-EXC-003"
+  - "module/domain_exchange/SPEC.md#FR-EXC-003"
+  - "module/domain_exchange/SPEC.md#§12"
+  - "module/domain_exchange/SPEC.md#BR-EXC-003"
 files:
   - "errors.go"
   - "errors_test.go"

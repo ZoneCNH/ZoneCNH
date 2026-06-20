@@ -1,4 +1,4 @@
-# xlib-standard 实现计划
+# xlib_standard 实现计划
 
 > 来源：[SPEC.md](./SPEC.md)
 > 生成日期：2026-06-14

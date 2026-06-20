@@ -25,6 +25,6 @@ macro_regime 是分析域的宏观体制(M引擎)模块。M1-M7宏观体制分�
 | 类型 | 说明 |
 | --- | --- |
 | Owns | M1-M7分类器/宏观指标管线/transition检测 |
-| Depends on | macro-data, domain-macro, flowx |
-| Consumed by | regime-engine |
-| Excludes | 市场状态(→market_regime)、联合决策(→regime-engine) |
+| Depends on | macro_data, domain_macro, flowx |
+| Consumed by | regime_engine |
+| Excludes | 市场状态(→market_regime)、联合决策(→regime_engine) |

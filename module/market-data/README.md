@@ -1,8 +1,8 @@
-# module/market-data
+# module/market_data
 
-`module/market-data` defines the exchange-neutral downstream market-data receiving contract.
+`module/market_data` defines the exchange-neutral downstream market_data receiving contract.
 
-It receives validated `domain-market` market facts from exchange-specific ingest servers such as `module/binance/server`. It owns the receiver-side dispatch port and the durable handoff contract used before upstream servers emit durable ACKs.
+It receives validated `domain_market` market facts from exchange-specific ingest servers such as `module/binance/server`. It owns the receiver-side dispatch port and the durable handoff contract used before upstream servers emit durable ACKs.
 
 ## Read Next
 

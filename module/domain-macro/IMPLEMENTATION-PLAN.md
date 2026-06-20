@@ -1,11 +1,11 @@
-# domain-macro v1.0.0 Implementation Plan
+# domain_macro v1.0.0 Implementation Plan
 
 | 字段 | 值 |
 | --- | --- |
-| 模块 | `domain-macro` |
+| 模块 | `domain_macro` |
 | 当前版本 | v0.1.0 |
 | 目标版本 | v1.0.0 |
-| 依赖顺序 | `decimalx` API freeze 后，与 `domain-market` / `domainx` 可并行 |
+| 依赖顺序 | `decimalx` API freeze 后，与 `domain_market` / `domainx` 可并行 |
 | 最后更新 | 2026-06-16 |
 
 ## 里程碑

@@ -25,5 +25,5 @@ Client-specific gates:
 - CI fails when client imports server internals.
 - CI fails when client references `binance-market` outside allowlist.
 - CI fails when client owns storage/query/strategy.
-- CI allows contracts/domain-market imports.
+- CI allows contracts/domain_market imports.
 - gate does not require `rg`; POSIX `grep` is sufficient.

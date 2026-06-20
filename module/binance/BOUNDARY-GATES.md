@@ -67,7 +67,7 @@ Allowed:
 
 ```text
 client -> module/contracts generated gRPC client
-client -> module/domain-market semantic types
+client -> module/domain_market semantic types
 client -> shared config/observability packages
 ```
 
@@ -106,8 +106,8 @@ Allowed:
 
 ```text
 server -> module/contracts generated gRPC server
-server -> module/domain-market semantic types
-server -> module/market-data downstream port
+server -> module/domain_market semantic types
+server -> module/market_data downstream port
 server -> shared config/observability packages
 ```
 
@@ -138,7 +138,7 @@ Allowed:
 
 ```text
 server -> downstream dispatch port
-server -> market-data ingestion handoff
+server -> market_data ingestion handoff
 ```
 
 Suggested check keywords:
@@ -208,7 +208,7 @@ echo "PASS: Contracts gate — no local proto, no wire SSOT claim"
 Allowed:
 
 ```text
-module/binance -> module/domain-market
+module/binance -> module/domain_market
 ```
 
 Forbidden:
@@ -219,7 +219,7 @@ module/binance defines canonical InstrumentKey source of truth
 module/binance defines canonical MarketScope source of truth
 ```
 
-Binance may define exchange-specific parsing and mapping, but the resulting canonical value must be a `domain-market` concept.
+Binance may define exchange-specific parsing and mapping, but the resulting canonical value must be a `domain_market` concept.
 
 Suggested check:
 
@@ -233,7 +233,7 @@ pl_hits="$(grep -R -n -E 'ProductLine\s*(string|=|:).*\"(spot|usdm_futures|coinm
   --include='*.md' \
   --include='*.go' || true)"
 if [ -n "$pl_hits" ]; then
-  echo "FAIL: module/binance defines canonical ProductLine — belongs to module/domain-market"
+  echo "FAIL: module/binance defines canonical ProductLine — belongs to module/domain_market"
   echo "$pl_hits"
   exit 1
 fi
@@ -243,7 +243,7 @@ canonical_hits="$(grep -R -n -E 'canonical\s+(ProductLine|InstrumentKey|MarketSc
   module/binance \
   --include='*.md' || true)"
 if [ -n "$canonical_hits" ]; then
-  echo "FAIL: module/binance claims canonical market semantics SSOT — belongs to module/domain-market"
+  echo "FAIL: module/binance claims canonical market semantics SSOT — belongs to module/domain_market"
   echo "$canonical_hits"
   exit 1
 fi

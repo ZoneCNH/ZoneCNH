@@ -396,7 +396,7 @@ git push origin v0.5.0
 
 ### 4.1 `.github/ci/` 脚本
 
-- `spec-lint.sh`（539）：23 节结构、FR 连续性、模糊词、metadata、xlib-standard 专用门禁和 Analysis Lint；调用方：docs-ci, release。
+- `spec-lint.sh`（539）：23 节结构、FR 连续性、模糊词、metadata、xlib_standard 专用门禁和 Analysis Lint；调用方：docs-ci, release。
 - `status-consistency-check.sh`（~250）：状态表与文档交叉一致性；调用方：docs-ci, release。
 - `task-spec-validate.sh`（~280）：Task Spec 结构和引用一致性；调用方：docs-ci。
 - `traceability-check.sh`（~190）：追踪矩阵 FR↔证据映射；调用方：docs-ci, release。

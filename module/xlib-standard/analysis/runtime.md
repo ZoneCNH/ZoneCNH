@@ -1,8 +1,8 @@
-# xlib-standard 运行时分析
+# xlib_standard 运行时分析
 
 本文件是运行时维度分析，不是可执行规格。
 
-- Parent: module/xlib-standard/ANALYSIS.md
+- Parent: module/xlib_standard/ANALYSIS.md
 - Upstream-Commit: `93753b30e6d01fb4a9b096acaa0d7d53a2fb231c`
 
 ## 1. 运行时来源

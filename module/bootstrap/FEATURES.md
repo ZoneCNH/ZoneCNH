@@ -39,12 +39,12 @@
 
 | ID | 完整实现项 | 验收/测试/任务挂钩 | 当前登记状态 | 来源 |
 | --- | --- | --- | --- | --- |
-| BR-001 | bootstrap 不得 import domain-market/domain-macro/domainx/contracts（禁业务语义） | AC-005 / TC-008, boundary-gates.sh / TASK-BS-004 | v0.1.0 boundary gate 已通过；需复验脚本证据 | TRACEABILITY.md §2 |
+| BR-001 | bootstrap 不得 import domain_market/domain_macro/domainx/contracts（禁业务语义） | AC-005 / TC-008, boundary-gates.sh / TASK-BS-004 | v0.1.0 boundary gate 已通过；需复验脚本证据 | TRACEABILITY.md §2 |
 | BR-002 | bootstrap 不得 import 任何数据域子模块（binance/fred/…）（禁采集逻辑） | AC-005 / TC-008, boundary-gates.sh / TASK-BS-004 | v0.1.0 boundary gate 已通过；需复验脚本证据 | TRACEABILITY.md §2 |
 | BR-003 | bootstrap 不得起 HTTP/gRPC server（源码无 net.Listen） | AC-005 / boundary-gates.sh / TASK-BS-004 | v0.1.0 boundary gate 已通过；需复验脚本证据 | TRACEABILITY.md §2 |
 | BR-004 | bootstrap 只向下依赖 kernel/configx/observex/resiliencx/存储适配器，不向上 | AC-005 / go list, dependency scan / TASK-BS-004 | 已登记，需复验 | TRACEABILITY.md §2 |
 | BR-005 | adapter 进程的 Spec.Stores 必须为 None；App.Stores 为 nil | AC-004, AC-005 / TC-001, TC-009 / TASK-BS-001, TASK-BS-004 | v0.1.0 Stores=None 已发布；需复验 | TRACEABILITY.md §2 |
-| BR-006 | 仅聚合层（market-data/macro-data）的 Spec.Stores 可非 None | AC-004 / TC-002, TC-004 / TASK-BS-001, TASK-BS-005 | v0.2.0 准入 | TRACEABILITY.md §2 |
+| BR-006 | 仅聚合层（market_data/macro_data）的 Spec.Stores 可非 None | AC-004 / TC-002, TC-004 / TASK-BS-001, TASK-BS-005 | v0.2.0 准入 | TRACEABILITY.md §2 |
 | BR-007 | Spec.Stores 位掩码控制；未启用的存储不构造不连接 | AC-004 / TC-004 / TASK-BS-001 | v0.2.0 准入 | TRACEABILITY.md §2 |
 | BR-008 | 文档批准前不得新增运行时代码或依赖 | AC-005 / 文档状态与 diff 审查 / TASK-BS-004 | SPEC 仍为 Draft；禁止扩大运行时代码 | TRACEABILITY.md §2 |
 | NFR-001 | 职责单一 | AC-005 / boundary review / TASK-BS-004 | 已登记，需复验 | TRACEABILITY.md §2 |

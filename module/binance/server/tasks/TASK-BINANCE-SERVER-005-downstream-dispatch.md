@@ -2,7 +2,7 @@
 
 ## Objective
 
-Dispatch accepted Binance market events to downstream exchange-neutral market-data infrastructure.
+Dispatch accepted Binance market events to downstream exchange-neutral market_data infrastructure.
 
 ## Scope
 
@@ -29,4 +29,4 @@ Dispatch starts after server-side acceptance.
 
 - SERVER-003 idempotency
 - SERVER-004 ACK semantics
-- `module/market-data` downstream port
+- `module/market_data` downstream port

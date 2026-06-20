@@ -10,10 +10,10 @@ goal_id: GOAL-XLIB-STD-001
 date: "2026-06-09"
 status: PENDING
 files_changed:
-  - module/xlib-standard/tasks/TASK-XLIB-005.md
-  - module/xlib-standard/prompt/PROMPT-XLIB-005.md
+  - module/xlib_standard/tasks/TASK-XLIB-005.md
+  - module/xlib_standard/prompt/PROMPT-XLIB-005.md
 commands_run:
-  - "grep -r 'templatex\\|xlib-standard' . --include='*.go'"
+  - "grep -r 'templatex\\|xlib_standard' . --include='*.go'"
   - "GOWORK=off make release-final-check"
 ```
 

@@ -1,7 +1,7 @@
-# backtest-engine 需求追溯矩阵
+# backtest_engine 需求追溯矩阵
 
 > 更新：2026-06-17
-> 来源：module/backtest-engine/SPEC.md
+> 来源：module/backtest_engine/SPEC.md
 > 规范：docs/governance/TRACEABILITY.md
 
 ---

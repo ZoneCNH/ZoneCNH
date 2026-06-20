@@ -13,11 +13,11 @@
 
 ## 目标
 
-`decimalx` 为 ZoneCNH 所有金融域模块提供唯一的高精度定点数值基础，覆盖 `Decimal`、`Money` 和 `Currency` 的公开语义。v1.0.0 的目标是冻结可审计、可复现、无浮点误差传播的数值契约，供 `domain-market`、`domain-exchange`、`domain-macro` 与 `domainx` 复用。
+`decimalx` 为 ZoneCNH 所有金融域模块提供唯一的高精度定点数值基础，覆盖 `Decimal`、`Money` 和 `Currency` 的公开语义。v1.0.0 的目标是冻结可审计、可复现、无浮点误差传播的数值契约，供 `domain_market`、`domain_exchange`、`domain_macro` 与 `domainx` 复用。
 
 ## 非目标
 
-- 不实现交易所精度规则库；交易所规则由 `domain-exchange` 或更上层适配层表达。
+- 不实现交易所精度规则库；交易所规则由 `domain_exchange` 或更上层适配层表达。
 - 不实现账本、税务、组合估值或会计规则。
 - 不提供通用数学 DSL 或策略计算框架。
 
@@ -42,4 +42,4 @@
 
 ## 下游采用门禁
 
-`domain-market`、`domain-exchange`、`domain-macro` 和 `domainx` 的公开价格、数量、金额、费率与名义价值字段不得使用 `float64` 作为 v1.0.0 公共契约。
+`domain_market`、`domain_exchange`、`domain_macro` 和 `domainx` 的公开价格、数量、金额、费率与名义价值字段不得使用 `float64` 作为 v1.0.0 公共契约。

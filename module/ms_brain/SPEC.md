@@ -5,7 +5,7 @@
 - Last-Updated: 2026-06-17
 - Layer: 分析域 · M×S 架构分析
 - Version: v0.1.0-draft
-- Related: `module/market_regime`, `module/macro_regime`, `module/regime-engine`
+- Related: `module/market_regime`, `module/macro_regime`, `module/regime_engine`
 
 ---
 
@@ -19,7 +19,7 @@
 | --- | --- |
 | Owns | M×S DecisionMatrix、架构可视化、决策推演工具、分析文档 |
 | Depends on | market_regime（S 分类）、macro_regime（M 分类） |
-| Consumed by | regime-engine（决策参考）、策略研发（分析工具） |
+| Consumed by | regime_engine（决策参考）、策略研发（分析工具） |
 | Excludes | 在线 regime 分类、交易执行、实时数据管线 |
 
 ## 3. 功能需求

@@ -1,7 +1,7 @@
-# signal-factory 需求追溯矩阵
+# signal_factory 需求追溯矩阵
 
 > 更新：2026-06-17
-> 来源：module/signal-factory/SPEC.md
+> 来源：module/signal_factory/SPEC.md
 > 规范：docs/governance/TRACEABILITY.md
 
 ---

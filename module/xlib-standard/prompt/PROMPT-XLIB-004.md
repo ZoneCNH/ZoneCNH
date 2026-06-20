@@ -9,7 +9,7 @@ TASK-XLIB-004: release manifest 生成和 semver 兼容矩阵
 
 ## Related Spec
 
-- module/xlib-standard/SPEC.md §21 Release DoD, §22 Upgrade Compatibility
+- module/xlib_standard/SPEC.md §21 Release DoD, §22 Upgrade Compatibility
 
 ## Related Requirements
 
@@ -74,4 +74,4 @@ grep "goal_runtime" release/manifest/latest.json  # 应无输出
 
 ## Test Case Reference
 
-参见 `module/xlib-standard/TRACEABILITY.md` FR-013 / FR-014 对应 TC。
+参见 `module/xlib_standard/TRACEABILITY.md` FR-013 / FR-014 对应 TC。

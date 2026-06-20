@@ -182,7 +182,7 @@ test_rule_scorer.py: 22/22
 | rule-scorer ≥98 | 15/20 modules |
 | PRs | #259 → #296 |
 | 测试 | 44/44 |
-| 剩余需 SPEC 级手修 | 5 modules (taosx/transportx/xlib-evidence/xlib-harness/xlib-standard) |
+| 剩余需 SPEC 级手修 | 5 modules (taosx/transportx/xlib_evidence/xlib_harness/xlib_standard) |
 
 ## 11. 决策记录
 

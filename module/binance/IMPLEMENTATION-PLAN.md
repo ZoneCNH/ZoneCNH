@@ -2,7 +2,7 @@
 
 ## 1. Goal
 
-Deliver `module/binance` v1.0.0 as a complete Binance-specific market-data C/S module.
+Deliver `module/binance` v1.0.0 as a complete Binance-specific market_data C/S module.
 
 ## 2. Required Preflight Decisions
 
@@ -11,9 +11,9 @@ Before runtime implementation:
 1. `binance-market` is removed.
 2. `module/binance/client` and `module/binance/server` are documented.
 3. `module/binance/server` is the Binance-specific `MarketDataService` implementation.
-4. `module/domain-market` owns canonical market semantics.
+4. `module/domain_market` owns canonical market semantics.
 5. `module/contracts` owns proto/gRPC wire contracts.
-6. `module/market-data` owns downstream exchange-neutral processing.
+6. `module/market_data` owns downstream exchange-neutral processing.
 7. Delivery semantics are at-least-once + idempotent acceptance.
 
 ### Phase 0: Upstream Contract Closure Gate (2026-06-17 验证通过)
@@ -23,13 +23,13 @@ Before runtime implementation:
 | Gate | 验证项 | 验证方式 | 状态 |
 |------|--------|----------|:----:|
 | G0-1 | `module/contracts` §8.4 已定义 `MarketDataService` + `IngestRequest`/`IngestResult`/`IngestAck`/`IngestReject`/`RejectCode` | `grep -c "IngestRequest\|IngestResult\|RejectCode" module/contracts/SPEC.md` ≥ 10 | ✅ |
-| G0-2 | `module/domain-market` 已定义 `ProductLine`(4值)/`InstrumentKey`(12维)/`MarketFactEnvelope`(canonical wrapper) | `grep -c "ProductLine\|InstrumentKey\|MarketFactEnvelope" module/domain-market/SPEC.md` ≥ 15 | ✅ |
-| G0-3 | `module/market-data` downstream dispatch port SPEC 已发布 + binance reject 映射规则已文档化 | `ls module/market-data/SPEC.md` + `grep -c "binance.*reject\|RejectCode" module/market-data/SPEC.md` ≥ 5 | ✅ |
+| G0-2 | `module/domain_market` 已定义 `ProductLine`(4值)/`InstrumentKey`(12维)/`MarketFactEnvelope`(canonical wrapper) | `grep -c "ProductLine\|InstrumentKey\|MarketFactEnvelope" module/domain_market/SPEC.md` ≥ 15 | ✅ |
+| G0-3 | `module/market_data` downstream dispatch port SPEC 已发布 + binance reject 映射规则已文档化 | `ls module/market_data/SPEC.md` + `grep -c "binance.*reject\|RejectCode" module/market_data/SPEC.md` ≥ 5 | ✅ |
 | G0-4 | `module/binance` OQ-001（contracts wire 就绪？）已闭合 | SPEC §22 OQ-001 状态为已确认 | ✅ |
-| G0-5 | `module/binance` OQ-002（market-data dispatch port 就绪？）已闭合 | SPEC §22 OQ-002 状态为已确认 | ✅ |
+| G0-5 | `module/binance` OQ-002（market_data dispatch port 就绪？）已闭合 | SPEC §22 OQ-002 状态为已确认 | ✅ |
 | G0-6 | BOUNDARY-GATES.md 全部 9 门禁有可执行 CI 脚本 | `grep -c "Suggested check:" module/binance/BOUNDARY-GATES.md` ≥ 7 | ✅ |
 
-> **6/6 通过** — 上游契约链闭合，binance 可从 Draft 推进到运行时实现。PR-004（domain-market dependency）和 PR-005（contracts dependency）的 docs baseline 已就绪，后续 PR 只需引用已稳定的 SPEC 定义。
+> **6/6 通过** — 上游契约链闭合，binance 可从 Draft 推进到运行时实现。PR-004（domain_market dependency）和 PR-005（contracts dependency）的 docs baseline 已就绪，后续 PR 只需引用已稳定的 SPEC 定义。
 
 ## 3. Recommended PR Sequence
 
@@ -38,7 +38,7 @@ PR-000 Remove binance-market
 PR-001 module/binance root
 PR-002 module/binance/client
 PR-003 module/binance/server
-PR-004 domain-market dependency
+PR-004 domain_market dependency
 PR-005 contracts dependency
 PR-006 transportx dependency
 PR-007 runtime implementation
@@ -107,7 +107,7 @@ Acceptance:
 - server does not connect to Binance exchange endpoints
 - server does not own physical storage/query/strategy
 
-## 8. PR-004 domain-market Dependency
+## 8. PR-004 domain_market Dependency
 
 Required external concepts:
 
@@ -120,7 +120,7 @@ Required external concepts:
 - `MarketFactEnvelope`
 - `decision_time`
 
-> **Docs baseline**: 以上全部类型已在 `module/domain-market/SPEC.md` v1.0.1 §10 中定义（ProductLine=4 值枚举, InstrumentKey=12 字段, MarketFactEnvelope=canonical wrapper with time semantics）。运行时实现时直接 import domain-market Go 类型，不需要在 binance 侧重新定义。
+> **Docs baseline**: 以上全部类型已在 `module/domain_market/SPEC.md` v1.0.1 §10 中定义（ProductLine=4 值枚举, InstrumentKey=12 字段, MarketFactEnvelope=canonical wrapper with time semantics）。运行时实现时直接 import domain_market Go 类型，不需要在 binance 侧重新定义。
 
 Acceptance from Binance perspective:
 

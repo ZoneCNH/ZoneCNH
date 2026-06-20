@@ -9,7 +9,7 @@ TASK-XLIB-008: 公共 API 模板、examples/basic、testkit 辅助包
 
 ## Related Spec
 
-- module/xlib-standard/SPEC.md §7 Functional Requirements (FR-007, FR-008)
+- module/xlib_standard/SPEC.md §7 Functional Requirements (FR-007, FR-008)
 
 ## Related Requirements
 
@@ -75,4 +75,4 @@ GOWORK=off go run examples/basic/main.go
 
 ## Test Case Reference
 
-参见 `module/xlib-standard/TRACEABILITY.md` FR-007 / FR-008 对应 TC-019。
+参见 `module/xlib_standard/TRACEABILITY.md` FR-007 / FR-008 对应 TC-019。

@@ -47,7 +47,7 @@
       "id": "BLK-004",
       "severity": "high",
       "module": "contracts",
-      "title": "仓库身份需重写 (README H1 仍是 xlib-standard)",
+      "title": "仓库身份需重写 (README H1 仍是 xlib_standard)",
       "status": "resolved",
       "category": "identity",
       "detail": "已在本仓库 STATUS/ARCHITECTURE/README 中修正为 spec-baseline 身份",

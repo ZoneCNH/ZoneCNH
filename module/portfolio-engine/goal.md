@@ -1,4 +1,4 @@
-# portfolio-engine Goal
+# portfolio_engine Goal
 
 ## 元数据
 
@@ -12,7 +12,7 @@
 
 ## 定位
 
-portfolio-engine 是执行域的投资组合模块。组合管理、PnL计算、风险敞口监控。
+portfolio_engine 是执行域的投资组合模块。组合管理、PnL计算、风险敞口监控。
 
 ## 目标
 
@@ -25,6 +25,6 @@ portfolio-engine 是执行域的投资组合模块。组合管理、PnL计算、
 | 类型 | 说明 |
 | --- | --- |
 | Owns | 组合管理/PnL实时计算/风险敞口/再平衡 |
-| Depends on | order-engine, settlement, domainx |
-| Consumed by | risk-engine |
-| Excludes | 订单执行(→order-engine)、风控规则(→risk-engine) |
+| Depends on | order_engine, settlement, domainx |
+| Consumed by | risk_engine |
+| Excludes | 订单执行(→order_engine)、风控规则(→risk_engine) |

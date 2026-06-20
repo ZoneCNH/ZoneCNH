@@ -12,11 +12,11 @@
 ┌─────────────────────────────────────────────────────────────────────────────────┐
 │                                  数据域                                          │
 │                                                                                 │
-│  market-data (13)                    macro-data (11)           alternative-data │
+│  market_data (13)                    macro_data (11)           alternative_data │
 │  ┌──────────────────┐                ┌──────────────────┐      ┌──────────────┐ │
 │  │ 13 交易所 SDK     │                │ fred             │      │ 链上数据     │ │
 │  │ binance/okx/...   │                │ treasury         │      │ 社交情绪     │ │
-│  │                   │                │ bea/ecb/uk-cb/...│      │ 新闻 NLP     │ │
+│  │                   │                │ bea/ecb/uk_cb/...│      │ 新闻 NLP     │ │
 │  └────────┬─────────┘                │ eastmoney        │      └──────────────┘ │
 │           │                          │ jin10            │                       │
 │           │                          │ yahoo            │                       │
@@ -27,7 +27,7 @@
 ┌─────────────────────────────────────────────────────────────────────────────────┐
 │                              L2.5 领域共享层                                      │
 │                                                                                 │
-│  domain-market                         domain-macro                              │
+│  domain_market                         domain_macro                              │
 │  domainx (Order/Position/Trade)                                               │
 │  ┌──────────────────┐                ┌──────────────────┐                       │
 │  │ Tick (逐笔成交)   │                │ MacroPoint       │                       │
@@ -42,7 +42,7 @@
 │           │                          └────────┬─────────┘                       │
 │           │                                   │                                 │
 │  decimalx (Price/Qty/Ratio/Money)             │                                 │
-│  domain-exchange (VenueAdapter)               │                                 │
+│  domain_exchange (VenueAdapter)               │                                 │
 └───────────┼───────────────────────────────────┼─────────────────────────────────┘
             │                                   │
             ▼                                   ▼
@@ -108,7 +108,7 @@
 │              │  explain: string        │                                        │
 │              └───────────┬─────────────┘                                        │
 │                          │                                                      │
-│  factor-engine ◄──► feature-store ◄──► factor-eval                              │
+│  factor_engine ◄──► feature_store ◄──► factor_eval                              │
 │  (alpha 因子计算)   (特征版本管理)     (IC/IR 评估)                               │
 └──────────────────────────┼──────────────────────────────────────────────────────┘
                            │
@@ -119,7 +119,7 @@
 │  DecisionCard                                                                │
 │       │                                                                        │
 │       ▼                                                                        │
-│  signal-factory ◄── backtest-engine ──── factor-eval (反馈)                     │
+│  signal_factory ◄── backtest_engine ──── factor_eval (反馈)                     │
 │  (信号生成/组合)     (事件驱动回测)                                              │
 │       │              ▲                                                          │
 │       ▼              │                                                          │
@@ -131,7 +131,7 @@
 ┌─────────────────────────────────────────────────────────────────────────────────┐
 │                                 执行域                                           │
 │                                                                                 │
-│  risk-engine ───► order-engine ───► portfolio-engine ───► settlement            │
+│  risk_engine ───► order_engine ───► portfolio_engine ───► settlement            │
 │  ┌───────────┐    ┌───────────┐    ┌──────────────┐    ┌───────────┐           │
 │  │ trade_    │    │ 智能路由   │    │ 多策略资金   │    │ PnL 计算  │           │
 │  │ permission│    │ TWAP/VWAP │    │ 分配/再平衡  │    │ 交易所对账│           │

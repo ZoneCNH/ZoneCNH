@@ -53,13 +53,13 @@
 | BR-001 | 标准化 exit code：0=pass, 1=fail, 2=error | CI 无法正确判断门禁结果 / TC-004, TC-005 / TASK-XLIBGATE-006 | ✅ | TRACEABILITY.md |
 | BR-002 | import 规则从 deps.yaml 读取，不硬编码 | 规则变更需改代码重新编译 / FR-001 WHEN/THEN --config 参数覆盖 / TASK-XLIBGATE-002 | ✅ | TRACEABILITY.md |
 | BR-003 | baseline 从配置或 --expected 参数获取，不硬编码 | 版本升级需改代码 / FR-003 WHEN/THEN 参数和配置 fallback / TASK-XLIBGATE-004 | ✅ | TRACEABILITY.md |
-| BR-004 | evidence schema 与 xlib-standard 定义的 Evidence 标准一致 | 跨工具 evidence 不可互操作 / FR-004 schema 验证（JSON 格式 + 必需字段） / TASK-XLIBGATE-005 | ✅ | TRACEABILITY.md |
+| BR-004 | evidence schema 与 xlib_standard 定义的 Evidence 标准一致 | 跨工具 evidence 不可互操作 / FR-004 schema 验证（JSON 格式 + 必需字段） / TASK-XLIBGATE-005 | ✅ | TRACEABILITY.md |
 | BR-005 | secret 扫描使用 gitleaks 作为底层工具 | 自研扫描器漏报 / TC-008, check all 中 gitleaks 集成调用 / TASK-XLIBGATE-006 | ✅ | TRACEABILITY.md |
 | BR-006 | check all 必须执行所有子检查，即使前面检查已失败 | 部分检查被跳过，门禁不完整 / TC-004, TC-005 / TASK-XLIBGATE-006 | ✅ | TRACEABILITY.md |
 | BR-007 | JSON 输出必须包含 machine-readable 的 status 字段 | CI 解析失败 / TC-007 / TASK-XLIBGATE-006 | ✅ | TRACEABILITY.md |
 | BR-008 | human-readable 输出必须包含文件路径和行号 | 开发者无法定位违规位置 / TC-001, TC-002, TC-008 / TASK-XLIBGATE-002 | ✅ | TRACEABILITY.md |
-| BR-009 | 依赖矩阵文件 FOUNDATION-DEPS.yaml schema 与 xlib-standard 定义一致 | deps.yaml 解析失败 / FR-001 config 加载（YAML 解析 + schema 校验）+ Config.Validate() / TASK-XLIBGATE-002 | ✅ | TRACEABILITY.md |
-| BR-010 | 禁止模板身份短语：仅 xlib-standard 可含 5 条模板身份短语 | 模块身份定义冲突 / TC-016, TC-017 + template-residue 精确字符串匹配 / TASK-XLIBGATE-012 | ❌ | TRACEABILITY.md |
+| BR-009 | 依赖矩阵文件 FOUNDATION-DEPS.yaml schema 与 xlib_standard 定义一致 | deps.yaml 解析失败 / FR-001 config 加载（YAML 解析 + schema 校验）+ Config.Validate() / TASK-XLIBGATE-002 | ✅ | TRACEABILITY.md |
+| BR-010 | 禁止模板身份短语：仅 xlib_standard 可含 5 条模板身份短语 | 模块身份定义冲突 / TC-016, TC-017 + template-residue 精确字符串匹配 / TASK-XLIBGATE-012 | ❌ | TRACEABILITY.md |
 | NFR-001 | 全量门禁性能（50 模块） | < 30s / Benchmark BenchmarkCheckAll / TASK-XLIBGATE-006 | ⚠️ | TRACEABILITY.md |
 | NFR-002 | import 扫描性能（50 模块） | < 10s / Benchmark BenchmarkCheckImports / TASK-XLIBGATE-002 | ⚠️ | TRACEABILITY.md |
 | NFR-003 | go.mod 检查性能（50 模块） | < 5s / Benchmark BenchmarkCheckGomod / TASK-XLIBGATE-003 | ⚠️ | TRACEABILITY.md |

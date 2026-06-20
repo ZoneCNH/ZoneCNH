@@ -63,17 +63,17 @@ FoundationX 是一套模块化的量化交易基础设施，为策略开发者�
 ### UC-01: 策略开发者接入新交易所
 
 策略开发者需要接入 Binance 现货数据。
-→ 使用 `market-data/binance` 采集器，配置 symbol 和 interval，启动后数据自动流入 Kafka。
+→ 使用 `market_data/binance` 采集器，配置 symbol 和 interval，启动后数据自动流入 Kafka。
 
 ### UC-02: 因子开发者添加新因子
 
 因子开发者要实现一个新的动量因子。
-→ 在 `factor-engine` 中实现 Factor 接口，注册到因子库，回测框架自动发现。
+→ 在 `factor_engine` 中实现 Factor 接口，注册到因子库，回测框架自动发现。
 
 ### UC-03: 风控规则调整
 
 风控团队要调整最大持仓比例。
-→ 修改 `risk-engine` 配置，无需改代码，热生效。
+→ 修改 `risk_engine` 配置，无需改代码，热生效。
 
 ### UC-04: 系统故障排查
 
@@ -99,15 +99,15 @@ AI 代理被要求实现一个新的存储扩展模块。
 | 弹性策略     | resiliencx                                                 |
 | 任务调度     | schedulex                                                  |
 | 测试工具     | testkitx                                                   |
-| Import 门禁  | xlibgate, xlib-standard                                    |
+| Import 门禁  | xlibgate, xlib_standard                                    |
 | 跨域契约     | contracts                                                  |
 | 存储扩展     | redisx, kafkax, natsx, postgresx, taosx, ossx, clickhousex |
 
 ### Excluded (Future)
 
-- 业务域模块（market-data, factor-engine, risk-engine 等）
+- 业务域模块（market_data, factor_engine, risk_engine 等）
 - x.go 组合根的运行时实现（Foundation v1 仅保留组合根边界验收，不在 `module/` 下维护独立 x.go 规格）
-- L2.5 领域共享层（decimalx, domain-market 等）
+- L2.5 领域共享层（decimalx, domain_market 等）
 - 回测框架
 - 实盘执行引擎
 - Web UI / Dashboard

@@ -1,16 +1,16 @@
-# TASK-BINANCE-ROOT-004 domain-market Dependency
+# TASK-BINANCE-ROOT-004 domain_market Dependency
 
 ## Objective
 
-Validate and document the dependency of `module/binance` on `module/domain-market` for canonical market semantics, ensuring that instrument identity, product-line classification, and market fact envelope types are correctly consumed from the domain layer.
+Validate and document the dependency of `module/binance` on `module/domain_market` for canonical market semantics, ensuring that instrument identity, product-line classification, and market fact envelope types are correctly consumed from the domain layer.
 
 ## Scope
 
-`module/domain-market` owns the canonical definitions for market types. This task ensures that `module/binance/client` and `module/binance/server` reference these types without redefining them, and that mapping between Binance-native data and domain types is correct and testable.
+`module/domain_market` owns the canonical definitions for market types. This task ensures that `module/binance/client` and `module/binance/server` reference these types without redefining them, and that mapping between Binance-native data and domain types is correct and testable.
 
 ## Deliverables
 
-- Dependency declaration in root SPEC.md referencing `module/domain-market`
+- Dependency declaration in root SPEC.md referencing `module/domain_market`
 - Verification that all required domain types are available:
   - `InstrumentKey`
   - `ProductLine`
@@ -33,4 +33,4 @@ Validate and document the dependency of `module/binance` on `module/domain-marke
 ## Dependencies
 
 - PR-001 (root docs established).
-- `module/domain-market` (external — must expose the listed types).
+- `module/domain_market` (external — must expose the listed types).

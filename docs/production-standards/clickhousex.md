@@ -25,7 +25,7 @@ ZoneCNH 基座层 ClickHouse 客户端模块（Layer L2 基础设施适配器）
 - 不做 SQL 拼接 DSL（调用方传 raw SQL）、物化视图/字典管理。
 
 ## 5. 架构位置
-基座层（L2 存储扩展）。依赖方向：kernel + observex(interface) + ClickHouse driver + decimal lib。被 `factor-engine`/`signal-engine`/`backtest-engine`/`risk-engine` 和 `x.go` 组合根消费。observex 实现在 x.go 组装时注入（interface-only import）。
+基座层（L2 存储扩展）。依赖方向：kernel + observex(interface) + ClickHouse driver + decimal lib。被 `factor_engine`/`signal-engine`/`backtest_engine`/`risk_engine` 和 `x.go` 组合根消费。observex 实现在 x.go 组装时注入（interface-only import）。
 
 ## 6. 生命周期
 - `NewClient`：校验 Config（DSN 非空），初始化连接池。

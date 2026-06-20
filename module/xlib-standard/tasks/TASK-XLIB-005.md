@@ -6,12 +6,12 @@
 
 ```yaml
 task_id: TASK-XLIB-005
-module: xlib-standard
+module: xlib_standard
 scope: "生成库验收、100 次自检脚本、tag v1.0.0"
 spec_ref:
-  - "module/xlib-standard/SPEC.md#22"
-  - "module/xlib-standard/goal.md#12"
-  - "module/xlib-standard/goal.md#13"
+  - "module/xlib_standard/SPEC.md#22"
+  - "module/xlib_standard/goal.md#12"
+  - "module/xlib_standard/goal.md#13"
 files:
   - "selfcheck-100.sh"
 
@@ -20,7 +20,7 @@ files_change:
 acceptance_criteria:
   - "AC-001: 临时目录生成库 GOWORK=off go test ./... 通过"
   - "AC-002: 临时目录生成库 GOWORK=off go test -race ./... 通过"
-  - "AC-003: 生成库无 templatex/xlib-standard/foundationx/baselib-template 残留"
+  - "AC-003: 生成库无 templatex/xlib_standard/foundationx/baselib-template 残留"
   - "AC-004: selfcheck-100.sh 100 次全部通过"
   - "AC-005: GOWORK=off make ci 通过"
   - "AC-006: GOWORK=off make release-check 通过"
@@ -53,14 +53,14 @@ status: pending
 ## Acceptance
 
 - 临时目录生成库 `GOWORK=off go test ./...` 和 `GOWORK=off go test -race ./...` 通过。
-- 生成库不包含 templatex、xlib-standard、foundationx 或 baselib-template 残留。
+- 生成库不包含 templatex、xlib_standard、foundationx 或 baselib-template 残留。
 - `./selfcheck-100.sh`、`GOWORK=off make ci`、`GOWORK=off make release-check`、`GOWORK=off make release-final-check` 全部通过。
 
 ## Requirements Covered
 
 | Requirement | Description         | Acceptance Criteria                                                         |
 | ----------- | ------------------- | --------------------------------------------------------------------------- |
-| FR-010      | 生成库无模板残留    | 生成库不包含 templatex、xlib-standard、foundationx 或 baselib-template 残留 |
+| FR-010      | 生成库无模板残留    | 生成库不包含 templatex、xlib_standard、foundationx 或 baselib-template 残留 |
 | FR-014      | release final check | release-final-check 通过                                                    |
 | §22         | Release DoD         | 所有 AC 通过                                                                |
 | goal.md §12 | 生成库验收          | 临时目录测试通过                                                            |
@@ -79,7 +79,7 @@ cd "$tmp/kernel"
 GOWORK=off go test ./...
 GOWORK=off go test -race ./...
 ! grep -R "templatex" "$tmp/kernel" --exclude-dir=.git
-! grep -R "xlib-standard" "$tmp/kernel" --exclude-dir=.git
+! grep -R "xlib_standard" "$tmp/kernel" --exclude-dir=.git
 cd -
 rm -rf "$tmp"
 

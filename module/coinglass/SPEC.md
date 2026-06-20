@@ -9,7 +9,7 @@
 - Layer: 数据域 · 行情
 - Module-Version: v1.0.0-spec
 - Repository: [github.com/ZoneCNH/coinglass](https://github.com/ZoneCNH/coinglass)
-- Related: [CONSTITUTION.md](../../CONSTITUTION.md), [ARCHITECTURE.md](../../ARCHITECTURE.md), [`module/binance`](../binance/), [`module/_template/cex-cs-module/README.md`](../_template/cex-cs-module/README.md), `module/domain-market`, `module/contracts`, `module/market-data`
+- Related: [CONSTITUTION.md](../../CONSTITUTION.md), [ARCHITECTURE.md](../../ARCHITECTURE.md), [`module/binance`](../binance/), [`module/_template/cex-cs-module/README.md`](../_template/cex-cs-module/README.md), `module/domain_market`, `module/contracts`, `module/market_data`
 
 > 子模块规格：`module/coinglass/client/SPEC.md`、`module/coinglass/server/SPEC.md`
 >
@@ -28,12 +28,12 @@ module/coinglass/client       ← 聚合数据采集器（多窗口 polling）
   ↓ contracts-defined gRPC (MarketDataService)
 module/coinglass/server       ← 摄入受理服务器
   ↓ downstream dispatch port
-module/market-data
+module/market_data
 ```
 
 为什么本模块仍统一采用 C/S Module 范式（而非旧 SDK / Provider）：
 
-- **下游不感知来源差异**：`module/market-data` 接收的 `MarketDataService.Ingest` 输入面对来源不敏感，无论是 binance Spot trade 还是 Coinglass funding rate，都是 canonical event
+- **下游不感知来源差异**：`module/market_data` 接收的 `MarketDataService.Ingest` 输入面对来源不敏感，无论是 binance Spot trade 还是 Coinglass funding rate，都是 canonical event
 - **可靠性诉求一致**：聚合数据虽然延迟更高（分钟级），但 at-least-once + idempotent acceptance + ACK-driven checkpoint 同样需要
 - **未来可扩展**：把 ZoneCNH 自营聚合算法加入时，只需新建 `module/{custom-aggregator}` C/S Module 而无需重构数据域
 
@@ -59,7 +59,7 @@ Coinglass 集成面临以下问题：
 - 明确 polling 重叠窗口的 idempotency key 维度（含 `venue + symbol + window_start`）
 - Venue 名称在 client 层规范化为 canonical `exchange` 值（`Binance` → `binance`），server 校验
 - Rate limit 在 client 层显式调度，避免单 channel 浪费 quota
-- 下游 `module/market-data` 对来源不敏感
+- 下游 `module/market_data` 对来源不敏感
 - 移除旧 `coinglass` SDK active 引用
 
 ---
@@ -68,12 +68,12 @@ Coinglass 集成面临以下问题：
 
 | 不做 | 原因 |
 |------|------|
-| 定义 canonical domain model | 由 `module/domain-market` 拥有（含 derivatives_aggregate 类型扩展） |
+| 定义 canonical domain model | 由 `module/domain_market` 拥有（含 derivatives_aggregate 类型扩展） |
 | 定义 proto/gRPC wire contract | 由 `module/contracts` 拥有 |
 | 拥有 storage / query / strategy | 不属于数据域 |
 | 自营衍生品聚合算法 | 应另立模块（`{custom-aggregator}`） |
 | Coinglass dashboard 复刻 | 不属于本模块 |
-| 历史数据回填 | 由 `module/market-data` 或 backfill 模块负责 |
+| 历史数据回填 | 由 `module/market_data` 或 backfill 模块负责 |
 | 旧 coinglass SDK 兼容 | 硬切移除 |
 
 ---
@@ -82,10 +82,10 @@ Coinglass 集成面临以下问题：
 
 | 消费者 | 使用方式 |
 |--------|----------|
-| `module/market-data` | 通过 server downstream dispatch port 接收 canonical events |
+| `module/market_data` | 通过 server downstream dispatch port 接收 canonical events |
 | `module/coinglass/client` | 通过 contracts gRPC 调用 server `MarketDataService.Ingest` |
 | `module/coinglass/server` | 接收 client 流 |
-| 下游 `module/factor-engine` | 通过 market-data 消费 derivatives_aggregate 事件作为因子输入 |
+| 下游 `module/factor_engine` | 通过 market_data 消费 derivatives_aggregate 事件作为因子输入 |
 
 ---
 
@@ -213,7 +213,7 @@ server 校验：缺失任一字段 → `terminal_validation` reject；`coinglass
 
 ### Downstream Dispatch Port
 
-> 与 binance 一致。`module/market-data` 接收的事件包含 `aggregator=coinglass` 标注，下游可基于此做去重或并存策略。
+> 与 binance 一致。`module/market_data` 接收的事件包含 `aggregator=coinglass` 标注，下游可基于此做去重或并存策略。
 
 ---
 
@@ -225,7 +225,7 @@ server 校验：缺失任一字段 → `terminal_validation` reject；`coinglass
 
 | Concept | Purpose | Owned By |
 |---------|---------|----------|
-| `DerivativesAggregateEvent` | 聚合事件 wrapper，含 venue + window 维度 | domain-market（v1.1+ 扩展） |
+| `DerivativesAggregateEvent` | 聚合事件 wrapper，含 venue + window 维度 | domain_market（v1.1+ 扩展） |
 
 ### Coinglass Channel Schema
 
@@ -412,8 +412,8 @@ internal/client/
 | ID | 问题 | 状态 |
 |----|------|------|
 | OQ-001 | contracts §8.4 wire 是否就绪？ | ✅ 已确认 |
-| OQ-002 | market-data downstream port 是否就绪？ | ✅ 已确认 |
-| OQ-003 | derivatives_aggregate 在 domain-market 的扩展位置？ | 待 domain-market v1.1 决议；过渡期通过 `source_metadata.aggregator` 标注 |
+| OQ-002 | market_data downstream port 是否就绪？ | ✅ 已确认 |
+| OQ-003 | derivatives_aggregate 在 domain_market 的扩展位置？ | 待 domain_market v1.1 决议；过渡期通过 `source_metadata.aggregator` 标注 |
 
 ### Non-blocking
 

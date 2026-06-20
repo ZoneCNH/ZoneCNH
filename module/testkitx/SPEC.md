@@ -15,16 +15,16 @@
 
 `testkitx` 是测试基础设施，提供 fake 实现、fixture 加载、golden 测试、contract 测试、边界扫描等工具，帮助各模块稳定验证边界、错误路径和集成行为。禁止进入生产依赖图。
 
-**证据边界：testkitx 提供测试期证据（test-time evidence）。** testkitx 的证据产物——golden file（FR-008 GoldenUpdate）、contract test 结果（§16.3）、boundary check 输出（FR-009）、goroutine leak check 输出（FR-010）、manifest——全部在 `go test` 进程内生成，服务于开发和 CI 测试阶段。testkitx 不做证据收集、汇总或发布；这些职责属于 xlib-evidence。详细分工：
+**证据边界：testkitx 提供测试期证据（test-time evidence）。** testkitx 的证据产物——golden file（FR-008 GoldenUpdate）、contract test 结果（§16.3）、boundary check 输出（FR-009）、goroutine leak check 输出（FR-010）、manifest——全部在 `go test` 进程内生成，服务于开发和 CI 测试阶段。testkitx 不做证据收集、汇总或发布；这些职责属于 xlib_evidence。详细分工：
 
-| 维度 | testkitx（测试期证据） | xlib-evidence（CI/发布期证据） |
+| 维度 | testkitx（测试期证据） | xlib_evidence（CI/发布期证据） |
 |------|----------------------|------------------------------|
 | 运行阶段 | `go test` 进程内 | CI pipeline |
 | 证据类型 | golden/contract/boundary/leak/manifest | coverage/manifest/remote evidence/report |
 | 角色 | 证据**生成者** | 证据**收集者与发布者** |
 | manifest | 测试期 manifest（本次测试的 golden/contract/boundary 结果） | 发布期 manifest（汇总所有模块 coverage/gate/manifest） |
 
-两者互补：testkitx 产出原始证据 → xlib-evidence 在 CI pipeline 中收集、验证、发布为统一报告。
+两者互补：testkitx 产出原始证据 → xlib_evidence 在 CI pipeline 中收集、验证、发布为统一报告。
 
 ---
 
@@ -58,7 +58,7 @@
 - 不进入生产二进制或生产依赖图（生产代码由各模块自身维护，testkitx 仅供 `go test` 使用；BR-005 + CI Gate `no-production-import` 强制执行）
 - 不定义交易、行情、风控、订单、仓位等业务域模型（业务模型由 `contracts` 和各业务域模块负责，testkitx 的 fake 类型只镜像 L1 基础设施接口）
 - 不承担各模块领域 fixture 的集中维护（领域 fixture 由各模块在自身 `testdata/` 下维护，testkitx 只提供 fixture loader 工具和 golden file 辅助函数）
-- 不替代集成测试 (L2)、系统测试 (L3)、混沌工程和长稳测试（这些测试层由各模块自行组织或由 `xlib-harness` / `xlibgate` 在 CI 管线中协调，testkitx 只覆盖单元测试期的 fake、fixture、golden、contract、boundary 工具）
+- 不替代集成测试 (L2)、系统测试 (L3)、混沌工程和长稳测试（这些测试层由各模块自行组织或由 `xlib_harness` / `xlibgate` 在 CI 管线中协调，testkitx 只覆盖单元测试期的 fake、fixture、golden、contract、boundary 工具）
 
 ---
 

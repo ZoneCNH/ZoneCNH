@@ -39,7 +39,7 @@ pipeline_state: DESIGN_READY
 related_issues:
   - "#1393"
 related_specs:
-  - module/market-data/SPEC.md
+  - module/market_data/SPEC.md
 success_criteria:
   - market_data 独立运行
   - 支持历史 K 线采集
@@ -58,7 +58,7 @@ task_id: TASK-GOAL-20260608-001-003
 goal_id: GOAL-20260608-001
 title: Implement WS subscription handler
 status: In Progress
-owner: agent-market-data
+owner: agent-market_data
 priority: P0
 dod:
   - WS 连接成功
@@ -82,14 +82,14 @@ title: Market Data module foundation
 status: in_progress
 priority: P0
 goal_id: GOAL-20260608-001
-spec_id: SPEC-market-data-v1
-design_id: DESIGN-market-data-v1
+spec_id: SPEC-market_data-v1
+design_id: DESIGN-market_data-v1
 tasks:
   - TASK-GOAL-20260608-001-001
   - TASK-GOAL-20260608-001-002
   - TASK-GOAL-20260608-001-003
 labels:
-  - market-data
+  - market_data
   - p0
   - architecture
 ```
@@ -114,7 +114,7 @@ Issue 生命周期的异常状态沿用 Pipeline 异常状态枚举；完整 SSO
 ## 5. Release Registry
 
 ```yaml
-release_id: REL-20260608-market-data
+release_id: REL-20260608-market_data
 goal_id: GOAL-20260608-001
 version: v0.3.0
 status: ready_for_pr
@@ -125,8 +125,8 @@ tests:
 docs_updated:
   - README.md
   - CHANGELOG.md
-rollback_plan: docs/goal/release/rollback-market-data.md
-evidence_manifest: .config/goal/evidence/REL-20260608-market-data-manifest.md
+rollback_plan: docs/goal/release/rollback-market_data.md
+evidence_manifest: .config/goal/evidence/REL-20260608-market_data-manifest.md
 ```
 
 路径：`.config/goal/registry/releases.yaml`
@@ -146,7 +146,7 @@ impact: High
 severity: High
 trigger: WS 连接中断超过 5 秒
 mitigation: 增加消息缓存和重放机制
-owner: agent-market-data
+owner: agent-market_data
 status: Open
 linked_gates:
   - G8

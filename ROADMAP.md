@@ -51,7 +51,7 @@ Scope:
 - foundationx compatibility 冻结
 - Foundation 依赖矩阵 CI 化
 - 各模块补最小 v1 能力（kernel/configx/observex/resiliencx/schedulex/testkitx）
-- foundation-example 垂直烟雾测试
+- foundation_example 垂直烟雾测试
 - x.go 体检与瘦身
 
 Out of Scope:
@@ -65,7 +65,7 @@ Done when:
 - [ ] resiliencx README 不再包含 Standard Source / Generator / Harness 叙事
 - [ ] 6 个模块 Go version 一致（1.23）
 - [ ] xlibgate check-all exit code = 0
-- [ ] foundation-example 可启动、可关闭、所有 make target 可运行
+- [ ] foundation_example 可启动、可关闭、所有 make target 可运行
 - [ ] x.go 体量合理（< 500KB），无业务逻辑泄漏
 - [ ] 每个模块测试覆盖率 ≥ 80%（kernel ≥ 90%）
 
@@ -88,7 +88,7 @@ Scope:
 
 - 契约先行：固化 MarketDataProvider / MacroDataProvider / FactorInput / FactorOutput / RegimeSnapshot / RegimeCard / DecisionCard DTO
 - 三引擎实现：market_regime（S1-S7）、macro_regime（M1-M7）、regime_engine（M×S 矩阵）
-- 因子管线：factor-engine + feature-store + factor-eval + 初始因子库（10+ 基础因子）
+- 因子管线：factor_engine + feature_store + factor_eval + 初始因子库（10+ 基础因子）
 - 黄金案例校验：2020 COVID / 2022 加息 / 2023 复苏
 
 Out of Scope:
@@ -102,7 +102,7 @@ Done when:
 - [ ] market_regime: S1-S7 分类器准确率 ≥ 80%（黄金案例集）
 - [ ] macro_regime: M1-M7 分类器准确率 ≥ 80%（黄金案例集）
 - [ ] regime_engine: M×S 矩阵 49 格全覆盖，冲突门逻辑正确
-- [ ] factor-engine: ≥ 10 个因子可计算
+- [ ] factor_engine: ≥ 10 个因子可计算
 - [ ] DecisionCard 输出可被下游消费
 - [ ] 所有模块测试覆盖率 ≥ 80%
 
@@ -128,10 +128,10 @@ DecisionCard 驱动信号生成，回测引擎验证策略，优化器调参。
 Scope:
 
 - 契约固化：SignalIntent / PortfolioTarget / BacktestConfig / BacktestReport / FactorFeedback
-- signal-factory：DecisionCard 消费 + 信号生成 + 5 种策略模板
-- backtest-engine：事件驱动引擎 + Tick 级回放 + 撮合模拟 + 回测报告
+- signal_factory：DecisionCard 消费 + 信号生成 + 5 种策略模板
+- backtest_engine：事件驱动引擎 + Tick 级回放 + 撮合模拟 + 回测报告
 - optimizer：参数搜索 + Walk-forward 验证
-- backtest → factor-eval 反馈闭环
+- backtest → factor_eval 反馈闭环
 
 Out of Scope:
 
@@ -141,10 +141,10 @@ Out of Scope:
 
 Done when:
 
-- [ ] DecisionCard → signal-factory → SignalIntent 端到端可跑通
-- [ ] backtest-engine: 历史数据 Tick 级回放可运行
+- [ ] DecisionCard → signal_factory → SignalIntent 端到端可跑通
+- [ ] backtest_engine: 历史数据 Tick 级回放可运行
 - [ ] 回测报告包含收益率、夏普比、最大回撤、胜率
-- [ ] backtest → factor-eval 反馈闭环可运行
+- [ ] backtest → factor_eval 反馈闭环可运行
 - [ ] 所有模块测试覆盖率 ≥ 80%
 
 Blocked By:
@@ -169,9 +169,9 @@ SignalIntent 经风控放行、订单执行、组合管理，完成完整交易�
 Scope:
 
 - 契约固化：RiskDecision / OrderIntent / ExecutionReport / PositionSnapshot / PnLReport / ExposureEvent
-- risk-engine：trade_permission + VaR + 止损 + 持仓限额 + 压力测试 + DecisionCard 集成
-- order-engine：统一订单接口 + 智能路由 + TWAP/VWAP + 滑点控制 + 交易所适配（paper trading）
-- portfolio-engine：多策略资金分配 + 再平衡 + 仓位追踪
+- risk_engine：trade_permission + VaR + 止损 + 持仓限额 + 压力测试 + DecisionCard 集成
+- order_engine：统一订单接口 + 智能路由 + TWAP/VWAP + 滑点控制 + 交易所适配（paper trading）
+- portfolio_engine：多策略资金分配 + 再平衡 + 仓位追踪
 - 执行反馈闭环：fills/positions/PnL/exposure events → 决策域
 
 Out of Scope:
@@ -182,15 +182,15 @@ Out of Scope:
 
 Done when:
 
-- [ ] SignalIntent → risk-engine → paper order-engine → portfolio update 可跑通
-- [ ] 策略只能通过 risk-engine 提交订单（P5 原则验证）
+- [ ] SignalIntent → risk_engine → paper order_engine → portfolio update 可跑通
+- [ ] 策略只能通过 risk_engine 提交订单（P5 原则验证）
 - [ ] 至少对接 2 个交易所 SDK（binance/okx）
 - [ ] 执行反馈事件可回到决策域
 - [ ] 所有模块测试覆盖率 ≥ 80%
 
 Blocked By:
 
-- v0.3.0（决策域，至少 signal-factory + 契约）
+- v0.3.0（决策域，至少 signal_factory + 契约）
 
 ---
 
@@ -211,7 +211,7 @@ Scope:
 
 - settlement：PnL 计算 + 交易所对账 + 资金流水
 - alertx：策略异常 + 风控触发 + 系统健康三类告警
-- alternative-data：链上数据 + 社交情绪 + 新闻 NLP
+- alternative_data：链上数据 + 社交情绪 + 新闻 NLP
 - 存储层分优先级实现：redisx / kafkax（P1 优先）、postgresx / clickhousex（P2 按数据量增长驱动）
 
 Out of Scope:
@@ -248,7 +248,7 @@ x.go 组合根串联所有模块，验证从数据采集到交易执行的完整
 Scope:
 
 - x.go wiring：configx → observex → resiliencx → schedulex → 数据域 → 分析域 → 决策域 → 执行域
-- 端到端烟雾测试：market-data → factor → signal → risk → paper order → portfolio → settlement
+- 端到端烟雾测试：market_data → factor → signal → risk → paper order → portfolio → settlement
 - 优雅停机验证：所有组件按拓扑序停止，无 goroutine 泄漏
 - 可观测性验证：metrics/logs/traces 覆盖完整链路
 

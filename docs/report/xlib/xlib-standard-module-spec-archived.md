@@ -1,4 +1,4 @@
-# xlib-standard 模块规格（已归档）
+# xlib_standard 模块规格（已归档）
 
 Status: **archived**（2026-06-08 归档；非当前权威）
 Spec-Version: 2026-06-07.agent-team
@@ -12,7 +12,7 @@ Coverage-Method: agent-team semantic synthesis; 1000-pass check verifies input f
 
 ## 1. 模块身份
 
-`xlib-standard` 是基础库体系的唯一标准源，不是业务库、不是生产运行时，也不是下游模块源码仓库。
+`xlib_standard` 是基础库体系的唯一标准源，不是业务库、不是生产运行时，也不是下游模块源码仓库。
 
 它承担六个职责：
 
@@ -65,11 +65,11 @@ Docker Toolchain Runtime 只是可复现工具链环境，不是第二套发布�
 
 | 层级             | 模块                                                                     | 允许职责                                                  | 禁止项                                               |
 | ---------------- | ------------------------------------------------------------------------ | --------------------------------------------------------- | ---------------------------------------------------- |
-| Standard/Runtime | `xlib-standard`                                                          | 标准、模板、生成器、Harness、Evidence、Debt、Goal Runtime | 真实 L1/L2 运行时、业务模型、`x.go` 依赖、生产凭证。 |
+| Standard/Runtime | `xlib_standard`                                                          | 标准、模板、生成器、Harness、Evidence、Debt、Goal Runtime | 真实 L1/L2 运行时、业务模型、`x.go` 依赖、生产凭证。 |
 | L0               | `kernel`                                                                 | 无业务基础原语、稳定契约、错误和生命周期基元              | profile runtime、业务仓库依赖、生产密钥路径。        |
 | L1               | `configx`、`observex`、`testkitx`                                        | 配置、观测、测试辅助和标准契约执行                        | 应用编排、业务语义、生产端点。                       |
 | L2               | `postgresx`、`redisx`、`kafkax`、`natsx`、`taosx`、`ossx`、`clickhousex` | Provider-neutral adapter、契约包、能力声明、证据包        | 业务 schema、私有仓库约束、不可替换厂商假设。        |
-| L3/Business      | `x.go`、`market-data`、`macro-data`、engines                             | 组合基础库和承载业务                                      | 反向定义基础库标准。                                 |
+| L3/Business      | `x.go`、`market_data`、`macro_data`、engines                             | 组合基础库和承载业务                                      | 反向定义基础库标准。                                 |
 
 依赖方向只能从上层消费下层或消费标准产物：
 
@@ -78,14 +78,14 @@ x.go / business
   -> L2 provider libraries
   -> L1 support libraries
   -> L0 kernel
-  -> xlib-standard contracts/template/gates
+  -> xlib_standard contracts/template/gates
 ```text
 
-`xlib-standard` 不依赖 `x.go`、业务仓库、已生成运行时或 profile runtime。
+`xlib_standard` 不依赖 `x.go`、业务仓库、已生成运行时或 profile runtime。
 
 ## 4. 边界和非目标
 
-`xlib-standard` 必须包含：
+`xlib_standard` 必须包含：
 
 - 标准文档、分层文档、模块边界、仓库角色、DoD、Harness 门禁、Evidence 协议、Release 标准。
 - Go 模板、公共 API 参考、契约、示例、生成脚本、Makefile、CI 工作流和 schema。
@@ -93,7 +93,7 @@ x.go / business
 - 本地证据、发布证据、债务证据、标准影响和下游同步计划的生成规则。
 - 下游治理包和可被渲染的标准材料。
 
-`xlib-standard` 禁止包含：
+`xlib_standard` 禁止包含：
 
 - L1/L2 真实 provider runtime、真实连接池、真实队列/数据库客户端。
 - `x.go` 业务模型、业务仓库导入、私有策略、交易或生产配置。
@@ -161,7 +161,7 @@ scripts/render_template.sh --module <module> --name <name> --package <package> -
 
 要求：
 
-- 输出目录不得是 `xlib-standard` 根，也不得落在本仓库内部。
+- 输出目录不得是 `xlib_standard` 根，也不得落在本仓库内部。
 - 输出目录必须不存在或为空。
 - 必须替换 module/name/package/import path、README、docs、contracts、examples、scripts、manifest、Makefile、CI 中的模板 token。
 - 必须去除旧身份 token 和不可提交的生成态 latest 文件。
@@ -423,9 +423,9 @@ Release 阻断条件：
 
 ## 19. 接受标准
 
-一个 `xlib-standard` 模块变更只有在以下条件满足时才能声明完成：
+一个 `xlib_standard` 模块变更只有在以下条件满足时才能声明完成：
 
-1. 修改保持 `xlib-standard` 作为标准源和模板源，不引入业务或 provider runtime。
+1. 修改保持 `xlib_standard` 作为标准源和模板源，不引入业务或 provider runtime。
 2. API、config、errors、health、metrics、contracts、docs 保持一致。
 3. 生成器输出可编译、无旧身份 token、无 forbidden path、无 secret。
 4. Harness、Evidence、Debt、Goal Runtime 门禁可本地机器验证。

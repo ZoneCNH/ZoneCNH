@@ -10,7 +10,7 @@ TASK-XLIB-003: 核心包 — pkg/templatex、contracts、examples、testkit
 
 ## Related Spec
 
-- module/xlib-standard/SPEC.md (§7 功能需求 FR-001~FR-008, §9 接口契约, §10 数据模型)
+- module/xlib_standard/SPEC.md (§7 功能需求 FR-001~FR-008, §9 接口契约, §10 数据模型)
 
 ## Related Requirements
 
@@ -98,4 +98,4 @@ cd examples && go run main.go
 
 ## Test Case Reference
 
-参见 `module/xlib-standard/TRACEABILITY.md` FR-001 对应 TC-001~TC-003，FR-006 对应 TC-019。
+参见 `module/xlib_standard/TRACEABILITY.md` FR-001 对应 TC-001~TC-003，FR-006 对应 TC-019。

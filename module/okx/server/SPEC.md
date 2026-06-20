@@ -13,7 +13,7 @@
 
 ## 1. Summary
 
-`module/okx/server` 是 OKX 行情数据的 gRPC ingest server。接收来自 `module/okx/client` 的规范化行情事件，执行校验、幂等去重、durable acceptance，通过 exchange-neutral downstream port 分发到 `module/market-data`。
+`module/okx/server` 是 OKX 行情数据的 gRPC ingest server。接收来自 `module/okx/client` 的规范化行情事件，执行校验、幂等去重、durable acceptance，通过 exchange-neutral downstream port 分发到 `module/market_data`。
 
 ## 2. Inherited Behavior
 
@@ -49,7 +49,7 @@ server validation 阶段额外检查：
 
 ### 3.3 Downstream Dispatch（继承 binance）
 
-dispatch 给 `module/market-data` 的事件保留 `source_metadata.environment` 字段，下游可基于此过滤：
+dispatch 给 `module/market_data` 的事件保留 `source_metadata.environment` 字段，下游可基于此过滤：
 - production pipeline：仅消费 environment=production
 - 测试 pipeline：可消费 environment=simulated
 

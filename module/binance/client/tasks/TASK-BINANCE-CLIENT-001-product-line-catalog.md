@@ -27,4 +27,4 @@ The catalog stores exchange-native metadata required to create canonical instrum
 
 ## Dependencies
 
-- `module/domain-market` ProductLine and InstrumentKey semantics.
+- `module/domain_market` ProductLine and InstrumentKey semantics.

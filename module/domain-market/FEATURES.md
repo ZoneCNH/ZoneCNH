@@ -1,11 +1,11 @@
-# domain-market 完整实现功能清单
+# domain_market 完整实现功能清单
 
 - Status: Generated（与 [SPEC.md](./SPEC.md) 同步抽取，未经 pipeline-arbiter 校验）
 - Last-Updated: 2026-06-18
 - Source: [SPEC.md](./SPEC.md) · [TRACEABILITY.md](./TRACEABILITY.md) · [goal.md](./goal.md)
 - Scale: 17 FR · 7 BR · 0 NFR
 
-> 本文档是 domain-market **要完整实现的、可勾选的功能清单**，把 SPEC 的 FR/BR/NFR 展开成具体可验收的功能点。
+> 本文档是 domain_market **要完整实现的、可勾选的功能清单**，把 SPEC 的 FR/BR/NFR 展开成具体可验收的功能点。
 > 它不是 Why（goal.md）、不是规格（SPEC.md）、不是追溯矩阵（TRACEABILITY.md）。
 > 实现状态以本清单勾选为准；任一未勾选项存在即视为未完整实现。
 
@@ -40,7 +40,7 @@
 - [ ] **BR-MKT-003** 非法数据默认拒绝，不做静默修正（fail-closed）
 - [ ] **BR-MKT-004** 策略层不直接消费 Bar/Tick 原始结构体，必须通过 MarketEventEnvelope
 - [ ] **BR-MKT-005** stale/future 数据 fail-closed，DegradeReason + metrics 暴露，不可靠数据不静默进入策略
-- [ ] **BR-MKT-006** domain-market 仅表达行情语义，订单生命周期语义归 domainx
+- [ ] **BR-MKT-006** domain_market 仅表达行情语义，订单生命周期语义归 domainx
 - [ ] **BR-MKT-008** canonical event type 使用 exchange-neutral 命名；vendor stream 名称不得成为领域事件枚举
 
 ## 3. 非功能需求（NFR）
@@ -55,5 +55,5 @@
 
 ## 5. 明确不做
 
-参见 [SPEC.md](./SPEC.md) §4 非目标章节。domain-market 只承担 SPEC 范围内的能力，不做范围外业务语义/集成编排/跨模块横切。
+参见 [SPEC.md](./SPEC.md) §4 非目标章节。domain_market 只承担 SPEC 范围内的能力，不做范围外业务语义/集成编排/跨模块横切。
 

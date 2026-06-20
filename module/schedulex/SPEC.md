@@ -55,9 +55,9 @@ Status: Approved
 | 消费者           | 使用方式                             |
 | ---------------- | ------------------------------------ |
 | `x.go`（组合根） | 创建 Scheduler，注册 job，调用 Start |
-| `market-data`    | 定时拉取行情数据                     |
-| `factor-engine`  | 定时计算因子                         |
-| `risk-engine`    | 定时执行风控检查                     |
+| `market_data`    | 定时拉取行情数据                     |
+| `factor_engine`  | 定时计算因子                         |
+| `risk_engine`    | 定时执行风控检查                     |
 | `report-engine`  | 定时生成报表                         |
 | 业务域模块       | 通过 Scheduler.Schedule 注册定时任务 |
 
@@ -445,12 +445,12 @@ trigger, err := schedulex.Cron("*/5 * * * *", time.UTC)
 if err != nil { /* ... */ }
 
 err = s.AddJob(
-    schedulex.JobFunc{NameValue: "market-data", RunFunc: pullMarketData},
+    schedulex.JobFunc{NameValue: "market_data", RunFunc: pullMarketData},
     trigger,
     schedulex.WithOverlapPolicy(schedulex.OverlapSkip),
     schedulex.WithMisfirePolicy(schedulex.MisfireRunOnce),
     schedulex.WithLocker(myRedisLocker),
-    schedulex.WithLockKey("market-data"),
+    schedulex.WithLockKey("market_data"),
     schedulex.WithLockTTL(30*time.Second),
 )
 if err != nil { /* ... */ }

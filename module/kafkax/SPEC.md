@@ -62,10 +62,10 @@ Status: Approved
 
 | 消费者 | 使用方式 |
 |--------|----------|
-| `market-data` | 通过 Producer 发布行情消息到 Kafka |
+| `market_data` | 通过 Producer 发布行情消息到 Kafka |
 | `signal-engine` | 通过 Consumer 消费因子信号消息 |
-| `order-engine` | 通过 Producer 发布订单相关消息 |
-| `risk-engine` | 通过 Consumer 消费风控消息 |
+| `order_engine` | 通过 Producer 发布订单相关消息 |
+| `risk_engine` | 通过 Consumer 消费风控消息 |
 | 业务域模块 | 通过 Producer/Consumer 进行跨域事件通信 |
 
 ---

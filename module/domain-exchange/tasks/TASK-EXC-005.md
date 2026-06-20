@@ -6,12 +6,12 @@
 
 ```yaml
 task_id: TASK-EXC-005
-module: domain-exchange
+module: domain_exchange
 scope: "实现线程安全的 Registry，支持 Exchange 注册/查询/列表，支持 fake exchange 注入"
 spec_ref:
-  - "module/domain-exchange/SPEC.md#FR-EXC-005"
-  - "module/domain-exchange/SPEC.md#BR-EXC-006"
-  - "module/domain-exchange/SPEC.md#§16"
+  - "module/domain_exchange/SPEC.md#FR-EXC-005"
+  - "module/domain_exchange/SPEC.md#BR-EXC-006"
+  - "module/domain_exchange/SPEC.md#§16"
 files:
   - "registry.go"
   - "registry_test.go"

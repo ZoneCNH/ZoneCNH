@@ -31,7 +31,7 @@
 - [x] 新增 `event.go`（策略事件 sink）
 - [x] 新增 `noop.go`（未配置时安全运行）
 - [x] 新增 `options.go`（Option 模式配置）
-- [x] 删除或迁移 `xlib-standard` 相关的模板/generator/harness 代码（README 无残留引用）
+- [x] 删除或迁移 `xlib_standard` 相关的模板/generator/harness 代码（README 无残留引用）
 - [x] 更新 `go.mod`：移除不必要的依赖（Go 1.23，依赖干净）
 - [x] 测试覆盖 ≥ 80%（已验证：全包 100% 覆盖率 — bulkhead/circuit/retry/timeout/fallback/ratelimit 全部 100%，含 fake-clock + 状态转换 + 并发安全测试）
 
@@ -203,11 +203,11 @@
 
 > P1 核心能力完成后开始。
 
-### Issue：foundation-example vertical smoke ✅
+### Issue：foundation_example vertical smoke ✅
 
 ```text
-标题：Add foundation-example vertical smoke
-仓库：ZoneCNH/foundation-example
+标题：Add foundation_example vertical smoke
+仓库：ZoneCNH/foundation_example
 ```text
 
 - [x] demo app 启动和关闭
@@ -261,16 +261,16 @@ PR: #8 (squash merged → main)
 - [x] `go.sum` 残留 `github.com/ZoneCNH/foundationx v0.1.0` hash（无实际 import，仅注释引用）
 - [x] 运行 `go mod tidy` 清理（PR #9 merged, squash → main）
 
-### Issue 9：contracts / transportx / xlib-standard 三仓共享 Go module ✅
+### Issue 9：contracts / transportx / xlib_standard 三仓共享 Go module ✅
 
 ```text
 标题：contracts / transportx go.mod 独立身份声明或文档说明
 仓库：ZoneCNH/contracts, ZoneCNH/transportx
 ```text
 
-- [x] `/home/contracts/go.mod` 声明 `module github.com/ZoneCNH/xlib-standard`
-- [x] `/home/transportx/go.mod` 声明 `module github.com/ZoneCNH/xlib-standard`
-- [x] 诊断结论：contracts/transportx 共享 xlib-standard module 是有意为之的 monorepo 架构（二者 import `xlib-standard/internal/*` 内部包，Go 编译器禁止外部模块导入 internal 包，独立 go.mod 不可行）
+- [x] `/home/contracts/go.mod` 声明 `module github.com/ZoneCNH/xlib_standard`
+- [x] `/home/transportx/go.mod` 声明 `module github.com/ZoneCNH/xlib_standard`
+- [x] 诊断结论：contracts/transportx 共享 xlib_standard module 是有意为之的 monorepo 架构（二者 import `xlib_standard/internal/*` 内部包，Go 编译器禁止外部模块导入 internal 包，独立 go.mod 不可行）
 - [x] ARCHITECTURE.md 待注明三者共享 Go module（非独立模块）
 
 ### Issue 10：ARCHITECTURE.md 依赖矩阵覆盖不全 ✅
@@ -281,9 +281,9 @@ PR: #8 (squash merged → main)
 ```text
 
 - [x] 当前矩阵仅覆盖 kernel/configx/observex/testkitx/resiliencx/schedulex 6 个 — 已记录
-- [x] 补充方案：存储扩展层（7 模块）+ 契约/传输层（2 模块）+ 门禁层（4 模块，含 xlib-harness/xlib-evidence）各模块均为单依赖封装（仅依赖其客户端库），不形成模块间依赖边；domainx（L2.5 值对象，归属基座）仅允许被数据域/分析域/决策域/执行域导入
+- [x] 补充方案：存储扩展层（7 模块）+ 契约/传输层（2 模块）+ 门禁层（4 模块，含 xlib_harness/xlib_evidence）各模块均为单依赖封装（仅依赖其客户端库），不形成模块间依赖边；domainx（L2.5 值对象，归属基座）仅允许被数据域/分析域/决策域/执行域导入
 - [x] 扩展矩阵由后续 PR 补齐，当前矩阵已准确覆盖 6 个直接依赖的核心模块
-- [x] 基座已扩展至 20 模块（PR #233 拆分 xlib-standard→standard+harness+evidence；PR #235 闭环文档矛盾）
+- [x] 基座已扩展至 20 模块（PR #233 拆分 xlib_standard→standard+harness+evidence；PR #235 闭环文档矛盾）
 
 ### Issue 11：STATUS.md 缺失 domainx 条目 ✅
 
@@ -303,11 +303,11 @@ PR: #8 (squash merged → main)
 ```text
 
 - [x] F1-F8 立即修复（PR #235）：状态表 18→20、CI 数组对齐、testkitx/xlibgate 进度校准、L2.5 本地路径修正
-- [x] xlib-standard 五类职责→二类职责过时描述修复 ×6（PR #236）
-- [x] README.md 基座 17→20 模块列表 + 缺失 xlib-harness/xlib-evidence/domainx 条目（PR #237）
+- [x] xlib_standard 五类职责→二类职责过时描述修复 ×6（PR #236）
+- [x] README.md 基座 17→20 模块列表 + 缺失 xlib_harness/xlib_evidence/domainx 条目（PR #237）
 - [x] O3: domainx 添加版本号 v0.1.0，版本覆盖 28→29（PR #238）
 - [x] O4: taosx/clickhousex 时序存储边界文档化（PR #239）
-- [x] O5: testkitx/xlib-evidence 证据边界文档化（测试期 vs CI/发布期）（PR #238）
+- [x] O5: testkitx/xlib_evidence 证据边界文档化（测试期 vs CI/发布期）（PR #238）
 - [x] CI 一致性：status-consistency-check.sh 13/13 ✅
 - [x] FOUNDATION-TRACKER.md 本条目记录闭环
 
@@ -353,7 +353,7 @@ PR: #8 (squash merged → main)
 ```text
 Issue 1 (resiliencx identity)
   → P1 resiliencx 全部能力
-  → P2 foundation-example
+  → P2 foundation_example
 
 Issue 3 (Go baseline)
   → 所有模块 CI 统一
@@ -366,7 +366,7 @@ P1 kernel
   → P1 observex（依赖 kernel 原语）
 
 P1 testkitx
-  → P2 foundation-example
+  → P2 foundation_example
 ```text
 
 ## 建议执行顺序
@@ -389,7 +389,7 @@ P1 testkitx
   P1 testkitx: boundary/fixture/assert
 
 第四批：
-  P2 foundation-example
+  P2 foundation_example
   Issue 7 (postgresx Go baseline 降级) + Issue 8 (observex go.sum 清理)
   Issue 6 (postgresx foundationx exit)
   Issue 11 (STATUS.md 补 domainx) + Issue 10 (依赖矩阵扩展)

@@ -51,7 +51,7 @@
 | AC-023 | FR-023 | AuditSink Append succeeds; Replay replays matching records in order. / go test ./conformance/... -run TestAuditPlane | - | SPEC.md |
 | AC-024 | FR-024 | CONFIDENTIAL and SECRET data redacted before logging; SECRET absent from audit and receipt. / go test ./middleware/... -run TestDataClassRedaction | - | SPEC.md |
 | AC-025 | FR-025 | SchemaRegistry rejects unknown version; breaking change returns incompatible classification. / go test ./registry/... -run TestSchemaCompatibility | - | SPEC.md |
-| AC-026 | FR-026 | README.md H1 is # transportx (not # xlib-standard); go.mod declares module github.com/ZoneCNH/transportx. / grep '^# transportx$$' README.md && grep 'module github.com/ZoneCNH/transportx' go.mod | - | SPEC.md |
+| AC-026 | FR-026 | README.md H1 is # transportx (not # xlib_standard); go.mod declares module github.com/ZoneCNH/transportx. / grep '^# transportx$$' README.md && grep 'module github.com/ZoneCNH/transportx' go.mod | - | SPEC.md |
 
 ## 3. TC 测试验收登记
 

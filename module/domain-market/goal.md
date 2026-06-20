@@ -1,19 +1,19 @@
-# domain-market Goal
+# domain_market Goal
 
 | 字段 | 值 |
 | --- | --- |
-| 模块 | `domain-market` |
+| 模块 | `domain_market` |
 | 层级 | L2.5 领域共享 |
-| 仓库 | <https://github.com/ZoneCNH/domain-market> |
+| 仓库 | <https://github.com/ZoneCNH/domain_market> |
 | 当前版本 | v1.1.0 |
 | 目标版本 | v1.1.0 |
 | 状态 | v1.1.0 SPEC Approved (canonical types aligned with cross-module contracts) |
-| 计划来源 | `/home/zone/Downloads/0615/ZoneCNH-v1.0.0-goal-execution-plans/domain-market-v1.0.0-goal-execution-plan.md` |
+| 计划来源 | `/home/zone/Downloads/0615/ZoneCNH-v1.0.0-goal-execution-plans/domain_market-v1.0.0-goal-execution-plan.md` |
 | 最后更新 | 2026-06-17 |
 
 ## 目标
 
-`domain-market` 是 ZoneCNH 的市场数据语义源，统一研究、回测、实盘、provider 和策略之间的 Tick、Quote、Bar、OrderBook、Instrument、Funding、OpenInterest、LongShortRatio 与数据质量语义。
+`domain_market` 是 ZoneCNH 的市场数据语义源，统一研究、回测、实盘、provider 和策略之间的 Tick、Quote、Bar、OrderBook、Instrument、Funding、OpenInterest、LongShortRatio 与数据质量语义。
 
 ## 非目标
 

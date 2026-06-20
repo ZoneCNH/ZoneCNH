@@ -71,9 +71,9 @@
 
 ### 4.3 Governance boundary
 
-`contracts` 遵循 `xlib-standard` 的治理协议（Conventional Commits、semver、PR 模板、CI gate），但：
+`contracts` 遵循 `xlib_standard` 的治理协议（Conventional Commits、semver、PR 模板、CI gate），但：
 
-- **不是标准源**：`contracts` 不定义 xlib-standard 的编码规范、目录布局或工具链约定——这些由 `xlib-standard` 自身定义。
+- **不是标准源**：`contracts` 不定义 xlib_standard 的编码规范、目录布局或工具链约定——这些由 `xlib_standard` 自身定义。
 - **不是 generator**：`contracts` 不生成代码（不通过 protoc、go generate 或模板引擎产出任何文件）。
 - **不是模板仓库**：`contracts` 不作为其他模块的脚手架或模板使用，每个模块从自身 SPEC 出发独立初始化。
 
@@ -95,13 +95,13 @@
 
 | 消费者             | 使用方式                                     |
 | ------------------ | -------------------------------------------- |
-| `market-data`      | 实现 `MarketDataProvider` 接口，发布行情事件；消费端实现 `DownstreamDispatchPort` 接收侧 |
+| `market_data`      | 实现 `MarketDataProvider` 接口，发布行情事件；消费端实现 `DownstreamDispatchPort` 接收侧 |
 | `module/binance`    | 通过 `MarketDataService.Ingest`（§8.4）摄入行情事件 |
-| `macro-data`       | 实现 `MacroDataProvider` 接口，发布宏观事件  |
-| `factor-engine`    | 消费 `MarketDataProvider` 获取行情数据       |
+| `macro_data`       | 实现 `MacroDataProvider` 接口，发布宏观事件  |
+| `factor_engine`    | 消费 `MarketDataProvider` 获取行情数据       |
 | `signal-engine`    | 消费因子数据，发布信号事件                   |
-| `risk-engine`      | 消费信号和仓位数据，发布风险事件             |
-| `order-engine`     | 消费信号事件，发布订单事件                   |
+| `risk_engine`      | 消费信号和仓位数据，发布风险事件             |
+| `order_engine`     | 消费信号事件，发布订单事件                   |
 | `execution-engine` | 消费订单事件，发布执行事件                   |
 | `x.go`             | 组装端口实现，注入到各域                     |
 
@@ -193,11 +193,11 @@ AND 允许发布，版本为 minor 升级
 
 WHEN downstream consumer reads `contracts` `README.md`
 THEN the H1 heading MUST be `# contracts`
-AND MUST NOT be `# xlib-standard`
+AND MUST NOT be `# xlib_standard`
 
 WHEN module documentation references the `contracts` Go module path
 THEN it MUST use `github.com/ZoneCNH/contracts`
-AND MUST NOT use `github.com/ZoneCNH/xlib-standard`
+AND MUST NOT use `github.com/ZoneCNH/xlib_standard`
 
 WHEN `go.mod` declares the module name
 THEN it MUST be `module github.com/ZoneCNH/contracts`
@@ -361,9 +361,9 @@ type MacroHistoryRequest struct {
 
 `MarketDataService` is a logical gRPC service contract for upstream exchange adapters. `contracts` owns the DTO shapes, method signatures, and wire semantics only. Transport binding (proto generation, gRPC server registration, TLS, deadlines, retries, persistence) remains outside this module per §4.2 and §4.3 governance boundaries.
 
-> **命名约定（Naming Convention）**：本 §8.4 中所有 DTO 的 JSON tag 遵循 snake_case（BR-009）。domain-market 层使用 Go PascalCase struct 字段（无 JSON tag，BR-MKT-002）。market-data 接收侧使用 camelCase 文档字段名。以下映射表声明跨层命名等价关系，实现层负责转换：
+> **命名约定（Naming Convention）**：本 §8.4 中所有 DTO 的 JSON tag 遵循 snake_case（BR-009）。domain_market 层使用 Go PascalCase struct 字段（无 JSON tag，BR-MKT-002）。market_data 接收侧使用 camelCase 文档字段名。以下映射表声明跨层命名等价关系，实现层负责转换：
 
-| contracts (JSON tag) | domain-market (Go field) | market-data (doc field) | 语义 |
+| contracts (JSON tag) | domain_market (Go field) | market_data (doc field) | 语义 |
 |---|---|---|---|
 | `source` | `Venue` | `venue` | 交易所/来源场所标识 |
 | `product_line` | `ProductLine` | `productLine` | canonical 产品线枚举 |
@@ -375,11 +375,11 @@ type MacroHistoryRequest struct {
 | `sequence` | — | `sourceSequence` | 来源序列号 |
 
 ```go
-// MarketDataService receives normalized upstream market-data ingestion requests
+// MarketDataService receives normalized upstream market_data ingestion requests
 // from exchange adapters (e.g. module/binance).
 // Transport: gRPC bidirectional stream.
 // Producer: module/binance client.
-// Consumer: module/binance server → module/market-data downstream dispatch.
+// Consumer: module/binance server → module/market_data downstream dispatch.
 type MarketDataService interface {
     // Ingest accepts a stream of IngestRequest and returns per-request outcomes.
     Ingest(stream IngestRequest) (stream IngestResult, error)
@@ -396,16 +396,16 @@ type IngestRequest struct {
     // Must not include secrets, host paths, or environment-specific tokens.
     Source string `json:"source"`
 
-    // ProductLine is the canonical product line from domain-market.
+    // ProductLine is the canonical product line from domain_market.
     // Allowed values: "spot", "um_perp", "cm_perp", "option".
     ProductLine string `json:"product_line"`
 
-    // InstrumentKey carries the canonical instrument identity as defined by domain-market.
+    // InstrumentKey carries the canonical instrument identity as defined by domain_market.
     // Must include venue, product_line, instrument_type, symbol and
     // contract/option dimensions sufficient for collision-free identity.
     InstrumentKey json.RawMessage `json:"instrument_key"`
 
-    // EventType is the canonical event type from domain-market.
+    // EventType is the canonical event type from domain_market.
     // Examples: "trade", "kline", "bookTicker", "depthUpdate", "markPrice",
     // "fundingRate", "openInterest", "longShortRatio".
     EventType string `json:"event_type"`
@@ -424,7 +424,7 @@ type IngestRequest struct {
     SchemaVersion string `json:"schema_version"`
 
     // Payload carries the serialized canonical market fact.
-    // Must deserialize to domain-market MarketFactEnvelope.
+    // Must deserialize to domain_market MarketFactEnvelope.
     Payload json.RawMessage `json:"payload"`
 
     // Sequence is an optional monotonic sequence number from the source stream.
@@ -507,13 +507,13 @@ const (
 |---|---|---|
 | `request_id` | 是 | 客户端生成的唯一标识；server 用于幂等去重和 ACK 关联 |
 | `source` | 是 | 稳定上游生产方标识如 `"binance"`；不得包含密钥或主机路径 |
-| `product_line` | 是 | domain-market ProductLine canonical 枚举值：`"spot"` / `"um_perp"` / `"cm_perp"` / `"option"` |
-| `instrument_key` | 是 | domain-market InstrumentKey JSON 序列化；包含 venue/product_line/instrument_type/symbol 及合约/期权维度 |
-| `event_type` | 是 | domain-market canonical event type |
+| `product_line` | 是 | domain_market ProductLine canonical 枚举值：`"spot"` / `"um_perp"` / `"cm_perp"` / `"option"` |
+| `instrument_key` | 是 | domain_market InstrumentKey JSON 序列化；包含 venue/product_line/instrument_type/symbol 及合约/期权维度 |
+| `event_type` | 是 | domain_market canonical event type |
 | `event_time` | 是 | 交易所事件时间；不得为零值 |
 | `received_at` | 是 | adapter 本地接收时间；用于延迟计算和时序门禁 |
 | `schema_version` | 是 | semver 格式；server 先校验 schema 兼容性再解析 payload |
-| `payload` | 是 | 必须可反序列化为 domain-market MarketFactEnvelope |
+| `payload` | 是 | 必须可反序列化为 domain_market MarketFactEnvelope |
 | `sequence` | 否 | 来源序列号；存在时 server 必须检测 gap 和乱序 |
 | `ordering_key` | 否 | 分区内排序键；存在时 server 保证同 key 内顺序 |
 | `source_metadata` | 是 | 至少包含 stream_id 和 connector_version |
@@ -521,13 +521,13 @@ const (
 #### 8.4.2 生产者/消费者
 
 - **Producer**: `module/binance` client 及未来 exchange adapter
-- **Consumer**: `module/binance` server → `module/market-data` downstream dispatch port
+- **Consumer**: `module/binance` server → `module/market_data` downstream dispatch port
 - **Stability**: v1.x DTO 字段名和 JSON tag 稳定；字段删除/重命名为 breaking change，需 major version bump
 
 #### 8.4.3 与 MarketDataProvider 的关系
 
-`MarketDataService`（§8.4）是 ingestion 入口契约，用于 adapter → server → market-data 的北向数据流。
-`MarketDataProvider`（§8.1）是行情消费端口，用于 market-data → 策略/回测/因子引擎的南向数据流。
+`MarketDataService`（§8.4）是 ingestion 入口契约，用于 adapter → server → market_data 的北向数据流。
+`MarketDataProvider`（§8.1）是行情消费端口，用于 market_data → 策略/回测/因子引擎的南向数据流。
 两者服务不同的消费者，不互相替代。
 
 ---
@@ -683,8 +683,8 @@ go 1.23
 
 | 可以依赖                                                                          | 禁止依赖                                                 |
 | --------------------------------------------------------------------------------- | -------------------------------------------------------- |
-| stdlib                                                                            | 所有业务域实现（market-data, signal-engine 等）          |
-| L2.5 领域共享层（`decimalx`, `domain-market`, `domain-exchange`, `domain-macro`） | Foundation L1 运行时模块（kernel, configx, observex 等） |
+| stdlib                                                                            | 所有业务域实现（market_data, signal-engine 等）          |
+| L2.5 领域共享层（`decimalx`, `domain_market`, `domain_exchange`, `domain_macro`） | Foundation L1 运行时模块（kernel, configx, observex 等） |
 |                                                                                   | 所有存储/中间件扩展（redisx, kafkax 等）                 |
 
 ### 14.3 特殊说明
@@ -747,7 +747,7 @@ Then 不暴露可变内部切片或 map
 **TC-008: Module Identity**
 Given `contracts` `README.md` 存在
 When 读取 H1 标题和 `go.mod` module 声明
-Then H1 为 `# contracts`（非 `# xlib-standard`）
+Then H1 为 `# contracts`（非 `# xlib_standard`）
 AND `go.mod` 声明 `module github.com/ZoneCNH/contracts`
 
 **TC-009: Binance C/S ingestion contract**
@@ -767,7 +767,7 @@ Then all DTO fields are populated, JSON tags are stable, and reject codes cover 
 
 | 场景         | 验证点                                           |
 | ------------ | ------------------------------------------------ |
-| 跨域数据流   | market-data → contracts DTO → factor-engine      |
+| 跨域数据流   | market_data → contracts DTO → factor_engine      |
 | 事件发布消费 | 生产方发布 MarketEvent → 消费方通过 channel 接收 |
 | 版本兼容     | 新版本 DTO 可反序列化旧版本数据                  |
 

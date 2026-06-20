@@ -14,10 +14,10 @@ bootstrap 是 Foundation L1 Assembly 通用进程组装层，位于 L1 primitive
 - FR-008 EffectiveConfigHash 暴露：App.ConfigHash（SHA-256）用于启动日志与配置漂移排查
 
 ## 3. 边界定义
-行为约束 BR-001 ~ BR-008：不得 import domain-market/domain-macro/domainx/contracts（禁业务语义）；不得 import 任何数据域子模块 binance/fred/…（禁采集逻辑）；不得起 HTTP/gRPC server（源码无 `net.Listen`）；只向下依赖 kernel/configx/observex/resiliencx/存储适配器，不向上穿透 L2.5/业务域/x.go；adapter 进程 Spec.Stores 必须为 None；仅聚合层 Spec.Stores 可非 None；Spec.Stores 位掩码控制未启用存储不构造不连接；文档批准前不得新增运行时代码或依赖。
+行为约束 BR-001 ~ BR-008：不得 import domain_market/domain_macro/domainx/contracts（禁业务语义）；不得 import 任何数据域子模块 binance/fred/…（禁采集逻辑）；不得起 HTTP/gRPC server（源码无 `net.Listen`）；只向下依赖 kernel/configx/observex/resiliencx/存储适配器，不向上穿透 L2.5/业务域/x.go；adapter 进程 Spec.Stores 必须为 None；仅聚合层 Spec.Stores 可非 None；Spec.Stores 位掩码控制未启用存储不构造不连接；文档批准前不得新增运行时代码或依赖。
 
 ## 4. 不负责什么
-不内置 admin HTTP server / metrics endpoint（各服务自己的事）；不内置 graceful shutdown 编排策略（用 kernel.shutdownx）；不内置连接池管理（kafkax/natsx 各自管理）；不承载领域语义（domain-market/domain-macro 归 L2.5）；不 import 业务域模块（binance/fred/…）；不起 HTTP/gRPC server（仅组装 Component，不起 `net.Listen`）。是 Foundation 内 L1 Assembly 横切能力，不是 configx/observex/resiliencx 原子能力替代。
+不内置 admin HTTP server / metrics endpoint（各服务自己的事）；不内置 graceful shutdown 编排策略（用 kernel.shutdownx）；不内置连接池管理（kafkax/natsx 各自管理）；不承载领域语义（domain_market/domain_macro 归 L2.5）；不 import 业务域模块（binance/fred/…）；不起 HTTP/gRPC server（仅组装 Component，不起 `net.Listen`）。是 Foundation 内 L1 Assembly 横切能力，不是 configx/observex/resiliencx 原子能力替代。
 
 ## 5. 架构位置
 L1 Assembly（基座进程组装层）。依赖方向：向下组合 kernel（L0: lifecycx, shutdownx）+ configx/observex/resiliencx（L1 primitives）+ 受控 L2 存储适配器（taosx/postgresx/redisx/kafkax/natsx/ossx/clickhousex）；禁止向上依赖 domain-*、contracts、任何业务域模块或 x.go。位于 L1 primitives 之上、具体入口 x.go 之下。已登记进 FOUNDATION-DEPS.yaml modules 与 allowed_deps 节，定位为 L1 Assembly（不属于 L1 primitive）。
@@ -109,7 +109,7 @@ bootstrap 为进程组装层，无长尾请求路径，不适用网络故障/依
 ## 19. CI Gate
 通用 Go Gate：`go build ./...` / `go test ./... -race -count=1` / `go vet ./...` / 覆盖率 / lint。
 boundary-gates.sh 5 道专属 Gate（SPEC §20）：
-1. 禁业务语义：go.mod 无 domain-market/domain-macro/domainx/contracts（grep 零命中）
+1. 禁业务语义：go.mod 无 domain_market/domain_macro/domainx/contracts（grep 零命中）
 2. 禁采集逻辑：go.mod 无数据域子模块 binance/fred/…（grep 零命中）
 3. 禁 transport 实体：源码无 `net.Listen`（grep 零命中）
 4. 依赖方向：只向下依赖 kernel/configx/observex/resiliencx/存储（依赖图扫描）
@@ -119,7 +119,7 @@ boundary-gates.sh 5 道专属 Gate（SPEC §20）：
 ## 20. Release Gate
 ACCEPTANCE §5 DoD（当前全部未勾选，运行时证据待 /home/bootstrap 复验）：[ ] FEATURES/ACCEPTANCE 与 SPEC/TRACEABILITY 一致；[ ] AC/TC 与运行时测试名一致；[ ] go test/-race/vet/coverage 通过；[ ] 外部服务依赖有测试替身；[ ] 安全检查通过；[ ] 版本号/标签/CHANGELOG 一致。
 SPEC §22 v0.1.0 已发布（2026-06-17）：[x] go build/test -race（10 测试）/boundary-gates.sh 5 道/CHANGELOG+README/GitHub Release v0.1.0/Stores=None 路径端到端就绪。
-v0.2.0 准入项：[ ] Stores=All 与位组合冒烟（market-data 接入）；[ ] foundationx 依赖移除；[ ] binance 接入验证（main.go ≤10 行）；[ ] SPEC 四源 ≥98 分转 Approved。
+v0.2.0 准入项：[ ] Stores=All 与位组合冒烟（market_data 接入）；[ ] foundationx 依赖移除；[ ] binance 接入验证（main.go ≤10 行）；[ ] SPEC 四源 ≥98 分转 Approved。
 
 ## 21. Versioning
 semver。module-version v0.1.0-runtime / v0.1.7-spec（运行时已发布 v0.1.0，SPEC 仍为 Draft）。go.mod：`module github.com/ZoneCNH/bootstrap`，`go 1.23`。依赖：kernel v1.0.0、configx v1.0.0、observex v0.3.1、resiliencx v0.4.9、foundationx v0.1.1（过渡期，OQ-004 待清零）、7 存储 adapter（taosx v1.0.1/postgresx v1.0.0/redisx v1.0.1/kafkax v1.0.2/natsx v1.0.0/clickhousex v1.0.1，ossx 暂不 require）。升级兼容性：v0.1.0 冻结 Build/Run/Shutdown/Spec/App 签名（NFR-002）。
@@ -157,7 +157,7 @@ App.ConfigHash（FR-008）暴露 configx EffectiveConfigHash（SHA-256）用于�
 - 禁止 global mutable state（App 由 Build 显式创建，非单例）
 - 禁止向上依赖（BR-004 不得 import L2.5/业务域/x.go）
 - 禁止 transport 实体（BR-003 net.Listen）
-- 禁止业务语义混入（BR-001 domain-market/domain-macro/contracts）
+- 禁止业务语义混入（BR-001 domain_market/domain_macro/contracts）
 - 禁止采集逻辑混入（BR-002 binance/fred/…）
 - 禁止内置 graceful shutdown 编排（用 kernel.shutdownx）
 - 禁止内置连接池管理（kafkax/natsx 各自管理）
@@ -176,6 +176,6 @@ App.ConfigHash（FR-008）暴露 configx EffectiveConfigHash（SHA-256）用于�
 ## 30. Roadmap
 - v0.1.0（2026-06-17 已发布）：初始 SPEC + 实现，Build/Run/Shutdown + Spec/StoreSet/App + 7 存储 Component 适配 + 5 道边界门禁；Stores=None 路径端到端就绪（adapter 23 接入）
 - v0.1.x patch（计划）：foundationx 依赖清零（OQ-004，bootstrap v0.1.1 一行替换 stores.go:217）
-- v0.2.0 准入项：Stores=All 与位组合端到端冒烟（market-data 接入验证）；binance 接入验证（main.go ≤10 行）；SPEC 四源 ≥98 分转 Approved
+- v0.2.0 准入项：Stores=All 与位组合端到端冒烟（market_data 接入验证）；binance 接入验证（main.go ≤10 行）；SPEC 四源 ≥98 分转 Approved
 - v0.1.7（2026-06-18 SPEC）：明确 bootstrap 定位为 Foundation L1 Assembly（位于 L1 primitives 之上、x.go 入口之下，只做进程组装/生命周期/可选 adapter 构造）
 - Open Questions（OQ-001~004 已确认）：基座 Client 无业务 getter（不改基座）/ 已登记 FOUNDATION-DEPS / 存储 adapter 未实现 Component（closerComponent wrapper）/ foundationx 迁移

@@ -1,8 +1,8 @@
-# xlib-standard 规则分析
+# xlib_standard 规则分析
 
 本文件是规则维度分析，不是可执行规格。
 
-- Parent: module/xlib-standard/ANALYSIS.md
+- Parent: module/xlib_standard/ANALYSIS.md
 - Upstream-Commit: `93753b30e6d01fb4a9b096acaa0d7d53a2fb231c`
 
 ## 1. 规则来源

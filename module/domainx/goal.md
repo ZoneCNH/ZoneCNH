@@ -23,13 +23,13 @@
 
 ## 1. Goal 定位
 
-`domainx` 的 Goal 是提供执行域共享值对象（Order / Fill / Position / Exposure），确保 `risk-engine`、`order-engine`、`portfolio-engine`、`settlement` 之间使用统一的执行语义类型，消除跨模块类型重复定义和精度丢失。
+`domainx` 的 Goal 是提供执行域共享值对象（Order / Fill / Position / Exposure），确保 `risk_engine`、`order_engine`、`portfolio_engine`、`settlement` 之间使用统一的执行语义类型，消除跨模块类型重复定义和精度丢失。
 
 ### 1.1 为什么需要这个模块
 
-- 执行域模块（risk-engine / order-engine / portfolio-engine / settlement）需要在模块间传递订单、成交、持仓和风险敞口数据
+- 执行域模块（risk_engine / order_engine / portfolio_engine / settlement）需要在模块间传递订单、成交、持仓和风险敞口数据
 - 当前缺少执行域 L2.5 共享层，类型定义可能在各模块重复，导致字段不一致和精度丢失
-- 数据域已有 `domain-market`（行情值对象）和 `domain-macro`（宏观值对象），执行域需要同等定位的共享层
+- 数据域已有 `domain_market`（行情值对象）和 `domain_macro`（宏观值对象），执行域需要同等定位的共享层
 - 金额字段使用 `float64` 会在多次传递中累积浮点误差，必须统一使用 `decimal.Decimal`
 
 ### 1.2 1.0 要解决的问题
@@ -42,11 +42,11 @@
 
 ### 1.3 目标用户
 
-- risk-engine 开发者（Position / Exposure）
-- order-engine 开发者（Order / Fill）
-- portfolio-engine 开发者（Position / Exposure）
+- risk_engine 开发者（Position / Exposure）
+- order_engine 开发者（Order / Fill）
+- portfolio_engine 开发者（Position / Exposure）
 - settlement 开发者（Fill / Position）
-- signal-factory 开发者（Order）
+- signal_factory 开发者（Order）
 
 ## 2. 1.0 发布目标
 
@@ -63,19 +63,19 @@
 
 | 场景 | 说明 | 1.0 期望结果 |
 |------|------|-------------|
-| 订单创建 | risk-engine 或 signal-factory 构造 Order 传递给 order-engine | 合法参数返回 Order；非法参数返回明确错误 |
-| 成交记录 | order-engine 构造 Fill 传递给 settlement | Fill 包含完整成交信息，fee 非负 |
-| 持仓查询 | portfolio-engine 构造 Position 传递给 risk-engine | MarketValue() 和 UnrealizedPnL() 精度正确 |
-| 风险敞口 | portfolio-engine 构造 Exposure 传递给 risk-engine | NetExposureRatio() 除零安全 |
+| 订单创建 | risk_engine 或 signal_factory 构造 Order 传递给 order_engine | 合法参数返回 Order；非法参数返回明确错误 |
+| 成交记录 | order_engine 构造 Fill 传递给 settlement | Fill 包含完整成交信息，fee 非负 |
+| 持仓查询 | portfolio_engine 构造 Position 传递给 risk_engine | MarketValue() 和 UnrealizedPnL() 精度正确 |
+| 风险敞口 | portfolio_engine 构造 Exposure 传递给 risk_engine | NetExposureRatio() 除零安全 |
 | JSON 序列化 | 通过 transportx 传输值对象 | round-trip 后字段值一致 |
 
 ## 4. 边界与不做什么
 
 | 不在 domainx 做 | 由谁负责 |
 |-----------------|----------|
-| 订单状态机流转 | order-engine |
-| 风控计算（VaR, margin） | risk-engine |
-| 组合计算（PnL 汇总, 归因） | portfolio-engine |
+| 订单状态机流转 | order_engine |
+| 风控计算（VaR, margin） | risk_engine |
+| 组合计算（PnL 汇总, 归因） | portfolio_engine |
 | 结算对账逻辑 | settlement |
 | 持久化存储 | postgresx / clickhousex |
 | 网络传输协议 | contracts / transportx |

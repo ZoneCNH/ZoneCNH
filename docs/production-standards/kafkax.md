@@ -24,7 +24,7 @@
 - 配置解析（→ configx）
 
 ## 5. 架构位置
-属于 L2 基础设施适配器（存储扩展），位于基座层。消费者：market-data（Producer 发布行情）、signal-engine（Consumer 消费因子信号）、order-engine（Producer 订单消息）、risk-engine（Consumer 风控消息）、业务域模块跨域事件通信。go.mod：`github.com/ZoneCNH/kafkax`，go 1.23。
+属于 L2 基础设施适配器（存储扩展），位于基座层。消费者：market_data（Producer 发布行情）、signal-engine（Consumer 消费因子信号）、order_engine（Producer 订单消息）、risk_engine（Consumer 风控消息）、业务域模块跨域事件通信。go.mod：`github.com/ZoneCNH/kafkax`，go 1.23。
 
 ## 6. 生命周期
 - Producer/Consumer 在 kernel 应用启停时随应用生命周期创建与关闭

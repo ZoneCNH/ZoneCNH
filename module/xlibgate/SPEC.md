@@ -5,7 +5,7 @@
 - Last-Updated: 2026-06-14
 - Layer: 基座 · CI 门禁
 - Version: v1.0.0
-- Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `xlib-standard`
+- Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `xlib_standard`
 
 > 公开投影 caveat：Status=Approved 与 100.0% 覆盖证据不等同于 factory-grade；机器事实层保持 factory=false。
 
@@ -18,7 +18,7 @@
 - `l2`：L2 发布就绪门禁，包含能力清单校验、契约测试计划生成、契约/证据完整性验证、发布就绪评分。
 - `trust`：v2 Trust Alignment 门禁，包含身份对齐、模板残留扫描、发布一致性、成熟度工厂、import 边界、testkitx 生产隔离、secret 脱敏、舰队状态聚合。
 
-消费 `xlib-standard` 定义的 Gate 和 Evidence 标准。
+消费 `xlib_standard` 定义的 Gate 和 Evidence 标准。
 
 ---
 
@@ -45,7 +45,7 @@ Foundation 由 70+ 个 Go 模块组成，模块间的依赖关系、import 边�
 - 输出格式支持 JSON 和 human-readable，适配 CI artifact
 - secret 扫描门禁：集成 `gitleaks` 检测泄露（由 FR-005 `check all` 统一执行，配置见 §11 Config Schema `secret_scan` 节）
 - L2 发布就绪门禁：校验 `.agent/l2-capabilities.yaml` 能力清单，从 registry 解析契约测试要求，验证契约测试证据和文件级证据完整性，生成发布就绪评分 artifact
-- v2 Trust Alignment 门禁（`trust` 子命令组）：身份对齐（repo/go.mod/README/SPEC/contract 五源比对）、模板残留扫描（禁止下游仓库声称 xlib-standard 身份）、发布一致性离线校验（版本表/go.mod/VERSION/CHANGELOG/tag/release/manifest 七源比对）、成熟度工厂门禁（11 维工厂级判定，禁止单项 100% 替代）、import 边界校验（消费 FOUNDATION-DEPS.yaml 的 allowed_deps 和 forbidden_foundation_edges）、testkitx 生产隔离（禁止生产代码导入 testkitx）、secret 脱敏扫描（release/evidence 文档中的密钥/API key/私有端点/DSN）、舰队状态聚合（20 模块 → .foundationx/status/index.json）
+- v2 Trust Alignment 门禁（`trust` 子命令组）：身份对齐（repo/go.mod/README/SPEC/contract 五源比对）、模板残留扫描（禁止下游仓库声称 xlib_standard 身份）、发布一致性离线校验（版本表/go.mod/VERSION/CHANGELOG/tag/release/manifest 七源比对）、成熟度工厂门禁（11 维工厂级判定，禁止单项 100% 替代）、import 边界校验（消费 FOUNDATION-DEPS.yaml 的 allowed_deps 和 forbidden_foundation_edges）、testkitx 生产隔离（禁止生产代码导入 testkitx）、secret 脱敏扫描（release/evidence 文档中的密钥/API key/私有端点/DSN）、舰队状态聚合（20 模块 → .foundationx/status/index.json）
 
 ---
 
@@ -55,7 +55,7 @@ Foundation 由 70+ 个 Go 模块组成，模块间的依赖关系、import 边�
 - 不做 Go 源码解析或 AST 分析框架（依赖关系数据通过 `go list`、`go mod graph` 等标准工具获取，xlibgate 只做规则匹配和结果聚合，不构建自有代码分析引擎）
 - 不做交易、行情、风控、订单或仓位等任何业务域计算（xlibgate 是纯 CI 门禁工具，只验证结构和合规性，不参与业务数据流或状态变更）
 - 不替代 CI 平台本身（只提供检查能力，不管理流水线）
-- 不替代 `xlib-standard`（标准定义在 xlib-standard，机器执行在 xlibgate）
+- 不替代 `xlib_standard`（标准定义在 xlib_standard，机器执行在 xlibgate）
 - 不做代码格式化（→ `gofmt` / `goimports`）
 - 不做代码审查（→ human review + AI reviewer）
 
@@ -211,7 +211,7 @@ THEN 输出 status=fail、hard_failures 列表，exit code 1
 
 ### FR-012: trust identity
 
-WHEN 调用 `xlibgate trust identity --repo <repo-path>` 且 README H1 == repo name、go.mod module == `github.com/ZoneCNH/<repo>`、`public_package` 存在、下游仓库未声称 xlib-standard 身份
+WHEN 调用 `xlibgate trust identity --repo <repo-path>` 且 README H1 == repo name、go.mod module == `github.com/ZoneCNH/<repo>`、`public_package` 存在、下游仓库未声称 xlib_standard 身份
 THEN 输出 JSON `{check: "identity", repo, status: "pass", reason_code: ""}`，exit code 0
 
 WHEN README H1 不匹配 repo name 或 go.mod module 不匹配 `github.com/ZoneCNH/<repo>`
@@ -231,13 +231,13 @@ THEN reason_code=CONTRACT_PARSE_ERROR，exit code 2
 WHEN 调用 `xlibgate trust template-residue --repo <repo-path>` 且下游仓库不包含任何禁止短语
 THEN 输出 JSON `{check: "template-residue", repo, status: "pass", reason_code: ""}`，exit code 0
 
-WHEN 下游仓库（非 xlib-standard）包含禁止短语
+WHEN 下游仓库（非 xlib_standard）包含禁止短语
 THEN 输出 findings 含文件路径、行号和匹配短语，reason_code=TEMPLATE_RESIDUE，exit code 1
 
 WHEN `--summary` 参数指定
 THEN 输出命中统计（按短语分组计数），不改变 exit code
 
-WHEN 目标仓库为 xlib-standard 自身
+WHEN 目标仓库为 xlib_standard 自身
 THEN 自动跳过检查，reason_code=TEMPLATE_RESIDUE_SELF_SKIP，status=pass，exit code 0
 
 ### FR-014: trust release-consistency
@@ -374,13 +374,13 @@ Go baseline 版本从配置或 `--expected` 参数获取，不硬编码。
 
 **违反时**：Go 版本升级需改动 xlibgate 源码重新编译，增加 CI 基础设施维护成本。处理：未提供 `--expected` 且配置无 `baseline.go_version` 时，输出明确错误提示（exit 2），不使用编译时硬编码的默认版本号。
 
-### BR-004: evidence schema 与 xlib-standard 一致
+### BR-004: evidence schema 与 xlib_standard 一致
 
-release evidence 清单与 `xlib-standard` 定义的 Evidence schema 保持一致。
+release evidence 清单与 `xlib_standard` 定义的 Evidence schema 保持一致。
 
-**约束**：evidence JSON 的字段名、类型、必需项、枚举值必须与 xlib-standard 的 Evidence Runtime 定义完全相同。
+**约束**：evidence JSON 的字段名、类型、必需项、枚举值必须与 xlib_standard 的 Evidence Runtime 定义完全相同。
 
-**违反时**：跨工具 evidence 不可互操作——xlibgate 生成的 evidence 无法被其他 xlib-standard 兼容工具校验，反之亦然。处理：evidence schema 校验阶段检测到不匹配时，返回 `ErrEvidenceInvalid`（exit 2），不静默接受。
+**违反时**：跨工具 evidence 不可互操作——xlibgate 生成的 evidence 无法被其他 xlib_standard 兼容工具校验，反之亦然。处理：evidence schema 校验阶段检测到不匹配时，返回 `ErrEvidenceInvalid`（exit 2），不静默接受。
 
 ### BR-005: secret 扫描使用 gitleaks
 
@@ -414,17 +414,17 @@ JSON 输出必须包含 machine-readable 的 status 字段（pass/fail/error）�
 
 **违反时**：开发者无法快速定位违规位置，需手动搜索全仓库。处理：`Violation` 结构体的 `File` 字段为必填，`Line` 可选；human-readable formatter 在 File 为空时输出 `"<unknown location>"` 提示信息不完整。
 
-### BR-009: FOUNDATION-DEPS.yaml schema 与 xlib-standard 一致
+### BR-009: FOUNDATION-DEPS.yaml schema 与 xlib_standard 一致
 
-依赖矩阵文件 `FOUNDATION-DEPS.yaml` 的 schema 与 `xlib-standard` 定义一致。
+依赖矩阵文件 `FOUNDATION-DEPS.yaml` 的 schema 与 `xlib_standard` 定义一致。
 
-**约束**：YAML 结构、字段名、数据类型、必填/可选字段完全对齐 xlib-standard 的 Gate 模块中的 deps schema。
+**约束**：YAML 结构、字段名、数据类型、必填/可选字段完全对齐 xlib_standard 的 Gate 模块中的 deps schema。
 
-**违反时**：deps.yaml 解析失败或行为与预期不符，其他依赖 xlib-standard 的工具也无法读取同一份 deps 文件。处理：解析 deps.yaml 时执行 schema 校验，不匹配时返回 `ErrConfigInvalid` 并附详细错误路径（如 `imports.forbidden[0].source: field required`）。
+**违反时**：deps.yaml 解析失败或行为与预期不符，其他依赖 xlib_standard 的工具也无法读取同一份 deps 文件。处理：解析 deps.yaml 时执行 schema 校验，不匹配时返回 `ErrConfigInvalid` 并附详细错误路径（如 `imports.forbidden[0].source: field required`）。
 
 ### BR-010: 禁止模板身份短语（template-residue）
 
-下游仓库（非 xlib-standard）不得包含以下五条禁止短语：
+下游仓库（非 xlib_standard）不得包含以下五条禁止短语：
 
 1. "承担五类职责：Standard Source、Go Reference Template、Generator、Harness 和 Evidence Runtime"
 2. "本仓库不再把标准源与模板实现拆成两个角色"
@@ -432,7 +432,7 @@ JSON 输出必须包含 machine-readable 的 status 字段（pass/fail/error）�
 4. "渲染后会移动到 pkg/<package-name>"
 5. "生成库包括 configx、observex、testkitx"
 
-**约束**：只有 `github.com/ZoneCNH/xlib-standard` 仓库允许包含以上短语。其他所有 Foundation 仓库包含任一短语即违规。`template-residue` 检查必须执行精确字符串匹配（含标点和空格），不区分注释或代码上下文。
+**约束**：只有 `github.com/ZoneCNH/xlib_standard` 仓库允许包含以上短语。其他所有 Foundation 仓库包含任一短语即违规。`template-residue` 检查必须执行精确字符串匹配（含标点和空格），不区分注释或代码上下文。
 
 **违反时**：下游仓库包含模板身份声明，导致模块身份定义冲突——CI 和文档工具无法区分真正的标准源/生成器/模板实现与残留模板文案。处理：检查结果中逐文件、逐行列出匹配短语，给出 reason_code=TEMPLATE_RESIDUE。
 
@@ -626,7 +626,7 @@ xlibgate version
 |-------------|------|----------|
 | `IDENTITY_MISMATCH` | 身份字段不匹配（README H1 / go.mod / contract） | identity |
 | `TEMPLATE_RESIDUE` | 下游仓库包含禁止的模板身份短语 | template-residue |
-| `TEMPLATE_RESIDUE_SELF_SKIP` | 目标为 xlib-standard，自动跳过 | template-residue |
+| `TEMPLATE_RESIDUE_SELF_SKIP` | 目标为 xlib_standard，自动跳过 | template-residue |
 | `RELEASE_DRIFT` | 七源版本信息不一致 | release-consistency |
 | `FACTORY_GATE_BLOCKED` | 工厂级成熟度门禁未通过；或 release=false / open blocker / factory 投影不一致导致 factory=false | maturity / fleet-status |
 | `IMPORT_BOUNDARY_VIOLATION` | import 违反 allowed_deps 或 forbidden_foundation_edges | import-boundary |
@@ -999,7 +999,7 @@ When 运行 `xlibgate l2 release-check`
 Then 输出 status=pass, score ≥ 80, hard_failures=0，exit code 0
 
 **TC-014: trust identity pass**
-Given 目标仓库 README H1 == repo name、go.mod module == github.com/ZoneCNH/<repo>、public_package 存在、未声称 xlib-standard 身份
+Given 目标仓库 README H1 == repo name、go.mod module == github.com/ZoneCNH/<repo>、public_package 存在、未声称 xlib_standard 身份
 When 运行 `xlibgate trust identity --repo <repo-path>`
 Then 输出 status=pass, reason_code=""，exit code 0
 
@@ -1009,7 +1009,7 @@ When 运行 `xlibgate trust identity --repo <repo-path>`
 Then 输出 findings 含 README H1 不匹配详情，reason_code=IDENTITY_MISMATCH，exit code 1
 
 **TC-016: trust template-residue pass**
-Given 下游仓库（非 xlib-standard）不包含任何 BR-010 定义的禁止短语
+Given 下游仓库（非 xlib_standard）不包含任何 BR-010 定义的禁止短语
 When 运行 `xlibgate trust template-residue --repo <repo-path>`
 Then 输出 status=pass, reason_code=""，exit code 0
 
@@ -1219,7 +1219,7 @@ CLI 短生命周期工具不启动 tracing exporter。执行流程通过父子�
 | Gate | 命令 | 阻塞条件 |
 |------|------|----------|
 | 身份对齐 | `xlibgate trust identity --repo .` | IDENTITY_MISMATCH 或 CONTRACT_PARSE_ERROR |
-| 模板残留 | `xlibgate trust template-residue --repo .` | 非 xlib-standard 仓库命中禁止短语 |
+| 模板残留 | `xlibgate trust template-residue --repo .` | 非 xlib_standard 仓库命中禁止短语 |
 | 发布一致性 | `xlibgate trust release-consistency --offline --repo .` | RELEASE_DRIFT |
 | 成熟度工厂 | `xlibgate trust maturity --factory --repo .` | FACTORY_GATE_BLOCKED（11 维不满足、release=false、open blocker） |
 | import 边界 | `xlibgate trust import-boundary --repo . --deps FOUNDATION-DEPS.yaml` | IMPORT_BOUNDARY_VIOLATION |

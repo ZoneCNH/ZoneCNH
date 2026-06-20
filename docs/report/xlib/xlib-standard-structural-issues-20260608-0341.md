@@ -1,7 +1,7 @@
-# `module/xlib-standard/` 结构性问题深度分析
+# `module/xlib_standard/` 结构性问题深度分析
 
 - 报告日期：2026-06-08 03:41 (+08:00)
-- 分析对象：`module/xlib-standard/`
+- 分析对象：`module/xlib_standard/`
   - 主目录：`README.md`(56) · `SPEC.md`(1500) · `TRACEABILITY.md`(62) · `CONFLICT-LEDGER.md`(179) · `COVERAGE-MANIFEST.md`(198)
   - 归档：`archive/MODULE-SPEC.md`(450) · `archive/DEEP-ANALYSIS.md`(538) · `archive/README.md`(16)
 - 对照基线：`docs/governance/SPEC-TEMPLATE.md`(23 节模板)、`module/README.md`、`CONSTITUTION.md`、`ARCHITECTURE.md`
@@ -59,9 +59,9 @@
 
 **影响维度**：模板合规、跨模块一致性、`spec-lint.sh` 通过、AI 代理可机读性。
 
-**根因**：SPEC.md 标注 v2.0.0、Last-Updated 2026-06-07，而 `SPEC-TEMPLATE.md` Last-Updated 同样 2026-06-07；本规格按"自适应 23 节"自定义章节，**没有跟随模板冻结的节标题表**。下游所有 16 模块 SPEC 若都参照 xlib-standard 会污染模板权威性。
+**根因**：SPEC.md 标注 v2.0.0、Last-Updated 2026-06-07，而 `SPEC-TEMPLATE.md` Last-Updated 同样 2026-06-07；本规格按"自适应 23 节"自定义章节，**没有跟随模板冻结的节标题表**。下游所有 16 模块 SPEC 若都参照 xlib_standard 会污染模板权威性。
 
-**严重度依据**：xlib-standard 本身是"标准源"，其 SPEC 不符标准模板是治理元层级矛盾。
+**严重度依据**：xlib_standard 本身是"标准源"，其 SPEC 不符标准模板是治理元层级矛盾。
 
 ---
 
@@ -129,7 +129,7 @@ R-010 与附录数字两处与现状不符，缺乏数字门禁。
 
 ### S6【中】悬挂引用 / 引用回路
 
-- `COVERAGE-MANIFEST.md` L15 指向 `../docs/report/xlib-standard-specs-structural-review-*.md S6`——该报告是**外部分析产物**，主规格不应把外部审查报告作为权威结构缺口来源（治理上倒置）。
+- `COVERAGE-MANIFEST.md` L15 指向 `../docs/report/xlib_standard-specs-structural-review-*.md S6`——该报告是**外部分析产物**，主规格不应把外部审查报告作为权威结构缺口来源（治理上倒置）。
 - `archive/README.md` 与主 `README.md` 都提到归档时间 2026-06-08，但 `TRACEABILITY.md` 与 `CONFLICT-LEDGER.md` 内部仍以 "consolidated" 静态状态存在，未声明归档后是否需要回滚追溯条目。
 - `TRACEABILITY.md` 罗列的 22+ 条章节级映射的章节号已经因 S1 整体错位而**不再可信**（例如表中 "Harness gates → §8-10、§16" 现在对应 "接口契约 / 数据模型 / 错误处理 / 可观测性"，语义错配）。
 
@@ -156,11 +156,11 @@ R-010 与附录数字两处与现状不符，缺乏数字门禁。
 
 ### S9【中】层级模型与 `ARCHITECTURE.md` 主模型不一致
 
-- `SPEC.md §15.1` 采用 `L-1 / L0 / L1 / L2 / L3 / L4 / L5 / L6` 数字层级，并把 xlib-standard 自封为 "L-1"。
-- `ARCHITECTURE.md` 与 `module/README.md` 一律采用领域模型："基座 / 数据域 / 分析域 / 决策域 / 执行域 / 入口 / 横切"，xlib-standard 归"门禁"。
+- `SPEC.md §15.1` 采用 `L-1 / L0 / L1 / L2 / L3 / L4 / L5 / L6` 数字层级，并把 xlib_standard 自封为 "L-1"。
+- `ARCHITECTURE.md` 与 `module/README.md` 一律采用领域模型："基座 / 数据域 / 分析域 / 决策域 / 执行域 / 入口 / 横切"，xlib_standard 归"门禁"。
 - `CLAUDE.md` 明确："**采用分层领域模型，而不是编号层级**"。
 
-xlib-standard 是仓库唯一仍坚持编号层级的规格，构成跨规格表述污染。
+xlib_standard 是仓库唯一仍坚持编号层级的规格，构成跨规格表述污染。
 
 ---
 
@@ -230,9 +230,9 @@ xlib-standard 是仓库唯一仍坚持编号层级的规格，构成跨规格表
 
 ## 4. 结论
 
-`module/xlib-standard/` 在**工件治理层**（归档、上游/快照边界、状态语义层级、TRUTH↔IR 映射）相对扎实，但在**模板合规层**（23 节标题、元数据字段、追溯粒度、节号唯一性）距离 `SPEC-TEMPLATE.md` 与 `CLAUDE.md` / `CONSTITUTION.md` 的硬约束仍有一档差距。
+`module/xlib_standard/` 在**工件治理层**（归档、上游/快照边界、状态语义层级、TRUTH↔IR 映射）相对扎实，但在**模板合规层**（23 节标题、元数据字段、追溯粒度、节号唯一性）距离 `SPEC-TEMPLATE.md` 与 `CLAUDE.md` / `CONSTITUTION.md` 的硬约束仍有一档差距。
 
-由于 xlib-standard 自身定位为"标准源 + Go Reference Template + Harness + Evidence Runtime"，其 SPEC.md 的模板偏差会被下游 16 个模块视为"标准本身允许偏离"的暗示。建议先做 **P0 三项**（章节重排、节号冲突、元数据字段），将分数推到 6.5 / 10 以上，再处理 P1/P2 的细节债。
+由于 xlib_standard 自身定位为"标准源 + Go Reference Template + Harness + Evidence Runtime"，其 SPEC.md 的模板偏差会被下游 16 个模块视为"标准本身允许偏离"的暗示。建议先做 **P0 三项**（章节重排、节号冲突、元数据字段），将分数推到 6.5 / 10 以上，再处理 P1/P2 的细节债。
 
 ---
 
@@ -252,7 +252,7 @@ xlib-standard 是仓库唯一仍坚持编号层级的规格，构成跨规格表
 | S6  | 删除 COVERAGE → 外部审查报告的反向引用                                                                                                                                                                                                                               | `COVERAGE-MANIFEST.md` L15                                                    | 改为指向 `SPEC.md §19 OQ-008 / §20 R-011` 内部跟踪                                            |
 | S9  | §15.1 改为领域分层口径，保留旧 L 编号作历史映射；元数据表"层级"改为"门禁（Foundation Gate）"                                                                                                                                                                         | `SPEC.md` §15.1 + L31                                                         | 与 `ARCHITECTURE.md` / `CLAUDE.md` 一致                                                       |
 | S11 | 在 §8.1 (IR 表) 增 "IR ↔ TRUTH 别名约定" 注释                                                                                                                                                                                                                        | `SPEC.md` §8.1                                                                | 对外引用 TRUTH，内部分类 IR；不再并列两套独立体系                                             |
-| —   | README 主规格描述补充版本与对齐信息                                                                                                                                                                                                                                  | `xlib-standard/README.md`                                                     | "v2.0.1, Status: Review；23 节按 SPEC-TEMPLATE.md 对齐"                                       |
+| —   | README 主规格描述补充版本与对齐信息                                                                                                                                                                                                                                  | `xlib_standard/README.md`                                                     | "v2.0.1, Status: Review；23 节按 SPEC-TEMPLATE.md 对齐"                                       |
 
 ### 5.2 第二轮修复（P2-P3，2026-06-08 03:52+08:00）
 
@@ -464,7 +464,7 @@ R-1（占位符统一）/ R-2（TC-016/017 双向闭环）/ R-3（trace_coverage
 
 ## 总结
 
-**xlib-standard 规格族审查全周期完成**：
+**xlib_standard 规格族审查全周期完成**：
 
 - 六轮迭代：5.1（初始 No-Go）→ 9.66（Approved）
 - 修复 13 原始 S 问题 + spec-review 第一轮 16 项 + 第二轮 8 项残留 + 第三轮 1 项 N-1

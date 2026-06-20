@@ -2,7 +2,7 @@
 
 `module/binance/server` is the Binance-specific ingest acceptance server.
 
-It implements the contracts-defined `MarketDataService` for Binance market-data ingestion.
+It implements the contracts-defined `MarketDataService` for Binance market_data ingestion.
 
 ## Owns
 
@@ -39,7 +39,7 @@ through contracts-defined gRPC.
 ## Dispatches To
 
 ```text
-module/market-data
+module/market_data
 ```
 
-through downstream exchange-neutral market-data port.
+through downstream exchange-neutral market_data port.

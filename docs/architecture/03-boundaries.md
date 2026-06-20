@@ -4,7 +4,7 @@
 
 | 边界                                                | 放什么                                                                       | 不放什么                                         |
 | --------------------------------------------------- | ---------------------------------------------------------------------------- | ------------------------------------------------ |
-| `xlib-standard`                                     | 标准事实源、Go Reference Template（Generator/Harness/Evidence 已拆分至 xlib-harness / xlib-evidence） | 运行时业务依赖、具体弹性策略实现                 |
+| `xlib_standard`                                     | 标准事实源、Go Reference Template（Generator/Harness/Evidence 已拆分至 xlib_harness / xlib_evidence） | 运行时业务依赖、具体弹性策略实现                 |
 | `kernel`                                            | 最小稳定原语和 stdlib-only 基础能力                                          | 配置解析、观测后端、业务 DTO、存储/网络适配器    |
 | `configx` / `observex` / `resiliencx` / `schedulex` | L1 primitives 横切运行时能力，彼此通过窄接口协作                              | 业务模型、组合根职责、对彼此的强耦合反向依赖     |
 | `testkitx`                                          | 测试、golden、contract、fixture、harness、boundary evidence                  | production import graph、真实外部系统入口        |
@@ -17,8 +17,8 @@
 ## 域间关系与反馈
 
 - **数据域 → 分析域**：单向，原始数据和标准化行情进入因子计算。
-- **分析域 ↔ 决策域**：因子驱动信号生成；回测结果和评估指标反馈到 factor-eval / feature-store。
-- **决策域 → 执行域**：信号必须先经过 risk-engine，禁止绕过风控直接调用 order-engine。
+- **分析域 ↔ 决策域**：因子驱动信号生成；回测结果和评估指标反馈到 factor_eval / feature_store。
+- **决策域 → 执行域**：信号必须先经过 risk_engine，禁止绕过风控直接调用 order_engine。
 - **执行域 → 决策域**：通过 fills / positions / PnL / exposure events 反馈组合再平衡和策略调整，不反向直接调用决策内部实现。
 - **x.go → 各域**：只做启动和组装依赖，不参与业务链路计算。
 
@@ -32,7 +32,7 @@
 | `testkitx` 边界   | 仅测试包、测试 fixture、harness、boundary evidence 导入           | production Go 文件导入 `testkitx`                                                            | `make boundary-testkit` 或 import scan    |
 | 可观测脱敏        | 低基数、非敏感 label；secret redaction 覆盖日志、health、manifest | `order_id`、`account_id`、`api_key`、trace id 等进入普通 metrics label                       | schema/golden + secret leak test          |
 | 业务域依赖        | 数据域/分析域/决策域/执行域导入 L2.5、contracts 和基座            | 业务域互相导入实现包，尤其执行域反向导入决策域                                               | `go list` 或依赖图中无业务域实现包反向边  |
-| 决策到执行        | signal-factory / optimizer 通过 risk-engine 提交执行意图          | 绕过 risk-engine 直接调用 order-engine 或交易所 SDK                                          | paper trade 链路能证明 risk gate 必经     |
+| 决策到执行        | signal_factory / optimizer 通过 risk_engine 提交执行意图          | 绕过 risk_engine 直接调用 order_engine 或交易所 SDK                                          | paper trade 链路能证明 risk gate 必经     |
 | 执行反馈          | fills / positions / PnL / exposure 以事件进入决策域               | execution 包同步调用 strategy / backtest 内部实现                                            | 事件 topic、DTO 和消费方在 contracts 固化 |
 | contracts         | 跨域端口、事件协议、DTO                                           | 领域模型全集、通用工具、域内临时接口                                                         | 新增契约必须说明消费方、生产方和稳定期    |
 | transportx        | Envelope/Endpoint、ServiceIdentity、QoS、Codec、RPC、EventBus、Stream、Outbox/Inbox、Audit Plane、Data Classification、SchemaRegistry、conformance gate | 具体 broker/client、协议 SDK、业务语义、领域模型                                             | 新增通信契约必须说明 runtime / adapter 边界、QoS/codec/schema 兼容期和审计要求 |
