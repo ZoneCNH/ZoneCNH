@@ -344,7 +344,7 @@ Foundation 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中在 
 
 > **公开投影口径**：架构矩阵中的进度是 Spec→Code 管线投影；release/factory 以 `.foundationx/status/index.json` + `.foundationx/blockers.json` 为准。BLK-001~011 全部已 resolved，**0 open blockers；Foundation 20/20 runtime factory-ready** ✅（BLK-009 bootstrap v0.2.0 + BLK-010 ossx v1.2.1，2026-06-20）。
 
-| 域                    | 组件                                                            | 版本   | 状态      | Spec→Code 投影 | 说明                                                                                      |
+| 域                    | 组件                                                            | 版本（已发布）| 状态      | Spec→Code 投影 | 说明                                                                                      |
 | --------------------- | --------------------------------------------------------------- | ------ | --------- | -------- | ----------------------------------------------------------------------------------------- |
 | **基座**              |                                                                 |        |           |          |                                                                                           |
 | 基座                  | [kernel](https://github.com/ZoneCNH/kernel)                     | v1.0.0 | ✅ 已发布 | Spec→Code 完成 | L0 原语 / 12 子包轻量工具集：lifecycx/errx/healthx/obsx/retryx/shutdownx/syncx/timex/validx/versionx/contextx/contracttest，stdlib-only，v1.0.0 已发布 |
