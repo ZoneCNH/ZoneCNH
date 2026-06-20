@@ -204,8 +204,8 @@
 | [factor_engine](https://github.com/ZoneCNH/factor_engine) | v0.1.0       | ░░░░ 5%  | 100%       | 因子计算引擎                                                             |
 | [feature_store](https://github.com/ZoneCNH/feature_store) | v0.1.0       | ░░░░ 5%  | 100%       | 特征存储与版本管理                                                       |
 | [factor_eval](https://github.com/ZoneCNH/factor_eval)     | v0.1.0       | ░░░░ 5%  | 100%       | 因子评估                                                                 |
-| [market_regime](https://github.com/ZoneCNH/market_regime) | v0.1.0       | ████ 40% | 100%       | 市场状态识别（S1-S7）；骨架完成，5D特征+规则分类器，5 tests PASS        |
-| [macro_regime](https://github.com/ZoneCNH/macro_regime)   | v0.1.0       | ████ 40% | 100%       | 宏观经济体制识别（M1-M7）；LGIP四因子+规则分类器，5 tests PASS          |
+| [market_regime](https://github.com/ZoneCNH/market_regime) | v0.2.0       | ████████ 70% | 100%       | 市场状态识别（S1-S7）；新增 BarWindow 滑动窗口、domain-market 适配器和 Subscriber 消费者，12 tests PASS |
+| [macro_regime](https://github.com/ZoneCNH/macro_regime)   | v0.2.0       | ████████ 70% | 100%       | 宏观经济体制识别（M1-M7）；新增 MacroInformationSet mapper 和 ClassifyFromSet 便利方法，13 tests PASS  |
 | [ms_brain](https://github.com/ZoneCNH/ms_brain)           | v1.6.6       | ░░░░ 5%  | 100%       | M×S 系统架构分析体系                                                     |
 | [regime_engine](https://github.com/ZoneCNH/regime_engine) | v1.0.0       | ████ 60% | 100%       | M×S 联合决策引擎（P0 DTO 桥接层，RegimeSnapshot+RegimeCard→DecisionCard，13 tests PASS） |
 | [flowx](https://github.com/ZoneCNH/flowx)                 | v0.1.0-draft | ░░░░ 5%  | 100%       | 数据流管线引擎 — 流式 ETL、窗口聚合、背压控制（7 FR, SPEC draft）        |
@@ -218,8 +218,8 @@
 | factor_engine |  ❌  |  ❌  |   N/A   |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | 5%；仅创建，无实现                 |
 | feature_store |  ❌  |  ❌  |   N/A   |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | 5%；仅创建，无实现                 |
 | factor_eval   |  ❌  |  ❌  |   N/A   |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | 5%；仅创建，无实现                 |
-| market_regime |  ❌  |  ⚠️  |   ⚠️    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | v0.1.0；40% S引擎骨架，5D特征+分类器，5 tests PASS              |
-| macro_regime  |  ❌  |  ⚠️  |   ⚠️    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | v0.1.0；40% M引擎骨架，LGIP四因子+分类器，5 tests PASS           |
+| market_regime |  ❌  |  ⚠️  |   ⚠️    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | v0.2.0；70% S引擎，BarWindow+Subscriber+adapter接入，12 tests PASS |
+| macro_regime  |  ❌  |  ⚠️  |   ⚠️    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | v0.2.0；70% M引擎，mapper+ClassifyFromSet接入，13 tests PASS           |
 | ms_brain      |  ❌  |  ❌  |   N/A   |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | 5%；仅创建，无实现                 |
 | regime_engine |  ❌  |  ⚠️  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | v1.0.0；60% P0桥接完成，13 tests PASS，contracts v1.4.0 接入    |
 | flowx         |  ❌  |  ❌  |   N/A   |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | v0.1.0-draft；7 FR，SPEC draft     |
