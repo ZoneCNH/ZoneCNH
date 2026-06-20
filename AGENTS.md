@@ -171,7 +171,8 @@ Spec → Matrix → Tasks → Plan → Prompt → Code
 | `docs/governance/TRACEABILITY.md`         | 需求追踪矩阵规范；具体矩阵位于 `module/{module}/TRACEABILITY.md` |
 | `docs/governance/DEFINITION-OF-READY.md`  | 进入开发的前置条件                                               |
 | `docs/governance/DEFINITION-OF-DONE.md`   | 完成验收条件                                                     |
-| `CONSTITUTION.md`                         | 最高治理权威（§0-§19，含分支纪律、设计原则、交付管线、CRI）      |
+| `CONSTITUTION.md`                         | 最高治理权威（§0-§19，向后兼容存根；完整条款见 `docs/constitution/`） |
+| `docs/constitution/`                      | 宪法章节视图（按条款拆分，含导航链接；[README](docs/constitution/README.md)） |
 | `module/FOUNDATION-DEPS.yaml`             | Foundation 依赖矩阵（机器可读，规定允许/禁止的依赖边与特殊约束） |
 
 ## Goal 驱动交付体系

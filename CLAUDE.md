@@ -12,7 +12,7 @@ ZoneCNH 的 `FoundationX` 量化交易基础设施文档枢纽，也是 `ZoneCNH
 
 - `README.md`：个人主页、技术栈、架构摘要和组件索引
 - `ARCHITECTURE.md`：依赖拓扑、领域职责、设计原则和状态表（权威来源）
-- `CONSTITUTION.md`：模块宪法 §0-§19（最高权威）
+- `CONSTITUTION.md`：模块宪法 §0-§19（最高权威，向后兼容存根；章节视图见 `docs/constitution/`）
 - `AGENTS.md` / `CLAUDE.md`：自动化代理和贡献者工作指南
 - `docs/goal/`：Goal 驱动交付体系规范
 
