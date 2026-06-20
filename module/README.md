@@ -140,7 +140,7 @@ test-only，不参与生产运行时。
 
 基础设施客户端封装。均为可选，按需引入。
 
-> **投影口径**：`module/` 是规格 SSOT；release/factory 公共成熟度由 `.foundationx/status/index.json` + `.foundationx/blockers.json` 投影。存在公开 release 缺口或 BLK-001/002/003/006/007/008 open 时，不声明 Foundation 单一 100% 或 factory-grade。
+> **投影口径**：`module/` 是规格 SSOT；release/factory 公共成熟度由 `.foundationx/status/index.json` + `.foundationx/blockers.json` 投影。BLK-001~011 全部已 resolved，**0 open blockers；Foundation 20/20 runtime factory-ready** ✅（2026-06-20）。
 
 | 模块        | 规格                                                    | 封装目标                                                                                             |
 | ----------- | ------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
