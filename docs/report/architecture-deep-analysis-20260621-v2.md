@@ -381,9 +381,9 @@ risk_engine/order_engine/portfolio_engine: 废弃占位
 
 | 优先级 | 修复项                                                                                        | 影响                 |
 | :----: | --------------------------------------------------------------------------------------------- | -------------------- |
-|   P2   | 废弃占位仓库（risk_engine/order_engine/portfolio_engine/backtest_engine）折叠或移出活跃域统计 | 清晰化模块计数       |
-|   P2   | 明细表 `pln/prm/cod` 列增加 `[P]` 标注（pass-through）或列头说明                              | 消除评分失真         |
-|   P2   | 12 个行情 SDK 的 factory-ready 升级路径声明（或明确豁免原因）                                 | 关闭 R4 悬留问题     |
+|   P2   | 废弃占位仓库（risk_engine/order_engine/portfolio_engine/backtest_engine）折叠或移出活跃域统计 | 清晰化模块计数       | ✅ |
+|   P2   | 明细表 `pln/prm/cod` 列增加 `[P]` 标注（pass-through）或列头说明                              | 消除评分失真         | ✅ |
+|   P2   | 12 个行情 SDK 的 factory-ready 升级路径声明（或明确豁免原因）                                 | 关闭 R4 悬留问题     | ✅ |
 |   P3   | 启动 factor_engine SPEC 审批 → 进入 Phase 1                                                   | 解除核心链路最大阻塞 |
 
 ---
