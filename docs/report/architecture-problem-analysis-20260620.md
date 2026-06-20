@@ -82,20 +82,21 @@ macro_data ✅                        → macro_regime  ❌空仓库 → regime_
 
 ---
 
-## 四、🟡 中风险：7 个 x 模块横切重复实现未收敛
+## 四、✅ 已解决：7 个 x 模块横切重复实现收敛
 
-7 个存储 adapter（redisx / kafkax / natsx / clickhousex / postgresx / taosx / ossx）各自独立实现了：
+7 个存储 adapter（redisx / kafkax / natsx / clickhousex / postgresx / taosx / ossx）各自独立实现的横切关注点已完成 P0-P4 收敛（2026-06-20）：
 
 ```
-health check × 7    ← 应收敛到 kernel/healthx
-metrics 常量 × 7    ← 应收敛到 observex
-lifecycle × 7       ← 已有 kernel/lifecycx，但未统一接入
-retry loop × 2      ← clickhousex + ossx 有独立实现，应接入 resiliencx
+metrics 常量 × 7    ← ✅ redisx/kafkax/clickhousex 改为 observex alias；
+                       natsx/taosx 保留前缀常量并补跨引用注释；
+                       postgresx/ossx 私有/无公共 API 无需处理
+retry loop × 2      ← ✅ clickhousex + ossx 保留本地实现，补充注释说明
+                       resiliencx.retry.Do 无非重试错误 sentinel 的保留理由
+health check × 7    ← 差异来自 provider 语义，本轮记录后不强制统一
+lifecycle × 7       ← 单 client Close() 保留本地（符合 non-goal）
 ```
 
-每次改一个共性行为（如健康检查字段格式），需要修改 7 个仓库。
-
-**现有方案**：`docs/report/x-modules-cross-cutting-dedup-plan-20260620.md`（尚未执行）
+**收敛方案**：`docs/report/x-modules-cross-cutting-dedup-plan-20260620.md`（**P0-P4 已执行完成，2026-06-20**）
 
 ---
 
@@ -186,7 +187,7 @@ lab-*         → ms_brain / alternative_data ...
 
 ### 下一个月（架构收敛）
 
-6. 执行 x 模块横切收敛计划（已有方案）
+6. ~~执行 x 模块横切收敛计划（已有方案）~~ ✅ **已完成（2026-06-20，P0-P4）**
 7. ~~`regime_engine` 最小实现 → DecisionCard 链路打通~~ ✅ **已完成（2026-06-20，v1.0.0）**
 8. ~~`signal_factory` 骨架（消费 DecisionCard）~~ ✅ **已完成（2026-06-20，v0.1.0）**
 9. 补齐 6 个模块 Spec 至 98 分
