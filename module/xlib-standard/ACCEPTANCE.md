@@ -1,6 +1,6 @@
 # xlib-standard 完整验收清单
 
-- Status: Release-candidate synced from v1.0.2 local acceptance evidence
+- Status: Local-main merged from v1.0.2 acceptance evidence
 - Last-Updated: 2026-06-20
 - Module-Version: v1.0.2
 - Module-State: 本地验收通过，待远端发布
@@ -10,17 +10,19 @@
 
 > 本清单用于验收 xlib-standard 是否达到可发布、可追溯、可复验状态。除非条目明确记录为已通过，默认需要在运行时代码仓库重新执行验证并补充证据。
 
-## 0. v1.0.2 验收证据快照
+## 0. v1.0.2 本地 main 合并验收证据快照
 
 | 项目 | 证据 |
 | --- | --- |
 | 功能分支提交 | `/home/xlib-standard/.worktree/workspaces/xlib-standard` branch `xlib-standard` / `c899cf530f29ade438da048ddeff3f30584b6b04` |
+| 本地 main 合并提交 | `/home/xlib-standard/.worktree/workspaces/main-merge` branch `main` / `8c41021d5d2573c8c97ccd968d5d3fbf0b0bf872` |
 | Release 版本 | `v1.0.2` |
 | Release facts target | `26792dc01317794fb337a0dc81bd732285e49100`；`ci_pull_request` 本地上下文跳过 tag 校验 |
-| 本地发布验收 | `GOWORK=off XLIB_CONTEXT=ci_pull_request make release-check` 通过 |
+| 本地发布验收 | `GOWORK=off XLIB_CONTEXT=ci_pull_request make release-check` 在功能分支与本地 main 合并提交均通过 |
 | 覆盖率门槛 | `GOWORK=off make coverage-check` 通过，`coverage 100.0% >= 100.0%`；`go tool cover -func=coverage.out` 未发现非 100.0% 函数 |
 | Goal score | `GOWORK=off go run ./cmd/goalcli score --min 9.8` 通过，score `10` |
-| 证据 hash | `6c8d786bb4cbe4fd6eff54c5fe823538d2b035700d9869e49746af7f92f7dfd9` |
+| 证据 hash | 功能分支 `6c8d786bb4cbe4fd6eff54c5fe823538d2b035700d9869e49746af7f92f7dfd9`；本地 main `7e1d43ec6fc0e2f9c77fbbdfd37556ff2de4d5139868ad86aca00820e0000fbd` |
+| Release manifest | 本地 main `release/manifest/latest.json` 记录 `version=v1.0.2`、`commit=8c41021d5d2573c8c97ccd968d5d3fbf0b0bf872`、`tree_state=clean`、`workflow_run_id=local` |
 | CI/CD 配置 | `.github/workflows/ci.yml` 上传 `coverage-${{ github.run_id }}` 与 release manifest；`.github/workflows/goal-gates.yml` 执行 pinned golangci-lint、coverage-check、evidence-check |
 | 远端发布缺口 | 本轮未执行远端 GitHub Actions、push、tag publish 或 GitHub Release 创建 |
 
@@ -32,6 +34,7 @@
 | v1.0.2 覆盖率证据 | `/home/xlib-standard/.worktree/workspaces/xlib-standard`: `GOWORK=off go test ./... -covermode=atomic -coverprofile=coverage.out && go tool cover -func=coverage.out` | 通过；所有 statement-bearing package 与函数为 100.0% |
 | v1.0.2 覆盖率门槛 | `/home/xlib-standard/.worktree/workspaces/xlib-standard`: `GOWORK=off make coverage-check` | 通过，`coverage 100.0% >= 100.0%` |
 | v1.0.2 PR 发布验收 | `/home/xlib-standard/.worktree/workspaces/xlib-standard`: `GOWORK=off XLIB_CONTEXT=ci_pull_request make release-check` | 通过，evidence hash `6c8d786bb4cbe4fd6eff54c5fe823538d2b035700d9869e49746af7f92f7dfd9` |
+| v1.0.2 本地 main 发布验收 | `/home/xlib-standard/.worktree/workspaces/main-merge`: `GOWORK=off XLIB_CONTEXT=ci_pull_request make release-check` | 通过，`tree_state=clean`，evidence hash `7e1d43ec6fc0e2f9c77fbbdfd37556ff2de4d5139868ad86aca00820e0000fbd` |
 | v1.0.2 goal score | `/home/xlib-standard/.worktree/workspaces/xlib-standard`: `GOWORK=off go run ./cmd/goalcli score --min 9.8` | 通过，score `10` |
 | v1.0.2 CI/CD 配置 | `/home/xlib-standard/.worktree/workspaces/xlib-standard`: inspect `.github/workflows/ci.yml` and `.github/workflows/goal-gates.yml` | coverage/release manifest artifacts、pinned golangci-lint、coverage-check 与 evidence-check 已配置；远端未运行 |
 | 文档存在性 | cd /home/ZoneCNH && test -f module/xlib-standard/FEATURES.md && test -f module/xlib-standard/ACCEPTANCE.md | FEATURES.md 与 ACCEPTANCE.md 均存在 |
@@ -190,15 +193,15 @@
 
 ## 5. 发布 DoD 清单
 
-- [x] FEATURES.md 的 FR、BR/NFR、任务清单与 SPEC/TRACEABILITY 当前登记一致（FEATURES.md 已同步 v1.0.2 本地发布候选证据）。
-- [x] ACCEPTANCE.md 的 AC、TC 与运行时代码测试名、证据文件或 CI 记录一致（本节记录 `go test`、100.0% coverage、`coverage-check`、`release-check` 与 goal score 10 证据）。
-- [x] 运行时代码仓库 /home/xlib-standard 通过 go test 与 100.0% 覆盖率门槛（v1.0.2 分支 release-check 已覆盖 release facts、manifest、coverage 与 evidence gates）。
+- [x] FEATURES.md 的 FR、BR/NFR、任务清单与 SPEC/TRACEABILITY 当前登记一致（FEATURES.md 已同步 v1.0.2 本地 main 合并证据）。
+- [x] ACCEPTANCE.md 的 AC、TC 与运行时代码测试名、证据文件或 CI 记录一致（本节记录 `go test`、100.0% coverage、`coverage-check`、`release-check`、goal score 10 与本地 main manifest 证据）。
+- [x] 运行时代码仓库 /home/xlib-standard 通过 go test 与 100.0% 覆盖率门槛（v1.0.2 功能分支与本地 main 合并提交的 release-check 已覆盖 release facts、manifest、coverage 与 evidence gates）。
 - [x] 所有外部服务依赖有本地可重复的测试替身或明确 live-gate 证据（xlib-standard 无外部服务运行依赖，L2 模板 gate 已复验 kernel/configx/redisx）。
 - [x] 安全检查确认没有凭证、私有端点、账户 ID 或实盘配置进入公开文档与代码（security gate 与 secret check 通过）。
-- [x] 版本号、CHANGELOG 或 release note 与本目录状态一致（v1.0.2 本地发布候选提交 `c899cf530f29ade438da048ddeff3f30584b6b04`；远端 tag 与 GitHub Release 待执行）。
+- [x] 版本号、CHANGELOG 或 release note 与本目录状态一致（v1.0.2 功能分支提交 `c899cf530f29ade438da048ddeff3f30584b6b04`，本地 main 合并提交 `8c41021d5d2573c8c97ccd968d5d3fbf0b0bf872`；远端 tag 与 GitHub Release 待执行）。
 
 ## 6. 当前缺口登记
 
-- 无本地验收阻断项；v1.0.2 已完成本地 `go test`、100.0% coverage、`coverage-check`、`release-check` 与 goal score 10。
+- 无本地验收阻断项；v1.0.2 功能分支与本地 main 合并提交均已完成本地 `go test`、100.0% coverage、`coverage-check`、`release-check` 与 goal score 10。
 - 远端 GitHub Actions、push、tag publish 与 GitHub Release 本轮未执行，仍是发布完成前的外部动作。
 - `govulncheck` 按仓库策略仍只在 `XLIB_ENABLE_VULNCHECK=1` 时启用；本次安全 gate 的 secret check 通过，且无凭证/私有端点进入文档。

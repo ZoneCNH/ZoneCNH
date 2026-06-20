@@ -1,6 +1,6 @@
 # xlib-standard 完整实现清单
 
-- Status: Release-candidate synced from v1.0.2 local acceptance evidence
+- Status: Local-main merged from v1.0.2 acceptance evidence
 - Last-Updated: 2026-06-20
 - Module-Version: v1.0.2
 - Module-State: 本地验收通过，待远端发布
@@ -10,17 +10,19 @@
 
 > 本清单用于约束 xlib-standard 的完整实现范围。条目来自本目录已有 Spec、Traceability、Plan、Task 等文档；若运行时代码状态与本文不一致，以相应模块仓库的最新验证证据补充更新本文。
 
-## 0. v1.0.2 发布候选证据快照
+## 0. v1.0.2 本地 main 合并证据快照
 
 | 项目 | 证据 |
 | --- | --- |
 | 功能分支提交 | `/home/xlib-standard/.worktree/workspaces/xlib-standard` branch `xlib-standard` / `c899cf530f29ade438da048ddeff3f30584b6b04` |
+| 本地 main 合并提交 | `/home/xlib-standard/.worktree/workspaces/main-merge` branch `main` / `8c41021d5d2573c8c97ccd968d5d3fbf0b0bf872` |
 | Release 版本 | `v1.0.2` |
 | Release facts target | `26792dc01317794fb337a0dc81bd732285e49100`；`ci_pull_request` 本地上下文跳过 tag 校验 |
-| 本地发布验收 | `GOWORK=off XLIB_CONTEXT=ci_pull_request make release-check` 通过 |
+| 本地发布验收 | `GOWORK=off XLIB_CONTEXT=ci_pull_request make release-check` 在功能分支与本地 main 合并提交均通过 |
 | 覆盖率门槛 | `GOWORK=off make coverage-check` 通过，`coverage 100.0% >= 100.0%`；`go tool cover -func=coverage.out` 未发现非 100.0% 函数 |
 | Goal score | `GOWORK=off go run ./cmd/goalcli score --min 9.8` 通过，score `10` |
-| 证据 hash | `6c8d786bb4cbe4fd6eff54c5fe823538d2b035700d9869e49746af7f92f7dfd9` |
+| 证据 hash | 功能分支 `6c8d786bb4cbe4fd6eff54c5fe823538d2b035700d9869e49746af7f92f7dfd9`；本地 main `7e1d43ec6fc0e2f9c77fbbdfd37556ff2de4d5139868ad86aca00820e0000fbd` |
+| Release manifest | 本地 main `release/manifest/latest.json` 记录 `version=v1.0.2`、`commit=8c41021d5d2573c8c97ccd968d5d3fbf0b0bf872`、`tree_state=clean`、`workflow_run_id=local` |
 | CI/CD 配置 | `.github/workflows/ci.yml` 上传 `coverage-${{ github.run_id }}` 与 release manifest；`.github/workflows/goal-gates.yml` 执行 pinned golangci-lint、coverage-check、evidence-check |
 | 远端发布缺口 | 本轮未执行远端 GitHub Actions、push、tag publish 或 GitHub Release 创建 |
 
@@ -137,5 +139,5 @@
 - [x] 所有 BR/NFR 条目均有测试、静态检查或人工可审计证据覆盖（boundary、security、contracts、docs-check、cli-contract、adoption 与 evidence gates 通过）。
 - [x] 所有任务文档均能追溯到 FR、BR/NFR、AC 或 TC（traceability gate 与 `goalcli traceability-check` 在 release-preflight 中通过）。
 - [x] 依赖边界符合 FOUNDATION-DEPS.yaml，不引入未授权运行时依赖（boundary gate 与 `GOWORK=off go list -deps ./...` 相关检查通过）。
-- [x] 运行时代码仓库 /home/xlib-standard 的 lint、typecheck、test、coverage 与 release 验证证据已归档（v1.0.2 分支通过 `go test ./...`、100.0% coverage、`coverage-check`、`release-check` 与 goal score 10）。
-- [x] 发布说明、版本号与本目录登记状态一致（v1.0.2 本地发布候选提交 `c899cf530f29ade438da048ddeff3f30584b6b04`；远端 tag 与 GitHub Release 待执行）。
+- [x] 运行时代码仓库 /home/xlib-standard 的 lint、typecheck、test、coverage 与 release 验证证据已归档（v1.0.2 功能分支与本地 main 合并提交通过 `go test ./...`、100.0% coverage、`coverage-check`、`release-check` 与 goal score 10）。
+- [x] 发布说明、版本号与本目录登记状态一致（v1.0.2 功能分支提交 `c899cf530f29ade438da048ddeff3f30584b6b04`，本地 main 合并提交 `8c41021d5d2573c8c97ccd968d5d3fbf0b0bf872`；远端 tag 与 GitHub Release 待执行）。
