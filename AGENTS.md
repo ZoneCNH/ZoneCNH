@@ -30,6 +30,8 @@
 
 **仓库命名强制规则**：所有 ZoneCNH 仓库使用 snake_case（下划线），禁止 kebab-case（连字符）、PascalCase、camelCase。例外：`x.go`、`binance.rs`。
 
+**Go 编码规范**：所有 Go 模块代码须遵循 [`docs/standards/go-coding-standards.md`](docs/standards/go-coding-standards.md)，涵盖格式化、命名、错误处理、并发、接口设计、测试等 13 个维度。文档中"FoundationX 强制"条款来自 `CONSTITUTION.md`，优先级最高。
+
 编辑表格时，除非能同时提升 `README.md` 和 `docs/architecture/` 文档的可读性，否则保持列顺序稳定。
 
 ## 测试规范

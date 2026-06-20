@@ -3,6 +3,10 @@
 > 综合整合 **Google Go Style Guide**、**Effective Go**、**Go Code Review Comments** 及 **Uber Go Style Guide** 最佳实践。
 > 核心目标：让代码**可读、一致且易于维护**。
 
+> **效力层级**：`CONSTITUTION.md` > 本文档 > 社区最佳实践。
+> 文中标注 **FoundationX 强制** 的规则来源于 `CONSTITUTION.md`，具有最高优先级；
+> 标注 **FoundationX 补充** 的规则是项目特定扩展，与通用 Go 惯例有细微差异。
+
 ---
 
 ## 目录
