@@ -103,11 +103,12 @@
       "severity": "medium",
       "module": "bootstrap",
       "title": "bootstrap pkg/bootstrap/stores.go:217 仍 import foundationx.SecretString（postgresx 已独立无需联动）",
-      "status": "open",
+      "status": "resolved",
       "category": "implementation",
       "detail": "实测核实（2026-06-18 v3）：postgresx@v1.0.0 已完成 foundationx 退出——Config.Password 类型为本地 `postgresx.SecretString`（pkg/postgresx/secret.go），Validate 用本地 NewError/ErrorKindConfig（pkg/postgresx/error.go），go.mod 不含 foundationx。bootstrap stores.go:217 import foundationx 是历史遗留单点：仅需 `foundationx.SecretString(...)` → `postgresx.SecretString(...)` 一行替换 + go.mod 移除 foundationx require。v0.1.0 runtime Stores!=None 路径未实现是另一独立子项（BLK-009b）。",
       "evidence": "postgresx 实测：grep -n foundationx pkg/postgresx/*.go 零命中；secret.go 定义 type SecretString string；error.go 定义 ErrorKind/ErrorKindConfig/NewError 三者均本地。bootstrap 实测：grep -n foundationx pkg/bootstrap/stores.go = 行 23 import + 行 217 SecretString 一处用法。",
-      "action": "分两子项：(a) 1 行替换 stores.go:217 + 1 行移除 go.mod foundationx require + go mod tidy + bootstrap v0.1.1 release（已可在本会话完成）；(b) Stores!=None 路径实现（BLK-009b）属 v0.2.0 范围，独立处理。"
+      "action": "分两子项：(a) 1 行替换 stores.go:217 + 1 行移除 go.mod foundationx require + go mod tidy + bootstrap v0.1.1 release（已可在本会话完成）；(b) Stores!=None 路径实现（BLK-009b）属 v0.2.0 范围，独立处理。",
+      "resolution": "bootstrap v0.2.0 已移除 foundationx 直接依赖；stores.go 使用 postgresx.NewSecretString；8个 buildXxx 函数实现 Stores!=None 路径；go build + go test 全部通过（2026-06-20）"
     },
     {
       "id": "BLK-010",
@@ -177,14 +178,12 @@
     "note": "全部阻塞项已通过治理流程闭合（2026-06-16）",
     "items": []
   },
-  "open_blockers": 2,
-  "resolved_blockers": 9,
+  "open_blockers": 1,
+  "resolved_blockers": 10,
   "open_by_severity": {
-    "high": 1,
-    "medium": 1
+    "high": 1
   },
   "factory_blocking_modules": [
-    "bootstrap",
     "ossx"
   ],
   "release_blocking_modules": []
