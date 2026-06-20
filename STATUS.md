@@ -233,7 +233,7 @@
 | 组件                                                          | 版本         | 进度    | 覆盖率要求 | 说明                                                                |
 | ------------------------------------------------------------- | ------------ | ------- | ---------- | ------------------------------------------------------------------- |
 | [signal_factory](https://github.com/ZoneCNH/signal_factory)   | v0.1.0       | ░░░░ 5% | 100%       | 信号生成与组合                                                      |
-| [backtest_engine](https://github.com/ZoneCNH/backtest_engine) | v0.1.0       | ░░░░ 5% | 100%       | 事件驱动回测                                                        |
+| [backtest_engine](https://github.com/ZoneCNH/backtest_engine) | v0.1.0       | ░░░░ 5% | 100%       | ~~占位~~ → [**backtestx**](https://github.com/ZoneCNH/backtestx)  |
 | [optimizer](https://github.com/ZoneCNH/optimizer)             | v0.1.0       | ░░░░ 5% | 100%       | 参数优化                                                            |
 | [backtestx](https://github.com/ZoneCNH/backtestx)             | v0.1.0-draft | ░░░░ 5% | 100%       | 回测引擎 — 事件驱动回测、Walk-Forward、蒙特卡洛（7 FR, SPEC draft） |
 | [strategyx](https://github.com/ZoneCNH/strategyx)             | v0.1.0-draft | ░░░░ 5% | 100%       | 策略工厂 — 策略注册、参数管理、信号组合（7 FR, SPEC draft）         |
@@ -245,7 +245,7 @@
 | 模块            | SPEC | IMPL | RELEASE | LIVE INT | EXT CI | ADOPT | SOAK | FACTORY | 备注                           |
 | --------------- | :--: | :--: | :-----: | :------: | :----: | :---: | :--: | :-----: | ------------------------------ |
 | signal_factory  |  ❌  |  ❌  |   N/A   |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | 5%；仅创建，无实现             |
-| backtest_engine |  ❌  |  ❌  |   N/A   |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | 5%；仅创建，无实现             |
+| backtest_engine |  ❌  |  ❌  |   N/A   |   N/A    |  N/A   |  N/A  | N/A  | ~~占位~~ → backtestx | 5%；仅创建，无实现             |
 | optimizer       |  ❌  |  ❌  |   N/A   |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | 5%；仅创建，无实现             |
 | backtestx       |  ❌  |  ❌  |   N/A   |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | v0.1.0-draft；7 FR，SPEC draft |
 | strategyx       |  ❌  |  ❌  |   N/A   |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | v0.1.0-draft；7 FR，SPEC draft |
@@ -259,9 +259,9 @@
 
 | 组件                                                            | 版本         | 进度    | 覆盖率要求 | 说明                                                         |
 | --------------------------------------------------------------- | ------------ | ------- | ---------- | ------------------------------------------------------------ |
-| [risk_engine](https://github.com/ZoneCNH/risk_engine)           | v0.1.0       | ░░░░ 5% | 100%       | 风险管理引擎                                                 |
-| [order_engine](https://github.com/ZoneCNH/order_engine)         | v0.1.0       | ░░░░ 5% | 100%       | 订单执行引擎                                                 |
-| [portfolio_engine](https://github.com/ZoneCNH/portfolio_engine) | v0.1.0       | ░░░░ 5% | 100%       | 投资组合管理                                                 |
+| [risk_engine](https://github.com/ZoneCNH/risk_engine)           | ~~占位~~     | ░░░░ 5% | 100%       | ~~风险管理引擎~~ → [**riskx**](https://github.com/ZoneCNH/riskx) |
+| [order_engine](https://github.com/ZoneCNH/order_engine)         | ~~占位~~     | ░░░░ 5% | 100%       | ~~订单执行引擎~~ → [**orderx**](https://github.com/ZoneCNH/orderx) |
+| [portfolio_engine](https://github.com/ZoneCNH/portfolio_engine) | v0.1.0       | ░░░░ 5% | 100%       | ~~占位~~ → [**positionx**](https://github.com/ZoneCNH/positionx)  |
 | [settlement](https://github.com/ZoneCNH/settlement)             | v0.1.0       | ░░░░ 5% | 100%       | 结算与对账                                                   |
 | [riskx](https://github.com/ZoneCNH/riskx)                       | v0.1.0-draft | ░░░░ 5% | 100%       | 风控引擎 — 事前风控、回撤控制、熔断机制（7 FR, SPEC draft）  |
 | [orderx](https://github.com/ZoneCNH/orderx)                     | v0.1.0-draft | ░░░░ 5% | 100%       | 订单管理器 — 订单生命周期、SOR、状态机（7 FR, SPEC draft）   |
@@ -272,9 +272,9 @@
 
 | 模块             | SPEC | IMPL | RELEASE | LIVE INT | EXT CI | ADOPT | SOAK | FACTORY | 备注                           |
 | ---------------- | :--: | :--: | :-----: | :------: | :----: | :---: | :--: | :-----: | ------------------------------ |
-| risk_engine      |  ❌  |  ❌  |   N/A   |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | 5%；仅创建，无实现             |
-| order_engine     |  ❌  |  ❌  |   N/A   |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | 5%；仅创建，无实现             |
-| portfolio_engine |  ❌  |  ❌  |   N/A   |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | 5%；仅创建，无实现             |
+| risk_engine      |  ❌  |  ❌  |   N/A   |   N/A    |  N/A   |  N/A  | N/A  | ~~占位~~ → riskx | 5%；仅创建，无实现             |
+| order_engine     |  ❌  |  ❌  |   N/A   |   N/A    |  N/A   |  N/A  | N/A  | ~~占位~~ → orderx | 5%；仅创建，无实现             |
+| portfolio_engine |  ❌  |  ❌  |   N/A   |   N/A    |  N/A   |  N/A  | N/A  | ~~占位~~ → positionx | 5%；仅创建，无实现             |
 | settlement       |  ❌  |  ❌  |   N/A   |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | 5%；仅创建，无实现             |
 | riskx            |  ❌  |  ❌  |   N/A   |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | v0.1.0-draft；7 FR，SPEC draft |
 | orderx           |  ❌  |  ❌  |   N/A   |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | v0.1.0-draft；7 FR，SPEC draft |
