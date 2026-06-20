@@ -1,8 +1,8 @@
 {
-  "version": "v1.11.15",
+  "version": "v1.12.0",
   "commit": "9cb609f46a7934c3b0364f8fc2b3f55d72dfa247",
   "commit_short": "9cb609f",
-  "generated_at": "2026-06-20T16:25:00Z",
+  "generated_at": "2026-06-20T18:13:09Z",
   "stats": {
     "total_components": 70,
     "existing": 54,
@@ -40,11 +40,22 @@
         "medium": 3
       },
       "by_module": {
-        "natsx": ["BLK-001","BLK-002"],
-        "clickhousex": ["BLK-003"],
-        "postgresx": ["BLK-006"],
-        "taosx": ["BLK-007"],
-        "ossx": ["BLK-008"]
+        "natsx": [
+          "BLK-001",
+          "BLK-002"
+        ],
+        "clickhousex": [
+          "BLK-003"
+        ],
+        "postgresx": [
+          "BLK-006"
+        ],
+        "taosx": [
+          "BLK-007"
+        ],
+        "ossx": [
+          "BLK-008"
+        ]
       },
       "by_category": {
         "governance": 1,
@@ -54,12 +65,24 @@
         "spec-quality": 1,
         "evidence": 1
       },
-      "ids": ["BLK-001","BLK-002","BLK-003","BLK-006","BLK-007","BLK-008"]
+      "ids": [
+        "BLK-001",
+        "BLK-002",
+        "BLK-003",
+        "BLK-006",
+        "BLK-007",
+        "BLK-008"
+      ]
     },
     "projection_guard": {
       "source": ".foundationx/repo-contract.json",
       "contract_version": "v0.5.2-foundation-v2",
-      "public_docs": ["README.md","ARCHITECTURE.md","STATUS.md","module/README.md"],
+      "public_docs": [
+        "README.md",
+        "ARCHITECTURE.md",
+        "STATUS.md",
+        "module/README.md"
+      ],
       "release_manifest": "release/manifest/latest.json",
       "reason_code": "policy_contract_projection_drift",
       "reason_present": true
