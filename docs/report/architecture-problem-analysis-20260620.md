@@ -52,20 +52,22 @@ macro_data ✅                        → macro_regime  ❌空仓库 → regime_
 
 ---
 
-## 二、🔴 高风险：双轨并存，身份混乱
+## 二、~~🔴 高风险：双轨并存，身份混乱~~ → ✅ 已解决（2026-06-20）
 
-4 组模块"旧占位仓库 + 新规格模块"并存，没有明确废弃路线：
+> **2026-06-20 更新**：4 个旧占位仓库已全部添加 DEPRECATED 标记（README [!WARNING] + GitHub topic `deprecated`），废弃路线已明确。
 
-| 旧仓库（占位约 5%） | 新模块（SPEC draft） | 职责变化                         |
-| ------------------- | -------------------- | -------------------------------- |
-| `risk_engine`       | `riskx`              | 无（命名重构）                   |
-| `order_engine`      | `orderx`             | 无（命名重构）                   |
-| `portfolio_engine`  | `positionx`          | portfolio → position（语义收窄） |
-| `backtest_engine`   | `backtestx`          | 无（命名重构）                   |
+4 组模块"旧占位仓库 + 新规格模块"并存，~~没有明确废弃路线~~：
 
-**问题**：两者同时出现在 STATUS / README / ARCHITECTURE 中，外部消费者无法判断应该依赖哪个仓库。
+| 旧仓库（占位约 5%） | 新模块（SPEC draft） | 职责变化                         | 状态 |
+| ------------------- | -------------------- | -------------------------------- | ---- |
+| `risk_engine`       | `riskx`              | 无（命名重构）                   | ✅ DEPRECATED |
+| `order_engine`      | `orderx`             | 无（命名重构）                   | ✅ DEPRECATED |
+| `portfolio_engine`  | `positionx`          | portfolio → position（语义收窄） | ✅ DEPRECATED |
+| `backtest_engine`   | `backtestx`          | 无（命名重构）                   | ✅ DEPRECATED |
 
-另外 `market_regime` / `macro_regime` 使用 `snake_case` 命名，与全系统 `kebab-case` 约定不一致，属历史遗留问题。
+~~**问题**：两者同时出现在 STATUS / README / ARCHITECTURE 中，外部消费者无法判断应该依赖哪个仓库。~~
+
+另外 `market_regime` / `macro_regime` 使用 `snake_case` 命名，已按全局 snake_case 规则归档（CONSTITUTION.md 已更新）。
 
 ---
 
@@ -157,7 +159,7 @@ lab-*         → ms_brain / alternative_data ...
 | **P0** | 分析域三引擎（market_regime/macro_regime/regime_engine）全空 | 核心业务闭环                 |
 | **P1** | BLK-009 bootstrap 遗留依赖                                   | Foundation factory 闭合      |
 | **P1** | BLK-010 ossx 无源码                                          | Foundation factory 闭合      |
-| **P1** | 双轨模块废弃路线不明                                         | 开发者认知统一               |
+| ~~**P1**~~ | ~~双轨模块废弃路线不明~~                                     | ~~开发者认知统一~~           | ✅ **已解决 2026-06-20** |
 | **P2** | 7 模块横切重复收敛                                           | 维护成本降低                 |
 | **P2** | 管线 6 模块评分未达 98                                       | 治理一致性                   |
 | **P3** | x.go 体量核实                                                | 架构守卫                     |
@@ -180,7 +182,7 @@ lab-*         → ms_brain / alternative_data ...
 
 3. `market_regime` 最小实现（依赖 domain_market ✅ + contracts P0 ✅）
 4. `macro_regime` 最小实现（依赖 domain_macro ✅ + contracts P0 ✅）
-5. 为旧占位仓库（risk_engine / order_engine / portfolio_engine / backtest_engine）添加 DEPRECATED 标记
+5. ~~为旧占位仓库（risk_engine / order_engine / portfolio_engine / backtest_engine）添加 DEPRECATED 标记~~ ✅ **已完成（2026-06-20）**
 
 ### 下一个月（架构收敛）
 
