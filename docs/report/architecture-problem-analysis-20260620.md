@@ -46,7 +46,7 @@ macro_data ✅                        → macro_regime  ❌空仓库 → regime_
 | `MacroDataProvider` | macro_data → macro_regime | P0 | ✅ `ports.go` |
 | `DecisionCardProvider` | regime_engine → signal_factory | P0 | ✅ `ports.go` |
 | `FactorInput` / `FactorOutput` | factor_engine 内部 | P1 | ⬜ 待实现 |
-| `SignalIntent` | signal_factory → orderx | P1 | ⬜ 待实现 |
+| `SignalIntent` | signal_factory → orderx | P1 | ✅ 本地 DTO（signal_factory/contracts/provider.go），待升入 contracts |
 
 > ✅ **风险已消除**：P0 契约全部固化，上层三域可基于稳定接口开始实现，无接口漂移风险。
 
@@ -187,8 +187,8 @@ lab-*         → ms_brain / alternative_data ...
 ### 下一个月（架构收敛）
 
 6. 执行 x 模块横切收敛计划（已有方案）
-7. `regime_engine` 最小实现 → DecisionCard 链路打通
-8. `signal_factory` 骨架（消费 DecisionCard）
+7. ~~`regime_engine` 最小实现 → DecisionCard 链路打通~~ ✅ **已完成（2026-06-20，v1.0.0）**
+8. ~~`signal_factory` 骨架（消费 DecisionCard）~~ ✅ **已完成（2026-06-20，v0.1.0）**
 9. 补齐 6 个模块 Spec 至 98 分
 
 ---
