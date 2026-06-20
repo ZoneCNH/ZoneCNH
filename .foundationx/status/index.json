@@ -44,7 +44,7 @@
       "adopt": "N/A",
       "soak": "N/A",
       "factory": true,
-      "note": "GitHub Release v0.1.0 已发布；factory grade（与 STATUS 多维表一致）"
+      "note": "GitHub Release v0.1.6 已发布；Release run 27855366871 与 main CI run 27855396013 通过；coverage 100.0%；pinned gitleaks CLI secret scan 已对齐；factory grade（与 STATUS 多维表一致）"
     },
     "xlib-evidence": {
       "layer": "evidence",
@@ -57,7 +57,7 @@
       "adopt": "N/A",
       "soak": "N/A",
       "factory": true,
-      "note": "GitHub Release v0.1.0 已发布；factory grade（与 STATUS 多维表一致）"
+      "note": "GitHub Release v0.2.4 已发布；go test/race/vet/build/coverage 100.0% 通过；release evidence assets 已归档；factory grade（与 STATUS 多维表一致）"
     },
     "xlibgate": {
       "layer": "gate",

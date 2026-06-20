@@ -76,8 +76,8 @@ L2.5: domainx / decimalx / domain-market / domain-macro / domain-exchange (5/5 �
 
 ### 基座 · 基础设施
 - [xlib-standard](https://github.com/ZoneCNH/xlib-standard) — 标准事实源、Go Reference Template（Generator/Harness/Evidence 已拆分至 xlib-harness / xlib-evidence）；v1.0.1 GitHub Release 已发布，CI/Docker/Worktree/adoption 与本地 release-preflight 通过；不作为运行时 import 依赖 `公开`
-- [xlib-harness](https://github.com/ZoneCNH/xlib-harness) — 模块生成器与门禁执行器：generate/scaffold、spec-lint、boundary-check、traceability-gate；✅ v0.1.1 GitHub Release 已发布 `公开`
-- [xlib-evidence](https://github.com/ZoneCNH/xlib-evidence) — 证据收集与发布运行时：collect-coverage、generate-manifest、validate-manifest、remote-evidence、report；✅ v0.2.2 GitHub Release 已发布（Latest），本地 Go runtime 验收通过（go test/race/vet/coverage 100.0%） `公开`
+- [xlib-harness](https://github.com/ZoneCNH/xlib-harness) — 模块生成器与门禁执行器：generate/scaffold、spec-lint、boundary-check、traceability-gate、format-check；✅ v0.1.6 GitHub Release 已发布，Release run 27855366871 与 main CI run 27855396013 通过，覆盖率 100.0%，pinned gitleaks CLI secret scan 已对齐 `公开`
+- [xlib-evidence](https://github.com/ZoneCNH/xlib-evidence) — 证据收集与发布运行时：collect-coverage、generate-manifest、validate-manifest、remote-evidence、report；✅ v0.2.4 GitHub Release 已发布，release evidence assets 已归档，本地 Go runtime 验收通过（go test/race/vet/build/coverage 100.0%） `公开`
 - [kernel](https://github.com/ZoneCNH/kernel) — L0 标准库扩展原语（error/time/context/lifecycle/health/sync） `公开`
 - [configx](https://github.com/ZoneCNH/configx) — 显式配置加载、多源合并（File/Env/Map/Args）、StrictDecode、SecretString 脱敏、Provenance 追踪、EffectiveConfigHash、Bind() 强类型绑定、ConfigSnapshot 热更新与回滚、RemoteSource SPI、配置文档自动生成 `公开`
 - [observex](https://github.com/ZoneCNH/observex) — vendor-neutral 日志、指标、追踪、健康与脱敏契约 `公开`
