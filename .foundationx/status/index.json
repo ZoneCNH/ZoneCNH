@@ -17,7 +17,8 @@
     "impl_complete": 21,
     "release_published": 21,
     "live_integration": 7,
-    "factory_grade": 18
+    "factory_grade": 19,
+    "open_blockers": 1
   },
   "modules": {
     "xlib_standard": {
@@ -269,7 +270,7 @@
     },
     "bootstrap": {
       "layer": "L1",
-      "version": "v0.1.0",
+      "version": "v0.2.0",
       "spec": true,
       "impl": true,
       "release": true,
@@ -277,8 +278,8 @@
       "ci": true,
       "adopt": "N/A",
       "soak": "N/A",
-      "factory": false,
-      "note": "L1 通用进程组装层；v0.1.0 GitHub Release 已发布；非 factory：v0.1.0 仅 Stores=None 端到端就绪，Stores!=None 路径与 foundationx 依赖清零待 v0.1.x patch（BLK-009 open）"
+      "factory": true,
+      "note": "BLK-009 closed; v0.2.0 released; foundationx direct dep removed; 8 store adapters implemented"
     },
     "domainx": {
       "layer": "L2.5",
