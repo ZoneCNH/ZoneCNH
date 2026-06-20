@@ -426,7 +426,8 @@ Foundation 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中在 
 | 执行域                | [positionx](https://github.com/ZoneCNH/positionx)               | v0.1.0-draft | 🔨 已创建 | ░░░░ 5%  | 仓位管理器 — 实时仓位追踪、PnL、敞口监控（7 FR, SPEC draft）                             |
 | 执行域                | [settlement](https://github.com/ZoneCNH/settlement)             | -      | 🔨 已创建 | ░░░░ 5%  | PnL 计算、交易所对账                                                                      |
 | **入口**              |                                                                 |        |           |          |                                                                                           |
-| 入口                  | [x.go](https://github.com/ZoneCNH/x.go)                         | v0.0.1 | ✅ 已有   | ███░ 80% | 组合根，2.8MB/33 项                                                                       |
+| 入口                  | [x.go](https://github.com/ZoneCNH/x.go)                         | v0.0.1 | ✅ 已有   | ███░ 80% | 组合根，2.8MB/33 项（治理/工具 CLI，非 trading wiring）                                  |
+| 入口                  | [composer](https://github.com/ZoneCNH/composer)                  | v0.1.0 | ✅ 已有   | ███████░ 75% | 数据域组合根：25 进程（23 adapter + market-data + macro-data）；✅ dispatch→regime SinkPort 适配器（MarketRegimeSink/MacroRegimeSink）；HTTP health；Docker Compose |
 | **横切**              |                                                                 |        |           |          |                                                                                           |
 | 横切                  | [alertx](https://github.com/ZoneCNH/alertx)                     | -      | 🔨 已创建 | ░░░░ 5%  | 策略异常、风控触发告警                                                                    |
 | 横切                  | [observex](https://github.com/ZoneCNH/observex)                 | v0.3.4 | ✅ 已发布 | █████ 100% | 可观测性（同时归属基座，提供底层 metrics/tracing/logging）；Labels type alias                                |
