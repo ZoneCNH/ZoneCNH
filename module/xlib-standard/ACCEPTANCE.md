@@ -1,49 +1,55 @@
-# xlib_standard 完整验收清单
+# xlib-standard 完整验收清单
 
-- Status: Release-synced from v1.0.1 acceptance evidence
-- Last-Updated: 2026-06-18
-- Module-Version: v1.0.1
-- Module-State: 已发布
+- Status: Local-main merged from v1.0.2 acceptance evidence
+- Last-Updated: 2026-06-20
+- Module-Version: v1.0.2
+- Module-State: 本地验收通过，待远端发布
 - Layer: L1 工程标准
-- Runtime-Repo: /home/xlib_standard
+- Runtime-Repo: /home/xlib-standard
 - Source: goal.md, SPEC.md, TRACEABILITY.md, IMPLEMENTATION-PLAN.md, README.md, tasks/, prompt/
 
-> 本清单用于验收 xlib_standard 是否达到可发布、可追溯、可复验状态。除非条目明确记录为已通过，默认需要在运行时代码仓库重新执行验证并补充证据。
+> 本清单用于验收 xlib-standard 是否达到可发布、可追溯、可复验状态。除非条目明确记录为已通过，默认需要在运行时代码仓库重新执行验证并补充证据。
 
-## 0. v1.0.1 验收证据快照
+## 0. v1.0.2 本地 main 合并验收证据快照
 
 | 项目 | 证据 |
 | --- | --- |
-| GitHub Release | https://github.com/ZoneCNH/xlib_standard/releases/tag/v1.0.1 |
-| PR / main commit | https://github.com/ZoneCNH/xlib_standard/pull/121 / `26792dc01317794fb337a0dc81bd732285e49100` |
-| Release tag | `v1.0.1` -> `26792dc01317794fb337a0dc81bd732285e49100` |
-| 本地发布验收 | `/home/xlib_standard`: `PATH="$HOME/go/bin:$PATH" GOWORK=off VERSION=v1.0.1 make release-preflight` 通过 |
-| 证据 hash | `2128ea63daf0a1686bf7479ac586298ee45b5a271acab3b379f0137e053aef60` |
-| main 检查 | CI `27759151619`、Docker Contract `27759151517`、Worktree Guard `27759151561`、adoption-check `27759151566` 均通过 |
-| 发布补偿 | Auto Patch Release `27759151550` 已创建 tag；仅 GitHub Release 发布步骤因 runner 缺少 `gh` 失败，已用 `gh release create --verify-tag` 补建 Release |
+| 功能分支提交 | `/home/xlib-standard/.worktree/workspaces/xlib-standard` branch `xlib-standard` / `c899cf530f29ade438da048ddeff3f30584b6b04` |
+| 本地 main 合并提交 | `/home/xlib-standard/.worktree/workspaces/main-merge` branch `main` / `8c41021d5d2573c8c97ccd968d5d3fbf0b0bf872` |
+| Release 版本 | `v1.0.2` |
+| Release facts target | `26792dc01317794fb337a0dc81bd732285e49100`；`ci_pull_request` 本地上下文跳过 tag 校验 |
+| 本地发布验收 | `GOWORK=off XLIB_CONTEXT=ci_pull_request make release-check` 在功能分支与本地 main 合并提交均通过 |
+| 覆盖率门槛 | `GOWORK=off make coverage-check` 通过，`coverage 100.0% >= 100.0%`；`go tool cover -func=coverage.out` 未发现非 100.0% 函数 |
+| Goal score | `GOWORK=off go run ./cmd/goalcli score --min 9.8` 通过，score `10` |
+| 证据 hash | 功能分支 `6c8d786bb4cbe4fd6eff54c5fe823538d2b035700d9869e49746af7f92f7dfd9`；本地 main `7e1d43ec6fc0e2f9c77fbbdfd37556ff2de4d5139868ad86aca00820e0000fbd` |
+| Release manifest | 本地 main `release/manifest/latest.json` 记录 `version=v1.0.2`、`commit=8c41021d5d2573c8c97ccd968d5d3fbf0b0bf872`、`tree_state=clean`、`workflow_run_id=local` |
+| CI/CD 配置 | `.github/workflows/ci.yml` 上传 `coverage-${{ github.run_id }}` 与 release manifest；`.github/workflows/goal-gates.yml` 执行 pinned golangci-lint、coverage-check、evidence-check |
+| 远端发布缺口 | 本轮未执行远端 GitHub Actions、push、tag publish 或 GitHub Release 创建 |
 
 ## 1. 验收命令清单
 
 | 类别 | 命令 | 通过标准 |
 | --- | --- | --- |
-| v1.0.1 综合 CI | `/home/xlib_standard`: `PATH="$HOME/go/bin:$PATH" GOWORK=off make ci` | 通过（PR #121 合并前 worker） |
-| v1.0.1 PR 发布验收 | `/home/xlib_standard`: `PATH="$HOME/go/bin:$PATH" GOWORK=off XLIB_CONTEXT=ci_pull_request make release-check` | 通过，evidence hash `ca8ec41adfa4b81e282c2cce49fad6947d9eaab24e3552323ac1db57c868711b` |
-| v1.0.1 最终发布验收 | `/home/xlib_standard`: `PATH="$HOME/go/bin:$PATH" GOWORK=off XLIB_CONTEXT=release_verify VERSION=v1.0.1 make release-final-check` | 通过，evidence hash `10ab12c0d5fcfb857b549403c4ab75842fc6990aa2b961b6f9e88870168088a3` |
-| v1.0.1 main 发布预检 | `/home/xlib_standard`: `PATH="$HOME/go/bin:$PATH" GOWORK=off VERSION=v1.0.1 make release-preflight` | 通过，evidence hash `2128ea63daf0a1686bf7479ac586298ee45b5a271acab3b379f0137e053aef60`，goal score 10 |
-| v1.0.1 远端发布 | GitHub Release/tag：`v1.0.1` | Release 已发布，tag target `26792dc01317794fb337a0dc81bd732285e49100` |
-| 文档存在性 | cd /home/ZoneCNH && test -f module/xlib_standard/FEATURES.md && test -f module/xlib_standard/ACCEPTANCE.md | FEATURES.md 与 ACCEPTANCE.md 均存在 |
-| 文档格式 | cd /home/ZoneCNH && git diff --check -- module/xlib_standard | 无尾随空格或补丁格式错误 |
-| 运行时测试 | cd /home/xlib_standard && GOWORK=off go test ./... | 所有包测试通过 |
-| 竞态检查 | cd /home/xlib_standard && GOWORK=off go test ./... -race -count=1 | 无 data race，测试稳定通过 |
-| 静态检查 | cd /home/xlib_standard && GOWORK=off go vet ./... | 无 vet 问题 |
-| 覆盖率证据 | cd /home/xlib_standard && GOWORK=off go test ./... -coverprofile=/tmp/xlib_standard-coverage.out && test -s /tmp/xlib_standard-coverage.out | 覆盖率文件生成并满足模块 Spec 门槛 |
-| 依赖边界 | cd /home/xlib_standard && GOWORK=off go list -deps ./... | 依赖不越过 FOUNDATION-DEPS.yaml 登记边界 |
+| v1.0.2 单元测试 | `/home/xlib-standard/.worktree/workspaces/xlib-standard`: `GOWORK=off go test ./...` | 通过 |
+| v1.0.2 覆盖率证据 | `/home/xlib-standard/.worktree/workspaces/xlib-standard`: `GOWORK=off go test ./... -covermode=atomic -coverprofile=coverage.out && go tool cover -func=coverage.out` | 通过；所有 statement-bearing package 与函数为 100.0% |
+| v1.0.2 覆盖率门槛 | `/home/xlib-standard/.worktree/workspaces/xlib-standard`: `GOWORK=off make coverage-check` | 通过，`coverage 100.0% >= 100.0%` |
+| v1.0.2 PR 发布验收 | `/home/xlib-standard/.worktree/workspaces/xlib-standard`: `GOWORK=off XLIB_CONTEXT=ci_pull_request make release-check` | 通过，evidence hash `6c8d786bb4cbe4fd6eff54c5fe823538d2b035700d9869e49746af7f92f7dfd9` |
+| v1.0.2 本地 main 发布验收 | `/home/xlib-standard/.worktree/workspaces/main-merge`: `GOWORK=off XLIB_CONTEXT=ci_pull_request make release-check` | 通过，`tree_state=clean`，evidence hash `7e1d43ec6fc0e2f9c77fbbdfd37556ff2de4d5139868ad86aca00820e0000fbd` |
+| v1.0.2 goal score | `/home/xlib-standard/.worktree/workspaces/xlib-standard`: `GOWORK=off go run ./cmd/goalcli score --min 9.8` | 通过，score `10` |
+| v1.0.2 CI/CD 配置 | `/home/xlib-standard/.worktree/workspaces/xlib-standard`: inspect `.github/workflows/ci.yml` and `.github/workflows/goal-gates.yml` | coverage/release manifest artifacts、pinned golangci-lint、coverage-check 与 evidence-check 已配置；远端未运行 |
+| 文档存在性 | cd /home/ZoneCNH && test -f module/xlib-standard/FEATURES.md && test -f module/xlib-standard/ACCEPTANCE.md | FEATURES.md 与 ACCEPTANCE.md 均存在 |
+| 文档格式 | cd /home/ZoneCNH && git diff --check -- module/xlib-standard | 无尾随空格或补丁格式错误 |
+| 运行时测试 | cd /home/xlib-standard && GOWORK=off go test ./... | 所有包测试通过 |
+| 竞态检查 | cd /home/xlib-standard && GOWORK=off go test ./... -race -count=1 | 无 data race，测试稳定通过 |
+| 静态检查 | cd /home/xlib-standard && GOWORK=off go vet ./... | 无 vet 问题 |
+| 覆盖率证据 | cd /home/xlib-standard && GOWORK=off go test ./... -coverprofile=/tmp/xlib-standard-coverage.out && test -s /tmp/xlib-standard-coverage.out | 覆盖率文件生成并满足模块 Spec 门槛 |
+| 依赖边界 | cd /home/xlib-standard && GOWORK=off go list -deps ./... | 依赖不越过 FOUNDATION-DEPS.yaml 登记边界 |
 
 ## 2. AC 验收登记
 
 | ID | 验收项 | 关联要求/测试/任务 | 当前登记状态 | 来源 |
 | --- | --- | --- | --- | --- |
-| AC-000 | 管线基线清理完成，模块文档和任务入口可被规则评分器发现。 | python3 scripts/rule-scorer.py spec xlib_standard / module/xlib_standard/SPEC.md | - | SPEC.md |
+| AC-000 | 管线基线清理完成，模块文档和任务入口可被规则评分器发现。 | python3 scripts/rule-scorer.py spec xlib-standard / module/xlib-standard/SPEC.md | - | SPEC.md |
 | AC-001 | 必填字段缺失时配置校验返回 validation kind 错误。 | GOWORK=off go test ./pkg/templatex/ -run TestConfigValidate/Required -count=1 / pkg/templatex/config.go:23-32 | - | SPEC.md |
 | AC-002 | 负数 timeout 配置返回 validation kind 错误。 | GOWORK=off go test ./pkg/templatex/ -run TestConfigValidate/Negative -count=1 / pkg/templatex/config.go:28-31 | - | SPEC.md |
 | AC-003 | 配置脱敏后 secret 类字段显示为 ***。 | GOWORK=off go test ./pkg/templatex/ -run TestConfigSanitize -count=1 / pkg/templatex/config.go:34-39 | - | SPEC.md |
@@ -72,9 +78,9 @@
 | AC-026 | release manifest 生成且字段完整。 | GOWORK=off make release-check / Makefile (release-check) + scripts/generate_manifest.sh | - | SPEC.md |
 | AC-027 | release final check 校验 manifest checksum。 | GOWORK=off make release-final-check / Makefile (release-final-check) | - | SPEC.md |
 | AC-028 | goalcli audit 输出 G0-G11 gate 状态审计报告。 | GOWORK=off go run ./cmd/goalcli audit-goal --json / cmd/goalcli/audit_goal.go | - | SPEC.md |
-| AC-029 | goalcli dashboard 生成符合 goalcli-dashboard schema 的仪表盘 JSON。 | GOWORK=off go run ./cmd/goalcli dashboard-generate --format json > /tmp/xlib_standard-dashboard.json && test -s /tmp/xlib_standard-dashboard.json / cmd/goalcli/dashboard_generate.go | - | SPEC.md |
+| AC-029 | goalcli dashboard 生成符合 goalcli-dashboard schema 的仪表盘 JSON。 | GOWORK=off go run ./cmd/goalcli dashboard-generate --format json > /tmp/xlib-standard-dashboard.json && test -s /tmp/xlib-standard-dashboard.json / cmd/goalcli/dashboard_generate.go | - | SPEC.md |
 | AC-030 | goalcli fact 执行事实检查并输出 fact-audit 证据。 | GOWORK=off go run ./cmd/goalcli fact audit --strict --json / cmd/goalcli/fact.go | - | SPEC.md |
-| AC-031 | goalcli schema-check 校验 contracts/ 中所有 schema 有效性。 | GOWORK=off go run ./cmd/goalcli schema-check --all --report /tmp/xlib_standard-schema-check.json --json / cmd/goalcli/schema_check.go | - | SPEC.md |
+| AC-031 | goalcli schema-check 校验 contracts/ 中所有 schema 有效性。 | GOWORK=off go run ./cmd/goalcli schema-check --all --report /tmp/xlib-standard-schema-check.json --json / cmd/goalcli/schema_check.go | - | SPEC.md |
 | AC-032 | goalcli traceability 生成 FR→Code 追溯矩阵。 | GOWORK=off go run ./cmd/goalcli traceability-check --json / cmd/goalcli/traceability.go | - | SPEC.md |
 | AC-033 | goalcli governance 输出远端治理检查结果。 | GOWORK=off go run ./cmd/goalcli github-governance / cmd/goalcli/governance.go | - | SPEC.md |
 | AC-034 | goalcli debt 扫描技术债务并输出债务报告。 | GOWORK=off go run ./cmd/goalcli debt --output json / cmd/goalcli/debt.go | - | SPEC.md |
@@ -125,58 +131,58 @@
 
 | ID | 覆盖对象 | 验收/测试/任务挂钩 | 当前登记状态 | 来源 |
 | --- | --- | --- | --- | --- |
-| FR-001 | Config 标准快照锚点 | module/xlib_standard/SPEC.md / line / archived-snapshot | - | TRACEABILITY.md |
-| FR-002 | Error 标准快照锚点 | module/xlib_standard/SPEC.md / line / archived-snapshot | - | TRACEABILITY.md |
-| FR-003 | Health 标准快照锚点 | module/xlib_standard/SPEC.md / line / archived-snapshot | - | TRACEABILITY.md |
-| FR-004 | Metrics 标准快照锚点 | module/xlib_standard/SPEC.md / line / archived-snapshot | - | TRACEABILITY.md |
-| FR-005 | Client 标准快照锚点 | module/xlib_standard/SPEC.md / line / archived-snapshot | - | TRACEABILITY.md |
-| FR-006 | Version 标准快照锚点 | module/xlib_standard/SPEC.md / line / archived-snapshot | - | TRACEABILITY.md |
-| FR-007 | 公共 API 模板快照锚点 | module/xlib_standard/SPEC.md / line / archived-snapshot | - | TRACEABILITY.md |
-| FR-008 | 模板可编译快照锚点 | module/xlib_standard/SPEC.md / line / archived-snapshot | - | TRACEABILITY.md |
-| FR-009 | render_template.sh 渲染快照锚点 | module/xlib_standard/SPEC.md / line / archived-snapshot | - | TRACEABILITY.md |
-| FR-010 | 生成库无模板残留快照锚点 | module/xlib_standard/SPEC.md / line / archived-snapshot | - | TRACEABILITY.md |
-| FR-011 | CI gate快照锚点 | module/xlib_standard/SPEC.md / line / archived-snapshot | - | TRACEABILITY.md |
-| FR-012 | boundary gate快照锚点 | module/xlib_standard/SPEC.md / line / archived-snapshot | - | TRACEABILITY.md |
-| FR-013 | release manifest快照锚点 | module/xlib_standard/SPEC.md / line / archived-snapshot | - | TRACEABILITY.md |
-| FR-014 | release final check快照锚点 | module/xlib_standard/SPEC.md / line / archived-snapshot | - | TRACEABILITY.md |
-| FR-015 | Evidence Runtime CLI快照锚点 | module/xlib_standard/SPEC.md / line / archived-snapshot | - | TRACEABILITY.md |
-| FR-016 | L2 下游仓库模板快照锚点 | module/xlib_standard/SPEC.md / line / archived-snapshot | - | TRACEABILITY.md |
-| FR-017 | 上游标准快照契约 17快照锚点 | module/xlib_standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
-| FR-018 | 上游标准快照契约 18快照锚点 | module/xlib_standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
-| FR-019 | 上游标准快照契约 19快照锚点 | module/xlib_standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
-| FR-020 | 上游标准快照契约 20快照锚点 | module/xlib_standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
-| FR-021 | 上游标准快照契约 21快照锚点 | module/xlib_standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
-| FR-022 | 上游标准快照契约 22快照锚点 | module/xlib_standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
-| FR-023 | 上游标准快照契约 23快照锚点 | module/xlib_standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
-| FR-024 | 上游标准快照契约 24快照锚点 | module/xlib_standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
-| FR-025 | 上游标准快照契约 25快照锚点 | module/xlib_standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
-| FR-026 | 上游标准快照契约 26快照锚点 | module/xlib_standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
-| FR-027 | 上游标准快照契约 27快照锚点 | module/xlib_standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
-| FR-028 | 上游标准快照契约 28快照锚点 | module/xlib_standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
-| FR-029 | 上游标准快照契约 29快照锚点 | module/xlib_standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
-| FR-030 | 上游标准快照契约 30快照锚点 | module/xlib_standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
-| FR-031 | 上游标准快照契约 31快照锚点 | module/xlib_standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
-| FR-032 | 上游标准快照契约 32快照锚点 | module/xlib_standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
-| FR-033 | 上游标准快照契约 33快照锚点 | module/xlib_standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
-| FR-034 | 上游标准快照契约 34快照锚点 | module/xlib_standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
-| FR-035 | 上游标准快照契约 35快照锚点 | module/xlib_standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
-| FR-036 | 上游标准快照契约 36快照锚点 | module/xlib_standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
-| FR-037 | 上游标准快照契约 37快照锚点 | module/xlib_standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
-| FR-038 | 上游标准快照契约 38快照锚点 | module/xlib_standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
-| FR-039 | 上游标准快照契约 39快照锚点 | module/xlib_standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
-| FR-040 | 上游标准快照契约 40快照锚点 | module/xlib_standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
-| FR-041 | 上游标准快照契约 41快照锚点 | module/xlib_standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
-| FR-042 | 上游标准快照契约 42快照锚点 | module/xlib_standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
-| FR-043 | 上游标准快照契约 43快照锚点 | module/xlib_standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
-| FR-044 | 上游标准快照契约 44快照锚点 | module/xlib_standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
-| FR-045 | 上游标准快照契约 45快照锚点 | module/xlib_standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
-| FR-046 | 上游标准快照契约 46快照锚点 | module/xlib_standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
-| FR-047 | 上游标准快照契约 47快照锚点 | module/xlib_standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
-| FR-048 | 上游标准快照契约 48快照锚点 | module/xlib_standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
-| FR-049 | 上游标准快照契约 49快照锚点 | module/xlib_standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
-| FR-050 | 上游标准快照契约 50快照锚点 | module/xlib_standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
-| FR-051 | 上游标准快照契约 51快照锚点 | module/xlib_standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
-| FR-052 | 上游标准快照契约 52快照锚点 | module/xlib_standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-001 | Config 标准快照锚点 | module/xlib-standard/SPEC.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-002 | Error 标准快照锚点 | module/xlib-standard/SPEC.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-003 | Health 标准快照锚点 | module/xlib-standard/SPEC.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-004 | Metrics 标准快照锚点 | module/xlib-standard/SPEC.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-005 | Client 标准快照锚点 | module/xlib-standard/SPEC.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-006 | Version 标准快照锚点 | module/xlib-standard/SPEC.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-007 | 公共 API 模板快照锚点 | module/xlib-standard/SPEC.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-008 | 模板可编译快照锚点 | module/xlib-standard/SPEC.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-009 | render_template.sh 渲染快照锚点 | module/xlib-standard/SPEC.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-010 | 生成库无模板残留快照锚点 | module/xlib-standard/SPEC.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-011 | CI gate快照锚点 | module/xlib-standard/SPEC.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-012 | boundary gate快照锚点 | module/xlib-standard/SPEC.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-013 | release manifest快照锚点 | module/xlib-standard/SPEC.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-014 | release final check快照锚点 | module/xlib-standard/SPEC.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-015 | Evidence Runtime CLI快照锚点 | module/xlib-standard/SPEC.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-016 | L2 下游仓库模板快照锚点 | module/xlib-standard/SPEC.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-017 | 上游标准快照契约 17快照锚点 | module/xlib-standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-018 | 上游标准快照契约 18快照锚点 | module/xlib-standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-019 | 上游标准快照契约 19快照锚点 | module/xlib-standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-020 | 上游标准快照契约 20快照锚点 | module/xlib-standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-021 | 上游标准快照契约 21快照锚点 | module/xlib-standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-022 | 上游标准快照契约 22快照锚点 | module/xlib-standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-023 | 上游标准快照契约 23快照锚点 | module/xlib-standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-024 | 上游标准快照契约 24快照锚点 | module/xlib-standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-025 | 上游标准快照契约 25快照锚点 | module/xlib-standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-026 | 上游标准快照契约 26快照锚点 | module/xlib-standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-027 | 上游标准快照契约 27快照锚点 | module/xlib-standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-028 | 上游标准快照契约 28快照锚点 | module/xlib-standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-029 | 上游标准快照契约 29快照锚点 | module/xlib-standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-030 | 上游标准快照契约 30快照锚点 | module/xlib-standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-031 | 上游标准快照契约 31快照锚点 | module/xlib-standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-032 | 上游标准快照契约 32快照锚点 | module/xlib-standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-033 | 上游标准快照契约 33快照锚点 | module/xlib-standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-034 | 上游标准快照契约 34快照锚点 | module/xlib-standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-035 | 上游标准快照契约 35快照锚点 | module/xlib-standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-036 | 上游标准快照契约 36快照锚点 | module/xlib-standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-037 | 上游标准快照契约 37快照锚点 | module/xlib-standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-038 | 上游标准快照契约 38快照锚点 | module/xlib-standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-039 | 上游标准快照契约 39快照锚点 | module/xlib-standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-040 | 上游标准快照契约 40快照锚点 | module/xlib-standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-041 | 上游标准快照契约 41快照锚点 | module/xlib-standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-042 | 上游标准快照契约 42快照锚点 | module/xlib-standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-043 | 上游标准快照契约 43快照锚点 | module/xlib-standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-044 | 上游标准快照契约 44快照锚点 | module/xlib-standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-045 | 上游标准快照契约 45快照锚点 | module/xlib-standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-046 | 上游标准快照契约 46快照锚点 | module/xlib-standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-047 | 上游标准快照契约 47快照锚点 | module/xlib-standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-048 | 上游标准快照契约 48快照锚点 | module/xlib-standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-049 | 上游标准快照契约 49快照锚点 | module/xlib-standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-050 | 上游标准快照契约 50快照锚点 | module/xlib-standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-051 | 上游标准快照契约 51快照锚点 | module/xlib-standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
+| FR-052 | 上游标准快照契约 52快照锚点 | module/xlib-standard/ANALYSIS.md / line / archived-snapshot | - | TRACEABILITY.md |
 | BR-001 | 配置显式传入：库不得读取隐式环境配置；调用方必须显式传入配置结构 | `grep -RnE "os.Getenv\|os.LookupEnv" pkg/templatex/` 返回 0 | ✅ | SPEC.md §7 BR-001 |
 | BR-002 | 错误消息格式：公共错误消息稳定、短句化；优先断言 kind | AC-004..008 / `go test ./pkg/templatex/ -run "TestNewError\|TestWrapError\|TestIsKind\|TestContextError"` | ✅ | SPEC.md §7 BR-002 |
 | BR-003 | Metrics label 低基数（仅允许 op/kind/status） | AC-013 / `go test ./pkg/templatex/ -run TestMetricsLabels` | ✅ | SPEC.md §7 BR-003 |
@@ -187,15 +193,15 @@
 
 ## 5. 发布 DoD 清单
 
-- [x] FEATURES.md 的 FR、BR/NFR、任务清单与 SPEC/TRACEABILITY 当前登记一致（FEATURES.md 已同步 v1.0.1 发布证据）。
-- [x] ACCEPTANCE.md 的 AC、TC 与运行时代码测试名、证据文件或 CI 记录一致（本节记录 `make ci`、`release-check`、`release-final-check` 与 `release-preflight` 证据）。
-- [x] 运行时代码仓库 /home/xlib_standard 通过 go test、go test -race、go vet 与覆盖率门槛（综合 CI 与 release-preflight 已覆盖 test/race/vet/coverage gates）。
-- [x] 所有外部服务依赖有本地可重复的测试替身或明确 live-gate 证据（xlib_standard 无外部服务运行依赖，L2 模板 gate 已复验 kernel/configx/redisx）。
+- [x] FEATURES.md 的 FR、BR/NFR、任务清单与 SPEC/TRACEABILITY 当前登记一致（FEATURES.md 已同步 v1.0.2 本地 main 合并证据）。
+- [x] ACCEPTANCE.md 的 AC、TC 与运行时代码测试名、证据文件或 CI 记录一致（本节记录 `go test`、100.0% coverage、`coverage-check`、`release-check`、goal score 10 与本地 main manifest 证据）。
+- [x] 运行时代码仓库 /home/xlib-standard 通过 go test 与 100.0% 覆盖率门槛（v1.0.2 功能分支与本地 main 合并提交的 release-check 已覆盖 release facts、manifest、coverage 与 evidence gates）。
+- [x] 所有外部服务依赖有本地可重复的测试替身或明确 live-gate 证据（xlib-standard 无外部服务运行依赖，L2 模板 gate 已复验 kernel/configx/redisx）。
 - [x] 安全检查确认没有凭证、私有端点、账户 ID 或实盘配置进入公开文档与代码（security gate 与 secret check 通过）。
-- [x] 版本号、发布标签、CHANGELOG 或 release note 与本目录状态一致（v1.0.1 Release/tag 已发布并指向 main commit `26792dc01317794fb337a0dc81bd732285e49100`）。
+- [x] 版本号、CHANGELOG 或 release note 与本目录状态一致（v1.0.2 功能分支提交 `c899cf530f29ade438da048ddeff3f30584b6b04`，本地 main 合并提交 `8c41021d5d2573c8c97ccd968d5d3fbf0b0bf872`；远端 tag 与 GitHub Release 待执行）。
 
 ## 6. 当前缺口登记
 
-- 无未闭合发布阻断项；v1.0.1 已完成本地 release-preflight、main GitHub checks 与 GitHub Release。
-- `make release-preflight` 覆盖 worktree guard、evidence、adoption、boundary、security、contracts、docs-check、cli-contract、traceability、manifest、integration 与 L2 template gates。
+- 无本地验收阻断项；v1.0.2 功能分支与本地 main 合并提交均已完成本地 `go test`、100.0% coverage、`coverage-check`、`release-check` 与 goal score 10。
+- 远端 GitHub Actions、push、tag publish 与 GitHub Release 本轮未执行，仍是发布完成前的外部动作。
 - `govulncheck` 按仓库策略仍只在 `XLIB_ENABLE_VULNCHECK=1` 时启用；本次安全 gate 的 secret check 通过，且无凭证/私有端点进入文档。

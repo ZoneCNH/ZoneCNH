@@ -411,7 +411,7 @@ Foundation 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中在 
 | 分析域                | [ms_brain](https://github.com/ZoneCNH/ms_brain)                 | -      | ✅ 已有   | -        | M×S 系统架构分析体系                                                                      |
 | 分析域                | [flowx](https://github.com/ZoneCNH/flowx)                       | v0.1.0-draft | 🔨 已创建 | ░░░░ 5%  | 数据流管线引擎 — 实时流式 ETL、窗口聚合、背压控制（7 FR, SPEC draft）                    |
 | **决策域**            |                                                                 |        |           |          |                                                                                           |
-| 决策域                | [signal_factory](https://github.com/ZoneCNH/signal_factory)     | -      | 🔨 已创建 | ░░░░ 5%  | 多因子信号生成、过滤、评分                                                                |
+| 决策域                | [signal_factory](https://github.com/ZoneCNH/signal_factory)     | v0.1.0 | 🔨 已创建 | ████ 40% | DecisionCard→SignalIntent 骨架完成（冲突门+强度映射+RiskMultiplier），5 tests PASS       |
 | 决策域                | [backtest_engine](https://github.com/ZoneCNH/backtest_engine)   | ~~占位~~ | 🔨 已创建 | ░░░░ 5%  | ~~事件驱动回测~~ → [**backtestx**](https://github.com/ZoneCNH/backtestx)                |
 | 决策域                | [backtestx](https://github.com/ZoneCNH/backtestx)               | v0.1.0-draft | 🔨 已创建 | ░░░░ 5%  | 回测引擎 — 事件驱动回测、Walk-Forward、蒙特卡洛（7 FR, SPEC draft）                      |
 | 决策域                | [strategyx](https://github.com/ZoneCNH/strategyx)               | v0.1.0-draft | 🔨 已创建 | ░░░░ 5%  | 策略工厂 — 策略注册、参数管理、信号组合（7 FR, SPEC draft）                              |
