@@ -6,7 +6,10 @@
 
 ---
 
-## 一、🔴 致命问题：核心业务链路完全断裂
+## 一、🔴 ~~致命问题：核心业务链路完全断裂~~ → 🟡 契约已就绪，实现待启动
+
+> **2026-06-20 更新**：contracts P0 DTO 已全部固化（PR #10），市场/宏观/决策链路的数据契约障碍已清除。  
+> 当前状态：contracts ✅ → market_regime/macro_regime/regime_engine 仍为空仓库（等待实现）。
 
 这是整个架构的最大风险，且比文档记录的更严重。
 
@@ -30,21 +33,22 @@ macro_data ✅                        → macro_regime  ❌空仓库 → regime_
 | **决策域**  | 6      | **0/6**（全部仅 README）        | **0%**  |
 | **执行域**  | 7      | **0/7**（全部仅 README）        | **0%**  |
 
-### P0 契约缺失
+### P0 契约缺失 → ✅ 已解决（2026-06-20，contracts PR #10）
 
-`contracts/pkg/contracts/` 只有 `contracts.go` + `ingestion.go`，**以下 P0 级 DTO 一条都未固化**：
+~~`contracts/pkg/contracts/` 只有 `contracts.go` + `ingestion.go`，**以下 P0 级 DTO 一条都未固化**：~~
 
-| 契约                           | 数据流路径                                   | 优先级 |
-| ------------------------------ | -------------------------------------------- | ------ |
-| `RegimeSnapshot`               | market_regime → regime_engine                | P0     |
-| `RegimeCard`                   | macro_regime → regime_engine                 | P0     |
-| `DecisionCard`                 | regime_engine → signal_factory / risk_engine | P0     |
-| `MarketDataProvider`           | market_data → market_regime                  | P0     |
-| `MacroDataProvider`            | macro_data → macro_regime                    | P0     |
-| `FactorInput` / `FactorOutput` | factor_engine 内部                           | P1     |
-| `SignalIntent`                 | signal_factory → orderx                      | P1     |
+| 契约 | 数据流路径 | 优先级 | 状态 |
+| --- | --- | --- | --- |
+| `RegimeSnapshot` | market_regime → regime_engine | P0 | ✅ `regime_snapshot.go` |
+| `RegimeCard` | macro_regime → regime_engine | P0 | ✅ `regime_card.go` |
+| `DecisionCard` | regime_engine → signal_factory / risk_engine | P0 | ✅ `decision_card.go` |
+| `MarketDataProvider` | market_data → market_regime | P0 | ✅ `ports.go` |
+| `MacroDataProvider` | macro_data → macro_regime | P0 | ✅ `ports.go` |
+| `DecisionCardProvider` | regime_engine → signal_factory | P0 | ✅ `ports.go` |
+| `FactorInput` / `FactorOutput` | factor_engine 内部 | P1 | ⬜ 待实现 |
+| `SignalIntent` | signal_factory → orderx | P1 | ⬜ 待实现 |
 
-> **风险**：上层三个域在没有任何契约定义的情况下写代码，将来必然出现接口不兼容，重构成本极高。
+> ✅ **风险已消除**：P0 契约全部固化，上层三域可基于稳定接口开始实现，无接口漂移风险。
 
 ---
 
@@ -149,7 +153,7 @@ lab-*         → ms_brain / alternative_data ...
 
 | 优先级 | 问题                                                         | 阻塞目标                     |
 | ------ | ------------------------------------------------------------ | ---------------------------- |
-| **P0** | contracts P0 DTO 未固化                                      | 分析域/决策域/执行域无法开始 |
+| **P0** | ~~contracts P0 DTO 未固化~~ | ~~分析域/决策域/执行域无法开始~~ | ✅ **已解决 2026-06-20**（PR #10） |
 | **P0** | 分析域三引擎（market_regime/macro_regime/regime_engine）全空 | 核心业务闭环                 |
 | **P1** | BLK-009 bootstrap 遗留依赖                                   | Foundation factory 闭合      |
 | **P1** | BLK-010 ossx 无源码                                          | Foundation factory 闭合      |
