@@ -10,6 +10,7 @@
 | P0 | `MarketDataProvider` port | market_data | market_regime | ✅ **2026-06-20** |
 | P0 | `MacroDataProvider` port | macro_data | macro_regime | ✅ **2026-06-20** |
 | P0 | `DecisionCardProvider` port | regime_engine | signal_factory, risk_engine | ✅ **2026-06-20** |
+| P1 | `SignalIntent` DTO | regime_engine | signal_factory, risk_engine | ✅ **2026-06-21**（PR #12） |
 | P1 | `RegimeSnapshotEvent` (Kafka) | market_regime | regime_engine | ⬜ 待实现 |
 | P1 | `RegimeCardEvent` (Kafka) | macro_regime | regime_engine | ⬜ 待实现 |
 | P1 | `DecisionCardEvent` (Kafka) | regime_engine | signal_factory, risk_engine | ⬜ 待实现 |
@@ -39,6 +40,10 @@ Phase 1b: macro_regime 实现（与 1a 并行）← 前置契约已就绪 ✅
   依赖: domain_macro ✅ + macro_data ✅ + contracts P0 DTO ✅
   退出: macro_data → macro_regime → RegimeCard 可跑通
 
+Phase 1c: SignalIntent DTO 已升入 contracts ✅
+  依赖: regime_engine / signal_factory ✅
+  退出: DecisionCard → SignalIntent 下游口径统一
+
 Phase 2: regime_engine 实现
   依赖: 1a ✅ + 1b ✅ + P0 DTO ✅
   退出: M State + S State → DecisionCard 可跑通
@@ -48,4 +53,3 @@ Phase 3: 下游集成
   risk_engine 消费 trade_permission + position_caps
   backtest_engine 回放 M×S 决策日志
 ```
-

@@ -89,13 +89,13 @@ contracts 未冻结
 
 规范文档与实际目录不一致，会导致脚本扫描、路径引用、CI 检查出现歧义。
 
-#### 问题 A4：L2.5 域共享层定义与命名混乱（中）
+#### 问题 A4：L2.5 域共享层命名已完成显示层对齐，但历史投影仍需收口（中）
 
-`domain-market`（kebab）对应仓库 `domain_market`（snake），`domain-macro` 对应 `domain_macro`，`domain-exchange` 对应 `domain_exchange`——目录命名、仓库命名、SPEC 内部引用三者不一致。L2.5 是所有业务域的依赖根节点，混乱将随依赖扩散放大。
+`domain-market`（kebab）对应仓库 `domain_market`（snake），`domain-macro` 对应 `domain_macro`，`domain-exchange` 对应 `domain_exchange`——目录命名、仓库命名、SPEC 内部引用曾长期并存。当前 `module/README.md` 已切到 `snake_case` 显示层，剩余工作不再是重新定义命名，而是把旧路径投影限制在同步文档与历史引用清单中，不再扩散到主分析报告。
 
-#### 问题 A5：x.go 组合根无模块规格（低）
+#### 问题 A5：x.go 说明入口仍有历史叙述残留（低）
 
-`x.go` 已从 `module/` 移除，设计上合理，但 `sre/docs/x.go/` 文档与 `ARCHITECTURE.md` 中的 x.go 描述未形成统一管理入口，在系统集成阶段可能造成盲区。
+`x.go` 的职责本身已经收口为治理 CLI / 组合根装配入口；当前未完成的是少数归档文档与分析报告中的入口叙述统一，而不是架构职责未定义。
 
 ---
 
@@ -207,6 +207,11 @@ Prompt（S5）和 Evidence（S6）几乎为零，表明四源评分体系的后�
 | 投影分层 | `L2.5` 的目标命名口径与当前文件投影分开维护；`module/README.md` 只负责历史路径同步，不把投影写成已完成重命名事实。 |
 | 入口单一 | `x.go` 只保留组合根职责，不再派生第二套模块边界。 |
 
+### 5.1.1 当前收口结果
+
+- 已完成：`#4` 固定 L2.5 命名基准与迁移表；`#8` 清理 L2.5 遗留 kebab 引用，并回写统一命名 / 对齐同步文档。
+- 仍待完成：`#1`-`#3`、`#5`-`#7`、`#9`-`#12`。
+
 ### 5.2 P0 — 基线解锁（1-2 周）
 
 | # | 行动 | 对应问题 | 主要产出 | 完成标准 |
@@ -214,7 +219,7 @@ Prompt（S5）和 Evidence（S6）几乎为零，表明四源评分体系的后�
 | 1 | `contracts` 推进至 Approved，并补齐跨域 AC / TC | A1、S1 | 冻结版 `contracts`、协议边界清单 | `contracts = Approved`，下游引用口径单一 |
 | 2 | 为 8 个 Approved 模块补 AC | S1、G2 | Approved 模块验收标准补丁 | Approved 无 AC = 0 |
 | 3 | 将 5 个占位符 SPEC 全部扩充为完整规格 | S3、A2 | 可拆任务的完整 Spec | 占位符 SPEC = 0 |
-| 4 | 固定 L2.5 命名基准与迁移表 | A3、A4 | `snake_case` 对照表、遗留引用清单 | 新增文档不再产生新的 kebab 投影 |
+| 4 | ✅ 已完成：固定 L2.5 命名基准与迁移表 | A3、A4 | `snake_case` 对照表、遗留引用清单、同步文档回写 | 新增文档不再产生新的 kebab 投影；显示层口径已收口 |
 
 ### 5.3 P1 — 管线补洞（2-4 周）
 
@@ -223,7 +228,7 @@ Prompt（S5）和 Evidence（S6）几乎为零，表明四源评分体系的后�
 | 5 | 从 `regime_engine`、`signal_factory` 等核心链路开始拆分分析域 / 决策域 / 执行域 tasks | A2、S4 | 21 个核心模块的任务树 | 三个业务域全部进入可执行状态 |
 | 6 | 按 AC → TC → tasks 顺序补齐测试与执行制品 | S2、S4、G2 | TC、tasks、prompt 的串联补丁 | 不再出现“有任务无验收” |
 | 7 | 统一 `sre/docs/x.go/` 与 `ARCHITECTURE.md` 的 `x.go` 说明入口 | A5 | 单一入口说明与引用更新 | 不再存在双入口叙述冲突 |
-| 8 | 清理 L2.5 遗留 kebab 引用，并回写统一命名 / 对齐同步文档（`docs/report/repo-naming-unification-20260620.md`） | A3、A4 | 引用替换、迁移记录、对齐说明 | 目录、仓库、SPEC 引用分层归位，历史路径投影不再混写 |
+| 8 | ✅ 已完成：清理 L2.5 遗留 kebab 引用，并回写统一命名 / 对齐同步文档（`docs/report/repo-naming-unification-20260620.md`） | A3、A4 | 引用替换、迁移记录、对齐说明 | 目录、仓库、SPEC 引用分层归位，历史路径投影不再混写 |
 
 ### 5.4 P2 — 质量收敛（持续）
 

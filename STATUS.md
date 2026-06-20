@@ -435,13 +435,13 @@
 
 ### 当前阻塞项
 
-- [ ] Phase 1（分析域）未开始 → 阻塞 Phase 2/3/4/5
+- [ ] Phase 1（分析域）仍待完成收口 → 阻塞 Phase 2/3/4/5
 - [x] ~~x.go 体量待核实~~ ✅ **已核实**：x.go = 治理 CLI，非组合根；composer v0.1.0 承担数据域组合根
 
 ### 下一步行动
 
 1. **聚焦 Phase 1**：先固化 MarketDataProvider / FactorInput / FactorOutput，再实现 factor_engine → feature_store → factor_eval
-2. **核实 x.go**：确认只包含配置加载、依赖 wiring 和生命周期控制，必要时剥离业务逻辑
+2. **同步 contracts 契约口径**：补齐 `SignalIntent` 已升入 contracts 的文档投影，统一下游引用
 3. ~~**版本化 SDK**~~：✅ 已完成 — 18 仓库 v0.1.1 tagged release（2026-06-16）
 4. ~~**统一宏观适配器**~~：✅ 已评估 — 保持独立模块架构，11 仓库全部 v0.1.1 tagged release（2026-06-16）
 5. ~~**清理仓库卫生**（R10）~~：✅ 已完成（2026-06-07）
