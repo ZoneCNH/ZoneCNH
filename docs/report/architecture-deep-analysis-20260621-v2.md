@@ -213,7 +213,7 @@ docs/report/
 
 3 个废弃占位仓库占用执行域 3/7 的计数位，使"执行域 7 个"看起来比实际（4 个活跃）更成熟。
 
-同样，决策域有 backtest_engine（废弃）+ backtestx（活跃）并列，分析域还列着旧名在 ARCHITECTURE 建议实现顺序中（Phase 3 仍写 risk_engine / order_engine / portfolio_engine）。
+同样，决策域有 backtest_engine（废弃）+ backtestx（活跃）并列，分析域还列着旧名在 ARCHITECTURE 建议实现顺序中（Phase 2/3 旧名 ✅ 已于 2026-06-21 修复为 backtestx/riskx/orderx/positionx）。
 
 **建议**：
 
@@ -375,7 +375,7 @@ risk_engine/order_engine/portfolio_engine: 废弃占位
 | :----: | -------------------------------------------------------------------------------------------- | ------------ | :--: |
 |   P1   | README 增加 composer 模块条目，更新 x.go 定位为"治理 CLI"                                    | 消除定位漂移 | ✅ |
 |   P1   | 文档同步检查表数字重新验证（三文档 unique links 更新为 74）                                   | 消除误报     | ✅ |
-|   P1   | ARCHITECTURE 建议实现顺序 Phase 3 改为 riskx/orderx/positionx                                | 消除旧名残留 | ❌ 待做 |
+|   P1   | ARCHITECTURE 建议实现顺序 Phase 2/3 改为 backtestx/riskx/orderx/positionx                    | 消除旧名残留 | ✅ |
 
 ### 中期（专项 PR）
 
