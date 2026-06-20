@@ -2,8 +2,8 @@
 
 - Status: Generated from current module SSOT
 - Last-Updated: 2026-06-20
-- Module-Version: v0.2.3
-- Module-State: v0.2.3 已发布；runtime 本地 100.0% 覆盖率、并发 Store 防护、CI/CD 证据门禁与 GitHub Release 资产已闭合
+- Module-Version: v0.2.4
+- Module-State: v0.2.4 已发布；runtime 本地 100.0% 覆盖率、并发 Store 防护、仓库身份契约、CI/CD 证据门禁与 GitHub Release 资产已闭合
 - Layer: L1 证据
 - Runtime-Repo: /home/xlib-evidence
 - Source: goal.md, SPEC.md, TRACEABILITY.md, IMPLEMENTATION-PLAN.md, tasks/
@@ -61,6 +61,7 @@
 | TASK-XLIBEVIDENCE-003B | TASK-XLIBEVIDENCE-003b: FR-003 | `manifest.go` / `manifest_test.go` | ✅ | tasks/TASK-XLIBEVIDENCE-003b.md |
 | TASK-XLIBEVIDENCE-004 | TASK-XLIBEVIDENCE-004: FR-005 | `report.go` / `report_test.go` | ✅ | tasks/TASK-XLIBEVIDENCE-004.md |
 | TASK-XLIBEVIDENCE-005 | TASK-XLIBEVIDENCE-005: FR-001 | `.github/workflows/ci.yml` / `.github/workflows/release.yml` / `FEATURES.md` / `ACCEPTANCE.md` | ✅ | tasks/TASK-XLIBEVIDENCE-005.md |
+| TASK-XLIBEVIDENCE-006 | 仓库身份契约与 Trust Alignment 可执行性修复 | `.repo-contract.yaml` / `.github/workflows/ci.yml` / `.github/workflows/release.yml` | ✅ | runtime v0.2.4 release |
 
 ## 5. 文档资产清单
 
@@ -79,4 +80,4 @@
 - [x] 所有任务文档均能追溯到 FR、BR/NFR、AC 或 TC。
 - [x] 依赖边界符合 FOUNDATION-DEPS.yaml，不引入未授权运行时依赖。
 - [x] 运行时代码仓库 /home/xlib-evidence 的 lint、typecheck、test、race、coverage 验证证据已归档。
-- [x] v0.2.3 本地生产验收已通过并发布到 GitHub Release；runtime 发布包包含根级 `FEATURES.md`、`ACCEPTANCE.md`、CI docs contract 与 release evidence assets。
+- [x] v0.2.4 本地生产验收已通过并发布到 GitHub Release；runtime 发布包包含根级 `FEATURES.md`、`ACCEPTANCE.md`、`.repo-contract.yaml`、CI docs contract、Trust Alignment 与 release evidence assets。
