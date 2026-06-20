@@ -16,6 +16,7 @@ docs/constitution/（章节视图，按条款快速导航）
 
 - **§0-§14**：约束模块实现质量（代码、接口、测试、命名、安全等）
 - **§15-§19**：约束交付流程质量（管线、追溯、AI 辅助、完成层级、改进）
+- **§20**：约束认识论标准（证据标签、置信度、FRAME→REALITY 禁止）
 - **附录**：模块清单、文档关系、L2.5 收口边界
 
 ## 章节索引
@@ -43,6 +44,7 @@ docs/constitution/（章节视图，按条款快速导航）
 | [`17-ai-assisted-delivery.md`](17-ai-assisted-delivery.md) | 第十七条：AI 辅助交付 | Prompt 质量标准、代码边界、输出验证 |
 | [`18-artifact-completion.md`](18-artifact-completion.md) | 第十八条：制品完成层级 | 四级 Done L1-L4（Code/Test/Release/Goal） |
 | [`19-cri.md`](19-cri.md) | 第十九条：受控递归改进 | CRI 七原则 R1-R7、改进边界、风险分级审批 |
+| [`20-epistemic-standards.md`](20-epistemic-standards.md) | 第二十条：认识论标准 | 证据标签、置信度、FRAME→REALITY 禁止、反奉承红旗、自检要求 |
 | [`appendix.md`](appendix.md) | 附录 A / B / L2.5 | 模块清单（基座+L2.5）、与 CLAUDE.md 关系、L2.5 收口边界 |
 
 ## 修改规则
