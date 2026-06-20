@@ -40,7 +40,7 @@
 
 > ✅ **版本 / release 注记**：公开文档是投影层；"版本（目标投影）"列为规划目标版本，已发布版本以"状态总览"表或 `.foundationx/status/index.json` + `.foundationx/blockers.json` 为准。当前 21-module projection 中 21/21 已发布 GitHub Release tag，21/21 impl；**0 open blockers，Foundation 21/21 factory-ready** ✅（BLK-009 bootstrap + BLK-010 ossx 均已 resolved，2026-06-20）。
 
-> **成熟度语义说明（2026-06-14 v2 Trust Alignment）**：上表"进度"反映本仓库 Spec 管线评分（spec→code），不代表可投产等级（factory grade）。下表提供多维度成熟度视图；RELEASE=❌ 或存在 open blocker 的模块不得投影为 FACTORY=✅。
+> **成熟度语义说明（2026-06-14 v2 Trust Alignment）**：上表"进度"反映本仓库 Spec 管线评分（spec→code），不代表可投产等级（factory grade）。"子维度投影"列中 `pln/prm/cod` 对外仓模块为文档模板 pass-through 评分 **[P]**，不代表代码编译或测试已验证——权威代码质量见对应仓库 CI/GitHub Release。下表提供多维度成熟度视图；RELEASE=❌ 或存在 open blocker 的模块不得投影为 FACTORY=✅。
 
 <details>
 <summary>📊 基座多维成熟度展开（点击展开）</summary>
@@ -128,18 +128,20 @@
 | 模块            | SPEC | IMPL | RELEASE | LIVE INT | EXT CI | ADOPT | SOAK | FACTORY | 备注                               |
 | --------------- | :--: | :--: | :-----: | :------: | :----: | :---: | :--: | :-----: | ---------------------------------- |
 | binance         |  ✅  |  ❌  |   ❌    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | C/S Module；v0.1.0；Spec Approved；4产品线          |
-| okx             |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | SDK；80%；OKX CEX                  |
-| bybit           |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | SDK；80%；Bybit CEX                |
-| bitget          |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | SDK；80%；Bitget CEX               |
-| kucoin          |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | SDK；80%；KuCoin CEX               |
-| gate            |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | SDK；80%；Gate CEX                 |
-| mexc            |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | SDK；80%；MEXC CEX                 |
-| htx             |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | SDK；80%；HTX CEX                  |
-| coinbase        |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | SDK；80%；Coinbase CEX             |
-| hyperliquid     |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | SDK；80%；Hyperliquid DEX          |
-| lighter         |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | SDK；80%；Lighter DEX              |
-| upbit           |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | SDK；80%；Upbit CEX                |
-| coinglass       |  ✅  |  ✅  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | SDK；80%；衍生品聚合数据           |
+| okx             |  ✅  |  ✅  |   ✅    |   ⏳待验证 |  N/A   |  N/A  | N/A  |   ❌    | SDK；80%；OKX CEX；factory ❌ 原因：LIVE INT 待 market_data dispatch 集成验证 |
+| bybit           |  ✅  |  ✅  |   ✅    |   ⏳待验证 |  N/A   |  N/A  | N/A  |   ❌    | SDK；80%；Bybit CEX；factory ❌ 同上 |
+| bitget          |  ✅  |  ✅  |   ✅    |   ⏳待验证 |  N/A   |  N/A  | N/A  |   ❌    | SDK；80%；Bitget CEX；factory ❌ 同上 |
+| kucoin          |  ✅  |  ✅  |   ✅    |   ⏳待验证 |  N/A   |  N/A  | N/A  |   ❌    | SDK；80%；KuCoin CEX；factory ❌ 同上 |
+| gate            |  ✅  |  ✅  |   ✅    |   ⏳待验证 |  N/A   |  N/A  | N/A  |   ❌    | SDK；80%；Gate CEX；factory ❌ 同上 |
+| mexc            |  ✅  |  ✅  |   ✅    |   ⏳待验证 |  N/A   |  N/A  | N/A  |   ❌    | SDK；80%；MEXC CEX；factory ❌ 同上 |
+| htx             |  ✅  |  ✅  |   ✅    |   ⏳待验证 |  N/A   |  N/A  | N/A  |   ❌    | SDK；80%；HTX CEX；factory ❌ 同上 |
+| coinbase        |  ✅  |  ✅  |   ✅    |   ⏳待验证 |  N/A   |  N/A  | N/A  |   ❌    | SDK；80%；Coinbase CEX；factory ❌ 同上 |
+| hyperliquid     |  ✅  |  ✅  |   ✅    |   ⏳待验证 |  N/A   |  N/A  | N/A  |   ❌    | SDK；80%；Hyperliquid DEX；factory ❌ 同上 |
+| lighter         |  ✅  |  ✅  |   ✅    |   ⏳待验证 |  N/A   |  N/A  | N/A  |   ❌    | SDK；80%；Lighter DEX；factory ❌ 同上 |
+| upbit           |  ✅  |  ✅  |   ✅    |   ⏳待验证 |  N/A   |  N/A  | N/A  |   ❌    | SDK；80%；Upbit CEX；factory ❌ 同上 |
+| coinglass       |  ✅  |  ✅  |   ✅    |   ⏳待验证 |  N/A   |  N/A  | N/A  |   ❌    | SDK；80%；衍生品聚合数据；factory ❌ 同上 |
+
+> **factory ❌ 升级路径（12 SDK 共同）**：LIVE INT 需 `market_data` dispatch port adapter 集成验证真实 tick 数据流后方可触发批量 factory-ready 评估。非阻塞上层开发，豁免已记录。
 
 > **维度说明**：SPEC=规格完成 | IMPL=实现完成 | RELEASE=tag/release/manifest 一致 | LIVE INT=真实服务集成（非 mock） | EXT CI=外部 CI artifact | ADOPT=下游模块真实采用 | SOAK=生产或类生产长时间运行 | FACTORY=factory_grade_allowed（最高综合等级）
 
@@ -245,7 +247,7 @@
 | 模块            | SPEC | IMPL | RELEASE | LIVE INT | EXT CI | ADOPT | SOAK | FACTORY | 备注                           |
 | --------------- | :--: | :--: | :-----: | :------: | :----: | :---: | :--: | :-----: | ------------------------------ |
 | signal_factory  |  ❌  |  ⚠️  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | v0.1.0；40% 骨架，DecisionCard→SignalIntent，5 tests PASS |
-| backtest_engine |  ❌  |  ❌  |   N/A   |   N/A    |  N/A   |  N/A  | N/A  | ~~占位~~ → backtestx | 5%；仅创建，无实现             |
+| backtest_engine | [P]废弃 | [P]废弃 |  [P]废弃  |  [P]废弃  | [P]废弃 | [P]废弃 | [P]废弃 | ~~占位~~ → backtestx | 仅创建占位，已迁移至 backtestx；不参与质量评估 |
 | optimizer       |  ❌  |  ❌  |   N/A   |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | 5%；仅创建，无实现             |
 | backtestx       |  ❌  |  ❌  |   N/A   |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | v0.1.0-draft；7 FR，SPEC draft |
 | strategyx       |  ❌  |  ❌  |   N/A   |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | v0.1.0-draft；7 FR，SPEC draft |
@@ -272,9 +274,9 @@
 
 | 模块             | SPEC | IMPL | RELEASE | LIVE INT | EXT CI | ADOPT | SOAK | FACTORY | 备注                           |
 | ---------------- | :--: | :--: | :-----: | :------: | :----: | :---: | :--: | :-----: | ------------------------------ |
-| risk_engine      |  ❌  |  ❌  |   N/A   |   N/A    |  N/A   |  N/A  | N/A  | ~~占位~~ → riskx | 5%；仅创建，无实现             |
-| order_engine     |  ❌  |  ❌  |   N/A   |   N/A    |  N/A   |  N/A  | N/A  | ~~占位~~ → orderx | 5%；仅创建，无实现             |
-| portfolio_engine |  ❌  |  ❌  |   N/A   |   N/A    |  N/A   |  N/A  | N/A  | ~~占位~~ → positionx | 5%；仅创建，无实现             |
+| risk_engine      | [P]废弃 | [P]废弃 | [P]废弃 |  [P]废弃  | [P]废弃 | [P]废弃 | [P]废弃 | ~~占位~~ → riskx | 仅创建占位，已迁移至 riskx；不参与质量评估 |
+| order_engine     | [P]废弃 | [P]废弃 | [P]废弃 |  [P]废弃  | [P]废弃 | [P]废弃 | [P]废弃 | ~~占位~~ → orderx | 仅创建占位，已迁移至 orderx；不参与质量评估 |
+| portfolio_engine | [P]废弃 | [P]废弃 | [P]废弃 |  [P]废弃  | [P]废弃 | [P]废弃 | [P]废弃 | ~~占位~~ → positionx | 仅创建占位，已迁移至 positionx；不参与质量评估 |
 | settlement       |  ❌  |  ❌  |   N/A   |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | 5%；仅创建，无实现             |
 | riskx            |  ❌  |  ❌  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ⚠️    | v0.1.0；最小实现（仓位检查+熔断，7 tests PASS）；消费 contracts.SignalIntent P1 DTO |
 | orderx           |  ❌  |  ❌  |   N/A   |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | v0.1.0-draft；7 FR，SPEC draft |
@@ -331,6 +333,8 @@
 | 独立                   | 1      | 1      | 0      | -                                  | 0                                                     |
 | **合计**               | **76** | **57** | **19** | **58%**                            | **73**                                                |
 
+> ⚠️ **废弃占位说明**：总数 76 含 4 个历史占位仓库（`backtest_engine`→决策域、`risk_engine`/`order_engine`/`portfolio_engine`→执行域），已迁移至新名称（backtestx/riskx/orderx/positionx），多维成熟度表中已标注 **[P]废弃**，不参与质量评估。活跃组件 72 个。
+
 ---
 
 ## 域健康度
@@ -353,7 +357,7 @@
 - Dispatch：1 个（market_data），v1.0.0，dispatch.go 已发布，进度 30%
 - SDK：12 个交易所适配器，全部 v0.1.1，进度 80%
 - C/S Module：1 个（binance），v0.1.0，Spec Approved，0% 实现
-- **待确认**：SDK 全部 v0.1.1 tagged release，已通过生产验证？
+- **factory 升级路径声明**：12 个 SDK SPEC ✅ IMPL ✅ RELEASE ✅，但 factory ❌ 原因为：LIVE INT 尚未验证（需 market_data dispatch port adapter 集成验证真实 tick 数据流）。升级前提：`market_data` dispatch 完成 LIVE INT → 12 SDK 批量触发 factory-ready 评估。非阻塞上层开发，当前豁免理由已记录。
 
 ### 🟡 数据域 · 宏观（注意）
 
