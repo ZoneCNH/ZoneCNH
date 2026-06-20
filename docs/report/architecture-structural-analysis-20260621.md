@@ -55,7 +55,9 @@ L0 kernel（stdlib-only）
 
 #### 问题 A1：contracts 尚未 Approved（严重）
 
-`contracts`（跨域稳定端口、事件协议、DTO 契约）是整个业务链路的依赖枢纽，但当前 `Status: Docs`，未进入 Approved。
+`contracts`（跨域稳定端口、事件协议、DTO 契约）是整个业务链路的依赖枢纽，但当前 `Status: Docs Baseline Approved / Runtime Pending`，未进入 Approved。
+
+其中 P1 / P2 的兼容投影名已通过 contracts type alias 补齐，当前未闭合的是 Approved 门禁、AC / TC 收口和运行时验证，不是命名缺口。
 
 **影响链**：
 ```
@@ -209,7 +211,7 @@ Prompt（S5）和 Evidence（S6）几乎为零，表明四源评分体系的后�
 
 ### 5.1.1 当前收口结果
 
-- 已完成：`#4` 固定 L2.5 命名基准与迁移表；`#8` 清理 L2.5 遗留 kebab 引用，并回写统一命名 / 对齐同步文档。
+- 已完成：`#4` 固定 L2.5 命名基准与迁移表；`#8` 清理 L2.5 遗留 kebab 引用，并回写统一命名 / 对齐同步文档；`contracts` P1 / P2 兼容投影别名（`RegimeSnapshotEvent` / `RegimeCardEvent` / `DecisionCardEvent` / `MarketRegimePort` / `MacroRegimePort` / `RegimeEnginePort`）已在 contracts 仓库以 type alias 方式补齐。
 - 仍待完成：`#1`-`#3`、`#5`-`#7`、`#9`-`#12`。
 
 ### 5.2 P0 — 基线解锁（1-2 周）

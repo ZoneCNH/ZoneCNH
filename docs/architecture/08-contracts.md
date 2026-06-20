@@ -11,12 +11,14 @@
 | P0 | `MacroDataProvider` port | macro_data | macro_regime | ✅ **2026-06-20** |
 | P0 | `DecisionCardProvider` port | regime_engine | signal_factory, risk_engine | ✅ **2026-06-20** |
 | P1 | `SignalIntent` DTO | regime_engine | signal_factory, risk_engine | ✅ **2026-06-21**（PR #12） |
-| P1 | `RegimeSnapshotEvent` (Kafka) | market_regime | regime_engine | ⬜ 待实现 |
-| P1 | `RegimeCardEvent` (Kafka) | macro_regime | regime_engine | ⬜ 待实现 |
-| P1 | `DecisionCardEvent` (Kafka) | regime_engine | signal_factory, risk_engine | ⬜ 待实现 |
-| P2 | `MarketRegimePort` (interface) | contracts | market_regime 实现 | ⬜ 待实现 |
-| P2 | `MacroRegimePort` (interface) | contracts | macro_regime 实现 | ⬜ 待实现 |
-| P2 | `RegimeEnginePort` (interface) | contracts | regime_engine 实现 | ⬜ 待实现 |
+| P1 | `RegimeSnapshotEvent` (Kafka) | market_regime | regime_engine | ✅ **2026-06-21**（type alias 投影已补齐） |
+| P1 | `RegimeCardEvent` (Kafka) | macro_regime | regime_engine | ✅ **2026-06-21**（type alias 投影已补齐） |
+| P1 | `DecisionCardEvent` (Kafka) | regime_engine | signal_factory, risk_engine | ✅ **2026-06-21**（type alias 投影已补齐） |
+| P2 | `MarketRegimePort` (interface) | contracts | market_regime 实现 | ✅ **2026-06-21**（type alias 投影已补齐） |
+| P2 | `MacroRegimePort` (interface) | contracts | macro_regime 实现 | ✅ **2026-06-21**（type alias 投影已补齐） |
+| P2 | `RegimeEnginePort` (interface) | contracts | regime_engine 实现 | ✅ **2026-06-21**（type alias 投影已补齐） |
+
+> 注：P1/P2 行仅表示 contracts 中的兼容投影别名已落地；消息发布/消费、序列化和运行时验证仍按后续 AC/TC 推进。
 
 ### P0 固化内容（contracts PR #10，2026-06-20）
 
