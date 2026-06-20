@@ -15,14 +15,16 @@
 
 ### 数据流现实
 
-> **2026-06-20 更新**：三引擎均已有骨架实现（v0.1.0），regime_engine 已完成 P0 DTO 桥接（v1.0.0）。
+> **2026-06-20 更新**：三引擎消费者层全部就绪（v0.2.0），数据契约完整，dispatch→regime adapter 层待实现。
 
 ```
-binance ✅ → market_data(dispatch) ✅ → market_regime ✅ v0.2.0（~70%）→ regime_engine ✅ v1.0.0
-macro_data ✅                        → macro_regime  ✅ v0.2.0（~70%）→ regime_engine ✅
-                                                                ↓
-                                                    signal_factory ✅ v0.1.0 → riskx ❌ → orderx ❌
+binance ✅ → market_data(dispatch) ✅ ─── SinkPort ⚠️ 待实现 ──→ market_regime ✅ v0.2.0（~70%）→ regime_engine ✅ v1.0.0
+                                                                                                              ↓
+macro-data(dispatch) ✅ ─────────────── SinkPort ⚠️ 待实现 ──→ macro_regime  ✅ v0.2.0（~70%）→        signal_factory ✅ v0.1.0 → riskx ❌ → orderx ❌
 ```
+
+> `macro-data`（`github.com/ZoneCNH/macro_data`）是纯 Go dispatch 模块，非 Python 服务。
+> `SinkPort` 适配器是当前数据流的唯一缺口：消费者层 API 已就绪，但没有代码将 dispatch 输出推送到 Subscriber/ClassifyFromSet。
 
 ### 各域实际完成度
 
@@ -119,13 +121,23 @@ lifecycle × 7       ← 单 client Close() 保留本地（符合 non-goal）
 
 ---
 
-## 六、🟡 中风险：x.go 体量异常大
+## 六、🔴 高风险：Composition Root 不存在（已核实，2026-06-20）
 
-`x.go` 仓库本地目录 2.8MB，声称包含 33 项。按 Composition Root 原则，入口应只包含 wiring + lifecycle，2.8MB 远超预期。
+> **核实结果**：`github.com/ZoneCNH/x.go`（2.8MB）是 **治理/工具 CLI 仓库**，不是 Composition Root。
 
-**待核实**：是否混入了因子计算逻辑、信号判断、风控规则或订单路由等业务逻辑。
+实际内容：
+- `cmd/goalcli/` — Goal 管理 CLI（goal audit / dashboard / traceability）
+- `pkg/templatex/` — x 模块 factory-ready 模板库
+- `internal/tools/releasemanifest/` — release 工具
 
-**影响**：违反 P13 设计原则（x.go 只做编排），且业务逻辑散落入口会导致无法被上层域复用。
+2.8MB 来自 `.agent/` `.omx/` `.claude/` 元数据，业务 Go 文件约 52 个，全为工具代码。**没有** `cmd/server/`、`pkg/composer/`、`pkg/wiring/` 或任何 trading 编排入口。
+
+**影响**：全系统没有运行时服务入口，所有已完成的消费者层（market_regime.Subscriber / macro_regime.ClassifyFromSet / regime_engine / signal_factory）无法在真实环境中串联运行，违反 P13（x.go 只做编排）。
+
+**下一步**：创建 `composer` 服务（或在 `bootstrap` 基础上扩展），实现：
+1. 加载 market-data / macro-data dispatch → 注入 SinkPort 适配器
+2. 调用 regime_engine.Run → signal_factory.Generate
+3. 暴露 gRPC / HTTP 服务端口
 
 ---
 
@@ -152,7 +164,7 @@ lab-*         → ms_brain / alternative_data ...
 
 - ~~`market_regime` 完全为空~~ → ✅ **v0.2.0 消费者层完成**（BarWindow+Subscriber，Push(domainmarket.Bar) → RegimeSnapshot）
 - 其余 12 个 CEX/DEX SDK（okx/bybit/...）均停在约 80%，没有统一的 C/S Module 封装
-- `market_data` dispatch 下游 receiver → `market_regime.Subscriber` 接口已就绪，x.go wire-up 仍待推进
+- `market-data` dispatch 下游 receiver → `market_regime.Subscriber` 接口已就绪，`composer` SinkPort 适配器仍待实现
 
 ---
 
@@ -162,13 +174,13 @@ lab-*         → ms_brain / alternative_data ...
 | ---------- | ------------------------------------------------------------------------------------------- | -------------------------------- | ---------------------------------- |
 | **P0**     | ~~contracts P0 DTO 未固化~~                                                                 | ~~分析域/决策域/执行域无法开始~~ | ✅ **已解决 2026-06-20**（PR #10） |
 | **P0**     | ~~分析域三引擎消费者接入层完成~~ | ~~核心业务闭环~~ | ✅ **已解决 2026-06-20**（market_regime/macro_regime v0.2.0；Subscriber+mapper+ClassifyFromSet）
-| **P0-next** | market_regime/macro_regime 真实 Kafka/HTTP 流接入（x.go wire-up）；signal_factory→riskx→orderx 完整链路 | 端到端交易闭环 |
+| **P0-next** | ① 创建 `composer` 服务入口（Composition Root 缺失） ② dispatch→regime SinkPort 适配器（2个）③ signal_factory→riskx→orderx 完整链路 | 端到端交易闭环 |
 | **P1**     | ~~BLK-009 bootstrap 遗留依赖~~                                                              | ~~Foundation factory 闭合~~      | ✅ **已解决 2026-06-20**（v0.2.0） |
 | **P1**     | ~~BLK-010 ossx 无源码~~                                                                     | ~~Foundation factory 闭合~~      | ✅ **已解决 2026-06-20**（v1.2.1） |
 | ~~**P1**~~ | ~~双轨模块废弃路线不明~~                                                                    | ~~开发者认知统一~~               | ✅ **已解决 2026-06-20**           |
 | **P2**     | ~~7 模块横切重复收敛~~                                                                      | ~~维护成本降低~~                 | ✅ **已解决 2026-06-20**（P0-P4）  |
 | **P2**     | 管线 6 模块评分未达 98（xlib_standard/evidence/harness/transportx/natsx/configx）           | 治理一致性                       |
-| **P3**     | x.go 体量核实（2.8MB/33项，本地无目录，待 GitHub 核查）                                     | 架构守卫                         |
+| ~~**P3**~~ | ~~x.go 体量核实~~ | ~~架构守卫~~ | ✅ **已核实 2026-06-20**：x.go = 治理 CLI 工具库，非 Composition Root，见第六节 |
 | **P3**     | 75 仓库命名统一                                                                             | 长期可维护性                     |
 
 ---
@@ -177,17 +189,14 @@ lab-*         → ms_brain / alternative_data ...
 
 ### 本周（解锁业务域）
 
-1. **固化 contracts P0 DTO**：`RegimeSnapshot` / `RegimeCard` / `DecisionCard`
-   - 这是解锁上层三个域的**唯一前置条件**
-   - 修改范围：`/home/contracts/pkg/contracts/`，新增 3 个接口文件
+1. ~~**固化 contracts P0 DTO**：`RegimeSnapshot` / `RegimeCard` / `DecisionCard`~~ ✅ **已完成（2026-06-20，v1.4.0，PR #10）**
 
-2. **清理 BLK-009**：`bootstrap/stores.go:217` 去除 `foundationx.SecretString` 依赖
-   - 改动范围小，可立即执行，解除 Foundation factory 阻塞
+2. ~~**清理 BLK-009**：`bootstrap/stores.go:217` 去除 `foundationx.SecretString` 依赖~~ ✅ **已完成（2026-06-20，v0.2.0）**
 
 ### 下两周（最小链路闭环）
 
-3. ~~`market_regime` 最小实现~~ ✅ **v0.2.0 消费者层已完成（2026-06-20）；BarWindow+domain-market 适配器+Subscriber，12 tests PASS；x.go Kafka/stream wire-up 仍待推进**
-4. ~~`macro_regime` 最小实现~~ ✅ **v0.2.0 消费者层已完成（2026-06-20）；MacroInformationSet mapper+ClassifyFromSet，13 tests PASS；x.go 集成仍待推进**
+3. ~~`market_regime` 最小实现~~ ✅ **v0.2.0 消费者层已完成（2026-06-20）；BarWindow+domain-market 适配器+Subscriber，12 tests PASS；`composer` SinkPort 适配器仍待实现**
+4. ~~`macro_regime` 最小实现~~ ✅ **v0.2.0 消费者层已完成（2026-06-20）；MacroInformationSet mapper+ClassifyFromSet，13 tests PASS；`composer` SinkPort 适配器仍待实现**
 5. ~~为旧占位仓库（risk_engine / order_engine / portfolio_engine / backtest_engine）添加 DEPRECATED 标记~~ ✅ **已完成（2026-06-20）**
 
 ### 下一个月（架构收敛）
@@ -196,6 +205,13 @@ lab-*         → ms_brain / alternative_data ...
 7. ~~`regime_engine` 最小实现 → DecisionCard 链路打通~~ ✅ **已完成（2026-06-20，v1.0.0）**
 8. ~~`signal_factory` 骨架（消费 DecisionCard）~~ ✅ **已完成（2026-06-20，v0.1.0）**
 9. 补齐 6 个模块 Spec 至 98 分
+
+### 下一步（核心链路打通）
+
+10. **创建 `composer` 服务**（Composition Root）：加载 dispatch → SinkPort 适配器 → 三引擎 → signal_factory 完整 pipeline
+11. **dispatch→regime SinkPort 适配器**（2个）：`market-data SinkPort` → `market_regime.Subscriber.Push`；`macro-data SinkPort` → `macro_regime.ClassifyFromSet`
+12. **riskx 最小实现**：消费 `signal_factory.SignalIntent`，实现仓位检查 + 熔断逻辑
+13. **SignalIntent 升入 contracts**：固化 P1 信号接口，避免接口漂移
 
 ---
 
