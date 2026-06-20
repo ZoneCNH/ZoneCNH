@@ -7,6 +7,8 @@
 > 说明：本文是同步与修正说明，不是 GitHub 重命名执行单。仓库名、目录名与文档投影以当前权威正文为准。
 >
 > 现实状态：`module/README.md` 仍保留 `domain-market` / `domain-macro` / `domain-exchange` 的历史路径投影；本文把“目标命名口径”和“当前文件投影”分开记录，避免把计划写成已完成事实。
+>
+> 配套关系：`docs/report/architecture-structural-analysis-20260621.md` 第 5 节给出修复优先级、阶段划分与退出条件；本文只维护命名同步结果与历史投影边界。
 
 ---
 

@@ -522,13 +522,13 @@ Phase 1: 分析域   ← factor_engine + feature_store + factor_eval
          先固化 MarketDataProvider / FactorInput / FactorOutput；
          退出条件是 market provider → factor_engine → factor_eval 可跑通
 
-Phase 2: 决策域   ← signal_factory + backtest_engine + optimizer
+Phase 2: 决策域   ← signal_factory + backtestx + optimizer
          先固化 SignalIntent / PortfolioTarget；
          退出条件是 signal → backtest → factor feedback 可跑通
 
-Phase 3: 执行域   ← risk_engine + order_engine + portfolio_engine
+Phase 3: 执行域   ← riskx + orderx + positionx
          先固化 RiskDecision / OrderIntent / ExecutionReport；
-         退出条件是 signal → risk_engine → paper order_engine → portfolio update 可跑通
+         退出条件是 signal → riskx → paper orderx → positionx update 可跑通
 
 Phase 4: 平台化   ← settlement + alertx + alternative_data
          先固化 PositionSnapshot / PnLReport / ExposureEvent；
