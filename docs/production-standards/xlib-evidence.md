@@ -1,45 +1,45 @@
-# xlib_evidence
+# xlib-evidence
 
 ## 1. 模块定位
-xlib_evidence 是 Foundation 的**证据收集与发布运行时**——在 CI pipeline 中收集各模块的覆盖率、门禁结果、发布 manifest，生成统一证据报告，支持远程证据验证。**证据边界：CI/发布期证据（CI/release-time evidence）**，不做测试也不生成原始证据——从各模块（含 testkitx）收集已有证据汇总为标准报告。Status=Approved（SPEC v1.2.1），模块版本 v0.2.4（GitHub Release 已发布；release evidence assets 已归档），Layer=基座·CI 证据运行时（L1 证据）。从 xlib_standard 拆分而来，独立 Go module。
+xlib-evidence 是 Foundation 的**证据收集与发布运行时**——在 CI pipeline 中收集各模块的覆盖率、门禁结果、发布 manifest，生成统一证据报告，支持远程证据验证。**证据边界：CI/发布期证据（CI/release-time evidence）**，不做测试也不生成原始证据——从各模块（含 testkitx）收集已有证据汇总为标准报告。Status=Approved（SPEC v1.2.1），模块版本 v0.2.4（GitHub Release 已发布，release evidence assets 已归档），Layer=基座·CI 证据运行时（L1 证据）。从 xlib-standard 拆分而来，独立 Go module。
 
 ## 2. 生产职责
 - FR-001 collect-coverage：模块执行 `go test -cover` → 覆盖率报告收集并结构化存储
 - FR-002 generate-manifest：模块通过所有门禁 → 生成 Release Manifest（version/commitSHA/gates/coverage/hash）
 - FR-003 validate-manifest：CI 检查 manifest → 验证完整性/hash/内容一致性
 - FR-004 remote-evidence：远程查询模块证据 → 返回结构化 manifest JSON
-- FR-005 evidence-report：聚合多模块证据 → 生成跨模块统一报告
+- FR-005 report：聚合多模块证据 → 生成跨模块统一报告
 
 ## 3. 边界定义
 - manifest 必须包含门禁全绿证据（BR-001）
-- 覆盖率低于 100% 不得发布（BR-002，边界值 99.99% 拒绝 / 100.00% 通过）
+- 覆盖率低于 100.0% 不得发布（BR-002，边界值 99.99% 拒绝 / 100.00% 通过）
 - manifest 不可事后篡改，hash 链校验（BR-003）
 - evidence 存储必须不可变追加（BR-004）
 - 仅 CI/发布期证据；testkitx 在 `go test` 进程内生成原始证据
 
 ## 4. 不负责什么
-- 不定义标准（那是 xlib_standard）
-- 不执行门禁检查（那是 xlib_harness / xlibgate）
-- 不生成模块骨架（那是 xlib_harness）
+- 不定义标准（那是 xlib-standard）
+- 不执行门禁检查（那是 xlib-harness / xlibgate）
+- 不生成模块骨架（那是 xlib-harness）
 - 不参与业务运行时
 - 不生成原始测试证据（那是 testkitx 的 golden/contract/boundary/leak 证据）
 
 ## 5. 架构位置
-基座层（L1 证据）。依赖方向：允许 Go 标准库；禁止 kernel/observex/configx/resiliencx/schedulex 等未授权运行时模块；禁止任何存储/网络后端（不连接 Redis/Postgres）；允许通过显式配置的 HTTP endpoint 查询远程 evidence（默认不连接）。分工链：testkitx 生成测试期原始证据 → xlib_evidence 在 CI 中收集 + 结合 coverage/gate 结果 → 生成发布期 manifest 和统一报告。
+基座层（L1 证据）。依赖方向：允许 Go 标准库；禁止 kernel/observex/configx/resiliencx/schedulex 等未授权运行时模块；禁止任何存储/网络后端（不连接 Redis/Postgres）；允许通过显式配置的 HTTP endpoint 查询远程 evidence（默认不连接）。分工链：testkitx 生成测试期原始证据 → xlib-evidence 在 CI 中收集 + 结合 coverage/gate 结果 → 生成发布期 manifest 和统一报告。
 
 ## 6. 生命周期
 CI pipeline 期运行，无业务运行时生命周期。每次执行：collect（coverage/gate）→ generate（manifest）→ validate（hash/完整性）→ report（聚合）。证据存储不可变追加（BR-004），manifest hash 链防篡改（BR-003）。
 
 ## 7. 标准目录结构
 ```text
-module/xlib_evidence/
+module/xlib-evidence/
   SPEC.md
   goal.md
   TRACEABILITY.md
   IMPLEMENTATION-PLAN.md
   tasks/               # 6 个 task markdown
 
-/home/xlib_evidence/   # 运行时代码（独立 Go module）
+/home/xlib-evidence/   # 运行时代码（独立 Go module）
   coverage.go / coverage_test.go        # FR-001
   manifest.go / manifest_test.go        # FR-002/003
   remote.go / remote_test.go            # FR-004
@@ -98,10 +98,10 @@ CoverageReport{Module, TotalPct, PerPkg, Timestamp}；Manifest{Module, Version, 
 `go test ./...`、`go test ./... -race -count=1`、`go vet ./...`、`go build ./...`、`go test ./... -coverprofile=coverage.out` 且 total coverage >= 100.0%、`go list -deps ./...` + `go list -m all` 依赖边界审计（SPEC §19）。
 
 ## 20. Release Gate
-DoD（SPEC §21，全 ✅）：SPEC Approved、所有 FR 实现并测试、collect → generate → validate 闭环、文档齐全。ACCEPTANCE §5 发布 DoD 全 ✅：FR/BR/NFR 与 SSOT 一致、AC/TC 与测试名一致、运行时通过 test/race/vet/build/coverage、无凭证/私有端点、v0.2.4 tag/release 已发布，release evidence assets 已归档。
+DoD（SPEC §21，全 ✅）：SPEC Approved、所有 FR 实现并测试、collect → generate → validate 闭环、文档齐全。ACCEPTANCE §5 发布 DoD 全 ✅：FR/BR/NFR 与 SSOT 一致、AC/TC 与测试名一致、运行时通过 test/race/vet/build/coverage、无凭证/私有端点、v0.2.4 tag/release 已发布且 release evidence assets 已归档。
 
 ## 21. Versioning
-manifest 格式 v1 保持稳定（SPEC §20）。新字段为追加，不删除旧字段。当前 v0.2.4（2026-06-20 GitHub Release 已发布；release evidence assets 已归档），从 xlib_standard 拆分的初始版本为 v1.0.0（2026-06-14）。
+manifest 格式 v1 保持稳定（SPEC §20）。新字段为追加，不删除旧字段。当前 v0.2.4（2026-06-20 GitHub Release 已发布，release evidence assets 已归档），从 xlib-standard 拆分的初始版本为 v1.0.0（2026-06-14）。
 
 ## 22. 兼容性策略
 manifest 格式 v1 稳定，新字段追加不删除旧字段。CoverageReport/Manifest/EvidenceBundle 数据模型向后兼容。远程 evidence endpoint JSON 格式稳定。覆盖率阈值通过配置可调（默认 100.0）。
@@ -113,7 +113,7 @@ manifest 格式 v1 稳定，新字段追加不删除旧字段。CoverageReport/M
 无流式/在线 backpressure。CI 期批处理工具。资源约束：多 CI job 并发生成同一模块 manifest、20 模块聚合 < 5s、manifest 生成 < 1s。evidence 存储不可变追加（BR-004）约束存储增长模式。
 
 ## 25. 审计要求
-**本模块的核心职责即证据归档审计**。Release Manifest 含 version/commitSHA/gates/coverage/hash，是发布审计的事实来源。manifest hash 链校验（BR-003）保证不可事后篡改。evidence 存储不可变追加（BR-004）保证审计轨迹完整。evidence-report（FR-005）生成跨模块统一报告供审计/治理消费。远程 evidence（FR-004）返回结构化 manifest JSON 支持外部审计验证。
+**本模块的核心职责即证据归档审计**。Release Manifest 含 version/commitSHA/gates/coverage/hash，是发布审计的事实来源。manifest hash 链校验（BR-003）保证不可事后篡改。evidence 存储不可变追加（BR-004）保证审计轨迹完整。report（FR-005）生成跨模块统一报告供审计/治理消费。远程 evidence（FR-004）返回结构化 manifest JSON 支持外部审计验证。
 
 ## 26. 熵减规则
 - manifest 不可事后篡改（hash 链校验，BR-003）
@@ -122,7 +122,7 @@ manifest 格式 v1 稳定，新字段追加不删除旧字段。CoverageReport/M
 - 仅 CI/发布期证据，不与 testkitx 测试期证据职责混淆
 
 ## 27. AI Constraints
-- AI 不得生成覆盖率低于 100% 的发布 manifest（BR-002 强制）
+- AI 不得生成覆盖率低于 100.0% 的发布 manifest（BR-002 强制）
 - 不得接受 manifest hash 不匹配（ErrManifestTampered）
 - 不得引入存储/网络后端依赖（Redis/Postgres，NFR-005）
 - 不得读取密钥/连接未配置的远程服务（NFR-004）
@@ -136,19 +136,17 @@ manifest 格式 v1 稳定，新字段追加不删除旧字段。CoverageReport/M
 
 ## 29. Production Ready Checklist
 - [x] 所有 FR 实现（FR-001~005，AC-001~005 ✅）
-- [x] BR-001~004 行为约束（门禁全绿/100% 阈值/hash 链/不可变追加 ✅）
+- [x] BR-001~004 行为约束（门禁全绿/100.0% 阈值/hash 链/不可变追加 ✅）
 - [x] NFR-001~005 性能/安全/依赖边界（✅）
 - [x] go test/-race/go vet/go build/coverage 100.0% 通过
 - [x] collect → generate → validate 闭环
 - [x] BenchmarkManifestGen 20340 ns/op，BenchmarkMultiModuleAggregate 543300 ns/op
-- [x] 仓库身份契约与 Trust Alignment 证据通过（.repo-contract.yaml、xlibgate trust identity、xlibgate trust template-residue）
 - [x] 禁止依赖扫描 + 凭证/外部服务关键字扫描无匹配
-- [x] CI/CD workflow 已部署
 - [x] v0.2.4 GitHub Release 已发布，release evidence assets 已归档
+- [x] Trust Alignment 与 CI/CD workflows 已部署并纳入发布证据
 
 ## 30. Roadmap
-- v1.0.0 初始版本，从 xlib_standard 拆分（2026-06-14）
+- v1.0.0 初始版本，从 xlib-standard 拆分（2026-06-14）
 - v1.0.1 对齐独立 Go module 验收、实际测试名、依赖边界与 CI 门禁（2026-06-18）
-- v0.2.4 GitHub Release 发布（2026-06-20），release evidence assets 已归档
-- v0.2.4 Trust Alignment 与 CI/CD workflow 闭合（2026-06-20）
+- v0.2.4 GitHub Release 发布，release evidence assets 与 Trust Alignment/CI-CD 证据闭合（2026-06-20）
 - 待解决（OQ）：remote evidence 是否需要签名、证据存储是否支持 SQLite/文件双后端、manifest 是否包含 reproducible build info

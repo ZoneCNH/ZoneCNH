@@ -12,11 +12,11 @@
 | --- | --- | --- | --- | --- |
 | `decimalx` | v0.2.0 | v1.0.0 | 高精度 Decimal / Money / Currency 数值基础 | [Goal](decimalx/goal.md) / [Spec](decimalx/SPEC.md) / [Traceability](decimalx/TRACEABILITY.md) / [Plan](decimalx/IMPLEMENTATION-PLAN.md) |
 | `domainx` | v1.0.0 | v1.0.0 | 执行域共享值对象：Order / Position / Trade / Portfolio / ExecutionReport | [Goal](domainx/goal.md) / [Spec](domainx/SPEC.md) / [Traceability](domainx/TRACEABILITY.md) / [Plan](domainx/IMPLEMENTATION-PLAN.md) |
-| `domain_market` | v1.1.0 | v1.1.0 | ProductLine/InstrumentKey/MarketFactEnvelope + Tick/Quote/Bar/OrderBook 市场语义 + Binance C/S ingestion canonical types | [Goal](domain_market/goal.md) / [Spec](domain_market/SPEC.md) / [Traceability](domain_market/TRACEABILITY.md) / [Plan](domain_market/IMPLEMENTATION-PLAN.md) |
-| `domain_macro` | v0.1.0 | v1.0.0 | MacroPoint / MacroInformationSet / no-lookahead 宏观语义 | [Goal](domain_macro/goal.md) / [Spec](domain_macro/SPEC.md) / [Traceability](domain_macro/TRACEABILITY.md) / [Plan](domain_macro/IMPLEMENTATION-PLAN.md) |
-| `domain_exchange` | v0.1.0 | v1.0.0 | Exchange SPI / VenueCapability / RateLimitPolicy / ExchangeError | [Goal](domain_exchange/goal.md) / [Spec](domain_exchange/SPEC.md) / [Traceability](domain_exchange/TRACEABILITY.md) / [Plan](domain_exchange/IMPLEMENTATION-PLAN.md) |
+| `domain-market` | v1.1.0 | v1.1.0 | ProductLine/InstrumentKey/MarketFactEnvelope + Tick/Quote/Bar/OrderBook 市场语义 + Binance C/S ingestion canonical types | [Goal](domain-market/goal.md) / [Spec](domain-market/SPEC.md) / [Traceability](domain-market/TRACEABILITY.md) / [Plan](domain-market/IMPLEMENTATION-PLAN.md) |
+| `domain-macro` | v0.1.0 | v1.0.0 | MacroPoint / MacroInformationSet / no-lookahead 宏观语义 | [Goal](domain-macro/goal.md) / [Spec](domain-macro/SPEC.md) / [Traceability](domain-macro/TRACEABILITY.md) / [Plan](domain-macro/IMPLEMENTATION-PLAN.md) |
+| `domain-exchange` | v0.1.0 | v1.0.0 | Exchange SPI / VenueCapability / RateLimitPolicy / ExchangeError | [Goal](domain-exchange/goal.md) / [Spec](domain-exchange/SPEC.md) / [Traceability](domain-exchange/TRACEABILITY.md) / [Plan](domain-exchange/IMPLEMENTATION-PLAN.md) |
 
-依赖顺序：`decimalx` -> `domainx` -> `domain_market` / `domain_macro` -> `domain_exchange`。上述目标版本表示文档 / 执行计划基线，用于对齐目标范围与依赖顺序；不代表对应模块仓库已经完成 API freeze、CI release gate、v1.0.0 git tag 或 GitHub Release。`domainx` 已归入 L2.5 领域共享层，不计入基座模块统计。
+依赖顺序：`decimalx` -> `domainx` -> `domain-market` / `domain-macro` -> `domain-exchange`。上述目标版本表示文档 / 执行计划基线，用于对齐目标范围与依赖顺序；不代表对应模块仓库已经完成 API freeze、CI release gate、v1.0.0 git tag 或 GitHub Release。`domainx` 已归入 L2.5 领域共享层，不计入基座模块统计。
 
 ## 同步口径
 
@@ -34,9 +34,9 @@
 
 ```text
 标准源 ──→ 门禁校验 ──→ L0 原语 ──→ L1 primitives / 测试 ──→ L1 Assembly ──→ 存储扩展 / 契约 / 传输 / 领域共享
- xlib_standard    xlibgate       kernel    configx                  bootstrap       redisx        contracts
- xlib_harness     (CI gate)               observex                                  kafkax
- xlib_evidence                            resiliencx                                natsx
+ xlib-standard    xlibgate       kernel    configx                  bootstrap       redisx        contracts
+ xlib-harness     (CI gate)               observex                                  kafkax
+ xlib-evidence                            resiliencx                                natsx
                                           schedulex                                 postgresx
                                           testkitx                                  taosx
                                                                                     ossx
@@ -57,9 +57,9 @@
 
 | 模块          | 1.0 Goal                           |
 | ------------- | ---------------------------------- |
-| xlib_standard | [goal.md](./xlib_standard/goal.md) |
-| xlib_harness  | [goal.md](./xlib_harness/goal.md)  |
-| xlib_evidence | [goal.md](./xlib_evidence/goal.md) |
+| xlib-standard | [goal.md](./xlib-standard/goal.md) |
+| xlib-harness  | [goal.md](./xlib-harness/goal.md)  |
+| xlib-evidence | [goal.md](./xlib-evidence/goal.md) |
 | kernel        | [goal.md](./kernel/goal.md)        |
 | configx       | [goal.md](./configx/goal.md)       |
 | observex      | [goal.md](./observex/goal.md)      |
@@ -129,9 +129,9 @@ test-only，不参与生产运行时。
 
 | 模块          | 规格                                                                  | 核心职责                                                                                                                                      |
 | ------------- | --------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| xlib_standard | [SPEC.md](./xlib_standard/SPEC.md) · [tasks/](./xlib_standard/tasks/) | 标准事实源、Go Reference Template（声明式标准定义，15 FR + goalcli，12 tasks；v1.0.1 已发布，release-preflight 通过）                          |
-| xlib_harness  | [SPEC.md](./xlib_harness/SPEC.md) · [goal.md](./xlib_harness/goal.md) · [TRACEABILITY.md](./xlib_harness/TRACEABILITY.md) · [tasks/](./xlib_harness/tasks/) | 模块生成器与门禁执行器：generate/scaffold、spec-lint、boundary-check、format-check、traceability-gate、template-validate（6 FR，6 TC） |
-| xlib_evidence | [SPEC.md](./xlib_evidence/SPEC.md) · [goal.md](./xlib_evidence/goal.md) · [TRACEABILITY.md](./xlib_evidence/TRACEABILITY.md) · [tasks/](./xlib_evidence/tasks/) | 证据收集与发布运行时：collect-coverage、generate-manifest、validate-manifest、remote-evidence、report；v0.2.4 已发布，100.0% 覆盖率与 release evidence assets 已归档 |
+| xlib-standard | [SPEC.md](./xlib-standard/SPEC.md) · [tasks/](./xlib-standard/tasks/) | 标准事实源、Go Reference Template（声明式标准定义，15 FR + goalcli，12 tasks；v1.0.1 已发布，release-preflight 通过）                          |
+| xlib-harness  | [SPEC.md](./xlib-harness/SPEC.md) · [goal.md](./xlib-harness/goal.md) · [TRACEABILITY.md](./xlib-harness/TRACEABILITY.md) · [tasks/](./xlib-harness/tasks/) | 模块生成器与门禁执行器：generate/scaffold、spec-lint、boundary-check、format-check、traceability-gate、template-validate（6 FR，6 TC） |
+| xlib-evidence | [SPEC.md](./xlib-evidence/SPEC.md) · [goal.md](./xlib-evidence/goal.md) · [TRACEABILITY.md](./xlib-evidence/TRACEABILITY.md) · [tasks/](./xlib-evidence/tasks/) | 证据收集与发布运行时：collect-coverage、generate-manifest、validate-manifest、remote-evidence、report；v0.2.4 已发布，100.0% 覆盖率与 release evidence assets 已归档 |
 | xlibgate      | [SPEC.md](./xlibgate/SPEC.md) · [tasks/](./xlibgate/tasks/)           | check imports/gomod/baseline/release/all、输出格式、l2 validate-manifest/plan/check-contracts/check-evidence/release-check（11 FR，10 tasks） |
 
 ---
@@ -140,7 +140,7 @@ test-only，不参与生产运行时。
 
 基础设施客户端封装。均为可选，按需引入。
 
-> **投影口径**：`module/` 是规格 SSOT；release/factory 公共成熟度由 `.foundationx/status/index.json` + `.foundationx/blockers.json` 投影。BLK-001~011 全部已 resolved，**0 open blockers；Foundation 20/20 runtime factory-ready** ✅（2026-06-20）。
+> **投影口径**：`module/` 是规格 SSOT；release/factory 公共成熟度由 `.foundationx/status/index.json` + `.foundationx/blockers.json` 投影。存在公开 release 缺口或 BLK-001/002/003/006/007/008 open 时，不声明 Foundation 单一 100% 或 factory-grade。
 
 | 模块        | 规格                                                    | 封装目标                                                                                             |
 | ----------- | ------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
