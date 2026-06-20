@@ -108,7 +108,7 @@
 | `confidence`     | float64 [0,1]      | 分类置信度              |
 | `timestamp`      | time.Time          | 计算时间                |
 | `data_freshness` | time.Time          | 数据新鲜度              |
-| `input_source`   | string             | macro_data_py 数据产品来源 |
+| `input_source`   | string             | macro_data 数据产品来源 |
 
 **黄金案例校验**：
 

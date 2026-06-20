@@ -15,7 +15,7 @@
 
 ### 基座
 
-| 组件                                                      | 版本        | 阶段投影               | 门禁口径        | 子维度投影                                       | 说明                                                                                                                                                                                                |
+| 组件                                                      | 版本（目标投影）| 阶段投影               | 门禁口径        | 子维度投影                                       | 说明                                                                                                                                                                                                |
 | --------------------------------------------------------- | ----------- | ---------------------- | --------------- | ------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | [xlib_standard](https://github.com/ZoneCNH/xlib_standard) | v1.1.0      | spec/code/release      | factory-ready   | spec=100 mat=98 tsk=100 pln=100 prm=100 cod=100  | 标准事实源 / Go Reference Template；Generator/Harness/Evidence 已拆分至 xlib_harness / xlib_evidence；✅ .repo-contract.yaml (is_standard_source)；✅ GitHub Release v1.0.0 已发布                  |
 | [xlib_harness](https://github.com/ZoneCNH/xlib_harness)   | v1.1.0      | spec/code/release      | factory-ready   | spec=98 mat=100 tsk=98 pln=100 prm=100 cod=100   | 模块生成器与门禁执行器：generate/scaffold、spec-lint、boundary-check、traceability-gate、format-check；✅ CI 已部署；✅ GitHub Release v0.1.6 已发布；Release run 27855366871 与 main CI run 27855396013 通过；coverage 100.0%；pinned gitleaks CLI secret scan 已对齐 |
@@ -38,7 +38,7 @@
 | [contracts](https://github.com/ZoneCNH/contracts)         | v1.5.0 | spec/code/release       | factory-ready   | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | 跨域稳定端口/事件/DTO 契约；✅ P0 DTO 已固化（RegimeSnapshot/RegimeCard/DecisionCard + 3 Provider ports，PR #10）；✅ P1 SignalIntent DTO 升入（PR #12，2026-06-21）；ingestion contract §8.4 已实现 |
 | [transportx](https://github.com/ZoneCNH/transportx)       | v1.3.0 | spec/code/release       | factory-ready   | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | 应用通信底座规格基线；spec-only；✅ GitHub Release v1.1.1-spec 已发布                                                                                                                            |
 
-> ✅ **版本 / release 注记**：公开文档是投影层；版本、release 与 factory 状态以 `.foundationx/status/index.json` + `.foundationx/blockers.json` 为准。当前 21-module projection 中 21/21 已发布 GitHub Release tag，21/21 impl；**0 open blockers，Foundation 21/21 factory-ready** ✅（BLK-009 bootstrap + BLK-010 ossx 均已 resolved，2026-06-20）。
+> ✅ **版本 / release 注记**：公开文档是投影层；"版本（目标投影）"列为规划目标版本，已发布版本以"状态总览"表或 `.foundationx/status/index.json` + `.foundationx/blockers.json` 为准。当前 21-module projection 中 21/21 已发布 GitHub Release tag，21/21 impl；**0 open blockers，Foundation 21/21 factory-ready** ✅（BLK-009 bootstrap + BLK-010 ossx 均已 resolved，2026-06-20）。
 
 > **成熟度语义说明（2026-06-14 v2 Trust Alignment）**：上表"进度"反映本仓库 Spec 管线评分（spec→code），不代表可投产等级（factory grade）。下表提供多维度成熟度视图；RELEASE=❌ 或存在 open blocker 的模块不得投影为 FACTORY=✅。
 
@@ -308,7 +308,7 @@
   ░░░░  5%  █████████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░  24 个 (32%)
   未标注    ██░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   1 个 ( 1%)
 
-版本覆盖: 有版本号 72 个 (96%)    无版本号 3 个 (4%)
+版本覆盖: 有版本号 73 个 (96%)    无版本号 3 个 (4%)
 ```
 
 ### 按域统计
@@ -450,7 +450,7 @@
 
 | 检查项           | README | ARCHITECTURE | STATUS    | 一致性 |
 | ---------------- | ------ | ------------ | --------- | ------ |
-| 组件总数         | 73     | 73           | 73        | ✅     |
+| 组件总数         | 74     | 74           | 74        | ✅     |
 | market_data 数量 | 14     | 14          | 14        | ✅     |
 | macro_data 数量  | 10     | 10           | 10        | ✅     |
 | L2.5 组件        | 5      | 5            | 5         | ✅     |
@@ -458,7 +458,7 @@
 | 决策域组件       | 6      | 6            | 6         | ✅     |
 | 横切组件         | 2      | 2            | 2         | ✅     |
 
-注：以上为各文档 unique repo 链接数（grep github.com/ZoneCNH 去重后计数）。README/ARCH/STATUS 三者一致为 73。STATUS 的 75 是按域统计 domain-sum 口径，不与 unique-link 73 直接比较（observex 计入基座+横切 2 域）。L2.5=5/分析域=8/决策域=6 三文档一致。
+注：以上为各文档 unique repo 链接数（grep github.com/ZoneCNH 去重后计数）。README/ARCH/STATUS 三者一致为 74（含 composer 入口模块，2026-06-21 对齐）。STATUS 的 76 是按域统计 domain-sum 口径，不与 unique-link 74 直接比较（observex 计入基座+横切 2 域）。L2.5=5/分析域=8/决策域=6 三文档一致。
 
 ### 迁移与门禁基线
 

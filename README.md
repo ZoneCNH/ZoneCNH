@@ -103,7 +103,7 @@ L2.5: domainx / decimalx / domain_market / domain_macro / domain_exchange (5/5 �
 
 ### 基座 · 契约与传输
 
-- [contracts](https://github.com/ZoneCNH/contracts) — 跨域稳定端口、事件协议与 DTO 契约（含 §8.4 Binance C/S ingestion contract）；✅ v1.2.0 GitHub Release 已发布 `公开`
+- [contracts](https://github.com/ZoneCNH/contracts) — 跨域稳定端口、事件协议与 DTO 契约（含 §8.4 Binance C/S ingestion contract）；✅ v1.5.0 GitHub Release 已发布（P0 RegimeSnapshot/RegimeCard/DecisionCard；P1 SignalIntent DTO） `公开`
 - [transportx](https://github.com/ZoneCNH/transportx) — 应用通信底座规格基线（Envelope/Endpoint、ServiceIdentity、QoS、Codec、RPC、EventBus、Stream、Outbox/Inbox、Audit Plane、Data Classification、SchemaRegistry 与 conformance gates）；✅ v1.1.1-spec GitHub Release 已发布 `公开`
 
 ### L2.5 · 领域共享层
@@ -186,7 +186,8 @@ L2.5: domainx / decimalx / domain_market / domain_macro / domain_exchange (5/5 �
 ### 横切 · 入口
 
 - [alertx](https://github.com/ZoneCNH/alertx) — 告警引擎 `公开`
-- [x.go](https://github.com/ZoneCNH/x.go) — 组合根，负责启动、配置加载与引擎组装 `私有`
+- [x.go](https://github.com/ZoneCNH/x.go) — 治理/工具 CLI（goalcli + templatex）；运行时 Composition Root 职责由 composer 承担 `私有`
+- [composer](https://github.com/ZoneCNH/composer) — 数据域组合根：25 进程编排 + HTTP health + Docker Compose；RegimeCoordinator（dispatch→regime→engine→signal_factory 全链路）；SinkPort 适配器（MarketRegimeSink/MacroRegimeSink）；v0.2.0 `公开`
 - [module](./module/README.md) — 项目技术规范、接口定义与 Goal 适配模块索引
 - [docs/governance](./docs/governance/README.md) — Spec → Code 交付治理、模板、门禁与评分规则
 - [docs/sre/foundation-cicd-plan.md](./docs/sre/foundation-cicd-plan.md) — 基座层 19 模块 + L2.5 领域共享 CI/CD 部署执行方案（SRE 机器池 4 阶段）
