@@ -53,11 +53,11 @@ x.go ───────────────► 基座运行时 / L2.5 / �
 ### 业务流与反馈
 
 ```text
-market-data (14) ──────────────► market_regime ──┐
+market-data (14) ──────────────► market-regime ──┐
   domain-market (Bar/Tick/OB)     S1-S7 状态     │
   质量门禁 → 特征 → 分类器       bias/permission  │
                                                ├──► regime-engine ──► DecisionCard
-macro-data (10) ───────────────► macro_regime ──┘     M×S 融合        action A-E
+macro-data (10) ───────────────► macro-regime ──┘     M×S 融合        action A-E
   domain-macro (MacroPoint)      M1-M7 状态           冲突门           profile
   LGIP 四因子                    LGIP 得分            风险放大          risk_tier
                                                                       position_caps
