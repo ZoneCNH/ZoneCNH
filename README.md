@@ -49,8 +49,8 @@ L2.5: domainx / decimalx / domain_market / domain_macro / domain_exchange (5/5 �
 数据域: market_data (14) / macro_data (10) / alternative_data
 分析域: factor_engine / feature_store / factor_eval / market_regime / macro_regime / regime_engine / ms_brain / flowx
        三引擎: market_engine(market facts → S state) / macro_engine(macro facts → M state) / regime_engine(M+S → action/risk/permission)
-决策域: signal_factory / backtest_engine / optimizer / backtestx / strategyx / maestro
-执行域: risk_engine → order_engine → portfolio_engine / settlement ; riskx / orderx / positionx
+决策域: signal_factory / ~~backtest_engine~~ / optimizer / backtestx / strategyx / maestro
+执行域: ~~risk_engine~~ / ~~order_engine~~ / ~~portfolio_engine~~ / settlement ; riskx / orderx / positionx
 
 反馈: backtest → factor_eval；fills / PnL / exposure events → 决策域
 横切: alertx (告警) / observex (可观测)
@@ -167,7 +167,7 @@ L2.5: domainx / decimalx / domain_market / domain_macro / domain_exchange (5/5 �
 ### 决策域
 
 - [signal_factory](https://github.com/ZoneCNH/signal_factory) — 信号生成与组合 `公开`
-- [backtest_engine](https://github.com/ZoneCNH/backtest_engine) — 事件驱动回测引擎 `公开`
+- ~~[backtest_engine](https://github.com/ZoneCNH/backtest_engine) — 事件驱动回测引擎~~ → **backtestx** `已弃用`
 - [optimizer](https://github.com/ZoneCNH/optimizer) — 参数优化 `公开`
 - [backtestx](https://github.com/ZoneCNH/backtestx) — 回测引擎（事件驱动、Walk-Forward、蒙特卡洛） `公开`
 - [strategyx](https://github.com/ZoneCNH/strategyx) — 策略工厂（策略注册、参数管理、信号组合） `公开`
@@ -175,9 +175,9 @@ L2.5: domainx / decimalx / domain_market / domain_macro / domain_exchange (5/5 �
 
 ### 执行域
 
-- [risk_engine](https://github.com/ZoneCNH/risk_engine) — 风险管理引擎 `公开`
-- [order_engine](https://github.com/ZoneCNH/order_engine) — 订单执行引擎 `公开`
-- [portfolio_engine](https://github.com/ZoneCNH/portfolio_engine) — 投资组合管理 `公开`
+- ~~[risk_engine](https://github.com/ZoneCNH/risk_engine) — 风险管理引擎~~ → **riskx** `已弃用`
+- ~~[order_engine](https://github.com/ZoneCNH/order_engine) — 订单执行引擎~~ → **orderx** `已弃用`
+- ~~[portfolio_engine](https://github.com/ZoneCNH/portfolio_engine) — 投资组合管理~~ → **positionx** `已弃用`
 - [settlement](https://github.com/ZoneCNH/settlement) — 结算与对账 `公开`
 - [riskx](https://github.com/ZoneCNH/riskx) — 风控引擎（事前风控、回撤控制、熔断机制） `公开`
 - [orderx](https://github.com/ZoneCNH/orderx) — 订单管理器（订单生命周期、SOR、状态机） `公开`
