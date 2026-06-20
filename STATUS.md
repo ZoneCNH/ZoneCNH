@@ -35,7 +35,7 @@
 | [taosx](https://github.com/ZoneCNH/taosx)                 | v1.1.0      | spec/code/release/live | factory-ready   | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | TDengine L2 adapter；真实 taosWS WebSocket 集成已验证；GitHub Release 已发布                                                                                              |
 | [ossx](https://github.com/ZoneCNH/ossx)                   | v1.2.1 | spec/code/release      | factory-ready   | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | Aliyun OSS L2 adapter；✅ v1.2.1 PR #8 已合并（真实 adapters/aliyun + 流式 + multipart + presign + 策略 + retry/circuit + observex hooks）；pkg/ossx 100% 覆盖；✅ BLK-010 resolved（2026-06-20） |
 | [clickhousex](https://github.com/ZoneCNH/clickhousex)     | v1.1.0      | spec/code/release/live  | factory-ready   | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | ClickHouse；OLAP 查询、批量写入；GitHub Release 已发布；CI 已部署+运行(Docker ClickHouse)                                                                                  |
-| [contracts](https://github.com/ZoneCNH/contracts)         | v1.2.0 | spec/code/release       | factory-ready   | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | 跨域稳定端口/事件/DTO 契约；✅ P0 DTO 已固化（RegimeSnapshot/RegimeCard/DecisionCard + 3 Provider ports，PR #10，2026-06-20）；✅ GitHub Release v1.2.0 已发布；ingestion contract §8.4 已实现 |
+| [contracts](https://github.com/ZoneCNH/contracts)         | v1.5.0 | spec/code/release       | factory-ready   | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | 跨域稳定端口/事件/DTO 契约；✅ P0 DTO 已固化（RegimeSnapshot/RegimeCard/DecisionCard + 3 Provider ports，PR #10）；✅ P1 SignalIntent DTO 升入（PR #12，2026-06-21）；ingestion contract §8.4 已实现 |
 | [transportx](https://github.com/ZoneCNH/transportx)       | v1.3.0 | spec/code/release       | factory-ready   | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | 应用通信底座规格基线；spec-only；✅ GitHub Release v1.1.1-spec 已发布                                                                                                                            |
 
 > ✅ **版本 / release 注记**：公开文档是投影层；版本、release 与 factory 状态以 `.foundationx/status/index.json` + `.foundationx/blockers.json` 为准。当前 21-module projection 中 21/21 已发布 GitHub Release tag，21/21 impl；**0 open blockers，Foundation 21/21 factory-ready** ✅（BLK-009 bootstrap + BLK-010 ossx 均已 resolved，2026-06-20）。
@@ -65,7 +65,7 @@
 | taosx                         |      ✅       |                ✅                 |                ✅                |           ✅            |           ✅           |             N/A             |                      N/A                      |   ✅    | v1.0.1; GitHub Release 已发布; 8 CI workflows; 真实 taosWS WebSocket 集成已验证 |
 | ossx                          |      ✅       |                ✅                 |                ✅                |           ✅            |           ✅           |             N/A             |                      N/A                      |   ✅    | v1.2.1; PR #8 merged; 真实 adapters/aliyun + 流式 + multipart + presign + retry/circuit + observex hooks; pkg/ossx 100% 覆盖; BLK-010 resolved ✅ |
 | clickhousex                   |      ✅       |                ✅                 |                ✅                |           ✅            |           ✅           |             N/A             |                      N/A                      |   ✅    | v1.0.8; GitHub Release 已发布; CI 已部署+运行(Docker ClickHouse)                                                  |
-| contracts                     |      ✅       |                ✅                 |                ✅                |           N/A           |           ✅           |             ✅              |                      N/A                      |   ✅    | v1.2.0; GitHub Release 已发布; P0 DTO 已固化（RegimeSnapshot/RegimeCard/DecisionCard + 3 Provider ports，PR #10，2026-06-20）                          |
+| contracts                     |      ✅       |                ✅                 |                ✅                |           N/A           |           ✅           |             ✅              |                      N/A                      |   ✅    | v1.5.0; P0 DTO 已固化（RegimeSnapshot/RegimeCard/DecisionCard + 3 Provider ports）；✅ P1 SignalIntent DTO 升入（PR #12，2026-06-21）                          |
 | transportx                    |      ✅       |                ✅                 |                ✅                |           N/A           |           ✅           |             N/A             |                      N/A                      |   ✅    | v1.1.1-spec; GitHub Release 已发布; spec-only; 应用通信底座规格基线                                                      |
 | domainx                       |      ✅       |                ✅                 |                ✅                |           N/A           |           ✅           |             N/A             |                      N/A                      |   ✅    | v1.0.1; L2.5 领域共享层; 公开 GitHub Release/tag v1.0.1 已观测并完成 fact-layer/trust release 对账; factory grade；live/soak N/A（纯值对象库） |
 | > **维度说明**：SPEC=规格完成 | IMPL=实现完成 | RELEASE=tag/release/manifest 一致 | LIVE INT=真实服务集成（非 mock） | EXT CI=外部 CI artifact | ADOPT=下游模块真实采用 | SOAK=生产或类生产长时间运行 | FACTORY=factory_grade_allowed（最高综合等级） |
@@ -263,7 +263,7 @@
 | [order_engine](https://github.com/ZoneCNH/order_engine)         | ~~占位~~     | ░░░░ 5% | 100%       | ~~订单执行引擎~~ → [**orderx**](https://github.com/ZoneCNH/orderx) |
 | [portfolio_engine](https://github.com/ZoneCNH/portfolio_engine) | v0.1.0       | ░░░░ 5% | 100%       | ~~占位~~ → [**positionx**](https://github.com/ZoneCNH/positionx)  |
 | [settlement](https://github.com/ZoneCNH/settlement)             | v0.1.0       | ░░░░ 5% | 100%       | 结算与对账                                                   |
-| [riskx](https://github.com/ZoneCNH/riskx)                       | v0.1.0-draft | ░░░░ 5% | 100%       | 风控引擎 — 事前风控、回撤控制、熔断机制（7 FR, SPEC draft）  |
+| [riskx](https://github.com/ZoneCNH/riskx)                       | v0.1.0 | ████░ 40% | 100%       | 风控引擎 — ✅ 最小实现（仓位上限/最大持仓/熔断门禁，7 tests PASS，消费 contracts.SignalIntent）  |
 | [orderx](https://github.com/ZoneCNH/orderx)                     | v0.1.0-draft | ░░░░ 5% | 100%       | 订单管理器 — 订单生命周期、SOR、状态机（7 FR, SPEC draft）   |
 | [positionx](https://github.com/ZoneCNH/positionx)               | v0.1.0-draft | ░░░░ 5% | 100%       | 仓位管理器 — 实时仓位追踪、PnL、敞口监控（7 FR, SPEC draft） |
 
@@ -276,7 +276,7 @@
 | order_engine     |  ❌  |  ❌  |   N/A   |   N/A    |  N/A   |  N/A  | N/A  | ~~占位~~ → orderx | 5%；仅创建，无实现             |
 | portfolio_engine |  ❌  |  ❌  |   N/A   |   N/A    |  N/A   |  N/A  | N/A  | ~~占位~~ → positionx | 5%；仅创建，无实现             |
 | settlement       |  ❌  |  ❌  |   N/A   |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | 5%；仅创建，无实现             |
-| riskx            |  ❌  |  ❌  |   N/A   |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | v0.1.0-draft；7 FR，SPEC draft |
+| riskx            |  ❌  |  ❌  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ⚠️    | v0.1.0；最小实现（仓位检查+熔断，7 tests PASS）；消费 contracts.SignalIntent P1 DTO |
 | orderx           |  ❌  |  ❌  |   N/A   |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | v0.1.0-draft；7 FR，SPEC draft |
 | positionx        |  ❌  |  ❌  |   N/A   |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | v0.1.0-draft；7 FR，SPEC draft |
 
@@ -289,7 +289,7 @@
 | 组件                                              | 域   | 版本   | 进度                            | 覆盖率要求 | 说明                                                      |
 | ------------------------------------------------- | ---- | ------ | ------------------------------- | ---------- | --------------------------------------------------------- |
 | [x.go](https://github.com/ZoneCNH/x.go)           | 入口 | v0.0.1 | ███░ 80%                        | 100%       | 组合根，2.8MB/33 项                                       |
-| [composer](https://github.com/ZoneCNH/composer)   | 入口 | v0.1.0 | ███████░ 75%                    | 100%       | 数据域组合根：25 进程（23 adapter + market-data + macro-data）+ HTTP health + Docker Compose；✅ dispatch→regime SinkPort 适配器（MarketRegimeSink/MacroRegimeSink，14 tests PASS） |
+| [composer](https://github.com/ZoneCNH/composer)   | 入口 | v0.2.0 | ████████░ 85%                   | 100%       | 数据域组合根：25 进程 + HTTP health + Docker Compose；✅ SinkPort 适配器（14 tests）；✅ RegimeCoordinator v0.2.0（dispatch→regime→engine→signal_factory 全链路，6 tests PASS） |
 | [alertx](https://github.com/ZoneCNH/alertx)       | 横切 | v0.1.0 | ░░░░ 5%                         | 100%       | 告警引擎                                                  |
 | [observex](https://github.com/ZoneCNH/observex)   | 横切 | v0.3.4 | 全管线 --force pass (spec→code) | 100%       | 可观测性（同时归属基座）；✅ v0.3.4 GitHub Release 已发布；Labels type alias；redisx/kafkax/clickhousex 已对齐 |
 | [module](./module/README.md)                      | 独立 | -      | -                               | 100%       | 项目技术规范与接口定义                                    |
@@ -299,7 +299,7 @@
 ## 总览仪表盘
 
 ```text
-组件总数: 76    已有: 55    已创建: 21    平均进度: 57%
+组件总数: 76    已有: 57    已创建: 19    平均进度: 58%
 
 进度分布:
   ███░ ≥80% ██████████████████████████████████████████      48 个 (64%)
@@ -323,13 +323,13 @@
 | 数据域 · 行情 Provider | 0      | 0      | 0      | -                                  | 0 (Provider 类型已并入 SDK；保留行用于审计兼容)         |
 | 数据域 · 宏观          | 10     | 10     | 0      | 80%                                | 10 (全部 v0.1.1)                                      |
 | 数据域 · 另类          | 1      | 0      | 1      | 5%                                 | 1 (v0.1.0)                                            |
-| 分析域                 | 8      | 3      | 5      | 35%                                | 8 (market_regime/macro_regime v0.2.0；regime_engine v1.0.0；composer SinkPort ✅) |
-| 决策域                 | 6      | 0      | 6      | 5%                                 | 6 (全部 v0.1.0+)                                      |
-| 执行域                 | 7      | 0      | 7      | 5%                                 | 7 (全部 v0.1.0+)                                      |
-| 入口                   | 2      | 2      | 0      | 78%                                | 2 (x.go v0.0.1；composer v0.1.0 ✅ SinkPort适配器)         |
+| 分析域                 | 8      | 3      | 5      | 40%                                | 8 (market_regime/macro_regime v0.2.0；regime_engine v1.0.0；RegimeCoordinator ✅ composer v0.2.0) |
+| 决策域                 | 6      | 1      | 5      | 10%                                | 6 (signal_factory v0.1.0 ✅；其余 v0.1.0+)              |
+| 执行域                 | 7      | 1      | 6      | 10%                                | 7 (riskx v0.1.0 ✅ 最小实现；其余 v0.1.0+)              |
+| 入口                   | 2      | 2      | 0      | 85%                                | 2 (x.go v0.0.1；composer v0.2.0 ✅ Coordinator+SinkPort) |
 | 横切                   | 2      | 1      | 1      | 53%                                | 2 (observex, alertx)                                  |
 | 独立                   | 1      | 1      | 0      | -                                  | 0                                                     |
-| **合计**               | **76** | **55** | **21** | **57%**                            | **73**                                                |
+| **合计**               | **76** | **57** | **19** | **58%**                            | **73**                                                |
 
 ---
 
