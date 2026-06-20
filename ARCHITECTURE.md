@@ -124,8 +124,8 @@ backtestx ──► optimizer ──► strategyx ──► maestro             
 |---|---|---|
 | risk_engine | riskx | 统一 Foundation 命名风格（configx, redisx, kafkax...），旧名保留为 GitHub 仓库并存但以新 SPEC 为准 |
 | order_engine | orderx | 同上 |
-| portfolio_engine | positionx | 职责更精确——定位为跨账户仓位管理，而非完整投资组合 |
-| backtest_engine | backtestx | 同上 |
+| ~~占位~~ → riskx | positionx | 职责更精确——定位为跨账户仓位管理，而非完整投资组合 |
+| ~~占位~~ → orderx | backtestx | 同上 |
 | (无) | maestro | 新概念——工作流编排填补了策略到执行之间的空白 |
 | (无) | flowx | 新概念——数据流管线填补了行情到因子之间的空白 |
 
@@ -412,17 +412,17 @@ Foundation 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中在 
 | 分析域                | [flowx](https://github.com/ZoneCNH/flowx)                       | v0.1.0-draft | 🔨 已创建 | ░░░░ 5%  | 数据流管线引擎 — 实时流式 ETL、窗口聚合、背压控制（7 FR, SPEC draft）                    |
 | **决策域**            |                                                                 |        |           |          |                                                                                           |
 | 决策域                | [signal_factory](https://github.com/ZoneCNH/signal_factory)     | -      | 🔨 已创建 | ░░░░ 5%  | 多因子信号生成、过滤、评分                                                                |
-| 决策域                | [backtest_engine](https://github.com/ZoneCNH/backtest_engine)   | -      | 🔨 已创建 | ░░░░ 5%  | 事件驱动回测、Tick 级回放                                                                 |
+| 决策域                | [backtest_engine](https://github.com/ZoneCNH/backtest_engine)   | ~~占位~~ | 🔨 已创建 | ░░░░ 5%  | ~~事件驱动回测~~ → [**backtestx**](https://github.com/ZoneCNH/backtestx)                |
 | 决策域                | [backtestx](https://github.com/ZoneCNH/backtestx)               | v0.1.0-draft | 🔨 已创建 | ░░░░ 5%  | 回测引擎 — 事件驱动回测、Walk-Forward、蒙特卡洛（7 FR, SPEC draft）                      |
 | 决策域                | [strategyx](https://github.com/ZoneCNH/strategyx)               | v0.1.0-draft | 🔨 已创建 | ░░░░ 5%  | 策略工厂 — 策略注册、参数管理、信号组合（7 FR, SPEC draft）                              |
 | 决策域                | [maestro](https://github.com/ZoneCNH/maestro)                   | v0.1.0-draft | 🔨 已创建 | ░░░░ 5%  | 工作流编排引擎 — DAG 工作流、状态机、错误恢复（9 FR, SPEC draft）                        |
 | 决策域                | [optimizer](https://github.com/ZoneCNH/optimizer)               | -      | 🔨 已创建 | ░░░░ 5%  | 参数搜索、Walk-forward 验证                                                               |
 | **执行域**            |                                                                 |        |           |          |                                                                                           |
-| 执行域                | [risk_engine](https://github.com/ZoneCNH/risk_engine)           | -      | 🔨 已创建 | ░░░░ 5%  | VaR、止损、持仓限额、压力测试                                                             |
+| 执行域                | [risk_engine](https://github.com/ZoneCNH/risk_engine)           | ~~占位~~ | 🔨 已创建 | ░░░░ 5%  | ~~VaR/止损~~ → [**riskx**](https://github.com/ZoneCNH/riskx)                            |
 | 执行域                | [riskx](https://github.com/ZoneCNH/riskx)                       | v0.1.0-draft | 🔨 已创建 | ░░░░ 5%  | 风控引擎 — 事前风控、回撤控制、熔断机制（7 FR, SPEC draft）                              |
-| 执行域                | [order_engine](https://github.com/ZoneCNH/order_engine)         | -      | 🔨 已创建 | ░░░░ 5%  | 智能路由、TWAP/VWAP、滑点控制                                                             |
+| 执行域                | [order_engine](https://github.com/ZoneCNH/order_engine)         | ~~占位~~ | 🔨 已创建 | ░░░░ 5%  | ~~智能路由~~ → [**orderx**](https://github.com/ZoneCNH/orderx)                           |
 | 执行域                | [orderx](https://github.com/ZoneCNH/orderx)                     | v0.1.0-draft | 🔨 已创建 | ░░░░ 5%  | 订单管理器 — 订单生命周期、SOR、状态机（7 FR, SPEC draft）                               |
-| 执行域                | [portfolio_engine](https://github.com/ZoneCNH/portfolio_engine) | -      | 🔨 已创建 | ░░░░ 5%  | 多策略资金分配、再平衡                                                                    |
+| 执行域                | [portfolio_engine](https://github.com/ZoneCNH/portfolio_engine) | -      | 🔨 已创建 | ░░░░ 5%  | ~~占位~~ → [**positionx**](https://github.com/ZoneCNH/positionx)  |
 | 执行域                | [positionx](https://github.com/ZoneCNH/positionx)               | v0.1.0-draft | 🔨 已创建 | ░░░░ 5%  | 仓位管理器 — 实时仓位追踪、PnL、敞口监控（7 FR, SPEC draft）                             |
 | 执行域                | [settlement](https://github.com/ZoneCNH/settlement)             | -      | 🔨 已创建 | ░░░░ 5%  | PnL 计算、交易所对账                                                                      |
 | **入口**              |                                                                 |        |           |          |                                                                                           |
