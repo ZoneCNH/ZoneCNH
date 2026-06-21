@@ -331,9 +331,9 @@
 | 入口                   | 2      | 2      | 0      | 85%                                | 2 (x.go v0.0.1；composer v0.2.0 ✅ Coordinator+SinkPort) |
 | 横切                   | 2      | 1      | 1      | 53%                                | 2 (observex, alertx)                                  |
 | 独立                   | 1      | 1      | 0      | -                                  | 0                                                     |
-| **合计**               | **77** | **77** | **58** | **58%**                            | **73**                                                |
+| **合计**               | **77** | **58** | **19** | **58%**                            | **73**                                                |
 
-> ⚠️ **废弃占位说明**：~~总数 76 含 4 个历史占位仓库~~ → 总数 77（新增 macro_data dispatch 独立进程）；4 个历史占位仓库（`backtest_engine`→决策域、`risk_engine`/`order_engine`/`portfolio_engine`→执行域）已迁移至新名称（backtestx/riskx/orderx/positionx），多维成熟度表中已标注 **[P]废弃**，不参与质量评估。活跃组件 73 个。
+> ⚠️ **废弃占位说明**：总数 77（新增 macro_data dispatch 独立进程）；4 个历史占位仓库（`backtest_engine`→决策域、`risk_engine`/`order_engine`/`portfolio_engine`→执行域）已迁移至新名称（backtestx/riskx/orderx/positionx），多维成熟度表中已标注 **[P]废弃**，不参与质量评估。活跃组件 73 个。
 
 ---
 

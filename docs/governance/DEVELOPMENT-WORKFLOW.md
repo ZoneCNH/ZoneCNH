@@ -20,7 +20,7 @@
 
 在创建任何 worktree 或 feature branch 之前，必须执行以下前置检查：
 
-本仓库的真实 worktree 路径模板为 `/home/{module}/.worktree/workspaces/<branch-name>`；下面示例也统一使用该绝对路径模板，避免相对路径与实际规则分叉。该模板仅约束 `git worktree add` 创建的附加 worktree；纯文档仓库的仓库根 checkout 可以直接承载 feature branch，不视为路径违规。
+本仓库的真实 worktree 路径模板为 `/home/{module}/.worktree/workspaces/<branch-name>`；下面示例也统一使用该绝对路径模板，避免相对路径与实际规则分叉。这里的 `<branch-name>` 直接使用 Git 分支名本体（仅去掉 `refs/heads/` 前缀），因此 `feat/x` 会自然落盘为 `.worktree/workspaces/feat/x`。该模板仅约束 `git worktree add` 创建的附加 worktree；纯文档仓库的仓库根 checkout 可以直接承载 feature branch，不视为路径违规。
 
 ```bash
 # 1. 确保本地 main 为最新

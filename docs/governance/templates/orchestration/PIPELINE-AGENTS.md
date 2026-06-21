@@ -21,6 +21,7 @@ done
 ### 2. 为每个 Agent 创建独立 worktree
 
 ```bash
+# 路径按分支名原样落盘，斜杠会形成目录层级
 for agent in spec design plan tasks matrix prompt code lint meta; do
   git worktree add /home/$MODULE/.worktree/workspaces/feat/$MODULE-$agent -b feat/$MODULE-$agent origin/main
 done
