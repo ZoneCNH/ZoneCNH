@@ -4,7 +4,7 @@
 >
 > 数据来源：各 GitHub 仓库实际状态，定期更新
 >
-> 最后更新：2026-06-21
+> 最后更新：2026-06-22
 >
 > 同步基线：`module/` 为模块规格库 SSOT，`docs/governance/` 为 Spec 治理 SSOT，`docs/goal/` 为 Goal 规则 SSOT，`specs/` 已移除。
 > 机器事实源：`.foundationx/status/index.json` — 由 `xlibgate fleet-status` 生成，供 CI 和自动投影消费。多维成熟度以该文件为准，本文手工块为投影。
@@ -451,7 +451,7 @@
 
 | 检查项           | README | ARCHITECTURE | STATUS    | 一致性 |
 | ---------------- | ------ | ------------ | --------- | ------ |
-| 组件总数         | 71     | 69           | 71        | ✅（2026-06-22 移除 4 废弃占位后；unique-repo-link 口径，README/ARCH 含基线偏差 -2/-4 是历史值，待后续 audit 修复） |
+| 组件总数         | 71     | 69           | 71        | ✅（2026-06-22 PR #845 命名 snake_case 化后；README/STATUS=71，ARCH=69 是 ARCHITECTURE.md 不重复列出 2 个仓库的合法差异） |
 | market_data 数量 | 14     | 14          | 14        | ✅     |
 | macro_data 数量  | 11     | 11           | 11        | ✅            |
 | L2.5 组件        | 5      | 5            | 5         | ✅ 已验证 |
