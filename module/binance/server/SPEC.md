@@ -6,12 +6,12 @@
 |------|-----|
 | Module | `module/binance/server` |
 | Status | Approved |
-| Spec-Version | v1.0.2 |
-| Last-Updated | 2026-06-17 |
+| Spec-Version | v1.1.0 |
+| Last-Updated | 2026-06-21 |
 | Owner | ZoneCNH |
 | Layer | 数据域 · 行情接入层 |
-| Role | Binance 行情数据的 gRPC ingest server |
-| Port Interface | `contracts.MarketDataService` (gRPC streaming) |
+| Role | Binance 行情数据的处理 + 存储服务端（natsx 消费 + redisx + postgresx + taosx + kafkax + ossx + Gin REST API） |
+| Port Interface | natsx JetStream subject `binance.market.*` (消费) + Gin REST HTTP `:8080` (提供给 market_data) |
 | Language | Go |
 | Version | v0.1.0 |
 | Repository | [github.com/ZoneCNH/binance](https://github.com/ZoneCNH/binance)（server/ 子目录） |
@@ -54,14 +54,17 @@ Binance 行情接入需要服务端边界确保数据质量和可靠性。直接
 
 - 不做 Binance REST/WebSocket 适配（由 `module/binance/client` 负责）
 - 不做 exchange connectivity（由 `module/binance/client` 负责）
-- 不做 client-side spool/checkpoint 管理（由 `module/binance/client` 负责）
-- 不做 canonical domain type 定义（由 `module/contracts` 负责）
+- 不做 client-side spool/checkpoint 管理（v2.0.0 已删除，由 natsx JetStream 替代）
+- 不做 canonical domain type 定义（由 `module/domain_market` 负责）
 - 不做 proto 定义（由 `module/contracts` 负责）
-- 不做物理存储引擎实现（由 `module/market_data` 或存储扩展负责）
-- 不做 query API（由 `module/market_data` 负责）
-- 不做 strategy API（由决策域负责）
 - 不做跨交易所通用 ingest server（本模块仅 Binance）
 - 不做旧 `binance-market` 兼容
+- 不做 strategy API / trading decision（由决策域负责）
+- 不做 order execution（由执行域负责）
+
+> **v2.0.0 归属变更**：`market_data` 不再拥有 Binance 行情存储。
+> `binance/server` 拥有 taosx 时序存储 + postgresx 元数据 + ossx 归档。
+> `market_data` 改为通过 Gin REST API 主动拉取 和 kafkax topic 消费。
 
 ---
 
@@ -69,8 +72,9 @@ Binance 行情接入需要服务端边界确保数据质量和可靠性。直接
 
 | 消费者 | 使用方式 |
 |--------|----------|
-| `module/binance/client` | 通过 gRPC bidi stream 推送 `IngestRequest`，消费 `IngestAck` 推进 checkpoint |
-| `module/market_data` | 通过 downstream port 接收已验收的行情事件 |
+| natsx JetStream | server 消费 subject `binance.market.>` 接收 client 发布的行情事件 |
+| `module/market_data` | 通过 Gin REST `GET /api/v1/market/*` 主动拉取，或消费 kafkax topic `binance.market.*` |
+| 下游分析域 | 通过 kafkax consumer group 消费 `binance.market.ticks` 等 topic |
 | `SRE / 运维` | 通过 Gin admin HTTP 端点查询流状态、触发排水 |
 
 ---
