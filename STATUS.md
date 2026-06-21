@@ -391,7 +391,7 @@
 
 - x.go 已有（80%，v0.0.1）；2.8MB 体量已核实为治理/工具 CLI（goalcli+templatex），非 Composition Root
 - **composer v0.1.0** ✅（75%）：数据域组合根，25 进程（23 adapter + market-data + macro-data）+ HTTP health + Docker Compose；dispatch→regime SinkPort 适配器已完成（MarketRegimeSink/MacroRegimeSink）
-- **待完成**：regime_engine → signal_factory → riskx 完整链路集成
+- **待完成**：核心链路收口（`regime_engine` → `signal_factory` → `riskx`）继续按 `docs/report/architecture-structural-repair-plan-20260621.md` 的 `#5`-`#6` 承接，不在本文件展开执行树
 
 ### 🟡 横切（注意）
 
