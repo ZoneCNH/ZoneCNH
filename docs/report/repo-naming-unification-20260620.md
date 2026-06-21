@@ -142,7 +142,7 @@ xlib_standard/go.mod → module github.com/ZoneCNH/xlib_standard
 | `docs/architecture/05-foundation.md` | 基座与模块索引保持 `xlibgate`、`xlib_standard` 等现名 |
 | `docs/architecture/07-three-engines.md` | `macro_data_py` 已回收为 `macro_data` |
 | `docs/architecture/08-contracts.md` | `market_regime` / `macro_regime` / `regime_engine` 继续使用现名 |
-| `docs/report/architecture-structural-analysis-20260621.md` | 修复方案已固定 `L2.5` 命名基准为 `snake_case`，并将 `x.go` / `composer` 入口口径与 `README.md` / `ARCHITECTURE.md` / `docs/architecture/*` 的入口说明同步收口；同时将 `macro_data` / `market_data` 统一为数据域表述 |
+| `docs/report/architecture-structural-analysis-20260621.md` | 修复方案已固定 `L2.5` 命名基准为 `snake_case`，并将 `x.go` / `composer` 入口口径与 `README.md` / `ARCHITECTURE.md` / `docs/architecture/*` 的入口说明同步收口；同时将 `macro_data` / `market_data` 统一为数据域表述；当前仍保留 9 项收口动作：P0 `#1`-`#3`、P1 `#5`-`#6`、P2 `#9`-`#12` |
 | `STATUS.md` | 维持现名投影，不再回写 rename 叙事 |
 | `module/README.md` | L2.5 显示层已切换为 `domain_market` / `domain_macro` / `domain_exchange`，链接目标继续使用当前目录投影，`xlibgate` 保持现名 |
 

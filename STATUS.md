@@ -434,7 +434,11 @@
 
 ### 当前阻塞项
 
-- [ ] Phase 1（分析域）仍待完成收口（对应分析报告剩余 9 项收口动作） → 阻塞 Phase 2/3/4/5
+- [ ] Phase 1（分析域）仍待完成收口，当前未完成 9 项：
+  - P0 `#1`-`#3`：`contracts` Approved + 跨域 AC/TC、8 个 Approved 模块补 AC、5 个占位符 SPEC 扩充
+  - P1 `#5`-`#6`：从 `regime_engine` / `signal_factory` 等核心链路拆分 tasks，并按 AC → TC → tasks 串联补齐
+  - P2 `#9`-`#12`：补全数据域 tasks、prompt / evidence、关键 ADR 与 `live_integration` 扩展
+  → 阻塞 Phase 2/3/4/5
 - [x] ~~x.go 体量待核实~~ ✅ **已核实**：x.go = 治理 CLI，非组合根；composer v0.1.0 承担数据域组合根
 
 ### 下一步行动
