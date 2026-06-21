@@ -1,11 +1,19 @@
-# order_engine 规格
+# order_engine 规格 ⚠️ DEPRECATED
 
-- Status: Docs Baseline Approved
+> **⚠️ DEPRECATED — 已废弃**
+>
+> 本模块已被 **[`orderx`](../orderx/SPEC.md)** 取代。`order_engine` 是早期占位仓库，不再维护，不应作为新开发依据。
+>
+> - **替代模块**：`orderx`（命名重构，职责不变）
+> - **废弃日期**：2026-06-22（文档基线层标记；GitHub 仓库 README 已于 2026-06-20 加 DEPRECATED）
+> - **本规格保留原因**：留作历史档案，避免外部链接 404；规格内容已冻结，不再修订
+
+- Status: Deprecated
 - Spec-Version: v1.0.0
-- Last-Updated: 2026-06-21
-- Layer: 执行域 · 订单执行
+- Last-Updated: 2026-06-22
+- Layer: 执行域 · 订单执行（已迁移至 orderx）
 - Version: v1.0.0-spec
-- Related: `CONSTITUTION.md`, `module/order-engine/TRACEABILITY.md`
+- Related: `CONSTITUTION.md`, `module/order-engine/TRACEABILITY.md`, **`module/orderx/SPEC.md`（活跃规格）**
 
 > 本文档发布 `order_engine` 文档基线，不引入运行时代码、依赖或 wire schema。运行时实现与 `TC-ORDER_ENGINE-001`~`TC-ORDER_ENGINE-006` 测试进入后续阶段。
 

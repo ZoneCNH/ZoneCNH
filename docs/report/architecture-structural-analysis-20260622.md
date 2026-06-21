@@ -29,15 +29,15 @@ FoundationX 是一个**治理过度成熟、实现严重滞后**的量化交易�
 
 ## 二、综合评分卡
 
-| 维度 | 权重 | 得分 | 加权 | 等级 | 核心依据 |
-|---|:---:|:---:|:---:|:---:|---|
-| A · 架构分层完整性 | 20% | 74 | 14.8 | 🟡 | 14 条设计原则清晰、依赖矩阵健全；业务域实现空白 `[KNOWN]` |
-| B · 跨文档一致性 | 20% | 66 | 13.2 | 🟡 | 三文档版本三源不一致 `[COMPUTED]`；命名口径分裂 |
-| C · 规格管线覆盖 | 20% | 44 | 8.8 | 🔴 | 61 SPEC 中业务域多为 54-94 行存根 `[COMPUTED]`；53/61 有 TRACEABILITY |
-| D · 治理成熟度 | 15% | 85 | 12.8 | 🟢 | 宪法 §0-§20 完整、10 hooks、RSI 标准落地 `[KNOWN]` |
-| E · 交付健康度 | 15% | 82 | 12.3 | 🟢 | 基座 21/21 factory-ready、0 open blockers `[KNOWN]` |
-| F · 工程卫生 | 10% | 58 | 5.8 | 🟡 | `entropy_reduction.md` 11612 行污染 `[COMPUTED]`；报告区 22 文件冗余 |
-| **加权综合** | 100% | — | **67.7** | **C** | 四舍五入 68 |
+| 维度               | 权重 | 得分 |   加权   | 等级  | 核心依据                                                              |
+| ------------------ | :--: | :--: | :------: | :---: | --------------------------------------------------------------------- |
+| A · 架构分层完整性 | 20%  |  74  |   14.8   |  🟡   | 14 条设计原则清晰、依赖矩阵健全；业务域实现空白 `[KNOWN]`             |
+| B · 跨文档一致性   | 20%  |  66  |   13.2   |  🟡   | 三文档版本三源不一致 `[COMPUTED]`；命名口径分裂                       |
+| C · 规格管线覆盖   | 20%  |  44  |   8.8    |  🔴   | 61 SPEC 中业务域多为 54-94 行存根 `[COMPUTED]`；53/61 有 TRACEABILITY |
+| D · 治理成熟度     | 15%  |  85  |   12.8   |  🟢   | 宪法 §0-§20 完整、10 hooks、RSI 标准落地 `[KNOWN]`                    |
+| E · 交付健康度     | 15%  |  82  |   12.3   |  🟢   | 基座 21/21 factory-ready、0 open blockers `[KNOWN]`                   |
+| F · 工程卫生       | 10%  |  58  |   5.8    |  🟡   | `entropy_reduction.md` 11612 行污染 `[COMPUTED]`；报告区 22 文件冗余  |
+| **加权综合**       | 100% |  —   | **67.7** | **C** | 四舍五入 68                                                           |
 
 > 等级：S≥90 / A≥80 / B≥70 / C≥60 / D<60
 
@@ -72,14 +72,14 @@ composer (Composition Root) ──► bootstrap.Build(ctx, Spec)
 
 ### 3.2 实现现实（STATUS.md + 前序报告投影）
 
-| 域 | 模块数 | 实现度 | 状态 |
-|---|:---:|:---:|---|
-| 基座 | 21 | ~100% | ✅ 21/21 factory-ready，0 open blockers `[KNOWN]` |
-| L2.5 | 5 | ~100% | ✅ 5/5 已发布 `[KNOWN]` |
-| 数据域 | 26 | ~85% | 🟡 dispatch + 13 行情 + 10 宏观 C/S 子模块；binance 为参考实现 |
-| 分析域 | 8 | ~40% | 🟠 仅 market_regime/macro_regime v0.2.0 + regime_engine v1.0.0 有代码 |
-| 决策域 | 6 | ~5% | 🔴 仅 signal_factory v0.1.0 骨架；backtestx/strategyx/maestro/optimizer 全是 SPEC draft |
-| 执行域 | 7 | ~10% | 🔴 仅 riskx v0.1.0 最小实现（仓位检查+熔断，7 tests） |
+| 域     | 模块数 | 实现度 | 状态                                                                                    |
+| ------ | :----: | :----: | --------------------------------------------------------------------------------------- |
+| 基座   |   21   | ~100%  | ✅ 21/21 factory-ready，0 open blockers `[KNOWN]`                                       |
+| L2.5   |   5    | ~100%  | ✅ 5/5 已发布 `[KNOWN]`                                                                 |
+| 数据域 |   26   |  ~85%  | 🟡 dispatch + 13 行情 + 10 宏观 C/S 子模块；binance 为参考实现                          |
+| 分析域 |   8    |  ~40%  | 🟠 仅 market_regime/macro_regime v0.2.0 + regime_engine v1.0.0 有代码                   |
+| 决策域 |   6    |  ~5%   | 🔴 仅 signal_factory v0.1.0 骨架；backtestx/strategyx/maestro/optimizer 全是 SPEC draft |
+| 执行域 |   7    |  ~10%  | 🔴 仅 riskx v0.1.0 最小实现（仓位检查+熔断，7 tests）                                   |
 
 `[INFERRED]` 核心交易闭环 `数据→因子→信号→风控→订单→仓位` 端到端未跑通；前序报告指出 `RegimeCoordinator` 缺失、`regime_engine.Run` 从未被调用、分类结果被 `_, _ =` 丢弃。
 
@@ -92,6 +92,7 @@ composer (Composition Root) ──► bootstrap.Build(ctx, Spec)
 **证据** `[COMPUTED]`：`entropy_reduction.md` 11612 行，是全仓库最大 Markdown 文件（第二大 3942 行，第三大 1936 行）。内容为"熵减战略问题"通用哲学散文，与量化交易基础设施无任何工程关系。git log 显示其经 3 次 commit 扩展（`9f121829 熵减分析深度扩展`、`ca04b66a markdownlint 修复`、`41c8beba 全局表格排版优化`），已被纳入 373 文件批量排版扫描。
 
 **影响**：
+
 - 仓库根噪音化，新贡献者首屏看到 11612 行哲学文件而非项目说明
 - 纳入 markdownlint / 排版扫描，每次批量修复消耗无关计算
 - 拉高 `wc -l` 统计，污染文档规模度量
@@ -102,12 +103,12 @@ composer (Composition Root) ──► bootstrap.Build(ctx, Spec)
 
 **证据** `[COMPUTED]`：module/ 下 70 目录存在三种命名风格：
 
-| 风格 | 数量 | 示例 | 规则符合性 |
-|---|:---:|---|---|
-| snake_case | 4 | `market_regime` / `macro_regime` / `ms_brain` / `_template` | ✅ 符合 CLAUDE.md §仓库命名规则 |
-| kebab-case | 20 | `risk-engine` / `order-engine` / `factor-engine` / `domain-market` / `xlib-standard` | ❌ 违反 |
-| x-suffix 单词 | 22 | `riskx` / `orderx` / `configx` / `kafkax` | ⚠️ 符合 Foundation 命名风格，但非 snake_case |
-| 单词 | ~14 | `kernel` / `binance` / `contracts` / `settlement` | ✅ 符合（无分隔符需求） |
+| 风格          | 数量 | 示例                                                                                 | 规则符合性                                   |
+| ------------- | :--: | ------------------------------------------------------------------------------------ | -------------------------------------------- |
+| snake_case    |  4   | `market_regime` / `macro_regime` / `ms_brain` / `_template`                          | ✅ 符合 CLAUDE.md §仓库命名规则              |
+| kebab-case    |  20  | `risk-engine` / `order-engine` / `factor-engine` / `domain-market` / `xlib-standard` | ❌ 违反                                      |
+| x-suffix 单词 |  22  | `riskx` / `orderx` / `configx` / `kafkax`                                            | ⚠️ 符合 Foundation 命名风格，但非 snake_case |
+| 单词          | ~14  | `kernel` / `binance` / `contracts` / `settlement`                                    | ✅ 符合（无分隔符需求）                      |
 
 **矛盾点** `[KNOWN]`：CLAUDE.md 明确"所有 ZoneCNH 仓库统一 snake_case，禁止 kebab-case/PascalCase/camelCase"，例外仅 `x.go` 与 `binance.rs` 两项。但实际存在 20 个 kebab-case 目录，且 `risk-engine`/`order-engine`/`backtest-engine`/`portfolio-engine` 四个旧占位仓库对应的 GitHub 仓库本身也是 kebab-case。
 
@@ -119,24 +120,24 @@ composer (Composition Root) ──► bootstrap.Build(ctx, Spec)
 
 **证据** `[COMPUTED]`：16 个业务域 SPEC 行数：
 
-| 模块 | 行数 | 评估 |
-|---|:---:|---|
-| market_regime | 54 | 存根 |
-| macro_regime | 77 | 存根 |
-| optimizer | 76 | 存根 |
-| factor-eval | 94 | 存根 |
-| settlement | 77 | 存根 |
-| signal-factory | 82 | 存根 |
-| regime-engine | 87 | 存根 |
-| feature-store | 177 | 半成 |
-| factor-engine | 310 | 半成 |
-| flowx | 406 | 半成 |
-| backtestx | 361 | 半成 |
-| strategyx | 379 | 半成 |
-| maestro | 437 | 半成 |
-| riskx | 361 | 半成 |
-| orderx | 385 | 半成 |
-| positionx | 344 | 半成 |
+| 模块           | 行数 | 评估 |
+| -------------- | :--: | ---- |
+| market_regime  |  54  | 存根 |
+| macro_regime   |  77  | 存根 |
+| optimizer      |  76  | 存根 |
+| factor-eval    |  94  | 存根 |
+| settlement     |  77  | 存根 |
+| signal-factory |  82  | 存根 |
+| regime-engine  |  87  | 存根 |
+| feature-store  | 177  | 半成 |
+| factor-engine  | 310  | 半成 |
+| flowx          | 406  | 半成 |
+| backtestx      | 361  | 半成 |
+| strategyx      | 379  | 半成 |
+| maestro        | 437  | 半成 |
+| riskx          | 361  | 半成 |
+| orderx         | 385  | 半成 |
+| positionx      | 344  | 半成 |
 
 **对比**：基座 SPEC 平均 600-1300 行（kernel 1274、xlibgate 1303、binance 1155），业务域 SPEC 中位数约 200 行，远未达到 23 节结构完整度。
 
@@ -154,12 +155,12 @@ composer (Composition Root) ──► bootstrap.Build(ctx, Spec)
 
 **证据** `[COMPUTED]`（前序报告已详列，本报告复核确认仍在）：同一模块版本在 STATUS.md 明细表（顶部）、状态总览表（ARCHITECTURE.md 底部）、README.md 三处不一致。典型案例：
 
-| 模块 | 明细表 | 总览表 | README |
-|---|---|---|---|
+| 模块          | 明细表 | 总览表 | README |
+| ------------- | ------ | ------ | ------ |
 | xlib_standard | v1.1.0 | v1.0.1 | v1.0.1 |
-| xlib_harness | v1.1.0 | v0.1.1 | v0.1.6 |
-| kernel | v2.1.0 | v1.0.0 | v2.1.0 |
-| resiliencx | v1.1.0 | v1.0.2 | v1.0.2 |
+| xlib_harness  | v1.1.0 | v0.1.1 | v0.1.6 |
+| kernel        | v2.1.0 | v1.0.0 | v2.1.0 |
+| resiliencx    | v1.1.0 | v1.0.2 | v1.0.2 |
 
 **根因** `[INFERRED]`：明细表为"目标投影"（规划版本），总览表为"已发布版本"，README 滞后更新。虽然 STATUS.md 已加注释说明"版本（目标投影）列为规划目标版本，已发布版本以 .foundationx/status/index.json 为准"，但三源数字直接并列展示，读者默认按字面值比较，注释无法消除认知摩擦。
 
@@ -168,6 +169,7 @@ composer (Composition Root) ──► bootstrap.Build(ctx, Spec)
 ### 🟡 S-6 docs/report/ 报告区冗余膨胀
 
 **证据** `[COMPUTED]`：docs/report/ 含 22 个 Markdown 文件共 5808 行，其中：
+
 - `xlib/` 子目录 13 文件，多为 2026-06-08 单日多次生成的 xlib_standard 分析（0341/0446/0459/0513/0530/0602 六个时间戳版本），属典型"AI 代理连续产出未收敛"产物
 - `architecture-*` 4 文件为 2026-06-20/21 连续两日架构分析，内容高度重叠（v2 报告自身标注"在前两份报告基础上"）
 - `goal/` 5 文件为 2026-06-09 goal 文档分析
@@ -204,16 +206,16 @@ composer (Composition Root) ──► bootstrap.Build(ctx, Spec)
 
 ## 六、修复优先级建议
 
-| 优先级 | 问题 | 修复动作 | 预估工作量 | 仓库可独立修复 |
-|:---:|---|---|---|:---:|
-| P0 | S-1 entropy_reduction.md 污染 | 移至 `docs/essays/` 或 `git rm --cached` | 5 min | ✅ |
-| P0 | S-4 废弃 SPEC 未标记 | 4 个 SPEC 首行加 `> ⚠️ DEPRECATED → riskx/orderx/positionx/backtestx`，Status 改 `Deprecated` | 10 min | ✅ |
-| P1 | S-2 命名三轨并存 | 制定 module/ 目录命名迁移计划：kebab-case → snake_case（与 GitHub 仓库重命名同步） | 跨仓库，需 issue 跟踪 | ⚠️ 部分 |
-| P1 | S-5 版本三源不一致 | 明细表"目标投影"列加 `(target)` 后缀；总览表加 `(released)` 后缀；业务域模块补入 index.json | 2 h | ✅ |
-| P1 | S-6 报告区冗余 | `xlib/` 13 文件归档为单份 `xlib-standard-analysis-archived.md`；建立 `docs/report/INDEX.md` 区分权威报告与过程草稿 | 1 h | ✅ |
-| P2 | S-3 业务域 SPEC 存根 | 优先补全 signal_factory / riskx / orderx 三个 P0 链路模块的 SPEC 至 23 节完整结构 | 跨仓库 | ❌ |
-| P2 | S-7 反向工作流 | 评估"文档同步批处理窗口"是否可拉长，减少单次变更即触发全文档同步 | 流程优化 | ✅ |
-| P2 | S-8 blockers.json 陈旧 | 重新生成 blockers.json，纳入 CI 定时刷新 | 30 min | ✅ |
+| 优先级 | 问题                          | 修复动作                                                                                                           | 预估工作量            | 仓库可独立修复 |
+| :----: | ----------------------------- | ------------------------------------------------------------------------------------------------------------------ | --------------------- | :------------: |
+|   P0   | S-1 entropy_reduction.md 污染 | 移至 `docs/essays/` 或 `git rm --cached`                                                                           | 5 min                 |       ✅       |
+|   P0   | S-4 废弃 SPEC 未标记          | 4 个 SPEC 首行加 `> ⚠️ DEPRECATED → riskx/orderx/positionx/backtestx`，Status 改 `Deprecated`                      | 10 min                |       ✅       |
+|   P1   | S-2 命名三轨并存              | 制定 module/ 目录命名迁移计划：kebab-case → snake_case（与 GitHub 仓库重命名同步）                                 | 跨仓库，需 issue 跟踪 |    ⚠️ 部分     |
+|   P1   | S-5 版本三源不一致            | 明细表"目标投影"列加 `(target)` 后缀；总览表加 `(released)` 后缀；业务域模块补入 index.json                        | 2 h                   |       ✅       |
+|   P1   | S-6 报告区冗余                | `xlib/` 13 文件归档为单份 `xlib-standard-analysis-archived.md`；建立 `docs/report/INDEX.md` 区分权威报告与过程草稿 | 1 h                   |       ✅       |
+|   P2   | S-3 业务域 SPEC 存根          | 优先补全 signal_factory / riskx / orderx 三个 P0 链路模块的 SPEC 至 23 节完整结构                                  | 跨仓库                |       ❌       |
+|   P2   | S-7 反向工作流                | 评估"文档同步批处理窗口"是否可拉长，减少单次变更即触发全文档同步                                                   | 流程优化              |       ✅       |
+|   P2   | S-8 blockers.json 陈旧        | 重新生成 blockers.json，纳入 CI 定时刷新                                                                           | 30 min                |       ✅       |
 
 ---
 
@@ -241,11 +243,11 @@ CLAUDE.md 已定全局 snake_case 规则，但旧 kebab-case 仓库未完成迁�
 
 本报告不重复 2026-06-20/21 三份报告已详述的内容，聚焦新增发现与结构性根因：
 
-| 前序报告 | 已覆盖 | 本报告增量 |
-|---|---|---|
-| `architecture-problem-analysis-20260620.md` | 业务域实现度、双轨并存、P0 契约缺失（已解决） | S-1/S-6 新增；S-4 复核发现 SPEC 层未标记 |
-| `architecture-deep-analysis-20260621-v2.md` | 版本三源不一致、仪表盘算术错误、pass-through 虚高 | S-2 命名三轨扩大化分析；S-7 反向工作流；S-8 blockers 陈旧 |
-| `architecture-structural-analysis-20260621.md` | 结构性分析 | 根因分析 §7 |
+| 前序报告                                       | 已覆盖                                            | 本报告增量                                                |
+| ---------------------------------------------- | ------------------------------------------------- | --------------------------------------------------------- |
+| `architecture-problem-analysis-20260620.md`    | 业务域实现度、双轨并存、P0 契约缺失（已解决）     | S-1/S-6 新增；S-4 复核发现 SPEC 层未标记                  |
+| `architecture-deep-analysis-20260621-v2.md`    | 版本三源不一致、仪表盘算术错误、pass-through 虚高 | S-2 命名三轨扩大化分析；S-7 反向工作流；S-8 blockers 陈旧 |
+| `architecture-structural-analysis-20260621.md` | 结构性分析                                        | 根因分析 §7                                               |
 
 **本报告独立价值**：`entropy_reduction.md` 污染（S-1）是前序报告均未发现的最大单文件债务；命名三轨的系统化审计（S-2）前序报告仅提及双轨；废弃标记未传导 SPEC（S-4）前序报告误判为已解决。
 

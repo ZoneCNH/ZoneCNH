@@ -1,11 +1,19 @@
-# backtest_engine 规格
+# backtest_engine 规格 ⚠️ DEPRECATED
 
-- Status: Draft
+> **⚠️ DEPRECATED — 已废弃**
+>
+> 本模块已被 **[`backtestx`](../backtestx/SPEC.md)** 取代。`backtest_engine` 是早期占位仓库，不再维护，不应作为新开发依据。
+>
+> - **替代模块**：`backtestx`（命名重构，职责不变）
+> - **废弃日期**：2026-06-22（文档基线层标记；GitHub 仓库 README 已于 2026-06-20 加 DEPRECATED）
+> - **本规格保留原因**：留作历史档案，避免外部链接 404；规格内容已冻结，不再修订
+
+- Status: Deprecated
 - Spec-Version: v0.1.0-draft
-- Last-Updated: 2026-06-17
-- Layer: 决策域 · 回测引擎
+- Last-Updated: 2026-06-22
+- Layer: 决策域 · 回测引擎（已迁移至 backtestx）
 - Version: v0.1.0-draft
-- Related: `CONSTITUTION.md`, `../factor_engine/`, `../domain_market/`
+- Related: `CONSTITUTION.md`, `../factor_engine/`, `../domain_market/`, **`module/backtestx/SPEC.md`（活跃规格）**
 
 > 本文档发布 backtest_engine 基线。运行时实现为 Pending。
 
