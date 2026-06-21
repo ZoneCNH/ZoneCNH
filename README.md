@@ -8,9 +8,11 @@ Go 🐹 (主要) · Rust 🦀 (底层) · Python 🐍 (脚本/数据) · TypeScr
 
 ## 🏗️ 分层架构
 
-> 📐 完整依赖拓扑、域间关系、运行时组装与子模块明细 → **[docs/architecture/](./docs/architecture/)**（原 ARCHITECTURE.md 已迁移）
+> 📐 完整依赖拓扑、域间关系、运行时组装与子模块明细 → **[docs/architecture/](./docs/architecture/)**（主叙事已迁移，根目录 ARCHITECTURE.md 保留兼容入口）
 >
-> 🔄 三引擎数据流全景、M×S 联合决策矩阵与契约清单 → **[docs/architecture/06-dataflow.md](./docs/architecture/06-dataflow.md)** · **[07-three-engines.md](./docs/architecture/07-three-engines.md)**
+> 🔄 活跃事实链路、M×S 联合决策矩阵与契约清单 → **[docs/architecture/01-overview.md](./docs/architecture/01-overview.md)** · **[docs/architecture/08-contracts.md](./docs/architecture/08-contracts.md)**
+>
+> 🧭 `06-dataflow.md` / `07-three-engines.md` 仅保留历史投影与迁移对照
 >
 > 📊 项目状态监控、健康度与风险追踪 → **[STATUS.md](./STATUS.md)**
 >
@@ -47,10 +49,10 @@ L2.5: domainx / decimalx / domain_market / domain_macro / domain_exchange (5/5 �
       ▼
 业务流: 数据域 → 分析域 ↔ 决策域 → 执行域
 数据域: market_data (14) / macro_data (11) / alternative_data
-分析域: factor_engine / feature_store / factor_eval / market_regime / macro_regime / regime_engine / ms_brain / flowx（活跃交易链路口径统一为 riskx / orderx / positionx / backtestx）
-       三引擎: market_engine(market facts → S state) / macro_engine(macro facts → M state) / regime_engine(M+S → action/risk/permission)（历史投影名；详见 contracts 映射）
-决策域: signal_factory / ~~backtest_engine~~ / optimizer / backtestx / strategyx / maestro（对应活跃链路 backtestx）
-执行域: ~~risk_engine~~ / ~~order_engine~~ / ~~portfolio_engine~~ / settlement ; riskx / orderx / positionx（对应活跃链路 riskx / orderx / positionx）
+分析域: factor_engine / feature_store / factor_eval / market_regime / macro_regime / regime_engine / ms_brain / flowx
+       三引擎: market_regime / macro_regime / regime_engine（活跃事实链路；market_engine / macro_engine 仅保留在投影与迁移文档）
+决策域: signal_factory / optimizer / backtestx / strategyx / maestro
+执行域: riskx / orderx / positionx / settlement
 
 反馈: backtest → factor_eval；fills / PnL / exposure events → 决策域
 横切: alertx (告警) / observex (可观测)

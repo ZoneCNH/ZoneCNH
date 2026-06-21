@@ -1,4 +1,6 @@
-## 三引擎详细规格
+## 三引擎详细规格（历史投影 / 兼容层）
+
+> 本文是历史投影 / 兼容层，不作为事实源；活跃事实链路请参见 [01-overview.md](./01-overview.md)、[README.md](./README.md) 与 [08-contracts.md](./08-contracts.md)。
 
 ### 1. market_engine → S State
 

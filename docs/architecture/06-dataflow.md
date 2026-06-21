@@ -1,6 +1,6 @@
-# 🔄 数据流架构
+# 🔄 数据流架构（历史投影 / 兼容层）
 
-> FoundationX 三引擎数据流：从原始数据到交易决策的完整路径
+> 本文是历史投影 / 兼容层，不作为事实源；活跃事实链路请参见 [01-overview.md](./01-overview.md)、[README.md](./README.md) 与 [08-contracts.md](./08-contracts.md)。
 >
 > 最后更新：2026-06-21
 
