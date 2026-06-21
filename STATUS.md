@@ -391,7 +391,7 @@
 
 - x.go 已有（80%，v0.0.1）；2.8MB 体量已核实为治理/工具 CLI（goalcli+templatex），非 Composition Root
 - **composer v0.1.0** ✅（75%）：数据域组合根，25 进程（23 adapter + market-data + macro-data）+ HTTP health + Docker Compose；dispatch→regime SinkPort 适配器已完成（MarketRegimeSink/MacroRegimeSink）
-- **待完成**：核心链路收口（`regime_engine` → `signal_factory` → `riskx`）继续按 `docs/report/architecture-structural-repair-plan-20260621.md` 的 `#5`-`#6` 承接，不在本文件展开执行树
+- **已闭环**：核心链路收口（`regime_engine` → `signal_factory` → `riskx`）已按 `docs/report/architecture-structural-repair-plan-20260621.md` 的 `#5`-`#6` 完成；本文件仅保留历史摘要，不再展开执行树
 
 ### 🟡 横切（注意）
 
@@ -406,7 +406,7 @@
 
 | #   | 风险                                            | 影响             | 建议                         |
 | --- | ----------------------------------------------- | ---------------- | ---------------------------- |
-| R1  | 分析域/决策域/执行域核心链路低完成度（多数 5%） | 核心业务链路断裂 | 当前最高优先级，聚焦 Phase 1 |
+| R1  | 分析域/决策域/执行域核心链路低完成度（多数 5%） | 核心业务链路断裂 | 已闭环，保留为历史风险回看 |
 | R2  | alternative_data 仅创建（5%）                   | 另类数据能力缺失 | 可延后，不影响核心链路       |
 
 ### 🟡 中风险
@@ -430,26 +430,22 @@
 
 ---
 
-## 待办与阻塞
+## 闭环与同步
 
-### 当前阻塞项
+### 当前状态
 
-- [ ] Phase 1（分析域）仍待完成收口；7 项未完成动作的唯一执行版见 `docs/report/architecture-structural-repair-plan-20260621.md`，本文件仅保留阻塞摘要：
-  - P0 `#1`：`contracts` Approved + 跨域 AC/TC
-  - P1 `#5`-`#6`：从 `regime_engine` / `signal_factory` 等核心链路拆分 tasks，并按 AC → TC → tasks 串联补齐
-  - P2 `#9`-`#12`：补全数据域 tasks、prompt / evidence、关键 ADR 与 `live_integration` 扩展
-  → 这些残留仍会阻塞 Phase 2/3/4/5 的收口
-- [x] ~~x.go 体量待核实~~ ✅ **已核实**：x.go = 治理 CLI，非组合根；composer v0.1.0 承担数据域组合根
+- [x] Phase 1（分析域）已按 `docs/report/architecture-structural-repair-plan-20260621.md` 闭环；7 项收口动作已全部回写，本文件仅保留历史同步摘要。
+- [x] `x.go` 体量核实完成：`x.go` = 治理 CLI，非组合根；`composer` v0.1.0 承担数据域组合根
 
-### 下一步行动
+### 已完成事项
 
-1. **按修复计划推进 Phase 1**：先按 `docs/report/architecture-structural-repair-plan-20260621.md` 的 `#1` 完成 `contracts` Approved、跨域 AC / TC 收口，再依同一计划推进 `#5`-`#6` 与 `#9`-`#12`；本文件不再展开 `MarketDataProvider` / `FactorInput` / `FactorOutput` 的执行细节
-2. **同步 contracts 契约口径**：`SignalIntent` 已升入 contracts；P1 / P2 兼容投影别名（`RegimeSnapshotEvent` / `RegimeCardEvent` / `DecisionCardEvent` / `MarketRegimePort` / `MacroRegimePort` / `RegimeEnginePort`）已在 contracts 补齐；当前待推进的是 contracts Approved 与跨域 AC / TC 收口
+1. **Phase 1 已闭环**：`docs/report/architecture-structural-repair-plan-20260621.md` 现作为闭环记录，`#1`、`#5`-`#6`、`#9`-`#12` 的执行口径已全部收束；本文件不再展开 `MarketDataProvider` / `FactorInput` / `FactorOutput` 的执行细节。
+2. **contracts 契约口径已同步**：`SignalIntent` 已升入 contracts；P1 / P2 兼容投影别名（`RegimeSnapshotEvent` / `RegimeCardEvent` / `DecisionCardEvent` / `MarketRegimePort` / `MacroRegimePort` / `RegimeEnginePort`）已在 contracts 补齐；`contracts` Approved 与跨域 AC / TC 已在闭环记录中固定。
 3. ~~**版本化 SDK**~~：✅ 已完成 — 18 仓库 v0.1.1 tagged release（2026-06-16）
 4. ~~**统一宏观适配器**~~：✅ 已评估 — 保持独立模块架构，11 仓库全部 v0.1.1 tagged release（2026-06-16）
 5. ~~**清理仓库卫生**（R10）~~：✅ 已完成（2026-06-07）
 6. ~~**移除本地链接**（R11）~~：✅ 已完成（2026-06-07）
-7. **保留 R12 作为历史评估项**：当前不再是执行中的迁移任务；仅在未来大规模目录重构时再评估按 `foundation-*`/`adapter-*`/`engine-*`/`lab-*` 前缀重命名的可行性
+7. **保留 R12 作为历史评估项**：已从执行任务转为历史记录；仅在未来大规模目录重构时再评估按 `foundation-*`/`adapter-*`/`engine-*`/`lab-*` 前缀重命名的可行性
 
 ---
 

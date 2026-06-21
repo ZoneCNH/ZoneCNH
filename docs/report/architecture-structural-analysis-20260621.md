@@ -213,7 +213,7 @@ Prompt（S5）和 Evidence（S6）几乎为零，表明四源评分体系的后�
 
 - 已完成：`#4` 固定 L2.5 命名基准与迁移表；`#7` 统一 `x.go / composer` 说明入口并回写对齐文档；`#8` 清理 L2.5 遗留 kebab 引用，并回写统一命名 / 对齐同步文档；`#3` 的 5 个 SPEC 已升级为完整基线（`module/settlement/SPEC.md`、`module/portfolio-engine/SPEC.md`、`module/risk-engine/SPEC.md`、`module/order-engine/SPEC.md`、`module/macro_regime/SPEC.md`）；`contracts` P1 / P2 兼容投影别名（`RegimeSnapshotEvent` / `RegimeCardEvent` / `DecisionCardEvent` / `MarketRegimePort` / `MacroRegimePort` / `RegimeEnginePort`）已在 contracts 仓库以 type alias 方式补齐；`README.md`、`ARCHITECTURE.md` 与 `docs/architecture/README.md` / `01-overview.md` / `02-domain-layers.md` / `03-boundaries.md` / `04-principles.md` / `05-foundation.md` / `06-dataflow.md` / `07-three-engines.md` / `08-contracts.md` 的活跃交易链路口径已统一到 `riskx` / `orderx` / `positionx` / `backtestx`；`market_engine` / `macro_engine` / `regime_engine` 继续作为三引擎章节与数据流图的历史投影名保留，避免把索引页误写成新命名事实。
 - 数据域 C/S Module 标准化基线已就位：`module/data-cs-module/README.md`、`SPEC-TEMPLATE.md`、`UPGRADE-ROADMAP.md` 已形成统一入口；`#9` 现阶段转为执行问题，需按该入口拆分 `market_data` / `macro_data` 落地任务。
-- 当前未完成共 7 项：P0 `#1`、P1 `#5`-`#6`、P2 `#9`-`#12`；`#2` 已在模块级 AC 回写并冻结，完整执行版修复方案已拆出为 `docs/report/architecture-structural-repair-plan-20260621.md`，后续跟踪以该文档为主。
+- 该批次当时共 7 项待收口：P0 `#1`、P1 `#5`-`#6`、P2 `#9`-`#12`；`#2` 已在模块级 AC 回写并冻结，完整执行版修复方案已拆出为 `docs/report/architecture-structural-repair-plan-20260621.md`，现已全部闭环，后续仅保留历史诊断，不再作为未完成项。
 - 其中 `#4`、`#7`、`#8` 已作为同步基线收口，仅保留在历史记录和对照清单中，不再列入当前执行面。
 
 ### 5.2 P0 — 基线解锁（1-2 周）
