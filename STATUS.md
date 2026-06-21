@@ -105,22 +105,22 @@
 
 ### 数据域 · 行情
 
-| 组件                                                          | 类型     | 版本   | 进度     | 覆盖率要求 | 说明                  |
+| 组件                                                          | 架构类型     | 版本   | 进度     | 覆盖率要求 | 说明                  |
 | ------------------------------------------------------------- | -------- | ------ | -------- | ---------- | --------------------- |
-| [binance](https://github.com/ZoneCNH/binance)                 | C/S Module | v0.1.0      | ░░░░  5% | 100%       | Market Data C/S (client+server)；Spec Approved；4产品线 |
-| [market_data](https://github.com/ZoneCNH/market_data)         | Dispatch | v1.0.0 | ██░░ 30% | 100%       | downstream dispatch port 接收侧（FR-MD-001~008）；dispatch.go 已实现；v1.0.0 released |
-| [okx](https://github.com/ZoneCNH/okx)                         | SDK      | v0.1.1 | ███░ 80% | 100%       | OKX CEX               |
-| [bybit](https://github.com/ZoneCNH/bybit)                     | SDK      | v0.1.1 | ███░ 80% | 100%       | Bybit CEX             |
-| [bitget](https://github.com/ZoneCNH/bitget)                   | SDK      | v0.1.1 | ███░ 80% | 100%       | Bitget CEX            |
-| [kucoin](https://github.com/ZoneCNH/kucoin)                   | SDK      | v0.1.1 | ███░ 80% | 100%       | KuCoin CEX            |
-| [gate](https://github.com/ZoneCNH/gate)                       | SDK      | v0.1.1 | ███░ 80% | 100%       | Gate CEX              |
-| [mexc](https://github.com/ZoneCNH/mexc)                       | SDK      | v0.1.1 | ███░ 80% | 100%       | MEXC CEX              |
-| [htx](https://github.com/ZoneCNH/htx)                         | SDK      | v0.1.1 | ███░ 80% | 100%       | HTX CEX               |
-| [coinbase](https://github.com/ZoneCNH/coinbase)               | SDK      | v0.1.1 | ███░ 80% | 100%       | Coinbase CEX          |
-| [hyperliquid](https://github.com/ZoneCNH/hyperliquid)         | SDK      | v0.1.1 | ███░ 80% | 100%       | Hyperliquid DEX       |
-| [lighter](https://github.com/ZoneCNH/lighter)                 | SDK      | v0.1.1 | ███░ 80% | 100%       | Lighter DEX           |
-| [upbit](https://github.com/ZoneCNH/upbit)                     | SDK      | v0.1.1 | ███░ 80% | 100%       | Upbit CEX             |
-| [coinglass](https://github.com/ZoneCNH/coinglass)             | SDK      | v0.1.1 | ███░ 80% | 100%       | 衍生品聚合数据        |
+| [market_data](https://github.com/ZoneCNH/market_data)         | 独立进程 | v1.0.0 | ██░░ 30% | 100%       | dispatch 聚合（域入口）：Receiver + DualWriteSink；FR-MD-001~008；v1.0.0 released |
+| [binance](https://github.com/ZoneCNH/binance)                 | C/S Module | v0.1.0      | ░░░░  5% | 100%       | 参考实现：bootstrap + client/server；Spec Approved；4产品线 |
+| [okx](https://github.com/ZoneCNH/okx)                         | C/S Module      | v0.1.1 | ███░ 80% | 100%       | OKX CEX 行情采集；待升级 client/server 拆分 |
+| [bybit](https://github.com/ZoneCNH/bybit)                     | C/S Module      | v0.1.1 | ███░ 80% | 100%       | Bybit CEX             |
+| [bitget](https://github.com/ZoneCNH/bitget)                   | C/S Module      | v0.1.1 | ███░ 80% | 100%       | Bitget CEX            |
+| [kucoin](https://github.com/ZoneCNH/kucoin)                   | C/S Module      | v0.1.1 | ███░ 80% | 100%       | KuCoin CEX            |
+| [gate](https://github.com/ZoneCNH/gate)                       | C/S Module      | v0.1.1 | ███░ 80% | 100%       | Gate CEX              |
+| [mexc](https://github.com/ZoneCNH/mexc)                       | C/S Module      | v0.1.1 | ███░ 80% | 100%       | MEXC CEX              |
+| [htx](https://github.com/ZoneCNH/htx)                         | C/S Module      | v0.1.1 | ███░ 80% | 100%       | HTX CEX               |
+| [coinbase](https://github.com/ZoneCNH/coinbase)               | C/S Module      | v0.1.1 | ███░ 80% | 100%       | Coinbase CEX          |
+| [hyperliquid](https://github.com/ZoneCNH/hyperliquid)         | C/S Module      | v0.1.1 | ███░ 80% | 100%       | Hyperliquid DEX       |
+| [lighter](https://github.com/ZoneCNH/lighter)                 | C/S Module      | v0.1.1 | ███░ 80% | 100%       | Lighter DEX           |
+| [upbit](https://github.com/ZoneCNH/upbit)                     | C/S Module      | v0.1.1 | ███░ 80% | 100%       | Upbit CEX             |
+| [coinglass](https://github.com/ZoneCNH/coinglass)             | C/S Module      | v0.1.1 | ███░ 80% | 100%       | 衍生品聚合数据        |
 
 <details>
 <summary>📊 数据域 · 行情多维成熟度展开（点击展开）</summary>
