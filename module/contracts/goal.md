@@ -194,7 +194,7 @@ contracts 自身是编译时依赖，无运行时。观测由消费者模块负�
 - DTO 字段和 JSON tag 冻结。
 - Topic 常量集冻结。
 - SPEC、Matrix、Tasks 制品通过治理评分门禁（目标 100 分）。
-- README、CHANGELOG 完成（待 TASK-CONTRACTS-004 实现）。
+- [x] README、CHANGELOG 完成（TASK-CONTRACTS-004 已实现）。
 
 ## 13. v1.0 后演进方向
 

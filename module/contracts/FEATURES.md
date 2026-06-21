@@ -1,7 +1,7 @@
 # contracts 完整实现清单
 
 - Status: Generated from current module SSOT
-- Last-Updated: 2026-06-18
+- Last-Updated: 2026-06-21
 - Module-Version: v1.2.0
 - Module-State: 已发布
 - Layer: L2.5 共享契约
@@ -77,6 +77,8 @@
 | goal.md | 存在 | module/contracts/goal.md |
 | SPEC.md | 存在 | module/contracts/SPEC.md |
 | TRACEABILITY.md | 存在 | module/contracts/TRACEABILITY.md |
+| README.md | 存在 | module/contracts/README.md |
+| CHANGELOG.md | 存在 | module/contracts/CHANGELOG.md |
 | IMPLEMENTATION-PLAN.md | 存在 | module/contracts/IMPLEMENTATION-PLAN.md |
 | tasks/ | 6 个 Markdown 文件 | module/contracts/tasks |
 

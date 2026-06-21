@@ -1,7 +1,7 @@
 # contracts 完整验收清单
 
 - Status: Generated from current module SSOT
-- Last-Updated: 2026-06-18
+- Last-Updated: 2026-06-21
 - Module-Version: v1.2.0
 - Module-State: 已发布
 - Layer: L2.5 共享契约
@@ -14,7 +14,7 @@
 
 | 类别 | 命令 | 通过标准 |
 | --- | --- | --- |
-| 文档存在性 | cd /home/ZoneCNH && test -f module/contracts/FEATURES.md && test -f module/contracts/ACCEPTANCE.md | FEATURES.md 与 ACCEPTANCE.md 均存在 |
+| 文档存在性 | cd /home/ZoneCNH && test -f module/contracts/FEATURES.md && test -f module/contracts/ACCEPTANCE.md && test -f module/contracts/README.md && test -f module/contracts/CHANGELOG.md | FEATURES.md、ACCEPTANCE.md、README.md 与 CHANGELOG.md 均存在 |
 | 文档格式 | cd /home/ZoneCNH && git diff --check -- module/contracts | 无尾随空格或补丁格式错误 |
 | 运行时测试 | cd /home/contracts && go test ./... | 所有包测试通过 |
 | 竞态检查 | cd /home/contracts && go test ./... -race -count=1 | 无 data race，测试稳定通过 |
