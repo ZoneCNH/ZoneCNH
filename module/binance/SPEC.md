@@ -2,9 +2,9 @@
 
 ## 1. Metadata
 
-- Status: Approved
-- Spec-Version: v1.0.1
-- Last-Updated: 2026-06-17
+- Status: Draft → v2.0.0
+- Spec-Version: v2.0.0
+- Last-Updated: 2026-06-21
 - Owner: ZoneCNH
 - Layer: 数据域 · 行情
 - Version: v0.1.0
@@ -17,19 +17,31 @@
 
 ## 2. Summary
 
-`module/binance` 是 Binance 专属 Market Data C/S Module，定义 Binance 行情数据从交易所采集到 ZoneCNH 内部摄入的完整边界。它从被动 SDK / 旧式 Provider 模型升级为显式 client/server 双端架构：
+`module/binance` 是 Binance 专属 Market Data **分布式** C/S Module，定义 Binance 行情数据从交易所采集到 ZoneCNH 内部存储与对外服务的完整边界。
+
+**核心架构约束：client 和 server 是独立进程，分开部署，通过 natsx JetStream 网络通信，禁止同进程调用。**
 
 ```text
-Binance Exchange
-  ↓
-module/binance/client          ← 交易所侧采集器
-  ↓ contracts-defined gRPC
-module/binance/server          ← 摄入受理服务器
-  ↓ downstream dispatch port
-module/market_data             ← 交易所中立的后续管线
+[采集区 / 交易所侧]
+  Binance Exchange (WS/REST)
+    ↓
+  binance-client          ← 交易所侧采集器（独立进程）
+    ↓ natsx.Publish()     ← 网络消息发布，subject: binance.market.*
+  ──────────── NATS JetStream (TCP 网络) ────────────
+    ↓ natsx.Subscribe()   ← 网络消息消费
+[服务区 / 内网]
+  binance-server          ← 处理 + 存储 + API（独立进程）
+    ├── redisx            ← 幂等 + 热缓存
+    ├── postgresx         ← 元数据 + 审计
+    ├── taosx             ← 时序行情存储
+    ├── kafkax            ← 跨域事件发布
+    ├── ossx              ← 历史归档
+    └── Gin :8080         ← REST API 供 market_data 调用
+        ↓ HTTP
+  market_data             ← 交易所中立的后续管线
 ```
 
-子模块 `client` 负责连接 Binance、解析和规范化行情事件；`server` 负责验证、去重、ACK 和下游分发。`binance-market` 已移除。
+`binance-client` 和 `binance-server` 可部署在不同机器/容器/可用区，通过 NATS Server 集群传递消息。`binance-market` 已移除。
 
 ---
 
@@ -37,23 +49,26 @@ module/market_data             ← 交易所中立的后续管线
 
 Binance 行情集成面临以下问题：
 
-1. **旧 SDK 模型职责不清**：`binance` SDK 和 `binance-market` Provider 并存，采集、转换、持久化边界模糊，新增产品线时无法确定代码放在哪个模块。
-2. **无明确传输契约**：采集端产出的数据"向谁发送"未定义，server 侧 ingest 接受语义缺失，导致每个 CEX 集成各自发明传输方式。
-3. **身份碰撞风险**：Spot `BTCUSDT`、USDⓈ-M `BTCUSDT`、COIN-M `BTCUSD` 和 Options 合约若不以显式 product_line 区分，会在下游产生身份碰撞。
-4. **可靠性无保障**：at-least-once delivery + idempotent acceptance + ACK-driven checkpoint 的端到端语义从未定义，client 重启或 server 故障时事件丢失或重复不可控。
-5. **边界侵蚀**：Binance 模块容易向其内部引入 storage/query/strategy 所有权，违背数据域"采集后即交付"的架构原则。
+1. **旧 SDK 模型职责不清**：`binance` SDK 和 `binance-market` Provider 并存，采集、转换、持久化边界模糊。
+2. **同进程耦合**：当前 `internal/cs` 包将 client 和 server 绑定在同一进程（Go interface 直调），无法独立部署，无网络容错。
+3. **身份碰撞风险**：Spot `BTCUSDT`、USDⓈ-M `BTCUSDT`、COIN-M `BTCUSD` 和 Options 合约无 product_line 区分。
+4. **可靠性无保障**：at-least-once delivery + 幂等接受的端到端语义未定义，进程重启或故障时数据丢失或重复。
+5. **无存储能力**：server 端无法独立存储行情数据，必须依赖外部 market_data 模块。
+6. **无对外 API**：market_data 无法主动查询 Binance 行情，缺少服务化接口。
 
 ---
 
 ## 4. Goals
 
-- 定义 client/server 双端架构，client 拥有交易所侧采集，server 拥有摄入受理
+- **分布式 C/S 架构**：client 和 server 为独立进程，可独立部署在不同机器/容器，通过 natsx JetStream 网络通信
 - 支持 Binance 四产品线：Spot、USDⓈ-M Futures、COIN-M Futures、Options
-- 通过 contracts-defined `MarketDataService` gRPC bidirectional stream 传输
-- 明确 at-least-once (client) + idempotent acceptance (server) + ACK-driven checkpoint 交付语义
-- 定义 canonical instrument identity 所需维度，覆盖四产品线碰撞场景
-- 定义 enforceable boundary gates，防止跨边界导入和所有权扩散
-- 移除 `binance-market` 作为 active/legacy Provider
+- **natsx JetStream** 作为 client→server 唯一通信通道，保证 at-least-once delivery + 持久化
+- server 侧完整存储：taosx（时序）+ postgresx（元数据）+ redisx（缓存）+ ossx（归档）
+- server 侧 **kafkax** 跨域事件发布，解耦下游消费者
+- server 侧 **Gin REST API** 供 market_data 主动查询
+- 定义 canonical instrument identity，覆盖四产品线碰撞场景
+- 定义 enforceable boundary gates：禁止跨进程代码导入，CI 拦截
+- 移除 `binance-market` + `internal/cs` 同进程桥接包
 
 ---
 
@@ -64,25 +79,24 @@ Binance 行情集成面临以下问题：
 | 不做 | 原因 |
 |------|------|
 | 定义 canonical domain model（ProductLine/InstrumentKey 等） | 由 `module/domain_market` 拥有 |
-| 定义 proto/gRPC wire contract | 由 `module/contracts` 拥有 |
-| 拥有 market_data storage engine | 由 `module/market_data` 拥有 |
-| 暴露 query API | 属于 `module/market_data` 或下游模块 |
 | 实现 strategy API / trading decision | 属于分析域和决策域 |
 | 实现 order execution | 属于执行域 |
-| 兼容旧 `binance-market` Provider | 已移除，迁移历史详见 `docs/migrations/` |
-| 作为跨 CEX 通用 ingestion server | 本模块仅处理 Binance，通用部分在 `module/market_data` |
+| 兼容旧 `binance-market` Provider | 已移除 |
+| 作为跨 CEX 通用 ingestion server | 本模块仅处理 Binance |
+| 同进程运行 client + server | **违反分布式约束（见 §0）** |
+| 保留 `internal/cs` 同进程桥接包为运行时依赖 | **必须删除** |
 
 ---
 
 ## 6. Consumers
 
-| 消费者 | 使用方式 | 状态 |
-|--------|----------|------|
-| `module/market_data` | 通过 server downstream dispatch port 接收 canonical market events | SPEC Approved (Spec-Version v1.0.0, Code v0.1.0), runtime integration pending |
-| `module/binance/client` | 通过 contracts-defined gRPC 调用 `module/binance/server` 的 `MarketDataService.Ingest` | 待实现 |
-| `module/binance/server` | 接收 client 发送的 `IngestRequest` 流 | 待实现 |
-| Operator / SRE | 通过 client/server Gin admin 端点监控和管理 | 待实现 |
-| CI Pipeline | 通过 BOUNDARY-GATES.md 中的 gate 脚本执行边界检查 | 待实现 |
+| 消费者 | 使用方式 | 通信协议 |
+|--------|----------|---------|
+| `module/market_data` | HTTP `GET /api/v1/market/*` 主动拉取，或 kafkax topic 消费 | HTTP REST / Kafka |
+| 下游分析域（signal/risk/backtest） | kafkax consumer group 消费 `binance.market.*` topic | Kafka |
+| `module/binance/server` | natsx subscribe `binance.market.>` 消费 client 发布的事件 | NATS JetStream |
+| Operator / SRE | client :8081 / server :8082 Gin admin 端点 | HTTP |
+| CI Pipeline | BOUNDARY-GATES.md gate 脚本执行边界检查 | — |
 
 ---
 

@@ -2,9 +2,9 @@
 
 ## 1. Metadata
 
-- Status: Approved
-- Spec-Version: v1.0.1
-- Last-Updated: 2026-06-17
+- Status: Draft → v2.0.0
+- Spec-Version: v2.0.0
+- Last-Updated: 2026-06-21
 - Owner: ZoneCNH
 - Layer: 数据域 · Binance 交易所接入
 - Version: v0.1.0
@@ -15,59 +15,75 @@
 
 ## 2. Summary
 
-`module/binance/client` 是 Binance 交易所对向行情采集器。它连接 Binance 行情端点，将交易所原生事件转换为 ZoneCNH 规范行情事件，持久化本地投递状态，并通过 contracts 定义的 gRPC 协议将事件发送至 `module/binance/server`。
+`module/binance/client` 是 Binance 交易所对向**行情采集器**，以**独立进程**运行。
+
+**职责极简化**：仅采集 + 规范化 + 发布。不持有存储，不持有状态，不知道 server 的存在。
+
+```text
+[采集区 / 交易所侧]
+  Binance Exchange (WS/REST)
+        ↓
+  binance-client（独立进程）
+  catalog → parser → connectors(4条线) → normalize → mapper
+                                                    ↓
+                                    natsx.Publish(subj, json)
+                                    跨网络发布到 NATS JetStream
+                                    subject: binance.market.{line}.{type}
+```
+
+client 完成发布即结束职责。持久化、幂等、存储、API 全部由 `binance-server` 负责。
 
 ---
 
 ## 3. Problem
 
-量化交易系统需要从 Binance 采集行情数据。直接使用 Binance SDK 或裸 WS/REST 调用存在以下问题：
+量化交易系统需要从 Binance 采集行情数据。存在以下问题：
 
-- **多产品线身份碰撞**：`BTCUSDT` 同时存在于 Spot 和 USDⓈ-M 永续合约，裸 symbol 无法区分产品线，导致数据路由错误
-- **投递不可靠**：网络断开后事件丢失，无法恢复断点；重启后无法确定哪些事件已送达 server
-- **重试幂等无保障**：直接重发可能导致 server 侧重复处理同一事件
-- **耦合风险**：client 直接依赖 server 内部实现，导致 C/S 边界模糊、无法独立部署
-- **无本地缓冲**：网络瞬断时事件直接丢弃，缺乏 spool-and-forward 交付保障
+- **多产品线身份碰撞**：`BTCUSDT` 同时存在于 Spot 和 USDⓈ-M，裸 symbol 无法区分，导致数据路由错误
+- **同进程耦合**：旧架构 client 通过 Go interface 直接调用 server，无法独立部署，无法容错
+- **重试重复**：无跨重试稳定的幂等键，直接重发导致 server 重复处理
+- **产品线不完整**：仅 Spot 有实现，USDⓈ-M/COIN-M/Options 缺失
 
 ---
 
 ## 4. Goals
 
+- **独立进程部署**：`binance-client` 以独立二进制运行，与 server 无代码依赖
 - 支持 Binance 全部 4 条产品线：Spot、USDⓈ-M Futures、COIN-M Futures、Options，每条可独立启停
 - 提供产品线目录，包含足够字段生成规范身份标识
-- 提供 Binance 符号解析器，区分 Spot/USDⓈ-M/COIN-M/Options 身份，输出 `domain_market` 兼容的身份组件
-- 提供 product-line connector 模型，每条产品线暴露一致的内部事件流
-- 将交易所原生事件规范化为内部 client 事件，保留完整溯源信息
-- 将规范化事件映射为 `domain_market` 规范行情事件，不自定义规范枚举
-- 生成跨重试稳定的幂等键
-- 提供 SQLite spool，发送前持久化事件，支持进程重启恢复
-- 提供 checkpoint 机制，仅在 server 持久 ACK 后推进
-- 提供 gRPC sender，处理重连、背压、流重启、部分 ACK、reject 分类
-- 提供 Gin admin 端点，仅操作本地状态（/healthz, /readyz, /debug/*, /admin/*）
+- 提供 Binance 符号解析器，区分 Spot/USDⓈ-M/COIN-M/Options 身份
+- 将交易所原生事件规范化为 `domain_market.MarketFactEnvelope`
+- 生成跨重试稳定的幂等键（放入 envelope Header，由 server 消费）
+- **通过 natsx JetStream 发布事件**（网络通信，不依赖 server 进程）
+  - subject 格式：`binance.market.{product_line}.{event_type}`
+  - 同步等待 JetStream Publish ACK（确认消息已持久化到 NATS）
+- 提供 Gin admin 端点（:8081），仅操作本地状态：`/healthz /readyz`
 - 所有可观测性通过 `observex` 集成
 
 ---
 
 ## 5. Non-goals
 
-- 不做 gRPC ingest server 实现（由 `module/binance/server` 负责）
-- 不做 server 侧幂等接受或持久 ACK 逻辑（由 server 负责）
-- 不做下游 dispatch（由 server → `module/market_data` 链路负责）
-- 不做 storage/query/strategy（属于分析域和执行域职责）
+- **不做同进程 server 调用**（Go interface / cs 包 — 违反分布式约束）
+- **不做 spool / checkpoint**（由 natsx JetStream 持久化替代）
+- **不做 gRPC sender**（由 natsx publisher 替代）
+- 不做 server 侧幂等接受或持久化（由 server 负责）
+- 不做下游 dispatch（由 server 负责）
+- 不做存储（redisx/postgresx/taosx/ossx 全部属于 server）
+- 不做 REST API（由 server Gin 接口负责）
 - 不做规范行情类型定义（由 `module/domain_market` 负责）
-- 不做 proto 定义（由 `module/contracts` 负责）
-- 不做 `binance-market` 遗留模块迁移或兼容
-- 不做交易下单（本模块仅采集行情数据）
+- 不做 `binance-market` 遗留模块兼容
+- 不做交易下单
 
 ---
 
 ## 6. Consumers
 
-| 消费者 | 使用方式 |
-|--------|----------|
-| `module/binance/server` | 通过 contracts 定义 gRPC 协议接收 `IngestRequest` 流 |
+| 消费者 | 通信方式 | 说明 |
+|--------|---------|------|
+| natsx JetStream | TCP 网络 | client 发布事件，NATS 持久化后由 server 消费 |
 
-> client 当前只有 server 一个消费者。未来若有其他模块需要直接消费 client 输出，需通过 contracts 定义接口。
+> **client 不直接与 server 交互**。两者通过 NATS JetStream 解耦，互不感知对方的进程位置。
 
 ---
 

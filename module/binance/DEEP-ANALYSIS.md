@@ -6,6 +6,129 @@
 
 ---
 
+## 0. 分布式架构约束（最高优先级）
+
+> 本节是 §2 目标架构的前置约束。所有设计决策必须满足本节规则。
+
+### 0.1 强制分离原则
+
+`binance/client` 和 `binance/server` **必须**以独立进程运行，支持部署在不同机器/容器/可用区。
+
+```
+禁止的模式（当前代码实态）:
+┌────────────────────────────────────────────┐
+│  binance 单进程                             │
+│  ┌──────────┐  Go interface  ┌──────────┐  │
+│  │  client  │ ─────────────► │  server  │  │
+│  └──────────┘                └──────────┘  │
+└────────────────────────────────────────────┘
+  问题：同进程调用，内存共享，无法独立部署，无网络容错
+
+强制的模式（v2.0.0 目标）:
+┌─────────────────┐  TCP/TLS  ┌─────────┐  TCP/TLS  ┌─────────────────┐
+│  binance-client │ ─────────► │  NATS   │ ─────────► │  binance-server │
+│  (独立进程/容器)  │           │ Server  │           │  (独立进程/容器) │
+│  可部署于:       │           │(Cluster)│           │  可部署于:       │
+│  - 境外VPS      │           └─────────┘           │  - 内网服务器    │
+│  - 离交易所近    │                                  │  - Kubernetes   │
+└─────────────────┘                                  └─────────────────┘
+```
+
+### 0.2 通信隔离规则
+
+| 规则 | 说明 |
+|------|------|
+| **R1** | `binance-client` 与 `binance-server` **不得共享任何 Go interface 或内存** |
+| **R2** | 两进程的唯一通信通道是 **natsx JetStream（网络消息队列）** |
+| **R3** | `internal/cs` 包（当前同进程桥接包）**必须删除**，不得成为 v2.0.0 运行时依赖 |
+| **R4** | client 和 server 的 Go 二进制必须可以在**不同机器**上独立启动 |
+| **R5** | 任何 `client.import server` 或 `server.import client` 均是边界违反，CI 门禁拦截 |
+
+### 0.3 分布式数据流
+
+```
+  [采集区 / 交易所侧]                  [NATS Cluster]              [服务区 / 内网]
+  ──────────────────                  ─────────────               ──────────────
+  binance-client-1 (spot+usdm)  ──┐
+  binance-client-2 (coinm+opts) ──┼──► JetStream Stream        ──► binance-server-1
+                                  │    BINANCE_MARKET            ──► binance-server-2
+  (多 client 可横向扩展)           ──┘   Retention: 7d              (HA, 至少 2 实例)
+                                        Replicas: 3                     │
+                                                                ┌───────┴───────┐
+                                                           redisx  taosx  postgresx
+                                                           kafkax  ossx   Gin:8080
+```
+
+**JetStream 提供的分布式保障**：
+- 消息持久化到磁盘（client 进程重启不丢数据）
+- 至少投递一次（at-least-once delivery）
+- Consumer Group（server 多实例竞争消费，每条消息只处理一次）
+- ACK 超时自动重投（server 宕机后重新投递给健康实例）
+
+### 0.4 当前代码的违规清单
+
+```go
+// ❌ 违规：internal/cs/types.go
+// 这是同进程共享类型，依赖于 client 和 server 在同一个 Go binary 中
+
+// ❌ 违规：internal/client/sender.go
+type Sender struct {
+    ingest IngestClient  // Go interface — 只能同进程调用！
+    ...
+}
+
+// ❌ 违规：internal/server/ingest.go
+func (s *IngestServer) Process(ctx context.Context, req cs.IngestRequest) cs.IngestResult {
+    // 这个方法只能被同进程的 client 直接调用，无法跨网络
+}
+
+// ✅ 目标：internal/client/publisher/publisher.go
+func (p *MarketPublisher) Publish(ctx context.Context, env *domainmarket.MarketFactEnvelope) error {
+    data, _ := json.Marshal(env)
+    _, err := p.js.Publish(subj, data)  // 网络调用，跨进程
+    return err
+}
+
+// ✅ 目标：internal/server/consumer/consumer.go
+func (c *MarketConsumer) Start(ctx context.Context) {
+    sub, _ := c.js.Subscribe("binance.market.>", c.handle,
+        nats.Durable("binance-server"),
+        nats.ManualAck(),
+    )  // 网络订阅，跨进程
+}
+```
+
+### 0.5 分布式部署配置隔离
+
+```yaml
+# binance-client.yaml（仅需 NATS 地址，不知道 server 在哪）
+nats:
+  url: "nats://nats-cluster:4222"
+  stream: "BINANCE_MARKET"
+# client 不配置：redis / postgres / taos / kafka / oss / gin
+
+# binance-server.yaml（仅需 NATS 地址，不知道 client 在哪）
+nats:
+  url: "nats://nats-cluster:4222"
+  consumer:
+    durable: "binance-server"
+redis:
+  addr: "redis:6379"
+postgres:
+  host: "postgres"
+taos:
+  endpoint: "tdengine:6041"
+kafka:
+  brokers: ["kafka:9092"]
+oss:
+  endpoint: "oss-cn-hangzhou.aliyuncs.com"
+gin:
+  bind: ":8080"
+# server 不配置：binance exchange 连接参数
+```
+
+---
+
 ## 1. 当前架构评估
 
 ### 1.1 现状概览
