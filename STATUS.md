@@ -108,7 +108,7 @@
 | 组件                                                          | 架构类型     | 版本   | 进度     | 覆盖率要求 | 说明                  |
 | ------------------------------------------------------------- | -------- | ------ | -------- | ---------- | --------------------- |
 | [market_data](https://github.com/ZoneCNH/market_data)         | 独立进程 | v1.0.0 | ██░░ 30% | 100%       | dispatch 聚合（域入口）：Receiver + DualWriteSink；FR-MD-001~008；v1.0.0 released |
-| [binance](https://github.com/ZoneCNH/binance)                 | C/S Module | v0.1.0      | ░░░░  5% | 100%       | 参考实现：bootstrap + client/server；Spec Approved；4产品线 |
+| [binance](https://github.com/ZoneCNH/binance)                 | C/S Module | v2.1.0 (spec) | ░░░░  5% | 100%       | C/S 分布式：client(natsx publish) + server(7 infra: natsx/redisx/pg/taosx/clickhousex/kafkax/ossx + Gin :8080)；Spec v2.1.0 Approved；runtime 待 PR-007 |
 | [okx](https://github.com/ZoneCNH/okx)                         | C/S Module      | v0.1.1 | ███░ 80% | 100%       | OKX CEX 行情采集；待升级 client/server 拆分 |
 | [bybit](https://github.com/ZoneCNH/bybit)                     | C/S Module      | v0.1.1 | ███░ 80% | 100%       | Bybit CEX             |
 | [bitget](https://github.com/ZoneCNH/bitget)                   | C/S Module      | v0.1.1 | ███░ 80% | 100%       | Bitget CEX            |
@@ -127,7 +127,7 @@
 
 | 模块            | SPEC | IMPL | RELEASE | LIVE INT | EXT CI | ADOPT | SOAK | FACTORY | 备注                               |
 | --------------- | :--: | :--: | :-----: | :------: | :----: | :---: | :--: | :-----: | ---------------------------------- |
-| binance         |  ✅  |  ❌  |   ❌    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | C/S Module；v0.1.0；Spec Approved；4产品线          |
+| binance         |  ✅  |  ❌  |   ❌    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | C/S Module；spec v2.1.0 Approved；7 infra + Gin；runtime 待实现 |
 | okx             |  ✅  |  ✅  |   ✅    |   ⏳待验证 |  N/A   |  N/A  | N/A  |   ❌    | SDK；80%；OKX CEX；factory ❌ 原因：LIVE INT 待 market_data dispatch 集成验证 |
 | bybit           |  ✅  |  ✅  |   ✅    |   ⏳待验证 |  N/A   |  N/A  | N/A  |   ❌    | SDK；80%；Bybit CEX；factory ❌ 同上 |
 | bitget          |  ✅  |  ✅  |   ✅    |   ⏳待验证 |  N/A   |  N/A  | N/A  |   ❌    | SDK；80%；Bitget CEX；factory ❌ 同上 |
@@ -352,7 +352,7 @@
 
 - market_data 域：14 组件（13 C/S Module + 1 独立进程 dispatch）
 - dispatch（market_data）：独立进程，v1.0.0，Receiver + DualWriteSink，进度 30%
-- C/S Module（13）：binance 为参考实现（v0.2.0，bootstrap + client/server + 4 产品线）；其余 12 个 v0.1.1，待升级
+- C/S Module（13）：binance 为参考实现（spec v2.1.0 分布式：natsx + 7 infra + Gin；runtime v0.2.0）；其余 12 个 v0.1.1，待升级
 - **factory 升级路径**：13 C/S Module 需完成 client/server 拆分 + bootstrap 接入 + dispatch 集成验证后批量触发 factory-ready 评估
 
 ### 🟡 数据域 · macro_data（注意）

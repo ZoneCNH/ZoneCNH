@@ -187,7 +187,7 @@ github.com/ZoneCNH/binance/
 
 ---
 
-## 6. 六模块依赖声明
+## 6. 七模块依赖声明
 
 | 模块 | 使用方 | 用途 | go.mod 变更 |
 |------|--------|------|:-----------:|
@@ -195,6 +195,7 @@ github.com/ZoneCNH/binance/
 | `redisx` | server | 幂等 + 热缓存 + 锁 + 限流 | indirect → **direct** |
 | `postgresx` | server | 元数据 + 幂等日志 + 审计 | indirect → **direct** |
 | `taosx` | server | 时序行情存储 | indirect → **direct** |
+| `clickhousex` | server | OLAP 分析查询（跨符号聚合、多维分析、因子回看） | **缺失 → 新增** |
 | `kafkax` | server | 跨域事件发布 | indirect → **direct** |
 | `ossx` | server | 历史数据归档 | **缺失 → 新增** |
 | `gin-gonic/gin` | server | REST API | **缺失 → 新增** |

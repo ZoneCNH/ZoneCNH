@@ -2,9 +2,9 @@
 
 - Status: Approved
 - Spec-Version: v1.1.0
-- Last-Updated: 2026-06-19
+- Last-Updated: 2026-06-21
 - Layer: L2 存储适配器
-- Version: v1.0.3
+- Version: v1.0.5
 - Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `kernel`
 
 > 公开投影 caveat：Status=Approved、100.0% 覆盖证据与 dev live gate 通过不等同于 factory-grade；外部 tag/GitHub Release/远端 CI/发布制品证据补齐前保持非 factory 声明。
@@ -13,11 +13,11 @@
 
 ## 1. 摘要
 
-`taosx` 是 TDengine 的 L2 存储适配器契约模块。v1.0.3 在保持 v1.0.0 公共 API 与适配器边界不变的前提下，交付 Go 侧可审计的配置归一化与脱敏、SQL 执行与查询契约、批量写入与 schemaless 写入契约、健康检查、可注入驱动端口和可选指标端口。
+`taosx` 是 TDengine 的 L2 存储适配器契约模块。v1.0.5 在保持 v1.0.0 公共 API 与适配器边界不变的前提下，交付 Go 侧可审计的配置归一化与脱敏、SQL 执行与查询契约、批量写入与 schemaless 写入契约、健康检查、可注入驱动端口和可选指标端口。
 
 **时序存储边界：taosx vs clickhousex** — taosx 面向 **IoT 时序存储**场景（高频传感器/行情数据写入、时间窗口查询、设备监控），基于 TDengine 的超级表（supertable）模型优化写入吞吐，适合每秒数万点的高频写入和简单时间窗口聚合（如 `INTERVAL(1m)` 均值/最大/最小）。clickhousex 面向 **OLAP 分析查询**场景（复杂聚合、多维分析、即席查询），适合需要对历史数据进行灵活 SQL 分析的分析工作负载。选型指南：高频写入 + 固定窗口查询 → taosx；复杂聚合 + 灵活多维分析 → clickhousex。两者不重叠，按场景组合使用。
 
-v1.0.3 保持 `pkg/taosx` 为公共运行时 API：默认驱动仍显式不可用，真实 TDengine 通过 `WithDriver` 注入或测试适配器接入。本地发布候选已把 `taosx-coverage-check` 接入 CI/release 门禁并验证 `pkg/taosx` 100.0% 覆盖率；官方 `taosWS` WebSocket 集成仍是 `integration` tag + `TAOSX_INTEGRATION=1` 显式 opt-in gate，2026-06-19 已使用受控 dev 配置完成 live run；证据只登记脱敏命令、数据库名和 PASS 结果。核心包仍不内置连接池、STMT 批量写入实现或自动重试策略。
+v1.0.5 保持 `pkg/taosx` 为公共运行时 API：默认驱动仍显式不可用，真实 TDengine 通过 `WithDriver` 注入或测试适配器接入。本地发布候选已把 `taosx-coverage-check` 接入 CI/release 门禁并验证 `pkg/taosx` 100.0% 覆盖率；官方 `taosWS` WebSocket 集成仍是 `integration` tag + `TAOSX_INTEGRATION=1` 显式 opt-in gate，2026-06-19 已使用受控 dev 配置完成 live run；证据只登记脱敏命令、数据库名和 PASS 结果。核心包仍不内置连接池、STMT 批量写入实现或自动重试策略。
 
 ## 2. 目标
 
@@ -50,7 +50,7 @@ v1.0.3 保持 `pkg/taosx` 为公共运行时 API：默认驱动仍显式不可�
 
 ## 5. 功能需求
 
-以下功能需求定义 v1.0.3 必须稳定交付的 TDengine 适配器公共能力。每条 FR 包含 WHEN/THEN 行为规格和对应的验收标准 (AC) 与测试用例 (TC) 映射。
+以下功能需求定义 v1.0.5 必须稳定交付的 TDengine 适配器公共能力。每条 FR 包含 WHEN/THEN 行为规格和对应的验收标准 (AC) 与测试用例 (TC) 映射。
 
 ### FR-001: Config.Normalize 默认值补齐
 
@@ -336,17 +336,17 @@ module/taosx/
 
 ### 兼容性
 
-v1.0.3 不改变 v1.0.0 的公共构造入口和核心接口语义。新增字段、方法或错误分类必须保留旧调用方的编译兼容性，破坏性变更必须进入后续 major 版本。
+v1.0.5 不改变 v1.0.0 的公共构造入口和核心接口语义。新增字段、方法或错误分类必须保留旧调用方的编译兼容性，破坏性变更必须进入后续 major 版本。
 
 ### 迁移策略
 
-从 v1.0.2 升级到 v1.0.3 的调用方只需重新运行验证命令。已注入自定义 driver、metrics 或测试适配器的项目不需要调整构造方式。
+从 v1.0.4 升级到 v1.0.5 的调用方只需重新运行验证命令。已注入自定义 driver、metrics 或测试适配器的项目不需要调整构造方式。
 
 ## 19. 发布证据与测试矩阵
 
 ### 发布证据
 
-v1.0.3 本地发布候选证据必须包含单元测试、契约测试、示例测试、race 检查、覆盖率报告、边界检查、依赖差异检查、`GOWORK=off make release-check`、`GOWORK=off make taosx-coverage-check` 100.0% 结果、`GOWORK=off make integration`、integration tag 默认 skip 证据、`git diff --check` 输出和无凭据泄漏检查；当前源码证据锚定 `/home/taosx/.worktree/workspaces/taosx-20260619` branch `taosx` @ `d46af01`，release evidence hash `c78f9de861cf83434140fc0e0e051e91af71736ec2d22f0ce1c0cf74c9a87f61`。dev live TDengine opt-in 运行证据已在 2026-06-19 补齐；对外发布、GitHub Release 或 factory-grade 声明还必须补充外部发布/远端 CI/发布制品证据。
+v1.0.5 本地发布候选证据必须包含单元测试、契约测试、示例测试、race 检查、覆盖率报告、边界检查、依赖差异检查、`GOWORK=off make release-check`、`GOWORK=off make taosx-coverage-check` 100.0% 结果、`GOWORK=off make integration`、integration tag 默认 skip 证据、`git diff --check` 输出和无凭据泄漏检查；当前源码证据锚定 `/home/taosx/.worktree/workspaces/taosx-20260619` branch `taosx` @ `d46af01`，release evidence hash `c78f9de861cf83434140fc0e0e051e91af71736ec2d22f0ce1c0cf74c9a87f61`。dev live TDengine opt-in 运行证据已在 2026-06-19 补齐；对外发布、GitHub Release 或 factory-grade 声明还必须补充外部发布/远端 CI/发布制品证据。
 
 ### 测试矩阵
 
@@ -354,7 +354,7 @@ v1.0.3 本地发布候选证据必须包含单元测试、契约测试、示例�
 
 ## 20. 回滚策略
 
-如 v1.0.3 发布后出现回归，调用方可回退到上一已验证候选或已发布 tag（当前上一候选为 v1.0.2）。回滚不需要数据迁移，因为核心包不持久化状态、不写 schema、不管理连接池。
+如 v1.0.5 发布后出现回归，调用方可回退到上一已验证候选或已发布 tag（当前上一候选为 v1.0.2）。回滚不需要数据迁移，因为核心包不持久化状态、不写 schema、不管理连接池。
 
 ## 21. 运行手册
 

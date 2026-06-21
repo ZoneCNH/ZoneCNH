@@ -1,37 +1,36 @@
-# module/contracts
+# contracts
 
-`module/contracts` 是 contracts 领域的契约 SSOT（single source of truth）。
+`pkg/contracts` 的文档索引，记录当前运行时导出的契约面、兼容投影与边界约束。
+当前真相以 `/home/contracts/pkg/contracts` 为准；本文档只描述现状，不保留旧版分层叙事。
 
-它只描述跨模块、跨运行时可复用的稳定接口，不承载业务逻辑、持久化实现或传输实现。
+## 当前导出面
 
-## 角色定位
+| 层级 | 导出 | 作用 |
+| --- | --- | --- |
+| 基础信封 | `Event`, `Command`, `Query` | 统一跨域消息包，字段名与 JSON tag 稳定 |
+| 标记接口 | `DTO`, `Port` | 标识数据对象与端口对象 |
+| 错误注册 | `ErrorCode` | 记录 `code` / `domain` / `severity` / `retryable` |
+| P0 市场态势 | `RegimeSnapshot` | 单标的市场态势快照 |
+| P0 宏观态势 | `RegimeCard` | 宏观 regime card |
+| P0 决策卡 | `DecisionCard` | `regime_engine` 的联合决策输出 |
+| P1 信号意图 | `SignalIntent` | `signal_factory` 面向 `risk_engine` / `order_engine` 的输出 |
+| 供应端口 | `MarketDataProvider`, `MacroDataProvider`, `DecisionCardProvider`, `SignalFactoryProvider` | 最新值查询、订阅流或意图生成 |
+| 采集 wire contract | `MarketDataService`, `IngestRequest`, `IngestResult`, `IngestAck`, `IngestReject`, `RejectCode` | 适配器到 contracts 的单请求/单结果接入面 |
+| 兼容投影 | `RegimeSnapshotEvent`, `RegimeCardEvent`, `DecisionCardEvent`, `MarketRegimePort`, `MacroRegimePort`, `RegimeEnginePort` | 过渡期别名，保留旧引用稳定性 |
 
-| 视角 | 说明 |
-| --- | --- |
-| Consumer | 依赖本目录中的接口、DTO、topic 常量和兼容性约束的上层模块与运行时仓库。 |
-| Producer | 维护契约定义的人或流水线，负责发布版本、兼容性说明和变更记录。 |
-| Stable period | 当前 `v1.x` 期间默认保持向后兼容；仅允许非破坏性增量变更。破坏性变更需进入下一个 semver-major。 |
+## 边界
 
-## 目录内容
+- 该包只定义契约，不实现 HTTP/gRPC/Kafka/NATS。
+- 当前 ingestion 形态是单请求/单结果 `Ingest`，不是双向流。
+- `AllRejectCodes()` 返回 9 个 canonical code；`RejectUnsupportedChannel` 仍是导出常量，但不在 canonical 列表中。
+- 任何新增字段或方法都必须同步更新 `SPEC.md`、`TRACEABILITY.md`、`ACCEPTANCE.md` 和任务文档。
 
-- `SPEC.md`：契约规格与版本边界
-- `FEATURES.md`：功能与约束总览
-- `ACCEPTANCE.md`：验收门禁与测试登记
-- `TRACEABILITY.md`：需求、测试、证据追溯矩阵
-- `goal.md`：目标与完成定义
-- `CHANGELOG.md`：面向发布的变更记录
+## 关联模块
 
-## 使用约定
-
-- 只依赖这里已经冻结并文档化的导出契约。
-- 新增字段、常量或行为时，优先保持兼容，并同步更新 SPEC、TRACEABILITY、ACCEPTANCE 与 CHANGELOG。
-- 任何破坏性修改都必须先提升版本策略，再调整消费者。
-
-## 参考
-
-- `SPEC.md`
-- `FEATURES.md`
-- `ACCEPTANCE.md`
-- `TRACEABILITY.md`
-- `goal.md`
-- `CHANGELOG.md`
+- `market_data`
+- `macro_data`
+- `regime_engine`
+- `signal_factory`
+- `risk_engine`
+- `order_engine`
+- `module/binance`
