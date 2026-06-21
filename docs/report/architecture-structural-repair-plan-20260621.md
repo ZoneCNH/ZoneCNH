@@ -1,6 +1,6 @@
 # FoundationX 架构结构性修复方案（2026-06-21）
 
-> 适用范围：`docs/report/architecture-structural-analysis-20260621.md` 中原先标记为“当前未完成”的 7 项收口动作。
+> 适用范围：`docs/report/architecture-structural-analysis-20260621.md` 中原先标记为“待收口”的 7 项收口动作。
 > 定位：2026-06-21 修复批次的闭环记录；分析报告保留结构性诊断与摘要，本文件承载完成顺序、产出、依赖和退出条件。
 > 原则：契约先行、AC 先于任务、占位符先实化、命名先定基准、投影分层、入口单一。
 > 说明：`domain_market` / `domain_macro` / `domain_exchange` 的目标命名口径已统一为 `snake_case`；当前本地路径投影仍可能保留历史目录名（如 `module/portfolio-engine`），仅允许出现在迁移表和同步说明中，正文规范名统一使用 `snake_case`。
@@ -261,7 +261,7 @@
 | 文件 | 需要对齐的内容 |
 | --- | --- |
 | `docs/report/architecture-structural-analysis-20260621.md` | 保留结构性诊断与摘要，完整执行计划改引用本文件的闭环结果 |
-| `STATUS.md` | 阻塞项与下一步行动改为闭环摘要，不再保留待完成表述 |
+| `STATUS.md` | 阻塞项与下一步行动改为闭环摘要，不再保留未闭环措辞 |
 | `docs/report/repo-naming-unification-20260620.md` | 只保留命名同步结果与历史投影边界，不再承载完整修复计划 |
 | `module/data-cs-module/README.md` | 作为数据域标准化入口，被 `#9` 直接引用 |
 | `module/data-cs-module/SPEC-TEMPLATE.md` | 数据域 SPEC 模板入口，服务 `#9` |
