@@ -171,21 +171,21 @@ L2.5: domainx / decimalx / domain_market / domain_macro / domain_exchange (5/5 �
 ### 决策域
 
 - [signal_factory](https://github.com/ZoneCNH/signal_factory) — 信号生成与组合 `公开`
-- ~~[backtest_engine](https://github.com/ZoneCNH/backtest_engine) — 事件驱动回测引擎~~ → **backtestx** `已弃用`
 - [optimizer](https://github.com/ZoneCNH/optimizer) — 参数优化 `公开`
 - [backtestx](https://github.com/ZoneCNH/backtestx) — 回测引擎（事件驱动、Walk-Forward、蒙特卡洛） `公开`
 - [strategyx](https://github.com/ZoneCNH/strategyx) — 策略工厂（策略注册、参数管理、信号组合） `公开`
 - [maestro](https://github.com/ZoneCNH/maestro) — 工作流编排引擎（DAG 工作流、状态机、错误恢复） `公开`
 
+> 历史占位 `backtest_engine` 已于 2026-06-22 移除（迁移至 backtestx）。
+
 ### 执行域
 
-- ~~[risk_engine](https://github.com/ZoneCNH/risk_engine) — 风险管理引擎~~ → **riskx** `已弃用`
-- ~~[order_engine](https://github.com/ZoneCNH/order_engine) — 订单执行引擎~~ → **orderx** `已弃用`
-- ~~[portfolio_engine](https://github.com/ZoneCNH/portfolio_engine) — 投资组合管理~~ → **positionx** `已弃用`
 - [settlement](https://github.com/ZoneCNH/settlement) — 结算与对账 `公开`
 - [riskx](https://github.com/ZoneCNH/riskx) — 风控引擎（事前风控、回撤控制、熔断机制） `公开`
 - [orderx](https://github.com/ZoneCNH/orderx) — 订单管理器（订单生命周期、SOR、状态机） `公开`
 - [positionx](https://github.com/ZoneCNH/positionx) — 仓位管理器（实时仓位追踪、PnL、敞口监控） `公开`
+
+> 历史占位 `risk_engine` / `order_engine` / `portfolio_engine` 已于 2026-06-22 移除（分别迁移至 riskx / orderx / positionx）。
 
 ### 横切 · 入口
 

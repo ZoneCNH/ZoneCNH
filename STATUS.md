@@ -238,7 +238,6 @@
 | 组件                                                          | 版本         | 进度    | 覆盖率要求 | 说明                                                                |
 | ------------------------------------------------------------- | ------------ | ------- | ---------- | ------------------------------------------------------------------- |
 | [signal_factory](https://github.com/ZoneCNH/signal_factory)   | v0.1.0       | ████ 40% | 100%       | 信号生成工厂，消费 DecisionCard→SignalIntent[]，冲突门+强度映射，5 tests PASS |
-| [backtest_engine](https://github.com/ZoneCNH/backtest_engine) | v0.1.0       | ░░░░ 5% | 100%       | ~~占位~~ → [**backtestx**](https://github.com/ZoneCNH/backtestx)  |
 | [optimizer](https://github.com/ZoneCNH/optimizer)             | v0.1.0       | ░░░░ 5% | 100%       | 参数优化                                                            |
 | [backtestx](https://github.com/ZoneCNH/backtestx)             | v0.1.0-draft | ░░░░ 5% | 100%       | 回测引擎 — 事件驱动回测、Walk-Forward、蒙特卡洛（7 FR, SPEC draft） |
 | [strategyx](https://github.com/ZoneCNH/strategyx)             | v0.1.0-draft | ░░░░ 5% | 100%       | 策略工厂 — 策略注册、参数管理、信号组合（7 FR, SPEC draft）         |
@@ -250,7 +249,7 @@
 | 模块            | SPEC | IMPL | RELEASE | LIVE INT | EXT CI | ADOPT | SOAK | FACTORY | 备注                           |
 | --------------- | :--: | :--: | :-----: | :------: | :----: | :---: | :--: | :-----: | ------------------------------ |
 | signal_factory  |  ❌  |  ⚠️  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | v0.1.0；40% 骨架，DecisionCard→SignalIntent，5 tests PASS |
-| backtest_engine | [P]废弃 | [P]废弃 |  [P]废弃  |  [P]废弃  | [P]废弃 | [P]废弃 | [P]废弃 | ~~占位~~ → backtestx | 仅创建占位，已迁移至 backtestx；不参与质量评估 |
+| backtest_engine | — | — | — | — | — | — | — | 已移除 | 2026-06-22 从 module/ 物理移除（迁移至 backtestx） |
 | optimizer       |  ❌  |  ❌  |   N/A   |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | 5%；仅创建，无实现             |
 | backtestx       |  ❌  |  ❌  |   N/A   |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | v0.1.0-draft；7 FR，SPEC draft |
 | strategyx       |  ❌  |  ❌  |   N/A   |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | v0.1.0-draft；7 FR，SPEC draft |
@@ -264,9 +263,6 @@
 
 | 组件                                                            | 版本         | 进度    | 覆盖率要求 | 说明                                                         |
 | --------------------------------------------------------------- | ------------ | ------- | ---------- | ------------------------------------------------------------ |
-| [risk_engine](https://github.com/ZoneCNH/risk_engine)           | ~~占位~~     | ░░░░ 5% | 100%       | ~~风险管理引擎~~ → [**riskx**](https://github.com/ZoneCNH/riskx) |
-| [order_engine](https://github.com/ZoneCNH/order_engine)         | ~~占位~~     | ░░░░ 5% | 100%       | ~~订单执行引擎~~ → [**orderx**](https://github.com/ZoneCNH/orderx) |
-| [portfolio_engine](https://github.com/ZoneCNH/portfolio_engine) | v0.1.0       | ░░░░ 5% | 100%       | ~~占位~~ → [**positionx**](https://github.com/ZoneCNH/positionx)  |
 | [settlement](https://github.com/ZoneCNH/settlement)             | v0.1.0       | ░░░░ 5% | 100%       | 结算与对账                                                   |
 | [riskx](https://github.com/ZoneCNH/riskx)                       | v0.1.0 | ████░ 40% | 100%       | 风控引擎 — ✅ 最小实现（仓位上限/最大持仓/熔断门禁，7 tests PASS，消费 contracts.SignalIntent）  |
 | [orderx](https://github.com/ZoneCNH/orderx)                     | v0.1.0-draft | ░░░░ 5% | 100%       | 订单管理器 — 订单生命周期、SOR、状态机（7 FR, SPEC draft）   |
@@ -277,9 +273,9 @@
 
 | 模块             | SPEC | IMPL | RELEASE | LIVE INT | EXT CI | ADOPT | SOAK | FACTORY | 备注                           |
 | ---------------- | :--: | :--: | :-----: | :------: | :----: | :---: | :--: | :-----: | ------------------------------ |
-| risk_engine      | [P]废弃 | [P]废弃 | [P]废弃 |  [P]废弃  | [P]废弃 | [P]废弃 | [P]废弃 | ~~占位~~ → riskx | 仅创建占位，已迁移至 riskx；不参与质量评估 |
-| order_engine     | [P]废弃 | [P]废弃 | [P]废弃 |  [P]废弃  | [P]废弃 | [P]废弃 | [P]废弃 | ~~占位~~ → orderx | 仅创建占位，已迁移至 orderx；不参与质量评估 |
-| portfolio_engine | [P]废弃 | [P]废弃 | [P]废弃 |  [P]废弃  | [P]废弃 | [P]废弃 | [P]废弃 | ~~占位~~ → positionx | 仅创建占位，已迁移至 positionx；不参与质量评估 |
+| risk_engine      | — | — | — | — | — | — | — | 已移除 | 2026-06-22 从 module/ 物理移除（迁移至 riskx） |
+| order_engine     | — | — | — | — | — | — | — | 已移除 | 2026-06-22 从 module/ 物理移除（迁移至 orderx） |
+| portfolio_engine | — | — | — | — | — | — | — | 已移除 | 2026-06-22 从 module/ 物理移除（迁移至 positionx） |
 | settlement       |  ❌  |  ❌  |   N/A   |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | 5%；仅创建，无实现             |
 | riskx            |  ❌  |  ❌  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ⚠️    | v0.1.0；最小实现（仓位检查+熔断，7 tests PASS）；消费 contracts.SignalIntent P1 DTO |
 | orderx           |  ❌  |  ❌  |   N/A   |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | v0.1.0-draft；7 FR，SPEC draft |
@@ -322,14 +318,14 @@
 | 数据域 · macro_data    | 11     | 11     | 0      | 80%                                | 10 C/S Module + 1 独立进程 (dispatch)                                      |
 | 数据域 · 另类          | 1      | 0      | 1      | 5%                                 | 1 (v0.1.0)                                            |
 | 分析域                 | 8      | 3      | 5      | 40%                                | 8 独立进程（market_regime/macro_regime v0.2.0；regime_engine v1.0.0） |
-| 决策域                 | 6      | 1      | 5      | 10%                                | 6 (signal_factory v0.1.0 ✅；其余 v0.1.0+)              |
-| 执行域                 | 7      | 1      | 6      | 10%                                | 7 (riskx v0.1.0 ✅ 最小实现；其余 v0.1.0+)              |
+| 决策域                 | 5      | 1      | 4      | 10%                                | 5 (signal_factory v0.1.0 ✅；其余 v0.1.0+)              |
+| 执行域                 | 4      | 1      | 3      | 10%                                | 4 (riskx v0.1.0 ✅ 最小实现；其余 v0.1.0+)              |
 | 入口                   | 2      | 2      | 0      | 85%                                | 2 (x.go v0.0.1；composer v0.2.0 ✅ Coordinator+SinkPort) |
 | 横切                   | 2      | 1      | 1      | 53%                                | 2 (observex, alertx)                                  |
 | 独立                   | 1      | 1      | 0      | -                                  | 0                                                     |
-| **合计**               | **77** | **58** | **19** | **58%**                            | **73**                                                |
+| **合计**               | **73** | **58** | **15** | **62%**                            | **73**                                                |
 
-> ⚠️ **废弃占位说明**：总数 77（新增 macro_data dispatch 独立进程）；4 个历史占位仓库（`backtest_engine`→决策域、`risk_engine`/`order_engine`/`portfolio_engine`→执行域）已迁移至新名称（backtestx/riskx/orderx/positionx），多维成熟度表中已标注 **[P]废弃**，不参与质量评估。活跃组件 73 个。
+> ⚠️ **历史占位移除说明**（2026-06-22）：4 个历史占位模块（`backtest_engine`/`risk_engine`/`order_engine`/`portfolio_engine`）已从 `module/` 目录物理移除，迁移至对应新名称（backtestx/riskx/orderx/positionx）。多维成熟度表中保留行作为档案，标注"已移除"。当前活跃组件 73 个（原 77，扣除 4 个已移除占位）。
 
 ---
 
@@ -377,7 +373,7 @@
 
 ### 🔴 决策域（阻塞）
 
-- signal_factory v0.1.0 骨架完成（40%）：DecisionCard→SignalIntent 链路打通；~~backtest_engine~~ / optimizer 仅创建（5%）
+- signal_factory v0.1.0 骨架完成（40%）：DecisionCard→SignalIntent 链路打通；optimizer 仅创建（5%）
 - backtestx / strategyx / maestro SPEC 已创建（v0.1.0-draft）
 - **阻塞项**：依赖分析域产出因子；signal_factory 待接入真实因子信号
 
@@ -458,10 +454,10 @@
 | macro_data 数量  | 11     | 11           | 11        | ✅            |
 | L2.5 组件        | 5      | 5            | 5         | ✅ 已验证 |
 | 分析域组件       | 8      | 8            | 8         | ✅ 已验证 |
-| 决策域组件       | 6      | 6            | 6         | ✅ 已验证 |
+| 决策域组件       | 5      | 5            | 5         | ✅ 已验证（2026-06-22 移除 backtest_engine 占位后） |
 | 横切组件         | 2      | 2            | 2         | ✅ 已验证 |
 
-注：macro_data 域从 10 增至 11（新增 dispatch 独立进程），ARCHITECTURE.md、README.md 与 STATUS.md 已同步新增 macro_data 行并统一为 11；本次复核后，L2.5、分析域、决策域与横切四项计数也已与 README.md / ARCHITECTURE.md 对齐确认。STATUS 域统计 domain-sum 口径（77）与 unique-link 口径不完全等同（observex 计入基座+横切 2 域，废弃占位不计入 unique-link）。
+注：macro_data 域从 10 增至 11（新增 dispatch 独立进程），ARCHITECTURE.md、README.md 与 STATUS.md 已同步新增 macro_data 行并统一为 11；本次复核后，L2.5、分析域、决策域与横切四项计数也已与 README.md / ARCHITECTURE.md 对齐确认。2026-06-22 移除 4 个废弃占位（risk_engine/order_engine/portfolio_engine/backtest_engine），决策域 6→5，执行域 7→4，总计 77→73。STATUS 域统计 domain-sum 口径（73）与 unique-link 口径不完全等同（observex 计入基座+横切 2 域）。
 
 ### 迁移与门禁基线
 
