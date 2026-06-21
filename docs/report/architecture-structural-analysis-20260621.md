@@ -116,12 +116,12 @@ contracts 未冻结
   positionx（FR=17）、riskx（FR=18）、schedulex（FR=6）、
   strategyx（FR=12）、testkitx（FR=35）、taosx（FR=22）、postgresx（FR=25）
 
-Approved 但无 AC 的模块（8个）：
+Approved 但无 AC 的模块（历史快照，已收口）：
   binance、decimalx、domain-exchange、domain-market、
   postgresx、resiliencx、taosx、testkitx
 ```
 
-Approved 模块无 AC 是最严重的问题——意味着已过审批但无验收标准，无法证明实现满足需求。
+Approved 模块无 AC 曾是最严重的问题——对应的 8 个模块已完成 AC 回写并冻结，当前不再属于未完成项；当前仍需关注的是其余有 FR 但无 AC 的模块池。
 
 #### 问题 S2：TC 缺失率 55%（严重）
 
@@ -213,7 +213,7 @@ Prompt（S5）和 Evidence（S6）几乎为零，表明四源评分体系的后�
 
 - 已完成：`#4` 固定 L2.5 命名基准与迁移表；`#7` 统一 `x.go / composer` 说明入口并回写对齐文档；`#8` 清理 L2.5 遗留 kebab 引用，并回写统一命名 / 对齐同步文档；`#3` 的 5 个 SPEC 已升级为完整基线（`module/settlement/SPEC.md`、`module/portfolio-engine/SPEC.md`、`module/risk-engine/SPEC.md`、`module/order-engine/SPEC.md`、`module/macro_regime/SPEC.md`）；`contracts` P1 / P2 兼容投影别名（`RegimeSnapshotEvent` / `RegimeCardEvent` / `DecisionCardEvent` / `MarketRegimePort` / `MacroRegimePort` / `RegimeEnginePort`）已在 contracts 仓库以 type alias 方式补齐；`README.md`、`ARCHITECTURE.md` 与 `docs/architecture/README.md` / `01-overview.md` / `02-domain-layers.md` / `03-boundaries.md` / `04-principles.md` / `05-foundation.md` / `06-dataflow.md` / `07-three-engines.md` / `08-contracts.md` 的活跃口径已统一到 `riskx` / `orderx` / `positionx` / `backtestx`，历史投影仅保留在迁移表和对照清单中。
 - 数据域 C/S Module 标准化基线已就位：`module/data-cs-module/README.md`、`SPEC-TEMPLATE.md`、`UPGRADE-ROADMAP.md` 已形成统一入口；`#9` 现阶段转为执行问题，需按该入口拆分 `market_data` / `macro_data` 落地任务。
-- 当前未完成共 8 项：P0 `#1`-`#2`、P1 `#5`-`#6`、P2 `#9`-`#12`；完整执行版修复方案已拆出为 `docs/report/architecture-structural-repair-plan-20260621.md`，后续跟踪以该文档为主。
+- 当前未完成共 7 项：P0 `#1`、P1 `#5`-`#6`、P2 `#9`-`#12`；`#2` 已在模块级 AC 回写并冻结，完整执行版修复方案已拆出为 `docs/report/architecture-structural-repair-plan-20260621.md`，后续跟踪以该文档为主。
 - 其中 `#4`、`#7`、`#8` 已作为同步基线收口，仅保留在历史记录和对照清单中，不再列入当前执行面。
 
 ### 5.2 P0 — 基线解锁（1-2 周）
@@ -221,7 +221,7 @@ Prompt（S5）和 Evidence（S6）几乎为零，表明四源评分体系的后�
 | # | 行动 | 对应问题 | 主要产出 | 完成标准 |
 |---|---|---|---|---|
 | 1 | `contracts` 推进至 Approved，并补齐跨域 AC / TC | A1、S1 | 冻结版 `contracts`、协议边界清单 | `contracts = Approved`，下游引用口径单一 |
-| 2 | 为 8 个 Approved 模块补 AC | S1、G2 | Approved 模块验收标准补丁 | Approved 无 AC = 0 |
+| 2 | ✅ 已完成：8 个 Approved 模块 AC 已收口 | S1、G2 | Approved 模块验收标准补丁（已回写） | Approved 无 AC = 0 |
 | 3 | ✅ 已完成：将 5 个占位符 SPEC 全部扩充为完整规格 | S3、A2 | 完整 Spec 基线 | 占位符 SPEC = 0 |
 | 4 | ✅ 已完成：固定 L2.5 命名基准与迁移表 | A3、A4 | `snake_case` 对照表、遗留引用清单、同步文档回写 | 新增文档不再产生新的 kebab 投影；显示层口径已收口 |
 

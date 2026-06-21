@@ -1,6 +1,6 @@
 # FoundationX 架构结构性修复方案（2026-06-21）
 
-> 适用范围：`docs/report/architecture-structural-analysis-20260621.md` 中标记为“当前未完成”的 8 项收口动作。
+> 适用范围：`docs/report/architecture-structural-analysis-20260621.md` 中标记为“当前未完成”的 7 项收口动作。
 > 定位：唯一执行版修复计划；分析报告保留结构性诊断与摘要，本文件承载执行顺序、产出、依赖和退出条件。
 > 原则：契约先行、AC 先于任务、占位符先实化、命名先定基准、投影分层、入口单一。
 > 说明：`domain_market` / `domain_macro` / `domain_exchange` 的目标命名口径已统一为 `snake_case`；当前本地路径投影仍可能保留历史目录名（如 `module/portfolio-engine`），仅允许出现在迁移表和同步说明中，正文规范名统一使用 `snake_case`。
@@ -9,7 +9,7 @@
 
 ## 1. 目标与边界
 
-- 目标：把分析报告里的 8 项残余动作拆成可执行、可验收、可同步的文档修复与规格修复计划。
+- 目标：把分析报告里的 7 项残余动作拆成可执行、可验收、可同步的文档修复与规格修复计划。
 - 边界：本轮只做文档、规格、追踪关系、同步说明与门禁口径收口，不直接改业务代码。
 - 成功标准：每一项都能落到明确产物、依赖和退出条件，且后续文档只引用本计划，不再重复展开完整执行树。
 
@@ -24,17 +24,17 @@
 - `#8`：L2.5 遗留 kebab 引用已清理，对齐同步文档已回写。
 - `#3`：5 个占位符 SPEC 已全部实化并冻结，作为后续 tasks 拆分的稳定输入。
 - `contracts` 的兼容投影别名已补齐，为 `#1` 的 Approved 收口提供引用基础。
+- `#2`：8 个 Approved 模块的 AC 已回写并冻结，不再作为当前待办。
 
-### 2.2 剩余 8 项总览
+### 2.2 剩余 7 项总览
 
 | 编号 | 优先级 | 当前问题 | 主要依赖 | 退出条件 |
 | --- | --- | --- | --- | --- |
 | `#1` | P0 | `contracts` 仍未 Approved，跨域 AC / TC 未闭合 | contracts 现有 DTO / event / port 结构 | `contracts = Approved`，并形成冻结版边界清单 |
-| `#2` | P0 | 8 个 Approved 模块仍无 AC | `#1` 冻结后的契约口径 | Approved 无 AC = 0 |
 | `#5` | P1 | 分析域 / 决策域 / 执行域任务树未拆出 | `#1`-`#3` 的稳定输入 | 三个业务域均出现可执行 tasks |
-| `#6` | P1 | AC → TC → tasks 串联未形成闭环 | `#2`、`#5` | 不再出现“有任务无验收” |
+| `#6` | P1 | AC → TC → tasks 串联未形成闭环 | `#1`、`#5` | 不再出现“有任务无验收” |
 | `#9` | P2 | 数据域 tasks 不足，标准化入口未完全落地 | `module/data-cs-module/*` | 数据域不再停留在低覆盖状态 |
-| `#10` | P2 | prompt / evidence 覆盖不足 | `#2`、`#5`、`#9` | S5 / S6 覆盖持续提升 |
+| `#10` | P2 | prompt / evidence 覆盖不足 | `#5`、`#9` | S5 / S6 覆盖持续提升 |
 | `#11` | P2 | 关键 ADR 数量偏少 | 现有治理与边界材料 | 关键决策可追溯 |
 | `#12` | P2 | `live_integration` 仍需扩展 | 发布 / 集成清单 | `live_integration` 进入 15+ 目标段 |
 
@@ -43,7 +43,7 @@
 | 维度 | 当前状态 | 说明 |
 | --- | --- | --- |
 | `contracts` | 未 Approved | 仍处在可用但未冻结的门禁前状态 |
-| Approved 但无 AC | 8 个 | `binance`、`decimalx`、`domain_exchange`、`domain_market`、`postgresx`、`resiliencx`、`taosx`、`testkitx` |
+| Approved 但无 AC | 0 个 | 历史快照曾为 8 个；对应模块 AC 已回写到各自 `SPEC.md` / `TRACEABILITY.md` |
 | 完整 Spec 基线 | 5 个 | `module/settlement/SPEC.md`、`module/portfolio-engine/SPEC.md`、`module/risk-engine/SPEC.md`、`module/order-engine/SPEC.md`、`module/macro_regime/SPEC.md` 已全部实化并冻结 |
 | 分析 / 决策 / 执行域 tasks | 0 或接近 0 | 任务树尚未形成可执行闭环 |
 | 数据域任务 | 不足 | 需要通过 `module/data-cs-module/README.md`、`SPEC-TEMPLATE.md`、`UPGRADE-ROADMAP.md` 统一入口推进 |
@@ -62,9 +62,8 @@
 ## 3. 修复顺序
 
 1. 先完成 `#1`，把 `contracts` 冻结到 Approved，并补齐跨域 AC / TC。
-2. 再完成 `#2`，把 Approved 模块验收标准一次性补齐。
-3. 然后推进 `#5` 与 `#6`，把分析域 / 决策域 / 执行域任务树拆出来并串成闭环。
-4. 最后推进 `#9`、`#10`、`#11`、`#12`，把数据域、治理文档和集成面补齐。
+2. 然后推进 `#5` 与 `#6`，把分析域 / 决策域 / 执行域任务树拆出来并串成闭环。
+3. 最后推进 `#9`、`#10`、`#11`、`#12`，把数据域、治理文档和集成面补齐。
 
 说明：
 - `#3` 已完成并冻结，不再作为本轮待办。
@@ -92,7 +91,10 @@
 - 下游只保留单一契约口径，不再依赖未冻结的投影。
 - `contracts` 相关跨域规则可直接被后续任务引用。
 
-### 4.2 `#2` - 8 个 Approved 模块补 AC
+### 4.2 `#2` - 8 个 Approved 模块补 AC（已完成并冻结）
+
+**状态**
+- 已完成并冻结，8 个 Approved 模块的 AC 已回写，不再作为当前待办。
 
 **目标**
 - 为当前已经 Approved 但缺少 AC 的模块补齐验收标准。
@@ -263,7 +265,7 @@
 ## 9. 本文件对应的剩余动作
 
 - `#1` `contracts` Approved + 跨域 AC / TC
-- `#2` 8 个 Approved 模块补 AC
+- `#2` 8 个 Approved 模块补 AC（已完成并冻结）
 - `#5` 核心链路 tasks 拆分
 - `#6` AC → TC → tasks 闭环
 - `#9` 数据域 tasks 与标准化入口
