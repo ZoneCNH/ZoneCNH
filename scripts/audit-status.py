@@ -121,6 +121,15 @@ def count_base_versions(text):
                 if ver and ver != "-": count += 1
     return count
 
+def count_market_rows(text):
+    """Count C/S Module rows in 数据域 · 行情 section (replaces old SDK/Provider split)."""
+    count = 0; in_market = False
+    for line in text.splitlines():
+        if "### 数据域 · 行情" in line: in_market = True; continue
+        if in_market and "### 数据域 · 宏观" in line: break
+        if in_market and "github.com" in line: count += 1
+    return count
+
 def count_sdk_provider(text):
     """Count SDK and Provider rows separately in market_data section."""
     sdk = prov = 0; in_market = False
@@ -357,21 +366,21 @@ print("--- 1. Table rows vs domain stats ---")
 rows, totals = parse_domain_stats(STATUS)
 BASE      = github_rows_between(STATUS, "### 基座", "### L2.5")
 L25       = github_rows_between(STATUS, "### L2.5", "### 数据域")
-SDK, PROV = count_sdk_provider(STATUS)
+MARKET    = count_market_rows(STATUS)
+SDK, PROV = count_sdk_provider(STATUS)  # legacy; retained for transitional reporting
 MACRO     = github_rows_between(STATUS, "### 数据域 · 宏观", "### 数据域 · 另类")
 ALT       = github_rows_between(STATUS, "### 数据域 · 另类", "### 分析域")
 ANALYSIS  = github_rows_between(STATUS, "### 分析域", "### 决策域")
 DECISION  = github_rows_between(STATUS, "### 决策域", "### 执行域")
 EXECUTION = github_rows_between(STATUS, "### 执行域", "### 入口")
 
-DMAP = {"Base":"基座","L2.5":"L2.5 领域共享层","SDK":"数据域 · 行情 SDK",
-       "Provider":"数据域 · 行情 Provider","Macro":"数据域 · 宏观","Alt":"数据域 · 另类",
+DMAP = {"Base":"基座","L2.5":"L2.5 领域共享层",
+       "Market":"数据域 · market_data","Macro":"数据域 · macro_data","Alt":"数据域 · 另类",
        "Analysis":"分析域","Decision":"决策域","Execution":"执行域"}
 def _get(label,x): return rows.get(DMAP[label],{}).get(x,"?")
 chk("Base", str(BASE), _get("Base","total"))
 chk("L2.5", str(L25), _get("L2.5","total"))
-chk("SDK", str(SDK), _get("SDK","total"))
-chk("Provider", str(PROV), _get("Provider","total"))
+chk("Market (SDK+Provider)", str(MARKET), _get("Market","total"))
 chk("Macro", str(MACRO), _get("Macro","total"))
 chk("Alt", str(ALT), _get("Alt","total"))
 chk("Analysis", str(ANALYSIS), _get("Analysis","total"))
