@@ -127,9 +127,9 @@ Approved 模块无 AC 是最严重的问题——意味着已过审批但无验�
 
 29/53 个模块无 TC（测试用例），包括分析/决策/执行域全部模块。TC 缺失意味着测试设计完全未启动。
 
-#### 问题 S3：5 个 SPEC 为占位符（中）
+#### 问题 S3：5 个 SPEC 基线已实化（已收口）
 
-以下模块 SPEC 内容 <1KB，为明显占位符，缺乏实质性需求定义：
+以下模块 SPEC 已从占位符升级为完整基线，当前不再计入未完成项；完整规格已回写到各模块 `SPEC.md`：
 
 | 模块 | 字节数 | 域 |
 |------|:------:|-----|
@@ -139,7 +139,7 @@ Approved 模块无 AC 是最严重的问题——意味着已过审批但无验�
 | `order-engine` | 964 | 执行域 |
 | `macro_regime` | 859 | 分析域 |
 
-执行域 4/7 个核心模块均为占位符，这是系统安全性的重大风险点。
+执行域 4/7 个核心模块曾为占位符，这是分析时点的系统安全性重大风险点；该风险已由 `#3` 收口消除。
 
 #### 问题 S4：管线在 Spec/Matrix 后系统性断裂（严重）
 
@@ -192,7 +192,7 @@ Prompt（S5）和 Evidence（S6）几乎为零，表明四源评分体系的后�
 | 数据域 | 7 | 100% | 0% | 29% | 🔴 tasks 不足，AC 全缺 |
 | 分析域 | 6 | 100% | 0% | 0% | 🔴 管线完全停滞 |
 | 决策域 | 8 | 100% | 0% | 0% | 🔴 全部为 Draft/Review，无任何执行制品 |
-| 执行域 | 7 | 100% | 0% | 0% | 🔴 4/7 SPEC 占位符，最高优先级风险 |
+| 执行域 | 7 | 100% | 0% | 0% | 🔴 4/7 SPEC 占位符（分析时点风险，已由 `#3` 收口消除） |
 
 ---
 
@@ -211,9 +211,9 @@ Prompt（S5）和 Evidence（S6）几乎为零，表明四源评分体系的后�
 
 ### 5.1.1 当前收口结果
 
-- 已完成：`#4` 固定 L2.5 命名基准与迁移表；`#7` 统一 `x.go / composer` 说明入口并回写对齐文档；`#8` 清理 L2.5 遗留 kebab 引用，并回写统一命名 / 对齐同步文档；`contracts` P1 / P2 兼容投影别名（`RegimeSnapshotEvent` / `RegimeCardEvent` / `DecisionCardEvent` / `MarketRegimePort` / `MacroRegimePort` / `RegimeEnginePort`）已在 contracts 仓库以 type alias 方式补齐；`README.md`、`ARCHITECTURE.md` 与 `docs/architecture/README.md` / `01-overview.md` / `02-domain-layers.md` / `03-boundaries.md` / `04-principles.md` / `05-foundation.md` / `06-dataflow.md` / `07-three-engines.md` / `08-contracts.md` 的活跃口径已统一到 `riskx` / `orderx` / `positionx` / `backtestx`，历史投影仅保留在迁移表和对照清单中。
+- 已完成：`#4` 固定 L2.5 命名基准与迁移表；`#7` 统一 `x.go / composer` 说明入口并回写对齐文档；`#8` 清理 L2.5 遗留 kebab 引用，并回写统一命名 / 对齐同步文档；`#3` 的 5 个 SPEC 已升级为完整基线（`module/settlement/SPEC.md`、`module/portfolio-engine/SPEC.md`、`module/risk-engine/SPEC.md`、`module/order-engine/SPEC.md`、`module/macro_regime/SPEC.md`）；`contracts` P1 / P2 兼容投影别名（`RegimeSnapshotEvent` / `RegimeCardEvent` / `DecisionCardEvent` / `MarketRegimePort` / `MacroRegimePort` / `RegimeEnginePort`）已在 contracts 仓库以 type alias 方式补齐；`README.md`、`ARCHITECTURE.md` 与 `docs/architecture/README.md` / `01-overview.md` / `02-domain-layers.md` / `03-boundaries.md` / `04-principles.md` / `05-foundation.md` / `06-dataflow.md` / `07-three-engines.md` / `08-contracts.md` 的活跃口径已统一到 `riskx` / `orderx` / `positionx` / `backtestx`，历史投影仅保留在迁移表和对照清单中。
 - 数据域 C/S Module 标准化基线已就位：`module/data-cs-module/README.md`、`SPEC-TEMPLATE.md`、`UPGRADE-ROADMAP.md` 已形成统一入口；`#9` 现阶段转为执行问题，需按该入口拆分 `market_data` / `macro_data` 落地任务。
-- 当前未完成共 9 项：P0 `#1`-`#3`、P1 `#5`-`#6`、P2 `#9`-`#12`。
+- 当前未完成共 8 项：P0 `#1`-`#2`、P1 `#5`-`#6`、P2 `#9`-`#12`；完整执行版修复方案已拆出为 `docs/report/architecture-structural-repair-plan-20260621.md`，后续跟踪以该文档为主。
 - 其中 `#4`、`#7`、`#8` 已作为同步基线收口，仅保留在历史记录和对照清单中，不再列入当前执行面。
 
 ### 5.2 P0 — 基线解锁（1-2 周）
@@ -222,7 +222,7 @@ Prompt（S5）和 Evidence（S6）几乎为零，表明四源评分体系的后�
 |---|---|---|---|---|
 | 1 | `contracts` 推进至 Approved，并补齐跨域 AC / TC | A1、S1 | 冻结版 `contracts`、协议边界清单 | `contracts = Approved`，下游引用口径单一 |
 | 2 | 为 8 个 Approved 模块补 AC | S1、G2 | Approved 模块验收标准补丁 | Approved 无 AC = 0 |
-| 3 | 将 5 个占位符 SPEC 全部扩充为完整规格 | S3、A2 | 可拆任务的完整 Spec | 占位符 SPEC = 0 |
+| 3 | ✅ 已完成：将 5 个占位符 SPEC 全部扩充为完整规格 | S3、A2 | 完整 Spec 基线 | 占位符 SPEC = 0 |
 | 4 | ✅ 已完成：固定 L2.5 命名基准与迁移表 | A3、A4 | `snake_case` 对照表、遗留引用清单、同步文档回写 | 新增文档不再产生新的 kebab 投影；显示层口径已收口 |
 
 ### 5.3 P1 — 管线补洞（2-4 周）
@@ -247,7 +247,7 @@ Prompt（S5）和 Evidence（S6）几乎为零，表明四源评分体系的后�
 
 - `contracts` 已 Approved，且下游不再依赖未冻结口径。
 - Approved 无 AC = 0。
-- 5 个占位符 SPEC 全部清零。
+- 5 个 SPEC 基线已补齐并冻结，不再保留占位符文案。
 - 分析域、决策域、执行域均形成可执行 tasks。
 - 数据域补齐 tasks，并通过 `module/data-cs-module` 标准化入口持续对齐新建数据域模块，避免继续停留在低覆盖状态。
 - L2.5 目标命名基准已统一为 `snake_case`，历史路径投影在同步文档中显式隔离，不再与主分析报告混写。
@@ -275,7 +275,7 @@ L2.5             ████  ████  ████  ████  ░░�
 执行域           ████  ████  ░░░░  ░░░░  ░░░░  ░░░░  ← 停滞
 ```
 
-### 综合数据速查
+### 综合数据速查（分析时点快照）
 
 ```
 Release:               v1.12.1
@@ -289,7 +289,7 @@ evidence 覆盖:         2/53（4%）
 Foundation Blocker:    0/11（全解决）
 命名不规范目录:        21/53（40%，含 18 kebab + 3 snake）
 Approved 无 AC:        8 个
-SPEC 占位符(<1KB):     5 个
+SPEC 占位符(<1KB):     0 个
 业务域 tasks=0 的域:   分析域（6）+ 决策域（8）+ 执行域（7）= 21 个模块
 ```
 
