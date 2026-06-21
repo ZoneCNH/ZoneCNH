@@ -1,6 +1,8 @@
 # TASK-BINANCE-SERVER-009 Implementation Readiness — Dispatch Binding
 
-- Status: Ready
+> Archived v2.0.0: this `contracts`/gRPC + `market_data` DownstreamDispatchPort readiness task is superseded by `natsx`, `domain_market`, server-owned storage, `kafkax`, and Gin REST tasks. Do not use it for implementation.
+
+- Status: Archived
 - Owner: `module/binance/server`
 - Last-Updated: 2026-06-17
 - Dependencies: `module/contracts/SPEC.md` §8.4, `module/market_data/SPEC.md` v1.0.0 §4

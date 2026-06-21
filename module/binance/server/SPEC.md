@@ -16,7 +16,7 @@
 | Version | v0.1.0 |
 | Repository | [github.com/ZoneCNH/binance](https://github.com/ZoneCNH/binance)（server/ 子目录） |
 | Go Module Path | `github.com/ZoneCNH/binance`（monorepo，server 端通过 `cmd/binance-server` + `internal/server` 提供） |
-| Related | [CONSTITUTION.md](../../../CONSTITUTION.md), [ARCHITECTURE.md](../../../ARCHITECTURE.md), [module/binance/SPEC.md](../SPEC.md), [module/contracts](../../contracts/), [module/domain_market](../../domain_market/), [module/market_data](../../market_data/) |
+| Related | [CONSTITUTION.md](../../../CONSTITUTION.md), [ARCHITECTURE.md](../../../ARCHITECTURE.md), [module/binance/SPEC.md](../SPEC.md), [module/domain_market](../../domain_market/), [module/natsx](../../natsx/), [module/redisx](../../redisx/), [module/taosx](../../taosx/), [module/kafkax](../../kafkax/), [module/ossx](../../ossx/), [module/postgresx](../../postgresx/) |
 
 ---
 
@@ -82,8 +82,8 @@ client 和 server **互不感知彼此的进程位置**。server 只知道 NATS 
 - 不做 exchange connectivity（由 `module/binance/client` 负责）
 - 不做 client-side spool/checkpoint 管理（v2.0.0 已删除，由 natsx JetStream 替代）
 - 不做 canonical domain type 定义（由 `module/domain_market` 负责）
-- 不做 proto 定义（由 `module/contracts` 负责）
-- 不做跨交易所通用 ingest server（本模块仅 Binance）
+- 不做 proto/gRPC 定义（v2.0.0 已删除，通过 natsx 通信）
+- 不做跨交易所通用采集/消费服务（本模块仅 Binance）
 - 不做旧 `binance-market` 兼容
 - 不做 strategy API / trading decision（由决策域负责）
 - 不做 order execution（由执行域负责）
@@ -107,169 +107,162 @@ client 和 server **互不感知彼此的进程位置**。server 只知道 NATS 
 
 ## 7. Functional Requirements
 
-### FR-001: gRPC Server Binding
+### FR-001: natsx Consumer Binding
 
-**WHEN** server 启动且 gRPC port 可用
-**THEN** 绑定 `MarketDataService` 到 gRPC server 并开始接受 stream 连接
+**WHEN** server 启动且 natsx 连接就绪
+**THEN** 创建 durable consumer（`durable=binance-server`），订阅 `binance.market.>`，ManualAck 模式
 
-**WHEN** server 收到 `Ingest` bidi stream 请求
-**THEN** 创建 stream context 并开始接收 `IngestRequest` 消息
+**WHEN** NATS 连接断开后重连
+**THEN** durable consumer 自动从上次 Ack 位置恢复，无数据丢失
 
-### FR-002: Stream Lifecycle
+### FR-002: Consumer Lifecycle
 
-**WHEN** client 打开新的 ingest stream
-**THEN** 分配 stream_id 并初始化 stream-scoped 统计计数器
+**WHEN** server 启动 durable consumer
+**THEN** 分配 consumer 上下文，初始化 metrics 计数器
 
-**WHEN** client 正常关闭 stream（EOF）
-**THEN** 清理 stream 资源并记录最终统计
+**WHEN** server 正常关闭（SIGTERM）
+**THEN** 完成当前处理中消息的 Ack 后关闭 consumer，不丢弃 in-flight 消息
 
-**WHEN** stream 因网络错误中断
-**THEN** 释放 stream 资源，不阻塞其他 stream
+**WHEN** consumer 处理超过 `ack_wait` 仍未 Ack
+**THEN** JetStream 自动重投（NakWithDelay），consumer 重新处理；redisx SetNX 幂等过滤重复
 
-### FR-003: Request Validation
+### FR-003: Envelope Validation
 
-**WHEN** 收到 `IngestRequest`
-**THEN** 校验 required envelope 字段（product_line、instrument identity、event type、event time、idempotency key、source metadata）全部存在且有效
+**WHEN** 收到 natsx 消息（`domain_market.MarketFactEnvelope` JSON）
+**THEN** 校验 required 字段：product_line、instrument_key、event_type、event_time、idempotency_key、source_metadata 全部存在且有效
 
 **WHEN** product_line 不在支持列表中
-**THEN** 返回 reject，类别为 `terminal_validation`
+**THEN** ManualNak，记录 terminal_validation 错误日志
 
 **WHEN** instrument identity 结构无效
-**THEN** 返回 reject，类别为 `terminal_validation`
+**THEN** ManualNak，记录 terminal_validation 错误日志
 
 **WHEN** event type 未知
-**THEN** 返回 reject，类别为 `terminal_validation`
+**THEN** ManualNak，记录 terminal_validation 错误日志
 
 **WHEN** event time 无效（零值或未来时间超阈值）
-**THEN** 返回 reject，类别为 `terminal_validation`
+**THEN** ManualNak，记录 terminal_validation 错误日志
 
 **WHEN** idempotency key 缺失
-**THEN** 返回 reject，类别为 `terminal_validation`
-
-**WHEN** domain enum 值不被识别
-**THEN** 返回 reject，类别为 `terminal_validation`
-
-**WHEN** payload shape 与 event type 不匹配
-**THEN** 返回 reject，类别为 `terminal_validation`
+**THEN** ManualNak，记录 terminal_validation 错误日志
 
 **WHEN** 所有校验通过
 **THEN** 进入 idempotency 检查阶段
 
-### FR-004: Idempotent Acceptance
+### FR-004: Idempotent Acceptance（redisx SetNX）
 
 **WHEN** idempotency key 未被接受过
-**THEN** 进入 durable acceptance 阶段
+**THEN** 通过 `redisx.SetNX(key, payloadHash, 72h)` 原子写入，进入存储阶段
 
-**WHEN** idempotency key 已被接受且 payload 一致
-**THEN** 返回 ACK，标记为 idempotent duplicate，不重复 dispatch
+**WHEN** idempotency key 已存在且 payload hash 一致
+**THEN** 视为幂等重复，跳过存储，直接 Ack
 
-**WHEN** idempotency key 已被接受但 payload 冲突
-**THEN** 返回 reject，类别为 `terminal_conflict`
+**WHEN** idempotency key 已存在但 payload hash 冲突
+**THEN** ManualNak（terminal_conflict），记录告警，不重复存储
 
-### FR-005: Durable Acceptance
+### FR-005: Multi-Store Write
 
 **WHEN** event 通过校验和幂等检查
-**THEN** 执行 durable acceptance（持久化 idempotency record 或写入可靠队列）
+**THEN** 并行执行以下写入：
+1. `taosx.WriteBatch()` — 写入时序行情数据（tick/bar/depth）
+2. `postgresx.Upsert()` — 更新 instrument catalog 元数据
+3. `redisx.SET("tick:{instrument_key}", value, 60s)` — 热缓存最新行情
 
-**WHEN** durable acceptance 成功
-**THEN** 生成 ACK 并 dispatch 到 downstream port
+**WHEN** 全部写入成功
+**THEN** 进入 kafkax dispatch 阶段；暂不调用 `msg.Ack()`
 
-**WHEN** durable acceptance 失败（存储不可用、队列满）
-**THEN** 返回 reject，类别为 `retryable`，不标记 event 为已接受
+**WHEN** 任意写入失败（taosx / postgresx / redisx）
+**THEN** ManualNak（NakWithDelay），JetStream 重投；不调用 `msg.Ack()`；告警
 
-**Idempotency Store 后端选择**:
-- 生产默认：Redis（SCADA-redis 共享实例，TTL 24h + Lua CAS 原子操作），适用于多实例共享和跨重启持久化
-- 开发/测试：in-memory（sync.Map + TTL GC），通过 `IdempotencyStore` 接口切换，仅用于本地单实例场景
-- 接口抽象：`CheckAndSet(ctx, key, payloadHash) -> (accepted bool, conflict bool, err error)`
+**设计约束**：`msg.Ack()` 必须在全部存储写入和 `kafkax` handoff 成功后才能调用（BR-001 / BR-003）
 
-### FR-006: ACK Generation
+### FR-006: kafkax Dispatch
 
-**WHEN** event 通过 durable acceptance
-**THEN** 生成 ACK 包含：stream_id、accepted idempotency key、accepted count、duplicate count、rejects list、durable acceptance indicator
+**WHEN** 全部存储写入成功，且 `msg.Ack()` 尚未调用
+**THEN** 通过 `kafkax.Send()` 将事件发布到 topic `binance.market.{product_line}.{event_type}`，解耦下游消费者；handoff 成功后调用 `msg.Ack()`
 
-**WHEN** event 被 reject
-**THEN** reject 包含：stream_id、rejected idempotency key、reject classification（retryable / terminal_validation / terminal_conflict）、retry hint
+**WHEN** kafkax 发送失败
+**THEN** 立即重试（最多 3 次，指数退避）；仍失败则返回 error、调用 `msg.NakWithDelay(...)` 或进入 dead-letter/告警路径；`kafkax` handoff 完成前不得调用 `msg.Ack()`
 
-**WHEN** 返回 ACK/reject
-**THEN** 数据足够 client 推进 checkpoint
+### FR-007: Gin REST API（market_data 主动拉取）
 
-### FR-007: Downstream Dispatch
+**WHEN** `GET /api/v1/market/ticks/{instrument_key}`
+**THEN** 优先从 redisx 热缓存返回最新 tick；缓存 miss 则查 taosx
 
-**WHEN** event 通过 durable acceptance
-**THEN** 通过 exchange-neutral downstream port 将 event 分发到 `module/market_data`
+**WHEN** `GET /api/v1/market/bars/{instrument_key}?interval=1m&start=&end=`
+**THEN** 从 taosx 查询 K 线历史数据，返回 JSON
 
-**WHEN** downstream dispatch 失败
-**THEN** 采用 retry-first + dead-letter 策略：
-  1. 立即重试 dispatch（最多 3 次，指数退避 100ms/200ms/400ms）
-  2. 重试耗尽后写入 dead-letter spool，触发 `alertx` 告警，不阻塞后续事件
-  3. 不回滚幂等记录：ACK 已发送，client checkpoint 已推进，回滚代价大于收益
-  4. Dead-letter 事件可通过 `/admin/dead-letter` 端点查看、重放或丢弃
+**WHEN** `GET /api/v1/market/instruments`
+**THEN** 从 postgresx 返回所有活跃 instrument catalog
 
-**设计理由**: durable acceptance 成功后，幂等记录已持久化且 ACK 已返回 client。回滚（rollback-first）需撤销幂等记录 + 通知 client 撤回 ACK，显著增加复杂度和延迟，且收益有限——idempotency 层本身已防止重复。retry-first + dead-letter 在保障数据不丢失的同时保持 pipeline 简洁。
+**WHEN** `GET /api/v1/market/depth/{instrument_key}`
+**THEN** 从 redisx 热缓存返回最新深度快照
 
-### FR-008: Admin HTTP Endpoints
+**WHEN** market_data 调用超过 redisx 限流阈值
+**THEN** 返回 429 Too Many Requests
 
-**WHEN** `GET /healthz`
-**THEN** 返回 200（进程存活）
+### FR-008: ossx Archival
 
-**WHEN** `GET /readyz`
-**THEN** 返回 200（gRPC server 就绪，下游可连通），否则 503
+**WHEN** ossx 定时任务触发
+**THEN** 将 taosx 中超过 RetentionDays 的时序数据异步归档到 ossx（parquet/json.gz）
 
-**WHEN** `GET /debug/*`
-**THEN** 返回调试信息（pprof 等，仅 debug 模式启用）
+**WHEN** ossx 上传完成并验证 ETag
+**THEN** 才允许删除对应 taosx 热数据，禁止先删后写
 
-**WHEN** `GET /admin/streams`
-**THEN** 返回活跃 stream 列表及统计
+### FR-009: Boundary Enforcement
 
-**WHEN** `POST /admin/drain`
-**THEN** 进入排水模式：拒绝新 stream，等待现有 stream 完成
+**WHEN** server runtime code imports `internal/client`、`internal/cs`、`module/contracts` 或 gRPC ingest runtime
+**THEN** CI boundary gate MUST fail
+
+**WHEN** server `go.mod` 缺少 `gin` / `ossx` / `natsx` / `redisx` / `taosx` / `postgresx` / `kafkax` direct dependency
+**THEN** CI dependency gate MUST fail
 
 ---
 
 ## 8. Business Rules
 
-### BR-001: Idempotency Key — Accept At Most Once
+### BR-001: ManualAck 全链路写入后才 Ack
 
-**规则**: 每条 idempotency key 最多被 durable accept 一次，最多产生一次 downstream dispatch。
+**规则**: `msg.Ack()` 必须在 redisx SetNX + taosx + postgresx + `kafkax` handoff 全部成功后才调用。
 
-**约束**: idempotency store 必须在 durable acceptance 阶段原子写入，check-and-set 语义。
+**约束**: 禁止在校验通过、idempotency 检查后、任何单一存储写入成功时提前 Ack。
 
-**违反时**: 重复 key 的第二次请求：若 payload 一致返回 ACK（idempotent duplicate）；若 payload 冲突返回 `terminal_conflict` reject。
+**违反时**: 进程崩溃后 JetStream 重投，redisx SetNX 幂等检查防止重复写入 taosx。
 
-### BR-002: Duplicate With Conflicting Payload → Reject
+### BR-002: redisx SetNX — 幂等唯一性
 
-**规则**: 同一 idempotency key 的不同 payload 必须被拒绝。
+**规则**: redisx `SetNX(key, payloadHash, TTL)` 必须原子执行，保证 at-most-once 存储语义。
 
-**约束**: idempotency store 必须存储已接受 event 的 payload hash，用于冲突检测。
+**约束**: idempotency key TTL 默认 72h，可配置；多实例 server 共享同一 Redis 实例。
 
-**违反时**: 返回 `terminal_conflict` reject。冲突不触发 dispatch，不覆盖已接受的数据。
+**违反时**: 重复 key 同 payload → 幂等 Ack；重复 key 不同 payload → terminal_conflict Nak。
 
-### BR-003: ACK Only After Durable Acceptance
+### BR-003: ManualAck Only After Durable Processing
 
-**规则**: ACK（包含 durable acceptance indicator = true）必须在 durable acceptance 完成后才能发送。
+**规则**: JetStream `msg.Ack()` 必须在 validation、idempotency、durable storage、`kafkax` handoff 全部完成后才能发送。
 
-**约束**: 禁止在 idempotency check 通过但 durable write 未完成时发送 ACK。
+**约束**: 禁止在 idempotency check 通过但存储或 fanout 未完成时 Ack；失败路径使用 Nak / retry / dead-letter policy。
 
-**违反时**: 若 durable write 失败但已发送 ACK → client 可能跳过未持久化的事件，数据丢失。server 必须确保 ACK 仅在实际持久化后发送。
+**违反时**: 若写入失败但已 Ack，JetStream 不会重投，导致数据丢失。server 必须确保 Ack 仅在实际持久化并完成 `kafkax` handoff 后发送。
 
-### BR-004: Validation Failure → No Checkpoint Advancement
+### BR-004: Validation Failure → Terminal Reject Without Durable Acceptance
 
-**规则**: 终端校验失败（terminal_validation）不应推进 client checkpoint。
+**规则**: 终端校验失败（terminal_validation）不得进入幂等、存储或 `kafkax` fanout。
 
-**约束**: reject 分类为 `terminal_validation` 时，client 不应将对应 event 视为已消费。
+**约束**: terminal validation 可以按 policy Ack / dead-letter，但不得产生 durable market fact。
 
-**违反时**: client 推进 checkpoint 会导致该失败 event 被跳过。server 通过 reject classification 告知 client 正确处理方式。
+**违反时**: 无效 payload 被持久化或 fanout，污染历史行情和下游分析。
 
 ### BR-005: Admin Surface Isolation
 
 **规则**: Admin 端点只能变更 server-local 状态，禁止：
 - 修改 client connector
-- 删除 client checkpoint
+- 清理或伪造 JetStream consumer state
 - 绕过 idempotency
 - 暴露 secrets
 - 触发交易操作
 
-**约束**: Admin handler 只能访问 server 内部状态（stream registry、idempotency store stats、dispatch stats）。
+**约束**: Admin handler 只能访问 server 内部状态（consumer stats、idempotency store stats、storage/API/fanout stats）。
 
 **违反时**: 操作被拒绝并记录 security event。
 
@@ -277,7 +270,7 @@ client 和 server **互不感知彼此的进程位置**。server 只知道 NATS 
 
 **规则**: server 禁止 import `module/binance/client` 的任何 internal 包或类型。
 
-**约束**: server 与 client 之间仅通过 `contracts` §8.4 中定义的 gRPC wire contract 类型通信。
+**约束**: server 与 client 之间仅通过 `natsx` subject + `domain_market.MarketFactEnvelope` JSON 解耦；禁止 `contracts` / gRPC / `internal/cs` bridge。
 
 **违反时**: 编译失败（依赖方向违反 ARCHITECTURE.md 数据域边界）。
 
@@ -285,27 +278,28 @@ client 和 server **互不感知彼此的进程位置**。server 只知道 NATS 
 
 ## 9. Interface Contract
 
-### 9.1 gRPC Service（由 contracts §8.4 定义）
+### 9.1 natsx JetStream Consumer
 
-```go
-// MarketDataService receives normalized upstream market_data ingestion requests.
-// Defined in module/contracts/SPEC.md §8.4.
-type MarketDataService interface {
-    Ingest(stream IngestRequest) (stream IngestResult, error)
-}
+```text
+Stream: BINANCE_MARKET
+Subjects: binance.market.*
+Durable: binance-server
+Ack policy: ManualAck after validation + idempotency + storage + kafkax handoff
+Payload: domain_market.MarketFactEnvelope JSON
 ```
 
-server 负责实现该接口的 server 端。每个 `IngestRequest` 返回一个 `IngestResult`，其中 exactly one of `Ack` or `Reject` is non-nil。
+server 不暴露 gRPC ingest；client 与 server 只通过 `natsx` subject 和 `domain_market.MarketFactEnvelope` JSON 解耦。
 
-### 9.2 Downstream Port（exchange-neutral）
+### 9.2 Server Output Surfaces
 
-```go
-// MarketDataSink 下游行情数据接收端口
-type MarketDataSink interface {
-    // Accept 接受已验收的行情事件
-    Accept(ctx context.Context, event *MarketEvent) error
-}
-```
+| Surface | 用途 |
+|---------|------|
+| `taosx` | tick / bar / depth 时序存储 |
+| `postgresx` | instrument catalog、审计日志、幂等备份 |
+| `redisx` | SetNX 幂等与最新行情热缓存 |
+| `kafkax` | `binance.market.*` topic fanout |
+| `ossx` | 过期行情归档 |
+| Gin REST `GET /api/v1/market/*` | `market_data` 主动查询 Binance-specific 行情 |
 
 ### 9.3 Gin Admin Routes
 
@@ -313,7 +307,7 @@ type MarketDataSink interface {
 GET  /healthz
 GET  /readyz
 GET  /debug/*
-GET  /admin/streams
+GET  /admin/stats
 POST /admin/drain
 ```
 
@@ -321,19 +315,17 @@ POST /admin/drain
 
 ## 10. Data Model
 
-### IngestRequest / IngestResult / IngestAck / IngestReject / RejectCode（由 contracts §8.4 定义）
+### MarketFactEnvelope / ProcessingResult / RejectReason
 
-权威定义见 `module/contracts/SPEC.md` §8.4。以下为 server 视角的关键语义摘要：
+权威 payload 由 `module/domain_market` 定义。server 只消费 `domain_market.MarketFactEnvelope` JSON，不依赖 `contracts` proto 或 gRPC DTO。
 
-| contracts §8.4 类型 | server 侧语义 |
-|---|---|
-| `IngestRequest` | 接收：12 字段（request_id/source/product_line/instrument_key/event_type/event_time/received_at/schema_version/payload/sequence/ordering_key/source_metadata）。`request_id` 即幂等键 |
-| `IngestResult` | 返回：per-request 终端结果，exactly one of `Ack` or `Reject` non-nil |
-| `IngestAck` | 接受确认：stream_id + accepted_count + duplicate_count + durable indicator |
-| `IngestReject` | 拒绝说明：reject_code（RejectCode 枚举）+ reason + retryable flag |
-| `RejectCode` | 10 个机器可读拒绝码：retryable / terminal_validation / terminal_conflict / unauthorized / rate_limited / server_unavailable / contract_violation / quality_rejected / ordering_violation / unsupported_channel |
+| 类型 | server 侧语义 |
+|------|-------------|
+| `MarketFactEnvelope` | JetStream input payload；包含 source、product_line、instrument_key、event_type、event_time、received_at、schema_version、payload、sequence、ordering_key、source_metadata |
+| `ProcessingResult` | server 内部处理结果；记录 accepted / duplicate / rejected / retryable、storage refs、fanout refs |
+| `RejectReason` | 机器可读拒绝原因；用于日志、metrics、dead-letter metadata |
 
-**server 必须处理全部 10 个 RejectCode 路径**。`contract_violation`、`quality_rejected`、`ordering_violation`、`unsupported_channel` 为 contracts §8.4 新增码（此前 SPEC 仅列 3 个，本次同步至 contracts v1.2.0 的 10 码定义），server validation 层和 idempotency 层需全部覆盖。
+server 必须覆盖 `terminal_validation`、`terminal_conflict`、`retryable_storage`、`retryable_fanout`、`unsupported_product_line`、`quality_rejected` 路径。
 
 ---
 
@@ -341,14 +333,16 @@ POST /admin/drain
 
 | 配置项 | 类型 | 默认值 | 说明 |
 |--------|------|--------|------|
-| `server.grpc_addr` | string | `:9090` | gRPC 监听地址 |
+| `nats.stream` | string | `BINANCE_MARKET` | JetStream stream 名称 |
+| `nats.subject` | string | `binance.market.>` | 订阅 subject |
+| `nats.durable` | string | `binance-server` | durable consumer 名称 |
 | `server.admin_addr` | string | `:8080` | Admin HTTP 监听地址 |
-| `server.max_streams` | int | `100` | 最大并发 stream 数 |
-| `idempotency.store` | string | `memory` | 幂等存储类型：memory / redis |
-| `idempotency.ttl` | duration | `24h` | 幂等记录保留时间 |
-| `idempotency.max_entries` | int | `1000000` | 幂等记录最大条目数 |
-| `dispatch.timeout` | duration | `5s` | 下游 dispatch 超时 |
-| `dispatch.retry_max` | int | `3` | dispatch 失败最大重试次数 |
+| `server.api_addr` | string | `:8080` | Market REST API 监听地址 |
+| `idempotency.store` | string | `redis` | 幂等存储类型：redis / memory（测试） |
+| `idempotency.ttl` | duration | `72h` | 幂等记录保留时间 |
+| `storage.taos.database` | string | `binance_market` | taosx 时序库 |
+| `fanout.kafkax.topic_prefix` | string | `binance.market` | kafkax topic 前缀 |
+| `fanout.retry_max` | int | `3` | kafkax 发布失败最大重试次数 |
 | `validation.future_time_threshold` | duration | `5m` | 未来时间容忍阈值 |
 | `observability.log_level` | string | `info` | 日志级别 |
 
@@ -358,14 +352,14 @@ POST /admin/drain
 
 | 错误 | 触发条件 | 处理方式 | Reject 分类 |
 |------|----------|----------|-------------|
-| Envelope validation failure | 缺少必填字段或字段无效 | 返回 reject，不进入幂等检查 | `terminal_validation` |
-| Unsupported product_line | product_line 不在白名单 | 返回 reject | `terminal_validation` |
-| Unknown event type | event_type 不在注册表 | 返回 reject | `terminal_validation` |
-| Invalid event time | 零值或未来时间超阈值 | 返回 reject | `terminal_validation` |
-| Idempotency conflict | key 已存在但 payload hash 不匹配 | 返回 reject，不 dispatch | `terminal_conflict` |
-| Durable write failure | 存储不可用或写入失败 | 返回 reject，不标记已接受 | `retryable` |
-| Downstream dispatch failure | 下游不可达或超时 | 取决于策略：retry 或 rollback | `retryable` |
-| Stream quota exceeded | 超过 max_streams | 拒绝新 stream 连接 | — (gRPC resource_exhausted) |
+| Envelope validation failure | 缺少必填字段或字段无效 | 记录 reject metric，按 policy Ack / dead-letter，不进入幂等检查 | `terminal_validation` |
+| Unsupported product_line | product_line 不在白名单 | 记录 reject metric，按 policy Ack / dead-letter | `terminal_validation` |
+| Unknown event type | event_type 不在注册表 | 记录 reject metric，按 policy Ack / dead-letter | `terminal_validation` |
+| Invalid event time | 零值或未来时间超阈值 | 记录 reject metric，按 policy Ack / dead-letter | `terminal_validation` |
+| Idempotency conflict | key 已存在但 payload hash 不匹配 | terminal reject，不写 storage，不 fanout | `terminal_conflict` |
+| Durable storage failure | `redisx` / `taosx` / `postgresx` / `ossx` 不可用或写入失败 | `msg.NakWithDelay`，不 Ack，不 finalization SetNX | `retryable_storage` |
+| `kafkax` fanout failure | `kafkax` 不可达或发布失败 | retry-first，耗尽后 dead-letter / Nak per policy | `retryable_fanout` |
+| NATS redelivery limit exceeded | message 超过最大重投次数 | dead-letter + alert | `retry_exhausted` |
 
 **错误消息格式**: `"binance-server: <operation>: <detail>"`
 **错误包装**: 使用 `%w` 保留底层错误链
@@ -376,14 +370,14 @@ POST /admin/drain
 
 | 场景 | 输入/状态 | 预期行为 |
 |------|-----------|----------|
-| Stream 断连恢复 | client stream 网络中断后重连 | server 释放旧 stream 资源；client 新 stream 从未 ACK 的 event 继续推送；server 幂等检查保证不重复 dispatch |
-| Duplicate key + conflicting payload | idempotency key 已存在，payload hash 不同 | 返回 `terminal_conflict` reject；不 dispatch；不覆盖已有数据 |
-| Downstream dispatch 失败 | dispatch 到 `module/market_data` 超时或不可达 | 若策略为 rollback：撤销幂等记录，返回 `retryable` reject 让 client 重试；若策略为 retry：记录失败 metric，后台重试，ACK 已返回但 durable_indicator=false |
-| Idempotency store 满 | 幂等记录达到 `max_entries` | 拒绝新 event，返回 `retryable` reject；告警触发 |
-| 并发推送同一 key | 两个 stream 同时推送相同 idempotency key | check-and-set 语义保证仅一个 stream 获得 accept，另一个返回 idempotent duplicate 或 terminal_conflict |
+| `natsx` reconnect | server 与 NATS 短暂断开后恢复 | durable consumer 从未 Ack message 继续处理；幂等检查避免重复 storage / fanout |
+| Duplicate key + conflicting payload | idempotency key 已存在，payload hash 不同 | 记录 `terminal_conflict`；不写 storage；不 fanout；按 policy Ack / dead-letter |
+| `kafkax` fanout 失败 | `kafkax` 发布超时或不可达 | retry-first；未完成 fanout 前不得 Ack；耗尽后 dead-letter + alert |
+| Idempotency store 满 | Redis 内存或容量限制触发 | Nak / retryable_storage；告警触发 |
+| 并发处理同一 key | 多个 delivery 同时处理相同 idempotency key | redisx SetNX 保证仅一个 delivery 获得 accept，另一个 duplicate 或 terminal_conflict |
 | Payload 为空 | event_type 正确但 payload 为空 | 取决于 event type schema：若支持空 payload 则通过；否则返回 `terminal_validation` |
-| Admin drain 时有活跃 stream | drain 模式开启，仍有活跃 ingest stream | 拒绝新 stream 连接；等待现有 stream 自然结束或超时后强制关闭 |
-| gRPC server 未就绪时收到 /readyz | 下游 dispatch port 不可达 | `/readyz` 返回 503 |
+| Admin drain 时有活跃 delivery | drain 模式开启，仍有进行中的 message | 停止拉取新 message；等待已接收 message 完成或超时后 Nak |
+| `/readyz` 依赖不可用 | NATS / Redis / taosx / kafkax 不可用 | `/readyz` 返回 503 |
 
 ---
 
@@ -407,22 +401,24 @@ github.com/ZoneCNH/binance/
 ├── go.mod
 ├── go.sum
 ├── cmd/
-│   └── binance-server/main.go      # ingest acceptance 进程入口
+│   └── binance-server/main.go      # natsx consumer + storage/API/fanout 进程入口
 └── internal/server/
     ├── app/                        # 顶层组装与生命周期
     ├── config/                     # configx 集成
-    ├── ingest/                     # gRPC server 绑定 + stream handler
-    ├── validation/                 # IngestRequest 信封校验
+    ├── consumer/                   # natsx durable consumer + message handler
+    ├── validation/                 # MarketFactEnvelope 信封校验
     ├── idempotency/                # IdempotencyStore 接口 + memory/redis 实现 + check-and-set
-    ├── ack/                        # IngestAck/IngestReject 构造
-    ├── dispatch/                   # exchange-neutral downstream port
-    ├── admin/                      # Gin admin handler（healthz/readyz/debug/admin/streams/admin/drain）
+    ├── ack/                        # JetStream Ack/Nak policy
+    ├── storage/                    # redisx/taosx/postgresx/ossx persistence adapters
+    ├── api/                        # Gin market data REST API
+    ├── fanout/                     # kafkax publish path
+    ├── admin/                      # Gin admin handler（healthz/readyz/debug/admin/stats/admin/drain）
     ├── observability/              # observex metrics/logging/tracing
     ├── errors.go                   # 公共错误变量
     └── *_test.go                   # 各子目录单元测试 + contract 测试
 ```
 
-> **monorepo 边界约束**：`internal/server/*` 不得 import `internal/client/*`，对应 BR-006 + BOUNDARY-GATES §4 CI gate。`internal/server` 仅通过 `module/contracts` 生成的 gRPC server 类型与 `module/binance/client` 跨进程通信。
+> **monorepo 边界约束**：`internal/server/*` 不得 import `internal/client/*`，对应 BR-006 + BOUNDARY-GATES §4 CI gate。`internal/server` 仅通过 `natsx` subject + `domain_market` envelope 与 client 解耦，禁止 `contracts` / gRPC / `internal/cs` bridge。
 
 ---
 
@@ -432,11 +428,14 @@ github.com/ZoneCNH/binance/
 
 | 依赖 | 用途 | 来源 |
 |------|------|------|
-| `module/contracts` | gRPC wire contract（§8.4）：`MarketDataService` 接口 + `IngestRequest`/`IngestResult`/`IngestAck`/`IngestReject`/`RejectCode` DTO | FoundationX 基座 |
-| `module/domain_market` | 领域值对象（Instrument、ProductLine 等） | L2.5 领域共享层 |
-| `module/market_data` downstream port | 已验收事件的分发目标（仅通过 port interface） | 数据域 |
-| `google.golang.org/grpc` | gRPC server runtime | 第三方（标准选择） |
-| `github.com/gin-gonic/gin` | Admin HTTP server | 第三方 |
+| `module/natsx` | JetStream stream、consumer、ManualAck | FoundationX 基座 |
+| `module/domain_market` | `MarketFactEnvelope` 与市场领域值对象 | L2.5 领域共享层 |
+| `module/redisx` | SetNX 幂等、热缓存 | FoundationX 基座 |
+| `module/taosx` | Binance-specific 时序行情存储 | FoundationX 基座 |
+| `module/postgresx` | catalog、审计、幂等备份 | FoundationX 基座 |
+| `module/ossx` | 归档存储 | FoundationX 基座 |
+| `module/kafkax` | 下游 fanout | FoundationX 基座 |
+| `github.com/gin-gonic/gin` | Admin HTTP server + Market REST API | 第三方 |
 | `configx` | 配置管理 | FoundationX 基座 |
 | `observex` | 可观测性集成 | FoundationX 基座 |
 
@@ -444,23 +443,26 @@ github.com/ZoneCNH/binance/
 
 | 禁止依赖 | 原因 |
 |----------|------|
-| `module/binance/client` | client 与 server 之间仅通过 contracts proto 通信，禁止 import client internals |
+| `module/binance/client` | client 与 server 之间仅通过 natsx/domain_market 通信，禁止 import client internals |
 | 任何 exchange connector | exchange 连接由 client 负责，server 不应感知具体交易所 API |
-| storage engine 实现 | 存储由 `module/market_data` 或 storage 扩展负责 |
-| query API 实现 | server 不暴露查询 API |
+| `module/contracts` 作为 ingest wire dependency | v2 runtime wire 已迁移到 natsx + domain_market，禁止恢复 proto/gRPC ingest |
+| `google.golang.org/grpc` 作为 ingest runtime | server 不暴露 gRPC ingest |
+| generic `market_data` storage / query platform ownership | Binance server 只拥有 Binance-specific storage/API/fanout，不拥有通用跨交易所平台语义 |
 | strategy / risk engine | 决策域模块不应被数据域 server 感知 |
 
 ### 15.3 依赖方向
 
 ```text
-contracts (proto 定义)
+domain_market + natsx
     ↓
-binance/server (实现 gRPC server 端)
-    ↓ (通过 exchange-neutral port)
-market_data (下游消费)
+binance/server
+    ↓
+redisx/taosx/postgresx/ossx/kafkax/Gin REST
+    ↓
+market_data consumers
 ```
 
-server 不反向依赖 client，二者通过 contracts 解耦。
+server 不反向依赖 client，二者通过 `natsx` subject + `domain_market` envelope 解耦。
 
 ---
 
@@ -468,34 +470,37 @@ server 不反向依赖 client，二者通过 contracts 解耦。
 
 ### 16.1 测试矩阵
 
-| TC 编号 | 对应 FR | 测试类型 | 场景 | 预期结果 |
-|---------|---------|----------|------|----------|
-| TC-001 | FR-001 | 单元 | gRPC server 启动绑定 | server 注册成功，端口监听 |
-| TC-002 | FR-002 | 单元 | client 正常关闭 stream | stream 清理，最终统计输出 |
-| TC-003 | FR-003 | 单元 | 缺少必填字段的 IngestRequest | 返回 terminal_validation reject |
-| TC-004 | FR-003 | 单元 | 不支持的 product_line | 返回 terminal_validation reject |
-| TC-005 | FR-004 | 集成 | 首次 idempotency key | 通过，进入 dispatch |
-| TC-006 | FR-004 | 集成 | 重复 idempotency key（相同 payload） | ACK idempotent duplicate，不 dispatch |
-| TC-007 | FR-004 | 集成 | 重复 idempotency key（冲突 payload） | terminal_conflict reject |
-| TC-008 | FR-005 | 集成 | durable write 成功 | ACK 含 durable_indicator=true |
-| TC-009 | FR-005 | 集成 | durable write 失败 | retryable reject，不标记已接受 |
-| TC-010 | FR-006 | 单元 | ACK 包含所有必要字段 | ACK 可驱动 client checkpoint |
-| TC-011 | FR-007 | 集成 | dispatch 到下游成功 | event 被下游接受 |
-| TC-012 | FR-007 | 集成 | dispatch 到下游失败 | 取决于策略：retry 或 rollback |
-| TC-013 | FR-008 | 单元 | GET /healthz | 200 |
-| TC-014 | FR-008 | 单元 | GET /readyz（下游不可达） | 503 |
-| TC-015 | FR-008 | 单元 | POST /admin/drain | 新 stream 被拒绝 |
+> 正式 TC 编号以 `TRACEABILITY.md` §4 为准；本表使用 SPEC 场景 ID，避免与追溯矩阵的详细 TC ID 冲突。
+
+| 场景 ID | 对应 FR/BR | 测试类型 | 场景 | 预期结果 |
+|---------|------------|----------|------|----------|
+| SC-001 | FR-001 | 集成 | natsx durable consumer 订阅 | consumer 绑定 stream/subject/durable 成功 |
+| SC-002 | FR-002 | 集成 | 未 Ack message 后进程重启 | JetStream redelivery，server 重新处理 |
+| SC-003 | FR-003 | 单元 | 缺少必填字段的 MarketFactEnvelope | 返回 terminal_validation reject，不写 storage/fanout |
+| SC-004 | FR-003 | 单元 | 不支持的 product_line | 返回 terminal_validation reject |
+| SC-005 | FR-004 | 集成 | 首次 idempotency key | 写入 redisx/taosx/postgresx，完成 kafkax handoff 后 Ack |
+| SC-006 | FR-004 | 集成 | 重复 idempotency key（相同 payload） | Ack duplicate，不重复写 storage/fanout |
+| SC-007 | FR-004 | 集成 | 重复 idempotency key（冲突 payload） | terminal_conflict reject |
+| SC-008 | FR-005 | 集成 | storage write 成功 | Ack 仅在 redisx + taosx + postgresx + kafkax handoff 完成后发送 |
+| SC-009 | FR-005 | 集成 | storage write 失败 | Nak，不 finalization SetNX，不 Ack |
+| SC-010 | FR-006 | 集成 | kafkax fanout 失败 | retry-first，耗尽后 dead-letter |
+| SC-011 | FR-007 | 集成 | GET /api/v1/market/ticks | 返回已持久化 Binance-specific 行情 |
+| SC-012 | FR-009 | 静态 | server imports internal/client or internal/cs | CI boundary gate fails |
+| SC-013 | FR-009 | 静态 | server imports module/contracts or gRPC ingest runtime | CI boundary gate fails |
+| SC-014 | FR-009 | 静态 | go.mod missing direct gin/ossx/natsx/redisx/taosx/postgresx/kafkax dependency | CI dependency gate fails |
+| SC-015 | BR-006 | 静态 | boundary scan | 无 client/gRPC/internal-cs import |
 
 ### 16.2 契约测试
 
-server 必须通过 contracts 定义的 server-side contract tests：
-- 编译期接口检查：`var _ MarketDataServiceServer = (*Server)(nil)`
-- ACK 格式满足 contracts 定义的 `IngestAck` schema
+server 必须通过 consumer contract tests：
+- decode `MarketFactEnvelope` fixture
+- subject routing 匹配 `binance.market.*`
+- Ack only after injected storage/fanout success
 
 ### 16.3 测试工具
 
 - 框架：`testing` + `testify`
-- Mock：`testkitx` 或 gRPC 内置 mock
+- Mock：`natsx` / `redisx` / `taosx` / `kafkax` test doubles
 - 覆盖率：`go test -coverprofile=.coverage/cover.out && go tool cover -func=.coverage/cover.out`
 - 竞态：`go test -race -count=1`
 
@@ -508,9 +513,9 @@ server 必须通过 contracts 定义的 server-side contract tests：
 | Request validation | 延迟 P99 | < 1ms | benchmark test |
 | Idempotency check (memory) | 延迟 P99 | < 0.5ms | benchmark test |
 | Idempotency check (redis) | 延迟 P99 | < 5ms | benchmark test |
-| ACK generation | 延迟 P99 | < 0.5ms | benchmark test |
-| End-to-end ingest (validate + idempotency + ACK) | 延迟 P99 | < 10ms | benchmark test |
-| Concurrent streams | 吞吐 | ≥ 1000 events/s per stream | `go test -bench` |
+| Ack/Nak decision | 延迟 P99 | < 0.5ms | benchmark test |
+| End-to-end ingest (validate + idempotency + storage + fanout + Ack) | 延迟 P99 | < 25ms | benchmark test |
+| Consumer throughput | 吞吐 | ≥ 1000 events/s per instance | `go test -bench` |
 
 ---
 
@@ -520,31 +525,31 @@ server 必须通过 contracts 定义的 server-side contract tests：
 
 | 指标名 | 类型 | 说明 |
 |--------|------|------|
-| `binance_server_active_streams` | gauge | 当前活跃 ingest stream 数 |
-| `binance_server_ingested_total` | counter | 累计接收 ingest request 数 |
+| `binance_server_consumer_lag` | gauge | durable consumer 未处理 message lag |
+| `binance_server_consumed_total` | counter | 累计接收 JetStream message 数 |
 | `binance_server_accepted_total` | counter | 累计验收 event 数 |
 | `binance_server_duplicate_total` | counter | 累计重复 event 数 |
 | `binance_server_rejected_total` | counter | 累计拒绝 event 数（按 reject_class 分组） |
-| `binance_server_ack_latency_ms` | histogram | ACK 响应的端到端延迟 |
-| `binance_server_dispatch_latency_ms` | histogram | 下游 dispatch 延迟 |
-| `binance_server_dispatch_failures_total` | counter | 下游 dispatch 失败计数 |
+| `binance_server_manual_ack_latency_ms` | histogram | ManualAck 决策端到端延迟 |
+| `binance_server_kafkax_dispatch_latency_ms` | histogram | `kafkax` fanout 延迟 |
+| `binance_server_kafkax_dispatch_failures_total` | counter | `kafkax` fanout 失败计数 |
 | `binance_server_idempotency_store_size` | gauge | 幂等记录数 |
 
 ### 18.2 Logging
 
 | 事件 | 级别 | 说明 |
 |------|------|------|
-| stream opened | info | 含 stream_id |
-| stream closed | info | 含 stream_id、accepted/rejected/duplicate 计数 |
-| event accepted | debug | 含 stream_id、product_line、instrument_key、idempotency_key |
-| event rejected | warn | 含 stream_id、idempotency_key、reject_class、reason |
-| duplicate detected | info | 含 stream_id、idempotency_key |
-| dispatch failed | error | 含 stream_id、idempotency_key、error |
+| consumer started | info | 含 stream、subject、durable |
+| consumer stopped | info | 含 accepted/rejected/duplicate 计数 |
+| event accepted | debug | 含 subject、product_line、instrument_key、idempotency_key |
+| event rejected | warn | 含 subject、idempotency_key、reject_class、reason |
+| duplicate detected | info | 含 subject、idempotency_key |
+| kafkax fanout failed | error | 含 subject、idempotency_key、topic、error |
 | idempotency store near capacity | warn | 当前条目数 / max_entries |
 
 ### 18.3 Required Log Fields
 
-每条 server 日志必须包含：`stream_id`、`product_line`（如适用）、`instrument_key`（如适用）、`idempotency_key`（如适用）、`ack_status`（如适用）、`reject_reason`（如适用）
+每条 server 日志必须包含：`subject`、`product_line`（如适用）、`instrument_key`（如适用）、`idempotency_key`（如适用）、`processing_status`（如适用）、`reject_reason`（如适用）
 
 ---
 
@@ -553,7 +558,7 @@ server 必须通过 contracts 定义的 server-side contract tests：
 - 不硬编码 secret、API key、密码 — 全部从环境变量或 `configx` 读取
 - 不在日志中记录敏感数据（secret、token、内部路径）
 - Admin 端点不应暴露 secrets 或允许绕过 idempotency
-- gRPC 传输使用 TLS（生产环境强制）
+- `natsx` 连接与 HTTP/admin 暴露面在生产环境必须使用 TLS/mTLS 或内网隔离
 - 输入校验必须在所有处理之前完成
 - 禁止 admin 端点触发交易操作
 - 依赖扫描（`gitleaks detect --no-git`）为 CI 门禁
@@ -581,6 +586,7 @@ server 必须通过 contracts 定义的 server-side contract tests：
 |------|------|----------|
 | 契约测试 | `go test -run TestContract ./...` | 全部通过 |
 | 无 client import | `go list -deps ./... | grep -q 'binance/client' && exit 1 || exit 0` | 零匹配 |
+| 无 legacy ingest runtime | `rg "google.golang.org/grpc|module/contracts|internal/cs" internal/server cmd/binance-server && exit 1 || exit 0` | 零匹配 |
 | admin 安全 | `go test -run TestAdminSecurity ./...` | 全部通过 |
 
 ---
@@ -589,12 +595,13 @@ server 必须通过 contracts 定义的 server-side contract tests：
 
 | 变更类型 | 兼容性 | 迁移方式 |
 |----------|--------|----------|
-| gRPC wire contract（contracts §8.4）新增 optional 字段 | 向后兼容 | 无需迁移 |
-| gRPC wire contract（contracts §8.4）删除/重命名字段 | Breaking | contracts 版本 bump + server 同步升级 |
+| `MarketFactEnvelope` JSON 新增 optional 字段 | 向后兼容 | server 忽略未知字段或按 schema_version 处理 |
+| `MarketFactEnvelope` JSON 删除/重命名字段 | Breaking | `domain_market` schema_version bump + client/server 同步升级 |
+| `natsx` subject pattern 变更 | Breaking | 新旧 subject 并行迁移或 major bump |
+| Gin REST response schema 变更 | Breaking | API version bump |
+| `kafkax` topic contract 变更 | Breaking | topic version bump + downstream consumer migration |
 | 新增 Idempotency store backend | 向后兼容 | 通过 config 切换 |
-| 修改 RejectClass 枚举 | Breaking | client 需同步更新分类处理逻辑 |
 | 新增 admin endpoint | 向后兼容 | 无需迁移 |
-| 修改 ACK 结构 | Breaking | contracts 版本 bump |
 
 遵循 semver：breaking change → major bump；新增功能 → minor bump；修复 → patch bump。
 
@@ -602,18 +609,19 @@ server 必须通过 contracts 定义的 server-side contract tests：
 
 ## 22. Release DoD
 
-- [ ] 所有 FR-001 ~ FR-008 实现完成
-- [ ] gRPC `MarketDataService` 接口全部实现
-- [ ] 请求校验覆盖所有必填字段
+- [ ] 所有 FR-001 ~ FR-009 实现完成
+- [ ] `natsx` durable consumer + ManualAck policy 实现完成
+- [ ] `MarketFactEnvelope` 请求校验覆盖所有必填字段
 - [ ] 幂等验收：首次 accept、重复 ACK、冲突 reject 全部正确
-- [ ] durable acceptance 正确：ACK 仅在持久化后发送
-- [ ] downstream dispatch 通过 exchange-neutral port
-- [ ] Gin admin endpoints 全部可用（/healthz, /readyz, /admin/*）
-- [ ] 所有 TC-001 ~ TC-015 编写并全部通过
+- [ ] durable acceptance 正确：Ack 仅在 storage + `kafkax` handoff 后发送
+- [ ] storage/API/`kafkax` surfaces 全部实现
+- [ ] Gin admin/API endpoints 全部可用（/healthz, /readyz, /admin/*, /api/v1/market/*）
+- [ ] `TRACEABILITY.md` §4 的正式 TC 全部编写并通过
 - [ ] 覆盖率 ≥ 80%
 - [ ] CI Gate 全部通过
 - [ ] Performance Budget 达标
-- [ ] 不 import `module/binance/client` 或任何 storage/query/strategy 模块
+- [ ] 不 import `module/binance/client`、`module/contracts`、gRPC runtime 或 `internal/cs`
+- [ ] 不拥有 generic `market_data` / strategy 语义；仅实现 Binance-specific storage/API/fanout
 - [ ] SPEC.md status 更新为 Implemented
 
 ---
@@ -624,9 +632,9 @@ server 必须通过 contracts 定义的 server-side contract tests：
 
 | ID | 问题 | 状态 | 负责人 |
 |----|------|------|--------|
-| OQ-001 | idempotency store 首选实现：in-memory 还是 Redis？ | 已解决：Redis 为主（SCADA-redis 共享实例，TTL 24h + Lua CAS），`IdempotencyStore` 接口保留 in-memory 实现仅用于本地开发/测试（2026-06-17） | ZoneCNH |
-| OQ-002 | downstream dispatch 失败策略：retry-first 还是 rollback-first？ | 已解决：retry-first + dead-letter（FR-007）。重试 3 次指数退避后写入死信队列并告警，不回滚幂等记录（2026-06-17） | ZoneCNH |
-| OQ-003 | proto 定义是否已在 `module/contracts` 中可用？ | 已解决：`module/contracts/SPEC.md` §8.4 已定义全部 wire types（2026-06-17） | ZoneCNH |
+| OQ-001 | idempotency store 首选实现：in-memory 还是 Redis？ | 已解决：`redisx` SetNX 为生产默认，TTL 72h；`IdempotencyStore` 接口保留 in-memory 实现仅用于本地开发/测试（2026-06-21） | ZoneCNH |
+| OQ-002 | `kafkax` fanout 失败策略：retry-first 还是 rollback-first？ | 已解决：retry-first + dead-letter；未完成 storage + fanout 前不 Ack，不使用旧 DownstreamDispatchPort rollback 语义（2026-06-21） | ZoneCNH |
+| OQ-003 | runtime wire 是否继续依赖 `module/contracts` proto？ | 已解决：不依赖。root SPEC §9 已选择 `natsx` + `domain_market.MarketFactEnvelope` JSON 作为 v2 wire（2026-06-21） | ZoneCNH |
 
 ### Non-blocking（不阻塞开发）
 
@@ -640,7 +648,7 @@ server 必须通过 contracts 定义的 server-side contract tests：
 | ID | 问题 | 状态 | 负责人 |
 |----|------|------|--------|
 | OQ-006 | 是否需要支持批量 ingest（一个 request 含多个 event）以提高吞吐？ | 待评估 | — |
-| OQ-007 | 是否需要扩展到非 Binance 交易所的 ingest server（模板化）？ | 待评估 | — |
+| OQ-007 | 是否需要扩展到非 Binance 交易所的 natsx consumer + storage/API 模板？ | 待评估 | — |
 
 ---
 
@@ -648,17 +656,17 @@ server 必须通过 contracts 定义的 server-side contract tests：
 
 | AC ID | FR 引用 | 验收标准 | 验证方式 |
 |-------|---------|----------|----------|
-| AC-001 | FR-001 | gRPC server 绑定成功，接受 stream 连接 | 集成测试 TC-001 |
-| AC-002 | FR-003 | 必填字段缺失返回 terminal_validation reject | 单元测试 TC-003 |
-| AC-003 | FR-004 | 首次 idempotency key 通过验收 | 集成测试 TC-005 |
-| AC-004 | FR-004 | 重复 key 不产生重复 dispatch | 集成测试 TC-006 |
-| AC-005 | FR-004 | 冲突 payload 返回 terminal_conflict | 集成测试 TC-007 |
-| AC-006 | FR-005 | ACK 仅在 durable acceptance 后发送 | 集成测试 TC-008/TC-009 |
-| AC-007 | FR-006 | ACK 包含足够数据推进 client checkpoint | 单元测试 TC-010 |
-| AC-008 | FR-007 | 验收 event 分发到 downstream port | 集成测试 TC-011 |
-| AC-009 | FR-008 | /healthz 返回 200 | 单元测试 TC-013 |
-| AC-010 | FR-008 | drain mode 拒绝新 stream | 单元测试 TC-015 |
-| AC-011 | BR-005 | admin 无法绕过 idempotency | admin security test |
+| AC-001 | FR-001 | `natsx` durable consumer 绑定成功，接收 `binance.market.*` message | 集成场景 SC-001 |
+| AC-002 | FR-003 | 必填字段缺失返回 terminal_validation reject | 单元场景 SC-003 |
+| AC-003 | FR-004 | 首次 idempotency key 通过验收 | 集成场景 SC-005 |
+| AC-004 | FR-004 | 重复 key 不产生重复 storage/fanout | 集成场景 SC-006 |
+| AC-005 | FR-004 | 冲突 payload 返回 terminal_conflict | 集成场景 SC-007 |
+| AC-006 | FR-005 | durable storage 成功后进入 `kafkax` handoff；失败不 Ack | 集成场景 SC-008/SC-009 |
+| AC-007 | FR-006 | `kafkax` handoff 成功后才 Ack；失败 retry-first，耗尽后 dead-letter/告警 | 集成场景 SC-010 |
+| AC-008 | FR-007 | Gin API 返回已持久化 Binance-specific 行情 | 集成场景 SC-011 |
+| AC-009 | FR-009 | server 源码无 `internal/client` / `internal/cs` / `module/contracts` / gRPC ingest runtime import | 静态场景 SC-012/SC-013 |
+| AC-010 | FR-009 | go.mod direct deps 包含 gin/ossx/natsx/redisx/taosx/postgresx/kafkax | 静态场景 SC-014 |
+| AC-011 | BR-005/BR-006 | 同进程 cs 与 client internals boundary gate PASS | 静态场景 SC-015 |
 
 ## Appendix B: Change History
 

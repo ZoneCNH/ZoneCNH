@@ -2,11 +2,11 @@
 
 ## Objective
 
-Map normalized Binance client events to canonical market events.
+Map normalized Binance client events to `domain_market.MarketFactEnvelope` payloads.
 
 ## Scope
 
-The mapper converts internal client normalized events into domain/contract-compatible envelopes.
+The mapper converts internal client normalized events into `domain_market` envelopes that the `natsx` publisher can serialize. It must not depend on a local proto or contracts-owned gRPC shape.
 
 ## Deliverables
 
@@ -29,4 +29,3 @@ The mapper converts internal client normalized events into domain/contract-compa
 
 - CLIENT-001 through CLIENT-006
 - `module/domain_market`
-- `module/contracts`

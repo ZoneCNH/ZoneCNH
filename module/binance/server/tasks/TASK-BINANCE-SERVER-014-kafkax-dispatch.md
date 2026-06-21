@@ -65,7 +65,7 @@ func (d *MarketDispatcher) Dispatch(ctx context.Context, env *domainmarket.Marke
 
 **FR-DISP-003**: Kafka producer 异步发送（不等待消费者 offset commit），`Dispatch` 只等待 broker ACK。
 
-**FR-DISP-004**: Kafka 不可达时返回 error，由 processor pipeline 决定是否降级（仍写入 taosx，仅告警）。
+**FR-DISP-004**: Kafka 不可达时返回 error；processor pipeline 可保留已完成的 taosx 写入，但未完成 kafkax handoff 前 consumer 不得 Ack。
 
 ## Acceptance Criteria
 

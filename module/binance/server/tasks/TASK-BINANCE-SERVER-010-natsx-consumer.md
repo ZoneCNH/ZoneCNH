@@ -10,7 +10,7 @@
 ## 分布式约束
 
 - consumer 只做网络订阅，不感知 client 进程位置
-- ManualAck：消息处理完成后（写入 taosx + redisx + kafkax）才 Ack
+- ManualAck：消息处理完成后（redisx + taosx + postgresx + kafkax handoff 全部成功）才 Ack
 - 禁止导入 `internal/client/*` 或 `internal/cs`
 
 ## Scope
@@ -72,7 +72,7 @@ func (c *MarketConsumer) dispatch(msg *nats.Msg) {
 
 **FR-CON-001**: durable consumer 绑定名称 `binance-server`，进程重启后从上次 Ack 位置继续消费。
 
-**FR-CON-002**: ManualAck — 消息经过 validation + idempotency + taosx + redisx + kafkax 全部成功后才 Ack。
+**FR-CON-002**: ManualAck — 消息经过 validation + idempotency + redisx + taosx + postgresx + kafkax handoff 全部成功后才 Ack。
 
 **FR-CON-003**: 处理失败时 NakWithDelay（延迟重投），失败计数达 MaxDeliver 后消息进入死信。
 

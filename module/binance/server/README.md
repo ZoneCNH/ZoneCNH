@@ -2,29 +2,32 @@
 
 `module/binance/server` is the Binance-specific ingest acceptance server.
 
-It implements the contracts-defined `MarketDataService` for Binance market_data ingestion.
+It consumes Binance market data envelopes from `natsx` JetStream, validates and deduplicates them, persists Binance-owned data, exposes query APIs, and fans out accepted events through `kafkax`.
 
 ## Owns
 
-- gRPC ingest server
-- stream lifecycle
+- NATS JetStream consumer lifecycle
+- `domain_market.MarketFactEnvelope` validation
 - event validation
 - server-side idempotent acceptance
-- ACK/reject generation
+- ManualAck / reject decisions
 - durable acceptance boundary
-- downstream dispatch
+- Binance-specific storage adapters
+- Binance-specific query APIs
+- `kafkax` fanout
 - server Gin admin endpoints
 
 ## Does Not Own
 
 - Binance exchange connectivity
 - REST/WebSocket connectors
-- client-side spool
-- client-side checkpoint
+- client-side publish evidence
+- client-side PubAck handling
 - canonical domain type definitions
-- proto definitions
-- physical storage engine
-- query APIs
+- local proto definitions
+- gRPC / proto ingest contracts
+- generic physical storage engine
+- generic cross-exchange query APIs
 - strategy APIs
 - `binance-market`
 
@@ -34,12 +37,14 @@ It implements the contracts-defined `MarketDataService` for Binance market_data 
 module/binance/client
 ```
 
-through contracts-defined gRPC.
+through `natsx` JetStream.
 
-## Dispatches To
+## Publishes / Serves To
 
 ```text
-module/market_data
+taosx / postgresx / redisx / ossx
+kafkax
+Gin REST query/admin APIs
 ```
 
-through downstream exchange-neutral market_data port.
+The server owns Binance-specific persistence and fanout, but not generic market_data or strategy semantics.

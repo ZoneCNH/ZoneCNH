@@ -10,9 +10,9 @@ Client-specific gates:
 
 - no server internal import
 - no `binance-market`
-- no storage/query/strategy ownership
+- no storage/query/API/fanout ownership
 - no domain canonical type ownership
-- no local proto ownership
+- no local proto/gRPC/contracts ownership
 
 ## Deliverables
 
@@ -24,6 +24,7 @@ Client-specific gates:
 
 - CI fails when client imports server internals.
 - CI fails when client references `binance-market` outside allowlist.
-- CI fails when client owns storage/query/strategy.
-- CI allows contracts/domain_market imports.
+- CI fails when client owns storage/query/API/fanout behavior.
+- CI fails when client defines local proto/gRPC/contracts ingest types.
+- CI allows `domain_market` and `natsx` imports.
 - gate does not require `rg`; POSIX `grep` is sufficient.
