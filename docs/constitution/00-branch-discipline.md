@@ -29,7 +29,7 @@
 2. **分支/worktree 命名**必须遵循 `{type}/{module}-{description}` 格式（如 `docs/kernel-spec-update`、`feat/kernel-new-api`、`fix/redisx-timeout`），或 `{branch-name}` 格式（如 `feat/v2-foundation-trust-governance-20260615`）
 3. **工作完成后**通过 PR 或 merge 合入 main，随后清理 worktree 和 feature branch
 4. **禁止**在 main worktree 中堆积未提交变更
-5. **ZoneCNH 纯文档仓库的 feature worktree** 统一放在 `/home/{module}/.worktree/workspaces/<branch-name>`，其中 `{module}` 是仓库目录名；不得再使用仓库根外的临时散落路径
+5. **ZoneCNH 纯文档仓库新增的 feature worktree** 统一放在 `/home/{module}/.worktree/workspaces/<branch-name>`，其中 `{module}` 是仓库目录名；仓库根 checkout 作为分支工作区时不受此附加 worktree 路径模板约束；不得再使用仓库根外的临时散落路径
 
 ### 0.3 Agent 约束
 

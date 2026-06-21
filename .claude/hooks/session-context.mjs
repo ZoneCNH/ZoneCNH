@@ -72,7 +72,8 @@ if (branch === "main") {
 if (branch !== "main" && branch !== "HEAD" && branch !== "（非 git 目录）") {
   const actualPath = worktreeState.branchToPath.get(branch) || currentTopLevel;
   const expectedPath = canonicalWorktreePath(projectRoot, branch);
-  if (actualPath && actualPath !== expectedPath) {
+  const isRootCheckout = actualPath === projectRoot;
+  if (actualPath && !isRootCheckout && actualPath !== expectedPath) {
     lines.push("---", "⚠️ 分支路径不符合 worktree 规则：");
     lines.push("   当前: " + actualPath);
     lines.push("   期望: " + expectedPath);
