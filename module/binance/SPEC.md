@@ -2,14 +2,14 @@
 
 ## 1. Metadata
 
-- Status: Draft → v2.0.0
-- Spec-Version: v2.0.0
+- Status: Draft → v2.1.0
+- Spec-Version: v2.1.0
 - Last-Updated: 2026-06-21
 - Owner: ZoneCNH
 - Layer: 数据域 · 行情
 - Version: v0.1.0
 - Repository: [github.com/ZoneCNH/binance](https://github.com/ZoneCNH/binance)
-- Related: [CONSTITUTION.md](../../CONSTITUTION.md), [ARCHITECTURE.md](../../ARCHITECTURE.md), `module/domain_market`, `module/natsx`, `module/redisx`, `module/taosx`, `module/kafkax`, `module/ossx`, `module/postgresx`
+- Related: [CONSTITUTION.md](../../CONSTITUTION.md), [ARCHITECTURE.md](../../ARCHITECTURE.md), `module/domain_market`, `module/natsx`, `module/redisx`, `module/taosx`, `module/kafkax`, `module/ossx`, `module/postgresx`, `module/clickhousex`
 
 > 子模块规格：`module/binance/client/SPEC.md`、`module/binance/server/SPEC.md`
 
@@ -34,6 +34,7 @@
     ├── redisx            ← 幂等 + 热缓存
     ├── postgresx         ← 元数据 + 审计
     ├── taosx             ← 时序行情存储
+    ├── clickhousex       ← OLAP 分析查询
     ├── kafkax            ← 跨域事件发布
     ├── ossx              ← 历史归档
     └── Gin :8080         ← REST API 供 market_data 调用
@@ -63,7 +64,7 @@ Binance 行情集成面临以下问题：
 - **分布式 C/S 架构**：client 和 server 为独立进程，可独立部署在不同机器/容器，通过 natsx JetStream 网络通信
 - 支持 Binance 四产品线：Spot、USDⓈ-M Futures、COIN-M Futures、Options
 - **natsx JetStream** 作为 client→server 唯一通信通道，保证 at-least-once delivery + 持久化
-- server 侧完整存储：taosx（时序）+ postgresx（元数据）+ redisx（缓存）+ ossx（归档）
+- server 侧完整存储：taosx（时序）+ postgresx（元数据）+ redisx（缓存）+ clickhousex（OLAP 分析）+ ossx（归档）
 - server 侧 **kafkax** 跨域事件发布，解耦下游消费者
 - server 侧 **Gin REST API** 供 market_data 主动查询
 - 定义 canonical instrument identity，覆盖四产品线碰撞场景
@@ -431,24 +432,182 @@ server_unavailable
 
 ## 11. Config Schema
 
-| 配置项 | 类型 | 默认值 | 说明 |
+> 配置按部署单元分层：§11.1 client 端（仅需 NATS + Binance），§11.2 server 端（全栈 7 模块 + Gin）。
+> Secrets 一律从环境变量注入，配置文件仅存非敏感键名与默认值。
+> 环境变量前缀：client=`BINANCE_CLIENT_`，server=`BINANCE_SERVER_`。基础设施凭据使用各模块规范前缀。
+
+### 11.1 Client Config（`binance-client.yaml`）
+
+| 配置键 | 类型 | 默认值 | 说明 |
 |--------|------|--------|------|
-| `binance.endpoints.rest` | `string` | `https://api.binance.com` | Binance REST API base URL |
-| `binance.endpoints.ws` | `string` | `wss://stream.binance.com:9443` | Binance WebSocket base URL |
-| `binance.product_lines` | `[]string` | `[]` | 启用的产品线：spot/um_perp/cm_perp/options（canonical domain_market ProductLine 值） |
+| `binance.rest_url` | `string` | `https://api.binance.com` | Binance REST API base URL |
+| `binance.ws_url` | `string` | `wss://stream.binance.com:9443` | Binance WebSocket base URL |
+| `binance.product_lines` | `[]string` | `[]` | 启用的产品线（domain_market canonical：`spot`/`um_perp`/`cm_perp`/`options`） |
 | `binance.symbols.allow` | `[]string` | `[]` | 白名单 symbol（空=全部） |
 | `binance.symbols.deny` | `[]string` | `[]` | 黑名单 symbol |
-| `natsx.nats_url` | `string` | `nats://localhost:4222` | NATS JetStream 连接地址 |
-| `natsx.stream` | `string` | `BINANCE_MARKET` | JetStream Stream 名称 |
-| `natsx.durable` | `string` | `binance-server` | server durable consumer 名称（server 配置） |
-| `natsx.ack_wait` | `duration` | `30s` | ManualAck 超时（server 配置） |
-| `natsx.max_deliver` | `int` | `5` | 最大重投次数（server 配置） |
-| `retry.max_attempts` | `int` | `5` | 最大重试次数 |
+| `binance.api_key_env` | `string` | `BINANCE_API_KEY` | 读取 API Key 的环境变量名 |
+| `binance.secret_key_env` | `string` | `BINANCE_SECRET_KEY` | 读取 Secret Key 的环境变量名 |
+| `nats.url` | `string` | `nats://127.0.0.1:4222` | NATS 连接地址（含认证） |
+| `nats.stream` | `string` | `BINANCE_MARKET` | JetStream Stream 名称 |
+| `nats.auth.user` | `string` | `admin` | NATS 用户名 |
+| `nats.auth.password_env` | `string` | `NATS_PASSWORD` | NATS 密码环境变量名 |
+| `publisher.batch_size` | `int` | `256` | 批量发布大小（0=逐条发布） |
+| `publisher.flush_interval` | `duration` | `100ms` | 批量刷新间隔 |
+| `retry.max_attempts` | `int` | `5` | natsx Publish 最大重试次数 |
 | `retry.backoff_initial` | `duration` | `1s` | 初始退避时间 |
 | `retry.backoff_max` | `duration` | `60s` | 最大退避时间 |
-| `admin.bind` | `string` | `:8080` | admin HTTP 绑定地址 |
+| `admin.bind` | `string` | `:8081` | Gin admin HTTP 绑定地址（/healthz /readyz） |
 
-> **Security**：API keys、secrets、signatures 从环境变量注入，不从配置文件读取。禁止在 logs 和 admin/debug 端点暴露。
+> Client 不配置：redis / postgres / taos / clickhouse / kafka / oss / Gin API — 这些全部属于 server。
+
+### 11.2 Server Config（`binance-server.yaml`）
+
+#### 11.2.1 natsx Consumer（server 消费端）
+
+| 配置键 | 类型 | 默认值 | 说明 |
+|--------|------|--------|------|
+| `nats.url` | `string` | `nats://127.0.0.1:4222` | NATS 连接地址 |
+| `nats.stream` | `string` | `BINANCE_MARKET` | JetStream Stream 名称 |
+| `nats.auth.user` | `string` | `admin` | NATS 用户名 |
+| `nats.auth.password_env` | `string` | `NATS_PASSWORD` | NATS 密码环境变量名 |
+| `nats.consumer.durable` | `string` | `binance-server` | durable consumer 名称 |
+| `nats.consumer.ack_wait` | `duration` | `30s` | ManualAck 超时 |
+| `nats.consumer.max_deliver` | `int` | `5` | 最大重投次数（超限进入死信） |
+| `nats.consumer.filter_subject` | `string` | `binance.market.>` | 订阅 subject 通配符 |
+
+#### 11.2.2 redisx
+
+| 配置键 | 类型 | 默认值 | 说明 |
+|--------|------|--------|------|
+| `redis.addr` | `string` | `127.0.0.1:6379` | Redis 地址 |
+| `redis.username` | `string` | `admin` | Redis 用户名 |
+| `redis.password_env` | `string` | `REDIS_PASSWORD` | Redis 密码环境变量名 |
+| `redis.db` | `int` | `0` | Redis DB 编号 |
+| `redis.pool_size` | `int` | `32` | 连接池大小 |
+| `redis.idempotency.ttl` | `duration` | `72h` | 幂等 key TTL（覆盖 JetStream 7d 重投窗口） |
+| `redis.cache.tick_ttl` | `duration` | `60s` | 最新 tick 热缓存 TTL |
+| `redis.cache.depth_ttl` | `duration` | `5s` | 深度快照缓存 TTL |
+| `redis.lock.ttl` | `duration` | `30s` | 分布式协调锁 lease TTL |
+| `redis.ratelimit.window` | `duration` | `1s` | API 限流窗口 |
+| `redis.ratelimit.max_req` | `int` | `100` | 每窗口最大请求数 |
+
+#### 11.2.3 postgresx
+
+| 配置键 | 类型 | 默认值 | 说明 |
+|--------|------|--------|------|
+| `postgres.host` | `string` | `127.0.0.1` | PostgreSQL 主机 |
+| `postgres.port` | `int` | `5432` | PostgreSQL 端口 |
+| `postgres.database` | `string` | `market_binance` | 数据库名 |
+| `postgres.username` | `string` | `market_binance` | 数据库用户名 |
+| `postgres.password_env` | `string` | `PG_PASSWORD` | 数据库密码环境变量名 |
+| `postgres.sslmode` | `string` | `disable` | SSL 模式（dev=disable，prod=require） |
+| `postgres.pool_max` | `int` | `20` | 最大连接数 |
+| `postgres.migrations_dir` | `string` | `migrations/` | 迁移脚本目录 |
+| `postgres.migrations_table` | `string` | `binance_schema_migrations` | 迁移版本记录表 |
+
+> 数据库 `market_binance` 已存在（PG per-provider 独立数据库）。表（binance_instruments / binance_idempotency_log / binance_admin_audit / binance_stream_sessions）由 migrations/ 目录管理。
+
+#### 11.2.4 taosx
+
+| 配置键 | 类型 | 默认值 | 说明 |
+|--------|------|--------|------|
+| `taos.endpoint` | `string` | `127.0.0.1:6030` | TDengine Native 端点 |
+| `taos.database` | `string` | `market_binance` | TDengine 数据库名 |
+| `taos.username` | `string` | `market_binance` | TDengine 用户名 |
+| `taos.password_env` | `string` | `TAOS_PASSWORD` | TDengine 密码环境变量名 |
+| `taos.write.batch_size` | `int` | `1000` | 批量写入行数 |
+| `taos.write.flush_interval` | `duration` | `200ms` | 批量写入刷新间隔 |
+| `taos.retention.ticks` | `duration` | `720h` | Tick 热数据保留（30d） |
+| `taos.retention.bars` | `duration` | `8760h` | Bar 热数据保留（365d） |
+| `taos.retention.depth` | `duration` | `72h` | Depth 热数据保留（3d） |
+
+> 数据库 `market_binance` 已存在（TDengine per-provider 独立数据库）。超表（binance_ticks / binance_bars / binance_depth）由 taosx SchemalessWrite 自动创建子表。
+
+#### 11.2.5 clickhousex（OLAP 分析存储）
+
+| 配置键 | 类型 | 默认值 | 说明 |
+|--------|------|--------|------|
+| `clickhouse.host` | `string` | `127.0.0.1` | ClickHouse 主机 |
+| `clickhouse.port` | `int` | `9000` | ClickHouse Native 端口 |
+| `clickhouse.database` | `string` | `market_binance` | ClickHouse 数据库名 |
+| `clickhouse.username` | `string` | `default` | ClickHouse 用户名 |
+| `clickhouse.password_env` | `string` | `CLICKHOUSE_PASSWORD` | ClickHouse 密码环境变量名 |
+| `clickhouse.pool_max` | `int` | `16` | 连接池大小 |
+| `clickhouse.etl.interval` | `duration` | `5m` | taosx→clickhousex ETL 间隔 |
+| `clickhouse.etl.batch_rows` | `int` | `50000` | ETL 每批行数 |
+| `clickhouse.etl.aggregations` | `[]string` | `["1m_ohlcv","5m_vwap","15m_stats"]` | 预计算聚合类型 |
+
+> ClickHouse v26.5.2.39 已部署（host=xhypers，port=9000/8123）。`market_binance` 业务库待建表（通过 clickhousex.Exec DDL）。clickhousex 是 taosx 的 OLAP 互补层：taosx 负责高频时序写入，clickhousex 负责跨符号聚合、多维分析、因子回看查询。
+
+#### 11.2.6 kafkax
+
+| 配置键 | 类型 | 默认值 | 说明 |
+|--------|------|--------|------|
+| `kafka.brokers` | `[]string` | `["127.0.0.1:9092"]` | Kafka broker 列表 |
+| `kafka.auth.mechanism` | `string` | `SASL_PLAINTEXT` | 认证机制 |
+| `kafka.auth.username` | `string` | `admin` | Kafka 用户名 |
+| `kafka.auth.password_env` | `string` | `KAFKA_PASSWORD` | Kafka 密码环境变量名 |
+| `kafka.topic_prefix` | `string` | `binance.market` | topic 前缀 |
+| `kafka.compression` | `string` | `snappy` | 消息压缩算法 |
+| `kafka.retry.max` | `int` | `3` | 发送失败最大重试次数 |
+| `kafka.required_acks` | `string` | `all` | 生产者 ACK 级别 |
+
+#### 11.2.7 ossx
+
+| 配置键 | 类型 | 默认值 | 说明 |
+|--------|------|--------|------|
+| `oss.endpoint` | `string` | `oss-ap-northeast-1.aliyuncs.com` | OSS 地域端点 |
+| `oss.bucket` | `string` | `x-go` | OSS Bucket 名称 |
+| `oss.path_prefix` | `string` | `binance/market` | 归档路径前缀 |
+| `oss.access_key_id_env` | `string` | `OSS_ACCESS_KEY_ID` | AccessKey ID 环境变量名 |
+| `oss.access_key_secret_env` | `string` | `OSS_ACCESS_KEY_SECRET` | AccessKey Secret 环境变量名 |
+| `oss.archiver.schedule` | `string` | `0 3 * * *` | 归档 cron（默认每日 03:00 UTC） |
+| `oss.archiver.ticks_cutoff` | `duration` | `720h` | Ticks 热→冷截止（30d） |
+| `oss.archiver.bars_cutoff` | `duration` | `2160h` | Bars 热→冷截止（90d） |
+| `oss.archiver.verify_etag` | `bool` | `true` | 上传后 ETag 校验后再删热数据 |
+
+> OSS region=ap-northeast-1（东京），bucket=`x-go`。归档格式：`{prefix}/{product_line}/{symbol}/{YYYY}/{MM}/{DD}/{event_type}.parquet`
+
+#### 11.2.8 Gin REST API
+
+| 配置键 | 类型 | 默认值 | 说明 |
+|--------|------|--------|------|
+| `api.bind` | `string` | `:8080` | Gin API 绑定地址 |
+| `api.auth_token_env` | `string` | `BINANCE_API_TOKEN` | Bearer Token 环境变量名 |
+| `api.read_timeout` | `duration` | `30s` | HTTP 读超时 |
+| `api.write_timeout` | `duration` | `30s` | HTTP 写超时 |
+| `api.max_body_bytes` | `int` | `1048576` | 最大请求体（1MB） |
+| `api.cors_allowed_origins` | `[]string` | `[]` | CORS 允许源（空=同源） |
+| `admin.bind` | `string` | `:8082` | Gin admin 绑定地址（/healthz /readyz /debug/pprof） |
+
+#### 11.2.9 Observability（server + client 共用）
+
+| 配置键 | 类型 | 默认值 | 说明 |
+|--------|------|--------|------|
+| `observability.metrics.bind` | `string` | `:9090` | Prometheus metrics 绑定地址 |
+| `observability.tracing.sample_rate` | `float` | `0.1` | Trace 采样率（0.0~1.0） |
+| `observability.log.level` | `string` | `info` | 日志级别（debug/info/warn/error） |
+| `observability.log.format` | `string` | `json` | 日志格式（json/text） |
+
+### 11.3 环境变量清单（Secrets）
+
+> **Security**：所有密码/Token/API Key/Secret 仅通过环境变量注入。配置文件不包含明文凭据。禁止在 logs 和 admin/debug 端点暴露。CI gitleaks 门禁强制执行。
+
+| 环境变量 | 消费方 | 来源（dev） | 说明 |
+|---------|--------|------------|------|
+| `BINANCE_API_KEY` | client | Binance 交易所 API 管理页 | Binance REST/WS API Key |
+| `BINANCE_SECRET_KEY` | client | Binance 交易所 API 管理页 | Binance REST/WS Secret Key |
+| `NATS_PASSWORD` | client + server | `sre/secrets/env/dev.md` §NATS | NATS 认证密码 |
+| `REDIS_PASSWORD` | server | `sre/secrets/env/dev.md` §Redis | Redis 认证密码 |
+| `PG_PASSWORD` | server | `sre/secrets/env/dev.md` §PostgreSQL `market_binance` | PostgreSQL 认证密码 |
+| `TAOS_PASSWORD` | server | `sre/secrets/env/dev.md` §TDengine `market_binance` | TDengine 认证密码 |
+| `CLICKHOUSE_PASSWORD` | server | `sre/secrets/env/dev.md` §ClickHouse | ClickHouse 认证密码 |
+| `KAFKA_PASSWORD` | server | `sre/secrets/env/dev.md` §Kafka | Kafka SASL 认证密码 |
+| `OSS_ACCESS_KEY_ID` | server | `sre/secrets/env/dev.md` §OSS | 阿里云 OSS AccessKey ID |
+| `OSS_ACCESS_KEY_SECRET` | server | `sre/secrets/env/dev.md` §OSS | 阿里云 OSS AccessKey Secret |
+| `BINANCE_API_TOKEN` | server（Gin API） | 运维生成 | Gin REST API Bearer Token |
+
+> **凭据来源**：`sre/secrets/env/dev.md`（本地开发环境）。生产环境使用 HashiCorp Vault / GitHub Secrets，不引用本文件。
 
 ---
 
@@ -549,6 +708,7 @@ github.com/ZoneCNH/binance/
 | `module/taosx` | 时序行情数据存储 | server storage |
 | `module/kafkax` | 下游事件分发 | server dispatch |
 | `module/ossx` | 归档 / cold-tier snapshot | server archiver |
+| `module/clickhousex` | OLAP 分析查询（跨符号聚合、多维分析、因子回看） | server storage（ETL 写入 + analytics API 查询） |
 | `gin-gonic/gin` | REST API（`/api/v1/market/*`），供 market_data 拉取 | server API |
 
 ### Forbidden Dependencies
