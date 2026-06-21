@@ -364,7 +364,11 @@ FoundationX 运行模块分为两种架构类型。详见 [`ARCHITECTURE.md`](..
 
 ### 独立进程（非 C/S）
 
-**适用**：dispatch 聚合层（market_data/macro_data）和分析域模块（market_regime/macro_regime/regime_engine）。
+**标准化索引**：[`data-independent-process/README.md`](./data-independent-process/README.md) — 适用范围、模板和对比参考的统一入口
+
+**SPEC 模板**：[`data-independent-process/SPEC-TEMPLATE.md`](./data-independent-process/SPEC-TEMPLATE.md) — 23 节独立进程标准模板，新建模块时复制填写
+
+**适用**：dispatch 聚合层（market_data/macro_data）和分析域模块（market_regime/macro_regime/regime_engine/factor_engine/feature_store/factor_eval/flowx/ms_brain）。
 
 ```text
 {module}/
