@@ -2,6 +2,7 @@ import { execFileSync } from "child_process";
 import { readFileSync, existsSync } from "fs";
 import { join, dirname, resolve } from "path";
 import { fileURLToPath } from "url";
+import { WORKTREE_PATH_RULE, canonicalWorktreePath } from "../../scripts/worktree-policy.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const projectRoot = join(__dirname, "../..");
@@ -166,11 +167,11 @@ if (tool === "Bash" || tool === "PowerShell") {
   const attachedBranch = worktreeAdd && (worktreeAdd.branch || (isBranchLikeRef(worktreeAdd.commitish) ? worktreeAdd.commitish : null));
   if (worktreeAdd && attachedBranch && worktreeAdd.path) {
     const actualPath = resolve(projectRoot, worktreeAdd.path);
-    const expectedPath = resolve(projectRoot, ".worktree", "workspaces", attachedBranch);
+    const expectedPath = canonicalWorktreePath(projectRoot, attachedBranch);
     if (actualPath !== expectedPath) {
       process.stdout.write(JSON.stringify({
         block: true,
-        reason: `🧱 worktree 路径违规：\`git worktree add\` 创建分支附着工作区时，路径必须遵守 /home/{module}/.worktree/workspaces/<branch-name>。\n   分支: ${attachedBranch}\n   实际: ${actualPath}\n   期望: ${expectedPath}\n   → 请改为：git worktree add ${expectedPath} ${worktreeAdd.branch ? `-b ${attachedBranch}` : attachedBranch}`,
+        reason: `🧱 worktree 路径违规：\`git worktree add\` 创建分支附着工作区时，路径必须遵守 ${WORKTREE_PATH_RULE}。\n   分支: ${attachedBranch}\n   实际: ${actualPath}\n   期望: ${expectedPath}\n   → 请改为：git worktree add ${expectedPath} ${worktreeAdd.branch ? `-b ${attachedBranch}` : attachedBranch}`,
       }));
       process.exit(0);
     }

@@ -2,6 +2,11 @@ import { execSync, execFileSync } from "child_process";
 import { readdirSync, readFileSync, existsSync, statSync, rmSync } from "fs";
 import { join, dirname, relative } from "path";
 import { fileURLToPath } from "url";
+import {
+  WORKTREE_PATH_RULE,
+  describeBranchWorktreePath,
+  parseWorktreePorcelain,
+} from "../../scripts/worktree-policy.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const projectRoot = join(__dirname, "../..");
@@ -30,34 +35,6 @@ const status = run("git status --short 2>/dev/null") || "";
 const log = run("git log --oneline -10 2>/dev/null") || "";
 const currentTopLevel = run("git rev-parse --show-toplevel 2>/dev/null") || projectRoot;
 
-const canonicalWorktreePath = (root, branchName) => join(root, ".worktree", "workspaces", branchName);
-
-const parseWorktreePorcelain = (porcelain) => {
-  const registered = new Set();
-  const pathToBranch = new Map();
-  const branchToPath = new Map();
-  let currentPath = null;
-
-  for (const line of porcelain.split("\n")) {
-    if (line.startsWith("worktree ")) {
-      currentPath = line.slice("worktree ".length).trim();
-      if (currentPath) registered.add(currentPath);
-      continue;
-    }
-    if (line.startsWith("branch ")) {
-      const branchName = line.slice("branch ".length).trim().replace(/^refs\/heads\//, "");
-      if (currentPath && branchName) {
-        pathToBranch.set(currentPath, branchName);
-        if (!branchToPath.has(branchName)) branchToPath.set(branchName, currentPath);
-      }
-      continue;
-    }
-    if (line === "") currentPath = null;
-  }
-
-  return { registered, pathToBranch, branchToPath };
-};
-
 const worktreePorcelain = run("git worktree list --porcelain 2>/dev/null");
 const worktreeState = parseWorktreePorcelain(worktreePorcelain);
 
@@ -71,13 +48,16 @@ if (branch === "main") {
 
 if (branch !== "main" && branch !== "HEAD" && branch !== "（非 git 目录）") {
   const actualPath = worktreeState.branchToPath.get(branch) || currentTopLevel;
-  const expectedPath = canonicalWorktreePath(projectRoot, branch);
-  const isRootCheckout = actualPath === projectRoot;
-  if (actualPath && !isRootCheckout && actualPath !== expectedPath) {
+  const { expectedPath, isRootCheckout, compliant } = describeBranchWorktreePath({
+    root: projectRoot,
+    branchName: branch,
+    actualPath,
+  });
+  if (actualPath && !compliant) {
     lines.push("---", "⚠️ 分支路径不符合 worktree 规则：");
     lines.push("   当前: " + actualPath);
     lines.push("   期望: " + expectedPath);
-    lines.push("   规则: /home/{module}/.worktree/workspaces/<branch-name>");
+    lines.push("   规则: " + WORKTREE_PATH_RULE);
   }
 }
 
