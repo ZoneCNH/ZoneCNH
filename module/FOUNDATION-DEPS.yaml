@@ -218,14 +218,13 @@ forbidden_deps:
   - github.com/ZoneCNH/ms_brain
   - github.com/ZoneCNH/flowx
   - github.com/ZoneCNH/signal-factory
-  - github.com/ZoneCNH/backtest-engine
   - github.com/ZoneCNH/optimizer
   - github.com/ZoneCNH/backtestx
   - github.com/ZoneCNH/strategyx
   - github.com/ZoneCNH/maestro
-  - github.com/ZoneCNH/risk-engine
-  - github.com/ZoneCNH/order-engine
-  - github.com/ZoneCNH/portfolio-engine
+  - github.com/ZoneCNH/riskx
+  - github.com/ZoneCNH/orderx
+  - github.com/ZoneCNH/positionx
   - github.com/ZoneCNH/settlement
   - github.com/ZoneCNH/riskx
   - github.com/ZoneCNH/orderx

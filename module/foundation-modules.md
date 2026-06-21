@@ -186,7 +186,7 @@ x.go：组合根，负责显式装配和生命周期 wiring
 
 ```text
 resiliencx = operational resilience
-risk_engine = trading risk
+riskx = trading risk
 ```text
 
 必需能力：

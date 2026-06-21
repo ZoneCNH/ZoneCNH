@@ -24,7 +24,7 @@
 | --------------- | ------------- | ---------------------------------- |
 | `<name>x`       | 基座扩展模块  | `redisx`, `kafkax`, `configx`      |
 | `domain-<name>` | L2.5 领域模型 | `domain_market`, `domain_exchange` |
-| `<name>-engine` | 分析/决策引擎 | `risk_engine`, `factor_engine`     |
+| `<name>-engine` | 分析引擎（决策/执行域已淘汰此格式） | `factor_engine`（决策/执行域旧名 `risk_engine`/`order_engine`/`portfolio_engine`/`backtest_engine` 已于 2026-06-22 重命名为 `riskx`/`orderx`/`positionx`/`backtestx`） |
 | `<exchange>`    | 数据域采集器  | `binance`, `okx`                   |
 
 ### 7.3 文件命名

@@ -406,7 +406,7 @@ type Event struct {
 
 ```text
 resiliencx = operational resilience
-risk_engine = trading risk
+riskx = trading risk
 ```text
 
 `resiliencx` **可以**判断：

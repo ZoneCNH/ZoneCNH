@@ -129,7 +129,7 @@ Scope:
 
 - 契约固化：SignalIntent / PortfolioTarget / BacktestConfig / BacktestReport / FactorFeedback
 - signal_factory：DecisionCard 消费 + 信号生成 + 5 种策略模板
-- backtest_engine：事件驱动引擎 + Tick 级回放 + 撮合模拟 + 回测报告
+- backtestx：事件驱动引擎 + Tick 级回放 + 撮合模拟 + 回测报告
 - optimizer：参数搜索 + Walk-forward 验证
 - backtest → factor_eval 反馈闭环
 
@@ -142,7 +142,7 @@ Out of Scope:
 Done when:
 
 - [ ] DecisionCard → signal_factory → SignalIntent 端到端可跑通
-- [ ] backtest_engine: 历史数据 Tick 级回放可运行
+- [ ] backtestx: 历史数据 Tick 级回放可运行
 - [ ] 回测报告包含收益率、夏普比、最大回撤、胜率
 - [ ] backtest → factor_eval 反馈闭环可运行
 - [ ] 所有模块测试覆盖率 ≥ 80%
@@ -169,9 +169,9 @@ SignalIntent 经风控放行、订单执行、组合管理，完成完整交易�
 Scope:
 
 - 契约固化：RiskDecision / OrderIntent / ExecutionReport / PositionSnapshot / PnLReport / ExposureEvent
-- risk_engine：trade_permission + VaR + 止损 + 持仓限额 + 压力测试 + DecisionCard 集成
-- order_engine：统一订单接口 + 智能路由 + TWAP/VWAP + 滑点控制 + 交易所适配（paper trading）
-- portfolio_engine：多策略资金分配 + 再平衡 + 仓位追踪
+- riskx：trade_permission + VaR + 止损 + 持仓限额 + 压力测试 + DecisionCard 集成
+- orderx：统一订单接口 + 智能路由 + TWAP/VWAP + 滑点控制 + 交易所适配（paper trading）
+- positionx：多账户仓位追踪 + PnL + 敞口监控
 - 执行反馈闭环：fills/positions/PnL/exposure events → 决策域
 
 Out of Scope:
@@ -182,8 +182,8 @@ Out of Scope:
 
 Done when:
 
-- [ ] SignalIntent → risk_engine → paper order_engine → portfolio update 可跑通
-- [ ] 策略只能通过 risk_engine 提交订单（P5 原则验证）
+- [ ] SignalIntent → riskx → paper orderx → positionx update 可跑通
+- [ ] 策略只能通过 riskx 提交订单（P5 原则验证）
 - [ ] 至少对接 2 个交易所 SDK（binance/okx）
 - [ ] 执行反馈事件可回到决策域
 - [ ] 所有模块测试覆盖率 ≥ 80%

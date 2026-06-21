@@ -14,12 +14,12 @@ backtestx ──► optimizer ──► strategyx ──► maestro             
 
 ### 命名约定：为什么是 X 后缀
 
-| 旧名（占位） | 新名 | 理由 |
+| 旧名（已移除） | 新名 | 理由 |
 |---|---|---|
-| risk_engine | riskx | 统一 Foundation 命名风格（configx, redisx, kafkax...），旧名保留为 GitHub 仓库并存但以新 SPEC 为准 |
-| order_engine | orderx | 同上 |
-| portfolio_engine | positionx | 职责更精确——定位为跨账户仓位管理，而非完整投资组合 |
-| backtest_engine | backtestx | 同上 |
+| ~~risk_engine~~ | riskx | 统一 Foundation 命名风格（configx, redisx, kafkax...）；旧占位模块已于 2026-06-22 从 module/ 移除 |
+| ~~order_engine~~ | orderx | 同上 |
+| ~~portfolio_engine~~ | positionx | 职责更精确——定位为跨账户仓位管理，而非完整投资组合；旧占位已移除 |
+| ~~backtest_engine~~ | backtestx | 命名重构；旧占位已移除 |
 | (无) | maestro | 新概念——工作流编排填补了策略到执行之间的空白 |
 | (无) | flowx | 新概念——数据流管线填补了行情到因子之间的空白 |
 

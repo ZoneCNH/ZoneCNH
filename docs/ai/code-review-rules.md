@@ -108,7 +108,7 @@ Status: Approved
 - [ ] 依赖方向正确（数据域 → 基座，执行域 → 决策域，不反向）
 - [ ] 跨域调用通过 `contracts` 接口，不直接 import 实现
 - [ ] 数据职责不跨域
-- [ ] 策略只能通过 `risk_engine` 提交订单
+- [ ] 策略只能通过 `riskx` 提交订单
 - [ ] L2.5 领域共享层（`decimalx`、`domain_market` 等）被正确复用
 - [ ] `x.go` 只做组合，不含业务逻辑
 

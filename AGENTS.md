@@ -18,7 +18,7 @@
 
 本仓库仅包含文档，没有本地构建系统。提交前使用轻量检查：
 
-- `rg "market_data|risk_engine" README.md docs/architecture/01-overview.md docs/architecture/05-foundation.md` 查找受影响的架构引用。
+- `rg "market_data|riskx" README.md docs/architecture/01-overview.md docs/architecture/05-foundation.md` 查找受影响的架构引用。
 - `git diff --check` 检查尾随空格和补丁格式问题。
 - `git status --short` 确认只修改了预期文档文件。
 - `git log -5 --pretty=format:%s` 查看最近提交标题风格。
@@ -27,7 +27,7 @@
 
 ## 编写风格与命名规范
 
-所有回复和文档默认使用中文。Markdown 应使用清晰标题、紧凑表格和短说明。保留英文模块名与技术名词，例如 `domain_market`、`order_engine`，项目名统一使用 **snake_case**（禁止 kebab-case）。域标签保持一致：基座、数据域、分析域、决策域、执行域、入口、横切。
+所有回复和文档默认使用中文。Markdown 应使用清晰标题、紧凑表格和短说明。保留英文模块名与技术名词，例如 `domain_market`、`orderx`，项目名统一使用 **snake_case**（禁止 kebab-case）。域标签保持一致：基座、数据域、分析域、决策域、执行域、入口、横切。
 
 ## 专家沟通与真实性规则
 
