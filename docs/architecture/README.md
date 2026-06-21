@@ -28,7 +28,7 @@
 
 ### 依赖关系
 ```text
-x.go → 基座(L0/L1) → L2.5(域共享) → 数据域 → 分析域 ↔ 决策域 → 执行域
+x.go（治理/工具 CLI）→ composer（Composition Root）→ 基座(L0/L1) → L2.5(域共享) → 数据域 → 分析域 ↔ 决策域 → 执行域
 ```
 → 详见 [01-overview.md](./01-overview.md)
 
