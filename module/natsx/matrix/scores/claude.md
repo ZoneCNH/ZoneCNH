@@ -17,6 +17,6 @@ Overall matrix evidence score: **20/20**.
 ## Verification Notes
 
 - `TRACEABILITY.md` explicitly separates repair-slice complete FR/BR/NFR rows from external formal release gates.
-- Executable evidence is pinned to `/home/natsx` commit `393d148`.
+- Executable evidence is pinned to `/home/natsx` commit `20f801f`.
 - This score refresh does not mark `SPEC.md` Approved or satisfy the formal four-source 98+ arbiter.
 - Enabled live verification passed against the local auth broker with `FOUNDATIONX_NATS_URL`, `FOUNDATIONX_NATS_USERNAME`, and `FOUNDATIONX_NATS_PASSWORD` sourced from local NATS config without printing credentials.

@@ -105,6 +105,8 @@ run_success "setup-ci-toolchain fallback exposes yamllint wrapper" \
     PYTHONPATH="$toolchain_fallback/python" \
     PATH="$toolchain_fallback/bin:$PATH" \
     yamllint --version
+run_success "goal-delivery create help lists create command" \
+  bash -c '"$1" create --help | grep -q "^  create[[:space:]]"' _ "$SCRIPT_DIR/goal-delivery.sh"
 
 write_validator_gates() {
   local root="$1"

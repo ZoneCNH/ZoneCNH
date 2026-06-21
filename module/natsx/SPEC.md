@@ -545,7 +545,7 @@ Executable repair evidence (2026-06-13): embedded CI assertions now enforce gene
 | log | `natsx.reconnected` | info，重连成功 |
 | log | `natsx.handler.panic` | error，handler panic 详情 |
 
-Executable repair evidence (2026-06-13): `/home/natsx` commit `393d148` records canonical `foundationx_nats_*` metrics for client lifecycle, health, Core NATS publish/request/subscribe outcomes, JetStream outcomes, reconnects, and disconnects. Legacy `natsx_*` metric names are not part of the 1.0 contract. Secret-safety tests assert config/env validation errors and live-test evidence do not print payloads, credentials, tokens, or credential-bearing endpoints.
+Executable repair evidence (2026-06-13): `/home/natsx` commit `20f801f` records canonical `foundationx_nats_*` metrics for client lifecycle, health, Core NATS publish/request/subscribe outcomes, JetStream outcomes, reconnects, and disconnects. Legacy `natsx_*` metric names are not part of the 1.0 contract. Secret-safety tests assert config/env validation errors and live-test evidence do not print payloads, credentials, tokens, or credential-bearing endpoints.
 
 ---
 

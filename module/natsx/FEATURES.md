@@ -99,7 +99,7 @@
 | TASK-NATSX-012-PROMPT | TASK-NATSX-012 实现 Prompt | module/natsx/tasks/TASK-NATSX-012-PROMPT.md | - | tasks/TASK-NATSX-012-PROMPT.md |
 | TASK-NATSX-013 | NFR-004 | Dependency boundary check passed for forbidden ZoneCNH messaging/storage modules | - | TRACEABILITY.md |
 | TASK-NATSX-013-PROMPT | TASK-NATSX-013 实现 Prompt | module/natsx/tasks/TASK-NATSX-013-PROMPT.md | - | tasks/TASK-NATSX-013-PROMPT.md |
-| TASK-NATSX-014 | NFR-005 | Release evidence + CI gate: README.md quickstart/API overview, CHANGELOG.md v1.0.0, CI gate (build/test/vet/lint/secret scan), coverage >=80%, benchmark regression guard; /home/natsx evidence pinned to commit 393d148 | - | TRACEABILITY.md |
+| TASK-NATSX-014 | NFR-005 | Release evidence + CI gate: README.md quickstart/API overview, CHANGELOG.md v1.0.0, CI gate (build/test/vet/lint/secret scan), coverage >=80%, benchmark regression guard; /home/natsx evidence pinned to commit 20f801f | - | TRACEABILITY.md |
 | TASK-NATSX-014-PROMPT | TASK-NATSX-014 实现 Prompt | module/natsx/tasks/TASK-NATSX-014-PROMPT.md | - | tasks/TASK-NATSX-014-PROMPT.md |
 
 ## 5. 文档资产清单
@@ -119,4 +119,4 @@
 - [ ] 所有任务文档均能追溯到 FR、BR/NFR、AC 或 TC。
 - [ ] 依赖边界符合 FOUNDATION-DEPS.yaml，不引入未授权运行时依赖。
 - [ ] 运行时代码仓库 /home/natsx 的 lint、typecheck、test、race、coverage 验证证据已归档。
-- [ ] 发布说明、版本标签与本目录登记状态一致。
+- [ ] 发布说明、版本标签与本目录登记状态一致，且当前目标发布版本为 `v0.4.7`。
