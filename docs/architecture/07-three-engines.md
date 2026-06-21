@@ -195,11 +195,11 @@
 | -------------------------------- | ------ | ------------------------------------------------- | ------------------------------ |
 | `action`                         | enum   | A/B/C/D/E                                         | signal_factory（信号强度调制） |
 | `profile`                        | enum   | aggressive/moderate/conservative/defensive/flat   | signal_factory（策略模板选择） |
-| `risk_tier`                      | int    | 1-5                                               | risk_engine（风险阈值）        |
+| `risk_tier`                      | int    | 1-5                                               | riskx（风险阈值）              |
 | `template`                       | enum   | trend_following/range_trading/breakout/hedge/cash | signal_factory（策略模板）     |
-| `position_caps.max_leverage`     | float  | —                                                 | risk_engine（杠杆上限）        |
-| `position_caps.max_position_pct` | float  | —                                                 | risk_engine（仓位上限）        |
-| `risk_multiplier`                | float  | 0.3-1.0                                           | risk_engine（风险乘数）        |
+| `position_caps.max_leverage`     | float  | —                                                 | riskx（杠杆上限）              |
+| `position_caps.max_position_pct` | float  | —                                                 | riskx（仓位上限）              |
+| `risk_multiplier`                | float  | 0.3-1.0                                           | riskx（风险乘数）              |
 | `conflict`                       | bool   | —                                                 | 审计/监控                      |
 | `explain`                        | string | —                                                 | 人类可读决策解释               |
 

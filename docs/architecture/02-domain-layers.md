@@ -2,7 +2,7 @@
 
 ### 为什么新增 7 个业务域模块
 
-在此次推演之前，分析/决策/执行域仅有早期占位仓库（factor_engine、backtest_engine、risk_engine 等），缺乏规范化规格和接口契约。本次以 23 节 SPEC 结构为每个域创建了具名模块（X 后缀），形成从数据到执行的完整链路：
+在此次推演之前，分析/决策/执行域仍停留在早期占位仓库阶段，缺乏规范化规格和接口契约。本次以 23 节 SPEC 结构为每个域创建了具名模块（X 后缀），形成从数据到执行的完整链路：
 
 ```text
 factor_eval ──► signal_factory ──► riskx ──► orderx ──► positionx   (实盘)
@@ -43,7 +43,7 @@ backtestx ──► optimizer ──► strategyx ──► maestro             
 | L2.5   | 领域共享值对象和语义模型，上层统一依赖                                                                                        | domainx, decimalx, domain_market, domain_exchange, domain_macro                                                                                         |
 | 数据域 | 行情、宏观、另类数据采集                                                                                                      | market_data (14: 1 dispatch + 12 SDK + 1 C/S Module), macro_data (10), alternative_data                                                                                       |
 | 分析域 | 因子计算、特征存储、因子评估、市场/宏观环境分类、数据流管线、M×S 联合决策（三引擎：market_engine→S / macro_engine→M / regime_engine→M+S） | factor_engine, feature_store, factor_eval, market_regime, macro_regime, regime_engine, ms_brain, flowx                                                              |
-| 决策域 | 信号生成、历史回测、参数优化、策略工厂、工作流编排（并行协作）                                                                  | signal_factory, backtest_engine, optimizer, backtestx, strategyx, maestro                                                                          |
-| 执行域 | 风险管理、订单执行、仓位管理、结算                                                                                              | risk_engine, order_engine, portfolio_engine, settlement, riskx, orderx, positionx                                                                              |
+| 决策域 | 信号生成、历史回测、参数优化、策略工厂、工作流编排（并行协作）                                                                  | signal_factory, backtestx, optimizer, strategyx, maestro                                                                                             |
+| 执行域 | 风险管理、订单执行、仓位管理、结算                                                                                              | riskx, orderx, positionx, settlement                                                                                                                 |
 | 入口   | 启动、配置加载、依赖组装、生命周期控制                                                                                        | composer                                                                                                                                                   |
 | 横切   | 告警、可观测性                                                                                                                | alertx, observex                                                                                                                                           |

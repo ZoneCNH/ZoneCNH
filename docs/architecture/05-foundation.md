@@ -84,7 +84,7 @@ Foundation 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中在 
 
 `resiliencx` 必须回到 operational resilience：对不稳定外部依赖、任务、数据源、交易所 API、消息处理和调度任务提供可组合故障控制策略。
 
-`risk_engine` 才负责 trading risk，二者不能混用。
+`riskx` 才负责 trading risk，二者不能混用。
 
 `xlib_standard` v1.0.1 已发布（tag v1.0.1, PR #121），标准源和 Go Reference Template 职责已完整落地。Generator / Harness Gate / Evidence Runtime 职责已于 PR #233 拆分至 `xlib_harness` 和 `xlib_evidence`。
 
@@ -292,13 +292,13 @@ Phase 1: 分析域   ← factor_engine + feature_store + factor_eval
          先固化 MarketDataProvider / FactorInput / FactorOutput；
          退出条件是 market provider → factor_engine → factor_eval 可跑通
 
-Phase 2: 决策域   ← signal_factory + backtest_engine + optimizer
+Phase 2: 决策域   ← signal_factory + backtestx + optimizer
          先固化 SignalIntent / PortfolioTarget；
-         退出条件是 signal → backtest → factor feedback 可跑通
+         退出条件是 signal → backtestx → factor feedback 可跑通
 
-Phase 3: 执行域   ← risk_engine + order_engine + portfolio_engine
+Phase 3: 执行域   ← riskx + orderx + positionx
          先固化 RiskDecision / OrderIntent / ExecutionReport；
-         退出条件是 signal → risk_engine → paper order_engine → portfolio update 可跑通
+         退出条件是 signal → riskx → paper orderx → position update 可跑通
 
 Phase 4: 平台化   ← settlement + alertx + alternative_data
          先固化 PositionSnapshot / PnLReport / ExposureEvent；

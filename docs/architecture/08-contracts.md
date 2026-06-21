@@ -4,16 +4,16 @@
 
 | 优先级 | 契约 | 生产方 | 消费方 | 状态 |
 | --- | --- | --- | --- | --- |
-| P0 | `RegimeSnapshot` DTO | market_regime | regime_engine, signal_factory, risk_engine | ✅ **2026-06-20** |
+| P0 | `RegimeSnapshot` DTO | market_regime | regime_engine, signal_factory, riskx | ✅ **2026-06-20** |
 | P0 | `RegimeCard` DTO | macro_regime | regime_engine | ✅ **2026-06-20** |
-| P0 | `DecisionCard` DTO | regime_engine | signal_factory, risk_engine, backtest_engine | ✅ **2026-06-20** |
+| P0 | `DecisionCard` DTO | regime_engine | signal_factory, riskx, backtestx | ✅ **2026-06-20** |
 | P0 | `MarketDataProvider` port | market_data | market_regime | ✅ **2026-06-20** |
 | P0 | `MacroDataProvider` port | macro_data | macro_regime | ✅ **2026-06-20** |
-| P0 | `DecisionCardProvider` port | regime_engine | signal_factory, risk_engine | ✅ **2026-06-20** |
-| P1 | `SignalIntent` DTO | regime_engine | signal_factory, risk_engine | ✅ **2026-06-21**（PR #12） |
+| P0 | `DecisionCardProvider` port | regime_engine | signal_factory, riskx | ✅ **2026-06-20** |
+| P1 | `SignalIntent` DTO | regime_engine | signal_factory, riskx | ✅ **2026-06-21**（PR #12） |
 | P1 | `RegimeSnapshotEvent` (Kafka) | market_regime | regime_engine | ✅ **2026-06-21**（type alias 投影已补齐） |
 | P1 | `RegimeCardEvent` (Kafka) | macro_regime | regime_engine | ✅ **2026-06-21**（type alias 投影已补齐） |
-| P1 | `DecisionCardEvent` (Kafka) | regime_engine | signal_factory, risk_engine | ✅ **2026-06-21**（type alias 投影已补齐） |
+| P1 | `DecisionCardEvent` (Kafka) | regime_engine | signal_factory, riskx | ✅ **2026-06-21**（type alias 投影已补齐） |
 | P2 | `MarketRegimePort` (interface) | contracts | market_regime 实现 | ✅ **2026-06-21**（type alias 投影已补齐） |
 | P2 | `MacroRegimePort` (interface) | contracts | macro_regime 实现 | ✅ **2026-06-21**（type alias 投影已补齐） |
 | P2 | `RegimeEnginePort` (interface) | contracts | regime_engine 实现 | ✅ **2026-06-21**（type alias 投影已补齐） |
@@ -52,6 +52,6 @@ Phase 2: regime_engine 实现
 
 Phase 3: 下游集成
   signal_factory 消费 DecisionCard
-  risk_engine 消费 trade_permission + position_caps
-  backtest_engine 回放 M×S 决策日志
+  riskx 消费 trade_permission + position_caps
+  backtestx 回放 M×S 决策日志
 ```

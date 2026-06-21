@@ -63,7 +63,7 @@ L0 kernel（stdlib-only）
 ```
 contracts 未冻结
   → 分析域/决策域/执行域无法安全依赖 DTO 契约
-  → signal_factory / risk_engine / order_engine 等核心路径处于漂移风险
+  → signal_factory / riskx / orderx / positionx 等核心路径处于漂移风险
   → 所有下游模块 AC/TC 均难以固化
 ```
 
@@ -211,7 +211,7 @@ Prompt（S5）和 Evidence（S6）几乎为零，表明四源评分体系的后�
 
 ### 5.1.1 当前收口结果
 
-- 已完成：`#4` 固定 L2.5 命名基准与迁移表；`#7` 统一 `x.go / composer` 说明入口并回写对齐文档；`#8` 清理 L2.5 遗留 kebab 引用，并回写统一命名 / 对齐同步文档；`contracts` P1 / P2 兼容投影别名（`RegimeSnapshotEvent` / `RegimeCardEvent` / `DecisionCardEvent` / `MarketRegimePort` / `MacroRegimePort` / `RegimeEnginePort`）已在 contracts 仓库以 type alias 方式补齐；`README.md`、`ARCHITECTURE.md` 与 `docs/architecture/README.md` / `01-overview.md` / `02-domain-layers.md` / `03-boundaries.md` / `04-principles.md` / `05-foundation.md` 的入口口径已统一。
+- 已完成：`#4` 固定 L2.5 命名基准与迁移表；`#7` 统一 `x.go / composer` 说明入口并回写对齐文档；`#8` 清理 L2.5 遗留 kebab 引用，并回写统一命名 / 对齐同步文档；`contracts` P1 / P2 兼容投影别名（`RegimeSnapshotEvent` / `RegimeCardEvent` / `DecisionCardEvent` / `MarketRegimePort` / `MacroRegimePort` / `RegimeEnginePort`）已在 contracts 仓库以 type alias 方式补齐；`README.md`、`ARCHITECTURE.md` 与 `docs/architecture/README.md` / `01-overview.md` / `02-domain-layers.md` / `03-boundaries.md` / `04-principles.md` / `05-foundation.md` / `06-dataflow.md` / `07-three-engines.md` / `08-contracts.md` 的活跃口径已统一到 `riskx` / `orderx` / `positionx` / `backtestx`，历史投影仅保留在迁移表和对照清单中。
 - 仍待完成：`#1`-`#3`、`#5`-`#6`、`#9`-`#12`。
 
 ### 5.2 P0 — 基线解锁（1-2 周）
