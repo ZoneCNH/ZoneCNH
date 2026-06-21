@@ -1,7 +1,7 @@
 # testkitx 完整验收清单
 
 - Status: Generated from current module SSOT
-- Last-Updated: 2026-06-18
+- Last-Updated: 2026-06-21
 - Module-Version: v1.0.0
 - Module-State: Release Candidate — 运行时验收通过（2026-06-18）；factory=false（四源评分未达 98，见 SPEC caveat）
 - Layer: L0 测试工具
@@ -28,26 +28,26 @@
 
 | ID | 验收项 | 关联要求/测试/任务 | 当前登记状态 | 来源 |
 | --- | --- | --- | --- | --- |
-| AC-001 | FR-001 | FakeConfig 实现 configx.Reader 接口，Get(key) 返回注入值，key 不存在返回 nil / TC-001 | - | TRACEABILITY.md |
-| AC-002 | FR-002 | FakeLogger 实现 observex.Logger 接口，AssertLogged/AssertNoErrors/Entries 可用 / TC-002 + CI: compile | - | TRACEABILITY.md |
-| AC-003 | FR-003 | FakeMeter 实现 observex.Meter 接口，AssertCounterValue/AssertHistogramRecorded 可用 / TC-003 + CI: compile | - | TRACEABILITY.md |
-| AC-004 | FR-004 | FakeTracer 实现 observex.Tracer 接口，AssertSpanCount/AssertTraceID 可用 / TC-004 + CI: compile | - | TRACEABILITY.md |
-| AC-005 | FR-005 | FakeClock Now() 返回可控时间，Advance(d) 推进，Set(t) 设置 / TC-005 | - | TRACEABILITY.md |
-| AC-006 | FR-006 | FakeBreaker 可设置 Closed/Open/Half-Open，Execute 受状态控制 / TC-006 | - | TRACEABILITY.md |
-| AC-007 | FR-007, BR-003 | fn 在 timeout 内返回 true → 通过；超时仍 false → fail + 清晰诊断 / TC-007 | - | TRACEABILITY.md |
-| AC-008 | FR-008, BR-004 | GOLDEN_UPDATE=1 → GoldenUpdate() 返回 true；未设置 → false / TC-008 | - | TRACEABILITY.md |
-| AC-009 | FR-009, BR-005 | 生产包依赖 testkitx → fail + 依赖路径；不依赖 → pass / TC-009 | - | TRACEABILITY.md |
-| AC-010 | FR-010 | 测试后无新增 goroutine → pass；有泄漏 → fail + 堆栈 / TC-010 | - | TRACEABILITY.md |
-| AC-TKX-001 | FR-001 | FakeConfig(values) 返回 configx.Reader；Get(key) 返回对应值；key 不存在返回 nil | - | SPEC.md |
-| AC-TKX-002 | FR-002 | FakeLogger() 返回 (*FakeLoggerImpl, observex.Logger)；AssertLogged 断言指定 level 包含文本；AssertNoErrors 断言无 Error 日志；Entries 返回全部条目 | - | SPEC.md |
-| AC-TKX-003 | FR-003 | FakeMeter() 返回 (*FakeMeterImpl, observex.Meter)；AssertCounterValue 断言计数器值；AssertHistogramRecorded 断言直方图有记录 | - | SPEC.md |
-| AC-TKX-004 | FR-004 | FakeTracer() 返回 (*FakeTracerImpl, observex.Tracer)；AssertSpanCount 断言 span 数量；AssertTraceID 断言 trace_id 已传播 | - | SPEC.md |
-| AC-TKX-005 | FR-005 | FakeClock(at) Now() 返回 at；Advance(d) 后 Now() 返回 at+d；Set(t) 后 Now() 返回 t | - | SPEC.md |
-| AC-TKX-006 | FR-006 | FakeBreaker(initial) 返回 resiliencx.Breaker，状态为 initial | - | SPEC.md |
-| AC-TKX-007 | FR-007 | Eventually 在 timeout 内 fn 返回 true 则测试通过；超时仍 false 则测试失败并输出诊断 | - | SPEC.md |
-| AC-TKX-008 | FR-008 | GOLDEN_UPDATE=1 时 GoldenUpdate() 返回 true；未设置时返回 false | - | SPEC.md |
-| AC-TKX-009 | FR-009 | BoundaryCheck 检测到生产包依赖 testkitx 时测试失败报告路径；无依赖时通过 | - | SPEC.md |
-| AC-TKX-010 | FR-010 | GoroutineLeakCheck 检测到泄漏时失败报告堆栈；无泄漏时通过 | - | SPEC.md |
+| AC-001 | FR-001 | FakeConfig 实现 configx.Reader 接口，Get(key) 返回注入值，key 不存在返回 nil / TC-001 | ✅ | TRACEABILITY.md |
+| AC-002 | FR-002 | FakeLogger 实现 observex.Logger 接口，AssertLogged/AssertNoErrors/Entries 可用 / TC-002 + CI: compile | ✅ | TRACEABILITY.md |
+| AC-003 | FR-003 | FakeMeter 实现 observex.Meter 接口，AssertCounterValue/AssertHistogramRecorded 可用 / TC-003 + CI: compile | ✅ | TRACEABILITY.md |
+| AC-004 | FR-004 | FakeTracer 实现 observex.Tracer 接口，AssertSpanCount/AssertTraceID 可用 / TC-004 + CI: compile | ✅ | TRACEABILITY.md |
+| AC-005 | FR-005 | FakeClock Now() 返回可控时间，Advance(d) 推进，Set(t) 设置 / TC-005 | ✅ | TRACEABILITY.md |
+| AC-006 | FR-006 | FakeBreaker 可设置 Closed/Open/Half-Open，Execute 受状态控制 / TC-006 | ✅ | TRACEABILITY.md |
+| AC-007 | FR-007, BR-003 | fn 在 timeout 内返回 true → 通过；超时仍 false → fail + 清晰诊断 / TC-007 | ✅ | TRACEABILITY.md |
+| AC-008 | FR-008, BR-004 | GOLDEN_UPDATE=1 → GoldenUpdate() 返回 true；未设置 → false / TC-008 | ✅ | TRACEABILITY.md |
+| AC-009 | FR-009, BR-005 | 生产包依赖 testkitx → fail + 依赖路径；不依赖 → pass / TC-009 | ✅ | TRACEABILITY.md |
+| AC-010 | FR-010 | 测试后无新增 goroutine → pass；有泄漏 → fail + 堆栈 / TC-010 | ✅ | TRACEABILITY.md |
+| AC-TKX-001 | FR-001 | FakeConfig(values) 返回 configx.Reader；Get(key) 返回对应值；key 不存在返回 nil | ✅ | SPEC.md |
+| AC-TKX-002 | FR-002 | FakeLogger() 返回 (*FakeLoggerImpl, observex.Logger)；AssertLogged 断言指定 level 包含文本；AssertNoErrors 断言无 Error 日志；Entries 返回全部条目 | ✅ | SPEC.md |
+| AC-TKX-003 | FR-003 | FakeMeter() 返回 (*FakeMeterImpl, observex.Meter)；AssertCounterValue 断言计数器值；AssertHistogramRecorded 断言直方图有记录 | ✅ | SPEC.md |
+| AC-TKX-004 | FR-004 | FakeTracer() 返回 (*FakeTracerImpl, observex.Tracer)；AssertSpanCount 断言 span 数量；AssertTraceID 断言 trace_id 已传播 | ✅ | SPEC.md |
+| AC-TKX-005 | FR-005 | FakeClock(at) Now() 返回 at；Advance(d) 后 Now() 返回 at+d；Set(t) 后 Now() 返回 t | ✅ | SPEC.md |
+| AC-TKX-006 | FR-006 | FakeBreaker(initial) 返回 resiliencx.Breaker，状态为 initial | ✅ | SPEC.md |
+| AC-TKX-007 | FR-007 | Eventually 在 timeout 内 fn 返回 true 则测试通过；超时仍 false 则测试失败并输出诊断 | ✅ | SPEC.md |
+| AC-TKX-008 | FR-008 | GOLDEN_UPDATE=1 时 GoldenUpdate() 返回 true；未设置时返回 false | ✅ | SPEC.md |
+| AC-TKX-009 | FR-009 | BoundaryCheck 检测到生产包依赖 testkitx 时测试失败报告路径；无依赖时通过 | ✅ | SPEC.md |
+| AC-TKX-010 | FR-010 | GoroutineLeakCheck 检测到泄漏时失败报告堆栈；无泄漏时通过 | ✅ | SPEC.md |
 
 ## 3. TC 测试验收登记
 
