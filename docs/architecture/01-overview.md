@@ -8,7 +8,9 @@
 
 依赖、业务流和运行时组装刻意分开呈现：业务数据从数据域走向执行域，代码依赖不反向穿透；`x.go` 是治理/工具 CLI，`composer` 是组合根（Composition Root），不是业务链路终点。
 
-> 🔄 三引擎数据流全景（market_engine→S / macro_engine→M / regime_engine→DecisionCard）、M×S 矩阵、契约固化清单 → **[DATAFLOW.md](./DATAFLOW.md)**
+> 活跃事实链路、M×S 矩阵与契约清单 → **[08-contracts.md](./08-contracts.md)**
+>
+> 历史投影 / 兼容层 → **[06-dataflow.md](./06-dataflow.md)** · **[07-three-engines.md](./07-three-engines.md)**
 >
 > 🗺️ 六阶段交付路线图、任务编号与验收标准 → **[ROADMAP.md](./ROADMAP.md)**
 

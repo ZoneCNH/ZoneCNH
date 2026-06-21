@@ -8,7 +8,9 @@
 
 依赖、业务流和运行时组装刻意分开呈现：业务数据从数据域走向执行域，代码依赖不反向穿透；`x.go` 是治理/工具 CLI，`composer` 是组合根（Composition Root），不是业务链路终点。
 
-> 🔄 三引擎数据流全景（market_engine→S / macro_engine→M / regime_engine→DecisionCard）、M×S 矩阵、契约固化清单 → **[DATAFLOW.md](./DATAFLOW.md)**
+> 🔄 活跃事实链路、M×S 矩阵与契约固化清单 → **[docs/architecture/01-overview.md](./docs/architecture/01-overview.md)** · **[docs/architecture/08-contracts.md](./docs/architecture/08-contracts.md)**
+>
+> 🧭 `06-dataflow.md` / `07-three-engines.md` 仅保留历史投影名与迁移对照；主叙事请以 `01-overview.md` 与 `08-contracts.md` 为准。
 >
 > 🗺️ 六阶段交付路线图、任务编号与验收标准 → **[ROADMAP.md](./ROADMAP.md)**
 
@@ -131,7 +133,7 @@ composer / service main
 
 ### 为什么新增 7 个业务域模块
 
-在此次推演之前，分析/决策/执行域仅有早期占位仓库（factor_engine、backtest_engine、risk_engine 等），缺乏规范化规格和接口契约。本次以 23 节 SPEC 结构为每个域创建了具名模块（X 后缀），形成从数据到执行的完整链路：
+在本次推演之前，分析/决策/执行域多停留在早期占位仓库与未固化契约阶段；本次以 23 节 SPEC 结构为每个域创建了具名模块（X 后缀），形成从数据到执行的活跃事实链路，历史兼容名仅保留在迁移清单与投影文档中：
 
 ```text
 factor_eval ──► signal_factory ──► riskx ──► orderx ──► positionx   (实盘)
@@ -143,12 +145,12 @@ backtestx ──► optimizer ──► strategyx ──► maestro             
 
 ### 命名约定：为什么是 X 后缀
 
-| 旧名（占位） | 新名 | 理由 |
+| 旧名（已移除） | 新名 | 理由 |
 |---|---|---|
-| risk_engine | riskx | 统一 Foundation 命名风格（configx, redisx, kafkax...），旧名保留为 GitHub 仓库并存但以新 SPEC 为准 |
-| order_engine | orderx | 同上 |
-| ~~占位~~ → riskx | positionx | 职责更精确——定位为跨账户仓位管理，而非完整投资组合 |
-| ~~占位~~ → orderx | backtestx | 同上 |
+| ~~risk_engine~~ | riskx | 统一 Foundation 命名风格（configx, redisx, kafkax...）；旧占位模块已于 2026-06-22 从 module/ 移除 |
+| ~~order_engine~~ | orderx | 同上 |
+| ~~portfolio_engine~~ | positionx | 职责更精确——定位为跨账户仓位管理，而非完整投资组合；旧占位已移除 |
+| ~~backtest_engine~~ | backtestx | 命名重构；旧占位已移除 |
 | (无) | maestro | 新概念——工作流编排填补了策略到执行之间的空白 |
 | (无) | flowx | 新概念——数据流管线填补了行情到因子之间的空白 |
 
@@ -205,7 +207,7 @@ FoundationX 中运行模块分为两种架构类型：
 
 ### 独立进程（非 C/S）
 
-**适用**：dispatch 聚合层（market_data/macro_data）和分析域模块（market_regime/macro_regime/regime_engine），无 client/server 拆分。
+**适用**：dispatch 聚合层（market_data/macro_data）和分析域模块（market_regime/macro_regime/regime_engine），无 client/server 拆分。历史兼容名仅保留在迁移清单与投影文档中。
 
 ```text
 {module}/
@@ -409,6 +411,7 @@ Foundation 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中在 
 ## 状态总览
 
 > **公开投影口径**：架构矩阵中的进度是 Spec→Code 管线投影；release/factory 以 `.foundationx/status/index.json` + `.foundationx/blockers.json` 为准。BLK-001~011 全部已 resolved，**0 open blockers；Foundation 20/20 runtime factory-ready** ✅（BLK-009 bootstrap v0.2.0 + BLK-010 ossx v1.2.1，2026-06-20）。
+> **分层口径**：主表只保留当前事实层与已发布投影；历史命名仅留在迁移说明与兼容清单中，不再在此处重复。
 
 | 域                    | 组件                                                            | 版本（已发布）| 状态      | Spec→Code 投影 | 说明                                                                                      |
 | --------------------- | --------------------------------------------------------------- | ------ | --------- | -------- | ----------------------------------------------------------------------------------------- |
@@ -479,17 +482,13 @@ Foundation 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中在 
 | 分析域                | [flowx](https://github.com/ZoneCNH/flowx)                       | v0.1.0-draft | 🔨 已创建 | ░░░░ 5%  | 数据流管线引擎 — 实时流式 ETL、窗口聚合、背压控制（7 FR, SPEC draft）                    |
 | **决策域**            |                                                                 |        |           |          |                                                                                           |
 | 决策域                | [signal_factory](https://github.com/ZoneCNH/signal_factory)     | v0.1.0 | 🔨 已创建 | ████ 40% | DecisionCard→SignalIntent；✅ SignalIntent 已升入 contracts v1.5.0 P1 DTO；冲突门+强度映射，5 tests PASS |
-| 决策域                | [backtest_engine](https://github.com/ZoneCNH/backtest_engine)   | ~~占位~~ | 🔨 已创建 | ░░░░ 5%  | ~~事件驱动回测~~ → [**backtestx**](https://github.com/ZoneCNH/backtestx)                |
 | 决策域                | [backtestx](https://github.com/ZoneCNH/backtestx)               | v0.1.0-draft | 🔨 已创建 | ░░░░ 5%  | 回测引擎 — 事件驱动回测、Walk-Forward、蒙特卡洛（7 FR, SPEC draft）                      |
 | 决策域                | [strategyx](https://github.com/ZoneCNH/strategyx)               | v0.1.0-draft | 🔨 已创建 | ░░░░ 5%  | 策略工厂 — 策略注册、参数管理、信号组合（7 FR, SPEC draft）                              |
 | 决策域                | [maestro](https://github.com/ZoneCNH/maestro)                   | v0.1.0-draft | 🔨 已创建 | ░░░░ 5%  | 工作流编排引擎 — DAG 工作流、状态机、错误恢复（9 FR, SPEC draft）                        |
 | 决策域                | [optimizer](https://github.com/ZoneCNH/optimizer)               | -      | 🔨 已创建 | ░░░░ 5%  | 参数搜索、Walk-forward 验证                                                               |
 | **执行域**            |                                                                 |        |           |          |                                                                                           |
-| 执行域                | [risk_engine](https://github.com/ZoneCNH/risk_engine)           | ~~占位~~ | 🔨 已创建 | ░░░░ 5%  | ~~VaR/止损~~ → [**riskx**](https://github.com/ZoneCNH/riskx)                            |
 | 执行域                | [riskx](https://github.com/ZoneCNH/riskx)                       | v0.1.0 | ✅ 已有   | ████░ 40%  | 风控引擎 — ✅ 最小实现（仓位上限/最大持仓/熔断门禁，7 tests PASS）；消费 contracts.SignalIntent P1 DTO                              |
-| 执行域                | [order_engine](https://github.com/ZoneCNH/order_engine)         | ~~占位~~ | 🔨 已创建 | ░░░░ 5%  | ~~智能路由~~ → [**orderx**](https://github.com/ZoneCNH/orderx)                           |
 | 执行域                | [orderx](https://github.com/ZoneCNH/orderx)                     | v0.1.0-draft | 🔨 已创建 | ░░░░ 5%  | 订单管理器 — 订单生命周期、SOR、状态机（7 FR, SPEC draft）                               |
-| 执行域                | [portfolio_engine](https://github.com/ZoneCNH/portfolio_engine) | -      | 🔨 已创建 | ░░░░ 5%  | ~~占位~~ → [**positionx**](https://github.com/ZoneCNH/positionx)  |
 | 执行域                | [positionx](https://github.com/ZoneCNH/positionx)               | v0.1.0-draft | 🔨 已创建 | ░░░░ 5%  | 仓位管理器 — 实时仓位追踪、PnL、敞口监控（7 FR, SPEC draft）                             |
 | 执行域                | [settlement](https://github.com/ZoneCNH/settlement)             | -      | 🔨 已创建 | ░░░░ 5%  | PnL 计算、交易所对账                                                                      |
 | **入口**              |                                                                 |        |           |          |                                                                                           |

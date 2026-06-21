@@ -8,9 +8,11 @@ Go 🐹 (主要) · Rust 🦀 (底层) · Python 🐍 (脚本/数据) · TypeScr
 
 ## 🏗️ 分层架构
 
-> 📐 完整依赖拓扑、域间关系、运行时组装与子模块明细 → **[docs/architecture/](./docs/architecture/)**（原 ARCHITECTURE.md 已迁移）
+> 📐 完整依赖拓扑、域间关系、运行时组装与子模块明细 → **[docs/architecture/](./docs/architecture/)**（主叙事已迁移，根目录 ARCHITECTURE.md 保留兼容入口）
 >
-> 🔄 三引擎数据流全景、M×S 联合决策矩阵与契约清单 → **[docs/architecture/06-dataflow.md](./docs/architecture/06-dataflow.md)** · **[07-three-engines.md](./docs/architecture/07-three-engines.md)**
+> 🔄 活跃事实链路、M×S 联合决策矩阵与契约清单 → **[docs/architecture/01-overview.md](./docs/architecture/01-overview.md)** · **[docs/architecture/08-contracts.md](./docs/architecture/08-contracts.md)**
+>
+> 🧭 `06-dataflow.md` / `07-three-engines.md` 仅保留历史投影与迁移对照
 >
 > 📊 项目状态监控、健康度与风险追踪 → **[STATUS.md](./STATUS.md)**
 >
@@ -47,10 +49,10 @@ L2.5: domainx / decimalx / domain_market / domain_macro / domain_exchange (5/5 �
       ▼
 业务流: 数据域 → 分析域 ↔ 决策域 → 执行域
 数据域: market_data (14) / macro_data (11) / alternative_data
-分析域: factor_engine / feature_store / factor_eval / market_regime / macro_regime / regime_engine / ms_brain / flowx（活跃交易链路口径统一为 riskx / orderx / positionx / backtestx）
-       三引擎: market_engine(market facts → S state) / macro_engine(macro facts → M state) / regime_engine(M+S → action/risk/permission)（历史投影名；详见 contracts 映射）
-决策域: signal_factory / ~~backtest_engine~~ / optimizer / backtestx / strategyx / maestro（对应活跃链路 backtestx）
-执行域: ~~risk_engine~~ / ~~order_engine~~ / ~~portfolio_engine~~ / settlement ; riskx / orderx / positionx（对应活跃链路 riskx / orderx / positionx）
+分析域: factor_engine / feature_store / factor_eval / market_regime / macro_regime / regime_engine / ms_brain / flowx
+       三引擎: market_regime / macro_regime / regime_engine（活跃事实链路；market_engine / macro_engine 仅保留在投影与迁移文档）
+决策域: signal_factory / optimizer / backtestx / strategyx / maestro
+执行域: riskx / orderx / positionx / settlement
 
 反馈: backtest → factor_eval；fills / PnL / exposure events → 决策域
 横切: alertx (告警) / observex (可观测)
@@ -169,21 +171,21 @@ L2.5: domainx / decimalx / domain_market / domain_macro / domain_exchange (5/5 �
 ### 决策域
 
 - [signal_factory](https://github.com/ZoneCNH/signal_factory) — 信号生成与组合 `公开`
-- ~~[backtest_engine](https://github.com/ZoneCNH/backtest_engine) — 事件驱动回测引擎~~ → **backtestx** `已弃用`
 - [optimizer](https://github.com/ZoneCNH/optimizer) — 参数优化 `公开`
 - [backtestx](https://github.com/ZoneCNH/backtestx) — 回测引擎（事件驱动、Walk-Forward、蒙特卡洛） `公开`
 - [strategyx](https://github.com/ZoneCNH/strategyx) — 策略工厂（策略注册、参数管理、信号组合） `公开`
 - [maestro](https://github.com/ZoneCNH/maestro) — 工作流编排引擎（DAG 工作流、状态机、错误恢复） `公开`
 
+> 历史占位 `backtest_engine` 已于 2026-06-22 移除（迁移至 backtestx）。
+
 ### 执行域
 
-- ~~[risk_engine](https://github.com/ZoneCNH/risk_engine) — 风险管理引擎~~ → **riskx** `已弃用`
-- ~~[order_engine](https://github.com/ZoneCNH/order_engine) — 订单执行引擎~~ → **orderx** `已弃用`
-- ~~[portfolio_engine](https://github.com/ZoneCNH/portfolio_engine) — 投资组合管理~~ → **positionx** `已弃用`
 - [settlement](https://github.com/ZoneCNH/settlement) — 结算与对账 `公开`
 - [riskx](https://github.com/ZoneCNH/riskx) — 风控引擎（事前风控、回撤控制、熔断机制） `公开`
 - [orderx](https://github.com/ZoneCNH/orderx) — 订单管理器（订单生命周期、SOR、状态机） `公开`
 - [positionx](https://github.com/ZoneCNH/positionx) — 仓位管理器（实时仓位追踪、PnL、敞口监控） `公开`
+
+> 历史占位 `risk_engine` / `order_engine` / `portfolio_engine` 已于 2026-06-22 移除（分别迁移至 riskx / orderx / positionx）。
 
 ### 横切 · 入口
 
