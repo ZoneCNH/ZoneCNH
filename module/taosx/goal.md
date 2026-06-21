@@ -4,14 +4,14 @@
 
 | 字段 | 值 |
 | --- | --- |
-| Target | v1.0.3 |
+| Target | v1.0.5 |
 | Layer | L2 存储适配器 |
 | Source of truth | `/home/taosx/pkg/taosx` |
-| Last-Updated | 2026-06-19 |
+| Last-Updated | 2026-06-21 |
 
 ## 目标
 
-`taosx` 的 v1.0.3 目标是在保持 v1.0.0 公共 API 与驱动注入边界不变的前提下，交付一个可审计、可测试、可替换驱动实现的 TDengine L2 存储适配器契约。模块应让上层系统用稳定 Go API 组合 TDengine 写入、查询、健康检查和指标采集，而不是在核心包中内置连接池、STMT 写入、自动重试或横切运行时；v1.0.3 同时把 `pkg/taosx` 100.0% 覆盖率门禁接入本地 CI/release，并把官方 `taosWS` live 集成保持为显式 opt-in gate。
+`taosx` 的 v1.0.5 目标是在保持 v1.0.0 公共 API 与驱动注入边界不变的前提下，交付一个可审计、可测试、可替换驱动实现的 TDengine L2 存储适配器契约。模块应让上层系统用稳定 Go API 组合 TDengine 写入、查询、健康检查和指标采集，而不是在核心包中内置连接池、STMT 写入、自动重试或横切运行时；v1.0.5 同时把 `pkg/taosx` 100.0% 覆盖率门禁接入本地 CI/release，并把官方 `taosWS` live 集成保持为显式 opt-in gate。
 
 ## 成功标准
 
@@ -26,7 +26,7 @@
 - 指标名称保持 `taosx_client_*` 前缀，且 metrics 是接口注入能力，不形成对观测模块的直接依赖。
 - `Close` 幂等；关闭后业务操作返回 closed 错误。
 - 中心依赖契约保持 `taosx: [kernel]`，不得声明直接依赖 `configx`、`observex` 或 `resiliencx`。
-- v1.0.3 对外发布前必须在具备 TDengine 服务和凭据时通过官方 `taosWS` WebSocket driver 的 env-gated 集成测试；本地发布候选至少必须证明未 opt-in 时默认 skip 且测试失败输出不得泄漏 DSN 或密码。
+- v1.0.5 对外发布前必须在具备 TDengine 服务和凭据时通过官方 `taosWS` WebSocket driver 的 env-gated 集成测试；本地发布候选至少必须证明未 opt-in 时默认 skip 且测试失败输出不得泄漏 DSN 或密码。
 
 ## 范围内
 
@@ -89,11 +89,11 @@ type Config struct {
 - `/home/taosx/pkg/taosx/config.go` 与 `contracts/config.schema.json` 锁定 `Config` 字段、默认值和校验。
 - `/home/taosx/pkg/taosx/client.go`、`batch.go`、`schemaless.go`、`health.go` 锁定 client/driver 行为。
 - `/home/taosx/pkg/taosx/*_test.go`、`/home/taosx/contracts/contracts_test.go`、`/home/taosx/examples/*/*_test.go` 提供回归证据。
-- `GOWORK=off make release-check`、`GOWORK=off make taosx-coverage-check` 和 `GOWORK=off make integration` 是 v1.0.3 本地发布候选的完整默认验证；其中 `pkg/taosx` total 必须等于 100.0%。
+- `GOWORK=off make release-check`、`GOWORK=off make taosx-coverage-check` 和 `GOWORK=off make integration` 是 v1.0.5 本地发布候选的完整默认验证；其中 `pkg/taosx` total 必须等于 100.0%。
 - `GOWORK=off go test -tags=integration ./pkg/taosx -run TestTDengineWebSocketIntegration -count=1 -v` 在未设置 `TAOSX_INTEGRATION=1` 时必须 pass 并 skip，不连接外部 TDengine。
 - `TAOSX_INTEGRATION=1 go test -tags=integration ./pkg/taosx -run TestTDengineWebSocketIntegration -count=1` 是对外发布前的 live gate；2026-06-19 已使用 `sre/secrets/env/dev.md` 中 `market_binance` dev 配置通过，证据口径只允许记录脱敏命令、数据库名和 PASS 结果。
 - 中心仓文档修改至少通过 `git diff --check` 和契约文本漂移检查。
 
 ## 评分基线
 
-v1.0.3 评分同时看契约准确性、边界诚实、测试锁定行为、100.0% 覆盖率门禁、默认 opt-in 防护和文档一致性。未显式 opt-in 的默认测试可不连接 TDengine；live TDengine dev gate 已通过但不等同于外部发布、GitHub Release 或 factory-grade 声明，后者仍需另补外部发布/远端 CI/发布制品证据。任何文档声称内置连接池、STMT、自动重试、真实默认驱动、直接依赖 `configx`/`observex`/`resiliencx`，或把空 batch 描述为 no-op，均视为 contract drift。
+v1.0.5 评分同时看契约准确性、边界诚实、测试锁定行为、100.0% 覆盖率门禁、默认 opt-in 防护和文档一致性。未显式 opt-in 的默认测试可不连接 TDengine；live TDengine dev gate 已通过但不等同于外部发布、GitHub Release 或 factory-grade 声明，后者仍需另补外部发布/远端 CI/发布制品证据。任何文档声称内置连接池、STMT、自动重试、真实默认驱动、直接依赖 `configx`/`observex`/`resiliencx`，或把空 batch 描述为 no-op，均视为 contract drift。

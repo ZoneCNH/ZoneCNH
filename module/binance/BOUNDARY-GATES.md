@@ -1,8 +1,9 @@
 # module/binance BOUNDARY GATES
 
-> 版本：v2.0.0
+> 版本：v2.1.1
 > 更新日期：2026-06-21
 > 参见：`DEEP-ANALYSIS.md §0`（分布式架构约束）
+> Runtime 脚本：`/home/binance/scripts/boundary-gates.sh`
 
 ## 1. 目的
 
@@ -89,7 +90,7 @@ cmd/binance-server -> internal/client/*
 ```text
 server -> natsx JetStream（网络订阅，不是 Go import）
 server -> module/domain_market（语义类型）
-server -> redisx, postgresx, taosx, kafkax, ossx, gin（存储和 API 层）
+server -> redisx, postgresx, taosx, clickhousex, kafkax, ossx, gin（存储、分析、fanout 和 API 层）
 server -> pkg/config, pkg/observability（共享包）
 ```
 
@@ -105,9 +106,9 @@ grep -R -n -E 'internal/client|module/binance/client' \
 
 ## 5. Gate: No cs Package as Runtime Dependency
 
-> ⚡ v2.0.0 新增 — 分布式架构强制门禁
+> ⚡ v2.1.1 对齐 — 分布式架构强制门禁
 
-`internal/cs` 包是同进程桥接骨架，在 v2.0.0 中**必须删除**，不得成为 client 或 server 的运行时依赖。
+`internal/cs` 包是同进程桥接骨架，在当前 runtime 中**必须删除**，不得成为 client 或 server 的运行时依赖。
 
 禁止（运行时代码中引用 cs 包）：
 
@@ -130,7 +131,7 @@ cs_hits="$(grep -R -n '"github.com/ZoneCNH/binance/internal/cs"' \
   ./internal/client ./internal/server ./cmd \
   --include='*.go' 2>/dev/null || true)"
 if [ -n "$cs_hits" ]; then
-  echo "FAIL: internal/cs package imported in runtime code — must be deleted in v2.0.0"
+  echo "FAIL: internal/cs package imported in runtime code — must be deleted before release"
   echo "$cs_hits"
   exit 1
 fi
@@ -141,7 +142,7 @@ echo "PASS: No cs package runtime import"
 
 ## 6. Gate: No Same-Process C/S Communication
 
-> ⚡ v2.0.0 新增 — 分布式架构强制门禁
+> ⚡ v2.1.1 对齐 — 分布式架构强制门禁
 
 client 和 server 必须通过 natsx JetStream **网络通信**，禁止任何 Go interface 直调。
 
@@ -194,7 +195,7 @@ echo "PASS: No same-process C/S communication detected"
 
 ## 7. Gate: Binance Server Owns Binance-Specific Storage Only
 
-> v2.0.0 变更 — 原 Gate 5「不做存储」已反转：server 现在**拥有** Binance 专属存储。
+> v2.1.1 对齐 — 原 Gate 5「不做存储」已反转：server 现在**拥有** Binance 专属存储。
 
 `binance/server` **允许**拥有：
 
@@ -202,6 +203,7 @@ echo "PASS: No same-process C/S communication detected"
 taosx     → Binance 行情时序数据（binance_ticks / binance_bars / binance_depth）
 postgresx → Binance 合约元数据（binance_instruments）+ 幂等日志 + 审计
 redisx    → Binance 行情热缓存（tick:{product_line}:{symbol}）
+clickhousex → Binance OLAP 聚合数据（binance_ohlcv_1m / binance_vwap_5m / binance_stats_15m）
 ossx      → Binance 历史数据归档
 kafkax    → Binance 行情事件发布（binance.market.* topic）
 ```
@@ -287,7 +289,7 @@ echo "PASS: Admin boundary gate"
 
 ## 11. Gate: go.mod Dependency Compliance
 
-> ⚡ v2.0.0 新增 — 确保分布式架构依赖声明规范
+> ⚡ v2.1.1 对齐 — 确保分布式架构依赖声明规范
 
 Client 二进制（`cmd/binance-client`）**禁止**将以下包声明为 `direct` 依赖（这些属于 server）：
 
@@ -295,6 +297,7 @@ Client 二进制（`cmd/binance-client`）**禁止**将以下包声明为 `direc
 github.com/ZoneCNH/redisx
 github.com/ZoneCNH/postgresx
 github.com/ZoneCNH/taosx
+github.com/ZoneCNH/clickhousex
 github.com/ZoneCNH/kafkax
 github.com/ZoneCNH/ossx
 github.com/gin-gonic/gin
@@ -307,6 +310,7 @@ github.com/ZoneCNH/natsx
 github.com/ZoneCNH/redisx
 github.com/ZoneCNH/postgresx
 github.com/ZoneCNH/taosx
+github.com/ZoneCNH/clickhousex
 github.com/ZoneCNH/kafkax
 github.com/ZoneCNH/ossx
 github.com/gin-gonic/gin
@@ -315,21 +319,25 @@ github.com/gin-gonic/gin
 ```bash
 #!/usr/bin/env bash
 set -euo pipefail
-# 检查 server 侧 infra 模块未被标记为 indirect
-for mod in natsx redisx postgresx taosx kafkax ossx; do
-  if grep -q "ZoneCNH/${mod}.*// indirect" go.mod 2>/dev/null; then
-    echo "FAIL: ZoneCNH/${mod} is indirect — must be direct dependency of binance-server"
+required=(
+  github.com/ZoneCNH/natsx
+  github.com/ZoneCNH/redisx
+  github.com/ZoneCNH/kafkax
+  github.com/ZoneCNH/postgresx
+  github.com/ZoneCNH/taosx
+  github.com/ZoneCNH/clickhousex
+  github.com/ZoneCNH/ossx
+  github.com/gin-gonic/gin
+)
+
+for dep in "${required[@]}"; do
+  line="$(grep -F "$dep" go.mod 2>/dev/null | grep -v '// indirect' || true)"
+  if [ -z "$line" ]; then
+    echo "FAIL: $dep must be a direct dependency"
     exit 1
   fi
 done
-if grep -q 'gin-gonic/gin.*// indirect' go.mod 2>/dev/null; then
-  echo "FAIL: gin-gonic/gin is indirect — must be direct dependency of binance-server"
-  exit 1
-fi
-if ! grep -q 'gin-gonic/gin' go.mod 2>/dev/null; then
-  echo "FAIL: gin-gonic/gin not in go.mod — required for binance-server REST API"
-  exit 1
-fi
+
 echo "PASS: go.mod dependency compliance"
 ```
 
@@ -342,10 +350,10 @@ echo "PASS: go.mod dependency compliance"
 | 2 | No Legacy binance-market | v1.0 | 历史清理 |
 | 3 | Client Must Not Import Server | v1.0 | 边界隔离 |
 | 4 | Server Must Not Import Client | v1.0 | 边界隔离 |
-| 5 | **No cs Package Runtime Dependency** | **v2.0 新增** | **分布式强制** |
-| 6 | **No Same-Process C/S Communication** | **v2.0 新增** | **分布式强制** |
-| 7 | Server Owns Binance-Specific Storage | v2.0 变更 | 所有权 |
+| 5 | **No cs Package Runtime Dependency** | **v2.1.1 对齐** | **分布式强制** |
+| 6 | **No Same-Process C/S Communication** | **v2.1.1 对齐** | **分布式强制** |
+| 7 | Server Owns Binance-Specific Storage | v2.1.1 对齐 | 所有权 |
 | 8 | Wire Contract Externality | v2.0 变更 | 边界隔离 |
 | 9 | Domain-Market Semantic Source | v1.0 | 语义边界 |
 | 10 | Admin Surface Boundary | v1.0 | 边界隔离 |
-| 11 | **go.mod Dependency Compliance** | **v2.0 新增** | **分布式强制** |
+| 11 | **go.mod Dependency Compliance** | **v2.1.1 对齐** | **分布式强制** |

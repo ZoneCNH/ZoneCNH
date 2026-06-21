@@ -1,9 +1,9 @@
 # taosx 追溯矩阵
 
-Last-Updated: 2026-06-19
-Source: `module/taosx/SPEC.md` v1.0.3
+Last-Updated: 2026-06-21
+Source: `module/taosx/SPEC.md` v1.0.5
 
-本矩阵追踪 taosx v1.0.3 规格中所有功能需求、行为约束、非功能需求与测试用例/验收标准之间的完整追溯链路。
+本矩阵追踪 taosx v1.0.5 规格中所有功能需求、行为约束、非功能需求与测试用例/验收标准之间的完整追溯链路。
 
 ## §1 FR 功能需求追溯
 
@@ -42,7 +42,7 @@ Source: `module/taosx/SPEC.md` v1.0.3
 | NFR-003 | Observability | 指标端口只记录低基数标签；默认 no-op 零配置可用；健康状态不含明文密码 | `go test ./pkg/taosx -run TestMetrics` + `go test ./pkg/taosx -run TestHealth` | ✅ |
 | NFR-004 | Security | 错误/状态/日志/测试输出/示例均不得暴露真实密码、API key、私有 endpoint | `./scripts/check_contracts.sh` | ✅ |
 | NFR-005 | Dependency | 核心包直接 Zone 依赖仅允许 `kernel`；驱动/指标/配置通过端口注入 | `./scripts/check_boundary.sh` + `./scripts/check_dependency_diff.sh` | ✅ |
-| NFR-006 | Compatibility | v1.0.3 不改变 v1.0.0 公共构造入口和核心接口语义；破坏性变更进后续 major | `GOWORK=off make release-check` | ✅ |
+| NFR-006 | Compatibility | v1.0.5 不改变 v1.0.0 公共构造入口和核心接口语义；破坏性变更进后续 major | `GOWORK=off make release-check` | ✅ |
 
 ## §4 TC→FR 反向追溯
 

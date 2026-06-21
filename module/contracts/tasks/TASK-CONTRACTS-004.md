@@ -1,27 +1,32 @@
 # TASK-CONTRACTS-004
 
-> 文档 + Release DoD
-
----
+> 追溯闭合与文档基线一致性
 
 ```yaml
 task_id: TASK-CONTRACTS-004
 module: contracts
-scope: "创建 README、CHANGELOG，验证 Release DoD"
+scope: "同步 SPEC、TRACEABILITY、ACCEPTANCE、FEATURES 与 IMPLEMENTATION-PLAN 的事实口径"
 spec_ref:
-  - "module/contracts/SPEC.md#FR-006"
+  - "module/contracts/SPEC.md#FR-008"
   - "module/contracts/SPEC.md#BR-002"
+  - "module/contracts/SPEC.md#BR-003"
+  - "module/contracts/SPEC.md#BR-009"
   - "module/contracts/SPEC.md#NFR-004"
-  - "module/contracts/SPEC.md#NFR-007"
+  - "module/contracts/SPEC.md#NFR-008"
 files:
-  - "README.md"
-  - "CHANGELOG.md"
+  - "SPEC.md"
+  - "TRACEABILITY.md"
+  - "ACCEPTANCE.md"
+  - "FEATURES.md"
+  - "IMPLEMENTATION-PLAN.md"
 acceptance_criteria:
-  - "AC-FR-005: CHANGELOG.md 记录所有 breaking changes"
-  - "AC-BR-002: README 包含消费方/生产方/稳定期说明"
-  - "AC-NFR-004: gitleaks 扫描通过"
-  - "AC-NFR-007: README/CHANGELOG/godoc 齐全"
+  - "这些文档与 README、goal、CHANGELOG 共享同一事实源。"
+  - "TRACEABILITY 覆盖 FR-001..FR-008，并指向当前 TASK-CONTRACTS-000..TASK-CONTRACTS-005。"
+  - "依赖图只使用 TASK-CONTRACTS-000..TASK-CONTRACTS-005。"
+  - "文档不残留旧术语、旧 API 名称或旧任务编号。"
+  - "文档不把传输实现写成主线事实。"
 depends_on:
+  - "TASK-CONTRACTS-000"
   - "TASK-CONTRACTS-001"
   - "TASK-CONTRACTS-002"
   - "TASK-CONTRACTS-003"
@@ -29,47 +34,7 @@ estimated_effort: "1h"
 priority: P1
 status: pending
 non_scope:
-  - "不编写Go代码（纯文档）"
-  - "不修改SPEC（已完成）"
+  - "不修改 /home/contracts/pkg/contracts 源码。"
+  - "不添加新的规格章节或任务编号。"
+  - "不恢复旧术语。"
 ```
-
----
-
-## Non-scope
-
-- 不编写Go代码（纯文档）
-- 不修改SPEC（已完成）
-
-## Requirements Covered
-
-| Requirement | Description   | Acceptance Criteria           |
-| ----------- | ------------- | ----------------------------- |
-| FR-006      | BC 变更记录   | AC-FR-005: CHANGELOG 记录 |
-| BR-002      | 契约三方说明   | AC-BR-002: README 含消费方/生产方/稳定期 |
-| NFR-004     | Secret 扫描   | AC-NFR-004: gitleaks 通过 |
-| NFR-007     | 文档齐全      | AC-NFR-007: README+CHANGELOG+godoc |
-
-## Test Plan
-
-| Test Case | Type    | Description           |
-| --------- | ------- | --------------------- |
-| TC-003    | CI Gate | go build 编译通过 |
-| TC-003    | CI Gate | gitleaks Secret 扫描 |
-| TC-003    | Review  | README 模块定位/端口概览/消费方说明 |
-
-## Implementation Notes
-
-- README 说明 contracts 是跨域接口契约包
-
-## Implementation Plan
-
-| Step | Description       | Deliverables   | Verification |
-| ---- | ----------------- | -------------- | ------------ |
-| 1    | 创建 README.md    | `README.md`    | 人工 review  |
-| 2    | 创建 CHANGELOG.md | `CHANGELOG.md` | 格式正确     |
-
-### Risk Assessment
-
-| Risk | Probability | Impact | Mitigation |
-| ---- | ----------- | ------ | ---------- |
-| 无   | Low         | Low    | —          |
