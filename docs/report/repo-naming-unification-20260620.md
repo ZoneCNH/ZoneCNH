@@ -8,7 +8,7 @@
 >
 > 现实状态：`module/README.md` 已将 L2.5 显示层切换为 `snake_case`，但链接目标仍指向当前目录投影 `domain-market` / `domain-macro` / `domain-exchange`；本文继续把“目标命名口径”和“当前文件投影”分开记录，避免把计划写成已完成事实。
 >
-> 补充说明：`SignalIntent` 属于 contracts 契约投影，已在 `docs/architecture/08-contracts.md` 与 `STATUS.md` 固化，不计入本次 L2.5 命名清理；本轮仅继续跟踪尚未落地的 P1 / P2 事件与接口。
+> 补充说明：`SignalIntent` 属于 contracts 契约投影，已在 `docs/architecture/08-contracts.md` 与 `STATUS.md` 固化，不计入本次 L2.5 命名清理；后续尚未落地的 P1 / P2 事件与接口统一由 `docs/report/architecture-structural-repair-plan-20260621.md` 承接，本文不展开执行树。
 >
 > 配套关系：`docs/report/architecture-structural-analysis-20260621.md` 负责结构性诊断摘要，`docs/report/architecture-structural-repair-plan-20260621.md` 负责完整修复计划；本文只维护命名同步结果与历史投影边界。
 

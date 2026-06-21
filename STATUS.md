@@ -443,7 +443,7 @@
 
 ### 下一步行动
 
-1. **按修复计划推进 Phase 1**：先按 `docs/report/architecture-structural-repair-plan-20260621.md` 的 `#1` 完成 `contracts` Approved、跨域 AC / TC 收口，再固化 `MarketDataProvider` / `FactorInput` / `FactorOutput`，并推进 `factor_engine → feature_store → factor_eval`
+1. **按修复计划推进 Phase 1**：先按 `docs/report/architecture-structural-repair-plan-20260621.md` 的 `#1` 完成 `contracts` Approved、跨域 AC / TC 收口，再依同一计划推进 `#5`-`#6` 与 `#9`-`#12`；本文件不再展开 `MarketDataProvider` / `FactorInput` / `FactorOutput` 的执行细节
 2. **同步 contracts 契约口径**：`SignalIntent` 已升入 contracts；P1 / P2 兼容投影别名（`RegimeSnapshotEvent` / `RegimeCardEvent` / `DecisionCardEvent` / `MarketRegimePort` / `MacroRegimePort` / `RegimeEnginePort`）已在 contracts 补齐；当前待推进的是 contracts Approved 与跨域 AC / TC 收口
 3. ~~**版本化 SDK**~~：✅ 已完成 — 18 仓库 v0.1.1 tagged release（2026-06-16）
 4. ~~**统一宏观适配器**~~：✅ 已评估 — 保持独立模块架构，11 仓库全部 v0.1.1 tagged release（2026-06-16）
