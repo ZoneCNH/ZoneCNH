@@ -354,6 +354,8 @@ FoundationX 运行模块分为两种架构类型。详见 [`ARCHITECTURE.md`](..
 └── go.mod
 ```
 
+**SPEC 模板**：[`data-cs-module/SPEC-TEMPLATE.md`](./data-cs-module/SPEC-TEMPLATE.md) — 23 节 C/S Module 标准模板，新建模块时复制填写
+
 **参考实现**：[binance](https://github.com/ZoneCNH/binance)（v0.2.0，bootstrap 接入 + client/server + 4 产品线）
 
 ### 独立进程（非 C/S）

@@ -46,7 +46,7 @@ L2.5: domainx / decimalx / domain_market / domain_macro / domain_exchange (5/5 �
       │
       ▼
 业务流: 数据域 → 分析域 ↔ 决策域 → 执行域
-数据域: market_data (14) / macro_data (10) / alternative_data
+数据域: market_data (14) / macro_data (11) / alternative_data
 分析域: factor_engine / feature_store / factor_eval / market_regime / macro_regime / regime_engine / ms_brain / flowx
        三引擎: market_engine(market facts → S state) / macro_engine(macro facts → M state) / regime_engine(M+S → action/risk/permission)
 决策域: signal_factory / ~~backtest_engine~~ / optimizer / backtestx / strategyx / maestro
@@ -136,7 +136,9 @@ L2.5: domainx / decimalx / domain_market / domain_macro / domain_exchange (5/5 �
 - [upbit](https://github.com/ZoneCNH/upbit) — Upbit `公开`
 - [coinglass](https://github.com/ZoneCNH/coinglass) — Coinglass 加密货币数据 `公开`
 
-### 数据域 · macro_data
+### 数据域 · macro_data（11: 1 dispatch + 10 C/S Module）
+
+- [macro_data](https://github.com/ZoneCNH/macro_data) — 宏观数据聚合调度（Receiver + DualWriteSink）；dispatch 独立进程 `公开`
 
 - [fred](https://github.com/ZoneCNH/fred) — 美联储经济数据 (FRED) `公开`
 - [treasury](https://github.com/ZoneCNH/treasury) — 美国国债/财政数据 `公开`
