@@ -6,17 +6,17 @@
 |------|-----|
 | Module | `module/binance/server` |
 | Status | Approved |
-| Spec-Version | v1.1.0 |
+| Spec-Version | v1.2.0 |
 | Last-Updated | 2026-06-21 |
 | Owner | ZoneCNH |
 | Layer | 数据域 · 行情接入层 |
-| Role | Binance 行情数据的处理 + 存储服务端（natsx 消费 + redisx + postgresx + taosx + kafkax + ossx + Gin REST API） |
+| Role | Binance 行情数据的处理 + 存储服务端（natsx 消费 + redisx + postgresx + taosx + clickhousex + kafkax + ossx + Gin REST API） |
 | Port Interface | natsx JetStream subject `binance.market.*` (消费) + Gin REST HTTP `:8080` (提供给 market_data) |
 | Language | Go |
 | Version | v0.1.0 |
 | Repository | [github.com/ZoneCNH/binance](https://github.com/ZoneCNH/binance)（server/ 子目录） |
 | Go Module Path | `github.com/ZoneCNH/binance`（monorepo，server 端通过 `cmd/binance-server` + `internal/server` 提供） |
-| Related | [CONSTITUTION.md](../../../CONSTITUTION.md), [ARCHITECTURE.md](../../../ARCHITECTURE.md), [module/binance/SPEC.md](../SPEC.md), [module/domain_market](../../domain_market/), [module/natsx](../../natsx/), [module/redisx](../../redisx/), [module/taosx](../../taosx/), [module/kafkax](../../kafkax/), [module/ossx](../../ossx/), [module/postgresx](../../postgresx/) |
+| Related | [CONSTITUTION.md](../../../CONSTITUTION.md), [ARCHITECTURE.md](../../../ARCHITECTURE.md), [module/binance/SPEC.md](../SPEC.md), [module/domain_market](../../domain_market/), [module/natsx](../../natsx/), [module/redisx](../../redisx/), [module/taosx](../../taosx/), [module/clickhousex](../../clickhousex/), [module/kafkax](../../kafkax/), [module/ossx](../../ossx/), [module/postgresx](../../postgresx/) |
 
 ---
 
@@ -201,6 +201,20 @@ client 和 server **互不感知彼此的进程位置**。server 只知道 NATS 
 **WHEN** market_data 调用超过 redisx 限流阈值
 **THEN** 返回 429 Too Many Requests
 
+### FR-007a: clickhousex Analytics API
+
+**WHEN** `GET /api/v1/analytics/vwap/{instrument_key}?interval=1m`
+**THEN** 从 clickhousex 返回聚合 VWAP 数据
+
+**WHEN** `GET /api/v1/analytics/top-movers?product_line=spot&limit=20`
+**THEN** 从 clickhousex 返回涨跌幅排行
+
+**WHEN** `GET /api/v1/analytics/correlation?symbols=BTCUSDT,ETHUSDT`
+**THEN** 从 clickhousex 返回相关性矩阵
+
+**WHEN** clickhousex 不可达
+**THEN** 返回 503，日志记录，不影响 taosx 实时 ticks API
+
 ### FR-008: ossx Archival
 
 **WHEN** ossx 定时任务触发
@@ -214,8 +228,36 @@ client 和 server **互不感知彼此的进程位置**。server 只知道 NATS 
 **WHEN** server runtime code imports `internal/client`、`internal/cs`、`module/contracts` 或 gRPC ingest runtime
 **THEN** CI boundary gate MUST fail
 
-**WHEN** server `go.mod` 缺少 `gin` / `ossx` / `natsx` / `redisx` / `taosx` / `postgresx` / `kafkax` direct dependency
+**WHEN** server `go.mod` 缺少 `gin` / `ossx` / `natsx` / `redisx` / `taosx` / `postgresx` / `kafkax` / `clickhousex` direct dependency
 **THEN** CI dependency gate MUST fail
+
+### FR-010: clickhousex OLAP Storage
+
+**WHEN** ETL scheduler 触发（每 5 分钟）
+**THEN** 从 taosx 查询上一窗口的 raw ticks，聚合计算 1m_ohlcv / 5m_vwap / 15m_stats，通过 `clickhousex.InsertBatch` 写入 ClickHouse
+
+**WHEN** clickhousex InsertBatch 失败
+**THEN** 记录 error 日志，跳过本批次，不阻塞实时 ticks API
+
+**WHEN** taosx 数据不可达
+**THEN** ETL 本轮跳过，下轮重试；不影响 natsx 消费主管线
+
+### FR-011: Distributed Coordinator Lock
+
+**WHEN** server 启动时
+**THEN** 尝试通过 redisx `SetNX(coordinator_lock, instance_id, 30s)` 获取分布式锁
+
+**WHEN** SetNX 成功（本实例为主）
+**THEN** 启动 ETL scheduler（FR-010）；每 10s 续期（Expire）；同时定期触发 ossx 归档（FR-008）
+
+**WHEN** SetNX 失败（其他实例已持锁）
+**THEN** 进入 standby 模式，每 5s 轮询；持锁实例崩溃后 TTL 到期自动接管
+
+**WHEN** 续期失败（网络抖动或 redisx 不可达）
+**THEN** 立即停止 ETL scheduler 和 ossx 归档；记录告警；等待重新获取锁
+
+**WHEN** 正常关闭
+**THEN** 主动调用 `Del(coordinator_lock)` 释放锁，减少等待时间
 
 ---
 
