@@ -2,8 +2,8 @@
 
 > 模块级追溯矩阵。治理规范见 [docs/governance/TRACEABILITY.md](../../docs/governance/TRACEABILITY.md)。
 
-Last-Updated: 2026-06-18
-Source: module/testkitx/SPEC.md v1.0.0
+Last-Updated: 2026-06-21
+Source: module/testkitx/SPEC.md v1.1.0
 Runtime-Evidence: /home/testkitx — build/vet/test/race exit=0；总覆盖率 92.6%；Eventually 100%；CI ci.yml（testkitx-gates）已部署
 
 ---
@@ -64,14 +64,14 @@ Runtime-Evidence: /home/testkitx — build/vet/test/race exit=0；总覆盖率 9
 | TC-008             | FR-008, BR-004  | `go test ./pkg/testkitx/golden/...`（CI golden-update-guard）| ✅      |
 | TC-009             | FR-009, BR-005  | `go test ./pkg/testkitx/boundarytest/...`           | ✅             |
 | TC-010             | FR-010          | `go test ./pkg/testkitx/leaktest/...`               | ✅             |
-| CI: compile        | BR-001          | `go build ./...`                                    |                |
-| CI: race           | BR-002, NFR-003 | `go test ./... -race -count=1`                      |                |
-| CI: golden-guard   | BR-004          | 检查 `GOLDEN_UPDATE` 不在 CI 中设置                 |                |
-| CI: no-prod-import | BR-005, NFR-004 | `go list -deps ...                                  | grep testkitx` |
-| CI: deps           | BR-006          | `go mod tidy && git diff --exit-code go.mod go.sum` |                |
-| CI: gitleaks       | BR-007, NFR-005 | `gitleaks detect --no-git`                          |                |
-| CI: coverage       | NFR-002         | `go tool cover -func=.coverage/cover.out`           |                |
-| Benchmark          | NFR-001         | `go test -bench=. -benchmem -count=3 ./...`         |                |
+| CI: compile        | BR-001          | `go build ./...`                                    | ✅             |
+| CI: race           | BR-002, NFR-003 | `go test ./... -race -count=1`                      | ✅             |
+| CI: golden-guard   | BR-004          | 检查 `GOLDEN_UPDATE` 不在 CI 中设置                 | ✅             |
+| CI: no-prod-import | BR-005, NFR-004 | `go list -deps ...                                  | grep testkitx` | ✅             |
+| CI: deps           | BR-006          | `go mod tidy && git diff --exit-code go.mod go.sum` | ✅             |
+| CI: gitleaks       | BR-007, NFR-005 | `gitleaks detect --no-git`                          | ✅             |
+| CI: coverage       | NFR-002         | `go tool cover -func=.coverage/cover.out`           | ✅             |
+| Benchmark          | NFR-001         | `go test -bench=. -benchmem -count=3 ./...`         | ✅             |
 
 ---
 

@@ -17,7 +17,7 @@ Foundation 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中在 
 | [`CONSTITUTION.md`](./CONSTITUTION.md)                                   | 系统宪法 — FoundationX 全系统最高治理文件，覆盖模块实现与交付管线 |
 | [`docs/sre/foundation-cicd-plan.md`](./docs/sre/foundation-cicd-plan.md) | SRE CI/CD — 基座层 19 模块 4 阶段部署方案、机器池架构、标准化模板 |
 
-19 个基座模块的独立规格均为 23 节结构：行为规格 WHEN/THEN、接口契约、业务规则、错误处理、边界场景、验收标准、目录结构、CI Gate、测试矩阵、性能预算、可观测输出、发布 DoD。完整索引见 [`module/README.md`](./module/README.md)。`x.go` 组合根仍作为运行时入口维护，但不再作为 `module/` 下的模块规格。
+19 个基座模块的独立规格均为 23 节结构：行为规格 WHEN/THEN、接口契约、业务规则、错误处理、边界场景、验收标准、目录结构、CI Gate、测试矩阵、性能预算、可观测输出、发布 DoD。完整索引见 [`module/README.md`](./module/README.md)。`x.go` 负责治理/工具 CLI，`composer` 负责运行时组合根；两者都不作为 `module/` 下的模块规格。
 
 | 层级                  | 模块          | 完整规格                                                         |
 | --------------------- | ------------- | ---------------------------------------------------------------- |
@@ -84,7 +84,7 @@ Foundation 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中在 
 
 `resiliencx` 必须回到 operational resilience：对不稳定外部依赖、任务、数据源、交易所 API、消息处理和调度任务提供可组合故障控制策略。
 
-`risk_engine` 才负责 trading risk，二者不能混用。
+`riskx` 才负责 trading risk，二者不能混用。
 
 `xlib_standard` v1.0.1 已发布（tag v1.0.1, PR #121），标准源和 Go Reference Template 职责已完整落地。Generator / Harness Gate / Evidence Runtime 职责已于 PR #233 拆分至 `xlib_harness` 和 `xlib_evidence`。
 
@@ -124,7 +124,7 @@ Foundation 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中在 
 | 基座                  | [testkitx](https://github.com/ZoneCNH/testkitx)                 | v0.4.0       | ✅ 已发布 | Spec→Code 完成 | Fake / Fixture / Golden / Contract / Leak / Boundary / Manifest 测试工具包；test-only；禁止生产导入；factory grade 不适用                                                                                                                                                                                                                                                        |
 | 基座                  | [resiliencx](https://github.com/ZoneCNH/resiliencx)             | v1.0.2       | ✅ 已发布 | Spec→Code 完成 | 运行时弹性策略库：timeout/retry/circuit/bulkhead/rate/fallback、Compose、InstrumentStrategy、panic recovery；v1.0.2 GitHub Release 已发布，Release Check 27777166525 通过                                                                                                                                                                                                        |
 | 基座                  | [schedulex](https://github.com/ZoneCNH/schedulex)               | v1.0.0       | ✅ 已发布 | Spec→Code 完成 | cron/interval/delay 调度、OverlapPolicy（Skip/Queue/Replace）、MisfirePolicy（Skip/RunOnce/CatchUp）、EventSink、Locker、Clock 注入；98.2% 覆盖，release-check 通过                                                                                                                                                                                                              |
-| 基座                  | [bootstrap](https://github.com/ZoneCNH/bootstrap)               | v0.2.0       | ✅ 已发布 | Spec→Code 完成 | L1 Assembly 通用进程组装层：位于 L1 primitives 之上、`x.go` 入口之下，统一组装 configx/observex/resiliencx/lifecycx + 7 存储 adapter 可选构造（StoreSet 位掩码）+ 信号捕获；不承载业务语义、service listener、domain contracts；✅ GitHub Release v0.2.0 已发布；BLK-009 resolved ✅；factory-ready                                                                              |
+| 基座                  | [bootstrap](https://github.com/ZoneCNH/bootstrap)               | v0.2.0       | ✅ 已发布 | Spec→Code 完成 | L1 Assembly 通用进程组装层：位于 L1 primitives 之上、`composer` 入口之下，统一组装 configx/observex/resiliencx/lifecycx + 7 存储 adapter 可选构造（StoreSet 位掩码）+ 信号捕获；不承载业务语义、service listener、domain contracts；✅ GitHub Release v0.2.0 已发布；BLK-009 resolved ✅；factory-ready                                                                              |
 | 基座                  | [xlibgate](https://github.com/ZoneCNH/xlibgate)                 | v1.0.0       | ✅ 已发布 | Spec→Code 完成 | check / l2 / trust 三组门禁；全管线评分 100                                                                                                                                                                                                                                                                                                                                      |
 | 基座                  | [xlib_standard](https://github.com/ZoneCNH/xlib_standard)       | v1.0.1       | ✅ 已发布 | Spec→Code 完成 | 标准事实源、Go Reference Template；Generator/Harness/Evidence 已拆分；v1.0.1 GitHub Release 与 release-preflight 已通过，不参与运行时 import                                                                                                                                                                                                                                     |
 | 基座                  | [xlib_harness](https://github.com/ZoneCNH/xlib_harness)         | v0.1.1       | ✅ 已发布 | Spec→Code 完成 | 模块生成器与门禁执行器：generate/scaffold、spec-lint、boundary-check、traceability-gate；✅ v0.1.1 发布基线已通过 go test/race/vet/coverage/benchmark/CLI smoke 验收                                                                                                                                                                                                             |
@@ -176,8 +176,8 @@ Foundation 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中在 
 | 分析域                | [factor_engine](https://github.com/ZoneCNH/factor_engine)       | -            | 🔨 已创建 | ░░░░ 5%        | 从原始数据计算 alpha 因子                                                                                                                                                                                                                                                                                                                                                        |
 | 分析域                | [feature_store](https://github.com/ZoneCNH/feature_store)       | -            | 🔨 已创建 | ░░░░ 5%        | 因子版本管理、IC 评估                                                                                                                                                                                                                                                                                                                                                            |
 | 分析域                | [factor_eval](https://github.com/ZoneCNH/factor_eval)           | -            | 🔨 已创建 | ░░░░ 5%        | IC/IR/换手率评估                                                                                                                                                                                                                                                                                                                                                                 |
-| 分析域                | [market_regime](https://github.com/ZoneCNH/market_regime)       | v0.2.0       | 🔨 已创建 | ████████ 70%   | 市场状态识别（S1-S7）；BarWindow 滑动窗口、domain-market 适配器、Subscriber 消费者层，12 tests PASS；x.go wire-up 待推进                                                                                                                                                                                                                                                          |
-| 分析域                | [macro_regime](https://github.com/ZoneCNH/macro_regime)         | v0.2.0       | 🔨 已创建 | ████████ 70%   | 宏观经济体制识别（M1-M7）；MacroInformationSet mapper+ClassifyFromSet 便利方法，13 tests PASS；x.go wire-up 待推进                                                                                                                                                                                                                                                                |
+| 分析域                | [market_regime](https://github.com/ZoneCNH/market_regime)       | v0.2.0       | 🔨 已创建 | ████████ 70%   | 市场状态识别（S1-S7）；BarWindow 滑动窗口、domain-market 适配器、Subscriber 消费者层，12 tests PASS；composer wire-up 待推进                                                                                                                                                                                                                                                          |
+| 分析域                | [macro_regime](https://github.com/ZoneCNH/macro_regime)         | v0.2.0       | 🔨 已创建 | ████████ 70%   | 宏观经济体制识别（M1-M7）；MacroInformationSet mapper+ClassifyFromSet 便利方法，13 tests PASS；composer wire-up 待推进                                                                                                                                                                                                                                                                |
 | 分析域                | [regime_engine](https://github.com/ZoneCNH/regime_engine)       | v1.0.0       | 🔨 已创建 | ████ 60%       | M×S 联合决策引擎，P0 DTO 桥接完成（RegimeSnapshot+RegimeCard→DecisionCard），13 tests PASS                                                                                                                                                                                                                                                                                       |
 | 分析域                | [ms_brain](https://github.com/ZoneCNH/ms_brain)                 | -            | ✅ 已有   | -              | M×S 系统架构分析体系                                                                                                                                                                                                                                                                                                                                                             |
 | 分析域                | [flowx](https://github.com/ZoneCNH/flowx)                       | v0.1.0-draft | 🔨 已创建 | ░░░░ 5%        | 数据流管线引擎 — 实时流式 ETL、窗口聚合、背压控制（7 FR, SPEC draft）                                                                                                                                                                                                                                                                                                            |
@@ -197,7 +197,7 @@ Foundation 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中在 
 | 执行域                | [positionx](https://github.com/ZoneCNH/positionx)               | v0.1.0-draft | 🔨 已创建 | ░░░░ 5%        | 仓位管理器 — 实时仓位追踪、PnL、敞口监控（7 FR, SPEC draft）                                                                                                                                                                                                                                                                                                                     |
 | 执行域                | [settlement](https://github.com/ZoneCNH/settlement)             | -            | 🔨 已创建 | ░░░░ 5%        | PnL 计算、交易所对账                                                                                                                                                                                                                                                                                                                                                             |
 | **入口**              |                                                                 |              |           |                |                                                                                                                                                                                                                                                                                                                                                                                  |
-| 入口                  | [x.go](https://github.com/ZoneCNH/x.go)                         | v0.0.1       | ✅ 已有   | ███░ 80%       | 组合根，2.8MB/33 项                                                                                                                                                                                                                                                                                                                                                              |
+| 入口                  | [composer](https://github.com/ZoneCNH/composer)                 | v0.2.0       | ✅ 已有   | ███░ 80%       | 运行时组合根，25 进程编排                                                                                                                                                                                                                                                                                                                                                          |
 | **横切**              |                                                                 |              |           |                |                                                                                                                                                                                                                                                                                                                                                                                  |
 | 横切                  | [alertx](https://github.com/ZoneCNH/alertx)                     | -            | 🔨 已创建 | ░░░░ 5%        | 策略异常、风控触发告警                                                                                                                                                                                                                                                                                                                                                           |
 | 横切                  | [observex](https://github.com/ZoneCNH/observex)                 | v0.3.4       | ✅ 已发布 | █████ 100%     | 可观测性（同时归属基座，提供底层 metrics/tracing/logging）；Labels type alias；redisx/kafkax/clickhousex 已对齐                                                                                                                                                                                                                                                                                                                       |
@@ -271,7 +271,7 @@ Foundation 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中在 
 | 执行域            | orderx          | `/home/orderx/`          |
 | 执行域            | positionx       | `/home/positionx/`       |
 | **入口**          |                 |                          |
-| 入口              | x.go            | `/home/x.go/`            |
+| 入口              | composer        | `/home/composer/`        |
 
 > 完整仓库 URL 映射见上方状态总览表。分析域（flowx）、决策域（backtestx/strategyx/maestro）、执行域（riskx/orderx/positionx）模块 SPEC 已发布（v0.1.0-draft）。
 
@@ -292,18 +292,18 @@ Phase 1: 分析域   ← factor_engine + feature_store + factor_eval
          先固化 MarketDataProvider / FactorInput / FactorOutput；
          退出条件是 market provider → factor_engine → factor_eval 可跑通
 
-Phase 2: 决策域   ← signal_factory + backtest_engine + optimizer
+Phase 2: 决策域   ← signal_factory + backtestx + optimizer
          先固化 SignalIntent / PortfolioTarget；
-         退出条件是 signal → backtest → factor feedback 可跑通
+         退出条件是 signal → backtestx → factor feedback 可跑通
 
-Phase 3: 执行域   ← risk_engine + order_engine + portfolio_engine
+Phase 3: 执行域   ← riskx + orderx + positionx
          先固化 RiskDecision / OrderIntent / ExecutionReport；
-         退出条件是 signal → risk_engine → paper order_engine → portfolio update 可跑通
+         退出条件是 signal → riskx → paper orderx → position update 可跑通
 
 Phase 4: 平台化   ← settlement + alertx + alternative_data
          先固化 PositionSnapshot / PnLReport / ExposureEvent；
          生产化运维能力；执行反馈以事件回到决策域
 
-Phase 5: 入口验收 ← x.go
+Phase 5: 入口验收 ← composer
          只补最终 wiring 和生命周期，验证完整闭环，不新增业务逻辑
 ```

@@ -6,7 +6,7 @@
 
 ## 架构视图
 
-依赖、业务流和运行时组装刻意分开呈现：业务数据从数据域走向执行域，代码依赖不反向穿透；`x.go` 是组合根（Composition Root），不是业务链路终点。
+依赖、业务流和运行时组装刻意分开呈现：业务数据从数据域走向执行域，代码依赖不反向穿透；`x.go` 是治理/工具 CLI，`composer` 是组合根（Composition Root），不是业务链路终点。
 
 > 🔄 三引擎数据流全景（market_engine→S / macro_engine→M / regime_engine→DecisionCard）、M×S 矩阵、契约固化清单 → **[DATAFLOW.md](./DATAFLOW.md)**
 >
@@ -17,7 +17,7 @@
 ```text
 依赖方向：左侧模块可以导入右侧模块。
 
-x.go ───────────────► 基座运行时 / L2.5 / 数据域 / 分析域 / 决策域 / 执行域
+composer ───────────► 基座运行时 / L2.5 / 数据域 / 分析域 / 决策域 / 执行域
 
 数据域 ─┐
 分析域 ─┼──────────► L2.5 Domain Shared
@@ -86,7 +86,7 @@ factor_engine ◄──► feature_store ◄──► factor_eval
 ### 运行时组装
 
 ```text
-x.go / service main
+composer / service main
   └── bootstrap.Build(ctx, Spec{Module, Stores, Hooks})
       ├── validate module/context
       ├── configx: .env + XGO_{MODULE}_*
@@ -103,4 +103,3 @@ x.go / service main
 ```
 
 `bootstrap` 只组装进程入口，不承载业务语义、domain/contracts、HTTP/gRPC listener 或跨进程编排；跨进程 composer 属于上层入口职责。Adapter 进程使用 `Stores=None`，`market_data` / `macro_data` 聚合进程可使用 `Stores=All` 或位组合。
-

@@ -2,7 +2,7 @@
 
 > FoundationX 三引擎数据流：从原始数据到交易决策的完整路径
 >
-> 最后更新：2026-06-06
+> 最后更新：2026-06-21
 
 ---
 
@@ -12,9 +12,9 @@
 ┌─────────────────────────────────────────────────────────────────────────────────┐
 │                                  数据域                                          │
 │                                                                                 │
-│  market_data (13)                    macro_data (11)           alternative_data │
+│  market_data (14)                    macro_data (10)           alternative_data │
 │  ┌──────────────────┐                ┌──────────────────┐      ┌──────────────┐ │
-│  │ 13 交易所 SDK     │                │ fred             │      │ 链上数据     │ │
+│  │ 12 交易所 SDK     │                │ fred             │      │ 链上数据     │ │
 │  │ binance/okx/...   │                │ treasury         │      │ 社交情绪     │ │
 │  │                   │                │ bea/ecb/uk_cb/...│      │ 新闻 NLP     │ │
 │  └────────┬─────────┘                │ eastmoney        │      └──────────────┘ │
@@ -119,7 +119,7 @@
 │  DecisionCard                                                                │
 │       │                                                                        │
 │       ▼                                                                        │
-│  signal_factory ◄── backtest_engine ──── factor_eval (反馈)                     │
+│  signal_factory ◄── backtestx ──── factor_eval (反馈)                           │
 │  (信号生成/组合)     (事件驱动回测)                                              │
 │       │              ▲                                                          │
 │       ▼              │                                                          │
@@ -131,7 +131,7 @@
 ┌─────────────────────────────────────────────────────────────────────────────────┐
 │                                 执行域                                           │
 │                                                                                 │
-│  risk_engine ───► order_engine ───► portfolio_engine ───► settlement            │
+│  riskx ───────► orderx ───────► positionx ───────► settlement                   │
 │  ┌───────────┐    ┌───────────┐    ┌──────────────┐    ┌───────────┐           │
 │  │ trade_    │    │ 智能路由   │    │ 多策略资金   │    │ PnL 计算  │           │
 │  │ permission│    │ TWAP/VWAP │    │ 分配/再平衡  │    │ 交易所对账│           │
@@ -145,4 +145,3 @@
 ```text
 
 ---
-

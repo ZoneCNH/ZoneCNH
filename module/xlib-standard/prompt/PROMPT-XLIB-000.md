@@ -2,7 +2,7 @@
 
 > PR-1: 删除治理运行时与冗余目录
 > 工作分支: `feat/xlib-v1-prune`
-> 工作目录: worktree/xlib-v1-prune/
+> 工作目录: /home/xlib-standard/.worktree/workspaces/feat/xlib-v1-prune
 
 ## Current Task
 

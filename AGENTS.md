@@ -12,7 +12,7 @@
 - `ARCHITECTURE.md` 是向后兼容重定向存根；架构内容已拆分迁移至 `docs/architecture/`（01-overview / 02-domain-layers / 03-boundaries / 04-principles / 05-foundation / 06-dataflow / 07-three-engines / 08-contracts / adr）。
 - `kernel`、`market_data`、`factor_engine`、`x.go` 等模块位于独立 GitHub 仓库；不要把它们的源码树加入本仓库。
 - 模块代码的本地工作目录统一为 `/home/{module}`，其中 `{module}` 与 GitHub 仓库名一致；本仓库只引用这些路径，不复制或收纳模块源码。
-- 本仓库的 feature worktree 统一放在 `/home/{module}/.worktree/workspaces/<branch-name>`，其中 `{module}` 是仓库目录名；禁止再把新 worktree 放在仓库根外的零散目录。
+- 本仓库的 feature worktree 统一放在 `/home/{module}/.worktree/workspaces/<branch-name>`，其中 `{module}` 是仓库目录名，`<branch-name>` 按 Git 分支名原样落盘（仅去掉 `refs/heads/` 前缀，`feat/...` 会自然形成嵌套目录）；纯文档仓库的仓库根 checkout 只在 feature branch 承载时可视为例外，不算新增 worktree。禁止再把新 worktree 放在仓库根外的零散目录。
 
 ## 构建、测试与开发命令
 

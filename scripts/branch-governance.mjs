@@ -6,6 +6,7 @@
  * - merge candidates: open, non-draft, mergeable PRs
  * - fix candidates: open PRs that are draft or not mergeable
  * - delete candidates: local branches that are fully merged into main and not attached to a worktree
+ * - worktree path violations: non-root branch-attached worktrees not under .worktree/workspaces/<branch-name>
  *
  * Usage:
  *   node scripts/branch-governance.mjs [--json]
@@ -14,6 +15,11 @@
 import { execFileSync } from "child_process";
 import { dirname, resolve } from "path";
 import { fileURLToPath } from "url";
+import {
+  canonicalWorktreePath,
+  describeBranchWorktreePath,
+  parseWorktreePorcelain,
+} from "./worktree-policy.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const projectRoot = resolve(__dirname, "..");
@@ -39,25 +45,9 @@ export function buildScan({ run = defaultRun, now = () => new Date() } = {}) {
   const hasGh = !!run("gh", ["--version"]);
   const timestamp = now().toISOString();
 
-  const worktreeBranchToPath = new Map();
-  if (getGitRoot) {
-    let currentPath = null;
-    for (const rawLine of splitLines(run("git", ["worktree", "list", "--porcelain"]))) {
-      const line = rawLine.trim();
-      if (!line) {
-        currentPath = null;
-        continue;
-      }
-      if (line.startsWith("worktree ")) {
-        currentPath = line.slice("worktree ".length).trim();
-      } else if (line.startsWith("branch ") && currentPath) {
-        worktreeBranchToPath.set(
-          line.slice("branch ".length).trim().replace(/^refs\/heads\//, ""),
-          currentPath,
-        );
-      }
-    }
-  }
+  const worktreeState = getGitRoot
+    ? parseWorktreePorcelain(run("git", ["worktree", "list", "--porcelain"]))
+    : { branchToPath: new Map() };
 
   const openPrs = hasGh
     ? JSON.parse(
@@ -87,11 +77,16 @@ export function buildScan({ run = defaultRun, now = () => new Date() } = {}) {
   const closeCandidates = [];
   const deleteCandidates = [];
   const unpublishedBranches = [];
+  const worktreePathViolations = [];
   const branchInventory = [];
 
   for (const branch of branchNames) {
-    const branchTracked = worktreeBranchToPath.has(branch);
-    const branchPath = worktreeBranchToPath.get(branch) || null;
+    const branchTracked = worktreeState.branchToPath.has(branch);
+    const branchPath = worktreeState.branchToPath.get(branch) || null;
+    const worktreePathStatus = branchTracked
+      ? describeBranchWorktreePath({ root: getGitRoot, branchName: branch, actualPath: branchPath })
+      : { expectedPath: getGitRoot ? canonicalWorktreePath(getGitRoot, branch) : null, isRootCheckout: false, compliant: null };
+    const { expectedPath: expectedWorktreePath, isRootCheckout, compliant: worktreePathCompliant } = worktreePathStatus;
     const upstreamCount = run("git", ["rev-list", "--left-right", "--count", `main...${branch}`]);
     const [aheadMain, aheadBranch] = upstreamCount
       ? upstreamCount.split(/\s+/).map((n) => Number(n) || 0)
@@ -105,12 +100,24 @@ export function buildScan({ run = defaultRun, now = () => new Date() } = {}) {
       aheadBranch,
       mergedIntoMain: isMergedIntoMain,
       worktreePath: branchPath,
+      expectedWorktreePath,
+      rootCheckout: isRootCheckout,
+      worktreePathCompliant,
       hasOpenPr: !!pr,
       prNumber: pr ? pr.number : null,
       prDraft: pr ? !!pr.isDraft : null,
       prMergeable: pr ? pr.mergeable : null,
     };
     branchInventory.push(branchEntry);
+
+    if (branchTracked && !isRootCheckout && branchPath !== expectedWorktreePath) {
+      worktreePathViolations.push({
+        branch,
+        actualPath: branchPath,
+        expectedPath: expectedWorktreePath,
+        reason: "branch-attached worktree path is not canonical",
+      });
+    }
 
     if (isMergedIntoMain && !branchTracked) {
       deleteCandidates.push({
@@ -191,12 +198,14 @@ export function buildScan({ run = defaultRun, now = () => new Date() } = {}) {
       closeCandidates: closeCandidates.length,
       unpublishedBranches: unpublishedBranches.length,
       branchesScanned: branchInventory.length,
+      worktreePathViolations: worktreePathViolations.length,
     },
     mergeCandidates,
     fixCandidates,
     deleteCandidates,
     closeCandidates,
     unpublishedBranches,
+    worktreePathViolations,
     branchInventory,
     openPrs,
   };
@@ -212,7 +221,11 @@ export function formatHumanReport(result) {
   lines.push(`  Delete candidates: ${result.summary.deleteCandidates}`);
   lines.push(`  Close candidates: ${result.summary.closeCandidates}`);
   lines.push(`  Unpublished branches: ${result.summary.unpublishedBranches}`);
+  lines.push(`  Worktree path violations: ${result.summary.worktreePathViolations}`);
   lines.push("");
+  for (const item of result.worktreePathViolations) {
+    lines.push(`[WORKTREE] ${item.branch} — actual ${item.actualPath} (expected ${item.expectedPath})`);
+  }
   for (const item of result.mergeCandidates) {
     lines.push(`[MERGE] #${item.number} ${item.branch} — ${item.title}`);
     lines.push(`        ${item.url}`);

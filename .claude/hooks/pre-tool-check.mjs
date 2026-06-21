@@ -1,6 +1,8 @@
+import { execFileSync } from "child_process";
 import { readFileSync, existsSync } from "fs";
 import { join, dirname, resolve } from "path";
 import { fileURLToPath } from "url";
+import { WORKTREE_PATH_RULE, canonicalWorktreePath } from "../../scripts/worktree-policy.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const projectRoot = join(__dirname, "../..");
@@ -30,6 +32,98 @@ const tool = call.tool || "";
 const args = call.input || {};
 const filePath = args.file_path || args.path || "";
 
+const tokenizeShellCommand = (command) => {
+  const tokens = [];
+  let current = "";
+  let quote = null;
+  let escaped = false;
+
+  for (const ch of command) {
+    if (escaped) {
+      current += ch;
+      escaped = false;
+      continue;
+    }
+    if (quote === "'") {
+      if (ch === "'") quote = null;
+      else current += ch;
+      continue;
+    }
+    if (ch === "\\") {
+      escaped = true;
+      continue;
+    }
+    if (ch === '"' || ch === "'") {
+      quote = ch;
+      continue;
+    }
+    if (/\s/.test(ch)) {
+      if (current) {
+        tokens.push(current);
+        current = "";
+      }
+      continue;
+    }
+    current += ch;
+  }
+
+  if (escaped) current += "\\";
+  if (current) tokens.push(current);
+  return tokens;
+};
+
+const isBranchLikeRef = (ref) => {
+  if (!ref) return false;
+  try {
+    execFileSync("git", ["check-ref-format", "--branch", ref], { stdio: "ignore", timeout: 3000 });
+    return true;
+  } catch {
+    return false;
+  }
+};
+
+const parseWorktreeAdd = (command) => {
+  const tokens = tokenizeShellCommand(command);
+  const gitIndex = tokens.indexOf("git");
+  if (gitIndex < 0 || tokens[gitIndex + 1] !== "worktree" || tokens[gitIndex + 2] !== "add") {
+    return null;
+  }
+
+  const args = tokens.slice(gitIndex + 3);
+  const positional = [];
+  let branch = null;
+  let passthrough = false;
+
+  for (let i = 0; i < args.length; i += 1) {
+    const token = args[i];
+    if (!passthrough && token === "--") {
+      passthrough = true;
+      continue;
+    }
+    if (!passthrough && (token === "-b" || token === "-B" || token === "--branch")) {
+      branch = args[i + 1] || "";
+      i += 1;
+      continue;
+    }
+    if (!passthrough && token.startsWith("--branch=")) {
+      branch = token.slice("--branch=".length);
+      continue;
+    }
+    if (!passthrough && /^-[bB].+/.test(token)) {
+      branch = token.slice(2);
+      continue;
+    }
+    if (!passthrough && token.startsWith("-")) continue;
+    positional.push(token);
+  }
+
+  return {
+    path: positional[0] || "",
+    commitish: positional[1] || "",
+    branch,
+  };
+};
+
 // 硬拦截：禁止 AI 直接修改 .env 文件（所有模式均生效）
 const PROTECTED_FILES = [/(^|\/|\\)\.env$/, /(^|\/|\\)\.env\.local$/];
 
@@ -55,8 +149,8 @@ if (tool === "Bash" || tool === "PowerShell") {
   const c1 = cmd.match(/\bgit\s+(?:checkout\s+-b|switch\s+-c)\s+(\S+)/);
   if (c1) branchName = c1[1];
   if (!branchName) {
-    const c2 = cmd.match(/\bgit\s+worktree\s+add\b[^\n]*?\s+-b\s+(\S+)/);
-    if (c2) branchName = c2[1];
+    const worktreeAdd = parseWorktreeAdd(cmd);
+    if (worktreeAdd && worktreeAdd.branch) branchName = worktreeAdd.branch;
   }
   if (branchName) {
     const ALLOWED_BRANCH = /^(docs|feat|feature|fix|test|refactor|chore|governance|benchmark)\//;
@@ -64,6 +158,20 @@ if (tool === "Bash" || tool === "PowerShell") {
       process.stdout.write(JSON.stringify({
         block: true,
         reason: `🏷️ 分支命名违规：\`${branchName}\` 缺少 type/ 前缀（CONSTITUTION §0.2.2 要求 {type}/{module}-{描述}）。\n   → 建议改名：docs/${branchName}-<描述>\n   → 合法前缀：docs/feat/feature/fix/test/refactor/chore/governance/benchmark\n   → 示例：git checkout -b docs/${branchName}-<描述>`,
+      }));
+      process.exit(0);
+    }
+  }
+
+  const worktreeAdd = parseWorktreeAdd(cmd);
+  const attachedBranch = worktreeAdd && (worktreeAdd.branch || (isBranchLikeRef(worktreeAdd.commitish) ? worktreeAdd.commitish : null));
+  if (worktreeAdd && attachedBranch && worktreeAdd.path) {
+    const actualPath = resolve(projectRoot, worktreeAdd.path);
+    const expectedPath = canonicalWorktreePath(projectRoot, attachedBranch);
+    if (actualPath !== expectedPath) {
+      process.stdout.write(JSON.stringify({
+        block: true,
+        reason: `🧱 worktree 路径违规：\`git worktree add\` 创建分支附着工作区时，路径必须遵守 ${WORKTREE_PATH_RULE}。\n   分支: ${attachedBranch}\n   实际: ${actualPath}\n   期望: ${expectedPath}\n   → 请改为：git worktree add ${expectedPath} ${worktreeAdd.branch ? `-b ${attachedBranch}` : attachedBranch}`,
       }));
       process.exit(0);
     }

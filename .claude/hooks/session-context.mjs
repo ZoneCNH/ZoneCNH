@@ -2,6 +2,11 @@ import { execSync, execFileSync } from "child_process";
 import { readdirSync, readFileSync, existsSync, statSync, rmSync } from "fs";
 import { join, dirname, relative } from "path";
 import { fileURLToPath } from "url";
+import {
+  WORKTREE_PATH_RULE,
+  describeBranchWorktreePath,
+  parseWorktreePorcelain,
+} from "../../scripts/worktree-policy.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const projectRoot = join(__dirname, "../..");
@@ -28,6 +33,10 @@ const isAncestor = (br) => {
 const branch = run("git rev-parse --abbrev-ref HEAD 2>/dev/null") || "（非 git 目录）";
 const status = run("git status --short 2>/dev/null") || "";
 const log = run("git log --oneline -10 2>/dev/null") || "";
+const currentTopLevel = run("git rev-parse --show-toplevel 2>/dev/null") || projectRoot;
+
+const worktreePorcelain = run("git worktree list --porcelain 2>/dev/null");
+const worktreeState = parseWorktreePorcelain(worktreePorcelain);
 
 const lines = ["--- SessionStart Hook ---", "分支: " + branch];
 
@@ -35,6 +44,21 @@ const lines = ["--- SessionStart Hook ---", "分支: " + branch];
 if (branch === "main") {
   lines.push("---", "⚠️ 当前在 main 分支！CLAUDE.md 禁止在 main 上直接编辑。请创建 feature 分支：");
   lines.push("   git checkout -b docs/<module>-<描述>");
+}
+
+if (branch !== "main" && branch !== "HEAD" && branch !== "（非 git 目录）") {
+  const actualPath = worktreeState.branchToPath.get(branch) || currentTopLevel;
+  const { expectedPath, isRootCheckout, compliant } = describeBranchWorktreePath({
+    root: projectRoot,
+    branchName: branch,
+    actualPath,
+  });
+  if (actualPath && !compliant) {
+    lines.push("---", "⚠️ 分支路径不符合 worktree 规则：");
+    lines.push("   当前: " + actualPath);
+    lines.push("   期望: " + expectedPath);
+    lines.push("   规则: " + WORKTREE_PATH_RULE);
+  }
 }
 
 // === Stale working tree guard ===
@@ -136,12 +160,7 @@ if (existsSync(worktreeBase)) {
   const PROTECT = new Set(["note.md", "v2.md"]);
 
   // 注册的 worktree 路径（git worktree list）
-  const registered = new Set(
-    run("git worktree list --porcelain 2>/dev/null")
-      .split("\n")
-      .filter(l => l.startsWith("worktree "))
-      .map(l => l.slice("worktree ".length).trim())
-  );
+  const registered = worktreeState.registered;
   // 排除主 worktree，避免其路径作为 .worktree/* 的前缀污染判定
   const regSub = new Set([...registered].filter(r => r !== projectRoot));
 
@@ -238,19 +257,7 @@ if (existsSync(worktreeBase)) {
   // 避免裸删目录留 .git/worktrees 元数据残留）。尊重 note.md/v2.md 白名单。
   {
     // ISC-1: 解析 porcelain 的 branch 行，按 worktree 块聚合 path → branch 映射
-    const wtPorcelain = run("git worktree list --porcelain 2>/dev/null");
-    const pathToBranch = new Map();
-    let curPath = null;
-    for (const line of wtPorcelain.split("\n")) {
-      if (line.startsWith("worktree ")) {
-        curPath = line.slice("worktree ".length).trim();
-      } else if (line.startsWith("branch ")) {
-        const bn = line.slice("branch ".length).trim().replace(/^refs\/heads\//, "");
-        if (curPath) pathToBranch.set(curPath, bn);
-      } else if (line === "") {
-        curPath = null; // ISC-3b: detached HEAD 块无 branch 行，自然不入 map
-      }
-    }
+    const pathToBranch = worktreeState.pathToBranch;
 
     const mergedStale = [];
     for (const [wtPath, wtBranch] of pathToBranch) {

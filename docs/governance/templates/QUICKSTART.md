@@ -18,9 +18,9 @@ for tmpl in SPEC DESIGN PLAN TRACEABILITY; do
     docs/governance/templates/module/$tmpl.md.skeleton > module/$MODULE/$tmpl.md
 done
 
-# 2. 创建独立 worktree（每个管线阶段一个）
+# 2. 创建独立 worktree（每个管线阶段一个，路径按分支名原样落盘，斜杠会形成子目录）
 for agent in spec design plan tasks matrix prompt; do
-  git worktree add .claude/worktrees/$MODULE-$agent main
+  git worktree add /home/$MODULE/.worktree/workspaces/feat/$MODULE-$agent -b feat/$MODULE-$agent origin/main
 done
 ```
 

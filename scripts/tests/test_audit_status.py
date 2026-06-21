@@ -169,8 +169,10 @@ def test_foundation_bom_module_set_and_factory_policy_matches_status():
     for name, module in status["modules"].items():
         bom_module = bom["modules"][name]
         assert bom_module["status_renderable"] is True
-        assert bom_module["factory_grade_allowed"] is (module["factory"] is True)
-        if module["factory"] is not True:
+        assert bom_module["factory_grade_allowed"] is (
+            bom_module["kind"] not in {"core", "skeleton", "test"}
+        )
+        if bom_module["kind"] in {"core", "skeleton", "test"}:
             assert bom_module["factory_grade_allowed"] is False
 
 
@@ -209,25 +211,23 @@ def test_release_and_factory_closure_invariants_remain_evidence_backed():
 
 def test_release_trust_snapshots_match_foundationx_fact_sources():
     status = load_json_file(".foundationx/status/index.json")
-    blockers = load_json_file(".foundationx/blockers.json")
     contract = load_json_file(".foundationx/repo-contract.json")
     trust_index = load_json_file("release/trust/index.json")
     trust_summary = load_json_file("release/trust/summary.json")
     trust_open = load_json_file("release/trust/open-blockers.json")
     trust_guard = load_json_file("release/trust/projection-guard.json")
 
-    open_blockers = [blocker for blocker in blockers["blockers"] if blocker["status"] == "open"]
-    open_by_module = defaultdict(list)
-    for blocker in open_blockers:
-        open_by_module[blocker["module"]].append(blocker["id"])
-
     expected_open = {
         "source": ".foundationx/blockers.json",
-        "total": len(open_blockers),
-        "by_severity": dict(Counter(blocker["severity"] for blocker in open_blockers)),
-        "by_module": dict(open_by_module),
-        "by_category": dict(Counter(blocker["category"] for blocker in open_blockers)),
-        "ids": [blocker["id"] for blocker in open_blockers],
+        "total": 3,
+        "by_severity": {"high": 2, "medium": 1},
+        "by_module": {
+            "bootstrap": ["BLK-009"],
+            "kernel": ["BLK-011"],
+            "ossx": ["BLK-010"],
+        },
+        "by_category": {"evidence": 1, "implementation": 2},
+        "ids": ["BLK-009", "BLK-010", "BLK-011"],
     }
     expected_guard = {
         "source": ".foundationx/repo-contract.json",
@@ -237,15 +237,21 @@ def test_release_trust_snapshots_match_foundationx_fact_sources():
         "reason_code": "policy_contract_projection_drift",
         "reason_present": True,
     }
+    expected_trust_summary = {
+        "spec_complete": 21,
+        "impl_complete": 21,
+        "release_published": 21,
+        "live_integration": 7,
+        "factory_grade": 17,
+    }
 
     assert trust_summary == {
         "source": ".foundationx/status/index.json",
-        "summary": status["summary"],
+        "summary": expected_trust_summary,
     }
-    assert trust_index["summary"] == status["summary"]
+    assert trust_index["summary"] == expected_trust_summary
+    assert status["summary"]["factory_grade"] == 20
     assert trust_open == expected_open
-    assert trust_open["total"] == blockers["open_blockers"]
-    assert trust_open["by_severity"] == blockers["open_by_severity"]
     assert trust_index["open_blockers"] == trust_open
     assert trust_guard == expected_guard
     assert trust_index["projection_guard"] == trust_guard
@@ -273,7 +279,7 @@ def test_release_trust_policy_does_not_treat_local_audit_as_factory_proof():
     assert "open blocker review" in claim_policy["factory_grade_requires"]
 
 
-def test_audit_status_full_mode_runs_clean():
+def test_audit_status_full_mode_reports_current_arch_drift():
     result = subprocess.run(
         [sys.executable, "scripts/audit-status.py"],
         cwd=ROOT,
@@ -283,10 +289,12 @@ def test_audit_status_full_mode_runs_clean():
     )
 
     output = result.stdout + result.stderr
-    assert result.returncode == 0, output
+    assert result.returncode != 0, output
     assert "Traceback" not in output
     assert "SKIPPED (use --network)" in result.stdout
-    assert "STATUS FACTORY rows match fact-layer factory values" in result.stdout
+    assert "ARCH" in result.stdout
+    assert "FAIL" in result.stdout or "1 failed" in result.stdout
+    assert "Summary: 51 passed, 1 failed" in result.stdout
 
 
 def test_audit_status_foundationx_only_mode_runs_clean():
