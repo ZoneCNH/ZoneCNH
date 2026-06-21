@@ -69,6 +69,29 @@
 
 ---
 
+## 机器门禁（Approved 升级前必检）
+
+> 2026-06-22 新增（见 `docs/report/architecture-structural-analysis-20260622-v2.md` §5.2 P0-2）
+
+`.github/ci/spec-lint.sh` 在 `Status: Approved` 时强制执行以下 ERROR 级检查（违反阻断 CI）：
+
+- **AC 必填**：SPEC.md 必须包含至少一条 `AC-` 编号（任何形式：`AC-001` / `AC-XXX-001` / `AC-MD-001`），否则报 `Status=Approved 但 SPEC 不含任何 AC`
+- 已有 Status 六态合法性检查（Draft / Review / Approved / Implemented / Changed / Deprecated）
+- 已有 23 节模板序检查（§1..§23 + Appendix）
+- 已有 Spec-Version / Last-Updated 字段校验
+- 已有 FR 编号连续性检查
+
+**升级到 Approved 的可机器验证条件**：
+
+- AC count ≥ 1
+- FR count ≥ 1
+- TC 至少在 §16/§19 章节出现（推荐但非阻断）
+- 23 节模板完整或采用简化版（contracts / xlib_standard 等元契约模块）
+
+Draft / Review 状态允许 AC 缺失，作为过渡窗口；推进到 Approved 前必须补齐。
+
+---
+
 ## 判断标准
 
 ```text

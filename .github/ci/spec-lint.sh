@@ -247,6 +247,19 @@ check_spec() {
     FAIL=1
   fi
 
+  # 11. Approved 状态门禁：Status=Approved 必须存在至少 1 条 AC（验收标准）
+  # 触发：仅在 Status 为 Approved 时阻断；Draft/Review 允许 AC 缺失（过渡窗口）
+  # 来源：docs/report/architecture-structural-analysis-20260622-v2.md §5.2 P0-2
+  # AC 形式：AC-001 / AC-XXX-001 / AC-MD-001 / AC-DEC-001 等（前缀 AC- 后跟字母数字）
+  if [[ "$status_val" == "Approved" ]]; then
+    local ac_count
+    ac_count=$(grep -oP '(?<![A-Za-z0-9_])AC-[A-Za-z0-9_-]+' "$spec_file" 2>/dev/null | sort -u | wc -l || echo 0)
+    if [[ "$ac_count" -eq 0 ]]; then
+      issues+=("❌ Status=Approved 但 SPEC 不含任何 AC（Acceptance Criteria）— 违反 DoR 验收要求")
+      FAIL=1
+    fi
+  fi
+
   # 输出结果
   if [[ ${#issues[@]} -eq 0 ]]; then
     echo "  ✅ $module: ${section_count}/23 sections, ${fr_count} FRs, ${when_count} WHEN clauses"

@@ -308,3 +308,26 @@ factor_engine/
 | 日期 | 版本 | 变更内容 | 作者 |
 | --- | --- | --- | --- |
 | 2026-06-17 | v0.1.0-draft | 初始文档基线：Factor 接口、FactorRegistry、ComputePipeline、FactorOutput | ZoneCNH |
+| 2026-06-22 | v0.1.1-draft | 新增 Appendix A: Acceptance Criteria Registry（11 条 AC，覆盖 FR-001..FR-008） | ZoneCNH |
+
+---
+
+## Appendix A: Acceptance Criteria Registry
+
+> 验收口径：本 Registry 锚定到 §4 功能需求、§5 行为约束、§6 非功能需求。当前 Status=`Docs Baseline Approved / Runtime Pending`，每条 AC 分两阶段：**Baseline**（文档与接口契约已固化）与 **Runtime**（实现验证通过）。新增/移除 AC 需同步更新 TRACEABILITY.md。
+
+| AC ID      | FR/BR/NFR Ref       | Criterion                                                                                                  | Verification                                            | Baseline Status      | Runtime Status |
+| ---------- | ------------------- | ---------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- | -------------------- | -------------- |
+| AC-FE-001  | FR-001              | `Factor` 接口包含 `Name() / InputTypes() / Warmup() / Compute(ctx, history)` 四方法，签名匹配 §7 Interface  | `factor.go` go doc + 接口实现断言                       | Baseline Approved    | Pending        |
+| AC-FE-002  | FR-002, BR-001      | `FactorRegistry.Register` 对重复 `Name()` 返回 `ErrDuplicateFactor`；`Get(name)` 返回 (Factor, bool)        | unit test：Register/Get/Duplicate                       | Baseline Approved    | Pending        |
+| AC-FE-003  | FR-002              | `ListByTags(tags)` 返回标签匹配的因子集合；`Names()` 返回全集                                              | unit test：标签查询正确返回非空集合                     | Baseline Approved    | Pending        |
+| AC-FE-004  | FR-003              | `ComputePipeline` 按 输入校验 → 因子选择 → 并行计算 → 结果聚合 → 写入 feature_store 顺序执行；并行度由配置控制 | integration test：mock feature_store + 并发 100 因子    | Baseline Approved    | Pending        |
+| AC-FE-005  | FR-004, BR-002      | `IsReliable=false` 的输入被拒绝并 emit `validation_reject` metric；`InstrumentKey.ProductLine.IsValid()` 失败拒绝 | unit test：构造 IsReliable=false 输入断言拒绝路径       | Baseline Approved    | Pending        |
+| AC-FE-006  | FR-005              | `FactorOutput` 包含 FactorName / Value / Timestamp / InstrumentKey / ProductLine / EventType / ComputeMetadata 七字段；Timestamp 为计算执行时间非事件时间 | unit test：字段断言 + Timestamp 类型校验                | Baseline Approved    | Pending        |
+| AC-FE-007  | FR-006              | 因子声明 `Warmup() > 0` 时，warmup 完成前不输出结果；`ComputeMetadata.WarmupComplete=false`               | unit test：构造未充分预热输入断言无输出                 | Baseline Approved    | Pending        |
+| AC-FE-008  | FR-007              | metrics 包含 `compute_latency_us / compute_total / validation_reject_total / warmup_pending` 四项指标     | metrics endpoint scrape + Prometheus name 断言          | Baseline Approved    | Pending        |
+| AC-FE-009  | FR-008              | Go module path 必须为 `github.com/ZoneCNH/factor_engine`；README H1 为 `# factor_engine`                    | `go list -m` + README grep                              | Baseline Approved    | Pending        |
+| AC-FE-010  | BR-003, BR-004, BR-005 | 因子计算不修改输入 MarketEventEnvelope；输出必须写入 feature_store 不暴露策略层；no-lookahead             | property test：输入对象 deep equal 前后；boundary scan  | Baseline Approved    | Pending        |
+| AC-FE-011  | NFR-001, NFR-002, NFR-003, NFR-004 | 单因子 Compute P99 < 100μs；100 因子并发 < 1ms；测试覆盖率 ≥ 80%；gitleaks 零命中            | benchmark + `go tool cover -func` + gitleaks CI gate    | Baseline Approved    | Pending        |
+
+> Coverage check：11 条 AC 覆盖 FR-001..FR-008（8/8） + BR-001..BR-005（5/5） + NFR-001..NFR-004（4/4）。Runtime Status 在 §1 Metadata Status 升级到 `Approved` 时同步更新为 `Verified`。

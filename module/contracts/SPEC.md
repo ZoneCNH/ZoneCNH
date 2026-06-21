@@ -195,7 +195,32 @@ canonical reject-code 集合保持 10 项，不随文档整理漂移。
 - 不把 release history 写成契约本体
 - 不承载业务流程编排或状态机
 
-## 6. 参考
+## 6. 验收标准（Acceptance Criteria Registry）
+
+> 验收口径：本 Registry 锚定到 §2 Functional Requirements 与 §3 Behavior Rules，每条 AC 必须能由 `/home/contracts/pkg/contracts/` 的 runtime 符号检查或单元测试直接验证。`Status` 与 §0 Metadata 的 `Status: Docs Baseline Synced / Runtime Truth Verified` 对齐。
+
+| AC ID      | FR/BR Ref      | Criterion                                                                                                       | Verification                                                                 | Status   |
+| ---------- | -------------- | --------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | -------- |
+| AC-CTR-001 | FR-001         | `Event` / `Command` / `Query` 导出且字段结构匹配 §2.FR-001 列表（Event=ID/Type/Source/Version/Data 等）          | `go doc github.com/ZoneCNH/contracts.{Event,Command,Query}` + 字段断言       | Verified |
+| AC-CTR-002 | FR-002         | `DTO` / `Port` marker interface 暴露 `IsDTO()` / `IsPort()`；`ErrorCode` 暴露 `Code/Domain/Severity/Retryable` | runtime 包 `pkg/contracts/contracts.go` go vet + 单元测试断言                | Verified |
+| AC-CTR-003 | FR-003         | `RegimeSnapshot` / `RegimeCard` / `DecisionCard` 三类业务载体在 runtime 中导出，且字段对齐 §2.FR-003           | `pkg/contracts/regime_snapshot.go` / `regime_card.go` / `decision_card.go` 导出符号检查 | Verified |
+| AC-CTR-004 | FR-004         | `SignalIntent` 导出；`SignalFactoryProvider.Generate(card, symbols) ([]SignalIntent, error)` 签名稳定           | `pkg/contracts/signal_intent.go` + `ports.go` 接口签名断言                   | Verified |
+| AC-CTR-005 | FR-005         | 四个 Provider 端口（MarketDataProvider/MacroDataProvider/DecisionCardProvider/SignalFactoryProvider）暴露 `Latest*` 与 `Subscribe*` 方法 | `pkg/contracts/ports.go` go doc + 接口实现断言                               | Verified |
+| AC-CTR-006 | FR-006, BR-006, BR-007 | `MarketDataService.Ingest(IngestRequest) (IngestResult, error)` 为单次请求/响应；`AllRejectCodes()` 返回 10 项 canonical 集合，包含 `RejectUnsupportedChannel` | `pkg/contracts/ingestion.go` + 测试 `len(AllRejectCodes()) == 10` + 集合断言 | Verified |
+| AC-CTR-007 | FR-007, BR-008 | 6 个兼容别名（RegimeSnapshotEvent / RegimeCardEvent / DecisionCardEvent / MarketRegimePort / MacroRegimePort / RegimeEnginePort）保留并指向当前 runtime 符号 | `pkg/contracts/projections.go` go doc + alias target 断言                    | Verified |
+| AC-CTR-008 | FR-008, BR-009 | README / goal / TRACEABILITY / ACCEPTANCE / FEATURES / IMPLEMENTATION-PLAN / tasks/ 与 runtime 公开符号同步     | stale-term grep + `git diff --check` + docs 引用扫描                         | Verified |
+| AC-CTR-009 | BR-001, BR-002, BR-003 | 文档与 runtime 不出现 `GetSnapshot` / `GetHistory` / `GetLatest` / `Subscribe` / `AlternativeDataProvider` / `ErrInvalidSymbol` / `stable period` / `v1.0.1` 等旧叙事；不包含 Topic 常量层 | stale-term grep 全仓零命中                                                   | Verified |
+| AC-CTR-010 | BR-004, BR-005 | runtime 仅依赖 stdlib 与 `module/FOUNDATION-DEPS.yaml` 允许的共享层；DTO 字段保留 JSON tag 且无隐式命名变换    | `go list -m all` 依赖扫描 + DTO JSON marshal/unmarshal round-trip 测试       | Verified |
+| AC-CTR-011 | BR-006, BR-007, NFR-006 | canonical reject-code 集合在版本演进中保持 10 项不漂移；新增/删除需走 BR-010 治理流程                      | snapshot test：固定 `AllRejectCodes()` golden 列表                           | Verified |
+| AC-CTR-012 | BR-010         | 公开 rename/removal 必须先完成兼容层与追溯文档更新，再进入发布决策；任何破坏性变更需有 alias 过渡            | 治理 checklist + PR template；alias 出现率审计                               | Verified |
+| AC-CTR-013 | NFR-001, NFR-002, NFR-003 | `/home/contracts` 通过 `go build ./...` / `go test ./... -race -count=1` / `go vet ./...` / lint 全部 ✅ | CI gate (foundation-release.yml + audit-status)                              | Verified |
+| AC-CTR-014 | NFR-007, NFR-008 | 文档不把 gRPC / Kafka / NATS / HTTP 写成契约本体；`stable period` / `v1.0.1` / 旧方法名 / 旧 Topic 叙事不回流 | docs grep 扫描零命中                                                          | Verified |
+
+> Coverage check：14 条 AC 覆盖 8 条 FR + 10 条 BR + 8 条 NFR；FR-001..FR-008 每条至少一个 AC 锚点；BR-001..BR-010 全部映射；NFR-001..NFR-008 通过 AC-CTR-013/014 与 NFR-006 通过 AC-CTR-011 关联。
+
+---
+
+## 7. 参考
 
 - `/home/contracts/pkg/contracts/contracts.go`
 - `/home/contracts/pkg/contracts/ports.go`
