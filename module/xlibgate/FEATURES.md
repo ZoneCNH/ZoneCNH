@@ -1,9 +1,9 @@
 # xlibgate 完整实现清单
 
 - Status: Generated from current module SSOT
-- Last-Updated: 2026-06-20
-- Module-Version: v1.1.0
-- Module-State: 已发布
+- Last-Updated: 2026-06-21
+- Module-Version: v1.0.1
+- Module-State: 本地发布门禁通过（远端发布待授权）
 - Layer: L1 门禁
 - Runtime-Repo: /home/xlibgate
 - Source: goal.md, SPEC.md, DESIGN.md, TRACEABILITY.md, IMPLEMENTATION-PLAN.md, tasks/
@@ -37,14 +37,14 @@
 | FR-009 | l2 check-contracts：验证契约测试证据是否覆盖所有必需契约测试 | AC-012 / TC-011 / TASK-XLIBGATE-009（矩阵登记待落任务文档） | ✅ | TRACEABILITY.md |
 | FR-010 | l2 check-evidence：验证 L2 evidence 目录下必需证据文件是否存在 | AC-013 / TC-012 / TASK-XLIBGATE-009（矩阵登记待落任务文档） | ✅ | TRACEABILITY.md |
 | FR-011 | l2 release-check：完整 L2 发布就绪判定 | AC-014 / TC-013 / TASK-XLIBGATE-009（矩阵登记待落任务文档） | ✅ | TRACEABILITY.md |
-| FR-012 | trust identity：五源身份比对（README H1 / go.mod / .repo-contract.yaml / public_package / 身份声明），不匹配时输出 IDENTITY_MISMATCH | AC-015 / TC-014, TC-015 / TASK-XLIBGATE-011 | ❌ | TRACEABILITY.md |
-| FR-013 | trust template-residue：扫描下游仓库中的 BR-010 禁止模板身份短语 | AC-016 / TC-016, TC-017 / TASK-XLIBGATE-012 | ❌ | TRACEABILITY.md |
-| FR-014 | trust release-consistency：七源版本一致性校验（.repo-contract.yaml / go.mod / VERSION / CHANGELOG / git tag / release manifest / GitHub release），默认离线模式 | AC-017 / TC-018, TC-019 / TASK-XLIBGATE-013 | ❌ | TRACEABILITY.md |
-| FR-015 | trust maturity --factory：11 维工厂级成熟度判定，拒绝单个百分比替代 | AC-018 / TC-020, TC-021 / TASK-XLIBGATE-014 | ❌ | TRACEABILITY.md |
-| FR-016 | trust import-boundary：消费 FOUNDATION-DEPS.yaml 的 allowed_deps 和 forbidden_foundation_edges | AC-019 / TC-022, TC-023 / TASK-XLIBGATE-015 | ❌ | TRACEABILITY.md |
-| FR-017 | trust testkit-prod-import：检测生产代码中的 testkitx import，区分生产/测试路径 | AC-020 / TC-024, TC-025 / TASK-XLIBGATE-016 | ❌ | TRACEABILITY.md |
-| FR-018 | trust secret-redaction：扫描 release/evidence 文档中的密钥和私有端点 | AC-021 / TC-026, TC-027 / TASK-XLIBGATE-017 | ❌ | TRACEABILITY.md |
-| FR-019 | trust fleet-status：20 模块舰队状态聚合 → .foundationx/status/index.json | AC-022 / TC-028, TC-029 / TASK-XLIBGATE-018 | ❌ | TRACEABILITY.md |
+| FR-012 | trust identity：五源身份比对（README H1 / go.mod / .repo-contract.yaml / public_package / 身份声明），不匹配时输出 IDENTITY_MISMATCH | AC-015 / TC-014, TC-015 / TASK-XLIBGATE-011 | ✅ | TRACEABILITY.md |
+| FR-013 | trust template-residue：扫描下游仓库中的 BR-010 禁止模板身份短语 | AC-016 / TC-016, TC-017 / TASK-XLIBGATE-012 | ✅ | TRACEABILITY.md |
+| FR-014 | trust release-consistency：七源版本一致性校验（.repo-contract.yaml / go.mod / VERSION / CHANGELOG / git tag / release manifest / GitHub release），默认离线模式；远端 tag/GitHub release 校验待发布授权后补跑 | AC-017 / TC-018, TC-019 / TASK-XLIBGATE-013 | ✅ | TRACEABILITY.md |
+| FR-015 | trust maturity --factory：11 维工厂级成熟度判定，拒绝单个百分比替代 | AC-018 / TC-020, TC-021 / TASK-XLIBGATE-014 | ✅ | TRACEABILITY.md |
+| FR-016 | trust import-boundary：消费 FOUNDATION-DEPS.yaml 的 allowed_deps 和 forbidden_foundation_edges | AC-019 / TC-022, TC-023 / TASK-XLIBGATE-015 | ✅ | TRACEABILITY.md |
+| FR-017 | trust testkit-prod-import：检测生产代码中的 testkitx import，区分生产/测试路径 | AC-020 / TC-024, TC-025 / TASK-XLIBGATE-016 | ✅ | TRACEABILITY.md |
+| FR-018 | trust secret-redaction：扫描 release/evidence 文档中的密钥和私有端点 | AC-021 / TC-026, TC-027 / TASK-XLIBGATE-017 | ✅ | TRACEABILITY.md |
+| FR-019 | trust fleet-status：20 模块舰队状态聚合 → .foundationx/status/index.json | AC-022 / TC-028, TC-029 / TASK-XLIBGATE-018 | ✅ | TRACEABILITY.md |
 
 ## 3. 行为与非功能实现清单
 
@@ -59,7 +59,7 @@
 | BR-007 | JSON 输出必须包含 machine-readable 的 status 字段 | CI 解析失败 / TC-007 / TASK-XLIBGATE-006 | ✅ | TRACEABILITY.md |
 | BR-008 | human-readable 输出必须包含文件路径和行号 | 开发者无法定位违规位置 / TC-001, TC-002, TC-008 / TASK-XLIBGATE-002 | ✅ | TRACEABILITY.md |
 | BR-009 | 依赖矩阵文件 FOUNDATION-DEPS.yaml schema 与 xlib_standard 定义一致 | deps.yaml 解析失败 / FR-001 config 加载（YAML 解析 + schema 校验）+ Config.Validate() / TASK-XLIBGATE-002 | ✅ | TRACEABILITY.md |
-| BR-010 | 禁止模板身份短语：仅 xlib_standard 可含 5 条模板身份短语 | 模块身份定义冲突 / TC-016, TC-017 + template-residue 精确字符串匹配 / TASK-XLIBGATE-012 | ❌ | TRACEABILITY.md |
+| BR-010 | 禁止模板身份短语：仅 xlib_standard 可含 5 条模板身份短语 | 模块身份定义冲突 / TC-016, TC-017 + template-residue 精确字符串匹配 / TASK-XLIBGATE-012 | ✅ | TRACEABILITY.md |
 | NFR-001 | 全量门禁性能（50 模块） | < 30s / Benchmark BenchmarkCheckAll / TASK-XLIBGATE-006 | ⚠️ | TRACEABILITY.md |
 | NFR-002 | import 扫描性能（50 模块） | < 10s / Benchmark BenchmarkCheckImports / TASK-XLIBGATE-002 | ⚠️ | TRACEABILITY.md |
 | NFR-003 | go.mod 检查性能（50 模块） | < 5s / Benchmark BenchmarkCheckGomod / TASK-XLIBGATE-003 | ⚠️ | TRACEABILITY.md |
@@ -70,14 +70,14 @@
 | NFR-008 | 无硬编码密钥 | 全仓扫描零命中 / gitleaks detect --no-git / TASK-XLIBGATE-006 | ✅ | TRACEABILITY.md |
 | NFR-009 | secret 扫描不泄露敏感数据 | 错误消息只含文件路径和行号 / review 错误输出格式 / TASK-XLIBGATE-006 | ⚠️ | TRACEABILITY.md |
 | NFR-010 | 无 Foundation 运行时依赖 | go list -deps 零命中 ZoneCNH 模块 / CI gate go list -deps ./... / TASK-XLIBGATE-006 | ✅ | TRACEABILITY.md |
-| NFR-011 | trust identity 检查性能 | < 2s / Benchmark BenchmarkTrustIdentity / TASK-XLIBGATE-011 | ❌ | TRACEABILITY.md |
-| NFR-012 | trust template-residue 扫描 | < 15s（50 模块） / Benchmark BenchmarkTrustTemplate / TASK-XLIBGATE-012 | ❌ | TRACEABILITY.md |
-| NFR-013 | trust release-consistency | < 3s / Benchmark BenchmarkTrustRelease / TASK-XLIBGATE-013 | ❌ | TRACEABILITY.md |
-| NFR-014 | trust maturity 检查 | < 1s / Benchmark BenchmarkTrustMaturity / TASK-XLIBGATE-014 | ❌ | TRACEABILITY.md |
-| NFR-015 | trust import-boundary 检查 | < 10s / Benchmark BenchmarkTrustBoundary / TASK-XLIBGATE-015 | ❌ | TRACEABILITY.md |
-| NFR-016 | trust testkit-prod-import | < 5s / Benchmark BenchmarkTrustTestkit / TASK-XLIBGATE-016 | ❌ | TRACEABILITY.md |
-| NFR-017 | trust secret-redaction 扫描 | < 10s / Benchmark BenchmarkTrustSecret / TASK-XLIBGATE-017 | ❌ | TRACEABILITY.md |
-| NFR-018 | trust fleet-status 聚合 | < 60s（20 模块） / Benchmark BenchmarkTrustFleet / TASK-XLIBGATE-018 | ❌ | TRACEABILITY.md |
+| NFR-011 | trust identity 检查性能 | < 2s / Benchmark BenchmarkTrustIdentity / TASK-XLIBGATE-011 | ⚠️ | TRACEABILITY.md |
+| NFR-012 | trust template-residue 扫描 | < 15s（50 模块） / Benchmark BenchmarkTrustTemplate / TASK-XLIBGATE-012 | ⚠️ | TRACEABILITY.md |
+| NFR-013 | trust release-consistency | < 3s / Benchmark BenchmarkTrustRelease / TASK-XLIBGATE-013 | ⚠️ | TRACEABILITY.md |
+| NFR-014 | trust maturity 检查 | < 1s / Benchmark BenchmarkTrustMaturity / TASK-XLIBGATE-014 | ⚠️ | TRACEABILITY.md |
+| NFR-015 | trust import-boundary 检查 | < 10s / Benchmark BenchmarkTrustBoundary / TASK-XLIBGATE-015 | ⚠️ | TRACEABILITY.md |
+| NFR-016 | trust testkit-prod-import | < 5s / Benchmark BenchmarkTrustTestkit / TASK-XLIBGATE-016 | ⚠️ | TRACEABILITY.md |
+| NFR-017 | trust secret-redaction 扫描 | < 10s / Benchmark BenchmarkTrustSecret / TASK-XLIBGATE-017 | ⚠️ | TRACEABILITY.md |
+| NFR-018 | trust fleet-status 聚合 | < 60s（20 模块） / Benchmark BenchmarkTrustFleet / TASK-XLIBGATE-018 | ⚠️ | TRACEABILITY.md |
 
 ## 4. 任务交付清单
 
@@ -116,11 +116,26 @@
 | IMPLEMENTATION-PLAN.md | 存在 | module/xlibgate/IMPLEMENTATION-PLAN.md |
 | tasks/ | 21 个 Markdown 文件 | module/xlibgate/tasks |
 
-## 6. 实现完成判定
+## 6. v1.0.1 本地发布证据（2026-06-21）
 
-- [ ] 所有 FR 条目均有运行时代码、单元测试或契约测试覆盖。
-- [ ] 所有 BR/NFR 条目均有测试、静态检查或人工可审计证据覆盖。
-- [ ] 所有任务文档均能追溯到 FR、BR/NFR、AC 或 TC。
-- [ ] 依赖边界符合 FOUNDATION-DEPS.yaml，不引入未授权运行时依赖。
-- [ ] 运行时代码仓库 /home/xlibgate 的 lint、typecheck、test、race、coverage 验证证据已归档。
-- [ ] 发布说明、版本标签与本目录登记状态一致。
+| 项目 | 证据 |
+| --- | --- |
+| 运行时代码提交 | `/home/xlibgate` 分支 `ci/sre-cicd-pools-20260618`，提交 `e76725b` |
+| 版本同步 | `AGENTS.md`、`README.md`、`docs/release.md`、`docs/standard/release-standard.md`、`CHANGELOG.md`、`.agent/harness/harness.yaml`、`release/manifest/template.json`、`cmd/goalcli/governance.go`、`pkg/templatex/version.go` 均同步到 `v1.0.1` |
+| 核心测试 | `GOWORK=off go test ./... -covermode=atomic -coverprofile=/tmp/xlibgate_all_continue4.out` 通过 |
+| 覆盖率 | 全仓 statement coverage `86.1%`；其中 `cmd/goalcli` package coverage `85.2%`，满足当前 `>= 80%` 本地门槛但未达到 `100%` |
+| 边界与文档 | `GOWORK=off make boundary`、`GOWORK=off make docs-check` 通过 |
+| 集成验证 | `GOWORK=off make integration` 通过 |
+| 发布门禁 | `XLIB_CONTEXT=release_verify GOWORK=off make release-check` 通过，release evidence hash `e61617b0c44dd836b0c3a80e166fdadd471dd4824f2d1f4e3b9af054c3add870` |
+| 最终本地门禁 | `XLIB_CONTEXT=release_verify GOWORK=off make release-final-check` 通过，release evidence hash `451a937f91125127d79cf9333ab4dfe0b7610834c96405751365d74efa2e7ef8`；score `10/10`，debt score `10/10` |
+| 依赖治理提示 | `release-final-check` 中 dependency governance 命令通过，但输出 `standard_contract_generator_review_required=true`，需在人工发布审查中保留该提示 |
+| 远端发布边界 | `git push`、`v1.0.1` tag、GitHub Release 与远端 CI 未执行，等待显式授权 |
+
+## 7. 实现完成判定
+
+- [x] 所有 FR 条目均有运行时代码、单元测试或契约测试覆盖。
+- [x] 所有 BR 条目均有测试、静态检查或人工可审计证据覆盖。
+- [x] 所有任务文档均能追溯到 FR、BR/NFR、AC 或 TC。
+- [x] 依赖边界符合 FOUNDATION-DEPS.yaml，不引入未授权运行时依赖。
+- [x] 运行时代码仓库 /home/xlibgate 的 test、boundary、docs-check、integration、release-check、release-final-check 与覆盖率验证证据已归档；全仓 statement coverage 为 86.1%，不是 100%。
+- [ ] 发布说明、本地版本与本目录登记状态一致；远端 `v1.0.1` tag、GitHub Release 与远端 CI 待显式授权后执行。
