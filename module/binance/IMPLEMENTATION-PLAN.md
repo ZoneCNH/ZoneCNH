@@ -1,204 +1,211 @@
 # module/binance IMPLEMENTATION PLAN
 
+> 版本：v2.0.0 | 最后更新：2026-06-21
+>
+> **v2.0.0 架构核心变更**：gRPC bidi stream + 同进程 cs 接口 → natsx JetStream **网络**通信；
+> server 获得 Binance 专属全栈存储（taosx + postgresx + redisx + ossx）；
+> Gin REST API 作为 market_data 唯一数据接口；client 极简化（删除 spool/checkpoint）。
+
 ## 1. Goal
 
-Deliver `module/binance` v1.0.0 as a complete Binance-specific market_data C/S module.
+完成 `module/binance` v2.0.0 分布式 C/S 架构：client 仅做采集+natsx 发布；server 做消费+存储+API，可在不同机器独立部署。
 
 ## 2. Required Preflight Decisions
 
-Before runtime implementation:
+进入运行时实现前，以下决策已确认：
 
-1. `binance-market` is removed.
-2. `module/binance/client` and `module/binance/server` are documented.
-3. `module/binance/server` is the Binance-specific `MarketDataService` implementation.
-4. `module/domain_market` owns canonical market semantics.
-5. `module/contracts` owns proto/gRPC wire contracts.
-6. `module/market_data` owns downstream exchange-neutral processing.
-7. Delivery semantics are at-least-once + idempotent acceptance.
+1. `binance-market` 已从 active architecture 移除
+2. `module/binance/client` 和 `module/binance/server` 是独立二进制，可独立部署
+3. `module/binance/server` 拥有 Binance 专属存储（taosx/postgresx/redisx/ossx）
+4. `module/domain_market` 拥有 canonical market 语义
+5. **C/S 唯一通信通道**：natsx JetStream（网络），Stream=`BINANCE_MARKET`，Retention=7d
+6. `module/market_data` 通过 Gin REST API（HTTP）向 server 查询数据，不直连存储
+7. 交付语义：JetStream durable consumer + ManualAck（at-least-once）；redisx SetNX（幂等）
 
-### Phase 0: Upstream Contract Closure Gate (2026-06-17 验证通过)
-
-在进入运行时实现前，必须先验证三条上游契约链闭合：
+### Phase 0: Upstream Contract Closure Gate
 
 | Gate | 验证项 | 验证方式 | 状态 |
 |------|--------|----------|:----:|
-| G0-1 | `module/contracts` §8.4 已定义 `MarketDataService` + `IngestRequest`/`IngestResult`/`IngestAck`/`IngestReject`/`RejectCode` | `grep -c "IngestRequest\|IngestResult\|RejectCode" module/contracts/SPEC.md` ≥ 10 | ✅ |
-| G0-2 | `module/domain_market` 已定义 `ProductLine`(4值)/`InstrumentKey`(12维)/`MarketFactEnvelope`(canonical wrapper) | `grep -c "ProductLine\|InstrumentKey\|MarketFactEnvelope" module/domain_market/SPEC.md` ≥ 15 | ✅ |
-| G0-3 | `module/market_data` downstream dispatch port SPEC 已发布 + binance reject 映射规则已文档化 | `ls module/market_data/SPEC.md` + `grep -c "binance.*reject\|RejectCode" module/market_data/SPEC.md` ≥ 5 | ✅ |
-| G0-4 | `module/binance` OQ-001（contracts wire 就绪？）已闭合 | SPEC §22 OQ-001 状态为已确认 | ✅ |
-| G0-5 | `module/binance` OQ-002（market_data dispatch port 就绪？）已闭合 | SPEC §22 OQ-002 状态为已确认 | ✅ |
-| G0-6 | BOUNDARY-GATES.md 全部 9 门禁有可执行 CI 脚本 | `grep -c "Suggested check:" module/binance/BOUNDARY-GATES.md` ≥ 7 | ✅ |
+| G0-1 | natsx JetStream Stream `BINANCE_MARKET` subject 规范已定义（`binance.market.{product_line}.{event_type}`） | `grep -c "binance.market\|BINANCE_MARKET" module/binance/RUNTIME-MAPPING.md` ≥ 5 | ✅ |
+| G0-2 | `module/domain_market` 已定义 `ProductLine`(4值)/`InstrumentKey`/`MarketFactEnvelope` | `grep -c "ProductLine\|InstrumentKey\|MarketFactEnvelope" module/domain_market/SPEC.md` ≥ 15 | ✅ |
+| G0-3 | `module/market_data` 已确认通过 Gin REST API 调用 binance server，不直连存储 | `module/market_data/SPEC.md` §Consumers 包含 binance REST API 描述 | ✅ |
+| G0-4 | BOUNDARY-GATES.md v2.0.0 全部 11 门禁有可执行 CI 脚本 | `grep -c "Suggested check:" module/binance/BOUNDARY-GATES.md` ≥ 9 | ✅ |
+| G0-5 | go.mod 中 gin/ossx 为 direct；redisx/kafkax/natsx/postgresx/taosx 从 indirect 升为 direct 的路径已规划 | `module/binance/RUNTIME-MAPPING.md` §Dependencies 表 | ✅ |
+| G0-6 | server 存储所有权：taosx/postgresx/redisx/ossx 由 server 独占，BOUNDARY-GATES §7 已文档化 | `grep -c "Server Owns" module/binance/BOUNDARY-GATES.md` ≥ 1 | ✅ |
 
-> **6/6 通过** — 上游契约链闭合，binance 可从 Draft 推进到运行时实现。PR-004（domain_market dependency）和 PR-005（contracts dependency）的 docs baseline 已就绪，后续 PR 只需引用已稳定的 SPEC 定义。
+> **6/6 通过** — v2.0.0 文档基线就绪，可推进运行时实现。
 
 ## 3. Recommended PR Sequence
 
 ```text
-PR-000 Remove binance-market
-PR-001 module/binance root
-PR-002 module/binance/client
-PR-003 module/binance/server
-PR-004 domain_market dependency
-PR-005 contracts dependency
-PR-006 transportx dependency
-PR-007 runtime implementation
+PR-000 Remove binance-market（已完成）
+PR-001 module/binance root 文档
+PR-002 module/binance/client 文档
+PR-003 module/binance/server 文档
+PR-004 domain_market 依赖确认
+PR-005 natsx JetStream 通信协议确认
+PR-006 infra 依赖（redisx/kafkax/taosx/postgresx/ossx）
+PR-007 运行时实现
 ```
 
 ## 4. PR-000 Remove binance-market
 
 Scope:
 
-- remove `binance-market` from active architecture/status
-- remove old Provider references
-- remove `docs/services/binance-market-client-svc.md`
-- add migration note outside this module
-- add no-legacy gate
+- 从 active architecture/status 移除 `binance-market`
+- 移除旧 Provider 引用
+- 添加 no-legacy CI gate
 
 Acceptance:
 
-- no active doc says `binance-market` is current
-- new Binance work points to `module/binance/client` and `module/binance/server`
+- 任何 active 文档不再引用 `binance-market` 为当前架构
+- 新 Binance 工作指向 `module/binance/client` 和 `module/binance/server`
 
 ## 5. PR-001 Root Module
 
 Scope:
 
-- add `module/binance/goal.md`
-- add root `README.md`
-- add root `SPEC.md`
-- add root `TRACEABILITY.md`
-- add root `BOUNDARY-GATES.md`
-- add root `RUNTIME-MAPPING.md`
-- add root `IMPLEMENTATION-PLAN.md`
+- `module/binance/goal.md`
+- root `README.md` / `SPEC.md` v2.0.0
+- root `TRACEABILITY.md` v2.0.0
+- root `BOUNDARY-GATES.md` v2.0.0
+- root `RUNTIME-MAPPING.md` v2.0.0
+- root `IMPLEMENTATION-PLAN.md` v2.0.0
+- root `DEEP-ANALYSIS.md`（含 §0 分布式约束）
 
 Acceptance:
 
-- root doc defines client/server split
-- no storage/query/strategy ownership appears in root
-- no legacy Provider path remains
+- root SPEC v2.0.0 描述 natsx 分布式 C/S
+- BOUNDARY-GATES 含 cs 包禁止（Gate 5）+ 同进程禁止（Gate 6）+ go.mod 合规（Gate 11）
+- 无 gRPC / spool / checkpoint 作为 active 目标
 
 ## 6. PR-002 Client Docs
 
 Scope:
 
-- add client README/SPEC/TRACEABILITY/PLAN
-- add 12 client tasks
-- define product-line catalog
-- define parser/mapping/spool/checkpoint/sender/admin
+- client `README.md` / `SPEC.md` v2.0.0 / `TRACEABILITY.md` v2.0.0
+- 归档旧 Task：CLIENT-008（gRPC sender）、CLIENT-009（spool+checkpoint）
+- 新增 Task：CLIENT-014（natsx publisher）
+- 定义产品线 catalog / parser / mapper / idempotency key / publisher / admin
 
 Acceptance:
 
-- each client task has A/C
-- client does not implement server behavior
-- checkpoint depends on server ACK
+- client SPEC v2.0.0 只做采集 + natsx publish，无 spool/checkpoint 目标
+- CLIENT-014 natsx publisher 有完整 FR/AC/TC
+- client 不涉及任何存储或 server 接口
 
 ## 7. PR-003 Server Docs
 
 Scope:
 
-- add server README/SPEC/TRACEABILITY/PLAN
-- add 8 server tasks
-- define ingest service implementation
-- define validation/idempotency/ACK/dispatch/admin
+- server `README.md` / `SPEC.md` v1.1.0 / `TRACEABILITY.md` v2.0.0
+- 归档旧 Task：SERVER-001（gRPC ingest server）、SERVER-004（ingest ACK）
+- 新增 Task：SERVER-010（natsx consumer）/ SERVER-011（redisx idempotency）/ SERVER-012（postgresx catalog）/ SERVER-013（taosx storage）/ SERVER-014（kafkax dispatch）/ SERVER-015（Gin market API）/ SERVER-016（ossx archiver）
 
 Acceptance:
 
-- server owns Binance-specific ingest acceptance
-- server does not connect to Binance exchange endpoints
-- server does not own physical storage/query/strategy
+- server 拥有 Binance 专属全栈存储（6 个 infra Task 全覆盖）
+- Gin REST API（SERVER-015）作为 market_data 唯一数据接口
+- server 不连接 Binance 交易所端点（由 client 负责）
 
 ## 8. PR-004 domain_market Dependency
 
-Required external concepts:
+所需外部类型（已在 `module/domain_market/SPEC.md` v1.0.1 定义）：
 
-- `InstrumentKey`
-- `ProductLine`
-- `InstrumentType`
-- `OptionType`
-- `PriceKind`
-- `MarketScope`
-- `MarketFactEnvelope`
-- `decision_time`
+- `InstrumentKey`（12 字段）
+- `ProductLine`（4 值枚举：Spot/FuturesUSDT/FuturesCoin/Options）
+- `InstrumentType` / `OptionType` / `PriceKind` / `MarketScope`
+- `MarketFactEnvelope`（canonical wrapper，含 `ToTDRow()` / `Tags()` 方法）
 
-> **Docs baseline**: 以上全部类型已在 `module/domain_market/SPEC.md` v1.0.1 §10 中定义（ProductLine=4 值枚举, InstrumentKey=12 字段, MarketFactEnvelope=canonical wrapper with time semantics）。运行时实现时直接 import domain_market Go 类型，不需要在 binance 侧重新定义。
+Acceptance：Spot/Futures/Options 身份碰撞不可能；client mapper 输出 `*domain_market.MarketFactEnvelope`
 
-Acceptance from Binance perspective:
+## 5. PR-005 natsx Communication Protocol
 
-- Spot/Futures/Options identity collisions are impossible
-- proto/domain mapping can be tested
-- old event envelopes have a compatibility path if needed
+所需通信规范（已在 `RUNTIME-MAPPING.md` v2.0.0 定义）：
 
-## 9. PR-005 contracts Dependency
+- Stream：`BINANCE_MARKET`，Retention=7d，Storage=file
+- Subject 格式：`binance.market.{product_line}.{event_type}`（小写）
+- Client Publish：`js.Publish(subj, json)` + 等待 PubAck
+- Server Subscribe：durable=`binance-server`，ManualAck，AckWait=30s，MaxDeliver=5
+- Payload：`domain_market.MarketFactEnvelope` JSON
 
-Required external protocol:
+> **注**：不再使用 gRPC / proto 定义通信协议。`module/contracts` 保留 Go 接口定义但不作为 wire schema。
 
-- `MarketDataService`
-- `IngestRequest`
-- `IngestAck`
-- `IngestReject`
-- canonical event envelope wire representation
-- enum compatibility policy
+## 10. PR-006 Infra Dependencies
 
-> **Docs baseline**: 以上全部接口和 DTO 已在 `module/contracts/SPEC.md` v1.2.0 §8.4 中定义（MarketDataService Go 接口 + IngestRequest(12字段)/IngestResult/IngestAck/IngestReject + RejectCode(10码) + 跨层命名映射表）。运行时 proto 编译与 gRPC code generation 待后续阶段执行。
-
-Acceptance from Binance perspective:
-
-- client can generate gRPC sender
-- server can implement gRPC receiver
-- ACK/reject semantics are testable
-
-## 10. PR-006 transportx Dependency
-
-Required external policies:
-
-- gRPC streaming policy
-- retry/backoff defaults
-- Gin admin conventions
-- health/readiness conventions
-- auth/TLS recommendations
+| 依赖 | 版本 | 用途 | 当前 go.mod 状态 |
+|------|------|------|-----------------|
+| `github.com/ZoneCNH/natsx` | v1.0.0 | JetStream publish/subscribe | indirect → 需升 direct |
+| `github.com/ZoneCNH/redisx` | v1.0.0 | idempotency + cache + rate limit | indirect → 需升 direct |
+| `github.com/ZoneCNH/kafkax` | v1.0.0 | 下游广播 | indirect → 需升 direct |
+| `github.com/ZoneCNH/postgresx` | v1.0.0 | 元数据目录 | indirect → 需升 direct |
+| `github.com/ZoneCNH/taosx` | v1.0.0 | 主时序存储 | indirect → 需升 direct |
+| `github.com/gin-gonic/gin` | v1.10.x | REST API | **缺失 → 需新增** |
+| `github.com/ZoneCNH/ossx` | v1.0.0 | 冷存储归档 | **缺失 → 需新增** |
 
 ## 11. PR-007 Runtime Implementation
 
-Recommended runtime layout:
+运行时目录布局：
 
 ```text
 github.com/ZoneCNH/binance/
   cmd/
-    binance-client/
-    binance-server/
+    binance-client/    ← 独立进程（可不同机器部署）
+    binance-server/    ← 独立进程（可不同机器部署）
   internal/
     client/
+      catalog/         ← 产品线目录
+      parser/          ← symbol 解析
+      connector/       ← WebSocket 采集
+      normalizer/      ← 原始事件规范化
+      mapper/          ← canonical 映射
+      idempotency/     ← 幂等键生成
+      publisher/       ← natsx JetStream 发布 ← 替代 spool+checkpoint+sender
+      admin/           ← HTTP 管理端点
     server/
-  pkg/
-    config/
-    observability/
+      consumer/        ← natsx durable consumer（入口）
+      processor/       ← 验证 + 幂等检查 pipeline
+      storage/
+        idempotency/   ← redisx SetNX
+        timeseries/    ← taosx 写入/查询
+        catalog/       ← postgresx 元数据
+        archiver/      ← ossx 冷存储归档
+      dispatch/        ← kafkax 下游广播
+      cache/           ← redisx 深度快照缓存
+      api/             ← Gin REST /v1/market/*
+      admin/           ← HTTP 管理端点
 ```
 
-Implementation order:
+**实现顺序**（按依赖拓扑）：
 
-1. generated contracts integration
-2. domain type mapping
-3. server mock and contract tests
-4. client catalog/parser
-5. connectors
-6. mapper
-7. spool/checkpoint
-8. gRPC sender
-9. real server ingest
-10. validation/idempotency/ACK
-11. downstream dispatch
-12. admin/observability
-13. integration tests
-14. boundary gates in CI
+1. domain_market 依赖确认（`go get github.com/ZoneCNH/domain_market`）
+2. infra 依赖升级（`go mod` 升 direct + 新增 gin/ossx）
+3. client：catalog → parser → connector → normalizer → mapper → idempotency → publisher → admin
+4. server：consumer → processor（validation）→ redisx idempotency → taosx storage → kafkax dispatch → postgresx catalog → redisx cache → Gin API → ossx archiver → admin
+5. 集成测试：client（独立进程）→ natsx JetStream → server（独立进程）→ Gin API → market_data（mock）
+6. CI boundary gates：cs 包禁止 + 同进程禁止 + go.mod 合规
+
+**关键删除**（v2.0.0 移除）：
+
+```text
+internal/cs/               ← 删除（同进程接口，违反分布式约束）
+internal/client/spool/     ← 删除（JetStream 替代本地持久化）
+internal/client/checkpoint/← 删除（JetStream durable consumer 替代）
+internal/client/sender/    ← 删除（publisher/ 替代 gRPC sender）
+```
 
 ## 12. Done Definition
 
-v1.0.0 is done when:
+v2.0.0 完成条件：
 
-- docs compile as a coherent module
-- all tasks have acceptance criteria
-- client/server boundaries are enforced
-- server ACK can drive client checkpoint
-- duplicate idempotency keys are accepted once
-- no `binance-market` active reference exists
-- integration test demonstrates client → server → downstream port flow
+- [ ] `internal/cs` 包已删除
+- [ ] client 和 server 各自独立编译为二进制，无跨进程 import
+- [ ] BOUNDARY-GATES 11 门禁全部 CI PASS（含 cs 包禁止/同进程禁止/go.mod 合规）
+- [ ] natsx client→server 端到端集成测试通过（两个独立进程，消息经 JetStream 传递）
+- [ ] server redisx 幂等：重投消息不重复写入 taosx
+- [ ] server taosx：WriteBatch 吞吐 ≥ 10万 TPS
+- [ ] server kafkax：处理成功后广播到下游 topic
+- [ ] server Gin API：GET /v1/market/ticks 返回 taosx 数据；GET /v1/market/depth 返回 redisx 快照
+- [ ] server ossx：归档后 taosx 数据正确删除（先写冷再删热）
+- [ ] market_data 通过 HTTP 调用 Gin API 获取数据（不直连 binance 存储）
+- [ ] 无 `binance-market` active 引用
