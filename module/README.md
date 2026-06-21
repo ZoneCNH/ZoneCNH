@@ -344,6 +344,8 @@ FoundationX 运行模块分为两种架构类型。详见 [`ARCHITECTURE.md`](..
 
 **适用**：数据域子模块（binance/okx/fred/treasury 等），从外部数据源采集数据。
 
+**标准化索引**：[`data-cs-module/README.md`](./data-cs-module/README.md) — 适用范围、模板、路线图和参考实现的统一入口
+
 ```text
 {module}/
 ├── cmd/{module}-server/main.go    # bootstrap.Build() 独立进程
@@ -356,11 +358,17 @@ FoundationX 运行模块分为两种架构类型。详见 [`ARCHITECTURE.md`](..
 
 **SPEC 模板**：[`data-cs-module/SPEC-TEMPLATE.md`](./data-cs-module/SPEC-TEMPLATE.md) — 23 节 C/S Module 标准模板，新建模块时复制填写
 
+**升级路线图**：[`data-cs-module/UPGRADE-ROADMAP.md`](./data-cs-module/UPGRADE-ROADMAP.md) — market_data / macro_data 的分批升级计划
+
 **参考实现**：[binance](https://github.com/ZoneCNH/binance)（v0.2.0，bootstrap 接入 + client/server + 4 产品线）
 
 ### 独立进程（非 C/S）
 
-**适用**：dispatch 聚合层（market_data/macro_data）和分析域模块（market_regime/macro_regime/regime_engine）。
+**标准化索引**：[`data-independent-process/README.md`](./data-independent-process/README.md) — 适用范围、模板和对比参考的统一入口
+
+**SPEC 模板**：[`data-independent-process/SPEC-TEMPLATE.md`](./data-independent-process/SPEC-TEMPLATE.md) — 23 节独立进程标准模板，新建模块时复制填写
+
+**适用**：dispatch 聚合层（market_data/macro_data）和分析域模块（market_regime/macro_regime/regime_engine/factor_engine/feature_store/factor_eval/flowx/ms_brain）。
 
 ```text
 {module}/
