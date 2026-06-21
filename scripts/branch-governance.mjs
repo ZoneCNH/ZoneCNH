@@ -6,7 +6,7 @@
  * - merge candidates: open, non-draft, mergeable PRs
  * - fix candidates: open PRs that are draft or not mergeable
  * - delete candidates: local branches that are fully merged into main and not attached to a worktree
- * - worktree path violations: branch-attached worktrees not under .worktree/workspaces/<branch-name>
+ * - worktree path violations: non-root branch-attached worktrees not under .worktree/workspaces/<branch-name>
  *
  * Usage:
  *   node scripts/branch-governance.mjs [--json]
@@ -105,6 +105,10 @@ export function buildScan({ run = defaultRun, now = () => new Date() } = {}) {
     const branchTracked = worktreeBranchToPath.has(branch);
     const branchPath = worktreeBranchToPath.get(branch) || null;
     const expectedWorktreePath = getGitRoot ? canonicalWorktreePath(getGitRoot, branch) : null;
+    const isRootCheckout = branchTracked && branchPath === getGitRoot;
+    const worktreePathCompliant = branchTracked
+      ? isRootCheckout || branchPath === expectedWorktreePath
+      : null;
     const upstreamCount = run("git", ["rev-list", "--left-right", "--count", `main...${branch}`]);
     const [aheadMain, aheadBranch] = upstreamCount
       ? upstreamCount.split(/\s+/).map((n) => Number(n) || 0)
@@ -119,7 +123,8 @@ export function buildScan({ run = defaultRun, now = () => new Date() } = {}) {
       mergedIntoMain: isMergedIntoMain,
       worktreePath: branchPath,
       expectedWorktreePath,
-      worktreePathCompliant: branchTracked ? branchPath === expectedWorktreePath : null,
+      rootCheckout: isRootCheckout,
+      worktreePathCompliant,
       hasOpenPr: !!pr,
       prNumber: pr ? pr.number : null,
       prDraft: pr ? !!pr.isDraft : null,
@@ -127,7 +132,7 @@ export function buildScan({ run = defaultRun, now = () => new Date() } = {}) {
     };
     branchInventory.push(branchEntry);
 
-    if (branchTracked && branchPath !== expectedWorktreePath) {
+    if (branchTracked && !isRootCheckout && branchPath !== expectedWorktreePath) {
       worktreePathViolations.push({
         branch,
         actualPath: branchPath,

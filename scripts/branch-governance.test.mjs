@@ -12,11 +12,11 @@ test("classifies merge, fix, delete, close, and publish candidates", () => {
       "git worktree list --porcelain",
       [
         "worktree /repo",
-        "HEAD 0123456",
-        "branch refs/heads/main",
+        "HEAD 1111111",
+        "branch refs/heads/feature-merge",
         "",
         "worktree /repo/.worktree/feature-fix",
-        "HEAD 1111111",
+        "HEAD 2222222",
         "branch refs/heads/feature-fix",
         "",
       ].join("\n"),
@@ -112,6 +112,12 @@ test("classifies merge, fix, delete, close, and publish candidates", () => {
       reason: "branch-attached worktree path is not canonical",
     },
   ]);
+
+  const featureMerge = scan.branchInventory.find((entry) => entry.branch === "feature-merge");
+  assert.ok(featureMerge);
+  assert.equal(featureMerge.rootCheckout, true);
+  assert.equal(featureMerge.worktreePathCompliant, true);
+  assert.equal(featureMerge.expectedWorktreePath, "/repo/.worktree/workspaces/feature-merge");
 
   const featureFix = scan.branchInventory.find((entry) => entry.branch === "feature-fix");
   assert.ok(featureFix);
