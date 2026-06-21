@@ -2,14 +2,14 @@
 
 ## 1. Metadata
 
-- Status: Draft → v2.0.0
-- Spec-Version: v2.0.0
+- Status: Approved
+- Spec-Version: v2.1.2
 - Last-Updated: 2026-06-21
 - Owner: ZoneCNH
 - Layer: 数据域 · 行情
 - Version: v0.1.0
 - Repository: [github.com/ZoneCNH/binance](https://github.com/ZoneCNH/binance)
-- Related: [CONSTITUTION.md](../../CONSTITUTION.md), [ARCHITECTURE.md](../../ARCHITECTURE.md), `module/domain_market`, `module/natsx`, `module/redisx`, `module/taosx`, `module/kafkax`, `module/ossx`, `module/postgresx`
+- Related: [CONSTITUTION.md](../../CONSTITUTION.md), [ARCHITECTURE.md](../../ARCHITECTURE.md), `module/domain_market`, `module/natsx`, `module/redisx`, `module/taosx`, `module/kafkax`, `module/ossx`, `module/postgresx`, `module/clickhousex`
 
 > 子模块规格：`module/binance/client/SPEC.md`、`module/binance/server/SPEC.md`
 
@@ -504,13 +504,13 @@ module/binance/
     SPEC.md
     TRACEABILITY.md
     IMPLEMENTATION-PLAN.md
-    tasks/                         # Client task spec（12 个）
+    tasks/                         # Client task spec（14 个）
   server/                          # Server 子模块
     README.md
     SPEC.md
     TRACEABILITY.md
     IMPLEMENTATION-PLAN.md
-    tasks/                         # Server task spec（8 个）
+    tasks/                         # Server task spec（17 个）
 ```
 
 ### Runtime (`github.com/ZoneCNH/binance/`)
@@ -586,11 +586,17 @@ github.com/ZoneCNH/binance/
 | TC-015 | FR-007 | httptest | 请求超过限流 | 返回 429 + Retry-After |
 | TC-016 | FR-008 | 单元 | 超 retention 数据归档 | 先写 `ossx`，ETag 校验通过后删 `taosx` |
 | TC-017 | FR-008 | 单元 | 生成归档路径 | 路径符合 `binance/{product_line}/{symbol}/{YYYY}/{MM}/{DD}/{event_type}.parquet` |
-| TC-018 | FR-009 | 单元 | kafkax topic 与 partition key | topic 为 `binance.market.{product_line}.{event_type}`，key 为 symbol |
-| TC-019 | FR-009 | 单元 | `kafkax` 不可达 | 返回 error，未完成 handoff 前不 Ack |
-| TC-020 | FR-010 | CI | server import `internal/client` 或 `internal/cs` | boundary gate 失败 |
-| TC-021 | FR-010 | CI | reintroduce `binance-market` 引用 | no-legacy gate 失败 |
-| TC-022 | FR-010 | CI | go.mod 依赖合规检查 | gin/ossx/direct infra 依赖状态符合 BOUNDARY-GATES |
+| TC-018 | FR-008 | 单元 | kafkax topic 与 partition key | topic 为 `binance.market.{product_line}.{event_type}`，key 为 symbol |
+| TC-019 | FR-008 | 单元 | `kafkax` 不可达 | 返回 error，未完成 handoff 前不 Ack |
+| TC-020 | FR-009 | CI | server import `internal/client` 或 `internal/cs` | boundary gate 失败 |
+| TC-021 | FR-009 | CI | reintroduce `binance-market` 引用 | no-legacy gate 失败 |
+| TC-022 | FR-009 | CI | go.mod 依赖合规检查 | natsx/redisx/kafkax/postgresx/taosx/clickhousex/ossx/gin 均为 direct |
+| TC-023 | FR-006c | 单元 | redisx 热缓存写入 | redisx SET(tick:{line}:{symbol}, json, 60s) 成功；失败→warn 降级，主管线不阻塞 |
+| TC-024 | FR-007a | httptest | clickhousex analytics API | GET /api/v1/analytics/vwap + top-movers + correlation；clickhousex 不可达→503 |
+| TC-025 | FR-010 | 集成 | clickhousex ETL | taosx Query → 聚合 → InsertBatch（1m_ohlcv/5m_vwap/15m_stats）写入成功 |
+| TC-026 | FR-010 | 单元 | clickhousex 不可达→ETL 降级 | InsertBatch 失败→error 日志 + 跳过本批次；实时 ticks API 正常 |
+| TC-027 | FR-011 | 单元 | coordinator 分布式锁获取 | redisx SetNX 成功→启动 scheduler；失败→standby 每 5s 轮询 |
+| TC-028 | FR-011 | 单元 | lease 续期失败与主动释放 | Expire 失败→停止 ETL+归档；正常关闭→Del 主动释放锁 |
 
 ### Test Tools
 
