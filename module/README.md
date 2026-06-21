@@ -344,6 +344,8 @@ FoundationX 运行模块分为两种架构类型。详见 [`ARCHITECTURE.md`](..
 
 **适用**：数据域子模块（binance/okx/fred/treasury 等），从外部数据源采集数据。
 
+**标准化索引**：[`data-cs-module/README.md`](./data-cs-module/README.md) — 适用范围、模板、路线图和参考实现的统一入口
+
 ```text
 {module}/
 ├── cmd/{module}-server/main.go    # bootstrap.Build() 独立进程
@@ -355,6 +357,8 @@ FoundationX 运行模块分为两种架构类型。详见 [`ARCHITECTURE.md`](..
 ```
 
 **SPEC 模板**：[`data-cs-module/SPEC-TEMPLATE.md`](./data-cs-module/SPEC-TEMPLATE.md) — 23 节 C/S Module 标准模板，新建模块时复制填写
+
+**升级路线图**：[`data-cs-module/UPGRADE-ROADMAP.md`](./data-cs-module/UPGRADE-ROADMAP.md) — market_data / macro_data 的分批升级计划
 
 **参考实现**：[binance](https://github.com/ZoneCNH/binance)（v0.2.0，bootstrap 接入 + client/server + 4 产品线）
 

@@ -212,6 +212,7 @@ Prompt（S5）和 Evidence（S6）几乎为零，表明四源评分体系的后�
 ### 5.1.1 当前收口结果
 
 - 已完成：`#4` 固定 L2.5 命名基准与迁移表；`#7` 统一 `x.go / composer` 说明入口并回写对齐文档；`#8` 清理 L2.5 遗留 kebab 引用，并回写统一命名 / 对齐同步文档；`contracts` P1 / P2 兼容投影别名（`RegimeSnapshotEvent` / `RegimeCardEvent` / `DecisionCardEvent` / `MarketRegimePort` / `MacroRegimePort` / `RegimeEnginePort`）已在 contracts 仓库以 type alias 方式补齐；`README.md`、`ARCHITECTURE.md` 与 `docs/architecture/README.md` / `01-overview.md` / `02-domain-layers.md` / `03-boundaries.md` / `04-principles.md` / `05-foundation.md` / `06-dataflow.md` / `07-three-engines.md` / `08-contracts.md` 的活跃口径已统一到 `riskx` / `orderx` / `positionx` / `backtestx`，历史投影仅保留在迁移表和对照清单中。
+- 数据域 C/S Module 标准化基线已就位：`module/data-cs-module/README.md`、`SPEC-TEMPLATE.md`、`UPGRADE-ROADMAP.md` 已形成统一入口；`#9` 现阶段转为执行问题，需按该入口拆分 `market_data` / `macro_data` 落地任务。
 - 当前未完成共 9 项：P0 `#1`-`#3`、P1 `#5`-`#6`、P2 `#9`-`#12`。
 - 其中 `#4`、`#7`、`#8` 已作为同步基线收口，仅保留在历史记录和对照清单中，不再列入当前执行面。
 
@@ -237,7 +238,7 @@ Prompt（S5）和 Evidence（S6）几乎为零，表明四源评分体系的后�
 
 | # | 行动 | 对应问题 | 主要产出 | 完成标准 |
 |---|---|---|---|---|
-| 9 | 补全数据域 tasks，优先从 `macro_data` / `market_data` 等链路开始 | 数据域短板 | 数据域任务树 | 数据域不再停留在 29% tasks 覆盖 |
+| 9 | 补全数据域 tasks，并按 `module/data-cs-module/README.md` / `SPEC-TEMPLATE.md` / `UPGRADE-ROADMAP.md` 推进 `market_data` / `macro_data` C/S Module 落地 | 数据域短板 | 数据域任务树 + 标准化入口 | 数据域不再停留在 29% tasks 覆盖 |
 | 10 | 补充 prompt / evidence，优先从 Foundation 层和 Approved 业务模块开始 | G1 | S5 / S6 运行制品 | Prompt / Evidence 覆盖率持续提升 |
 | 11 | 补录关键 ADR，覆盖 L2.5、三引擎契约、业务域边界等决策 | G3 | ADR 队列 | 关键决策可追溯 |
 | 12 | 按里程碑推进 `live_integration` 扩展（当前 7 → 15+） | 交付健康度 | 集成清单 | 发布级联路线上线 |
@@ -248,7 +249,7 @@ Prompt（S5）和 Evidence（S6）几乎为零，表明四源评分体系的后�
 - Approved 无 AC = 0。
 - 5 个占位符 SPEC 全部清零。
 - 分析域、决策域、执行域均形成可执行 tasks。
-- 数据域补齐 tasks，避免继续停留在低覆盖状态。
+- 数据域补齐 tasks，并通过 `module/data-cs-module` 标准化入口持续对齐新建数据域模块，避免继续停留在低覆盖状态。
 - L2.5 目标命名基准已统一为 `snake_case`，历史路径投影在同步文档中显式隔离，不再与主分析报告混写。
 - `x.go` 的主文档口径已完成治理 CLI / `composer` 组合根分工同步，后续新增文档需保持同一入口分工。
 - S5 / S6 不再长期停留在个位数覆盖。
