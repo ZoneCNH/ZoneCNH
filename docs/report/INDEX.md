@@ -1,0 +1,43 @@
+# docs/report/ 索引
+
+> 报告区分为**权威报告**与**历史档案**两类。修复 S-6 报告区冗余膨胀（2026-06-22）。
+
+## 权威报告（最新）
+
+每份报告应在文件名注明日期（YYYYMMDD），并在内容首部声明分析对象与数据来源。
+
+| 报告 | 日期 | 主题 | 综合评分 |
+|---|---|---|:---:|
+| [architecture-structural-analysis-20260622.md](./architecture-structural-analysis-20260622.md) | 2026-06-22 | 架构深度分析与 P0 修复（entropy 迁移、4 占位移除） | 68/100 (C) |
+| [architecture-deep-analysis-20260621-v2.md](./architecture-deep-analysis-20260621-v2.md) | 2026-06-21 | 跨文档版本一致性审计 v2 | 71/100 (B) |
+| [architecture-structural-analysis-20260621.md](./architecture-structural-analysis-20260621.md) | 2026-06-21 | 早间结构性分析（v2 前身） | 68.6/100 (C) |
+| [architecture-structural-repair-plan-20260621.md](./architecture-structural-repair-plan-20260621.md) | 2026-06-21 | 结构性修复计划 | — |
+| [architecture-problem-analysis-20260620.md](./architecture-problem-analysis-20260620.md) | 2026-06-20 | 业务域实现度分析 | — |
+| [repo-naming-unification-20260620.md](./repo-naming-unification-20260620.md) | 2026-06-20 | 仓库命名统一方案 | — |
+
+## 子目录
+
+| 路径 | 说明 |
+|---|---|
+| [`goal/`](./goal/) | Goal 文档分析（2026-06-09 收尾，含 ISSUE-LEDGER 与 README） |
+| [`archive/`](./archive/) | 历史档案区（已收敛的过程草稿） |
+| [`archive/xlib-20260608/`](./archive/xlib-20260608/) | xlib_standard 2026-06-08 单日多次产出（0341/0446/0459/0513/0530/0602 六个时间戳版本 + score-team），共 12 文件，已归档 |
+
+## 命名约定
+
+- **权威报告**：`<topic>-<YYYYMMDD>[-v<N>].md`，保留在 `docs/report/` 根目录
+- **过程草稿**：单日多版本或后续被合并的中间产物，归入 `archive/<topic>-<YYYYMMDD>/`
+- **修订版本**：以 `-v2`、`-v3` 后缀区分；旧版若已被新版完全覆盖，移入 `archive/`
+
+## 维护原则
+
+1. 每份报告必须可独立阅读（含分析范围、数据来源、证据标签）
+2. 同一主题在同一日内产出 2 份以上时，应汇总为单份并将中间稿归档
+3. archive/ 内容不可删除——保留作历史复盘依据，但不出现在主索引中
+4. 本文件每次新增/归档报告时同步更新
+
+## 变更历史
+
+| 日期 | 变更 |
+|---|---|
+| 2026-06-22 | 创建 INDEX；归档 `xlib/` 13 文件至 `archive/xlib-20260608/`；区分权威报告与历史档案 |

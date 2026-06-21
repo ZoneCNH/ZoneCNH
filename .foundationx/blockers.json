@@ -1,6 +1,6 @@
 {
   "schema_version": "blockers/v1",
-  "generated_at": "2026-06-18T04:00:00Z",
+  "generated_at": "2026-06-21T23:07:07Z",
   "source": ".foundationx/blockers.json",
   "total_blockers": 11,
   "by_severity": {
