@@ -20,6 +20,8 @@
 
 在创建任何 worktree 或 feature branch 之前，必须执行以下前置检查：
 
+本仓库的真实 worktree 路径模板为 `/home/{module}/.worktree/workspaces/<branch-name>`；下面示例仅保留相对路径写法 `.worktree/workspaces/<name>`，便于在不同模块仓库复用。
+
 ```bash
 # 1. 确保本地 main 为最新
 git checkout main
