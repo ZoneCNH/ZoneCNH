@@ -202,16 +202,18 @@
 
 ### 分析域
 
-| 组件                                                      | 版本         | 进度     | 覆盖率要求 | 说明                                                                     |
-| --------------------------------------------------------- | ------------ | -------- | ---------- | ------------------------------------------------------------------------ |
-| [factor_engine](https://github.com/ZoneCNH/factor_engine) | v0.1.0       | ░░░░ 5%  | 100%       | 因子计算引擎                                                             |
-| [feature_store](https://github.com/ZoneCNH/feature_store) | v0.1.0       | ░░░░ 5%  | 100%       | 特征存储与版本管理                                                       |
-| [factor_eval](https://github.com/ZoneCNH/factor_eval)     | v0.1.0       | ░░░░ 5%  | 100%       | 因子评估                                                                 |
-| [market_regime](https://github.com/ZoneCNH/market_regime) | v0.2.0       | ████████ 70% | 100%       | 市场状态识别（S1-S7）；新增 BarWindow 滑动窗口、domain-market 适配器和 Subscriber 消费者，12 tests PASS |
-| [macro_regime](https://github.com/ZoneCNH/macro_regime)   | v0.2.0       | ████████ 70% | 100%       | 宏观经济体制识别（M1-M7）；新增 MacroInformationSet mapper 和 ClassifyFromSet 便利方法，13 tests PASS  |
-| [ms_brain](https://github.com/ZoneCNH/ms_brain)           | v1.6.6       | ░░░░ 5%  | 100%       | M×S 系统架构分析体系                                                     |
-| [regime_engine](https://github.com/ZoneCNH/regime_engine) | v1.0.0       | ████ 60% | 100%       | M×S 联合决策引擎（P0 DTO 桥接层，RegimeSnapshot+RegimeCard→DecisionCard，13 tests PASS） |
-| [flowx](https://github.com/ZoneCNH/flowx)                 | v0.1.0-draft | ░░░░ 5%  | 100%       | 数据流管线引擎 — 流式 ETL、窗口聚合、背压控制（7 FR, SPEC draft）        |
+> 分析域全部模块为**独立进程（非 C/S）**，bootstrap 接入，无 client/server 拆分。
+
+| 组件                                                      | 架构类型 | 版本         | 进度     | 覆盖率要求 | 说明                                                                     |
+| --------------------------------------------------------- | -------- | ------------ | -------- | ---------- | ------------------------------------------------------------------------ |
+| [factor_engine](https://github.com/ZoneCNH/factor_engine) | 独立进程 | v0.1.0       | ░░░░ 5%  | 100%       | 因子计算引擎                                                             |
+| [feature_store](https://github.com/ZoneCNH/feature_store) | 独立进程 | v0.1.0       | ░░░░ 5%  | 100%       | 特征存储与版本管理                                                       |
+| [factor_eval](https://github.com/ZoneCNH/factor_eval)     | 独立进程 | v0.1.0       | ░░░░ 5%  | 100%       | 因子评估                                                                 |
+| [market_regime](https://github.com/ZoneCNH/market_regime) | 独立进程 | v0.2.0       | ████████ 70% | 100%       | 市场状态识别（S1-S7）；BarWindow+Subscriber+domain-market 适配器，12 tests PASS |
+| [macro_regime](https://github.com/ZoneCNH/macro_regime)   | 独立进程 | v0.2.0       | ████████ 70% | 100%       | 宏观经济体制识别（M1-M7）；MacroInformationSet mapper+ClassifyFromSet，13 tests PASS  |
+| [ms_brain](https://github.com/ZoneCNH/ms_brain)           | 独立进程 | v1.6.6       | ░░░░ 5%  | 100%       | M×S 系统架构分析体系                                                     |
+| [regime_engine](https://github.com/ZoneCNH/regime_engine) | 独立进程 | v1.0.0       | ████ 60% | 100%       | M×S 联合决策引擎（P0 DTO 桥接层，RegimeSnapshot+RegimeCard→DecisionCard，13 tests PASS） |
+| [flowx](https://github.com/ZoneCNH/flowx)                 | 独立进程 | v0.1.0-draft | ░░░░ 5%  | 100%       | 数据流管线引擎 — 流式 ETL、窗口聚合、背压控制（7 FR, SPEC draft）        |
 
 <details>
 <summary>📊 分析域多维成熟度展开（点击展开）</summary>
@@ -316,25 +318,22 @@
 
 ### 按域统计
 
-| 域                     | 总数   | 已有   | 已创建 | 平均进度                           | 有版本号                                              |
+| 域                     | 总数   | 已有   | 已创建 | 平均进度                           | 架构组成                                              |
 | ---------------------- | ------ | ------ | ------ | ---------------------------------- | ----------------------------------------------------- |
-| 基座                   | 20     | 20     | 0      | Spec→Code 投影完成；Foundation 整体非 factory | 20                                                    |
-| L2.5 领域共享层        | 5      | 5      | 0      | 100%                               | 5 (全部 5/5 factory grade；live/soak N/A)            |
-| 数据域 · 行情 SDK      | 12     | 12     | 0      | 80%                                | 12 (全部 v0.1.1)                                      |
-| 数据域 · 行情 C/S Module | 1     | 0      | 1      | 5%                                 | 1 (v0.1.0；Spec Approved)                                |
-| 数据域 · 行情 Dispatch  | 1      | 1      | 0      | 30%                                | 1 (v1.0.0；runtime pending)                      |
-| 数据域 · 行情 Provider | 0      | 0      | 0      | -                                  | 0 (Provider 类型已并入 SDK；保留行用于审计兼容)         |
-| 数据域 · 宏观          | 10     | 10     | 0      | 80%                                | 10 (全部 v0.1.1)                                      |
+| 基座                   | 20     | 20     | 0      | Spec→Code 投影完成；Foundation 整体非 factory | 20 独立 module                                                    |
+| L2.5 领域共享层        | 5      | 5      | 0      | 100%                               | 5 纯值对象库 (factory grade；live/soak N/A)            |
+| 数据域 · market_data   | 14     | 13     | 1      | 80%                                | 13 C/S Module + 1 独立进程 (dispatch)                                      |
+| 数据域 · macro_data    | 11     | 11     | 0      | 80%                                | 10 C/S Module + 1 独立进程 (dispatch)                                      |
 | 数据域 · 另类          | 1      | 0      | 1      | 5%                                 | 1 (v0.1.0)                                            |
-| 分析域                 | 8      | 3      | 5      | 40%                                | 8 (market_regime/macro_regime v0.2.0；regime_engine v1.0.0；RegimeCoordinator ✅ composer v0.2.0) |
+| 分析域                 | 8      | 3      | 5      | 40%                                | 8 独立进程（market_regime/macro_regime v0.2.0；regime_engine v1.0.0） |
 | 决策域                 | 6      | 1      | 5      | 10%                                | 6 (signal_factory v0.1.0 ✅；其余 v0.1.0+)              |
 | 执行域                 | 7      | 1      | 6      | 10%                                | 7 (riskx v0.1.0 ✅ 最小实现；其余 v0.1.0+)              |
 | 入口                   | 2      | 2      | 0      | 85%                                | 2 (x.go v0.0.1；composer v0.2.0 ✅ Coordinator+SinkPort) |
 | 横切                   | 2      | 1      | 1      | 53%                                | 2 (observex, alertx)                                  |
 | 独立                   | 1      | 1      | 0      | -                                  | 0                                                     |
-| **合计**               | **76** | **57** | **19** | **58%**                            | **73**                                                |
+| **合计**               | **77** | **77** | **58** | **58%**                            | **73**                                                |
 
-> ⚠️ **废弃占位说明**：总数 76 含 4 个历史占位仓库（`backtest_engine`→决策域、`risk_engine`/`order_engine`/`portfolio_engine`→执行域），已迁移至新名称（backtestx/riskx/orderx/positionx），多维成熟度表中已标注 **[P]废弃**，不参与质量评估。活跃组件 72 个。
+> ⚠️ **废弃占位说明**：~~总数 76 含 4 个历史占位仓库~~ → 总数 77（新增 macro_data dispatch 独立进程）；4 个历史占位仓库（`backtest_engine`→决策域、`risk_engine`/`order_engine`/`portfolio_engine`→执行域）已迁移至新名称（backtestx/riskx/orderx/positionx），多维成熟度表中已标注 **[P]废弃**，不参与质量评估。活跃组件 73 个。
 
 ---
 
@@ -353,16 +352,18 @@
 - 组件：5 个，进度 80%
 - Phase 0 已完成，当前已建模的上层模块已依赖此层
 
-### 🟢 数据域 · 行情（健康）
+### 🟢 数据域 · market_data（健康）
 
-- Dispatch：1 个（market_data），v1.0.0，dispatch.go 已发布，进度 30%
-- SDK：12 个交易所适配器，全部 v0.1.1，进度 80%
-- C/S Module：1 个（binance），v0.1.0，Spec Approved，0% 实现
-- **factory 升级路径声明**：12 个 SDK SPEC ✅ IMPL ✅ RELEASE ✅，但 factory ❌ 原因为：LIVE INT 尚未验证（需 market_data dispatch port adapter 集成验证真实 tick 数据流）。升级前提：`market_data` dispatch 完成 LIVE INT → 12 SDK 批量触发 factory-ready 评估。非阻塞上层开发，当前豁免理由已记录。
+- market_data 域：14 组件（13 C/S Module + 1 独立进程 dispatch）
+- dispatch（market_data）：独立进程，v1.0.0，Receiver + DualWriteSink，进度 30%
+- C/S Module（13）：binance 为参考实现（v0.2.0，bootstrap + client/server + 4 产品线）；其余 12 个 v0.1.1，待升级
+- **factory 升级路径**：13 C/S Module 需完成 client/server 拆分 + bootstrap 接入 + dispatch 集成验证后批量触发 factory-ready 评估
 
-### 🟡 数据域 · 宏观（注意）
+### 🟡 数据域 · macro_data（注意）
 
-- 组件：10 个，全部 80%，jin10 v0.2.0，其他 v0.1.1 tagged release
+- macro_data 域：11 组件（10 C/S Module + 1 独立进程 dispatch）
+- dispatch（macro_data）：独立进程，v1.0.0，Receiver + DualWriteSink
+- C/S Module（10）：全部 v0.1.1 tagged release，待升级 bootstrap + client/server 拆分
 - 6 个央行数据源结构高度相似（fred / treasury / bea / ecb / uk_cb / japan_cb）
 - **评估结论（2026-06-16）**：各模块保持独立架构，不合并；建议在 contracts 中提取共享 DataSource 接口统一契约
 
@@ -373,7 +374,8 @@
 
 ### 🔴 分析域（阻塞）
 
-- 组件：8 个，三引擎（market_regime/macro_regime v0.2.0，regime_engine v1.0.0）已完成 P0 桥接；dispatch→regime SinkPort 适配器 ✅（composer v0.1.0，MarketRegimeSink/MacroRegimeSink，14 tests PASS），5 个处于早期（5%）
+- 组件：8 个，**全部为独立进程（非 C/S）**，bootstrap 接入，无 client/server 拆分
+- 三引擎（market_regime/macro_regime v0.2.0，regime_engine v1.0.0）已完成 P0 桥接；dispatch→regime SinkPort 适配器 ✅（composer v0.1.0，MarketRegimeSink/MacroRegimeSink，14 tests PASS），5 个处于早期（5%）
 - **阻塞项**：factor_engine / feature_store / factor_eval / ms_brain 均未实现到可用闭环；flowx SPEC 已创建（v0.1.0-draft）
 - **里程碑**：分析域三引擎 contracts v1.4.0 P0 DTO 接入完成，M×S→DecisionCard 链路打通
 
@@ -455,15 +457,15 @@
 
 | 检查项           | README | ARCHITECTURE | STATUS    | 一致性 |
 | ---------------- | ------ | ------------ | --------- | ------ |
-| 组件总数         | 74     | 74           | 74        | ✅     |
-| market_data 数量 | 14     | 14          | 14        | ✅     |
-| macro_data 数量  | 10     | 10           | 10        | ✅     |
-| L2.5 组件        | 5      | 5            | 5         | ✅     |
-| 分析域组件       | 8      | 8            | 8         | ✅     |
-| 决策域组件       | 6      | 6            | 6         | ✅     |
-| 横切组件         | 2      | 2            | 2         | ✅     |
+| 组件总数         | 74     | 74           | 74        | ⏳ 待验证 |
+| market_data 数量 | 14     | 14          | 14        | ⏳ 待验证 |
+| macro_data 数量  | 11     | 11           | 11        | ⏳ 待验证 |
+| L2.5 组件        | 5      | 5            | 5         | ⏳ 待验证 |
+| 分析域组件       | 8      | 8            | 8         | ⏳ 待验证 |
+| 决策域组件       | 6      | 6            | 6         | ⏳ 待验证 |
+| 横切组件         | 2      | 2            | 2         | ⏳ 待验证 |
 
-注：以上为各文档 unique repo 链接数（grep github.com/ZoneCNH 去重后计数）。README/ARCH/STATUS 三者一致为 74（含 composer 入口模块，2026-06-21 对齐）。STATUS 的 76 是按域统计 domain-sum 口径，不与 unique-link 74 直接比较（observex 计入基座+横切 2 域）。L2.5=5/分析域=8/决策域=6 三文档一致。
+注：macro_data 域从 10 增至 11（新增 dispatch 独立进程）。以上数字待 `python3 scripts/audit-status.py --network` 最终验证。STATUS 域统计 domain-sum 口径与 unique-link 口径不完全等同（observex 计入基座+横切 2 域）。
 
 ### 迁移与门禁基线
 

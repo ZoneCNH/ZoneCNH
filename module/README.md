@@ -179,7 +179,7 @@ Foundation 目录内的执行域共享值对象规格，用于订单、成交、
 
 ## 分析域（1 个）
 
-数据流管线与计算引擎。
+数据流管线与计算引擎。**分析域全部模块为独立进程（非 C/S）**，bootstrap 接入，无 client/server 拆分。
 
 | 模块  | 规格                        | 核心职责                                                       |
 | ----- | --------------------------- | -------------------------------------------------------------- |
@@ -333,6 +333,40 @@ Draft → Review → Approved → Implemented → Changed → Deprecated
 ```
 
 完整状态机定义、流转规则、CI 集成点详见 [`LIFECYCLE.md`](../docs/governance/LIFECYCLE.md)。
+
+---
+
+## 模块架构类型
+
+FoundationX 运行模块分为两种架构类型。详见 [`ARCHITECTURE.md`](../ARCHITECTURE.md#模块架构类型)。
+
+### C/S Module（数据源采集）
+
+**适用**：数据域子模块（binance/okx/fred/treasury 等），从外部数据源采集数据。
+
+```text
+{module}/
+├── cmd/{module}-server/main.go    # bootstrap.Build() 独立进程
+├── internal/client/               # 数据采集
+├── internal/server/               # 数据服务
+├── internal/cs/                   # 共享类型
+├── pkg/{module}x/                 # 公开 adapter
+└── go.mod
+```
+
+**参考实现**：[binance](https://github.com/ZoneCNH/binance)（v0.2.0，bootstrap 接入 + client/server + 4 产品线）
+
+### 独立进程（非 C/S）
+
+**适用**：dispatch 聚合层（market_data/macro_data）和分析域模块（market_regime/macro_regime/regime_engine）。
+
+```text
+{module}/
+├── cmd/{module}/main.go           # bootstrap.Build() 独立进程
+├── internal/                      # 业务逻辑（无 client/server 拆分）
+├── pkg/{module}x/                 # 公开包
+└── go.mod
+```
 
 ---
 
