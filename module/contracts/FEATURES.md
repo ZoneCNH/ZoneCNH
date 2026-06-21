@@ -1,7 +1,7 @@
 # contracts 功能清单
 
 - Status: Docs Baseline Synced / Feature Inventory Closed
-- Last-Updated: 2026-06-21
+- Last-Updated: 2026-06-22
 - Layer: 基座 · 跨域接口契约
 - Source-of-Truth: `/home/contracts/pkg/contracts`
 - Related: `SPEC.md`, `TRACEABILITY.md`, `ACCEPTANCE.md`, `README.md`, `goal.md`, `IMPLEMENTATION-PLAN.md`, `tasks/`
@@ -17,7 +17,7 @@
 | CORE-003 | `RegimeSnapshot`, `RegimeCard`, `DecisionCard` | `regime_snapshot.go`, `regime_card.go`, `decision_card.go` | 市场态势、宏观态势与决策卡载体 |
 | CORE-004 | `SignalIntent` | `signal_intent.go` | 供 `signal_factory` 生成的下游意图载体 |
 | CORE-005 | `MarketDataProvider`, `MacroDataProvider`, `DecisionCardProvider`, `SignalFactoryProvider` | `ports.go` | 最新态势查询、订阅和信号生成端口 |
-| CORE-006 | `MarketDataService`, `IngestRequest`, `IngestResult`, `IngestAck`, `IngestReject`, `RejectCode`, `AllRejectCodes()` | `ingestion.go` | 单请求 / 单结果摄入契约与 9 个 canonical 拒绝码 |
+| CORE-006 | `MarketDataService`, `IngestRequest`, `IngestResult`, `IngestAck`, `IngestReject`, `RejectCode`, `AllRejectCodes()` | `ingestion.go` | 单请求 / 单结果摄入契约与 10 个 canonical 拒绝码 |
 | CORE-007 | `RegimeSnapshotEvent`, `RegimeCardEvent`, `DecisionCardEvent`, `MarketRegimePort`, `MacroRegimePort`, `RegimeEnginePort` | `projections.go` | 迁移期兼容投影与旧命名别名 |
 | CORE-008 | 文档基线同步 | `README.md`, `SPEC.md`, `TRACEABILITY.md`, `ACCEPTANCE.md`, `FEATURES.md`, `IMPLEMENTATION-PLAN.md`, `tasks/` | 只保留当前 runtime truth 的文档投影 |
 
@@ -36,7 +36,7 @@
 ## 3. 当前一致性规则
 
 - `MarketDataService.Ingest(...)` 是单次请求 / 单次结果契约，不是双向流。
-- `AllRejectCodes()` 只返回 9 个 canonical code；`RejectUnsupportedChannel` 仍是导出常量，但不进入 canonical 列表。
+- `AllRejectCodes()` 只返回 10 个 canonical code；`RejectUnsupportedChannel` 仍是导出常量，并进入 canonical 列表。
 - 兼容别名只承担迁移和过渡，不引入新语义。
 - 任意新增、删除或重命名公开符号，必须先更新 `SPEC.md`，再同步 `TRACEABILITY.md`、`ACCEPTANCE.md` 与 `tasks/`。
 

@@ -1,7 +1,7 @@
 # contracts 规格
 
 - Status: Docs Baseline Synced / Runtime Truth Verified
-- Last-Updated: 2026-06-21
+- Last-Updated: 2026-06-22
 - Layer: 基座 · 跨域接口契约
 - Source-of-Truth: `/home/contracts/pkg/contracts`
 - Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `README.md`, `TRACEABILITY.md`, `ACCEPTANCE.md`, `IMPLEMENTATION-PLAN.md`, `tasks/`
@@ -77,8 +77,8 @@
 - `IngestResult` 只携带一个结果分支：`Ack` 或 `Reject`
 - `IngestAck` 字段：`RequestID`、`StreamID`、`AcceptedCount`、`DuplicateCount`、`Durable`
 - `IngestReject` 字段：`RequestID`、`RejectCode`、`Reason`、`Retryable`
-- `RejectCode` 的 canonical 集合由 `AllRejectCodes()` 给出，共 9 个：`RejectRetryable`、`RejectTerminalValidation`、`RejectTerminalConflict`、`RejectUnauthorized`、`RejectRateLimited`、`RejectServerUnavailable`、`RejectContractViolation`、`RejectQualityRejected`、`RejectOrderingViolation`
-- `RejectUnsupportedChannel` 仍然导出，但不属于 canonical 集合
+- `RejectCode` 的 canonical 集合由 `AllRejectCodes()` 给出，共 10 个：`RejectRetryable`、`RejectTerminalValidation`、`RejectTerminalConflict`、`RejectUnauthorized`、`RejectRateLimited`、`RejectServerUnavailable`、`RejectContractViolation`、`RejectQualityRejected`、`RejectOrderingViolation`、`RejectUnsupportedChannel`
+- `RejectUnsupportedChannel` 仍然导出，并且属于 canonical 集合
 
 ### FR-007: 兼容别名
 
@@ -133,13 +133,13 @@
 
 ### BR-006: Canonical RejectCode
 
-`AllRejectCodes()` 是 canonical 列表，只返回 9 个代码：
+`AllRejectCodes()` 是 canonical 列表，只返回 10 个代码：
 
-`RejectRetryable`、`RejectTerminalValidation`、`RejectTerminalConflict`、`RejectUnauthorized`、`RejectRateLimited`、`RejectServerUnavailable`、`RejectContractViolation`、`RejectQualityRejected`、`RejectOrderingViolation`
+`RejectRetryable`、`RejectTerminalValidation`、`RejectTerminalConflict`、`RejectUnauthorized`、`RejectRateLimited`、`RejectServerUnavailable`、`RejectContractViolation`、`RejectQualityRejected`、`RejectOrderingViolation`、`RejectUnsupportedChannel`
 
-### BR-007: 非 canonical 代码
+### BR-007: RejectUnsupportedChannel 导出
 
-`RejectUnsupportedChannel` 仍然可见，但它是兼容补充，不进入 canonical 列表。
+`RejectUnsupportedChannel` 仍然可见，并且属于 canonical 列表。
 
 ### BR-008: 兼容层
 
@@ -177,7 +177,7 @@ runtime 公开符号应保留可读的 godoc。
 
 ### NFR-006: RejectCode 稳定性
 
-canonical reject-code 集合保持 9 项，不随文档整理漂移。
+canonical reject-code 集合保持 10 项，不随文档整理漂移。
 
 ### NFR-007: 不暴露传输实现
 

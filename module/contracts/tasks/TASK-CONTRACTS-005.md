@@ -21,7 +21,7 @@ acceptance_criteria:
   - "IngestRequest 仅包含 RequestID、Source、ProductLine、InstrumentKey、EventType、EventTime、ReceivedAt、SchemaVersion、Payload、Sequence、OrderingKey、SourceMetadata 这 12 个字段。"
   - "IngestResult 仅保留 Ack 或 Reject 分支。"
   - "IngestAck 与 IngestReject 的字段与 runtime 一致。"
-  - "AllRejectCodes() 返回 9 个 canonical code；RejectUnsupportedChannel 仍导出但不进入 canonical 集合。"
+  - "AllRejectCodes() 返回 10 个 canonical code；RejectUnsupportedChannel 仍导出且属于 canonical 集合。"
   - "文档和测试不再使用旧的双向流叙事。"
 depends_on:
   - "TASK-CONTRACTS-000"
@@ -31,6 +31,6 @@ priority: P0
 status: pending
 non_scope:
   - "不恢复双向流实现。"
-  - "不将 RejectUnsupportedChannel 设为 canonical。"
+  - "不恢复 RejectUnsupportedChannel 非 canonical 的旧叙事。"
   - "不引入新的传输实现。"
 ```

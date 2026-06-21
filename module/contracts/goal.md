@@ -1,7 +1,7 @@
 # contracts 文档同步目标
 
 ## 目标
-把 `module/contracts` 的文档基线收敛到 `/home/contracts/pkg/contracts` 当前导出面，确保规格、追溯、任务和说明都只描述运行时真实存在的类型、端口和 wire contract。
+把 `module/contracts` 的文档基线收敛到 `/home/contracts/pkg/contracts` 当前导出面，确保规格、追溯、任务和说明都只描述运行时真实存在的类型、端口、reject code 和 wire contract。
 
 ## 终态
 
@@ -21,9 +21,10 @@
 - 端口：`MarketDataProvider`、`MacroDataProvider`、`DecisionCardProvider`、`SignalFactoryProvider`
 - 采集契约：`MarketDataService.Ingest(IngestRequest) (IngestResult, error)`
 - 兼容投影：`RegimeSnapshotEvent`、`RegimeCardEvent`、`DecisionCardEvent`、`MarketRegimePort`、`MacroRegimePort`、`RegimeEnginePort`
+- 拒绝码：`AllRejectCodes()` 的 canonical 集合为 10 项，`RejectUnsupportedChannel` 仍保留且属于 canonical 列表
 
 ## 成功标准
 
 - 每份文档都能在 `pkg/contracts` 中找到对应导出
 - 不再出现已删除或旧命名 API
-- 追溯、特性和任务编号互相一致
+- 追溯、特性、任务编号和 reject-code 事实互相一致

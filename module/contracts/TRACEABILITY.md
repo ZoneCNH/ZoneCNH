@@ -1,7 +1,7 @@
 # contracts 追溯矩阵
 
 - Status: Docs Baseline Synced / Coverage Closed
-- Last-Updated: 2026-06-21
+- Last-Updated: 2026-06-22
 - Layer: 基座 · 跨域接口契约
 - Source-of-Truth: `/home/contracts/pkg/contracts`
 - Related: `SPEC.md`, `README.md`, `goal.md`, `ACCEPTANCE.md`, `FEATURES.md`, `IMPLEMENTATION-PLAN.md`, `tasks/`
@@ -30,8 +30,8 @@
 | BR-003 | 不再使用旧版查询与订阅命名、旧版本标记 | `README.md`、`goal.md`、`tasks/` | `SPEC.md`、`README.md`、`goal.md` | `TASK-CONTRACTS-004` |
 | BR-004 | 依赖边界受 `module/FOUNDATION-DEPS.yaml` 约束 | 共享层依赖图 | `SPEC.md`、`goal.md` | `TASK-CONTRACTS-000` |
 | BR-005 | DTO 需要明确导出字段与 JSON tag 约定 | `contracts.go`、`regime_*`、`decision_card.go`、`ingestion.go` | `SPEC.md`、`README.md` | `TASK-CONTRACTS-002` |
-| BR-006 | `AllRejectCodes()` 只返回 9 个 canonical code | `ingestion.go` | `SPEC.md`、`README.md`、`FEATURES.md` | `TASK-CONTRACTS-005` |
-| BR-007 | `RejectUnsupportedChannel` 导出但不进入 canonical 列表 | `ingestion.go` | `SPEC.md`、`README.md`、`FEATURES.md` | `TASK-CONTRACTS-005` |
+| BR-006 | `AllRejectCodes()` 只返回 10 个 canonical code | `ingestion.go` | `SPEC.md`、`README.md`、`FEATURES.md` | `TASK-CONTRACTS-005` |
+| BR-007 | `RejectUnsupportedChannel` 导出且属于 canonical 列表 | `ingestion.go` | `SPEC.md`、`README.md`、`FEATURES.md` | `TASK-CONTRACTS-005` |
 | BR-008 | 兼容别名只承担迁移，不承载新语义 | `projections.go` | `SPEC.md`、`README.md`、`FEATURES.md` | `TASK-CONTRACTS-003` |
 | BR-009 | 文档必须保持同一组事实源 | `module/contracts/*` | `SPEC.md`、`README.md`、`TRACEABILITY.md`、`ACCEPTANCE.md`、`FEATURES.md`、`IMPLEMENTATION-PLAN.md`、`tasks/` | `TASK-CONTRACTS-004` |
 | BR-010 | 公开 rename/removal 先修兼容层与追溯文档 | `projections.go`、`module/contracts/*` | `SPEC.md`、`goal.md`、`TRACEABILITY.md`、`ACCEPTANCE.md`、`FEATURES.md`、`IMPLEMENTATION-PLAN.md` | `TASK-CONTRACTS-003`、`TASK-CONTRACTS-004` |
@@ -45,7 +45,7 @@
 | NFR-003 | 静态检查干净 | `go vet ./...` | `SPEC.md`、`ACCEPTANCE.md` | `TASK-CONTRACTS-005` |
 | NFR-004 | 文档更新可审计 | `git diff --check`、`rg` 旧术语扫描 | `SPEC.md`、`TRACEABILITY.md`、`ACCEPTANCE.md` | `TASK-CONTRACTS-004` |
 | NFR-005 | 公开符号保留可读 godoc | `contracts.go`、`ports.go`、`ingestion.go`、`projections.go` 的注释 | `SPEC.md`、`README.md` | `TASK-CONTRACTS-001`、`TASK-CONTRACTS-002`、`TASK-CONTRACTS-003`、`TASK-CONTRACTS-005` |
-| NFR-006 | canonical reject-code 集合稳定为 9 项 | `ingestion.go` | `SPEC.md`、`README.md`、`ACCEPTANCE.md` | `TASK-CONTRACTS-005` |
+| NFR-006 | canonical reject-code 集合稳定为 10 项 | `ingestion.go` | `SPEC.md`、`README.md`、`ACCEPTANCE.md` | `TASK-CONTRACTS-005` |
 | NFR-007 | 不把 transport 实现写成契约本体 | `SPEC.md`、`README.md` | `SPEC.md`、`FEATURES.md` | `TASK-CONTRACTS-000`、`TASK-CONTRACTS-004` |
 | NFR-008 | 不回流旧叙事 | `module/contracts/*` 的旧术语扫描 | `SPEC.md`、`goal.md`、`TRACEABILITY.md`、`ACCEPTANCE.md`、`FEATURES.md` | `TASK-CONTRACTS-004` |
 
