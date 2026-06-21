@@ -1,6 +1,8 @@
+> Archived v2.0.0: this readiness task belongs to the pre-`natsx` gRPC/contracts design. Do not use it for implementation. Use `TASK-BINANCE-CLIENT-014-natsx-publisher.md` and `TASK-BINANCE-CLIENT-007-market-event-mapper.md` for the active publish boundary.
+
 # TASK-BINANCE-CLIENT-013 Implementation Readiness — Contracts and Domain Bindings
 
-- Status: Ready
+- Status: Archived
 - Owner: `module/binance/client`
 - Last-Updated: 2026-06-17
 - Dependencies: `module/contracts/SPEC.md` §8.4, `module/domain_market/SPEC.md` v1.1.0 §10

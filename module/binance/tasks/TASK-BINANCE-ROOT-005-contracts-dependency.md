@@ -1,3 +1,7 @@
+> Archived v2.0.0: this task belongs to the pre-`natsx` gRPC/contracts design. Do not use it for implementation. Use `domain_market.MarketFactEnvelope` plus `natsx` JetStream as the active client/server boundary.
+>
+> Status: Archived
+
 # TASK-BINANCE-ROOT-005 contracts Dependency
 
 ## Objective

@@ -1,36 +1,36 @@
-# TASK-BINANCE-SERVER-007 Contract Tests
+# TASK-BINANCE-SERVER-007 Consumer / Envelope Tests
 
 ## Objective
 
-Verify server compatibility with contracts-defined gRPC service and client expectations.
+Verify server compatibility with `domain_market` envelope semantics, `natsx` consumer behavior, and durable processing expectations.
 
 ## Scope
 
 Tests cover:
 
-- gRPC stream startup
-- request validation
-- ACK response
-- reject response
+- JetStream consumer startup
+- envelope validation
+- ManualAck after durable processing
+- terminal reject/negative ack behavior
 - duplicate behavior
-- reconnect behavior
+- redelivery behavior
 
 ## Deliverables
 
-- generated server interface tests
-- client fixture tests
-- golden ACK/reject fixtures
-- duplicate event tests
+- consumer tests
+- client-published envelope fixtures
+- ManualAck/reject fixtures
+- duplicate and redelivery tests
 
 ## Acceptance Criteria
 
 - server accepts valid client request.
 - server rejects invalid request with machine-readable reason.
-- server ACK drives client checkpoint fixture.
-- duplicate idempotency key does not duplicate dispatch.
+- server ManualAck occurs only after validation, idempotency, durable storage, and `kafkax` handoff succeed.
+- duplicate idempotency key does not duplicate storage or `kafkax` fanout.
 - server does not require client internal packages.
 
 ## Dependencies
 
-- SERVER-001 through SERVER-004
+- SERVER-010 through SERVER-016
 - CLIENT-011

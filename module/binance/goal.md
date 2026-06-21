@@ -26,8 +26,7 @@ Provide a reliable, canonical, Binance-specific market_data ingestion path for:
 
 - generic market_data domain semantics
 - cross-exchange market_data ingestion policy
-- market_data storage engine
-- query APIs
+- generic cross-exchange market_data storage/query ownership
 - strategy APIs
 - trading decisions
 - order execution
@@ -40,9 +39,9 @@ Provide a reliable, canonical, Binance-specific market_data ingestion path for:
 `module/binance` is successful when:
 
 1. Binance market data can be collected by `module/binance/client`.
-2. Canonical market events can be transmitted through contracts-defined gRPC.
-3. `module/binance/server` can validate, deduplicate, acknowledge, and dispatch accepted events.
+2. Canonical market events can be durably published through `natsx` JetStream using `domain_market` envelopes.
+3. `module/binance/server` can validate, deduplicate, persist, expose, and fan out accepted Binance events.
 4. Spot `BTCUSDT`, USDⓈ-M `BTCUSDT`, COIN-M `BTCUSD`, and Options contracts produce non-colliding canonical instrument identities.
-5. Client checkpoints advance only after durable server ACK.
+5. Client publish success is confirmed by JetStream PubAck, and server consumption advances only after durable ManualAck.
 6. No code or documentation reintroduces `binance-market`.
 7. Client/server internals remain separated by boundary gates.

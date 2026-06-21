@@ -228,14 +228,15 @@ echo "PASS: Storage ownership gate"
 
 ---
 
-## 8. Gate: Contracts Are Wire Representation Only
+## 8. Gate: Wire Contract Externality
 
-`module/binance` 不得定义独立的 proto 或 wire schema。
+`module/binance` 的 runtime wire 仅允许使用 `natsx` subject + `domain_market.MarketFactEnvelope` JSON，不得定义独立的 proto 或 wire schema。
 
 禁止：
 
 ```text
 module/binance/proto/*
+module/binance 定义本地 wire service/schema
 module/binance 定义 canonical wire enum SSOT
 ```
 
@@ -245,7 +246,7 @@ set -euo pipefail
 [ ! -d "module/binance/proto" ] || { echo "FAIL: proto/ dir exists"; exit 1; }
 proto_files="$(find module/binance -name '*.proto' 2>/dev/null || true)"
 [ -z "$proto_files" ] || { echo "FAIL: .proto files found"; echo "$proto_files"; exit 1; }
-echo "PASS: Contracts gate"
+echo "PASS: Wire contract externality gate"
 ```
 
 ---
@@ -344,7 +345,7 @@ echo "PASS: go.mod dependency compliance"
 | 5 | **No cs Package Runtime Dependency** | **v2.0 新增** | **分布式强制** |
 | 6 | **No Same-Process C/S Communication** | **v2.0 新增** | **分布式强制** |
 | 7 | Server Owns Binance-Specific Storage | v2.0 变更 | 所有权 |
-| 8 | Contracts Wire Representation Only | v1.0 | 边界隔离 |
+| 8 | Wire Contract Externality | v2.0 变更 | 边界隔离 |
 | 9 | Domain-Market Semantic Source | v1.0 | 语义边界 |
 | 10 | Admin Surface Boundary | v1.0 | 边界隔离 |
 | 11 | **go.mod Dependency Compliance** | **v2.0 新增** | **分布式强制** |

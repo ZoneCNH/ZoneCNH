@@ -9,7 +9,7 @@
 - Layer: 数据域 · Binance 交易所接入
 - Version: v0.1.0
 - Repository: [github.com/ZoneCNH/binance](https://github.com/ZoneCNH/binance)（client/ 子目录）
-- Related: [CONSTITUTION.md](../../../CONSTITUTION.md), [ARCHITECTURE.md](../../../ARCHITECTURE.md), [module/binance/SPEC.md](../SPEC.md), [module/contracts/SPEC.md](../../contracts/SPEC.md), [module/domain_market](../../domain_market/)
+- Related: [CONSTITUTION.md](../../../CONSTITUTION.md), [ARCHITECTURE.md](../../../ARCHITECTURE.md), [module/binance/SPEC.md](../SPEC.md), [module/domain_market](../../domain_market/), [module/natsx](../../natsx/)
 
 ---
 
@@ -167,7 +167,7 @@ client 完成发布即结束职责。持久化、幂等、存储、API 全部由
 
 **功能描述**：生成跨重试稳定的幂等键。
 
-**WHEN** 事件进入 spool 前
+**WHEN** 事件进入 publisher 前
 **THEN** 生成幂等键，维度包括：exchange、product_line、instrument_key、event_type、event_time 或 source sequence、interval/open time（K 线）、trade id（成交，如可用）、update id range（深度，如可用）
 
 **WHEN** 不同 event type 需要不同 key 策略
@@ -176,62 +176,24 @@ client 完成发布即结束职责。持久化、幂等、存储、API 全部由
 **WHEN** 同一事件重试
 **THEN** 幂等键不变（跨重试稳定）
 
-### FR-007: Spool
+### FR-007: natsx Publisher
 
-**功能描述**：发送前持久化事件，支持进程重启恢复。
+**功能描述**：通过 natsx JetStream 发布规范化事件，同步等待 PubAck 确认持久化。
 
-**WHEN** 事件生成幂等键后
-**THEN** 写入 SQLite spool，状态为 `pending`
+**WHEN** 规范化事件生成幂等键后
+**THEN** 构造 `domain_market.MarketFactEnvelope` JSON payload，调用 `js.Publish(subject, payload)` 同步发布
 
-**WHEN** sender 开始发送
-**THEN** spool 状态转换为 `sending`
+**WHEN** JetStream 返回 PubAck
+**THEN** 投递视为成功；JetStream 已在 NATS 集群持久化该消息
 
-**WHEN** 收到 server ACK
-**THEN** spool 状态转换为 `acked`
+**WHEN** PubAck 超时或 NATS 连接断开
+**THEN** 内存队列（有界，backpressure 阈值可配置）暂存事件；指数退避重连后重发；重发消息由 server redisx SetNX 幂等过滤
 
-**WHEN** 发送失败且可重试
-**THEN** spool 状态转换为 `failed_retryable`
-
-**WHEN** 发送失败且不可重试（如永久 reject）
-**THEN** spool 状态转换为 `failed_terminal`
+**WHEN** 内存队列达到 backpressure 阈值
+**THEN** 触发 `ErrNATSBackpressure`，告警，暂停新事件采集
 
 **WHEN** client 进程重启
-**THEN** spool 中所有 `pending` 和 `failed_retryable` 事件恢复为可发送状态
-
-### FR-008: Checkpoint
-
-**功能描述**：记录最后 server 持久接受的位置。
-
-**WHEN** 收到 server 持久 ACK
-**THEN** checkpoint 推进到已确认位置
-
-**WHEN** 发生序列化成功、本地入队成功、gRPC 写成功、或发送尝试成功
-**THEN** checkpoint 不推进
-
-**WHEN** client 重启
-**THEN** 从 checkpoint 位置恢复发送
-
-### FR-009: gRPC Sender
-
-**功能描述**：将事件通过 gRPC 流发送至 server。
-
-**WHEN** spool 中有待发送事件
-**THEN** sender 流式发送 `IngestRequest` 到 `module/binance/server`
-
-**WHEN** 连接断开
-**THEN** sender 自动重连并恢复流
-
-**WHEN** 遇到背压
-**THEN** sender 减速发送，不丢弃事件
-
-**WHEN** 收到部分 ACK
-**THEN** 仅确认对应事件的 spool 状态和 checkpoint
-
-**WHEN** 收到 reject
-**THEN** 分类处理：可重试的 → `failed_retryable`，终端拒绝 → `failed_terminal`
-
-**WHEN** ACK 确认后
-**THEN** 按清理策略回收 spool 空间
+**THEN** 内存队列清空，从当前 Binance WS 连接重新采集；JetStream durable consumer 确保 server 侧无数据丢失
 
 ### FR-010: Admin Surface
 
@@ -247,37 +209,34 @@ client 完成发布即结束职责。持久化、幂等、存储、API 全部由
 **THEN** 返回调试信息（pprof 等）
 
 **WHEN** 访问 `/admin/*`
-**THEN** 提供本地管理操作：list enabled product lines、list active streams、pause/resume product-line collection、show spool stats、show checkpoint stats、trigger safe catalog reload
+**THEN** 提供本地管理操作：list enabled product lines、list active streams、pause/resume product-line collection、show natsx publisher stats（queue depth、puback latency）、trigger safe catalog reload
 
 **WHEN** admin 操作涉及修改
-**THEN** 不修改 server 状态、不删除 checkpoint（除非受保护的显式操作）、不暴露 secrets、不触发交易动作
+**THEN** 不修改 server 状态、不清理或伪造 JetStream PubAck / consumer state、不暴露 secrets、不触发交易动作
 
 ---
 
 ## 8. Business Rules
 
-### BR-001: Checkpoint 仅在 ACK 后推进
+### BR-001: natsx PubAck — 发布确认语义
 
-**约束**：checkpoint 不得在序列化成功、本地入队成功、gRPC 写成功、或发送尝试成功时推进。仅在收到 server 持久 ACK 后方可推进。
+**约束**：client 必须调用 `js.Publish()` 并同步等待 `PubAck` 返回，确认消息已持久化到 JetStream，才视为发布成功。
 
-**违反时**：若 checkpoint 在未确认 ACK 时推进，server 侧存在数据丢失风险——系统必须拒绝推进并记录 error 日志。
+**违反时**：若不等待 PubAck 直接返回，NATS 网络抖动时消息可能丢失，server 侧无法感知。
 
-### BR-002: Spool 状态转换规则
+### BR-002: natsx 发布状态机
 
-**约束**：spool 状态机仅允许以下转换：
+**约束**：publisher 内部状态机仅允许以下转换：
 
 ```text
-pending → sending
-pending → failed_terminal（事件无效，不进入发送）
-sending → acked
-sending → failed_retryable
-failed_retryable → sending（重试）
-failed_retryable → failed_terminal（超过最大重试次数）
+pending → publishing → pub_acked
+                     → pub_failed_retryable → pending（退避重试）
+                     → pub_failed_terminal（NATS 拒绝或超过最大重试次数）
 ```
 
-禁止 `acked → sending`、`failed_terminal → sending`、`pending → acked`（跳过发送阶段）。
+禁止 `pub_acked → publishing`（重复发布已确认事件）。
 
-**违反时**：非法状态转换被 spool 层拦截，返回错误并记录 event log，不写入 spool。
+**违反时**：状态转换被 publisher 层拦截，返回错误并记录日志，不重复发布。
 
 ### BR-003: Client 不能 import server internals
 
@@ -335,13 +294,15 @@ type CanonicalMapper interface {
 }
 ```
 
-### 9.4 Sender Interface
+### 9.4 Publisher Interface
 
 ```go
-// GrpcSender gRPC 发送器
-type GrpcSender interface {
-    // Send 发送事件流，返回每个事件的确认结果
-    Send(ctx context.Context, events <-chan SpooledEvent) (<-chan AckResult, error)
+// NATSPublisher natsx JetStream 发布器
+type NATSPublisher interface {
+    // Publish 发布事件到 JetStream，同步等待 PubAck
+    Publish(ctx context.Context, subject string, envelope *domain_market.MarketFactEnvelope) error
+    // Close 关闭 NATS 连接
+    Close() error
 }
 ```
 
@@ -395,42 +356,31 @@ type IdempotencyKeyer interface {
 | UpdateIDStart | `*int64` | ❌ | 更新 ID 起始（深度数据，如可用） |
 | UpdateIDEnd | `*int64` | ❌ | 更新 ID 结束（深度数据，如可用） |
 
-### 10.3 SpooledEvent
+### 10.3 PublishRecord（发布记录，内存态）
 
 | 字段 | 类型 | 必填 | 说明 |
 |------|------|------|------|
-| ID | `string` | ✅ | spool 内唯一 ID |
-| IdempotencyKey | `string` | ✅ | 幂等键 |
-| Payload | `[]byte` | ✅ | 序列化后的规范事件 |
-| State | `SpoolState` | ✅ | spool 状态 |
-| CreatedAt | `time.Time` | ✅ | 创建时间 |
+| Subject | `string` | ✅ | natsx subject，格式 `binance.market.{line}.{type}` |
+| IdempotencyKey | `string` | ✅ | 幂等键（放入 Envelope Header） |
+| Payload | `[]byte` | ✅ | JSON 序列化的 MarketFactEnvelope |
+| State | `PublishState` | ✅ | 发布状态 |
+| EnqueuedAt | `time.Time` | ✅ | 入队时间 |
 | RetryCount | `int` | ✅ | 重试次数 |
-| LastAttemptAt | `*time.Time` | ❌ | 最后尝试时间 |
-| AckedAt | `*time.Time` | ❌ | ACK 确认时间 |
+| PubAckedAt | `*time.Time` | ❌ | PubAck 时间 |
 
-### 10.4 SpoolState
+### 10.4 PublishState
 
 ```go
-type SpoolState string
+type PublishState string
 
 const (
-    SpoolPending        SpoolState = "pending"
-    SpoolSending        SpoolState = "sending"
-    SpoolAcked          SpoolState = "acked"
-    SpoolFailedRetryable SpoolState = "failed_retryable"
-    SpoolFailedTerminal SpoolState = "failed_terminal"
+    PublishPending        PublishState = "pending"
+    PublishInFlight       PublishState = "publishing"
+    PublishAcked          PublishState = "pub_acked"
+    PublishFailedRetry    PublishState = "pub_failed_retryable"
+    PublishFailedTerminal PublishState = "pub_failed_terminal"
 )
 ```
-
-### 10.5 Checkpoint
-
-| 字段 | 类型 | 必填 | 说明 |
-|------|------|------|------|
-| ProductLine | `string` | ✅ | 产品线 |
-| StreamID | `string` | ✅ | 流标识 |
-| LastAckedID | `string` | ✅ | 最后确认的 spool event ID |
-| LastAckedTime | `time.Time` | ✅ | 最后确认时间 |
-| LastEventTime | `time.Time` | ✅ | 最后事件时间 |
 
 ---
 
@@ -439,13 +389,11 @@ const (
 | 配置项 | 类型 | 默认值 | 说明 |
 |--------|------|--------|------|
 | `client.product_lines` | `[]string` | `["spot"]` | 启用的产品线列表 |
-| `client.spool_path` | `string` | `./spool/client.db` | SQLite spool 文件路径 |
-| `client.spool_max_size_mb` | `int` | `1024` | spool 文件最大大小（MB） |
-| `client.checkpoint_path` | `string` | `./spool/checkpoint.db` | checkpoint 文件路径 |
-| `client.grpc_server_addr` | `string` | `<loopback-host>:50051` | gRPC server 地址 |
-| `client.grpc_max_retry` | `int` | `10` | gRPC 最大重试次数 |
-| `client.grpc_retry_backoff_ms` | `int` | `1000` | gRPC 重试退避基数（ms） |
-| `client.max_retry_per_event` | `int` | `5` | 单事件最大重试次数 |
+| `natsx.url` | `string` | `nats://localhost:4222` | NATS JetStream 连接地址 |
+| `natsx.stream` | `string` | `BINANCE_MARKET` | JetStream Stream 名称 |
+| `natsx.publish_ack_timeout` | `duration` | `5s` | PubAck 等待超时 |
+| `natsx.max_publish_retry` | `int` | `5` | 最大发布重试次数 |
+| `natsx.backpressure_queue_size` | `int` | `10000` | 内存队列最大事件数 |
 | `client.admin_port` | `int` | `8081` | Gin admin 端口 |
 | `client.binance_api_key` | `string` | 从环境变量读取 | Binance API Key（敏感） |
 | `client.binance_secret_key` | `string` | 从环境变量读取 | Binance Secret Key（敏感） |
@@ -460,12 +408,11 @@ const (
 |------|----------|----------|--------|
 | `ErrInvalidSymbol` | parser 无法解析 symbol | 记录 warn 日志，跳过该事件 | `BNC-CLIENT-4001` |
 | `ErrProductLineDisabled` | 尝试操作未启用的产品线 | 返回错误，不启动 connector | `BNC-CLIENT-4002` |
-| `ErrSpoolFull` | spool 超过最大大小 | 拒绝写入，触发告警，不丢弃已有事件 | `BNC-CLIENT-4003` |
-| `ErrCheckpointStale` | checkpoint 数据损坏或不一致 | 记录 error 日志，从最新 spool 位置重建 | `BNC-CLIENT-4004` |
-| `ErrGrpcUnavailable` | gRPC server 不可达 | 指数退避重试，事件保留在 spool | `BNC-CLIENT-4005` |
-| `ErrRejectTerminal` | server 返回终端拒绝 | 事件标记 `failed_terminal`，记录 error 日志 | `BNC-CLIENT-4006` |
-| `ErrCatalogReloadFailed` | catalog 重载失败 | 保留当前 catalog，记录 error 日志 | `BNC-CLIENT-4007` |
-| `ErrIdentityCollision` | parser/mapper 检测到身份碰撞 | 拒绝事件，记录 error 日志 | `BNC-CLIENT-4008` |
+| `ErrNATSConnect` | 无法连接 natsx JetStream | 指数退避重连；内存队列暂存事件 | `BNC-CLIENT-4003` |
+| `ErrNATSPubAck` | PubAck 超时 | 重试发布；超过阈值触发告警 | `BNC-CLIENT-4004` |
+| `ErrNATSBackpressure` | 内存队列达到阈值 | 暂停采集，触发告警；等待队列消化 | `BNC-CLIENT-4005` |
+| `ErrCatalogReloadFailed` | catalog 重载失败 | 保留当前 catalog，记录 error 日志 | `BNC-CLIENT-4006` |
+| `ErrIdentityCollision` | parser/mapper 检测到身份碰撞 | 拒绝事件，记录 error 日志 | `BNC-CLIENT-4007` |
 
 **错误消息格式**：`"binance/client: <operation>: <detail>"`
 **错误包装**：使用 `%w` 保留底层错误链
@@ -478,14 +425,13 @@ const (
 | 场景 | 输入/状态 | 预期行为 |
 |------|-----------|----------|
 | 产品线身份碰撞 | `BTCUSDT` 同时出现在 Spot 和 USDⓈ-M | parser 结合 product_line 上下文产生不同 identity；mapper 验证无碰撞后才映射 |
-| 重连不丢事件 | connector WebSocket 断开 | connector 自动重连；重连期间产生的事件不丢失；spool 中未 acked 事件在重连后继续发送 |
-| spool 满策略 | spool 文件达到 `max_size_mb` | 拒绝新事件写入，触发 `ErrSpoolFull` 告警；已持久化事件不丢失；需人工扩容或清理 `acked` 事件 |
-| checkpoint 回退 | server 返回的 ACK 序列小于当前 checkpoint | 检查是否为重复 ACK；若 ACK 合法（server 侧 checkpoint 确实在此位置），记录 warn 并忽略；若 ACK 异常，记录 error 并保持当前 checkpoint |
+| 重连不丢事件 | connector WebSocket 断开 | connector 自动重连；重连期间产生的事件暂存内存队列；队列满触发背压告警 |
+| NATS 连接断开 | natsx 连接不可达 | publisher 退避重连；内存队列持续累积；重连后批量发布；重发由 server 幂等过滤 |
+| 内存队列满 | 队列达到 backpressure_queue_size | 触发 `ErrNATSBackpressure`，暂停采集；等待队列消化后恢复 |
 | 空 product_lines 配置 | `client.product_lines` 为空 | client 启动但不启动任何 connector，admin 可操作 |
-| 并发 spool 读写 | 多个 connector 同时写入 spool | SQLite WAL 模式保证并发安全；单 writer 串行写 |
-| gRPC 流中断 | sender 正在发送时流断开 | sender 重启流，从 checkpoint 位置恢复；server 通过幂等键去重 |
-| 最大重试耗尽 | 事件重试次数达到 `max_retry_per_event` | 事件转为 `failed_terminal`，记录 error 日志，触发告警 |
-| 进程崩溃 | 任意时刻 SIGKILL | 重启后从 checkpoint 恢复，spool 中 `pending`/`failed_retryable` 事件重新进入发送队列 |
+| 并发 connector 发布 | 多个 connector 同时写入内存队列 | channel-based 并发安全；单 goroutine drain 队列到 natsx |
+| NATS PubAck 超时 | Publish 等待超过 `publish_ack_timeout` | 重试发布；超过 `max_publish_retry` 后触发 `ErrNATSPubAck` 告警 |
+| 进程崩溃 | 任意时刻 SIGKILL | 内存队列未 PubAck 事件丢失；重启后从 WS 重新采集；server durable consumer 天然幂等 |
 | catalog 热重载时活跃连接 | admin 触发 catalog reload | 已启用且仍在 catalog 中的产品线连接不中断；新增产品线启动 connector；移除产品线优雅关闭 |
 
 ---
@@ -521,13 +467,10 @@ client/
 ├── idempotency/
 │   ├── keyer.go                 # 幂等键生成
 │   └── keyer_test.go
-├── spool/
-│   ├── spool.go                 # SQLite spool 实现
-│   ├── checkpoint.go            # checkpoint 管理
-│   └── spool_test.go
-├── sender/
-│   ├── sender.go                # gRPC sender
-│   └── sender_test.go
+├── publisher/
+│   ├── publisher.go             # natsx JetStream publisher
+│   ├── publisher_test.go
+│   └── retry.go                 # 退避重试策略
 ├── admin/
 │   ├── admin.go                 # Gin admin 端点
 │   └── admin_test.go
@@ -549,35 +492,38 @@ client/
 | 依赖 | 用途 | 来源 |
 |------|------|------|
 | stdlib | Go 标准库 | 标准库 |
-| `module/contracts` | gRPC wire contract（§8.4）：`MarketDataService` + `IngestRequest`/`IngestResult`/`IngestAck`/`IngestReject`/`RejectCode` DTO | FoundationX |
-| `module/domain_market` | 规范行情类型定义 | FoundationX L2.5 |
+| `module/domain_market` | 规范行情类型定义（MarketFactEnvelope） | FoundationX L2.5 |
 | `module/domain_exchange` | 交易所领域值对象 | FoundationX L2.5 |
 | `module/decimalx` | 高精度数值 | FoundationX L2.5 |
 | `module/configx` | 配置管理 | FoundationX L1 |
 | `module/observex` | 可观测性（metrics/tracing/logging） | FoundationX L1 |
+| `module/natsx` | JetStream 发布（Publish + PubAck） | FoundationX 基座 |
 | `github.com/gin-gonic/gin` | HTTP admin 框架 | 第三方 |
-| `github.com/mattn/go-sqlite3` | SQLite 驱动 | 第三方 |
-| `google.golang.org/grpc` | gRPC 客户端 | 第三方 |
 
 ### 15.2 禁止依赖
 
 | 禁止依赖 | 原因 |
 |----------|------|
 | `module/binance/server` | 违反 C/S 边界，client 不得引用 server 内部实现 |
-| `storage/query/strategy` | 超出 client 职责范围，client 仅做采集与投递 |
-| `module/market_data` | client 不直接对接 market_data，通过 server 中转 |
+| `module/contracts` / `google.golang.org/grpc` | v2.0.0 已删除 gRPC，通过 natsx 通信 |
+| `github.com/mattn/go-sqlite3` | v2.0.0 已删除本地 spool |
+| `storage/query/strategy` | 超出 client 职责范围，client 仅做采集与发布 |
+| `module/market_data` | client 不直接对接 market_data，通过 server REST API 中转 |
 | `module/factor_engine` 及所有分析域模块 | 跨域依赖 |
 | `module/risk_engine` 及所有决策域模块 | 跨域依赖 |
 
 ### 15.3 依赖方向
 
 ```text
-module/contracts → module/domain_market
-       ↑                  ↑
-       │                  │
-module/binance/client ─────┘
-       │
-       ↓ (gRPC, contracts-defined)
+module/domain_market ← module/natsx
+        ↑                    ↑
+        │                    │
+module/binance/client ────────┘
+        │
+        ↓ (natsx JetStream publish, subject: binance.market.*)
+NATS JetStream (BINANCE_MARKET stream)
+        │
+        ↓ (natsx JetStream consume)
 module/binance/server
 ```
 
@@ -599,22 +545,18 @@ module/binance/server
 | TC-008 | FR-005 | 单元 | 映射规范化事件到 domain_market 类型 | 输出 `*domain_market.MarketEvent` |
 | TC-009 | FR-006 | 单元 | 同一事件两次生成幂等键 | 两次 key 相同 |
 | TC-010 | FR-006 | 单元 | 不同 event type 使用不同 key 策略 | key 格式符合各 type 预期 |
-| TC-011 | FR-007 | 单元 | 写入 spool → 状态 pending | DB 中状态为 pending |
-| TC-012 | FR-007 | 单元 | 非法状态转换 | 返回错误 |
-| TC-013 | FR-008 | 单元 | 收到 ACK 后 checkpoint | checkpoint 推进到 ACK 位置 |
-| TC-014 | FR-008 | 单元 | 未 ACK 时 checkpoint 不变 | checkpoint 停留在原位 |
-| TC-015 | FR-009 | 集成 | sender 发送事件到 mock server | server 收到事件 |
-| TC-016 | FR-009 | 集成 | sender 重连 | 事件从 checkpoint 恢复，无重复 |
-| TC-017 | FR-010 | 单元 | `/healthz` 返回 200 | HTTP 200 |
-| TC-018 | FR-010 | 单元 | admin pause 产品线 | connector 停止产生新事件 |
+| TC-011 | FR-007 | 集成 | publisher 调用 `js.Publish`，NATS 返回 PubAck | 发布成功，状态 pub_acked |
+| TC-012 | FR-007 | 单元 | PubAck 超时后重试 | 重试 `max_publish_retry` 次后触发告警 |
+| TC-013 | FR-007 | 集成 | 内存队列满时暂停采集 | 触发 ErrNATSBackpressure，collector 暂停 |
+| TC-014 | FR-008 | 单元 | `/healthz` 返回 200 | HTTP 200 |
+| TC-015 | FR-008 | 单元 | admin pause 产品线 | connector 停止产生新事件 |
 
 ### 16.2 测试工具
 
 - 框架：`testing` + `testify`
-- Mock：`testkitx`（gRPC mock server）
+- Mock：natsx embedded test server（`nats-server -js`）
 - 覆盖率：`go tool cover`
 - 竞态：`go test -race`
-- SQLite：内存数据库（`:memory:`）
 
 ### 16.3 测试数据
 
@@ -634,12 +576,11 @@ module/binance/server
 | 事件规范化 | 延迟 P99 | < 1ms | `go test -bench` |
 | 事件映射 | 延迟 P99 | < 500μs | `go test -bench` |
 | 幂等键生成 | 延迟 P99 | < 100μs | `go test -bench` |
-| spool 写入 | 延迟 P99 | < 5ms | `go test -bench` |
-| spool ACK 更新 | 延迟 P99 | < 2ms | `go test -bench` |
-| gRPC 发送吞吐 | 吞吐 | > 1000 events/s | benchmark |
+| natsx PubAck（单事件） | 延迟 P99 | < 10ms | integration benchmark |
+| 内存队列 enqueue | 延迟 P99 | < 50μs | `go test -bench` |
 | admin `/healthz` | 延迟 P99 | < 1ms | benchmark |
 | 单 connector 采集 | 吞吐 | > 500 events/s | 集成 benchmark |
-| client 内存稳态 | 内存 | < 256MB | `go test -benchmem` long-running test |
+| client 内存稳态 | 内存 | < 128MB | `go test -benchmem` long-running test |
 
 ---
 
@@ -652,15 +593,13 @@ module/binance/server
 | `binance_client_raw_events_total` | counter | 原始事件接收总数（按 product_line） |
 | `binance_client_events_normalized_total` | counter | 事件规范化总数 |
 | `binance_client_events_mapped_total` | counter | 事件映射总数 |
-| `binance_client_events_spooled_total` | counter | 事件 spool 总数 |
-| `binance_client_events_sent_total` | counter | 事件发送总数 |
-| `binance_client_ack_lag_seconds` | gauge | ACK 延迟（秒） |
-| `binance_client_retry_count` | counter | 重试总次数 |
+| `binance_client_events_published_total` | counter | natsx 发布成功总数 |
+| `binance_client_puback_latency_seconds` | histogram | PubAck 延迟分布 |
+| `binance_client_publish_retry_total` | counter | 发布重试总次数 |
+| `binance_client_queue_depth` | gauge | 内存队列当前深度（按 product_line） |
 | `binance_client_stream_reconnects_total` | counter | 流重连总次数（按 product_line） |
 | `binance_client_connector_errors_total` | counter | connector 错误总数（按 product_line） |
 | `binance_client_throughput_events_per_second` | gauge | 每产品线吞吐量 |
-| `binance_client_spool_size_bytes` | gauge | spool 文件大小 |
-| `binance_client_checkpoint_position` | gauge | checkpoint 位置 |
 
 ### 18.2 Logging
 
@@ -670,18 +609,15 @@ module/binance/server
 | connector reconnecting | warn | product_line, stream_id, attempt |
 | event normalized | debug | product_line, raw_symbol |
 | event mapped | debug | product_line, instrument_key |
-| event spooled | debug | idempotency_key |
-| send attempt | debug | event_count |
-| ack received | debug | acked_count, checkpoint_position |
-| send failed retryable | warn | error, retry_count |
-| send failed terminal | error | error, idempotency_key |
-| checkpoint advanced | info | product_line, position |
-| spool full | error | current_size_mb, max_size_mb |
+| natsx publish success | debug | subject, idempotency_key |
+| natsx publish retry | warn | subject, attempt, error |
+| natsx publish failed terminal | error | subject, idempotency_key, error |
+| natsx backpressure triggered | error | queue_depth, threshold |
 | identity collision detected | error | raw_symbol, product_lines |
 
 ### 18.3 Structured Log Fields
 
-所有日志必须包含：product_line、stream_id。按级别可选包含：raw_symbol、instrument_key、idempotency_key、checkpoint_position。
+所有日志必须包含：product_line、stream_id。按级别可选包含：raw_symbol、instrument_key、idempotency_key、subject。
 
 ---
 
@@ -691,9 +627,8 @@ module/binance/server
 - 不在日志中记录 API Key、Secret Key、或签名原文
 - admin 端点不暴露 secrets
 - admin 变更操作（pause/resume）仅允许本地访问（绑定 loopback interface）
-- gRPC 通信使用 TLS（生产环境）
+- natsx 通信使用 TLS（`module/natsx` TLS policy 指导）
 - catalog reload 的输入必须校验，防止注入非法 product_line 配置
-- spool 文件权限设为 `0600`（仅 owner 可读写）
 
 ---
 
@@ -717,9 +652,9 @@ module/binance/server
 | Gate | 命令 | 通过条件 |
 |------|------|----------|
 | 边界检查（server） | `go list -deps ./... \| grep -q 'binance/server' && exit 1 \|\| exit 0` | 零匹配 |
-| 边界检查（storage） | `go list -deps ./... \| grep -qE 'storage/\|query/\|strategy/' && exit 1 \|\| exit 0` | 零匹配 |
-| Spool 状态机测试 | `go test -run TestSpoolStateMachine ./...` | 全部通过 |
-| Checkpoint 安全测试 | `go test -run TestCheckpointSafety ./...` | 全部通过 |
+| 边界检查（gRPC/spool） | `go list -deps ./... \| grep -qE 'google.golang.org/grpc\|go-sqlite3' && exit 1 \|\| exit 0` | 零匹配 |
+| natsx 发布幂等测试 | `go test -run TestPublisherIdempotency ./...` | 全部通过 |
+| 发布状态机测试 | `go test -run TestPublishStateMachine ./...` | 全部通过 |
 | 幂等键稳定性测试 | `go test -run TestIdempotencyKeyStability ./...` | 全部通过 |
 
 ---
@@ -729,9 +664,8 @@ module/binance/server
 | 变更类型 | 兼容性 | 迁移方式 |
 |----------|--------|----------|
 | 新增产品线 connector | 向后兼容 | 更新配置启用即可 |
-| spool schema 变更 | Breaking | 提供迁移脚本，旧 spool 事件需重放或丢弃（以 checkpoint 为界） |
-| gRPC wire contract 变更（contracts §8.4 侧） | Breaking（如有字段删除/重命名） | 同步更新 contracts 版本，client 适配新 DTO |
-| checkpoint 格式变更 | Breaking | 提供 checkpoint 迁移工具；若不可迁移，清空 checkpoint 从当前 spool 位置重建 |
+| natsx subject 格式变更 | Breaking | 协调 client/server 版本升级，蓝绿部署 |
+| natsx stream 名称变更 | Breaking | durable consumer name 版本化，消费端同步升级 |
 | admin 端点路径变更 | Breaking | 更新监控和运维脚本 |
 | 配置项新增 | 向后兼容 | 新配置有默认值，无需手动迁移 |
 | 配置项删除/重命名 | Breaking | 提供迁移说明，旧配置项在过渡期标记 deprecated |
@@ -744,12 +678,11 @@ module/binance/server
 - [ ] parser 区分 Spot/USDⓈ-M/COIN-M/Options 身份
 - [ ] 4 个 connector 均可产生规范化事件
 - [ ] mapper 使用 domain_market 类型输出规范事件
-- [ ] 事件在发送前已 spool
-- [ ] checkpoint 仅在 server ACK 后推进
-- [ ] gRPC sender 重连时与 server 幂等配合无重复投递
-- [ ] client admin 仅操作本地状态
+- [ ] natsx publisher 同步等待 PubAck 后才视为发布成功
+- [ ] 内存队列背压机制生效，队列满时暂停采集
 - [ ] client 不 import server internals（CI 边界检查通过）
-- [ ] client 不 import storage/query/strategy
+- [ ] client 不 import gRPC / sqlite3（CI 边界检查通过）
+- [ ] client admin 仅操作本地状态
 - [ ] 所有 FR 实现完成
 - [ ] 所有 TC 编写并全部通过
 - [ ] 覆盖率 ≥ 80%
@@ -766,13 +699,13 @@ module/binance/server
 
 | ID | 问题 | 状态 | 负责人 |
 |----|------|------|--------|
-| OQ-001 | proto 定义是否已在 contracts 中确定？gRPC 流定义（`IngestRequest` 格式）需要 contracts 侧确认 | 已解决：`module/contracts/SPEC.md` §8.4 已定义全部 wire types（2026-06-17） | ZoneCNH |
+| OQ-001 | `natsx` subject 与 payload schema 是否冻结？ | 已解决：以 root SPEC §9 `domain_market.MarketFactEnvelope` JSON + `binance.market.*` subjects 为准 | ZoneCNH |
 
 ### Non-blocking（不阻塞开发）
 
 | ID | 问题 | 状态 | 负责人 |
 |----|------|------|--------|
-| OQ-002 | spool 清理策略：acked 事件是定时清理还是按大小阈值？ | 已解决：双重策略 — 时间 TTL 7 天为主，1GB 大小上限为辅（2026-06-17） | ZoneCNH |
+| OQ-002 | 是否保留本地 spool/checkpoint？ | 已解决：不保留；PubAck + JetStream persistence 作为 publish delivery 证据，server durable consumer state 作为消费进度 | ZoneCNH |
 | OQ-003 | connector 是否需要支持 Binance 多 endpoint 负载均衡？ | 已解决：v1 默认单 endpoint；多 endpoint 轮询/故障切换作为 v1.1 增强；通过配置 `endpoints[]` 启用（2026-06-17） | - |
 | OQ-004 | admin 是否需要认证（即使仅绑定 loopback interface）？ | 已解决：v1 默认 loopback-only 无需认证；生产环境通过反向代理（nginx/Caddy）添加认证；v1.1 可考虑内置 API key（2026-06-17） | - |
 
@@ -781,5 +714,5 @@ module/binance/server
 | ID | 问题 | 状态 | 负责人 |
 |----|------|------|--------|
 | OQ-005 | 是否需要支持 Binance WebSocket 多路复用（组合流）以减少连接数？ | 待评估 | - |
-| OQ-006 | 是否需要支持 compressed payload 传输以降低 gRPC 带宽？ | 待评估 | - |
+| OQ-006 | 是否需要支持 compressed payload 传输以降低 `natsx` / JetStream 带宽？ | 待评估 | - |
 | OQ-007 | 是否需要支持 client 横向扩展（多实例分片采集不同产品线）？ | 待评估 | - |

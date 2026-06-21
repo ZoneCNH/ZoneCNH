@@ -15,16 +15,16 @@ module/binance/server
 
 It does not define the canonical market domain itself. Canonical semantics are owned by `module/domain_market`.
 
-It does not define the wire protocol itself. Wire contracts are owned by `module/contracts`.
+It does not define transport-neutral wire/domain contracts itself. Runtime transport is `natsx`; canonical payload semantics are owned by `module/domain_market`.
 
-It does not own downstream storage, query, or generic fanout. Those are owned by `module/market_data` and downstream modules.
+It owns Binance-specific persistence, query API, and fanout needed to serve accepted Binance facts. It does not own generic cross-exchange market_data semantics or strategy behavior.
 
 ## Submodules
 
 | Submodule | Role |
 |---|---|
-| `module/binance/client` | Connects to Binance, parses exchange-native data, maps to canonical events, spools, checkpoints, sends over gRPC |
-| `module/binance/server` | Implements Binance ingest server, validates events, performs idempotent acceptance, ACKs, dispatches downstream |
+| `module/binance/client` | Connects to Binance, parses exchange-native data, maps to `domain_market` envelopes, publishes through `natsx` JetStream |
+| `module/binance/server` | Consumes `natsx` JetStream events, validates and deduplicates facts, persists Binance data, exposes Gin REST APIs, and fans out through `kafkax` |
 
 ## Removed Legacy Module
 

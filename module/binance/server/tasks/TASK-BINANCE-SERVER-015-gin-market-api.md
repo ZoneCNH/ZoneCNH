@@ -28,14 +28,14 @@ internal/server/api/
 ## REST API 端点
 
 ```
-GET  /v1/market/ticks           查询最新 tick（最近 N 条或时间范围）
-GET  /v1/market/ticks/{symbol}  查询指定 symbol 最新 tick
-GET  /v1/market/klines          查询 K 线
-GET  /v1/market/depth/{symbol}  查询当前深度快照（来自 redisx 缓存）
-GET  /v1/health                 健康检查（taosx/redis/postgres 连通性）
+GET  /api/v1/market/ticks           查询最新 tick（最近 N 条或时间范围）
+GET  /api/v1/market/ticks/{symbol}  查询指定 symbol 最新 tick
+GET  /api/v1/market/bars            查询 K 线 / bar
+GET  /api/v1/market/depth/{symbol}  查询当前深度快照（来自 redisx 缓存）
+GET  /readyz                        健康检查（taosx/redis/postgres 连通性）
 ```
 
-### 请求参数（GET /v1/market/ticks）
+### 请求参数（GET /api/v1/market/ticks）
 
 | 参数 | 类型 | 说明 |
 |------|------|------|
@@ -75,30 +75,31 @@ type Server struct {
 }
 
 func (s *Server) RegisterRoutes() {
-    v1 := s.engine.Group("/v1")
+    v1 := s.engine.Group("/api/v1")
     v1.Use(middleware.APIKey(s.cfg.APIKeys))
     v1.Use(middleware.RateLimit(s.cache, 1000))  // 1000 req/min per key
     {
         v1.GET("/market/ticks",          s.queryTicks)
         v1.GET("/market/ticks/:symbol",  s.latestTick)
-        v1.GET("/market/klines",         s.queryKlines)
+            v1.GET("/market/bars",           s.queryBars)
         v1.GET("/market/depth/:symbol",  s.depthSnapshot)
-        v1.GET("/health",                s.health)
     }
+
+    s.engine.GET("/readyz", s.health)
 }
 ```
 
 ## Functional Requirements
 
-**FR-API-001**: `GET /v1/market/ticks` 从 taosx 查询，支持 symbol + time range + limit 过滤。
+**FR-API-001**: `GET /api/v1/market/ticks` 从 taosx 查询，支持 symbol + time range + limit 过滤。
 
-**FR-API-002**: `GET /v1/market/depth/:symbol` 从 redisx 读取最新深度快照（key: `binance:depth:{symbol}`），延迟 ≤1ms。
+**FR-API-002**: `GET /api/v1/market/depth/:symbol` 从 redisx 读取最新深度快照（key: `binance:depth:{symbol}`），延迟 ≤1ms。
 
 **FR-API-003**: API key 认证中间件从 `configx` 读取允许的 key 列表，无效 key 返回 401。
 
 **FR-API-004**: redisx 令牌桶限流，超限返回 429 + Retry-After header。
 
-**FR-API-005**: `/health` 返回 taosx + redisx + postgresx 三个组件的连通性状态，任一失败返回 503。
+**FR-API-005**: `/readyz` 返回 taosx + redisx + postgresx 三个组件的连通性状态，任一失败返回 503。
 
 **FR-API-006**: 所有响应统一 JSON 格式，错误使用 `{"error": "message", "code": "SYMBOL_NOT_FOUND"}` 结构。
 
@@ -106,11 +107,11 @@ func (s *Server) RegisterRoutes() {
 
 | AC | 验证方式 |
 |----|---------|
-| /v1/market/ticks 返回 taosx 数据 | httptest + mock taosx，验证响应 JSON |
-| /v1/market/depth 从 redisx 读 | mock redisx，验证 key 包含 symbol |
+| /api/v1/market/ticks 返回 taosx 数据 | httptest + mock taosx，验证响应 JSON |
+| /api/v1/market/depth 从 redisx 读 | mock redisx，验证 key 包含 symbol |
 | 无效 API key → 401 | httptest 验证状态码 |
 | 超限 → 429 + Retry-After | mock 令牌桶耗尽，验证响应头 |
-| /health 连通性失败 → 503 | mock taosx 断连，验证 503 |
+| /readyz 连通性失败 → 503 | mock taosx 断连，验证 503 |
 
 ## Dependencies
 

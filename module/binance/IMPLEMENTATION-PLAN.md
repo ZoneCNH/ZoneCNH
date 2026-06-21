@@ -172,7 +172,7 @@ github.com/ZoneCNH/binance/
         archiver/      ← ossx 冷存储归档
       dispatch/        ← kafkax 下游广播
       cache/           ← redisx 深度快照缓存
-      api/             ← Gin REST /v1/market/*
+      api/             ← Gin REST /api/v1/market/*
       admin/           ← HTTP 管理端点
 ```
 
@@ -205,7 +205,7 @@ v2.0.0 完成条件：
 - [ ] server redisx 幂等：重投消息不重复写入 taosx
 - [ ] server taosx：WriteBatch 吞吐 ≥ 10万 TPS
 - [ ] server kafkax：处理成功后广播到下游 topic
-- [ ] server Gin API：GET /v1/market/ticks 返回 taosx 数据；GET /v1/market/depth 返回 redisx 快照
+- [ ] server Gin API：GET /api/v1/market/ticks 返回 taosx 数据；GET /api/v1/market/depth 返回 redisx 快照
 - [ ] server ossx：归档后 taosx 数据正确删除（先写冷再删热）
 - [ ] market_data 通过 HTTP 调用 Gin API 获取数据（不直连 binance 存储）
 - [ ] 无 `binance-market` active 引用

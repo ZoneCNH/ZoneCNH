@@ -26,7 +26,7 @@ Endpoints:
 ## Acceptance Criteria
 
 - `/healthz` reports process liveness.
-- `/readyz` verifies client config, spool availability, and sender readiness.
+- `/readyz` verifies client config, connector readiness, and `natsx` publisher connectivity.
 - `/debug/*` is read-only.
 - `/admin/*` mutates client-local state only.
 - no endpoint exposes API keys, secrets, signatures, or private config.
@@ -35,4 +35,4 @@ Endpoints:
 ## Dependencies
 
 - transport/admin policy
-- CLIENT-009 spool/checkpoint
+- CLIENT-014 `natsx` publisher

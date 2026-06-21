@@ -1,10 +1,11 @@
 # module/binance/client IMPLEMENTATION PLAN
 
-## Phase 1: Contract and Domain Integration
+## Phase 1: Domain and Publish Boundary
 
-- consume generated contracts
 - consume `domain_market` semantic types
+- consume `natsx` publisher APIs
 - define mapping adapters without owning canonical semantics
+- keep pre-v2 contracts/gRPC/spool tasks archived only
 
 ## Phase 2: Catalog and Parser
 
@@ -22,23 +23,18 @@
 
 ## Phase 4: Mapping
 
-- map normalized events to canonical market envelopes
+- map normalized events to `domain_market.MarketFactEnvelope`
 - generate idempotency keys
 - add fixtures for each product line
 
-## Phase 5: Spool and Checkpoint
+## Phase 5: `natsx` Publisher
 
-- implement SQLite spool
-- implement checkpoint store
-- enforce ACK-based checkpoint advancement
+- implement JetStream publisher
+- select configured subject/stream
+- treat JetStream PubAck as publish evidence
+- classify retryable publish failures and terminal serialization/schema failures
 
-## Phase 6: gRPC Sender
-
-- implement streaming sender
-- handle ACK/reject
-- retry/reconnect from spool
-
-## Phase 7: Admin and Observability
+## Phase 6: Admin and Observability
 
 - implement `/healthz`
 - implement `/readyz`
@@ -46,12 +42,12 @@
 - implement safe `/admin/*`
 - add metrics/logging/tracing dimensions
 
-## Phase 8: Tests and Gates
+## Phase 7: Tests and Gates
 
 - connector tests
 - parser tests
 - mapper tests
-- spool tests
-- checkpoint tests
-- contract tests
+- publisher tests
+- PubAck/retry tests
+- envelope compatibility tests
 - boundary gates
