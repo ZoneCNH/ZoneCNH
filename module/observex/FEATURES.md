@@ -1,8 +1,8 @@
 # observex 完整实现清单
 
 - Status: Generated from current module SSOT
-- Last-Updated: 2026-06-18
-- Module-Version: v0.3.3
+- Last-Updated: 2026-06-21
+- Module-Version: v0.3.4
 - Module-State: 已发布
 - Layer: L0 观测
 - Runtime-Repo: /home/observex

@@ -20,6 +20,8 @@
 
 在创建任何 worktree 或 feature branch 之前，必须执行以下前置检查：
 
+本仓库的真实 worktree 路径模板为 `/home/{module}/.worktree/workspaces/<branch-name>`；下面示例仅保留相对路径写法 `.worktree/workspaces/<name>`，便于在不同模块仓库复用。
+
 ```bash
 # 1. 确保本地 main 为最新
 git checkout main
@@ -29,7 +31,7 @@ git rebase origin/main
 # 2. 从最新 main 创建分支
 git checkout -b <branch-name>
 # 或通过 worktree
-git worktree add .worktree/<name> -b <branch-name> main
+git worktree add .worktree/workspaces/<name> -b <branch-name> main
 ```
 
 **当不在 main worktree 时**（已在其他 worktree 中，无法 `git checkout main`）：
@@ -40,7 +42,7 @@ git fetch origin
 git branch -f main origin/main
 
 # 从最新 main 创建 worktree
-git worktree add .worktree/<name> -b <branch-name> main
+git worktree add .worktree/workspaces/<name> -b <branch-name> main
 ```
 
 ### 分支来源验证
@@ -61,7 +63,7 @@ git log --oneline main..HEAD | tail -1
 | ------------------------------- | ------------------------------------------------------------------------------ |
 | `git rebase origin/main` 冲突   | 解决冲突后 `git rebase --continue`；无法解决则 `git rebase --abort` 并人工介入 |
 | main 有未推送的本地提交         | 先 `git push` 确保远程 main 为最新，再 rebase                                  |
-| worktree 创建失败（路径已存在） | 清理旧 worktree：`git worktree remove .worktree/<name>`，或使用不同名称        |
+| worktree 创建失败（路径已存在） | 清理旧 worktree：`git worktree remove .worktree/workspaces/<name>`，或使用不同名称        |
 
 ### 禁止行为
 

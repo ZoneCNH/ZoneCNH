@@ -55,7 +55,9 @@ L0 kernel（stdlib-only）
 
 #### 问题 A1：contracts 尚未 Approved（严重）
 
-`contracts`（跨域稳定端口、事件协议、DTO 契约）是整个业务链路的依赖枢纽，但当前 `Status: Docs`，未进入 Approved。
+`contracts`（跨域稳定端口、事件协议、DTO 契约）是整个业务链路的依赖枢纽，但当前 `Status: Docs Baseline Approved / Runtime Pending`，未进入 Approved。
+
+其中 P1 / P2 的兼容投影名已通过 contracts type alias 补齐，当前未闭合的是 Approved 门禁、AC / TC 收口和运行时验证，不是命名缺口。
 
 **影响链**：
 ```
@@ -95,7 +97,7 @@ contracts 未冻结
 
 #### 问题 A5：x.go 说明入口仍有历史叙述残留（低）
 
-`x.go` 的职责本身已经收口为治理 CLI / 组合根装配入口；当前未完成的是少数归档文档与分析报告中的入口叙述统一，而不是架构职责未定义。
+`x.go` 的职责口径已在部分正文中回写为治理 CLI / 组合根装配入口，但顶部架构图、分层索引、原则文档、基础层文档与分析报告仍混用旧叙述；当前未完成的是全链路统一，而不是职责定义本身。
 
 ---
 
@@ -209,8 +211,8 @@ Prompt（S5）和 Evidence（S6）几乎为零，表明四源评分体系的后�
 
 ### 5.1.1 当前收口结果
 
-- 已完成：`#4` 固定 L2.5 命名基准与迁移表；`#8` 清理 L2.5 遗留 kebab 引用，并回写统一命名 / 对齐同步文档。
-- 仍待完成：`#1`-`#3`、`#5`-`#7`、`#9`-`#12`。
+- 已完成：`#4` 固定 L2.5 命名基准与迁移表；`#8` 清理 L2.5 遗留 kebab 引用，并回写统一命名 / 对齐同步文档；`contracts` P1 / P2 兼容投影别名（`RegimeSnapshotEvent` / `RegimeCardEvent` / `DecisionCardEvent` / `MarketRegimePort` / `MacroRegimePort` / `RegimeEnginePort`）已在 contracts 仓库以 type alias 方式补齐；`README.md` 与 `ARCHITECTURE.md` 的正文说明已开始回写到治理 CLI / composer 口径，但顶层架构图仍有历史残留。
+- 仍待完成：`#1`-`#3`、`#5`-`#7`、`#9`-`#12`；其中 `#7` 还未全链路完成，当前仍需统一 `README.md`、`ARCHITECTURE.md`、`docs/architecture/README.md`、`docs/architecture/01-overview.md`、`02-domain-layers.md`、`03-boundaries.md`、`04-principles.md`、`05-foundation.md` 的 `x.go / bootstrap / composer` 口径。
 
 ### 5.2 P0 — 基线解锁（1-2 周）
 
@@ -227,7 +229,7 @@ Prompt（S5）和 Evidence（S6）几乎为零，表明四源评分体系的后�
 |---|---|---|---|---|
 | 5 | 从 `regime_engine`、`signal_factory` 等核心链路开始拆分分析域 / 决策域 / 执行域 tasks | A2、S4 | 21 个核心模块的任务树 | 三个业务域全部进入可执行状态 |
 | 6 | 按 AC → TC → tasks 顺序补齐测试与执行制品 | S2、S4、G2 | TC、tasks、prompt 的串联补丁 | 不再出现“有任务无验收” |
-| 7 | 统一 `sre/docs/x.go/` 与 `ARCHITECTURE.md` 的 `x.go` 说明入口 | A5 | 单一入口说明与引用更新 | 不再存在双入口叙述冲突 |
+| 7 | 统一 `sre/docs/x.go/` 与 `ARCHITECTURE.md` 的 `x.go` 说明入口 | A5 | 单一入口说明与引用更新 | `README.md` / `ARCHITECTURE.md` 的正文说明已部分对齐，但顶层架构图与 `docs/architecture/README.md`、`01-overview.md`、`02-domain-layers.md`、`03-boundaries.md`、`04-principles.md`、`05-foundation.md` 仍需回写 |
 | 8 | ✅ 已完成：清理 L2.5 遗留 kebab 引用，并回写统一命名 / 对齐同步文档（`docs/report/repo-naming-unification-20260620.md`） | A3、A4 | 引用替换、迁移记录、对齐说明 | 目录、仓库、SPEC 引用分层归位，历史路径投影不再混写 |
 
 ### 5.4 P2 — 质量收敛（持续）
@@ -247,6 +249,7 @@ Prompt（S5）和 Evidence（S6）几乎为零，表明四源评分体系的后�
 - 分析域、决策域、执行域均形成可执行 tasks。
 - 数据域补齐 tasks，避免继续停留在低覆盖状态。
 - L2.5 目标命名基准已统一为 `snake_case`，历史路径投影在同步文档中显式隔离，不再与主分析报告混写。
+- `x.go` 的主文档口径已开始改为治理 CLI / composer 组合根分工，但顶层架构图与 `docs/architecture/README.md`、`01-overview.md`、`02-domain-layers.md`、`03-boundaries.md`、`04-principles.md`、`05-foundation.md` 仍需补齐同步。
 - S5 / S6 不再长期停留在个位数覆盖。
 - 关键 ADR 已补录，`live_integration` 继续按里程碑推进。
 
