@@ -149,18 +149,19 @@
 
 ### 数据域 · 宏观
 
-| 组件                                                  | 版本 | 进度     | 覆盖率要求 | 说明           |
-| ----------------------------------------------------- | ---- | -------- | ---------- | -------------- |
-| [fred](https://github.com/ZoneCNH/fred)               | v0.1.1 | ███░ 80% | 100%       | 美联储 FRED    |
-| [treasury](https://github.com/ZoneCNH/treasury)       | v0.1.1 | ███░ 80% | 100%       | 美国财政部     |
-| [yield_curve](https://github.com/ZoneCNH/yield_curve) | v0.1.1 | ███░ 80% | 100%       | 收益率曲线     |
-| [bea](https://github.com/ZoneCNH/bea)                 | v0.1.1 | ███░ 80% | 100%       | 美国经济分析局 |
-| [ecb](https://github.com/ZoneCNH/ecb)                 | v0.1.1 | ███░ 80% | 100%       | 欧洲央行       |
-| [uk_cb](https://github.com/ZoneCNH/uk_cb)             | v0.1.1 | ███░ 80% | 100%       | 英国央行       |
-| [japan_cb](https://github.com/ZoneCNH/japan_cb)       | v0.1.1 | ███░ 80% | 100%       | 日本央行       |
-| [eastmoney](https://github.com/ZoneCNH/eastmoney)     | v0.1.1 | ███░ 80% | 100%       | 东方财富 A 股  |
-| [jin10](https://github.com/ZoneCNH/jin10)             | v0.2.0 | ███░ 80% | 100%       | 金十数据 SDK：openapi（宏观数据）+ flash（实时快讯） |
-| [yahoo](https://github.com/ZoneCNH/yahoo)             | v0.1.1 | ███░ 80% | 100%       | Yahoo Finance  |
+| 组件                                                  | 架构类型 | 版本 | 进度     | 覆盖率要求 | 说明           |
+| ----------------------------------------------------- | -------- | ---- | -------- | ---------- | -------------- |
+| [macro_data](https://github.com/ZoneCNH/macro_data)   | 独立进程 | v1.0.0 | ██░░ 30% | 100%       | dispatch 聚合（域入口）：Receiver + DualWriteSink |
+| [fred](https://github.com/ZoneCNH/fred)               | C/S Module | v0.1.1 | ███░ 80% | 100%       | 美联储 FRED 宏观数据采集 |
+| [treasury](https://github.com/ZoneCNH/treasury)       | C/S Module | v0.1.1 | ███░ 80% | 100%       | 美国财政部     |
+| [yield_curve](https://github.com/ZoneCNH/yield_curve) | C/S Module | v0.1.1 | ███░ 80% | 100%       | 收益率曲线     |
+| [bea](https://github.com/ZoneCNH/bea)                 | C/S Module | v0.1.1 | ███░ 80% | 100%       | 美国经济分析局 |
+| [ecb](https://github.com/ZoneCNH/ecb)                 | C/S Module | v0.1.1 | ███░ 80% | 100%       | 欧洲央行       |
+| [uk_cb](https://github.com/ZoneCNH/uk_cb)             | C/S Module | v0.1.1 | ███░ 80% | 100%       | 英国央行       |
+| [japan_cb](https://github.com/ZoneCNH/japan_cb)       | C/S Module | v0.1.1 | ███░ 80% | 100%       | 日本央行       |
+| [eastmoney](https://github.com/ZoneCNH/eastmoney)     | C/S Module | v0.1.1 | ███░ 80% | 100%       | 东方财富 A 股  |
+| [jin10](https://github.com/ZoneCNH/jin10)             | C/S Module | v0.2.0 | ███░ 80% | 100%       | 金十数据 SDK：openapi（宏观数据）+ flash（实时快讯） |
+| [yahoo](https://github.com/ZoneCNH/yahoo)             | C/S Module | v0.1.1 | ███░ 80% | 100%       | Yahoo Finance  |
 
 <details>
 <summary>📊 数据域 · 宏观多维成熟度展开（点击展开）</summary>
