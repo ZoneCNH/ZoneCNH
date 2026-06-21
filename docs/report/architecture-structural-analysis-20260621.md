@@ -91,7 +91,7 @@ contracts 未冻结
 
 规范文档与实际目录不一致，会导致脚本扫描、路径引用、CI 检查出现歧义。
 
-#### 问题 A4：L2.5 域共享层命名已完成显示层对齐，但历史投影仍需收口（中）
+#### 问题 A4：L2.5 域共享层命名已完成显示层对齐，历史投影已完成收口（中）
 
 `domain-market`（kebab）对应仓库 `domain_market`（snake），`domain-macro` 对应 `domain_macro`，`domain-exchange` 对应 `domain_exchange`——目录命名、仓库命名、SPEC 内部引用曾长期并存。当前 `module/README.md` 已切到 `snake_case` 显示层，剩余工作不再是重新定义命名，而是把旧路径投影限制在同步文档与历史引用清单中，不再扩散到主分析报告。
 
@@ -234,7 +234,7 @@ Prompt（S5）和 Evidence（S6）几乎为零，表明四源评分体系的后�
 | 7 | ✅ 已完成：统一 `README.md` 与 `ARCHITECTURE.md` 的 `x.go` 说明入口 | A5 | 单一入口说明与引用更新 | `README.md` / `ARCHITECTURE.md` / `docs/architecture/README.md` / `01-overview.md` / `02-domain-layers.md` / `03-boundaries.md` / `04-principles.md` / `05-foundation.md` 的入口口径已统一；后续新增文档需沿用 `x.go`(治理 CLI) / `composer`(运行时组合根) 的分工 |
 | 8 | ✅ 已完成：清理 L2.5 遗留 kebab 引用，并回写统一命名 / 对齐同步文档（`docs/report/repo-naming-unification-20260620.md`） | A3、A4 | 引用替换、迁移记录、对齐说明 | 目录、仓库、SPEC 引用分层归位，历史路径投影不再混写 |
 
-### 5.4 P2 — 质量收敛（持续）
+### 5.4 P2 — 质量收敛（已闭环）
 
 | # | 行动 | 对应问题 | 主要产出 | 完成标准 |
 |---|---|---|---|---|
