@@ -1,7 +1,7 @@
 # contracts 验收清单
 
 - Status: Docs Baseline Synced / Acceptance Closed
-- Last-Updated: 2026-06-21
+- Last-Updated: 2026-06-22
 - Layer: 基座 · 跨域接口契约
 - Source-of-Truth: `/home/contracts/pkg/contracts`
 - Related: `SPEC.md`, `README.md`, `goal.md`, `TRACEABILITY.md`, `FEATURES.md`, `IMPLEMENTATION-PLAN.md`, `tasks/`
@@ -42,8 +42,8 @@
 | BR-003 | 不再使用旧 API 名称与旧版本标记 | TC-005 | 已同步 |
 | BR-004 | 依赖边界受 `module/FOUNDATION-DEPS.yaml` 约束 | TC-008 | 已同步 |
 | BR-005 | DTO 需要明确导出字段与 JSON tag 约定 | TC-001 | 已同步 |
-| BR-006 | `AllRejectCodes()` 只返回 9 个 canonical code | TC-003 | 已同步 |
-| BR-007 | `RejectUnsupportedChannel` 导出但不进入 canonical 列表 | TC-003 | 已同步 |
+| BR-006 | `AllRejectCodes()` 只返回 10 个 canonical code | TC-003 | 已同步 |
+| BR-007 | `RejectUnsupportedChannel` 导出且属于 canonical 列表 | TC-003 | 已同步 |
 | BR-008 | 兼容别名只承担迁移，不承载新语义 | TC-004 | 已同步 |
 | BR-009 | 文档必须保持同一组事实源 | TC-005 | 已同步 |
 | BR-010 | 公开 rename/removal 先修兼容层与追溯文档 | TC-004、TC-005 | 已同步 |
@@ -57,7 +57,7 @@
 | NFR-003 | 静态检查干净 | `go vet ./...` | 已同步 |
 | NFR-004 | 文档更新可审计 | `git diff --check`、旧术语扫描 | 已同步 |
 | NFR-005 | 公开符号保留可读 godoc | `contracts.go`、`ports.go`、`ingestion.go`、`projections.go` 注释 | 已同步 |
-| NFR-006 | canonical reject-code 集合稳定为 9 项 | TC-003 | 已同步 |
+| NFR-006 | canonical reject-code 集合稳定为 10 项 | TC-003 | 已同步 |
 | NFR-007 | 不把 transport 实现写成契约本体 | TC-008 | 已同步 |
 | NFR-008 | 不回流旧叙事 | TC-005 | 已同步 |
 
@@ -67,5 +67,5 @@
 - `git diff --check` 无格式问题。
 - `/home/contracts` 的 `go test ./...`、`go test ./... -race -count=1`、`go vet ./...` 已完成并归档证据。
 - `README.md`、`goal.md`、`TRACEABILITY.md`、`FEATURES.md`、`IMPLEMENTATION-PLAN.md` 与 `SPEC.md` 同源。
-- `RejectUnsupportedChannel` 仍为导出常量，但不进入 `AllRejectCodes()`。
+- `RejectUnsupportedChannel` 仍为导出常量，并进入 `AllRejectCodes()`。
 - 公开符号的新增、删除或重命名必须先更新 `SPEC.md` 再更新本文档。

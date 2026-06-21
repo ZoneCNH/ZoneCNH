@@ -22,7 +22,7 @@
 
 - 该包只定义契约，不实现 HTTP/gRPC/Kafka/NATS。
 - 当前 ingestion 形态是单请求/单结果 `Ingest`，不是双向流。
-- `AllRejectCodes()` 返回 9 个 canonical code；`RejectUnsupportedChannel` 仍是导出常量，但不在 canonical 列表中。
+- `AllRejectCodes()` 返回 10 个 canonical code；`RejectUnsupportedChannel` 也属于 canonical 列表。
 - 任何新增字段或方法都必须同步更新 `SPEC.md`、`TRACEABILITY.md`、`ACCEPTANCE.md` 和任务文档。
 
 ## 关联模块
