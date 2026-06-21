@@ -108,3 +108,64 @@ docs/governance/improvements/20260609-auto-delivery-hook/SPEC.md
 ```
 
 合入主线前仍需完成项目要求的元级管线评审与授权。
+
+---
+
+## S-7 反向工作流议题（2026-06-22 新增）
+
+### 问题陈述
+
+近 30 天 1266 commits（日均 42）集中在 "preserve evidence" / "保存已验证变更" / "avoid 传播未经验证断言" 等语义，反映**文档追代码**的反向工作流：大量精力消耗在文档同步而非实现推进。
+
+### 根因分析（来自 docs/report/architecture-structural-analysis-20260622.md §7.2）
+
+**投影层与事实层未分离**：
+
+- **投影层**：`ARCHITECTURE.md` / `STATUS.md` / `README.md` 中的版本号、进度百分比、组件计数（全手工）
+- **事实层**：`.foundationx/status/index.json`（机器生成，仅覆盖 21 个 Foundation 模块）
+
+每次实现变更需手工同步多处投影，churn 高。业务域模块（分析/决策/执行域，47 个）完全无机器事实源，仍全部手工维护。
+
+### 修复路径（分阶段）
+
+| 阶段 | 范围 | 工具 | 状态 |
+| --- | --- | --- | --- |
+| Phase 1 | Foundation 21 模块 fact→projection 只读 diff | `scripts/projection-sync.py`（雏形） | ✅ 2026-06-22 |
+| Phase 2 | 建立业务域事实层（factor_engine/signal_factory 等 32 模块） | 待规划：扩展 `.foundationx/status/index.json` schema 或独立 `.foundationx/business/index.json` | ⏳ |
+| Phase 3 | 投影自动写入 STATUS 手工块（auto-patch） | 升级 projection-sync.py 支持 `--apply` 模式 | ⏳ |
+| Phase 4 | README/ARCHITECTURE 全部纳入投影范围 | 进一步分离手工块与机器块 | ⏳ |
+
+### 当前可消费工具
+
+```text
+python3 scripts/projection-sync.py            # 报告 + exit code（0=一致 / 1=漂移）
+python3 scripts/projection-sync.py --json     # 机器可读 JSON
+```
+
+报告示例字段：
+
+```text
+foundation_factory_grade: 20/21 (machine fact)
+foundation_open_blockers: 0
+dashboard.total: 73 (manual; PENDING_FACT_SOURCE 因业务域无事实层)
+```
+
+### 与 audit-status.py 的关系
+
+- **`audit-status.py`**：横向一致性检查（STATUS 内部跨字段、跨表数字是否自洽，目前 51/51 PASS）
+- **`projection-sync.py`**：纵向投影↔事实对齐检查（手工数字 vs 机器事实是否漂移）
+
+两者并行运行，互不替代：
+
+```text
+python3 scripts/audit-status.py        # 自洽性
+python3 scripts/projection-sync.py     # 真实性
+```
+
+### 计量目标
+
+| 指标 | 当前 | Phase 4 目标 |
+| --- | --- | --- |
+| 手工同步 commit 占比（近 30 天） | 估约 60% | < 20% |
+| Foundation 数字漂移检测延迟 | 手工（不定） | CI 自动（< 5 min） |
+| 业务域数字事实源覆盖 | 0% | 100% |
