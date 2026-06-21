@@ -47,10 +47,10 @@ L2.5: domainx / decimalx / domain_market / domain_macro / domain_exchange (5/5 �
       ▼
 业务流: 数据域 → 分析域 ↔ 决策域 → 执行域
 数据域: market_data (14) / macro_data (11) / alternative_data
-分析域: factor_engine / feature_store / factor_eval / market_regime / macro_regime / regime_engine / ms_brain / flowx
-       三引擎: market_engine(market facts → S state) / macro_engine(macro facts → M state) / regime_engine(M+S → action/risk/permission)
-决策域: signal_factory / ~~backtest_engine~~ / optimizer / backtestx / strategyx / maestro
-执行域: ~~risk_engine~~ / ~~order_engine~~ / ~~portfolio_engine~~ / settlement ; riskx / orderx / positionx
+分析域: factor_engine / feature_store / factor_eval / market_regime / macro_regime / regime_engine / ms_brain / flowx（活跃交易链路口径统一为 riskx / orderx / positionx / backtestx）
+       三引擎: market_engine(market facts → S state) / macro_engine(macro facts → M state) / regime_engine(M+S → action/risk/permission)（历史投影名；详见 contracts 映射）
+决策域: signal_factory / ~~backtest_engine~~ / optimizer / backtestx / strategyx / maestro（对应活跃链路 backtestx）
+执行域: ~~risk_engine~~ / ~~order_engine~~ / ~~portfolio_engine~~ / settlement ; riskx / orderx / positionx（对应活跃链路 riskx / orderx / positionx）
 
 反馈: backtest → factor_eval；fills / PnL / exposure events → 决策域
 横切: alertx (告警) / observex (可观测)

@@ -18,7 +18,7 @@
 | [04-principles.md](./04-principles.md) | 14 条核心设计原则、进度校准标准（5%→100% 定义） |
 | [05-foundation.md](./05-foundation.md) | Foundation 规格投影、第一阶段闭环、依赖矩阵、状态总览、建议实现顺序 |
 | [06-dataflow.md](./06-dataflow.md) | 全景数据流：数据域 → L2.5 → 分析域 → 决策域 → 执行域 ASCII 全图 |
-| [07-three-engines.md](./07-three-engines.md) | 三引擎详细规格：market_engine(S) / macro_engine(M) / regime_engine(DecisionCard) |
+| [07-three-engines.md](./07-three-engines.md) | 三引擎详细规格：market_engine(S) / macro_engine(M) / regime_engine(DecisionCard)（历史投影名；活跃口径见 README / 08-contracts） |
 | [08-contracts.md](./08-contracts.md) | 契约固化清单（P0/P1/P2）、三引擎实现路径 |
 | [adr/](./adr/) | 架构决策记录（ADR）索引 |
 
@@ -37,6 +37,7 @@ x.go（治理/工具 CLI）→ composer（Composition Root）→ 基座(L0/L1) �
 market_data → market_engine → S State ─┐
 macro_data  → macro_engine  → M State  ├─► regime_engine → DecisionCard
 ```
+> 注：上图保留 market_engine / macro_engine / regime_engine 历史投影名；活跃交易链路口径见 README 与 contracts。
 → 详见 [06-dataflow.md](./06-dataflow.md) · [07-three-engines.md](./07-three-engines.md)
 
 ### Foundation 状态
