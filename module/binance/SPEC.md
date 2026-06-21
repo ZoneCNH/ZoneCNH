@@ -9,7 +9,7 @@
 - Layer: 数据域 · 行情
 - Version: v0.1.0
 - Repository: [github.com/ZoneCNH/binance](https://github.com/ZoneCNH/binance)
-- Related: [CONSTITUTION.md](../../CONSTITUTION.md), [ARCHITECTURE.md](../../ARCHITECTURE.md), `module/domain_market`, `module/contracts`, `module/market_data`, `module/transportx`
+- Related: [CONSTITUTION.md](../../CONSTITUTION.md), [ARCHITECTURE.md](../../ARCHITECTURE.md), `module/domain_market`, `module/natsx`, `module/redisx`, `module/taosx`, `module/kafkax`, `module/ossx`, `module/postgresx`
 
 > 子模块规格：`module/binance/client/SPEC.md`、`module/binance/server/SPEC.md`
 
@@ -131,31 +131,34 @@ Binance 行情集成面临以下问题：
 **WHEN** parser 解析 Options 合约
 **THEN** identity 包含 expiry、strike、option_type 三个维度
 
-### FR-003: gRPC Ingestion
+### FR-003: natsx Communication
 
-**功能描述**：client 和 server 之间通过 contracts-defined `MarketDataService` gRPC 通信。
+**功能描述**：client 和 server 通过 natsx JetStream **网络**通信，禁止共享进程或内存，可在不同机器独立部署。
 
 **WHEN** client 有 canonical event 待发送
-**THEN** 通过 `MarketDataService.Ingest` bidirectional stream 发送 `IngestRequest`
+**THEN** 调用 `js.Publish("binance.market.{product_line}.{event_type}", jsonPayload)` 并等待 JetStream PubAck
 
-**WHEN** server 收到有效 `IngestRequest`
-**THEN** 验证、去重后返回 `IngestAck`，包含 stream_id、accepted key、durable acceptance indicator
+**WHEN** JetStream PubAck 返回成功
+**THEN** 消息已持久化到 NATS Stream（`BINANCE_MARKET`，Retention=7d），client 可继续下一条
 
-**WHEN** server 收到无效 `IngestRequest`
-**THEN** 返回 `IngestReject`，含 machine-readable reject reason
+**WHEN** JetStream 不可达或超时
+**THEN** `Publish` 返回 error，调用方指数退避重试；不丢弃消息
+
+**WHEN** server natsx consumer 收到消息（durable=`binance-server`）
+**THEN** 反序列化 `MarketFactEnvelope`，进入 validation → idempotency → storage pipeline
 
 ### FR-004: At-Least-Once Delivery
 
-**功能描述**：client 提供 at-least-once 交付语义。
+**功能描述**：通过 JetStream durable consumer + ManualAck 保证 at-least-once 交付。无需本地 spool 或 checkpoint。
 
-**WHEN** client 规范化并映射一个 event 为 canonical envelope
-**THEN** 先将 event 持久化到本地 spool，状态为 `pending`
+**WHEN** server 处理消息成功（redisx + taosx + kafkax 全部写入）
+**THEN** 调用 `msg.Ack()`，consumer 推进消费位点
 
-**WHEN** server 返回 durable ACK 确认接受
-**THEN** client 将 spool 状态更新为 `acked` 并推进 checkpoint
+**WHEN** server 处理消息失败（任一写入报错）
+**THEN** 调用 `msg.NakWithDelay(5s)`，JetStream 重投；达到 MaxDeliver(5) 后进入死信
 
-**WHEN** gRPC 写成功但 server 未确认 durable acceptance
-**THEN** client 不得推进 checkpoint
+**WHEN** server 进程重启
+**THEN** durable consumer 从上次 Ack 位置自动恢复，无需外部 checkpoint 管理
 
 ### FR-005: Idempotent Acceptance
 
@@ -218,7 +221,7 @@ Binance 行情集成面临以下问题：
 **约束**：
 - `module/binance/client` → 禁止 import `module/binance/server/*`
 - Runtime: `internal/client` 与 `cmd/binance-client` → 禁止 import `internal/server/*`
-- 允许：client → `module/contracts` 生成的 gRPC client、`module/domain_market` 语义类型、shared config/observability
+- 允许：client → `module/natsx`（JetStream publisher）、`module/domain_market` 语义类型、shared config/observability
 
 **违反时**：CI boundary gate（`BOUNDARY-GATES.md` §3）失败。
 
@@ -229,18 +232,18 @@ Binance 行情集成面临以下问题：
 **约束**：
 - `module/binance/server` → 禁止 import `module/binance/client/*`
 - Runtime: `internal/server` 与 `cmd/binance-server` → 禁止 import `internal/client/*`
-- 特别禁止：server → spot/usdm/coinm/options connector、client spool、client checkpoint
-- 允许：server → `module/contracts` 生成的 gRPC server、`module/domain_market` 语义类型、`module/market_data` downstream port、shared config/observability
+- 特别禁止：server → spot/usdm/coinm/options connector、`internal/cs` 包
+- 允许：server → `module/domain_market` 语义类型、`module/natsx`、`module/redisx`、`module/taosx`、shared config/observability
 
 **违反时**：CI boundary gate（`BOUNDARY-GATES.md` §4）失败。
 
-### BR-004: Checkpoint Requires ACK
+### BR-004: natsx ManualAck — 全链路写入后才 Ack
 
-**规则**：client checkpoint 仅可在 server 返回 durable ACK 后推进。
+**规则**：server consumer 必须在 redisx + taosx + kafkax 全部写入成功后才调用 `msg.Ack()`。
 
-**约束**：禁止在 serialization 成功、local enqueue 成功、gRPC write 成功或 send attempt 成功后推进 checkpoint。
+**约束**：禁止在 validation 完成、idempotency 检查后、任何单一存储写入成功后提前 Ack。
 
-**违反时**：spool 状态机拒绝 transition；重启后 checkpoint 回退到上一个 durable ACK 位置。
+**违反时**：处理中断会导致 JetStream 重投，redisx SetNX 幂等检查防止重复写入 taosx。
 
 ### BR-005: No Domain Ownership
 
@@ -262,7 +265,7 @@ Binance 行情集成面临以下问题：
 
 **规则**：`module/binance` 不得定义自己的 proto 文件或 wire schema。
 
-**约束**：proto 定义和 gRPC code generation 由 `module/contracts` 拥有。禁止 `module/binance/proto/*` 和独立 canonical wire enum 定义。
+**约束**：wire schema（JSON envelope）由 `module/domain_market` 的 `MarketFactEnvelope` 定义。禁止 `module/binance/proto/*` 和独立 canonical wire enum 定义。natsx subject 命名规范见 §9。
 
 **违反时**：CI gate 失败。
 
@@ -278,7 +281,7 @@ Binance 行情集成面临以下问题：
 
 **规则**：client admin 仅可变更 client-local state，server admin 仅可变更 server-local state。
 
-**约束**：禁止 client admin 变更 server state、server admin 变更 client connector state、admin 变更 downstream storage/strategy state、未经显式保护操作删除 checkpoint。
+**约束**：禁止 client admin 变更 server state、server admin 变更 client connector state、admin 变更 downstream storage/strategy state。
 
 **违反时**：操作被拒绝并返回错误。
 
@@ -286,35 +289,39 @@ Binance 行情集成面临以下问题：
 
 ## 9. Interface Contract
 
-### MarketDataService (defined by module/contracts)
+### natsx JetStream Interface (v2.0.0)
 
 ```go
 // MarketDataService receives normalized upstream market_data ingestion requests.
-// Defined in module/contracts/SPEC.md §8.4 (v1.2.0-spec).
-// Implemented by module/binance/server.
-// Called by module/binance/client.
-//
-// THIS INTERFACE IS OWNED BY module/contracts — reproduced here for spec clarity only.
-type MarketDataService interface {
-	// Ingest accepts a bidirectional stream of IngestRequest and returns per-request outcomes.
-	// Each IngestRequest returns exactly one IngestResult (Ack or Reject).
-	Ingest(stream IngestRequest) (stream IngestResult, error)
+// natsx JetStream subject 格式（v2.0.0，替代 gRPC MarketDataService）
+// Subject: binance.market.{product_line}.{event_type}
+// Stream:  BINANCE_MARKET (Retention=7d, Storage=file)
+// Client:  js.Publish(subj, json) → PubAck（同步等待）
+// Server:  js.Subscribe("binance.market.>", handler, Durable("binance-server"), ManualAck())
+
+// Wire payload: domain_market.MarketFactEnvelope（JSON）
+type MarketFactEnvelope struct {
+	ProductLine  ProductLine   `json:"product_line"`
+	EventType    EventType     `json:"event_type"`
+	Symbol       string        `json:"symbol"`
+	ExchangeTime time.Time     `json:"exchange_time"`
+	ServerTime   time.Time     `json:"server_time"`
+	// ... 其他字段见 module/domain_market/SPEC.md §10
 }
 ```
 
-**Wire DTOs** (全部由 `module/contracts` §8.4 拥有)：
+**subject 规范**：
 
-| DTO | 字段/值 | 说明 |
-|-----|---------|------|
-| `IngestRequest` | 10 required + 2 optional（request_id, source, product_line, instrument_key, event_type, event_time, received_at, schema_version, payload, source_metadata；+ sequence, ordering_key 可选） | adapter 提交的归一化事件 |
-| `IngestResult` | `Ack *IngestAck` 或 `Reject *IngestReject`（exactly one non-nil） | 逐请求的终端结果 |
-| `IngestAck` | request_id, instrument_key, accepted_at, durable | 确认事件已接收 |
-| `IngestReject` | request_id, reject_code, reason, details | 拒绝原因与上下文 |
-| `RejectCode` | 10 码枚举：retryable / terminal_validation / terminal_conflict / unauthorized / rate_limited / server_unavailable / contract_violation / quality_rejected / ordering_violation / unsupported_channel | 供 adapter retry policy 决策 |
+| Subject | 说明 |
+|---------|------|
+| `binance.market.spot.tick` | 现货成交 |
+| `binance.market.spot.depth` | 现货深度 |
+| `binance.market.futures_usdt.tick` | U 本位合约成交 |
+| `binance.market.futures_usdt.depth` | U 本位合约深度 |
+| `binance.market.kline.1m` | 1 分钟 K 线 |
 
-- Client 发送 `IngestRequest`，携带 canonical market fact envelope + idempotency key + source metadata
-- Server 对每个 `IngestRequest` 返回一个 `IngestResult`，exactly one of Ack or Reject is non-nil
-- RejectCode 10 码覆盖 binance §10 全部 6 种 native 分类 + 4 种 market_data 门禁分类
+- Client 调用 `js.Publish(subj, jsonPayload)`，等待 PubAck 后返回（确保持久化）
+- Server durable consumer 订阅 `binance.market.>`，ManualAck，处理完整链路后 Ack
 
 ### Downstream Dispatch Port
 
@@ -355,12 +362,19 @@ Minimum dimensions for collision-free identity across Binance product lines:
 | strike | — | — | — | ✅ |
 | option_type | — | — | — | ✅ |
 
-### Spool State Machine
+### natsx Publish State Machine
 
 ```text
-pending → sending → acked
-                  → failed_retryable → pending (retry)
-                  → failed_terminal
+pending → publishing → pub_acked
+                     → pub_failed_retryable → pending (retry with backoff)
+                     → pub_failed_terminal
+```
+
+### natsx Consumer Processing State
+
+```text
+received → validating → idempotency_check → storing → acked
+                                                     → nak_retry (ManualNak, redelivered by JetStream)
 ```
 
 ### Reject Classification
@@ -385,10 +399,11 @@ server_unavailable
 | `binance.product_lines` | `[]string` | `[]` | 启用的产品线：spot/um_perp/cm_perp/options（canonical domain_market ProductLine 值） |
 | `binance.symbols.allow` | `[]string` | `[]` | 白名单 symbol（空=全部） |
 | `binance.symbols.deny` | `[]string` | `[]` | 黑名单 symbol |
-| `grpc.target` | `string` | `<loopback-host>:9090` | server gRPC 地址 |
-| `spool.path` | `string` | `./spool` | SQLite spool 文件路径 |
-| `spool.max_size_mb` | `int` | `1024` | spool 最大大小 (MB) |
-| `checkpoint.path` | `string` | `./checkpoint` | checkpoint 文件路径 |
+| `natsx.nats_url` | `string` | `nats://localhost:4222` | NATS JetStream 连接地址 |
+| `natsx.stream` | `string` | `BINANCE_MARKET` | JetStream Stream 名称 |
+| `natsx.durable` | `string` | `binance-server` | server durable consumer 名称（server 配置） |
+| `natsx.ack_wait` | `duration` | `30s` | ManualAck 超时（server 配置） |
+| `natsx.max_deliver` | `int` | `5` | 最大重投次数（server 配置） |
 | `retry.max_attempts` | `int` | `5` | 最大重试次数 |
 | `retry.backoff_initial` | `duration` | `1s` | 初始退避时间 |
 | `retry.backoff_max` | `duration` | `60s` | 最大退避时间 |
@@ -404,9 +419,9 @@ server_unavailable
 |------|----------|----------|--------|
 | `ErrProductLineDisabled` | 配置未启用的 product line 被请求 | 记录日志，跳过该 product line | `BNC-001` |
 | `ErrInvalidSymbol` | parser 无法解析 Binance symbol | 结构化错误返回，记录原始 symbol | `BNC-002` |
-| `ErrSpoolFull` | spool 超过 max_size | 阻塞接收，触发告警 | `BNC-003` |
-| `ErrCheckpointStale` | checkpoint 落后超过阈值 | 触发告警，暂停新事件采集 | `BNC-004` |
-| `ErrGRPCConnect` | 无法连接 server gRPC | 指数退避重试，spool 继续累积 | `BNC-005` |
+| `ErrNATSConnect` | 无法连接 natsx JetStream | 指数退避重试；client 积压在内存队列（有界） | `BNC-003` |
+| `ErrNATSPubAck` | JetStream PubAck 超时 | 重试发布；超过阈值触发告警 | `BNC-004` |
+| `ErrNATSConsumer` | durable consumer 订阅失败 | 进程重启自动恢复；告警 | `BNC-005` |
 | `ErrDuplicateConflict` | server 收到同一 key 但 payload 不同的 event | terminal reject，记录冲突详情 | `BNC-006` |
 | `ErrValidation` | server 收到缺少必需字段的 event | terminal reject，含 machine-readable reason | `BNC-007` |
 | `ErrDispatchFailed` | downstream dispatch 失败 | 重试（指数退避），超过阈值告警 | `BNC-008` |
@@ -418,10 +433,10 @@ server_unavailable
 | 场景 | 输入/状态 | 预期行为 |
 |------|-----------|----------|
 | 产品线身份碰撞 | Spot `BTCUSDT` 和 USDⓈ-M `BTCUSDT` 同时采集 | parser 产生不同 `InstrumentKey`，product_line 维度区分 |
-| Client 进程重启 | spool 中有 `pending`/`sending` 事件 | 从 checkpoint 位置恢复发送，duplicate 由 server idempotency 消解 |
-| gRPC stream 断连 | server 不可达或网络中断 | client 退避重连，spool 状态保持 `sending`，checkpoint 不推进 |
-| Server 已接受后崩溃 | durable acceptance 完成但 ACK 未发给 client | client 重发同一 key，server 返回 idempotent ACK |
-| Spool 写满 | spool 达到 max_size_mb | 阻塞新事件接收，触发 `ErrSpoolFull` 告警 |
+| Client 进程重启 | natsx client 重连 | JetStream PubAck 语义保证，重发消息由 server redisx SetNX 幂等过滤 |
+| natsx stream 断连 | server consumer 不可达 | JetStream 重投（NakWithDelay），consumer 重连后自动恢复 |
+| Server 崩溃后重启 | consumer 进度未 Ack | durable consumer 从上次 Ack 位置恢复，redisx SetNX 防重复写入 |
+| natsx 积压 | stream 积压超过 retention 窗口 | 告警；消息在 7d Retention 内不丢失；超时消息进入死信 |
 | Idempotency key 冲突 | 同一 key 但不同 payload 到达 server | server 返回 `terminal_conflict` reject |
 | 无效 symbol | parser 收到未知 format 的 symbol | 返回结构化 `ErrInvalidSymbol`，不产生 canonical event |
 | 产品线禁用 | 配置中 product line 未启用 | connector 不订阅该 product line 的 stream |
@@ -468,7 +483,7 @@ github.com/ZoneCNH/binance/
     binance-client/main.go
     binance-server/main.go
   internal/
-    client/     # app/config/catalog/parser/spot/um_perp/cm_perp/options/normalize/mapper/idempotency/spool/checkpoint/sender/admin/observability
+    client/     # app/config/catalog/parser/spot/um_perp/cm_perp/options/normalize/mapper/idempotency/publisher/admin/observability
     server/     # app/config/ingest/validation/idempotency/ack/dispatch/admin/observability
   pkg/
     config/
@@ -489,9 +504,13 @@ github.com/ZoneCNH/binance/
 | 依赖 | 用途 | 消费方 |
 |------|------|--------|
 | `module/domain_market` | canonical 语义类型（InstrumentKey/ProductLine/MarketFactEnvelope 等） | client mapper, server validation |
-| `module/contracts` | proto/gRPC wire contract（MarketDataService/IngestRequest/IngestAck） | client sender, server ingest |
-| `module/market_data` | downstream exchange-neutral dispatch port | server dispatch |
-| `module/transportx` | gRPC 流策略、retry/backoff 约定、Gin admin 约定 | client, server |
+| `module/natsx` | JetStream publish/subscribe（分布式消息通道） | client publisher, server consumer |
+| `module/redisx` | SetNX 幂等去重、server-side cache | server idempotency |
+| `module/postgresx` | 品种目录元数据持久化 | server catalog |
+| `module/taosx` | 时序行情数据存储 | server storage |
+| `module/kafkax` | 下游事件分发 | server dispatch |
+| `module/ossx` | 归档 / cold-tier snapshot | server archiver |
+| `gin-gonic/gin` | REST API（`/v1/market/*`），供 market_data 拉取 | server API |
 
 ### Forbidden Dependencies
 
@@ -514,8 +533,8 @@ github.com/ZoneCNH/binance/
 | TC-001 | FR-001 | 集成 | 启用 Spot product line，连接 Binance testnet | connector 产生标有 ProductLine=Spot 的 normalized events |
 | TC-002 | FR-002 | 单元 | parser 输入 Spot `BTCUSDT` 和 USDⓈ-M `BTCUSDT` | 两个不同的 InstrumentKey |
 | TC-003 | FR-002 | 单元 | parser 输入 COIN-M `BTCUSD` | InstrumentKey 含 settlement_asset |
-| TC-004 | FR-003 | 契约 | client 发送 IngestRequest → mock server | server 收到有效请求 |
-| TC-005 | FR-004 | 集成 | 发送 event 后 kill client 进程，重启 | spool 中的 event 从 checkpoint 位置恢复 |
+| TC-004 | FR-003 | 集成 | client 调用 `js.Publish(subj, payload)` | natsx 返回 PubAck，消息持久化到 JetStream stream |
+| TC-005 | FR-004 | 集成 | 发送 event 后 kill client 进程，重启 | JetStream durable consumer 从上次 Ack 位置恢复；redisx SetNX 防重复写入 |
 | TC-006 | FR-005 | 集成 | 发送同一 idempotency key 两次 | server 返回 idempotent ACK，downstream 仅 dispatch 一次 |
 | TC-007 | FR-005 | 集成 | 发送同一 key 但不同 payload | server 返回 terminal_conflict reject |
 | TC-008 | FR-006 | 单元 | GET /healthz | 返回 200 |
@@ -524,7 +543,7 @@ github.com/ZoneCNH/binance/
 ### Test Tools
 
 - 框架：`testing` + `testify`
-- Mock：gRPC mock server（contract tests）
+- Mock：natsx embedded test server（`nats-server -js`），redisx mock
 - 覆盖率：`go test -cover`
 - 竞态：`go test -race`
 
@@ -536,8 +555,8 @@ github.com/ZoneCNH/binance/
 |------|------|------|----------|
 | Client event normalization | 延迟 P99 | < 1ms | `go test -bench` |
 | Canonical mapping | 延迟 P99 | < 100μs | `go test -bench` |
-| Spool write | 延迟 P99 | < 5ms | `go test -bench` |
-| gRPC send (单 event) | 延迟 P99 | < 10ms | integration test |
+| natsx PubAck (单 event) | 延迟 P99 | < 10ms | integration test |
+| Server consumer process (validate→store) | 延迟 P99 | < 50ms | integration test |
 | Server validation | 延迟 P99 | < 100μs | `go test -bench` |
 | Server idempotency check | 延迟 P99 | < 1ms | `go test -bench` |
 | ACK lag (server receive → ACK send) | P99 | < 100ms | integration test |
@@ -554,8 +573,8 @@ github.com/ZoneCNH/binance/
 | `binance_client_raw_events_total` | counter | 收到的原始事件数（per product_line） |
 | `binance_client_events_normalized_total` | counter | 规范化后的事件数 |
 | `binance_client_events_mapped_total` | counter | 映射为 canonical 的事件数 |
-| `binance_client_events_spooled_total` | counter | spool 写入的事件数 |
-| `binance_client_events_sent_total` | counter | gRPC 发送成功的事件数 |
+| `binance_client_events_published_total` | counter | natsx JetStream 发布成功的事件数 |
+| `binance_client_puback_latency_seconds` | histogram | PubAck 延迟 |
 | `binance_client_ack_lag_seconds` | histogram | ACK 延迟（send → ACK receive） |
 | `binance_client_retry_total` | counter | 重试次数 |
 | `binance_client_stream_reconnects_total` | counter | stream 重连次数 |
@@ -574,8 +593,8 @@ github.com/ZoneCNH/binance/
 | Event rejected | warn | stream_id, reject_reason, idempotency_key |
 | Duplicate detected | debug | stream_id, idempotency_key |
 | Dispatch failed | error | stream_id, instrument_key, error |
-| Checkpoint advanced | debug | checkpoint_position, stream_id |
-| Spool near capacity | warn | spool_usage_percent |
+| natsx stream reconnect | info | stream_id, subject |
+| natsx consumer redelivery | warn | subject, deliver_count |
 
 ### Tracing
 
@@ -583,8 +602,8 @@ github.com/ZoneCNH/binance/
 |---------|------|
 | `binance.client.normalize` | 原始事件规范化 |
 | `binance.client.map` | 映射为 canonical event |
-| `binance.client.spool_write` | spool 写入 |
-| `binance.client.grpc_send` | gRPC 发送 |
+| `binance.client.publish` | natsx JetStream 发布 |
+| `binance.client.puback_wait` | 等待 PubAck |
 | `binance.server.validate` | server 端验证 |
 | `binance.server.idempotency_check` | 幂等性检查 |
 | `binance.server.dispatch` | downstream dispatch |
@@ -598,7 +617,7 @@ github.com/ZoneCNH/binance/
 - `/debug/*` 和 `/admin/*` 端点不得暴露 secrets、API keys、签名或私有配置
 - Admin 端点在暴露于非本地可信网络时必须使用认证
 - 日志中禁止记录 API key、secret、signature、完整 payload（仅记录 metadata）
-- Client/server gRPC 通信建议使用 mTLS（由 `module/transportx` TLS policy 指导）
+- Client/server 间 natsx 通信使用 TLS（`module/natsx` TLS policy 指导）
 - 输入校验：所有收到的 exchange-native payload 在进入 parser 前验证基本结构
 - Idempotency store 不暴露外部查询接口
 
@@ -627,7 +646,7 @@ github.com/ZoneCNH/binance/
 | Contracts only | `BOUNDARY-GATES.md` §6 gate script | 零 local proto 文件 |
 | Domain-market source | `BOUNDARY-GATES.md` §7 gate script | 零独立 canonical enum 定义 |
 | Admin boundary | `BOUNDARY-GATES.md` §8 gate script | 零跨模块 admin mutation |
-| Checkpoint requires ACK | `BOUNDARY-GATES.md` §9 gate script | 零 send-only checkpoint advance |
+| natsx ManualAck 全链路 | `BOUNDARY-GATES.md` §9 gate script | 零 partial-write Ack |
 
 ---
 
@@ -636,9 +655,9 @@ github.com/ZoneCNH/binance/
 | 变更类型 | 兼容性 | 迁移方式 |
 |----------|--------|----------|
 | 新增 product line | 向后兼容 | 添加 connector + parser rule + catalog entry |
-| `IngestRequest` 或 `IngestAck` proto 变更 | 取决于 contracts 兼容策略 | 升级 contracts 版本，regenerate client/server |
+| `MarketFactEnvelope` JSON schema 变更 | 取决于 domain_market 兼容策略 | 升级 domain_market 版本，更新 client mapper 和 server consumer |
 | Canonical domain type 变更 | 取决于 domain_market 兼容策略 | 更新 mapper，regenerate 测试 fixtures |
-| Spool schema 变更 | 可能需要 migration | 提供 spool migration 工具或清空重建 |
+| natsx stream schema 变更 | 需协调 client/server 升级 | 蓝绿部署；consumer durable name 版本化 |
 | Admin endpoint 新增 | 向后兼容 | 无迁移需求 |
 | 移除 `binance-market` references | Breaking（新模块无此 legacy） | `docs/migrations/remove-binance-market.md` |
 
@@ -653,7 +672,7 @@ github.com/ZoneCNH/binance/
 - [ ] root/client/server TRACEABILITY.md 完成，所有需求可追溯
 - [ ] client/server task sets 独立可执行
 - [ ] Delivery semantics 明确为 at-least-once + idempotent acceptance（FR-004, FR-005）
-- [ ] ACK/checkpoint semantics 已定义且 testable（BR-004）
+- [ ] natsx JetStream ManualAck 全链路语义已定义且 testable（BR-004）
 - [ ] ProductLine 和 InstrumentKey 碰撞 case 已文档化（FR-002, §10 Data Model）
 - [ ] Boundary gates 可在 CI 执行（FR-007, BOUNDARY-GATES.md）
 - [ ] Runtime mapping 未将 storage/query/strategy ownership 放在 Binance 内（BR-006）
@@ -750,29 +769,30 @@ Binance Exchange (REST/WebSocket)
     │  Idempotency Key  │
     │  Generator        │
     ├──────────────────┤
-    │  SQLite Spool     │
-    ├──────────────────┤
-    │  Checkpoint       │
-    ├──────────────────┤
-    │  gRPC Sender      │ ◄── module/contracts
+    │  natsx Publisher  │ ◄── module/natsx (JetStream)
     └────────┬─────────┘
-             │  MarketDataService.Ingest (bidirectional stream)
+             │  binance.market.{product_line}.{event_type}  (JetStream BINANCE_MARKET)
              ▼
     ┌──────────────────┐
-    │  gRPC Ingest      │ ◄── module/contracts
-    │  Server            │
+    │  natsx Consumer   │ ◄── module/natsx durable=binance-server, ManualAck
+    │  (Server)         │
     ├──────────────────┤
-    │  Validation        │
+    │  Validation       │
     ├──────────────────┤
-    │  Idempotent        │
-    │  Acceptance        │
+    │  redisx SetNX     │ ◄── module/redisx (idempotency)
+    │  Idempotency      │
     ├──────────────────┤
-    │  ACK / Reject      │
+    │  taosx Storage    │ ◄── module/taosx (time-series)
     ├──────────────────┤
-    │  Downstream        │
-    │  Dispatch          │ ◄── module/market_data downstream port
+    │  postgresx        │ ◄── module/postgresx (catalog)
+    ├──────────────────┤
+    │  kafkax Dispatch  │ ◄── module/kafkax (downstream fanout)
+    ├──────────────────┤
+    │  msg.Ack()        │  ← 全部写入成功后才 Ack
+    ├──────────────────┤
+    │  Gin REST API     │ ◄── gin-gonic/gin  /v1/market/*
     └────────┬─────────┘
-             │
+             │  HTTP (market_data 主动拉取)
              ▼
     ┌──────────────────┐
     │  module/          │
@@ -791,13 +811,13 @@ Binance Exchange (REST/WebSocket)
 
 | # | Gate | 验证 | 状态 |
 |---|------|------|:----:|
-| G0-1 | `module/contracts` §8.4 `MarketDataService` + `IngestRequest`(10 required + 2 optional)/`IngestResult`/`IngestAck`/`IngestReject` + `RejectCode`(10码) | contracts SPEC v1.2.0 | ✅ |
+| G0-1 | `module/natsx` JetStream stream `BINANCE_MARKET` + subject pattern `binance.market.{product_line}.{event_type}` + durable consumer 规范 | natsx SPEC + v2.0.0 RUNTIME-MAPPING.md | ✅ |
 | G0-2 | `module/domain_market` `ProductLine`(4值)/`InstrumentKey`(12维)/`MarketFactEnvelope` canonical 类型 | domain_market SPEC v1.0.1 §10 | ✅ |
 | G0-3 | `module/market_data` DownstreamDispatchPort + 12 输入字段 + 8 种 reject reason + §4.4.1 binance reject 映射 | market_data SPEC v1.0.0 §4 | ✅ |
 | G0-4 | binance OQ-001（contracts wire 就绪？） | 已确认 (2026-06-17) | ✅ |
 | G0-5 | binance OQ-002（market_data dispatch port 就绪？） | 已确认 (2026-06-17) | ✅ |
 | G0-6 | BOUNDARY-GATES.md 全部 9 门禁有 CI 脚本 | 9/9 (2026-06-17) | ✅ |
 
-> **6/6 通过** — 上游契约链闭合。本 SPEC 处于 Review 状态，可进入运行时实现阶段（PR-007）。实现时必须严格遵循 contracts §8.4 wire types、domain_market §10 canonical semantics、market_data §4 dispatch port 契约。
+> **6/6 通过** — 上游契约链闭合。本 SPEC 处于 Review 状态，可进入运行时实现阶段（PR-007）。实现时必须严格遵循 natsx JetStream subject 规范、domain_market §10 canonical semantics、Gin REST API `/v1/market/*` 契约。
 
 ---
