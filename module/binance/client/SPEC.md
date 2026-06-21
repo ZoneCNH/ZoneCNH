@@ -2,8 +2,8 @@
 
 ## 1. Metadata
 
-- Status: Draft → v2.0.0
-- Spec-Version: v2.0.0
+- Status: Approved
+- Spec-Version: v2.1.0
 - Last-Updated: 2026-06-21
 - Owner: ZoneCNH
 - Layer: 数据域 · Binance 交易所接入
@@ -176,7 +176,19 @@ client 完成发布即结束职责。持久化、幂等、存储、API 全部由
 **WHEN** 同一事件重试
 **THEN** 幂等键不变（跨重试稳定）
 
-### FR-007: natsx Publisher
+### ~~FR-007~~: ~~Spool~~ [ARCHIVED v2.0.0]
+
+> **ARCHIVED**：SQLite spool 已归档，由 natsx JetStream 持久化替代（详见 server FR-010）。
+
+---
+
+### ~~FR-008~~: ~~Checkpoint~~ [ARCHIVED v2.0.0]
+
+> **ARCHIVED**：Checkpoint 已归档，由 JetStream durable consumer 替代。
+
+---
+
+### FR-009: natsx Publisher
 
 **功能描述**：通过 natsx JetStream 发布规范化事件，同步等待 PubAck 确认持久化。
 
@@ -545,11 +557,11 @@ module/binance/server
 | TC-008 | FR-005 | 单元 | 映射规范化事件到 domain_market 类型 | 输出 `*domain_market.MarketEvent` |
 | TC-009 | FR-006 | 单元 | 同一事件两次生成幂等键 | 两次 key 相同 |
 | TC-010 | FR-006 | 单元 | 不同 event type 使用不同 key 策略 | key 格式符合各 type 预期 |
-| TC-011 | FR-007 | 集成 | publisher 调用 `js.Publish`，NATS 返回 PubAck | 发布成功，状态 pub_acked |
-| TC-012 | FR-007 | 单元 | PubAck 超时后重试 | 重试 `max_publish_retry` 次后触发告警 |
-| TC-013 | FR-007 | 集成 | 内存队列满时暂停采集 | 触发 ErrNATSBackpressure，collector 暂停 |
-| TC-014 | FR-008 | 单元 | `/healthz` 返回 200 | HTTP 200 |
-| TC-015 | FR-008 | 单元 | admin pause 产品线 | connector 停止产生新事件 |
+| TC-011 | FR-009 | 集成 | publisher 调用 `js.Publish`，NATS 返回 PubAck | 发布成功，状态 pub_acked |
+| TC-012 | FR-009 | 单元 | PubAck 超时后重试 | 重试 `max_publish_retry` 次后触发告警 |
+| TC-013 | FR-009 | 集成 | 内存队列满时暂停采集 | 触发 ErrNATSBackpressure，collector 暂停 |
+| TC-014 | FR-010 | 单元 | `/healthz` 返回 200 | HTTP 200 |
+| TC-015 | FR-010 | 单元 | admin pause 产品线 | connector 停止产生新事件 |
 
 ### 16.2 测试工具
 
