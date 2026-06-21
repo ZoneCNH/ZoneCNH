@@ -25,7 +25,7 @@ ZoneCNH 基座层 PostgreSQL 访问模块（Layer L2 基础设施适配器），
 - 不承诺分页、排序、审计字段、租户隔离或批处理工具进入 v1.0 基线。
 
 ## 5. 架构位置
-基座层（L2 存储扩展）。依赖方向：仅依赖 Go stdlib + `github.com/jackc/pgx/v5`（v5.9.2）+ kernel。被 `market_data`/`signal-engine`/`order_engine`/`risk_engine`/`backtest_engine` 等通过 `pkg/postgresx` 显式构造客户端消费。禁止反向依赖业务域。
+基座层（L2 存储扩展）。依赖方向：仅依赖 Go stdlib + `github.com/jackc/pgx/v5`（v5.9.2）+ kernel。被 `market_data`/`signal_factory`/`orderx`/`riskx`/`backtestx` 等通过 `pkg/postgresx` 显式构造客户端消费。禁止反向依赖业务域。
 
 ## 6. 生命周期
 - `New`/`Open`：校验 Config → 填充默认值 → 构造 pgxpool → 初始 Ping（失败则关闭池）。
