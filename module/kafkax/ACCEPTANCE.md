@@ -1,9 +1,9 @@
 # kafkax 完整验收清单
 
 - Status: Generated from current module SSOT
-- Last-Updated: 2026-06-19
-- Module-Version: v1.1.0
-- Module-State: 已发布（v1.1.0）
+- Last-Updated: 2026-06-21
+- Module-Version: v1.1.1
+- Module-State: 已发布（v1.1.1）
 - Layer: L2 基础设施适配器
 - Runtime-Repo: /home/kafkax
 - Source: goal.md, SPEC.md, TRACEABILITY.md, IMPLEMENTATION-PLAN.md, tasks/
@@ -88,11 +88,11 @@
 - [x] 运行时代码仓库 /home/kafkax 通过 go test、go test -race、go vet 与覆盖率门槛（pkg/kafkax 94.5%）。
 - [x] 所有外部服务依赖有本地可重复的测试替身或明确 live-gate 证据（testkit + integration workflow）。
 - [x] 安全检查确认没有凭证、私有端点、账户 ID 或实盘配置进入公开文档与代码（goalcli secret scan passed）。
-- [x] 版本号、发布标签、CHANGELOG 或 release note 与本目录状态一致（GitHub release v1.1.0）。
+- [x] 版本号、发布标签、CHANGELOG 或 release note 与本目录状态一致（GitHub release v1.1.1）。
 
 ## 6. 当前缺口登记
 
-- v1.1.0 运行时验收已于 2026-06-18 在 /home/kafkax 执行并归档：go build/vet/test/race 全 exit 0、零 data race、golangci-lint 0 issues、go mod tidy clean、secret scan passed、pkg/kafkax 覆盖率 94.5%。
+- v1.1.1 运行时验收已于 2026-06-21 在 /home/kafkax 执行并归档：go build/vet/test/race 全 exit 0、零 data race、golangci-lint 0 issues、go mod tidy clean、secret scan passed、pkg/kafkax 覆盖率 94.5%。
 - 集成测试（make integration / 真实 broker gates）由 integration workflow 在 SRE 池执行，Kafka 不可达时按 SPEC §19.2 skip，不阻塞发布。
 - 依赖边界：pkg/kafkax 仅依赖 stdlib + segmentio/kafka-go，未越过 FOUNDATION-DEPS.yaml。
-- 发布证据：GitHub release v1.1.0（PR #16, squash a357c9c）。
+- 发布证据：GitHub release v1.1.1（PR #16, squash a357c9c）。

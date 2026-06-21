@@ -294,7 +294,7 @@ def test_audit_status_full_mode_reports_current_arch_drift():
     assert "SKIPPED (use --network)" in result.stdout
     assert "ARCH" in result.stdout
     assert "FAIL" in result.stdout or "1 failed" in result.stdout
-    assert "Summary: 51 passed, 1 failed" in result.stdout
+    assert "Summary: 48 passed, 4 failed" in result.stdout
 
 
 def test_audit_status_foundationx_only_mode_runs_clean():

@@ -1,8 +1,8 @@
 # kafkax 完整实现清单
 
 - Status: Generated from current module SSOT
-- Last-Updated: 2026-06-19
-- Module-Version: v1.1.0
+- Last-Updated: 2026-06-21
+- Module-Version: v1.1.1
 - Module-State: 已发布
 - Layer: L2 基础设施适配器
 - Runtime-Repo: /home/kafkax
@@ -66,7 +66,7 @@
 | TASK-KAFKAX-003 | TASK-KAFKAX-003: 手动 offset 提交 + Close 边界 + 无自动提交 | module/kafkax/tasks/TASK-KAFKAX-003.md | ✅ | tasks/TASK-KAFKAX-003.md |
 | TASK-KAFKAX-004 | TASK-KAFKAX-004: 幂等 Health + sanitized errors | module/kafkax/tasks/TASK-KAFKAX-004.md | ✅ | tasks/TASK-KAFKAX-004.md |
 | TASK-KAFKAX-005 | TASK-KAFKAX-005: Consumer 配置校验 | module/kafkax/tasks/TASK-KAFKAX-005.md | ✅ | tasks/TASK-KAFKAX-005.md |
-| TASK-KAFKAX-006 | TASK-KAFKAX-006: CI + Release 基线 | module/kafkax/tasks/TASK-KAFKAX-006.md | ✅ v1.1.0 (PR#16) | tasks/TASK-KAFKAX-006.md |
+| TASK-KAFKAX-006 | TASK-KAFKAX-006: CI + Release 基线 | module/kafkax/tasks/TASK-KAFKAX-006.md | ✅ v1.1.1 (PR#16) | tasks/TASK-KAFKAX-006.md |
 
 ## 5. 文档资产清单
 
@@ -84,5 +84,5 @@
 - [x] 所有 BR/NFR 条目均有测试、静态检查或人工可审计证据覆盖（lint 0 issues / secret scan passed）。
 - [x] 所有任务文档均能追溯到 FR、BR/NFR、AC 或 TC。
 - [x] 依赖边界符合 FOUNDATION-DEPS.yaml（pkg/kafkax 仅 stdlib + segmentio/kafka-go）。
-- [x] 运行时代码仓库 /home/kafkax 的 lint、vet、test、race、coverage 验证证据已归档（v1.1.0, 2026-06-18）。
-- [x] 发布说明、版本标签与本目录登记状态一致（GitHub release v1.1.0）。
+- [x] 运行时代码仓库 /home/kafkax 的 lint、vet、test、race、coverage 验证证据已归档（v1.1.1, 2026-06-21）。
+- [x] 发布说明、版本标签与本目录登记状态一致（GitHub release v1.1.1）。

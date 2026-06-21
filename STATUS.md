@@ -434,12 +434,16 @@
 
 ### 当前阻塞项
 
-- [ ] Phase 1（分析域）仍待完成收口（对应分析报告剩余 9 项收口动作） → 阻塞 Phase 2/3/4/5
+- [ ] Phase 1（分析域）仍待完成收口；7 项未完成动作已统一收敛到 `docs/report/architecture-structural-repair-plan-20260621.md`：
+  - P0 `#1`：`contracts` Approved + 跨域 AC/TC
+  - P1 `#5`-`#6`：从 `regime_engine` / `signal_factory` 等核心链路拆分 tasks，并按 AC → TC → tasks 串联补齐
+  - P2 `#9`-`#12`：补全数据域 tasks、prompt / evidence、关键 ADR 与 `live_integration` 扩展
+  → 阻塞 Phase 2/3/4/5
 - [x] ~~x.go 体量待核实~~ ✅ **已核实**：x.go = 治理 CLI，非组合根；composer v0.1.0 承担数据域组合根
 
 ### 下一步行动
 
-1. **聚焦 Phase 1 核心项**：先按分析报告 `#1`-`#3` 完成 `contracts` Approved、跨域 AC / TC 收口与占位符 SPEC 扩充，再固化 MarketDataProvider / FactorInput / FactorOutput，并推进 `factor_engine → feature_store → factor_eval`
+1. **按 canonical repair plan 推进 Phase 1**：先按 `docs/report/architecture-structural-repair-plan-20260621.md` 的 `#1` 完成 `contracts` Approved、跨域 AC / TC 收口，再固化 `MarketDataProvider` / `FactorInput` / `FactorOutput`，并推进 `factor_engine → feature_store → factor_eval`
 2. **同步 contracts 契约口径**：`SignalIntent` 已升入 contracts；P1 / P2 兼容投影别名（`RegimeSnapshotEvent` / `RegimeCardEvent` / `DecisionCardEvent` / `MarketRegimePort` / `MacroRegimePort` / `RegimeEnginePort`）已在 contracts 补齐；当前待推进的是 contracts Approved 与跨域 AC / TC 收口
 3. ~~**版本化 SDK**~~：✅ 已完成 — 18 仓库 v0.1.1 tagged release（2026-06-16）
 4. ~~**统一宏观适配器**~~：✅ 已评估 — 保持独立模块架构，11 仓库全部 v0.1.1 tagged release（2026-06-16）

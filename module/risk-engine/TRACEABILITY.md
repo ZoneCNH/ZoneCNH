@@ -1,7 +1,7 @@
 # risk_engine 需求追溯矩阵
 
-> 更新：2026-06-17
-> 来源：module/risk_engine/SPEC.md
+> 更新：2026-06-21
+> 来源：module/risk-engine/SPEC.md
 > 规范：docs/governance/TRACEABILITY.md
 
 ---
