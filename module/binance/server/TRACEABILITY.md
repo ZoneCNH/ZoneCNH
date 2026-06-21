@@ -1,36 +1,39 @@
 # module/binance/server TRACEABILITY
 
-> 追溯矩阵版本：v1.1.1 | 最后更新：2026-06-17 | 对应 server SPEC v1.0.1
+> 追溯矩阵版本：v2.0.0 | 最后更新：2026-06-21 | 对应 server SPEC v1.1.0
+>
+> **v2.0.0 架构变更**：gRPC bidi stream + 同进程 cs 接口 → natsx JetStream 网络通信；
+> server 获得 Binance 专属全栈存储（taosx + postgresx + redisx + ossx）；
+> Gin REST API 替代 net/http admin 端点，作为 market_data 的唯一数据接口。
 
 ---
 
 ## §1 FR 追溯表
 
-| FR ID | 功能需求 | AC | TC ID(s) | 实现状态 |
-|-------|----------|-----|----------|:--------:|
-| FR-001 | gRPC Server Binding — 实现 contracts-defined ingest server | server 注册并监听，接受 `MarketDataService.Ingest` 双向流 | TC-001 | ⬜ |
-| FR-002 | Stream Lifecycle — 管理 stream 生命周期 | 启动/正常关闭/异常断开时清理；最终统计输出 | TC-002 | ⬜ |
-| FR-003 | Request Validation — 验证 envelope/payload/domain enum | 缺字段→terminal_validation；不支持 product_line→terminal_validation；payload 不匹配→terminal_validation | TC-003, TC-004 | ⬜ |
-| FR-004 | Idempotent Acceptance — 同一 key 最多 accept 一次 | 首次→accept+dispatch；重复同内容→idempotent ACK；重复冲突内容→terminal_conflict | TC-005, TC-006, TC-007 | ⬜ |
-| FR-005 | Durable Acceptance — accept 后持久化 | durable write 成功→durable_indicator=true；失败→retryable reject（不标记已接受） | TC-008, TC-009 | ⬜ |
-| FR-006 | ACK Generation — 返回可驱动 client checkpoint 的 ACK | ACK 含 stream_id/accepted keys/rejects/durable indicator/retry hint | TC-010 | ⬜ |
-| FR-007 | Downstream Dispatch — 分发至 market_data downstream port | dispatch 成功→event 被下游接受；不实现物理存储；不暴露 query API | TC-011, TC-012 | ⬜ |
-| FR-008 | Admin HTTP Endpoints — /healthz /readyz /debug /admin | healthz 200；readyz 反映 readiness；debug 只读；admin 仅 server-local；/admin/drain 拒绝新 stream | TC-013, TC-014, TC-015 | ⬜ |
-
-> 映射：BNC-SERVER-001→FR-001, BNC-SERVER-002→FR-003, BNC-SERVER-003→FR-004, BNC-SERVER-004→FR-006, BNC-SERVER-005→FR-007, BNC-SERVER-006→FR-008, BNC-SERVER-007→contract tests, BNC-SERVER-008→boundary gates
+| FR ID | 功能需求 | AC | TC ID(s) | Task | 实现状态 |
+|-------|----------|-----|----------|------|:--------:|
+| FR-001 | natsx Consumer — 通过 JetStream durable consumer 从 client 接收行情事件（网络通信，禁止同进程） | AC-001 ~ AC-003 | TC-001, TC-002 | TASK-BINANCE-SERVER-010 | ⬜ Pending |
+| FR-002 | Message Validation — 验证 envelope/payload/domain enum；不合法消息 Nak | AC-004 ~ AC-006 | TC-003, TC-004 | TASK-BINANCE-SERVER-002 | ⬜ Pending |
+| FR-003 | redisx Idempotency — SetNX 防止 JetStream 重投导致重复写入（key TTL 24h） | AC-007 ~ AC-009 | TC-005, TC-006 | TASK-BINANCE-SERVER-011 | ⬜ Pending |
+| FR-004 | taosx Persistence — 规范化事件写入 TDengine 超表，支持 WriteBatch + QueryRange | AC-010 ~ AC-012 | TC-007, TC-008 | TASK-BINANCE-SERVER-013 | ⬜ Pending |
+| FR-005 | postgresx Catalog — 维护 symbol 注册、时钟偏移、采集进度三张元数据表 | AC-013 ~ AC-015 | TC-009 | TASK-BINANCE-SERVER-012 | ⬜ Pending |
+| FR-006 | kafkax Dispatch — 处理成功后广播到下游 topic，symbol 为 partition key | AC-016 ~ AC-018 | TC-010, TC-011 | TASK-BINANCE-SERVER-014 | ⬜ Pending |
+| FR-007 | Gin Market API — /v1/market/* REST 接口，作为 market_data 唯一数据接口 | AC-019 ~ AC-024 | TC-012 ~ TC-015 | TASK-BINANCE-SERVER-015 | ⬜ Pending |
+| FR-008 | ossx Archival — 每日定时将 taosx 中超 RetentionDays 数据归档到对象存储 | AC-025 ~ AC-027 | TC-016, TC-017 | TASK-BINANCE-SERVER-016 | ⬜ Pending |
+| FR-009 | Boundary Enforcement — CI gate 阻断 server 导入 client/cs 包；go.mod 合规检查 | AC-028 ~ AC-030 | TC-018, TC-019 | TASK-BINANCE-SERVER-008 | ⬜ Pending |
 
 ---
 
 ## §2 BR 追溯表
 
-| BR ID | 业务规则 | 验证方式 | 实现状态 |
-|-------|----------|----------|:--------:|
-| BR-001 | Idempotency Key — Accept At Most Once | integration test: 相同 key 两次发送 | ⬜ |
-| BR-002 | Duplicate With Conflicting Payload → Reject | integration test: 相同 key 不同 payload | ⬜ |
-| BR-003 | ACK Only After Durable Acceptance | integration test: durable write 失败 → 不标记已接受 | ⬜ |
-| BR-004 | Validation Failure → No Checkpoint Advancement | unit test: reject 不触发 durable acceptance | ⬜ |
-| BR-005 | Admin Surface Isolation — admin 只能操作 server-local 状态 | unit test: admin 不能变更 client/下游/strategy 状态 | ⬜ |
-| BR-006 | Server Must Not Import Client Internals | CI gate: `grep -R 'internal/client\|module/binance/client' internal/server cmd/binance-server` | ⬜ |
+| BR ID | 业务规则 | 验证方式 | Task | 实现状态 |
+|-------|----------|----------|------|:--------:|
+| BR-001 | natsx ManualAck — 全链路写入（redisx+taosx+kafkax）成功后才 Ack，失败时 NakWithDelay | TC-002: 处理失败→NakWithDelay 集成测试 | TASK-BINANCE-SERVER-010 | ⬜ |
+| BR-002 | Idempotency At Most Once — 相同 (product_line, exchange_time, event_type, symbol) 最多写入 taosx 一次 | TC-005, TC-006: SetNX 原子性集成测试 | TASK-BINANCE-SERVER-011 | ⬜ |
+| BR-003 | Cold-Write-First — ossx 上传确认（ETag）后才从 taosx 删除归档段数据，禁止先删后写 | TC-016: 上传失败→taosx 未删除验证 | TASK-BINANCE-SERVER-016 | ⬜ |
+| BR-004 | Server Owns Storage — server 独占 taosx/postgresx/redisx/ossx（Binance 专属），market_data 禁止直连 | CI Gate: BOUNDARY-GATES.md §7 | TASK-BINANCE-SERVER-008 | ⬜ |
+| BR-005 | No cs Package — 禁止导入 `internal/cs`；禁止与 client 同进程运行 | CI Gate: BOUNDARY-GATES.md §5, §6 | TASK-BINANCE-SERVER-008 | ⬜ |
+| BR-006 | Server Must Not Import Client Internals | CI gate: grep internal/client 零匹配 | TASK-BINANCE-SERVER-008 | ⬜ |
 
 ---
 
@@ -38,61 +41,79 @@
 
 | NFR ID | 非功能需求 | 来源(SPEC §) | 验证方式 |
 |--------|-----------|-------------|----------|
-| NFR-S01 | Validation P99 < 100μs | Performance Budget | `go test -bench` |
-| NFR-S02 | Idempotency check P99 < 1ms | Performance Budget | `go test -bench` |
-| NFR-S03 | ACK lag P99 < 100ms | Performance Budget | integration test |
-| NFR-S04 | Metrics: active streams/ingested/accepted/duplicate/rejected (per reason)/ACK latency/dispatch latency/dispatch failures | Observability | metrics endpoint |
-| NFR-S05 | Logs 含 stream_id/product_line/instrument_key/idempotency_key/ack status/reject reason | Observability | log inspection |
-| NFR-S06 | No hardcoded secrets | Security | gitleaks |
-| NFR-S07 | /debug/* 和 /admin/* 不暴露 secrets | Security | secret redaction test |
-| NFR-S08 | Admin auth when exposed outside loopback-only mode | Security | auth test |
+| NFR-S01 | natsx consumer 消息处理延迟（receive→Ack）P99 < 50ms | 性能预算 | integration test: JetStream latency |
+| NFR-S02 | redisx SetNX 幂等检查延迟 P99 < 1ms | 性能预算 | `go test -bench BenchmarkIdempotencyCheck` |
+| NFR-S03 | taosx WriteBatch 吞吐量 ≥ 10万 TPS（批量参数绑定） | 性能预算 | `go test -bench BenchmarkWriteBatch` |
+| NFR-S04 | Gin API /v1/market/ticks 响应延迟 P99 < 20ms（redisx cache 命中） | 性能预算 | httptest benchmark |
+| NFR-S05 | Gin API /v1/market/depth P99 < 1ms（redisx 直接命中） | 性能预算 | httptest benchmark |
+| NFR-S06 | Metrics: consumer lag / idempotency hits / taosx write TPS / kafkax dispatch errors / API p99 latency | Observability | metrics endpoint |
+| NFR-S07 | Logs 含 subject / symbol / product_line / idempotency_hash | Observability | log inspection |
+| NFR-S08 | API key 不出现于 log / debug 端点输出 | Security | gitleaks + secret redaction test |
+| NFR-S09 | Admin auth when exposed outside loopback-only | Security | auth test |
+| NFR-S10 | ossx 归档完整性：ETag 验证通过后才执行 taosx 删除 | 数据完整性 | TC-016 |
 
 ---
 
 ## §4 TC→FR 反向追溯
 
-| TC ID | 覆盖 FR(s) | 测试类型 | 状态 |
-|-------|-----------|----------|:----:|
-| TC-001 | FR-001 | 单元 | ⬜ |
-| TC-002 | FR-002 | 单元 | ⬜ |
-| TC-003 | FR-003 | 单元 | ⬜ |
-| TC-004 | FR-003 | 单元 | ⬜ |
-| TC-005 | FR-004 | 集成 | ⬜ |
-| TC-006 | FR-004 | 集成 | ⬜ |
-| TC-007 | FR-004 | 集成 | ⬜ |
-| TC-008 | FR-005 | 集成 | ⬜ |
-| TC-009 | FR-005 | 集成 | ⬜ |
-| TC-010 | FR-006 | 单元 | ⬜ |
-| TC-011 | FR-007 | 集成 | ⬜ |
-| TC-012 | FR-007 | 集成 | ⬜ |
-| TC-013 | FR-008 | 单元 | ⬜ |
-| TC-014 | FR-008 | 单元 | ⬜ |
-| TC-015 | FR-008 | 单元 | ⬜ |
+| TC ID | 覆盖 FR(s) | 覆盖 BR(s) | 测试类型 | 状态 |
+|-------|-----------|------------|----------|:----:|
+| TC-001 | FR-001 | — | 单元（mock JetStream） | ⬜ |
+| TC-002 | FR-001 | BR-001 | 集成（处理失败→NakWithDelay） | ⬜ |
+| TC-003 | FR-002 | — | 单元（缺字段→Nak） | ⬜ |
+| TC-004 | FR-002 | — | 单元（非法 product_line→Nak） | ⬜ |
+| TC-005 | FR-003 | BR-002 | 单元（首次 SetNX→false） | ⬜ |
+| TC-006 | FR-003 | BR-002 | 单元（重复 SetNX→true，跳过写入） | ⬜ |
+| TC-007 | FR-004 | — | 单元（mock taosx WriteTick） | ⬜ |
+| TC-008 | FR-004 | — | 集成（WriteBatch 吞吐 benchmark） | ⬜ |
+| TC-009 | FR-005 | — | 单元（UpsertSymbol 幂等；ClockOffset 记录） | ⬜ |
+| TC-010 | FR-006 | — | 单元（topic 名称 + partition key） | ⬜ |
+| TC-011 | FR-006 | — | 单元（Kafka 不可达→error） | ⬜ |
+| TC-012 | FR-007 | — | httptest（/v1/market/ticks 返回 taosx 数据） | ⬜ |
+| TC-013 | FR-007 | — | httptest（/v1/market/depth 读 redisx） | ⬜ |
+| TC-014 | FR-007 | — | httptest（无效 API key → 401） | ⬜ |
+| TC-015 | FR-007 | — | httptest（超限 → 429） | ⬜ |
+| TC-016 | FR-008 | BR-003 | 单元（PutObject 失败→taosx 未删除） | ⬜ |
+| TC-017 | FR-008 | BR-003 | 单元（路径格式验证） | ⬜ |
+| TC-018 | FR-009 | BR-005, BR-006 | CI gate（cs 包/client 包 import 检查） | ⬜ |
+| TC-019 | FR-009 | BR-004 | CI gate（go.mod 合规检查） | ⬜ |
 
 ---
 
 ## §5 AC 注册表
 
-| AC ID | 所属 FR/BR | AC 描述 | 验证方式 |
-|-------|-----------|---------|----------|
-| AC-001 | FR-001 | gRPC server 绑定端口成功 | TC-001 |
-| AC-002 | FR-002 | 正常关闭 stream 时清理资源 | TC-002 |
-| AC-003 | FR-003 | 缺必填字段→terminal_validation reject | TC-003 |
-| AC-004 | FR-003 | 不支持 product_line→terminal_validation reject | TC-004 |
-| AC-005 | FR-004 | 首次 key→accept+dispatch | TC-005 |
-| AC-006 | FR-004 | 重复 key+相同 payload→idempotent ACK，不 dispatch | TC-006 |
-| AC-007 | FR-004 | 重复 key+冲突 payload→terminal_conflict | TC-007 |
-| AC-008 | FR-005 | durable write 成功→durable_indicator=true | TC-008 |
-| AC-009 | FR-005 | durable write 失败→retryable reject | TC-009 |
-| AC-010 | FR-006 | ACK 含所有必要字段，可驱动 checkpoint | TC-010 |
-| AC-011 | FR-007 | dispatch 成功→event 被下游接受 | TC-011 |
-| AC-012 | FR-007 | dispatch 失败→retry 或 rollback | TC-012 |
-| AC-013 | FR-008 | /healthz 返回 200 | TC-013 |
-| AC-014 | FR-008 | /readyz（下游不可达）返回 503 | TC-014 |
-| AC-015 | FR-008 | /admin/drain 拒绝新 stream | TC-015 |
-| AC-016 | BR-001 | Idempotency key accept at most once | TC-005, TC-006 |
-| AC-017 | BR-002 | Conflicting payload→terminal_conflict | TC-007 |
-| AC-018 | BR-006 | server 代码中无 client internal 引用 | CI gate |
+| AC ID | 所属 FR | AC 描述 | 验证方式 |
+|-------|---------|---------|----------|
+| AC-001 | FR-001 | durable consumer 绑定名称 `binance-server`，进程重启后从上次 Ack 位置继续消费 | TC-001: mock 验证 Subscribe 使用 Durable option |
+| AC-002 | FR-001 | ManualAck — Handle 成功后 Ack；Handle 失败后 NakWithDelay(5s) | TC-002: mock handler 失败→验证 NakWithDelay |
+| AC-003 | FR-001 | consumer 不持有任何 client 接口，不导入 `internal/client` 或 `internal/cs` | TC-018: CI gate grep 零匹配 |
+| AC-004 | FR-002 | envelope 缺必填字段（symbol/exchange_time/product_line）→ Nak（解析失败不重投） | TC-003: 构造不完整 JSON → 验证 Nak |
+| AC-005 | FR-002 | 不支持的 product_line 值 → Nak | TC-004: 非法 product_line → Nak |
+| AC-006 | FR-002 | 合法 envelope 通过验证，进入处理管线 | TC-003 负向验证反向确认 |
+| AC-007 | FR-003 | 首次消息：SetNX 返回 true → 继续处理（非重复） | TC-005: mock SetNX 返回 true |
+| AC-008 | FR-003 | 重复消息（相同 hash key 已存在）：SetNX 返回 false → Ack 并跳过，不写 taosx | TC-006: mock SetNX 返回 false → taosx.Write 未调用 |
+| AC-009 | FR-003 | Redis 不可达时 → 返回 error，consumer NakWithDelay | TC-005: mock SetNX 返回 err → NakWithDelay |
+| AC-010 | FR-004 | WriteTick 使用 symbol+product_line 生成子表名，自动创建子表 | TC-007: mock 验证 WriteWithAutoCreate 参数 |
+| AC-011 | FR-004 | WriteBatch 合并多条消息为一次网络往返（非循环 WriteTick） | TC-008: benchmark mock 验证 WriteBatch 被调用 |
+| AC-012 | FR-004 | taosx 不可达时 → error，consumer NakWithDelay | TC-007: mock 注入 error |
+| AC-013 | FR-005 | UpsertSymbol ON CONFLICT DO UPDATE，幂等插入 | TC-009: 同 symbol 插入两次不报错 |
+| AC-014 | FR-005 | RecordClockOffset 每分钟采样写入 binance_clock_offsets 表 | TC-009: mock 验证 INSERT 被调用 |
+| AC-015 | FR-005 | UpdateIngestStatus 更新 last_seq，用于 gap fill 检测 | TC-009: mock 验证 seq 参数 |
+| AC-016 | FR-006 | topic = `binance.market.{product_line}.{event_type}`，与 natsx subject 一致 | TC-010: mock 验证 topic 字符串 |
+| AC-017 | FR-006 | partition key = `[]byte(symbol)`，相同 symbol 有序到达同一 partition | TC-010: mock 验证 Key 参数 |
+| AC-018 | FR-006 | Kafka 不可达时 → error（降级告警，不中断 taosx 写入） | TC-011: mock 返回 error → observex 告警 |
+| AC-019 | FR-007 | GET /v1/market/ticks 从 taosx 查询，支持 symbol + time range + limit | TC-012: httptest + mock taosx |
+| AC-020 | FR-007 | GET /v1/market/depth/:symbol 从 redisx 读取最新深度快照，P99 < 1ms | TC-013: mock redisx 验证 key 格式 |
+| AC-021 | FR-007 | 无效 API key → 401 | TC-014: httptest 验证状态码 |
+| AC-022 | FR-007 | 超限（>1000 req/min per key）→ 429 + Retry-After header | TC-015: mock 令牌桶耗尽 |
+| AC-023 | FR-007 | GET /v1/health 三组件（taosx/redisx/postgresx）任一断连 → 503 | TC-012: mock taosx 断连 → 503 |
+| AC-024 | FR-007 | 所有响应统一 JSON，错误使用 `{"error":"...","code":"..."}` 结构 | TC-012~015: 验证响应体格式 |
+| AC-025 | FR-008 | 每日定时归档 cutoff（now - RetentionDays）之前的 taosx 数据 | TC-017: 验证 taosx 查询参数含 cutoff |
+| AC-026 | FR-008 | 先 ossx.PutObject + 验证 ETag，成功后才 taosx.Delete（先写冷再删热） | TC-016: mock PutObject 失败→Delete 未调用 |
+| AC-027 | FR-008 | 归档路径 `binance/{product_line}/{symbol}/{YYYY}/{MM}/{DD}/{event_type}.parquet` | TC-017: 验证 key 字符串格式 |
+| AC-028 | FR-009 | server 源码无 `internal/client` 或 `internal/cs` 导入 | TC-018: CI gate grep 零匹配 |
+| AC-029 | FR-009 | go.mod 中 gin / ossx 为 direct 依赖；redisx/kafkax/natsx/postgresx/taosx 为 direct 依赖 | TC-019: go mod 检查 |
+| AC-030 | FR-009 | BOUNDARY-GATES §5（cs 包禁止）+ §6（同进程禁止）CI gate 全 PASS | TC-018: 本地 PASS |
 
 ---
 
@@ -100,24 +121,25 @@
 
 | 指标 | 计数 | 覆盖率 |
 |------|:----:|:------:|
-| 总 FR | 8 | — |
+| 总 FR | 9 | — |
 | 总 BR | 6 | — |
-| 总 NFR | 8 | — |
-| 总 TC | 15 | — |
-| 总 AC | 18 | — |
-| FR→TC 映射率 | 8 / 8 | 100% |
+| 总 NFR | 10 | — |
+| 总 TC | 19 | — |
+| 总 AC | 30 | — |
+| FR→TC 映射率 | 9 / 9 | 100% |
 | BR→验证映射率 | 6 / 6 | 100% |
-| TC→FR 回溯率 | 15 / 15 | 100% |
-| AC→验证映射率 | 18 / 18 | 100% |
-| 实现完成率 | 0 / 37 | 0% |
+| TC→FR 回溯率 | 19 / 19 | 100% |
+| AC→验证映射率 | 30 / 30 | 100% |
+| 实现完成率 | 0 / 9 FR | 0%（文档对齐 v2.0.0，代码待实现） |
 
 ---
 
 ## §7 变更历史
 
-| 日期 | 版本 | 变更内容 |
-|------|------|----------|
-| 2026-06-16 | v1.0.0 | 初始版本：§1-§7 标准追溯矩阵，基于 server SPEC.md v1.0.0 (23节) 生成 |
-| 2026-06-17 | v1.1.0 | **R7 AC 命名空间统一**：AC-S01~AC-S18 → AC-001~AC-018（18 处），消除评分器期望的 AC-### 格式偏差。注：§5.1 别名表已在更早的清理中删除，本 PR 仅完成 §1/§5 中 AC 主键与引用的最终统一 | ZoneCNH |
-| 2026-06-17 | v1.1.1 | **同步 server SPEC v1.0.1 修订**：跟随 server SPEC §1 Metadata 字段统一（删除头部重复 metadata + Repository 修正为 monorepo `github.com/ZoneCNH/binance` + §14 重写为 `internal/server/` 布局）。本次仅同步 SPEC 引用版本号，FR/BR/AC/TC 主体未变，覆盖率保持 100% | ZoneCNH |
-| 2026-06-17 | v1.1.2 | **同步 SPEC v1.0.2 Status 晋升**：跟随 server SPEC Status Review → Approved 晋升。本版仅同步 SPEC 引用版本号与状态，FR/BR/AC/TC 主体未变，覆盖率保持 100% | ZoneCNH |
+| 日期 | 版本 | 变更内容 | 作者 |
+|------|------|----------|------|
+| 2026-06-16 | v1.0.0 | 初始版本：§1-§7 标准追溯矩阵，基于 server SPEC.md v1.0.0 生成 | ZoneCNH |
+| 2026-06-17 | v1.1.0 | R7 AC 命名空间统一：AC-S01~AC-S18 → AC-001~AC-018 | ZoneCNH |
+| 2026-06-17 | v1.1.1 | 同步 server SPEC v1.0.1 修订（metadata 字段统一） | ZoneCNH |
+| 2026-06-17 | v1.1.2 | 同步 SPEC v1.0.2 Status 晋升（Review → Approved） | ZoneCNH |
+| 2026-06-21 | v2.0.0 | **全面重写：gRPC/同进程 cs → natsx JetStream 分布式架构**：FR-001~009 全部对齐 natsx(010)/redisx(011)/postgresx(012)/taosx(013)/kafkax(014)/Gin(015)/ossx(016)；BR-001~006 对齐 ManualAck/幂等/冷写/存储所有权；NFR 新增 consumer lag / WriteBatch TPS / API p99；TC-001~019 + AC-001~030 全面更新；归档旧 gRPC FR-001~008 描述 | ZoneCNH |
