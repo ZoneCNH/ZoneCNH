@@ -176,33 +176,38 @@ Binance 行情集成面临以下问题：
 
 ### FR-006: Full-Stack Storage
 
-**功能描述**：server 持有 Binance-specific persistence，使用 `taosx`、`postgresx`、`redisx`、`ossx` adapter；不拥有 generic market_data storage platform。
+**功能描述**：server 持有 Binance-specific persistence，通过 Foundation adapter 写入四个存储层。每个存储层独立失败不影响其他层。
+
+#### FR-006a: taosx Time-Series Storage
 
 **WHEN** event 通过 validation 与 idempotency
-**THEN** 写入 `taosx` 时序行情、`postgresx` instrument catalog/audit、`redisx` latest cache 与 idempotency state
+**THEN** 调用 `taosx.WriteBatch(ctx, points)` 写入 tick/bar/depth 数据到对应超级表子表
+**AND** 写入使用 product_line + symbol 作为子表名，自动建表
 
-**WHEN** 任一 storage write 失败
-**THEN** 不调用 `msg.Ack()`；调用 `msg.NakWithDelay(...)` 并告警
+**WHEN** taosx WriteBatch 失败
+**THEN** 返回 error；不调用 `msg.Ack()`；调用 `msg.NakWithDelay(5s)` 并告警
 
-**WHEN** retention cutoff 之前的数据需要降冷
-**THEN** 先写入 `ossx` cold archive 并校验 ETag，再删除 `taosx` 热数据
+**WHEN** 查询历史 tick/bar
+**THEN** 通过 `taosx.Query(ctx, sql)` 按 symbol + time range 查询，返回 `Rows` 迭代器
 
-### FR-007: Gin Market API
+#### FR-006b: postgresx Metadata Storage
 
-**功能描述**：server 暴露 Gin REST market API，供 `market_data` 主动拉取 Binance-specific facts。
+**WHEN** 收到新 instrument symbol
+**THEN** 调用 `postgresx.Exec(ctx, upsertSQL)` 幂等写入 `binance_instruments` 表（ON CONFLICT DO UPDATE）
 
-**WHEN** 请求 `GET /api/v1/market/ticks`
-**THEN** 从 `taosx` 查询 tick time range，支持 symbol、product_line、time range、limit 过滤
+**WHEN** postgresx 不可达
+**THEN** 返回 error；不 Ack；重试（指数退避）
 
-**WHEN** 请求 `GET /api/v1/market/depth/{instrument_key}`
-**THEN** 优先从 `redisx` 最新快照返回；cache miss 时回退到 `taosx`
+#### FR-006c: redisx Hot Cache
 
-**WHEN** API key 无效或请求超限
-**THEN** 返回 401 或 429，不访问下游 storage
+**WHEN** event 写入 taosx 成功
+**THEN** 调用 `redisx.SET(ctx, "tick:{product_line}:{symbol}", json, 60s)` 更新最新行情热缓存
+**AND** 调用 `redisx.SET(ctx, "depth:{product_line}:{symbol}", json, 5s)` 更新深度快照缓存
 
-### FR-008: ossx Archival
+**WHEN** redisx 缓存写入失败
+**THEN** 记录 warn 日志；继续后续管线（缓存失败不阻塞存储——降级到 taosx 直查）
 
-**功能描述**：server 定时将 Binance-specific historical facts 从 `taosx` 降冷到 `ossx`。
+#### FR-006d: ossx Archival
 
 **WHEN** archiver 扫描到超过 retention cutoff 的数据
 **THEN** 按 `binance/{product_line}/{symbol}/{YYYY}/{MM}/{DD}/{event_type}.parquet` 写入 `ossx`
@@ -213,7 +218,58 @@ Binance 行情集成面临以下问题：
 **WHEN** `ossx` 写入或校验失败
 **THEN** 保留 `taosx` 热数据并告警；不得删除源数据
 
-### FR-009: Downstream Broadcast
+### FR-007: Gin Market API
+
+**功能描述**：server 暴露 Gin REST market API，供 `market_data` 主动拉取 Binance-specific facts。实时查询走 redisx 热缓存，历史查询走 taosx 时序存储，分析查询走 clickhousex。
+
+**WHEN** 请求 `GET /api/v1/market/ticks/:symbol`
+**THEN** 优先从 `redisx` 热缓存返回（<5ms）；cache miss 回退 `taosx` 查询
+
+**WHEN** 请求 `GET /api/v1/market/ticks/:symbol/range`
+**THEN** 从 `taosx` 查询 tick time range，支持 symbol、product_line、start/end time、limit 过滤
+
+**WHEN** 请求 `GET /api/v1/market/bars/:symbol`
+**THEN** 优先从 `redisx` 热缓存返回最新 bar；cache miss 回退 `taosx`
+
+**WHEN** 请求 `GET /api/v1/market/bars/:symbol/range`
+**THEN** 从 `taosx` 查询 bar time range
+
+**WHEN** 请求 `GET /api/v1/market/depth/:symbol`
+**THEN** 从 `redisx` 最新快照返回（5s TTL）；cache miss 回退 `taosx`
+
+**WHEN** 请求 `GET /api/v1/market/trades/:symbol`
+**THEN** 从 `taosx` 查询最近的 trade 记录
+
+**WHEN** 请求 `GET /api/v1/instruments`
+**THEN** 从 `postgresx` 查询合约目录，支持 product_line + status 过滤
+
+**WHEN** 请求 `GET /api/v1/instruments/:symbol`
+**THEN** 从 `postgresx` 查询单个合约详情
+
+**WHEN** API key 无效或请求超限
+**THEN** 返回 401 或 429，不访问下游 storage
+
+**WHEN** 请求 `GET /api/v1/stats/streams`
+**THEN** 返回各产品线 stream 状态（connected / disconnected / lag）
+
+**WHEN** 请求 `GET /api/v1/stats/daily`
+**THEN** 返回当日采集统计（tick 数、bar 数、去重率、错误率）
+
+#### FR-007a: clickhousex Analytics API
+
+**WHEN** 请求 `GET /api/v1/analytics/vwap`
+**THEN** 从 `clickhousex` 查询跨符号 VWAP 排名（参数：product_line, window=1h/4h/24h, top_n）
+
+**WHEN** 请求 `GET /api/v1/analytics/top-movers`
+**THEN** 从 `clickhousex` 查询涨幅/跌幅 top N（参数：product_line, metric=price_change_pct, window=5m/1h/24h, top_n）
+
+**WHEN** 请求 `GET /api/v1/analytics/correlation`
+**THEN** 从 `clickhousex` 查询两个 symbol 的 Pearson 相关系数（参数：symbol_a, symbol_b, product_line, window=1h/4h/24h）
+
+**WHEN** 请求 `GET /api/v1/analytics/volume-profile`
+**THEN** 从 `clickhousex` 查询某 symbol 在时间窗口内的成交量分布
+
+### FR-008: kafkax Downstream Broadcast
 
 **功能描述**：server 在 storage 成功后通过 `kafkax` 将 accepted facts 广播给下游消费者。
 
@@ -226,7 +282,7 @@ Binance 行情集成面临以下问题：
 **WHEN** `kafkax` 不可达或 handoff 失败
 **THEN** 返回 error，调用 `msg.NakWithDelay(...)` 或进入 dead-letter/告警路径；handoff 完成前不得 Ack
 
-### FR-010: Boundary Enforcement
+### FR-009: Boundary Enforcement
 
 **功能描述**：模块边界通过 CI gate 强制执行。
 
@@ -236,11 +292,51 @@ Binance 行情集成面临以下问题：
 **WHEN** 任何代码 reintroduce `binance-market` 引用
 **THEN** CI no-legacy gate 失败
 
-**WHEN** 模块内声明 storage/query/strategy 所有权
+**WHEN** 模块内声明存储/query/strategy 所有权
 **THEN** CI ownership gate 失败
 
 **WHEN** 模块内定义本地 proto、gRPC ingest service 或独立 wire schema
 **THEN** CI wire contract externality gate 失败
+
+### FR-010: clickhousex OLAP Storage
+
+**功能描述**：server 将 taosx 热数据通过定时 ETL 聚合写入 clickhousex，为 analytics API 和下游分析模块提供 OLAP 查询能力。clickhousex 与 taosx 互补——taosx 负责高频时序写入，clickhousex 负责跨符号聚合、多维分析、因子回看。
+
+**WHEN** ETL scheduler 触发（默认每 5 分钟）
+**THEN** 从 `taosx` 查询最近 5 分钟的 tick/bar 数据
+**AND** 预计算 1m OHLCV、5m VWAP、15m 统计聚合
+**AND** 调用 `clickhousex.InsertBatch(ctx, table, cols, rows)` 批量写入
+
+**WHEN** clickhousex InsertBatch 失败
+**THEN** 记录 error 日志并告警；跳过本批次（ETL 失败不阻塞 taosx 热路径）；下个 ETL 周期自动重试
+
+**WHEN** 查询 `GET /api/v1/analytics/*`
+**THEN** 调用 `clickhousex.Query(ctx, sql, args...)` 执行 OLAP 查询，返回聚合结果
+
+**WHEN** clickhousex 不可达
+**THEN** analytics API 返回 503 + 错误信息 "analytics temporarily unavailable"；实时 API（ticks/bars/depth）不受影响
+
+**WHEN** `market_binance` 业务库不存在
+**THEN** 启动时通过 `clickhousex.Exec(ctx, ddl)` 自动建库建表
+
+### FR-011: Distributed Coordinator Lock
+
+**功能描述**：server 多实例 HA 部署时，通过 redisx 分布式锁确保 coordinator 任务（ETL 调度、归档调度）同一时刻只有一个实例执行。
+
+**WHEN** server 实例启动且需要竞选 coordinator
+**THEN** 调用 `redisx.SetNX(ctx, "lock:binance:coordinator", instanceID, 30s)` 尝试获取锁
+
+**WHEN** 获取锁成功
+**THEN** 启动 ETL scheduler + 归档 scheduler；每 10s 续期 lease（`redisx.Expire`）
+
+**WHEN** 获取锁失败
+**THEN** 进入 standby 模式；每 5s 轮询重试；当持锁实例释放或过期时自动接管
+
+**WHEN** 持锁实例 lease 续期失败（redisx 不可达）
+**THEN** 立即停止 ETL + 归档任务；重新进入竞选状态
+
+**WHEN** 持锁实例正常关闭
+**THEN** 调用 `redisx.Del(ctx, "lock:binance:coordinator")` 主动释放锁
 
 ---
 
@@ -355,17 +451,23 @@ type MarketFactEnvelope struct {
 | Subject | 说明 |
 |---------|------|
 | `binance.market.spot.tick` | 现货成交 |
+| `binance.market.spot.bar` | 现货 K 线 |
 | `binance.market.spot.depth` | 现货深度 |
-| `binance.market.futures_usdt.tick` | U 本位合约成交 |
-| `binance.market.futures_usdt.depth` | U 本位合约深度 |
-| `binance.market.kline.1m` | 1 分钟 K 线 |
+| `binance.market.spot.trade` | 现货逐笔成交 |
+| `binance.market.um_perp.tick` | U 本位合约成交 |
+| `binance.market.um_perp.bar` | U 本位合约 K 线 |
+| `binance.market.um_perp.depth` | U 本位合约深度 |
+| `binance.market.cm_perp.tick` | 币本位合约成交 |
+| `binance.market.cm_perp.bar` | 币本位合约 K 线 |
+| `binance.market.options.tick` | 期权成交 |
+| `binance.market.options.bar` | 期权 K 线 |
 
 - Client 调用 `js.Publish(subj, jsonPayload)`，等待 PubAck 后返回（确保持久化）
 - Server durable consumer 订阅 `binance.market.>`，ManualAck，处理完整链路后 Ack
 
 ### Server Storage / Fanout / API Surface
 
-Server persists Binance-specific facts through `redisx`, `taosx`, `postgresx`, and `ossx` adapters, publishes accepted facts through `kafkax` topic `binance.market.*`, and exposes Gin REST `GET /api/v1/market/*` for market_data pull access. `market_data` consumes Binance facts through these surfaces; it does not own Binance persistence.
+Server persists Binance-specific facts through `taosx`（时序）、`clickhousex`（OLAP 分析）、`postgresx`（元数据）、`redisx`（缓存/幂等/锁）adapters, publishes accepted facts through `kafkax` topic `binance.market.*`, and exposes Gin REST `GET /api/v1/market/*` for market_data pull access. `market_data` consumes Binance facts through these surfaces; it does not own Binance persistence.
 
 ---
 
@@ -623,6 +725,11 @@ server_unavailable
 | `ErrDuplicateConflict` | server 收到同一 key 但 payload 不同的 event | terminal reject，记录冲突详情 | `BNC-006` |
 | `ErrValidation` | server 收到缺少必需字段的 event | terminal reject，含 machine-readable reason | `BNC-007` |
 | `ErrKafkaxDispatchFailed` | `kafkax` fanout handoff 失败 | 重试（指数退避）；不 Ack；超过阈值进入 dead-letter/告警路径 | `BNC-008` |
+| `ErrRedisUnavailable` | redisx 幂等检查或缓存不可达 | 幂等检查失败 → NakWithDelay；缓存失败 → 降级到 taosx 直查 | `BNC-009` |
+| `ErrTaosxWriteFailed` | taosx WriteBatch 写入失败 | NakWithDelay(5s)；MaxDeliver 超过后进入死信 | `BNC-010` |
+| `ErrPostgresUnavailable` | postgresx catalog 查询或 upsert 不可达 | 指数退避重试；超过阈值告警 | `BNC-011` |
+| `ErrOssUploadFailed` | ossx 归档上传失败 | 保留 taosx 热数据；告警；下个调度周期自动重试 | `BNC-012` |
+| `ErrClickhouseUnavailable` | clickhousex ETL 写入或 analytics 查询不可达 | analytics API 返回 503；ETL 跳过本批次；实时 API 不受影响 | `BNC-013` |
 
 ---
 
@@ -770,9 +877,21 @@ github.com/ZoneCNH/binance/
 | natsx PubAck (单 event) | 延迟 P99 | < 10ms | integration test |
 | Server consumer process (validate→store) | 延迟 P99 | < 50ms | integration test |
 | Server validation | 延迟 P99 | < 100μs | `go test -bench` |
-| Server idempotency check | 延迟 P99 | < 1ms | `go test -bench` |
+| redisx idempotency check (SetNX) | 延迟 P99 | < 1ms | `go test -bench` |
+| redisx hot cache read (GET) | 延迟 P99 | < 0.5ms | `go test -bench` |
+| taosx WriteBatch (1000 rows) | 延迟 P99 | < 20ms | integration test |
+| taosx WriteBatch | 吞吐量 | ≥ 100,000 TPS | `go test -bench` |
+| postgresx UpsertSymbol | 延迟 P99 | < 5ms | `go test -bench` |
+| clickhousex InsertBatch (50000 rows) | 延迟 P99 | < 500ms | integration test |
+| clickhousex analytics Query | 延迟 P99 | < 2s | integration test |
+| kafkax Send (async) | 延迟 P99 | < 5ms | integration test |
+| ossx Upload (100MB parquet) | 吞吐量 | ≥ 50 MB/s | integration test |
 | ACK lag (server receive → ACK send) | P99 | < 100ms | integration test |
 | Client restart recovery | 时间 | < 10s | integration test |
+| Gin API /api/v1/market/ticks (redisx hit) | 延迟 P99 | < 5ms | httptest benchmark |
+| Gin API /api/v1/market/depth (redisx hit) | 延迟 P99 | < 1ms | httptest benchmark |
+| Gin API /api/v1/analytics/vwap (clickhousex) | 延迟 P99 | < 2s | httptest benchmark |
+| Gin API /api/v1/instruments (postgresx) | 延迟 P99 | < 20ms | httptest benchmark |
 
 ---
 
