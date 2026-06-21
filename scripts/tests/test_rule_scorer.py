@@ -215,6 +215,14 @@ def test_prompt_missing_redline(tmp_module):
     assert s.redline is True
 
 
+def test_prompt_pass_through_without_local_code_or_prompt(tmp_module):
+    _, module = tmp_module
+    s = rs.score_prompt(module)
+    assert s.score == 100
+    assert s.confidence == "medium"
+    assert s.deductions == []
+
+
 def test_prompt_complete(tmp_module):
     mod_dir, module = tmp_module
     prompt = """## Context
