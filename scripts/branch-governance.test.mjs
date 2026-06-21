@@ -85,6 +85,7 @@ test("classifies merge, fix, delete, close, and publish candidates", () => {
   assert.equal(scan.summary.deleteCandidates, 1);
   assert.equal(scan.summary.closeCandidates, 1);
   assert.equal(scan.summary.unpublishedBranches, 1);
+  assert.equal(scan.summary.worktreePathViolations, 1);
   assert.equal(scan.summary.branchesScanned, 4);
   assert.equal(scan.context.mainSynced, true);
   assert.equal(scan.context.repoClean, true);
@@ -103,8 +104,23 @@ test("classifies merge, fix, delete, close, and publish candidates", () => {
   assert.equal(scan.deleteCandidates[0].branch, "merged-local");
   assert.equal(scan.closeCandidates[0].branch, "stale-branch");
   assert.equal(scan.unpublishedBranches[0].branch, "local-unpublished");
+  assert.deepEqual(scan.worktreePathViolations, [
+    {
+      branch: "feature-fix",
+      actualPath: "/repo/.worktree/feature-fix",
+      expectedPath: "/repo/.worktree/workspaces/feature-fix",
+      reason: "branch-attached worktree path is not canonical",
+    },
+  ]);
+
+  const featureFix = scan.branchInventory.find((entry) => entry.branch === "feature-fix");
+  assert.ok(featureFix);
+  assert.equal(featureFix.worktreePathCompliant, false);
+  assert.equal(featureFix.expectedWorktreePath, "/repo/.worktree/workspaces/feature-fix");
 
   const report = formatHumanReport(scan);
+  assert.match(report, /Worktree path violations: 1/);
+  assert.match(report, /\[WORKTREE\] feature-fix/);
   assert.match(report, /\[MERGE\] #11 feature-merge/);
   assert.match(report, /\[FIX\]   #12 feature-fix/);
   assert.match(report, /\[DELETE\] merged-local/);
