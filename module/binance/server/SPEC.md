@@ -10,13 +10,13 @@
 | Last-Updated | 2026-06-21 |
 | Owner | ZoneCNH |
 | Layer | 数据域 · 行情接入层 |
-| Role | Binance 行情数据的处理 + 存储服务端（natsx 消费 + redisx + postgresx + taosx + kafkax + ossx + Gin REST API） |
+| Role | Binance 行情数据的处理 + 存储服务端（natsx 消费 + redisx + postgresx + taosx + clickhousex + kafkax + ossx + Gin REST API） |
 | Port Interface | natsx JetStream subject `binance.market.*` (消费) + Gin REST HTTP `:8080` (提供给 market_data) |
 | Language | Go |
 | Version | v0.1.0 |
 | Repository | [github.com/ZoneCNH/binance](https://github.com/ZoneCNH/binance)（server/ 子目录） |
 | Go Module Path | `github.com/ZoneCNH/binance`（monorepo，server 端通过 `cmd/binance-server` + `internal/server` 提供） |
-| Related | [CONSTITUTION.md](../../../CONSTITUTION.md), [ARCHITECTURE.md](../../../ARCHITECTURE.md), [module/binance/SPEC.md](../SPEC.md), [module/domain_market](../../domain_market/), [module/natsx](../../natsx/), [module/redisx](../../redisx/), [module/taosx](../../taosx/), [module/kafkax](../../kafkax/), [module/ossx](../../ossx/), [module/postgresx](../../postgresx/) |
+| Related | [CONSTITUTION.md](../../../CONSTITUTION.md), [ARCHITECTURE.md](../../../ARCHITECTURE.md), [module/binance/SPEC.md](../SPEC.md), [module/domain_market](../../domain_market/), [module/natsx](../../natsx/), [module/redisx](../../redisx/), [module/taosx](../../taosx/), [module/clickhousex](../../clickhousex/), [module/kafkax](../../kafkax/), [module/ossx](../../ossx/), [module/postgresx](../../postgresx/) |
 
 ---
 
