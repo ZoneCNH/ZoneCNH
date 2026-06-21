@@ -39,7 +39,7 @@ L0 kernel（stdlib-only）
             └─ L2 存储扩展：redisx / kafkax / natsx / postgresx / taosx / ossx / clickhousex
                  └─ L2.5 域共享：decimalx / domainx / domain_market / domain_macro / domain_exchange
                       └─ 业务域：数据域 → 分析域 ⇄ 决策域 → 执行域
-                           └─ x.go（Composition Root，只做装配）
+                           └─ composer（Composition Root，只做装配）
 ```
 
 **边界守卫完整**
@@ -95,9 +95,9 @@ contracts 未冻结
 
 `domain-market`（kebab）对应仓库 `domain_market`（snake），`domain-macro` 对应 `domain_macro`，`domain-exchange` 对应 `domain_exchange`——目录命名、仓库命名、SPEC 内部引用曾长期并存。当前 `module/README.md` 已切到 `snake_case` 显示层，剩余工作不再是重新定义命名，而是把旧路径投影限制在同步文档与历史引用清单中，不再扩散到主分析报告。
 
-#### 问题 A5：x.go 说明入口仍有历史叙述残留（低）
+#### 问题 A5：x.go / composer 说明入口已完成口径收口（低）
 
-`x.go` 的职责口径已在部分正文中回写为治理 CLI / 组合根装配入口，但顶部架构图、分层索引、原则文档、基础层文档与分析报告仍混用旧叙述；当前未完成的是全链路统一，而不是职责定义本身。
+`x.go` 已固定为治理/工具 CLI，`composer` 已固定为运行时 Composition Root；顶部架构图、分层索引、原则文档、基础层文档与本分析报告已统一收口，后续只需保持这条分工在新增文档中的一致性。
 
 ---
 
@@ -207,12 +207,12 @@ Prompt（S5）和 Evidence（S6）几乎为零，表明四源评分体系的后�
 | 占位符先实化 | 1KB 以下 SPEC 先补成完整需求，再进入后续阶段。 |
 | 命名先定基准 | 新增文档、任务与引用只使用 `snake_case`，历史 kebab 仅保留在迁移说明。 |
 | 投影分层 | `L2.5` 的目标命名口径与当前文件投影分开维护；`module/README.md` 只负责历史路径同步，不把投影写成已完成重命名事实。 |
-| 入口单一 | `x.go` 只保留组合根职责，不再派生第二套模块边界。 |
+| 入口单一 | `composer` 只保留组合根职责，不再派生第二套模块边界。 |
 
 ### 5.1.1 当前收口结果
 
-- 已完成：`#4` 固定 L2.5 命名基准与迁移表；`#8` 清理 L2.5 遗留 kebab 引用，并回写统一命名 / 对齐同步文档；`contracts` P1 / P2 兼容投影别名（`RegimeSnapshotEvent` / `RegimeCardEvent` / `DecisionCardEvent` / `MarketRegimePort` / `MacroRegimePort` / `RegimeEnginePort`）已在 contracts 仓库以 type alias 方式补齐；`README.md` 与 `ARCHITECTURE.md` 的正文说明已开始回写到治理 CLI / composer 口径，但顶层架构图仍有历史残留。
-- 仍待完成：`#1`-`#3`、`#5`-`#7`、`#9`-`#12`；其中 `#7` 还未全链路完成，当前仍需统一 `README.md`、`ARCHITECTURE.md`、`docs/architecture/README.md`、`docs/architecture/01-overview.md`、`02-domain-layers.md`、`03-boundaries.md`、`04-principles.md`、`05-foundation.md` 的 `x.go / bootstrap / composer` 口径。
+- 已完成：`#4` 固定 L2.5 命名基准与迁移表；`#7` 统一 `x.go / composer` 说明入口并回写对齐文档；`#8` 清理 L2.5 遗留 kebab 引用，并回写统一命名 / 对齐同步文档；`contracts` P1 / P2 兼容投影别名（`RegimeSnapshotEvent` / `RegimeCardEvent` / `DecisionCardEvent` / `MarketRegimePort` / `MacroRegimePort` / `RegimeEnginePort`）已在 contracts 仓库以 type alias 方式补齐；`README.md`、`ARCHITECTURE.md` 与 `docs/architecture/README.md` / `01-overview.md` / `02-domain-layers.md` / `03-boundaries.md` / `04-principles.md` / `05-foundation.md` 的入口口径已统一。
+- 仍待完成：`#1`-`#3`、`#5`-`#6`、`#9`-`#12`。
 
 ### 5.2 P0 — 基线解锁（1-2 周）
 
@@ -229,7 +229,7 @@ Prompt（S5）和 Evidence（S6）几乎为零，表明四源评分体系的后�
 |---|---|---|---|---|
 | 5 | 从 `regime_engine`、`signal_factory` 等核心链路开始拆分分析域 / 决策域 / 执行域 tasks | A2、S4 | 21 个核心模块的任务树 | 三个业务域全部进入可执行状态 |
 | 6 | 按 AC → TC → tasks 顺序补齐测试与执行制品 | S2、S4、G2 | TC、tasks、prompt 的串联补丁 | 不再出现“有任务无验收” |
-| 7 | 统一 `sre/docs/x.go/` 与 `ARCHITECTURE.md` 的 `x.go` 说明入口 | A5 | 单一入口说明与引用更新 | `README.md` / `ARCHITECTURE.md` 的正文说明已部分对齐，但顶层架构图与 `docs/architecture/README.md`、`01-overview.md`、`02-domain-layers.md`、`03-boundaries.md`、`04-principles.md`、`05-foundation.md` 仍需回写 |
+| 7 | 统一 `sre/docs/x.go/` 与 `ARCHITECTURE.md` 的 `x.go` 说明入口 | A5 | 单一入口说明与引用更新 | `README.md` / `ARCHITECTURE.md` / `docs/architecture/README.md` / `01-overview.md` / `02-domain-layers.md` / `03-boundaries.md` / `04-principles.md` / `05-foundation.md` 的入口口径已统一；后续新增文档需沿用 `x.go`(治理 CLI) / `composer`(运行时组合根) 的分工 |
 | 8 | ✅ 已完成：清理 L2.5 遗留 kebab 引用，并回写统一命名 / 对齐同步文档（`docs/report/repo-naming-unification-20260620.md`） | A3、A4 | 引用替换、迁移记录、对齐说明 | 目录、仓库、SPEC 引用分层归位，历史路径投影不再混写 |
 
 ### 5.4 P2 — 质量收敛（持续）
@@ -249,7 +249,7 @@ Prompt（S5）和 Evidence（S6）几乎为零，表明四源评分体系的后�
 - 分析域、决策域、执行域均形成可执行 tasks。
 - 数据域补齐 tasks，避免继续停留在低覆盖状态。
 - L2.5 目标命名基准已统一为 `snake_case`，历史路径投影在同步文档中显式隔离，不再与主分析报告混写。
-- `x.go` 的主文档口径已开始改为治理 CLI / composer 组合根分工，但顶层架构图与 `docs/architecture/README.md`、`01-overview.md`、`02-domain-layers.md`、`03-boundaries.md`、`04-principles.md`、`05-foundation.md` 仍需补齐同步。
+- `x.go` 的主文档口径已完成治理 CLI / `composer` 组合根分工同步，后续新增文档需保持同一入口分工。
 - S5 / S6 不再长期停留在个位数覆盖。
 - 关键 ADR 已补录，`live_integration` 继续按里程碑推进。
 

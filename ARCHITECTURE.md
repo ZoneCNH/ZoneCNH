@@ -6,7 +6,7 @@
 
 ## 架构视图
 
-依赖、业务流和运行时组装刻意分开呈现：业务数据从数据域走向执行域，代码依赖不反向穿透；`x.go` 是组合根（Composition Root），不是业务链路终点。
+依赖、业务流和运行时组装刻意分开呈现：业务数据从数据域走向执行域，代码依赖不反向穿透；`x.go` 是治理/工具 CLI，`composer` 是组合根（Composition Root），不是业务链路终点。
 
 > 🔄 三引擎数据流全景（market_engine→S / macro_engine→M / regime_engine→DecisionCard）、M×S 矩阵、契约固化清单 → **[DATAFLOW.md](./DATAFLOW.md)**
 >
@@ -17,7 +17,7 @@
 ```text
 依赖方向：左侧模块可以导入右侧模块。
 
-x.go ───────────────► 基座运行时 / L2.5 / 数据域 / 分析域 / 决策域 / 执行域
+composer ───────────► 基座运行时 / L2.5 / 数据域 / 分析域 / 决策域 / 执行域
 
 数据域 ─┐
 分析域 ─┼──────────► L2.5 Domain Shared
@@ -86,7 +86,7 @@ factor_engine ◄──► feature_store ◄──► factor_eval
 ### 运行时组装
 
 ```text
-x.go / service main
+composer / service main
   └── bootstrap.Build(ctx, Spec{Module, Stores, Hooks})
       ├── validate module/context
       ├── configx: .env + XGO_{MODULE}_*
@@ -151,7 +151,7 @@ backtestx ──► optimizer ──► strategyx ──► maestro             
 | 分析域 | 因子计算、特征存储、因子评估、市场/宏观环境分类、数据流管线、M×S 联合决策（三引擎：market_engine→S / macro_engine→M / regime_engine→M+S） | factor_engine, feature_store, factor_eval, market_regime, macro_regime, regime_engine, ms_brain, flowx                                                              |
 | 决策域 | 信号生成、历史回测、参数优化、策略工厂、工作流编排（并行协作）                                                                  | signal_factory, backtest_engine, optimizer, backtestx, strategyx, maestro                                                                          |
 | 执行域 | 风险管理、订单执行、仓位管理、结算                                                                                              | risk_engine, order_engine, portfolio_engine, settlement, riskx, orderx, positionx                                                                              |
-| 入口   | 启动、配置加载、依赖组装、生命周期控制                                                                                        | x.go                                                                                                                                                       |
+| 入口   | 启动、配置加载、依赖组装、生命周期控制                                                                                        | composer                                                                                                                                                   |
 | 横切   | 告警、可观测性                                                                                                                | alertx, observex                                                                                                                                           |
 
 ## Foundation 规格文档（公开投影）
@@ -171,7 +171,7 @@ Foundation 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中在 
 | [`CONSTITUTION.md`](./CONSTITUTION.md)                                   | 系统宪法 — FoundationX 全系统最高治理文件，覆盖模块实现与交付管线 |
 | [`docs/sre/foundation-cicd-plan.md`](./docs/sre/foundation-cicd-plan.md) | SRE CI/CD — 基座层 19 模块 4 阶段部署方案、机器池架构、标准化模板   |
 
-19 个基座模块的独立规格均为 23 节结构：行为规格 WHEN/THEN、接口契约、业务规则、错误处理、边界场景、验收标准、目录结构、CI Gate、测试矩阵、性能预算、可观测输出、发布 DoD。完整索引见 [`module/README.md`](./module/README.md)。`x.go` 组合根仍作为运行时入口维护，但不再作为 `module/` 下的模块规格。
+19 个基座模块的独立规格均为 23 节结构：行为规格 WHEN/THEN、接口契约、业务规则、错误处理、边界场景、验收标准、目录结构、CI Gate、测试矩阵、性能预算、可观测输出、发布 DoD。完整索引见 [`module/README.md`](./module/README.md)。`x.go` 负责治理/工具 CLI，`composer` 负责运行时组合根；两者都不作为 `module/` 下的模块规格。
 
 | 层级          | 模块          | 完整规格                                                         |
 | ------------- | ------------- | ---------------------------------------------------------------- |
@@ -276,7 +276,7 @@ Foundation 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中在 
 | `L2.5`                                              | 多个业务域共享的领域值对象、枚举、语义模型                                   | Provider 实现、策略逻辑、执行策略                |
 | `contracts`                                         | 跨域稳定端口、事件协议、DTO 契约                                             | 域内接口、临时适配器、通用工具函数、领域模型全集 |
 | `transportx`                                        | 应用通信底座契约：Envelope/Endpoint、ServiceIdentity、QoS、Codec、RPC、EventBus、Stream、Outbox/Inbox、Audit Plane、Data Classification、SchemaRegistry、conformance gate | 具体 broker/client、协议 SDK、业务语义、领域模型全集 |
-| `x.go`                                              | 配置加载、依赖创建、模块 wiring、生命周期管理                                | 因子计算、信号判断、风控规则、订单路由           |
+| `composer`                                          | 配置加载、依赖创建、模块 wiring、生命周期管理                                | 因子计算、信号判断、风控规则、订单路由           |
 | `observex` / `alertx`                               | 指标、追踪、日志、告警事件                                                   | 业务决策和风控放行逻辑                           |
 
 ## 域间关系与反馈
@@ -285,7 +285,7 @@ Foundation 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中在 
 - **分析域 ↔ 决策域**：因子驱动信号生成；回测结果和评估指标反馈到 factor_eval / feature_store。
 - **决策域 → 执行域**：信号必须先经过 risk_engine，禁止绕过风控直接调用 order_engine。
 - **执行域 → 决策域**：通过 fills / positions / PnL / exposure events 反馈组合再平衡和策略调整，不反向直接调用决策内部实现。
-- **x.go → 各域**：只做启动和组装依赖，不参与业务链路计算。
+- **composer → 各域**：只做启动和组装依赖，不参与业务链路计算。
 
 ## 依赖守卫
 
@@ -301,7 +301,7 @@ Foundation 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中在 
 | 执行反馈          | fills / positions / PnL / exposure 以事件进入决策域               | execution 包同步调用 strategy / backtest 内部实现                                            | 事件 topic、DTO 和消费方在 contracts 固化 |
 | contracts         | 跨域端口、事件协议、DTO                                           | 领域模型全集、通用工具、域内临时接口                                                         | 新增契约必须说明消费方、生产方和稳定期    |
 | transportx        | Envelope/Endpoint、ServiceIdentity、QoS、Codec、RPC、EventBus、Stream、Outbox/Inbox、Audit Plane、Data Classification、SchemaRegistry、conformance gate | 具体 broker/client、协议 SDK、业务语义、领域模型                                             | 新增通信契约必须说明 runtime / adapter 边界、QoS/codec/schema 兼容期和审计要求 |
-| x.go              | 读取配置、创建依赖、连接模块、管理生命周期                        | 因子计算、信号生成、风控判断、订单路由                                                       | 入口包只出现 wiring / lifecycle 测试      |
+| composer          | 读取配置、创建依赖、连接模块、管理生命周期                        | 因子计算、信号生成、风控判断、订单路由                                                       | 入口包只出现 wiring / lifecycle 测试      |
 
 ## 契约固化优先级
 
@@ -325,7 +325,7 @@ Foundation 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中在 
 10. **数据职责不跨域** — 数据域只负责采集、标准化和存储，因子计算在分析域，策略逻辑在决策域
 11. **执行抽象交易所差异** — order_engine 对上层暴露统一接口，内部适配各交易所
 12. **反馈通过事件表达** — 执行结果、仓位、PnL、风险暴露以事件反馈决策域，避免执行域反向调用决策内部实现
-13. **x.go 只做组合根** — 不含业务逻辑，仅负责启动、配置加载、依赖组装和生命周期控制
+13. **composer 只做组合根** — 不含业务逻辑，仅负责启动、配置加载、依赖组装和生命周期控制
 14. **域内平级协作** — 同域模块不编号、不分先后，按需协作
 
 ## 进度校准标准
@@ -353,7 +353,7 @@ Foundation 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中在 
 | 基座                  | [testkitx](https://github.com/ZoneCNH/testkitx)                 | v0.4.0 | ✅ 已发布 | Spec→Code 完成 | Fake / Fixture / Golden / Contract / Leak / Boundary / Manifest 测试工具包；test-only；禁止生产导入；factory grade 不适用 |
 | 基座                  | [resiliencx](https://github.com/ZoneCNH/resiliencx)             | v1.0.2 | ✅ 已发布 | Spec→Code 完成 | 运行时弹性策略库：timeout/retry/circuit/bulkhead/rate/fallback、Compose、InstrumentStrategy、panic recovery；v1.0.2 GitHub Release 已发布，Release Check 27777166525 通过 |
 | 基座                  | [schedulex](https://github.com/ZoneCNH/schedulex)               | v1.0.0 | ✅ 已发布 | Spec→Code 完成 | cron/interval/delay 调度、OverlapPolicy（Skip/Queue/Replace）、MisfirePolicy（Skip/RunOnce/CatchUp）、EventSink、Locker、Clock 注入；98.2% 覆盖，release-check 通过 |
-| 基座                  | [bootstrap](https://github.com/ZoneCNH/bootstrap)               | v0.2.0 | ✅ 已发布 | Spec→Code 完成 | L1 Assembly 通用进程组装层：位于 L1 primitives 之上、`x.go` 入口之下，统一组装 configx/observex/resiliencx/lifecycx + 7 存储 adapter 可选构造（StoreSet 位掩码）+ 信号捕获；不承载业务语义、service listener、domain contracts；✅ GitHub Release v0.2.0 已发布；BLK-009 resolved ✅；factory-ready |
+| 基座                  | [bootstrap](https://github.com/ZoneCNH/bootstrap)               | v0.2.0 | ✅ 已发布 | Spec→Code 完成 | L1 Assembly 通用进程组装层：位于 L1 primitives 之上、`composer` 入口之下，统一组装 configx/observex/resiliencx/lifecycx + 7 存储 adapter 可选构造（StoreSet 位掩码）+ 信号捕获；不承载业务语义、service listener、domain contracts；✅ GitHub Release v0.2.0 已发布；BLK-009 resolved ✅；factory-ready |
 | 基座                  | [xlibgate](https://github.com/ZoneCNH/xlibgate)                 | v1.0.0 | ✅ 已发布 | Spec→Code 完成 | check / l2 / trust 三组门禁；全管线评分 100 |
 | 基座                  | [xlib_standard](https://github.com/ZoneCNH/xlib_standard)       | v1.0.1 | ✅ 已发布 | Spec→Code 完成 | 标准事实源、Go Reference Template；Generator/Harness/Evidence 已拆分；v1.0.1 GitHub Release 与 release-preflight 已通过，不参与运行时 import |
 | 基座                  | [xlib_harness](https://github.com/ZoneCNH/xlib_harness)         | v0.1.1 | ✅ 已发布 | Spec→Code 完成 | 模块生成器与门禁执行器：generate/scaffold、spec-lint、boundary-check、traceability-gate；✅ v0.1.1 发布基线已通过 go test/race/vet/coverage/benchmark/CLI smoke 验收 |
@@ -501,7 +501,7 @@ Foundation 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中在 
 | 执行域            | orderx                                                                                                    | `/home/orderx/`                             |
 | 执行域            | positionx                                                                                                 | `/home/positionx/`                          |
 | **入口**          |                                                                                                           |                                             |
-| 入口              | x.go                                                                                                      | `/home/x.go/`                               |
+| 入口              | composer                                                                                                  | `/home/composer/`                           |
 
 > 完整仓库 URL 映射见上方状态总览表。分析域（flowx）、决策域（backtestx/strategyx/maestro）、执行域（riskx/orderx/positionx）模块 SPEC 已发布（v0.1.0-draft）。
 
@@ -534,6 +534,6 @@ Phase 4: 平台化   ← settlement + alertx + alternative_data
          先固化 PositionSnapshot / PnLReport / ExposureEvent；
          生产化运维能力；执行反馈以事件回到决策域
 
-Phase 5: 入口验收 ← x.go
+Phase 5: 入口验收 ← composer
          只补最终 wiring 和生命周期，验证完整闭环，不新增业务逻辑
 ```

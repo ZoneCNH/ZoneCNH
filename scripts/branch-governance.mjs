@@ -15,6 +15,11 @@
 import { execFileSync } from "child_process";
 import { dirname, resolve } from "path";
 import { fileURLToPath } from "url";
+import {
+  canonicalWorktreePath,
+  describeBranchWorktreePath,
+  parseWorktreePorcelain,
+} from "./worktree-policy.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const projectRoot = resolve(__dirname, "..");
@@ -34,41 +39,15 @@ const defaultRun = (cmd, args, opts = {}) => {
 };
 
 const splitLines = (text) => text.split(/\r?\n/);
-const canonicalWorktreePath = (root, branch) => resolve(root, ".worktree", "workspaces", branch);
-
-const parseWorktreePorcelain = (porcelain) => {
-  const branchToPath = new Map();
-  let currentPath = null;
-
-  for (const rawLine of splitLines(porcelain)) {
-    const line = rawLine.trim();
-    if (!line) {
-      currentPath = null;
-      continue;
-    }
-    if (line.startsWith("worktree ")) {
-      currentPath = line.slice("worktree ".length).trim();
-      continue;
-    }
-    if (line.startsWith("branch ") && currentPath) {
-      branchToPath.set(
-        line.slice("branch ".length).trim().replace(/^refs\/heads\//, ""),
-        currentPath,
-      );
-    }
-  }
-
-  return branchToPath;
-};
 
 export function buildScan({ run = defaultRun, now = () => new Date() } = {}) {
   const getGitRoot = run("git", ["rev-parse", "--show-toplevel"]);
   const hasGh = !!run("gh", ["--version"]);
   const timestamp = now().toISOString();
 
-  const worktreeBranchToPath = getGitRoot
+  const worktreeState = getGitRoot
     ? parseWorktreePorcelain(run("git", ["worktree", "list", "--porcelain"]))
-    : new Map();
+    : { branchToPath: new Map() };
 
   const openPrs = hasGh
     ? JSON.parse(
@@ -102,13 +81,12 @@ export function buildScan({ run = defaultRun, now = () => new Date() } = {}) {
   const branchInventory = [];
 
   for (const branch of branchNames) {
-    const branchTracked = worktreeBranchToPath.has(branch);
-    const branchPath = worktreeBranchToPath.get(branch) || null;
-    const expectedWorktreePath = getGitRoot ? canonicalWorktreePath(getGitRoot, branch) : null;
-    const isRootCheckout = branchTracked && branchPath === getGitRoot;
-    const worktreePathCompliant = branchTracked
-      ? isRootCheckout || branchPath === expectedWorktreePath
-      : null;
+    const branchTracked = worktreeState.branchToPath.has(branch);
+    const branchPath = worktreeState.branchToPath.get(branch) || null;
+    const worktreePathStatus = branchTracked
+      ? describeBranchWorktreePath({ root: getGitRoot, branchName: branch, actualPath: branchPath })
+      : { expectedPath: getGitRoot ? canonicalWorktreePath(getGitRoot, branch) : null, isRootCheckout: false, compliant: null };
+    const { expectedPath: expectedWorktreePath, isRootCheckout, compliant: worktreePathCompliant } = worktreePathStatus;
     const upstreamCount = run("git", ["rev-list", "--left-right", "--count", `main...${branch}`]);
     const [aheadMain, aheadBranch] = upstreamCount
       ? upstreamCount.split(/\s+/).map((n) => Number(n) || 0)
