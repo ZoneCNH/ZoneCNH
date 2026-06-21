@@ -2,11 +2,11 @@
 
 ## Objective
 
-Establish the complete documentation set for `module/binance/server`, including spec, traceability, implementation plan, and 8 task definitions.
+Establish the complete documentation set for `module/binance/server`, including spec, traceability, implementation plan, and current task definitions.
 
 ## Scope
 
-The server implements the Binance-specific side of the `MarketDataService` gRPC contract — it accepts ingest streams, validates, deduplicates, acks, and dispatches downstream. This task defines the documentation that specifies these responsibilities without reaching into exchange connectivity or physical storage.
+The server implements the Binance-specific consumer side of the `natsx` / `domain_market` contract: it consumes `MarketFactEnvelope` messages, validates, deduplicates, persists Binance market facts, exposes read/admin APIs, and fans out accepted facts through `kafkax`. This task defines the documentation that specifies these responsibilities without reaching into exchange connectivity or generic market/strategy ownership.
 
 ## Deliverables
 
@@ -14,22 +14,24 @@ The server implements the Binance-specific side of the `MarketDataService` gRPC 
 - `module/binance/server/SPEC.md`
 - `module/binance/server/TRACEABILITY.md`
 - `module/binance/server/IMPLEMENTATION-PLAN.md`
-- 8 server task specs covering:
-  - gRPC ingest server skeleton
+- server task specs covering:
+  - `natsx` consumer
   - Validation
   - Idempotent acceptance
-  - Ingest ACK
-  - Downstream dispatch
+  - Durable storage
+  - `kafkax` fanout
+  - Query/admin API
   - Gin admin
-  - Contract tests
+  - Consumer/envelope tests
   - Boundary gates
+  - Archived pre-v2 tasks clearly marked as historical reference only
 
 ## Acceptance Criteria
 
 1. Server owns Binance-specific ingest acceptance semantics.
 2. Server does not connect to Binance exchange endpoints.
-3. Server does not own physical storage, query, or strategy.
-4. Server docs define validation, idempotency, ACK, and dispatch responsibilities.
+3. Server owns Binance-specific storage/query/fanout while not owning generic market data or strategy semantics.
+4. Server docs define validation, idempotency, durable storage, API, ManualAck, and `kafkax` fanout responsibilities.
 5. Server boundary gates are documented and enforceable.
 
 ## Dependencies

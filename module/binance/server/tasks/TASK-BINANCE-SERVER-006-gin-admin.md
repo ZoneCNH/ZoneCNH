@@ -26,7 +26,7 @@ Endpoints:
 ## Acceptance Criteria
 
 - `/healthz` reports process liveness.
-- `/readyz` verifies ingest server and downstream dispatch readiness.
+- `/readyz` verifies natsx consumer and storage/fanout dependency readiness.
 - `/debug/*` is read-only.
 - `/admin/*` mutates server-local state only.
 - admin cannot mutate client connector state.
@@ -35,6 +35,9 @@ Endpoints:
 
 ## Dependencies
 
-- SERVER-001
-- SERVER-005
+- SERVER-010
+- SERVER-011
+- SERVER-012
+- SERVER-013
+- SERVER-014
 - transport/admin policy

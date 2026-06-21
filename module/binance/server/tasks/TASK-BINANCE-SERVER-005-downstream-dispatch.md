@@ -1,5 +1,9 @@
 # TASK-BINANCE-SERVER-005 Downstream Dispatch
 
+> Archived v2.0.0: this `market_data` DownstreamDispatchPort task belongs to the pre-`natsx` design. Do not use it for implementation. Use TASK-BINANCE-SERVER-012/013/014/015/016 for storage, API, and `kafkax` delivery.
+
+Status: Archived
+
 ## Objective
 
 Dispatch accepted Binance market events to downstream exchange-neutral market_data infrastructure.

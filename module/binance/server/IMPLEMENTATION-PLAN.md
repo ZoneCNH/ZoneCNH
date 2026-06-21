@@ -1,10 +1,11 @@
 # module/binance/server IMPLEMENTATION PLAN
 
-## Phase 1: Contract Server Skeleton
+## Phase 1: `natsx` Consumer Skeleton
 
-- consume generated gRPC server interface
-- implement stream handler shell
-- add contract fixtures
+- consume `natsx` JetStream consumer APIs
+- consume `domain_market.MarketFactEnvelope` semantics
+- implement consumer loop shell
+- add envelope fixtures
 
 ## Phase 2: Validation
 
@@ -22,18 +23,27 @@
 
 ## Phase 4: ACK / Reject
 
-- implement ACK generation
-- implement reject response generation
-- define stream-level and event-level response behavior
-- test checkpoint-driving ACK semantics
+- implement ManualAck after durable processing
+- implement terminal reject / retryable failure behavior
+- define event-level processing result behavior
+- test that no ManualAck occurs before validation, idempotency, storage, and fanout boundaries pass
 
-## Phase 5: Downstream Dispatch
+## Phase 5: Durable Storage
 
-- implement downstream market_data port adapter
-- dispatch accepted events
-- ensure duplicate accepted events do not duplicate dispatch
+- implement Redisx idempotency coordination
+- implement Taosx hot fact writes
+- implement Postgresx metadata/index writes where required
+- implement OSSx archive path where required
+- ensure duplicate accepted events do not duplicate storage
 
-## Phase 6: Admin and Observability
+## Phase 6: API and `kafkax` Fanout
+
+- implement read/query API for Binance-owned market facts
+- implement `kafkax` accepted-fact fanout
+- ensure duplicate accepted events do not duplicate fanout
+- classify storage/fanout failures for retry behavior
+
+## Phase 7: Admin and Observability
 
 - implement `/healthz`
 - implement `/readyz`
@@ -41,16 +51,17 @@
 - implement safe `/admin/*`
 - expose metrics/logging/tracing dimensions
 
-## Phase 7: Contract and Integration Tests
+## Phase 8: Consumer and Integration Tests
 
-- contract tests with client
+- envelope compatibility tests with client publisher fixtures
 - duplicate/retry tests
-- stream reconnect tests
-- downstream dispatch tests
+- JetStream redelivery tests
+- storage/API/`kafkax` fanout tests
 
-## Phase 8: Boundary Gates
+## Phase 9: Boundary Gates
 
 - no client internal imports
 - no `binance-market`
-- no storage/query/strategy ownership
-- no local proto ownership
+- no exchange connector ownership
+- no generic market data or strategy ownership
+- no local proto/gRPC/contracts ownership

@@ -2,7 +2,7 @@
 
 `module/binance/client` is the Binance exchange-facing collector.
 
-It connects to Binance market_data endpoints, converts exchange-native events into canonical ZoneCNH market events, persists local delivery state, and sends events to `module/binance/server`.
+It connects to Binance market_data endpoints, converts exchange-native events into `domain_market.MarketFactEnvelope` payloads, and publishes them to `module/binance/server` through `natsx` JetStream.
 
 ## Owns
 
@@ -12,20 +12,21 @@ It connects to Binance market_data endpoints, converts exchange-native events in
 - raw event normalization
 - raw-to-canonical mapping
 - idempotency key generation
-- SQLite spool
-- checkpoint
-- gRPC sender
+- `domain_market` envelope construction
+- `natsx` publisher
+- JetStream PubAck evidence
 - client Gin admin endpoints
 
 ## Does Not Own
 
-- gRPC ingest server implementation
+- NATS JetStream consumer implementation
 - server-side idempotent acceptance
-- durable server ACK
-- downstream dispatch
-- storage/query/strategy
+- durable server processing state
+- server storage/API/fanout
+- storage/query/strategy ownership
 - canonical domain type definitions
-- proto definitions
+- local proto definitions
+- gRPC / proto ingest contracts
 - `binance-market`
 
 ## Sends To
@@ -34,10 +35,10 @@ It connects to Binance market_data endpoints, converts exchange-native events in
 module/binance/server
 ```
 
-over contracts-defined gRPC.
+over `natsx` JetStream subjects using `domain_market` payload semantics.
 
 ## Delivery Contract
 
-The client provides at-least-once delivery.
+The client publishes with at-least-once delivery semantics.
 
-It advances checkpoint only after durable ACK from server.
+It records publish evidence only after JetStream PubAck. Server acceptance, durable storage, query API visibility, and `kafkax` fanout remain server-owned concerns.

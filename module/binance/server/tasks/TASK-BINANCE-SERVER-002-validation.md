@@ -2,7 +2,7 @@
 
 ## Objective
 
-Validate incoming Binance market_data ingest requests before acceptance.
+Validate incoming `domain_market.MarketFactEnvelope` JSON messages from `natsx` before storage/fanout.
 
 ## Scope
 
@@ -16,6 +16,7 @@ Validation covers:
 - idempotency key
 - source metadata
 - payload shape
+- schema/version compatibility
 
 ## Deliverables
 
@@ -30,11 +31,10 @@ Validation covers:
 - unknown product line is rejected.
 - malformed instrument identity is rejected.
 - payload mismatch is rejected.
-- validation rejects do not dispatch downstream.
+- validation rejects do not write storage/fanout and do not Ack.
 - reject reason is machine-readable.
 
 ## Dependencies
 
-- SERVER-001
+- SERVER-010
 - `module/domain_market`
-- `module/contracts`

@@ -4,7 +4,7 @@
 >
 > **v2.0.0 架构变更**：gRPC bidi stream + 同进程 cs 接口 → natsx JetStream 网络通信；
 > server 获得 Binance 专属全栈存储（taosx + postgresx + redisx + ossx）；
-> Gin REST API 替代 net/http admin 端点，作为 market_data 的唯一数据接口。
+> 新增 Gin REST Market API 作为 market_data 的唯一数据接口；运维 admin/health 端点迁移为 Gin server-local endpoints。
 
 ---
 
@@ -18,7 +18,7 @@
 | FR-004 | taosx Persistence — 规范化事件写入 TDengine 超表，支持 WriteBatch + QueryRange | AC-010 ~ AC-012 | TC-007, TC-008 | TASK-BINANCE-SERVER-013 | ⬜ Pending |
 | FR-005 | postgresx Catalog — 维护 symbol 注册、时钟偏移、采集进度三张元数据表 | AC-013 ~ AC-015 | TC-009 | TASK-BINANCE-SERVER-012 | ⬜ Pending |
 | FR-006 | kafkax Dispatch — 处理成功后广播到下游 topic，symbol 为 partition key | AC-016 ~ AC-018 | TC-010, TC-011 | TASK-BINANCE-SERVER-014 | ⬜ Pending |
-| FR-007 | Gin Market API — /v1/market/* REST 接口，作为 market_data 唯一数据接口 | AC-019 ~ AC-024 | TC-012 ~ TC-015 | TASK-BINANCE-SERVER-015 | ⬜ Pending |
+| FR-007 | Gin Market API — /api/v1/market/* REST 接口，作为 market_data 唯一数据接口 | AC-019 ~ AC-024 | TC-012 ~ TC-015 | TASK-BINANCE-SERVER-015 | ⬜ Pending |
 | FR-008 | ossx Archival — 每日定时将 taosx 中超 RetentionDays 数据归档到对象存储 | AC-025 ~ AC-027 | TC-016, TC-017 | TASK-BINANCE-SERVER-016 | ⬜ Pending |
 | FR-009 | Boundary Enforcement — CI gate 阻断 server 导入 client/cs 包；go.mod 合规检查 | AC-028 ~ AC-030 | TC-018, TC-019 | TASK-BINANCE-SERVER-008 | ⬜ Pending |
 
@@ -28,7 +28,7 @@
 
 | BR ID | 业务规则 | 验证方式 | Task | 实现状态 |
 |-------|----------|----------|------|:--------:|
-| BR-001 | natsx ManualAck — 全链路写入（redisx+taosx+kafkax）成功后才 Ack，失败时 NakWithDelay | TC-002: 处理失败→NakWithDelay 集成测试 | TASK-BINANCE-SERVER-010 | ⬜ |
+| BR-001 | natsx ManualAck — 全链路写入（redisx+taosx+postgresx+kafkax handoff）成功后才 Ack，失败时 NakWithDelay | TC-002: 处理失败→NakWithDelay 集成测试 | TASK-BINANCE-SERVER-010 | ⬜ |
 | BR-002 | Idempotency At Most Once — 相同 (product_line, exchange_time, event_type, symbol) 最多写入 taosx 一次 | TC-005, TC-006: SetNX 原子性集成测试 | TASK-BINANCE-SERVER-011 | ⬜ |
 | BR-003 | Cold-Write-First — ossx 上传确认（ETag）后才从 taosx 删除归档段数据，禁止先删后写 | TC-016: 上传失败→taosx 未删除验证 | TASK-BINANCE-SERVER-016 | ⬜ |
 | BR-004 | Server Owns Storage — server 独占 taosx/postgresx/redisx/ossx（Binance 专属），market_data 禁止直连 | CI Gate: BOUNDARY-GATES.md §7 | TASK-BINANCE-SERVER-008 | ⬜ |
@@ -44,8 +44,8 @@
 | NFR-S01 | natsx consumer 消息处理延迟（receive→Ack）P99 < 50ms | 性能预算 | integration test: JetStream latency |
 | NFR-S02 | redisx SetNX 幂等检查延迟 P99 < 1ms | 性能预算 | `go test -bench BenchmarkIdempotencyCheck` |
 | NFR-S03 | taosx WriteBatch 吞吐量 ≥ 10万 TPS（批量参数绑定） | 性能预算 | `go test -bench BenchmarkWriteBatch` |
-| NFR-S04 | Gin API /v1/market/ticks 响应延迟 P99 < 20ms（redisx cache 命中） | 性能预算 | httptest benchmark |
-| NFR-S05 | Gin API /v1/market/depth P99 < 1ms（redisx 直接命中） | 性能预算 | httptest benchmark |
+| NFR-S04 | Gin API /api/v1/market/ticks 响应延迟 P99 < 20ms（redisx cache 命中） | 性能预算 | httptest benchmark |
+| NFR-S05 | Gin API /api/v1/market/depth P99 < 1ms（redisx 直接命中） | 性能预算 | httptest benchmark |
 | NFR-S06 | Metrics: consumer lag / idempotency hits / taosx write TPS / kafkax dispatch errors / API p99 latency | Observability | metrics endpoint |
 | NFR-S07 | Logs 含 subject / symbol / product_line / idempotency_hash | Observability | log inspection |
 | NFR-S08 | API key 不出现于 log / debug 端点输出 | Security | gitleaks + secret redaction test |
@@ -69,8 +69,8 @@
 | TC-009 | FR-005 | — | 单元（UpsertSymbol 幂等；ClockOffset 记录） | ⬜ |
 | TC-010 | FR-006 | — | 单元（topic 名称 + partition key） | ⬜ |
 | TC-011 | FR-006 | — | 单元（Kafka 不可达→error） | ⬜ |
-| TC-012 | FR-007 | — | httptest（/v1/market/ticks 返回 taosx 数据） | ⬜ |
-| TC-013 | FR-007 | — | httptest（/v1/market/depth 读 redisx） | ⬜ |
+| TC-012 | FR-007 | — | httptest（/api/v1/market/ticks 返回 taosx 数据） | ⬜ |
+| TC-013 | FR-007 | — | httptest（/api/v1/market/depth 读 redisx） | ⬜ |
 | TC-014 | FR-007 | — | httptest（无效 API key → 401） | ⬜ |
 | TC-015 | FR-007 | — | httptest（超限 → 429） | ⬜ |
 | TC-016 | FR-008 | BR-003 | 单元（PutObject 失败→taosx 未删除） | ⬜ |
@@ -101,12 +101,12 @@
 | AC-015 | FR-005 | UpdateIngestStatus 更新 last_seq，用于 gap fill 检测 | TC-009: mock 验证 seq 参数 |
 | AC-016 | FR-006 | topic = `binance.market.{product_line}.{event_type}`，与 natsx subject 一致 | TC-010: mock 验证 topic 字符串 |
 | AC-017 | FR-006 | partition key = `[]byte(symbol)`，相同 symbol 有序到达同一 partition | TC-010: mock 验证 Key 参数 |
-| AC-018 | FR-006 | Kafka 不可达时 → error（降级告警，不中断 taosx 写入） | TC-011: mock 返回 error → observex 告警 |
-| AC-019 | FR-007 | GET /v1/market/ticks 从 taosx 查询，支持 symbol + time range + limit | TC-012: httptest + mock taosx |
-| AC-020 | FR-007 | GET /v1/market/depth/:symbol 从 redisx 读取最新深度快照，P99 < 1ms | TC-013: mock redisx 验证 key 格式 |
+| AC-018 | FR-006 | Kafka 不可达时 → error；未完成 kafkax handoff 前不 Ack，进入 retry/dead-letter/告警路径 | TC-011: mock 返回 error → observex 告警 |
+| AC-019 | FR-007 | GET /api/v1/market/ticks 从 taosx 查询，支持 symbol + time range + limit | TC-012: httptest + mock taosx |
+| AC-020 | FR-007 | GET /api/v1/market/depth/:symbol 从 redisx 读取最新深度快照，P99 < 1ms | TC-013: mock redisx 验证 key 格式 |
 | AC-021 | FR-007 | 无效 API key → 401 | TC-014: httptest 验证状态码 |
 | AC-022 | FR-007 | 超限（>1000 req/min per key）→ 429 + Retry-After header | TC-015: mock 令牌桶耗尽 |
-| AC-023 | FR-007 | GET /v1/health 三组件（taosx/redisx/postgresx）任一断连 → 503 | TC-012: mock taosx 断连 → 503 |
+| AC-023 | FR-007 | GET /readyz 三组件（taosx/redisx/postgresx）任一断连 → 503 | TC-012: mock taosx 断连 → 503 |
 | AC-024 | FR-007 | 所有响应统一 JSON，错误使用 `{"error":"...","code":"..."}` 结构 | TC-012~015: 验证响应体格式 |
 | AC-025 | FR-008 | 每日定时归档 cutoff（now - RetentionDays）之前的 taosx 数据 | TC-017: 验证 taosx 查询参数含 cutoff |
 | AC-026 | FR-008 | 先 ossx.PutObject + 验证 ETag，成功后才 taosx.Delete（先写冷再删热） | TC-016: mock PutObject 失败→Delete 未调用 |
