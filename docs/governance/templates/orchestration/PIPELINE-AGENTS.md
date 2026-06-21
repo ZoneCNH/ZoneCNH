@@ -22,7 +22,7 @@ done
 
 ```bash
 for agent in spec design plan tasks matrix prompt code lint meta; do
-  git worktree add .claude/worktrees/$MODULE-$agent main
+  git worktree add /home/$MODULE/.worktree/workspaces/feat/$MODULE-$agent -b feat/$MODULE-$agent origin/main
 done
 ```
 
@@ -32,7 +32,7 @@ done
 
 ### Agent A: spec-writer
 ```
-工作目录: .claude/worktrees/$MODULE-spec
+工作目录: /home/$MODULE/.worktree/workspaces/feat/$MODULE-spec
 输入: goal.md, SPEC.md 骨架
 Prompt 要点:
   - 读 CONSTITUTION.md §4.4 (WHEN/THEN 格式)
@@ -46,7 +46,7 @@ Prompt 要点:
 
 ### Agent B: designer
 ```
-工作目录: .claude/worktrees/$MODULE-design
+工作目录: /home/$MODULE/.worktree/workspaces/feat/$MODULE-design
 输入: SPEC.md (只读), DESIGN.md 骨架
 Prompt 要点:
   - 读 SPEC.md 了解模块功能
@@ -58,7 +58,7 @@ Prompt 要点:
 
 ### Agent C: planner
 ```
-工作目录: .claude/worktrees/$MODULE-plan
+工作目录: /home/$MODULE/.worktree/workspaces/feat/$MODULE-plan
 输入: SPEC.md (只读), PLAN.md 骨架
 Prompt 要点:
   - 读 SPEC.md FR 列表
@@ -75,7 +75,7 @@ Prompt 要点:
 
 ### Agent D: task-splitter
 ```
-工作目录: .claude/worktrees/$MODULE-tasks
+工作目录: /home/$MODULE/.worktree/workspaces/feat/$MODULE-tasks
 输入: SPEC.md + PLAN.md (只读)
 Prompt 要点:
   - 读 SPEC.md AC/TC
@@ -88,7 +88,7 @@ Prompt 要点:
 
 ### Agent E: matrix-builder
 ```
-工作目录: .claude/worktrees/$MODULE-matrix
+工作目录: /home/$MODULE/.worktree/workspaces/feat/$MODULE-matrix
 输入: SPEC.md + TASK-*.md (只读)
 Prompt 要点:
   - 读 SPEC.md FR/BR/NFR/TC
@@ -101,7 +101,7 @@ Prompt 要点:
 
 ### Agent F: prompt-builder
 ```
-工作目录: .claude/worktrees/$MODULE-prompt
+工作目录: /home/$MODULE/.worktree/workspaces/feat/$MODULE-prompt
 输入: SPEC.md + TASK-*.md (只读)
 Prompt 要点:
   - 读 SPEC.md §9.3 (JSON schema) 和 §7 (FR)
@@ -165,7 +165,7 @@ Prompt 要点:
 
 ### Agent J: meta-syncer
 ```
-工作目录: .claude/worktrees/$MODULE-meta
+工作目录: /home/$MODULE/.worktree/workspaces/feat/$MODULE-meta
 输入: SPEC.md (只读)
 任务:
   1. STATUS.md: 更新模块版本/进度/描述
