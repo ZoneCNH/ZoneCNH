@@ -358,7 +358,7 @@ gates:
     details:
     - check: 复盘完成
       status: PASS
-      evidence: module/xlib-standard/retrospective/RETRO.md 已完成，5 类制品 98 分，G0-G10
+      evidence: module/xlib_standard/retrospective/RETRO.md 已完成，5 类制品 98 分，G0-G10
         全 PASS，v1.0.0 已发布
     - check: 改进点记录
       status: PASS

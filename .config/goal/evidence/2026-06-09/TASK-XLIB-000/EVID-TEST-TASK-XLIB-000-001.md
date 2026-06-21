@@ -6,5 +6,5 @@
 - **Goal ID**: GOAL-XLIB-STD-001
 - **Date**: 2026-06-09
 - **Status**: PASS
-- **Files Changed**: module/xlib-standard/goal.md, module/xlib-standard/SPEC.md
+- **Files Changed**: module/xlib_standard/goal.md, module/xlib_standard/SPEC.md
 - **Commands Run**: test ! -d .agent && test ! -d .codex && test ! -d .devcontainer; test ! -f Dockerfile; test -d pkg && test -d contracts && test -d examples && test -d testkit; test -f Makefile

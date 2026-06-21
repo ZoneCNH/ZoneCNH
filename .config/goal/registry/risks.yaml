@@ -98,7 +98,7 @@ risks:
 #   probability: Medium
 #   impact: High
 #   status: Open
-#   owner: agent-market-data
+#   owner: agent-market_data
 #   created_at: "2026-06-08"
 #   updated_at: "2026-06-08"
 #   mitigation:

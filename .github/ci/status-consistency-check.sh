@@ -2,7 +2,7 @@
 # status-consistency-check.sh — 校验 README / ARCHITECTURE / STATUS / module 数量一致性
 #
 # 检查逻辑：
-#   1. 从 README.md 提取 market-data / macro-data / L2.5 / 分析域 / 决策域 / 横切 组件数量
+#   1. 从 README.md 提取 market_data / macro_data / L2.5 / 分析域 / 决策域 / 横切 组件数量
 #   2. 从 ARCHITECTURE.md 提取相同指标
 #   3. 从 STATUS.md 提取 domain-level 统计表中的组件数量
 #   4. 从 module/ 提取 Foundation 规格数量
@@ -62,19 +62,19 @@ count_status_domain() {
 # ── 实际组件数统计 ───────────────────────────────────────
 
 # 从 README 架构图提取写死的数量
-README_MD_NUM=$(grep -oP 'market-data \(\K[0-9]+' "$REPO_ROOT/README.md" | head -1)
-README_MACRO_NUM=$(grep -oP 'macro-data \(\K[0-9]+' "$REPO_ROOT/README.md" | head -1)
+README_MD_NUM=$(grep -oP 'market_data \(\K[0-9]+' "$REPO_ROOT/README.md" | head -1)
+README_MACRO_NUM=$(grep -oP 'macro_data \(\K[0-9]+' "$REPO_ROOT/README.md" | head -1)
 
 # 从 README 列表章节精确计数
-README_MARKET=$(count_readme_section "数据域 · market-data")
-README_MACRO=$(count_readme_section "数据域 · macro-data")
+README_MARKET=$(count_readme_section "数据域 · market_data")
+README_MACRO=$(count_readme_section "数据域 · macro_data")
 README_L25=$(count_readme_section "L2.5 · 领域共享层")
 README_ANALYSIS=$(count_readme_section "分析域")
 README_DECISION=$(count_readme_section "决策域")
 
 # 从 ARCHITECTURE 架构图提取写死的数量
-ARCH_MD_NUM=$(grep -oP 'market-data \(\K[0-9]+' "$REPO_ROOT/ARCHITECTURE.md" | head -1)
-ARCH_MACRO_NUM=$(grep -oP 'macro-data \(\K[0-9]+' "$REPO_ROOT/ARCHITECTURE.md" | head -1)
+ARCH_MD_NUM=$(grep -oP 'market_data \(\K[0-9]+' "$REPO_ROOT/ARCHITECTURE.md" | head -1)
+ARCH_MACRO_NUM=$(grep -oP 'macro_data \(\K[0-9]+' "$REPO_ROOT/ARCHITECTURE.md" | head -1)
 
 # 从 ARCHITECTURE 状态总览表提取域名级计数
 ARCH_BASE=$(count_arch_domain "基座")
@@ -94,8 +94,8 @@ STATUS_UNIQUE_REPOS=$(grep -oP 'github\.com/ZoneCNH/[a-zA-Z0-9_.-]+' "$REPO_ROOT
 
 # 从 STATUS.md "文档同步检查" 表提取（匹配表格行 "| 组件总数"）
 STATUS_SYNC_TOTAL=$(awk -F'|' '/^\| 组件总数/{gsub(/[ \t*\r]/, "", $5); match($5, /^[0-9]+/); print substr($5, RSTART, RLENGTH)}' "$REPO_ROOT/STATUS.md")
-STATUS_SYNC_MD=$(awk -F'|' '/^\| market-data/{gsub(/[ \t*\r]/, "", $5); match($5, /^[0-9]+/); print substr($5, RSTART, RLENGTH)}' "$REPO_ROOT/STATUS.md")
-STATUS_SYNC_MACRO=$(awk -F'|' '/^\| macro-data/{gsub(/[ \t*\r]/, "", $5); match($5, /^[0-9]+/); print substr($5, RSTART, RLENGTH)}' "$REPO_ROOT/STATUS.md")
+STATUS_SYNC_MD=$(awk -F'|' '/^\| market_data/{gsub(/[ \t*\r]/, "", $5); match($5, /^[0-9]+/); print substr($5, RSTART, RLENGTH)}' "$REPO_ROOT/STATUS.md")
+STATUS_SYNC_MACRO=$(awk -F'|' '/^\| macro_data/{gsub(/[ \t*\r]/, "", $5); match($5, /^[0-9]+/); print substr($5, RSTART, RLENGTH)}' "$REPO_ROOT/STATUS.md")
 STATUS_PROGRESS_BUCKET_TOTAL=$(awk '/进度分布:/{found=1; next} found && /^$/{found=0} found { print }' "$REPO_ROOT/STATUS.md" | grep -oP '[0-9]+(?= 个)' | awk '{sum += $1} END { print sum+0 }')
 STATUS_VERSIONED=$(grep -oP '版本覆盖:\s*有版本号\s*\K[0-9]+' "$REPO_ROOT/STATUS.md" | head -1)
 STATUS_UNVERSIONED=$(grep -oP '版本覆盖:.*无版本号\s*\K[0-9]+' "$REPO_ROOT/STATUS.md" | head -1)
@@ -103,9 +103,9 @@ STATUS_DOMAIN_VERSIONED=$(awk -F'|' '/^\| \*\*合计/ {gsub(/[^0-9]/, "", $7); p
 
 # 从 module/ 提取 Foundation 规格数量；domainx 现已归入基座/领域共享（见 module/README.md）。
 FOUNDATION_MODULES=(
-  xlib-standard
-  xlib-harness
-  xlib-evidence
+  xlib_standard
+  xlib_harness
+  xlib_evidence
   kernel
   configx
   observex
@@ -134,13 +134,13 @@ done
 FOUNDATION_SPEC_COUNT="$SPEC_COUNT"
 
 echo "--- 数据采集 ---"
-echo "README 架构图:     market-data = $README_MD_NUM, macro-data = $README_MACRO_NUM"
-echo "README 列表计数:   market-data = $README_MARKET, macro-data = $README_MACRO, L2.5 = $README_L25"
-echo "ARCHITECTURE 图:   market-data = $ARCH_MD_NUM, macro-data = $ARCH_MACRO_NUM"
+echo "README 架构图:     market_data = $README_MD_NUM, macro_data = $README_MACRO_NUM"
+echo "README 列表计数:   market_data = $README_MARKET, macro_data = $README_MACRO, L2.5 = $README_L25"
+echo "ARCHITECTURE 图:   market_data = $ARCH_MD_NUM, macro_data = $ARCH_MACRO_NUM"
 echo "ARCHITECTURE 表:   基座=$ARCH_BASE, L2.5=$ARCH_L25, 数据域=$ARCH_DATA, 分析域=$ARCH_ANALYSIS, 决策域=$ARCH_DECISION, 执行域=$ARCH_EXEC, 入口=$ARCH_ENTRY, 横切=$ARCH_CROSS, Rust=$ARCH_RUST, 独立=$ARCH_INDEP"
 echo "STATUS 总数:       $STATUS_TOTAL"
 echo "STATUS 唯一仓库:   $STATUS_UNIQUE_REPOS"
-echo "STATUS 同步表:     总计=$STATUS_SYNC_TOTAL, market-data=$STATUS_SYNC_MD, macro-data=$STATUS_SYNC_MACRO"
+echo "STATUS 同步表:     总计=$STATUS_SYNC_TOTAL, market_data=$STATUS_SYNC_MD, macro_data=$STATUS_SYNC_MACRO"
 echo "STATUS 分布/版本:  进度分布合计=$STATUS_PROGRESS_BUCKET_TOTAL, 版本覆盖=$STATUS_VERSIONED+$STATUS_UNVERSIONED, 域统计有版本号=$STATUS_DOMAIN_VERSIONED"
 echo "Spec 规格计数:     Foundation=$FOUNDATION_SPEC_COUNT, 预期=$FOUNDATION_EXPECTED_COUNT"
 echo ""
@@ -184,17 +184,17 @@ check_max_diff() {
 echo "--- 一致性比对 ---"
 echo ""
 
-# 1. market-data 数量：README 图 == ARCHITECTURE 图 == STATUS 同步表
-check "market-data (README 图 vs ARCHITECTURE 图)" "$README_MD_NUM" "$ARCH_MD_NUM"
-check "market-data (README 图 vs STATUS 同步表)" "$README_MD_NUM" "$STATUS_SYNC_MD"
+# 1. market_data 数量：README 图 == ARCHITECTURE 图 == STATUS 同步表
+check "market_data (README 图 vs ARCHITECTURE 图)" "$README_MD_NUM" "$ARCH_MD_NUM"
+check "market_data (README 图 vs STATUS 同步表)" "$README_MD_NUM" "$STATUS_SYNC_MD"
 
-# 2. macro-data 数量：README 图 == ARCHITECTURE 图 == STATUS 同步表
-check "macro-data (README 图 vs ARCHITECTURE 图)" "$README_MACRO_NUM" "$ARCH_MACRO_NUM"
-check "macro-data (README 图 vs STATUS 同步表)" "$README_MACRO_NUM" "$STATUS_SYNC_MACRO"
+# 2. macro_data 数量：README 图 == ARCHITECTURE 图 == STATUS 同步表
+check "macro_data (README 图 vs ARCHITECTURE 图)" "$README_MACRO_NUM" "$ARCH_MACRO_NUM"
+check "macro_data (README 图 vs STATUS 同步表)" "$README_MACRO_NUM" "$STATUS_SYNC_MACRO"
 
 # 3. README 列表实际条目 vs 图中标注数量
-check "market-data (列表条目 vs 图中标注)" "$README_MARKET" "$README_MD_NUM"
-check "macro-data (列表条目 vs 图中标注)" "$README_MACRO" "$README_MACRO_NUM"
+check "market_data (列表条目 vs 图中标注)" "$README_MARKET" "$README_MD_NUM"
+check "macro_data (列表条目 vs 图中标注)" "$README_MACRO" "$README_MACRO_NUM"
 
 # 4. ARCHITECTURE 状态表组件行总数 vs STATUS 总数
 # module/ 规格数量只统计 Foundation 规格；公开组件总数仍包含入口组合根 x.go。
@@ -233,7 +233,7 @@ if [[ $FAIL -ne 0 ]]; then
   echo "❌ Status Consistency Check 失败 — 请修复上述不一致项"
   echo ""
   echo "修复提示："
-  echo "  1. 确保 README.md / ARCHITECTURE.md 中的 market-data (N) / macro-data (N) 数字与实际列表条目一致"
+  echo "  1. 确保 README.md / ARCHITECTURE.md 中的 market_data (N) / macro_data (N) 数字与实际列表条目一致"
   echo "  2. 确保 STATUS.md 的「文档同步检查」总计与唯一仓库数差异不超过已知复用仓库口径（当前 <=2）；仪表盘「组件总数」匹配域统计行口径"
   echo "  3. 确保 STATUS.md 的进度分布、版本覆盖与域统计合计一致"
   echo "  4. 新增/删除规格时，同步更新 module/README.md 与 Foundation 数量口径"

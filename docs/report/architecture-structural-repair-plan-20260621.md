@@ -47,16 +47,16 @@
 | Approved 但无 AC | 0 个 | 历史快照曾为 8 个；对应模块 AC 已回写到各自 `SPEC.md` / `TRACEABILITY.md` |
 | 完整 Spec 基线 | 5 个 | `module/settlement/SPEC.md`、`module/portfolio-engine/SPEC.md`、`module/risk-engine/SPEC.md`、`module/order-engine/SPEC.md`、`module/macro_regime/SPEC.md` 已全部实化并冻结 |
 | 分析 / 决策 / 执行域 tasks | 已形成 | 任务树已完成拆分并串联到可执行闭环 |
-| 数据域任务 | 已标准化 | 通过 `module/data-cs-module/README.md`、`SPEC-TEMPLATE.md`、`UPGRADE-ROADMAP.md` 统一入口推进 |
+| 数据域任务 | 已标准化 | 通过 `module/data_cs_module/README.md`、`SPEC-TEMPLATE.md`、`UPGRADE-ROADMAP.md` 统一入口推进 |
 | prompt / evidence | 已补齐 | S5 / S6 已形成稳定执行面 |
 | ADR | 已补录 | 关键边界与决策已可追溯 |
 | `live_integration` | 已扩展 | 已按里程碑推进到 15+ |
 
 ### 2.4 数据域标准化入口
 
-- `module/data-cs-module/README.md`
-- `module/data-cs-module/SPEC-TEMPLATE.md`
-- `module/data-cs-module/UPGRADE-ROADMAP.md`
+- `module/data_cs_module/README.md`
+- `module/data_cs_module/SPEC-TEMPLATE.md`
+- `module/data_cs_module/UPGRADE-ROADMAP.md`
 
 ---
 
@@ -198,7 +198,7 @@
 - 已完成。
 
 **目标**
-- 补全数据域 tasks，并按 `module/data-cs-module` 标准入口推进 `market_data` / `macro_data` 的 C/S Module 落地。
+- 补全数据域 tasks，并按 `module/data_cs_module` 标准入口推进 `market_data` / `macro_data` 的 C/S Module 落地。
 
 **产出**
 - 数据域任务树。
@@ -263,9 +263,9 @@
 | `docs/report/architecture-structural-analysis-20260621.md` | 保留结构性诊断与摘要，后续执行说明统一引用本文件的闭环结果 |
 | `STATUS.md` | 阻塞项与下一步行动改为闭环摘要，不再保留旧的待办措辞 |
 | `docs/report/repo-naming-unification-20260620.md` | 只保留命名同步结果与历史投影边界，作为闭环说明，不再承载执行树 |
-| `module/data-cs-module/README.md` | 作为数据域标准化入口，被 `#9` 直接引用 |
-| `module/data-cs-module/SPEC-TEMPLATE.md` | 数据域 SPEC 模板入口，服务 `#9` |
-| `module/data-cs-module/UPGRADE-ROADMAP.md` | 数据域升级路线，服务 `#9` |
+| `module/data_cs_module/README.md` | 作为数据域标准化入口，被 `#9` 直接引用 |
+| `module/data_cs_module/SPEC-TEMPLATE.md` | 数据域 SPEC 模板入口，服务 `#9` |
+| `module/data_cs_module/UPGRADE-ROADMAP.md` | 数据域升级路线，服务 `#9` |
 | `docs/architecture/adr/README.md` | ADR 入口索引，服务 `#11` |
 
 ---
@@ -276,7 +276,7 @@
 2. Approved 无 AC = 0。
 3. 5 个占位符 SPEC 已全部实化并冻结（占位符 SPEC = 0）。
 4. 分析域、决策域、执行域均形成可执行 tasks。
-5. 数据域补齐 tasks，并通过 `module/data-cs-module` 统一入口持续对齐新建模块。
+5. 数据域补齐 tasks，并通过 `module/data_cs_module` 统一入口持续对齐新建模块。
 6. `L2.5` 目标命名基准已统一为 `snake_case`，历史路径投影只保留在同步文档和迁移表。
 7. `x.go` / `composer` 的入口分工持续保持一致。
 8. S5 / S6 覆盖不再长期停留在个位数。

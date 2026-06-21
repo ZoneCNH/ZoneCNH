@@ -43,7 +43,7 @@ jobs:
             for raw_module in "${modules[@]}"; do
               module="$(printf '%s' "$raw_module" | tr -d '[:space:]')"
               case "$module" in
-                kernel|configx|observex|resiliencx|schedulex|testkitx|xlib-standard|xlib-harness|xlib-evidence|xlibgate|redisx|kafkax|natsx|postgresx|taosx|ossx|clickhousex|contracts|transportx|domainx)
+                kernel|configx|observex|resiliencx|schedulex|testkitx|xlib_standard|xlib_harness|xlib_evidence|xlibgate|redisx|kafkax|natsx|postgresx|taosx|ossx|clickhousex|contracts|transportx|domainx)
                   selected_count=$((selected_count + 1))
                   ;;
                 "")
@@ -87,9 +87,9 @@ jobs:
           - resiliencx
           - schedulex
           - testkitx
-          - xlib-standard
-          - xlib-harness
-          - xlib-evidence
+          - xlib_standard
+          - xlib_harness
+          - xlib_evidence
           - xlibgate
           - redisx
           - kafkax
@@ -161,9 +161,9 @@ jobs:
               "resiliencx",
               "schedulex",
               "testkitx",
-              "xlib-standard",
-              "xlib-harness",
-              "xlib-evidence",
+              "xlib_standard",
+              "xlib_harness",
+              "xlib_evidence",
               "xlibgate",
               "redisx",
               "kafkax",
@@ -177,9 +177,9 @@ jobs:
               "domainx"
             ],
             "gate_modules": [
-              "xlib-standard",
-              "xlib-harness",
-              "xlib-evidence",
+              "xlib_standard",
+              "xlib_harness",
+              "xlib_evidence",
               "xlibgate"
             ],
             "trust_contract": ".foundationx/repo-contract.json"

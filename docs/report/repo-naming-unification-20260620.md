@@ -6,7 +6,7 @@
 
 > 说明：本文已收口为同步与修正闭环记录，不是 GitHub 重命名执行单。仓库名、目录名与文档投影以当前权威正文为准。
 >
-> 现实状态：`module/README.md` 已将 L2.5 显示层切换为 `snake_case`，但链接目标仍指向当前目录投影 `domain-market` / `domain-macro` / `domain-exchange`；本文继续把“目标命名口径”和“当前文件投影”分开记录，避免把闭环说明写成执行计划。
+> 现实状态：`module/README.md` 已将 L2.5 显示层切换为 `snake_case`，但链接目标仍指向当前目录投影 `domain_market` / `domain_macro` / `domain_exchange`；本文继续把“目标命名口径”和“当前文件投影”分开记录，避免把闭环说明写成执行计划。
 >
 > 补充说明：`SignalIntent` 属于 contracts 契约投影，已在 `docs/architecture/08-contracts.md` 与 `STATUS.md` 固化，不计入本次 L2.5 命名清理；P1 / P2 事件与接口统一已归档为 `docs/report/architecture-structural-repair-plan-20260621.md` 的闭环记录，本文不展开执行树。
 >
@@ -60,7 +60,7 @@
 
 | 禁止模式 | 示例 | 原因 |
 | -------- | ---- | ---- |
-| kebab-case 作为新投影 | `domain-market`, `xlib-gate`, `factor-engine` | 与当前权威正文的现名不一致，制造同步漂移 |
+| kebab-case 作为新投影 | `domain_market`, `xlib-gate`, `factor_engine` | 与当前权威正文的现名不一致，制造同步漂移 |
 | PascalCase | `GYM`, `OneKey` | 当前权威正文中没有稳定引用 |
 | 未经证据的派生别名 | `macro_data_py` | 只是旧稿投影或说明性后缀，不应直接写成仓库名 |
 | 把现名写成“需重命名” | `market_regime`, `macro_regime`, `ms_brain` | 与 `README.md` / `ARCHITECTURE.md` / `STATUS.md` 已有事实冲突 |
@@ -144,7 +144,7 @@ xlib_standard/go.mod → module github.com/ZoneCNH/xlib_standard
 | `docs/architecture/08-contracts.md` | `market_regime` / `macro_regime` / `regime_engine` 继续使用现名 |
 | `docs/report/architecture-structural-analysis-20260621.md` | 诊断摘要已固定 `L2.5` 命名基准为 `snake_case`，并将 `x.go` / `composer` 入口口径与 `README.md` / `ARCHITECTURE.md` / `docs/architecture/*` 的入口说明同步收口；`macro_data` / `market_data` 统一为数据域表述；完整修复动作已归档为 `docs/report/architecture-structural-repair-plan-20260621.md` 的闭环记录 |
 | `STATUS.md` | 维持现名投影；结构修复只保留闭环摘要并指向 repair plan，不在此处重复完整执行树 |
-| `module/README.md` | L2.5 显示层已切换为 `domain_market` / `domain_macro` / `domain_exchange`，并补充 `data-cs-module` / `data-independent-process` 标准化入口；链接目标继续使用当前目录投影，`xlibgate` 保持现名 |
+| `module/README.md` | L2.5 显示层已切换为 `domain_market` / `domain_macro` / `domain_exchange`，并补充 `data_cs_module` / `data_independent_process` 标准化入口；链接目标继续使用当前目录投影，`xlibgate` 保持现名 |
 
 ---
 

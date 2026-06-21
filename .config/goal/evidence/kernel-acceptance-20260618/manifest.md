@@ -51,7 +51,7 @@
 | `.github/workflows/ci.yml` | PR / push main / workflow_dispatch | sre/foundation-l0 | workflow-policy → module-ci (matrix 12 子包) → ci (Go 1.26.3 / 1.23) → coverage upload + evidence |
 | `.github/workflows/release.yml` | tag `v*` push | sre/deploy | release-check（make release-final-check）→ manifest upload → GH Release |
 | `.github/workflows/security.yml` | PR / push main / workflow_dispatch | sre/foundation-l0 | toolchain → boundary → security → contracts → SARIF upload |
-| `.github/workflows/standard-sync-watch.yml` | scheduled | sre/foundation-l0 | xlib-standard 漂移检查 |
+| `.github/workflows/standard-sync-watch.yml` | scheduled | sre/foundation-l0 | xlib_standard 漂移检查 |
 
 所有 actions 已 SHA-pin，runner 全部走 `sre/` 池，无 GitHub-hosted 回退。
 

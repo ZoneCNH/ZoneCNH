@@ -99,7 +99,7 @@ tasks:
   - 删除 AGENTS.md CLAUDE.md CONSTITUTION.md releasemanifest renovate.json
   - 保留 pkg/ contracts/ examples/ testkit/ Makefile
   evidence:
-  - module/xlib-standard/tasks/TASK-XLIB-000.md
+  - module/xlib_standard/tasks/TASK-XLIB-000.md
   code_ref: N/A (doc-only task)
 - task_id: TASK-XLIB-001
   document_version: '2026-06-09'
@@ -120,7 +120,7 @@ tasks:
   - docs/standard.md 覆盖目录结构/命名规则/go.mod/错误处理/契约/测试
   - docs/INDEX.md 仅 9 个文件
   evidence:
-  - module/xlib-standard/tasks/TASK-XLIB-001.md
+  - module/xlib_standard/tasks/TASK-XLIB-001.md
   code_ref: N/A (doc-only task)
 - task_id: TASK-XLIB-002
   document_version: '2026-06-09'
@@ -144,7 +144,7 @@ tasks:
   - scripts/selfcheck-100.sh 可执行
   - .github/workflows/ci.yml 存在
   evidence:
-  - module/xlib-standard/tasks/TASK-XLIB-002.md
+  - module/xlib_standard/tasks/TASK-XLIB-002.md
   code_ref: N/A (doc-only task)
 - task_id: TASK-XLIB-004
   document_version: '2026-06-09'
@@ -166,7 +166,7 @@ tasks:
   - pkg/templatex/compat.go 可编译
   - GOWORK=off go test ./... -race 通过
   evidence:
-  - module/xlib-standard/tasks/TASK-XLIB-004.md
+  - module/xlib_standard/tasks/TASK-XLIB-004.md
   code_ref: N/A (doc-only task)
 - task_id: TASK-XLIB-005
   document_version: '2026-06-09'
@@ -184,10 +184,10 @@ tasks:
   created_at: '2026-06-09'
   updated_at: '2026-06-09'
   dod:
-  - 生成库无 templatex/xlib-standard 残留
+  - 生成库无 templatex/xlib_standard 残留
   - release manifest 生成且 checksum 校验通过
   evidence:
-  - module/xlib-standard/tasks/TASK-XLIB-005.md
+  - module/xlib_standard/tasks/TASK-XLIB-005.md
   code_ref: N/A (doc-only task)
 - task_id: TASK-XLIB-003A
   goal_id: GOAL-XLIB-STD-001

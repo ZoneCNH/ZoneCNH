@@ -6,5 +6,5 @@
 - **Goal ID**: GOAL-XLIB-STD-001
 - **Date**: 2026-06-09
 - **Status**: PARTIAL
-- **Files Changed**: module/xlib-standard/tasks/TASK-XLIB-002.md, module/xlib-standard/prompt/PROMPT-XLIB-002.md
+- **Files Changed**: module/xlib_standard/tasks/TASK-XLIB-002.md, module/xlib_standard/prompt/PROMPT-XLIB-002.md
 - **Commands Run**: make -n build && make -n test && make -n lint; test -x scripts/spec-lint.sh

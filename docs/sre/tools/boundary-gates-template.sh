@@ -75,7 +75,7 @@ gate_server_cmd_no_client() {
 
 # §5 no-storage-query-strategy: 不 import storage/query/strategy
 gate_no_storage_query_strategy() {
-  ! grep -R -n -E 'github.com/ZoneCNH/(factor-engine|risk-engine|order-engine)' \
+  ! grep -R -n -E 'github.com/ZoneCNH/(factor_engine|risk-engine|order-engine)' \
     --include='*.go' \
     . 2>/dev/null | grep -vE '_test|vendor'
 }
@@ -89,13 +89,13 @@ gate_no_local_proto() {
 gate_no_canonical_ssot_claim() {
   ! grep -R -n -iE 'canonical (ssot|source of truth)' \
     --include='*.go' \
-    internal/ pkg/ 2>/dev/null | grep -viE 'domain-market|domain-macro|contracts'
+    internal/ pkg/ 2>/dev/null | grep -viE 'domain_market|domain_macro|contracts'
 }
 
-# §8 no-xlib-standard: go.mod 无 xlib-standard（标准源不参与运行时）
+# §8 no-xlib_standard: go.mod 无 xlib_standard（标准源不参与运行时）
 gate_no_xlib_standard() {
   if [ ! -f go.mod ]; then return 0; fi
-  ! grep -q 'xlib-standard' go.mod
+  ! grep -q 'xlib_standard' go.mod
 }
 
 # §9 no-storage-adapter: go.mod 无直接（非 indirect）L2 存储适配器 require（adapter 零存储）
@@ -114,7 +114,7 @@ run_gate "§4b" "server cmd must not import client" gate_server_cmd_no_client
 run_gate "§5"  "no storage/query/strategy"        gate_no_storage_query_strategy
 run_gate "§6"  "no local proto files"             gate_no_local_proto
 run_gate "§7"  "no canonical SSOT claim"          gate_no_canonical_ssot_claim
-run_gate "§8"  "no xlib-standard in go.mod"       gate_no_xlib_standard
+run_gate "§8"  "no xlib_standard in go.mod"       gate_no_xlib_standard
 run_gate "§9"  "no storage adapter in go.mod"     gate_no_storage_adapter
 
 echo ""

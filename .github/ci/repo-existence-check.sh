@@ -20,9 +20,9 @@ echo ""
 
 # 与 status-consistency-check.sh 保持同步的基座模块列表
 FOUNDATION_MODULES=(
-  xlib-standard
-  xlib-harness
-  xlib-evidence
+  xlib_standard
+  xlib_harness
+  xlib_evidence
   kernel
   configx
   observex
@@ -77,7 +77,7 @@ if [[ ${#MISSING[@]} -gt 0 ]]; then
   echo "修复提示："
   echo "  1. 为每个缺失模块创建 GitHub 仓库：gh repo create ZoneCNH/<module> --public"
   echo "  2. 至少初始化 README.md 说明模块职责和 Go module 归属"
-  echo "  3. 如果模块共享 xlib-standard 的 Go module，在 README 中注明"
+  echo "  3. 如果模块共享 xlib_standard 的 Go module，在 README 中注明"
   echo ""
   echo "规则来源：CLAUDE.md §模块-仓库强制对应"
 fi

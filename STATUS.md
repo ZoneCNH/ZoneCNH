@@ -211,7 +211,7 @@
 | [factor_engine](https://github.com/ZoneCNH/factor_engine) | 独立进程 | v0.1.0       | ░░░░ 5%  | 100%       | 因子计算引擎                                                             |
 | [feature_store](https://github.com/ZoneCNH/feature_store) | 独立进程 | v0.1.0       | ░░░░ 5%  | 100%       | 特征存储与版本管理                                                       |
 | [factor_eval](https://github.com/ZoneCNH/factor_eval)     | 独立进程 | v0.1.0       | ░░░░ 5%  | 100%       | 因子评估                                                                 |
-| [market_regime](https://github.com/ZoneCNH/market_regime) | 独立进程 | v0.2.0       | ████████ 70% | 100%       | 市场状态识别（S1-S7）；BarWindow+Subscriber+domain-market 适配器，12 tests PASS |
+| [market_regime](https://github.com/ZoneCNH/market_regime) | 独立进程 | v0.2.0       | ████████ 70% | 100%       | 市场状态识别（S1-S7）；BarWindow+Subscriber+domain_market 适配器，12 tests PASS |
 | [macro_regime](https://github.com/ZoneCNH/macro_regime)   | 独立进程 | v0.2.0       | ████████ 70% | 100%       | 宏观经济体制识别（M1-M7）；MacroInformationSet mapper+ClassifyFromSet，13 tests PASS  |
 | [ms_brain](https://github.com/ZoneCNH/ms_brain)           | 独立进程 | v1.6.6       | ░░░░ 5%  | 100%       | M×S 系统架构分析体系                                                     |
 | [regime_engine](https://github.com/ZoneCNH/regime_engine) | 独立进程 | v1.0.0       | ████ 60% | 100%       | M×S 联合决策引擎（P0 DTO 桥接层，RegimeSnapshot+RegimeCard→DecisionCard，13 tests PASS） |
@@ -388,7 +388,7 @@
 ### 🟡 入口（注意）
 
 - x.go 已有（80%，v0.0.1）；2.8MB 体量已核实为治理/工具 CLI（goalcli+templatex），非 Composition Root
-- **composer v0.1.0** ✅（75%）：数据域组合根，25 进程（23 adapter + market-data + macro-data）+ HTTP health + Docker Compose；dispatch→regime SinkPort 适配器已完成（MarketRegimeSink/MacroRegimeSink）
+- **composer v0.1.0** ✅（75%）：数据域组合根，25 进程（23 adapter + market_data + macro_data）+ HTTP health + Docker Compose；dispatch→regime SinkPort 适配器已完成（MarketRegimeSink/MacroRegimeSink）
 - **已闭环**：核心链路收口（`regime_engine` → `signal_factory` → `riskx`）已按 `docs/report/architecture-structural-repair-plan-20260621.md` 的 `#5`-`#6` 完成；本文件仅保留历史摘要，不再展开执行树
 
 ### 🟡 横切（注意）

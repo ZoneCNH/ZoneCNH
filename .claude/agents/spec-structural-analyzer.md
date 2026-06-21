@@ -324,7 +324,7 @@ tools: [Read, Grep, Glob, Bash, Write]
 ### 多模块对比
 
 ```text
-对比分析 module/kernel/ 和 module/xlib-standard/ 的结构健康度
+对比分析 module/kernel/ 和 module/xlib_standard/ 的结构健康度
 ```
 
 ### 批量分析

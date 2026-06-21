@@ -6,5 +6,5 @@
 - **Goal ID**: GOAL-XLIB-STD-001
 - **Date**: 2026-06-09
 - **Status**: PARTIAL
-- **Files Changed**: module/xlib-standard/tasks/TASK-XLIB-003.md, module/xlib-standard/prompt/PROMPT-XLIB-003.md
+- **Files Changed**: module/xlib_standard/tasks/TASK-XLIB-003.md, module/xlib_standard/prompt/PROMPT-XLIB-003.md
 - **Commands Run**: GOWORK=off go test ./...; GOWORK=off go test -race ./...

@@ -63,10 +63,10 @@ if [ -z "$is_market" ] && [ -z "$is_macro" ]; then
 fi
 
 DB_PREFIX="market"
-DISPATCH_TARGET="market-data"
+DISPATCH_TARGET="market_data"
 if [ -n "$is_macro" ]; then
   DB_PREFIX="macro"
-  DISPATCH_TARGET="macro-data"
+  DISPATCH_TARGET="macro_data"
 fi
 
 # dev.md 里的库名可能与 module 名不完全一致（如 jin10→jinshi，japan-cb→japan_cb）
