@@ -5,20 +5,20 @@
 ## 应用顺序
 
 ```
-1. domain-market    → github.com/ZoneCNH/domain-market
+1. domain_market    → github.com/ZoneCNH/domain_market
 2. contracts        → github.com/ZoneCNH/contracts
-3. market-data      → github.com/ZoneCNH/market-data (空仓库，从零初始化)
+3. market_data      → github.com/ZoneCNH/market_data (空仓库，从零初始化)
 4. binance          → github.com/ZoneCNH/binance (老 SDK 升级)
 ```
 
 ## 各仓库应用方法
 
-### domain-market (add canonical types)
+### domain_market (add canonical types)
 
 ```bash
-cd domain-market
-cp ../patches/domain-market/canonical.go pkg/domainmarket/
-cp ../patches/domain-market/canonical_test.go pkg/domainmarket/
+cd domain_market
+cp ../patches/domain_market/canonical.go pkg/domainmarket/
+cp ../patches/domain_market/canonical_test.go pkg/domainmarket/
 # stdlib-only: no third-party Go dependency is required.
 go mod tidy
 # 构建 + 测试
@@ -36,13 +36,13 @@ go build ./...
 go test ./... -race -count=1
 ```
 
-### market-data (init empty repo)
+### market_data (init empty repo)
 
 ```bash
-cd market-data
-go mod init github.com/ZoneCNH/market-data
+cd market_data
+go mod init github.com/ZoneCNH/market_data
 mkdir -p pkg/dispatch
-cp ../patches/market-data/dispatch.go pkg/dispatch/
+cp ../patches/market_data/dispatch.go pkg/dispatch/
 go mod tidy
 go build ./...
 ```
@@ -59,11 +59,11 @@ go build ./...
 ## 依赖链
 
 ```
-domain-market (canonical types)
+domain_market (canonical types)
     ↓
 contracts (ingestion DTOs)
     ↓
-market-data (dispatch port) ← binance (server implementation)
+market_data (dispatch port) ← binance (server implementation)
 ```
 
 ## 生成信息

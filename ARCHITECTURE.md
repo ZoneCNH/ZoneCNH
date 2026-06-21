@@ -475,7 +475,7 @@ Foundation 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中在 
 | 分析域                | [factor_engine](https://github.com/ZoneCNH/factor_engine)       | -      | 🔨 已创建 | ░░░░ 5%  | 从原始数据计算 alpha 因子                                                                 |
 | 分析域                | [feature_store](https://github.com/ZoneCNH/feature_store)       | -      | 🔨 已创建 | ░░░░ 5%  | 因子版本管理、IC 评估                                                                     |
 | 分析域                | [factor_eval](https://github.com/ZoneCNH/factor_eval)           | -      | 🔨 已创建 | ░░░░ 5%  | IC/IR/换手率评估                                                                          |
-| 分析域                | [market_regime](https://github.com/ZoneCNH/market_regime)       | v0.2.0 | 🔨 已创建 | ████████ 70% | **独立进程（非 C/S）**：市场状态识别（S1-S7）；BarWindow+Subscriber消费者层，domain-market适配器，12 tests PASS |
+| 分析域                | [market_regime](https://github.com/ZoneCNH/market_regime)       | v0.2.0 | 🔨 已创建 | ████████ 70% | **独立进程（非 C/S）**：市场状态识别（S1-S7）；BarWindow+Subscriber消费者层，domain_market适配器，12 tests PASS |
 | 分析域                | [macro_regime](https://github.com/ZoneCNH/macro_regime)         | v0.2.0 | 🔨 已创建 | ████████ 70% | **独立进程（非 C/S）**：宏观经济体制识别（M1-M7）；MacroInformationSet mapper+ClassifyFromSet接入层，13 tests PASS |
 | 分析域                | [regime_engine](https://github.com/ZoneCNH/regime_engine)       | v1.0.0 | 🔨 已创建 | ████ 60% | **独立进程（非 C/S）**：M×S 联合决策引擎，P0 DTO 桥接完成（RegimeSnapshot+RegimeCard→DecisionCard）              |
 | 分析域                | [ms_brain](https://github.com/ZoneCNH/ms_brain)                 | -      | ✅ 已有   | -        | M×S 系统架构分析体系                                                                      |

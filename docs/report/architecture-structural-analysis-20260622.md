@@ -106,7 +106,7 @@ composer (Composition Root) ──► bootstrap.Build(ctx, Spec)
 | 风格          | 数量 | 示例                                                                                 | 规则符合性                                   |
 | ------------- | :--: | ------------------------------------------------------------------------------------ | -------------------------------------------- |
 | snake_case    |  4   | `market_regime` / `macro_regime` / `ms_brain` / `_template`                          | ✅ 符合 CLAUDE.md §仓库命名规则              |
-| kebab-case    |  20  | `risk-engine` / `order-engine` / `factor-engine` / `domain-market` / `xlib-standard` | ❌ 违反                                      |
+| kebab-case    |  20  | `risk-engine` / `order-engine` / `factor_engine` / `domain_market` / `xlib_standard` | ❌ 违反                                      |
 | x-suffix 单词 |  22  | `riskx` / `orderx` / `configx` / `kafkax`                                            | ⚠️ 符合 Foundation 命名风格，但非 snake_case |
 | 单词          | ~14  | `kernel` / `binance` / `contracts` / `settlement`                                    | ✅ 符合（无分隔符需求）                      |
 
@@ -125,12 +125,12 @@ composer (Composition Root) ──► bootstrap.Build(ctx, Spec)
 | market_regime  |  54  | 存根 |
 | macro_regime   |  77  | 存根 |
 | optimizer      |  76  | 存根 |
-| factor-eval    |  94  | 存根 |
+| factor_eval    |  94  | 存根 |
 | settlement     |  77  | 存根 |
-| signal-factory |  82  | 存根 |
-| regime-engine  |  87  | 存根 |
-| feature-store  | 177  | 半成 |
-| factor-engine  | 310  | 半成 |
+| signal_factory |  82  | 存根 |
+| regime_engine  |  87  | 存根 |
+| feature_store  | 177  | 半成 |
+| factor_engine  | 310  | 半成 |
 | flowx          | 406  | 半成 |
 | backtestx      | 361  | 半成 |
 | strategyx      | 379  | 半成 |
@@ -212,7 +212,7 @@ composer (Composition Root) ──► bootstrap.Build(ctx, Spec)
 |   P0   | S-4 废弃 SPEC 未标记          | 4 个 SPEC 首行加 `> ⚠️ DEPRECATED → riskx/orderx/positionx/backtestx`，Status 改 `Deprecated`                      | 10 min                |       ✅       |
 |   P1   | S-2 命名三轨并存              | 制定 module/ 目录命名迁移计划：kebab-case → snake_case（与 GitHub 仓库重命名同步）                                 | 跨仓库，需 issue 跟踪 |    ⚠️ 部分     |
 |   P1   | S-5 版本三源不一致            | 明细表"目标投影"列加 `(target)` 后缀；总览表加 `(released)` 后缀；业务域模块补入 index.json                        | 2 h                   |       ✅       |
-|   P1   | S-6 报告区冗余                | `xlib/` 13 文件归档为单份 `xlib-standard-analysis-archived.md`；建立 `docs/report/INDEX.md` 区分权威报告与过程草稿 | 1 h                   |       ✅       |
+|   P1   | S-6 报告区冗余                | `xlib/` 13 文件归档为单份 `xlib_standard-analysis-archived.md`；建立 `docs/report/INDEX.md` 区分权威报告与过程草稿 | 1 h                   |       ✅       |
 |   P2   | S-3 业务域 SPEC 存根          | 优先补全 signal_factory / riskx / orderx 三个 P0 链路模块的 SPEC 至 23 节完整结构                                  | 跨仓库                |       ❌       |
 |   P2   | S-7 反向工作流                | 评估"文档同步批处理窗口"是否可拉长，减少单次变更即触发全文档同步                                                   | 流程优化              |       ✅       |
 |   P2   | S-8 blockers.json 陈旧        | 重新生成 blockers.json，纳入 CI 定时刷新                                                                           | 30 min                |       ✅       |
@@ -286,7 +286,7 @@ docs/report/ 文件数: 22（5808 行）
 ### 10.2 命名审计明细 `[COMPUTED]`
 
 kebab-case 目录（20，违反全局规则）：
-`backtest-engine` `data-cs-module` `data-independent-process` `domain-exchange` `domain-macro` `domain-market` `factor-engine` `factor-eval` `feature-store` `macro-data` `market-data` `order-engine` `pe-data` `portfolio-engine` `regime-engine` `risk-engine` `signal-factory` `xlib-evidence` `xlib-harness` `xlib-standard`
+`backtest-engine` `data_cs_module` `data_independent_process` `domain_exchange` `domain_macro` `domain_market` `factor_engine` `factor_eval` `feature_store` `macro_data` `market_data` `order-engine` `pe_data` `portfolio-engine` `regime_engine` `risk-engine` `signal_factory` `xlib_evidence` `xlib_harness` `xlib_standard`
 
 snake_case 目录（4，符合规则）：`macro_regime` `market_regime` `ms_brain` `_template`
 
@@ -296,8 +296,8 @@ x-suffix 目录（22，Foundation 风格）：`backtestx` `clickhousex` `configx
 
 ```
 market_regime      54   macro_regime       77   optimizer          76
-factor-eval        94   settlement         77   signal-factory     82
-regime-engine      87   feature-store     177   factor-engine     310
+factor_eval        94   settlement         77   signal_factory     82
+regime_engine      87   feature_store     177   factor_engine     310
 flowx             406   backtestx         361   strategyx         379
 maestro           437   riskx             361   orderx            385
 positionx         344

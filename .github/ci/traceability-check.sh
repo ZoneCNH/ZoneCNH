@@ -65,10 +65,10 @@ check_module() {
   local tc_reference_file="$spec_file"
   local snapshot_matrix=0
 
-  # xlib-standard 当前在本仓库内是上游分析快照，不以旧 SPEC.md
+  # xlib_standard 当前在本仓库内是上游分析快照，不以旧 SPEC.md
   # 作为 FR 分母；52 条 FR 的行为明细以 FR-DETAIL.md 为准。
-  if [[ "$module" == "xlib-standard" && -f "$SPEC_DIR/xlib-standard/FR-DETAIL.md" ]]; then
-    fr_reference_file="$SPEC_DIR/xlib-standard/FR-DETAIL.md"
+  if [[ "$module" == "xlib_standard" && -f "$SPEC_DIR/xlib_standard/FR-DETAIL.md" ]]; then
+    fr_reference_file="$SPEC_DIR/xlib_standard/FR-DETAIL.md"
     tc_reference_file=""
     snapshot_matrix=1
   fi

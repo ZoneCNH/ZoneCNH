@@ -261,7 +261,7 @@ matrix:
   # AC Coverage: ≥ 95%
   # Task Traceability: ≥ 95%
 
-  # === xlib-standard edges ===
+  # === xlib_standard edges ===
   - source_id: GOAL-XLIB-STD-001
     target_id: SPEC-XLIB-STD-001
     relation: decomposes_to
@@ -352,7 +352,7 @@ matrix:
     owner: goal-matrix
     updated_at: "2026-06-09"
 
-  # === xlib-standard sub-task edges (split from TASK-XLIB-003) ===
+  # === xlib_standard sub-task edges (split from TASK-XLIB-003) ===
   - source_id: TASK-XLIB-003A
     target_id: EVID-TEST-TASK-XLIB-003A-001
     relation: evidenced_by

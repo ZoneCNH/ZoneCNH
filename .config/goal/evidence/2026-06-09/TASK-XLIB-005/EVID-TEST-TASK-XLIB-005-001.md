@@ -6,5 +6,5 @@
 - **Goal ID**: GOAL-XLIB-STD-001
 - **Date**: 2026-06-09
 - **Status**: PARTIAL
-- **Files Changed**: module/xlib-standard/tasks/TASK-XLIB-005.md, module/xlib-standard/prompt/PROMPT-XLIB-005.md
-- **Commands Run**: grep -r 'templatex|xlib-standard' . --include='*.go'; GOWORK=off make release-final-check
+- **Files Changed**: module/xlib_standard/tasks/TASK-XLIB-005.md, module/xlib_standard/prompt/PROMPT-XLIB-005.md
+- **Commands Run**: grep -r 'templatex|xlib_standard' . --include='*.go'; GOWORK=off make release-final-check

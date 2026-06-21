@@ -89,7 +89,7 @@ contracts 未冻结
 
 | 格式         |  数量  | 示例                                            |
 | ------------ | :----: | ----------------------------------------------- |
-| kebab-case   | **18** | `factor-engine`, `risk-engine`, `domain-market` |
+| kebab-case   | **18** | `factor_engine`, `risk-engine`, `domain_market` |
 | snake_case   |   3    | `market_regime`, `macro_regime`, `ms_brain`     |
 | 无分隔符小写 |   32   | `kernel`, `configx`, `binance`                  |
 
@@ -97,7 +97,7 @@ contracts 未冻结
 
 #### 问题 A4：L2.5 域共享层命名已完成显示层对齐，历史投影已完成收口（中）
 
-`domain-market`（kebab）对应仓库 `domain_market`（snake），`domain-macro` 对应 `domain_macro`，`domain-exchange` 对应 `domain_exchange`——目录命名、仓库命名、SPEC 内部引用曾长期并存。当前 `module/README.md` 已切到 `snake_case` 显示层，剩余工作不再是重新定义命名，而是把旧路径投影限制在同步文档与历史引用清单中，不再扩散到主分析报告。
+`domain_market`（kebab）对应仓库 `domain_market`（snake），`domain_macro` 对应 `domain_macro`，`domain_exchange` 对应 `domain_exchange`——目录命名、仓库命名、SPEC 内部引用曾长期并存。当前 `module/README.md` 已切到 `snake_case` 显示层，剩余工作不再是重新定义命名，而是把旧路径投影限制在同步文档与历史引用清单中，不再扩散到主分析报告。
 
 #### 问题 A5：x.go / composer 说明入口已完成口径收口（低）
 
@@ -115,13 +115,13 @@ contracts 未冻结
 
 ```
 有 FR 但无 AC 的模块（14个）：
-  backtestx（FR=17）、binance（FR=20）、factor-engine（FR=12）、
+  backtestx（FR=17）、binance（FR=20）、factor_engine（FR=12）、
   flowx（FR=21）、maestro（FR=22）、orderx（FR=17）、ossx（FR=17）、
   positionx（FR=17）、riskx（FR=18）、schedulex（FR=6）、
   strategyx（FR=12）、testkitx（FR=35）、taosx（FR=22）、postgresx（FR=25）
 
 Approved 但无 AC 的模块（历史快照，已收口）：
-  binance、decimalx、domain-exchange、domain-market、
+  binance、decimalx、domain_exchange、domain_market、
   postgresx、resiliencx、taosx、testkitx
 ```
 
@@ -216,7 +216,7 @@ Prompt（S5）和 Evidence（S6）几乎为零，表明四源评分体系的后�
 ### 5.1.1 当前收口结果
 
 - 已完成：`#4` 固定 L2.5 命名基准与迁移表；`#7` 统一 `x.go / composer` 说明入口并回写对齐文档；`#8` 清理 L2.5 遗留 kebab 引用，并回写统一命名 / 对齐同步文档；`#3` 的 5 个 SPEC 已升级为完整基线（`module/settlement/SPEC.md`、`module/portfolio-engine/SPEC.md`、`module/risk-engine/SPEC.md`、`module/order-engine/SPEC.md`、`module/macro_regime/SPEC.md`）；`contracts` P1 / P2 兼容投影别名（`RegimeSnapshotEvent` / `RegimeCardEvent` / `DecisionCardEvent` / `MarketRegimePort` / `MacroRegimePort` / `RegimeEnginePort`）已在 contracts 仓库以 type alias 方式补齐；`README.md`、`ARCHITECTURE.md` 与 `docs/architecture/README.md` / `01-overview.md` / `02-domain-layers.md` / `03-boundaries.md` / `04-principles.md` / `05-foundation.md` / `06-dataflow.md` / `07-three-engines.md` / `08-contracts.md` 的活跃交易链路口径已统一到 `riskx` / `orderx` / `positionx` / `backtestx`；`market_engine` / `macro_engine` / `regime_engine` 继续作为三引擎章节与数据流图的历史投影名保留，避免把索引页误写成新命名事实。
-- 数据域 C/S Module 标准化基线已就位：`module/data-cs-module/README.md`、`SPEC-TEMPLATE.md`、`UPGRADE-ROADMAP.md` 已形成统一入口；`#9` 现阶段转为执行问题，需按该入口拆分 `market_data` / `macro_data` 落地任务。
+- 数据域 C/S Module 标准化基线已就位：`module/data_cs_module/README.md`、`SPEC-TEMPLATE.md`、`UPGRADE-ROADMAP.md` 已形成统一入口；`#9` 现阶段转为执行问题，需按该入口拆分 `market_data` / `macro_data` 落地任务。
 - 该批次当时共 7 项收口动作：P0 `#1`、P1 `#5`-`#6`、P2 `#9`-`#12`；`#2` 已在模块级 AC 回写并冻结，完整执行版修复方案已拆出为 `docs/report/architecture-structural-repair-plan-20260621.md`，现已全部闭环，后续仅保留历史诊断，不再作为当前待办。
 - 其中 `#4`、`#7`、`#8` 已作为同步基线收口，仅保留在历史记录和对照清单中，不再列入当前执行面。
 
@@ -242,7 +242,7 @@ Prompt（S5）和 Evidence（S6）几乎为零，表明四源评分体系的后�
 
 | #   | 行动                                                                                                                                                              | 对应问题   | 主要产出                  | 完成标准                         |
 | --- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- | ------------------------- | -------------------------------- |
-| 9   | ✅ 已完成：补全数据域 tasks，并按 `module/data-cs-module/README.md` / `SPEC-TEMPLATE.md` / `UPGRADE-ROADMAP.md` 推进 `market_data` / `macro_data` C/S Module 落地 | 数据域短板 | 数据域任务树 + 标准化入口 | 数据域不再停留在 29% tasks 覆盖  |
+| 9   | ✅ 已完成：补全数据域 tasks，并按 `module/data_cs_module/README.md` / `SPEC-TEMPLATE.md` / `UPGRADE-ROADMAP.md` 推进 `market_data` / `macro_data` C/S Module 落地 | 数据域短板 | 数据域任务树 + 标准化入口 | 数据域不再停留在 29% tasks 覆盖  |
 | 10  | ✅ 已完成：补充 prompt / evidence，优先从 Foundation 层和 Approved 业务模块开始                                                                                   | G1         | S5 / S6 运行制品          | Prompt / Evidence 覆盖率持续提升 |
 | 11  | ✅ 已完成：补录关键 ADR，覆盖 L2.5、三引擎契约、业务域边界等决策                                                                                                  | G3         | ADR 队列                  | 关键决策可追溯                   |
 | 12  | ✅ 已完成：按里程碑推进 `live_integration` 扩展（当前 7 → 15+）                                                                                                   | 交付健康度 | 集成清单                  | 发布级联路线上线                 |
@@ -253,7 +253,7 @@ Prompt（S5）和 Evidence（S6）几乎为零，表明四源评分体系的后�
 - Approved 无 AC = 0。
 - 5 个 SPEC 基线已补齐并冻结，不再保留占位符文案。
 - 分析域、决策域、执行域均形成可执行 tasks。
-- 数据域补齐 tasks，并通过 `module/data-cs-module` 标准化入口保持新增数据域模块的一致结构，避免继续停留在低覆盖状态。
+- 数据域补齐 tasks，并通过 `module/data_cs_module` 标准化入口保持新增数据域模块的一致结构，避免继续停留在低覆盖状态。
 - L2.5 目标命名基准已统一为 `snake_case`，历史路径投影在同步文档中显式隔离，不再与主分析报告混写。
 - `x.go` 的主文档口径已完成治理 CLI / `composer` 组合根分工同步，后续新增文档需保持同一入口分工。
 - S5 / S6 不再长期停留在个位数覆盖。

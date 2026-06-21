@@ -21,14 +21,14 @@
 ```
 binance ✅ → market_data(dispatch) ✅ ─── MarketRegimeSink ✅ ──→ market_regime ✅ v0.2.0 ──→ RegimeSnapshot
                                                                                                      ↓ ❌ RegimeCoordinator 缺失
-macro-data(dispatch) ✅ ─────────────── MacroRegimeSink ✅ ──→ macro_regime  ✅ v0.2.0 ──→ RegimeCard
+macro_data(dispatch) ✅ ─────────────── MacroRegimeSink ✅ ──→ macro_regime  ✅ v0.2.0 ──→ RegimeCard
                                                                                                      ↓
                                                                                                regime_engine.Run(MState, SState) ❌ 从未调用
                                                                                                      ↓
                                                                                               signal_factory.Generate(card) ❌ → riskx ❌ → orderx ❌
 ```
 
-> `macro-data`（`github.com/ZoneCNH/macro_data`）是纯 Go dispatch 模块，非 Python 服务。
+> `macro_data`（`github.com/ZoneCNH/macro_data`）是纯 Go dispatch 模块，非 Python 服务。
 > SinkPort 适配器已在 `composer/pkg/adapter/`（MarketRegimeSink/MacroRegimeSink，14 tests PASS）实现。
 > ⚠️ **新增缺口（2026-06-21 核实）**：`RegimeSnapshot`/`RegimeCard` 分类结果当前被丢弃（`_, _ =`），`regime_engine.Run` 从未被调用。剩余断点是 RegimeCoordinator + riskx 最小实现。
 
@@ -141,7 +141,7 @@ lifecycle × 7       ← 单 client Close() 保留本地（符合 non-goal）
 **影响（已缓解 2026-06-21）**：~~全系统没有运行时服务入口，所有已完成的消费者层（market_regime.Subscriber / macro_regime.ClassifyFromSet / regime_engine / signal_factory）无法在真实环境中串联运行，违反 P13（x.go 只做编排）~~。`composer` 独立服务已承担数据域组合根职责（v0.1.0）。
 
 **状态（2026-06-21 最终）**：✅ `composer` v0.2.0 全部完成：
-1. ✅ market-data / macro-data dispatch → SinkPort 适配器（MarketRegimeSink/MacroRegimeSink）
+1. ✅ market_data / macro_data dispatch → SinkPort 适配器（MarketRegimeSink/MacroRegimeSink）
 2. ⚠️ **RegimeCoordinator 缺失**（新增，2026-06-21 核实）：SinkPort 适配器调用 `Subscriber.Push` / `ClassifyFromSet` 后，返回的 `RegimeSnapshot` / `RegimeCard` 被 `_, _ =` 丢弃，`regime_engine.Run(MState, SState)` **从未被调用**。需在 composer 中实现 RegimeCoordinator——缓存最新 `(RegimeSnapshot, RegimeCard)`，任一更新时触发 `regime_engine.Run → signal_factory.Generate`。
 3. ✅ HTTP health endpoint（/health + /live + /ready）
 
@@ -170,7 +170,7 @@ lab-*         → ms_brain / alternative_data ...
 
 - ~~`market_regime` 完全为空~~ → ✅ **v0.2.0 消费者层完成**（BarWindow+Subscriber，Push(domainmarket.Bar) → RegimeSnapshot）
 - 其余 12 个 CEX/DEX SDK（okx/bybit/...）均停在约 80%，没有统一的 C/S Module 封装
-- `market-data` dispatch 下游 receiver → `market_regime.Subscriber` 接口已就绪；✅ **`composer` SinkPort 适配器已完成**（MarketRegimeSink，composer v0.1.0）
+- `market_data` dispatch 下游 receiver → `market_regime.Subscriber` 接口已就绪；✅ **`composer` SinkPort 适配器已完成**（MarketRegimeSink，composer v0.1.0）
 
 ---
 
@@ -202,7 +202,7 @@ lab-*         → ms_brain / alternative_data ...
 
 ### 下两周（最小链路闭环）
 
-3. ~~`market_regime` 最小实现~~ ✅ **v0.2.0 消费者层已完成（2026-06-20）；BarWindow+domain-market 适配器+Subscriber，12 tests PASS；✅ `composer` SinkPort 适配器已完成（2026-06-21，MarketRegimeSink）**
+3. ~~`market_regime` 最小实现~~ ✅ **v0.2.0 消费者层已完成（2026-06-20）；BarWindow+domain_market 适配器+Subscriber，12 tests PASS；✅ `composer` SinkPort 适配器已完成（2026-06-21，MarketRegimeSink）**
 4. ~~`macro_regime` 最小实现~~ ✅ **v0.2.0 消费者层已完成（2026-06-20）；MacroInformationSet mapper+ClassifyFromSet，13 tests PASS；✅ `composer` SinkPort 适配器已完成（2026-06-21，MacroRegimeSink）**
 5. ~~为旧占位仓库（risk_engine / order_engine / portfolio_engine / backtest_engine）添加 DEPRECATED 标记~~ ✅ **已完成（2026-06-20）**
 
@@ -216,7 +216,7 @@ lab-*         → ms_brain / alternative_data ...
 ### 下一步（核心链路打通）
 
 10. ~~**创建 `composer` 服务**（Composition Root）：加载 dispatch → SinkPort 适配器 → 三引擎 → signal_factory 完整 pipeline~~ ✅ **已完成（2026-06-21）**：composer v0.1.0，25 进程编排 + HTTP health + Docker Compose
-11. ~~**dispatch→regime SinkPort 适配器**（2个）：`market-data SinkPort` → `market_regime.Subscriber.Push`；`macro-data SinkPort` → `macro_regime.ClassifyFromSet`~~ ✅ **已完成（2026-06-21）**：MarketRegimeSink/MacroRegimeSink，composer PR #5，14 tests PASS
+11. ~~**dispatch→regime SinkPort 适配器**（2个）：`market_data SinkPort` → `market_regime.Subscriber.Push`；`macro_data SinkPort` → `macro_regime.ClassifyFromSet`~~ ✅ **已完成（2026-06-21）**：MarketRegimeSink/MacroRegimeSink，composer PR #5，14 tests PASS
 12. **③-a RegimeCoordinator**（新增，2026-06-21 核实）：在 `composer` 中缓存最新 `RegimeSnapshot` + `RegimeCard`；任一更新时调用 `regime_engine.Run(MState, SState)` → `signal_factory.Generate(card, symbols)`；将 `[]SignalIntent` 传入 riskx
 13. **③-b signal_factory 结果传出**：`Generate` 已有实现，需要在 composer 中接收 `[]SignalIntent` 并路由到 riskx（channel/callback）
 14. **③-c riskx 最小实现**：消费 `signal_factory.SignalIntent`，实现仓位检查 + 熔断逻辑
@@ -259,6 +259,6 @@ lab-*         → ms_brain / alternative_data ...
 | 项目 | 原状态 | 当前状态 | PR/Tag |
 | --- | --- | --- | --- |
 | composer | ❌ 不存在 | ✅ v0.1.0（25 进程编排 + HTTP health + Docker Compose） | v0.1.0 |
-| MarketRegimeSink | ❌ 不存在 | ✅ market-data SinkPort → market_regime.Subscriber.Push（7 tests PASS） | composer PR #5 |
-| MacroRegimeSink | ❌ 不存在 | ✅ macro-data SinkPort → macro_regime.ClassifyFromSet（6 tests PASS） | composer PR #5 |
+| MarketRegimeSink | ❌ 不存在 | ✅ market_data SinkPort → market_regime.Subscriber.Push（7 tests PASS） | composer PR #5 |
+| MacroRegimeSink | ❌ 不存在 | ✅ macro_data SinkPort → macro_regime.ClassifyFromSet（6 tests PASS） | composer PR #5 |
 | RegimeCoordinator | ❌ 缺失（新发现） | ⚠️ 待实现：RegimeSnapshot/RegimeCard 分类结果目前被丢弃，regime_engine.Run 从未被调用 | — |

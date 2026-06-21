@@ -230,7 +230,7 @@ PR 标题遵循 Conventional Commits（不含模块名，模块名放 body 首�
 | 模式 | 示例 | 状态 |
 |---|---|---|
 | `snake_case` | `market_data`、`domain_market`、`xlib_standard` | ✅ 唯一合法格式 |
-| `kebab-case` | `market-data`、`domain-market` | ❌ 禁止 |
+| `kebab-case` | `market_data`、`domain_market` | ❌ 禁止 |
 | `PascalCase` | `MarketData` | ❌ 禁止 |
 | `camelCase` | `marketData` | ❌ 禁止 |
 

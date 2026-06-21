@@ -51,7 +51,7 @@ check_spec() {
     if echo "$term" | grep -qP '^[a-z]'; then
       continue
     fi
-    # Skip Go exported identifiers used in xlib-standard and other module SPECs
+    # Skip Go exported identifiers used in xlib_standard and other module SPECs
     if echo "$term" | grep -qP '^(Close|HealthCheck|IsKind|Metrics|New|NewError|NoopMetrics|Sanitize|VersionInfo|WrapError|GetBool|GetInt|GetString|Advance)$'; then
       continue
     fi

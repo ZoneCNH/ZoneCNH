@@ -122,7 +122,7 @@ Goal =
 | 有什么规则？ | Business Rule |
 | 什么情况算成功？ | Acceptance Criteria |
 
-**ID 格式**：`SPEC-<domain>-vN`，如 `SPEC-market-data-v1`
+**ID 格式**：`SPEC-<domain>-vN`，如 `SPEC-market_data-v1`
 
 **Requirement 原子化标准**：
 - 只表达一个行为

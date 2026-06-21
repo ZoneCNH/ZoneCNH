@@ -159,8 +159,8 @@ docs/report/
 ├── package-lock.json   ← npm 锁文件（不应在此）
 └── node_modules/       ← npm 依赖目录（内含分析文档残留）
     ├── codex-chatgpt-control/
-    ├── xlib-standard-archive-readme.md
-    ├── xlib-standard-*.md（多份存档报告）
+    ├── xlib_standard-archive-readme.md
+    ├── xlib_standard-*.md（多份存档报告）
     ├── ISSUE-LEDGER.md
     └── goal-docs-*.md（多份分析）
 ```

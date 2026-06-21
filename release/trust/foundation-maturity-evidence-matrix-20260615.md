@@ -13,10 +13,10 @@ Scope: safe local validation commands for proving current FoundationX maturity c
 
 ## Worker-2 release evidence reconciliation — 2026-06-15T10:45Z
 
-- Release evidence reconciliation audited `xlib-harness`, `xlib-evidence`, `clickhousex`, `contracts`, `transportx`, and `domainx`.
-  - Integrated finding: `xlib-harness`, `xlib-evidence`, `clickhousex`, `contracts`, and `transportx` remain `release=false` / `factory=false` in the local fact layer and public projections.
+- Release evidence reconciliation audited `xlib_harness`, `xlib_evidence`, `clickhousex`, `contracts`, `transportx`, and `domainx`.
+  - Integrated finding: `xlib_harness`, `xlib_evidence`, `clickhousex`, `contracts`, and `transportx` remain `release=false` / `factory=false` in the local fact layer and public projections.
   - `domainx` is the separated case with `release=true` and `factory=false`.
-  - Evidence boundary: `xlib-harness` and `xlib-evidence` lack public tag/GitHub Release proof; `clickhousex` still has open release blocker `BLK-003`; `contracts` and `transportx` require upstream source-repo tag/release alignment before local projection changes; `domainx` must keep factory non-✅ until adoption/factory evidence is archived.
+  - Evidence boundary: `xlib_harness` and `xlib_evidence` lack public tag/GitHub Release proof; `clickhousex` still has open release blocker `BLK-003`; `contracts` and `transportx` require upstream source-repo tag/release alignment before local projection changes; `domainx` must keep factory non-✅ until adoption/factory evidence is archived.
 - `Kuhn` (`019ecac4-4ac1-7da1-a66d-2eb365ec86cb`) audited factory blockers for `natsx`, `postgresx`, `taosx`, and `ossx`.
   - Integrated finding: `BLK-001`, `BLK-002`, `BLK-003`, `BLK-006`, `BLK-007`, and `BLK-008` remain open.
   - Evidence boundary: `natsx` still lacks four-source arbiter and production TLS/SLO evidence; `postgresx` and `taosx` have local remediation paths but no fresh closure evidence; `ossx` still needs a complete public-facing release/evidence trail.
@@ -93,15 +93,15 @@ Result:
 
 - `total_modules`: 20
 - `summary`: `spec_complete=20`, `impl_complete=20`, `release_published=15`, `live_integration=7`, `factory_grade=9`
-- `release=false`: `xlib-harness`, `xlib-evidence`, `clickhousex`, `contracts`, `transportx`
-- `factory=false`: `xlib-harness`, `xlib-evidence`, `natsx`, `postgresx`, `taosx`, `ossx`, `clickhousex`, `contracts`, `transportx`, `domainx`
+- `release=false`: `xlib_harness`, `xlib_evidence`, `clickhousex`, `contracts`, `transportx`
+- `factory=false`: `xlib_harness`, `xlib_evidence`, `natsx`, `postgresx`, `taosx`, `ossx`, `clickhousex`, `contracts`, `transportx`, `domainx`
 - `factory=N/A`: `testkitx` (test-only; not a green claim)
 
 ## Remaining non-✅ dimensions
 
-- Release remains non-✅ for `xlib-harness`, `xlib-evidence`, `clickhousex`, `contracts`, `transportx`.
+- Release remains non-✅ for `xlib_harness`, `xlib_evidence`, `clickhousex`, `contracts`, `transportx`.
 - `domainx` public v1.0.1 GitHub Release/tag is observed and reconciled to local fact-layer/trust release=true; factory remains non-✅ until adoption/factory evidence is archived.
-- Factory remains non-✅ for `xlib-harness`, `xlib-evidence`, `natsx`, `postgresx`, `taosx`, `ossx`, `clickhousex`, `contracts`, `transportx`, `domainx`.
+- Factory remains non-✅ for `xlib_harness`, `xlib_evidence`, `natsx`, `postgresx`, `taosx`, `ossx`, `clickhousex`, `contracts`, `transportx`, `domainx`.
 - Local SPEC lint and strict traceability gates now pass; remaining local lint warnings are non-blocking wording/section-cleanup items and do not flip release/factory facts.
 - Open blockers remain:
   - `BLK-001` `natsx` governance critical
@@ -120,7 +120,7 @@ Result:
 
 ## User-authorized external actions required before full ✅ can be honest
 
-- Publish or verify public GitHub releases/tags/manifest evidence for `xlib-harness`, `xlib-evidence`, `clickhousex`, `contracts`, and `transportx` where appropriate.
+- Publish or verify public GitHub releases/tags/manifest evidence for `xlib_harness`, `xlib_evidence`, `clickhousex`, `contracts`, and `transportx` where appropriate.
 - Keep `domainx` factory non-✅ until source/CI, adoption, and factory evidence are archived; release was reconciled from observed public v1.0.1 GitHub Release/tag.
 - Resolve credentialed or remote CI evidence gaps; local checks cannot replace GitHub Actions or protected-environment results.
 - Complete cross-repo PR/release alignment for `contracts` and `transportx`; keep any remaining `domainx` source/CI/adoption alignment outside release separate from factory-grade claims.
@@ -131,12 +131,12 @@ Result:
 
 ## Worker-1 public release evidence refresh — 2026-06-15T12:00Z
 
-Scope: read-only public GitHub checks for `xlib-harness`, `xlib-evidence`, `clickhousex`, `contracts`, `transportx`, and `domainx`. This refresh preserves the existing local fact layer because no new public evidence proves the blocked release/factory dimensions green.
+Scope: read-only public GitHub checks for `xlib_harness`, `xlib_evidence`, `clickhousex`, `contracts`, `transportx`, and `domainx`. This refresh preserves the existing local fact layer because no new public evidence proves the blocked release/factory dimensions green.
 
 | Module | Public evidence refreshed | Decision |
 | --- | --- | --- |
-| `xlib-harness` | GitHub API `releases/latest` returned `404`, release list returned `[]`, tag list returned `[]`, and contents checks for `.repo-contract.yaml`, `.foundationx/repo-contract.json`, and `release/manifest/latest.json` returned `404` where reachable. `git ls-remote --tags --refs https://github.com/ZoneCNH/xlib-harness.git` also returned no tag rows. | Keep `release=false` / `factory=false`. |
-| `xlib-evidence` | GitHub API `releases/latest` returned `404`, release list returned `[]`, tag list returned `[]`, and contents/raw checks for `.repo-contract.yaml`, `.foundationx/repo-contract.json`, and `release/manifest/latest.json` returned `404`. `git ls-remote --tags --refs https://github.com/ZoneCNH/xlib-evidence.git` returned no tag rows. | Keep `release=false` / `factory=false`. |
+| `xlib_harness` | GitHub API `releases/latest` returned `404`, release list returned `[]`, tag list returned `[]`, and contents checks for `.repo-contract.yaml`, `.foundationx/repo-contract.json`, and `release/manifest/latest.json` returned `404` where reachable. `git ls-remote --tags --refs https://github.com/ZoneCNH/xlib_harness.git` also returned no tag rows. | Keep `release=false` / `factory=false`. |
+| `xlib_evidence` | GitHub API `releases/latest` returned `404`, release list returned `[]`, tag list returned `[]`, and contents/raw checks for `.repo-contract.yaml`, `.foundationx/repo-contract.json`, and `release/manifest/latest.json` returned `404`. `git ls-remote --tags --refs https://github.com/ZoneCNH/xlib_evidence.git` returned no tag rows. | Keep `release=false` / `factory=false`. |
 | `clickhousex` | GitHub API `releases/latest` returned `404`, release list returned `[]`, tag list returned `v1.0.1` at `47098ecdcb8ea2c105f5da362c4f2d6182d85964`, and public `.repo-contract.yaml` records `table_version: v1.0.1`, `latest_git_tag: v1.0.1`, `all_aligned: true`. Raw checks found no `.foundationx/repo-contract.json` or `release/manifest/latest.json`. | Keep `release=false` under open `BLK-003`; a tag/contract alone is not a public GitHub Release/manifest closure packet. |
 | `contracts` | `git ls-remote --tags --refs https://github.com/ZoneCNH/contracts.git` returned `v1.0.1-spec` at `8c15f061e991ea372d6b831f3d572ee41b3d9323`. Public `.repo-contract.yaml` records `table_version: v1.0.1-spec`, `latest_git_tag: ""`, `all_aligned: false`; raw checks found no `.foundationx/repo-contract.json` or `release/manifest/latest.json`. | Keep `release=false` / `factory=false` until upstream source-repo release/tag/manifest alignment is proven. |
 | `transportx` | `git ls-remote --tags --refs https://github.com/ZoneCNH/transportx.git` returned `v1.1.1-spec` at `bb61925161120da04bf8c8b36206275cfb74ba48`. Public `.repo-contract.yaml` records `table_version: v1.1.1-spec`, `latest_git_tag: ""`, `all_aligned: false`; raw checks found no `.foundationx/repo-contract.json` or `release/manifest/latest.json`. | Keep `release=false` / `factory=false` until upstream source-repo release/tag/manifest alignment is proven. |
@@ -146,13 +146,13 @@ Evidence caveat: unauthenticated GitHub API quota was exhausted after the `click
 
 ## Worker-1 task-2 release evidence API refresh — 2026-06-15T12:15Z
 
-Scope: read-only unauthenticated GitHub API checks for `clickhousex`, `xlib-harness`, `xlib-evidence`, `contracts`, and `transportx`. This refresh does not flip maturity flags because no module has both public GitHub Release evidence and an aligned release-manifest closure packet.
+Scope: read-only unauthenticated GitHub API checks for `clickhousex`, `xlib_harness`, `xlib_evidence`, `contracts`, and `transportx`. This refresh does not flip maturity flags because no module has both public GitHub Release evidence and an aligned release-manifest closure packet.
 
 | Module | Fresh public evidence | Decision / hard blocker |
 | --- | --- | --- |
 | `clickhousex` | `GET https://api.github.com/repos/ZoneCNH/clickhousex/releases?per_page=10` returned `[]`; `GET https://api.github.com/repos/ZoneCNH/clickhousex/tags?per_page=10` returned tag `v1.0.1` at commit `47098ecdcb8ea2c105f5da362c4f2d6182d85964`. | Keep `release=false` / `factory=false`; `BLK-003` remains open because a tag alone is not the required public GitHub Release + manifest + integration evidence packet. |
-| `xlib-harness` | `GET https://api.github.com/repos/ZoneCNH/xlib-harness/releases?per_page=10` returned `[]`; `GET https://api.github.com/repos/ZoneCNH/xlib-harness/tags?per_page=10` returned `[]`. | Keep `release=false` / `factory=false`; hard blocker is absent public tag/GitHub Release evidence. |
-| `xlib-evidence` | `GET https://api.github.com/repos/ZoneCNH/xlib-evidence/releases?per_page=10` returned `[]`; `GET https://api.github.com/repos/ZoneCNH/xlib-evidence/tags?per_page=10` returned `[]`. | Keep `release=false` / `factory=false`; hard blocker is absent public tag/GitHub Release evidence. |
+| `xlib_harness` | `GET https://api.github.com/repos/ZoneCNH/xlib_harness/releases?per_page=10` returned `[]`; `GET https://api.github.com/repos/ZoneCNH/xlib_harness/tags?per_page=10` returned `[]`. | Keep `release=false` / `factory=false`; hard blocker is absent public tag/GitHub Release evidence. |
+| `xlib_evidence` | `GET https://api.github.com/repos/ZoneCNH/xlib_evidence/releases?per_page=10` returned `[]`; `GET https://api.github.com/repos/ZoneCNH/xlib_evidence/tags?per_page=10` returned `[]`. | Keep `release=false` / `factory=false`; hard blocker is absent public tag/GitHub Release evidence. |
 | `contracts` | `GET https://api.github.com/repos/ZoneCNH/contracts/releases?per_page=10` returned `[]`; `GET https://api.github.com/repos/ZoneCNH/contracts/tags?per_page=10` returned tag `v1.0.1-spec` at commit `8c15f061e991ea372d6b831f3d572ee41b3d9323`. | Keep `release=false` / `factory=false`; hard blocker is missing public GitHub Release/manifest alignment, not tag absence. |
 | `transportx` | `GET https://api.github.com/repos/ZoneCNH/transportx/releases?per_page=10` returned `[]`; `GET https://api.github.com/repos/ZoneCNH/transportx/tags?per_page=10` returned tag `v1.1.1-spec` at commit `bb61925161120da04bf8c8b36206275cfb74ba48`. | Keep `release=false` / `factory=false`; hard blocker is missing public GitHub Release/manifest alignment, not tag absence. |
 

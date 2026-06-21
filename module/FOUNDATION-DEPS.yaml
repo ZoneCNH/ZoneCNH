@@ -60,22 +60,22 @@ modules:
     description: "L1 Assembly 通用进程组装层：位于 L1 primitives 之上、x.go 入口之下，统一组装 configx/observex/lifecycx/resiliencx 与可选存储适配器"
 
   # 标准源 / 门禁（不参与运行时依赖）
-  xlib-standard:
-    path: github.com/ZoneCNH/xlib-standard
+  xlib_standard:
+    path: github.com/ZoneCNH/xlib_standard
     layer: standard-source
     stdlib_only: false
     runtime_dependency: false
     description: "标准事实源 / Go Reference Template / schema / template"
 
-  xlib-harness:
-    path: github.com/ZoneCNH/xlib-harness
+  xlib_harness:
+    path: github.com/ZoneCNH/xlib_harness
     layer: harness
     stdlib_only: false
     runtime_dependency: false
     description: "generator/scaffold/spec-lint/boundary/traceability/format/template 门禁运行器"
 
-  xlib-evidence:
-    path: github.com/ZoneCNH/xlib-evidence
+  xlib_evidence:
+    path: github.com/ZoneCNH/xlib_evidence
     layer: evidence
     stdlib_only: false
     runtime_dependency: false
@@ -161,9 +161,9 @@ allowed_deps:
   schedulex:     [kernel]                              # 不直接依赖 resiliencx/observex
   testkitx:      [kernel, configx, observex, resiliencx, schedulex]  # 测试所有
   bootstrap:     [kernel, configx, observex, resiliencx, taosx, postgresx, redisx, kafkax, natsx, ossx, clickhousex]  # L1 Assembly 特例：只做组装，可依赖 L0/L1 primitives 与受控 L2 adapter；禁止 L2.5/业务域/x.go
-  xlib-standard: []                                    # 标准源，无运行时依赖
-  xlib-harness:  []                                    # 工具运行器，无 Foundation 运行时依赖
-  xlib-evidence: []                                    # evidence runtime，无 Foundation 运行时依赖
+  xlib_standard: []                                    # 标准源，无运行时依赖
+  xlib_harness:  []                                    # 工具运行器，无 Foundation 运行时依赖
+  xlib_evidence: []                                    # evidence runtime，无 Foundation 运行时依赖
   xlibgate:      []                                    # 机器门禁，无运行时依赖
   redisx:        [kernel]                              # 只依赖 kernel 原语
   kafkax:        [kernel]                              # 只依赖 kernel 原语
@@ -209,15 +209,15 @@ forbidden_deps:
   - github.com/ZoneCNH/jin10
   - github.com/ZoneCNH/yahoo
   - github.com/ZoneCNH/alternative-data
-  - github.com/ZoneCNH/factor-engine
-  - github.com/ZoneCNH/feature-store
-  - github.com/ZoneCNH/factor-eval
+  - github.com/ZoneCNH/factor_engine
+  - github.com/ZoneCNH/feature_store
+  - github.com/ZoneCNH/factor_eval
   - github.com/ZoneCNH/market_regime
   - github.com/ZoneCNH/macro_regime
-  - github.com/ZoneCNH/regime-engine
+  - github.com/ZoneCNH/regime_engine
   - github.com/ZoneCNH/ms_brain
   - github.com/ZoneCNH/flowx
-  - github.com/ZoneCNH/signal-factory
+  - github.com/ZoneCNH/signal_factory
   - github.com/ZoneCNH/optimizer
   - github.com/ZoneCNH/backtestx
   - github.com/ZoneCNH/strategyx
@@ -343,9 +343,9 @@ forbidden_foundation_edges:
     rule: "testkitx 只能 test-only 使用，不得进入生产 import graph。"
 
   # 标准源 / 门禁
-  - from: xlib-standard
+  - from: xlib_standard
     to: [kernel, configx, observex, resiliencx, schedulex, testkitx, redisx, kafkax, natsx, postgresx, taosx, ossx, clickhousex, contracts, transportx, x.go, business]
-    rule: "xlib-standard 是标准源，不 import 任何运行时模块。只通过脚本扫描/检查下游仓库。"
+    rule: "xlib_standard 是标准源，不 import 任何运行时模块。只通过脚本扫描/检查下游仓库。"
 
   - from: xlibgate
     to: [kernel, configx, observex, resiliencx, schedulex, testkitx, redisx, kafkax, natsx, postgresx, taosx, ossx, clickhousex, contracts, transportx, x.go, business]

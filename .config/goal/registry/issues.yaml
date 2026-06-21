@@ -12,8 +12,8 @@ issues: []
 #   status: IN_PROGRESS
 #   priority: P0
 #   goal_id: GOAL-20260608-001
-#   spec_id: SPEC-market-data-v1
-#   design_id: DESIGN-market-data-v1
+#   spec_id: SPEC-market_data-v1
+#   design_id: DESIGN-market_data-v1
 #   created_at: "2026-06-08"
 #   updated_at: "2026-06-08"
 #   tasks:
@@ -21,7 +21,7 @@ issues: []
 #     - TASK-GOAL-20260608-001-002
 #     - TASK-GOAL-20260608-001-003
 #   labels:
-#     - market-data
+#     - market_data
 #     - p0
 #     - architecture
 
