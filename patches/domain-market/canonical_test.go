@@ -28,6 +28,33 @@ func TestProductLine_IsValid(t *testing.T) {
 	}
 }
 
+func TestProductLine_IsDerivative(t *testing.T) {
+	tests := []struct {
+		name string
+		pl   ProductLine
+		want bool
+	}{
+		{"spot", ProductLineSpot, false},
+		{"um_perp", ProductLineUMPerp, true},
+		{"cm_perp", ProductLineCMPerp, true},
+		{"option", ProductLineOption, true},
+		{"invalid", ProductLine("futures"), false},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.pl.IsDerivative(); got != tt.want {
+				t.Errorf("ProductLine(%q).IsDerivative() = %v, want %v", tt.pl, got, tt.want)
+			}
+		})
+	}
+}
+
+func TestDecimal_String(t *testing.T) {
+	if got := Decimal("50000.125").String(); got != "50000.125" {
+		t.Fatalf("Decimal.String() = %q, want %q", got, "50000.125")
+	}
+}
+
 func TestInstrumentKey_Validate(t *testing.T) {
 	validKey := InstrumentKey{
 		Venue: "binance", ProductLine: ProductLineSpot, Symbol: "BTCUSDT",
@@ -57,6 +84,31 @@ func TestInstrumentKey_Validate(t *testing.T) {
 	}
 	if err := optKey.Validate(); err != nil {
 		t.Errorf("valid option key should pass: %v", err)
+	}
+
+	missingExpiry := optKey
+	missingExpiry.Expiry = nil
+	if err := missingExpiry.Validate(); err == nil {
+		t.Error("option key missing Expiry should fail")
+	}
+
+	missingStrike := optKey
+	missingStrike.Strike = nil
+	if err := missingStrike.Validate(); err == nil {
+		t.Error("option key missing Strike should fail")
+	}
+
+	invalidOptionType := optKey
+	invalidOptionType.OptionType = "binary"
+	if err := invalidOptionType.Validate(); err == nil {
+		t.Error("option key with invalid OptionType should fail")
+	}
+}
+
+func TestInstrumentKey_String(t *testing.T) {
+	key := InstrumentKey{Venue: "binance", ProductLine: ProductLineOption, Symbol: "BTC-1231-50000-C"}
+	if got, want := key.String(), "binance:option:BTC-1231-50000-C"; got != want {
+		t.Fatalf("InstrumentKey.String() = %q, want %q", got, want)
 	}
 }
 
@@ -110,6 +162,15 @@ func TestMarketFactEnvelope_EventAge(t *testing.T) {
 	age := e.EventAge()
 	if age < 49*time.Millisecond || age > 51*time.Millisecond {
 		t.Errorf("EventAge = %v, want ~50ms", age)
+	}
+}
+
+func TestMarketFactEnvelope_EndToEndLatency(t *testing.T) {
+	now := time.Now()
+	e := MarketFactEnvelope{EventTime: now.Add(-75 * time.Millisecond), AvailableAt: now}
+	latency := e.EndToEndLatency()
+	if latency < 74*time.Millisecond || latency > 76*time.Millisecond {
+		t.Errorf("EndToEndLatency = %v, want ~75ms", latency)
 	}
 }
 
