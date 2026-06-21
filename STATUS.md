@@ -419,7 +419,7 @@
 | R7  | observex 双重归属（基座+横切）          | 职责边界模糊                      | ✅ 已记录 ADR：`module/observex/ADR-dual-attribution.md`（2026-06-12） |
 | R10 | ~~`.omc/state/sessions` 已入库~~        | ~~可能泄露 prompt/会话/环境信息~~ | ✅ 已修复：`git rm -r --cached .omc`（2026-06-07）                     |
 | R11 | ~~公开 README 含 `127.0.0.1` 本地链接~~ | ~~外部无法访问，降低专业度~~      | ✅ 已修复：批量移除所有本地链接（2026-06-07）                          |
-| R12 | 71 个仓库无统一命名前缀                 | 分类困难，增加维护成本            | 按 `foundation-*`/`adapter-*`/`engine-*`/`lab-*` 重整                  |
+| ~~R12~~ | ~~71 个仓库无统一命名前缀~~                 | ~~分类困难，增加维护成本~~            | ✅ 已收口：L2.5 目录命名统一完成；当前仅保留为历史评估项，未来若发生大规模目录重构再单独评估 |
 
 ### 🟢 低风险
 
@@ -434,18 +434,18 @@
 
 ### 当前阻塞项
 
-- [ ] Phase 1（分析域）仍待完成收口 → 阻塞 Phase 2/3/4/5
+- [ ] Phase 1（分析域）仍待完成收口（对应分析报告剩余 9 项收口动作） → 阻塞 Phase 2/3/4/5
 - [x] ~~x.go 体量待核实~~ ✅ **已核实**：x.go = 治理 CLI，非组合根；composer v0.1.0 承担数据域组合根
 
 ### 下一步行动
 
-1. **聚焦 Phase 1**：先固化 MarketDataProvider / FactorInput / FactorOutput，再实现 factor_engine → feature_store → factor_eval
+1. **聚焦 Phase 1 核心项**：先按分析报告 `#1`-`#3` 完成 `contracts` Approved、跨域 AC / TC 收口与占位符 SPEC 扩充，再固化 MarketDataProvider / FactorInput / FactorOutput，并推进 `factor_engine → feature_store → factor_eval`
 2. **同步 contracts 契约口径**：`SignalIntent` 已升入 contracts；P1 / P2 兼容投影别名（`RegimeSnapshotEvent` / `RegimeCardEvent` / `DecisionCardEvent` / `MarketRegimePort` / `MacroRegimePort` / `RegimeEnginePort`）已在 contracts 补齐；当前待推进的是 contracts Approved 与跨域 AC / TC 收口
 3. ~~**版本化 SDK**~~：✅ 已完成 — 18 仓库 v0.1.1 tagged release（2026-06-16）
 4. ~~**统一宏观适配器**~~：✅ 已评估 — 保持独立模块架构，11 仓库全部 v0.1.1 tagged release（2026-06-16）
 5. ~~**清理仓库卫生**（R10）~~：✅ 已完成（2026-06-07）
 6. ~~**移除本地链接**（R11）~~：✅ 已完成（2026-06-07）
-7. **重整仓库命名**（R12）：评估按 `foundation-*`/`adapter-*`/`engine-*`/`lab-*` 前缀重命名的可行性
+7. **保留 R12 作为历史评估项**：当前不再是执行中的迁移任务；仅在未来大规模目录重构时再评估按 `foundation-*`/`adapter-*`/`engine-*`/`lab-*` 前缀重命名的可行性
 
 ---
 
@@ -453,15 +453,15 @@
 
 | 检查项           | README | ARCHITECTURE | STATUS    | 一致性 |
 | ---------------- | ------ | ------------ | --------- | ------ |
-| 组件总数         | 74     | 75           | 75        | ⚠️ ARCH/STATUS +1 (新增 macro_data dispatch) |
+| 组件总数         | 75     | 75           | 75        | ✅            |
 | market_data 数量 | 14     | 14          | 14        | ✅     |
-| macro_data 数量  | 10     | 11           | 11        | ⚠️ ARCH/STATUS +1 (新增 macro_data dispatch) |
+| macro_data 数量  | 11     | 11           | 11        | ✅            |
 | L2.5 组件        | 5      | 5            | 5         | ⏳ 待验证 |
 | 分析域组件       | 8      | 8            | 8         | ⏳ 待验证 |
 | 决策域组件       | 6      | 6            | 6         | ⏳ 待验证 |
 | 横切组件         | 2      | 2            | 2         | ⏳ 待验证 |
 
-注：macro_data 域从 10 增至 11（新增 dispatch 独立进程），ARCHITECTURE.md 同步新增 macro_data 行。README.md 暂未同步（后续单开 PR）。STATUS 域统计 domain-sum 口径（77）与 unique-link 口径不完全等同（observex 计入基座+横切 2 域，废弃占位不计入 unique-link）。
+注：macro_data 域从 10 增至 11（新增 dispatch 独立进程），ARCHITECTURE.md、README.md 与 STATUS.md 已同步新增 macro_data 行并统一为 11。STATUS 域统计 domain-sum 口径（77）与 unique-link 口径不完全等同（observex 计入基座+横切 2 域，废弃占位不计入 unique-link）。
 
 ### 迁移与门禁基线
 
