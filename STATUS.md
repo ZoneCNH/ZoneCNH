@@ -453,15 +453,15 @@
 
 | 检查项           | README | ARCHITECTURE | STATUS    | 一致性 |
 | ---------------- | ------ | ------------ | --------- | ------ |
-| 组件总数         | 74     | 74           | 74        | ⏳ 待验证 |
-| market_data 数量 | 14     | 14          | 14        | ⏳ 待验证 |
-| macro_data 数量  | 11     | 11           | 11        | ⏳ 待验证 |
+| 组件总数         | 74     | 75           | 75        | ⚠️ ARCH/STATUS +1 (新增 macro_data dispatch) |
+| market_data 数量 | 14     | 14          | 14        | ✅     |
+| macro_data 数量  | 10     | 11           | 11        | ⚠️ ARCH/STATUS +1 (新增 macro_data dispatch) |
 | L2.5 组件        | 5      | 5            | 5         | ⏳ 待验证 |
 | 分析域组件       | 8      | 8            | 8         | ⏳ 待验证 |
 | 决策域组件       | 6      | 6            | 6         | ⏳ 待验证 |
 | 横切组件         | 2      | 2            | 2         | ⏳ 待验证 |
 
-注：macro_data 域从 10 增至 11（新增 dispatch 独立进程）。以上数字待 `python3 scripts/audit-status.py --network` 最终验证。STATUS 域统计 domain-sum 口径与 unique-link 口径不完全等同（observex 计入基座+横切 2 域）。
+注：macro_data 域从 10 增至 11（新增 dispatch 独立进程），ARCHITECTURE.md 同步新增 macro_data 行。README.md 暂未同步（后续单开 PR）。STATUS 域统计 domain-sum 口径（77）与 unique-link 口径不完全等同（observex 计入基座+横切 2 域，废弃占位不计入 unique-link）。
 
 ### 迁移与门禁基线
 

@@ -172,8 +172,8 @@ backtestx ──► optimizer ──► strategyx ──► maestro             
 | L2.5   | 领域共享值对象和语义模型，上层统一依赖                                                                                        | domainx, decimalx, domain_market, domain_exchange, domain_macro                                                                                         |
 | 数据域 | 行情、宏观、另类数据采集；域 = Σ C/S 子模块 + dispatch 独立进程；每个 C/S 子模块（binance/fred 等）可独立运行，含 internal/client（采集）+ internal/server（服务）；dispatch（market_data/macro_data）为聚合调度独立进程 | market_data 域 (14: 13 C/S 子模块 + 1 dispatch)，macro_data 域 (11: 10 C/S 子模块 + 1 dispatch)，alternative_data (1) |
 | 分析域 | 因子计算、特征存储、因子评估、市场/宏观环境分类、数据流管线、M×S 联合决策；**全部为独立进程（非 C/S）**，bootstrap 接入，无 client/server 拆分 | factor_engine, feature_store, factor_eval, market_regime, macro_regime, regime_engine, ms_brain, flowx |
-| 决策域 | 信号生成、历史回测、参数优化、策略工厂、工作流编排（并行协作）                                                                  | signal_factory, backtest_engine, optimizer, backtestx, strategyx, maestro                                                                          |
-| 执行域 | 风险管理、订单执行、仓位管理、结算                                                                                              | risk_engine, order_engine, portfolio_engine, settlement, riskx, orderx, positionx                                                                              |
+| 决策域 | 信号生成、历史回测、参数优化、策略工厂、工作流编排（并行协作）                                                                  | signal_factory, backtestx, optimizer, strategyx, maestro                                                                          |
+| 执行域 | 风险管理、订单执行、仓位管理、结算                                                                                              | riskx, orderx, positionx, settlement                                                                              |
 | 入口   | 启动、配置加载、依赖组装、生命周期控制                                                                                        | composer                                                                                                                                                   |
 | 横切   | 告警、可观测性                                                                                                                | alertx, observex                                                                                                                                           |
 
@@ -304,7 +304,7 @@ Foundation 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中在 
 
 `resiliencx` 必须回到 operational resilience：对不稳定外部依赖、任务、数据源、交易所 API、消息处理和调度任务提供可组合故障控制策略。
 
-`risk_engine` 才负责 trading risk，二者不能混用。
+`riskx` 才负责 trading risk，二者不能混用。
 
 `xlib_standard` v1.0.1 已发布（tag v1.0.1, PR #121），标准源和 Go Reference Template 职责已完整落地。Generator / Harness Gate / Evidence Runtime 职责已于 PR #233 拆分至 `xlib_harness` 和 `xlib_evidence`。
 
@@ -349,7 +349,7 @@ Foundation 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中在 
 
 - **数据域 → 分析域**：单向，原始数据和标准化行情进入因子计算。
 - **分析域 ↔ 决策域**：因子驱动信号生成；回测结果和评估指标反馈到 factor_eval / feature_store。
-- **决策域 → 执行域**：信号必须先经过 risk_engine，禁止绕过风控直接调用 order_engine。
+- **决策域 → 执行域**：信号必须先经过 riskx，禁止绕过风控直接调用 orderx。
 - **执行域 → 决策域**：通过 fills / positions / PnL / exposure events 反馈组合再平衡和策略调整，不反向直接调用决策内部实现。
 - **composer → 各域**：只做启动和组装依赖，不参与业务链路计算。
 
@@ -363,7 +363,7 @@ Foundation 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中在 
 | `testkitx` 边界   | 仅测试包、测试 fixture、harness、boundary evidence 导入           | production Go 文件导入 `testkitx`                                                            | `make boundary-testkit` 或 import scan    |
 | 可观测脱敏        | 低基数、非敏感 label；secret redaction 覆盖日志、health、manifest | `order_id`、`account_id`、`api_key`、trace id 等进入普通 metrics label                       | schema/golden + secret leak test          |
 | 业务域依赖        | 数据域/分析域/决策域/执行域导入 L2.5、contracts 和基座            | 业务域互相导入实现包，尤其执行域反向导入决策域                                               | `go list` 或依赖图中无业务域实现包反向边  |
-| 决策到执行        | signal_factory / optimizer 通过 risk_engine 提交执行意图          | 绕过 risk_engine 直接调用 order_engine 或交易所 SDK                                          | paper trade 链路能证明 risk gate 必经     |
+| 决策到执行        | signal_factory / optimizer 通过 riskx 提交执行意图          | 绕过 riskx 直接调用 orderx 或交易所 SDK                                          | paper trade 链路能证明 risk gate 必经     |
 | 执行反馈          | fills / positions / PnL / exposure 以事件进入决策域               | execution 包同步调用 strategy / backtest 内部实现                                            | 事件 topic、DTO 和消费方在 contracts 固化 |
 | contracts         | 跨域端口、事件协议、DTO                                           | 领域模型全集、通用工具、域内临时接口                                                         | 新增契约必须说明消费方、生产方和稳定期    |
 | transportx        | Envelope/Endpoint、ServiceIdentity、QoS、Codec、RPC、EventBus、Stream、Outbox/Inbox、Audit Plane、Data Classification、SchemaRegistry、conformance gate | 具体 broker/client、协议 SDK、业务语义、领域模型                                             | 新增通信契约必须说明 runtime / adapter 边界、QoS/codec/schema 兼容期和审计要求 |
@@ -381,10 +381,10 @@ Foundation 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中在 
 
 1. **Foundation 先边界后功能** — 先固化 `xlib_standard`、依赖矩阵、Go baseline 和 release gate，再扩大 L1 能力面
 2. **`xlib_standard` 不是运行时依赖** — 它是独立 Go module，承担标准事实源和 Go Reference Template 职责（Generator/Harness/Evidence 已拆分至 `xlib_harness` / `xlib_evidence`），不承载业务运行
-3. **`resiliencx` 只做运行时弹性** — timeout/retry/circuit/bulkhead/rate/fallback 属于它，交易风控属于 `risk_engine`
+3. **`resiliencx` 只做运行时弹性** — timeout/retry/circuit/bulkhead/rate/fallback 属于它，交易风控属于 `riskx`
 4. **`testkitx` 只能 test-only** — 生产 import graph 不允许出现测试工具包
-5. **风控是独立引擎** — 策略只能通过 risk_engine 提交订单，不能直接调用 order_engine
-6. **回测与实盘共享代码** — signal_factory / factor_engine / risk_engine 同一套，backtest_engine 只替换数据源和撮合/回放环境
+5. **风控是独立引擎** — 策略只能通过 riskx 提交订单，不能直接调用 orderx
+6. **回测与实盘共享代码** — signal_factory / factor_engine / riskx 同一套，backtestx 只替换数据源和撮合/回放环境
 7. **contracts 只定义跨域稳定契约** — 跨域端口、事件协议、DTO 放在 contracts；域内接口留在域内，领域值对象放在 L2.5
 8. **transportx 只定义应用通信底座契约** — Envelope/Endpoint、ServiceIdentity、QoS、Codec、RPC、EventBus、Stream、Outbox/Inbox、Audit Plane、Data Classification、SchemaRegistry 和 conformance gate 放在 transportx；具体 broker/client、协议 SDK、业务语义和领域模型留在 adapter 或业务域内
 9. **领域语义沉到 L2.5** — 多域共享的 Price/Qty/Tick/Quote/MacroPoint 等模型统一来自 decimalx / domain-\*，避免各域重复定义
