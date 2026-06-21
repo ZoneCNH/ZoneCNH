@@ -1,7 +1,7 @@
 # clickhousex
 
 ## 1. 模块定位
-ZoneCNH 基座层 ClickHouse 客户端模块（Layer L2 基础设施适配器），封装连接管理、原生 batch insert、OLAP 查询和可观测集成，面向分析域（因子回看、收益归因、风险归因）。Status=Approved，Module-Version v1.0.8（Spec v1.0.1）。与 taosx 互补：clickhousex=OLAP 分析查询，taosx=IoT 时序存储。
+ZoneCNH 基座层 ClickHouse 客户端模块（Layer L2 基础设施适配器），封装连接管理、原生 batch insert、OLAP 查询和可观测集成，面向分析域（因子回看、收益归因、风险归因）。Status=Approved，Module-Version v1.0.10（Spec v1.0.1）。与 taosx 互补：clickhousex=OLAP 分析查询，taosx=IoT 时序存储。
 
 ## 2. 生产职责
 - FR-001：`NewClient(cfg)` 创建连接池 + DSN 校验。
@@ -76,10 +76,10 @@ span：`clickhousex.exec`、`clickhousex.query`、`clickhousex.insert_batch`。T
 - 错误消息不泄露连接详情；连接凭据不硬编码，通过 Config 注入（SPEC §18）。
 
 ## 15. Performance SLO
-v1.0.8 已归档 benchmark：Exec `1474 ns/op`、QueryRowsScan `1672 ns/op`、InsertBatch(client path) `2013 ns/op`、HealthCheck `485.4 ns/op`。SPEC §16 目标：单次 Exec < 10ms、InsertBatch 10000 行 < 1s、单次 OLAP 查询 < 100ms、复杂聚合 < 1s、池获取 < 1ms、常驻内存 < 5MB。
+v1.0.10 已归档 benchmark：Exec `4156 ns/op`、QueryRowsScan `5632 ns/op`、InsertBatch(client path) `6155 ns/op`、HealthCheck `1538 ns/op`。SPEC §16 目标：单次 Exec < 10ms、InsertBatch 10000 行 < 1s、单次 OLAP 查询 < 100ms、复杂聚合 < 1s、池获取 < 1ms、常驻内存 < 5MB。
 
 ## 16. 测试标准
-AC-001..AC-026（26 条验收）+ TC-001..TC-007 Given/When/Then。v1.0.8 覆盖率 100.0%（`go tool cover -func`）。必跑：`go test -race ./...`、`go vet`、`go build`、`golangci-lint`、gitleaks、`go mod tidy`。集成测试 `go test -tags=integration` + 真实 ClickHouse live（`CLICKHOUSEX_RUN_INTEGRATION=1`）+ 60s soak。
+AC-001..AC-026（26 条验收）+ TC-001..TC-007 Given/When/Then。v1.0.10 覆盖率 100.0%（`go tool cover -func`）。必跑：`go test -race ./...`、`go vet`、`go build`、`golangci-lint`、gitleaks、`go mod tidy`。集成测试 `go test -tags=integration` + 真实 ClickHouse live（`CLICKHOUSEX_RUN_INTEGRATION=1`）+ 60s soak。
 
 ## 17. Chaos 标准
 SPEC §12/§15 边界场景：DSN 格式错误、ClickHouse 不可达（不 panic）、批量写入空 rows/cols、查询结果为空、并发 Close 幂等、连接池耗尽（阻塞→超时 `ErrPoolExhausted`）、ctx 超时、大结果集逐行迭代、Nullable Scan 非指针、Decimal 精度丢失、batch insert 部分失败（返回首个错误+行号）。连接断开→恢复由 BR-004 retry 覆盖。
@@ -88,16 +88,16 @@ SPEC §12/§15 边界场景：DSN 格式错误、ClickHouse 不可达（不 pani
 `Client` interface：Exec/Query/InsertBatch/Health/Close。`Rows` interface：Next/Scan/Close/Err/ColumnTypes。`ColumnType`：Name/Type/Nullable。`HealthStatus`：Ready/Live/Message。类型映射表锁定（SPEC §9.2）：UInt/Int/Float/String/DateTime/Decimal/Nullable(T)→*T/LowCardinality(T)→T/Array(T)→[]T。Client interface 变更=major，新增方法=minor。
 
 ## 19. CI Gate
-通用：`go build`、`go test -race -count=1`、覆盖率 < 80% 阻断、`go vet`、`golangci-lint`、`go mod tidy`、`gitleaks detect --no-git`、benchmark 附 PR comment。专属：`go test -tags=integration`（不可达 skip，可达必过）、`go list -deps | grep configx`（无匹配）。v1.0.8 branch/tag/main CI 全绿。
+通用：`go build`、`go test -race -count=1`、覆盖率 < 80% 阻断、`go vet`、`golangci-lint`、`go mod tidy`、`gitleaks detect --no-git`、benchmark 附 PR comment。专属：`go test -tags=integration`（不可达 skip，可达必过）、`go list -deps | grep configx`（无匹配）。v1.0.10 本地 release gate、branch/tag/main CI 配置与 release workflow 已对齐；远端 push 后再触发对应 Actions。
 
 ## 20. Release Gate
-SPEC §21 DoD：godoc 注释、示例代码、CHANGELOG、README、覆盖率 ≥ 80%、race 通过、benchmark 无 > 10% 回退、vet/lint/gitleaks 通过、公共 API 无破坏性变更（或 bump major）、所有 FR/Edge Case 有测试、集成测试无环境正确 skip、类型映射表有测试。v1.0.8 已通过 PR #6 合并入 main，GitHub Release 已发布。
+SPEC §21 DoD：godoc 注释、示例代码、CHANGELOG、README、覆盖率 ≥ 80%、race 通过、benchmark 无 > 10% 回退、vet/lint/gitleaks 通过、公共 API 无破坏性变更（或 bump major）、所有 FR/Edge Case 有测试、集成测试无环境正确 skip、类型映射表有测试。v1.0.10 已在本地完成 release evidence、版本元数据、覆盖率、race、benchmark、vet/lint/gitleaks、真实 ClickHouse live 集成与 60s soak；远端 push、GitHub Release 与 Actions 待后续触发。
 
 ## 21. Versioning
-semver。Client interface 变更=major；Config 新增可选字段=patch/minor，必填=minor（带默认值）；新增 Client 方法=minor；类型映射变更=major；错误变量新增=minor 删除=major；bugfix=patch。v1.0.8 为复验发布，客户端 API 与 FR/BR/NFR 覆盖范围与 v1.0.7 一致。
+semver。Client interface 变更=major；Config 新增可选字段=patch/minor，必填=minor（带默认值）；新增 Client 方法=minor；类型映射变更=major；错误变量新增=minor 删除=major；bugfix=patch。v1.0.10 为生产门禁强化发布，客户端 API 与 FR/BR/NFR 覆盖范围与 v1.0.7 一致；远端 push、GitHub Release 与 Actions 需后续触发。
 
 ## 22. 兼容性策略
-SPEC §20 升级兼容性矩阵。v1.0.8 已合并 v1.0.3–v1.0.8 发布线入 main。下游只允许依赖已发布的 Client/Rows/Config 入口。Config 新增字段保留旧调用方编译兼容性。类型映射变更（影响现有 Scan 行为）必须 bump major。
+SPEC §20 升级兼容性矩阵。v1.0.10 继承 v1.0.3–v1.0.10 发布线的兼容边界。下游只允许依赖已发布的 Client/Rows/Config 入口。Config 新增字段保留旧调用方编译兼容性。类型映射变更（影响现有 Scan 行为）必须 bump major。
 
 ## 23. Failover 策略
 连接断开→自动重试 3 次指数退避→超过返回 `ErrConnectionLost`（BR-004，触发调用方感知）。ClickHouse 临时不可达→Exec 返回 `ErrConnectionLost`，恢复后 Exec 成功自动重连（TC-002）。模块不内置集群故障转移，由 ClickHouse 集群自行处理分布式查询路由。
@@ -124,17 +124,18 @@ SPEC §20 升级兼容性矩阵。v1.0.8 已合并 v1.0.3–v1.0.8 发布线入 
 - 全局可变状态、shared singleton chaos、runtime reflection abuse。
 
 ## 29. Production Ready Checklist
-- [x] v1.0.8 tag/GitHub Release 已发布（PR #6 合并入 main）
-- [x] FR-001..008、BR-001..012、AC-001..026 由 TRACEABILITY + v1.0.8 evidence 闭合
+- [x] v1.0.10 本地 release evidence / 版本元数据已闭合
+- [x] FR-001..008、BR-001..012、AC-001..026 由 TRACEABILITY + v1.0.10 evidence 闭合
 - [x] 覆盖率 100.0% / race / vet / build / lint / gitleaks / Trust Alignment 通过
 - [x] 真实 ClickHouse live 集成测试 + 60s live soak 通过
 - [x] benchmark/profile 归档（Exec/Query/InsertBatch/HealthCheck）
+- [ ] 远端 push / GitHub Release / Actions —— 待后续触发
 - [ ] 生产时长多小时 soak —— factory 前缺口
 - [ ] 外部消费方 rollout —— factory 前缺口
 - [ ] 100000 行真实规模 + 复杂聚合 benchmark（NFR-003/005）—— factory 前缺口
 - [ ] Factory-grade 声明（BLK-003 已 resolved，但 factory 证据仍待补）
 
 ## 30. Roadmap
-- v1.0.8（已发布）：复验 release gate，合并 v1.0.3–v1.0.8 入 main，闭合完整客户端 API + live 集成 + soak + benchmark。
+- v1.0.10（本地已闭环）：release gate、live 集成、soak、benchmark 已验证；远端 push / GitHub Release / Actions 待后续触发。
 - v1.x：补生产时长 soak、外部消费方 rollout、大规模/复杂查询 benchmark、factory 归档证据。
 - 开放问题（SPEC §22）：异步 insert、Decimal Go 库选型、压缩传输、动态扩缩容、分布式表查询、批量写入部分重试。
