@@ -220,7 +220,7 @@ Prompt（S5）和 Evidence（S6）几乎为零，表明四源评分体系的后�
 
 | # | 行动 | 对应问题 | 主要产出 | 完成标准 |
 |---|---|---|---|---|
-| 1 | `contracts` 推进至 Approved，并补齐跨域 AC / TC | A1、S1 | 冻结版 `contracts`、协议边界清单 | `contracts = Approved`，下游引用口径单一 |
+| 1 | ✅ 已完成：`contracts` 推进至 Approved，并补齐跨域 AC / TC | A1、S1 | 冻结版 `contracts`、协议边界清单 | `contracts = Approved`，下游引用口径单一 |
 | 2 | ✅ 已完成：8 个 Approved 模块 AC 已收口 | S1、G2 | Approved 模块验收标准补丁（已回写） | Approved 无 AC = 0 |
 | 3 | ✅ 已完成：将 5 个占位符 SPEC 全部扩充为完整规格 | S3、A2 | 完整 Spec 基线 | 占位符 SPEC = 0 |
 | 4 | ✅ 已完成：固定 L2.5 命名基准与迁移表 | A3、A4 | `snake_case` 对照表、遗留引用清单、同步文档回写 | 新增文档不再产生新的 kebab 投影；显示层口径已收口 |
@@ -229,19 +229,19 @@ Prompt（S5）和 Evidence（S6）几乎为零，表明四源评分体系的后�
 
 | # | 行动 | 对应问题 | 主要产出 | 完成标准 |
 |---|---|---|---|---|
-| 5 | 从 `regime_engine`、`signal_factory` 等核心链路开始拆分分析域 / 决策域 / 执行域 tasks | A2、S4 | 21 个核心模块的任务树 | 三个业务域全部进入可执行状态 |
-| 6 | 按 AC → TC → tasks 顺序补齐测试与执行制品 | S2、S4、G2 | TC、tasks、prompt 的串联补丁 | 不再出现“有任务无验收” |
-| 7 | 统一 `README.md` 与 `ARCHITECTURE.md` 的 `x.go` 说明入口 | A5 | 单一入口说明与引用更新 | `README.md` / `ARCHITECTURE.md` / `docs/architecture/README.md` / `01-overview.md` / `02-domain-layers.md` / `03-boundaries.md` / `04-principles.md` / `05-foundation.md` 的入口口径已统一；后续新增文档需沿用 `x.go`(治理 CLI) / `composer`(运行时组合根) 的分工 |
+| 5 | ✅ 已完成：从 `regime_engine`、`signal_factory` 等核心链路开始拆分分析域 / 决策域 / 执行域 tasks | A2、S4 | 21 个核心模块的任务树 | 三个业务域全部进入可执行状态 |
+| 6 | ✅ 已完成：按 AC → TC → tasks 顺序补齐测试与执行制品 | S2、S4、G2 | TC、tasks、prompt 的串联补丁 | 不再出现“有任务无验收” |
+| 7 | ✅ 已完成：统一 `README.md` 与 `ARCHITECTURE.md` 的 `x.go` 说明入口 | A5 | 单一入口说明与引用更新 | `README.md` / `ARCHITECTURE.md` / `docs/architecture/README.md` / `01-overview.md` / `02-domain-layers.md` / `03-boundaries.md` / `04-principles.md` / `05-foundation.md` 的入口口径已统一；后续新增文档需沿用 `x.go`(治理 CLI) / `composer`(运行时组合根) 的分工 |
 | 8 | ✅ 已完成：清理 L2.5 遗留 kebab 引用，并回写统一命名 / 对齐同步文档（`docs/report/repo-naming-unification-20260620.md`） | A3、A4 | 引用替换、迁移记录、对齐说明 | 目录、仓库、SPEC 引用分层归位，历史路径投影不再混写 |
 
 ### 5.4 P2 — 质量收敛（持续）
 
 | # | 行动 | 对应问题 | 主要产出 | 完成标准 |
 |---|---|---|---|---|
-| 9 | 补全数据域 tasks，并按 `module/data-cs-module/README.md` / `SPEC-TEMPLATE.md` / `UPGRADE-ROADMAP.md` 推进 `market_data` / `macro_data` C/S Module 落地 | 数据域短板 | 数据域任务树 + 标准化入口 | 数据域不再停留在 29% tasks 覆盖 |
-| 10 | 补充 prompt / evidence，优先从 Foundation 层和 Approved 业务模块开始 | G1 | S5 / S6 运行制品 | Prompt / Evidence 覆盖率持续提升 |
-| 11 | 补录关键 ADR，覆盖 L2.5、三引擎契约、业务域边界等决策 | G3 | ADR 队列 | 关键决策可追溯 |
-| 12 | 按里程碑推进 `live_integration` 扩展（当前 7 → 15+） | 交付健康度 | 集成清单 | 发布级联路线上线 |
+| 9 | ✅ 已完成：补全数据域 tasks，并按 `module/data-cs-module/README.md` / `SPEC-TEMPLATE.md` / `UPGRADE-ROADMAP.md` 推进 `market_data` / `macro_data` C/S Module 落地 | 数据域短板 | 数据域任务树 + 标准化入口 | 数据域不再停留在 29% tasks 覆盖 |
+| 10 | ✅ 已完成：补充 prompt / evidence，优先从 Foundation 层和 Approved 业务模块开始 | G1 | S5 / S6 运行制品 | Prompt / Evidence 覆盖率持续提升 |
+| 11 | ✅ 已完成：补录关键 ADR，覆盖 L2.5、三引擎契约、业务域边界等决策 | G3 | ADR 队列 | 关键决策可追溯 |
+| 12 | ✅ 已完成：按里程碑推进 `live_integration` 扩展（当前 7 → 15+） | 交付健康度 | 集成清单 | 发布级联路线上线 |
 
 ### 5.5 退出条件
 
