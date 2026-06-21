@@ -460,12 +460,12 @@
 | 组件总数         | 75     | 75           | 75        | ✅            |
 | market_data 数量 | 14     | 14          | 14        | ✅     |
 | macro_data 数量  | 11     | 11           | 11        | ✅            |
-| L2.5 组件        | 5      | 5            | 5         | ⏳ 待验证 |
-| 分析域组件       | 8      | 8            | 8         | ⏳ 待验证 |
-| 决策域组件       | 6      | 6            | 6         | ⏳ 待验证 |
-| 横切组件         | 2      | 2            | 2         | ⏳ 待验证 |
+| L2.5 组件        | 5      | 5            | 5         | ✅ 已验证 |
+| 分析域组件       | 8      | 8            | 8         | ✅ 已验证 |
+| 决策域组件       | 6      | 6            | 6         | ✅ 已验证 |
+| 横切组件         | 2      | 2            | 2         | ✅ 已验证 |
 
-注：macro_data 域从 10 增至 11（新增 dispatch 独立进程），ARCHITECTURE.md、README.md 与 STATUS.md 已同步新增 macro_data 行并统一为 11。STATUS 域统计 domain-sum 口径（77）与 unique-link 口径不完全等同（observex 计入基座+横切 2 域，废弃占位不计入 unique-link）。
+注：macro_data 域从 10 增至 11（新增 dispatch 独立进程），ARCHITECTURE.md、README.md 与 STATUS.md 已同步新增 macro_data 行并统一为 11；本次复核后，L2.5、分析域、决策域与横切四项计数也已与 README.md / ARCHITECTURE.md 对齐确认。STATUS 域统计 domain-sum 口径（77）与 unique-link 口径不完全等同（observex 计入基座+横切 2 域，废弃占位不计入 unique-link）。
 
 ### 迁移与门禁基线
 
