@@ -51,7 +51,7 @@
 | TC-011 | NFR-001, NFR-002, BR-008 | /home/natsx/pkg/natsx/config_test.go::TestConfigValidateDefaultsAndSanitize; /home/natsx/pkg/natsx/env_test.go::TestConfigFromEnvRejectsInvalidValuesWithoutSecretLeak; /home/natsx/pkg/natsx/live_integration_test.go; local auth live test passed with FOUNDATIONX_NATS_URL, FOUNDATIONX_NATS_USERNAME, and FOUNDATIONX_NATS_PASSWORD sourced from local NATS config without printing credentials | - | TRACEABILITY.md |
 | TC-012 | NFR-003 | /home/natsx/pkg/natsx/benchmark_test.go::BenchmarkEmbeddedNATSPublish; /home/natsx/pkg/natsx/benchmark_test.go::BenchmarkEmbeddedNATSRequest; /home/natsx/pkg/natsx/benchmark_test.go::BenchmarkEmbeddedNATSJetStreamPublish; /home/natsx/pkg/natsx/embedded_nats_test.go adds request, JetStream publish/fetch SLO assertions and handler latency evidence | - | TRACEABILITY.md |
 | TC-013 | NFR-004 | /home/natsx$ GOWORK=off go list -deps ./pkg/natsx ./examples/... plus forbidden-domain filter returned dependency boundary clean | - | TRACEABILITY.md |
-| TC-014 | NFR-005 | /home/natsx commit 393d148; this matrix refresh; formal four-source arbiter still pending | - | TRACEABILITY.md |
+| TC-014 | NFR-005 | /home/natsx commit 20f801f; this matrix refresh; formal four-source arbiter still pending | - | TRACEABILITY.md |
 
 ## 4. 覆盖闭合验收
 
@@ -91,7 +91,7 @@
 - [ ] 运行时代码仓库 /home/natsx 通过 go test、go test -race、go vet 与覆盖率门槛。
 - [ ] 所有外部服务依赖有本地可重复的测试替身或明确 live-gate 证据。
 - [ ] 安全检查确认没有凭证、私有端点、账户 ID 或实盘配置进入公开文档与代码。
-- [ ] 版本号、发布标签、CHANGELOG 或 release note 与本目录状态一致。
+- [ ] 版本号、发布标签、CHANGELOG 或 release note 与本目录状态一致，且当前目标发布版本为 `v0.4.7`。
 
 ## 6. 当前缺口登记
 

@@ -1,16 +1,16 @@
-# FoundationX 仓库命名对齐同步说明
+# FoundationX 仓库命名对齐同步闭环说明
 
 **日期**: 2026-06-21
 **范围**: ZoneCNH 组织 86 个仓库  
 **目标**: 对齐 `README.md`、`ARCHITECTURE.md`、`docs/architecture/`、`STATUS.md` 与 `module/README.md` 的当前命名事实，移除过时的 kebab/PascalCase 迁移假设，只保留经权威正文支持的残留项。
 
-> 说明：本文是同步与修正说明，不是 GitHub 重命名执行单。仓库名、目录名与文档投影以当前权威正文为准。
+> 说明：本文已收口为同步与修正闭环记录，不是 GitHub 重命名执行单。仓库名、目录名与文档投影以当前权威正文为准。
 >
-> 现实状态：`module/README.md` 已将 L2.5 显示层切换为 `snake_case`，但链接目标仍指向当前目录投影 `domain-market` / `domain-macro` / `domain-exchange`；本文继续把“目标命名口径”和“当前文件投影”分开记录，避免把计划写成已完成事实。
+> 现实状态：`module/README.md` 已将 L2.5 显示层切换为 `snake_case`，但链接目标仍指向当前目录投影 `domain-market` / `domain-macro` / `domain-exchange`；本文继续把“目标命名口径”和“当前文件投影”分开记录，避免把闭环说明写成执行计划。
 >
 > 补充说明：`SignalIntent` 属于 contracts 契约投影，已在 `docs/architecture/08-contracts.md` 与 `STATUS.md` 固化，不计入本次 L2.5 命名清理；P1 / P2 事件与接口统一已归档为 `docs/report/architecture-structural-repair-plan-20260621.md` 的闭环记录，本文不展开执行树。
 >
-> 配套关系：`docs/report/architecture-structural-analysis-20260621.md` 负责结构性诊断摘要，`docs/report/architecture-structural-repair-plan-20260621.md` 负责完整修复计划；本文只维护命名同步结果与历史投影边界。
+> 配套关系：`docs/report/architecture-structural-analysis-20260621.md` 负责结构性诊断摘要，`docs/report/architecture-structural-repair-plan-20260621.md` 负责闭环修复记录；本文只维护命名同步结果与历史投影边界。
 
 ---
 
@@ -98,7 +98,7 @@ xlib_standard/go.mod → module github.com/ZoneCNH/xlib_standard
 
 ## 四、同步收口结果
 
-当前可执行的 rename 动作已清零；阶段 1 / 2 已完成，阶段 3 仅保留历史边界说明，不再作为本轮执行面。
+本轮 rename 执行面已清零；阶段 1 / 2 已完成，阶段 3 仅保留历史边界说明，不再作为本轮执行面。
 
 ### 阶段 1：锁定现名（已完成）
 
@@ -143,7 +143,7 @@ xlib_standard/go.mod → module github.com/ZoneCNH/xlib_standard
 | `docs/architecture/07-three-engines.md` | `macro_data_py` 已回收为 `macro_data` |
 | `docs/architecture/08-contracts.md` | `market_regime` / `macro_regime` / `regime_engine` 继续使用现名 |
 | `docs/report/architecture-structural-analysis-20260621.md` | 诊断摘要已固定 `L2.5` 命名基准为 `snake_case`，并将 `x.go` / `composer` 入口口径与 `README.md` / `ARCHITECTURE.md` / `docs/architecture/*` 的入口说明同步收口；`macro_data` / `market_data` 统一为数据域表述；完整修复动作已归档为 `docs/report/architecture-structural-repair-plan-20260621.md` 的闭环记录 |
-| `STATUS.md` | 维持现名投影；结构修复阻塞只保留摘要并指向 repair plan，不在此处重复完整计划 |
+| `STATUS.md` | 维持现名投影；结构修复只保留闭环摘要并指向 repair plan，不在此处重复完整执行树 |
 | `module/README.md` | L2.5 显示层已切换为 `domain_market` / `domain_macro` / `domain_exchange`，并补充 `data-cs-module` / `data-independent-process` 标准化入口；链接目标继续使用当前目录投影，`xlibgate` 保持现名 |
 
 ---

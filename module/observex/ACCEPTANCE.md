@@ -2,7 +2,7 @@
 
 - Status: Generated from current module SSOT
 - Last-Updated: 2026-06-21
-- Module-Version: v0.3.5
+- Module-Version: v0.3.6
 - Module-State: 已发布
 - Layer: L0 观测
 - Runtime-Repo: /home/observex
@@ -107,11 +107,11 @@
 - 若上表存在 Pending、Draft、Blocked、Open 或未登记状态，发布前必须补充证据或在模块追溯矩阵中登记豁免理由。
 - SPEC/TRACEABILITY 已登记 AC/TC 主链路。
 
-### 6.1 2026-06-21 v0.3.5 验收证据归档
+### 6.1 2026-06-21 v0.3.6 验收证据归档
 
 - 运行时测试：`cd /home/observex && go test ./... -race -count=1` → `EXIT_RACE=0`，全包通过（含 `internal/tools/releasemanifest`）。
 - 静态检查：`go vet ./...` 零警告；`golangci-lint run ./...` → `0 issues`（修复 `coverage_boost_test.go` 5 处 SA1012，NFR-008 转绿）。
 - 覆盖率：`go test -coverprofile` → 97.9%（NFR-005 门槛 80%）。
 - 依赖边界：`go list -deps ./...` 仅依赖 Go 标准库，无 Prometheus / OTel / Zap 直接依赖（BR-008 / NFR-010）。
 - CI/CD：`.github/workflows/{ci,integration,security,release}.yml` 全部路由 SRE 机器池；`ci.yml` 恢复带版本推导的 `release-check` job（修正 `TestCIWorkflowPassesVersionToReleaseCheck` 回归）。
-- 发布门禁：`make release-final-check VERSION=v0.3.5` 通过；`v1.0.0` 误置 tag 与 GitHub Release 已清理；打 tag `v0.3.5` 并发布。
+- 发布门禁：`make release-final-check VERSION=v0.3.6` 通过；`v1.0.0` 误置 tag 与 GitHub Release 已清理；打 tag `v0.3.6` 并发布。

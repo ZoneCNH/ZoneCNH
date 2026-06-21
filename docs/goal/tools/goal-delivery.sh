@@ -113,6 +113,7 @@ Goal 驱动交付体系 — 端到端工作流编排 (v2)
   bash docs/goal/tools/goal-delivery.sh <command> [options]
 
 制品创建命令（按管线顺序）:
+  create              显示制品创建命令帮助
   init                初始化项目结构和配置中心
   goal                创建 Goal 制品（SMART 模板）
   spec --goal-id ID   从 Goal 生成 Spec 框架
@@ -2136,6 +2137,7 @@ main() {
   parse_args "$@"
 
   case "$COMMAND" in
+    create)    usage ;;
     init)      cmd_init ;;
     goal)      cmd_goal "$ARG1" "$ARG2" ;;
     spec)      cmd_spec "$ARG1" ;;

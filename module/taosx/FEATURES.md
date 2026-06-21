@@ -1,8 +1,8 @@
 # taosx 完整实现清单
 
 - Status: Generated from current module SSOT
-- Last-Updated: 2026-06-19
-- Module-Version: v1.0.3
+- Last-Updated: 2026-06-21
+- Module-Version: v1.0.4
 - Module-State: 本地发布候选
 - Layer: L2 基础设施适配器
 - Runtime-Repo: /home/taosx/.worktree/workspaces/taosx-20260619
@@ -54,7 +54,7 @@
 | NFR-003 | Observability | 指标端口只记录低基数标签；默认 no-op 零配置可用；健康状态不含明文密码 / go test ./pkg/taosx -run TestMetrics + go test ./pkg/taosx -run TestHealth | ✅ | TRACEABILITY.md |
 | NFR-004 | Security | 错误/状态/日志/测试输出/示例均不得暴露真实密码、API key、私有 endpoint / ./scripts/check_contracts.sh | ✅ | TRACEABILITY.md |
 | NFR-005 | Dependency | 核心包直接 Zone 依赖仅允许 kernel；驱动/指标/配置通过端口注入 / ./scripts/check_boundary.sh + ./scripts/check_dependency_diff.sh | ✅ | TRACEABILITY.md |
-| NFR-006 | Compatibility | v1.0.3 不改变 v1.0.0 公共构造入口和核心接口语义；破坏性变更进后续 major / GOWORK=off make taosx-coverage-check + GOWORK=off make release-check | ✅ | TRACEABILITY.md |
+| NFR-006 | Compatibility | v1.0.4 不改变 v1.0.0 公共构造入口和核心接口语义；破坏性变更进后续 major / GOWORK=off make taosx-coverage-check + GOWORK=off make release-check | ✅ | TRACEABILITY.md |
 
 ## 4. 任务交付清单
 
@@ -86,9 +86,9 @@
 - [x] 运行时代码仓库 /home/taosx 的 lint、typecheck、test、race、coverage 验证证据已归档。
 - [x] 发布说明、版本标签与本目录登记状态一致。
 
-## 7. v1.0.3 本地发布候选证据
+## 7. v1.0.4 本地发布候选证据
 
-- Source commit: `/home/taosx/.worktree/workspaces/taosx-20260619` branch `taosx` @ `d46af01`。
+- Source commit: `/home/taosx/.worktree/workspaces/taosx-20260619` branch `taosx` @ `2bf5aaa`。
 - `GOWORK=off make taosx-coverage-check`: PASS，`pkg/taosx` total `100.0%`。
 - `GOWORK=off make release-check`: PASS，生成并校验 `release/manifest/latest.json`；release evidence hash `c78f9de861cf83434140fc0e0e051e91af71736ec2d22f0ce1c0cf74c9a87f61`。
 - `GOWORK=off make integration`: PASS，kernel/configx/redisx 渲染下游通过。

@@ -155,7 +155,7 @@ type SubjectBuilder interface { Build(domain, resource, action string, version i
 - [x] go test/race/vet/coverage 通过（pkg/natsx 97.1%，总覆盖率 84.2%）
 - [x] embedded broker + local auth live integration 提供测试替身（redacted 凭据）
 - [x] secret scan 通过（无 payload/凭据/连接串明文）
-- [x] 版本标签 + CHANGELOG 一致（/home/natsx commit 393d148 / b5adee9，tag v1.0.3）
+- [x] 版本标签 + CHANGELOG 一致（/home/natsx commit 20f801f / b5adee9，tag v1.0.3）
 - [ ] **BLK-002 生产 TLS 闭环 packet 归档**（release-blocking，未关闭）
 - [ ] 四源 98+ 仲裁、生产 benchmark 阈值 gate（外部阻塞）
 
