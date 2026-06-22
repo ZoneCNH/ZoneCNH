@@ -1,6 +1,6 @@
 # contracts 规格
 
-- Status: Docs Baseline Synced / Runtime Truth Verified
+- Status: Approved (Docs Baseline Synced / Runtime Truth Verified)
 - Last-Updated: 2026-06-22
 - Layer: 基座 · 跨域接口契约
 - Source-of-Truth: `/home/contracts/pkg/contracts`
