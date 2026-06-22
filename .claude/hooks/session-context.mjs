@@ -314,6 +314,49 @@ if (existsSync(worktreeBase)) {
         lines.push("   已 git worktree remove " + removed + "/" + mergedStale.length + " 个" + (guarded > 0 ? "，保护 " + guarded + " 个有未提交改动的工作区" : ""));
       }
     }
+
+    // === #11: 僵尸 dirty worktree 告警 ===
+    // 分支已合入 main 但工作区有未提交改动的 worktree——GC 跳过保护，但需醒目告警
+    // 提示用户 commit/discard 后才能清理。信息护栏，不阻塞。
+    const zombieMerged = mergedStale.filter((m) => m.dirty);
+    if (zombieMerged.length > 0) {
+      lines.push("---");
+      lines.push("🧟 僵尸 dirty worktree（分支已合入 main 但有未提交改动）：" + zombieMerged.length + " 个");
+      for (const m of zombieMerged.slice(0, 10)) {
+        const dirtyFiles = execFileSync("git", ["-C", m.path, "status", "--porcelain"], { encoding: "utf-8", timeout: 3000 }).trim().split("\n").filter(Boolean);
+        lines.push("   " + relative(projectRoot, m.path) + "  ← " + m.branch + "  (" + dirtyFiles.length + " 个改动，需人工 commit/discard 后才能清理)");
+      }
+    }
+
+    // === #12: 长期未活动 feature worktree 告警 ===
+    // 未合入 main 的 feature worktree，HEAD commit 超 7 天未活动 → 提醒。信息护栏。
+    {
+      const INACTIVE_MS = 7 * 24 * 3600 * 1000;
+      const now = Date.now();
+      const inactive = [];
+      for (const [wtPath, wtBranch] of pathToBranch) {
+        if (wtPath === projectRoot) continue;
+        if (hasProtectedFile(wtPath)) continue;
+        const br = wtBranch.replace(/^refs\/heads\//, "");
+        if (isAncestor(br)) continue; // 已合入的不算（归 mergedStale 管）
+        // 取 HEAD commit 时间
+        let headTs = 0;
+        try {
+          const t = execFileSync("git", ["-C", wtPath, "log", "-1", "--format=%ct", "HEAD"], { encoding: "utf-8", timeout: 3000 }).trim();
+          headTs = parseInt(t, 10) * 1000;
+        } catch { continue; }
+        if (headTs > 0 && (now - headTs) > INACTIVE_MS) {
+          inactive.push({ path: wtPath, branch: br, ageDays: Math.floor((now - headTs) / 86400000) });
+        }
+      }
+      if (inactive.length > 0) {
+        lines.push("---");
+        lines.push("💤 长期未活动 feature worktree（>7 天无 commit）：" + inactive.length + " 个");
+        for (const w of inactive.slice(0, 10)) {
+          lines.push("   " + relative(projectRoot, w.path) + "  ← " + w.branch + "  (" + w.ageDays + "d 未活动)");
+        }
+      }
+    }
   }
 
   // === 轨道 C：detached HEAD worktree（#2）===
@@ -413,24 +456,35 @@ if (existsSync(worktreeBase)) {
         if (effectiveClean) {
           let dropped = 0;
           let guarded = 0;
-          // #7: 合并 expired + overLimit 中的自动 stash，去重后按 idx 降序 drop（避免索引漂移）。
-          // 护栏：仅自动 stash 且当前分支非来源分支；手动 stash 永不动。
+          // #7+#10: 合并 expired + overLimit，去重后按 idx 降序 drop（避免索引漂移）。
+          // 护栏：当前分支非来源分支；overLimit 的手动 stash 需超 STASH_TTL_MS（3 天）才 drop
+          // （给手动 stash 恢复窗口），自动 stash 无 TTL 约束（超量即清）。
           const dropSet = new Map();
           for (const e of expired) {
             if (e.srcBranch !== curBranch) dropSet.set(e.idx, e);
           }
           for (const e of overLimit) {
-            if (e.isAuto && e.srcBranch !== curBranch) dropSet.set(e.idx, e);
+            if (e.srcBranch === curBranch) continue;
+            if (e.isAuto) {
+              dropSet.set(e.idx, e);
+            } else if (e.ts > 0 && (now - e.ts) > STASH_TTL_MS) {
+              // #10: 手动 stash 超量且超 3 天才 drop
+              dropSet.set(e.idx, e);
+            }
           }
           const toDrop = [...dropSet.values()].sort((a, b) => Number(b.idx) - Number(a.idx));
           for (const e of toDrop) {
             try { execFileSync("git", ["stash", "drop", "stash@{" + e.idx + "}"], { stdio: "ignore", timeout: 5000 }); dropped++; } catch {}
           }
-          // guarded = 过期但受保护（当前分支来源）+ 超限但手动/来源受保护
+          // guarded = 过期但来源受保护 + 超限但来源/手动-3天内受保护
           const expiredGuarded = expired.filter((e) => e.srcBranch === curBranch).length;
-          const overLimitGuarded = overLimit.filter((e) => !(e.isAuto && e.srcBranch !== curBranch)).length;
+          const overLimitGuarded = overLimit.filter((e) => {
+            if (e.srcBranch === curBranch) return true;
+            if (!e.isAuto && !(e.ts > 0 && (now - e.ts) > STASH_TTL_MS)) return true;
+            return false;
+          }).length;
           guarded = expiredGuarded + overLimitGuarded;
-          lines.push("   已 git stash drop " + dropped + " 个（expired+overLimit 合并去重）" + (guarded > 0 ? "，保护 " + guarded + " 个（来源/手动）" : ""));
+          lines.push("   已 git stash drop " + dropped + " 个（expired+overLimit 合并去重）" + (guarded > 0 ? "，保护 " + guarded + " 个（来源/手动3天内）" : ""));
         }
       }
     }
