@@ -61,6 +61,10 @@ Binance 行情集成面临以下问题：
 
 ## 4. Goals
 
+本节是分布式约束的规范摘要；详细论证与历史代码审计见
+`module/binance/DEEP-ANALYSIS.md` §0、§12，以及
+`docs/migrations/binance-v2-upgrade.md`。
+
 - **分布式 C/S 架构**：client 和 server 为独立进程，可独立部署在不同机器/容器，通过 natsx JetStream 网络通信
 - 支持 Binance 四产品线：Spot、USDⓈ-M Futures、COIN-M Futures、Options
 - **natsx JetStream** 作为 client→server 唯一通信通道，保证 at-least-once delivery + 持久化
@@ -1032,6 +1036,7 @@ github.com/ZoneCNH/binance/
 | Canonical domain type 变更 | 取决于 domain_market 兼容策略 | 更新 mapper，regenerate 测试 fixtures |
 | natsx stream schema 变更 | 需协调 client/server 升级 | 蓝绿部署；consumer durable name 版本化 |
 | Admin endpoint 新增 | 向后兼容 | 无迁移需求 |
+| Binance v2 同进程 C/S → 分布式 C/S | Breaking | `docs/migrations/binance-v2-upgrade.md` |
 | 移除 `binance-market` references | Breaking（新模块无此 legacy） | `docs/migrations/remove-binance-market.md` |
 
 ---
