@@ -32,6 +32,7 @@
 | V-008 | `cd /home/fred && go test ./internal/server/... -run NoLookahead` | as-of 查询不暴露未来 vintage。 | Pending |
 | V-009 | `cd /home/fred && bash scripts/boundary-gates.sh && go test ./...` | 共享基座接入和模块边界 gate 通过。 | Pending |
 | V-010 | `cd /home/fred && FRED_DEV_CONFIG=/home/ZoneCNH/sre/secrets/env/dev.md go test ./internal/integration/...` | OSS、Postgres、TDengine、Kafka、Redis、NATS、ClickHouse 集成写入和读取闭合。 | Pending |
+| V-011 | `rg -n "FR-015|BR-009|AC-009|TC-009|ms_brain|DFII10|BAMLH0A0HYM2" module/fred/SPEC.md module/fred/TRACEABILITY.md module/fred/FEATURES.md module/fred/ACCEPTANCE.md` | `ms_brain` 消费契约、初始序列锚点和新增 FR/BR/AC/TC 可定位。 | Ready |
 
 ## Acceptance Criteria
 
@@ -45,6 +46,7 @@
 | AC-006 | no-lookahead 测试证明查询不会暴露未来 vintage。 | FR-005、BR-003 | V-008 | Pending |
 | AC-007 | boundary gate 禁止绕过共享基座直接连接基础设施。 | FR-014、BR-001、BR-008 | V-009 | Pending |
 | AC-008 | Goal、FR、BR、AC、TC 追溯闭合，并记录剩余风险。 | 全部 | V-003、V-004 | Pending |
+| AC-009 | `ms_brain` 可通过 `fred` contract fixture 获取初始宏观序列、PIT/as-of 查询、发布日历、修订事件和 freshness/degrade 元数据，且 `fred` 不输出策略状态或交易决策。 | FR-015、BR-009 | V-011、TC-009 | Pending |
 
 ## Test Case Registry
 
@@ -58,6 +60,7 @@
 | TC-006 | NATS 控制面与 Kafka durable event 分离。 | FR-011、BR-004 | `cd /home/fred && go test ./internal/integration/... -run NATSControl` | Pending |
 | TC-007 | as-of/no-lookahead 查询。 | FR-005、BR-003 | `cd /home/fred && go test ./internal/server/... -run NoLookahead` | Pending |
 | TC-008 | 边界 gate 阻止绕过共享基座的直接 infra connection。 | FR-014、BR-001、BR-008 | `cd /home/fred && bash scripts/boundary-gates.sh` | Pending |
+| TC-009 | `ms_brain` integration profile 和 contract fixture。 | FR-015、BR-009 | `cd /home/fred && go test ./internal/integration/... -run MsBrainContract` | Pending |
 
 ## 覆盖闭合矩阵
 
@@ -72,17 +75,18 @@
 | 控制面隔离 | TC-006 通过，NATS 只触发控制命令，Kafka 才是 durable event。 |
 | 无前视 | TC-007 通过，以 `available_at` 判定 as-of 可见性。 |
 | 边界治理 | TC-008 通过，直接 infra connection 和内部 DTO 外泄被 gate 拦截。 |
+| `ms_brain` 消费契约 | TC-009 通过，覆盖 `DFII10`、`T10YIE`、`DFF`、`BAMLH0A0HYM2`、`T10Y2Y`、`ICSA`、`FYFSGDA188S`、`FDHBFRBN` 初始锚点、发布/修订事件和 freshness/degrade 元数据。 |
 | 追溯闭合 | AC-008 通过，Goal、FR、BR、AC、TC 和剩余风险在文档中一致。 |
 
 ## Definition of Done
 
 1. `FEATURES.md` 和 `ACCEPTANCE.md` 存在，且通过 `git diff --check`。
 2. `SPEC.md`、`TRACEABILITY.md`、`FEATURES.md`、`ACCEPTANCE.md` 的 FR/BR/AC/TC 编号一致。
-3. `/home/fred` runtime 完成 FR-001..FR-014 的实现，并保留对应测试证据。
+3. `/home/fred` runtime 完成 FR-001..FR-015 的实现，并保留对应测试证据。
 4. 七类持久化/消息组件职责均有测试证明：`taos`、`kafka`、`postgres`、`Redis`、`oss`、`nats`、`clickhouse`。
 5. `sre/secrets/env/dev.md` 只作为配置来源，不向仓库复制 secret 值。
 6. `scripts/boundary-gates.sh` 已从旧 `Stores=None` 口径迁移为完整目标边界。
-7. AC-001..AC-008 全部通过，并在发布说明或报告中登记证据路径。
+7. AC-001..AC-009 全部通过，并在发布说明或报告中登记证据路径。
 
 ## 当前阻塞与风险
 
@@ -93,3 +97,4 @@
 | `domain_macro` 契约未确认 | 可能出现字段映射和依赖方向返工 | 开发前确认包路径、字段、版本策略。 |
 | dev infra 不可用 | 集成验收无法闭合 | 缺环境时只能标记 Not-tested，不得宣称 AC-003/AC-004/AC-005 通过。 |
 | FRED 凭证不可复制 | 配置测试不能硬编码 secret | 只验证键名、装载路径和运行时注入，不提交任何 secret 值。 |
+| `ms_brain` runtime 尚未落地 | 无法用真实下游进程证明消费契约 | 先用 `ms_brain` 文档/YAML/spec 提取 contract fixture，真实 runtime 接入后补端到端证据。 |

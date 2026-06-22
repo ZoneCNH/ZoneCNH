@@ -50,6 +50,7 @@
 | FR-012 | ClickHouse 保存分析读模型和校验输出，且可重建 | Planned | `SPEC.md` read model 职责已定义 | runtime 需实现重建路径和分析查询证据 |
 | FR-013 | API 提供 series metadata、observation query、job status、admin trigger | Planned | `SPEC.md` API 表已定义 | runtime 需实现 C/S API、错误码和鉴权/管理边界 |
 | FR-014 | 边界 gate 只允许通过共享基座接入目标存储适配器，禁止直接 infra connection | Planned | `SPEC.md` AC/TC 已定义 | 需迁移旧 `Stores=None` boundary script 到完整存储边界 |
+| FR-015 | 提供 `ms_brain` 下游消费画像，覆盖 PIT 宏观观测、修订、发布日历、freshness/degrade 和初始序列锚点 | Planned | `SPEC.md` 已补充 `ms_brain` 初始数据契约 | runtime 需提供 integration profile、contract fixture 和无前视查询证据 |
 
 ## 业务规则
 
@@ -63,6 +64,7 @@
 | BR-006 | Redis 和 ClickHouse 只允许作为可重建派生层。 | 清空缓存或读模型后，系统可从权威存储恢复。 |
 | BR-007 | OSS raw path 必须包含 provider、endpoint、date、job_id、content hash。 | 原始响应可审计、可去重、可重放。 |
 | BR-008 | `domain_macro` 不得依赖 `fred/internal`、provider DTO 或私有存储表。 | 领域共享层保持独立，防止数据域反向污染。 |
+| BR-009 | `fred` 只向 `ms_brain` 提供宏观数据、事件、质量和版本契约，不实现 M/S 状态机、交易许可、仓位折扣或策略判断。 | 下游策略逻辑留在 `ms_brain`，`fred` 保持数据域 provider 服务边界。 |
 
 ## 文档资产
 
@@ -82,6 +84,7 @@
 | 规格完整性 | Done | `SPEC.md` 已定义 C/S 边界、共享基座、领域层、七类持久化/消息和验收项。 |
 | 功能清单 | Done | 本文档补齐 `FEATURES.md`，将 FR-001..FR-014 投影为可审查清单。 |
 | 验收清单 | Done | `ACCEPTANCE.md` 补齐 AC/TC/命令闭合口径。 |
+| `ms_brain` 消费契约 | Done | 已补充下游画像、初始序列锚点、PIT/no-lookahead、freshness/degrade 和事件覆盖要求。 |
 | runtime 实现 | Pending | 当前文档未证明 `/home/fred` 已实现完整目标边界。 |
 | 边界 gate | Pending | 旧 `Stores=None` 口径必须迁移为完整存储边界。 |
 | 集成环境 | Pending | 需要可用的 `sre/secrets/env/dev.md` 映射和 dev infra 连接。 |
@@ -93,3 +96,4 @@
 3. `domain_macro` 的实际 Go 包路径、字段名和版本契约仍需在 runtime 实现前确认。
 4. `sre/secrets/env/dev.md` 只能作为配置键名和装载约定来源，不能把 secret 值复制到 `module/fred/` 或 `/home/fred`。
 5. 集成验收依赖 dev 环境中的 FRED 凭证和七类基础设施可用性；未满足前只能完成文档与单元级验证。
+6. `ms_brain` 当前证据主要来自文档、spec 和 YAML 配置；在其 runtime 落地前，`fred` 只能先用 contract fixture 和回放样例闭合消费契约。

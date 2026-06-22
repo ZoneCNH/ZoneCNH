@@ -13,6 +13,7 @@
 | C-003 | `fred` 是独立服务；`macro_data` 是消费者或聚合器，不拥有 FRED provider 内部实现。 |
 | C-004 | 旧 `Stores=None` 规则只能作为历史状态，不能阻止目标规格实现。 |
 | C-005 | 每阶段完成后更新 [TRACEABILITY.md](TRACEABILITY.md) 状态和验证证据。 |
+| C-006 | `ms_brain` 只是下游消费方；`fred` 提供宏观数据、PIT、事件、质量和版本契约，不实现 M/S 状态机、交易许可、仓位折扣或策略判断。 |
 
 ## 阶段 0：规格对齐
 
@@ -69,6 +70,7 @@
 | -- | ---- |
 | API | `GetSeries`、`QueryObservations`、`StartBackfill`、`GetJobStatus`、`ScanRevisions`、`ReloadConfig` |
 | Client | `pkg/fredx` 对外稳定 API，隐藏传输和服务端内部错误 |
+| Integration Profile | 为 `ms_brain` 提供 contract fixture：初始序列锚点、PIT/as-of 查询、发布/修订事件、freshness/degrade 元数据和策略字段禁出断言 |
 | 验证 | client contract tests、server handler tests、兼容性 fixture |
 
 ## 阶段 6：验收与发布
@@ -89,6 +91,7 @@
 | FRED-TASK-004 | 实现 Redis/ClickHouse 读模型 | FRED-TASK-003 |
 | FRED-TASK-005 | 实现 Kafka/NATS/contract 事件与控制面 | FRED-TASK-003 |
 | FRED-TASK-006 | 补齐服务 API、client、端到端验收 | FRED-TASK-004, FRED-TASK-005 |
+| FRED-TASK-007 | 补齐 `ms_brain` integration profile、contract fixture 和 `MsBrainContract` 验收测试 | FRED-TASK-002, FRED-TASK-005, FRED-TASK-006 |
 
 ## 完成判定
 

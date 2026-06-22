@@ -38,6 +38,7 @@
 | 消费者 | 使用方式 | 边界 |
 | ------ | -------- | ---- |
 | `macro_data` | 通过服务 API、Kafka 事件和 `domain_macro` 模型读取宏观数据 | 不依赖 `fred/internal/*` |
+| `ms_brain` | 读取 PIT 宏观观测、修订事件、发布日历和 freshness/degrade 元数据，用于 LGIP/M-state、事件覆盖和回放 | 不依赖 `fred/internal/*`，且 `fred` 不承接策略、仓位或状态分类逻辑 |
 | 分析域服务 | 读取 ClickHouse 分析读模型或订阅 Kafka 事件 | 不直接调用 FRED provider |
 | 运维与数据治理 | 通过 admin API、NATS 控制面和观测指标管理作业 | 不写入业务数据表 |
 | 回放与审计任务 | 读取 OSS 原始载荷和 Postgres checkpoint | 不绕过服务幂等账本 |
@@ -61,6 +62,7 @@
 | FR-012 | WHEN 分析读模型或批量校验结果生成 | THEN 必须写入 `clickhouse`，且可由权威写入流重放重建。 |
 | FR-013 | WHEN 外部消费者读取服务数据 | THEN 服务 API 必须提供 series metadata、observation query、job status 和 admin trigger。 |
 | FR-014 | WHEN 边界门禁运行 | THEN 必须允许目标存储适配器经共享基座接入，并禁止模块绕过基座组件直连基础设施。 |
+| FR-015 | WHEN `ms_brain` 消费宏观数据 | THEN `fred` 必须提供 `ms_brain` integration profile，包含初始序列锚点、PIT observation、revision delta event、release/calendar event、freshness/degrade metadata 和 no-lookahead 查询语义。 |
 
 ## 6. 业务规则
 
@@ -74,6 +76,7 @@
 | BR-006 | Redis 与 ClickHouse 均为可重建缓存或读模型，不作为唯一权威源。 |
 | BR-007 | OSS 原始载荷路径必须包含 provider、endpoint、日期、job_id 和 content hash。 |
 | BR-008 | `macro_data` 不得依赖 `fred/internal/*`、provider DTO 或存储私有表结构。 |
+| BR-009 | `fred` 只向 `ms_brain` 提供宏观事实、发布日历、修订、质量和新鲜度语义；不得实现 `ms_brain` 的 M/S 状态分类、LGIP 权重、TradePermission、仓位折扣或风控决策。 |
 
 ## 7. 公共 API 契约
 
@@ -108,6 +111,17 @@
 | `MacroRelease` | release_id、name、scheduled_at、actual_at、timezone、source_url |
 | `MacroRevision` | series_id、period_start、old_value、new_value、previous_vintage_at、vintage_at、detected_at |
 | `MacroIngestJob` | job_id、series_id、mode、cursor、started_at、finished_at、status、error_class |
+
+### 9.1 `ms_brain` 初始数据契约
+
+`ms_brain` 当前配置和规格要求宏观数据支持 PIT、发布延迟、修订、事件覆盖和数据质量降级。`fred` 的初始 integration profile 必须覆盖下列 FRED 序列锚点；非 FRED 或混合来源数据只在 FRED 端点具备权威来源时由 `fred` 负责，否则通过 `source_component` 标记外部来源并交由上游数据域路由。
+
+| 类别 | 初始序列锚点 | `fred` 输出要求 |
+| ---- | ------------ | --------------- |
+| Real yield / inflation | `DFII10`、`T10YIE`、`DFF` | 支持日度刷新、as-of 查询、freshness/degrade 标记。 |
+| Credit / cycle | `BAMLH0A0HYM2`、`T10Y2Y`、`ICSA` | 支持 revision scan、release lag、missing value 语义和 `MacroRevisionObserved`。 |
+| Fiscal | `FYFSGDA188S`、`FDHBFRBN` | 支持月度/季度发布延迟；`FDHBFRBN` 如需 Treasury.gov 组合输入，必须显式标记 `source_component`。 |
+| Event/replay | release calendar、revision delta、data_version | 支持 Kafka durable event、ClickHouse 读模型和 no-lookahead replay。 |
 
 ## 10. 持久化模型
 
@@ -198,6 +212,7 @@
 | TC-006 | NATS admin trigger 与 Kafka durable event 分离 | FR-011、BR-004 |
 | TC-007 | as_of 查询 no-lookahead | FR-005、BR-003 |
 | TC-008 | 边界脚本阻断绕过共享基座的直连实现 | FR-014 |
+| TC-009 | `ms_brain` profile fixture 覆盖初始序列锚点、PIT/no-lookahead、freshness/degrade 和发布日历事件 | FR-015、BR-009 |
 
 ## 17. 性能预算
 
@@ -266,6 +281,7 @@
 | AC-006 | no-lookahead 测试证明查询不会提前暴露未来 vintage。 |
 | AC-007 | 边界门禁禁止绕过共享基座组件的基础设施直连。 |
 | AC-008 | 追溯矩阵闭合 Goal、FR、BR、AC、TC，并记录剩余风险。 |
+| AC-009 | `ms_brain` integration profile 可查询初始序列锚点和 release/calendar 事件，并在缺失、滞后或修订数据上输出可解释的质量标记。 |
 
 ## 23. 待解决问题
 
@@ -275,3 +291,4 @@
 | OPEN-002 | `domain_macro` 具体包路径与字段名需以实现仓库为准 | 实施前完成领域共享层 API 对齐 |
 | OPEN-003 | `sre/secrets/env/dev.md` 的键名需映射到 `configx` schema | dev 配置 schema 审查通过且不暴露值 |
 | OPEN-004 | 七类介质的本地集成环境需确认可用性 | integration profile 可启动并跑通单 series 验证 |
+| OPEN-005 | `ms_brain` 当前仍以文档、规格和配置为主，尚无可运行消费者契约测试 | `/home/ms_brain` 提供 runtime fixture 或 contract test 后纳入 `fred` 集成验收 |
