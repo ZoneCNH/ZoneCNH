@@ -1,197 +1,121 @@
-# module/binance NAMING.md — 命名权威 SSOT
+# module/binance NAMING.md — 命名 SSOT
 
-- Doc-Version: v1.0.0
-- Last-Updated: 2026-06-22
-- 权威性：本文件为 `module/binance/` 全部命名的 **Single Source of Truth**。任何子规格、task、runtime 代码、CI gate 与本文冲突时，**以本文为准**。
-- 适用范围：`module/binance/` 全部规格 + `github.com/ZoneCNH/binance` runtime 仓全部代码
+- Doc-Version: v2.0.0
+- Last-Updated: 2026-06-23
+- Applies-To: `module/binance/SPEC.md` v3.0.0, `module/binance/RULES.md` v2.0.0
+- Scope: product_line、event_type、natsx subject、Kafka topic、TDengine stable、Redis key、REST endpoint、OSS path
 
-> 历史背景：2026-06-22 治理审计发现 `usdm_futures/coinm_futures`、`um_perp/cm_perp`、`futures_usdt/futures_coin` 4 套不兼容命名分散在 5 处，击穿 NATS subject / Redis key / TDengine tag / Kafka topic / Gin API 五条管线一致性。本文建立后命名漂移视为治理违规（RULES.md R1）。
-
----
-
-## 1. product_line 枚举（4 值唯一合法）
-
-| 合法值    | 含义                                                                     | 历史别名（已废弃）              |
-| --------- | ------------------------------------------------------------------------ | ------------------------------- |
-| `spot`    | Binance 现货                                                             | —                               |
-| `um_perp` | USDⓈ-Margined Perpetuals（USDT/USDC 保证金永续，含未来 USDⓈ-M Delivery） | `usdm_futures`、`futures_usdt`  |
-| `cm_perp` | COIN-Margined Perpetuals（币本位永续，含未来 COIN-M Delivery）           | `coinm_futures`、`futures_coin` |
-| `options` | Binance EOptions                                                         | `option`、`opts`                |
-
-**强制约束：**
-
-- snake_case，全小写
-- 子规格、task、wire envelope、Redis key、TDengine tag、Kafka topic、Gin API 参数、Go enum 全部使用以上 4 值
-- runtime 代码中 `string` 类型的 `product_line` 字段必须通过同名 Go enum/常量赋值，**禁止内嵌字符串字面量**
+> [COMPUTED, HIGH] 本文件是 `module/binance` 命名权威入口。所有新增规格、任务和 runtime 代码必须使用本文件的 canonical token；历史别名只允许出现在本文件、治理报告、漂移清单和归档 task 中。
 
 ---
 
-## 2. event_type 枚举（4 值唯一合法）
+## 1. Canonical Product Line
 
-| 合法值  | 含义                                  | 适用产品线                                   |
-| ------- | ------------------------------------- | -------------------------------------------- |
-| `tick`  | 行情快照（含 best bid/ask、24h 统计） | 全部 4 条                                    |
-| `trade` | 成交流（逐笔）                        | 全部 4 条                                    |
-| `bar`   | K 线（多周期）                        | 全部 4 条                                    |
-| `depth` | 订单簿深度（增量 + 快照）             | 全部 4 条（Options 用 `<symbol>@depth1000`） |
+| product_line | 含义 | 历史别名（禁止新用） |
+|---|---|---|
+| `spot` | 现货 | `cash`, `spot_market` |
+| `um_perp` | USDⓈ-M 永续 | `usdm`, `usdm_futures`, `futures_usdt` |
+| `cm_perp` | COIN-M 永续 | `coinm`, `coinm_futures`, `futures_coin` |
+| `options` | 期权 | `option`, `opts` |
 
-**强制约束：4 × 4 对称矩阵无缺口**（违反此规则即触发 RULES R2）
+## 2. Canonical Event Type
 
----
+| event_type | 含义 | 主要来源 |
+|---|---|---|
+| `tick` | 最优价/最新行情快照 | WS ticker / bookTicker |
+| `trade` | 逐笔或聚合成交 | WS trade / aggTrade |
+| `bar` | K 线 | WS kline / REST klines |
+| `depth` | 深度快照或增量 | WS depth / REST depth |
+| `funding_rate` | 资金费率与 funding 信息 | futures mark price / fundingInfo |
+| `mark_price` | 标记价格 | futures mark price stream |
 
-## 3. natsx Subject 命名
+> [COMPUTED, HIGH] v3.0.0 起 product_line × event_type 为 **4 × 6** 对称矩阵，共 24 个规范组合。即使交易所暂不提供某产品线的某事件，命名层仍保留组合，runtime 可用 capability/status 标识暂不产出。
+
+## 3. natsx Subject Matrix
 
 格式：`binance.market.{product_line}.{event_type}`
 
-| product_line | tick                          | trade                          | bar                          | depth                          |
-| ------------ | ----------------------------- | ------------------------------ | ---------------------------- | ------------------------------ |
-| spot         | `binance.market.spot.tick`    | `binance.market.spot.trade`    | `binance.market.spot.bar`    | `binance.market.spot.depth`    |
-| um_perp      | `binance.market.um_perp.tick` | `binance.market.um_perp.trade` | `binance.market.um_perp.bar` | `binance.market.um_perp.depth` |
-| cm_perp      | `binance.market.cm_perp.tick` | `binance.market.cm_perp.trade` | `binance.market.cm_perp.bar` | `binance.market.cm_perp.depth` |
-| options      | `binance.market.options.tick` | `binance.market.options.trade` | `binance.market.options.bar` | `binance.market.options.depth` |
+| product_line | tick | trade | bar | depth | funding_rate | mark_price |
+|---|---|---|---|---|---|---|
+| `spot` | `binance.market.spot.tick` | `binance.market.spot.trade` | `binance.market.spot.bar` | `binance.market.spot.depth` | `binance.market.spot.funding_rate` | `binance.market.spot.mark_price` |
+| `um_perp` | `binance.market.um_perp.tick` | `binance.market.um_perp.trade` | `binance.market.um_perp.bar` | `binance.market.um_perp.depth` | `binance.market.um_perp.funding_rate` | `binance.market.um_perp.mark_price` |
+| `cm_perp` | `binance.market.cm_perp.tick` | `binance.market.cm_perp.trade` | `binance.market.cm_perp.bar` | `binance.market.cm_perp.depth` | `binance.market.cm_perp.funding_rate` | `binance.market.cm_perp.mark_price` |
+| `options` | `binance.market.options.tick` | `binance.market.options.trade` | `binance.market.options.bar` | `binance.market.options.depth` | `binance.market.options.funding_rate` | `binance.market.options.mark_price` |
 
-**权威来源**：`module/binance/SPEC.md` §9 + `module/binance/RUNTIME-MAPPING.md` §natsx subject 表
-
----
-
-## 4. Kafka Topic 命名
+## 4. Kafka Topic Matrix
 
 格式：`binance.{product_line}.{event_type}.v1`
 
-| product_line | tick                      | trade                      | bar                      | depth                      |
-| ------------ | ------------------------- | -------------------------- | ------------------------ | -------------------------- |
-| spot         | `binance.spot.tick.v1`    | `binance.spot.trade.v1`    | `binance.spot.bar.v1`    | `binance.spot.depth.v1`    |
-| um_perp      | `binance.um_perp.tick.v1` | `binance.um_perp.trade.v1` | `binance.um_perp.bar.v1` | `binance.um_perp.depth.v1` |
-| cm_perp      | `binance.cm_perp.tick.v1` | `binance.cm_perp.trade.v1` | `binance.cm_perp.bar.v1` | `binance.cm_perp.depth.v1` |
-| options      | `binance.options.tick.v1` | `binance.options.trade.v1` | `binance.options.bar.v1` | `binance.options.depth.v1` |
+| product_line | tick | trade | bar | depth | funding_rate | mark_price |
+|---|---|---|---|---|---|---|
+| `spot` | `binance.spot.tick.v1` | `binance.spot.trade.v1` | `binance.spot.bar.v1` | `binance.spot.depth.v1` | `binance.spot.funding_rate.v1` | `binance.spot.mark_price.v1` |
+| `um_perp` | `binance.um_perp.tick.v1` | `binance.um_perp.trade.v1` | `binance.um_perp.bar.v1` | `binance.um_perp.depth.v1` | `binance.um_perp.funding_rate.v1` | `binance.um_perp.mark_price.v1` |
+| `cm_perp` | `binance.cm_perp.tick.v1` | `binance.cm_perp.trade.v1` | `binance.cm_perp.bar.v1` | `binance.cm_perp.depth.v1` | `binance.cm_perp.funding_rate.v1` | `binance.cm_perp.mark_price.v1` |
+| `options` | `binance.options.tick.v1` | `binance.options.trade.v1` | `binance.options.bar.v1` | `binance.options.depth.v1` | `binance.options.funding_rate.v1` | `binance.options.mark_price.v1` |
 
-**Schema 演进**：版本后缀（`.v1`/`.v2`）通过 Schema Registry 管理；topic 删除走 ADR 流程
+## 5. TDengine Naming
 
----
+| 层级 | 格式 | 示例 |
+|---|---|---|
+| Database | `binance_market` | `binance_market` |
+| Supertable | `binance_{event_type}` | `binance_tick`, `binance_trade`, `binance_bar`, `binance_depth`, `binance_funding_rate`, `binance_mark_price` |
+| Subtable | `binance_{event_type}_{product_line}_{symbol_slug}` | `binance_tick_spot_btcusdt` |
+| Tags | `exchange`, `product_line`, `symbol`, `event_type` | `binance`, `um_perp`, `BTCUSDT`, `mark_price` |
 
-## 5. TDengine 超表 + Tag 命名
+## 6. Redis Key Naming
 
-**超表（stable）**：
+| 用途 | 格式 | TTL |
+|---|---|---|
+| 最新事件缓存 | `binance:{event_type}:{product_line}:{symbol}` | tick/trade/bar/funding_rate/mark_price 60s；depth 5s |
+| 幂等标记 | `binance:idem:{idempotency_key}` | 72h |
+| 分布式锁 | `binance:lock:{scope}` | 30s lease |
+| 限流桶 | `binance:ratelimit:{endpoint}:{token}` | 1s |
 
-| event_type | stable name             |
-| ---------- | ----------------------- |
-| tick       | `binance_market_ticks`  |
-| trade      | `binance_market_trades` |
-| bar        | `binance_market_bars`   |
-| depth      | `binance_market_depth`  |
+## 7. REST Endpoint Naming
 
-**Tag 列（全部超表共用）**：
+| endpoint | 事件 |
+|---|---|
+| `GET /api/v1/market/ticks/:symbol` | `tick` |
+| `GET /api/v1/market/ticks/:symbol/range` | `tick` |
+| `GET /api/v1/market/trades/:symbol` | `trade` |
+| `GET /api/v1/market/bars/:symbol` | `bar` |
+| `GET /api/v1/market/bars/:symbol/range` | `bar` |
+| `GET /api/v1/market/depth/:symbol` | `depth` |
+| `GET /api/v1/market/funding-rates/:symbol` | `funding_rate` |
+| `GET /api/v1/market/mark-prices/:symbol` | `mark_price` |
 
-```sql
-TAGS (
-  symbol      VARCHAR(32),  -- 原始 Binance symbol，如 "BTCUSDT"
-  product_line VARCHAR(16)  -- spot / um_perp / cm_perp / options
-)
+## 8. OSS Path Naming
+
+格式：`binance/{product_line}/{symbol}/{YYYY}/{MM}/{DD}/{event_type}.parquet`
+
+示例：
+
+```text
+binance/spot/BTCUSDT/2026/06/23/tick.parquet
+binance/um_perp/BTCUSDT/2026/06/23/funding_rate.parquet
+binance/cm_perp/BTCUSD_PERP/2026/06/23/mark_price.parquet
 ```
 
-**子表名**：`{stable}_{product_line}_{symbol_lower}`，例如 `binance_market_ticks_um_perp_btcusdt`
+## 9. Environment Variable Naming
 
----
+| 范围 | 格式 | 示例 |
+|---|---|---|
+| client | `BINANCE_CLIENT_{NAME}` | `BINANCE_CLIENT_NATS_URL` |
+| server | `BINANCE_SERVER_{NAME}` | `BINANCE_SERVER_REDIS_URL` |
+| product line enable | `BINANCE_ENABLE_{PRODUCT_LINE}` | `BINANCE_ENABLE_UM_PERP` |
 
-## 6. Redis Key 命名
-
-格式：`binance:{event_type}:{product_line}:{symbol}`
-
-| 类型        | 示例                                                   |
-| ----------- | ------------------------------------------------------ |
-| tick 缓存   | `binance:tick:spot:BTCUSDT`                            |
-| trade 缓存  | `binance:trade:um_perp:BTCUSDT`                        |
-| bar 缓存    | `binance:bar:cm_perp:BTCUSD_PERP`                      |
-| depth 缓存  | `binance:depth:options:BTC-260626-50000-C`             |
-| dedup SetNX | `binance:dedup:{product_line}:{event_type}:{event_id}` |
-| 分布式锁    | `binance:lock:{resource}`                              |
-
-**TTL**：tick=60s、trade=5s、bar=按周期 ×2、depth=5s、dedup=1h
-
----
-
-## 7. ossx 归档路径命名
-
-格式：`binance/{product_line}/{event_type}/{yyyy}/{mm}/{dd}/{hh}/{file}.{format}`
-
-| 示例                                                             |
-| ---------------------------------------------------------------- |
-| `binance/spot/tick/2026/06/22/14/btcusdt.parquet`                |
-| `binance/um_perp/depth/2026/06/22/14/btcusdt.parquet`            |
-| `binance/cm_perp/bar/2026/06/22/btcusd_perp_1m.parquet`          |
-| `binance/options/depth/2026/06/22/14/BTC-260626-50000-C.parquet` |
-
-**强制约束**：4 产品线 × 4 event_type 路径前缀必须全部存在（即使当前 task 未实现）
-
----
-
-## 8. Gin REST API 路径
-
-格式：`/api/v1/market/{event_type}/{symbol}?product_line={product_line}`
-
-| 端点  | 示例                                                               |
-| ----- | ------------------------------------------------------------------ |
-| tick  | `GET /api/v1/market/ticks/BTCUSDT?product_line=spot`               |
-| depth | `GET /api/v1/market/depth/BTCUSDT?product_line=um_perp`            |
-| bar   | `GET /api/v1/market/bars/BTCUSDT?product_line=cm_perp&interval=1m` |
-| trade | `GET /api/v1/market/trades/BTCUSDT?product_line=options`           |
-
-**响应 envelope**：统一使用 `domain_market.MarketEvent` JSON 编码，`product_line` 字段使用本文 §1 枚举
-
----
-
-## 9. Go 文件名与包结构
-
-| 路径                   | 命名                                                      |
-| ---------------------- | --------------------------------------------------------- |
-| client connector       | `internal/client/{product_line}/connector.go`             |
-| client parser          | `internal/client/{product_line}/parser.go`                |
-| client publisher       | `internal/client/{product_line}/publisher.go`             |
-| server consumer        | `internal/server/consumer/{product_line}/{event_type}.go` |
-| server storage adapter | `internal/server/storage/{infra}/binance_{stable}.go`     |
-
-**强制约束**：文件名全部 snake_case；禁止 `usdm_futures.go`、`coinm.go` 等历史别名
-
----
-
-## 10. 环境变量与配置键名
-
-格式：`BINANCE_{COMPONENT}_{KEY}`（全大写、snake_case）
-
-| 示例                            |
-| ------------------------------- |
-| `BINANCE_CLIENT_NATSX_URL`      |
-| `BINANCE_SERVER_TAOSX_DSN`      |
-| `BINANCE_SERVER_REDISX_ADDR`    |
-| `BINANCE_SERVER_KAFKAX_BROKERS` |
-
-配置文件 YAML 键使用 snake_case：`product_line`、`event_type`、`nats_subject`，**禁止** camelCase 或 PascalCase
-
----
-
-## 11. 命名漂移检测命令
+## 10. Drift Detection
 
 ```bash
-# 1. 旧 product_line 别名扫描（反向过滤变更历史与例外文档）
-grep -rE "(usdm_futures|coinm_futures|futures_usdt|futures_coin)" module/binance/ \
-  | grep -vE "NAMING\.md|RULES\.md|ARCHITECTURE-DRIFT|历史别名|废弃|archive/|命名同步|命名收敛|旧命名"
-
-# 2. natsx subject 不规范扫描
-grep -rE "binance\.market\.[a-z_]+\." module/binance/ | grep -vE "binance\.market\.(spot|um_perp|cm_perp|options)\.(tick|trade|bar|depth)"
-
-# 3. Kafka topic 不规范扫描
-grep -rE "binance\.[a-z_]+\.[a-z]+\.v[0-9]" module/binance/ | grep -vE "binance\.(spot|um_perp|cm_perp|options)\.(tick|trade|bar|depth)\.v1"
-
-# 4. Redis key 不规范扫描
-grep -rE "binance:[a-z]+:[a-z_]+:" module/binance/ | grep -vE "binance:(tick|trade|bar|depth|dedup|lock):(spot|um_perp|cm_perp|options):"
+rg -n 'usdm_futures|coinm_futures|futures_usdt|futures_coin|\\boption\\b|\\bopts\\b' module/binance
+rg -n 'binance\\.market\\.(ticks|bars|depth|events)\\b' module/binance
+rg -n '4 × [4]|16 × 5 = [8]0' module/binance/NAMING.md module/binance/RULES.md module/binance/server/tasks/TASK-BINANCE-SERVER-014-kafkax-dispatch.md
+rg -n 'funding\\b' module/binance | rg -v 'funding_rate|fundingInfo|funding-rates'
 ```
 
-期望：以上 4 条命令返回 0 行（命中均视为治理违规，触发 RULES R1）
+## 11. Change History
 
----
-
-## 12. 变更历史
-
-| 日期       | 版本   | 变更内容                                                                                                                   | 作者    |
-| ---------- | ------ | -------------------------------------------------------------------------------------------------------------------------- | ------- |
-| 2026-06-22 | v1.0.0 | 首次建立。整合 SPEC §9 natsx subject 表 + RUNTIME-MAPPING + 各 task 命名约定，统一为 4 产品线 × 4 event_type 对称矩阵 SSOT | ZoneCNH |
+| Date | Version | Change |
+|---|---|---|
+| 2026-06-23 | v2.0.0 | MAJOR taxonomy fold：event_type 从 4 扩为 6，新增 `funding_rate`、`mark_price`；natsx subject 与 Kafka topic 扩为 4 × 6。 |
+| 2026-06-22 | v1.0.0 | 建立 product_line、event_type、subject/topic 命名 SSOT。 |

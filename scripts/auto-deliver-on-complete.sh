@@ -402,6 +402,15 @@ assert_main_ready() {
     finish "blocked" "未找到 main worktree，无法自动合并" 2
   fi
 
+  # 主 worktree 纪律护栏（#4）：主 worktree 应绑定 main。若被 OmX/team 切到 feature
+  # 分支，find_main_worktree 仍可能返回它（基于 porcelain 的 branch 行），但实际 HEAD
+  # 已漂移。此时在主 worktree 上 merge 会污染非 main 分支。校验当前分支必须为 main，
+  # 否则 block，要求人工处理（不自动 checkout main，避免丢失工作区 WIP）。
+  main_cur_branch="$(git -C "$main_worktree" symbolic-ref --short HEAD 2>/dev/null || true)"
+  if [ -n "$main_cur_branch" ] && [ "$main_cur_branch" != "main" ] && [ "$main_cur_branch" != "master" ]; then
+    finish "blocked" "主 worktree 当前在 ${main_cur_branch} 非 main，可能被编排切走。需人工 checkout main 后再自动合并（不自动切换以防丢失 WIP）" 2
+  fi
+
   if [ -n "$(git -C "$main_worktree" status --porcelain)" ]; then
     finish "blocked" "main worktree 不干净，必须人工处理后才能自动合并" 2
   fi

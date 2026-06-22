@@ -176,6 +176,33 @@ if (tool === "Bash" || tool === "PowerShell") {
       process.exit(0);
     }
   }
+
+  // === stash pop/apply 跨基线告警（#5）===
+  // 不阻塞（信息护栏，与 branch-protect.mjs 同策略）：检测 git stash pop|apply，
+  // 若当前分支不在 stash 来源分支的祖先链上（基线偏离），stderr 告警可能冲突。
+  const stashMatch = cmd.match(/\bgit\s+stash\s+(pop|apply)(?:\s+stash@\{(\d+)\})?/);
+  if (stashMatch) {
+    const stashIdx = stashMatch[2] || "0";
+    try {
+      const stashLine = execFileSync("git", ["stash", "list"], { encoding: "utf-8", timeout: 3000 });
+      const target = stashLine.split("\n").find((l) => l.startsWith(`stash@{${stashIdx}}:`)) || "";
+      const onMatch = target.match(/(?:On|WIP on) ([^:]+):/);
+      const srcBranch = onMatch ? onMatch[1].trim() : "";
+      const curBranch = execFileSync("git", ["symbolic-ref", "--short", "HEAD"], { encoding: "utf-8", timeout: 3000 }).trim();
+      if (srcBranch && curBranch && srcBranch !== curBranch) {
+        // 判断当前分支是否在来源分支祖先链上（即来源分支包含当前分支基线）
+        let baseDiverged = true;
+        try {
+          // merge-base --is-ancestor <cur> <src>：cur 是 src 祖先 → 基线一致，不告警
+          execFileSync("git", ["merge-base", "--is-ancestor", curBranch, srcBranch], { stdio: "ignore", timeout: 3000 });
+          baseDiverged = false;
+        } catch {}
+        if (baseDiverged) {
+          console.error(`\n══════════════════════════════════════════════════════\n[StashGuard] ⚠️ stash 跨基线 pop 可能冲突\n\n  stash 来源分支: ${srcBranch}\n  当前分支: ${curBranch}\n  基线偏离：当前分支不在 ${srcBranch} 的祖先链上，pop 可能产生冲突。\n\n  ✅ 建议：\n    - 先切到 ${srcBranch} 再 pop，或\n    - 用 \`git stash branch stash@{${stashIdx}}\` 从 stash 创建新分支\n══════════════════════════════════════════════════════\n`);
+        }
+      }
+    } catch {}
+  }
 }
 
 // 危险命令拦截（tweak/design 模式下放行）

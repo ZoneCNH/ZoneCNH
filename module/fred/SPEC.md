@@ -112,7 +112,19 @@
 | `MacroRevision` | series_id、period_start、old_value、new_value、previous_vintage_at、vintage_at、detected_at |
 | `MacroIngestJob` | job_id、series_id、mode、cursor、started_at、finished_at、status、error_class |
 
-### 9.1 `ms_brain` 初始数据契约
+### 9.1 `domain_macro` 绑定状态
+
+[COMPUTED][HIGH] 上表 5 个模型为 fred 目标领域语义。`domain-macro` 仓库 v0.1.0 源码（`pkg/domainmacro/`）当前只有 `MacroPoint`（字段 `SeriesCode/Value/ObservedAt/ReleasedAt/AvailableAt/RevisionVersion/IsPreliminary/Source`，含 `Validate()` 与 `IsVisibleAt()` no-lookahead 判定）和 `MacroInformationSet`；`MacroSeries/MacroRelease/MacroRevision/MacroIngestJob` 尚不存在。
+
+[INFERRED][HIGH] 绑定决策（详见 [stage2-contracts-binding-20260622.md](../../docs/report/fred/stage2-contracts-binding-20260622.md) §2）：
+- `MacroObservation` 映射到现有 `MacroPoint`，fred 实施期推动 `domain-macro` 补 `provider/unit/period_start/period_end/vintage_at` 字段。
+- `MacroSeries/MacroRelease/MacroRevision` 标注为 fred 实施期在 `domain-macro` 补齐。
+- `MacroIngestJob` 为 fred internal 定义，不进 `domain-macro`。
+- FRED DTO → `MacroPoint` 字段映射见 stage2 报告 §2.3。
+
+[INFERRED][HIGH] 该决策需在阶段 3 实施前由数据域 owner 确认（OPEN-006）。若选方案 A（`domain-macro` 预先补齐 5 类型），需 `domain-macro` 发 v0.2.0。
+
+### 9.2 `ms_brain` 初始数据契约
 
 `ms_brain` 当前配置和规格要求宏观数据支持 PIT、发布延迟、修订、事件覆盖和数据质量降级。`fred` 的初始 integration profile 必须覆盖下列 FRED 序列锚点；非 FRED 或混合来源数据只在 FRED 端点具备权威来源时由 `fred` 负责，否则通过 `source_component` 标记外部来源并交由上游数据域路由。
 
@@ -292,3 +304,4 @@
 | OPEN-003 | `sre/secrets/env/dev.md` 的键名需映射到 `configx` schema | dev 配置 schema 审查通过且不暴露值 |
 | OPEN-004 | 七类介质的本地集成环境需确认可用性 | integration profile 可启动并跑通单 series 验证 |
 | OPEN-005 | `ms_brain` 当前仍以文档、规格和配置为主，尚无可运行消费者契约测试 | `/home/ms_brain` 提供 runtime fixture 或 contract test 后纳入 `fred` 集成验收 |
+| OPEN-006 | `domain_macro` 绑定方案待定：SPEC §9 五模型与 `domain-macro` v0.1.0 源码（仅 `MacroPoint`）不一致，方案 A（`domain-macro` 补齐发 v0.2.0）vs 方案 B（SPEC 锚定 `MacroPoint`，fred 实施期补） | 数据域 owner 确认方案，详见 stage2 报告 §2 |
