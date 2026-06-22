@@ -202,7 +202,7 @@
 | #893 DEEP-ANALYSIS §0 → SPEC §4 | G-09 | 6 | ✅ |
 | #894 DEEP-ANALYSIS §12 → migrations/ | G-10 | 6 | ✅ |
 | #895 legacy binance-market 压缩 | G-11 | 6 | ✅ |
-| #896 preserve/stash commit 覆盖审计 | G-12 | 6 | ✅ |
+| #896 preserve/stash commit 覆盖审计 | G-12 | 6 | ✅ local audit / ⚠️ external lineage pending |
 
 **结论**：当前 26 个 open issue 全部映射成功；2026-06-23 本地执行后，#866~#873、#879、#888、#893~#895 达到本地关闭或本地证据口径，#896 保留外部 PR/head 谱系缺口，#880~#887 与 #889~#892 保留 lifecycle draft / spec-fold / runtime 后续状态。当前无待建 issue。
 

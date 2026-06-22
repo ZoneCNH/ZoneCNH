@@ -2,7 +2,7 @@
 
 - Date: 2026-06-23
 - Scope: local git evidence for newest 50 commits matching `preserve|stash|backup|保存|临时|WIP`.
-- Local candidate count from command: 150.
+- Local candidate count from command: 151.
 - Command: `git log --all --date=short --format=%H%x09%ad%x09%D%x09%s --grep="preserve\|stash\|backup\|保存\|临时\|WIP" -i`
 
 > This report is evidence for #896, not final closure. Local git history can identify candidates and refs, but cannot by itself prove every PR/head relationship or that no omitted change reaches `main`.
