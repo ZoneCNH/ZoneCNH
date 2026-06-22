@@ -8,6 +8,7 @@
 
 | 报告 | 日期 | 主题 | 综合评分 |
 |---|---|---|:---:|
+| [branch-governance-audit-20260622.md](./branch-governance-audit-20260622.md) | 2026-06-22 | Git 分支治理、同步与工作树审计 | — |
 | [architecture-structural-analysis-20260622.md](./architecture-structural-analysis-20260622.md) | 2026-06-22 | 架构深度分析与 P0 修复（entropy 迁移、4 占位移除） | 68/100 (C) |
 | [architecture-deep-analysis-20260621-v2.md](./architecture-deep-analysis-20260621-v2.md) | 2026-06-21 | 跨文档版本一致性审计 v2 | 71/100 (B) |
 | [architecture-structural-analysis-20260621.md](./architecture-structural-analysis-20260621.md) | 2026-06-21 | 早间结构性分析（v2 前身） | 68.6/100 (C) |
