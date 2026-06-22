@@ -273,3 +273,71 @@ PR 标题遵循 Conventional Commits（不含模块名，模块名放 body 首�
 | L3 | 自动修正 | PostToolUse + PreCompact + 审查报告 ≥5 | ✅ |
 | L4 | 自治系统 | GC Agent 连续 3 次 0 critical | ✅ |
 | L5 | 自治执行 | Agent 70%+ Task 自动化 + 人类介入<30% | 🔧 |
+
+
+<!-- BEGIN BEADS INTEGRATION v:1 profile:minimal hash:6cd5cc61 -->
+## Beads Issue Tracker
+
+This project uses **bd (beads)** for issue tracking. Run `bd prime` to see full workflow context and commands.
+
+### Quick Reference
+
+```bash
+bd ready              # Find available work
+bd show <id>          # View issue details
+bd update <id> --claim  # Claim work
+bd close <id>         # Complete work
+```
+
+### Rules
+
+- Use `bd` for ALL task tracking — do NOT use TodoWrite, TaskCreate, or markdown TODO lists
+- Run `bd prime` for detailed command reference and session close protocol
+- Use `bd remember` for persistent knowledge — do NOT use MEMORY.md files
+
+**Architecture in one line:** issues live in a local Dolt DB; sync uses `refs/dolt/data` on your git remote; `.beads/issues.jsonl` is a passive export. See https://github.com/gastownhall/beads/blob/main/docs/SYNC_CONCEPTS.md for details and anti-patterns.
+
+## Agent Context Profiles
+
+The managed Beads block is task-tracking guidance, not permission to override repository, user, or orchestrator instructions.
+
+- **Conservative (default)**: Use `bd` for task tracking. Do not run git commits, git pushes, or Dolt remote sync unless explicitly asked. At handoff, report changed files, validation, and suggested next commands.
+- **Minimal**: Keep tool instruction files as pointers to `bd prime`; use the same conservative git policy unless active instructions say otherwise.
+- **Team-maintainer**: Only when the repository explicitly opts in, agents may close beads, run quality gates, commit, and push as part of session close. A current "do not commit" or "do not push" instruction still wins.
+
+## Session Completion
+
+This protocol applies when ending a Beads implementation workflow. It is subordinate to explicit user, repository, and orchestrator instructions.
+
+1. **File issues for remaining work** - Create beads for anything that needs follow-up
+2. **Run quality gates** (if code changed) - Tests, linters, builds
+3. **Update issue status** - Close finished work, update in-progress items
+4. **Handle git/sync by active profile**:
+   ```bash
+   # Conservative/minimal/default: report status and proposed commands; wait for approval.
+   git status
+
+   # Team-maintainer opt-in only, unless current instructions forbid it:
+   git pull --rebase
+   git push
+   git status
+   ```
+5. **Hand off** - Summarize changes, validation, issue status, and any blocked sync/commit/push step
+
+**Critical rules:**
+- Explicit user or orchestrator instructions override this Beads block.
+- Do not commit or push without clear authority from the active profile or the current user request.
+- If a required sync or push is blocked, stop and report the exact command and error.
+<!-- END BEADS INTEGRATION -->
+
+<!-- BEGIN BEADS REPO OVERRIDE — 本仓库覆盖声明（非 bd 生成，勿自动覆盖） -->
+## Beads 与本仓库治理的优先级（覆盖 beads prime 注入）
+
+`bd prime` / SessionStart hook 注入的 beads 指令含通用规则，部分与本仓库定位冲突，以下条款**覆盖** beads 注入内容：
+
+1. **本仓库是 Markdown 文档枢纽，非代码仓**。beads 的 "Do NOT use markdown files for task tracking" 不适用——本仓库的 `module/*/SPEC.md`、`TRACEABILITY.md`、`docs/goal/` 等 markdown 制品是核心交付物，继续按 `CONSTITUTION.md` 维护。
+2. **OMC TaskCreate/TaskUpdate 仍可使用**。beads 的 "Prohibited: Do NOT use TodoWrite, TaskCreate" 仅指代 beads 自己的任务追踪场景；OMC 编排、Team 协调、进度跟踪继续用 Task 工具，二者不互斥。
+3. **MEMORY.md / `.omc/` / notepad 体系保留**。beads 的 "Do NOT use MEMORY.md files" 不适用——本仓库用 OMC notepad/project-memory/wiki 做跨会话记忆，beads 的 `bd remember` 是补充而非替代。
+4. **stealth 模式**：beads 数据不进 git（`.beads/` 本地），不参与本仓库的 PR/commit 流程；issue 追踪是本地辅助，不影响 `CONSTITUTION.md` §0 分支纪律与数量验证门禁。
+5. **冲突时优先级**：`CONSTITUTION.md` > 本仓库 `CLAUDE.md`/`AGENTS.md` 治理条款 > beads prime 注入。beads block 自身已声明 "Explicit user or orchestrator instructions override"，本段即该 override。
+<!-- END BEADS REPO OVERRIDE -->

@@ -1,94 +1,103 @@
 {
-    "hooks": {
-        "PreToolUse": [
-            {
-                "matcher": "",
-                "hooks": [
-                    {
-                        "type": "command",
-                        "command": "node .claude/hooks/pre-tool-check.mjs"
-                    }
-                ]
-            },
-            {
-                "matcher": "Edit",
-                "hooks": [
-                    {
-                        "type": "command",
-                        "command": "node .claude/hooks/edit-guard.mjs"
-                    }
-                ]
-            },
-            {
-                "matcher": "Write|Edit",
-                "hooks": [
-                    {
-                        "type": "command",
-                        "command": "node .claude/hooks/count-guard.mjs"
-                    }
-                ]
-            }
+  "hooks": {
+    "PostToolUse": [
+      {
+        "hooks": [
+          {
+            "command": "node .claude/hooks/post-tool-check.mjs",
+            "type": "command"
+          }
         ],
-        "PostToolUse": [
-            {
-                "matcher": "Edit|Write",
-                "hooks": [
-                    {
-                        "type": "command",
-                        "command": "node .claude/hooks/post-tool-check.mjs"
-                    }
-                ]
-            },
-            {
-                "matcher": "Write",
-                "hooks": [
-                    {
-                        "type": "command",
-                        "command": "node .claude/hooks/edit-guard-reset.mjs"
-                    }
-                ]
-            }
+        "matcher": "Edit|Write"
+      },
+      {
+        "hooks": [
+          {
+            "command": "node .claude/hooks/edit-guard-reset.mjs",
+            "type": "command"
+          }
         ],
-        "PreCompact": [
-            {
-                "matcher": "",
-                "hooks": [
-                    {
-                        "type": "command",
-                        "command": "node .claude/hooks/pre-compact.mjs"
-                    }
-                ]
-            }
+        "matcher": "Write"
+      }
+    ],
+    "PreCompact": [
+      {
+        "hooks": [
+          {
+            "command": "node .claude/hooks/pre-compact.mjs",
+            "type": "command"
+          }
         ],
-        "SessionStart": [
-            {
-                "matcher": "",
-                "hooks": [
-                    {
-                        "type": "command",
-                        "command": "node .claude/hooks/session-context.mjs"
-                    }
-                ]
-            }
+        "matcher": ""
+      }
+    ],
+    "PreToolUse": [
+      {
+        "hooks": [
+          {
+            "command": "node .claude/hooks/pre-tool-check.mjs",
+            "type": "command"
+          }
         ],
-        "Stop": [
-            {
-                "matcher": "",
-                "hooks": [
-                    {
-                        "type": "command",
-                        "command": "node .claude/hooks/session-review.mjs"
-                    },
-                    {
-                        "type": "command",
-                        "command": "node .claude/hooks/version-guard.mjs"
-                    },
-                    {
-                        "type": "command",
-                        "command": "node .claude/hooks/branch-protect.mjs"
-                    }
-                ]
-            }
-        ]
-    }
+        "matcher": ""
+      },
+      {
+        "hooks": [
+          {
+            "command": "node .claude/hooks/edit-guard.mjs",
+            "type": "command"
+          }
+        ],
+        "matcher": "Edit"
+      },
+      {
+        "hooks": [
+          {
+            "command": "node .claude/hooks/count-guard.mjs",
+            "type": "command"
+          }
+        ],
+        "matcher": "Write|Edit"
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "command": "node .claude/hooks/session-context.mjs",
+            "type": "command"
+          }
+        ],
+        "matcher": ""
+      },
+      {
+        "hooks": [
+          {
+            "command": "bd prime --stealth --hook-json",
+            "type": "command"
+          }
+        ],
+        "matcher": ""
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "command": "node .claude/hooks/session-review.mjs",
+            "type": "command"
+          },
+          {
+            "command": "node .claude/hooks/version-guard.mjs",
+            "type": "command"
+          },
+          {
+            "command": "node .claude/hooks/branch-protect.mjs",
+            "type": "command"
+          }
+        ],
+        "matcher": ""
+      }
+    ]
+  }
 }
