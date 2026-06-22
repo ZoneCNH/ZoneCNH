@@ -111,3 +111,9 @@ docs/report/package-lock.json
 .claude/reviews/
 .claude/loops/
 .claude/.edit-guard-state.json
+
+# Beads / Dolt files (added by bd init)
+.dolt/
+*.db
+.beads-credential-key
+.beads/proxieddb/
