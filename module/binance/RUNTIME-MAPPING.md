@@ -209,14 +209,18 @@ Stream: BINANCE_MARKET
 Retention: 7d  Storage: file  Replicas: 1 (生产升 3)
 
 Subjects:
-  binance.market.spot.tick         binance.market.spot.bar
-  binance.market.spot.depth        binance.market.spot.trade
-  binance.market.um_perp.tick      binance.market.um_perp.bar
-  binance.market.um_perp.depth     binance.market.um_perp.trade
-  binance.market.cm_perp.tick      binance.market.cm_perp.bar
-  binance.market.cm_perp.depth     binance.market.cm_perp.trade
-  binance.market.options.tick      binance.market.options.bar
-  binance.market.options.depth     binance.market.options.trade
+  binance.market.spot.tick            binance.market.spot.trade
+  binance.market.spot.bar             binance.market.spot.depth
+  binance.market.spot.funding_rate    binance.market.spot.mark_price
+  binance.market.um_perp.tick         binance.market.um_perp.trade
+  binance.market.um_perp.bar          binance.market.um_perp.depth
+  binance.market.um_perp.funding_rate binance.market.um_perp.mark_price
+  binance.market.cm_perp.tick         binance.market.cm_perp.trade
+  binance.market.cm_perp.bar          binance.market.cm_perp.depth
+  binance.market.cm_perp.funding_rate binance.market.cm_perp.mark_price
+  binance.market.options.tick         binance.market.options.trade
+  binance.market.options.bar          binance.market.options.depth
+  binance.market.options.funding_rate binance.market.options.mark_price
 
 Server Consumer:
   Durable: binance-server  AckPolicy: explicit  AckWait: 30s  MaxDeliver: 5
@@ -228,14 +232,18 @@ Server Consumer:
 
 ```
 Topics:
-  binance.spot.tick.v1          binance.spot.bar.v1
-  binance.spot.depth.v1         binance.spot.trade.v1
-  binance.um_perp.tick.v1       binance.um_perp.bar.v1
-  binance.um_perp.depth.v1      binance.um_perp.trade.v1
-  binance.cm_perp.tick.v1       binance.cm_perp.bar.v1
-  binance.cm_perp.depth.v1      binance.cm_perp.trade.v1
-  binance.options.tick.v1       binance.options.bar.v1
-  binance.options.depth.v1      binance.options.trade.v1
+  binance.spot.tick.v1             binance.spot.trade.v1
+  binance.spot.bar.v1              binance.spot.depth.v1
+  binance.spot.funding_rate.v1     binance.spot.mark_price.v1
+  binance.um_perp.tick.v1          binance.um_perp.trade.v1
+  binance.um_perp.bar.v1           binance.um_perp.depth.v1
+  binance.um_perp.funding_rate.v1  binance.um_perp.mark_price.v1
+  binance.cm_perp.tick.v1          binance.cm_perp.trade.v1
+  binance.cm_perp.bar.v1           binance.cm_perp.depth.v1
+  binance.cm_perp.funding_rate.v1  binance.cm_perp.mark_price.v1
+  binance.options.tick.v1          binance.options.trade.v1
+  binance.options.bar.v1           binance.options.depth.v1
+  binance.options.funding_rate.v1  binance.options.mark_price.v1
 
 Consumer Groups:
   signal_engine  risk_engine  backtestx  market_regime
@@ -256,6 +264,8 @@ GET  /api/v1/market/bars/:symbol          最新 Bar
 GET  /api/v1/market/bars/:symbol/range    历史 Bar（taosx）
 GET  /api/v1/market/depth/:symbol         最新深度（redisx 5s TTL）
 GET  /api/v1/market/trades/:symbol        最新成交
+GET  /api/v1/market/funding-rates/:symbol 最新资金费率
+GET  /api/v1/market/mark-prices/:symbol   最新标记价格
 GET  /api/v1/instruments                  合约列表（postgresx）
 GET  /api/v1/instruments/:symbol          单个合约详情
 GET  /api/v1/stats/streams                流统计

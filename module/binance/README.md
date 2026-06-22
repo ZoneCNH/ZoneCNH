@@ -3,7 +3,7 @@
 `module/binance` is the Binance-specific Market Data C/S Module for ZoneCNH.
 
 - Spec-Version: v2.2.3 (root) / v2.1.1 (client) / v2.1.0 (server)
-- Last-Updated: 2026-06-22
+- Last-Updated: 2026-06-23
 
 It is split into two submodules:
 
@@ -29,9 +29,12 @@ It owns Binance-specific persistence, query API, and fanout needed to serve acce
 | `module/binance/client` | Connects to Binance, parses exchange-native data, maps to `domain_market` envelopes, publishes through `natsx` JetStream |
 | `module/binance/server` | Consumes `natsx` JetStream events, validates and deduplicates facts, persists Binance data, exposes Gin REST APIs, and fans out through `kafkax` |
 
-## Removed Legacy Module
+## Legacy Provider Removal
 
-Legacy module removal is governed by `SPEC.md` BR-001 and Appendix B. New Binance market_data ingestion work targets only `module/binance/client` and `module/binance/server`.
+Historical legacy Provider paths are archive-only. New Binance market_data
+ingestion work must target `module/binance/client` and
+`module/binance/server`; exact forbidden legacy paths are tracked in
+`SPEC.md` BR-001, Appendix B, and `docs/migrations/remove-binance-market.md`.
 
 ## Runtime Shape
 
@@ -81,6 +84,7 @@ module/binance/server
 
 ## Read Next
 
+- `STANDARD.md`
 - `SPEC.md`
 - `DATA-LIFECYCLE.md`（FR-012~FR-024 讨论稿，定稿后再 fold into SPEC）
 - `BOUNDARY-GATES.md`

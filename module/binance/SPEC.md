@@ -4,7 +4,7 @@
 
 - Status: Approved
 - Spec-Version: v2.2.3
-- Last-Updated: 2026-06-22
+- Last-Updated: 2026-06-23
 - Owner: ZoneCNH
 - Layer: 数据域 · 行情
 - Version: v0.1.0
@@ -42,7 +42,7 @@
   market_data             ← 交易所中立的后续管线
 ```
 
-`binance-client` 和 `binance-server` 可部署在不同机器/容器/可用区，通过 NATS Server 集群传递消息。NATS JetStream 是独立部署的平台/基础设施服务，不由 `binance-client` 或 `binance-server` 内嵌启动；两个进程只通过配置连接地址使用它。legacy 模块移除约束集中在 BR-001 与 Appendix B。
+`binance-client` 和 `binance-server` 可部署在不同机器/容器/可用区，通过 NATS Server 集群传递消息。NATS JetStream 是独立部署的平台/基础设施服务，不由 `binance-client` 或 `binance-server` 内嵌启动；两个进程只通过配置连接地址使用它。legacy Provider path 已移除；历史约束集中在 BR-001 与 Appendix B。
 
 ---
 
@@ -50,7 +50,7 @@
 
 Binance 行情集成面临以下问题：
 
-1. **旧 SDK/Provider 模型职责不清**：被动 SDK 与 Provider 并存，采集、转换、持久化边界模糊。
+1. **旧 SDK/Provider 分裂模型职责不清**：采集、转换、持久化边界模糊。
 2. **同进程耦合**：当前 `internal/cs` 包将 client 和 server 绑定在同一进程（Go interface 直调），无法独立部署，无网络容错。
 3. **身份碰撞风险**：Spot `BTCUSDT`、USDⓈ-M `BTCUSDT`、COIN-M `BTCUSD` 和 Options 合约无 product_line 区分。
 4. **可靠性无保障**：at-least-once delivery + 幂等接受的端到端语义未定义，进程重启或故障时数据丢失或重复。
@@ -61,9 +61,21 @@ Binance 行情集成面临以下问题：
 
 ## 4. Goals
 
-本节是分布式约束的规范摘要；详细论证与历史代码审计见
-`module/binance/DEEP-ANALYSIS.md` §0、§12，以及
-`docs/migrations/binance-v2-upgrade.md`。
+本节是分布式约束的规范摘要；历史论证与迁移证据见
+`docs/migrations/binance-v2-upgrade.md`，归档分析指针见
+`module/binance/DEEP-ANALYSIS.md` §0、§12。
+
+### 4.1 分布式运行约束
+
+| 编号 | 约束 |
+|---|---|
+| R1 | `binance-client` 与 `binance-server` 不得共享 Go interface 或内存。 |
+| R2 | client→server 唯一通信通道是外部 NATS JetStream via `natsx`。 |
+| R3 | NATS JetStream 是独立基础设施，由地址和凭据配置接入，不由 Binance 进程内嵌启动。 |
+| R4 | `internal/cs` 不得作为 runtime dependency，也不得作为同进程桥接路径。 |
+| R5 | runtime closure 必须来自 fresh `/home/binance` verification evidence。 |
+
+### 4.2 功能目标
 
 - **分布式 C/S 架构**：client 和 server 为独立进程，可独立部署在不同机器/容器，通过 natsx JetStream 网络通信
 - 支持 Binance 四产品线：Spot、USDⓈ-M Futures、COIN-M Futures、Options
@@ -74,7 +86,7 @@ Binance 行情集成面临以下问题：
 - server 侧 **Gin REST API** 供 market_data 主动查询
 - 定义 canonical instrument identity，覆盖四产品线碰撞场景
 - 定义 enforceable boundary gates：禁止跨进程代码导入，CI 拦截
-- 移除 legacy Provider + `internal/cs` 同进程桥接包
+- 移除 legacy Provider 路径 + `internal/cs` 同进程桥接包
 
 ---
 
@@ -87,9 +99,9 @@ Binance 行情集成面临以下问题：
 | 定义 canonical domain model（ProductLine/InstrumentKey 等） | 由 `module/domain_market` 拥有 |
 | 实现 strategy API / trading decision | 属于分析域和决策域 |
 | 实现 order execution | 属于执行域 |
-| 兼容旧 Provider 模式 | 已移除；legacy 名称约束见 BR-001 / Appendix B |
+| 兼容旧 Provider 分裂模型 | 已移除；历史路径仅保留于 BR-001、Appendix B 与迁移报告中。 |
 | 作为跨 CEX 通用 ingestion server | 本模块仅处理 Binance |
-| 同进程运行 client + server | **违反分布式约束（见 §0）** |
+| 同进程运行 client + server | **违反分布式约束（见 §4.1）** |
 | 保留 `internal/cs` 同进程桥接包为运行时依赖 | **必须删除** |
 
 ---

@@ -178,13 +178,13 @@
 
 - 🔴 **阶段 3 在阶段 0 未收敛时启动**：在漂移基线上叠新 FR，会让 #866/#868 的修复更难（subject/topic 表又要改一遍）。**必须阶段 0 先合并**
 - 🔴 **阶段 5 MAJOR bump 未同步 R2 矩阵**：event_type 4→6 后若不补 funding/mark_price 的 8 个新组合，RULES R2 硬约束违规
-- 🟡 **runtime 发布证据仍分层**（#869）：2026-06-23 本地 runtime gate/test/lint 已通过；Release DoD 仍需远端 CI、release tag、live smoke/deploy 证据。
+- 🟡 **runtime 发布证据仍分层**（#869）：2026-06-23 从 `/home/binance` 重新取得 clean short status、boundary gates PASS 10/10、`go test ./...`、`go vet ./...`、race test 和 `golangci-lint run` 通过证据；Release DoD 仍需远端 CI、release tag、live smoke/deploy 证据。
 - 🟡 **v5 报告丢失**（212 行清洗/处理缺口）：v4 已含 13 条 FR 核心结论，但 C1-C8 清洗缺口、P1-P7 处理问题、G1-G4 缺口分类的细节无法恢复；阶段 3/4 落地时需重新推导这部分细节
 
 ### 5.2 停止条件
 
-- [COMPUTED, HIGH] 2026-06-23 team 后续执行已完成阶段 0、阶段 1、阶段 2 讨论稿与阶段 6 治理收口的本地文档证据；#869 本地 runtime 证据已刷新。
-- [COMPUTED, HIGH] 现有 12 个 issue 中，11 个已达到本地关闭口径；#896 已完成 local audit，但 PR/head 谱系仍需权威 GitHub 元数据。
+- [COMPUTED, HIGH] 2026-06-23 team 后续执行已完成阶段 0、阶段 1、阶段 2 讨论稿、阶段 6 治理收口与 #869 本地 runtime 命令证据。
+- [COMPUTED, HIGH] 现有 12 个 issue 中，11 个已达到本地关闭口径；#896 已完成 local audit 但 PR/head 谱系仍需权威 GitHub 元数据。
 - [INFERRED, MED] 阶段 3+ 的 FR 实现和 Release DoD 仍不得因文档本地关闭而自动视为完成。
 
 ---
@@ -199,7 +199,7 @@
 | #873 RULES 任务引用错误 | G-04 | 0 | ✅ |
 | #872 状态口径分层 | G-05 | 0 | ✅ |
 | #870 检查脚本 | G-06 | 1 | ✅ |
-| #869 运行证据 | G-07 | 7 | ✅ |
+| #869 运行证据 | G-07 | 7 | ✅ local evidence |
 | #871 STANDARD.md | G-08 | 6 | ✅ |
 | #893 DEEP-ANALYSIS §0 → SPEC §4 | G-09 | 6 | ✅ |
 | #894 DEEP-ANALYSIS §12 → migrations/ | G-10 | 6 | ✅ |
@@ -210,4 +210,4 @@
 
 ---
 
-[RULES I BROKE]：无 — 原始方案是规划文档；2026-06-23 team 后续补记同步本地关闭状态，并将实际治理入口、审计产物、数据生命周期讨论稿和 #869 runtime 证据口径记录在 `STANDARD.md`、`RULES.md` R9、`DATA-LIFECYCLE.md` 与 `docs/report/binance/governance-closure-20260623.md`。
+[RULES I BROKE]：无 — 原始方案是规划文档；2026-06-23 team 后续补记同步本地关闭状态，并将实际治理入口、审计产物、数据生命周期讨论稿和 #869 runtime evidence 记录在 `STANDARD.md`、`RULES.md` R9、`DATA-LIFECYCLE.md` 与 `docs/report/binance/governance-closure-20260623.md`。

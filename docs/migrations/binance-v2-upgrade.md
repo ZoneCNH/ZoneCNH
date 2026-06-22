@@ -11,17 +11,19 @@
 This note is the migration index for the Binance v2 move from the historical
 same-process C/S shape to the required distributed C/S architecture.
 
-Normative constraints live in `module/binance/SPEC.md` §4. Historical rationale
-and the code-state audit remain in `module/binance/DEEP-ANALYSIS.md` §0 and
-§12 so the analysis file can be reduced later without losing traceability.
+Normative constraints live in `module/binance/SPEC.md` §4.1. Historical
+rationale and the code-state audit are consolidated here so
+`module/binance/DEEP-ANALYSIS.md` §0 and §12 can remain archive stubs without
+becoming a second SSOT.
 
 ## Source evidence
 
 | Source | Why it matters |
 |---|---|
-| `module/binance/SPEC.md` §4 | Normative distributed constraints: independent client/server processes, natsx JetStream as the only client→server channel, no same-process bridge. |
-| `module/binance/DEEP-ANALYSIS.md` §0 | Detailed distributed-architecture rationale and forbidden patterns. |
-| `module/binance/DEEP-ANALYSIS.md` §12 | Historical code-state audit for runtime gaps such as `internal/cs`, missing wire contracts, and dependency differences. |
+| `module/binance/SPEC.md` §4.1 | Normative distributed constraints: independent client/server processes, natsx JetStream as the only client→server channel, no same-process bridge. |
+| `module/binance/DEEP-ANALYSIS.md` §0 | Archive stub pointing to SPEC §4.1 and this migration note. |
+| `module/binance/DEEP-ANALYSIS.md` §12 | Archive stub pointing to this historical code-state evidence index. |
+| `docs/migrations/binance-v2-upgrade.md` | Migration contract plus historical evidence index for distributed C/S migration. |
 | `docs/report/binance/deep-analysis-20260622.md` | Review record recommending §0 promotion into SPEC §4 and §12 migration into `docs/migrations/`. |
 | `docs/report/binance/deep-analysis-20260622-v2.md` | Follow-up review record confirming the same migration split. |
 
@@ -56,11 +58,11 @@ recorded.
 
 ## Current gap handling
 
-- #893: SPEC §4 now links back to the detailed DEEP-ANALYSIS rationale and this
-  migration note, so distributed constraints have one normative home.
+- #893: SPEC §4.1 is the normative home for distributed runtime constraints.
+  DEEP §0/§12 are stubs that point here and back to SPEC rather than carrying
+  duplicate SSOT text.
 - #894: this file plus `docs/migrations/README.md` and the SPEC migration table
-  provide the migration index wiring. Do not duplicate the full §12 body here;
-  keep §12 as historical evidence until a dedicated compression pass removes or
-  summarizes it.
+  provide the migration index wiring. This file carries the historical evidence
+  index; DEEP §0/§12 are reduced to pointers.
 - #869: docs can record evidence, but runtime closure remains implementation
   gated until the command set above is fresh and clean.

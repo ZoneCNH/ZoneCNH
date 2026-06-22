@@ -8,6 +8,8 @@
 
 | 报告 | 日期 | 主题 | 综合评分 |
 |---|---|---|:---:|
+| [binance/governance-closure-20260623.md](./binance/governance-closure-20260623.md) | 2026-06-23 | binance governance closure review（#869 本地 runtime 证据闭合；#871/#893/#894/#895 文档治理收口；#896 部分满足） | — |
+| [binance/commit-coverage-audit-20260623.md](./binance/commit-coverage-audit-20260623.md) | 2026-06-23 | binance #896 newest 50 preserve/stash candidate 本地覆盖审计 | — |
 | [binance/goal-execution-plan-20260622.md](./binance/goal-execution-plan-20260622.md) | 2026-06-22 | binance Goal 执行方案（82→95 分目标，AC-1~AC-9，12 issue + FR-012~FR-024 分阶段验收） | 82→95 |
 | [binance/iteration-plan-20260622.md](./binance/iteration-plan-20260622.md) | 2026-06-22 | binance 完整更新迭代方案（5 份报告 + 12 issues 收敛，27 项 backlog，7 阶段路线） | — |
 | [fred/iteration-plan-20260622.md](./fred/iteration-plan-20260622.md) | 2026-06-22 | fred 完整更新迭代方案（4 份报告 + 7 模块文件收敛，29 项 backlog，7 阶段路线，68→80+ 分） | 68/100 (D+) |
@@ -28,7 +30,7 @@
 
 | 路径 | 说明 |
 |---|---|
-| [`binance/`](./binance/) | binance 模块深度分析（v2 评分权威；v3 治理漂移；v4 历史/实时缺口；iteration-plan 为收敛迭代方案；goal-execution-plan 为 82→95 执行路线；v1 保留 PR #850 基线） |
+| [`binance/`](./binance/) | binance 模块深度分析与治理报告（governance-closure / commit-coverage 为 2026-06-23 收口证据；v2 评分权威；v3 治理漂移；v4 历史/实时缺口；iteration-plan 为收敛迭代方案；goal-execution-plan 为 82→95 执行路线；v1 保留 PR #850 基线） |
 | [`fred/`](./fred/) | fred 模块深度分析（deep-analysis P0/P1 排序；data-issues 历史/实时/同步/清洗/缺口；ms_brain 下游契约；structural-score 68/42 分账本；iteration-plan 为收敛迭代方案） |
 | [`goal/`](./goal/) | Goal 文档分析（2026-06-09 收尾，含 ISSUE-LEDGER 与 README） |
 | [`archive/`](./archive/) | 历史档案区（已收敛的过程草稿） |
@@ -51,6 +53,7 @@
 
 | 日期 | 变更 |
 |---|---|
+| 2026-06-23 | 新增 binance governance closure 与 commit coverage audit 索引；补 `docs/report/binance/` 子目录索引入口 |
 | 2026-06-23 | 新增 `binance/goal-execution-plan-20260622.md`：补回 Goal 执行路线，记录 AC-1~AC-9、本地已关闭 issue 与外部门禁缺口 |
 | 2026-06-22 | 新增 `binance/iteration-plan-20260622.md`：5 份报告 + 12 issues 收敛为 27 项 backlog + 7 阶段路线；补索引 v3/v4 条目 |
 | 2026-06-22 | 新增 `fred/iteration-plan-20260622.md`：4 份报告 + 7 模块文件收敛为 29 项 backlog + 7 阶段路线；补 `fred/` 子目录条目 |

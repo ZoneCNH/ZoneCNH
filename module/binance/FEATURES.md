@@ -5,12 +5,12 @@
 | 字段 | 值 |
 | --- | --- |
 | Status | Generated from current module SSOT |
-| Last-Updated | 2026-06-21 |
-| Module-Version | v2.2.2 |
-| Module-State | 规格重构；v2.2.2 runtime 大部分仍为 Pending |
+| Last-Updated | 2026-06-23 |
+| Module-Version | v2.2.3 |
+| Module-State | 文档治理收敛；runtime 实现状态仍以 `/home/binance` fresh evidence 为准 |
 | Layer | 数据域 / Binance-specific market_data C/S module |
 | Runtime-Repo | `/home/binance` |
-| Source | `goal.md`, `SPEC.md`, `TRACEABILITY.md`, `BOUNDARY-GATES.md`, `RUNTIME-MAPPING.md`, `IMPLEMENTATION-PLAN.md`, `client/`, `server/`, `tasks/` |
+| Source | `goal.md`, `STANDARD.md`, `SPEC.md`, `DATA-LIFECYCLE.md`, `TRACEABILITY.md`, `BOUNDARY-GATES.md`, `RUNTIME-MAPPING.md`, `IMPLEMENTATION-PLAN.md`, `client/`, `server/`, `tasks/` |
 
 本文档是 `module/binance` 当前规格库的实现投影，不是 runtime 代码验收证据。实际完成状态以 `TRACEABILITY.md`、`client/TRACEABILITY.md`、`server/TRACEABILITY.md` 和 `/home/binance` 的测试证据为准。
 
@@ -24,7 +24,7 @@
 | Server 职责 | 订阅 `natsx` JetStream，校验与去重事实，写入 Binance 专属存储，提供 Gin REST API，并通过 `kafkax` 广播。 |
 | 允许依赖 | `domain_market`, `natsx`, `redisx`, `postgresx`, `taosx`, `ossx`, `kafkax`, `gin`, `observability` 等按规格边界使用。 |
 | 禁止归属 | 不拥有 canonical market domain，不定义跨交易所通用 `market_data` 语义，不实现策略、下单、撮合或风控。 |
-| 禁止路径 | 禁止恢复 `module/binance-market`、`github.com/ZoneCNH/binance-market`、运行时 `internal/cs`。 |
+| 禁止路径 | 禁止恢复 legacy Provider paths（精确路径见 `SPEC.md` Appendix B / `docs/migrations/remove-binance-market.md`）与运行时 `internal/cs`。 |
 | Wire Contract | Client -> Server 的 wire contract 必须是 `natsx` subject 加 `domain_market` envelope JSON，不能新增本地 proto/gRPC ingest schema。 |
 
 ## 2. 功能实现投影
@@ -53,7 +53,7 @@
 
 | 项 | 当前状态 | 说明 |
 | --- | --- | --- |
-| BR-001 No binance-market | Pending | 禁止旧仓库或旧 module 名称回流；需要 CI grep gate。 |
+| BR-001 Legacy Provider archive-only | Pending | 禁止旧仓库或旧 module 名称回流；需要 CI grep gate。 |
 | BR-002 Client Must Not Import Server | Pending | Client 禁止导入 server internals。 |
 | BR-003 Server Must Not Import Client | Pending | Server 禁止导入 client internals。 |
 | BR-004 natsx ManualAck | Pending | Server 必须在持久化与广播 handoff 后 Ack。 |
@@ -81,7 +81,9 @@
 | 文档 | 用途 | 当前使用方式 |
 | --- | --- | --- |
 | `goal.md` | 业务目标与模块意图 | 作为实现清单的目标来源。 |
-| `SPEC.md` | v2.0.0 功能与边界规格 | 作为 FR/BR/NFR 语义来源。 |
+| `STANDARD.md` | 模块标准入口与权威顺序 | 作为治理入口、检查命令与 runtime evidence guardrail 来源。 |
+| `SPEC.md` | v2.2.3 功能与边界规格 | 作为 FR/BR/NFR 语义来源。 |
+| `DATA-LIFECYCLE.md` | FR-012~FR-024 数据生命周期草案 | 作为历史/实时数据补强讨论稿来源。 |
 | `TRACEABILITY.md` | 根级 FR/AC/TC/Task 追溯 | 作为当前状态与验收编号来源。 |
 | `client/TRACEABILITY.md` | Client 子域追溯 | 作为 client active/pending 实现面来源。 |
 | `server/TRACEABILITY.md` | Server 子域追溯 | 作为 server active/pending 实现面来源。 |

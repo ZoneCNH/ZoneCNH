@@ -18,7 +18,7 @@ done
 
 for phrase in \
   "event_type" \
-  "funding" \
+  "funding_rate" \
   "mark_price" \
   "gap detector" \
   "binance_backfill_jobs" \

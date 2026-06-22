@@ -4,11 +4,11 @@
 - Issue Scope: #879 pre-draft plus #880~#892 FR review anchors
 - Source: `docs/report/binance/deep-analysis-20260622-v4.md` §五~§八
 - Scope: FR-012 ~ FR-024 only; do not fold into `SPEC.md` / `TRACEABILITY.md` until review accepts the lifecycle gates and event taxonomy change.
-- Last-Updated: 2026-06-22
+- Last-Updated: 2026-06-23
 
 ## 0. 为什么先独立成稿
 
-v4 分析提出 13 条新增需求，覆盖实时采集控制面、历史回填、缺口修复、对账、冷数据回热与运维可见性。若直接写入 `SPEC.md`，其中 FR-020 会把 `event_type` 从 4 类扩展到 6 类（新增 `funding` / `mark_price`），触发 RULES R2 矩阵重算和 MAJOR bump。
+v4 分析提出 13 条新增需求，覆盖实时采集控制面、历史回填、缺口修复、对账、冷数据回热与运维可见性。若直接写入 `SPEC.md`，其中 FR-020 会把 `event_type` 从 4 类扩展到 6 类（新增 `funding_rate` / `mark_price`），触发 RULES R2 矩阵重算和 MAJOR bump。
 
 因此本文件只作为评审入口：先固定数据生命周期闭环和 FR 草案，再由后续 PR fold into root/client/server SPEC、TRACEABILITY、ACCEPTANCE 与任务矩阵。
 
@@ -31,7 +31,7 @@ symbol discovery
 
 1. 实时链路和 REST 回填使用同一幂等键，避免双写。
 2. 回填和对账不得挤占实时控制面的限速预算。
-3. 新增 `funding` / `mark_price` 只有在 event_type 6 值矩阵、topic、表、AC/TC 同步定稿后才能进入 Approved SPEC。
+3. 新增 `funding_rate` / `mark_price` 只有在 event_type 6 值矩阵、topic、表、AC/TC 同步定稿后才能进入 Approved SPEC。
 
 ## 2. FR 草案索引
 
@@ -45,7 +45,7 @@ symbol discovery
 | #885 | FR-017 | P0 | gap detection | server 每 5min 运行 gap detector；trade 用 `aggTrade.a` 连号校验；bar 按窗口期望条数；gap 入 `binance_backfill_jobs` | server/SPEC §7 |
 | #886 | FR-018 | P0 | backfill throttle | REST token bucket 感知 spot 1200 weight/min、futures 2400 weight/min；80% 预算保留实时控制面，20% 给回填；优先级 trade > bar > tick | server/SPEC §7 |
 | #887 | FR-019 | P0 | replay idempotency | REST 回填幂等键与 WS 一致：trade=`exchange+product_line+symbol+trade_id`，bar=`exchange+product_line+symbol+interval+open_time` | BR-008 extension |
-| #888 | FR-020 | P1 | periodic data | um_perp/cm_perp 订阅 `markPriceUpdate`；`fundingInfo` 8h；新增 `binance_funding` / `binance_mark_price`；event_type 扩展为 `funding` / `mark_price` | NAMING §2 + RULES R2/R3 |
+| #888 | FR-020 | P1 | periodic data | um_perp/cm_perp 订阅 `markPriceUpdate`；`fundingInfo` 8h；新增 `binance_funding_rate` / `binance_mark_price`；event_type 扩展为 `funding_rate` / `mark_price` | NAMING §2 + RULES R2/R3 |
 | #889 | FR-021 | P1 | reconciliation | 每日 04:00 UTC 按 symbol×1d 对账 taosx OHLCV 与 Binance klines；差异超过 0.01% 写 `binance_reconciliation_alerts` | server/SPEC §7 |
 | #890 | FR-022 | P1 | cold rehydration | range query 命中 OSS 归档区时异步 OSS→taosx 回热临时表（24h TTL）；同步返回 202 + `job_id` | FR-007 extension |
 | #891 | FR-023 | P2 | operator visibility | 提供 `GET /api/v1/admin/backfill/jobs` 和 `GET /api/v1/admin/backfill/coverage/:symbol`，暴露 coverage 最早可用时间戳 | server/SPEC §7 |
@@ -57,7 +57,7 @@ symbol discovery
 - #881：`listenKey` 只适用于 user-data stream；public market stream 不应继承该要求。
 - #882/#883：interval、partial depth、diff depth、snapshot 与 update_id 语义必须按 product_line 分表确认，不能用单行规则覆盖全部产品。
 - #884~#887：回填 source API、gap key、限速权重和幂等键必须按 event_type × product_line 固定，depth 无历史回填要显式标为 unsupported。
-- #888：`funding` / `mark_price` 是 futures-only；若不做 4×6 全矩阵，必须在 RULES/NAMING/TRACEABILITY 中写明适用性例外。
+- #888：`funding_rate` / `mark_price` 是 futures-only；若不做 4×6 全矩阵，必须在 RULES/NAMING/TRACEABILITY 中写明适用性例外。
 - #889~#892：对账、回热、进度 API、热重载都需要 auth/status/pagination/rollback/compatibility 合同后才能进入 Approved SPEC。
 
 ## 4. Fold 前门禁

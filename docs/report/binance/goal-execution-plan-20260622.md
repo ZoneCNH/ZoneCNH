@@ -1,79 +1,79 @@
-# Goal: Binance module from spec reference to releasable C/S reference
+# Goal：binance 从规格参考推进到可发布 C/S 参考路径
 
-- [COMPUTED, HIGH] Date: 2026-06-22
-- [COMPUTED, HIGH] Reconciled: 2026-06-23
-- [COMPUTED, HIGH] Sources: `docs/report/binance/iteration-plan-20260622.md`, `docs/report/binance/deep-analysis-20260622-v2.md`, `docs/report/binance/deep-analysis-20260622-v3.md`, `docs/report/binance/deep-analysis-20260622-v4.md`, `docs/report/binance/business-types-coverage-20260622.md`, and issues #866~#873 / #893~#896.
+- [COMPUTED, HIGH] 日期：2026-06-22
+- [COMPUTED, HIGH] 对账日期：2026-06-23
+- [COMPUTED, HIGH] 来源：`docs/report/binance/iteration-plan-20260622.md`、`docs/report/binance/deep-analysis-20260622-v2.md`、`docs/report/binance/deep-analysis-20260622-v3.md`、`docs/report/binance/deep-analysis-20260622-v4.md`、`docs/report/binance/business-types-coverage-20260622.md`、issues #866~#873 / #893~#896。
 
 ---
 
-## Goal
+## 目标
 
-[INFERRED, HIGH] Upgrade `module/binance` from a partially governed specification reference to a release-ready Binance C/S reference implementation path by 2026-09-30.
+[INFERRED, HIGH] 到 2026-09-30，将 `module/binance` 从部分治理完备的规格参考推进为可发布的 Binance C/S 参考实现路径。
 
-Target score:
+[INFERRED, HIGH] 目标评分：
 
 ```text
-Current governance score: 82/100
-Target governance score: 95+/100
+当前治理评分: 82/100
+目标治理评分: 95+/100
 ```
 
-The score target is not a release claim. Release readiness requires local evidence, remote CI evidence, live smoke/deploy evidence, and a release tag or equivalent owner-approved snapshot.
+[COMPUTED, HIGH] 评分目标不等同于发布声明；Release readiness 仍需要本地证据、远端 CI 证据、live smoke/deploy 证据，以及 release tag 或等价的 owner-approved snapshot。
 
 ---
 
-## Acceptance Criteria
+## 验收标准
 
-| AC | Target | 2026-06-23 status | Evidence |
+| AC | 目标 | 2026-06-23 状态 | 证据 |
 |---|---|---|---|
-| AC-1 | Close governance drift #866/#867/#868/#872/#873 | PASS(local) | `scripts/check-binance-docs.sh` passes; root version, 4x4 natsx/Kafka matrix, task filenames, and layered runtime status are aligned. |
-| AC-2 | Add executable doc consistency script #870 | PASS(local) | `scripts/check-binance-docs.sh`; CI draft in `module/binance/ci-workflow.yaml`. |
-| AC-3 | Add FR-012~FR-024 lifecycle discussion draft | PASS(local) | `module/binance/DATA-LIFECYCLE.md`; `scripts/check-binance-data-lifecycle.sh` covers 13 FR anchors. |
-| AC-4 | Define runtime control plane for FR-012~FR-015 | NOT COMPLETE | Discussion draft exists; implementation/spec fold remains future work. |
-| AC-5 | Define historical lifecycle for FR-016~FR-019 | NOT COMPLETE | Discussion draft exists; implementation/spec fold remains future work. |
-| AC-6 | Define funding / mark price / reconciliation / rehydration for FR-020~FR-022 | NOT COMPLETE | Discussion draft exists; event_type expansion and MAJOR bump are not claimed complete. |
-| AC-7 | Define governance APIs for FR-023~FR-024 | NOT COMPLETE | Discussion draft exists; dynamic hot reload evidence is not claimed complete. |
-| AC-8 | Refresh local runtime evidence #869 | PASS(local) | `/home/binance` boundary gates, `go test ./...`, `go vet ./...`, race test, and `golangci-lint run` passed in the 2026-06-23 worker evidence set. |
-| AC-9 | Satisfy Release DoD | NOT COMPLETE | Remote CI, live smoke/deploy, authoritative PR/head lineage, and release tag evidence remain outside this local audit. |
+| AC-1 | 关闭治理漂移 #866/#867/#868/#872/#873 | PASS(local) | `scripts/check-binance-docs.sh` 通过；root version、4x4 natsx/Kafka matrix、task 文件名和 runtime 分层口径已对齐。 |
+| AC-2 | 增加可执行文档一致性脚本 #870 | PASS(local) | `scripts/check-binance-docs.sh`；CI draft 位于 `module/binance/ci-workflow.yaml`。 |
+| AC-3 | 增加 FR-012~FR-024 生命周期讨论稿 | PASS(local) | `module/binance/DATA-LIFECYCLE.md`；`scripts/check-binance-data-lifecycle.sh` 覆盖 13 个 FR anchor。 |
+| AC-4 | 定义 FR-012~FR-015 runtime control plane | NOT COMPLETE | discussion draft 已存在；实现与 spec fold 仍属后续工作。 |
+| AC-5 | 定义 FR-016~FR-019 historical lifecycle | NOT COMPLETE | discussion draft 已存在；实现与 spec fold 仍属后续工作。 |
+| AC-6 | 定义 funding / mark price / reconciliation / rehydration | NOT COMPLETE | discussion draft 已存在；event_type expansion 与 MAJOR bump 未声明完成。 |
+| AC-7 | 定义 FR-023~FR-024 governance APIs | NOT COMPLETE | discussion draft 已存在；dynamic hot reload 未声明完成。 |
+| AC-8 | 刷新 #869 本地 runtime 证据 | PASS(local command set) | 2026-06-23 从 `/home/binance` 重新取得 clean short status、boundary gates PASS 10/10、`go test ./...`、`go vet ./...`、race test、`golangci-lint run` 通过证据；release/live smoke 仍由 owner gate。 |
+| AC-9 | 满足 Release DoD | NOT COMPLETE | remote CI、live smoke/deploy、authoritative PR/head lineage 和 release tag 证据不在本地审计闭包内。 |
 
 ---
 
-## Issue Execution State
+## Issue 执行状态
 
-| Issue | Execution state | Closure boundary |
+| Issue | 执行状态 | 关闭边界 |
 |---|---|---|
-| #866 | CLOSED(local) | NATS 4x4 matrix complete in docs and script check. |
-| #867 | CLOSED(local) | Root README version aligns with SPEC. |
-| #868 | CLOSED(local) | Kafka topics use `binance.{product_line}.{event_type}.v1`; aggregate legacy topics are absent from checked docs. |
-| #869 | LOCAL-EVIDENCE CLOSED | Local runtime command set passes; release/live smoke remains owner-gated. |
-| #870 | CLOSED(local) | `scripts/check-binance-docs.sh` is executable and passing. |
-| #871 | CLOSED(local) | `module/binance/STANDARD.md` exists and is wired through `RULES.md` R9. |
-| #872 | CLOSED(local) | Runtime status wording stays layered from docs readiness. |
-| #873 | CLOSED(local) | RULES task filenames resolve to existing docs. |
-| #893 | CLOSED(local) | SPEC §4 links distributed constraints and analysis sources. |
-| #894 | CLOSED(local) | Migration anchor exists in `docs/migrations/binance-v2-upgrade.md` and the migration index. |
-| #895 | CLOSED(local) | README, goal, and SPEC overview prose now point to BR-001 / Appendix B rather than repeating legacy module detail. |
-| #896 | PARTIAL(local audit) | Local newest-50 coverage audit exists; authoritative GitHub PR/head lineage is still required. |
+| #866 | CLOSED(local) | NATS 4x4 matrix 已进入文档与脚本检查。 |
+| #867 | CLOSED(local) | root README version 与 SPEC 对齐。 |
+| #868 | CLOSED(local) | Kafka topics 使用 `binance.{product_line}.{event_type}.v1`；checked docs 不再保留 aggregate legacy topics。 |
+| #869 | LOCAL-EVIDENCE CLOSED | `/home/binance` clean short status、boundary gate、`go test ./...`、`go vet ./...`、race test、lint 已通过；release/live smoke 仍由 owner gate。 |
+| #870 | CLOSED(local) | `scripts/check-binance-docs.sh` 可执行且通过。 |
+| #871 | CLOSED(local) | `module/binance/STANDARD.md` 已存在，并通过 `RULES.md` R9 连接。 |
+| #872 | CLOSED(local) | runtime status wording 保持 docs readiness 与 runtime evidence 分层。 |
+| #873 | CLOSED(local) | RULES task filenames 可解析到现有 docs。 |
+| #893 | CLOSED(local) | SPEC §4 链接 distributed constraints 与 analysis sources。 |
+| #894 | CLOSED(local) | migration anchor 已存在于 `docs/migrations/binance-v2-upgrade.md` 与 migration index。 |
+| #895 | CLOSED(local) | README、goal、SPEC overview prose 改为指向 BR-001 / Appendix B，不再重复 legacy module detail。 |
+| #896 | PARTIAL(local audit) | local newest-50 coverage audit 已存在；仍需要 authoritative GitHub PR/head lineage。 |
 
 ---
 
-## Phase Route
+## 阶段路线
 
-| Phase | Scope | 2026-06-23 state |
+| 阶段 | 范围 | 2026-06-23 状态 |
 |---|---|---|
-| 0 | Governance drift #866/#867/#868/#872/#873 | PASS(local) |
-| 1 | Script and report index #870 | PASS(local) |
+| 0 | governance drift #866/#867/#868/#872/#873 | PASS(local) |
+| 1 | script and report index #870 | PASS(local) |
 | 2 | DATA-LIFECYCLE discussion draft | PASS(local) |
-| 3 | Realtime control FR-012~FR-015 | FUTURE |
-| 4 | Historical lifecycle FR-016~FR-019 | FUTURE |
-| 5 | Periodic data and reconciliation FR-020~FR-022 | FUTURE |
-| 6 | Governance observability and doc cleanup #871/#893/#894/#895/#896 | PASS(local) except #896 external lineage |
-| 7 | Runtime evidence #869 | PASS(local); release evidence still external |
+| 3 | realtime control FR-012~FR-015 | FUTURE |
+| 4 | historical lifecycle FR-016~FR-019 | FUTURE |
+| 5 | periodic data and reconciliation FR-020~FR-022 | FUTURE |
+| 6 | governance observability and doc cleanup #871/#893/#894/#895/#896 | PASS(local)，但 #896 external lineage 除外 |
+| 7 | runtime evidence #869 | PASS(local runtime evidence)；release evidence 仍为外部门禁 |
 
 ---
 
-## Verification Commands
+## 验证命令
 
-Local docs verification:
+[COMPUTED, HIGH] 本仓库文档验证命令：
 
 ```bash
 bash -n scripts/check-binance-docs.sh
@@ -84,7 +84,7 @@ node scripts/check.mjs
 git diff --check
 ```
 
-Runtime verification from `/home/binance`:
+[COMPUTED, HIGH] `/home/binance` runtime 验证命令：
 
 ```bash
 ./scripts/boundary-gates.sh
@@ -96,10 +96,11 @@ golangci-lint run
 
 ---
 
-## Remaining Gates
+## 剩余门禁
 
-1. [COMPUTED, HIGH] #896 cannot be fully closed from local git evidence alone; it needs authoritative GitHub PR/head metadata or an equivalent owner-approved mapping.
-2. [COMPUTED, HIGH] Release DoD is not complete without remote CI, live smoke/deploy evidence, and a release tag or owner-approved release snapshot.
-3. [INFERRED, MED] FR-012~FR-024 should stay in discussion/spec-fold state until the owner approves the implementation sequence and version bump plan.
+1. [COMPUTED, HIGH] #869 local runtime evidence is closed by fresh `/home/binance` command output; release/live smoke evidence remains an external owner gate.
+2. [COMPUTED, HIGH] #896 cannot be fully closed from local git evidence alone; it needs authoritative GitHub PR/head metadata or an equivalent owner-approved mapping.
+3. [COMPUTED, HIGH] Release DoD is not complete without remote CI, live smoke/deploy evidence, and a release tag or owner-approved release snapshot.
+4. [INFERRED, MED] FR-012~FR-024 should stay in discussion/spec-fold state until the owner approves the implementation sequence and version bump plan.
 
 [RULES I BROKE]：无

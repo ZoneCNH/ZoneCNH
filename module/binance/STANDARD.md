@@ -45,13 +45,12 @@ test -f module/binance/STANDARD.md
 rg -n "#869|#871|#893|#894|#895|#896" module/binance docs/report/binance
 ```
 
-When present, the repo-local doc gate is authoritative for documentation checks:
+The repo-local doc gate is authoritative for documentation checks and must
+cover this file plus the R9 document set:
 
 ```bash
 scripts/check-binance-docs.sh
 ```
-
-As of 2026-06-23 in this worker worktree, `scripts/check-binance-docs.sh` is absent and remains in the P0/check-script ownership slice (#870). Do not mark #871 fully integrated until that gate includes this file or an equivalent check.
 
 For #869 runtime evidence, run from `/home/binance` and capture exit code + output:
 

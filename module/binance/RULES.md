@@ -1,6 +1,6 @@
 # module/binance RULES.md — 模块治理规则
 
-- Doc-Version: v1.0.1
+- Doc-Version: v2.0.0
 - Last-Updated: 2026-06-23
 - 适用范围：`module/binance/` 全部规格文档 + `github.com/ZoneCNH/binance` runtime 仓
 - 优先级：本文 > 子规格 > task；与 `CONSTITUTION.md` §0-§20 冲突时以 `CONSTITUTION.md` 为准
@@ -29,9 +29,9 @@
 
 ---
 
-## R2【硬】4 × 4 对称矩阵无缺口
+## R2【硬】4 × 6 对称命名矩阵无缺口
 
-**规则**：`module/binance/` 的 product_line（spot/um_perp/cm_perp/options）× event_type（tick/trade/bar/depth）构成 16 个组合，全部组合必须在以下 5 个层面对称存在：
+**规则**：`module/binance/` 的 product_line（spot/um_perp/cm_perp/options）× event_type（tick/trade/bar/depth/funding_rate/mark_price）构成 24 个命名组合，全部组合必须在以下 5 个合同层面对称存在：
 
 1. natsx subject（`SPEC.md` §9 + `RUNTIME-MAPPING.md`）
 2. Kafka topic（`TASK-BINANCE-SERVER-014-kafkax-dispatch.md`）
@@ -41,9 +41,11 @@
 
 **违规**：缺失任一组合（例如缺 `binance.market.options.depth`）
 
+**能力例外**：R2 约束的是命名层与合同层的可寻址性，不等价于交易所已经对所有 24 个组合提供数据。runtime 可对暂不支持的组合显式返回 capability/status，不得用缺失命名来表达不支持。
+
 **检测**：
 ```bash
-# 期望返回 16 × 5 = 80 行（每层 16 个组合）
+# 期望返回 24 × 5 = 120 行（每层 24 个组合）
 for layer in "binance\.market\." "binance\." "binance_market_" "binance/" "/api/v1/market/"; do
   echo "=== $layer ==="
   grep -rE "$layer" module/binance/ --include="*.md" | wc -l
@@ -192,6 +194,7 @@ ACC=$(grep -oP "Module-Version: \Kv[0-9.]+" module/binance/ACCEPTANCE.md)
 | `TRACEABILITY.md` | FR/BR/NFR/TC/AC 追溯矩阵 |
 | `ACCEPTANCE.md` | 验收清单 |
 | `FEATURES.md` | 功能特性总览 |
+| `DATA-LIFECYCLE.md` | 历史/实时数据生命周期草案与 FR-012~FR-024 讨论稿 |
 | `IMPLEMENTATION-PLAN.md` | 实现计划 |
 | `RUNTIME-MAPPING.md` | runtime 仓映射 |
 | `BOUNDARY-GATES.md` | CI gate 定义 |
@@ -205,7 +208,7 @@ ACC=$(grep -oP "Module-Version: \Kv[0-9.]+" module/binance/ACCEPTANCE.md)
 
 **检测**：
 ```bash
-for f in STANDARD.md SPEC.md TRACEABILITY.md ACCEPTANCE.md FEATURES.md IMPLEMENTATION-PLAN.md \
+for f in STANDARD.md SPEC.md TRACEABILITY.md ACCEPTANCE.md FEATURES.md DATA-LIFECYCLE.md IMPLEMENTATION-PLAN.md \
          RUNTIME-MAPPING.md BOUNDARY-GATES.md NAMING.md RULES.md \
          ARCHITECTURE-DRIFT-WATCHLIST.md CHANGELOG.md; do
   [ -f "module/binance/$f" ] && echo "✓ $f" || echo "✗ $f MISSING"
@@ -258,5 +261,6 @@ done
 
 | 日期 | 版本 | 变更内容 | 作者 |
 |---|---|---|---|
+| 2026-06-23 | v1.0.2 | R9 文档存在性新增 `DATA-LIFECYCLE.md`，并要求脚本覆盖 `STANDARD.md` / `DATA-LIFECYCLE.md` 两个入口。 | ZoneCNH |
 | 2026-06-23 | v1.0.1 | R9 文档存在性新增 `STANDARD.md`，对齐 #871 模块标准入口。 | ZoneCNH |
 | 2026-06-22 | v1.0.0 | 首次建立。整合 2026-06-22 治理审计复盘 + binance/SPEC.md §11 NFR 治理章节 + CLAUDE.md 编辑纪律，规则 R1-R10 全部可机器检测 | ZoneCNH |
