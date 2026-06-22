@@ -66,35 +66,35 @@
 
 ### 阶段 2：数据生命周期讨论稿（v4 前置，P1）
 
-- **范围**：G-14（DATA-LIFECYCLE.md 讨论稿）
-- **目标**：在不动 SPEC.md 的前提下，把 v4 的 15 个缺口（6 实时 + 9 历史）整理成可评审讨论稿，定稿后再一次性 fold 进 SPEC §7
+- **范围**：G-14（#879 DATA-LIFECYCLE.md 讨论稿）
+- **目标**：在不动 SPEC.md 的前提下，把 FR-012~FR-024 的 13 个 lifecycle 缺口整理成可评审讨论稿；G-13/FR-020 taxonomy fold 已进入 SPEC v3.0.0，后续只推进 remaining spec fold / runtime 实现
 - **产出**：`module/binance/DATA-LIFECYCLE.md`
 - **依赖**：无（纯讨论稿，不触发 bump）；建议阶段 0/1 并行
 
 ### 阶段 3：实时控制面 FR 补齐（P0 功能面）
 
-- **范围**：R-01 ~ R-04（FR-012~015）
+- **范围**：R-01 ~ R-04（#880~#883，FR-012~015）
 - **目标**：定义"采什么 / 怎么采 / 多深"
 - **bump**：MINOR（新增 4 FR）；G-13/FR-020 已由 v3.0.0 taxonomy fold 关闭
 - **依赖**：阶段 2 讨论稿定稿；阶段 0 漂移收敛（避免在漂移基线上叠新 FR）
 
 ### 阶段 4：历史数据生命周期 FR（P0 功能面）
 
-- **范围**：R-05 ~ R-08（FR-016~019）
+- **范围**：R-05 ~ R-08（#884~#887，FR-016~019）
 - **目标**：定义"从哪开始 / 缺了怎么办 / 幂等不双写 / 限速不打爆"
 - **bump**：MINOR
 - **依赖**：阶段 3（实时控制面定了 symbol/周期，历史回填才有锚点）
 
 ### 阶段 5：周期数据 + 对账（P1 功能面）
 
-- **范围**：R-10（FR-021 对账）+ R-11（FR-022 冷数据回热）；R-09/FR-020 已按 v3.0.0 taxonomy fold 本地关闭
+- **范围**：R-09~R-11（#888~#890，FR-020~022）；R-09/FR-020 已按 v3.0.0 taxonomy fold 本地关闭
 - **目标**：补全量校验 + 冷数据可用
 - **bump**：MINOR 或 PATCH（取决于 reconciliation / rehydration 是否扩展公开合同）；MAJOR taxonomy fold 已由 v3.0.0 承载
 - **依赖**：阶段 4；不得回退 v3.0.0 的 4 × 6 event_type 矩阵
 
 ### 阶段 6：治理可观测 + 标准入口（P2/P3）
 
-- **范围**：R-12（FR-023 进度 API）+ R-13（FR-024 热重载）+ G-08（STANDARD.md）+ G-09/G-10/G-11（DEEP-ANALYSIS 重构）+ G-12（commit 覆盖审计）
+- **范围**：R-12（#891，FR-023 进度 API）+ R-13（#892，FR-024 热重载）+ G-08（#871 STANDARD.md）+ G-09/G-10/G-11（#893~#895 DEEP-ANALYSIS 重构）+ G-12（#896 commit 覆盖审计）
 - **目标**：运维可见 + 可热配 + 模块标准入口 + 历史文档瘦身
 - **依赖**：阶段 0~5 收敛后
 
@@ -114,6 +114,7 @@
 
 仅在明确授权后执行远端评论或关闭：
 - #866/#867/#868/#872/#873 可附本地 drift 修复验证命令。
+- #869 只能声明 local runtime evidence 已取得；release/live smoke 仍是外部门禁。
 - #879~#887、#889~#892 仅能声明 discussion draft 已存在，不得声明 Approved SPEC 或 runtime 实现完成。
 - #888 可声明 FR-020/G-13 已折叠进 SPEC v3.0.0 与 4×6 命名矩阵。
 - #896 仍需权威 GitHub PR/head 谱系，不能只凭本地审计关闭。
@@ -167,7 +168,7 @@
 ### 5.2 停止条件
 
 - [COMPUTED, HIGH] 2026-06-23 team 后续执行已完成阶段 0、阶段 1、阶段 2 讨论稿、阶段 6 治理收口与 #869 本地 runtime 命令证据。
-- [COMPUTED, HIGH] 现有纳入本轮的 13 个治理/漂移 issue 中，12 个已达到本地关闭口径；#896 已完成 local audit 但 PR/head 谱系仍需权威 GitHub 元数据。
+- [COMPUTED, HIGH] 当前 26 个 open issue 均已本地映射：#866~#873、#879、#888、#893~#895 达到本地关闭或本地证据口径；#896 保留 external lineage 缺口；#880~#887、#889~#892 保留 lifecycle draft / spec-fold / runtime 后续状态。
 - [INFERRED, MED] 阶段 3+ 的 FR 实现和 Release DoD 仍不得因文档本地关闭而自动视为完成。
 
 ---
@@ -184,12 +185,26 @@
 | #870 检查脚本 | G-06 | 1 | ✅ |
 | #869 运行证据 | G-07 | 7 | ✅ local evidence |
 | #871 STANDARD.md | G-08 | 6 | ✅ |
+| #879 DATA-LIFECYCLE 讨论稿 | G-14 | 2 | ✅ |
+| #880 Symbol Discovery & Filtering | R-01 | 3 | ✅ draft |
+| #881 WebSocket Connection Policy | R-02 | 3 | ✅ draft |
+| #882 Bar Interval Subscription Set | R-03 | 3 | ✅ draft |
+| #883 Depth Snapshot Tier | R-04 | 3 | ✅ draft |
+| #884 Historical Backfill on Cold Start | R-05 | 4 | ✅ draft |
+| #885 Gap Detection & Fill | R-06 | 4 | ✅ draft |
+| #886 Backfill Throttle & Priority | R-07 | 4 | ✅ draft |
+| #887 Backfill Idempotency Key Strategy | R-08 | 4 | ✅ draft |
+| #888 Funding Rate / Mark Price Stream | R-09 / G-13 | 5 | ✅ local taxonomy fold |
+| #889 Daily Reconciliation Job | R-10 | 5 | ✅ draft |
+| #890 Cold Data Rehydration | R-11 | 5 | ✅ draft |
+| #891 Backfill Progress API | R-12 | 6 | ✅ draft |
+| #892 Symbol Subscription Hot Reload | R-13 | 6 | ✅ draft |
 | #893 DEEP-ANALYSIS §0 → SPEC §4 | G-09 | 6 | ✅ |
 | #894 DEEP-ANALYSIS §12 → migrations/ | G-10 | 6 | ✅ |
 | #895 legacy binance-market 压缩 | G-11 | 6 | ✅ |
 | #896 preserve/stash commit 覆盖审计 | G-12 | 6 | ✅ |
 
-**结论**：12 个现有 issue 全部映射成功；2026-06-23 本地执行后 11 个达到本地关闭口径，#896 保留外部 PR/head 谱系缺口。待建 15 个 issue 为纯增量。
+**结论**：当前 26 个 open issue 全部映射成功；2026-06-23 本地执行后，#866~#873、#879、#888、#893~#895 达到本地关闭或本地证据口径，#896 保留外部 PR/head 谱系缺口，#880~#887 与 #889~#892 保留 lifecycle draft / spec-fold / runtime 后续状态。当前无待建 issue。
 
 ---
 
