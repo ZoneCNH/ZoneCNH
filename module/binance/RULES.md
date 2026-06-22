@@ -1,7 +1,7 @@
 # module/binance RULES.md — 模块治理规则
 
-- Doc-Version: v1.0.0
-- Last-Updated: 2026-06-22
+- Doc-Version: v1.0.1
+- Last-Updated: 2026-06-23
 - 适用范围：`module/binance/` 全部规格文档 + `github.com/ZoneCNH/binance` runtime 仓
 - 优先级：本文 > 子规格 > task；与 `CONSTITUTION.md` §0-§20 冲突时以 `CONSTITUTION.md` 为准
 - 强制级别：每条规则标注【硬】（违反即治理违规）/【软】（推荐）/【开】（仅验证存在性）
@@ -187,6 +187,7 @@ ACC=$(grep -oP "Module-Version: \Kv[0-9.]+" module/binance/ACCEPTANCE.md)
 
 | 文件 | 用途 |
 |---|---|
+| `STANDARD.md` | 模块标准入口与权威顺序 |
 | `SPEC.md` | 23 节模块规格 |
 | `TRACEABILITY.md` | FR/BR/NFR/TC/AC 追溯矩阵 |
 | `ACCEPTANCE.md` | 验收清单 |
@@ -204,7 +205,7 @@ ACC=$(grep -oP "Module-Version: \Kv[0-9.]+" module/binance/ACCEPTANCE.md)
 
 **检测**：
 ```bash
-for f in SPEC.md TRACEABILITY.md ACCEPTANCE.md FEATURES.md IMPLEMENTATION-PLAN.md \
+for f in STANDARD.md SPEC.md TRACEABILITY.md ACCEPTANCE.md FEATURES.md IMPLEMENTATION-PLAN.md \
          RUNTIME-MAPPING.md BOUNDARY-GATES.md NAMING.md RULES.md \
          ARCHITECTURE-DRIFT-WATCHLIST.md CHANGELOG.md; do
   [ -f "module/binance/$f" ] && echo "✓ $f" || echo "✗ $f MISSING"
@@ -257,4 +258,5 @@ done
 
 | 日期 | 版本 | 变更内容 | 作者 |
 |---|---|---|---|
+| 2026-06-23 | v1.0.1 | R9 文档存在性新增 `STANDARD.md`，对齐 #871 模块标准入口。 | ZoneCNH |
 | 2026-06-22 | v1.0.0 | 首次建立。整合 2026-06-22 治理审计复盘 + binance/SPEC.md §11 NFR 治理章节 + CLAUDE.md 编辑纪律，规则 R1-R10 全部可机器检测 | ZoneCNH |

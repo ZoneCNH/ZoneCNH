@@ -2,10 +2,23 @@
 
 所有 notable 变更记录，按 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/) 格式维护。
 
-- Doc-Version: v2.2.3
-- Last-Updated: 2026-06-22
+- Doc-Version: v2.2.4
+- Last-Updated: 2026-06-23
 - Spec-Reference: `module/binance/SPEC.md` v2.2.2
 - 治理规则：`module/binance/RULES.md` R9 文档存在性
+
+---
+
+## [v2.2.4] — 2026-06-23
+
+### Added
+- `STANDARD.md` thin standard entrypoint for #871, linking authority order, mandatory governance sources, required checks, and #869 evidence guardrails.
+- `docs/report/binance/governance-closure-20260623.md` for worker-3 governance issue review (#869/#871/#893/#894/#895/#896).
+- `docs/report/binance/commit-coverage-audit-20260623.md` for the #896 newest-50 local commit coverage audit.
+
+### Changed
+- `RULES.md` R9 document existence table and check loop now include `STANDARD.md`.
+- `docs/report/binance/iteration-plan-20260622.md` issue mapping now records #893-#896 as existing open issues instead of pending issue creation.
 
 ---
 

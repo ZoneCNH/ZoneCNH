@@ -1,7 +1,7 @@
 # Binance 模块完整更新迭代方案
 
 - [COMPUTED, HIGH] 制定日期：2026-06-22
-- [COMPUTED, HIGH] 输入来源：`docs/report/binance/` 全部 5 份报告（v1/v2/v3/v4 + business-types）+ 现有 8 个开放 issue（#866~#873）+ `module/binance/` 治理文件基线
+- [COMPUTED, HIGH] 输入来源：`docs/report/binance/` 全部 5 份报告（v1/v2/v3/v4 + business-types）+ 现有 12 个开放 issue（#866~#873、#893~#896）+ `module/binance/` 治理文件基线
 - [COMPUTED, HIGH] 目标：把分散在 5 份报告中的发现收敛为单一执行计划，并同步到 GitHub issues，形成可追溯的迭代 backlog
 - [INFERRED, HIGH] 不修改任何 `module/binance/` 受保护治理文件；本方案是规划文档，落地由各 issue 独立 PR 执行
 
@@ -21,10 +21,10 @@
 | G-06 | v3 P1§1-4 | 缺文档一致性检查脚本 `scripts/check-binance-docs.sh` | 🟡 P1 | #870 | OPEN |
 | G-07 | v3 P2 | 运行证据链缺失（runtime 仓未提交变更 + 无 boundary/test 输出） | 🟡 P2 | #869 | OPEN |
 | G-08 | v3 §标准 | 薄层 `STANDARD.md` 标准入口（P0/P1 收敛后启动） | 🟢 P3 | #871 | OPEN |
-| G-09 | v2 P1 | DEEP-ANALYSIS §0 分布式约束未升入 SPEC §4 顶部 | 🟢 P2 | — | 待建 issue |
-| G-10 | v2 P2 | DEEP-ANALYSIS 62KB 体量过大，§12 旧代码审计应移 migrations/ | 🟢 P2 | — | 待建 issue |
-| G-11 | v2 P2 | legacy `binance-market` 30+ 处描述应压缩 | 🟢 P2 | — | 待建 issue |
-| G-12 | v2 P1 | 50 个 preserve/stash 类 commit 覆盖审计未做 | 🟢 P3 | — | 待建 issue |
+| G-09 | v2 P1 | DEEP-ANALYSIS §0 分布式约束未升入 SPEC §4 顶部 | 🟢 P2 | #893 | OPEN |
+| G-10 | v2 P2 | DEEP-ANALYSIS 62KB 体量过大，§12 旧代码审计应移 migrations/ | 🟢 P2 | #894 | OPEN |
+| G-11 | v2 P2 | legacy `binance-market` 30+ 处描述应压缩 | 🟢 P2 | #895 | OPEN |
+| G-12 | v2 P1 | 50 个 preserve/stash 类 commit 覆盖审计未做 | 🟢 P3 | #896 | OPEN |
 | **R-01** | **v4 P0 实时控制面** | **Symbol Discovery & Filtering（FR-012）** | 🔴 P0 | — | **待建 issue** |
 | **R-02** | **v4 P0 实时控制面** | **WebSocket Connection Policy（FR-013）** | 🔴 P0 | — | **待建 issue** |
 | **R-03** | **v4 P0 实时控制面** | **Bar Interval Subscription Set（FR-014）** | 🔴 P0 | — | **待建 issue** |
@@ -41,7 +41,7 @@
 | G-13 | v4 §七 | event_type 枚举 4→6（加 funding/mark_price）触发 RULES R2 4×N 矩阵重算 + MAJOR bump | 🔴 P0 | — | 待建 issue（伴随 R-09） |
 | G-14 | v4 §五 | 建议先建 `module/binance/DATA-LIFECYCLE.md` 讨论稿，再 fold 进 SPEC | 🟡 P1 | — | 待建 issue（R 系列前置） |
 
-**统计**：27 项。已有 issue 8 项（#866~#873）；待建 issue 19 项（v2 收尾 4 + v4 新增 13 + v4 治理 2）。
+**统计**：27 项。已有 issue 12 项（#866~#873、#893~#896）；待建 issue 15 项（v4 新增 13 + v4 治理 2）。
 
 ---
 
@@ -108,19 +108,15 @@
 
 ## 三、Issue 同步策略
 
-### 3.1 已有 issue（8 个，保持不动）
+### 3.1 已有 issue（12 个，保持不动）
 
-#866~#873 已覆盖 v3 全部 P0~P3 + v2 运行证据。仅在以下情况更新：
+#866~#873 已覆盖 v3 全部 P0~P3 + v2 运行证据；#893~#896 已覆盖 v2 收尾治理项 G-09~G-12。仅在以下情况更新：
 - 阶段 0 完成时，给 #866/#867/#868/#872/#873 加 `closed-by PR #XXX` 评论
 - #870 检查脚本落地后，反哺 #866~#873 的验证命令
 
-### 3.2 待建 issue（19 个）
+### 3.2 待建 issue（15 个）
 
-**v2 收尾（4 个，P2~P3）**：
-- DEEP-ANALYSIS §0 升入 SPEC §4（G-09）
-- DEEP-ANALYSIS §12 迁移到 migrations/（G-10）
-- legacy `binance-market` 压缩（G-11）
-- 50 commit 覆盖审计（G-12）
+**v2 收尾**：已由 #893~#896 覆盖，不再待建。
 
 **v4 前置（1 个，P1）**：
 - DATA-LIFECYCLE.md 讨论稿（G-14）
@@ -187,8 +183,8 @@
 
 ### 5.2 停止条件
 
-- [COMPUTED, HIGH] 本方案**未修改任何 `module/binance/` 治理文件**
-- [INFERRED, HIGH] 建议下一步：用户确认阶段划分 → 创建 19 个待建 issue → 启动阶段 0 的 5 个并行 PR
+- [COMPUTED, HIGH] 原始方案**未修改任何 `module/binance/` 治理文件**；2026-06-23 worker-3 后续补记仅更新 issue 映射，并另行新增 `STANDARD.md` 与治理审计报告。
+- [INFERRED, HIGH] 建议下一步：用户确认阶段划分 → 创建 15 个待建 issue → 启动阶段 0 的 5 个并行 PR
 - [INFERRED, MED] 阶段 0 收敛前，禁止启动阶段 3+ 的 FR 落地
 
 ---
@@ -205,9 +201,13 @@
 | #870 检查脚本 | G-06 | 1 | ✅ |
 | #869 运行证据 | G-07 | 7 | ✅ |
 | #871 STANDARD.md | G-08 | 6 | ✅ |
+| #893 DEEP-ANALYSIS §0 → SPEC §4 | G-09 | 6 | ✅ |
+| #894 DEEP-ANALYSIS §12 → migrations/ | G-10 | 6 | ✅ |
+| #895 legacy binance-market 压缩 | G-11 | 6 | ✅ |
+| #896 preserve/stash commit 覆盖审计 | G-12 | 6 | ✅ |
 
-**结论**：8 个现有 issue 全部映射成功，无遗漏、无冲突。待建 19 个 issue 为纯增量。
+**结论**：12 个现有 issue 全部映射成功，无遗漏、无冲突。待建 15 个 issue 为纯增量。
 
 ---
 
-[RULES I BROKE]：无 — 本方案是规划文档，仅新增到 `docs/report/binance/`，未触及 `module/binance/` 受保护治理文件；所有事实基于已读报告 + grep 验证（FR-012~020 在 module/binance 中不存在已确认）
+[RULES I BROKE]：无 — 原始方案是规划文档；2026-06-23 worker-3 后续补记同步 #893~#896 映射，并将实际治理入口/审计产物记录在 `STANDARD.md`、`RULES.md` R9 与 `docs/report/binance/governance-closure-20260623.md`。
