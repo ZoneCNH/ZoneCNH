@@ -23,6 +23,9 @@ for phrase in \
   "gap detector" \
   "binance_backfill_jobs" \
   "symbols/reload" \
+  "#880" \
+  "#892" \
+  "non-normative" \
   "Fold 前门禁"; do
   grep -q "$phrase" "$doc" || fail "missing phrase: $phrase"
 done
