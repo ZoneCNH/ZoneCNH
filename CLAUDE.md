@@ -70,6 +70,10 @@ ZoneCNH 的 `FoundationX` 量化交易基础设施文档枢纽，也是 `ZoneCNH
 - **已合入可清理**：GC 段额外识别「分支已合入 main 但 worktree 未清理」的半残留态（`git merge-base --is-ancestor <branch> main` 命中）。合入即报告，不受 24h TTL 约束；尊重 note.md/v2.md 白名单；`WORKTREE_GC_CLEAN=1` 时用 `git worktree remove --force`（非裸删目录，避免 `.git/worktrees/<name>` 元数据残留）。与 ORPHAN 孤儿正交，独立报告
 - **白名单**：直接含 `note.md` 或 `v2.md` 的目录不清理；活跃 worktree 及其祖先/内部目录不清理
 - git 元数据清理用 `git worktree prune`（仅清 `.git/worktrees/<name>`，不清文件系统目录）
+- **detached HEAD worktree GC（轨道 C）**：`.worktree/omx-team/*/worker-*` 等 detached HEAD worktree（porcelain 输出 `detached` 而非 `branch`）取其 HEAD SHA，`is-ancestor <sha> main` 命中即报告/清理；复用 dirty/白名单护栏
+- **Stash GC**：OmX 自动 stash（`auto-safety-stash-before/after-*`）TTL 7 天，总 stash 上限 30；`WORKTREE_GC_CLEAN=1` 时仅 drop 自动 stash 且当前分支非来源分支，手动 stash 永不动
+- **自动清理（WORKTREE_GC_AUTO=1）**：worktree >15 或 stash >30 时，SessionStart 自动按 CLEAN 逻辑清理已合入的 detached/merged worktree 与过期自动 stash，无需手动设 `WORKTREE_GC_CLEAN`；阈值未超仍 dry-run；护栏不变
+- **stash pop 跨基线告警**：PreToolUse hook 检测 `git stash pop/apply`，若当前分支不在 stash 来源分支祖先链上，stderr 告警不阻塞（信息护栏，与分支保护同策略）
 
 ### 提交批处理
 

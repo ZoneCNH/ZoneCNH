@@ -159,6 +159,14 @@ if (existsSync(worktreeBase)) {
   const TTL_MS = 24 * 3600 * 1000;
   const PROTECT = new Set(["note.md", "v2.md"]);
 
+  // === GC 自动清理（#3）：超阈值时本次启动自动按 CLEAN 逻辑清理 ===
+  // WORKTREE_GC_AUTO=1 且 worktree>15 或 stash>30 时，视同 CLEAN 模式。
+  // 护栏不变：dirty / 白名单 / 残骸全部跳过。阈值未超仍 dry-run 报告。
+  const worktreeCount = worktreeState.registered.size;
+  const stashCount = parseInt(run("git stash list 2>/dev/null | wc -l") || "0", 10) || 0;
+  const autoTrigger = process.env.WORKTREE_GC_AUTO === "1" && (worktreeCount > 15 || stashCount > 30);
+  const effectiveClean = cleanMode || autoTrigger;
+
   // 注册的 worktree 路径（git worktree list）
   const registered = worktreeState.registered;
   // 排除主 worktree，避免其路径作为 .worktree/* 的前缀污染判定
@@ -234,12 +242,12 @@ if (existsSync(worktreeBase)) {
     const tagged = orphans.map((o) => ({ ...o, remnant: hasWorktreeRemnant(o.path) }));
     const remnantCount = tagged.filter((o) => o.remnant).length;
     lines.push("---");
-    lines.push("🧹 Worktree 孤儿 GC（" + (cleanMode ? "✅ CLEAN 模式" : "dry-run，设 WORKTREE_GC_CLEAN=1 真删") + "）：发现 " + orphans.length + " 个 >24h 孤儿" + (remnantCount > 0 ? "（其中 " + remnantCount + " 个 worktree 残骸将受保护）" : ""));
+    lines.push("🧹 Worktree 孤儿 GC（" + (effectiveClean ? "✅ CLEAN 模式" + (autoTrigger ? "（AUTO 触发：worktree=" + worktreeCount + " stash=" + stashCount + "）" : "") : "dry-run，设 WORKTREE_GC_CLEAN=1 真删") + "）：发现 " + orphans.length + " 个 >24h 孤儿" + (remnantCount > 0 ? "（其中 " + remnantCount + " 个 worktree 残骸将受保护）" : ""));
     for (const o of tagged.slice(0, 15)) {
       lines.push("   " + Math.floor(o.ageMs / 3600000) + "h  " + relative(projectRoot, o.path) + (o.remnant ? "  🛡️ 残骸受保护" : ""));
     }
     if (tagged.length > 15) lines.push("   ... 还有 " + (tagged.length - 15) + " 个");
-    if (cleanMode) {
+    if (effectiveClean) {
       let removed = 0;
       let guarded = 0;
       for (const o of tagged) {
@@ -271,12 +279,12 @@ if (existsSync(worktreeBase)) {
       const tagged = mergedStale.map((m) => ({ ...m, dirty: hasUncommittedChanges(m.path) }));
       const dirtyCount = tagged.filter((m) => m.dirty).length;
       lines.push("---");
-      lines.push("♻️ 已合入可清理（分支已合入 main）：" + mergedStale.length + " 个" + (cleanMode ? "（CLEAN：git worktree remove）" : "（dry-run）") + (dirtyCount > 0 ? "（其中 " + dirtyCount + " 个 🛡️ 有未提交改动" + (cleanMode ? "，将跳过" : "") + "）" : ""));
+      lines.push("♻️ 已合入可清理（分支已合入 main）：" + mergedStale.length + " 个" + (effectiveClean ? "（CLEAN：git worktree remove）" : "（dry-run）") + (dirtyCount > 0 ? "（其中 " + dirtyCount + " 个 🛡️ 有未提交改动" + (effectiveClean ? "，将跳过" : "") + "）" : ""));
       for (const m of tagged.slice(0, 15)) {
         lines.push("   " + relative(projectRoot, m.path) + "  ← " + m.branch + (m.dirty ? "  🛡️ 有未提交改动" : ""));
       }
       if (tagged.length > 15) lines.push("   ... 还有 " + (tagged.length - 15) + " 个");
-      if (!cleanMode) {
+      if (!effectiveClean) {
         lines.push("   提示：git worktree remove \"" + tagged[0].path + "\"" + (tagged[0].dirty ? "  ⚠️ 该工作区有未提交改动，remove --force 会丢弃" : ""));
       } else {
         let removed = 0;
@@ -287,6 +295,115 @@ if (existsSync(worktreeBase)) {
           try { execFileSync("git", ["worktree", "remove", "--force", m.path], { stdio: "ignore", timeout: 5000 }); removed++; } catch {}
         }
         lines.push("   已 git worktree remove " + removed + "/" + mergedStale.length + " 个" + (guarded > 0 ? "，保护 " + guarded + " 个有未提交改动的工作区" : ""));
+      }
+    }
+  }
+
+  // === 轨道 C：detached HEAD worktree（#2）===
+  // .worktree/omx-team/*/worker-* 等 detached HEAD worktree 在 porcelain 输出 "detached"
+  // 而非 "branch " 行，原 pathToBranch 无映射 → GC 盲区。此处取其 HEAD SHA，判断是否
+  // 已合入 main，已合入 + 非 dirty + 非白名单 → 报告/清理。复用 hasUncommittedChanges/hasProtectedFile 护栏。
+  {
+    const detachedStale = [];
+    for (const wtPath of worktreeState.detachedPaths) {
+      if (wtPath === projectRoot) continue; // 主 worktree 过滤
+      if (hasProtectedFile(wtPath)) continue; // 尊重 PROTECT 白名单
+      // 取 detached worktree 的 HEAD SHA
+      let sha = "";
+      try {
+        sha = execFileSync("git", ["-C", wtPath, "rev-parse", "HEAD"], { encoding: "utf-8", timeout: 3000 }).trim();
+      } catch { continue; }
+      if (!sha) continue;
+      // isAncestor 判断 sha 是否已合入 main（是 main 祖先）
+      let merged = false;
+      try {
+        execFileSync("git", ["merge-base", "--is-ancestor", sha, "main"], { stdio: "ignore", timeout: 3000 });
+        merged = true;
+      } catch { merged = false; }
+      if (merged) detachedStale.push({ path: wtPath, sha: sha.slice(0, 8) });
+    }
+
+    if (detachedStale.length > 0) {
+      const tagged = detachedStale.map((d) => ({ ...d, dirty: hasUncommittedChanges(d.path) }));
+      const dirtyCount = tagged.filter((d) => d.dirty).length;
+      lines.push("---");
+      lines.push("👻 detached HEAD worktree（HEAD 已合入 main）：" + detachedStale.length + " 个" + (effectiveClean ? "（CLEAN：git worktree remove）" : "（dry-run）") + (dirtyCount > 0 ? "（其中 " + dirtyCount + " 个 🛡️ 有未提交改动" + (effectiveClean ? "，将跳过" : "") + "）" : ""));
+      for (const d of tagged.slice(0, 15)) {
+        lines.push("   " + relative(projectRoot, d.path) + "  ← " + d.sha + (d.dirty ? "  🛡️ 有未提交改动" : ""));
+      }
+      if (tagged.length > 15) lines.push("   ... 还有 " + (tagged.length - 15) + " 个");
+      if (!effectiveClean) {
+        lines.push("   提示：git worktree remove \"" + tagged[0].path + "\"" + (tagged[0].dirty ? "  ⚠️ 该工作区有未提交改动，remove --force 会丢弃" : ""));
+      } else {
+        let removed = 0;
+        let guarded = 0;
+        for (const d of tagged) {
+          if (d.dirty) { guarded++; continue; }
+          try { execFileSync("git", ["worktree", "remove", "--force", d.path], { stdio: "ignore", timeout: 5000 }); removed++; } catch {}
+        }
+        lines.push("   已 git worktree remove " + removed + "/" + detachedStale.length + " 个" + (guarded > 0 ? "，保护 " + guarded + " 个有未提交改动的工作区" : ""));
+      }
+    }
+  }
+
+  // === Stash GC（#1）===
+  // OmX 自动 stash（auto-safety-stash-before-* / auto-safety-stash-after-*）TTL 7 天；
+  // 总 stash >30 上限时报告最旧超量。CLEAN 时仅 drop 自动 stash，且当前分支非该 stash
+  // 来源分支（防误删正在用的）。手动 stash 永不动。
+  {
+    const stashRaw = run("git stash list 2>/dev/null");
+    if (stashRaw) {
+      const STASH_TTL_MS = 7 * 24 * 3600 * 1000;
+      const STASH_LIMIT = 30;
+      const AUTO_PATTERN = /^auto-safety-stash-(before|after)-/;
+      const curBranch = branch;
+      const now = Date.now();
+      const entries = stashRaw.split("\n").filter(Boolean).map((line, idx) => {
+        // 格式：stash@{N}: On <branch>: <msg>  或  stash@{N}: WIP on <branch>: ...
+        const idxMatch = line.match(/^stash@\{(\d+)\}/);
+        const stashIdx = idxMatch ? idxMatch[1] : String(idx);
+        const onMatch = line.match(/(?:On|WIP on|On ) ([^:]+):/);
+        const srcBranch = onMatch ? onMatch[1].trim() : "";
+        const msg = line.split(":").slice(2).join(":").trim();
+        // 取 stash commit 时间戳
+        let ts = 0;
+        try {
+          const t = execFileSync("git", ["log", "-1", "--format=%ct", "stash@{" + stashIdx + "}"], { encoding: "utf-8", timeout: 3000 }).trim();
+          ts = parseInt(t, 10) * 1000;
+        } catch {}
+        return { idx: stashIdx, srcBranch, msg, ts, isAuto: AUTO_PATTERN.test(msg), line };
+      });
+
+      const expired = entries.filter((e) => e.isAuto && e.ts > 0 && (now - e.ts) > STASH_TTL_MS);
+      const overLimit = entries.length > STASH_LIMIT ? entries.slice(STASH_LIMIT) : [];
+
+      if (expired.length > 0 || overLimit.length > 0) {
+        lines.push("---");
+        lines.push("📦 Stash GC：" + entries.length + " 个 stash" + (effectiveClean ? "（CLEAN）" : "（dry-run，设 WORKTREE_GC_CLEAN=1 真删）"));
+        if (expired.length > 0) {
+          lines.push("   过期自动 stash（>7 天）：" + expired.length + " 个");
+          for (const e of expired.slice(0, 10)) {
+            const days = e.ts ? Math.floor((now - e.ts) / 86400000) : "?";
+            lines.push("      stash@{" + e.idx + "}  " + days + "d  " + e.msg.slice(0, 50) + (e.srcBranch === curBranch ? "  🛡️ 当前分支来源，跳过" : ""));
+          }
+        }
+        if (overLimit.length > 0) {
+          lines.push("   超上限（>" + STASH_LIMIT + "）最旧：" + overLimit.length + " 个");
+          for (const e of overLimit.slice(0, 10)) {
+            lines.push("      stash@{" + e.idx + "}  " + (e.isAuto ? "auto" : "manual") + "  " + e.msg.slice(0, 40));
+          }
+        }
+        if (effectiveClean) {
+          let dropped = 0;
+          let guarded = 0;
+          // 从高 idx 往低 idx drop，避免索引漂移
+          const toDrop = expired.filter((e) => e.srcBranch !== curBranch).sort((a, b) => Number(b.idx) - Number(a.idx));
+          for (const e of toDrop) {
+            try { execFileSync("git", ["stash", "drop", "stash@{" + e.idx + "}"], { stdio: "ignore", timeout: 5000 }); dropped++; } catch {}
+          }
+          guarded = expired.length - toDrop.length;
+          lines.push("   已 git stash drop " + dropped + "/" + expired.length + " 个" + (guarded > 0 ? "，保护 " + guarded + " 个当前分支来源" : ""));
+        }
       }
     }
   }
