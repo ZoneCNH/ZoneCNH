@@ -11,7 +11,7 @@
 
 | Issue | Local status after this slice | Evidence | Closure decision |
 |---|---|---|---|
-| #869 | Runtime evidence partially refreshed | `/home/binance` branch `fix/binance-issues`; `./scripts/boundary-gates.sh` PASS 10/10; runtime tree still has untracked `.worktree/`; Go test/vet captured separately in verification output. | **Do not close from docs only.** Needs clean runtime tree plus full gate/test/race/vet/lint/smoke evidence. |
+| #869 | Runtime evidence partially refreshed | `/home/binance` branch `fix/binance-issues`; `./scripts/boundary-gates.sh` PASS 10/10; runtime tree still has untracked `.worktree/`; `go test ./...` and `go vet ./...` both failed on module checksum mismatch for `github.com/ZoneCNH/decimalx@v1.0.0`. | **Do not close from docs only.** Needs clean runtime tree plus full gate/test/race/vet/lint/smoke evidence. |
 | #871 | Thin standard entrypoint created | `module/binance/STANDARD.md` v0.1.0; `RULES.md` R9 now includes `STANDARD.md`. | **Partially satisfied.** Final closure waits for the P0 doc gate script (#870) to include/check `STANDARD.md`. |
 | #893 | SPEC §4 already contains distributed constraints | `module/binance/SPEC.md` §4 has independent client/server + natsx/NATS + boundary constraints; `DEEP-ANALYSIS.md` §0 still contains the full duplicated narrative. | **Not closed.** Needs explicit DEEP-ANALYSIS §0 reduction/reference update under the owner of that shared surface. |
 | #894 | Migration target still absent | `docs/migrations/binance-v2-upgrade.md` was not present before this slice and was not created by worker-3 to avoid broad migration edits. | **Not closed.** Needs DEEP-ANALYSIS §12 migration + report index update. |
@@ -45,9 +45,17 @@ PASS  §10  admin surface boundary
 PASS  §11  go.mod dependency compliance
 
 Results: 10 passed, 0 failed
+
+$ go test ./...
+verifying github.com/ZoneCNH/decimalx@v1.0.0: checksum mismatch
+SECURITY ERROR
+
+$ go vet ./...
+verifying github.com/ZoneCNH/decimalx@v1.0.0: checksum mismatch
+SECURITY ERROR
 ```
 
-Because the runtime tree is not clean and the full requested command set includes race/lint/smoke evidence, #869 remains open pending runtime-owner verification.
+Because the runtime tree is not clean, Go verification is blocked by a checksum mismatch, and the full requested command set also includes race/lint/smoke evidence, #869 remains open pending runtime-owner verification.
 
 ---
 
