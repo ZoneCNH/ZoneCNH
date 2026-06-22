@@ -404,11 +404,13 @@ const (
 | 配置项 | 类型 | 默认值 | 说明 |
 |--------|------|--------|------|
 | `client.product_lines` | `[]string` | `["spot"]` | 启用的产品线列表 |
-| `natsx.url` | `string` | `nats://localhost:4222` | NATS JetStream 连接地址 |
-| `natsx.stream` | `string` | `BINANCE_MARKET` | JetStream Stream 名称 |
-| `natsx.publish_ack_timeout` | `duration` | `5s` | PubAck 等待超时 |
-| `natsx.max_publish_retry` | `int` | `5` | 最大发布重试次数 |
-| `natsx.backpressure_queue_size` | `int` | `10000` | 内存队列最大事件数 |
+| `nats.url` | `string` | `nats://127.0.0.1:4222` | 外部 NATS JetStream 连接地址；client 不内嵌 NATS |
+| `nats.stream` | `string` | `BINANCE_MARKET` | JetStream Stream 名称 |
+| `nats.auth.user` | `string` | `admin` | NATS 用户名 |
+| `nats.auth.password_env` | `string` | `FOUNDATIONX_NATS_PASSWORD` | NATS 密码环境变量名；明文只来自本地 secret/env |
+| `publisher.publish_ack_timeout` | `duration` | `5s` | PubAck 等待超时 |
+| `publisher.max_publish_retry` | `int` | `5` | 最大发布重试次数 |
+| `publisher.backpressure_queue_size` | `int` | `10000` | 内存队列最大事件数 |
 | `client.admin_port` | `int` | `8081` | Gin admin 端口 |
 | `client.binance_api_key` | `string` | 从环境变量读取 | Binance API Key（敏感） |
 | `client.binance_secret_key` | `string` | 从环境变量读取 | Binance Secret Key（敏感） |

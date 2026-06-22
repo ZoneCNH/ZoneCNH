@@ -570,6 +570,7 @@ server_unavailable
 > Secrets 一律从环境变量注入，配置文件仅存非敏感键名与默认值。
 > 环境变量前缀：client=`BINANCE_CLIENT_`，server=`BINANCE_SERVER_`。基础设施凭据使用各模块规范前缀。
 > `nats.url` 指向外部 NATS JetStream 服务；部署 NATS 集群属于平台/运维边界，不属于 client/server 二进制。
+> Dev 非敏感 NATS 配置与 `sre/secrets/env/dev.md` §NATS 对齐：client URL=`nats://127.0.0.1:4222`，monitor=`http://127.0.0.1:8222`，JetStream enabled，server_name=`nats-dev-01`。认证明文只能经环境变量注入。
 
 ### 11.1 Client Config（`binance-client.yaml`）
 
@@ -582,10 +583,10 @@ server_unavailable
 | `binance.symbols.deny` | `[]string` | `[]` | 黑名单 symbol |
 | `binance.api_key_env` | `string` | `BINANCE_API_KEY` | 读取 API Key 的环境变量名 |
 | `binance.secret_key_env` | `string` | `BINANCE_SECRET_KEY` | 读取 Secret Key 的环境变量名 |
-| `nats.url` | `string` | `nats://127.0.0.1:4222` | NATS 连接地址（含认证） |
+| `nats.url` | `string` | `nats://127.0.0.1:4222` | 外部 NATS JetStream 连接地址 |
 | `nats.stream` | `string` | `BINANCE_MARKET` | JetStream Stream 名称 |
 | `nats.auth.user` | `string` | `admin` | NATS 用户名 |
-| `nats.auth.password_env` | `string` | `NATS_PASSWORD` | NATS 密码环境变量名 |
+| `nats.auth.password_env` | `string` | `FOUNDATIONX_NATS_PASSWORD` | NATS 密码环境变量名；旧 `NATS_PASSWORD` 仅作为兼容输入 |
 | `publisher.batch_size` | `int` | `256` | 批量发布大小（0=逐条发布） |
 | `publisher.flush_interval` | `duration` | `100ms` | 批量刷新间隔 |
 | `retry.max_attempts` | `int` | `5` | natsx Publish 最大重试次数 |
@@ -601,10 +602,10 @@ server_unavailable
 
 | 配置键 | 类型 | 默认值 | 说明 |
 |--------|------|--------|------|
-| `nats.url` | `string` | `nats://127.0.0.1:4222` | NATS 连接地址 |
+| `nats.url` | `string` | `nats://127.0.0.1:4222` | 外部 NATS JetStream 连接地址 |
 | `nats.stream` | `string` | `BINANCE_MARKET` | JetStream Stream 名称 |
 | `nats.auth.user` | `string` | `admin` | NATS 用户名 |
-| `nats.auth.password_env` | `string` | `NATS_PASSWORD` | NATS 密码环境变量名 |
+| `nats.auth.password_env` | `string` | `FOUNDATIONX_NATS_PASSWORD` | NATS 密码环境变量名；旧 `NATS_PASSWORD` 仅作为兼容输入 |
 | `nats.consumer.durable` | `string` | `binance-server` | durable consumer 名称 |
 | `nats.consumer.ack_wait` | `duration` | `30s` | ManualAck 超时 |
 | `nats.consumer.max_deliver` | `int` | `5` | 最大重投次数（超限进入死信） |
@@ -732,7 +733,7 @@ server_unavailable
 |---------|--------|------------|------|
 | `BINANCE_API_KEY` | client | Binance 交易所 API 管理页 | Binance REST/WS API Key |
 | `BINANCE_SECRET_KEY` | client | Binance 交易所 API 管理页 | Binance REST/WS Secret Key |
-| `NATS_PASSWORD` | client + server | `sre/secrets/env/dev.md` §NATS | NATS 认证密码 |
+| `FOUNDATIONX_NATS_PASSWORD` | client + server | `sre/secrets/env/dev.md` §NATS | NATS 认证密码；`NATS_PASSWORD` 仅为兼容旧前缀 |
 | `REDIS_PASSWORD` | server | `sre/secrets/env/dev.md` §Redis | Redis 认证密码 |
 | `PG_PASSWORD` | server | `sre/secrets/env/dev.md` §PostgreSQL `market_binance` | PostgreSQL 认证密码 |
 | `TAOS_PASSWORD` | server | `sre/secrets/env/dev.md` §TDengine `market_binance` | TDengine 认证密码 |

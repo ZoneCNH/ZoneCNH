@@ -905,8 +905,11 @@ server:
     auth_token: "${BINANCE_API_TOKEN}"
 
 nats:
-  url: "nats://localhost:4222"
+  url: "nats://127.0.0.1:4222"
   stream: "BINANCE_MARKET"
+  auth:
+    user: "admin"
+    password_env: "FOUNDATIONX_NATS_PASSWORD"
   consumer:
     durable: "binance-server"
     ack_wait: 30s
