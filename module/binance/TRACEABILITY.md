@@ -4,15 +4,15 @@
 >
 > 规范来源：`docs/governance/TRACEABILITY.md`
 
-- Matrix-Version: v2.2.3
+- Matrix-Version: v3.1.0
 - Last-Updated: 2026-06-22
-- Spec-Reference: `module/binance/SPEC.md` v2.2.3
+- Spec-Reference: `module/binance/SPEC.md` v3.1.0
 
 ---
 
 ## §1 FR 追溯表
 
-> **v2.1.0 变更摘要**：FR-006 拆分为 6a(tasox)/6b(postgresx)/6c(redisx cache)/6d(ossx)；FR-007 扩展 analytics API(7a)；新增 FR-010（clickhousex OLAP 存储）、FR-011（分布式协调锁）；subject 命名统一 `um_perp`/`cm_perp`；Error 码扩展至 BNC-013；Performance Budget 扩展至 20 项。
+> **v3.1.0 变更摘要**：FR-006 拆分为 6a(taosx)/6b(postgresx)/6c(redisx cache)/6d(ossx)；FR-007 扩展 analytics API(7a)；新增 FR-010（clickhousex OLAP 存储）、FR-011（分布式协调锁）；v3.1.0 继续登记 FR-012~FR-024，覆盖 realtime control、historical lifecycle、event governance、release evidence 与 runtime hot reload；subject 命名统一 `um_perp`/`cm_perp`；Error 码扩展至 BNC-013；Performance Budget 扩展至 20 项。
 
 | FR ID | 功能需求 | AC | TC ID(s) | Task | 实现状态 |
 |-------|----------|-----|----------|------|----------|
@@ -31,8 +31,21 @@
 | FR-009 | Boundary Enforcement：CI gate 阻断 client/server 跨界、cs 包引用、go.mod 合规 | AC-032 ~ AC-035 | TC-020 ~ TC-022 | SERVER-008 | Done |
 | FR-010 | clickhousex OLAP Storage：定时 ETL 聚合 taosx→clickhousex，为 analytics API 提供 OLAP 查询 | AC-041 ~ AC-044 | TC-025, TC-026 | SERVER-017 | Pending |
 | FR-011 | Distributed Coordinator Lock：redisx SetNX 分布式锁，coordinator HA 选举 + lease 续期 | AC-045 ~ AC-047 | TC-027, TC-028 | SERVER-013 | Pending |
+| FR-012 | Stream Session Lifecycle：active stream registry 支持运行中增删订阅且不重启进程 | AC-048 ~ AC-050 | TC-029 | CLIENT-015 | Pending |
+| FR-013 | Exchange Reliability Controls：retry budget、rate-limit、clock skew 与 exchange disconnect 策略可观测 | AC-051 ~ AC-053 | TC-030 | CLIENT-016 | Pending |
+| FR-014 | Runtime Stream Observability：admin/metrics 暴露 stream state、lag、unhealthy reason | AC-054 ~ AC-056 | TC-031 | CLIENT-017 | Pending |
+| FR-015 | Runtime Pause/Resume/Drain：operator 可暂停、恢复与 drain 订阅且有审计记录 | AC-057 ~ AC-059 | TC-032 | CLIENT-018 | Pending |
+| FR-016 | Historical Backfill Planner：backfill window、cursor、overlap validation 与恢复语义 | AC-060 ~ AC-062 | TC-033 | SERVER-018 | Pending |
+| FR-017 | Gap Detection and Replay：检测 ingest gap 并生成可幂等 replay job | AC-063 ~ AC-065 | TC-034 | SERVER-019 | Pending |
+| FR-018 | Archive Manifest and Restore：归档 manifest、restore、retention delete 可审计 | AC-066 ~ AC-068 | TC-035 | SERVER-020 | Pending |
+| FR-019 | Backfill Resource Governance：全局与单 instrument 资源限额、取消与 cursor 恢复 | AC-069 ~ AC-071 | TC-036 | SERVER-021 | Pending |
+| FR-020 | Funding Rate Event Support：funding_rate 事件 mapping、存储、查询与广播一致 | AC-072 ~ AC-074 | TC-037 | SERVER-022 | Pending |
+| FR-021 | Mark and Index Price Support：mark_price/index_price 事件类型、topic 与存储不混淆 | AC-075 ~ AC-077 | TC-038 | SERVER-023 | Pending |
+| FR-022 | Event-Type Governance Matrix：R2 120-cell matrix 锁定 event/product/governance 覆盖面 | AC-078 ~ AC-080 | TC-039 | ROOT-008 | Pending |
+| FR-023 | Release Evidence Bundle：local/CI/live/release evidence 分层归档且不可互相替代 | AC-081 ~ AC-083 | TC-040, TC-041 | ROOT-009 | Pending |
+| FR-024 | Runtime Config Hot Reload：`POST /api/v1/admin/symbols/reload` 重载目录并应用 stream diff | AC-084 ~ AC-086 | TC-042 | CLIENT-019 | Pending |
 
-> Status 列使用 CI 枚举值以满足 `traceability-check.sh`；FR-009/BR Done 的 runtime 证据见 `BOUNDARY-GATES.md` 与变更历史 v2.2.3（runtime SHA `bae80d6`）。
+> 状态口径：v3.1.0 新增 FR-012~FR-024 仅完成追溯登记，全部保持 Pending；FR-009/BR Done 的 runtime 证据见 `BOUNDARY-GATES.md` 与变更历史 v2.2.3（runtime SHA `bae80d6`）。
 
 ---
 
@@ -111,6 +124,20 @@
 | TC-026 | FR-010 | — | 单元（clickhousex 不可达→503 + ETL 跳过本批次） | Pending |
 | TC-027 | FR-011 | — | 单元（redisx SetNX 获取锁 → 启动 ETL；5s 轮询重试） | Pending |
 | TC-028 | FR-011 | — | 单元（lease 续期失败 → 停止任务；主动释放锁 → Del） | Pending |
+| TC-029 | FR-012 | — | 集成（active stream registry 增删订阅） | Pending |
+| TC-030 | FR-013 | — | 单元 + 集成（retry budget、rate-limit、clock skew） | Pending |
+| TC-031 | FR-014 | — | httptest + metrics（stream state / lag / unhealthy reason） | Pending |
+| TC-032 | FR-015 | — | httptest + 集成（pause/resume/drain + audit） | Pending |
+| TC-033 | FR-016 | — | 单元（window validation + cursor + overlap rejection） | Pending |
+| TC-034 | FR-017 | — | 集成（gap detect + replay idempotency） | Pending |
+| TC-035 | FR-018 | — | 单元 + 集成（manifest + restore + retention delete） | Pending |
+| TC-036 | FR-019 | — | 单元（global/per-instrument caps + cancellation cursor） | Pending |
+| TC-037 | FR-020 | — | 单元 + 集成（funding_rate mapping/storage/query/fanout） | Pending |
+| TC-038 | FR-021 | — | 单元 + 集成（mark/index price kind/topic/storage） | Pending |
+| TC-039 | FR-022 | — | 文档校验（R2 governance matrix + stale checks） | Pending |
+| TC-040 | FR-023 | — | 证据归档（local/CI/live evidence bundle） | Pending |
+| TC-041 | FR-023 | — | release gate（tag/changelog/evidence consistency） | Pending |
+| TC-042 | FR-024 | — | 集成 + httptest（`POST /api/v1/admin/symbols/reload` + no-restart proof） | Pending |
 
 ---
 
@@ -165,6 +192,45 @@
 | AC-045 | FR-011 | redisx SetNX("lock:binance:coordinator", instanceID, 30s) 成功 → 启动 scheduler | TC-027 |
 | AC-046 | FR-011 | 锁获取失败 → standby 模式，每 5s 轮询重试，自动接管 | TC-027 |
 | AC-047 | FR-011 | lease 续期失败 → 停止 ETL+归档；正常关闭 → Del 主动释放 | TC-028 |
+| AC-048 | FR-012 | active stream registry 可在运行中新增 symbol/product_line 订阅，不重启 client 进程 | TC-029 |
+| AC-049 | FR-012 | active stream registry 可在运行中移除订阅并关闭对应 websocket/topic fanout | TC-029 |
+| AC-050 | FR-012 | 增删订阅期间已存在 stream 的 sequence、lag 与 reconnect state 不丢失 | TC-029 |
+| AC-051 | FR-013 | retry budget 对 connect/read/publish 分别限额，超限后进入 unhealthy 状态 | TC-030 |
+| AC-052 | FR-013 | Binance rate-limit 响应映射为可观测 backoff，不忙等、不吞错 | TC-030 |
+| AC-053 | FR-013 | 本地 clock skew 超阈值时拒绝签名/时间敏感请求并暴露告警 | TC-030 |
+| AC-054 | FR-014 | admin/metrics 暴露每个 stream 的 state、last_event_time、lag 与 reconnect_count | TC-031 |
+| AC-055 | FR-014 | unhealthy reason 可区分 connect、read、publish、rate_limit、clock_skew | TC-031 |
+| AC-056 | FR-014 | metrics label 使用 product_line/event_type/instrument，不泄漏 secret | TC-031 |
+| AC-057 | FR-015 | operator 可 pause 单个 stream，pause 后停止 publish 但保留状态 | TC-032 |
+| AC-058 | FR-015 | operator 可 resume 单个 stream，resume 后从当前 Binance stream 恢复采集 | TC-032 |
+| AC-059 | FR-015 | drain 会等待 in-flight publish 完成并记录 audit event | TC-032 |
+| AC-060 | FR-016 | backfill planner 拒绝 end<=start、overlap policy 未声明和超 retention window 请求 | TC-033 |
+| AC-061 | FR-016 | backfill cursor 可持久化并在重启后从上次成功 offset 恢复 | TC-033 |
+| AC-062 | FR-016 | backfill window 按 product_line/event_type/instrument 分片且可限速 | TC-033 |
+| AC-063 | FR-017 | ingest gap detector 可基于 sequence/time bucket 发现缺口并生成 replay job | TC-034 |
+| AC-064 | FR-017 | replay job 对已存在数据幂等，不重复写入 taosx/clickhousex | TC-034 |
+| AC-065 | FR-017 | replay 失败会保留原因、重试次数和可恢复 cursor | TC-034 |
+| AC-066 | FR-018 | archive manifest 记录 object key、checksum、row_count、time range 与 source query | TC-035 |
+| AC-067 | FR-018 | restore 根据 manifest 校验 checksum/row_count 后恢复到指定存储 | TC-035 |
+| AC-068 | FR-018 | retention delete 必须引用已验证 manifest，禁止无 manifest 删除热数据 | TC-035 |
+| AC-069 | FR-019 | backfill/replay 支持全局并发与单 instrument 并发限额 | TC-036 |
+| AC-070 | FR-019 | operator 可取消 backfill/replay，取消后 cursor 保持可恢复 | TC-036 |
+| AC-071 | FR-019 | resource governance 指标暴露 queue depth、active jobs、throttled jobs | TC-036 |
+| AC-072 | FR-020 | funding_rate Binance 原生事件可映射为 domain_market envelope 并持久化 | TC-037 |
+| AC-073 | FR-020 | funding_rate 查询 API 与 Kafka fanout 使用独立 event_type，不与 ticker/trade 混淆 | TC-037 |
+| AC-074 | FR-020 | funding_rate 的 historical replay 与 realtime ingest 使用同一 idempotency contract | TC-037 |
+| AC-075 | FR-021 | mark_price 与 index_price 事件类型在 subject/topic/storage 中分离 | TC-038 |
+| AC-076 | FR-021 | mark/index price 可按 instrument/time range 查询，返回统一 envelope | TC-038 |
+| AC-077 | FR-021 | mark/index price 不覆盖 spot ticker 或 futures ticker 数据 | TC-038 |
+| AC-078 | FR-022 | R2 event/product/governance matrix 覆盖 product_line × event_type × FR/AC/TC 映射 | TC-039 |
+| AC-079 | FR-022 | 文档 checker 能阻断旧 topic、旧 product_line、旧 endpoint 或缺失 FR-024 锚点 | TC-039 |
+| AC-080 | FR-022 | matrix 变更必须同步 SPEC、TRACEABILITY、ACCEPTANCE、FEATURES 与 checker | TC-039 |
+| AC-081 | FR-023 | local evidence bundle 区分 docs checker、runtime unit/integration、boundary gates | TC-040 |
+| AC-082 | FR-023 | CI/live evidence 不得由本地 smoke 冒充，必须记录来源、命令和时间 | TC-040 |
+| AC-083 | FR-023 | release gate 要求 tag、CHANGELOG、evidence bundle 与 traceability 状态一致 | TC-041 |
+| AC-084 | FR-024 | `POST /api/v1/admin/symbols/reload` 会重新读取 catalog 并返回 applied diff | TC-042 |
+| AC-085 | FR-024 | reload 可新增或移除 active stream 且无需重启 client 进程 | TC-042 |
+| AC-086 | FR-024 | reload 对非法 method/payload/catalog failure 返回稳定错误并保留旧配置 | TC-042 |
 
 ---
 
@@ -172,15 +238,16 @@
 
 | 指标 | 总数 | 已覆盖 | 覆盖率 | 说明 |
 |------|------|--------|--------|------|
-| 功能需求 (FR) | 11 | 11 | 100% | FR-001~FR-011 与 SPEC FR 分母一致；6b/6c/6d/7a 作为实现子切片保留在矩阵中 |
+| 功能需求 (FR) | 24 | 24 | 100% | FR-001~FR-024 与 SPEC FR 分母一致；6b/6c/6d/7a 作为实现子切片保留在矩阵中 |
 | 业务规则 (BR) | 9 | 9 | 100% | BR-001 ~ BR-009 全部有 CI Gate 或 TC |
 | 非功能需求 (NFR) | 20 | 20 | 100% | NFR-001 ~ NFR-020 全部有验证方式 |
-| 测试用例 (TC) | 28 | 28 | 100% | TC-001 ~ TC-028 全部有对应 FR/BR |
-| 验收标准 (AC) | 47 | 47 | 100% | AC-001 ~ AC-047 全部有验证方式 |
-| FR→TC 覆盖率 | — | 11/11 | 100% | — |
+| 测试用例 (TC) | 42 | 42 | 100% | TC-001 ~ TC-042 全部有对应 FR/BR |
+| 验收标准 (AC) | 86 | 86 | 100% | AC-001 ~ AC-086 全部有验证方式 |
+| FR→TC 覆盖率 | — | 24/24 | 100% | — |
 | BR→验证覆盖率 | — | 9/9 | 100% | — |
-| AC→验证覆盖率 | — | 47/47 | 100% | — |
-| 实现状态 | — | 1/11 FR | 9% | FR-009 boundary gate 已落地；其余 v2.1.0 目标代码待实现 |
+| AC→验证覆盖率 | — | 86/86 | 100% | — |
+| R2 governance matrix | 120 cells | 120 cells | 100% | 24 FR/event-product-governance cells × 5 文档/checker anchors |
+| 实现状态 | — | 1/24 FR | 4% | FR-009 boundary gate 已落地；FR-012~FR-024 为 v3.1.0 登记态 Pending |
 
 ---
 
@@ -188,6 +255,7 @@
 
 | 日期 | 版本 | 变更内容 | 作者 |
 |------|------|----------|------|
+| 2026-06-22 | v3.1.0 | **Realtime/Historical/Event/Release 扩展登记**：新增 FR-012~FR-024、TC-029~TC-042、AC-048~AC-086；登记 R2 120-cell governance matrix；统一 FR-024 endpoint 为 `POST /api/v1/admin/symbols/reload`；新增项均保持 Pending，FR-009 runtime evidence 不变 | ZoneCNH |
 | 2026-06-16 | v1.0.0 | 从零创建 §1-§7 标准追溯矩阵 | ZoneCNH |
 | 2026-06-17 | v1.1.0 | 修复 FR/BR/AC 错位，新增 AC-021~023 边界强制 | ZoneCNH |
 | 2026-06-17 | v1.2.0 | BR-002/003 拆分；BR 总数 8→9 | ZoneCNH |

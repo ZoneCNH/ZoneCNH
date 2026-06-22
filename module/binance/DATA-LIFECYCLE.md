@@ -53,12 +53,18 @@
 
 ## 3. Review checklist
 
-- [ ] Confirm whether FR-012 through FR-015 are the minimum set for the next realtime-control SPEC bump.
-- [ ] Confirm whether historical backfill and replay work should stay in v2.5.x or split across implementation milestones.
-- [ ] Confirm whether event-type expansion must be a v3.0.0 major bump because it changes the 4 × 4 canonical matrix.
-- [ ] Confirm whether `STANDARD.md` should be created in stage 6 before FR-024 lands.
+- [x] Confirm whether FR-012 through FR-015 are the minimum set for the next realtime-control SPEC bump.
+- [x] Confirm whether historical backfill and replay work should stay in v2.5.x or split across implementation milestones.
+- [x] Confirm whether event-type expansion must be a v3.0.0 major bump because it changes the 4 × 4 canonical matrix.
+- [x] Confirm whether `STANDARD.md` should be created in stage 6 before FR-024 lands.
 
-## 4. Open questions
+## 4. Review outcome
+
+[COMPUTED, HIGH] 2026-06-22 review closed the planning checklist for this discussion draft: FR-012 through FR-015 are the next realtime-control SPEC bump candidate set; FR-016 through FR-019 stay grouped as the v2.5.x historical lifecycle candidate set; FR-020 through FR-022 remain a v3.0.0 MAJOR candidate because they change the canonical event matrix; `STANDARD.md` is required before FR-024 can be promoted into SPEC.
+
+[FRAME, HIGH] This outcome approves only the issue split, dependency order, bump class, and document landing plan. It does not approve runtime behavior, does not update `SPEC.md`, does not change `TRACEABILITY.md`, and does not mark any release DoD item done.
+
+## 5. Open questions
 
 1. Should late/out-of-order policy be event-type specific, or should the first SPEC update define one conservative module-wide default?
 2. Should replay evidence be attached to every release, or only to releases that touch backfill, ossx, Kafka, or TAOS writes?

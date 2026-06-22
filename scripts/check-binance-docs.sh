@@ -89,7 +89,7 @@ expect_eq "CHANGELOG Spec-Reference" "$spec_version" "$changelog_ref"
 
 for f in SPEC.md TRACEABILITY.md ACCEPTANCE.md FEATURES.md IMPLEMENTATION-PLAN.md \
          RUNTIME-MAPPING.md BOUNDARY-GATES.md NAMING.md RULES.md \
-         ARCHITECTURE-DRIFT-WATCHLIST.md CHANGELOG.md client/SPEC.md \
+         ARCHITECTURE-DRIFT-WATCHLIST.md CHANGELOG.md STANDARD.md client/SPEC.md \
          client/TRACEABILITY.md server/SPEC.md server/TRACEABILITY.md \
          client/tasks/archive/README.md server/tasks/archive/README.md; do
   expect_file "module/binance/$f"
@@ -156,6 +156,14 @@ fi
 expect_rg 'FR-009.*runtime SHA `bae80d6`' module/binance/TRACEABILITY.md "FR-009 has runtime SHA evidence"
 expect_rg "L1 Boundary/Governance Gate" module/binance/RULES.md "RULES documents L1/L2 status boundary"
 expect_rg "bash scripts/check-binance-docs\\.sh" .github/workflows/docs-ci.yml "docs CI runs binance checker"
+expect_rg 'POST /api/v1/admin/symbols/reload' module/binance/STANDARD.md "STANDARD documents current symbols reload endpoint"
+expect_rg 'FR-024' module/binance/STANDARD.md "STANDARD documents FR-024 boundary"
+expect_rg 'FR-024' module/binance/SPEC.md "SPEC includes FR-024"
+expect_rg 'AC-086' module/binance/TRACEABILITY.md "TRACEABILITY includes AC-086"
+expect_rg 'TC-042' module/binance/TRACEABILITY.md "TRACEABILITY includes TC-042"
+expect_rg '24 FR/event-product-governance cells' module/binance/TRACEABILITY.md "TRACEABILITY documents R2 120-cell matrix"
+expect_rg 'POST /api/v1/admin/symbols/reload' module/binance/RUNTIME-MAPPING.md "RUNTIME-MAPPING uses current symbols reload endpoint"
+expect_no_rg 'POST /api/v1/admin/catalog/reload' module/binance/RUNTIME-MAPPING.md "RUNTIME-MAPPING drops legacy catalog reload endpoint"
 
 if (( failures > 0 )); then
   printf '%s check(s) failed\n' "$failures" >&2

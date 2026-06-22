@@ -1,7 +1,7 @@
-# module/binance RUNTIME MAPPING v2.0.0
+# module/binance RUNTIME MAPPING v3.1.0
 
-> 版本：v2.0.0
-> 更新日期：2026-06-21
+> 版本：v3.1.0
+> 更新日期：2026-06-22
 > 替代：v1.0.0（gRPC + SQLite spool 架构）
 > 参见：`DEEP-ANALYSIS.md`（架构决策全文）
 
@@ -97,7 +97,7 @@ github.com/ZoneCNH/binance/
           market.go          ← /api/v1/market/ticks、bars、depth、trades
           instrument.go      ← /api/v1/instruments
           stats.go           ← /api/v1/stats/streams、daily
-          admin.go           ← /api/v1/admin/catalog、stream
+          admin.go           ← /api/v1/admin/symbols/reload、stream
         middleware/
           auth.go            ← Bearer Token
           ratelimit.go       ← redisx 限流
@@ -268,7 +268,7 @@ GET  /api/v1/instruments                  合约列表（postgresx）
 GET  /api/v1/instruments/:symbol          单个合约详情
 GET  /api/v1/stats/streams                流统计
 GET  /api/v1/stats/daily                  日统计
-POST /api/v1/admin/catalog/reload         重载目录
+POST /api/v1/admin/symbols/reload         重载目录并应用 stream diff
 POST /api/v1/admin/stream/pause/:line     暂停产品线
 POST /api/v1/admin/stream/resume/:line    恢复产品线
 GET  /api/v1/admin/config                 查看配置

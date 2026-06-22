@@ -6,11 +6,11 @@
 | --- | --- |
 | Status | Generated from current module SSOT |
 | Last-Updated | 2026-06-22 |
-| Module-Version | v2.2.3 |
-| Module-State | 规格重构；v2.2.3 runtime 大部分仍为 Pending |
+| Module-Version | v3.1.0 |
+| Module-State | 规格扩展到 v3.1.0；FR-009 boundary 已有本地 runtime 证据，其余 FR 仍以 `/home/binance` 证据为准 |
 | Layer | 数据域 / Binance-specific market_data C/S module |
 | Runtime-Repo | `/home/binance` |
-| Source | `goal.md`, `SPEC.md`, `TRACEABILITY.md`, `BOUNDARY-GATES.md`, `RUNTIME-MAPPING.md`, `IMPLEMENTATION-PLAN.md`, `client/`, `server/`, `tasks/` |
+| Source | `goal.md`, `SPEC.md`, `TRACEABILITY.md`, `DATA-LIFECYCLE.md`, `STANDARD.md`, `BOUNDARY-GATES.md`, `RUNTIME-MAPPING.md`, `IMPLEMENTATION-PLAN.md`, `client/`, `server/`, `tasks/` |
 
 本文档是 `module/binance` 当前规格库的实现投影，不是 runtime 代码验收证据。实际完成状态以 `TRACEABILITY.md`、`client/TRACEABILITY.md`、`server/TRACEABILITY.md` 和 `/home/binance` 的测试证据为准。
 
@@ -29,7 +29,7 @@
 
 ## 2. 功能实现投影
 
-> v2.1.2 编号体系：FR-006 拆分为 6a/6b/6c/6d；FR-007a 新增（analytics API）；FR-009 升为 Boundary Enforcement；FR-010 新增（clickhousex OLAP）；FR-011 新增（分布式锁）。
+> v3.1.0 编号体系：FR-006 拆分为 6a/6b/6c/6d；FR-007a 新增（analytics API）；FR-009 升为 Boundary Enforcement；FR-010 新增（clickhousex OLAP）；FR-011 新增（分布式锁）；FR-012~FR-024 登记 realtime control、historical lifecycle、event governance、release evidence 与 runtime hot reload。
 
 | FR | 功能 | 当前状态 | 已有证据 | 剩余实现面 |
 | --- | --- | --- | --- | --- |
@@ -45,9 +45,22 @@
 | FR-007 | Gin Market API | Pending | 规格定义 `/api/v1/market/ticks/depth/bars/trades` REST 接口。 | 认证、限流、统一错误、readyz、market_data HTTP 调用方兼容。 |
 | FR-007a | clickhousex Analytics API | Pending | 规格定义 `/api/v1/analytics/vwap/top-movers/correlation` OLAP 查询。 | analytics 查询正确性、查询 P99 < 2s、降级到 503。 |
 | FR-008 | kafkax Broadcast | Pending | 规格定义 `kafkax` topic、symbol key 与 handoff 后 Ack。 | Kafka dispatch、失败不 Ack、重试、下游消费契约。 |
-| FR-009 | Boundary Enforcement | Implemented / Documented | `BOUNDARY-GATES.md` v2.1.1 已落地，`TRACEABILITY.md` 标注 FR-009 Implemented，TC-020 PASS。 | TC-021 与 TC-022 仍需 runtime/repo CI 执行证据闭合。 |
+| FR-009 | Boundary Enforcement | Implemented / Documented | `BOUNDARY-GATES.md` 与 `TRACEABILITY.md` 标注 FR-009 Done；`/home/binance` boundary-gates 10/10、go test、lint、smoke self-test 已通过。 | 远端 CI/release evidence 仍需归档；非边界 FR 不因此闭合。 |
 | FR-010 | clickhousex OLAP Storage | Pending | 规格定义定时 ETL 聚合 taosx → clickhousex。 | ETL 调度、InsertBatch 性能、ClickHouse 不可达降级。 |
 | FR-011 | Distributed Coordinator Lock | Pending | 规格定义 redisx SetNX 分布式锁 + lease 续期 + coordinator HA。 | SetNX 锁获取、lease 续期失败后停止任务、主动释放。 |
+| FR-012 | Stream Session Lifecycle | Pending | `SPEC.md`/`TRACEABILITY.md` v3.1.0 已登记。 | active stream registry 运行中增删订阅且不重启进程的集成证据。 |
+| FR-013 | Exchange Reliability Controls | Pending | `SPEC.md`/`TRACEABILITY.md` v3.1.0 已登记。 | retry budget、rate-limit、clock skew 与 disconnect 策略测试。 |
+| FR-014 | Runtime Stream Observability | Pending | `SPEC.md`/`TRACEABILITY.md` v3.1.0 已登记。 | admin/metrics 暴露 stream state、lag、unhealthy reason 的验证。 |
+| FR-015 | Runtime Pause/Resume/Drain | Pending | `SPEC.md`/`TRACEABILITY.md` v3.1.0 已登记。 | pause/resume/drain API、in-flight drain 与 audit event 证据。 |
+| FR-016 | Historical Backfill Planner | Pending | `SPEC.md`/`TRACEABILITY.md` v3.1.0 已登记。 | window validation、cursor persistence、overlap rejection 与限速测试。 |
+| FR-017 | Gap Detection and Replay | Pending | `SPEC.md`/`TRACEABILITY.md` v3.1.0 已登记。 | gap detect、replay idempotency、失败恢复 cursor 证据。 |
+| FR-018 | Archive Manifest and Restore | Pending | `SPEC.md`/`TRACEABILITY.md` v3.1.0 已登记。 | manifest、checksum、restore、retention delete guard 证据。 |
+| FR-019 | Backfill Resource Governance | Pending | `SPEC.md`/`TRACEABILITY.md` v3.1.0 已登记。 | job caps、cancellation、queue/active/throttled metrics 证据。 |
+| FR-020 | Funding Rate Event Support | Pending | `SPEC.md`/`TRACEABILITY.md` v3.1.0 已登记。 | funding_rate mapping/storage/query/fanout 与 replay 一致性证据。 |
+| FR-021 | Mark and Index Price Support | Pending | `SPEC.md`/`TRACEABILITY.md` v3.1.0 已登记。 | mark_price/index_price topic/storage/query 分离证据。 |
+| FR-022 | Event-Type Governance Matrix | Pending | `TRACEABILITY.md` 与 checker 已登记 R2 120-cell matrix。 | matrix checker 持续阻断旧 topic、旧 product_line、旧 endpoint。 |
+| FR-023 | Release Evidence Bundle | Pending | `SPEC.md`/`TRACEABILITY.md` v3.1.0 已登记。 | local/CI/live/release evidence bundle 与 release gate 证据。 |
+| FR-024 | Runtime Config Hot Reload | Pending | `STANDARD.md`、`SPEC.md` 与 `TRACEABILITY.md` v3.1.0 已登记 endpoint：`POST /api/v1/admin/symbols/reload`。 | no-restart stream add/remove、live websocket、remote CI 与 release snapshot 证据。 |
 
 ## 3. 边界与质量需求投影
 
@@ -104,15 +117,15 @@
 | natsx publish/consume runtime 闭合 | Not Done | FR-003 Pending。 |
 | ManualAck 与 at-least-once runtime 闭合 | Not Done | FR-004 Pending。 |
 | Server idempotency runtime 闭合 | Not Done | FR-005 Pending。 |
-| Storage/API/archival/broadcast runtime 闭合 | Not Done | FR-006~FR-009 Pending。 |
-| 全量 AC/TC 通过 | Not Done | TC-001~019、TC-021、TC-022 仍 Pending；TC-020 PASS。 |
+| Storage/API/archival/broadcast/runtime 扩展闭合 | Not Done | FR-006~FR-008、FR-010~FR-024 Pending；FR-009 local boundary evidence closed。 |
+| 全量 AC/TC 通过 | Not Done | TC-001~019、TC-023~TC-042 仍 Pending；TC-020~TC-022 local PASS。 |
 
 ## 7. 当前缺口登记
 
 | 缺口 | 影响 | 关闭条件 |
 | --- | --- | --- |
 | FR-001/FR-002 只有 Partial | 不能声明四条 product line 完整支持。 | Spot、USDM、COINM、Options 的 parser、mapper、connector、server acceptance 全部通过。 |
-| FR-003~FR-009 Pending | 不能声明 distributed runtime 已实现。 | `/home/binance` 中 client/server runtime、存储、API、广播、归档对应测试全部通过。 |
+| FR-003~FR-008/FR-010~FR-011 Pending | 不能声明 distributed runtime 已实现。 | `/home/binance` 中 client/server runtime、存储、API、广播、归档对应测试全部通过。 |
+| FR-012~FR-024 Pending | 不能声明 realtime control、historical lifecycle、event governance、release evidence 或 hot reload 完成。 | 对应 runtime 集成、R2 matrix、live websocket、远端 CI 和 release snapshot 全部闭合。 |
 | Client active FR 仍为 0/8 implemented | Client 侧 v2.0.0 交付尚未闭合。 | `client/TRACEABILITY.md` 中 active FR 状态更新并附 runtime 证据。 |
 | Server active FR 仍为 0/9 implemented | Server 侧 v2.0.0 交付尚未闭合。 | `server/TRACEABILITY.md` 中 active FR 状态更新并附 runtime 证据。 |
-| TC-021/TC-022 Pending | FR-010 尚缺完整 CI 证据。 | 边界 gate 在 runtime/repo CI 中稳定执行并记录 PASS。 |

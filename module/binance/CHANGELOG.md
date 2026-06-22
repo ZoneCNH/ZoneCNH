@@ -2,10 +2,25 @@
 
 所有 notable 变更记录，按 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/) 格式维护。
 
-- Doc-Version: v2.2.3
+- Doc-Version: v3.1.0
 - Last-Updated: 2026-06-22
-- Spec-Reference: `module/binance/SPEC.md` v2.2.3
+- Spec-Reference: `module/binance/SPEC.md` v3.1.0
 - 治理规则：`module/binance/RULES.md` R9 文档存在性
+
+---
+
+## [v3.1.0] — 2026-06-22
+
+### Added
+- 将 root SPEC / TRACEABILITY 扩展到 FR-012..FR-024、AC-086、TC-042，记录 realtime control、historical lifecycle、event governance、release evidence 与 runtime hot reload 后续交付面。
+- 在 TRACEABILITY 中登记 R2 120-cell governance matrix（24 FR/event-product-governance cells × 5 documents/checker anchors）。
+
+### Changed
+- README、ACCEPTANCE、FEATURES、IMPLEMENTATION-PLAN 与 root SPEC 版本同步到 v3.1.0。
+- `RUNTIME-MAPPING.md` 管理端点口径从旧 `/api/v1/admin/catalog/reload` 统一为当前 runtime 已验证的 `POST /api/v1/admin/symbols/reload`。
+
+### Reviewed
+- 保留 FR-024 Pending：endpoint 单元证据已存在，但 active stream add/remove no-restart proof、live websocket、remote CI 与 release tag 仍未闭合。
 
 ---
 
@@ -24,7 +39,11 @@
 ### Added
 - 新建 `scripts/check-binance-docs.sh`，作为 Stage1 可执行文档治理检查
 - 新建 `module/binance/DATA-LIFECYCLE.md`，记录 Stage2 lifecycle gap 与 FR-012..FR-024 草案
+- 新建 `module/binance/STANDARD.md`，记录 FR-024 前置 runtime control 标准与证据门禁
 - 新建 `docs/report/binance/INDEX.md`，收口报告索引与 Stage0–Stage2 gate 入口
+
+### Reviewed
+- 关闭 `DATA-LIFECYCLE.md` review checklist，确认 FR-012..FR-024 的落点、bump class、依赖顺序与 `STANDARD.md` 前置关系；该结论不修改 root SPEC，也不标记 Release DoD
 
 ### Added (runtime 仓)
 - runtime 仓 `.github/workflows/boundary-gates.yml`（9 道 boundary gate 自动化），满足 RULES.md R10
@@ -171,6 +190,7 @@
 
 | 版本 | SPEC | TRACEABILITY | 关键变更 |
 |------|------|-------------|----------|
+| v3.1.0 | v3.1.0 | v3.1.0 | FR-012~FR-024 登记 + R2 120-cell matrix + symbols reload endpoint 口径 |
 | v2.2.3 | v2.2.3 | v2.2.3 | runtime evidence + CI URL + topic/version drift guard |
 | v2.2.2 | v2.2.2 | v2.2.2 | CHANGELOG 新建 + 版本号全量对齐 |
 | v2.2.1 | v2.2.0 | v2.2.1 | Boundary gate 证据回填 |
@@ -185,6 +205,7 @@
 
 | 日期 | 版本 | 变更内容 | 作者 |
 |------|------|----------|------|
+| 2026-06-22 | v3.1.0 | root SPEC/TRACEABILITY/ACCEPTANCE/FEATURES/README/IMPLEMENTATION-PLAN/RUNTIME-MAPPING 同步到 v3.1.0 登记态 | ZoneCNH |
 | 2026-06-22 | v2.2.2 | 新建 CHANGELOG + ACCEPTANCE/FEATURES/IMPLEMENTATION-PLAN 版本号同步到 v2.2.2 | ZoneCNH |
 | 2026-06-22 | v2.2.1 | Boundary gate evidence 回填 + 5 个 v2.0.0 前 task 归档 | ZoneCNH |
 | 2026-06-22 | v2.2.0 | 命名收敛 + Options/cm_perp depth 补全 + 状态口径修复 | ZoneCNH |

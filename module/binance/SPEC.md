@@ -3,7 +3,7 @@
 ## 1. Metadata
 
 - Status: Approved
-- Spec-Version: v2.2.3
+- Spec-Version: v3.1.0
 - Last-Updated: 2026-06-22
 - Owner: ZoneCNH
 - Layer: 数据域 · 行情
@@ -365,8 +365,21 @@ Binance 行情集成面临以下问题：
 | FR-009 Boundary Enforcement | AC-032 ~ AC-035 | TC-020 ~ TC-022 | CI gate（cs 包 / no-legacy / go.mod 合规） |
 | FR-010 clickhousex OLAP | AC-041 ~ AC-044 | TC-025, TC-026 | 集成（ETL: taosx → clickhousex + 503 降级） |
 | FR-011 Distributed Lock | AC-045 ~ AC-047 | TC-027, TC-028 | 单元（SetNX 锁 + lease 续期失败停止 + Del 释放） |
+| FR-012 Stream Session Lifecycle | AC-048 ~ AC-050 | TC-029 | 集成（active stream registry + no-restart add/remove） |
+| FR-013 Exchange Reliability Controls | AC-051 ~ AC-053 | TC-030 | 单元 + 集成（retry budget + rate-limit + clock skew） |
+| FR-014 Runtime Stream Observability | AC-054 ~ AC-056 | TC-031 | httptest + metrics（stream state + lag + unhealthy reason） |
+| FR-015 Runtime Pause/Resume/Drain | AC-057 ~ AC-059 | TC-032 | httptest + 集成（pause/resume/drain + audit） |
+| FR-016 Historical Backfill Planner | AC-060 ~ AC-062 | TC-033 | 单元（window validation + cursor + overlap rejection） |
+| FR-017 Gap Detection and Replay | AC-063 ~ AC-065 | TC-034 | 集成（gap detect + replay jobs + idempotency） |
+| FR-018 Archive Manifest and Restore | AC-066 ~ AC-068 | TC-035 | 单元 + 集成（manifest + restore + retention delete） |
+| FR-019 Backfill Resource Governance | AC-069 ~ AC-071 | TC-036 | 单元（global/per-instrument caps + cancellation cursor） |
+| FR-020 Funding Rate Event Support | AC-072 ~ AC-074 | TC-037 | 单元 + 集成（funding_rate mapping + storage/query/fanout） |
+| FR-021 Mark and Index Price Support | AC-075 ~ AC-077 | TC-038 | 单元 + 集成（mark/index price kind + topics/storage） |
+| FR-022 Event-Type Governance Matrix | AC-078 ~ AC-080 | TC-039 | 文档校验（R2 120-cell matrix + stale checks） |
+| FR-023 Release Evidence Bundle | AC-081 ~ AC-083 | TC-040, TC-041 | 证据归档（local/CI/live/release evidence separation） |
+| FR-024 Runtime Config Hot Reload | AC-084 ~ AC-086 | TC-042 | 管理端点 + 集成（catalog reload + stream diff + no-restart proof） |
 
-**AC 总数**：47（AC-001 ~ AC-047）· **TC 总数**：28（TC-001 ~ TC-028）· **覆盖率**：100%（FR→AC→TC 全链路闭合）
+**AC 总数**：86（AC-001 ~ AC-086）· **TC 总数**：42（TC-001 ~ TC-042）· **覆盖率**：100%（FR→AC→TC 全链路登记；新增 FR-012~FR-024 默认 Pending）
 
 > AC 完整描述（验收标准文本）单点维护于 `TRACEABILITY.md §5`。本表只做 SPEC ↔ Traceability 双向锚点，遵循 `~/.claude/rules/ecc/matrix-scoring-rules.md §R1 跨表走查` 原则。
 
@@ -903,6 +916,20 @@ github.com/ZoneCNH/binance/
 | TC-026 | FR-010 | 单元 | clickhousex 不可达→ETL 降级 | InsertBatch 失败→error 日志 + 跳过本批次；实时 ticks API 正常 |
 | TC-027 | FR-011 | 单元 | coordinator 分布式锁获取 | redisx SetNX 成功→启动 scheduler；失败→standby 每 5s 轮询 |
 | TC-028 | FR-011 | 单元 | lease 续期失败与主动释放 | Expire 失败→停止 ETL+归档；正常关闭→Del 主动释放锁 |
+| TC-029 | FR-012 | 集成 | active stream registry 增删订阅 | 不重启 client 进程即可应用 stream diff |
+| TC-030 | FR-013 | 单元 + 集成 | retry budget、rate-limit 与 clock skew 控制 | 故障注入下 retry/backoff/clock skew 指标符合预算 |
+| TC-031 | FR-014 | httptest + metrics | runtime stream state / lag / unhealthy reason | admin/metrics 同步暴露可审计状态 |
+| TC-032 | FR-015 | httptest + 集成 | pause/resume/drain lifecycle | pause 后停止新增消费，resume 恢复，drain 有审计记录 |
+| TC-033 | FR-016 | 单元 | backfill window、cursor 与 overlap validation | 无效窗口/重叠区间被拒绝，cursor 可恢复 |
+| TC-034 | FR-017 | 集成 | gap detection and replay idempotency | gap 生成 replay job，重复 replay 不重复写入 |
+| TC-035 | FR-018 | 单元 + 集成 | archive manifest、restore 与 retention delete | manifest 可校验，restore 可回放，retention delete 有保护 |
+| TC-036 | FR-019 | 单元 | backfill resource cap and cancellation cursor | 全局/单 instrument 限额生效，取消后 cursor 可恢复 |
+| TC-037 | FR-020 | 单元 + 集成 | funding_rate event mapping/storage/query/fanout | funding_rate 事件在 mapping、存储、API 与 fanout 中一致 |
+| TC-038 | FR-021 | 单元 + 集成 | mark_price/index_price kind/topic/storage | mark/index price 不与 last/bid/ask 混淆 |
+| TC-039 | FR-022 | 文档校验 | R2 governance matrix + stale alias checks | 24 FR/event-product-governance cells 覆盖 5 个文档/checker 锚点 |
+| TC-040 | FR-023 | 证据归档 | local/CI/live evidence bundle | local 与 remote CI/live 证据分层归档，不能互相替代 |
+| TC-041 | FR-023 | release gate | release tag/changelog/evidence consistency | release tag、CHANGELOG、CI URL、evidence bundle 一致 |
+| TC-042 | FR-024 | 集成 + httptest | `POST /api/v1/admin/symbols/reload` catalog reload | endpoint 验证通过，并证明 active stream add/remove 无进程重启 |
 
 ### Test Tools
 

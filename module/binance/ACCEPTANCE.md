@@ -6,10 +6,10 @@
 | --- | --- |
 | Status | Generated from current module SSOT |
 | Last-Updated | 2026-06-22 |
-| Module-Version | v2.2.3 |
+| Module-Version | v3.1.0 |
 | Module-State | 验收清单已补齐；runtime 通过状态仍以实际 `/home/binance` 测试为准 |
 | Runtime-Repo | `/home/binance` |
-| Source | `SPEC.md`, `TRACEABILITY.md`, `client/TRACEABILITY.md`, `server/TRACEABILITY.md`, `BOUNDARY-GATES.md` |
+| Source | `SPEC.md`, `TRACEABILITY.md`, `DATA-LIFECYCLE.md`, `STANDARD.md`, `client/TRACEABILITY.md`, `server/TRACEABILITY.md`, `BOUNDARY-GATES.md` |
 
 本文档是验收执行清单，不是通过证明。每个 Pending 项必须由实际命令输出、CI run、测试报告或 traceability 状态更新关闭。
 
@@ -19,7 +19,7 @@
 | --- | --- | --- |
 | 文档文件存在 | `cd /home/ZoneCNH/.worktree/workspaces/docs/binance-features-acceptance && test -f module/binance/FEATURES.md && test -f module/binance/ACCEPTANCE.md` | 两个文件都存在。 |
 | 文档补丁格式 | `cd /home/ZoneCNH/.worktree/workspaces/docs/binance-features-acceptance && git diff --check -- module/binance` | 无 trailing whitespace 或 patch 格式错误。 |
-| 追溯锚点覆盖 | `cd /home/ZoneCNH/.worktree/workspaces/docs/binance-features-acceptance && rg -n "FR-001|FR-010|TC-001|TC-022|AC-001|AC-035" module/binance/SPEC.md module/binance/TRACEABILITY.md module/binance/FEATURES.md module/binance/ACCEPTANCE.md` | 根级 FR、AC、TC 锚点在规格、追溯和补齐文档中可定位。 |
+| 追溯锚点覆盖 | `cd /home/ZoneCNH/.worktree/workspaces/docs/binance-features-acceptance && rg -n "FR-001|FR-010|FR-024|TC-001|TC-022|TC-042|AC-001|AC-035|AC-086" module/binance/SPEC.md module/binance/TRACEABILITY.md module/binance/FEATURES.md module/binance/ACCEPTANCE.md` | 根级 FR、AC、TC 锚点在规格、追溯和补齐文档中可定位。 |
 | Runtime build | `cd /home/binance && go build ./...` | 所有 package 构建通过。 |
 | Runtime tests | `cd /home/binance && go test ./...` | 单元与集成测试通过。 |
 | Runtime race | `cd /home/binance && go test ./... -race -count=1` | 并发路径无 race。 |
@@ -63,10 +63,15 @@
 | AC-029 | FR-009 | Kafka message key 为 symbol 或 instrument identity；partition key = symbol，相同 symbol 有序到达同一 partition。 | TC-018 | Pending |
 | AC-030 | FR-009 | Kafka handoff 失败时不 Ack NATS message；Kafka 不可达时返回 error，进入 retry/dead-letter/告警路径。 | TC-019 | Pending |
 | AC-031 | FR-010 | CI 禁止 `binance-client` 导入 server internals；server 源码无 `internal/client` 或 `internal/cs` 导入。 | TC-020 | PASS |
-| AC-032 | FR-010 | CI 禁止 `binance-server` 导入 client internals；任何代码 reintroduce `binance-market` 引用时 CI no-legacy gate 失败。 | TC-021 | Pending |
-| AC-033 | FR-010 | CI 禁止 `binance-market` 与 runtime `internal/cs` 回流；go.mod 中 natsx/redisx/postgresx/taosx/clickhousex/kafkax/ossx/gin 均保持 direct 依赖。 | TC-022 | Pending |
-| AC-034 | FR-010 | CI 禁止 Binance 模块定义 canonical market domain 或本地 proto/gRPC ingest schema；BOUNDARY-GATES §5（cs 包禁止）+ §6（同进程禁止）+ §11（go.mod 合规）全 PASS。 | TC-020, TC-022 | Pending |
-| AC-035 | FR-010 | `BOUNDARY-GATES` 全量检查通过，且 client/server 边界、进程边界、依赖边界与 schema 约束均保持可审计。 | TC-020, TC-022 | Pending |
+| AC-032 | FR-010 | CI 禁止 `binance-server` 导入 client internals；任何代码 reintroduce `binance-market` 引用时 CI no-legacy gate 失败。 | TC-021 | PASS |
+| AC-033 | FR-010 | CI 禁止 `binance-market` 与 runtime `internal/cs` 回流；go.mod 中 natsx/redisx/postgresx/taosx/clickhousex/kafkax/ossx/gin 均保持 direct 依赖。 | TC-022 | PASS |
+| AC-034 | FR-010 | CI 禁止 Binance 模块定义 canonical market domain 或本地 proto/gRPC ingest schema；BOUNDARY-GATES §5（cs 包禁止）+ §6（同进程禁止）+ §11（go.mod 合规）全 PASS。 | TC-020, TC-022 | PASS |
+| AC-035 | FR-010 | `BOUNDARY-GATES` 全量检查通过，且 client/server 边界、进程边界、依赖边界与 schema 约束均保持可审计。 | TC-020, TC-022 | PASS |
+| AC-036~AC-047 | FR-006c/FR-007a/FR-010/FR-011 | redisx hot cache、analytics API、clickhousex ETL 与 distributed coordinator lock。 | TC-023~TC-028 | Pending |
+| AC-048~AC-059 | FR-012~FR-015 | stream session lifecycle、reliability controls、observability、pause/resume/drain。 | TC-029~TC-032 | Pending |
+| AC-060~AC-071 | FR-016~FR-019 | historical backfill planner、gap replay、archive manifest/restore、resource governance。 | TC-033~TC-036 | Pending |
+| AC-072~AC-080 | FR-020~FR-022 | funding rate、mark/index price 与 event-type governance matrix。 | TC-037~TC-039 | Pending |
+| AC-081~AC-086 | FR-023~FR-024 | release evidence bundle 与 runtime config hot reload。 | TC-040~TC-042 | Pending |
 
 ## 3. Test Case 登记
 
@@ -92,8 +97,13 @@
 | TC-018 | FR-009 | 单元（kafkax topic + partition key） | Pending | topic 与 partition key 测试输出。 |
 | TC-019 | FR-009, BR-004 | 单元（kafkax 不可达→error/不 Ack） | Pending | Kafka 故障不 Ack 测试输出。 |
 | TC-020 | FR-009, BR-005 | CI gate（cs 包/client 包 import 检查） | PASS | `TRACEABILITY.md` 已标注 PASS。 |
-| TC-021 | FR-009, BR-001 | CI gate（no-legacy 引用检查） | Pending | legacy name grep gate 输出。 |
-| TC-022 | FR-009, BR-009 | CI gate（go.mod 合规） | Pending | go.mod direct dependency gate 输出。 |
+| TC-021 | FR-009, BR-001 | CI gate（no-legacy 引用检查） | PASS | `TRACEABILITY.md` 已标注 PASS。 |
+| TC-022 | FR-009, BR-009 | CI gate（go.mod 合规） | PASS | `TRACEABILITY.md` 已标注 PASS。 |
+| TC-023~TC-028 | FR-006c/FR-007a/FR-010/FR-011 | 单元 + 集成 + httptest（redisx hot cache、analytics API、clickhousex ETL、coordinator lock） | Pending | 对应 runtime tests 与 traceability PASS。 |
+| TC-029~TC-032 | FR-012~FR-015 | active stream registry/reliability/metrics/operator controls | Pending | no-restart stream add/remove、retry budget、pause/resume/drain 证据。 |
+| TC-033~TC-036 | FR-016~FR-019 | backfill planner/gap replay/archive/resource governance | Pending | historical lifecycle runtime tests 与 restore evidence。 |
+| TC-037~TC-039 | FR-020~FR-022 | funding/mark/index event support + R2 governance matrix | Pending | event mapping/storage/query/fanout 与 checker evidence。 |
+| TC-040~TC-042 | FR-023~FR-024 | evidence bundle/release gate/runtime hot reload | Pending | release evidence、CI/live smoke、no-restart reload proof。 |
 
 ## 4. 覆盖闭合矩阵
 
@@ -108,8 +118,15 @@
 | FR-007 | AC-021~AC-025 | TC-012~TC-015 | Not Closed |
 | FR-006d | AC-026~AC-028 | TC-016~TC-017 | Not Closed |
 | FR-008 | AC-029~AC-031 | TC-018~TC-019 | Not Closed |
-| FR-009 | AC-032~AC-035 | TC-020~TC-022 | Partially Closed |
+| FR-009 | AC-032~AC-035 | TC-020~TC-022 | Locally Closed / Release Evidence Pending |
 | FR-010 | AC-041~AC-044 | TC-025~TC-026 | Not Closed |
+| FR-006c | AC-036~AC-037 | TC-023 | Not Closed |
+| FR-007a | AC-038~AC-040 | TC-024 | Not Closed |
+| FR-011 | AC-045~AC-047 | TC-027~TC-028 | Not Closed |
+| FR-012~FR-015 | AC-048~AC-059 | TC-029~TC-032 | Not Closed |
+| FR-016~FR-019 | AC-060~AC-071 | TC-033~TC-036 | Not Closed |
+| FR-020~FR-022 | AC-072~AC-080 | TC-037~TC-039 | Not Closed |
+| FR-023~FR-024 | AC-081~AC-086 | TC-040~TC-042 | Not Closed |
 
 ## 5. Release Definition of Done
 
@@ -120,9 +137,9 @@
 | 根、Client、Server traceability 存在 | Done | 三个 traceability 文件可定位。 |
 | natsx / ManualAck / redisx / ossx / kafkax 边界已写入规格 | Done | `SPEC.md` 与 `TRACEABILITY.md` 可定位对应 FR/AC/TC。 |
 | Boundary gates 文档化 | Done | `BOUNDARY-GATES.md` 存在。 |
-| 所有 FR implemented | Not Done | FR-001~FR-009 状态全部闭合。 |
-| 所有 AC passed | Not Done | AC-001~AC-035 全部有测试证据。 |
-| 所有 TC passed | Not Done | TC-001~TC-022 全部 PASS。 |
+| 所有 FR implemented | Not Done | FR-001~FR-024 状态全部闭合。 |
+| 所有 AC passed | Not Done | AC-001~AC-086 全部有测试证据。 |
+| 所有 TC passed | Not Done | TC-001~TC-042 全部 PASS。 |
 | Runtime test evidence | Not Done | `/home/binance` 的 build/test/race/vet/lint/secret scan 输出归档。 |
 | Coverage and performance evidence | Not Done | 覆盖率、延迟、吞吐、重放与故障注入报告归档。 |
 | CI pass | Not Done | GitHub Actions 或等价 CI run 通过并链接到 release evidence。 |
@@ -133,6 +150,5 @@
 | --- | --- | --- |
 | 文档仓库无 runtime 测试输出 | 不能从 docs repo 推断实现完成。 | 在 `/home/binance` 执行 build/test/race/vet/lint/secret scan 并回填证据。 |
 | FR-001/FR-002 Partial | 四 product line 与 identity contract 不完整。 | 补齐 USDM、COINM、Options parser/mapper/connector/server acceptance。 |
-| FR-003~FR-009 Pending | C/S runtime、存储、API、广播、归档未闭合。 | 按 `IMPLEMENTATION-PLAN.md` 和 tasks 顺序实现并更新 traceability。 |
-| TC-021/TC-022 Pending | Boundary enforcement 仍缺完整 CI 证据。 | 将 `BOUNDARY-GATES.md` gate 命令接入 CI 并记录 PASS。 |
-| Release DoD 未达成 | 不能声明 binance v2.0.0 已可发布。 | 全量 AC/TC PASS 后再更新 release 状态。 |
+| FR-003~FR-008/FR-010~FR-024 Pending | C/S runtime、存储、API、广播、归档、实时控制面、历史生命周期、事件治理与发布证据未闭合。 | 按 `IMPLEMENTATION-PLAN.md` 和 tasks 顺序实现并更新 traceability。 |
+| Release DoD 未达成 | 不能声明 binance v3.1.0 已可发布。 | 全量 AC/TC PASS 后再更新 release 状态。 |
