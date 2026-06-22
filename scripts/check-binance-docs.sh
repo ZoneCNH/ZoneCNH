@@ -153,7 +153,7 @@ else
   fail "non-boundary FR marked Implemented: $implemented_functional"
 fi
 
-expect_rg '\| FR-009 \|.*runtime SHA `bae80d6`' module/binance/TRACEABILITY.md "FR-009 has runtime SHA evidence"
+expect_rg 'FR-009.*runtime SHA `bae80d6`' module/binance/TRACEABILITY.md "FR-009 has runtime SHA evidence"
 expect_rg "L1 Boundary/Governance Gate" module/binance/RULES.md "RULES documents L1/L2 status boundary"
 expect_rg "bash scripts/check-binance-docs\\.sh" .github/workflows/docs-ci.yml "docs CI runs binance checker"
 
