@@ -15,21 +15,20 @@
 | #871 | Thin standard entrypoint verified | `module/binance/STANDARD.md` v0.1.0; `RULES.md` R9 includes `STANDARD.md`. | **Closed for standard entrypoint.** Automation coverage remains tracked by separate P0 doc gate script work (#870). |
 | #893 | SPEC §4 contains distributed constraints and explicit analysis links | `module/binance/SPEC.md` §4 now links to `DEEP-ANALYSIS.md` §0/§12 and `docs/migrations/binance-v2-upgrade.md`. | **Closed for governance docs.** Full DEEP-ANALYSIS compression can be handled separately without reopening the SPEC authority link. |
 | #894 | Migration target and index wiring created | `docs/migrations/binance-v2-upgrade.md`; `docs/migrations/README.md`; `module/binance/SPEC.md` §21 migration table row. | **Closed for migration anchor.** The file intentionally indexes §12 instead of duplicating the full historical audit body. |
-| #895 | Legacy references still high | `grep -rn 'binance-market' module/binance/ --include='*.md' \| wc -l` measured 69 before this slice. | **Not closed.** Needs a dedicated compression pass and exception-preserving verification. |
+| #895 | Active prose compressed | `module/binance/README.md`, `module/binance/goal.md`, and `module/binance/SPEC.md` front matter now point to BR-001 / Appendix B instead of repeating legacy module detail. | **Closed for the requested compression pass.** Canonical gate, migration, task, changelog, and report references remain intentionally literal. |
 | #896 | Coverage audit artifact created | `docs/report/binance/commit-coverage-audit-20260623.md` covers the newest 50 local preserve/stash/backup/WIP candidates. | **Partially satisfied.** Local git evidence alone cannot prove PR/head lineage or absence from main for all candidates. |
 
 ---
 
 ## #869 runtime feasibility note
 
-Worker-3 treated #869 as an evidence/feasibility issue, not a docs closure issue.
+Worker-3 treated #869 as an evidence/feasibility issue, not a docs-only closure issue. Worker-2 then refreshed the runtime command set from `/home/binance` and closed the local feasibility gap.
 
-Fresh command evidence collected from `/home/binance`:
+Fresh command evidence collected from `/home/binance` on 2026-06-23:
 
 ```text
 $ git status --short --branch
 ## fix/binance-issues
-?? .worktree/
 
 $ ./scripts/boundary-gates.sh
 === binance boundary-gates (10 gates) ===
@@ -47,15 +46,19 @@ PASS  §11  go.mod dependency compliance
 Results: 10 passed, 0 failed
 
 $ go test ./...
-verifying github.com/ZoneCNH/decimalx@v1.0.0: checksum mismatch
-SECURITY ERROR
+PASS
 
 $ go vet ./...
-verifying github.com/ZoneCNH/decimalx@v1.0.0: checksum mismatch
-SECURITY ERROR
+PASS
+
+$ go test ./... -race -count=1
+PASS
+
+$ golangci-lint run
+PASS
 ```
 
-Because the runtime tree is not clean, Go verification is blocked by a checksum mismatch, and the full requested command set also includes race/lint/smoke evidence, #869 remains open pending runtime-owner verification.
+#869 is closed for local runtime feasibility evidence. Release closure still requires any live smoke/deploy evidence that the runtime owner treats as release-gating.
 
 ---
 
@@ -66,12 +69,12 @@ Because the runtime tree is not clean, Go verification is blocked by a checksum 
 - Added this governance closure review for the worker-3 issue slice.
 - Added the local 50-candidate commit coverage report for #896.
 - Updated the 2026-06-22 iteration plan issue mapping so #893-#896 are no longer listed as “待建 issue”.
+- Compressed active `binance-market` prose in README, goal, and SPEC overview sections for #895 while preserving canonical gate/migration literals.
 
 ---
 
 ## Known gaps intentionally not hidden
 
-1. `scripts/check-binance-docs.sh` is absent in this worktree and belongs to the worker-1/P0 script slice.
-2. #871 automation coverage still depends on that worker-1/P0 script slice, but the standard entrypoint itself is present and wired into `RULES.md`.
-3. #895 still needs a dedicated compression pass and exception-preserving verification.
-4. #896 requires GitHub/PR metadata or an equivalent authoritative mapping to prove branch/head coverage beyond local log evidence.
+1. #896 requires GitHub/PR metadata or an equivalent authoritative mapping to prove branch/head coverage beyond local log evidence.
+2. Runtime release closure still needs any live smoke/deploy checks required by the implementation owner before a release DoD claim.
+3. Remote CI and release tag evidence are not proven by this local audit.

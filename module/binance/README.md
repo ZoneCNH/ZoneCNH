@@ -31,14 +31,7 @@ It owns Binance-specific persistence, query API, and fanout needed to serve acce
 
 ## Removed Legacy Module
 
-`binance-market` is removed.
-
-New Binance market_data ingestion work must not target:
-
-```text
-module/binance-market
-github.com/ZoneCNH/binance-market
-```
+Legacy module removal is governed by `SPEC.md` BR-001 and Appendix B. New Binance market_data ingestion work targets only `module/binance/client` and `module/binance/server`.
 
 ## Runtime Shape
 

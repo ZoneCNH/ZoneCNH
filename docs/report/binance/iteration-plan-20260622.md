@@ -13,18 +13,18 @@
 
 | ID | 来源报告 | 问题 | 严重性 | 已有 issue | 状态 |
 |---|---|---|:---:|:---:|:---:|
-| G-01 | v3 P0§1 | README root Spec-Version v2.2.0 → v2.2.2 漂移 | 🔴 P0 | #867 | OPEN |
-| G-02 | v3 P0§2 | RUNTIME-MAPPING NATS 4×4 矩阵缺 3 个 trade 组合 | 🔴 P0 | #866 | OPEN |
-| G-03 | v3 P0§3 | Kafka topic 旧式 `binance.market.*` 未收敛到 `binance.{pl}.{et}.v1` | 🔴 P0 | #868 | OPEN |
-| G-04 | v3 P0§4 | RULES.md 任务文件名引用错误（kafkax-export/ossx-archive） | 🔴 P0 | #873 | OPEN |
-| G-05 | v3 P0§5 | 状态口径未分层（文档门禁 vs 运行证据） | 🔴 P0 | #872 | OPEN |
-| G-06 | v3 P1§1-4 | 缺文档一致性检查脚本 `scripts/check-binance-docs.sh` | 🟡 P1 | #870 | OPEN |
-| G-07 | v3 P2 | 运行证据链缺失（runtime 仓未提交变更 + 无 boundary/test 输出） | 🟡 P2 | #869 | OPEN |
-| G-08 | v3 §标准 | 薄层 `STANDARD.md` 标准入口（P0/P1 收敛后启动） | 🟢 P3 | #871 | OPEN |
-| G-09 | v2 P1 | DEEP-ANALYSIS §0 分布式约束未升入 SPEC §4 顶部 | 🟢 P2 | #893 | OPEN |
-| G-10 | v2 P2 | DEEP-ANALYSIS 62KB 体量过大，§12 旧代码审计应移 migrations/ | 🟢 P2 | #894 | OPEN |
-| G-11 | v2 P2 | legacy `binance-market` 30+ 处描述应压缩 | 🟢 P2 | #895 | OPEN |
-| G-12 | v2 P1 | 50 个 preserve/stash 类 commit 覆盖审计未做 | 🟢 P3 | #896 | OPEN |
+| G-01 | v3 P0§1 | README root Spec-Version v2.2.0 → v2.2.2 漂移 | 🔴 P0 | #867 | CLOSED(local) |
+| G-02 | v3 P0§2 | RUNTIME-MAPPING NATS 4×4 矩阵缺 3 个 trade 组合 | 🔴 P0 | #866 | CLOSED(local) |
+| G-03 | v3 P0§3 | Kafka topic 旧式 `binance.market.*` 未收敛到 `binance.{pl}.{et}.v1` | 🔴 P0 | #868 | CLOSED(local) |
+| G-04 | v3 P0§4 | RULES.md 任务文件名引用错误（kafkax-export/ossx-archive） | 🔴 P0 | #873 | CLOSED(local) |
+| G-05 | v3 P0§5 | 状态口径未分层（文档门禁 vs 运行证据） | 🔴 P0 | #872 | CLOSED(local) |
+| G-06 | v3 P1§1-4 | 缺文档一致性检查脚本 `scripts/check-binance-docs.sh` | 🟡 P1 | #870 | CLOSED(local) |
+| G-07 | v3 P2 | 运行证据链缺失（runtime 仓未提交变更 + 无 boundary/test 输出） | 🟡 P2 | #869 | LOCAL-EVIDENCE CLOSED |
+| G-08 | v3 §标准 | 薄层 `STANDARD.md` 标准入口（P0/P1 收敛后启动） | 🟢 P3 | #871 | CLOSED(local) |
+| G-09 | v2 P1 | DEEP-ANALYSIS §0 分布式约束未升入 SPEC §4 顶部 | 🟢 P2 | #893 | CLOSED(local) |
+| G-10 | v2 P2 | DEEP-ANALYSIS 62KB 体量过大，§12 旧代码审计应移 migrations/ | 🟢 P2 | #894 | CLOSED(local) |
+| G-11 | v2 P2 | legacy `binance-market` 30+ 处描述应压缩 | 🟢 P2 | #895 | CLOSED(local) |
+| G-12 | v2 P1 | 50 个 preserve/stash 类 commit 覆盖审计未做 | 🟢 P3 | #896 | PARTIAL(local audit) |
 | **R-01** | **v4 P0 实时控制面** | **Symbol Discovery & Filtering（FR-012）** | 🔴 P0 | — | **待建 issue** |
 | **R-02** | **v4 P0 实时控制面** | **WebSocket Connection Policy（FR-013）** | 🔴 P0 | — | **待建 issue** |
 | **R-03** | **v4 P0 实时控制面** | **Bar Interval Subscription Set（FR-014）** | 🔴 P0 | — | **待建 issue** |
@@ -178,14 +178,14 @@
 
 - 🔴 **阶段 3 在阶段 0 未收敛时启动**：在漂移基线上叠新 FR，会让 #866/#868 的修复更难（subject/topic 表又要改一遍）。**必须阶段 0 先合并**
 - 🔴 **阶段 5 MAJOR bump 未同步 R2 矩阵**：event_type 4→6 后若不补 funding/mark_price 的 8 个新组合，RULES R2 硬约束违规
-- 🟡 **runtime 仓脏工作区**（#869）：阶段 7 前不整理，所有 FR 实现状态只能停在 Pending
+- 🟡 **runtime 发布证据仍分层**（#869）：2026-06-23 本地 runtime gate/test/lint 已通过；Release DoD 仍需远端 CI、release tag、live smoke/deploy 证据。
 - 🟡 **v5 报告丢失**（212 行清洗/处理缺口）：v4 已含 13 条 FR 核心结论，但 C1-C8 清洗缺口、P1-P7 处理问题、G1-G4 缺口分类的细节无法恢复；阶段 3/4 落地时需重新推导这部分细节
 
 ### 5.2 停止条件
 
-- [COMPUTED, HIGH] 原始方案**未修改任何 `module/binance/` 治理文件**；2026-06-23 worker-3 后续补记仅更新 issue 映射，并另行新增 `STANDARD.md` 与治理审计报告。
-- [INFERRED, HIGH] 建议下一步：用户确认阶段划分 → 创建 15 个待建 issue → 启动阶段 0 的 5 个并行 PR
-- [INFERRED, MED] 阶段 0 收敛前，禁止启动阶段 3+ 的 FR 落地
+- [COMPUTED, HIGH] 2026-06-23 team 后续执行已完成阶段 0、阶段 1、阶段 2 讨论稿与阶段 6 治理收口的本地文档证据；#869 本地 runtime 证据已刷新。
+- [COMPUTED, HIGH] 现有 12 个 issue 中，11 个已达到本地关闭口径；#896 已完成 local audit，但 PR/head 谱系仍需权威 GitHub 元数据。
+- [INFERRED, MED] 阶段 3+ 的 FR 实现和 Release DoD 仍不得因文档本地关闭而自动视为完成。
 
 ---
 
@@ -206,8 +206,8 @@
 | #895 legacy binance-market 压缩 | G-11 | 6 | ✅ |
 | #896 preserve/stash commit 覆盖审计 | G-12 | 6 | ✅ |
 
-**结论**：12 个现有 issue 全部映射成功，无遗漏、无冲突。待建 15 个 issue 为纯增量。
+**结论**：12 个现有 issue 全部映射成功；2026-06-23 本地执行后 11 个达到本地关闭口径，#896 保留外部 PR/head 谱系缺口。待建 15 个 issue 为纯增量。
 
 ---
 
-[RULES I BROKE]：无 — 原始方案是规划文档；2026-06-23 worker-3 后续补记同步 #893~#896 映射，并将实际治理入口/审计产物记录在 `STANDARD.md`、`RULES.md` R9 与 `docs/report/binance/governance-closure-20260623.md`。
+[RULES I BROKE]：无 — 原始方案是规划文档；2026-06-23 team 后续补记同步本地关闭状态，并将实际治理入口、审计产物、数据生命周期讨论稿和 #869 runtime 证据口径记录在 `STANDARD.md`、`RULES.md` R9、`DATA-LIFECYCLE.md` 与 `docs/report/binance/governance-closure-20260623.md`。

@@ -4,7 +4,7 @@
 
 `module/binance` defines the Binance-specific market_data ingest module for ZoneCNH.
 
-It replaces the previous ambiguous split between a passive `binance` SDK and a separate `binance-market` Provider with a single explicit C/S architecture:
+It replaces the previous ambiguous SDK/provider split with a single explicit C/S architecture:
 
 ```text
 module/binance/client
@@ -32,7 +32,7 @@ Provide a reliable, canonical, Binance-specific market_data ingestion path for:
 - order execution
 - portfolio accounting
 - risk management
-- legacy `binance-market` compatibility
+- legacy provider compatibility
 
 ## Success Criteria
 
@@ -43,5 +43,5 @@ Provide a reliable, canonical, Binance-specific market_data ingestion path for:
 3. `module/binance/server` can validate, deduplicate, persist, expose, and fan out accepted Binance events.
 4. Spot `BTCUSDT`, USDⓈ-M `BTCUSDT`, COIN-M `BTCUSD`, and Options contracts produce non-colliding canonical instrument identities.
 5. Client publish success is confirmed by JetStream PubAck, and server consumption advances only after durable ManualAck.
-6. No code or documentation reintroduces `binance-market`.
+6. BR-001 legacy-name gate remains clean.
 7. Client/server internals remain separated by boundary gates.
