@@ -183,7 +183,7 @@ Foundation 目录内的执行域共享值对象规格，用于订单、成交、
 
 | 模块  | 规格                        | 核心职责                                                       |
 | ----- | --------------------------- | -------------------------------------------------------------- |
-| flowx | [SPEC.md](./flowx/SPEC.md) | 数据流管线引擎 — 流式 ETL、窗口聚合、背压控制（7 FR，SPEC draft） |
+| flowx | [SPEC.md](./flowx/SPEC.md) | 数据流管线引擎 — 流式 ETL、窗口聚合、背压控制（7 FR，Spec Approved / Tasks Pending） |
 
 ---
 
@@ -193,9 +193,9 @@ Foundation 目录内的执行域共享值对象规格，用于订单、成交、
 
 | 模块       | 规格                              | 核心职责                                                               |
 | ---------- | --------------------------------- | ---------------------------------------------------------------------- |
-| strategyx  | [SPEC.md](./strategyx/SPEC.md)  | 策略工厂 — 策略注册、参数管理、信号组合（7 FR，SPEC draft）               |
-| backtestx  | [SPEC.md](./backtestx/SPEC.md)  | 回测引擎 — 事件驱动回测、Walk-Forward、蒙特卡洛（7 FR，SPEC draft）       |
-| maestro    | [SPEC.md](./maestro/SPEC.md)    | 工作流编排引擎 — DAG 工作流、状态机、错误恢复（9 FR，SPEC draft）         |
+| strategyx  | [SPEC.md](./strategyx/SPEC.md)  | 策略工厂 — 策略注册、参数管理、信号组合（7 FR，Spec Approved / Tasks Pending）               |
+| backtestx  | [SPEC.md](./backtestx/SPEC.md)  | 回测引擎 — 事件驱动回测、Walk-Forward、蒙特卡洛（7 FR，Spec Approved / Tasks Pending）       |
+| maestro    | [SPEC.md](./maestro/SPEC.md)    | 工作流编排引擎 — DAG 工作流、状态机、错误恢复（9 FR，Spec Approved / Tasks Pending）         |
 
 ---
 
@@ -205,9 +205,9 @@ Foundation 目录内的执行域共享值对象规格，用于订单、成交、
 
 | 模块      | 规格                            | 核心职责                                                         |
 | --------- | ------------------------------- | ---------------------------------------------------------------- |
-| riskx     | [SPEC.md](./riskx/SPEC.md)     | 风控引擎 — 事前风控、回撤控制、熔断机制（7 FR，SPEC draft）         |
-| orderx    | [SPEC.md](./orderx/SPEC.md)    | 订单管理器 — 订单生命周期、SOR、状态机（7 FR，SPEC draft）          |
-| positionx | [SPEC.md](./positionx/SPEC.md) | 仓位管理器 — 实时仓位追踪、PnL、敞口监控（7 FR，SPEC draft）        |
+| riskx     | [SPEC.md](./riskx/SPEC.md)     | 风控引擎 — 事前风控、回撤控制、熔断机制（7 FR，Spec Approved / Tasks Pending；最小实现 v0.1.0 7 tests PASS）         |
+| orderx    | [SPEC.md](./orderx/SPEC.md)    | 订单管理器 — 订单生命周期、SOR、状态机（7 FR，Spec Approved / Tasks Pending）          |
+| positionx | [SPEC.md](./positionx/SPEC.md) | 仓位管理器 — 实时仓位追踪、PnL、敞口监控（7 FR，Spec Approved / Tasks Pending）        |
 
 ---
 

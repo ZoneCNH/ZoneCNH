@@ -215,7 +215,7 @@
 | [macro_regime](https://github.com/ZoneCNH/macro_regime)   | 独立进程 | v0.2.0       | ████████ 70% | 100%       | 宏观经济体制识别（M1-M7）；MacroInformationSet mapper+ClassifyFromSet，13 tests PASS  |
 | [ms_brain](https://github.com/ZoneCNH/ms_brain)           | 独立进程 | v1.6.6       | ░░░░ 5%  | 100%       | M×S 系统架构分析体系                                                     |
 | [regime_engine](https://github.com/ZoneCNH/regime_engine) | 独立进程 | v1.0.0       | ████ 60% | 100%       | M×S 联合决策引擎（P0 DTO 桥接层，RegimeSnapshot+RegimeCard→DecisionCard，13 tests PASS） |
-| [flowx](https://github.com/ZoneCNH/flowx)                 | 独立进程 | v0.1.0-draft | ░░░░ 5%  | 100%       | 数据流管线引擎 — 流式 ETL、窗口聚合、背压控制（7 FR, SPEC draft）        |
+| [flowx](https://github.com/ZoneCNH/flowx)                 | 独立进程 | v0.1.0 | ░░░░ 5%  | 100%       | 数据流管线引擎 — 流式 ETL、窗口聚合、背压控制（7 FR, Spec Approved / Tasks Pending）        |
 
 <details>
 <summary>📊 分析域多维成熟度展开（点击展开）</summary>
@@ -229,7 +229,7 @@
 | macro_regime  |  ❌  |  ⚠️  |   ⚠️    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | v0.2.0；70% M引擎，mapper+ClassifyFromSet接入，13 tests PASS           |
 | ms_brain      |  ❌  |  ❌  |   N/A   |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | 5%；仅创建，无实现                 |
 | regime_engine |  ❌  |  ⚠️  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | v1.0.0；60% P0桥接完成，13 tests PASS，contracts v1.4.0 接入    |
-| flowx         |  ❌  |  ❌  |   N/A   |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | v0.1.0-draft；7 FR，SPEC draft     |
+| flowx         |  ❌  |  ❌  |   N/A   |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | v0.1.0；7 FR，Spec Approved / Tasks Pending     |
 
 > **维度说明**：SPEC=规格完成 | IMPL=实现完成 | RELEASE=tag/release/manifest 一致 | LIVE INT=真实服务集成（非 mock） | EXT CI=外部 CI artifact | ADOPT=下游模块真实采用 | SOAK=生产或类生产长时间运行 | FACTORY=factory_grade_allowed（最高综合等级）
 
@@ -241,9 +241,9 @@
 | ------------------------------------------------------------- | ------------ | ------- | ---------- | ------------------------------------------------------------------- |
 | [signal_factory](https://github.com/ZoneCNH/signal_factory)   | v0.1.0       | ████ 40% | 100%       | 信号生成工厂，消费 DecisionCard→SignalIntent[]，冲突门+强度映射，5 tests PASS；SPEC v1.0.0 已补全（386 行 23 节完整，PR #847） |
 | [optimizer](https://github.com/ZoneCNH/optimizer)             | v0.1.0       | ░░░░ 5% | 100%       | 参数优化                                                            |
-| [backtestx](https://github.com/ZoneCNH/backtestx)             | v0.1.0-draft | ░░░░ 5% | 100%       | 回测引擎 — 事件驱动回测、Walk-Forward、蒙特卡洛（7 FR, SPEC draft） |
-| [strategyx](https://github.com/ZoneCNH/strategyx)             | v0.1.0-draft | ░░░░ 5% | 100%       | 策略工厂 — 策略注册、参数管理、信号组合（7 FR, SPEC draft）         |
-| [maestro](https://github.com/ZoneCNH/maestro)                 | v0.1.0-draft | ░░░░ 5% | 100%       | 工作流编排引擎 — DAG 工作流、状态机、错误恢复（9 FR, SPEC draft）   |
+| [backtestx](https://github.com/ZoneCNH/backtestx)             | v0.1.0 | ░░░░ 5% | 100%       | 回测引擎 — 事件驱动回测、Walk-Forward、蒙特卡洛（7 FR, Spec Approved / Tasks Pending） |
+| [strategyx](https://github.com/ZoneCNH/strategyx)             | v0.1.0 | ░░░░ 5% | 100%       | 策略工厂 — 策略注册、参数管理、信号组合（7 FR, Spec Approved / Tasks Pending）         |
+| [maestro](https://github.com/ZoneCNH/maestro)                 | v0.1.0 | ░░░░ 5% | 100%       | 工作流编排引擎 — DAG 工作流、状态机、错误恢复（9 FR, Spec Approved / Tasks Pending）   |
 
 <details>
 <summary>📊 决策域多维成熟度展开（点击展开）</summary>
@@ -253,9 +253,9 @@
 | signal_factory  |  ✅  |  ⚠️  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | v0.1.0；40% 骨架；SPEC v1.0.0 23 节完整（PR #847）；DecisionCard→SignalIntent，5 tests PASS |
 | backtest_engine | — | — | — | — | — | — | — | 已移除 | 2026-06-22 从 module/ 物理移除（迁移至 backtestx） |
 | optimizer       |  ❌  |  ❌  |   N/A   |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | 5%；仅创建，无实现             |
-| backtestx       |  ❌  |  ❌  |   N/A   |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | v0.1.0-draft；7 FR，SPEC draft |
-| strategyx       |  ❌  |  ❌  |   N/A   |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | v0.1.0-draft；7 FR，SPEC draft |
-| maestro         |  ❌  |  ❌  |   N/A   |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | v0.1.0-draft；9 FR，SPEC draft |
+| backtestx       |  ❌  |  ❌  |   N/A   |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | v0.1.0；7 FR，Spec Approved / Tasks Pending |
+| strategyx       |  ❌  |  ❌  |   N/A   |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | v0.1.0；7 FR，Spec Approved / Tasks Pending |
+| maestro         |  ❌  |  ❌  |   N/A   |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | v0.1.0；9 FR，Spec Approved / Tasks Pending |
 
 > **维度说明**：SPEC=规格完成 | IMPL=实现完成 | RELEASE=tag/release/manifest 一致 | LIVE INT=真实服务集成（非 mock） | EXT CI=外部 CI artifact | ADOPT=下游模块真实采用 | SOAK=生产或类生产长时间运行 | FACTORY=factory_grade_allowed（最高综合等级）
 
@@ -267,8 +267,8 @@
 | --------------------------------------------------------------- | ------------ | ------- | ---------- | ------------------------------------------------------------ |
 | [settlement](https://github.com/ZoneCNH/settlement)             | v0.1.0       | ░░░░ 5% | 100%       | 结算与对账                                                   |
 | [riskx](https://github.com/ZoneCNH/riskx)                       | v0.1.0 | ████░ 40% | 100%       | 风控引擎 — ✅ 最小实现（仓位上限/最大持仓/熔断门禁，7 tests PASS，消费 contracts.SignalIntent）  |
-| [orderx](https://github.com/ZoneCNH/orderx)                     | v0.1.0-draft | ░░░░ 5% | 100%       | 订单管理器 — 订单生命周期、SOR、状态机（7 FR, SPEC draft）   |
-| [positionx](https://github.com/ZoneCNH/positionx)               | v0.1.0-draft | ░░░░ 5% | 100%       | 仓位管理器 — 实时仓位追踪、PnL、敞口监控（7 FR, SPEC draft） |
+| [orderx](https://github.com/ZoneCNH/orderx)                     | v0.1.0 | ░░░░ 5% | 100%       | 订单管理器 — 订单生命周期、SOR、状态机（7 FR, Spec Approved / Tasks Pending）   |
+| [positionx](https://github.com/ZoneCNH/positionx)               | v0.1.0 | ░░░░ 5% | 100%       | 仓位管理器 — 实时仓位追踪、PnL、敞口监控（7 FR, Spec Approved / Tasks Pending） |
 
 <details>
 <summary>📊 执行域多维成熟度展开（点击展开）</summary>
@@ -280,8 +280,8 @@
 | portfolio_engine | — | — | — | — | — | — | — | 已移除 | 2026-06-22 从 module/ 物理移除（迁移至 positionx） |
 | settlement       |  ❌  |  ❌  |   N/A   |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | 5%；仅创建，无实现             |
 | riskx            |  ❌  |  ❌  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ⚠️    | v0.1.0；最小实现（仓位检查+熔断，7 tests PASS）；消费 contracts.SignalIntent P1 DTO |
-| orderx           |  ❌  |  ❌  |   N/A   |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | v0.1.0-draft；7 FR，SPEC draft |
-| positionx        |  ❌  |  ❌  |   N/A   |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | v0.1.0-draft；7 FR，SPEC draft |
+| orderx           |  ❌  |  ❌  |   N/A   |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | v0.1.0；7 FR，Spec Approved / Tasks Pending |
+| positionx        |  ❌  |  ❌  |   N/A   |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | v0.1.0；7 FR，Spec Approved / Tasks Pending |
 
 > **维度说明**：SPEC=规格完成 | IMPL=实现完成 | RELEASE=tag/release/manifest 一致 | LIVE INT=真实服务集成（非 mock） | EXT CI=外部 CI artifact | ADOPT=下游模块真实采用 | SOAK=生产或类生产长时间运行 | FACTORY=factory_grade_allowed（最高综合等级）
 
@@ -376,7 +376,7 @@
 ### 🔴 决策域（阻塞）
 
 - signal_factory v0.1.0 骨架完成（40%）：DecisionCard→SignalIntent 链路打通；optimizer 仅创建（5%）
-- backtestx / strategyx / maestro SPEC 已创建（v0.1.0-draft）
+- backtestx / strategyx / maestro 已推进至 Spec Approved / Tasks Pending（v0.1.0）
 - **阻塞项**：依赖分析域产出因子；signal_factory 待接入真实因子信号
 
 ### 🔴 执行域（阻塞）
