@@ -1,55 +1,65 @@
-# Binance Data Lifecycle Discussion Draft
+# module/binance DATA-LIFECYCLE
 
-Status: discussion draft  
-Last-Updated: 2026-06-22  
-Source: `docs/report/binance/goal-execution-plan-20260622.md` stage 2  
-Spec-Impact: none in this draft; `SPEC.md` remains unchanged until the listed FRs are approved.
+## Metadata
+
+- Status: Discussion draft for Stage2; not an approved SPEC change
+- Last-Updated: 2026-06-22
+- Scope: lifecycle gaps before the next `module/binance/SPEC.md` bump
+- Spec-Impact: This document does not modify `SPEC.md`; it prepares review input for a later approved bump.
+- Source: `SPEC.md`, `TRACEABILITY.md`, `RUNTIME-MAPPING.md`, `BOUNDARY-GATES.md`, `IMPLEMENTATION-PLAN.md`, `docs/report/binance/goal-execution-plan-20260622.md`
 
 ## Purpose
 
-This document collects the data-lifecycle gaps that must be resolved before expanding the Binance module beyond the current 4×4 market-data contract. It is intentionally a planning artifact: it defines landing points, version bumps, and dependencies without claiming runtime implementation.
+Stage2 needs a focused lifecycle draft so retention, replay, archival, idempotency, and deletion semantics can be reviewed before they become normative requirements. This file records proposed gaps and FR landing points only; runtime acceptance still depends on future SPEC, task, and test updates.
 
-## Fifteen lifecycle gaps
+## Lifecycle gap register
 
-| Gap | Area | Description | Proposed landing |
-|---|---|---|---|
-| RT-01 | Real-time | Symbol discovery and filtering must define which instruments are subscribed, excluded, and refreshed. | FR-012 |
-| RT-02 | Real-time | WebSocket connection policy must define sharding, reconnect, backoff, and listen-key/session boundaries. | FR-013 |
-| RT-03 | Real-time | Bar interval subscriptions must be explicit instead of implied by event type alone. | FR-014 |
-| RT-04 | Real-time | Depth snapshot tier and delta reconciliation must define freshness and recovery limits. | FR-015 |
-| RT-05 | Real-time | Real-time gap detection must state when a stream gap becomes a backfill job. | FR-017 |
-| RT-06 | Real-time | Stream lifecycle operations must expose safe pause/resume/reload behavior. | FR-024 |
-| HIST-01 | Historical | Cold-start bootstrap must define how far back each product/event line is hydrated. | FR-016 |
-| HIST-02 | Historical | Backfill scheduling must preserve priority between catch-up and live ingestion. | FR-018 |
-| HIST-03 | Historical | Backfill idempotency keys must prevent duplicate writes across retries. | FR-019 |
-| HIST-04 | Historical | Pagination, rate limits, and retry budgets must be bounded per Binance API family. | FR-018 |
-| HIST-05 | Historical | Hot/cold retention must define taosx, clickhousex, and ossx ownership by data class. | FR-016 |
-| HIST-06 | Historical | Replay manifests must make archival reloads auditable and repeatable. | FR-022 |
-| HIST-07 | Historical | Completeness checks must compare expected vs persisted intervals and events. | FR-017 |
-| HIST-08 | Historical | Daily reconciliation must define correction, alerting, and replay triggers. | FR-021 |
-| HIST-09 | Historical | Funding-rate and mark-price data need dedicated lifecycle rules before event-type expansion. | FR-020 |
+| Gap | Area | Current risk | Proposed closure |
+| --- | --- | --- | --- |
+| DL-GAP-001 | Ingest identity | Product-line + symbol collisions can leak across spot, USDⓈ-M, COIN-M, and options. | Require canonical `InstrumentKey` on every persisted and fanned-out fact. |
+| DL-GAP-002 | Event time | Exchange time, server receive time, and decision time are not uniformly distinguished. | Persist all three timestamps and declare query defaults. |
+| DL-GAP-003 | Idempotency | Duplicate payload and duplicate key with different payload need separate outcomes. | Standardize `redisx` SetNX key, conflict marker, and retry handling. |
+| DL-GAP-004 | Ack boundary | The exact side-effect set required before NATS Ack can drift. | Keep Ack after redisx + taosx + postgresx + kafkax required handoff. |
+| DL-GAP-005 | Hot cache | Redis hot snapshots lack freshness and stale-read behavior. | Define TTL, stale response metadata, and degradation behavior. |
+| DL-GAP-006 | Time-series retention | taosx retention cutoff and partition deletion are not independently reviewable. | Gate deletion behind archival ETag proof and replay window checks. |
+| DL-GAP-007 | Cold archive | OSS path, object format, and replay metadata can diverge from query semantics. | Treat path format and parquet schema as acceptance-covered contracts. |
+| DL-GAP-008 | Metadata catalog | Symbol lifecycle, contract expiry, and options identity updates need durable history. | Use postgresx catalog versioning and replayable status transitions. |
+| DL-GAP-009 | OLAP backfill | clickhousex analytics can miss late or replayed facts. | Define taosx→clickhousex ETL watermark and correction policy. |
+| DL-GAP-010 | Kafka fanout | Kafka topic naming drift can couple downstream consumers to NATS subjects. | Keep Kafka topics on `binance.{product_line}.{event_type}.v1`. |
+| DL-GAP-011 | Dead letters | Retry exhaustion evidence is not tied to replay and incident ownership. | Add DLQ envelope, alert, and replay owner requirements. |
+| DL-GAP-012 | Schema evolution | Payload field additions need compatibility rules before downstream use. | Add additive-only compatibility and versioned envelope guidance. |
+| DL-GAP-013 | Audit evidence | Lifecycle operations can pass locally without durable proof. | Store command output / CI link / runtime SHA in traceability evidence. |
+| DL-GAP-014 | Data deletion | Manual deletion has no documented safety interlock. | Require two-phase delete: archive proof, query drain, then hot-delete. |
+| DL-GAP-015 | Recovery drill | No explicit restore drill proves cold archive can rebuild hot stores. | Add periodic replay drill and acceptance evidence. |
 
-## Proposed FR landing map
+## Proposed FR landing points
 
-| Issue | FR | Scope | Bump | Depends on |
-|---|---|---|---|---|
-| #880 | FR-012 Symbol Discovery & Filtering | Define catalog source, include/exclude filters, and symbol identity refresh. | SPEC v2.4.0 | Stage 0 naming/topic convergence |
-| #881 | FR-013 WebSocket Connection Policy | Define stream sharding, reconnect/backoff, and session ownership. | SPEC v2.4.0 | FR-012 |
-| #882 | FR-014 Bar Interval Subscription Set | Define supported intervals and subscription matrix per product line. | SPEC v2.4.0 | FR-012 |
-| #883 | FR-015 Depth Snapshot Tier | Define snapshot levels, delta reconciliation, and freshness limits. | SPEC v2.4.0 | FR-013 |
-| #884 | FR-016 Historical Backfill on Cold Start | Define bootstrap ranges and storage ownership. | SPEC v2.5.0 | FR-012, FR-014 |
-| #885 | FR-017 Gap Detection & Fill | Convert stream/persistence gaps into bounded backfill jobs. | SPEC v2.5.0 | FR-013, FR-016 |
-| #886 | FR-018 Backfill Throttle & Priority | Define scheduling priority, rate limits, and API budgets. | SPEC v2.5.0 | FR-016 |
-| #887 | FR-019 Backfill Idempotency Key Strategy | Define dedupe keys and retry-safe writes. | SPEC v2.5.0 | FR-016, FR-017 |
-| #888 | FR-020 Funding Rate / Mark Price Stream | Add funding/mark-price lifecycle and event-type expansion plan. | SPEC v3.0.0 MAJOR | Stages 3–4 complete |
-| #889 | FR-021 Daily Reconciliation Job | Define daily completeness/correction workflow. | SPEC v3.0.0 MAJOR | FR-017, FR-019 |
-| #890 | FR-022 Cold Data Rehydration | Define archive replay manifests and reload workflow. | SPEC v3.0.0 MAJOR | FR-016, FR-021 |
-| #891 | FR-023 Backfill Progress API | Expose backfill state and progress through admin/API boundaries. | SPEC v3.1.0 | FR-018, FR-019 |
-| #892 | FR-024 Symbol Subscription Hot Reload | Expose safe symbol reload without process restart. | SPEC v3.1.0 | FR-012, FR-013 |
+These are suggested landing points for the next approved SPEC revision. They are intentionally not applied to `SPEC.md` in Stage2.
 
-## Non-goals for this draft
+| Suggested FR | Draft title | Depends on | Bump impact |
+| --- | --- | --- | --- |
+| FR-012 | Lifecycle evidence bundle for ingest, storage, archive, and fanout | TRACEABILITY evidence convention | minor |
+| FR-013 | Instrument identity history and contract lifecycle catalog | domain_market, postgresx | minor |
+| FR-014 | Event-time / receive-time / decision-time semantics | domain_market, taosx, clickhousex | minor |
+| FR-015 | Idempotency conflict ledger | redisx, postgresx | minor |
+| FR-016 | Ack boundary proof before NATS Ack | natsx, redisx, taosx, postgresx, kafkax | minor |
+| FR-017 | Hot cache freshness and stale-read contract | redisx, Gin API | minor |
+| FR-018 | taosx retention and partition delete gate | taosx, ossx | minor |
+| FR-019 | OSS archive manifest and replay contract | ossx, parquet reader, postgresx | minor |
+| FR-020 | clickhousex ETL watermark and late-fact correction | clickhousex, taosx | minor |
+| FR-021 | Kafka topic versioning and consumer compatibility | kafkax | patch |
+| FR-022 | Dead-letter ownership and replay workflow | natsx, observability | minor |
+| FR-023 | Schema evolution compatibility rules | domain_market, downstream consumers | minor |
+| FR-024 | Recovery drill for cold-to-hot restore | ossx, taosx, postgresx, clickhousex | minor |
 
-- No runtime code changes.
-- No `SPEC.md`, `TRACEABILITY.md`, or `ACCEPTANCE.md` claim that FR-012 through FR-024 are implemented.
-- No event-type expansion before the stage-5 major-bump migration.
-- No reintroduction of local spool/checkpoint/sender paths, gRPC/proto ingest, or embedded server assumptions.
+## Suggested bump and dependency notes
+
+- Proposed bump: `v2.3.0` once these lifecycle requirements are accepted, because the draft adds new lifecycle acceptance surface rather than only correcting prose.
+- No new repository dependency is proposed by this draft. It reuses existing module dependencies: `domain_market`, `natsx`, `redisx`, `taosx`, `postgresx`, `clickhousex`, `ossx`, `kafkax`, Gin, and runtime observability.
+- Review dependency: Stage1 `scripts/check-binance-docs.sh` should pass before this draft is used as SPEC input.
+
+## Non-goals
+
+- Do not modify `SPEC.md` from this Stage2 draft.
+- Do not mark runtime AC/TC items PASS without `/home/binance` evidence.
+- Do not expand Stage2 into Stage3+ implementation work.
