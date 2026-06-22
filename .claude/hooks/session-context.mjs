@@ -61,6 +61,23 @@ if (branch !== "main" && branch !== "HEAD" && branch !== "（非 git 目录）")
   }
 }
 
+// === 主 worktree 落后 main 告警（#9）===
+// 防止"hook 改进合并了但主 worktree 落后 main 导致跑旧 hook 从未生效"。
+// 仅当当前 worktree 是主 worktree（currentTopLevel === projectRoot）且分支非 main 时，
+// 检查 HEAD..origin/main，若非空（落后 main）输出醒目告警。信息护栏，不阻塞。
+if (currentTopLevel === projectRoot && branch !== "main" && branch !== "HEAD" && branch !== "（非 git 目录）") {
+  const behindLog = run("git log HEAD..origin/main --oneline 2>/dev/null") || "";
+  if (behindLog) {
+    const behindCount = behindLog.split("\n").filter(Boolean).length;
+    lines.push("---");
+    lines.push("⚠️⚠️ 主 worktree 在 " + branch + " 落后 main " + behindCount + " commit — hook/脚本改进未生效（跑的是旧版本）！");
+    lines.push("   → 建议先 git push -u origin HEAD 保命当前分支，再 git checkout main && git pull origin main 同步");
+    lines.push("   落后的 commit（main 独有）：");
+    lines.push(...behindLog.split("\n").filter(Boolean).slice(0, 5).map(l => "     " + l));
+    if (behindCount > 5) lines.push("     ... 还有 " + (behindCount - 5) + " 个");
+  }
+}
+
 // === Stale working tree guard ===
 const originDiff = run("git diff origin/main --stat 2>/dev/null") || "";
 if (originDiff) {
@@ -353,7 +370,7 @@ if (existsSync(worktreeBase)) {
   {
     const stashRaw = run("git stash list 2>/dev/null");
     if (stashRaw) {
-      const STASH_TTL_MS = 7 * 24 * 3600 * 1000;
+      const STASH_TTL_MS = 3 * 24 * 3600 * 1000;
       const STASH_LIMIT = 30;
       const AUTO_PATTERN = /^auto-safety-stash-(before|after)-/;
       const curBranch = branch;
@@ -381,7 +398,7 @@ if (existsSync(worktreeBase)) {
         lines.push("---");
         lines.push("📦 Stash GC：" + entries.length + " 个 stash" + (effectiveClean ? "（CLEAN）" : "（dry-run，设 WORKTREE_GC_CLEAN=1 真删）"));
         if (expired.length > 0) {
-          lines.push("   过期自动 stash（>7 天）：" + expired.length + " 个");
+          lines.push("   过期自动 stash（>3 天）：" + expired.length + " 个");
           for (const e of expired.slice(0, 10)) {
             const days = e.ts ? Math.floor((now - e.ts) / 86400000) : "?";
             lines.push("      stash@{" + e.idx + "}  " + days + "d  " + e.msg.slice(0, 50) + (e.srcBranch === curBranch ? "  🛡️ 当前分支来源，跳过" : ""));
@@ -396,13 +413,24 @@ if (existsSync(worktreeBase)) {
         if (effectiveClean) {
           let dropped = 0;
           let guarded = 0;
-          // 从高 idx 往低 idx drop，避免索引漂移
-          const toDrop = expired.filter((e) => e.srcBranch !== curBranch).sort((a, b) => Number(b.idx) - Number(a.idx));
+          // #7: 合并 expired + overLimit 中的自动 stash，去重后按 idx 降序 drop（避免索引漂移）。
+          // 护栏：仅自动 stash 且当前分支非来源分支；手动 stash 永不动。
+          const dropSet = new Map();
+          for (const e of expired) {
+            if (e.srcBranch !== curBranch) dropSet.set(e.idx, e);
+          }
+          for (const e of overLimit) {
+            if (e.isAuto && e.srcBranch !== curBranch) dropSet.set(e.idx, e);
+          }
+          const toDrop = [...dropSet.values()].sort((a, b) => Number(b.idx) - Number(a.idx));
           for (const e of toDrop) {
             try { execFileSync("git", ["stash", "drop", "stash@{" + e.idx + "}"], { stdio: "ignore", timeout: 5000 }); dropped++; } catch {}
           }
-          guarded = expired.length - toDrop.length;
-          lines.push("   已 git stash drop " + dropped + "/" + expired.length + " 个" + (guarded > 0 ? "，保护 " + guarded + " 个当前分支来源" : ""));
+          // guarded = 过期但受保护（当前分支来源）+ 超限但手动/来源受保护
+          const expiredGuarded = expired.filter((e) => e.srcBranch === curBranch).length;
+          const overLimitGuarded = overLimit.filter((e) => !(e.isAuto && e.srcBranch !== curBranch)).length;
+          guarded = expiredGuarded + overLimitGuarded;
+          lines.push("   已 git stash drop " + dropped + " 个（expired+overLimit 合并去重）" + (guarded > 0 ? "，保护 " + guarded + " 个（来源/手动）" : ""));
         }
       }
     }
