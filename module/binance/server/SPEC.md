@@ -400,6 +400,8 @@ server 必须覆盖 `terminal_validation`、`terminal_conflict`、`retryable_sto
 | 配置项 | 类型 | 默认值 | 说明 |
 |--------|------|--------|------|
 | `nats.url` | string | `nats://127.0.0.1:4222` | 外部 NATS JetStream 服务连接地址；server 不内嵌 NATS |
+| `nats.auth.user` | string | `admin` | NATS 用户名 |
+| `nats.auth.password_env` | string | `FOUNDATIONX_NATS_PASSWORD` | NATS 密码环境变量名；明文只来自本地 secret/env |
 | `nats.stream` | string | `BINANCE_MARKET` | JetStream stream 名称 |
 | `nats.subject` | string | `binance.market.>` | 订阅 subject |
 | `nats.durable` | string | `binance-server` | durable consumer 名称 |

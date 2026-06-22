@@ -125,7 +125,7 @@
 | AC-007 | FR-003 | Client 通过 `natsx.Publish(subj, json)` 发布事件，等待 JetStream PubAck（确保持久化） | TC-004 |
 | AC-008 | FR-003 | Server 通过 `natsx.Subscribe(durable)` 订阅，不共享 client 进程或内存 | TC-004, TC-005 |
 | AC-009 | FR-003 | Subject 格式 `binance.market.{product_line}.{event_type}`，大小写统一小写 | TC-004 |
-| AC-010 | FR-003 | C/S 可在不同机器独立启动，CI gate 验证无跨进程 import | TC-005 |
+| AC-010 | FR-003 | C/S 可在不同机器独立启动，共用外部 NATS JetStream 连接地址；CI gate 验证无跨进程 import | TC-005 |
 | AC-011 | FR-004 | JetStream durable consumer（durable: `binance-server`）进程重启后从上次 Ack 位置恢复 | TC-006 |
 | AC-012 | FR-004 | 处理成功（redisx+taosx+postgresx+kafkax handoff 全完成）后 msg.Ack() | TC-006 |
 | AC-013 | FR-004 | 处理失败时 msg.NakWithDelay(5s)，MaxDeliver=5 后进入死信 | TC-006 |
