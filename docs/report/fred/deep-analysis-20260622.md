@@ -15,23 +15,23 @@
 
 ## 2. 证据范围
 
-| 证据 | 结论 | 置信度 |
-| ---- | ---- | ------ |
-| `module/fred/SPEC.md:3` | 规格状态仍是 `Draft`。 | [COMPUTED][HIGH] |
-| `module/fred/SPEC.md:14` | 规格声明自身是目标状态，`/home/fred` 当前仍保留旧 `Stores=None` 边界口径。 | [COMPUTED][HIGH] |
-| `module/fred/SPEC.md:50-63` | 功能需求覆盖启动、配置、FRED client、作业、OSS、TDengine、Postgres、Redis、Kafka、NATS、ClickHouse、API、边界门禁。 | [COMPUTED][HIGH] |
-| `module/fred/SPEC.md:69-76` | 业务规则定义幂等、`available_at` 可见性、Kafka/NATS 分工、checkpoint、可重建读模型、OSS path、`macro_data` 边界。 | [COMPUTED][HIGH] |
-| `module/fred/TRACEABILITY.md:47-53` | 业务规则矩阵与 `SPEC.md` 的 BR-002 到 BR-007 编号存在漂移。 | [COMPUTED][HIGH] |
-| `module/fred/TRACEABILITY.md:71-73` | 未闭合项已承认旧零存储门禁、`domain_macro` 类型路径、dev 配置映射三项缺口。 | [COMPUTED][HIGH] |
-| `module/fred/IMPLEMENTATION-PLAN.md:26-33` | 阶段 1 已计划补 `bootstrap/configx`、配置 key mapping、边界脚本迁移和 redaction 测试。 | [COMPUTED][HIGH] |
-| `/home/fred/cmd/fred-server/main.go:1-4` | 当前服务入口注释仍称 `adapter 零存储`。 | [COMPUTED][HIGH] |
-| `/home/fred/cmd/fred-server/main.go:17-20` | 当前 `bootstrap.Build` 使用 `Stores: bootstrap.None`。 | [COMPUTED][HIGH] |
-| `/home/fred/scripts/boundary-gates.sh:101-105` | 当前边界门禁仍禁止直接依赖 L2 存储适配器，规则名是 `no-storage-adapter`。 | [COMPUTED][HIGH] |
-| `docs/architecture/01-overview.md:107` | 全局架构仍写 adapter 进程使用 `Stores=None`，未区分 `fred` 目标 C/S provider service。 | [COMPUTED][HIGH] |
-| `docs/architecture/05-foundation.md:164` | 全局模块表把 `fred` 标为已有、进度约 `80%`。 | [COMPUTED][HIGH] |
-| `sre/secrets/env/dev.md` 无值匹配计数 | 关键词 `fred/FRED/taos/tdengine/kafka/postgres/redis/oss/nats/clickhouse` 匹配计数为 33；未读取或复制 secret 值。 | [COMPUTED][HIGH] |
-| `/home/fred` 验证 | 当前 `./scripts/boundary-gates.sh` 9 项通过，`go test ./...` 通过；这只能证明旧骨架当前自洽，不能证明目标 C/S 服务完成。 | [COMPUTED][HIGH] |
-| `.github/ci/spec-lint.sh` | 全仓 spec lint 退出码为 1；其中 `fred` 行显示 `23/23 sections, 14 FRs, 15 WHEN clauses`。 | [COMPUTED][HIGH] |
+| 证据                                           | 结论                                                                                                                     | 置信度           |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ | ---------------- |
+| `module/fred/SPEC.md:3`                        | 规格状态仍是 `Draft`。                                                                                                   | [COMPUTED][HIGH] |
+| `module/fred/SPEC.md:14`                       | 规格声明自身是目标状态，`/home/fred` 当前仍保留旧 `Stores=None` 边界口径。                                               | [COMPUTED][HIGH] |
+| `module/fred/SPEC.md:50-63`                    | 功能需求覆盖启动、配置、FRED client、作业、OSS、TDengine、Postgres、Redis、Kafka、NATS、ClickHouse、API、边界门禁。      | [COMPUTED][HIGH] |
+| `module/fred/SPEC.md:69-76`                    | 业务规则定义幂等、`available_at` 可见性、Kafka/NATS 分工、checkpoint、可重建读模型、OSS path、`macro_data` 边界。        | [COMPUTED][HIGH] |
+| `module/fred/TRACEABILITY.md:47-53`            | 业务规则矩阵与 `SPEC.md` 的 BR-002 到 BR-007 编号存在漂移。                                                              | [COMPUTED][HIGH] |
+| `module/fred/TRACEABILITY.md:71-73`            | 未闭合项已承认旧零存储门禁、`domain_macro` 类型路径、dev 配置映射三项缺口。                                              | [COMPUTED][HIGH] |
+| `module/fred/IMPLEMENTATION-PLAN.md:26-33`     | 阶段 1 已计划补 `bootstrap/configx`、配置 key mapping、边界脚本迁移和 redaction 测试。                                   | [COMPUTED][HIGH] |
+| `/home/fred/cmd/fred-server/main.go:1-4`       | 当前服务入口注释仍称 `adapter 零存储`。                                                                                  | [COMPUTED][HIGH] |
+| `/home/fred/cmd/fred-server/main.go:17-20`     | 当前 `bootstrap.Build` 使用 `Stores: bootstrap.None`。                                                                   | [COMPUTED][HIGH] |
+| `/home/fred/scripts/boundary-gates.sh:101-105` | 当前边界门禁仍禁止直接依赖 L2 存储适配器，规则名是 `no-storage-adapter`。                                                | [COMPUTED][HIGH] |
+| `docs/architecture/01-overview.md:107`         | 全局架构仍写 adapter 进程使用 `Stores=None`，未区分 `fred` 目标 C/S provider service。                                   | [COMPUTED][HIGH] |
+| `docs/architecture/05-foundation.md:164`       | 全局模块表把 `fred` 标为已有、进度约 `80%`。                                                                             | [COMPUTED][HIGH] |
+| `sre/secrets/env/dev.md` 无值匹配计数          | 关键词 `fred/FRED/taos/tdengine/kafka/postgres/redis/oss/nats/clickhouse` 匹配计数为 33；未读取或复制 secret 值。        | [COMPUTED][HIGH] |
+| `/home/fred` 验证                              | 当前 `./scripts/boundary-gates.sh` 9 项通过，`go test ./...` 通过；这只能证明旧骨架当前自洽，不能证明目标 C/S 服务完成。 | [COMPUTED][HIGH] |
+| `.github/ci/spec-lint.sh`                      | 全仓 spec lint 退出码为 1；其中 `fred` 行显示 `23/23 sections, 14 FRs, 15 WHEN clauses`。                                | [COMPUTED][HIGH] |
 
 ## 3. 关键问题排序
 
@@ -85,18 +85,18 @@
 
 ## 4. 建议补充清单
 
-| 优先级 | 补充项 | 目标文件 | 验收方式 |
-| ------ | ------ | -------- | -------- |
-| P0 | 修正 BR 编号漂移，确保 `TRACEABILITY.md` 与 `SPEC.md` 一一对应。 | `module/fred/TRACEABILITY.md` | `rg "BR-00[2-7]" module/fred/SPEC.md module/fred/TRACEABILITY.md` 人工核对无错位。 |
-| P0 | 新增 redacted config mapping。 | `module/fred/SPEC.md` 或单独附录 | 映射表只含 key 名、类型、必填性、redaction 策略，不含 secret 值。 |
-| P0 | 更新 `/home/fred` 边界门禁目标。 | `/home/fred/scripts/boundary-gates.sh` | 门禁允许共享基座存储 adapter，禁止直接驱动、私有连接池和绕过 `configx`。 |
-| P0 | 增加配置 redaction 测试。 | `/home/fred` tests | 缺失配置 fail fast，日志和错误不泄露值。 |
-| P1 | 冻结 `domain_macro` 绑定表。 | `module/fred/SPEC.md` 附录或 Task Spec | 每个 FRED DTO 字段有目标 domain 字段、时区、空值、单位规则。 |
-| P1 | 固化 API 和 error contract。 | `module/fred/SPEC.md` 或 Task Spec | API 请求、响应、状态码、错误类、版本字段可测试。 |
-| P1 | 固化 Kafka/NATS contract。 | `module/fred/SPEC.md` 或 contracts 目录 | Kafka durable event 与 NATS control subject 不混用。 |
-| P1 | 固化七类介质最小 schema。 | `module/fred/SPEC.md` 附录或 Task Spec | 单 series backfill 能证明 raw、metadata、observation、cache、read model 和事件一致。 |
-| P1 | 补 no-lookahead 和 revision fixture。 | `/home/fred` tests | `released_at < available_at` 时，下游查询在 `available_at` 前不可见。 |
-| P2 | 更新全局架构口径。 | `docs/architecture/01-overview.md`, `docs/architecture/05-foundation.md` | 不再把 `fred` 目标误读为普通零存储 adapter。 |
+| 优先级 | 补充项                                                           | 目标文件                                                                 | 验收方式                                                                             |
+| ------ | ---------------------------------------------------------------- | ------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ |
+| P0     | 修正 BR 编号漂移，确保 `TRACEABILITY.md` 与 `SPEC.md` 一一对应。 | `module/fred/TRACEABILITY.md`                                            | `rg "BR-00[2-7]" module/fred/SPEC.md module/fred/TRACEABILITY.md` 人工核对无错位。   |
+| P0     | 新增 redacted config mapping。                                   | `module/fred/SPEC.md` 或单独附录                                         | 映射表只含 key 名、类型、必填性、redaction 策略，不含 secret 值。                    |
+| P0     | 更新 `/home/fred` 边界门禁目标。                                 | `/home/fred/scripts/boundary-gates.sh`                                   | 门禁允许共享基座存储 adapter，禁止直接驱动、私有连接池和绕过 `configx`。             |
+| P0     | 增加配置 redaction 测试。                                        | `/home/fred` tests                                                       | 缺失配置 fail fast，日志和错误不泄露值。                                             |
+| P1     | 冻结 `domain_macro` 绑定表。                                     | `module/fred/SPEC.md` 附录或 Task Spec                                   | 每个 FRED DTO 字段有目标 domain 字段、时区、空值、单位规则。                         |
+| P1     | 固化 API 和 error contract。                                     | `module/fred/SPEC.md` 或 Task Spec                                       | API 请求、响应、状态码、错误类、版本字段可测试。                                     |
+| P1     | 固化 Kafka/NATS contract。                                       | `module/fred/SPEC.md` 或 contracts 目录                                  | Kafka durable event 与 NATS control subject 不混用。                                 |
+| P1     | 固化七类介质最小 schema。                                        | `module/fred/SPEC.md` 附录或 Task Spec                                   | 单 series backfill 能证明 raw、metadata、observation、cache、read model 和事件一致。 |
+| P1     | 补 no-lookahead 和 revision fixture。                            | `/home/fred` tests                                                       | `released_at < available_at` 时，下游查询在 `available_at` 前不可见。                |
+| P2     | 更新全局架构口径。                                               | `docs/architecture/01-overview.md`, `docs/architecture/05-foundation.md` | 不再把 `fred` 目标误读为普通零存储 adapter。                                         |
 
 ## 5. 不建议补充的内容
 
