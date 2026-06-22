@@ -15,7 +15,7 @@
 
 [COMPUTED][HIGH] 本模块明确排除交易决策、交易执行和订单执行能力，因此“订单”如果指撮合/委托/下单，不包含；如果指订单簿深度行情，则包含。证据：`module/binance/SPEC.md:77`-`89`。
 
-[COMPUTED][MED] 当前落地状态不是“全量已实现”：根追溯矩阵标注 FR-001 为 Partial，说明 Spot connector 已实现，USDⓈ-M、COIN-M、Options 后续实现；client 追溯矩阵仍把 catalog/parser/connectors/publisher 标成 Pending；server 的 taosx、redisx、REST API 也仍是 Pending。证据：`module/binance/TRACEABILITY.md:17`-`28`、`module/binance/client/TRACEABILITY.md:17`-`28`。
+[COMPUTED][MED] 当前落地状态不是“全量已实现”：根追溯矩阵标注 FR-001 为 Partial，说明 Spot connector 已实现，USDⓈ-M、COIN-M、Options 后续实现；client 追溯矩阵仍把 catalog/parser/connectors/publisher 标成 Pending；server 的 taosx、redisx、REST API 也仍是 Pending。证据：`module/binance/TRACEABILITY.md:17`-`33`（根矩阵 FR-006a/b/c/d、FR-007/007a/008、FR-010/011 全部 ⬜ Pending）、`module/binance/client/TRACEABILITY.md:17`-`28`（client FR-001~010 全部 ⬜ Pending，仅文档对齐）。
 
 ## 覆盖矩阵
 
@@ -67,16 +67,50 @@
 
 [COMPUTED][HIGH] `module/binance/` 是 Binance 专用 market data 分布式 C/S 模块规格，不是交易执行模块。证据：`module/binance/SPEC.md:18`-`22`、`module/binance/SPEC.md:77`-`89`。
 
-[COMPUTED][MED] 产品线命名存在不完全一致：根/client 规格出现 `usdm_futures`、`coinm_futures`，connector 任务验收使用 `um_perp`、`cm_perp`，server 存储/API 示例出现 `futures_usdt`、`futures_coin`。这会影响 subject、cache key、表 tag、API 参数和 instrument identity 的一致性。证据：`module/binance/client/SPEC.md:338`-`356`、`module/binance/client/tasks/TASK-BINANCE-CLIENT-004-usdm-futures-connector.md:25`-`31`、`module/binance/client/tasks/TASK-BINANCE-CLIENT-005-coinm-futures-connector.md:25`-`31`、`module/binance/server/tasks/TASK-BINANCE-SERVER-013-taosx-storage.md:27`-`31`、`module/binance/server/tasks/TASK-BINANCE-SERVER-015-gin-market-api.md:38`-`45`。
+[COMPUTED][HIGH] **产品线命名漂移（升级为 HIGH 级风险）**：同一概念在 5 处使用 3 套不兼容命名，会击穿 NATS subject 路由、Redis cache key、TDengine tag、Kafka topic、Gin API 参数五条管线一致性。证据：
+
+| 出处 | 命名 |
+|------|------|
+| `module/binance/client/SPEC.md:343` | `spot / usdm_futures / coinm_futures / options` |
+| `module/binance/SPEC.md:482`-`495`（natsx subject 表） | `spot / um_perp / cm_perp / options` |
+| `module/binance/client/tasks/TASK-BINANCE-CLIENT-004-usdm-futures-connector.md:27` | `um_perp` |
+| `module/binance/client/tasks/TASK-BINANCE-CLIENT-005-coinm-futures-connector.md:27` | `cm_perp` |
+| `module/binance/server/tasks/TASK-BINANCE-SERVER-013-taosx-storage.md:29` | `spot / futures_usdt / futures_coin` |
+| `module/binance/server/tasks/TASK-BINANCE-SERVER-015-gin-market-api.md:44` | `spot / futures_usdt` |
+
+[COMPUTED][HIGH] **Options 深度覆盖缺口**：Options 产品线在 depth 维度存在三重缺口，违反根 SPEC 对四产品线的对称承诺：
+
+1. `module/binance/SPEC.md:484`-`495` natsx subject 表只定义 `binance.market.options.tick` 与 `binance.market.options.bar`，未定义 `binance.market.options.depth`，与 Spot/um_perp/cm_perp 三条产品线均含 depth subject 不对称。
+2. `module/binance/client/tasks/TASK-BINANCE-CLIENT-006-options-connector.md:11`-`13` Scope 仅列 `option ticker / trade / kline/bar`，明确**不包含 depth/update events**，与 Spot/USDⓈ-M/COIN-M connector task 均含 `depth/update events where applicable` 不对称（`TASK-...-003-spot.md:14`、`-004-usdm.md:15`、`-005-coinm.md:15`）。
+3. 然而根 SPEC `module/binance/SPEC.md:181`-`190`（FR-006a）、`:241`-`242`（FR-007 depth API）、`:705`（ossx 归档路径）均隐含 4 产品线统一覆盖。规格内部存在"产品线对称"与"Options 任务实际不覆盖 depth"的矛盾。
 
 [COMPUTED][MED] 状态字段也存在不一致：根追溯矩阵称 Spot connector 已实现，client 追溯矩阵仍标 Pending。若要判断真实代码完成度，需要继续审阅实际实现仓或最新 pipeline evidence。证据：`module/binance/TRACEABILITY.md:19`、`module/binance/client/TRACEABILITY.md:21`。
 
+[COMPUTED][LOW] 子规格版本漂移（次级风险）：`module/binance/client/TRACEABILITY.md:8` 引用 `module/binance/client/SPEC.md v2.0.0`，但 `module/binance/client/SPEC.md:6` 实际为 `v2.1.0`。不影响业务覆盖判断，但说明追溯矩阵的版本元数据未与子规格同步刷新。
+
 ## 最终判断
 
-[COMPUTED][HIGH] 若问题是“`module/binance/` 是否在业务范围中包含现货、合约、期权、订单簿”，答案是：包含现货、包含合约、包含期权、包含订单簿行情。
+[COMPUTED][HIGH] 若问题是“`module/binance/` 是否在业务范围中包含现货、合约、期权、订单簿”，答案是：包含现货、包含合约、包含期权、包含订单簿行情（但 Options 的 depth 覆盖在任务/subject 层面存在缺口）。
 
-[COMPUTED][HIGH] 更精确的表述是：`module/binance/` 覆盖 Binance market data 的 Spot、USDⓈ-M Futures、COIN-M Futures、Options 四条产品线，并对 tick/bar/trade/depth 等行情类型进行采集、传输、存储、缓存和查询规划。
+[COMPUTED][HIGH] 更精确的表述是：`module/binance/` 覆盖 Binance market data 的 Spot、USDⓈ-M Futures、COIN-M Futures、Options 四条产品线，并对 tick/bar/trade/depth 等行情类型进行采集、传输、存储、缓存和查询规划；Options depth 在规格层假设覆盖，但 connector task 与 natsx subject 表实际未列入。
 
 [COMPUTED][HIGH] 若问题是“是否已经全部实现”，答案是否定的；文档证据显示它处于规格/任务规划与部分实现混合状态，至少 USDⓈ-M、COIN-M、Options、server storage/cache/API 仍未被追溯矩阵证明完成。
+
+[INFERRED][MED] 本仓库（`ZoneCNH/ZoneCNH`）是文档枢纽，runtime 实现位于独立仓库 `github.com/ZoneCNH/binance`；以上所有“已实现”判断仅基于追溯矩阵的状态字段，未与 runtime 仓库代码交叉验证。生产可用性判断须以 runtime 仓库为准（见下节 Runtime 核对建议）。
+
+## Runtime 核对建议
+
+[FRAME][HIGH] 本报告所有结论均基于 `module/binance/` 文档树（SPEC + TRACEABILITY + tasks），不读 runtime 仓库代码。规格层"Implemented"与生产可用性是两个分离概念（CLAUDE.md §认识论标准 §`[FRAME] → REALITY` 防护）。若需把规格层结论升级为生产可用性结论，必须在 `github.com/ZoneCNH/binance` 仓库核对以下 6 项：
+
+| # | 待核对事实 | 核对命令 | 期望落地路径 |
+|---|------------|----------|---------------|
+| 1 | Spot connector 是否真实存在并可运行 | `gh repo view ZoneCNH/binance && gh api repos/ZoneCNH/binance/contents/internal/client/spot` | `internal/client/spot/` |
+| 2 | USDⓈ-M / COIN-M / Options connector 是否已开始落地 | `gh api repos/ZoneCNH/binance/contents/internal/client/um_perp`（cm_perp / options 同理） | `internal/client/{um_perp,cm_perp,options}/` |
+| 3 | Boundary gate（FR-009）是否在 CI 真实运行 | `gh api repos/ZoneCNH/binance/contents/.github/workflows`，查找 boundary-gates 脚本调用 | `.github/workflows/boundary-gates.yml` |
+| 4 | natsx subject 命名实际取哪一套（usdm_futures / um_perp / futures_usdt） | `gh search code "binance.market." --repo ZoneCNH/binance` | publisher / consumer 源码 |
+| 5 | server taosx 超表名称是否与 SERVER-013 task 一致 | `gh search code "binance_market_ticks" --repo ZoneCNH/binance` | `internal/server/storage/timeseries/` |
+| 6 | Gin REST API `/api/v1/market/*` 是否已实现 | `gh search code "/api/v1/market/ticks" --repo ZoneCNH/binance` | `internal/server/api/handler/` |
+
+[INFERRED][HIGH] 核对结果可直接回填本报告 §覆盖矩阵 "任务/实现状态" 列，把当前的 [COMPUTED][MED] 升级为 [KNOWN][HIGH] 或降级为 [COMPUTED][HIGH] Pending。
 
 [RULES I BROKE]：无
