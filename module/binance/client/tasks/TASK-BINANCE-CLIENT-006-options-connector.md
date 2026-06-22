@@ -11,6 +11,7 @@ Initial scope:
 - option ticker
 - trade
 - kline/bar where supported
+- depth/update events where applicable（Binance EOptions WebSocket `<symbol>@depth1000`，与 Spot/USDⓈ-M/COIN-M connector 对称覆盖）
 - option-specific facts where available
 
 ## Deliverables

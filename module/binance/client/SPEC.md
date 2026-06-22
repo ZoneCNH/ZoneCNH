@@ -3,8 +3,8 @@
 ## 1. Metadata
 
 - Status: Approved
-- Spec-Version: v2.1.0
-- Last-Updated: 2026-06-21
+- Spec-Version: v2.1.1
+- Last-Updated: 2026-06-22
 - Owner: ZoneCNH
 - Layer: 数据域 · Binance 交易所接入
 - Version: v0.1.0
@@ -340,7 +340,7 @@ type IdempotencyKeyer interface {
 | 字段 | 类型 | 必填 | 说明 |
 |------|------|------|------|
 | Exchange | `string` | ✅ | 交易所标识，固定 `"binance"` |
-| ProductLine | `string` | ✅ | 产品线：`spot` / `usdm_futures` / `coinm_futures` / `options` |
+| ProductLine | `string` | ✅ | 产品线：`spot` / `um_perp` / `cm_perp` / `options` |
 | InstrumentType | `string` | ✅ | 品种类型：`spot` / `perpetual` / `future` / `option` |
 | Symbol | `string` | ✅ | Binance 原生 symbol |
 | BaseAsset | `string` | ✅ | 基础资产 |
@@ -471,8 +471,8 @@ client/
 ├── connector/
 │   ├── connector.go             # Connector 接口与公共逻辑
 │   ├── spot.go                  # Spot connector
-│   ├── usdm_futures.go          # USDⓈ-M connector
-│   ├── coinm_futures.go         # COIN-M connector
+│   ├── um_perp.go               # USDⓈ-M connector（um_perp）
+│   ├── cm_perp.go               # COIN-M connector（cm_perp）
 │   ├── options.go               # Options connector
 │   └── connector_test.go
 ├── normalize/
@@ -554,7 +554,7 @@ module/binance/server
 |---------|---------|----------|------|----------|
 | TC-001 | FR-001 | 单元 | 加载包含 4 条产品线的 catalog | 4 条均加载，状态正确 |
 | TC-002 | FR-002 | 单元 | 解析 `BTCUSDT` + `product_line=spot` | 返回 Spot 身份，非 USDⓈ-M |
-| TC-003 | FR-002 | 单元 | 解析 `BTCUSDT` + `product_line=usdm_futures` | 返回 USDⓈ-M 永续身份 |
+| TC-003 | FR-002 | 单元 | 解析 `BTCUSDT` + `product_line=um_perp` | 返回 USDⓈ-M 永续身份 |
 | TC-004 | FR-002 | 单元 | 解析 `BTC-240628-50000-C` | 返回 Options Call 身份 |
 | TC-005 | FR-003 | 集成 | Spot connector 连接并接收事件 | 收到 NormalizedEvent，product_line=spot |
 | TC-006 | FR-003 | 集成 | connector 断开后自动重连 | 连接恢复，事件流继续 |

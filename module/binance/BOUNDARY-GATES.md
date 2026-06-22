@@ -261,7 +261,7 @@ echo "PASS: Wire contract externality gate"
 #!/usr/bin/env bash
 set -euo pipefail
 pl_hits="$(grep -R -n -E \
-  'ProductLine\s*(string|=|:).*\"(spot|usdm_futures|coinm_futures|options)\"' \
+  'ProductLine\s*(string|=|:).*\"(spot|um_perp|cm_perp|options)\"' \
   module/binance --include='*.md' --include='*.go' || true)"
 [ -z "$pl_hits" ] || { echo "FAIL: binance defines canonical ProductLine"; echo "$pl_hits"; exit 1; }
 echo "PASS: Domain-Market gate"

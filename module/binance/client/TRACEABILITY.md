@@ -1,11 +1,11 @@
 # module/binance/client TRACEABILITY
 
 > 追溯矩阵 §1–§7，符合 `docs/governance/TRACEABILITY.md` 标准格式。
-> 数据来源：`module/binance/client/SPEC.md` v2.0.0。
+> 数据来源：`module/binance/client/SPEC.md` v2.1.0。
 
-- Matrix-Version: v2.1.0
+- Matrix-Version: v2.1.1
 - Last-Updated: 2026-06-22
-- Spec-Reference: `module/binance/client/SPEC.md` v2.1.0
+- Spec-Reference: `module/binance/client/SPEC.md` v2.1.1
 
 ---
 
@@ -205,3 +205,4 @@
 | 2026-06-17 | v1.1.0 | §1 FR 命名空间统一，BNC-CLIENT-### → FR-001~010 | ZoneCNH |
 | 2026-06-17 | v1.2.0 | 同步 SPEC v1.0.1 Status 晋升 | ZoneCNH |
 | 2026-06-21 | v2.0.0 | **v2.0.0 分布式架构对齐**：归档 FR-007（SQLite spool）+ FR-008（checkpoint）+ BR-001/002（spool/checkpoint 约束）；FR-009 重写为 natsx Publisher（替代 gRPC bidi stream）；新增 BR-006（PubAck 同步等待）+ BR-007（禁止同进程）；NFR 删除 spool/gRPC 延迟，新增 natsx PubAck 预算；TC-011~013 替换为 natsx publisher 测试；AC 从 38 条精简为 28 条（归档 spool/checkpoint AC）；CI Gate 更新为 cs 包/同进程禁止检查 | ZoneCNH |
+| 2026-06-22 | v2.1.1 | 命名同步：`usdm_futures/coinm_futures` 收敛到 `um_perp/cm_perp`（catalog enum + go 文件名 + TC-003）；Spec-Reference 指向 client/SPEC.md v2.1.1 | ZoneCNH |

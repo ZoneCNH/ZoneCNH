@@ -21,7 +21,7 @@ binance/{product_line}/{symbol}/{YYYY}/{MM}/{DD}/{event_type}.parquet
 
 示例：
 binance/spot/BTCUSDT/2024/01/01/tick.parquet
-binance/futures_usdt/ETHUSDT/2024/01/01/depth.parquet
+binance/um_perp/ETHUSDT/2024/01/01/depth.parquet
 binance/spot/BTCUSDT/2024/01/01/kline_1m.parquet
 ```
 
