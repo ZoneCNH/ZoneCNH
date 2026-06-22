@@ -212,11 +212,11 @@ Subjects:
   binance.market.spot.tick         binance.market.spot.bar
   binance.market.spot.depth        binance.market.spot.trade
   binance.market.um_perp.tick      binance.market.um_perp.bar
-  binance.market.um_perp.depth
+  binance.market.um_perp.depth     binance.market.um_perp.trade
   binance.market.cm_perp.tick      binance.market.cm_perp.bar
-  binance.market.cm_perp.depth
+  binance.market.cm_perp.depth     binance.market.cm_perp.trade
   binance.market.options.tick      binance.market.options.bar
-  binance.market.options.depth
+  binance.market.options.depth     binance.market.options.trade
 
 Server Consumer:
   Durable: binance-server  AckPolicy: explicit  AckWait: 30s  MaxDeliver: 5
@@ -228,10 +228,14 @@ Server Consumer:
 
 ```
 Topics:
-  binance.market.ticks    实时逐笔（按 symbol hash 分区）
-  binance.market.bars     K 线
-  binance.market.depth    深度
-  binance.market.events   状态变更
+  binance.spot.tick.v1          binance.spot.bar.v1
+  binance.spot.depth.v1         binance.spot.trade.v1
+  binance.um_perp.tick.v1       binance.um_perp.bar.v1
+  binance.um_perp.depth.v1      binance.um_perp.trade.v1
+  binance.cm_perp.tick.v1       binance.cm_perp.bar.v1
+  binance.cm_perp.depth.v1      binance.cm_perp.trade.v1
+  binance.options.tick.v1       binance.options.bar.v1
+  binance.options.depth.v1      binance.options.trade.v1
 
 Consumer Groups:
   signal_engine  risk_engine  backtestx  market_regime

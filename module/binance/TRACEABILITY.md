@@ -6,7 +6,7 @@
 
 - Matrix-Version: v2.2.3
 - Last-Updated: 2026-06-22
-- Spec-Reference: `module/binance/SPEC.md` v2.2.2
+- Spec-Reference: `module/binance/SPEC.md` v2.2.3
 
 ---
 
@@ -27,7 +27,7 @@
 | FR-006d | ossx Archival：定时将 taosx 过期数据归档到 OSS，ETag 校验后删热 | AC-026 ~ AC-028 | TC-016, TC-017 | SERVER-016 | ⬜ Pending |
 | FR-007 | Gin Market API：/api/v1/market/* REST 接口，redisx 热缓存 + taosx 回退 | AC-021 ~ AC-025 | TC-012 ~ TC-015 | SERVER-015 | ⬜ Pending |
 | FR-007a | clickhousex Analytics API：/api/v1/analytics/* OLAP 查询（vwap/top-movers/correlation） | AC-038 ~ AC-040 | TC-024 | SERVER-015 | ⬜ Pending（v2.1.0 新增） |
-| FR-008 | kafkax Broadcast：将 accepted facts 广播到 binance.market.* topic | AC-029 ~ AC-031 | TC-018, TC-019 | SERVER-014 | ⬜ Pending |
+| FR-008 | kafkax Broadcast：将 accepted facts 广播到 `binance.{product_line}.{event_type}.v1` Kafka topic | AC-029 ~ AC-031 | TC-018, TC-019 | SERVER-014 | ⬜ Pending |
 | FR-009 | Boundary Enforcement：CI gate 阻断 client/server 跨界、cs 包引用、go.mod 合规 | AC-032 ~ AC-035 | TC-020 ~ TC-022 | SERVER-008 | **Implemented** — runtime CI [boundary-gates.yml](https://github.com/ZoneCNH/binance/actions/workflows/boundary-gates.yml) 已集成（runtime SHA `bae80d6`），BOUNDARY-GATES.md 10/10 PASS |
 | FR-010 | clickhousex OLAP Storage：定时 ETL 聚合 taosx→clickhousex，为 analytics API 提供 OLAP 查询 | AC-041 ~ AC-044 | TC-025, TC-026 | SERVER-017 | ⬜ Pending（v2.1.0 新增） |
 | FR-011 | Distributed Coordinator Lock：redisx SetNX 分布式锁，coordinator HA 选举 + lease 续期 | AC-045 ~ AC-047 | TC-027, TC-028 | SERVER-013 | ⬜ Pending（v2.1.0 新增） |
@@ -144,7 +144,7 @@
 | AC-026 | FR-008 | 每日定时查询 cutoff（now - 90d）之前的 taosx 数据 | TC-016 |
 | AC-027 | FR-008 | ossx ETag 验证通过后才执行 taosx.Delete（先写冷再删热） | TC-016 |
 | AC-028 | FR-008 | 归档路径格式 `binance/{product_line}/{symbol}/{YYYY}/{MM}/{DD}/{event_type}.parquet` | TC-017 |
-| AC-029 | FR-009 | kafkax topic = `binance.market.{product_line}.{event_type}` | TC-018 |
+| AC-029 | FR-009 | kafkax topic = `binance.{product_line}.{event_type}.v1` | TC-018 |
 | AC-030 | FR-009 | partition key = symbol，相同 symbol 有序到达同一 partition | TC-018 |
 | AC-031 | FR-009 | Kafka 不可达时返回 error；未完成 kafkax handoff 前不 Ack，进入 retry/dead-letter/告警路径 | TC-019 |
 | AC-032 | FR-010 | server 源码无 `internal/client` 或 `internal/cs` 导入（CI gate） | TC-020 |

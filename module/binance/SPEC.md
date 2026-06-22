@@ -95,7 +95,7 @@ Binance 行情集成面临以下问题：
 | 消费者 | 使用方式 | 通信协议 |
 |--------|----------|---------|
 | `module/market_data` | HTTP `GET /api/v1/market/*` 主动拉取，或 kafkax topic 消费 | HTTP REST / Kafka |
-| 下游分析域（signal/risk/backtest） | kafkax consumer group 消费 `binance.market.*` topic | Kafka |
+| 下游分析域（signal/risk/backtest） | kafkax consumer group 消费 `binance.{product_line}.{event_type}.v1` topic | Kafka |
 | `module/binance/server` | natsx subscribe `binance.market.>` 消费 client 发布的事件 | NATS JetStream |
 | Operator / SRE | client :8081 / server :8082 Gin admin 端点 | HTTP |
 | CI Pipeline | BOUNDARY-GATES.md gate 脚本执行边界检查 | — |
@@ -278,7 +278,7 @@ Binance 行情集成面临以下问题：
 **功能描述**：server 在 storage 成功后通过 `kafkax` 将 accepted facts 广播给下游消费者。
 
 **WHEN** storage writes 全部成功且 `msg.Ack()` 尚未调用
-**THEN** 调用 `kafkax.Send(topic="binance.market.{product_line}.{event_type}", key=symbol, payload=MarketFactEnvelope)`
+**THEN** 调用 `kafkax.Send(topic="binance.{product_line}.{event_type}.v1", key=symbol, payload=MarketFactEnvelope)`
 
 **WHEN** `kafkax` handoff 成功
 **THEN** 调用 `msg.Ack()`
@@ -501,7 +501,7 @@ type MarketFactEnvelope struct {
 
 ### Server Storage / Fanout / API Surface
 
-Server persists Binance-specific facts through `taosx`（时序）、`clickhousex`（OLAP 分析）、`postgresx`（元数据）、`redisx`（缓存/幂等/锁）adapters, publishes accepted facts through `kafkax` topic `binance.market.*`, and exposes Gin REST `GET /api/v1/market/*` for market_data pull access. `market_data` consumes Binance facts through these surfaces; it does not own Binance persistence.
+Server persists Binance-specific facts through `taosx`（时序）、`clickhousex`（OLAP 分析）、`postgresx`（元数据）、`redisx`（缓存/幂等/锁）adapters, publishes accepted facts through `kafkax` topic `binance.{product_line}.{event_type}.v1`, and exposes Gin REST `GET /api/v1/market/*` for market_data pull access. `market_data` consumes Binance facts through these surfaces; it does not own Binance persistence.
 
 ---
 
@@ -685,7 +685,7 @@ server_unavailable
 | `kafka.auth.mechanism` | `string` | `SASL_PLAINTEXT` | 认证机制 |
 | `kafka.auth.username` | `string` | `admin` | Kafka 用户名 |
 | `kafka.auth.password_env` | `string` | `KAFKA_PASSWORD` | Kafka 密码环境变量名 |
-| `kafka.topic_prefix` | `string` | `binance.market` | topic 前缀 |
+| `kafka.topic_prefix` | `string` | `binance` | topic 前缀 |
 | `kafka.compression` | `string` | `snappy` | 消息压缩算法 |
 | `kafka.retry.max` | `int` | `3` | 发送失败最大重试次数 |
 | `kafka.required_acks` | `string` | `all` | 生产者 ACK 级别 |
@@ -889,7 +889,7 @@ github.com/ZoneCNH/binance/
 | TC-015 | FR-007 | httptest | 请求超过限流 | 返回 429 + Retry-After |
 | TC-016 | FR-008 | 单元 | 超 retention 数据归档 | 先写 `ossx`，ETag 校验通过后删 `taosx` |
 | TC-017 | FR-008 | 单元 | 生成归档路径 | 路径符合 `binance/{product_line}/{symbol}/{YYYY}/{MM}/{DD}/{event_type}.parquet` |
-| TC-018 | FR-008 | 单元 | kafkax topic 与 partition key | topic 为 `binance.market.{product_line}.{event_type}`，key 为 symbol |
+| TC-018 | FR-008 | 单元 | kafkax topic 与 partition key | topic 为 `binance.{product_line}.{event_type}.v1`，key 为 symbol |
 | TC-019 | FR-008 | 单元 | `kafkax` 不可达 | 返回 error，未完成 handoff 前不 Ack |
 | TC-020 | FR-009 | CI | server import `internal/client` 或 `internal/cs` | boundary gate 失败 |
 | TC-021 | FR-009 | CI | reintroduce `binance-market` 引用 | no-legacy gate 失败 |
@@ -1187,7 +1187,7 @@ Binance Exchange (REST/WebSocket)
 | AC-BNC-009 | FR-006d, FR-008      | ossx 归档路径 `binance/{product_line}/{symbol}/{YYYY}/{MM}/{DD}/{event_type}.parquet`；ETag 校验通过才删 taosx 热数据 | TC-016, TC-017                        | Approved |
 | AC-BNC-010 | FR-007               | `GET /api/v1/market/{ticks,bars,depth,trades}/:symbol` 走 redisx 热缓存优先，cache miss 回退 taosx；无效 token 返回 401，超限返回 429 | TC-012, TC-013, TC-014, TC-015        | Approved |
 | AC-BNC-011 | FR-007a, FR-010      | clickhousex analytics API（vwap/top-movers/correlation/volume-profile）通过 OLAP 查询返回结果；不可达返回 503，实时 API 不受影响 | TC-024, TC-025, TC-026                | Approved |
-| AC-BNC-012 | FR-008               | server storage 全部成功后 kafkax Send 到 `binance.market.{product_line}.{event_type}`，key=symbol；handoff 完成前不得 Ack | TC-018, TC-019                        | Approved |
+| AC-BNC-012 | FR-008               | server storage 全部成功后 kafkax Send 到 `binance.{product_line}.{event_type}.v1`，key=symbol；handoff 完成前不得 Ack | TC-018, TC-019                        | Approved |
 | AC-BNC-013 | FR-009, BR-002, BR-003 | CI boundary gate 拦截 client→server internal import / server→client internal import / `internal/cs` 引用 / `binance-market` 引用 | TC-020, TC-021, TC-022                | Approved |
 | AC-BNC-014 | FR-010               | ETL scheduler 每 5 分钟从 taosx 聚合 1m_ohlcv/5m_vwap/15m_stats 写入 clickhousex；失败时跳过本批次不阻塞热路径 | TC-025, TC-026                        | Approved |
 | AC-BNC-015 | FR-011               | redisx SetNX 分布式锁竞选 coordinator；成功者启动 ETL+归档，每 10s 续期 lease；失败时主动 Del 或 lease 过期由 standby 接管 | TC-027, TC-028                        | Approved |

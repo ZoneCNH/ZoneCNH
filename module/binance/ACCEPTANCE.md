@@ -6,7 +6,7 @@
 | --- | --- |
 | Status | Generated from current module SSOT |
 | Last-Updated | 2026-06-22 |
-| Module-Version | v2.2.2 |
+| Module-Version | v2.2.3 |
 | Module-State | 验收清单已补齐；runtime 通过状态仍以实际 `/home/binance` 测试为准 |
 | Runtime-Repo | `/home/binance` |
 | Source | `SPEC.md`, `TRACEABILITY.md`, `client/TRACEABILITY.md`, `server/TRACEABILITY.md`, `BOUNDARY-GATES.md` |
@@ -59,7 +59,7 @@
 | AC-025 | FR-008 | 归档路径遵循 `binance/{product_line}/{symbol}/{YYYY}/{MM}/{DD}/{event_type}.parquet`；每日定时查询 cutoff（now - 90d）之前的 taosx 数据。 | TC-016 | Pending |
 | AC-026 | FR-008 | 删除 `taosx` 旧分区前必须校验对象 ETag；ossx ETag 验证通过后才执行 taosx.Delete（先写冷再删热）。 | TC-016 | Pending |
 | AC-027 | FR-008 | ETag 不匹配时停止删除并报警；ossx path 与 parquet object 格式可回放校验。 | TC-017 | Pending |
-| AC-028 | FR-009 | Server 通过 `kafkax` 发送 `binance.market.{product_line}.{event_type}`；kafkax topic = 同名主题。 | TC-018 | Pending |
+| AC-028 | FR-009 | Server 从 natsx subject `binance.market.{product_line}.{event_type}` 读取 accepted facts 后，通过 `kafkax` 发送 Kafka topic `binance.{product_line}.{event_type}.v1`。 | TC-018 | Pending |
 | AC-029 | FR-009 | Kafka message key 为 symbol 或 instrument identity；partition key = symbol，相同 symbol 有序到达同一 partition。 | TC-018 | Pending |
 | AC-030 | FR-009 | Kafka handoff 失败时不 Ack NATS message；Kafka 不可达时返回 error，进入 retry/dead-letter/告警路径。 | TC-019 | Pending |
 | AC-031 | FR-010 | CI 禁止 `binance-client` 导入 server internals；server 源码无 `internal/client` 或 `internal/cs` 导入。 | TC-020 | PASS |
