@@ -9,6 +9,7 @@
 | Module-Version | v3.0.0 |
 | Module-State | 验收清单已补齐；runtime 通过状态仍以实际 `/home/binance` 测试为准 |
 | Runtime-Repo | `/home/binance` |
+| Status-Layers | L1 Doc Gate = 本清单与 SPEC/TRACEABILITY 一致；L2 Runtime Evidence = `/home/binance` 命令、CI run 或 PR；L3 Report Evidence = `docs/report/binance/**` [COMPUTED] |
 | Source | `SPEC.md`, `TRACEABILITY.md`, `client/TRACEABILITY.md`, `server/TRACEABILITY.md`, `BOUNDARY-GATES.md` |
 
 本文档是验收执行清单，不是通过证明。每个 Pending 项必须由实际命令输出、CI run、测试报告或 traceability 状态更新关闭。

@@ -84,13 +84,13 @@ done
 
 ## R4【硬】状态三层一致
 
-**规则**：FR/BR/AC 的实现状态必须在三个层面一致：
+**规则**：FR/BR/AC 的实现状态必须声明并校验三个层级：
 
-1. **追溯矩阵**（`TRACEABILITY.md`、`{client,server}/TRACEABILITY.md`）"实现状态" 列
-2. **runtime 仓** 实际代码与 CI gate 证据（`gh api repos/ZoneCNH/binance`）
-3. **报告**（`docs/report/binance/**`）的 [COMPUTED] 标签
+1. **L1 Doc Gate**：`TRACEABILITY.md`、`{client,server}/TRACEABILITY.md`、`FEATURES.md`、`ACCEPTANCE.md` 的状态投影一致。
+2. **L2 Runtime Evidence**：runtime 仓实际代码、命令输出、CI run 或 PR 证据一致（`/home/binance` / `github.com/ZoneCNH/binance`）。
+3. **L3 Report Evidence**：`docs/report/binance/**` 的 [COMPUTED] 标签与 L1/L2 口径一致。
 
-**违规**：根矩阵 "Implemented" 但 runtime 仓未推送对应代码；或报告称 Pending 但矩阵称 Implemented
+**违规**：L1 标为 "Implemented" 但 L2 无对应 runtime 证据；或报告称 Pending 但矩阵称 Implemented；或仅有 L1 文档闭环却关闭需要 L2 runtime evidence 的 issue。
 
 **检测**：
 ```bash
@@ -102,9 +102,10 @@ cd /home/binance && bash scripts/boundary-gates.sh 2>&1 | grep -c "PASS"
 ```
 
 **修复义务**：
-- 同步状态时必须附 boundary-gate 输出或 git SHA 证据
+- L1 Doc Gate 只能证明文档一致，不得单独关闭 L2 runtime issue
+- 同步 L2 状态时必须附 boundary-gate 输出、测试输出、CI run、PR 或 git SHA 证据
 - 不可仅凭 "已写代码" 主观判断，必须 CI gate PASS
-- runtime 仓未推送时，所有 FR 实现状态默认 `Pending — 以 runtime 仓为准`
+- runtime 仓未推送或无 fresh evidence 时，所有 FR 实现状态默认 `Pending — 以 runtime 仓为准`
 
 ---
 

@@ -7,6 +7,7 @@
 - Matrix-Version: v3.0.0
 - Last-Updated: 2026-06-23
 - Spec-Reference: `module/binance/SPEC.md` v3.0.0
+- Status-Layers: L1 Doc Gate = 本矩阵与规格/清单一致；L2 Runtime Evidence = `/home/binance` 或 GitHub CI/PR 证据；L3 Report Evidence = `docs/report/binance/**` [COMPUTED] 快照
 
 ---
 
@@ -31,6 +32,7 @@
 | FR-009 | Boundary Enforcement：CI gate 阻断 client/server 跨界、cs 包引用、go.mod 合规 | AC-032 ~ AC-035 | TC-020 ~ TC-022 | SERVER-008 | **Implemented** — runtime CI [boundary-gates.yml](https://github.com/ZoneCNH/binance/actions/workflows/boundary-gates.yml) 已集成（runtime SHA `bae80d6`），BOUNDARY-GATES.md 10/10 PASS |
 | FR-010 | clickhousex OLAP Storage：定时 ETL 聚合 taosx→clickhousex，为 analytics API 提供 OLAP 查询 | AC-041 ~ AC-044 | TC-025, TC-026 | SERVER-017 | ⬜ Pending（v2.1.0 新增） |
 | FR-011 | Distributed Coordinator Lock：redisx SetNX 分布式锁，coordinator HA 选举 + lease 续期 | AC-045 ~ AC-047 | TC-027, TC-028 | SERVER-013 | ⬜ Pending（v2.1.0 新增） |
+| FR-020 | Periodic Futures Data：`funding_rate` / `mark_price` taxonomy、storage/cache/API/fanout 纳入 v3.0.0 | AC-017, AC-021, AC-029, AC-036 | TC-009, TC-012, TC-018, TC-023 | ROOT-004, SERVER-012, SERVER-013, SERVER-014, SERVER-015 | ⬜ Pending L2 Runtime Evidence — L1 Doc Gate 已折入 4 product_line × 6 event_type；runtime capability/status 例外待验证 |
 
 ---
 

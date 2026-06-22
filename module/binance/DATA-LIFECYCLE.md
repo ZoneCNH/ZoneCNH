@@ -1,7 +1,7 @@
 # Binance Data Lifecycle 讨论稿
 
-- Status: Draft / Discussion (non-normative except FR-020, which is folded into Approved SPEC v3.0.0)
-- Issue Scope: #879 pre-draft plus #880~#892 FR review anchors
+- Status: Draft / Discussion for #879 (non-normative); FR-020 is out of #879 scope and handled by #888 normative fold
+- Issue Scope: #879 pre-draft for FR-012~FR-019 and FR-021~FR-024; #880~#887/#889~#892 FR review anchors; #888 tracks FR-020 only
 - Source: `docs/report/binance/deep-analysis-20260622-v4.md` §五~§八
 - Scope: FR-012 ~ FR-019 and FR-021 ~ FR-024 remain discussion draft; FR-020 is folded into `SPEC.md` / `TRACEABILITY.md` v3.0.0.
 - Last-Updated: 2026-06-23
@@ -10,7 +10,7 @@
 
 v4 分析提出 13 条新增需求，覆盖实时采集控制面、历史回填、缺口修复、对账、冷数据回热与运维可见性。FR-020 已作为 v3.0.0 MAJOR taxonomy fold 写入 `SPEC.md`、`NAMING.md` 与 `RULES.md`：`event_type` 从 4 类扩展到 6 类，新增 `funding_rate` / `mark_price`，并完成 RULES R2 4 × 6 矩阵重算。
 
-因此本文件只作为 FR-012~FR-019、FR-021~FR-024 的评审入口：先固定数据生命周期闭环和 FR 草案，再由后续 PR fold into root/client/server SPEC、TRACEABILITY、ACCEPTANCE 与任务矩阵。
+因此本文件只作为 FR-012~FR-019、FR-021~FR-024 的评审入口：先固定数据生命周期闭环和 FR 草案，再由后续 PR fold into root/client/server SPEC、TRACEABILITY、ACCEPTANCE 与任务矩阵。FR-020 的规范化折叠属于 #888，不作为 #879 草案完成条件。
 
 ## 1. 生命周期闭环
 
@@ -45,11 +45,28 @@ symbol discovery
 | #885 | FR-017 | P0 | gap detection | server 每 5min 运行 gap detector；trade 用 `aggTrade.a` 连号校验；bar 按窗口期望条数；gap 入 `binance_backfill_jobs` | server/SPEC §7 |
 | #886 | FR-018 | P0 | backfill throttle | REST token bucket 感知 spot 1200 weight/min、futures 2400 weight/min；80% 预算保留实时控制面，20% 给回填；优先级 trade > bar > tick | server/SPEC §7 |
 | #887 | FR-019 | P0 | replay idempotency | REST 回填幂等键与 WS 一致：trade=`exchange+product_line+symbol+trade_id`，bar=`exchange+product_line+symbol+interval+open_time` | BR-008 extension |
-| #888 | FR-020 | P1 | periodic data | um_perp/cm_perp 订阅 `markPriceUpdate`；`fundingInfo` 8h；新增 `binance_funding_rate` / `binance_mark_price`；event_type 扩展为 `funding_rate` / `mark_price` | NAMING §2 + RULES R2/R3 |
+| #888 | FR-020 | P1 | periodic data | um_perp/cm_perp 订阅 `markPriceUpdate`；`fundingInfo` 8h；新增 `binance_funding_rate` / `binance_mark_price`；event_type 扩展为 `funding_rate` / `mark_price` | handled by #888; folded into SPEC / TRACEABILITY / NAMING / RULES v3.0.0 |
 | #889 | FR-021 | P1 | reconciliation | 每日 04:00 UTC 按 symbol×1d 对账 taosx OHLCV 与 Binance klines；差异超过 0.01% 写 `binance_reconciliation_alerts` | server/SPEC §7 |
 | #890 | FR-022 | P1 | cold rehydration | range query 命中 OSS 归档区时异步 OSS→taosx 回热临时表（24h TTL）；同步返回 202 + `job_id` | FR-007 extension |
 | #891 | FR-023 | P2 | operator visibility | 提供 `GET /api/v1/admin/backfill/jobs` 和 `GET /api/v1/admin/backfill/coverage/:symbol`，暴露 coverage 最早可用时间戳 | server/SPEC §7 |
 | #892 | FR-024 | P2 | hot reload | 提供 `POST /api/v1/admin/symbols/reload`；重读 postgresx 白黑名单；发布 `symbols.changed`；client 增减 stream 无需重启 | client/SPEC §7 + server/SPEC §7 |
+
+## 2.1 #879 草案元数据
+
+| FR | Motivation | Landing | Impact | Version / Dependencies |
+|---|---|---|---|---|
+| FR-012 | symbol 目录必须可发现、过滤和热更新，避免静态列表漂移 | root SPEC §7 + client/SPEC §7 | catalog/control-plane | proposed MINOR; depends postgresx catalog |
+| FR-013 | 长连接采集需要统一重连、限流和 stream 上限 | client/SPEC §7 | websocket reliability | proposed MINOR; depends natsx publish path |
+| FR-014 | 订阅周期必须按 product_line 固定，避免不可用 interval 进入 runtime | NAMING §2 + root SPEC §9 | subscription planner | proposed MINOR; depends product_line matrix |
+| FR-015 | depth 需要区分 partial 与 diff 语义，避免快照拼合错误 | root SPEC §9 | order book ingest | proposed MINOR; depends exchange update_id semantics |
+| FR-016 | 新 symbol 和首次部署需要历史覆盖基线 | server/SPEC §7 Backfill | storage completeness | proposed MINOR; depends REST rate budget |
+| FR-017 | gap detector 是回填触发源，避免静默缺口 | server/SPEC §7 | data quality | proposed MINOR; depends taosx/postgresx jobs |
+| FR-018 | 回填限速必须保护实时链路预算 | server/SPEC §7 | operational safety | proposed MINOR; depends Binance weight model |
+| FR-019 | REST 回填与 WS 实时链路必须共用幂等键 | BR-008 extension | duplicate prevention | proposed MINOR; depends FR-017/FR-018 |
+| FR-021 | 日级对账提供跨源一致性检查 | server/SPEC §7 | reconciliation alerts | proposed MINOR; depends FR-016/FR-017 |
+| FR-022 | 冷数据命中时需要可审计回热流程 | FR-007 extension | archive query UX | proposed MINOR; depends ossx archive layout |
+| FR-023 | operator 需要覆盖率和回填 job 可见性 | server/SPEC §7 | admin visibility | proposed MINOR; depends auth/status/pagination contract |
+| FR-024 | symbol 变更应可热加载，避免重启 client/server | client/SPEC §7 + server/SPEC §7 | control-plane operations | proposed MINOR; depends symbols.changed contract |
 
 ## 3. 评审风险清单
 

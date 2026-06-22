@@ -10,6 +10,7 @@
 | Module-State | 文档治理收敛；runtime 实现状态仍以 `/home/binance` fresh evidence 为准 |
 | Layer | 数据域 / Binance-specific market_data C/S module |
 | Runtime-Repo | `/home/binance` |
+| Status-Layers | L1 Doc Gate = 本投影与 SPEC/TRACEABILITY/ACCEPTANCE 一致；L2 Runtime Evidence = `/home/binance` 命令、CI run 或 PR；L3 Report Evidence = `docs/report/binance/**` [COMPUTED] |
 | Source | `goal.md`, `STANDARD.md`, `SPEC.md`, `DATA-LIFECYCLE.md`, `TRACEABILITY.md`, `BOUNDARY-GATES.md`, `RUNTIME-MAPPING.md`, `IMPLEMENTATION-PLAN.md`, `client/`, `server/`, `tasks/` |
 
 本文档是 `module/binance` 当前规格库的实现投影，不是 runtime 代码验收证据。实际完成状态以 `TRACEABILITY.md`、`client/TRACEABILITY.md`、`server/TRACEABILITY.md` 和 `/home/binance` 的测试证据为准。
