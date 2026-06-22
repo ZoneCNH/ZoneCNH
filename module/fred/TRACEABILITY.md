@@ -17,7 +17,7 @@
 | G-SC-001 独立进程 | FR-001, FR-013 | BR-008 | AC-001 | TC-006 |
 | G-SC-002 配置不泄密 | FR-002 | BR-006 | AC-002 | TC-006 |
 | G-SC-003 领域归一化 | FR-003, FR-005 | BR-001, BR-002 | AC-006 | TC-001, TC-002, TC-005 |
-| G-SC-004 完整持久化 | FR-006, FR-007, FR-008, FR-009, FR-010, FR-011, FR-012 | BR-003, BR-004, BR-005, BR-007 | AC-003, AC-004, AC-005 | TC-003, TC-004 |
+| G-SC-004 完整持久化 | FR-006, FR-007, FR-008, FR-009, FR-010, FR-011, FR-012 | BR-004, BR-005, BR-006, BR-007 | AC-003, AC-004, AC-005 | TC-003, TC-004 |
 | G-SC-005 下游稳定契约 | FR-010, FR-013, FR-014, FR-015 | BR-001, BR-004, BR-008, BR-009 | AC-005, AC-007, AC-009 | TC-006, TC-009 |
 | G-SC-006 回放与 no-lookahead | FR-004, FR-005, FR-006, FR-008 | BR-002, BR-003, BR-007 | AC-003, AC-006 | TC-003, TC-005 |
 
@@ -45,14 +45,14 @@
 
 | BR | 规则摘要 | AC | TC | 状态 |
 | -- | -------- | -- | -- | ---- |
-| BR-001 | 不暴露 provider DTO | AC-006, AC-007 | TC-002, TC-006 | Planned |
-| BR-002 | `available_at` 后才可见 | AC-006 | TC-005 | Planned |
-| BR-003 | provider / series / period / vintage 幂等 | AC-003 | TC-003 | Planned |
-| BR-004 | Kafka 是 durable business event，NATS 是 control plane | AC-005 | TC-004 | Planned |
-| BR-005 | ClickHouse / Redis 可重建 | AC-004 | TC-004 | Planned |
-| BR-006 | OSS raw 路径包含可审计维度 | AC-003 | TC-004 | Planned |
-| BR-007 | Postgres checkpoint 控制作业完成 | AC-003 | TC-003, TC-004 | Planned |
-| BR-008 | `macro_data` 不依赖 `fred/internal/*` | AC-007 | TC-006 | Planned |
+| BR-001 | 不暴露 provider DTO，对外只出服务 API / Kafka 事件 / `pkg/fredx` / `domain_macro` | AC-007 | TC-002, TC-008 | Planned |
+| BR-002 | 相同 provider / series / period / vintage 写入幂等 | AC-003 | TC-003 | Planned |
+| BR-003 | `available_at` 是 no-lookahead 判定依据，晚于 `released_at` 时下游只能在 `available_at` 后使用 | AC-006 | TC-007 | Planned |
+| BR-004 | Kafka 是 durable business event，NATS 只承载 control plane | AC-005 | TC-006 | Planned |
+| BR-005 | Postgres checkpoint 成功推进前，backfill job 不得进入 completed | AC-003 | TC-003, TC-004 | Planned |
+| BR-006 | Redis 与 ClickHouse 均为可重建派生层，不作为唯一权威源 | AC-004 | TC-005 | Planned |
+| BR-007 | OSS raw 路径包含 provider、endpoint、日期、job_id、content hash | AC-003 | TC-004 | Planned |
+| BR-008 | `macro_data` 不依赖 `fred/internal/*`、provider DTO 或私有存储表 | AC-007 | TC-002, TC-008 | Planned |
 | BR-009 | `fred` 不实现 `ms_brain` 的 M/S 状态机、交易许可、仓位折扣或策略判断 | AC-009 | TC-009 | Planned |
 
 ## 验证命令占位
@@ -77,3 +77,4 @@
 | GAP-002 | `domain_macro` 具体类型名和包路径需在代码实施前确认 | 实施阶段 2 先读取领域共享层并锁定契约 |
 | GAP-003 | dev 配置键名需从 `sre/secrets/env/dev.md` 映射，但不能复制值 | 实施阶段 1 只生成 key mapping 和 redaction 测试 |
 | GAP-004 | `ms_brain` 当前证据以文档、spec、YAML 配置为主，尚不能提供真实下游 runtime 消费证明 | 实施阶段 5 先提供 contract fixture；`ms_brain` runtime 落地后补端到端证据 |
+| GAP-005 | BR 编号漂移已修正：`rg -n "BR-00[1-9]" module/fred/SPEC.md module/fred/TRACEABILITY.md` 人工核对 BR-001..009 摘要与 SPEC.md:69-79 一一对应；AC/TC 映射与 ACCEPTANCE.md AC→BR / TC→BR 一致；G-SC-004 补 BR-006、去 BR-003 | 2026-06-22 已闭合，记录为追溯修正证据 |
