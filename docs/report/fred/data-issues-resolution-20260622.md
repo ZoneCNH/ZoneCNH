@@ -8,18 +8,18 @@
 
 ## 1. 总结判断
 
-[COMPUTED][HIGH] `module/fred/SPEC.md` 已经把目标架构定义为独立 C/S 宏观数据服务，并要求共享基座、`domain_macro` 领域共享层、`taos + kafka + postgres + Redis + oss + nats + clickhouse` 七类持久化职责。
-[COMPUTED][HIGH] `/home/fred` 当前实现仍是旧骨架：启动注释为 `adapter 零存储`，bootstrap 配置使用 `Stores: bootstrap.None`，未发现 `internal/server`、`internal/domain`、`internal/store`、`StartBackfill`、`QueryObservations`、`ScanRevisions`、`available_at`、`vintage_at` 或 `domain_macro` 的 Go 实现。
-[INFERRED][HIGH] 因此，fred 的核心问题不是再选择更多存储或再扩展 provider，而是先把 FRED 官方数据语义落成可追溯的数据生命周期：原始响应先归档、领域映射显式化、幂等 checkpoint 可恢复、事实可见性使用 `available_at` 防止未来函数、缺口检测可定位并可重放。
+[COMPUTED][HIGH] `module/fred/SPEC.md` 已经把目标架构定义为独立 C/S 宏观数据服务，并要求共享基座、`domain_macro` 领域共享层、`taos + kafka + postgres + Redis + oss + nats + clickhouse` 七类持久化职责。  
+[COMPUTED][HIGH] `/home/fred` 当前实现仍是旧骨架：启动注释为 `adapter 零存储`，bootstrap 配置使用 `Stores: bootstrap.None`，未发现 `internal/server`、`internal/domain`、`internal/store`、`StartBackfill`、`QueryObservations`、`ScanRevisions`、`available_at`、`vintage_at` 或 `domain_macro` 的 Go 实现。  
+[INFERRED][HIGH] 因此，fred 的核心问题不是再选择更多存储或再扩展 provider，而是先把 FRED 官方数据语义落成可追溯的数据生命周期：原始响应先归档、领域映射显式化、幂等 checkpoint 可恢复、事实可见性使用 `available_at` 防止未来函数、缺口检测可定位并可重放。  
 [INFERRED][MED] 在代码未补齐前，模块只能被视为规格完整但运行态未闭环，不能承诺已具备生产级历史回填、实时同步、缺口修复或下游查询能力。
 
 ## 2. 官方 FRED 数据语义约束
 
-[KNOWN][HIGH] FRED `series/observations` 支持 `realtime_start`、`realtime_end`、`frequency`、`aggregation_method`、`output_type`、`vintage_dates` 等参数；其中 `output_type=2` 面向所有 vintage date 下的所有观测，`output_type=3` 面向新增或修订观测，`output_type=4` 面向 initial release only。
-[KNOWN][HIGH] FRED `series/vintagedates` 返回某个 series 发生新发布或修订的 vintage dates，并且不包含对该 series 没有数据变化的 release date。
-[KNOWN][HIGH] FRED `releases/dates` 文档说明，数据源发布日不一定等于数据在 FRED 或 ALFRED 上可用的时间。
-[KNOWN][HIGH] FRED `series/updates` 返回最近两周内按 `last_updated` 排序的 series 更新列表。
-[KNOWN][HIGH] FRED real-time period 表达事实在某段时间内被认为真实，默认 real-time period 是当天。
+[KNOWN][HIGH] FRED `series/observations` 支持 `realtime_start`、`realtime_end`、`frequency`、`aggregation_method`、`output_type`、`vintage_dates` 等参数；其中 `output_type=2` 面向所有 vintage date 下的所有观测，`output_type=3` 面向新增或修订观测，`output_type=4` 面向 initial release only。  
+[KNOWN][HIGH] FRED `series/vintagedates` 返回某个 series 发生新发布或修订的 vintage dates，并且不包含对该 series 没有数据变化的 release date。  
+[KNOWN][HIGH] FRED `releases/dates` 文档说明，数据源发布日不一定等于数据在 FRED 或 ALFRED 上可用的时间。  
+[KNOWN][HIGH] FRED `series/updates` 返回最近两周内按 `last_updated` 排序的 series 更新列表。  
+[KNOWN][HIGH] FRED real-time period 表达事实在某段时间内被认为真实，默认 real-time period 是当天。  
 [KNOWN][HIGH] FRED observation 的 `value` 以字符串保存以降低精度损失风险，缺失值使用 `"."` 表示。
 
 ## 3. 历史数据问题与解决方案
@@ -34,8 +34,8 @@
 
 ## 4. 实时/实施数据问题与解决方案
 
-[COMPUTED][HIGH] 当前实现只有 `pkg/fredx` provider client、normalizer 和 registry，尚未具备独立 C/S 服务、领域接口、存储端口、队列事件、同步 job 或读模型。
-[COMPUTED][HIGH] 当前边界脚本存在 `no-storage-adapter` gate，仍在阻止 fred 直接接入 ZoneCNH shared storage adapter。
+[COMPUTED][HIGH] 当前实现只有 `pkg/fredx` provider client、normalizer 和 registry，尚未具备独立 C/S 服务、领域接口、存储端口、队列事件、同步 job 或读模型。  
+[COMPUTED][HIGH] 当前边界脚本存在 `no-storage-adapter` gate，仍在阻止 fred 直接接入 ZoneCNH shared storage adapter。  
 [INFERRED][HIGH] 解决实时/实施数据问题的第一步是把边界从“零存储 provider adapter”迁移为“独立宏观数据服务”，但存储接入仍必须通过共享基座组件和领域共享层，不应在 fred 内部手写数据库驱动。
 
 推荐实施路径：
@@ -63,12 +63,12 @@
 
 ## 6. 数据清洗与数据处理规则
 
-[INFERRED][HIGH] fred 的清洗原则应是 raw-first、lossless-normalization、derived-late，即先保存 provider 原文，再做最小无损规范化，最后在可重建读模型中生成派生视图。
-[INFERRED][HIGH] `value` 必须保留原始字符串，并额外解析为 decimal 或 nullable numeric；`"."`、空值和解析失败必须变成 `quality_status`，不能从事实表中静默删除。
-[INFERRED][HIGH] `date`、`realtime_start`、`realtime_end`、`vintage_at`、`released_at`、`available_at` 应同时存在；其中 `available_at` 是防止未来函数的查询门槛。
-[INFERRED][HIGH] `frequency`、`units`、`seasonal_adjustment`、`aggregation_method` 和 provider query params 应进入 metadata 或 observation context，避免不同频率或口径的数据被混写。
-[COMMON][HIGH] 默认不做插值、前向填充或异常值替换；如需要派生序列，应在 ClickHouse 或独立派生层中显式标记 `derived_from`、`method` 和 `generated_at`。
-[INFERRED][HIGH] 幂等键建议使用 `(series_id, observation_date, realtime_start, realtime_end, vintage_at, units, frequency, provider)`；raw manifest 另用 `(provider, endpoint, params_hash, fetched_at_bucket, checksum)` 去重。
+[INFERRED][HIGH] fred 的清洗原则应是 raw-first、lossless-normalization、derived-late，即先保存 provider 原文，再做最小无损规范化，最后在可重建读模型中生成派生视图。  
+[INFERRED][HIGH] `value` 必须保留原始字符串，并额外解析为 decimal 或 nullable numeric；`"."`、空值和解析失败必须变成 `quality_status`，不能从事实表中静默删除。  
+[INFERRED][HIGH] `date`、`realtime_start`、`realtime_end`、`vintage_at`、`released_at`、`available_at` 应同时存在；其中 `available_at` 是防止未来函数的查询门槛。  
+[INFERRED][HIGH] `frequency`、`units`、`seasonal_adjustment`、`aggregation_method` 和 provider query params 应进入 metadata 或 observation context，避免不同频率或口径的数据被混写。  
+[COMMON][HIGH] 默认不做插值、前向填充或异常值替换；如需要派生序列，应在 ClickHouse 或独立派生层中显式标记 `derived_from`、`method` 和 `generated_at`。  
+[INFERRED][HIGH] 幂等键建议使用 `(series_id, observation_date, realtime_start, realtime_end, vintage_at, units, frequency, provider)`；raw manifest 另用 `(provider, endpoint, params_hash, fetched_at_bucket, checksum)` 去重。  
 [INFERRED][HIGH] 清洗失败、单位变化、频率变化、时区异常和超范围值应进入 Postgres gap/quality ledger，并产生可追踪事件，而不是只写日志。
 
 ## 7. 数据缺口检测与恢复
@@ -87,9 +87,9 @@
 
 ### 7.2 对账规则
 
-[INFERRED][HIGH] 每个 job 完成后应核对四个数量：OSS raw manifest 数、normalized observation 数、Taos 写入数、Kafka event 数。
-[INFERRED][HIGH] 每日批处理应核对 ClickHouse projection 与 Taos/Postgres source-of-record 的行数、最大 observation date、最大 available_at 和 revision count。
-[INFERRED][HIGH] gap ledger 至少应保存 `gap_id`、`series_id`、`period`、`vintage_at`、`gap_type`、`detected_at`、`source_job_id`、`raw_manifest_id`、`repair_status`、`repair_job_id`、`closed_at`。
+[INFERRED][HIGH] 每个 job 完成后应核对四个数量：OSS raw manifest 数、normalized observation 数、Taos 写入数、Kafka event 数。  
+[INFERRED][HIGH] 每日批处理应核对 ClickHouse projection 与 Taos/Postgres source-of-record 的行数、最大 observation date、最大 available_at 和 revision count。  
+[INFERRED][HIGH] gap ledger 至少应保存 `gap_id`、`series_id`、`period`、`vintage_at`、`gap_type`、`detected_at`、`source_job_id`、`raw_manifest_id`、`repair_status`、`repair_job_id`、`closed_at`。  
 [INFERRED][HIGH] Redis 中的 lock、cursor、rate-limit 状态只能作为加速层；若 Redis 丢失，应能从 Postgres checkpoint 和 Kafka/OSS 重建。
 
 ## 8. 七类持久化职责边界
@@ -115,7 +115,7 @@
 
 ## 10. 验收证据建议
 
-[COMPUTED][HIGH] 当前 `module/fred/ACCEPTANCE.md` 中运行态验收仍是 Pending。
+[COMPUTED][HIGH] 当前 `module/fred/ACCEPTANCE.md` 中运行态验收仍是 Pending。  
 [INFERRED][HIGH] 下列命令或等价命令应成为补齐后的最小验收证据：
 
 ```bash
@@ -131,10 +131,10 @@ bash scripts/boundary-gates.sh
 
 ## 11. 剩余风险
 
-[COMPUTED][HIGH] 本报告未运行 `/home/fred` 的集成环境，也未读取开发密钥值。
-[COMPUTED][HIGH] 本报告只验证了本地文档、当前源码结构和 FRED 官方 API 文档语义。
-[INFERRED][MED] 最大实施风险是把 FRED release calendar 误当成可用时间；该风险会直接破坏回测的 no-lookahead 保证。
-[INFERRED][MED] 第二风险是继续静默丢弃 `"."`、解析失败和异常值；该风险会把 provider 缺失误报为 fred 自身缺口已修复。
+[COMPUTED][HIGH] 本报告未运行 `/home/fred` 的集成环境，也未读取开发密钥值。  
+[COMPUTED][HIGH] 本报告只验证了本地文档、当前源码结构和 FRED 官方 API 文档语义。  
+[INFERRED][MED] 最大实施风险是把 FRED release calendar 误当成可用时间；该风险会直接破坏回测的 no-lookahead 保证。  
+[INFERRED][MED] 第二风险是继续静默丢弃 `"."`、解析失败和异常值；该风险会把 provider 缺失误报为 fred 自身缺口已修复。  
 [INFERRED][MED] 第三风险是 ClickHouse 或 Redis 被误当成权威事实库；该风险会导致 rebuild 后数据不一致且无法追责。
 
 ## 12. 证据来源
