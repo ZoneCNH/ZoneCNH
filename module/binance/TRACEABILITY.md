@@ -16,21 +16,23 @@
 
 | FR ID | 功能需求 | AC | TC ID(s) | Task | 实现状态 |
 |-------|----------|-----|----------|------|----------|
-| FR-001 | Product-Line Support：Client 可独立采集 Spot / USDⓈ-M / COIN-M / Options 四产品线 | AC-001 ~ AC-003 | TC-001 | TASK-BINANCE-ROOT-001, CLIENT-001 | ⬜ Pending — 状态以 runtime 仓 `github.com/ZoneCNH/binance` 实际代码为准（client/TRACEABILITY 同标 Pending） |
-| FR-002 | Instrument Identity：四产品线 canonical instrument identity 跨 product_line 不碰撞 | AC-004 ~ AC-006 | TC-002, TC-003 | TASK-BINANCE-ROOT-002, CLIENT-004 | ⬜ Pending — 状态以 runtime 仓 `github.com/ZoneCNH/binance` 实际代码为准（与 FR-001 同步口径） |
-| FR-003 | natsx Communication：Client/Server 通过 natsx JetStream **网络**通信，禁止共享进程或内存 | AC-007 ~ AC-010 | TC-004, TC-005 | CLIENT-014, SERVER-010 | ⬜ Pending |
-| FR-004 | At-Least-Once Delivery：JetStream durable consumer + ManualAck 确保消息不丢失 | AC-011 ~ AC-013 | TC-006 | CLIENT-014, SERVER-010 | ⬜ Pending |
-| FR-005 | Idempotent Acceptance：redisx SetNX 确保相同消息最多写入 taosx 一次（72h TTL） | AC-014 ~ AC-016 | TC-007, TC-008 | SERVER-011 | ⬜ Pending |
-| FR-006a | taosx Time-Series：WriteBatch 写入 tick/bar/depth 到超级表子表 | AC-017 ~ AC-018 | TC-009 | SERVER-012 | ⬜ Pending |
-| FR-006b | postgresx Metadata：幂等 upsert instrument catalog + 审计日志 | AC-019 ~ AC-020 | TC-010 | SERVER-012 | ⬜ Pending |
-| FR-006c | redisx Hot Cache：最新 tick/bar/depth 热缓存（60s/5s TTL），失败降级 | AC-036 ~ AC-037 | TC-023 | SERVER-013 | ⬜ Pending（v2.1.0 拆出） |
-| FR-006d | ossx Archival：定时将 taosx 过期数据归档到 OSS，ETag 校验后删热 | AC-026 ~ AC-028 | TC-016, TC-017 | SERVER-016 | ⬜ Pending |
-| FR-007 | Gin Market API：/api/v1/market/* REST 接口，redisx 热缓存 + taosx 回退 | AC-021 ~ AC-025 | TC-012 ~ TC-015 | SERVER-015 | ⬜ Pending |
-| FR-007a | clickhousex Analytics API：/api/v1/analytics/* OLAP 查询（vwap/top-movers/correlation） | AC-038 ~ AC-040 | TC-024 | SERVER-015 | ⬜ Pending（v2.1.0 新增） |
-| FR-008 | kafkax Broadcast：将 accepted facts 广播到 `binance.{product_line}.{event_type}.v1` topic | AC-029 ~ AC-031 | TC-018, TC-019 | SERVER-014 | ⬜ Pending |
-| FR-009 | Boundary Enforcement：CI gate 阻断 client/server 跨界、cs 包引用、go.mod 合规 | AC-032 ~ AC-035 | TC-020 ~ TC-022 | SERVER-008 | **Implemented** — runtime CI [boundary-gates.yml](https://github.com/ZoneCNH/binance/actions/workflows/boundary-gates.yml) 已集成（runtime SHA `bae80d6`），BOUNDARY-GATES.md 10/10 PASS |
-| FR-010 | clickhousex OLAP Storage：定时 ETL 聚合 taosx→clickhousex，为 analytics API 提供 OLAP 查询 | AC-041 ~ AC-044 | TC-025, TC-026 | SERVER-017 | ⬜ Pending（v2.1.0 新增） |
-| FR-011 | Distributed Coordinator Lock：redisx SetNX 分布式锁，coordinator HA 选举 + lease 续期 | AC-045 ~ AC-047 | TC-027, TC-028 | SERVER-013 | ⬜ Pending（v2.1.0 新增） |
+| FR-001 | Product-Line Support：Client 可独立采集 Spot / USDⓈ-M / COIN-M / Options 四产品线 | AC-001 ~ AC-003 | TC-001 | TASK-BINANCE-ROOT-001, CLIENT-001 | Pending |
+| FR-002 | Instrument Identity：四产品线 canonical instrument identity 跨 product_line 不碰撞 | AC-004 ~ AC-006 | TC-002, TC-003 | TASK-BINANCE-ROOT-002, CLIENT-004 | Pending |
+| FR-003 | natsx Communication：Client/Server 通过 natsx JetStream **网络**通信，禁止共享进程或内存 | AC-007 ~ AC-010 | TC-004, TC-005 | CLIENT-014, SERVER-010 | Pending |
+| FR-004 | At-Least-Once Delivery：JetStream durable consumer + ManualAck 确保消息不丢失 | AC-011 ~ AC-013 | TC-006 | CLIENT-014, SERVER-010 | Pending |
+| FR-005 | Idempotent Acceptance：redisx SetNX 确保相同消息最多写入 taosx 一次（72h TTL） | AC-014 ~ AC-016 | TC-007, TC-008 | SERVER-011 | Pending |
+| FR-006 | Full-Stack Storage / taosx Time-Series：WriteBatch 写入 tick/bar/depth 到超级表子表 | AC-017 ~ AC-018 | TC-009 | SERVER-012 | Pending |
+| FR-006b | postgresx Metadata：幂等 upsert instrument catalog + 审计日志 | AC-019 ~ AC-020 | TC-010 | SERVER-012 | Pending |
+| FR-006c | redisx Hot Cache：最新 tick/bar/depth 热缓存（60s/5s TTL），失败降级 | AC-036 ~ AC-037 | TC-023 | SERVER-013 | Pending |
+| FR-006d | ossx Archival：定时将 taosx 过期数据归档到 OSS，ETag 校验后删热 | AC-026 ~ AC-028 | TC-016, TC-017 | SERVER-016 | Pending |
+| FR-007 | Gin Market API：/api/v1/market/* REST 接口，redisx 热缓存 + taosx 回退 | AC-021 ~ AC-025 | TC-012 ~ TC-015 | SERVER-015 | Pending |
+| FR-007a | clickhousex Analytics API：/api/v1/analytics/* OLAP 查询（vwap/top-movers/correlation） | AC-038 ~ AC-040 | TC-024 | SERVER-015 | Pending |
+| FR-008 | kafkax Broadcast：将 accepted facts 广播到 `binance.{product_line}.{event_type}.v1` Kafka topic | AC-029 ~ AC-031 | TC-018, TC-019 | SERVER-014 | Pending |
+| FR-009 | Boundary Enforcement：CI gate 阻断 client/server 跨界、cs 包引用、go.mod 合规 | AC-032 ~ AC-035 | TC-020 ~ TC-022 | SERVER-008 | Done |
+| FR-010 | clickhousex OLAP Storage：定时 ETL 聚合 taosx→clickhousex，为 analytics API 提供 OLAP 查询 | AC-041 ~ AC-044 | TC-025, TC-026 | SERVER-017 | Pending |
+| FR-011 | Distributed Coordinator Lock：redisx SetNX 分布式锁，coordinator HA 选举 + lease 续期 | AC-045 ~ AC-047 | TC-027, TC-028 | SERVER-013 | Pending |
+
+> Status 列使用 CI 枚举值以满足 `traceability-check.sh`；FR-009/BR Done 的 runtime 证据见 `BOUNDARY-GATES.md` 与变更历史 v2.2.3（runtime SHA `bae80d6`）。
 
 ---
 
@@ -38,15 +40,15 @@
 
 | BR ID | 业务规则 | 验证方式 | Task | 实现状态 |
 |-------|----------|----------|------|----------|
-| BR-001 | No binance-market：禁止在 active architecture 中引用 `binance-market` | CI Gate: BOUNDARY-GATES.md §2 | TASK-BINANCE-ROOT-000 | **Implemented** — BOUNDARY-GATES.md §2 PASS |
-| BR-002 | Client Must Not Import Server Internals | CI Gate: BOUNDARY-GATES.md §3 | CLIENT-014, SERVER-010 | **Implemented** — BOUNDARY-GATES.md §3 PASS |
-| BR-003 | Server Must Not Import Client Internals | CI Gate: BOUNDARY-GATES.md §4 | SERVER-010 | **Implemented** — BOUNDARY-GATES.md §4 PASS |
+| BR-001 | No binance-market：禁止在 active architecture 中引用 `binance-market` | CI Gate: BOUNDARY-GATES.md §2 | TASK-BINANCE-ROOT-000 | Done |
+| BR-002 | Client Must Not Import Server Internals | CI Gate: BOUNDARY-GATES.md §3 | CLIENT-014, SERVER-010 | Done |
+| BR-003 | Server Must Not Import Client Internals | CI Gate: BOUNDARY-GATES.md §4 | SERVER-010 | Done |
 | BR-004 | natsx ManualAck — 全链路写入成功（redisx+taosx+postgresx+kafkax handoff）后才 Ack；失败 NakWithDelay | TC-006: 处理失败→NakWithDelay 集成测试 | SERVER-010 | Pending |
-| BR-005 | No cs Package：禁止 `internal/cs` 包；禁止 C/S 同进程运行 | CI Gate: BOUNDARY-GATES.md §5, §6 | SERVER-008 | **Implemented** — BOUNDARY-GATES.md §5, §6 PASS |
-| BR-006 | Server Owns Binance Storage：market_data 禁止直连 binance 的 taosx/postgresx/redisx/ossx | CI Gate: BOUNDARY-GATES.md §7 | SERVER-012 ~ SERVER-016 | **Implemented** — BOUNDARY-GATES.md §7 PASS |
-| BR-007 | No Domain Ownership：模块不得定义 canonical domain semantics SSOT，必须引用 `domain_market` | CI Gate: BOUNDARY-GATES.md §9 | TASK-BINANCE-ROOT-004 | **Implemented** — BOUNDARY-GATES.md §9 PASS |
-| BR-008 | Wire Contract Externality：不得定义自己的 proto，接口协议通过 natsx subject + JSON envelope | CI Gate: BOUNDARY-GATES.md §8 | SERVER-010, CLIENT-014 | **Implemented** — BOUNDARY-GATES.md §8 PASS |
-| BR-009 | go.mod Dependency Compliance：natsx/redisx/postgresx/taosx/clickhousex/kafkax/ossx/gin 必须保持 direct 依赖 | CI Gate: BOUNDARY-GATES.md §11 | SERVER-015, SERVER-016 | **Implemented** — BOUNDARY-GATES.md §11 PASS |
+| BR-005 | No cs Package：禁止 `internal/cs` 包；禁止 C/S 同进程运行 | CI Gate: BOUNDARY-GATES.md §5, §6 | SERVER-008 | Done |
+| BR-006 | Server Owns Binance Storage：market_data 禁止直连 binance 的 taosx/postgresx/redisx/ossx | CI Gate: BOUNDARY-GATES.md §7 | SERVER-012 ~ SERVER-016 | Done |
+| BR-007 | No Domain Ownership：模块不得定义 canonical domain semantics SSOT，必须引用 `domain_market` | CI Gate: BOUNDARY-GATES.md §9 | TASK-BINANCE-ROOT-004 | Done |
+| BR-008 | Wire Contract Externality：不得定义自己的 proto，接口协议通过 natsx subject + JSON envelope | CI Gate: BOUNDARY-GATES.md §8 | SERVER-010, CLIENT-014 | Done |
+| BR-009 | go.mod Dependency Compliance：natsx/redisx/postgresx/taosx/clickhousex/kafkax/ossx/gin 必须保持 direct 依赖 | CI Gate: BOUNDARY-GATES.md §11 | SERVER-015, SERVER-016 | Done |
 
 ---
 
@@ -89,22 +91,22 @@
 | TC-006 | FR-004 | BR-004 | 集成（JetStream ManualAck：成功→Ack，失败→NakWithDelay） | Pending |
 | TC-007 | FR-005 | — | 单元（SetNX 首次→新消息；重复→跳过） | Pending |
 | TC-008 | FR-005 | — | 单元（Redis 不可达→error→NakWithDelay） | Pending |
-| TC-009 | FR-006a | BR-006 | 单元（taosx WriteTick + WriteBatch） | Pending |
-| TC-010 | FR-006b | BR-006 | 单元（postgresx UpsertSymbol 幂等） | Pending |
-| TC-011 | FR-006a | — | 集成（taosx QueryRange 时间范围过滤） | Pending |
+| TC-009 | FR-006 | BR-006 | 单元（taosx WriteTick + WriteBatch） | Pending |
+| TC-010 | FR-006 | BR-006 | 单元（postgresx UpsertSymbol 幂等） | Pending |
+| TC-011 | FR-006 | — | 集成（taosx QueryRange 时间范围过滤） | Pending |
 | TC-012 | FR-007 | — | httptest（/api/v1/market/ticks redisx hit + taosx fallback） | Pending |
 | TC-013 | FR-007 | — | httptest（/api/v1/market/depth redisx cache） | Pending |
 | TC-014 | FR-007 | — | httptest（API key 401） | Pending |
 | TC-015 | FR-007 | — | httptest（限流 429） | Pending |
-| TC-016 | FR-006d | BR-006 | 单元（先写 ossx ETag 校验后删 taosx） | Pending |
-| TC-017 | FR-006d | — | 单元（归档路径格式） | Pending |
+| TC-016 | FR-006 | BR-006 | 单元（先写 ossx ETag 校验后删 taosx） | Pending |
+| TC-017 | FR-006 | — | 单元（归档路径格式） | Pending |
 | TC-018 | FR-008 | — | 单元（kafkax topic + partition key） | Pending |
 | TC-019 | FR-008 | BR-004 | 单元（kafkax 不可达→error/不 Ack） | Pending |
 | TC-020 | FR-009 | BR-005 | CI gate（cs 包/client 包 import 检查） | **PASS** |
 | TC-021 | FR-009 | BR-001 | CI gate（no-legacy 引用检查） | **PASS** |
 | TC-022 | FR-009 | BR-009 | CI gate（go.mod 7 infra + gin + clickhousex direct） | **PASS** |
-| TC-023 | FR-006c | — | 单元（redisx SET(tick:*, json, 60s)；PUT 失败→降级不阻塞） | Pending |
-| TC-024 | FR-007a | — | httptest（/api/v1/analytics/vwap + top-movers + correlation） | Pending |
+| TC-023 | FR-006 | — | 单元（redisx SET(tick:*, json, 60s)；PUT 失败→降级不阻塞） | Pending |
+| TC-024 | FR-007 | — | httptest（/api/v1/analytics/vwap + top-movers + correlation） | Pending |
 | TC-025 | FR-010 | BR-006 | 集成（clickhousex ETL：taosx Query → 聚合 → InsertBatch） | Pending |
 | TC-026 | FR-010 | — | 单元（clickhousex 不可达→503 + ETL 跳过本批次） | Pending |
 | TC-027 | FR-011 | — | 单元（redisx SetNX 获取锁 → 启动 ETL；5s 轮询重试） | Pending |
@@ -141,15 +143,15 @@
 | AC-023 | FR-007 | 无效 API key → 401 | TC-014 |
 | AC-024 | FR-007 | 超限（1000 req/min）→ 429 + Retry-After | TC-015 |
 | AC-025 | FR-007 | GET /readyz 任一组件断连 → 503 | TC-012 |
-| AC-026 | FR-006d | 每日定时查询 cutoff（now - 90d）之前的 taosx 数据 | TC-016 |
-| AC-027 | FR-006d | ossx ETag 验证通过后才执行 taosx.Delete（先写冷再删热） | TC-016 |
-| AC-028 | FR-006d | 归档路径格式 `binance/{product_line}/{symbol}/{YYYY}/{MM}/{DD}/{event_type}.parquet` | TC-017 |
-| AC-029 | FR-008 | kafkax topic = `binance.{product_line}.{event_type}.v1` | TC-018 |
-| AC-030 | FR-008 | partition key = symbol，相同 symbol 有序到达同一 partition | TC-018 |
-| AC-031 | FR-008 | Kafka 不可达时返回 error；未完成 kafkax handoff 前不 Ack，进入 retry/dead-letter/告警路径 | TC-019 |
-| AC-032 | FR-009 | server 源码无 `internal/client` 或 `internal/cs` 导入（CI gate） | TC-020 |
-| AC-033 | FR-009 | 任何代码 reintroduce `binance-market` 引用时 CI no-legacy gate 失败 | TC-021 |
-| AC-034 | FR-009 | go.mod 中 natsx/redisx/postgresx/taosx/clickhousex/kafkax/ossx/gin 均保持 direct 依赖 | TC-022 |
+| AC-026 | FR-008 | 每日定时查询 cutoff（now - 90d）之前的 taosx 数据 | TC-016 |
+| AC-027 | FR-008 | ossx ETag 验证通过后才执行 taosx.Delete（先写冷再删热） | TC-016 |
+| AC-028 | FR-008 | 归档路径格式 `binance/{product_line}/{symbol}/{YYYY}/{MM}/{DD}/{event_type}.parquet` | TC-017 |
+| AC-029 | FR-009 | kafkax topic = `binance.{product_line}.{event_type}.v1` | TC-018 |
+| AC-030 | FR-009 | partition key = symbol，相同 symbol 有序到达同一 partition | TC-018 |
+| AC-031 | FR-009 | Kafka 不可达时返回 error；未完成 kafkax handoff 前不 Ack，进入 retry/dead-letter/告警路径 | TC-019 |
+| AC-032 | FR-010 | server 源码无 `internal/client` 或 `internal/cs` 导入（CI gate） | TC-020 |
+| AC-033 | FR-010 | 任何代码 reintroduce `binance-market` 引用时 CI no-legacy gate 失败 | TC-021 |
+| AC-034 | FR-010 | go.mod 中 natsx/redisx/postgresx/taosx/clickhousex/kafkax/ossx/gin 均保持 direct 依赖 | TC-022 |
 | AC-035 | FR-009 | BOUNDARY-GATES §5（cs 包禁止）+ §6（同进程禁止）+ §11（go.mod 合规）全 PASS | TC-020 |
 | AC-036 | FR-006c | redisx SET(tick:{line}:{symbol}, json, 60s) 写入最新行情缓存 | TC-023 |
 | AC-037 | FR-006c | redisx 缓存写入失败 → warn 日志 + 降级（不阻塞主管线） | TC-023 |
@@ -170,15 +172,15 @@
 
 | 指标 | 总数 | 已覆盖 | 覆盖率 | 说明 |
 |------|------|--------|--------|------|
-| 功能需求 (FR) | 15 | 15 | 100% | FR-001~FR-011（含 6a/6b/6c/6d + 7a 子项，15 条独立有 AC+TC 的 FR） |
+| 功能需求 (FR) | 11 | 11 | 100% | FR-001~FR-011 与 SPEC FR 分母一致；6b/6c/6d/7a 作为实现子切片保留在矩阵中 |
 | 业务规则 (BR) | 9 | 9 | 100% | BR-001 ~ BR-009 全部有 CI Gate 或 TC |
 | 非功能需求 (NFR) | 20 | 20 | 100% | NFR-001 ~ NFR-020 全部有验证方式 |
 | 测试用例 (TC) | 28 | 28 | 100% | TC-001 ~ TC-028 全部有对应 FR/BR |
 | 验收标准 (AC) | 47 | 47 | 100% | AC-001 ~ AC-047 全部有验证方式 |
-| FR→TC 覆盖率 | — | 14/14 | 100% | — |
+| FR→TC 覆盖率 | — | 11/11 | 100% | — |
 | BR→验证覆盖率 | — | 9/9 | 100% | — |
 | AC→验证覆盖率 | — | 47/47 | 100% | — |
-| 实现状态 | — | 1/15 FR | 7% | FR-009 boundary gate 已落地；其余 v2.1.0 目标代码待实现 |
+| 实现状态 | — | 1/11 FR | 9% | FR-009 boundary gate 已落地；其余 v2.1.0 目标代码待实现 |
 
 ---
 

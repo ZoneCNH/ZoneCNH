@@ -145,7 +145,7 @@
 
 | AC ID | AC 描述 | 验证方式 |
 |-------|---------|----------|
-| AC-016 | topic = `binance.{product_line}.{event_type}.v1`，与 natsx subject 的 `binance.market.{product_line}.{event_type}` 分层一致但格式独立 | TC-010: mock 验证 topic 字符串 |
+| AC-016 | Kafka topic = `binance.{product_line}.{event_type}.v1`，与 natsx subject 明确分离 | TC-010: mock 验证 topic 字符串 |
 | AC-017 | partition key = `[]byte(symbol)`，相同 symbol 有序到达同一 partition | TC-010: mock 验证 Key 参数 |
 | AC-018 | Kafka 不可达时 → error；未完成 kafkax handoff 前不 Ack，进入 retry/dead-letter/告警路径 | TC-011: mock 返回 error → Ack 未发送 + observex 告警 |
 

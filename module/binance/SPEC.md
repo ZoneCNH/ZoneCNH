@@ -489,12 +489,15 @@ type MarketFactEnvelope struct {
 | `binance.market.um_perp.tick` | U 本位合约成交 |
 | `binance.market.um_perp.bar` | U 本位合约 K 线 |
 | `binance.market.um_perp.depth` | U 本位合约深度 |
+| `binance.market.um_perp.trade` | U 本位合约逐笔成交 |
 | `binance.market.cm_perp.tick` | 币本位合约成交 |
 | `binance.market.cm_perp.bar` | 币本位合约 K 线 |
 | `binance.market.cm_perp.depth` | 币本位合约深度 |
+| `binance.market.cm_perp.trade` | 币本位合约逐笔成交 |
 | `binance.market.options.tick` | 期权成交 |
 | `binance.market.options.bar` | 期权 K 线 |
 | `binance.market.options.depth` | 期权深度（Binance EOptions `<symbol>@depth1000` WebSocket stream） |
+| `binance.market.options.trade` | 期权逐笔成交 |
 
 - Client 调用 `js.Publish(subj, jsonPayload)`，等待 PubAck 后返回（确保持久化）
 - Server durable consumer 订阅 `binance.market.>`，ManualAck，处理完整链路后 Ack

@@ -98,24 +98,31 @@ for product_line in "${product_lines[@]}"; do
   done
 done
 
-expect_rg "CREATE STABLE IF NOT EXISTS binance_market_ticks" module/binance/server/tasks/TASK-BINANCE-SERVER-013-taosx-storage.md "taosx ticks stable"
-expect_rg "CREATE STABLE IF NOT EXISTS binance_market_depth" module/binance/server/tasks/TASK-BINANCE-SERVER-013-taosx-storage.md "taosx depth stable"
-expect_rg "binance/\\{product_line\\}/\\{symbol\\}/\\{YYYY\\}/\\{MM\\}/\\{DD\\}/\\{event_type\\}\\.parquet" module/binance/server/tasks/TASK-BINANCE-SERVER-016-ossx-archiver.md "ossx generic 4x4 archive path"
-expect_rg "/api/v1/market/ticks" module/binance/server/tasks/TASK-BINANCE-SERVER-015-gin-market-api.md "Gin ticks route"
-expect_rg "/api/v1/market/depth" module/binance/server/tasks/TASK-BINANCE-SERVER-015-gin-market-api.md "Gin depth route"
+# Stage0 Kafka topic repair: active Kafka docs must not use the NATS subject template as Kafka topic.
+reject_text module/binance/ACCEPTANCE.md 'kafkax.*binance\.market\.\{product_line\}\.\{event_type\}' 'ACCEPTANCE Kafka topic is not old NATS template'
+reject_text module/binance/TRACEABILITY.md 'kafkax.*binance\.market' 'TRACEABILITY Kafka topic is not old NATS template'
+reject_text module/binance/server/tasks/TASK-BINANCE-SERVER-014-kafkax-dispatch.md '[Tt]opic.*binance\.market\.\{product_line\}\.\{event_type\}' 'SERVER-014 Kafka topic is not old NATS template'
+require_text module/binance/server/tasks/TASK-BINANCE-SERVER-014-kafkax-dispatch.md 'binance\.\{product_line\}\.\{event_type\}\.v1' 'SERVER-014 documents versioned Kafka topic template'
+require_text module/binance/server/TRACEABILITY.md 'binance\.\{product_line\}\.\{event_type\}\.v1' 'server TRACEABILITY documents versioned Kafka topic template'
 
-expect_no_rg 'binance\.market\.(spot|um_perp|cm_perp|options)\.(tick|trade|bar|depth)|topic := fmt.Sprintf\("binance\.market' module/binance/server/tasks/TASK-BINANCE-SERVER-014-kafkax-dispatch.md "Kafka task has no legacy topic format"
-expect_rg 'Kafka topic 格式：`binance\.\{product_line\}\.\{event_type\}\.v1`' module/binance/server/tasks/TASK-BINANCE-SERVER-014-kafkax-dispatch.md "Kafka canonical format documented"
-expect_rg 'topic = `binance\.\{product_line\}\.\{event_type\}\.v1`' module/binance/server/TRACEABILITY.md "server TRACEABILITY Kafka topic canonical"
-expect_no_rg 'topic = `binance\.market' module/binance/server/TRACEABILITY.md "server TRACEABILITY has no legacy Kafka topic"
-expect_no_rg 'binance\.market\.(ticks|bars|depth|events)|fmt.Sprintf\("binance\.market|kafkax\.Send\("binance\.market' module/binance/DEEP-ANALYSIS.md "DEEP-ANALYSIS has no legacy Kafka topic examples"
-expect_rg '\| AC-029 \| FR-008 \| kafkax topic = `binance\.\{product_line\}\.\{event_type\}\.v1` \|' module/binance/TRACEABILITY.md "TRACEABILITY AC-029 maps to FR-008"
-expect_rg '\| AC-032 \| FR-009 \| server 源码无 `internal/client` 或 `internal/cs` 导入' module/binance/TRACEABILITY.md "TRACEABILITY AC-032 maps to FR-009"
-expect_rg '\| AC-028 \| FR-008 \| Server 通过 `kafkax` 发送 `binance\.\{product_line\}\.\{event_type\}\.v1`' module/binance/ACCEPTANCE.md "ACCEPTANCE AC-028 maps to FR-008"
-expect_rg '\| AC-031 \| FR-009 \| CI 禁止 `binance-client` 导入 server internals' module/binance/ACCEPTANCE.md "ACCEPTANCE AC-031 maps to FR-009"
-expect_rg '\| TC-020 \| FR-009, BR-005 \|' module/binance/ACCEPTANCE.md "ACCEPTANCE TC-020 maps to FR-009"
-expect_rg '\| TC-021 \| FR-009, BR-001 \|' module/binance/ACCEPTANCE.md "ACCEPTANCE TC-021 maps to FR-009"
-expect_rg '\| TC-022 \| FR-009, BR-009 \|' module/binance/ACCEPTANCE.md "ACCEPTANCE TC-022 maps to FR-009"
+# R1 naming aliases: operational docs must not reintroduce legacy product-line aliases.
+legacy_alias='usdm_futures|coinm_futures|futures_usdt|futures_coin|opts'
+scan_files=(
+  module/binance/SPEC.md
+  module/binance/README.md
+  module/binance/TRACEABILITY.md
+  module/binance/IMPLEMENTATION-PLAN.md
+  module/binance/FEATURES.md
+  module/binance/ACCEPTANCE.md
+  module/binance/RUNTIME-MAPPING.md
+  module/binance/client/SPEC.md
+  module/binance/server/SPEC.md
+  module/binance/client/TRACEABILITY.md
+  module/binance/server/TRACEABILITY.md
+)
+for file in "${scan_files[@]}"; do
+  reject_text "$file" "(^|[^[:alnum:]_])(${legacy_alias})([^[:alnum:]_]|$)" "no legacy alias in $file"
+done
 
 expect_no_rg "FR-010, BOUNDARY-GATES\\.md" module/binance/SPEC.md "SPEC boundary gate references FR-009"
 

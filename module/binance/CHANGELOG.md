@@ -12,12 +12,19 @@
 ## [v2.2.3] — 2026-06-22
 
 ### Changed
+- Stage0–Stage2 文档治理基线收敛：ACCEPTANCE、FEATURES、IMPLEMENTATION-PLAN、TRACEABILITY 与 root SPEC v2.2.3 对齐
+- Kafka topic 文档从旧式 `binance.market.{product_line}.{event_type}` 收敛到 `binance.{product_line}.{event_type}.v1`，保留 natsx subject 为 `binance.market.*`
 - TRACEABILITY FR-009 状态附 runtime SHA `bae80d6` + CI workflow URL（runtime PR ZoneCNH/binance#9 合并）
 - ARCHITECTURE-DRIFT-WATCHLIST D8 风险级别 MEDIUM → LOW（CI 已自动化）
 - 业务报告 §Runtime 核对结果 第 4 项证据升级为 runtime commit + CI workflow URL
 
 ### Removed (runtime 仓)
 - runtime 仓 `internal/cs/` 目录（doc.go + types.go），满足 BR-005 No cs Package
+
+### Added
+- 新建 `scripts/check-binance-docs.sh`，作为 Stage1 可执行文档治理检查
+- 新建 `module/binance/DATA-LIFECYCLE.md`，记录 Stage2 lifecycle gap 与 FR-012..FR-024 草案
+- 新建 `docs/report/binance/INDEX.md`，收口报告索引与 Stage0–Stage2 gate 入口
 
 ### Added (runtime 仓)
 - runtime 仓 `.github/workflows/boundary-gates.yml`（9 道 boundary gate 自动化），满足 RULES.md R10
