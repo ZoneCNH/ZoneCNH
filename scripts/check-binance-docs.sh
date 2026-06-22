@@ -44,7 +44,7 @@ extract_value() {
         n = split(line, parts, "|")
         for (i = 1; i <= n; i++) {
           gsub(/^[[:space:]]+|[[:space:]]+$/, "", parts[i])
-          if (parts[i] == label && i < n) { print parts[i + 1]; exit }
+          if (parts[i] == label && i < n) { gsub(/^[[:space:]]+|[[:space:]]+$/, "", parts[i + 1]); print parts[i + 1]; exit }
         }
       }
       sub(/^.*:[[:space:]]*/, "", line)
