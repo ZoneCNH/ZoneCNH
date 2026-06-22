@@ -57,6 +57,16 @@ expect_no_rg() {
   fi
 }
 
+require_text() {
+  local path=$1 pattern=$2 label=$3
+  expect_rg "$pattern" "$path" "$label"
+}
+
+reject_text() {
+  local path=$1 pattern=$2 label=$3
+  expect_no_rg "$pattern" "$path" "$label"
+}
+
 table_value() {
   local key=$1 path=$2
   awk -F'|' -v key="$key" '$2 ~ key {v=$3; gsub(/^[ \t]+|[ \t]+$/, "", v); print v; exit}' "$path"
