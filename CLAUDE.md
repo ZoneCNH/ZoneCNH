@@ -71,9 +71,10 @@ ZoneCNH 的 `FoundationX` 量化交易基础设施文档枢纽，也是 `ZoneCNH
 - **白名单**：直接含 `note.md` 或 `v2.md` 的目录不清理；活跃 worktree 及其祖先/内部目录不清理
 - git 元数据清理用 `git worktree prune`（仅清 `.git/worktrees/<name>`，不清文件系统目录）
 - **detached HEAD worktree GC（轨道 C）**：`.worktree/omx-team/*/worker-*` 等 detached HEAD worktree（porcelain 输出 `detached` 而非 `branch`）取其 HEAD SHA，`is-ancestor <sha> main` 命中即报告/清理；复用 dirty/白名单护栏
-- **Stash GC**：OmX 自动 stash（`auto-safety-stash-before/after-*`）TTL 7 天，总 stash 上限 30；`WORKTREE_GC_CLEAN=1` 时仅 drop 自动 stash 且当前分支非来源分支，手动 stash 永不动
-- **自动清理（WORKTREE_GC_AUTO=1）**：worktree >15 或 stash >30 时，SessionStart 自动按 CLEAN 逻辑清理已合入的 detached/merged worktree 与过期自动 stash，无需手动设 `WORKTREE_GC_CLEAN`；阈值未超仍 dry-run；护栏不变
+- **Stash GC**：OmX 自动 stash（`auto-safety-stash-before/after-*`）TTL 3 天（> 取代: 第一轮的 7 天，自动 stash 为短期切换产物，3 天足够保险），总 stash 上限 30；超限时最旧的自动 stash 一并 drop（与 expired 合并去重）；`WORKTREE_GC_CLEAN=1`/`WORKTREE_GC_AUTO=1` 时仅 drop 自动 stash 且当前分支非来源分支，手动 stash 永不动
+- **自动清理（WORKTREE_GC_AUTO=1）**：worktree >15 或 stash >30 时，SessionStart 自动按 CLEAN 逻辑清理已合入的 detached/merged worktree 与过期/超量自动 stash，无需手动设 `WORKTREE_GC_CLEAN`；阈值未超仍 dry-run；护栏不变
 - **stash pop 跨基线告警**：PreToolUse hook 检测 `git stash pop/apply`，若当前分支不在 stash 来源分支祖先链上，stderr 告警不阻塞（信息护栏，与分支保护同策略）
+- **主 worktree 落后 main 告警**：SessionStart 检测主 worktree 在 feature 分支且落后 origin/main 时，输出醒目告警（hook/脚本改进未生效），建议 push 保命后切 main 同步；信息护栏，不阻塞
 
 ### 提交批处理
 
