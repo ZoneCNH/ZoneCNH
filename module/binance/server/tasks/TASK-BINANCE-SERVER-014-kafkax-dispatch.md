@@ -24,10 +24,17 @@ internal/server/dispatch/
 | Topic | Key | 用途 |
 |-------|-----|------|
 | `binance.market.spot.tick` | symbol | 现货成交 |
+| `binance.market.spot.bar` | symbol | 现货 K 线 / bar |
 | `binance.market.spot.depth` | symbol | 现货深度 |
-| `binance.market.um_perp.tick` | symbol | U 本位合约成交 |
-| `binance.market.um_perp.depth` | symbol | U 本位合约深度 |
-| `binance.market.kline.1m` | symbol | 1 分钟 K 线 |
+| `binance.market.um_perp.tick` | symbol | USDⓈ-M 成交 |
+| `binance.market.um_perp.bar` | symbol | USDⓈ-M K 线 / bar |
+| `binance.market.um_perp.depth` | symbol | USDⓈ-M 深度 |
+| `binance.market.cm_perp.tick` | symbol | COIN-M 成交 |
+| `binance.market.cm_perp.bar` | symbol | COIN-M K 线 / bar |
+| `binance.market.cm_perp.depth` | symbol | COIN-M 深度 |
+| `binance.market.options.tick` | symbol | Options 成交 |
+| `binance.market.options.bar` | symbol | Options K 线 / bar |
+| `binance.market.options.depth` | symbol | Options 深度 |
 
 格式规律：`binance.market.{product_line}.{event_type}`（与 natsx subject 一致）
 

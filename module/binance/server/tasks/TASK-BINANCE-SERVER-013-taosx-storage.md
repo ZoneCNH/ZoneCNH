@@ -26,8 +26,8 @@ CREATE STABLE IF NOT EXISTS binance_market_ticks (
     server_time TIMESTAMP
 ) TAGS (
     symbol      BINARY(32),
-    product_line BINARY(16),         -- 'spot' / 'um_perp' / 'cm_perp'
-    event_type  BINARY(16)           -- 'tick' / 'depth' / 'kline'
+    product_line BINARY(16),         -- 'spot' / 'um_perp' / 'cm_perp' / 'options'
+    event_type  BINARY(16)           -- 'tick' / 'depth' / 'bar'
 );
 
 -- 订单簿快照（超表）

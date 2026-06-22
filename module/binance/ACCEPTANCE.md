@@ -64,7 +64,7 @@
 | AC-030 | FR-009 | Kafka handoff 失败时不 Ack NATS message；Kafka 不可达时返回 error，进入 retry/dead-letter/告警路径。 | TC-019 | Pending |
 | AC-031 | FR-010 | CI 禁止 `binance-client` 导入 server internals；server 源码无 `internal/client` 或 `internal/cs` 导入。 | TC-020 | PASS |
 | AC-032 | FR-010 | CI 禁止 `binance-server` 导入 client internals；任何代码 reintroduce `binance-market` 引用时 CI no-legacy gate 失败。 | TC-021 | Pending |
-| AC-033 | FR-010 | CI 禁止 `binance-market` 与 runtime `internal/cs` 回流；go.mod gin/ossx 为 direct，五个 infra 模块从 indirect 升为 direct。 | TC-022 | Pending |
+| AC-033 | FR-010 | CI 禁止 `binance-market` 与 runtime `internal/cs` 回流；go.mod 中 natsx/redisx/postgresx/taosx/clickhousex/kafkax/ossx/gin 均保持 direct 依赖。 | TC-022 | Pending |
 | AC-034 | FR-010 | CI 禁止 Binance 模块定义 canonical market domain 或本地 proto/gRPC ingest schema；BOUNDARY-GATES §5（cs 包禁止）+ §6（同进程禁止）+ §11（go.mod 合规）全 PASS。 | TC-020, TC-022 | Pending |
 | AC-035 | FR-010 | `BOUNDARY-GATES` 全量检查通过，且 client/server 边界、进程边界、依赖边界与 schema 约束均保持可审计。 | TC-020, TC-022 | Pending |
 

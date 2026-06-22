@@ -23,7 +23,7 @@ internal/server/storage/catalog/
 CREATE TABLE IF NOT EXISTS binance_symbols (
     id          BIGSERIAL PRIMARY KEY,
     symbol      TEXT        NOT NULL,
-    product_line TEXT       NOT NULL,  -- 'spot' / 'um_perp' / 'cm_perp'
+    product_line TEXT       NOT NULL,  -- 'spot' / 'um_perp' / 'cm_perp' / 'options'
     active      BOOLEAN     NOT NULL DEFAULT TRUE,
     created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
     UNIQUE(symbol, product_line)
