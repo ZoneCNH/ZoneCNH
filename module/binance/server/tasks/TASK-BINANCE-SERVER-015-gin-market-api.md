@@ -40,7 +40,7 @@ GET  /readyz                        健康检查（taosx/redis/postgres 连通�
 | 参数 | 类型 | 说明 |
 |------|------|------|
 | symbol | string（必填）| e.g. BTCUSDT |
-| product_line | string（必填）| spot / futures_usdt |
+| product_line | string（必填）| spot / um_perp |
 | start | RFC3339 | 开始时间 |
 | end | RFC3339 | 结束时间（默认 now）|
 | limit | int | 最大条数，默认 100，上限 10000 |

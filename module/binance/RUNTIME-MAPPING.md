@@ -214,7 +214,9 @@ Subjects:
   binance.market.um_perp.tick      binance.market.um_perp.bar
   binance.market.um_perp.depth
   binance.market.cm_perp.tick      binance.market.cm_perp.bar
+  binance.market.cm_perp.depth
   binance.market.options.tick      binance.market.options.bar
+  binance.market.options.depth
 
 Server Consumer:
   Durable: binance-server  AckPolicy: explicit  AckWait: 30s  MaxDeliver: 5

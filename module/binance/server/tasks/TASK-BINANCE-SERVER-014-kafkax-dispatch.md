@@ -25,8 +25,8 @@ internal/server/dispatch/
 |-------|-----|------|
 | `binance.market.spot.tick` | symbol | 现货成交 |
 | `binance.market.spot.depth` | symbol | 现货深度 |
-| `binance.market.futures_usdt.tick` | symbol | U 本位合约成交 |
-| `binance.market.futures_usdt.depth` | symbol | U 本位合约深度 |
+| `binance.market.um_perp.tick` | symbol | U 本位合约成交 |
+| `binance.market.um_perp.depth` | symbol | U 本位合约深度 |
 | `binance.market.kline.1m` | symbol | 1 分钟 K 线 |
 
 格式规律：`binance.market.{product_line}.{event_type}`（与 natsx subject 一致）

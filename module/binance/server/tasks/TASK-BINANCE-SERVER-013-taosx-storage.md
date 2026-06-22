@@ -26,7 +26,7 @@ CREATE STABLE IF NOT EXISTS binance_market_ticks (
     server_time TIMESTAMP
 ) TAGS (
     symbol      BINARY(32),
-    product_line BINARY(16),         -- 'spot' / 'futures_usdt' / 'futures_coin'
+    product_line BINARY(16),         -- 'spot' / 'um_perp' / 'cm_perp'
     event_type  BINARY(16)           -- 'tick' / 'depth' / 'kline'
 );
 
