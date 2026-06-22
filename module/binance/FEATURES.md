@@ -5,9 +5,9 @@
 | 字段 | 值 |
 | --- | --- |
 | Status | Generated from current module SSOT |
-| Last-Updated | 2026-06-21 |
-| Module-Version | v2.2.2 |
-| Module-State | 规格重构；v2.2.2 runtime 大部分仍为 Pending |
+| Last-Updated | 2026-06-22 |
+| Module-Version | v2.2.3 |
+| Module-State | 规格重构；v2.2.3 runtime 大部分仍为 Pending |
 | Layer | 数据域 / Binance-specific market_data C/S module |
 | Runtime-Repo | `/home/binance` |
 | Source | `goal.md`, `SPEC.md`, `TRACEABILITY.md`, `BOUNDARY-GATES.md`, `RUNTIME-MAPPING.md`, `IMPLEMENTATION-PLAN.md`, `client/`, `server/`, `tasks/` |

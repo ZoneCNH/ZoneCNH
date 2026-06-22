@@ -208,6 +208,8 @@
 
 **Gate**：脚本本地 PASS + CI 集成方案出稿 → SPEC v2.3.1
 
+**CI 集成方案草案**：在 docs CI 中于通用漂移检查后运行 `bash scripts/check-binance-docs.sh`；该脚本不引入新依赖，输出 `PASS/FAIL <file>:<reason>`，并在失败时以非零退出码阻断后续 runtime evidence jobs。
+
 ### 阶段 2：数据生命周期讨论稿（P1，预计 3 天）
 
 | issue | 任务 |

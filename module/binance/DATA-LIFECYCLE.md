@@ -1,65 +1,65 @@
-# module/binance DATA-LIFECYCLE
+# module/binance DATA-LIFECYCLE.md — 数据生命周期讨论稿
 
-## Metadata
+## 元数据
 
-- Status: Discussion draft for Stage2; not an approved SPEC change
-- Last-Updated: 2026-06-22
-- Scope: lifecycle gaps before the next `module/binance/SPEC.md` bump
-- Spec-Impact: This document does not modify `SPEC.md`; it prepares review input for a later approved bump.
-- Source: `SPEC.md`, `TRACEABILITY.md`, `RUNTIME-MAPPING.md`, `BOUNDARY-GATES.md`, `IMPLEMENTATION-PLAN.md`, `docs/report/binance/goal-execution-plan-20260622.md`
+| 字段 | 值 |
+| --- | --- |
+| Status | Discussion Draft |
+| Doc-Version | v0.1.0 |
+| Last-Updated | 2026-06-22 |
+| Scope | `module/binance` stage2 lifecycle planning |
+| Spec-Impact | 无；本讨论稿不修改 `SPEC.md`，不产生 runtime contract |
+| Source Plan | `docs/report/binance/goal-execution-plan-20260622.md` 阶段 2 / AC-3 |
 
-## Purpose
+> 本文件用于把后续实时控制面、历史补偿、event-type 扩展与治理证据拆成可评审的 FR 落点。它不是 SPEC change；在评审通过并形成对应 issue/PR 前，不应把下列内容视为已批准接口。
 
-Stage2 needs a focused lifecycle draft so retention, replay, archival, idempotency, and deletion semantics can be reviewed before they become normative requirements. This file records proposed gaps and FR landing points only; runtime acceptance still depends on future SPEC, task, and test updates.
+## 1. 15 个生命周期缺口
 
-## Lifecycle gap register
-
-| Gap | Area | Current risk | Proposed closure |
+| # | 缺口 | 影响 | 建议落点 |
 | --- | --- | --- | --- |
-| DL-GAP-001 | Ingest identity | Product-line + symbol collisions can leak across spot, USDⓈ-M, COIN-M, and options. | Require canonical `InstrumentKey` on every persisted and fanned-out fact. |
-| DL-GAP-002 | Event time | Exchange time, server receive time, and decision time are not uniformly distinguished. | Persist all three timestamps and declare query defaults. |
-| DL-GAP-003 | Idempotency | Duplicate payload and duplicate key with different payload need separate outcomes. | Standardize `redisx` SetNX key, conflict marker, and retry handling. |
-| DL-GAP-004 | Ack boundary | The exact side-effect set required before NATS Ack can drift. | Keep Ack after redisx + taosx + postgresx + kafkax required handoff. |
-| DL-GAP-005 | Hot cache | Redis hot snapshots lack freshness and stale-read behavior. | Define TTL, stale response metadata, and degradation behavior. |
-| DL-GAP-006 | Time-series retention | taosx retention cutoff and partition deletion are not independently reviewable. | Gate deletion behind archival ETag proof and replay window checks. |
-| DL-GAP-007 | Cold archive | OSS path, object format, and replay metadata can diverge from query semantics. | Treat path format and parquet schema as acceptance-covered contracts. |
-| DL-GAP-008 | Metadata catalog | Symbol lifecycle, contract expiry, and options identity updates need durable history. | Use postgresx catalog versioning and replayable status transitions. |
-| DL-GAP-009 | OLAP backfill | clickhousex analytics can miss late or replayed facts. | Define taosx→clickhousex ETL watermark and correction policy. |
-| DL-GAP-010 | Kafka fanout | Kafka topic naming drift can couple downstream consumers to NATS subjects. | Keep Kafka topics on `binance.{product_line}.{event_type}.v1`. |
-| DL-GAP-011 | Dead letters | Retry exhaustion evidence is not tied to replay and incident ownership. | Add DLQ envelope, alert, and replay owner requirements. |
-| DL-GAP-012 | Schema evolution | Payload field additions need compatibility rules before downstream use. | Add additive-only compatibility and versioned envelope guidance. |
-| DL-GAP-013 | Audit evidence | Lifecycle operations can pass locally without durable proof. | Store command output / CI link / runtime SHA in traceability evidence. |
-| DL-GAP-014 | Data deletion | Manual deletion has no documented safety interlock. | Require two-phase delete: archive proof, query drain, then hot-delete. |
-| DL-GAP-015 | Recovery drill | No explicit restore drill proves cold archive can rebuild hot stores. | Add periodic replay drill and acceptance evidence. |
+| G01 | WebSocket 连接、重连、退避和会话归属没有统一生命周期 | client 侧故障恢复口径不稳定 | FR-012 |
+| G02 | listenKey 创建、续租、过期和恢复没有 owner/状态机 | 用户数据流未来扩展容易泄漏状态 | FR-012 |
+| G03 | Binance weight/rate-limit 预算没有配置 gate | 运行期容易在 backfill 或重连时触发封禁 | FR-013 |
+| G04 | server time 校准与本地 clock skew 没有验收口径 | event_time / receive_time 追溯不可靠 | FR-013 |
+| G05 | 实时流暂停、恢复、drain 与优雅关闭未定义 | 发布、扩容和故障处理不可验证 | FR-015 |
+| G06 | status API 未绑定 lag、断流、重连、缓存 freshness | L1/L2 状态分层缺少可观测闭环 | FR-014 |
+| G07 | 历史 backfill 窗口、分页、边界闭合规则缺失 | 补数会产生重复或断档 | FR-016 |
+| G08 | 实时断档检测与 replay 触发条件未定义 | market data 完整性无法证明 | FR-017 |
+| G09 | replay 幂等边界与 SetNX/存储写入顺序未固化 | 重放可能污染下游存储 | FR-019 |
+| G10 | ossx 归档 retention、manifest、replay 索引未定义 | 冷数据恢复不可审计 | FR-018 |
+| G11 | late/out-of-order event 的接收、纠偏、拒绝策略缺失 | K 线、深度和逐笔事实口径可能漂移 | FR-017 |
+| G12 | dead-letter / poison message 回放流程未定义 | 下游失败后无法形成运营闭环 | FR-019 |
+| G13 | funding-rate、mark-price、index-price 等扩展事件未纳入矩阵治理 | 新事件会绕开 NAMING/RULES/RUNTIME-MAPPING | FR-020 / FR-021 / FR-022 |
+| G14 | runtime config hot reload、冻结、回滚边界缺失 | 运维变更无法证明不破坏数据生命周期 | FR-024 |
+| G15 | 证据包、traceability、acceptance 与 release gate 未串联 | 文档通过不等于实现可放行 | FR-023 |
 
-## Proposed FR landing points
+## 2. 13 个建议 FR 落点
 
-These are suggested landing points for the next approved SPEC revision. They are intentionally not applied to `SPEC.md` in Stage2.
+| FR | 建议标题 | Landing doc | Bump | Dependencies | 覆盖缺口 |
+| --- | --- | --- | --- | --- | --- |
+| FR-012 | Stream session lifecycle | `SPEC.md` client runtime / `client/IMPLEMENTATION-PLAN.md` | MINOR v2.4.0 | FR-001, FR-003 | G01, G02 |
+| FR-013 | Rate-limit, retry budget, and clock-skew guard | `SPEC.md` config/errors / `ACCEPTANCE.md` | MINOR v2.4.0 | FR-001, FR-004 | G03, G04 |
+| FR-014 | Status and lag control API | `SPEC.md` Gin/status / `TRACEABILITY.md` | MINOR v2.4.0 | FR-007, FR-009 | G06 |
+| FR-015 | Operational pause/resume/drain | `SPEC.md` runtime control / `BOUNDARY-GATES.md` | MINOR v2.4.0 | FR-003, FR-004, FR-009 | G05 |
+| FR-016 | Backfill window planning | `SPEC.md` history lifecycle / `server/IMPLEMENTATION-PLAN.md` | MINOR v2.5.0 | FR-006a, FR-006d | G07 |
+| FR-017 | Gap detection and replay trigger | `SPEC.md` history lifecycle / `RUNTIME-MAPPING.md` | MINOR v2.5.0 | FR-004, FR-005, FR-006a | G08, G11 |
+| FR-018 | Archive retention and replay manifest | `SPEC.md` ossx lifecycle / `server/tasks/TASK-BINANCE-SERVER-016-ossx-archiver.md` | MINOR v2.5.0 | FR-006d | G10 |
+| FR-019 | Backfill concurrency and idempotency gates | `ACCEPTANCE.md` / `TRACEABILITY.md` | MINOR v2.5.0 | FR-005, FR-011, FR-016, FR-017 | G09, G12 |
+| FR-020 | Funding-rate event support | `SPEC.md` event taxonomy / `NAMING.md` | MAJOR v3.0.0 | FR-001, FR-003, FR-006a, FR-009 | G13 |
+| FR-021 | Mark-price and index-price event support | `SPEC.md` event taxonomy / `NAMING.md` | MAJOR v3.0.0 | FR-001, FR-003, FR-006a, FR-009 | G13 |
+| FR-022 | Event-type matrix expansion governance | `RULES.md` / `NAMING.md` / `RUNTIME-MAPPING.md` | MAJOR v3.0.0 | FR-020, FR-021 | G13 |
+| FR-023 | Governance evidence bundle | `ACCEPTANCE.md` / `TRACEABILITY.md` / `docs/report/binance/` | MINOR v3.1.0 | boundary gates, CI evidence | G15 |
+| FR-024 | Runtime config hot reload | `STANDARD.md` / `SPEC.md` | MINOR v3.1.0 | FR-014, FR-015 | G14 |
 
-| Suggested FR | Draft title | Depends on | Bump impact |
-| --- | --- | --- | --- |
-| FR-012 | Lifecycle evidence bundle for ingest, storage, archive, and fanout | TRACEABILITY evidence convention | minor |
-| FR-013 | Instrument identity history and contract lifecycle catalog | domain_market, postgresx | minor |
-| FR-014 | Event-time / receive-time / decision-time semantics | domain_market, taosx, clickhousex | minor |
-| FR-015 | Idempotency conflict ledger | redisx, postgresx | minor |
-| FR-016 | Ack boundary proof before NATS Ack | natsx, redisx, taosx, postgresx, kafkax | minor |
-| FR-017 | Hot cache freshness and stale-read contract | redisx, Gin API | minor |
-| FR-018 | taosx retention and partition delete gate | taosx, ossx | minor |
-| FR-019 | OSS archive manifest and replay contract | ossx, parquet reader, postgresx | minor |
-| FR-020 | clickhousex ETL watermark and late-fact correction | clickhousex, taosx | minor |
-| FR-021 | Kafka topic versioning and consumer compatibility | kafkax | patch |
-| FR-022 | Dead-letter ownership and replay workflow | natsx, observability | minor |
-| FR-023 | Schema evolution compatibility rules | domain_market, downstream consumers | minor |
-| FR-024 | Recovery drill for cold-to-hot restore | ossx, taosx, postgresx, clickhousex | minor |
+## 3. Review checklist
 
-## Suggested bump and dependency notes
+- [ ] Confirm whether FR-012 through FR-015 are the minimum set for the next realtime-control SPEC bump.
+- [ ] Confirm whether historical backfill and replay work should stay in v2.5.x or split across implementation milestones.
+- [ ] Confirm whether event-type expansion must be a v3.0.0 major bump because it changes the 4 × 4 canonical matrix.
+- [ ] Confirm whether `STANDARD.md` should be created in stage 6 before FR-024 lands.
 
-- Proposed bump: `v2.3.0` once these lifecycle requirements are accepted, because the draft adds new lifecycle acceptance surface rather than only correcting prose.
-- No new repository dependency is proposed by this draft. It reuses existing module dependencies: `domain_market`, `natsx`, `redisx`, `taosx`, `postgresx`, `clickhousex`, `ossx`, `kafkax`, Gin, and runtime observability.
-- Review dependency: Stage1 `scripts/check-binance-docs.sh` should pass before this draft is used as SPEC input.
+## 4. Open questions
 
-## Non-goals
-
-- Do not modify `SPEC.md` from this Stage2 draft.
-- Do not mark runtime AC/TC items PASS without `/home/binance` evidence.
-- Do not expand Stage2 into Stage3+ implementation work.
+1. Should late/out-of-order policy be event-type specific, or should the first SPEC update define one conservative module-wide default?
+2. Should replay evidence be attached to every release, or only to releases that touch backfill, ossx, Kafka, or TAOS writes?
+3. Should funding-rate and mark/index price be separate event types, or grouped under a future derived-market event family?
