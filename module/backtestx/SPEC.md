@@ -1,6 +1,6 @@
 # backtestx 规格
 
-- Status: Review
+- Status: Spec Approved / Tasks Pending
 - Spec-Version: v1.0.0
 - Last-Updated: 2026-06-14
 - Layer: 分析域 · 回测引擎

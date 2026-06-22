@@ -72,23 +72,43 @@
 ## 机器门禁（Approved 升级前必检）
 
 > 2026-06-22 新增（见 `docs/report/architecture-structural-analysis-20260622-v2.md` §5.2 P0-2）
+> 2026-06-22 扩展：Status 校验改为"抽取主态关键词"，兼容历史描述性次态
 
-`.github/ci/spec-lint.sh` 在 `Status: Approved` 时强制执行以下 ERROR 级检查（违反阻断 CI）：
+`.github/ci/spec-lint.sh` 在 Status 主态为 `Approved` 时强制执行以下 ERROR 级检查（违反阻断 CI）：
 
-- **AC 必填**：SPEC.md 必须包含至少一条 `AC-` 编号（任何形式：`AC-001` / `AC-XXX-001` / `AC-MD-001`），否则报 `Status=Approved 但 SPEC 不含任何 AC`
-- 已有 Status 六态合法性检查（Draft / Review / Approved / Implemented / Changed / Deprecated）
+- **AC 必填**：SPEC.md 必须包含至少一条 `AC-` 编号（任何形式：`AC-001` / `AC-XXX-001` / `AC-MD-001`），否则报 `Status='...' (主态=Approved) 但 SPEC 不含任何 AC`
+- 已有 Status 合法性检查（六态关键词必须出现在 Status 行内）
 - 已有 23 节模板序检查（§1..§23 + Appendix）
 - 已有 Spec-Version / Last-Updated 字段校验
 - 已有 FR 编号连续性检查
 
-**升级到 Approved 的可机器验证条件**：
+### Status 合法值
+
+合法 Status 必须**包含**以下六个主态关键词之一：
+- `Draft` — 草稿
+- `Review` — 评审中
+- `Approved` — 已批准，可进入开发（触发 AC 必填门禁）
+- `Implemented` — 已实现
+- `Changed` — 已变更（破坏性变更标记）
+- `Deprecated` — 已废弃
+
+主态可与描述性后缀组合，常见形式：
+- `Spec Approved / Tasks Pending` — 规格层就绪、实施层未启动（用于 Review 模块向 Approved 过渡）
+- `Docs Baseline Approved / Runtime Pending` — 文档基线已批准、运行时未启动
+- `Approved (Docs Baseline Synced / Runtime Truth Verified)` — 文档与 runtime 双向同步
+- `Approved (contract-corrected)` — 历史 contract 修正后批准
+- `Implemented Locally` — 本地实现版本
+
+**判定规则**：spec-lint 按 `Approved → Review → Draft → Implemented → Changed → Deprecated` 顺序抽取首个匹配关键词作为 `status_main`，用于 AC 必填判断。
+
+### 升级到 Approved 的可机器验证条件
 
 - AC count ≥ 1
 - FR count ≥ 1
 - TC 至少在 §16/§19 章节出现（推荐但非阻断）
 - 23 节模板完整或采用简化版（contracts / xlib_standard 等元契约模块）
 
-Draft / Review 状态允许 AC 缺失，作为过渡窗口；推进到 Approved 前必须补齐。
+Draft / Review 状态允许 AC 缺失，作为过渡窗口；推进到 Approved 主态前必须补齐。
 
 ---
 

@@ -201,20 +201,35 @@ check_spec() {
     WARN=1
   fi
 
-  # 7. Status 字段校验（六态：Draft/Review/Approved/Implemented/Changed/Deprecated）
-  local status_val
-  status_val=$(grep -oP "^- Status:\s*\K\S+" "$spec_file" || true)
-  if [[ -z "$status_val" ]]; then
+  # 7. Status 字段校验
+  # 合法值：主态六态 (Draft/Review/Approved/Implemented/Changed/Deprecated) 或其复合形式
+  # 复合形式示例：
+  #   'Spec Approved / Tasks Pending'         — Review→Approved 过渡次态
+  #   'Docs Baseline Approved / Runtime Pending' — 文档基线已批/运行时未启
+  #   'Docs Baseline Synced / Runtime Truth Verified' — 文档与 runtime 同步
+  #   'Implemented Locally' / 'Approved (contract-corrected)' — 各类描述性后缀
+  # 判定规则：抽取 status_line 中首个匹配六态的关键词作为 status_main
+  # 来源：2026-06-22 PR #848 + 本 PR（兼容历史描述性次态，避免新增 grep 引入回归）
+  local status_line
+  status_line=$(grep -oP "^- Status:\s*\K[^\n]+" "$spec_file" | head -1 | sed 's/[[:space:]]*$//' || true)
+  local status_val=""
+  local status_main=""
+  if [[ -z "$status_line" ]]; then
     issues+=("❌ missing Status metadata")
     FAIL=1
   else
-    case "$status_val" in
-      Draft|Review|Approved|Implemented|Changed|Deprecated) ;;
-      *)
-        issues+=("❌ invalid Status: $status_val (expected: Draft|Review|Approved|Implemented|Changed|Deprecated)")
-        FAIL=1
-        ;;
-    esac
+    status_val="$status_line"
+    # 抽取首个出现的六态关键词作为主态（顺序匹配，先匹配先用）
+    for kw in Approved Review Draft Implemented Changed Deprecated; do
+      if [[ "$status_line" == *"$kw"* ]]; then
+        status_main="$kw"
+        break
+      fi
+    done
+    if [[ -z "$status_main" ]]; then
+      issues+=("❌ invalid Status: $status_line (expected one of: Draft|Review|Approved|Implemented|Changed|Deprecated, optionally combined with descriptive suffix)")
+      FAIL=1
+    fi
   fi
 
   # 8. Spec-Version 字段校验
@@ -247,15 +262,16 @@ check_spec() {
     FAIL=1
   fi
 
-  # 11. Approved 状态门禁：Status=Approved 必须存在至少 1 条 AC（验收标准）
-  # 触发：仅在 Status 为 Approved 时阻断；Draft/Review 允许 AC 缺失（过渡窗口）
+  # 11. Approved 系列状态门禁：status_main=Approved 时必须存在至少 1 条 AC
+  # 触发条件：主态为 Approved（含 'Spec Approved'、'Docs Baseline Approved'、'Approved (contract-corrected)' 等所有以 Approved 为关键词的次态）
+  # 不触发：Draft / Review / Implemented / Changed / Deprecated（给予过渡或终态窗口）
   # 来源：docs/report/architecture-structural-analysis-20260622-v2.md §5.2 P0-2
   # AC 形式：AC-001 / AC-XXX-001 / AC-MD-001 / AC-DEC-001 等（前缀 AC- 后跟字母数字）
-  if [[ "$status_val" == "Approved" ]]; then
+  if [[ "$status_main" == "Approved" ]]; then
     local ac_count
     ac_count=$(grep -oP '(?<![A-Za-z0-9_])AC-[A-Za-z0-9_-]+' "$spec_file" 2>/dev/null | sort -u | wc -l || echo 0)
     if [[ "$ac_count" -eq 0 ]]; then
-      issues+=("❌ Status=Approved 但 SPEC 不含任何 AC（Acceptance Criteria）— 违反 DoR 验收要求")
+      issues+=("❌ Status='$status_val' (主态=Approved) 但 SPEC 不含任何 AC（Acceptance Criteria）— 违反 DoR 验收要求")
       FAIL=1
     fi
   fi
