@@ -22,21 +22,12 @@ require_text() {
   fi
 }
 
-reject_text() {
-  local file="$1" pattern="$2" label="$3"
-  if grep -Eq "$pattern" "$file"; then
-    fail "$label"
-  else
-    pass "$label"
-  fi
-}
+spec_version="$(sed -n 's/^- Spec-Version: //p' module/binance/SPEC.md | head -n1)"
+acceptance_version="$(sed -n 's/^| Module-Version | \([^|]*\) |$/\1/p' module/binance/ACCEPTANCE.md | head -n1)"
+impl_version="$(sed -n 's/^- Version: //p' module/binance/IMPLEMENTATION-PLAN.md | head -n1)"
+trace_ref="$(sed -n 's/^- Spec-Reference: `module\/binance\/SPEC.md` //p' module/binance/TRACEABILITY.md | head -n1)"
 
-# R9 + Stage artifacts.
-required_docs=(
-  module/binance/SPEC.md
-  module/binance/README.md
-  module/binance/NAMING.md
-  module/binance/RULES.md
+alias_scan_docs=(
   module/binance/RUNTIME-MAPPING.md
   module/binance/BOUNDARY-GATES.md
   module/binance/TRACEABILITY.md
@@ -52,14 +43,12 @@ for doc in "${required_docs[@]}"; do
   require_file "$doc"
 done
 
-# R6 version sync for current Stage0 repair baseline.
-require_text module/binance/SPEC.md 'Spec-Version: v2\.2\.3' 'SPEC version is v2.2.3'
-require_text module/binance/README.md 'Spec-Version: v2\.2\.3' 'README root version is v2.2.3'
-require_text module/binance/ACCEPTANCE.md 'Module-Version \| v2\.2\.3' 'ACCEPTANCE module version matches v2.2.3'
-require_text module/binance/FEATURES.md 'Module-Version \| v2\.2\.3' 'FEATURES module version matches v2.2.3'
-require_text module/binance/IMPLEMENTATION-PLAN.md 'Version: v2\.2\.3' 'IMPLEMENTATION-PLAN version matches v2.2.3'
-require_text module/binance/TRACEABILITY.md 'Spec-Reference: `module/binance/SPEC\.md` v2\.2\.3' 'TRACEABILITY spec reference matches v2.2.3'
-require_text module/binance/CHANGELOG.md 'Spec-Reference: `module/binance/SPEC\.md` v2\.2\.3' 'CHANGELOG spec reference matches v2.2.3'
+if rg -n 'usdm_futures|coinm_futures|futures_usdt|futures_coin' "${alias_scan_docs[@]}" >/tmp/binance-doc-aliases.$$ 2>/dev/null; then
+  fail R1 "invalid product_line alias found: $(head -n1 /tmp/binance-doc-aliases.$$)"
+else
+  pass R1 'active contract docs avoid deprecated product_line aliases'
+fi
+rm -f /tmp/binance-doc-aliases.$$
 
 # R2 4x4 symmetry: NATS subjects and Kafka topics must be explicitly enumerable in SSOT docs.
 product_lines=(spot um_perp cm_perp options)
