@@ -19,6 +19,7 @@
 **检测**：`NAMING.md` §11 给出 4 条 grep 命令，期望全部 0 行命中
 
 **例外**：以下文件允许引用历史别名（仅作为漂移证据保留）：
+
 - `NAMING.md`（"历史别名" 列）
 - `RULES.md`（本文 "违规" 示例）
 - `ARCHITECTURE-DRIFT-WATCHLIST.md`（漂移历史）
@@ -42,6 +43,7 @@
 **违规**：缺失任一组合（例如缺 `binance.market.options.depth`）
 
 **检测**：
+
 ```bash
 # 期望返回 16 × 5 = 80 行（每层 16 个组合）
 for layer in "binance\.market\." "binance\." "binance_market_" "binance/" "/api/v1/market/"; do
@@ -60,20 +62,21 @@ done
 
 **规则**：以下变更必须对应 SPEC 版本号 bump：
 
-| 变更类型 | bump 级别 | 示例 |
-|---|---|---|
-| FR/BR/NFR 接口/契约变更 | MINOR | 新增 FR、修改 AC 语义 |
-| 命名收敛 / subject/topic/key 重命名 | MINOR | um_perp 命名统一 |
-| product_line / event_type 枚举变更 | MAJOR | 新增 USDⓈ-M Delivery |
-| 状态字段修正 / 文档错字 / 链接修复 | PATCH | Pending → Implemented |
-| 追溯矩阵新增 TC/AC | PATCH | TC-029 新增 |
-| 治理体系重构（如废弃 TRACEABILITY） | MAJOR | — |
+| 变更类型                            | bump 级别 | 示例                  |
+| ----------------------------------- | --------- | --------------------- |
+| FR/BR/NFR 接口/契约变更             | MINOR     | 新增 FR、修改 AC 语义 |
+| 命名收敛 / subject/topic/key 重命名 | MINOR     | um_perp 命名统一      |
+| product_line / event_type 枚举变更  | MAJOR     | 新增 USDⓈ-M Delivery  |
+| 状态字段修正 / 文档错字 / 链接修复  | PATCH     | Pending → Implemented |
+| 追溯矩阵新增 TC/AC                  | PATCH     | TC-029 新增           |
+| 治理体系重构（如废弃 TRACEABILITY） | MAJOR     | —                     |
 
 **违规**：变更未 bump 或 bump 级别错误
 
 **检测**：PR 描述必须显式声明 bump 级别 + 触发理由，CI gate `version-bump-check.sh` 验证
 
 **强制约束**：
+
 - 版本号只能升不能降
 - bump 必须是 PR 最后一个 commit
 - 子规格版本（client/SPEC.md、server/SPEC.md）独立 bump，但根 SPEC.md bump 时所有引用根 SPEC 的子追溯矩阵 `Spec-Reference` 字段必须同步更新
@@ -91,6 +94,7 @@ done
 **违规**：根矩阵 "Implemented" 但 runtime 仓未推送对应代码；或报告称 Pending 但矩阵称 Implemented
 
 **检测**：
+
 ```bash
 # 1. 根 TRACEABILITY Implemented 数量
 grep -cE "\| \*\*Implemented\*\*" module/binance/TRACEABILITY.md
@@ -100,6 +104,7 @@ cd /home/binance && bash scripts/boundary-gates.sh 2>&1 | grep -c "PASS"
 ```
 
 **修复义务**：
+
 - 同步状态时必须附 boundary-gate 输出或 git SHA 证据
 - 不可仅凭 "已写代码" 主观判断，必须 CI gate PASS
 - runtime 仓未推送时，所有 FR 实现状态默认 `Pending — 以 runtime 仓为准`
@@ -120,12 +125,14 @@ cd /home/binance && bash scripts/boundary-gates.sh 2>&1 | grep -c "PASS"
 **违规**：原地保留 + 加 `[ARCHIVED]` 标记（视觉污染 + 索引混淆）
 
 **检测**：
+
 ```bash
 # 期望 0 行命中（除 DEEP-ANALYSIS.md 的历史快照外）
 grep -lE "^\> \[ARCHIVED" module/binance/ --include="*.md" -r | grep -v "DEEP-ANALYSIS\|archive/"
 ```
 
 **修复义务**：
+
 - 归档时使用 `git mv`（保留 history）
 - `archive/README.md` 必须列出每个文件的 "替代 task ID + 架构变更原因 + 归档日期"
 - 根 TRACEABILITY.md 的 Task 列引用归档 task 时，必须改引用替代 task
@@ -139,6 +146,7 @@ grep -lE "^\> \[ARCHIVED" module/binance/ --include="*.md" -r | grep -v "DEEP-AN
 **违规**：ACCEPTANCE Module-Version 落后于 SPEC Spec-Version
 
 **检测**：
+
 ```bash
 SPEC=$(grep -oP "Spec-Version: \Kv[0-9.]+" module/binance/SPEC.md)
 ACC=$(grep -oP "Module-Version: \Kv[0-9.]+" module/binance/ACCEPTANCE.md)
@@ -169,6 +177,7 @@ ACC=$(grep -oP "Module-Version: \Kv[0-9.]+" module/binance/ACCEPTANCE.md)
 ## R8【软】PR 聚合纪律
 
 **规则**：
+
 - 同模块文档修复 → 1 个 PR
 - 跨文档同步（如 SPEC bump 触发 ACCEPTANCE 同步）→ 1 个 PR
 - 禁止 1 行变更的 PR
@@ -185,24 +194,25 @@ ACC=$(grep -oP "Module-Version: \Kv[0-9.]+" module/binance/ACCEPTANCE.md)
 
 **规则**：`module/binance/` 必须存在以下文件（缺失即视为治理不完整）：
 
-| 文件 | 用途 |
-|---|---|
-| `SPEC.md` | 23 节模块规格 |
-| `TRACEABILITY.md` | FR/BR/NFR/TC/AC 追溯矩阵 |
-| `ACCEPTANCE.md` | 验收清单 |
-| `FEATURES.md` | 功能特性总览 |
-| `IMPLEMENTATION-PLAN.md` | 实现计划 |
-| `RUNTIME-MAPPING.md` | runtime 仓映射 |
-| `BOUNDARY-GATES.md` | CI gate 定义 |
-| `NAMING.md` | 命名 SSOT |
-| `RULES.md` | 治理规则（本文） |
-| `ARCHITECTURE-DRIFT-WATCHLIST.md` | 漂移监控点 |
-| `CHANGELOG.md` | 模块变更历史 |
-| `client/SPEC.md` + `client/TRACEABILITY.md` | 客户端子规格 |
-| `server/SPEC.md` + `server/TRACEABILITY.md` | 服务端子规格 |
-| `{client,server}/tasks/archive/README.md` | 归档映射 |
+| 文件                                        | 用途                     |
+| ------------------------------------------- | ------------------------ |
+| `SPEC.md`                                   | 23 节模块规格            |
+| `TRACEABILITY.md`                           | FR/BR/NFR/TC/AC 追溯矩阵 |
+| `ACCEPTANCE.md`                             | 验收清单                 |
+| `FEATURES.md`                               | 功能特性总览             |
+| `IMPLEMENTATION-PLAN.md`                    | 实现计划                 |
+| `RUNTIME-MAPPING.md`                        | runtime 仓映射           |
+| `BOUNDARY-GATES.md`                         | CI gate 定义             |
+| `NAMING.md`                                 | 命名 SSOT                |
+| `RULES.md`                                  | 治理规则（本文）         |
+| `ARCHITECTURE-DRIFT-WATCHLIST.md`           | 漂移监控点               |
+| `CHANGELOG.md`                              | 模块变更历史             |
+| `client/SPEC.md` + `client/TRACEABILITY.md` | 客户端子规格             |
+| `server/SPEC.md` + `server/TRACEABILITY.md` | 服务端子规格             |
+| `{client,server}/tasks/archive/README.md`   | 归档映射                 |
 
 **检测**：
+
 ```bash
 for f in SPEC.md TRACEABILITY.md ACCEPTANCE.md FEATURES.md IMPLEMENTATION-PLAN.md \
          RUNTIME-MAPPING.md BOUNDARY-GATES.md NAMING.md RULES.md \
@@ -255,6 +265,6 @@ done
 
 ## 12. 变更历史
 
-| 日期 | 版本 | 变更内容 | 作者 |
-|---|---|---|---|
+| 日期       | 版本   | 变更内容                                                                                                                   | 作者    |
+| ---------- | ------ | -------------------------------------------------------------------------------------------------------------------------- | ------- |
 | 2026-06-22 | v1.0.0 | 首次建立。整合 2026-06-22 治理审计复盘 + binance/SPEC.md §11 NFR 治理章节 + CLAUDE.md 编辑纪律，规则 R1-R10 全部可机器检测 | ZoneCNH |
