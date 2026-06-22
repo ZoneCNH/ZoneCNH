@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import { buildScan, formatHumanReport } from "./branch-governance.mjs";
+import { describeBranchWorktreePath } from "./worktree-policy.mjs";
 
 test("classifies merge, fix, delete, close, and publish candidates", () => {
   const calls = [];
@@ -133,4 +134,28 @@ test("classifies merge, fix, delete, close, and publish candidates", () => {
   assert.match(report, /\[CLOSE\] #13 stale-branch/);
   assert.match(report, /\[PUBLISH\] local-unpublished/);
   assert.ok(calls.includes("git worktree list --porcelain"));
+});
+
+test("derives canonical worktree paths and accepts root checkouts", () => {
+  const rootCheckout = describeBranchWorktreePath({
+    root: "/repo",
+    branchName: "docs/binance-deep-analysis-v2-20260622",
+    actualPath: "/repo",
+  });
+  assert.deepEqual(rootCheckout, {
+    expectedPath: "/repo/.worktree/workspaces/docs/binance-deep-analysis-v2-20260622",
+    isRootCheckout: true,
+    compliant: true,
+  });
+
+  const nestedCheckout = describeBranchWorktreePath({
+    root: "/repo",
+    branchName: "feature/nested/path",
+    actualPath: "/repo/.worktree/workspaces/feature/nested/path",
+  });
+  assert.deepEqual(nestedCheckout, {
+    expectedPath: "/repo/.worktree/workspaces/feature/nested/path",
+    isRootCheckout: false,
+    compliant: true,
+  });
 });
