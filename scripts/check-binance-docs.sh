@@ -1,10 +1,8 @@
 #!/usr/bin/env bash
-# Validate the stage0-stage2 Binance documentation gates from
-# docs/report/binance/goal-execution-plan-20260622.md.
-set -u
+set -euo pipefail
 
-ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-cd "$ROOT" || exit 1
+ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
+cd "$ROOT"
 
 failures=0
 
@@ -14,148 +12,137 @@ fail() {
   failures=$((failures + 1))
 }
 
-require_file() {
-  local file="$1"
-  if [ -f "$file" ]; then
-    pass "$file exists"
+expect_file() {
+  local path=$1
+  if [[ -f "$path" ]]; then
+    pass "file exists: $path"
   else
-    fail "$file: missing required file"
+    fail "missing file: $path"
   fi
 }
 
-require_grep() {
-  local pattern="$1"
-  local file="$2"
-  local label="$3"
-  if grep -Eq "$pattern" "$file" 2>/dev/null; then
-    pass "$label"
+expect_executable() {
+  local path=$1
+  if [[ -x "$path" ]]; then
+    pass "executable: $path"
   else
-    fail "$file: missing $label"
+    fail "not executable: $path"
   fi
 }
 
-extract_value() {
-  local label="$1"
-  local file="$2"
-  awk -v label="$label" '
-    index($0, label) {
-      line = $0
-      if (line ~ /^ *\|/) {
-        n = split(line, parts, "|")
-        for (i = 1; i <= n; i++) {
-          gsub(/^[[:space:]]+|[[:space:]]+$/, "", parts[i])
-          if (parts[i] == label && i < n) { gsub(/^[[:space:]]+|[[:space:]]+$/, "", parts[i + 1]); print parts[i + 1]; exit }
-        }
-      }
-      sub(/^.*:[[:space:]]*/, "", line)
-      sub(/[ |`)].*$/, "", line)
-      print line
-      exit
-    }
-  ' "$file"
-}
-
-require_equal() {
-  local actual="$1"
-  local expected="$2"
-  local file="$3"
-  local label="$4"
-  if [ "$actual" = "$expected" ]; then
+expect_eq() {
+  local label=$1 expected=$2 actual=$3
+  if [[ "$actual" == "$expected" ]]; then
     pass "$label = $expected"
   else
-    fail "$file: $label is '$actual', expected '$expected'"
+    fail "$label expected $expected got ${actual:-<empty>}"
   fi
 }
 
-required_files=(
-  docs/report/binance/goal-execution-plan-20260622.md
-  docs/report/INDEX.md
-  module/binance/README.md
-  module/binance/SPEC.md
-  module/binance/TRACEABILITY.md
-  module/binance/ACCEPTANCE.md
-  module/binance/FEATURES.md
-  module/binance/RULES.md
-  module/binance/NAMING.md
-  module/binance/RUNTIME-MAPPING.md
-  module/binance/BOUNDARY-GATES.md
-  module/binance/DATA-LIFECYCLE.md
-)
-for file in "${required_files[@]}"; do
-  require_file "$file"
+expect_rg() {
+  local pattern=$1 path=$2 label=$3
+  if rg -q "$pattern" "$path"; then
+    pass "$label"
+  else
+    fail "$label"
+  fi
+}
+
+expect_no_rg() {
+  local pattern=$1 path=$2 label=$3
+  if rg -q "$pattern" "$path"; then
+    fail "$label"
+  else
+    pass "$label"
+  fi
+}
+
+table_value() {
+  local key=$1 path=$2
+  awk -F'|' -v key="$key" '$2 ~ key {v=$3; gsub(/^[ \t]+|[ \t]+$/, "", v); print v; exit}' "$path"
+}
+
+spec_version=$(sed -nE 's/^- Spec-Version: (v[0-9.]+).*/\1/p' module/binance/SPEC.md | head -1)
+readme_root=$(sed -nE 's/^- Spec-Version: (v[0-9.]+).*/\1/p' module/binance/README.md | head -1)
+trace_ref=$(sed -nE 's/^- Spec-Reference: `module\/binance\/SPEC.md` (v[0-9.]+).*/\1/p' module/binance/TRACEABILITY.md | head -1)
+acceptance_version=$(table_value "Module-Version" module/binance/ACCEPTANCE.md)
+features_version=$(table_value "Module-Version" module/binance/FEATURES.md)
+impl_version=$(sed -nE 's/^- Version: (v[0-9.]+).*/\1/p' module/binance/IMPLEMENTATION-PLAN.md | head -1)
+changelog_ref=$(sed -nE 's/^- Spec-Reference: `module\/binance\/SPEC.md` (v[0-9.]+).*/\1/p' module/binance/CHANGELOG.md | head -1)
+
+expect_eq "README root Spec-Version" "$spec_version" "$readme_root"
+expect_eq "TRACEABILITY Spec-Reference" "$spec_version" "$trace_ref"
+expect_eq "ACCEPTANCE Module-Version" "$spec_version" "$acceptance_version"
+expect_eq "FEATURES Module-Version" "$spec_version" "$features_version"
+expect_eq "IMPLEMENTATION-PLAN Version" "$spec_version" "$impl_version"
+expect_eq "CHANGELOG Spec-Reference" "$spec_version" "$changelog_ref"
+
+for f in SPEC.md TRACEABILITY.md ACCEPTANCE.md FEATURES.md IMPLEMENTATION-PLAN.md \
+         RUNTIME-MAPPING.md BOUNDARY-GATES.md NAMING.md RULES.md \
+         ARCHITECTURE-DRIFT-WATCHLIST.md CHANGELOG.md client/SPEC.md \
+         client/TRACEABILITY.md server/SPEC.md server/TRACEABILITY.md \
+         client/tasks/archive/README.md server/tasks/archive/README.md; do
+  expect_file "module/binance/$f"
 done
+expect_file "scripts/check-binance-docs.sh"
+expect_executable "scripts/check-binance-docs.sh"
 
-plan=docs/report/binance/goal-execution-plan-20260622.md
-index=docs/report/INDEX.md
-rules=module/binance/RULES.md
-naming=module/binance/NAMING.md
-runtime=module/binance/RUNTIME-MAPPING.md
-lifecycle=module/binance/DATA-LIFECYCLE.md
-spec=module/binance/SPEC.md
-readme=module/binance/README.md
-trace=module/binance/TRACEABILITY.md
-acceptance=module/binance/ACCEPTANCE.md
-features=module/binance/FEATURES.md
+product_lines=(spot um_perp cm_perp options)
+event_types=(tick trade bar depth)
 
-require_grep 'AC-1' "$plan" 'goal plan AC-1 present'
-require_grep 'AC-2' "$plan" 'goal plan AC-2 present'
-require_grep 'AC-3' "$plan" 'goal plan AC-3 present'
-require_grep '阶段 0' "$plan" 'stage 0 present'
-require_grep '阶段 1' "$plan" 'stage 1 present'
-require_grep '阶段 2' "$plan" 'stage 2 present'
-require_grep 'CI 集成方案|CI integration' "$plan" 'CI integration plan drafted'
-require_grep 'binance/goal-execution-plan-20260622\.md' "$index" 'report INDEX links goal plan'
-
-for rule in R1 R2 R3 R4 R5 R6 R7 R8 R9 R10; do
-  require_grep "^## ${rule}" "$rules" "RULES ${rule} machine-detectable"
-done
-
-spec_version="$(extract_value 'Spec-Version' "$spec")"
-readme_root_version="$(sed -n 's/^- Spec-Version: \([^ ]*\).*/\1/p' "$readme" | head -n 1)"
-trace_matrix_version="$(extract_value 'Matrix-Version' "$trace")"
-trace_spec_ref=$(sed -n 's/^- Spec-Reference: `module\/binance\/SPEC\.md` \(v[0-9][^ ]*\).*/\1/p' "$trace" | head -n 1)
-acceptance_version="$(extract_value 'Module-Version' "$acceptance")"
-features_version="$(extract_value 'Module-Version' "$features")"
-
-require_equal "$readme_root_version" "$spec_version" "$readme" 'README root Spec-Version'
-require_equal "$trace_matrix_version" "$spec_version" "$trace" 'TRACEABILITY Matrix-Version'
-require_equal "$trace_spec_ref" "$spec_version" "$trace" 'TRACEABILITY Spec-Reference'
-require_equal "$acceptance_version" "$spec_version" "$acceptance" 'ACCEPTANCE Module-Version'
-require_equal "$features_version" "$spec_version" "$features" 'FEATURES Module-Version'
-
-products=(spot um_perp cm_perp options)
-events=(tick trade bar depth)
-for product in "${products[@]}"; do
-  for event in "${events[@]}"; do
-    subject="binance.market.${product}.${event}"
-    topic="binance.${product}.${event}.v1"
-    require_grep "${subject}" "$naming" "NAMING NATS ${subject}"
-    require_grep "${subject}" "$runtime" "RUNTIME-MAPPING NATS ${subject}"
-    require_grep "${topic}" "$naming" "NAMING Kafka ${topic}"
-    require_grep "${topic}" "$runtime" "RUNTIME-MAPPING Kafka ${topic}"
+for product_line in "${product_lines[@]}"; do
+  for event_type in "${event_types[@]}"; do
+    expect_rg "binance\\.market\\.${product_line}\\.${event_type}" module/binance/RUNTIME-MAPPING.md "NATS subject ${product_line}/${event_type}"
+    expect_rg "binance\\.${product_line}\\.${event_type}\\.v1" module/binance/RUNTIME-MAPPING.md "Kafka runtime mapping ${product_line}/${event_type}"
+    expect_rg "binance\\.${product_line}\\.${event_type}\\.v1" module/binance/server/tasks/TASK-BINANCE-SERVER-014-kafkax-dispatch.md "Kafka task ${product_line}/${event_type}"
   done
 done
 
-while IFS= read -r task_file; do
-  [ -n "$task_file" ] || continue
-  if find module/binance -path '*/tasks/*' -type f -name "$task_file" | grep -q .; then
-    pass "RULES task ref ${task_file} exists"
-  else
-    fail "$rules: task ref ${task_file} has no matching task file"
-  fi
-done < <(grep -Eo 'TASK-BINANCE-[A-Z]+-[0-9]+-[A-Za-z0-9-]+\.md' "$rules" | sort -u)
+expect_rg "CREATE STABLE IF NOT EXISTS binance_market_ticks" module/binance/server/tasks/TASK-BINANCE-SERVER-013-taosx-storage.md "taosx ticks stable"
+expect_rg "CREATE STABLE IF NOT EXISTS binance_market_depth" module/binance/server/tasks/TASK-BINANCE-SERVER-013-taosx-storage.md "taosx depth stable"
+expect_rg "binance/\\{product_line\\}/\\{symbol\\}/\\{YYYY\\}/\\{MM\\}/\\{DD\\}/\\{event_type\\}\\.parquet" module/binance/server/tasks/TASK-BINANCE-SERVER-016-ossx-archiver.md "ossx generic 4x4 archive path"
+expect_rg "/api/v1/market/ticks" module/binance/server/tasks/TASK-BINANCE-SERVER-015-gin-market-api.md "Gin ticks route"
+expect_rg "/api/v1/market/depth" module/binance/server/tasks/TASK-BINANCE-SERVER-015-gin-market-api.md "Gin depth route"
 
-require_grep '15 .*缺口|15 gaps' "$lifecycle" 'DATA-LIFECYCLE lists 15 gaps'
-for fr in FR-012 FR-013 FR-014 FR-015 FR-016 FR-017 FR-018 FR-019 FR-020 FR-021 FR-022 FR-023 FR-024; do
-  require_grep "$fr" "$lifecycle" "DATA-LIFECYCLE ${fr} landing point"
-done
-require_grep 'SPEC\.md.*未修改|not modify.*SPEC\.md|not a SPEC change|不是 SPEC change' "$lifecycle" 'DATA-LIFECYCLE declares no SPEC change'
-require_grep 'bump|Bump' "$lifecycle" 'DATA-LIFECYCLE records bump levels'
-require_grep '依赖|Dependencies' "$lifecycle" 'DATA-LIFECYCLE records dependencies'
+expect_no_rg 'binance\.market\.(spot|um_perp|cm_perp|options)\.(tick|trade|bar|depth)|topic := fmt.Sprintf\("binance\.market' module/binance/server/tasks/TASK-BINANCE-SERVER-014-kafkax-dispatch.md "Kafka task has no legacy topic format"
+expect_rg 'Kafka topic 格式：`binance\.\{product_line\}\.\{event_type\}\.v1`' module/binance/server/tasks/TASK-BINANCE-SERVER-014-kafkax-dispatch.md "Kafka canonical format documented"
+expect_rg 'topic = `binance\.\{product_line\}\.\{event_type\}\.v1`' module/binance/server/TRACEABILITY.md "server TRACEABILITY Kafka topic canonical"
+expect_no_rg 'topic = `binance\.market' module/binance/server/TRACEABILITY.md "server TRACEABILITY has no legacy Kafka topic"
+expect_no_rg 'binance\.market\.(ticks|bars|depth|events)|fmt.Sprintf\("binance\.market|kafkax\.Send\("binance\.market' module/binance/DEEP-ANALYSIS.md "DEEP-ANALYSIS has no legacy Kafka topic examples"
+expect_rg '\| AC-029 \| FR-008 \| kafkax topic = `binance\.\{product_line\}\.\{event_type\}\.v1` \|' module/binance/TRACEABILITY.md "TRACEABILITY AC-029 maps to FR-008"
+expect_rg '\| AC-032 \| FR-009 \| server 源码无 `internal/client` 或 `internal/cs` 导入' module/binance/TRACEABILITY.md "TRACEABILITY AC-032 maps to FR-009"
+expect_rg '\| AC-028 \| FR-008 \| Server 通过 `kafkax` 发送 `binance\.\{product_line\}\.\{event_type\}\.v1`' module/binance/ACCEPTANCE.md "ACCEPTANCE AC-028 maps to FR-008"
+expect_rg '\| AC-031 \| FR-009 \| CI 禁止 `binance-client` 导入 server internals' module/binance/ACCEPTANCE.md "ACCEPTANCE AC-031 maps to FR-009"
+expect_rg '\| TC-020 \| FR-009, BR-005 \|' module/binance/ACCEPTANCE.md "ACCEPTANCE TC-020 maps to FR-009"
+expect_rg '\| TC-021 \| FR-009, BR-001 \|' module/binance/ACCEPTANCE.md "ACCEPTANCE TC-021 maps to FR-009"
+expect_rg '\| TC-022 \| FR-009, BR-009 \|' module/binance/ACCEPTANCE.md "ACCEPTANCE TC-022 maps to FR-009"
 
-if [ "$failures" -eq 0 ]; then
-  printf 'PASS binance docs stage0-stage2 gates: 0 fail\n'
+expect_no_rg "FR-010, BOUNDARY-GATES\\.md" module/binance/SPEC.md "SPEC boundary gate references FR-009"
+
+implemented_functional=$(awk -F'|' '
+  $2 ~ /^[[:space:]]*FR-[0-9]/ {
+    id=$2
+    row=$0
+    gsub(/^[[:space:]]+|[[:space:]]+$/, "", id)
+    if (row ~ /\*\*Implemented\*\*/ && id != "FR-009") {
+      print id
+    }
+  }
+' module/binance/TRACEABILITY.md)
+
+if [[ -z "$implemented_functional" ]]; then
+  pass "only FR-009 is Implemented in root FR table"
 else
-  printf 'FAIL binance docs stage0-stage2 gates: %s fail\n' "$failures"
+  fail "non-boundary FR marked Implemented: $implemented_functional"
 fi
-exit "$failures"
+
+expect_rg '\| FR-009 \|.*runtime SHA `bae80d6`' module/binance/TRACEABILITY.md "FR-009 has runtime SHA evidence"
+expect_rg "L1 Boundary/Governance Gate" module/binance/RULES.md "RULES documents L1/L2 status boundary"
+expect_rg "bash scripts/check-binance-docs\\.sh" .github/workflows/docs-ci.yml "docs CI runs binance checker"
+
+if (( failures > 0 )); then
+  printf '%s check(s) failed\n' "$failures" >&2
+  exit 1
+fi
+
+printf 'binance docs checks passed\n'

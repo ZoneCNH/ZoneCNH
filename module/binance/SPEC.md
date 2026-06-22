@@ -1047,7 +1047,7 @@ github.com/ZoneCNH/binance/
 - [ ] Delivery semantics 明确为 at-least-once + idempotent acceptance（FR-004, FR-005）
 - [ ] natsx JetStream ManualAck 全链路语义已定义且 testable（BR-004）
 - [ ] ProductLine 和 InstrumentKey 碰撞 case 已文档化（FR-002, §10 Data Model）
-- [ ] Boundary gates 可在 CI 执行（FR-010, BOUNDARY-GATES.md）
+- [ ] Boundary gates 可在 CI 执行（FR-009, BOUNDARY-GATES.md）
 - [ ] Runtime mapping 未将 generic market_data/strategy ownership 放在 Binance 内（BR-006）
 - [ ] 所有 FR 实现完成，所有 AC 验证通过
 - [ ] 覆盖率 ≥ 80%

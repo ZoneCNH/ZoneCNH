@@ -141,15 +141,15 @@
 | AC-023 | FR-007 | 无效 API key → 401 | TC-014 |
 | AC-024 | FR-007 | 超限（1000 req/min）→ 429 + Retry-After | TC-015 |
 | AC-025 | FR-007 | GET /readyz 任一组件断连 → 503 | TC-012 |
-| AC-026 | FR-008 | 每日定时查询 cutoff（now - 90d）之前的 taosx 数据 | TC-016 |
-| AC-027 | FR-008 | ossx ETag 验证通过后才执行 taosx.Delete（先写冷再删热） | TC-016 |
-| AC-028 | FR-008 | 归档路径格式 `binance/{product_line}/{symbol}/{YYYY}/{MM}/{DD}/{event_type}.parquet` | TC-017 |
-| AC-029 | FR-009 | kafkax topic = `binance.{product_line}.{event_type}.v1` | TC-018 |
-| AC-030 | FR-009 | partition key = symbol，相同 symbol 有序到达同一 partition | TC-018 |
-| AC-031 | FR-009 | Kafka 不可达时返回 error；未完成 kafkax handoff 前不 Ack，进入 retry/dead-letter/告警路径 | TC-019 |
-| AC-032 | FR-010 | server 源码无 `internal/client` 或 `internal/cs` 导入（CI gate） | TC-020 |
-| AC-033 | FR-010 | 任何代码 reintroduce `binance-market` 引用时 CI no-legacy gate 失败 | TC-021 |
-| AC-034 | FR-010 | go.mod 中 natsx/redisx/postgresx/taosx/clickhousex/kafkax/ossx/gin 均保持 direct 依赖 | TC-022 |
+| AC-026 | FR-006d | 每日定时查询 cutoff（now - 90d）之前的 taosx 数据 | TC-016 |
+| AC-027 | FR-006d | ossx ETag 验证通过后才执行 taosx.Delete（先写冷再删热） | TC-016 |
+| AC-028 | FR-006d | 归档路径格式 `binance/{product_line}/{symbol}/{YYYY}/{MM}/{DD}/{event_type}.parquet` | TC-017 |
+| AC-029 | FR-008 | kafkax topic = `binance.{product_line}.{event_type}.v1` | TC-018 |
+| AC-030 | FR-008 | partition key = symbol，相同 symbol 有序到达同一 partition | TC-018 |
+| AC-031 | FR-008 | Kafka 不可达时返回 error；未完成 kafkax handoff 前不 Ack，进入 retry/dead-letter/告警路径 | TC-019 |
+| AC-032 | FR-009 | server 源码无 `internal/client` 或 `internal/cs` 导入（CI gate） | TC-020 |
+| AC-033 | FR-009 | 任何代码 reintroduce `binance-market` 引用时 CI no-legacy gate 失败 | TC-021 |
+| AC-034 | FR-009 | go.mod 中 natsx/redisx/postgresx/taosx/clickhousex/kafkax/ossx/gin 均保持 direct 依赖 | TC-022 |
 | AC-035 | FR-009 | BOUNDARY-GATES §5（cs 包禁止）+ §6（同进程禁止）+ §11（go.mod 合规）全 PASS | TC-020 |
 | AC-036 | FR-006c | redisx SET(tick:{line}:{symbol}, json, 60s) 写入最新行情缓存 | TC-023 |
 | AC-037 | FR-006c | redisx 缓存写入失败 → warn 日志 + 降级（不阻塞主管线） | TC-023 |

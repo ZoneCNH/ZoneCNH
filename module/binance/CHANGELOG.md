@@ -4,7 +4,7 @@
 
 - Doc-Version: v2.2.3
 - Last-Updated: 2026-06-22
-- Spec-Reference: `module/binance/SPEC.md` v2.2.2
+- Spec-Reference: `module/binance/SPEC.md` v2.2.3
 - 治理规则：`module/binance/RULES.md` R9 文档存在性
 
 ---
@@ -164,6 +164,7 @@
 
 | 版本 | SPEC | TRACEABILITY | 关键变更 |
 |------|------|-------------|----------|
+| v2.2.3 | v2.2.3 | v2.2.3 | runtime evidence + CI URL + topic/version drift guard |
 | v2.2.2 | v2.2.2 | v2.2.2 | CHANGELOG 新建 + 版本号全量对齐 |
 | v2.2.1 | v2.2.0 | v2.2.1 | Boundary gate 证据回填 |
 | v2.2.0 | v2.2.0 | v2.2.0 | 命名收敛 + Options depth 补全 |

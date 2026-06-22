@@ -1,6 +1,6 @@
 # module/binance RULES.md — 模块治理规则
 
-- Doc-Version: v1.0.0
+- Doc-Version: v1.0.1
 - Last-Updated: 2026-06-22
 - 适用范围：`module/binance/` 全部规格文档 + `github.com/ZoneCNH/binance` runtime 仓
 - 优先级：本文 > 子规格 > task；与 `CONSTITUTION.md` §0-§20 冲突时以 `CONSTITUTION.md` 为准
@@ -34,7 +34,7 @@
 **规则**：`module/binance/` 的 product_line（spot/um_perp/cm_perp/options）× event_type（tick/trade/bar/depth）构成 16 个组合，全部组合必须在以下 5 个层面对称存在：
 
 1. natsx subject（`SPEC.md` §9 + `RUNTIME-MAPPING.md`）
-2. Kafka topic（`TASK-BINANCE-SERVER-014-kafkax-dispatch.md`）
+2. Kafka topic（`binance.{product_line}.{event_type}.v1`；`TASK-BINANCE-SERVER-014-kafkax-dispatch.md`）
 3. TDengine 子表（`TASK-BINANCE-SERVER-013-taosx-storage.md`）
 4. ossx 归档路径（`TASK-BINANCE-SERVER-016-ossx-archiver.md`）
 5. Gin REST API（`TASK-BINANCE-SERVER-015-gin-market-api.md`）
@@ -43,11 +43,7 @@
 
 **检测**：
 ```bash
-# 期望返回 16 × 5 = 80 行（每层 16 个组合）
-for layer in "binance\.market\." "binance\." "binance_market_" "binance/" "/api/v1/market/"; do
-  echo "=== $layer ==="
-  grep -rE "$layer" module/binance/ --include="*.md" | wc -l
-done
+bash scripts/check-binance-docs.sh
 ```
 
 **例外**：暂不实现的组合必须显式标注 `[POSTPONED <task-id>]`，且 PR 描述说明推迟理由
@@ -80,29 +76,26 @@ done
 
 ---
 
-## R4【硬】状态三层一致
+## R4【硬】状态 L1/L2 分层一致
 
-**规则**：FR/BR/AC 的实现状态必须在三个层面一致：
+**规则**：FR/BR/AC 的实现状态必须按 L1/L2 分层同步，不得用 boundary gate 证据替代功能验收：
 
-1. **追溯矩阵**（`TRACEABILITY.md`、`{client,server}/TRACEABILITY.md`）"实现状态" 列
-2. **runtime 仓** 实际代码与 CI gate 证据（`gh api repos/ZoneCNH/binance`）
-3. **报告**（`docs/report/binance/**`）的 [COMPUTED] 标签
+1. **L1 Boundary/Governance Gate**：只覆盖 FR-009 / BR-005 / BR-009 等边界治理约束，可用 runtime SHA + CI workflow URL + boundary-gates.sh PASS 标记 `Implemented`。
+2. **L2 Functional Runtime FR**：FR-001~FR-008、FR-010 及后续功能 FR 只能在 runtime feature tests / integration tests / reproducible commit SHA 同时存在时标记 `Implemented`。
+3. **报告**（`docs/report/binance/**`）的 [COMPUTED] 标签必须区分 L1 boundary evidence 与 L2 functional evidence。
 
-**违规**：根矩阵 "Implemented" 但 runtime 仓未推送对应代码；或报告称 Pending 但矩阵称 Implemented
+**违规**：用 boundary gate PASS 推导 FR-001~FR-008/FR-010 已实现；根矩阵 "Implemented" 但 runtime 仓未推送对应代码；或报告称 Pending 但矩阵称 Implemented。
 
 **检测**：
 ```bash
-# 1. 根 TRACEABILITY Implemented 数量
-grep -cE "\| \*\*Implemented\*\*" module/binance/TRACEABILITY.md
-# 2. boundary-gates.sh 实际 PASS 数量（在 /home/binance）
-cd /home/binance && bash scripts/boundary-gates.sh 2>&1 | grep -c "PASS"
-# 3. 期望：两数相等
+bash scripts/check-binance-docs.sh
 ```
 
 **修复义务**：
-- 同步状态时必须附 boundary-gate 输出或 git SHA 证据
+- 同步 L1 状态时必须附 boundary-gate 输出或 git SHA 证据
+- 同步 L2 状态时必须附对应 feature test / integration test 输出和 runtime git SHA
 - 不可仅凭 "已写代码" 主观判断，必须 CI gate PASS
-- runtime 仓未推送时，所有 FR 实现状态默认 `Pending — 以 runtime 仓为准`
+- runtime 仓未推送时，所有 L2 FR 实现状态默认 `Pending — 以 runtime 仓为准`
 
 ---
 
@@ -201,6 +194,7 @@ ACC=$(grep -oP "Module-Version: \Kv[0-9.]+" module/binance/ACCEPTANCE.md)
 | `client/SPEC.md` + `client/TRACEABILITY.md` | 客户端子规格 |
 | `server/SPEC.md` + `server/TRACEABILITY.md` | 服务端子规格 |
 | `{client,server}/tasks/archive/README.md` | 归档映射 |
+| `scripts/check-binance-docs.sh` | binance 文档漂移 CI gate（仓库脚本） |
 
 **检测**：
 ```bash
@@ -209,6 +203,7 @@ for f in SPEC.md TRACEABILITY.md ACCEPTANCE.md FEATURES.md IMPLEMENTATION-PLAN.m
          ARCHITECTURE-DRIFT-WATCHLIST.md CHANGELOG.md; do
   [ -f "module/binance/$f" ] && echo "✓ $f" || echo "✗ $f MISSING"
 done
+test -x scripts/check-binance-docs.sh
 ```
 
 ---
@@ -257,4 +252,5 @@ done
 
 | 日期 | 版本 | 变更内容 | 作者 |
 |---|---|---|---|
+| 2026-06-22 | v1.0.1 | 接入 `scripts/check-binance-docs.sh`，明确 Kafka topic canonical v1 格式，并将状态一致性规则拆分为 L1 boundary gate 与 L2 functional runtime FR | ZoneCNH |
 | 2026-06-22 | v1.0.0 | 首次建立。整合 2026-06-22 治理审计复盘 + binance/SPEC.md §11 NFR 治理章节 + CLAUDE.md 编辑纪律，规则 R1-R10 全部可机器检测 | ZoneCNH |

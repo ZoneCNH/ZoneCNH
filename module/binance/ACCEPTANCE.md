@@ -59,14 +59,14 @@
 | AC-025 | FR-008 | 归档路径遵循 `binance/{product_line}/{symbol}/{YYYY}/{MM}/{DD}/{event_type}.parquet`；每日定时查询 cutoff（now - 90d）之前的 taosx 数据。 | TC-016 | Pending |
 | AC-026 | FR-008 | 删除 `taosx` 旧分区前必须校验对象 ETag；ossx ETag 验证通过后才执行 taosx.Delete（先写冷再删热）。 | TC-016 | Pending |
 | AC-027 | FR-008 | ETag 不匹配时停止删除并报警；ossx path 与 parquet object 格式可回放校验。 | TC-017 | Pending |
-| AC-028 | FR-009 | Server 通过 `kafkax` 发送 `binance.{product_line}.{event_type}.v1`；kafkax topic 遵循 NAMING.md SSOT。 | TC-018 | Pending |
-| AC-029 | FR-009 | Kafka message key 为 symbol 或 instrument identity；partition key = symbol，相同 symbol 有序到达同一 partition。 | TC-018 | Pending |
-| AC-030 | FR-009 | Kafka handoff 失败时不 Ack NATS message；Kafka 不可达时返回 error，进入 retry/dead-letter/告警路径。 | TC-019 | Pending |
-| AC-031 | FR-010 | CI 禁止 `binance-client` 导入 server internals；server 源码无 `internal/client` 或 `internal/cs` 导入。 | TC-020 | PASS |
-| AC-032 | FR-010 | CI 禁止 `binance-server` 导入 client internals；任何代码 reintroduce `binance-market` 引用时 CI no-legacy gate 失败。 | TC-021 | Pending |
-| AC-033 | FR-010 | CI 禁止 `binance-market` 与 runtime `internal/cs` 回流；go.mod 中 natsx/redisx/postgresx/taosx/clickhousex/kafkax/ossx/gin 均保持 direct 依赖。 | TC-022 | Pending |
-| AC-034 | FR-010 | CI 禁止 Binance 模块定义 canonical market domain 或本地 proto/gRPC ingest schema；BOUNDARY-GATES §5（cs 包禁止）+ §6（同进程禁止）+ §11（go.mod 合规）全 PASS。 | TC-020, TC-022 | Pending |
-| AC-035 | FR-010 | `BOUNDARY-GATES` 全量检查通过，且 client/server 边界、进程边界、依赖边界与 schema 约束均保持可审计。 | TC-020, TC-022 | Pending |
+| AC-028 | FR-008 | Server 通过 `kafkax` 发送 `binance.{product_line}.{event_type}.v1`；kafkax topic 遵循 NAMING.md SSOT。 | TC-018 | Pending |
+| AC-029 | FR-008 | Kafka message key 为 symbol 或 instrument identity；partition key = symbol，相同 symbol 有序到达同一 partition。 | TC-018 | Pending |
+| AC-030 | FR-008 | Kafka handoff 失败时不 Ack NATS message；Kafka 不可达时返回 error，进入 retry/dead-letter/告警路径。 | TC-019 | Pending |
+| AC-031 | FR-009 | CI 禁止 `binance-client` 导入 server internals；server 源码无 `internal/client` 或 `internal/cs` 导入。 | TC-020 | PASS |
+| AC-032 | FR-009 | CI 禁止 `binance-server` 导入 client internals；任何代码 reintroduce `binance-market` 引用时 CI no-legacy gate 失败。 | TC-021 | Pending |
+| AC-033 | FR-009 | CI 禁止 `binance-market` 与 runtime `internal/cs` 回流；go.mod 中 natsx/redisx/postgresx/taosx/clickhousex/kafkax/ossx/gin 均保持 direct 依赖。 | TC-022 | Pending |
+| AC-034 | FR-009 | CI 禁止 Binance 模块定义 canonical market domain 或本地 proto/gRPC ingest schema；BOUNDARY-GATES §5（cs 包禁止）+ §6（同进程禁止）+ §11（go.mod 合规）全 PASS。 | TC-020, TC-022 | Pending |
+| AC-035 | FR-009 | `BOUNDARY-GATES` 全量检查通过，且 client/server 边界、进程边界、依赖边界与 schema 约束均保持可审计。 | TC-020, TC-022 | Pending |
 
 ## 3. Test Case 登记
 
@@ -91,9 +91,9 @@
 | TC-017 | FR-008 | 单元（归档路径格式） | Pending | ossx path 格式测试输出。 |
 | TC-018 | FR-009 | 单元（kafkax topic + partition key） | Pending | topic 与 partition key 测试输出。 |
 | TC-019 | FR-009, BR-004 | 单元（kafkax 不可达→error/不 Ack） | Pending | Kafka 故障不 Ack 测试输出。 |
-| TC-020 | FR-010, BR-005 | CI gate（cs 包/client 包 import 检查） | PASS | `TRACEABILITY.md` 已标注 PASS。 |
-| TC-021 | FR-010, BR-001 | CI gate（no-legacy 引用检查） | Pending | legacy name grep gate 输出。 |
-| TC-022 | FR-010, BR-009 | CI gate（go.mod 合规） | Pending | go.mod direct dependency gate 输出。 |
+| TC-020 | FR-009, BR-005 | CI gate（cs 包/client 包 import 检查） | PASS | `TRACEABILITY.md` 已标注 PASS。 |
+| TC-021 | FR-009, BR-001 | CI gate（no-legacy 引用检查） | Pending | legacy name grep gate 输出。 |
+| TC-022 | FR-009, BR-009 | CI gate（go.mod 合规） | Pending | go.mod direct dependency gate 输出。 |
 
 ## 4. 覆盖闭合矩阵
 
@@ -106,9 +106,10 @@
 | FR-005 | AC-014~AC-016 | TC-007~TC-008 | Not Closed |
 | FR-006 | AC-017~AC-020 | TC-009~TC-011 | Not Closed |
 | FR-007 | AC-021~AC-025 | TC-012~TC-015 | Not Closed |
-| FR-008 | AC-026~AC-028 | TC-016~TC-017 | Not Closed |
-| FR-009 | AC-029~AC-031 | TC-018~TC-019 | Not Closed |
-| FR-010 | AC-032~AC-035 | TC-020~TC-022 | Partially Closed |
+| FR-006d | AC-026~AC-028 | TC-016~TC-017 | Not Closed |
+| FR-008 | AC-029~AC-031 | TC-018~TC-019 | Not Closed |
+| FR-009 | AC-032~AC-035 | TC-020~TC-022 | Partially Closed |
+| FR-010 | AC-041~AC-044 | TC-025~TC-026 | Not Closed |
 
 ## 5. Release Definition of Done
 
