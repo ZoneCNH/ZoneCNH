@@ -4,7 +4,7 @@
 
 - Status: Approved
 - Spec-Version: v2.1.2
-- Last-Updated: 2026-06-21
+- Last-Updated: 2026-06-22
 - Owner: ZoneCNH
 - Layer: 数据域 · 行情
 - Version: v0.1.0
@@ -42,7 +42,7 @@
   market_data             ← 交易所中立的后续管线
 ```
 
-`binance-client` 和 `binance-server` 可部署在不同机器/容器/可用区，通过 NATS Server 集群传递消息。`binance-market` 已移除。
+`binance-client` 和 `binance-server` 可部署在不同机器/容器/可用区，通过 NATS Server 集群传递消息。`binance-market` 已移除。NATS JetStream 是独立部署的平台/基础设施服务，不由 `binance-client` 或 `binance-server` 内嵌启动；两个进程只通过配置连接地址使用它。
 
 ---
 
@@ -64,6 +64,7 @@ Binance 行情集成面临以下问题：
 - **分布式 C/S 架构**：client 和 server 为独立进程，可独立部署在不同机器/容器，通过 natsx JetStream 网络通信
 - 支持 Binance 四产品线：Spot、USDⓈ-M Futures、COIN-M Futures、Options
 - **natsx JetStream** 作为 client→server 唯一通信通道，保证 at-least-once delivery + 持久化
+- 明确 NATS JetStream 部署边界：基础设施独立部署，client/server 仅配置连接地址
 - server 侧完整存储：taosx（时序）+ postgresx（元数据）+ redisx（缓存）+ clickhousex（OLAP 分析）+ ossx（归档）
 - server 侧 **kafkax** 跨域事件发布，解耦下游消费者
 - server 侧 **Gin REST API** 供 market_data 主动查询
@@ -138,6 +139,9 @@ Binance 行情集成面临以下问题：
 
 **WHEN** client 有 canonical event 待发送
 **THEN** 调用 `js.Publish("binance.market.{product_line}.{event_type}", jsonPayload)` 并等待 JetStream PubAck
+
+**WHEN** 部署 `binance-client` / `binance-server`
+**THEN** 二者 SHALL 仅配置外部 NATS JetStream 连接地址，不负责启动、打包或内嵌 NATS Server
 
 **WHEN** JetStream PubAck 返回成功
 **THEN** 消息已持久化到 NATS Stream（`BINANCE_MARKET`，Retention=7d），client 可继续下一条
@@ -340,6 +344,34 @@ Binance 行情集成面临以下问题：
 
 ---
 
+### FR → AC 映射索引
+
+> 本表显式锚定 SPEC.md 内的 FR 与 `TRACEABILITY.md §5 AC 注册表` 的映射，消除"SPEC 内 grep AC- 为 0"的单点漂移风险。AC 详细描述见 `TRACEABILITY.md §5`，TC 覆盖见 `TRACEABILITY.md §4`。
+
+| FR | AC 范围 | 主 TC | 验证机制 |
+|---|---|---|---|
+| FR-001 Product-Line Support | AC-001 ~ AC-003 | TC-001 | 集成（Binance testnet 四产品线） |
+| FR-002 Instrument Identity | AC-004 ~ AC-006 | TC-002, TC-003 | 单元（product_line identity 跨产品线不碰撞） |
+| FR-003 natsx Communication | AC-007 ~ AC-010 | TC-004, TC-005 | 集成 + CI gate（独立进程接收 + 跨界检查） |
+| FR-004 At-Least-Once Delivery | AC-011 ~ AC-013 | TC-006 | 集成（JetStream ManualAck：成功→Ack，失败→NakWithDelay） |
+| FR-005 Idempotent Acceptance | AC-014 ~ AC-016 | TC-007, TC-008 | 单元（SetNX 首次→新消息；重复→跳过） |
+| FR-006a taosx Time-Series | AC-017 ~ AC-018 | TC-009, TC-011 | 单元 + 集成（WriteBatch + QueryRange） |
+| FR-006b postgresx Metadata | AC-019 ~ AC-020 | TC-010 | 单元（UpsertSymbol 幂等 ON CONFLICT） |
+| FR-006c redisx Hot Cache | AC-036 ~ AC-037 | TC-023 | 单元（SET TTL + PUT 失败降级） |
+| FR-006d ossx Archival | AC-026 ~ AC-028 | TC-016, TC-017 | 单元（ETag 校验后删 + 路径格式） |
+| FR-007 Gin Market API | AC-021 ~ AC-025 | TC-012 ~ TC-015 | httptest（redisx hit + taosx fallback + 401 + 429） |
+| FR-007a clickhousex Analytics | AC-038 ~ AC-040 | TC-024 | httptest（vwap + top-movers + correlation） |
+| FR-008 kafkax Broadcast | AC-029 ~ AC-031 | TC-018, TC-019 | 单元（topic + partition key + 不可达不 Ack） |
+| FR-009 Boundary Enforcement | AC-032 ~ AC-035 | TC-020 ~ TC-022 | CI gate（cs 包 / no-legacy / go.mod 合规） |
+| FR-010 clickhousex OLAP | AC-041 ~ AC-044 | TC-025, TC-026 | 集成（ETL: taosx → clickhousex + 503 降级） |
+| FR-011 Distributed Lock | AC-045 ~ AC-047 | TC-027, TC-028 | 单元（SetNX 锁 + lease 续期失败停止 + Del 释放） |
+
+**AC 总数**：47（AC-001 ~ AC-047）· **TC 总数**：28（TC-001 ~ TC-028）· **覆盖率**：100%（FR→AC→TC 全链路闭合）
+
+> AC 完整描述（验收标准文本）单点维护于 `TRACEABILITY.md §5`。本表只做 SPEC ↔ Traceability 双向锚点，遵循 `~/.claude/rules/ecc/matrix-scoring-rules.md §R1 跨表走查` 原则。
+
+---
+
 ## 8. Business Rules
 
 ### BR-001: No binance-market
@@ -537,6 +569,7 @@ server_unavailable
 > 配置按部署单元分层：§11.1 client 端（仅需 NATS + Binance），§11.2 server 端（全栈 7 模块 + Gin）。
 > Secrets 一律从环境变量注入，配置文件仅存非敏感键名与默认值。
 > 环境变量前缀：client=`BINANCE_CLIENT_`，server=`BINANCE_SERVER_`。基础设施凭据使用各模块规范前缀。
+> `nats.url` 指向外部 NATS JetStream 服务；部署 NATS 集群属于平台/运维边界，不属于 client/server 二进制。
 
 ### 11.1 Client Config（`binance-client.yaml`）
 

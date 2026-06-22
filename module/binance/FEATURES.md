@@ -29,6 +29,8 @@
 
 ## 2. 功能实现投影
 
+> v2.1.2 编号体系：FR-006 拆分为 6a/6b/6c/6d；FR-007a 新增（analytics API）；FR-009 升为 Boundary Enforcement；FR-010 新增（clickhousex OLAP）；FR-011 新增（分布式锁）。
+
 | FR | 功能 | 当前状态 | 已有证据 | 剩余实现面 |
 | --- | --- | --- | --- | --- |
 | FR-001 | Product-Line Support | Partial | `TRACEABILITY.md` 标注 Spot 已实现，USDM/COINM/Options 待补齐。 | 四条 product line 的连接、订阅、映射、发布与服务端消费验收。 |
@@ -36,11 +38,16 @@
 | FR-003 | natsx Communication | Pending | 规格定义 `js.Publish("binance.market.{product_line}.{event_type}", jsonPayload)` 与 durable consumer。 | Client publisher、Server consumer、subject 校验、PubAck 与 durable replay。 |
 | FR-004 | At-Least-Once Delivery | Pending | 规格定义 ManualAck、失败 NakWithDelay、MaxDeliver 5、dead-letter。 | Ack/Nak 策略、失败注入、重复投递与死信处理。 |
 | FR-005 | Idempotent Acceptance | Pending | 规格定义 idempotency key 与 duplicate/conflict 行为。 | `redisx` SetNX、重复跳过、冲突终止、重放测试。 |
-| FR-006 | Full-Stack Storage | Pending | 规格定义 `taosx`、`postgresx`、`redisx`、`ossx` 分工。 | tick/depth 写入、catalog upsert、缓存 TTL、归档生命周期。 |
-| FR-007 | Gin Market API | Pending | 规格定义 `/api/v1/market/ticks` 与 `/api/v1/market/depth/{instrument_key}`。 | 认证、限流、统一错误、readyz、market_data HTTP 调用方兼容。 |
-| FR-008 | ossx Archival | Pending | 规格定义对象路径与 ETag 删除前校验。 | Parquet 归档、ETag 校验、生命周期删除、防误删测试。 |
-| FR-009 | Downstream Broadcast | Pending | 规格定义 `kafkax` topic、symbol key 与 handoff 后 Ack。 | Kafka dispatch、失败不 Ack、重试、下游消费契约。 |
-| FR-010 | Boundary Enforcement | Implemented / Documented | `BOUNDARY-GATES.md` v2.0.0 已落地，`TRACEABILITY.md` 标注 FR-010 Implemented，TC-020 PASS。 | TC-021 与 TC-022 仍需 runtime/repo CI 执行证据闭合。 |
+| FR-006a | taosx Time-Series Storage | Pending | 规格定义 WriteBatch 写入 tick/bar/depth 到超级表子表。 | 时序写入吞吐 100K TPS、子表自动建表、查询时间范围过滤。 |
+| FR-006b | postgresx Metadata Storage | Pending | 规格定义幂等 upsert instrument catalog + 审计日志。 | UpsertSymbol 幂等性、ON CONFLICT 行为、审计完整性。 |
+| FR-006c | redisx Hot Cache | Pending | 规格定义最新 tick/bar/depth 热缓存（60s/5s TTL）+ 失败降级。 | SET 命令封装、TTL 验证、失败不阻塞主管线。 |
+| FR-006d | ossx Archival | Pending | 规格定义对象路径与 ETag 删除前校验。 | Parquet 归档、ETag 校验、生命周期删除、防误删测试。 |
+| FR-007 | Gin Market API | Pending | 规格定义 `/api/v1/market/ticks/depth/bars/trades` REST 接口。 | 认证、限流、统一错误、readyz、market_data HTTP 调用方兼容。 |
+| FR-007a | clickhousex Analytics API | Pending | 规格定义 `/api/v1/analytics/vwap/top-movers/correlation` OLAP 查询。 | analytics 查询正确性、查询 P99 < 2s、降级到 503。 |
+| FR-008 | kafkax Broadcast | Pending | 规格定义 `kafkax` topic、symbol key 与 handoff 后 Ack。 | Kafka dispatch、失败不 Ack、重试、下游消费契约。 |
+| FR-009 | Boundary Enforcement | Implemented / Documented | `BOUNDARY-GATES.md` v2.1.1 已落地，`TRACEABILITY.md` 标注 FR-009 Implemented，TC-020 PASS。 | TC-021 与 TC-022 仍需 runtime/repo CI 执行证据闭合。 |
+| FR-010 | clickhousex OLAP Storage | Pending | 规格定义定时 ETL 聚合 taosx → clickhousex。 | ETL 调度、InsertBatch 性能、ClickHouse 不可达降级。 |
+| FR-011 | Distributed Coordinator Lock | Pending | 规格定义 redisx SetNX 分布式锁 + lease 续期 + coordinator HA。 | SetNX 锁获取、lease 续期失败后停止任务、主动释放。 |
 
 ## 3. 边界与质量需求投影
 
