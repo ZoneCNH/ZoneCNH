@@ -205,7 +205,7 @@ postgresx → Binance 合约元数据（binance_instruments）+ 幂等日志 + �
 redisx    → Binance 行情热缓存（tick:{product_line}:{symbol}）
 clickhousex → Binance OLAP 聚合数据（binance_ohlcv_1m / binance_vwap_5m / binance_stats_15m）
 ossx      → Binance 历史数据归档
-kafkax    → Binance 行情事件发布（binance.market.* topic）
+kafkax    → Binance 行情事件发布（binance.{product_line}.{event_type}.v1 topic）
 ```
 
 `binance/server` **禁止**拥有：

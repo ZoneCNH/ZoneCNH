@@ -209,14 +209,14 @@ Stream: BINANCE_MARKET
 Retention: 7d  Storage: file  Replicas: 1 (生产升 3)
 
 Subjects:
-  binance.market.spot.tick         binance.market.spot.bar
-  binance.market.spot.depth        binance.market.spot.trade
-  binance.market.um_perp.tick      binance.market.um_perp.bar
-  binance.market.um_perp.depth
-  binance.market.cm_perp.tick      binance.market.cm_perp.bar
-  binance.market.cm_perp.depth
-  binance.market.options.tick      binance.market.options.bar
-  binance.market.options.depth
+  binance.market.spot.tick         binance.market.spot.trade
+  binance.market.spot.bar          binance.market.spot.depth
+  binance.market.um_perp.tick      binance.market.um_perp.trade
+  binance.market.um_perp.bar       binance.market.um_perp.depth
+  binance.market.cm_perp.tick      binance.market.cm_perp.trade
+  binance.market.cm_perp.bar       binance.market.cm_perp.depth
+  binance.market.options.tick      binance.market.options.trade
+  binance.market.options.bar       binance.market.options.depth
 
 Server Consumer:
   Durable: binance-server  AckPolicy: explicit  AckWait: 30s  MaxDeliver: 5
@@ -228,10 +228,22 @@ Server Consumer:
 
 ```
 Topics:
-  binance.market.ticks    实时逐笔（按 symbol hash 分区）
-  binance.market.bars     K 线
-  binance.market.depth    深度
-  binance.market.events   状态变更
+  binance.spot.tick.v1         现货 tick
+  binance.spot.trade.v1        现货逐笔成交
+  binance.spot.bar.v1          现货 K 线
+  binance.spot.depth.v1        现货深度
+  binance.um_perp.tick.v1      U 本位合约 tick
+  binance.um_perp.trade.v1     U 本位合约逐笔成交
+  binance.um_perp.bar.v1       U 本位合约 K 线
+  binance.um_perp.depth.v1     U 本位合约深度
+  binance.cm_perp.tick.v1      币本位合约 tick
+  binance.cm_perp.trade.v1     币本位合约逐笔成交
+  binance.cm_perp.bar.v1       币本位合约 K 线
+  binance.cm_perp.depth.v1     币本位合约深度
+  binance.options.tick.v1      期权 tick
+  binance.options.trade.v1     期权逐笔成交
+  binance.options.bar.v1       期权 K 线
+  binance.options.depth.v1     期权深度
 
 Consumer Groups:
   signal_engine  risk_engine  backtestx  market_regime

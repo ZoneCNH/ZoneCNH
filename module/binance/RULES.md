@@ -34,9 +34,9 @@
 **规则**：`module/binance/` 的 product_line（spot/um_perp/cm_perp/options）× event_type（tick/trade/bar/depth）构成 16 个组合，全部组合必须在以下 5 个层面对称存在：
 
 1. natsx subject（`SPEC.md` §9 + `RUNTIME-MAPPING.md`）
-2. Kafka topic（`TASK-BINANCE-SERVER-014-kafkax-export.md`）
+2. Kafka topic（`TASK-BINANCE-SERVER-014-kafkax-dispatch.md`）
 3. TDengine 子表（`TASK-BINANCE-SERVER-013-taosx-storage.md`）
-4. ossx 归档路径（`TASK-BINANCE-SERVER-016-ossx-archive.md`）
+4. ossx 归档路径（`TASK-BINANCE-SERVER-016-ossx-archiver.md`）
 5. Gin REST API（`TASK-BINANCE-SERVER-015-gin-market-api.md`）
 
 **违规**：缺失任一组合（例如缺 `binance.market.options.depth`）

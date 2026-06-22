@@ -11,35 +11,35 @@
 
 > 5 份报告的去重合并视图。每行 = 一个独立可执行项。
 
-| ID | 来源报告 | 问题 | 严重性 | 已有 issue | 状态 |
-|---|---|---|:---:|:---:|:---:|
-| G-01 | v3 P0§1 | README root Spec-Version v2.2.0 → v2.2.2 漂移 | 🔴 P0 | #867 | OPEN |
-| G-02 | v3 P0§2 | RUNTIME-MAPPING NATS 4×4 矩阵缺 3 个 trade 组合 | 🔴 P0 | #866 | OPEN |
-| G-03 | v3 P0§3 | Kafka topic 旧式 `binance.market.*` 未收敛到 `binance.{pl}.{et}.v1` | 🔴 P0 | #868 | OPEN |
-| G-04 | v3 P0§4 | RULES.md 任务文件名引用错误（kafkax-export/ossx-archive） | 🔴 P0 | #873 | OPEN |
-| G-05 | v3 P0§5 | 状态口径未分层（文档门禁 vs 运行证据） | 🔴 P0 | #872 | OPEN |
-| G-06 | v3 P1§1-4 | 缺文档一致性检查脚本 `scripts/check-binance-docs.sh` | 🟡 P1 | #870 | OPEN |
-| G-07 | v3 P2 | 运行证据链缺失（runtime 仓未提交变更 + 无 boundary/test 输出） | 🟡 P2 | #869 | OPEN |
-| G-08 | v3 §标准 | 薄层 `STANDARD.md` 标准入口（P0/P1 收敛后启动） | 🟢 P3 | #871 | OPEN |
-| G-09 | v2 P1 | DEEP-ANALYSIS §0 分布式约束未升入 SPEC §4 顶部 | 🟢 P2 | — | 待建 issue |
-| G-10 | v2 P2 | DEEP-ANALYSIS 62KB 体量过大，§12 旧代码审计应移 migrations/ | 🟢 P2 | — | 待建 issue |
-| G-11 | v2 P2 | legacy `binance-market` 30+ 处描述应压缩 | 🟢 P2 | — | 待建 issue |
-| G-12 | v2 P1 | 50 个 preserve/stash 类 commit 覆盖审计未做 | 🟢 P3 | — | 待建 issue |
-| **R-01** | **v4 P0 实时控制面** | **Symbol Discovery & Filtering（FR-012）** | 🔴 P0 | — | **待建 issue** |
-| **R-02** | **v4 P0 实时控制面** | **WebSocket Connection Policy（FR-013）** | 🔴 P0 | — | **待建 issue** |
-| **R-03** | **v4 P0 实时控制面** | **Bar Interval Subscription Set（FR-014）** | 🔴 P0 | — | **待建 issue** |
-| **R-04** | **v4 P0 实时控制面** | **Depth Snapshot Tier（FR-015）** | 🔴 P0 | — | **待建 issue** |
-| **R-05** | **v4 P0 历史生命周期** | **Historical Backfill on Cold Start（FR-016）** | 🔴 P0 | — | **待建 issue** |
-| **R-06** | **v4 P0 历史生命周期** | **Gap Detection & Fill（FR-017）** | 🔴 P0 | — | **待建 issue** |
-| **R-07** | **v4 P0 历史生命周期** | **Backfill Throttle & Priority（FR-018）** | 🔴 P0 | — | **待建 issue** |
-| **R-08** | **v4 P0 历史生命周期** | **Backfill Idempotency Key Strategy（FR-019）** | 🔴 P0 | — | **待建 issue** |
-| **R-09** | **v4 P1 周期数据** | **Funding Rate / Mark Price Stream（FR-020）** | 🟡 P1 | — | 待建 issue |
-| **R-10** | **v4 P1 周期数据** | **Daily Reconciliation Job（FR-021）** | 🟡 P1 | — | 待建 issue |
-| **R-11** | **v4 P1 周期数据** | **Cold Data Rehydration（FR-022）** | 🟡 P1 | — | 待建 issue |
-| **R-12** | **v4 P2 治理** | **Backfill Progress API（FR-023）** | 🟢 P2 | — | 待建 issue |
-| **R-13** | **v4 P2 治理** | **Symbol Subscription Hot Reload（FR-024）** | 🟢 P2 | — | 待建 issue |
-| G-13 | v4 §七 | event_type 枚举 4→6（加 funding/mark_price）触发 RULES R2 4×N 矩阵重算 + MAJOR bump | 🔴 P0 | — | 待建 issue（伴随 R-09） |
-| G-14 | v4 §五 | 建议先建 `module/binance/DATA-LIFECYCLE.md` 讨论稿，再 fold 进 SPEC | 🟡 P1 | — | 待建 issue（R 系列前置） |
+| ID       | 来源报告               | 问题                                                                                | 严重性 | 已有 issue |           状态           |
+| -------- | ---------------------- | ----------------------------------------------------------------------------------- | :----: | :--------: | :----------------------: |
+| G-01     | v3 P0§1                | README root Spec-Version v2.2.0 → v2.2.2 漂移                                       | 🔴 P0  |    #867    |           OPEN           |
+| G-02     | v3 P0§2                | RUNTIME-MAPPING NATS 4×4 矩阵缺 3 个 trade 组合                                     | 🔴 P0  |    #866    |           OPEN           |
+| G-03     | v3 P0§3                | Kafka topic 旧式 `binance.market.*` 未收敛到 `binance.{pl}.{et}.v1`                 | 🔴 P0  |    #868    |           OPEN           |
+| G-04     | v3 P0§4                | RULES.md 任务文件名引用错误（kafkax-export/ossx-archive）                           | 🔴 P0  |    #873    |           OPEN           |
+| G-05     | v3 P0§5                | 状态口径未分层（文档门禁 vs 运行证据）                                              | 🔴 P0  |    #872    |           OPEN           |
+| G-06     | v3 P1§1-4              | 缺文档一致性检查脚本 `scripts/check-binance-docs.sh`                                | 🟡 P1  |    #870    |           OPEN           |
+| G-07     | v3 P2                  | 运行证据链缺失（runtime 仓未提交变更 + 无 boundary/test 输出）                      | 🟡 P2  |    #869    |           OPEN           |
+| G-08     | v3 §标准               | 薄层 `STANDARD.md` 标准入口（P0/P1 收敛后启动）                                     | 🟢 P3  |    #871    |           OPEN           |
+| G-09     | v2 P1                  | DEEP-ANALYSIS §0 分布式约束未升入 SPEC §4 顶部                                      | 🟢 P2  |     —      |        待建 issue        |
+| G-10     | v2 P2                  | DEEP-ANALYSIS 62KB 体量过大，§12 旧代码审计应移 migrations/                         | 🟢 P2  |     —      |        待建 issue        |
+| G-11     | v2 P2                  | legacy `binance-market` 30+ 处描述应压缩                                            | 🟢 P2  |     —      |        待建 issue        |
+| G-12     | v2 P1                  | 50 个 preserve/stash 类 commit 覆盖审计未做                                         | 🟢 P3  |     —      |        待建 issue        |
+| **R-01** | **v4 P0 实时控制面**   | **Symbol Discovery & Filtering（FR-012）**                                          | 🔴 P0  |     —      |      **待建 issue**      |
+| **R-02** | **v4 P0 实时控制面**   | **WebSocket Connection Policy（FR-013）**                                           | 🔴 P0  |     —      |      **待建 issue**      |
+| **R-03** | **v4 P0 实时控制面**   | **Bar Interval Subscription Set（FR-014）**                                         | 🔴 P0  |     —      |      **待建 issue**      |
+| **R-04** | **v4 P0 实时控制面**   | **Depth Snapshot Tier（FR-015）**                                                   | 🔴 P0  |     —      |      **待建 issue**      |
+| **R-05** | **v4 P0 历史生命周期** | **Historical Backfill on Cold Start（FR-016）**                                     | 🔴 P0  |     —      |      **待建 issue**      |
+| **R-06** | **v4 P0 历史生命周期** | **Gap Detection & Fill（FR-017）**                                                  | 🔴 P0  |     —      |      **待建 issue**      |
+| **R-07** | **v4 P0 历史生命周期** | **Backfill Throttle & Priority（FR-018）**                                          | 🔴 P0  |     —      |      **待建 issue**      |
+| **R-08** | **v4 P0 历史生命周期** | **Backfill Idempotency Key Strategy（FR-019）**                                     | 🔴 P0  |     —      |      **待建 issue**      |
+| **R-09** | **v4 P1 周期数据**     | **Funding Rate / Mark Price Stream（FR-020）**                                      | 🟡 P1  |     —      |        待建 issue        |
+| **R-10** | **v4 P1 周期数据**     | **Daily Reconciliation Job（FR-021）**                                              | 🟡 P1  |     —      |        待建 issue        |
+| **R-11** | **v4 P1 周期数据**     | **Cold Data Rehydration（FR-022）**                                                 | 🟡 P1  |     —      |        待建 issue        |
+| **R-12** | **v4 P2 治理**         | **Backfill Progress API（FR-023）**                                                 | 🟢 P2  |     —      |        待建 issue        |
+| **R-13** | **v4 P2 治理**         | **Symbol Subscription Hot Reload（FR-024）**                                        | 🟢 P2  |     —      |        待建 issue        |
+| G-13     | v4 §七                 | event_type 枚举 4→6（加 funding/mark_price）触发 RULES R2 4×N 矩阵重算 + MAJOR bump | 🔴 P0  |     —      | 待建 issue（伴随 R-09）  |
+| G-14     | v4 §五                 | 建议先建 `module/binance/DATA-LIFECYCLE.md` 讨论稿，再 fold 进 SPEC                 | 🟡 P1  |     —      | 待建 issue（R 系列前置） |
 
 **统计**：27 项。已有 issue 8 项（#866~#873）；待建 issue 19 项（v2 收尾 4 + v4 新增 13 + v4 治理 2）。
 
@@ -111,44 +111,52 @@
 ### 3.1 已有 issue（8 个，保持不动）
 
 #866~#873 已覆盖 v3 全部 P0~P3 + v2 运行证据。仅在以下情况更新：
+
 - 阶段 0 完成时，给 #866/#867/#868/#872/#873 加 `closed-by PR #XXX` 评论
 - #870 检查脚本落地后，反哺 #866~#873 的验证命令
 
 ### 3.2 待建 issue（19 个）
 
 **v2 收尾（4 个，P2~P3）**：
+
 - DEEP-ANALYSIS §0 升入 SPEC §4（G-09）
 - DEEP-ANALYSIS §12 迁移到 migrations/（G-10）
 - legacy `binance-market` 压缩（G-11）
 - 50 commit 覆盖审计（G-12）
 
 **v4 前置（1 个，P1）**：
+
 - DATA-LIFECYCLE.md 讨论稿（G-14）
 
 **v4 实时控制面（4 个，P0）**：
+
 - FR-012 Symbol Discovery（R-01）
 - FR-013 WebSocket Connection Policy（R-02）
 - FR-014 Bar Interval Subscription Set（R-03）
 - FR-015 Depth Snapshot Tier（R-04）
 
 **v4 历史生命周期（4 个，P0）**：
+
 - FR-016 Historical Backfill（R-05）
 - FR-017 Gap Detection & Fill（R-06）
 - FR-018 Backfill Throttle & Priority（R-07）
 - FR-019 Backfill Idempotency Key Strategy（R-08）
 
 **v4 周期数据（3 个，P1）**：
+
 - FR-020 Funding Rate / Mark Price Stream（R-09，含 G-13 event_type 扩展）
 - FR-021 Daily Reconciliation Job（R-10）
 - FR-022 Cold Data Rehydration（R-11）
 
 **v4 治理（2 个，P2）**：
+
 - FR-023 Backfill Progress API（R-12）
 - FR-024 Symbol Subscription Hot Reload（R-13）
 
 ### 3.3 标签体系
 
 为便于阶段过滤，建议给所有 binance issue 打标签：
+
 - `module:binance` — 模块归属
 - `P0` / `P1` / `P2` / `P3` — 优先级
 - `phase-0-governance` ~ `phase-7-runtime` — 阶段归属
@@ -195,16 +203,16 @@
 
 ## 六、与现有 issue 的映射核对
 
-| 现有 issue | 对应方案 ID | 阶段 | 一致性 |
-|---|---|:---:|:---:|
-| #867 README 版本漂移 | G-01 | 0 | ✅ |
-| #866 NATS 4×4 缺 3 组合 | G-02 | 0 | ✅ |
-| #868 Kafka topic 旧式 | G-03 | 0 | ✅ |
-| #873 RULES 任务引用错误 | G-04 | 0 | ✅ |
-| #872 状态口径分层 | G-05 | 0 | ✅ |
-| #870 检查脚本 | G-06 | 1 | ✅ |
-| #869 运行证据 | G-07 | 7 | ✅ |
-| #871 STANDARD.md | G-08 | 6 | ✅ |
+| 现有 issue              | 对应方案 ID | 阶段 | 一致性 |
+| ----------------------- | ----------- | :--: | :----: |
+| #867 README 版本漂移    | G-01        |  0   |   ✅   |
+| #866 NATS 4×4 缺 3 组合 | G-02        |  0   |   ✅   |
+| #868 Kafka topic 旧式   | G-03        |  0   |   ✅   |
+| #873 RULES 任务引用错误 | G-04        |  0   |   ✅   |
+| #872 状态口径分层       | G-05        |  0   |   ✅   |
+| #870 检查脚本           | G-06        |  1   |   ✅   |
+| #869 运行证据           | G-07        |  7   |   ✅   |
+| #871 STANDARD.md        | G-08        |  6   |   ✅   |
 
 **结论**：8 个现有 issue 全部映射成功，无遗漏、无冲突。待建 19 个 issue 为纯增量。
 

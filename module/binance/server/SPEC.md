@@ -68,7 +68,7 @@ client 和 server **互不感知彼此的进程位置**。server 只知道 NATS 
 - **taosx** 存储时序行情数据（tick/bar/depth），支持实时写入与历史查询
 - **postgresx** 存储合约元数据（instrument catalog）和审计日志
 - **redisx** 热缓存最新行情（60s TTL），加速 API 响应
-- **kafkax** 发布已验收事件到 `binance.market.*` topic，解耦下游消费者
+- **kafkax** 发布已验收事件到 `binance.{product_line}.{event_type}.v1` topic，解耦下游消费者
 - **ossx** 定时将过期行情从 taosx 归档到对象存储（parquet/json.gz）
 - **Gin REST API**（:8080）供 `market_data` 主动查询：`/api/v1/market/*`
 - 提供 Gin admin HTTP 端点（health、stats、drain）
@@ -99,8 +99,8 @@ client 和 server **互不感知彼此的进程位置**。server 只知道 NATS 
 | 消费者 | 使用方式 |
 |--------|----------|
 | natsx JetStream | server 消费 subject `binance.market.>` 接收 client 发布的行情事件 |
-| `module/market_data` | 通过 Gin REST `GET /api/v1/market/*` 主动拉取，或消费 kafkax topic `binance.market.*` |
-| 下游分析域 | 通过 kafkax consumer group 消费 `binance.market.ticks` 等 topic |
+| `module/market_data` | 通过 Gin REST `GET /api/v1/market/*` 主动拉取，或消费 kafkax topic `binance.{product_line}.{event_type}.v1` |
+| 下游分析域 | 通过 kafkax consumer group 消费 `binance.spot.tick.v1` 等 topic |
 | `SRE / 运维` | 通过 Gin admin HTTP 端点查询流状态、触发排水 |
 
 ---
@@ -203,7 +203,7 @@ client 和 server **互不感知彼此的进程位置**。server 只知道 NATS 
 ### FR-006: kafkax Dispatch
 
 **WHEN** 全部存储写入成功，且 `msg.Ack()` 尚未调用
-**THEN** 通过 `kafkax.Send()` 将事件发布到 topic `binance.market.{product_line}.{event_type}`，解耦下游消费者；handoff 成功后调用 `msg.Ack()`
+**THEN** 通过 `kafkax.Send()` 将事件发布到 topic `binance.{product_line}.{event_type}.v1`，解耦下游消费者；handoff 成功后调用 `msg.Ack()`
 
 **WHEN** kafkax 发送失败
 **THEN** 立即重试（最多 3 次，指数退避）；仍失败则返回 error、调用 `msg.NakWithDelay(...)` 或进入 dead-letter/告警路径；`kafkax` handoff 完成前不得调用 `msg.Ack()`
@@ -363,7 +363,7 @@ server 不暴露 gRPC ingest；client 与 server 只通过 `natsx` subject 和 `
 | `taosx` | tick / bar / depth 时序存储 |
 | `postgresx` | instrument catalog、审计日志、幂等备份 |
 | `redisx` | SetNX 幂等与最新行情热缓存 |
-| `kafkax` | `binance.market.*` topic fanout |
+| `kafkax` | `binance.{product_line}.{event_type}.v1` topic fanout |
 | `ossx` | 过期行情归档 |
 | Gin REST `GET /api/v1/market/*` | `market_data` 主动查询 Binance-specific 行情 |
 
@@ -410,7 +410,7 @@ server 必须覆盖 `terminal_validation`、`terminal_conflict`、`retryable_sto
 | `idempotency.store` | string | `redis` | 幂等存储类型：redis / memory（测试） |
 | `idempotency.ttl` | duration | `72h` | 幂等记录保留时间 |
 | `storage.taos.database` | string | `binance_market` | taosx 时序库 |
-| `fanout.kafkax.topic_prefix` | string | `binance.market` | kafkax topic 前缀 |
+| `fanout.kafkax.topic_prefix` | string | `binance` | kafkax topic 前缀；实际 topic = `binance.{product_line}.{event_type}.v1` |
 | `fanout.retry_max` | int | `3` | kafkax 发布失败最大重试次数 |
 | `validation.future_time_threshold` | duration | `5m` | 未来时间容忍阈值 |
 | `observability.log_level` | string | `info` | 日志级别 |
