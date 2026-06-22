@@ -96,21 +96,23 @@
 
 [COMPUTED][HIGH] 若问题是“是否已经全部实现”，答案是否定的；文档证据显示它处于规格/任务规划与部分实现混合状态，至少 USDⓈ-M、COIN-M、Options、server storage/cache/API 仍未被追溯矩阵证明完成。
 
-[INFERRED][MED] 本仓库（`ZoneCNH/ZoneCNH`）是文档枢纽，runtime 实现位于独立仓库 `github.com/ZoneCNH/binance`；以上所有“已实现”判断仅基于追溯矩阵的状态字段，未与 runtime 仓库代码交叉验证。生产可用性判断须以 runtime 仓库为准（见下节 Runtime 核对建议）。
+[COMPUTED][HIGH] 本仓库（`ZoneCNH/ZoneCNH`）是文档枢纽，runtime 实现位于独立仓库 `github.com/ZoneCNH/binance`；本次已用本地 `/home/binance`、`/home/domain-exchange`、`/home/domain-market` 与 `/home/decimalx` 对 runtime 代码进行交叉核对。该核对证明本地代码已满足当前 C/S 边界、wire 合约、snake_case import、`domain_exchange`/`domain_market` 适配和基础测试门禁；它不证明所有产品线业务能力已全量实现。
 
-## Runtime 核对建议
+## Runtime 核对结果
 
-[FRAME][HIGH] 本报告所有结论均基于 `module/binance/` 文档树（SPEC + TRACEABILITY + tasks），不读 runtime 仓库代码。规格层"Implemented"与生产可用性是两个分离概念（CLAUDE.md §认识论标准 §`[FRAME] → REALITY` 防护）。若需把规格层结论升级为生产可用性结论，必须在 `github.com/ZoneCNH/binance` 仓库核对以下 6 项：
+[COMPUTED][HIGH] 本地 runtime 核对已完成，结果如下：
 
-| # | 待核对事实 | 核对命令 | 期望落地路径 |
-|---|------------|----------|---------------|
-| 1 | Spot connector 是否真实存在并可运行 | `gh repo view ZoneCNH/binance && gh api repos/ZoneCNH/binance/contents/internal/client/spot` | `internal/client/spot/` |
-| 2 | USDⓈ-M / COIN-M / Options connector 是否已开始落地 | `gh api repos/ZoneCNH/binance/contents/internal/client/um_perp`（cm_perp / options 同理） | `internal/client/{um_perp,cm_perp,options}/` |
-| 3 | Boundary gate（FR-009）是否在 CI 真实运行 | `gh api repos/ZoneCNH/binance/contents/.github/workflows`，查找 boundary-gates 脚本调用 | `.github/workflows/boundary-gates.yml` |
-| 4 | natsx subject 命名实际取哪一套（usdm_futures / um_perp / futures_usdt） | `gh search code "binance.market." --repo ZoneCNH/binance` | publisher / consumer 源码 |
-| 5 | server taosx 超表名称是否与 SERVER-013 task 一致 | `gh search code "binance_market_ticks" --repo ZoneCNH/binance` | `internal/server/storage/timeseries/` |
-| 6 | Gin REST API `/api/v1/market/*` 是否已实现 | `gh search code "/api/v1/market/ticks" --repo ZoneCNH/binance` | `internal/server/api/handler/` |
+| # | 核对事实 | 结果 | 证据 |
+|---|----------|------|------|
+| 1 | Spot connector / smoke client 基础代码是否可编译 | 通过 | `/home/binance` 执行 `go test ./...` 通过 |
+| 2 | `domain_exchange.VenueAdapter` 接口是否被 `BinanceAdapter` 满足 | 通过 | `/home/binance/pkg/binancex` 测试通过；`ListExecutions` / `StreamExecutions` 已返回 `VenueExecution` |
+| 3 | Boundary gate 是否能在本地真实运行 | 通过 | `/home/binance/scripts/boundary-gates.sh` 输出 10 passed, 0 failed |
+| 4 | C/S 是否仍依赖旧 `internal/cs` 或同进程 adapter | 通过 | boundary gate §5、§6 通过；runtime 迁移为 `internal/wire` |
+| 5 | `domain_market` 与 `domain_exchange` 是否适配当前 `decimalx` API | 通过 | `/home/domain-market` 与 `/home/domain-exchange` 执行 `go test ./...` 通过 |
+| 6 | Binance runtime 所需基础设施包是否保持直接依赖 | 通过 | boundary gate §11 通过；`go mod tidy` 后直接依赖未被降为仅间接依赖 |
 
-[INFERRED][HIGH] 核对结果可直接回填本报告 §覆盖矩阵 "任务/实现状态" 列，把当前的 [COMPUTED][MED] 升级为 [KNOWN][HIGH] 或降级为 [COMPUTED][HIGH] Pending。
+[COMPUTED][HIGH] 仍需单独处理的不是本地源码编译错误，而是发布链路风险：远端 `github.com/ZoneCNH/decimalx@v1.0.0` 与 `sum.golang.org` 记录存在校验和不一致。本地通过 `replace github.com/ZoneCNH/decimalx => ../decimalx` 可以完成开发与测试，但远端消费者在不使用本地 replace 时仍可能拉取失败；该问题需要通过 `decimalx` 仓库的 tag/release 与模块代理链路治理解决。
+
+[COMPUTED][MED] 本次 runtime 核对不会消除上文列出的规格层问题：产品线命名漂移、Options depth 覆盖缺口、追溯矩阵状态不一致、子规格版本漂移仍然是文档/规格层待修项。
 
 [RULES I BROKE]：无
