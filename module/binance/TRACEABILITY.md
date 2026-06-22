@@ -4,7 +4,7 @@
 >
 > 规范来源：`docs/governance/TRACEABILITY.md`
 
-- Matrix-Version: v2.2.2
+- Matrix-Version: v2.2.3
 - Last-Updated: 2026-06-22
 - Spec-Reference: `module/binance/SPEC.md` v2.2.2
 
@@ -28,7 +28,7 @@
 | FR-007 | Gin Market API：/api/v1/market/* REST 接口，redisx 热缓存 + taosx 回退 | AC-021 ~ AC-025 | TC-012 ~ TC-015 | SERVER-015 | ⬜ Pending |
 | FR-007a | clickhousex Analytics API：/api/v1/analytics/* OLAP 查询（vwap/top-movers/correlation） | AC-038 ~ AC-040 | TC-024 | SERVER-015 | ⬜ Pending（v2.1.0 新增） |
 | FR-008 | kafkax Broadcast：将 accepted facts 广播到 binance.market.* topic | AC-029 ~ AC-031 | TC-018, TC-019 | SERVER-014 | ⬜ Pending |
-| FR-009 | Boundary Enforcement：CI gate 阻断 client/server 跨界、cs 包引用、go.mod 合规 | AC-032 ~ AC-035 | TC-020 ~ TC-022 | SERVER-008 | **Implemented** — BOUNDARY-GATES.md 10/10 PASS |
+| FR-009 | Boundary Enforcement：CI gate 阻断 client/server 跨界、cs 包引用、go.mod 合规 | AC-032 ~ AC-035 | TC-020 ~ TC-022 | SERVER-008 | **Implemented** — runtime CI [boundary-gates.yml](https://github.com/ZoneCNH/binance/actions/workflows/boundary-gates.yml) 已集成（runtime SHA `bae80d6`），BOUNDARY-GATES.md 10/10 PASS |
 | FR-010 | clickhousex OLAP Storage：定时 ETL 聚合 taosx→clickhousex，为 analytics API 提供 OLAP 查询 | AC-041 ~ AC-044 | TC-025, TC-026 | SERVER-017 | ⬜ Pending（v2.1.0 新增） |
 | FR-011 | Distributed Coordinator Lock：redisx SetNX 分布式锁，coordinator HA 选举 + lease 续期 | AC-045 ~ AC-047 | TC-027, TC-028 | SERVER-013 | ⬜ Pending（v2.1.0 新增） |
 
@@ -196,3 +196,4 @@
 | 2026-06-22 | v2.2.0 | **命名收敛 + Options depth 补全 + 状态口径修复**：(1) 4 套旧命名全部收敛到 `um_perp/cm_perp`（与根 SPEC §9 natsx subject 表对齐）；(2) 新增 `binance.market.cm_perp.depth` + `binance.market.options.depth` 两条 subject，TASK-CLIENT-006 Scope 加 depth/update events（依据：Binance EOptions `<symbol>@depth1000` WebSocket stream）；(3) FR-001 Partial→Pending（与 client/TRACEABILITY 同步，以 runtime 仓为准） | ZoneCNH |
 | 2026-06-22 | v2.2.1 | **Boundary gate runtime evidence 回填**：BR-001/002/003/005/006/007/008/009 与 TC-005/021/022 对齐 `/home/binance/scripts/boundary-gates.sh` 10/10 PASS；BR-004 与非边界业务 FR 仍保持 Pending | ZoneCNH |
 | 2026-06-22 | v2.2.2 | **PR-C 模块治理收尾**：新建 `CHANGELOG.md`（Keep-a-Changelog 格式）；ACCEPTANCE Module-Version v2.0.0 → v2.2.2、FEATURES Module-Version v2.0.0 → v2.2.2、IMPLEMENTATION-PLAN Version v2.1.2 → v2.2.2；满足 RULES.md R6 + R9 + DRIFT D4 | ZoneCNH |
+| 2026-06-22 | v2.2.3 | **PR-D runtime evidence 回填**：FR-009 状态附 runtime SHA `bae80d6` + CI workflow URL（runtime PR ZoneCNH/binance#9 合并，删除 `internal/cs/` + 集成 `.github/workflows/boundary-gates.yml` 9 道 gate）；DRIFT D8 风险级别 MEDIUM → LOW；报告 §Runtime 核对结果 第 4 项证据升级为 runtime commit + CI URL | ZoneCNH |
