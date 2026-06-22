@@ -2,24 +2,50 @@
 
 所有 notable 变更记录，按 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/) 格式维护。
 
-- Doc-Version: v2.2.3
+- Doc-Version: v3.0.0
 - Last-Updated: 2026-06-23
-- Spec-Reference: `module/binance/SPEC.md` v2.2.3
+- Spec-Reference: `module/binance/SPEC.md` v3.0.0
 - 治理规则：`module/binance/RULES.md` R9 文档存在性
 
 ---
 
-## [v2.2.3] — 2026-06-23
+## [v3.0.0] — 2026-06-23
+
+### Added
+- `funding_rate` and `mark_price` event_type values as the FR-020 taxonomy fold.
+- 4 product_line × 6 event_type contract across natsx subjects, Kafka topics, taosx supertables, redisx cache keys, API routes, and OSS archive paths.
 
 ### Changed
-- runtime 证据锚定到 SHA `f30322e00794f9f0af7353c4f8e1cd2b6cc398b3`
-- 文档投影同步本地 boundary-gates、`go test`、smoke 检查证据
-- Kafka fanout topic 从旧聚合口径收敛为 `binance.{product_line}.{event_type}.v1`
+- `SPEC.md`, `TRACEABILITY.md`, `NAMING.md`, `RULES.md`, `RUNTIME-MAPPING.md`, and `ACCEPTANCE.md` now project the v3.0.0 4 × 6 naming and acceptance surface.
+- `DATA-LIFECYCLE.md` keeps FR-012~019 and FR-021~024 as discussion draft scope while marking FR-020 folded into the approved spec.
 
-### Evidence
+---
 
-- 已有：本地 boundary-gates 通过、本地 `go test` 通过、本地 smoke 通过
-- 未提供：live/prod/race/vet/lint/secret/GitHub CI/release 证据
+## [v2.2.4] — 2026-06-23
+
+### Added
+- `STANDARD.md` thin standard entrypoint for #871, linking authority order, mandatory governance sources, required checks, and #869 evidence guardrails.
+- `docs/report/binance/governance-closure-20260623.md` for worker-3 governance issue review (#869/#871/#893/#894/#895/#896).
+- `docs/report/binance/commit-coverage-audit-20260623.md` for the #896 newest-50 local commit coverage audit.
+
+### Changed
+- `RULES.md` R9 document existence table and check loop now include `STANDARD.md`.
+- `docs/report/binance/iteration-plan-20260622.md` issue mapping now records #893-#896 as existing open issues instead of pending issue creation.
+
+---
+
+## [v2.2.3] — 2026-06-22
+
+### Changed
+- TRACEABILITY FR-009 状态附 runtime SHA `bae80d6` + CI workflow URL（runtime PR ZoneCNH/binance#9 合并）
+- ARCHITECTURE-DRIFT-WATCHLIST D8 风险级别 MEDIUM → LOW（CI 已自动化）
+- 业务报告 §Runtime 核对结果 第 4 项证据升级为 runtime commit + CI workflow URL
+
+### Removed (runtime 仓)
+- runtime 仓 `internal/cs/` 目录（doc.go + types.go），满足 BR-005 No cs Package
+
+### Added (runtime 仓)
+- runtime 仓 `.github/workflows/boundary-gates.yml`（9 道 boundary gate 自动化），满足 RULES.md R10
 
 ---
 
@@ -163,7 +189,7 @@
 
 | 版本 | SPEC | TRACEABILITY | 关键变更 |
 |------|------|-------------|----------|
-| v2.2.3 | v2.2.3 | v2.2.3 | runtime SHA 与本地验证证据投影 + Kafka topic v1 命名收敛 |
+| v3.0.0 | v3.0.0 | v3.0.0 | FR-020 4 × 6 taxonomy fold + funding_rate/mark_price |
 | v2.2.2 | v2.2.2 | v2.2.2 | CHANGELOG 新建 + 版本号全量对齐 |
 | v2.2.1 | v2.2.0 | v2.2.1 | Boundary gate 证据回填 |
 | v2.2.0 | v2.2.0 | v2.2.0 | 命名收敛 + Options depth 补全 |
@@ -177,7 +203,7 @@
 
 | 日期 | 版本 | 变更内容 | 作者 |
 |------|------|----------|------|
-| 2026-06-23 | v2.2.3 | runtime SHA `f30322e00794f9f0af7353c4f8e1cd2b6cc398b3` + 本地 boundary-gates/go test/smoke 证据投影；明确无 live/prod/race/vet/lint/secret/GitHub CI/release 证据 | ZoneCNH |
+| 2026-06-23 | v3.0.0 | FR-020 taxonomy fold：event_type 扩为 6 类，4 × 6 命名/topic/storage/cache/API/AC/TC 同步 | ZoneCNH |
 | 2026-06-22 | v2.2.2 | 新建 CHANGELOG + ACCEPTANCE/FEATURES/IMPLEMENTATION-PLAN 版本号同步到 v2.2.2 | ZoneCNH |
 | 2026-06-22 | v2.2.1 | Boundary gate evidence 回填 + 5 个 v2.0.0 前 task 归档 | ZoneCNH |
 | 2026-06-22 | v2.2.0 | 命名收敛 + Options/cm_perp depth 补全 + 状态口径修复 | ZoneCNH |

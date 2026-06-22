@@ -1,55 +1,68 @@
-# Binance v2 Upgrade Migration Notes
+# Binance v2 distributed C/S upgrade migration (#894)
 
-- Status: Historical Migration Note
-- Created: 2026-06-23
-- Scope: `module/binance/`
-- Confidence: HIGH
+- Date: 2026-06-23
+- Owner surface: `module/binance`
+- Status: docs anchor for the v2 migration; runtime closure remains gated by
+  fresh `/home/binance` verification evidence.
+- Related issues: #869, #893, #894
 
-## 1. 定位
+## Purpose
 
-[COMPUTED][HIGH] 本文件是历史迁移说明，用于替代旧 deep analysis 中的执行引用。它不作为当前 spec 权威，不覆盖 `module/binance/SPEC.md`、`module/binance/STANDARD.md` 或 `module/binance/NAMING.md`。
+This note is the migration index for the Binance v2 move from the historical
+same-process C/S shape to the required distributed C/S architecture.
 
-[COMPUTED][HIGH] 当前权威以 `module/binance/SPEC.md` v2.2.3 为根，以 `STANDARD.md` 固定权威顺序、证据语义和 4x4 命名标准，以 `NAMING.md` 维护完整 subject/topic 投影。
+Normative constraints live in `module/binance/SPEC.md` §4.1. Historical
+rationale and the code-state audit are consolidated here so
+`module/binance/DEEP-ANALYSIS.md` §0 and §12 can remain archive stubs without
+becoming a second SSOT.
 
-## 2. 迁移背景
+## Source evidence
 
-[INFERRED][HIGH] v2 系列迁移的目标是把 `binance` 文档控制面从散落的历史分析结论，收敛为可审查、可复跑、可追溯的治理制品：
+| Source | Why it matters |
+|---|---|
+| `module/binance/SPEC.md` §4.1 | Normative distributed constraints: independent client/server processes, natsx JetStream as the only client→server channel, no same-process bridge. |
+| `module/binance/DEEP-ANALYSIS.md` §0 | Archive stub pointing to SPEC §4.1 and this migration note. |
+| `module/binance/DEEP-ANALYSIS.md` §12 | Archive stub pointing to this historical code-state evidence index. |
+| `docs/migrations/binance-v2-upgrade.md` | Migration contract plus historical evidence index for distributed C/S migration. |
+| `docs/report/binance/deep-analysis-20260622.md` | Review record recommending §0 promotion into SPEC §4 and §12 migration into `docs/migrations/`. |
+| `docs/report/binance/deep-analysis-20260622-v2.md` | Follow-up review record confirming the same migration split. |
 
-1. [COMPUTED][HIGH] root spec 固定当前业务合同和版本。
-2. [COMPUTED][HIGH] `STANDARD.md` 固定权威顺序、NATS/Kafka 命名和 L1/L2/L3 证据语义。
-3. [COMPUTED][HIGH] `NAMING.md` 固定 product line、event type、subject 和 topic 的 4x4 投影。
-4. [COMPUTED][HIGH] 历史报告只保留为 evidence，不再直接驱动当前合同。
+## Migration contract
 
-## 3. 当前命名合同
+1. `binance-client` and `binance-server` are independently deployable runtime
+   processes.
+2. Client-to-server market data crosses the network through natsx JetStream;
+   direct Go interface calls are not a valid runtime path.
+3. NATS JetStream is external platform infrastructure configured by address,
+   not embedded by either Binance process.
+4. `internal/cs` may appear only as historical context during migration and
+   must not be a runtime dependency.
+5. Release closure requires fresh runtime evidence, not docs-only assertions.
 
-[COMPUTED][HIGH] NATS subject 格式为：
+## Runtime closure checklist
 
-```text
-binance.market.{product_line}.{event_type}
+Run from `/home/binance` on the runtime implementation branch:
+
+```bash
+git status --short --branch
+./scripts/boundary-gates.sh
+go test ./...
+go vet ./...
+go test ./... -race -count=1
+golangci-lint run
 ```
 
-[COMPUTED][HIGH] Kafka topic 格式为：
+The migration is ready for release only when those checks are clean and any
+remaining smoke/deployment checks required by `module/binance/STANDARD.md` are
+recorded.
 
-```text
-binance.{product_line}.{event_type}.v1
-```
+## Current gap handling
 
-[COMPUTED][HIGH] 当前 product line 为 `spot`、`um_perp`、`cm_perp`、`options`；event type 为 `tick`、`trade`、`bar`、`depth`。任何新增类型必须先 spec bump。
-
-## 4. 历史报告替代规则
-
-[COMPUTED][HIGH] 旧 deep analysis 报告中的版本、任务名、Kafka 投影和 runtime 快照只作为历史排障线索。后续引用应优先指向：
-
-| 主题 | 当前引用 |
-| --- | --- |
-| 业务合同 | `module/binance/SPEC.md` |
-| 模块标准 | `module/binance/STANDARD.md` |
-| 命名矩阵 | `module/binance/NAMING.md` |
-| 数据生命周期候选 | `module/binance/DATA-LIFECYCLE.md` |
-| 文档自检 | `scripts/check-binance-docs.sh` |
-
-## 5. 验收方式
-
-[COMPUTED][HIGH] 文档侧迁移验收以 `scripts/check-binance-docs.sh` 为可复跑入口。运行侧证据按 `STANDARD.md` 的 L2 定义，只能由本地 runtime HEAD SHA、boundary gates、Go tests 和 smoke 输出组成。
-
-[RULES I BROKE]：无
+- #893: SPEC §4.1 is the normative home for distributed runtime constraints.
+  DEEP §0/§12 are stubs that point here and back to SPEC rather than carrying
+  duplicate SSOT text.
+- #894: this file plus `docs/migrations/README.md` and the SPEC migration table
+  provide the migration index wiring. This file carries the historical evidence
+  index; DEEP §0/§12 are reduced to pointers.
+- #869: docs can record evidence, but runtime closure remains implementation
+  gated until the command set above is fresh and clean.

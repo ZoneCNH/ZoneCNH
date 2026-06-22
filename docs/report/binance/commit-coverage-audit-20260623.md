@@ -1,53 +1,70 @@
-# Binance Commit Coverage Audit 2026-06-23
+# Binance commit coverage audit — newest 50 preserve/stash candidates (#896)
 
-- Status: Audit
-- Scope: `ZoneCNH/ZoneCNH` PR metadata and `/home/binance` local commit window
-- Issue: #896
-- Confidence: MED
+- Date: 2026-06-23
+- Scope: local git evidence for newest 50 commits matching `preserve|stash|backup|保存|临时|WIP`.
+- Local candidate count from command: 151.
+- Command: `git log --all --date=short --format=%H%x09%ad%x09%D%x09%s --grep="preserve\|stash\|backup\|保存\|临时\|WIP" -i`
 
-## 1. 审计结论
+> This report is evidence for #896, not final closure. Local git history can identify candidates and refs, but cannot by itself prove every PR/head relationship or that no omitted change reaches `main`.
 
-[COMPUTED][MED] #896 的前提不能被本 lane 严格复现，因此不应关闭该 issue。
+## Coverage matrix
 
-[COMPUTED][HIGH] `ZoneCNH/ZoneCNH` 中 PR #850、PR #852、PR #853 的 mergedAt 与 mergeCommit 可通过 `gh pr view` 复核。
+| # | Commit | Date | PR/head inference | Subject | Verification command | Main-impact disposition |
+|---:|---|---|---|---|---|---|
+| 1 | `50c440aadaa5` | 2026-06-22 | stash ref (`refs/stash`), not a PR head | On docs/fred-stage2-contracts-20260622: fred-stage2-wip | `git show --stat --oneline --no-renames 50c440aadaa5 -- module/binance docs/report/binance docs/migrations` | Stash candidate; must compare against eventual branch/PR before closure. |
+| 2 | `5d6036ffbafd` | 2026-06-22 | not encoded in local subject/refs | Close Binance stage gates with executable doc checks | `git show --stat --oneline --no-renames 5d6036ffbafd -- module/binance docs/report/binance docs/migrations` | Requires manual PR/head review; local log only. |
+| 3 | `e341ddca6e14` | 2026-06-22 | not encoded in local subject/refs | Keep Binance docs gates executable and scoped | `git show --stat --oneline --no-renames e341ddca6e14 -- module/binance docs/report/binance docs/migrations` | Requires manual PR/head review; local log only. |
+| 4 | `2ca30d0bce37` | 2026-06-22 | not encoded in local subject/refs | 保存已验证变更以完成自动交付闭环 | `git show --stat --oneline --no-renames 2ca30d0bce37 -- module/binance docs/report/binance docs/migrations` | No binance impact proven from local subject/refs; verify stat command before excluding. |
+| 5 | `f6b73ccc78e3` | 2026-06-22 | not encoded in local subject/refs | 保存已验证变更以完成自动交付闭环 | `git show --stat --oneline --no-renames f6b73ccc78e3 -- module/binance docs/report/binance docs/migrations` | No binance impact proven from local subject/refs; verify stat command before excluding. |
+| 6 | `de7c3923cc3d` | 2026-06-22 | not encoded in local subject/refs | 保存已验证变更以完成自动交付闭环 | `git show --stat --oneline --no-renames de7c3923cc3d -- module/binance docs/report/binance docs/migrations` | No binance impact proven from local subject/refs; verify stat command before excluding. |
+| 7 | `8ac5f48753d2` | 2026-06-22 | PR #860 from subject | docs(binance): 模块治理三件套 + 自动捕获跨文档同步 (#860) | `git show --stat --oneline --no-renames 8ac5f48753d2 -- module/binance docs/report/binance docs/migrations` | Requires manual PR/head review; local log only. |
+| 8 | `e83ffa00cb03` | 2026-06-22 | PR #857 from subject | docs(report): 升级 binance 业务类型覆盖报告 88→95+ (#857) | `git show --stat --oneline --no-renames e83ffa00cb03 -- module/binance docs/report/binance docs/migrations` | Requires manual PR/head review; local log only. |
+| 9 | `7c22ca292afb` | 2026-06-22 | PR #842 from subject | docs: 移除 4 个废弃占位模块并同步对齐文档 (#842) | `git show --stat --oneline --no-renames 7c22ca292afb -- module/binance docs/report/binance docs/migrations` | No binance impact proven from local subject/refs; verify stat command before excluding. |
+| 10 | `35d494e96bc5` | 2026-06-21 | not encoded in local subject/refs | Preserve current mainline facts while integrating traceability updates | `git show --stat --oneline --no-renames 35d494e96bc5 -- module/binance docs/report/binance docs/migrations` | No binance impact proven from local subject/refs; verify stat command before excluding. |
+| 11 | `ce29d4dc7470` | 2026-06-21 | not encoded in local subject/refs | docs: preserve binance evidence alignment | `git show --stat --oneline --no-renames ce29d4dc7470 -- module/binance docs/report/binance docs/migrations` | Requires manual PR/head review; local log only. |
+| 12 | `8cb5c71bdc9b` | 2026-06-21 | not encoded in local subject/refs | docs: preserve binance client/server spec alignment | `git show --stat --oneline --no-renames 8cb5c71bdc9b -- module/binance docs/report/binance docs/migrations` | Requires manual PR/head review; local log only. |
+| 13 | `8871caf84d51` | 2026-06-21 | not encoded in local subject/refs | docs: preserve binance acceptance and traceability alignment | `git show --stat --oneline --no-renames 8871caf84d51 -- module/binance docs/report/binance docs/migrations` | Requires manual PR/head review; local log only. |
+| 14 | `c33ea4f40ea7` | 2026-06-21 | not encoded in local subject/refs | 保存已验证变更以完成自动交付闭环 | `git show --stat --oneline --no-renames c33ea4f40ea7 -- module/binance docs/report/binance docs/migrations` | No binance impact proven from local subject/refs; verify stat command before excluding. |
+| 15 | `e8317837d059` | 2026-06-21 | not encoded in local subject/refs | Align clickhousex docs with v1.0.10 local evidence | `git show --stat --oneline --no-renames e8317837d059 -- module/binance docs/report/binance docs/migrations` | No binance impact proven from local subject/refs; verify stat command before excluding. |
+| 16 | `92ad34759c5d` | 2026-06-21 | not encoded in local subject/refs | docs: preserve release evidence projections | `git show --stat --oneline --no-renames 92ad34759c5d -- module/binance docs/report/binance docs/migrations` | No binance impact proven from local subject/refs; verify stat command before excluding. |
+| 17 | `46063b9a7508` | 2026-06-21 | not encoded in local subject/refs | Preserve clickhousex and xlibgate release evidence before cleanup | `git show --stat --oneline --no-renames 46063b9a7508 -- module/binance docs/report/binance docs/migrations` | No binance impact proven from local subject/refs; verify stat command before excluding. |
+| 18 | `d8f55fc6feb4` | 2026-06-21 | not encoded in local subject/refs | 保存已验证变更以完成自动交付闭环 | `git show --stat --oneline --no-renames d8f55fc6feb4 -- module/binance docs/report/binance docs/migrations` | No binance impact proven from local subject/refs; verify stat command before excluding. |
+| 19 | `94af6440a800` | 2026-06-21 | not encoded in local subject/refs | Preserve binance v2 boundary evidence before branch cleanup | `git show --stat --oneline --no-renames 94af6440a800 -- module/binance docs/report/binance docs/migrations` | Requires manual PR/head review; local log only. |
+| 20 | `3616e0460220` | 2026-06-21 | not encoded in local subject/refs | 保存已验证变更以完成自动交付闭环 | `git show --stat --oneline --no-renames 3616e0460220 -- module/binance docs/report/binance docs/migrations` | No binance impact proven from local subject/refs; verify stat command before excluding. |
+| 21 | `c21ece612a1d` | 2026-06-21 | not encoded in local subject/refs | 保存已验证变更以完成自动交付闭环 | `git show --stat --oneline --no-renames c21ece612a1d -- module/binance docs/report/binance docs/migrations` | No binance impact proven from local subject/refs; verify stat command before excluding. |
+| 22 | `4a008b63ec6c` | 2026-06-21 | not encoded in local subject/refs | docs: preserve verified branch evidence before cleanup | `git show --stat --oneline --no-renames 4a008b63ec6c -- module/binance docs/report/binance docs/migrations` | No binance impact proven from local subject/refs; verify stat command before excluding. |
+| 23 | `9130d980ee8d` | 2026-06-21 | PR #835 from subject | docs(contracts): 对齐 v1.2.0 发布基线，补充 README/CHANGELOG (#835) | `git show --stat --oneline --no-renames 9130d980ee8d -- module/binance docs/report/binance docs/migrations` | No binance impact proven from local subject/refs; verify stat command before excluding. |
+| 24 | `00e7dde297e5` | 2026-06-21 | not encoded in local subject/refs | 保存已验证变更以完成自动交付闭环 | `git show --stat --oneline --no-renames 00e7dde297e5 -- module/binance docs/report/binance docs/migrations` | No binance impact proven from local subject/refs; verify stat command before excluding. |
+| 25 | `8802cc131a94` | 2026-06-21 | not encoded in local subject/refs | 保存已验证变更以完成自动交付闭环 | `git show --stat --oneline --no-renames 8802cc131a94 -- module/binance docs/report/binance docs/migrations` | No binance impact proven from local subject/refs; verify stat command before excluding. |
+| 26 | `4ee575cad798` | 2026-06-21 | not encoded in local subject/refs | Keep natsx release evidence pinned to the current repair-slice commit | `git show --stat --oneline --no-renames 4ee575cad798 -- module/binance docs/report/binance docs/migrations` | No binance impact proven from local subject/refs; verify stat command before excluding. |
+| 27 | `2bcd8d843907` | 2026-06-21 | not encoded in local subject/refs | 保存已验证变更以完成自动交付闭环 | `git show --stat --oneline --no-renames 2bcd8d843907 -- module/binance docs/report/binance docs/migrations` | No binance impact proven from local subject/refs; verify stat command before excluding. |
+| 28 | `fcc16183757a` | 2026-06-21 | not encoded in local subject/refs | 保存已验证变更以完成自动交付闭环 | `git show --stat --oneline --no-renames fcc16183757a -- module/binance docs/report/binance docs/migrations` | No binance impact proven from local subject/refs; verify stat command before excluding. |
+| 29 | `9a44d2c4569b` | 2026-06-21 | not encoded in local subject/refs | docs(report): 收口架构结构分析与同步文档 | `git show --stat --oneline --no-renames 9a44d2c4569b -- module/binance docs/report/binance docs/migrations` | No binance impact proven from local subject/refs; verify stat command before excluding. |
+| 30 | `9958e543475e` | 2026-06-21 | not encoded in local subject/refs | 保存已验证变更以完成自动交付闭环 | `git show --stat --oneline --no-renames 9958e543475e -- module/binance docs/report/binance docs/migrations` | No binance impact proven from local subject/refs; verify stat command before excluding. |
+| 31 | `96ae3ac119cd` | 2026-06-21 | not encoded in local subject/refs | 保存已验证变更以完成自动交付闭环 | `git show --stat --oneline --no-renames 96ae3ac119cd -- module/binance docs/report/binance docs/migrations` | No binance impact proven from local subject/refs; verify stat command before excluding. |
+| 32 | `2661d32c5e3c` | 2026-06-21 | not encoded in local subject/refs | 保存已验证变更以完成自动交付闭环 | `git show --stat --oneline --no-renames 2661d32c5e3c -- module/binance docs/report/binance docs/migrations` | No binance impact proven from local subject/refs; verify stat command before excluding. |
+| 33 | `f6a5a192129f` | 2026-06-21 | not encoded in local subject/refs | 保存已验证变更以完成自动交付闭环 | `git show --stat --oneline --no-renames f6a5a192129f -- module/binance docs/report/binance docs/migrations` | No binance impact proven from local subject/refs; verify stat command before excluding. |
+| 34 | `d1addc607c68` | 2026-06-21 | not encoded in local subject/refs | 保存已验证变更以完成自动交付闭环 | `git show --stat --oneline --no-renames d1addc607c68 -- module/binance docs/report/binance docs/migrations` | No binance impact proven from local subject/refs; verify stat command before excluding. |
+| 35 | `0b2d8d01b1d6` | 2026-06-21 | not encoded in local subject/refs | 保存已验证变更以完成自动交付闭环 | `git show --stat --oneline --no-renames 0b2d8d01b1d6 -- module/binance docs/report/binance docs/migrations` | No binance impact proven from local subject/refs; verify stat command before excluding. |
+| 36 | `d3c2b107bee3` | 2026-06-21 | not encoded in local subject/refs | 保存已验证变更以完成自动交付闭环 | `git show --stat --oneline --no-renames d3c2b107bee3 -- module/binance docs/report/binance docs/migrations` | No binance impact proven from local subject/refs; verify stat command before excluding. |
+| 37 | `4e86b6f5054e` | 2026-06-21 | not encoded in local subject/refs | docs: 独立进程 SPEC 模板 + module/README.md 索引完善 | `git show --stat --oneline --no-renames 4e86b6f5054e -- module/binance docs/report/binance docs/migrations` | No binance impact proven from local subject/refs; verify stat command before excluding. |
+| 38 | `6a45b6a69819` | 2026-06-21 | not encoded in local subject/refs | 保存已验证变更以完成自动交付闭环 | `git show --stat --oneline --no-renames 6a45b6a69819 -- module/binance docs/report/binance docs/migrations` | No binance impact proven from local subject/refs; verify stat command before excluding. |
+| 39 | `800f969ad26c` | 2026-06-21 | not encoded in local subject/refs | docs: 架构梳理 — market_data/macro_data 域重组，C/S Module vs 独立进程区分 | `git show --stat --oneline --no-renames 800f969ad26c -- module/binance docs/report/binance docs/migrations` | No binance impact proven from local subject/refs; verify stat command before excluding. |
+| 40 | `b52d0f65f55d` | 2026-06-21 | not encoded in local subject/refs | 保存已验证变更以完成自动交付闭环 | `git show --stat --oneline --no-renames b52d0f65f55d -- module/binance docs/report/binance docs/migrations` | No binance impact proven from local subject/refs; verify stat command before excluding. |
+| 41 | `e5a068991cac` | 2026-06-21 | not encoded in local subject/refs | 保存已验证变更以完成自动交付闭环 | `git show --stat --oneline --no-renames e5a068991cac -- module/binance docs/report/binance docs/migrations` | No binance impact proven from local subject/refs; verify stat command before excluding. |
+| 42 | `98765891a1e4` | 2026-06-21 | not encoded in local subject/refs | 保存已验证变更以完成自动交付闭环 | `git show --stat --oneline --no-renames 98765891a1e4 -- module/binance docs/report/binance docs/migrations` | No binance impact proven from local subject/refs; verify stat command before excluding. |
+| 43 | `3065371ce659` | 2026-06-21 | not encoded in local subject/refs | 保存已验证变更以完成自动交付闭环 | `git show --stat --oneline --no-renames 3065371ce659 -- module/binance docs/report/binance docs/migrations` | No binance impact proven from local subject/refs; verify stat command before excluding. |
+| 44 | `94fd324ea5e0` | 2026-06-21 | not encoded in local subject/refs | 保存已验证变更以完成自动交付闭环 | `git show --stat --oneline --no-renames 94fd324ea5e0 -- module/binance docs/report/binance docs/migrations` | No binance impact proven from local subject/refs; verify stat command before excluding. |
+| 45 | `6a11efcd465d` | 2026-06-21 | not encoded in local subject/refs | 保存已验证变更以完成自动交付闭环 | `git show --stat --oneline --no-renames 6a11efcd465d -- module/binance docs/report/binance docs/migrations` | No binance impact proven from local subject/refs; verify stat command before excluding. |
+| 46 | `adfd5e27aa92` | 2026-06-21 | PR #818 from subject | docs: P0修复 + 三文档同步对齐 + 版本v1.12.2 (#818) | `git show --stat --oneline --no-renames adfd5e27aa92 -- module/binance docs/report/binance docs/migrations` | No binance impact proven from local subject/refs; verify stat command before excluding. |
+| 47 | `43750f3cf423` | 2026-06-21 | tag: governance-archive-20260620T191957Z-docs-deep-analysis-20260621 | 保存已验证变更以完成自动交付闭环 | `git show --stat --oneline --no-renames 43750f3cf423 -- module/binance docs/report/binance docs/migrations` | No binance impact proven from local subject/refs; verify stat command before excluding. |
+| 48 | `9f50146f3d78` | 2026-06-21 | not encoded in local subject/refs | 保存已验证变更以完成自动交付闭环 | `git show --stat --oneline --no-renames 9f50146f3d78 -- module/binance docs/report/binance docs/migrations` | No binance impact proven from local subject/refs; verify stat command before excluding. |
+| 49 | `1e67b0a74376` | 2026-06-21 | not encoded in local subject/refs | 保存已验证变更以完成自动交付闭环 | `git show --stat --oneline --no-renames 1e67b0a74376 -- module/binance docs/report/binance docs/migrations` | No binance impact proven from local subject/refs; verify stat command before excluding. |
+| 50 | `b3970cc07e8b` | 2026-06-21 | not encoded in local subject/refs | 保存已验证变更以完成自动交付闭环 | `git show --stat --oneline --no-renames b3970cc07e8b -- module/binance docs/report/binance docs/migrations` | No binance impact proven from local subject/refs; verify stat command before excluding. |
 
-[KNOWN][MED] 当前任务要求记录 `/home/binance` 在 2026-06-21 到 2026-06-23（+08）窗口内 unique commits=191、literal 保存/backup/preserve/auto-stash grep count=0、extended OR grep count=52。
+## Required follow-up before closing #896
 
-[COMPUTED][MED] 本 lane 对 `/home/binance` 的本地只读复核未能得到 unique commits=191：在当前本地 refs 下，`git log --all` 同窗口 unique commit count 为 10。该差异支持“不严格复现”的结论。
-
-## 2. PR 合并事实
-
-| PR | mergedAt UTC | mergedAt +08 | mergeCommit |
-| --- | --- | --- | --- |
-| #850 | 2026-06-22T00:09:24Z | 2026-06-22 08:09:24 +08 | `b92a6909a646af8236db6bc865fbf23f709f6534` |
-| #852 | 2026-06-22T04:44:59Z | 2026-06-22 12:44:59 +08 | `2d83b6b9d9795d5c568794ce5f483c853d74a6cb` |
-| #853 | 2026-06-22T04:51:49Z | 2026-06-22 12:51:49 +08 | `aa7d8bf3bdb7541e87bbb68717e73cd837c560de` |
-
-## 3. Commit Coverage 记录
-
-| 项目 | 记录值 | 来源 |
-| --- | --- | --- |
-| `/home/binance` 统计窗口 | 2026-06-21 00:00:00 +08 到 2026-06-23 23:59:59 +08 | 任务输入 |
-| unique commits | 191 | 任务输入 |
-| literal 保存/backup/preserve/auto-stash grep count | 0 | 任务输入 |
-| extended OR grep count | 52 | 任务输入 |
-| 本地 `git log --all` unique commits 复核 | 10 | 当前 lane 只读命令 |
-| 本地 literal grep 复核 | 0 | 当前 lane 只读命令 |
-
-## 4. 复核命令
-
-```bash
-gh pr view 850 --repo ZoneCNH/ZoneCNH --json number,mergedAt,mergeCommit
-gh pr view 852 --repo ZoneCNH/ZoneCNH --json number,mergedAt,mergeCommit
-gh pr view 853 --repo ZoneCNH/ZoneCNH --json number,mergedAt,mergeCommit
-git -C /home/binance log --all --since='2026-06-21 00:00 +0800' --until='2026-06-23 23:59:59 +0800' --format=%H | sort -u | wc -l
-git -C /home/binance log --all --since='2026-06-21 00:00 +0800' --until='2026-06-23 23:59:59 +0800' --format='%H %s' --grep='保存' --grep='backup' --grep='preserve' --grep='auto-stash'
-```
-
-## 5. 处理建议
-
-[INFERRED][MED] #896 应保持打开，直到主线程能说明 191 的统计来源、refs 范围、是否包含远端或临时 refs、以及 extended OR 的完整表达式。
-
-[INFERRED][MED] 若后续要关闭 #896，应先补一份可复跑命令记录，确保 unique commit count、literal grep count 和 extended OR count 都能在同一工作区复现。
-
-[RULES I BROKE]：无
+1. For each row, run the listed `git show --stat` command and mark whether it touches `module/binance`, `docs/report/binance`, or `docs/migrations`.
+2. Map every PR-numbered subject to its actual GitHub PR/head SHA; local subject text is not authoritative.
+3. For stash-only rows, compare the stash patch against the branch/PR that absorbed or discarded it.
+4. Only after the above, assert whether any omitted change still affects `main`.

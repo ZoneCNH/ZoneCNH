@@ -2,7 +2,7 @@
 
 `module/binance` is the Binance-specific Market Data C/S Module for ZoneCNH.
 
-- Spec-Version: v2.2.3 (root) / v2.1.1 (client) / v2.1.0 (server)
+- Spec-Version: v3.0.0 (root) / v2.1.1 (client) / v2.1.0 (server)
 - Last-Updated: 2026-06-23
 
 It is split into two submodules:
@@ -20,8 +20,6 @@ It does not define the canonical market domain itself. Canonical semantics are o
 
 It does not define transport-neutral wire/domain contracts itself. Runtime transport is `natsx`; canonical payload semantics are owned by `module/domain_market`.
 
-Root runtime naming follows `SPEC.md` §4.1 and the concrete transport projection in `RUNTIME-MAPPING.md`.
-
 It owns Binance-specific persistence, query API, and fanout needed to serve accepted Binance facts. It does not own generic cross-exchange market_data semantics or strategy behavior.
 
 ## Submodules
@@ -31,16 +29,12 @@ It owns Binance-specific persistence, query API, and fanout needed to serve acce
 | `module/binance/client` | Connects to Binance, parses exchange-native data, maps to `domain_market` envelopes, publishes through `natsx` JetStream |
 | `module/binance/server` | Consumes `natsx` JetStream events, validates and deduplicates facts, persists Binance data, exposes Gin REST APIs, and fans out through `kafkax` |
 
-## Removed Legacy Module
+## Legacy Provider Removal
 
-`binance-market` is removed.
-
-New Binance market_data ingestion work must not target:
-
-```text
-module/binance-market
-github.com/ZoneCNH/binance-market
-```
+Historical legacy Provider paths are archive-only. New Binance market_data
+ingestion work must target `module/binance/client` and
+`module/binance/server`; exact forbidden legacy paths are tracked in
+`SPEC.md` BR-001, Appendix B, and `docs/migrations/remove-binance-market.md`.
 
 ## Runtime Shape
 
@@ -90,9 +84,9 @@ module/binance/server
 
 ## Read Next
 
-- `SPEC.md`
 - `STANDARD.md`
-- `DATA-LIFECYCLE.md`
+- `SPEC.md`
+- `DATA-LIFECYCLE.md`（FR-012~FR-024 讨论稿，定稿后再 fold into SPEC）
 - `BOUNDARY-GATES.md`
 - `RUNTIME-MAPPING.md`
 - `client/SPEC.md`
