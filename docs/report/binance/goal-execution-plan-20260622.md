@@ -191,7 +191,7 @@
 
 | issue | 任务 | bump | 依赖 |
 |---|---|---|---|
-| #867 | README root Spec-Version v2.2.0→v2.2.2 | PATCH | 无 |
+| #867 | README root Spec-Version v2.2.0→v2.2.3 | PATCH | 无 |
 | #866 | RUNTIME-MAPPING NATS 4×4 补 3 个 trade | MINOR | 无 |
 | #868 | Kafka topic 旧式→`binance.{pl}.{et}.v1` | MINOR | 无 |
 | #873 | RULES.md 任务文件名引用修正 | PATCH | 无 |
@@ -275,7 +275,7 @@
 ## 9. 版本演进路径
 
 ```
-当前:     SPEC v2.2.2 / client v2.1.1 / server v2.1.0 / RULES v1.0.0
+当前:     SPEC v2.2.3 / client v2.1.1 / server v2.1.0 / RULES v1.0.0
 阶段 0:   SPEC v2.3.0  (MINOR, subject/topic 收敛 + 状态分层)
 阶段 1:   SPEC v2.3.1  (PATCH, 检查脚本配套)
 阶段 2:   无 bump      (讨论稿)
