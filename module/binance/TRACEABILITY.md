@@ -4,7 +4,7 @@
 >
 > 规范来源：`docs/governance/TRACEABILITY.md`
 
-- Matrix-Version: v2.2.0
+- Matrix-Version: v2.2.1
 - Last-Updated: 2026-06-22
 - Spec-Reference: `module/binance/SPEC.md` v2.2.0
 
@@ -28,7 +28,7 @@
 | FR-007 | Gin Market API：/api/v1/market/* REST 接口，redisx 热缓存 + taosx 回退 | AC-021 ~ AC-025 | TC-012 ~ TC-015 | SERVER-015 | ⬜ Pending |
 | FR-007a | clickhousex Analytics API：/api/v1/analytics/* OLAP 查询（vwap/top-movers/correlation） | AC-038 ~ AC-040 | TC-024 | SERVER-015 | ⬜ Pending（v2.1.0 新增） |
 | FR-008 | kafkax Broadcast：将 accepted facts 广播到 binance.market.* topic | AC-029 ~ AC-031 | TC-018, TC-019 | SERVER-014 | ⬜ Pending |
-| FR-009 | Boundary Enforcement：CI gate 阻断 client/server 跨界、cs 包引用、go.mod 合规 | AC-032 ~ AC-035 | TC-020 ~ TC-022 | SERVER-008 | **Implemented** — BOUNDARY-GATES.md v2.0.0 落地 |
+| FR-009 | Boundary Enforcement：CI gate 阻断 client/server 跨界、cs 包引用、go.mod 合规 | AC-032 ~ AC-035 | TC-020 ~ TC-022 | SERVER-008 | **Implemented** — BOUNDARY-GATES.md 10/10 PASS |
 | FR-010 | clickhousex OLAP Storage：定时 ETL 聚合 taosx→clickhousex，为 analytics API 提供 OLAP 查询 | AC-041 ~ AC-044 | TC-025, TC-026 | SERVER-017 | ⬜ Pending（v2.1.0 新增） |
 | FR-011 | Distributed Coordinator Lock：redisx SetNX 分布式锁，coordinator HA 选举 + lease 续期 | AC-045 ~ AC-047 | TC-027, TC-028 | SERVER-013 | ⬜ Pending（v2.1.0 新增） |
 
@@ -38,15 +38,15 @@
 
 | BR ID | 业务规则 | 验证方式 | Task | 实现状态 |
 |-------|----------|----------|------|----------|
-| BR-001 | No binance-market：禁止在 active architecture 中引用 `binance-market` | CI Gate: BOUNDARY-GATES.md §2 | TASK-BINANCE-ROOT-000 | Pending |
-| BR-002 | Client Must Not Import Server Internals | CI Gate: BOUNDARY-GATES.md §3 | CLIENT-014, SERVER-010 | Pending |
-| BR-003 | Server Must Not Import Client Internals | CI Gate: BOUNDARY-GATES.md §4 | SERVER-010 | Pending |
+| BR-001 | No binance-market：禁止在 active architecture 中引用 `binance-market` | CI Gate: BOUNDARY-GATES.md §2 | TASK-BINANCE-ROOT-000 | **Implemented** — BOUNDARY-GATES.md §2 PASS |
+| BR-002 | Client Must Not Import Server Internals | CI Gate: BOUNDARY-GATES.md §3 | CLIENT-014, SERVER-010 | **Implemented** — BOUNDARY-GATES.md §3 PASS |
+| BR-003 | Server Must Not Import Client Internals | CI Gate: BOUNDARY-GATES.md §4 | SERVER-010 | **Implemented** — BOUNDARY-GATES.md §4 PASS |
 | BR-004 | natsx ManualAck — 全链路写入成功（redisx+taosx+postgresx+kafkax handoff）后才 Ack；失败 NakWithDelay | TC-006: 处理失败→NakWithDelay 集成测试 | SERVER-010 | Pending |
-| BR-005 | No cs Package：禁止 `internal/cs` 包；禁止 C/S 同进程运行 | CI Gate: BOUNDARY-GATES.md §5, §6 | SERVER-008 | **Documented** — BOUNDARY-GATES v2.0.0 |
-| BR-006 | Server Owns Binance Storage：market_data 禁止直连 binance 的 taosx/postgresx/redisx/ossx | CI Gate: BOUNDARY-GATES.md §7 | SERVER-012 ~ SERVER-016 | Pending |
-| BR-007 | No Domain Ownership：模块不得定义 canonical domain semantics SSOT，必须引用 `domain_market` | CI Gate: BOUNDARY-GATES.md §8 | TASK-BINANCE-ROOT-004 | Pending |
-| BR-008 | Wire Contract Externality：不得定义自己的 proto，接口协议通过 natsx subject + JSON envelope | CI Gate: BOUNDARY-GATES.md §10 | SERVER-010, CLIENT-014 | Pending |
-| BR-009 | go.mod Dependency Compliance：gin/ossx 为 direct；redisx/kafkax/natsx/postgresx/taosx 从 indirect 升为 direct | CI Gate: BOUNDARY-GATES.md §11 | SERVER-015, SERVER-016 | Pending |
+| BR-005 | No cs Package：禁止 `internal/cs` 包；禁止 C/S 同进程运行 | CI Gate: BOUNDARY-GATES.md §5, §6 | SERVER-008 | **Implemented** — BOUNDARY-GATES.md §5, §6 PASS |
+| BR-006 | Server Owns Binance Storage：market_data 禁止直连 binance 的 taosx/postgresx/redisx/ossx | CI Gate: BOUNDARY-GATES.md §7 | SERVER-012 ~ SERVER-016 | **Implemented** — BOUNDARY-GATES.md §7 PASS |
+| BR-007 | No Domain Ownership：模块不得定义 canonical domain semantics SSOT，必须引用 `domain_market` | CI Gate: BOUNDARY-GATES.md §9 | TASK-BINANCE-ROOT-004 | **Implemented** — BOUNDARY-GATES.md §9 PASS |
+| BR-008 | Wire Contract Externality：不得定义自己的 proto，接口协议通过 natsx subject + JSON envelope | CI Gate: BOUNDARY-GATES.md §8 | SERVER-010, CLIENT-014 | **Implemented** — BOUNDARY-GATES.md §8 PASS |
+| BR-009 | go.mod Dependency Compliance：natsx/redisx/postgresx/taosx/clickhousex/kafkax/ossx/gin 必须保持 direct 依赖 | CI Gate: BOUNDARY-GATES.md §11 | SERVER-015, SERVER-016 | **Implemented** — BOUNDARY-GATES.md §11 PASS |
 
 ---
 
@@ -85,7 +85,7 @@
 | TC-002 | FR-002 | BR-007 | 单元（product_line identity） | Pending |
 | TC-003 | FR-002 | BR-007 | 单元（cross product_line 不碰撞） | Pending |
 | TC-004 | FR-003 | BR-005 | 集成（client natsx Publish，server 独立进程接收） | Pending |
-| TC-005 | FR-003 | BR-002, BR-003 | CI gate（跨进程边界检查） | Pending |
+| TC-005 | FR-003 | BR-002, BR-003 | CI gate（跨进程边界检查） | **PASS** |
 | TC-006 | FR-004 | BR-004 | 集成（JetStream ManualAck：成功→Ack，失败→NakWithDelay） | Pending |
 | TC-007 | FR-005 | — | 单元（SetNX 首次→新消息；重复→跳过） | Pending |
 | TC-008 | FR-005 | — | 单元（Redis 不可达→error→NakWithDelay） | Pending |
@@ -101,8 +101,8 @@
 | TC-018 | FR-008 | — | 单元（kafkax topic + partition key） | Pending |
 | TC-019 | FR-008 | BR-004 | 单元（kafkax 不可达→error/不 Ack） | Pending |
 | TC-020 | FR-009 | BR-005 | CI gate（cs 包/client 包 import 检查） | **PASS** |
-| TC-021 | FR-009 | BR-001 | CI gate（no-legacy 引用检查） | Pending |
-| TC-022 | FR-009 | BR-009 | CI gate（go.mod 7 infra + gin + clickhousex direct） | Pending |
+| TC-021 | FR-009 | BR-001 | CI gate（no-legacy 引用检查） | **PASS** |
+| TC-022 | FR-009 | BR-009 | CI gate（go.mod 7 infra + gin + clickhousex direct） | **PASS** |
 | TC-023 | FR-006c | — | 单元（redisx SET(tick:*, json, 60s)；PUT 失败→降级不阻塞） | Pending |
 | TC-024 | FR-007a | — | httptest（/api/v1/analytics/vwap + top-movers + correlation） | Pending |
 | TC-025 | FR-010 | BR-006 | 集成（clickhousex ETL：taosx Query → 聚合 → InsertBatch） | Pending |
@@ -149,7 +149,7 @@
 | AC-031 | FR-009 | Kafka 不可达时返回 error；未完成 kafkax handoff 前不 Ack，进入 retry/dead-letter/告警路径 | TC-019 |
 | AC-032 | FR-010 | server 源码无 `internal/client` 或 `internal/cs` 导入（CI gate） | TC-020 |
 | AC-033 | FR-010 | 任何代码 reintroduce `binance-market` 引用时 CI no-legacy gate 失败 | TC-021 |
-| AC-034 | FR-010 | go.mod gin/ossx 为 direct；五个 infra 模块从 indirect 升为 direct | TC-022 |
+| AC-034 | FR-010 | go.mod 中 natsx/redisx/postgresx/taosx/clickhousex/kafkax/ossx/gin 均保持 direct 依赖 | TC-022 |
 | AC-035 | FR-009 | BOUNDARY-GATES §5（cs 包禁止）+ §6（同进程禁止）+ §11（go.mod 合规）全 PASS | TC-020 |
 | AC-036 | FR-006c | redisx SET(tick:{line}:{symbol}, json, 60s) 写入最新行情缓存 | TC-023 |
 | AC-037 | FR-006c | redisx 缓存写入失败 → warn 日志 + 降级（不阻塞主管线） | TC-023 |
@@ -193,4 +193,5 @@
 | 2026-06-17 | v1.4.0 | runtime 骨架落地，实现状态 0%→71% | ZoneCNH |
 | 2026-06-21 | v2.0.0 | **全面重写：gRPC/spool/checkpoint/同进程 → natsx JetStream 分布式架构**：FR-003~006 替换，新增 FR-007~010；BR-004~009 对齐 ManualAck/redisx/ossx/存储所有权；NFR 删除 spool/gRPC 延迟，新增 natsx/taosx/Gin 预算；TC 扩展至 22 条；AC 扩展至 35 条；覆盖率全部 100% | ZoneCNH |
 | 2026-06-21 | v2.1.0 | **七模块补全 + 追溯链扩展**：FR-006 拆分为 6a(taosx)/6b(postgresx)/6c(redisx cache)/6d(ossx)；新增 FR-010（clickhousex OLAP）、FR-011（分布式锁）、FR-007a（analytics API）；Config §11 从 14 项扩展至 100+ 项（7 模块 + Gin + Obs + 环境变量）；Error 码 BNC-009~013；Performance Budget 从 8 项扩展至 20 项；Subject 命名统一 um_perp/cm_perp；TC 22→28；AC 35→47；NFR 13→20；dashboard 全量更新 | ZoneCNH |
-| 2026-06-22 | v2.2.0 | **命名收敛 + Options depth 补全 + 状态口径修复**：(1) `usdm_futures/coinm_futures/futures_usdt/futures_coin` 4 套旧命名全部收敛到 `um_perp/cm_perp`（与根 SPEC §9 natsx subject 表对齐）；(2) 新增 `binance.market.cm_perp.depth` + `binance.market.options.depth` 两条 subject，TASK-CLIENT-006 Scope 加 depth/update events（依据：Binance EOptions `<symbol>@depth1000` WebSocket stream）；(3) FR-001 Partial→Pending（与 client/TRACEABILITY 同步，以 runtime 仓为准） | ZoneCNH |
+| 2026-06-22 | v2.2.0 | **命名收敛 + Options depth 补全 + 状态口径修复**：(1) 4 套旧命名全部收敛到 `um_perp/cm_perp`（与根 SPEC §9 natsx subject 表对齐）；(2) 新增 `binance.market.cm_perp.depth` + `binance.market.options.depth` 两条 subject，TASK-CLIENT-006 Scope 加 depth/update events（依据：Binance EOptions `<symbol>@depth1000` WebSocket stream）；(3) FR-001 Partial→Pending（与 client/TRACEABILITY 同步，以 runtime 仓为准） | ZoneCNH |
+| 2026-06-22 | v2.2.1 | **Boundary gate runtime evidence 回填**：BR-001/002/003/005/006/007/008/009 与 TC-005/021/022 对齐 `/home/binance/scripts/boundary-gates.sh` 10/10 PASS；BR-004 与非边界业务 FR 仍保持 Pending | ZoneCNH |

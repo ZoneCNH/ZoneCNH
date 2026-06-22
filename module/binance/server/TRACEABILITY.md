@@ -1,8 +1,8 @@
 # module/binance/server TRACEABILITY
 
-> 追溯矩阵版本：v2.1.0 | 最后更新：2026-06-21 | 对应 server SPEC v1.2.0
+> 追溯矩阵版本：v2.1.1 | 最后更新：2026-06-22 | 对应 server SPEC v2.1.0
 >
-> **v2.1.0 变更摘要**：FR 命名全面对齐 server SPEC v1.2.0；补充 FR-002 Consumer Lifecycle 及
+> **v2.1.1 变更摘要**：元数据对齐 server SPEC v2.1.0；保留 v2.1.0 的 FR/TC/AC 追溯结构；
 > TC-020/021 覆盖；FR-002→FR-005 编号修正（v2.0.0 漏收 Consumer Lifecycle 导致整体偏移）；
 > 新增 FR-007a（clickhousex Analytics API）、FR-010（clickhousex OLAP Storage）、FR-011
 > （Distributed Coordinator Lock）及对应 TC/AC；BR 表对齐 SPEC BR-001~BR-006 + 补充
@@ -214,7 +214,7 @@
 | BR→验证映射率 | 9 / 9 | 100% |
 | TC→FR 回溯率 | 26 / 26 | 100% |
 | AC→验证映射率 | 40 / 40 | 100% |
-| 实现完成率 | 0 / 12 FR | 0%（文档对齐 v2.1.0，代码待实现） |
+| 实现完成率 | 0 / 12 FR | 0%（文档对齐 server SPEC v2.1.0，代码待实现） |
 
 ---
 
@@ -227,4 +227,5 @@
 | 2026-06-17 | v1.1.1 | 同步 server SPEC v1.0.1 修订（metadata 字段统一） | ZoneCNH |
 | 2026-06-17 | v1.1.2 | 同步 SPEC v1.0.2 Status 晋升（Review → Approved） | ZoneCNH |
 | 2026-06-21 | v2.0.0 | **全面重写**：gRPC/同进程 cs → natsx JetStream 分布式架构；FR-001~009 全部对齐 natsx/redisx/postgresx/taosx/kafkax/Gin/ossx；BR/NFR/TC/AC 全面更新 | ZoneCNH |
-| 2026-06-21 | v2.1.0 | **对齐 server SPEC v1.2.0**：补充 FR-002 Consumer Lifecycle（TC-020/021, AC-031/032）；FR 命名全面对齐 SPEC（FR-002→FR-003 Envelope Validation, FR-003→FR-004 Idempotent Acceptance, FR-004+005→FR-005 Multi-Store Write）；新增 FR-007a（clickhousex Analytics API, TC-022, AC-033~035）、FR-010（clickhousex OLAP, TC-023/024, AC-036~038）、FR-011（Coordinator Lock, TC-025/026, AC-039~040）；BR 从 6 条扩展至 9 条（对齐 SPEC BR-001~006 + Cold-Write-First/Server Owns Storage/No cs Package）；NFR 10→12；TC 19→26；AC 30→40 | ZoneCNH |
+| 2026-06-21 | v2.1.0 | **对齐当时的 server SPEC 基线**：补充 FR-002 Consumer Lifecycle（TC-020/021, AC-031/032）；FR 命名全面对齐 SPEC（FR-002→FR-003 Envelope Validation, FR-003→FR-004 Idempotent Acceptance, FR-004+005→FR-005 Multi-Store Write）；新增 FR-007a（clickhousex Analytics API, TC-022, AC-033~035）、FR-010（clickhousex OLAP, TC-023/024, AC-036~038）、FR-011（Coordinator Lock, TC-025/026, AC-039~040）；BR 从 6 条扩展至 9 条（对齐 SPEC BR-001~006 + Cold-Write-First/Server Owns Storage/No cs Package）；NFR 10→12；TC 19→26；AC 30→40 | ZoneCNH |
+| 2026-06-22 | v2.1.1 | 修正追溯矩阵元数据：对应 server SPEC v2.1.0；实现状态仍保持 Pending，代码待实现 | ZoneCNH |

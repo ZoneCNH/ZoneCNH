@@ -40,7 +40,7 @@ GET  /readyz                        健康检查（taosx/redis/postgres 连通�
 | 参数 | 类型 | 说明 |
 |------|------|------|
 | symbol | string（必填）| e.g. BTCUSDT |
-| product_line | string（必填）| spot / um_perp |
+| product_line | string（必填）| spot / um_perp / cm_perp / options |
 | start | RFC3339 | 开始时间 |
 | end | RFC3339 | 结束时间（默认 now）|
 | limit | int | 最大条数，默认 100，上限 10000 |
@@ -79,10 +79,10 @@ func (s *Server) RegisterRoutes() {
     v1.Use(middleware.APIKey(s.cfg.APIKeys))
     v1.Use(middleware.RateLimit(s.cache, 1000))  // 1000 req/min per key
     {
-        v1.GET("/market/ticks",          s.queryTicks)
-        v1.GET("/market/ticks/:symbol",  s.latestTick)
-            v1.GET("/market/bars",           s.queryBars)
-        v1.GET("/market/depth/:symbol",  s.depthSnapshot)
+        v1.GET("/market/ticks",         s.queryTicks)
+        v1.GET("/market/ticks/:symbol", s.latestTick)
+        v1.GET("/market/bars",          s.queryBars)
+        v1.GET("/market/depth/:symbol", s.depthSnapshot)
     }
 
     s.engine.GET("/readyz", s.health)
