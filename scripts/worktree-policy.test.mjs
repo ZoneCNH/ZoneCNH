@@ -53,3 +53,28 @@ test("describes canonical worktree paths and root checkout exceptions", () => {
     },
   );
 });
+
+test("parseWorktreePorcelain 收录 detached HEAD worktree 路径", () => {
+  const parsed = parseWorktreePorcelain([
+    "worktree /repo",
+    "HEAD 1111111",
+    "branch refs/heads/main",
+    "",
+    "worktree /repo/.worktree/omx-team/run-a/worker-1",
+    "HEAD 2222222",
+    "detached",
+    "",
+    "worktree /repo/.worktree/workspaces/feature-x",
+    "HEAD 3333333",
+    "branch refs/heads/feature-x",
+    "",
+  ].join("\n"));
+
+  // detached worktree 不进 pathToBranch/branchToPath，但进 detachedPaths
+  assert.equal(parsed.pathToBranch.has("/repo/.worktree/omx-team/run-a/worker-1"), false);
+  assert.equal(parsed.branchToPath.has("detached"), false);
+  assert.ok(parsed.detachedPaths.has("/repo/.worktree/omx-team/run-a/worker-1"));
+  // 非 detached 的 worktree 不在 detachedPaths
+  assert.equal(parsed.detachedPaths.has("/repo"), false);
+  assert.equal(parsed.detachedPaths.has("/repo/.worktree/workspaces/feature-x"), false);
+});
