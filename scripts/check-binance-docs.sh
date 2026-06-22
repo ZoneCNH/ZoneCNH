@@ -37,7 +37,22 @@ require_grep() {
 extract_value() {
   local label="$1"
   local file="$2"
-  sed -n "s/.*${label}[[:space:]]*[:|][[:space:]]*\([^ |`)]*\).*/\1/p" "$file" | head -n 1
+  awk -v label="$label" '
+    index($0, label) {
+      line = $0
+      if (line ~ /^ *\|/) {
+        n = split(line, parts, "|")
+        for (i = 1; i <= n; i++) {
+          gsub(/^[[:space:]]+|[[:space:]]+$/, "", parts[i])
+          if (parts[i] == label && i < n) { print parts[i + 1]; exit }
+        }
+      }
+      sub(/^.*:[[:space:]]*/, "", line)
+      sub(/[ |`)].*$/, "", line)
+      print line
+      exit
+    }
+  ' "$file"
 }
 
 require_equal() {
@@ -134,7 +149,7 @@ require_grep '15 .*缺口|15 gaps' "$lifecycle" 'DATA-LIFECYCLE lists 15 gaps'
 for fr in FR-012 FR-013 FR-014 FR-015 FR-016 FR-017 FR-018 FR-019 FR-020 FR-021 FR-022 FR-023 FR-024; do
   require_grep "$fr" "$lifecycle" "DATA-LIFECYCLE ${fr} landing point"
 done
-require_grep 'SPEC\.md.*未修改|not modify.*SPEC\.md|not a SPEC change' "$lifecycle" 'DATA-LIFECYCLE declares no SPEC change'
+require_grep 'SPEC\.md.*未修改|not modify.*SPEC\.md|not a SPEC change|不是 SPEC change' "$lifecycle" 'DATA-LIFECYCLE declares no SPEC change'
 require_grep 'bump|Bump' "$lifecycle" 'DATA-LIFECYCLE records bump levels'
 require_grep '依赖|Dependencies' "$lifecycle" 'DATA-LIFECYCLE records dependencies'
 
