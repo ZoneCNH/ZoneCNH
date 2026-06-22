@@ -5,14 +5,22 @@
 | 字段 | 值 |
 | --- | --- |
 | Status | Generated from current module SSOT |
-| Last-Updated | 2026-06-21 |
-| Module-Version | v2.2.2 |
-| Module-State | 规格重构；v2.2.2 runtime 大部分仍为 Pending |
+| Last-Updated | 2026-06-23 |
+| Module-Version | v2.2.3 |
+| Module-State | L1/L2 boundary evidence 已回填；release、全链路、live Binance 与生产凭证仍为 Blocked/Pending |
 | Layer | 数据域 / Binance-specific market_data C/S module |
 | Runtime-Repo | `/home/binance` |
 | Source | `goal.md`, `SPEC.md`, `TRACEABILITY.md`, `BOUNDARY-GATES.md`, `RUNTIME-MAPPING.md`, `IMPLEMENTATION-PLAN.md`, `client/`, `server/`, `tasks/` |
 
 本文档是 `module/binance` 当前规格库的实现投影，不是 runtime 代码验收证据。实际完成状态以 `TRACEABILITY.md`、`client/TRACEABILITY.md`、`server/TRACEABILITY.md` 和 `/home/binance` 的测试证据为准。
+
+## 0. 证据层级
+
+| 层级 | 含义 | 当前口径 |
+| --- | --- | --- |
+| L1 | 文档与追溯矩阵一致性证据。 | 本文件、`ACCEPTANCE.md`、`TRACEABILITY.md`、`IMPLEMENTATION-PLAN.md` 与 root `SPEC.md` v2.2.3 对齐。 |
+| L2 | `/home/binance` 本地 runtime 命令证据。 | Runtime SHA `f30322e00794f9f0af7353c4f8e1cd2b6cc398b3`；仅采信 `boundary-gates 10/10 PASS`、`go test ./... PASS`、`XGO_BINANCE_SMOKE_SELF_TEST=1 go run ./cmd/binance-smoke PASS`。 |
+| L3 | live Binance、production credentials、GitHub CI、release 证据。 | 当前未取得，不得据此声明 release ready 或 live production complete。 |
 
 ## 1. 模块边界
 
@@ -29,7 +37,7 @@
 
 ## 2. 功能实现投影
 
-> v2.1.2 编号体系：FR-006 拆分为 6a/6b/6c/6d；FR-007a 新增（analytics API）；FR-009 升为 Boundary Enforcement；FR-010 新增（clickhousex OLAP）；FR-011 新增（分布式锁）。
+> v2.2.3 编号体系：FR-006 拆分为 6a/6b/6c/6d；FR-007a 新增（analytics API）；FR-009 升为 Boundary Enforcement；FR-010 新增（clickhousex OLAP）；FR-011 新增（分布式锁）。
 
 | FR | 功能 | 当前状态 | 已有证据 | 剩余实现面 |
 | --- | --- | --- | --- | --- |
@@ -44,8 +52,8 @@
 | FR-006d | ossx Archival | Pending | 规格定义对象路径与 ETag 删除前校验。 | Parquet 归档、ETag 校验、生命周期删除、防误删测试。 |
 | FR-007 | Gin Market API | Pending | 规格定义 `/api/v1/market/ticks/depth/bars/trades` REST 接口。 | 认证、限流、统一错误、readyz、market_data HTTP 调用方兼容。 |
 | FR-007a | clickhousex Analytics API | Pending | 规格定义 `/api/v1/analytics/vwap/top-movers/correlation` OLAP 查询。 | analytics 查询正确性、查询 P99 < 2s、降级到 503。 |
-| FR-008 | kafkax Broadcast | Pending | 规格定义 `kafkax` topic、symbol key 与 handoff 后 Ack。 | Kafka dispatch、失败不 Ack、重试、下游消费契约。 |
-| FR-009 | Boundary Enforcement | Implemented / Documented | `BOUNDARY-GATES.md` v2.1.1 已落地，`TRACEABILITY.md` 标注 FR-009 Implemented，TC-020 PASS。 | TC-021 与 TC-022 仍需 runtime/repo CI 执行证据闭合。 |
+| FR-008 | kafkax Broadcast | Pending | 规格定义 versioned Kafka topic `binance.{product_line}.{event_type}.v1`、symbol key 与 handoff 后 Ack。 | Kafka dispatch、失败不 Ack、重试、下游消费契约。 |
+| FR-009 | Boundary Enforcement | L1/L2 PASS | Runtime SHA `f30322e00794f9f0af7353c4f8e1cd2b6cc398b3`；`boundary-gates 10/10 PASS`、`go test ./... PASS`、`XGO_BINANCE_SMOKE_SELF_TEST=1 go run ./cmd/binance-smoke PASS`。 | L3 live Binance、production credentials、GitHub CI、release 证据未取得。 |
 | FR-010 | clickhousex OLAP Storage | Pending | 规格定义定时 ETL 聚合 taosx → clickhousex。 | ETL 调度、InsertBatch 性能、ClickHouse 不可达降级。 |
 | FR-011 | Distributed Coordinator Lock | Pending | 规格定义 redisx SetNX 分布式锁 + lease 续期 + coordinator HA。 | SetNX 锁获取、lease 续期失败后停止任务、主动释放。 |
 
@@ -53,19 +61,19 @@
 
 | 项 | 当前状态 | 说明 |
 | --- | --- | --- |
-| BR-001 No binance-market | Pending | 禁止旧仓库或旧 module 名称回流；需要 CI grep gate。 |
-| BR-002 Client Must Not Import Server | Pending | Client 禁止导入 server internals。 |
-| BR-003 Server Must Not Import Client | Pending | Server 禁止导入 client internals。 |
+| BR-001 No binance-market | L1/L2 PASS | 禁止旧仓库或旧 module 名称回流；runtime SHA `f30322e00794f9f0af7353c4f8e1cd2b6cc398b3` 上 boundary gate 通过。 |
+| BR-002 Client Must Not Import Server | L1/L2 PASS | Client 禁止导入 server internals；runtime SHA `f30322e00794f9f0af7353c4f8e1cd2b6cc398b3` 上 boundary gate 通过。 |
+| BR-003 Server Must Not Import Client | L1/L2 PASS | Server 禁止导入 client internals；runtime SHA `f30322e00794f9f0af7353c4f8e1cd2b6cc398b3` 上 boundary gate 通过。 |
 | BR-004 natsx ManualAck | Pending | Server 必须在持久化与广播 handoff 后 Ack。 |
-| BR-005 No cs Package | Documented | `BOUNDARY-GATES.md` 已声明禁止 runtime `internal/cs`。 |
-| BR-006 Server Owns Binance Storage | Pending | Server 只拥有 Binance-specific storage，不上移为通用 market_data。 |
-| BR-007 No Domain Ownership | Pending | Binance 只能消费 `domain_market` 语义，不能定义 canonical domain。 |
-| BR-008 Wire Contract Externality | Pending | Wire contract 外置在 `natsx` subject 与 `domain_market` envelope，不落本地 proto/gRPC ingest schema。 |
-| BR-009 go.mod Dependency Compliance | Pending | 需要 runtime `go.mod` 与边界依赖检查。 |
+| BR-005 No cs Package | L1/L2 PASS | `BOUNDARY-GATES.md` 已声明禁止 runtime `internal/cs`，且 boundary gate 通过。 |
+| BR-006 Server Owns Binance Storage | L1/L2 PASS | Server 只拥有 Binance-specific storage，不上移为通用 market_data；boundary gate 通过。 |
+| BR-007 No Domain Ownership | L1/L2 PASS | Binance 只能消费 `domain_market` 语义，不能定义 canonical domain；boundary gate 通过。 |
+| BR-008 Wire Contract Externality | L1/L2 PASS | Wire contract 外置在 `natsx` subject 与 `domain_market` envelope，不落本地 proto/gRPC ingest schema；boundary gate 通过。 |
+| BR-009 go.mod Dependency Compliance | L1/L2 PASS | runtime `go.mod` direct dependency gate 通过。 |
 | NFR-001~004 Performance | Pending | 延迟、吞吐、回压、重放预算需要 runtime 压测证据。 |
 | NFR-005~009 Storage/API | Pending | 数据一致性、查询 SLA、归档安全、故障恢复需要集成测试证据。 |
 | NFR-010~011 Observability | Pending | metrics、logs、trace、health/readiness 需要 runtime 验证。 |
-| NFR-012~013 Security | Pending | Secret scan、auth、rate limit、least privilege 需要 CI 与 API 测试证据。 |
+| NFR-012~013 Security | Pending | auth、rate limit、least privilege 仍需要 API 与 L3 证据；当前不声明 production credential 或 GitHub CI 完成。 |
 
 ## 4. 任务交付视图
 
@@ -74,18 +82,18 @@
 | Root tasks | `TASK-BINANCE-ROOT-000` ~ `TASK-BINANCE-ROOT-007` | 模块级拆分、边界、通信、存储、API、广播、归档与治理任务已登记；完成度仍受 FR 状态约束。 |
 | Client tasks | `TASK-BINANCE-CLIENT-001` ~ `TASK-BINANCE-CLIENT-014` | product line catalog、parser、connector、mapping、idempotency、admin、natsx publisher 等已拆分；`CLIENT-008/009` spool/checkpoint 已归档。 |
 | Server tasks | `TASK-BINANCE-SERVER-010` ~ `TASK-BINANCE-SERVER-016` | natsx consumer、idempotency、storage、kafkax、Gin API、ossx archival 等为 v2.0.0 active server 交付面。 |
-| Boundary gates | `BOUNDARY-GATES.md` | 已形成文档化 gate 清单，仍需 CI 执行命令与 runtime 证据闭合。 |
+| Boundary gates | `BOUNDARY-GATES.md` | L1/L2 PASS：runtime SHA `f30322e00794f9f0af7353c4f8e1cd2b6cc398b3`；`boundary-gates 10/10 PASS`、`go test ./... PASS`、`XGO_BINANCE_SMOKE_SELF_TEST=1 go run ./cmd/binance-smoke PASS`。 |
 
 ## 5. 文档资产清单
 
 | 文档 | 用途 | 当前使用方式 |
 | --- | --- | --- |
 | `goal.md` | 业务目标与模块意图 | 作为实现清单的目标来源。 |
-| `SPEC.md` | v2.0.0 功能与边界规格 | 作为 FR/BR/NFR 语义来源。 |
+| `SPEC.md` | v2.2.3 功能与边界规格 | 作为 FR/BR/NFR 语义来源。 |
 | `TRACEABILITY.md` | 根级 FR/AC/TC/Task 追溯 | 作为当前状态与验收编号来源。 |
 | `client/TRACEABILITY.md` | Client 子域追溯 | 作为 client active/pending 实现面来源。 |
 | `server/TRACEABILITY.md` | Server 子域追溯 | 作为 server active/pending 实现面来源。 |
-| `BOUNDARY-GATES.md` | 边界漂移防线 | 作为 FR-010 与 BR-005 的文档证据。 |
+| `BOUNDARY-GATES.md` | 边界漂移防线 | 作为 FR-009 与 BR-005 的文档证据。 |
 | `RUNTIME-MAPPING.md` | docs 到 runtime repo 的路径映射 | 用于避免把文档仓库误当 runtime。 |
 | `IMPLEMENTATION-PLAN.md` | 实施顺序与依赖计划 | 用于任务排序与风险解释。 |
 | `tasks/` | 可执行 task specs | 用于 Root/Client/Server 任务粒度追踪。 |
@@ -98,21 +106,22 @@
 | 根级 traceability 存在 | Done | `TRACEABILITY.md`。 |
 | Client/Server 子域 traceability 存在 | Done | `client/TRACEABILITY.md`, `server/TRACEABILITY.md`。 |
 | C/S 独立进程边界已定义 | Done | `README.md`, `SPEC.md`, `BOUNDARY-GATES.md`。 |
-| Boundary gate 文档已形成 | Done | `BOUNDARY-GATES.md` v2.0.0。 |
+| Boundary gate 文档已形成 | Done | `BOUNDARY-GATES.md`。 |
+| Boundary gate 本地证据 | L1/L2 PASS | Runtime SHA `f30322e00794f9f0af7353c4f8e1cd2b6cc398b3`；`boundary-gates 10/10 PASS`、`go test ./... PASS`、`XGO_BINANCE_SMOKE_SELF_TEST=1 go run ./cmd/binance-smoke PASS`。 |
 | Product line 全覆盖实现 | Not Done | FR-001 Partial。 |
 | Instrument identity 全覆盖实现 | Not Done | FR-002 Partial。 |
 | natsx publish/consume runtime 闭合 | Not Done | FR-003 Pending。 |
 | ManualAck 与 at-least-once runtime 闭合 | Not Done | FR-004 Pending。 |
 | Server idempotency runtime 闭合 | Not Done | FR-005 Pending。 |
-| Storage/API/archival/broadcast runtime 闭合 | Not Done | FR-006~FR-009 Pending。 |
-| 全量 AC/TC 通过 | Not Done | TC-001~019、TC-021、TC-022 仍 Pending；TC-020 PASS。 |
+| Storage/API/archival/broadcast runtime 闭合 | Not Done | FR-006~FR-008 Pending；FR-009 仅 L1/L2 boundary closed，L3 release 未闭合。 |
+| 全量 AC/TC 通过 | Not Done | TC-005、TC-020、TC-021、TC-022 为 L1/L2 PASS；其余功能、全链路、live 与 release 证据仍 Pending/Blocked。 |
 
 ## 7. 当前缺口登记
 
 | 缺口 | 影响 | 关闭条件 |
 | --- | --- | --- |
 | FR-001/FR-002 只有 Partial | 不能声明四条 product line 完整支持。 | Spot、USDM、COINM、Options 的 parser、mapper、connector、server acceptance 全部通过。 |
-| FR-003~FR-009 Pending | 不能声明 distributed runtime 已实现。 | `/home/binance` 中 client/server runtime、存储、API、广播、归档对应测试全部通过。 |
+| FR-003~FR-008 Pending；FR-009 L1/L2 only | 不能声明 distributed runtime 或 release 已实现。 | `/home/binance` 中 client/server runtime、存储、API、广播、归档对应测试全部通过，并补充 L3 release 证据。 |
 | Client active FR 仍为 0/8 implemented | Client 侧 v2.0.0 交付尚未闭合。 | `client/TRACEABILITY.md` 中 active FR 状态更新并附 runtime 证据。 |
 | Server active FR 仍为 0/9 implemented | Server 侧 v2.0.0 交付尚未闭合。 | `server/TRACEABILITY.md` 中 active FR 状态更新并附 runtime 证据。 |
-| TC-021/TC-022 Pending | FR-010 尚缺完整 CI 证据。 | 边界 gate 在 runtime/repo CI 中稳定执行并记录 PASS。 |
+| TC-021/TC-022 L3 Pending | FR-009 已有 L1/L2 本地证据，但缺 GitHub CI 与 release 证据。 | 后续接入 CI 并记录独立 run 链接；未取得前保持 Pending/Blocked。 |

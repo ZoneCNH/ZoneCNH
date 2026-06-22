@@ -3,8 +3,8 @@
 ## 1. Metadata
 
 - Status: Approved
-- Spec-Version: v2.2.3
-- Last-Updated: 2026-06-22
+- Spec-Version: v2.3.0
+- Last-Updated: 2026-06-23
 - Owner: ZoneCNH
 - Layer: 数据域 · 行情
 - Version: v0.1.0
@@ -26,7 +26,7 @@
   Binance Exchange (WS/REST)
     ↓
   binance-client          ← 交易所侧采集器（独立进程）
-    ↓ natsx.Publish()     ← 网络消息发布，subject: binance.market.*
+    ↓ natsx.Publish()     ← 网络消息发布，subject: binance.market.{product_line}.{event_type}
   ──────────── NATS JetStream (TCP 网络) ────────────
     ↓ natsx.Subscribe()   ← 网络消息消费
 [服务区 / 内网]
@@ -72,6 +72,19 @@ Binance 行情集成面临以下问题：
 - 定义 enforceable boundary gates：禁止跨进程代码导入，CI 拦截
 - 移除 `binance-market` + `internal/cs` 同进程桥接包
 
+### 4.0 分布式边界与证据层级
+
+`binance-client` 与 `binance-server` 是两个可独立发布、独立回滚、独立扩缩容的运行时进程；二者之间唯一数据面通信是外部 NATS JetStream，不存在同进程函数调用、共享内存桥接或嵌入式 NATS Server。
+
+本模块使用两层消息命名，禁止混用：
+
+| 层级 | 拥有者 | 模式 | 用途 |
+|------|--------|------|------|
+| L1 ingest/control | `natsx` + `binance-client/server` | `binance.market.{product_line}.{event_type}` | client → server 的 JetStream 持久化投递 |
+| L2 durable fanout | `kafkax` + `binance-server` | `binance.{product_line}.{event_type}.v1` | server 验收后对下游分析域广播 |
+
+证据分层如下：L1 文档注册证明需求、主题、验收链已闭合；L2 运行时实现证明代码、测试与边界 gate 已执行；L3 release/live 证据证明发布、运行、回滚和监控链路存在。本 SPEC v2.3.0 只声明 L1 文档注册，不把 L2/L3 证据视为已完成。
+
 ---
 
 ## 5. Non-goals
@@ -85,7 +98,7 @@ Binance 行情集成面临以下问题：
 | 实现 order execution | 属于执行域 |
 | 兼容旧 `binance-market` Provider | 已移除 |
 | 作为跨 CEX 通用 ingestion server | 本模块仅处理 Binance |
-| 同进程运行 client + server | **违反分布式约束（见 §0）** |
+| 同进程运行 client + server | **违反分布式约束（见 §4.0）** |
 | 保留 `internal/cs` 同进程桥接包为运行时依赖 | **必须删除** |
 
 ---
@@ -95,7 +108,7 @@ Binance 行情集成面临以下问题：
 | 消费者 | 使用方式 | 通信协议 |
 |--------|----------|---------|
 | `module/market_data` | HTTP `GET /api/v1/market/*` 主动拉取，或 kafkax topic 消费 | HTTP REST / Kafka |
-| 下游分析域（signal/risk/backtest） | kafkax consumer group 消费 `binance.market.*` topic | Kafka |
+| 下游分析域（signal/risk/backtest） | kafkax consumer group 消费 `binance.{product_line}.{event_type}.v1` topic | Kafka |
 | `module/binance/server` | natsx subscribe `binance.market.>` 消费 client 发布的事件 | NATS JetStream |
 | Operator / SRE | client :8081 / server :8082 Gin admin 端点 | HTTP |
 | CI Pipeline | BOUNDARY-GATES.md gate 脚本执行边界检查 | — |
@@ -278,7 +291,7 @@ Binance 行情集成面临以下问题：
 **功能描述**：server 在 storage 成功后通过 `kafkax` 将 accepted facts 广播给下游消费者。
 
 **WHEN** storage writes 全部成功且 `msg.Ack()` 尚未调用
-**THEN** 调用 `kafkax.Send(topic="binance.market.{product_line}.{event_type}", key=symbol, payload=MarketFactEnvelope)`
+**THEN** 调用 `kafkax.Send(topic="binance.{product_line}.{event_type}.v1", key=symbol, payload=MarketFactEnvelope)`
 
 **WHEN** `kafkax` handoff 成功
 **THEN** 调用 `msg.Ack()`
@@ -342,6 +355,175 @@ Binance 行情集成面临以下问题：
 **WHEN** 持锁实例正常关闭
 **THEN** 调用 `redisx.Del(ctx, "lock:binance:coordinator")` 主动释放锁
 
+### FR-012: Symbol Discovery & Filtering
+
+**功能描述**：client 必须从 Binance 产品线目录发现可订阅 symbol，并按配置过滤 active universe。
+
+**WHEN** client 启动或定期刷新目录
+**THEN** 从对应产品线 REST catalog 同步 active symbols
+
+**WHEN** 配置包含 allow/deny symbol 规则
+**THEN** 订阅集合只包含 active 且通过过滤的 symbol
+
+**WHEN** Binance 标记 symbol 为 delisted / expired
+**THEN** client 停止新增订阅并向 server 发布可审计状态变化
+
+### FR-013: WebSocket Connection Policy
+
+**功能描述**：client 必须用可配置连接预算、dial timeout 和指数退避管理 Binance WebSocket。
+
+**WHEN** 建立 WebSocket 连接
+**THEN** 使用产品线级连接预算和 dial timeout
+
+**WHEN** 连接断开或握手失败
+**THEN** 使用带 jitter 的指数退避重连，不突破连接预算
+
+**WHEN** 重连成功
+**THEN** 以幂等方式恢复当前订阅集合
+
+### FR-014: Bar Interval Subscription Set
+
+**功能描述**：bar/K 线订阅必须显式声明 interval 集合，不允许隐式扩展。
+
+**WHEN** 配置声明 bar intervals
+**THEN** client 校验 interval 属于 Binance 支持集合
+
+**WHEN** 配置包含不支持 interval
+**THEN** 启动失败并返回稳定错误码
+
+**WHEN** interval 集合变更
+**THEN** client 生成确定性的订阅差异并记录审计日志
+
+### FR-015: Depth Snapshot Tier
+
+**功能描述**：depth 事件必须先建立快照基线，再应用增量更新。
+
+**WHEN** 订阅 depth stream
+**THEN** client 先获取 REST snapshot 并记录 lastUpdateId
+
+**WHEN** 增量更新出现 update_id gap
+**THEN** client 丢弃本地 order book 并重新获取 snapshot
+
+**WHEN** 不同产品线有不同 depth tier 限制
+**THEN** client 按产品线配置执行，不使用全局单一阈值
+
+### FR-016: Historical Backfill on Cold Start
+
+**功能描述**：server 冷启动时必须发现缺失历史窗口，并通过受控 backfill 队列补齐。
+
+**WHEN** server 启动
+**THEN** 对比 metadata watermark 与目标保留窗口，生成缺失时间段
+
+**WHEN** 存在缺失时间段
+**THEN** 写入有界 backfill job 队列，不阻塞实时 ingest
+
+**WHEN** backfill 数据被接受
+**THEN** 复用正常 validation、idempotency、storage 与 fanout 管线
+
+### FR-017: Gap Detection & Fill
+
+**功能描述**：server 必须检测 sequence 或时间窗口 gap，并生成可追踪补洞任务。
+
+**WHEN** ingest 发现 sequence/time gap
+**THEN** 记录 gap 事实并产生 backfill task
+
+**WHEN** gap task 完成
+**THEN** 更新 gap 状态为 resolved，并保留完成证据
+
+**WHEN** gap task 失败超过预算
+**THEN** 标记为 failed 并暴露到 progress/report API
+
+### FR-018: Backfill Throttle & Priority
+
+**功能描述**：backfill 资源必须与 live ingest 隔离，避免历史补数冲击实时链路。
+
+**WHEN** backfill worker 拉取任务
+**THEN** 使用独立 throttle 与并发预算
+
+**WHEN** live ingest 负载升高
+**THEN** backfill 降低优先级或暂停，不抢占实时写入资源
+
+**WHEN** backfill 任务失败
+**THEN** 按 retry budget 重试并暴露可观测状态
+
+### FR-019: Backfill Idempotency Key Strategy
+
+**功能描述**：backfill 写入必须与实时 ingest 共用确定性 idempotency key，避免重复接受。
+
+**WHEN** 生成 backfill event
+**THEN** idempotency key 包含 product_line、symbol、event_type、time range 与 source
+
+**WHEN** 重复执行同一 backfill job
+**THEN** storage/fanout 不产生重复 accepted fact
+
+**WHEN** 相同 key 对应 payload 冲突
+**THEN** 标记 terminal conflict 并写入审计日志
+
+### FR-020: Funding Rate / Mark Price Stream
+
+**功能描述**：衍生品产品线必须支持 funding rate 与 mark price 扩展事件，同时保持基础 4×4 NATS 矩阵不变。
+
+**WHEN** product_line 为 `um_perp` 或 `cm_perp`
+**THEN** client 可订阅 `funding_rate` 扩展事件并发送 canonical envelope
+
+**WHEN** product_line 支持 mark price
+**THEN** client 可订阅 `mark_price` 扩展事件并发送 canonical envelope
+
+**WHEN** 注册扩展事件
+**THEN** 不改变基础 mandatory event_type 集合 `tick|trade|bar|depth`
+
+### FR-021: Daily Reconciliation Job
+
+**功能描述**：server 必须每日对 expected universe、ingested facts 与 storage watermark 做 reconciliation。
+
+**WHEN** reconciliation job 触发
+**THEN** 比较 symbol universe、event count、watermark 与 gap 状态
+
+**WHEN** 发现缺失或漂移
+**THEN** 生成 report 并触发 backfill/gap 任务
+
+**WHEN** 漂移超过阈值且未解决
+**THEN** 发出告警并保留审计记录
+
+### FR-022: Cold Data Rehydration
+
+**功能描述**：server 必须支持从 ossx 冷归档恢复指定 symbol/time range 到 warm store。
+
+**WHEN** 请求 rehydrate 冷数据
+**THEN** 通过 catalog 定位 ossx parquet 分片
+
+**WHEN** rehydrate 写入 warm store
+**THEN** 使用幂等写入，不覆盖更新鲜数据
+
+**WHEN** rehydrate 完成
+**THEN** API 能返回对应可用性状态
+
+### FR-023: Backfill Progress API
+
+**功能描述**：server 必须暴露 backfill/gap/rehydration 进度查询 API。
+
+**WHEN** 请求 progress API
+**THEN** 返回 queued、running、done、failed 计数与最近错误
+
+**WHEN** 请求携带 job_id 或 symbol filter
+**THEN** 只返回匹配任务状态
+
+**WHEN** 任务不存在或权限不足
+**THEN** 返回稳定错误结构
+
+### FR-024: Symbol Subscription Hot Reload
+
+**功能描述**：client 必须在不重启进程的情况下热更新 symbol 订阅集合。
+
+**WHEN** 配置新增 symbol
+**THEN** client 增量 subscribe 并记录审计事件
+
+**WHEN** 配置移除 symbol
+**THEN** client 安全 unsubscribe，等待已接收事件处理完成
+
+**WHEN** hot reload 完成
+**THEN** admin/status API 暴露新订阅集合和 reload 结果
+
 ---
 
 ### FR → AC 映射索引
@@ -365,8 +547,21 @@ Binance 行情集成面临以下问题：
 | FR-009 Boundary Enforcement | AC-032 ~ AC-035 | TC-020 ~ TC-022 | CI gate（cs 包 / no-legacy / go.mod 合规） |
 | FR-010 clickhousex OLAP | AC-041 ~ AC-044 | TC-025, TC-026 | 集成（ETL: taosx → clickhousex + 503 降级） |
 | FR-011 Distributed Lock | AC-045 ~ AC-047 | TC-027, TC-028 | 单元（SetNX 锁 + lease 续期失败停止 + Del 释放） |
+| FR-012 Symbol Discovery & Filtering | AC-048 ~ AC-050 | TC-029 | 单元 + catalog mock（active/allow/deny/delist） |
+| FR-013 WebSocket Connection Policy | AC-051 ~ AC-053 | TC-030 | 单元（timeout/backoff/budget + reconnect restore） |
+| FR-014 Bar Interval Subscription Set | AC-054 ~ AC-056 | TC-031 | 单元（interval allowlist + deterministic diff） |
+| FR-015 Depth Snapshot Tier | AC-057 ~ AC-059 | TC-032 | 单元 + REST/WS mock（snapshot first + gap resync） |
+| FR-016 Historical Backfill on Cold Start | AC-060 ~ AC-062 | TC-033 | 单元（watermark diff + bounded job queue） |
+| FR-017 Gap Detection & Fill | AC-063 ~ AC-065 | TC-034 | 单元（sequence/time gap → task → status） |
+| FR-018 Backfill Throttle & Priority | AC-066 ~ AC-068 | TC-035 | 单元（live ingest priority + retry budget） |
+| FR-019 Backfill Idempotency Key Strategy | AC-069 ~ AC-071 | TC-036 | 单元（range/source/event_type key + conflict） |
+| FR-020 Funding Rate / Mark Price Stream | AC-072 ~ AC-074 | TC-037 | 单元（extension events + base 4×4 unchanged） |
+| FR-021 Daily Reconciliation Job | AC-075 ~ AC-077 | TC-038 | 单元（expected vs ingested report + alert） |
+| FR-022 Cold Data Rehydration | AC-078 ~ AC-080 | TC-039 | 单元（ossx catalog → warm store idempotent） |
+| FR-023 Backfill Progress API | AC-081 ~ AC-083 | TC-040 | httptest（job/symbol filter + stable error） |
+| FR-024 Symbol Subscription Hot Reload | AC-084 ~ AC-086 | TC-041 | 单元 + admin mock（add/remove/reload audit） |
 
-**AC 总数**：47（AC-001 ~ AC-047）· **TC 总数**：28（TC-001 ~ TC-028）· **覆盖率**：100%（FR→AC→TC 全链路闭合）
+**AC 总数**：86（AC-001 ~ AC-086）· **TC 总数**：41（TC-001 ~ TC-041）· **覆盖率**：100%（FR→AC→TC 全链路闭合）
 
 > AC 完整描述（验收标准文本）单点维护于 `TRACEABILITY.md §5`。本表只做 SPEC ↔ Traceability 双向锚点，遵循 `~/.claude/rules/ecc/matrix-scoring-rules.md §R1 跨表走查` 原则。
 
@@ -501,7 +696,7 @@ type MarketFactEnvelope struct {
 
 ### Server Storage / Fanout / API Surface
 
-Server persists Binance-specific facts through `taosx`（时序）、`clickhousex`（OLAP 分析）、`postgresx`（元数据）、`redisx`（缓存/幂等/锁）adapters, publishes accepted facts through `kafkax` topic `binance.market.*`, and exposes Gin REST `GET /api/v1/market/*` for market_data pull access. `market_data` consumes Binance facts through these surfaces; it does not own Binance persistence.
+Server persists Binance-specific facts through `taosx`（时序）、`clickhousex`（OLAP 分析）、`postgresx`（元数据）、`redisx`（缓存/幂等/锁）adapters, publishes accepted facts through `kafkax` topic `binance.{product_line}.{event_type}.v1`, and exposes Gin REST `GET /api/v1/market/*` for market_data pull access. `market_data` consumes Binance facts through these surfaces; it does not own Binance persistence.
 
 ---
 
@@ -685,7 +880,7 @@ server_unavailable
 | `kafka.auth.mechanism` | `string` | `SASL_PLAINTEXT` | 认证机制 |
 | `kafka.auth.username` | `string` | `admin` | Kafka 用户名 |
 | `kafka.auth.password_env` | `string` | `KAFKA_PASSWORD` | Kafka 密码环境变量名 |
-| `kafka.topic_prefix` | `string` | `binance.market` | topic 前缀 |
+| `kafka.topic_prefix` | `string` | `binance` | topic 前缀；最终 topic 为 `binance.{product_line}.{event_type}.v1` |
 | `kafka.compression` | `string` | `snappy` | 消息压缩算法 |
 | `kafka.retry.max` | `int` | `3` | 发送失败最大重试次数 |
 | `kafka.required_acks` | `string` | `all` | 生产者 ACK 级别 |
@@ -887,9 +1082,9 @@ github.com/ZoneCNH/binance/
 | TC-013 | FR-007 | httptest | `GET /api/v1/market/depth/{instrument_key}` | redisx cache hit 返回最新快照 |
 | TC-014 | FR-007 | httptest | 无效 API key | 返回 401 |
 | TC-015 | FR-007 | httptest | 请求超过限流 | 返回 429 + Retry-After |
-| TC-016 | FR-008 | 单元 | 超 retention 数据归档 | 先写 `ossx`，ETag 校验通过后删 `taosx` |
-| TC-017 | FR-008 | 单元 | 生成归档路径 | 路径符合 `binance/{product_line}/{symbol}/{YYYY}/{MM}/{DD}/{event_type}.parquet` |
-| TC-018 | FR-008 | 单元 | kafkax topic 与 partition key | topic 为 `binance.market.{product_line}.{event_type}`，key 为 symbol |
+| TC-016 | FR-006d | 单元 | 超 retention 数据归档 | 先写 `ossx`，ETag 校验通过后删 `taosx` |
+| TC-017 | FR-006d | 单元 | 生成归档路径 | 路径符合 `binance/{product_line}/{symbol}/{YYYY}/{MM}/{DD}/{event_type}.parquet` |
+| TC-018 | FR-008 | 单元 | kafkax topic 与 partition key | topic 为 `binance.{product_line}.{event_type}.v1`，key 为 symbol |
 | TC-019 | FR-008 | 单元 | `kafkax` 不可达 | 返回 error，未完成 handoff 前不 Ack |
 | TC-020 | FR-009 | CI | server import `internal/client` 或 `internal/cs` | boundary gate 失败 |
 | TC-021 | FR-009 | CI | reintroduce `binance-market` 引用 | no-legacy gate 失败 |
@@ -1184,10 +1379,10 @@ Binance Exchange (REST/WebSocket)
 | AC-BNC-006 | FR-006a              | taosx WriteBatch 写入 tick/bar/depth 到对应超级表子表；失败时不 Ack 并 NakWithDelay(5s)                       | TC-009, TC-011                        | Approved |
 | AC-BNC-007 | FR-006b              | postgresx 通过 `ON CONFLICT DO UPDATE` 幂等 upsert `binance_instruments` 表，不可达时返回 error              | TC-010                                | Approved |
 | AC-BNC-008 | FR-006c              | redisx 热缓存 SET(tick, 60s) / SET(depth, 5s) 成功；失败时降级到 taosx 直查，不阻塞主管线                    | TC-023                                | Approved |
-| AC-BNC-009 | FR-006d, FR-008      | ossx 归档路径 `binance/{product_line}/{symbol}/{YYYY}/{MM}/{DD}/{event_type}.parquet`；ETag 校验通过才删 taosx 热数据 | TC-016, TC-017                        | Approved |
+| AC-BNC-009 | FR-006d              | ossx 归档路径 `binance/{product_line}/{symbol}/{YYYY}/{MM}/{DD}/{event_type}.parquet`；ETag 校验通过才删 taosx 热数据 | TC-016, TC-017                        | Approved |
 | AC-BNC-010 | FR-007               | `GET /api/v1/market/{ticks,bars,depth,trades}/:symbol` 走 redisx 热缓存优先，cache miss 回退 taosx；无效 token 返回 401，超限返回 429 | TC-012, TC-013, TC-014, TC-015        | Approved |
 | AC-BNC-011 | FR-007a, FR-010      | clickhousex analytics API（vwap/top-movers/correlation/volume-profile）通过 OLAP 查询返回结果；不可达返回 503，实时 API 不受影响 | TC-024, TC-025, TC-026                | Approved |
-| AC-BNC-012 | FR-008               | server storage 全部成功后 kafkax Send 到 `binance.market.{product_line}.{event_type}`，key=symbol；handoff 完成前不得 Ack | TC-018, TC-019                        | Approved |
+| AC-BNC-012 | FR-008               | server storage 全部成功后 kafkax Send 到 `binance.{product_line}.{event_type}.v1`，key=symbol；handoff 完成前不得 Ack | TC-018, TC-019                        | Approved |
 | AC-BNC-013 | FR-009, BR-002, BR-003 | CI boundary gate 拦截 client→server internal import / server→client internal import / `internal/cs` 引用 / `binance-market` 引用 | TC-020, TC-021, TC-022                | Approved |
 | AC-BNC-014 | FR-010               | ETL scheduler 每 5 分钟从 taosx 聚合 1m_ohlcv/5m_vwap/15m_stats 写入 clickhousex；失败时跳过本批次不阻塞热路径 | TC-025, TC-026                        | Approved |
 | AC-BNC-015 | FR-011               | redisx SetNX 分布式锁竞选 coordinator；成功者启动 ETL+归档，每 10s 续期 lease；失败时主动 Del 或 lease 过期由 standby 接管 | TC-027, TC-028                        | Approved |

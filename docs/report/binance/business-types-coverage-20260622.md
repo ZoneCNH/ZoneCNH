@@ -45,7 +45,7 @@
 | 1 | Binance runtime 基础代码可编译 | 通过 | `/home/binance` 执行 `go test ./...` 通过 |
 | 2 | `BinanceAdapter` 满足 `domain_exchange.VenueAdapter` | 通过 | `/home/binance/pkg/binancex` 测试通过；execution 方法使用 `VenueExecution` |
 | 3 | C/S 边界 gate 可真实运行 | 通过 | `/home/binance/scripts/boundary-gates.sh` 输出 10 passed, 0 failed |
-| 4 | 旧 `internal/cs` / 同进程 adapter 已移除 | 通过 | runtime SHA `bae80d6` 删除 `internal/cs/`；CI [boundary-gates.yml](https://github.com/ZoneCNH/binance/actions/workflows/boundary-gates.yml) §5、§6 自动验证；runtime 迁移为 `internal/wire` |
+| 4 | 旧 `internal/cs` / 同进程 adapter 移除项已归档 | 历史已解决 | 该项保留为迁移历史，不再把单个历史短 SHA 或远端 workflow 当作主动 L2 证据；当前 L2 证据以本地 runtime HEAD SHA、boundary gates、`go test ./...` 和 smoke 输出为准 |
 | 5 | `domain_market` 与 `domain_exchange` 适配当前 `decimalx` API | 通过 | `/home/domain-market` 与 `/home/domain-exchange` 执行 `go test ./...` 通过 |
 | 6 | Binance runtime 直接依赖 gate 通过 | 通过 | boundary gate §11 通过；`natsx/redisx/postgresx/taosx/clickhousex/kafkax/ossx/gin` 保持 direct 依赖 |
 

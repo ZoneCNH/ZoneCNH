@@ -2,8 +2,8 @@
 
 `module/binance` is the Binance-specific Market Data C/S Module for ZoneCNH.
 
-- Spec-Version: v2.2.0 (root) / v2.1.1 (client) / v2.1.0 (server)
-- Last-Updated: 2026-06-22
+- Spec-Version: v2.2.3 (root) / v2.1.1 (client) / v2.1.0 (server)
+- Last-Updated: 2026-06-23
 
 It is split into two submodules:
 
@@ -19,6 +19,8 @@ module/binance/server
 It does not define the canonical market domain itself. Canonical semantics are owned by `module/domain_market`.
 
 It does not define transport-neutral wire/domain contracts itself. Runtime transport is `natsx`; canonical payload semantics are owned by `module/domain_market`.
+
+Root runtime naming follows `SPEC.md` §4.1 and the concrete transport projection in `RUNTIME-MAPPING.md`.
 
 It owns Binance-specific persistence, query API, and fanout needed to serve accepted Binance facts. It does not own generic cross-exchange market_data semantics or strategy behavior.
 
@@ -89,6 +91,8 @@ module/binance/server
 ## Read Next
 
 - `SPEC.md`
+- `STANDARD.md`
+- `DATA-LIFECYCLE.md`
 - `BOUNDARY-GATES.md`
 - `RUNTIME-MAPPING.md`
 - `client/SPEC.md`

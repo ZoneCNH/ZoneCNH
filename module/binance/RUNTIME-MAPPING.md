@@ -1,9 +1,9 @@
-# module/binance RUNTIME MAPPING v2.0.0
+# module/binance RUNTIME MAPPING v2.2.3
 
-> 版本：v2.0.0
-> 更新日期：2026-06-21
+> 版本：v2.2.3
+> 更新日期：2026-06-23
 > 替代：v1.0.0（gRPC + SQLite spool 架构）
-> 参见：`DEEP-ANALYSIS.md`（架构决策全文）
+> 参见：`SPEC.md` §4.1、`NAMING.md`、`DEEP-ANALYSIS.md`（架构决策全文）
 
 ---
 
@@ -209,14 +209,14 @@ Stream: BINANCE_MARKET
 Retention: 7d  Storage: file  Replicas: 1 (生产升 3)
 
 Subjects:
-  binance.market.spot.tick         binance.market.spot.bar
+  binance.market.spot.tick         binance.market.spot.kline
   binance.market.spot.depth        binance.market.spot.trade
-  binance.market.um_perp.tick      binance.market.um_perp.bar
-  binance.market.um_perp.depth
-  binance.market.cm_perp.tick      binance.market.cm_perp.bar
-  binance.market.cm_perp.depth
-  binance.market.options.tick      binance.market.options.bar
-  binance.market.options.depth
+  binance.market.um_perp.tick      binance.market.um_perp.kline
+  binance.market.um_perp.depth     binance.market.um_perp.trade
+  binance.market.cm_perp.tick      binance.market.cm_perp.kline
+  binance.market.cm_perp.depth     binance.market.cm_perp.trade
+  binance.market.options.tick      binance.market.options.kline
+  binance.market.options.depth     binance.market.options.trade
 
 Server Consumer:
   Durable: binance-server  AckPolicy: explicit  AckWait: 30s  MaxDeliver: 5
@@ -227,11 +227,18 @@ Server Consumer:
 ## 8. kafkax Topic 规范
 
 ```
+Topic format:
+  binance.{product_line}.{event_type}.v1
+
 Topics:
-  binance.market.ticks    实时逐笔（按 symbol hash 分区）
-  binance.market.bars     K 线
-  binance.market.depth    深度
-  binance.market.events   状态变更
+  binance.spot.tick.v1       binance.spot.kline.v1
+  binance.spot.depth.v1      binance.spot.trade.v1
+  binance.um_perp.tick.v1    binance.um_perp.kline.v1
+  binance.um_perp.depth.v1   binance.um_perp.trade.v1
+  binance.cm_perp.tick.v1    binance.cm_perp.kline.v1
+  binance.cm_perp.depth.v1   binance.cm_perp.trade.v1
+  binance.options.tick.v1    binance.options.kline.v1
+  binance.options.depth.v1   binance.options.trade.v1
 
 Consumer Groups:
   signal_engine  risk_engine  backtestx  market_regime
