@@ -1,4 +1,7 @@
 {
+  "env": {
+    "WORKTREE_GC_AUTO": "1"
+  },
   "hooks": {
     "PostToolUse": [
       {
