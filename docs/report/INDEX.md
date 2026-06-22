@@ -8,6 +8,7 @@
 
 | 报告 | 日期 | 主题 | 综合评分 |
 |---|---|---|:---:|
+| [binance/goal-execution-plan-20260622.md](./binance/goal-execution-plan-20260622.md) | 2026-06-22 | binance Goal 执行方案（82→95 分，7 阶段 × 9 AC × 26 issues，遵循 docs/goal/02-goal-standard.md） | — |
 | [binance/iteration-plan-20260622.md](./binance/iteration-plan-20260622.md) | 2026-06-22 | binance 完整更新迭代方案（5 份报告 + 8 issues 收敛，27 项 backlog，7 阶段路线） | — |
 | [binance/deep-analysis-20260622-v4.md](./binance/deep-analysis-20260622-v4.md) | 2026-06-22 | binance 历史数据 vs 实时数据缺口（13 条建议 FR: FR-012~FR-024） | — |
 | [binance/deep-analysis-20260622-v3.md](./binance/deep-analysis-20260622-v3.md) | 2026-06-22 | binance 治理漂移分析（命名 SSOT、Kafka topic、任务引用、状态口径） | — |
@@ -47,6 +48,7 @@
 
 | 日期 | 变更 |
 |---|---|
+| 2026-06-22 | 新增 `binance/goal-execution-plan-20260622.md`：Goal 执行方案（82→95 分，9 AC，7 阶段 × 26 issues，遵循 docs/goal/02-goal-standard.md） |
 | 2026-06-22 | 新增 `binance/iteration-plan-20260622.md`：5 份报告 + 8 issues 收敛为 27 项 backlog + 7 阶段路线；补索引 v3/v4 条目 |
 | 2026-06-22 | 新增 binance 深度分析 v3（治理漂移）+ v4（历史/实时数据缺口，13 条建议 FR-012~024）via PR #877 |
 | 2026-06-22 | 新增 `binance/business-types-coverage-20260622.md`：业务类型覆盖深度分析 + Options depth 缺口（HIGH）+ 命名漂移（HIGH，3 套命名击穿 5 条管线）+ Runtime 核对建议（6 项 gh 命令清单） |
