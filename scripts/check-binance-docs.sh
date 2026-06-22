@@ -17,6 +17,8 @@ require_file() {
 }
 
 SPEC="module/binance/SPEC.md"
+ROOT_README="README.md"
+MODULE_INDEX="module/README.md"
 README="module/binance/README.md"
 STANDARD="module/binance/STANDARD.md"
 DATA_LIFECYCLE="module/binance/DATA-LIFECYCLE.md"
@@ -37,7 +39,7 @@ ITERATION_PLAN="docs/report/binance/iteration-plan-20260622.md"
 COMMIT_COVERAGE="docs/report/binance/commit-coverage-audit-20260623.md"
 GOVERNANCE_CLOSURE="docs/report/binance/governance-closure-20260623.md"
 
-for doc in "$SPEC" "$README" "$STANDARD" "$DATA_LIFECYCLE" "$FEATURES" "$GOAL" "$DEEP_ANALYSIS" "$ACCEPTANCE" "$TRACEABILITY" "$RUNTIME_MAPPING" "$NAMING" "$RULES" "$SERVER_SPEC" "$TASK_KAFKA" "$MIGRATION" "$REPORT_INDEX" "$BINANCE_REPORT_INDEX" "$ITERATION_PLAN" "$COMMIT_COVERAGE" "$GOVERNANCE_CLOSURE"; do
+for doc in "$SPEC" "$ROOT_README" "$MODULE_INDEX" "$README" "$STANDARD" "$DATA_LIFECYCLE" "$FEATURES" "$GOAL" "$DEEP_ANALYSIS" "$ACCEPTANCE" "$TRACEABILITY" "$RUNTIME_MAPPING" "$NAMING" "$RULES" "$SERVER_SPEC" "$TASK_KAFKA" "$MIGRATION" "$REPORT_INDEX" "$BINANCE_REPORT_INDEX" "$ITERATION_PLAN" "$COMMIT_COVERAGE" "$GOVERNANCE_CLOSURE"; do
   require_file "$doc"
 done
 
@@ -51,6 +53,10 @@ acceptance_version="$(sed -n 's/^| Module-Version | \(v[0-9][0-9.]*\) |$/\1/p' "
 grep -Fq "Spec-Reference: \`module/binance/SPEC.md\` $spec_version" "$TRACEABILITY" || fail "$TRACEABILITY Spec-Reference does not match $spec_version"
 pass "Binance root doc versions match $spec_version"
 
+grep -Fq "spec $spec_version Approved" "$ROOT_README" || fail "$ROOT_README missing binance spec $spec_version projection"
+grep -Fq "spec $spec_version Approved" "$MODULE_INDEX" || fail "$MODULE_INDEX missing binance spec $spec_version projection"
+pass "root README projections match $spec_version"
+
 grep -Fq "### 4.1 分布式运行约束" "$SPEC" || fail "$SPEC missing canonical distributed runtime constraints section"
 grep -Fq '| R1 | `binance-client` 与 `binance-server` 不得共享 Go interface 或内存。 |' "$SPEC" || fail "$SPEC missing R1 independent process constraint"
 if grep -Fq "见 §0" "$SPEC"; then
@@ -63,11 +69,12 @@ event_types=(tick trade bar depth funding_rate mark_price)
 
 for product_line in "${product_lines[@]}"; do
   for event_type in "${event_types[@]}"; do
+    grep -Fq "binance.market.${product_line}.${event_type}" "$SPEC" || fail "missing natsx subject binance.market.${product_line}.${event_type} in $SPEC"
     grep -Fq "binance.market.${product_line}.${event_type}" "$RUNTIME_MAPPING" || fail "missing natsx subject binance.market.${product_line}.${event_type} in $RUNTIME_MAPPING"
     grep -Fq "binance.${product_line}.${event_type}.v1" "$RUNTIME_MAPPING" || fail "missing Kafka topic binance.${product_line}.${event_type}.v1 in $RUNTIME_MAPPING"
   done
 done
-pass "RUNTIME-MAPPING has complete 4x6 natsx subjects and Kafka topics"
+pass "SPEC and RUNTIME-MAPPING have complete 4x6 natsx subjects and Kafka topics"
 
 legacy_topics="$(grep -nE 'binance\.market\.(ticks|bars|depth|events)\b' "$RUNTIME_MAPPING" "$NAMING" "$SPEC" "$ACCEPTANCE" "$TRACEABILITY" "$SERVER_SPEC" "$TASK_KAFKA" || true)"
 if [ -n "$legacy_topics" ]; then
