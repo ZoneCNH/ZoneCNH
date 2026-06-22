@@ -3,24 +3,23 @@
 所有 notable 变更记录，按 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/) 格式维护。
 
 - Doc-Version: v2.2.3
-- Last-Updated: 2026-06-22
-- Spec-Reference: `module/binance/SPEC.md` v2.2.2
+- Last-Updated: 2026-06-23
+- Spec-Reference: `module/binance/SPEC.md` v2.2.3
 - 治理规则：`module/binance/RULES.md` R9 文档存在性
 
 ---
 
-## [v2.2.3] — 2026-06-22
+## [v2.2.3] — 2026-06-23
 
 ### Changed
-- TRACEABILITY FR-009 状态附 runtime SHA `bae80d6` + CI workflow URL（runtime PR ZoneCNH/binance#9 合并）
-- ARCHITECTURE-DRIFT-WATCHLIST D8 风险级别 MEDIUM → LOW（CI 已自动化）
-- 业务报告 §Runtime 核对结果 第 4 项证据升级为 runtime commit + CI workflow URL
+- runtime 证据锚定到 SHA `f30322e00794f9f0af7353c4f8e1cd2b6cc398b3`
+- 文档投影同步本地 boundary-gates、`go test`、smoke 检查证据
+- Kafka fanout topic 从旧聚合口径收敛为 `binance.{product_line}.{event_type}.v1`
 
-### Removed (runtime 仓)
-- runtime 仓 `internal/cs/` 目录（doc.go + types.go），满足 BR-005 No cs Package
+### Evidence
 
-### Added (runtime 仓)
-- runtime 仓 `.github/workflows/boundary-gates.yml`（9 道 boundary gate 自动化），满足 RULES.md R10
+- 已有：本地 boundary-gates 通过、本地 `go test` 通过、本地 smoke 通过
+- 未提供：live/prod/race/vet/lint/secret/GitHub CI/release 证据
 
 ---
 
@@ -164,6 +163,7 @@
 
 | 版本 | SPEC | TRACEABILITY | 关键变更 |
 |------|------|-------------|----------|
+| v2.2.3 | v2.2.3 | v2.2.3 | runtime SHA 与本地验证证据投影 + Kafka topic v1 命名收敛 |
 | v2.2.2 | v2.2.2 | v2.2.2 | CHANGELOG 新建 + 版本号全量对齐 |
 | v2.2.1 | v2.2.0 | v2.2.1 | Boundary gate 证据回填 |
 | v2.2.0 | v2.2.0 | v2.2.0 | 命名收敛 + Options depth 补全 |
@@ -177,6 +177,7 @@
 
 | 日期 | 版本 | 变更内容 | 作者 |
 |------|------|----------|------|
+| 2026-06-23 | v2.2.3 | runtime SHA `f30322e00794f9f0af7353c4f8e1cd2b6cc398b3` + 本地 boundary-gates/go test/smoke 证据投影；明确无 live/prod/race/vet/lint/secret/GitHub CI/release 证据 | ZoneCNH |
 | 2026-06-22 | v2.2.2 | 新建 CHANGELOG + ACCEPTANCE/FEATURES/IMPLEMENTATION-PLAN 版本号同步到 v2.2.2 | ZoneCNH |
 | 2026-06-22 | v2.2.1 | Boundary gate evidence 回填 + 5 个 v2.0.0 前 task 归档 | ZoneCNH |
 | 2026-06-22 | v2.2.0 | 命名收敛 + Options/cm_perp depth 补全 + 状态口径修复 | ZoneCNH |
