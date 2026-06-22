@@ -2,10 +2,25 @@
 
 所有 notable 变更记录，按 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/) 格式维护。
 
-- Doc-Version: v2.2.2
+- Doc-Version: v2.2.3
 - Last-Updated: 2026-06-22
 - Spec-Reference: `module/binance/SPEC.md` v2.2.2
 - 治理规则：`module/binance/RULES.md` R9 文档存在性
+
+---
+
+## [v2.2.3] — 2026-06-22
+
+### Changed
+- TRACEABILITY FR-009 状态附 runtime SHA `bae80d6` + CI workflow URL（runtime PR ZoneCNH/binance#9 合并）
+- ARCHITECTURE-DRIFT-WATCHLIST D8 风险级别 MEDIUM → LOW（CI 已自动化）
+- 业务报告 §Runtime 核对结果 第 4 项证据升级为 runtime commit + CI workflow URL
+
+### Removed (runtime 仓)
+- runtime 仓 `internal/cs/` 目录（doc.go + types.go），满足 BR-005 No cs Package
+
+### Added (runtime 仓)
+- runtime 仓 `.github/workflows/boundary-gates.yml`（9 道 boundary gate 自动化），满足 RULES.md R10
 
 ---
 

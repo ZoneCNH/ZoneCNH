@@ -111,8 +111,7 @@ grep -oP "Spec-Version: \Kv[0-9.]+" module/binance/SPEC.md
 
 ## D8. Boundary gate 输出与 BR 状态不匹配
 
-**风险级别**：MEDIUM
-**历史**：BR-001/002/003 长期标 Pending 但 boundary-gates.sh 已 PASS（待 PR-C 回填）
+**风险级别**：LOW（PR-D 已修复，CI workflow [boundary-gates.yml](https://github.com/ZoneCNH/binance/actions/workflows/boundary-gates.yml) 已集成，runtime SHA `bae80d6`）
 **违反规则**：R4
 **检测命令**（需 runtime 仓）：
 ```bash

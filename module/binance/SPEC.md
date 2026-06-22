@@ -3,7 +3,7 @@
 ## 1. Metadata
 
 - Status: Approved
-- Spec-Version: v2.2.2
+- Spec-Version: v2.2.3
 - Last-Updated: 2026-06-22
 - Owner: ZoneCNH
 - Layer: 数据域 · 行情
