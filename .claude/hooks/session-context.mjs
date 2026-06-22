@@ -318,7 +318,8 @@ if (existsSync(worktreeBase)) {
     // === #11: 僵尸 dirty worktree 告警 ===
     // 分支已合入 main 但工作区有未提交改动的 worktree——GC 跳过保护，但需醒目告警
     // 提示用户 commit/discard 后才能清理。信息护栏，不阻塞。
-    const zombieMerged = mergedStale.filter((m) => m.dirty);
+    // 注意：mergedStale 元素无 dirty 属性（dirty 在内层 tagged 上），此处用 hasUncommittedChanges 重检。
+    const zombieMerged = mergedStale.filter((m) => hasUncommittedChanges(m.path));
     if (zombieMerged.length > 0) {
       lines.push("---");
       lines.push("🧟 僵尸 dirty worktree（分支已合入 main 但有未提交改动）：" + zombieMerged.length + " 个");
