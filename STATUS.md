@@ -239,7 +239,7 @@
 
 | 组件                                                          | 版本         | 进度    | 覆盖率要求 | 说明                                                                |
 | ------------------------------------------------------------- | ------------ | ------- | ---------- | ------------------------------------------------------------------- |
-| [signal_factory](https://github.com/ZoneCNH/signal_factory)   | v0.1.0       | ████ 40% | 100%       | 信号生成工厂，消费 DecisionCard→SignalIntent[]，冲突门+强度映射，5 tests PASS |
+| [signal_factory](https://github.com/ZoneCNH/signal_factory)   | v0.1.0       | ████ 40% | 100%       | 信号生成工厂，消费 DecisionCard→SignalIntent[]，冲突门+强度映射，5 tests PASS；SPEC v1.0.0 已补全（386 行 23 节完整，PR #847） |
 | [optimizer](https://github.com/ZoneCNH/optimizer)             | v0.1.0       | ░░░░ 5% | 100%       | 参数优化                                                            |
 | [backtestx](https://github.com/ZoneCNH/backtestx)             | v0.1.0-draft | ░░░░ 5% | 100%       | 回测引擎 — 事件驱动回测、Walk-Forward、蒙特卡洛（7 FR, SPEC draft） |
 | [strategyx](https://github.com/ZoneCNH/strategyx)             | v0.1.0-draft | ░░░░ 5% | 100%       | 策略工厂 — 策略注册、参数管理、信号组合（7 FR, SPEC draft）         |
@@ -250,7 +250,7 @@
 
 | 模块            | SPEC | IMPL | RELEASE | LIVE INT | EXT CI | ADOPT | SOAK | FACTORY | 备注                           |
 | --------------- | :--: | :--: | :-----: | :------: | :----: | :---: | :--: | :-----: | ------------------------------ |
-| signal_factory  |  ❌  |  ⚠️  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | v0.1.0；40% 骨架，DecisionCard→SignalIntent，5 tests PASS |
+| signal_factory  |  ✅  |  ⚠️  |   ✅    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | v0.1.0；40% 骨架；SPEC v1.0.0 23 节完整（PR #847）；DecisionCard→SignalIntent，5 tests PASS |
 | backtest_engine | — | — | — | — | — | — | — | 已移除 | 2026-06-22 从 module/ 物理移除（迁移至 backtestx） |
 | optimizer       |  ❌  |  ❌  |   N/A   |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | 5%；仅创建，无实现             |
 | backtestx       |  ❌  |  ❌  |   N/A   |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | v0.1.0-draft；7 FR，SPEC draft |

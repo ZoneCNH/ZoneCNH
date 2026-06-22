@@ -127,7 +127,7 @@ composer (Composition Root) ──► bootstrap.Build(ctx, Spec)
 | optimizer      |  76  | 存根 |
 | factor_eval    |  94  | 存根 |
 | settlement     |  77  | 存根 |
-| signal_factory |  82  | 存根 |
+| signal_factory | 82 → **386** | ✅ 已补全（PR #847） |
 | regime_engine  |  87  | 存根 |
 | feature_store  | 177  | 半成 |
 | factor_engine  | 310  | 半成 |
