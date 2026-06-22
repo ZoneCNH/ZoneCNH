@@ -89,6 +89,7 @@ module/binance/server
 ## Read Next
 
 - `SPEC.md`
+- `DATA-LIFECYCLE.md`（FR-012~FR-024 讨论稿，定稿后再 fold into SPEC）
 - `BOUNDARY-GATES.md`
 - `RUNTIME-MAPPING.md`
 - `client/SPEC.md`
