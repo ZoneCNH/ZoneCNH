@@ -65,7 +65,9 @@
 - Consumer Group（server 多实例竞争消费，每条消息只处理一次）
 - ACK 超时自动重投（server 宕机后重新投递给健康实例）
 
-### 0.4 当前代码的违规清单
+### 0.4 当前 runtime 违规清单（2026-06-22 复核）
+
+> **2026-06-22 runtime 复核**：`/home/binance` 仍存在 `internal/cs` import，见 `internal/server/server.go`、`internal/server/ingest.go`、`internal/client/sender.go`、`internal/client/spool.go`、`cmd/binance-smoke/main.go` 及相关测试；`scripts/boundary-gates.sh` 已包含 "no internal/cs runtime dependency" gate。runtime 工作区存在既有未提交变更（`go.mod`、`go.sum`、`scripts/boundary-gates.sh`），本节仅记录阻断证据，不声明 runtime 已修复。
 
 ```go
 // ❌ 违规：internal/cs/types.go
