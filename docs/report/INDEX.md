@@ -8,6 +8,9 @@
 
 | 报告 | 日期 | 主题 | 综合评分 |
 |---|---|---|:---:|
+| [binance/business-types-coverage-20260622.md](./binance/business-types-coverage-20260622.md) | 2026-06-22 | binance 业务类型覆盖（Spot/合约/期权/订单簿）+ Options depth 缺口与命名漂移识别 | — |
+| [binance/deep-analysis-20260622-v2.md](./binance/deep-analysis-20260622-v2.md) | 2026-06-22 | binance 模块修复链复盘与 runtime 阻断复核 | 82/100 (B+) |
+| [branch-governance-audit-20260622.md](./branch-governance-audit-20260622.md) | 2026-06-22 | Git 分支治理、同步与工作树审计 | — |
 | [architecture-structural-analysis-20260622.md](./architecture-structural-analysis-20260622.md) | 2026-06-22 | 架构深度分析与 P0 修复（entropy 迁移、4 占位移除） | 68/100 (C) |
 | [architecture-deep-analysis-20260621-v2.md](./architecture-deep-analysis-20260621-v2.md) | 2026-06-21 | 跨文档版本一致性审计 v2 | 71/100 (B) |
 | [architecture-structural-analysis-20260621.md](./architecture-structural-analysis-20260621.md) | 2026-06-21 | 早间结构性分析（v2 前身） | 68.6/100 (C) |
@@ -19,6 +22,7 @@
 
 | 路径 | 说明 |
 |---|---|
+| [`binance/`](./binance/) | binance 模块深度分析（v2 为当前权威；v1 保留 PR #850 基线） |
 | [`goal/`](./goal/) | Goal 文档分析（2026-06-09 收尾，含 ISSUE-LEDGER 与 README） |
 | [`archive/`](./archive/) | 历史档案区（已收敛的过程草稿） |
 | [`archive/xlib-20260608/`](./archive/xlib-20260608/) | xlib_standard 2026-06-08 单日多次产出（0341/0446/0459/0513/0530/0602 六个时间戳版本 + score-team），共 12 文件，已归档 |
@@ -40,5 +44,6 @@
 
 | 日期 | 变更 |
 |---|---|
-| 2026-06-22 | 新增 `binance-module-deep-analysis-20260622.md`（PR #850）+ 后续 P0/P1 修复（PR #852）；评分 68→~80 |
+| 2026-06-22 | 新增 `binance/business-types-coverage-20260622.md`：业务类型覆盖深度分析 + Options depth 缺口（HIGH）+ 命名漂移（HIGH，3 套命名击穿 5 条管线）+ Runtime 核对建议（6 项 gh 命令清单） |
+| 2026-06-22 | 新增 binance 深度分析 v1/v2（`binance/deep-analysis-20260622.md`、`binance/deep-analysis-20260622-v2.md`）+ 后续 P0/P1 修复（PR #852/#853）；评分 68→82 |
 | 2026-06-22 | 创建 INDEX；归档 `xlib/` 13 文件至 `archive/xlib-20260608/`；区分权威报告与历史档案 |
