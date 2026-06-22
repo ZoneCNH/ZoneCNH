@@ -1134,7 +1134,36 @@ Binance Exchange (REST/WebSocket)
     └──────────────────┘
 ```
 
-## Appendix D: Upstream Contract Gate Closure
+## Appendix D: Acceptance Criteria Registry
+
+> 验收口径：本 Registry 锚定到 §7 Functional Requirements 与 §16 Testing TC 矩阵，每条 AC 必须能由一条 TC 或 CI Gate 直接验证。`Status` 字段对齐 §1 Metadata 的 Status=Approved。
+
+| AC ID      | FR/BR Ref            | Criterion                                                                                                    | Verification                          | Status   |
+| ---------- | -------------------- | ------------------------------------------------------------------------------------------------------------ | ------------------------------------- | -------- |
+| AC-BNC-001 | FR-001               | Spot / USDⓈ-M / COIN-M / Options 四产品线 connector 均可独立启停，配置禁用时不订阅对应 stream                | TC-001, integration test              | Approved |
+| AC-BNC-002 | FR-002               | parser 对 Spot `BTCUSDT` 与 USDⓈ-M `BTCUSDT` 输出不同 `InstrumentKey`，product_line/settlement/expiry 维度不碰撞 | TC-002, TC-003                        | Approved |
+| AC-BNC-003 | FR-003               | client 调用 `js.Publish(subj, jsonPayload)` 成功后必须收到 JetStream PubAck；Stream=`BINANCE_MARKET` Retention=7d | TC-004, BOUNDARY-GATES.md §3-§4       | Approved |
+| AC-BNC-004 | FR-004, BR-004       | server 仅在 redisx + taosx + postgresx + kafkax handoff 全部成功后调用 `msg.Ack()`，失败路径走 `NakWithDelay` | TC-006, BOUNDARY-GATES.md §9          | Approved |
+| AC-BNC-005 | FR-005, BR-008       | redisx SetNX 首次成功进入 storage/fanout；重复 key 同 payload 返回 idempotent ACK；payload 冲突返回 terminal_conflict | TC-007, TC-008                        | Approved |
+| AC-BNC-006 | FR-006a              | taosx WriteBatch 写入 tick/bar/depth 到对应超级表子表；失败时不 Ack 并 NakWithDelay(5s)                       | TC-009, TC-011                        | Approved |
+| AC-BNC-007 | FR-006b              | postgresx 通过 `ON CONFLICT DO UPDATE` 幂等 upsert `binance_instruments` 表，不可达时返回 error              | TC-010                                | Approved |
+| AC-BNC-008 | FR-006c              | redisx 热缓存 SET(tick, 60s) / SET(depth, 5s) 成功；失败时降级到 taosx 直查，不阻塞主管线                    | TC-023                                | Approved |
+| AC-BNC-009 | FR-006d, FR-008      | ossx 归档路径 `binance/{product_line}/{symbol}/{YYYY}/{MM}/{DD}/{event_type}.parquet`；ETag 校验通过才删 taosx 热数据 | TC-016, TC-017                        | Approved |
+| AC-BNC-010 | FR-007               | `GET /api/v1/market/{ticks,bars,depth,trades}/:symbol` 走 redisx 热缓存优先，cache miss 回退 taosx；无效 token 返回 401，超限返回 429 | TC-012, TC-013, TC-014, TC-015        | Approved |
+| AC-BNC-011 | FR-007a, FR-010      | clickhousex analytics API（vwap/top-movers/correlation/volume-profile）通过 OLAP 查询返回结果；不可达返回 503，实时 API 不受影响 | TC-024, TC-025, TC-026                | Approved |
+| AC-BNC-012 | FR-008               | server storage 全部成功后 kafkax Send 到 `binance.market.{product_line}.{event_type}`，key=symbol；handoff 完成前不得 Ack | TC-018, TC-019                        | Approved |
+| AC-BNC-013 | FR-009, BR-002, BR-003 | CI boundary gate 拦截 client→server internal import / server→client internal import / `internal/cs` 引用 / `binance-market` 引用 | TC-020, TC-021, TC-022                | Approved |
+| AC-BNC-014 | FR-010               | ETL scheduler 每 5 分钟从 taosx 聚合 1m_ohlcv/5m_vwap/15m_stats 写入 clickhousex；失败时跳过本批次不阻塞热路径 | TC-025, TC-026                        | Approved |
+| AC-BNC-015 | FR-011               | redisx SetNX 分布式锁竞选 coordinator；成功者启动 ETL+归档，每 10s 续期 lease；失败时主动 Del 或 lease 过期由 standby 接管 | TC-027, TC-028                        | Approved |
+| AC-BNC-016 | BR-005, BR-006, BR-007 | 模块不定义 canonical domain enum、不引入 `github.com/ZoneCNH/strategy`、不定义本地 proto/wire schema       | CI ownership/wire-contract gate       | Approved |
+| AC-BNC-017 | §19 Security         | 配置文件无明文凭据；所有 Secret 通过环境变量注入；日志/admin 端点不暴露 API Key/Signature；gitleaks 零命中    | CI gitleaks gate                      | Approved |
+| AC-BNC-018 | §17 Performance      | natsx PubAck P99 < 10ms、server consumer process P99 < 50ms、Gin /api/v1/market/ticks (redisx hit) P99 < 5ms | `go test -bench` + httptest benchmark | Approved |
+
+> Coverage：18 条 AC 覆盖 FR-001..FR-011（11/11）+ BR-002/BR-003/BR-004/BR-005/BR-006/BR-007/BR-008（7/9，其余 BR-001/BR-009 已由 §16 TC + §19 Admin Boundary 覆盖）+ §17/§19 NFR。
+
+---
+
+## Appendix E: Upstream Contract Gate Closure
 
 > 本节是 PR-007 运行时实现前的上游契约链闭合验证记录，原以 §0 形式置于文档前部，现按 23 节模板规整为附录 D。原内容完整保留，仅顶层标题变更。
 
