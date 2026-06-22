@@ -1,9 +1,9 @@
 # Binance 模块完整更新迭代方案
 
 - [COMPUTED, HIGH] 制定日期：2026-06-22
-- [COMPUTED, HIGH] 输入来源：`docs/report/binance/` 全部 5 份报告（v1/v2/v3/v4 + business-types）+ 现有 12 个开放 issue（#866~#873、#893~#896）+ `module/binance/` 治理文件基线
+- [COMPUTED, HIGH] 输入来源：`docs/report/binance/` 全部 5 份报告（v1/v2/v3/v4 + business-types）+ 本轮纳入的治理/漂移 issue（#866~#873、#879~#896）+ `module/binance/` 治理文件基线
 - [COMPUTED, HIGH] 目标：把分散在 5 份报告中的发现收敛为单一执行计划，并同步到 GitHub issues，形成可追溯的迭代 backlog
-- [INFERRED, HIGH] 不修改任何 `module/binance/` 受保护治理文件；本方案是规划文档，落地由各 issue 独立 PR 执行
+- [COMPUTED, HIGH] 2026-06-23 执行已同步 `module/binance/` 治理文件；本文件保留规划轨迹并记录本地关闭口径。
 
 ---
 
@@ -25,23 +25,23 @@
 | G-10 | v2 P2 | DEEP-ANALYSIS 62KB 体量过大，§12 旧代码审计应移 migrations/ | 🟢 P2 | #894 | CLOSED(local) |
 | G-11 | v2 P2 | legacy `binance-market` 30+ 处描述应压缩 | 🟢 P2 | #895 | CLOSED(local) |
 | G-12 | v2 P1 | 50 个 preserve/stash 类 commit 覆盖审计未做 | 🟢 P3 | #896 | PARTIAL(local audit) |
-| **R-01** | **v4 P0 实时控制面** | **Symbol Discovery & Filtering（FR-012）** | 🔴 P0 | — | **待建 issue** |
-| **R-02** | **v4 P0 实时控制面** | **WebSocket Connection Policy（FR-013）** | 🔴 P0 | — | **待建 issue** |
-| **R-03** | **v4 P0 实时控制面** | **Bar Interval Subscription Set（FR-014）** | 🔴 P0 | — | **待建 issue** |
-| **R-04** | **v4 P0 实时控制面** | **Depth Snapshot Tier（FR-015）** | 🔴 P0 | — | **待建 issue** |
-| **R-05** | **v4 P0 历史生命周期** | **Historical Backfill on Cold Start（FR-016）** | 🔴 P0 | — | **待建 issue** |
-| **R-06** | **v4 P0 历史生命周期** | **Gap Detection & Fill（FR-017）** | 🔴 P0 | — | **待建 issue** |
-| **R-07** | **v4 P0 历史生命周期** | **Backfill Throttle & Priority（FR-018）** | 🔴 P0 | — | **待建 issue** |
-| **R-08** | **v4 P0 历史生命周期** | **Backfill Idempotency Key Strategy（FR-019）** | 🔴 P0 | — | **待建 issue** |
+| **R-01** | **v4 P0 实时控制面** | **Symbol Discovery & Filtering（FR-012）** | 🔴 P0 | #880 | DATA-LIFECYCLE draft(local) |
+| **R-02** | **v4 P0 实时控制面** | **WebSocket Connection Policy（FR-013）** | 🔴 P0 | #881 | DATA-LIFECYCLE draft(local) |
+| **R-03** | **v4 P0 实时控制面** | **Bar Interval Subscription Set（FR-014）** | 🔴 P0 | #882 | DATA-LIFECYCLE draft(local) |
+| **R-04** | **v4 P0 实时控制面** | **Depth Snapshot Tier（FR-015）** | 🔴 P0 | #883 | DATA-LIFECYCLE draft(local) |
+| **R-05** | **v4 P0 历史生命周期** | **Historical Backfill on Cold Start（FR-016）** | 🔴 P0 | #884 | DATA-LIFECYCLE draft(local) |
+| **R-06** | **v4 P0 历史生命周期** | **Gap Detection & Fill（FR-017）** | 🔴 P0 | #885 | DATA-LIFECYCLE draft(local) |
+| **R-07** | **v4 P0 历史生命周期** | **Backfill Throttle & Priority（FR-018）** | 🔴 P0 | #886 | DATA-LIFECYCLE draft(local) |
+| **R-08** | **v4 P0 历史生命周期** | **Backfill Idempotency Key Strategy（FR-019）** | 🔴 P0 | #887 | DATA-LIFECYCLE draft(local) |
 | **R-09** | **v4 P1 周期数据** | **Funding Rate / Mark Price Stream（FR-020）** | 🟡 P1 | #888 | CLOSED(local，v3.0.0 taxonomy fold) |
-| **R-10** | **v4 P1 周期数据** | **Daily Reconciliation Job（FR-021）** | 🟡 P1 | — | 待建 issue |
-| **R-11** | **v4 P1 周期数据** | **Cold Data Rehydration（FR-022）** | 🟡 P1 | — | 待建 issue |
-| **R-12** | **v4 P2 治理** | **Backfill Progress API（FR-023）** | 🟢 P2 | — | 待建 issue |
-| **R-13** | **v4 P2 治理** | **Symbol Subscription Hot Reload（FR-024）** | 🟢 P2 | — | 待建 issue |
+| **R-10** | **v4 P1 周期数据** | **Daily Reconciliation Job（FR-021）** | 🟡 P1 | #889 | DATA-LIFECYCLE draft(local) |
+| **R-11** | **v4 P1 周期数据** | **Cold Data Rehydration（FR-022）** | 🟡 P1 | #890 | DATA-LIFECYCLE draft(local) |
+| **R-12** | **v4 P2 治理** | **Backfill Progress API（FR-023）** | 🟢 P2 | #891 | DATA-LIFECYCLE draft(local) |
+| **R-13** | **v4 P2 治理** | **Symbol Subscription Hot Reload（FR-024）** | 🟢 P2 | #892 | DATA-LIFECYCLE draft(local) |
 | G-13 | v4 §七 | funding_rate/mark_price event_type 扩展触发 RULES R2 4×6 矩阵重算 + MAJOR bump | 🔴 P0 | #888 | CLOSED(local，随 FR-020 折叠进 v3.0.0) |
-| G-14 | v4 §五 | 建议先建 `module/binance/DATA-LIFECYCLE.md` 讨论稿，再 fold 进 SPEC | 🟡 P1 | — | 待建 issue（R 系列前置） |
+| G-14 | v4 §五 | 建议先建 `module/binance/DATA-LIFECYCLE.md` 讨论稿，再 fold 进 SPEC | 🟡 P1 | #879 | CLOSED(local discussion draft) |
 
-**统计**：27 项。已有 issue 13 项（#866~#873、#888、#893~#896）；待建 issue 13 项（R-01~R-08、R-10~R-13、G-14）；G-13 已并入 #888 本地关闭口径。
+**统计**：27 项。已纳入唯一 GitHub issue 26 个（#866~#873、#879~#896）；G-13 已并入 #888 本地关闭口径。
 
 ---
 
@@ -52,7 +52,7 @@
 ### 阶段 0：治理漂移收敛（P0 文档面）
 
 - **范围**：G-01 ~ G-05（#866~#873 中的 P0 子集）
-- **目标**：版本元数据一致、4×4 矩阵闭合、Kafka topic 收敛、任务引用可解析、状态口径分层
+- **目标**：版本元数据一致、R2 命名矩阵闭合、Kafka topic 收敛、任务引用可解析、状态口径分层
 - **验证**：`scripts/check-binance-docs.sh`（G-06 落地后）全部 PASS
 - **bump**：MINOR（subject/topic 枚举变更 + 状态语义扩展）
 - **依赖**：无，可立即并行启动 5 个 PR
@@ -108,38 +108,19 @@
 
 ## 三、Issue 同步策略
 
-### 3.1 已有 issue（12 个，保持不动）
+### 3.1 已纳入 issue（26 个，不自动远程关闭）
 
-#866~#873 已覆盖 v3 全部 P0~P3 + v2 运行证据；#893~#896 已覆盖 v2 收尾治理项 G-09~G-12。仅在以下情况更新：
-- 阶段 0 完成时，给 #866/#867/#868/#872/#873 加 `closed-by PR #XXX` 评论
-- #870 检查脚本落地后，反哺 #866~#873 的验证命令
+#866~#873 覆盖 v3 治理漂移与 runtime 本地证据；#879 覆盖 DATA-LIFECYCLE 讨论稿；#880~#887、#889~#892 覆盖 FR-012~FR-019 与 FR-021~FR-024 的 lifecycle draft；#888 覆盖 FR-020/G-13 taxonomy fold；#893~#896 覆盖治理收尾项 G-09~G-12。
 
-### 3.2 待建 issue（13 个）
+仅在明确授权后执行远端评论或关闭：
+- #866/#867/#868/#872/#873 可附本地 drift 修复验证命令。
+- #879~#887、#889~#892 仅能声明 discussion draft 已存在，不得声明 Approved SPEC 或 runtime 实现完成。
+- #888 可声明 FR-020/G-13 已折叠进 SPEC v3.0.0 与 4×6 命名矩阵。
+- #896 仍需权威 GitHub PR/head 谱系，不能只凭本地审计关闭。
 
-**v2 收尾**：已由 #893~#896 覆盖，不再待建。
+### 3.2 待建 issue（0 个）
 
-**v4 前置（1 个，P1）**：
-- DATA-LIFECYCLE.md 讨论稿（G-14）
-
-**v4 实时控制面（4 个，P0）**：
-- FR-012 Symbol Discovery（R-01）
-- FR-013 WebSocket Connection Policy（R-02）
-- FR-014 Bar Interval Subscription Set（R-03）
-- FR-015 Depth Snapshot Tier（R-04）
-
-**v4 历史生命周期（4 个，P0）**：
-- FR-016 Historical Backfill（R-05）
-- FR-017 Gap Detection & Fill（R-06）
-- FR-018 Backfill Throttle & Priority（R-07）
-- FR-019 Backfill Idempotency Key Strategy（R-08）
-
-**v4 周期数据（2 个，P1）**：
-- FR-021 Daily Reconciliation Job（R-10）
-- FR-022 Cold Data Rehydration（R-11）
-
-**v4 治理（2 个，P2）**：
-- FR-023 Backfill Progress API（R-12）
-- FR-024 Symbol Subscription Hot Reload（R-13）
+本轮报告收敛项已全部映射到 #866~#873 与 #879~#896。后续只有当 FR draft 进入实现或 Release DoD 时，才新建实现型 issue。
 
 ### 3.3 标签体系
 
@@ -158,15 +139,19 @@
 ```
 当前: SPEC v3.0.0 / client v2.1.1 / server v2.1.0 / RULES v2.0.0 / NAMING v2.0.0
 
-阶段 0/1 已完成: 已纳入 v2.2.4/v3.0.0 本地治理收敛，不再产生低于 v3.0.0 的后续版本
-阶段 2 完成: 无 bump (讨论稿)
-阶段 3 完成: 下一 MINOR (FR-012~015)
-阶段 4 完成: 下一 MINOR (FR-016~019)
-阶段 5 完成: 下一 MINOR/PATCH (FR-021~022；FR-020 已由 v3.0.0 taxonomy fold 承载)
-阶段 6 完成: 下一 MINOR (FR-023~024 + STANDARD.md)
+已纳入当前版本:
+- 阶段 0/1: subject/topic 收敛、状态分层、检查脚本文档化。
+- 阶段 2: DATA-LIFECYCLE discussion draft，无 SPEC bump。
+- G-13/R-09/FR-020: SPEC v3.0.0 MAJOR taxonomy fold，event_type 4→6。
+
+后续版本不得回退到 v2.x:
+- 阶段 3: FR-012~015 fold 后使用 v3.0.0 之后的 next MINOR。
+- 阶段 4: FR-016~019 fold 后使用 v3.0.0 之后的 next MINOR。
+- 阶段 5: FR-021~022 视公开合同扩展范围使用 next MINOR 或 PATCH；FR-020 不再重复规划。
+- 阶段 6: FR-023~024 若形成公开治理 API，使用 next MINOR；仅标准入口补文档时使用 PATCH。
 ```
 
-> [COMPUTED, HIGH] RULES.md R3 规定 event_type 枚举变更触发 MAJOR。FR-020 已作为唯一 MAJOR 节点在 SPEC v3.0.0 落地；后续阶段继承 4×6 矩阵，不再回退到 4×4。
+> [COMPUTED, HIGH] RULES.md R3 规定 event_type 枚举变更触发 MAJOR。FR-020/G-13 已由 SPEC v3.0.0 承载，R2 4×N 矩阵已重算为 N=6、组合数 24；后续规划不得再把 4→6 当作待落地变更。
 
 ---
 
@@ -175,14 +160,14 @@
 ### 5.1 风险
 
 - 🔴 **阶段 3 在阶段 0 未收敛时启动**：在漂移基线上叠新 FR，会让 #866/#868 的修复更难（subject/topic 表又要改一遍）。**必须阶段 0 先合并**
-- 🟡 **后续阶段回退 4×6 矩阵**：FR-020/#888 已由 SPEC v3.0.0 承载；FR-021/FR-022 若按旧 4 类 event_type 编写，会破坏 RULES R2 的 4×6 硬约束
+- 🔴 **v3.0.0 taxonomy 回退风险**：若后续文档或 runtime mapping 重新退回 4 类 event_type，或使用 `funding` 等旧混合命名替代 `funding_rate`/`mark_price`，RULES R2/R3 硬约束违规
 - 🟡 **runtime 发布证据仍分层**（#869）：2026-06-23 从 `/home/binance` 重新取得 clean short status、boundary gates PASS 10/10、`go test ./...`、`go vet ./...`、race test 和 `golangci-lint run` 通过证据；Release DoD 仍需远端 CI、release tag、live smoke/deploy 证据。
 - 🟡 **v5 报告丢失**（212 行清洗/处理缺口）：v4 已含 13 条 FR 核心结论，但 C1-C8 清洗缺口、P1-P7 处理问题、G1-G4 缺口分类的细节无法恢复；阶段 3/4 落地时需重新推导这部分细节
 
 ### 5.2 停止条件
 
 - [COMPUTED, HIGH] 2026-06-23 team 后续执行已完成阶段 0、阶段 1、阶段 2 讨论稿、阶段 6 治理收口与 #869 本地 runtime 命令证据。
-- [COMPUTED, HIGH] 现有 12 个 issue 中，11 个已达到本地关闭口径；#896 已完成 local audit 但 PR/head 谱系仍需权威 GitHub 元数据。
+- [COMPUTED, HIGH] 现有纳入本轮的 13 个治理/漂移 issue 中，12 个已达到本地关闭口径；#896 已完成 local audit 但 PR/head 谱系仍需权威 GitHub 元数据。
 - [INFERRED, MED] 阶段 3+ 的 FR 实现和 Release DoD 仍不得因文档本地关闭而自动视为完成。
 
 ---

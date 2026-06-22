@@ -1,13 +1,15 @@
 # binance 实施计划
 
-- Version: v2.2.2
-- Last-Updated: 2026-06-22
+- Version: v3.0.0
+- Last-Updated: 2026-06-23
 - Status: execution plan; release blocked until runtime gates pass
 - Runtime-Repo: `/home/binance`
 
 ## 1. 目标
 
 `binance` 必须落成分布式 C/S：client 只负责 Binance 采集、canonical 映射和 `natsx` 发布；server 只通过 `natsx` durable consumer 接收消息，并完成 `redisx` 幂等/热缓存、`taosx` 时序、`postgresx` 元数据、`clickhousex` OLAP、`ossx` 归档、`kafkax` fanout、Gin API、`redisx` coordinator lock。
+
+当前命名 taxonomy 已由 `SPEC.md` v3.0.0 固化为 4 product_line × 6 event_type：tick / trade / bar / depth / funding_rate / mark_price。后续实现不得回退到 v2.x 的 4 类 event_type。
 
 ## 2. 阶段门禁
 
@@ -27,7 +29,7 @@
 | PR | Scope | 关闭标准 |
 | --- | --- | --- |
 | PR-000 | Remove legacy `binance-market` | active runtime 和 active docs 不再引用旧模块为当前架构。 |
-| PR-001 | Root docs v2.1.2 | `SPEC.md`、`TRACEABILITY.md`、`BOUNDARY-GATES.md`、`ACCEPTANCE.md`、`IMPLEMENTATION-PLAN.md` 版本和追溯一致。 |
+| PR-001 | Root docs v3.0.0 taxonomy fold | `SPEC.md`、`TRACEABILITY.md`、`BOUNDARY-GATES.md`、`ACCEPTANCE.md`、`IMPLEMENTATION-PLAN.md` 版本和追溯一致。 |
 | PR-002 | Client `natsx` publisher | client 无 server import，无 local spool/checkpoint 作为 active C/S 交付路径。 |
 | PR-003 | Server `natsx` consumer | server durable consumer 使用 ManualAck、AckWait、MaxDeliver、dead-letter 策略。 |
 | PR-004 | `redisx` idempotency/cache/coordinator lock | duplicate same payload 不重复副作用；conflict payload terminal reject。 |
