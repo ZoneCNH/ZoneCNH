@@ -22,8 +22,9 @@ ACCEPTANCE="module/binance/ACCEPTANCE.md"
 TRACEABILITY="module/binance/TRACEABILITY.md"
 RUNTIME_MAPPING="module/binance/RUNTIME-MAPPING.md"
 RULES="module/binance/RULES.md"
+SERVER_SPEC="module/binance/server/SPEC.md"
 
-for doc in "$SPEC" "$README" "$ACCEPTANCE" "$TRACEABILITY" "$RUNTIME_MAPPING" "$RULES"; do
+for doc in "$SPEC" "$README" "$ACCEPTANCE" "$TRACEABILITY" "$RUNTIME_MAPPING" "$RULES" "$SERVER_SPEC"; do
   require_file "$doc"
 done
 
@@ -48,13 +49,13 @@ for product_line in "${product_lines[@]}"; do
 done
 pass "RUNTIME-MAPPING has complete 4x4 natsx subjects and Kafka topics"
 
-legacy_topics="$(grep -nE 'binance\.market\.(ticks|bars|depth|events)\b' "$RUNTIME_MAPPING" "$SPEC" "$ACCEPTANCE" "$TRACEABILITY" || true)"
+legacy_topics="$(grep -nE 'binance\.market\.(ticks|bars|depth|events)\b' "$RUNTIME_MAPPING" "$SPEC" "$ACCEPTANCE" "$TRACEABILITY" "$SERVER_SPEC" || true)"
 if [ -n "$legacy_topics" ]; then
   printf '%s\n' "$legacy_topics" >&2
   fail "legacy aggregate Kafka topic remains"
 fi
 
-topic_wildcards="$(grep -nE 'binance\.market\.\*.*topic|topic.*binance\.market\.\*' "$SPEC" "$ACCEPTANCE" "$TRACEABILITY" || true)"
+topic_wildcards="$(grep -nE 'binance\.market\.\*.*topic|topic.*binance\.market\.\*' "$SPEC" "$ACCEPTANCE" "$TRACEABILITY" "$SERVER_SPEC" || true)"
 if [ -n "$topic_wildcards" ]; then
   printf '%s\n' "$topic_wildcards" >&2
   fail "Kafka topic wording still uses natsx binance.market.* wildcard"
