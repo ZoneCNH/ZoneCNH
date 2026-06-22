@@ -98,7 +98,7 @@ done
 spec_version="$(extract_value 'Spec-Version' "$spec")"
 readme_root_version="$(sed -n 's/^- Spec-Version: \([^ ]*\).*/\1/p' "$readme" | head -n 1)"
 trace_matrix_version="$(extract_value 'Matrix-Version' "$trace")"
-trace_spec_ref="$(sed -n 's/^- Spec-Reference: `module\/binance\/SPEC\.md` \(v[0-9][^ ]*\).*/\1/p' "$trace" | head -n 1)"
+trace_spec_ref=$(sed -n 's/^- Spec-Reference: `module\/binance\/SPEC\.md` \(v[0-9][^ ]*\).*/\1/p' "$trace" | head -n 1)
 acceptance_version="$(extract_value 'Module-Version' "$acceptance")"
 features_version="$(extract_value 'Module-Version' "$features")"
 
