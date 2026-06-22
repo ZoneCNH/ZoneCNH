@@ -32,6 +32,19 @@
 4. 将原始载荷、规范化时间序列、元数据、事件流、缓存和分析读模型分别落到对应持久化介质。
 5. 对 `macro_data`、分析域、SRE 工具和回放作业提供稳定的服务端 API 与事件契约。
 
+## `ms_brain` 消费画像
+
+`/home/ms_brain` 是 `fred` 的宏观数据下游消费者之一。当前证据显示它主要是文档、规格和 YAML 配置驱动的 Crypto Macro-State Trading OS 设计面，工程实现尚未启动；因此 `fred` 只补充可验证的数据契约，不承接 `ms_brain` 的策略、仓位或状态机逻辑。
+
+| 维度 | `fred` 需要提供 |
+| ---- | --------------- |
+| 下游用途 | 支撑 `ms_brain` 的 LGIP/M-state、事件覆盖、回放和 DataQuality 判断。 |
+| 初始序列锚点 | `DFII10`、`T10YIE`、`DFF`、`BAMLH0A0HYM2`、`T10Y2Y`、`ICSA`、`FYFSGDA188S`、`FDHBFRBN`；这是初始契约锚点，不是全量清单。 |
+| 时间语义 | 提供 `released_at`、`available_at`、`vintage_at`、`observed_at`、`data_version`，确保 as-of/no-lookahead 查询可复现。 |
+| 同步周期 | 支持日度刷新、发布日历驱动刷新、revision scan，以及月度/季度财政类序列的延迟发布。 |
+| 输出形态 | 服务 API、Kafka durable events、ClickHouse 读模型、release/calendar 事件与 freshness/degrade 元数据。 |
+| 边界 | `fred` 不实现 M1-M7/S1-S7 分类、7x7 决策矩阵、TradePermission、仓位折扣或风控逻辑。 |
+
 ## 当前迁移提示
 
 `/home/fred` 当前已有 Go 模块、`cmd/fred-server`、`pkg/fredx` 和边界脚本骨架；目标规格要求从旧的“adapter 零存储”口径迁移为独立服务拥有的完整持久化与事件边界。实施时必须同步更新代码边界门禁，避免旧的 `Stores=None` 约束继续阻止目标架构落地。
