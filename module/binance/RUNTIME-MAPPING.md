@@ -1,7 +1,7 @@
-# module/binance RUNTIME MAPPING v3.0.0
+# module/binance RUNTIME MAPPING v3.1.0
 
-> 版本：v3.0.0
-> 更新日期：2026-06-23
+> 版本：v3.1.0
+> 更新日期：2026-06-22
 > 替代：v1.0.0（gRPC + SQLite spool 架构）
 > 参见：`DEEP-ANALYSIS.md`（架构决策全文）
 
@@ -13,7 +13,7 @@
 
 ### 架构版本对比
 
-| 维度 | v1.0.0 | v3.0.0 |
+| 维度 | v1.0.0 | v2.0.0 |
 |------|--------|--------|
 | C/S 通信 | in-process cs interface | **natsx JetStream** |
 | Client 职责 | 采集 + spool + checkpoint + send | **仅采集 + natsx publish** |
@@ -97,7 +97,7 @@ github.com/ZoneCNH/binance/
           market.go          ← /api/v1/market/ticks、bars、depth、trades
           instrument.go      ← /api/v1/instruments
           stats.go           ← /api/v1/stats/streams、daily
-          admin.go           ← /api/v1/admin/catalog、stream
+          admin.go           ← /api/v1/admin/symbols/reload、stream
         middleware/
           auth.go            ← Bearer Token
           ratelimit.go       ← redisx 限流
@@ -147,7 +147,7 @@ github.com/ZoneCNH/binance/
 
 ## 4. Client 组件映射
 
-| Spec 功能域 | 运行时路径 | v3.0.0 状态 |
+| Spec 功能域 | 运行时路径 | v2.0.0 状态 |
 |------------|-----------|:-----------:|
 | 产品线目录 | `internal/client/catalog/` | 保留 |
 | 符号解析器 | `internal/client/parser/` | 保留 |
@@ -168,7 +168,7 @@ github.com/ZoneCNH/binance/
 
 ## 5. Server 组件映射
 
-| Spec 功能域 | 运行时路径 | v3.0.0 状态 |
+| Spec 功能域 | 运行时路径 | v2.0.0 状态 |
 |------------|-----------|:-----------:|
 | natsx 消费入口 | `internal/server/consumer/` | ✨ 新增 |
 | 请求校验 | `internal/server/validation/` | 保留 |
@@ -209,18 +209,14 @@ Stream: BINANCE_MARKET
 Retention: 7d  Storage: file  Replicas: 1 (生产升 3)
 
 Subjects:
-  binance.market.spot.tick            binance.market.spot.trade
-  binance.market.spot.bar             binance.market.spot.depth
-  binance.market.spot.funding_rate    binance.market.spot.mark_price
-  binance.market.um_perp.tick         binance.market.um_perp.trade
-  binance.market.um_perp.bar          binance.market.um_perp.depth
-  binance.market.um_perp.funding_rate binance.market.um_perp.mark_price
-  binance.market.cm_perp.tick         binance.market.cm_perp.trade
-  binance.market.cm_perp.bar          binance.market.cm_perp.depth
-  binance.market.cm_perp.funding_rate binance.market.cm_perp.mark_price
-  binance.market.options.tick         binance.market.options.trade
-  binance.market.options.bar          binance.market.options.depth
-  binance.market.options.funding_rate binance.market.options.mark_price
+  binance.market.spot.tick         binance.market.spot.trade
+  binance.market.spot.bar          binance.market.spot.depth
+  binance.market.um_perp.tick      binance.market.um_perp.trade
+  binance.market.um_perp.bar       binance.market.um_perp.depth
+  binance.market.cm_perp.tick      binance.market.cm_perp.trade
+  binance.market.cm_perp.bar       binance.market.cm_perp.depth
+  binance.market.options.tick      binance.market.options.trade
+  binance.market.options.bar       binance.market.options.depth
 
 Server Consumer:
   Durable: binance-server  AckPolicy: explicit  AckWait: 30s  MaxDeliver: 5
@@ -232,18 +228,22 @@ Server Consumer:
 
 ```
 Topics:
-  binance.spot.tick.v1             binance.spot.trade.v1
-  binance.spot.bar.v1              binance.spot.depth.v1
-  binance.spot.funding_rate.v1     binance.spot.mark_price.v1
-  binance.um_perp.tick.v1          binance.um_perp.trade.v1
-  binance.um_perp.bar.v1           binance.um_perp.depth.v1
-  binance.um_perp.funding_rate.v1  binance.um_perp.mark_price.v1
-  binance.cm_perp.tick.v1          binance.cm_perp.trade.v1
-  binance.cm_perp.bar.v1           binance.cm_perp.depth.v1
-  binance.cm_perp.funding_rate.v1  binance.cm_perp.mark_price.v1
-  binance.options.tick.v1          binance.options.trade.v1
-  binance.options.bar.v1           binance.options.depth.v1
-  binance.options.funding_rate.v1  binance.options.mark_price.v1
+  binance.spot.tick.v1         现货 tick
+  binance.spot.trade.v1        现货逐笔成交
+  binance.spot.bar.v1          现货 K 线
+  binance.spot.depth.v1        现货深度
+  binance.um_perp.tick.v1      U 本位合约 tick
+  binance.um_perp.trade.v1     U 本位合约逐笔成交
+  binance.um_perp.bar.v1       U 本位合约 K 线
+  binance.um_perp.depth.v1     U 本位合约深度
+  binance.cm_perp.tick.v1      币本位合约 tick
+  binance.cm_perp.trade.v1     币本位合约逐笔成交
+  binance.cm_perp.bar.v1       币本位合约 K 线
+  binance.cm_perp.depth.v1     币本位合约深度
+  binance.options.tick.v1      期权 tick
+  binance.options.trade.v1     期权逐笔成交
+  binance.options.bar.v1       期权 K 线
+  binance.options.depth.v1     期权深度
 
 Consumer Groups:
   signal_engine  risk_engine  backtestx  market_regime
@@ -264,13 +264,11 @@ GET  /api/v1/market/bars/:symbol          最新 Bar
 GET  /api/v1/market/bars/:symbol/range    历史 Bar（taosx）
 GET  /api/v1/market/depth/:symbol         最新深度（redisx 5s TTL）
 GET  /api/v1/market/trades/:symbol        最新成交
-GET  /api/v1/market/funding-rates/:symbol 最新资金费率
-GET  /api/v1/market/mark-prices/:symbol   最新标记价格
 GET  /api/v1/instruments                  合约列表（postgresx）
 GET  /api/v1/instruments/:symbol          单个合约详情
 GET  /api/v1/stats/streams                流统计
 GET  /api/v1/stats/daily                  日统计
-POST /api/v1/admin/catalog/reload         重载目录
+POST /api/v1/admin/symbols/reload         重载目录并应用 stream diff
 POST /api/v1/admin/stream/pause/:line     暂停产品线
 POST /api/v1/admin/stream/resume/:line    恢复产品线
 GET  /api/v1/admin/config                 查看配置

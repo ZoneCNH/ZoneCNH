@@ -1,9 +1,8 @@
 # module/binance/server TRACEABILITY
 
-> 追溯矩阵版本：v2.1.2 | 最后更新：2026-06-23 | 对应 server SPEC v2.1.0
+> 追溯矩阵版本：v2.1.1 | 最后更新：2026-06-22 | 对应 server SPEC v2.1.0
 >
-> **v2.1.2 变更摘要**：Kafka/kafkax topic 追溯口径对齐 `binance.{product_line}.{event_type}.v1`；
-> natsx subject 仍保留 `binance.market.*` 语义。v2.1.1 元数据对齐 server SPEC v2.1.0；保留 v2.1.0 的 FR/TC/AC 追溯结构；
+> **v2.1.1 变更摘要**：元数据对齐 server SPEC v2.1.0；保留 v2.1.0 的 FR/TC/AC 追溯结构；
 > TC-020/021 覆盖；FR-002→FR-005 编号修正（v2.0.0 漏收 Consumer Lifecycle 导致整体偏移）；
 > 新增 FR-007a（clickhousex Analytics API）、FR-010（clickhousex OLAP Storage）、FR-011
 > （Distributed Coordinator Lock）及对应 TC/AC；BR 表对齐 SPEC BR-001~BR-006 + 补充
@@ -78,7 +77,7 @@
 | TC-007 | FR-005 | — | 单元（mock taosx WriteTick） | WriteTick 参数：symbol+product_line 子表名 | ⬜ |
 | TC-008 | FR-005 | — | 集成（WriteBatch 吞吐 benchmark） | WriteBatch 合并多条，非循环 WriteTick | ⬜ |
 | TC-009 | FR-005 | — | 单元（postgresx UpsertSymbol 幂等；ClockOffset 记录） | ON CONFLICT DO UPDATE，同 symbol 两次不报错 | ⬜ |
-| TC-010 | FR-006 | — | 单元（topic 名称 + partition key） | topic=binance.{line}.{type}.v1；key=symbol | ⬜ |
+| TC-010 | FR-006 | — | 单元（topic 名称 + partition key） | topic=binance.market.{line}.{type}；key=symbol | ⬜ |
 | TC-011 | FR-006 | BR-003 | 单元（Kafka 不可达→error，未 Ack） | kafkax.Send 失败→NakWithDelay；Ack 未发送 | ⬜ |
 | TC-012 | FR-007 | — | httptest（/api/v1/market/ticks 返回 taosx 数据） | 返回正确 JSON，status 200 | ⬜ |
 | TC-013 | FR-007 | — | httptest（/api/v1/market/depth 读 redisx） | redisx 命中，P99 < 1ms | ⬜ |
@@ -146,7 +145,7 @@
 
 | AC ID | AC 描述 | 验证方式 |
 |-------|---------|----------|
-| AC-016 | topic = `binance.{product_line}.{event_type}.v1`，与 natsx subject 命名空间分离；示例 `binance.spot.tick.v1` | TC-010: mock 验证 topic 字符串 |
+| AC-016 | Kafka topic = `binance.{product_line}.{event_type}.v1`，与 natsx subject 明确分离 | TC-010: mock 验证 topic 字符串 |
 | AC-017 | partition key = `[]byte(symbol)`，相同 symbol 有序到达同一 partition | TC-010: mock 验证 Key 参数 |
 | AC-018 | Kafka 不可达时 → error；未完成 kafkax handoff 前不 Ack，进入 retry/dead-letter/告警路径 | TC-011: mock 返回 error → Ack 未发送 + observex 告警 |
 
@@ -230,4 +229,3 @@
 | 2026-06-21 | v2.0.0 | **全面重写**：gRPC/同进程 cs → natsx JetStream 分布式架构；FR-001~009 全部对齐 natsx/redisx/postgresx/taosx/kafkax/Gin/ossx；BR/NFR/TC/AC 全面更新 | ZoneCNH |
 | 2026-06-21 | v2.1.0 | **对齐当时的 server SPEC 基线**：补充 FR-002 Consumer Lifecycle（TC-020/021, AC-031/032）；FR 命名全面对齐 SPEC（FR-002→FR-003 Envelope Validation, FR-003→FR-004 Idempotent Acceptance, FR-004+005→FR-005 Multi-Store Write）；新增 FR-007a（clickhousex Analytics API, TC-022, AC-033~035）、FR-010（clickhousex OLAP, TC-023/024, AC-036~038）、FR-011（Coordinator Lock, TC-025/026, AC-039~040）；BR 从 6 条扩展至 9 条（对齐 SPEC BR-001~006 + Cold-Write-First/Server Owns Storage/No cs Package）；NFR 10→12；TC 19→26；AC 30→40 | ZoneCNH |
 | 2026-06-22 | v2.1.1 | 修正追溯矩阵元数据：对应 server SPEC v2.1.0；实现状态仍保持 Pending，代码待实现 | ZoneCNH |
-| 2026-06-23 | v2.1.2 | Kafka/kafkax topic 追溯口径改为 `binance.{product_line}.{event_type}.v1`，NATS subject 仍保留 `binance.market.*` | ZoneCNH |

@@ -100,7 +100,7 @@ client 和 server **互不感知彼此的进程位置**。server 只知道 NATS 
 |--------|----------|
 | natsx JetStream | server 消费 subject `binance.market.>` 接收 client 发布的行情事件 |
 | `module/market_data` | 通过 Gin REST `GET /api/v1/market/*` 主动拉取，或消费 kafkax topic `binance.{product_line}.{event_type}.v1` |
-| 下游分析域 | 通过 kafkax consumer group 消费 `binance.{product_line}.{event_type}.v1` topic |
+| 下游分析域 | 通过 kafkax consumer group 消费 `binance.spot.tick.v1` 等 topic |
 | `SRE / 运维` | 通过 Gin admin HTTP 端点查询流状态、触发排水 |
 
 ---
@@ -410,7 +410,7 @@ server 必须覆盖 `terminal_validation`、`terminal_conflict`、`retryable_sto
 | `idempotency.store` | string | `redis` | 幂等存储类型：redis / memory（测试） |
 | `idempotency.ttl` | duration | `72h` | 幂等记录保留时间 |
 | `storage.taos.database` | string | `binance_market` | taosx 时序库 |
-| `fanout.kafkax.topic_prefix` | string | `binance` | kafkax topic 前缀 |
+| `fanout.kafkax.topic_prefix` | string | `binance` | kafkax topic 前缀；实际 topic = `binance.{product_line}.{event_type}.v1` |
 | `fanout.retry_max` | int | `3` | kafkax 发布失败最大重试次数 |
 | `validation.future_time_threshold` | duration | `5m` | 未来时间容忍阈值 |
 | `observability.log_level` | string | `info` | 日志级别 |

@@ -5,13 +5,12 @@
 | 字段 | 值 |
 | --- | --- |
 | Status | Generated from current module SSOT |
-| Last-Updated | 2026-06-23 |
-| Module-Version | v3.0.0 |
-| Module-State | 文档治理收敛；runtime 实现状态仍以 `/home/binance` fresh evidence 为准 |
+| Last-Updated | 2026-06-22 |
+| Module-Version | v3.1.0 |
+| Module-State | 规格扩展到 v3.1.0；FR-009 boundary 已有本地 runtime 证据，其余 FR 仍以 `/home/binance` 证据为准 |
 | Layer | 数据域 / Binance-specific market_data C/S module |
 | Runtime-Repo | `/home/binance` |
-| Status-Layers | L1 Doc Gate = 本投影与 SPEC/TRACEABILITY/ACCEPTANCE 一致；L2 Runtime Evidence = `/home/binance` 命令、CI run 或 PR；L3 Report Evidence = `docs/report/binance/**` [COMPUTED] |
-| Source | `goal.md`, `STANDARD.md`, `SPEC.md`, `DATA-LIFECYCLE.md`, `TRACEABILITY.md`, `BOUNDARY-GATES.md`, `RUNTIME-MAPPING.md`, `IMPLEMENTATION-PLAN.md`, `client/`, `server/`, `tasks/` |
+| Source | `goal.md`, `SPEC.md`, `TRACEABILITY.md`, `DATA-LIFECYCLE.md`, `STANDARD.md`, `BOUNDARY-GATES.md`, `RUNTIME-MAPPING.md`, `IMPLEMENTATION-PLAN.md`, `client/`, `server/`, `tasks/` |
 
 本文档是 `module/binance` 当前规格库的实现投影，不是 runtime 代码验收证据。实际完成状态以 `TRACEABILITY.md`、`client/TRACEABILITY.md`、`server/TRACEABILITY.md` 和 `/home/binance` 的测试证据为准。
 
@@ -25,12 +24,12 @@
 | Server 职责 | 订阅 `natsx` JetStream，校验与去重事实，写入 Binance 专属存储，提供 Gin REST API，并通过 `kafkax` 广播。 |
 | 允许依赖 | `domain_market`, `natsx`, `redisx`, `postgresx`, `taosx`, `ossx`, `kafkax`, `gin`, `observability` 等按规格边界使用。 |
 | 禁止归属 | 不拥有 canonical market domain，不定义跨交易所通用 `market_data` 语义，不实现策略、下单、撮合或风控。 |
-| 禁止路径 | 禁止恢复 legacy Provider paths（精确路径见 `SPEC.md` Appendix B / `docs/migrations/remove-binance-market.md`）与运行时 `internal/cs`。 |
+| 禁止路径 | 禁止恢复 `module/binance-market`、`github.com/ZoneCNH/binance-market`、运行时 `internal/cs`。 |
 | Wire Contract | Client -> Server 的 wire contract 必须是 `natsx` subject 加 `domain_market` envelope JSON，不能新增本地 proto/gRPC ingest schema。 |
 
 ## 2. 功能实现投影
 
-> 当前编号体系：FR-006 拆分为 6a/6b/6c/6d；FR-007a 新增（analytics API）；FR-009 升为 Boundary Enforcement；FR-010 新增（clickhousex OLAP）；FR-011 新增（分布式锁）；FR-020 已折入 v3.0.0 4 product_line × 6 event_type taxonomy。
+> v3.1.0 编号体系：FR-006 拆分为 6a/6b/6c/6d；FR-007a 新增（analytics API）；FR-009 升为 Boundary Enforcement；FR-010 新增（clickhousex OLAP）；FR-011 新增（分布式锁）；FR-012~FR-024 登记 realtime control、historical lifecycle、event governance、release evidence 与 runtime hot reload。
 
 | FR | 功能 | 当前状态 | 已有证据 | 剩余实现面 |
 | --- | --- | --- | --- | --- |
@@ -39,22 +38,35 @@
 | FR-003 | natsx Communication | Pending | 规格定义 `js.Publish("binance.market.{product_line}.{event_type}", jsonPayload)` 与 durable consumer。 | Client publisher、Server consumer、subject 校验、PubAck 与 durable replay。 |
 | FR-004 | At-Least-Once Delivery | Pending | 规格定义 ManualAck、失败 NakWithDelay、MaxDeliver 5、dead-letter。 | Ack/Nak 策略、失败注入、重复投递与死信处理。 |
 | FR-005 | Idempotent Acceptance | Pending | 规格定义 idempotency key 与 duplicate/conflict 行为。 | `redisx` SetNX、重复跳过、冲突终止、重放测试。 |
-| FR-006a | taosx Time-Series Storage | Pending | 规格定义 WriteBatch 写入 tick/trade/bar/depth/funding_rate/mark_price 到超级表子表。 | 时序写入吞吐 100K TPS、子表自动建表、查询时间范围过滤。 |
+| FR-006a | taosx Time-Series Storage | Pending | 规格定义 WriteBatch 写入 tick/bar/depth 到超级表子表。 | 时序写入吞吐 100K TPS、子表自动建表、查询时间范围过滤。 |
 | FR-006b | postgresx Metadata Storage | Pending | 规格定义幂等 upsert instrument catalog + 审计日志。 | UpsertSymbol 幂等性、ON CONFLICT 行为、审计完整性。 |
-| FR-006c | redisx Hot Cache | Pending | 规格定义最新 tick/trade/bar/depth/funding_rate/mark_price 热缓存（60s/5s TTL）+ 失败降级。 | SET 命令封装、TTL 验证、失败不阻塞主管线。 |
+| FR-006c | redisx Hot Cache | Pending | 规格定义最新 tick/bar/depth 热缓存（60s/5s TTL）+ 失败降级。 | SET 命令封装、TTL 验证、失败不阻塞主管线。 |
 | FR-006d | ossx Archival | Pending | 规格定义对象路径与 ETag 删除前校验。 | Parquet 归档、ETag 校验、生命周期删除、防误删测试。 |
-| FR-007 | Gin Market API | Pending | 规格定义 `/api/v1/market/ticks/trades/bars/depth/funding-rates/mark-prices` REST 接口。 | 认证、限流、统一错误、readyz、market_data HTTP 调用方兼容。 |
+| FR-007 | Gin Market API | Pending | 规格定义 `/api/v1/market/ticks/depth/bars/trades` REST 接口。 | 认证、限流、统一错误、readyz、market_data HTTP 调用方兼容。 |
 | FR-007a | clickhousex Analytics API | Pending | 规格定义 `/api/v1/analytics/vwap/top-movers/correlation` OLAP 查询。 | analytics 查询正确性、查询 P99 < 2s、降级到 503。 |
 | FR-008 | kafkax Broadcast | Pending | 规格定义 `kafkax` topic、symbol key 与 handoff 后 Ack。 | Kafka dispatch、失败不 Ack、重试、下游消费契约。 |
-| FR-009 | Boundary Enforcement | Implemented / Documented | `BOUNDARY-GATES.md` v2.1.1 已落地，`TRACEABILITY.md` 标注 FR-009 Implemented，TC-020 PASS。 | TC-021 与 TC-022 仍需 runtime/repo CI 执行证据闭合。 |
+| FR-009 | Boundary Enforcement | Implemented / Documented | `BOUNDARY-GATES.md` 与 `TRACEABILITY.md` 标注 FR-009 Done；`/home/binance` boundary-gates 10/10、go test、lint、smoke self-test 已通过。 | 远端 CI/release evidence 仍需归档；非边界 FR 不因此闭合。 |
 | FR-010 | clickhousex OLAP Storage | Pending | 规格定义定时 ETL 聚合 taosx → clickhousex。 | ETL 调度、InsertBatch 性能、ClickHouse 不可达降级。 |
 | FR-011 | Distributed Coordinator Lock | Pending | 规格定义 redisx SetNX 分布式锁 + lease 续期 + coordinator HA。 | SetNX 锁获取、lease 续期失败后停止任务、主动释放。 |
+| FR-012 | Stream Session Lifecycle | Pending | `SPEC.md`/`TRACEABILITY.md` v3.1.0 已登记。 | active stream registry 运行中增删订阅且不重启进程的集成证据。 |
+| FR-013 | Exchange Reliability Controls | Pending | `SPEC.md`/`TRACEABILITY.md` v3.1.0 已登记。 | retry budget、rate-limit、clock skew 与 disconnect 策略测试。 |
+| FR-014 | Runtime Stream Observability | Pending | `SPEC.md`/`TRACEABILITY.md` v3.1.0 已登记。 | admin/metrics 暴露 stream state、lag、unhealthy reason 的验证。 |
+| FR-015 | Runtime Pause/Resume/Drain | Pending | `SPEC.md`/`TRACEABILITY.md` v3.1.0 已登记。 | pause/resume/drain API、in-flight drain 与 audit event 证据。 |
+| FR-016 | Historical Backfill Planner | Pending | `SPEC.md`/`TRACEABILITY.md` v3.1.0 已登记。 | window validation、cursor persistence、overlap rejection 与限速测试。 |
+| FR-017 | Gap Detection and Replay | Pending | `SPEC.md`/`TRACEABILITY.md` v3.1.0 已登记。 | gap detect、replay idempotency、失败恢复 cursor 证据。 |
+| FR-018 | Archive Manifest and Restore | Pending | `SPEC.md`/`TRACEABILITY.md` v3.1.0 已登记。 | manifest、checksum、restore、retention delete guard 证据。 |
+| FR-019 | Backfill Resource Governance | Pending | `SPEC.md`/`TRACEABILITY.md` v3.1.0 已登记。 | job caps、cancellation、queue/active/throttled metrics 证据。 |
+| FR-020 | Funding Rate Event Support | Pending | `SPEC.md`/`TRACEABILITY.md` v3.1.0 已登记。 | funding_rate mapping/storage/query/fanout 与 replay 一致性证据。 |
+| FR-021 | Mark and Index Price Support | Pending | `SPEC.md`/`TRACEABILITY.md` v3.1.0 已登记。 | mark_price/index_price topic/storage/query 分离证据。 |
+| FR-022 | Event-Type Governance Matrix | Pending | `TRACEABILITY.md` 与 checker 已登记 R2 120-cell matrix。 | matrix checker 持续阻断旧 topic、旧 product_line、旧 endpoint。 |
+| FR-023 | Release Evidence Bundle | Pending | `SPEC.md`/`TRACEABILITY.md` v3.1.0 已登记。 | local/CI/live/release evidence bundle 与 release gate 证据。 |
+| FR-024 | Runtime Config Hot Reload | Pending | `STANDARD.md`、`SPEC.md` 与 `TRACEABILITY.md` v3.1.0 已登记 endpoint：`POST /api/v1/admin/symbols/reload`。 | no-restart stream add/remove、live websocket、remote CI 与 release snapshot 证据。 |
 
 ## 3. 边界与质量需求投影
 
 | 项 | 当前状态 | 说明 |
 | --- | --- | --- |
-| BR-001 Legacy Provider archive-only | Pending | 禁止旧仓库或旧 module 名称回流；需要 CI grep gate。 |
+| BR-001 No binance-market | Pending | 禁止旧仓库或旧 module 名称回流；需要 CI grep gate。 |
 | BR-002 Client Must Not Import Server | Pending | Client 禁止导入 server internals。 |
 | BR-003 Server Must Not Import Client | Pending | Server 禁止导入 client internals。 |
 | BR-004 natsx ManualAck | Pending | Server 必须在持久化与广播 handoff 后 Ack。 |
@@ -82,9 +94,7 @@
 | 文档 | 用途 | 当前使用方式 |
 | --- | --- | --- |
 | `goal.md` | 业务目标与模块意图 | 作为实现清单的目标来源。 |
-| `STANDARD.md` | 模块标准入口与权威顺序 | 作为治理入口、检查命令与 runtime evidence guardrail 来源。 |
-| `SPEC.md` | v3.0.0 功能与边界规格 | 作为 FR/BR/NFR 语义来源。 |
-| `DATA-LIFECYCLE.md` | FR-012~FR-024 数据生命周期草案 | 作为历史/实时数据补强讨论稿来源。 |
+| `SPEC.md` | v2.0.0 功能与边界规格 | 作为 FR/BR/NFR 语义来源。 |
 | `TRACEABILITY.md` | 根级 FR/AC/TC/Task 追溯 | 作为当前状态与验收编号来源。 |
 | `client/TRACEABILITY.md` | Client 子域追溯 | 作为 client active/pending 实现面来源。 |
 | `server/TRACEABILITY.md` | Server 子域追溯 | 作为 server active/pending 实现面来源。 |
@@ -107,15 +117,15 @@
 | natsx publish/consume runtime 闭合 | Not Done | FR-003 Pending。 |
 | ManualAck 与 at-least-once runtime 闭合 | Not Done | FR-004 Pending。 |
 | Server idempotency runtime 闭合 | Not Done | FR-005 Pending。 |
-| Storage/API/archival/broadcast runtime 闭合 | Not Done | FR-006~FR-009 Pending。 |
-| 全量 AC/TC 通过 | Not Done | TC-001~019、TC-021、TC-022 仍 Pending；TC-020 PASS。 |
+| Storage/API/archival/broadcast/runtime 扩展闭合 | Not Done | FR-006~FR-008、FR-010~FR-024 Pending；FR-009 local boundary evidence closed。 |
+| 全量 AC/TC 通过 | Not Done | TC-001~019、TC-023~TC-042 仍 Pending；TC-020~TC-022 local PASS。 |
 
 ## 7. 当前缺口登记
 
 | 缺口 | 影响 | 关闭条件 |
 | --- | --- | --- |
 | FR-001/FR-002 只有 Partial | 不能声明四条 product line 完整支持。 | Spot、USDM、COINM、Options 的 parser、mapper、connector、server acceptance 全部通过。 |
-| FR-003~FR-009 Pending | 不能声明 distributed runtime 已实现。 | `/home/binance` 中 client/server runtime、存储、API、广播、归档对应测试全部通过。 |
+| FR-003~FR-008/FR-010~FR-011 Pending | 不能声明 distributed runtime 已实现。 | `/home/binance` 中 client/server runtime、存储、API、广播、归档对应测试全部通过。 |
+| FR-012~FR-024 Pending | 不能声明 realtime control、historical lifecycle、event governance、release evidence 或 hot reload 完成。 | 对应 runtime 集成、R2 matrix、live websocket、远端 CI 和 release snapshot 全部闭合。 |
 | Client active FR 仍为 0/8 implemented | Client 侧 v2.0.0 交付尚未闭合。 | `client/TRACEABILITY.md` 中 active FR 状态更新并附 runtime 证据。 |
 | Server active FR 仍为 0/9 implemented | Server 侧 v2.0.0 交付尚未闭合。 | `server/TRACEABILITY.md` 中 active FR 状态更新并附 runtime 证据。 |
-| TC-021/TC-022 Pending | FR-010 尚缺完整 CI 证据。 | 边界 gate 在 runtime/repo CI 中稳定执行并记录 PASS。 |

@@ -153,7 +153,18 @@ jobs:
       - name: 校验 Task Spec 结构和一致性
         run: bash .github/ci/task-spec-validate.sh
 
-  # ── 9. Spec 状态报告 ────────────────────────────────────────
+  # ── 9. Binance 文档治理校验 ────────────────────────────────
+  binance-docs-check:
+    name: Binance Docs Check
+    runs-on: [self-hosted, Linux, X64, homepage]
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 校验 binance 文档治理规则
+        run: bash scripts/check-binance-docs.sh
+
+  # ── 10. Spec 状态报告 ───────────────────────────────────────
   spec-status-report:
     name: Spec Status Report
     runs-on: [self-hosted, Linux, X64, homepage]
@@ -164,7 +175,7 @@ jobs:
       - name: 生成 spec 状态报告
         run: bash .github/ci/spec-status-report.sh
 
-  # ── 10. 术语一致性检查 ──────────────────────────────────────
+  # ── 11. 术语一致性检查 ──────────────────────────────────────
   glossary-consistency:
     name: Glossary Consistency
     runs-on: [self-hosted, Linux, X64, homepage]
@@ -175,7 +186,7 @@ jobs:
       - name: 检查术语与 GLOSSARY.md 一致性
         run: bash .github/ci/glossary-consistency.sh
 
-  # ── 11. 反需求扫描 ─────────────────────────────────────────
+  # ── 12. 反需求扫描 ─────────────────────────────────────────
   anti-requirement-scan:
     name: Anti-Requirement Scan
     runs-on: [self-hosted, Linux, X64, homepage]
@@ -186,7 +197,7 @@ jobs:
       - name: 扫描 spec 代码片段违反反需求
         run: bash .github/ci/anti-requirement-scan.sh
 
-  # ── 12. Outer Metrics 写入源守卫（宪法 §14.2） ──────────────
+  # ── 13. Outer Metrics 写入源守卫（宪法 §14.2） ──────────────
   # 禁止 LLM agent 修改 .omc/state/outer-metrics/；只允许 github-actions[bot]
   # 或带 [outer-metrics] 标记的提交。
   outer-metrics-guard:
@@ -201,7 +212,7 @@ jobs:
       - name: 校验 outer-metrics 写入源合法性
         run: bash scripts/outer-metrics-validate.sh
 
-  # ── 12. 部署控制面守卫 ──────────────────────────────────────
+  # ── 14. 部署控制面守卫 ──────────────────────────────────────
   # 业务仓库只能引用 ZoneCNH/sre 的发布入口；不得收纳 sre/ 源码
   # 或在 workflow 内写 inline 远程部署命令。
   deployment-policy:

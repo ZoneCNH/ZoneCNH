@@ -1,82 +1,71 @@
-# module/binance STANDARD.md — 模块标准入口
+# module/binance STANDARD.md — Runtime Control Standard
 
-- Doc-Version: v0.1.0
-- Last-Updated: 2026-06-23
-- Issue: #871
-- Scope: `module/binance/` governance entrypoint + `github.com/ZoneCNH/binance` runtime evidence pointers
+## Metadata
 
-> 本文件是薄入口（thin index），只声明权威顺序与必查入口；具体规则仍以被引用文档为准，避免复制粘贴导致二次漂移。
+| Field | Value |
+| --- | --- |
+| Status | Draft |
+| Doc-Version | v0.1.0 |
+| Last-Updated | 2026-06-22 |
+| Scope | `module/binance` runtime control and evidence standard |
+| Spec-Impact | None until FR-024 is promoted into `SPEC.md` |
 
----
+> [FRAME, HIGH] This document is the thin standard entry for runtime control work. It is not a replacement for `SPEC.md`, `TRACEABILITY.md`, `ACCEPTANCE.md`, or `RUNTIME-MAPPING.md`.
 
-## 1. Authority order
+## 1. Scope
 
-当文档、task、runtime 证据互相冲突时，按以下顺序裁决：
+[FRAME, HIGH] The standard covers symbol catalog reload, runtime stream-diff behavior, release evidence, and document synchronization for future FR-024 work.
 
-1. Repository `CONSTITUTION.md`（尤其 §20 证据与验收纪律）
-2. `module/binance/STANDARD.md`（本文，入口与优先级）
-3. `module/binance/{RULES,SPEC,BOUNDARY-GATES,NAMING,ACCEPTANCE,TRACEABILITY}.md`
-4. `module/binance/{client,server}/SPEC.md` 与 `{client,server}/TRACEABILITY.md`
-5. `module/binance/{client,server}/tasks/**`、`docs/report/binance/**` 与临时审计报告
-6. Runtime 仓 `github.com/ZoneCNH/binance` 的 fresh command output（用于证明实现状态，不替代规格权威）
+[FRAME, HIGH] The standard does not approve a release, create a new event type, alter the 4 product-line by 4 event-type matrix, or authorize credentials, live trading endpoints, or production rollout.
 
----
+## 2. Hot Reload Contract
 
-## 2. Mandatory entrypoints
+[COMPUTED, HIGH] The current local runtime evidence path is `POST /api/v1/admin/symbols/reload` in `/home/binance/internal/client/admin.go`.
 
-| Concern | Mandatory source | Notes |
-|---|---|---|
-| Naming / products / event types | `module/binance/NAMING.md` §1-§11 | 历史别名只允许出现在 RULES 例外清单与治理报告中。 |
-| Boundary gates | `module/binance/BOUNDARY-GATES.md` + `/home/binance/scripts/boundary-gates.sh` | #869 runtime 证据必须记录 fresh command output。 |
-| Documentation sync | `module/binance/RULES.md` R3 / R6 / R9 | 版本、状态、文档存在性必须同步。 |
-| Acceptance | `module/binance/ACCEPTANCE.md` | 验收口径以 acceptance + traceability 双向一致为准。 |
-| Evidence | `CONSTITUTION.md` §20 + runtime command output | 文档断言不能替代运行证据。 |
-| Forbidden patterns | `module/binance/RULES.md` R1 / R2 / R5 + `module/binance/SPEC.md` BR-001 | 包括 legacy name、跨边界 import、未归档旧 task。 |
+[FRAME, HIGH] FR-024 must not be marked done until the runtime proves all of the following:
 
----
+| Requirement | Evidence required |
+| --- | --- |
+| Method boundary | Non-POST requests return 405 with `Allow: POST` |
+| Payload boundary | Unknown fields and invalid catalog entries are rejected |
+| Atomic catalog swap | A valid request replaces the local catalog without process restart |
+| Stream diff | Added symbols start new streams and removed symbols drain existing streams |
+| Existing stream continuity | Unchanged active streams remain connected during reload |
+| Rollback path | Failed reload leaves the previous catalog and active stream set intact |
+| Auditability | Reload count, rejected entry count, and stream add/remove counts are observable |
 
-## 3. Required local checks
+[FRAME, HIGH] Older planning references to `/api/v1/admin/catalog/reload` must be reconciled with the current `POST /api/v1/admin/symbols/reload` runtime path before `RUNTIME-MAPPING.md` or `SPEC.md` can claim FR-024 completion.
 
-Run the narrowest check set that can prove the claim being made:
+## 3. Evidence Gates
 
-```bash
-git diff --check
-test -f module/binance/STANDARD.md
-rg -n "#869|#871|#893|#894|#895|#896" module/binance docs/report/binance
-```
+[COMPUTED, HIGH] Current local runtime tests cover successful catalog reload, invalid method, and invalid payload.
 
-The repo-local doc gate is authoritative for documentation checks and must
-cover this file plus the R9 document set:
+[FRAME, HIGH] Full FR-024 evidence still requires an integration test or smoke test that demonstrates active stream add/remove without restarting the client process.
 
-```bash
-scripts/check-binance-docs.sh
-```
+[FRAME, HIGH] Release evidence for this standard must include:
 
-For #869 runtime evidence, run from `/home/binance` and capture exit code + output:
+| Gate | Minimum evidence |
+| --- | --- |
+| Unit | admin reload success, method rejection, payload rejection |
+| Integration | active stream add/remove, unchanged stream continuity, rollback on reload failure |
+| Boundary | `./scripts/boundary-gates.sh` passes all gates |
+| Runtime | `go test ./...`, `golangci-lint run`, and smoke self-test pass |
+| Release | `TRACEABILITY.md`, `ACCEPTANCE.md`, `FEATURES.md`, and release evidence archive reference the same result |
 
-```bash
-./scripts/boundary-gates.sh
-go test ./...
-go test ./... -race -count=1
-go vet ./...
-golangci-lint run
-```
+## 4. Document Synchronization
 
-A clean runtime repository is part of the evidence chain. Untracked files, local changes, missing lint tool, or omitted smoke/e2e commands must be recorded as gaps instead of treated as PASS.
+[FRAME, HIGH] When FR-024 lands, update these files in the same PR or explicitly block the PR:
 
----
+| File | Required update |
+| --- | --- |
+| `SPEC.md` | FR-024 requirement, acceptance criteria, and failure modes |
+| `TRACEABILITY.md` | FR-024, AC, TC, and evidence mapping |
+| `ACCEPTANCE.md` | Hot reload acceptance command and Release DoD status |
+| `FEATURES.md` | Feature projection and implementation status |
+| `RUNTIME-MAPPING.md` | Admin endpoint path and operational behavior |
+| `CHANGELOG.md` | Versioned change summary |
+| `scripts/check-binance-docs.sh` | Machine check for the accepted contract |
 
-## 4. Closure guardrails for open governance issues
+## 5. Stop Conditions
 
-- #869 is runtime-evidence gated. It cannot be closed by docs-only edits.
-- #871 is satisfied only when this thin entrance exists, `RULES.md` R9 knows about it, and the doc check script covers it.
-- #893-#895 are migration/compression work items; reports may document current state, but closure requires the named document moves/compressions.
-- #896 requires a commit coverage matrix plus authoritative PR/head metadata before “no omitted change reaches main” can be claimed.
-
----
-
-## 5. Change history
-
-| Date | Version | Change | Author |
-|---|---|---|---|
-| 2026-06-23 | v0.1.0 | Established thin standard entrypoint for #871 and recorded #869 evidence guardrails. | ZoneCNH |
+[FRAME, HIGH] Stop and keep FR-024 pending if live stream behavior is not proven, if endpoint naming remains split across active docs, if release evidence is local-only but the gate requires remote CI, or if rollback behavior is untested.

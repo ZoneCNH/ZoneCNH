@@ -23,32 +23,24 @@ internal/server/dispatch/
 
 | Topic | Key | 用途 |
 |-------|-----|------|
-| `binance.spot.tick.v1` | symbol | 现货 Tick |
-| `binance.spot.trade.v1` | symbol | 现货成交 |
+| `binance.spot.tick.v1` | symbol | 现货成交 |
 | `binance.spot.bar.v1` | symbol | 现货 K 线 / bar |
 | `binance.spot.depth.v1` | symbol | 现货深度 |
-| `binance.spot.funding_rate.v1` | symbol | 现货资金费率 capability 事件 |
-| `binance.spot.mark_price.v1` | symbol | 现货标记价格 capability 事件 |
-| `binance.um_perp.tick.v1` | symbol | USDⓈ-M Tick |
-| `binance.um_perp.trade.v1` | symbol | USDⓈ-M 成交 |
+| `binance.spot.trade.v1` | symbol | 现货逐笔成交 |
+| `binance.um_perp.tick.v1` | symbol | USDⓈ-M 成交 |
 | `binance.um_perp.bar.v1` | symbol | USDⓈ-M K 线 / bar |
 | `binance.um_perp.depth.v1` | symbol | USDⓈ-M 深度 |
-| `binance.um_perp.funding_rate.v1` | symbol | USDⓈ-M 资金费率 |
-| `binance.um_perp.mark_price.v1` | symbol | USDⓈ-M 标记价格 |
-| `binance.cm_perp.tick.v1` | symbol | COIN-M Tick |
-| `binance.cm_perp.trade.v1` | symbol | COIN-M 成交 |
+| `binance.um_perp.trade.v1` | symbol | USDⓈ-M 逐笔成交 |
+| `binance.cm_perp.tick.v1` | symbol | COIN-M 成交 |
 | `binance.cm_perp.bar.v1` | symbol | COIN-M K 线 / bar |
 | `binance.cm_perp.depth.v1` | symbol | COIN-M 深度 |
-| `binance.cm_perp.funding_rate.v1` | symbol | COIN-M 资金费率 |
-| `binance.cm_perp.mark_price.v1` | symbol | COIN-M 标记价格 |
-| `binance.options.tick.v1` | symbol | Options Tick |
-| `binance.options.trade.v1` | symbol | Options 成交 |
+| `binance.cm_perp.trade.v1` | symbol | COIN-M 逐笔成交 |
+| `binance.options.tick.v1` | symbol | Options 成交 |
 | `binance.options.bar.v1` | symbol | Options K 线 / bar |
 | `binance.options.depth.v1` | symbol | Options 深度 |
-| `binance.options.funding_rate.v1` | symbol | Options 资金费率 capability 事件 |
-| `binance.options.mark_price.v1` | symbol | Options 标记价格 capability 事件 |
+| `binance.options.trade.v1` | symbol | Options 逐笔成交 |
 
-格式规律：`binance.{product_line}.{event_type}.v1`（Kafka topic 与 natsx subject 分离）
+格式规律：`binance.{product_line}.{event_type}.v1`（与 natsx subject 明确分离）
 
 ## 接口设计
 
@@ -78,7 +70,7 @@ func (d *MarketDispatcher) Dispatch(ctx context.Context, env *domainmarket.Marke
 
 ## Functional Requirements
 
-**FR-DISP-001**: topic 名称格式使用 Kafka 合同：`binance.{product_line}.{event_type}.v1`。
+**FR-DISP-001**: Kafka topic 名称格式为 `binance.{product_line}.{event_type}.v1`，与 natsx subject 明确分离。
 
 **FR-DISP-002**: 使用 symbol 作为 Kafka partition key，相同 symbol 消息保证有序到达同一 partition。
 

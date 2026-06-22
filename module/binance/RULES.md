@@ -1,7 +1,7 @@
 # module/binance RULES.md — 模块治理规则
 
-- Doc-Version: v2.0.0
-- Last-Updated: 2026-06-23
+- Doc-Version: v1.0.1
+- Last-Updated: 2026-06-22
 - 适用范围：`module/binance/` 全部规格文档 + `github.com/ZoneCNH/binance` runtime 仓
 - 优先级：本文 > 子规格 > task；与 `CONSTITUTION.md` §0-§20 冲突时以 `CONSTITUTION.md` 为准
 - 强制级别：每条规则标注【硬】（违反即治理违规）/【软】（推荐）/【开】（仅验证存在性）
@@ -29,32 +29,26 @@
 
 ---
 
-## R2【硬】4 × 6 对称命名矩阵无缺口
+## R2【硬】4 × 4 对称矩阵无缺口
 
-**规则**：`module/binance/` 的 product_line（spot/um_perp/cm_perp/options）× event_type（tick/trade/bar/depth/funding_rate/mark_price）构成 24 个命名组合，全部组合必须在以下 5 个合同层面对称存在：
+**规则**：`module/binance/` 的 product_line（spot/um_perp/cm_perp/options）× event_type（tick/trade/bar/depth）构成 16 个组合，全部组合必须在以下 5 个层面对称存在：
 
 1. natsx subject（`SPEC.md` §9 + `RUNTIME-MAPPING.md`）
-2. Kafka topic（`TASK-BINANCE-SERVER-014-kafkax-dispatch.md`）
+2. Kafka topic（`binance.{product_line}.{event_type}.v1`；`TASK-BINANCE-SERVER-014-kafkax-dispatch.md`）
 3. TDengine 子表（`TASK-BINANCE-SERVER-013-taosx-storage.md`）
 4. ossx 归档路径（`TASK-BINANCE-SERVER-016-ossx-archiver.md`）
 5. Gin REST API（`TASK-BINANCE-SERVER-015-gin-market-api.md`）
 
-**违规**：缺失任一组合（例如缺 `binance.market.options.funding_rate`）
-
-**能力例外**：R2 约束的是命名层与合同层的可寻址性，不等价于交易所已经对所有 24 个组合提供数据。runtime 可对暂不支持的组合显式返回 capability/status，不得用缺失命名来表达不支持。
+**违规**：缺失任一组合（例如缺 `binance.market.options.depth`）
 
 **检测**：
 ```bash
-# 期望返回 24 × 5 = 120 行（每层 24 个组合）
-for layer in "binance\.market\." "binance\." "binance_market_" "binance/" "/api/v1/market/"; do
-  echo "=== $layer ==="
-  grep -rE "$layer" module/binance/ --include="*.md" | wc -l
-done
+bash scripts/check-binance-docs.sh
 ```
 
 **例外**：暂不实现的组合必须显式标注 `[POSTPONED <task-id>]`，且 PR 描述说明推迟理由
 
-**修复义务**：发现缺口 → 同 PR 补全或显式 POSTPONED → 按 R3 bump；product_line/event_type 枚举变更必须 MAJOR
+**修复义务**：发现缺口 → 同 PR 补全或显式 POSTPONED → bump SPEC MINOR 版本
 
 ---
 
@@ -66,7 +60,7 @@ done
 |---|---|---|
 | FR/BR/NFR 接口/契约变更 | MINOR | 新增 FR、修改 AC 语义 |
 | 命名收敛 / subject/topic/key 重命名 | MINOR | um_perp 命名统一 |
-| product_line / event_type 枚举变更 | MAJOR | 新增 `funding_rate` / `mark_price` event_type |
+| product_line / event_type 枚举变更 | MAJOR | 新增 USDⓈ-M Delivery |
 | 状态字段修正 / 文档错字 / 链接修复 | PATCH | Pending → Implemented |
 | 追溯矩阵新增 TC/AC | PATCH | TC-029 新增 |
 | 治理体系重构（如废弃 TRACEABILITY） | MAJOR | — |
@@ -82,30 +76,26 @@ done
 
 ---
 
-## R4【硬】状态三层一致
+## R4【硬】状态 L1/L2 分层一致
 
-**规则**：FR/BR/AC 的实现状态必须声明并校验三个层级：
+**规则**：FR/BR/AC 的实现状态必须按 L1/L2 分层同步，不得用 boundary gate 证据替代功能验收：
 
-1. **L1 Doc Gate**：`TRACEABILITY.md`、`{client,server}/TRACEABILITY.md`、`FEATURES.md`、`ACCEPTANCE.md` 的状态投影一致。
-2. **L2 Runtime Evidence**：runtime 仓实际代码、命令输出、CI run 或 PR 证据一致（`/home/binance` / `github.com/ZoneCNH/binance`）。
-3. **L3 Report Evidence**：`docs/report/binance/**` 的 [COMPUTED] 标签与 L1/L2 口径一致。
+1. **L1 Boundary/Governance Gate**：只覆盖 FR-009 / BR-005 / BR-009 等边界治理约束，可用 runtime SHA + CI workflow URL + boundary-gates.sh PASS 标记 `Implemented`。
+2. **L2 Functional Runtime FR**：FR-001~FR-008、FR-010 及后续功能 FR 只能在 runtime feature tests / integration tests / reproducible commit SHA 同时存在时标记 `Implemented`。
+3. **报告**（`docs/report/binance/**`）的 [COMPUTED] 标签必须区分 L1 boundary evidence 与 L2 functional evidence。
 
-**违规**：L1 标为 "Implemented" 但 L2 无对应 runtime 证据；或报告称 Pending 但矩阵称 Implemented；或仅有 L1 文档闭环却关闭需要 L2 runtime evidence 的 issue。
+**违规**：用 boundary gate PASS 推导 FR-001~FR-008/FR-010 已实现；根矩阵 "Implemented" 但 runtime 仓未推送对应代码；或报告称 Pending 但矩阵称 Implemented。
 
 **检测**：
 ```bash
-# 1. 根 TRACEABILITY Implemented 数量
-grep -cE "\| \*\*Implemented\*\*" module/binance/TRACEABILITY.md
-# 2. boundary-gates.sh 实际 PASS 数量（在 /home/binance）
-cd /home/binance && bash scripts/boundary-gates.sh 2>&1 | grep -c "PASS"
-# 3. 期望：两数相等
+bash scripts/check-binance-docs.sh
 ```
 
 **修复义务**：
-- L1 Doc Gate 只能证明文档一致，不得单独关闭 L2 runtime issue
-- 同步 L2 状态时必须附 boundary-gate 输出、测试输出、CI run、PR 或 git SHA 证据
+- 同步 L1 状态时必须附 boundary-gate 输出或 git SHA 证据
+- 同步 L2 状态时必须附对应 feature test / integration test 输出和 runtime git SHA
 - 不可仅凭 "已写代码" 主观判断，必须 CI gate PASS
-- runtime 仓未推送或无 fresh evidence 时，所有 FR 实现状态默认 `Pending — 以 runtime 仓为准`
+- runtime 仓未推送时，所有 L2 FR 实现状态默认 `Pending — 以 runtime 仓为准`
 
 ---
 
@@ -190,12 +180,10 @@ ACC=$(grep -oP "Module-Version: \Kv[0-9.]+" module/binance/ACCEPTANCE.md)
 
 | 文件 | 用途 |
 |---|---|
-| `STANDARD.md` | 模块标准入口与权威顺序 |
 | `SPEC.md` | 23 节模块规格 |
 | `TRACEABILITY.md` | FR/BR/NFR/TC/AC 追溯矩阵 |
 | `ACCEPTANCE.md` | 验收清单 |
 | `FEATURES.md` | 功能特性总览 |
-| `DATA-LIFECYCLE.md` | 历史/实时数据生命周期草案与 FR-012~FR-024 讨论稿 |
 | `IMPLEMENTATION-PLAN.md` | 实现计划 |
 | `RUNTIME-MAPPING.md` | runtime 仓映射 |
 | `BOUNDARY-GATES.md` | CI gate 定义 |
@@ -206,14 +194,16 @@ ACC=$(grep -oP "Module-Version: \Kv[0-9.]+" module/binance/ACCEPTANCE.md)
 | `client/SPEC.md` + `client/TRACEABILITY.md` | 客户端子规格 |
 | `server/SPEC.md` + `server/TRACEABILITY.md` | 服务端子规格 |
 | `{client,server}/tasks/archive/README.md` | 归档映射 |
+| `scripts/check-binance-docs.sh` | binance 文档漂移 CI gate（仓库脚本） |
 
 **检测**：
 ```bash
-for f in STANDARD.md SPEC.md TRACEABILITY.md ACCEPTANCE.md FEATURES.md DATA-LIFECYCLE.md IMPLEMENTATION-PLAN.md \
+for f in SPEC.md TRACEABILITY.md ACCEPTANCE.md FEATURES.md IMPLEMENTATION-PLAN.md \
          RUNTIME-MAPPING.md BOUNDARY-GATES.md NAMING.md RULES.md \
          ARCHITECTURE-DRIFT-WATCHLIST.md CHANGELOG.md; do
   [ -f "module/binance/$f" ] && echo "✓ $f" || echo "✗ $f MISSING"
 done
+test -x scripts/check-binance-docs.sh
 ```
 
 ---
@@ -262,6 +252,5 @@ done
 
 | 日期 | 版本 | 变更内容 | 作者 |
 |---|---|---|---|
-| 2026-06-23 | v1.0.2 | R9 文档存在性新增 `DATA-LIFECYCLE.md`，并要求脚本覆盖 `STANDARD.md` / `DATA-LIFECYCLE.md` 两个入口。 | ZoneCNH |
-| 2026-06-23 | v1.0.1 | R9 文档存在性新增 `STANDARD.md`，对齐 #871 模块标准入口。 | ZoneCNH |
+| 2026-06-22 | v1.0.1 | 接入 `scripts/check-binance-docs.sh`，明确 Kafka topic canonical v1 格式，并将状态一致性规则拆分为 L1 boundary gate 与 L2 functional runtime FR | ZoneCNH |
 | 2026-06-22 | v1.0.0 | 首次建立。整合 2026-06-22 治理审计复盘 + binance/SPEC.md §11 NFR 治理章节 + CLAUDE.md 编辑纪律，规则 R1-R10 全部可机器检测 | ZoneCNH |

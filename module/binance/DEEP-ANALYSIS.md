@@ -446,10 +446,10 @@ kafkax.Producer.Send()             kafkax.Consumer.Poll()
        ▼                                    ▼
 ┌────────────────── Kafka ──────────────────────┐
 │  Topics:                                      │
-│    binance.market.ticks    (实时逐笔)          │
-│    binance.market.bars     (K线)               │
-│    binance.market.depth    (深度)              │
-│    binance.market.events   (行情事件/状态变更)  │
+│    binance.spot.tick.v1       (现货逐笔)       │
+│    binance.spot.bar.v1        (现货K线)        │
+│    binance.spot.depth.v1      (现货深度)       │
+│    binance.um_perp.trade.v1   (U本位成交)      │
 │                                                │
 │  Partitions: 按 symbol hash 分区               │
 │  Retention: 7 days                             │
@@ -472,7 +472,7 @@ type KafkaDispatcher struct {
 
 func (d *KafkaDispatcher) Dispatch(ctx context.Context, event *AcceptedEvent) error {
     // server 接受事件后 → 同时写 taosx + kafkax
-    topic := fmt.Sprintf("binance.market.%s", event.EventType)
+    topic := fmt.Sprintf("binance.%s.%s.v1", event.ProductLine, event.EventType)
     key := fmt.Sprintf("%s:%s", event.ProductLine, event.Symbol)
     value, _ := json.Marshal(event)
 
@@ -684,7 +684,7 @@ T+10ms│  server/processor  │  enrich: 补充衍生字段
       │  [并行写入]        │
 T+11ms│  server/storage    │  taosx.WriteBatch → binance_ticks
 T+12ms│  server/cache      │  redisx.SET("tick:spot:BTCUSDT", json, 60s)
-T+13ms│  server/dispatch   │  kafkax.Send("binance.market.ticks", key, value)
+T+13ms│  server/dispatch   │  kafkax.Send("binance.spot.tick.v1", key, value)
 ──────┼───────────────────┼──────────────────────────────────────
 T+14ms│  【存储完成】       │  事件已持久化到 taosx + kafkax
 ──────┼───────────────────┼──────────────────────────────────────
@@ -832,10 +832,11 @@ kafka:
     acks: "all"
     compression: "snappy"
     max_retries: 3
+  topic_pattern: "binance.{product_line}.{event_type}.v1"
   topics:
-    ticks: "binance.market.ticks"
-    bars: "binance.market.bars"
-    depth: "binance.market.depth"
+    spot_tick: "binance.spot.tick.v1"
+    spot_bar: "binance.spot.bar.v1"
+    spot_depth: "binance.spot.depth.v1"
 
 oss:
   endpoint: "oss-cn-hangzhou.aliyuncs.com"

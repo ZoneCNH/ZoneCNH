@@ -8,12 +8,9 @@
 
 | 报告 | 日期 | 主题 | 综合评分 |
 |---|---|---|:---:|
-| [binance/governance-closure-20260623.md](./binance/governance-closure-20260623.md) | 2026-06-23 | binance governance closure review（#869 本地 runtime 证据闭合；#871/#893/#894/#895 文档治理收口；#896 部分满足） | — |
-| [binance/commit-coverage-audit-20260623.md](./binance/commit-coverage-audit-20260623.md) | 2026-06-23 | binance #896 newest 50 preserve/stash candidate 本地覆盖审计 | — |
-| [binance/goal-execution-plan-20260622.md](./binance/goal-execution-plan-20260622.md) | 2026-06-22 | binance Goal 执行方案（82→95 分目标，AC-1~AC-9，12 issue + FR-012~FR-024 分阶段验收） | 82→95 |
-| [binance/iteration-plan-20260622.md](./binance/iteration-plan-20260622.md) | 2026-06-22 | binance 完整更新迭代方案（5 份报告 + 12 issues 收敛，27 项 backlog，7 阶段路线） | — |
+| [binance/goal-execution-plan-20260622.md](./binance/goal-execution-plan-20260622.md) | 2026-06-22 | binance Goal 执行方案（82→95 分，7 阶段 × 9 AC × 26 issues，遵循 docs/goal/02-goal-standard.md） | — |
+| [binance/iteration-plan-20260622.md](./binance/iteration-plan-20260622.md) | 2026-06-22 | binance 完整更新迭代方案（5 份报告 + 8 issues 收敛，27 项 backlog，7 阶段路线） | — |
 | [fred/iteration-plan-20260622.md](./fred/iteration-plan-20260622.md) | 2026-06-22 | fred 完整更新迭代方案（4 份报告 + 7 模块文件收敛，29 项 backlog，7 阶段路线，68→80+ 分） | 68/100 (D+) |
-| [fred/stage2-contracts-binding-20260622.md](./fred/stage2-contracts-binding-20260622.md) | 2026-06-22 | fred 阶段 2 产物：config mapping + API/Kafka/NATS/七介质契约 + domain_macro 绑定（发现 SPEC 模型与源码不一致） | — |
 | [binance/deep-analysis-20260622-v4.md](./binance/deep-analysis-20260622-v4.md) | 2026-06-22 | binance 历史数据 vs 实时数据缺口（13 条建议 FR: FR-012~FR-024） | — |
 | [binance/deep-analysis-20260622-v3.md](./binance/deep-analysis-20260622-v3.md) | 2026-06-22 | binance 治理漂移分析（命名 SSOT、Kafka topic、任务引用、状态口径） | — |
 | [binance/business-types-coverage-20260622.md](./binance/business-types-coverage-20260622.md) | 2026-06-22 | binance 业务类型覆盖（Spot/合约/期权/订单簿）+ Options depth 缺口与命名漂移识别 | — |
@@ -30,7 +27,7 @@
 
 | 路径 | 说明 |
 |---|---|
-| [`binance/`](./binance/) | binance 模块深度分析与治理报告（governance-closure / commit-coverage 为 2026-06-23 收口证据；v2 评分权威；v3 治理漂移；v4 历史/实时缺口；iteration-plan 为收敛迭代方案；goal-execution-plan 为 82→95 执行路线；v1 保留 PR #850 基线） |
+| [`binance/`](./binance/) | binance 模块深度分析（v2 评分权威；v3 治理漂移；v4 历史/实时缺口；iteration-plan 为收敛迭代方案；v1 保留 PR #850 基线） |
 | [`fred/`](./fred/) | fred 模块深度分析（deep-analysis P0/P1 排序；data-issues 历史/实时/同步/清洗/缺口；ms_brain 下游契约；structural-score 68/42 分账本；iteration-plan 为收敛迭代方案） |
 | [`goal/`](./goal/) | Goal 文档分析（2026-06-09 收尾，含 ISSUE-LEDGER 与 README） |
 | [`archive/`](./archive/) | 历史档案区（已收敛的过程草稿） |
@@ -53,11 +50,9 @@
 
 | 日期 | 变更 |
 |---|---|
-| 2026-06-23 | 新增 binance governance closure 与 commit coverage audit 索引；补 `docs/report/binance/` 子目录索引入口 |
-| 2026-06-23 | 新增 `binance/goal-execution-plan-20260622.md`：补回 Goal 执行路线，记录 AC-1~AC-9、本地已关闭 issue 与外部门禁缺口 |
-| 2026-06-22 | 新增 `binance/iteration-plan-20260622.md`：5 份报告 + 12 issues 收敛为 27 项 backlog + 7 阶段路线；补索引 v3/v4 条目 |
+| 2026-06-22 | 新增 `binance/goal-execution-plan-20260622.md`：Goal 执行方案（82→95 分，9 AC，7 阶段 × 26 issues，遵循 docs/goal/02-goal-standard.md） |
+| 2026-06-22 | 新增 `binance/iteration-plan-20260622.md`：5 份报告 + 8 issues 收敛为 27 项 backlog + 7 阶段路线；补索引 v3/v4 条目 |
 | 2026-06-22 | 新增 `fred/iteration-plan-20260622.md`：4 份报告 + 7 模块文件收敛为 29 项 backlog + 7 阶段路线；补 `fred/` 子目录条目 |
-| 2026-06-22 | 新增 `fred/stage2-contracts-binding-20260622.md`：阶段 2 产物（config mapping + API/Kafka/NATS/七介质契约 + domain_macro 绑定，发现 SPEC §9 模型与 domain-macro v0.1.0 源码不一致） |
 | 2026-06-22 | 新增 binance 深度分析 v3（治理漂移）+ v4（历史/实时数据缺口，13 条建议 FR-012~024）via PR #877 |
 | 2026-06-22 | 新增 `binance/business-types-coverage-20260622.md`：业务类型覆盖深度分析 + Options depth 缺口（HIGH）+ 命名漂移（HIGH，3 套命名击穿 5 条管线）+ Runtime 核对建议（6 项 gh 命令清单） |
 | 2026-06-22 | 新增 binance 深度分析 v1/v2（`binance/deep-analysis-20260622.md`、`binance/deep-analysis-20260622-v2.md`）+ 后续 P0/P1 修复（PR #852/#853）；评分 68→82 |
