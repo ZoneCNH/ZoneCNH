@@ -4,9 +4,9 @@
 >
 > 规范来源：`docs/governance/TRACEABILITY.md`
 
-- Matrix-Version: v2.2.3
-- Last-Updated: 2026-06-22
-- Spec-Reference: `module/binance/SPEC.md` v2.2.3
+- Matrix-Version: v3.0.0
+- Last-Updated: 2026-06-23
+- Spec-Reference: `module/binance/SPEC.md` v3.0.0
 
 ---
 
@@ -21,9 +21,9 @@
 | FR-003 | natsx Communication：Client/Server 通过 natsx JetStream **网络**通信，禁止共享进程或内存 | AC-007 ~ AC-010 | TC-004, TC-005 | CLIENT-014, SERVER-010 | ⬜ Pending |
 | FR-004 | At-Least-Once Delivery：JetStream durable consumer + ManualAck 确保消息不丢失 | AC-011 ~ AC-013 | TC-006 | CLIENT-014, SERVER-010 | ⬜ Pending |
 | FR-005 | Idempotent Acceptance：redisx SetNX 确保相同消息最多写入 taosx 一次（72h TTL） | AC-014 ~ AC-016 | TC-007, TC-008 | SERVER-011 | ⬜ Pending |
-| FR-006a | taosx Time-Series：WriteBatch 写入 tick/bar/depth 到超级表子表 | AC-017 ~ AC-018 | TC-009 | SERVER-012 | ⬜ Pending |
+| FR-006a | taosx Time-Series：WriteBatch 写入 tick/trade/bar/depth/funding_rate/mark_price 到超级表子表 | AC-017 ~ AC-018 | TC-009 | SERVER-012 | ⬜ Pending |
 | FR-006b | postgresx Metadata：幂等 upsert instrument catalog + 审计日志 | AC-019 ~ AC-020 | TC-010 | SERVER-012 | ⬜ Pending |
-| FR-006c | redisx Hot Cache：最新 tick/bar/depth 热缓存（60s/5s TTL），失败降级 | AC-036 ~ AC-037 | TC-023 | SERVER-013 | ⬜ Pending（v2.1.0 拆出） |
+| FR-006c | redisx Hot Cache：最新 tick/trade/bar/funding_rate/mark_price 60s TTL，depth 5s TTL，失败降级 | AC-036 ~ AC-037 | TC-023 | SERVER-013 | ⬜ Pending（v2.1.0 拆出） |
 | FR-006d | ossx Archival：定时将 taosx 过期数据归档到 OSS，ETag 校验后删热 | AC-026 ~ AC-028 | TC-016, TC-017 | SERVER-016 | ⬜ Pending |
 | FR-007 | Gin Market API：/api/v1/market/* REST 接口，redisx 热缓存 + taosx 回退 | AC-021 ~ AC-025 | TC-012 ~ TC-015 | SERVER-015 | ⬜ Pending |
 | FR-007a | clickhousex Analytics API：/api/v1/analytics/* OLAP 查询（vwap/top-movers/correlation） | AC-038 ~ AC-040 | TC-024 | SERVER-015 | ⬜ Pending（v2.1.0 新增） |
@@ -66,7 +66,7 @@
 | NFR-010 | clickhousex analytics Query 延迟 P99 < 2s | §17 | integration test |
 | NFR-011 | kafkax Send (async) 延迟 P99 < 5ms | §17 | integration test |
 | NFR-012 | ossx Upload (100MB) 吞吐量 ≥ 50 MB/s | §17 | integration test |
-| NFR-013 | Gin API /api/v1/market/ticks (redisx hit) P99 < 5ms | §17 | httptest benchmark |
+| NFR-013 | Gin Market API redisx hit（ticks/trades/bars/funding-rates/mark-prices）P99 < 5ms | §17 | httptest benchmark |
 | NFR-014 | Gin API /api/v1/analytics/vwap (clickhousex) P99 < 2s | §17 | httptest benchmark |
 | NFR-015 | Gin API /api/v1/instruments (postgresx) P99 < 20ms | §17 | httptest benchmark |
 | NFR-016 | Client restart recovery < 10s | §17 | integration test |
@@ -89,10 +89,10 @@
 | TC-006 | FR-004 | BR-004 | 集成（JetStream ManualAck：成功→Ack，失败→NakWithDelay） | Pending |
 | TC-007 | FR-005 | — | 单元（SetNX 首次→新消息；重复→跳过） | Pending |
 | TC-008 | FR-005 | — | 单元（Redis 不可达→error→NakWithDelay） | Pending |
-| TC-009 | FR-006a | BR-006 | 单元（taosx WriteTick + WriteBatch） | Pending |
+| TC-009 | FR-006a | BR-006 | 单元（taosx WriteBatch 覆盖 tick/trade/bar/depth/funding_rate/mark_price） | Pending |
 | TC-010 | FR-006b | BR-006 | 单元（postgresx UpsertSymbol 幂等） | Pending |
 | TC-011 | FR-006a | — | 集成（taosx QueryRange 时间范围过滤） | Pending |
-| TC-012 | FR-007 | — | httptest（/api/v1/market/ticks redisx hit + taosx fallback） | Pending |
+| TC-012 | FR-007 | — | httptest（/api/v1/market/{ticks,trades,bars,funding-rates,mark-prices} redisx hit + taosx fallback） | Pending |
 | TC-013 | FR-007 | — | httptest（/api/v1/market/depth redisx cache） | Pending |
 | TC-014 | FR-007 | — | httptest（API key 401） | Pending |
 | TC-015 | FR-007 | — | httptest（限流 429） | Pending |
@@ -103,7 +103,7 @@
 | TC-020 | FR-009 | BR-005 | CI gate（cs 包/client 包 import 检查） | **PASS** |
 | TC-021 | FR-009 | BR-001 | CI gate（no-legacy 引用检查） | **PASS** |
 | TC-022 | FR-009 | BR-009 | CI gate（go.mod 7 infra + gin + clickhousex direct） | **PASS** |
-| TC-023 | FR-006c | — | 单元（redisx SET(tick:*, json, 60s)；PUT 失败→降级不阻塞） | Pending |
+| TC-023 | FR-006c | — | 单元（redisx SET({event_type}:{line}:{symbol}, json, ttl)；tick/trade/bar/funding_rate/mark_price 60s，depth 5s；PUT 失败→降级不阻塞） | Pending |
 | TC-024 | FR-007a | — | httptest（/api/v1/analytics/vwap + top-movers + correlation） | Pending |
 | TC-025 | FR-010 | BR-006 | 集成（clickhousex ETL：taosx Query → 聚合 → InsertBatch） | Pending |
 | TC-026 | FR-010 | — | 单元（clickhousex 不可达→503 + ETL 跳过本批次） | Pending |
@@ -132,11 +132,11 @@
 | AC-014 | FR-005 | 首次消息（SetNX 成功）→ 继续写入 taosx | TC-007 |
 | AC-015 | FR-005 | 重复消息（SetNX 失败）→ Ack 并跳过，不写 taosx | TC-007 |
 | AC-016 | FR-005 | Redis 不可达 → error，consumer NakWithDelay | TC-008 |
-| AC-017 | FR-006 | taosx WriteTick 使用 symbol+product_line 子表名，自动创建子表 | TC-009 |
+| AC-017 | FR-006 | taosx WriteBatch 按 product_line + event_type + symbol 写入 tick/trade/bar/depth/funding_rate/mark_price 子表并自动创建子表 | TC-009 |
 | AC-018 | FR-006 | taosx WriteBatch 合并多条消息一次网络往返 | TC-009 |
 | AC-019 | FR-006 | postgresx UpsertSymbol 幂等（ON CONFLICT DO UPDATE） | TC-010 |
 | AC-020 | FR-006 | postgresx UpdateIngestStatus 更新 last_seq 用于 gap fill | TC-010 |
-| AC-021 | FR-007 | GET /api/v1/market/ticks 从 taosx 查询，支持 symbol+time range+limit | TC-012 |
+| AC-021 | FR-007 | GET /api/v1/market/{ticks,trades,bars,funding-rates,mark-prices} 支持 redisx hit + taosx fallback，按 symbol+time range+limit 查询 | TC-012 |
 | AC-022 | FR-007 | GET /api/v1/market/depth/:symbol 从 redisx 读取最新快照 | TC-013 |
 | AC-023 | FR-007 | 无效 API key → 401 | TC-014 |
 | AC-024 | FR-007 | 超限（1000 req/min）→ 429 + Retry-After | TC-015 |
@@ -151,7 +151,7 @@
 | AC-033 | FR-010 | 任何代码 reintroduce `binance-market` 引用时 CI no-legacy gate 失败 | TC-021 |
 | AC-034 | FR-010 | go.mod 中 natsx/redisx/postgresx/taosx/clickhousex/kafkax/ossx/gin 均保持 direct 依赖 | TC-022 |
 | AC-035 | FR-009 | BOUNDARY-GATES §5（cs 包禁止）+ §6（同进程禁止）+ §11（go.mod 合规）全 PASS | TC-020 |
-| AC-036 | FR-006c | redisx SET(tick:{line}:{symbol}, json, 60s) 写入最新行情缓存 | TC-023 |
+| AC-036 | FR-006c | redisx SET({event_type}:{line}:{symbol}, json, ttl) 写入最新行情缓存；tick/trade/bar/funding_rate/mark_price 60s，depth 5s | TC-023 |
 | AC-037 | FR-006c | redisx 缓存写入失败 → warn 日志 + 降级（不阻塞主管线） | TC-023 |
 | AC-038 | FR-007a | GET /api/v1/analytics/vwap 从 clickhousex 返回跨符号 VWAP 排名 | TC-024 |
 | AC-039 | FR-007a | GET /api/v1/analytics/top-movers 返回涨幅/跌幅 top N | TC-024 |
@@ -197,3 +197,4 @@
 | 2026-06-22 | v2.2.1 | **Boundary gate runtime evidence 回填**：BR-001/002/003/005/006/007/008/009 与 TC-005/021/022 对齐 `/home/binance/scripts/boundary-gates.sh` 10/10 PASS；BR-004 与非边界业务 FR 仍保持 Pending | ZoneCNH |
 | 2026-06-22 | v2.2.2 | **PR-C 模块治理收尾**：新建 `CHANGELOG.md`（Keep-a-Changelog 格式）；ACCEPTANCE Module-Version v2.0.0 → v2.2.2、FEATURES Module-Version v2.0.0 → v2.2.2、IMPLEMENTATION-PLAN Version v2.1.2 → v2.2.2；满足 RULES.md R6 + R9 + DRIFT D4 | ZoneCNH |
 | 2026-06-22 | v2.2.3 | **PR-D runtime evidence 回填**：FR-009 状态附 runtime SHA `bae80d6` + CI workflow URL（runtime PR ZoneCNH/binance#9 合并，删除 `internal/cs/` + 集成 `.github/workflows/boundary-gates.yml` 9 道 gate）；DRIFT D8 风险级别 MEDIUM → LOW；报告 §Runtime 核对结果 第 4 项证据升级为 runtime commit + CI URL | ZoneCNH |
+| 2026-06-23 | v3.0.0 | **FR-020 taxonomy fold**：event_type 从 4 类扩展为 6 类，新增 `funding_rate` / `mark_price`；SPEC、TRACEABILITY、NAMING、RULES、RUNTIME-MAPPING 与 README 投影同步到 4 × 6 命名矩阵；runtime 可用性仍需 capability/status 证据表达 | ZoneCNH |

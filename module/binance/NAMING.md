@@ -2,7 +2,7 @@
 
 - Doc-Version: v2.0.0
 - Last-Updated: 2026-06-23
-- Applies-To: `module/binance/SPEC.md` v2.2.3, `module/binance/RULES.md` v2.0.0
+- Applies-To: `module/binance/SPEC.md` v3.0.0, `module/binance/RULES.md` v2.0.0
 - Scope: product_line、event_type、natsx subject、Kafka topic、TDengine stable、Redis key、REST endpoint、OSS path
 
 > [COMPUTED, HIGH] 本文件是 `module/binance` 命名权威入口。所有新增规格、任务和 runtime 代码必须使用本文件的 canonical token；历史别名只允许出现在本文件、治理报告、漂移清单和归档 task 中。
@@ -29,7 +29,7 @@
 | `funding_rate` | 资金费率与 funding 信息 | futures mark price / fundingInfo |
 | `mark_price` | 标记价格 | futures mark price stream |
 
-> [COMPUTED, HIGH] v2.2.3 起 product_line × event_type 为 **4 × 6** 对称矩阵，共 24 个规范组合。即使交易所暂不提供某产品线的某事件，命名层仍保留组合，runtime 可用 capability/status 标识暂不产出。
+> [COMPUTED, HIGH] v3.0.0 起 product_line × event_type 为 **4 × 6** 对称矩阵，共 24 个规范组合。即使交易所暂不提供某产品线的某事件，命名层仍保留组合，runtime 可用 capability/status 标识暂不产出。
 
 ## 3. natsx Subject Matrix
 

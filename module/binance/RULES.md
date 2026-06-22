@@ -39,7 +39,7 @@
 4. ossx 归档路径（`TASK-BINANCE-SERVER-016-ossx-archiver.md`）
 5. Gin REST API（`TASK-BINANCE-SERVER-015-gin-market-api.md`）
 
-**违规**：缺失任一组合（例如缺 `binance.market.options.depth`）
+**违规**：缺失任一组合（例如缺 `binance.market.options.funding_rate`）
 
 **能力例外**：R2 约束的是命名层与合同层的可寻址性，不等价于交易所已经对所有 24 个组合提供数据。runtime 可对暂不支持的组合显式返回 capability/status，不得用缺失命名来表达不支持。
 
@@ -54,7 +54,7 @@ done
 
 **例外**：暂不实现的组合必须显式标注 `[POSTPONED <task-id>]`，且 PR 描述说明推迟理由
 
-**修复义务**：发现缺口 → 同 PR 补全或显式 POSTPONED → bump SPEC MINOR 版本
+**修复义务**：发现缺口 → 同 PR 补全或显式 POSTPONED → 按 R3 bump；product_line/event_type 枚举变更必须 MAJOR
 
 ---
 
@@ -66,7 +66,7 @@ done
 |---|---|---|
 | FR/BR/NFR 接口/契约变更 | MINOR | 新增 FR、修改 AC 语义 |
 | 命名收敛 / subject/topic/key 重命名 | MINOR | um_perp 命名统一 |
-| product_line / event_type 枚举变更 | MAJOR | 新增 USDⓈ-M Delivery |
+| product_line / event_type 枚举变更 | MAJOR | 新增 `funding_rate` / `mark_price` event_type |
 | 状态字段修正 / 文档错字 / 链接修复 | PATCH | Pending → Implemented |
 | 追溯矩阵新增 TC/AC | PATCH | TC-029 新增 |
 | 治理体系重构（如废弃 TRACEABILITY） | MAJOR | — |

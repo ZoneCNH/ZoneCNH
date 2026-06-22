@@ -1,16 +1,16 @@
 # Binance Data Lifecycle 讨论稿
 
-- Status: Draft / Discussion (non-normative; not SSOT until folded into Approved SPEC)
+- Status: Draft / Discussion (non-normative except FR-020, which is folded into Approved SPEC v3.0.0)
 - Issue Scope: #879 pre-draft plus #880~#892 FR review anchors
 - Source: `docs/report/binance/deep-analysis-20260622-v4.md` §五~§八
-- Scope: FR-012 ~ FR-024 only; do not fold into `SPEC.md` / `TRACEABILITY.md` until review accepts the lifecycle gates and event taxonomy change.
+- Scope: FR-012 ~ FR-019 and FR-021 ~ FR-024 remain discussion draft; FR-020 is folded into `SPEC.md` / `TRACEABILITY.md` v3.0.0.
 - Last-Updated: 2026-06-23
 
 ## 0. 为什么先独立成稿
 
-v4 分析提出 13 条新增需求，覆盖实时采集控制面、历史回填、缺口修复、对账、冷数据回热与运维可见性。若直接写入 `SPEC.md`，其中 FR-020 会把 `event_type` 从 4 类扩展到 6 类（新增 `funding_rate` / `mark_price`），触发 RULES R2 矩阵重算和 MAJOR bump。
+v4 分析提出 13 条新增需求，覆盖实时采集控制面、历史回填、缺口修复、对账、冷数据回热与运维可见性。FR-020 已作为 v3.0.0 MAJOR taxonomy fold 写入 `SPEC.md`、`NAMING.md` 与 `RULES.md`：`event_type` 从 4 类扩展到 6 类，新增 `funding_rate` / `mark_price`，并完成 RULES R2 4 × 6 矩阵重算。
 
-因此本文件只作为评审入口：先固定数据生命周期闭环和 FR 草案，再由后续 PR fold into root/client/server SPEC、TRACEABILITY、ACCEPTANCE 与任务矩阵。
+因此本文件只作为 FR-012~FR-019、FR-021~FR-024 的评审入口：先固定数据生命周期闭环和 FR 草案，再由后续 PR fold into root/client/server SPEC、TRACEABILITY、ACCEPTANCE 与任务矩阵。
 
 ## 1. 生命周期闭环
 
@@ -31,7 +31,7 @@ symbol discovery
 
 1. 实时链路和 REST 回填使用同一幂等键，避免双写。
 2. 回填和对账不得挤占实时控制面的限速预算。
-3. 新增 `funding_rate` / `mark_price` 只有在 event_type 6 值矩阵、topic、表、AC/TC 同步定稿后才能进入 Approved SPEC。
+3. 新增 `funding_rate` / `mark_price` 已在 v3.0.0 进入 Approved SPEC；后续若 runtime capability 不能覆盖 4 × 6 全矩阵，必须在 RULES/NAMING/TRACEABILITY 中写明适用性例外。
 
 ## 2. FR 草案索引
 
@@ -57,12 +57,12 @@ symbol discovery
 - #881：`listenKey` 只适用于 user-data stream；public market stream 不应继承该要求。
 - #882/#883：interval、partial depth、diff depth、snapshot 与 update_id 语义必须按 product_line 分表确认，不能用单行规则覆盖全部产品。
 - #884~#887：回填 source API、gap key、限速权重和幂等键必须按 event_type × product_line 固定，depth 无历史回填要显式标为 unsupported。
-- #888：`funding_rate` / `mark_price` 是 futures-only；若不做 4×6 全矩阵，必须在 RULES/NAMING/TRACEABILITY 中写明适用性例外。
+- #888：`funding_rate` / `mark_price` 命名层已按 4 × 6 全矩阵保留；runtime 若仅支持 futures 产出，必须以 capability/status 标识暂不产出的产品线。
 - #889~#892：对账、回热、进度 API、热重载都需要 auth/status/pagination/rollback/compatibility 合同后才能进入 Approved SPEC。
 
 ## 4. Fold 前门禁
 
 - FR-012~FR-019 可作为 P0 两阶段进入 SPEC：先实时控制面，再历史生命周期。
-- FR-020 必须和 event_type 6 值矩阵、Kafka topic、taosx 超表、AC/TC 一起评审；不得只改命名文档。
+- FR-020 已和 event_type 6 值矩阵、Kafka topic、taosx 超表、AC/TC 一起折叠进 v3.0.0；后续只允许补 runtime capability/status 证据，不得回退命名矩阵。
 - FR-021~FR-024 依赖前置生命周期锚点，不应先于 FR-012~FR-019 合入 Approved SPEC。
 - fold PR 必须同步更新 `SPEC.md`、`TRACEABILITY.md`、`ACCEPTANCE.md`、`client/SPEC.md`、`server/SPEC.md` 和相应任务状态。

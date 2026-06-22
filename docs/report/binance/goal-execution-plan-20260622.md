@@ -30,7 +30,7 @@
 | AC-3 | 增加 FR-012~FR-024 生命周期讨论稿 | PASS(local) | `module/binance/DATA-LIFECYCLE.md`；`scripts/check-binance-data-lifecycle.sh` 覆盖 13 个 FR anchor。 |
 | AC-4 | 定义 FR-012~FR-015 runtime control plane | NOT COMPLETE | discussion draft 已存在；实现与 spec fold 仍属后续工作。 |
 | AC-5 | 定义 FR-016~FR-019 historical lifecycle | NOT COMPLETE | discussion draft 已存在；实现与 spec fold 仍属后续工作。 |
-| AC-6 | 定义 funding / mark price / reconciliation / rehydration | NOT COMPLETE | discussion draft 已存在；event_type expansion 与 MAJOR bump 未声明完成。 |
+| AC-6 | 定义 funding_rate / mark_price / reconciliation / rehydration | PARTIAL LOCAL CLOSED | FR-020 funding_rate/mark_price 已折叠进 SPEC v3.0.0 4 × 6；reconciliation / rehydration 仍保留在 DATA-LIFECYCLE discussion draft。 |
 | AC-7 | 定义 FR-023~FR-024 governance APIs | NOT COMPLETE | discussion draft 已存在；dynamic hot reload 未声明完成。 |
 | AC-8 | 刷新 #869 本地 runtime 证据 | PASS(local command set) | 2026-06-23 从 `/home/binance` 重新取得 clean short status、boundary gates PASS 10/10、`go test ./...`、`go vet ./...`、race test、`golangci-lint run` 通过证据；release/live smoke 仍由 owner gate。 |
 | AC-9 | 满足 Release DoD | NOT COMPLETE | remote CI、live smoke/deploy、authoritative PR/head lineage 和 release tag 证据不在本地审计闭包内。 |

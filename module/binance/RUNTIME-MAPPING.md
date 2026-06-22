@@ -1,7 +1,7 @@
-# module/binance RUNTIME MAPPING v2.0.0
+# module/binance RUNTIME MAPPING v3.0.0
 
-> 版本：v2.0.0
-> 更新日期：2026-06-21
+> 版本：v3.0.0
+> 更新日期：2026-06-23
 > 替代：v1.0.0（gRPC + SQLite spool 架构）
 > 参见：`DEEP-ANALYSIS.md`（架构决策全文）
 
@@ -13,7 +13,7 @@
 
 ### 架构版本对比
 
-| 维度 | v1.0.0 | v2.0.0 |
+| 维度 | v1.0.0 | v3.0.0 |
 |------|--------|--------|
 | C/S 通信 | in-process cs interface | **natsx JetStream** |
 | Client 职责 | 采集 + spool + checkpoint + send | **仅采集 + natsx publish** |
@@ -147,7 +147,7 @@ github.com/ZoneCNH/binance/
 
 ## 4. Client 组件映射
 
-| Spec 功能域 | 运行时路径 | v2.0.0 状态 |
+| Spec 功能域 | 运行时路径 | v3.0.0 状态 |
 |------------|-----------|:-----------:|
 | 产品线目录 | `internal/client/catalog/` | 保留 |
 | 符号解析器 | `internal/client/parser/` | 保留 |
@@ -168,7 +168,7 @@ github.com/ZoneCNH/binance/
 
 ## 5. Server 组件映射
 
-| Spec 功能域 | 运行时路径 | v2.0.0 状态 |
+| Spec 功能域 | 运行时路径 | v3.0.0 状态 |
 |------------|-----------|:-----------:|
 | natsx 消费入口 | `internal/server/consumer/` | ✨ 新增 |
 | 请求校验 | `internal/server/validation/` | 保留 |

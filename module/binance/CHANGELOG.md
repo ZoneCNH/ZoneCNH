@@ -2,10 +2,22 @@
 
 所有 notable 变更记录，按 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/) 格式维护。
 
-- Doc-Version: v2.2.4
+- Doc-Version: v3.0.0
 - Last-Updated: 2026-06-23
-- Spec-Reference: `module/binance/SPEC.md` v2.2.2
+- Spec-Reference: `module/binance/SPEC.md` v3.0.0
 - 治理规则：`module/binance/RULES.md` R9 文档存在性
+
+---
+
+## [v3.0.0] — 2026-06-23
+
+### Added
+- `funding_rate` and `mark_price` event_type values as the FR-020 taxonomy fold.
+- 4 product_line × 6 event_type contract across natsx subjects, Kafka topics, taosx supertables, redisx cache keys, API routes, and OSS archive paths.
+
+### Changed
+- `SPEC.md`, `TRACEABILITY.md`, `NAMING.md`, `RULES.md`, `RUNTIME-MAPPING.md`, and `ACCEPTANCE.md` now project the v3.0.0 4 × 6 naming and acceptance surface.
+- `DATA-LIFECYCLE.md` keeps FR-012~019 and FR-021~024 as discussion draft scope while marking FR-020 folded into the approved spec.
 
 ---
 
@@ -177,6 +189,7 @@
 
 | 版本 | SPEC | TRACEABILITY | 关键变更 |
 |------|------|-------------|----------|
+| v3.0.0 | v3.0.0 | v3.0.0 | FR-020 4 × 6 taxonomy fold + funding_rate/mark_price |
 | v2.2.2 | v2.2.2 | v2.2.2 | CHANGELOG 新建 + 版本号全量对齐 |
 | v2.2.1 | v2.2.0 | v2.2.1 | Boundary gate 证据回填 |
 | v2.2.0 | v2.2.0 | v2.2.0 | 命名收敛 + Options depth 补全 |
@@ -190,6 +203,7 @@
 
 | 日期 | 版本 | 变更内容 | 作者 |
 |------|------|----------|------|
+| 2026-06-23 | v3.0.0 | FR-020 taxonomy fold：event_type 扩为 6 类，4 × 6 命名/topic/storage/cache/API/AC/TC 同步 | ZoneCNH |
 | 2026-06-22 | v2.2.2 | 新建 CHANGELOG + ACCEPTANCE/FEATURES/IMPLEMENTATION-PLAN 版本号同步到 v2.2.2 | ZoneCNH |
 | 2026-06-22 | v2.2.1 | Boundary gate evidence 回填 + 5 个 v2.0.0 前 task 归档 | ZoneCNH |
 | 2026-06-22 | v2.2.0 | 命名收敛 + Options/cm_perp depth 补全 + 状态口径修复 | ZoneCNH |

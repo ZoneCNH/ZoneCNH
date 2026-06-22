@@ -5,8 +5,8 @@
 | 字段 | 值 |
 | --- | --- |
 | Status | Generated from current module SSOT |
-| Last-Updated | 2026-06-22 |
-| Module-Version | v2.2.3 |
+| Last-Updated | 2026-06-23 |
+| Module-Version | v3.0.0 |
 | Module-State | 验收清单已补齐；runtime 通过状态仍以实际 `/home/binance` 测试为准 |
 | Runtime-Repo | `/home/binance` |
 | Source | `SPEC.md`, `TRACEABILITY.md`, `client/TRACEABILITY.md`, `server/TRACEABILITY.md`, `BOUNDARY-GATES.md` |
@@ -47,11 +47,11 @@
 | AC-013 | FR-005 | idempotency key 第一次出现时接受并落库；首次消息（SetNX 成功）继续写入 taosx。 | TC-007 | Pending |
 | AC-014 | FR-005 | 重复 key 同 payload 时 Ack 并跳过副作用；重复消息（SetNX 失败）Ack 并跳过，不写 taosx。 | TC-007 | Pending |
 | AC-015 | FR-005 | 重复 key 不同 payload 时 terminal reject 并记录冲突；Redis 不可达时返回 error，consumer NakWithDelay。 | TC-008 | Pending |
-| AC-016 | FR-006 | tick/depth facts 写入 `taosx`；`taosx.WriteTick` 使用 symbol+product_line 子表名并自动创建子表。 | TC-009 | Pending |
+| AC-016 | FR-006 | tick/trade/bar/depth/funding_rate/mark_price facts 写入 `taosx`；`taosx.WriteBatch` 使用 product_line + event_type + symbol 子表名并自动创建子表。 | TC-009 | Pending |
 | AC-017 | FR-006 | instrument catalog 与 replay metadata 写入 `postgresx`；`taosx.WriteBatch` 合并多条消息一次网络往返。 | TC-009 | Pending |
 | AC-018 | FR-006 | hot cache 与 idempotency marker 使用 `redisx`；`postgresx.UpsertSymbol` 幂等（ON CONFLICT DO UPDATE）。 | TC-010 | Pending |
 | AC-019 | FR-006 | 冷归档使用 `ossx`，不把通用 market_data 存储上移到本模块外；`postgresx.UpdateIngestStatus` 更新 last_seq 用于 gap fill。 | TC-011 | Pending |
-| AC-020 | FR-007 | `GET /api/v1/market/ticks` 返回统一 JSON envelope，并从 taosx 查询，支持 symbol、time range、limit。 | TC-012 | Pending |
+| AC-020 | FR-007 | `GET /api/v1/market/{ticks,bars,trades,funding-rates,mark-prices}` 返回统一 JSON envelope，并从 redisx 热缓存优先查询，cache miss 回退 taosx，支持 symbol、time range、limit。 | TC-012 | Pending |
 | AC-021 | FR-007 | `GET /api/v1/market/depth/{instrument_key}` 返回深度快照或统一错误，并从 redisx 读取最新快照。 | TC-013 | Pending |
 | AC-022 | FR-007 | 未授权请求返回 401；无效 API key 返回 401。 | TC-014 | Pending |
 | AC-023 | FR-007 | 超出限流返回 429 与 `Retry-After`；限流阈值以 1000 req/min 为准。 | TC-015 | Pending |
@@ -80,10 +80,10 @@
 | TC-006 | FR-004, BR-004 | 集成（JetStream ManualAck：处理成功→Ack，失败→NakWithDelay） | Pending | Ack/Nak、MaxDeliver、dead-letter 失败注入测试输出。 |
 | TC-007 | FR-005 | 单元（SetNX 首次→新消息；重复→跳过） | Pending | 首次写入和重复跳过测试输出。 |
 | TC-008 | FR-005 | 单元（idempotency conflict / Redis 不可达→error→NakWithDelay） | Pending | Duplicate different payload terminal reject 与 Redis 故障注入测试输出。 |
-| TC-009 | FR-006, BR-006 | 单元（taosx WriteTick + WriteBatch） | Pending | taosx 写入和批量写入测试输出。 |
+| TC-009 | FR-006, BR-006 | 单元（taosx WriteBatch 覆盖 tick/trade/bar/depth/funding_rate/mark_price） | Pending | taosx 写入和批量写入测试输出。 |
 | TC-010 | FR-006, BR-006 | 单元（postgresx UpsertSymbol 幂等 + UpdateIngestStatus） | Pending | postgresx upsert 与 ingest status 测试输出。 |
 | TC-011 | FR-006 | 集成（taosx QueryRange 时间范围过滤 / ossx lifecycle） | Pending | taosx 时间范围查询与 archive lifecycle 测试输出。 |
-| TC-012 | FR-007 | httptest（/api/v1/market/ticks；ticks API success；readyz） | Pending | ticks API success 与 readyz 测试输出。 |
+| TC-012 | FR-007 | httptest（/api/v1/market/{ticks,bars,trades,funding-rates,mark-prices}；market APIs success；readyz） | Pending | market APIs success 与 readyz 测试输出。 |
 | TC-013 | FR-007 | httptest（/api/v1/market/depth；redisx snapshot；401 auth） | Pending | depth API redisx snapshot 与 401 测试输出。 |
 | TC-014 | FR-007 | httptest（API key 401；rate limit 429 and Retry-After） | Pending | 401 与 429 测试输出。 |
 | TC-015 | FR-007 | boundary test（market_data 不导入 server internals；HTTP/Kafka only） | Pending | market_data boundary test 输出。 |
@@ -134,4 +134,4 @@
 | FR-001/FR-002 Partial | 四 product line 与 identity contract 不完整。 | 补齐 USDM、COINM、Options parser/mapper/connector/server acceptance。 |
 | FR-003~FR-009 Pending | C/S runtime、存储、API、广播、归档未闭合。 | 按 `IMPLEMENTATION-PLAN.md` 和 tasks 顺序实现并更新 traceability。 |
 | TC-021/TC-022 Pending | Boundary enforcement 仍缺完整 CI 证据。 | 将 `BOUNDARY-GATES.md` gate 命令接入 CI 并记录 PASS。 |
-| Release DoD 未达成 | 不能声明 binance v2.0.0 已可发布。 | 全量 AC/TC PASS 后再更新 release 状态。 |
+| Release DoD 未达成 | 不能声明 binance v3.0.0 已可发布。 | 全量 AC/TC PASS 后再更新 release 状态。 |

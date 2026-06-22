@@ -3,7 +3,7 @@
 ## 1. Metadata
 
 - Status: Approved
-- Spec-Version: v2.2.3
+- Spec-Version: v3.0.0
 - Last-Updated: 2026-06-23
 - Owner: ZoneCNH
 - Layer: 数据域 · 行情
@@ -201,13 +201,13 @@ Binance 行情集成面临以下问题：
 #### FR-006a: taosx Time-Series Storage
 
 **WHEN** event 通过 validation 与 idempotency
-**THEN** 调用 `taosx.WriteBatch(ctx, points)` 写入 tick/bar/depth 数据到对应超级表子表
-**AND** 写入使用 product_line + symbol 作为子表名，自动建表
+**THEN** 调用 `taosx.WriteBatch(ctx, points)` 写入 tick/trade/bar/depth/funding_rate/mark_price 数据到对应超级表子表
+**AND** 写入使用 product_line + event_type + symbol 作为子表名，自动建表
 
 **WHEN** taosx WriteBatch 失败
 **THEN** 返回 error；不调用 `msg.Ack()`；调用 `msg.NakWithDelay(5s)` 并告警
 
-**WHEN** 查询历史 tick/bar
+**WHEN** 查询历史 tick/trade/bar/depth/funding_rate/mark_price
 **THEN** 通过 `taosx.Query(ctx, sql)` 按 symbol + time range 查询，返回 `Rows` 迭代器
 
 #### FR-006b: postgresx Metadata Storage
@@ -221,8 +221,8 @@ Binance 行情集成面临以下问题：
 #### FR-006c: redisx Hot Cache
 
 **WHEN** event 写入 taosx 成功
-**THEN** 调用 `redisx.SET(ctx, "tick:{product_line}:{symbol}", json, 60s)` 更新最新行情热缓存
-**AND** 调用 `redisx.SET(ctx, "depth:{product_line}:{symbol}", json, 5s)` 更新深度快照缓存
+**THEN** 调用 `redisx.SET(ctx, "{event_type}:{product_line}:{symbol}", json, ttl)` 更新最新行情热缓存
+**AND** tick/trade/bar/funding_rate/mark_price 使用 60s TTL，depth 使用 5s TTL
 
 **WHEN** redisx 缓存写入失败
 **THEN** 记录 warn 日志；继续后续管线（缓存失败不阻塞存储——降级到 taosx 直查）
@@ -259,6 +259,12 @@ Binance 行情集成面临以下问题：
 
 **WHEN** 请求 `GET /api/v1/market/trades/:symbol`
 **THEN** 从 `taosx` 查询最近的 trade 记录
+
+**WHEN** 请求 `GET /api/v1/market/funding-rates/:symbol` 或 `GET /api/v1/market/mark-prices/:symbol`
+**THEN** 优先从 `redisx` 热缓存返回最新 funding_rate / mark_price；cache miss 回退 `taosx`
+
+**WHEN** 请求 `GET /api/v1/market/funding-rates/:symbol/range` 或 `GET /api/v1/market/mark-prices/:symbol/range`
+**THEN** 从 `taosx` 查询 funding_rate / mark_price time range，支持 symbol、product_line、start/end time、limit 过滤
 
 **WHEN** 请求 `GET /api/v1/instruments`
 **THEN** 从 `postgresx` 查询合约目录，支持 product_line + status 过滤
@@ -323,7 +329,7 @@ Binance 行情集成面临以下问题：
 **功能描述**：server 将 taosx 热数据通过定时 ETL 聚合写入 clickhousex，为 analytics API 和下游分析模块提供 OLAP 查询能力。clickhousex 与 taosx 互补——taosx 负责高频时序写入，clickhousex 负责跨符号聚合、多维分析、因子回看。
 
 **WHEN** ETL scheduler 触发（默认每 5 分钟）
-**THEN** 从 `taosx` 查询最近 5 分钟的 tick/bar 数据
+**THEN** 从 `taosx` 查询最近 5 分钟的 tick/trade/bar/depth/funding_rate/mark_price 数据
 **AND** 预计算 1m OHLCV、5m VWAP、15m 统计聚合
 **AND** 调用 `clickhousex.InsertBatch(ctx, table, cols, rows)` 批量写入
 
@@ -473,11 +479,11 @@ Binance 行情集成面临以下问题：
 
 ## 9. Interface Contract
 
-### natsx JetStream Interface (v2.0.0)
+### natsx JetStream Interface (v3.0.0)
 
 ```go
 // MarketFactEnvelope is published by client through natsx JetStream.
-// natsx JetStream subject 格式（v2.0.0，替代 gRPC MarketDataService）
+// natsx JetStream subject 格式（v3.0.0，替代 gRPC MarketDataService）
 // Subject: binance.market.{product_line}.{event_type}
 // Stream:  BINANCE_MARKET (Retention=7d, Storage=file)
 // Client:  js.Publish(subj, json) → PubAck（同步等待）
@@ -907,10 +913,10 @@ github.com/ZoneCNH/binance/
 | TC-006 | FR-004 | 集成 | 处理成功与失败两条消息 | 成功仅在 storage + kafkax handoff 后 Ack；失败 NakWithDelay |
 | TC-007 | FR-005 | 单元 | Redis SetNX 首次成功 | 继续 storage/fanout pipeline |
 | TC-008 | FR-005 | 单元 | Redis 不可达 | 返回 error，consumer NakWithDelay，不 Ack |
-| TC-009 | FR-006 | 单元 | `taosx` WriteTick / WriteBatch | 子表与 batch 写入成功 |
+| TC-009 | FR-006 | 单元 | `taosx` WriteBatch 覆盖 tick/trade/bar/depth/funding_rate/mark_price | 6 类 event_type 子表与 batch 写入成功 |
 | TC-010 | FR-006 | 单元 | `postgresx` UpsertSymbol | 幂等 upsert，无重复 catalog 记录 |
 | TC-011 | FR-006 | 集成 | `taosx` QueryRange | 按 symbol + time range 返回正确结果 |
-| TC-012 | FR-007 | httptest | `GET /api/v1/market/ticks` | 返回 `taosx` 查询结果 |
+| TC-012 | FR-007 | httptest | `GET /api/v1/market/{ticks,trades,bars,funding-rates,mark-prices}` | redisx hit + taosx fallback 返回统一 envelope |
 | TC-013 | FR-007 | httptest | `GET /api/v1/market/depth/{instrument_key}` | redisx cache hit 返回最新快照 |
 | TC-014 | FR-007 | httptest | 无效 API key | 返回 401 |
 | TC-015 | FR-007 | httptest | 请求超过限流 | 返回 429 + Retry-After |
@@ -921,7 +927,7 @@ github.com/ZoneCNH/binance/
 | TC-020 | FR-009 | CI | server import `internal/client` 或 `internal/cs` | boundary gate 失败 |
 | TC-021 | FR-009 | CI | reintroduce `binance-market` 引用 | no-legacy gate 失败 |
 | TC-022 | FR-009 | CI | go.mod 依赖合规检查 | natsx/redisx/kafkax/postgresx/taosx/clickhousex/ossx/gin 均为 direct |
-| TC-023 | FR-006c | 单元 | redisx 热缓存写入 | redisx SET(tick:{line}:{symbol}, json, 60s) 成功；失败→warn 降级，主管线不阻塞 |
+| TC-023 | FR-006c | 单元 | redisx 热缓存写入 | redisx SET({event_type}:{line}:{symbol}, json, ttl) 成功；tick/trade/bar/funding_rate/mark_price TTL 60s，depth TTL 5s；失败→warn 降级，主管线不阻塞 |
 | TC-024 | FR-007a | httptest | clickhousex analytics API | GET /api/v1/analytics/vwap + top-movers + correlation；clickhousex 不可达→503 |
 | TC-025 | FR-010 | 集成 | clickhousex ETL | taosx Query → 聚合 → InsertBatch（1m_ohlcv/5m_vwap/15m_stats）写入成功 |
 | TC-026 | FR-010 | 单元 | clickhousex 不可达→ETL 降级 | InsertBatch 失败→error 日志 + 跳过本批次；实时 ticks API 正常 |
@@ -957,7 +963,7 @@ github.com/ZoneCNH/binance/
 | ossx Upload (100MB parquet) | 吞吐量 | ≥ 50 MB/s | integration test |
 | ACK lag (server receive → ACK send) | P99 | < 100ms | integration test |
 | Client restart recovery | 时间 | < 10s | integration test |
-| Gin API /api/v1/market/ticks (redisx hit) | 延迟 P99 | < 5ms | httptest benchmark |
+| Gin Market API redisx hit（ticks/trades/bars/funding-rates/mark-prices） | 延迟 P99 | < 5ms | httptest benchmark |
 | Gin API /api/v1/market/depth (redisx hit) | 延迟 P99 | < 1ms | httptest benchmark |
 | Gin API /api/v1/analytics/vwap (clickhousex) | 延迟 P99 | < 2s | httptest benchmark |
 | Gin API /api/v1/instruments (postgresx) | 延迟 P99 | < 20ms | httptest benchmark |
@@ -1066,7 +1072,7 @@ github.com/ZoneCNH/binance/
 
 ## 22. Release DoD
 
-`module/binance` v2.0.0 发布完成标准：
+`module/binance` v3.0.0 发布完成标准：
 
 - [ ] `binance-market` references 已移除或隔离到 migration history（BR-001）
 - [ ] `module/binance/client` 和 `module/binance/server` specs 完成并通过 spec-lint
@@ -1209,11 +1215,11 @@ Binance Exchange (REST/WebSocket)
 | AC-BNC-003 | FR-003               | client 调用 `js.Publish(subj, jsonPayload)` 成功后必须收到 JetStream PubAck；Stream=`BINANCE_MARKET` Retention=7d | TC-004, BOUNDARY-GATES.md §3-§4       | Approved |
 | AC-BNC-004 | FR-004, BR-004       | server 仅在 redisx + taosx + postgresx + kafkax handoff 全部成功后调用 `msg.Ack()`，失败路径走 `NakWithDelay` | TC-006, BOUNDARY-GATES.md §9          | Approved |
 | AC-BNC-005 | FR-005, BR-008       | redisx SetNX 首次成功进入 storage/fanout；重复 key 同 payload 返回 idempotent ACK；payload 冲突返回 terminal_conflict | TC-007, TC-008                        | Approved |
-| AC-BNC-006 | FR-006a              | taosx WriteBatch 写入 tick/bar/depth 到对应超级表子表；失败时不 Ack 并 NakWithDelay(5s)                       | TC-009, TC-011                        | Approved |
+| AC-BNC-006 | FR-006a              | taosx WriteBatch 写入 tick/trade/bar/depth/funding_rate/mark_price 到对应超级表子表；失败时不 Ack 并 NakWithDelay(5s) | TC-009, TC-011                        | Approved |
 | AC-BNC-007 | FR-006b              | postgresx 通过 `ON CONFLICT DO UPDATE` 幂等 upsert `binance_instruments` 表，不可达时返回 error              | TC-010                                | Approved |
-| AC-BNC-008 | FR-006c              | redisx 热缓存 SET(tick, 60s) / SET(depth, 5s) 成功；失败时降级到 taosx 直查，不阻塞主管线                    | TC-023                                | Approved |
+| AC-BNC-008 | FR-006c              | redisx 热缓存 SET 成功：tick/trade/bar/funding_rate/mark_price TTL 60s，depth TTL 5s；失败时降级到 taosx 直查，不阻塞主管线 | TC-023                                | Approved |
 | AC-BNC-009 | FR-006d, FR-008      | ossx 归档路径 `binance/{product_line}/{symbol}/{YYYY}/{MM}/{DD}/{event_type}.parquet`；ETag 校验通过才删 taosx 热数据 | TC-016, TC-017                        | Approved |
-| AC-BNC-010 | FR-007               | `GET /api/v1/market/{ticks,bars,depth,trades}/:symbol` 走 redisx 热缓存优先，cache miss 回退 taosx；无效 token 返回 401，超限返回 429 | TC-012, TC-013, TC-014, TC-015        | Approved |
+| AC-BNC-010 | FR-007               | `GET /api/v1/market/{ticks,bars,depth,trades,funding-rates,mark-prices}/:symbol` 走 redisx 热缓存优先，cache miss 回退 taosx；无效 token 返回 401，超限返回 429 | TC-012, TC-013, TC-014, TC-015        | Approved |
 | AC-BNC-011 | FR-007a, FR-010      | clickhousex analytics API（vwap/top-movers/correlation/volume-profile）通过 OLAP 查询返回结果；不可达返回 503，实时 API 不受影响 | TC-024, TC-025, TC-026                | Approved |
 | AC-BNC-012 | FR-008               | server storage 全部成功后 kafkax Send 到 `binance.{product_line}.{event_type}.v1`，key=symbol；handoff 完成前不得 Ack | TC-018, TC-019                        | Approved |
 | AC-BNC-013 | FR-009, BR-002, BR-003 | CI boundary gate 拦截 client→server internal import / server→client internal import / `internal/cs` 引用 / `binance-market` 引用 | TC-020, TC-021, TC-022                | Approved |
@@ -1221,7 +1227,7 @@ Binance Exchange (REST/WebSocket)
 | AC-BNC-015 | FR-011               | redisx SetNX 分布式锁竞选 coordinator；成功者启动 ETL+归档，每 10s 续期 lease；失败时主动 Del 或 lease 过期由 standby 接管 | TC-027, TC-028                        | Approved |
 | AC-BNC-016 | BR-005, BR-006, BR-007 | 模块不定义 canonical domain enum、不引入 `github.com/ZoneCNH/strategy`、不定义本地 proto/wire schema       | CI ownership/wire-contract gate       | Approved |
 | AC-BNC-017 | §19 Security         | 配置文件无明文凭据；所有 Secret 通过环境变量注入；日志/admin 端点不暴露 API Key/Signature；gitleaks 零命中    | CI gitleaks gate                      | Approved |
-| AC-BNC-018 | §17 Performance      | natsx PubAck P99 < 10ms、server consumer process P99 < 50ms、Gin /api/v1/market/ticks (redisx hit) P99 < 5ms | `go test -bench` + httptest benchmark | Approved |
+| AC-BNC-018 | §17 Performance      | natsx PubAck P99 < 10ms、server consumer process P99 < 50ms、Gin Market API redisx hit P99 < 5ms | `go test -bench` + httptest benchmark | Approved |
 
 > Coverage：18 条 AC 覆盖 FR-001..FR-011（11/11）+ BR-002/BR-003/BR-004/BR-005/BR-006/BR-007/BR-008（7/9，其余 BR-001/BR-009 已由 §16 TC + §19 Admin Boundary 覆盖）+ §17/§19 NFR。
 
@@ -1236,9 +1242,9 @@ Binance Exchange (REST/WebSocket)
 
 | # | Gate | 验证 | 状态 |
 |---|------|------|:----:|
-| G0-1 | `module/natsx` JetStream stream `BINANCE_MARKET` + subject pattern `binance.market.{product_line}.{event_type}` + durable consumer 规范 | natsx SPEC + v2.0.0 RUNTIME-MAPPING.md | ✅ |
+| G0-1 | `module/natsx` JetStream stream `BINANCE_MARKET` + subject pattern `binance.market.{product_line}.{event_type}` + durable consumer 规范 | natsx SPEC + v3.0.0 RUNTIME-MAPPING.md | ✅ |
 | G0-2 | `module/domain_market` `ProductLine`(4值)/`InstrumentKey`(12维)/`MarketFactEnvelope` canonical 类型 | domain_market SPEC v1.0.1 §10 | ✅ |
-| G0-3 | `redisx`/`taosx`/`postgresx`/`ossx`/`kafkax`/Gin ownership chain ready | server SPEC §7/§9 + v2.0.0 RUNTIME-MAPPING.md | ✅ |
+| G0-3 | `redisx`/`taosx`/`postgresx`/`ossx`/`kafkax`/Gin ownership chain ready | server SPEC §7/§9 + v3.0.0 RUNTIME-MAPPING.md | ✅ |
 | G0-4 | binance OQ-001（`natsx` + `domain_market` envelope ready?） | 已确认：本 SPEC §9 | ✅ |
 | G0-5 | market_data consumption via REST/`kafkax` ready | 已确认：本 SPEC §9.2 | ✅ |
 | G0-6 | BOUNDARY-GATES.md 全部 9 门禁有 CI 脚本 | 9/9 (2026-06-17) | ✅ |

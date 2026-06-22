@@ -33,15 +33,15 @@
 | **R-06** | **v4 P0 历史生命周期** | **Gap Detection & Fill（FR-017）** | 🔴 P0 | — | **待建 issue** |
 | **R-07** | **v4 P0 历史生命周期** | **Backfill Throttle & Priority（FR-018）** | 🔴 P0 | — | **待建 issue** |
 | **R-08** | **v4 P0 历史生命周期** | **Backfill Idempotency Key Strategy（FR-019）** | 🔴 P0 | — | **待建 issue** |
-| **R-09** | **v4 P1 周期数据** | **Funding Rate / Mark Price Stream（FR-020）** | 🟡 P1 | — | 待建 issue |
+| **R-09** | **v4 P1 周期数据** | **Funding Rate / Mark Price Stream（FR-020）** | 🟡 P1 | #888 | CLOSED(local，v3.0.0 taxonomy fold) |
 | **R-10** | **v4 P1 周期数据** | **Daily Reconciliation Job（FR-021）** | 🟡 P1 | — | 待建 issue |
 | **R-11** | **v4 P1 周期数据** | **Cold Data Rehydration（FR-022）** | 🟡 P1 | — | 待建 issue |
 | **R-12** | **v4 P2 治理** | **Backfill Progress API（FR-023）** | 🟢 P2 | — | 待建 issue |
 | **R-13** | **v4 P2 治理** | **Symbol Subscription Hot Reload（FR-024）** | 🟢 P2 | — | 待建 issue |
-| G-13 | v4 §七 | event_type 枚举 4→6（加 funding/mark_price）触发 RULES R2 4×N 矩阵重算 + MAJOR bump | 🔴 P0 | — | 待建 issue（伴随 R-09） |
+| G-13 | v4 §七 | funding_rate/mark_price event_type 扩展触发 RULES R2 4×6 矩阵重算 + MAJOR bump | 🔴 P0 | #888 | CLOSED(local，随 FR-020 折叠进 v3.0.0) |
 | G-14 | v4 §五 | 建议先建 `module/binance/DATA-LIFECYCLE.md` 讨论稿，再 fold 进 SPEC | 🟡 P1 | — | 待建 issue（R 系列前置） |
 
-**统计**：27 项。已有 issue 12 项（#866~#873、#893~#896）；待建 issue 15 项（v4 新增 13 + v4 治理 2）。
+**统计**：27 项。已有 issue 13 项（#866~#873、#888、#893~#896）；待建 issue 13 项（R-01~R-08、R-10~R-13、G-14）；G-13 已并入 #888 本地关闭口径。
 
 ---
 
@@ -73,9 +73,9 @@
 
 ### 阶段 3：实时控制面 FR 补齐（P0 功能面）
 
-- **范围**：R-01 ~ R-04（FR-012~015）+ G-13（event_type 4→6 MAJOR bump 评估）
+- **范围**：R-01 ~ R-04（FR-012~015）
 - **目标**：定义"采什么 / 怎么采 / 多深"
-- **bump**：MINOR（新增 4 FR）；若 G-13 同期落地则 MAJOR
+- **bump**：MINOR（新增 4 FR）；G-13/FR-020 已由 v3.0.0 taxonomy fold 关闭
 - **依赖**：阶段 2 讨论稿定稿；阶段 0 漂移收敛（避免在漂移基线上叠新 FR）
 
 ### 阶段 4：历史数据生命周期 FR（P0 功能面）
@@ -87,10 +87,10 @@
 
 ### 阶段 5：周期数据 + 对账（P1 功能面）
 
-- **范围**：R-09（FR-020 funding/mark_price）+ R-10（FR-021 对账）+ R-11（FR-022 冷数据回热）
-- **目标**：补非事件性周期数据 + 全量校验 + 冷数据可用
-- **bump**：MAJOR（event_type 枚举扩展，RULES R3）
-- **依赖**：阶段 4；G-13 在此阶段必须落地
+- **范围**：R-10（FR-021 对账）+ R-11（FR-022 冷数据回热）；R-09/FR-020 已按 v3.0.0 taxonomy fold 本地关闭
+- **目标**：补全量校验 + 冷数据可用
+- **bump**：MINOR 或 PATCH（取决于 reconciliation / rehydration 是否扩展公开合同）；MAJOR taxonomy fold 已由 v3.0.0 承载
+- **依赖**：阶段 4；不得回退 v3.0.0 的 4 × 6 event_type 矩阵
 
 ### 阶段 6：治理可观测 + 标准入口（P2/P3）
 
@@ -114,7 +114,7 @@
 - 阶段 0 完成时，给 #866/#867/#868/#872/#873 加 `closed-by PR #XXX` 评论
 - #870 检查脚本落地后，反哺 #866~#873 的验证命令
 
-### 3.2 待建 issue（15 个）
+### 3.2 待建 issue（13 个）
 
 **v2 收尾**：已由 #893~#896 覆盖，不再待建。
 
@@ -133,8 +133,7 @@
 - FR-018 Backfill Throttle & Priority（R-07）
 - FR-019 Backfill Idempotency Key Strategy（R-08）
 
-**v4 周期数据（3 个，P1）**：
-- FR-020 Funding Rate / Mark Price Stream（R-09，含 G-13 event_type 扩展）
+**v4 周期数据（2 个，P1）**：
 - FR-021 Daily Reconciliation Job（R-10）
 - FR-022 Cold Data Rehydration（R-11）
 
@@ -157,18 +156,17 @@
 ## 四、bump 路径与版本演进
 
 ```
-当前: SPEC v2.2.2 / client v2.1.1 / server v2.1.0 / RULES v1.0.0
+当前: SPEC v3.0.0 / client v2.1.1 / server v2.1.0 / RULES v2.0.0 / NAMING v2.0.0
 
-阶段 0 完成: SPEC v2.3.0 (MINOR, subject/topic 收敛 + 状态分层)
-阶段 1 完成: SPEC v2.3.1 (PATCH, 检查脚本配套文档)
+阶段 0/1 已完成: 已纳入 v2.2.4/v3.0.0 本地治理收敛，不再产生低于 v3.0.0 的后续版本
 阶段 2 完成: 无 bump (讨论稿)
-阶段 3 完成: SPEC v2.4.0 (MINOR, FR-012~015)
-阶段 4 完成: SPEC v2.5.0 (MINOR, FR-016~019)
-阶段 5 完成: SPEC v3.0.0 (MAJOR, event_type 4→6 + FR-020~022)
-阶段 6 完成: SPEC v3.1.0 (MINOR, FR-023~024 + STANDARD.md)
+阶段 3 完成: 下一 MINOR (FR-012~015)
+阶段 4 完成: 下一 MINOR (FR-016~019)
+阶段 5 完成: 下一 MINOR/PATCH (FR-021~022；FR-020 已由 v3.0.0 taxonomy fold 承载)
+阶段 6 完成: 下一 MINOR (FR-023~024 + STANDARD.md)
 ```
 
-> [COMPUTED, HIGH] RULES.md R3 规定 event_type 枚举变更触发 MAJOR。阶段 5 是唯一 MAJOR 节点，必须在此阶段同步重算 R2 4×N 矩阵（N 从 4 变 6，组合数 16→24）。
+> [COMPUTED, HIGH] RULES.md R3 规定 event_type 枚举变更触发 MAJOR。FR-020 已作为唯一 MAJOR 节点在 SPEC v3.0.0 落地；后续阶段继承 4×6 矩阵，不再回退到 4×4。
 
 ---
 
@@ -177,7 +175,7 @@
 ### 5.1 风险
 
 - 🔴 **阶段 3 在阶段 0 未收敛时启动**：在漂移基线上叠新 FR，会让 #866/#868 的修复更难（subject/topic 表又要改一遍）。**必须阶段 0 先合并**
-- 🔴 **阶段 5 MAJOR bump 未同步 R2 矩阵**：event_type 4→6 后若不补 funding/mark_price 的 8 个新组合，RULES R2 硬约束违规
+- 🟡 **后续阶段回退 4×6 矩阵**：FR-020/#888 已由 SPEC v3.0.0 承载；FR-021/FR-022 若按旧 4 类 event_type 编写，会破坏 RULES R2 的 4×6 硬约束
 - 🟡 **runtime 发布证据仍分层**（#869）：2026-06-23 从 `/home/binance` 重新取得 clean short status、boundary gates PASS 10/10、`go test ./...`、`go vet ./...`、race test 和 `golangci-lint run` 通过证据；Release DoD 仍需远端 CI、release tag、live smoke/deploy 证据。
 - 🟡 **v5 报告丢失**（212 行清洗/处理缺口）：v4 已含 13 条 FR 核心结论，但 C1-C8 清洗缺口、P1-P7 处理问题、G1-G4 缺口分类的细节无法恢复；阶段 3/4 落地时需重新推导这部分细节
 

@@ -6,7 +6,7 @@
 | --- | --- |
 | Status | Generated from current module SSOT |
 | Last-Updated | 2026-06-23 |
-| Module-Version | v2.2.3 |
+| Module-Version | v3.0.0 |
 | Module-State | 文档治理收敛；runtime 实现状态仍以 `/home/binance` fresh evidence 为准 |
 | Layer | 数据域 / Binance-specific market_data C/S module |
 | Runtime-Repo | `/home/binance` |
@@ -29,7 +29,7 @@
 
 ## 2. 功能实现投影
 
-> v2.1.2 编号体系：FR-006 拆分为 6a/6b/6c/6d；FR-007a 新增（analytics API）；FR-009 升为 Boundary Enforcement；FR-010 新增（clickhousex OLAP）；FR-011 新增（分布式锁）。
+> 当前编号体系：FR-006 拆分为 6a/6b/6c/6d；FR-007a 新增（analytics API）；FR-009 升为 Boundary Enforcement；FR-010 新增（clickhousex OLAP）；FR-011 新增（分布式锁）；FR-020 已折入 v3.0.0 4 product_line × 6 event_type taxonomy。
 
 | FR | 功能 | 当前状态 | 已有证据 | 剩余实现面 |
 | --- | --- | --- | --- | --- |
@@ -38,11 +38,11 @@
 | FR-003 | natsx Communication | Pending | 规格定义 `js.Publish("binance.market.{product_line}.{event_type}", jsonPayload)` 与 durable consumer。 | Client publisher、Server consumer、subject 校验、PubAck 与 durable replay。 |
 | FR-004 | At-Least-Once Delivery | Pending | 规格定义 ManualAck、失败 NakWithDelay、MaxDeliver 5、dead-letter。 | Ack/Nak 策略、失败注入、重复投递与死信处理。 |
 | FR-005 | Idempotent Acceptance | Pending | 规格定义 idempotency key 与 duplicate/conflict 行为。 | `redisx` SetNX、重复跳过、冲突终止、重放测试。 |
-| FR-006a | taosx Time-Series Storage | Pending | 规格定义 WriteBatch 写入 tick/bar/depth 到超级表子表。 | 时序写入吞吐 100K TPS、子表自动建表、查询时间范围过滤。 |
+| FR-006a | taosx Time-Series Storage | Pending | 规格定义 WriteBatch 写入 tick/trade/bar/depth/funding_rate/mark_price 到超级表子表。 | 时序写入吞吐 100K TPS、子表自动建表、查询时间范围过滤。 |
 | FR-006b | postgresx Metadata Storage | Pending | 规格定义幂等 upsert instrument catalog + 审计日志。 | UpsertSymbol 幂等性、ON CONFLICT 行为、审计完整性。 |
-| FR-006c | redisx Hot Cache | Pending | 规格定义最新 tick/bar/depth 热缓存（60s/5s TTL）+ 失败降级。 | SET 命令封装、TTL 验证、失败不阻塞主管线。 |
+| FR-006c | redisx Hot Cache | Pending | 规格定义最新 tick/trade/bar/depth/funding_rate/mark_price 热缓存（60s/5s TTL）+ 失败降级。 | SET 命令封装、TTL 验证、失败不阻塞主管线。 |
 | FR-006d | ossx Archival | Pending | 规格定义对象路径与 ETag 删除前校验。 | Parquet 归档、ETag 校验、生命周期删除、防误删测试。 |
-| FR-007 | Gin Market API | Pending | 规格定义 `/api/v1/market/ticks/depth/bars/trades` REST 接口。 | 认证、限流、统一错误、readyz、market_data HTTP 调用方兼容。 |
+| FR-007 | Gin Market API | Pending | 规格定义 `/api/v1/market/ticks/trades/bars/depth/funding-rates/mark-prices` REST 接口。 | 认证、限流、统一错误、readyz、market_data HTTP 调用方兼容。 |
 | FR-007a | clickhousex Analytics API | Pending | 规格定义 `/api/v1/analytics/vwap/top-movers/correlation` OLAP 查询。 | analytics 查询正确性、查询 P99 < 2s、降级到 503。 |
 | FR-008 | kafkax Broadcast | Pending | 规格定义 `kafkax` topic、symbol key 与 handoff 后 Ack。 | Kafka dispatch、失败不 Ack、重试、下游消费契约。 |
 | FR-009 | Boundary Enforcement | Implemented / Documented | `BOUNDARY-GATES.md` v2.1.1 已落地，`TRACEABILITY.md` 标注 FR-009 Implemented，TC-020 PASS。 | TC-021 与 TC-022 仍需 runtime/repo CI 执行证据闭合。 |
@@ -82,7 +82,7 @@
 | --- | --- | --- |
 | `goal.md` | 业务目标与模块意图 | 作为实现清单的目标来源。 |
 | `STANDARD.md` | 模块标准入口与权威顺序 | 作为治理入口、检查命令与 runtime evidence guardrail 来源。 |
-| `SPEC.md` | v2.2.3 功能与边界规格 | 作为 FR/BR/NFR 语义来源。 |
+| `SPEC.md` | v3.0.0 功能与边界规格 | 作为 FR/BR/NFR 语义来源。 |
 | `DATA-LIFECYCLE.md` | FR-012~FR-024 数据生命周期草案 | 作为历史/实时数据补强讨论稿来源。 |
 | `TRACEABILITY.md` | 根级 FR/AC/TC/Task 追溯 | 作为当前状态与验收编号来源。 |
 | `client/TRACEABILITY.md` | Client 子域追溯 | 作为 client active/pending 实现面来源。 |
