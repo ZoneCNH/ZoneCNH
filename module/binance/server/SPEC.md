@@ -6,8 +6,8 @@
 |------|-----|
 | Module | `module/binance/server` |
 | Status | Approved |
-| Spec-Version | v1.2.0 |
-| Last-Updated | 2026-06-21 |
+| Spec-Version | v2.1.0 |
+| Last-Updated | 2026-06-22 |
 | Owner | ZoneCNH |
 | Layer | 数据域 · 行情接入层 |
 | Role | Binance 行情数据的处理 + 存储服务端（natsx 消费 + redisx + postgresx + taosx + clickhousex + kafkax + ossx + Gin REST API） |
@@ -162,19 +162,43 @@ client 和 server **互不感知彼此的进程位置**。server 只知道 NATS 
 
 ### FR-005: Multi-Store Write
 
+> **v2.1.0 对齐**：与根 SPEC.md FR-006 (Full-Stack Storage) 一一对应。
+> 子项 FR-005a/5b/5c/5d 映射根 FR-006a/6b/6c/6d，命名分歧仅在 server 子规格层；任务（SERVER-012~016）按子项独立追踪。
+> 任一存储层独立失败不影响其他层；taosx/postgresx 失败 → 不 Ack；redisx/ossx 失败 → 降级不阻塞主管线。
+
+#### FR-005a: taosx Time-Series Storage（对应根 FR-006a）
+
 **WHEN** event 通过校验和幂等检查
-**THEN** 并行执行以下写入：
-1. `taosx.WriteBatch()` — 写入时序行情数据（tick/bar/depth）
-2. `postgresx.Upsert()` — 更新 instrument catalog 元数据
-3. `redisx.SET("tick:{instrument_key}", value, 60s)` — 热缓存最新行情
+**THEN** 调用 `taosx.WriteBatch(ctx, points)` 写入 tick/bar/depth 到对应超级表子表（product_line + symbol 作为子表名）
 
-**WHEN** 全部写入成功
-**THEN** 进入 kafkax dispatch 阶段；暂不调用 `msg.Ack()`
+**WHEN** taosx WriteBatch 失败
+**THEN** 返回 error；调用 `msg.NakWithDelay(5s)`；不调用 `msg.Ack()`；告警
 
-**WHEN** 任意写入失败（taosx / postgresx / redisx）
+#### FR-005b: postgresx Metadata Storage（对应根 FR-006b）
+
+**WHEN** 收到新 instrument symbol
+**THEN** 调用 `postgresx.Exec(ctx, upsertSQL)` 幂等写入 `binance_instruments` 表（ON CONFLICT DO UPDATE）+ 写入审计日志
+
+**WHEN** postgresx 不可达
+**THEN** 返回 error；不 Ack；指数退避重试
+
+#### FR-005c: redisx Hot Cache（对应根 FR-006c）
+
+**WHEN** taosx 写入成功
+**THEN** 并行调用 `redisx.SET(ctx, "tick:{product_line}:{symbol}", json, 60s)` 与 `redisx.SET(..., "depth:{...}", json, 5s)` 更新热缓存
+
+**WHEN** redisx 缓存写入失败
+**THEN** 记录 warn 日志；**继续后续管线**（缓存失败降级到 taosx 直查，不阻塞 kafkax handoff）
+
+#### FR-005d: kafkax Handoff Gate（聚合点）
+
+**WHEN** FR-005a + FR-005b 全部成功（FR-005c 失败可降级）
+**THEN** 进入 FR-006 kafkax dispatch 阶段；暂不调用 `msg.Ack()`
+
+**WHEN** FR-005a 或 FR-005b 任一失败
 **THEN** ManualNak（NakWithDelay），JetStream 重投；不调用 `msg.Ack()`；告警
 
-**设计约束**：`msg.Ack()` 必须在全部存储写入和 `kafkax` handoff 成功后才能调用（BR-001 / BR-003）
+**设计约束**：`msg.Ack()` 必须在 FR-005a + FR-005b + FR-006 kafkax handoff 全部成功后才能调用（BR-001 / BR-003）
 
 ### FR-006: kafkax Dispatch
 
@@ -375,6 +399,7 @@ server 必须覆盖 `terminal_validation`、`terminal_conflict`、`retryable_sto
 
 | 配置项 | 类型 | 默认值 | 说明 |
 |--------|------|--------|------|
+| `nats.url` | string | `nats://127.0.0.1:4222` | 外部 NATS JetStream 服务连接地址；server 不内嵌 NATS |
 | `nats.stream` | string | `BINANCE_MARKET` | JetStream stream 名称 |
 | `nats.subject` | string | `binance.market.>` | 订阅 subject |
 | `nats.durable` | string | `binance-server` | durable consumer 名称 |
@@ -684,6 +709,7 @@ server 必须通过 consumer contract tests：
 |----|------|------|--------|
 | OQ-004 | idempotency store 是否需要支持跨实例共享（Redis cluster）？ | 已解决 (2026-06-17)：见 §7 FR-005 Idempotency Store 后端选择 — Redis 为生产默认（含 Cluster/Sentinel HA 模式），server 应用层无感；多实例共享与跨重启持久化由 Redis 自身能力承担 | ZoneCNH |
 | OQ-005 | admin endpoint 是否需要认证（API key / JWT）？ | 已解决 (2026-06-17)：见 §19 Security — v1 默认 loopback-only 无需认证；生产环境通过反向代理（nginx/Caddy）或 mTLS 添加认证；v1.1 可考虑内置 API key（沿用 client OQ-004 决策模式） | ZoneCNH |
+| OQ-008 | NATS JetStream 是否由 client/server 内嵌部署？ | 已解决：不内嵌。NATS 是独立部署的平台/基础设施服务；server 只配置 `nats.url` 并创建 durable consumer（2026-06-22） | ZoneCNH |
 
 ### Future（未来考虑）
 

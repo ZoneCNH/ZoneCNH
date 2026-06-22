@@ -72,6 +72,7 @@ client 完成发布即结束职责。持久化、幂等、存储、API 全部由
 - 不做存储（redisx/postgresx/taosx/ossx 全部属于 server）
 - 不做 REST API（由 server Gin 接口负责）
 - 不做规范行情类型定义（由 `module/domain_market` 负责）
+- 不部署、不内嵌 NATS Server / JetStream；只配置外部 `nats.url` 并发布事件
 - 不做 `binance-market` 遗留模块兼容
 - 不做交易下单
 
@@ -197,6 +198,8 @@ client 完成发布即结束职责。持久化、幂等、存储、API 全部由
 
 **WHEN** JetStream 返回 PubAck
 **THEN** 投递视为成功；JetStream 已在 NATS 集群持久化该消息
+
+client 仅作为 JetStream producer；NATS Server / JetStream 由外部平台服务提供。
 
 **WHEN** PubAck 超时或 NATS 连接断开
 **THEN** 内存队列（有界，backpressure 阈值可配置）暂存事件；指数退避重连后重发；重发消息由 server redisx SetNX 幂等过滤

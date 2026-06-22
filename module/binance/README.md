@@ -2,6 +2,9 @@
 
 `module/binance` is the Binance-specific Market Data C/S Module for ZoneCNH.
 
+- Spec-Version: v2.1.2 (root) / v2.1.0 (client, server)
+- Last-Updated: 2026-06-22
+
 It is split into two submodules:
 
 ```text
@@ -53,6 +56,34 @@ github.com/ZoneCNH/binance/
     config/
     observability/
 ```
+
+NATS JetStream 是独立部署的平台/基础设施服务；`binance-client` 与 `binance-server` 只配置连接地址，不内嵌或启动 NATS。
+
+## 数据流字符图
+
+```text
+Binance Exchange
+  │ WS / REST
+  ▼
+module/binance/client
+  catalog -> parser -> normalize -> mapper -> natsx publisher
+  │
+  ▼
+natsx JetStream (BINANCE_MARKET)
+  │
+  ▼
+module/binance/server
+  consumer -> validation -> idempotency -> processor
+   ├─ redisx hot cache / idempotency
+   ├─ taosx time-series storage
+   ├─ postgresx metadata / audit
+   ├─ kafkax downstream fanout
+   └─ ossx archive
+  │
+  └─ Gin REST API -> market_data / downstream consumers
+```
+
+详细版见 `DEEP-ANALYSIS.md` 的 §2.1 和 §5.1。
 
 ## Read Next
 

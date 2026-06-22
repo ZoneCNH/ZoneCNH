@@ -5,8 +5,8 @@
 > 规范来源：`docs/governance/TRACEABILITY.md`
 
 - Matrix-Version: v2.1.0
-- Last-Updated: 2026-06-21
-- Spec-Reference: `module/binance/SPEC.md` v2.1.0
+- Last-Updated: 2026-06-22
+- Spec-Reference: `module/binance/SPEC.md` v2.1.2
 
 ---
 
