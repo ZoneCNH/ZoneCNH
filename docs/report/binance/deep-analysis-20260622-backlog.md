@@ -5,6 +5,7 @@
 > **目的**：把 5 份深度分析中提出但**仍未完成**的问题汇总成单一可执行清单，区分"已在后续 spec bump 中解决"与"真正剩余"
 > **证据标签**：`[KNOWN]` 文件读取 + 实跑脚本；`[COMPUTED]` 直接统计；`[INFERRED]` 跨文档交叉
 > **置信度**：HIGH
+> **Post-PR #936 supersession**：本汇总原基线为 v3.4.0；current module docs are v3.5.0, with FR-029/FR-030 registered and FR-025~FR-030 still `Pending` runtime capabilities. See `pr-936-governance-docs-closure-20260623.md` before treating older FR-025~029 rows as current backlog.
 
 ---
 
@@ -16,11 +17,11 @@
 
 | 项 | 当前值 | 来源 |
 |---|---|---|
-| SPEC 版本 | **v3.4.0** | `module/binance/SPEC.md:107` Spec-Version |
-| TRACEABILITY 版本 | v3.4.0 / Last-Updated 2026-06-23 | `module/binance/TRACEABILITY.md` |
-| FR 登记数 | **28**（FR-001~FR-028） | SPEC §7 + TRACEABILITY §1 |
-| AC 登记数 | **98**（AC-001~AC-098） | TRACEABILITY §5 |
-| TC 登记数 | **46**（TC-001~TC-046） | TRACEABILITY §4 |
+| SPEC 版本 | **v3.5.0** | `module/binance/SPEC.md` Spec-Version |
+| TRACEABILITY 版本 | v3.5.0 / Last-Updated 2026-06-23 | `module/binance/TRACEABILITY.md` |
+| FR 登记数 | **30**（FR-001~FR-030） | SPEC §7 + TRACEABILITY §1 |
+| AC 登记数 | **104**（AC-001~AC-104） | TRACEABILITY §5 |
+| TC 登记数 | **49**（TC-001~TC-049） | TRACEABILITY §4 |
 | FR→AC→TC 覆盖率 | 100% 追溯登记 | SPEC §7 末尾 |
 | 文档自检脚本 | **PASS**（`scripts/check-binance-docs.sh` 全绿） | 实跑 2026-06-23 |
 | STATUS/ARCHITECTURE 标注 spec 版本 | **v3.3.0** ← 落后 v3.4.0 | `STATUS.md:113/132/353`、`ARCHITECTURE.md:206/447` |

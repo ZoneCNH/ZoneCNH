@@ -4,6 +4,7 @@
 - [COMPUTED, HIGH] 目标：从 2026-06-22 系列深度分析报告中抽取仍标记为未启动、未归档、未闭合、待补充或需进入正式管线的事项。
 - [COMPUTED, HIGH] 判定口径：后续版本已声明修复的 v1 P0/P1 文档对齐项不再列入当前未完成清单；v2 之后仍保留或新增的 runtime、证据、治理投影、数据生命周期、清洗处理和 gap 缺口列为未完成。
 - [COMPUTED, HIGH] 限制：2026-06-23 已在 `/home/binance` `fix/binance-issues` 采集 L1/local evidence，证据 commit 为 `66f60b3945dce215f68ff833bbd336364d635ae8`；未执行 L2/L3/live/release/external integration 验证。
+- [COMPUTED, HIGH] Post-PR #936/current-docs note: FR-025~FR-030 are now registered in current module docs, but remain `Pending` runtime capabilities; see `pr-936-governance-docs-closure-20260623.md` before treating older projection rows as current docs backlog.
 
 ---
 
