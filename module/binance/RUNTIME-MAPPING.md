@@ -283,8 +283,8 @@ GET  /api/v1/market/bars/:symbol          最新 Bar
 GET  /api/v1/market/bars/:symbol/range    历史 Bar（taosx）
 GET  /api/v1/market/depth/:symbol         最新深度（redisx 5s TTL）
 GET  /api/v1/market/trades/:symbol        最新成交
-GET  /api/v1/market/funding_rates/:symbol 最新资金费率（redisx 热缓存）
-GET  /api/v1/market/mark_prices/:symbol   最新标记价格（redisx 热缓存）
+GET  /api/v1/market/funding-rates/:symbol 最新资金费率（redisx 热缓存）
+GET  /api/v1/market/mark-prices/:symbol   最新标记价格（redisx 热缓存）
 GET  /api/v1/instruments                  合约列表（postgresx）
 GET  /api/v1/instruments/:symbol          单个合约详情
 GET  /api/v1/stats/streams                流统计
