@@ -175,15 +175,17 @@
 ## 7. GitHub Issue Closure Ledger（2026-06-23）
 
 > [COMPUTED, HIGH] GitHub #923~#931 当前均不可关闭；PR #936/#937 只闭合文档投影错配，不替代 runtime、remote CI、live websocket、外部集成或 release tag 证据。完整账本见 [`docs/report/binance/github-issues-923-931-closure-ledger-20260623.md`](../../docs/report/binance/github-issues-923-931-closure-ledger-20260623.md)。
+>
+> [COMPUTED, HIGH] 本节记录 2026-06-23 全量 GitHub issue 核查后的闭合口径：文档可以登记当前事实与缺口，但 issue 关闭仍必须等待对应 runtime evidence、CI/release evidence 或治理审计证据。
 
-| Issue | 当前口径 | 未闭合证据 |
-| --- | --- | --- |
-| #923 | Not closeable | 依赖 runtime release/remote CI/live/external evidence；PR #13/#14 状态不足以发布。 |
-| #924 | Not closeable | 同 #923；本地 evidence 不替代 release bundle。 |
-| #925 | Docs projection locally reconciled / GitHub close pending | 仍需 runtime acceptance 与 release evidence 后才能关闭。 |
-| #926 | Not closeable | FR-012~FR-030 runtime 功能证据仍 Pending。 |
-| #927 | Not closeable | live websocket 与四 product_line runtime evidence 缺失。 |
-| #928 | Not closeable | external natsx/JetStream/storage/fanout/query 集成证据缺失。 |
-| #929 | Not closeable | remote CI、secret scan、release tag/changelog/evidence bundle 缺失。 |
-| #930 | Docs projection locally reconciled / GitHub close pending | 文档口径已修正为 Pending，但 closure 仍受 runtime/release gate 约束。 |
-| #931 | Not closeable | 子 issue 与 release DoD 未全部关闭。 |
+| Issue | 当前判断 | 已有证据 | 未闭合条件 |
+| --- | --- | --- | --- |
+| #923 | Partial / Open | `RUNTIME-MAPPING.md`、`BOUNDARY-GATES.md`、`/home/binance/release/evidence/binance/20260623/SUMMARY.md` | live Binance WebSocket、`natsx` JetStream PubAck/ManualAck、durable storage/fanout/query、post-fix release tag。 |
+| #924 | Open | 本地 evidence bundle 与 PR #14 可作为候选证据入口。 | 远端 CI、GitHub Release、live smoke、release artifact linkage。 |
+| #925 | Open / Projection Pending | `README.md`、`docs/architecture/` 与本清单已标注 release evidence pending。 | #923/#924 运行时和发布证据闭合后，才能同步公开状态为完成。 |
+| #926 | Registered / Runtime Pending | `DATA-LIFECYCLE.md`、`SPEC.md`、`TRACEABILITY.md` 已承接 FR-012~FR-030。 | FR-012~FR-030 的 runtime tests、integration evidence、release DoD。 |
+| #927 | Open | FR-012~FR-015 已登记。 | `exchangeInfo` discovery、catalog refresh、stream policy、depth tier、real reconnect/degradation evidence。 |
+| #928 | Open | FR-016~FR-024 已登记。 | cold-start backfill、gap replay、funding/mark-price、reconciliation、rehydration、progress API、hot reload runtime proof。 |
+| #929 | Open | FR-025~FR-030 已登记。 | throttle、validation、gap repair、SLA metrics、schema drift 与 quality evidence。 |
+| #930 | Open | 文档中已区分 L1 boundary 与 L2 runtime/release 口径。 | 50-commit coverage matrix、GateGuard/branch governance verification、历史 stale projection 清理。 |
+| #931 | Open / Umbrella | #923~#930 的状态入口已统一登记。 | #923~#930 全部关闭并链接证据后才能关闭。 |
