@@ -12,6 +12,7 @@
 ## [v3.3.0] — 2026-06-23
 
 ### Changed
+- 收紧 R3 bump 触发器：Spec-Version 只反映接口契约演进，排除文档治理变更（状态修正/错字/版本同步/issue 闭环/讨论稿/规则文案）。根因：v3.1.0/v3.3.0 把文档治理当契约 bump 导致版本号通胀。收紧后 spec 版本与 runtime 成熟度解耦。
 - 版本号统一治理：字段名收敛为 `Spec-Version`（仅 root/client/server SPEC.md）/ `Module-Version`（所有治理文档）/ `Runtime-Version`（SPEC.md runtime 版本，原 `Version` 字段）。
 - 废弃异名字段 `Doc-Version` / `Matrix-Version` / `Version`：RULES/NAMING/DATA-LIFECYCLE/STANDARD/WATCHLIST/CHANGELOG/IMPLEMENTATION-PLAN/TRACEABILITY 全部改用 `Module-Version`。
 - 顶层治理文档 Module-Version 统一对齐 root SPEC Spec-Version（v3.3.0）；NAMING/RULES/DATA-LIFECYCLE/STANDARD/WATCHLIST 从游离版本号（v1.0.2/v2.1.0/v0.2.0/v0.1.1/v1.0.0）收敛到 v3.3.0。

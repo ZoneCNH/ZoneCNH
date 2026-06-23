@@ -56,26 +56,36 @@ bash scripts/check-binance-docs.sh
 
 ## R3【硬】版本 bump 触发器
 
-**规则**：以下变更必须对应 SPEC 版本号 bump：
+**规则**：Spec-Version 只反映**接口契约演进**，不反映文档治理动作。以下变更必须对应 SPEC 版本号 bump：
 
 | 变更类型 | bump 级别 | 示例 |
 |---|---|---|
-| FR/BR/NFR 接口/契约变更 | MINOR | 新增 FR、修改 AC 语义 |
-| 命名收敛 / subject/topic/key 重命名 | MINOR | um_perp 命名统一 |
+| FR/BR/NFR 接口/契约变更 | MINOR | 新增 FR、修改 AC 语义、新增 AC/TC 锚点 |
+| 命名收敛 / subject/topic/key 重命名（影响 runtime 契约） | MINOR | um_perp 命名统一 |
 | product_line / event_type 枚举变更 | MAJOR | 新增 USDⓈ-M Delivery |
-| 状态字段修正 / 文档错字 / 链接修复 | PATCH | Pending → Implemented |
-| 追溯矩阵新增 TC/AC | PATCH | TC-029 新增 |
-| 治理体系重构（如废弃 TRACEABILITY） | MAJOR | — |
+| 治理体系重构（如废弃 TRACEABILITY、字段名收敛） | MAJOR | Doc-Version→Module-Version |
 
-**违规**：变更未 bump 或 bump 级别错误
+**无需 bump 的变更**（文档治理类，仅更新 Last-Updated）：
 
-**检测**：PR 描述必须显式声明 bump 级别 + 触发理由，CI gate `version-bump-check.sh` 验证
+| 变更类型 | 示例 |
+|---|---|
+| 状态字段修正 / 文档错字 / 链接修复 | Pending → Implemented、错字、§0→§4 引用修正 |
+| 追溯矩阵状态标注 | TC Pending → PASS、L1/L2 标注 |
+| 文档同步 / 版本号统一 / issue 闭环报告 | 三文档版本同步、报告对齐、R 规则文案调整 |
+| 讨论稿 / CHANGELOG / WATCHLIST 内容更新 | DATA-LIFECYCLE 讨论稿扩充、D4 描述更新 |
+
+> [COMPUTED, HIGH] 2026-06-23 收紧：此前 v3.1.0/v3.2.0/v3.3.0 三次 bump 中，v3.1.0（issue 闭环 + 版本同步）、v3.3.0（版本号统一）属文档治理类，按收紧后规则无需 bump。spec 版本通胀根因即是把文档治理当契约 bump。收紧后 spec 版本只反映 FR/BR/AC 契约演进，runtime 成熟度由 Runtime-Version 表达，二者解耦。
+
+**违规**：契约变更未 bump、或文档治理变更错误触发 bump、或 bump 级别错误
+
+**检测**：PR 描述必须显式声明 bump 级别 + 触发理由（契约变更）或"无需 bump（文档治理）"；CI gate `version-bump-check.sh` 验证
 
 **强制约束**：
 - 版本号只能升不能降
 - bump 必须是 PR 最后一个 commit
 - 子规格版本（client/SPEC.md、server/SPEC.md）独立 bump，但根 SPEC.md bump 时所有引用根 SPEC 的子追溯矩阵 `Spec-Reference` 字段必须同步更新
 - 子规格 bump 时，对应 `TRACEABILITY.md` 的 `Module-Version` + `Spec-Reference` 必须同 commit 同步（见 R6）
+- spec 版本与 runtime 版本独立：Spec-Version 反映契约，Runtime-Version 反映 runtime 实现成熟度，二者不耦合
 
 ---
 
