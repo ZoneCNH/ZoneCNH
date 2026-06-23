@@ -4,9 +4,9 @@
 >
 > 规范来源：`docs/governance/TRACEABILITY.md`
 
-- Matrix-Version: v3.2.0
+- Module-Version: v3.3.0
 - Last-Updated: 2026-06-23
-- Spec-Reference: `module/binance/SPEC.md` v3.2.0
+- Spec-Reference: `module/binance/SPEC.md` v3.3.0
 
 ---
 
@@ -15,6 +15,8 @@
 > **v3.1.0 变更摘要**：FR-006 拆分为 6a(taosx)/6b(postgresx)/6c(redisx cache)/6d(ossx)；FR-007 扩展 analytics API(7a)；新增 FR-010（clickhousex OLAP 存储）、FR-011（分布式协调锁）；v3.1.0 继续登记 FR-012~FR-024，覆盖 realtime control、historical lifecycle、event governance、release evidence 与 runtime hot reload；subject 命名统一 `um_perp`/`cm_perp`；Error 码扩展至 BNC-013；Performance Budget 扩展至 20 项。
 
 > **v3.2.0 变更摘要**：fold DATA-LIFECYCLE §7 候选 FR 进 SPEC/TRACEABILITY/NAMING——新增 FR-025（Backfill Throttle & Priority）、FR-026（Daily Reconciliation Job）、FR-027（Cold Data Rehydration）、FR-028（Backfill Progress API）；NAMING §2.1 补 bar 订阅周期集、§3.1 补 control subjects（`instruments.changed`/`symbols.changed`）；SPEC §9 补 FR-015 depth 档位表 + control subjects；AC 扩展至 098、TC 扩展至 046。FR-025~028 全部 Pending（runtime 仓未实现）。
+
+> **v3.3.0 变更摘要**：版本号统一治理——字段名收敛为 `Spec-Version`（仅 SPEC）/ `Module-Version`（治理文档）/ `Runtime-Version`（SPEC runtime 版本）；废弃 `Doc-Version`/`Matrix-Version`/`Version` 异名；顶层 Module-Version 对齐 root SPEC；server/TRACEABILITY 补建版本字段；R6 扩展为全量版本统一规则 + check-binance-docs.sh 增项。
 
 | FR ID | 功能需求 | AC | TC ID(s) | Task | 实现状态 |
 |-------|----------|-----|----------|------|----------|
@@ -51,7 +53,7 @@
 | FR-027 | Cold Data Rehydration：OSS→taosx 回热 24h TTL + 202 job_id + 轮询 | AC-093 ~ AC-095 | TC-045 | SERVER-024 | Pending |
 | FR-028 | Backfill Progress API：jobs 列表 + coverage 时间戳 + 诊断字段 | AC-096 ~ AC-098 | TC-046 | SERVER-025 | Pending |
 
-> 状态口径：v3.1.0 新增 FR-012~FR-024 仅完成追溯登记，全部保持 Pending；v3.2.0 新增 FR-025~FR-028（fold 自 DATA-LIFECYCLE §7 候选）同样保持 Pending；FR-009/BR Done 的 runtime 证据见 `BOUNDARY-GATES.md` 与变更历史 v2.2.3（runtime SHA `bae80d6`）。
+> 状态口径：v3.1.0 新增 FR-012~FR-024 仅完成追溯登记，全部保持 Pending；v3.3.0 新增 FR-025~FR-028（fold 自 DATA-LIFECYCLE §7 候选）同样保持 Pending；FR-009/BR Done 的 runtime 证据见 `BOUNDARY-GATES.md` 与变更历史 v2.2.3（runtime SHA `bae80d6`）。
 
 ---
 
@@ -269,7 +271,7 @@
 | BR→验证覆盖率 | — | 9/9 | 100% | — |
 | AC→验证覆盖率 | — | 86/86 | 100% | — |
 | R2 governance matrix | 120 cells | 120 cells | 100% | 24 FR/event-product-governance cells × 5 文档/checker anchors |
-| 实现状态 | — | 1/24 FR | 4% | FR-009 boundary gate 已落地；FR-012~FR-024 为 v3.2.0 登记态 Pending |
+| 实现状态 | — | 1/24 FR | 4% | FR-009 boundary gate 已落地；FR-012~FR-024 为 v3.3.0 登记态 Pending |
 
 ---
 
@@ -277,7 +279,7 @@
 
 | 日期 | 版本 | 变更内容 | 作者 |
 |------|------|----------|------|
-| 2026-06-22 | v3.2.0 | **Realtime/Historical/Event/Release 扩展登记**：新增 FR-012~FR-024、TC-029~TC-042、AC-048~AC-086；登记 R2 120-cell governance matrix；统一 FR-024 endpoint 为 `POST /api/v1/admin/symbols/reload`；新增项均保持 Pending，FR-009 runtime evidence 不变 | ZoneCNH |
+| 2026-06-22 | v3.3.0 | **Realtime/Historical/Event/Release 扩展登记**：新增 FR-012~FR-024、TC-029~TC-042、AC-048~AC-086；登记 R2 120-cell governance matrix；统一 FR-024 endpoint 为 `POST /api/v1/admin/symbols/reload`；新增项均保持 Pending，FR-009 runtime evidence 不变 | ZoneCNH |
 | 2026-06-16 | v1.0.0 | 从零创建 §1-§7 标准追溯矩阵 | ZoneCNH |
 | 2026-06-17 | v1.1.0 | 修复 FR/BR/AC 错位，新增 AC-021~023 边界强制 | ZoneCNH |
 | 2026-06-17 | v1.2.0 | BR-002/003 拆分；BR 总数 8→9 | ZoneCNH |

@@ -77,15 +77,45 @@ readme_root=$(sed -nE 's/^- Spec-Version: (v[0-9.]+).*/\1/p' module/binance/READ
 trace_ref=$(sed -nE 's/^- Spec-Reference: `module\/binance\/SPEC.md` (v[0-9.]+).*/\1/p' module/binance/TRACEABILITY.md | head -1)
 acceptance_version=$(table_value "Module-Version" module/binance/ACCEPTANCE.md)
 features_version=$(table_value "Module-Version" module/binance/FEATURES.md)
-impl_version=$(sed -nE 's/^- Version: (v[0-9.]+).*/\1/p' module/binance/IMPLEMENTATION-PLAN.md | head -1)
+impl_version=$(sed -nE 's/^- Module-Version: (v[0-9.]+).*/\1/p' module/binance/IMPLEMENTATION-PLAN.md | head -1)
 changelog_ref=$(sed -nE 's/^- Spec-Reference: `module\/binance\/SPEC.md` (v[0-9.]+).*/\1/p' module/binance/CHANGELOG.md | head -1)
 
 expect_eq "README root Spec-Version" "$spec_version" "$readme_root"
 expect_eq "TRACEABILITY Spec-Reference" "$spec_version" "$trace_ref"
 expect_eq "ACCEPTANCE Module-Version" "$spec_version" "$acceptance_version"
 expect_eq "FEATURES Module-Version" "$spec_version" "$features_version"
-expect_eq "IMPLEMENTATION-PLAN Version" "$spec_version" "$impl_version"
+expect_eq "IMPLEMENTATION-PLAN Module-Version" "$spec_version" "$impl_version"
 expect_eq "CHANGELOG Spec-Reference" "$spec_version" "$changelog_ref"
+
+# R6 全量版本统一：顶层治理文档 Module-Version == root SPEC Spec-Version
+for f in RULES.md NAMING.md DATA-LIFECYCLE.md STANDARD.md ARCHITECTURE-DRIFT-WATCHLIST.md; do
+  v=$(sed -nE 's/^- Module-Version: (v[0-9.]+).*/\1/p' module/binance/$f | head -1)
+  [ -z "$v" ] && v=$(table_value "Module-Version" module/binance/$f)
+  expect_eq "$f Module-Version" "$spec_version" "$v"
+done
+
+# R6 子规格对称：client/server TRACEABILITY Module-Version == 对应子 SPEC Spec-Version
+client_spec=$(sed -nE 's/^- Spec-Version: (v[0-9.]+).*/\1/p' module/binance/client/SPEC.md | head -1)
+server_spec=$(sed -nE 's/^\| Spec-Version \| (v[0-9.]+).*/\1/p' module/binance/server/SPEC.md | head -1)
+client_trace=$(sed -nE 's/^- Module-Version: (v[0-9.]+).*/\1/p' module/binance/client/TRACEABILITY.md | head -1)
+server_trace=$(sed -nE 's/^- Module-Version: (v[0-9.]+).*/\1/p' module/binance/server/TRACEABILITY.md | head -1)
+client_trace_ref=$(sed -nE 's/^- Spec-Reference: `module\/binance\/client\/SPEC.md` (v[0-9.]+).*/\1/p' module/binance/client/TRACEABILITY.md | head -1)
+server_trace_ref=$(sed -nE 's/^- Spec-Reference: `module\/binance\/server\/SPEC.md` (v[0-9.]+).*/\1/p' module/binance/server/TRACEABILITY.md | head -1)
+expect_eq "client/TRACEABILITY Module-Version" "$client_spec" "$client_trace"
+expect_eq "server/TRACEABILITY Module-Version" "$server_spec" "$server_trace"
+expect_eq "client/TRACEABILITY Spec-Reference" "$client_spec" "$client_trace_ref"
+expect_eq "server/TRACEABILITY Spec-Reference" "$server_spec" "$server_trace_ref"
+
+# R6 异名字段禁用：禁止 Doc-Version / Matrix-Version / ^- Version:
+for f in module/binance/*.md module/binance/client/*.md module/binance/server/*.md; do
+  case "$f" in
+    */DEEP-ANALYSIS.md|*/goal.md|*/BOUNDARY-GATES.md|*/RUNTIME-MAPPING.md|*/client/README.md|*/server/README.md|*/client/IMPLEMENTATION-PLAN.md|*/server/IMPLEMENTATION-PLAN.md|*/tasks/*) continue ;;
+  esac
+  if grep -qE '^[-|] (Doc-Version|Matrix-Version|Version) [:(|]' "$f" 2>/dev/null; then
+    echo "FAIL $f uses deprecated version field name (Doc-Version/Matrix-Version/Version); use Module-Version or Spec-Version"
+    exit 1
+  fi
+done
 
 for f in SPEC.md TRACEABILITY.md ACCEPTANCE.md FEATURES.md IMPLEMENTATION-PLAN.md \
          RUNTIME-MAPPING.md BOUNDARY-GATES.md NAMING.md RULES.md \

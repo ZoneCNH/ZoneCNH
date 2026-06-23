@@ -5,7 +5,7 @@
 | 字段 | 值 |
 | --- | --- |
 | Status | Discussion Draft |
-| Doc-Version | v0.2.0 |
+| Module-Version | v3.3.0 |
 | Last-Updated | 2026-06-23 |
 | Scope | `module/binance` stage2 lifecycle planning |
 | Spec-Impact | 无；本讨论稿不修改 `SPEC.md`，不产生 runtime contract |

@@ -1,8 +1,8 @@
 # module/binance NAMING.md — 命名 SSOT
 
-- Doc-Version: v2.1.0
+- Module-Version: v3.3.0
 - Last-Updated: 2026-06-23
-- Applies-To: `module/binance/SPEC.md` v3.2.0, `module/binance/RULES.md` v1.0.2
+- Applies-To: `module/binance/SPEC.md` v3.3.0, `module/binance/RULES.md` v3.3.0
 - Scope: product_line、event_type、natsx subject、Kafka topic、TDengine stable、Redis key、REST endpoint、OSS path
 
 > [COMPUTED, HIGH] 本文件是 `module/binance` 命名权威入口。所有新增规格、任务和 runtime 代码必须使用本文件的 canonical token；历史别名只允许出现在本文件、治理报告、漂移清单和归档 task 中。
@@ -135,5 +135,6 @@ rg -n 'funding\\b' module/binance | rg -v 'funding_rate|fundingInfo|funding-rate
 
 | Date | Version | Change |
 |---|---|---|
+| 2026-06-23 | v3.3.0 | 版本号统一：Doc-Version → Module-Version，对齐 root SPEC v3.3.0；补 §2.1 bar 订阅周期集 + §3.1 control subjects。 |
 | 2026-06-23 | v2.0.0 | MAJOR taxonomy fold：event_type 从 4 扩为 6，新增 `funding_rate`、`mark_price`；natsx subject 与 Kafka topic 扩为 4 × 6。 |
 | 2026-06-22 | v1.0.0 | 建立 product_line、event_type、subject/topic 命名 SSOT。 |

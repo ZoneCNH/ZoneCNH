@@ -1,6 +1,6 @@
 # module/binance RULES.md — 模块治理规则
 
-- Doc-Version: v1.0.2
+- Module-Version: v3.3.0
 - Last-Updated: 2026-06-23
 - 适用范围：`module/binance/` 全部规格文档 + `github.com/ZoneCNH/binance` runtime 仓
 - 优先级：本文 > 子规格 > task；与 `CONSTITUTION.md` §0-§20 冲突时以 `CONSTITUTION.md` 为准
@@ -75,6 +75,7 @@ bash scripts/check-binance-docs.sh
 - 版本号只能升不能降
 - bump 必须是 PR 最后一个 commit
 - 子规格版本（client/SPEC.md、server/SPEC.md）独立 bump，但根 SPEC.md bump 时所有引用根 SPEC 的子追溯矩阵 `Spec-Reference` 字段必须同步更新
+- 子规格 bump 时，对应 `TRACEABILITY.md` 的 `Module-Version` + `Spec-Reference` 必须同 commit 同步（见 R6）
 
 ---
 
@@ -127,22 +128,27 @@ grep -lE "^\> \[ARCHIVED" module/binance/ --include="*.md" -r | grep -v "DEEP-AN
 
 ---
 
-## R6【硬】ACCEPTANCE 元数据同步
+## R6【硬】模块版本统一与元数据同步
 
-**规则**：`module/binance/ACCEPTANCE.md` 顶部的 `Module-Version` 字段必须与 `module/binance/SPEC.md` 的 `Spec-Version` 同步。
+**规则**：`module/binance/` 版本字段名与版本号必须统一：
 
-**违规**：ACCEPTANCE Module-Version 落后于 SPEC Spec-Version
+1. **字段名收敛**：仅允许 2 种版本字段名
+   - `Spec-Version`：仅 root/client/server 的 `SPEC.md`
+   - `Module-Version`：所有其他治理文档（ACCEPTANCE / FEATURES / IMPLEMENTATION-PLAN / TRACEABILITY / CHANGELOG / NAMING / RULES / DATA-LIFECYCLE / STANDARD / ARCHITECTURE-DRIFT-WATCHLIST / README）
+   - `Runtime-Version`：仅 SPEC.md 的 runtime 版本（与 Spec-Version 语义区分，独立不 bump）
+   - **禁止** `Doc-Version` / `Matrix-Version` / `Version` 等异名字段
+2. **顶层版本号统一**：所有顶层治理文档的 `Module-Version` 必须 == root `SPEC.md` 的 `Spec-Version`
+3. **子规格版本独立**：`client/SPEC.md` / `server/SPEC.md` 的 `Spec-Version` 独立 bump（见 R3）；其 `TRACEABILITY.md` 的 `Module-Version` 必须等于对应子规格的 `Spec-Version`
+4. **Spec-Reference 闭环**：所有 `Spec-Reference` 字段必须指向正确的 SPEC + 版本号
+
+**违规**：使用异名字段名；顶层 Module-Version 与 root SPEC Spec-Version 不一致；子规格 TRACEABILITY Module-Version 与子 SPEC Spec-Version 不一致；Spec-Reference 指向错误版本
 
 **检测**：
 ```bash
-SPEC=$(grep -oP "Spec-Version: \Kv[0-9.]+" module/binance/SPEC.md)
-ACC=$(grep -oP "Module-Version: \Kv[0-9.]+" module/binance/ACCEPTANCE.md)
-[ "$SPEC" = "$ACC" ] && echo PASS || echo "FAIL: SPEC=$SPEC ACC=$ACC"
+bash scripts/check-binance-docs.sh   # 含 R6 全量版本统一校验
 ```
 
-**修复义务**：SPEC bump 时同 commit 更新 ACCEPTANCE.md
-
-**关联同步**：FEATURES.md / IMPLEMENTATION-PLAN.md 引用版本号的位置也需检查
+**修复义务**：SPEC bump 时同 commit 更新所有顶层 Module-Version + Spec-Reference；子规格 bump 时同 commit 更新对应 TRACEABILITY
 
 ---
 

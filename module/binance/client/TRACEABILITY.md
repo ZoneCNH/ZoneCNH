@@ -3,8 +3,8 @@
 > 追溯矩阵 §1–§7，符合 `docs/governance/TRACEABILITY.md` 标准格式。
 > 数据来源：`module/binance/client/SPEC.md` v2.1.1。
 
-- Matrix-Version: v2.1.1
-- Last-Updated: 2026-06-22
+- Module-Version: v2.1.1
+- Last-Updated: 2026-06-23
 - Spec-Reference: `module/binance/client/SPEC.md` v2.1.1
 
 ---
