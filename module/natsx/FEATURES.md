@@ -1,14 +1,16 @@
 # natsx 完整实现清单
 
 - Status: Generated from current module SSOT
-- Last-Updated: 2026-06-18
-- Module-Version: v1.0.3
-- Module-State: 已发布
+- Last-Updated: 2026-06-23
+- Module-Version: v1.0.3 remote tag / Spec v1.2.0
+- Module-State: Tag Exists / GitHub Release Pending
 - Layer: L2 基础设施适配器
 - Runtime-Repo: /home/natsx
 - Source: goal.md, SPEC.md, TRACEABILITY.md, IMPLEMENTATION-PLAN.md, tasks/
 
 > 本清单用于约束 natsx 的完整实现范围。条目来自本目录已有 Spec、Traceability、Plan、Task 等文档；若运行时代码状态与本文不一致，以相应模块仓库的最新验证证据补充更新本文。
+>
+> [COMPUTED, HIGH] 2026-06-23 核查：origin refs/tags/v1.0.3 存在且 PR #17 已合并，但 `gh release view v1.0.3 --repo ZoneCNH/natsx` 返回 `release not found`；本清单不得作为 GitHub Release 完成证明。
 
 ## 1. 模块边界清单
 
@@ -34,8 +36,8 @@
 | FR-006 | JetStream.AddStream | 创建、幂等、冲突配置均有测试 / TC-003 / TASK-NATSX-004 | ✅ | TRACEABILITY.md |
 | FR-007 | JetStream.AddConsumer | 创建、幂等、冲突配置均有测试 / TC-003 / TASK-NATSX-004 | ✅ | TRACEABILITY.md |
 | FR-008 | Health | ready/live/message 与连接状态映射有测试 / TC-005 / TASK-NATSX-005 | ✅ | TRACEABILITY.md |
-| FR-009 | JetStream IngestPublisher Adapter | IngestAck{Durable}/retryable reject/duplicate 幂等 / TC-010 / TASK-NATSX-010 | ⏳ Pending | TRACEABILITY.md |
-| FR-010 | JetStream IngestConsumer Adapter | Fetch+ManualAck/重投递/DLQ/poison message / TC-015 / TASK-NATSX-010 | ⏳ Pending | TRACEABILITY.md |
+| FR-009 | JetStream IngestPublisher Adapter | IngestAck{Durable}/retryable reject/duplicate 幂等 / TC-010 / TASK-NATSX-010 | ✅ PR #17 merged; GitHub Release pending | TRACEABILITY.md |
+| FR-010 | JetStream IngestConsumer Adapter | Fetch+ManualAck/重投递/DLQ/poison message / TC-015 / TASK-NATSX-010 | ✅ PR #17 merged; GitHub Release pending | TRACEABILITY.md |
 
 ## 3. 行为与非功能实现清单
 
@@ -54,7 +56,7 @@
 | NFR-002 | TLS/auth | TLS 与认证配置可表达且不泄漏凭据 / TC-011 / TASK-NATSX-011 | ✅ Config expression/sanitize, canonical auth env vars, and local auth live test with redacted credentials covered; production TLS closure packet remains external release blocker BLK-002 | TRACEABILITY.md |
 | NFR-003 | Performance budget | publish/request/JetStream 延迟预算有 benchmark / TC-012 / TASK-NATSX-012 | ✅ Publish/request/JetStream benchmarks plus embedded request/publish/fetch SLO assertions and handler latency metric covered | TRACEABILITY.md |
 | NFR-004 | Layer boundary | 不依赖 kafkax，不替代 RPC/治理框架 / TC-013 / TASK-NATSX-013 | ✅ Dependency boundary clean | TRACEABILITY.md |
-| NFR-005 | Release evidence | SPEC、goal、traceability、matrix evidence 一致 / TC-014 / TASK-NATSX-014 | ✅ Documentation and executable evidence reconciled | TRACEABILITY.md |
+| NFR-005 | Release evidence | SPEC、goal、traceability、matrix evidence 一致 / TC-014 / TASK-NATSX-014 | 🟡 Documentation and executable evidence reconciled for PR #17; GitHub Release v1.0.3 pending | TRACEABILITY.md |
 | NFR-006 | SubjectBuilder | domain.resource.action.v{version} 构造和解析有测试 / TC-006 / TASK-NATSX-006 | ✅ Build/parse/validation tests | TRACEABILITY.md |
 | NFR-007 | NatsMessageEnvelope | traceId/messageId/schemaVersion/header 双向映射有测试 / TC-007 / TASK-NATSX-007 | ✅ Header metadata round-trip and embedded propagation tests | TRACEABILITY.md |
 | NFR-008 | Config contract | foundationx.nats.* 配置、默认值和旧别名兼容有测试 / TC-008 / TASK-NATSX-008 | ✅ Defaults/sanitize/validation plus canonical FOUNDATIONX_NATS_ over legacy NATS_ fallback covered | TRACEABILITY.md |
@@ -95,13 +97,14 @@
 | TASK-NATSX-008-PROMPT | TASK-NATSX-008 实现 Prompt | module/natsx/tasks/TASK-NATSX-008-PROMPT.md | - | tasks/TASK-NATSX-008-PROMPT.md |
 | TASK-NATSX-009 | NFR-009 | - | Complete repair-slice canonical metrics and secret-safe error/log evidence; distributed tracing is not claimed by this matrix | TRACEABILITY.md |
 | TASK-NATSX-009-PROMPT | TASK-NATSX-009 实现 Prompt | module/natsx/tasks/TASK-NATSX-009-PROMPT.md | - | tasks/TASK-NATSX-009-PROMPT.md |
+| TASK-NATSX-010 | FR-009, FR-010 | - | ✅ PR #17 merged; GitHub Release pending | TRACEABILITY.md |
 | TASK-NATSX-011 | NFR-001, NFR-002, BR-008 | - | Complete repair-slice sanitize/config evidence plus local auth live integration passed with redacted local config; production TLS closure packet remains separate release blocker BLK-002 in release/trust/foundation-maturity-evidence-matrix-20260615.md | TRACEABILITY.md |
 | TASK-NATSX-011-PROMPT | TASK-NATSX-011 实现 Prompt | module/natsx/tasks/TASK-NATSX-011-PROMPT.md | - | tasks/TASK-NATSX-011-PROMPT.md |
 | TASK-NATSX-012 | NFR-003 | - | Complete repair-slice SLO assertions for embedded request, JetStream publish/fetch, and handler latency; production benchmark gate still separate | TRACEABILITY.md |
 | TASK-NATSX-012-PROMPT | TASK-NATSX-012 实现 Prompt | module/natsx/tasks/TASK-NATSX-012-PROMPT.md | - | tasks/TASK-NATSX-012-PROMPT.md |
 | TASK-NATSX-013 | NFR-004 | Dependency boundary check passed for forbidden ZoneCNH messaging/storage modules | - | TRACEABILITY.md |
 | TASK-NATSX-013-PROMPT | TASK-NATSX-013 实现 Prompt | module/natsx/tasks/TASK-NATSX-013-PROMPT.md | - | tasks/TASK-NATSX-013-PROMPT.md |
-| TASK-NATSX-014 | NFR-005 | Release evidence + CI gate: README.md quickstart/API overview, CHANGELOG.md v1.0.0, CI gate (build/test/vet/lint/secret scan), coverage >=80%, benchmark regression guard; /home/natsx evidence pinned to commit 20f801f | - | TRACEABILITY.md |
+| TASK-NATSX-014 | NFR-005 | Release evidence + CI gate: README.md quickstart/API overview, CHANGELOG.md v1.0.0, CI gate (build/test/vet/lint/secret scan), coverage >=80%, benchmark regression guard; PR #17 merge and remote tag v1.0.3 observed; GitHub Release v1.0.3 pending | - | TRACEABILITY.md |
 | TASK-NATSX-014-PROMPT | TASK-NATSX-014 实现 Prompt | module/natsx/tasks/TASK-NATSX-014-PROMPT.md | - | tasks/TASK-NATSX-014-PROMPT.md |
 
 ## 5. 文档资产清单
@@ -121,4 +124,4 @@
 - [ ] 所有任务文档均能追溯到 FR、BR/NFR、AC 或 TC。
 - [ ] 依赖边界符合 FOUNDATION-DEPS.yaml，不引入未授权运行时依赖。
 - [ ] 运行时代码仓库 /home/natsx 的 lint、typecheck、test、race、coverage 验证证据已归档。
-- [ ] 发布说明、版本标签与本目录登记状态一致，且当前目标发布版本为 `v0.4.7`。
+- [ ] 发布说明、版本标签与本目录登记状态一致；当前已确认 `v1.0.3` 远端 tag，GitHub Release `v1.0.3` 待补。

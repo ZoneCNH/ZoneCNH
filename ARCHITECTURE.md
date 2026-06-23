@@ -39,7 +39,7 @@ composer ───────────► 基座运行时 / L2.5 / 数据域
                       L1 test-only: testkitx
                       扩展: redisx · kafkax · natsx · postgresx · taosx · ossx · clickhousex
                       契约: contracts · transportx
-                      
+
 
 标准与门禁：
   xlib_standard ─── 标准事实源 / Go Reference Template，v1.0.1 发布验收通过，不参与业务运行

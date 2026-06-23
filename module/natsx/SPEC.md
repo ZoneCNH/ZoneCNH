@@ -7,7 +7,7 @@ Status: Approved
 - Version: v1.0.0
 - Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `kernel`
 
-> 公开投影 caveat：Status=Review 与矩阵覆盖证据不等同于 factory-grade；四源评分通过前机器事实层保持 factory=false。
+> 公开投影 caveat：Status=Approved 表示本目录目标契约已批准；GitHub Release v1.0.3 仍以仓库 release 证据为准；四源评分通过前机器事实层保持 factory=false。
 
 ---
 
@@ -203,8 +203,8 @@ THEN 返回 `error`（poison message），调用方决定 nack 或 DLQ，适配�
 | AC-006 | JetStream.AddStream | AddStream 幂等创建；配置兼容时返回 nil；配置冲突时返回错误 | TC-003, unit test | ✅ AddStream create/idempotency/conflict covered |
 | AC-007 | JetStream.AddConsumer | AddConsumer 幂等创建；配置兼容时返回 nil；配置冲突时返回错误 | TC-003, unit test | ✅ AddConsumer create/idempotency/conflict covered |
 | AC-008 | Health | NATS 可用时 Health() 返回 Ready=true/Live=true；不可达时 Ready=false/Live=false；JetStream 不可用时 Ready=false/Live=true | TC-005, unit test | ✅ Healthy, disconnected, nil, canceled, closed, reconnect, and degraded health paths covered |
-| AC-009 | JetStream IngestPublisher Adapter | IngestAck{Durable:true} on PubAck；JETSTREAM_PUBLISH_FAILED retryable；空 IdempotencyKey 不可重试；duplicate 返回 Duplicate:true | TC-010, unit + integration | ⏳ Pending — 契约已登记，runtime 适配器待实现 |
-| AC-010 | JetStream IngestConsumer Adapter | Fetch 返回 (req, Ack, err)；Ack 推进 offset；超 AckWait 重投递；超 MaxDeliver 进 DLQ；poison message 不吞没 payload | TC-011, unit + integration | ⏳ Pending — 契约已登记，runtime 适配器待实现 |
+| AC-009 | JetStream IngestPublisher Adapter | IngestAck{Durable:true} on PubAck；JETSTREAM_PUBLISH_FAILED retryable；空 IdempotencyKey 不可重试；duplicate 返回 Duplicate:true | TC-010, unit + integration | ✅ PR #17 merged — IngestPublisher runtime adapter 已实现；GitHub Release v1.0.3 待补 |
+| AC-010 | JetStream IngestConsumer Adapter | Fetch 返回 (req, Ack, err)；Ack 推进 offset；超 AckWait 重投递；超 MaxDeliver 进 DLQ；poison message 不吞没 payload | TC-015, unit + integration | ✅ PR #17 merged — IngestConsumer runtime adapter 已实现；GitHub Release v1.0.3 待补 |
 
 
 ## 7. 行为约束
