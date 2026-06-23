@@ -1,5 +1,7 @@
 # Binance 模块完整更新迭代方案
 
+> [COMPUTED, HIGH] **2026-06-23 闭环状态**：本方案中的 27 项 backlog + 19 个待建 issue 已全部落地并关闭（PR #910，GitHub open count = 0）。正文中"待建 issue"字样为 2026-06-22 规划时状态，实际 issue 编号为 #866~#896（含 #869）。逐 issue 最终状态、证据与残留动作见 [`issues-full-closure-20260623.md`](issues-full-closure-20260623.md)。候选 FR-025~028（Backfill Throttle/Daily Reconciliation/Cold Rehydration/Progress API）未 fold 进 SPEC，待后续 PR 按 R3 bump 落地。
+
 - [COMPUTED, HIGH] 制定日期：2026-06-22
 - [COMPUTED, HIGH] 输入来源：`docs/report/binance/` 全部 5 份报告（v1/v2/v3/v4 + business-types）+ 现有 8 个开放 issue（#866~#873）+ `module/binance/` 治理文件基线
 - [COMPUTED, HIGH] 目标：把分散在 5 份报告中的发现收敛为单一执行计划，并同步到 GitHub issues，形成可追溯的迭代 backlog
