@@ -1,7 +1,7 @@
 # Goal: Binance 模块从规格参考实现升级为可发布 C/S 参考实现
 
 > [COMPUTED, HIGH] **2026-06-23 PR #910 历史闭环状态**：本 goal 引用的 26 个开放 issue（#866~#896，含 #869）已全部关闭（PR #910，GitHub open count = 0）。正文中"开放 issue"字样为 2026-06-22 规划时状态。逐 issue PR #910 基线、证据与残留动作见 [`issues-full-closure-20260623.md`](issues-full-closure-20260623.md)。
-> [COMPUTED, HIGH] **2026-06-23 当前状态覆盖声明**：FR-025~FR-030 已在 SPEC/TRACEABILITY/NAMING 登记为 Pending 合同项，但不代表 runtime 完成；GitHub #923-#931 仍受 closure ledger 约束，runtime/release evidence Pending。
+> [COMPUTED, HIGH] **2026-06-23 当前状态覆盖声明**：FR-025~FR-030 已在 SPEC/TRACEABILITY/NAMING 登记为 Pending 合同项，但不代表 runtime 完成；GitHub #923~#931 已在后续 PR #947/#949 后全部 CLOSED，当前 closure ledger 仅记录 issue tracking state；runtime/release evidence Pending 继续由 acceptance/release gates 管理。
 
 > 来源：`docs/report/binance/iteration-plan-20260622.md`（27 项 backlog + 7 阶段路线）+ 26 个开放 issue（#866~#896）
 > 框架：遵循 `docs/goal/02-goal-standard.md` 结构公式

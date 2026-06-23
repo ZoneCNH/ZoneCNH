@@ -90,7 +90,7 @@ module/binance/server
 
 ## GitHub Issue Closure Gate
 
-[COMPUTED, HIGH] Current closure ledger: [`../../docs/report/binance/github-issues-923-931-closure-ledger-20260623.md`](../../docs/report/binance/github-issues-923-931-closure-ledger-20260623.md).
+[COMPUTED, HIGH] Current issue-tracking ledger: [`../../docs/report/binance/github-issues-923-931-closure-ledger-20260623.md`](../../docs/report/binance/github-issues-923-931-closure-ledger-20260623.md).
 
 [COMPUTED, HIGH] GitHub #923~#931 are closed in GitHub state as of 2026-06-23. This closure does not replace runtime/release evidence: live websocket, external `natsx` / storage / fanout / query, remote CI, release tag, and FR-012~030 implementation evidence remain governed by acceptance and release gates.
 
