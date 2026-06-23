@@ -4,7 +4,7 @@
 
 - Status: Approved
 - Spec-Version: v3.4.0
-- Last-Updated: 2026-06-23
+- Last-Updated: 2026-06-23 (Appendix C.2 数据流图 v2 补强)
 - Owner: ZoneCNH
 - Layer: 数据域 · 行情
 - Runtime-Version: v0.1.0
@@ -1220,6 +1220,72 @@ Binance Exchange (REST/WebSocket)
     │   pipeline)       │
     └──────────────────┘
 ```
+
+### Appendix C.2: Complete Data Flow Diagram v2
+
+[COMPUTED][HIGH] v1 仅画热路径（real-time ingest）与四事件（tick/trade/bar/depth）。v2 补全温路径（OLAP ETL）、冷路径（归档）、读路径（API cache），并反映 6 事件类型（+funding_rate/mark_price）与 instrument_subtype identity。
+
+```text
+┌─────────────────────────────── Binance Exchange (REST/WS) ───────────────────────────────┐
+│  Spot / USDⓈ-M(perp+delivery) / COIN-M(perp+delivery) / Options                          │
+│  events: tick · trade · bar · depth · funding_rate · mark_price                          │
+└───────────────────────────────────────┬─────────────────────────────────────────────────┘
+                                        │ ▼ HOT PATH (real-time, P99 < 50ms)
+                   ┌────────────────────┴───────────────────┐
+                   │  CLIENT (binance-client)               │
+                   │  connector → catalog → parser          │
+                   │  → normalizer → canonical mapper       │  ◄── module/domain_market
+                   │    (instrument_subtype ∈ InstrumentKey)│      (InstrumentSubtype: perpetual/delivery)
+                   │  → idempotency key → natsx publisher   │  ◄── module/natsx (JetStream PubAck)
+                   └────────────────────┬───────────────────┘
+                                        │ binance.market.{product_line}.{event_type}
+                                        │ Stream=BINANCE_MARKET, Retention=7d, at-least-once
+                                        ▼
+                   ┌────────────────────┴───────────────────┐
+                   │  SERVER (binance-server, ManualAck)     │
+                   │  validation → redisx SetNX idempotency  │  ◄── module/redisx
+                   │  → taosx WriteBatch (hot store)         │  ◄── module/taosx
+                   │  → postgresx upsert (instrument catalog)│  ◄── module/postgresx
+                   │  → kafkax Send (downstream fanout)      │  ◄── module/kafkax
+                   │  → msg.Ack()  ← 仅 storage+kafkax 全成功 │      topic=binance.{pl}.{et}.v1
+                   └──────┬─────────────────┬────────────────┘
+                          │                 │
+          ┌───────────────▼───┐    ┌────────▼─────────────────────────────────┐
+          │  kafkax fanout     │    │  WARM PATH (OLAP ETL, 每 5min)            │
+          │  → module/         │    │  coordinator lease (redisx SetNX, 10s)    │  ◄── FR-011
+          │  market_data       │    │  → taosx 聚合 1m_ohlcv/5m_vwap/15m_stats  │  ◄── FR-010
+          │  (exchange-neutral)│    │  → clickhousex WriteBatch (analytics)     │  ◄── module/clickhousex
+          └────────────────────┘    └────────┬──────────────────────────────────┘
+                                              │
+                                     ┌────────▼─────────────────────────────────┐
+                                     │  COLD PATH (archive, daily)               │
+                                     │  ossx parquet                             │  ◄── module/ossx
+                                     │  binance/{pl}/{symbol}/{YYYY}/{MM}/{DD}/  │  ◄── FR-008
+                                     │    {event_type}.parquet                   │
+                                     │  ETag 校验通过 → 删 taosx 热数据           │
+                                     └──────────────────────────────────────────┘
+
+┌─────────────────────────────── READ PATH (HTTP API) ─────────────────────────────────────┐
+│  GET /api/v1/market/{ticks,bars,depth,trades,funding-rates,mark-prices}/:symbol           │
+│      │                                                                                     │
+│      ▼                                                                                     │
+│  redisx hot cache (tick/bar 60s, depth 5s)  ◄── module/redisx    hit → 200 (P99 < 5ms)    │
+│      │ miss                                                                                │
+│      ▼                                                                                     │
+│  taosx 直查 (hot store)                    ◄── module/taosx       miss → 200              │
+│                                                                                            │
+│  OLAP analytics (vwap/top-movers/correlation/volume-profile)                               │
+│      → clickhousex query                  ◄── module/clickhousex 不可达 → 503 (不阻塞实时) │
+└───────────────────────────────────────────────────────────────────────────────────────────┘
+```
+
+[KNOWN][HIGH] 路径分层：
+- **HOT**：client→natsx→server→taosx/kafkax，实时 ingest，P99 < 50ms（FR-001~008）
+- **WARM**：taosx→clickhousex ETL，5min 聚合，coordinator lease 互斥（FR-010/FR-011）
+- **COLD**：taosx→ossx parquet 归档，daily，ETag 校验后删热数据（FR-008）
+- **READ**：Gin API→redisx→taosx 三级读 + clickhousex OLAP 独立支路（FR-007/FR-007a）
+
+[COMPUTED][HIGH] instrument_subtype（perpetual/delivery）在 v2 图中由 canonical mapper 注入 InstrumentKey，贯穿 taosx tag / postgresx catalog / kafkax payload / ossx path 元数据，但不进入 natsx subject——与 NAMING §1.1 承载规则一致。
 
 ## Appendix D: Acceptance Criteria Registry
 
