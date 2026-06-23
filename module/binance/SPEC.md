@@ -72,6 +72,21 @@ Binance 行情集成面临以下问题：
 - 定义 enforceable boundary gates：禁止跨进程代码导入，CI 拦截
 - 移除 `binance-market` + `internal/cs` 同进程桥接包
 
+### 4.1 Runtime Distributed Architecture Constraints
+
+以下分布式约束是 **可执行** 的——由 CI boundary gates 验证，任何 runtime 部署不得违反：
+
+| # | 约束 | 强制方式 |
+|---|------|---------|
+| C1 | Client 和 Server 是 **独立进程**——禁止同进程 wiring、Go interface 直调或共享 in-process state。 | BOUNDARY-GATES §6；`cmd/binance-smoke` 是仅有的本地 self-test 例外。 |
+| C2 | Client → Server 通信 **仅通过 natsx JetStream**——禁止 gRPC、HTTP、共享内存或 Go interface 跨边界调用。 | BOUNDARY-GATES §6；SPEC §2 dataflow diagram。 |
+| C3 | NATS JetStream 是 **独立部署的基础设施**——`binance-client` 和 `binance-server` 均不内嵌或启动 NATS server。两个进程仅通过配置地址连接。 | SPEC §4；SPEC §2 deployment note。 |
+| C4 | `internal/cs`（旧 in-process C/S bridge）**不能**作为任何 client、server 或 cmd package 的 runtime 依赖存在。 | BOUNDARY-GATES §5。 |
+| C5 | Client 不得 import server internals (`internal/server`)；Server 不得 import client internals (`internal/client`)。 | BOUNDARY-GATES §3, §4。 |
+| C6 | 共享 wire contract 位于 `internal/wire`——canonical 市场语义属于 `domain_market`。 | BOUNDARY-GATES §8。 |
+
+以上约束对任何标记为 "production" 的部署 **不可协商**。`cmd/binance-smoke` 本地 self-test 是 C1 的唯一例外（仅限开发验证）。
+
 ---
 
 ## 5. Non-goals

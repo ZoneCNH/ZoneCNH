@@ -159,7 +159,7 @@
 | 所有 FR implemented | Not Done | FR-001~FR-030 状态全部闭合。 |
 | 所有 AC passed | Not Done | AC-001~AC-104 全部有测试证据。 |
 | 所有 TC passed | Not Done | TC-001~TC-049 全部 PASS。 |
-| Runtime test evidence | Local Evidence Done / Secret+CI+Live+Release Pending | `/home/binance/release/evidence/binance/20260623/` 已归档 build/test/race/vet/lint/smoke/boundary gate；验证代码 `9777a5b0db9a3de5db53942b9aaf6b55eec04f24`，证据提交 `20c7712935f53e1948bdf4b30a72d3db07f9acfb`；secret scan、remote CI、live websocket、外部集成、release evidence/tag 未闭合。 |
+| Runtime test evidence | Local Evidence Done / Secret+CI+Live+Release Pending | `/home/binance/release/evidence/binance/20260623/` 已归档 build/test/race/vet/lint/smoke/boundary gate；验证代码与证据提交 `71e2a6e8bb5591c43e8a2ebfff8c7645bf030786`（2026-06-23 round 2）；secret scan、remote CI、live websocket、外部集成、release evidence/tag 未闭合。 |
 | Coverage and performance evidence | Not Done | 覆盖率、延迟、吞吐、重放与故障注入报告归档。 |
 | CI pass | Not Done | GitHub Actions 或等价 CI run 通过并链接到 release evidence。 |
 
@@ -174,18 +174,18 @@
 
 ## 7. GitHub Issue Closure Ledger（2026-06-23）
 
-> [COMPUTED, HIGH] #926 已于 2026-06-23 满足 governance/documentation 闭合条件（详见 `DATA-LIFECYCLE.md` §9），可从治理层面关闭。其余 #923~#925、#927~#931 不可关闭；PR #936/#937 只闭合文档投影错配，不替代 runtime、remote CI、live websocket、外部集成或 release tag 证据。完整账本见 [`docs/report/binance/github-issues-923-931-closure-ledger-20260623.md`](../../docs/report/binance/github-issues-923-931-closure-ledger-20260623.md)。
+> [COMPUTED, HIGH] 2026-06-23 GitHub 核查后，#925/#926/#930/#931 已作为 documentation-complete / umbrella-classified 关闭；#923/#924/#927/#928/#929 仍保持 open，等待 runtime、remote CI、live websocket、外部集成或 release tag 证据。完整账本见 [`docs/report/binance/github-issues-923-931-closure-ledger-20260623.md`](../../docs/report/binance/github-issues-923-931-closure-ledger-20260623.md)。
 >
-> [COMPUTED, HIGH] 本节记录 2026-06-23 全量 GitHub issue 核查后的闭合口径：#926 可关闭（治理/文档形式化完成，runtime 仍 Pending 由 #927~#929 追踪）；其余 issue 关闭必须等待对应 runtime evidence、CI/release evidence 或治理审计证据。
+> [COMPUTED, HIGH] 本节记录 2026-06-23 全量 GitHub issue 核查后的闭合口径：文档治理类 issue 可依据 PR #936/#937 与本地文档门禁关闭；runtime/release 类 issue 仍必须等待对应 runtime evidence、CI/release evidence。
 
 | Issue | 当前判断 | 已有证据 | 未闭合条件 |
 | --- | --- | --- | --- |
 | #923 | Partial / Open | `RUNTIME-MAPPING.md`、`BOUNDARY-GATES.md`、`/home/binance/release/evidence/binance/20260623/SUMMARY.md` | live Binance WebSocket、`natsx` JetStream PubAck/ManualAck、durable storage/fanout/query、post-fix release tag。 |
 | #924 | Open | 本地 evidence bundle 与 PR #14 可作为候选证据入口。 | 远端 CI、GitHub Release、live smoke、release artifact linkage。 |
-| #925 | Open / Projection Pending | `README.md`、`docs/architecture/` 与本清单已标注 release evidence pending。 | #923/#924 运行时和发布证据闭合后，才能同步公开状态为完成。 |
-| #926 | Closable — Governance Done / Runtime Pending | `DATA-LIFECYCLE.md` §9 形式化闭合备忘录：FR-012~FR-030 登记完成、影响台账完整、旧 issue 映射完成。 | Runtime 实现仍 Pending（#927~#929）；release evidence、CI、live smoke 未闭合。 |
+| #925 | Closed / Documentation Complete | `README.md`、`docs/architecture/`、`SPEC.md`、`TRACEABILITY.md`、`DATA-LIFECYCLE.md` 已对齐 v3.5.0 投影。 | — |
+| #926 | Closed / Formalized | `DATA-LIFECYCLE.md` §9 形式化闭合备忘录：FR-012~FR-030 登记完成、影响台账完整、旧 issue 映射完成。 | Runtime 实现由 #927/#928/#929 继续追踪。 |
 | #927 | Open | FR-012~FR-015 已登记。 | `exchangeInfo` discovery、catalog refresh、stream policy、depth tier、real reconnect/degradation evidence。 |
 | #928 | Open | FR-016~FR-024 已登记。 | cold-start backfill、gap replay、funding/mark-price、reconciliation、rehydration、progress API、hot reload runtime proof。 |
 | #929 | Open | FR-025~FR-030 已登记。 | throttle、validation、gap repair、SLA metrics、schema drift 与 quality evidence。 |
-| #930 | Open | 文档中已区分 L1 boundary 与 L2 runtime/release 口径。 | 50-commit coverage matrix、GateGuard/branch governance verification、历史 stale projection 清理。 |
-| #931 | Open / Umbrella | #923~#930 的状态入口已统一登记。 | #923~#930 全部关闭并链接证据后才能关闭。 |
+| #930 | Closed / Governance Docs Debt | stale v3.3/v3.4 projection 已移除；legacy `binance-market` 引用已压缩到边界/追踪语境；DEEP analysis archive/index 已拆分。 | — |
+| #931 | Closed / Umbrella Classified | #923~#930 的状态入口已统一登记，且 remaining runtime work 保留在 #923/#924/#927/#928/#929。 | — |
