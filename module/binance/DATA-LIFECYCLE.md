@@ -4,7 +4,7 @@
 
 | 字段 | 值 |
 | --- | --- |
-| Status | Formal Proposal / Runtime Evidence Pending |
+| Status | Formal Proposal（governance/documentation closed via #926 2026-06-23）; Runtime Evidence Pending |
 | Module-Version | v3.5.0 |
 | Last-Updated | 2026-06-23 |
 | Scope | `module/binance` stage2 lifecycle planning |

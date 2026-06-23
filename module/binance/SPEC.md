@@ -223,8 +223,8 @@ Binance 行情集成面临以下问题：
 #### FR-006c: redisx Hot Cache
 
 **WHEN** event 写入 taosx 成功
-**THEN** 调用 `redisx.SET(ctx, "tick:{product_line}:{symbol}", json, 60s)` 更新最新行情热缓存
-**AND** 调用 `redisx.SET(ctx, "depth:{product_line}:{symbol}", json, 5s)` 更新深度快照缓存
+**THEN** 调用 `redisx.SET(ctx, "binance:tick:{product_line}:{symbol}", json, 60s)` 更新最新行情热缓存
+**AND** 调用 `redisx.SET(ctx, "binance:depth:{product_line}:{symbol}", json, 5s)` 更新深度快照缓存
 
 **WHEN** redisx 缓存写入失败
 **THEN** 记录 warn 日志；继续后续管线（缓存失败不阻塞存储——降级到 taosx 直查）
@@ -725,7 +725,7 @@ server_unavailable
 | `taos.retention.bars` | `duration` | `8760h` | Bar 热数据保留（365d） |
 | `taos.retention.depth` | `duration` | `72h` | Depth 热数据保留（3d） |
 
-> 数据库 `market_binance` 已存在（TDengine per-provider 独立数据库）。超表（binance_ticks / binance_bars / binance_depth）由 taosx SchemalessWrite 自动创建子表。
+> 数据库 `market_binance` 已存在（TDengine per-provider 独立数据库）。超表（binance_tick / binance_bar / binance_depth / binance_trade / binance_funding_rate / binance_mark_price）由 taosx SchemalessWrite 自动创建子表。
 
 #### 11.2.5 clickhousex（OLAP 分析存储）
 
@@ -950,7 +950,7 @@ github.com/ZoneCNH/binance/
 | TC-010 | FR-006 | 单元 | `postgresx` UpsertSymbol | 幂等 upsert，无重复 catalog 记录 |
 | TC-011 | FR-006 | 集成 | `taosx` QueryRange | 按 symbol + time range 返回正确结果 |
 | TC-012 | FR-007 | httptest | `GET /api/v1/market/ticks` | 返回 `taosx` 查询结果 |
-| TC-013 | FR-007 | httptest | `GET /api/v1/market/depth/{instrument_key}` | redisx cache hit 返回最新快照 |
+| TC-013 | FR-007 | httptest | `GET /api/v1/market/depth/:symbol` | redisx cache hit 返回最新快照 |
 | TC-014 | FR-007 | httptest | 无效 API key | 返回 401 |
 | TC-015 | FR-007 | httptest | 请求超过限流 | 返回 429 + Retry-After |
 | TC-016 | FR-006d | 单元 | 超 retention 数据归档 | 先写 `ossx`，ETag 校验通过后删 `taosx` |
@@ -1125,17 +1125,17 @@ github.com/ZoneCNH/binance/
 
 ## 22. Release DoD
 
-`module/binance` v2.0.0 发布完成标准：
+`module/binance` v3.5.0 发布完成标准：
 
-- [ ] `binance-market` references 已移除或隔离到 migration history（BR-001）
+- [x] `binance-market` references 已移除或隔离到 migration history（BR-001）
 - [ ] `module/binance/client` 和 `module/binance/server` specs 完成并通过 spec-lint
 - [ ] root/client/server TRACEABILITY.md 完成，所有需求可追溯
-- [ ] client/server task sets 独立可执行
-- [ ] Delivery semantics 明确为 at-least-once + idempotent acceptance（FR-004, FR-005）
-- [ ] natsx JetStream ManualAck 全链路语义已定义且 testable（BR-004）
-- [ ] ProductLine 和 InstrumentKey 碰撞 case 已文档化（FR-002, §10 Data Model）
-- [ ] Boundary gates 可在 CI 执行（FR-009, BOUNDARY-GATES.md）
-- [ ] Runtime mapping 未将 generic market_data/strategy ownership 放在 Binance 内（BR-006）
+- [x] client/server task sets 独立可执行
+- [x] Delivery semantics 明确为 at-least-once + idempotent acceptance（FR-004, FR-005）
+- [x] natsx JetStream ManualAck 全链路语义已定义且 testable（BR-004）
+- [x] ProductLine 和 InstrumentKey 碰撞 case 已文档化（FR-002, §10 Data Model）
+- [x] Boundary gates 可在 CI 执行（FR-009, BOUNDARY-GATES.md）
+- [x] Runtime mapping 未将 generic market_data/strategy ownership 放在 Binance 内（BR-006）
 - [ ] 所有 FR 实现完成，所有 AC 验证通过
 - [ ] 覆盖率 ≥ 80%
 - [ ] CI Gate 全部通过（通用 + 模块专属）
@@ -1302,7 +1302,7 @@ Binance Exchange (REST/WebSocket)
                                      └──────────────────────────────────────────┘
 
 ┌─────────────────────────────── READ PATH (HTTP API) ─────────────────────────────────────┐
-│  GET /api/v1/market/{ticks,bars,depth,trades,funding-rates,mark-prices}/:symbol           │
+│  GET /api/v1/market/{ticks,bars,depth,trades,funding_rates,mark_prices}/:symbol           │
 │      │                                                                                     │
 │      ▼                                                                                     │
 │  redisx hot cache (tick/bar 60s, depth 5s)  ◄── module/redisx    hit → 200 (P99 < 5ms)    │

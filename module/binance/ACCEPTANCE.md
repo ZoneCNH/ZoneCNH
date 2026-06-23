@@ -7,7 +7,7 @@
 | Status | Generated from current module SSOT |
 | Last-Updated | 2026-06-23 |
 | Module-Version | v3.5.0 |
-| Module-State | 验收清单已补齐；FR-009 本地 runtime evidence 已归档（`/home/binance/release/evidence/binance/20260623/`），L2 功能与 release 状态仍以实际 `/home/binance` 测试、CI 与 release 证据为准 |
+| Module-State | 验收清单已补齐；L1 边界治理 FR-009 本地 evidence 已归档；L2 功能 FR 多数 Pending，以 runtime 仓实际测试、CI 与 release 证据为准 |
 | Runtime-Repo | `/home/binance` |
 | Source | `SPEC.md`, `TRACEABILITY.md`, `DATA-LIFECYCLE.md`, `STANDARD.md`, `client/TRACEABILITY.md`, `server/TRACEABILITY.md`, `BOUNDARY-GATES.md` |
 
@@ -135,7 +135,7 @@
 | FR-007 | AC-021~AC-025 | TC-012~TC-015 | Not Closed |
 | FR-006d | AC-026~AC-028 | TC-016~TC-017 | Not Closed |
 | FR-008 | AC-029~AC-031 | TC-018~TC-019 | Not Closed |
-| FR-009 | AC-032~AC-035 | TC-020~TC-022 | Locally Closed / CI+Release Pending |
+| FR-009 | AC-032~AC-035 | TC-020~TC-022 | Done（L1 边界治理，本地 runtime evidence 已归档；远端 CI/release evidence 仍单独验收）|
 | FR-010 | AC-041~AC-044 | TC-025~TC-026 | Not Closed |
 | FR-006c | AC-036~AC-037 | TC-023 | Not Closed |
 | FR-007a | AC-038~AC-040 | TC-024 | Not Closed |
