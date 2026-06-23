@@ -636,7 +636,7 @@ server_unavailable
 
 > 配置按部署单元分层：§11.1 client 端（仅需 NATS + Binance），§11.2 server 端（全栈 7 模块 + Gin）。
 > Secrets 一律从环境变量注入，配置文件仅存非敏感键名与默认值。
-> 环境变量前缀：client=`BINANCE_CLIENT_`，server=`BINANCE_SERVER_`。基础设施凭据使用各模块规范前缀。
+> 环境变量前缀：统一使用 `XGO_BINANCE_`（`configx` 约定，见 `module/bootstrap/SPEC.md`）。基础设施凭据使用各模块规范前缀。
 > `nats.url` 指向外部 NATS JetStream 服务；部署 NATS 集群属于平台/运维边界，不属于 client/server 二进制。
 > Dev 非敏感 NATS 配置与 `sre/secrets/env/dev.md` §NATS 对齐：client URL=`nats://127.0.0.1:4222`，monitor=`http://127.0.0.1:8222`，JetStream enabled，server_name=`nats-dev-01`。认证明文只能经环境变量注入。
 
