@@ -205,6 +205,49 @@ git checkout main && git pull origin main
 
 PR 标题遵循 Conventional Commits（不含模块名，模块名放 body 首行），不超过 50 字符。合并策略：squash merge。确认合并后删除本地分支。
 
+### 5. 模块内部一致性规则（> 新增: 2026-06-23 binance 审计复盘）
+
+> 以下规则从 `module/binance/` 跨文件审计的 13 项矛盾中提炼，适用于所有模块。
+
+#### 5.1 单一事实来源
+
+- **TRACEABILITY.md §6 仪表盘禁止独立维护 FR 实现状态**。仪表盘的"实现状态"行必须从 §1 FR 表的 `实现状态` 列派生（grep/awk 自动统计），不得手写。二者出现差异时以 §1 为准。
+- **FR 状态以 TRACEABILITY.md §1 为权威来源**。`ACCEPTANCE.md`、`SPEC.md` Appendix D、`FEATURES.md` 等文件可引用或汇总，但不得独立声明 FR 级别的 Done/Pending/Pending 状态。AC 粒度状态以 `ACCEPTANCE.md §2` 为准。
+
+#### 5.2 附录版本同步
+
+- **SPEC.md 的 Appendix 不得冻结为历史快照而不声明**。若 Appendix 仅覆盖部分 FR（如 Appendix D 仅覆盖 FR-001~FR-011 而模块已扩展至 FR-030），必须：(a) 在 Appendix 顶部添加弃用声明，标明"已冻结，权威来源见 XXX"；(b) 提供新旧编号映射（如有）；(c) 声明其 Status 列的含义（如"Approved=已批准纳入规格，不代表 runtime 已实现"）。
+- **FR 总数变更时必须扫描** SPEC.md 所有 Appendix、TRACEABILITY.md 所有汇总行、ACCEPTANCE.md 覆盖矩阵，确保无遗漏更新。
+
+#### 5.3 DoD 与验收清单交叉验证
+
+- **SPEC.md §22 Release DoD 的勾选状态必须与 ACCEPTANCE.md §5 一致**。DoD 中的可验证项（如"TRACEABILITY 完成"、"Boundary gates 文档化"）在 ACCEPTANCE.md §5 中标记为 Done 时，DoD checkbox 必须同步勾选。反之，DoD 中未勾选的运行时项（如"所有 FR 实现完成"）必须在 ACCEPTANCE.md §5 中标记为 Not Done。
+- **DoD 标题版本号必须与 SPEC.md §1 Spec-Version 一致**。版本 bump 时 DoD 标题同步更新。
+
+#### 5.4 跨文件 PR/commit 前检查
+
+编辑 `module/{module}/` 下任一文件后，commit 前执行：
+```bash
+# 检查 TRACEABILITY §1 vs §6 仪表盘 FR 状态一致性
+diff <(grep -P '^\| FR-\d+' module/{module}/TRACEABILITY.md | awk -F'|' '{print $2, $6}') \
+     <(grep 'FR-.*Partial\|FR-.*Pending\|FR-.*Done' module/{module}/TRACEABILITY.md | grep -v '^\| FR' | head -30)
+# 若不一致 → 以 §1 为准修正 §6
+
+# 检查 SPEC.md Appendix D 是否有弃用声明（若 FR 总数 > 附录覆盖数）
+spec_fr=$(grep -c '^### FR-' module/{module}/SPEC.md)
+appendix_ac=$(grep -c 'AC-BNC-' module/{module}/SPEC.md)
+if [ "$appendix_ac" -gt 0 ] && [ "$spec_fr" -gt 11 ]; then
+  grep -q '弃用声明\|历史遗物\|已冻结' module/{module}/SPEC.md || echo "WARNING: SPEC.md Appendix D 可能过期，需添加弃用声明"
+fi
+
+# 检查 SPEC §22 DoD 版本号 vs SPEC §1 Spec-Version
+dod_ver=$(grep -oP 'v\d+\.\d+\.\d+' module/{module}/SPEC.md | head -1)
+spec_ver=$(grep -oP 'Spec-Version:\s*v\d+\.\d+\.\d+' module/{module}/SPEC.md | grep -oP 'v\d+\.\d+\.\d+')
+[ "$dod_ver" = "$spec_ver" ] || echo "WARNING: SPEC §22 DoD 标题版本 ($dod_ver) ≠ Spec-Version ($spec_ver)"
+```
+
+> 本规则受 `~/.claude/rules/ecc/matrix-scoring-rules.md` 的 R1（跨表走查）原则约束。冲突时以 CONSTITUTION.md 为准。
+
 ## 评分纪律
 
 > 详细规则见 `~/.claude/rules/ecc/matrix-scoring-rules.md`。受保护文件修改走 RSI 流程。
