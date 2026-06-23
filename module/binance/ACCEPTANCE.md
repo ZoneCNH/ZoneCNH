@@ -7,7 +7,7 @@
 | Status | Generated from current module SSOT |
 | Last-Updated | 2026-06-23 |
 | Module-Version | v3.5.0 |
-| Module-State | 验收清单已补齐；runtime 通过状态仍以实际 `/home/binance` 测试为准 |
+| Module-State | 验收清单已补齐；FR-009 本地 runtime evidence 已归档（`/home/binance/release/evidence/binance/20260623/`），L2 功能与 release 状态仍以实际 `/home/binance` 测试、CI 与 release 证据为准 |
 | Runtime-Repo | `/home/binance` |
 | Source | `SPEC.md`, `TRACEABILITY.md`, `DATA-LIFECYCLE.md`, `STANDARD.md`, `client/TRACEABILITY.md`, `server/TRACEABILITY.md`, `BOUNDARY-GATES.md` |
 
@@ -19,12 +19,12 @@
 
 | 状态值 | 层级 | 含义 | 证据要求 |
 | --- | --- | --- | --- |
-| `PASS` | L1 Boundary/Governance | 边界治理 AC（FR-009/BR-001~009）已由本地 boundary gate、verified source commit 与证据包证明；远端 CI 属 release evidence | boundary-gate 输出 + verified source commit / evidence commit / 证据包 |
-| `Done` | L1 Boundary/Governance | 边界治理 BR/TC 已有 runtime 证据（BOUNDARY-GATES.md + evidence commit）；CI URL 若存在则附加 | verified source commit + evidence commit + local evidence path |
+| `PASS` | L1 Boundary/Governance | 边界治理 AC（FR-009/BR-001~009）通过 boundary-gate.sh 或 CI workflow，并绑定 runtime SHA | local evidence log / CI URL + runtime SHA |
+| `Done` | L1 Boundary/Governance | 边界治理 BR/TC 已有 runtime 证据（BOUNDARY-GATES.md + 变更历史 SHA） | runtime SHA + local evidence log 或 CI URL |
 | `Partial / TC Pending` | L2 Functional | 功能 FR 已部分实现（如 Spot 产品线），但 TC 未全绿 | feature/integration test 输出 + runtime SHA |
 | `Pending` | L2 Functional | runtime 仓未推送对应功能实现；默认 `Pending — 以 runtime 仓为准` | runtime feature test + integration test |
 
-> [COMPUTED, HIGH] L1 状态可由本地 boundary gate + verified source commit + evidence commit + 证据包标记；L2 状态必须附 runtime feature/integration test 输出与 runtime git SHA，runtime 仓未推送时所有 L2 FR 默认 Pending。
+> [COMPUTED, HIGH] L1 状态可由本地 boundary gate 或 CI 证据标记，但必须绑定 runtime SHA；L2 状态必须附 runtime feature/integration test 输出与 runtime git SHA，runtime 仓未推送时所有 L2 FR 默认 Pending。
 
 ## 1. 验收命令
 
@@ -39,7 +39,7 @@
 | Runtime vet | `cd /home/binance && go vet ./...` | 无 vet blocker。 |
 | Runtime lint | `cd /home/binance && golangci-lint run` | 无 lint blocker。 |
 | Secret scan | `cd /home/binance && gitleaks detect --no-git` | 无凭证泄漏。 |
-| Boundary gates | `cd /home/binance && bash -n scripts/boundary-gates.sh && ./scripts/boundary-gates.sh` | 10/10 PASS：禁止路径、禁止导入、禁止同进程 C/S、禁止 ownership drift 与 go.mod drift 全部 PASS。 |
+| Boundary gates | `cd /home/binance && bash -n scripts/boundary-gates.sh && ./scripts/boundary-gates.sh` | 10/10 PASS：禁止路径、禁止导入、禁止同进程 C/S、禁止 ownership drift 与 go.mod drift 全部 PASS；本地证据归档见 `/home/binance/release/evidence/binance/20260623/boundary-gates.log`。 |
 
 ## 2. Acceptance Criteria 登记
 
@@ -76,10 +76,10 @@
 | AC-029 | FR-008 | Server 通过 `kafkax` 发送 `binance.{product_line}.{event_type}.v1`；Kafka topic 与 natsx subject 明确分离。 | TC-018 | Pending |
 | AC-030 | FR-008 | Kafka message key 为 symbol 或 instrument identity；partition key = symbol，相同 symbol 有序到达同一 partition。 | TC-018 | Pending |
 | AC-031 | FR-008 | Kafka handoff 失败时不 Ack NATS message；Kafka 不可达时返回 error，进入 retry/dead-letter/告警路径。 | TC-019 | Pending |
-| AC-032 | FR-009 | CI 禁止 `binance-client` 导入 server internals；server 源码无 `internal/client` 或 `internal/cs` 导入。 | TC-020 | PASS |
+| AC-032 | FR-009 | CI 禁止 `binance-client` 导入 server internals；server 源码无 client 内部包或运行时共享包导入。 | TC-020 | PASS |
 | AC-033 | FR-009 | CI 禁止 `binance-server` 导入 client internals；任何代码 reintroduce `binance-market` 引用时 CI no-legacy gate 失败。 | TC-021 | PASS |
-| AC-034 | FR-009 | CI 禁止 `binance-market` 与 runtime `internal/cs` 回流；go.mod 中 natsx/redisx/postgresx/taosx/clickhousex/kafkax/ossx/gin 均保持 direct 依赖。 | TC-022 | PASS |
-| AC-035 | FR-009 | `BOUNDARY-GATES` 全量检查通过，且 client/server 边界、进程边界、依赖边界与 schema 约束均保持可审计。 | TC-020, TC-022 | PASS |
+| AC-034 | FR-009 | CI 禁止 `binance-market` 与运行时共享包回流；go.mod 中 natsx/redisx/postgresx/taosx/clickhousex/kafkax/ossx/gin 均保持 direct 依赖。 | TC-022 | PASS |
+| AC-035 | FR-009 | `BOUNDARY-GATES` 全量检查通过，且 client/server 边界、进程边界、运行时共享包禁止与依赖边界均保持可审计。 | TC-020, TC-022 | PASS |
 | AC-036~AC-047 | FR-006c/FR-007a/FR-010/FR-011 | redisx hot cache、analytics API、clickhousex ETL 与 distributed coordinator lock。 | TC-023~TC-028 | Pending |
 | AC-048~AC-059 | FR-012~FR-015 | stream session lifecycle、reliability controls、observability、pause/resume/drain。 | TC-029~TC-032 | Pending |
 | AC-060~AC-071 | FR-016~FR-019 | historical backfill planner、gap replay、archive manifest/restore、resource governance。 | TC-033~TC-036 | Pending |
@@ -111,9 +111,9 @@
 | TC-017 | FR-006d | 单元（归档路径格式） | Pending | ossx path 格式测试输出。 |
 | TC-018 | FR-008 | 单元（kafkax topic + partition key） | Pending | topic 与 partition key 测试输出。 |
 | TC-019 | FR-008, BR-004 | 单元（kafkax 不可达→error/不 Ack） | Pending | Kafka 故障不 Ack 测试输出。 |
-| TC-020 | FR-009, BR-005 | CI gate（cs 包/client 包 import 检查） | PASS | `TRACEABILITY.md` 已标注 PASS。 |
-| TC-021 | FR-009, BR-001 | CI gate（no-legacy 引用检查） | PASS | `TRACEABILITY.md` 已标注 PASS。 |
-| TC-022 | FR-009, BR-009 | CI gate（go.mod 合规） | PASS | `TRACEABILITY.md` 已标注 PASS。 |
+| TC-020 | FR-009, BR-005 | CI gate（运行时共享包/client 包 import 检查） | PASS | `/home/binance/release/evidence/binance/20260623/boundary-gates.log` |
+| TC-021 | FR-009, BR-001 | CI gate（no-legacy 引用检查） | PASS | `/home/binance/release/evidence/binance/20260623/boundary-gates.log` |
+| TC-022 | FR-009, BR-009 | CI gate（go.mod 合规） | PASS | `/home/binance/release/evidence/binance/20260623/boundary-gates.log` + `/home/binance/release/evidence/binance/20260623/go-build.log` |
 | TC-023~TC-028 | FR-006c/FR-007a/FR-010/FR-011 | 单元 + 集成 + httptest（redisx hot cache、analytics API、clickhousex ETL、coordinator lock） | Pending | 对应 runtime tests 与 traceability PASS。 |
 | TC-029~TC-032 | FR-012~FR-015 | active stream registry/reliability/metrics/operator controls | Pending | no-restart stream add/remove、retry budget、pause/resume/drain 证据。 |
 | TC-033~TC-036 | FR-016~FR-019 | backfill planner/gap replay/archive/resource governance | Pending | historical lifecycle runtime tests 与 restore evidence。 |
@@ -135,7 +135,7 @@
 | FR-007 | AC-021~AC-025 | TC-012~TC-015 | Not Closed |
 | FR-006d | AC-026~AC-028 | TC-016~TC-017 | Not Closed |
 | FR-008 | AC-029~AC-031 | TC-018~TC-019 | Not Closed |
-| FR-009 | AC-032~AC-035 | TC-020~TC-022 | Locally Closed / Release Evidence Pending |
+| FR-009 | AC-032~AC-035 | TC-020~TC-022 | Locally Closed / CI+Release Pending |
 | FR-010 | AC-041~AC-044 | TC-025~TC-026 | Not Closed |
 | FR-006c | AC-036~AC-037 | TC-023 | Not Closed |
 | FR-007a | AC-038~AC-040 | TC-024 | Not Closed |
@@ -159,7 +159,7 @@
 | 所有 FR implemented | Not Done | FR-001~FR-030 状态全部闭合。 |
 | 所有 AC passed | Not Done | AC-001~AC-104 全部有测试证据。 |
 | 所有 TC passed | Not Done | TC-001~TC-049 全部 PASS。 |
-| Runtime test evidence | Local Evidence Done / Remote CI Pending | `/home/binance/release/evidence/binance/20260623/` 已归档 build/test/race/vet/lint/smoke/boundary gate；verified source commit `9777a5b0db9a3de5db53942b9aaf6b55eec04f24`，evidence commit `66f60b3945dce215f68ff833bbd336364d635ae8`；secret scan 与远端 CI 仍按 release evidence 单独补齐。 |
+| Runtime test evidence | Local Evidence Done / Secret+CI+Live+Release Pending | `/home/binance/release/evidence/binance/20260623/` 已归档 build/test/race/vet/lint/smoke/boundary gate；验证代码 `9777a5b0db9a3de5db53942b9aaf6b55eec04f24`，证据提交 `20c7712935f53e1948bdf4b30a72d3db07f9acfb`；secret scan、remote CI、live websocket、外部集成、release evidence/tag 未闭合。 |
 | Coverage and performance evidence | Not Done | 覆盖率、延迟、吞吐、重放与故障注入报告归档。 |
 | CI pass | Not Done | GitHub Actions 或等价 CI run 通过并链接到 release evidence。 |
 
@@ -167,7 +167,7 @@
 
 | 缺口 | 风险 | 下一步关闭动作 |
 | --- | --- | --- |
-| Runtime 证据仍是本地 evidence bundle | 不能把本地证据等同远端 CI 或 release tag。 | 将 `/home/binance/release/evidence/binance/20260623/` 与后续 GitHub Actions/release evidence 一并归档。 |
+| release 证据仍未闭合 | 本地 evidence 不能替代 remote CI、live websocket、外部集成或 release tag。 | 补齐 secret scan、GitHub Actions、live websocket、外部依赖集成与 release evidence bundle。 |
 | FR-001/FR-002 Partial | 四 product line 与 identity contract 不完整。 | 补齐 USDM、COINM、Options parser/mapper/connector/server acceptance。 |
-| FR-003~FR-008/FR-010~FR-030 Pending | C/S runtime、存储、API、广播、归档、实时控制面、历史生命周期、事件治理与发布证据未闭合。 | 按 `IMPLEMENTATION-PLAN.md` 和 tasks 顺序实现并更新 traceability。 |
+| FR-003~FR-008/FR-010~FR-030 Pending | C/S runtime、存储、API、广播、归档、实时控制面、历史生命周期、事件治理、数据质量、Options 字段透传与发布证据未闭合。 | 按 `IMPLEMENTATION-PLAN.md` 和 tasks 顺序实现并更新 traceability。 |
 | Release DoD 未达成 | 不能声明 binance v3.5.0 已可发布。 | 全量 AC/TC PASS 后再更新 release 状态。 |

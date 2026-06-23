@@ -203,7 +203,7 @@ FoundationX 中运行模块分为两种架构类型：
 - 通过 `bootstrap.Build(ctx, Spec{Module, Stores=None})` 组装
 - 实现 `contracts.MarketDataProvider` 或 `MacroDataProvider` 接口
 - 使用 `domain_market` / `domain_macro` / `domain_exchange` 共享类型
-- **规格参考实现**：binance（spec v3.5.0 Approved 分布式：natsx + 7 infra + Gin；runtime v0.2.0 bootstrap + Spot 产品线状态以 runtime 仓为准；进度 15%；runtime release blocked；FR-012~030 追溯登记）
+- **规格参考实现**：binance（spec v3.5.0 Approved 分布式：natsx + 7 infra + Gin；2026-06-23 本地 runtime evidence 已归档，验证代码 `9777a5b0db9a3de5db53942b9aaf6b55eec04f24`，证据提交 `20c7712935f53e1948bdf4b30a72d3db07f9acfb`；FR-009 本地闭合；FR-001/002 Partial，FR-003~008/010~030 Pending；remote CI/live websocket/外部集成/release tag 未闭合）
 
 ### 独立进程（非 C/S）
 
@@ -444,7 +444,7 @@ Foundation 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中在 
 | L2.5                  | [domain_macro](https://github.com/ZoneCNH/domain_macro)         | v1.0.0 | ✅ 已有   | Spec→Code 完成 | 宏观数据域模型（MacroPoint/MacroState）；v1.0.0 GitHub Release 已发布；7 FR Done；factory grade；live/soak N/A（纯值对象库）           |
 | **数据域 · 行情**     |                                                                 |        |           |          |                                                                                           |
 | 数据域                | [market_data](https://github.com/ZoneCNH/market_data)           | v1.1.0 | ✅ 已发布 | ████ 85% | **dispatch 独立进程（域入口）**：Receiver（DownstreamDispatchPort，18 测试）+ DualWriteSink（TD+Kafka 双写，6 测试）；v1.1.0 released                    |
-| 数据域                | [binance](https://github.com/ZoneCNH/binance)                   | v0.2.0 (rt) / v3.5.0 (spec) | ✅ 已有 | ░░░░ 15% | **C/S Module 规格参考实现**：spec v3.5.0 Approved（分布式 — client natsx publish / server 7 infra: natsx+redisx+pg+taosx+clickhousex+kafkax+ossx + Gin :8080）；runtime v0.2.0 bootstrap 接入 + Spot 产品线 connector/parser/mapper 部分实现；FR-009 边界 gate 文档落地；FR-012~030 追溯登记（data-lifecycle + runtime-control + 数据质量 SLA + Options 字段透传）；TC-020 evidence 待归档；runtime release blocked；其余 12 FR Pending（待 PR-007 runtime 实现） |
+| 数据域                | [binance](https://github.com/ZoneCNH/binance)                   | evidence-20260623 / v3.5.0 (spec) | 🟡 本地证据 | ░░░░ 3% | **C/S Module 规格参考实现**：spec v3.5.0 Approved（分布式 — client natsx publish / server 7 infra: natsx+redisx+pg+taosx+clickhousex+kafkax+ossx + Gin :8080）；本地 runtime evidence 已归档（验证代码 `9777a5b0db9a3de5db53942b9aaf6b55eec04f24`，证据提交 `20c7712935f53e1948bdf4b30a72d3db07f9acfb`）；FR-009 本地闭合；FR-001/002 Partial，FR-003~008/010~030 Pending；未覆盖 live websocket、外部集成、remote CI、release tag |
 | 数据域                | [okx](https://github.com/ZoneCNH/okx)                           | -      | ✅ 已有   | ███░ 80% | **C/S Module**：OKX CEX 行情采集；待升级 bootstrap 接入 + client/server 拆分                                                                               |
 | 数据域                | [bybit](https://github.com/ZoneCNH/bybit)                       | -      | ✅ 已有   | ███░ 80% | **C/S Module**：Bybit CEX 行情采集；待升级                                                                             |
 | 数据域                | [bitget](https://github.com/ZoneCNH/bitget)                     | -      | ✅ 已有   | ███░ 80% | **C/S Module**：Bitget CEX 行情采集；待升级                                                                            |
