@@ -16,7 +16,7 @@
 
 [FRAME, HIGH] The standard covers symbol catalog reload, runtime stream-diff behavior, release evidence, and document synchronization for future FR-024 work.
 
-[FRAME, HIGH] The standard does not approve a release, create a new event type, alter the 4 product-line by 4 event-type matrix, or authorize credentials, live trading endpoints, or production rollout.
+[FRAME, HIGH] The standard does not approve a release, create a new event type, alter the 4 product-line by 6 event-type matrix, or authorize credentials, live trading endpoints, or production rollout.
 
 ## 2. Hot Reload Contract
 
