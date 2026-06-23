@@ -4,15 +4,17 @@
 >
 > 规范来源：`docs/governance/TRACEABILITY.md`
 
-- Matrix-Version: v3.1.0
-- Last-Updated: 2026-06-22
-- Spec-Reference: `module/binance/SPEC.md` v3.1.0
+- Matrix-Version: v3.2.0
+- Last-Updated: 2026-06-23
+- Spec-Reference: `module/binance/SPEC.md` v3.2.0
 
 ---
 
 ## §1 FR 追溯表
 
 > **v3.1.0 变更摘要**：FR-006 拆分为 6a(taosx)/6b(postgresx)/6c(redisx cache)/6d(ossx)；FR-007 扩展 analytics API(7a)；新增 FR-010（clickhousex OLAP 存储）、FR-011（分布式协调锁）；v3.1.0 继续登记 FR-012~FR-024，覆盖 realtime control、historical lifecycle、event governance、release evidence 与 runtime hot reload；subject 命名统一 `um_perp`/`cm_perp`；Error 码扩展至 BNC-013；Performance Budget 扩展至 20 项。
+
+> **v3.2.0 变更摘要**：fold DATA-LIFECYCLE §7 候选 FR 进 SPEC/TRACEABILITY/NAMING——新增 FR-025（Backfill Throttle & Priority）、FR-026（Daily Reconciliation Job）、FR-027（Cold Data Rehydration）、FR-028（Backfill Progress API）；NAMING §2.1 补 bar 订阅周期集、§3.1 补 control subjects（`instruments.changed`/`symbols.changed`）；SPEC §9 补 FR-015 depth 档位表 + control subjects；AC 扩展至 098、TC 扩展至 046。FR-025~028 全部 Pending（runtime 仓未实现）。
 
 | FR ID | 功能需求 | AC | TC ID(s) | Task | 实现状态 |
 |-------|----------|-----|----------|------|----------|
@@ -44,8 +46,12 @@
 | FR-022 | Event-Type Governance Matrix：R2 120-cell matrix 锁定 event/product/governance 覆盖面 | AC-078 ~ AC-080 | TC-039 | ROOT-008 | Pending |
 | FR-023 | Release Evidence Bundle：local/CI/live/release evidence 分层归档且不可互相替代 | AC-081 ~ AC-083 | TC-040, TC-041 | ROOT-009 | Pending |
 | FR-024 | Runtime Config Hot Reload：`POST /api/v1/admin/symbols/reload` 重载目录并应用 stream diff | AC-084 ~ AC-086 | TC-042 | CLIENT-019 | Pending |
+| FR-025 | Backfill Throttle & Priority：token bucket weight 限流 + 80/20 配额 + trade>bar>tick 优先级 | AC-087 ~ AC-089 | TC-043 | SERVER-022 | Pending |
+| FR-026 | Daily Reconciliation Job：04:00 UTC 对账 taosx vs Binance klines + tolerance 0.01% + alerts 表 | AC-090 ~ AC-092 | TC-044 | SERVER-023 | Pending |
+| FR-027 | Cold Data Rehydration：OSS→taosx 回热 24h TTL + 202 job_id + 轮询 | AC-093 ~ AC-095 | TC-045 | SERVER-024 | Pending |
+| FR-028 | Backfill Progress API：jobs 列表 + coverage 时间戳 + 诊断字段 | AC-096 ~ AC-098 | TC-046 | SERVER-025 | Pending |
 
-> 状态口径：v3.1.0 新增 FR-012~FR-024 仅完成追溯登记，全部保持 Pending；FR-009/BR Done 的 runtime 证据见 `BOUNDARY-GATES.md` 与变更历史 v2.2.3（runtime SHA `bae80d6`）。
+> 状态口径：v3.1.0 新增 FR-012~FR-024 仅完成追溯登记，全部保持 Pending；v3.2.0 新增 FR-025~FR-028（fold 自 DATA-LIFECYCLE §7 候选）同样保持 Pending；FR-009/BR Done 的 runtime 证据见 `BOUNDARY-GATES.md` 与变更历史 v2.2.3（runtime SHA `bae80d6`）。
 
 ---
 
@@ -138,6 +144,10 @@
 | TC-040 | FR-023 | — | 证据归档（local/CI/live evidence bundle） | Pending |
 | TC-041 | FR-023 | — | release gate（tag/changelog/evidence consistency） | Pending |
 | TC-042 | FR-024 | — | 集成 + httptest（`POST /api/v1/admin/symbols/reload` + no-restart proof） | Pending |
+| TC-043 | FR-025 | — | 单元 + 集成（token bucket weight 限流 + 80/20 配额 + 优先级排序） | Pending |
+| TC-044 | FR-026 | — | 集成（04:00 UTC 对账 + tolerance 阈值 + alerts 表写入） | Pending |
+| TC-045 | FR-027 | — | 集成（OSS→taosx 回热 + 202 job_id + 24h TTL 过期） | Pending |
+| TC-046 | FR-028 | — | httptest（jobs 列表 + coverage 时间戳 + 诊断字段） | Pending |
 
 ---
 
@@ -231,6 +241,18 @@
 | AC-084 | FR-024 | `POST /api/v1/admin/symbols/reload` 会重新读取 catalog 并返回 applied diff | TC-042 |
 | AC-085 | FR-024 | reload 可新增或移除 active stream 且无需重启 client 进程 | TC-042 |
 | AC-086 | FR-024 | reload 对非法 method/payload/catalog failure 返回稳定错误并保留旧配置 | TC-042 |
+| AC-087 | FR-025 | token bucket 感知 spot 1200/futures 2400 weight/min 限流，超限暂停 backfill | TC-043 |
+| AC-088 | FR-025 | weight 预算 80% 实时 / 20% backfill；backfill 优先级 trade>bar>tick | TC-043 |
+| AC-089 | FR-025 | weight >90% 时暂停 backfill 调度并记录 `backfill.weight_exhausted` 指标 | TC-043 |
+| AC-090 | FR-026 | 每日 04:00 UTC coordinator 持锁实例跑 symbol×1d 全量对账 | TC-044 |
+| AC-091 | FR-026 | 差异超 tolerance 0.01% 写入 `binance_reconciliation_alerts` 表 | TC-044 |
+| AC-092 | FR-026 | 对账完成发布 `binance.control.reconciliation.completed` + 当日统计 | TC-044 |
+| AC-093 | FR-027 | 冷数据查询返回 202 + job_id，触发 OSS→taosx 回热（24h TTL 临时表） | TC-045 |
+| AC-094 | FR-027 | `GET /api/v1/admin/rehydration/jobs/:job_id` 返回 pending/running/ready/expired | TC-045 |
+| AC-095 | FR-027 | 临时表 24h TTL 到期自动删除，重复查询重新触发回热 | TC-045 |
+| AC-096 | FR-028 | `GET /api/v1/admin/backfill/jobs` 返回活跃 job 列表含 cursor/progress_pct | TC-046 |
+| AC-097 | FR-028 | `GET /api/v1/admin/backfill/coverage/:symbol` 返回 (pl,et) 最早可用时间戳 | TC-046 |
+| AC-098 | FR-028 | 失败 job 暴露 last_error/retry_count/next_retry_at 诊断字段 | TC-046 |
 
 ---
 
@@ -238,16 +260,16 @@
 
 | 指标 | 总数 | 已覆盖 | 覆盖率 | 说明 |
 |------|------|--------|--------|------|
-| 功能需求 (FR) | 24 | 24 | 100% | FR-001~FR-024 与 SPEC FR 分母一致；6b/6c/6d/7a 作为实现子切片保留在矩阵中 |
+| 功能需求 (FR) | 28 | 28 | 100% | FR-001~FR-028 与 SPEC FR 分母一致；6b/6c/6d/7a 作为实现子切片保留在矩阵中 |
 | 业务规则 (BR) | 9 | 9 | 100% | BR-001 ~ BR-009 全部有 CI Gate 或 TC |
 | 非功能需求 (NFR) | 20 | 20 | 100% | NFR-001 ~ NFR-020 全部有验证方式 |
-| 测试用例 (TC) | 42 | 42 | 100% | TC-001 ~ TC-042 全部有对应 FR/BR |
-| 验收标准 (AC) | 86 | 86 | 100% | AC-001 ~ AC-086 全部有验证方式 |
-| FR→TC 覆盖率 | — | 24/24 | 100% | — |
+| 测试用例 (TC) | 46 | 46 | 100% | TC-001 ~ TC-046 全部有对应 FR/BR |
+| 验收标准 (AC) | 98 | 98 | 100% | AC-001 ~ AC-098 全部有验证方式 |
+| FR→TC 覆盖率 | — | 28/28 | 100% | — |
 | BR→验证覆盖率 | — | 9/9 | 100% | — |
 | AC→验证覆盖率 | — | 86/86 | 100% | — |
 | R2 governance matrix | 120 cells | 120 cells | 100% | 24 FR/event-product-governance cells × 5 文档/checker anchors |
-| 实现状态 | — | 1/24 FR | 4% | FR-009 boundary gate 已落地；FR-012~FR-024 为 v3.1.0 登记态 Pending |
+| 实现状态 | — | 1/24 FR | 4% | FR-009 boundary gate 已落地；FR-012~FR-024 为 v3.2.0 登记态 Pending |
 
 ---
 
@@ -255,7 +277,7 @@
 
 | 日期 | 版本 | 变更内容 | 作者 |
 |------|------|----------|------|
-| 2026-06-22 | v3.1.0 | **Realtime/Historical/Event/Release 扩展登记**：新增 FR-012~FR-024、TC-029~TC-042、AC-048~AC-086；登记 R2 120-cell governance matrix；统一 FR-024 endpoint 为 `POST /api/v1/admin/symbols/reload`；新增项均保持 Pending，FR-009 runtime evidence 不变 | ZoneCNH |
+| 2026-06-22 | v3.2.0 | **Realtime/Historical/Event/Release 扩展登记**：新增 FR-012~FR-024、TC-029~TC-042、AC-048~AC-086；登记 R2 120-cell governance matrix；统一 FR-024 endpoint 为 `POST /api/v1/admin/symbols/reload`；新增项均保持 Pending，FR-009 runtime evidence 不变 | ZoneCNH |
 | 2026-06-16 | v1.0.0 | 从零创建 §1-§7 标准追溯矩阵 | ZoneCNH |
 | 2026-06-17 | v1.1.0 | 修复 FR/BR/AC 错位，新增 AC-021~023 边界强制 | ZoneCNH |
 | 2026-06-17 | v1.2.0 | BR-002/003 拆分；BR 总数 8→9 | ZoneCNH |

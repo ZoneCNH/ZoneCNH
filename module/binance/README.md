@@ -2,8 +2,8 @@
 
 `module/binance` is the Binance-specific Market Data C/S Module for ZoneCNH.
 
-- Spec-Version: v3.1.0 (root) / v2.1.1 (client) / v2.1.0 (server)
-- Last-Updated: 2026-06-22
+- Spec-Version: v3.2.0 (root) / v2.1.1 (client) / v2.2.0 (server)
+- Last-Updated: 2026-06-23
 
 It is split into two submodules:
 

@@ -2,10 +2,31 @@
 
 所有 notable 变更记录，按 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/) 格式维护。
 
-- Doc-Version: v3.1.0
-- Last-Updated: 2026-06-22
-- Spec-Reference: `module/binance/SPEC.md` v3.1.0
+- Doc-Version: v3.2.0
+- Last-Updated: 2026-06-23
+- Spec-Reference: `module/binance/SPEC.md` v3.2.0
 - 治理规则：`module/binance/RULES.md` R9 文档存在性
+
+---
+
+## [v3.2.0] — 2026-06-23
+
+### Added
+- fold DATA-LIFECYCLE §7 候选 FR 进 SPEC/TRACEABILITY/NAMING：新增 FR-025（Backfill Throttle & Priority）、FR-026（Daily Reconciliation Job）、FR-027（Cold Data Rehydration）、FR-028（Backfill Progress API）。
+- TRACEABILITY 新增 AC-087~AC-098、TC-043~TC-046；FR 总数 24→28、TC 42→46、AC 86→98。
+- NAMING §2.1 补 bar 订阅周期集（spot/um_perp/cm_perp = 1s/1m/5m/15m/1h/4h/1d；options = 1m/5m/1h/1d）。
+- NAMING §3.1 + SPEC §9 补 control subjects（`binance.control.instruments.changed` / `binance.control.symbols.changed`）。
+- SPEC §9 补 FR-015 depth 订阅档位表（@depth20@100ms + @depth@1000ms 增量 + update_id 拼合）。
+- server/SPEC §7 新增 FR-025~FR-028 节。
+
+### Changed
+- root SPEC v3.1.0 → v3.2.0（MINOR，FR 接口新增）；server/SPEC v2.1.0 → v2.2.0（MINOR）。
+- STATUS/README/ARCHITECTURE 三文档 binance 版本同步 v3.2.0。
+- RULES R1 例外清单补 BR-001 边界声明豁免；R9 收录 STANDARD.md + DATA-LIFECYCLE.md。
+- ACCEPTANCE/FEATURES 新增 L1/L2 状态口径分层图例（RULES R4）。
+
+### Reviewed
+- FR-025~028 全部 Pending：runtime 仓未实现，L2 状态默认 `Pending — 以 runtime 仓为准`。
 
 ---
 
@@ -190,7 +211,7 @@
 
 | 版本 | SPEC | TRACEABILITY | 关键变更 |
 |------|------|-------------|----------|
-| v3.1.0 | v3.1.0 | v3.1.0 | FR-012~FR-024 登记 + R2 120-cell matrix + symbols reload endpoint 口径 |
+| v3.2.0 | v3.2.0 | v3.2.0 | FR-012~FR-024 登记 + R2 120-cell matrix + symbols reload endpoint 口径 |
 | v2.2.3 | v2.2.3 | v2.2.3 | runtime evidence + CI URL + topic/version drift guard |
 | v2.2.2 | v2.2.2 | v2.2.2 | CHANGELOG 新建 + 版本号全量对齐 |
 | v2.2.1 | v2.2.0 | v2.2.1 | Boundary gate 证据回填 |
@@ -205,7 +226,7 @@
 
 | 日期 | 版本 | 变更内容 | 作者 |
 |------|------|----------|------|
-| 2026-06-22 | v3.1.0 | root SPEC/TRACEABILITY/ACCEPTANCE/FEATURES/README/IMPLEMENTATION-PLAN/RUNTIME-MAPPING 同步到 v3.1.0 登记态 | ZoneCNH |
+| 2026-06-22 | v3.2.0 | root SPEC/TRACEABILITY/ACCEPTANCE/FEATURES/README/IMPLEMENTATION-PLAN/RUNTIME-MAPPING 同步到 v3.2.0 登记态 | ZoneCNH |
 | 2026-06-22 | v2.2.2 | 新建 CHANGELOG + ACCEPTANCE/FEATURES/IMPLEMENTATION-PLAN 版本号同步到 v2.2.2 | ZoneCNH |
 | 2026-06-22 | v2.2.1 | Boundary gate evidence 回填 + 5 个 v2.0.0 前 task 归档 | ZoneCNH |
 | 2026-06-22 | v2.2.0 | 命名收敛 + Options/cm_perp depth 补全 + 状态口径修复 | ZoneCNH |

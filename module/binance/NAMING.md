@@ -1,8 +1,8 @@
 # module/binance NAMING.md — 命名 SSOT
 
-- Doc-Version: v2.0.0
+- Doc-Version: v2.1.0
 - Last-Updated: 2026-06-23
-- Applies-To: `module/binance/SPEC.md` v3.0.0, `module/binance/RULES.md` v2.0.0
+- Applies-To: `module/binance/SPEC.md` v3.2.0, `module/binance/RULES.md` v1.0.2
 - Scope: product_line、event_type、natsx subject、Kafka topic、TDengine stable、Redis key、REST endpoint、OSS path
 
 > [COMPUTED, HIGH] 本文件是 `module/binance` 命名权威入口。所有新增规格、任务和 runtime 代码必须使用本文件的 canonical token；历史别名只允许出现在本文件、治理报告、漂移清单和归档 task 中。
@@ -31,6 +31,15 @@
 
 > [COMPUTED, HIGH] v3.0.0 起 product_line × event_type 为 **4 × 6** 对称矩阵，共 24 个规范组合。即使交易所暂不提供某产品线的某事件，命名层仍保留组合，runtime 可用 capability/status 标识暂不产出。
 
+### 2.1 Bar 订阅周期集（FR-014）
+
+| product_line | 订阅周期 | 说明 |
+|---|---|---|
+| `spot` / `um_perp` / `cm_perp` | `1s, 1m, 5m, 15m, 1h, 4h, 1d` | 全周期直采 |
+| `options` | `1m, 5m, 1h, 1d` | 期权不含 1s/15m/4h |
+
+> [COMPUTED, HIGH] 其他周期（如 `3m, 2h, 1w`）下游通过 `clickhousex` 重采样生成，不在 client 订阅集内。
+
 ## 3. natsx Subject Matrix
 
 格式：`binance.market.{product_line}.{event_type}`
@@ -41,6 +50,15 @@
 | `um_perp` | `binance.market.um_perp.tick` | `binance.market.um_perp.trade` | `binance.market.um_perp.bar` | `binance.market.um_perp.depth` | `binance.market.um_perp.funding_rate` | `binance.market.um_perp.mark_price` |
 | `cm_perp` | `binance.market.cm_perp.tick` | `binance.market.cm_perp.trade` | `binance.market.cm_perp.bar` | `binance.market.cm_perp.depth` | `binance.market.cm_perp.funding_rate` | `binance.market.cm_perp.mark_price` |
 | `options` | `binance.market.options.tick` | `binance.market.options.trade` | `binance.market.options.bar` | `binance.market.options.depth` | `binance.market.options.funding_rate` | `binance.market.options.mark_price` |
+
+### 3.1 Control Subjects（FR-012 / FR-024）
+
+| Subject | 触发 | 消费方 | 说明 |
+|---|---|---|---|
+| `binance.control.instruments.changed` | client 每 6h 刷新 exchangeInfo 发现合约目录变更 | server | 触发 server 重读 instrument catalog（FR-012） |
+| `binance.control.symbols.changed` | `POST /api/v1/admin/symbols/reload` 应用白黑名单 diff | client | client 增减 active stream，不重启进程（FR-024） |
+
+> [COMPUTED, HIGH] control subjects 不属于 4×6 market 矩阵，是独立控制面 subject；用 `binance.control.*` 前缀与 `binance.market.*` 区分。
 
 ## 4. Kafka Topic Matrix
 
