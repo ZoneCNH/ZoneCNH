@@ -4,9 +4,9 @@
 >
 > 规范来源：`docs/governance/TRACEABILITY.md`
 
-- Module-Version: v3.3.0
+- Module-Version: v3.4.0
 - Last-Updated: 2026-06-23
-- Spec-Reference: `module/binance/SPEC.md` v3.3.0
+- Spec-Reference: `module/binance/SPEC.md` v3.4.0
 
 ---
 

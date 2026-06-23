@@ -1,6 +1,6 @@
 # module/binance RULES.md — 模块治理规则
 
-- Module-Version: v3.3.0
+- Module-Version: v3.4.0
 - Last-Updated: 2026-06-23
 - 适用范围：`module/binance/` 全部规格文档 + `github.com/ZoneCNH/binance` runtime 仓
 - 优先级：本文 > 子规格 > task；与 `CONSTITUTION.md` §0-§20 冲突时以 `CONSTITUTION.md` 为准
@@ -31,9 +31,9 @@
 
 ---
 
-## R2【硬】4 × 4 对称矩阵无缺口
+## R2【硬】4 × 6 对称矩阵无缺口
 
-**规则**：`module/binance/` 的 product_line（spot/um_perp/cm_perp/options）× event_type（tick/trade/bar/depth）构成 16 个组合，全部组合必须在以下 5 个层面对称存在：
+**规则**：`module/binance/` 的 product_line（spot/um_perp/cm_perp/options）× event_type（tick/trade/bar/depth/funding_rate/mark_price）构成 24 个组合，全部组合必须在以下 5 个层面对称存在：
 
 1. natsx subject（`SPEC.md` §9 + `RUNTIME-MAPPING.md`）
 2. Kafka topic（`binance.{product_line}.{event_type}.v1`；`TASK-BINANCE-SERVER-014-kafkax-dispatch.md`）
@@ -41,7 +41,9 @@
 4. ossx 归档路径（`TASK-BINANCE-SERVER-016-ossx-archiver.md`）
 5. Gin REST API（`TASK-BINANCE-SERVER-015-gin-market-api.md`）
 
-**违规**：缺失任一组合（例如缺 `binance.market.options.depth`）
+**交割合约承载**：`um_perp` / `cm_perp` product_line 下永续与交割合约通过 `instrument_subtype`（perpetual/delivery）维度区分（NAMING §1.1、SPEC §9 identity 矩阵、FR-002a），**不拆分 product_line、不扩矩阵**。subject/topic/path 仍只含 product_line + event_type；`instrument_subtype` 只进入 InstrumentKey identity 与 TDengine tag / Redis key identity 段。
+
+**违规**：缺失任一组合（例如缺 `binance.market.options.depth`）；或把交割合约拆为独立 product_line（如 `um_delivery`）破坏 4×6 矩阵
 
 **检测**：
 ```bash
