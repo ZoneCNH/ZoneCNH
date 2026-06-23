@@ -7,7 +7,7 @@
 | Status | Generated from current module SSOT |
 | Last-Updated | 2026-06-23 |
 | Module-Version | v3.5.0 |
-| Module-State | 规格扩展到 v3.5.0；FR-009 boundary 已有本地 runtime 证据，FR-012~FR-030 仍 Pending，以 `/home/binance` runtime/release evidence 为准 |
+| Module-State | 规格扩展到 v3.5.0；FR-009 boundary 已有本地 runtime 证据与 runtime PR #11 远端 boundary gate 证据；FR-012~FR-030 仍 Pending，以 `/home/binance` runtime/release evidence 为准 |
 | Layer | 数据域 / Binance-specific market_data C/S module |
 | Runtime-Repo | `/home/binance` |
 | Source | `goal.md`, `SPEC.md`, `TRACEABILITY.md`, `DATA-LIFECYCLE.md`, `STANDARD.md`, `BOUNDARY-GATES.md`, `RUNTIME-MAPPING.md`, `IMPLEMENTATION-PLAN.md`, `client/`, `server/`, `tasks/` |
@@ -47,7 +47,7 @@
 | FR-007 | Gin Market API | Pending | 规格定义 `/api/v1/market/ticks/depth/bars/trades` REST 接口。 | 认证、限流、统一错误、readyz、market_data HTTP 调用方兼容。 |
 | FR-007a | clickhousex Analytics API | Pending | 规格定义 `/api/v1/analytics/vwap/top-movers/correlation` OLAP 查询。 | analytics 查询正确性、查询 P99 < 2s、降级到 503。 |
 | FR-008 | kafkax Broadcast | Pending | 规格定义 `kafkax` topic、symbol key 与 handoff 后 Ack。 | Kafka dispatch、失败不 Ack、重试、下游消费契约。 |
-| FR-009 | Boundary Enforcement | Implemented / Documented | `BOUNDARY-GATES.md` 与 `TRACEABILITY.md` 标注 FR-009 Done；`/home/binance` boundary-gates 10/10、go test、lint、smoke self-test 已通过。 | 远端 CI/release evidence 仍需归档；非边界 FR 不因此闭合。 |
+| FR-009 | Boundary Enforcement | Implemented / Documented | `BOUNDARY-GATES.md` 与 `TRACEABILITY.md` 标注 FR-009 Done；`/home/binance` boundary-gates 10/10、go test、lint、smoke self-test 已通过；runtime PR #11 merge commit `5a57a19aed3be5420135b8e05016da15faf094ed` / source commit `7873b795b13fc4b5a0fc4310300b6f196cca7532` 远端 `Boundary Gates (10 gates)` PASS，并证明 `cmd/binance-client` HTTP `/ingest` boundary。 | release evidence 仍需归档；TC-005、JetStream PubAck/ManualAck 与非边界 FR 不因此闭合。 |
 | FR-010 | clickhousex OLAP Storage | Pending | 规格定义定时 ETL 聚合 taosx → clickhousex。 | ETL 调度、InsertBatch 性能、ClickHouse 不可达降级。 |
 | FR-011 | Distributed Coordinator Lock | Pending | 规格定义 redisx SetNX 分布式锁 + lease 续期 + coordinator HA。 | SetNX 锁获取、lease 续期失败后停止任务、主动释放。 |
 | FR-012 | Stream Session Lifecycle | Pending | `SPEC.md`/`TRACEABILITY.md` v3.5.0 已登记。 | active stream registry 运行中增删订阅且不重启进程的集成证据。 |
@@ -95,7 +95,7 @@
 | Root tasks | `TASK-BINANCE-ROOT-000` ~ `TASK-BINANCE-ROOT-007` | 模块级拆分、边界、通信、存储、API、广播、归档与治理任务已登记；完成度仍受 FR 状态约束。 |
 | Client tasks | `TASK-BINANCE-CLIENT-001` ~ `TASK-BINANCE-CLIENT-014` | product line catalog、parser、connector、mapping、idempotency、admin、natsx publisher 等已拆分；`CLIENT-008/009` spool/checkpoint 已归档。 |
 | Server tasks | `TASK-BINANCE-SERVER-010` ~ `TASK-BINANCE-SERVER-016` | natsx consumer、idempotency、storage、kafkax、Gin API、ossx archival 等为 v2.0.0 active server 交付面。 |
-| Boundary gates | `BOUNDARY-GATES.md` | 已对齐 `/home/binance` runtime gate 清单；`scripts/boundary-gates.sh` 本地 10/10 PASS，证据归档于 `/home/binance/release/evidence/binance/20260623/`。 |
+| Boundary gates | `BOUNDARY-GATES.md` | 已对齐 `/home/binance` runtime gate 清单；`scripts/boundary-gates.sh` 本地 10/10 PASS，证据归档于 `/home/binance/release/evidence/binance/20260623/`；runtime PR #11 远端 `Boundary Gates (10 gates)` PASS。 |
 
 ## 5. 文档资产清单
 
@@ -119,7 +119,7 @@
 | 根级 traceability 存在 | Done | `TRACEABILITY.md`。 |
 | Client/Server 子域 traceability 存在 | Done | `client/TRACEABILITY.md`, `server/TRACEABILITY.md`。 |
 | C/S 独立进程边界已定义 | Done | `README.md`, `SPEC.md`, `BOUNDARY-GATES.md`。 |
-| Boundary gate 文档已形成 | Done | `BOUNDARY-GATES.md` v2.2.4；runtime evidence commit `66f60b3945dce215f68ff833bbd336364d635ae8`；verified source commit `9777a5b0db9a3de5db53942b9aaf6b55eec04f24`。 |
+| Boundary gate 文档已形成 | Done | `BOUNDARY-GATES.md` v2.2.4；runtime evidence commit `66f60b3945dce215f68ff833bbd336364d635ae8`；verified source commit `9777a5b0db9a3de5db53942b9aaf6b55eec04f24`；runtime PR #11 merge commit `5a57a19aed3be5420135b8e05016da15faf094ed` / source commit `7873b795b13fc4b5a0fc4310300b6f196cca7532` 远端 boundary gate PASS。 |
 | Product line 全覆盖实现 | Not Done | FR-001 Partial。 |
 | Instrument identity 全覆盖实现 | Not Done | FR-002 Partial。 |
 | natsx publish/consume runtime 闭合 | Not Done | FR-003 Pending。 |
