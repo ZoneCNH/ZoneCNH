@@ -146,6 +146,8 @@ ZoneCNH 的 `FoundationX` 量化交易基础设施文档枢纽，也是 `ZoneCNH
 
 **门禁**：VersionGuard Stop Hook 自动检查。版本递增是会话收尾强制步骤。版本号只能升不能降。bump 必须是 PR 最后一个 commit。Stop hook 发现版本落后时自动补 bump。
 
+> **适用范围区分**：本节"每次迭代+1"针对**仓库 release manifest 版本**（`release/manifest/latest.json`）。**模块 spec 版本**（`module/*/SPEC.md` 的 `Spec-Version`）遵循 [`CONSTITUTION.md` §10.4](docs/constitution/10-change-management.md)——只反映接口契约演进，文档治理变更不触发 bump。二者独立，不可混用。
+
 ## 核心原则
 
 - **消除信息差**：编辑前验证基线，禁止凭记忆假设
