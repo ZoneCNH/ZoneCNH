@@ -92,8 +92,8 @@
 
 | TC | 覆盖 | 类型 / 验证口径 | 当前状态 | 关闭证据 |
 | --- | --- | --- | --- | --- |
-| TC-001 | FR-001 | 集成（Binance testnet；四条 product line 的连接、publish、consume；断线重连与 durable recovery） | Pending / Partial basis | 四条 product line 的连接、publish、consume 集成测试输出。 |
-| TC-002 | FR-002, BR-007 | 单元（product_line identity / canonical identity 字段） | Pending / Partial basis | canonical identity 字段与必填字段测试输出。 |
+| TC-001 | FR-001 | 集成（Binance testnet；四条 product line 的连接、publish、consume；断线重连与 durable recovery） | Partial（Spot 基本通路可用；USDM/COINM/Options 未完成）| 四条 product line 的连接、publish、consume 集成测试输出。 |
+| TC-002 | FR-002, BR-007 | 单元（product_line identity / canonical identity 字段） | Partial（Spot identity 已验证；跨产品线碰撞未全覆盖）| canonical identity 字段与必填字段测试输出。 |
 | TC-003 | FR-002, BR-007 | 单元（cross product_line 不碰撞 / options identity replay） | Pending | 同名 symbol 跨 product_line 不碰撞与 Options 回放测试输出。 |
 | TC-004 | FR-003, BR-005 | 集成（client natsx Publish，server 独立进程接收） | Pending | `natsx` publish、subject、PubAck、独立进程接收测试输出。 |
 | TC-005 | FR-003, BR-002, BR-003 | CI gate（跨进程边界检查） | Pending | FR-003 独立进程 publish/consume 仍需集成输出；BR-002/BR-003 boundary 证据由 TC-020/TC-021 与 `BOUNDARY-GATES.md` 承载。 |

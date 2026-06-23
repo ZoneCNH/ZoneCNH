@@ -114,10 +114,10 @@
 | `GET /api/v1/market/bars/:symbol` | `bar` |
 | `GET /api/v1/market/bars/:symbol/range` | `bar` |
 | `GET /api/v1/market/depth/:symbol` | `depth` |
-| `GET /api/v1/market/funding-rates/:symbol` | `funding_rate` |
-| `GET /api/v1/market/mark-prices/:symbol` | `mark_price` |
+| `GET /api/v1/market/funding_rates/:symbol` | `funding_rate` |
+| `GET /api/v1/market/mark_prices/:symbol` | `mark_price` |
 
-> [CONVENTION] REST API URL 路径使用 kebab-case（`funding-rates`、`mark-prices`），遵循 RFC 3986 URL 命名惯例；内部 event_type 与 subject/topic 使用 snake_case（`funding_rate`、`mark_price`），遵循 NATS subject 与 Kafka topic 命名惯例。两者不一致为设计决策，非命名漂移。
+> [CONVENTION] REST API URL 路径统一使用 snake_case，与 product_line / event_type / subject / topic / TDengine / Redis / OSS / ENV 全命名面一致。优先于 RFC 3986 kebab-case 惯例：本模块命名一致性优先于通用 REST 风格指南。
 
 ## 8. OSS Path Naming
 
@@ -145,7 +145,7 @@ binance/cm_perp/BTCUSD_PERP/2026/06/23/mark_price.parquet
 rg -n 'usdm_futures|coinm_futures|futures_usdt|futures_coin|\\boption\\b|\\bopts\\b' module/binance
 rg -n 'binance\\.market\\.(ticks|bars|depth|events)\\b' module/binance
 rg -n '4 × [4]|16 × 5 = [8]0' module/binance/NAMING.md module/binance/RULES.md module/binance/server/tasks/TASK-BINANCE-SERVER-014-kafkax-dispatch.md
-rg -n 'funding\\b' module/binance | rg -v 'funding_rate|fundingInfo|funding-rates'
+rg -n 'funding\\b' module/binance | rg -v 'funding_rate|fundingInfo|funding_rates'
 rg -n 'USDⓈ-M 永续|COIN-M 永续' module/binance/NAMING.md  # 期望 0 命中：语义注释已改为"合约（永续 + 交割）"
 ```
 

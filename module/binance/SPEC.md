@@ -403,7 +403,7 @@ Binance 行情集成面临以下问题：
 | FR-029 Data Quality & Freshness SLA | AC-099 ~ AC-101 | TC-047 | 集成 + metrics（freshness SLA + stale alert + schema drift） |
 | FR-030 Options Chain Raw Field Pass-through | AC-102 ~ AC-104 | TC-048, TC-049 | 单元 + 契约测试（Options 原始字段透传，Greeks 归分析域） |
 
-**AC 总数**：104（AC-001 ~ AC-104）· **TC 总数**：49（TC-001 ~ TC-049）· **覆盖率**：100%（FR→AC→TC 全链路登记；新增 FR-012~FR-030 默认 Pending）
+**AC 总数**：104（AC-001 ~ AC-104）· **TC 总数**：49（TC-001 ~ TC-049）· **追溯登记覆盖率**：100%（FR→AC→TC 全链路已登记；实现通过率见 TRACEABILITY.md §6，截至 2026-06-23 多数 FR 仍为 Pending）
 
 > AC 完整描述（验收标准文本）单点维护于 `TRACEABILITY.md §5`。本表只做 SPEC ↔ Traceability 双向锚点，遵循 `~/.claude/rules/ecc/matrix-scoring-rules.md §R1 跨表走查` 原则。
 
