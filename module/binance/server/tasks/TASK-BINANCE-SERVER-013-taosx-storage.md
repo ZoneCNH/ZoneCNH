@@ -54,10 +54,10 @@ type TimeSeriesStore struct {
 }
 
 // WriteTick 将单条 MarketFactEnvelope 写入对应的子表。
-// 子表名规则：{event_type}_{md5(symbol+product_line)[:8]}
+// 子表名规则：binance_{event_type}_{product_line}_{symbol_slug}（见 NAMING.md §5）
 func (s *TimeSeriesStore) WriteTick(ctx context.Context, env *domainmarket.MarketFactEnvelope) error {
     child := s.childTable(env)
-    return s.db.WriteWithAutoCreate(ctx, "binance_market_ticks", child, env.ToTDRow(), env.Tags())
+    return s.db.WriteWithAutoCreate(ctx, "binance_tick", child, env.ToTDRow(), env.Tags())
 }
 
 // WriteBatch 批量写入，提升写入吞吐。
@@ -65,7 +65,7 @@ func (s *TimeSeriesStore) WriteBatch(ctx context.Context, envs []*domainmarket.M
     // taosx.Client.WriteBatch 支持批量参数绑定
     rows := make([]taosx.Row, len(envs))
     for i, e := range envs { rows[i] = e.ToTDRow() }
-    return s.db.WriteBatch(ctx, "binance_market_ticks", rows)
+    return s.db.WriteBatch(ctx, "binance_tick", rows)
 }
 
 // QueryRange 按时间范围和 symbol 查询 tick 数据，供 Gin API 调用。
