@@ -3,8 +3,8 @@
 ## 1. Metadata
 
 - Status: Approved
-- Spec-Version: v3.4.0
-- Last-Updated: 2026-06-23 (Appendix C.2 数据流图 v2 补强)
+- Spec-Version: v3.5.0
+- Last-Updated: 2026-06-23 (v3.5.0: FR-029/030 + §17 freshness SLA; Appendix C.2 数据流图 v2)
 - Owner: ZoneCNH
 - Layer: 数据域 · 行情
 - Runtime-Version: v0.1.0
@@ -985,6 +985,11 @@ github.com/ZoneCNH/binance/
 | Gin API /api/v1/market/depth (redisx hit) | 延迟 P99 | < 1ms | httptest benchmark |
 | Gin API /api/v1/analytics/vwap (clickhousex) | 延迟 P99 | < 2s | httptest benchmark |
 | Gin API /api/v1/instruments (postgresx) | 延迟 P99 | < 20ms | httptest benchmark |
+| End-to-end freshness (event_time → taosx persist) | 延迟 P99 | < 200ms | integration test（FR-029） |
+| End-to-end freshness (event_time → kafkax fanout) | 延迟 P99 | < 300ms | integration test（FR-029） |
+| Stale alert threshold (无新事件) | 超时 | spot/um_perp/cm_perp 30s，options 60s | observability alert（FR-029） |
+
+> [COMPUTED, HIGH] §17 原 P99 指标均为单环节延迟；FR-029 新增端到端 freshness SLA（event_time → persist/fanout）与 stale alert 阈值，覆盖单环节指标无法表达的"数据链路整体滞后"与"断流"两类数据质量风险。schema 漂移检测（字段增删/类型变更）由 CI gate 在 parser 单测层守门，不在此表。
 
 ---
 
