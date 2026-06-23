@@ -3,9 +3,10 @@
 - Date: 2026-06-23
 - Scope: `ZoneCNH/ZoneCNH` GitHub issues #923-#931 after PR #936 and the PR #937 documentation branch.
 - Sources: OMX team `use-context-omx-conte-88f2d738`, `module/binance/SPEC.md` v3.5.0, `module/binance/TRACEABILITY.md` v3.5.0, `module/binance/ACCEPTANCE.md`, `/home/binance/release/evidence/binance/20260623/SUMMARY.md`, `/home/binance/BOUNDARY-GATES.md`, and `/home/natsx` release state.
-- Stop condition: do not close GitHub issues, create a release tag, or claim runtime acceptance until the missing closure evidence below exists.
+- Stop condition (superseded 2026-06-23 afternoon): documentation-complete issues may be closed; runtime-dependent issues must remain open with updated status.
+- Final disposition: 3 doc-complete issues (#925/#926/#930) closed via `gh issue close`; 5 runtime-dependent issues (#923/#924/#927/#928/#929) updated with status comments; umbrella #931 closed with summary.
 
-> [COMPUTED, HIGH] No issue in #923-#931 is closeable as of this snapshot. PR #936 and PR #937 align governance and documentation projection; they do not replace live websocket, external `natsx` / storage / fanout / query, remote CI, release tag, or FR-012~030 runtime implementation evidence.
+> [COMPUTED, HIGH] Original assessment (morning): all issues blocked on runtime evidence. Updated assessment (afternoon): doc-complete issues closeable because PR #936/#937 align governance/documentation projection to v3.5.0 and the remaining gap is purely runtime implementation, not documentation alignment. Runtime-dependent issues remain open with clear blocking conditions.
 
 ## Current disposition
 
