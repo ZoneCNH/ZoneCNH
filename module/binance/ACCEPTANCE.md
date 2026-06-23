@@ -30,9 +30,9 @@
 
 | 验收面 | 命令 | 通过条件 |
 | --- | --- | --- |
-| 文档文件存在 | `cd /home/ZoneCNH/.worktree/workspaces/fix/binance-issues && test -f module/binance/FEATURES.md && test -f module/binance/ACCEPTANCE.md` | 两个文件都存在。 |
-| 文档补丁格式 | `cd /home/ZoneCNH/.worktree/workspaces/fix/binance-issues && git diff --check -- module/binance` | 无 trailing whitespace 或 patch 格式错误。 |
-| 追溯锚点覆盖 | `cd /home/ZoneCNH/.worktree/workspaces/fix/binance-issues && rg -n "FR-001|FR-010|FR-030|TC-001|TC-022|TC-049|AC-001|AC-035|AC-104" module/binance/SPEC.md module/binance/TRACEABILITY.md module/binance/FEATURES.md module/binance/ACCEPTANCE.md` | 根级 FR、AC、TC 锚点在规格、追溯和补齐文档中可定位。 |
+| 文档文件存在 | `cd /home/ZoneCNH && test -f module/binance/FEATURES.md && test -f module/binance/ACCEPTANCE.md` | 两个文件都存在。 |
+| 文档补丁格式 | `cd /home/ZoneCNH && git diff --check -- module/binance` | 无 trailing whitespace 或 patch 格式错误。 |
+| 追溯锚点覆盖 | `cd /home/ZoneCNH && rg -n "FR-001|FR-010|FR-030|TC-001|TC-022|TC-049|AC-001|AC-035|AC-104" module/binance/SPEC.md module/binance/TRACEABILITY.md module/binance/FEATURES.md module/binance/ACCEPTANCE.md` | 根级 FR、AC、TC 锚点在规格、追溯和补齐文档中可定位。 |
 | Runtime build | `cd /home/binance && go build ./...` | 所有 package 构建通过。 |
 | Runtime tests | `cd /home/binance && go test ./...` | 单元与集成测试通过。 |
 | Runtime race | `cd /home/binance && go test ./... -race -count=1` | 并发路径无 race。 |
