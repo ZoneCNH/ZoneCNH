@@ -39,7 +39,8 @@ CREATE STABLE IF NOT EXISTS binance_depth (
     last_update_id BIGINT
 ) TAGS (
     symbol      BINARY(32),
-    product_line BINARY(16)
+    product_line BINARY(16),
+    event_type  BINARY(16)           -- 'depth'
 );
 ```
 

@@ -222,6 +222,63 @@ if (gitRoot) {
   }
 }
 
+// 10. Stash GC — auto-safety stash 超限与过期检测
+if (gitRoot) {
+  const stashLines = (run("git stash list 2>/dev/null") || "").split("\n").filter(Boolean);
+  const totalStashes = stashLines.length;
+  const autoSafetyStashes = stashLines.filter(l => l.includes("auto-safety")).length;
+  const STASH_LIMIT = 30;
+  const STASH_TTL_DAYS = 3;
+
+  if (totalStashes > STASH_LIMIT) {
+    addFinding("stash_overflow", "warning", "", 0,
+      `Stash 超限: ${totalStashes}/${STASH_LIMIT}（auto-safety ${autoSafetyStashes} 个）`,
+      "运行 scripts/gc-cleanup.sh 或手动 git stash drop 过期条目");
+  }
+
+  if (autoSafetyStashes > 10) {
+    addFinding("stash_autosafety", "info", "", 0,
+      `Auto-safety stash 积累: ${autoSafetyStashes} 个（TTL ${STASH_TTL_DAYS} 天）`,
+      "SessionStart hook 会自动扫描过期条目；超过 STASH_LIMIT 时 oldest-first 清理");
+  }
+
+  // 检测过期 auto-safety stash
+  const cutoffSec = Date.now() / 1000 - STASH_TTL_DAYS * 86400;
+  let expiredCount = 0;
+  for (const stashLine of stashLines) {
+    if (!stashLine.includes("auto-safety")) continue;
+    const refMatch = stashLine.match(/stash@\{(\d+)\}/);
+    if (!refMatch) continue;
+    const stashRef = `stash@{${refMatch[1]}}`;
+    const dateStr = run(`git log -1 --format="%at" ${stashRef} 2>/dev/null`);
+    if (!dateStr || parseInt(dateStr) < cutoffSec) expiredCount++;
+  }
+  if (expiredCount > 0) {
+    addFinding("stash_expired", "warning", "", 0,
+      `过期 auto-safety stash: ${expiredCount} 个（> ${STASH_TTL_DAYS} 天）`,
+      "运行 scripts/gc-cleanup.sh 自动清理");
+  }
+}
+
+// 11. 已合并分支清理检测
+if (gitRoot) {
+  const localBranches = (run("git branch --list 'docs/*' --format='%(refname:short)' 2>/dev/null") || "")
+    .split("\n").filter(Boolean);
+  const mergedToDelete = [];
+  for (const b of localBranches) {
+    if (run(`git merge-base --is-ancestor ${b} main && echo yes || echo no 2>/dev/null`) === "yes") {
+      mergedToDelete.push(b);
+    }
+  }
+  if (mergedToDelete.length > 0) {
+    addFinding("branch_merged", "info", "", 0,
+      `已合入 main 的 docs 分支: ${mergedToDelete.length} 个 (${mergedToDelete.slice(0, 3).join(", ")}${mergedToDelete.length > 3 ? "..." : ""})`,
+      mergedToDelete.length > 3
+        ? `运行 git branch -D ${mergedToDelete.join(" ")} 清理`
+        : `运行 git branch -D ${mergedToDelete[0]} 清理`);
+  }
+}
+
 // ── 汇总 ──────────────────────────────────
 
 const bySeverity = { critical: [], warning: [], info: [] };
