@@ -183,7 +183,8 @@ else
   fail "non-boundary FR marked Implemented: $implemented_functional"
 fi
 
-expect_rg 'FR-009.*runtime SHA `bae80d6`' module/binance/TRACEABILITY.md "FR-009 has runtime SHA evidence"
+expect_rg 'FR-009/BR Done 的 2026-06-23 本地 runtime 证据' module/binance/TRACEABILITY.md "FR-009 has current runtime evidence"
+expect_rg '证据提交 `20c7712935f53e1948bdf4b30a72d3db07f9acfb`' module/binance/TRACEABILITY.md "FR-009 records published evidence commit"
 expect_rg "L1 Boundary/Governance Gate" module/binance/RULES.md "RULES documents L1/L2 status boundary"
 expect_rg "bash scripts/check-binance-docs\\.sh" .github/workflows/docs-ci.yml "docs CI runs binance checker"
 expect_rg 'POST /api/v1/admin/symbols/reload' module/binance/STANDARD.md "STANDARD documents current symbols reload endpoint"
