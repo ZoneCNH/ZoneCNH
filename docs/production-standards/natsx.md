@@ -1,7 +1,7 @@
 # natsx
 
 ## 1. 模块定位
-封装 NATS 客户端，提供 Core NATS（发布/订阅、Request-Reply，at-most-once 低延迟）和 JetStream（持久化、消费组，at-least-once）统一封装与可观测集成。Status=Approved、Layer=基座·存储扩展、Version=v1.0.3（已发布）。背景：70+ 模块需低延迟内部通信，各自封装 NATS 导致重连、Core/JetStream 混用、subject 命名、健康检查、可观测和安全脱敏不一致。
+封装 NATS 客户端，提供 Core NATS（发布/订阅、Request-Reply，at-most-once 低延迟）和 JetStream（持久化、消费组，at-least-once）统一封装与可观测集成。Status=Approved、Layer=基座·存储扩展、Version=v1.0.3（远端 tag 已存在，GitHub Release 待补）。背景：70+ 模块需低延迟内部通信，各自封装 NATS 导致重连、Core/JetStream 混用、subject 命名、健康检查、可观测和安全脱敏不一致。
 
 ## 2. 生产职责
 - Core NATS：`Publish(ctx, subject, msg)`、`Subscribe(ctx, subject, handler)`、`Request(ctx, subject, msg, timeout)`、`Reply`
@@ -155,12 +155,13 @@ type SubjectBuilder interface { Build(domain, resource, action string, version i
 - [x] go test/race/vet/coverage 通过（pkg/natsx 97.1%，总覆盖率 84.2%）
 - [x] embedded broker + local auth live integration 提供测试替身（redacted 凭据）
 - [x] secret scan 通过（无 payload/凭据/连接串明文）
-- [x] 版本标签 + CHANGELOG 一致（/home/natsx commit 20f801f / b5adee9，tag v1.0.3）
+- [x] 版本标签 + CHANGELOG 一致（/home/natsx commit 20f801f / b5adee9，tag v1.0.3；tag 不等于 GitHub Release）
+- [ ] GitHub Release v1.0.3 发布证据（当前缺失）
 - [ ] **BLK-002 生产 TLS 闭环 packet 归档**（release-blocking，未关闭）
 - [ ] 四源 98+ 仲裁、生产 benchmark 阈值 gate（外部阻塞）
 
 ## 21. Versioning
-semver。PubSub/Request/JetStreamClientX 接口新增方法=minor，删除/修改=major；Subscription/NatsMessageEnvelope 变更=major；StreamConfig/ConsumerConfig 新增字段=minor（带默认值）；Option 新增=minor。当前 v1.0.3，只升不降。
+semver。PubSub/Request/JetStreamClientX 接口新增方法=minor，删除/修改=major；Subscription/NatsMessageEnvelope 变更=major；StreamConfig/ConsumerConfig 新增字段=minor（带默认值）；Option 新增=minor。当前 v1.0.3（远端 tag 已存在，GitHub Release 待补），只升不降。
 
 ## 22. 兼容性策略
 - Core NATS 用于实时低延迟 at-most-once（BR-001）；JetStream 用于持久化 at-least-once（BR-002）
@@ -212,6 +213,6 @@ semver。PubSub/Request/JetStreamClientX 接口新增方法=minor，删除/修�
 
 ## 30. Roadmap
 - v1.0.0（已发布）：Core NATS Pub/Sub/Request + JetStream Publish/Consume/AddStream/AddConsumer + Health + SubjectBuilder + Envelope
-- v1.0.3（已发布）：pkg/natsx 覆盖率 97.1%，race-clean，CI/CD 路由 sre/* 机器池
+- v1.0.3（远端 tag 已存在，GitHub Release 待补）：pkg/natsx 覆盖率 97.1%，race-clean，CI/CD 路由 sre/* 机器池
 - 待解决：NATS Leaf Node、JetStream KV Store、Object Store、Core NATS 丢失是否全走 JetStream、消息压缩
 - 外部阻塞：BLK-002 生产 TLS 闭环 packet、四源 98+ 仲裁、生产 benchmark 阈值
