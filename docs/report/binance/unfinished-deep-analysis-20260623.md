@@ -1,0 +1,122 @@
+# Binance 深度分析未完成项汇总（2026-06-23）
+
+- [COMPUTED, HIGH] 分析范围：`docs/report/binance/deep-analysis-20260622.md`、`deep-analysis-20260622-v2.md`、`deep-analysis-20260622-v3.md`、`deep-analysis-20260622-v4.md`、`deep-analysis-20260622-v5-cleansing-processing-gaps.md`。
+- [COMPUTED, HIGH] 目标：从 2026-06-22 系列深度分析报告中抽取仍标记为未启动、未归档、未闭合、待补充或需进入正式管线的事项。
+- [COMPUTED, HIGH] 判定口径：后续版本已声明修复的 v1 P0/P1 文档对齐项不再列入当前未完成清单；v2 之后仍保留或新增的 runtime、证据、治理投影、数据生命周期、清洗处理和 gap 缺口列为未完成。
+- [INFERRED, HIGH] 限制：本报告未重新进入 `/home/binance` 运行 L2/L3 验证，当前状态判断仅来自上述报告文本证据。
+
+---
+
+## 一、结论摘要
+
+- [COMPUTED, HIGH] v1 明确称自身是 PR #850 历史基线，并声明 P0/P1 文档对齐项已由 PR #852/#853 与 v2 复核闭合（`deep-analysis-20260622.md:9`）。
+- [COMPUTED, HIGH] v2 明确给出仍未启动的 P2 项：PR-007 runtime、TC-020 evidence、`internal/cs` 删除（`deep-analysis-20260622-v2.md:59`-`61`）。
+- [COMPUTED, HIGH] v3 明确指出当前主要缺口不是缺规则，而是规则未全部投影、检查和执行化，且 release 运行证据需重新采集（`deep-analysis-20260622-v3.md:16`-`19`）。
+- [COMPUTED, HIGH] v4 将未覆盖范围扩展到实时控制面、历史数据生命周期、同步对象、同步周期和周期数据（`deep-analysis-20260622-v4.md:24`-`33`、`56`-`68`、`72`-`110`）。
+- [COMPUTED, HIGH] v5 将未覆盖范围扩展到数据清洗、处理契约和 gap 检测，并汇总累计未明确问题 36 条、建议新增 FR 不少于 18 条（`deep-analysis-20260622-v5-cleansing-processing-gaps.md:156`-`166`）。
+
+---
+
+## 二、P0 未完成项
+
+| 编号 | 未完成项                                                  | 当前证据                                                                                                                                                                                                                                      | 需要完成的闭环                                                                                                                          |
+| ---- | --------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| P0-1 | [COMPUTED, HIGH] PR-007 runtime 仍是 release blocker。    | [COMPUTED, HIGH] v2 记录 runtime 13 个 FR 中 11 个仍为 Pending，TC-020 证据未归档，且 PR-007 是 A 等级唯一钥匙（`deep-analysis-20260622-v2.md:254`-`261`、`431`-`438`）。                                                                     | [INFERRED, HIGH] 完成 PR-007a~g runtime 实施，闭合 FR、BR、TC 与 C/S 模块参考实现证据。                                                 |
+| P0-2 | [COMPUTED, HIGH] 运行证据需要重新采集并归档。             | [COMPUTED, HIGH] v2 指出 TC-020 证据未归档；v3 要求在干净实现快照上采集 runtime HEAD SHA、boundary gates、Go tests、smoke，L3 证据单独记录（`deep-analysis-20260622-v2.md:258`-`260`、`392`-`393`；`deep-analysis-20260622-v3.md:45`-`54`）。 | [INFERRED, HIGH] 在 `/home/binance` 干净快照上跑 L2 验证，归档 evidence，并将 release 声明与 TRACEABILITY/ACCEPTANCE/FEATURES 对齐。    |
+| P0-3 | [COMPUTED, HIGH] `internal/cs` 仍被列为 runtime blocker。 | [COMPUTED, HIGH] v2 指出 `internal/cs` 是违反 BOUNDARY §5 的 runtime blocker，删除未启动（`deep-analysis-20260622-v2.md:225`-`231`、`297`-`307`）。                                                                                           | [INFERRED, HIGH] 删除 `internal/cs` 或迁出到合法边界，并在对应文档中标注 BOUNDARY §5 决策。                                             |
+| P0-4 | [COMPUTED, HIGH] 治理投影仍未完全收敛。                   | [COMPUTED, HIGH] v3 列出 `RULES.md`、`TRACEABILITY.md`、`CHANGELOG.md`、`RUNTIME-MAPPING.md` 等主动文档残留仍需修复（`deep-analysis-20260622-v3.md:32`-`39`）。                                                                               | [INFERRED, HIGH] 将权威入口、状态字段、任务引用和 4x4 NATS/Kafka 口径投影到所有主动文档，避免历史报告和治理文档互相打架。               |
+| P0-5 | [COMPUTED, HIGH] 数据生命周期候选仍未进入正式管线。       | [COMPUTED, HIGH] v3 指出 `DATA-LIFECYCLE.md` 仍只是 Discussion Draft，FR-012~FR-024 与 issue #880~#892 映射不改变当前合同，#888 若纳入会把 event_type 从 4 扩到 6，必须正式 spec bump（`deep-analysis-20260622-v3.md:40`-`44`）。             | [INFERRED, HIGH] 将数据生命周期提案纳入正式 Spec -> Review -> Matrix -> Tasks -> Plan -> Prompt -> Code 管线，明确是否触发 MAJOR bump。 |
+
+---
+
+## 三、P1 未完成项：行情平台能力缺口
+
+### 3.1 实时数据控制面
+
+| 编号 | 未完成项                                       | 当前证据                                                                                                                                                            | 建议承载                                                                              |
+| ---- | ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| P1-1 | [COMPUTED, HIGH] 同步对象选择规则缺失。        | [COMPUTED, HIGH] v4 R1 指出 `symbols.allow/deny` 空列表语义未定义；同步对象粒度、动态发现、配额、下线处理也未定义（`deep-analysis-20260622-v4.md:28`、`78`-`86`）。 | [INFERRED, HIGH] FR-012 Symbol Discovery & Filtering。                                |
+| P1-2 | [COMPUTED, HIGH] 新合约动态发现缺失。          | [COMPUTED, HIGH] v4 R2 指出没有 FR 定义谁增量发现新 symbol（`deep-analysis-20260622-v4.md:29`）。                                                                   | [INFERRED, HIGH] exchangeInfo 周期拉取、instrument 事件、catalog 刷新。               |
+| P1-3 | [COMPUTED, HIGH] K 线周期和深度档位未明确。    | [COMPUTED, HIGH] v4 R3/R4 指出 bar 订阅周期、spot/um_perp/cm_perp 深度档位未定义（`deep-analysis-20260622-v4.md:30`-`31`）。                                        | [INFERRED, HIGH] FR-014 Bar Interval Subscription Set 与 FR-015 Depth Snapshot Tier。 |
+| P1-4 | [COMPUTED, HIGH] WS 重连策略与 REST 兜底缺失。 | [COMPUTED, HIGH] v4 R5/R6 指出没有重连退避曲线、最大窗口、最大尝试次数，也缺少 WS 断流期间 REST 补齐策略（`deep-analysis-20260622-v4.md:32`-`33`）。                | [INFERRED, HIGH] FR-013 WebSocket Connection Policy 与 REST fallback/gap fill 约束。  |
+
+### 3.2 历史数据生命周期
+
+| 编号 | 未完成项                                                           | 当前证据                                                                                                                                                                                 | 建议承载                                                                                         |
+| ---- | ------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| P1-5 | [COMPUTED, HIGH] 历史数据冷启动回填缺失。                          | [COMPUTED, HIGH] v4 指出 SPEC 只覆盖热数据到冷数据的归档退潮，不覆盖历史初始化回填、断流补齐、全量校验、冷数据回热（`deep-analysis-20260622-v4.md:39`-`55`）。                           | [INFERRED, HIGH] FR-016 Historical Backfill on Cold Start。                                      |
+| P1-6 | [COMPUTED, HIGH] 回填窗口、来源和同步周期未定义。                  | [COMPUTED, HIGH] v4 H1-H4 指出冷启动起点、回填深度、回填数据源、增量同步周期均未明确（`deep-analysis-20260622-v4.md:56`-`64`）。                                                         | [INFERRED, HIGH] Backfill 窗口、REST/第三方来源选择、周期调度表。                                |
+| P1-7 | [COMPUTED, HIGH] gap 检测、gap fill 优先级、回填幂等和限流未定义。 | [COMPUTED, HIGH] v4 H5-H9 指出 gap 检测算法、补齐优先级、REST/WS 幂等 key、冷数据回热、REST throttle 均未明确（`deep-analysis-20260622-v4.md:64`-`68`）。                                | [INFERRED, HIGH] FR-017、FR-018、FR-019、FR-022、FR-023。                                        |
+| P1-8 | [COMPUTED, HIGH] Funding rate 与 Mark price 等周期数据缺失。       | [COMPUTED, HIGH] v4 周期 grep 表显示缺少 Funding rate / Mark price 等非事件性周期数据，且建议 event_type 从 4 扩展到 6（`deep-analysis-20260622-v4.md:103`-`110`、`140`-`142`、`183`）。 | [INFERRED, HIGH] FR-020 Funding Rate / Mark Price Stream，并同步更新 NAMING/RULES/TRACEABILITY。 |
+| P1-8a | [COMPUTED, HIGH] 日级全量对账任务未定义。 | [COMPUTED, HIGH] v4 将 FR-021 Daily Reconciliation Job 列为建议 FR，要求每日 04:00 UTC 按 symbol x 1d 做 OHLCV 对账；v5 继续把 Reconciliation 判为未覆盖阶段（`deep-analysis-20260622-v4.md:141`、`166`；`deep-analysis-20260622-v5-cleansing-processing-gaps.md:154`）。 | [INFERRED, HIGH] FR-021 Daily Reconciliation Job，并同步定义对账阈值、告警表和调度周期。 |
+| P1-8b | [COMPUTED, HIGH] 回填进度 API 与订阅热重载未显式列入闭环。 | [COMPUTED, HIGH] v4 将 FR-023 Backfill Progress API 与 FR-024 Symbol Subscription Hot Reload 列为 P2 可观测性与治理项（`deep-analysis-20260622-v4.md:148`-`149`、`196`）。 | [INFERRED, HIGH] FR-023 管理端覆盖率/任务查询 API 与 FR-024 白黑名单热重载、`symbols.changed` 事件、客户端无重启增减 stream。 |
+
+### 3.3 数据清洗、处理与缺口检测
+
+| 编号  | 未完成项                                                              | 当前证据                                                                                                                                                                                                               | 建议承载                                                                                       |
+| ----- | --------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| P1-9  | [COMPUTED, HIGH] 数据清洗能力未定义。                                 | [COMPUTED, HIGH] v5 C1-C8 列出 price/qty 值域、spike detector、timestamp sanity、乱序、depth update_id、bar 自洽、symbol 归一化、质量计数均缺失（`deep-analysis-20260622-v5-cleansing-processing-gaps.md:52`-`64`）。  | [INFERRED, HIGH] FR-025 Quality Validation。                                                   |
+| P1-10 | [COMPUTED, HIGH] 数据处理契约无 FR 锚定。                             | [COMPUTED, HIGH] v5 P1-P7 指出 enricher/aggregator 无 FR，多周期 bar、VWAP/TWAP、Mark Price、basis、bar 闭合、watermark/late event policy 未定义（`deep-analysis-20260622-v5-cleansing-processing-gaps.md:81`-`91`）。 | [INFERRED, HIGH] FR-026 Watermark & Late Event Policy 与 FR-027 Processing Pipeline Contract。 |
+| P1-11 | [COMPUTED, HIGH] gap 检测只有字段记账，无检测、报告、修复、验证链路。 | [COMPUTED, HIGH] v5 指出 `last_seq` 已写入但没有 FR 定义谁检测 gap、何时检测、检测到怎么办；G1-G4 四类 gap 全部未覆盖（`deep-analysis-20260622-v5-cleansing-processing-gaps.md:97`-`129`）。                           | [INFERRED, HIGH] FR-028 Gap Detection Multi-Dimensional 与 FR-029 Data Coverage SLA。          |
+
+---
+
+## 四、P2 未完成项：治理与可维护性
+
+| 编号 | 未完成项                                                      | 当前证据                                                                                                                                                                       | 建议动作                                                                                     |
+| ---- | ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------- |
+| P2-1 | [COMPUTED, HIGH] `DEEP-ANALYSIS.md` 过大，仍需拆分。          | [COMPUTED, HIGH] v2 指出 `DEEP-ANALYSIS` 约 62KB 过大未处理，并把拆分列入剩余 +1 分项（`deep-analysis-20260622-v2.md:188`-`196`、`301`-`305`）。                               | [INFERRED, HIGH] 将历史长报告拆成 runtime、governance、data-lifecycle、evidence 等专题索引。 |
+| P2-2 | [COMPUTED, HIGH] SPEC §4 分布式约束仍需上提。                 | [COMPUTED, HIGH] v2 将 SPEC §4 上提分布式约束列为剩余加分项（`deep-analysis-20260622-v2.md:301`-`305`）。                                                                      | [INFERRED, MED] 将 runtime 分布式协作约束从分析报告提升为 SPEC 主线合同。                    |
+| P2-3 | [COMPUTED, HIGH] legacy `binance-market` 引用仍需压缩。       | [COMPUTED, HIGH] v2 指出 legacy `binance-market` 30+ 处未处理，并建议压缩到一处历史迁移说明（`deep-analysis-20260622-v2.md:188`-`196`、`306`、`397`-`398`）。                  | [INFERRED, HIGH] 保留单一历史迁移锚点，删除主动治理文档中的旧名漂移。                        |
+| P2-4 | [COMPUTED, HIGH] 50 个 preserve/stash commit 覆盖矩阵未完成。 | [COMPUTED, HIGH] v2 指出新增 50 个 preserve/stash commit，需要覆盖审计且尚未生成 commit -> artifact 覆盖矩阵（`deep-analysis-20260622-v2.md:200`-`210`、`353`-`357`、`403`）。 | [INFERRED, HIGH] 建立 commit 覆盖矩阵，标注对应 spec、traceability、test 或明确废弃理由。    |
+| P2-5 | [COMPUTED, HIGH] GateGuard/branch governance 流程仍有优化项。 | [COMPUTED, HIGH] v2 风险清单指出 GateGuard 的 PR 回滚和 branch governance 仍可能误判（`deep-analysis-20260622-v2.md:361`-`362`、`404`）。                                      | [INFERRED, MED] 将流程风险转为明确检查项或文档化例外。                                       |
+| P2-6 | [COMPUTED, HIGH] v4/v5 治理影响台账未展开。 | [COMPUTED, HIGH] v4 估算新增 FR 13、AC ~30、TC ~20、BR 2、event_type 4 -> 6、新 taosx/postgresx 表和 Kafka topic；v5 累计扩大到 FR 18、AC ~45、TC ~32、BR 4、postgresx 表 5、metrics 8+（`deep-analysis-20260622-v4.md:177`-`187`；`deep-analysis-20260622-v5-cleansing-processing-gaps.md:184`-`191`）。 | [INFERRED, HIGH] 在 DATA-LIFECYCLE 正式提案中维护 FR/AC/TC/BR、表、topic、metric 与版本 bump 影响矩阵。 |
+
+---
+
+## 五、建议落地顺序
+
+1. [INFERRED, HIGH] 先闭合 runtime 主线：PR-007a~g、TC-020 evidence、`internal/cs` 删除。
+2. [INFERRED, HIGH] 再闭合治理投影：RULES/TRACEABILITY/CHANGELOG/RUNTIME-MAPPING/FEATURES/ACCEPTANCE 的状态口径和入口一致性。
+3. [INFERRED, HIGH] 将 v4/v5 的 FR-012~FR-029 合并为 `module/binance/DATA-LIFECYCLE.md` 正式提案，而不是直接改 SPEC。
+4. [INFERRED, HIGH] 提案通过后进入 Spec -> Matrix -> Tasks -> Plan -> Prompt -> Code 管线，按 event_type 是否扩展决定 MINOR 或 MAJOR bump。
+5. [INFERRED, MED] 最后处理文档维护项：拆分长报告、压缩 legacy 名称、补 commit 覆盖矩阵、优化 GateGuard 流程说明。
+
+---
+
+## 六、不再列为当前未完成的事项
+
+- [COMPUTED, HIGH] v1 的版本漂移、状态冲突、AC 锚点缺失、server SPEC 不一致等 P0/P1 文档对齐项已由 v2 声明修复或复核，因此本报告不重复列入未完成项（`deep-analysis-20260622.md:9`；`deep-analysis-20260622-v2.md:47`-`61`、`188`-`196`）。
+- [COMPUTED, HIGH] v3 将自身定位为历史问题已经转化为治理项后的复核报告，因此本报告仅继承其仍需补充的治理投影、数据生命周期和运行证据要求（`deep-analysis-20260622-v3.md:3`-`19`、`32`-`54`）。
+
+---
+
+## 七、验收口径
+
+- [INFERRED, HIGH] 文档闭环：主动治理文档中不存在互相冲突的状态、版本、任务引用和 4x4 NATS/Kafka 口径。
+- [INFERRED, HIGH] runtime 闭环：`/home/binance` 干净实现快照可提供 runtime HEAD SHA、boundary gates、Go tests、smoke 和 TC-020/L3 evidence。
+- [INFERRED, HIGH] 数据生命周期闭环：FR-012~FR-029 或其等价方案进入正式 spec/matrix/task/test 链条，而不是停留在报告建议。
+- [INFERRED, HIGH] 治理闭环：legacy 名称、长报告、preserve/stash commit 和 GateGuard 流程风险均有明确保留、删除或迁移记录。
+- [INFERRED, HIGH] 运维闭环：FR-021/FR-023/FR-024 的对账、回填可观测性和订阅热重载进入同一数据生命周期提案。
+- [INFERRED, HIGH] 影响台账闭环：v4/v5 新增 FR/AC/TC/BR、表、topic、metric 和版本 bump 均可追溯。
+
+---
+
+## 八、十轮复核结果（2026-06-23）
+
+| 轮次 | 检查切面 | 结果 |
+| --- | --- | --- |
+| 1 | [COMPUTED, HIGH] 源文件覆盖 | [COMPUTED, HIGH] 覆盖 5 个 `deep-analysis-20260622*` 源报告：v1、v2、v3、v4、v5。 |
+| 2 | [COMPUTED, HIGH] P0 阻塞项 | [COMPUTED, HIGH] PR-007 runtime blocker、证据重跑、`internal/cs`、governance projection、DATA-LIFECYCLE 均已覆盖。 |
+| 3 | [COMPUTED, HIGH] v1 过时项过滤 | [COMPUTED, HIGH] v1 trade/orderbook compatibility 等已被后续报告标记为过时，未被误列为当前未完成项。 |
+| 4 | [COMPUTED, HIGH] v4 realtime FR 覆盖 | [COMPUTED, HIGH] FR-012、FR-013、FR-014、FR-015 已覆盖。 |
+| 5 | [COMPUTED, HIGH] v4 historical FR 覆盖 | [COMPUTED, HIGH] 发现遗漏：FR-021、FR-023、FR-024 未显式列入；已补 P1-8a 与 P1-8b。 |
+| 6 | [COMPUTED, HIGH] v4 funding / mark price 覆盖 | [COMPUTED, HIGH] FR-020 已覆盖。 |
+| 7 | [COMPUTED, HIGH] v5 cleansing / processing / gap 覆盖 | [COMPUTED, HIGH] FR-025、FR-026、FR-027、FR-028、FR-029 已覆盖。 |
+| 8 | [COMPUTED, HIGH] governance impact ledger | [COMPUTED, HIGH] 发现遗漏：v4/v5 的 FR/AC/TC/BR、表、topic、metric、版本 bump 影响台账未展开；已补 P2-6。 |
+| 9 | [COMPUTED, HIGH] 执行顺序 | [COMPUTED, HIGH] P0 -> P1 -> P2 顺序仍成立；新增 P1-8a/P1-8b 不改变前置依赖。 |
+| 10 | [COMPUTED, HIGH] 验收口径 | [COMPUTED, HIGH] 已补对账、回填可观测性、订阅热重载与治理影响台账验收口径。 |
+
+- [COMPUTED, HIGH] 本轮结论：原汇总没有遗漏 P0 主线，但遗漏 3 个 v4 显式治理/运维承载项（FR-021、FR-023、FR-024）和 1 个 v4/v5 累计治理影响台账；已在本报告补齐。
+
+[RULES I BROKE]：无
