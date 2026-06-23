@@ -2,10 +2,26 @@
 
 所有 notable 变更记录，按 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/) 格式维护。
 
-- Module-Version: v3.4.0
+- Module-Version: v3.5.0
 - Last-Updated: 2026-06-23
-- Spec-Reference: `module/binance/SPEC.md` v3.4.0
+- Spec-Reference: `module/binance/SPEC.md` v3.5.0
 - 治理规则：`module/binance/RULES.md` R9 文档存在性
+
+---
+
+## [v3.5.0] — 2026-06-23
+
+### Added
+- FR-029 Data Quality & Freshness SLA：端到端 event_time→persist/fanout 延迟上限 + schema 漂移检测 + stale alert（AC-099~101, TC-047, ROOT-010）。SPEC §17 Performance Budget 补 3 项 freshness 指标（端到端 persist P99 < 200ms、fanout P99 < 300ms、stale alert 阈值 spot/um/cm 30s / options 60s）。
+- FR-030 Options Chain Raw Field Pass-through：option chain 原始字段（strike/expiry/option_type/mark/IV）透传至下游，Greeks 派生归分析域（AC-102~104, TC-048/049, CLIENT-020）。
+
+### 决策依据
+- P2-2 数据质量 SLA：§17 原仅单环节延迟，缺端到端 freshness 与断流检测，补 FR-029 + NFR。
+- P2-3 历史回填：FR-016/017/019/025/027/028 已完整覆盖（backfill planner/gap replay/resource governance/throttle/rehydration/progress API），**无缺口，不新增 FR**。
+- P2-4 Options Greeks：Greeks/IV 派生属分析域职责，本模块只需透传 option chain 原始字段，补 FR-030。
+
+### 触发依据
+- R3 / CONSTITUTION §10.4：FR-029/030 契约登记 + §17 NFR 扩展属接口契约演进 → Spec-Version MINOR bump v3.4.0 → v3.5.0。FR-029/030 仅追溯登记（与 FR-012~028 同层级），WHEN/THEN 主体待 promote 时补。
 
 ---
 
