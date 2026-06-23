@@ -1323,9 +1323,13 @@ Binance Exchange (REST/WebSocket)
 
 [COMPUTED][HIGH] instrument_subtype（perpetual/delivery）在 v2 图中由 canonical mapper 注入 InstrumentKey，贯穿 taosx tag / postgresx catalog / kafkax payload / ossx path 元数据，但不进入 natsx subject——与 NAMING §1.1 承载规则一致。
 
-## Appendix D: Acceptance Criteria Registry
+## Appendix D: Acceptance Criteria Registry（v2.0.0 历史遗物，已冻结）
 
-> 验收口径：本 Registry 锚定到 §7 Functional Requirements 与 §16 Testing TC 矩阵，每条 AC 必须能由一条 TC 或 CI Gate 直接验证。`Status` 字段对齐 §1 Metadata 的 Status=Approved。
+> **弃用声明**：本 Registry 是 v2.0.0 时期的验收口径快照，仅覆盖 FR-001~FR-011 共 18 条 AC（编号 AC-BNC-001 ~ AC-BNC-018）。当前模块已扩展至 30 FR / 104 AC（AC-001 ~ AC-104），完整 AC 注册表单点维护于 `TRACEABILITY.md §5`，实现状态见 `ACCEPTANCE.md §2` 与 `TRACEABILITY.md §6`。
+>
+> **编号映射**：AC-BNC-001→AC-001、AC-BNC-002→AC-002、…、AC-BNC-018→AC-018（一一对应）。AC-019~AC-104 为 v2.1.0 后扩展，无对应 AC-BNC 编号。
+>
+> 以下内容为历史存档，Status 列的 `Approved` 仅表示需求已批准纳入规格，**不代表 runtime 实现已完成**。
 
 | AC ID      | FR/BR Ref            | Criterion                                                                                                    | Verification                          | Status   |
 | ---------- | -------------------- | ------------------------------------------------------------------------------------------------------------ | ------------------------------------- | -------- |
