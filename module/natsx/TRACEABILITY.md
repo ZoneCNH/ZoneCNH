@@ -1,9 +1,9 @@
 # natsx 需求追溯矩阵
 
-> 模块级追溯矩阵。治理规范见 [docs/governance/TRACEABILITY.md](../../docs/governance/TRACEABILITY.md)。本矩阵记录 repair-slice complete evidence；formal release approval 仍需独立批准，不得替代发布批准。
+> 模块级追溯矩阵。治理规范见 [docs/governance/TRACEABILITY.md](../../docs/governance/TRACEABILITY.md)。本矩阵记录 PR #17 merged + v1.0.3 remote tag evidence；GitHub Release v1.0.3 仍需独立发布证据，不得由 tag 推导。
 
-Last-Updated: 2026-06-13
-Source: `goal.md` 1.0 发布基线 + `SPEC.md` Draft v1.0.0 + `/home/natsx` commit `20f801f`
+Last-Updated: 2026-06-23
+Source: `goal.md` 1.0 发布基线 + `SPEC.md` Approved v1.2.0 + `/home/natsx` PR #17 merge `29503212` + remote tag `v1.0.3`
 
 ## Forward Coverage
 
@@ -17,8 +17,8 @@ Source: `goal.md` 1.0 发布基线 + `SPEC.md` Draft v1.0.0 + `/home/natsx` comm
 | FR-006 | JetStream.AddStream | 创建、幂等、冲突配置均有测试 | TC-003 | TASK-NATSX-004 | ✅ |
 | FR-007 | JetStream.AddConsumer | 创建、幂等、冲突配置均有测试 | TC-003 | TASK-NATSX-004 | ✅ |
 | FR-008 | Health | ready/live/message 与连接状态映射有测试 | TC-005 | TASK-NATSX-005 | ✅ |
-| FR-009 | JetStream IngestPublisher Adapter | IngestAck{Durable}/JETSTREAM_PUBLISH_FAILED retryable/duplicate 幂等 | TC-010 | TASK-NATSX-010 | ⏳ Pending |
-| FR-010 | JetStream IngestConsumer Adapter | Fetch+ManualAck/重投递/DLQ/poison message 不吞没 payload | TC-011 | TASK-NATSX-010 | ⏳ Pending |
+| FR-009 | JetStream IngestPublisher Adapter | IngestAck{Durable}/JETSTREAM_PUBLISH_FAILED retryable/duplicate 幂等 | TC-010 | TASK-NATSX-010 | ✅ PR #17 merged; GitHub Release pending |
+| FR-010 | JetStream IngestConsumer Adapter | Fetch+ManualAck/重投递/DLQ/poison message 不吞没 payload | TC-015 | TASK-NATSX-010 | ✅ PR #17 merged; GitHub Release pending |
 | NFR-006 | SubjectBuilder | `domain.resource.action.v{version}` 构造和解析有测试 | TC-006 | TASK-NATSX-006 | ✅ Build/parse/validation tests |
 | NFR-007 | NatsMessageEnvelope | traceId/messageId/schemaVersion/header 双向映射有测试 | TC-007 | TASK-NATSX-007 | ✅ Header metadata round-trip and embedded propagation tests |
 | NFR-008 | Config contract | `foundationx.nats.*` 配置、默认值和旧别名兼容有测试 | TC-008 | TASK-NATSX-008 | ✅ Defaults/sanitize/validation plus canonical `FOUNDATIONX_NATS_*` over legacy `NATS_*` fallback covered |
@@ -36,7 +36,7 @@ Source: `goal.md` 1.0 发布基线 + `SPEC.md` Draft v1.0.0 + `/home/natsx` comm
 | NFR-002 | TLS/auth | TLS 与认证配置可表达且不泄漏凭据 | TC-011 | TASK-NATSX-011 | ✅ Config expression/sanitize, canonical auth env vars, and local auth live test with redacted credentials covered; production TLS closure packet remains external release blocker `BLK-002` |
 | NFR-003 | Performance budget | publish/request/JetStream 延迟预算有 benchmark | TC-012 | TASK-NATSX-012 | ✅ Publish/request/JetStream benchmarks plus embedded request/publish/fetch SLO assertions and handler latency metric covered |
 | NFR-004 | Layer boundary | 不依赖 kafkax，不替代 RPC/治理框架 | TC-013 | TASK-NATSX-013 | ✅ Dependency boundary clean |
-| NFR-005 | Release evidence | SPEC、goal、traceability、matrix evidence 一致 | TC-014 | TASK-NATSX-014 | ✅ Documentation and executable evidence reconciled |
+| NFR-005 | Release evidence | SPEC、goal、traceability、matrix evidence 一致 | TC-014 | TASK-NATSX-014 | 🟡 Documentation and executable evidence reconciled; GitHub Release v1.0.3 pending |
 
 ## Acceptance Criteria Linkage
 
@@ -50,8 +50,8 @@ Source: `goal.md` 1.0 发布基线 + `SPEC.md` Draft v1.0.0 + `/home/natsx` comm
 | AC-006 | FR-006 | TC-003 | Embedded AddStream create/idempotency/conflict covered |
 | AC-007 | FR-007 | TC-003 | Embedded AddConsumer create/idempotency/conflict covered |
 | AC-008 | FR-008 | TC-005 | Healthy, disconnected, nil, canceled, closed, reconnect, and degraded health paths covered |
-| AC-009 | FR-009 | TC-010 | ⏳ Pending — IngestPublisher PubAck→Durable Ack / retryable reject / duplicate 幂等，runtime 适配器待实现 |
-| AC-010 | FR-010 | TC-015 | ⏳ Pending — IngestConsumer Fetch+ManualAck / 重投递 / DLQ / poison message，runtime 适配器待实现 |
+| AC-009 | FR-009 | TC-010 | ✅ PR #17 merged — IngestPublisher runtime adapter 已实现；GitHub Release v1.0.3 待补 |
+| AC-010 | FR-010 | TC-015 | ✅ PR #17 merged — IngestConsumer runtime adapter 已实现；GitHub Release v1.0.3 待补 |
 
 ## Reverse Coverage
 
@@ -67,12 +67,12 @@ Source: `goal.md` 1.0 发布基线 + `SPEC.md` Draft v1.0.0 + `/home/natsx` comm
 | TC-007 | NFR-007 | `/home/natsx/pkg/natsx/envelope_test.go`; embedded request/reply metadata propagation in `/home/natsx/pkg/natsx/embedded_nats_test.go` |
 | TC-008 | NFR-008 | `/home/natsx/pkg/natsx/config_test.go` and `/home/natsx/pkg/natsx/env_test.go` cover defaults/sanitize/validation plus `ConfigFromEnv` canonical precedence and legacy fallback |
 | TC-009 | NFR-009 | `/home/natsx/pkg/natsx/regression_test.go::TestMetricNamesUseFoundationNATSPrefix`; `TestNoopMetricsMethodsAreSafe`; `/home/natsx/pkg/natsx/health_test.go::TestHealthCheckDisconnectedRecordsMetrics`; embedded tests assert canonical `foundationx_nats_*` metric emission |
-| TC-010 | FR-009 | ⏳ Pending — `IngestPublisher.Ingest` PubAck→Durable Ack、JETSTREAM_PUBLISH_FAILED retryable、空 IdempotencyKey 不可重试、duplicate 幂等；runtime 适配器待实现（解耦 binance PR-007c） |
-| TC-015 | FR-010 | ⏳ Pending — `IngestConsumer.Fetch` 返回 (req, Ack, err)、Ack 推进 offset、超 AckWait 重投递、超 MaxDeliver 进 DLQ、poison message 不吞没 payload；runtime 适配器待实现（解耦 binance PR-007d） |
+| TC-010 | FR-009 | ✅ PR #17 merged — `/home/natsx` pkg/natsx/ingest covers IngestPublisher PubAck→Durable Ack, retryable reject, empty IdempotencyKey non-retryable, duplicate idempotency; GitHub Release v1.0.3 pending |
+| TC-015 | FR-010 | ✅ PR #17 merged — `/home/natsx` pkg/natsx/ingest covers Fetch return (req, Ack, err), Ack offset advance, AckWait redelivery, MaxDeliver DLQ, poison message payload preservation; GitHub Release v1.0.3 pending |
 | TC-011 | NFR-001, NFR-002, BR-008 | `/home/natsx/pkg/natsx/config_test.go::TestConfigValidateDefaultsAndSanitize`; `/home/natsx/pkg/natsx/env_test.go::TestConfigFromEnvRejectsInvalidValuesWithoutSecretLeak`; `/home/natsx/pkg/natsx/live_integration_test.go`; local auth live test passed with `FOUNDATIONX_NATS_URL`, `FOUNDATIONX_NATS_USERNAME`, and `FOUNDATIONX_NATS_PASSWORD` sourced from local NATS config without printing credentials |
 | TC-012 | NFR-003 | `/home/natsx/pkg/natsx/benchmark_test.go::BenchmarkEmbeddedNATSPublish`; `/home/natsx/pkg/natsx/benchmark_test.go::BenchmarkEmbeddedNATSRequest`; `/home/natsx/pkg/natsx/benchmark_test.go::BenchmarkEmbeddedNATSJetStreamPublish`; `/home/natsx/pkg/natsx/embedded_nats_test.go` adds request, JetStream publish/fetch SLO assertions and handler latency evidence |
 | TC-013 | NFR-004 | `/home/natsx$ GOWORK=off go list -deps ./pkg/natsx ./examples/...` plus forbidden-domain filter returned `dependency boundary clean` |
-| TC-014 | NFR-005 | `/home/natsx` commit `20f801f`; this matrix refresh; formal four-source arbiter still pending |
+| TC-014 | NFR-005 | `/home/natsx` PR #17 merge `29503212`, remote tag `v1.0.3`; GitHub Release `v1.0.3` pending; formal four-source arbiter still pending |
 
 ## Task Coverage
 
@@ -87,11 +87,11 @@ Source: `goal.md` 1.0 发布基线 + `SPEC.md` Draft v1.0.0 + `/home/natsx` comm
 | TASK-NATSX-007 | NFR-007 | Complete envelope/header metadata round-trip coverage |
 | TASK-NATSX-008 | NFR-008 | Complete config default/sanitize/validation plus canonical/legacy env alias precedence coverage |
 | TASK-NATSX-009 | NFR-009 | Complete repair-slice canonical metrics and secret-safe error/log evidence; distributed tracing is not claimed by this matrix |
-| TASK-NATSX-010 | FR-009, FR-010 | ⏳ Pending — 实现 `IngestPublisher`（PubAck→Durable Ack/JetStream 幂等去重）与 `IngestConsumer`（durable+ManualAck/DLQ/poison message）域适配器，解耦 binance PR-007c/d；runtime 适配器与 TC-010/TC-015 待实现 |
+| TASK-NATSX-010 | FR-009, FR-010 | ✅ PR #17 merged — implemented `IngestPublisher`（PubAck→Durable Ack/JetStream 幂等去重）与 `IngestConsumer`（durable+ManualAck/DLQ/poison message）域适配器；GitHub Release v1.0.3 pending |
 | TASK-NATSX-011 | NFR-001, NFR-002, BR-008 | Complete repair-slice sanitize/config evidence plus local auth live integration passed with redacted local config; production TLS closure packet remains separate release blocker `BLK-002` in `release/trust/foundation-maturity-evidence-matrix-20260615.md` |
 | TASK-NATSX-012 | NFR-003 | Complete repair-slice SLO assertions for embedded request, JetStream publish/fetch, and handler latency; production benchmark gate still separate |
 | TASK-NATSX-013 | NFR-004 | Dependency boundary check passed for forbidden ZoneCNH messaging/storage modules |
-| TASK-NATSX-014 | NFR-005 | Release evidence + CI gate: `README.md` quickstart/API overview, `CHANGELOG.md` v1.0.0, CI gate (build/test/vet/lint/secret scan), coverage >=80%, benchmark regression guard; `/home/natsx` evidence pinned to commit `20f801f` |
+| TASK-NATSX-014 | NFR-005 | Release evidence + CI gate: `README.md` quickstart/API overview, `CHANGELOG.md` v1.0.0, CI gate (build/test/vet/lint/secret scan), coverage >=80%, benchmark regression guard; PR #17 merge and remote tag v1.0.3 observed; GitHub Release v1.0.3 pending |
 
 ## Documentation Evidence Inventory
 
@@ -106,7 +106,7 @@ Source: `goal.md` 1.0 发布基线 + `SPEC.md` Draft v1.0.0 + `/home/natsx` comm
 | `/home/natsx/pkg/natsx/envelope_test.go` | Covers data/header copy and trace/message/schema metadata round-trip. | Complete evidence for envelope baseline. |
 | `/home/natsx/pkg/natsx/config_test.go` | Covers defaults, endpoint validation, canonical/legacy env alias precedence, and secret sanitization. | Complete repair-slice config/security evidence; production TLS endpoint remains external. |
 | `/home/natsx/pkg/natsx/health_test.go`, `/home/natsx/pkg/natsx/regression_test.go`, `/home/natsx/pkg/natsx/env_test.go`, and `/home/natsx/pkg/natsx/live_integration_test.go` | Cover disconnected health, nil/canceled context, invalid preconditions, noop metrics safety, canonical metric names, secret-safe env validation/live evidence, and race-safe recording metrics; embedded broker tests cover healthy, closed-client, reconnect, and degraded health. | Regression evidence for failure paths, metric naming, redaction, and guardrails. |
-| `/home/ZoneCNH/module/natsx/SPEC.md` | Keeps Draft / not approved semantics explicit. | Target contract, not release approval. |
+| `/home/ZoneCNH/module/natsx/SPEC.md` | Keeps Approved target-contract semantics explicit and separates that from GitHub Release approval. | Target contract, not release approval. |
 | `/home/ZoneCNH/module/natsx/TRACEABILITY.md` | Separates repair-slice complete local evidence from external formal release gates. | Prevents documentation-only release approval claims. |
 
 ## Matrix Score Evidence
@@ -116,8 +116,8 @@ Source: `goal.md` 1.0 发布基线 + `SPEC.md` Draft v1.0.0 + `/home/natsx` comm
 - Executable implementation coverage in `/home/natsx/pkg/natsx` and `/home/natsx/examples`: **14 / 14 task groups complete**, **0 / 14 partial**, **0 / 14 pending** for the repair slice.
 - Module directory coverage in `/home/ZoneCNH/module/natsx`: documentation only; no local Go source or executable tests.
 - Repair-slice score: **20 / 20** (module self-assessment of repair completeness).
-- Structural matrix score: **100 / 100** (Claude rubric scoring, 2026-06-14, post D1/D2/D3 repair). Formal release approval remains **Not Approved** until the four-source 98+ arbiter, production benchmark thresholds, and production TLS endpoint gates run.
-- Code evidence commit: `/home/natsx` `20f801f` (`Document inherited template metrics outside natsx namespace`; includes `8b67fc6` release config/live gates).
+- Structural matrix score: **100 / 100** (Claude rubric scoring, 2026-06-14, post D1/D2/D3 repair). Formal release approval remains **Not Approved** until GitHub Release evidence, four-source 98+ arbiter, production benchmark thresholds, and production TLS endpoint gates run.
+- Code evidence: `/home/natsx` PR #17 merge `29503212e762c82bc91790c714e167f4f970a49f`; remote tag `v1.0.3` annotated tag `d2c12bed9a61e5411b6aadc103df611f0e4c59ce` peels to `f4db0b76ea7c86515559b04fcaa0853e1d08a02d`; GitHub Release v1.0.3 pending.
 - Verification commands for this refresh:
   - `/home/natsx$ GOWORK=off go test ./pkg/natsx -run TestEmbeddedNATSJetStreamMaxDeliverAdvisory -count=1 -v`
   - `/home/natsx$ GOWORK=off go test ./pkg/natsx -count=1`
@@ -138,6 +138,9 @@ Source: `goal.md` 1.0 发布基线 + `SPEC.md` Draft v1.0.0 + `/home/natsx` comm
   - `/home/natsx$ NATSX_LIVE_INTEGRATION=1 FOUNDATIONX_NATS_URL=<redacted-dev-url> FOUNDATIONX_NATS_USERNAME=<redacted> FOUNDATIONX_NATS_PASSWORD=<redacted> GOWORK=off go test ./pkg/natsx -run TestLiveNATSIntegration -count=1 -v` => PASS; no credentials printed
   - `/home/natsx$ git diff --check`
   - `/home/ZoneCNH/.worktree/workspaces/natsx$ git diff --check`
+  - `/home/ZoneCNH$ gh release view v1.0.3 --repo ZoneCNH/natsx --json tagName,name,publishedAt,targetCommitish` => `release not found`
+  - `/home/ZoneCNH$ git -C /home/natsx ls-remote origin refs/tags/v1.0.3 'refs/tags/v1.0.3^{}' refs/heads/main` => refs for `main`, `refs/tags/v1.0.3`, and peeled `refs/tags/v1.0.3^{}`
+  - `/home/natsx$ GOCACHE=/tmp/omx-readonly-audit-gocache GOWORK=off go test ./pkg/natsx/ingest -count=1` => PASS
 
 ## Known Risks / Blockers
 
