@@ -155,7 +155,7 @@
 
 ### Changed
 - TRACEABILITY BR-001/002/003/005/006/007/008/009 → Implemented（boundary gate §2-§11 PASS）
-- TRACEABILITY TC-005/021/022 → PASS（boundary gate 证据对齐）
+- TRACEABILITY TC-020/021/022 → PASS（boundary gate 证据对齐）；TC-005 保持 Pending，等待 FR-003 独立进程 publish/consume 集成证据
 - 业务报告 `docs/report/binance/business-types-coverage-20260622.md` §Runtime 核对建议 → §Runtime 核对结果（[INFERRED] → [COMPUTED][HIGH]）
 
 ### Fixed
