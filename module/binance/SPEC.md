@@ -3,8 +3,8 @@
 ## 1. Metadata
 
 - Status: Approved
-- Spec-Version: v3.1.0
-- Last-Updated: 2026-06-22
+- Spec-Version: v3.2.0
+- Last-Updated: 2026-06-23
 - Owner: ZoneCNH
 - Layer: 数据域 · 行情
 - Version: v0.1.0
@@ -511,6 +511,22 @@ type MarketFactEnvelope struct {
 | `binance.market.options.bar` | 期权 K 线 |
 | `binance.market.options.depth` | 期权深度（Binance EOptions `<symbol>@depth1000` WebSocket stream） |
 | `binance.market.options.trade` | 期权逐笔成交 |
+
+#### Depth 订阅档位（FR-015）
+
+| product_line | 档位 | 说明 |
+|---|---|---|
+| `spot` / `um_perp` / `cm_perp` | `@depth20@100ms`（快照）+ `@depth@1000ms`（增量） | snapshot 与 incremental 用 `update_id` 拼合 |
+| `options` | `@depth1000` | 沿用现有 EOptions depth stream |
+
+> [COMPUTED, HIGH] snapshot 与 incremental 通过 `update_id` 单调递增校验拼合；`update_id` 回退或不连续触发 gap 检测（FR-017）。
+
+#### Control Subjects
+
+| Subject | 触发 | 消费方 |
+|---|---|---|
+| `binance.control.instruments.changed` | client 6h 刷新 exchangeInfo 发现目录变更 | server |
+| `binance.control.symbols.changed` | `POST /api/v1/admin/symbols/reload` | client |
 
 - Client 调用 `js.Publish(subj, jsonPayload)`，等待 PubAck 后返回（确保持久化）
 - Server durable consumer 订阅 `binance.market.>`，ManualAck，处理完整链路后 Ack

@@ -1,7 +1,7 @@
 # binance 实施计划
 
-- Version: v3.1.0
-- Last-Updated: 2026-06-22
+- Version: v3.2.0
+- Last-Updated: 2026-06-23
 - Status: execution plan; release blocked until runtime gates pass
 - Runtime-Repo: `/home/binance`
 

@@ -6,8 +6,8 @@
 |------|-----|
 | Module | `module/binance/server` |
 | Status | Approved |
-| Spec-Version | v2.1.0 |
-| Last-Updated | 2026-06-22 |
+| Spec-Version | v2.2.0 |
+| Last-Updated | 2026-06-23 |
 | Owner | ZoneCNH |
 | Layer | 数据域 · 行情接入层 |
 | Role | Binance 行情数据的处理 + 存储服务端（natsx 消费 + redisx + postgresx + taosx + clickhousex + kafkax + ossx + Gin REST API） |
@@ -282,6 +282,62 @@ client 和 server **互不感知彼此的进程位置**。server 只知道 NATS 
 
 **WHEN** 正常关闭
 **THEN** 主动调用 `Del(coordinator_lock)` 释放锁，减少等待时间
+
+---
+
+### FR-025: Backfill Throttle & Priority
+
+**WHEN** server 发起 REST backfill 或实时 REST 调用
+**THEN** 通过 token bucket 感知 Binance IP weight 限流（spot 1200 weight/min，futures 2400 weight/min）
+
+**WHEN** weight 预算分配
+**THEN** 80% 给实时流恢复，20% 给 backfill；backfill 内部优先级 `trade > bar > tick`
+
+**WHEN** weight 接近上限（>90%）
+**THEN** 暂停 backfill 调度，保留实时配额；记录 `backfill.weight_exhausted` 指标
+
+**配置**（`binance-server.yaml` §11）：`backfill.weight_budget`、`backfill.priority`、`backfill.spot_weight_per_min=1200`、`backfill.futures_weight_per_min=2400`
+
+---
+
+### FR-026: Daily Reconciliation Job
+
+**WHEN** 每日 04:00 UTC（`reconciliation.schedule=0 4 * * *`）
+**THEN** coordinator 锁持有实例跑全量对账：按 `symbol × 1d` 维度比对 taosx 聚合 OHLCV vs Binance `/api/v3/klines`
+
+**WHEN** 差异超阈值（`reconciliation.tolerance=0.01%`）
+**THEN** 写入 postgresx `binance_reconciliation_alerts` 表，含 symbol、date、expected、actual、diff、severity
+
+**WHEN** 对账完成
+**THEN** 发布 `binance.control.reconciliation.completed` 事件，附当日统计（symbols_checked、alerts_count）
+
+---
+
+### FR-027: Cold Data Rehydration
+
+**WHEN** `GET /api/v1/market/ticks/:symbol/range` 命中时间窗落在 OSS 归档区（已过期出 taosx）
+**THEN** 返回 `202 Accepted` + `job_id`，触发 async OSS→taosx 回热（临时表 24h TTL，`rehydration.temp_ttl=24h`）
+
+**WHEN** 回热 job 完成
+**THEN** 临时表可查询；客户端通过 `GET /api/v1/admin/rehydration/jobs/:job_id` 轮询状态（`pending`/`running`/`ready`/`expired`）
+
+**WHEN** 临时表 TTL 到期（24h）
+**THEN** 自动删除临时表，后续相同查询重新触发回热
+
+> [COMPUTED, HIGH] FR-027 是 FR-007 Gin Market API 的冷数据扩展分支，不替代热数据查询路径。
+
+---
+
+### FR-028: Backfill Progress API
+
+**WHEN** 运维查询 `GET /api/v1/admin/backfill/jobs`
+**THEN** 返回活跃 backfill job 列表（job_id、symbol、product_line、event_type、window、cursor、status、progress_pct）
+
+**WHEN** 运维查询 `GET /api/v1/admin/backfill/coverage/:symbol`
+**THEN** 返回该 symbol 每个 `(product_line, event_type)` 的最早可用时间戳（taosx + OSS 合并视图）
+
+**WHEN** job 失败或卡住
+**THEN** API 暴露 `last_error`、`retry_count`、`next_retry_at` 字段供运维诊断
 
 ---
 

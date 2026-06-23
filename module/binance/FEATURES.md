@@ -5,8 +5,8 @@
 | 字段 | 值 |
 | --- | --- |
 | Status | Generated from current module SSOT |
-| Last-Updated | 2026-06-22 |
-| Module-Version | v3.1.0 |
+| Last-Updated | 2026-06-23 |
+| Module-Version | v3.2.0 |
 | Module-State | 规格扩展到 v3.1.0；FR-009 boundary 已有本地 runtime 证据，其余 FR 仍以 `/home/binance` 证据为准 |
 | Layer | 数据域 / Binance-specific market_data C/S module |
 | Runtime-Repo | `/home/binance` |

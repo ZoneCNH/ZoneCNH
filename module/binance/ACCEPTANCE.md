@@ -5,8 +5,8 @@
 | 字段 | 值 |
 | --- | --- |
 | Status | Generated from current module SSOT |
-| Last-Updated | 2026-06-22 |
-| Module-Version | v3.1.0 |
+| Last-Updated | 2026-06-23 |
+| Module-Version | v3.2.0 |
 | Module-State | 验收清单已补齐；runtime 通过状态仍以实际 `/home/binance` 测试为准 |
 | Runtime-Repo | `/home/binance` |
 | Source | `SPEC.md`, `TRACEABILITY.md`, `DATA-LIFECYCLE.md`, `STANDARD.md`, `client/TRACEABILITY.md`, `server/TRACEABILITY.md`, `BOUNDARY-GATES.md` |
