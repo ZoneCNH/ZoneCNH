@@ -55,8 +55,8 @@ github.com/ZoneCNH/binance/
       parser/                ← Binance 符号解析
       connectors/            ← 四产品线 connector（v2.0.0 整合）
         spot.go              ← 已有（保留）
-        usdm.go              ← 新增
-        coinm.go             ← 新增
+        um_perp.go           ← 新增
+        cm_perp.go           ← 新增
         options.go           ← 新增
         connector.go         ← 接口定义
       normalize/             ← 原生事件 → NormalizedEvent
@@ -159,8 +159,8 @@ github.com/ZoneCNH/binance/
 | 产品线目录 | `internal/client/catalog/` | 保留 |
 | 符号解析器 | `internal/client/parser/` | 保留 |
 | Spot connector | `internal/client/connectors/spot.go` | 保留 |
-| USDⓈ-M connector | `internal/client/connectors/usdm.go` | ✨ 新增 |
-| COIN-M connector | `internal/client/connectors/coinm.go` | ✨ 新增 |
+| USDⓈ-M connector | `internal/client/connectors/um_perp.go` | ✨ 新增 |
+| COIN-M connector | `internal/client/connectors/cm_perp.go` | ✨ 新增 |
 | Options connector | `internal/client/connectors/options.go` | ✨ 新增 |
 | 事件规范化 | `internal/client/normalize/` | 保留 |
 | 规范映射 | `internal/client/mapper/` | 保留 |
