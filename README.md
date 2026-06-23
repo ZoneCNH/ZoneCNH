@@ -89,7 +89,7 @@ L2.5: domainx / decimalx / domain_market / domain_macro / domain_exchange (5/5 �
 - [testkitx](https://github.com/ZoneCNH/testkitx) — 测试专用 evidence/golden/fixture/boundary 工具包 `公开`
 - [xlibgate](https://github.com/ZoneCNH/xlibgate) — import 边界、go.mod、Go baseline、release evidence、Trust Alignment 门禁 `公开`
 
-> **公开投影口径**：版本 / release / factory 状态以 `.foundationx/status/index.json` + `.foundationx/blockers.json` 为准；BLK-001~011 全部已 resolved，**0 open blockers；Foundation 20/20 runtime factory-ready** ✅（BLK-009 bootstrap v0.2.0 + BLK-010 ossx v1.2.1 均已 resolved，2026-06-20）。
+> **公开投影口径**：版本 / release / factory 状态以 `.foundationx/status/index.json` + `.foundationx/blockers.json` 和 GitHub Release 实际证据为准；2026-06-23 核查发现 `natsx` 仅有 `v1.0.3` 远端 tag，GitHub Release `v1.0.3` 尚不存在；Foundation factory 投影不得把 tag 直接等同 Release。
 >
 > `configx` v1.1.0、`observex` v0.3.3、`testkitx` v0.4.0、`resiliencx` v1.0.2 已发布；resiliencx Release Check 27777166525 通过，此前版本误标已修正。
 
@@ -100,7 +100,7 @@ L2.5: domainx / decimalx / domain_market / domain_macro / domain_exchange (5/5 �
 - [clickhousex](https://github.com/ZoneCNH/clickhousex) — ClickHouse — OLAP 查询、批量写入（v1.0.10 本地 release evidence 已闭合；Exec/Query/Rows/InsertBatch、metrics/tracing/logger/retry/error mapping 与 100.0% 覆盖率门禁已对齐；真实 ClickHouse live 集成与 60s soak 已验证；远端 push / GitHub Release / Actions 待触发；BLK-003 resolved；非 factory） `公开`
 - [taosx](https://github.com/ZoneCNH/taosx) — TDengine L2 adapter contract（pkg/taosx v1.0.5 本地发布候选；CI/release 已加入 taosx-coverage-check，pkg/taosx 100.0% 覆盖；TDengine dev live gate 已通过且保持显式 opt-in；未执行外部 tag/GitHub Release；非 factory） `公开`
 - [kafkax](https://github.com/ZoneCNH/kafkax) — Kafka — 消息队列、事件流（v1.1.0 已发布；真实 broker gates 已验证） `公开`
-- [natsx](https://github.com/ZoneCNH/natsx) — NATS 内部通信模块（v1.0.3 已发布；Core NATS / JetStream、Drain/reconnect/degraded health、canonical `FOUNDATIONX_NATS_*` 配置和真实 dev auth live gate 已验证；正式四源 98+ arbiter 与生产 TLS gate 待补，BLK-001/BLK-002 open；非 factory） `公开`
+- [natsx](https://github.com/ZoneCNH/natsx) — NATS 内部通信模块（v1.0.3 remote tag 已存在，GitHub Release v1.0.3 待补；Core NATS / JetStream、Drain/reconnect/degraded health、canonical `FOUNDATIONX_NATS_*` 配置和真实 dev auth live gate 已验证；FR-009/010 runtime adapter PR #17 已合并；正式四源 98+ arbiter 与生产 TLS gate 待补，BLK-001/BLK-002 open；非 factory） `公开`
 - [ossx](https://github.com/ZoneCNH/ossx) — Aliyun OSS 对象存储 L2 adapter（v1.2.1；真实 adapters/aliyun + 流式 SPI + multipart + presign + retry/circuit + observex hooks；pkg/ossx 100% 覆盖；BLK-010 resolved ✅；PR #8 merged） `公开`
 
 ### 基座 · 契约与传输
