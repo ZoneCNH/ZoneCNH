@@ -155,3 +155,4 @@
   - **#929** — FR-025~FR-030: throttle、daily reconciliation、cold rehydration、progress API、freshness SLA、Options raw field
 - 任一 FR 翻转为 Done 前必须通过：Spec -> Review -> Matrix -> Tasks -> Plan -> Prompt -> Code 管线、runtime 测试证据、CI/live smoke 和 release gate
 - 不得将本备忘录视为 runtime behavior、CI pass、GitHub Release 或 release evidence 完成证明
+
