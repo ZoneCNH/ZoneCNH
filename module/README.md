@@ -362,7 +362,7 @@ FoundationX 运行模块分为两种架构类型。详见 [`ARCHITECTURE.md`](..
 
 **宏观模块规格**：[`fred`](./fred/README.md) — FRED 独立 C/S 服务，覆盖共享基座、`domain_macro` 领域共享层、完整持久化和 dev 配置来源。
 
-**参考实现**：[binance](https://github.com/ZoneCNH/binance)（spec v3.0.0 Approved，runtime v0.2.0 bootstrap 接入；FR-001/002 状态以 runtime 仓为准（追溯矩阵已标 Pending） + FR-009 边界 gate 落地 + TC-020 PASS；进度 15%；USDM/COINM/Options 与 FR-003~011 待 PR-007）
+**参考实现**：[binance](https://github.com/ZoneCNH/binance)（spec v3.5.0；runtime PR #11 已证明独立 `cmd/binance-client` + HTTP `/ingest` client/server boundary，FR-009 边界 gate 与 TC-020 PASS；TC-005、JetStream PubAck/ManualAck、live websocket、release tag 与 FR-003~011 仍待 PR-007 后续证据）
 
 ### 独立进程（非 C/S）
 
