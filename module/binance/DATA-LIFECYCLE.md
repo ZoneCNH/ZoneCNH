@@ -1,17 +1,17 @@
-# module/binance DATA-LIFECYCLE.md — 数据生命周期讨论稿
+# module/binance DATA-LIFECYCLE.md — 数据生命周期正式提案（runtime pending）
 
 ## 元数据
 
 | 字段 | 值 |
 | --- | --- |
-| Status | Discussion Draft |
+| Status | Formal Proposal / Runtime Pending |
 | Module-Version | v3.5.0 |
 | Last-Updated | 2026-06-23 |
 | Scope | `module/binance` stage2 lifecycle planning |
-| Spec-Impact | 已 fold：FR-012~FR-030 已登记到 `SPEC.md`/`TRACEABILITY.md`；本文件仍不声明 runtime contract |
+| Spec-Impact | 已 fold：FR-012~FR-030 已登记到 `SPEC.md`/`TRACEABILITY.md`，相关命名落点已投影到 `NAMING.md`；本文件仍不声明 runtime contract |
 | Source Plan | `docs/report/binance/goal-execution-plan-20260622.md` 阶段 2 / AC-3 |
 
-> 本文件用于把后续实时控制面、历史补偿、event-type 扩展与治理证据拆成可评审的 FR 落点。它已经 fold 到 `SPEC.md`/`TRACEABILITY.md` 的 FR-012~FR-030 追溯口径；仍不应把下列内容视为 runtime behavior 或 release evidence 已完成。
+> 本文件记录 FR-012~FR-030 的正式提案落点和版本影响台账，但不是 runtime 完成证据。任一能力翻转为 Done 前，仍必须通过 Spec -> Review -> Matrix -> Tasks -> Plan -> Prompt -> Code 管线、runtime 测试证据、CI/live smoke 和 release gate；不得把下列内容视为 runtime behavior 或 release evidence 已完成。
 
 ## 1. 15 个生命周期缺口
 
@@ -60,9 +60,9 @@
 
 ## 4. Review outcome
 
-[COMPUTED, HIGH] 2026-06-22 review closed the planning checklist for this discussion draft: FR-012 through FR-015 are the next realtime-control SPEC bump candidate set; FR-016 through FR-019 stay grouped as the v2.5.x historical lifecycle candidate set; FR-020 through FR-022 remain a v3.0.0 MAJOR candidate because they change the canonical event matrix; `STANDARD.md` is required before FR-024 can be promoted into SPEC.
+[COMPUTED, HIGH] 2026-06-22 review closed the planning checklist for this lifecycle proposal: FR-012 through FR-015 are the next realtime-control SPEC bump candidate set; FR-016 through FR-019 stay grouped as the v2.5.x historical lifecycle candidate set; FR-020 through FR-022 remain a v3.0.0 MAJOR candidate because they change the canonical event matrix; `STANDARD.md` is required before FR-024 can be promoted into SPEC.
 
-[FRAME, HIGH] This outcome approves only the issue split, dependency order, bump class, and document landing plan, and records that `SPEC.md`/`TRACEABILITY.md` now carry FR-012~FR-030. It does not approve runtime behavior, does not mark runtime evidence complete, and does not mark any release DoD item done.
+[FRAME, HIGH] This outcome approves only the issue split, dependency order, bump class, and document landing plan, and records that `SPEC.md`/`TRACEABILITY.md` now carry FR-012~FR-030. It does not approve runtime behavior, does not mark runtime evidence complete, and does not mark any release DoD item done. `NAMING.md` may carry the proposal as Pending projection, but runtime status remains Pending until implementation evidence exists.
 
 ## 5. Open questions
 
@@ -72,9 +72,9 @@
 
 ## 6. Issue 原始诉求 → 现有 FR 覆盖映射（2026-06-23 补齐）
 
-> [COMPUTED, HIGH] 2026-06-23 全量 issue 核查发现：GitHub issue #880~#892（R-01~R-13）的标题语义是 2026-06-22 早期提案，本讨论稿 §4 review 已将它们重组为更合理的 FR-012~024 落点。本节逐条映射 issue 原始诉求 → 现有 FR 覆盖关系，并对未覆盖项声明落点，确保每条 issue 的实质能力都有 FR 承接。
+> [COMPUTED, HIGH] 2026-06-23 全量 issue 核查发现：GitHub issue #880~#892（R-01~R-13）的标题语义是 2026-06-22 早期提案，本提案 §4 review 已将它们重组为更合理的 FR-012~024 落点。本节逐条映射 issue 原始诉求 → 现有 FR 覆盖关系，并对未覆盖项声明落点，确保每条 issue 的实质能力都有 FR 承接。
 
-[FRAME, HIGH] 术语归一：`funding-rate` / `mark-price` 的 runtime `event_type` 值分别按 snake_case 记录为 `funding_rate` / `mark_price`；R-06 的 runtime gap detector 结果进入 `binance_backfill_jobs` 队列；#880/#892 的热重载入口以 `symbols/reload` 管理；本讨论稿保持 non-normative，关闭实现项前仍须通过 runtime/release evidence 门禁。
+[FRAME, HIGH] 术语归一：`funding-rate` / `mark-price` 的 runtime `event_type` 值分别按 snake_case 记录为 `funding_rate` / `mark_price`；R-06 的 runtime gap detector 结果进入 `binance_backfill_jobs` 队列；#880/#892 的热重载入口以 `symbols/reload` 管理；本讨论稿保持 non-normative，任何 Done 翻转须通过 Fold 前门禁、runtime evidence 和 release evidence 门禁。
 
 | Issue | 原始诉求 | 现有 FR 覆盖 | 覆盖判定 | 未覆盖落点 |
 | --- | --- | --- | --- | --- |
@@ -111,3 +111,13 @@
 | FR-015 扩展 | depth 订阅档位：spot/um_perp/cm_perp = @depth20@100ms + @depth@1000ms 增量；options = @depth1000；update_id 拼合 | `SPEC.md` §9 | MINOR | #883 |
 
 [FRAME, HIGH] 本节声明后，issue #880~#892 与 Beads P2-2/P2-4 的规格层落点都有明确 FR 承接（已覆盖 6 项 + FR-025~FR-030 + NAMING/FR 扩展）。runtime evidence 和 release evidence 未闭合；后续只能按 `/home/binance` runtime 测试、CI/live smoke 与 release evidence 关闭实现项。
+
+## 8. 版本与影响矩阵（runtime pending）
+
+| 切面 | v4/v5 影响 | Bump 判定 | 当前状态 | 关闭证据 |
+| --- | --- | --- | --- | --- |
+| event_type | 4 -> 6，新增 `funding_rate`、`mark_price` | runtime 接口、存储或 fanout 暴露时按 MAJOR 处理 | Pending | `NAMING.md` / `RUNTIME-MAPPING.md` / `SPEC.md` 同步更新 + event matrix 测试 |
+| tables | `binance_backfill_jobs`、reconciliation alerts、coverage、archive/rehydration metadata、quality/gap metrics | 仅内部表为 MINOR；对外查询合同变化按 MAJOR 评估 | Pending | schema migration、repository 测试、回填/对账集成证据 |
+| topics/subjects | NATS 4x4 baseline 保持；Kafka topic 需版本化；新增 `instruments.changed` / `symbols.changed` | subject/topic 扩展默认 MINOR；event matrix 变化按 MAJOR | Pending | subject mapping、boundary gate、fanout integration evidence |
+| metrics | stream lag、retry、gap、backfill、reconciliation、quality、coverage 指标 | MINOR | Pending | metrics contract、alert rule、smoke/test evidence |
+| version ledger | FR-012~019 v2.4/v2.5；FR-020~022 v3.0 MAJOR；FR-023~030 v3.x staged；全部仍为 proposal / evidence pending | Proposal only | Pending | Spec -> Code artifacts、CI、release evidence |

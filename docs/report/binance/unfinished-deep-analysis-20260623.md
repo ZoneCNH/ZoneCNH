@@ -25,7 +25,7 @@
 | P0-1 | [COMPUTED, HIGH] PR-007 runtime 仍是 release blocker。    | [COMPUTED, HIGH] v2 记录 runtime 13 个 FR 中 11 个仍为 Pending，TC-020 证据未归档，且 PR-007 是 A 等级唯一钥匙（`deep-analysis-20260622-v2.md:254`-`261`、`431`-`438`）。2026-06-23 L1/local evidence 只证明本地 boundary/smoke 健康，不闭合 PR-007a~g。 | [INFERRED, HIGH] 完成 PR-007a~g runtime 实施，闭合 standalone client、JetStream PubAck/ManualAck、durable storage/fanout/query 与 C/S 模块参考实现证据。 |
 | P0-2 | [COMPUTED, HIGH] L1/local 运行证据已采集；L2/L3/release 证据仍缺失。 | [COMPUTED, HIGH] `/home/binance/release/evidence/binance/20260623/` 记录 SHA `66f60b3945dce215f68ff833bbd336364d635ae8`，`scripts/boundary-gates.sh` 10/10 PASS，`go build/test/race/vet`、`golangci-lint`、本地 smoke self-test PASS；未提供 live websocket、remote CI、release tag 或外部依赖集成证据。 | [INFERRED, HIGH] 补齐 L2/L3/live/release/external integration evidence，并将 release 声明与 TRACEABILITY/ACCEPTANCE/FEATURES 对齐。 |
 | P0-3 | [COMPUTED, HIGH] 治理投影仍未完全收敛。                   | [COMPUTED, HIGH] v3 列出 `RULES.md`、`TRACEABILITY.md`、`CHANGELOG.md`、`RUNTIME-MAPPING.md` 等主动文档残留仍需修复（`deep-analysis-20260622-v3.md:32`-`39`）。                                                                               | [INFERRED, HIGH] 将权威入口、状态字段、任务引用和 4x4 NATS/Kafka 口径投影到所有主动文档，避免历史报告和治理文档互相打架。               |
-| P0-4 | [COMPUTED, HIGH] 数据生命周期候选仍未进入正式管线。       | [COMPUTED, HIGH] v3 指出 `DATA-LIFECYCLE.md` 仍只是 Discussion Draft，FR-012~FR-024 与 issue #880~#892 映射不改变当前合同，#888 若纳入会把 event_type 从 4 扩到 6，必须正式 spec bump（`deep-analysis-20260622-v3.md:40`-`44`）。             | [INFERRED, HIGH] 将数据生命周期提案纳入正式 Spec -> Review -> Matrix -> Tasks -> Plan -> Prompt -> Code 管线，明确是否触发 MAJOR bump。 |
+| P0-4 | [COMPUTED, HIGH] 数据生命周期已进入正式提案；仍未进入 Spec -> Code 实现管线。 | [COMPUTED, HIGH] v3 曾指出 `DATA-LIFECYCLE.md` 只是 Discussion Draft；2026-06-23 已更新为 Formal Proposal / Runtime Pending，并补充 FR-012~FR-030 impact ledger。该投影不改变 runtime Done 状态，#888 若纳入会把 event_type 从 4 扩到 6，仍必须正式 spec bump（`deep-analysis-20260622-v3.md:40`-`44`）。 | [INFERRED, HIGH] 将数据生命周期提案推进到 Spec -> Review -> Matrix -> Tasks -> Plan -> Prompt -> Code 管线，明确是否触发 MAJOR bump，并用 runtime/CI/release 证据关闭。 |
 
 ---
 
@@ -70,7 +70,7 @@
 | P2-3 | [COMPUTED, HIGH] legacy `binance-market` 引用仍需压缩。       | [COMPUTED, HIGH] v2 指出 legacy `binance-market` 30+ 处未处理，并建议压缩到一处历史迁移说明（`deep-analysis-20260622-v2.md:188`-`196`、`306`、`397`-`398`）。                  | [INFERRED, HIGH] 保留单一历史迁移锚点，删除主动治理文档中的旧名漂移。                        |
 | P2-4 | [COMPUTED, HIGH] 50 个 preserve/stash commit 覆盖矩阵未完成。 | [COMPUTED, HIGH] v2 指出新增 50 个 preserve/stash commit，需要覆盖审计且尚未生成 commit -> artifact 覆盖矩阵（`deep-analysis-20260622-v2.md:200`-`210`、`353`-`357`、`403`）。 | [INFERRED, HIGH] 建立 commit 覆盖矩阵，标注对应 spec、traceability、test 或明确废弃理由。    |
 | P2-5 | [COMPUTED, HIGH] GateGuard/branch governance 流程仍有优化项。 | [COMPUTED, HIGH] v2 风险清单指出 GateGuard 的 PR 回滚和 branch governance 仍可能误判（`deep-analysis-20260622-v2.md:361`-`362`、`404`）。                                      | [INFERRED, MED] 将流程风险转为明确检查项或文档化例外。                                       |
-| P2-6 | [COMPUTED, HIGH] v4/v5 治理影响台账未展开。 | [COMPUTED, HIGH] v4 估算新增 FR 13、AC ~30、TC ~20、BR 2、event_type 4 -> 6、新 taosx/postgresx 表和 Kafka topic；v5 累计扩大到 FR 18、AC ~45、TC ~32、BR 4、postgresx 表 5、metrics 8+（`deep-analysis-20260622-v4.md:177`-`187`；`deep-analysis-20260622-v5-cleansing-processing-gaps.md:184`-`191`）。 | [INFERRED, HIGH] 在 DATA-LIFECYCLE 正式提案中维护 FR/AC/TC/BR、表、topic、metric 与版本 bump 影响矩阵。 |
+| P2-6 | [COMPUTED, HIGH] v4/v5 治理影响台账已有正式提案落点，但实现证据仍缺失。 | [COMPUTED, HIGH] v4 估算新增 FR 13、AC ~30、TC ~20、BR 2、event_type 4 -> 6、新 taosx/postgresx 表和 Kafka topic；v5 累计扩大到 FR 18、AC ~45、TC ~32、BR 4、postgresx 表 5、metrics 8+（`deep-analysis-20260622-v4.md:177`-`187`；`deep-analysis-20260622-v5-cleansing-processing-gaps.md:184`-`191`）。2026-06-23 `DATA-LIFECYCLE.md` 已补 impact ledger。 | [INFERRED, HIGH] 保持 DATA-LIFECYCLE impact ledger 与 SPEC/TRACEABILITY/NAMING Pending 投影一致，并继续阻断 runtime Done 翻转，直到证据闭合。 |
 
 ---
 
@@ -78,7 +78,7 @@
 
 1. [INFERRED, HIGH] 先闭合 runtime 主线：PR-007a~g、L2/L3/live/release evidence；`internal/cs` 边界已有本地证据，继续保留 boundary gate。
 2. [INFERRED, HIGH] 再闭合治理投影：RULES/TRACEABILITY/CHANGELOG/RUNTIME-MAPPING/FEATURES/ACCEPTANCE 的状态口径和入口一致性。
-3. [INFERRED, HIGH] 将 v4/v5 的 FR-012~FR-029 合并为 `module/binance/DATA-LIFECYCLE.md` 正式提案，而不是直接改 SPEC。
+3. [INFERRED, HIGH] 维护 v4/v5 的 FR-012~FR-030 `module/binance/DATA-LIFECYCLE.md` 正式提案，并继续将 runtime Done 翻转阻断在证据门禁前。
 4. [INFERRED, HIGH] 提案通过后进入 Spec -> Matrix -> Tasks -> Plan -> Prompt -> Code 管线，按 event_type 是否扩展决定 MINOR 或 MAJOR bump。
 5. [INFERRED, MED] 最后处理文档维护项：拆分长报告、压缩 legacy 名称、补 commit 覆盖矩阵、优化 GateGuard 流程说明。
 
@@ -96,7 +96,7 @@
 
 - [INFERRED, HIGH] 文档闭环：主动治理文档中不存在互相冲突的状态、版本、任务引用和 4x4 NATS/Kafka 口径。
 - [INFERRED, HIGH] runtime 闭环：当前已有 runtime HEAD SHA、boundary gates、Go tests、smoke 本地证据；仍需 L2/L3/live/release、remote CI、standalone client、JetStream PubAck/ManualAck、durable storage/fanout/query。
-- [INFERRED, HIGH] 数据生命周期闭环：FR-012~FR-029 或其等价方案进入正式 spec/matrix/task/test 链条，而不是停留在报告建议。
+- [INFERRED, HIGH] 数据生命周期闭环：Formal Proposal 已建立；FR-012~FR-030 或其等价方案仍需进入正式 spec/matrix/task/test 链条，而不是停留在提案 projection。
 - [INFERRED, HIGH] 治理闭环：legacy 名称、长报告、preserve/stash commit 和 GateGuard 流程风险均有明确保留、删除或迁移记录。
 - [INFERRED, HIGH] 运维闭环：FR-021/FR-023/FR-024 的对账、回填可观测性和订阅热重载进入同一数据生命周期提案。
 - [INFERRED, HIGH] 影响台账闭环：v4/v5 新增 FR/AC/TC/BR、表、topic、metric 和版本 bump 均可追溯。
