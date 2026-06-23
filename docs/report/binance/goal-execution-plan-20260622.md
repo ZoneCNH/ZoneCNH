@@ -1,6 +1,7 @@
 # Goal: Binance 模块从规格参考实现升级为可发布 C/S 参考实现
 
-> [COMPUTED, HIGH] **2026-06-23 当前状态覆盖声明**：本 goal 是历史 GitHub issue/PR #910 规划与闭环快照，不是当前 Beads closure evidence。当前本地 Beads audit 仍有 9 个 binance open issues（ZoneCNH-awc, ZoneCNH-n0s, ZoneCNH-4h5, ZoneCNH-7un, ZoneCNH-8ep, ZoneCNH-97r, ZoneCNH-h1p, ZoneCNH-t51, ZoneCNH-azf）；runtime/release evidence Pending。正文中“开放 issue/已全部关闭/GitHub open count”保留历史语境。FR-025~FR-030 已在 SPEC/TRACEABILITY/NAMING 登记，但不代表 runtime 完成。
+> [COMPUTED, HIGH] **2026-06-23 PR #910 历史闭环状态**：本 goal 引用的 26 个开放 issue（#866~#896，含 #869）已全部关闭（PR #910，GitHub open count = 0）。正文中"开放 issue"字样为 2026-06-22 规划时状态。逐 issue PR #910 基线、证据与残留动作见 [`issues-full-closure-20260623.md`](issues-full-closure-20260623.md)。
+> [COMPUTED, HIGH] **2026-06-23 当前状态覆盖声明**：FR-025~FR-030 已在 SPEC/TRACEABILITY/NAMING 登记为 Pending 合同项，但不代表 runtime 完成；GitHub #923-#931 仍受 closure ledger 约束，runtime/release evidence Pending。
 
 > 来源：`docs/report/binance/iteration-plan-20260622.md`（27 项 backlog + 7 阶段路线）+ 26 个开放 issue（#866~#896）
 > 框架：遵循 `docs/goal/02-goal-standard.md` 结构公式

@@ -18,6 +18,7 @@
 | --- | --- |
 | [business-types-coverage-20260622.md](business-types-coverage-20260622.md) | Product-line and business-type coverage assessment. |
 | [dataflow-architecture-analysis-20260623.md](dataflow-architecture-analysis-20260623.md) | Dataflow architecture gaps, delivery-futures product_line gap, and ruleset maturity assessment. |
+| [infrastructure-decoupling-report-20260623.md](infrastructure-decoupling-report-20260623.md) | Binance decoupling target for redisx/kafkax/natsx/postgresx/taosx/ossx/clickhousex boundaries, config/lifecycle ownership, and final dependency graph. |
 | [multi-exchange-adr-20260623.md](multi-exchange-adr-20260623.md) | ADR for OQ-005/006 multi-exchange generalization — recommends per-exchange module template (Option B). |
 | [deep-analysis-20260622.md](deep-analysis-20260622.md) | Initial deep analysis snapshot. |
 | [deep-analysis-20260622-v2.md](deep-analysis-20260622-v2.md) | Follow-up analysis snapshot. |
@@ -33,6 +34,7 @@
 | [governance-closure-20260623.md](governance-closure-20260623.md) | Worker-3 governance slice closure for #869/#871/#893/#894/#895/#896. |
 | [commit-coverage-audit-20260623.md](commit-coverage-audit-20260623.md) | 50-candidate preserve/stash/backup commit coverage audit for #896. |
 | [issues-full-closure-20260623.md](issues-full-closure-20260623.md) | Full 25-issue closure review (PR #910) — final status, evidence, residual actions. |
+| [github-issues-923-931-closure-ledger-20260623.md](github-issues-923-931-closure-ledger-20260623.md) | Current GitHub #923-#931 closure ledger — #925/#930 docs projection reconciled; all issues remain runtime/release gated. |
 
 ## Stage0–Stage2 executable gates
 

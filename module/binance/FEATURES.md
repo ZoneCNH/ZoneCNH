@@ -7,7 +7,7 @@
 | Status | Generated from current module SSOT |
 | Last-Updated | 2026-06-23 |
 | Module-Version | v3.5.0 |
-| Module-State | 规格扩展到 v3.5.0；FR-009 boundary 已有本地 runtime 证据与 runtime PR #11 远端 boundary gate 证据；FR-012~FR-030 仍 Pending，以 `/home/binance` runtime/release evidence 为准 |
+| Module-State | 规格扩展到 v3.5.0；FR-009 boundary 已有 2026-06-23 本地 evidence，runtime PR #11 仅补充远端 boundary gate 证据；FR-001/002 Partial，FR-003~008/010~030 Pending，以 `/home/binance` runtime/release evidence 为准 |
 | Layer | 数据域 / Binance-specific market_data C/S module |
 | Runtime-Repo | `/home/binance` |
 | Source | `goal.md`, `SPEC.md`, `TRACEABILITY.md`, `DATA-LIFECYCLE.md`, `STANDARD.md`, `BOUNDARY-GATES.md`, `RUNTIME-MAPPING.md`, `IMPLEMENTATION-PLAN.md`, `client/`, `server/`, `tasks/` |
@@ -24,14 +24,14 @@
 | Server 职责 | 订阅 `natsx` JetStream，校验与去重事实，写入 Binance 专属存储，提供 Gin REST API，并通过 `kafkax` 广播。 |
 | 允许依赖 | `domain_market`, `natsx`, `redisx`, `postgresx`, `taosx`, `ossx`, `kafkax`, `gin`, `observability` 等按规格边界使用。 |
 | 禁止归属 | 不拥有 canonical market domain，不定义跨交易所通用 `market_data` 语义，不实现策略、下单、撮合或风控。 |
-| 禁止路径 | 禁止恢复 `module/binance-market`、`github.com/ZoneCNH/binance-market`、运行时 `internal/cs`。 |
+| 禁止路径 | 禁止恢复 `module/binance-market`、`github.com/ZoneCNH/binance-market` 或运行时共享包回流。 |
 | Wire Contract | Client -> Server 的 wire contract 必须是 `natsx` subject 加 `domain_market` envelope JSON，不能新增本地 proto/gRPC ingest schema。 |
 
 ## 2. 功能实现投影
 
 > v3.5.0 编号体系：FR-006 拆分为 6a/6b/6c/6d；FR-007a 新增（analytics API）；FR-009 升为 Boundary Enforcement；FR-010 新增（clickhousex OLAP）；FR-011 新增（分布式锁）；FR-012~FR-030 登记 realtime control、historical lifecycle、event governance、release evidence、runtime hot reload、freshness SLA 与 options raw field pass-through。
 
-> 状态口径 L1/L2 分层（RULES R4）：`Done`=L1 Boundary/Governance（boundary-gate + runtime SHA 证据）；`Partial`=L2 Functional（部分产品线已实现，TC 未全绿）；`Pending`=L2 Functional（runtime 仓未推送，默认 `Pending — 以 runtime 仓为准`）。L1 不可替代 L2 功能验收。
+> 状态口径 L1/L2 分层（RULES R4）：`Done`=L1 Boundary/Governance（本地 boundary-gate 或 CI evidence + runtime SHA）；`Partial`=L2 Functional（部分产品线已实现，TC 未全绿）；`Pending`=L2 Functional（runtime 仓未推送，默认 `Pending — 以 runtime 仓为准`）。L1 不可替代 L2 功能验收。
 
 | FR | 功能 | 当前状态 | 已有证据 | 剩余实现面 |
 | --- | --- | --- | --- | --- |
@@ -47,7 +47,7 @@
 | FR-007 | Gin Market API | Pending | 规格定义 `/api/v1/market/ticks/depth/bars/trades` REST 接口。 | 认证、限流、统一错误、readyz、market_data HTTP 调用方兼容。 |
 | FR-007a | clickhousex Analytics API | Pending | 规格定义 `/api/v1/analytics/vwap/top-movers/correlation` OLAP 查询。 | analytics 查询正确性、查询 P99 < 2s、降级到 503。 |
 | FR-008 | kafkax Broadcast | Pending | 规格定义 `kafkax` topic、symbol key 与 handoff 后 Ack。 | Kafka dispatch、失败不 Ack、重试、下游消费契约。 |
-| FR-009 | Boundary Enforcement | Implemented / Documented | `BOUNDARY-GATES.md` 与 `TRACEABILITY.md` 标注 FR-009 Done；`/home/binance` boundary-gates 10/10、go test、lint、smoke self-test 已通过；runtime PR #11 merge commit `5a57a19aed3be5420135b8e05016da15faf094ed` / source commit `7873b795b13fc4b5a0fc4310300b6f196cca7532` 远端 `Boundary Gates (10 gates)` PASS，并证明 `cmd/binance-client` HTTP `/ingest` boundary。 | release evidence 仍需归档；TC-005、JetStream PubAck/ManualAck 与非边界 FR 不因此闭合。 |
+| FR-009 | Boundary Enforcement | Implemented / Documented | `BOUNDARY-GATES.md` 与 `TRACEABILITY.md` 标注 FR-009 Done；`/home/binance/release/evidence/binance/20260623/` 归档 boundary-gates 10/10、go build/test/race/vet/lint 与 smoke self-test PASS；验证代码 `9777a5b0db9a3de5db53942b9aaf6b55eec04f24`，证据提交 `20c7712935f53e1948bdf4b30a72d3db07f9acfb`。 | 远端 CI/release/live websocket/外部集成证据仍需归档；非边界 FR 不因此闭合。 |
 | FR-010 | clickhousex OLAP Storage | Pending | 规格定义定时 ETL 聚合 taosx → clickhousex。 | ETL 调度、InsertBatch 性能、ClickHouse 不可达降级。 |
 | FR-011 | Distributed Coordinator Lock | Pending | 规格定义 redisx SetNX 分布式锁 + lease 续期 + coordinator HA。 | SetNX 锁获取、lease 续期失败后停止任务、主动释放。 |
 | FR-012 | Stream Session Lifecycle | Pending | `SPEC.md`/`TRACEABILITY.md` v3.5.0 已登记。 | active stream registry 运行中增删订阅且不重启进程的集成证据。 |
@@ -78,7 +78,7 @@
 | BR-002 Client Must Not Import Server | Done | `/home/binance/BOUNDARY-GATES.md` §3 证明 Client 无 server internals import。 |
 | BR-003 Server Must Not Import Client | Done | `/home/binance/BOUNDARY-GATES.md` §4 证明 Server 无 client internals import。 |
 | BR-004 natsx ManualAck | Pending | Server 必须在持久化与广播 handoff 后 Ack；该业务路径需要 TC-006 集成测试，不由 boundary gate 证明。 |
-| BR-005 No cs Package | Done | `/home/binance/BOUNDARY-GATES.md` §5/§6 证明无 runtime `internal/cs` 依赖且无同进程 C/S 通信。 |
+| BR-005 No Runtime Shared Package | Done | `/home/binance/BOUNDARY-GATES.md` §5/§6 与 2026-06-23 本地证据已声明并验证禁止运行时共享包回流。 |
 | BR-006 Server Owns Binance Storage | Done | `/home/binance/BOUNDARY-GATES.md` §7 证明 Server 只拥有 Binance-specific storage，不上移为通用 market_data。 |
 | BR-007 No Domain Ownership | Done | `/home/binance/BOUNDARY-GATES.md` §9 证明 Binance 只消费 `domain_market` 语义，不能定义 canonical domain。 |
 | BR-008 Wire Contract Externality | Done | `/home/binance/BOUNDARY-GATES.md` §8 证明无本地 `.proto`/gRPC ingest schema；当前 runtime 使用 HTTP JSON `/ingest` 与 `internal/wire` skeleton，canonical 语义仍外置。 |
@@ -95,7 +95,7 @@
 | Root tasks | `TASK-BINANCE-ROOT-000` ~ `TASK-BINANCE-ROOT-007` | 模块级拆分、边界、通信、存储、API、广播、归档与治理任务已登记；完成度仍受 FR 状态约束。 |
 | Client tasks | `TASK-BINANCE-CLIENT-001` ~ `TASK-BINANCE-CLIENT-014` | product line catalog、parser、connector、mapping、idempotency、admin、natsx publisher 等已拆分；`CLIENT-008/009` spool/checkpoint 已归档。 |
 | Server tasks | `TASK-BINANCE-SERVER-010` ~ `TASK-BINANCE-SERVER-016` | natsx consumer、idempotency、storage、kafkax、Gin API、ossx archival 等为 v2.0.0 active server 交付面。 |
-| Boundary gates | `BOUNDARY-GATES.md` | 已对齐 `/home/binance` runtime gate 清单；`scripts/boundary-gates.sh` 本地 10/10 PASS，证据归档于 `/home/binance/release/evidence/binance/20260623/`；runtime PR #11 远端 `Boundary Gates (10 gates)` PASS。 |
+| Boundary gates | `BOUNDARY-GATES.md` | 文档化 gate 清单已由 2026-06-23 本地 runtime evidence 验证；仍需 remote CI/release 证据。 |
 
 ## 5. 文档资产清单
 
@@ -106,7 +106,7 @@
 | `TRACEABILITY.md` | 根级 FR/AC/TC/Task 追溯 | 作为当前状态与验收编号来源。 |
 | `client/TRACEABILITY.md` | Client 子域追溯 | 作为 client active/pending 实现面来源。 |
 | `server/TRACEABILITY.md` | Server 子域追溯 | 作为 server active/pending 实现面来源。 |
-| `BOUNDARY-GATES.md` | 边界漂移防线 | 作为 FR-009 与 BR-001~BR-009 的边界治理证据。 |
+| `BOUNDARY-GATES.md` | 边界漂移防线 | 作为 FR-009 与 BR-001~BR-009 的文档和本地 runtime 证据入口。 |
 | `RUNTIME-MAPPING.md` | docs 到 runtime repo 的路径映射 | 用于避免把文档仓库误当 runtime。 |
 | `IMPLEMENTATION-PLAN.md` | 实施顺序与依赖计划 | 用于任务排序与风险解释。 |
 | `tasks/` | 可执行 task specs | 用于 Root/Client/Server 任务粒度追踪。 |
@@ -119,7 +119,7 @@
 | 根级 traceability 存在 | Done | `TRACEABILITY.md`。 |
 | Client/Server 子域 traceability 存在 | Done | `client/TRACEABILITY.md`, `server/TRACEABILITY.md`。 |
 | C/S 独立进程边界已定义 | Done | `README.md`, `SPEC.md`, `BOUNDARY-GATES.md`。 |
-| Boundary gate 文档已形成 | Done | `BOUNDARY-GATES.md` v2.2.4；runtime evidence commit `66f60b3945dce215f68ff833bbd336364d635ae8`；verified source commit `9777a5b0db9a3de5db53942b9aaf6b55eec04f24`；runtime PR #11 merge commit `5a57a19aed3be5420135b8e05016da15faf094ed` / source commit `7873b795b13fc4b5a0fc4310300b6f196cca7532` 远端 boundary gate PASS。 |
+| Boundary gate 文档已形成 | Done | `BOUNDARY-GATES.md` v2.2.4；本地证据 `/home/binance/release/evidence/binance/20260623/`；验证代码 `9777a5b0db9a3de5db53942b9aaf6b55eec04f24`，证据提交 `20c7712935f53e1948bdf4b30a72d3db07f9acfb`。 |
 | Product line 全覆盖实现 | Not Done | FR-001 Partial。 |
 | Instrument identity 全覆盖实现 | Not Done | FR-002 Partial。 |
 | natsx publish/consume runtime 闭合 | Not Done | FR-003 Pending。 |
@@ -134,6 +134,6 @@
 | --- | --- | --- |
 | FR-001/FR-002 只有 Partial | 不能声明四条 product line 完整支持。 | Spot、USDM、COINM、Options 的 parser、mapper、connector、server acceptance 全部通过。 |
 | FR-003~FR-008/FR-010~FR-011 Pending | 不能声明 distributed runtime 已实现。 | `/home/binance` 中 client/server runtime、存储、API、广播、归档对应测试全部通过。 |
-| FR-012~FR-030 Pending | 不能声明 realtime control、historical lifecycle、event governance、release evidence、hot reload、freshness SLA 或 options raw field pass-through 完成。 | 对应 runtime 集成、R2 matrix、live websocket、远端 CI 和 release snapshot 全部闭合。 |
+| FR-012~FR-030 Pending | 不能声明 realtime control、historical lifecycle、event governance、数据质量、Options 字段透传、release evidence 或 hot reload 完成。 | 对应 runtime 集成、R2 matrix、live websocket、远端 CI 和 release snapshot 全部闭合。 |
 | Client active FR 仍为 0/8 implemented | Client 侧 v2.0.0 交付尚未闭合。 | `client/TRACEABILITY.md` 中 active FR 状态更新并附 runtime 证据。 |
 | Server active FR 仍为 0/9 implemented | Server 侧 v2.0.0 交付尚未闭合。 | `server/TRACEABILITY.md` 中 active FR 状态更新并附 runtime 证据。 |

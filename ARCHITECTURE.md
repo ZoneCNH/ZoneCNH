@@ -39,7 +39,7 @@ composer ───────────► 基座运行时 / L2.5 / 数据域
                       L1 test-only: testkitx
                       扩展: redisx · kafkax · natsx · postgresx · taosx · ossx · clickhousex
                       契约: contracts · transportx
-                      
+
 
 标准与门禁：
   xlib_standard ─── 标准事实源 / Go Reference Template，v1.0.1 发布验收通过，不参与业务运行
@@ -203,7 +203,7 @@ FoundationX 中运行模块分为两种架构类型：
 - 通过 `bootstrap.Build(ctx, Spec{Module, Stores=None})` 组装
 - 实现 `contracts.MarketDataProvider` 或 `MacroDataProvider` 接口
 - 使用 `domain_market` / `domain_macro` / `domain_exchange` 共享类型
-- **规格参考实现**：binance（spec v3.5.0 Approved 分布式：natsx + 7 infra + Gin；runtime v0.2.0 bootstrap + Spot 产品线状态以 runtime 仓为准；进度 15%；runtime release blocked；FR-012~030 追溯登记）
+- **规格参考实现**：binance（spec v3.5.0 Approved 分布式：natsx + 7 infra + Gin；2026-06-23 本地 runtime evidence 已归档，验证代码 `9777a5b0db9a3de5db53942b9aaf6b55eec04f24`，证据提交 `20c7712935f53e1948bdf4b30a72d3db07f9acfb`；FR-009 本地闭合；FR-001/002 Partial，FR-003~008/010~030 Pending；remote CI/live websocket/外部集成/release tag 未闭合）
 
 ### 独立进程（非 C/S）
 
@@ -410,7 +410,7 @@ Foundation 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中在 
 
 ## 状态总览
 
-> **公开投影口径**：架构矩阵中的进度是 Spec→Code 管线投影；release/factory 以 `.foundationx/status/index.json` + `.foundationx/blockers.json` 为准。BLK-001~011 全部已 resolved，**0 open blockers；Foundation 20/20 runtime factory-ready** ✅（BLK-009 bootstrap v0.2.0 + BLK-010 ossx v1.2.1，2026-06-20）。
+> **公开投影口径**：架构矩阵中的进度是 Spec→Code 管线投影；release/factory 以 `.foundationx/status/index.json` + `.foundationx/blockers.json` 和 GitHub Release 实际证据为准。2026-06-23 核查发现 `natsx` 仅有 `v1.0.3` 远端 tag，GitHub Release `v1.0.3` 尚不存在；Foundation factory 投影不得把 tag 直接等同 Release。
 > **分层口径**：主表只保留当前事实层与已发布投影；历史命名仅留在迁移说明与兼容清单中，不再在此处重复。
 
 | 域                    | 组件                                                            | 版本（已发布）| 状态      | Spec→Code 投影 | 说明                                                                                      |
@@ -429,7 +429,7 @@ Foundation 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中在 
 | 基座                  | [xlib_evidence](https://github.com/ZoneCNH/xlib_evidence)       | v0.2.2 | ✅ 已发布 | Spec→Code 完成 | 证据收集与发布运行时：collect-coverage、generate-manifest、validate-manifest、remote-evidence、report；/home/xlib_evidence 本地 go test/race/vet/coverage 100.0% 通过；✅ GitHub Release v0.2.2 已发布（Latest） |
 | 基座                  | [redisx](https://github.com/ZoneCNH/redisx)                     | v1.1.0 | ✅ 已发布 | Spec→Code 完成 | Redis L2 adapter：KV/TTL/Hash/List/Pipeline/Cache-aside/Lock/RateLimit/Pool/Persistence restart recovery；PR #19、release-preflight、GitHub Release v1.1.0 与 dev Redis 集成验证通过 |
 | 基座                  | [kafkax](https://github.com/ZoneCNH/kafkax)                     | v1.1.0 | ✅ 已发布 | Spec→Code 完成 | Kafka L2 adapter — 消息队列、事件流（v1.0.0 已发布，driver-neutral API + kafka-go 生产驱动，真实 broker gates） |
-| 基座                  | [natsx](https://github.com/ZoneCNH/natsx)                       | v1.0.3 (tag) / Spec v1.2.0 | ✅ 已发布 | Spec→Code 完成 | NATS L2 adapter：Core NATS / JetStream、Drain/reconnect/degraded health、canonical `FOUNDATIONX_NATS_*` 配置和真实 dev auth live gate 已验证；repair-slice 20/20；Spec v1.2.0 新增 FR-009/010 JetStream IngestAdapter 域适配契约（pkg/natsx/ingest，Publisher PubAck→Durable + Consumer durable ManualAck/DLQ，解耦 binance PR-007c/d）；正式四源 98+ arbiter 与生产 TLS gate 待补（BLK-001/BLK-002）；非 factory |
+| 基座                  | [natsx](https://github.com/ZoneCNH/natsx)                       | v1.0.3 (remote tag) / Spec v1.2.0 | 🟡 tag / Release 待补 | Spec→Code 完成 | NATS L2 adapter：Core NATS / JetStream、Drain/reconnect/degraded health、canonical `FOUNDATIONX_NATS_*` 配置和真实 dev auth live gate 已验证；repair-slice 20/20；GitHub Release v1.0.3 待补；PR #17 已合并并实现 FR-009/010 JetStream IngestAdapter runtime 适配器；Spec v1.2.0 新增 FR-009/010 JetStream IngestAdapter 域适配契约（pkg/natsx/ingest，Publisher PubAck→Durable + Consumer durable ManualAck/DLQ，解耦 binance PR-007c/d）；正式四源 98+ arbiter 与生产 TLS gate 待补（BLK-001/BLK-002）；非 factory |
 | 基座                  | [postgresx](https://github.com/ZoneCNH/postgresx)               | v1.0.0 | ✅ 已发布 | Spec→Code 完成 | PostgreSQL — 关系型存储、事务、迁移；live integration 通过；BLK-006 open（52.4% coverage + Docker integration skip）；非 factory |
 | 基座                  | [taosx](https://github.com/ZoneCNH/taosx)                       | v1.0.3 | 🟡 候选 | Spec→Code 完成 | TDengine L2 adapter contract；本地发布候选已通过 release-check、integration 与 taosx-coverage-check 100.0%；TDengine dev live gate 已通过且保持显式 opt-in；未执行外部 tag/GitHub Release；非 factory |
 | 基座                  | [ossx](https://github.com/ZoneCNH/ossx)                         | v1.2.1 | ✅ 已发布 | Spec→Code 完成 | Aliyun OSS L2 adapter；真实 adapters/aliyun + 流式 SPI + 完整 multipart + presign + 策略 + retry/circuit + observex hooks；pkg/ossx 100.0% 覆盖；本地实盘 integration 5/5（bucket x-go）；BLK-010 resolved ✅（PR #8 merged）；factory-ready |
@@ -444,7 +444,7 @@ Foundation 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中在 
 | L2.5                  | [domain_macro](https://github.com/ZoneCNH/domain_macro)         | v1.0.0 | ✅ 已有   | Spec→Code 完成 | 宏观数据域模型（MacroPoint/MacroState）；v1.0.0 GitHub Release 已发布；7 FR Done；factory grade；live/soak N/A（纯值对象库）           |
 | **数据域 · 行情**     |                                                                 |        |           |          |                                                                                           |
 | 数据域                | [market_data](https://github.com/ZoneCNH/market_data)           | v1.1.0 | ✅ 已发布 | ████ 85% | **dispatch 独立进程（域入口）**：Receiver（DownstreamDispatchPort，18 测试）+ DualWriteSink（TD+Kafka 双写，6 测试）；v1.1.0 released                    |
-| 数据域                | [binance](https://github.com/ZoneCNH/binance)                   | v0.2.0 (rt) / v3.5.0 (spec) | ✅ 已有 | ░░░░ 15% | **C/S Module 规格参考实现**：spec v3.5.0 Approved（分布式 — client natsx publish / server 7 infra: natsx+redisx+pg+taosx+clickhousex+kafkax+ossx + Gin :8080）；runtime v0.2.0 bootstrap 接入 + Spot 产品线 connector/parser/mapper 部分实现；FR-009 边界 gate 文档落地；FR-012~030 追溯登记（data-lifecycle + runtime-control + 数据质量 SLA + Options 字段透传）；TC-020 evidence 待归档；runtime release blocked；其余 12 FR Pending（待 PR-007 runtime 实现） |
+| 数据域                | [binance](https://github.com/ZoneCNH/binance)                   | evidence-20260623 / v3.5.0 (spec) | 🟡 本地证据 | ░░░░ 3% | **C/S Module 规格参考实现**：spec v3.5.0 Approved（分布式 — client natsx publish / server 7 infra: natsx+redisx+pg+taosx+clickhousex+kafkax+ossx + Gin :8080）；本地 runtime evidence 已归档（验证代码 `9777a5b0db9a3de5db53942b9aaf6b55eec04f24`，证据提交 `20c7712935f53e1948bdf4b30a72d3db07f9acfb`）；FR-009 本地闭合；FR-001/002 Partial，FR-003~008/010~030 Pending；未覆盖 live websocket、外部集成、remote CI、release tag |
 | 数据域                | [okx](https://github.com/ZoneCNH/okx)                           | -      | ✅ 已有   | ███░ 80% | **C/S Module**：OKX CEX 行情采集；待升级 bootstrap 接入 + client/server 拆分                                                                               |
 | 数据域                | [bybit](https://github.com/ZoneCNH/bybit)                       | -      | ✅ 已有   | ███░ 80% | **C/S Module**：Bybit CEX 行情采集；待升级                                                                             |
 | 数据域                | [bitget](https://github.com/ZoneCNH/bitget)                     | -      | ✅ 已有   | ███░ 80% | **C/S Module**：Bitget CEX 行情采集；待升级                                                                            |

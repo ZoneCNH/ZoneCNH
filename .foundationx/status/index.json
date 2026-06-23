@@ -15,9 +15,9 @@
   "summary": {
     "spec_complete": 21,
     "impl_complete": 21,
-    "release_published": 21,
+    "release_published": 20,
     "live_integration": 7,
-    "factory_grade": 20,
+    "factory_grade": 19,
     "open_blockers": 0
   },
   "modules": {
@@ -179,16 +179,16 @@
     },
     "natsx": {
       "layer": "L2",
-      "version": "v1.0.0",
+      "version": "v1.0.3-tag",
       "spec": true,
       "impl": true,
-      "release": true,
+      "release": false,
       "live": true,
       "ci": true,
       "adopt": "N/A",
       "soak": false,
-      "factory": true,
-      "note": "BLK-001/BLK-002 open; release remains published but factory=false until four-source arbiter archive and production TLS gate close"
+      "factory": false,
+      "note": "PR #17 merged and remote tag v1.0.3 exists, but GitHub Release v1.0.3 is missing; keep release=false and factory=false until release evidence exists"
     },
     "postgresx": {
       "layer": "L2",
@@ -304,29 +304,11 @@
       "open_release_blocker_implies_release_false"
     ],
     "release_false_modules": [
-      "xlib_harness",
-      "clickhousex",
-      "contracts",
-      "transportx"
+      "natsx"
     ],
-    "open_blocker_modules": [
-      "clickhousex",
-      "kernel",
-      "natsx",
-      "ossx",
-      "postgresx",
-      "taosx"
-    ],
+    "open_blocker_modules": [],
     "factory_blocking_modules": [
-      "clickhousex",
-      "contracts",
-      "kernel",
-      "natsx",
-      "ossx",
-      "postgresx",
-      "taosx",
-      "transportx",
-      "xlib_harness"
+      "natsx"
     ]
   }
 }

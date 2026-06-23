@@ -30,7 +30,7 @@
 | [bootstrap](https://github.com/ZoneCNH/bootstrap)         | v0.2.0      | spec/code/release      | factory-ready   | spec=~90 mat=N/A tsk=N/A pln=N/A prm=N/A cod=N/A | L1 通用进程组装层：configx/observex/resiliencx + lifecycx 统一组装 + 8 存储 adapter 构造（StoreSet 位掩码）；✅ GitHub Release v0.2.0；✅ BLK-009 closed（foundationx 依赖清零 + Stores!=None 全部实现）                        |
 | [redisx](https://github.com/ZoneCNH/redisx)               | v1.2.0      | spec/code/release/live | live-ready      | spec=98 mat=100 tsk=100 pln=100 prm=100 cod=100  | Redis L2 adapter；✅ .repo-contract.yaml，v1.1.0；GitHub Release v1.1.0 已发布；PR #19、release workflow 27802471873、release-preflight 与 dev Redis 集成验证通过                             |
 | [kafkax](https://github.com/ZoneCNH/kafkax)               | v1.2.0      | spec/code/release/live | live-ready      | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | Kafka L2 adapter；✅ .repo-contract.yaml，v1.1.0；此前误标 v1.0.0（tag 超前于表格）；真实 broker gates 已验证                                                                                       |
-| [natsx](https://github.com/ZoneCNH/natsx)                 | v1.2.0      | spec/code/release/live | factory-ready   | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | NATS L2 adapter；✅ .repo-contract.yaml；真实 dev auth live gate 已验证；GitHub Release v1.0.3 已发布；Spec v1.2.0 新增 FR-009/010 JetStream IngestAdapter 域适配契约（pkg/natsx/ingest，解耦 binance PR-007c/d）                                                                          |
+| [natsx](https://github.com/ZoneCNH/natsx)                 | v1.2.0      | spec/code/live/tag     | release-evidence-pending | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | NATS L2 adapter；✅ .repo-contract.yaml；真实 dev auth live gate 已验证；v1.0.3 远端 tag 已存在但 GitHub Release v1.0.3 待补；PR #17 已合并并实现 FR-009/010 JetStream IngestAdapter runtime 适配器；BLK-001/BLK-002 open；非 factory                                                                          |
 | [postgresx](https://github.com/ZoneCNH/postgresx)         | v1.1.0      | spec/code/release/live | factory-ready   | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | PostgreSQL；✅ .repo-contract.yaml；live integration 通过；GitHub Release 已发布                                                                                         |
 | [taosx](https://github.com/ZoneCNH/taosx)                 | v1.1.0      | spec/code/release/live | factory-ready   | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | TDengine L2 adapter；真实 taosWS WebSocket 集成已验证；GitHub Release 已发布                                                                                              |
 | [ossx](https://github.com/ZoneCNH/ossx)                   | v1.2.1 | spec/code/release      | factory-ready   | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | Aliyun OSS L2 adapter；✅ v1.2.1 PR #8 已合并（真实 adapters/aliyun + 流式 + multipart + presign + 策略 + retry/circuit + observex hooks）；pkg/ossx 100% 覆盖；✅ BLK-010 resolved（2026-06-20） |
@@ -38,7 +38,7 @@
 | [contracts](https://github.com/ZoneCNH/contracts)         | v1.5.0 | spec/code/release       | factory-ready   | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | 跨域稳定端口/事件/DTO 契约；✅ P0 DTO 已固化（RegimeSnapshot/RegimeCard/DecisionCard + 3 Provider ports，PR #10）；✅ P1 SignalIntent DTO 升入（PR #12，2026-06-21）；ingestion contract §8.4 已实现 |
 | [transportx](https://github.com/ZoneCNH/transportx)       | v1.3.0 | spec/code/release       | factory-ready   | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | 应用通信底座规格基线；spec-only；✅ GitHub Release v1.1.1-spec 已发布                                                                                                                            |
 
-> ✅ **版本 / release 注记**：公开文档是投影层；"版本（目标投影）"列为规划目标版本，已发布版本以"状态总览"表或 `.foundationx/status/index.json` + `.foundationx/blockers.json` 为准。当前 21-module projection 中 21/21 已发布 GitHub Release tag，21/21 impl；**0 open blockers，Foundation 21/21 factory-ready** ✅（BLK-009 bootstrap + BLK-010 ossx 均已 resolved，2026-06-20）。
+> ✅ **版本 / release 注记**：公开文档是投影层；"版本（目标投影）"列为规划目标版本，已发布版本以"状态总览"表或 `.foundationx/status/index.json` + `.foundationx/blockers.json` 与 GitHub Release 实际证据为准。当前 21-module projection 中 20/21 已发布 GitHub Release；2026-06-23 核查：`natsx` `v1.0.3` 远端 tag 已存在但 GitHub Release `v1.0.3` 待补；factory 投影必须读取 release/live/blocker 证据，不能由 tag 自动推出。
 
 > **成熟度语义说明（2026-06-14 v2 Trust Alignment）**：上表"进度"反映本仓库 Spec 管线评分（spec→code），不代表可投产等级（factory grade）。"子维度投影"列中 `pln/prm/cod` 对外仓模块为文档模板 pass-through 评分 **[P]**，不代表代码编译或测试已验证——权威代码质量见对应仓库 CI/GitHub Release。下表提供多维度成熟度视图；RELEASE=❌ 或存在 open blocker 的模块不得投影为 FACTORY=✅。
 
@@ -60,7 +60,7 @@
 | bootstrap                     |      ✅       |                ✅                 |                ✅                |           N/A           |           ✅           |             N/A             |                      N/A                      |   ✅    | v0.2.0; GitHub Release 已发布; 8 存储 adapter 构造全部实现; BLK-009 closed; factory-ready                  |
 | redisx                        |      ✅       |                ✅                 |                ✅                |           ✅            |           ✅           |             N/A             |                      N/A                      |   ✅    | v1.1.0; GitHub Release 已发布; CI/release workflows 通过; Docker-backed + dev Redis 集成验证通过                                                           |
 | kafkax                        |      ✅       |                ✅                 |                ✅                |           ✅            |           ✅           |             N/A             |                      N/A                      |   ✅    | v1.1.0; 8 CI workflows; 真实 broker gates 已验证                                                                                                           |
-| natsx                         |      ✅       |                ✅                 |                ✅                |           ✅            |           ✅           |             N/A             |                      N/A                      |   ✅    | v1.0.3 tag / Spec v1.2.0; GitHub Release 已发布; 6 CI workflows; dev auth live gate 已验证; FR-009/010 IngestAdapter 域适配契约                                                               |
+| natsx                         |      ✅       |                ✅                 |                ❌                |           ✅            |           ✅           |             N/A             |                      N/A                      |   ❌    | v1.0.3 remote tag / Spec v1.2.0; GitHub Release v1.0.3 待补; PR #17 merged; dev auth live gate 已验证; BLK-001/BLK-002 historical blockers resolved; 非 factory                                                               |
 | postgresx                     |      ✅       |                ✅                 |                ✅                |           ✅            |           ✅           |             N/A             |                      N/A                      |   ✅    | v1.0.0; GitHub Release 已发布; 3 CI workflows; live integration 通过                                                              |
 | taosx                         |      ✅       |                ✅                 |                ✅                |           ✅            |           ✅           |             N/A             |                      N/A                      |   ✅    | v1.0.1; GitHub Release 已发布; 8 CI workflows; 真实 taosWS WebSocket 集成已验证 |
 | ossx                          |      ✅       |                ✅                 |                ✅                |           ✅            |           ✅           |             N/A             |                      N/A                      |   ✅    | v1.2.1; PR #8 merged; 真实 adapters/aliyun + 流式 + multipart + presign + retry/circuit + observex hooks; pkg/ossx 100% 覆盖; BLK-010 resolved ✅ |
@@ -110,7 +110,7 @@
 | 组件                                                          | 架构类型     | 版本   | 进度     | 覆盖率要求 | 说明                  |
 | ------------------------------------------------------------- | -------- | ------ | -------- | ---------- | --------------------- |
 | [market_data](https://github.com/ZoneCNH/market_data)         | 独立进程 | v1.0.0 | ██░░ 30% | 100%       | dispatch 聚合（域入口）：Receiver + DualWriteSink；FR-MD-001~008；v1.0.0 released |
-| [binance](https://github.com/ZoneCNH/binance)                 | C/S Module | v3.5.0 (spec) | ░░░░ 15% | 100%       | C/S 分布式：client(natsx publish) + server(7 infra: natsx/redisx/pg/taosx/clickhousex/kafkax/ossx + Gin :8080)；Spec v3.5.0 Approved；FR-012~030 追溯登记（data-lifecycle + runtime-control + 数据质量 SLA + Options 字段透传）；FR-001/002 状态以 runtime 仓为准（追溯矩阵改标 Pending）；FR-009 边界 gate 文档落地；TC-020 evidence 待归档；runtime 12 FR 待 PR-007 |
+| [binance](https://github.com/ZoneCNH/binance)                 | C/S Module | v3.5.0 (spec) / evidence-20260623 | ░░░░ 3% | 100%       | C/S 分布式：client(natsx publish) + server(7 infra: natsx/redisx/pg/taosx/clickhousex/kafkax/ossx + Gin :8080)；2026-06-23 本地 runtime evidence 已归档（验证代码 `9777a5b0db9a3de5db53942b9aaf6b55eec04f24`，证据提交 `20c7712935f53e1948bdf4b30a72d3db07f9acfb`）；boundary-gates 10/10、go build/test/race/vet/lint、smoke self-test PASS；FR-009 本地闭合；FR-001/002 Partial，FR-003~008/010~030 Pending；live websocket/外部集成/remote CI/release tag 未闭合 |
 | [okx](https://github.com/ZoneCNH/okx)                         | C/S Module      | v0.1.1 | ███░ 80% | 100%       | OKX CEX 行情采集；待升级 client/server 拆分 |
 | [bybit](https://github.com/ZoneCNH/bybit)                     | C/S Module      | v0.1.1 | ███░ 80% | 100%       | Bybit CEX             |
 | [bitget](https://github.com/ZoneCNH/bitget)                   | C/S Module      | v0.1.1 | ███░ 80% | 100%       | Bitget CEX            |
@@ -129,7 +129,7 @@
 
 | 模块            | SPEC | IMPL | RELEASE | LIVE INT | EXT CI | ADOPT | SOAK | FACTORY | 备注                               |
 | --------------- | :--: | :--: | :-----: | :------: | :----: | :---: | :--: | :-----: | ---------------------------------- |
-| binance         |  ✅  |  ⏳  |   ❌    |   N/A    |  N/A   |  N/A  | N/A  |   ❌    | C/S Module；spec v3.5.0 Approved；7 infra + Gin；FR-012~030 追溯登记；FR-001/002 状态以 runtime 仓为准（追溯矩阵改标 Pending） + FR-009 边界 gate 文档落地；TC-020 evidence 待归档；runtime release blocked |
+| binance         |  ✅  |  ⏳  |   ❌    |   ❌    |  ❌   |  N/A  | N/A  |   ❌    | C/S Module；spec v3.5.0 Approved；2026-06-23 本地 runtime evidence 已归档；FR-009 本地闭合；FR-001/002 Partial，FR-003~008/010~030 Pending；release、live websocket、外部集成、remote CI 与 factory 投影仍未闭合 |
 | okx             |  ✅  |  ✅  |   ✅    |   ⏳待验证 |  N/A   |  N/A  | N/A  |   ❌    | SDK；80%；OKX CEX；factory ❌ 原因：LIVE INT 待 market_data dispatch 集成验证 |
 | bybit           |  ✅  |  ✅  |   ✅    |   ⏳待验证 |  N/A   |  N/A  | N/A  |   ❌    | SDK；80%；Bybit CEX；factory ❌ 同上 |
 | bitget          |  ✅  |  ✅  |   ✅    |   ⏳待验证 |  N/A   |  N/A  | N/A  |   ❌    | SDK；80%；Bitget CEX；factory ❌ 同上 |
@@ -337,9 +337,9 @@
 
 - 组件：19 个（不含 L2.5；机器事实层另将 `domainx` 作为 L2.5 模块计入 20-module projection）；
   Spec→Code 管线投影已闭合，但不等于 Foundation 整体 factory grade。
- - 核心模块全部 21/21 GitHub Release tag 已发布，21/21 impl，**0 open blockers，Foundation 21/21 factory-ready** ✅（BLK-009 bootstrap + BLK-010 ossx 均已 resolved，2026-06-20）。
- - 存储层全部模块 GitHub Release 已发布、CI 已部署、live integration 已验证。
- - **阻塞项**：BLK-009 ✅ closed（bootstrap v0.2.0，2026-06-20）；BLK-010 ✅ resolved（ossx v1.2.1 PR #8 merged，2026-06-20）；BLK-011 已 resolved（kernel factory 闭合）。BLK-001~008 历史项已闭合。
+ - 核心模块 release/tag 投影仍需逐项读取 GitHub Release 与 blocker 证据；natsx v1.0.3 当前仅确认远端 tag，GitHub Release 待补。
+ - 存储层并非全部 GitHub Release 已发布；natsx Release/TLS gates pending。
+ - **阻塞项**：BLK-001/BLK-002 仍需按 natsx 生产 TLS / release evidence 闭合证据复核；不得写作历史项已闭合。
 
 ### 🟢 L2.5 领域共享层（健康）
 
@@ -350,7 +350,7 @@
 
 - market_data 域：14 组件（13 C/S Module + 1 独立进程 dispatch）
 - dispatch（market_data）：独立进程，v1.0.0，Receiver + DualWriteSink，进度 30%
-- C/S Module（13）：binance 为规格参考实现（spec v3.5.0 Approved 分布式：natsx + 7 infra + Gin；runtime v0.2.0，进度 15%——FR-012~030 追溯登记；FR-001/002 状态以 runtime 仓为准（追溯矩阵改标 Pending） + FR-009 边界 gate 文档落地；TC-020 evidence 待归档；runtime release blocked）；其余 12 个 v0.1.1，待升级
+- C/S Module（13）：binance 为规格参考实现（spec v3.5.0 Approved；2026-06-23 本地 runtime evidence 已归档，FR-009 本地闭合；FR-001/002 Partial，FR-003~008/010~030 Pending；release/live websocket/外部集成/remote CI 未闭合）；其余 12 个 v0.1.1，待升级
 - **factory 升级路径**：13 C/S Module 需完成 client/server 拆分 + bootstrap 接入 + dispatch 集成验证后批量触发 factory-ready 评估
 
 ### 🟡 数据域 · macro_data（注意）

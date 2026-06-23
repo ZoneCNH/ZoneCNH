@@ -8,6 +8,7 @@
 > [COMPUTED][HIGH] Post-PR #936/current-docs note: 本报告中的 R2 `4×4` 矩阵缺口为 2026-06-23 历史分析口径；current module docs/checks have moved to a 4×6 event matrix and preserve the remaining rows as provenance/backlog context. See `pr-936-governance-docs-closure-20260623.md`.
 
 > 本报告聚焦用户四问：① 数据流架构图 ② 业务类型（现货/合约/期权/订单簿）覆盖 ③ 其他需补充/优化/迭代点 ④ 是否需建立模块规则与标准规范。
+> [COMPUTED][HIGH] 2026-06-23 后续 PR #936 / SPEC v3.5.0 已吸收 FR-029/030 与 Appendix C.2 数据流图 v2；本文保留为架构分析和残留风险说明。delivery futures 承载、full runtime release evidence 与外部存储/fanout/query 仍需后续 runtime PR 证明。
 
 ---
 
@@ -53,7 +54,7 @@ Binance Exchange (REST/WebSocket)
 | G5  | **kafkax 下游拓扑**                  | `binance.{product_line}.{event_type}.v1`                                                    | 仅画"Dispatch"方框，未表达下游 market_data 如何消费            |
 | G6  | **funding_rate / mark_price 事件**   | FR-020/FR-021、NAMING.md §50-51                                                             | 图只画 tick/trade/bar/depth 四类，funding/mark price 缺席      |
 
-[INFERRED][MED] G1-G4 是"已规划但图未更新"，G6 是"事件类型矩阵已扩但架构图仍是早期四事件快照"。建议在 SPEC Appendix C 增补一张**完整数据流图 v2**，分层标注热路径（real-time）、温路径（OLAP ETL）、冷路径（归档）、读路径（API cache）。
+[INFERRED][MED] G1-G4 是"已规划但图未更新"，G6 是"事件类型矩阵已扩但架构图仍是早期四事件快照"。PR #936 已在 SPEC Appendix C.2 增补**完整数据流图 v2**，分层标注热路径（real-time）、温路径（OLAP ETL）、冷路径（归档）、读路径（API cache）；后续仍需 runtime evidence 证明这些路径已实现。
 
 ---
 
@@ -111,7 +112,7 @@ Binance Exchange (REST/WebSocket)
 | ID   | 项                                     | 建议                                                                                                                                                                                     | 触发规则              |
 | ---- | -------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------- |
 | P0-1 | 交割合约 product_line 缺失             | 二选一：① 扩 product_line 为 `um_perp`/`um_delivery`/`cm_perp`/`cm_delivery`；② 保持 `um_perp`/`cm_perp` 但新增 `instrument_subtype` 维度区分永续/交割，并修订 NAMING.md §17-18 语义注释 | R2 对称矩阵需重算     |
-| P0-2 | 数据流图未含 OLAP/归档/缓存/协调者支路 | SPEC Appendix C 增补完整数据流图 v2（热/温/冷/读四路径）                                                                                                                                 | R9 文档完整性         |
+| P0-2 | 数据流图 v2 已补；需与 runtime evidence 同步 | 保持 SPEC Appendix C.2 数据流图 v2 与 runtime implementation / release evidence 同步                                                                                                 | R9 文档完整性         |
 | P0-3 | 架构图缺 funding_rate/mark_price 事件  | 图中事件类型从 4 类扩到 6 类（+funding_rate/mark_price）                                                                                                                                 | R2 矩阵已含，图未同步 |
 
 ### 3.2 P1 — 治理优化（已有规则但需强化）
@@ -175,7 +176,7 @@ Binance Exchange (REST/WebSocket)
 | 优先级 | 行动                                                               | 涉及文件                                | 触发             |
 | ------ | ------------------------------------------------------------------ | --------------------------------------- | ---------------- |
 | P0     | 决策交割合约承载方案（扩 product_line vs 加 instrument_subtype）   | NAMING.md、SPEC.md §9、RULES R2         | 本报告 §2.2      |
-| P0     | SPEC Appendix C 增补完整数据流图 v2                                | SPEC.md                                 | 本报告 §1.2      |
+| P0     | 维护/验证 SPEC Appendix C.2 数据流图 v2                             | SPEC.md                                 | 本报告 §1.2      |
 | P0     | 架构图补 funding_rate/mark_price 事件                              | SPEC.md Appendix C                      | 本报告 §1.2 G6   |
 | P1     | R2 矩阵维度 4×4 → 4×6 + 更新 check 脚本（历史项，current docs/checks 已收敛） | RULES.md、scripts/check-binance-docs.sh | 本报告 §3.2 P1-1 |
 | P1     | STANDARD.md 增 check-binance-docs.sh vs boundary-gates.sh 职责对照 | STANDARD.md                             | 本报告 §3.2 P1-2 |
@@ -187,7 +188,7 @@ Binance Exchange (REST/WebSocket)
 
 [COMPUTED][HIGH] 四问回答：
 
-1. **数据流架构图**：已有 6 层单向管道图，但缺 OLAP/归档/缓存/协调者/funding/mark price 六条支路，建议增补 v2。
+1. **数据流架构图**：已有 6 层单向管道图，PR #936 已补 Appendix C.2 v2；仍缺 runtime proof 覆盖 OLAP/归档/缓存/协调者/funding/mark price 支路。
 2. **业务类型覆盖**：现货 ✅、U 本位合约 ✅、币本位合约 ✅、期权 ✅、订单簿 ✅（depth 事件）。**真实缺口：交割合约无 product_line 承载**（um_perp/cm_perp 命名锁定永续）。
 3. **其他需补充/优化/迭代**：P0 三项（交割合约、数据流图 v2、funding/mark price 入图）、P1 三项（R2 矩阵维度、脚本职责对照、L2 backlog）、P2 四项（多交易所、数据质量 SLA、历史回填、Options Greeks）。
 4. **模块规则与标准规范**：**已建立且成熟**（R1-R10 + STANDARD + NAMING + BOUNDARY-GATES + check 脚本），无需新建，需迭代 R2 维度与新增交割合约承载规则。

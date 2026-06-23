@@ -351,7 +351,7 @@ FoundationX 运行模块分为两种架构类型。详见 [`ARCHITECTURE.md`](..
 ├── cmd/{module}-server/main.go    # bootstrap.Build() 独立进程
 ├── internal/client/               # 数据采集
 ├── internal/server/               # 数据服务
-├── internal/cs/                   # 共享类型
+├── internal/wire/                 # 进程间 wire contract（禁止运行时共享包回流）
 ├── pkg/{module}x/                 # 公开 adapter
 └── go.mod
 ```
@@ -362,7 +362,7 @@ FoundationX 运行模块分为两种架构类型。详见 [`ARCHITECTURE.md`](..
 
 **宏观模块规格**：[`fred`](./fred/README.md) — FRED 独立 C/S 服务，覆盖共享基座、`domain_macro` 领域共享层、完整持久化和 dev 配置来源。
 
-**参考实现**：[binance](https://github.com/ZoneCNH/binance)（spec v3.5.0；runtime PR #11 已证明独立 `cmd/binance-client` + HTTP `/ingest` client/server boundary，FR-009 边界 gate 与 TC-020 PASS；TC-005、JetStream PubAck/ManualAck、live websocket、release tag 与 FR-003~011 仍待 PR-007 后续证据）
+**参考实现**：[binance](https://github.com/ZoneCNH/binance)（spec v3.5.0 Approved；2026-06-23 本地 runtime evidence 已归档：`/home/binance/release/evidence/binance/20260623/`，验证代码 `9777a5b0db9a3de5db53942b9aaf6b55eec04f24`，证据提交 `20c7712935f53e1948bdf4b30a72d3db07f9acfb`；boundary-gates 10/10、go build/test/race/vet/lint 与 smoke self-test PASS；FR-009 本地闭合；FR-001/002 Partial，FR-003~008/010~030 Pending；未归档 live websocket、外部集成、remote CI、release tag。）
 
 ### 独立进程（非 C/S）
 

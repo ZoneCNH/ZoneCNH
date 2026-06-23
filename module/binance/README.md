@@ -4,7 +4,7 @@
 
 - Spec-Version: v3.5.0 (root) / v2.1.1 (client) / v2.2.0 (server)
 - Runtime-Version: v0.1.0
-- Delivery-State: FR-001~FR-030 spec/traceability registered; runtime/release evidence Pending
+- Delivery-State: FR-001~FR-030 spec/traceability registered; runtime/release evidence Pending; GitHub #923-#931 remain gated by the current closure ledger.
 - Last-Updated: 2026-06-23
 
 It is split into two submodules:
@@ -87,6 +87,12 @@ module/binance/server
 ```
 
 详细版见 `DEEP-ANALYSIS.md` 的 §2.1 和 §5.1。
+
+## GitHub Issue Closure Gate
+
+[COMPUTED, HIGH] Current closure ledger: [`../../docs/report/binance/github-issues-923-931-closure-ledger-20260623.md`](../../docs/report/binance/github-issues-923-931-closure-ledger-20260623.md).
+
+[COMPUTED, HIGH] GitHub #923-#931 require runtime and release evidence before closure. PR #936 and PR #937 align documentation projection for #925/#930, but they do not close live websocket, external `natsx` / storage / fanout / query, remote CI, release tag, or FR-012~030 implementation evidence gaps.
 
 ## Read Next
 
