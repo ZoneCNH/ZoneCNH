@@ -35,8 +35,8 @@
 
 | FR | 功能 | 当前状态 | 已有证据 | 剩余实现面 |
 | --- | --- | --- | --- | --- |
-| FR-001 | Product-Line Support | Partial | `TRACEABILITY.md` 标注 Spot 已实现，USDM/COINM/Options 待补齐。 | 四条 product line 的连接、订阅、映射、发布与服务端消费验收。 |
-| FR-002 | Instrument Identity | Partial | `TRACEABILITY.md` 标注 Spot parser/mapper 已实现。 | USDM、COINM、Options 的 `instrument_key` 与身份冲突测试。 |
+| FR-001 | Product-Line Support | Partial | ACCEPTANCE.md AC-001 Partial（Spot 产品线，TC 未全绿），USDM/COINM/Options 待补齐。 | 四条 product line 的连接、订阅、映射、发布与服务端消费验收。 |
+| FR-002 | Instrument Identity | Partial | ACCEPTANCE.md AC-004 Partial（Spot 身份映射，TC 未全绿）。 | USDM、COINM、Options 的 `instrument_key` 与身份冲突测试。 |
 | FR-003 | natsx Communication | Pending | 规格定义 `js.Publish("binance.market.{product_line}.{event_type}", jsonPayload)` 与 durable consumer。 | Client publisher、Server consumer、subject 校验、PubAck 与 durable replay。 |
 | FR-004 | At-Least-Once Delivery | Pending | 规格定义 ManualAck、失败 NakWithDelay、MaxDeliver 5、dead-letter。 | Ack/Nak 策略、失败注入、重复投递与死信处理。 |
 | FR-005 | Idempotent Acceptance | Pending | 规格定义 idempotency key 与 duplicate/conflict 行为。 | `redisx` SetNX、重复跳过、冲突终止、重放测试。 |
