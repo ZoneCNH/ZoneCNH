@@ -8,10 +8,10 @@
 | Module-Version | v3.5.0 |
 | Last-Updated | 2026-06-23 |
 | Scope | `module/binance` stage2 lifecycle planning |
-| Spec-Impact | 无；本讨论稿不修改 `SPEC.md`，不产生 runtime contract |
+| Spec-Impact | 已 fold：FR-012~FR-030 已登记到 `SPEC.md`/`TRACEABILITY.md`；本文件仍不声明 runtime contract |
 | Source Plan | `docs/report/binance/goal-execution-plan-20260622.md` 阶段 2 / AC-3 |
 
-> 本文件用于把后续实时控制面、历史补偿、event-type 扩展与治理证据拆成可评审的 FR 落点。它不是 SPEC change；在评审通过并形成对应 issue/PR 前，不应把下列内容视为已批准接口。
+> 本文件用于把后续实时控制面、历史补偿、event-type 扩展与治理证据拆成可评审的 FR 落点。它已经 fold 到 `SPEC.md`/`TRACEABILITY.md` 的 FR-012~FR-030 追溯口径；仍不应把下列内容视为 runtime behavior 或 release evidence 已完成。
 
 ## 1. 15 个生命周期缺口
 
@@ -62,7 +62,7 @@
 
 [COMPUTED, HIGH] 2026-06-22 review closed the planning checklist for this discussion draft: FR-012 through FR-015 are the next realtime-control SPEC bump candidate set; FR-016 through FR-019 stay grouped as the v2.5.x historical lifecycle candidate set; FR-020 through FR-022 remain a v3.0.0 MAJOR candidate because they change the canonical event matrix; `STANDARD.md` is required before FR-024 can be promoted into SPEC.
 
-[FRAME, HIGH] This outcome approves only the issue split, dependency order, bump class, and document landing plan. It does not approve runtime behavior, does not update `SPEC.md`, does not change `TRACEABILITY.md`, and does not mark any release DoD item done.
+[FRAME, HIGH] This outcome approves only the issue split, dependency order, bump class, and document landing plan, and records that `SPEC.md`/`TRACEABILITY.md` now carry FR-012~FR-030. It does not approve runtime behavior, does not mark runtime evidence complete, and does not mark any release DoD item done.
 
 ## 5. Open questions
 
@@ -74,7 +74,7 @@
 
 > [COMPUTED, HIGH] 2026-06-23 全量 issue 核查发现：GitHub issue #880~#892（R-01~R-13）的标题语义是 2026-06-22 早期提案，本讨论稿 §4 review 已将它们重组为更合理的 FR-012~024 落点。本节逐条映射 issue 原始诉求 → 现有 FR 覆盖关系，并对未覆盖项声明落点，确保每条 issue 的实质能力都有 FR 承接。
 
-[FRAME, HIGH] 术语归一：后续 fold 时，`funding-rate` / `mark-price` 的 runtime `event_type` 值分别按 snake_case 记录为 `funding_rate` / `mark_price`；R-06 的 runtime gap detector 结果进入 `binance_backfill_jobs` 队列；#880/#892 的热重载入口以 `symbols/reload` 管理；本讨论稿保持 non-normative，进入 SPEC 前须通过 Fold 前门禁。
+[FRAME, HIGH] 术语归一：`funding-rate` / `mark-price` 的 runtime `event_type` 值分别按 snake_case 记录为 `funding_rate` / `mark_price`；R-06 的 runtime gap detector 结果进入 `binance_backfill_jobs` 队列；#880/#892 的热重载入口以 `symbols/reload` 管理；本讨论稿保持 non-normative，关闭实现项前仍须通过 runtime/release evidence 门禁。
 
 | Issue | 原始诉求 | 现有 FR 覆盖 | 覆盖判定 | 未覆盖落点 |
 | --- | --- | --- | --- | --- |
@@ -92,22 +92,22 @@
 | #891 R-12 | FR-023 Backfill Progress API（jobs + coverage 查询） | FR-023 Evidence Bundle（未含 progress API） | ❌ 未覆盖 | 新增 FR-028 Backfill Progress API（见 §7） |
 | #892 R-13 | FR-024 Symbol Subscription Hot Reload（reload endpoint + stream diff） | FR-024 Runtime Config Hot Reload | ✅ 覆盖 | — |
 
-## 7. 未覆盖项落点声明（候选 FR-025~028 + NAMING/subject 补充）
+## 7. 已登记落点声明（FR-025~030 + NAMING/subject 补充）
 
-> [FRAME, HIGH] 以下为讨论稿级别的落点声明，未 fold 进 SPEC.md / TRACEABILITY.md。需在后续 PR 中按 RULES R3 bump 触发器落地（FR 接口新增 = MINOR）。
+> [FRAME, HIGH] 以下为历史讨论稿到当前 `SPEC.md`/`TRACEABILITY.md` 的落点对齐声明。FR-025~FR-030 已登记；runtime evidence 与 release evidence 仍 Pending，不得据此关闭功能实现或发布 DoD。
 >
-> [COMPUTED, HIGH] 2026-06-23 post-PR #936 supersession note: FR-025~FR-028 are now folded into SPEC/TRACEABILITY/NAMING in v3.2.0, and FR-029/FR-030 are recorded in v3.5.0. This §7 remains historical provenance for why those follow-ups existed, not current open backlog.
->
-> [COMPUTED, HIGH] 追溯闭环口径：FR-012~FR-030 的 FR/AC/TC 已登记于 SPEC/TRACEABILITY；本讨论稿保持 non-normative，runtime evidence 仍为 Pending（L1/local 证据已采集，L2/L3/live/release 未闭合），进入 SPEC 前须通过 Fold 前门禁。
+> [COMPUTED, HIGH] 追溯闭环口径：FR-012~FR-030 的 FR/AC/TC 已登记于 `SPEC.md`/`TRACEABILITY.md`；本讨论稿保持 non-normative，runtime evidence 仍为 Pending（L1/local 证据已采集，L2/L3/live/release 未闭合）。
 
-| 候选 | 标题 | Landing | Bump | 覆盖 issue |
+| FR | 标题 | Landing | Bump | 覆盖 issue / Beads |
 | --- | --- | --- | --- | --- |
 | FR-025 | Backfill Throttle & Priority（token bucket: spot 1200/futures 2400 weight/min；80% 实时 / 20% 回填；priority trade>bar>tick） | `server/SPEC.md` §7 throttle | MINOR | #886 |
 | FR-026 | Daily Reconciliation Job（04:00 UTC；symbol×1d 比对 taosx OHLCV vs Binance /api/v3/klines；tolerance 0.01%；入 binance_reconciliation_alerts） | `server/SPEC.md` §7 reconciliation | MINOR | #889 |
 | FR-027 | Cold Data Rehydration（/api/v1/market/ticks/:symbol/range 命中 OSS 归档区 → async OSS→taosx 回热 24h TTL；202 + job_id 轮询） | `SPEC.md` FR-007 扩展 | MINOR | #890 |
 | FR-028 | Backfill Progress API（GET /api/v1/admin/backfill/jobs + /coverage/:symbol 返回 (pl, symbol, et) 最早时间戳） | `server/SPEC.md` §7 admin API | MINOR | #891 |
+| FR-029 | Data Quality & Freshness SLA（event_time→persist P95/P99、stale alert、schema drift evidence） | `SPEC.md` / `TRACEABILITY.md` / runtime evidence | MINOR | Beads P2-2 |
+| FR-030 | Options Chain Raw Field Pass-through（strike/expiry/option_type/mark/IV 原始字段透传；Greeks 归分析域） | `SPEC.md` / `TRACEABILITY.md` / NAMING subject matrix | MINOR | Beads P2-4 |
 | NAMING §2 | 订阅周期集枚举：spot/um_perp/cm_perp = 1s,1m,5m,15m,1h,4h,1d；options = 1m,5m,1h,1d；其他周期下游 clickhousex 重采样 | `NAMING.md` §2 | PATCH | #882 |
 | NAMING subject | `instruments.changed`（symbol 目录变更）+ `symbols.changed`（订阅白黑名单热重载） | `NAMING.md` §3 | MINOR | #880, #892 |
 | FR-015 扩展 | depth 订阅档位：spot/um_perp/cm_perp = @depth20@100ms + @depth@1000ms 增量；options = @depth1000；update_id 拼合 | `SPEC.md` §9 | MINOR | #883 |
 
-[FRAME, HIGH] 本节声明后，issue #880~#892 的全部实质能力都有明确 FR 承接（已覆盖 6 项 + 候选新增 4 项 + NAMING/FR 扩展 3 项）。后续 PR 按 §7 表逐条 fold 进 SPEC/TRACEABILITY/NAMING 时再 bump 版本。
+[FRAME, HIGH] 本节声明后，issue #880~#892 与 Beads P2-2/P2-4 的规格层落点都有明确 FR 承接（已覆盖 6 项 + FR-025~FR-030 + NAMING/FR 扩展）。runtime evidence 和 release evidence 未闭合；后续只能按 `/home/binance` runtime 测试、CI/live smoke 与 release evidence 关闭实现项。

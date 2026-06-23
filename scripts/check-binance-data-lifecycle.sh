@@ -27,8 +27,9 @@ for phrase in \
   "#892" \
   "non-normative" \
   "runtime evidence" \
-  "SPEC/TRACEABILITY" \
-  "Fold 前门禁"; do
+  "SPEC.md" \
+  "TRACEABILITY.md" \
+  "runtime/release evidence"; do
   grep -q "$phrase" "$doc" || fail "missing phrase: $phrase"
 done
 

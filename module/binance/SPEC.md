@@ -961,7 +961,7 @@ github.com/ZoneCNH/binance/
 | TC-036 | FR-019 | 单元 | backfill resource cap and cancellation cursor | 全局/单 instrument 限额生效，取消后 cursor 可恢复 |
 | TC-037 | FR-020 | 单元 + 集成 | funding_rate event mapping/storage/query/fanout | funding_rate 事件在 mapping、存储、API 与 fanout 中一致 |
 | TC-038 | FR-021 | 单元 + 集成 | mark_price/index_price kind/topic/storage | mark/index price 不与 last/bid/ask 混淆 |
-| TC-039 | FR-022 | 文档校验 | R2 governance matrix + stale alias checks | 24 FR/event-product-governance cells 覆盖 5 个文档/checker 锚点 |
+| TC-039 | FR-022 | 文档校验 | R2 governance matrix + stale alias checks | 4 product lines × 6 event types × 5 文档/checker anchors |
 | TC-040 | FR-023 | 证据归档 | local/CI/live evidence bundle | local 与 remote CI/live 证据分层归档，不能互相替代 |
 | TC-041 | FR-023 | release gate | release tag/changelog/evidence consistency | release tag、CHANGELOG、CI URL、evidence bundle 一致 |
 | TC-042 | FR-024 | 集成 + httptest | `POST /api/v1/admin/symbols/reload` catalog reload | endpoint 验证通过，并证明 active stream add/remove 无进程重启 |
