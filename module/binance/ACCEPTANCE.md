@@ -174,16 +174,16 @@
 
 ## 7. GitHub Issue Closure Ledger（2026-06-23）
 
-> [COMPUTED, HIGH] GitHub #923~#931 当前均不可关闭；PR #936/#937 只闭合文档投影错配，不替代 runtime、remote CI、live websocket、外部集成或 release tag 证据。完整账本见 [`docs/report/binance/github-issues-923-931-closure-ledger-20260623.md`](../../docs/report/binance/github-issues-923-931-closure-ledger-20260623.md)。
+> [COMPUTED, HIGH] #926 已于 2026-06-23 满足 governance/documentation 闭合条件（详见 `DATA-LIFECYCLE.md` §9），可从治理层面关闭。其余 #923~#925、#927~#931 不可关闭；PR #936/#937 只闭合文档投影错配，不替代 runtime、remote CI、live websocket、外部集成或 release tag 证据。完整账本见 [`docs/report/binance/github-issues-923-931-closure-ledger-20260623.md`](../../docs/report/binance/github-issues-923-931-closure-ledger-20260623.md)。
 >
-> [COMPUTED, HIGH] 本节记录 2026-06-23 全量 GitHub issue 核查后的闭合口径：文档可以登记当前事实与缺口，但 issue 关闭仍必须等待对应 runtime evidence、CI/release evidence 或治理审计证据。
+> [COMPUTED, HIGH] 本节记录 2026-06-23 全量 GitHub issue 核查后的闭合口径：#926 可关闭（治理/文档形式化完成，runtime 仍 Pending 由 #927~#929 追踪）；其余 issue 关闭必须等待对应 runtime evidence、CI/release evidence 或治理审计证据。
 
 | Issue | 当前判断 | 已有证据 | 未闭合条件 |
 | --- | --- | --- | --- |
 | #923 | Partial / Open | `RUNTIME-MAPPING.md`、`BOUNDARY-GATES.md`、`/home/binance/release/evidence/binance/20260623/SUMMARY.md` | live Binance WebSocket、`natsx` JetStream PubAck/ManualAck、durable storage/fanout/query、post-fix release tag。 |
 | #924 | Open | 本地 evidence bundle 与 PR #14 可作为候选证据入口。 | 远端 CI、GitHub Release、live smoke、release artifact linkage。 |
 | #925 | Open / Projection Pending | `README.md`、`docs/architecture/` 与本清单已标注 release evidence pending。 | #923/#924 运行时和发布证据闭合后，才能同步公开状态为完成。 |
-| #926 | Registered / Runtime Pending | `DATA-LIFECYCLE.md`、`SPEC.md`、`TRACEABILITY.md` 已承接 FR-012~FR-030。 | FR-012~FR-030 的 runtime tests、integration evidence、release DoD。 |
+| #926 | Closable — Governance Done / Runtime Pending | `DATA-LIFECYCLE.md` §9 形式化闭合备忘录：FR-012~FR-030 登记完成、影响台账完整、旧 issue 映射完成。 | Runtime 实现仍 Pending（#927~#929）；release evidence、CI、live smoke 未闭合。 |
 | #927 | Open | FR-012~FR-015 已登记。 | `exchangeInfo` discovery、catalog refresh、stream policy、depth tier、real reconnect/degradation evidence。 |
 | #928 | Open | FR-016~FR-024 已登记。 | cold-start backfill、gap replay、funding/mark-price、reconciliation、rehydration、progress API、hot reload runtime proof。 |
 | #929 | Open | FR-025~FR-030 已登记。 | throttle、validation、gap repair、SLA metrics、schema drift 与 quality evidence。 |

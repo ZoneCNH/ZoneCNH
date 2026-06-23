@@ -22,22 +22,11 @@
 ### Reviewed
 - PR-007a~g 分布式 runtime、远端 CI、release tag、live websocket 与外部依赖集成证据仍未闭合；本节不关闭 `ZoneCNH-n0s` / GitHub #923。
 - **P2-2 SPEC §4 分布式约束（#930）**：DEEP-ANALYSIS.md §0 分布式约束已迁移至 `SPEC.md` §4 Goals（分布式 C/S 架构）与 FR-011（Distributed Coordinator Lock），SPEC 已明确独立进程、natsx 网络通信、禁止同进程调用等约束。无需额外迁移。
-<<<<<<< HEAD
 - **P2-3 binance-market 遗留引用（#930）**：全量扫描 `module/binance/*.md` 中 whitelist 外文件（client/SPEC.md、server/SPEC.md、RUNTIME-MAPPING.md、BOUNDARY-GATES.md、TRACEABILITY.md、ACCEPTANCE.md、IMPLEMENTATION-PLAN.md、README.md、FEATURES.md、client/README.md、server/README.md、tasks/*.md）的 `binance-market` 引用，全部为 BR-001 边界声明（"已移除 / 禁止恢复 / 禁止路径"）或 AC/TC 追踪元数据，无发现需压缩的冗余叙事。
 - **P2-5 BOUNDARY-GATES.md 审查（#930）**：10 道 gate 完整覆盖 BR-001~BR-009 + go.mod 合规，每道 gate 有可执行关闭规则与 runtime 证据引用。无发现结构性缺口。Gate §2 No Legacy binance-market 关闭规则明确，与 RULES R1 豁免清单一致。
 
 ### Deferred
 - **P2-4 commit coverage matrix（#930）**：binance runtime 仓约 50 个 preserve/stash commit 的覆盖率矩阵建立仍为开放任务。当前 `/home/binance` 仓库的 squash merge 策略已将 PR 级历史保留在 main 分支，但其对应 issue/AC 的精细映射尚未建立。建议待 FR-003~FR-030 runtime 实现推进后按需建立。
-
-### Changed (Round 2 证据刷新)
-- 2026-06-23 round 2：重新运行 `/home/binance/scripts/boundary-gates.sh` 10/10 PASS；`go build`/`go vet`/`go test` 全部 PASS 于 SHA `71e2a6e8bb5591c43e8a2ebfff8c7645bf030786`；全部 9 个 issue 分支已合并至 origin/main。
-=======
-- **P2-3 binance-market 遗留引用（#930）**：全量扫描 `module/binance/*.md` 中 whitelist 外文件的 `binance-market` 引用，全部为 BR-001 边界声明（"已移除 / 禁止恢复 / 禁止路径"）或 AC/TC 追踪元数据，无发现需压缩的冗余叙事。
-- **P2-5 BOUNDARY-GATES.md 审查（#930）**：10 道 gate 完整覆盖 BR-001~BR-009 + go.mod 合规，每道 gate 有可执行关闭规则与 runtime 证据引用。无发现结构性缺口。
-
-### Deferred
-- **P2-4 commit coverage matrix（#930）**：binance runtime 仓约 50 个 preserve/stash commit 的覆盖率矩阵建立仍为开放任务。建议待 FR-003~FR-030 runtime 实现推进后按需建立。
->>>>>>> 2c1afb82 (docs: add DEEP-ANALYSIS-INDEX.md navigation and update CHANGELOG round 2 evidence)
 
 ---
 
