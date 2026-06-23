@@ -2,10 +2,27 @@
 
 所有 notable 变更记录，按 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/) 格式维护。
 
-- Module-Version: v3.3.0
+- Module-Version: v3.4.0
 - Last-Updated: 2026-06-23
-- Spec-Reference: `module/binance/SPEC.md` v3.3.0
+- Spec-Reference: `module/binance/SPEC.md` v3.4.0
 - 治理规则：`module/binance/RULES.md` R9 文档存在性
+
+---
+
+## [v3.4.0] — 2026-06-23
+
+### Added
+- SPEC §9 Instrument Identity 新增 `instrument_subtype` 维度（perpetual/delivery），仅 um_perp/cm_perp 适用；FR-002 补交割合约 WHEN/THEN（`instrument_subtype=delivery` + 非零 expiry 与永续产出不同 InstrumentKey，共享 subject 不拆分订阅）。
+- NAMING §1.1 新增 `instrument_subtype` canonical 维度表 + 承载规则（不进入 subject/topic/path，只进入 InstrumentKey identity 与 TDengine tag / Redis key identity 段）。
+- RULES R2 补"交割合约承载"条款：禁止拆 product_line 破坏 4×6 矩阵。
+
+### Changed
+- NAMING §1 um_perp/cm_perp 语义注释从"永续"改为"合约（永续 + 交割）"，消除命名与可承载交割合约的语义张力。
+- RULES R2 矩阵维度 4×4（16 组合）→ 4×6（24 组合），对齐 NAMING §2 已声明的 4×6 矩阵。
+- NAMING §10 drift detection 增 `USDⓈ-M 永续|COIN-M 永续` 残留检测。
+
+### 触发依据
+- R3 / CONSTITUTION §10.4：FR-002 instrument identity 契约扩展（新增 instrument_subtype 维度 + WHEN/THEN）属接口契约演进 → Spec-Version MINOR bump v3.3.0 → v3.4.0。NAMING/RULES 矩阵维度与语义注释为文档治理，因依附契约变更同 PR 同步，Module-Version 跟随 root SPEC。
 
 ---
 

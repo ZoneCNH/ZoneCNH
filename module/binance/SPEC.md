@@ -3,7 +3,7 @@
 ## 1. Metadata
 
 - Status: Approved
-- Spec-Version: v3.3.0
+- Spec-Version: v3.4.0
 - Last-Updated: 2026-06-23
 - Owner: ZoneCNH
 - Layer: 数据域 · 行情
@@ -132,6 +132,9 @@ Binance 行情集成面临以下问题：
 
 **WHEN** parser 解析 Options 合约
 **THEN** identity 包含 expiry、strike、option_type 三个维度
+
+**WHEN** parser 解析 USDⓈ-M / COIN-M 交割合约（如 `BTCUSDT_240329`、`BTCUSD_240628`）
+**THEN** identity 包含 `instrument_subtype=delivery` 维度与非零 `expiry`，与同 product_line 的永续合约（`instrument_subtype=perpetual`、`expiry=null`）产出不同 `InstrumentKey`，且共享 `binance.market.{product_line}.{event_type}` subject，不拆分 subject 订阅
 
 ### FR-003: natsx Communication
 
@@ -546,6 +549,7 @@ Server persists Binance-specific facts through `taosx`（时序）、`clickhouse
 | `InstrumentKey` | Unique instrument identity across product lines | domain_market |
 | `ProductLine` | Spot / USDⓈ-M / COIN-M / Options | domain_market |
 | `InstrumentType` | Perpetual / Futures / Option / Spot | domain_market |
+| `InstrumentSubtype` | Perpetual / Delivery（仅 um_perp / cm_perp 适用） | domain_market |
 | `OptionType` | Call / Put | domain_market |
 | `PriceKind` | Bid / Ask / Last / Mark / Index | domain_market |
 | `MarketScope` | Exchange-native liquidity scope | domain_market |
@@ -561,6 +565,7 @@ Minimum dimensions for collision-free identity across Binance product lines:
 | exchange | ✅ | ✅ | ✅ | ✅ |
 | product_line | ✅ | ✅ | ✅ | ✅ |
 | instrument_type | ✅ | ✅ | ✅ | ✅ |
+| instrument_subtype | — | ✅ | ✅ | — |
 | base_asset | ✅ | ✅ | ✅ | ✅ |
 | quote_asset | ✅ | — | — | — |
 | margin_asset | — | ✅ | ✅ | — |
