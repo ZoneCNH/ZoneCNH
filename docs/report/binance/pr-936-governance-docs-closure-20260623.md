@@ -10,7 +10,7 @@
 | ID | File / local anchor | Stale projection or gap | Patch applied |
 | --- | --- | --- | --- |
 | F1 | `docs/report/binance/INDEX.md` closure table | Closure index ended at PR #910/#896 reports and had no post-PR #936 entry for #925/#930/#931. | Added this PR #936 closure audit to the index. |
-| F2 | `docs/report/binance/issues-full-closure-20260623.md` header and §3/§5 | PR #910 report reads as a full/current closure artifact while its scope is #866~#896 against v3.1.0; residual FR-025~028 text no longer matches current module docs. | Marked the report as a historical PR #910 baseline, linked this audit, and annotated FR-025~028 residual rows as superseded by later module docs. |
+| F2 | `docs/report/binance/issues-full-closure-20260623.md`, `goal-execution-plan-20260622.md`, and `iteration-plan-20260622.md` PR #910 projection notes | PR #910 reports read as full/current closure artifacts while their scope is #866~#896 against v3.1.0; residual FR-025~028 text no longer matches current module docs. | Marked the reports as historical PR #910 baselines, linked this audit, and annotated FR-025~028 residual rows as superseded by later module docs. |
 | F3 | `module/binance/DATA-LIFECYCLE.md` §7 | §7 still says FR-025~028 are not folded into `SPEC.md` / `TRACEABILITY.md`, although current docs record v3.2.0 folds and v3.5.0 FR-029/030. | Added a post-PR #936 supersession note while preserving the discussion-draft provenance. |
 | F4 | repo-wide search for `#925`, `#930`, `#931`, `#936`, `PR #936` | No authoritative local issue/PR anchors exist for #925/#930/#931/#936. | Kept closure language scoped to repo-local governance/docs evidence; external GitHub issue/PR metadata remains an explicit validation dependency. |
 
@@ -30,9 +30,11 @@
 2. `docs/report/binance/issues-full-closure-20260623.md`
    - Add a post-PR #936 note that PR #910 closes only #866~#896.
    - Annotate §3 residual actions and §5 known gaps as PR #910 historical projections superseded by later module docs.
-3. `module/binance/DATA-LIFECYCLE.md`
+3. `docs/report/binance/goal-execution-plan-20260622.md` and `docs/report/binance/iteration-plan-20260622.md`
+   - Annotate the top closure notes so FR-025~FR-028 "not folded" language is historical, not current backlog.
+4. `module/binance/DATA-LIFECYCLE.md`
    - Add a supersession note to §7 documenting that FR-025~FR-028 are now folded and FR-029/030 are present.
-4. `docs/report/binance/pr-936-governance-docs-closure-20260623.md`
+5. `docs/report/binance/pr-936-governance-docs-closure-20260623.md`
    - Record the findings, patch set, validation commands, and remaining external evidence dependency.
 
 ## 4. Validation commands
