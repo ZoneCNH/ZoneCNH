@@ -18,6 +18,7 @@
 - 记录 `/home/binance` 本地 runtime boundary evidence：SHA `71e2a6e8bb5591c43e8a2ebfff8c7645bf030786`，`scripts/boundary-gates.sh` 10/10 PASS，`go build/test/race/vet`、`golangci-lint`、本地 smoke self-test PASS。
 - 记录 runtime PR `ZoneCNH/binance#11`：merge commit `5a57a19aed3be5420135b8e05016da15faf094ed`，source commit `7873b795b13fc4b5a0fc4310300b6f196cca7532`，远端 `Boundary Gates (10 gates)` PASS；独立 `cmd/binance-client` + HTTP `/ingest` client/server 边界已证明。
 - 将 `RUNTIME-MAPPING.md` 标为目标运行时映射而非完成声明，并补充 JetStream PubAck/ManualAck、durable natsx/storage/fanout/query 等未证明项；`cmd/binance-client` 只关闭 HTTP boundary 证据，不关闭 FR-003 publish/consume。
+### Fixed
 - 2026-06-23 round 2 证据刷新：重新运行 `/home/binance/scripts/boundary-gates.sh` 10/10 PASS；`go build`/`go vet`/`go test` 全部 PASS 于 SHA `71e2a6e8bb5591c43e8a2ebfff8c7645bf030786`；全部 9 个 issue 分支已合并至 origin/main。
 
 ### Reviewed
