@@ -34,6 +34,8 @@
 | FR-006 | JetStream.AddStream | 创建、幂等、冲突配置均有测试 / TC-003 / TASK-NATSX-004 | ✅ | TRACEABILITY.md |
 | FR-007 | JetStream.AddConsumer | 创建、幂等、冲突配置均有测试 / TC-003 / TASK-NATSX-004 | ✅ | TRACEABILITY.md |
 | FR-008 | Health | ready/live/message 与连接状态映射有测试 / TC-005 / TASK-NATSX-005 | ✅ | TRACEABILITY.md |
+| FR-009 | JetStream IngestPublisher Adapter | IngestAck{Durable}/retryable reject/duplicate 幂等 / TC-010 / TASK-NATSX-010 | ⏳ Pending | TRACEABILITY.md |
+| FR-010 | JetStream IngestConsumer Adapter | Fetch+ManualAck/重投递/DLQ/poison message / TC-015 / TASK-NATSX-010 | ⏳ Pending | TRACEABILITY.md |
 
 ## 3. 行为与非功能实现清单
 

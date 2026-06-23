@@ -17,6 +17,8 @@ Source: `goal.md` 1.0 发布基线 + `SPEC.md` Draft v1.0.0 + `/home/natsx` comm
 | FR-006 | JetStream.AddStream | 创建、幂等、冲突配置均有测试 | TC-003 | TASK-NATSX-004 | ✅ |
 | FR-007 | JetStream.AddConsumer | 创建、幂等、冲突配置均有测试 | TC-003 | TASK-NATSX-004 | ✅ |
 | FR-008 | Health | ready/live/message 与连接状态映射有测试 | TC-005 | TASK-NATSX-005 | ✅ |
+| FR-009 | JetStream IngestPublisher Adapter | IngestAck{Durable}/JETSTREAM_PUBLISH_FAILED retryable/duplicate 幂等 | TC-010 | TASK-NATSX-010 | ⏳ Pending |
+| FR-010 | JetStream IngestConsumer Adapter | Fetch+ManualAck/重投递/DLQ/poison message 不吞没 payload | TC-011 | TASK-NATSX-010 | ⏳ Pending |
 | NFR-006 | SubjectBuilder | `domain.resource.action.v{version}` 构造和解析有测试 | TC-006 | TASK-NATSX-006 | ✅ Build/parse/validation tests |
 | NFR-007 | NatsMessageEnvelope | traceId/messageId/schemaVersion/header 双向映射有测试 | TC-007 | TASK-NATSX-007 | ✅ Header metadata round-trip and embedded propagation tests |
 | NFR-008 | Config contract | `foundationx.nats.*` 配置、默认值和旧别名兼容有测试 | TC-008 | TASK-NATSX-008 | ✅ Defaults/sanitize/validation plus canonical `FOUNDATIONX_NATS_*` over legacy `NATS_*` fallback covered |
@@ -48,6 +50,8 @@ Source: `goal.md` 1.0 发布基线 + `SPEC.md` Draft v1.0.0 + `/home/natsx` comm
 | AC-006 | FR-006 | TC-003 | Embedded AddStream create/idempotency/conflict covered |
 | AC-007 | FR-007 | TC-003 | Embedded AddConsumer create/idempotency/conflict covered |
 | AC-008 | FR-008 | TC-005 | Healthy, disconnected, nil, canceled, closed, reconnect, and degraded health paths covered |
+| AC-009 | FR-009 | TC-010 | ⏳ Pending — IngestPublisher PubAck→Durable Ack / retryable reject / duplicate 幂等，runtime 适配器待实现 |
+| AC-010 | FR-010 | TC-015 | ⏳ Pending — IngestConsumer Fetch+ManualAck / 重投递 / DLQ / poison message，runtime 适配器待实现 |
 
 ## Reverse Coverage
 
@@ -63,6 +67,8 @@ Source: `goal.md` 1.0 发布基线 + `SPEC.md` Draft v1.0.0 + `/home/natsx` comm
 | TC-007 | NFR-007 | `/home/natsx/pkg/natsx/envelope_test.go`; embedded request/reply metadata propagation in `/home/natsx/pkg/natsx/embedded_nats_test.go` |
 | TC-008 | NFR-008 | `/home/natsx/pkg/natsx/config_test.go` and `/home/natsx/pkg/natsx/env_test.go` cover defaults/sanitize/validation plus `ConfigFromEnv` canonical precedence and legacy fallback |
 | TC-009 | NFR-009 | `/home/natsx/pkg/natsx/regression_test.go::TestMetricNamesUseFoundationNATSPrefix`; `TestNoopMetricsMethodsAreSafe`; `/home/natsx/pkg/natsx/health_test.go::TestHealthCheckDisconnectedRecordsMetrics`; embedded tests assert canonical `foundationx_nats_*` metric emission |
+| TC-010 | FR-009 | ⏳ Pending — `IngestPublisher.Ingest` PubAck→Durable Ack、JETSTREAM_PUBLISH_FAILED retryable、空 IdempotencyKey 不可重试、duplicate 幂等；runtime 适配器待实现（解耦 binance PR-007c） |
+| TC-015 | FR-010 | ⏳ Pending — `IngestConsumer.Fetch` 返回 (req, Ack, err)、Ack 推进 offset、超 AckWait 重投递、超 MaxDeliver 进 DLQ、poison message 不吞没 payload；runtime 适配器待实现（解耦 binance PR-007d） |
 | TC-011 | NFR-001, NFR-002, BR-008 | `/home/natsx/pkg/natsx/config_test.go::TestConfigValidateDefaultsAndSanitize`; `/home/natsx/pkg/natsx/env_test.go::TestConfigFromEnvRejectsInvalidValuesWithoutSecretLeak`; `/home/natsx/pkg/natsx/live_integration_test.go`; local auth live test passed with `FOUNDATIONX_NATS_URL`, `FOUNDATIONX_NATS_USERNAME`, and `FOUNDATIONX_NATS_PASSWORD` sourced from local NATS config without printing credentials |
 | TC-012 | NFR-003 | `/home/natsx/pkg/natsx/benchmark_test.go::BenchmarkEmbeddedNATSPublish`; `/home/natsx/pkg/natsx/benchmark_test.go::BenchmarkEmbeddedNATSRequest`; `/home/natsx/pkg/natsx/benchmark_test.go::BenchmarkEmbeddedNATSJetStreamPublish`; `/home/natsx/pkg/natsx/embedded_nats_test.go` adds request, JetStream publish/fetch SLO assertions and handler latency evidence |
 | TC-013 | NFR-004 | `/home/natsx$ GOWORK=off go list -deps ./pkg/natsx ./examples/...` plus forbidden-domain filter returned `dependency boundary clean` |
@@ -81,6 +87,7 @@ Source: `goal.md` 1.0 发布基线 + `SPEC.md` Draft v1.0.0 + `/home/natsx` comm
 | TASK-NATSX-007 | NFR-007 | Complete envelope/header metadata round-trip coverage |
 | TASK-NATSX-008 | NFR-008 | Complete config default/sanitize/validation plus canonical/legacy env alias precedence coverage |
 | TASK-NATSX-009 | NFR-009 | Complete repair-slice canonical metrics and secret-safe error/log evidence; distributed tracing is not claimed by this matrix |
+| TASK-NATSX-010 | FR-009, FR-010 | ⏳ Pending — 实现 `IngestPublisher`（PubAck→Durable Ack/JetStream 幂等去重）与 `IngestConsumer`（durable+ManualAck/DLQ/poison message）域适配器，解耦 binance PR-007c/d；runtime 适配器与 TC-010/TC-015 待实现 |
 | TASK-NATSX-011 | NFR-001, NFR-002, BR-008 | Complete repair-slice sanitize/config evidence plus local auth live integration passed with redacted local config; production TLS closure packet remains separate release blocker `BLK-002` in `release/trust/foundation-maturity-evidence-matrix-20260615.md` |
 | TASK-NATSX-012 | NFR-003 | Complete repair-slice SLO assertions for embedded request, JetStream publish/fetch, and handler latency; production benchmark gate still separate |
 | TASK-NATSX-013 | NFR-004 | Dependency boundary check passed for forbidden ZoneCNH messaging/storage modules |

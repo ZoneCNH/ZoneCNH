@@ -1,8 +1,8 @@
 # natsx 规格
 
 Status: Approved
-- Spec-Version: v1.1.0
-- Last-Updated: 2026-06-14
+- Spec-Version: v1.2.0
+- Last-Updated: 2026-06-23
 - Layer: 基座 · 存储扩展
 - Version: v1.0.0
 - Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `kernel`
@@ -157,6 +157,38 @@ THEN 返回 HealthStatus{Ready: false, Live: false, Message: "..."}
 WHEN JetStream 已启用且 JetStream 不可用
 THEN 返回 HealthStatus{Ready: false, Live: true, Message: "jetstream unavailable"}
 
+### FR-009: JetStream IngestPublisher Adapter
+
+> 域适配契约：把 domain 模块（如 binance）的 `wire.IngestRequest` 经 JetStream 发布，使 natsx 承担 JetStream 适配职责，domain 模块只声明 `wire.IngestEndpoint` 依赖。解耦 PR-007c：binance 不自实现 JetStream publisher，改由 natsx 提供 `IngestPublisher` 适配器。
+
+WHEN 调用 `IngestPublisher.Ingest(ctx, req)` 且 JetStream stream 已创建
+THEN 事件以 `Nats-Msg-Id=req.IdempotencyKey` 发布到 `binance.market.{product_line}.{event_type}` subject，返回 `IngestAck{Durable: true, AcceptedKey: req.IdempotencyKey}`（PubAck 证明服务器侧已持久化）
+
+WHEN 调用 `IngestPublisher.Ingest(ctx, req)` 且 JetStream 不可用
+THEN 返回 `IngestReject{Code: "JETSTREAM_PUBLISH_FAILED", Retryable: true}`（连接类错误可重试）
+
+WHEN 调用 `IngestPublisher.Ingest(ctx, req)` 且 `req.IdempotencyKey` 为空
+THEN 返回 `IngestReject{Code: "INVALID_REQUEST", Retryable: false}`（不可重试）
+
+WHEN 同一 `IdempotencyKey` 二次到达且 JetStream 判定 duplicate
+THEN 返回 `IngestAck{Durable: true, Duplicate: true}`（幂等去重由 JetStream 服务器侧完成）
+
+### FR-010: JetStream IngestConsumer Adapter
+
+> 域适配契约：durable consumer + ManualAck 消费 JetStream 消息，反序列化为 `wire.IngestRequest` 交给 domain handler。解耦 PR-007d：binance 不自实现 JetStream consumer，改由 natsx 提供 `IngestConsumer` 适配器。
+
+WHEN 调用 `IngestConsumer.Fetch(ctx)` 且有可用消息
+THEN 返回 `(wire.IngestRequest, Ack func(), error)`，消息未自动 ack，调用方显式 `Ack()` 后 offset 推进
+
+WHEN 调用方未调用 `Ack()` 且超过 AckWait
+THEN JetStream 重投递该消息（at-least-once）
+
+WHEN 调用 `IngestConsumer.Fetch(ctx)` 且消息数超过 MaxDeliver
+THEN 消息进入 Dead Letter，返回可审计错误（含 subject、stream、consumer、deliveries 计数）
+
+WHEN 消息反序列化失败
+THEN 返回 `error`（poison message），调用方决定 nack 或 DLQ，适配器不吞没原始 payload
+
 ---
 
 ### 6.1 Acceptance Criteria Registry
@@ -171,6 +203,8 @@ THEN 返回 HealthStatus{Ready: false, Live: true, Message: "jetstream unavailab
 | AC-006 | JetStream.AddStream | AddStream 幂等创建；配置兼容时返回 nil；配置冲突时返回错误 | TC-003, unit test | ✅ AddStream create/idempotency/conflict covered |
 | AC-007 | JetStream.AddConsumer | AddConsumer 幂等创建；配置兼容时返回 nil；配置冲突时返回错误 | TC-003, unit test | ✅ AddConsumer create/idempotency/conflict covered |
 | AC-008 | Health | NATS 可用时 Health() 返回 Ready=true/Live=true；不可达时 Ready=false/Live=false；JetStream 不可用时 Ready=false/Live=true | TC-005, unit test | ✅ Healthy, disconnected, nil, canceled, closed, reconnect, and degraded health paths covered |
+| AC-009 | JetStream IngestPublisher Adapter | IngestAck{Durable:true} on PubAck；JETSTREAM_PUBLISH_FAILED retryable；空 IdempotencyKey 不可重试；duplicate 返回 Duplicate:true | TC-010, unit + integration | ⏳ Pending — 契约已登记，runtime 适配器待实现 |
+| AC-010 | JetStream IngestConsumer Adapter | Fetch 返回 (req, Ack, err)；Ack 推进 offset；超 AckWait 重投递；超 MaxDeliver 进 DLQ；poison message 不吞没 payload | TC-011, unit + integration | ⏳ Pending — 契约已登记，runtime 适配器待实现 |
 
 
 ## 7. 行为约束
