@@ -4,7 +4,7 @@
 
 - Spec-Version: v3.5.0 (root) / v2.1.1 (client) / v2.2.0 (server)
 - Runtime-Version: v0.1.0
-- Delivery-State: FR-001~FR-030 spec/traceability registered; runtime/release evidence Pending; GitHub #923-#931 remain gated by the current closure ledger.
+- Delivery-State: FR-001~FR-030 spec/traceability registered; runtime/release evidence Pending for FR-012~030 and PR-007; GitHub #923/#924/#927/#928/#929 remain open tracking runtime implementation; #925/#926/#930/#931 closed (doc-complete).
 - Last-Updated: 2026-06-23
 
 It is split into two submodules:
