@@ -32,7 +32,7 @@
 | --- | --- | --- |
 | 文档文件存在 | `cd /home/ZoneCNH/.worktree/workspaces/fix/binance-pr007-runtime-boundary && test -f module/binance/FEATURES.md && test -f module/binance/ACCEPTANCE.md` | 两个文件都存在。 |
 | 文档补丁格式 | `cd /home/ZoneCNH/.worktree/workspaces/fix/binance-pr007-runtime-boundary && git diff --check -- module/binance` | 无 trailing whitespace 或 patch 格式错误。 |
-| 追溯锚点覆盖 | `cd /home/ZoneCNH/.worktree/workspaces/fix/binance-pr007-runtime-boundary && rg -n "FR-001|FR-010|FR-024|TC-001|TC-022|TC-042|AC-001|AC-035|AC-086" module/binance/SPEC.md module/binance/TRACEABILITY.md module/binance/FEATURES.md module/binance/ACCEPTANCE.md` | 根级 FR、AC、TC 锚点在规格、追溯和补齐文档中可定位。 |
+| 追溯锚点覆盖 | `cd /home/ZoneCNH/.worktree/workspaces/fix/binance-pr007-runtime-boundary && rg -n "FR-001|FR-010|FR-030|TC-001|TC-022|TC-049|AC-001|AC-035|AC-104" module/binance/SPEC.md module/binance/TRACEABILITY.md module/binance/FEATURES.md module/binance/ACCEPTANCE.md` | 根级 FR、AC、TC 锚点在规格、追溯和补齐文档中可定位。 |
 | Runtime build | `cd /home/binance && go build ./...` | 所有 package 构建通过。 |
 | Runtime tests | `cd /home/binance && go test ./...` | 单元与集成测试通过。 |
 | Runtime race | `cd /home/binance && go test ./... -race -count=1` | 并发路径无 race。 |
@@ -85,6 +85,8 @@
 | AC-060~AC-071 | FR-016~FR-019 | historical backfill planner、gap replay、archive manifest/restore、resource governance。 | TC-033~TC-036 | Pending |
 | AC-072~AC-080 | FR-020~FR-022 | funding rate、mark/index price 与 event-type governance matrix。 | TC-037~TC-039 | Pending |
 | AC-081~AC-086 | FR-023~FR-024 | release evidence bundle 与 runtime config hot reload。 | TC-040~TC-042 | Pending |
+| AC-087~AC-098 | FR-025~FR-028 | throttle/reconciliation/rehydration/progress API。 | TC-043~TC-046 | Pending |
+| AC-099~AC-104 | FR-029~FR-030 | freshness SLA/schema drift 与 options chain raw field pass-through。 | TC-047~TC-049 | Pending |
 
 ## 3. Test Case 登记
 
@@ -117,6 +119,8 @@
 | TC-033~TC-036 | FR-016~FR-019 | backfill planner/gap replay/archive/resource governance | Pending | historical lifecycle runtime tests 与 restore evidence。 |
 | TC-037~TC-039 | FR-020~FR-022 | funding/mark/index event support + R2 governance matrix | Pending | event mapping/storage/query/fanout 与 checker evidence。 |
 | TC-040~TC-042 | FR-023~FR-024 | evidence bundle/release gate/runtime hot reload | Pending | release evidence、CI/live smoke、no-restart reload proof。 |
+| TC-043~TC-046 | FR-025~FR-028 | throttle/reconciliation/rehydration/progress API | Pending | runtime tests、admin API evidence、storage evidence。 |
+| TC-047~TC-049 | FR-029~FR-030 | freshness SLA/schema drift/options raw field pass-through | Pending | runtime quality evidence、options mapping/fanout/query evidence。 |
 
 ## 4. 覆盖闭合矩阵
 
@@ -140,6 +144,8 @@
 | FR-016~FR-019 | AC-060~AC-071 | TC-033~TC-036 | Not Closed |
 | FR-020~FR-022 | AC-072~AC-080 | TC-037~TC-039 | Not Closed |
 | FR-023~FR-024 | AC-081~AC-086 | TC-040~TC-042 | Not Closed |
+| FR-025~FR-028 | AC-087~AC-098 | TC-043~TC-046 | Not Closed |
+| FR-029~FR-030 | AC-099~AC-104 | TC-047~TC-049 | Not Closed |
 
 ## 5. Release Definition of Done
 
@@ -150,9 +156,9 @@
 | 根、Client、Server traceability 存在 | Done | 三个 traceability 文件可定位。 |
 | natsx / ManualAck / redisx / ossx / kafkax 边界已写入规格 | Done | `SPEC.md` 与 `TRACEABILITY.md` 可定位对应 FR/AC/TC。 |
 | Boundary gates 文档化 | Done | `BOUNDARY-GATES.md` 存在。 |
-| 所有 FR implemented | Not Done | FR-001~FR-024 状态全部闭合。 |
-| 所有 AC passed | Not Done | AC-001~AC-086 全部有测试证据。 |
-| 所有 TC passed | Not Done | TC-001~TC-042 全部 PASS。 |
+| 所有 FR implemented | Not Done | FR-001~FR-030 状态全部闭合。 |
+| 所有 AC passed | Not Done | AC-001~AC-104 全部有测试证据。 |
+| 所有 TC passed | Not Done | TC-001~TC-049 全部 PASS。 |
 | Runtime test evidence | Local Evidence Done / Remote CI Pending | `/home/binance/release/evidence/binance/20260623/` 已归档 build/test/race/vet/lint/smoke/boundary gate；verified source commit `9777a5b0db9a3de5db53942b9aaf6b55eec04f24`，evidence commit `66f60b3945dce215f68ff833bbd336364d635ae8`；secret scan 与远端 CI 仍按 release evidence 单独补齐。 |
 | Coverage and performance evidence | Not Done | 覆盖率、延迟、吞吐、重放与故障注入报告归档。 |
 | CI pass | Not Done | GitHub Actions 或等价 CI run 通过并链接到 release evidence。 |
@@ -163,5 +169,5 @@
 | --- | --- | --- |
 | Runtime 证据仍是本地 evidence bundle | 不能把本地证据等同远端 CI 或 release tag。 | 将 `/home/binance/release/evidence/binance/20260623/` 与后续 GitHub Actions/release evidence 一并归档。 |
 | FR-001/FR-002 Partial | 四 product line 与 identity contract 不完整。 | 补齐 USDM、COINM、Options parser/mapper/connector/server acceptance。 |
-| FR-003~FR-008/FR-010~FR-024 Pending | C/S runtime、存储、API、广播、归档、实时控制面、历史生命周期、事件治理与发布证据未闭合。 | 按 `IMPLEMENTATION-PLAN.md` 和 tasks 顺序实现并更新 traceability。 |
-| Release DoD 未达成 | 不能声明 binance v3.1.0 已可发布。 | 全量 AC/TC PASS 后再更新 release 状态。 |
+| FR-003~FR-008/FR-010~FR-030 Pending | C/S runtime、存储、API、广播、归档、实时控制面、历史生命周期、事件治理与发布证据未闭合。 | 按 `IMPLEMENTATION-PLAN.md` 和 tasks 顺序实现并更新 traceability。 |
+| Release DoD 未达成 | 不能声明 binance v3.5.0 已可发布。 | 全量 AC/TC PASS 后再更新 release 状态。 |

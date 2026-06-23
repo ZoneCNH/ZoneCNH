@@ -128,7 +128,7 @@ expect_file "scripts/check-binance-docs.sh"
 expect_executable "scripts/check-binance-docs.sh"
 
 product_lines=(spot um_perp cm_perp options)
-event_types=(tick trade bar depth)
+event_types=(tick trade bar depth funding_rate mark_price)
 
 for product_line in "${product_lines[@]}"; do
   for event_type in "${event_types[@]}"; do
@@ -188,10 +188,10 @@ expect_rg "L1 Boundary/Governance Gate" module/binance/RULES.md "RULES documents
 expect_rg "bash scripts/check-binance-docs\\.sh" .github/workflows/docs-ci.yml "docs CI runs binance checker"
 expect_rg 'POST /api/v1/admin/symbols/reload' module/binance/STANDARD.md "STANDARD documents current symbols reload endpoint"
 expect_rg 'FR-024' module/binance/STANDARD.md "STANDARD documents FR-024 boundary"
-expect_rg 'FR-024' module/binance/SPEC.md "SPEC includes FR-024"
-expect_rg 'AC-086' module/binance/TRACEABILITY.md "TRACEABILITY includes AC-086"
-expect_rg 'TC-042' module/binance/TRACEABILITY.md "TRACEABILITY includes TC-042"
-expect_rg '24 FR/event-product-governance cells' module/binance/TRACEABILITY.md "TRACEABILITY documents R2 120-cell matrix"
+expect_rg 'FR-030' module/binance/SPEC.md "SPEC includes FR-030"
+expect_rg 'AC-104' module/binance/TRACEABILITY.md "TRACEABILITY includes AC-104"
+expect_rg 'TC-049' module/binance/TRACEABILITY.md "TRACEABILITY includes TC-049"
+expect_rg '4 product lines × 6 event types × 5 文档/checker anchors' module/binance/TRACEABILITY.md "TRACEABILITY documents R2 120-cell matrix"
 expect_rg 'POST /api/v1/admin/symbols/reload' module/binance/RUNTIME-MAPPING.md "RUNTIME-MAPPING uses current symbols reload endpoint"
 expect_no_rg 'POST /api/v1/admin/catalog/reload' module/binance/RUNTIME-MAPPING.md "RUNTIME-MAPPING drops legacy catalog reload endpoint"
 

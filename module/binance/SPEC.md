@@ -381,8 +381,14 @@ Binance 行情集成面临以下问题：
 | FR-022 Event-Type Governance Matrix | AC-078 ~ AC-080 | TC-039 | 文档校验（R2 120-cell matrix + stale checks） |
 | FR-023 Release Evidence Bundle | AC-081 ~ AC-083 | TC-040, TC-041 | 证据归档（local/CI/live/release evidence separation） |
 | FR-024 Runtime Config Hot Reload | AC-084 ~ AC-086 | TC-042 | 管理端点 + 集成（catalog reload + stream diff + no-restart proof） |
+| FR-025 Backfill Throttle & Priority | AC-087 ~ AC-089 | TC-043 | 单元 + 集成（token bucket + 80/20 配额 + priority） |
+| FR-026 Daily Reconciliation Job | AC-090 ~ AC-092 | TC-044 | 集成（04:00 UTC reconciliation + tolerance + alerts） |
+| FR-027 Cold Data Rehydration | AC-093 ~ AC-095 | TC-045 | 集成（OSS→taosx rehydration + 202 job_id + 24h TTL） |
+| FR-028 Backfill Progress API | AC-096 ~ AC-098 | TC-046 | httptest（jobs/coverage API + diagnostic fields） |
+| FR-029 Data Quality & Freshness SLA | AC-099 ~ AC-101 | TC-047 | 单元 + 集成（freshness SLA + stale alert + schema drift evidence） |
+| FR-030 Options Chain Raw Field Pass-through | AC-102 ~ AC-104 | TC-048, TC-049 | 单元 + 集成（raw options fields mapping + fanout/query pass-through） |
 
-**AC 总数**：86（AC-001 ~ AC-086）· **TC 总数**：42（TC-001 ~ TC-042）· **覆盖率**：100%（FR→AC→TC 全链路登记；新增 FR-012~FR-024 默认 Pending）
+**AC 总数**：104（AC-001 ~ AC-104）· **TC 总数**：49（TC-001 ~ TC-049）· **覆盖率**：100%（FR→AC→TC 全链路登记；新增 FR-012~FR-030 默认 Pending）
 
 > AC 完整描述（验收标准文本）单点维护于 `TRACEABILITY.md §5`。本表只做 SPEC ↔ Traceability 双向锚点，遵循 `~/.claude/rules/ecc/matrix-scoring-rules.md §R1 跨表走查` 原则。
 
@@ -514,6 +520,14 @@ type MarketFactEnvelope struct {
 | `binance.market.options.bar` | 期权 K 线 |
 | `binance.market.options.depth` | 期权深度（Binance EOptions `<symbol>@depth1000` WebSocket stream） |
 | `binance.market.options.trade` | 期权逐笔成交 |
+| `binance.market.spot.funding_rate` | 现货资金费率占位（治理矩阵保留；runtime 不采集） |
+| `binance.market.spot.mark_price` | 现货标记价格占位（治理矩阵保留；runtime 不采集） |
+| `binance.market.um_perp.funding_rate` | U 本位合约资金费率 |
+| `binance.market.um_perp.mark_price` | U 本位合约标记价格 |
+| `binance.market.cm_perp.funding_rate` | 币本位合约资金费率 |
+| `binance.market.cm_perp.mark_price` | 币本位合约标记价格 |
+| `binance.market.options.funding_rate` | 期权资金费率占位（治理矩阵保留；runtime 不采集） |
+| `binance.market.options.mark_price` | 期权标记价格 / option mark |
 
 #### Depth 订阅档位（FR-015）
 

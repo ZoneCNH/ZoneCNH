@@ -11,7 +11,7 @@ fail() {
 
 [[ -f "$doc" ]] || fail "missing module/binance/DATA-LIFECYCLE.md"
 
-for i in $(seq 12 24); do
+for i in $(seq 12 30); do
   n="$(printf "%03d" "$i")"
   grep -q "FR-$n" "$doc" || fail "missing FR-$n"
 done
@@ -26,11 +26,13 @@ for phrase in \
   "#880" \
   "#892" \
   "non-normative" \
+  "runtime evidence" \
+  "SPEC/TRACEABILITY" \
   "Fold 前门禁"; do
   grep -q "$phrase" "$doc" || fail "missing phrase: $phrase"
 done
 
-fr_count="$(grep -o 'FR-0[12][0-9]' "$doc" | sort -u | awk '$0 >= "FR-012" && $0 <= "FR-024"' | wc -l | tr -d ' ')"
-[[ "$fr_count" = "13" ]] || fail "expected 13 unique FR-012..FR-024 entries, got $fr_count"
+fr_count="$(grep -Eo 'FR-0(1[2-9]|2[0-9]|30)' "$doc" | sort -u | wc -l | tr -d ' ')"
+[[ "$fr_count" = "19" ]] || fail "expected 19 unique FR-012..FR-030 entries, got $fr_count"
 
-printf 'PASS: %s covers FR-012..FR-024 lifecycle draft\n' "${doc#$root/}"
+printf 'PASS: %s covers FR-012..FR-030 lifecycle draft\n' "${doc#$root/}"
