@@ -120,7 +120,7 @@
 | --- | --- | --- | --- | --- |
 | event_type | 4 -> 6，新增 `funding_rate`、`mark_price` | runtime 接口、存储或 fanout 暴露时按 MAJOR 处理 | Pending | `NAMING.md` / `RUNTIME-MAPPING.md` / `SPEC.md` 同步更新 + event matrix 测试 |
 | tables | `binance_backfill_jobs`、reconciliation alerts、coverage、archive/rehydration metadata、quality/gap metrics | 仅内部表为 MINOR；对外查询合同变化按 MAJOR 评估 | Pending | schema migration、repository 测试、回填/对账集成证据 |
-| topics/subjects | NATS 4x4 baseline 保持；Kafka topic 需版本化；新增 `instruments.changed` / `symbols.changed` | subject/topic 扩展默认 MINOR；event matrix 变化按 MAJOR | Pending | subject mapping、boundary gate、fanout integration evidence |
+| topics/subjects | NATS 4x6 baseline 保持；Kafka topic 需版本化；新增 `instruments.changed` / `symbols.changed` | subject/topic 扩展默认 MINOR；event matrix 变化按 MAJOR | Pending | subject mapping、boundary gate、fanout integration evidence |
 | metrics | stream lag、retry、gap、backfill、reconciliation、quality、coverage 指标 | MINOR | Pending | metrics contract、alert rule、smoke/test evidence |
 | version ledger | FR-012~019 v2.4/v2.5；FR-020~022 v3.0 MAJOR；FR-023~030 v3.x staged；全部仍为 proposal / evidence pending | Proposal only | Pending | Spec -> Code artifacts、CI、release evidence |
 
