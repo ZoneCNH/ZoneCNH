@@ -24,9 +24,8 @@
 
 ## Team reconciliation
 
-- [COMPUTED, HIGH] `omx team status use-context-omx-conte-88f2d738` reported phase `complete`, 3 completed tasks, 0 failed tasks, 0 blocked tasks, and 0 non-reporting workers.
-- [COMPUTED, HIGH] Worker reconciliation classified #923-#931 as still open, with #925/#930 locally documentation-reconciled but not GitHub-closeable.
-- [COMPUTED, HIGH] `omx team shutdown use-context-omx-conte-88f2d738` reported no worker worktree diffs and no synthetic merge.
+- [COMPUTED, HIGH] OMX team `omx-conte-88f2d738` reconciliation (morning): all children classified, no broken dependencies.
+- [COMPUTED, HIGH] OMX team `fix-binance-issues` reconciliation (afternoon): GitHub issue operations executed — closed #925/#926/#930/#931; updated #923/#924/#927/#928/#929 with status comments.
 
 ## Release boundary
 
