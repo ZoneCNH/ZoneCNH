@@ -100,7 +100,7 @@ L2.5: domainx / decimalx / domain_market / domain_macro / domain_exchange (5/5 �
 - [clickhousex](https://github.com/ZoneCNH/clickhousex) — ClickHouse — OLAP 查询、批量写入（v1.0.10 本地 release evidence 已闭合；Exec/Query/Rows/InsertBatch、metrics/tracing/logger/retry/error mapping 与 100.0% 覆盖率门禁已对齐；真实 ClickHouse live 集成与 60s soak 已验证；远端 push / GitHub Release / Actions 待触发；BLK-003 resolved；非 factory） `公开`
 - [taosx](https://github.com/ZoneCNH/taosx) — TDengine L2 adapter contract（pkg/taosx v1.0.5 本地发布候选；CI/release 已加入 taosx-coverage-check，pkg/taosx 100.0% 覆盖；TDengine dev live gate 已通过且保持显式 opt-in；未执行外部 tag/GitHub Release；非 factory） `公开`
 - [kafkax](https://github.com/ZoneCNH/kafkax) — Kafka — 消息队列、事件流（v1.1.0 已发布；真实 broker gates 已验证） `公开`
-- [natsx](https://github.com/ZoneCNH/natsx) — NATS 内部通信模块（v1.0.3 已发布；Core NATS / JetStream、Drain/reconnect/degraded health、canonical `FOUNDATIONX_NATS_*` 配置和真实 dev auth live gate 已验证；正式四源 98+ arbiter 与生产 TLS gate 待补，BLK-001/BLK-002 open；非 factory） `公开`
+- [natsx](https://github.com/ZoneCNH/natsx) — NATS 内部通信模块（v1.0.3 已发布 / Spec v1.2.0；Core NATS / JetStream、Drain/reconnect/degraded health、canonical `FOUNDATIONX_NATS_*` 配置和真实 dev auth live gate 已验证；FR-009/010 JetStream IngestAdapter 域适配契约 pkg/natsx/ingest 解耦 binance PR-007c/d；正式四源 98+ arbiter 与生产 TLS gate 待补，BLK-001/BLK-002 open；非 factory） `公开`
 - [ossx](https://github.com/ZoneCNH/ossx) — Aliyun OSS 对象存储 L2 adapter（v1.2.1；真实 adapters/aliyun + 流式 SPI + multipart + presign + retry/circuit + observex hooks；pkg/ossx 100% 覆盖；BLK-010 resolved ✅；PR #8 merged） `公开`
 
 ### 基座 · 契约与传输
