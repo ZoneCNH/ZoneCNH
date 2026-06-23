@@ -1,7 +1,7 @@
 # module/binance ARCHITECTURE-DRIFT-WATCHLIST.md — 漂移监控点
 
-- Doc-Version: v1.0.0
-- Last-Updated: 2026-06-22
+- Module-Version: v3.3.0
+- Last-Updated: 2026-06-23
 - 用途：列举 `module/binance/` 最易漂移的位置（违反 NAMING/RULES 的高发区），供 PR review / GC agent 逐项检查
 
 ---
@@ -50,19 +50,19 @@ echo "警告：这些状态需经 runtime CI gate 核验"
 
 ---
 
-## D4. ACCEPTANCE Module-Version 与 SPEC Spec-Version 脱钩
+## D4. 模块版本号分裂与脱钩
 
-**风险级别**：MEDIUM
-**历史**：多次审计显示 ACCEPTANCE 版本号更新滞后
-**违反规则**：R6
+**风险级别**：MEDIUM（2026-06-23 从"仅 ACCEPTANCE"升级为全量版本统一监控）
+**历史**：多次审计显示版本号更新滞后；2026-06-23 发现 5 套异名字段（Doc-Version/Matrix-Version/Version/Module-Version/Spec-Version）+ 顶层版本号不统一 + 子规格 TRACEABILITY 版本字段缺失
+**违反规则**：R6（2026-06-23 扩展为全量版本统一）
 **检测命令**：
 ```bash
-SPEC_VER=$(grep -oP "Spec-Version: \Kv[0-9.]+" module/binance/SPEC.md)
-ACC_VER=$(grep -oP "Module-Version: \Kv[0-9.]+" module/binance/ACCEPTANCE.md)
-if [ "$SPEC_VER" != "$ACC_VER" ]; then
-  echo "WARN: SPEC=$SPEC_VER ACC=$ACC_VER — R6 违规"
-fi
+bash scripts/check-binance-docs.sh   # 含 R6 全量版本统一 + 异名字段禁用 + 子规格对称校验
 ```
+**统一模型**：
+- 字段名收敛为 2 种：`Spec-Version`（仅 SPEC.md）+ `Module-Version`（其他治理文档）+ `Runtime-Version`（SPEC.md runtime 版本）
+- 顶层 Module-Version == root SPEC Spec-Version
+- 子规格 TRACEABILITY Module-Version == 对应子 SPEC Spec-Version
 
 ---
 

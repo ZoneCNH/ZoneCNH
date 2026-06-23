@@ -2,10 +2,27 @@
 
 所有 notable 变更记录，按 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/) 格式维护。
 
-- Doc-Version: v3.2.0
+- Module-Version: v3.3.0
 - Last-Updated: 2026-06-23
-- Spec-Reference: `module/binance/SPEC.md` v3.2.0
+- Spec-Reference: `module/binance/SPEC.md` v3.3.0
 - 治理规则：`module/binance/RULES.md` R9 文档存在性
+
+---
+
+## [v3.3.0] — 2026-06-23
+
+### Changed
+- 版本号统一治理：字段名收敛为 `Spec-Version`（仅 root/client/server SPEC.md）/ `Module-Version`（所有治理文档）/ `Runtime-Version`（SPEC.md runtime 版本，原 `Version` 字段）。
+- 废弃异名字段 `Doc-Version` / `Matrix-Version` / `Version`：RULES/NAMING/DATA-LIFECYCLE/STANDARD/WATCHLIST/CHANGELOG/IMPLEMENTATION-PLAN/TRACEABILITY 全部改用 `Module-Version`。
+- 顶层治理文档 Module-Version 统一对齐 root SPEC Spec-Version（v3.3.0）；NAMING/RULES/DATA-LIFECYCLE/STANDARD/WATCHLIST 从游离版本号（v1.0.2/v2.1.0/v0.2.0/v0.1.1/v1.0.0）收敛到 v3.3.0。
+- SPEC.md L10 `Version: v0.1.0` → `Runtime-Version: v0.1.0`（区分规格版本与 runtime 版本）；client/SPEC、server/SPEC 同步。
+- server/TRACEABILITY.md 补建结构化版本字段（Module-Version + Spec-Reference），与 client/TRACEABILITY 对称；版本从散文 v2.1.1 对齐到 server/SPEC v2.2.0。
+
+### Added
+- RULES R6 从"仅 ACCEPTANCE"扩展为"全量版本统一"规则：字段名收敛 + 顶层版本号统一 + 子规格对称 + Spec-Reference 闭环。
+- RULES R3 补充子规格 bump 时 TRACEABILITY 同步条款。
+- check-binance-docs.sh 增项：顶层文档 Module-Version 全量校验 + 子规格 TRACEABILITY 对称校验 + 异名字段禁用检测。
+- WATCHLIST D4 从"ACCEPTANCE 脱钩"升级为"模块版本号分裂与脱钩"全量监控点。
 
 ---
 
@@ -20,8 +37,8 @@
 - server/SPEC §7 新增 FR-025~FR-028 节。
 
 ### Changed
-- root SPEC v3.1.0 → v3.2.0（MINOR，FR 接口新增）；server/SPEC v2.1.0 → v2.2.0（MINOR）。
-- STATUS/README/ARCHITECTURE 三文档 binance 版本同步 v3.2.0。
+- root SPEC v3.1.0 → v3.3.0（MINOR，FR 接口新增）；server/SPEC v2.1.0 → v2.2.0（MINOR）。
+- STATUS/README/ARCHITECTURE 三文档 binance 版本同步 v3.3.0。
 - RULES R1 例外清单补 BR-001 边界声明豁免；R9 收录 STANDARD.md + DATA-LIFECYCLE.md。
 - ACCEPTANCE/FEATURES 新增 L1/L2 状态口径分层图例（RULES R4）。
 
@@ -211,7 +228,7 @@
 
 | 版本 | SPEC | TRACEABILITY | 关键变更 |
 |------|------|-------------|----------|
-| v3.2.0 | v3.2.0 | v3.2.0 | FR-012~FR-024 登记 + R2 120-cell matrix + symbols reload endpoint 口径 |
+| v3.3.0 | v3.3.0 | v3.3.0 | FR-012~FR-024 登记 + R2 120-cell matrix + symbols reload endpoint 口径 |
 | v2.2.3 | v2.2.3 | v2.2.3 | runtime evidence + CI URL + topic/version drift guard |
 | v2.2.2 | v2.2.2 | v2.2.2 | CHANGELOG 新建 + 版本号全量对齐 |
 | v2.2.1 | v2.2.0 | v2.2.1 | Boundary gate 证据回填 |
@@ -226,7 +243,7 @@
 
 | 日期 | 版本 | 变更内容 | 作者 |
 |------|------|----------|------|
-| 2026-06-22 | v3.2.0 | root SPEC/TRACEABILITY/ACCEPTANCE/FEATURES/README/IMPLEMENTATION-PLAN/RUNTIME-MAPPING 同步到 v3.2.0 登记态 | ZoneCNH |
+| 2026-06-22 | v3.3.0 | root SPEC/TRACEABILITY/ACCEPTANCE/FEATURES/README/IMPLEMENTATION-PLAN/RUNTIME-MAPPING 同步到 v3.3.0 登记态 | ZoneCNH |
 | 2026-06-22 | v2.2.2 | 新建 CHANGELOG + ACCEPTANCE/FEATURES/IMPLEMENTATION-PLAN 版本号同步到 v2.2.2 | ZoneCNH |
 | 2026-06-22 | v2.2.1 | Boundary gate evidence 回填 + 5 个 v2.0.0 前 task 归档 | ZoneCNH |
 | 2026-06-22 | v2.2.0 | 命名收敛 + Options/cm_perp depth 补全 + 状态口径修复 | ZoneCNH |

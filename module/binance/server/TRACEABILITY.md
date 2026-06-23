@@ -1,12 +1,19 @@
 # module/binance/server TRACEABILITY
 
-> 追溯矩阵版本：v2.1.1 | 最后更新：2026-06-22 | 对应 server SPEC v2.1.0
->
+> 追溯矩阵 §1–§7，符合 `docs/governance/TRACEABILITY.md` 标准格式。
+> 数据来源：`module/binance/server/SPEC.md` v2.2.0。
+
+- Module-Version: v2.2.0
+- Last-Updated: 2026-06-23
+- Spec-Reference: `module/binance/server/SPEC.md` v2.2.0
+
 > **v2.1.1 变更摘要**：元数据对齐 server SPEC v2.1.0；保留 v2.1.0 的 FR/TC/AC 追溯结构；
 > TC-020/021 覆盖；FR-002→FR-005 编号修正（v2.0.0 漏收 Consumer Lifecycle 导致整体偏移）；
 > 新增 FR-007a（clickhousex Analytics API）、FR-010（clickhousex OLAP Storage）、FR-011
 > （Distributed Coordinator Lock）及对应 TC/AC；BR 表对齐 SPEC BR-001~BR-006 + 补充
 > Cold-Write-First（BR-007）、Server Owns Binance Storage（BR-008）、No cs Package（BR-009）。
+
+> **v2.2.0 变更摘要**：server/SPEC §7 新增 FR-025~FR-028（Backfill Throttle/Reconciliation/Rehydration/Progress API）；Module-Version 对齐 server/SPEC v2.2.0。
 
 ---
 
