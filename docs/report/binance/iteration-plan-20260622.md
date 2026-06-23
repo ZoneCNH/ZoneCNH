@@ -2,6 +2,8 @@
 
 > [COMPUTED, HIGH] **2026-06-23 闭环状态**：本方案中的 27 项 backlog + 19 个待建 issue 已全部落地并关闭（PR #910，GitHub open count = 0）。正文中"待建 issue"字样为 2026-06-22 规划时状态，实际 issue 编号为 #866~#896（含 #869）。逐 issue 最终状态、证据与残留动作见 [`issues-full-closure-20260623.md`](issues-full-closure-20260623.md)。候选 FR-025~028（Backfill Throttle/Daily Reconciliation/Cold Rehydration/Progress API）未 fold 进 SPEC 为 PR #910 历史口径；post-PR #936/current module docs have since folded FR-025~028 into SPEC/TRACEABILITY/NAMING and added FR-029/030. See `pr-936-governance-docs-closure-20260623.md`.
 
+> [COMPUTED, HIGH] 下文表格中的 `OPEN` / `待建 issue` / `4×4` 均为 2026-06-22 规划快照，不是 post-PR #936/current-docs 当前状态。
+
 - [COMPUTED, HIGH] 制定日期：2026-06-22
 - [COMPUTED, HIGH] 输入来源：`docs/report/binance/` 全部 5 份报告（v1/v2/v3/v4 + business-types）+ 现有 8 个开放 issue（#866~#873）+ `module/binance/` 治理文件基线
 - [COMPUTED, HIGH] 目标：把分散在 5 份报告中的发现收敛为单一执行计划，并同步到 GitHub issues，形成可追溯的迭代 backlog
@@ -117,7 +119,7 @@
 - 阶段 0 完成时，给 #866/#867/#868/#872/#873 加 `closed-by PR #XXX` 评论
 - #870 检查脚本落地后，反哺 #866~#873 的验证命令
 
-### 3.2 待建 issue（19 个）
+### 3.2 待建 issue（19 个，2026-06-22 历史规划口径）
 
 **v2 收尾（4 个，P2~P3）**：
 
@@ -198,7 +200,7 @@
 ### 5.2 停止条件
 
 - [COMPUTED, HIGH] 本方案**未修改任何 `module/binance/` 治理文件**
-- [INFERRED, HIGH] 建议下一步：用户确认阶段划分 → 创建 19 个待建 issue → 启动阶段 0 的 5 个并行 PR
+- [INFERRED, HIGH] 历史下一步：用户确认阶段划分 → 创建 19 个待建 issue → 启动阶段 0 的 5 个并行 PR；post-PR #936/current-docs 口径见 `pr-936-governance-docs-closure-20260623.md`
 - [INFERRED, MED] 阶段 0 收敛前，禁止启动阶段 3+ 的 FR 落地
 
 ---
