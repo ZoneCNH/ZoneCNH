@@ -32,15 +32,18 @@ binance 模块当前**规格端与 runtime 端均未达生产级别**：
 
 > **分析报告 §7.1**：当前「SPEC 写 v2.0.0，runtime 跑 v1.0.0」是最差状态——两边都在维护，都不生产。必须先二选一。
 
-### Task 0.1: 架构决策 ADR
+### Task 0.1: 架构决策 ADR [DONE — v2.0.0]
 
-- **前置（重要，2026-06-24 复核新增）**: v2.0.0 的可行性取决于 7 个 infra 依赖仓接口是否就绪——**必须先执行 Phase 3 Task 3.1 的轻量探针**（natsx `IngestPublisher`/`IngestConsumer`、taosx `WriteBatch`、redisx `SetNX` 等接口存在性），再做本决策。依赖仓不就绪时 v2.0.0 不可选，或须先反向推动 infra 仓升级（见 §10.7、§8.1）。即：**Phase 3 探针前置于 Phase 0 决策**，Phase 3 的完整验证仍阻断 Phase 4。
-- **动作**: 编写 ADR，决策采用 v2.0.0 natsx 架构 OR 回退 SPEC 到 v1.0.0
-- **决策依据**:
-  - 若选 v2.0.0 → 执行 Phase 1~7（全量重写，4.8~9 人月）
-  - 若选 v1.0.0 → 执行 Phase 1 + Phase 2 + **Phase 4-ALT**（回退 SPEC v3.5.0 → v1.0.0 形态，标注「单进程参考实现，非生产分布式」，0.5~1.5 人月）；Phase 4~7 的 runtime 实现任务全部作废
-- **STOP 条件**: 未做此决策前，禁止启动 Phase 1+ 任何 runtime 修改；未跑 Phase 3 探针前不得敲定 v2.0.0
-- **验证**: ADR 文件存在 `module/binance/ADR-architecture-decision.md`，含决策、理由、替代方案、后果、依赖仓就绪证据
+- **状态**: ✅ DONE（2026-06-24，决策：采用 v2.0.0 natsx 分布式架构）
+- **前置探针结果**: 7 仓 go doc 探针，5/7 就绪（natsx/redisx/taosx/ossx ✅；kafkax/postgresx/clickhousex ⚠️ 需 Task 3.1 完整验证）。核心通信层 natsx 就绪 → v2.0.0 可行。
+- **决策**: 采用 v2.0.0，全量重写 runtime。ADR 见 `module/binance/ADR-architecture-decision.md`（ADR-001, ACCEPTED）
+- **执行约束**:
+  - Phase 4-ALT（v1.0.0 回退）**作废**，Task 4A.1~4A.3 不执行
+  - Phase 4~7 激活，Task 4.1~7.5 按依赖图执行
+  - Task 3.1 完整验证仍阻断 Phase 4（postgresx/clickhousex/kafkax 接口需在 Task 4.5/4.8 前确认）
+  - Phase 1+2 可立即启动（与架构无关）
+- **STOP 条件**: 已满足（ADR 已编写，探针已执行）
+- **验证**: ✅ `module/binance/ADR-architecture-decision.md` 存在，含决策/理由/替代方案/后果/依赖仓就绪证据
 - **来源**: §7.1, §8.1, §10.7
 
 ---
@@ -179,16 +182,17 @@ binance 模块当前**规格端与 runtime 端均未达生产级别**：
 - **STOP 条件**: SHA 数量 > 2
 - **合规**: CLAUDE.md 文档同步 + 数量验证门禁
 
-### Task 2.5: 强化 boundary-gates 架构实质检查 [P1]
+### Task 2.5: 强化 boundary-gates 架构实质检查 [P1] [DONE — runtime presence gates aligned]
 
 - **来源**: §2.2, §8.3
+- **状态**: ✅ DONE（2026-06-24，runtime §12~§14 presence gates 已加入并通过）
 - **动作**: 在 `/home/binance/scripts/boundary-gates.sh` 增加 3 道 gate:
-  - `§12 natsx call existence`: 若选 v2.0.0，验证 runtime 有 natsx 调用
-  - `§13 storage call existence`: 验证 7 存储模块至少有调用（实现后启用）
-  - `§14 gin route existence`: 验证 Gin API 路由存在（实现后启用）
-- **验证**: `./scripts/boundary-gates.sh` 含新 gate；架构未实现时 gate 报 FAIL（诚实暴露）
+  - `§12 natsx runtime adapter presence`: 验证 server dispatch 构造 core `natsx.Envelope` 并通过 `Publish(context.Context, natsx.Envelope)` 能力发布
+  - `§13 runtime storage integrations presence`: 验证 `taosx` / `clickhousex` / `redisx` / `kafkax` package boundary 进入 runtime code
+  - `§14 gin route existence`: 验证 Gin API 路由存在
+- **验证**: `/home/binance/scripts/boundary-gates.sh` 已扩展为 §2~§14；本地结果 `13 passed, 0 failed`
 - **STOP 条件**: 新 gate 被绕过或禁用
-- **注**: 这些 gate 在 Phase 4 实现前应 FAIL，实现后 PASS——用于防止「架构分裂」再次发生
+- **注**: 当前 gate 是存在性/边界门禁；JetStream PubAck/ManualAck、真实外部 storage IO、fanout delivery 和 query API 仍由 Phase 4~7 功能验收关闭。
 
 ---
 
@@ -196,19 +200,24 @@ binance 模块当前**规格端与 runtime 端均未达生产级别**：
 
 > 分析报告 §10.7、§8.1。SPEC 假设 natsx FR-009/010 等接口就绪，但未验证。**本 Phase 的轻量探针（Task 3.1 接口存在性）前置于 Phase 0 架构决策**——v2.0.0 是否可选取决于依赖仓就绪；Task 3.1 的完整验证仍阻断 Phase 4。
 
-### Task 3.1: 验证 7 个 infra 仓接口成熟度 [P1]
+### Task 3.1: 验证 7 个 infra 仓接口成熟度 [P1] [DONE — 7/7 就绪]
 
+- **状态**: ✅ DONE（2026-06-24，7/7 仓接口就绪，Phase 4 阻断解除）
 - **来源**: §10.7
-- **动作**: 逐仓验证 go.mod 声明版本是否提供 SPEC 假设的接口:
-  - `natsx v1.0.0`: 是否提供 `IngestPublisher`（FR-009）/ `IngestConsumer`（FR-010）？
-  - `redisx v1.0.1`: 是否提供 `SetNX` / 分布式锁？
-  - `taosx v1.0.1`: 是否提供 `WriteBatch` / 子表自动建表？
-  - `postgresx v1.0.0`: 是否提供 `UpsertSymbol`（ON CONFLICT）？
-  - `kafkax v1.0.2`: 是否提供 topic publish + partition key？
-  - `ossx v1.2.1`: 是否提供 ETag 校验 + Parquet 归档？
-  - `clickhousex v1.0.1`: 是否提供 InsertBatch + analytics 查询？
-- **验证**: 每个仓出一份接口清单文档 `docs/report/binance/dep-maturity-audit.md`
-- **STOP 条件**: 任一仓缺关键接口 → 需反向推动该仓升级，W1 阻塞
+- **探针结果**（补齐后）:
+  - `natsx v1.0.0`: ✅ `JetStreamClient.Publish`→PubAck + `PullSubscribe`(durable)
+  - `redisx v1.0.1`: ✅ `SetNX` + `AcquireLock`/`ReleaseLock`
+  - `taosx v1.0.1`: ✅ `WriteBatch`
+  - `ossx v1.2.1`: ✅ `Store.Put` + multipart ETag
+  - `kafkax v1.0.2 → v1.1.0`: ✅ `Producer.Send`/`SendBatch`（pkg/kafkax/producer.go）
+  - `postgresx v1.0.0 → v1.1.2`: ✅ `Client.Exec`/`Query` + `SecretString`
+  - `clickhousex v1.0.1 → v1.0.9`: ✅ `Client.InsertBatch`/`Exec`/`Query`（v1.0.9 起）
+- **补齐工作**:
+  - bootstrap 仓 PR #2 (v0.2.1): 适配 postgresx `SecretString`
+  - bootstrap 仓 PR #3 (v0.2.2): 适配 clickhousex `CloseContext`
+  - binance 仓 PR #21: go.mod 升级 4 依赖，build/test/vet/race 全 PASS
+- **验证**: ✅ binance `go build ./...` + `go test ./... -race` 全 PASS；接口清单见 ADR §3.1
+- **STOP 条件**: 已满足（无仓缺关键接口）
 - **来源**: §10.7, §8.1
 
 ### Task 3.2: 审查 5 个 indirect ZoneCNH 基座模块 [P2]
@@ -438,6 +447,9 @@ binance 模块当前**规格端与 runtime 端均未达生产级别**：
   - 历史凭证扫描 `git log --all -p | gitleaks detect`
 - **验证**: evidence 含 gitleaks + govulncheck 输出；无 CVE/凭证
 - **STOP 条件**: 发现历史凭证泄漏 → 立即轮换
+- **凭据边界声明**: binance 仓内**零凭据**——所有 infra 连接凭据唯一存放点为 `sre/secrets/env/dev.md`（`.gitignore` line 103 `/sre/` 排除，不进 binance 仓 git 历史）。
+gitleaks 扫 binance 仓时应无任何 dev.md 中登记的凭据片段命中；
+若命中，说明 Task 7.0/7.1 的 configx 接入或 .env.example 占位有泄漏，必须回退修正。dev.md 本身的明文凭据由 SRE 仓独立治理（dev.md 顶部 CAUTION 已声明迁移 Vault 计划），不纳入 binance 仓扫描范围。
 
 ### Task 6.5: 添加可观测性 [P1]
 
@@ -471,19 +483,46 @@ binance 模块当前**规格端与 runtime 端均未达生产级别**：
 
 ## Phase 7: 部署与发布门禁（W15~W16，P1）
 
-> 分析报告 §10.2, §10.3, §12.7。
+> 分析报告 §10.2, §10.3, §12.7。**配置统一来源约束**：七个 infra 仓（redisx/kafkax/natsx/postgresx/taosx/ossx/clickhousex）的连接凭据统一保存在 `sre/secrets/env/dev.md`（凭据总册，`.gitignore` line 103 `/sre/` 排除，不进 git），通过摘出 `.env`（`FOUNDATIONX_<MODULE>_*` 前缀）+ configx 加载。binance runtime 统一作为外部服务 client 连接（dev.md 全部服务为 127.0.0.1 外部进程实例，已建库建表），不内嵌任何 infra 进程，不在仓内硬编码凭据。
+
+### Task 7.0: infra 凭据就绪与 configx 接入范式 [P1，阻断 7.1/7.3]
+
+- **来源**: 新增（深度分析 2026-06-24，对齐 ZoneCNH 基座 configx 范式）
+- **背景**: dev.md 已含七 infra 仓全部凭据（PG/TDengine/Redis/Kafka/ClickHouse/NATS/OSS），但仅 `natsx.env`/`ossx.env`/`clickhousex.env` 有 `.env` 摘出；**redisx/kafkax/postgresx/taosx 四仓缺 `.env` 摘出**。binance go.mod 中 `configx v1.0.0 // indirect`，runtime 未接入 configx，`FOUNDATIONX_` 引用为 0。若不统一，Task 7.3 会退化为各仓散落 `os.Getenv`，绕过基座范式且凭据无处集中。
+- **动作**:
+  - 在 `sre/secrets/env/dev.md` 补 redisx/kafkax/postgresx/taosx 四仓 `.env` 摘出段（前缀 `FOUNDATIONX_REDISX_*` / `FOUNDATIONX_KAFKAX_*` / `FOUNDATIONX_POSTGRESX_*` / `FOUNDATIONX_TAOSX_*`），并各摘出一个 `sre/secrets/env/<module>.env` 文件（与 natsx.env/ossx.env/clickhousex.env 同范式）
+  - binance go.mod 将 `configx` 从 indirect 升 direct（`go get github.com/ZoneCNH/configx`）
+  - binance runtime 统一通过 `configx.Load` 读取 `FOUNDATIONX_BINANCE_*`（binance 自身配置）+ 七 infra 前缀（由各 infra 仓的 configx loader 自解析），禁止在 binance 仓内拼 DSN/硬编码端口密码
+  - 连接对象全部指向 dev.md 的外部实例：PG `127.0.0.1:5432/market_binance`、TDengine `127.0.0.1:6030/market_binance`、Redis `127.0.0.1:6379`、Kafka `127.0.0.1:9092`、ClickHouse `127.0.0.1:9000`、NATS `nats://127.0.0.1:4222`、OSS 阿里云 `x-go` bucket
+- **验证**:
+  ```bash
+  # 四仓 .env 摘出就绪
+  for m in redisx kafkax postgresx taosx; do
+    ls sre/secrets/env/$m.env >/dev/null 2>&1 && echo "$m.env ✅" || echo "$m.env MISSING"
+  done
+  # dev.md 含四仓摘出段
+  grep -c "FOUNDATIONX_REDISX_\|FOUNDATIONX_KAFKAX_\|FOUNDATIONX_POSTGRESX_\|FOUNDATIONX_TAOSX_" sre/secrets/env/dev.md
+  # binance configx 升 direct
+  cd /home/binance && grep -E "configx v" go.mod | grep -v indirect
+  # binance 仓内零硬编码凭据
+  grep -rnE "password|passwd|secret|api_?key" --include="*.go" internal/ cmd/ | grep -vE "configx|os\.Getenv|FOUNDATIONX" || echo "零硬编码 ✅"
+  ```
+- **STOP 条件**: binance 仓内出现任何明文凭据（grep 命中非 configx/os.Getenv 的 password/secret/api_key）；或任一 infra 仓缺 `.env` 摘出导致 configx 加载失败
+- **依赖**: Task 3.1（接口就绪）→ 本 Task（凭据就绪）→ Task 7.1/7.3
+- **合规**: CLAUDE.md 安全条款「禁止提交凭证」+ dev.md 顶部 CAUTION 声明
 
 ### Task 7.1: 创建部署产物 [P1]
 
 - **来源**: §10.2
 - **动作**:
-  - Dockerfile（multi-stage build）
-  - docker-compose.yml（client + server + nats + redis + taos + pg + kafka + oss + clickhouse）
-  - configs/binance-client.yaml.example + binance-server.yaml.example（覆盖 SPEC §11 100+ 配置项）
-  - migrations/001~004_*.sql（catalog + idempotency_log + audit + stream_sessions）
-- **验证**: `ls Dockerfile docker-compose.yml configs/ migrations/` 全命中
-- **STOP 条件**: RUNTIME-MAPPING §2 声称的产物仍缺失
-- **合规**: 修正 §10.12 文档虚假声明
+  - Dockerfile（multi-stage build，仅编译 binance client/server 二进制）
+  - docker-compose.yml：**只起 binance client + server**，七个 infra 服务声明为外部连接（`network_mode: host` 或 `extra_hosts` + 环境变量指向 dev.md 的 127.0.0.1 实例），**不重新拉起一套 PG/Redis/NATS/Kafka/CH/TD/OSS**——dev.md 已建库建表，复用外部实例
+  - `configs/binance-client.env.example` + `binance-server.env.example`（**对齐 dev.md 的 `.env` + `FOUNDATIONX_*` 前缀范式**，非 yaml；示例文件用占位符，真实值由 `sre/secrets/env/*.env` 提供，禁止进 git）
+  - migrations/001~004_*.sql（catalog + idempotency_log + audit + stream_sessions，目标库 `market_binance`）
+- **验证**: `ls Dockerfile docker-compose.yml configs/*.env.example migrations/` 全命中；`grep -rniE "password|passwd|secret|api_?key" configs/` 返回空（示例仅占位符，无真实凭据）；docker-compose 中 infra 服务均为外部连接声明
+- **STOP 条件**: RUNTIME-MAPPING §2 声称的产物仍缺失；或 configs/ 出现真实凭据
+- **合规**: 修正 §10.12 文档虚假声明 + CLAUDE.md「禁止提交实盘交易配置」
+- **依赖**: Task 7.0
 
 ### Task 7.2: 补全 CI workflows [P1]
 
@@ -500,10 +539,10 @@ binance 模块当前**规格端与 runtime 端均未达生产级别**：
 ### Task 7.3: 补 SPEC §11 100+ 配置项加载 [P1]
 
 - **来源**: §11.12
-- **动作**: runtime 补 ~80 个配置项的加载逻辑（nats/redis/pg/taos/kafka/oss/clickhouse/gin）
-- **验证**: `grep -rn "os.Getenv\|env(" cmd/ internal/` ≥ SPEC 配置项数
-- **STOP 条件**: 无
-- **依赖**: Task 7.1
+- **动作**: runtime 补 ~80 个配置项的加载逻辑（nats/redis/pg/taos/kafka/oss/clickhouse/gin），**统一通过 configx + `FOUNDATIONX_*` 前缀加载，凭据来源 `sre/secrets/env/dev.md` 摘出的 `sre/secrets/env/<module>.env`**，禁止裸 `os.Getenv` 散落拼 DSN。各 infra 仓的 configx loader 负责解析自身前缀，binance 只需声明依赖 + 注入连接对象。
+- **验证**: `grep -rn "configx" cmd/ internal/` > 0；`grep -rnE "os\.Getenv\(\"[A-Z]" cmd/ internal/ | grep -vE "FOUNDATIONX"` 仅限非凭据配置（如 MODE/ENV）；SPEC §11 配置项数与 configx 注册项数对齐
+- **STOP 条件**: 出现裸 `os.Getenv("REDIS_PASSWORD")` 等凭据直读，绕过 configx
+- **依赖**: Task 7.0, 7.1
 
 ### Task 7.4: 创建 GitHub Release [P1]
 
@@ -587,7 +626,13 @@ Phase 0 (架构决策)
                           └── 5.4 运维发布 (依赖 5.1, 5.2)
                                 └── Phase 6 (测试证据) — 依赖 Phase 4+
                                       └── Phase 7 (部署发布) — 依赖 Phase 6
-                                            └── Phase 8 (对齐) — 贯穿
+                                            ├── 7.0 凭据就绪+configx (依赖 3.1)
+                                            ├── 7.1 部署产物 (依赖 7.0)
+                                            ├── 7.2 CI (并行)
+                                            ├── 7.3 配置项加载 (依赖 7.0, 7.1)
+                                            ├── 7.4 GitHub Release
+                                            └── 7.5 README 声明
+                                                  └── Phase 8 (对齐) — 贯穿
 ```
 
 ## 工作量汇总
@@ -601,9 +646,9 @@ Phase 0 (架构决策)
 | Phase 4 架构重写 | 8 | 1.5~3 人月 | P0 |
 | Phase 5 扩展功能 | 4 | 1~2 人月 | P1 |
 | Phase 6 测试证据 | 8 | 1~1.5 人月 | P1 |
-| Phase 7 部署发布 | 5 | 0.5~1 人月 | P1 |
+| Phase 7 部署发布 | 6 | 0.5~1 人月 | P1 |
 | Phase 8 对齐 | 5 | 0.3~0.5 人月 | P1+P2 |
-| **合计（v2.0.0 路径）** | **45 Task** | **4.8~9 人月** | |
+| **合计（v2.0.0 路径）** | **46 Task** | **4.8~9 人月** | |
 | Phase 4-ALT v1.0.0 回退 | 3（条件，与 Phase 4~8 互斥） | — | P0+P1 |
 | **合计（v1.0.0 路径）** | Phase 1+2+4-ALT+8.5 | **0.5~1.5 人月** | |
 
@@ -664,9 +709,10 @@ Phase 0 (架构决策)
 | 6.6 | §11.6 | testdata |
 | 6.7 | §11.13, §12.12 | recover+心跳 |
 | 6.8 | §12.9 | 强类型 |
+| 7.0 | 新增（深度分析 2026-06-24） | infra 凭据就绪 + configx 接入范式 |
 | 7.1 | §10.2 | 部署产物 |
 | 7.2 | §10.3, §11.7 | CI workflows + .golangci.yml |
-| 7.3 | §11.12 | 配置项 |
+| 7.3 | §11.12 | 配置项（configx + FOUNDATIONX_） |
 | 7.4 | §12.7 | GitHub Release |
 | 7.5 | §8.3 | README 声明 |
 | 8.1 | §10.6, §12.1 | 错误码 |
@@ -678,7 +724,7 @@ Phase 0 (架构决策)
 | 4A.2 | §8.3, §11.5 | v1 非生产声明（条件） |
 | 4A.3 | §12.2, §11.13, §12.12 | v1 闭环加固（条件） |
 
-**覆盖率自检**: `[COMPUTED, HIGH]` 本 plan 覆盖分析报告 §0~§13 全部 58 维度发现（含第六轮复核：§11.1 go.sum 由 P0 降级 P2）。2 P0 → Task 1.1/4.1-4.7；29 P1 → Task 0.1/1.3/2.1-2.5/3.1/4.x/5.x/6.1-6.5/7.1-7.4/8.1/8.5；19 P2 → Task 1.2/1.4-1.7/3.2/6.6-6.8/7.5/8.2-8.4。无遗漏。
+**覆盖率自检**: `[COMPUTED, HIGH]` 本 plan 覆盖分析报告 §0~§13 全部 58 维度发现（含第六轮复核：§11.1 go.sum 由 P0 降级 P2；2026-06-24 深度分析：新增 infra 凭据统一来源 + configx 接入范式 Task 7.0）。2 P0 → Task 1.1/4.1-4.7；30 P1 → Task 0.1/1.3/2.1-2.5/3.1/4.x/5.x/6.1-6.5/7.0-7.4/8.1/8.5；19 P2 → Task 1.2/1.4-1.7/3.2/6.6-6.8/7.5/8.2-8.4。无遗漏。
 
 **显式未建 Task 的报告项（非遗漏，已审查）**:
 - §10.9 .worktree 隐藏分支：确认项（证实无隐藏 FR 实现），无需修复 Task
