@@ -6,8 +6,8 @@
 > Runtime 契约：`/home/binance/BOUNDARY-GATES.md`
 > Runtime 脚本：`/home/binance/scripts/boundary-gates.sh`
 > Runtime 证据：`/home/binance/release/evidence/binance/20260623/`
-> Runtime evidence commit：`66f60b3945dce215f68ff833bbd336364d635ae8`
-> Verified source commit：`9777a5b0db9a3de5db53942b9aaf6b55eec04f24`
+> Runtime evidence commit：`71e2a6e8bb5591c43e8a2ebfff8c7645bf030786`
+> Verified source commit：`71e2a6e8bb5591c43e8a2ebfff8c7645bf030786`
 
 ## 1. 目的
 

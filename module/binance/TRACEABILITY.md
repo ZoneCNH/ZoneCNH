@@ -20,7 +20,7 @@
 
 > **v3.5.0 变更摘要**：补齐 FR-029（Data Quality & Freshness SLA）与 FR-030（Options Chain Raw Field Pass-through）的追溯闭环；新增 AC-099~AC-104 与 TC-047~TC-049；R2 governance matrix 文案统一为 4 product lines × 6 event types × 5 文档/checker anchors；新增项保持 Pending，runtime/release evidence 仍未闭合。
 
-> **2026-06-23 证据刷新**：本地 runtime evidence 已归档至 `/home/binance/release/evidence/binance/20260623/`；验证代码 `9777a5b0db9a3de5db53942b9aaf6b55eec04f24`，证据提交 `20c7712935f53e1948bdf4b30a72d3db07f9acfb`；仅闭合 FR-009/BR 本地边界证据，release、remote CI、live websocket、外部集成与 L2 功能 FR 不因此闭合。
+> **2026-06-23 证据刷新（round 2）**：本地 runtime evidence 已归档至 `/home/binance/release/evidence/binance/20260623/`；证据提交 `71e2a6e8bb5591c43e8a2ebfff8c7645bf030786`；boundary gates 重新运行 10/10 PASS，`go build`/`go vet`/`go test` 全部 PASS，全部 9 个 issue 分支已合并至 origin/main；仅闭合 FR-009/BR 本地边界证据，release、remote CI、live websocket、外部集成与 L2 功能 FR 不因此闭合。
 
 | FR ID | 功能需求 | AC | TC ID(s) | Task | 实现状态 |
 |-------|----------|-----|----------|------|----------|
@@ -59,7 +59,7 @@
 | FR-029 | Data Quality & Freshness SLA：端到端 event_time→persist 延迟上限 + schema 漂移检测 + stale alert | AC-099 ~ AC-101 | TC-047 | ROOT-010 | Pending |
 | FR-030 | Options Chain Raw Field Pass-through：option chain 原始字段（strike/expiry/option_type/mark/IV）透传至下游，Greeks 派生归分析域 | AC-102 ~ AC-104 | TC-048, TC-049 | CLIENT-020 | Pending |
 
-> 状态口径：v3.1.0 新增 FR-012~FR-024 仅完成追溯登记，全部保持 Pending；v3.3.0 新增 FR-025~FR-028（fold 自 DATA-LIFECYCLE §7 候选）同样保持 Pending；v3.5.0 新增 FR-029（P2-2 数据质量/freshness SLA）+ FR-030（P2-4 Options 字段透传）同样保持 Pending；FR-009/BR Done 的 2026-06-23 本地 runtime 证据见 `BOUNDARY-GATES.md` 与 `/home/binance/release/evidence/binance/20260623/`（验证代码 `9777a5b0db9a3de5db53942b9aaf6b55eec04f24`，证据提交 `20c7712935f53e1948bdf4b30a72d3db07f9acfb`），并有 runtime PR `ZoneCNH/binance#11` merge commit `5a57a19aed3be5420135b8e05016da15faf094ed` / source commit `7873b795b13fc4b5a0fc4310300b6f196cca7532` 的远端 `Boundary Gates (10 gates)` PASS 作为边界 gate 补充证据。该状态只补充独立 `cmd/binance-client` + HTTP `/ingest` 边界证据，不代表 PR-007a~g 分布式 runtime、TC-005、secret scan、远端 release CI、live websocket、外部集成或 release tag 已完成。
+> 状态口径：v3.1.0 新增 FR-012~FR-024 仅完成追溯登记，全部保持 Pending；v3.3.0 新增 FR-025~FR-028（fold 自 DATA-LIFECYCLE §7 候选）同样保持 Pending；v3.5.0 新增 FR-029（P2-2 数据质量/freshness SLA）+ FR-030（P2-4 Options 字段透传）同样保持 Pending；FR-009/BR Done 的 2026-06-23 round 2 本地 runtime 证据见 `BOUNDARY-GATES.md` 与 `/home/binance/release/evidence/binance/20260623/`（证据提交 `71e2a6e8bb5591c43e8a2ebfff8c7645bf030786`），并有 runtime PR `ZoneCNH/binance#11` merge commit `5a57a19aed3be5420135b8e05016da15faf094ed` / source commit `7873b795b13fc4b5a0fc4310300b6f196cca7532` 的远端 `Boundary Gates (10 gates)` PASS 作为边界 gate 补充证据。该状态只补充独立 `cmd/binance-client` + HTTP `/ingest` 边界证据，不代表 PR-007a~g 分布式 runtime、TC-005、secret scan、远端 release CI、live websocket、外部集成或 release tag 已完成。
 
 ---
 

@@ -24,7 +24,7 @@
 ### 当前证据口径（2026-06-23）
 
 - [COMPUTED, HIGH] 当前远端 runtime 基线：`ZoneCNH/binance` `origin/main` merge commit `5a57a19aed3be5420135b8e05016da15faf094ed`（runtime PR #11），source commit `7873b795b13fc4b5a0fc4310300b6f196cca7532`。
-- [COMPUTED, HIGH] 已归档本地证据：`/home/binance/release/evidence/binance/20260623/`；历史本地 evidence commit `66f60b3945dce215f68ff833bbd336364d635ae8`。
+- [COMPUTED, HIGH] 已归档本地证据：`/home/binance/release/evidence/binance/20260623/`；历史本地 evidence commit `71e2a6e8bb5591c43e8a2ebfff8c7645bf030786`。
 - [COMPUTED, HIGH] 已证明范围：独立 `cmd/binance-client` 可启动 admin `:8081` self-test，并通过 `internal/wire` 发送 HTTP JSON `/ingest` 到 `cmd/binance-server` handler；`internal/wire` 为合法共享 wire contract；runtime 不含 `internal/cs`；`scripts/boundary-gates.sh` 10/10 PASS；`go build/test/race/vet`、`golangci-lint` 与本地 smoke self-test PASS；runtime PR #11 远端 `Boundary Gates (10 gates)` PASS。
 - [COMPUTED, HIGH] 未证明范围：`natsx` JetStream PubAck/ManualAck、durable consumer、`redisx/postgresx/taosx/ossx` 持久化、`kafkax` fanout、`/api/v1` market/query API、live websocket、release tag 与 release evidence。
 

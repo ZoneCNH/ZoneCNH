@@ -362,7 +362,7 @@ FoundationX 运行模块分为两种架构类型。详见 [`ARCHITECTURE.md`](..
 
 **宏观模块规格**：[`fred`](./fred/README.md) — FRED 独立 C/S 服务，覆盖共享基座、`domain_macro` 领域共享层、完整持久化和 dev 配置来源。
 
-**参考实现**：[binance](https://github.com/ZoneCNH/binance)（spec v3.5.0 Approved；2026-06-23 本地 runtime evidence 已归档：`/home/binance/release/evidence/binance/20260623/`，验证代码 `9777a5b0db9a3de5db53942b9aaf6b55eec04f24`，证据提交 `20c7712935f53e1948bdf4b30a72d3db07f9acfb`；boundary-gates 10/10、go build/test/race/vet/lint 与 smoke self-test PASS；FR-009 本地闭合；FR-001/002 Partial，FR-003~008/010~030 Pending；未归档 live websocket、外部集成、remote CI、release tag。）
+**参考实现**：[binance](https://github.com/ZoneCNH/binance)（spec v3.5.0 Approved；2026-06-23 PR #19 本地 lifecycle/runtime/release-gate evidence 已归档：`/home/binance/release/evidence/binance/20260623/`，实现提交 `c7967dd7eec6523927f2157a2e7c49a0f2fb820d`，证据刷新 `56a7f5c7eb174e352fc91371227877365c6ae299`；boundary-gates、go test、go test -race、go vet、runtime-release-evidence 与 smoke/split-process self-test PASS；FR-012~FR-030 本地 lifecycle 规划/admin 合约可测；release_closeable=NO，未归档 live websocket、historical REST、natsx PubAck/ManualAck、外部存储/fanout/query、remote CI、release tag。）
 
 ### 独立进程（非 C/S）
 

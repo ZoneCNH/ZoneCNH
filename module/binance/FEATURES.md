@@ -47,7 +47,7 @@
 | FR-007 | Gin Market API | Pending | 规格定义 `/api/v1/market/ticks/depth/bars/trades` REST 接口。 | 认证、限流、统一错误、readyz、market_data HTTP 调用方兼容。 |
 | FR-007a | clickhousex Analytics API | Pending | 规格定义 `/api/v1/analytics/vwap/top-movers/correlation` OLAP 查询。 | analytics 查询正确性、查询 P99 < 2s、降级到 503。 |
 | FR-008 | kafkax Broadcast | Pending | 规格定义 `kafkax` topic、symbol key 与 handoff 后 Ack。 | Kafka dispatch、失败不 Ack、重试、下游消费契约。 |
-| FR-009 | Boundary Enforcement | Implemented / Documented | `BOUNDARY-GATES.md` 与 `TRACEABILITY.md` 标注 FR-009 Done；`/home/binance/release/evidence/binance/20260623/` 归档 boundary-gates 10/10、go build/test/race/vet/lint 与 smoke self-test PASS；验证代码 `9777a5b0db9a3de5db53942b9aaf6b55eec04f24`，证据提交 `20c7712935f53e1948bdf4b30a72d3db07f9acfb`。 | 远端 CI/release/live websocket/外部集成证据仍需归档；非边界 FR 不因此闭合。 |
+| FR-009 | Boundary Enforcement | Implemented / Documented | `BOUNDARY-GATES.md` 与 `TRACEABILITY.md` 标注 FR-009 Done；`/home/binance/release/evidence/binance/20260623/` 归档 boundary-gates 10/10、go build/test/race/vet/lint 与 smoke self-test PASS；证据提交 `71e2a6e8bb5591c43e8a2ebfff8c7645bf030786`。 | 远端 CI/release/live websocket/外部集成证据仍需归档；非边界 FR 不因此闭合。 |
 | FR-010 | clickhousex OLAP Storage | Pending | 规格定义定时 ETL 聚合 taosx → clickhousex。 | ETL 调度、InsertBatch 性能、ClickHouse 不可达降级。 |
 | FR-011 | Distributed Coordinator Lock | Pending | 规格定义 redisx SetNX 分布式锁 + lease 续期 + coordinator HA。 | SetNX 锁获取、lease 续期失败后停止任务、主动释放。 |
 | FR-012 | Stream Session Lifecycle | Pending | `SPEC.md`/`TRACEABILITY.md` v3.5.0 已登记。 | active stream registry 运行中增删订阅且不重启进程的集成证据。 |
@@ -119,7 +119,7 @@
 | 根级 traceability 存在 | Done | `TRACEABILITY.md`。 |
 | Client/Server 子域 traceability 存在 | Done | `client/TRACEABILITY.md`, `server/TRACEABILITY.md`。 |
 | C/S 独立进程边界已定义 | Done | `README.md`, `SPEC.md`, `BOUNDARY-GATES.md`。 |
-| Boundary gate 文档已形成 | Done | `BOUNDARY-GATES.md` v2.2.4；本地证据 `/home/binance/release/evidence/binance/20260623/`；验证代码 `9777a5b0db9a3de5db53942b9aaf6b55eec04f24`，证据提交 `20c7712935f53e1948bdf4b30a72d3db07f9acfb`。 |
+| Boundary gate 文档已形成 | Done | `BOUNDARY-GATES.md` v2.2.4；本地证据 `/home/binance/release/evidence/binance/20260623/`；证据提交 `71e2a6e8bb5591c43e8a2ebfff8c7645bf030786`（2026-06-23 round 2）。 |
 | Product line 全覆盖实现 | Not Done | FR-001 Partial。 |
 | Instrument identity 全覆盖实现 | Not Done | FR-002 Partial。 |
 | natsx publish/consume runtime 闭合 | Not Done | FR-003 Pending。 |
