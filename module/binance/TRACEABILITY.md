@@ -156,9 +156,9 @@
 | TC-044 | FR-026 | — | 集成（04:00 UTC 对账 + tolerance 阈值 + alerts 表写入） | Pending |
 | TC-045 | FR-027 | — | 集成（OSS→taosx 回热 + 202 job_id + 24h TTL 过期） | Pending |
 | TC-046 | FR-028 | — | httptest（jobs 列表 + coverage 时间戳 + 诊断字段） | Pending |
-| TC-047 | FR-029 | — | 单元 + 集成（freshness SLA、stale alert 与 schema drift evidence） | Pending |
-| TC-048 | FR-030 | — | 单元（options chain raw field mapping） | Pending |
-| TC-049 | FR-030 | — | 集成（options raw fields fanout/query pass-through） | Pending |
+| TC-047 | FR-029 | — | 集成 + metrics（event_time→persist/fanout freshness SLA + stale alert + schema drift） | Pending |
+| TC-048 | FR-030 | — | 单元（Options 原始字段透传：strike/expiry/option_type/mark/IV） | Pending |
+| TC-049 | FR-030 | — | 契约测试（Greeks 派生不进入 binance，交由分析域处理） | Pending |
 
 ---
 
@@ -264,12 +264,12 @@
 | AC-096 | FR-028 | `GET /api/v1/admin/backfill/jobs` 返回活跃 job 列表含 cursor/progress_pct | TC-046 |
 | AC-097 | FR-028 | `GET /api/v1/admin/backfill/coverage/:symbol` 返回 (pl,et) 最早可用时间戳 | TC-046 |
 | AC-098 | FR-028 | 失败 job 暴露 last_error/retry_count/next_retry_at 诊断字段 | TC-046 |
-| AC-099 | FR-029 | event_time→persist 延迟可统计 P95/P99，并按 product_line/event_type 暴露 freshness 指标 | TC-047 |
-| AC-100 | FR-029 | stale data 超 SLA 时产生可审计 alert，包含 product_line、event_type、symbol 与 lag | TC-047 |
-| AC-101 | FR-029 | schema drift 检测记录新增/缺失/类型变化字段，不吞没原始 payload 证据 | TC-047 |
-| AC-102 | FR-030 | Options chain 原始 strike、expiry、option_type、mark、IV 字段进入 envelope 扩展区且不重命名丢失 | TC-048 |
-| AC-103 | FR-030 | downstream fanout/query 可读取 options raw fields，字段语义保持 Binance 原始来源可追溯 | TC-049 |
-| AC-104 | FR-030 | Greeks 派生指标不在 binance 模块计算，只保留原始字段并交给分析域处理 | TC-049 |
+| AC-099 | FR-029 | event_time→persist P99 < 200ms，event_time→kafkax fanout P99 < 300ms | TC-047 |
+| AC-100 | FR-029 | spot/um_perp/cm_perp 30s、options 60s 无新事件触发 stale alert | TC-047 |
+| AC-101 | FR-029 | parser 单测能捕获 Binance 原生字段增删或类型变更的 schema drift | TC-047 |
+| AC-102 | FR-030 | Options chain 原始 strike/expiry/option_type/mark/IV 字段进入 MarketFactEnvelope 扩展字段或等价下游 payload | TC-048 |
+| AC-103 | FR-030 | Options 原始字段透传不改变 canonical InstrumentKey 或 product_line identity | TC-048 |
+| AC-104 | FR-030 | Greeks 派生指标不在 binance 内计算，必须交由分析域消费原始字段后生成 | TC-049 |
 
 ---
 

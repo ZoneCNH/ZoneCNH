@@ -94,7 +94,7 @@
 
 ## 7. 已登记落点声明（FR-025~030 + NAMING/subject 补充）
 
-> [FRAME, HIGH] 以下为历史讨论稿到当前 `SPEC.md`/`TRACEABILITY.md` 的落点对齐声明。FR-025~FR-030 已登记；runtime evidence 与 release evidence 仍 Pending，不得据此关闭功能实现或发布 DoD。
+> [FRAME, HIGH] 以下为历史讨论稿到当前 `SPEC.md`/`TRACEABILITY.md` 的落点对齐声明。FR-025~FR-030 已登记；runtime/release evidence 仍 Pending，不得据此关闭功能实现或发布 DoD。
 >
 > [COMPUTED, HIGH] 追溯闭环口径：FR-012~FR-030 的 FR/AC/TC 已登记于 `SPEC.md`/`TRACEABILITY.md`；本讨论稿保持 non-normative，runtime evidence 仍为 Pending（L1/local 证据已采集，L2/L3/live/release 未闭合）。
 
