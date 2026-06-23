@@ -18,7 +18,7 @@ internal/server/storage/timeseries/
 
 ```sql
 -- 行情主表（超表）
-CREATE STABLE IF NOT EXISTS binance_market_ticks (
+CREATE STABLE IF NOT EXISTS binance_tick (
     ts          TIMESTAMP,           -- exchange_time（毫秒精度）
     price       DOUBLE,
     quantity    DOUBLE,
@@ -27,11 +27,11 @@ CREATE STABLE IF NOT EXISTS binance_market_ticks (
 ) TAGS (
     symbol      BINARY(32),
     product_line BINARY(16),         -- 'spot' / 'um_perp' / 'cm_perp' / 'options'
-    event_type  BINARY(16)           -- 'tick' / 'depth' / 'bar'
+    event_type  BINARY(16)           -- 'tick' / 'trade' / 'bar' / 'depth' / 'funding_rate' / 'mark_price'
 );
 
 -- 订单簿快照（超表）
-CREATE STABLE IF NOT EXISTS binance_market_depth (
+CREATE STABLE IF NOT EXISTS binance_depth (
     ts          TIMESTAMP,
     side        BINARY(4),
     price       DOUBLE,
