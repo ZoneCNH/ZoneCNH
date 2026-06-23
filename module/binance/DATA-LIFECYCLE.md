@@ -74,6 +74,8 @@
 
 > [COMPUTED, HIGH] 2026-06-23 全量 issue 核查发现：GitHub issue #880~#892（R-01~R-13）的标题语义是 2026-06-22 早期提案，本讨论稿 §4 review 已将它们重组为更合理的 FR-012~024 落点。本节逐条映射 issue 原始诉求 → 现有 FR 覆盖关系，并对未覆盖项声明落点，确保每条 issue 的实质能力都有 FR 承接。
 
+[FRAME, HIGH] 术语归一：后续 fold 时，`funding-rate` / `mark-price` 的 runtime `event_type` 值分别按 snake_case 记录为 `funding_rate` / `mark_price`；R-06 的 runtime gap detector 结果进入 `binance_backfill_jobs` 队列；#880/#892 的热重载入口以 `symbols/reload` 管理；本讨论稿保持 non-normative，进入 SPEC 前须通过 Fold 前门禁。
+
 | Issue | 原始诉求 | 现有 FR 覆盖 | 覆盖判定 | 未覆盖落点 |
 | --- | --- | --- | --- | --- |
 | #880 R-01 | FR-012 Symbol Discovery & Filtering（exchangeInfo 拉取 + allow/deny + 6h 刷新 + instruments.changed） | FR-012 Stream Session Lifecycle（未含 catalog discovery） | ⚠️ 部分覆盖 | 并入 FR-012：catalog discovery 是 stream session 前置；`instruments.changed` subject 见 §7 |
@@ -105,4 +107,3 @@
 | FR-015 扩展 | depth 订阅档位：spot/um_perp/cm_perp = @depth20@100ms + @depth@1000ms 增量；options = @depth1000；update_id 拼合 | `SPEC.md` §9 | MINOR | #883 |
 
 [FRAME, HIGH] 本节声明后，issue #880~#892 的全部实质能力都有明确 FR 承接（已覆盖 6 项 + 候选新增 4 项 + NAMING/FR 扩展 3 项）。后续 PR 按 §7 表逐条 fold 进 SPEC/TRACEABILITY/NAMING 时再 bump 版本。
-
