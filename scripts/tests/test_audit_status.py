@@ -279,7 +279,7 @@ def test_release_trust_policy_does_not_treat_local_audit_as_factory_proof():
     assert "open blocker review" in claim_policy["factory_grade_requires"]
 
 
-def test_audit_status_full_mode_reports_current_arch_drift():
+def test_audit_status_full_mode_runs_clean_for_current_projection():
     result = subprocess.run(
         [sys.executable, "scripts/audit-status.py"],
         cwd=ROOT,
@@ -289,12 +289,12 @@ def test_audit_status_full_mode_reports_current_arch_drift():
     )
 
     output = result.stdout + result.stderr
-    assert result.returncode != 0, output
+    assert result.returncode == 0, output
     assert "Traceback" not in output
     assert "SKIPPED (use --network)" in result.stdout
     assert "ARCH" in result.stdout
-    assert "FAIL" in result.stdout or "1 failed" in result.stdout
-    assert "Summary: 48 passed, 4 failed" in result.stdout
+    assert "FAIL" not in result.stdout
+    assert "Summary: 51 passed, 0 failed" in result.stdout
 
 
 def test_audit_status_foundationx_only_mode_runs_clean():
