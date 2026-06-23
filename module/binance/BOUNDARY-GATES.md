@@ -1,359 +1,95 @@
 # module/binance BOUNDARY GATES
 
-> 版本：v2.1.1
-> 更新日期：2026-06-21
-> 参见：`DEEP-ANALYSIS.md §0`（分布式架构约束）
+> 版本：v2.2.4
+> 更新日期：2026-06-23
+> Runtime 仓库：`/home/binance`
+> Runtime 契约：`/home/binance/BOUNDARY-GATES.md`
 > Runtime 脚本：`/home/binance/scripts/boundary-gates.sh`
+> Runtime 证据：`/home/binance/release/evidence/binance/20260623/`
+> Runtime evidence commit：`66f60b3945dce215f68ff833bbd336364d635ae8`
+> Verified source commit：`9777a5b0db9a3de5db53942b9aaf6b55eec04f24`
 
 ## 1. 目的
 
-边界门禁防止 `module/binance` 超越其设计边界扩张，并强制执行分布式 C/S 架构约束。
+本文档是 docs 侧边界投影；可执行事实以 runtime 仓库为准。边界门禁证明 FR-009 / BR-001~BR-009 的结构治理，不替代 FR-003~FR-008、FR-010+ 的功能验收。
 
-**所有门禁必须在 CI 中可执行。**
-
----
+| 验证面 | 命令 | 通过条件 |
+| --- | --- | --- |
+| 脚本语法 | `cd /home/binance && bash -n scripts/boundary-gates.sh` | shell 语法通过 |
+| 边界门禁 | `cd /home/binance && ./scripts/boundary-gates.sh` | 10/10 PASS |
+| 证据包 | `cd /home/binance && sed -n '1,160p' release/evidence/binance/20260623/SUMMARY.md` | 记录 evidence commit、verified source commit、测试命令与已知缺口 |
 
 ## 2. Gate: No Legacy binance-market
 
-禁止引用：
+禁止 active runtime 或 docs 投影重新引入旧 `binance-market` 模块、仓库或服务文档引用。历史迁移、变更日志、报告和 `module/binance` 自引用文本不作为 active architecture 回流。
 
-```text
-module/binance-market
-github.com/ZoneCNH/binance-market
-binance-market
-docs/services/binance-market-client-svc.md
-```
-
-仅允许在以下路径出现（历史归档）：
-
-```text
-docs/migrations/remove-binance-market.md
-CHANGELOG.md
-module/binance/          （自引用：SPEC 历史描述、Task 文件名）
-docs/report/
-```
-
-```bash
-#!/usr/bin/env bash
-set -euo pipefail
-allow_re='docs/migrations/remove-binance-market.md|CHANGELOG.md|module/binance/|docs/report/'
-forbidden_re='module/binance-market|github\.com/ZoneCNH/binance-market|binance-market|docs/services/binance-market-client-svc\.md'
-hits="$(grep -R -n -E "$forbidden_re" . \
-  --include='*.md' --include='*.go' --include='go.mod' --include='*.yaml' || true)"
-if [ -n "$hits" ]; then
-  disallowed="$(printf '%s\n' "$hits" | grep -v -E "$allow_re" || true)"
-  [ -z "$disallowed" ] || { echo "FAIL: legacy binance-market reference"; echo "$disallowed"; exit 1; }
-fi
-echo "PASS: No legacy binance-market"
-```
-
----
+关闭规则：`/home/binance/scripts/boundary-gates.sh` 必须输出 `PASS: No legacy binance-market reference outside docs`.
 
 ## 3. Gate: Client Must Not Import Server Internals
 
-禁止：
+`internal/client` 与 `cmd/binance-client` 禁止导入 `internal/server` 或 server-only package。Client 只通过网络 wire contract 发布事实，不通过 Go import 触达 Server 内部。
 
-```text
-internal/client  ->  internal/server/*
-cmd/binance-client -> internal/server/*
-```
-
-允许（分布式架构下 client 的合法依赖）：
-
-```text
-client -> natsx JetStream（网络发布，不是 Go import）
-client -> module/domain_market（语义类型）
-client -> pkg/config, pkg/observability（共享包）
-```
-
-```bash
-grep -R -n -E 'internal/server|module/binance/server' \
-  ./internal/client ./cmd/binance-client 2>/dev/null && {
-  echo "FAIL: client imports server internals — violation of distributed boundary"
-  exit 1
-} || echo "PASS: Client boundary gate"
-```
-
----
+关闭规则：runtime gate 必须证明 client 侧无 server internals import。
 
 ## 4. Gate: Server Must Not Import Client Internals
 
-禁止：
+`internal/server` 与 `cmd/binance-server` 禁止导入 `internal/client` 或 client-only package。Server 只消费 wire contract，不复用 Client connector/parser 内部实现。
 
-```text
-internal/server  ->  internal/client/*
-cmd/binance-server -> internal/client/*
-```
+关闭规则：runtime gate 必须证明 server 侧无 client internals import。
 
-允许（分布式架构下 server 的合法依赖）：
+## 5. Gate: No `cs` Package as Runtime Dependency
 
-```text
-server -> natsx JetStream（网络订阅，不是 Go import）
-server -> module/domain_market（语义类型）
-server -> redisx, postgresx, taosx, clickhousex, kafkax, ossx, gin（存储、分析、fanout 和 API 层）
-server -> pkg/config, pkg/observability（共享包）
-```
+`internal/cs` 曾代表同进程 C/S 桥接；当前 runtime 禁止任何 client/server/cmd 运行时代码导入该包。合法共享 C/S contract 是 `internal/wire` 的外部化消息结构。
 
-```bash
-grep -R -n -E 'internal/client|module/binance/client' \
-  ./internal/server ./cmd/binance-server 2>/dev/null && {
-  echo "FAIL: server imports client internals — violation of distributed boundary"
-  exit 1
-} || echo "PASS: Server boundary gate"
-```
-
----
-
-## 5. Gate: No cs Package as Runtime Dependency
-
-> ⚡ v2.1.1 对齐 — 分布式架构强制门禁
-
-`internal/cs` 包是同进程桥接骨架，在当前 runtime 中**必须删除**，不得成为 client 或 server 的运行时依赖。
-
-禁止（运行时代码中引用 cs 包）：
-
-```text
-internal/client/*.go    import "github.com/ZoneCNH/binance/internal/cs"
-internal/server/*.go    import "github.com/ZoneCNH/binance/internal/cs"
-cmd/*/main.go           import "github.com/ZoneCNH/binance/internal/cs"
-```
-
-允许（仅历史参考）：
-
-```text
-internal/cs/doc.go      （归档标记，不被 import）
-```
-
-```bash
-#!/usr/bin/env bash
-set -euo pipefail
-cs_hits="$(grep -R -n '"github.com/ZoneCNH/binance/internal/cs"' \
-  ./internal/client ./internal/server ./cmd \
-  --include='*.go' 2>/dev/null || true)"
-if [ -n "$cs_hits" ]; then
-  echo "FAIL: internal/cs package imported in runtime code — must be deleted before release"
-  echo "$cs_hits"
-  exit 1
-fi
-echo "PASS: No cs package runtime import"
-```
-
----
+关闭规则：runtime gate 必须证明没有 `github.com/ZoneCNH/binance/internal/cs` import。
 
 ## 6. Gate: No Same-Process C/S Communication
 
-> ⚡ v2.1.1 对齐 — 分布式架构强制门禁
+Client 与 Server 必须通过外部 wire contract 通信，禁止 Go interface 直调、共享内存或同进程组合运行。`cmd/binance-smoke` 是唯一允许的本地 smoke/self-test 例外。
 
-client 和 server 必须通过 natsx JetStream **网络通信**，禁止任何 Go interface 直调。
-
-禁止模式：
-
-```text
-# 禁止：client 持有 IngestClient（server 接口）
-type Sender struct { ingest IngestClient ... }
-
-# 禁止：server Process() 被 client 直接调用
-s.Process(ctx, cs.IngestRequest{...})
-
-# 禁止：cmd 中同时 wire client + server（smoke 除外）
-```
-
-允许：
-
-```text
-# 允许：cmd/binance-smoke 可同进程集成（仅测试/演示用途）
-# 允许：natsx embedded server 在 smoke 中使用
-```
-
-```bash
-#!/usr/bin/env bash
-set -euo pipefail
-
-# 检查 client 是否持有 IngestClient/IngestServer interface
-cs_interface="$(grep -R -n -E 'IngestClient|IngestServer' \
-  ./internal/client ./cmd/binance-client \
-  --include='*.go' 2>/dev/null || true)"
-if [ -n "$cs_interface" ]; then
-  echo "FAIL: client references IngestClient/IngestServer — same-process communication forbidden"
-  echo "$cs_interface"
-  exit 1
-fi
-
-# 检查 server 是否在 main 中同时 wire client connector
-dual_wire="$(grep -R -n -E 'catalog\.|connector\.|Spot\.|spot\.' \
-  ./cmd/binance-server \
-  --include='*.go' 2>/dev/null || true)"
-if [ -n "$dual_wire" ]; then
-  echo "WARN: server cmd references client connector types — verify not same-process coupling"
-  echo "$dual_wire"
-fi
-
-echo "PASS: No same-process C/S communication detected"
-```
-
----
+关闭规则：runtime gate 必须证明生产 cmd 与 internal runtime 无同进程 C/S wiring。
 
 ## 7. Gate: Binance Server Owns Binance-Specific Storage Only
 
-> v2.1.1 对齐 — 原 Gate 5「不做存储」已反转：server 现在**拥有** Binance 专属存储。
+Server 可以拥有 Binance-specific 的时序、元数据、热缓存、归档、OLAP 与 fanout 持久化；禁止上移为 exchange-neutral market data engine、策略、下单、组合或风控存储。
 
-`binance/server` **允许**拥有：
-
-```text
-taosx     → Binance 行情时序数据（binance_ticks / binance_bars / binance_depth）
-postgresx → Binance 合约元数据（binance_instruments）+ 幂等日志 + 审计
-redisx    → Binance 行情热缓存（tick:{product_line}:{symbol}）
-clickhousex → Binance OLAP 聚合数据（binance_ohlcv_1m / binance_vwap_5m / binance_stats_15m）
-ossx      → Binance 历史数据归档
-kafkax    → Binance 行情事件发布（binance.{product_line}.{event_type}.v1 topic）
-```
-
-`binance/server` **禁止**拥有：
-
-```text
-exchange-neutral storage engine（由 module/market_data 拥有）
-cross-exchange query API（由 module/market_data 拥有）
-strategy / signal storage（属于分析域）
-order / portfolio storage（属于执行域）
-```
-
-```bash
-forbidden_ownership="$(grep -R -n -E \
-  'Owns.*exchange.neutral|cross.exchange.*query|strategy.*storage|order.*storage|portfolio.*storage' \
-  module/binance --include='*.md' || true)"
-[ -z "$forbidden_ownership" ] || {
-  echo "FAIL: binance claims exchange-neutral/cross-exchange ownership"
-  echo "$forbidden_ownership"; exit 1
-}
-echo "PASS: Storage ownership gate"
-```
-
----
+关闭规则：runtime gate 必须证明 storage ownership 未漂移到通用 market_data 或非数据域职责。
 
 ## 8. Gate: Wire Contract Externality
 
-`module/binance` 的 runtime wire 仅允许使用 `natsx` subject + `domain_market.MarketFactEnvelope` JSON，不得定义独立的 proto 或 wire schema。
+Binance 模块不定义本地 `.proto` / gRPC ingest schema，也不拥有 canonical market domain。当前 runtime skeleton 允许 `internal/wire` 保存 HTTP JSON `/ingest` 与后续 natsx/domain envelope 适配所需的本模块消息边界；canonical 语义仍来自 `domain_market`。
 
-禁止：
+关闭规则：runtime gate 必须证明没有本地 ingest proto/gRPC schema，wire contract 不回退为同进程 cs。
 
-```text
-module/binance/proto/*
-module/binance 定义本地 wire service/schema
-module/binance 定义 canonical wire enum SSOT
-```
+## 9. Gate: Domain-Market Semantic Source
 
-```bash
-#!/usr/bin/env bash
-set -euo pipefail
-[ ! -d "module/binance/proto" ] || { echo "FAIL: proto/ dir exists"; exit 1; }
-proto_files="$(find module/binance -name '*.proto' 2>/dev/null || true)"
-[ -z "$proto_files" ] || { echo "FAIL: .proto files found"; echo "$proto_files"; exit 1; }
-echo "PASS: Wire contract externality gate"
-```
+Binance 只能消费 `domain_market` 语义，禁止在本模块内重新定义 canonical product line、event type、market fact 或 cross-exchange identity。
 
----
+关闭规则：runtime gate 必须证明没有本地 canonical domain 枚举或替代模型。
 
-## 9. Gate: Domain-Market Is Semantic Source
+## 10. Gate: Admin Surface Boundary
 
-`module/binance` 不得独立定义 canonical market 语义。
+Server admin surface 可以暴露健康、就绪、stream stats、drain、dead letters 与 HTTP JSON `/ingest`，但不得成为跨模块通用 control plane，也不得让 Client 通过 server internals 变相同进程调用。
 
-```bash
-#!/usr/bin/env bash
-set -euo pipefail
-pl_hits="$(grep -R -n -E \
-  'ProductLine\s*(string|=|:).*\"(spot|um_perp|cm_perp|options)\"' \
-  module/binance --include='*.md' --include='*.go' || true)"
-[ -z "$pl_hits" ] || { echo "FAIL: binance defines canonical ProductLine"; echo "$pl_hits"; exit 1; }
-echo "PASS: Domain-Market gate"
-```
+关闭规则：runtime gate 必须证明 admin 入口保持在 Server 边界内，且不破坏 C/S import 与进程边界。
 
----
+## 11. Gate: `go.mod` Dependency Compliance
 
-## 10. Gate: Admin Surface Cannot Cross Module Boundaries
+Runtime `go.mod` 必须保留边界所需 direct dependencies，不得通过依赖删除或替换绕开 `domain_market`、`natsx`、`redisx`、`postgresx`、`taosx`、`clickhousex`、`kafkax`、`ossx`、`gin` 等契约面。
 
-Client admin 只操作 client 本地状态。Server admin 只操作 server 本地状态。
+关闭规则：runtime gate 必须证明 `go.mod` 中的边界依赖集合合规。
 
-```bash
-#!/usr/bin/env bash
-set -euo pipefail
-client_cross="$(grep -R -n -E 'client.*admin.*(server|dispatch|idempotency)' \
-  module/binance/client --include='*.md' --include='*.go' || true)"
-[ -z "$client_cross" ] || { echo "FAIL: client admin crosses server boundary"; echo "$client_cross"; exit 1; }
-server_cross="$(grep -R -n -E 'server.*admin.*(client|connector|spool)' \
-  module/binance/server --include='*.md' --include='*.go' || true)"
-[ -z "$server_cross" ] || { echo "FAIL: server admin crosses client boundary"; echo "$server_cross"; exit 1; }
-echo "PASS: Admin boundary gate"
-```
+## 12. 状态口径
 
----
-
-## 11. Gate: go.mod Dependency Compliance
-
-> ⚡ v2.1.1 对齐 — 确保分布式架构依赖声明规范
-
-Client 二进制（`cmd/binance-client`）**禁止**将以下包声明为 `direct` 依赖（这些属于 server）：
-
-```text
-github.com/ZoneCNH/redisx
-github.com/ZoneCNH/postgresx
-github.com/ZoneCNH/taosx
-github.com/ZoneCNH/clickhousex
-github.com/ZoneCNH/kafkax
-github.com/ZoneCNH/ossx
-github.com/gin-gonic/gin
-```
-
-Server 二进制（`cmd/binance-server`）**必须**将以下包声明为 `direct` 依赖（禁止 `// indirect`）：
-
-```text
-github.com/ZoneCNH/natsx
-github.com/ZoneCNH/redisx
-github.com/ZoneCNH/postgresx
-github.com/ZoneCNH/taosx
-github.com/ZoneCNH/clickhousex
-github.com/ZoneCNH/kafkax
-github.com/ZoneCNH/ossx
-github.com/gin-gonic/gin
-```
-
-```bash
-#!/usr/bin/env bash
-set -euo pipefail
-required=(
-  github.com/ZoneCNH/natsx
-  github.com/ZoneCNH/redisx
-  github.com/ZoneCNH/kafkax
-  github.com/ZoneCNH/postgresx
-  github.com/ZoneCNH/taosx
-  github.com/ZoneCNH/clickhousex
-  github.com/ZoneCNH/ossx
-  github.com/gin-gonic/gin
-)
-
-for dep in "${required[@]}"; do
-  line="$(grep -F "$dep" go.mod 2>/dev/null | grep -v '// indirect' || true)"
-  if [ -z "$line" ]; then
-    echo "FAIL: $dep must be a direct dependency"
-    exit 1
-  fi
-done
-
-echo "PASS: go.mod dependency compliance"
-```
-
----
-
-## 门禁汇总
-
-| Gate | 名称 | 版本 | 类型 |
-|:----:|------|:----:|:----:|
-| 2 | No Legacy binance-market | v1.0 | 历史清理 |
-| 3 | Client Must Not Import Server | v1.0 | 边界隔离 |
-| 4 | Server Must Not Import Client | v1.0 | 边界隔离 |
-| 5 | **No cs Package Runtime Dependency** | **v2.1.1 对齐** | **分布式强制** |
-| 6 | **No Same-Process C/S Communication** | **v2.1.1 对齐** | **分布式强制** |
-| 7 | Server Owns Binance-Specific Storage | v2.1.1 对齐 | 所有权 |
-| 8 | Wire Contract Externality | v2.0 变更 | 边界隔离 |
-| 9 | Domain-Market Semantic Source | v1.0 | 语义边界 |
-| 10 | Admin Surface Boundary | v1.0 | 边界隔离 |
-| 11 | **go.mod Dependency Compliance** | **v2.1.1 对齐** | **分布式强制** |
+| 项 | 状态 |
+| --- | --- |
+| BR-001 | Done：Gate §2 已由 runtime 10/10 PASS 证明 |
+| BR-002 | Done：Gate §3 已由 runtime 10/10 PASS 证明 |
+| BR-003 | Done：Gate §4 已由 runtime 10/10 PASS 证明 |
+| BR-004 | Pending：ManualAck 业务路径需要 TC-006 集成测试，不由 boundary gate 证明 |
+| BR-005 | Done：Gate §5 与 §6 已由 runtime 10/10 PASS 证明 |
+| BR-006 | Done：Gate §7 已由 runtime 10/10 PASS 证明 |
+| BR-007 | Done：Gate §9 已由 runtime 10/10 PASS 证明 |
+| BR-008 | Done：Gate §8 已由 runtime 10/10 PASS 证明 |
+| BR-009 | Done：Gate §11 已由 runtime 10/10 PASS 证明 |
+| Release | Not Done：远端 CI、release tag、覆盖率/性能/故障注入证据仍按 Release DoD 单独验收 |

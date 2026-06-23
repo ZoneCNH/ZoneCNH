@@ -924,8 +924,8 @@ github.com/ZoneCNH/binance/
 | TC-013 | FR-007 | httptest | `GET /api/v1/market/depth/{instrument_key}` | redisx cache hit 返回最新快照 |
 | TC-014 | FR-007 | httptest | 无效 API key | 返回 401 |
 | TC-015 | FR-007 | httptest | 请求超过限流 | 返回 429 + Retry-After |
-| TC-016 | FR-008 | 单元 | 超 retention 数据归档 | 先写 `ossx`，ETag 校验通过后删 `taosx` |
-| TC-017 | FR-008 | 单元 | 生成归档路径 | 路径符合 `binance/{product_line}/{symbol}/{YYYY}/{MM}/{DD}/{event_type}.parquet` |
+| TC-016 | FR-006d | 单元 | 超 retention 数据归档 | 先写 `ossx`，ETag 校验通过后删 `taosx` |
+| TC-017 | FR-006d | 单元 | 生成归档路径 | 路径符合 `binance/{product_line}/{symbol}/{YYYY}/{MM}/{DD}/{event_type}.parquet` |
 | TC-018 | FR-008 | 单元 | kafkax topic 与 partition key | topic 为 `binance.{product_line}.{event_type}.v1`，key 为 symbol |
 | TC-019 | FR-008 | 单元 | `kafkax` 不可达 | 返回 error，未完成 handoff 前不 Ack |
 | TC-020 | FR-009 | CI | server import `internal/client` 或 `internal/cs` | boundary gate 失败 |
@@ -1070,12 +1070,14 @@ github.com/ZoneCNH/binance/
 | Gate | 命令 | 通过条件 |
 |------|------|----------|
 | No legacy binance-market | `BOUNDARY-GATES.md` §2 gate script | 零 forbidden 引用 |
-| Client/server boundary | `BOUNDARY-GATES.md` §3-§4 gate scripts | 零跨边界 import |
-| Ownership | `BOUNDARY-GATES.md` §5 gate script | 零 generic market_data/strategy 所有权声明；Binance-specific persistence/API/fanout 明确归属 server |
-| No local legacy proto/gRPC | `BOUNDARY-GATES.md` §6 gate script | 零 local proto 文件；ingest runtime 不依赖 gRPC wire contract |
-| Domain-market source | `BOUNDARY-GATES.md` §7 gate script | 零独立 canonical enum 定义 |
-| Admin boundary | `BOUNDARY-GATES.md` §8 gate script | 零跨模块 admin mutation |
-| natsx ManualAck 全链路 | `BOUNDARY-GATES.md` §9 gate script | 零 partial-write Ack |
+| Client/server import boundary | `BOUNDARY-GATES.md` §3-§4 gate scripts | 零跨边界 import |
+| No `internal/cs` runtime dependency | `BOUNDARY-GATES.md` §5 gate script | 零 `internal/cs` runtime import；合法共享契约为 `internal/wire` |
+| No same-process C/S communication | `BOUNDARY-GATES.md` §6 gate script | 零生产同进程 C/S wiring；`cmd/binance-smoke` 仅作 smoke/self-test 例外 |
+| Binance-specific storage ownership | `BOUNDARY-GATES.md` §7 gate script | 零 generic market_data/strategy 所有权声明；Binance-specific persistence/API/fanout 明确归属 server |
+| Wire contract externality | `BOUNDARY-GATES.md` §8 gate script | 零 local `.proto`/gRPC ingest schema；当前 runtime 允许 HTTP JSON `/ingest` + `internal/wire` skeleton |
+| Domain-market source | `BOUNDARY-GATES.md` §9 gate script | 零独立 canonical enum 定义 |
+| Admin boundary | `BOUNDARY-GATES.md` §10 gate script | 零跨模块 admin mutation；server admin surface 保持在 server 边界内 |
+| go.mod dependency compliance | `BOUNDARY-GATES.md` §11 gate script | 边界 direct dependency 集合保持合规 |
 
 ---
 
@@ -1301,7 +1303,7 @@ Binance Exchange (REST/WebSocket)
 | AC-BNC-001 | FR-001               | Spot / USDⓈ-M / COIN-M / Options 四产品线 connector 均可独立启停，配置禁用时不订阅对应 stream                | TC-001, integration test              | Approved |
 | AC-BNC-002 | FR-002               | parser 对 Spot `BTCUSDT` 与 USDⓈ-M `BTCUSDT` 输出不同 `InstrumentKey`，product_line/settlement/expiry 维度不碰撞 | TC-002, TC-003                        | Approved |
 | AC-BNC-003 | FR-003               | client 调用 `js.Publish(subj, jsonPayload)` 成功后必须收到 JetStream PubAck；Stream=`BINANCE_MARKET` Retention=7d | TC-004, BOUNDARY-GATES.md §3-§4       | Approved |
-| AC-BNC-004 | FR-004, BR-004       | server 仅在 redisx + taosx + postgresx + kafkax handoff 全部成功后调用 `msg.Ack()`，失败路径走 `NakWithDelay` | TC-006, BOUNDARY-GATES.md §9          | Approved |
+| AC-BNC-004 | FR-004, BR-004       | server 仅在 redisx + taosx + postgresx + kafkax handoff 全部成功后调用 `msg.Ack()`，失败路径走 `NakWithDelay` | TC-006（非 boundary gate）            | Approved |
 | AC-BNC-005 | FR-005, BR-008       | redisx SetNX 首次成功进入 storage/fanout；重复 key 同 payload 返回 idempotent ACK；payload 冲突返回 terminal_conflict | TC-007, TC-008                        | Approved |
 | AC-BNC-006 | FR-006a              | taosx WriteBatch 写入 tick/bar/depth 到对应超级表子表；失败时不 Ack 并 NakWithDelay(5s)                       | TC-009, TC-011                        | Approved |
 | AC-BNC-007 | FR-006b              | postgresx 通过 `ON CONFLICT DO UPDATE` 幂等 upsert `binance_instruments` 表，不可达时返回 error              | TC-010                                | Approved |
@@ -1335,7 +1337,7 @@ Binance Exchange (REST/WebSocket)
 | G0-3 | `redisx`/`taosx`/`postgresx`/`ossx`/`kafkax`/Gin ownership chain ready | server SPEC §7/§9 + v2.0.0 RUNTIME-MAPPING.md | ✅ |
 | G0-4 | binance OQ-001（`natsx` + `domain_market` envelope ready?） | 已确认：本 SPEC §9 | ✅ |
 | G0-5 | market_data consumption via REST/`kafkax` ready | 已确认：本 SPEC §9.2 | ✅ |
-| G0-6 | BOUNDARY-GATES.md 全部 9 门禁有 CI 脚本 | 9/9 (2026-06-17) | ✅ |
+| G0-6 | BOUNDARY-GATES.md 全部 10 道 runtime 门禁有可执行脚本 | 10/10 (2026-06-23, verified source `9777a5b0db9a3de5db53942b9aaf6b55eec04f24`, evidence commit `66f60b3945dce215f68ff833bbd336364d635ae8`) | ✅ |
 
 > **6/6 通过** — 上游契约链闭合。本 SPEC 处于 Review 状态，可进入运行时实现阶段（PR-007）。实现时必须严格遵循 natsx JetStream subject 规范、domain_market §10 canonical semantics、Gin REST API `/api/v1/market/*` 契约。
 

@@ -68,15 +68,15 @@
 
 | 项 | 当前状态 | 说明 |
 | --- | --- | --- |
-| BR-001 No binance-market | Pending | 禁止旧仓库或旧 module 名称回流；需要 CI grep gate。 |
-| BR-002 Client Must Not Import Server | Pending | Client 禁止导入 server internals。 |
-| BR-003 Server Must Not Import Client | Pending | Server 禁止导入 client internals。 |
-| BR-004 natsx ManualAck | Pending | Server 必须在持久化与广播 handoff 后 Ack。 |
-| BR-005 No cs Package | Documented | `BOUNDARY-GATES.md` 已声明禁止 runtime `internal/cs`。 |
-| BR-006 Server Owns Binance Storage | Pending | Server 只拥有 Binance-specific storage，不上移为通用 market_data。 |
-| BR-007 No Domain Ownership | Pending | Binance 只能消费 `domain_market` 语义，不能定义 canonical domain。 |
-| BR-008 Wire Contract Externality | Pending | Wire contract 外置在 `natsx` subject 与 `domain_market` envelope，不落本地 proto/gRPC ingest schema。 |
-| BR-009 go.mod Dependency Compliance | Pending | 需要 runtime `go.mod` 与边界依赖检查。 |
+| BR-001 No binance-market | Done | `/home/binance/BOUNDARY-GATES.md` §2 + `scripts/boundary-gates.sh` 10/10 PASS，禁止旧仓库或旧 module 名称回流。 |
+| BR-002 Client Must Not Import Server | Done | `/home/binance/BOUNDARY-GATES.md` §3 证明 Client 无 server internals import。 |
+| BR-003 Server Must Not Import Client | Done | `/home/binance/BOUNDARY-GATES.md` §4 证明 Server 无 client internals import。 |
+| BR-004 natsx ManualAck | Pending | Server 必须在持久化与广播 handoff 后 Ack；该业务路径需要 TC-006 集成测试，不由 boundary gate 证明。 |
+| BR-005 No cs Package | Done | `/home/binance/BOUNDARY-GATES.md` §5/§6 证明无 runtime `internal/cs` 依赖且无同进程 C/S 通信。 |
+| BR-006 Server Owns Binance Storage | Done | `/home/binance/BOUNDARY-GATES.md` §7 证明 Server 只拥有 Binance-specific storage，不上移为通用 market_data。 |
+| BR-007 No Domain Ownership | Done | `/home/binance/BOUNDARY-GATES.md` §9 证明 Binance 只消费 `domain_market` 语义，不能定义 canonical domain。 |
+| BR-008 Wire Contract Externality | Done | `/home/binance/BOUNDARY-GATES.md` §8 证明无本地 `.proto`/gRPC ingest schema；当前 runtime 使用 HTTP JSON `/ingest` 与 `internal/wire` skeleton，canonical 语义仍外置。 |
+| BR-009 go.mod Dependency Compliance | Done | `/home/binance/BOUNDARY-GATES.md` §11 证明 runtime `go.mod` 与边界依赖合规。 |
 | NFR-001~004 Performance | Pending | 延迟、吞吐、回压、重放预算需要 runtime 压测证据。 |
 | NFR-005~009 Storage/API | Pending | 数据一致性、查询 SLA、归档安全、故障恢复需要集成测试证据。 |
 | NFR-010~011 Observability | Pending | metrics、logs、trace、health/readiness 需要 runtime 验证。 |
@@ -89,7 +89,7 @@
 | Root tasks | `TASK-BINANCE-ROOT-000` ~ `TASK-BINANCE-ROOT-007` | 模块级拆分、边界、通信、存储、API、广播、归档与治理任务已登记；完成度仍受 FR 状态约束。 |
 | Client tasks | `TASK-BINANCE-CLIENT-001` ~ `TASK-BINANCE-CLIENT-014` | product line catalog、parser、connector、mapping、idempotency、admin、natsx publisher 等已拆分；`CLIENT-008/009` spool/checkpoint 已归档。 |
 | Server tasks | `TASK-BINANCE-SERVER-010` ~ `TASK-BINANCE-SERVER-016` | natsx consumer、idempotency、storage、kafkax、Gin API、ossx archival 等为 v2.0.0 active server 交付面。 |
-| Boundary gates | `BOUNDARY-GATES.md` | 已形成文档化 gate 清单，仍需 CI 执行命令与 runtime 证据闭合。 |
+| Boundary gates | `BOUNDARY-GATES.md` | 已对齐 `/home/binance` runtime gate 清单；`scripts/boundary-gates.sh` 本地 10/10 PASS，证据归档于 `/home/binance/release/evidence/binance/20260623/`。 |
 
 ## 5. 文档资产清单
 
@@ -100,7 +100,7 @@
 | `TRACEABILITY.md` | 根级 FR/AC/TC/Task 追溯 | 作为当前状态与验收编号来源。 |
 | `client/TRACEABILITY.md` | Client 子域追溯 | 作为 client active/pending 实现面来源。 |
 | `server/TRACEABILITY.md` | Server 子域追溯 | 作为 server active/pending 实现面来源。 |
-| `BOUNDARY-GATES.md` | 边界漂移防线 | 作为 FR-010 与 BR-005 的文档证据。 |
+| `BOUNDARY-GATES.md` | 边界漂移防线 | 作为 FR-009 与 BR-001~BR-009 的边界治理证据。 |
 | `RUNTIME-MAPPING.md` | docs 到 runtime repo 的路径映射 | 用于避免把文档仓库误当 runtime。 |
 | `IMPLEMENTATION-PLAN.md` | 实施顺序与依赖计划 | 用于任务排序与风险解释。 |
 | `tasks/` | 可执行 task specs | 用于 Root/Client/Server 任务粒度追踪。 |
@@ -113,14 +113,14 @@
 | 根级 traceability 存在 | Done | `TRACEABILITY.md`。 |
 | Client/Server 子域 traceability 存在 | Done | `client/TRACEABILITY.md`, `server/TRACEABILITY.md`。 |
 | C/S 独立进程边界已定义 | Done | `README.md`, `SPEC.md`, `BOUNDARY-GATES.md`。 |
-| Boundary gate 文档已形成 | Done | `BOUNDARY-GATES.md` v2.0.0。 |
+| Boundary gate 文档已形成 | Done | `BOUNDARY-GATES.md` v2.2.4；runtime evidence commit `66f60b3945dce215f68ff833bbd336364d635ae8`；verified source commit `9777a5b0db9a3de5db53942b9aaf6b55eec04f24`。 |
 | Product line 全覆盖实现 | Not Done | FR-001 Partial。 |
 | Instrument identity 全覆盖实现 | Not Done | FR-002 Partial。 |
 | natsx publish/consume runtime 闭合 | Not Done | FR-003 Pending。 |
 | ManualAck 与 at-least-once runtime 闭合 | Not Done | FR-004 Pending。 |
 | Server idempotency runtime 闭合 | Not Done | FR-005 Pending。 |
 | Storage/API/archival/broadcast/runtime 扩展闭合 | Not Done | FR-006~FR-008、FR-010~FR-024 Pending；FR-009 local boundary evidence closed。 |
-| 全量 AC/TC 通过 | Not Done | TC-001~019、TC-023~TC-042 仍 Pending；TC-020~TC-022 local PASS。 |
+| 全量 AC/TC 通过 | Not Done | Boundary gates 10/10 PASS，TC-020~TC-022 local PASS；TC-001~019、TC-023~TC-042 仍 Pending。 |
 
 ## 7. 当前缺口登记
 
