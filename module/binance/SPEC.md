@@ -1125,17 +1125,17 @@ github.com/ZoneCNH/binance/
 
 ## 22. Release DoD
 
-`module/binance` v2.0.0 发布完成标准：
+`module/binance` v3.5.0 发布完成标准：
 
-- [ ] `binance-market` references 已移除或隔离到 migration history（BR-001）
-- [ ] `module/binance/client` 和 `module/binance/server` specs 完成并通过 spec-lint
-- [ ] root/client/server TRACEABILITY.md 完成，所有需求可追溯
-- [ ] client/server task sets 独立可执行
-- [ ] Delivery semantics 明确为 at-least-once + idempotent acceptance（FR-004, FR-005）
-- [ ] natsx JetStream ManualAck 全链路语义已定义且 testable（BR-004）
-- [ ] ProductLine 和 InstrumentKey 碰撞 case 已文档化（FR-002, §10 Data Model）
-- [ ] Boundary gates 可在 CI 执行（FR-009, BOUNDARY-GATES.md）
-- [ ] Runtime mapping 未将 generic market_data/strategy ownership 放在 Binance 内（BR-006）
+- [x] `binance-market` references 已移除或隔离到 migration history（BR-001）
+- [x] `module/binance/client` 和 `module/binance/server` specs 完成并通过 spec-lint
+- [x] root/client/server TRACEABILITY.md 完成，所有需求可追溯
+- [x] client/server task sets 独立可执行
+- [x] Delivery semantics 明确为 at-least-once + idempotent acceptance（FR-004, FR-005）
+- [x] natsx JetStream ManualAck 全链路语义已定义且 testable（BR-004）
+- [x] ProductLine 和 InstrumentKey 碰撞 case 已文档化（FR-002, §10 Data Model）
+- [x] Boundary gates 可在 CI 执行（FR-009, BOUNDARY-GATES.md）
+- [x] Runtime mapping 未将 generic market_data/strategy ownership 放在 Binance 内（BR-006）
 - [ ] 所有 FR 实现完成，所有 AC 验证通过
 - [ ] 覆盖率 ≥ 80%
 - [ ] CI Gate 全部通过（通用 + 模块专属）
