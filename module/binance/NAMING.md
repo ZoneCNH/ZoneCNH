@@ -117,6 +117,8 @@
 | `GET /api/v1/market/funding-rates/:symbol` | `funding_rate` |
 | `GET /api/v1/market/mark-prices/:symbol` | `mark_price` |
 
+> [CONVENTION] REST API URL 路径使用 kebab-case（`funding-rates`、`mark-prices`），遵循 RFC 3986 URL 命名惯例；内部 event_type 与 subject/topic 使用 snake_case（`funding_rate`、`mark_price`），遵循 NATS subject 与 Kafka topic 命名惯例。两者不一致为设计决策，非命名漂移。
+
 ## 8. OSS Path Naming
 
 格式：`binance/{product_line}/{symbol}/{YYYY}/{MM}/{DD}/{event_type}.parquet`
