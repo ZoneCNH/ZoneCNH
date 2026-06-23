@@ -9,6 +9,17 @@
 
 ---
 
+## [Unreleased] — 2026-06-23
+
+### Changed
+- 记录 `/home/binance` `fix/binance-issues` 本地 runtime boundary evidence：SHA `66f60b3945dce215f68ff833bbd336364d635ae8`，`scripts/boundary-gates.sh` 10/10 PASS，`go build/test/race/vet`、`golangci-lint`、本地 smoke self-test PASS。
+- 将 `RUNTIME-MAPPING.md` 标为目标运行时映射而非完成声明，并补充 `cmd/binance-client`、JetStream PubAck/ManualAck、durable natsx/storage/fanout/query 等未证明项。
+
+### Reviewed
+- PR-007a~g 分布式 runtime、远端 CI、release tag、live websocket 与外部依赖集成证据仍未闭合；本节不关闭 `ZoneCNH-n0s` / GitHub #923。
+
+---
+
 ## [v3.5.0] — 2026-06-23
 
 ### Added

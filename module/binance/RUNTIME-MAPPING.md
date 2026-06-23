@@ -1,7 +1,7 @@
-# module/binance RUNTIME MAPPING v3.1.0
+# module/binance RUNTIME MAPPING v3.1.1
 
-> 版本：v3.1.0
-> 更新日期：2026-06-22
+> 版本：v3.1.1
+> 更新日期：2026-06-23
 > 替代：v1.0.0（gRPC + SQLite spool 架构）
 > 参见：`DEEP-ANALYSIS.md`（架构决策全文）
 
@@ -21,9 +21,18 @@
 | 存储 | 无 | **taosx + postgresx + redisx + ossx** |
 | Web API | Gin admin only | **Gin REST /api/v1/** |
 
+### 当前证据口径（2026-06-23）
+
+- [COMPUTED, HIGH] 当前 runtime 分支：`/home/binance` `fix/binance-issues`，证据提交：`66f60b3945dce215f68ff833bbd336364d635ae8`。
+- [COMPUTED, HIGH] 已归档本地证据：`/home/binance/release/evidence/binance/20260623/`。
+- [COMPUTED, HIGH] 已证明范围：HTTP JSON `/ingest` 可本地接入、`internal/wire` 为合法共享 wire contract、runtime 不含 `internal/cs`、`scripts/boundary-gates.sh` 10/10 PASS、`go build/test/race/vet`、`golangci-lint` 与本地 smoke self-test PASS。
+- [COMPUTED, HIGH] 未证明范围：独立 `cmd/binance-client`、JetStream PubAck/ManualAck、durable `natsx` consumer、`redisx/postgresx/taosx/ossx` 持久化、`kafkax` fanout、`/api/v1` market/query API、live websocket、远端 CI 与 release tag。
+
 ---
 
-## 2. 目标运行时目录树
+## 2. 目标运行时目录树（非当前完成声明）
+
+本节描述目标运行时形态；当前完成状态以“当前证据口径”与 `TRACEABILITY.md` 状态为准。
 
 ```text
 github.com/ZoneCNH/binance/
@@ -35,7 +44,7 @@ github.com/ZoneCNH/binance/
       main.go
     binance-server/          ← 接入 + 处理 + 存储服务端
       main.go
-    binance-smoke/           ← 冒烟测试（改为 natsx embedded）
+    binance-smoke/           ← 冒烟测试（目标 natsx embedded；当前证据为本地 self-test）
       main.go
 
   internal/
@@ -108,7 +117,7 @@ github.com/ZoneCNH/binance/
       # ingest/  consumer/ 替代
       # ack/     JetStream ManualAck 替代
 
-    cs/                      ← ⚠️ 归档（首版骨架，不再是运行时通信契约）
+    cs/                      ← 历史目标/归档说明；当前 runtime SHA 66f60b 不含 internal/cs
       types.go
       doc.go
 
@@ -137,11 +146,11 @@ github.com/ZoneCNH/binance/
 
 ## 3. Command 映射
 
-| Command | 角色 | 监听端口 | 关键依赖 |
-|---------|------|---------|---------|
-| `cmd/binance-client` | 采集器：连接 Binance WS/REST → 发布 natsx | admin :8081 | natsx, domain_market |
-| `cmd/binance-server` | 服务端：消费 natsx → 处理存储 → 提供 API | API :8080, admin :8082 | natsx, redisx, postgresx, taosx, kafkax, ossx, gin |
-| `cmd/binance-smoke` | 冒烟测试（natsx embedded） | — | 同 server |
+| Command | 角色 | 监听端口 | 关键依赖 | 当前证据口径 |
+|---------|------|---------|---------|--------------|
+| `cmd/binance-client` | 采集器：连接 Binance WS/REST → 发布 natsx | admin :8081 | natsx, domain_market | Pending：尚无独立 client 与 PubAck 证据 |
+| `cmd/binance-server` | 服务端：消费 natsx → 处理存储 → 提供 API | API :8080, admin :8082 | natsx, redisx, postgresx, taosx, kafkax, ossx, gin | Partial：已证明 HTTP `/ingest`、本地 boundary/build/smoke；尚无 durable natsx、存储、fanout、query 证据 |
+| `cmd/binance-smoke` | 冒烟测试（目标 natsx embedded） | — | 同 server | PASS：本地 self-test；非分布式 runtime 证据 |
 
 ---
 

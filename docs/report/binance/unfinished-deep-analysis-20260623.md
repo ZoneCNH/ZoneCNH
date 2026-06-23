@@ -3,15 +3,15 @@
 - [COMPUTED, HIGH] 分析范围：`docs/report/binance/deep-analysis-20260622.md`、`deep-analysis-20260622-v2.md`、`deep-analysis-20260622-v3.md`、`deep-analysis-20260622-v4.md`、`deep-analysis-20260622-v5-cleansing-processing-gaps.md`。
 - [COMPUTED, HIGH] 目标：从 2026-06-22 系列深度分析报告中抽取仍标记为未启动、未归档、未闭合、待补充或需进入正式管线的事项。
 - [COMPUTED, HIGH] 判定口径：后续版本已声明修复的 v1 P0/P1 文档对齐项不再列入当前未完成清单；v2 之后仍保留或新增的 runtime、证据、治理投影、数据生命周期、清洗处理和 gap 缺口列为未完成。
-- [INFERRED, HIGH] 限制：本报告未重新进入 `/home/binance` 运行 L2/L3 验证，当前状态判断仅来自上述报告文本证据。
+- [COMPUTED, HIGH] 限制：2026-06-23 已在 `/home/binance` `fix/binance-issues` 采集 L1/local evidence，证据 commit 为 `66f60b3945dce215f68ff833bbd336364d635ae8`；未执行 L2/L3/live/release/external integration 验证。
 
 ---
 
 ## 一、结论摘要
 
 - [COMPUTED, HIGH] v1 明确称自身是 PR #850 历史基线，并声明 P0/P1 文档对齐项已由 PR #852/#853 与 v2 复核闭合（`deep-analysis-20260622.md:9`）。
-- [COMPUTED, HIGH] v2 明确给出仍未启动的 P2 项：PR-007 runtime、TC-020 evidence、`internal/cs` 删除（`deep-analysis-20260622-v2.md:59`-`61`）。
-- [COMPUTED, HIGH] v3 明确指出当前主要缺口不是缺规则，而是规则未全部投影、检查和执行化，且 release 运行证据需重新采集（`deep-analysis-20260622-v3.md:16`-`19`）。
+- [COMPUTED, HIGH] v2 原始报告明确给出仍未启动的 P2 项：PR-007 runtime、TC-020 evidence、`internal/cs` 删除（`deep-analysis-20260622-v2.md:59`-`61`）；当前 L1/local evidence 已闭合 `internal/cs` 边界与 TC-020 local gate，但未闭合 PR-007 分布式 runtime。
+- [COMPUTED, HIGH] v3 明确指出当前主要缺口不是缺规则，而是规则未全部投影、检查和执行化，且 release 运行证据需重新采集（`deep-analysis-20260622-v3.md:16`-`19`）；当前仅补入 L1/local 证据，release 证据仍缺失。
 - [COMPUTED, HIGH] v4 将未覆盖范围扩展到实时控制面、历史数据生命周期、同步对象、同步周期和周期数据（`deep-analysis-20260622-v4.md:24`-`33`、`56`-`68`、`72`-`110`）。
 - [COMPUTED, HIGH] v5 将未覆盖范围扩展到数据清洗、处理契约和 gap 检测，并汇总累计未明确问题 36 条、建议新增 FR 不少于 18 条（`deep-analysis-20260622-v5-cleansing-processing-gaps.md:156`-`166`）。
 
@@ -21,11 +21,10 @@
 
 | 编号 | 未完成项                                                  | 当前证据                                                                                                                                                                                                                                      | 需要完成的闭环                                                                                                                          |
 | ---- | --------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
-| P0-1 | [COMPUTED, HIGH] PR-007 runtime 仍是 release blocker。    | [COMPUTED, HIGH] v2 记录 runtime 13 个 FR 中 11 个仍为 Pending，TC-020 证据未归档，且 PR-007 是 A 等级唯一钥匙（`deep-analysis-20260622-v2.md:254`-`261`、`431`-`438`）。                                                                     | [INFERRED, HIGH] 完成 PR-007a~g runtime 实施，闭合 FR、BR、TC 与 C/S 模块参考实现证据。                                                 |
-| P0-2 | [COMPUTED, HIGH] 运行证据需要重新采集并归档。             | [COMPUTED, HIGH] v2 指出 TC-020 证据未归档；v3 要求在干净实现快照上采集 runtime HEAD SHA、boundary gates、Go tests、smoke，L3 证据单独记录（`deep-analysis-20260622-v2.md:258`-`260`、`392`-`393`；`deep-analysis-20260622-v3.md:45`-`54`）。 | [INFERRED, HIGH] 在 `/home/binance` 干净快照上跑 L2 验证，归档 evidence，并将 release 声明与 TRACEABILITY/ACCEPTANCE/FEATURES 对齐。    |
-| P0-3 | [COMPUTED, HIGH] `internal/cs` 仍被列为 runtime blocker。 | [COMPUTED, HIGH] v2 指出 `internal/cs` 是违反 BOUNDARY §5 的 runtime blocker，删除未启动（`deep-analysis-20260622-v2.md:225`-`231`、`297`-`307`）。                                                                                           | [INFERRED, HIGH] 删除 `internal/cs` 或迁出到合法边界，并在对应文档中标注 BOUNDARY §5 决策。                                             |
-| P0-4 | [COMPUTED, HIGH] 治理投影仍未完全收敛。                   | [COMPUTED, HIGH] v3 列出 `RULES.md`、`TRACEABILITY.md`、`CHANGELOG.md`、`RUNTIME-MAPPING.md` 等主动文档残留仍需修复（`deep-analysis-20260622-v3.md:32`-`39`）。                                                                               | [INFERRED, HIGH] 将权威入口、状态字段、任务引用和 4x4 NATS/Kafka 口径投影到所有主动文档，避免历史报告和治理文档互相打架。               |
-| P0-5 | [COMPUTED, HIGH] 数据生命周期候选仍未进入正式管线。       | [COMPUTED, HIGH] v3 指出 `DATA-LIFECYCLE.md` 仍只是 Discussion Draft，FR-012~FR-024 与 issue #880~#892 映射不改变当前合同，#888 若纳入会把 event_type 从 4 扩到 6，必须正式 spec bump（`deep-analysis-20260622-v3.md:40`-`44`）。             | [INFERRED, HIGH] 将数据生命周期提案纳入正式 Spec -> Review -> Matrix -> Tasks -> Plan -> Prompt -> Code 管线，明确是否触发 MAJOR bump。 |
+| P0-1 | [COMPUTED, HIGH] PR-007 runtime 仍是 release blocker。    | [COMPUTED, HIGH] v2 记录 runtime 13 个 FR 中 11 个仍为 Pending，TC-020 证据未归档，且 PR-007 是 A 等级唯一钥匙（`deep-analysis-20260622-v2.md:254`-`261`、`431`-`438`）。2026-06-23 L1/local evidence 只证明本地 boundary/smoke 健康，不闭合 PR-007a~g。 | [INFERRED, HIGH] 完成 PR-007a~g runtime 实施，闭合 standalone client、JetStream PubAck/ManualAck、durable storage/fanout/query 与 C/S 模块参考实现证据。 |
+| P0-2 | [COMPUTED, HIGH] L1/local 运行证据已采集；L2/L3/release 证据仍缺失。 | [COMPUTED, HIGH] `/home/binance/release/evidence/binance/20260623/` 记录 SHA `66f60b3945dce215f68ff833bbd336364d635ae8`，`scripts/boundary-gates.sh` 10/10 PASS，`go build/test/race/vet`、`golangci-lint`、本地 smoke self-test PASS；未提供 live websocket、remote CI、release tag 或外部依赖集成证据。 | [INFERRED, HIGH] 补齐 L2/L3/live/release/external integration evidence，并将 release 声明与 TRACEABILITY/ACCEPTANCE/FEATURES 对齐。 |
+| P0-3 | [COMPUTED, HIGH] 治理投影仍未完全收敛。                   | [COMPUTED, HIGH] v3 列出 `RULES.md`、`TRACEABILITY.md`、`CHANGELOG.md`、`RUNTIME-MAPPING.md` 等主动文档残留仍需修复（`deep-analysis-20260622-v3.md:32`-`39`）。                                                                               | [INFERRED, HIGH] 将权威入口、状态字段、任务引用和 4x4 NATS/Kafka 口径投影到所有主动文档，避免历史报告和治理文档互相打架。               |
+| P0-4 | [COMPUTED, HIGH] 数据生命周期候选仍未进入正式管线。       | [COMPUTED, HIGH] v3 指出 `DATA-LIFECYCLE.md` 仍只是 Discussion Draft，FR-012~FR-024 与 issue #880~#892 映射不改变当前合同，#888 若纳入会把 event_type 从 4 扩到 6，必须正式 spec bump（`deep-analysis-20260622-v3.md:40`-`44`）。             | [INFERRED, HIGH] 将数据生命周期提案纳入正式 Spec -> Review -> Matrix -> Tasks -> Plan -> Prompt -> Code 管线，明确是否触发 MAJOR bump。 |
 
 ---
 
@@ -76,7 +75,7 @@
 
 ## 五、建议落地顺序
 
-1. [INFERRED, HIGH] 先闭合 runtime 主线：PR-007a~g、TC-020 evidence、`internal/cs` 删除。
+1. [INFERRED, HIGH] 先闭合 runtime 主线：PR-007a~g、L2/L3/live/release evidence；`internal/cs` 边界已有本地证据，继续保留 boundary gate。
 2. [INFERRED, HIGH] 再闭合治理投影：RULES/TRACEABILITY/CHANGELOG/RUNTIME-MAPPING/FEATURES/ACCEPTANCE 的状态口径和入口一致性。
 3. [INFERRED, HIGH] 将 v4/v5 的 FR-012~FR-029 合并为 `module/binance/DATA-LIFECYCLE.md` 正式提案，而不是直接改 SPEC。
 4. [INFERRED, HIGH] 提案通过后进入 Spec -> Matrix -> Tasks -> Plan -> Prompt -> Code 管线，按 event_type 是否扩展决定 MINOR 或 MAJOR bump。
@@ -88,13 +87,14 @@
 
 - [COMPUTED, HIGH] v1 的版本漂移、状态冲突、AC 锚点缺失、server SPEC 不一致等 P0/P1 文档对齐项已由 v2 声明修复或复核，因此本报告不重复列入未完成项（`deep-analysis-20260622.md:9`；`deep-analysis-20260622-v2.md:47`-`61`、`188`-`196`）。
 - [COMPUTED, HIGH] v3 将自身定位为历史问题已经转化为治理项后的复核报告，因此本报告仅继承其仍需补充的治理投影、数据生命周期和运行证据要求（`deep-analysis-20260622-v3.md:3`-`19`、`32`-`54`）。
+- [COMPUTED, HIGH] `internal/cs` runtime blocker 不再列为当前未完成项：`/home/binance` SHA `66f60b3945dce215f68ff833bbd336364d635ae8` 证明当前 runtime 无 `internal/cs`，且 boundary gate §5 PASS。
 
 ---
 
 ## 七、验收口径
 
 - [INFERRED, HIGH] 文档闭环：主动治理文档中不存在互相冲突的状态、版本、任务引用和 4x4 NATS/Kafka 口径。
-- [INFERRED, HIGH] runtime 闭环：`/home/binance` 干净实现快照可提供 runtime HEAD SHA、boundary gates、Go tests、smoke 和 TC-020/L3 evidence。
+- [INFERRED, HIGH] runtime 闭环：当前已有 runtime HEAD SHA、boundary gates、Go tests、smoke 本地证据；仍需 L2/L3/live/release、remote CI、standalone client、JetStream PubAck/ManualAck、durable storage/fanout/query。
 - [INFERRED, HIGH] 数据生命周期闭环：FR-012~FR-029 或其等价方案进入正式 spec/matrix/task/test 链条，而不是停留在报告建议。
 - [INFERRED, HIGH] 治理闭环：legacy 名称、长报告、preserve/stash commit 和 GateGuard 流程风险均有明确保留、删除或迁移记录。
 - [INFERRED, HIGH] 运维闭环：FR-021/FR-023/FR-024 的对账、回填可观测性和订阅热重载进入同一数据生命周期提案。
@@ -107,7 +107,7 @@
 | 轮次 | 检查切面 | 结果 |
 | --- | --- | --- |
 | 1 | [COMPUTED, HIGH] 源文件覆盖 | [COMPUTED, HIGH] 覆盖 5 个 `deep-analysis-20260622*` 源报告：v1、v2、v3、v4、v5。 |
-| 2 | [COMPUTED, HIGH] P0 阻塞项 | [COMPUTED, HIGH] PR-007 runtime blocker、证据重跑、`internal/cs`、governance projection、DATA-LIFECYCLE 均已覆盖。 |
+| 2 | [COMPUTED, HIGH] P0 阻塞项 | [COMPUTED, HIGH] PR-007 runtime blocker、L2/L3/release 证据缺口、governance projection、DATA-LIFECYCLE 均已覆盖；`internal/cs` 已转入“不再列为当前未完成”。 |
 | 3 | [COMPUTED, HIGH] v1 过时项过滤 | [COMPUTED, HIGH] v1 trade/orderbook compatibility 等已被后续报告标记为过时，未被误列为当前未完成项。 |
 | 4 | [COMPUTED, HIGH] v4 realtime FR 覆盖 | [COMPUTED, HIGH] FR-012、FR-013、FR-014、FR-015 已覆盖。 |
 | 5 | [COMPUTED, HIGH] v4 historical FR 覆盖 | [COMPUTED, HIGH] 发现遗漏：FR-021、FR-023、FR-024 未显式列入；已补 P1-8a 与 P1-8b。 |

@@ -55,7 +55,7 @@
 | FR-029 | Data Quality & Freshness SLA：端到端 event_time→persist 延迟上限 + schema 漂移检测 + stale alert | AC-099 ~ AC-101 | TC-047 | ROOT-010 | Pending |
 | FR-030 | Options Chain Raw Field Pass-through：option chain 原始字段（strike/expiry/option_type/mark/IV）透传至下游，Greeks 派生归分析域 | AC-102 ~ AC-104 | TC-048, TC-049 | CLIENT-020 | Pending |
 
-> 状态口径：v3.1.0 新增 FR-012~FR-024 仅完成追溯登记，全部保持 Pending；v3.3.0 新增 FR-025~FR-028（fold 自 DATA-LIFECYCLE §7 候选）同样保持 Pending；v3.4.0 新增 FR-029（P2-2 数据质量/freshness SLA）+ FR-030（P2-4 Options 字段透传）同样保持 Pending；FR-009/BR Done 的 runtime 证据见 `BOUNDARY-GATES.md` 与变更历史 v2.2.3（runtime SHA `bae80d6`）。
+> 状态口径：v3.1.0 新增 FR-012~FR-024 仅完成追溯登记，全部保持 Pending；v3.3.0 新增 FR-025~FR-028（fold 自 DATA-LIFECYCLE §7 候选）同样保持 Pending；v3.4.0 新增 FR-029（P2-2 数据质量/freshness SLA）+ FR-030（P2-4 Options 字段透传）同样保持 Pending；FR-009/BR Done 仅代表本地 L1 boundary evidence，证据见 `BOUNDARY-GATES.md`、`/home/binance/release/evidence/binance/20260623/` 与变更历史 v2.2.4（runtime evidence commit `66f60b3945dce215f68ff833bbd336364d635ae8`，verified source commit `9777a5b0db9a3de5db53942b9aaf6b55eec04f24`）。该状态不代表 PR-007a~g 分布式 runtime、远端 CI 或 release tag 已完成。
 
 ---
 
@@ -121,8 +121,8 @@
 | TC-013 | FR-007 | — | httptest（/api/v1/market/depth redisx cache） | Pending |
 | TC-014 | FR-007 | — | httptest（API key 401） | Pending |
 | TC-015 | FR-007 | — | httptest（限流 429） | Pending |
-| TC-016 | FR-006 | BR-006 | 单元（先写 ossx ETag 校验后删 taosx） | Pending |
-| TC-017 | FR-006 | — | 单元（归档路径格式） | Pending |
+| TC-016 | FR-006d | BR-006 | 单元（先写 ossx ETag 校验后删 taosx） | Pending |
+| TC-017 | FR-006d | — | 单元（归档路径格式） | Pending |
 | TC-018 | FR-008 | — | 单元（kafkax topic + partition key） | Pending |
 | TC-019 | FR-008 | BR-004 | 单元（kafkax 不可达→error/不 Ack） | Pending |
 | TC-020 | FR-009 | BR-005 | CI gate（cs 包/client 包 import 检查） | **PASS** |
@@ -184,15 +184,15 @@
 | AC-023 | FR-007 | 无效 API key → 401 | TC-014 |
 | AC-024 | FR-007 | 超限（1000 req/min）→ 429 + Retry-After | TC-015 |
 | AC-025 | FR-007 | GET /readyz 任一组件断连 → 503 | TC-012 |
-| AC-026 | FR-008 | 每日定时查询 cutoff（now - 90d）之前的 taosx 数据 | TC-016 |
-| AC-027 | FR-008 | ossx ETag 验证通过后才执行 taosx.Delete（先写冷再删热） | TC-016 |
-| AC-028 | FR-008 | 归档路径格式 `binance/{product_line}/{symbol}/{YYYY}/{MM}/{DD}/{event_type}.parquet` | TC-017 |
-| AC-029 | FR-009 | kafkax topic = `binance.{product_line}.{event_type}.v1` | TC-018 |
-| AC-030 | FR-009 | partition key = symbol，相同 symbol 有序到达同一 partition | TC-018 |
-| AC-031 | FR-009 | Kafka 不可达时返回 error；未完成 kafkax handoff 前不 Ack，进入 retry/dead-letter/告警路径 | TC-019 |
-| AC-032 | FR-010 | server 源码无 `internal/client` 或 `internal/cs` 导入（CI gate） | TC-020 |
-| AC-033 | FR-010 | 任何代码 reintroduce `binance-market` 引用时 CI no-legacy gate 失败 | TC-021 |
-| AC-034 | FR-010 | go.mod 中 natsx/redisx/postgresx/taosx/clickhousex/kafkax/ossx/gin 均保持 direct 依赖 | TC-022 |
+| AC-026 | FR-006d | 每日定时查询 cutoff（now - 90d）之前的 taosx 数据；归档路径格式 `binance/{product_line}/{symbol}/{YYYY}/{MM}/{DD}/{event_type}.parquet` | TC-016, TC-017 |
+| AC-027 | FR-006d | ossx ETag 验证通过后才执行 taosx.Delete（先写冷再删热） | TC-016 |
+| AC-028 | FR-006d | ETag 不匹配时停止删除并报警；ossx path 与 parquet object 格式可回放校验 | TC-017 |
+| AC-029 | FR-008 | kafkax topic = `binance.{product_line}.{event_type}.v1` | TC-018 |
+| AC-030 | FR-008 | partition key = symbol，相同 symbol 有序到达同一 partition | TC-018 |
+| AC-031 | FR-008 | Kafka 不可达时返回 error；未完成 kafkax handoff 前不 Ack，进入 retry/dead-letter/告警路径 | TC-019 |
+| AC-032 | FR-009 | server 源码无 `internal/client` 或 `internal/cs` 导入（CI gate） | TC-020 |
+| AC-033 | FR-009 | 任何代码 reintroduce `binance-market` 引用时 CI no-legacy gate 失败 | TC-021 |
+| AC-034 | FR-009 | go.mod 中 natsx/redisx/postgresx/taosx/clickhousex/kafkax/ossx/gin 均保持 direct 依赖 | TC-022 |
 | AC-035 | FR-009 | BOUNDARY-GATES §5（cs 包禁止）+ §6（同进程禁止）+ §11（go.mod 合规）全 PASS | TC-020 |
 | AC-036 | FR-006c | redisx SET(tick:{line}:{symbol}, json, 60s) 写入最新行情缓存 | TC-023 |
 | AC-037 | FR-006c | redisx 缓存写入失败 → warn 日志 + 降级（不阻塞主管线） | TC-023 |
@@ -293,3 +293,4 @@
 | 2026-06-22 | v2.2.1 | **Boundary gate runtime evidence 回填**：BR-001/002/003/005/006/007/008/009 与 TC-005/021/022 对齐 `/home/binance/scripts/boundary-gates.sh` 10/10 PASS；BR-004 与非边界业务 FR 仍保持 Pending | ZoneCNH |
 | 2026-06-22 | v2.2.2 | **PR-C 模块治理收尾**：新建 `CHANGELOG.md`（Keep-a-Changelog 格式）；ACCEPTANCE Module-Version v2.0.0 → v2.2.3、FEATURES Module-Version v2.0.0 → v2.2.2、IMPLEMENTATION-PLAN Version v2.1.2 → v2.2.3；满足 RULES.md R6 + R9 + DRIFT D4 | ZoneCNH |
 | 2026-06-22 | v2.2.3 | **PR-D runtime evidence 回填**：FR-009 状态附 runtime SHA `bae80d6` + CI workflow URL（runtime PR ZoneCNH/binance#9 合并，删除 `internal/cs/` + 集成 `.github/workflows/boundary-gates.yml` 9 道 gate）；DRIFT D8 风险级别 MEDIUM → LOW；报告 §Runtime 核对结果 第 4 项证据升级为 runtime commit + CI URL | ZoneCNH |
+| 2026-06-23 | v2.2.4 | **PR-007 runtime boundary evidence refresh**：对齐 `/home/binance/BOUNDARY-GATES.md` §2-§11 与 `scripts/boundary-gates.sh` 10/10 PASS；runtime evidence commit `66f60b3945dce215f68ff833bbd336364d635ae8`，verified source commit `9777a5b0db9a3de5db53942b9aaf6b55eec04f24`；新增 HTTP JSON `/ingest` admin/server boundary evidence；本地 evidence bundle `/home/binance/release/evidence/binance/20260623/`；远端 CI/release tag 与 PR-007a~g 分布式 runtime 仍单独验收 | ZoneCNH |
