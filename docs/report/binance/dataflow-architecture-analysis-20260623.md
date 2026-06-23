@@ -5,6 +5,8 @@
 - Method: 读取 `SPEC.md`（1266 行）、`RULES.md`、`STANDARD.md`、`NAMING.md`、`TRACEABILITY.md`、client/server 子规格，交叉比对 `docs/report/binance/business-types-coverage-20260622.md`
 - Confidence: HIGH（架构层）/ MED（迭代优先级排序含主观判断）
 
+> [COMPUTED][HIGH] Post-PR #936/current-docs note: 本报告中的 R2 `4×4` 矩阵缺口为 2026-06-23 历史分析口径；current module docs/checks have moved to a 4×6 event matrix and preserve the remaining rows as provenance/backlog context. See `pr-936-governance-docs-closure-20260623.md`.
+
 > 本报告聚焦用户四问：① 数据流架构图 ② 业务类型（现货/合约/期权/订单簿）覆盖 ③ 其他需补充/优化/迭代点 ④ 是否需建立模块规则与标准规范。
 
 ---
@@ -83,7 +85,7 @@ Binance Exchange (REST/WebSocket)
 [INFERRED][MED] 影响：
 
 1. 交割合约 symbol（如 `BTCUSDT_240329`）落入 `um_perp` subject，下游消费者无法从 subject 区分永续 vs 交割。
-2. R2「4×4 对称矩阵」隐含假设 product_line 与合约类型一一对应，交割合约破坏该假设。
+2. R2「4×4 对称矩阵」为历史分析口径；current docs/checks 已按 4×6 event matrix 收敛，剩余交割合约问题仅影响 product_line/instrument_subtype 决策。
 3. 交割合约特有的 delivery_date / contract_type 字段在 identity 矩阵（SPEC line 559-571）未列。
 
 ### 2.3 其他业务类型评估
@@ -116,7 +118,7 @@ Binance Exchange (REST/WebSocket)
 
 | ID   | 项                                                                                 | 现状                                                            | 建议                                               |
 | ---- | ---------------------------------------------------------------------------------- | --------------------------------------------------------------- | -------------------------------------------------- |
-| P1-1 | R2「4×4 矩阵」实际已扩为 4 product_line × 6 event_type                             | NAMING §50-51 含 funding_rate/mark_price，但 RULES R2 仍写"4×4" | R2 改为「4 × 6 对称矩阵」并更新检测脚本            |
+| P1-1 | R2「4×4 矩阵」实际已扩为 4 product_line × 6 event_type（历史缺口）                   | Post-PR #936/current docs/checks 已按 4×6 收敛                      | 保留为历史 provenance；后续只跟踪新维度变更        |
 | P1-2 | `check-binance-docs.sh` 位于本仓 `scripts/`，但 runtime 仓另有 `boundary-gates.sh` | 两套 gate 分离                                                  | 在 STANDARD.md 增加两脚本职责对照表                |
 | P1-3 | L2 Functional FR 全部 Pending                                                      | business-types-coverage 报告确认                                | 无需文档侧动作，但应在迭代计划标注 L2 是主 backlog |
 
@@ -157,7 +159,7 @@ Binance Exchange (REST/WebSocket)
 
 | ID  | 项                                        | 建议                                                       |
 | --- | ----------------------------------------- | ---------------------------------------------------------- |
-| R-1 | R2 矩阵维度过期（4×4 → 实际 4×6）         | 更新 R2 + check 脚本                                       |
+| R-1 | R2 矩阵维度过期（4×4 → 实际 4×6，历史缺口） | Post-PR #936/current docs/checks 已收敛；保留 provenance |
 | R-2 | 无规则覆盖"交割合约 product_line 承载"    | P0-1 决策后补 R11 或扩 R2                                  |
 | R-3 | R9 文档存在性清单已含 `DATA-LIFECYCLE.md` | 确认 OK，无需动作                                          |
 | R-4 | 无规则要求数据流图与 FR/事件矩阵同步      | 建议增软规则：SPEC Appendix C 必须反映当前 event_type 全集 |
@@ -175,7 +177,7 @@ Binance Exchange (REST/WebSocket)
 | P0     | 决策交割合约承载方案（扩 product_line vs 加 instrument_subtype）   | NAMING.md、SPEC.md §9、RULES R2         | 本报告 §2.2      |
 | P0     | SPEC Appendix C 增补完整数据流图 v2                                | SPEC.md                                 | 本报告 §1.2      |
 | P0     | 架构图补 funding_rate/mark_price 事件                              | SPEC.md Appendix C                      | 本报告 §1.2 G6   |
-| P1     | R2 矩阵维度 4×4 → 4×6 + 更新 check 脚本                            | RULES.md、scripts/check-binance-docs.sh | 本报告 §3.2 P1-1 |
+| P1     | R2 矩阵维度 4×4 → 4×6 + 更新 check 脚本（历史项，current docs/checks 已收敛） | RULES.md、scripts/check-binance-docs.sh | 本报告 §3.2 P1-1 |
 | P1     | STANDARD.md 增 check-binance-docs.sh vs boundary-gates.sh 职责对照 | STANDARD.md                             | 本报告 §3.2 P1-2 |
 | P2     | 评估多交易所泛化（OQ-005/006）                                     | SPEC.md §18 Open Questions              | 中长期           |
 

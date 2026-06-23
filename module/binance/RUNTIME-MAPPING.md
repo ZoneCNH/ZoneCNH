@@ -1,6 +1,6 @@
-# module/binance RUNTIME MAPPING v3.1.2
+# module/binance RUNTIME MAPPING v3.5.0
 
-> 版本：v3.1.2
+> 版本：v3.5.0
 > 更新日期：2026-06-23
 > 替代：v1.0.0（gRPC + SQLite spool 架构）
 > 参见：`DEEP-ANALYSIS.md`（架构决策全文）
@@ -220,12 +220,16 @@ Retention: 7d  Storage: file  Replicas: 1 (生产升 3)
 Subjects:
   binance.market.spot.tick         binance.market.spot.trade
   binance.market.spot.bar          binance.market.spot.depth
+  binance.market.spot.funding_rate binance.market.spot.mark_price
   binance.market.um_perp.tick      binance.market.um_perp.trade
   binance.market.um_perp.bar       binance.market.um_perp.depth
+  binance.market.um_perp.funding_rate  binance.market.um_perp.mark_price
   binance.market.cm_perp.tick      binance.market.cm_perp.trade
   binance.market.cm_perp.bar       binance.market.cm_perp.depth
+  binance.market.cm_perp.funding_rate  binance.market.cm_perp.mark_price
   binance.market.options.tick      binance.market.options.trade
   binance.market.options.bar       binance.market.options.depth
+  binance.market.options.funding_rate  binance.market.options.mark_price
 
 Server Consumer:
   Durable: binance-server  AckPolicy: explicit  AckWait: 30s  MaxDeliver: 5
@@ -241,18 +245,26 @@ Topics:
   binance.spot.trade.v1        现货逐笔成交
   binance.spot.bar.v1          现货 K 线
   binance.spot.depth.v1        现货深度
+  binance.spot.funding_rate.v1 现货资金费率（占位，runtime 不采集）
+  binance.spot.mark_price.v1   现货标记价格（占位，runtime 不采集）
   binance.um_perp.tick.v1      U 本位合约 tick
   binance.um_perp.trade.v1     U 本位合约逐笔成交
   binance.um_perp.bar.v1       U 本位合约 K 线
   binance.um_perp.depth.v1     U 本位合约深度
+  binance.um_perp.funding_rate.v1  U 本位合约资金费率
+  binance.um_perp.mark_price.v1    U 本位合约标记价格
   binance.cm_perp.tick.v1      币本位合约 tick
   binance.cm_perp.trade.v1     币本位合约逐笔成交
   binance.cm_perp.bar.v1       币本位合约 K 线
   binance.cm_perp.depth.v1     币本位合约深度
+  binance.cm_perp.funding_rate.v1  币本位合约资金费率
+  binance.cm_perp.mark_price.v1    币本位合约标记价格
   binance.options.tick.v1      期权 tick
   binance.options.trade.v1     期权逐笔成交
   binance.options.bar.v1       期权 K 线
   binance.options.depth.v1     期权深度
+  binance.options.funding_rate.v1  期权资金费率（占位，runtime 不采集）
+  binance.options.mark_price.v1    期权标记价格 / option mark
 
 Consumer Groups:
   signal_engine  risk_engine  backtestx  market_regime

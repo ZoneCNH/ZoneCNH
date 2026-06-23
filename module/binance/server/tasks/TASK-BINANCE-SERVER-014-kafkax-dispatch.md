@@ -39,8 +39,16 @@ internal/server/dispatch/
 | `binance.options.bar.v1` | symbol | Options K 线 / bar |
 | `binance.options.depth.v1` | symbol | Options 深度 |
 | `binance.options.trade.v1` | symbol | Options 逐笔成交 |
+| `binance.spot.funding_rate.v1` | symbol | 现货资金费率（占位，runtime 不采集） |
+| `binance.spot.mark_price.v1` | symbol | 现货标记价格（占位，runtime 不采集） |
+| `binance.um_perp.funding_rate.v1` | symbol | USDⓈ-M 资金费率 |
+| `binance.um_perp.mark_price.v1` | symbol | USDⓈ-M 标记价格 |
+| `binance.cm_perp.funding_rate.v1` | symbol | COIN-M 资金费率 |
+| `binance.cm_perp.mark_price.v1` | symbol | COIN-M 标记价格 |
+| `binance.options.funding_rate.v1` | symbol | Options 资金费率（占位，runtime 不采集） |
+| `binance.options.mark_price.v1` | symbol | Options 标记价格 / option mark |
 
-格式规律：`binance.{product_line}.{event_type}.v1`（与 natsx subject 明确分离）
+格式规律：`binance.{product_line}.{event_type}.v1`（与 natsx subject 明确分离；spot/options 的 funding_rate/mark_price 为命名矩阵占位，runtime 暂不产出，capability 标记 `disabled`）
 
 ## 接口设计
 

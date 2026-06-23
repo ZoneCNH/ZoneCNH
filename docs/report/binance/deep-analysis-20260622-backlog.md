@@ -5,6 +5,7 @@
 > **目的**：把 5 份深度分析中提出但**仍未完成**的问题汇总成单一可执行清单，区分"已在后续 spec bump 中解决"与"真正剩余"
 > **证据标签**：`[KNOWN]` 文件读取 + 实跑脚本；`[COMPUTED]` 直接统计；`[INFERRED]` 跨文档交叉
 > **置信度**：HIGH
+> **Post-PR #936 supersession**：本汇总原基线为 v3.4.0；current module docs are v3.5.0, with FR-029/FR-030 registered and FR-025~FR-030 still `Pending` runtime capabilities. See `pr-936-governance-docs-closure-20260623.md` before treating older FR-025~029 rows as current backlog.
 
 ---
 
@@ -16,11 +17,11 @@
 
 | 项 | 当前值 | 来源 |
 |---|---|---|
-| SPEC 版本 | **v3.4.0** | `module/binance/SPEC.md:107` Spec-Version |
-| TRACEABILITY 版本 | v3.4.0 / Last-Updated 2026-06-23 | `module/binance/TRACEABILITY.md` |
-| FR 登记数 | **28**（FR-001~FR-028） | SPEC §7 + TRACEABILITY §1 |
-| AC 登记数 | **98**（AC-001~AC-098） | TRACEABILITY §5 |
-| TC 登记数 | **46**（TC-001~TC-046） | TRACEABILITY §4 |
+| SPEC 版本 | **v3.5.0** | `module/binance/SPEC.md` Spec-Version |
+| TRACEABILITY 版本 | v3.5.0 / Last-Updated 2026-06-23 | `module/binance/TRACEABILITY.md` |
+| FR 登记数 | **30**（FR-001~FR-030） | SPEC §7 + TRACEABILITY §1 |
+| AC 登记数 | **104**（AC-001~AC-104） | TRACEABILITY §5 |
+| TC 登记数 | **49**（TC-001~TC-049） | TRACEABILITY §4 |
 | FR→AC→TC 覆盖率 | 100% 追溯登记 | SPEC §7 末尾 |
 | 文档自检脚本 | **PASS**（`scripts/check-binance-docs.sh` 全绿） | 实跑 2026-06-23 |
 | STATUS/ARCHITECTURE 标注 spec 版本 | **v3.3.0** ← 落后 v3.4.0 | `STATUS.md:113/132/353`、`ARCHITECTURE.md:206/447` |
@@ -58,11 +59,11 @@ v3 报告要求的"模块标准规范"已全部建立：
 | 13 | v4 §5 P0 | 历史生命周期 FR-016~019 | 🔴 | ✅ 登记 / ❌ 实现 | traceability Pending |
 | 14 | v4 §5 P1 | 周期数据 FR-020~022 | 🟡 | ✅ 登记 / ❌ 实现 | traceability Pending |
 | 15 | v4 §5 P2 | 治理 FR-023~024 | 🟢 | ✅ 登记 / ❌ 实现 | traceability Pending |
-| 16 | v5 §5 | 清洗/处理/缺口 FR-025~029 | 🟡 | 🟡 部分（025~028 登记待实现；029 未登记） | 见 §二.2 |
+| 16 | v5 §5 | 清洗/处理/缺口 FR-025~029 | 🟡 | ✅ 文档登记 / ❌ 实现 | current v3.5.0 docs 已含 FR-029/030；runtime Pending |
 | 17 | v3 §P1 | DATA-LIFECYCLE 候选进正式管线 | 🟡 | ✅ | v3.2.0 fold |
 | 18 | v3 §P2 | 重新采集 runtime L2 证据 | 🟡 | ❌ | 无干净 runtime 快照 |
 | 19 | 🆕 | STATUS/ARCHITECTURE spec 版本落后（v3.3.0 vs v3.4.0） | 🔴 | ❌ | 见 §二.3 |
-| 20 | 🆕 | FR-029（Data Coverage SLA）未登记进 SPEC | 🟡 | ❌ | v5 建议但未 fold |
+| 20 | 🆕 | FR-029（Data Coverage SLA）登记状态 | 🟡 | ✅ 文档登记 / ❌ 实现 | current v3.5.0 docs 已登记，runtime Pending |
 
 ---
 
@@ -129,12 +130,12 @@ ARCHITECTURE.md:447 v3.3.0 (spec)   ← 应 v3.4.0
 - **动作**：在 `release/evidence/binance/` 输出 TC-020（及未来 TC-001~046）PASS log，按 `STANDARD.md` L2/L3 语义分层
 - **预期收益**：+2 分；满足 v3 报告 "release 声明条件：L3 证据独立归档"
 
-### 2.5 🟡 FR-029（Data Coverage SLA）未登记（v5 §5 遗漏）
+### 2.5 🟡 FR-029（Data Coverage SLA）登记状态（历史缺口已收敛，runtime Pending）（v5 §5）
 
-`[KNOWN][HIGH]` v5 报告建议 FR-025~029 共 5 条，但 v3.2.0 只 fold 了 FR-025~028，**FR-029（Data Coverage SLA：per (product_line, symbol, event_type) 覆盖率 SLA < 0.1%）未进 SPEC**。
+`[KNOWN][HIGH]` 原 v5 报告判断 FR-029 未进 SPEC；Post-PR #936/current module docs 已在 v3.5.0 登记 FR-029/AC-099~101/TC-047，并新增 FR-030。该条现在只保留历史 provenance，runtime capability 状态仍为 Pending。
 
-- **动作**：评估是否在下一 MINOR bump 把 FR-029 fold 进 SPEC §7 + §18，AC-099~101、TC-047
-- **决策点**：与 FR-026（Daily Reconciliation）功能重叠度需评估
+- **动作**：不再评估是否 fold；后续只需补 runtime/evidence 后再从 Pending 晋级
+- **决策点**：与 FR-026（Daily Reconciliation）的实现重叠度仍可在 runtime PR 中评估
 
 ### 2.6 🟢 50 个 preserve/stash commit 覆盖审计（v2 §3.2 / v2 §九 P3）
 
@@ -173,7 +174,7 @@ ARCHITECTURE.md:447 v3.3.0 (spec)   ← 应 v3.4.0
 ### P0（本周内，纯文档仓可做）
 
 1. **§2.3 版本同步**：STATUS.md / ARCHITECTURE.md 5 处 v3.3.0 → v3.4.0 + `audit-status.py --network`
-2. **§2.5 FR-029 决策**：评估是否 fold 进下一 bump（与 FR-026 重叠度分析）
+2. **§2.5 FR-029 runtime/evidence follow-up**：文档登记已收敛；仅在实现 PR 中评估与 FR-026 的运行职责边界
 
 ### P1（runtime 仓，需独立 PR）
 
@@ -201,7 +202,7 @@ ARCHITECTURE.md:447 v3.3.0 (spec)   ← 应 v3.4.0
 **真正剩余的未完成项集中在两个层面**：
 
 1. **runtime 实现层**（§2.1 PR-007 + §2.2 internal/cs + §2.4 evidence）——文档规格已完备，runtime 代码未跟上，这是 82→95+ 的唯一路径
-2. **跨文档同步层**（§2.3 版本漂移 + §2.5 FR-029）——纯文档仓可立即闭合，是被 bump 流程遗漏的收尾项
+2. **跨文档同步层**（§2.3 版本漂移 + §2.5 FR-029）——FR-029 文档登记已在 current v3.5.0 收敛；剩余风险转为 runtime/evidence follow-up
 
 **建议**：不再产出 v6 分析报告（v2 §十一 已预警边际效益递减）。剩余工作转为 §四 的可执行 PR 清单逐项闭环，每完成一项在 TRACEABILITY.md 变更历史登记，不再做整体重评分。
 

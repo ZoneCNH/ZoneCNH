@@ -3,6 +3,8 @@
 - Last-Updated: 2026-06-23
 - Scope: `docs/report/binance` report set for Stage0–Stage2 repair and audit follow-up.
 
+> [COMPUTED, HIGH] 2026-06-23 当前 Beads audit 仍有 9 个 binance open issues；历史 GitHub/PR reports 保留当时快照，不能作为当前 closure evidence。runtime/release evidence Pending。
+
 ## Execution and iteration plans
 
 | Report | Purpose |
@@ -27,6 +29,7 @@
 
 | Report | Purpose |
 | --- | --- |
+| [pr-936-governance-docs-closure-20260623.md](pr-936-governance-docs-closure-20260623.md) | Post-PR #936 governance/docs closure audit for #925/#930/#931, stale PR #910 projections, and exact patch set. |
 | [governance-closure-20260623.md](governance-closure-20260623.md) | Worker-3 governance slice closure for #869/#871/#893/#894/#895/#896. |
 | [commit-coverage-audit-20260623.md](commit-coverage-audit-20260623.md) | 50-candidate preserve/stash/backup commit coverage audit for #896. |
 | [issues-full-closure-20260623.md](issues-full-closure-20260623.md) | Full 25-issue closure review (PR #910) — final status, evidence, residual actions. |
@@ -34,6 +37,5 @@
 ## Stage0–Stage2 executable gates
 
 - Stage1 doc gate: `scripts/check-binance-docs.sh`
-- Stage2 lifecycle draft: `module/binance/DATA-LIFECYCLE.md` (v0.2.0 — includes §6 issue→FR coverage map + §7 candidate FR-025~028 landing)
+- Stage2 lifecycle draft: `module/binance/DATA-LIFECYCLE.md` (v3.5.0 — FR-012~FR-030 registered in SPEC/TRACEABILITY; runtime/release evidence Pending)
 - Stage6 `module/binance/STANDARD.md` is Active (v0.1.1) and wired into R9 + check-binance-docs.sh.
-

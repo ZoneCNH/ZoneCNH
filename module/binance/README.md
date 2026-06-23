@@ -4,6 +4,7 @@
 
 - Spec-Version: v3.5.0 (root) / v2.1.1 (client) / v2.2.0 (server)
 - Runtime-Version: v0.1.0
+- Delivery-State: FR-001~FR-030 spec/traceability registered; runtime/release evidence Pending
 - Last-Updated: 2026-06-23
 
 It is split into two submodules:

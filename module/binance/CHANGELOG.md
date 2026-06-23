@@ -97,7 +97,7 @@
 
 ### Added
 - 将 root SPEC / TRACEABILITY 扩展到 FR-012..FR-024、AC-086、TC-042，记录 realtime control、historical lifecycle、event governance、release evidence 与 runtime hot reload 后续交付面。
-- 在 TRACEABILITY 中登记 R2 120-cell governance matrix（24 FR/event-product-governance cells × 5 documents/checker anchors）。
+- 在 TRACEABILITY 中登记 R2 governance matrix（4 product lines × 6 event types × 5 documents/checker anchors）。
 
 ### Changed
 - README、ACCEPTANCE、FEATURES、IMPLEMENTATION-PLAN 与 root SPEC 版本同步到 v3.1.0。

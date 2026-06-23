@@ -18,6 +18,8 @@
 
 > **v3.3.0 变更摘要**：版本号统一治理——字段名收敛为 `Spec-Version`（仅 SPEC）/ `Module-Version`（治理文档）/ `Runtime-Version`（SPEC runtime 版本）；废弃 `Doc-Version`/`Matrix-Version`/`Version` 异名；顶层 Module-Version 对齐 root SPEC；server/TRACEABILITY 补建版本字段；R6 扩展为全量版本统一规则 + check-binance-docs.sh 增项。
 
+> **v3.5.0 变更摘要**：补齐 FR-029（Data Quality & Freshness SLA）与 FR-030（Options Chain Raw Field Pass-through）的追溯闭环；新增 AC-099~AC-104 与 TC-047~TC-049；R2 governance matrix 文案统一为 4 product lines × 6 event types × 5 文档/checker anchors；新增项保持 Pending，runtime/release evidence 仍未闭合。
+
 | FR ID | 功能需求 | AC | TC ID(s) | Task | 实现状态 |
 |-------|----------|-----|----------|------|----------|
 | FR-001 | Product-Line Support：Client 可独立采集 Spot / USDⓈ-M / COIN-M / Options 四产品线 | AC-001 ~ AC-003 | TC-001 | TASK-BINANCE-ROOT-001, CLIENT-001 | Pending |
@@ -55,7 +57,7 @@
 | FR-029 | Data Quality & Freshness SLA：端到端 event_time→persist 延迟上限 + schema 漂移检测 + stale alert | AC-099 ~ AC-101 | TC-047 | ROOT-010 | Pending |
 | FR-030 | Options Chain Raw Field Pass-through：option chain 原始字段（strike/expiry/option_type/mark/IV）透传至下游，Greeks 派生归分析域 | AC-102 ~ AC-104 | TC-048, TC-049 | CLIENT-020 | Pending |
 
-> 状态口径：v3.1.0 新增 FR-012~FR-024 仅完成追溯登记，全部保持 Pending；v3.3.0 新增 FR-025~FR-028（fold 自 DATA-LIFECYCLE §7 候选）同样保持 Pending；v3.4.0 新增 FR-029（P2-2 数据质量/freshness SLA）+ FR-030（P2-4 Options 字段透传）同样保持 Pending；FR-009/BR Done 仅代表 L1 boundary evidence，证据见 `BOUNDARY-GATES.md`、`/home/binance/release/evidence/binance/20260623/` 与变更历史 v2.2.4（runtime evidence commit `66f60b3945dce215f68ff833bbd336364d635ae8`，verified source commit `9777a5b0db9a3de5db53942b9aaf6b55eec04f24`），以及 runtime PR `ZoneCNH/binance#11` merge commit `5a57a19aed3be5420135b8e05016da15faf094ed` / source commit `7873b795b13fc4b5a0fc4310300b6f196cca7532` 的远端 `Boundary Gates (10 gates)` PASS。该状态只补充独立 `cmd/binance-client` + HTTP `/ingest` 边界证据，不代表 PR-007a~g 分布式 runtime、TC-005、远端 release CI 或 release tag 已完成。
+> 状态口径：v3.1.0 新增 FR-012~FR-024 仅完成追溯登记，全部保持 Pending；v3.3.0 新增 FR-025~FR-028（fold 自 DATA-LIFECYCLE §7 候选）同样保持 Pending；v3.5.0 新增 FR-029（P2-2 数据质量/freshness SLA）+ FR-030（P2-4 Options 字段透传）同样保持 Pending；FR-009/BR Done 仅代表本地 L1 boundary evidence，证据见 `BOUNDARY-GATES.md`、`/home/binance/release/evidence/binance/20260623/` 与变更历史 v2.2.4（runtime evidence commit `66f60b3945dce215f68ff833bbd336364d635ae8`，verified source commit `9777a5b0db9a3de5db53942b9aaf6b55eec04f24`），以及 runtime PR `ZoneCNH/binance#11` merge commit `5a57a19aed3be5420135b8e05016da15faf094ed` / source commit `7873b795b13fc4b5a0fc4310300b6f196cca7532` 的远端 `Boundary Gates (10 gates)` PASS。该状态只补充独立 `cmd/binance-client` + HTTP `/ingest` 边界证据，不代表 PR-007a~g 分布式 runtime、TC-005、远端 release CI 或 release tag 已完成。
 
 ---
 
@@ -152,6 +154,9 @@
 | TC-044 | FR-026 | — | 集成（04:00 UTC 对账 + tolerance 阈值 + alerts 表写入） | Pending |
 | TC-045 | FR-027 | — | 集成（OSS→taosx 回热 + 202 job_id + 24h TTL 过期） | Pending |
 | TC-046 | FR-028 | — | httptest（jobs 列表 + coverage 时间戳 + 诊断字段） | Pending |
+| TC-047 | FR-029 | — | 单元 + 集成（freshness SLA、stale alert 与 schema drift evidence） | Pending |
+| TC-048 | FR-030 | — | 单元（options chain raw field mapping） | Pending |
+| TC-049 | FR-030 | — | 集成（options raw fields fanout/query pass-through） | Pending |
 
 ---
 
@@ -257,6 +262,12 @@
 | AC-096 | FR-028 | `GET /api/v1/admin/backfill/jobs` 返回活跃 job 列表含 cursor/progress_pct | TC-046 |
 | AC-097 | FR-028 | `GET /api/v1/admin/backfill/coverage/:symbol` 返回 (pl,et) 最早可用时间戳 | TC-046 |
 | AC-098 | FR-028 | 失败 job 暴露 last_error/retry_count/next_retry_at 诊断字段 | TC-046 |
+| AC-099 | FR-029 | event_time→persist 延迟可统计 P95/P99，并按 product_line/event_type 暴露 freshness 指标 | TC-047 |
+| AC-100 | FR-029 | stale data 超 SLA 时产生可审计 alert，包含 product_line、event_type、symbol 与 lag | TC-047 |
+| AC-101 | FR-029 | schema drift 检测记录新增/缺失/类型变化字段，不吞没原始 payload 证据 | TC-047 |
+| AC-102 | FR-030 | Options chain 原始 strike、expiry、option_type、mark、IV 字段进入 envelope 扩展区且不重命名丢失 | TC-048 |
+| AC-103 | FR-030 | downstream fanout/query 可读取 options raw fields，字段语义保持 Binance 原始来源可追溯 | TC-049 |
+| AC-104 | FR-030 | Greeks 派生指标不在 binance 模块计算，只保留原始字段并交给分析域处理 | TC-049 |
 
 ---
 
@@ -264,16 +275,16 @@
 
 | 指标 | 总数 | 已覆盖 | 覆盖率 | 说明 |
 |------|------|--------|--------|------|
-| 功能需求 (FR) | 28 | 28 | 100% | FR-001~FR-028 与 SPEC FR 分母一致；6b/6c/6d/7a 作为实现子切片保留在矩阵中 |
+| 功能需求 (FR) | 30 | 30 | 100% | FR-001~FR-030 与 SPEC FR 分母一致；6b/6c/6d/7a 作为实现子切片保留在矩阵中 |
 | 业务规则 (BR) | 9 | 9 | 100% | BR-001 ~ BR-009 全部有 CI Gate 或 TC |
 | 非功能需求 (NFR) | 20 | 20 | 100% | NFR-001 ~ NFR-020 全部有验证方式 |
-| 测试用例 (TC) | 46 | 46 | 100% | TC-001 ~ TC-046 全部有对应 FR/BR |
-| 验收标准 (AC) | 98 | 98 | 100% | AC-001 ~ AC-098 全部有验证方式 |
-| FR→TC 覆盖率 | — | 28/28 | 100% | — |
+| 测试用例 (TC) | 49 | 49 | 100% | TC-001 ~ TC-049 全部有对应 FR/BR |
+| 验收标准 (AC) | 104 | 104 | 100% | AC-001 ~ AC-104 全部有验证方式 |
+| FR→TC 覆盖率 | — | 30/30 | 100% | — |
 | BR→验证覆盖率 | — | 9/9 | 100% | — |
-| AC→验证覆盖率 | — | 86/86 | 100% | — |
-| R2 governance matrix | 120 cells | 120 cells | 100% | 24 FR/event-product-governance cells × 5 文档/checker anchors |
-| 实现状态 | — | 1/24 FR | 4% | FR-009 boundary gate 已落地；FR-012~FR-024 为 v3.3.0 登记态 Pending |
+| AC→验证覆盖率 | — | 104/104 | 100% | — |
+| R2 governance matrix | 120 cells | 120 cells | 100% | 4 product lines × 6 event types × 5 文档/checker anchors |
+| 实现状态 | — | 1/30 FR | 3% | FR-009 boundary gate 已落地；FR-012~FR-030 为 v3.5.0 登记态 Pending |
 
 ---
 
@@ -281,6 +292,7 @@
 
 | 日期 | 版本 | 变更内容 | 作者 |
 |------|------|----------|------|
+| 2026-06-23 | v3.5.0 | **Freshness/Options traceability closure**：补齐 FR-029~FR-030 的 TC-047~TC-049 与 AC-099~AC-104；R2 matrix 文案统一为 4×6×5 anchors；新增项保持 Pending，runtime/release evidence 仍未闭合 | ZoneCNH |
 | 2026-06-22 | v3.3.0 | **Realtime/Historical/Event/Release 扩展登记**：新增 FR-012~FR-024、TC-029~TC-042、AC-048~AC-086；登记 R2 120-cell governance matrix；统一 FR-024 endpoint 为 `POST /api/v1/admin/symbols/reload`；新增项均保持 Pending，FR-009 runtime evidence 不变 | ZoneCNH |
 | 2026-06-16 | v1.0.0 | 从零创建 §1-§7 标准追溯矩阵 | ZoneCNH |
 | 2026-06-17 | v1.1.0 | 修复 FR/BR/AC 错位，新增 AC-021~023 边界强制 | ZoneCNH |

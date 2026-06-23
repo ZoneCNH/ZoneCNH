@@ -2,11 +2,15 @@
 
 - Date: 2026-06-23
 - Author: leader integration (agent team execution)
-- Scope: full closure audit of all 25 open binance issues (#866~#896) against the v3.1.0 baseline.
-- Source: `gh issue list --state open` (pre-closure) + `module/binance/` SSOT + PR #910 diff.
+- Scope: historical PR #910 closure audit of all 25 open GitHub binance issues (#866~#896); not current Beads closure evidence.
+- Source: historical `gh issue list --state open` (pre-closure) + `module/binance/` SSOT + PR #910 diff.
 - Prior slice: `governance-closure-20260623.md` (worker-3, 6 issues).
 
-> [COMPUTED, HIGH] 本报告是 PR #910 的闭环证据。25 个 issue 全部 closed；GitHub open count = 0。核查基线为 `module/binance/SPEC.md` v3.1.0（commit c158fc86 + PR #910）。
+> [COMPUTED, HIGH] **2026-06-23 当前状态覆盖声明**：本报告是历史 PR #910 闭环证据，不是当前 Beads closure evidence。当前本地 Beads audit 仍有 9 个 binance open issues（ZoneCNH-awc, ZoneCNH-n0s, ZoneCNH-4h5, ZoneCNH-7un, ZoneCNH-8ep, ZoneCNH-97r, ZoneCNH-h1p, ZoneCNH-t51, ZoneCNH-azf）；runtime/release evidence Pending。
+>
+> [COMPUTED, HIGH] PR #910 历史口径：25 个 GitHub issue 全部 closed；GitHub open count = 0。核查基线为 `module/binance/SPEC.md` v3.1.0（commit c158fc86 + PR #910）。
+>
+> [COMPUTED, HIGH] Post-PR #936 note: this report covers #866~#896 only and does not close #925/#930/#931. Read it with `pr-936-governance-docs-closure-20260623.md` before treating any PR #910 projection as current backlog.
 
 ---
 
@@ -40,7 +44,7 @@
 
 | Issue                     | 判定        | 本次动作                                                                    | 证据                                                                                            |
 | ------------------------- | ----------- | --------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
-| #870 P1-1 检查脚本        | ✅ 已修复   | —                                                                           | `scripts/check-binance-docs.sh` 存在且 PASS（覆盖 R1/R2/R6/R9 + FR-024/AC-086/TC-042/120-cell） |
+| #870 P1-1 检查脚本        | ✅ 已修复   | —                                                                           | `scripts/check-binance-docs.sh` 存在且 PASS（覆盖 R1/R2/R6/R9 + FR-030/AC-104/TC-049/120-cell） |
 | #871 P3 STANDARD.md       | ⚠️ 本次补齐 | Status Draft→Active (v0.1.1)；RULES R9 收录 STANDARD.md + DATA-LIFECYCLE.md | STANDARD.md Active；RULES.md R9 表含两行                                                        |
 | #872 P0-5 状态 L1/L2 分层 | ⚠️ 本次补齐 | ACCEPTANCE.md + FEATURES.md 新增 L1/L2 状态口径图例（RULES R4）             | ACCEPTANCE.md §2 图例表；FEATURES.md 状态说明段                                                 |
 
@@ -48,11 +52,11 @@
 
 | Issue                           | 判定                      | 证据                                                                                 |
 | ------------------------------- | ------------------------- | ------------------------------------------------------------------------------------ |
-| #879 G-14 DATA-LIFECYCLE 讨论稿 | ✅ 已修复（PR #910 扩充） | DATA-LIFECYCLE.md v0.2.0 含 15 缺口 + 13 FR + §6 issue→FR 映射 + §7 候选 FR-025~028  |
-| #880~#892 R-01~R-13             | ✅ 已修复（追溯登记）     | TRACEABILITY.md 含 FR-012~024 全部 13 行 + AC-048~086 + TC-029~042                   |
+| #879 G-14 DATA-LIFECYCLE 讨论稿 | ✅ 已修复（PR #910 扩充） | DATA-LIFECYCLE.md v3.5.0 含 15 缺口 + FR-012~030 + §6 issue→FR 映射 + §7 FR-025~030 登记口径 |
+| #880~#892 R-01~R-13             | ✅ 已修复（追溯登记）     | TRACEABILITY.md 含 FR-012~030 + AC-048~104 + TC-029~049                              |
 | #888 R-09 event_type 4→6        | ✅ 已修复                 | NAMING.md 4×6=24 矩阵 + TRACEABILITY 120-cell matrix + funding/mark_price event_type |
 
-> [FRAME, HIGH] #880~#892 的 issue 标题语义（Symbol Discovery/Backfill/Reconciliation/Rehydration/Progress API）是 2026-06-22 早期提案；DATA-LIFECYCLE §4 review 已将其重组为 FR-012~024（runtime-control + lifecycle 语义）。PR #910 在 §6 补 issue 诉求→现有 FR 覆盖映射，§7 声明候选 FR-025~028 覆盖未对齐项（Backfill Throttle/Daily Reconciliation/Cold Rehydration/Progress API）。候选 FR 待后续 PR 按 R3 bump fold 进 SPEC。
+> [FRAME, HIGH] #880~#892 的 issue 标题语义（Symbol Discovery/Backfill/Reconciliation/Rehydration/Progress API）是 2026-06-22 早期提案；DATA-LIFECYCLE §4 review 已将它们重组为 FR-012~024（runtime-control + lifecycle 语义）。当前 §7 已声明 FR-025~FR-030 规格层登记口径；runtime/release evidence 仍 Pending，不能据此关闭当前 Beads 实现项或 release DoD。
 
 ### 2.4 G-09~G-12 文档整理（#893/#894/#895/#896）
 
@@ -65,16 +69,18 @@
 
 ---
 
-## 3. Residual actions（fold 进 SPEC 的后续 PR）
+## 3. Current residual actions（runtime/release evidence）
 
-> [FRAME, HIGH] 以下为讨论稿层声明，未 fold 进 SPEC/TRACEABILITY。后续 PR 按 RULES R3 bump 触发器落地。
+> [FRAME, HIGH] 以下为当前残留动作：FR-025~FR-030 已登记，但仍需要 runtime feature tests、CI/live evidence 与 release evidence 才能关闭。
 
-| 候选           | 标题                                      | Landing                            | Bump  | 覆盖 issue |
+| FR             | 标题                                      | Landing                            | Bump  | 覆盖 issue / Beads |
 | -------------- | ----------------------------------------- | ---------------------------------- | ----- | ---------- |
 | FR-025         | Backfill Throttle & Priority              | `server/SPEC.md` §7 throttle       | MINOR | #886       |
 | FR-026         | Daily Reconciliation Job                  | `server/SPEC.md` §7 reconciliation | MINOR | #889       |
 | FR-027         | Cold Data Rehydration                     | `SPEC.md` FR-007 扩展              | MINOR | #890       |
 | FR-028         | Backfill Progress API                     | `server/SPEC.md` §7 admin API      | MINOR | #891       |
+| FR-029         | Data Quality & Freshness SLA              | `SPEC.md` / `TRACEABILITY.md` / runtime evidence | MINOR | Beads P2-2 |
+| FR-030         | Options Chain Raw Field Pass-through      | `SPEC.md` / `TRACEABILITY.md` / NAMING subject matrix | MINOR | Beads P2-4 |
 | NAMING §2      | 订阅周期集枚举                            | `NAMING.md` §2                     | PATCH | #882       |
 | NAMING subject | `instruments.changed` + `symbols.changed` | `NAMING.md` §3                     | MINOR | #880, #892 |
 | FR-015 扩展    | depth 订阅档位 + update_id 拼合           | `SPEC.md` §9                       | MINOR | #883       |
@@ -88,13 +94,13 @@
 | binance 文档漂移   | `bash scripts/check-binance-docs.sh`               | PASS（binance docs checks passed） |
 | 仓库数量门禁       | `python3 scripts/audit-status.py --network`        | 52 passed, 0 failed                |
 | 三文档版本一致     | `grep binance STATUS.md README.md ARCHITECTURE.md` | 全 v3.1.0                          |
-| GitHub open issues | `gh issue list --state open`                       | 0                                  |
+| Historical GitHub PR #910 issue state | PR #910-era `gh issue list --state open` evidence | historical 0；not current Beads state |
 
 ---
 
 ## 5. Known gaps intentionally not hidden
 
-1. **候选 FR-025~028 未 fold**：本闭环仅在 DATA-LIFECYCLE 讨论稿层声明落点，未修改 SPEC/TRACEABILITY。后续 PR 需按 R3 MINOR bump 落地。
+1. **FR-025~FR-030 已登记但 runtime/release evidence 未闭合**：当前闭环只完成文档追溯，不关闭功能实现或 release DoD。
 2. **runtime 证据**：FR-012~024 全部 Pending（runtime 仓未推送功能实现），L2 状态默认 `Pending — 以 runtime 仓为准`。
 3. **#896 PR/head 覆盖**：`commit-coverage-audit-20260623.md` 仅本地 git 证据，GitHub PR/head lineage 仍需权威映射（见 governance-closure §5 gap 1）。
 
