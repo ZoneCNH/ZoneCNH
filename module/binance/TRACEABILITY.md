@@ -20,7 +20,7 @@
 
 > **v3.5.0 变更摘要**：补齐 FR-029（Data Quality & Freshness SLA）与 FR-030（Options Chain Raw Field Pass-through）的追溯闭环；新增 AC-099~AC-104 与 TC-047~TC-049；R2 governance matrix 文案统一为 4 product lines × 6 event types × 5 文档/checker anchors；新增项保持 Pending，runtime/release evidence 仍未闭合。
 
-> **2026-06-23 证据刷新（round 2）**：本地 runtime evidence 已归档至 `/home/binance/release/evidence/binance/20260623/`；证据提交 `71e2a6e8bb5591c43e8a2ebfff8c7645bf030786`；boundary gates 重新运行 10/10 PASS，`go build`/`go vet`/`go test` 全部 PASS，全部 9 个 issue 分支已合并至 origin/main；仅闭合 FR-009/BR 本地边界证据，release、remote CI、live websocket、外部集成与 L2 功能 FR 不因此闭合。
+> **2026-06-23 证据刷新（round 2）**：本地 runtime evidence 已归档至 `/home/binance/release/evidence/binance/20260623/`；证据提交 `71e2a6e8bb5591c43e8a2ebfff8c7645bf030786`；boundary gates 重新运行 10/10 PASS，`go build`/`go vet`/`go test` 全部 PASS，全部 9 个 issue 分支已合并至 origin/main；GitHub #923~#931 已关闭并登记至 `docs/report/binance/github-issues-923-931-closure-ledger-20260623.md`；该关闭仅表示 issue tracking closure，不关闭 release、remote CI、live websocket、外部集成与 L2 功能 FR。
 
 | FR ID | 功能需求 | AC | TC ID(s) | Task | 实现状态 |
 |-------|----------|-----|----------|------|----------|

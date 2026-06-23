@@ -3,7 +3,7 @@
 - Last-Updated: 2026-06-23
 - Scope: `docs/report/binance` report set for Stage0–Stage2 repair and audit follow-up.
 
-> [COMPUTED, HIGH] 2026-06-23 final disposition: 3 doc-complete issues (#925/#926/#930) closed; 5 runtime-dependent issues (#923/#924/#927/#928/#929) remain open with updated status; umbrella #931 closed. Runtime/release evidence Pending for implementation-tracked issues.
+> [COMPUTED, HIGH] 2026-06-23 final disposition: GitHub #923~#931 are all closed. Runtime/release evidence remains Pending where `module/binance/ACCEPTANCE.md` and `TRACEABILITY.md` keep FR/runtime/release gates open.
 
 ## Execution and iteration plans
 
@@ -34,7 +34,7 @@
 | [governance-closure-20260623.md](governance-closure-20260623.md) | Worker-3 governance slice closure for #869/#871/#893/#894/#895/#896. |
 | [commit-coverage-audit-20260623.md](commit-coverage-audit-20260623.md) | 50-candidate preserve/stash/backup commit coverage audit for #896. |
 | [issues-full-closure-20260623.md](issues-full-closure-20260623.md) | Full 25-issue closure review (PR #910) — final status, evidence, residual actions. |
-| [github-issues-923-931-closure-ledger-20260623.md](github-issues-923-931-closure-ledger-20260623.md) | GitHub #923-#931 final closure ledger — 3 doc-complete closed (#925/#926/#930); 5 runtime-open (#923/#924/#927/#928/#929); umbrella #931 closed with summary. |
+| [github-issues-923-931-closure-ledger-20260623.md](github-issues-923-931-closure-ledger-20260623.md) | GitHub #923-#931 closure ledger: 9/9 GitHub issues closed, with runtime/release readiness explicitly kept under acceptance and release gates. |
 
 ## Stage0–Stage2 executable gates
 
