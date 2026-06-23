@@ -85,8 +85,8 @@
 | AC-060~AC-071 | FR-016~FR-019 | historical backfill planner、gap replay、archive manifest/restore、resource governance。 | TC-033~TC-036 | Pending |
 | AC-072~AC-080 | FR-020~FR-022 | funding rate、mark/index price 与 event-type governance matrix。 | TC-037~TC-039 | Pending |
 | AC-081~AC-086 | FR-023~FR-024 | release evidence bundle 与 runtime config hot reload。 | TC-040~TC-042 | Pending |
-| AC-087~AC-098 | FR-025~FR-028 | throttle/reconciliation/rehydration/progress API。 | TC-043~TC-046 | Pending |
-| AC-099~AC-104 | FR-029~FR-030 | freshness SLA/schema drift 与 options chain raw field pass-through。 | TC-047~TC-049 | Pending |
+| AC-087~AC-098 | FR-025~FR-028 | backfill throttle/priority、daily reconciliation、cold data rehydration、progress API。 | TC-043~TC-046 | Pending |
+| AC-099~AC-104 | FR-029~FR-030 | freshness SLA、Options raw field pass-through。 | TC-047~TC-049 | Pending |
 
 ## 3. Test Case 登记
 
@@ -119,8 +119,8 @@
 | TC-033~TC-036 | FR-016~FR-019 | backfill planner/gap replay/archive/resource governance | Pending | historical lifecycle runtime tests 与 restore evidence。 |
 | TC-037~TC-039 | FR-020~FR-022 | funding/mark/index event support + R2 governance matrix | Pending | event mapping/storage/query/fanout 与 checker evidence。 |
 | TC-040~TC-042 | FR-023~FR-024 | evidence bundle/release gate/runtime hot reload | Pending | release evidence、CI/live smoke、no-restart reload proof。 |
-| TC-043~TC-046 | FR-025~FR-028 | throttle/reconciliation/rehydration/progress API | Pending | runtime tests、admin API evidence、storage evidence。 |
-| TC-047~TC-049 | FR-029~FR-030 | freshness SLA/schema drift/options raw field pass-through | Pending | runtime quality evidence、options mapping/fanout/query evidence。 |
+| TC-043~TC-046 | FR-025~FR-028 | backfill throttle/reconciliation/rehydration/progress。 | Pending | 对应 runtime tests、metrics、contract tests 与 release evidence。 |
+| TC-047~TC-049 | FR-029~FR-030 | freshness SLA、Options raw field pass-through。 | Pending | 对应 runtime tests、metrics、contract tests 与 release evidence。 |
 
 ## 4. 覆盖闭合矩阵
 
@@ -171,3 +171,19 @@
 | FR-001/FR-002 Partial | 四 product line 与 identity contract 不完整。 | 补齐 USDM、COINM、Options parser/mapper/connector/server acceptance。 |
 | FR-003~FR-008/FR-010~FR-030 Pending | C/S runtime、存储、API、广播、归档、实时控制面、历史生命周期、事件治理、数据质量、Options 字段透传与发布证据未闭合。 | 按 `IMPLEMENTATION-PLAN.md` 和 tasks 顺序实现并更新 traceability。 |
 | Release DoD 未达成 | 不能声明 binance v3.5.0 已可发布。 | 全量 AC/TC PASS 后再更新 release 状态。 |
+
+## 7. GitHub Issue Closure Ledger（2026-06-23）
+
+> [COMPUTED, HIGH] GitHub #923~#931 当前均不可关闭；PR #936/#937 只闭合文档投影错配，不替代 runtime、remote CI、live websocket、外部集成或 release tag 证据。完整账本见 [`docs/report/binance/github-issues-923-931-closure-ledger-20260623.md`](../../docs/report/binance/github-issues-923-931-closure-ledger-20260623.md)。
+
+| Issue | 当前口径 | 未闭合证据 |
+| --- | --- | --- |
+| #923 | Not closeable | 依赖 runtime release/remote CI/live/external evidence；PR #13/#14 状态不足以发布。 |
+| #924 | Not closeable | 同 #923；本地 evidence 不替代 release bundle。 |
+| #925 | Docs projection locally reconciled / GitHub close pending | 仍需 runtime acceptance 与 release evidence 后才能关闭。 |
+| #926 | Not closeable | FR-012~FR-030 runtime 功能证据仍 Pending。 |
+| #927 | Not closeable | live websocket 与四 product_line runtime evidence 缺失。 |
+| #928 | Not closeable | external natsx/JetStream/storage/fanout/query 集成证据缺失。 |
+| #929 | Not closeable | remote CI、secret scan、release tag/changelog/evidence bundle 缺失。 |
+| #930 | Docs projection locally reconciled / GitHub close pending | 文档口径已修正为 Pending，但 closure 仍受 runtime/release gate 约束。 |
+| #931 | Not closeable | 子 issue 与 release DoD 未全部关闭。 |

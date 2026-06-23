@@ -6,11 +6,11 @@
 - Source: historical `gh issue list --state open` (pre-closure) + `module/binance/` SSOT + PR #910 diff.
 - Prior slice: `governance-closure-20260623.md` (worker-3, 6 issues).
 
-> [COMPUTED, HIGH] **2026-06-23 当前状态覆盖声明**：本报告是历史 PR #910 闭环证据，不是当前 Beads closure evidence。当前本地 Beads audit 仍有 9 个 binance open issues（ZoneCNH-awc, ZoneCNH-n0s, ZoneCNH-4h5, ZoneCNH-7un, ZoneCNH-8ep, ZoneCNH-97r, ZoneCNH-h1p, ZoneCNH-t51, ZoneCNH-azf）；runtime/release evidence Pending。
+> [COMPUTED, HIGH] **2026-06-23 当前状态覆盖声明**：本报告是 PR #910 的历史闭环证据，不是 GitHub #923-#931 的当前 closure evidence；#923-#931 仍由 `github-issues-923-931-closure-ledger-20260623.md` 管理，runtime/release evidence Pending。
 >
-> [COMPUTED, HIGH] PR #910 历史口径：25 个 GitHub issue 全部 closed；GitHub open count = 0。核查基线为 `module/binance/SPEC.md` v3.1.0（commit c158fc86 + PR #910）。
+> [COMPUTED, HIGH] PR #910 历史口径：25 个 issue 全部 closed；GitHub open count = 0。核查基线为 `module/binance/SPEC.md` v3.1.0（commit c158fc86 + PR #910）。
 >
-> [COMPUTED, HIGH] Post-PR #936 note: this report covers #866~#896 only and does not close #925/#930/#931. Read it with `pr-936-governance-docs-closure-20260623.md` before treating any PR #910 projection as current backlog.
+> [COMPUTED, HIGH] 2026-06-23 后续 PR #936 / SPEC v3.5.0 已将 PR #910 的候选 FR-025~028 加上 FR-029/030 登记为正式 Pending 合同项；本报告保留 PR #910 历史闭环证据，不再代表当前 SPEC 投影状态。
 
 ---
 
@@ -56,7 +56,7 @@
 | #880~#892 R-01~R-13             | ✅ 已修复（追溯登记）     | TRACEABILITY.md 含 FR-012~030 + AC-048~104 + TC-029~049                              |
 | #888 R-09 event_type 4→6        | ✅ 已修复                 | NAMING.md 4×6=24 矩阵 + TRACEABILITY 120-cell matrix + funding/mark_price event_type |
 
-> [FRAME, HIGH] #880~#892 的 issue 标题语义（Symbol Discovery/Backfill/Reconciliation/Rehydration/Progress API）是 2026-06-22 早期提案；DATA-LIFECYCLE §4 review 已将它们重组为 FR-012~024（runtime-control + lifecycle 语义）。当前 §7 已声明 FR-025~FR-030 规格层登记口径；runtime/release evidence 仍 Pending，不能据此关闭当前 Beads 实现项或 release DoD。
+> [FRAME, HIGH] #880~#892 的 issue 标题语义（Symbol Discovery/Backfill/Reconciliation/Rehydration/Progress API）是 2026-06-22 早期提案；DATA-LIFECYCLE §4 review 已将其重组为 FR-012~024（runtime-control + lifecycle 语义）。PR #910 在 §6 补 issue 诉求→现有 FR 覆盖映射，§7 声明候选 FR-025~028 覆盖未对齐项；后续 PR #936 已将 FR-025~030 fold 进 SPEC/TRACEABILITY v3.5.0。runtime/release evidence 仍 Pending，不能据此关闭当前 #923-#931。
 
 ### 2.4 G-09~G-12 文档整理（#893/#894/#895/#896）
 
@@ -69,9 +69,9 @@
 
 ---
 
-## 3. Current residual actions（runtime/release evidence）
+## 3. Residual actions（PR #910 历史状态，PR #936 已 supersede）
 
-> [FRAME, HIGH] 以下为当前残留动作：FR-025~FR-030 已登记，但仍需要 runtime feature tests、CI/live evidence 与 release evidence 才能关闭。
+> [FRAME, HIGH] 以下为 PR #910 当日讨论稿层声明，后续 PR #936 已按 R3 bump 触发器落地为 SPEC/TRACEABILITY v3.5.0 Pending 合同项。runtime implementation、CI/release evidence 与外部存储/fanout/query 仍未因此自动闭合。
 
 | FR             | 标题                                      | Landing                            | Bump  | 覆盖 issue / Beads |
 | -------------- | ----------------------------------------- | ---------------------------------- | ----- | ---------- |
@@ -100,7 +100,7 @@
 
 ## 5. Known gaps intentionally not hidden
 
-1. **FR-025~FR-030 已登记但 runtime/release evidence 未闭合**：当前闭环只完成文档追溯，不关闭功能实现或 release DoD。
+1. **PR #910 历史候选 FR 已 supersede**：候选 FR-025~028 当时未 fold；后续 PR #936 已扩展为 FR-025~030 并登记到 SPEC/TRACEABILITY v3.5.0。当前缺口转为 runtime implementation、test evidence 与 release closure；#923-#931 不因本报告自动关闭。
 2. **runtime 证据**：FR-012~024 全部 Pending（runtime 仓未推送功能实现），L2 状态默认 `Pending — 以 runtime 仓为准`。
 3. **#896 PR/head 覆盖**：`commit-coverage-audit-20260623.md` 仅本地 git 证据，GitHub PR/head lineage 仍需权威映射（见 governance-closure §5 gap 1）。
 

@@ -5,7 +5,7 @@
 > **目的**：把 5 份深度分析中提出但**仍未完成**的问题汇总成单一可执行清单，区分"已在后续 spec bump 中解决"与"真正剩余"
 > **证据标签**：`[KNOWN]` 文件读取 + 实跑脚本；`[COMPUTED]` 直接统计；`[INFERRED]` 跨文档交叉
 > **置信度**：HIGH
-> **Post-PR #936 supersession**：本汇总原基线为 v3.4.0；current module docs are v3.5.0, with FR-029/FR-030 registered and FR-025~FR-030 still `Pending` runtime capabilities. See `pr-936-governance-docs-closure-20260623.md` before treating older FR-025~029 rows as current backlog.
+> [COMPUTED, HIGH] 2026-06-23 PR #936 / SPEC v3.5.0 已 supersede 本报告的 v3.4.0 事实基线；FR-025~030 已登记为 Pending，本文保留为历史 backlog 复盘，当前交付缺口转向 runtime implementation / evidence / release。GitHub #923-#931 仍由当前 closure ledger 管理。
 
 ---
 
@@ -24,7 +24,7 @@
 | TC 登记数 | **49**（TC-001~TC-049） | TRACEABILITY §4 |
 | FR→AC→TC 覆盖率 | 100% 追溯登记 | SPEC §7 末尾 |
 | 文档自检脚本 | **PASS**（`scripts/check-binance-docs.sh` 全绿） | 实跑 2026-06-23 |
-| STATUS/ARCHITECTURE 标注 spec 版本 | **v3.3.0** ← 落后 v3.4.0 | `STATUS.md:113/132/353`、`ARCHITECTURE.md:206/447` |
+| STATUS/ARCHITECTURE 标注 spec 版本 | PR #936 投影已收敛为 v3.5.0；runtime/release 状态仍 Pending | `check-binance-docs.sh` + `audit-status.py` |
 
 ### 0.2 已落地的治理骨架 `[KNOWN][HIGH]`
 
@@ -46,7 +46,7 @@ v3 报告要求的"模块标准规范"已全部建立：
 |---|------|------|:---:|:---:|------|
 | 1 | v1 §2.2 P0 | 跨文档版本 7 处漂移 | 🔴 | ✅ | check-binance-docs.sh 全绿 |
 | 2 | v1 §2.2 P0 | ARCHITECTURE 90% vs STATUS 5% 进度冲突 | 🔴 | ✅ | 已统一 15% |
-| 3 | v1 §2.2 P0 | SPEC.md grep AC- = 0（无 AC 锚点） | 🔴 | ✅ | 现 98 AC 全登记 |
+| 3 | v1 §2.2 P0 | SPEC.md grep AC- = 0（无 AC 锚点） | 🔴 | ✅ | 现 104 AC 全登记 |
 | 4 | v1 §2.2 P1 | FEATURES FR 编号体系滞后 | 🟡 | ✅ | v2.1.2 投影 |
 | 5 | v1 §2.2 P1 | server SPEC FR-005 未拆分 | 🟡 | ✅ | FR-005a~d |
 | 6 | v1 §2.2 P2 | legacy `binance-market` 30+ 处 | 🟢 | ✅ | check 全 PASS no-legacy |
@@ -59,11 +59,11 @@ v3 报告要求的"模块标准规范"已全部建立：
 | 13 | v4 §5 P0 | 历史生命周期 FR-016~019 | 🔴 | ✅ 登记 / ❌ 实现 | traceability Pending |
 | 14 | v4 §5 P1 | 周期数据 FR-020~022 | 🟡 | ✅ 登记 / ❌ 实现 | traceability Pending |
 | 15 | v4 §5 P2 | 治理 FR-023~024 | 🟢 | ✅ 登记 / ❌ 实现 | traceability Pending |
-| 16 | v5 §5 | 清洗/处理/缺口 FR-025~029 | 🟡 | ✅ 文档登记 / ❌ 实现 | current v3.5.0 docs 已含 FR-029/030；runtime Pending |
+| 16 | v5 §5 | 清洗/处理/缺口 FR-025~030 | 🟡 | ✅ 登记 / ❌ 实现 | SPEC/TRACEABILITY v3.5.0；见 §二.5 |
 | 17 | v3 §P1 | DATA-LIFECYCLE 候选进正式管线 | 🟡 | ✅ | v3.2.0 fold |
 | 18 | v3 §P2 | 重新采集 runtime L2 证据 | 🟡 | ❌ | 无干净 runtime 快照 |
-| 19 | 🆕 | STATUS/ARCHITECTURE spec 版本落后（v3.3.0 vs v3.4.0） | 🔴 | ❌ | 见 §二.3 |
-| 20 | 🆕 | FR-029（Data Coverage SLA）登记状态 | 🟡 | ✅ 文档登记 / ❌ 实现 | current v3.5.0 docs 已登记，runtime Pending |
+| 19 | 🆕 | STATUS/ARCHITECTURE spec 版本漂移（v3.4.0 → v3.5.0 投影） | 🔴 | ✅ | PR #936 已收敛；见 §二.3 |
+| 20 | 🆕 | FR-029/030 已登记；runtime evidence 未闭合 | 🟡 | ✅ 登记 / ❌ 实现 | SPEC/TRACEABILITY v3.5.0；见 §二.5 |
 
 ---
 
@@ -75,7 +75,7 @@ v3 报告要求的"模块标准规范"已全部建立：
 
 **当前状态**：
 
-- SPEC v3.4.0 已登记 FR-001~FR-028（28 条）、AC-001~AC-098、TC-001~TC-046
+- SPEC v3.5.0 已登记 FR-001~FR-030（30 条）、AC-001~AC-104、TC-001~TC-049
 - TRACEABILITY 中 **FR-009（边界 gate）= Implemented**（runtime SHA `bae80d6` 证据），其余 27 条 FR 全部 **Pending**
 - runtime 仓库 `/home/binance/` 存在，`internal/cs` 仍被 `scripts/boundary-gates.sh` 引用
 
@@ -107,21 +107,12 @@ v3 报告要求的"模块标准规范"已全部建立：
 - **预期收益**：+1 分；解除 DEEP-ANALYSIS §0.4 "违规当前态"残留
 - **注意**：本仓库文档枢纽不直接改 runtime，需在 runtime 仓 PR
 
-### 2.3 🔴 STATUS/ARCHITECTURE spec 版本漂移（🆕 新发现）
+### 2.3 ✅ STATUS/ARCHITECTURE spec 版本漂移已由 PR #936 收敛（历史项）
 
-`[COMPUTED][HIGH]` **SPEC 已 bump 到 v3.4.0（PR #917），但 STATUS.md / ARCHITECTURE.md 仍标 v3.3.0**。
+`[COMPUTED][HIGH]` 本节原始发现是 PR #917 后 STATUS.md / ARCHITECTURE.md 仍停在 v3.3.0。2026-06-23 PR #936 已将主动治理文档投影到 v3.5.0；当前剩余风险不是版本字段本身，而是后续 bump 不得让历史报告重新被当成当前态。
 
-```
-STATUS.md:113       v3.3.0 (spec)   ← 应 v3.4.0
-STATUS.md:132       spec v3.3.0     ← 应 v3.4.0
-STATUS.md:353       spec v3.3.0     ← 应 v3.4.0
-ARCHITECTURE.md:206 v3.3.0          ← 应 v3.4.0
-ARCHITECTURE.md:447 v3.3.0 (spec)   ← 应 v3.4.0
-```
-
-- **违反**：`CLAUDE.md §版本号变更必须同步更新 ARCHITECTURE.md 状态表和 STATUS.md 组件明细表`
-- **动作**：5 处版本号同步为 v3.4.0 + 跑 `python3 scripts/audit-status.py --network` 验证
-- **预期收益**：闭合跨文档对齐（v2 报告评分维度 "跨文档对齐" 最后一分）
+- **当前动作**：保留本节为历史复盘；后续以 `check-binance-docs.sh` 与 `audit-status.py` 守门。
+- **当前收益**：跨文档对齐缺口转为 runtime/release evidence 缺口。
 
 ### 2.4 🟡 TC-020（及全量 TC）evidence 归档（v1/v2 §6 P2）
 
@@ -130,12 +121,12 @@ ARCHITECTURE.md:447 v3.3.0 (spec)   ← 应 v3.4.0
 - **动作**：在 `release/evidence/binance/` 输出 TC-020（及未来 TC-001~046）PASS log，按 `STANDARD.md` L2/L3 语义分层
 - **预期收益**：+2 分；满足 v3 报告 "release 声明条件：L3 证据独立归档"
 
-### 2.5 🟡 FR-029（Data Coverage SLA）登记状态（历史缺口已收敛，runtime Pending）（v5 §5）
+### 2.5 ✅ FR-029/030 已登记；实现证据仍 Pending（v5 §5 后续）
 
-`[KNOWN][HIGH]` 原 v5 报告判断 FR-029 未进 SPEC；Post-PR #936/current module docs 已在 v3.5.0 登记 FR-029/AC-099~101/TC-047，并新增 FR-030。该条现在只保留历史 provenance，runtime capability 状态仍为 Pending。
+`[COMPUTED][HIGH]` PR #936 / SPEC v3.5.0 已补 FR-029 Data Quality & Freshness SLA 与 FR-030 Options Chain Raw Field Pass-through，AC-099~104、TC-047~049；TRACEABILITY 均保持 Pending。
 
-- **动作**：不再评估是否 fold；后续只需补 runtime/evidence 后再从 Pending 晋级
-- **决策点**：与 FR-026（Daily Reconciliation）的实现重叠度仍可在 runtime PR 中评估
+- **动作**：不再要求“下一 bump fold FR-029”；下一步是 runtime implementation、metrics/alert tests、schema drift tests、options parser/fanout evidence。
+- **决策点**：FR-029 与 FR-026 的对账关系仍需在实现任务中拆清。
 
 ### 2.6 🟢 50 个 preserve/stash commit 覆盖审计（v2 §3.2 / v2 §九 P3）
 
@@ -159,7 +150,7 @@ ARCHITECTURE.md:447 v3.3.0 (spec)   ← 应 v3.4.0
 
 | 评分维度 | v2 得分 | 满分 | 剩余扣分点 | 对应未完成项 |
 |----------|:---:|:---:|------|------|
-| 规格结构 | 23 | 25 | -2：DEEP-ANALYSIS §0 分布式约束未升入 SPEC §4 顶部（**待核**：v3.4.0 是否已升） | 待核 |
+| 规格结构 | 23 | 25 | -2：DEEP-ANALYSIS §0 分布式约束未升入 SPEC §4 顶部（PR #936 已收敛；剩余在 runtime/release evidence） | 待核 |
 | 追溯完整性 | 24 | 25 | -1：DEEP-ANALYSIS 已迁但遗留引用清理待核 | §2.1 |
 | 边界与门禁 | 18 | 20 | -2：TC-020 evidence 无归档路径 | §2.4 |
 | 跨文档对齐 | 14 | 15 | -1：runtime release blocked + 版本漂移 | §2.1 / §2.3 |
@@ -173,8 +164,8 @@ ARCHITECTURE.md:447 v3.3.0 (spec)   ← 应 v3.4.0
 
 ### P0（本周内，纯文档仓可做）
 
-1. **§2.3 版本同步**：STATUS.md / ARCHITECTURE.md 5 处 v3.3.0 → v3.4.0 + `audit-status.py --network`
-2. **§2.5 FR-029 runtime/evidence follow-up**：文档登记已收敛；仅在实现 PR 中评估与 FR-026 的运行职责边界
+1. **保持 PR #936 投影收敛**：后续版本 bump 必须同步 STATUS/ARCHITECTURE/TRACEABILITY/CHANGELOG。
+2. **FR-029/030 runtime evidence**：不再做登记决策，转为实现、测试、指标和 release 证据。
 
 ### P1（runtime 仓，需独立 PR）
 
@@ -197,12 +188,12 @@ ARCHITECTURE.md:447 v3.3.0 (spec)   ← 应 v3.4.0
 
 `[INFERRED][HIGH]`
 
-5 份深度分析报告（v1→v5）提出的 **20 类问题中，11 类已通过 v3.1.0~v3.4.0 spec bump + 治理骨架建立完全解决**（版本漂移、AC 锚点、FR 编号体系、legacy 清理、DEEP-ANALYSIS 迁移、DATA-LIFECYCLE fold、模块标准规范）。
+5 份深度分析报告（v1→v5）提出的 **20 类问题中，11 类已通过 v3.1.0~v3.5.0 spec bump + 治理骨架建立完全解决**（版本漂移、AC 锚点、FR 编号体系、legacy 清理、DEEP-ANALYSIS 迁移、DATA-LIFECYCLE fold、模块标准规范）。
 
 **真正剩余的未完成项集中在两个层面**：
 
 1. **runtime 实现层**（§2.1 PR-007 + §2.2 internal/cs + §2.4 evidence）——文档规格已完备，runtime 代码未跟上，这是 82→95+ 的唯一路径
-2. **跨文档同步层**（§2.3 版本漂移 + §2.5 FR-029）——FR-029 文档登记已在 current v3.5.0 收敛；剩余风险转为 runtime/evidence follow-up
+2. **跨文档同步层**（§2.3 版本漂移 + §2.5 FR-029/030 登记）——PR #936 已闭合投影；当前不再作为登记缺口，剩余风险转为 runtime/evidence/release follow-up
 
 **建议**：不再产出 v6 分析报告（v2 §十一 已预警边际效益递减）。剩余工作转为 §四 的可执行 PR 清单逐项闭环，每完成一项在 TRACEABILITY.md 变更历史登记，不再做整体重评分。
 
@@ -212,21 +203,20 @@ ARCHITECTURE.md:447 v3.3.0 (spec)   ← 应 v3.4.0
 
 | 证据 | 来源 | 位置 |
 |------|------|------|
-| SPEC v3.4.0 | `module/binance/SPEC.md` | L107 |
-| FR-001~028 登记全 | `module/binance/SPEC.md` §7 + `TRACEABILITY.md` §1 | L356-385 |
-| AC-001~098 / TC-001~046 | `module/binance/TRACEABILITY.md` §4/§5 | 全表 |
+| SPEC v3.5.0 | `module/binance/SPEC.md` | Spec-Version |
+| FR-001~030 登记全 | `module/binance/SPEC.md` §7 + `TRACEABILITY.md` §1 | 全表 |
+| AC-001~104 / TC-001~049 | `module/binance/TRACEABILITY.md` §4/§5 | 全表 |
 | FR-009 Implemented + SHA bae80d6 | `module/binance/TRACEABILITY.md` | §1 / 变更历史 v2.2.3 |
-| FR-025~028 Pending | `module/binance/TRACEABILITY.md` | L51-54 |
+| FR-025~030 Pending | `module/binance/TRACEABILITY.md` | §1 |
 | 文档自检全绿 | `scripts/check-binance-docs.sh` | 实跑 2026-06-23 |
-| STATUS 版本落后 | `STATUS.md` | L113/132/353 |
-| ARCHITECTURE 版本落后 | `ARCHITECTURE.md` | L206/447 |
+| PR #936 / v3.5.0 projection | `module/binance/CHANGELOG.md` | v3.5.0 entry |
 | evidence 目录缺失 | `release/evidence/binance/` | 不存在 |
 | runtime internal/cs 残留 | `/home/binance/scripts/boundary-gates.sh` | rg 命中 |
-| v3.4.0 bump commit | git log | `83a10568` PR #917 |
+| PR #936 docs projection | `module/binance/CHANGELOG.md` | v3.5.0 entry |
 
 ---
 
-[RULES I BROKE]：无 — 全程基于文件 Read + 实跑 `check-binance-docs.sh` + git log + rg 验证。runtime `/home/binance` 为只读抽样，未修改。
+[RULES I BROKE]：无 — 本报告经 PR #936 后续补记更新；当前复核基于文件 Read + rg + check 脚本验证。历史生成记录中的 git log 证据不再作为当前态依据。
 
 **生成时间**：2026-06-23
 **生成者**：Claude Code（深度分析汇总模式）

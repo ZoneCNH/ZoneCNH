@@ -381,12 +381,12 @@ Binance 行情集成面临以下问题：
 | FR-022 Event-Type Governance Matrix | AC-078 ~ AC-080 | TC-039 | 文档校验（R2 120-cell matrix + stale checks） |
 | FR-023 Release Evidence Bundle | AC-081 ~ AC-083 | TC-040, TC-041 | 证据归档（local/CI/live/release evidence separation） |
 | FR-024 Runtime Config Hot Reload | AC-084 ~ AC-086 | TC-042 | 管理端点 + 集成（catalog reload + stream diff + no-restart proof） |
-| FR-025 Backfill Throttle & Priority | AC-087 ~ AC-089 | TC-043 | 单元 + 集成（token bucket + 80/20 配额 + priority） |
-| FR-026 Daily Reconciliation Job | AC-090 ~ AC-092 | TC-044 | 集成（04:00 UTC reconciliation + tolerance + alerts） |
-| FR-027 Cold Data Rehydration | AC-093 ~ AC-095 | TC-045 | 集成（OSS→taosx rehydration + 202 job_id + 24h TTL） |
-| FR-028 Backfill Progress API | AC-096 ~ AC-098 | TC-046 | httptest（jobs/coverage API + diagnostic fields） |
-| FR-029 Data Quality & Freshness SLA | AC-099 ~ AC-101 | TC-047 | 单元 + 集成（freshness SLA + stale alert + schema drift evidence） |
-| FR-030 Options Chain Raw Field Pass-through | AC-102 ~ AC-104 | TC-048, TC-049 | 单元 + 集成（raw options fields mapping + fanout/query pass-through） |
+| FR-025 Backfill Throttle & Priority | AC-087 ~ AC-089 | TC-043 | 单元 + 集成（token bucket weight 限流 + 80/20 配额 + 优先级排序） |
+| FR-026 Daily Reconciliation Job | AC-090 ~ AC-092 | TC-044 | 集成（04:00 UTC 对账 + tolerance 阈值 + alerts 表写入） |
+| FR-027 Cold Data Rehydration | AC-093 ~ AC-095 | TC-045 | 集成（OSS→taosx 回热 + 202 job_id + 24h TTL 过期） |
+| FR-028 Backfill Progress API | AC-096 ~ AC-098 | TC-046 | httptest（jobs 列表 + coverage 时间戳 + 诊断字段） |
+| FR-029 Data Quality & Freshness SLA | AC-099 ~ AC-101 | TC-047 | 集成 + metrics（freshness SLA + stale alert + schema drift） |
+| FR-030 Options Chain Raw Field Pass-through | AC-102 ~ AC-104 | TC-048, TC-049 | 单元 + 契约测试（Options 原始字段透传，Greeks 归分析域） |
 
 **AC 总数**：104（AC-001 ~ AC-104）· **TC 总数**：49（TC-001 ~ TC-049）· **覆盖率**：100%（FR→AC→TC 全链路登记；新增 FR-012~FR-030 默认 Pending）
 
@@ -1339,7 +1339,7 @@ Binance Exchange (REST/WebSocket)
 
 ## Appendix E: Upstream Contract Gate Closure
 
-> 本节是 PR-007 运行时实现前的上游契约链闭合验证记录，原以 §0 形式置于文档前部，现按 23 节模板规整为附录 D。原内容完整保留，仅顶层标题变更。
+> 本节是 PR-007 运行时实现前的上游契约链闭合验证记录，原以 §0 形式置于文档前部，现按 23 节模板规整为附录 E。原内容完整保留，仅顶层标题变更。
 
 
 在从 docs baseline 推进到运行时实现前，必须逐项验证以下上游契约链闭合条件：
@@ -1353,6 +1353,6 @@ Binance Exchange (REST/WebSocket)
 | G0-5 | market_data consumption via REST/`kafkax` ready | 已确认：本 SPEC §9.2 | ✅ |
 | G0-6 | BOUNDARY-GATES.md 全部 10 道 runtime 门禁有可执行脚本 | 10/10 (2026-06-23, verified source `9777a5b0db9a3de5db53942b9aaf6b55eec04f24`, evidence commit `66f60b3945dce215f68ff833bbd336364d635ae8`) | ✅ |
 
-> **6/6 通过** — 上游契约链闭合。本 SPEC 处于 Review 状态，可进入运行时实现阶段（PR-007）。实现时必须严格遵循 natsx JetStream subject 规范、domain_market §10 canonical semantics、Gin REST API `/api/v1/market/*` 契约。
+> **6/6 通过** — 上游契约链闭合。本 SPEC 处于 Approved 状态，可进入运行时实现阶段（PR-007）。实现时必须严格遵循 natsx JetStream subject 规范、domain_market §10 canonical semantics、Gin REST API `/api/v1/market/*` 契约。
 
 ---

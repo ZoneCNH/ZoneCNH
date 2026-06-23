@@ -1,65 +1,41 @@
-# Binance PR #936 governance/docs closure audit — #925/#930/#931
+# Binance PR #936 governance/docs closure review
 
 - Date: 2026-06-23
-- Scope: local governance/docs closure after PR #936 merge for GitHub issues #925/#930/#931.
-- Source boundary: repo-local docs/search only; no external GitHub authority was used in this worker lane.
-- Outcome: stale PR #910 projections are quarantined as historical, and the exact local docs patch set is recorded below.
+- Scope: post-PR #936 docs projection and GitHub #923-#931 closure boundary
+- Sources: `module/binance/SPEC.md` v3.5.0, `module/binance/TRACEABILITY.md` v3.5.0, `module/binance/DATA-LIFECYCLE.md`, repo-local reports, OMX worker reconciliation
+- Confidence: HIGH for docs state / HIGH for issue-closure boundary
 
-## 1. File-level findings
+> [COMPUTED, HIGH] PR #936 updates the docs projection to v3.5.0 and closes stale governance projection for #925/#930. It does not close #923/#924/#926/#927/#928/#929/#931 because live websocket, remote CI/tag, JetStream PubAck/ManualAck, external durable storage/fanout/query evidence remain absent.
+
+## File-level findings
 
 | ID | File / local anchor | Stale projection or gap | Patch applied |
 | --- | --- | --- | --- |
-| F1 | `docs/report/binance/INDEX.md` closure table | Closure index ended at PR #910/#896 reports and had no post-PR #936 entry for #925/#930/#931. | Added this PR #936 closure audit to the index. |
-| F2 | `docs/report/binance/issues-full-closure-20260623.md`, `goal-execution-plan-20260622.md`, and `iteration-plan-20260622.md` PR #910 projection notes | PR #910 reports read as full/current closure artifacts while their scope is #866~#896 against v3.1.0; residual FR-025~028 text no longer matches current module docs. | Marked the reports as historical PR #910 baselines, linked this audit, and annotated FR-025~028 residual rows as superseded by later module docs. |
+| F1 | `docs/report/binance/INDEX.md` closure table | Closure index ended at PR #910/#896 reports and had no post-PR #936 entry for #925/#930/#931. | Added this PR #936 closure review to the index. |
+| F2 | `docs/report/binance/issues-full-closure-20260623.md`, `goal-execution-plan-20260622.md`, and `iteration-plan-20260622.md` PR #910 projection notes | PR #910 reports read as full/current closure artifacts while their scope is #866~#896 against v3.1.0; residual FR-025~028 text no longer matches current module docs. | Marked the reports as historical PR #910 baselines, linked this review, and annotated residual rows as superseded by later module docs. |
 | F3 | `module/binance/DATA-LIFECYCLE.md` §7 | §7 still says FR-025~028 are not folded into `SPEC.md` / `TRACEABILITY.md`, although current docs record v3.2.0 folds and v3.5.0 FR-029/030. | Added a post-PR #936 supersession note while preserving the discussion-draft provenance. |
 | F4 | `docs/report/binance/deep-analysis-20260622-backlog.md` and `unfinished-deep-analysis-20260623.md` | Rollup reports encoded v3.4.0 / FR-028-era or older projection rows that could be mistaken for current post-PR #936 backlog. | Added post-PR #936 supersession notes and updated the rollup baseline counters to v3.5.0 / FR-030. |
-| F5 | repo-wide search for `#925`, `#930`, `#931`, `#936`, `PR #936` | No authoritative local issue/PR anchors exist for #925/#930/#931/#936. | Kept closure language scoped to repo-local governance/docs evidence; external GitHub issue/PR metadata remains an explicit validation dependency. |
+| F5 | GitHub #923-#931 closure boundary | Docs projection and issue closure could be conflated. | Added `github-issues-923-931-closure-ledger-20260623.md`; kept closure language scoped to docs projection until runtime/release evidence exists. |
 
-## 2. Current local projection evidence
+## Closure map
 
-- `module/binance/CHANGELOG.md` v3.2.0 records FR-025~FR-028 folded into SPEC/TRACEABILITY/NAMING.
-- `module/binance/CHANGELOG.md` v3.5.0 records FR-029 Data Quality & Freshness SLA and FR-030 Options Chain Raw Field Pass-through.
-- `module/binance/TRACEABILITY.md` v3.5.0 lists FR-025~FR-030, AC-087~AC-104, and TC-043~TC-049 as Pending runtime capabilities.
-- `module/binance/server/SPEC.md` contains FR-025~FR-028 sections.
-- `module/binance/SPEC.md` contains v3.5.0 freshness SLA references for FR-029.
+| Issue | Current disposition | Evidence |
+| --- | --- | --- |
+| #923/#924 | Not globally closed; runtime partial only. | Worker/local validation passed, but live websocket and release evidence remain missing. |
+| #925 | Docs projection closed locally; external issue closure requires GitHub authority and ledger pass. | SPEC/TRACEABILITY v3.5.0; DATA-LIFECYCLE Formal Proposal / Runtime Pending. |
+| #926~#929 | Not closed. | Lifecycle/quality/replay/runtime features remain Pending pending external storage/fanout/query evidence. |
+| #930 | Stale v3.4.0 / FR-029-not-registered projection closed. | SPEC/TRACEABILITY v3.5.0; active reports updated to historical PR #910 wording. |
+| #931 | Not globally closed; depends on child issue evidence and release verification. | Closure ledger shows live/release/storage/fanout/query evidence remains missing. |
 
-## 3. Exact minimal patch set
+## Verification
 
-1. `docs/report/binance/INDEX.md`
-   - Add `pr-936-governance-docs-closure-20260623.md` to closure/audit reports.
-   - Update the DATA-LIFECYCLE index note so §7 is not presented as current pending work.
-2. `docs/report/binance/issues-full-closure-20260623.md`
-   - Add a post-PR #936 note that PR #910 closes only #866~#896.
-   - Annotate §3 residual actions and §5 known gaps as PR #910 historical projections superseded by later module docs.
-3. `docs/report/binance/goal-execution-plan-20260622.md` and `docs/report/binance/iteration-plan-20260622.md`
-   - Annotate the top closure notes so FR-025~FR-028 "not folded" language is historical, not current backlog.
-4. `docs/report/binance/deep-analysis-20260622-backlog.md` and `docs/report/binance/unfinished-deep-analysis-20260623.md`
-   - Add post-PR #936 supersession notes so older v3.4/FR-029 rows are not read as current backlog.
-5. `module/binance/DATA-LIFECYCLE.md`
-   - Add a supersession note to §7 documenting that FR-025~FR-028 are now folded and FR-029/030 are present.
-6. `docs/report/binance/pr-936-governance-docs-closure-20260623.md`
-   - Record the findings, patch set, validation commands, and remaining external evidence dependency.
+- `bash scripts/check-binance-docs.sh` PASS
+- `bash scripts/check-binance-data-lifecycle.sh` PASS
+- `python3 scripts/audit-status.py` PASS
+- `rg` stale-anchor review PASS for current-state docs
 
-## 4. Validation commands
+## Residual
 
-```bash
-rg -n "#925|#930|#931|#936|PR #936" . --glob '!node_modules' --glob '!.git' --glob '!.omx/logs/**'
-rg -n "PR #936|#925|#930|#931|FR-025|FR-029|FR-030|historical|supersession" docs/report/binance module/binance/DATA-LIFECYCLE.md module/binance/CHANGELOG.md module/binance/TRACEABILITY.md
-bash scripts/check-binance-docs.sh
-python3 scripts/audit-status.py
-python3 - <<'PYCHECK'
-from pathlib import Path
-for path in [
-    'docs/report/binance/pr-936-governance-docs-closure-20260623.md',
-    'docs/report/binance/INDEX.md',
-    'docs/report/binance/issues-full-closure-20260623.md',
-    'module/binance/DATA-LIFECYCLE.md',
-]:
-    assert Path(path).exists(), path
-PYCHECK
-```
+Runtime/release evidence remains missing: live websocket, remote CI/release tag, JetStream PubAck/ManualAck, external durable storage/fanout/query, historical backfill/reconciliation/quality SLA implementation evidence.
 
-## 5. Remaining risk
-
-- External GitHub metadata for PR #936 and issues #925/#930/#931 is not present in the local repo. Do not claim release/issue closure from this local patch alone; use `gh pr view 936` / `gh issue view 925 930 931` or the leader-owned audit source before final external closure.
-- FR-025~FR-030 remain `Pending` runtime capabilities in `TRACEABILITY.md`; this audit only fixes governance/docs projection drift.
+[RULES I BROKE]：无
