@@ -875,8 +875,8 @@ github.com/ZoneCNH/binance/
     binance-client/main.go
     binance-server/main.go
   internal/
-    client/     # app/config/catalog/parser/spot/um_perp/cm_perp/options/normalize/mapper/idempotency/publisher/admin/observability
-    server/     # app/config/consumer/validation/idempotency/storage/api/fanout/admin/observability
+    client/     # app/config/catalog/parser/spot/um_perp/cm_perp/options/normalize/mapper/idempotency/admin/observability（publisher 由 natsx FR-009 提供）
+    server/     # app/config/validation/idempotency/storage/api/fanout/admin/observability（consumer 由 natsx FR-010 提供）
   pkg/
     config/
     observability/

@@ -61,9 +61,8 @@ github.com/ZoneCNH/binance/
         connector.go         ← 接口定义
       normalize/             ← 原生事件 → NormalizedEvent
       mapper/                ← NormalizedEvent → domain_market.MarketFactEnvelope
-      publisher/             ← natsx JetStream 发布器（新增，替换 sender）
-        publisher.go
-        publisher_test.go
+      # publisher 由 natsx FR-009 IngestPublisher 提供（域适配契约），binance 不自实现 JetStream 发布逻辑
+      # 装配点：cmd/binance-client 注入 natsx.IngestPublisher 作为 wire.IngestEndpoint，替换 HTTP sender
       admin/                 ← Gin admin :8081（/healthz /readyz）
       observability/
 
@@ -76,9 +75,8 @@ github.com/ZoneCNH/binance/
     server/                  ← 富服务端：处理 + 存储 + 缓存 + API + 归档
       app/                   ← 应用装配（大幅扩展）
       config/                ← 配置（nats/redis/pg/taos/kafka/oss/gin）
-      consumer/              ← natsx JetStream 消费（新增，替换 ingest）
-        consumer.go          ← durable consumer + ManualAck
-        consumer_test.go
+      # consumer 由 natsx FR-010 IngestConsumer 提供（域适配契约，durable+ManualAck/DLQ/poison message）
+      # binance server 不自实现 JetStream 消费逻辑，只声明依赖 natsx.IngestConsumer
       validation/            ← 请求校验（保留）
       idempotency/           ← 幂等处理（重写: redisx 主 + postgresx 备）
         redis_store.go       ← SetNX + 72h TTL
@@ -167,7 +165,7 @@ github.com/ZoneCNH/binance/
 | 事件规范化 | `internal/client/normalize/` | 保留 |
 | 规范映射 | `internal/client/mapper/` | 保留 |
 | 幂等键生成 | 移入 `mapper/`（放入 envelope.Header） | 迁移 |
-| natsx 发布器 | `internal/client/publisher/` | ✨ 新增 |
+| natsx 发布器 | 由 natsx FR-009 IngestPublisher 提供（域适配契约） | 引用 natsx |
 | Gin admin | `internal/client/admin/` | 保留精简 |
 | ❌ SQLite spool | `internal/client/spool/` | **删除** |
 | ❌ Checkpoint | `internal/client/checkpoint/` | **删除** |
@@ -179,7 +177,7 @@ github.com/ZoneCNH/binance/
 
 | Spec 功能域 | 运行时路径 | v2.0.0 状态 |
 |------------|-----------|:-----------:|
-| natsx 消费入口 | `internal/server/consumer/` | ✨ 新增 |
+| natsx 消费入口 | 由 natsx FR-010 IngestConsumer 提供（域适配契约） | 引用 natsx |
 | 请求校验 | `internal/server/validation/` | 保留 |
 | 幂等（redisx 主） | `internal/server/idempotency/redis_store.go` | ✨ 重写 |
 | 幂等日志（postgresx 备） | `internal/server/idempotency/pg_log.go` | ✨ 新增 |
@@ -312,8 +310,8 @@ Server 禁止:  client/*
 | 测试类型 | 路径 | 目的 |
 |---------|------|------|
 | connector tests | `internal/client/connectors/*_test.go` | Binance 原生输入 |
-| publisher tests | `internal/client/publisher/publisher_test.go` | natsx 发布（mock JS） |
-| consumer tests | `internal/server/consumer/consumer_test.go` | natsx 消费生命周期 |
+| publisher tests | 归属 natsx 仓（FR-009 TC-010） | binance 仅装配侧集成测试，JetStream 发布逻辑由 natsx 验证 |
+| consumer tests | 归属 natsx 仓（FR-010 TC-015） | binance 仅装配侧集成测试，durable+ManualAck 生命周期由 natsx 验证 |
 | idempotency tests | `internal/server/idempotency/*_test.go` | redisx 幂等语义 |
 | storage tests | `internal/server/storage/*_test.go` | taos/pg/oss 写入 |
 | api tests | `internal/server/api/*_test.go` | Gin 路由 + handler |
