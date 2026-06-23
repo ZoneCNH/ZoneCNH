@@ -5,7 +5,7 @@
 > **目的**：把 5 份深度分析中提出但**仍未完成**的问题汇总成单一可执行清单，区分"已在后续 spec bump 中解决"与"真正剩余"
 > **证据标签**：`[KNOWN]` 文件读取 + 实跑脚本；`[COMPUTED]` 直接统计；`[INFERRED]` 跨文档交叉
 > **置信度**：HIGH
-> [COMPUTED, HIGH] 2026-06-23 PR #936 / SPEC v3.5.0 已 supersede 本报告的 v3.4.0 事实基线；FR-025~030 已登记为 Pending，本文保留为历史 backlog 复盘，当前交付缺口转向 runtime implementation / evidence / release。GitHub #923-#931 仍由当前 closure ledger 管理。
+> [COMPUTED, HIGH] 2026-06-23 PR #936 / SPEC v3.5.0 已 supersede 本报告的 v3.4.0 事实基线；FR-025~030 已登记为 Pending，本文保留为历史 backlog 复盘，当前交付缺口转向 runtime implementation / evidence / release。GitHub #923~#931 已在后续 PR #947/#949 后全部 CLOSED；当前 closure ledger 仅记录 issue tracking state，runtime/release caveat 继续由 acceptance/release gates 管理。
 
 ---
 

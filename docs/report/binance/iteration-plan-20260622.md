@@ -1,7 +1,7 @@
 # Binance 模块完整更新迭代方案
 
 > [COMPUTED, HIGH] **2026-06-23 PR #910 历史闭环状态**：本方案中的 27 项 backlog + 19 个待建 issue 已全部落地并关闭（PR #910，GitHub open count = 0）。正文中"待建 issue"字样为 2026-06-22 规划时状态，实际 issue 编号为 #866~#896（含 #869）。逐 issue PR #910 基线、证据与残留动作见 [`issues-full-closure-20260623.md`](issues-full-closure-20260623.md)。
-> [COMPUTED, HIGH] **2026-06-23 当前状态覆盖声明**：FR-025~FR-030 已在 SPEC/TRACEABILITY/NAMING 登记为 Pending 合同项，但不代表 runtime 完成；GitHub #923-#931 仍由当前 closure ledger 跟踪，runtime/release evidence Pending。
+> [COMPUTED, HIGH] **2026-06-23 当前状态覆盖声明**：FR-025~FR-030 已在 SPEC/TRACEABILITY/NAMING 登记为 Pending 合同项，但不代表 runtime 完成；GitHub #923~#931 已在后续 PR #947/#949 后全部 CLOSED，当前 closure ledger 仅记录 issue tracking state；runtime/release evidence Pending 继续由 acceptance/release gates 管理。
 > [COMPUTED, HIGH] 下文表格中的 `OPEN` / `待建 issue` / `4×4` 均为 2026-06-22 规划快照，不是 post-PR #936/current-docs 当前状态。
 
 - [COMPUTED, HIGH] 制定日期：2026-06-22
