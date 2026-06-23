@@ -12,7 +12,7 @@
 ## [Unreleased] — 2026-06-23
 
 ### Added
-- 新建 `DEEP-ANALYSIS-INDEX.md`：为 1029 行 `DEEP-ANALYSIS.md` 提供分区索引与快速跳转，解决 P2-1 "Split oversized DEEP-ANALYSIS.md" 的可维护性问题（GitHub #930）。
+- `DEEP-ANALYSIS.md` 拆分为 `DEEP-ANALYSIS-ARCHIVE-architecture.md` + `DEEP-ANALYSIS-ARCHIVE-operations.md` + `DEEP-ANALYSIS-ARCHIVE-integration.md` 三个归档文件（GitHub #930）。
 
 ### Changed
 - 记录 `/home/binance` 本地 runtime boundary evidence：SHA `71e2a6e8bb5591c43e8a2ebfff8c7645bf030786`，`scripts/boundary-gates.sh` 10/10 PASS，`go build/test/race/vet`、`golangci-lint`、本地 smoke self-test PASS。
