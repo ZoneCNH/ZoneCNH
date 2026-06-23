@@ -1128,8 +1128,8 @@ github.com/ZoneCNH/binance/
 `module/binance` v3.5.0 发布完成标准：
 
 - [x] `binance-market` references 已移除或隔离到 migration history（BR-001）
-- [ ] `module/binance/client` 和 `module/binance/server` specs 完成并通过 spec-lint
-- [ ] root/client/server TRACEABILITY.md 完成，所有需求可追溯
+- [x] `module/binance/client` 和 `module/binance/server` specs 完成并通过 spec-lint
+- [x] root/client/server TRACEABILITY.md 完成，所有需求可追溯
 - [x] client/server task sets 独立可执行
 - [x] Delivery semantics 明确为 at-least-once + idempotent acceptance（FR-004, FR-005）
 - [x] natsx JetStream ManualAck 全链路语义已定义且 testable（BR-004）
