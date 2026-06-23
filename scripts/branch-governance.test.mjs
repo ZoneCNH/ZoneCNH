@@ -20,6 +20,10 @@ test("classifies merge, fix, delete, close, and publish candidates", () => {
         "HEAD 2222222",
         "branch refs/heads/feature-fix",
         "",
+        "worktree /repo/.worktree/feature-fix/.worktree/omx-team/run-a/worker-1",
+        "HEAD 3333333",
+        "detached",
+        "",
       ].join("\n"),
     ],
     [
@@ -87,6 +91,8 @@ test("classifies merge, fix, delete, close, and publish candidates", () => {
   assert.equal(scan.summary.closeCandidates, 1);
   assert.equal(scan.summary.unpublishedBranches, 1);
   assert.equal(scan.summary.worktreePathViolations, 1);
+  assert.equal(scan.summary.detachedWorktrees, 1);
+  assert.equal(scan.summary.nestedRegisteredWorktrees, 1);
   assert.equal(scan.summary.branchesScanned, 4);
   assert.equal(scan.context.mainSynced, true);
   assert.equal(scan.context.repoClean, true);
@@ -113,6 +119,15 @@ test("classifies merge, fix, delete, close, and publish candidates", () => {
       reason: "branch-attached worktree path is not canonical",
     },
   ]);
+  assert.deepEqual(scan.detachedWorktreePaths, [
+    "/repo/.worktree/feature-fix/.worktree/omx-team/run-a/worker-1",
+  ]);
+  assert.deepEqual(scan.nestedRegisteredWorktrees, [
+    {
+      path: "/repo/.worktree/feature-fix/.worktree/omx-team/run-a/worker-1",
+      parentPath: "/repo/.worktree/feature-fix",
+    },
+  ]);
 
   const featureMerge = scan.branchInventory.find((entry) => entry.branch === "feature-merge");
   assert.ok(featureMerge);
@@ -127,7 +142,11 @@ test("classifies merge, fix, delete, close, and publish candidates", () => {
 
   const report = formatHumanReport(scan);
   assert.match(report, /Worktree path violations: 1/);
+  assert.match(report, /Detached worktrees: 1/);
+  assert.match(report, /Nested registered worktrees: 1/);
   assert.match(report, /\[WORKTREE\] feature-fix/);
+  assert.match(report, /\[WORKTREE-DETACHED\] \/repo\/\.worktree\/feature-fix\/\.worktree\/omx-team\/run-a\/worker-1/);
+  assert.match(report, /\[WORKTREE-NESTED\] \/repo\/\.worktree\/feature-fix\/\.worktree\/omx-team\/run-a\/worker-1/);
   assert.match(report, /\[MERGE\] #11 feature-merge/);
   assert.match(report, /\[FIX\]   #12 feature-fix/);
   assert.match(report, /\[DELETE\] merged-local/);

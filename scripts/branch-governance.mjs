@@ -18,6 +18,8 @@ import { fileURLToPath } from "url";
 import {
   canonicalWorktreePath,
   describeBranchWorktreePath,
+  findNestedRegisteredWorktrees,
+  findUnregisteredWorktreeDirs,
   parseWorktreePorcelain,
 } from "./worktree-policy.mjs";
 
@@ -45,9 +47,17 @@ export function buildScan({ run = defaultRun, now = () => new Date() } = {}) {
   const hasGh = !!run("gh", ["--version"]);
   const timestamp = now().toISOString();
 
+  const worktreePorcelain = getGitRoot ? run("git", ["worktree", "list", "--porcelain"]) : "";
   const worktreeState = getGitRoot
-    ? parseWorktreePorcelain(run("git", ["worktree", "list", "--porcelain"]))
+    ? parseWorktreePorcelain(worktreePorcelain)
     : { branchToPath: new Map() };
+  const unregisteredWorktreeDirs = getGitRoot
+    ? findUnregisteredWorktreeDirs({ root: getGitRoot, porcelain: worktreePorcelain })
+    : [];
+  const detachedWorktreePaths = getGitRoot ? [...worktreeState.detachedPaths].sort() : [];
+  const nestedRegisteredWorktrees = getGitRoot
+    ? findNestedRegisteredWorktrees({ root: getGitRoot, porcelain: worktreePorcelain })
+    : [];
 
   const openPrs = hasGh
     ? JSON.parse(
@@ -199,6 +209,9 @@ export function buildScan({ run = defaultRun, now = () => new Date() } = {}) {
       unpublishedBranches: unpublishedBranches.length,
       branchesScanned: branchInventory.length,
       worktreePathViolations: worktreePathViolations.length,
+      unregisteredWorktreeDirs: unregisteredWorktreeDirs.length,
+      detachedWorktrees: detachedWorktreePaths.length,
+      nestedRegisteredWorktrees: nestedRegisteredWorktrees.length,
     },
     mergeCandidates,
     fixCandidates,
@@ -206,6 +219,9 @@ export function buildScan({ run = defaultRun, now = () => new Date() } = {}) {
     closeCandidates,
     unpublishedBranches,
     worktreePathViolations,
+    unregisteredWorktreeDirs,
+    detachedWorktreePaths,
+    nestedRegisteredWorktrees,
     branchInventory,
     openPrs,
   };
@@ -222,9 +238,21 @@ export function formatHumanReport(result) {
   lines.push(`  Close candidates: ${result.summary.closeCandidates}`);
   lines.push(`  Unpublished branches: ${result.summary.unpublishedBranches}`);
   lines.push(`  Worktree path violations: ${result.summary.worktreePathViolations}`);
+  lines.push(`  Unregistered worktree dirs: ${result.summary.unregisteredWorktreeDirs}`);
+  lines.push(`  Detached worktrees: ${result.summary.detachedWorktrees}`);
+  lines.push(`  Nested registered worktrees: ${result.summary.nestedRegisteredWorktrees}`);
   lines.push("");
   for (const item of result.worktreePathViolations) {
     lines.push(`[WORKTREE] ${item.branch} — actual ${item.actualPath} (expected ${item.expectedPath})`);
+  }
+  for (const dir of result.unregisteredWorktreeDirs) {
+    lines.push(`[WORKTREE-DIR] ${dir} — not registered by git worktree`);
+  }
+  for (const path of result.detachedWorktreePaths) {
+    lines.push(`[WORKTREE-DETACHED] ${path} — detached HEAD`);
+  }
+  for (const item of result.nestedRegisteredWorktrees) {
+    lines.push(`[WORKTREE-NESTED] ${item.path} — nested under ${item.parentPath}`);
   }
   for (const item of result.mergeCandidates) {
     lines.push(`[MERGE] #${item.number} ${item.branch} — ${item.title}`);
