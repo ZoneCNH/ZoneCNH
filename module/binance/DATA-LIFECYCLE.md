@@ -95,6 +95,8 @@
 ## 7. 未覆盖项落点声明（候选 FR-025~028 + NAMING/subject 补充）
 
 > [FRAME, HIGH] 以下为讨论稿级别的落点声明，未 fold 进 SPEC.md / TRACEABILITY.md。需在后续 PR 中按 RULES R3 bump 触发器落地（FR 接口新增 = MINOR）。
+>
+> [COMPUTED, HIGH] 2026-06-23 post-PR #936 supersession note: FR-025~FR-028 are now folded into SPEC/TRACEABILITY/NAMING in v3.2.0, and FR-029/FR-030 are recorded in v3.5.0. This §7 remains historical provenance for why those follow-ups existed, not current open backlog.
 
 | 候选 | 标题 | Landing | Bump | 覆盖 issue |
 | --- | --- | --- | --- | --- |

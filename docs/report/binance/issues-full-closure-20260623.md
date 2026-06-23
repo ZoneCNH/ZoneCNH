@@ -6,7 +6,9 @@
 - Source: `gh issue list --state open` (pre-closure) + `module/binance/` SSOT + PR #910 diff.
 - Prior slice: `governance-closure-20260623.md` (worker-3, 6 issues).
 
-> [COMPUTED, HIGH] 本报告是 PR #910 的闭环证据。25 个 issue 全部 closed；GitHub open count = 0。核查基线为 `module/binance/SPEC.md` v3.1.0（commit c158fc86 + PR #910）。
+> [COMPUTED, HIGH] 本报告是 PR #910 的历史闭环证据。25 个 issue 全部 closed；GitHub open count = 0。核查基线为 `module/binance/SPEC.md` v3.1.0（commit c158fc86 + PR #910）。
+>
+> [COMPUTED, HIGH] Post-PR #936 note: this report covers #866~#896 only and does not close #925/#930/#931. Read it with `pr-936-governance-docs-closure-20260623.md` before treating any PR #910 projection as current backlog.
 
 ---
 
@@ -67,7 +69,7 @@
 
 ## 3. Residual actions（fold 进 SPEC 的后续 PR）
 
-> [FRAME, HIGH] 以下为讨论稿层声明，未 fold 进 SPEC/TRACEABILITY。后续 PR 按 RULES R3 bump 触发器落地。
+> [FRAME, HIGH] 以下为 PR #910 时间点的讨论稿层声明，原文未 fold 进 SPEC/TRACEABILITY。Post-PR #936/current module docs have since folded FR-025~028 into SPEC/TRACEABILITY/NAMING (v3.2.0) and added FR-029/030 (v3.5.0); keep this table as historical residual evidence, not current open backlog.
 
 | 候选           | 标题                                      | Landing                            | Bump  | 覆盖 issue |
 | -------------- | ----------------------------------------- | ---------------------------------- | ----- | ---------- |
@@ -94,7 +96,7 @@
 
 ## 5. Known gaps intentionally not hidden
 
-1. **候选 FR-025~028 未 fold**：本闭环仅在 DATA-LIFECYCLE 讨论稿层声明落点，未修改 SPEC/TRACEABILITY。后续 PR 需按 R3 MINOR bump 落地。
+1. **候选 FR-025~028 未 fold（PR #910 历史口径）**：本闭环在 PR #910 时间点仅于 DATA-LIFECYCLE 讨论稿层声明落点；current module docs later folded FR-025~FR-028 into SPEC/TRACEABILITY/NAMING (v3.2.0) and added FR-029/030 (v3.5.0).
 2. **runtime 证据**：FR-012~024 全部 Pending（runtime 仓未推送功能实现），L2 状态默认 `Pending — 以 runtime 仓为准`。
 3. **#896 PR/head 覆盖**：`commit-coverage-audit-20260623.md` 仅本地 git 证据，GitHub PR/head lineage 仍需权威映射（见 governance-closure §5 gap 1）。
 
