@@ -4,14 +4,16 @@
 
 | 字段 | 值 |
 | --- | --- |
-| Status | Formal Proposal / Runtime Pending |
+| Status | Governance Registered / Runtime Evidence Pending |
 | Module-Version | v3.5.0 |
 | Last-Updated | 2026-06-23 |
 | Scope | `module/binance` stage2 lifecycle planning |
 | Spec-Impact | 已 fold：FR-012~FR-030 已登记到 `SPEC.md`/`TRACEABILITY.md`，相关命名落点已投影到 `NAMING.md`；本文件仍不声明 runtime contract |
 | Source Plan | `docs/report/binance/goal-execution-plan-20260622.md` 阶段 2 / AC-3 |
 
-> 本文件记录 FR-012~FR-030 的正式提案落点和版本影响台账，但不是 runtime 完成证据。任一能力翻转为 Done 前，仍必须通过 Spec -> Review -> Matrix -> Tasks -> Plan -> Prompt -> Code 管线、runtime 测试证据、CI/live smoke 和 release gate；不得把下列内容视为 runtime behavior 或 release evidence 已完成。
+> [COMPUTED, HIGH] FR-012~FR-030 已登记到 `SPEC.md`/`TRACEABILITY.md`，相关命名落点已投影到 `NAMING.md`；本文仍是 lifecycle planning 与 issue closure mapping，不构成 runtime behavior、CI pass、GitHub Release 或 release evidence 完成证明。
+>
+> 本文件记录 FR-012~FR-030 的正式提案落点和版本影响台账。任一能力翻转为 Done 前，仍必须通过 Spec -> Review -> Matrix -> Tasks -> Plan -> Prompt -> Code 管线、runtime 测试证据、CI/live smoke 和 release gate；不得把下列内容视为 runtime behavior 或 release evidence 已完成。
 
 ## 1. 15 个生命周期缺口
 
