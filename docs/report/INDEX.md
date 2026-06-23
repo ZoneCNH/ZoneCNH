@@ -9,7 +9,7 @@
 | 报告 | 日期 | 主题 | 综合评分 |
 |---|---|---|:---:|
 | [binance/deep-analysis-20260622-backlog.md](./binance/deep-analysis-20260622-backlog.md) | 2026-06-23 | binance 5 份深度分析未完成项汇总（20 类问题，11 已解决 / 9 剩余，含版本漂移新发现） | — |
-| [binance/github-issues-923-931-closure-ledger-20260623.md](./binance/github-issues-923-931-closure-ledger-20260623.md) | 2026-06-23 | binance GitHub #923-#931 当前关闭台账（#925/#930 文档投影已对齐；全部 issue 仍受 runtime/release 证据门禁约束） | — |
+| [binance/github-issues-923-931-closure-ledger-20260623.md](./binance/github-issues-923-931-closure-ledger-20260623.md) | 2026-06-23 | binance GitHub #923-#931 closure ledger（9/9 GitHub issues closed；runtime/release readiness 仍由 acceptance/release gates 单独治理） | — |
 | [binance/goal-execution-plan-20260622.md](./binance/goal-execution-plan-20260622.md) | 2026-06-22 | binance Goal 执行方案（82→95 分，7 阶段 × 9 AC × 26 issues，遵循 docs/goal/02-goal-standard.md） | — |
 | [binance/iteration-plan-20260622.md](./binance/iteration-plan-20260622.md) | 2026-06-22 | binance 完整更新迭代方案（5 份报告 + 8 issues 收敛，27 项 backlog，7 阶段路线） | — |
 | [fred/iteration-plan-20260622.md](./fred/iteration-plan-20260622.md) | 2026-06-22 | fred 完整更新迭代方案（4 份报告 + 7 模块文件收敛，29 项 backlog，7 阶段路线，68→80+ 分） | 68/100 (D+) |
@@ -53,7 +53,7 @@
 | 日期 | 变更 |
 |---|---|
 | 2026-06-23 | 新增 `binance/deep-analysis-20260622-backlog.md`：5 份深度分析（v1~v5）未完成项汇总，20 类问题逐条回核，11 已解决 / 9 剩余；新发现 STATUS/ARCHITECTURE spec 版本落后（v3.3.0 vs v3.4.0） |
-| 2026-06-23 | 新增 `binance/github-issues-923-931-closure-ledger-20260623.md`：记录 #923-#931 当前关闭状态，明确 #925/#930 仅文档投影对齐，GitHub issue 关闭仍需 runtime/release 证据 |
+| 2026-06-23 | 更新 `binance/github-issues-923-931-closure-ledger-20260623.md`：记录 #923-#931 已全部处于 GitHub Closed 状态，同时明确 issue tracking closure 不替代 runtime/release evidence |
 | 2026-06-22 | 新增 `binance/goal-execution-plan-20260622.md`：Goal 执行方案（82→95 分，9 AC，7 阶段 × 26 issues，遵循 docs/goal/02-goal-standard.md） |
 | 2026-06-22 | 新增 `binance/iteration-plan-20260622.md`：5 份报告 + 8 issues 收敛为 27 项 backlog + 7 阶段路线；补索引 v3/v4 条目 |
 | 2026-06-22 | 新增 `fred/iteration-plan-20260622.md`：4 份报告 + 7 模块文件收敛为 29 项 backlog + 7 阶段路线；补 `fred/` 子目录条目 |

@@ -174,18 +174,18 @@
 
 ## 7. GitHub Issue Closure Ledger（2026-06-23）
 
-> [COMPUTED, HIGH] 2026-06-23 GitHub 核查后，#925/#926/#930/#931 已作为 documentation-complete / umbrella-classified 关闭；#923/#924/#927/#928/#929 仍保持 open，等待 runtime、remote CI、live websocket、外部集成或 release tag 证据。完整账本见 [`docs/report/binance/github-issues-923-931-closure-ledger-20260623.md`](../../docs/report/binance/github-issues-923-931-closure-ledger-20260623.md)。
+> [COMPUTED, HIGH] 2026-06-23 GitHub 核查后，#923~#931 均为 `CLOSED`。完整账本见 [`docs/report/binance/github-issues-923-931-closure-ledger-20260623.md`](../../docs/report/binance/github-issues-923-931-closure-ledger-20260623.md)。
 >
-> [COMPUTED, HIGH] 本节记录 2026-06-23 全量 GitHub issue 核查后的闭合口径：文档治理类 issue 可依据 PR #936/#937 与本地文档门禁关闭；runtime/release 类 issue 仍必须等待对应 runtime evidence、CI/release evidence。
+> [COMPUTED, HIGH] 本节记录 issue tracking closure，而不是 runtime/release promotion。Live websocket、remote CI、外部集成、release artifact/tag 与 FR-012~FR-030 runtime evidence 仍必须由对应 acceptance/release gate 单独关闭。
 
-| Issue | 当前判断 | 已有证据 | 未闭合条件 |
+| Issue | GitHub 状态 | 已有证据 | Runtime/release 边界 |
 | --- | --- | --- | --- |
-| #923 | Partial / Open | `RUNTIME-MAPPING.md`、`BOUNDARY-GATES.md`、`/home/binance/release/evidence/binance/20260623/SUMMARY.md` | live Binance WebSocket、`natsx` JetStream PubAck/ManualAck、durable storage/fanout/query、post-fix release tag。 |
-| #924 | Open | 本地 evidence bundle 与 PR #14 可作为候选证据入口。 | 远端 CI、GitHub Release、live smoke、release artifact linkage。 |
-| #925 | Closed / Documentation Complete | `README.md`、`docs/architecture/`、`SPEC.md`、`TRACEABILITY.md`、`DATA-LIFECYCLE.md` 已对齐 v3.5.0 投影。 | — |
-| #926 | Closed / Formalized | `DATA-LIFECYCLE.md` §9 形式化闭合备忘录：FR-012~FR-030 登记完成、影响台账完整、旧 issue 映射完成。 | Runtime 实现由 #927/#928/#929 继续追踪。 |
-| #927 | Open | FR-012~FR-015 已登记。 | `exchangeInfo` discovery、catalog refresh、stream policy、depth tier、real reconnect/degradation evidence。 |
-| #928 | Open | FR-016~FR-024 已登记。 | cold-start backfill、gap replay、funding/mark-price、reconciliation、rehydration、progress API、hot reload runtime proof。 |
-| #929 | Open | FR-025~FR-030 已登记。 | throttle、validation、gap repair、SLA metrics、schema drift 与 quality evidence。 |
-| #930 | Closed / Governance Docs Debt | stale v3.3/v3.4 projection 已移除；legacy `binance-market` 引用已压缩到边界/追踪语境；DEEP analysis archive/index 已拆分。 | — |
-| #931 | Closed / Umbrella Classified | #923~#930 的状态入口已统一登记，且 remaining runtime work 保留在 #923/#924/#927/#928/#929。 | — |
+| #923 | Closed | `RUNTIME-MAPPING.md`、`BOUNDARY-GATES.md`、`/home/binance/release/evidence/binance/20260623/SUMMARY.md` | 不关闭 live Binance WebSocket、`natsx` JetStream PubAck/ManualAck、durable storage/fanout/query、post-fix release tag。 |
+| #924 | Closed | 本地 evidence bundle 与 PR #14 可作为候选证据入口。 | 不替代远端 CI、GitHub Release、live smoke、release artifact linkage。 |
+| #925 | Closed | `README.md`、`docs/architecture/`、`SPEC.md`、`TRACEABILITY.md`、`DATA-LIFECYCLE.md` 已对齐 v3.5.0 投影。 | 无额外 runtime 声明。 |
+| #926 | Closed | `DATA-LIFECYCLE.md` §9 形式化闭合备忘录：FR-012~FR-030 登记完成、影响台账完整、旧 issue 映射完成。 | Runtime 实现仍由 FR/runtime gates 治理。 |
+| #927 | Closed | FR-012~FR-015 已登记。 | 不关闭 `exchangeInfo` discovery、catalog refresh、stream policy、depth tier、real reconnect/degradation evidence。 |
+| #928 | Closed | FR-016~FR-024 已登记。 | 不关闭 cold-start backfill、gap replay、funding/mark-price、reconciliation、rehydration、progress API、hot reload runtime proof。 |
+| #929 | Closed | FR-025~FR-030 已登记。 | 不关闭 throttle、validation、gap repair、SLA metrics、schema drift 与 quality evidence。 |
+| #930 | Closed | stale v3.3/v3.4 projection 已移除；legacy `binance-market` 引用已压缩到边界/追踪语境；DEEP analysis archive/index 已拆分。 | 无额外 runtime 声明。 |
+| #931 | Closed | #923~#930 的状态入口已统一登记。 | Runtime/release readiness 继续按 acceptance/release gates 判断。 |

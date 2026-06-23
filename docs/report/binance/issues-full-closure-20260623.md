@@ -6,7 +6,7 @@
 - Source: historical `gh issue list --state open` (pre-closure) + `module/binance/` SSOT + PR #910 diff.
 - Prior slice: `governance-closure-20260623.md` (worker-3, 6 issues).
 
-> [COMPUTED, HIGH] **2026-06-23 当前状态覆盖声明**：本报告是 PR #910 的历史闭环证据，不是 GitHub #923-#931 的当前 closure evidence；#923-#931 仍由 `github-issues-923-931-closure-ledger-20260623.md` 管理，runtime/release evidence Pending。
+> [COMPUTED, HIGH] **2026-06-23 当前状态覆盖声明**：本报告是 PR #910 的历史闭环证据，不是 GitHub #923-#931 的当前 closure evidence；#923-#931 的 GitHub Closed 状态由 `github-issues-923-931-closure-ledger-20260623.md` 管理，runtime/release readiness 仍按 acceptance/release gates 单独判断。
 >
 > [COMPUTED, HIGH] PR #910 历史口径：25 个 issue 全部 closed；GitHub open count = 0。核查基线为 `module/binance/SPEC.md` v3.1.0（commit c158fc86 + PR #910）。
 >
