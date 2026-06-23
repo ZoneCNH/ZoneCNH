@@ -1351,7 +1351,7 @@ Binance Exchange (REST/WebSocket)
 | G0-3 | `redisx`/`taosx`/`postgresx`/`ossx`/`kafkax`/Gin ownership chain ready | server SPEC §7/§9 + v2.0.0 RUNTIME-MAPPING.md | ✅ |
 | G0-4 | binance OQ-001（`natsx` + `domain_market` envelope ready?） | 已确认：本 SPEC §9 | ✅ |
 | G0-5 | market_data consumption via REST/`kafkax` ready | 已确认：本 SPEC §9.2 | ✅ |
-| G0-6 | BOUNDARY-GATES.md 全部 10 道 runtime 门禁有可执行脚本 | 10/10 (2026-06-23, verified source `9777a5b0db9a3de5db53942b9aaf6b55eec04f24`, evidence commit `66f60b3945dce215f68ff833bbd336364d635ae8`) | ✅ |
+| G0-6 | BOUNDARY-GATES.md 全部 10 道 runtime 门禁有可执行脚本 | 10/10 (2026-06-23 round 2, evidence commit `71e2a6e8bb5591c43e8a2ebfff8c7645bf030786`) | ✅ |
 
 > **6/6 通过** — 上游契约链闭合。本 SPEC 处于 Approved 状态，可进入运行时实现阶段（PR-007）。实现时必须严格遵循 natsx JetStream subject 规范、domain_market §10 canonical semantics、Gin REST API `/api/v1/market/*` 契约。
 

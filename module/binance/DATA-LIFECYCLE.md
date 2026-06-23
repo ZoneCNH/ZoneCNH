@@ -4,7 +4,7 @@
 
 | 字段 | 值 |
 | --- | --- |
-| Status | Governance Registered / Runtime Evidence Pending |
+| Status | Formal Proposal / Runtime Evidence Pending |
 | Module-Version | v3.5.0 |
 | Last-Updated | 2026-06-23 |
 | Scope | `module/binance` stage2 lifecycle planning |
