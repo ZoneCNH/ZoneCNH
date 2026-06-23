@@ -66,6 +66,22 @@
 | `CHANGELOG.md` | Versioned change summary |
 | `scripts/check-binance-docs.sh` | Machine check for the accepted contract |
 
-## 5. Stop Conditions
+## 5. Script Responsibility Comparison
+
+[COMPUTED, HIGH] 本仓 `scripts/check-binance-docs.sh` 与 runtime 仓 `/home/binance/scripts/boundary-gates.sh` 是两套互补的 gate，职责不重叠：
+
+| 维度 | `scripts/check-binance-docs.sh`（本仓） | `scripts/boundary-gates.sh`（runtime 仓） |
+| --- | --- | --- |
+| 位置 | ZoneCNH/ZoneCNH 文档仓 | ZoneCNH/binance runtime 仓 |
+| 对象 | `module/binance/` 治理文档 | runtime Go 代码与 go.mod |
+| 层级 | L1 文档治理 gate | L1 runtime 边界 gate |
+| 检测内容 | 命名 SSOT 漂移、4×6 矩阵对称、版本字段统一（R6）、Spec-Reference 闭环、legacy alias 残留、FR-009 L1 证据 | C/S 进程隔离 import、No cs package（BR-005）、No same-process adapter、Server owns storage（BR-006）、Wire contract externality（BR-008）、No domain ownership（BR-007）、go.mod 依赖合规（BR-009） |
+| 触发 | 本仓 CI（docs PR） | runtime 仓 CI（code PR） |
+| 对应规则 | RULES R1/R2/R6/R9 | BOUNDARY-GATES.md §1-§12 |
+| 失败处理 | 阻断 docs PR 合并 | 阻断 code PR 合并 |
+
+[FRAME, HIGH] 两脚本均属 L1 boundary/governance gate，不可替代 L2 functional runtime evidence（RULES R4）。文档侧漂移由本仓脚本守门，runtime 侧架构边界由 runtime 脚本守门；FR-009 实现状态以 `boundary-gates.sh` 输出为唯一 L1 证据，文档侧 `check-binance-docs.sh` 只验证文档对 FR-009 的引用一致性。
+
+## 6. Stop Conditions
 
 [FRAME, HIGH] Stop and keep FR-024 pending if live stream behavior is not proven, if endpoint naming remains split across active docs, if release evidence is local-only but the gate requires remote CI, or if rollback behavior is untested.
