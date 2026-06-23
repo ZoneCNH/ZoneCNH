@@ -135,9 +135,8 @@ binance/cm_perp/BTCUSD_PERP/2026/06/23/mark_price.parquet
 
 | 范围 | 格式 | 示例 |
 |---|---|---|
-| client | `BINANCE_CLIENT_{NAME}` | `BINANCE_CLIENT_NATS_URL` |
-| server | `BINANCE_SERVER_{NAME}` | `BINANCE_SERVER_REDIS_URL` |
-| product line enable | `BINANCE_ENABLE_{PRODUCT_LINE}` | `BINANCE_ENABLE_UM_PERP` |
+| client + server | `XGO_BINANCE_{NAME}` | `XGO_BINANCE_INGEST_URL`, `XGO_BINANCE_ADMIN_ADDR` |
+| 基础设施凭据 | 各模块规范前缀 | `XGO_REDIS_PASSWORD`, `XGO_KAFKA_PASSWORD` |
 
 ## 10. Drift Detection
 
