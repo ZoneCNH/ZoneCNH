@@ -13,6 +13,19 @@
 
 本文档是验收执行清单，不是通过证明。每个 Pending 项必须由实际命令输出、CI run、测试报告或 traceability 状态更新关闭。
 
+### 状态口径 L1/L2 分层（RULES R4）
+
+> 状态列每个值隐含 L1/L2 层级，不可用 boundary gate 证据替代功能验收：
+
+| 状态值 | 层级 | 含义 | 证据要求 |
+| --- | --- | --- | --- |
+| `PASS` | L1 Boundary/Governance | 边界治理 AC（FR-009/BR-001~009）通过 boundary-gate.sh + CI workflow + runtime SHA 证明 | boundary-gate 输出或 git SHA |
+| `Done` | L1 Boundary/Governance | 边界治理 BR/TC 已有 runtime 证据（BOUNDARY-GATES.md + 变更历史 SHA） | runtime SHA + CI URL |
+| `Partial / TC Pending` | L2 Functional | 功能 FR 已部分实现（如 Spot 产品线），但 TC 未全绿 | feature/integration test 输出 + runtime SHA |
+| `Pending` | L2 Functional | runtime 仓未推送对应功能实现；默认 `Pending — 以 runtime 仓为准` | runtime feature test + integration test |
+
+> [COMPUTED, HIGH] L1 状态可由本地 boundary gate + CI 证据标记；L2 状态必须附 runtime feature/integration test 输出与 runtime git SHA，runtime 仓未推送时所有 L2 FR 默认 Pending。
+
 ## 1. 验收命令
 
 | 验收面 | 命令 | 通过条件 |

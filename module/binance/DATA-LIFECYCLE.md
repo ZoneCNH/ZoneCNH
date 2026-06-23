@@ -5,8 +5,8 @@
 | 字段 | 值 |
 | --- | --- |
 | Status | Discussion Draft |
-| Doc-Version | v0.1.0 |
-| Last-Updated | 2026-06-22 |
+| Doc-Version | v0.2.0 |
+| Last-Updated | 2026-06-23 |
 | Scope | `module/binance` stage2 lifecycle planning |
 | Spec-Impact | 无；本讨论稿不修改 `SPEC.md`，不产生 runtime contract |
 | Source Plan | `docs/report/binance/goal-execution-plan-20260622.md` 阶段 2 / AC-3 |
@@ -69,3 +69,40 @@
 1. Should late/out-of-order policy be event-type specific, or should the first SPEC update define one conservative module-wide default?
 2. Should replay evidence be attached to every release, or only to releases that touch backfill, ossx, Kafka, or TAOS writes?
 3. Should funding-rate and mark/index price be separate event types, or grouped under a future derived-market event family?
+
+## 6. Issue 原始诉求 → 现有 FR 覆盖映射（2026-06-23 补齐）
+
+> [COMPUTED, HIGH] 2026-06-23 全量 issue 核查发现：GitHub issue #880~#892（R-01~R-13）的标题语义是 2026-06-22 早期提案，本讨论稿 §4 review 已将它们重组为更合理的 FR-012~024 落点。本节逐条映射 issue 原始诉求 → 现有 FR 覆盖关系，并对未覆盖项声明落点，确保每条 issue 的实质能力都有 FR 承接。
+
+| Issue | 原始诉求 | 现有 FR 覆盖 | 覆盖判定 | 未覆盖落点 |
+| --- | --- | --- | --- | --- |
+| #880 R-01 | FR-012 Symbol Discovery & Filtering（exchangeInfo 拉取 + allow/deny + 6h 刷新 + instruments.changed） | FR-012 Stream Session Lifecycle（未含 catalog discovery） | ⚠️ 部分覆盖 | 并入 FR-012：catalog discovery 是 stream session 前置；`instruments.changed` subject 见 §7 |
+| #881 R-02 | FR-013 WebSocket Connection Policy（重连退避 + stream 上限 + keepalive + listenKey 续期） | FR-013 Rate-limit/retry/clock-skew guard | ✅ 覆盖 | — |
+| #882 R-03 | FR-014 Bar Interval Subscription Set（1s/1m/5m/15m/1h/4h/1d 枚举） | 未单列 FR | ⚠️ 未覆盖 | 并入 NAMING §2 订阅周期集枚举（见 §7） |
+| #883 R-04 | FR-015 Depth Snapshot Tier（@depth20@100ms + @depth@1000ms 增量 + update_id 拼合） | FR-015 Pause/Resume/Drain（未含 depth tier） | ⚠️ 部分覆盖 | 并入 FR-015 depth 订阅档位定义（见 §7） |
+| #884 R-05 | FR-016 Historical Backfill on Cold Start（REST 拉历史 + 默认深度） | FR-016 Backfill Window Planning | ✅ 覆盖 | — |
+| #885 R-06 | FR-017 Gap Detection & Fill（5min detector + trade 连号 + bar 窗口 + backfill_jobs 队列） | FR-017 Gap Detection and Replay | ✅ 覆盖 | — |
+| #886 R-07 | FR-018 Backfill Throttle & Priority（token bucket + 80/20 配额 + 优先级） | FR-018 Archive Manifest（未含 throttle） | ❌ 未覆盖 | 新增 FR-025 Backfill Throttle & Priority（见 §7） |
+| #887 R-08 | FR-019 Backfill Idempotency Key Strategy（trade/bar key 维度） | FR-019 Backfill Concurrency and Idempotency Gates | ✅ 覆盖 | — |
+| #888 R-09 | FR-020 Funding Rate / Mark Price Stream + event_type 4→6 | FR-020 Funding-rate + FR-021 Mark-price + FR-022 Event-type Matrix | ✅ 覆盖 | — |
+| #889 R-10 | FR-021 Daily Reconciliation Job（04:00 UTC 对账 + tolerance） | FR-021 Mark-price（未含 reconciliation） | ❌ 未覆盖 | 新增 FR-026 Daily Reconciliation Job（见 §7） |
+| #890 R-11 | FR-022 Cold Data Rehydration（OSS→taosx 回热 + 202 + job_id） | FR-022 Event-type Matrix（未含 rehydration） | ❌ 未覆盖 | 新增 FR-027 Cold Data Rehydration（见 §7） |
+| #891 R-12 | FR-023 Backfill Progress API（jobs + coverage 查询） | FR-023 Evidence Bundle（未含 progress API） | ❌ 未覆盖 | 新增 FR-028 Backfill Progress API（见 §7） |
+| #892 R-13 | FR-024 Symbol Subscription Hot Reload（reload endpoint + stream diff） | FR-024 Runtime Config Hot Reload | ✅ 覆盖 | — |
+
+## 7. 未覆盖项落点声明（候选 FR-025~028 + NAMING/subject 补充）
+
+> [FRAME, HIGH] 以下为讨论稿级别的落点声明，未 fold 进 SPEC.md / TRACEABILITY.md。需在后续 PR 中按 RULES R3 bump 触发器落地（FR 接口新增 = MINOR）。
+
+| 候选 | 标题 | Landing | Bump | 覆盖 issue |
+| --- | --- | --- | --- | --- |
+| FR-025 | Backfill Throttle & Priority（token bucket: spot 1200/futures 2400 weight/min；80% 实时 / 20% 回填；priority trade>bar>tick） | `server/SPEC.md` §7 throttle | MINOR | #886 |
+| FR-026 | Daily Reconciliation Job（04:00 UTC；symbol×1d 比对 taosx OHLCV vs Binance /api/v3/klines；tolerance 0.01%；入 binance_reconciliation_alerts） | `server/SPEC.md` §7 reconciliation | MINOR | #889 |
+| FR-027 | Cold Data Rehydration（/api/v1/market/ticks/:symbol/range 命中 OSS 归档区 → async OSS→taosx 回热 24h TTL；202 + job_id 轮询） | `SPEC.md` FR-007 扩展 | MINOR | #890 |
+| FR-028 | Backfill Progress API（GET /api/v1/admin/backfill/jobs + /coverage/:symbol 返回 (pl, symbol, et) 最早时间戳） | `server/SPEC.md` §7 admin API | MINOR | #891 |
+| NAMING §2 | 订阅周期集枚举：spot/um_perp/cm_perp = 1s,1m,5m,15m,1h,4h,1d；options = 1m,5m,1h,1d；其他周期下游 clickhousex 重采样 | `NAMING.md` §2 | PATCH | #882 |
+| NAMING subject | `instruments.changed`（symbol 目录变更）+ `symbols.changed`（订阅白黑名单热重载） | `NAMING.md` §3 | MINOR | #880, #892 |
+| FR-015 扩展 | depth 订阅档位：spot/um_perp/cm_perp = @depth20@100ms + @depth@1000ms 增量；options = @depth1000；update_id 拼合 | `SPEC.md` §9 | MINOR | #883 |
+
+[FRAME, HIGH] 本节声明后，issue #880~#892 的全部实质能力都有明确 FR 承接（已覆盖 6 项 + 候选新增 4 项 + NAMING/FR 扩展 3 项）。后续 PR 按 §7 表逐条 fold 进 SPEC/TRACEABILITY/NAMING 时再 bump 版本。
+

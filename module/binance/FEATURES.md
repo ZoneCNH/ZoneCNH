@@ -31,6 +31,8 @@
 
 > v3.1.0 编号体系：FR-006 拆分为 6a/6b/6c/6d；FR-007a 新增（analytics API）；FR-009 升为 Boundary Enforcement；FR-010 新增（clickhousex OLAP）；FR-011 新增（分布式锁）；FR-012~FR-024 登记 realtime control、historical lifecycle、event governance、release evidence 与 runtime hot reload。
 
+> 状态口径 L1/L2 分层（RULES R4）：`Done`=L1 Boundary/Governance（boundary-gate + runtime SHA 证据）；`Partial`=L2 Functional（部分产品线已实现，TC 未全绿）；`Pending`=L2 Functional（runtime 仓未推送，默认 `Pending — 以 runtime 仓为准`）。L1 不可替代 L2 功能验收。
+
 | FR | 功能 | 当前状态 | 已有证据 | 剩余实现面 |
 | --- | --- | --- | --- | --- |
 | FR-001 | Product-Line Support | Partial | `TRACEABILITY.md` 标注 Spot 已实现，USDM/COINM/Options 待补齐。 | 四条 product line 的连接、订阅、映射、发布与服务端消费验收。 |
