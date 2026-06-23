@@ -1,7 +1,7 @@
 # module/binance RULES.md — 模块治理规则
 
-- Doc-Version: v1.0.1
-- Last-Updated: 2026-06-22
+- Doc-Version: v1.0.2
+- Last-Updated: 2026-06-23
 - 适用范围：`module/binance/` 全部规格文档 + `github.com/ZoneCNH/binance` runtime 仓
 - 优先级：本文 > 子规格 > task；与 `CONSTITUTION.md` §0-§20 冲突时以 `CONSTITUTION.md` 为准
 - 强制级别：每条规则标注【硬】（违反即治理违规）/【软】（推荐）/【开】（仅验证存在性）
@@ -24,6 +24,8 @@
 - `ARCHITECTURE-DRIFT-WATCHLIST.md`（漂移历史）
 - `docs/report/binance/**`（治理审计报告）
 - `module/binance/{client,server}/tasks/archive/**`（归档 task）
+
+**BR-001 边界声明豁免**：`README.md`、`FEATURES.md`、`CHANGELOG.md`、`IMPLEMENTATION-PLAN.md`、`client/README.md`、`server/IMPLEMENTATION-PLAN.md` 中以 `binance-market` 为对象的引用，若语境是 BR-001 "已移除 / 禁止恢复 / 禁止路径" 边界声明（非描述性历史叙事），视为合法边界 gate 证据，不构成 R1 漂移。描述性"取代 binance-market"冗余叙事应压缩到 `SPEC.md` §3 + `docs/migrations/remove-binance-market.md` 单一入口。
 
 **修复义务**：发现漂移 → 当个 PR 内修复 → bump SPEC PATCH 版本 → 更新 NAMING.md 变更历史
 
@@ -194,6 +196,8 @@ ACC=$(grep -oP "Module-Version: \Kv[0-9.]+" module/binance/ACCEPTANCE.md)
 | `client/SPEC.md` + `client/TRACEABILITY.md` | 客户端子规格 |
 | `server/SPEC.md` + `server/TRACEABILITY.md` | 服务端子规格 |
 | `{client,server}/tasks/archive/README.md` | 归档映射 |
+| `STANDARD.md` | 模块标准入口（runtime control + evidence 薄层索引） |
+| `DATA-LIFECYCLE.md` | 数据生命周期讨论稿（FR-012~024 落点规划） |
 | `scripts/check-binance-docs.sh` | binance 文档漂移 CI gate（仓库脚本） |
 
 **检测**：

@@ -85,7 +85,7 @@ Binance 行情集成面临以下问题：
 | 实现 order execution | 属于执行域 |
 | 兼容旧 `binance-market` Provider | 已移除 |
 | 作为跨 CEX 通用 ingestion server | 本模块仅处理 Binance |
-| 同进程运行 client + server | **违反分布式约束（见 §0）** |
+| 同进程运行 client + server | **违反分布式约束（见 §4 Goals）** |
 | 保留 `internal/cs` 同进程桥接包为运行时依赖 | **必须删除** |
 
 ---
