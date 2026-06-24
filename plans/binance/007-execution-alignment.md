@@ -2,9 +2,11 @@
 
 - Plan: `plans/binance/007-binance-readiness-arch-fix.md`
 - Execution-Start: 2026-06-24
-- Execution-End: 2026-06-24
+- Execution-End: 2026-06-25
 - Executor: ZCode (direct + Agent Team)
+- Final-Status: **18/18 DONE ✅**
 - Baseline-HEAD: `8290dc9` (Plan006 final, PR #73)
+- Final-HEAD: `e02b190` (A2 evidence commit)
 
 ---
 
@@ -163,7 +165,23 @@
 
 ---
 
-## 涉及仓库与提交
+## A2 真实集成测试证据（2026-06-25）
+
+| 测试 | 结果 | 时间 | 详情 |
+|:-----|:----:|:----:|:-----|
+| TestTestnetLive_SpotTradeStream | ✅ PASS | 3.65s | BTCUSDT price=60222.01 qty=0.00016000 |
+| TestTestnetLive_SpotBookTicker | ✅ PASS | 9.75s | bid=60222.00 ask=60222.01 |
+| TestTestnetLive_SpotKline | ✅ PASS | 3.58s | interval=1m close=60222.01 |
+| TestNATSXIntegrationJetStreamSemantics | ✅ PASS | 20.59s | PubAck/duplicate/NakWithDelay(5s)/MaxDeliver=5 |
+| 24 Benchmarks | ✅ PASS | — | 全部远超 NFR 预算 |
+
+**凭据来源**: `sre/secrets/env/dev.md` — 本地 127.0.0.1 infra (PG/TD/CH/NATS/Kafka)
+**Binance testnet**: `testnet.binance.vision` — 公开，无需凭据
+**证据归档**: `release/evidence/binance/20260625/` (testnet-live.txt + slo-report.md)
+
+---
+
+## 涉及仓库与提交（最终）
 
 | 仓库 | 新 HEAD | 变更内容 |
 |------|---------|----------|
@@ -171,7 +189,19 @@
 | `/home/transportx` | `3127a4f` | module name xlib_standard→transportx |
 | `/home/domainx` | `e26bf7d` | 主目录补 go.mod |
 | `/home/domain-market` | `bfdeebc` | worktree/v100 snake_case |
-| `/home/domain-macro` | `d3ebe97` | worktree/v100 snake_case |
-| `/home/domain-exchange` | `2411c3e` | worktree/v100 snake_case |
-| `/home/binance` | `b82d5b1` | A3/A4/A7 + go.mod natsx replace |
-| `/home/ZoneCNH` | `b2fa06f4` | A8 文档刷新 |
+| `/home/domain-macro` | `1a68ee5` | decimalx v0.1.0→v1.0.0 |
+| `/home/domain-exchange` | `4b21134` | 新增 domainx, 删除 replace |
+| `/home/bootstrap` | `7784ee5` | B6 装配层文档 |
+| `/home/binance` | `e02b190` | A1/A2/A3/A4/A7/B4/B5 + evidence |
+| `/home/ZoneCNH` | (pending commit) | A8/B8 + 对齐文档 + 计划更新 |
+
+## 最终验证
+
+| 检查项 | 结果 |
+|:-------|:-----|
+| go test ./... (18 包) | ✅ PASS × 30+ 迭代 |
+| boundary-gates.sh (13 gates) | ✅ PASS × 30+ 迭代 |
+| govulncheck | ✅ 0 漏洞影响代码 |
+| §1.3 锚点 (8 条) | ✅ 全部核实 |
+| transportx 外部 import | ✅ 0 |
+| GitHub issues | ✅ 22/22 关闭 |

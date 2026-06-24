@@ -528,7 +528,7 @@ func TestInstrumentKey_CrossProductLine_NoCollision(t *testing.T) {
 | 任务 | Report1 来源                      | Report2 来源 | 优先级 | Phase | 状态 |
 | ---- | --------------------------------- | ------------ | :----: | :---: | :--: |
 | A1   | §0 G1 / §3.3 FR-016,017 / §7.1 R1 | —            |   P0   |   1   | ✅ DONE (2026-06-24) |
-| A2   | §0 G2 / §4.1 / §7.1 R2            | —            |   P0   |   3   | ⏳ READY (需 testnet 凭据) |
+| A2   | §0 G2 / §4.1 / §7.1 R2            | —            |   P0   |   3   | ✅ DONE (2026-06-25: testnet 3/3 PASS + NATS JetStream PASS) |
 | A3   | §0 G3 / §3.3 FR-004 / §7.2 R3     | —            |   P1   |   4   | ✅ DONE (2026-06-24) |
 | A4   | §0 G4 / §3.3 FR-002 / §7.2 R4     | —            |   P1   |   4   | ✅ DONE (2026-06-24) |
 | A5   | §0 G5 / §4.1 §12.7 / §7.2 R5      | —            |   P1   |   6   | ✅ DONE (2026-06-25: release.yml 配置验证) |
