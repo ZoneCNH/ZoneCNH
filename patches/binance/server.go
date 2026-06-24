@@ -1,16 +1,18 @@
-// Package server implements the Binance-specific MarketDataService gRPC ingest server.
-// It receives normalized market events from binance/client, performs validation,
-// idempotent dedup, durable acceptance, and dispatches to module/market-data downstream port.
+// Package server implements the Binance-specific transport-neutral ingest core.
+// It receives normalized market events from Binance adapters, performs validation,
+// idempotent dedup, durable acceptance, and dispatches to the market-data downstream port.
 package server
 
 import (
 	"context"
 	"time"
+
+	domainmarket "github.com/ZoneCNH/runtime-patches/domain-market"
 )
 
 // ---- Core Interfaces ----
 
-// IngestServer implements contracts.MarketDataService for Binance.
+// IngestServer coordinates validation, idempotency, durability, and downstream dispatch.
 type IngestServer struct {
 	validator   RequestValidator
 	idempotency IdempotencyStore
@@ -64,7 +66,7 @@ type RequestValidator interface {
 	Validate(ctx context.Context, req IngestRequest) error
 }
 
-// DefaultValidator implements the full 12-field validation per SPEC.
+// DefaultValidator implements required envelope-field validation per SPEC.
 type DefaultValidator struct {
 	staleThreshold  time.Duration
 	futureTolerance time.Duration
@@ -100,6 +102,9 @@ func (v *DefaultValidator) Validate(ctx context.Context, req IngestRequest) erro
 	}
 	if req.SchemaVersion == "" {
 		return NewRejectError(RejectContractViolation, "schema_version is required")
+	}
+	if len(req.Payload) == 0 {
+		return NewRejectError(RejectContractViolation, "payload is required")
 	}
 
 	// Stale gate
@@ -144,7 +149,7 @@ type DownstreamDispatcher interface {
 
 type AcceptedEvent struct {
 	EventID       string
-	InstrumentKey interface{} // domainmarket.InstrumentKey
+	InstrumentKey domainmarket.InstrumentKey
 	EventType     string
 	EventTime     time.Time
 	ReceivedAt    time.Time
