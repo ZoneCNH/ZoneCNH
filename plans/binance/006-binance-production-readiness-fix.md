@@ -118,6 +118,19 @@ binance 模块当前**规格端与 runtime 端均未达生产级别**：
 
 ---
 
+## Phase 1 2026-06-24 worker evidence refresh
+
+- **状态**: ✅ Local hygiene/build/readiness evidence refreshed in `/home/binance` worker lane; release remains **Not Done** until remote CI, live websocket, external integration, and release tag evidence are captured.
+- **Runtime HEAD**: `dd3332d3452f4eaa8146563bdb82caf577a3d4c1` with existing dirty readiness changes preserved; no history rewrite or commit was performed by the team worker.
+- **已验证**:
+  - `bash -n scripts/runtime-release-evidence.sh scripts/boundary-gates.sh scripts/readiness-audit.sh` PASS
+  - `make fmt-check boundary-gates build test vet readiness-audit` PASS（boundary gates `13 passed, 0 failed`）
+  - `go test ./... -race -count=1` PASS
+  - `git diff --check` PASS
+- **外部缺口**: live Binance websocket、JetStream PubAck/ManualAck、真实 external storage IO / fanout / query API、remote GitHub Actions、release tag/artifact 仍未闭合；不得据此将 FR-012~030 或 Release 改为 Done。
+
+---
+
 ## Phase 2: 规格端治理修复（P1，低成本，可并行于 runtime）
 
 > 分析报告 §13.1~13.4。这些是文档治理，成本低，**应先于 runtime 实现修复**，避免规格端错误传导到 runtime。

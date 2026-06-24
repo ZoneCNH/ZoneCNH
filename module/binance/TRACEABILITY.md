@@ -5,7 +5,7 @@
 > 规范来源：`docs/governance/TRACEABILITY.md`
 
 - Module-Version: v3.5.0
-- Last-Updated: 2026-06-23
+- Last-Updated: 2026-06-24
 - Spec-Reference: `module/binance/SPEC.md` v3.5.0
 
 ---
@@ -21,6 +21,8 @@
 > **v3.5.0 变更摘要**：补齐 FR-029（Data Quality & Freshness SLA）与 FR-030（Options Chain Raw Field Pass-through）的追溯闭环；新增 AC-099~AC-104 与 TC-047~TC-049；R2 governance matrix 文案统一为 4 product lines × 6 event types × 5 文档/checker anchors；新增项保持 Pending，runtime/release evidence 仍未闭合。
 
 > **2026-06-23 证据刷新（round 2）**：本地 runtime evidence 已归档至 `/home/binance/release/evidence/binance/20260623/`；证据提交 `71e2a6e8bb5591c43e8a2ebfff8c7645bf030786`；boundary gates 重新运行 10/10 PASS，`go build`/`go vet`/`go test` 全部 PASS，全部 9 个 issue 分支已合并至 origin/main；GitHub #923~#931 已关闭并登记至 `docs/report/binance/github-issues-923-931-closure-ledger-20260623.md`；该关闭仅表示 issue tracking closure，不关闭 release、remote CI、live websocket、外部集成与 L2 功能 FR。
+
+> **2026-06-24 本地 readiness 刷新**：worker lane 在 `/home/binance` runtime HEAD `dd3332d3452f4eaa8146563bdb82caf577a3d4c1`（保留既有 dirty readiness 变更，未提交）上完成本地验证：`bash -n scripts/runtime-release-evidence.sh scripts/boundary-gates.sh scripts/readiness-audit.sh` PASS，`make fmt-check boundary-gates build test vet readiness-audit` PASS（boundary gates `13 passed, 0 failed`），`go test ./... -race -count=1` PASS，`git diff --check` PASS；同时修正 `scripts/runtime-release-evidence.sh` 的 external-gate ledger 文案，避免后续证据刷新回退为 `MISSING_RUNTIME_ADAPTER`。该证据只更新 FR-009/BR 边界与本地 build/readiness 追溯，不关闭 JetStream PubAck/ManualAck、真实 external storage IO / fanout / query API、remote CI、release tag 或 FR-012~030。
 
 
 > **状态模型说明**：FR 表的"实现状态"列采用 Done/Pending 二元模型。"Partial"（部分产品线已实现、TC 未全绿）由 `ACCEPTANCE.md` §5-§6 按 AC 粒度登记。FR 行标记为 Pending 不排除其下个别 AC 已 Partial — 以 `ACCEPTANCE.md` 为准。
