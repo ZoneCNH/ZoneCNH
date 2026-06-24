@@ -7,7 +7,7 @@
 
 | Plan | Title | Priority | Effort | Depends on | Status |
 |------|-------|----------|--------|------------|--------|
-| 006 | binance 模块生产就绪修复（46 Task，8 Phase；Phase 4-ALT 作废；新增 Task 7.0 infra 凭据+configx 接入） | P0 | XL(4.8~9pm) | Task 0.1 DONE(v2.0.0) | IN PROGRESS — Phase 0 DONE, Phase 2.5 runtime presence gates DONE, Phase 1/2/3 继续推进 |
+| 006 | binance 模块生产就绪修复（46 Task，8 Phase；Phase 4-ALT 作废；新增 Task 7.0 infra 凭据+configx 接入） | P0 | XL(4.8~9pm) | Task 0.1 DONE(v2.0.0) | IN PROGRESS — Phase 0 DONE, Phase 1 local hygiene/build evidence refreshed, Phase 2.5 runtime presence gates DONE, Phase 3 DONE, Phase 2/4~8 继续推进 |
 
 Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJECTED (with one-line rationale)
 
