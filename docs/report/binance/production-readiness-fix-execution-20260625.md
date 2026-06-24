@@ -121,7 +121,7 @@ binancecfg.Load(ctx) [main.go:105]
 
 | 待验收项 | 原因 | gate/状态 |
 | --- | --- | --- |
-| 真实 infra 端到端落盘 | 需 taos/pg/redis/ch/oss 实例 | docker-compose 就绪，PENDING-LIVE-RUN |
+| ~~真实 infra 端到端落盘~~ | ~~需 taos/pg/redis/ch/oss 实例~~ | **PARTIAL-LIVE-PASS**：pg+ch 实证通过；redis/taos 受 infra 配置阻塞（密码/driver）；OSS 需真实凭据 |
 | mainnet live WS 四线 | 需外网 | BINANCE_MAINNET_LIVE gate，默认 SKIP |
 | 真实 Kafka broker e2e | 需 dev Kafka | BINANCE_KAFKA_LIVE gate，默认 SKIP |
 | release tag v0.2.0 产物 | release.yml 零历史 run | 需 version bump 后打 tag 实证 |
@@ -136,7 +136,7 @@ binancecfg.Load(ctx) [main.go:105]
 | --- | --- | --- | --- |
 | t60 | #81 | G0 存储 writer 装配 | ✅ 闭合 |
 | zbq | #80 | G0 persist fail-fast | ✅ 闭合 |
-| m7c | — | G0 端到端落盘测试 | 🟡 代码就绪 PENDING-LIVE |
+| m7c | — | G0 端到端落盘测试 | 🟡 **PARTIAL-LIVE-PASS**（pg+ch 实证；redis/taos 受 infra 配置阻塞） |
 | 7qs | #79 | C1 清除 testnet | ✅ 闭合 |
 | 2dj | #78 | C4 四线矩阵 | ✅ 闭合 |
 | dmk | #84 | G7 产品线差异 | ✅ 闭合 |
