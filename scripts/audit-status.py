@@ -348,6 +348,25 @@ def audit_foundationx_fact_layer():
         else:
             ok(f"projection_guards.{guard_key} paths exist")
 
+    # ── 10. Fact-layer staleness guard (issue #1089) ──────────
+    print("--- 10. Fact-layer staleness guard ---")
+    try:
+        from datetime import datetime, timezone
+        idx_path = ROOT / ".foundationx" / "status" / "index.json"
+        idx_data = json.loads(idx_path.read_text())
+        gen_str = idx_data.get("generated_at", "")
+        if gen_str:
+            gen_dt = datetime.fromisoformat(gen_str.replace("Z", "+00:00"))
+            age_days = (datetime.now(timezone.utc) - gen_dt).days
+            if age_days > 3:
+                print(f"  [WARN] generated_at is {age_days} days old (threshold: 3 days) — run `xlibgate trust fleet-status` to refresh; schema migration pending (issue #1089)")
+            else:
+                ok(f"generated_at is {age_days} days old (<= 3 days threshold)")
+        else:
+            no("generated_at field missing from index.json")
+    except Exception as e:
+        print(f"  [WARN] staleness check skipped: {e}")
+
 # ── Load ────────────────────────────────────────────────────
 if FOUNDATIONX_ONLY:
     print("=== audit-status.py --foundationx-only ===")
