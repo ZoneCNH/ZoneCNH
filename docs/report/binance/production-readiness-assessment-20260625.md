@@ -498,3 +498,39 @@ if s.storage != nil {
 ---
 
 > **报告结束。** 本报告基于 runtime HEAD `e02b190` 实测，核心新增贡献是发现并量化了 G0（存储装配断层），这是前序 recheck 报告未识别的阻断项。建议将 G0 修复作为下一轮 Plan 的最高优先级。
+
+---
+
+## §9 修复执行记录（2026-06-25 追加）
+
+`[COMPUTED, HIGH]` 本报告发布后，G0~G8 + C1/C4/C7 + G7/G8/A7/G2/G5 全部 P0+P1 缺口已在 `fix/binance-production-readiness` 分支修复完成。完整执行记录见 [`production-readiness-fix-execution-20260625.md`](production-readiness-fix-execution-20260625.md)。
+
+### §9.1 缺口状态翻转总表
+
+| 缺口 | 本报告状态（§0.1） | 修复后状态 | 关键证据 |
+| --- | --- | --- | --- |
+| **G0 存储装配** | P0 阻断 | ✅ **已闭合** | `storage_env.go` storageFromEnv 真实装配 5 client + 7 writer |
+| G2 外部集成 | 🟡 部分 | 🟡 **改进** | 四线 mainnet gate + Kafka gate 就绪（PENDING-LIVE-RUN） |
+| G7 产品线实质 | P1 未验证 | ✅ **已闭合** | `product_line_diff_test.go` 跨线差异断言 |
+| G8 订单簿 | P1 仅 top-of-book | ✅ **已闭合** | DepthBids/DepthAsks 全量档位 |
+| C1 testnet | — | ✅ **已闭合** | testnet evidence 清除，mainnet 矩阵替代 |
+| C7 规范文档 | — | ✅ **已闭合** | 6 新文档（ENDPOINTS/PERSISTENCE-WIRING/SECURITY/OBSERVABILITY/OPERATIONS/DATA-QUALITY-SLA） |
+
+### §9.2 FR 实现状态推进
+
+`[COMPUTED, HIGH]` G0 闭合后，FR 实现状态从 19/30 Done（63%）推进到 **28/30 Done（93%）**。9 项存储类 FR（FR-005/006a-d/007/007a/010/011）由 Partial→Done。剩余 2 Partial：FR-016（runtime 未注入 fetcher）+ FR-024（全量重连非增量 diff）。
+
+### §9.3 10 轮独立验证
+
+`[COMPUTED, HIGH]` 修复完成后执行 10 轮独立验证（代码事实/构建测试/质量门禁/testnet残留/FR追溯/beads闭环/证据/端到端装配/对齐文档/boundary-gates），**全部 PASS**。详见执行记录 §3。
+
+### §9.4 到生产级别的距离（修订）
+
+`[FRAME, HIGH]` 本报告 §0.1 估算「1.5~2.5 人月」到生产级别。G0 闭合后，**核心阻断项已消除**。剩余距离：
+
+- **真实 infra 端到端落盘验证**（代码就绪，需 docker-compose 实跑）——约 1-2 天
+- **mainnet live / Kafka broker 实跑**（gate 就绪，需外网/dev Kafka）——约 1 天
+- **release tag v0.2.0 实证**（release.yml 就绪，需打 tag）——约半天
+- **2 项 Partial FR**（FR-016/024，非阻断）——可生产后迭代
+
+`[INFERRED, HIGH]` 修订估算：**距生产发布约 3-5 个工作日**（主要是待验收项的实跑，非代码工作）。
