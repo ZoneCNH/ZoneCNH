@@ -10,25 +10,25 @@
 
 | FR | Description | WHEN | THEN | AC | TC | Task | Status |
 |----|-------------|------|------|----|----|------|--------|
-| FR-001 | Pre-Trade Risk Check | orderx 调用 CheckOrder(ctx, order, position) | 依次检查规则（短路求值，首个失败即拒绝）：order.qty*price ≤ maxOrderValue；netQty+order.qty ≤ maxPositionSize；dailyOrders+1 ≤ maxDailyOrders；dailyVolume+order.qty*price ≤ maxDailyVolume；symbol 不在禁止交易列表 | AC-RSK-001 | TC-RSK-001 | - | 🔲 |
-| FR-002 | Drawdown Control | 账户回撤超过 maxDrawdown | 拒绝所有该账户新订单；emit drawdown_circuit_breaker 事件；恢复条件：回撤降至 maxDrawdown*0.5 以下（滞后阈值） | AC-RSK-002 | TC-RSK-002 | - | 🔲 |
-| FR-003 | Kill Switch | 管理员发出 KillSwitch(account) | 立即取消该账户所有挂单（通过 orderx CancelAll）；拒绝所有新订单；状态持久化（重启后仍生效）；Resume(account) 恢复下单能力 | AC-RSK-003 | TC-RSK-003 | - | 🔲 |
-| FR-004 | Rate Limiting | 单账户订单频率超过 maxOrderRate（orders/sec） | 拒绝超出部分并返回 RATE_LIMITED 错误；使用滑动窗口计数 | AC-RSK-004 | TC-RSK-004 | - | 🔲 |
-| FR-005 | Concentration Control | 单 symbol 仓位占总仓位比例超过 maxConcentration | 拒绝该 symbol 的新增仓位；减仓不受此限制 | AC-RSK-005 | TC-RSK-005 | - | 🔲 |
-| FR-006 | Risk Metrics | 定时计算风险指标 | 输出 VaR（95%/99%）、Sharpe Ratio、Max Drawdown、Calmar Ratio、Volatility（annualized）；计算周期可配置（默认 5 min） | AC-RSK-006 | TC-RSK-006 | - | 🔲 |
-| FR-007 | Risk Event Audit | 风控检查通过（PASS）或被拒绝（REJECT） | 记录审计事件（timestamp/account/symbol/side/qty/price/result/reason/rule_id）；审计事件不可删除 | AC-RSK-007 | TC-RSK-007 | - | 🔲 |
-| FR-008 | Module Identity | downstream consumer 读取 README.md | H1 为 `# riskx`；Go module path 为 `github.com/ZoneCNH/riskx`；go.mod 声明 `module github.com/ZoneCNH/riskx` | AC-RSK-008 | TC-RSK-008 | - | 🔲 |
+| FR-001 | Pre-Trade Risk Check | orderx 调用 CheckOrder(ctx, order, position) | 依次检查规则（短路求值，首个失败即拒绝）：order.qty*price ≤ maxOrderValue；netQty+order.qty ≤ maxPositionSize；dailyOrders+1 ≤ maxDailyOrders；dailyVolume+order.qty*price ≤ maxDailyVolume；symbol 不在禁止交易列表 | AC-RSK-001 | TC-RSK-001 | - | ⬜→§8 |
+| FR-002 | Drawdown Control | 账户回撤超过 maxDrawdown | 拒绝所有该账户新订单；emit drawdown_circuit_breaker 事件；恢复条件：回撤降至 maxDrawdown*0.5 以下（滞后阈值） | AC-RSK-002 | TC-RSK-002 | - | ⬜→§8 |
+| FR-003 | Kill Switch | 管理员发出 KillSwitch(account) | 立即取消该账户所有挂单（通过 orderx CancelAll）；拒绝所有新订单；状态持久化（重启后仍生效）；Resume(account) 恢复下单能力 | AC-RSK-003 | TC-RSK-003 | - | ⬜→§8 |
+| FR-004 | Rate Limiting | 单账户订单频率超过 maxOrderRate（orders/sec） | 拒绝超出部分并返回 RATE_LIMITED 错误；使用滑动窗口计数 | AC-RSK-004 | TC-RSK-004 | - | ⬜→§8 |
+| FR-005 | Concentration Control | 单 symbol 仓位占总仓位比例超过 maxConcentration | 拒绝该 symbol 的新增仓位；减仓不受此限制 | AC-RSK-005 | TC-RSK-005 | - | ⬜→§8 |
+| FR-006 | Risk Metrics | 定时计算风险指标 | 输出 VaR（95%/99%）、Sharpe Ratio、Max Drawdown、Calmar Ratio、Volatility（annualized）；计算周期可配置（默认 5 min） | AC-RSK-006 | TC-RSK-006 | - | ⬜→§8 |
+| FR-007 | Risk Event Audit | 风控检查通过（PASS）或被拒绝（REJECT） | 记录审计事件（timestamp/account/symbol/side/qty/price/result/reason/rule_id）；审计事件不可删除 | AC-RSK-007 | TC-RSK-007 | - | ⬜→§8 |
+| FR-008 | Module Identity | downstream consumer 读取 README.md | H1 为 `# riskx`；Go module path 为 `github.com/ZoneCNH/riskx`；go.mod 声明 `module github.com/ZoneCNH/riskx` | AC-RSK-008 | TC-RSK-008 | - | ⬜→§8 |
 
 ---
 
 
 | BR | Rule | 违反后果 | TC ID(s) | Task | Status |
 |----|------|----------|---------------------|------|--------|
-| BR-001 | 所有订单必须通过 riskx 检查后才能提交交易所 | orderx 拒绝下单 | TC-RSK-001 风控调用链路断言 | - | 🔲 |
-| BR-002 | KillSwitch 状态必须持久化 | 重启后恢复风控状态 | TC-RSK-003 持久化+重启恢复断言 | - | 🔲 |
-| BR-003 | 回撤熔断有滞后恢复阈值（0.5x maxDrawdown） | 避免反复触发 | TC-RSK-002 滞后恢复断言 | - | 🔲 |
-| BR-004 | 风控规则优先级：KillSwitch > Drawdown > PositionLimit > RateLimit | 保证最关键规则先执行 | TC-RSK-008 规则优先级断言 | - | 🔲 |
-| BR-005 | 减仓不受集中度限制 | 风控不阻止降风险操作 | TC-RSK-005 减仓豁免断言 | - | 🔲 |
+| BR-001 | 所有订单必须通过 riskx 检查后才能提交交易所 | orderx 拒绝下单 | TC-RSK-001 风控调用链路断言 | - | ⬜→§8 |
+| BR-002 | KillSwitch 状态必须持久化 | 重启后恢复风控状态 | TC-RSK-003 持久化+重启恢复断言 | - | ⬜→§8 |
+| BR-003 | 回撤熔断有滞后恢复阈值（0.5x maxDrawdown） | 避免反复触发 | TC-RSK-002 滞后恢复断言 | - | ⬜→§8 |
+| BR-004 | 风控规则优先级：KillSwitch > Drawdown > PositionLimit > RateLimit | 保证最关键规则先执行 | TC-RSK-008 规则优先级断言 | - | ⬜→§8 |
+| BR-005 | 减仓不受集中度限制 | 风控不阻止降风险操作 | TC-RSK-005 减仓豁免断言 | - | ⬜→§8 |
 
 ---
 
@@ -36,11 +36,11 @@
 
 | NFR | Category | Requirement | Verification | Task | Status |
 |-----|----------|-------------|--------------|------|--------|
-| NFR-001 | 性能 | CheckOrder 延迟 < 1ms | Benchmark `BenchmarkCheckOrder` | - | 🔲 |
-| NFR-002 | 性能 | RiskMetrics 计算延迟 < 100ms | Benchmark `BenchmarkRiskMetrics` | - | 🔲 |
-| NFR-003 | 性能 | KillSwitch 切换延迟 < 10ms | Benchmark `BenchmarkKillSwitch` | - | 🔲 |
-| NFR-004 | 质量 | 测试覆盖率 >= 80% | `go tool cover -func` | - | 🔲 |
-| NFR-005 | 安全 | 无硬编码密钥 | `gitleaks detect --no-git` | - | 🔲 |
+| NFR-001 | 性能 | CheckOrder 延迟 < 1ms | Benchmark `BenchmarkCheckOrder` | - | ⬜→§8 |
+| NFR-002 | 性能 | RiskMetrics 计算延迟 < 100ms | Benchmark `BenchmarkRiskMetrics` | - | ⬜→§8 |
+| NFR-003 | 性能 | KillSwitch 切换延迟 < 10ms | Benchmark `BenchmarkKillSwitch` | - | ⬜→§8 |
+| NFR-004 | 质量 | 测试覆盖率 >= 80% | `go tool cover -func` | - | ⬜→§8 |
+| NFR-005 | 安全 | 无硬编码密钥 | `gitleaks detect --no-git` | - | ⬜→§8 |
 
 ---
 

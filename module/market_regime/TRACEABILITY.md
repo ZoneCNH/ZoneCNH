@@ -10,42 +10,42 @@
 
 | FR | Description | AC | TC | Task | Status |
 |----|-------------|----|----|------|--------|
-| FR-001 | S 分类 | AC-MARKET_REGIME-001 | TC-MARKET_REGIME-001 | - | ⬜ |
-| FR-002 | 特征提取 | AC-MARKET_REGIME-002 | TC-MARKET_REGIME-002 | - | ⬜ |
-| FR-003 | Bias/Permission | AC-MARKET_REGIME-003 | TC-MARKET_REGIME-003 | - | ⬜ |
+| FR-001 | S 分类 | AC-MARKET_REGIME-001 | TC-MARKET_REGIME-001 | - | ⬜→§8 |
+| FR-002 | 特征提取 | AC-MARKET_REGIME-002 | TC-MARKET_REGIME-002 | - | ⬜→§8 |
+| FR-003 | Bias/Permission | AC-MARKET_REGIME-003 | TC-MARKET_REGIME-003 | - | ⬜→§8 |
 
 ## §2 BR 追溯表
 
 | BR | Description | TC | Task | Status |
 |----|-------------|----|------|--------|
-| BR-001 | fail-closed | TC-MARKET_REGIME-004 | - | ⬜ |
-| BR-002 | 输出不可变 | TC-MARKET_REGIME-005 | - | ⬜ |
-| BR-003 | No lookahead | TC-MARKET_REGIME-006 | - | ⬜ |
+| BR-001 | fail-closed | TC-MARKET_REGIME-004 | - | ⬜→§8 |
+| BR-002 | 输出不可变 | TC-MARKET_REGIME-005 | - | ⬜→§8 |
+| BR-003 | No lookahead | TC-MARKET_REGIME-006 | - | ⬜→§8 |
 
 ## §3 NFR 追溯表
 
 | NFR | Description | 验证方式 | Task | Status |
 |-----|-------------|----------|------|--------|
-| - | 性能与安全基准 | - | - | ⬜ |
+| - | 性能与安全基准 | - | - | ⬜→§8 |
 
 ## §4 TC→FR 反向追溯
 
 | TC | FR/BR | 测试类型 | Status |
 |----|-------|----------|--------|
-| TC-MARKET_REGIME-001 | FR-001 | 单元测试 | ⬜ |
-| TC-MARKET_REGIME-002 | FR-002 | 单元测试 | ⬜ |
-| TC-MARKET_REGIME-003 | FR-003 | 单元测试 | ⬜ |
-| TC-MARKET_REGIME-004 | BR-001 | 单元测试 | ⬜ |
-| TC-MARKET_REGIME-005 | BR-002 | 单元测试 | ⬜ |
-| TC-MARKET_REGIME-006 | BR-003 | 单元测试 | ⬜ |
+| TC-MARKET_REGIME-001 | FR-001 | 单元测试 | ⬜→§8 |
+| TC-MARKET_REGIME-002 | FR-002 | 单元测试 | ⬜→§8 |
+| TC-MARKET_REGIME-003 | FR-003 | 单元测试 | ⬜→§8 |
+| TC-MARKET_REGIME-004 | BR-001 | 单元测试 | ⬜→§8 |
+| TC-MARKET_REGIME-005 | BR-002 | 单元测试 | ⬜→§8 |
+| TC-MARKET_REGIME-006 | BR-003 | 单元测试 | ⬜→§8 |
 
 ## §5 AC 注册表
 
 | AC | FR | Description | TC | Status |
 |----|----|-------------|----|--------|
-| AC-MARKET_REGIME-001 | FR-001 | S 分类 | TC-MARKET_REGIME-001 | ⬜ |
-| AC-MARKET_REGIME-002 | FR-002 | 特征提取 | TC-MARKET_REGIME-002 | ⬜ |
-| AC-MARKET_REGIME-003 | FR-003 | Bias/Permission | TC-MARKET_REGIME-003 | ⬜ |
+| AC-MARKET_REGIME-001 | FR-001 | S 分类 | TC-MARKET_REGIME-001 | ⬜→§8 |
+| AC-MARKET_REGIME-002 | FR-002 | 特征提取 | TC-MARKET_REGIME-002 | ⬜→§8 |
+| AC-MARKET_REGIME-003 | FR-003 | Bias/Permission | TC-MARKET_REGIME-003 | ⬜→§8 |
 
 ## §6 覆盖率仪表盘
 

@@ -10,39 +10,39 @@
 
 | FR | Description | AC | TC | Task | Status |
 |----|-------------|----|----|------|--------|
-| FR-001 | M 分类 | AC-MACRO_REGIME-001 | TC-MACRO_REGIME-001 | - | ⬜ |
-| FR-002 | Transition 检测 | AC-MACRO_REGIME-002 | TC-MACRO_REGIME-002 | - | ⬜ |
+| FR-001 | M 分类 | AC-MACRO_REGIME-001 | TC-MACRO_REGIME-001 | - | ⬜→§8 |
+| FR-002 | Transition 检测 | AC-MACRO_REGIME-002 | TC-MACRO_REGIME-002 | - | ⬜→§8 |
 
 ## §2 BR 追溯表
 
 | BR | Description | TC | Task | Status |
 |----|-------------|----|------|--------|
-| BR-001 | fail-closed | TC-MACRO_REGIME-003 | - | ⬜ |
-| BR-002 | 输出不可变 | TC-MACRO_REGIME-004 | - | ⬜ |
-| BR-003 | No lookahead | TC-MACRO_REGIME-005 | - | ⬜ |
+| BR-001 | fail-closed | TC-MACRO_REGIME-003 | - | ⬜→§8 |
+| BR-002 | 输出不可变 | TC-MACRO_REGIME-004 | - | ⬜→§8 |
+| BR-003 | No lookahead | TC-MACRO_REGIME-005 | - | ⬜→§8 |
 
 ## §3 NFR 追溯表
 
 | NFR | Description | 验证方式 | Task | Status |
 |-----|-------------|----------|------|--------|
-| - | 性能与安全基准 | - | - | ⬜ |
+| - | 性能与安全基准 | - | - | ⬜→§8 |
 
 ## §4 TC→FR 反向追溯
 
 | TC | FR/BR | 测试类型 | Status |
 |----|-------|----------|--------|
-| TC-MACRO_REGIME-001 | FR-001 | 单元测试 | ⬜ |
-| TC-MACRO_REGIME-002 | FR-002 | 单元测试 | ⬜ |
-| TC-MACRO_REGIME-003 | BR-001 | 单元测试 | ⬜ |
-| TC-MACRO_REGIME-004 | BR-002 | 单元测试 | ⬜ |
-| TC-MACRO_REGIME-005 | BR-003 | 单元测试 | ⬜ |
+| TC-MACRO_REGIME-001 | FR-001 | 单元测试 | ⬜→§8 |
+| TC-MACRO_REGIME-002 | FR-002 | 单元测试 | ⬜→§8 |
+| TC-MACRO_REGIME-003 | BR-001 | 单元测试 | ⬜→§8 |
+| TC-MACRO_REGIME-004 | BR-002 | 单元测试 | ⬜→§8 |
+| TC-MACRO_REGIME-005 | BR-003 | 单元测试 | ⬜→§8 |
 
 ## §5 AC 注册表
 
 | AC | FR | Description | TC | Status |
 |----|----|-------------|----|--------|
-| AC-MACRO_REGIME-001 | FR-001 | M 分类 | TC-MACRO_REGIME-001 | ⬜ |
-| AC-MACRO_REGIME-002 | FR-002 | Transition 检测 | TC-MACRO_REGIME-002 | ⬜ |
+| AC-MACRO_REGIME-001 | FR-001 | M 分类 | TC-MACRO_REGIME-001 | ⬜→§8 |
+| AC-MACRO_REGIME-002 | FR-002 | Transition 检测 | TC-MACRO_REGIME-002 | ⬜→§8 |
 
 ## §6 覆盖率仪表盘
 
