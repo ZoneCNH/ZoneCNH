@@ -7,7 +7,7 @@
 | Status | Generated from current module SSOT |
 | Last-Updated | 2026-06-24 |
 | Module-Version | v3.5.0 |
-| Module-State | 验收清单已补齐；L1 边界治理 FR-009 本地 evidence 已归档；L2 功能 FR 多数 Pending，以 runtime 仓实际测试、CI 与 release 证据为准 |
+| Module-State | 验收清单已补齐；L1 边界治理 FR-009 Done；L2 功能 FR 22/30 Done（runtime HEAD `8290dc9`，Plan007 执行中）；8 Partial 各有明确缺口；0 Pending 无实现 |
 | Runtime-Repo | `/home/binance` |
 | Source | `SPEC.md`, `TRACEABILITY.md`, `DATA-LIFECYCLE.md`, `STANDARD.md`, `client/TRACEABILITY.md`, `server/TRACEABILITY.md`, `BOUNDARY-GATES.md` |
 
@@ -161,10 +161,10 @@
 | 根、Client、Server traceability 存在 | Done | 三个 traceability 文件可定位。 |
 | natsx / ManualAck / redisx / ossx / kafkax 边界已写入规格 | Done | `SPEC.md` 与 `TRACEABILITY.md` 可定位对应 FR/AC/TC。 |
 | Boundary gates 文档化 | Done | `BOUNDARY-GATES.md` 存在。 |
-| 所有 FR implemented | Not Done | FR-001~FR-030 状态全部闭合。 |
+| 所有 FR implemented | 22/30 Done, 8 Partial | FR-001~030 全部闭合。Plan007 A8 已刷新至 runtime 实态（HEAD `8290dc9`）。 |
 | 所有 AC passed | Not Done | AC-001~AC-104 全部有测试证据。 |
 | 所有 TC passed | Not Done | TC-001~TC-049 全部 PASS。 |
-| Runtime test evidence | Local Evidence Done / Secret+CI+Live+Release Pending | `/home/binance/release/evidence/binance/20260623/` 已归档 build/test/race/vet/lint/smoke/boundary gate；本地验证 HEAD `dd3332d3452f4eaa8146563bdb82caf577a3d4c1`，证据提交 `71e2a6e8bb5591c43e8a2ebfff8c7645bf030786`（2026-06-23 round 2）；secret scan、remote CI、live websocket、外部集成、release evidence/tag 未闭合。 |
+| Runtime test evidence | Local Evidence Done / Secret+CI+Live+Release Pending | `/home/binance/release/evidence/binance/20260623/` 已归档 build/test/race/vet/lint/smoke/boundary gate；runtime HEAD `8290dc9`（Plan006 final, PR #73）；Plan007 执行中：A3 NakWithDelay+DLQ 已实现；secret scan、remote CI、live websocket、外部集成、release evidence/tag 未闭合。 |
 | Coverage and performance evidence | Not Done | 覆盖率、延迟、吞吐、重放与故障注入报告归档。 |
 | CI pass | Not Done | GitHub Actions 或等价 CI run 通过并链接到 release evidence。 |
 
