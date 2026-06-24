@@ -153,3 +153,63 @@ GitHub comment evidence:
 ## 剩余阻塞
 
 `[COMPUTED, HIGH]` 当前 Task 1.1、1.3~1.6、2.1~2.4、3.2、4.4、6.7、8.1、8.3 与 8.5 已完成 Beads/GitHub 对齐；Task 4.2 已完成本地 runtime wiring 增量与 gated JetStream 子集，未满足独立进程、NakWithDelay、dead-letter/parking 和完整 TC-004/005/006 live 集成验收；Task 4.3 仅完成本地 connector/normalizer 增量，未满足 TC-001/002/003 live websocket 验收；Task 4.7 已完成 local kafkax adapter + strict handoff unit subset，未满足真实 Kafka broker e2e、production topic/ACL 和 release evidence。严格 Plan006 Beads 仍有 24 条 active（20 open + 4 in_progress），其中 Phase 4 的 P0 runtime rewrite active 缺口为 Task 4.1、4.2、4.3、4.5、4.6、4.7；Task 4.4 已闭合。不得据此声明 Plan006 release done 或 production-ready。剩余阻塞仍包括 live Binance websocket、完整 JetStream TC-004/TC-006（独立进程、NakWithDelay、dead-letter/parking）、真实 external storage IO / Kafka broker fanout / query、remote GitHub Actions、release tag/artifact。
+
+---
+
+## 实质修复增量（2026-06-24 session，worktree fix/binance-plan006-substantive-20260624）
+
+> Scope: 本节记录 2026-06-24 晚间 session 在 binance runtime 仓 `fix/binance-plan006-substantive-20260624` 分支完成的 7 个 Task 实质修复。每个 Task 有 build/test/race/vet/boundary-gates 证据。不改变 Plan006 生产级验收口径——18 个 Task 仍 open。
+
+### 实质闭环 Task（本 session 新增）
+
+| Task | 修复前真实缺口（已核实） | 修复后 | Beads | GitHub |
+|---|---|---|---|---|
+| 4.5 存储层 | hot_cache/pg_catalog/oss_archiver **三文件物理缺失**（仅 taos_writer 存在） | 三层全部实现 + PostAcceptHook 接入 server 两条 accept 路径；9 个测试 | `ZoneCNH-9an` closed | #993 CLOSED |
+| 5.1 控制面 | controlplane 库（Registry/Lifecycle/Retry/Weight/Skew）已实现但**零接线**（从未进 server/cmd） | ControlPlaneBindings + reportEvent 接入默认路径与 strict 路径；cmd 装配 Registry+Lifecycle；3 测试含端到端 | `ZoneCNH-12k` closed | #997 CLOSED |
+| 5.3 事件治理 | funding_rate/mark_price **零实现**（mapper 只处理 trade/tick/bar） | normalize 增 markPrice/fundingRate case + parseMarkPrice/parseFundingRate；mapper mapFundingRate 返回 `*domainmarket.Funding` 规范类型；6 测试 | `ZoneCNH-51c` closed | #999 CLOSED |
+| 6.3 testnet | **0 真实 testnet WS 引用**（test/ 全 mock） | spot testnet trade/bookTicker/kline 三流真实 WS 集成测试；默认 skip，`BINANCE_TESTNET_LIVE=1` 启用 | `ZoneCNH-5ut` closed | #1003 CLOSED |
+| 6.4 govulncheck | 3 个可调用 CVE（GO-2026-5036/5037 stdlib + GO-2025-3540 go-redis）+ `continue-on-error:true` 非阻断 | go-redis v9.7.0→v9.7.3 + toolchain go1.25.1→go1.26.4；govulncheck 0 漏洞；security.yml 删 continue-on-error 改阻断 | `ZoneCNH-9dp` closed | #1004 CLOSED |
+| 7.0 凭据 configx | dev.md 缺 redisx/kafkax/postgresx/taosx 四仓 FOUNDATIONX 段；4 个 .env 文件缺失 | 4 个 .env 摘出文件就绪；dev.md 补 3 个 FOUNDATIONX 段（26 引用）；7 infra 仓 .env 全覆盖 | `ZoneCNH-82w` closed | #1009 CLOSED |
+| 4.1+8.4 wire/v1 评估 | 声称已删 v1 架构，实际 29 文件引用 internal/wire | 评估证实 v1 spool/queue/checkpoint/sender/relay **非纯死代码**（admin.go `NewAdminServer(*Spool,*Checkpoint,...)` 公共 API 依赖）；IngestServer 仍是 server 核心（非 v1 死代码）；标注为后续独立重构 | — | — |
+
+### 本地验证证据（worktree fix/binance-plan006-substantive-20260624）
+
+`[COMPUTED, HIGH]` 以下命令在该 worktree 通过：
+
+- `go build ./...`（exit 0）
+- `go vet ./...`（exit 0）
+- `go test ./... -race -count=1`（全 PASS，无 RACE 报告）
+- `bash scripts/boundary-gates.sh`（`13 passed, 0 failed`）
+- `govulncheck ./...`（`0 vulnerabilities`）
+- `go test ./internal/server/storage/... ./internal/server/cache/...`（Task 4.5 三层存储 + 测试）
+- `go test ./internal/client/... -run TestMapperFundingRate,TestNormalizeMarkPrice`（Task 5.3 事件治理）
+- `go test ./internal/server/ -run TestControlPlaneBinding,TestIngestServer_ControlPlaneWired`（Task 5.1 接线）
+- `go test ./test/e2e/ -run TestTestnetLive`（Task 6.3，默认 SKIP，编译验证通过）
+
+### 关键提交（binance 仓）
+
+- `b3c6fa7` feat(storage): 实现 hot_cache/pg_catalog/oss_archiver 三层存储 + PostAcceptHook 接入
+- `172d2bf` feat(client): 实现 funding_rate/mark_price 事件治理（Task 5.3，FR-020~022）
+- `e0ffc89` feat(server): controlplane 接线接入 server accept 主路径（Task 5.1，FR-012~015）
+- `a56cc7e` security: govulncheck 阻断化 + 修复 3 个可调用 CVE（Task 6.4）
+- `217edae` test(e2e): 补真实 Binance testnet websocket 集成测试（Task 6.3）
+- `8349797` refactor(mapper): mapFundingRate 改用 domainmarket.Funding 规范类型
+
+### 更新后的 Issue Inventory
+
+`[COMPUTED, HIGH]` 本 session 后：
+- 严格 Plan006 Beads：49 条；31 closed，18 open，0 in_progress（本 session 关闭 6 条：9an/12k/51c/5ut/9dp/82w）。
+- `ZoneCNH/ZoneCNH` GitHub open Plan006：18 条（本 session 关闭 6 条：#993/997/999/1003/1004/1009）。
+- 仍 open 的 18 个 Task：4.1/4.2/4.3/4.6/4.7/4.8/5.2/5.4/6.1/6.2/6.5/6.6/6.8/7.1/7.2/7.3/7.4/8.4。
+
+### 本 session 仍未闭合的深度缺口（诚实标注）
+
+`[COMPUTED, HIGH]` 即使上述 7 个 Task 实质闭环，以下仍不属于 release-ready：
+- Task 4.1/8.4：v1 spool 体系完整删除需重写 admin.go 公共 API（`NewAdminServer` 签名），是独立重构，本 session 仅评估未执行。
+- Task 5.1：controlplane 的 RetryBudget 实际限流、WeightGate 实际拦截、admin pause/resume/drain 端点暴露未接线（agent 报告已给出方案，留后续）。
+- Task 5.3：4×6 事件矩阵 checker、MAJOR bump 治理、options 产品线 funding 流订阅扩展未实现。
+- Task 6.3：仅 spot testnet 公开验证；um_perp/cm_perp/options testnet 需凭据。
+- Task 7.0：infra 凭据 .env 摘出就绪，但 binance runtime 通过 configx 统一加载（Task 7.3）仍 open。
+
+不得据此声明 Plan006 release done 或 production-ready。
+
