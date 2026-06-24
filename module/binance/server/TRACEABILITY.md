@@ -3,7 +3,7 @@
 > 追溯矩阵 §1–§7，符合 `docs/governance/TRACEABILITY.md` 标准格式。
 > 数据来源：`module/binance/server/SPEC.md` v2.2.0。
 
-- Module-Version: v2.2.0（与 server SPEC Spec-Version 一致；root Module-Version v3.5.2）
+- Module-Version: v2.2.0（与 server SPEC Spec-Version 一致；root Module-Version v3.6.0）
 - Last-Updated: 2026-06-25
 - Spec-Reference: `module/binance/server/SPEC.md` v2.2.0
 

@@ -5,7 +5,7 @@
 | Field | Value |
 | --- | --- |
 | Status | Active |
-| Module-Version | v3.5.2 |
+| Module-Version | v3.6.0 |
 | Last-Updated | 2026-06-25 |
 | Scope | `module/binance` Prometheus metrics 语义、告警阈值、SLO 仪表盘 |
 | Spec-Impact | NFR-001~004（可观测性） |

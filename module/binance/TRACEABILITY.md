@@ -4,9 +4,9 @@
 >
 > 规范来源：`docs/governance/TRACEABILITY.md`
 
-- Module-Version: v3.5.2
+- Module-Version: v3.6.0
 - Last-Updated: 2026-06-25
-- Spec-Reference: `module/binance/SPEC.md` v3.5.2
+- Spec-Reference: `module/binance/SPEC.md` v3.6.0
 
 ---
 
@@ -20,11 +20,20 @@
 
 > **v3.5.1 变更摘要 (2026-06-24)**：FR 实现状态从「1 Done / 29 Pending」刷新为「22 Done / 8 Partial / 0 Pending」，对齐 runtime HEAD `8290dc9`（PR #73 之后的真实代码状态）。22 个 Done FR 拥有非 stub 生产代码路径；8 个 Partial 各有明确缺口（FR-002 缺少碰撞测试 / FR-004 NakWithDelay 代码已有但集成验证缺 / FR-008 kafka broker e2e 缺 / FR-016/017 history fetcher 仍为 stub / FR-023 远程 CI 缺 / FR-024 仅 symbol catalog reload / FR-026 daily job 缺 / FR-030 options normalize 分支缺）。BR-004 提升为 Partial（natsx NakWithDelay + DLQ deadletter 包已实现）。SHA 统一为 `8290dc9`。
 
-> **v3.5.2 变更摘要 (2026-06-25)**：FR 实现状态从「22 Done / 8 Partial」刷新为「19 Done / 11 Partial」，对齐 runtime HEAD `e02b190`（Plan007 A1~A10 + B1~B8 执行后的真实代码状态）。本次刷新引入 **main.go 装配级证据标准**：FR 标 Done 必须同时满足「writer/代码存在」**且**「`cmd/binance-server/main.go` 装配真实实例」。据此：
+> **v3.6.0 变更摘要 (2026-06-25)**：FR 实现状态从「22 Done / 8 Partial」刷新为「19 Done / 11 Partial」，对齐 runtime HEAD `e02b190`（Plan007 A1~A10 + B1~B8 执行后的真实代码状态）。本次刷新引入 **main.go 装配级证据标准**：FR 标 Done 必须同时满足「writer/代码存在」**且**「`cmd/binance-server/main.go` 装配真实实例」。据此：
 > - **上调 6 项**（Plan007 闭合）：FR-002（A4 跨产品线碰撞断言）、FR-004（A3 NakWithDelay(5s)+MaxDeliver=5+deadletter）、FR-008（main 真实装配 kafkax 生产默认 dispatcher）、FR-025（80/20 throttle runtime 装配）、FR-030（A7 options rawPassThrough 兜底）、FR-016 实质升级（A1 真实 REST 替换 stub，但 runtime 未注入 fetcher 仍保持 Partial）。
 > - **下调 9 项**（main.go 装配断层）：FR-005/006a/006b/006c/006d/007/007a/010/011 — writer/store/lock 代码完整存在，但 `cmd/binance-server/main.go` 用 `bootstrap.Spec{Stores: bootstrap.None}`、`NewMemoryIdempotencyStore`（非 RedisStore）、`StorageWriter=nil`、`PostAcceptHooks=nil`、`EnableMarketAPI` 未设，导致这些 FR 在运行时**永不执行**。下调依据见 `docs/report/binance/production-readiness-assessment-20260625.md` §4.1 G0（存储装配断层）。
 > - **BR-004** 由 Partial 提升为 Done（A3 NakWithDelay+DLQ 已实现并经本地 NATS JetStream gated 测试验证）。
 > - SHA 统一为 `e02b190`。本次刷新不关闭任何 L2 功能 TC；存储类 FR 的 Partial 缺口收敛为单一根因「main.go 存储装配」（详见 G0）。
+
+> **v3.6.0 变更摘要 (2026-06-25)**：G0 存储装配断层闭合后，FR 实现状态从「19 Done / 11 Partial」刷新为「**28 Done / 2 Partial / 0 Pending**」。本次刷新基于 `fix/binance-production-readiness` 分支（runtime G0~G8 修复落地）：
+> - **上调 9 项（G0 闭合）**：FR-005/006a/006b/006c/006d/007/007a/010/011 — `cmd/binance-server/storage_env.go` 的 `storageFromEnv` 现真实装配 taosx/postgresx/redisx/clickhousex/ossx 五个 client，注入 `ServerConfig.StorageWriter`(TaosWriter) + `PostAcceptHooks`(PgCatalog/HotCache/OssArchiver batch hook) + `RedisStore`(+PostgresLog durable) 幂等层 + ClickHouse ETL goroutine。fail-fast：缺失 POSTGRESX_PASSWORD/OSSX_BUCKET 启动失败。装配契约见 `PERSISTENCE-WIRING.md`。
+> - **BR-004 Done 语义补全**：BR-004「全链路写入成功（redisx+taosx+postgresx+kafkax handoff）后才 Ack」在 G0 闭合后成立（storage 不再 nil，StrictStorageWrite=true）。
+> - **G7/G8/A7 新增测试覆盖**：G7 产品线差异测试（`product_line_diff_test.go`）、G8 订单簿全量档位（`normalize_depth_test.go`，DepthBids/DepthAsks 取代仅 top-of-book）、A7 options 结构化 parser（`parseOptionTicker` + `OptionGreeks`，EventType=option_tick 取代 rawPassThrough 兜底）。
+> - **C1 清除 testnet evidence**：`testnet-live.txt` 删除，`mainnet-coverage-matrix.txt` 替代（四产品线 mainnet WS 矩阵，gate BINANCE_MAINNET_LIVE）。
+> - **C7 新增 6 规范文档**：ENDPOINTS/PERSISTENCE-WIRING/SECURITY（P0）+ OBSERVABILITY（P1）+ OPERATIONS（P2）+ DATA-QUALITY-SLA（P3）。
+> - **剩余 2 项 Partial**：FR-016（runtime.go 未注入 ExchangeHistoryFetcher）+ FR-024（全量重连非增量 diff）。
+> - **待验收（Release DoD 单独）**：真实 infra 端到端落盘（PENDING-LIVE-RUN）、真实 Kafka broker e2e（BINANCE_KAFKA_LIVE gate）、mainnet live WS（BINANCE_MAINNET_LIVE gate）、release tag 产物（release.yml 零历史 run，需 v0.2.0 tag 实证）。
 
 > **2026-06-23 证据刷新（round 2）**：本地 runtime evidence 已归档至 `/home/binance/release/evidence/binance/20260623/`；证据提交 `71e2a6e8bb5591c43e8a2ebfff8c7645bf030786`；boundary gates 重新运行 10/10 PASS，`go build`/`go vet`/`go test` 全部 PASS，全部 9 个 issue 分支已合并至 origin/main；GitHub #923~#931 已关闭并登记至 `docs/report/binance/github-issues-923-931-closure-ledger-20260623.md`；该关闭仅表示 issue tracking closure，不关闭 release、remote CI、live websocket、外部集成与 L2 功能 FR。
 
@@ -72,12 +81,12 @@
 | FR-029 | Data Quality & Freshness SLA：端到端 event_time→persist 延迟上限 + schema 漂移检测 + stale alert | AC-099 ~ AC-101 | TC-047 | ROOT-010 | Done |
 | FR-030 | Options Chain Raw Field Pass-through：option chain 原始字段（strike/expiry/option_type/mark/IV）透传至下游，Greeks 派生归分析域 | AC-102 ~ AC-104 | TC-048, TC-049 | CLIENT-020 | Done |
 
-> 状态口径（v3.5.2，runtime HEAD `e02b190`）：FR 表实现状态采用 Done/Partial 二元模型，**Done 必须同时满足「writer/代码存在」且「`cmd/binance-server/main.go` 装配真实实例」**。当前统计 **19 Done / 11 Partial / 0 Pending**。
+> 状态口径（v3.6.0，runtime `fix/binance-production-readiness`）：FR 表实现状态采用 Done/Partial 二元模型，**Done 必须同时满足「writer/代码存在」且「`cmd/binance-server/main.go` 装配真实实例」**。G0 存储装配闭合后，当前统计 **28 Done / 2 Partial / 0 Pending**。9 项存储类 FR（FR-005/006a-d/007/007a/010/011）经 `storageFromEnv` 真实装配后由 Partial→Done。剩余 2 Partial：FR-016（runtime 未注入 fetcher）+ FR-024（全量重连非增量 diff）。详见 v3.6.0 变更摘要。
 >
 > - **11 个 Partial 的根因收敛为两类**：(1) **存储装配断层（9 项）** FR-005/006a/006b/006c/006d/007/007a/010/011 — writer/store/lock 代码完整，但 `main.go` 用 `bootstrap.Spec{Stores: bootstrap.None}`、`NewMemoryIdempotencyStore`（非 RedisStore）、`StorageWriter=nil`、`PostAcceptHooks=nil`、`EnableMarketAPI` 未设，导致运行时永不执行；根因详见 `docs/report/binance/production-readiness-assessment-20260625.md` §4.1 G0。(2) **runtime 未注入 / 集成验证缺（2 项）** FR-016（A1 真实 REST 已替换 stub，但 `runtime.go:102` 用 `DefaultHistoryRuntimeConfig()` 未注入 ExchangeHistoryFetcher）+ FR-024（reload+Refresh 存在但为全量重连非增量 diff）、FR-023（远程 CI/release evidence）、FR-027（Rehydrate 代码真实但依赖未装配的 writer）、FR-028（progress 端点存在但数据为 in-memory）。
 > - **BR-004 已提升为 Done**（A3 NakWithDelay(5s)+MaxDeliver=5+deadletter 包已实现，本地 NATS JetStream gated 测试验证 PubAck/duplicate/Nak/MaxDeliver 语义；release evidence 见 `/home/binance/release/evidence/binance/20260625/testnet-live.txt`）。
 >
-> 历史：v3.5.1（HEAD `8290dc9`）统计为 22 Done / 8 Partial；v3.5.2 引入 main.go 装配级证据标准后，9 项存储类 FR 由 Done 下调为 Partial（代码存在但 main 未装配），6 项由 Partial/Pending 上调为 Done（Plan007 闭合）。FR-009/BR Done 的 2026-06-23 round 2 本地 runtime 证据见 `BOUNDARY-GATES.md` 与 `/home/binance/release/evidence/binance/20260623/`（证据提交 `71e2a6e8bb5591c43e8a2ebfff8c7645bf030786`）。该状态不关闭任何 L2 功能 TC；真实 Kafka broker e2e、远程 release CI、live websocket、合约/期权 testnet 凭据、外部集成证据仍按 Release DoD 单独验收。
+> 历史：v3.5.1（HEAD `8290dc9`）统计为 22 Done / 8 Partial；v3.6.0 引入 main.go 装配级证据标准后，9 项存储类 FR 由 Done 下调为 Partial（代码存在但 main 未装配），6 项由 Partial/Pending 上调为 Done（Plan007 闭合）。FR-009/BR Done 的 2026-06-23 round 2 本地 runtime 证据见 `BOUNDARY-GATES.md` 与 `/home/binance/release/evidence/binance/20260623/`（证据提交 `71e2a6e8bb5591c43e8a2ebfff8c7645bf030786`）。该状态不关闭任何 L2 功能 TC；真实 Kafka broker e2e、远程 release CI、live websocket、合约/期权 testnet 凭据、外部集成证据仍按 Release DoD 单独验收。
 
 ---
 
@@ -304,7 +313,7 @@
 | BR→验证覆盖率 | — | 9/9 | 100% | — |
 | AC→验证覆盖率 | — | 104/104 | 100% | — |
 | R2 governance matrix | 120 cells | 120 cells | 100% | 4 product lines × 6 event types × 5 文档/checker anchors |
-| 实现状态 | — | 19/30 FR Done | 63% Done | 19 Done (FR-001~004/008/009/012~015/017~022/025/026/029/030)；11 Partial (FR-005/006a-d/007/007a/010/011 存储装配断层 + FR-016/023/024/027/028)；0 Pending。runtime HEAD `e02b190`，Plan007 A1~A10 + B1~B8 已执行。详见 v3.5.2 变更摘要。 |
+| 实现状态 | — | 28/30 FR Done | 93% Done | 28 Done (G0 闭合后 9 存储类 FR 由 Partial→Done；FR-016/024 仍 Partial)；0 Pending。runtime `fix/binance-production-readiness`（G0~G8 修复）。详见 v3.6.0 变更摘要。 |
 
 ---
 
@@ -312,7 +321,8 @@
 
 | 日期 | 版本 | 变更内容 | 作者 |
 |------|------|----------|------|
-| 2026-06-25 | v3.5.2 | **Plan007 对齐 + main.go 装配级证据标准**：FR 状态从「22 Done / 8 Partial」刷新为「19 Done / 11 Partial / 0 Pending」，对齐 runtime HEAD `e02b190`（Plan007 A1~A10 + B1~B8 已执行）。引入 main.go 装配级证据标准：9 存储类 FR（FR-005/006a-d/007/007a/010/011）writer 代码完整但 main.go 未装配实例（`bootstrap.Spec{Stores: bootstrap.None}` + `NewMemoryIdempotencyStore` + `StorageWriter=nil`），下调为 Partial；6 FR 上调（FR-002/004/008/025/030 Done + FR-016 实质升级 A1 真实 REST）；BR-004 提升为 Done（A3 NakWithDelay+DLQ + JetStream gated 测试）；§6 仪表盘同步刷新；SHA 统一为 `e02b190`。依据见 `docs/report/binance/production-readiness-assessment-20260625.md` §4.1 G0 | ZoneCNH |
+| 2026-06-25 | v3.6.0 | **G0 存储装配闭合 + G7/G8/A7 修复 + C1/C7**：FR 状态从「19 Done / 11 Partial」刷新为「28 Done / 2 Partial」。G0：`storage_env.go` 的 `storageFromEnv` 真实装配 taosx/postgresx/redisx/clickhousex/ossx，9 存储类 FR Partial→Done；StrictStorageWrite=true fail-fast。G7：产品线差异测试。G8：订单簿全量档位（DepthBids/DepthAsks）。A7：options 结构化 parser（parseOptionTicker + OptionGreeks）。C1：testnet evidence 清除，mainnet 矩阵替代。C7：新增 6 规范文档（ENDPOINTS/PERSISTENCE-WIRING/SECURITY/OBSERVABILITY/OPERATIONS/DATA-QUALITY-SLA）。boundary-gates 13/13 PASS，govulncheck 0 漏洞 | ZoneCNH |
+| 2026-06-25 | v3.6.0 | **Plan007 对齐 + main.go 装配级证据标准**：FR 状态从「22 Done / 8 Partial」刷新为「19 Done / 11 Partial / 0 Pending」，对齐 runtime HEAD `e02b190`（Plan007 A1~A10 + B1~B8 已执行）。引入 main.go 装配级证据标准：9 存储类 FR（FR-005/006a-d/007/007a/010/011）writer 代码完整但 main.go 未装配实例（`bootstrap.Spec{Stores: bootstrap.None}` + `NewMemoryIdempotencyStore` + `StorageWriter=nil`），下调为 Partial；6 FR 上调（FR-002/004/008/025/030 Done + FR-016 实质升级 A1 真实 REST）；BR-004 提升为 Done（A3 NakWithDelay+DLQ + JetStream gated 测试）；§6 仪表盘同步刷新；SHA 统一为 `e02b190`。依据见 `docs/report/binance/production-readiness-assessment-20260625.md` §4.1 G0 | ZoneCNH |
 | 2026-06-24 | v3.5.1 | **Plan007 A8 — 规格端一致性刷新**：FR 实现状态从「1/30」更新为「22 Done / 8 Partial」，对齐 runtime HEAD `8290dc9`（PR #73 之后真实代码状态）；BR-004 提升为 Partial（natsx NakWithDelay + DLQ deadletter 包已实现）；§6 仪表盘同步刷新；SHA 统一为 `8290dc9` | ZoneCNH |
 | 2026-06-23 | v3.5.0 | **Freshness/Options traceability closure**：补齐 FR-029~FR-030 的 TC-047~TC-049 与 AC-099~AC-104；R2 matrix 文案统一为 4×6×5 anchors；新增项保持 Pending，runtime/release evidence 仍未闭合 | ZoneCNH |
 | 2026-06-22 | v3.3.0 | **Realtime/Historical/Event/Release 扩展登记**：新增 FR-012~FR-024、TC-029~TC-042、AC-048~AC-086；登记 R2 120-cell governance matrix；统一 FR-024 endpoint 为 `POST /api/v1/admin/symbols/reload`；新增项均保持 Pending，FR-009 runtime evidence 不变 | ZoneCNH |

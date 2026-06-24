@@ -1,6 +1,6 @@
 # module/binance RULES.md — 模块治理规则
 
-- Module-Version: v3.5.2
+- Module-Version: v3.6.0
 - Last-Updated: 2026-06-25
 - 适用范围：`module/binance/` 全部规格文档 + `github.com/ZoneCNH/binance` runtime 仓
 - 优先级：本文 > 子规格 > task；与 `CONSTITUTION.md` §0-§20 冲突时以 `CONSTITUTION.md` 为准

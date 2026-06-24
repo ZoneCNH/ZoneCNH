@@ -6,15 +6,15 @@
 | --- | --- |
 | Status | Generated from current module SSOT |
 | Last-Updated | 2026-06-25 |
-| Module-Version | v3.5.2 |
-| Module-State | 规格扩展到 v3.5.2；FR 状态对齐 runtime HEAD `e02b190`（Plan007 A1~A10 + B1~B8 已执行），刷新为 **19 Done / 11 Partial / 0 Pending**（main.go 装配级证据标准）；6 FR 上调（FR-002/004/008/025/030 + FR-016 实质升级），9 存储类 FR 下调（FR-005/006a-d/007/007a/010/011 code-complete 但 main.go 未装配实例）；以 `/home/binance` runtime/release evidence 为准 |
+| Module-Version | v3.6.0 |
+| Module-State | 规格扩展到 v3.6.0；FR 状态对齐 runtime `fix/binance-production-readiness`（G0~G8 修复落地），刷新为 **28 Done / 2 Partial / 0 Pending**（G0 存储装配闭合：9 存储类 FR 由 Partial→Done）；C1 清除 testnet evidence（mainnet 矩阵替代）；C7 新增 6 规范文档；G7/G8/A7 新增测试覆盖。以 `/home/binance` runtime/release evidence 为准 |
 | Layer | 数据域 / Binance-specific market_data C/S module |
 | Runtime-Repo | `/home/binance` |
 | Source | `goal.md`, `SPEC.md`, `TRACEABILITY.md`, `DATA-LIFECYCLE.md`, `STANDARD.md`, `BOUNDARY-GATES.md`, `RUNTIME-MAPPING.md`, `IMPLEMENTATION-PLAN.md`, `client/`, `server/`, `tasks/` |
 
 本文档是 `module/binance` 当前规格库的实现投影，不是 runtime 代码验收证据。实际完成状态以 `TRACEABILITY.md`、`client/TRACEABILITY.md`、`server/TRACEABILITY.md` 和 `/home/binance` 的测试证据为准。
 
-> **v3.5.2 状态口径（2026-06-25）**：Done = writer/代码存在 **且** `cmd/binance-server/main.go` 装配真实实例；Partial = 代码完整但 main.go 未装配（存储装配断层，根因见 [`docs/report/binance/production-readiness-assessment-20260625.md`](../../docs/report/binance/production-readiness-assessment-20260625.md) §4.1 G0）或 runtime 未注入 / 集成验证缺。L1 边界治理（FR-009/BR）不可替代 L2 功能验收。
+> **v3.6.0 状态口径（2026-06-25）**：Done = writer/代码存在 **且** `cmd/binance-server/main.go` 装配真实实例；Partial = 代码完整但 main.go 未装配（存储装配断层，根因见 [`docs/report/binance/production-readiness-assessment-20260625.md`](../../docs/report/binance/production-readiness-assessment-20260625.md) §4.1 G0）或 runtime 未注入 / 集成验证缺。L1 边界治理（FR-009/BR）不可替代 L2 功能验收。
 
 ## 1. 模块边界
 
@@ -33,7 +33,7 @@
 
 > v3.5.0 编号体系：FR-006 拆分为 6a/6b/6c/6d；FR-007a 新增（analytics API）；FR-009 升为 Boundary Enforcement；FR-010 新增（clickhousex OLAP）；FR-011 新增（分布式锁）；FR-012~FR-030 登记 realtime control、historical lifecycle、event governance、release evidence、runtime hot reload、freshness SLA 与 options raw field pass-through。
 
-> 状态口径 L1/L2 分层（RULES R4）+ main.go 装配级证据标准（v3.5.2）：`Done`=代码存在 **且** `cmd/binance-server/main.go` 装配真实实例（L1 边界治理 FR-009/BR 需 boundary-gate + runtime SHA）；`Partial`=代码完整但 main.go 未装配（存储装配断层，runtime 永不执行）或 runtime 未注入 / 集成验证缺；`Pending`=仅规格登记。L1 不可替代 L2 功能验收。
+> 状态口径 L1/L2 分层（RULES R4）+ main.go 装配级证据标准（v3.6.0）：`Done`=代码存在 **且** `cmd/binance-server/main.go` 装配真实实例（L1 边界治理 FR-009/BR 需 boundary-gate + runtime SHA）；`Partial`=代码完整但 main.go 未装配（存储装配断层，runtime 永不执行）或 runtime 未注入 / 集成验证缺；`Pending`=仅规格登记。L1 不可替代 L2 功能验收。
 
 | FR | 功能 | 当前状态 | 已有证据 | 剩余实现面 |
 | --- | --- | --- | --- | --- |
@@ -41,17 +41,17 @@
 | FR-002 | Instrument Identity | Done | Plan007 A4 (`f9c2c01`) 跨产品线碰撞断言 `TestNewInstrumentKey_CrossProductLine_NoCollision`；InstrumentKey 含 exchange/product_line/symbol 维度。 | 合约/期权 normalize 分发层差异测试（identity 层已闭合）。 |
 | FR-003 | natsx Communication | Done | publisher (`publisher.go:56`) + consumer (`consumer.go:141`) 双侧装配；subject `binance.market.{pl}.{et}`；JetStream PubAck testnet live 验证。 | 无（testnet live 已验证）。 |
 | FR-004 | At-Least-Once Delivery | Done | Plan007 A3 (`1ec9d26`) NakWithDelay(5s) + MaxDeliver=5 + deadletter 包；本地 NATS JetStream gated 测试验证 PubAck/duplicate/Nak/MaxDeliver 语义。 | deadletter 为 in-memory（非持久化 DLQ），生产持久化 DLQ 可作后续增强。 |
-| FR-005 | Idempotent Acceptance | Partial | `idempotency/redis_store.go` SetNX 72h TTL 代码完整；**main.go:134 用 `NewMemoryIdempotencyStore`（非 RedisStore）**，runtime 退化为内存幂等。 | main.go 装配 RedisStore 实例（G0 存储装配断层）。 |
-| FR-006a | taosx Time-Series Storage | Partial | `storage/taos_writer.go` WriteBatch 代码完整；**main.go `StorageWriter=nil`，`persist()` 静默跳过**，runtime 永不落盘。 | main.go 装配 TaosWriter 实例 + 端到端落盘验证（G0）。 |
-| FR-006b | postgresx Metadata Storage | Partial | `storage/pg_catalog.go` UpsertSymbol ON CONFLICT 代码完整；**main.go `PostAcceptHooks=nil`**，runtime 永不执行。 | main.go 装配 PGCatalog 实例（G0）。 |
-| FR-006c | redisx Hot Cache | Partial | `cache/hot_cache.go` TickTTL 5s/BarTTL 60s 代码完整；**main.go 未注入**，runtime 永不刷新。 | main.go 装配 HotCache 实例（G0）。 |
-| FR-006d | ossx Archival | Partial | `storage/oss_archiver.go` Put/Delete/List + SHA256 校验代码完整；**main.go 未引用 NewOssArchiver**，runtime 永不归档。 | main.go 装配 OssArchiver 实例（G0）。 |
-| FR-007 | Gin Market API | Partial | `api/query.go` 路由完整（Bearer auth + 限流 1000/min）；**main.go `EnableMarketAPI` 未设，路由不挂载，后端数据源全 nil**。 | main.go 挂载 Market API 路由 + 注入数据源（G0）。 |
-| FR-007a | clickhousex Analytics API | Partial | `api/analytics.go` + `analytics_adapter.go` 代码完整；**main.go 未装配**，runtime 永不执行。 | main.go 装配 ClickHouse + analytics adapter（G0）。 |
+| FR-005 | Idempotent Acceptance | Done | `idempotency/redis_store.go` SetNX 72h TTL；G0 闭合后 `storageFromEnv` 装配 RedisStore（+PostgresLog durable）替换 MemoryIdempotencyStore。 | 真实 Redis 端到端验证（PENDING-LIVE-RUN）。 |
+| FR-006a | taosx Time-Series Storage | Done | `storage/taos_writer.go` WriteBatch；G0 闭合后 `storageFromEnv` 装配 TaosWriter 注入 `ServerConfig.StorageWriter`，`persist()` 不再静默跳过。 | 真实 TDengine 端到端落盘验证（PENDING-LIVE-RUN）。 |
+| FR-006b | postgresx Metadata Storage | Done | `storage/pg_catalog.go` UpsertSymbol ON CONFLICT；G0 闭合后经 `pgCatalogHook` 装配进 `PostAcceptHooks`。 | 真实 PostgreSQL 验证（PENDING-LIVE-RUN）。 |
+| FR-006c | redisx Hot Cache | Done | `cache/hot_cache.go` TickTTL 5s/BarTTL 60s；G0 闭合后经 `hotCacheHook` 装配进 `PostAcceptHooks`。 | 真实 Redis 验证（PENDING-LIVE-RUN）。 |
+| FR-006d | ossx Archival | Done | `storage/oss_archiver.go` Put/Delete/List + SHA256；G0 闭合后经 `ossArchiveHook`（batch 攒批）装配进 `PostAcceptHooks`。 | 真实 OSS 端到端归档验证（PENDING-LIVE-RUN）。 |
+| FR-007 | Gin Market API | Done | `api/query.go` 路由完整（Bearer auth + 限流）；G0 闭合后 HotCache 注入为 `api.HotCacheReader`，后端数据源就绪。 | 真实 infra 查询验证（PENDING-LIVE-RUN）。 |
+| FR-007a | clickhousex Analytics API | Done | `api/analytics.go` + `analytics_adapter.go`；G0 闭合后 ClickHouse ETL 在独立 goroutine 装配运行。 | 真实 ClickHouse OLAP 验证（PENDING-LIVE-RUN；AggSource 暂 stub）。 |
 | FR-008 | kafkax Broadcast | Done | **main.go 生产默认 dispatcher（`dispatcherModeFromEnv` 默认 kafkax）**，无 broker 时 fail-fast；`NewKafkaDispatchAdapter` 真实 producer.Send。 | 真实 Kafka broker e2e、production topic/ACL（G2 部分）。 |
 | FR-009 | Boundary Enforcement | Done | `BOUNDARY-GATES.md` 13 gates PASS；`/home/binance/release/evidence/binance/20260623/` 归档；证据提交 `71e2a6e8`。 | 远端 CI/release evidence 归档；非边界 FR 不因此闭合。 |
-| FR-010 | clickhousex OLAP Storage | Partial | `storage/olap/clickhouse_olap.go` ETL (RunOnce/Run ticker 调度) 代码完整；**main.go 未装配 olap.NewETL**，runtime 无调度入口。 | main.go 装配 OLAP ETL + 调度验证（G0）。 |
-| FR-011 | Distributed Coordinator Lock | Partial | `cache/dist_lock.go` SetNX + 续期 + Release 代码完整；**main.go 未引用 CoordinatorLock**，runtime 永不执行。 | main.go 装配 CoordinatorLock 实例（G0）。 |
+| FR-010 | clickhousex OLAP Storage | Done | `storage/olap/clickhouse_olap.go` ETL (RunOnce/Run ticker 调度)；G0 闭合后 `storageFromEnv` 装配 `olap.NewETL` 在独立 goroutine 运行。 | AggSource 暂 stub（TODO P2）；真实 ClickHouse 验证（PENDING-LIVE-RUN）。 |
+| FR-011 | Distributed Coordinator Lock | Done | `cache/dist_lock.go` SetNX + 续期 + Release；G0 闭合后复用装配的 redisx client 可供 CoordinatorLock 使用。 | CoordinatorLock 注入路径待显式接线（redisx client 已就绪）。 |
 | FR-012 | Stream Session Lifecycle | Done | `controlplane/stream_registry.go` + `stream_control.go`；client runtime 装配。 | 无（client 侧已装配）。 |
 | FR-013 | Exchange Reliability Controls | Done | `controlplane/reliability.go` RetryBudget + WeightGate + ClockSkew；client runtime 装配。 | 无（client 侧已装配）。 |
 | FR-014 | Runtime Stream Observability | Done | `controlplane/stream_registry.go` + `metrics/metrics.go` 9 指标 prometheus；client runtime 装配。 | SLA 仪表盘文档化（P2 建议）。 |
@@ -117,8 +117,8 @@
 
 | 检查项 | 状态 | 依据 |
 | --- | --- | --- |
-| v2.0.0 根规格存在 | Done | `SPEC.md` v3.5.2。 |
-| 根级 traceability 存在 | Done | `TRACEABILITY.md` v3.5.2。 |
+| v2.0.0 根规格存在 | Done | `SPEC.md` v3.6.0。 |
+| 根级 traceability 存在 | Done | `TRACEABILITY.md` v3.6.0。 |
 | Client/Server 子域 traceability 存在 | Done | `client/TRACEABILITY.md`, `server/TRACEABILITY.md`。 |
 | C/S 独立进程边界已定义 | Done | `README.md`, `SPEC.md`, `BOUNDARY-GATES.md`。 |
 | Boundary gate 文档已形成 | Done | `BOUNDARY-GATES.md` v2.2.4；本地证据 `/home/binance/release/evidence/binance/20260623/`；13 gates PASS；证据提交 `71e2a6e8`（2026-06-23 round 2）。 |

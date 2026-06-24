@@ -5,7 +5,7 @@
 | Field | Value |
 | --- | --- |
 | Status | Active |
-| Module-Version | v3.5.2 |
+| Module-Version | v3.6.0 |
 | Last-Updated | 2026-06-25 |
 | Scope | `module/binance` API 认证、限流、凭据管理、漏洞扫描流程 |
 | Spec-Impact | FR-028（API 认证）+ NFR 安全性要求 |

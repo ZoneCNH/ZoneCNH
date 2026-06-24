@@ -3,8 +3,8 @@
 ## 1. Metadata
 
 - Status: Approved
-- Spec-Version: v3.5.2
-- Last-Updated: 2026-06-25 (v3.5.2: TRACEABILITY FR 状态刷新为 19 Done / 11 Partial，引入 main.go 装配级证据标准，对齐 runtime HEAD `e02b190`；Plan007 A1~A10 + B1~B8 已执行)
+- Spec-Version: v3.6.0
+- Last-Updated: 2026-06-25 (v3.6.0: TRACEABILITY FR 状态刷新为 19 Done / 11 Partial，引入 main.go 装配级证据标准，对齐 runtime HEAD `e02b190`；Plan007 A1~A10 + B1~B8 已执行)
 - Owner: ZoneCNH
 - Layer: 数据域 · 行情
 - Runtime-Version: v0.1.0
