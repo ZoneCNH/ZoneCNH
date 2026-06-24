@@ -1,246 +1,215 @@
 # FoundationX 仓库深度架构与结构性审计报告
 
 > 范围：`ZoneCNH/ZoneCNH`（FoundationX 量化交易基础设施文档枢纽）
-> 日期：2026-06-25 · 分支：`docs/binance-readiness-alignment`
-> 方法：一手取证（git 元数据、退出码、内置 grep、文件重定向），跨 7 个维度
+> 审计基线：分支 `docs/binance-readiness-alignment` · 钉住 HEAD `1e8c07eb` @ 2026-06-25 03:04
+> 方法：一手取证（`git ls-files` / `git show` / 退出码 / 内置 glob·grep·view / 输出重定向）
 > 适用认识论标准：`docs/constitution/20-epistemic-standards.md`（§20）
 
 ---
 
 ## 0. 执行摘要
 
-ZoneCNH/ZoneCNH 是一个**架构愿景清晰、规格内容丰富**的文档枢纽（50 个模块 SPEC、24 章宪法、完整的分层架构文档），但其**重度治理与自动化机器正在反噬自身制品**：权威状态文档 STATUS.md 已被自动生成器损坏并提交入库、`.git` 因治理备份膨胀至 949MB、30 天内累计 1594 次提交。更危险的是，仓库自有的质量门禁 `audit-status.py` **全绿通过（51/0）却完全检测不到这些损坏**——形成"指标健康 ≠ 制品健康"的认知鸿沟，正是 §20 反复警告的 `[FRAME] → [REALITY]` 偷换。
+ZoneCNH/ZoneCNH 的**内容资产是健康且扎实的**：50 个模块 SPEC、24 章宪法、9 篇架构文档 + ADR，三大核心文档（STATUS / README / ARCHITECTURE）经逐一核验**均结构完好、提交历史干净**。仓库自带的审计门禁 `audit-status.py` 全绿通过（51/0）。
 
-**综合评分：59 / 100（C-，及格偏下）** `[COMPUTED] · 置信度 MED`
+真正的结构性张力**不在制品质量，而在交付节奏与治理重量**：本次审计的 ~30 分钟窗口内，仓库被并行自动化**提交了约 8 次**（02:40→03:04，约每 3 分钟一次），README/STATUS/binance 等文件在我观测期间持续变动，导致静态快照难以稳定锁定。与此同时，`.git` 本地目录因治理备份累积到 949MB（其中 897MB 为本地 bundle 备份，**不影响克隆**），三平台 agent 配置已出现 26/20/13 的不对称漂移。
 
-| 维度 | 权重 | 得分 | 评级 |
-|------|:----:|:----:|:----:|
-| 架构清晰度 | 20% | 78 | B |
-| 文档一致性 | 20% | 55 | D+ |
-| 数据完整性 | 15% | 45 | F+ |
-| 治理可执行性 | 15% | 60 | C- |
-| 基础设施健全度 | 15% | 50 | D |
-| 可维护性 | 15% | 58 | D+ |
-| **加权总分** | 100% | **59** | **C-** |
+**综合评分：70 / 100（C+，中等偏上）** `[COMPUTED] · 置信度 MED`
 
-> 加权计算：`78×.20 + 55×.20 + 45×.15 + 60×.15 + 50×.15 + 58×.15 = 58.55 ≈ 59` `[COMPUTED]`
+| 维度           | 权重 |  得分  |  评级  |
+| -------------- | :--: | :----: | :----: |
+| 架构清晰度     | 20%  |   82   |   B    |
+| 文档一致性     | 20%  |   75   |   B-   |
+| 数据完整性     | 15%  |   76   |   B-   |
+| 治理可执行性   | 15%  |   60   |   C-   |
+| 基础设施健全度 | 15%  |   58   |   D+   |
+| 可维护性       | 15%  |   60   |   C-   |
+| **加权总分**   | 100% | **70** | **C+** |
 
-**一句话诊断**：架构与规格的"内容资产"值 B 级，但"治理自动化"作为一个系统正在制造负价值——它损坏制品、膨胀仓库、制造提交噪声，并用通过的门禁掩盖伤害。**当前最大风险不是缺乏治理，而是治理过载且失去自我校验能力。**
+> 加权：`82×.20+75×.20+76×.15+60×.15+58×.15+60×.15 = 69.5 ≈ 70` `[COMPUTED]`
 
----
-
-## 1. 方法论与证据可靠性声明
-
-本次审计在执行中遭遇**工具输出过滤/截断**：bash 输出中凡命中疑似 token 的字符串会被替换为 `[REDACTED:hf-token]`，且部分长输出被静默截断。这导致首轮探查产生了 **5 处误判**，均已通过可靠手段（`git ls-files`、退出码捕获、内置 `grep`/`glob` 工具、输出重定向到文件）复核纠正：
-
-| 初判（错误） | 复核（正确） | 纠正手段 |
-|------|------|------|
-| CONSTITUTION.md 损坏 | 正常 77 字节存根 | `cat` 全文 |
-| ARCHITECTURE.md 是 89 行存根 | 实为 605 行/77K 完整文档 | `wc -l` + `head` |
-| module/ 仅 binance 一个 | 实为 53 目录/50 SPEC | `git ls-files` |
-| audit-status.py 崩溃退出 | 实际 PASS（51/0，exit 0） | 重定向 + `$?` |
-| STATUS.md 全文乱码 | 顶部乱码 + 下方表格存活 | 内置 grep 定位行 317 |
-
-> **诚实声明** `[FRAME]`：本报告所有量化结论均基于上表所列可复现命令，已规避过滤干扰。涉及主观评级（如各维度分数）标注为 `[INFERRED]`，置信度见各处标注。
+**一句话诊断**：制品健康（B 级内容），但被一套**重度且高频自变更的治理自动化**所承载——它带来扎实的规格资产与自愈能力，同时也带来极高的提交噪声、本地存储囤积与跨平台配置漂移。**最大风险不是制品缺陷，而是"系统的可观测性与可推理性"被高频并发突变和过度工程稀释。**
 
 ---
 
-## 2. P0 级问题（数据完整性 / 基础设施崩坏）
+## 1. 方法论与可靠性声明（必读）
 
-### F1 · STATUS.md 已损坏并提交入库 `[COMPUTED] · HIGH`
+本次审计在执行中遭遇**两类干扰**，导致初轮探查产生多处误判，全部已用可靠手段复核纠正。按 §20 要求如实披露：
 
-**现象**：权威状态快照 `STATUS.md`（2417 行）被严重损坏，且损坏**已存在于 git HEAD**（不在未提交变更列表中）。
+**干扰 A — 工具输出异常**：部分 bash/grep 输出被替换为 `[REDACTED:hf-token]` 或被静默截断，早期甚至返回过与实际不符的文件内容。
+**干扰 B — 并发突变**：仓库在审计期间被并行 agent 持续提交（见 §2.1），同一文件的早晚两次读数可能跨越了提交边界。
 
-**证据**：
-```
-$ wc -l STATUS.md                                  → 2417
-$ grep -cE '^[0-9]+\. [0-9]+\.' STATUS.md          → 1985   (82% 行带异常双行号前缀)
-$ grep -c '^## ' STATUS.md                         → 0      (无任何合法二级标题存活)
-$ grep -c 'github.com/ZoneCNH' STATUS.md           → 0      (仓库引用全部丢失)
-$ grep -nE '\| *基座' STATUS.md | head -1          → 317:| 基座 | 20 | 20 | 0 | ...
-```
+| 初判（已撤回）               | 复核结论（当前真相）                 | 复核手段                                    |
+| ---------------------------- | ------------------------------------ | ------------------------------------------- |
+| STATUS.md 损坏 2417 行并入库 | **全部提交历史均为 503 行干净版**    | `git show <sha>:STATUS.md` 逐版本迭代       |
+| README.md 1009 行 / 双 H1    | **210 行 / 单 H1，会话前即稳定**     | `view` + `git show HEAD:README.md \| wc -l` |
+| `.git` 949MB = 仓库膨胀      | 可克隆对象仅 ~48MB；897MB 为本地备份 | `git count-objects -vH`                     |
+| audit-status.py 崩溃         | PASS 51/0，exit 0                    | 重定向 + `$?`                               |
+| module/ 仅 binance           | 53 目录 / 50 SPEC                    | `git ls-files` + `glob`                     |
+| agents 三平台各 15 对称      | 26 / 20 / 13 不对称                  | `glob` 计数                                 |
 
-**机理** `[INFERRED] · MED`：自动生成器（`sync-status.mjs`）或某 hook 发生**递归自喂**——把"带行号的上一版输出"再次作为输入写回，导致：
-- 行号层层累积（`7. 8. ## 同步元数据` → `84. 86. # 模块明细`）
-- 章节标题被反复复制（数百个 `# 模块明细`/`# 风险`/`# 同步`）
-- 出现叠词噪声（`模块明细明细…`、`处理处理`、`更新更新`）
-
-顶部约 316 行为纯乱码，行 317 起仍残留可解析的管道表格数据（256 个含 `|` 的行）。
-
-**影响**：① 文档对人类完全不可读；② Markdown 渲染崩坏；③ 违反仓库自身"三文档同步检查表"（STATUS 仓库引用数应与 README 的 50 个一致，实为 0）；④ **该文档被宪法和 audit 脚本列为"事实来源"，事实来源已污染**。
-
-> **建议**：立即从 `sync-status.mjs` 重新生成 STATUS.md，或从损坏前的 git 历史 `git checkout <good-sha> -- STATUS.md` 恢复；并在生成器中加入"输入不得含已生成标记/行号前缀"的幂等护栏。
+> **诚实声明** `[FRAME]`：本报告**只采信用可靠工具在钉住 HEAD 上复核过的结论**。凡早期单次读数、无法在当前提交历史复现者，一律不作为事实陈述。主观评级标 `[INFERRED]` 并限定置信度。
 
 ---
 
-### F2 · `.git` 膨胀至 949MB —— 治理备份失控 `[COMPUTED] · HIGH`
+## 2. 核心结构性发现
 
-**现象**：一个仅 1344 个被跟踪文件（1097 个 md）的纯文档仓库，`.git` 目录达 **949MB**。
+### 2.1 〔P1〕极高提交频率 + 并发突变 —— 系统可推理性被稀释 `[COMPUTED] · HIGH`
 
-**证据**：
+**这是最显著、最可复现的结构性特征。**
+
 ```
-$ du -sh .git                                      → 949M
-$ git count-objects -vH                            → 对象仅 ~48MB (loose 38M + pack 10.5M)
-$ du -sh .git/* | sort -rh | head -2
-    897M  .git/branch-governance-backups           ← 根因
-     50M  .git/objects
-$ ls .git/branch-governance-backups | wc -l        → 87 个时间戳备份目录
-$ find .../branch-governance-backups -name '*.bundle' → 每个分支 bundle ~7.3MB
+$ git rev-list --all --count --since='30 days ago'   → 1596   (约 53 次/天)
+$ git rev-list --all --count --since='1 day ago'     → 28
+$ git log --since='2026-06-25 02:34' --format='%h %ci %s'   # 本会话窗口
+  1e8c07eb 03:04 ...        6d956eab 03:01 实证推进记录 — mainnet 四线 LIVE-PASS
+  8d172a25 02:57 beads 闭环  a3805eca 02:47 binance 生产就绪修复执行记录
+  bc635fdb 02:44 G0 闭合     098cc762 02:41 binance 生产就绪评估 + 架构分析报告
+  258f45c5 02:40 ...         5c5ca8be 02:40 C7 新增 6 个规范文档
 ```
 
-**机理** `[INFERRED] · HIGH`：CLAUDE.md 描述的"分支保护/自动 stash/branch-governance"自动化在**每次分支操作时把全部分支打成 git bundle 备份**，存入 `.git/branch-governance-backups/<时间戳>/`。87 次累积 = 897MB，且每个 bundle 几乎是整库历史的副本，随时间无界增长。
+**观测**：审计 ~30 分钟内 HEAD 前移 **8 次**，其中 098cc762 是**另一个 agent 并行产出的架构分析报告**（与本报告同写入 `docs/report/arch/`）。README、STATUS、binance 全套文档在窗口内被重写/再生。
 
-**影响**：克隆/拉取慢、磁盘浪费、备份本身比被备份的内容大 20 倍；这是**自动化负价值**的教科书案例——为"安全"付出的成本远超其保护的资产。
+**影响** `[INFERRED] · HIGH`：
 
-> **建议**：① 为 `branch-governance-backups` 设保留策略（如保留最近 3 个 + TTL 7 天）；② 备份改用增量/引用而非全量 bundle；③ 评估是否需要此机制——git 本身已是分布式备份。
+- `git log` 信噪比极低，提交历史无法承担"变更叙事"职能；
+- 任何**静态审查/评分/快照**都可能捕获瞬时不一致状态（本次审计亲历）；
+- "事实层"（STATUS/STATUS json/manifest）随高频投影刷新，人难以确认"此刻的真相"。
+
+> **这不是单点缺陷，而是运行模式的固有代价。** 对 AI 驱动的高速文档仓库，高频提交是特性；但缺乏**提交聚合**与**稳定可引用基线（如带签名的 daily snapshot tag）**，会让协作者与审查者持续处于"追逐移动目标"状态。
+
+> **建议**：① 引入提交聚合窗口（CLAUDE.md 已有"批处理"约定，但实际 28 次/天说明未落地）；② 提供每日/每阶段稳定快照 tag 供引用；③ 自动提交统一前缀（如 `chore(auto):`）以便 `git log` 过滤噪声。
 
 ---
 
-## 3. P1 级问题（一致性漂移 / 门禁盲区）
-
-### F3 · 极高提交频率：30 天 1594 次提交 `[COMPUTED] · HIGH`
+### 2.2 〔P2〕`.git` 本地目录囤积 897MB 治理备份 `[COMPUTED] · HIGH`
 
 ```
-$ git rev-list --all --count                       → 1594
-$ git rev-list --all --count --since="30 days ago" → 1594   (全部集中在 30 天内)
+$ du -sh .git                                  → 949M
+$ du -sh .git/branch-governance-backups        → 897M   (87 个时间戳目录)
+$ git count-objects -vH | grep size            → size 38.19 MiB / size-pack 10.56 MiB
 ```
-约 **53 次提交/天**。源自 CLAUDE.md 的"每次迭代版本号 +1"、auto-checkpoint、OMX team auto-commit 等策略叠加。后果：提交历史信噪比极低，`git log` 难以作为变更叙事，且与 F2 的备份机制叠加放大膨胀。`[INFERRED] · MED`
 
-### F4 · ARCHITECTURE.md 的"存根"声明与现实漂移 `[COMPUTED] · HIGH`
+**关键判别**：897MB 是 `branch-governance-backups/<时间戳>/*.bundle` 形式的**本地备份**，位于 `.git` 内部但**不属于 git 对象库、不随 push/clone 传播**。**因此新克隆仅约 48MB，协作者侧健康。**
 
-CLAUDE.md / AGENTS.md 多处声明：*"ARCHITECTURE.md 是向后兼容重定向存根；架构内容已迁移至 docs/architecture/"*。但实测：
-```
-$ wc -l ARCHITECTURE.md   → 605 行   $ wc -c ARCHITECTURE.md → 78776 字节
-$ head -1 ARCHITECTURE.md → "# 🏗️ 分层架构"（完整架构正文，非存根）
-```
-**ARCHITECTURE.md 实为 605 行完整架构文档**，与 `docs/architecture/`（9 文件）内容重叠，形成**双事实来源**；同时治理文档描述了一个**不存在的状态**（存根）。这是规则与现实脱节，违反仓库"消除信息差"核心原则。`[INFERRED] · HIGH`
+**性质** `[INFERRED] · HIGH`：这是**本地磁盘卫生问题**，非仓库膨胀灾难。根因是 CLAUDE.md 描述的"分支保护/自动 bundle 备份"在每次分支操作时打全量 bundle（每个 ~7.3MB），87 次累积、无界增长。属于**过度谨慎自动化的负价值**：备份体积是被保护内容的近 20 倍，而 git 本身已是分布式备份。
 
-> **建议**：二选一——要么真的把 ARCHITECTURE.md 缩成存根（落实声明），要么修正 CLAUDE.md/AGENTS.md 不再称其为存根，并明确它与 docs/architecture/ 的主从关系。
-
-### F5 · README.md 双 H1 + 篇幅失控 `[COMPUTED] · HIGH`
-
-```
-$ grep -n '^# ' README.md
-  4:# ZoneCNH · FoundationX
-  8:# FoundationX —— 个人级量化交易系统架构（草案 v3）
-$ wc -l README.md → 1009 行 / 44KB
-```
-README 含 **2 个 H1**，第二个还把一份"草案 v3"架构文档整体内嵌进主页。违反单一 H1 规范，且 1009 行对 GitHub 个人主页过长（主页应精简索引，深度内容应链接到 docs/）。`[INFERRED] · HIGH`
-
-### F6 · 质量门禁盲区：audit 全绿却测不出损坏 `[COMPUTED] · HIGH`
-
-```
-$ python3 scripts/audit-status.py; echo $?  → Summary: 51 passed, 0 failed / exit 0
-```
-`audit-status.py` 对 9 类检查全部 PASS，**但 STATUS.md 已 82% 乱码**。原因：审计按 `|` 分割解析表格算术（损坏的行号前缀落在首个 `|` 之前的 `parts[0]`，不影响数据列），因此对**文档结构完整性零检测**。
-
-**这是最危险的结构性问题**：门禁给出"全绿"虚假信号，掩盖了 F1 的数据灾难。任何依赖此门禁判断"仓库健康"的决策都被误导——精确复现了 §20 的 `[FRAME] → [REALITY]` 偷换。`[INFERRED] · HIGH`
-
-> **建议**：为 audit 增加文档结构健全性检查（H1 数量==1、无重复标题、无 `N. M.` 行号前缀、仓库引用数三文档一致），让门禁能感知"制品被破坏"。
+> **建议**：为 `branch-governance-backups` 设保留策略（最近 N 个 + TTL 7 天）、改增量/引用式备份，并评估该机制必要性。
 
 ---
 
-## 4. P2 级问题（过度工程化 / 可维护性）
-
-### F7 · 两套交付管线并存且重叠 `[COMPUTED] · MED`
-
-| 体系 | 管线 | 定义位置 |
-|------|------|----------|
-| governance | Spec→Matrix→Tasks→Plan→Prompt→Code | `docs/governance/DEVELOPMENT-WORKFLOW.md` |
-| goal | Goal→Spec→Design→Plan→Tasks→Prompt→Code→Test→Review→Release | `docs/goal/03-pipeline.md` |
-
-两套各有 pipeline、gate（governance 四源评分 / goal G0–G11）、traceability，阶段大量重叠（Spec/Plan/Tasks/Prompt/Code），需**并行维护两套门禁与状态机**。对个人仓库构成显著认知与维护负担。`[INFERRED] · MED`
-
-### F8 · 45 个 agent 定义需三重维护 `[COMPUTED] · MED`
+### 2.3 〔P2〕三平台 agent 配置已漂移失同步 `[COMPUTED] · HIGH`
 
 ```
-.claude/agents=15  .codex/agents=15  .copilot/agents=15  → 共 45
-.github/workflows=20 个
+glob .claude/agents/*  → 26 个    glob .codex/agents/*  → 20 个    glob .copilot/agents/* → 13 个
 ```
-三平台 agent 功能相同、配置格式不同，任何角色调整需改 3 处（DRY 违规）。20 个 workflow 对 docs-only 仓库偏重（CLAUDE.md O8 已自承"CI 死锁"风险）。`[INFERRED] · MED`
 
-### F9 · 运行态目录膨胀 `[COMPUTED] · MED`
+四源体系（Claude/Codex/Copilot/rules）要求三平台 agent **功能等价**，文档亦如此宣称。但实测数量为 **26 / 20 / 13**，严重不对称——说明"三处手工维护同一角色集"的 DRY 负担**已实际失败**，三套配置正在分叉。`.copilot` 缺失最多（仅 13），可能导致 Copilot 平台触发管线时部分角色缺位。`[INFERRED] · HIGH`
 
-```
-.omx=190M  .beads=18M  .worktree=16M  .omc=8.5M
-```
-`.omx` 单独 190MB。多数已 gitignore（`.omx/.beads/.worktree` 跟踪文件=0，良好），但 `.omc` 仍有 25 个、`.config` 46 个文件入库。本地工作区总占用偏大。`[COMPUTED] · MED`
-
-### 治理碎片化（观察）`[INFERRED] · MED`
-CONSTITUTION 1342 行（24 章）+ CLAUDE.md 395 行 + AGENTS.md 273 行，且 CLAUDE.md 内含大量 `> 取代: 日期 §...` 的规则演进记录、TTL 规则、复盘元规则。规则以"追加+取代"方式增长，CLAUDE.md 自设目标 `< 350 行` 已被突破（395）。规则治理本身需要被治理。
+> **建议**：以单一来源（如 `agents/*.yaml`）生成三平台配置，而非三处手写；或在 CI 增加"三平台 agent 集合一致性"校验。
 
 ---
 
-## 5. 正面发现（评分已计入，避免单边叙事）
+### 2.4 〔P2〕治理体系对当前规模偏重 `[COMPUTED] · MED`
 
-- **P1 · 规格资产扎实** `[COMPUTED] · HIGH`：module/ 含 **53 目录 / 50 个 SPEC.md**，体量从 binance（1380 行）、xlibgate（1303）、kernel（1274）到精简模块（54 行）梯度合理，是有真实内容的多模块规格库——**绝非"单模块"空壳**。
-- **P2 · 宪法与架构文档完整** `[COMPUTED] · HIGH`：`docs/constitution/` 24 章 1342 行齐全；`docs/architecture/` 9 文件 + 1 ADR 结构完整；§20 认识论标准设计成熟（证据标签 + 置信度 + 反奉承红旗）。
-- **P3 · 损坏被隔离** `[COMPUTED] · HIGH`：全仓库扫描确认乱码模式**仅 STATUS.md 一例**，未扩散；运行态目录基本已正确 gitignore；审计脚本（除盲区外）算术检查可用。
-- **自动化框架完备**：11 个 hooks、20 scripts、四源评分体系——**框架本身设计精良，问题在"过载"与"缺乏对自身产物的校验"，而非"缺失"**。
+| 体系            | 规模                                          | 证据                                  |
+| --------------- | --------------------------------------------- | ------------------------------------- |
+| 宪法            | 24 章 / 1342 行                               | `cat docs/constitution/*.md \| wc -l` |
+| governance 管线 | Spec→Matrix→Tasks→Plan→Prompt→Code + 48 文件  | `docs/governance/`                    |
+| goal 管线       | Goal→Spec→Design→…→Release + G0-G11 + 67 文件 | `docs/goal/`                          |
+| agent 定义      | 59 个（26+20+13）                             | glob                                  |
+| CI workflow     | 13 个                                         | glob                                  |
+| 行为准则        | CLAUDE.md 395 行 + AGENTS.md 273 行           | `wc -l`                               |
 
----
+**两套交付管线并存**（governance 与 goal）阶段大量重叠（Spec/Plan/Tasks/Prompt/Code），各自维护 pipeline、gate、traceability。CLAUDE.md 自设"< 350 行"目标已被突破（395 行），且含大量 `> 取代: 日期` 的规则演进层积。
 
-## 6. 评分理由明细
+**判断** `[INFERRED] · MED`：体系设计本身成熟（§20 认识论标准尤为先进），但对一个个人主导的文档仓库，**双管线 + 59 agent + 1342 行宪法**构成显著认知与维护开销。这是"治理重量 vs 实际吞吐"的权衡问题，非缺陷；但叠加 §2.1 的高频突变，会放大维护成本。
 
-| 维度 | 得分 | 主要扣分项 | 主要加分项 |
-|------|:----:|------|------|
-| 架构清晰度 | 78 | ARCHITECTURE 双源(F4)、README 内嵌架构(F5) | 分层模型清晰、docs/architecture 完整、9 原则成体系 |
-| 文档一致性 | 55 | STATUS 损坏(F1)、ARCHITECTURE 漂移(F4)、README 双 H1(F5) | constitution/architecture 内部自洽 |
-| 数据完整性 | 45 | STATUS.md 82% 乱码入库(F1)、事实来源被污染 | 损坏隔离、表格数据部分存活 |
-| 治理可执行性 | 60 | 门禁盲区(F6)、双管线(F7) | 体系完整、§20 标准先进 |
-| 基础设施健全度 | 50 | .git 949MB(F2)、极高 churn(F3)、运行态膨胀(F9) | 脚本可用、gitignore 基本正确 |
-| 可维护性 | 58 | 45 agent 三重维护(F8)、规则碎片化、CLAUDE 超行数目标 | hooks/scripts 框架精良 |
+> **建议**：明确 governance 与 goal 的主从或合并；执行 CLAUDE.md 自定的"季度规则瘦身"。
 
 ---
 
-## 7. 优先级修复建议
+### 2.5 〔P3〕质量门禁存在结构性盲区 `[COMPUTED] · MED`
 
-**立即（P0）**
-1. **恢复 STATUS.md**：`git checkout <损坏前 SHA> -- STATUS.md` 或重跑 `sync-status.mjs`；为生成器加幂等护栏（拒绝含行号前缀/已生成标记的输入）。
-2. **清理 .git 备份**：为 `branch-governance-backups` 设保留策略（最近 N 个 + TTL），改增量备份；一次性 `git gc` 前先归档清理旧 bundle。
+```
+$ python3 scripts/audit-status.py; echo $?   → 51 passed, 0 failed / exit 0
+```
 
-**近期（P1）**
-3. **修门禁盲区**：audit-status.py 增加文档结构健全性检查（单 H1、无重复标题、无行号前缀、三文档仓库引用数一致）——让"绿色"重新等于"健康"。
-4. **消除 ARCHITECTURE 漂移**：决定其为"存根"还是"正文"并落实，同步修正 CLAUDE/AGENTS 描述。
-5. **修 README 双 H1**：移除第二个 H1，将"草案 v3"架构正文迁出主页、改为链接。
+`audit-status.py` 校验的是**表格算术一致性**（域计数、版本计数、仓库引用数交叉核对）等 9 类检查，但**不校验文档结构完整性**（H1 数量、是否有重复标题、是否有异常行号前缀、Markdown 是否可渲染）。
 
-**中期（P2）**
-6. **收敛提交策略**：放宽"每次迭代 +1"，引入提交聚合，降低 churn。
-7. **统一两套管线**：明确 governance 与 goal 的主从或合并，消除重复 gate/traceability 维护。
-8. **agent 配置 DRY**：以单一来源生成三平台 agent 配置，而非手工三份。
-9. **规则瘦身**：执行 CLAUDE.md 自定的"季度瘦身"，将已内化规则归档，回到 < 350 行目标。
+**风险** `[INFERRED] · MED`：本次审计早期观测到的"瞬时损坏状态"（无论其确切来源）说明**生成管线在某些时刻可能产出畸形输出**。当前 audit 无法感知此类结构性破坏——若畸形输出被提交，门禁仍会全绿。这正是 §20 警示的 `[FRAME] → [REALITY]` 鸿沟的潜在入口：**指标绿 ≠ 文档可读**。
+
+> **建议**：为 audit 增补"文档结构健全性"检查（单 H1、无重复连续标题、无 `N. M.` 行号前缀、三文档仓库引用数一致），把"制品被破坏"纳入门禁可见域。
 
 ---
 
-## 8. 附录 · 关键可复现命令
+### 2.6 〔P3〕运行态目录本地膨胀 `[COMPUTED] · MED`
+
+```
+.omx=190M   .beads=18M   .worktree=16M   .omc=8.5M
+```
+
+`.omx` 单独 190MB。多数已正确 gitignore（`.omx/.beads/.worktree` 被跟踪文件数为 0），属本地工作区卫生，不影响仓库；但 `.omc`（25 文件）、`.config`（46 文件）仍入库，需确认是否应纳入版本控制。`[COMPUTED] · MED`
+
+---
+
+## 3. 正面发现（评分已计入）
+
+- **〔HIGH〕规格资产扎实**：`module/` 含 **53 目录 / 50 个 SPEC.md**，体量梯度合理（binance 1380、xlibgate 1303、kernel 1274 … 至精简模块 54 行）。**绝非"单模块"空壳**，是有真实内容的多模块规格库。`git ls-files 'module/*/SPEC.md' | wc -l`
+- **〔HIGH〕核心文档健康且历史干净**：STATUS.md（503 行）、README.md（210 行单 H1）、ARCHITECTURE.md（605 行架构枢纽，显式跳转 docs/architecture/）经逐一核验结构完好；STATUS.md **全部提交历史**均为干净版本。
+- **〔HIGH〕治理与架构文档完整**：`docs/constitution/` 24 章齐全、`docs/architecture/` 9 文件 + ADR、§20 认识论标准（证据标签 + 置信度 + 反奉承红旗）设计成熟。
+- **〔MED〕自愈能力**：审计期间观测到瞬时不一致状态被并行自动化快速收敛——表明生成/投影管线具备自我修复倾向（虽也是高频突变的来源）。
+- **〔MED〕审计可用**：`audit-status.py` 可运行且通过算术一致性检查；CI/hooks/scripts 框架完备。
+
+---
+
+## 4. 评分理由明细
+
+| 维度           | 得分 | 主要扣分                                                    | 主要加分                                  |
+| -------------- | :--: | ----------------------------------------------------------- | ----------------------------------------- |
+| 架构清晰度     |  82  | ARCHITECTURE/docs 存在内容重叠、"存根"措辞略不符            | 分层模型清晰、9 原则成体系、文档完整      |
+| 文档一致性     |  75  | agent 配置 26/20/13 漂移、治理措辞与现实小幅脱节            | 三核心文档干净自洽、提交历史干净          |
+| 数据完整性     |  76  | audit 结构盲区(2.5)、生成管线存在产出畸形的可能             | 提交历史干净、审计算术全绿                |
+| 治理可执行性   |  60  | 双管线重叠、门禁盲区、规则层积                              | 体系完整、§20 标准先进                    |
+| 基础设施健全度 |  58  | 本地 .git 囤积 897MB(2.2)、极高 churn(2.1)、运行态膨胀(2.6) | 可克隆仓库健康(~48MB)、gitignore 基本正确 |
+| 可维护性       |  60  | 高频突变损害可推理性、agent 漂移、治理重量                  | 工具框架精良、自愈能力                    |
+
+---
+
+## 5. 优先级修复建议
+
+**近期（P1-P2，影响可推理性与本地卫生）**
+
+1. **收敛提交节奏**：落实提交聚合（当前 28 次/天与 CLAUDE.md"批处理"约定不符）；自动提交统一前缀以便过滤；提供每日稳定快照 tag。
+2. **清理 .git 本地备份**：为 `branch-governance-backups` 设 TTL + 数量上限，改增量备份；评估该机制必要性。
+3. **agent 配置 DRY**：单一来源生成三平台配置，CI 增加三平台 agent 集合一致性校验，修复 26/20/13 漂移。
+
+**中期（P2-P3，降低治理重量与门禁盲区）** 4. **修门禁盲区**：audit-status.py 增补文档结构健全性检查，让"绿色"覆盖"制品未被破坏"。5. **统一双管线**：明确 governance 与 goal 的主从或合并，消除重复 gate/traceability 维护。6. **规则瘦身**：执行 CLAUDE.md 自定的季度瘦身，归档已内化规则，回到 < 350 行目标。7. **运行态入库审查**：确认 `.omc`/`.config` 入库文件是否应版本化。
+
+---
+
+## 6. 附录 · 关键可复现命令（钉住 HEAD 1e8c07eb）
 
 ```bash
-# 损坏量化
-wc -l STATUS.md; grep -cE '^[0-9]+\. [0-9]+\.' STATUS.md; grep -c '^## ' STATUS.md
-grep -c 'github.com/ZoneCNH' STATUS.md README.md   # 0 vs 50
+# 并发突变 / churn
+git rev-list --all --count --since='30 days ago'          # 1596
+git rev-list --all --count --since='1 day ago'            # 28
+git log --since='2026-06-25 02:34' --format='%h %ci %s'   # 会话窗口 8 提交
 
-# .git 膨胀
-du -sh .git; du -sh .git/* | sort -rh | head -3
-ls .git/branch-governance-backups | wc -l
+# .git 本地囤积 vs 可克隆健康
+du -sh .git .git/branch-governance-backups                # 949M / 897M
+git count-objects -vH | grep -E 'size:|size-pack:'        # ~48MB 对象
 
-# 提交频率
-git rev-list --all --count; git rev-list --all --count --since="30 days ago"
+# 核心文档健康（逐版本验证 STATUS 历史干净）
+wc -l STATUS.md README.md ARCHITECTURE.md                 # 503 / 210 / 605
+for s in $(git log -6 --format=%h -- STATUS.md); do \
+  echo "$s $(git show $s:STATUS.md|grep -cE '^[0-9]+\. [0-9]+\.')"; done   # 全 0
 
-# 文档漂移
-wc -l ARCHITECTURE.md; grep -n '^# ' README.md
-
-# 门禁盲区
-python3 scripts/audit-status.py; echo $?   # 51 passed / exit 0
-
-# 规格资产
-git ls-files 'module/*/SPEC.md' | wc -l    # 50
-find module -maxdepth 1 -type d | grep -vc '^module$'  # 53
-
-# 体系体量
-wc -l CLAUDE.md AGENTS.md; cat docs/constitution/*.md | wc -l
-find docs/governance docs/goal -name '*.md' | wc -l
+# 资产与配置计数（用 glob/git 避免输出过滤）
+git ls-files 'module/*/SPEC.md' | wc -l                   # 50
+ls .claude/agents .codex/agents .copilot/agents | ...     # 26 / 20 / 13
+python3 scripts/audit-status.py; echo $?                  # 51 passed / 0
 ```
 
 ---
 
-*[RULES I BROKE]：无。本报告已按 §20 标注证据标签与置信度；§1 主动披露了执行中的 5 处工具截断误判并复核纠正；所有量化结论附可复现命令；未编造引用；主观评级均标 `[INFERRED]` 且置信度不超过证据支持的水平。*
+_[RULES I BROKE]：无。本报告按 §20 标注证据标签与置信度；§1 主动、完整披露了审计中的 6 处误判（含早期对 STATUS.md/README 的错误读数）并逐一复核撤回；所有事实陈述均基于钉住 HEAD `1e8c07eb` 上可复现的命令；明确区分了"本地 .git 囤积"与"可克隆仓库健康"，未将本地卫生问题夸大为仓库膨胀；未编造引用；主观评级均标 `[INFERRED]` 且置信度不超过证据支持水平。_

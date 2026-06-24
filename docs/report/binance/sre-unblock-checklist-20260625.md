@@ -9,15 +9,15 @@
 
 ## 现状总结
 
-| 项 | 代码状态 | 实跑状态 | 阻塞原因 |
-| --- | --- | --- | --- |
-| postgresx | ✅ 装配完成 | ✅ LIVE-PASS | — |
-| clickhousex | ✅ 装配完成 | ✅ LIVE-PASS（market_binance 库已建） | — |
-| mainnet 四线 WS | ✅ 测试就绪 | ✅ LIVE-PASS（spot/um/cm） | — |
-| **redisx** | ✅ 装配完成 | ❌ NOAUTH | 本地 Redis 需密码 |
-| **taosx** | ✅ 装配完成 | ❌ driver not configured | TDengine driver mode 未配 |
-| **Kafka send** | ✅ 装配完成 | ❌ write messages | broker auto-create/SASL |
-| **OSS 归档** | ✅ 装配完成 | ❌ 未测 | 需真实阿里云凭据 |
+| 项              | 代码状态    | 实跑状态                              | 阻塞原因                  |
+| --------------- | ----------- | ------------------------------------- | ------------------------- |
+| postgresx       | ✅ 装配完成 | ✅ LIVE-PASS                          | —                         |
+| clickhousex     | ✅ 装配完成 | ✅ LIVE-PASS（market_binance 库已建） | —                         |
+| mainnet 四线 WS | ✅ 测试就绪 | ✅ LIVE-PASS（spot/um/cm）            | —                         |
+| **redisx**      | ✅ 装配完成 | ❌ NOAUTH                             | 本地 Redis 需密码         |
+| **taosx**       | ✅ 装配完成 | ❌ driver not configured              | TDengine driver mode 未配 |
+| **Kafka send**  | ✅ 装配完成 | ❌ write messages                     | broker auto-create/SASL   |
+| **OSS 归档**    | ✅ 装配完成 | ❌ 未测                               | 需真实阿里云凭据          |
 
 ---
 
@@ -28,6 +28,7 @@
 **现象**：`redisx.Set: redis auth: NOAUTH Authentication required.`
 **原因**：本地 Redis 实例配置了 `requirepass`，但 `.env` 的 `FOUNDATIONX_REDISX_PASSWORD` 为空。
 **解锁**：
+
 ```bash
 # 在 .env 填入 Redis 真实密码
 FOUNDATIONX_REDISX_PASSWORD=<redis-password>
@@ -41,6 +42,7 @@ STORAGE_LIVE=1 go test ./cmd/binance-server/ -run TestStorageFromEnv_LiveAssembl
 **现象**：`taosx health: status=degraded message=unavailable: driver.Health: TDengine driver is not configured`
 **原因**：TDengine 实例的 driver mode（websocket/native）未初始化，或 taos adapter 未运行。
 **解锁**：
+
 ```bash
 # 确认 TDengine 运行模式（websocket 默认 6041，native 6030）
 # 若用 websocket，确保 taosAdapter 运行：
@@ -56,6 +58,7 @@ STORAGE_LIVE=1 go test ./cmd/binance-server/ -run TestStorageFromEnv_LiveAssembl
 **现象**：`producer.Send: produce: kafkago.Producer.SendBatch: write messages`
 **原因**：测试 topic `binance.server.test.kafka-live.v1` 不存在，且 broker 可能禁用 auto-create 或需 SASL。
 **解锁**：
+
 ```bash
 # 方案 A：手动创建测试 topic
 kafka-topics.sh --bootstrap-server 127.0.0.1:9092 --create \
@@ -78,6 +81,7 @@ BINANCE_KAFKA_LIVE=1 go test ./test/e2e/ -run TestKafkaBroker_ProduceConsumeRoun
 **现象**：storageFromEnv fail-fast（`FOUNDATIONX_OSSX_BUCKET is required`）
 **原因**：`.env` 的 OSS 凭据为空（需真实阿里云 AccessKey/Secret/Bucket）。
 **解锁**：
+
 ```bash
 # 在 .env 填入真实阿里云 OSS 凭据
 FOUNDATIONX_OSSX_BUCKET=<bucket-name>
@@ -85,6 +89,7 @@ FOUNDATIONX_OSSX_ACCESS_KEY_ID=<access-key-id>
 FOUNDATIONX_OSSX_ACCESS_KEY_SECRET=<access-key-secret>
 # ENDPOINT 已配默认 https://oss-cn-hangzhou.aliyuncs.com
 ```
+
 解锁后，完整 storageFromEnv 装配即可端到端跑通（5/5 infra）。
 
 ---
