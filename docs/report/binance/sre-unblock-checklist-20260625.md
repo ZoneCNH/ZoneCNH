@@ -17,7 +17,9 @@
 | redisx          | ✅ 装配完成 | ✅ **LIVE-PASS**（ACL Username 修复） | — 已解锁（sre/dev.md 凭据）|
 | Kafka broker    | ✅ 装配完成 | ✅ **LIVE-PASS**（SASL+topic 自动创建）| — 已解锁                  |
 | OSS 归档        | ✅ 装配完成 | ✅ 凭据就绪（sre/dev.md 东京 x-go）   | — 已配置                  |
-| **taosx**       | ✅ 装配完成 | ❌ driver not configured              | **taosx 仓需导出 websocket driver API（issue ZoneCNH/taosx#16）** |
+| taosx           | ✅ 装配完成 | ✅ **LIVE-PASS**（websocket v1.0.2）  | — 已解锁（taosx#16 closed）|
+
+**✅ 全部 7/7 infra 已解锁 + LIVE-PASS。G0 端到端完全闭合。**
 
 ---
 
