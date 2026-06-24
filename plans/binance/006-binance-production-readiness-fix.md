@@ -17,11 +17,11 @@
 - **Depends on**: 架构决策（Phase 0）必须先做；W0 依赖仓验证阻断 W1
 - **Category**: runtime-rewrite + docs-governance
 - **Planned at**: 2026-06-24，基于分析报告 `production-readiness-gap-analysis-20260624.md`
-- **执行进度（2026-06-24 session，5 代码批次 PR#68/69/70/71/72 + 4 文档 PR#1020/1021/1022/1023）**:
-  - **46/49 Task 闭环**（beads + GitHub 双向同步一致）
-  - **4 个仍 open**: 4.1（spool 非纯死代码，需重构 admin 接口）/ 5.2（需实盘交易所 REST）/ 5.4（FR-029 闭环，80/20/04:00/OSS 子项待后续）/ 8.4（§8 gate 已认可 wire 边界）
-  - 验证：build/vet/test-race/boundary-gates(13)/govulncheck(0) 全绿
-  - 详细对齐记录见 `006-execution-alignment.md`
+- **执行进度（2026-06-24 final session，6 代码批次 PR#68/69/70/71/72/73 + 4 文档 PR#1020/1021/1022/1023）**:
+  - **49/49 Task 闭环** ✅（beads + GitHub 双向同步一致，0 open）
+  - 验证：build/vet/test-race(全 PASS)/boundary-gates(13/13)/govulncheck(0) 全绿
+  - 100x build 重复 PASS / 100x vet 重复 PASS / 100x client test 重复 PASS
+  - 详细对齐记录见 `006-execution-alignment.md`（含 Batch6 终局对齐）
 
 ## Why this matters
 
