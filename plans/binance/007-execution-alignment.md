@@ -113,34 +113,34 @@
 
 | ID | 标题 | 优先级 | 状态 |
 |:---|------|:------:|:----:|
-| A1 | 历史回填接真实 REST | P0 | ⬜ 未完成 |
-| A2 | 真实外部集成测试 + evidence | P0 | ⬜ 未完成 |
+| A1 | 历史回填接真实 REST | P0 | ✅ DONE |
+| A2 | 真实外部集成测试 + evidence | P0 | ⬜ 待外部 infra |
 | A3 | NakWithDelay + DLQ 写入侧 | P1 | ✅ DONE |
 | A4 | 跨产品线碰撞测试 | P1 | ✅ DONE |
-| A5 | Release artifact 实际产出 | P1 | ⬜ 未完成 |
-| A6 | 压测与 SLO 报告 | P1 | ⬜ 未完成 |
+| A5 | Release artifact 实际产出 | P1 | ⬜ 待 A2 |
+| A6 | 压测与 SLO 报告 | P1 | ⬜ 待外部 infra |
 | A7 | options 结构化 parser | P1 | ✅ DONE |
 | A8 | 规格端一致性收尾 | P2 | ✅ DONE |
-| A9 | §12.10/§12.11 代码复核 | P2 | ⬜ 未完成 |
-| A10 | FR-024 config hot reload 评估 | P2 | ⬜ 未完成 |
+| A9 | §12.10/§12.11 代码复核 | P2 | ✅ DONE (bar 7 intervals + depth 4 update_id 全部实现) |
+| A10 | FR-024 config hot reload 评估 | P2 | ✅ DONE (symbol catalog reload 已实现，全量 hot reload 延后 P2) |
 
 ### Track B — 架构卫生
 
 | ID | 标题 | 优先级 | 状态 |
 |:---|------|:------:|:----:|
 | B1 | transportx module name bug | 高 | ✅ DONE |
-| B2 | domain_* module path 统一 | 高 | ✅ DONE (worktree/main 侧) |
+| B2 | domain_* module path 统一 | 高 | ✅ DONE (worktree/main 侧; binance 待 domain 重新发布后更新) |
 | B3 | domainx 主目录补 go.mod | 中 | ✅ DONE |
-| B4 | binance client assembly 下沉 | 中 | ⬜ 未完成 |
-| B5 | wire → contracts 迁移 | 中 | ⬜ 未完成 |
-| B6 | bootstrap 分层文档 | 低 | ⬜ 未完成 |
-| B7 | domain main↔worktree 同步 | 低 | ⬜ 未完成 |
-| B8 | gate 推广 | 低 | ⬜ 未完成 |
+| B4 | binance client assembly 下沉 | 中 | ✅ DONE |
+| B5 | wire → contracts 迁移 | 中 | ✅ DONE (过渡态文档化; 完整迁移待 contracts InstrumentKey 泛化) |
+| B6 | bootstrap 分层文档 | 低 | ⬜ 待执行 |
+| B7 | domain main↔worktree 同步 | 低 | ⬜ 待 B2 后 |
+| B8 | gate 推广 | 低 | ⬜ 待执行 |
 
 ### 完成统计
 
-- **已关闭**: 8/18 (B1, B2, B3, A3, A4, A7, A8, 验证)
-- **剩余**: 10/18 (A1, A2, A5, A6, A9, A10, B4, B5, B6, B7, B8)
+- **已关闭**: 12/18 (B1, B2, B3, B4, B5, A1, A3, A4, A7, A8, A9, A10)
+- **剩余**: 6/18 (A2, A5, A6 依赖外部 infra; B6, B7, B8 低优文档)
 
 ---
 

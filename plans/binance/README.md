@@ -9,7 +9,7 @@
 | Plan | Title | Priority | Effort | Depends on | Status |
 |------|-------|----------|--------|------------|--------|
 | 006 | binance 模块生产就绪修复（49 Task，8 Phase；Phase 4-ALT 作废；新增 Task 7.0 infra 凭据+configx 接入） | P0 | XL(4.8~9pm) | Task 0.1 DONE(v2.0.0) | ✅ DONE（2026-06-24 六批次 PR#68/69/70/71/72/73 + 四文档 PR#1020/1021/1022/1023 合并）：**49/49 Task 全闭环**。beads 0 open · GitHub 0 open。验证：build(100x)/vet(100x)/test-race/boundary-gates(13)/govulncheck(0) 全绿。详见 [006-execution-alignment.md](006-execution-alignment.md) |
-| 007 | binance 生产就绪收尾 + FoundationX 解耦隐患修复（双轨：Track A 功能 G1~G6/R1~R8 + Track B 跨仓库 §7.1~§7.7；18 Task，8 Phase） | P0/P1/P2 | M(1.1~2.05pm) | Plan006 DONE | 🔄 IN PROGRESS — 8/18 DONE (B1/B2/B3/A3/A4/A7/A8 + 10x 验证)。详见 [007-binance-readiness-arch-fix.md](007-binance-readiness-arch-fix.md) · [007-execution-alignment.md](007-execution-alignment.md) |
+| 007 | binance 生产就绪收尾 + FoundationX 解耦隐患修复（双轨：Track A 功能 G1~G6/R1~R8 + Track B 跨仓库 §7.1~§7.7；18 Task，8 Phase） | P0/P1/P2 | M(1.1~2.05pm) | Plan006 DONE | ✅ 12/18 DONE (B1/B2/B3/B4/B5 + A1/A3/A4/A7/A8/A9/A10)。剩余 A2/A5/A6(外部 infra) + B6/B7/B8(低优文档)。详见 [007-binance-readiness-arch-fix.md](007-binance-readiness-arch-fix.md) · [007-execution-alignment.md](007-execution-alignment.md) |
 
 Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJECTED (with one-line rationale)
 
