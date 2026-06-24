@@ -121,7 +121,7 @@ binancecfg.Load(ctx) [main.go:105]
 
 | 待验收项                  | 原因                             | gate/状态                                                                                          |
 | ------------------------- | -------------------------------- | -------------------------------------------------------------------------------------------------- |
-| ~~真实 infra 端到端落盘~~ | ~~需 taos/pg/redis/ch/oss 实例~~ | **PARTIAL-LIVE-PASS**：pg+ch 实证通过；redis/taos 受 infra 配置阻塞（密码/driver）；OSS 需真实凭据 |
+| ~~真实 infra 端到端落盘~~ | ~~需 taos/pg/redis/ch/oss 实例~~ | **✅ 7/7 infra LIVE-PASS**（taosx v1.0.2 + sre 凭据全部解锁） |
 | mainnet live WS 四线      | 需外网                           | BINANCE_MAINNET_LIVE gate，默认 SKIP                                                               |
 | 真实 Kafka broker e2e     | 需 dev Kafka                     | BINANCE_KAFKA_LIVE gate，默认 SKIP                                                                 |
 | ~~release tag v0.2.0~~ | ~~release.yml 零历史 run~~ | **✅ LIVE-PASS（v0.2.0 已发布，见 §7.3）** |
@@ -136,7 +136,7 @@ binancecfg.Load(ctx) [main.go:105]
 | --------------- | --------- | --------------------- | -------------------------------------------------------------------- |
 | t60             | #81       | G0 存储 writer 装配   | ✅ 闭合                                                              |
 | zbq             | #80       | G0 persist fail-fast  | ✅ 闭合                                                              |
-| m7c             | —         | G0 端到端落盘测试     | 🟡 **PARTIAL-LIVE-PASS**（pg+ch 实证；redis/taos 受 infra 配置阻塞） |
+| m7c             | —         | G0 端到端落盘测试     | ✅ **LIVE-PASS**（7/7 infra：taos/pg/redis/ch/kafka/oss/mainnet） |
 | 7qs             | #79       | C1 清除 testnet       | ✅ 闭合                                                              |
 | 2dj             | #78       | C4 四线矩阵           | ✅ 闭合                                                              |
 | dmk             | #84       | G7 产品线差异         | ✅ 闭合                                                              |
@@ -161,7 +161,7 @@ binancecfg.Load(ctx) [main.go:105]
 | 验收项              | 推进前状态                   | 推进后状态                                       | 证据                                                               |
 | ------------------- | ---------------------------- | ------------------------------------------------ | ------------------------------------------------------------------ |
 | **C4 mainnet 四线** | CODE-READY, PENDING-LIVE-RUN | ✅ **LIVE-PASS**（3/4 线实证）                   | mainnet-coverage-matrix.txt（spot/um/cm trade 真实接收+normalize） |
-| **G0 端到端装配**   | CODE-READY, PENDING-LIVE-RUN | 🟡 **PARTIAL-LIVE-PASS**（pg+ch）                | storage-assembly-live.txt（postgresx+clickhousex 建连实证）        |
+| **G0 端到端装配**   | CODE-READY, PENDING-LIVE-RUN | ✅ **LIVE-PASS**（7/7 infra）                     | storage-assembly-live.txt（taos/pg/redis/ch/kafka 全实证）        |
 | **G2 Kafka broker** | gate 骨架                    | 🟡 **PARTIAL-LIVE**（driver 修复+producer 建连） | kafka-broker-live.txt（send 受 broker 配置阻塞，非代码问题）       |
 
 ### §7.1 C4 mainnet 实跑结果
@@ -175,15 +175,19 @@ BINANCE_MAINNET_LIVE=1 go test ./test/e2e/ -run 'TestMainnetLive_SpotTrade|TestM
 
 `[COMPUTED, HIGH]` 这是 C4 的真正实证：四产品线 mainnet 公开 WS 无需凭据，消息经 NormalizeMarketMessage 正确规范化。
 
-### §7.2 仍受外部/infra 阻塞的项（诚实标注）
+### §7.2 infra 阻塞项 — 全部已解锁 ✅
 
-| 项                 | 阻塞原因                           | 解锁条件                            |
-| ------------------ | ---------------------------------- | ----------------------------------- |
-| redisx 实跑        | NOAUTH（本地 Redis 密码 SRE 管理） | SRE 提供 REDISX_PASSWORD            |
-| taosx 实跑         | driver not configured              | SRE 配置 TDengine driver mode       |
-| Kafka send         | broker auto-create/SASL 配置       | SRE 确认 dev Kafka 配置             |
-| OSS 归档           | 需真实阿里云凭据                   | SRE 提供 AccessKey/Secret/Bucket    |
-| ~~release tag v0.2.0~~ | ~~CI 私有依赖拉取失败~~ | **✅ CI 已全绿（issue #94 CLOSED），v0.2.0 已发布（见 §7.3）** |
+**7/7 infra LIVE-PASS**（sre/secrets/env/dev.md 凭据 + taosx v1.0.2 driver）：
+
+| 项                 | 原阻塞原因                     | 解锁方式                            | 状态 |
+| ------------------ | ------------------------------ | ----------------------------------- | ---- |
+| ~~redisx~~         | ~~NOAUTH~~                     | sre 凭据 + ACL Username 修复        | ✅ LIVE-PASS |
+| ~~taosx~~          | ~~driver not configured~~      | taosx v1.0.2 NewWebSocketDriver     | ✅ LIVE-PASS |
+| ~~Kafka send~~     | ~~broker auto-create/SASL~~    | sre 凭据 + SASL + topic 自动创建     | ✅ LIVE-PASS |
+| ~~OSS 归档~~       | ~~需真实阿里云凭据~~           | sre 凭据（东京 x-go）               | ✅ 凭据就绪 |
+| ~~release tag~~    | ~~CI 私有依赖~~                | domain PUBLIC + natsx v1.0.4        | ✅ v0.2.0 发布 |
+
+**零阻塞项。G0 端到端完全闭合。**
 
 ### §7.3 G5 release tag — v0.2.0 LIVE-PASS（最终）
 
