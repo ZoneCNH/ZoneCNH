@@ -22,7 +22,9 @@
 
 > **2026-06-23 证据刷新（round 2）**：本地 runtime evidence 已归档至 `/home/binance/release/evidence/binance/20260623/`；证据提交 `71e2a6e8bb5591c43e8a2ebfff8c7645bf030786`；boundary gates 重新运行 10/10 PASS，`go build`/`go vet`/`go test` 全部 PASS，全部 9 个 issue 分支已合并至 origin/main；GitHub #923~#931 已关闭并登记至 `docs/report/binance/github-issues-923-931-closure-ledger-20260623.md`；该关闭仅表示 issue tracking closure，不关闭 release、remote CI、live websocket、外部集成与 L2 功能 FR。
 
-> **2026-06-24 本地 readiness 刷新**：worker lane 在 `/home/binance` runtime HEAD `dd3332d3452f4eaa8146563bdb82caf577a3d4c1`（保留既有 dirty readiness 变更，未提交）上完成本地验证：`bash -n scripts/runtime-release-evidence.sh scripts/boundary-gates.sh scripts/readiness-audit.sh` PASS，`make fmt-check boundary-gates build test vet readiness-audit` PASS（boundary gates `13 passed, 0 failed`），`go test ./... -race -count=1` PASS，`git diff --check` PASS；同时修正 `scripts/runtime-release-evidence.sh` 的 external-gate ledger 文案，避免后续证据刷新回退为 `MISSING_RUNTIME_ADAPTER`。该证据只更新 FR-009/BR 边界与本地 build/readiness 追溯，不关闭 JetStream PubAck/ManualAck、真实 external storage IO / fanout / query API、remote CI、release tag 或 FR-012~030。
+> **2026-06-24 本地 readiness 刷新**：worker lane 在 `/home/binance` runtime HEAD `dd3332d3452f4eaa8146563bdb82caf577a3d4c1`（保留既有 dirty readiness 变更，未提交）上完成本地验证：`bash -n scripts/runtime-release-evidence.sh scripts/boundary-gates.sh scripts/readiness-audit.sh` PASS，`make fmt-check boundary-gates build test vet readiness-audit` PASS（boundary gates `13 passed, 0 failed`），`go test ./... -race -count=1` PASS，`git diff --check` PASS；同时修正 `scripts/runtime-release-evidence.sh` 的 external-gate ledger 文案，避免后续证据刷新回退为 `MISSING_RUNTIME_ADAPTER`。该证据只更新 FR-009/BR 边界与本地 build/readiness 追溯，不关闭完整 JetStream TC-004/TC-006、真实 external storage IO / fanout / query API、remote CI、release tag 或 FR-012~030。
+
+> **2026-06-24 gated JetStream 子集刷新**：`BINANCE_NATSX_INTEGRATION=1 go test ./internal/server/consumer -run TestNATSXIntegrationJetStreamSemantics -count=1 -v` 与 100 次重复 gated loop PASS；真实本地 NATS JetStream 已证明 accepted PubAck、duplicate PubAck、Ack 后不重投、immediate Nak 到 `MaxDeliver=5` 后停止。TC-004/TC-006 继续 Pending：独立 client/server 进程、`NakWithDelay(5s)`、dead-letter/parking 与完整 live 链路仍未闭合。
 
 
 > **状态模型说明**：FR 表的"实现状态"列采用 Done/Pending 二元模型。"Partial"（部分产品线已实现、TC 未全绿）由 `ACCEPTANCE.md` §5-§6 按 AC 粒度登记。FR 行标记为 Pending 不排除其下个别 AC 已 Partial — 以 `ACCEPTANCE.md` 为准。
@@ -33,7 +35,7 @@
 | FR-003 | natsx Communication：Client/Server 通过 natsx JetStream **网络**通信，禁止共享进程或内存 | AC-007 ~ AC-010 | TC-004, TC-005 | CLIENT-014, SERVER-010 | Pending |
 | FR-004 | At-Least-Once Delivery：JetStream durable consumer + ManualAck 确保消息不丢失 | AC-011 ~ AC-013 | TC-006 | CLIENT-014, SERVER-010 | Pending |
 | FR-005 | Idempotent Acceptance：redisx SetNX 确保相同消息最多写入 taosx 一次（72h TTL） | AC-014 ~ AC-016 | TC-007, TC-008 | SERVER-011 | Pending |
-| FR-006 | Full-Stack Storage / taosx Time-Series：WriteBatch 写入 tick/bar/depth 到超级表子表 | AC-017 ~ AC-018 | TC-009 | SERVER-012 | Pending |
+| FR-006a | Full-Stack Storage / taosx Time-Series：WriteBatch 写入 tick/bar/depth 到超级表子表 | AC-017 ~ AC-018 | TC-009 | SERVER-012 | Pending |
 | FR-006b | postgresx Metadata：幂等 upsert instrument catalog + 审计日志 | AC-019 ~ AC-020 | TC-010 | SERVER-012 | Pending |
 | FR-006c | redisx Hot Cache：最新 tick/bar/depth 热缓存（60s/5s TTL），失败降级 | AC-036 ~ AC-037 | TC-023 | SERVER-013 | Pending |
 | FR-006d | ossx Archival：定时将 taosx 过期数据归档到 OSS，ETag 校验后删热 | AC-026 ~ AC-028 | TC-016, TC-017 | SERVER-016 | Pending |
@@ -117,14 +119,14 @@
 | TC-001 | FR-001 | — | 集成（Binance testnet） | Pending |
 | TC-002 | FR-002 | BR-007 | 单元（product_line identity） | Pending |
 | TC-003 | FR-002 | BR-007 | 单元（cross product_line 不碰撞） | Pending |
-| TC-004 | FR-003 | BR-005 | 集成（client natsx Publish，server 独立进程接收） | Pending |
+| TC-004 | FR-003 | BR-005 | 集成（client natsx Publish，server 独立进程接收；2026-06-24 gated local PubAck duplicate 子集已验证，独立进程/live 链路仍缺） | Pending |
 | TC-005 | FR-003 | BR-002, BR-003 | CI gate（跨进程边界检查；BR 边界证据由 TC-020/021/022 承载，FR-003 集成仍需独立进程 publish/consume 证据） | Pending |
-| TC-006 | FR-004 | BR-004 | 集成（JetStream ManualAck：成功→Ack，失败→NakWithDelay） | Pending |
+| TC-006 | FR-004 | BR-004 | 集成（JetStream ManualAck：成功→Ack，失败→NakWithDelay；2026-06-24 gated Ack/no-redelivery + immediate Nak MaxDeliver 子集已验证，`NakWithDelay`/dead-letter 仍缺） | Pending |
 | TC-007 | FR-005 | — | 单元（SetNX 首次→新消息；重复→跳过） | Pending |
 | TC-008 | FR-005 | — | 单元（Redis 不可达→error→NakWithDelay） | Pending |
-| TC-009 | FR-006 | BR-006 | 单元（taosx WriteTick + WriteBatch） | Pending |
-| TC-010 | FR-006 | BR-006 | 单元（postgresx UpsertSymbol 幂等） | Pending |
-| TC-011 | FR-006 | — | 集成（taosx QueryRange 时间范围过滤） | Pending |
+| TC-009 | FR-006a | BR-006 | 单元（taosx WriteTick + WriteBatch） | Pending |
+| TC-010 | FR-006b | BR-006 | 单元（postgresx UpsertSymbol 幂等） | Pending |
+| TC-011 | FR-006a | — | 集成（taosx QueryRange 时间范围过滤） | Pending |
 | TC-012 | FR-007 | — | httptest（/api/v1/market/ticks redisx hit + taosx fallback） | Pending |
 | TC-013 | FR-007 | — | httptest（/api/v1/market/depth redisx cache） | Pending |
 | TC-014 | FR-007 | — | httptest（API key 401） | Pending |
@@ -186,10 +188,10 @@
 | AC-014 | FR-005 | 首次消息（SetNX 成功）→ 继续写入 taosx | TC-007 |
 | AC-015 | FR-005 | 重复消息（SetNX 失败）→ Ack 并跳过，不写 taosx | TC-007 |
 | AC-016 | FR-005 | Redis 不可达 → error，consumer NakWithDelay | TC-008 |
-| AC-017 | FR-006 | taosx WriteTick 使用 symbol+product_line 子表名，自动创建子表 | TC-009 |
-| AC-018 | FR-006 | taosx WriteBatch 合并多条消息一次网络往返 | TC-009 |
-| AC-019 | FR-006 | postgresx UpsertSymbol 幂等（ON CONFLICT DO UPDATE） | TC-010 |
-| AC-020 | FR-006 | postgresx UpdateIngestStatus 更新 last_seq 用于 gap fill | TC-010 |
+| AC-017 | FR-006a | taosx WriteTick 使用 symbol+product_line 子表名，自动创建子表 | TC-009 |
+| AC-018 | FR-006a | taosx WriteBatch 合并多条消息一次网络往返 | TC-009 |
+| AC-019 | FR-006b | postgresx UpsertSymbol 幂等（ON CONFLICT DO UPDATE） | TC-010 |
+| AC-020 | FR-006b | postgresx UpdateIngestStatus 更新 last_seq 用于 gap fill | TC-010 |
 | AC-021 | FR-007 | GET /api/v1/market/ticks 从 taosx 查询，支持 symbol+time range+limit | TC-012 |
 | AC-022 | FR-007 | GET /api/v1/market/depth/:symbol 从 redisx 读取最新快照 | TC-013 |
 | AC-023 | FR-007 | 无效 API key → 401 | TC-014 |
@@ -313,6 +315,6 @@
 | 2026-06-23 | evidence-20260623 | **本地 runtime evidence 刷新**：`/home/binance/release/evidence/binance/20260623/` 归档 build/test/race/vet/lint/smoke/boundary gate 证据；验证代码 `9777a5b0db9a3de5db53942b9aaf6b55eec04f24`，证据提交 `20c7712935f53e1948bdf4b30a72d3db07f9acfb`；FR-009/BR 本地边界证据闭合，release、remote CI、live websocket、外部集成与 L2 功能 FR 仍 Pending | ZoneCNH |
 | 2026-06-22 | v2.2.3 | **PR-D runtime evidence 回填（历史记录）**：FR-009 状态曾附早期 runtime SHA + CI workflow URL（runtime PR ZoneCNH/binance#9 合并，删除运行时共享包 + 集成 `.github/workflows/boundary-gates.yml` 9 道 gate）；当前证据口径见 2026-06-23 evidence-20260623 行 | ZoneCNH |
 | 2026-06-23 | v2.2.4 | **PR-007 runtime boundary evidence refresh**：对齐 `/home/binance/BOUNDARY-GATES.md` §2-§11 与 `scripts/boundary-gates.sh` 10/10 PASS；证据提交 `20c7712935f53e1948bdf4b30a72d3db07f9acfb`，验证代码 `9777a5b0db9a3de5db53942b9aaf6b55eec04f24`；新增 HTTP JSON `/ingest` admin/server boundary evidence；本地 evidence bundle `/home/binance/release/evidence/binance/20260623/`；远端 CI/release tag 与 PR-007a~g 分布式 runtime 仍单独验收 | ZoneCNH |
-| 2026-06-23 | v2.2.5 | **standalone client boundary evidence（历史记录）**：曾记录独立 `cmd/binance-client` admin `:8081` self-test 与 HTTP `/ingest` client/server 边界；当前权威证据口径见 2026-06-23 evidence-20260623 行；TC-005、JetStream PubAck/ManualAck、live websocket、release tag 与 PR-007a~g 分布式 runtime 仍 Pending | ZoneCNH |
+| 2026-06-23 | v2.2.5 | **standalone client boundary evidence（历史记录）**：曾记录独立 `cmd/binance-client` admin `:8081` self-test 与 HTTP `/ingest` client/server 边界；当前权威证据口径见 2026-06-24 gated JetStream 子集与 2026-06-23 evidence-20260623 行；独立 client/server 进程 TC-005、完整 JetStream TC-004/TC-006（`NakWithDelay`、dead-letter/parking）、live websocket、release tag 与 PR-007a~g 分布式 runtime 仍 Pending | ZoneCNH |
 | 2026-06-23 | v2.2.6 | **round 2 证据刷新**：重新运行 `/home/binance/scripts/boundary-gates.sh` 10/10 PASS；`go build`/`go vet`/`go test` 全部 PASS 于 SHA `71e2a6e8bb5591c43e8a2ebfff8c7645bf030786`；全部 9 个 issue 分支已合并至 origin/main；release、remote CI、live websocket、外部集成与 L2 功能 FR 仍 Pending | ZoneCNH |
 | 2026-06-23 | v3.5.0 | **审计对齐**：修复 §1 与 §6 FR-001/002 状态矛盾（统一为 Pending）；§6 仪表盘同步；§7 补充 v2.2.6→v3.5.0 版本跳空说明（v3.2.0-implied: fold DATA-LIFECYCLE FR-025~028；v3.3.0: version governance unification；v3.4.0: naming/natsx subject alignment；v3.5.0: FR-029~030 freshness/Options traceability） | ZoneCNH |

@@ -1,6 +1,7 @@
 # module/binance BOUNDARY GATES
 
 > 版本：v2.2.4
+> Module-Version: v3.5.0
 > 更新日期：2026-06-24
 > Runtime 仓库：`/home/binance`
 > Runtime 契约：`/home/binance/BOUNDARY-GATES.md`
@@ -14,6 +15,8 @@
 本文档是 docs 侧边界投影；可执行事实以 runtime 仓库为准。边界门禁证明 FR-009 / BR-001~BR-009 的结构治理，不替代 FR-003~FR-008、FR-010+ 的功能验收。
 
 2026-06-24 本地 worker 验证补充：`bash -n scripts/runtime-release-evidence.sh scripts/boundary-gates.sh scripts/readiness-audit.sh`、`make fmt-check boundary-gates build test vet readiness-audit`、`go test ./... -race -count=1`、`git diff --check` 均 PASS；`boundary-gates.sh` 输出 `13 passed, 0 failed`。该补充不替代 live/remote/release evidence。
+
+2026-06-24 gated JetStream 子集补充：真实本地 NATS JetStream 已验证 PubAck duplicate、ManualAck 成功不重投、immediate Nak 到 `MaxDeliver=5` 后停止；独立 client/server 进程、`NakWithDelay(5s)`、dead-letter/parking 与 live Binance 链路仍不能标记为 PASS。
 
 | 验证面 | 命令 | 通过条件 |
 | --- | --- | --- |
@@ -94,4 +97,4 @@ Runtime `go.mod` 必须保留边界所需 direct dependencies，不得通过依�
 | BR-007 | Done：Gate §9 已由 runtime 13/13 PASS 证明 |
 | BR-008 | Done：Gate §8 已由 runtime 13/13 PASS 证明 |
 | BR-009 | Done：Gate §11 已由 runtime 13/13 PASS 证明 |
-| Release | Not Done：远端 CI、release tag、live websocket、JetStream PubAck/ManualAck、真实 storage/fanout/query IO、覆盖率/性能/故障注入证据仍按 Release DoD 单独验收 |
+| Release | Not Done：远端 CI、release tag、live websocket、完整 JetStream TC-004/TC-006（独立进程、`NakWithDelay`、dead-letter）、真实 storage/fanout/query IO、覆盖率/性能/故障注入证据仍按 Release DoD 单独验收 |

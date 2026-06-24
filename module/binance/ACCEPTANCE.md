@@ -5,7 +5,7 @@
 | 字段 | 值 |
 | --- | --- |
 | Status | Generated from current module SSOT |
-| Last-Updated | 2026-06-23 |
+| Last-Updated | 2026-06-24 |
 | Module-Version | v3.5.0 |
 | Module-State | 验收清单已补齐；L1 边界治理 FR-009 本地 evidence 已归档；L2 功能 FR 多数 Pending，以 runtime 仓实际测试、CI 与 release 证据为准 |
 | Runtime-Repo | `/home/binance` |
@@ -25,6 +25,8 @@
 | `Pending` | L2 Functional | runtime 仓未推送对应功能实现；默认 `Pending — 以 runtime 仓为准` | runtime feature test + integration test |
 
 > [COMPUTED, HIGH] L1 状态可由本地 boundary gate 或 CI 证据标记，但必须绑定 runtime SHA；L2 状态必须附 runtime feature/integration test 输出与 runtime git SHA，runtime 仓未推送时所有 L2 FR 默认 Pending。
+>
+> [COMPUTED, HIGH] 2026-06-24 gated `natsx` integration 已在真实本地 NATS JetStream 上验证 PubAck duplicate、ManualAck 成功不重投、immediate Nak 至 `MaxDeliver=5` 后停止；TC-004/TC-006 仍保持 Pending，因为独立 client/server 进程、`NakWithDelay(5s)`、dead-letter/parking 和完整 live 链路未闭合。
 
 ## 1. 验收命令
 
@@ -60,10 +62,10 @@
 | AC-013 | FR-005 | idempotency key 第一次出现时接受并落库；首次消息（SetNX 成功）继续写入 taosx。 | TC-007 | Pending |
 | AC-014 | FR-005 | 重复 key 同 payload 时 Ack 并跳过副作用；重复消息（SetNX 失败）Ack 并跳过，不写 taosx。 | TC-007 | Pending |
 | AC-015 | FR-005 | 重复 key 不同 payload 时 terminal reject 并记录冲突；Redis 不可达时返回 error，consumer NakWithDelay。 | TC-008 | Pending |
-| AC-016 | FR-006 | tick/depth facts 写入 `taosx`；`taosx.WriteTick` 使用 symbol+product_line 子表名并自动创建子表。 | TC-009 | Pending |
-| AC-017 | FR-006 | instrument catalog 与 replay metadata 写入 `postgresx`；`taosx.WriteBatch` 合并多条消息一次网络往返。 | TC-009 | Pending |
-| AC-018 | FR-006 | hot cache 与 idempotency marker 使用 `redisx`；`postgresx.UpsertSymbol` 幂等（ON CONFLICT DO UPDATE）。 | TC-010 | Pending |
-| AC-019 | FR-006 | 冷归档使用 `ossx`，不把通用 market_data 存储上移到本模块外；`postgresx.UpdateIngestStatus` 更新 last_seq 用于 gap fill。 | TC-011 | Pending |
+| AC-016 | FR-006a | tick/depth facts 写入 `taosx`；`taosx.WriteTick` 使用 symbol+product_line 子表名并自动创建子表。 | TC-009 | Pending |
+| AC-017 | FR-006a / FR-006b | instrument catalog 与 replay metadata 写入 `postgresx`；`taosx.WriteBatch` 合并多条消息一次网络往返。 | TC-009 | Pending |
+| AC-018 | FR-006b / FR-006c | hot cache 与 idempotency marker 使用 `redisx`；`postgresx.UpsertSymbol` 幂等（ON CONFLICT DO UPDATE）。 | TC-010 | Pending |
+| AC-019 | FR-006b / FR-006d | 冷归档使用 `ossx`，不把通用 market_data 存储上移到本模块外；`postgresx.UpdateIngestStatus` 更新 last_seq 用于 gap fill。 | TC-011 | Pending |
 | AC-020 | FR-007 | `GET /api/v1/market/ticks` 返回统一 JSON envelope，并从 taosx 查询，支持 symbol、time range、limit。 | TC-012 | Pending |
 | AC-021 | FR-007 | `GET /api/v1/market/depth/{instrument_key}` 返回深度快照或统一错误，并从 redisx 读取最新快照。 | TC-013 | Pending |
 | AC-022 | FR-007 | 未授权请求返回 401；无效 API key 返回 401。 | TC-014 | Pending |
@@ -95,14 +97,14 @@
 | TC-001 | FR-001 | 集成（Binance testnet；四条 product line 的连接、publish、consume；断线重连与 durable recovery） | Partial（Spot 基本通路可用；USDM/COINM/Options 未完成）| 四条 product line 的连接、publish、consume 集成测试输出。 |
 | TC-002 | FR-002, BR-007 | 单元（product_line identity / canonical identity 字段） | Partial（Spot identity 已验证；跨产品线碰撞未全覆盖）| canonical identity 字段与必填字段测试输出。 |
 | TC-003 | FR-002, BR-007 | 单元（cross product_line 不碰撞 / options identity replay） | Pending | 同名 symbol 跨 product_line 不碰撞与 Options 回放测试输出。 |
-| TC-004 | FR-003, BR-005 | 集成（client natsx Publish，server 独立进程接收） | Pending | `natsx` publish、subject、PubAck、独立进程接收测试输出。 |
+| TC-004 | FR-003, BR-005 | 集成（client natsx Publish，server 独立进程接收） | Pending | 2026-06-24 gated local JetStream test 已证明 accepted PubAck 与 duplicate PubAck；仍需独立 client/server 进程接收证明与完整 live 链路证据。 |
 | TC-005 | FR-003, BR-002, BR-003 | CI gate（跨进程边界检查） | Pending | FR-003 独立进程 publish/consume 仍需集成输出；BR-002/BR-003 boundary 证据由 TC-020/TC-021 与 `BOUNDARY-GATES.md` 承载。 |
-| TC-006 | FR-004, BR-004 | 集成（JetStream ManualAck：处理成功→Ack，失败→NakWithDelay） | Pending | Ack/Nak、MaxDeliver、dead-letter 失败注入测试输出。 |
+| TC-006 | FR-004, BR-004 | 集成（JetStream ManualAck：处理成功→Ack，失败→NakWithDelay） | Pending | 2026-06-24 gated local JetStream test 已证明 Ack 后不重投与 immediate Nak 到 `MaxDeliver=5` 后停止；仍需 `NakWithDelay(5s)` 与 dead-letter/parking 失败注入证据。 |
 | TC-007 | FR-005 | 单元（SetNX 首次→新消息；重复→跳过） | Pending | 首次写入和重复跳过测试输出。 |
 | TC-008 | FR-005 | 单元（idempotency conflict / Redis 不可达→error→NakWithDelay） | Pending | Duplicate different payload terminal reject 与 Redis 故障注入测试输出。 |
-| TC-009 | FR-006, BR-006 | 单元（taosx WriteTick + WriteBatch） | Pending | taosx 写入和批量写入测试输出。 |
-| TC-010 | FR-006, BR-006 | 单元（postgresx UpsertSymbol 幂等 + UpdateIngestStatus） | Pending | postgresx upsert 与 ingest status 测试输出。 |
-| TC-011 | FR-006 | 集成（taosx QueryRange 时间范围过滤 / ossx lifecycle） | Pending | taosx 时间范围查询与 archive lifecycle 测试输出。 |
+| TC-009 | FR-006a, BR-006 | 单元（taosx WriteTick + WriteBatch） | Pending | taosx 写入和批量写入测试输出。 |
+| TC-010 | FR-006b, BR-006 | 单元（postgresx UpsertSymbol 幂等 + UpdateIngestStatus） | Pending | postgresx upsert 与 ingest status 测试输出。 |
+| TC-011 | FR-006a / FR-006d | 集成（taosx QueryRange 时间范围过滤 / ossx lifecycle） | Pending | taosx 时间范围查询与 archive lifecycle 测试输出。 |
 | TC-012 | FR-007 | httptest（/api/v1/market/ticks；ticks API success；readyz） | Pending | ticks API success 与 readyz 测试输出。 |
 | TC-013 | FR-007 | httptest（/api/v1/market/depth；redisx snapshot；401 auth） | Pending | depth API redisx snapshot 与 401 测试输出。 |
 | TC-014 | FR-007 | httptest（API key 401；rate limit 429 and Retry-After） | Pending | 401 与 429 测试输出。 |
@@ -131,7 +133,8 @@
 | FR-003 | AC-007~AC-010 | TC-004~TC-005 | Not Closed |
 | FR-004 | AC-011~AC-013 | TC-006 | Not Closed |
 | FR-005 | AC-014~AC-016 | TC-007~TC-008 | Not Closed |
-| FR-006 | AC-017~AC-020 | TC-009~TC-011 | Not Closed |
+| FR-006a | AC-016~AC-017 | TC-009, TC-011 | Not Closed |
+| FR-006b | AC-017~AC-019 | TC-010 | Not Closed |
 | FR-007 | AC-021~AC-025 | TC-012~TC-015 | Not Closed |
 | FR-006d | AC-026~AC-028 | TC-016~TC-017 | Not Closed |
 | FR-008 | AC-029~AC-031 | TC-018~TC-019 | Not Closed |
@@ -159,7 +162,7 @@
 | 所有 FR implemented | Not Done | FR-001~FR-030 状态全部闭合。 |
 | 所有 AC passed | Not Done | AC-001~AC-104 全部有测试证据。 |
 | 所有 TC passed | Not Done | TC-001~TC-049 全部 PASS。 |
-| Runtime test evidence | Local Evidence Done / Secret+CI+Live+Release Pending | `/home/binance/release/evidence/binance/20260623/` 已归档 build/test/race/vet/lint/smoke/boundary gate；验证代码与证据提交 `71e2a6e8bb5591c43e8a2ebfff8c7645bf030786`（2026-06-23 round 2）；secret scan、remote CI、live websocket、外部集成、release evidence/tag 未闭合。 |
+| Runtime test evidence | Local Evidence Done / Secret+CI+Live+Release Pending | `/home/binance/release/evidence/binance/20260623/` 已归档 build/test/race/vet/lint/smoke/boundary gate；本地验证 HEAD `dd3332d3452f4eaa8146563bdb82caf577a3d4c1`，证据提交 `71e2a6e8bb5591c43e8a2ebfff8c7645bf030786`（2026-06-23 round 2）；secret scan、remote CI、live websocket、外部集成、release evidence/tag 未闭合。 |
 | Coverage and performance evidence | Not Done | 覆盖率、延迟、吞吐、重放与故障注入报告归档。 |
 | CI pass | Not Done | GitHub Actions 或等价 CI run 通过并链接到 release evidence。 |
 
@@ -180,7 +183,7 @@
 
 | Issue | GitHub 状态 | 已有证据 | Runtime/release 边界 |
 | --- | --- | --- | --- |
-| #923 | Closed | `RUNTIME-MAPPING.md`、`BOUNDARY-GATES.md`、`/home/binance/release/evidence/binance/20260623/SUMMARY.md` | 不关闭 live Binance WebSocket、`natsx` JetStream PubAck/ManualAck、durable storage/fanout/query、post-fix release tag。 |
+| #923 | Closed | `RUNTIME-MAPPING.md`、`BOUNDARY-GATES.md`、`/home/binance/release/evidence/binance/20260623/SUMMARY.md` | 不关闭 live Binance WebSocket、完整 `natsx` JetStream TC-004/TC-006（独立进程、`NakWithDelay`、dead-letter/parking）、durable storage/fanout/query、post-fix release tag。 |
 | #924 | Closed | 本地 evidence bundle 与 PR #14 可作为候选证据入口。 | 不替代远端 CI、GitHub Release、live smoke、release artifact linkage。 |
 | #925 | Closed | `README.md`、`docs/architecture/`、`SPEC.md`、`TRACEABILITY.md`、`DATA-LIFECYCLE.md` 已对齐 v3.5.0 投影。 | 无额外 runtime 声明。 |
 | #926 | Closed | `DATA-LIFECYCLE.md` §9 形式化闭合备忘录：FR-012~FR-030 登记完成、影响台账完整、旧 issue 映射完成。 | Runtime 实现仍由 FR/runtime gates 治理。 |

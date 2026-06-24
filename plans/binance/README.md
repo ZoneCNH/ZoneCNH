@@ -7,9 +7,13 @@
 
 | Plan | Title | Priority | Effort | Depends on | Status |
 |------|-------|----------|--------|------------|--------|
-| 006 | binance 模块生产就绪修复（46 Task，8 Phase；Phase 4-ALT 作废；新增 Task 7.0 infra 凭据+configx 接入） | P0 | XL(4.8~9pm) | Task 0.1 DONE(v2.0.0) | IN PROGRESS — Phase 0 DONE, Phase 1 local hygiene/build evidence refreshed, Phase 2.5 runtime presence gates DONE, Phase 3 DONE, Phase 2/4~8 继续推进 |
+| 006 | binance 模块生产就绪修复（46 Task，8 Phase；Phase 4-ALT 作废；新增 Task 7.0 infra 凭据+configx 接入） | P0 | XL(4.8~9pm) | Task 0.1 DONE(v2.0.0) | IN PROGRESS — Phase 0 DONE, Phase 1 local hygiene/build evidence refreshed, Task 1.1/1.3~1.6/2.1~2.4/4.4/6.7/8.1/8.3/8.5 local-fixed(Beads closed；对应 GitHub issues closed), Task 4.2 local runtime wiring + gated JetStream 子集(Beads in_progress；GitHub #990 open；独立进程/NakWithDelay/dead-letter pending), Task 4.3 local connector increment(Beads in_progress；GitHub #991 open；live Binance websocket pending), Task 6.6 Beads in_progress；严格 Plan006 仍有 24 条 active（21 open + 3 in_progress；GitHub open 24）, Phase 2.5 runtime presence gates DONE, Phase 3 DONE, Phase 4~8 继续推进 |
 
 Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJECTED (with one-line rationale)
+
+## 执行对齐记录
+
+- 2026-06-24: [Plan006 执行对齐记录](006-execution-alignment.md) 同步本地验证、Beads、GitHub issue 状态；不改变 Plan006 生产级验收口径。
 
 ## 依赖说明
 
