@@ -263,3 +263,57 @@ GitHub comment evidence:
 
 `[COMPUTED, HIGH]` 4.1/8.4 需架构决策，5.2/5.4 需实盘 infra 连接，6.1 可纯代码推进。不得据此声明 release done。
 
+---
+
+## Batch4 + Batch5 对齐（2026-06-24 session 续 2）
+
+> Scope: 本节记录 batch4（PR #71）+ batch5（PR #72）的对齐。本 session 累计 5 代码批次 + 2 文档 PR，关闭 21 个 Task，剩余 3 open（5.4 部分闭环）。
+
+### Batch4（PR #71，main 08601a4）
+
+| Task | 内容 | beads | GitHub |
+|---|---|---|---|
+| 6.1 故障注入测试 | 补 consumer panic recover 测试；核实确认 Nak/Redis BNC-009/Kafka BNC-008/dead-letter 已有覆盖 | `ZoneCNH-yvh` closed | #1001 closed |
+
+**核实纠正**：agent 审计称"故障注入薄弱/无 Nak/Redis/Kafka"不准确。实际已有：
+- `TestRunnerNaksRetryableRejects`（Nak 重投）
+- `TestRedisStoreRedisUnavailableReturnsBNC009`（Redis 不可达）
+- `TestKafkaDispatchAdapterSendErrorIsRetryableBNC008`（Kafka 故障）
+- `TestProcess_DispatchRetryExhausted_DeadLetter`（dispatch 重试耗尽 dead-letter）
+- `TestProcess_MetricsDeadLetter`（dispatch 失败 + retry 指标）
+- `TestIngestServerStorageFailureDefaultIsDeadLetter`（storage 失败 dead-letter）
+本次新增 `TestProcessMessagePanicRecovered`（panic recover，验证 batch2 recover 保护）。
+
+### Batch5（PR #72，main b5eb16e）
+
+| Task | 内容 | beads | GitHub |
+|---|---|---|---|
+| 5.4 FR-029 freshness SLA | SLAWindow 环形缓冲 P95/P99 + stale alert，集成 qualityTracker | （5.4 整体仍 open，FR-029 子项闭环） | — |
+
+**5.4 子项进度**：
+- ✅ FR-029 freshness SLA P95/P99 + stale alert（SLAWindow，5 测试 PASS）
+- ❌ backfill 80/20 预算分配（待后续，纯算法可推进）
+- ❌ daily reconciliation 04:00 UTC 定时器（待后续，纯代码可推进）
+- ❌ cold data rehydration OSS→taosx（待后续，需 OSS Read + taosx Write）
+- ✅ release evidence bundle（已存在）
+- ✅ config hot reload（已存在）
+
+### 更新后 Issue Inventory
+
+`[COMPUTED, HIGH]` 本 session 5 批次后：
+- 严格 Plan006 Beads：49 条；**46 closed，3 open**（5.4 部分闭环，整体仍 open）。
+- `ZoneCNH/ZoneCNH` GitHub Plan006 open：**3 条**（4.1 #989 / 5.2 #998 / 5.4 #1000；8.4 #1018 为 P2 第 4 条）。
+
+### 剩余 open Task
+
+| Task | 状态 | 缺口性质 |
+|---|---|---|
+| 4.1 删 v1 架构 | 评估完成，未执行 | spool 非纯死代码（admin API 依赖），需独立重构重写 admin 接口 |
+| 8.4 wire 外部化 | 评估完成，架构不适用 | §8 gate 已认可 wire 边界；迁移到 module/contracts 违反 AGENTS.md |
+| 5.2 历史生命周期 | PARTIAL | RequestBackfill 内存 stub；repair replay + archive restore 缺失；需实盘交易所 REST |
+| 5.4 运维发布 | PARTIAL（FR-029 闭环） | 80/20 节流 + 04:00 定时 + OSS 重注水 待后续 |
+
+> 注：5.4 的 FR-029 子项已闭环，但 5.4 整体因 3 个子项未完仍保持 open。
+
+`[COMPUTED, HIGH]` 4.1/8.4 需架构决策，5.2 需实盘交易所连接，5.4 剩余子项可纯代码推进。不得据此声明 release done。
+
