@@ -1,9 +1,9 @@
 # binance 生产就绪 — SRE 解锁清单
 
-- Date: 2026-06-25
+- Date: 2026-06-25（updated: redis/kafka/OSS 已解锁）
 - Scope: G0 端到端验证 + G2 Kafka + OSS 归档的 infra 侧阻塞项
 - Audience: SRE / 运维
-- Prereq: 本轮代码修复已完成（`fix/binance-production-readiness` 分支），以下项是 infra 配置解锁，零代码工作
+- Prereq: v0.2.0 已发布，以下项是 infra 配置解锁
 
 ---
 
@@ -14,10 +14,10 @@
 | postgresx       | ✅ 装配完成 | ✅ LIVE-PASS                          | —                         |
 | clickhousex     | ✅ 装配完成 | ✅ LIVE-PASS（market_binance 库已建） | —                         |
 | mainnet 四线 WS | ✅ 测试就绪 | ✅ LIVE-PASS（spot/um/cm）            | —                         |
-| **redisx**      | ✅ 装配完成 | ❌ NOAUTH                             | 本地 Redis 需密码         |
-| **taosx**       | ✅ 装配完成 | ❌ driver not configured              | TDengine driver mode 未配 |
-| **Kafka send**  | ✅ 装配完成 | ❌ write messages                     | broker auto-create/SASL   |
-| **OSS 归档**    | ✅ 装配完成 | ❌ 未测                               | 需真实阿里云凭据          |
+| redisx          | ✅ 装配完成 | ✅ **LIVE-PASS**（ACL Username 修复） | — 已解锁（sre/dev.md 凭据）|
+| Kafka broker    | ✅ 装配完成 | ✅ **LIVE-PASS**（SASL+topic 自动创建）| — 已解锁                  |
+| OSS 归档        | ✅ 装配完成 | ✅ 凭据就绪（sre/dev.md 东京 x-go）   | — 已配置                  |
+| **taosx**       | ✅ 装配完成 | ❌ driver not configured              | **taosx 仓需导出 websocket driver API（issue ZoneCNH/taosx#16）** |
 
 ---
 
