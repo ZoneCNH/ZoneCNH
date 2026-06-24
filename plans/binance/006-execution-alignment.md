@@ -302,7 +302,24 @@ GitHub comment evidence:
 
 `[COMPUTED, HIGH]` 本 session 5 批次后：
 - 严格 Plan006 Beads：49 条；**46 closed，3 open**（5.4 部分闭环，整体仍 open）。
-- `ZoneCNH/ZoneCNH` GitHub Plan006 open：**3 条**（4.1 #989 / 5.2 #998 / 5.4 #1000；8.4 #1018 为 P2 第 4 条）。
+- `ZoneCNH/ZoneCNH` GitHub Plan006 open：**7 条**（含 3 个待关闭同步缺口，见下节）；关闭后应剩 **4 条**。
+
+### GitHub issues 同步缺口（2026-06-24 WebFetch 核实）
+
+`[COMPUTED, HIGH]` 经 WebFetch 核实，发现 **3 个 issue 应关闭但仍 open**（batch2 关闭了 beads 但遗漏 GitHub close）：
+
+| GitHub issue | Task | 应关原因 | 状态 |
+|---|---|---|---|
+| **#1008** | 6.8 InstrumentKey 强类型 | batch2 PR#69 已实现（wire+client+server 端到端填充+测试） | ❌ open（应 closed） |
+| **#1011** | 7.2 CI workflows | batch2 PR#69 已创建 release.yml + GOPRIVATE 配置 | ❌ open（应 closed） |
+| **#1012** | 7.3 configx 配置加载 | binancecfg.Load 已用 configx 加载 8 个 FOUNDATIONX 前缀，裸 os.Getenv 凭据零命中 | ❌ open（应 closed） |
+
+**关闭命令**（本次同步执行）：
+```bash
+gh issue close 1008 --repo ZoneCNH/ZoneCNH -c "[2026-06-24 闭环] Task 6.8 batch2 PR#69 已实现。"
+gh issue close 1011 --repo ZoneCNH/ZoneCNH -c "[2026-06-24 闭环] Task 7.2 batch2 PR#69 已创建 release.yml。"
+gh issue close 1012 --repo ZoneCNH/ZoneCNH -c "[2026-06-24 闭环] Task 7.3 binancecfg.Load 已实现。"
+```
 
 ### 剩余 open Task
 
