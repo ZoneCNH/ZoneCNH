@@ -1,6 +1,7 @@
 # binance 修复执行 Plan 索引
 
-> 基于 `docs/report/binance/production-readiness-gap-analysis-20260624.md`（五轮 58 维度分析）。
+> Plan006 基于 `docs/report/binance/production-readiness-gap-analysis-20260624.md`（五轮 58 维度分析）。
+> **Plan007 基于 Plan006 完成后的两份复核报告**：[`production-readiness-recheck-20260624.md`](../../docs/report/binance/production-readiness-recheck-20260624.md)（生产就绪复核，HEAD 8290dc9）+ [`foundationx-binance-decoupling-architecture-20260624.md`](../../docs/report/arch/foundationx-binance-decoupling-architecture-20260624.md)（解耦架构）。
 > 执行顺序见各 Plan 内部 Phase；状态更新到本文件。
 
 ## 执行顺序与状态
@@ -8,6 +9,7 @@
 | Plan | Title | Priority | Effort | Depends on | Status |
 |------|-------|----------|--------|------------|--------|
 | 006 | binance 模块生产就绪修复（49 Task，8 Phase；Phase 4-ALT 作废；新增 Task 7.0 infra 凭据+configx 接入） | P0 | XL(4.8~9pm) | Task 0.1 DONE(v2.0.0) | ✅ DONE（2026-06-24 六批次 PR#68/69/70/71/72/73 + 四文档 PR#1020/1021/1022/1023 合并）：**49/49 Task 全闭环**。beads 0 open · GitHub 0 open。验证：build(100x)/vet(100x)/test-race/boundary-gates(13)/govulncheck(0) 全绿。详见 [006-execution-alignment.md](006-execution-alignment.md) |
+| 007 | binance 生产就绪收尾 + FoundationX 解耦隐患修复（双轨：Track A 功能 G1~G6/R1~R8 + Track B 跨仓库 §7.1~§7.7；18 Task，8 Phase） | P0/P1/P2 | M(1.1~2.05pm) | Plan006 DONE | ⏳ TODO。基于两份复核报告（HEAD 8290dc9）：Report1 勘误架构分裂已解决（22 FR 已实现），剩余 G1~G6 收尾；Report2 新增 transportx name bug + domain_* path 分叉 + wire→contracts 等 7 工程隐患。双轨可并行。详见 [007-binance-readiness-arch-fix.md](007-binance-readiness-arch-fix.md) |
 
 Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJECTED (with one-line rationale)
 

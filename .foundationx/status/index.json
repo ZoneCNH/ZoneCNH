@@ -15,9 +15,9 @@
   "summary": {
     "spec_complete": 21,
     "impl_complete": 21,
-    "release_published": 20,
+    "release_published": 21,
     "live_integration": 7,
-    "factory_grade": 19,
+    "factory_grade": 20,
     "open_blockers": 0
   },
   "modules": {
@@ -179,16 +179,16 @@
     },
     "natsx": {
       "layer": "L2",
-      "version": "v1.0.3-tag",
+      "version": "v1.0.2-release / v1.0.3-tag",
       "spec": true,
       "impl": true,
-      "release": false,
+      "release": true,
       "live": true,
       "ci": true,
       "adopt": "N/A",
       "soak": false,
-      "factory": false,
-      "note": "PR #17 merged and remote tag v1.0.3 exists, but GitHub Release v1.0.3 is missing; keep release=false and factory=false until release evidence exists"
+      "factory": true,
+      "note": "GitHub Release v1.0.2 exists (published 2026-06-18); remote tag v1.0.3 remains tag-only and is not counted as release evidence; PR #17 merged; BLK-001/BLK-002 resolved"
     },
     "postgresx": {
       "layer": "L2",
@@ -303,12 +303,8 @@
       "open_blocker_implies_factory_false",
       "open_release_blocker_implies_release_false"
     ],
-    "release_false_modules": [
-      "natsx"
-    ],
+    "release_false_modules": [],
     "open_blocker_modules": [],
-    "factory_blocking_modules": [
-      "natsx"
-    ]
+    "factory_blocking_modules": []
   }
 }
