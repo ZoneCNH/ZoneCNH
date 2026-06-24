@@ -5,9 +5,9 @@
 | 字段 | 值 |
 | --- | --- |
 | Status | Generated from current module SSOT |
-| Last-Updated | 2026-06-24 |
-| Module-Version | v3.5.0 |
-| Module-State | 验收清单已补齐；L1 边界治理 FR-009 本地 evidence 已归档；L2 功能 FR 多数 Pending，以 runtime 仓实际测试、CI 与 release 证据为准 |
+| Last-Updated | 2026-06-25 |
+| Module-Version | v3.6.0 |
+| Module-State | 验收清单已补齐；L1 边界治理 FR-009 Done（13 gates PASS）；L2 功能 FR **19/30 Done / 11 Partial / 0 Pending**（runtime HEAD `e02b190`，Plan007 A1~A10 + B1~B8 已执行）；本次引入 main.go 装配级证据标准——9 存储类 FR（FR-005/006a-d/007/007a/010/011）writer 代码完整但 `main.go` 未装配实例（`bootstrap.Spec{Stores: bootstrap.None}` + `NewMemoryIdempotencyStore` + `StorageWriter=nil`），runtime 永不执行，下调为 Partial；6 FR 上调（FR-002/004/008/025/030 Done + FR-016 实质升级）；BR-004 提升为 Done |
 | Runtime-Repo | `/home/binance` |
 | Source | `SPEC.md`, `TRACEABILITY.md`, `DATA-LIFECYCLE.md`, `STANDARD.md`, `client/TRACEABILITY.md`, `server/TRACEABILITY.md`, `BOUNDARY-GATES.md` |
 
@@ -43,7 +43,7 @@
 | Runtime vet | `cd /home/binance && go vet ./...` | 无 vet blocker。 |
 | Runtime lint | `cd /home/binance && golangci-lint run` | 无 lint blocker。 |
 | Secret scan | `cd /home/binance && gitleaks detect --no-git` | 无凭证泄漏。 |
-| Boundary gates | `cd /home/binance && bash -n scripts/boundary-gates.sh && ./scripts/boundary-gates.sh` | 10/10 PASS：禁止路径、禁止导入、禁止同进程 C/S、禁止 ownership drift 与 go.mod drift 全部 PASS；本地证据归档见 `/home/binance/release/evidence/binance/20260623/boundary-gates.log`。 |
+| Boundary gates | `cd /home/binance && bash -n scripts/boundary-gates.sh && ./scripts/boundary-gates.sh` | 13/13 PASS：禁止路径、禁止导入、禁止同进程 C/S、禁止 ownership drift、natsx/storage/gin presence 与 go.mod drift 全部 PASS；本地证据归档见 `/home/binance/release/evidence/binance/20260623/boundary-gates.log`。 |
 
 ## 2. Acceptance Criteria 登记
 
@@ -161,10 +161,10 @@
 | 根、Client、Server traceability 存在 | Done | 三个 traceability 文件可定位。 |
 | natsx / ManualAck / redisx / ossx / kafkax 边界已写入规格 | Done | `SPEC.md` 与 `TRACEABILITY.md` 可定位对应 FR/AC/TC。 |
 | Boundary gates 文档化 | Done | `BOUNDARY-GATES.md` 存在。 |
-| 所有 FR implemented | Not Done | FR-001~FR-030 状态全部闭合。 |
+| 所有 FR implemented | 19/30 Done, 11 Partial | FR-001~030 全部有实现（0 Pending）。v3.6.0 引入 main.go 装配级证据标准：9 存储类 FR（FR-005/006a-d/007/007a/010/011）writer 代码完整但 main.go 未装配实例，下调为 Partial；6 FR 上调（FR-002/004/008/025/030 + FR-016 实质升级）。详见 `TRACEABILITY.md` v3.6.0 变更摘要。 |
 | 所有 AC passed | Not Done | AC-001~AC-104 全部有测试证据。 |
 | 所有 TC passed | Not Done | TC-001~TC-049 全部 PASS。 |
-| Runtime test evidence | Local Evidence Done / Secret+CI+Live+Release Pending | `/home/binance/release/evidence/binance/20260623/` 已归档 build/test/race/vet/lint/smoke/boundary gate；本地验证 HEAD `dd3332d3452f4eaa8146563bdb82caf577a3d4c1`，证据提交 `71e2a6e8bb5591c43e8a2ebfff8c7645bf030786`（2026-06-23 round 2）；secret scan、remote CI、live websocket、外部集成、release evidence/tag 未闭合。 |
+| Runtime test evidence | Local Evidence Done / Secret+CI+Live+Release Pending | `/home/binance/release/evidence/binance/{20260623,20260625}/` 已归档 build/test/race/vet/lint/smoke/boundary gate/testnet-live/SLO；runtime HEAD `e02b190`（Plan007 A1~A10 + B1~B8 已执行）；Plan007 已闭合 G1(历史回填真实REST)/G3(NakWithDelay+DLQ)/G4(跨产品线碰撞)；secret scan、remote CI、合约/期权 testnet 凭据、真实 Kafka broker e2e、release evidence/tag 未闭合。 |
 | Coverage and performance evidence | Not Done | 覆盖率、延迟、吞吐、重放与故障注入报告归档。 |
 | CI pass | Not Done | GitHub Actions 或等价 CI run 通过并链接到 release evidence。 |
 

@@ -2,10 +2,43 @@
 
 所有 notable 变更记录，按 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/) 格式维护。
 
-- Module-Version: v3.5.0
-- Last-Updated: 2026-06-23
-- Spec-Reference: `module/binance/SPEC.md` v3.5.0
+- Module-Version: v3.6.0
+- Last-Updated: 2026-06-25
+- Spec-Reference: `module/binance/SPEC.md` v3.6.0
 - 治理规则：`module/binance/RULES.md` R9 文档存在性
+
+---
+
+## [v3.6.0] — 2026-06-25 生产就绪修复（G0~G8 + C1/C4/C7）
+
+### Added
+- **C7 新增 6 规范文档**：`ENDPOINTS.md` / `PERSISTENCE-WIRING.md` / `SECURITY.md` / `OBSERVABILITY.md` / `OPERATIONS.md` / `DATA-QUALITY-SLA.md`。
+- **G0 存储装配契约**：`PERSISTENCE-WIRING.md` 定义 `storageFromEnv` 装配链路（5 infra client + 7 writer + fail-fast + SecretString 桥接）。
+- **C4 mainnet 四线矩阵**：`test/e2e/mainnet_live_test.go`（取代 testnet 路线），gate `BINANCE_MAINNET_LIVE`，spot/um/cm/options 四产品线。
+- **G7 产品线差异测试**：`internal/client/product_line_diff_test.go`（同 symbol 跨线 InstrumentKey + 合约专属事件路由）。
+- **G8 订单簿全量档位**：`NormalizedEvent.DepthBids/DepthAsks []BookLevel`（取代仅 top-of-book）。
+- **A7 options 结构化 parser**：`parseOptionTicker` + `OptionGreeks` 结构（EventType=option_tick，取代 rawPassThrough 兜底）。
+- **G2 Kafka broker gate**：`test/e2e/kafka_broker_test.go`（gate `BINANCE_KAFKA_LIVE`）。
+
+### Changed
+- **G0 存储装配闭合**：`cmd/binance-server/storage_env.go` 的 `storageFromEnv` 真实装配 taosx/postgresx/redisx/clickhousex/ossx，注入 `ServerConfig.StorageWriter`(TaosWriter) + `PostAcceptHooks`(PgCatalog/HotCache/OssArchiver) + `RedisStore` 幂等层 + ClickHouse ETL。server 全局迁移到 `binancecfg.Load` + `FOUNDATIONX_*`。
+- **FR 实现状态**：19/30 → **28/30 Done (93%)**。9 存储类 FR（FR-005/006a-d/007/007a/010/011）Partial→Done。
+- **fail-fast 全局严格**：`StrictStorageWrite=true` + `validateStorageConfig`（缺失 POSTGRESX_PASSWORD/OSSX_BUCKET 启动失败）。
+- **C1 清除 testnet**：删除 `testnet-live.txt` evidence + `testnet_live_test.go`；`mainnet-coverage-matrix.txt` 替代。
+- **TRACEABILITY**：§6 仪表盘 63%→93%；§7 变更历史加 v3.6.0 行。
+
+### Fixed
+- **C2 options 端点勘误**：确认 `wss://fstream.binance.com/public` 是正确的 Binance Options WS 端点（issue #77 CLOSED/NOT_PLANNED）。
+- **options DefaultSymbol 补值**：`product_line.go` options spec 补 `DefaultSymbol`（占位 + 注释说明动态解析）。
+
+### Verified
+- 10 轮独立验证全部 PASS（boundary-gates 13/13, govulncheck 0 漏洞, go test 18 包全绿）。
+- C4 mainnet 四线 LIVE-PASS（spot/um/cm trade 真实接收实证）。
+- G0 端到端 postgresx + clickhousex 建连接证 PASS。
+
+### Pending（SRE/CI 解锁，零代码）
+- redisx/taosx/Kafka/OSS infra 配置（见 `docs/report/binance/sre-unblock-checklist-20260625.md`）。
+- CI 私有依赖修复（issue #94）后打 v0.2.0 release tag。
 
 ---
 

@@ -5,8 +5,8 @@
 | 字段 | 值 |
 | --- | --- |
 | Status | Formal Proposal（governance/documentation closed via #926 2026-06-23）; Runtime Evidence Pending |
-| Module-Version | v3.5.0 |
-| Last-Updated | 2026-06-23 |
+| Module-Version | v3.6.0 |
+| Last-Updated | 2026-06-25 |
 | Scope | `module/binance` stage2 lifecycle planning |
 | Spec-Impact | 已 fold：FR-012~FR-030 已登记到 `SPEC.md`/`TRACEABILITY.md`，相关命名落点已投影到 `NAMING.md`；本文件仍不声明 runtime contract |
 | Source Plan | `docs/report/binance/goal-execution-plan-20260622.md` 阶段 2 / AC-3 |

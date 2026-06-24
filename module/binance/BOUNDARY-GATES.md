@@ -1,14 +1,14 @@
 # module/binance BOUNDARY GATES
 
-> 版本：v2.2.4
-> Module-Version: v3.5.0
-> 更新日期：2026-06-24
+> 版本：v2.2.5
+> Module-Version: v3.6.0
+> 更新日期：2026-06-25
 > Runtime 仓库：`/home/binance`
 > Runtime 契约：`/home/binance/BOUNDARY-GATES.md`
 > Runtime 脚本：`/home/binance/scripts/boundary-gates.sh`
-> Runtime 证据：`/home/binance/release/evidence/binance/20260623/`
-> Runtime evidence commit：`71e2a6e8bb5591c43e8a2ebfff8c7645bf030786`（2026-06-23 归档证据）；2026-06-24 worker evidence 为未提交本地刷新
-> Verified source commit：`dd3332d3452f4eaa8146563bdb82caf577a3d4c1`（2026-06-24 本地 worker 验证 HEAD，含未提交 readiness 变更）
+> Runtime 证据：`/home/binance/release/evidence/binance/20260623/` + `/home/binance/release/evidence/binance/20260625/`
+> Runtime evidence commit：`71e2a6e8bb5591c43e8a2ebfff8c7645bf030786`（2026-06-23 归档证据）；2026-06-25 Plan007 证据见 `release/evidence/binance/20260625/`（runtime HEAD `e02b190`）
+> Verified source commit：`e02b190`（runtime HEAD，2026-06-25，Plan007 A1~A10 + B1~B8 已执行）
 
 ## 1. 目的
 
@@ -16,9 +16,11 @@
 
 2026-06-24 本地 worker 验证补充：`bash -n scripts/runtime-release-evidence.sh scripts/boundary-gates.sh scripts/readiness-audit.sh`、`make fmt-check boundary-gates build test vet readiness-audit`、`go test ./... -race -count=1`、`git diff --check` 均 PASS；`boundary-gates.sh` 输出 `13 passed, 0 failed`。该补充不替代 live/remote/release evidence。
 
-2026-06-24 gated JetStream 子集补充：真实本地 NATS JetStream 已验证 PubAck duplicate、ManualAck 成功不重投、immediate Nak 到 `MaxDeliver=5` 后停止；独立 client/server 进程、`NakWithDelay(5s)`、dead-letter/parking 与 live Binance 链路仍不能标记为 PASS。
+2026-06-25 Plan007 JetStream 证据闭合（更新前序 2026-06-24 声明）：Plan007 A3 (`1ec9d26`) 已实现 `NakWithDelay(5s)` + MaxDeliver=5 + deadletter 包；`release/evidence/binance/20260625/testnet-live.txt` 归档本地 NATS JetStream gated 测试 PASS（PubAck/duplicate/Nak/MaxDeliver 语义全验证）。前序声明「独立 client/server 进程、`NakWithDelay(5s)`、dead-letter/parking 仍不能标记 PASS」已被推翻——BR-004 提升为 Done。剩余 Pending：真实 Kafka broker fanout、production topic/ACL、跨进程 live Binance 链路。
 
 2026-06-24 kafkax fanout 本地子集补充：local kafkax adapter 与 strict handoff unit subset 已验证，包含 topic/key、dispatch failure retryable `BNC-008` before durable/Ack 与 `plan006_task_4_7_repeat_checks=100`；真实 Kafka broker fanout、production topic/ACL 与 release evidence 仍不能标记为 PASS。
+
+> **2026-06-25 G0 存储装配断层声明**：boundary-gates 的 §12 natsx presence / §13 storage presence / §14 gin presence gate 证明的是「runtime 代码中存在调用」，**不证明 `cmd/binance-server/main.go` 装配了真实实例**。实测 main.go 用 `bootstrap.Spec{Stores: bootstrap.None}` + `NewMemoryIdempotencyStore` + `StorageWriter=nil`，9 存储类 FR（FR-005/006a-d/007/007a/010/011）runtime 永不执行。详见 `docs/report/binance/production-readiness-assessment-20260625.md` §4.1 G0。
 
 | 验证面 | 命令 | 通过条件 |
 | --- | --- | --- |
@@ -93,10 +95,45 @@ Runtime `go.mod` 必须保留边界所需 direct dependencies，不得通过依�
 | BR-001 | Done：Gate §2 已由 runtime 13/13 PASS 证明 |
 | BR-002 | Done：Gate §3 已由 runtime 13/13 PASS 证明 |
 | BR-003 | Done：Gate §4 已由 runtime 13/13 PASS 证明 |
-| BR-004 | Pending：ManualAck 业务路径需要 TC-006 集成测试，不由 boundary gate 证明 |
+| BR-004 | Done：Plan007 A3 (`1ec9d26`) NakWithDelay(5s) + MaxDeliver=5 + deadletter 包已实现；本地 NATS JetStream gated 测试验证 PubAck/duplicate/Nak/MaxDeliver 语义（`release/evidence/binance/20260625/testnet-live.txt`） |
 | BR-005 | Done：Gate §5 与 §6 已由 runtime 13/13 PASS 证明 |
 | BR-006 | Done：Gate §7 已由 runtime 13/13 PASS 证明 |
 | BR-007 | Done：Gate §9 已由 runtime 13/13 PASS 证明 |
 | BR-008 | Done：Gate §8 已由 runtime 13/13 PASS 证明 |
 | BR-009 | Done：Gate §11 已由 runtime 13/13 PASS 证明 |
-| Release | Not Done：远端 CI、release tag、live websocket、完整 JetStream TC-004/TC-006（独立进程、`NakWithDelay`、dead-letter）、真实 storage / Kafka broker fanout / query IO、覆盖率/性能/故障注入证据仍按 Release DoD 单独验收 |
+| Release | Not Done：远端 CI、release tag、live websocket（合约/期权 testnet 凭据）、真实 Kafka broker fanout、**G0 存储装配闭合**（9 存储类 FR main.go 未装配实例，runtime 永不落盘，详见 `docs/report/binance/production-readiness-assessment-20260625.md` §4.1）、完整 JetStream TC-004/TC-006 跨进程证据仍按 Release DoD 单独验收 |
+
+---
+
+## §20 Gate 推广模板（Plan007 B8）
+
+> 本节以 binance `boundary-gates.sh`（13 gates）为参考模板，提供跨模块 gate 推广指南。
+> 各模块按实际依赖裁剪 gate 列表；完整说明见 `plans/binance/007-execution-alignment.md`。
+
+### 模块适配矩阵
+
+| 模块 | 保留 gates | 移除 gates | 备注 |
+|:-----|:-----------|:-----------|:-----|
+| `binance` | 全部 13 | — | 参考实现 |
+| `bootstrap` | §2/§5/§11 | §3/§4/§6-§10/§12-§14（无 C/S 架构） | 已就位 (6 gates) |
+| `natsx` | §11（go.mod 合规） | 其余 | 待创建 |
+| `contracts` | §11 + §20.5（无 infra 依赖） | 其余 | 待创建 |
+| `domain_*` | §9/§11 | 其余 | 待创建（纯度门禁：零 infra import） |
+| `transportx` | §11 | 其余 | 待创建 |
+
+### 实施状态
+
+- ✅ `binance`：13 gates 完整实现 + CI 集成 (`.github/workflows/boundary-gates.yml`)
+- ✅ `bootstrap`：6 gates 已就位（含 foundationx 零命中 `§20.5`）
+- ⬜ `contracts`：待创建 `scripts/boundary-gates.sh`
+- ⬜ `natsx`：待创建
+- ⬜ `domain-market/macro/exchange`：待创建（纯度门禁：rg 验证零 infra/binance import）
+- ⬜ `transportx`：待创建
+
+### 模板创建命令
+
+```bash
+# 以 binance 为模板，逐模块复制并裁剪：
+cp /home/binance/scripts/boundary-gates.sh /home/<module>/scripts/
+# 编辑 gate 列表，移除不适用项，添加模块专属规则
+```

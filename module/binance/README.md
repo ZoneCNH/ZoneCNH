@@ -2,10 +2,10 @@
 
 `module/binance` is the Binance-specific Market Data C/S Module for ZoneCNH.
 
-- Spec-Version: v3.5.0 (root) / v2.1.1 (client) / v2.2.0 (server)
-- Runtime-Version: v0.1.0
-- Delivery-State: FR-001~FR-030 spec/traceability registered; GitHub #923~#931 are closed as issue-tracking records on 2026-06-23; 2026-06-24 local runtime hygiene/build/readiness evidence passes, but runtime/release evidence remains Pending for FR-012~030 and PR-007 where no live/CI/release proof exists.
-- Last-Updated: 2026-06-24
+- Spec-Version: v3.6.0 (root) / v2.1.1 (client) / v2.2.0 (server)
+- Runtime-Version: v0.1.0 (v0.2.0 pending tag — CI issue #94 阻塞)
+- Delivery-State: FR-001~FR-030 spec/traceability registered; **2026-06-25 生产就绪修复 (G0~G8 + C1/C4/C7) 落地后 FR 状态刷新为 28 Done / 2 Partial / 0 Pending (93%)**. G0 存储装配断层闭合 — `storageFromEnv` 真实装配 5 infra client + 7 writer (PERSISTENCE-WIRING.md); 9 存储类 FR (FR-005/006a-d/007/007a/010/011) Partial→Done. C4 mainnet 四线 LIVE-PASS (spot/um/cm trade 真实接收实证). C7 新增 6 规范文档 (ENDPOINTS/PERSISTENCE-WIRING/SECURITY/OBSERVABILITY/OPERATIONS/DATA-QUALITY-SLA). 10 轮独立验证全部 PASS (boundary-gates 13/13, govulncheck 0 漏洞, go test 18 包全绿). 剩余 2 Partial: FR-016 (runtime 未注入 fetcher) + FR-024 (全量重连非增量 diff). 待 SRE 解锁: redisx/taosx/Kafka/OSS infra 配置; 待 CI 修复: 私有依赖拉取 (issue #94) 后打 v0.2.0 tag. 详见 `docs/report/binance/production-readiness-fix-execution-20260625.md`.
+- Last-Updated: 2026-06-25
 
 It is split into two submodules:
 
@@ -92,9 +92,9 @@ module/binance/server
 
 [COMPUTED, HIGH] Current issue-tracking ledger: [`../../docs/report/binance/github-issues-923-931-closure-ledger-20260623.md`](../../docs/report/binance/github-issues-923-931-closure-ledger-20260623.md).
 
-[COMPUTED, HIGH] GitHub #923~#931 are closed in GitHub state as of 2026-06-23. This closure does not replace runtime/release evidence: live websocket, external `natsx` / storage / fanout / query, remote CI, release tag, and FR-012~030 implementation evidence remain governed by acceptance and release gates.
+[COMPUTED, HIGH] GitHub #923~#931 are closed in GitHub state as of 2026-06-23. This closure does not replace runtime/release evidence: live websocket, external `natsx` / storage / fanout / query, remote CI, release tag, and Partial FR implementation evidence remain governed by acceptance and release gates.
 
-[COMPUTED, HIGH] 2026-06-24 worker evidence refresh: `/home/binance` local checks passed (`make fmt-check boundary-gates build test vet readiness-audit`, `go test ./... -race -count=1`, `git diff --check`) at runtime HEAD `dd3332d3452f4eaa8146563bdb82caf577a3d4c1` with existing dirty readiness changes preserved. This local evidence updates hygiene/readiness traceability only; it does not close live websocket, external JetStream/storage/fanout/query, remote CI, or release tag gates.
+[COMPUTED, HIGH] 2026-06-25 alignment refresh: runtime HEAD `e02b190` (Plan007 A1~A10 + B1~B8 executed). FR status refreshed to 19 Done / 11 Partial / 0 Pending under main.go 装配级证据标准 (see `TRACEABILITY.md` v3.6.0 变更摘要). 9 存储类 FR 下调根因：`cmd/binance-server/main.go` 用 `bootstrap.Spec{Stores: bootstrap.None}` + `NewMemoryIdempotencyStore` + `StorageWriter=nil`，writer 代码完整但 runtime 永不执行（详见 [`docs/report/binance/production-readiness-assessment-20260625.md`](../../docs/report/binance/production-readiness-assessment-20260625.md) §4.1 G0）。Plan007 已闭合：G1 (历史回填真实 REST)、G3 (NakWithDelay+DLQ)、G4 (跨产品线碰撞测试)；G2/G5/G7/G8 仍 Partial。
 
 ## Read Next
 
