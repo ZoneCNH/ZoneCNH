@@ -5,6 +5,7 @@
 - [COMPUTED, HIGH] 判定口径：后续版本已声明修复的 v1 P0/P1 文档对齐项不再列入当前未完成清单；v2 之后仍保留或新增的 runtime、证据、治理投影、数据生命周期、清洗处理和 gap 缺口列为未完成。
 - [COMPUTED, HIGH] 限制：2026-06-23 已在 `/home/binance` `fix/binance-issues` 采集 L1/local evidence，证据 commit 为 `66f60b3945dce215f68ff833bbd336364d635ae8`；未执行 L2/L3/live/release/external integration 验证。
 - [COMPUTED, HIGH] 2026-06-23 后续 PR #936 / SPEC v3.5.0 已将 FR-012~030 纳入正式 SPEC/TRACEABILITY；本报告中“数据生命周期候选仍未进入正式管线”的旧口径保留为 PR #910 前后的历史复盘，当前缺口转为实现、测试、证据和 release。GitHub #923~#931 已在后续 PR #947/#949 后全部 CLOSED；当前 closure ledger 仅记录 issue tracking state，runtime/release caveat 继续由 acceptance/release gates 管理。
+- [COMPUTED, HIGH] 2026-06-24 后续更新：本报告 §二 P0-1「PR-007 runtime 仍是 release blocker」与 P0-2「L2/L3/release 证据缺失」所列缺口，已由 runtime PR #73「Plan006 final」（HEAD `8290dc9`）大幅推进——natsx 分布式架构落地、22/30 FR 已实现、6 CI workflows（含 release.yml）就绪。当前基线见 [`production-readiness-recheck-20260624.md`](production-readiness-recheck-20260624.md)，剩余缺口收窄至 G1（历史回填 stub）/ G2（真实集成证据）/ G3~G5。本文 P0/P1 清单保留为 2026-06-23 历史快照。
 
 ---
 

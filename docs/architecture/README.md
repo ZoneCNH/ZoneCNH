@@ -41,7 +41,7 @@ macro_data  → macro_engine  → M State  ├─► regime_engine → DecisionC
 → 详见 [06-dataflow.md](./06-dataflow.md) · [07-three-engines.md](./07-three-engines.md)
 
 ### Foundation 状态
-- 21/21 Release ✅ · 18/21 Factory ✅ · 2 Open Blockers (BLK-009/010)  
+- 21/21 Release ✅ · 20/21 Factory ✅ · 0 Open Blockers
 → 详见 [05-foundation.md](./05-foundation.md)
 
 ### 设计原则（14 条）

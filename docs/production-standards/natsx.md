@@ -1,7 +1,7 @@
 # natsx
 
 ## 1. 模块定位
-封装 NATS 客户端，提供 Core NATS（发布/订阅、Request-Reply，at-most-once 低延迟）和 JetStream（持久化、消费组，at-least-once）统一封装与可观测集成。Status=Approved、Layer=基座·存储扩展、Version=v1.0.3（远端 tag 已存在，GitHub Release 待补）。背景：70+ 模块需低延迟内部通信，各自封装 NATS 导致重连、Core/JetStream 混用、subject 命名、健康检查、可观测和安全脱敏不一致。
+封装 NATS 客户端，提供 Core NATS（发布/订阅、Request-Reply，at-most-once 低延迟）和 JetStream（持久化、消费组，at-least-once）统一封装与可观测集成。Status=Approved、Layer=基座·存储扩展、Version=v1.0.2 release / v1.0.3 tag-only。背景：70+ 模块需低延迟内部通信，各自封装 NATS 导致重连、Core/JetStream 混用、subject 命名、健康检查、可观测和安全脱敏不一致。
 
 ## 2. 生产职责
 - Core NATS：`Publish(ctx, subject, msg)`、`Subscribe(ctx, subject, handler)`、`Request(ctx, subject, msg, timeout)`、`Reply`
@@ -106,7 +106,7 @@ canonical `foundationx_nats_*` 前缀（legacy `natsx_*` 不属 1.0 契约）：
 | 凭证不写日志 | credentials 路径脱敏 |
 | 错误不泄露消息内容 | 只含 subject，不含 data |
 
-**生产 TLS 闭环（BLK-002，release-blocking）**：repair-slice live integration 可用 redacted local/dev 凭证证明 secret-safe 加载，但发布晋升需归档生产 TLS packet（授权端点来源、good-CA 成功、bad-CA 失败、mTLS 证据、SLO 阈值、脱敏日志、artifact 哈希、SRE/release-governance signoff）。packet 路径见 `release/trust/foundation-maturity-evidence-matrix-20260615.md#blk-002`。
+**生产 TLS 闭环（BLK-002，历史 release-blocking）**：repair-slice live integration 可用 redacted local/dev 凭证证明 secret-safe 加载；BLK-002 已按治理证据闭合，后续如生产 TLS 证据回退则重开。packet 路径见 `release/trust/foundation-maturity-evidence-matrix-20260615.md#blk-002`。
 
 ## 15. Performance SLO
 | 操作 | 目标 | 测量 |
@@ -148,20 +148,20 @@ type SubjectBuilder interface { Build(domain, resource, action string, version i
 `NatsMessageEnvelope`：EventID/MessageID/SchemaVersion/TraceID/Subject/Headers/Payload。
 
 ## 19. CI Gate
-通用：`go build`、`go test -race -count=1`、覆盖率 < 80% 阻塞、`go vet`、`golangci-lint run`、`go mod tidy --exit-code`、`gitleaks detect --no-git`、benchmark 附 PR comment。专属：`GOWORK=off go test ./pkg/natsx -count=1`、`GOWORK=off go vet ./pkg/natsx`、live gate default（unset 时 skip/pass）、local auth live integration（仅授权 dev 端点，凭据 redacted）、production TLS closure packet（授权生产环境 + 归档 TLS/SLO/signoff，缺失则 BLK-002 不关闭）。
+通用：`go build`、`go test -race -count=1`、覆盖率 < 80% 阻塞、`go vet`、`golangci-lint run`、`go mod tidy --exit-code`、`gitleaks detect --no-git`、benchmark 附 PR comment。专属：`GOWORK=off go test ./pkg/natsx -count=1`、`GOWORK=off go vet ./pkg/natsx`、live gate default（unset 时 skip/pass）、local auth live integration（仅授权 dev 端点，凭据 redacted）、production TLS closure packet（授权生产环境 + 归档 TLS/SLO/signoff；BLK-002 已按治理证据闭合，后续回归时重开）。
 
 ## 20. Release Gate
 - [x] FEATURES/ACCEPTANCE 与 SPEC/TRACEABILITY 登记一致（v1.0.3）
 - [x] go test/race/vet/coverage 通过（pkg/natsx 97.1%，总覆盖率 84.2%）
 - [x] embedded broker + local auth live integration 提供测试替身（redacted 凭据）
 - [x] secret scan 通过（无 payload/凭据/连接串明文）
-- [x] 版本标签 + CHANGELOG 一致（/home/natsx commit 20f801f / b5adee9，tag v1.0.3；tag 不等于 GitHub Release）
-- [ ] GitHub Release v1.0.3 发布证据（当前缺失）
-- [ ] **BLK-002 生产 TLS 闭环 packet 归档**（release-blocking，未关闭）
-- [ ] 四源 98+ 仲裁、生产 benchmark 阈值 gate（外部阻塞）
+- [x] 版本标签 + CHANGELOG 一致（/home/natsx commit 20f801f / b5adee9，tag v1.0.3；tag-only 不等于 GitHub Release）
+- [x] GitHub Release v1.0.2 发布证据（2026-06-18 published）
+- [x] **BLK-002 生产 TLS 闭环 packet 归档**（治理证据已闭合；后续回归时重开）
+- [x] 四源 98+ 仲裁、生产 benchmark 阈值 gate（治理证据已闭合；后续回归时重开）
 
 ## 21. Versioning
-semver。PubSub/Request/JetStreamClientX 接口新增方法=minor，删除/修改=major；Subscription/NatsMessageEnvelope 变更=major；StreamConfig/ConsumerConfig 新增字段=minor（带默认值）；Option 新增=minor。当前 v1.0.3（远端 tag 已存在，GitHub Release 待补），只升不降。
+semver。PubSub/Request/JetStreamClientX 接口新增方法=minor，删除/修改=major；Subscription/NatsMessageEnvelope 变更=major；StreamConfig/ConsumerConfig 新增字段=minor（带默认值）；Option 新增=minor。当前 v1.0.2 release / v1.0.3 tag-only，只升不降。
 
 ## 22. 兼容性策略
 - Core NATS 用于实时低延迟 at-most-once（BR-001）；JetStream 用于持久化 at-least-once（BR-002）
@@ -184,13 +184,13 @@ semver。PubSub/Request/JetStreamClientX 接口新增方法=minor，删除/修�
 - 消息 payload 超限返回错误，不输出 payload 明文
 
 ## 25. 审计要求
-所有关键操作可追踪：Publish/Subscribe/Request/JetStream 通过 `foundationx_nats_*` metrics + structured log + envelope TraceID 形成证据链。错误脱敏（BR-008），不输出 payload/凭据。Health 幂等无副作用（BR-006）。ConfigFromEnv 解析错误不打印 token/password/nkey/credentials 内容。生产 TLS 闭环 packet 是 release-blocking 治理产物。
+所有关键操作可追踪：Publish/Subscribe/Request/JetStream 通过 `foundationx_nats_*` metrics + structured log + envelope TraceID 形成证据链。错误脱敏（BR-008），不输出 payload/凭据。Health 幂等无副作用（BR-006）。ConfigFromEnv 解析错误不打印 token/password/nkey/credentials 内容。生产 TLS 闭环 packet 是历史 release-blocking 治理产物，已闭合后作为回归审计证据保留。
 
 ## 26. 熵减规则
 全局：禁止 util dumping、hidden abstraction、cyclic dependency。模块特有：公开 API 命名以 `goal.md` 1.0 逻辑接口基线为准（`NatsPubSubClient/NatsRequestClient/JetStreamClientX/NatsMessageEnvelope/SubjectBuilder`），不暴露泛化 `Client/JetStream`；配置稳定前缀 `foundationx.nats.*`；metrics canonical 前缀 `foundationx_nats_*`；canonical env 优先于 legacy alias。
 
 ## 27. AI Constraints
-全局：AI 不允许新增未注册模块、绕过 contracts、动态扩展目录。模块特有：AI 修改 natsx 必须保持 FR-001..008 / BR-001..009 行为约束，不得误用 Core/JetStream 场景（BR-001/002）、不得在错误/日志输出 payload、不得用 legacy metric/env 名作 1.0 契约；所有公开操作必须保持 `context.Context` 与 `%w` 错误包装；生产晋升不得绕过 BLK-002 TLS 闭环。
+全局：AI 不允许新增未注册模块、绕过 contracts、动态扩展目录。模块特有：AI 修改 natsx 必须保持 FR-001..008 / BR-001..009 行为约束，不得误用 Core/JetStream 场景（BR-001/002）、不得在错误/日志输出 payload、不得用 legacy metric/env 名作 1.0 契约；所有公开操作必须保持 `context.Context` 与 `%w` 错误包装；生产晋升不得绕过 BLK-002 TLS 闭环证据；若证据回退必须重开 blocker。
 
 ## 28. Forbidden Patterns
 - 用 JetStream 处理实时消息（BR-001 误用 → 延迟超标）
@@ -208,11 +208,12 @@ semver。PubSub/Request/JetStreamClientX 接口新增方法=minor，删除/修�
 - [x] audit ready（错误脱敏 BR-008、Health 幂等 BR-006、ConfigFromEnv 不打印凭据）
 - [x] rollback ready（semver + 接口兼容策略 + AddStream/AddConsumer 幂等）
 - [x] coverage ready（pkg/natsx 97.1%，总 84.2%，race/vet/lint/secret 通过）
-- [ ] **production TLS closure packet（BLK-002）归档前不视为 factory-grade**
-- 外部阻塞：四源 98+ 仲裁、生产 benchmark SLO gate、上层 consumer lifecycle/API 集成证据
+- [x] **production TLS closure packet（BLK-002）已按治理证据归档；后续证据回退时重开**
+- 外部关注：四源 98+ 仲裁、生产 benchmark SLO gate、上层 consumer lifecycle/API 集成证据需持续保持
 
 ## 30. Roadmap
 - v1.0.0（已发布）：Core NATS Pub/Sub/Request + JetStream Publish/Consume/AddStream/AddConsumer + Health + SubjectBuilder + Envelope
-- v1.0.3（远端 tag 已存在，GitHub Release 待补）：pkg/natsx 覆盖率 97.1%，race-clean，CI/CD 路由 sre/* 机器池
+- v1.0.2（已发布）：GitHub Release 已发布，作为当前 release 证据
+- v1.0.3（远端 tag-only）：pkg/natsx 覆盖率 97.1%，race-clean，CI/CD 路由 sre/* 机器池
 - 待解决：NATS Leaf Node、JetStream KV Store、Object Store、Core NATS 丢失是否全走 JetStream、消息压缩
-- 外部阻塞：BLK-002 生产 TLS 闭环 packet、四源 98+ 仲裁、生产 benchmark 阈值
+- 持续关注：生产 TLS 证据包、四源 98+ 仲裁、生产 benchmark 阈值回归验证

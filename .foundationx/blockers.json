@@ -182,8 +182,6 @@
   "open_blockers": 0,
   "resolved_blockers": 11,
   "open_by_severity": {},
-  "factory_blocking_modules": [
-    "natsx"
-  ],
+  "factory_blocking_modules": [],
   "release_blocking_modules": []
 }

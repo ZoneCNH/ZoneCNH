@@ -6,6 +6,8 @@
 > **证据标签**：`[KNOWN]` 文件读取 + 实跑脚本；`[COMPUTED]` 直接统计；`[INFERRED]` 跨文档交叉
 > **置信度**：HIGH
 > [COMPUTED, HIGH] 2026-06-23 PR #936 / SPEC v3.5.0 已 supersede 本报告的 v3.4.0 事实基线；FR-025~030 已登记为 Pending，本文保留为历史 backlog 复盘，当前交付缺口转向 runtime implementation / evidence / release。GitHub #923~#931 已在后续 PR #947/#949 后全部 CLOSED；当前 closure ledger 仅记录 issue tracking state，runtime/release caveat 继续由 acceptance/release gates 管理。
+>
+> [COMPUTED, HIGH] 2026-06-24 后续更新：本报告 §二 P0-1「PR-007 runtime 仍是 release blocker」与 §三评分表「27 FR Pending / `internal/cs` 未删」所列 runtime 缺口，已由 runtime PR #73「Plan006 final」（HEAD `8290dc9`）大幅闭合——natsx 分布式架构落地、22/30 FR 已实现、`internal/cs` 已删。当前基线见 [`production-readiness-recheck-20260624.md`](production-readiness-recheck-20260624.md)，剩余缺口收窄至 G1~G5。本文 §三评分表与 §二 P0 清单保留为 2026-06-23 历史快照。
 
 ---
 
