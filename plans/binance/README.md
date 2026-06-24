@@ -7,7 +7,7 @@
 
 | Plan | Title | Priority | Effort | Depends on | Status |
 |------|-------|----------|--------|------------|--------|
-| 006 | binance 模块生产就绪修复（46 Task，8 Phase；Phase 4-ALT 作废；新增 Task 7.0 infra 凭据+configx 接入） | P0 | XL(4.8~9pm) | Task 0.1 DONE(v2.0.0) | IN PROGRESS（实质修复推进 2026-06-24，worktree fix/binance-plan006-substantive-20260624）：Phase 0/1/2.5/3 DONE；Task 4.5 三层存储 hot_cache/pg_catalog/oss_archiver 实质实现+PostAcceptHook 接入 DONE；Task 5.1 controlplane 接线接入 server accept 主路径 DONE；Task 5.3 funding_rate/mark_price 事件 normalize+mapper DONE；Task 6.3 真实 testnet e2e DONE（默认 skip）；Task 6.4 govulncheck 阻断化+3 CVE 修复 DONE；Task 7.0 七 infra 仓 .env 摘出全就绪 DONE；Task 4.1/8.4 v1 spool 评估完成（非纯死代码，admin API 依赖，标注后续重构）。验证：build/vet/test-race/boundary-gates 13 gates 全绿。 |
+| 006 | binance 模块生产就绪修复（46 Task，8 Phase；Phase 4-ALT 作废；新增 Task 7.0 infra 凭据+configx 接入） | P0 | XL(4.8~9pm) | Task 0.1 DONE(v2.0.0) | IN PROGRESS（2026-06-24 五批次 PR#68/69/70/71/72 合并）：46/49 Task 闭环，剩余 3 open（4.1 需架构重构 / 8.4 wire 边界已认可 / 5.2 需实盘交易所）。Phase 0-3 + Phase 4(4.2-4.8 核实IMPL) + Phase 5(5.1/5.3 DONE,5.4 FR-029闭环) + Phase 6(6.1-6.8) + Phase 7(7.0-7.4) + Phase 8(8.1/8.2/8.3/8.5) 全绿。验证：build/vet/test-race/boundary-gates(13)/govulncheck(0) 全绿。 |
 
 Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJECTED (with one-line rationale)
 
