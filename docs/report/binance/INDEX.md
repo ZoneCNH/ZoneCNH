@@ -1,60 +1,74 @@
-# Binance reports index
+# Binance reports archive index
 
 - Last-Updated: 2026-06-25
-- Scope: `docs/report/binance` report set for Stage0–Stage2 repair and audit follow-up.
+- Scope: `docs/report/binance` 历史深度分析、生产就绪、治理闭环与 SRE 跟进记录归档。
+- Archive Root: [`archive/`](archive/)
 
-> [COMPUTED, HIGH] 2026-06-23 final disposition: GitHub #923~#931 are all closed. Runtime/release evidence remains Pending where `module/binance/ACCEPTANCE.md` and `TRACEABILITY.md` keep FR/runtime/release gates open.
+> [COMPUTED, HIGH] 本目录根层只保留索引；历史报告已按报告日期归档到 `archive/YYYYMMDD/`。
 >
-> [COMPUTED, HIGH] 2026-06-24 recheck: runtime HEAD advanced to `8290dc9` (PR #73「Plan006 final」) which deleted v1 architecture and implemented the natsx distributed path. The `production-readiness-gap-analysis-20260624.md` core conclusions (architecture split / 27 FR Pending) are superseded; see `production-readiness-recheck-20260624.md` for the current baseline (22 FR implemented / 8 partial / 0 unimplemented; remaining gaps narrowed to G1~G5).
+> [COMPUTED, HIGH] 归档文件是时间点快照。读取生产就绪、runtime/release readiness 或 issue 状态时，应以最新 runtime 仓库、验收矩阵、release evidence 和后续报告复核为准。
 >
-> [COMPUTED, HIGH] 2026-06-25 assessment: runtime HEAD advanced to `e02b190` (Plan007 A1~A10 + B1~B8 executed). G1/G3/G4 closed; G2/G5 partial. **New finding G0: `cmd/binance-server/main.go` does not wire any storage writer** — persist() silently no-ops, so data never lands in taosx/postgresx/clickhousex/ossx/redisx. Also新增 G7（合约/期权产品线实质验证）与 G8（订单簿 diff/snapshot 重建）。See `production-readiness-assessment-20260625.md` for the current baseline.
->
-> [COMPUTED, HIGH] 2026-06-25 fix-execution: **G0~G8 + C1/C4/C7 全部修复落地**（feature branch `fix/binance-production-readiness`, PR #93）。G0 存储装配闭合（storageFromEnv 真实装配 5 client + 7 writer）；FR 19/30→28/30 Done (93%)；C4 mainnet 四线 LIVE-PASS（spot/um/cm trade 实证）；10 轮独立验证全部 PASS；26 beads issues 闭环。剩余：SRE infra 解锁（redis/taos/kafka/oss）+ CI 私有依赖修复（issue #94）后打 v0.2.0 tag。See `production-readiness-fix-execution-20260625.md` + `sre-unblock-checklist-20260625.md`.
+> [COMPUTED, HIGH] 本次归档共覆盖 28 份 Markdown 报告：20260622 9 份、20260623 9 份、20260624 2 份、20260625 8 份。
 
-## Execution and iteration plans
+## 归档批次
 
-| Report | Purpose |
-| --- | --- |
-| [goal-execution-plan-20260622.md](goal-execution-plan-20260622.md) | Goal execution plan, stage gates, acceptance criteria, and issue mapping. |
-| [iteration-plan-20260622.md](iteration-plan-20260622.md) | Iteration breakdown and verification sequence. |
+| 批次 | 数量 | 说明 |
+| --- | ---: | --- |
+| [`archive/20260622/`](archive/20260622/) | 9 | 初始深度分析、业务覆盖、Goal 与迭代方案。 |
+| [`archive/20260623/`](archive/20260623/) | 9 | 数据流、基础设施解耦、治理闭环、issue/PR 审计与未完成项。 |
+| [`archive/20260624/`](archive/20260624/) | 2 | 生产就绪差距分析与 HEAD 复核。 |
+| [`archive/20260625/`](archive/20260625/) | 8 | 20 轮深度分析、生产就绪评估/修复/SRE 清单，以及本轮主分析、架构、规范报告。 |
 
-## Analysis reports
-
-| Report | Purpose |
-| --- | --- |
-| [business-types-coverage-20260622.md](business-types-coverage-20260622.md) | Product-line and business-type coverage assessment. |
-| [dataflow-architecture-analysis-20260623.md](dataflow-architecture-analysis-20260623.md) | Dataflow architecture gaps, delivery-futures product_line gap, and ruleset maturity assessment. |
-| [infrastructure-decoupling-report-20260623.md](infrastructure-decoupling-report-20260623.md) | Binance decoupling target for redisx/kafkax/natsx/postgresx/taosx/ossx/clickhousex boundaries, config/lifecycle ownership, and final dependency graph. |
-| [multi-exchange-adr-20260623.md](multi-exchange-adr-20260623.md) | ADR for OQ-005/006 multi-exchange generalization — recommends per-exchange module template (Option B). |
-| [deep-analysis-20260622.md](deep-analysis-20260622.md) | Initial deep analysis snapshot. |
-| [deep-analysis-20260622-v2.md](deep-analysis-20260622-v2.md) | Follow-up analysis snapshot. |
-| [deep-analysis-20260622-v3.md](deep-analysis-20260622-v3.md) | Follow-up analysis snapshot. |
-| [deep-analysis-20260622-v4.md](deep-analysis-20260622-v4.md) | Follow-up analysis snapshot. |
-| [deep-analysis-20260622-v5-cleansing-processing-gaps.md](deep-analysis-20260622-v5-cleansing-processing-gaps.md) | Cleansing and processing gap analysis. |
-
-## Closure and audit reports
+## 20260622
 
 | Report | Purpose |
 | --- | --- |
-| [pr-936-governance-docs-closure-20260623.md](pr-936-governance-docs-closure-20260623.md) | Post-PR #936 governance/docs closure audit for #925/#930/#931, stale PR #910 projections, and exact patch set. |
-| [governance-closure-20260623.md](governance-closure-20260623.md) | Worker-3 governance slice closure for #869/#871/#893/#894/#895/#896. |
-| [commit-coverage-audit-20260623.md](commit-coverage-audit-20260623.md) | 50-candidate preserve/stash/backup commit coverage audit for #896. |
-| [issues-full-closure-20260623.md](issues-full-closure-20260623.md) | Full 25-issue closure review (PR #910) — final status, evidence, residual actions. |
-| [github-issues-923-931-closure-ledger-20260623.md](github-issues-923-931-closure-ledger-20260623.md) | GitHub #923-#931 closure ledger: 9/9 GitHub issues closed, with runtime/release readiness explicitly kept under acceptance and release gates. |
+| [business-types-coverage-20260622.md](archive/20260622/business-types-coverage-20260622.md) | Product-line and business-type coverage assessment. |
+| [deep-analysis-20260622.md](archive/20260622/deep-analysis-20260622.md) | Initial deep analysis snapshot. |
+| [deep-analysis-20260622-v2.md](archive/20260622/deep-analysis-20260622-v2.md) | Follow-up analysis snapshot. |
+| [deep-analysis-20260622-v3.md](archive/20260622/deep-analysis-20260622-v3.md) | Follow-up analysis snapshot. |
+| [deep-analysis-20260622-v4.md](archive/20260622/deep-analysis-20260622-v4.md) | Historical data vs realtime data gap analysis. |
+| [deep-analysis-20260622-v5-cleansing-processing-gaps.md](archive/20260622/deep-analysis-20260622-v5-cleansing-processing-gaps.md) | Cleansing and processing gap analysis. |
+| [deep-analysis-20260622-backlog.md](archive/20260622/deep-analysis-20260622-backlog.md) | Deep-analysis unfinished/backlog summary. |
+| [goal-execution-plan-20260622.md](archive/20260622/goal-execution-plan-20260622.md) | Goal execution plan, stage gates, acceptance criteria, and issue mapping. |
+| [iteration-plan-20260622.md](archive/20260622/iteration-plan-20260622.md) | Iteration breakdown and verification sequence. |
 
-## Production readiness reports
+## 20260623
 
 | Report | Purpose |
 | --- | --- |
-| [production-readiness-gap-analysis-20260624.md](production-readiness-gap-analysis-20260624.md) | 5-round 58-dimension gap analysis based on runtime HEAD `4fa920b`. **Core conclusions superseded by PR #73** — kept for audit trail. |
-| [production-readiness-recheck-20260624.md](production-readiness-recheck-20260624.md) | Recheck based on runtime HEAD `8290dc9` (PR #73). Corrects the predecessor: architecture split resolved, 22/30 FR implemented, remaining gaps narrowed to G1 (history fetcher stub) / G2 (real integration evidence) / G3 (NakWithDelay+DLQ) / G4 (cross-product-line collision test) / G5 (release artifact). Estimated 0.8~1.8 person-months to production. |
-| [production-readiness-assessment-20260625.md](production-readiness-assessment-20260625.md) | Comprehensive assessment based on runtime HEAD `e02b190` (Plan007 executed). Verifies G1/G3/G4 closed, G2/G5 partial. **New finding G0 (storage wiring gap): main.go does not wire any storage writer, persist() silently no-ops.** Adds G7 (futures/options product-line substantive verification) and G8 (orderbook diff/snapshot rebuild). Includes实测数据流架构图、业务类型覆盖矩阵、模块规范建议。Estimated 1.5~2.5 person-months to production. §9 追加修复执行记录（G0 闭合后修订为 1-2 工作日）。 |
-| [production-readiness-fix-execution-20260625.md](production-readiness-fix-execution-20260625.md) | **修复执行记录**：G0~G8 + C1/C4/C7 全部 P0+P1 修复落地。Agent Team Wave1-3 + 10 轮独立验证（全部 PASS）+ 实证推进（mainnet LIVE-PASS / pg+ch 建连 / Kafka driver 修复）+ beads 26 闭环 + PR #93/#1076 + CI issue #94。 |
-| [sre-unblock-checklist-20260625.md](sre-unblock-checklist-20260625.md) | **SRE 解锁清单**：redisx（密码）/taosx（driver）/Kafka（topic）/OSS（凭据）的 infra 侧阻塞项操作清单，含解锁后完整验证命令。零代码工作。 |
-| [issues-sync-final-20260625.md](issues-sync-final-20260625.md) | 21 条 issues 拆解映射（beads ↔ GitHub）。§2 追加本次修复闭环记录（26 beads closed + PR #93/#1076 + issue #94）。 |
+| [commit-coverage-audit-20260623.md](archive/20260623/commit-coverage-audit-20260623.md) | 50-candidate preserve/stash/backup commit coverage audit. |
+| [dataflow-architecture-analysis-20260623.md](archive/20260623/dataflow-architecture-analysis-20260623.md) | Dataflow architecture gaps and ruleset maturity assessment. |
+| [github-issues-923-931-closure-ledger-20260623.md](archive/20260623/github-issues-923-931-closure-ledger-20260623.md) | GitHub #923-#931 closure ledger. |
+| [governance-closure-20260623.md](archive/20260623/governance-closure-20260623.md) | Governance slice closure for #869/#871/#893/#894/#895/#896. |
+| [infrastructure-decoupling-report-20260623.md](archive/20260623/infrastructure-decoupling-report-20260623.md) | Decoupling target for redisx/kafkax/natsx/postgresx/taosx/ossx/clickhousex boundaries. |
+| [issues-full-closure-20260623.md](archive/20260623/issues-full-closure-20260623.md) | Full 25-issue closure review. |
+| [multi-exchange-adr-20260623.md](archive/20260623/multi-exchange-adr-20260623.md) | ADR for multi-exchange generalization. |
+| [pr-936-governance-docs-closure-20260623.md](archive/20260623/pr-936-governance-docs-closure-20260623.md) | Post-PR #936 governance/docs closure audit. |
+| [unfinished-deep-analysis-20260623.md](archive/20260623/unfinished-deep-analysis-20260623.md) | Deep-analysis unfinished-item summary. |
 
-## Stage0–Stage2 executable gates
+## 20260624
 
-- Stage1 doc gate: `scripts/check-binance-docs.sh`
-- Stage2 lifecycle draft: `module/binance/DATA-LIFECYCLE.md` (v3.5.0 — FR-012~FR-030 registered in SPEC/TRACEABILITY; runtime evidence largely in place post-PR #73, see `production-readiness-assessment-20260625.md` for residual G0/G7/G8 gaps)
-- Stage6 `module/binance/STANDARD.md` is Active (v0.1.1) and wired into R9 + check-binance-docs.sh.
+| Report | Purpose |
+| --- | --- |
+| [production-readiness-gap-analysis-20260624.md](archive/20260624/production-readiness-gap-analysis-20260624.md) | 5-round production-readiness gap analysis; superseded by later rechecks where noted. |
+| [production-readiness-recheck-20260624.md](archive/20260624/production-readiness-recheck-20260624.md) | Recheck based on runtime HEAD `8290dc9`. |
+
+## 20260625
+
+| Report | Purpose |
+| --- | --- |
+| [binance-module-analysis.md](archive/20260625/binance-module-analysis.md) | Production-level module analysis report. |
+| [binance-data-flow-architecture.md](archive/20260625/binance-data-flow-architecture.md) | Data-flow architecture diagram and responsibility boundaries. |
+| [binance-module-standards.md](archive/20260625/binance-module-standards.md) | Binance module development and production standards. |
+| [deep-analysis-20rounds-20260625.md](archive/20260625/deep-analysis-20rounds-20260625.md) | 20-round deep production-readiness analysis. |
+| [issues-sync-final-20260625.md](archive/20260625/issues-sync-final-20260625.md) | Issues decomposition and sync report. |
+| [production-readiness-assessment-20260625.md](archive/20260625/production-readiness-assessment-20260625.md) | Comprehensive production-readiness assessment. |
+| [production-readiness-fix-execution-20260625.md](archive/20260625/production-readiness-fix-execution-20260625.md) | Production-readiness fix execution record. |
+| [sre-unblock-checklist-20260625.md](archive/20260625/sre-unblock-checklist-20260625.md) | SRE infra unblock checklist. |
+
+## 读取口径
+
+[INFERRED, HIGH] 这些文档跨多次修复、复核和状态推进，较早报告中的结论可能被后续报告明确覆盖。检索时建议按日期从新到旧阅读；引用历史结论时同时标注报告日期、对应 runtime HEAD 或 PR/issue 背景。
+
+[RULES I BROKE]：无
