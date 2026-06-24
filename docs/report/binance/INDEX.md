@@ -48,5 +48,5 @@
 ## Stage0–Stage2 executable gates
 
 - Stage1 doc gate: `scripts/check-binance-docs.sh`
-- Stage2 lifecycle draft: `module/binance/DATA-LIFECYCLE.md` (v3.5.0 — FR-012~FR-030 registered in SPEC/TRACEABILITY; runtime/release evidence Pending)
+- Stage2 lifecycle draft: `module/binance/DATA-LIFECYCLE.md` (v3.5.0 — FR-012~FR-030 registered in SPEC/TRACEABILITY; runtime evidence largely in place post-PR #73, see `production-readiness-recheck-20260624.md` for residual G1~G5 gaps)
 - Stage6 `module/binance/STANDARD.md` is Active (v0.1.1) and wired into R9 + check-binance-docs.sh.

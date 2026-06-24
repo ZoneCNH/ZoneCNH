@@ -1,5 +1,19 @@
 # module/binance 生产就绪差距分析报告
 
+> **⚠️ SUPERSEDED — 核心结论已被推翻（2026-06-24）**
+>
+> 本报告基于 runtime HEAD `4fa920b`（PR #20）。其后合入的 **PR #73「Plan006 final」**（`8290dc9`，2026-06-24 19:35）删除了 v1 架构、重写为 natsx 分布式架构、补全部署/CI/安全/运维/生命周期，**推翻了本报告的核心结论**：
+>
+> | 本报告结论（已失效） | 当前实态（`8290dc9`） |
+> |---|---|
+> | 架构分裂（HTTP/wire vs natsx）是 P0 阻塞 | ✅ natsx JetStream 是真实生产路径，HTTP 显式退役 |
+> | 27 FR Pending / 0 FR 已实现 | ✅ 22 FR 已实现 / 8 部分实现 / 0 未实现 |
+> | 7 存储模块 go.mod direct 但 0 调用 | ✅ 全部真实接入 |
+> | 部署/CI/安全/可观测全缺 | ✅ Dockerfile + 6 CI workflows + gitleaks/govulncheck + prometheus/slog |
+> | 到生产 4.8~9 人月 | ✅ 收窄至 0.8~1.8 人月（剩余 G1~G5 收尾缺口） |
+>
+> **当前基线以 [`production-readiness-recheck-20260624.md`](production-readiness-recheck-20260624.md) 为准。** 本报告正文保留为审计证据链，不再代表 binance 当前状态。
+
 - Report-Date: 2026-06-24
 - Scope: `module/binance/`（规格文档）+ `/home/binance`（runtime 仓库）双端交叉审计
 - Goal: 评估 binance 模块到「生产级别、可发布状态」还需补充什么
