@@ -2,7 +2,7 @@
 
 > 定义 `module/*/SPEC.md` 的状态流转规则。
 
-最后更新：2026-06-09
+最后更新：2026-06-25
 
 ---
 
@@ -16,6 +16,15 @@
 | `Implemented` | 已实现                     | 模块追溯矩阵所有 FR 标记 `Done` / `✅`，且 DoD 证据齐全 | -                                                      |
 | `Changed`     | 已批准或已实现的规格被修改 | 修改 `Approved` / `Implemented` 状态的 `SPEC.md`       | 重新进入 `Review` 并跑四源评分                         |
 | `Deprecated`  | 已废弃                     | 模块被移除或替代                                       | -                                                      |
+
+> **主态与描述性后缀**：上表六态为**主态**。主态可与描述性后缀组合以表达过渡情形，合法形式见 [`DEFINITION-OF-READY.md` §Status 合法值](./DEFINITION-OF-READY.md#status-合法值)。常见后缀组合：
+> - `Spec Approved / Tasks Pending` — 规格层 Approved、实施层未启动（Approved 子态）
+> - `Docs Baseline Approved / Runtime Pending` — 文档基线 Approved、运行时未启动
+> - `Approved (Docs Baseline Synced / Runtime Truth Verified)` — 文档与 runtime 双向同步
+> - `Approved (contract-corrected)` — 历史 contract 修正后批准
+> - `Implemented Locally` — 本地实现版本
+>
+> **判定规则**：spec-lint 按 `Approved → Review → Draft → Implemented → Changed → Deprecated` 顺序抽取首个匹配关键词作为 `status_main`，用于 AC 必填等门禁判断。后缀不影响主态判定。
 
 ---
 
@@ -72,7 +81,7 @@ Deprecated is terminal.
 
 | 字段           | 说明                                      |
 | -------------- | ----------------------------------------- |
-| `Status`       | 规格生命周期状态（本文件定义的六态之一）  |
+| `Status`       | 规格生命周期状态（本文件定义的六态之一，可附描述性后缀，见 §1）  |
 | `Spec-Version` | 规格文档自身版本号，与代码 `Version` 解耦 |
 | `Last-Updated` | 规格最后一次修改日期                      |
 | `Owner`        | 规格负责人                                |
@@ -107,7 +116,7 @@ Deprecated is terminal.
 
 Spec lint 和 rule scorer 至少校验：
 
-- `Status` 值必须是六态之一（不接受 `Active`、`WIP` 等非标准值）。
+- `Status` 值必须包含六态关键词之一（主态；可附描述性后缀，见 §1 与 `DEFINITION-OF-READY.md` §Status 合法值）。不接受 `Active`、`WIP` 等非标准值。
 - `Spec-Version` 必须存在且格式为 `vX.Y.Z`。
 - `Last-Updated` 必须存在且为有效日期。
 - `Approved` / `Implemented` 状态的语义变更不得绕过 `Changed`。
@@ -166,7 +175,7 @@ Spec lint 和 rule scorer 至少校验：
 
 变更 `SPEC.md` 时检查：
 
-- [ ] `Status` 字段值在六态之内。
+- [ ] `Status` 字段值含六态主态关键词之一（可附描述性后缀，见 §1）。
 - [ ] 状态流转合法。
 - [ ] `Spec-Version` 和 `Last-Updated` 已按变更分类更新。
 - [ ] FR/BR/AC/TC 语义变化已进入 `Changed`。

@@ -67,4 +67,20 @@
 
 | 日期 | 版本 | 变更 |
 |------|------|------|
+| 2026-06-25 | v0.1.1 | 新增 §8 Evidence 投影：对齐 STATUS.md 外部 CI 声明 |
 | 2026-06-17 | v0.1.0-draft | 初始基线：4 FR + 3 BR + 1 NFR + 7 TC + 4 AC |
+
+---
+
+## §8 Evidence 投影（外部仓库 CI）
+
+> 来源：`STATUS.md` 分析域明细表 `[KNOWN]`
+> 认识论声明：以下为 STATUS.md 文档投影，非本会话独立验证；具体 TC↔test 文件映射与 CI run id 待外部仓库 evidence 归档。
+
+| 投影项 | 数值 | 来源 | evidence 状态 |
+|--------|------|------|---------------|
+| regime_engine tests PASS | 13 | STATUS.md "13 tests PASS" | ⬜ 待归档（外部仓库 CI run id / test 文件路径） |
+| 实现进度 | 60% | STATUS.md "████ 60%" | `[FRAME]` 投影 |
+| contracts 接入 | v1.0.0 P0 桥接 | STATUS.md "contracts v1.4.0 接入" | ⬜ 待归档 |
+
+> **未闭合项**：FR-001~004 的 TC 在本表 §4 仍为 ⬜，因无法确认 13 tests 与 7 TC 的精确映射（13 tests 可能含 TC 之外的边界/集成测试）；evidence 归档后应在 §4 Status 列逐条 ✅ 并填 evidence 路径。

@@ -2,8 +2,11 @@ name: Audit STATUS.md consistency
 
 # NOTE: self-hosted runner 已下线（zone-runner unregistered 2026-06-18），仅保留 workflow_dispatch 防止 queued 堆积。
 # 重装 runner 后恢复 pull_request/push trigger。
+# schedule: 每日 06:00 UTC 定时刷新 audit，检测投影层与事实层漂移（P1-1，2026-06-25）。
 on:
   workflow_dispatch:
+  schedule:
+    - cron: '0 6 * * *'
 
 jobs:
   audit:
