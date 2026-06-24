@@ -213,3 +213,53 @@ GitHub comment evidence:
 
 不得据此声明 Plan006 release done 或 production-ready。
 
+---
+
+## Batch2 + Batch3 对齐（2026-06-24 session 续）
+
+> Scope: 本节记录 batch2（PR #69）+ batch3（PR #70）的对齐。本 session 三批次累计关闭 25 个 Task，剩余 5 个 open。
+
+### Batch2（PR #69，main 3964eb1）
+
+| Task | 内容 | beads | GitHub |
+|---|---|---|---|
+| 6.8 InstrumentKey 强类型 | wire+client+server 端到端填充（之前零值） | `ZoneCNH-6kl` closed | #1008 closed |
+| 8.2 gRPC 注释修正 | streamOf 注释 → natsx/HTTP | — | — |
+| 6.7 recover 保护 | 消费循环+消息处理 panic 不崩进程 | — | — |
+| 7.2 release.yml | tag 触发+二进制+evidence+Release | `ZoneCNH-6ix` closed | #1011 closed |
+| 6.6 testdata | 4 产品线+golden 确认就绪 | — | — |
+| 7.3 configx 配置 | binancecfg.Load 8 前缀，零裸凭据 | `ZoneCNH-5ol` closed | #1012 closed |
+
+### Batch3（PR #70，main 5d4da85）
+
+| Task | 内容 | beads | GitHub |
+|---|---|---|---|
+| 6.5 gap Prometheus | 3 指标（gap_detected/repair_required/repair_verified）+ quality.observe 上报 | `ZoneCNH-lew` closed | #1005 closed |
+| 6.2 coverage 就绪 | coverage.out 65.6% + 5 benchmark 文件 | `ZoneCNH-0z4` closed | #1002 closed |
+| 4.2 natsx 双端 | agent 核实 IMPL（集成测试绿），关闭 | `ZoneCNH-xei` closed | #990 closed |
+| 4.3 四产品线 connector | agent 核实 IMPL（4 文件+测试），关闭 | `ZoneCNH-lor` closed | #991 closed |
+| 4.4 幂等 | agent 核实 IMPL（redis SetNX+pg，9 测试），关闭 | `ZoneCNH-2pk` closed | #992 closed |
+| 4.6 Gin API | agent 核实 IMPL（35 测试），关闭 | `ZoneCNH-71r` closed | #994 closed |
+| 4.7 kafkax fanout | agent 核实 IMPL（RecordingSink 仅 smoke），关闭 | `ZoneCNH-3fx` closed | #995 closed |
+| 4.8 OLAP+dist_lock | agent 核实 IMPL（26+22 测试），关闭 | `ZoneCNH-0ap` closed | #996 closed |
+| 7.1 部署产物 | 核实 Dockerfile/compose/env.example/5 migrations 全存在+零凭据，关闭 | `ZoneCNH-25y` closed | #1010 closed |
+| 7.4 GitHub Release | 核实 v0.1.1 已 published，关闭 | `ZoneCNH-55n` closed | #1013 closed |
+
+### 更新后 Issue Inventory
+
+`[COMPUTED, HIGH]` 本 session 三批次后：
+- 严格 Plan006 Beads：49 条；**44 closed，5 open**。
+- `ZoneCNH/ZoneCNH` GitHub Plan006：**5 open**。
+
+### 剩余 5 个 open Task（真实缺口，非 issue 未关）
+
+| Task | 状态 | 缺口性质 |
+|---|---|---|
+| 4.1 删 v1 架构 | 评估完成，未执行 | spool 非纯死代码（admin API 依赖），需独立重构重写 admin 接口 |
+| 8.4 wire 外部化 | 评估完成，架构不适用 | wire 是核心契约（88 引用），§8 gate 已认可边界；迁移到 module/contracts 违反 AGENTS.md（独立仓不依赖文档仓代码） |
+| 5.2 历史生命周期 | PARTIAL | RequestBackfill 内存 stub；repair replay + archive restore 缺失；需实盘交易所 REST 连接 |
+| 5.4 运维发布 | PARTIAL | 80/20 节流 + 04:00 定时对账 + OSS→taosx 重注水 + P95 SLA 缺失；需实盘 infra 集成 |
+| 6.1 测试重写 | PARTIAL | 50 文件仍 v1 wire；Nak/Redis/Kafka 故障注入薄弱；可纯代码推进 |
+
+`[COMPUTED, HIGH]` 4.1/8.4 需架构决策，5.2/5.4 需实盘 infra 连接，6.1 可纯代码推进。不得据此声明 release done。
+
