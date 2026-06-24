@@ -93,5 +93,23 @@
 
 | 日期 | 版本 | 变更 |
 |------|------|------|
+| 2026-06-25 | v1.2 | 新增 §8 Evidence 投影：对齐 STATUS.md 外部 CI 声明 |
 | 2026-06-16 | v1.1 | 标准化为 §1-§7 结构；FR 表增加 WHEN/THEN 列；TC 表增加 Command 列；AC 表增加 Verification 列 |
 | 2026-06-15 | v1.0 | 初始版本：8 FR + 5 BR + 5 NFR + 8 TC + 8 AC |
+
+---
+
+## §8 Evidence 投影（外部仓库 CI）
+
+> 来源：`STATUS.md` 执行域明细表 `[KNOWN]`
+> 认识论声明：以下为 STATUS.md 文档投影，非本会话独立验证；具体 TC↔test 文件映射与 CI run id 待外部仓库 evidence 归档。
+
+| 投影项 | 数值 | 来源 | evidence 状态 |
+|--------|------|------|---------------|
+| riskx tests PASS | 7 | STATUS.md "7 tests PASS" | ⬜ 待归档（外部仓库 CI run id / test 文件路径） |
+| 实现进度 | 40% | STATUS.md "████░ 40%" | `[FRAME]` 投影 |
+| 最小实现范围 | 仓位上限/最大持仓/熔断门禁 | STATUS.md "最小实现（仓位上限/最大持仓/熔断门禁）" | ⬜ 待归档 |
+| contracts 消费 | SignalIntent P1 DTO | STATUS.md "消费 contracts.SignalIntent P1 DTO" | ⬜ 待归档 |
+| SPEC 状态 | Spec Approved / Tasks Pending | SPEC.md Metadata | `[KNOWN]` |
+
+> **未闭合项**：7 tests 对应 §4 的 8 TC 中哪些尚未确认（7 tests 可能覆盖 8 TC 中的 7 个，或为不同粒度）；§4 TC 表已有 `go test ./... -run TestXxx` Command 列，evidence 归档时应填入实际 PASS 的 CI run id 与 test 输出路径。
