@@ -8,6 +8,7 @@
 
 | 报告 | 日期 | 主题 | 综合评分 |
 |---|---|---|:---:|
+| [architecture-structural-analysis-20260625-v1.md](./architecture-structural-analysis-20260625-v1.md) | 2026-06-25 | 架构深度分析与结构性评分 v1（Supersedes 0622-v2；audit 52/52；B 维首破 60；含 5 项短期修复落地） | 72/100 (B) |
 | [binance/deep-analysis-20260622-backlog.md](./binance/deep-analysis-20260622-backlog.md) | 2026-06-23 | binance 5 份深度分析未完成项汇总（20 类问题，11 已解决 / 9 剩余，含版本漂移新发现） | — |
 | [binance/github-issues-923-931-closure-ledger-20260623.md](./binance/github-issues-923-931-closure-ledger-20260623.md) | 2026-06-23 | binance GitHub #923-#931 closure ledger（9/9 GitHub issues closed；runtime/release readiness 仍由 acceptance/release gates 单独治理） | — |
 | [binance/goal-execution-plan-20260622.md](./binance/goal-execution-plan-20260622.md) | 2026-06-22 | binance Goal 执行方案（82→95 分，7 阶段 × 9 AC × 26 issues，遵循 docs/goal/02-goal-standard.md） | — |
@@ -52,6 +53,7 @@
 
 | 日期 | 变更 |
 |---|---|
+| 2026-06-25 | 新增 `architecture-structural-analysis-20260625-v1.md`：架构深度分析 v1（Supersedes 0622-v2；audit 52/52 PASS；综合 72/B；含 5 项短期修复落地：P1-1 事实层 verified_against 刷新+CI cron、P0-2 五模块 §8 Evidence 投影、P1-2 LIFECYCLE 主态+后缀补态、P1-3 AC ID 规范核实已完成、P2-1 核实取消） |
 | 2026-06-23 | 新增 `binance/deep-analysis-20260622-backlog.md`：5 份深度分析（v1~v5）未完成项汇总，20 类问题逐条回核，11 已解决 / 9 剩余；新发现 STATUS/ARCHITECTURE spec 版本落后（v3.3.0 vs v3.4.0） |
 | 2026-06-23 | 更新 `binance/github-issues-923-931-closure-ledger-20260623.md`：记录 #923-#931 已全部处于 GitHub Closed 状态，同时明确 issue tracking closure 不替代 runtime/release evidence |
 | 2026-06-22 | 新增 `binance/goal-execution-plan-20260622.md`：Goal 执行方案（82→95 分，9 AC，7 阶段 × 26 issues，遵循 docs/goal/02-goal-standard.md） |
