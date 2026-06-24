@@ -209,7 +209,16 @@ bd update ZoneCNH-t60 --claim
 - **binance runtime**: [PR #93](https://github.com/ZoneCNH/binance/pull/93)（7 commits）
 - **ZoneCNH 文档**: [PR #1076](https://github.com/ZoneCNH/ZoneCNH/pull/1076)（9 commits）
 
-### 仍 open（21 条，全部归类清晰）
+### GitHub issues 对齐（双仓）
+**binance 仓**：#74-#92 全部 CLOSED（回填修复证据 comment）；#94 OPEN（CI 私有依赖，跟踪型）
+**ZoneCNH 仓**：12 个 CLOSED（#1055/1058/1059/1060/1061/1062/1063/1064/1065/1068/1069/1072）；5 个 OPEN 跟踪型：
+- #1057 G0端到端（PARTIAL-LIVE-PASS，待 SRE）
+- #1066 G2 Kafka（PARTIAL-LIVE，待 SRE）
+- #1067 G5 release tag（待 CI #94 修复）
+- #1073 §20 跨模块推广（P3 范围外）
+- #1071 FR-030 Greeks（P2 范围外）
+
+### 仍 open（21 条 beads，全部归类清晰）
 - **7 跟踪型**（受外部/infra 阻塞）：i7l(G2 Kafka)/m7c(端到端)/297+8ji(release tag)/5j4(Kafka)/6h9+hwk(跨仓)
 - **14 P2/P3**（用户选 P0+P1 范围外）：eag/xeg/m3n/e7k 等
 
