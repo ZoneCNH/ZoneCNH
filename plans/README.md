@@ -9,9 +9,9 @@ Execute in the order below unless dependencies say otherwise. Each executor: rea
 |------|-------|----------|--------|------------|--------|
 | 001  | 轮换 sre/ 子仓库中所有硬编码凭据 | P1 | S | — | TODO |
 | 002  | 修复 audit-status.py 全模式崩溃 | P1 | S | — | DONE |
-| 003  | 修复 audit-status.py `or` 短路 bug | P1 | S | 002 | TODO |
-| 004  | 重建 release/manifest/latest.json 过期统计 | P1 | M | 002, 003 | TODO |
-| 005  | 删除 test_audit_status.py 重复代码 | P2 | S | 002, 003 | TODO |
+| 003  | 修复 audit-status.py `or` 短路 bug | P1 | S | 002 | DONE |
+| 004  | 重建 release/manifest/latest.json 过期统计 | P1 | M | 002, 003 | DONE |
+| 005  | 删除 test_audit_status.py 重复代码 | P2 | S | 002, 003 | DONE |
 
 Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJECTED (with one-line rationale)
 
