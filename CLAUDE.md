@@ -229,7 +229,7 @@ PR 标题遵循 Conventional Commits（不含模块名，模块名放 body 首�
 编辑 `module/{module}/` 下任一文件后，commit 前执行：
 ```bash
 # 检查 TRACEABILITY §1 vs §6 仪表盘 FR 状态一致性
-diff <(grep -P '^\| FR-\d+' module/{module}/TRACEABILITY.md | awk -F'|' '{print $2, $6}') \
+diff <(grep -P '^\| FR-\d+' module/{module}/TRACEABILITY.md | awk -F'|' '{print $2, $7}') \
      <(grep 'FR-.*Partial\|FR-.*Pending\|FR-.*Done' module/{module}/TRACEABILITY.md | grep -v '^\| FR' | head -30)
 # 若不一致 → 以 §1 为准修正 §6
 

@@ -7,9 +7,13 @@
 
 | Plan | Title | Priority | Effort | Depends on | Status |
 |------|-------|----------|--------|------------|--------|
-| 006 | binance 模块生产就绪修复（46 Task，8 Phase；Phase 4-ALT 作废；新增 Task 7.0 infra 凭据+configx 接入） | P0 | XL(4.8~9pm) | Task 0.1 DONE(v2.0.0) | IN PROGRESS — Phase 0 DONE, Phase 2.5 runtime presence gates DONE, Phase 1/2/3 继续推进 |
+| 006 | binance 模块生产就绪修复（46 Task，8 Phase；Phase 4-ALT 作废；新增 Task 7.0 infra 凭据+configx 接入） | P0 | XL(4.8~9pm) | Task 0.1 DONE(v2.0.0) | IN PROGRESS（实质修复推进 2026-06-24，worktree fix/binance-plan006-substantive-20260624）：Phase 0/1/2.5/3 DONE；Task 4.5 三层存储 hot_cache/pg_catalog/oss_archiver 实质实现+PostAcceptHook 接入 DONE；Task 5.1 controlplane 接线接入 server accept 主路径 DONE；Task 5.3 funding_rate/mark_price 事件 normalize+mapper DONE；Task 6.3 真实 testnet e2e DONE（默认 skip）；Task 6.4 govulncheck 阻断化+3 CVE 修复 DONE；Task 7.0 七 infra 仓 .env 摘出全就绪 DONE；Task 4.1/8.4 v1 spool 评估完成（非纯死代码，admin API 依赖，标注后续重构）。验证：build/vet/test-race/boundary-gates 13 gates 全绿。 |
 
 Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJECTED (with one-line rationale)
+
+## 执行对齐记录
+
+- 2026-06-24: [Plan006 执行对齐记录](006-execution-alignment.md) 同步本地验证、Beads、GitHub issue 状态；不改变 Plan006 生产级验收口径。
 
 ## 依赖说明
 

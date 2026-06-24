@@ -124,7 +124,7 @@ L2.5: domainx / decimalx / domain_market / domain_macro / domain_exchange (5/5 �
 
 **交易所 SDK / C/S Module：**
 
-- [binance](https://github.com/ZoneCNH/binance) — 币安 Binance Market Data C/S Module (Spot/USDⓈ-M/COIN-M/Options)；spec v3.5.0 Registered；2026-06-23 PR #19 本地 lifecycle/runtime/release-gate evidence 已归档（实现提交 `c7967dd7eec6523927f2157a2e7c49a0f2fb820d`，证据刷新 `56a7f5c7eb174e352fc91371227877365c6ae299`）；FR-012~FR-030 已补本地 lifecycle 规划/admin 合约与确定性测试；release_closeable=NO（未覆盖 live websocket / historical REST / natsx PubAck+ManualAck / 外部存储、fanout、query / remote CI / release tag） `公开`
+- [binance](https://github.com/ZoneCNH/binance) — 币安 Binance Market Data C/S Module (Spot/USDⓈ-M/COIN-M/Options)；spec v3.5.0 Registered；2026-06-23 PR #19 本地 lifecycle/runtime/release-gate evidence 已归档（本地验证 HEAD `dd3332d3452f4eaa8146563bdb82caf577a3d4c1`，证据提交 `71e2a6e8bb5591c43e8a2ebfff8c7645bf030786`）；FR-012~FR-030 已补本地 lifecycle 规划/admin 合约与确定性测试；release_closeable=NO（未覆盖 live websocket / historical REST / natsx PubAck+ManualAck / 外部存储、fanout、query / remote CI / release tag） `公开`
 - [okx](https://github.com/ZoneCNH/okx) — OKX `公开`
 - [bybit](https://github.com/ZoneCNH/bybit) — Bybit `公开`
 - [bitget](https://github.com/ZoneCNH/bitget) — Bitget `公开`

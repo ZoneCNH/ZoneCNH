@@ -1,22 +1,29 @@
 # module/binance BOUNDARY GATES
 
 > 版本：v2.2.4
-> 更新日期：2026-06-23
+> Module-Version: v3.5.0
+> 更新日期：2026-06-24
 > Runtime 仓库：`/home/binance`
 > Runtime 契约：`/home/binance/BOUNDARY-GATES.md`
 > Runtime 脚本：`/home/binance/scripts/boundary-gates.sh`
 > Runtime 证据：`/home/binance/release/evidence/binance/20260623/`
-> Runtime evidence commit：`71e2a6e8bb5591c43e8a2ebfff8c7645bf030786`
-> Verified source commit：`71e2a6e8bb5591c43e8a2ebfff8c7645bf030786`
+> Runtime evidence commit：`71e2a6e8bb5591c43e8a2ebfff8c7645bf030786`（2026-06-23 归档证据）；2026-06-24 worker evidence 为未提交本地刷新
+> Verified source commit：`dd3332d3452f4eaa8146563bdb82caf577a3d4c1`（2026-06-24 本地 worker 验证 HEAD，含未提交 readiness 变更）
 
 ## 1. 目的
 
 本文档是 docs 侧边界投影；可执行事实以 runtime 仓库为准。边界门禁证明 FR-009 / BR-001~BR-009 的结构治理，不替代 FR-003~FR-008、FR-010+ 的功能验收。
 
+2026-06-24 本地 worker 验证补充：`bash -n scripts/runtime-release-evidence.sh scripts/boundary-gates.sh scripts/readiness-audit.sh`、`make fmt-check boundary-gates build test vet readiness-audit`、`go test ./... -race -count=1`、`git diff --check` 均 PASS；`boundary-gates.sh` 输出 `13 passed, 0 failed`。该补充不替代 live/remote/release evidence。
+
+2026-06-24 gated JetStream 子集补充：真实本地 NATS JetStream 已验证 PubAck duplicate、ManualAck 成功不重投、immediate Nak 到 `MaxDeliver=5` 后停止；独立 client/server 进程、`NakWithDelay(5s)`、dead-letter/parking 与 live Binance 链路仍不能标记为 PASS。
+
+2026-06-24 kafkax fanout 本地子集补充：local kafkax adapter 与 strict handoff unit subset 已验证，包含 topic/key、dispatch failure retryable `BNC-008` before durable/Ack 与 `plan006_task_4_7_repeat_checks=100`；真实 Kafka broker fanout、production topic/ACL 与 release evidence 仍不能标记为 PASS。
+
 | 验证面 | 命令 | 通过条件 |
 | --- | --- | --- |
 | 脚本语法 | `cd /home/binance && bash -n scripts/boundary-gates.sh` | shell 语法通过 |
-| 边界门禁 | `cd /home/binance && ./scripts/boundary-gates.sh` | 10/10 PASS |
+| 边界门禁 | `cd /home/binance && ./scripts/boundary-gates.sh` | 13/13 PASS |
 | 证据包 | `cd /home/binance && sed -n '1,160p' release/evidence/binance/20260623/SUMMARY.md` | 记录 evidence commit、verified source commit、测试命令与已知缺口 |
 
 ## 2. Gate: No Legacy binance-market
@@ -83,13 +90,13 @@ Runtime `go.mod` 必须保留边界所需 direct dependencies，不得通过依�
 
 | 项 | 状态 |
 | --- | --- |
-| BR-001 | Done：Gate §2 已由 runtime 10/10 PASS 证明 |
-| BR-002 | Done：Gate §3 已由 runtime 10/10 PASS 证明 |
-| BR-003 | Done：Gate §4 已由 runtime 10/10 PASS 证明 |
+| BR-001 | Done：Gate §2 已由 runtime 13/13 PASS 证明 |
+| BR-002 | Done：Gate §3 已由 runtime 13/13 PASS 证明 |
+| BR-003 | Done：Gate §4 已由 runtime 13/13 PASS 证明 |
 | BR-004 | Pending：ManualAck 业务路径需要 TC-006 集成测试，不由 boundary gate 证明 |
-| BR-005 | Done：Gate §5 与 §6 已由 runtime 10/10 PASS 证明 |
-| BR-006 | Done：Gate §7 已由 runtime 10/10 PASS 证明 |
-| BR-007 | Done：Gate §9 已由 runtime 10/10 PASS 证明 |
-| BR-008 | Done：Gate §8 已由 runtime 10/10 PASS 证明 |
-| BR-009 | Done：Gate §11 已由 runtime 10/10 PASS 证明 |
-| Release | Not Done：远端 CI、release tag、覆盖率/性能/故障注入证据仍按 Release DoD 单独验收 |
+| BR-005 | Done：Gate §5 与 §6 已由 runtime 13/13 PASS 证明 |
+| BR-006 | Done：Gate §7 已由 runtime 13/13 PASS 证明 |
+| BR-007 | Done：Gate §9 已由 runtime 13/13 PASS 证明 |
+| BR-008 | Done：Gate §8 已由 runtime 13/13 PASS 证明 |
+| BR-009 | Done：Gate §11 已由 runtime 13/13 PASS 证明 |
+| Release | Not Done：远端 CI、release tag、live websocket、完整 JetStream TC-004/TC-006（独立进程、`NakWithDelay`、dead-letter）、真实 storage / Kafka broker fanout / query IO、覆盖率/性能/故障注入证据仍按 Release DoD 单独验收 |

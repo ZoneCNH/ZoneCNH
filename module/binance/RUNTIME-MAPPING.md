@@ -1,7 +1,8 @@
 # module/binance RUNTIME MAPPING v3.5.0
 
 > 版本：v3.5.0
-> 更新日期：2026-06-23
+> Module-Version: v3.5.0
+> 更新日期：2026-06-24
 > 替代：v1.0.0（gRPC + SQLite spool 架构）
 > 参见：`DEEP-ANALYSIS.md`（架构决策全文）
 
@@ -21,12 +22,14 @@
 | 存储 | 无 | **taosx + postgresx + redisx + ossx** |
 | Web API | Gin admin only | **Gin REST /api/v1/** |
 
-### 当前证据口径（2026-06-23）
+### 当前证据口径（2026-06-24）
 
 - [COMPUTED, HIGH] 当前远端 runtime 基线：`ZoneCNH/binance` `origin/main` merge commit `5a57a19aed3be5420135b8e05016da15faf094ed`（runtime PR #11），source commit `7873b795b13fc4b5a0fc4310300b6f196cca7532`。
 - [COMPUTED, HIGH] 已归档本地证据：`/home/binance/release/evidence/binance/20260623/`；本地 evidence commit `71e2a6e8bb5591c43e8a2ebfff8c7645bf030786`（round 2 2026-06-23）。
 - [COMPUTED, HIGH] 已证明范围：独立 `cmd/binance-client` 可启动 admin `:8081` self-test，并通过 `internal/wire` 发送 HTTP JSON `/ingest` 到 `cmd/binance-server` handler；`internal/wire` 为合法共享 wire contract；runtime 不含 `internal/cs`；`scripts/boundary-gates.sh` 10/10 PASS；`go build/test/race/vet`、`golangci-lint` 与本地 smoke self-test PASS；runtime PR #11 远端 `Boundary Gates (10 gates)` PASS。
-- [COMPUTED, HIGH] 未证明范围：`natsx` JetStream PubAck/ManualAck、durable consumer、`redisx/postgresx/taosx/ossx` 持久化、`kafkax` fanout、`/api/v1` market/query API、live websocket、release tag 与 release evidence。
+- [COMPUTED, HIGH] 2026-06-24 gated `natsx` integration 增量：真实本地 NATS JetStream 上已验证 accepted publish 非 duplicate PubAck、重复 publish duplicate PubAck、成功处理 Ack 后不重投、retryable reject immediate Nak 重投至 `MaxDeliver=5` 后停止；验证命令含 100 次重复 gated live-local loop。
+- [COMPUTED, HIGH] 2026-06-24 kafkax fanout 本地增量：`internal/server/kafka_dispatch.go` 已构造 topic `binance.{product_line}.{event_type}.v1`、message key=symbol fallback event_id；`cmd/binance-server` 支持 `XGO_BINANCE_DISPATCHER=kafkax` 并启用 strict handoff；`internal/server/ingest.go` 已验证 dispatch 失败返回 retryable `BNC-008` 且不 durable/Ack；`plan006_task_4_7_repeat_checks=100` PASS。
+- [COMPUTED, HIGH] 未证明范围：live Binance websocket、独立 client/server 进程端到端、`NakWithDelay(5s)`、dead-letter/parking/DLQ、`redisx/postgresx/taosx/ossx` 持久化、真实 Kafka broker fanout、`/api/v1` market/query API、release tag 与 release evidence。
 
 ---
 
@@ -146,8 +149,8 @@ github.com/ZoneCNH/binance/
 
 | Command | 角色 | 监听端口 | 关键依赖 | 当前证据口径 |
 |---------|------|---------|---------|--------------|
-| `cmd/binance-client` | 采集器：连接 Binance WS/REST → 发布 natsx | admin :8081 | natsx, domain_market | Partial：PR #11 已证明独立命令、admin `:8081` self-test、HTTP `/ingest` 发送路径与 boundary gate；尚无 natsx PubAck/live Binance 证据 |
-| `cmd/binance-server` | 服务端：消费 natsx → 处理存储 → 提供 API | API :8080, admin :8082 | natsx, redisx, postgresx, taosx, kafkax, ossx, gin | Partial：PR #11 已证明 HTTP `/ingest` receiver boundary；尚无 durable natsx、存储、fanout、query 证据 |
+| `cmd/binance-client` | 采集器：连接 Binance WS/REST → 发布 natsx | admin :8081 | natsx, domain_market | Partial：PR #11 已证明独立命令、admin `:8081` self-test、HTTP `/ingest` 发送路径与 boundary gate；2026-06-24 gated JetStream PubAck duplicate 子集通过；尚无独立进程/live Binance 证据 |
+| `cmd/binance-server` | 服务端：消费 natsx → 处理存储 → 提供 API | API :8080, admin :8082 | natsx, redisx, postgresx, taosx, kafkax, ossx, gin | Partial：PR #11 已证明 HTTP `/ingest` receiver boundary；2026-06-24 gated ManualAck/MaxDeliver immediate Nak 子集通过；2026-06-24 local kafkax adapter + strict handoff unit subset 通过；尚无独立进程、`NakWithDelay`、dead-letter、存储、真实 Kafka broker fanout、query 证据 |
 | `cmd/binance-smoke` | 冒烟测试（目标 natsx embedded） | — | 同 server | PASS：本地 self-test；非分布式 runtime 证据 |
 
 ---
@@ -186,7 +189,7 @@ github.com/ZoneCNH/binance/
 | 合约元数据（postgresx） | `internal/server/storage/pg_catalog.go` | ✨ 新增 |
 | 历史归档（ossx） | `internal/server/storage/oss_archiver.go` | ✨ 新增 |
 | 热缓存（redisx） | `internal/server/cache/` | ✨ 新增 |
-| 跨域发布（kafkax） | `internal/server/dispatch/` | ✨ 重写 |
+| 跨域发布（kafkax） | `internal/server/kafka_dispatch.go`（目标分层可迁至 `internal/server/dispatch/`） | ✨ 新增（local adapter；真实 broker e2e pending） |
 | Gin REST API | `internal/server/api/` | ✨ 新增 |
 | Gin admin | `internal/server/admin/` | 保留精简 |
 | ❌ gRPC ingest | `internal/server/ingest/` | **删除** |

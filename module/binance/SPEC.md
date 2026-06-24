@@ -1128,7 +1128,7 @@ github.com/ZoneCNH/binance/
 `module/binance` v3.5.0 发布完成标准：
 
 - [x] `binance-market` references 已移除或隔离到 migration history（BR-001）
-- [x] `module/binance/client` 和 `module/binance/server` specs 完成并通过 spec-lint
+- [x] `module/binance/client` 和 `module/binance/server` specs 完成并通过 spec-lint（即 `docs/governance/scoring/RUBRIC-spec.md` 结构评分门禁）
 - [x] root/client/server TRACEABILITY.md 完成，所有需求可追溯
 - [x] client/server task sets 独立可执行
 - [x] Delivery semantics 明确为 at-least-once + idempotent acceptance（FR-004, FR-005）
@@ -1141,6 +1141,8 @@ github.com/ZoneCNH/binance/
 - [ ] CI Gate 全部通过（通用 + 模块专属）
 - [ ] Performance Budget 达标
 - [ ] Integration test 演示 `client → natsx → server → storage/API/kafkax` 完整数据流
+
+> **完整 DoD 状态**：以上为本规格定义的发布完成标准。逐项验收状态（Done/Not Done）以 `ACCEPTANCE.md §5 Release Definition of Done` 为准，该文件额外包含 `FEATURES.md` 存在、`ACCEPTANCE.md` 自身存在等检查项。§23 Open Questions 中的已关闭问题不构成 DoD 门禁。
 
 ---
 
