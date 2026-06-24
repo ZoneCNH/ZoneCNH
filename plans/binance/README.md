@@ -7,7 +7,7 @@
 
 | Plan | Title | Priority | Effort | Depends on | Status |
 |------|-------|----------|--------|------------|--------|
-| 006 | binance 模块生产就绪修复（46 Task，8 Phase；Phase 4-ALT 作废；新增 Task 7.0 infra 凭据+configx 接入） | P0 | XL(4.8~9pm) | Task 0.1 DONE(v2.0.0) | IN PROGRESS — Phase 0 DONE, Phase 1 local hygiene/build evidence refreshed, Task 1.1/1.3~1.6/2.1~2.4/4.4/6.7/8.1/8.3/8.5 local-fixed(Beads closed；对应 GitHub issues closed), Task 4.2 local runtime wiring + gated JetStream 子集(Beads in_progress；GitHub #990 open；独立进程/NakWithDelay/dead-letter pending), Task 4.3 local connector increment(Beads in_progress；GitHub #991 open；live Binance websocket pending), Task 4.7 local kafkax fanout adapter + strict handoff(Beads in_progress；GitHub #995 open；real Kafka broker/release pending), Task 6.6 Beads in_progress；严格 Plan006 仍有 24 条 active（20 open + 4 in_progress；GitHub open 24）, Phase 2.5 runtime presence gates DONE, Phase 3 DONE, Phase 4~8 继续推进 |
+| 006 | binance 模块生产就绪修复（46 Task，8 Phase；Phase 4-ALT 作废；新增 Task 7.0 infra 凭据+configx 接入） | P0 | XL(4.8~9pm) | Task 0.1 DONE(v2.0.0) | IN PROGRESS（实质修复推进 2026-06-24，worktree fix/binance-plan006-substantive-20260624）：Phase 0/1/2.5/3 DONE；Task 4.5 三层存储 hot_cache/pg_catalog/oss_archiver 实质实现+PostAcceptHook 接入 DONE；Task 5.1 controlplane 接线接入 server accept 主路径 DONE；Task 5.3 funding_rate/mark_price 事件 normalize+mapper DONE；Task 6.3 真实 testnet e2e DONE（默认 skip）；Task 6.4 govulncheck 阻断化+3 CVE 修复 DONE；Task 7.0 七 infra 仓 .env 摘出全就绪 DONE；Task 4.1/8.4 v1 spool 评估完成（非纯死代码，admin API 依赖，标注后续重构）。验证：build/vet/test-race/boundary-gates 13 gates 全绿。 |
 
 Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJECTED (with one-line rationale)
 
