@@ -3,13 +3,14 @@
 - Date: 2026-06-24
 - Scope: 20 个基座模块 + 5 个领域共享层模块 + `module/binance`
 - Output: 模块边界定义、配置与生命周期解耦规则、禁止多层实现清单、最终依赖关系图
-- Evidence base: 各模块真实仓库 `go.mod` + `.go` import 语句（Agent Team 五路并行取证，2026-06-24）
+- Evidence base: 各模块真实仓库 `go.mod` + `.go` import 语句；本轮补充使用 OMX team `home-zonecnh-omx-cont-23eca57a` 只读取证并由主线程复核关键扫描（2026-06-24）
+- Team execution note: [COMPUTED, HIGH] 本轮 team 启动成功（3 workers），但任务分配出现 claim conflict / pending worker 状态；本报告不把未完成 worker 输出作为唯一证据，关键结论均由主线程命令复核。
 - 取证方法: `rg "github.com/ZoneCNH/" <dir> --type go` 逐模块扫描，对疑似命中回读源码区分真实 import 与字符串字面量/registry 数据/测试 fixture
 - 证据等级: 本报告所有边界与依赖结论均由**代码级证据**支撑（非纯文档推导），置信度 HIGH
 
 ## 0. 结论（一句话版）
 
-[COMPUTED, HIGH] 解耦架构在**代码层面已经成立**：基座层 0 反向依赖 binance、领域层 0 infra 依赖、infra 同层 0 真实互耦、binance core 走依赖注入窄接口而非多层封装。剩余工作不是"再造解耦层"，而是**修正 3 个工程隐患**（transportx module name bug、domain\_\* path 分叉、binance client assembly 越界）+ **把已记录的过渡态收口**（wire → contracts）。
+[COMPUTED, HIGH] 解耦架构在**代码层面已经成立**：基座层 0 反向依赖 binance、领域层 0 infra 依赖、infra 同层 0 真实互耦、binance core 走依赖注入窄接口而非多层封装。剩余工作不是"再造解耦层"，而是**修正 3 个工程隐患**（transportx module name bug、domain\_\* path 分叉、binance client assembly 越界）+ **收敛 2 个过渡态**（`binancecfg` 尚未接入 active `cmd/*`、wire → contracts）。
 
 [COMPUTED, HIGH] "禁止多层实现"在当前代码中**没有被违反**：binance core 持有的是 `PGClient`/`TaosClient`/`TaosClient` 等**窄接口**（六边形 ports），具体 infra 客户端只在 `cmd/binance-server/main.go` 与 `internal/client/runtime.go` 构造，没有出现 `internal/infra/{redis,nats,...}` 通用 wrapper 目录。
 
@@ -131,7 +132,7 @@
 
 | 能力                                                 | 唯一 production owner                                  | 允许的调用方形态                              | 禁止形态                                                    | 代码实证状态                                                                                                                                                                                                      |
 | ---------------------------------------------------- | ------------------------------------------------------ | --------------------------------------------- | ----------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 配置来源/合并/解码/secret/provenance                 | `configx`                                              | 各模块 typed Config + `Validate()` + defaults | `module/binance/internal/config` 自写 env/file/vault loader | [COMPUTED, HIGH] **PASS** — `internal/**` 下 0 处 `os.Getenv`；凭据全走 `pkg/binancecfg` 经 `configx.NewAllEnvSource`；无 `internal/config` wrapper 目录                                                          |
+| 配置来源/合并/解码/secret/provenance                 | `configx`                                              | 各模块 typed Config + `Validate()` + defaults | `module/binance/internal/config` 自写 env/file/vault loader | [COMPUTED, MED] **部分 PASS** — `pkg/binancecfg` 已经经 `configx.NewAllEnvSource` 聚合 8 个 `FOUNDATIONX_*` 前缀，且无 `internal/config` wrapper；但 active `cmd/*` 尚未调用 `binancecfg.Load`，仍直接读取 `XGO_BINANCE_*`/`MODE` |
 | 启停/ready/drain/shutdown 顺序                       | `bootstrap` / `cmd/*` assembly                         | 模块暴露 constructor + `Start`/`Stop` hooks   | core 自写全局 lifecycle manager                             | [COMPUTED, HIGH] **PASS** — `bootstrap` 仅在 `cmd/binance-server/main.go:22` 调用；core 层不调 bootstrap                                                                                                          |
 | logging/metrics/tracing/health                       | `observex`                                             | 业务只定义稳定 label/value                    | Binance 自写 metric registry/logger facade                  | [COMPUTED, HIGH] **PASS** — binance 经 dependency 注入 observex，无自写 facade                                                                                                                                    |
 | retry/timeout/circuit/backoff                        | `resiliencx`                                           | Binance 声明 per-operation policy             | 在 binance/natsx/redisx 各重复 retry engine                 | [COMPUTED, HIGH] **PASS** — resiliencx 零 ZoneCNH require；infra 各自零同层互耦                                                                                                                                   |
@@ -152,8 +153,10 @@
 | ------------------- | ------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- |
 | `configx`           | source/merge/decode/env/secret binding/redaction/provenance/配置快照                                    | [COMPUTED, HIGH] `configx` 零 ZoneCNH require，是纯机制层；binance 经 `pkg/binancecfg/config.go:23` 调 `configx.NewAllEnvSource` | 不知 Binance 产品线/NATS subject/Redis key 业务语义     |
 | 各 FoundationX 模块 | 自己的 typed Config/defaults/`Validate()`，如 `natsx.Config`/`redisx.Config`                            | [COMPUTED, HIGH] 各 infra 模块零业务 require                                                                                     | 不读业务配置文件，不依赖 binance                        |
-| `module/binance`    | Binance endpoint/product lines/subscription filters/symbol policy/ack/storage/fanout/archive/API policy | [COMPUTED, HIGH] `pkg/binancecfg` 聚合 8 个 `FOUNDATIONX_*` 前缀 DTO；`internal/**` 0 处 `os.Getenv`                             | 不拥有 infra connection pool config，不解析 env/secrets |
-| `cmd/*` assembly    | 将 `configx` decode 结果拆分传给各 owner constructor                                                    | [COMPUTED, HIGH] `cmd/binance-server/main.go` 构造顺序明确                                                                       | 不重新校验业务规则                                      |
+| `module/binance`    | Binance endpoint/product lines/subscription filters/symbol policy/ack/storage/fanout/archive/API policy | [COMPUTED, HIGH] `pkg/binancecfg` 已提供 per-module typed DTO 聚合；[COMPUTED, HIGH] production `internal/**` 无直接 `os.Getenv`，仅有注入式 `getenv` helper 用于文档化/测试化配置读取 | 不拥有 infra connection pool config，不自建 env/file/vault loader |
+| `cmd/*` assembly    | 将 `configx`/`binancecfg` decode 结果拆分传给各 owner constructor                                       | [COMPUTED, MED] `cmd/binance-server/main.go` 构造顺序明确；但 `cmd/binance-client`/`cmd/binance-server` 当前仍直接读 `XGO_BINANCE_*` 与 `MODE`，`rg binancecfg.Load` 仅命中定义与测试 | 不重新校验业务规则；下一步应统一到 `binancecfg.Load`    |
+
+[COMPUTED, HIGH] 当前配置解耦的准确状态是：机制层与 typed DTO 已存在，core production 包未直接读 env；但 active command 入口尚未统一接入 `binancecfg.Load`。因此配置/生命周期拆分是**核心层 PASS、装配入口待收敛**，不能记为全链路 0 偏差。
 
 ### 4.2 生命周期阶段
 
@@ -311,7 +314,7 @@ flowchart TB
 | Client/server boundary        | client 禁止 import server internals；server 禁止 import client internals                                                 | [COMPUTED, HIGH] 已 PASS（经 `internal/wire` 契约隔离）                                                          |
 | No duplicate infra wrapper    | 禁止 `internal/infra/{redis,nats,kafka,...}` 通用 wrapper                                                                | [COMPUTED, HIGH] 已 PASS（目录不存在）                                                                           |
 | No provider DTO leak          | domain\_\*/contracts 禁止出现 Binance raw field/SDK type                                                                 | [COMPUTED, HIGH] 已 PASS（领域层 0 命中）                                                                        |
-| Config/lifecycle split        | `module/binance/internal/**` 禁止直接 `os.Getenv`/读 env/file/secrets                                                    | [COMPUTED, HIGH] 已 PASS（0 处）                                                                                 |
+| Config/lifecycle split        | `module/binance/internal/**` 禁止直接 `os.Getenv`/读 env/file/secrets；`cmd/*` 应统一经 `binancecfg.Load` 装配           | [COMPUTED, MED] 核心层 PASS；装配入口部分 PASS，`cmd/*` 仍有直接 `XGO_BINANCE_*`/`MODE` env 读取                  |
 
 ## 7. 发现的工程隐患与迁移落点
 
@@ -355,17 +358,25 @@ flowchart TB
 
 **修复**：把 client 端的 infra 构造下沉到 `cmd/binance-client/main.go`，`internal/client` 只接收注入的 port。
 
-### 7.5 [中] binance `internal/wire` 自包含契约未迁移到 contracts
+### 7.5 [中] `binancecfg` 已实现但未接入 active `cmd/*`
+
+[COMPUTED, HIGH] `pkg/binancecfg/config.go` 已经通过 `configx.NewAllEnvSource` 聚合 `FOUNDATIONX_BINANCE_` 与 7 个 infra 前缀；`pkg/binancecfg/config_test.go` 覆盖了 `Load`。但 [COMPUTED, HIGH] `rg binancecfg.Load /home/binance` 仅命中定义与测试，active `cmd/binance-client/main.go`、`cmd/binance-server/main.go` 仍直接读取 `XGO_BINANCE_*` 与 `MODE`。
+
+**影响**：配置机制与 typed DTO 已经具备，但配置与生命周期解耦还停在"核心层合规、入口层过渡"状态；证据、redaction、provenance 无法覆盖全部运行入口。
+
+**修复**：让 `cmd/binance-client` 与 `cmd/binance-server` 统一从 `binancecfg.Load(ctx)` 取得配置，再拆分给 `natsx`/`kafkax`/`redisx`/`postgresx`/`taosx`/`ossx`/`clickhousex` 与 binance core constructor。
+
+### 7.6 [中] binance `internal/wire` 自包含契约未迁移到 contracts
 
 [COMPUTED, MED] binance 未 import `contracts`/`transportx`，C/S 契约当前用 `internal/wire` 自包含实现（`internal/wire/doc.go` + `module/binance/ADR-002-wire-boundary.md` 记录为过渡态）。这是已知的 ADR-002 过渡态，非违规，但阻碍"彻底解耦"的最终形态。
 
 **修复**：按 ADR-002 计划把 wire 契约上提到 `module/contracts`，binance 改为 import contracts。
 
-### 7.6 [低] bootstrap 分层定位需明确
+### 7.7 [低] bootstrap 分层定位需明确
 
 [COMPUTED, HIGH] `bootstrap` require 全部 6 基座 + 7 infra，是唯一跨 CORE+INFRA 的聚合点。把它和零依赖叶子基座（kernel/configx/...）归为同一"基座核心层"在分层语义上偏宽。建议在架构文档中把 bootstrap 单列为"装配层（composition root）"，使"基座核心层"严格限定为 6 个零依赖叶子模块。
 
-### 7.7 [低] main 落后于 worktree
+### 7.8 [低] main 落后于 worktree
 
 [COMPUTED, HIGH] domain_exchange main 缺 domainx 依赖，domain_macro 版本号（v0.1.0 vs v1.0.0）与代码量均落后于 worktree/v100。建议确认 canonical 分支并同步，避免 main 与实际运行版本漂移。
 
@@ -377,10 +388,11 @@ flowchart TB
 2. **[高] 统一 domain\_\* module path**（§7.2）：强制 snake_case，同步 main 与 worktree，修正 binance go.mod replace。
 3. **[中] 补 domainx 主 go.mod**（§7.3）：确认 canonical 源，让 main 可用。
 4. **[中] 下沉 binance client assembly**（§7.4）：`internal/client/runtime.go` 的 `natsx.New` 移到 `cmd/binance-client/`。
-5. **[中] 迁移 wire → contracts**（§7.5）：按 ADR-002 把 C/S 契约上提到 `module/contracts`。
-6. **[低] 明确 bootstrap 分层定位**（§7.6）：架构文档单列"装配层"。
-7. **[低] 同步 main 与 worktree**（§7.7）：消除版本漂移。
-8. **固化 gate**：把 §6 的 gate 推广到所有模块（以 binance `scripts/boundary-gates.sh` 为模板），纳入 CI。
+5. **[中] 接入 binancecfg**（§7.5）：`cmd/binance-client` 与 `cmd/binance-server` 统一从 `binancecfg.Load` 获得配置。
+6. **[中] 迁移 wire → contracts**（§7.6）：按 ADR-002 把 C/S 契约上提到 `module/contracts`。
+7. **[低] 明确 bootstrap 分层定位**（§7.7）：架构文档单列"装配层"。
+8. **[低] 同步 main 与 worktree**（§7.8）：消除版本漂移。
+9. **固化 gate**：把 §6 的 gate 推广到所有模块（以 binance `scripts/boundary-gates.sh` 为模板），纳入 CI。
 
 ## 9. 验收清单
 
@@ -393,13 +405,13 @@ flowchart TB
 - [COMPUTED, HIGH] 报告给出配置与生命周期解耦规则（§4），`configx` 定位为机制层而非所有 Config 的 owner。
 - [COMPUTED, HIGH] 报告给出最终 Mermaid 依赖关系图（§5），含代码实证的实线/虚线与颜色分级。
 - [COMPUTED, HIGH] "禁止多层实现"清单（§3）每条均附代码实证状态（PASS/部分 PASS/潜伏风险）。
-- [COMPUTED, HIGH] 解耦最硬四门禁全部 PASS（反向依赖 binance=0、领域纯度=0、infra 同层互耦=0、config/lifecycle split=0），证据来自五路 Agent Team 并行取证的 `rg --type go` 精确扫描 + 逐行回读。
-- [COMPUTED, HIGH] 发现 7 项工程隐患（§7），均附代码证据与修复建议。
+- [COMPUTED, MED] 解耦硬门禁中反向依赖 binance=0、领域纯度=0、infra 同层互耦=0 均 PASS；config/lifecycle split 为核心层 PASS、装配入口待收敛（见 §4 与 §7.5）。证据来自本轮 OMX team 启动记录 + 主线程 `rg --type go` 精确扫描 + 逐行回读。
+- [COMPUTED, HIGH] 发现 8 项工程隐患/过渡态（§7），均附代码证据与修复建议。
 - [INFERRED, MED] 下一步若进入实现，应先修 §7.1/§7.2 两个高优 bug（transportx name + domain path），再做 §7.4/§7.5 的 binance 内部收敛；否则"彻底解耦"在 import 层面会被这两个 bug 阻塞。
 
 ## 附录 A. 取证方法与可信度
 
-- **取证方式**：5 个 Explore Agent 并行，分别负责 (1) 基座核心层、(2) infra 扩展层、(3) 治理+领域层、(4) binance 模块内部、(5) 全局反向依赖扫描。
+- **取证方式**：[COMPUTED, HIGH] 本轮启动 OMX team `home-zonecnh-omx-cont-23eca57a`（3 workers，只读上下文快照 `.omx/context/module-decoupling-20260624T163557Z.md`），同时由主线程对基座核心层、infra 扩展层、治理+领域层、binance 模块内部、全局反向依赖扫描做命令复核。
 - **区分真实 import 与噪声**：对每个 `rg "github.com/ZoneCNH/<dep>"` 命中，回读源码区分四种形态——①真实 `import` 语句（计入依赖）；②字符串字面量（manifest/registry 数据，不计）；③`exec.Command` 参数（不计）；④`_test.go` 负向 fixture（不计）。
 - **可信度**：所有边界与依赖结论为 `[COMPUTED, HIGH]`；迁移建议为 `[INFERRED, HIGH/MED]`。
 - **已知局限**：未运行 `go build`/`go test` 验证编译（部分模块主目录缺 go.mod 或 path 分叉，无法直接 build）；结论基于静态 import 分析。
