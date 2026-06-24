@@ -1,17 +1,17 @@
 {
-  "version": "v2.2.6",
+  "version": "v2.2.7",
   "commit": "9cb609f46a7934c3b0364f8fc2b3f55d72dfa247",
   "commit_short": "9cb609f",
-  "generated_at": "2026-06-23T14:56:16Z",
+  "generated_at": "2026-06-24T11:43:17Z",
   "stats": {
-    "total_components": 70,
-    "existing": 54,
-    "planned": 16,
-    "average_progress": 49,
-    "versioned": 24,
-    "repo_count": 67,
-    "markdown_files": 518,
-    "markdown_total_lines": 96833
+    "total_components": 72,
+    "existing": 72,
+    "planned": 0,
+    "average_progress": 68,
+    "versioned": 195,
+    "repo_count": 71,
+    "markdown_files": 1114,
+    "markdown_total_lines": 164409
   },
   "sources": {
     "status": "STATUS.md",

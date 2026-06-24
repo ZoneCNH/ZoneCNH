@@ -211,11 +211,14 @@ def compare_multidimensional_projection(status_rows, modules, blockers_doc):
             )
 
     factory_na = sum(1 for row in status_rows.values() if row["factory"] == "N/A")
-    open_factory_blockers = set(blockers_doc.get("factory_blocking_modules") or sorted({
-        blocker.get("module")
-        for blocker in blockers_doc.get("blockers", [])
-        if blocker.get("status") == "open"
-    }))
+    _fbm = blockers_doc.get("factory_blocking_modules")
+    if _fbm is None:
+        _fbm = sorted({
+            blocker.get("module")
+            for blocker in blockers_doc.get("blockers", [])
+            if blocker.get("status") == "open"
+        })
+    open_factory_blockers = set(_fbm)
     factory_overclaims = [
         module
         for module, row in sorted(status_rows.items())
