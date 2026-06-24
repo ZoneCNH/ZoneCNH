@@ -1,11 +1,11 @@
 # FoundationX 架构深度分析与结构性评分报告
 
-**生成时间**：2026-06-25 CST
-**分析对象**：ZoneCNH/FoundationX 文档枢纽仓库（本仓库不含应用代码，仅描述约 73 个独立实现仓库的目标架构）
+**生成时间**：2026-06-25 CST（PR #1084 修复落地后对齐）
+**分析对象**：ZoneCNH/FoundationX 文档枢纽仓库（本仓库不含应用代码，仅描述约 73 个独立实现仓库的目标架构；`module/` 目录 54 条目，50 有 SPEC）
 **Release 基线**：`release/manifest/latest.json` = `v2.2.7` `[FRAME]`（投影字段，本会话无法访问外部仓库验证）
 **审计基线**：`scripts/audit-status.py --network` = **52/52 PASS**，0 FAIL `[COMPUTED, HIGH]`
-**分支合规声明**：从 `origin/main` HEAD `a7687452` 派生 feature branch `docs/architecture-audit-20260625`；未在 main 直接编辑 `[COMPUTED, HIGH]`
-**分析范围**：73 模块（50 有 SPEC）/ 50 SPEC / 13 CI workflow / 11 hook / commit 窗口 30d=1429、14d=1177、自 06-22=160
+**分支合规声明**：从 `origin/main` HEAD `079bca45`（PR #1084 合并后）派生 feature branch；未在 main 直接编辑 `[COMPUTED, HIGH]`
+**分析范围**：73 目标模块（`module/` 54 目录 / 50 有 SPEC）/ 50 SPEC / 13 CI workflow / 11 hook / commit 窗口 30d=1454、14d=1202
 **数据来源**：`audit-status.py`、`.foundationx/status/index.json`、`.foundationx/blockers.json`、`module/FOUNDATION-DEPS.yaml`、`wc -l`、`grep`、`git log`、`ls module/`
 
 **证据标签图例**：`[KNOWN]`=仓库已记录 · `[COMPUTED]`=本会话实测 · `[INFERRED]`=推断 · `[FRAME]`=治理状态投影（连贯≠真实）· `[GUESS]`=无依据猜测
@@ -139,7 +139,7 @@ Plan/Prompt/Evidence 三阶段 3 天无变化。52% tasks 全部来自基座 + �
 
 #### A6：文档追代码反向工作流持续（中 P1）`[COMPUTED, MED]`
 
-30d 1429 commits（日均 48），Top churn：STATUS.md 270 / ARCHITECTURE.md 189 / README.md 144 / `release/manifest/latest.json` 133。latest.json 30d 133 次变更对应 release v1.12.9→v2.2.7 频繁 bump，但 evidence 覆盖率仍 4%——`[FRAME]→REALITY` 风险信号持续。0622-v2 G2 持续。
+30d 1454 commits（日均 48），Top churn：STATUS.md 270 / ARCHITECTURE.md 189 / README.md 144 / `release/manifest/latest.json` 133。latest.json 30d 133 次变更对应 release v1.12.9→v2.2.7 频繁 bump，但 evidence 覆盖率仍 4%——`[FRAME]→REALITY` 风险信号持续。0622-v2 G2 持续。
 
 ---
 
@@ -226,7 +226,7 @@ Plan/Prompt/Evidence 三阶段 3 天无变化。52% tasks 全部来自基座 + �
 | S4   | Draft-no-AC=12（§三 S4 L179-181）                                         | Draft 仍 12 个                             | **持续(unchanged)**    | bootstrap/coinglass/factor_eval/feature_store/fred/hyperliquid/market_regime/ms_brain/okx/optimizer/pe_data/regime_engine `[COMPUTED]`                                                     |
 | S5   | tasks 53.1% / plan 4.1% / prompt 10.2% / evidence 4.1%（§三 S5 L185-196） | 52% / 4% / 10% / 4%                        | **持续(unchanged)**    | 3 天零进展 `[COMPUTED]`                                                                                                                                                                    |
 | S6   | 5 旧占位 SPEC 已实化（§三 S6 L198-200）                                   | 4 占位已物理移除（持续）                   | **持续(unchanged)**    | module/ 无 risk-engine/order-engine/portfolio-engine/backtest-engine 目录 `[COMPUTED]`                                                                                                     |
-| G2   | 30d 1273 commits 文档追代码（§三 G2 L210-219）                            | 30d 1429 commits，Top churn 不变           | **恶化（churn 加速）** | STATUS.md 270 / ARCHITECTURE.md 189 / README.md 144 / latest.json 133 `[COMPUTED]`；evidence 仍 4%                                                                                         |
+| G2   | 30d 1273 commits 文档追代码（§三 G2 L210-219）                            | 30d 1454 commits，Top churn 不变           | **恶化（churn 加速）** | STATUS.md 270 / ARCHITECTURE.md 189 / README.md 144 / latest.json 133 `[COMPUTED]`；evidence 仍 4%                                                                                         |
 | G3   | ADR=0（§三 G3 L221-227，仅搜 docs/）                                      | module/ 有 6 份 ADR                        | **缓解（测量修正）**   | 0622-v2 搜索盲区（只搜 `docs/`）；`module/ADR-*.md` 5 份 + `module/observex/ADR-dual-attribution.md` `[COMPUTED]`；但 6/73 仍低于 ≥10 目标 `[INFERRED]`                                    |
 | G4   | 报告区同主题多份无 superseded-by（§三 G4 L229-241）                       | INDEX.md 已建；本报告声明 Supersedes       | **缓解**               | `docs/report/INDEX.md` 区分权威/档案 `[KNOWN]`；本报告首部声明 Supersedes 0622-v2 `[COMPUTED]`                                                                                             |
 | G5   | verified_against 滞后 8 天（§三 G5 L243-250）                             | 滞后 5-8 天                                | **持续(unchanged)**    | index.json generated_at 06-17 vs STATUS 06-22 `[COMPUTED]`                                                                                                                                 |
@@ -237,13 +237,13 @@ Plan/Prompt/Evidence 三阶段 3 天无变化。52% tasks 全部来自基座 + �
 
 ## 5. 优化路线图
 
-### 短期（1-2 周，仓库可独立完成）
+### 短期（1-2 周，仓库可独立完成）— 5 项已落地（PR #1084）
 
-1. **刷新事实层**：重新生成 `xlibgate fleet-status`，`generated_at` 对齐当前；`audit-status.yml` 增每日定时刷新（P1-1）
-2. **统一 AC ID 规范**：`AC-{MODULE}-NNN` 与 `AC-NNN` 均合法——`DEFINITION-OF-READY.md:79` 已声明、`spec-lint.sh:272` pattern 已包容，**已完成无需改脚本**（P1-3 核实取消）
-3. **补 evidence 列**：对齐已 PASS tests 到 `regime_engine`/`signal_factory`/`riskx`/`market_regime`/`macro_regime` 的 TRACEABILITY evidence 列（P0-2）
-4. **LIFECYCLE 状态机补态**：在 `LIFECYCLE.md` §1 增"主态+描述性后缀"说明，明确 `Spec Approved / Tasks Pending` 为 Approved 子态（P1-2）
-5. **CI 数口径修正**：核实后取消——治理文档无"14 CI"口径（P2-1 核实取消）
+1. ✅ **刷新事实层**（P1-1）：`index.json` `verified_against` 刷新 + `metadata_refreshed_at` 标注 + `audit-status.yml` 加每日 cron。残留：`generated_at` 仍 06-17，需 trust fleet-status schema 迁移（issue #1089）。
+2. ✅ **统一 AC ID 规范**（P1-3 核实取消）：`DEFINITION-OF-READY.md:79` 已声明字母前缀合法，`spec-lint.sh:272` pattern 已包容，无需改脚本。
+3. ✅ **补 evidence 列**（P0-2）：5 模块 TRACEABILITY 新增 §8 Evidence 投影。残留：§4 TC Status 列仍 ⬜，待外部 CI run id 归档（issue #1090）。
+4. ✅ **LIFECYCLE 状态机补态**（P1-2）：`LIFECYCLE.md` §1/§3/§5.1/§7 补"主态+描述性后缀"说明。
+5. ✅ **CI 数口径修正**（P2-1 核实取消）：治理文档无"14 CI"口径，无需修正。
 
 ### 中期（3-6 周，跨仓库协同）
 
@@ -299,7 +299,7 @@ Plan/Prompt/Evidence 三阶段 3 天无变化。52% tasks 全部来自基座 + �
 
 ```
 audit-status.py --network:   52/52 PASS, 0 FAIL
-分支:                        docs/architecture-audit-20260625 (from origin/main a7687452)
+分支:                        docs/architecture-audit-fix-20260625 (from origin/main 079bca45, PR #1084 已合并)
 release manifest:            v2.2.7 [FRAME]
 
 —— module/ 维度 ——
@@ -341,7 +341,7 @@ Claude hooks:                11
 4 套评分源:                   claude/codex/copilot/rules 各 8+8+8 agent + rule-scorer.py
 ADR (module/):               5 实质 + 1 dual-attribution + 1 adr/README
 kebab-case 目录:             0
-30d commits:                 1429（日均 48）
+30d commits:                 1454（日均 48）
 自 06-22 commits:            160
 Top churn:                   STATUS.md 270 > ARCHITECTURE.md 189 > README.md 144 > latest.json 133
 ```
