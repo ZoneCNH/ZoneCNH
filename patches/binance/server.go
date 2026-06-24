@@ -13,6 +13,9 @@ import (
 // ---- Core Interfaces ----
 
 // IngestServer coordinates validation, idempotency, durability, and downstream dispatch.
+// The fields are retained as patch integration seams for concrete runtime wiring.
+//
+//nolint:unused
 type IngestServer struct {
 	validator   RequestValidator
 	idempotency IdempotencyStore
