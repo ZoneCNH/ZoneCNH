@@ -350,12 +350,13 @@ binance 模块当前**规格端与 runtime 端均未达生产级别**：
 ### Task 4.7: 实现 kafkax fanout [P0, FR-008]
 
 - **来源**: §3.1 FR-008, §11.5
+- **2026-06-24 执行状态**: `[COMPUTED, HIGH]` local kafkax adapter + strict handoff unit subset 完成；Beads `ZoneCNH-pwp` in_progress；GitHub `ZoneCNH/ZoneCNH#995` open，已评论本地验证；真实 Kafka broker e2e、production topic/ACL 与 release evidence 未闭合。
 - **动作**:
-  - `internal/server/dispatch/kafka_dispatcher.go` — 替换 RecordingSink
-  - topic `binance.{pl}.{et}.v1`，partition key = symbol
-  - handoff 失败不 Ack NATS；错误码 BNC-008
-- **验证**: TC-018/019 PASS；`grep -rn "kafkax" internal/server/` > 0；RecordingSink 仅测试用
-- **STOP 条件**: 无
+  - `internal/server/kafka_dispatch.go`：新增 kafkax adapter；RecordingSink 仅保留测试/默认本地模式
+  - topic `binance.{product_line}.{event_type}.v1`，message key = symbol（空值 fallback event_id）
+  - `XGO_BINANCE_DISPATCHER=kafkax` 启用 strict handoff；dispatch 成功后才 durable/Ack，失败返回 retryable `BNC-008`
+- **验证**: `[COMPUTED, HIGH]` local unit/package/full test、vet、boundary gates、diff check 与 100 repeats PASS；TC-018/019 仅 Partial，真实 broker e2e pending。
+- **STOP 条件**: 真实 Kafka broker e2e、production topic/ACL 或 release evidence 缺失时不得关闭 Task 4.7 / #995
 - **依赖**: Task 4.2
 
 ### Task 4.8: 实现 clickhousex OLAP + 分布式锁 [P1, FR-010/011]

@@ -18,6 +18,8 @@
 
 2026-06-24 gated JetStream 子集补充：真实本地 NATS JetStream 已验证 PubAck duplicate、ManualAck 成功不重投、immediate Nak 到 `MaxDeliver=5` 后停止；独立 client/server 进程、`NakWithDelay(5s)`、dead-letter/parking 与 live Binance 链路仍不能标记为 PASS。
 
+2026-06-24 kafkax fanout 本地子集补充：local kafkax adapter 与 strict handoff unit subset 已验证，包含 topic/key、dispatch failure retryable `BNC-008` before durable/Ack 与 `plan006_task_4_7_repeat_checks=100`；真实 Kafka broker fanout、production topic/ACL 与 release evidence 仍不能标记为 PASS。
+
 | 验证面 | 命令 | 通过条件 |
 | --- | --- | --- |
 | 脚本语法 | `cd /home/binance && bash -n scripts/boundary-gates.sh` | shell 语法通过 |
@@ -97,4 +99,4 @@ Runtime `go.mod` 必须保留边界所需 direct dependencies，不得通过依�
 | BR-007 | Done：Gate §9 已由 runtime 13/13 PASS 证明 |
 | BR-008 | Done：Gate §8 已由 runtime 13/13 PASS 证明 |
 | BR-009 | Done：Gate §11 已由 runtime 13/13 PASS 证明 |
-| Release | Not Done：远端 CI、release tag、live websocket、完整 JetStream TC-004/TC-006（独立进程、`NakWithDelay`、dead-letter）、真实 storage/fanout/query IO、覆盖率/性能/故障注入证据仍按 Release DoD 单独验收 |
+| Release | Not Done：远端 CI、release tag、live websocket、完整 JetStream TC-004/TC-006（独立进程、`NakWithDelay`、dead-letter）、真实 storage / Kafka broker fanout / query IO、覆盖率/性能/故障注入证据仍按 Release DoD 单独验收 |

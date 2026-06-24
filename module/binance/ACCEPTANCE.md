@@ -27,6 +27,8 @@
 > [COMPUTED, HIGH] L1 状态可由本地 boundary gate 或 CI 证据标记，但必须绑定 runtime SHA；L2 状态必须附 runtime feature/integration test 输出与 runtime git SHA，runtime 仓未推送时所有 L2 FR 默认 Pending。
 >
 > [COMPUTED, HIGH] 2026-06-24 gated `natsx` integration 已在真实本地 NATS JetStream 上验证 PubAck duplicate、ManualAck 成功不重投、immediate Nak 至 `MaxDeliver=5` 后停止；TC-004/TC-006 仍保持 Pending，因为独立 client/server 进程、`NakWithDelay(5s)`、dead-letter/parking 和完整 live 链路未闭合。
+>
+> [COMPUTED, HIGH] 2026-06-24 kafkax fanout local unit subset 已验证 topic/key 与 strict handoff：目标 server 测试、`go test ./cmd/binance-server ./internal/server -count=1`、`go test ./...`、`go vet ./...`、`./scripts/boundary-gates.sh` 与 `plan006_task_4_7_repeat_checks=100` PASS；真实 Kafka broker e2e、production topic/ACL 与 release evidence 仍未闭合。
 
 ## 1. 验收命令
 
@@ -75,9 +77,9 @@
 | AC-026 | FR-006d | 归档路径遵循 `binance/{product_line}/{symbol}/{YYYY}/{MM}/{DD}/{event_type}.parquet`；每日定时查询 cutoff（now - 90d）之前的 taosx 数据。 | TC-016, TC-017 | Pending |
 | AC-027 | FR-006d | 删除 `taosx` 旧分区前必须校验对象 ETag；ossx ETag 验证通过后才执行 taosx.Delete（先写冷再删热）。 | TC-016 | Pending |
 | AC-028 | FR-006d | ETag 不匹配时停止删除并报警；ossx path 与 parquet object 格式可回放校验。 | TC-017 | Pending |
-| AC-029 | FR-008 | Server 通过 `kafkax` 发送 `binance.{product_line}.{event_type}.v1`；Kafka topic 与 natsx subject 明确分离。 | TC-018 | Pending |
-| AC-030 | FR-008 | Kafka message key 为 symbol 或 instrument identity；partition key = symbol，相同 symbol 有序到达同一 partition。 | TC-018 | Pending |
-| AC-031 | FR-008 | Kafka handoff 失败时不 Ack NATS message；Kafka 不可达时返回 error，进入 retry/dead-letter/告警路径。 | TC-019 | Pending |
+| AC-029 | FR-008 | Server 通过 `kafkax` 发送 `binance.{product_line}.{event_type}.v1`；Kafka topic 与 natsx subject 明确分离。 | TC-018 | Partial（local adapter topic 已验证；真实 broker e2e pending） |
+| AC-030 | FR-008 | Kafka message key 为 symbol 或 instrument identity；partition key = symbol，相同 symbol 有序到达同一 partition。 | TC-018 | Partial（local key=symbol 已验证；真实 partition/order e2e pending） |
+| AC-031 | FR-008 | Kafka handoff 失败时不 Ack NATS message；Kafka 不可达时返回 error，进入 retry/dead-letter/告警路径。 | TC-019 | Partial（strict dispatch failure → retryable BNC-008 before durable/Ack 已验证；broker/DLQ e2e pending） |
 | AC-032 | FR-009 | CI 禁止 `binance-client` 导入 server internals；server 源码无 client 内部包或运行时共享包导入。 | TC-020 | PASS |
 | AC-033 | FR-009 | CI 禁止 `binance-server` 导入 client internals；任何代码 reintroduce `binance-market` 引用时 CI no-legacy gate 失败。 | TC-021 | PASS |
 | AC-034 | FR-009 | CI 禁止 `binance-market` 与运行时共享包回流；go.mod 中 natsx/redisx/postgresx/taosx/clickhousex/kafkax/ossx/gin 均保持 direct 依赖。 | TC-022 | PASS |
@@ -111,8 +113,8 @@
 | TC-015 | FR-007 | boundary test（market_data 不导入 server internals；HTTP/Kafka only） | Pending | market_data boundary test 输出。 |
 | TC-016 | FR-006d, BR-006 | 单元（先写 ossx 后删 taosx） | Pending | ETag 通过后删除 taosx 的生命周期测试输出。 |
 | TC-017 | FR-006d | 单元（归档路径格式） | Pending | ossx path 格式测试输出。 |
-| TC-018 | FR-008 | 单元（kafkax topic + partition key） | Pending | topic 与 partition key 测试输出。 |
-| TC-019 | FR-008, BR-004 | 单元（kafkax 不可达→error/不 Ack） | Pending | Kafka 故障不 Ack 测试输出。 |
+| TC-018 | FR-008 | 单元（kafkax topic + partition key） | Partial | 2026-06-24 local unit subset：`go test ./internal/server -run 'TestKafkaDispatch' -count=1 -v` 与 `plan006_task_4_7_repeat_checks=100` PASS；真实 Kafka broker topic 未验证。 |
+| TC-019 | FR-008, BR-004 | 单元（kafkax 不可达→error/不 Ack） | Partial | 2026-06-24 strict handoff unit subset：目标 `TestProcess_Strict*` / `TestProcess_DispatchRetryExhausted` 与 `plan006_task_4_7_repeat_checks=100` PASS；真实 broker/DLQ e2e 未验证。 |
 | TC-020 | FR-009, BR-005 | CI gate（运行时共享包/client 包 import 检查） | PASS | `/home/binance/release/evidence/binance/20260623/boundary-gates.log` |
 | TC-021 | FR-009, BR-001 | CI gate（no-legacy 引用检查） | PASS | `/home/binance/release/evidence/binance/20260623/boundary-gates.log` |
 | TC-022 | FR-009, BR-009 | CI gate（go.mod 合规） | PASS | `/home/binance/release/evidence/binance/20260623/boundary-gates.log` + `/home/binance/release/evidence/binance/20260623/go-build.log` |
@@ -137,7 +139,7 @@
 | FR-006b | AC-017~AC-019 | TC-010 | Not Closed |
 | FR-007 | AC-021~AC-025 | TC-012~TC-015 | Not Closed |
 | FR-006d | AC-026~AC-028 | TC-016~TC-017 | Not Closed |
-| FR-008 | AC-029~AC-031 | TC-018~TC-019 | Not Closed |
+| FR-008 | AC-029~AC-031 | TC-018~TC-019 | Not Closed（local unit subset Partial；broker e2e pending） |
 | FR-009 | AC-032~AC-035 | TC-020~TC-022 | Done（L1 边界治理，本地 runtime evidence 已归档；远端 CI/release evidence 仍单独验收）|
 | FR-010 | AC-041~AC-044 | TC-025~TC-026 | Not Closed |
 | FR-006c | AC-036~AC-037 | TC-023 | Not Closed |
@@ -172,7 +174,7 @@
 | --- | --- | --- |
 | release 证据仍未闭合 | 本地 evidence 不能替代 remote CI、live websocket、外部集成或 release tag。 | 补齐 secret scan、GitHub Actions、live websocket、外部依赖集成与 release evidence bundle。 |
 | FR-001/FR-002 Partial | 四 product line 与 identity contract 不完整。 | 补齐 USDM、COINM、Options parser/mapper/connector/server acceptance。 |
-| FR-003~FR-008/FR-010~FR-030 Pending | C/S runtime、存储、API、广播、归档、实时控制面、历史生命周期、事件治理、数据质量、Options 字段透传与发布证据未闭合。 | 按 `IMPLEMENTATION-PLAN.md` 和 tasks 顺序实现并更新 traceability。 |
+| FR-003~FR-008/FR-010~FR-030 未整体闭合 | C/S runtime、存储、API、广播、归档、实时控制面、历史生命周期、事件治理、数据质量、Options 字段透传与发布证据未闭合；FR-008 仅 local unit subset Partial。 | 按 `IMPLEMENTATION-PLAN.md` 和 tasks 顺序实现并更新 traceability。 |
 | Release DoD 未达成 | 不能声明 binance v3.5.0 已可发布。 | 全量 AC/TC PASS 后再更新 release 状态。 |
 
 ## 7. GitHub Issue Closure Ledger（2026-06-23）

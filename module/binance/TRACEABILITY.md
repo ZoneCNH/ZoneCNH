@@ -26,8 +26,9 @@
 
 > **2026-06-24 gated JetStream 子集刷新**：`BINANCE_NATSX_INTEGRATION=1 go test ./internal/server/consumer -run TestNATSXIntegrationJetStreamSemantics -count=1 -v` 与 100 次重复 gated loop PASS；真实本地 NATS JetStream 已证明 accepted PubAck、duplicate PubAck、Ack 后不重投、immediate Nak 到 `MaxDeliver=5` 后停止。TC-004/TC-006 继续 Pending：独立 client/server 进程、`NakWithDelay(5s)`、dead-letter/parking 与完整 live 链路仍未闭合。
 
+> **2026-06-24 kafkax fanout 本地子集刷新**：目标 server 测试、`go test ./cmd/binance-server ./internal/server -count=1`、`go test ./...`、`go vet ./...`、`./scripts/boundary-gates.sh` 与 `plan006_task_4_7_repeat_checks=100` PASS；本地 adapter 已验证 topic/key 和 strict handoff `BNC-008` before durable/Ack。FR-008 仍未 Done：真实 Kafka broker e2e、production topic/ACL、release evidence 未闭合。
 
-> **状态模型说明**：FR 表的"实现状态"列采用 Done/Pending 二元模型。"Partial"（部分产品线已实现、TC 未全绿）由 `ACCEPTANCE.md` §5-§6 按 AC 粒度登记。FR 行标记为 Pending 不排除其下个别 AC 已 Partial — 以 `ACCEPTANCE.md` 为准。
+> **状态模型说明**：FR 表的"实现状态"列采用 Done/Pending 二元模型。"Partial"（部分产品线已实现、TC 未全绿）由 `ACCEPTANCE.md` §5-§6 按 AC 粒度登记。FR 行标记为 Pending 不排除其下个别 AC 已 Partial，以 `ACCEPTANCE.md` 为准；FR-008 的 local kafkax unit subset 只登记在 TC/AC 证据，不把 FR-008 提升为 Done。
 | FR ID | 功能需求 | AC | TC ID(s) | Task | 实现状态 |
 |-------|----------|-----|----------|------|----------|
 | FR-001 | Product-Line Support：Client 可独立采集 Spot / USDⓈ-M / COIN-M / Options 四产品线 | AC-001 ~ AC-003 | TC-001 | TASK-BINANCE-ROOT-001, CLIENT-001 | Pending |
@@ -133,8 +134,8 @@
 | TC-015 | FR-007 | — | httptest（限流 429） | Pending |
 | TC-016 | FR-006d | BR-006 | 单元（先写 ossx ETag 校验后删 taosx） | Pending |
 | TC-017 | FR-006d | — | 单元（归档路径格式） | Pending |
-| TC-018 | FR-008 | — | 单元（kafkax topic + partition key） | Pending |
-| TC-019 | FR-008 | BR-004 | 单元（kafkax 不可达→error/不 Ack） | Pending |
+| TC-018 | FR-008 | — | 单元（kafkax topic + partition key；2026-06-24 local adapter topic/key 子集已验证，真实 broker pending） | Partial |
+| TC-019 | FR-008 | BR-004 | 单元（kafkax 不可达→error/不 Ack；2026-06-24 strict handoff BNC-008 before durable/Ack 子集已验证，broker/DLQ pending） | Partial |
 | TC-020 | FR-009 | BR-005 | CI gate（运行时共享包/client 包 import 检查） | **PASS** |
 | TC-021 | FR-009 | BR-001 | CI gate（no-legacy 引用检查） | **PASS** |
 | TC-022 | FR-009 | BR-009 | CI gate（go.mod 合规） | **PASS** |
@@ -200,9 +201,9 @@
 | AC-026 | FR-006d | 每日定时查询 cutoff（now - 90d）之前的 taosx 数据；归档路径格式 `binance/{product_line}/{symbol}/{YYYY}/{MM}/{DD}/{event_type}.parquet` | TC-016, TC-017 |
 | AC-027 | FR-006d | ossx ETag 验证通过后才执行 taosx.Delete（先写冷再删热） | TC-016 |
 | AC-028 | FR-006d | ETag 不匹配时停止删除并报警；ossx path 与 parquet object 格式可回放校验 | TC-017 |
-| AC-029 | FR-008 | kafkax topic = `binance.{product_line}.{event_type}.v1` | TC-018 |
-| AC-030 | FR-008 | partition key = symbol，相同 symbol 有序到达同一 partition | TC-018 |
-| AC-031 | FR-008 | Kafka 不可达时返回 error；未完成 kafkax handoff 前不 Ack，进入 retry/dead-letter/告警路径 | TC-019 |
+| AC-029 | FR-008 | kafkax topic = `binance.{product_line}.{event_type}.v1`；local adapter topic 已验证，真实 broker pending | TC-018 |
+| AC-030 | FR-008 | partition key = symbol；local message key=symbol 已验证，相同 symbol broker partition/order e2e pending | TC-018 |
+| AC-031 | FR-008 | strict dispatch failure 返回 retryable `BNC-008` before durable/Ack 已验证；broker/DLQ e2e pending | TC-019 |
 | AC-032 | FR-009 | server 源码无 client 内部包或运行时共享包导入（CI gate） | TC-020 |
 | AC-033 | FR-009 | 任何代码 reintroduce `binance-market` 引用时 CI no-legacy gate 失败 | TC-021 |
 | AC-034 | FR-009 | go.mod 中 natsx/redisx/postgresx/taosx/clickhousex/kafkax/ossx/gin 均保持 direct 依赖 | TC-022 |

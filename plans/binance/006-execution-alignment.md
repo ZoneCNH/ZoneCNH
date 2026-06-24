@@ -19,6 +19,7 @@
 | Task 4.2 natsx publisher + consumer | local runtime wiring + gated JetStream 子集 increment；Beads `ZoneCNH-7dn` in_progress；GitHub #990 open | `[COMPUTED, HIGH]` `/home/binance` 已升 `natsx v1.0.3`，新增 `internal/client/publisher/` 与 `internal/server/consumer/`，client/server runtime 已接入 `XGO_BINANCE_INGEST_TRANSPORT=http|natsx` 与 `XGO_BINANCE_NATS_URL`，server 会确保 JetStream stream/consumer topology 并启动 durable pull runner；目标包测试、全仓测试、vet、boundary gates、100 次 runtime 重复检查通过；真实本地 JetStream gated integration 已验证 PubAck duplicate、ManualAck 成功不重投、immediate Nak 至 MaxDeliver=5 后停止；独立进程、NakWithDelay、dead-letter/parking 与完整 live TC-004/005/006 证据未闭合 |
 | Task 4.3 四产品线 connector | local connector increment；Beads `ZoneCNH-i18` in_progress；GitHub #991 open，已评论 | `[COMPUTED, HIGH]` `/home/binance` 已新增 `internal/client/product_line.go` 与 `internal/client/connectors/{spot,um_perp,cm_perp,options}.go`，扩展 catalog/parser/normalizer 覆盖 spot、um_perp、cm_perp、options；目标包测试、全仓测试、vet、boundary gates、100 次重复检查通过；live Binance websocket、remote CI、release artifact 证据未闭合 |
 | Task 4.4 幂等 redisx/postgresx | local-fixed；Beads `ZoneCNH-2ge` closed；GitHub #992 closed | `[COMPUTED, HIGH]` `redis_store.go` 使用 `redisx` `SetNX` 与 72h TTL，`pg_log.go` 写入 postgresx 备份日志；目标包/全仓测试、`git diff --check` 与 `plan006_task_4_4_repeat_checks=100` PASS；GitHub API closed_at `2026-06-24T02:24:08Z` |
+| Task 4.7 kafkax fanout | local kafkax adapter + strict handoff unit subset；Beads `ZoneCNH-pwp` in_progress；GitHub #995 open，已评论 | `[COMPUTED, HIGH]` `/home/binance` 已新增 `internal/server/kafka_dispatch.go` 与 kafkax runtime 装配，topic=`binance.{product_line}.{event_type}.v1`、key=symbol fallback event_id；strict handoff 在 dispatch 成功后才 durable/Ack，失败返回 retryable `BNC-008`；目标包/全仓测试、vet、boundary gates、100 次重复检查通过；真实 Kafka broker e2e、production topic/ACL 与 release evidence 未闭合 |
 | Task 8.1 错误码 BNC-001~013 | local-fixed；Beads `ZoneCNH-4ah` closed；GitHub #1015 closed | `[COMPUTED, HIGH]` Beads/GitHub 状态已对齐；GitHub API closed_at `2026-06-24T02:12:35Z` |
 | Task 8.3 配置化 URL | local-fixed；Beads `ZoneCNH-8wy` closed；GitHub #1017 closed | `[COMPUTED, HIGH]` Beads/GitHub 状态已对齐；GitHub API closed_at `2026-06-24T01:59:28Z` |
 | Plan006 全量生产就绪 | IN PROGRESS | `[COMPUTED, HIGH]` live Binance websocket、完整 JetStream TC-004/TC-006（独立进程、NakWithDelay、dead-letter/parking）、真实 external storage IO/fanout/query、remote CI、release tag/artifact 尚未闭合 |
@@ -40,6 +41,7 @@
 | 4.2 | `ZoneCNH-7dn` in_progress | `ZoneCNH/ZoneCNH#990` open，已评论本地验证与 gated JetStream 子集证据 | 本地 natsx publisher/consumer runtime wiring 与 gated JetStream 子集已验证；保持 active，等待独立进程、NakWithDelay、dead-letter/parking 与完整 live TC-004/005/006 证据 |
 | 4.3 | `ZoneCNH-i18` in_progress | `ZoneCNH/ZoneCNH#991` open，已评论本地验证 | 本地四产品线 connector/normalizer 增量已验证；保持 active，等待 live Binance websocket TC-001/002/003、远端 CI 与 release artifact 证据 |
 | 4.4 | `ZoneCNH-2ge` closed | `ZoneCNH/ZoneCNH#992` closed | 本地 redisx SetNX/postgresx backup 幂等闭合；GitHub API confirmed closed |
+| 4.7 | `ZoneCNH-pwp` in_progress | `ZoneCNH/ZoneCNH#995` open，已评论本地验证 | 本地 kafkax adapter + strict handoff unit subset 已验证；保持 active，等待真实 Kafka broker e2e、production topic/ACL、release evidence |
 | 8.1 | `ZoneCNH-4ah` closed | `ZoneCNH/ZoneCNH#1015` closed | 本地错误码编号对齐闭合；GitHub API confirmed closed |
 | 8.3 | `ZoneCNH-8wy` closed | `ZoneCNH/ZoneCNH#1017` closed | 本地 URL 配置化闭合；GitHub API confirmed closed |
 | 8.5 | `ZoneCNH-8lk` closed | `ZoneCNH/ZoneCNH#1019` closed | 本地 Spool/Queue 有界化闭合；GitHub API confirmed closed |
@@ -55,15 +57,16 @@ GitHub comment evidence:
 - `https://github.com/ZoneCNH/ZoneCNH/issues/990#issuecomment-4785404043`
 - `https://github.com/ZoneCNH/ZoneCNH/issues/991#issuecomment-4785195407`
 - `https://github.com/ZoneCNH/ZoneCNH/issues/992#issuecomment-4785339095`
+- `https://github.com/ZoneCNH/ZoneCNH/issues/995#issuecomment-4785567395`
 - `https://github.com/ZoneCNH/ZoneCNH/issues/1019#issuecomment-4784923073`
 
 ## 全量 Issue Inventory
 
 `[COMPUTED, HIGH]` 2026-06-24 复核结果：
 
-- 严格 Plan006 Beads（标题含 `[Plan006 Task ...]`）：49 条；25 closed，21 open，3 in_progress。49 条覆盖 46 个 Plan task，差异来自 Task 0.1、2.5、3.1 的双 repo/重复 Beads 投影。
-- 宽口径 Binance 相关 Beads（标题或描述含 `Plan006`、`006` 或 `binance`）：66 条；42 closed，21 open，3 in_progress；额外 17 条当前均为 closed，不增加 active 缺口。
-- `ZoneCNH/ZoneCNH` GitHub open Plan006：24 条；与 Beads active task 编号集合对齐（Beads 为 21 open + 3 in_progress）。
+- 严格 Plan006 Beads（标题含 `[Plan006 Task ...]`）：49 条；25 closed，20 open，4 in_progress。49 条覆盖 46 个 Plan task，差异来自 Task 0.1、2.5、3.1 的双 repo/重复 Beads 投影。
+- 宽口径 Binance 相关 Beads（标题或描述含 `Plan006`、`006` 或 `binance`）：66 条；42 closed，20 open，4 in_progress；额外 17 条当前均为 closed，不增加 active 缺口。
+- `ZoneCNH/ZoneCNH` GitHub open Plan006：24 条；与 Beads active task 编号集合对齐（Beads 为 20 open + 4 in_progress）。
 - `ZoneCNH/binance` GitHub open Plan006/broad Binance 查询：0 条。
 
 ### Beads Active Plan006 Tasks
@@ -75,7 +78,7 @@ GitHub comment evidence:
 | 4.3 | `ZoneCNH-i18` | P0 | `ZoneCNH/ZoneCNH#991` | in_progress |
 | 4.5 | `ZoneCNH-9an` | P0 | `ZoneCNH/ZoneCNH#993` | open |
 | 4.6 | `ZoneCNH-71r` | P0 | `ZoneCNH/ZoneCNH#994` | open |
-| 4.7 | `ZoneCNH-pwp` | P0 | `ZoneCNH/ZoneCNH#995` | open |
+| 4.7 | `ZoneCNH-pwp` | P0 | `ZoneCNH/ZoneCNH#995` | in_progress |
 | 4.8 | `ZoneCNH-0ap` | P1 | `ZoneCNH/ZoneCNH#996` | open |
 | 5.1 | `ZoneCNH-12k` | P1 | `ZoneCNH/ZoneCNH#997` | open |
 | 5.2 | `ZoneCNH-167` | P1 | `ZoneCNH/ZoneCNH#998` | open |
@@ -144,8 +147,9 @@ GitHub comment evidence:
 - 100 次重复检查：natsx gated JetStream integration 通过（`plan006_natsx_integration_repeat_checks=100`）
 - 100 次重复检查：四产品线 connector/parser/normalizer 目标回归通过（`plan006_task_4_3_repeat_checks=100`）
 - 100 次重复检查：idempotency 目标包、`redisx` 接入与 `SetNX` 关键路径通过（`plan006_task_4_4_repeat_checks=100`）
+- 100 次重复检查：kafkax fanout adapter 与 strict handoff 目标回归通过（`plan006_task_4_7_repeat_checks=100`）
 - 100 次重复检查：FR-006a presence、Module-Version 6/6、runtime SHA set ≤2 通过（`phase2_repeat_checks=100`）
 
 ## 剩余阻塞
 
-`[COMPUTED, HIGH]` 当前 Task 1.1、1.3~1.6、2.1~2.4、3.2、4.4、6.7、8.1、8.3 与 8.5 已完成 Beads/GitHub 对齐；Task 4.2 已完成本地 runtime wiring 增量与 gated JetStream 子集，未满足独立进程、NakWithDelay、dead-letter/parking 和完整 TC-004/005/006 live 集成验收；Task 4.3 仅完成本地 connector/normalizer 增量，未满足 TC-001/002/003 live websocket 验收。严格 Plan006 Beads 仍有 24 条 active（21 open + 3 in_progress），其中 Phase 4 的 P0 runtime rewrite active 缺口为 Task 4.1、4.2、4.3、4.5、4.6、4.7；Task 4.4 已闭合。不得据此声明 Plan006 release done 或 production-ready。剩余阻塞仍包括 live Binance websocket、完整 JetStream TC-004/TC-006（独立进程、NakWithDelay、dead-letter/parking）、真实 external storage IO/fanout/query、remote GitHub Actions、release tag/artifact。
+`[COMPUTED, HIGH]` 当前 Task 1.1、1.3~1.6、2.1~2.4、3.2、4.4、6.7、8.1、8.3 与 8.5 已完成 Beads/GitHub 对齐；Task 4.2 已完成本地 runtime wiring 增量与 gated JetStream 子集，未满足独立进程、NakWithDelay、dead-letter/parking 和完整 TC-004/005/006 live 集成验收；Task 4.3 仅完成本地 connector/normalizer 增量，未满足 TC-001/002/003 live websocket 验收；Task 4.7 已完成 local kafkax adapter + strict handoff unit subset，未满足真实 Kafka broker e2e、production topic/ACL 和 release evidence。严格 Plan006 Beads 仍有 24 条 active（20 open + 4 in_progress），其中 Phase 4 的 P0 runtime rewrite active 缺口为 Task 4.1、4.2、4.3、4.5、4.6、4.7；Task 4.4 已闭合。不得据此声明 Plan006 release done 或 production-ready。剩余阻塞仍包括 live Binance websocket、完整 JetStream TC-004/TC-006（独立进程、NakWithDelay、dead-letter/parking）、真实 external storage IO / Kafka broker fanout / query、remote GitHub Actions、release tag/artifact。
