@@ -4,7 +4,7 @@
 >
 > 规范来源：`docs/governance/TRACEABILITY.md`
 
-- Module-Version: v3.6.0
+- Module-Version: v3.6.1
 - Last-Updated: 2026-06-25
 - Spec-Reference: `module/binance/SPEC.md` v3.6.0
 
@@ -26,6 +26,8 @@
 > - **BR-004** 由 Partial 提升为 Done（A3 NakWithDelay+DLQ 已实现并经本地 NATS JetStream gated 测试验证）。
 > - SHA 统一为 `e02b190`。本次刷新不关闭任何 L2 功能 TC；存储类 FR 的 Partial 缺口收敛为单一根因「main.go 存储装配」（详见 G0）。
 
+> **v3.6.1 变更摘要 (2026-06-25)**：基于 runtime HEAD `242134f`/v0.2.0 的 main.go + `storage_env.go` 装配实证复核，纠正 v3.6.0 状态注水。FR 实现状态从「28 Done / 2 Partial（v3.6.0 声称，含误判）」修正为「**24 Done / 10 Partial / 0 Pending**」（34 行口径）。**6 项 Partial→Done**（双重装配实证：`storage_env.go` TaosWriter/PgCatalog/HotCache/RedisStore/ETL/OssArchiver + `main.go:144-150` 注入）：FR-005/006a/006b/006c/006d/010。**3 项纠正回 Partial**（v3.6.0 误判为 Done）：FR-007/007a（`main.go` 全文未设 `EnableMarketAPI=true`，admin.go:69 条件不满足，API 路由运行时不挂载）+ FR-011（`NewCoordinatorLock` 全仓零调用 = dead code）。复核依据见 `docs/report/binance/v0.2.0-release-gate-verdict-20260625.md` §3 + 本次 grep 实证。readiness-audit gate 修复见运行仓 PR ZoneCNH/binance#102。
+>
 > **v3.6.0 变更摘要 (2026-06-25)**：G0 存储装配断层闭合后，FR 实现状态从「19 Done / 11 Partial」刷新为「**28 Done / 2 Partial / 0 Pending**」。本次刷新基于 `fix/binance-production-readiness` 分支（runtime G0~G8 修复落地）：
 > - **上调 9 项（G0 闭合）**：FR-005/006a/006b/006c/006d/007/007a/010/011 — `cmd/binance-server/storage_env.go` 的 `storageFromEnv` 现真实装配 taosx/postgresx/redisx/clickhousex/ossx 五个 client，注入 `ServerConfig.StorageWriter`(TaosWriter) + `PostAcceptHooks`(PgCatalog/HotCache/OssArchiver batch hook) + `RedisStore`(+PostgresLog durable) 幂等层 + ClickHouse ETL goroutine。fail-fast：缺失 POSTGRESX_PASSWORD/OSSX_BUCKET 启动失败。装配契约见 `PERSISTENCE-WIRING.md`。
 > - **BR-004 Done 语义补全**：BR-004「全链路写入成功（redisx+taosx+postgresx+kafkax handoff）后才 Ack」在 G0 闭合后成立（storage 不再 nil，StrictStorageWrite=true）。
@@ -50,16 +52,16 @@
 | FR-002 | Instrument Identity：四产品线 canonical instrument identity 跨 product_line 不碰撞 | AC-004 ~ AC-006 | TC-002, TC-003 | TASK-BINANCE-ROOT-002, CLIENT-004 | Done |
 | FR-003 | natsx Communication：Client/Server 通过 natsx JetStream **网络**通信，禁止共享进程或内存 | AC-007 ~ AC-010 | TC-004, TC-005 | CLIENT-014, SERVER-010 | Done |
 | FR-004 | At-Least-Once Delivery：JetStream durable consumer + ManualAck 确保消息不丢失 | AC-011 ~ AC-013 | TC-006 | CLIENT-014, SERVER-010 | Done |
-| FR-005 | Idempotent Acceptance：redisx SetNX 确保相同消息最多写入 taosx 一次（72h TTL） | AC-014 ~ AC-016 | TC-007, TC-008 | SERVER-011 | Partial |
-| FR-006a | Full-Stack Storage / taosx Time-Series：WriteBatch 写入 tick/bar/depth 到超级表子表 | AC-017 ~ AC-018 | TC-009 | SERVER-012 | Partial |
-| FR-006b | postgresx Metadata：幂等 upsert instrument catalog + 审计日志 | AC-019 ~ AC-020 | TC-010 | SERVER-012 | Partial |
-| FR-006c | redisx Hot Cache：最新 tick/bar/depth 热缓存（60s/5s TTL），失败降级 | AC-036 ~ AC-037 | TC-023 | SERVER-013 | Partial |
-| FR-006d | ossx Archival：定时将 taosx 过期数据归档到 OSS，ETag 校验后删热 | AC-026 ~ AC-028 | TC-016, TC-017 | SERVER-016 | Partial |
+| FR-005 | Idempotent Acceptance：redisx SetNX 确保相同消息最多写入 taosx 一次（72h TTL） | AC-014 ~ AC-016 | TC-007, TC-008 | SERVER-011 | Done |
+| FR-006a | Full-Stack Storage / taosx Time-Series：WriteBatch 写入 tick/bar/depth 到超级表子表 | AC-017 ~ AC-018 | TC-009 | SERVER-012 | Done |
+| FR-006b | postgresx Metadata：幂等 upsert instrument catalog + 审计日志 | AC-019 ~ AC-020 | TC-010 | SERVER-012 | Done |
+| FR-006c | redisx Hot Cache：最新 tick/bar/depth 热缓存（60s/5s TTL），失败降级 | AC-036 ~ AC-037 | TC-023 | SERVER-013 | Done |
+| FR-006d | ossx Archival：定时将 taosx 过期数据归档到 OSS，ETag 校验后删热 | AC-026 ~ AC-028 | TC-016, TC-017 | SERVER-016 | Done |
 | FR-007 | Gin Market API：/api/v1/market/* REST 接口，redisx 热缓存 + taosx 回退 | AC-021 ~ AC-025 | TC-012 ~ TC-015 | SERVER-015 | Partial |
 | FR-007a | clickhousex Analytics API：/api/v1/analytics/* OLAP 查询（vwap/top-movers/correlation） | AC-038 ~ AC-040 | TC-024 | SERVER-015 | Partial |
 | FR-008 | kafkax Broadcast：将 accepted facts 广播到 `binance.{product_line}.{event_type}.v1` Kafka topic | AC-029 ~ AC-031 | TC-018, TC-019 | SERVER-014 | Done |
 | FR-009 | Boundary Enforcement：CI gate 阻断 client/server 跨界、运行时共享包回流、go.mod 合规 | AC-032 ~ AC-035 | TC-020 ~ TC-022 | SERVER-008 | Done |
-| FR-010 | clickhousex OLAP Storage：定时 ETL 聚合 taosx→clickhousex，为 analytics API 提供 OLAP 查询 | AC-041 ~ AC-044 | TC-025, TC-026 | SERVER-017 | Partial |
+| FR-010 | clickhousex OLAP Storage：定时 ETL 聚合 taosx→clickhousex，为 analytics API 提供 OLAP 查询 | AC-041 ~ AC-044 | TC-025, TC-026 | SERVER-017 | Done |
 | FR-011 | Distributed Coordinator Lock：redisx SetNX 分布式锁，coordinator HA 选举 + lease 续期 | AC-045 ~ AC-047 | TC-027, TC-028 | SERVER-013 | Partial |
 | FR-012 | Stream Session Lifecycle：active stream registry 支持运行中增删订阅且不重启进程 | AC-048 ~ AC-050 | TC-029 | CLIENT-015 | Done |
 | FR-013 | Exchange Reliability Controls：retry budget、rate-limit、clock skew 与 exchange disconnect 策略可观测 | AC-051 ~ AC-053 | TC-030 | CLIENT-016 | Done |
@@ -81,7 +83,7 @@
 | FR-029 | Data Quality & Freshness SLA：端到端 event_time→persist 延迟上限 + schema 漂移检测 + stale alert | AC-099 ~ AC-101 | TC-047 | ROOT-010 | Done |
 | FR-030 | Options Chain Raw Field Pass-through：option chain 原始字段（strike/expiry/option_type/mark/IV）透传至下游，Greeks 派生归分析域 | AC-102 ~ AC-104 | TC-048, TC-049 | CLIENT-020 | Done |
 
-> 状态口径（v3.6.0，runtime `fix/binance-production-readiness`）：FR 表实现状态采用 Done/Partial 二元模型，**Done 必须同时满足「writer/代码存在」且「`cmd/binance-server/main.go` 装配真实实例」**。G0 存储装配闭合后，当前统计 **28 Done / 2 Partial / 0 Pending**。9 项存储类 FR（FR-005/006a-d/007/007a/010/011）经 `storageFromEnv` 真实装配后由 Partial→Done。剩余 2 Partial：FR-016（runtime 未注入 fetcher）+ FR-024（全量重连非增量 diff）。详见 v3.6.0 变更摘要。
+> 状态口径（v3.6.1，runtime HEAD `242134f`/v0.2.0）：FR 表实现状态采用 Done/Partial 二元模型，**Done 必须同时满足「writer/代码存在」且「`cmd/binance-server/main.go` 装配真实实例」**。经 main.go + `storage_env.go` 装配实证复核，当前统计 **24 Done / 10 Partial / 0 Pending**（34 行口径）。6 项（FR-005/006a-d/010）有 `storageFromEnv` + `RedisStore`/`TaosWriter`/`PgCatalog`/`HotCache`/`OssArchiver`/ClickHouse ETL 双重装配实证 → Done；**3 项纠正为 Partial**：FR-007/007a（main.go 未设 `EnableMarketAPI=true`，admin.go:69 条件不满足，路由不挂载）+ FR-011（`NewCoordinatorLock` 全仓零调用 = dead code）。v3.6.0 所称「28/2、9 项 Done」含此误判，本次纠正。
 >
 > - **11 个 Partial 的根因收敛为两类**：(1) **存储装配断层（9 项）** FR-005/006a/006b/006c/006d/007/007a/010/011 — writer/store/lock 代码完整，但 `main.go` 用 `bootstrap.Spec{Stores: bootstrap.None}`、`NewMemoryIdempotencyStore`（非 RedisStore）、`StorageWriter=nil`、`PostAcceptHooks=nil`、`EnableMarketAPI` 未设，导致运行时永不执行；根因详见 `docs/report/binance/production-readiness-assessment-20260625.md` §4.1 G0。(2) **runtime 未注入 / 集成验证缺（2 项）** FR-016（A1 真实 REST 已替换 stub，但 `runtime.go:102` 用 `DefaultHistoryRuntimeConfig()` 未注入 ExchangeHistoryFetcher）+ FR-024（reload+Refresh 存在但为全量重连非增量 diff）、FR-023（远程 CI/release evidence）、FR-027（Rehydrate 代码真实但依赖未装配的 writer）、FR-028（progress 端点存在但数据为 in-memory）。
 > - **BR-004 已提升为 Done**（A3 NakWithDelay(5s)+MaxDeliver=5+deadletter 包已实现，本地 NATS JetStream gated 测试验证 PubAck/duplicate/Nak/MaxDeliver 语义；release evidence 见 `/home/binance/release/evidence/binance/20260625/testnet-live.txt`）。
@@ -313,7 +315,7 @@
 | BR→验证覆盖率 | — | 9/9 | 100% | — |
 | AC→验证覆盖率 | — | 104/104 | 100% | — |
 | R2 governance matrix | 120 cells | 120 cells | 100% | 4 product lines × 6 event types × 5 文档/checker anchors |
-| 实现状态 | — | 28/30 FR Done | 93% Done | 28 Done (G0 闭合后 9 存储类 FR 由 Partial→Done；FR-016/024 仍 Partial)；0 Pending。runtime `fix/binance-production-readiness`（G0~G8 修复）。详见 v3.6.0 变更摘要。 |
+| 实现状态 | — | 24/34 FR Done | 71% Done | 24 Done（v3.6.1 装配实证：FR-005/006a-d/010 经 main.go+storage_env.go 双重装配）；10 Partial（FR-007/007a main 未设 EnableMarketAPI、FR-011 NewCoordinatorLock 零调用 dead code、FR-016/017/023/024/026/027/028）；0 Pending。runtime HEAD `242134f`/v0.2.0。详见 v3.6.1 变更摘要。 |
 
 ---
 
@@ -321,6 +323,7 @@
 
 | 日期 | 版本 | 变更内容 | 作者 |
 |------|------|----------|------|
+| 2026-06-25 | v3.6.1 | **装配实证复核 + v3.6.0 状态注水纠正**：基于 runtime HEAD `242134f`/v0.2.0 的 main.go + storage_env.go 装配实证，FR 状态从「28/2（v3.6.0 误判）」修正为「24 Done / 10 Partial / 0 Pending」（34 行口径）。6 项（FR-005/006a-d/010）双重装配实证 Partial→Done；3 项回退 Partial（FR-007/007a main 未设 EnableMarketAPI、FR-011 NewCoordinatorLock 零调用 dead code）。依据见 docs/report/binance/v0.2.0-release-gate-verdict-20260625.md §3 | Claude |
 | 2026-06-25 | v3.6.0 | **G0 存储装配闭合 + G7/G8/A7 修复 + C1/C7**：FR 状态从「19 Done / 11 Partial」刷新为「28 Done / 2 Partial」。G0：`storage_env.go` 的 `storageFromEnv` 真实装配 taosx/postgresx/redisx/clickhousex/ossx，9 存储类 FR Partial→Done；StrictStorageWrite=true fail-fast。G7：产品线差异测试。G8：订单簿全量档位（DepthBids/DepthAsks）。A7：options 结构化 parser（parseOptionTicker + OptionGreeks）。C1：testnet evidence 清除，mainnet 矩阵替代。C7：新增 6 规范文档（ENDPOINTS/PERSISTENCE-WIRING/SECURITY/OBSERVABILITY/OPERATIONS/DATA-QUALITY-SLA）。boundary-gates 13/13 PASS，govulncheck 0 漏洞 | ZoneCNH |
 | 2026-06-25 | v3.6.0 | **Plan007 对齐 + main.go 装配级证据标准**：FR 状态从「22 Done / 8 Partial」刷新为「19 Done / 11 Partial / 0 Pending」，对齐 runtime HEAD `e02b190`（Plan007 A1~A10 + B1~B8 已执行）。引入 main.go 装配级证据标准：9 存储类 FR（FR-005/006a-d/007/007a/010/011）writer 代码完整但 main.go 未装配实例（`bootstrap.Spec{Stores: bootstrap.None}` + `NewMemoryIdempotencyStore` + `StorageWriter=nil`），下调为 Partial；6 FR 上调（FR-002/004/008/025/030 Done + FR-016 实质升级 A1 真实 REST）；BR-004 提升为 Done（A3 NakWithDelay+DLQ + JetStream gated 测试）；§6 仪表盘同步刷新；SHA 统一为 `e02b190`。依据见 `docs/report/binance/production-readiness-assessment-20260625.md` §4.1 G0 | ZoneCNH |
 | 2026-06-24 | v3.5.1 | **Plan007 A8 — 规格端一致性刷新**：FR 实现状态从「1/30」更新为「22 Done / 8 Partial」，对齐 runtime HEAD `8290dc9`（PR #73 之后真实代码状态）；BR-004 提升为 Partial（natsx NakWithDelay + DLQ deadletter 包已实现）；§6 仪表盘同步刷新；SHA 统一为 `8290dc9` | ZoneCNH |
