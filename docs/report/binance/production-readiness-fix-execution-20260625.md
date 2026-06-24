@@ -183,4 +183,16 @@ BINANCE_MAINNET_LIVE=1 go test ./test/e2e/ -run 'TestMainnetLive_SpotTrade|TestM
 | taosx 实跑         | driver not configured              | SRE 配置 TDengine driver mode       |
 | Kafka send         | broker auto-create/SASL 配置       | SRE 确认 dev Kafka 配置             |
 | OSS 归档           | 需真实阿里云凭据                   | SRE 提供 AccessKey/Secret/Bucket    |
-| release tag v0.2.0 | release.yml 零历史 run             | version bump 后打 tag（可由你触发） |
+| **release tag v0.2.0** | **CI 私有依赖拉取失败（既有债务）** | **修复 GitHub runner GOPRIVATE 凭据（issue #94）后打 tag** |
+
+### §7.3 G5 release tag 推进结果
+
+`[COMPUTED, HIGH]` 尝试推进 G5（push feature branch + 创建 PR）后发现：
+
+- **binance PR #93** 已创建（https://github.com/ZoneCNH/binance/pull/93）
+- **ZoneCNH PR #1076** 已创建（https://github.com/ZoneCNH/ZoneCNH/pull/1076）
+- **CI 失败**：Build/Lint/Test 因私有依赖（domain-market/domain-exchange 仓库 runner 无权 + natsx 本地 replace）失败。这是**既有债务**（origin/main PR #73 同样失败），非本次修复引入。
+- **GitHub issue #94** 已创建跟踪 CI 私有依赖问题。
+- **v0.2.0 tag 暂缓**：tag 会触发 release.yml，同样依赖私有依赖能拉取，需 CI 修复后打。
+
+`[FRAME, HIGH]` G5 的真实状态：代码 version bump 已完成（v3.6.0），PR 已创建，但 release tag 被 CI 基础设施债务阻塞。这是仓库级治理问题，需单独解决（GOPRIVATE 凭据 / natsx 发布版本 / CI workflow 改造）。
