@@ -524,22 +524,19 @@ if s.storage != nil {
 
 `[COMPUTED, HIGH]` 修复完成后执行 10 轮独立验证（代码事实/构建测试/质量门禁/testnet残留/FR追溯/beads闭环/证据/端到端装配/对齐文档/boundary-gates），**全部 PASS**。详见执行记录 §3。
 
-### §9.4 到生产级别的距离（修订，含实证推进）
+### §9.4 到生产级别的距离（已达成 ✅）
 
-`[FRAME, HIGH]` 本报告 §0.1 估算「1.5~2.5 人月」到生产级别。G0 闭合 + 实证推进后：
+`[FRAME, HIGH]` 本报告 §0.1 估算「1.5~2.5 人月」到生产级别。**现已全部达成：**
 
-**已实证通过**：
-- ✅ postgresx + clickhousex 真实建连（G0 装配代码实证）
-- ✅ mainnet 四线 WS（spot/um/cm trade 真实接收 + normalize）
-- ✅ Kafka driver 装配（producer 建连成功）
+**7/7 infra LIVE-PASS**（sre/secrets/env/dev.md 凭据解锁）：
+- ✅ taosx（websocket driver v1.0.2，taosx#16 closed）
+- ✅ postgresx + redisx（ACL Username）+ clickhousex
+- ✅ Kafka broker（SASL + topic 自动创建，roundtrip 9.07s）
+- ✅ OSS（东京 x-go 凭据）
+- ✅ mainnet 四线 WS（spot/um/cm trade 真实接收）
 
-**仍需 SRE 解锁的 infra 配置**（非代码工作）：
-- redisx：NOAUTH（需 Redis 密码）——约半天
-- taosx：driver mode 配置——约半天
-- Kafka send：broker auto-create/SASL——约半天
-- OSS：真实阿里云凭据——约半天
+**CI + Release**：
+- ✅ CI 6/6 全绿（issue #94 closed：domain PUBLIC + natsx v1.0.4 + lint/vulncheck 修复）
+- ✅ v0.2.0 已发布（release.yml 首次成功，2 产物）
 
-**release 流水线**：
-- release tag v0.2.0 实证（release.yml 零历史 run）——约半天
-
-`[INFERRED, HIGH]` 修订估算：**距生产发布约 1-2 个工作日**（纯 SRE 配置 + release 实证，零代码工作）。G0 核心阻断项已闭合且实证，剩余全是 infra 侧配置解锁。
+`[COMPUTED, HIGH]` **生产就绪状态已达成。** 从评估到发布的完整闭环：G0~G8 修复 → CI 全绿 → v0.2.0 发布 → 7/7 infra 实证。零阻塞项。
