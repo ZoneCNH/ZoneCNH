@@ -7,7 +7,7 @@
 
 | Plan | Title | Priority | Effort | Depends on | Status |
 |------|-------|----------|--------|------------|--------|
-| 006 | binance 模块生产就绪修复（46 Task，8 Phase；Phase 4-ALT 作废；新增 Task 7.0 infra 凭据+configx 接入） | P0 | XL(4.8~9pm) | Task 0.1 DONE(v2.0.0) | IN PROGRESS（2026-06-24 五批次 PR#68/69/70/71/72 合并）：46/49 Task 闭环，剩余 3 open（4.1 需架构重构 / 8.4 wire 边界已认可 / 5.2 需实盘交易所）。Phase 0-3 + Phase 4(4.2-4.8 核实IMPL) + Phase 5(5.1/5.3 DONE,5.4 FR-029闭环) + Phase 6(6.1-6.8) + Phase 7(7.0-7.4) + Phase 8(8.1/8.2/8.3/8.5) 全绿。验证：build/vet/test-race/boundary-gates(13)/govulncheck(0) 全绿。 |
+| 006 | binance 模块生产就绪修复（46 Task，8 Phase；Phase 4-ALT 作废；新增 Task 7.0 infra 凭据+configx 接入） | P0 | XL(4.8~9pm) | Task 0.1 DONE(v2.0.0) | IN PROGRESS（2026-06-24 五批次 PR#68/69/70/71/72 + 四文档 PR#1020/1021/1022/1023 合并）：46/49 Task 闭环，剩余 4 open（4.1 需架构重构 / 8.4 wire 边界已认可 / 5.2 需实盘交易所 / 5.4 FR-029闭环子项待后续）。beads+GitHub 双向同步一致。验证：build/vet/test-race/boundary-gates(13)/govulncheck(0) 全绿。 |
 
 Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJECTED (with one-line rationale)
 
