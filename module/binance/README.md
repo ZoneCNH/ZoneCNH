@@ -3,8 +3,8 @@
 `module/binance` is the Binance-specific Market Data C/S Module for ZoneCNH.
 
 - Spec-Version: v3.6.0 (root) / v2.1.1 (client) / v2.2.0 (server)
-- Runtime-Version: v0.1.0
-- Delivery-State: FR-001~FR-030 spec/traceability registered; GitHub #923~#931 closed as issue-tracking records on 2026-06-23; 2026-06-25 alignment (runtime HEAD `e02b190`, Plan007 A1~A10 + B1~B8 executed) refreshes FR status to **19 Done / 11 Partial / 0 Pending** under a new main.go 装配级证据标准 — 6 FR 上调 (FR-002/004/008/025/030 Done + FR-016 实质升级), 9 存储类 FR 下调 (FR-005/006a-d/007/007a/010/011 code-complete but `cmd/binance-server/main.go` 未装配实例, runtime 永不执行; 根因见 G0 存储装配断层). Runtime/release evidence remains Pending for live websocket (合约/期权 testnet 凭据)、真实 Kafka broker e2e、remote CI、release tag 与 11 Partial FR 的 main.go 装配闭合.
+- Runtime-Version: v0.1.0 (v0.2.0 pending tag — CI issue #94 阻塞)
+- Delivery-State: FR-001~FR-030 spec/traceability registered; **2026-06-25 生产就绪修复 (G0~G8 + C1/C4/C7) 落地后 FR 状态刷新为 28 Done / 2 Partial / 0 Pending (93%)**. G0 存储装配断层闭合 — `storageFromEnv` 真实装配 5 infra client + 7 writer (PERSISTENCE-WIRING.md); 9 存储类 FR (FR-005/006a-d/007/007a/010/011) Partial→Done. C4 mainnet 四线 LIVE-PASS (spot/um/cm trade 真实接收实证). C7 新增 6 规范文档 (ENDPOINTS/PERSISTENCE-WIRING/SECURITY/OBSERVABILITY/OPERATIONS/DATA-QUALITY-SLA). 10 轮独立验证全部 PASS (boundary-gates 13/13, govulncheck 0 漏洞, go test 18 包全绿). 剩余 2 Partial: FR-016 (runtime 未注入 fetcher) + FR-024 (全量重连非增量 diff). 待 SRE 解锁: redisx/taosx/Kafka/OSS infra 配置; 待 CI 修复: 私有依赖拉取 (issue #94) 后打 v0.2.0 tag. 详见 `docs/report/binance/production-readiness-fix-execution-20260625.md`.
 - Last-Updated: 2026-06-25
 
 It is split into two submodules:
