@@ -20,7 +20,7 @@
 ## Context
 
 ### Original Request
-用户要求完整实现 `docs/goal/` 体系为 Go 工程。分析报告已产出在 `docs/report/goal-full-go-implementation-20260609.md`。
+用户要求完整实现 `docs/goal/` 体系为 Go 工程。分析报告已产出在 `report/goal-full-go-implementation-20260609.md`。
 
 ### 现有基础设施
 - **30 份文档**在 `docs/goal/` 定义了完整的 Goal 驱动交付体系
@@ -180,7 +180,7 @@ Wave FINAL: 评审
   - `.config/goal/registry/tasks.yaml` — Task 对象的实际字段（含 change_level, execution_mode）
   - `.config/goal/matrix/matrix.yaml` — Matrix edge 的 8 个必填字段和实际 relation 类型
   - `.config/goal/pipeline/state.yaml` — 四轴状态模型的实际值和 state_history 格式
-  - `docs/report/goal-full-go-implementation-20260609.md` §3 — 完整的 Go 类型定义参考
+  - `report/goal-full-go-implementation-20260609.md` §3 — 完整的 Go 类型定义参考
 
   **Acceptance Criteria**:
 
@@ -231,7 +231,7 @@ Wave FINAL: 评审
   **References**:
   - `.config/goal/schema/rules.yaml:33-47` — 全部 18 个 ID 正则模式
   - `docs/goal/07-id-system.md` — ID 格式规范文档
-  - `docs/report/goal-full-go-implementation-20260609.md` §3.4 — Go 实现参考
+  - `report/goal-full-go-implementation-20260609.md` §3.4 — Go 实现参考
 
   **Acceptance Criteria**:
 
@@ -289,7 +289,7 @@ Wave FINAL: 评审
   - `.config/goal/pipeline/state.yaml` — 四轴状态模型的实际值、state_history 格式
   - `.config/goal/schema/rules.yaml:199-284` — pipeline 状态枚举、phase 列表、workflow_step 列表
   - `docs/goal/03-pipeline.md` — 状态转换规则的权威定义
-  - `docs/report/goal-full-go-implementation-20260609.md` §4.1 — Go 实现参考
+  - `report/goal-full-go-implementation-20260609.md` §4.1 — Go 实现参考
 
   **Acceptance Criteria**:
 
@@ -347,7 +347,7 @@ Wave FINAL: 评审
   **References**:
   - `docs/goal/tools/README.md` — 现有工具的 CLI 接口和 flag 设计
   - `docs/goal/tools/gate-check.sh:8-14` — 环境变量和路径约定（GOAL_CONFIG_DIR 等）
-  - `docs/report/goal-full-go-implementation-20260609.md` §5 — CLI 命令设计参考
+  - `report/goal-full-go-implementation-20260609.md` §5 — CLI 命令设计参考
 
   **Acceptance Criteria**:
 
@@ -402,7 +402,7 @@ Wave FINAL: 评审
   - `.config/goal/gates/state.yaml` — Gate 状态的实际数据格式
   - `.config/goal/schema/rules.yaml:173-198` — Gate ID 列表、状态枚举
   - `docs/goal/tools/gate-check.sh` — 现有实现（278 行），需对齐检查逻辑
-  - `docs/report/goal-full-go-implementation-20260609.md` §3.3 + §4.2 — 完整 Go 实现参考
+  - `report/goal-full-go-implementation-20260609.md` §3.3 + §4.2 — 完整 Go 实现参考
 
   **Acceptance Criteria**:
 
@@ -460,7 +460,7 @@ Wave FINAL: 评审
   **References**:
   - `docs/goal/10-lint-rules.md` — 33 条 Lint 规则的完整定义
   - `docs/goal/tools/lint-goal.sh` — 现有实现（303 行），需对齐检查逻辑
-  - `docs/report/goal-full-go-implementation-20260609.md` §4.3 — Go 实现参考
+  - `report/goal-full-go-implementation-20260609.md` §4.3 — Go 实现参考
 
   **Acceptance Criteria**:
 
@@ -518,7 +518,7 @@ Wave FINAL: 评审
   - `docs/goal/15-registry.md` — 6 个 Registry 的 schema 定义
   - `.config/goal/registry/*.yaml` — 实际数据格式
   - `.config/goal/schema/rules.yaml:49-98` — 状态枚举
-  - `docs/report/goal-full-go-implementation-20260609.md` §3.5 — Go 类型定义参考
+  - `report/goal-full-go-implementation-20260609.md` §3.5 — Go 类型定义参考
 
   **Acceptance Criteria**:
 
@@ -570,7 +570,7 @@ Wave FINAL: 评审
   - `.config/goal/matrix/matrix.yaml` — 实际 edge 数据（26 条边）
   - `.config/goal/schema/rules.yaml:100-150` — Matrix 配置、edge 字段契约
   - `docs/goal/tools/matrix-gen.py` — 现有实现（388 行）
-  - `docs/report/goal-full-go-implementation-20260609.md` §3.6 — Go 实现参考
+  - `report/goal-full-go-implementation-20260609.md` §3.6 — Go 实现参考
 
   **Acceptance Criteria**:
 
@@ -631,7 +631,7 @@ Wave FINAL: 评审
   - `.config/goal/evidence/` — 现有 Evidence 文件格式
   - `.config/goal/schema/rules.yaml:152-171` — Evidence 配置
   - `docs/goal/tools/evidence-collect.sh` — 现有实现（155 行）
-  - `docs/report/goal-full-go-implementation-20260609.md` §3.7 + §4.7 — Go 实现参考
+  - `report/goal-full-go-implementation-20260609.md` §3.7 + §4.7 — Go 实现参考
 
   **Acceptance Criteria**:
 
@@ -680,7 +680,7 @@ Wave FINAL: 评审
 
   **References**:
   - `docs/goal/06-dod.md` — 13 个 stage 的 DoR/DoD 完整定义
-  - `docs/report/goal-full-go-implementation-20260609.md` §4.8 — Go 实现参考
+  - `report/goal-full-go-implementation-20260609.md` §4.8 — Go 实现参考
 
   **Acceptance Criteria**:
 
@@ -731,7 +731,7 @@ Wave FINAL: 评审
   **References**:
   - `docs/goal/13-runtime-engine.md` — 变更传播矩阵、优先级公式、变更级别定义
   - `docs/goal/12-operations.md` — 运营操作规范
-  - `docs/report/goal-full-go-implementation-20260609.md` §4.4 + §4.5 + §4.6 — Go 实现参考
+  - `report/goal-full-go-implementation-20260609.md` §4.4 + §4.5 + §4.6 — Go 实现参考
 
   **Acceptance Criteria**:
 
@@ -782,7 +782,7 @@ Wave FINAL: 评审
   **References**:
   - `docs/goal/16-ci-cd.md` — CI-CHK0-CHK9、XG-CHK1-CHK8、8 个执行阶段
   - `.config/goal/schema/rules.yaml:296-310` — CI required_jobs 列表
-  - `docs/report/goal-full-go-implementation-20260609.md` §8 — Go 实现参考
+  - `report/goal-full-go-implementation-20260609.md` §8 — Go 实现参考
 
   **Acceptance Criteria**:
 

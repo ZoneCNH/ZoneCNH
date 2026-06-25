@@ -48,11 +48,11 @@
 
 ## 历史与归档工件
 
-原 `archive/` 目录的历史文件已迁移至 `docs/report/`，旧 `SPEC.md` 23 节整理稿只保留归档说明；这些历史内容不再作为当前分析、lint 或 independent review verdict 的入口：
+原 `archive/` 目录的历史文件已迁移至 `report/`，旧 `SPEC.md` 23 节整理稿只保留归档说明；这些历史内容不再作为当前分析、lint 或 independent review verdict 的入口：
 
 - `SPEC.md`（旧 23 节整理稿）：已于 2026-06-12 去归档化恢复为可执行规格，当前权威入口见 `SPEC.md`（后四角色）和 `goal.md`（第一角色）。此条仅保留供溯源比对。
-- `docs/report/xlib_standard-module-spec-archived.md`：历史 20 节整理工件。
-- `docs/report/xlib_standard-deep-analysis-archived.md`：181 文件旧口径深度分析。
+- `report/xlib_standard-module-spec-archived.md`：历史 20 节整理工件。
+- `report/xlib_standard-deep-analysis-archived.md`：181 文件旧口径深度分析。
 - 历史工件 **不得** 作为当前分析、追溯、冲突取舍或门禁事实引用，仅供溯源比对。
 
 ## 阅读规则

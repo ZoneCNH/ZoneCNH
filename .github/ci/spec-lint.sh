@@ -265,7 +265,7 @@ check_spec() {
   # 11. Approved 系列状态门禁：status_main=Approved 时必须存在至少 1 条 AC
   # 触发条件：主态为 Approved（含 'Spec Approved'、'Docs Baseline Approved'、'Approved (contract-corrected)' 等所有以 Approved 为关键词的次态）
   # 不触发：Draft / Review / Implemented / Changed / Deprecated（给予过渡或终态窗口）
-  # 来源：docs/report/architecture-structural-analysis-20260622-v2.md §5.2 P0-2
+  # 来源：report/architecture-structural-analysis-20260622-v2.md §5.2 P0-2
   # AC 形式：AC-001 / AC-XXX-001 / AC-MD-001 / AC-DEC-001 等（前缀 AC- 后跟字母数字）
   if [[ "$status_main" == "Approved" ]]; then
     local ac_count

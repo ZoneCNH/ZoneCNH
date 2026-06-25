@@ -389,7 +389,7 @@
 
 - x.go 已有（80%，v0.0.1）；2.8MB 体量已核实为治理/工具 CLI（goalcli+templatex），非 Composition Root
 - **composer v0.1.0** ✅（75%）：数据域组合根，25 进程（23 adapter + market_data + macro_data）+ HTTP health + Docker Compose；dispatch→regime SinkPort 适配器已完成（MarketRegimeSink/MacroRegimeSink）
-- **已闭环**：核心链路收口（`regime_engine` → `signal_factory` → `riskx`）已按 `docs/report/architecture-structural-repair-plan-20260621.md` 的 `#5`-`#6` 完成；本文件仅保留历史摘要，不再展开执行树
+- **已闭环**：核心链路收口（`regime_engine` → `signal_factory` → `riskx`）已按 `report/architecture-structural-repair-plan-20260621.md` 的 `#5`-`#6` 完成；本文件仅保留历史摘要，不再展开执行树
 
 ### 🟡 横切（注意）
 
@@ -432,12 +432,12 @@
 
 ### 当前状态
 
-- [x] Phase 1（分析域）已按 `docs/report/architecture-structural-repair-plan-20260621.md` 闭环；7 项收口动作已全部回写，本文件仅保留历史同步摘要。
+- [x] Phase 1（分析域）已按 `report/architecture-structural-repair-plan-20260621.md` 闭环；7 项收口动作已全部回写，本文件仅保留历史同步摘要。
 - [x] `x.go` 体量核实完成：`x.go` = 治理 CLI，非组合根；`composer` v0.1.0 承担数据域组合根
 
 ### 已完成事项
 
-1. **Phase 1 已闭环**：`docs/report/architecture-structural-repair-plan-20260621.md` 现作为闭环记录，`#1`、`#5`-`#6`、`#9`-`#12` 的执行口径已全部收束；本文件不再展开 `MarketDataProvider` / `FactorInput` / `FactorOutput` 的执行细节。
+1. **Phase 1 已闭环**：`report/architecture-structural-repair-plan-20260621.md` 现作为闭环记录，`#1`、`#5`-`#6`、`#9`-`#12` 的执行口径已全部收束；本文件不再展开 `MarketDataProvider` / `FactorInput` / `FactorOutput` 的执行细节。
 2. **contracts 契约口径已同步**：`SignalIntent` 已升入 contracts；P1 / P2 兼容投影别名（`RegimeSnapshotEvent` / `RegimeCardEvent` / `DecisionCardEvent` / `MarketRegimePort` / `MacroRegimePort` / `RegimeEnginePort`）已在 contracts 补齐；`contracts` Approved 与跨域 AC / TC 已在闭环记录中固定。
 3. ~~**版本化 SDK**~~：✅ 已完成 — 18 仓库 v0.1.1 tagged release（2026-06-16）
 4. ~~**统一宏观适配器**~~：✅ 已评估 — 保持独立模块架构，11 仓库全部 v0.1.1 tagged release（2026-06-16）

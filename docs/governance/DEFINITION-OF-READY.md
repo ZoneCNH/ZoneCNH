@@ -71,7 +71,7 @@
 
 ## 机器门禁（Approved 升级前必检）
 
-> 2026-06-22 新增（见 `docs/report/architecture-structural-analysis-20260622-v2.md` §5.2 P0-2）
+> 2026-06-22 新增（见 `report/architecture-structural-analysis-20260622-v2.md` §5.2 P0-2）
 > 2026-06-22 扩展：Status 校验改为"抽取主态关键词"，兼容历史描述性次态
 
 `.github/ci/spec-lint.sh` 在 Status 主态为 `Approved` 时强制执行以下 ERROR 级检查（违反阻断 CI）：

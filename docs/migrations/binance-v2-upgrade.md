@@ -24,8 +24,8 @@ becoming a second SSOT.
 | `module/binance/DEEP-ANALYSIS.md` §0 | Archive stub pointing to SPEC §4.1 and this migration note. |
 | `module/binance/DEEP-ANALYSIS.md` §12 | Archive stub pointing to this historical code-state evidence index. |
 | `docs/migrations/binance-v2-upgrade.md` | Migration contract plus historical evidence index for distributed C/S migration. |
-| `docs/report/binance/deep-analysis-20260622.md` | Review record recommending §0 promotion into SPEC §4 and §12 migration into `docs/migrations/`. |
-| `docs/report/binance/deep-analysis-20260622-v2.md` | Follow-up review record confirming the same migration split. |
+| `report/binance/deep-analysis-20260622.md` | Review record recommending §0 promotion into SPEC §4 and §12 migration into `docs/migrations/`. |
+| `report/binance/deep-analysis-20260622-v2.md` | Follow-up review record confirming the same migration split. |
 
 ## Migration contract
 

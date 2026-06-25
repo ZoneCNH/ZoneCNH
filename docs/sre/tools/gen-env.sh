@@ -9,7 +9,7 @@
 #
 # module 名与 GitHub 仓库名一致（如 fred、binance、okx）。
 # 行情模块 → market_{module} 库；宏观模块 → macro_{module} 库。
-# 脚本自动检测模块类别（参考 docs/report/data-domain-infrastructure-20260617.md §一）。
+# 脚本自动检测模块类别（参考 report/data-domain-infrastructure-20260617.md §一）。
 #
 # 对齐 Bootstrap SOP §七（PR #688）和基础架构报告 §七（PR #686）。
 #

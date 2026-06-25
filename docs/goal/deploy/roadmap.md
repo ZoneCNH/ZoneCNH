@@ -1,6 +1,6 @@
 # Delivery OS 落地路线图
 
-> 基于 `docs/report/goal-deep-analysis-20260612.md` 深度分析，将 `22-delivery-os.md` 和 `23-workflow-governance-checks.md` 的愿景架构分解为 5 个可执行 Phase。
+> 基于 `report/goal-deep-analysis-20260612.md` 深度分析，将 `22-delivery-os.md` 和 `23-workflow-governance-checks.md` 的愿景架构分解为 5 个可执行 Phase。
 
 生成日期：2026-06-12
 当前成熟度：L5（自优化）— 全部 5 个 Phase 已完成

@@ -193,7 +193,7 @@ echo "✅ 全部依赖安装完成"
 
 | 触发                  | 条件                                                                                                                                                         |
 | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `push` (main)         | 变更路径匹配 `.config/goal/**`、`docs/goal/**`、`docs/report/goal-*`、`.claude/agents/goal-*`、`.codex/agents/goal-*`、`.copilot/agents/goal-*`、`AGENTS.md` |
+| `push` (main)         | 变更路径匹配 `.config/goal/**`、`docs/goal/**`、`report/goal-*`、`.claude/agents/goal-*`、`.codex/agents/goal-*`、`.copilot/agents/goal-*`、`AGENTS.md` |
 | `pull_request` (main) | 同上                                                                                                                                                         |
 
 **依赖链**：

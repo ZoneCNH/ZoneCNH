@@ -1,7 +1,7 @@
 # binance 修复执行 Plan 索引
 
-> Plan006 基于 `docs/report/binance/production-readiness-gap-analysis-20260624.md`（五轮 58 维度分析）。
-> **Plan007 基于 Plan006 完成后的两份复核报告**：[`production-readiness-recheck-20260624.md`](../../docs/report/binance/production-readiness-recheck-20260624.md)（生产就绪复核，HEAD 8290dc9）+ [`foundationx-binance-decoupling-architecture-20260624.md`](../../docs/report/arch/foundationx-binance-decoupling-architecture-20260624.md)（解耦架构）。
+> Plan006 基于 `report/binance/production-readiness-gap-analysis-20260624.md`（五轮 58 维度分析）。
+> **Plan007 基于 Plan006 完成后的两份复核报告**：[`production-readiness-recheck-20260624.md`](../../report/binance/production-readiness-recheck-20260624.md)（生产就绪复核，HEAD 8290dc9）+ [`foundationx-binance-decoupling-architecture-20260624.md`](../../report/arch/foundationx-binance-decoupling-architecture-20260624.md)（解耦架构）。
 > 执行顺序见各 Plan 内部 Phase；状态更新到本文件。
 
 ## 执行顺序与状态

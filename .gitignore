@@ -97,15 +97,15 @@ __pycache__/
 
 # Node dependencies (report tooling)
 node_modules/
-docs/report/node_modules/
+report/node_modules/
 
 # Separate sre project (not part of this repo)
 /sre/
 sre/
 
 # Report tooling npm artifacts
-docs/report/package.json
-docs/report/package-lock.json
+report/package.json
+report/package-lock.json
 
 # Harness Starter — 运行时生成物
 .claude/reviews/

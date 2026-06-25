@@ -1,11 +1,11 @@
 # Plan 006: binance 模块生产就绪修复执行计划
 
-> **Executor instructions**: 本计划基于 `docs/report/binance/production-readiness-gap-analysis-20260624.md`（五轮 58 维度分析 + 第六轮交叉复核，2 P0 + 29 P1 + 19 P2）。按 Phase 顺序执行，每个 Task 含验证命令与 STOP 条件。完成一个 Task 后更新 `plans/binance/README.md` 状态行。
+> **Executor instructions**: 本计划基于 `report/binance/production-readiness-gap-analysis-20260624.md`（五轮 58 维度分析 + 第六轮交叉复核，2 P0 + 29 P1 + 19 P2）。按 Phase 顺序执行，每个 Task 含验证命令与 STOP 条件。完成一个 Task 后更新 `plans/binance/README.md` 状态行。
 >
 > **Drift check (run first)**:
 > ```bash
 > cd /home/binance && git log --oneline -1
-> cd /home/ZoneCNH && git log --oneline -1 -- docs/report/binance/production-readiness-gap-analysis-20260624.md
+> cd /home/ZoneCNH && git log --oneline -1 -- report/binance/production-readiness-gap-analysis-20260624.md
 > ```
 > 若 runtime HEAD 已推进到 `4fa920b` 之后，或分析报告已更新，先对照新 commit 再执行。
 
