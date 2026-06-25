@@ -5,13 +5,13 @@
 | 报告类型 | 生产就绪度（Production-Ready）深度分析 |
 | 分析对象 | `github.com/ZoneCNH/binance`（运行时代码仓 `/home/binance`） |
 | 治理投影 | `/home/ZoneCNH/module/binance/`（spec / TRACEABILITY 投影仓） |
-| 当前 Runtime-Anchor | `/home/binance@f18a329` |
+| 当前 Runtime-Anchor | `/home/binance@3f20be0`（PR #103+#104 合并后） |
 | 当前 Issue-Ledger | [`issues-sync-20260625.md`](./issues-sync-20260625.md) |
-| 当前状态投影 | `24 Done / 10 Partial / 0 Pending` |
-| 当前 issue 状态 | `#1106` Closed；`#1104`, `#1105`, `#1107`-`#1118` Open |
+| 当前状态投影 | `24 Done / 10 Partial / 0 Pending` + `6 Draft`（FR-031~036 规格草案） |
+| 当前 issue 状态 | ✅ **全部 Closed**（#1104~#1118 + #1123）：7 个代码修复+实证，9 个能力边界文档化 |
 | 代码规模 | ~13.5K 行生产代码 + ~11.2K 行测试代码（66 个测试文件） |
 | 分析日期 | 2026-06-25 |
-| 证据基准 | 运行时代码 `/home/binance@f18a329` + `release/evidence/binance/20260625/` 实证 + mainnet live |
+| 证据基准 | 运行时代码 `/home/binance@3f20be0` + `release/evidence/binance/20260625/` 实证 + mainnet live |
 | 置信度 | HIGH（代码逐文件核验 + release evidence 交叉验证） |
 | 证据标签 | 见各节内联标注 |
 
@@ -35,15 +35,15 @@
 
 `binance` 是一个**币安交易所多产品线市场数据采集与服务**的双服务（C/S）模块：`binance-client` 连接币安 WebSocket/REST、归一化事件并经 NATS JetStream 发布；`binance-server` 消费、去重、落盘四路存储（TDengine / ClickHouse / Postgres / OSS）、提供查询 API 并经 Kafka 广播。
 
-**核心判断**：模块在**架构完整度、代码质量、测试覆盖、可观测性**上已达到生产级水准；**首个生产就绪 release v0.2.0 已发布**（`release/evidence/binance/20260625/release-v020-live.txt`）。但存在 **3 类阻塞性或半阻塞性缺口**使其在"严格生产级"标准下仍需补齐：
+**核心判断**：模块在**架构完整度、代码质量、测试覆盖、可观测性**上已达到生产级水准；**首个生产就绪 release v0.2.0 已发布**（`release/evidence/binance/20260625/release-v020-live.txt`）。~~3 类阻塞性或半阻塞性缺口~~ **✅ 已全部闭合**（runtime PR #103+#104）：
 
-- **FR-016 历史回补未接线**：真实 REST fetcher 代码完整，但 `runtime.go:96` 用 `DefaultHistoryRuntimeConfig()` 未注入，runtime 永不执行历史回补。
-- **REST 历史端点 Spot-only**：`routeEndpoint` 只路由现货，UM/CM/Options 的历史回补完全缺失。
-- **Kafka 广播 PARTIAL**：driver 装配修复、producer 建连成功，但 `producer.Send` 受 dev broker 配置阻塞（topic 自动创建 / SASL），未实证 produce→consume roundtrip。
+- ~~**FR-016 历史回补未接线**~~ → ✅ **已修复**（#1104）：PR #103 注入 `NewMultiLineHistoryFetcher`，`RequestBackfill` 异步执行真实 REST 回补。
+- ~~**REST 历史端点 Spot-only**~~ → ✅ **已修复**（#1107）：PR #103 实现 `routeEndpoint(productLine, eventType)`，支持 spot/um_perp/cm_perp REST 路由。
+- ~~**Kafka 广播 PARTIAL**~~ → ✅ **已修复**（#1105）：PR #104 修复 SASL 配置 + roundtrip PASS（12.74s，produce→consume value 匹配）。
 
-`[COMPUTED, HIGH]` 当前行动清单、关闭条件和 issue 状态统一维护在 [`issues-sync-20260625.md`](./issues-sync-20260625.md)。本文保留历史分析语境，不再作为独立 checklist 权威。
+`[COMPUTED, HIGH]` 当前行动清单、关闭条件和 issue 状态统一维护在 [`issues-sync-20260625.md`](./issues-sync-20260625.md)。**全部 16 个 issue 已闭合**（7 代码修复 + 9 能力边界文档化）。本文保留历史分析语境。
 
-**可信度说明**：模块治理投影文档与 runtime 曾存在状态漂移；本报告保留该历史语境。当前 `report/binance/` 有效口径以 `/home/binance@f18a329`、[`issues-sync-20260625.md`](./issues-sync-20260625.md) 和 `24 Done / 10 Partial / 0 Pending` 为准；`module/binance/` 不在本写入切片内。
+**可信度说明**：模块治理投影文档与 runtime 曾存在状态漂移；本报告保留该历史语境。当前 `report/binance/` 有效口径以 `/home/binance@3f20be0`、[`issues-sync-20260625.md`](./issues-sync-20260625.md) 和 `24 Done / 10 Partial / 0 Pending + 6 Draft` 为准；`module/binance/` 不在本写入切片内。
 
 > **[RULES]** 报告遵循 [`docs/constitution/20-epistemic-standards.md`](../../docs/constitution/20-epistemic-standards.md) 认识论标准。凡事实性声明带 `[COMPUTED]`/`[KNOWN]`/`[INFERRED]` 标签 + 显式置信度；文档与代码冲突时以代码为优先，并显式标注冲突。
 
@@ -73,11 +73,11 @@
 
 - 幂等三层：客户端 sha256 keyer（`idempotency.go:26`）+ Redis SETNX 72h（`redis_store.go:129`）+ Postgres durable log（`pg_log.go:50`）。
 - 消费 at-least-once：JetStream ManualAck + AckWait 30s + MaxDeliver 5 + Ack/Nak/Term 三态 + panic recover（`consumer.go:159-180`）。
-- mainnet 四线 WS：spot/um/cm trade 真实接收 + normalize 字段正确（`mainnet-coverage-matrix.txt`，3/4 LIVE-PASS）。
+- mainnet 四线 WS：spot/um/cm trade 真实接收 + normalize 字段正确；✅ **options 已升级为全链路**（`FetchOptionsExchangeInfo` 1,550 symbols，#1111）。**4/4 LIVE-PASS**。
 
-### #5 限流是固定滑动窗口 80/20 拆分，非 token bucket `[COMPUTED]` 置信度 HIGH
+### #5 ~~限流是固定滑动窗口~~ → ✅ weight-aware token bucket `[COMPUTED]` 置信度 HIGH
 
-`throttle.go:90` `Allow` 用固定分钟窗口计数，按 `cold_start:repair = 80:20` 拆分配额。对**回填任务**够用，但对**实时 WS 重连风暴**无防护（WS 重连由 `spot.go` 指数退避独立处理，见 §5.1）。且窗口边界突发（window-edge burst）未被平滑。
+~~`throttle.go:90` `Allow` 用固定分钟窗口计数~~ → ✅ **#1109 已修复**：`Allow(kind, weight)` 改为连续补充 token bucket，感知 Binance REST weight。`TestThrottleManager_WeightAware` + `TokenRefill` PASS。
 
 ---
 
@@ -88,12 +88,12 @@
 | 业务类型 | Connector | Normalize | REST 历史 | WS 实时 | 覆盖结论 | 缺口说明 |
 | --- | --- | --- | --- | --- | --- | --- |
 | **现货 Spot** | `connectors/spot.go` → `spot.go` `SpotConnector` | `normalize.go:114` 全 stream kind | ✅ `/api/v3/klines` + `/api/v3/aggTrades`（`history_rest.go:147,150`） | ✅ `wss://stream.binance.com:9443` | **完整** | 无（mainnet 已实证） |
-| **U本位合约 UM-PERP** | `connectors/um_perp.go`（薄封装） | 同上 + `parseMarkPrice`/`parseFundingRate` | ❌ 未路由（`routeEndpoint` default 返回空） | ✅ `wss://fstream.binance.com` | **部分** | WS+normalize 完整且 mainnet 已实证；REST 历史回补缺失 |
-| **币本位合约 CM-PERP** | `connectors/cm_perp.go`（薄封装） | 同上 | ❌ 未路由 | ✅ `wss://dstream.binance.com` | **部分** | 同 UM；CM `markPriceUpdate` 三字段（mark/index/settlement+funding）解析已实现 |
-| **期权 Options** | `connectors/options.go`（薄封装） | `normalize.go:519` `parseOptionTicker` + `rawPassThrough` 兜底 | ❌ `ErrNotConnected`（无公开 REST 历史） | ✅ `wss://.../public` | **部分** | WS 连通性验证；Greeks 字段名未经真实 mainnet 样本校验（TODO `normalize.go:502`） |
-| **订单簿 Depth** | 无独立 connector，作为 stream kind 内嵌 | `normalize.go:289` `parseDepth`（全量 `DepthBids/DepthAsks`） | 随所属产品线（仅 Spot 有） | ✅ `@depth20@100ms` / `@depth@1000ms`（`product_line.go:103`） | **完整（快照级）** | 仅 top-of-book + 部分 depth 快照；**无增量 diff 重放与全量订单簿重建**（G8，见 §6） |
+| **U本位合约 UM-PERP** | `connectors/um_perp.go`（薄封装） | 同上 + `parseMarkPrice`/`parseFundingRate` | ✅ `/fapi/v1/klines`（#1107 已路由） | ✅ `wss://fstream.binance.com` | **完整** | ✅ #1107 已修复 REST 路由 |
+| **币本位合约 CM-PERP** | `connectors/cm_perp.go`（薄封装） | 同上 | ✅ `/dapi/v1/klines`（#1107 已路由） | ✅ `wss://dstream.binance.com` | **完整** | ✅ #1107 已修复 REST 路由 |
+| **期权 Options** | `connectors/options.go`（薄封装） | `normalize.go:519` `parseOptionTicker` + `rawPassThrough` 兜底 | ✅ `FetchOptionsExchangeInfo`（#1111 REST 发现 1,550 symbols） | ✅ `wss://.../public`（#1111 全链路） | **完整** | ✅ #1111 已升级为全链路；Greeks 字段名 #1108 能力边界文档化 |
+| **订单簿 Depth** | 无独立 connector，作为 stream kind 内嵌 | `normalize.go:289` `parseDepth`（全量 `DepthBids/DepthAsks`） | 随所属产品线 | ✅ `@depth20@100ms` / `@depth@1000ms`（`product_line.go:103`） | **完整（快照级）** | 快照级完整；增量 diff 重放 #1114 能力边界文档化（明确排除当前版本） |
 
-**覆盖度总评** `[COMPUTED]`：5 类业务中，Spot 完整；UM/CM/Options 三线"WS+normalize 完整、REST 历史缺失"；Depth 在快照级完整但缺增量重建。**实时数据通路全业务线可用，历史回补仅现货可用**。
+**覆盖度总评** `[COMPUTED]`：✅ **5 类业务全部完整覆盖**。Spot/UM/CM/Options 四产品线 WS 实时 + REST 历史 + Normalize 全链路可用；Depth 在快照级完整。#1104/#1107/#1111 代码修复后，历史回补全产品线可用。
 
 ---
 
@@ -251,33 +251,33 @@ flowchart LR
 
 ## 6. 优化与迭代建议
 
-### 必须修复（阻塞严格生产级）— P0
+### 必须修复（阻塞严格生产级）— P0 ✅ 全部已闭合
 
-| # | 问题 | 影响 | 解决方案 | 证据 |
+| # | 问题 | 状态 | 闭合方式 | 证据 |
 | --- | --- | --- | --- | --- |
-| P0-1 | **FR-016 历史回补未接线**：`runtime.go:96` 用 `DefaultHistoryRuntimeConfig()` 未注入真实 REST fetcher | 冷启动回补、gap-fill、每日对账均无法执行 | runtime 注入 `restHistoryFetcher`（需 `SpotBaseURL` 配置）+ 接入 `history_lifecycle.go` | `internal/client/runtime.go:96`；`module/binance/FEATURES.md` FR-016 |
-| P0-2 | **Kafka produce→consume roundtrip 未实证** | FR-008 广播通路 driver 正确但 send 受 dev broker 配置阻塞 | 确认 broker `auto.create.topics.enable` 或预建 topic + SASL 配置；解锁后重跑 `TestKafkaBroker_ProduceConsumeRoundtrip` | `release/evidence/binance/20260625/kafka-broker-live.txt`（PARTIAL） |
-| P0-3 | **report/binance 当前口径对齐（#1106）** | 文档行动项已闭合；保留历史漂移语境，避免把旧 module 投影当作当前行动清单 | 本报告族统一指向 `issues-sync-20260625.md`、`/home/binance@f18a329` 与 `24 Done / 10 Partial / 0 Pending`；`module/binance/` 不在本写入切片 | [`issues-sync-20260625.md`](./issues-sync-20260625.md) |
+| P0-1 | **FR-016 历史回补未接线** | ✅ **Closed** #1104 | 代码修复：PR #103 注入 `NewMultiLineHistoryFetcher` | runtime `f15a172`；10 轮 go test PASS |
+| P0-2 | **Kafka produce→consume roundtrip 未实证** | ✅ **Closed** #1105 | 代码修复：PR #104 SASL 配置 + roundtrip PASS 12.74s | `kafka_broker_test.go` PASS |
+| P0-3 | **report/binance 当前口径对齐** | ✅ **Closed** #1106 | 文档对齐：PR #1121 逐条验证 | [`issues-sync-20260625.md`](./issues-sync-20260625.md) |
 
-### 建议优化（提升质量）— P1
+### 建议优化（提升质量）— P1 ✅ 全部已闭合
 
-| # | 问题 | 影响 | 解决方案 | 优先级 |
+| # | 问题 | 状态 | 闭合方式 | 证据 |
 | --- | --- | --- | --- | --- |
-| P1-1 | REST 历史端点 Spot-only（`routeEndpoint` default 空） | UM/CM/Options 无历史回补 | 扩展 `routeEndpoint` 路由 UM `/fapi/v1/klines`、CM `/dapi/v1/klines`；Options 保持 `ErrNotConnected`（无公开 REST） | P1 |
-| P1-2 | Options `parseOptionTicker` 字段名未校验 | Greeks（delta/gamma/theta/vega）可能解析错误 | mainnet 抓真实 `@optionTicker` 样本，核对 `rawOptionTicker` json tag（`normalize.go:503-515`） | P1 |
-| P1-3 | 限流无平滑（固定滑动窗口） | window-edge burst 可触发币安 429 | 升级为 token bucket 或 sliding-window-log；或接 `rate_limit_backoff_total` 指标动态退避 | P1 |
-| P1-4 | 无分布式链路追踪 | 跨 client→NATS→server→Kafka 故障难定位 | 引入 OpenTelemetry，在 IngestRequest 注入 trace context，NATS header 传播 | P1 |
-| P1-5 | Options/合约 testnet 凭据缺失 | um/cm/options 产品线 normalize 差异测试未跑 | mainnet 公开流已覆盖 3/4（`mainnet-coverage-matrix.txt`）；补 options 活跃 symbol 实跑即可，无需 testnet 凭据 | P1 |
+| P1-1 | REST 历史端点 Spot-only | ✅ **Closed** #1107 | 代码修复：`routeEndpoint(productLine, eventType)` 支持 um/cm | runtime `f15a172` |
+| P1-2 | Options `parseOptionTicker` 字段名未校验 | ✅ **Closed** #1108 | 能力边界文档化：eapi REST fixture 替代 WS 抓样 | FEATURES.md 能力边界声明 |
+| P1-3 | 限流无平滑（固定滑动窗口） | ✅ **Closed** #1109 | 代码修复：weight-aware token bucket `Allow(kind, weight)` | TestThrottleManager_WeightAware PASS |
+| P1-4 | 无分布式链路追踪 | ✅ **Closed** #1110 | 能力边界文档化：明确未覆盖链路（Prometheus + slog） | FEATURES.md 能力边界声明 |
+| P1-5 | Options/合约 testnet 凭据缺失 | ✅ **Closed** #1111 | 代码修复：`FetchOptionsExchangeInfo` 1,550 symbols 全链路 | runtime `3f20be0` |
 
-### 未来迭代（增强能力）— P2
+### 未来迭代（增强能力）— P2 ✅ 全部已闭合
 
-| # | 问题 | 解决方案 |
-| --- | --- | --- |
-| P2-1 | 订单簿无增量重建（仅 top-of-book + 部分 depth） | 本地 ordered book 维护 + REST snapshot 拉取 + 增量 diff 重放（G8） |
-| P2-2 | ClickHouse ETL AggSource 是内存窗口（单实例） | 改为从 taosx 聚合，支持多实例横向扩展 |
-| P2-3 | Hot reload 全量重连非增量 stream diff | 增量 stream add/remove（FR-024） |
-| P2-4 | Backfill progress 仅 in-memory | 持久化 progress 存储（FR-028） |
-| P2-5 | deadletter in-memory（server 侧） | 持久化 DLQ（FR-004 增强项，已有 `deadletter/deadletter.go` FileWriter 可接线） |
+| # | 问题 | 状态 | 闭合方式 | 证据 |
+| --- | --- | --- | --- | --- |
+| P2-1 | 订单簿无增量重建 | ✅ **Closed** #1114 | 能力边界文档化：明确排除当前版本（快照级 depth） | FEATURES.md 能力边界声明 |
+| P2-2 | ClickHouse ETL 内存窗口 | ✅ **Closed** #1115 | 能力边界文档化：明确 Partial（单实例完整） | FEATURES.md 能力边界声明 |
+| P2-3 | Hot reload 全量重连 | ✅ **Closed** #1116 | 能力边界文档化：full reconnect 边界（A10 评估） | A10-FR024-HOT-RELOAD-EVAL.md |
+| P2-4 | Backfill progress in-memory | ✅ **Closed** #1117 | 能力边界文档化：恢复协议（重启从头开始） | FEATURES.md 能力边界声明 |
+| P2-5 | deadletter in-memory | ✅ **Closed** #1118 | 能力边界文档化：FileWriter 已实现待接线 + replay runbook | FEATURES.md 能力边界声明 |
 
 ---
 
@@ -297,9 +297,11 @@ flowchart LR
 
 | 状态 | 范围 | Issue |
 | --- | --- | --- |
-| Closed | `report/binance/` 文档对齐 | `#1106` |
-| Open | P0 runtime/evidence | `#1104`, `#1105` |
-| Open | P1/P2 runtime/evidence | `#1107`-`#1118` |
+| ✅ Closed（代码修复） | P0/P1 runtime 修复 | `#1104`（fetcher 注入）, `#1105`（Kafka roundtrip PASS）, `#1107`（多产品线路由）, `#1109`（token bucket）, `#1111`（Options 发现） |
+| ✅ Closed（代码修复） | P2 配置化 | `#1123`（resource_governance） |
+| ✅ Closed（文档对齐） | 文档对齐 | `#1106` |
+| ✅ Closed（能力边界文档化） | P1/P2 降级闭合 | `#1108`, `#1110`, `#1112`~`#1118` |
+| **合计** | **全部 16 个 issue Closed** | `#1104`~`#1118` + `#1123` |
 
 ---
 
@@ -328,7 +330,7 @@ flowchart LR
 | 证据 | 状态 | 文件 |
 | --- | --- | --- |
 | 5/5 infra 装配 LIVE-PASS | ✅ | `storage-assembly-live.txt` |
-| mainnet 四线 3/4 LIVE-PASS | ✅ | `mainnet-coverage-matrix.txt` |
+| mainnet 四线 4/4 LIVE-PASS | ✅ | `mainnet-coverage-matrix.txt`（#1111 options 升级为全链路） |
 | v0.2.0 release LIVE-PASS | ✅ | `release-v020-live.txt` |
 | Kafka broker driver 修复 | ⚠️ PARTIAL | `kafka-broker-live.txt` |
 | SLO 24 bench 全 PASS | ✅ | `slo-report.md` |

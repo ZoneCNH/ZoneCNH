@@ -5,10 +5,10 @@
 | 文档类型 | 数据流架构（含 Mermaid 图 + 模块职责边界） |
 | 分析对象 | `github.com/ZoneCNH/binance` C/S 双进程数据通路 |
 | 证据基准 | 运行时代码逐文件核验 |
-| 当前 Runtime-Anchor | `/home/binance@f18a329` |
+| 当前 Runtime-Anchor | `/home/binance@3f20be0`（PR #103+#104 合并后） |
 | 当前 Issue-Ledger | [`issues-sync-20260625.md`](./issues-sync-20260625.md) |
-| 当前状态投影 | `24 Done / 10 Partial / 0 Pending` |
-| 当前 issue 状态 | `#1106` Closed；`#1104`, `#1105`, `#1107`-`#1118` Open |
+| 当前状态投影 | `24 Done / 10 Partial / 0 Pending` + `6 Draft`（FR-031~036） |
+| 当前 issue 状态 | ✅ **全部 Closed**（#1104~#1118 + #1123）：7 代码修复 + 9 能力边界文档化 |
 | 置信度 | HIGH |
 
 `[COMPUTED, HIGH]` 本文保留数据流架构语境；当前行动清单和关闭条件统一维护在 [`issues-sync-20260625.md`](./issues-sync-20260625.md)。
@@ -115,14 +115,14 @@ sequenceDiagram
     end
     REST->>REST: 按时间排序去重
     REST-->>History: []HistoryFetchResult
-    Note over REST: ⚠️ UM/CM/Options 不路由（routeEndpoint default 空）
+    Note over REST: ✅ UM/CM 已路由（#1107 routeEndpoint 多产品线）；Options 明确返回空（无公开 REST 历史）
 ```
 
 **关键约束** `[KNOWN]`：
-- `routeEndpoint`（`history_rest.go:143`）只识别 `kline/bar`→`/api/v3/klines`、`aggTrade/trade`→`/api/v3/aggTrades`，其余返回 `("","")`。
+- ✅ `routeEndpoint`（#1107 已扩展为 `(productLine, eventType)`）：spot→`/api/v3/`、um_perp→`/fapi/v1/`、cm_perp→`/dapi/v1/`；options 返回空（无公开 REST 历史）。
 - 重试：3 次，退避 `RetryBackoff * 2^(attempt-1)`，429 单独 continue 重试。
 - 分页防死循环：`cursor = lastTS.Add(time.Millisecond)`（`:117`）。
-- **⚠️ 当前 runtime 未注入**：`runtime.go:96` 用 `DefaultHistoryRuntimeConfig()`，fetcher 实际不执行（FR-016 Partial）。
+- ✅ **runtime 已注入真实 fetcher**（#1104）：`main.go` 注入 `NewMultiLineHistoryFetcher`，`RequestBackfill` 异步执行真实 REST 回补。
 
 ---
 
@@ -170,7 +170,7 @@ sequenceDiagram
 | spot | `wss://stream.binance.com:9443` | ✅ LIVE-PASS |
 | um_perp | `wss://fstream.binance.com` | ✅ LIVE-PASS |
 | cm_perp | `wss://dstream.binance.com` | ✅ LIVE-PASS |
-| options | `wss://fstream.binance.com/public` | ⚠️ 连通性验证（活跃 symbol 待补） |
+| options | `wss://fstream.binance.com/public` | ✅ LIVE-PASS（#1111 全链路：`FetchOptionsExchangeInfo` 1,550 symbols + `@optionTicker` WS + normalize） |
 
 **默认 stream kinds**（`product_line.go:103`）：`@trade` / `@bookTicker` / `@depth20@100ms` / `@kline_*` / 合约额外 `@markPrice` / `@fundingRate`。
 

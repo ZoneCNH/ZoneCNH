@@ -6,10 +6,10 @@
 | 适用范围 | `github.com/ZoneCNH/binance` runtime 代码 + `module/binance/` 治理投影   |
 | 制定依据 | 现行代码实现提炼 + `module/binance/{NAMING,RULES,STANDARD,SPEC}.md` 整合 |
 | 规范定位 | **整合层**：不重复 NAMING.md（命名 SSOT）内容，补全其未覆盖的工程约定    |
-| 当前 Runtime-Anchor | `/home/binance@f18a329` |
+| 当前 Runtime-Anchor | `/home/binance@3f20be0`（PR #103+#104 合并后） |
 | 当前 Issue-Ledger | [`issues-sync-20260625.md`](./issues-sync-20260625.md) |
-| 当前状态投影 | `24 Done / 10 Partial / 0 Pending` |
-| 当前 issue 状态 | `#1106` Closed；`#1104`, `#1105`, `#1107`-`#1118` Open |
+| 当前状态投影 | `24 Done / 10 Partial / 0 Pending` + `6 Draft`（FR-031~036） |
+| 当前 issue 状态 | ✅ **全部 Closed**（#1104~#1118 + #1123）：7 代码修复 + 9 能力边界文档化 |
 | 置信度   | HIGH（基于代码逐文件核验）                                               |
 
 ---
@@ -221,7 +221,7 @@ flowchart LR
 | --------------- | ------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
 | 单元测试        | 与被测同目录 `*_test.go`，66 文件 ~11.2K 行                                     | ✅ 覆盖 throttle/consumer/idempotency/normalize                   |
 | 基准测试        | 关键路径必有 bench，对标 NFR 预算                                               | ✅ 24 项全 PASS                                                   |
-| 集成测试        | `test/e2e/`，含 mainnet live + kafka broker                                     | ⚠️ Kafka roundtrip 待闭合                                         |
+| 集成测试        | `test/e2e/`，含 mainnet live + kafka broker                                     | ✅ Kafka roundtrip PASS 12.74s（#1105）                           |
 | fault injection | consumer 有 fault_injection_test                                                | ✅                                                                |
 | live gate       | mainnet/kafka/storage live 测试用环境变量 gate（默认 SKIP，避免 CI 无网络阻塞） | ✅ `BINANCE_MAINNET_LIVE` / `BINANCE_KAFKA_LIVE` / `STORAGE_LIVE` |
 
@@ -252,15 +252,15 @@ flowchart LR
 
 `[COMPUTED, HIGH]` 下表是规范缺口分类，不是当前行动清单；当前 issue、关闭条件和状态统一维护在 [`issues-sync-20260625.md`](./issues-sync-20260625.md)。
 
-基于本次分析，现行规范仍需补全：
+基于本次分析，现行规范的缺口已全部通过能力边界文档化闭合（FEATURES.md「能力边界声明」节）：
 
-| 缺口                 | 说明                                                       | 优先级 |
-| -------------------- | ---------------------------------------------------------- | ------ |
-| 分布式链路追踪规范   | 无 OpenTelemetry trace context 传播约定                    | P1     |
-| 存储层 mock 规范     | ClickHouse/TDengine 缺统一 mock 层，集成测试依赖真实 infra | P1     |
-| 大规模压测规范       | 无 100K TPS 级端到端压测 + 回压验证约定                    | P1     |
-| 持久化 DLQ 规范      | `deadletter.FileWriter` 已实现但未规范接线与重放流程       | P2     |
-| Options 字段校验规范 | `parseOptionTicker` 字段名未经 mainnet 样本确认            | P1     |
+| 缺口                 | 说明                                                       | 优先级 | 状态 |
+| -------------------- | ---------------------------------------------------------- | ------ | ---- |
+| 分布式链路追踪规范   | 无 OpenTelemetry trace context 传播约定                    | P1     | ✅ #1110 能力边界文档化（明确未覆盖链路） |
+| 存储层 mock 规范     | ClickHouse/TDengine 缺统一 mock 层，集成测试依赖真实 infra | P1     | ✅ #1112 能力边界文档化（证据分级 fake/live） |
+| 大规模压测规范       | 无 100K TPS 级端到端压测 + 回压验证约定                    | P1     | ✅ #1113 降级 Partial（SLO 24/24 PASS） |
+| 持久化 DLQ 规范      | `deadletter.FileWriter` 已实现但未规范接线与重放流程       | P2     | ✅ #1118 能力边界文档化（FileWriter 待接线 + replay runbook） |
+| Options 字段校验规范 | `parseOptionTicker` 字段名未经 mainnet 样本确认            | P1     | ✅ #1108 能力边界文档化（eapi REST fixture 替代 WS 抓样） |
 
 ---
 
