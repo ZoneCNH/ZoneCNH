@@ -293,7 +293,7 @@
 | ------------------------------------------------- | ---- | ------ | ------------------------------- | ---------- | --------------------------------------------------------- |
 | [x.go](https://github.com/ZoneCNH/x.go)           | 入口 | v0.0.1 | ███░ 80%                        | 100%       | 组合根，2.8MB/33 项                                       |
 | [composer](https://github.com/ZoneCNH/composer)   | 入口 | v0.2.0 | ████████░ 85%                   | 100%       | 数据域组合根：25 进程 + HTTP health + Docker Compose；✅ SinkPort 适配器（14 tests）；✅ RegimeCoordinator v0.2.0（dispatch→regime→engine→signal_factory 全链路，6 tests PASS） |
-| [alertx](https://github.com/ZoneCNH/alertx)       | 横切 | v0.1.0 | ░░░░ 5%                         | 100%       | 告警引擎                                                  |
+| [alertx](https://github.com/ZoneCNH/alertx)       | 横切 | v1.0.0 | █████ 100%                      | 100%       | 告警引擎（规则 DSL + 去重 + 分级 + 通知 + 双订阅）；✅ v1.0.0 spec→code 全链 pass；✅ AT-007 横切贯穿 |
 | [observex](https://github.com/ZoneCNH/observex)   | 横切 | v0.3.4 | 全管线 --force pass (spec→code) | 100%       | 可观测性（同时归属基座）；✅ v0.3.4 GitHub Release 已发布；Labels type alias；redisx/kafkax/clickhousex 已对齐 |
 | [module](./module/README.md)                      | 独立 | -      | -                               | 100%       | 项目技术规范与接口定义                                    |
 
@@ -393,7 +393,7 @@
 
 ### 🟡 横切（注意）
 
-- alertx 仅创建（5%），observex 已完成（100%，v0.3.4，✅ GitHub Release 已发布）
+- alertx v1.0.0 已完成（100%，spec→code 全链 pass，AT-007 横切贯穿，待 GitHub Release 发布）；observex 已完成（100%，v0.3.4，✅ GitHub Release 已发布）
 - observex 同属基座和横切，职责边界通过 ADR 明确（见 `module/observex/ADR-dual-attribution.md`，R7 已闭环）
 
 ---

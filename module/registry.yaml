@@ -895,13 +895,15 @@ alertx:
   domain: crosscut
   layer: business
   arch_type: independent_process
-  lifecycle: proposed
+  lifecycle: active
   owner: ZoneCNH
   registered: 2026-06-10
   spec_ref: module/alertx/SPEC.md
-  spec_version: v0.1.0-draft
+  deps_ref: module/FOUNDATION-DEPS.yaml
+  spec_version: v1.0.0
   release:
-    cadence: irregular
+    latest_tag: v1.0.0
+    cadence: stable
 
 x.go:
   repo: github.com/ZoneCNH/x.go
