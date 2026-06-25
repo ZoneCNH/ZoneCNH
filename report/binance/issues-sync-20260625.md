@@ -2,20 +2,20 @@
 
 | 字段 | 值 |
 | --- | --- |
-| Last-Updated | 2026-06-25（第二轮：#1106 状态修正 + FR-031~036 draft 登记） |
-| Scope | `report/binance/` 当前有效报告与历史语境对齐 |
+| Last-Updated | 2026-06-25（第三轮：report+module 10 轮交叉检查，新增 #1123） |
+| Scope | `report/binance/` + `module/binance/` 当前有效报告与历史语境对齐 |
 | Runtime Anchor | `/home/binance@f18a329` |
 | Status Projection | `24 Done / 10 Partial / 0 Pending`（FR-001~030 实现）+ `6 Draft`（FR-031~036 规格草案，不计入投影） |
-| Issue Range | GitHub / Beads `#1104`-`#1118`（15 个已实现 FR 缺口） |
+| Issue Range | GitHub / Beads `#1104`-`#1118`（15 个已实现 FR 缺口）+ `#1123`（1 个 10 轮交叉检查发现的新缺口） |
 | Draft Range | FR-031~036（PR #1119 引入，6 个规格草案，暂未创建独立 GitHub issue） |
 | Sync Result | Beads 15 / GitHub 15（已实现口径）；FR-031~036 仅在账本登记 |
 | Team Evidence | Pauli 完成 Beads/GitHub 查重；Jason 完成 `/home/binance@f18a329` 运行时代码与证据复核 |
 | Team Limitation | OMX team worktree 因当前仓库已有未提交文档迁移变更被阻断，改用 native agent team 执行 |
-| Status Policy | `#1106` 关闭条件已验证满足（anchor/投影/ledger/历史标注四项逐条核对），PR #1121 关闭；`#1104`、`#1105`、`#1107`-`#1118` 保持 Open，直到 runtime 或证据闭合 |
+| Status Policy | `#1106` 关闭条件已验证满足，PR #1121 关闭；`#1104`、`#1105`、`#1107`-`#1118`、`#1123` 保持 Open，直到 runtime 或证据闭合 |
 
 ## 当前结论
 
-`report/binance/` 的当前严格口径是：`binance` runtime 已闭合 storage assembly 基础设施路径，剩余 14 个可追踪事项（#1106 文档对齐已验证关闭）。其中 2 个为 P0，7 个为 P1，5 个为 P2（已实现 FR 缺口）。此外，PR #1119 引入了 FR-031~036 共 6 个 exchangeInfo 同步规格草案（Draft，未计入实现投影），定义于 `module/binance/SPEC-exchangeinfo-sync.md`，经五轮审查修正，待 pipeline-arbiter 翻转 Approved 后进入 task-split → code 管线。
+`report/binance/` + `module/binance/` 的当前严格口径是：`binance` runtime 已闭合 storage assembly 基础设施路径，剩余 15 个可追踪事项（#1106 文档对齐已验证关闭）。其中 2 个为 P0，7 个为 P1，6 个为 P2（已实现 FR 缺口，含第三轮 10 轮交叉检查发现的 #1123 resource_governance 不可配置）。此外，PR #1119 引入了 FR-031~036 共 6 个 exchangeInfo 同步规格草案（Draft，未计入实现投影），定义于 `module/binance/SPEC-exchangeinfo-sync.md`，经五轮审查修正，待 pipeline-arbiter 翻转 Approved 后进入 task-split → code 管线。
 
 当前模块状态投影统一为 `24 Done / 10 Partial / 0 Pending`（FR-001~030 实现）+ `6 Draft`（FR-031~036 规格草案）。Partial FR 为 `FR-007`、`FR-007a`、`FR-011`、`FR-016`、`FR-017`、`FR-023`、`FR-024`、`FR-026`、`FR-027`、`FR-028`。
 
@@ -38,6 +38,7 @@
 | RB-20260625-P2-03 | P2 | ZoneCNH-zwb | #1116 | 支持增量 hot reload diff 而非全量重连 | Open | hot reload 能按 diff 更新订阅，避免全量断连重连 |
 | RB-20260625-P2-04 | P2 | ZoneCNH-ioy | #1117 | 持久化历史回补进度 | Open | history/reconcile/rehydration progress 持久化，重启后可恢复 |
 | RB-20260625-P2-05 | P2 | ZoneCNH-1i0 | #1118 | 补齐持久 DLQ wiring 与 replay 流程 | Open | DLQ 使用持久 backend，并有 replay 与 operational runbook |
+| RB-20260625-P2-06 | P2 | ZoneCNH-56m | #1123 | resource_governance MaxConcurrent 不可配置，全量 backfill 受限 | Open（10 轮交叉检查发现） | `resource_governance.go:42` 硬编码 `MaxConcurrent=4`，注释声称 `XGO_BINANCE_RESOURCE_MAX_CONCURRENT` 可配置但 `binancecfg` 未接线；全量 backfill 并发受限。建议 #1104 闭合后或与 FR-032 同批处理 |
 
 ## FR-031~036 规格草案登记（PR #1119 引入）
 
