@@ -553,8 +553,8 @@ treasury:
   lifecycle: proposed
   owner: ZoneCNH
   registered: 2026-06-10
-  spec_ref: ~  # module/treasury/ 尚无 SPEC.md；根 README 已登记
-  spec_version: ~
+  spec_ref: module/treasury/SPEC.md
+  spec_version: v0.1.0-draft
   release:
     cadence: irregular
 
@@ -610,8 +610,8 @@ alternative_data:
   lifecycle: proposed
   owner: ZoneCNH
   registered: 2026-06-10
-  spec_ref: ~  # module/alternative_data/ 尚无 SPEC.md；根 README 已登记
-  spec_version: ~
+  spec_ref: module/alternative_data/SPEC.md
+  spec_version: v0.1.0-draft
   release:
     cadence: irregular
 
@@ -879,7 +879,7 @@ composer:
   lifecycle: proposed
   owner: ZoneCNH
   registered: 2026-06-10
-  spec_ref: ~  # module/composer/ 尚无 SPEC.md；根 README 已登记
+  spec_ref: module/composer/SPEC.md
   spec_version: v0.2.0
   release:
     latest_tag: v0.2.0
@@ -898,8 +898,8 @@ alertx:
   lifecycle: proposed
   owner: ZoneCNH
   registered: 2026-06-10
-  spec_ref: ~  # module/alertx/ 尚无 SPEC.md；根 README 已登记
-  spec_version: ~
+  spec_ref: module/alertx/SPEC.md
+  spec_version: v0.1.0-draft
   release:
     cadence: irregular
 
@@ -912,8 +912,8 @@ x.go:
   lifecycle: active
   owner: ZoneCNH
   registered: 2026-06-01
-  spec_ref: ~  # module/x.go/ 不作为模块规格维护（module/README §1 声明）
-  spec_version: ~
+  spec_ref: module/x.go/SPEC.md
+  spec_version: v0.1.0-draft
   release:
     cadence: irregular
   note: "治理/工具 CLI（goalcli + templatex）；运行时 Composition Root 职责由 composer 承担；命名例外（§7.2）"
