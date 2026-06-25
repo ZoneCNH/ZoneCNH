@@ -124,7 +124,7 @@ L2.5: domainx / decimalx / domain_market / domain_macro / domain_exchange (5/5 �
 
 **交易所 SDK / C/S Module：**
 
-- [binance](https://github.com/ZoneCNH/binance) — 币安 Binance Market Data C/S Module (Spot/USDⓈ-M/COIN-M/Options)；spec v3.6.2 Plan008 overlay；2026-06-25 PR #145 本地与远端 CI 修复证据已归档（runtime HEAD `d8668243cab999549bedfb60b7ffc8781f7190f2`）；Plan008 T008.001-T008.038 可本地闭合；foundation PRs taosx#18 / natsx#19 / kafkax#20 / clickhousex#11；release_closeable=NO（未捕获 live Binance websocket / 外部 JetStream PubAck+ManualAck / 外部存储、fanout、query / release tag / chaos+SLO） `公开`
+- [binance](https://github.com/ZoneCNH/binance) — 币安 Binance Market Data C/S Module (Spot/USDⓈ-M/COIN-M/Options)；spec v3.6.2 Plan008 overlay；2026-06-26 PR #145 本地、远端 CI 与 partial-live 修复证据已归档（runtime HEAD `a991c46c7959ad533196e9392c90a04734de2eda`）；Plan008 T008.001-T008.038 可按本地+PR CI 证据闭合；foundation PRs taosx#18 / natsx#19 / kafkax#20 / clickhousex#11；release_closeable=NO（已捕获 JetStream ack/ManualAck/NAK、dev storage assembly、Kafka broker roundtrip 与部分 Binance WS；仍缺 options WS、ossx live I/O、release tag、chaos+SLO evidence） `公开`
 - [okx](https://github.com/ZoneCNH/okx) — OKX `公开`
 - [bybit](https://github.com/ZoneCNH/bybit) — Bybit `公开`
 - [bitget](https://github.com/ZoneCNH/bitget) — Bitget `公开`

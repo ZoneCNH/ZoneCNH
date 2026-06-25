@@ -2,25 +2,25 @@
 
 > beads issues ↔ GitHub issues ↔ Plan 008 Task 三方一致性核验报告
 >
-> - 日期：2026-06-25
+> - 日期：2026-06-26
 > - Plan：`plans/binance/008-binance-production-fix-master-plan.md`
 > - SSOT：`plans/binance/008-tasks.json`
 > - **GitHub 仓库：`ZoneCNH/ZoneCNH`**（issues #1132-#1171）
 > - beads workspace：`ZoneCNH`（prefix=ZoneCNH，label `plan008`）
 > - Plan Runtime-Anchor：`/home/binance@3f20be0`（Plan 输入基线）
-> - Execution Runtime-Anchor：`/home/binance@d8668243cab999549bedfb60b7ffc8781f7190f2`（Plan008 本地/CI 修复证据）
+> - Execution Runtime-Anchor：`/home/binance@a991c46c7959ad533196e9392c90a04734de2eda`（Plan008 本地+PR CI 修复证据）
 
 ---
 
 ## 1. 执行摘要
 
-`[COMPUTED, HIGH]` Plan 008 的 **40 个 Task**（T008.001-T040）已完整拆解为可追踪的 issue 体系：
+`[COMPUTED, HIGH]` Plan 008 的 **40 个 Task**（T008.001-T008.040）已完整拆解为可追踪的 issue 体系：
 
 | 维度 | 数量 | 位置 |
 | --- | --- | --- |
 | Plan Task（SSOT） | 40 | `008-tasks.json` |
-| GitHub issues | 40 | **`ZoneCNH/ZoneCNH`** #1132-#1171（执行闭环目标：#1132-#1169 closed/commented，#1170/#1171 release-gated open，label `plan008`） |
-| beads issues | 40 | ZoneCNH workspace（label `plan008`，external-ref `gh-N`） |
+| GitHub issues | 40 | **`ZoneCNH/ZoneCNH`** #1132-#1171（当前权威状态：38 closed / 2 open；#1170/#1171 release-gated open，label `plan008`） |
+| beads issues | 40 | ZoneCNH workspace（当前状态：38 closed / 2 open；label `plan008`，external-ref `gh-N`） |
 | 依赖链接（beads） | 25 | `bd link --type blocks` |
 | 覆盖缺口 G1-G9 | 9/9 | 全部有 Task |
 | 覆盖标准 S1-S35 | 35/35 | 全部有 Task |
@@ -28,17 +28,18 @@
 
 **映射 100% 一致，0 遗漏；release-gated 状态需保守处理。**
 
-### 1.1 Plan008 执行闭环（2026-06-25）
+### 1.1 Plan008 执行闭环（2026-06-26）
 
-`[COMPUTED, HIGH]` 可本地闭合范围为 T008.001-T008.038；T008.039/T008.040 保持 release-gated open，因为 `release/evidence/binance/20260625-task2/external-gates.log` 仍记录 live websocket / 外部 JetStream PubAck+ManualAck / 外部 durable storage fanout/query / release tag 未捕获，`release_closeable=NO`。
+`[COMPUTED, HIGH]` GitHub 与 Beads 实时复核显示 #1132-#1171 / T008.001-T008.040 均为 38 closed、2 open。T008.001-T008.038 已完成闭合；T008.039/T008.040 保持 release-gated open，因为 `release/evidence/binance/20260625-task2/external-gates.log` 仍记录 `release_closeable=NO`：live Binance 已部分捕获但 options websocket 超时；local JetStream PubAck+ManualAck、dev storage/Kafka 已捕获或部分捕获；ossx archive live I/O、release tag、chaos+SLO 仍未捕获。
 
 | Evidence | Result |
 | --- | --- |
-| Binance runtime PR | [ZoneCNH/binance#145](https://github.com/ZoneCNH/binance/pull/145) @ `d8668243cab999549bedfb60b7ffc8781f7190f2` |
+| Binance runtime PR | [ZoneCNH/binance#145](https://github.com/ZoneCNH/binance/pull/145) @ `a991c46c7959ad533196e9392c90a04734de2eda` |
 | Foundation PRs | [taosx#18](https://github.com/ZoneCNH/taosx/pull/18) @ `6dd70cb`; [natsx#19](https://github.com/ZoneCNH/natsx/pull/19) @ `6bbfda0`; [kafkax#20](https://github.com/ZoneCNH/kafkax/pull/20) @ `7b2d9ce`; [clickhousex#11](https://github.com/ZoneCNH/clickhousex/pull/11) @ `457d9ff` |
 | Local runtime gates | `gofmt -l cmd internal pkg test tools`; `git diff --check`; `./scripts/readiness-audit.sh`; `go test ./...`; `go test -race ./...`; `go vet ./...`; `golangci-lint run`; `govulncheck ./...`; `runtime-release-evidence.sh` 全 PASS |
-| Remote CI | GitHub Actions for PR #145: Boundary Gates, Build & Vet, Test & Race & Cover, gitleaks, golangci-lint, govulncheck 全 PASS |
-| External gates | `release_closeable=NO`; live Binance / external JetStream ack / external storage+fanout+query / release tag / chaos+SLO 未捕获 |
+| Remote CI | 截至 2026-06-26 01:14 +0800，GitHub Actions for PR #145: Boundary Gates, Build & Vet, Test & Race & Cover, gitleaks, golangci-lint, govulncheck 全 PASS |
+| T008.011 local fix | [#1142 evidence comment](https://github.com/ZoneCNH/ZoneCNH/issues/1142#issuecomment-4802133265)；`go test ./internal/client -run 'TestHistoryRuntimePersistsAndRestoresState\|TestPostgresHistoryStateStore\|TestResolveStandaloneConfigModeAndOverrides' -count=1`；`go test ./cmd/binance-client ./internal/client -count=1`；migration 006 实际 schema 为 `history_runtime_state(snapshot JSONB)` |
+| External gates | `release_closeable=NO`; partial-live evidence in `live-gates-20260626.txt`: JetStream ack/ManualAck/NAK captured, taosx/postgresx/redisx/clickhousex assembly captured, Kafka broker roundtrip captured, Binance WS partial; options WS / ossx live I/O / release tag / chaos+SLO remain uncaptured |
 
 ---
 
@@ -60,7 +61,7 @@ GitHub issues 建在 **`ZoneCNH/ZoneCNH`**（而非 `ZoneCNH/binance`），理�
 | 操作 | 仓库 | 范围 | 状态 |
 | --- | --- | --- | --- |
 | 关闭错建 issue | ZoneCNH/binance | #105-#144（40 个） | ✅ 全部 CLOSED（reason: not planned） |
-| 重建 issue | ZoneCNH/ZoneCNH | #1132-#1171（40 个） | ✅ 已重建；执行闭环后 #1132-#1169 closed/commented，#1170/#1171 release-gated open |
+| 重建 issue | ZoneCNH/ZoneCNH | #1132-#1171（40 个） | ✅ 已重建；当前 #1132-#1169 closed，#1170/#1171 release-gated open |
 | 更新 beads external_ref | ZoneCNH workspace | 40 个 issue | ✅ gh-105~144 → gh-1132~1171 |
 | 更新 beads github 配置 | config.yaml | owner/repo | ✅ ZoneCNH/ZoneCNH |
 | 删除 beads 重复 issue | ZoneCNH workspace | 40 个（pull 误建） | ✅ 已清理 |
@@ -190,15 +191,18 @@ T039 ──blocks──▶ T040(TRACEABILITY 同步)
 - **40/40 Task** 三方映射完整
 - **0 遗漏**（9 缺口 + 35 标准 + 4 里程碑 = 48 项 100% 覆盖）
 - **映射 0 不一致**（GH 实时编号、Beads external_ref、SSOT、Plan 文档四方吻合）
-- **Release-gated 状态仍需保守处理**：#1132-#1169 可由本地/CI closure evidence 关闭；#1170/#1171 保持 open。后续完成判定以 GitHub issue 状态、代码验证和 Plan DoD 为准。
+- **Release-gated 状态仍需保守处理**：#1132-#1169 当前已关闭；#1170/#1171 保持 open。后续完成判定以 GitHub issue 状态、代码验证和 Plan DoD 为准。
 - binance 仓旧 issue 40 个全部 CLOSED，无活跃重复
 
-### 5.4 执行同步更新（2026-06-25）
+### 5.4 执行同步更新（2026-06-26）
 
-`[COMPUTED, HIGH]` 本轮只关闭 5 个已有目标测试证据覆盖的 GitHub issue。对应 Beads 项在本轮开始前已为 closed，未重复关闭。
+`[COMPUTED, HIGH]` 截至 2026-06-26 实时复核，GitHub #1132-#1171 与 Beads Plan008 项均为 38 closed / 2 open。#1170/#1171 已补 partial-live blocker 评论并保持 open。
+
+`[COMPUTED, HIGH]` 本轮新增 T008.011/#1142 的代码证据评论；以下为本报告可直接追溯的关闭/证据补充记录。
 
 | Task | GitHub | Beads | 关闭依据 |
 | ---- | ------ | ----- | -------- |
+| T008.011 | #1142 | `ZoneCNH-8kt` | `go test ./internal/client -run 'TestHistoryRuntimePersistsAndRestoresState\|TestPostgresHistoryStateStore\|TestResolveStandaloneConfigModeAndOverrides' -count=1`；`go test ./cmd/binance-client ./internal/client -count=1`；[#1142 evidence comment](https://github.com/ZoneCNH/ZoneCNH/issues/1142#issuecomment-4802133265)；migration 006 实际 schema 为 `history_runtime_state(snapshot JSONB)` |
 | T008.013 | #1144 | `ZoneCNH-y941` | `go test -count=1 ./internal/server/deadletter -run 'TestFileWriter_(Write_OK\|Idempotent\|EmptyID_Error)'`；`go test -count=1 ./internal/server -run 'TestAppendDeadLetterWritesConfiguredFileWriter'`；`go test -count=1 ./internal/server/consumer -run 'TestRunnerWritesDeadLetterBeforeTerminalReject'` |
 | T008.024 | #1155 | `ZoneCNH-ugsm` | `go test -count=1 ./internal/server/storage/olap -run 'TestEnsureSchema_ExecsDDL'` 验证 `ReplicatedMergeTree` DDL |
 | T008.025 | #1156 | `ZoneCNH-x6an` | `go test -count=1 ./internal/server/storage/olap -run 'TestEnsureSchema_ExecsDDL'` 验证 ClickHouse TTL DDL |
@@ -207,14 +211,14 @@ T039 ──blocks──▶ T040(TRACEABILITY 同步)
 
 | 系统 | total | closed | open | 判定 |
 | ---- | ----- | ------ | ---- | ---- |
-| GitHub | 40 | 13 | 27 | 权威执行状态 |
-| Beads | 40 | 40 | 0 | 本地追踪状态，存在过度关闭，不作为完成证据 |
+| GitHub | 40 | 38 | 2 | 权威执行状态 |
+| Beads | 40 | 38 | 2 | 本地追踪状态已同步到 release-gated open |
 
-`[INFERRED, HIGH]` 剩余 27 个 GitHub issue 不应关闭，原因是 strict DoD 或生产证据仍缺口。
+`[INFERRED, HIGH]` 剩余 2 个 GitHub issue 不应关闭，原因是 strict DoD 的 release/live gate 仍缺外部证据。
 
-- P0 / 生产证据缺口：T008.008、T008.009、T008.011、T008.012、T008.014-T008.019、T008.027、T008.028、T008.039、T008.040。
-- P1 / P2 仍 open：T008.020-T008.023、T008.026、T008.030、T008.031、T008.033-T008.038。
-- 关键缺口：T008.012 缺 strict `RepairRequired` + SetNX + 2min e2e 证据；T008.014 缺 disk JSONL replay 证据；T008.020 缺 0.01% alert / backfill 证据且依赖 T008.012；T008.022 缺 60d age 条件 / cold-hot 证据且依赖 T008.017；T008.026 缺 retry-no-duplicate 行为证据；T008.027 缺运行时 `XGO_BINANCE_FEATURE_{name}` 机制；T008.030 缺 OpenTelemetry SDK span-chain 证据。
+- Release-gated open：T008.039、T008.040；GitHub partial-live comments: [#1170](https://github.com/ZoneCNH/ZoneCNH/issues/1170#issuecomment-4802238741), [#1171](https://github.com/ZoneCNH/ZoneCNH/issues/1171#issuecomment-4802238748)。
+- 已捕获进展：本地 JetStream PubAck/duplicate/ManualAck/NAK；dev storage assembly（taosx/postgresx/redisx/clickhousex）；Kafka broker produce/consume；Binance WS partial（spot trade/bookTicker + UM/CM pass）。
+- 关键缺口：Binance options `@optionTicker` 证据、ossx archive live I/O、release tag、chaos+SLO release evidence 仍未捕获。
 
 ---
 

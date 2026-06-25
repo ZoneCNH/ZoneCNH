@@ -3,9 +3,9 @@
 `module/binance` is the Binance-specific Market Data C/S Module for ZoneCNH.
 
 - Spec-Version: v3.6.2 Plan008 overlay (root) / v2.1.1 (client) / v2.2.0 (server)
-- Runtime-Version: v0.2.1（Runtime-Anchor: `/home/binance@d8668243cab999549bedfb60b7ffc8781f7190f2`）
-- Delivery-State: FR-001~FR-030 spec/traceability registered; v3.6.1 baseline Status-Projection `24 Done / 10 Partial / 0 Pending` remains the release-state baseline. **Plan008 local closure overlay（2026-06-25）**：T008.001-T008.038 已有本地/PR CI closure evidence（runtime PR #145 @ `d8668243cab999549bedfb60b7ffc8781f7190f2`；foundation PRs taosx#18/natsx#19/kafkax#20/clickhousex#11）；T008.039/T008.040 保持 release-gated open，因 live Binance、外部 JetStream ack、外部 storage/fanout/query、release tag、chaos/SLO evidence 未捕获。
-- Last-Updated: 2026-06-25
+- Runtime-Version: v0.2.1（Runtime-Anchor: `/home/binance@a991c46c7959ad533196e9392c90a04734de2eda`）
+- Delivery-State: FR-001~FR-030 spec/traceability registered; v3.6.1 baseline Status-Projection `24 Done / 10 Partial / 0 Pending` remains the release-state baseline. **Plan008 local+CI closure overlay（2026-06-26）**：T008.001-T008.038 已有本地/PR CI closure evidence（runtime PR #145 @ `a991c46c7959ad533196e9392c90a04734de2eda`；foundation PRs taosx#18/natsx#19/kafkax#20/clickhousex#11）；T008.039/T008.040 保持 release-gated open。partial-live 已捕获 JetStream、storage assembly、Kafka roundtrip 与部分 Binance WS；仍缺 options WS、ossx live I/O、release tag、chaos/SLO evidence。
+- Last-Updated: 2026-06-26
 
 It is split into two submodules:
 

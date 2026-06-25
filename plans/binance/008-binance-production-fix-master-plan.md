@@ -220,6 +220,8 @@ Phase 4（验收与门禁）
 | T008.018 | G6+G7 删除顺序契约：G7 归档+ETag 校验成功 → 才触发 G6 删 taosx                  |   G6/G7    | binance      | T016/T017 | 顺序严格；归档失败不删热                        | R4§7            |
 | T008.019 | DLQ FileWriter 路径纳入 OSS 归档（跨磁盘安全）                                  |   G8/S12   | binance      | T013/T017 | 死信 JSONL 纳入 OSS 归档                        | R3§4.2 / R4§7   |
 
+> `[COMPUTED, HIGH]` T008.011 实施注记（2026-06-26）：当前 `migrations/006_history_runtime.sql` 的实际 schema 是 `history_runtime_state(snapshot JSONB)`。标题中的 “jobs+coverage 表” 按 issue 标题漂移处理，除非后续 migration 显式新增这两张规范化表，否则不作为本轮实现口径。
+
 ### Phase 2 — 生命周期 + 治理（P1，14 Task）
 
 > 目标：数据生命周期闭环 + 运维/治理/合规维度补齐。对应 R1§4 阶段二 + R7§10 阶段二。
@@ -261,6 +263,8 @@ Phase 4（验收与门禁）
 | -------- | --------------------------------------------------------------------------------------------- | :--: | ------- | :-------: | ----------------------------------------------------- | ------------- |
 | T008.039 | 全量回归 + 生产级 SLO 验收（build/vet/test-race/boundary-gates/govulncheck + 四维 SLO）       | 全部 | binance | T001-T038 | CI 全绿；四维 SLO 达标；chaos 测试 0 丢失             | R1§1.3 / R7§9 |
 | T008.040 | TRACEABILITY.md + SPEC.md + FEATURES.md 同步（FR 状态按 L0-L3 重判，runtime SHA+CI URL 回填） | 全部 | binance |   T039    | 30 FR 状态按 SLA 驱动重判；TRACEABILITY 有 SHA+CI URL | R1§5.1        |
+
+> `[COMPUTED, HIGH]` Phase 4 验收注记（2026-06-26）：`release/evidence/binance/20260625-task2/live-gates-20260626.txt` 已记录 partial-live 进展；JetStream ack/ManualAck/NAK、dev storage assembly、Kafka broker roundtrip 与部分 Binance WS 已捕获，但 options WS、ossx live I/O、release tag、chaos/SLO release evidence 尚未闭合，`external-gates.log` 仍为 `release_closeable=NO`。T008.039/T008.040 因此保持 release-gated open。
 
 ---
 
