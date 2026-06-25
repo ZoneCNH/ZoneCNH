@@ -177,37 +177,70 @@ Foundation 目录内的执行域共享值对象规格，用于订单、成交、
 
 ---
 
-## 分析域（1 个）
+## 数据域（10 个）
+
+数据采集与分发。C/S Module（交易所采集器）与独立进程（聚合层）混合。registry `domain=data`。
+
+> 域归属投影：见 [`module/registry.yaml`](./registry.yaml)；成熟度事实以 `.foundationx/status/index.json` 为准。
+
+| 模块 | 架构类型 | 规格 | 核心职责 |
+| --- | --- | --- | --- |
+| binance | C/S | [SPEC.md](./binance/SPEC.md) | 币安行情采集（spot/um_perp/cm_perp/options） |
+| okx | C/S | [SPEC.md](./okx/SPEC.md) | OKX 行情采集 |
+| hyperliquid | C/S | [SPEC.md](./hyperliquid/SPEC.md) | Hyperliquid 行情采集 |
+| coinglass | C/S | [SPEC.md](./coinglass/SPEC.md) | Coinglass 衍生品数据采集 |
+| fred | C/S | [SPEC.md](./fred/SPEC.md) | FRED 宏观经济数据采集 |
+| treasury | C/S | — | 美国国债/财政数据采集 |
+| market_data | 独立进程 | [SPEC.md](./market_data/SPEC.md) | 行情摄取与分发聚合层（14 子模块） |
+| macro_data | 独立进程 | [SPEC.md](./macro_data/SPEC.md) | 宏观摄取与分发聚合层（10/11 子模块） |
+| pe_data | 独立进程 | [SPEC.md](./pe_data/SPEC.md) | 另类数据（PE 相关）摄取 |
+| alternative_data | 独立进程 | — | 链上数据、社交情绪、新闻 NLP |
+
+C/S Module 标准化索引见 [`data_cs_module/README.md`](./data_cs_module/README.md)；独立进程模板见 [`data_independent_process/README.md`](./data_independent_process/README.md)。
+
+---
+
+## 分析域（8 个）
 
 数据流管线与计算引擎。**分析域全部模块为独立进程（非 C/S）**，bootstrap 接入，无 client/server 拆分。
 
-| 模块  | 规格                        | 核心职责                                                       |
-| ----- | --------------------------- | -------------------------------------------------------------- |
+| 模块 | 规格 | 核心职责 |
+| --- | --- | --- |
+| factor_engine | [SPEC.md](./factor_engine/SPEC.md) | 因子计算引擎 |
+| feature_store | [SPEC.md](./feature_store/SPEC.md) | 特征存储 |
+| factor_eval | [SPEC.md](./factor_eval/SPEC.md) | 因子评估 |
+| market_regime | [SPEC.md](./market_regime/SPEC.md) | 市场状态（S 引擎） |
+| macro_regime | [SPEC.md](./macro_regime/SPEC.md) | 宏观体制（M 引擎） |
+| regime_engine | [SPEC.md](./regime_engine/SPEC.md) | M×S 联合决策引擎 |
+| ms_brain | [SPEC.md](./ms_brain/SPEC.md) | M×S 架构分析 |
 | flowx | [SPEC.md](./flowx/SPEC.md) | 数据流管线引擎 — 流式 ETL、窗口聚合、背压控制（7 FR，Spec Approved / Tasks Pending） |
 
 ---
 
-## 决策域（3 个）
+## 决策域（5 个）
 
 策略工厂、回测引擎与工作流编排。
 
-| 模块       | 规格                              | 核心职责                                                               |
-| ---------- | --------------------------------- | ---------------------------------------------------------------------- |
-| strategyx  | [SPEC.md](./strategyx/SPEC.md)  | 策略工厂 — 策略注册、参数管理、信号组合（7 FR，Spec Approved / Tasks Pending）               |
-| backtestx  | [SPEC.md](./backtestx/SPEC.md)  | 回测引擎 — 事件驱动回测、Walk-Forward、蒙特卡洛（7 FR，Spec Approved / Tasks Pending）       |
-| maestro    | [SPEC.md](./maestro/SPEC.md)    | 工作流编排引擎 — DAG 工作流、状态机、错误恢复（9 FR，Spec Approved / Tasks Pending）         |
+| 模块 | 规格 | 核心职责 |
+| --- | --- | --- |
+| signal_factory | [SPEC.md](./signal_factory/SPEC.md) | 信号生成工厂 |
+| optimizer | [SPEC.md](./optimizer/SPEC.md) | 参数优化 |
+| strategyx | [SPEC.md](./strategyx/SPEC.md) | 策略工厂 — 策略注册、参数管理、信号组合（7 FR，Spec Approved / Tasks Pending） |
+| backtestx | [SPEC.md](./backtestx/SPEC.md) | 回测引擎 — 事件驱动回测、Walk-Forward、蒙特卡洛（7 FR，Spec Approved / Tasks Pending） |
+| maestro | [SPEC.md](./maestro/SPEC.md) | 工作流编排引擎 — DAG 工作流、状态机、错误恢复（9 FR，Spec Approved / Tasks Pending） |
 
 ---
 
-## 执行域（3 个）
+## 执行域（4 个）
 
 风控引擎、订单管理器与仓位管理器。
 
-| 模块      | 规格                            | 核心职责                                                         |
-| --------- | ------------------------------- | ---------------------------------------------------------------- |
-| riskx     | [SPEC.md](./riskx/SPEC.md)     | 风控引擎 — 事前风控、回撤控制、熔断机制（7 FR，Spec Approved / Tasks Pending；最小实现 v0.1.0 7 tests PASS）         |
-| orderx    | [SPEC.md](./orderx/SPEC.md)    | 订单管理器 — 订单生命周期、SOR、状态机（7 FR，Spec Approved / Tasks Pending）          |
-| positionx | [SPEC.md](./positionx/SPEC.md) | 仓位管理器 — 实时仓位追踪、PnL、敞口监控（7 FR，Spec Approved / Tasks Pending）        |
+| 模块 | 规格 | 核心职责 |
+| --- | --- | --- |
+| riskx | [SPEC.md](./riskx/SPEC.md) | 风控引擎 — 事前风控、回撤控制、熔断机制（7 FR，Spec Approved / Tasks Pending；最小实现 v0.1.0 7 tests PASS） |
+| orderx | [SPEC.md](./orderx/SPEC.md) | 订单管理器 — 订单生命周期、SOR、状态机（7 FR，Spec Approved / Tasks Pending） |
+| positionx | [SPEC.md](./positionx/SPEC.md) | 仓位管理器 — 实时仓位追踪、PnL、敞口监控（7 FR，Spec Approved / Tasks Pending） |
+| settlement | [SPEC.md](./settlement/SPEC.md) | 结算对账 |
 
 ---
 

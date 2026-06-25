@@ -202,14 +202,17 @@ registry.yaml 是**身份与治理状态 SSOT**；以下文档是其投影，须
 
 已知不一致：`flowx` SPEC 标「执行域」但属分析域；`riskx` SPEC 标「决策域」但属执行域。registry.yaml 的 `domain` 字段为权威值，SPEC.md Metadata 须对齐：
 
-| 模块 | registry domain（权威） | 现状 SPEC Layer | 对齐动作 |
+| 模块 | registry domain（权威） | 原始 SPEC Layer | 对齐状态 |
 | --- | --- | --- | --- |
-| flowx | analytics | 执行域·工作流引擎 | SPEC Metadata 改为分析域 |
-| riskx | execution | 决策域·风控引擎 | SPEC Metadata 改为执行域 |
-| orderx | execution | — | 确认执行域 |
-| positionx | execution | — | 确认执行域 |
+| flowx | analytics | 执行域·工作流引擎 | ✅ 已对齐为「分析域·工作流引擎」(2026-06-26) |
+| riskx | execution | 决策域·风控引擎 | ✅ 已对齐为「执行域·风控引擎」(2026-06-26) |
+| backtestx | decision | 分析域·回测引擎 | ✅ 已对齐为「决策域·回测引擎」(2026-06-26) |
+| market_data | data | L3 行情摄取与分发 | ✅ 已对齐为「数据域·行情摄取与分发」(2026-06-26) |
+| macro_data | data | L3 宏观摄取与分发 | ✅ 已对齐为「数据域·宏观摄取与分发」(2026-06-26) |
+| orderx | execution | 执行域·订单引擎 | ✅ 原本一致 |
+| positionx | execution | 执行域·仓位管理 | ✅ 原本一致 |
 
-> SPEC Metadata 对齐是后续工作；registry.yaml 先行钉死权威值。
+> SPEC Metadata 对齐已完成（2026-06-26）。registry.yaml 的 domain 字段为权威值。
 
 ---
 

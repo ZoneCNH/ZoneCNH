@@ -3,7 +3,7 @@
 - Status: Docs Baseline
 - Spec-Version: v0.1.0
 - Last-Created: 2026-06-17
-- Layer: L3 宏观摄取与分发
+- Layer: 数据域 · 宏观摄取与分发
 - Version: v0.1.0-spec
 - Related: `module/domain_macro`, `module/contracts`, `module/market_data`
 

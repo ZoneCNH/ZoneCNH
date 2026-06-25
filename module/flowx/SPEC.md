@@ -3,7 +3,7 @@
 - Status: Spec Approved / Tasks Pending
 - Spec-Version: v1.0.0
 - Last-Updated: 2026-06-14
-- Layer: 执行域 · 工作流引擎
+- Layer: 分析域 · 工作流引擎
 - Version: v0.1.0-draft
 - Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `orderx`, `positionx`, `riskx`
 

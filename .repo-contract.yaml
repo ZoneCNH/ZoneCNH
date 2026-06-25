@@ -7,7 +7,7 @@ repo:
   role: foundation-index
 foundation:
   name: Foundation v2
-  module_count: 20
+  module_count: 20  # 仅基座模块（FOUNDATION-DEPS.yaml modules 段 layer≠L2.5 的模块数）；不含 domainx(L2.5) 与业务域模块
   go_baseline: '1.23'
   deps_matrix: module/FOUNDATION-DEPS.yaml
   current_sources:
