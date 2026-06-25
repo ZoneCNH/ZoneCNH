@@ -558,7 +558,7 @@ type MarketFactEnvelope struct {
 
 | Subject | 触发 | 消费方 |
 |---|---|---|
-| `binance.control.instruments.changed` | client 6h 刷新 exchangeInfo 发现目录变更 | server |
+| `binance.control.instruments.changed` | client 6h 刷新 exchangeInfo 发现目录变更 | server | **→ FR-032 AC-112a**：runtime 当前 stream 仅声明 `binance.market.*.*`（`consumer.go:18`），本 subject 需 server 启动时 `AddStream("binance.control.>")` 声明，**retention=LimitsPolicy**（非 WorkQueue，multi-server 广播语义） |
 | `binance.control.symbols.changed` | `POST /api/v1/admin/symbols/reload` | client |
 
 - Client 调用 `js.Publish(subj, jsonPayload)`，等待 PubAck 后返回（确保持久化）
@@ -647,9 +647,9 @@ server_unavailable
 |--------|------|--------|------|
 | `binance.rest_url` | `string` | `https://api.binance.com` | Binance REST API base URL |
 | `binance.ws_url` | `string` | `wss://stream.binance.com:9443` | Binance WebSocket base URL |
-| `binance.product_lines` | `[]string` | `[]` | 启用的产品线（domain_market canonical：`spot`/`um_perp`/`cm_perp`/`options`） |
-| `binance.symbols.allow` | `[]string` | `[]` | 白名单 symbol（空=全部） |
-| `binance.symbols.deny` | `[]string` | `[]` | 黑名单 symbol |
+| `binance.product_lines` | `[]string` | `[]` | 启用的产品线（domain_market canonical：`spot`/`um_perp`/`cm_perp`/`options`）。**→ FR-034**（规格增补，见 [`SPEC-exchangeinfo-sync.md`](SPEC-exchangeinfo-sync.md) §6） |
+| `binance.symbols.allow` | `[]string` | `[]` | 白名单 symbol（空=全部）。**→ FR-034** |
+| `binance.symbols.deny` | `[]string` | `[]` | 黑名单 symbol（deny 永远赢）。**→ FR-034** |
 | `binance.api_key_env` | `string` | `BINANCE_API_KEY` | 读取 API Key 的环境变量名 |
 | `binance.secret_key_env` | `string` | `BINANCE_SECRET_KEY` | 读取 Secret Key 的环境变量名 |
 | `nats.url` | `string` | `nats://127.0.0.1:4222` | 外部 NATS JetStream 连接地址 |
