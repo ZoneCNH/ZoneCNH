@@ -3,12 +3,12 @@
 ## 1. Metadata
 
 - Status: Approved
-- Spec-Version: v3.6.0
-- Last-Updated: 2026-06-25 (v3.6.0: TRACEABILITY FR 状态刷新为 19 Done / 11 Partial，引入 main.go 装配级证据标准，对齐 runtime HEAD `e02b190`；Plan007 A1~A10 + B1~B8 已执行)
+- Spec-Version: v3.6.2
+- Last-Updated: 2026-06-25 (v3.6.2 Plan008 overlay: runtime HEAD `d8668243cab999549bedfb60b7ffc8781f7190f2` + PR #145 local/CI evidence; T008.001-T008.038 locally closeable; T008.039/T008.040 remain release-gated)
 - Owner: ZoneCNH
 - Layer: 数据域 · 行情
-- Runtime-Version: v0.1.0
-- Runtime-HEAD: `e02b190` (Plan007 final slice, 含 A1~A10 + B1~B8)
+- Runtime-Version: v0.2.1
+- Runtime-HEAD: `d8668243cab999549bedfb60b7ffc8781f7190f2` (Plan008 final evidence; release_closeable=NO pending live/release/chaos/SLO gates)
 - Repository: [github.com/ZoneCNH/binance](https://github.com/ZoneCNH/binance)
 - Related: [CONSTITUTION.md](../../CONSTITUTION.md), [ARCHITECTURE.md](../../ARCHITECTURE.md), `module/domain_market`, `module/natsx`, `module/redisx`, `module/taosx`, `module/kafkax`, `module/ossx`, `module/postgresx`, `module/clickhousex`
 

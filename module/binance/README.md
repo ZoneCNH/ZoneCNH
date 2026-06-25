@@ -2,9 +2,9 @@
 
 `module/binance` is the Binance-specific Market Data C/S Module for ZoneCNH.
 
-- Spec-Version: v3.6.0 (root) / v2.1.1 (client) / v2.2.0 (server)
-- Runtime-Version: v0.2.0（Runtime-Anchor: `/home/binance@f18a329`）
-- Delivery-State: FR-001~FR-030 spec/traceability registered; **2026-06-25 issue-ledger sync — Status-Projection `24 Done / 10 Partial / 0 Pending`**. Runtime-Anchor `/home/binance@f18a329`; Issue-Ledger [`../../report/binance/issues-sync-20260625.md`](../../report/binance/issues-sync-20260625.md). Partial FR: FR-007, FR-007a, FR-011, FR-016, FR-017, FR-023, FR-024, FR-026, FR-027, FR-028. GitHub #1104~#1118 已同步；#1106 为文档对齐项，本轮对齐后表述为已关闭，其余 runtime/evidence issues 保持开放。
+- Spec-Version: v3.6.2 Plan008 overlay (root) / v2.1.1 (client) / v2.2.0 (server)
+- Runtime-Version: v0.2.1（Runtime-Anchor: `/home/binance@d8668243cab999549bedfb60b7ffc8781f7190f2`）
+- Delivery-State: FR-001~FR-030 spec/traceability registered; v3.6.1 baseline Status-Projection `24 Done / 10 Partial / 0 Pending` remains the release-state baseline. **Plan008 local closure overlay（2026-06-25）**：T008.001-T008.038 已有本地/PR CI closure evidence（runtime PR #145 @ `d8668243cab999549bedfb60b7ffc8781f7190f2`；foundation PRs taosx#18/natsx#19/kafkax#20/clickhousex#11）；T008.039/T008.040 保持 release-gated open，因 live Binance、外部 JetStream ack、外部 storage/fanout/query、release tag、chaos/SLO evidence 未捕获。
 - Last-Updated: 2026-06-25
 
 It is split into two submodules:
