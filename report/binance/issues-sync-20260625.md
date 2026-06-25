@@ -2,21 +2,22 @@
 
 | 字段 | 值 |
 | --- | --- |
-| Last-Updated | 2026-06-25 |
+| Last-Updated | 2026-06-25（第二轮：#1106 状态修正 + FR-031~036 draft 登记） |
 | Scope | `report/binance/` 当前有效报告与历史语境对齐 |
 | Runtime Anchor | `/home/binance@f18a329` |
-| Status Projection | `24 Done / 10 Partial / 0 Pending` |
-| Issue Range | GitHub / Beads `#1104`-`#1118` |
-| Sync Result | Beads 15 / GitHub 15 |
+| Status Projection | `24 Done / 10 Partial / 0 Pending`（FR-001~030 实现）+ `6 Draft`（FR-031~036 规格草案，不计入投影） |
+| Issue Range | GitHub / Beads `#1104`-`#1118`（15 个已实现 FR 缺口） |
+| Draft Range | FR-031~036（PR #1119 引入，6 个规格草案，暂未创建独立 GitHub issue） |
+| Sync Result | Beads 15 / GitHub 15（已实现口径）；FR-031~036 仅在账本登记 |
 | Team Evidence | Pauli 完成 Beads/GitHub 查重；Jason 完成 `/home/binance@f18a329` 运行时代码与证据复核 |
 | Team Limitation | OMX team worktree 因当前仓库已有未提交文档迁移变更被阻断，改用 native agent team 执行 |
-| Status Policy | `#1106` 已由本轮 `report/binance/` 文档对齐关闭；`#1104`、`#1105`、`#1107`-`#1118` 保持 Open，直到 runtime 或证据闭合 |
+| Status Policy | `#1106` 关闭条件已满足（PR #1119 完成文档对齐），但 GitHub 状态仍为 Open，待人工确认关闭；`#1104`、`#1105`、`#1107`-`#1118` 保持 Open，直到 runtime 或证据闭合 |
 
 ## 当前结论
 
-`report/binance/` 的当前严格口径是：`binance` runtime 已闭合 storage assembly 基础设施路径，但仍有 15 个可追踪事项。其中 3 个为 P0，7 个为 P1，5 个为 P2；其中 `#1106` 为文档对齐项，本文档更新后已关闭，其余 14 个 runtime/evidence items 保持开放。
+`report/binance/` 的当前严格口径是：`binance` runtime 已闭合 storage assembly 基础设施路径，但仍有 15 个可追踪事项。其中 3 个为 P0，7 个为 P1，5 个为 P2（已实现 FR 缺口）。此外，PR #1119 引入了 FR-031~036 共 6 个 exchangeInfo 同步规格草案（Draft，未计入实现投影），定义于 `module/binance/SPEC-exchangeinfo-sync.md`，经五轮审查修正，待 pipeline-arbiter 翻转 Approved 后进入 task-split → code 管线。
 
-当前模块状态投影统一为 `24 Done / 10 Partial / 0 Pending`。Partial FR 为 `FR-007`、`FR-007a`、`FR-011`、`FR-016`、`FR-017`、`FR-023`、`FR-024`、`FR-026`、`FR-027`、`FR-028`。
+当前模块状态投影统一为 `24 Done / 10 Partial / 0 Pending`（FR-001~030 实现）+ `6 Draft`（FR-031~036 规格草案）。Partial FR 为 `FR-007`、`FR-007a`、`FR-011`、`FR-016`、`FR-017`、`FR-023`、`FR-024`、`FR-026`、`FR-027`、`FR-028`。
 
 ## Beads / GitHub 映射
 
@@ -24,7 +25,7 @@
 | --- | --- | --- | --- | --- | --- | --- |
 | RB-20260625-P0-01 | P0 | ZoneCNH-4ba | #1104 | 补齐 FR-016 历史回补运行时 REST fetcher 注入 | Open | runtime 注入真实 REST fetcher，并用 live/smoke 证据证明 history backfill 不再只依赖 mock |
 | RB-20260625-P0-02 | P0 | ZoneCNH-rfx | #1105 | 厘清 Kafka broker roundtrip 证据冲突 | Open | 以同一 commit、同一 broker 配置重新运行 producer/consumer roundtrip，并废弃或标注旧冲突证据 |
-| RB-20260625-P0-03 | P0 | ZoneCNH-hw2 | #1106 | 对齐 report/binance 状态文档 | Closed | `report/binance/` 当前口径全部指向本账本和 `/home/binance@f18a329`；本切片不修改 `module/binance/` |
+| RB-20260625-P0-03 | P0 | ZoneCNH-hw2 | #1106 | 对齐 report/binance 状态文档 | **Open（状态修正）** | 关闭条件已满足（PR #1119 完成文档对齐），但 GitHub 状态仍 Open；待人工确认关闭。账本此前误记为 Closed，本轮修正。 |
 | RB-20260625-P1-01 | P1 | ZoneCNH-9p8 | #1107 | 明确或实现 UM/CM/Options 历史 REST endpoint 支持 | Open | spot/um/cm/options 历史 endpoint 行为被实现或明确降级，并有测试覆盖 |
 | RB-20260625-P1-02 | P1 | ZoneCNH-5kn | #1108 | 用 mainnet 样本校验 Options ticker 字段归一化 | Open | Options ticker mainnet 样本覆盖 `normalize.go` 中 Options 字段映射 |
 | RB-20260625-P1-03 | P1 | ZoneCNH-0y2 | #1109 | 补齐速率限制平滑与 token bucket 机制 | Open | 从窗口计数升级为可验证的平滑/token bucket 限流，并覆盖 websocket/reconnect 场景 |
@@ -38,9 +39,35 @@
 | RB-20260625-P2-04 | P2 | ZoneCNH-ioy | #1117 | 持久化历史回补进度 | Open | history/reconcile/rehydration progress 持久化，重启后可恢复 |
 | RB-20260625-P2-05 | P2 | ZoneCNH-1i0 | #1118 | 补齐持久 DLQ wiring 与 replay 流程 | Open | DLQ 使用持久 backend，并有 replay 与 operational runbook |
 
+## FR-031~036 规格草案登记（PR #1119 引入）
+
+> [COMPUTED, HIGH] 以下 6 个 FR 为 PR #1119（`5dbe0d26`）引入的 exchangeInfo 同步规格草案，定义于 `module/binance/SPEC-exchangeinfo-sync.md`。当前状态 **Draft**，经五轮审查修正，待 pipeline-arbiter 翻转 Approved 后进入 task-split → code 管线。本节为账本级登记，暂未创建独立 GitHub issue（Draft 阶段不创建）；Approved 后可创建对应 issue 或直接进入 task-split。
+
+| FR | 优先级 | 标题 | Draft 状态 | 关闭条件 | 依赖交叉 |
+| --- | --- | --- | --- | --- | --- |
+| FR-031 | P1 | ExchangeInfo Discovery (4 Product Lines) | Draft | 四产品线 exchangeInfo 拉取解析 + API 陷阱修复（COIN-M `contractStatus`、Options `eapi`+`optionSymbols`） | 包含 #1107 范围（UM/CM/Options 历史 REST） |
+| FR-032 | P1 | ExchangeInfo Persistence & Scheduled Refresh | Draft | server 落库 + 6h diff-only + natsx control stream（LimitsPolicy） | 复用 #1104 路径（REST fetcher 注入） |
+| FR-033 | P2 | Sync Tier Classification | Draft | sync_tier 分级字段 + SymbolsByTier | — |
+| FR-034 | P2 | Selective Sync Whitelist | Draft | product_lines/allow/deny + 优先级裁决 | — |
+| FR-035 | P1 | Admin Surface Auth Hardening | Draft | admin 写操作 Bearer token + loopback fallback | FR-033/034 写操作的安全前置 |
+| FR-036 | P2 | Tier-Aware Connection Topology | Draft | stream manager 按 (productLine,tier) 分组连接 | **依赖 #1116**（增量 hot reload diff）；若 #1116 不升级则 FR-036 须自建增量 diff |
+
+## 依赖交叉关系（已实现 issue ↔ 新 draft FR）
+
+`[COMPUTED, HIGH]` PR #1119 引入的 FR-031~036 与现有 open issue 存在以下交叉关系，task-split 阶段须注意去重与依赖排序：
+
+| 现有 issue | 关系 | 新 draft FR | 说明 |
+| --- | --- | --- | --- |
+| #1107（UM/CM/Options 历史 REST） | **被包含** | FR-031 | FR-031 的四产品线 exchangeInfo 发现覆盖了 #1107 的「UM/CM/Options REST endpoint」需求。task-split 时 #1107 可合并入 FR-031 task，或在 FR-031 实现后关闭 #1107。 |
+| #1116（增量 hot reload diff） | **被依赖** | FR-036 | FR-036 AC-127 的 tier 升降级增量 drain 依赖 #1116 提供的增量 stream diff。若 #1116 先闭合，FR-036 可复用；否则 FR-036 须自建。详见 `SPEC-exchangeinfo-sync.md` AC-127 前置依赖警示。 |
+| #1104（FR-016 REST fetcher 注入） | **路径复用** | FR-032 | FR-032 的 exchangeInfo 拉取复用 #1104 修复的 REST fetcher 注入路径。#1104 先闭合可降低 FR-032 实现成本。 |
+| #1108（Options ticker 字段校验） | **数据基础** | FR-031 | FR-031 的 Options exchangeInfo 解析为 #1108 的 ticker 字段校验提供 contract 基础。 |
+
 ## 文档对齐范围
 
-本轮同步只更新以下 `report/binance/` 文档；`module/binance/` 不在本写入切片内。
+本轮（第二轮）仅更新 `report/binance/issues-sync-20260625.md`（本文件）：修正 #1106 状态漂移 + 补登记 FR-031~036 draft + 依赖交叉。
+
+第一轮同步更新了以下 `report/binance/` 文档；`module/binance/` 不在第一轮写入切片内：
 
 - `report/binance/INDEX.md`
 - `report/binance/issues-sync-20260625.md`
@@ -58,4 +85,6 @@
 - Beads IDs `ZoneCNH-4ba`、`ZoneCNH-rfx`、`ZoneCNH-hw2`、`ZoneCNH-9p8`、`ZoneCNH-5kn`、`ZoneCNH-0y2`、`ZoneCNH-5xi`、`ZoneCNH-cg1`、`ZoneCNH-0pz`、`ZoneCNH-nr1`、`ZoneCNH-3e1`、`ZoneCNH-eg8`、`ZoneCNH-zwb`、`ZoneCNH-ioy`、`ZoneCNH-1i0`
 - GitHub Issues #1104-#1118
 
-[RULES I BROKE]：无
+[RULES I BROKE]：
+1. 第一轮账本将 #1106 记为 Closed，但 GitHub 实际状态为 Open（`gh issue view 1106` 确认 `state: OPEN, closedAt: null`）。这是账本与 GitHub 的状态漂移，本轮修正为 Open 并注明「关闭条件已满足，待人工确认关闭」。违反了 §20「事实字段只能来自权威来源」——issue 状态的权威是 GitHub，不是账本叙述。
+2. FR-031~036 的优先级标注为 [INFERRED, MED]：基于规格复杂度和依赖关系推断，非 GitHub issue 正式分级。Approved 后 task-split 阶段可能调整。
