@@ -14,13 +14,15 @@
 
 | 维度 | 得分 | 级别 | 依据 |
 |------|:----:|:----:|------|
-| **Freshness** | **2.5** | **L2+** | SLO benchmark 24/24 PASS；但 stale alert 无动作（G1）拖累 |
+| **Freshness** | **1.8** | **L1+** | 延迟测量达 L2（SLO 24/24 PASS），但延迟违约响应仅 L1（G1 stale 无告警）|
 | **Completeness** | **0.8** | **L1-** | at-least-once 交付扎实，但 gap→修复断裂（G2）|
 | **Durability** | **1.0** | **L1** | DLQ in-memory（G8）；事件本身经 taosx 持久化 |
 | **Consistency** | **1.5** | **L1+** | 幂等 SetNX 扎实；断流/重启场景的一致性保障不足 |
-| **加权** | **1.5** | **预生产** | Freshness 达标，其余三维拉低 |
+| **加权** | **1.3** | **预生产** | 无单一维度达 L2+；Freshness 被 G1 拉低 |
 
-`[COMPUTED, HIGH]` **实时链路是三链路中成熟度最高的**（1.5），Freshness 维度已达生产级门槛（SLO benchmark 24/24 PASS，`release/evidence/binance/20260625/slo-report.md`）。核心问题集中在"检测到异常后的响应"——stale 只计数不告警、gap 检测后不修复、死信只进内存。
+`[COMPUTED, HIGH]` **实时链路是三链路中成熟度最高的**（1.3），但**没有任何单一维度达到生产级门槛**。Freshness 看似最强，实则分裂：延迟**测量**达 L2（SLO benchmark 24/24 PASS，`release/evidence/binance/20260625/slo-report.md`），但延迟**违约响应**仅 L1（G1 stale 计数后无告警动作）——"测得准"不等于"管得住"。核心问题：检测到异常后的响应全链路缺失（stale 不告警、gap 不修复、死信只进内存）。
+
+> [COMPUTED, HIGH] **打分修正说明**：初版给 Freshness 打 2.5（L2+），但同一报告 §2.1 判定 G1（stale 无告警）为 L1，构成内部矛盾。Freshness 应拆为"测量"（L2）与"违约响应"（L1）两个子项，综合 1.8 更诚实。实时加权总分相应从 1.5 下调至 1.3。
 
 ---
 

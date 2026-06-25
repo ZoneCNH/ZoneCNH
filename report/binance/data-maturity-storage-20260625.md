@@ -12,13 +12,13 @@
 
 ## 1. 链路成熟度评分（SLA 四维）
 
-| 维度 | 得分 | 级别 | 依据 |
-|------|:----:|:----:|------|
-| **Freshness** | **1.5** | **L1+** | G0 存储装配闭合（PR #101）；写入延迟达标 |
-| **Completeness** | **1.0** | **L1** | 四层存储写入路径齐全；归档完整性有缺口（G7）|
-| **Durability** | **0.8** | **L1-** | taosx retention 无删除（G6）；OSS 语义错位（G7）|
-| **Consistency** | **1.5** | **L1+** | 幂等 SetNX 扎实；跨层一致性无对账（依赖历史 G5）|
-| **加权** | **1.2** | **预生产** | 有基础设施，缺生命周期治理 |
+| 维度             |  得分   |    级别    | 依据                                             |
+| ---------------- | :-----: | :--------: | ------------------------------------------------ |
+| **Freshness**    | **1.5** |  **L1+**   | G0 存储装配闭合（PR #101）；写入延迟达标         |
+| **Completeness** | **1.0** |   **L1**   | 四层存储写入路径齐全；归档完整性有缺口（G7）     |
+| **Durability**   | **0.8** |  **L1-**   | taosx retention 无删除（G6）；OSS 语义错位（G7） |
+| **Consistency**  | **1.5** |  **L1+**   | 幂等 SetNX 扎实；跨层一致性无对账（依赖历史 G5） |
+| **加权**         | **1.2** | **预生产** | 有基础设施，缺生命周期治理                       |
 
 `[COMPUTED, HIGH]` **存储链路是"基础设施齐全但生命周期管理空白"**。G0 存储装配断层在 PR #101（`245b31c` "5/5 infra + Kafka + mainnet 全部 LIVE-PASS，G0 端到端完全闭合"）后已闭合——四层存储（redis/taos/pg/oss）+ clickhouse + kafka 都能真实写入。但**数据写进去之后怎么管理（过期、归档、回热）几乎是空白**。
 
@@ -29,11 +29,13 @@
 ### 2.1 G6：taosx retention 无删除（P0，Durability）
 
 **规格要求**（SPEC §11.2.4）：
+
 - `taos.retention.ticks` = `720h`（30d）
 - `taos.retention.bars` = `8760h`（365d）
 - `taos.retention.depth` = `72h`（3d）
 
 **runtime 实证**：
+
 - grep `internal/server/storage` 下 `retention|Retention|DropRange|DeleteRange|DROP|DELETE|prune|TTL`：唯一命中是 `oss_archiver.go:51-146`（OSS 冷存 `Retention`/`PurgeExpired`），**针对 OSS 对象，与 taosx 热数据无关**。
 - `internal/server/storage/taos_writer.go`：grep `[Dd]elete|[Dd]rop|Remove|retention` **零命中**。`TaosClient` 接口（:28-29）只暴露 `Exec`/`WriteBatch`，**无删除能力**；`Write`/`ensureStables` 只 CREATE+INSERT。
 - `migrations/taos_ddl.sql:20` `CREATE DATABASE IF NOT EXISTS binance;` —— **无 `KEEP`/`DAYS`/`RETENTIONS` 子句**，即数据库层也未配置保留期。
@@ -42,6 +44,7 @@
 `[COMPUTED, HIGH]` **判定：L0（零实现）**。720h tick / 8760h bar / 72h depth 的热数据保留期**既无应用层删除，也无 DB 层 KEEP 配置**。SPEC §11.2.4 定义的三个配置键在 runtime 无任何消费方。
 
 **生产级影响**：
+
 - **磁盘只增不减**。tick 数据高频写入，30d 后 taosx 数据量持续膨胀，最终撑爆磁盘。
 - 无 retention 意味着无法控制 taosx 的查询性能——数据量增长后，时间范围查询越来越慢。
 - 与 OSS 归档（G7）断裂：即使归档到 OSS，taosx 热数据也不删，冷热数据并存。
@@ -51,11 +54,13 @@
 ### 2.2 G7：OSS 归档语义错位（P1，Durability）
 
 **规格要求**（SPEC §11.2.7 / FR-006d / AC-026~028）：
+
 - `oss.archiver.schedule` = `0 3 * * *`（**每日 03:00 UTC 定时归档**）
 - archiver 扫描到超过 retention cutoff 的数据 → 归档 OSS → ETag 校验 → 删 taosx 热数据
 - ticks_cutoff `720h`（30d）、bars_cutoff `2160h`（90d）
 
 **runtime 实证**：
+
 - `cmd/binance-server/storage_env.go:241` — OSS 归档实际装配为：
   ```go
   ossHook := newOssArchiveHook(archiver, 500, 30*time.Second) // 攒批 500 条或 30s flush
@@ -69,13 +74,13 @@
 
 **语义差异详解**：
 
-| 维度 | SPEC 意图（定时迁移） | runtime 实现（实时 batch） |
-|------|---------------------|--------------------------|
-| 触发 | 每日 03:00 UTC cron | 每个事件 accept 时 |
-| 数据流 | taosx 热数据 → 超期 → 迁移 OSS → 删 taosx | 事件 → 同时写 taosx + OSS |
-| taosx 删除 | 归档后删热（控制 taosx 体积）| **不删**（taosx 只增不减）|
-| OSS 角色 | 冷归档（超期数据才能查） | 实时副本（与 taosx 数据重叠）|
-| 带宽 | 每日批量 | 实时持续 |
+| 维度       | SPEC 意图（定时迁移）                     | runtime 实现（实时 batch）    |
+| ---------- | ----------------------------------------- | ----------------------------- |
+| 触发       | 每日 03:00 UTC cron                       | 每个事件 accept 时            |
+| 数据流     | taosx 热数据 → 超期 → 迁移 OSS → 删 taosx | 事件 → 同时写 taosx + OSS     |
+| taosx 删除 | 归档后删热（控制 taosx 体积）             | **不删**（taosx 只增不减）    |
+| OSS 角色   | 冷归档（超期数据才能查）                  | 实时副本（与 taosx 数据重叠） |
+| 带宽       | 每日批量                                  | 实时持续                      |
 
 `[INFERRED, HIGH]` runtime 的实现实际上**比 SPEC 意图更安全**（实时冷备份，数据冗余更高），但**违背了"控制 taosx 体积"的核心目标**——因为不删热数据。正确的生产级做法是**两者结合**：实时 batch 备份（当前）+ 定时迁移删热（SPEC 意图）。
 
@@ -84,6 +89,7 @@
 > 此缺口与[历史分报告 §2.4](data-maturity-history-20260625.md) 是同一断点。rehydrate 代码已实现（`oss_rehydrate.go`），但未接入 API 查询路径。此处从存储视角补充。
 
 **存储视角实证**：
+
 - `internal/server/storage/oss_rehydrate.go:44-60` — `Rehydrate(ctx, reader, writer, pl, et, from, to, cfg)` 签名完整，读 OSS NDJSON → 写回 StorageWriter（taosx）。
 - **未接线的存储层影响**：冷数据回热需要 taosx 临时表 + 24h TTL。runtime 的 `TaosClient` 接口无临时表 / TTL 表达式能力，`migrations/taos_ddl.sql` 也无临时表 DDL。
 - OSS 对象路径格式 `{prefix}/{pl}/{et}/{YYYY}/{MM}/{DD}/{batchID}.jsonl`（`oss_archiver.go:198`），rehydrate 需按此格式 List+Get，但无 admin endpoint 触发。
@@ -148,6 +154,7 @@ Layer B（补充）：应用层 per-table 精细删除
 ```
 
 **改动点**：
+
 - `migrations/taos_ddl.sql`：`CREATE DATABASE` 加 `KEEP 365`（或新建 migration 009 ALTER）
 - 新增 `internal/server/storage/taos_retention.go`：定时删除任务
 - `cmd/binance-server/main.go`：装配 retention scheduler（复用 coordinator lock FR-011）
@@ -179,6 +186,7 @@ Path B（新增，定时生命周期迁移）：
 ```
 
 **改动点**：
+
 - 新增 `internal/server/storage/oss_lifecycle_scheduler.go`：定时迁移
 - 复用 `archive_manifest.go`（FR-018 已实现 `RecordArchive`/`IsArchived`）记录迁移
 - 复用 FR-011 coordinator lock 确保单实例执行
@@ -193,6 +201,7 @@ Path B（新增，定时生命周期迁移）：
 > 详细方案见[历史分报告 §4.4](data-maturity-history-20260625.md)。存储层补充：
 
 **存储层改动**：
+
 - `migrations/`：新增临时表 DDL（`binance_tick_rehydrated`，24h TTL）
 - TDengine 临时表可用 `KEEP 1`（1 天）的独立库或表级 TTL
 - `TaosClient` 接口：新增 `WriteToTempTable` / `QueryTempTable` 能力
@@ -206,18 +215,18 @@ Path B（新增，定时生命周期迁移）：
 
 `[KNOWN, HIGH]` 存储链路达到生产级必须满足（除补齐 3 个缺口外）：
 
-| 标准项 | 要求 | 当前 |
-|--------|------|------|
-| **四层存储写入** | redis/taos/pg/ch/oss 均可写 | ✅ G0 闭合（PR #101）|
-| **幂等去重** | redisx SetNX 72h | ✅ FR-005 Done |
-| **taosx retention** | tick 30d / bar 365d / depth 3d 自动过期 | ❌ G6 |
-| **clickhousex TTL** | 聚合数据有上限 | ❌ 无 TTL |
-| **OSS 归档完整性** | ETag 校验 + 删热 + manifest | 🟡 部分（G7）|
-| **归档可恢复** | OSS → taosx rehydrate | ❌ G9 未接线 |
-| **manifest 审计** | 归档对象可校验 checksum/row_count | ✅ FR-018 Done |
-| **分布式锁** | coordinator HA + lease | ✅ FR-011（Partial，装配待确认）|
-| **存储故障降级** | 单层失败不阻塞其他层 | ✅ SPEC §12 错误处理已定义 |
-| **磁盘容量告警** | 各层占用超阈值告警 | ❌ 无（阶段三）|
+| 标准项              | 要求                                    | 当前                             |
+| ------------------- | --------------------------------------- | -------------------------------- |
+| **四层存储写入**    | redis/taos/pg/ch/oss 均可写             | ✅ G0 闭合（PR #101）            |
+| **幂等去重**        | redisx SetNX 72h                        | ✅ FR-005 Done                   |
+| **taosx retention** | tick 30d / bar 365d / depth 3d 自动过期 | ❌ G6                            |
+| **clickhousex TTL** | 聚合数据有上限                          | ❌ 无 TTL                        |
+| **OSS 归档完整性**  | ETag 校验 + 删热 + manifest             | 🟡 部分（G7）                    |
+| **归档可恢复**      | OSS → taosx rehydrate                   | ❌ G9 未接线                     |
+| **manifest 审计**   | 归档对象可校验 checksum/row_count       | ✅ FR-018 Done                   |
+| **分布式锁**        | coordinator HA + lease                  | ✅ FR-011（Partial，装配待确认） |
+| **存储故障降级**    | 单层失败不阻塞其他层                    | ✅ SPEC §12 错误处理已定义       |
+| **磁盘容量告警**    | 各层占用超阈值告警                      | ❌ 无（阶段三）                  |
 
 ---
 
@@ -236,16 +245,17 @@ Path B（新增，定时生命周期迁移）：
 
 `[COMPUTED, HIGH]` 存储链路的补齐与其他分报告协同：
 
-| 本链路缺口 | 协同链路 | 协同点 |
-|-----------|---------|--------|
-| G6（taosx 删除）| [历史 G5](data-maturity-history-20260625.md) | reconcile 需查询 taosx，删除前需确认对账无缺失 |
-| G7（OSS 定时迁移）| [历史 G9](data-maturity-history-20260625.md) | 迁移后的冷数据需可 rehydrate 才有价值 |
-| G7（OSS 定时迁移）| [实时 G8](data-maturity-realtime-20260625.md) | DLQ FileWriter 的死信也应纳入 OSS 归档（跨磁盘安全）|
-| G6+G7 删除顺序 | — | **严格：G7 OSS 归档 + ETag 校验 → 成功后才 G6 删 taosx** |
+| 本链路缺口         | 协同链路                                      | 协同点                                                   |
+| ------------------ | --------------------------------------------- | -------------------------------------------------------- |
+| G6（taosx 删除）   | [历史 G5](data-maturity-history-20260625.md)  | reconcile 需查询 taosx，删除前需确认对账无缺失           |
+| G7（OSS 定时迁移） | [历史 G9](data-maturity-history-20260625.md)  | 迁移后的冷数据需可 rehydrate 才有价值                    |
+| G7（OSS 定时迁移） | [实时 G8](data-maturity-realtime-20260625.md) | DLQ FileWriter 的死信也应纳入 OSS 归档（跨磁盘安全）     |
+| G6+G7 删除顺序     | —                                             | **严格：G7 OSS 归档 + ETag 校验 → 成功后才 G6 删 taosx** |
 
 ---
 
 `[RULES I BROKE]`：
+
 1. **§20 FRAME→REALITY**：§4.1 的"TDengine 库级 KEEP"是 `[KNOWN]` 最佳实践（TDengine 官方文档），但 binance 的 `TaosClient` 接口当前无 ALTER DATABASE 能力，需实现时验证 adapter 支持。置信度 HIGH（TDengine 原生支持）。
 2. **§20 事后分析**：§3 的四层生命周期图是对现状描述。G0 闭合（PR #101）是 git log 实证，与 retention 空白是独立事实——装配成功 ≠ 生命周期管理完善。
 3. **§20 推断标注**：§4.2 "runtime 实时 batch 比 SPEC 意图更安全"是 `[INFERRED, HIGH]`——实时冗余确实更高，但"更安全"依赖 OSS 写入成功的假设（若 OSS 写失败而 taosx 成功，batch 备份形同虚设）。标注为推断而非定论。

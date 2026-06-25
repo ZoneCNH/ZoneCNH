@@ -76,7 +76,22 @@
 | 对账容差                       | 0.01%                       | FR-026 / AC-091 | **对账未真实执行** ❌（G5）        |
 | 冷数据可回热                   | OSS→taosx rehydrate         | FR-027          | 代码存在，**未接线** ❌（G9）      |
 
-`[COMPUTED, HIGH]` **10 项 SLO 中 5 项未达成（全在 Completeness/Durability/Consistency 三维），3 项部分达成。** Freshness 维度达标，这也是为什么"实时链路看起来能跑"——但生产级要求的是四维全过。
+`[COMPUTED, HIGH]` **10 项 SLO 中 5 项未达成（全在 Completeness/Durability/Consistency 三维），3 项部分达成。** Freshness 的"延迟测量"达标（SLO benchmark PASS），但"违约响应"（stale 告警）未达标——这也是为什么"实时链路看起来能跑"——但生产级要求的是四维全过，且每维的"测量"与"响应"都要达标。
+
+### 1.4 横切生产级维度（四维之外）
+
+`[COMPUTED, HIGH]` §1.1 的四维 SLA 只覆盖**数据本身**的质量。生产级系统还必须通过以下**横切维度**审计——它们不是数据缺口，而是"能否上线运营"的系统性前提。本报告聚焦数据三链路，这些维度做现状标注，详细规划留作后续：
+
+| 横切维度 | 生产级要求 | binance 当前状态 | 是否阻塞上线 |
+|---------|-----------|-----------------|:------------:|
+| **可观测性完整性** | 指标 + 集中式日志 + 分布式追踪三支柱齐全 | 指标 ✅（17+ Prometheus）/ slog 日志 ✅ / **分布式追踪 ❌**（#1110 已文档化为未覆盖）| MED |
+| **告警消费层** | metrics 有 alerting rules 消费 → 触发通知/on-call | **metrics 已采集但无 alerting rules**（grep `alertmanager` 零命中，见 §2"死信号"根因）| **HIGH（P0）** |
+| **灾难恢复（DR）** | RPO/RTO 定义 + 备份恢复演练 + 多可用区 | **无 RPO/RTO 定义；无备份恢复演练；单可用区假设** | HIGH |
+| **安全/鉴权** | admin 写操作鉴权 + secret 管理 + 审计 | server API Bearer ✅ / **client admin 无鉴权**（FR-035 Draft）/ gitleaks ✅ | MED |
+| **容量规划** | 各存储层容量上限 + 增长预测 + 扩容 runbook | **无容量规划；taosx 无 retention（G6）会撑爆磁盘** | HIGH |
+| **凭证/机密轮转** | API key/DB 密码定期轮转流程 | env 注入 ✅ / **无轮转 runbook** | LOW |
+
+`[INFERRED, HIGH]` 其中**告警消费层**（L2 断裂）和**灾难恢复**是比数据缺口更底层的阻塞项——即使 9 个数据缺口全修完，若无告警消费层，运维仍无法在故障时被通知；若无 DR，单可用区故障会导致全量数据不可用。这两个应纳入阶段一/二的前置。
 
 ---
 
@@ -114,7 +129,11 @@
                               [断点❿ G9] 冷数据 rehydrate 未接线
 ```
 
-`[INFERRED, HIGH]` **最严重的结构性问题**：检测能力（L1）和告警能力（L2 局部）已大量铺设，但**修复能力（L3）几乎为零**。这意味着系统能"知道数据出问题"，但不能"自动把数据修好"。生产级系统必须具备 L3 自愈，否则需要 7×24 人工介入。
+`[INFERRED, HIGH]` **最严重的结构性问题**：检测能力（L1）已大量铺设，但**告警消费层（L2）和修复能力（L3）几乎为零**。这意味着系统能"知道数据出问题"，但不能"通知人"或"自动修好"。
+
+`[COMPUTED, HIGH]` **"死信号"根因**：runtime 已设置 Prometheus gauge（`metrics.go:428` `SetGapRepairRequired`、`sla_window.go:80` stale 计数），但 grep 全仓 `alertmanager`/`alerting_rules`/`PageAt`/`firing` **零命中**——即 **metrics 被采集，却没有任何 alerting rules 消费它们**。这些是"死信号"：Prometheus 里有数据，但不会触发任何告警。这是 L1→L2 断裂的根因，比单纯的"没有 alert 代码"更隐蔽，因为看起来"可观测性已经做了"。
+
+> 生产级系统必须同时具备三层：**检测（L1）→ 告警消费（L2）→ 自动修复（L3）**。binance 目前 L1 扎实、L2 缺消费层、L3 完全空白，否则需要 7×24 人工盯着 Grafana 面板。
 
 ### 缺口优先级矩阵
 
@@ -125,7 +144,7 @@
 | G3  | replay job 零实现       | 历史      | Completeness           | L0       | L3         | **P0** | [历史分报告 §2.1](data-maturity-history-20260625.md)  |
 | G4  | backfill cursor 纯内存  | 历史      | Durability             | L0       | L3         | **P0** | [历史分报告 §2.2](data-maturity-history-20260625.md)  |
 | G5  | reconcile 无真实对账    | 历史      | Consistency            | L1       | L3         | **P1** | [历史分报告 §2.3](data-maturity-history-20260625.md)  |
-| G6  | taosx retention 无删除  | 存储      | Durability             | L0       | L2         | **P0** | [存储分报告 §2.1](data-maturity-storage-20260625.md)  |
+| G6  | taosx retention 无删除  | 存储      | Durability             | L0       | L3         | **P0** | [存储分报告 §2.1](data-maturity-storage-20260625.md)  |
 | G7  | OSS 归档语义错位        | 存储      | Durability             | L1       | L3         | **P1** | [存储分报告 §2.2](data-maturity-storage-20260625.md)  |
 | G8  | DLQ FileWriter 未接线   | 实时+历史 | Durability             | L1       | L3         | **P0** | [实时分报告 §2.3](data-maturity-realtime-20260625.md) |
 | G9  | 冷数据 rehydrate 未接线 | 历史+存储 | Durability             | L0       | L3         | **P1** | [存储分报告 §2.3](data-maturity-storage-20260625.md)  |
@@ -140,13 +159,13 @@
 
 | 链路     | Freshness  | Completeness | Durability | Consistency | 加权总分 |  等级  |
 | -------- | :--------: | :----------: | :--------: | :---------: | :------: | :----: |
-| 实时数据 | 2.5（L2+） |  0.8（L1-）  | 1.0（L1）  | 1.5（L1+）  | **1.5**  | 预生产 |
+| 实时数据 | 1.8（L1+） |  0.8（L1-）  | 1.0（L1）  | 1.5（L1+）  | **1.3**  | 预生产 |
 | 历史数据 |     —      |  0.3（L0+）  | 0.5（L0+） | 0.5（L0+）  | **0.4**  | 实验级 |
 | 数据存储 | 1.5（L1+） |  1.0（L1）   | 0.8（L1-） | 1.5（L1+）  | **1.2**  | 预生产 |
 
 > 评分依据见三份分报告的逐项证据。加权 = 有效维度均值，历史链路无 Freshness（历史数据非实时），取三维均值并折算到四维。
 
-`[COMPUTED, HIGH]` **综合判定：binance 当前是"预生产"（Preview）级系统**。实时链路时效性达标但完整性/持久性弱；历史链路基本处于"实验级"（检测能力缺失，重启即丢状态）；存储链路有基础设施但缺生命周期管理。距离"生产级"（三链路均 ≥2.0）还需要补齐 9 个缺口，工作量评估见 §4。
+`[COMPUTED, HIGH]` **综合判定：binance 当前是"预生产"（Preview）级系统**。实时链路延迟测量扎实但违约响应缺失（无维度达 L2+）；历史链路基本处于"实验级"（检测能力缺失，重启即丢状态）；存储链路有基础设施但缺生命周期管理。距离"生产级"（三链路均 ≥2.0）还需要补齐 9 个缺口，工作量评估见 §4。
 
 ---
 
@@ -164,7 +183,7 @@
 | gap→replay 桥接        | G2+G3 | RepairRequired=true → 生成 ReplayJob → 调 backfill fetcher | gap 2min 内自动入队修复             |
 | backfill cursor 持久化 | G4    | HistoryRuntime 状态持久化到 postgresx                      | 重启后 cursor 不丢                  |
 | DLQ FileWriter 接线    | G8    | appendDeadLetter 同时写 FileWriter（JSONL）                | 死信重启可读                        |
-| taosx retention 删除   | G6    | 定时任务删 taosx 超期数据 + DB KEEP 配置                   | tick 30d/bar 365d/depth 3d 自动过期 |
+| taosx retention 删除   | G6    | 定时任务删 taosx 超期数据 + DB KEEP 配置                   | tick 30d/bar 365d/depth 3d 过期；删前 ETag 校验 + manifest 审计 |
 
 ### 阶段二：建生命周期（P1，预计 2 个 sprint）
 
