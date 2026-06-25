@@ -9,7 +9,7 @@
 | Last-Updated | 2026-06-25 |
 | Scope | `module/binance` stage2 lifecycle planning |
 | Spec-Impact | 已 fold：FR-012~FR-030 已登记到 `SPEC.md`/`TRACEABILITY.md`，相关命名落点已投影到 `NAMING.md`；本文件仍不声明 runtime contract |
-| Source Plan | `docs/report/binance/goal-execution-plan-20260622.md` 阶段 2 / AC-3 |
+| Source Plan | `report/binance/goal-execution-plan-20260622.md` 阶段 2 / AC-3 |
 
 > [COMPUTED, HIGH] FR-012~FR-030 已登记到 `SPEC.md`/`TRACEABILITY.md`，相关命名落点已投影到 `NAMING.md`；本文仍是 lifecycle planning 与 issue closure mapping，不构成 runtime behavior、CI pass、GitHub Release 或 release evidence 完成证明。
 >
@@ -50,7 +50,7 @@
 | FR-020 | Funding-rate event support | `SPEC.md` event taxonomy / `NAMING.md` | MAJOR v3.0.0 | FR-001, FR-003, FR-006a, FR-009 | G13 |
 | FR-021 | Mark-price and index-price event support | `SPEC.md` event taxonomy / `NAMING.md` | MAJOR v3.0.0 | FR-001, FR-003, FR-006a, FR-009 | G13 |
 | FR-022 | Event-type matrix expansion governance | `RULES.md` / `NAMING.md` / `RUNTIME-MAPPING.md` | MAJOR v3.0.0 | FR-020, FR-021 | G13 |
-| FR-023 | Governance evidence bundle | `ACCEPTANCE.md` / `TRACEABILITY.md` / `docs/report/binance/` | MINOR v3.1.0 | boundary gates, CI evidence | G15 |
+| FR-023 | Governance evidence bundle | `ACCEPTANCE.md` / `TRACEABILITY.md` / `report/binance/` | MINOR v3.1.0 | boundary gates, CI evidence | G15 |
 | FR-024 | Runtime config hot reload | `STANDARD.md` / `SPEC.md` | MINOR v3.1.0 | FR-014, FR-015 | G14 |
 
 ## 3. Review checklist

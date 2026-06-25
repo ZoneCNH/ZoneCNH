@@ -20,7 +20,7 @@
 
 2026-06-24 kafkax fanout 本地子集补充：local kafkax adapter 与 strict handoff unit subset 已验证，包含 topic/key、dispatch failure retryable `BNC-008` before durable/Ack 与 `plan006_task_4_7_repeat_checks=100`；真实 Kafka broker fanout、production topic/ACL 与 release evidence 仍不能标记为 PASS。
 
-> **2026-06-25 G0 存储装配断层声明**：boundary-gates 的 §12 natsx presence / §13 storage presence / §14 gin presence gate 证明的是「runtime 代码中存在调用」，**不证明 `cmd/binance-server/main.go` 装配了真实实例**。实测 main.go 用 `bootstrap.Spec{Stores: bootstrap.None}` + `NewMemoryIdempotencyStore` + `StorageWriter=nil`，9 存储类 FR（FR-005/006a-d/007/007a/010/011）runtime 永不执行。详见 `docs/report/binance/production-readiness-assessment-20260625.md` §4.1 G0。
+> **2026-06-25 G0 存储装配断层声明**：boundary-gates 的 §12 natsx presence / §13 storage presence / §14 gin presence gate 证明的是「runtime 代码中存在调用」，**不证明 `cmd/binance-server/main.go` 装配了真实实例**。实测 main.go 用 `bootstrap.Spec{Stores: bootstrap.None}` + `NewMemoryIdempotencyStore` + `StorageWriter=nil`，9 存储类 FR（FR-005/006a-d/007/007a/010/011）runtime 永不执行。详见 `report/binance/production-readiness-assessment-20260625.md` §4.1 G0。
 
 | 验证面 | 命令 | 通过条件 |
 | --- | --- | --- |
@@ -101,7 +101,7 @@ Runtime `go.mod` 必须保留边界所需 direct dependencies，不得通过依�
 | BR-007 | Done：Gate §9 已由 runtime 13/13 PASS 证明 |
 | BR-008 | Done：Gate §8 已由 runtime 13/13 PASS 证明 |
 | BR-009 | Done：Gate §11 已由 runtime 13/13 PASS 证明 |
-| Release | Not Done：远端 CI、release tag、live websocket（合约/期权 testnet 凭据）、真实 Kafka broker fanout、**G0 存储装配闭合**（9 存储类 FR main.go 未装配实例，runtime 永不落盘，详见 `docs/report/binance/production-readiness-assessment-20260625.md` §4.1）、完整 JetStream TC-004/TC-006 跨进程证据仍按 Release DoD 单独验收 |
+| Release | Not Done：远端 CI、release tag、live websocket（合约/期权 testnet 凭据）、真实 Kafka broker fanout、**G0 存储装配闭合**（9 存储类 FR main.go 未装配实例，runtime 永不落盘，详见 `report/binance/production-readiness-assessment-20260625.md` §4.1）、完整 JetStream TC-004/TC-006 跨进程证据仍按 Release DoD 单独验收 |
 
 ---
 

@@ -14,7 +14,7 @@
 
 本文档是 `module/binance` 当前规格库的实现投影，不是 runtime 代码验收证据。实际完成状态以 `TRACEABILITY.md`、`client/TRACEABILITY.md`、`server/TRACEABILITY.md` 和 `/home/binance` 的测试证据为准。
 
-> **v3.6.0 状态口径（2026-06-25）**：Done = writer/代码存在 **且** `cmd/binance-server/main.go` 装配真实实例；Partial = 代码完整但 main.go 未装配（存储装配断层，根因见 [`docs/report/binance/production-readiness-assessment-20260625.md`](../../docs/report/binance/production-readiness-assessment-20260625.md) §4.1 G0）或 runtime 未注入 / 集成验证缺。L1 边界治理（FR-009/BR）不可替代 L2 功能验收。
+> **v3.6.0 状态口径（2026-06-25）**：Done = writer/代码存在 **且** `cmd/binance-server/main.go` 装配真实实例；Partial = 代码完整但 main.go 未装配（存储装配断层，根因见 [`report/binance/production-readiness-assessment-20260625.md`](../../report/binance/production-readiness-assessment-20260625.md) §4.1 G0）或 runtime 未注入 / 集成验证缺。L1 边界治理（FR-009/BR）不可替代 L2 功能验收。
 
 ## 1. 模块边界
 
@@ -134,7 +134,7 @@
 
 | 缺口 | 影响 | 关闭条件 |
 | --- | --- | --- |
-| **G0 存储装配断层（P0，阻断发布）** | 9 个存储类 FR（FR-005/006a-d/007/007a/010/011）代码完整但 `cmd/binance-server/main.go` 未装配实例，runtime 永不落盘/缓存/归档/OLAP。消息经 NATS→consumer→kafkax fanout 后即丢弃，查询 API/OLAP/归档无数据。 | main.go 新增 `storageFromEnv` 装配 taosx/pg/redis/ch/oss 实例 + 注入 serverConfig + 端到端落盘验证。详见 `docs/report/binance/production-readiness-assessment-20260625.md` §4.1。 |
+| **G0 存储装配断层（P0，阻断发布）** | 9 个存储类 FR（FR-005/006a-d/007/007a/010/011）代码完整但 `cmd/binance-server/main.go` 未装配实例，runtime 永不落盘/缓存/归档/OLAP。消息经 NATS→consumer→kafkax fanout 后即丢弃，查询 API/OLAP/归档无数据。 | main.go 新增 `storageFromEnv` 装配 taosx/pg/redis/ch/oss 实例 + 注入 serverConfig + 端到端落盘验证。详见 `report/binance/production-readiness-assessment-20260625.md` §4.1。 |
 | **G2 真实外部集成证据（P0）** | 合约/期权 testnet 凭据、真实 Kafka broker e2e、远程 CI 证据缺失。 | 申请 Binance 合约/期权 testnet 凭据 + 扩展 testnet_live_test + 真实 Kafka broker 集成测试。 |
 | **G5 Release artifact（P1）** | release.yml 存在但 v0.1.0/v0.1.1 tag 是否真有 GitHub Release 产物未验证。 | 触发 release.yml + 验证 GitHub Release artifact。 |
 | **G7 合约/期权产品线实质化（P1）** | um/cm/options 共享 spot engine，合约专属事件解析（markPrice/fundingRate）已有但未验证；options rawPassThrough 兜底但 Greeks 边界未测。 | 合约/期权 testnet 凭据 + 产品线差异测试（同 symbol 跨线 normalize/identity 断言）。 |

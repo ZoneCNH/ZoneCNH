@@ -179,7 +179,7 @@
 
 ## 7. GitHub Issue Closure Ledger（2026-06-23）
 
-> [COMPUTED, HIGH] 2026-06-23 GitHub 核查后，#923~#931 均为 `CLOSED`。完整账本见 [`docs/report/binance/github-issues-923-931-closure-ledger-20260623.md`](../../docs/report/binance/github-issues-923-931-closure-ledger-20260623.md)。
+> [COMPUTED, HIGH] 2026-06-23 GitHub 核查后，#923~#931 均为 `CLOSED`。完整账本见 [`report/binance/github-issues-923-931-closure-ledger-20260623.md`](../../report/binance/github-issues-923-931-closure-ledger-20260623.md)。
 >
 > [COMPUTED, HIGH] 本节记录 issue tracking closure，而不是 runtime/release promotion。Live websocket、remote CI、外部集成、release artifact/tag 与 FR-012~FR-030 runtime evidence 仍必须由对应 acceptance/release gate 单独关闭。
 

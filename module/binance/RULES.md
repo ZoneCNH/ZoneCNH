@@ -22,7 +22,7 @@
 - `NAMING.md`（"历史别名" 列）
 - `RULES.md`（本文 "违规" 示例）
 - `ARCHITECTURE-DRIFT-WATCHLIST.md`（漂移历史）
-- `docs/report/binance/**`（治理审计报告）
+- `report/binance/**`（治理审计报告）
 - `module/binance/{client,server}/tasks/archive/**`（归档 task）
 
 **BR-001 边界声明豁免**：`README.md`、`FEATURES.md`、`CHANGELOG.md`、`IMPLEMENTATION-PLAN.md`、`client/README.md`、`server/IMPLEMENTATION-PLAN.md` 中以 `binance-market` 为对象的引用，若语境是 BR-001 "已移除 / 禁止恢复 / 禁止路径" 边界声明（非描述性历史叙事），视为合法边界 gate 证据，不构成 R1 漂移。描述性"取代 binance-market"冗余叙事应压缩到 `SPEC.md` §3 + `docs/migrations/remove-binance-market.md` 单一入口。
@@ -83,7 +83,7 @@ bash scripts/check-binance-docs.sh
 
 1. **L1 Boundary/Governance Gate**：只覆盖 FR-009 / BR-005 / BR-009 等边界治理约束，可用 runtime SHA + CI workflow URL + boundary-gates.sh PASS 标记 `Implemented`。
 2. **L2 Functional Runtime FR**：FR-001~FR-008、FR-010 及后续功能 FR 只能在 runtime feature tests / integration tests / reproducible commit SHA 同时存在时标记 `Implemented`。
-3. **报告**（`docs/report/binance/**`）的 [COMPUTED] 标签必须区分 L1 boundary evidence 与 L2 functional evidence。
+3. **报告**（`report/binance/**`）的 [COMPUTED] 标签必须区分 L1 boundary evidence 与 L2 functional evidence。
 
 **违规**：用 boundary gate PASS 推导 FR-001~FR-008/FR-010 已实现；根矩阵 "Implemented" 但 runtime 仓未推送对应代码；或报告称 Pending 但矩阵称 Implemented。
 

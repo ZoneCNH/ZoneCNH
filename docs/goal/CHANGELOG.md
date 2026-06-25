@@ -12,7 +12,7 @@
 
 ## 2026-06-12 — v2 深度分析修复：跨平台一致性 + 愿景准确性 + 下游采纳
 
-基于 `docs/report/goal-deep-analysis-20260612-v2.md` 的 P1/P2 修复全部落地：
+基于 `report/goal-deep-analysis-20260612-v2.md` 的 P1/P2 修复全部落地：
 
 ### P1（一致性）
 - **M-LINT-008 四链路统一**：`10-lint-rules.md` 将 Matrix Verified 定义从 `Code + Test` 扩展为 `Code + Test + Evidence + Gate`（四链路），与 Codex/Copilot 对齐
@@ -42,7 +42,7 @@
 
 ## 2026-06-12 — v2 深度分析修复：跨平台一致性 + 愿景准确性 + 下游采纳
 
-基于 `docs/report/goal-deep-analysis-20260612.md` 的 6 项修复全部落地：
+基于 `report/goal-deep-analysis-20260612.md` 的 6 项修复全部落地：
 
 ### P0
 - **S-LINT 半自动化**：`lint-goal.sh` 新增 `check_spec_semantic()` 函数，S-LINT-004~008 从 manual → semi-automated（grep + [需人工确认]），自动化率 77%→87.5%

@@ -26,7 +26,7 @@ tools: [Read, Grep, Glob, Bash, Write]
 | 读取 spec 文件 | ✅ | - |
 | 读取治理文档 | ✅ | - |
 | 读取模板文件 | ✅ | - |
-| 生成报告文件 | ✅ | 仅写入 docs/report/ |
+| 生成报告文件 | ✅ | 仅写入 report/ |
 | 修改 spec 文件 | ❌ | 分析师不修改 |
 
 ### 1.3 上下文加载
@@ -37,7 +37,7 @@ tools: [Read, Grep, Glob, Bash, Write]
 | `docs/governance/SPEC-TEMPLATE.md` | P0 | 始终 |
 | `module/README.md` | P1 | 始终 |
 | `CONSTITUTION.md` | P2 | 评估合规性时 |
-| 已有报告 `docs/report/` | P2 | 避免重复分析 |
+| 已有报告 `report/` | P2 | 避免重复分析 |
 
 ---
 
@@ -202,7 +202,7 @@ tools: [Read, Grep, Glob, Bash, Write]
 3. 维度评估 → 逐维度打分（0-10）
 4. 问题标注 → ❌ 严重 / ⚠️ 中等 / 💡 建议
 5. 计算总分 → 8 维度加权平均（满分 100）
-6. 生成报告 → 写入 docs/report/{module}-structural-score-{timestamp}.md
+6. 生成报告 → 写入 report/{module}-structural-score-{timestamp}.md
 ```
 
 ---

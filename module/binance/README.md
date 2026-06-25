@@ -4,7 +4,7 @@
 
 - Spec-Version: v3.6.0 (root) / v2.1.1 (client) / v2.2.0 (server)
 - Runtime-Version: v0.2.0（已发布，CI 6/6 全绿，7/7 infra LIVE-PASS）
-- Delivery-State: FR-001~FR-030 spec/traceability registered; **2026-06-25 生产就绪修复完成 — v0.2.0 已发布，FR 28 Done / 2 Partial / 0 Pending (93%)**. G0 存储装配闭合 — `storageFromEnv` 真实装配 5 infra client + 7 writer; 9 存储类 FR Partial→Done. **7/7 infra LIVE-PASS**（taosx v1.0.2/pg/redis/ch/kafka/oss/mainnet 四线 全实证）. CI 6/6 全绿（issue #94 closed）. v0.2.0 release.yml 首次成功（2 产物）. 剩余 2 Partial: FR-016/024（非阻断）. 详见 `docs/report/binance/production-readiness-fix-execution-20260625.md`.
+- Delivery-State: FR-001~FR-030 spec/traceability registered; **2026-06-25 生产就绪修复完成 — v0.2.0 已发布，FR 28 Done / 2 Partial / 0 Pending (93%)**. G0 存储装配闭合 — `storageFromEnv` 真实装配 5 infra client + 7 writer; 9 存储类 FR Partial→Done. **7/7 infra LIVE-PASS**（taosx v1.0.2/pg/redis/ch/kafka/oss/mainnet 四线 全实证）. CI 6/6 全绿（issue #94 closed）. v0.2.0 release.yml 首次成功（2 产物）. 剩余 2 Partial: FR-016/024（非阻断）. 详见 `report/binance/production-readiness-fix-execution-20260625.md`.
 - Last-Updated: 2026-06-25
 
 It is split into two submodules:
@@ -90,11 +90,11 @@ module/binance/server
 
 ## GitHub Issue Closure Gate
 
-[COMPUTED, HIGH] Current issue-tracking ledger: [`../../docs/report/binance/github-issues-923-931-closure-ledger-20260623.md`](../../docs/report/binance/github-issues-923-931-closure-ledger-20260623.md).
+[COMPUTED, HIGH] Current issue-tracking ledger: [`../../report/binance/github-issues-923-931-closure-ledger-20260623.md`](../../report/binance/github-issues-923-931-closure-ledger-20260623.md).
 
 [COMPUTED, HIGH] GitHub #923~#931 are closed in GitHub state as of 2026-06-23. This closure does not replace runtime/release evidence: live websocket, external `natsx` / storage / fanout / query, remote CI, release tag, and Partial FR implementation evidence remain governed by acceptance and release gates.
 
-[COMPUTED, HIGH] 2026-06-25 alignment refresh: runtime HEAD `e02b190` (Plan007 A1~A10 + B1~B8 executed). FR status refreshed to 19 Done / 11 Partial / 0 Pending under main.go 装配级证据标准 (see `TRACEABILITY.md` v3.6.0 变更摘要). 9 存储类 FR 下调根因：`cmd/binance-server/main.go` 用 `bootstrap.Spec{Stores: bootstrap.None}` + `NewMemoryIdempotencyStore` + `StorageWriter=nil`，writer 代码完整但 runtime 永不执行（详见 [`docs/report/binance/production-readiness-assessment-20260625.md`](../../docs/report/binance/production-readiness-assessment-20260625.md) §4.1 G0）。Plan007 已闭合：G1 (历史回填真实 REST)、G3 (NakWithDelay+DLQ)、G4 (跨产品线碰撞测试)；G2/G5/G7/G8 仍 Partial。
+[COMPUTED, HIGH] 2026-06-25 alignment refresh: runtime HEAD `e02b190` (Plan007 A1~A10 + B1~B8 executed). FR status refreshed to 19 Done / 11 Partial / 0 Pending under main.go 装配级证据标准 (see `TRACEABILITY.md` v3.6.0 变更摘要). 9 存储类 FR 下调根因：`cmd/binance-server/main.go` 用 `bootstrap.Spec{Stores: bootstrap.None}` + `NewMemoryIdempotencyStore` + `StorageWriter=nil`，writer 代码完整但 runtime 永不执行（详见 [`report/binance/production-readiness-assessment-20260625.md`](../../report/binance/production-readiness-assessment-20260625.md) §4.1 G0）。Plan007 已闭合：G1 (历史回填真实 REST)、G3 (NakWithDelay+DLQ)、G4 (跨产品线碰撞测试)；G2/G5/G7/G8 仍 Partial。
 
 ## Read Next
 

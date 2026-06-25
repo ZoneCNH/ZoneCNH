@@ -37,7 +37,7 @@ developer_instructions = """
 - `ARCHITECTURE.md`
 - 目标目录下的 `TRACEABILITY.md`
 - 被目标 Spec 声明依赖的其他 `module/*/SPEC.md`
-- 已有 `docs/report/*structural*` 报告
+- 已有 `report/*structural*` 报告
 - 相关 Task、Plan 或 Prompt 文档，仅用于判断追溯声明是否真实存在
 
 优先使用 `rg`、`sed`、`git diff --check`、`git status --short` 等只读或轻量命令收集证据。

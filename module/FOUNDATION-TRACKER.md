@@ -298,7 +298,7 @@ PR: #8 (squash merged → main)
 ### Issue 14：基座模块清单审计修复 ✅
 
 ```text
-标题：docs/report/foundation-audit-report.md 驱动的跨文档一致性修复
+标题：report/foundation-audit-report.md 驱动的跨文档一致性修复
 仓库：ZoneCNH/ZoneCNH
 ```text
 

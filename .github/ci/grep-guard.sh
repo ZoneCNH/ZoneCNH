@@ -128,7 +128,7 @@ check_pattern_excluding "/home/xxx 或 /Users/xxx 或 C:\\xxx" \
   '\.config/goal/' \
   'docs/governance/' \
   'docs/goal/' \
-  'docs/report/' \
+  'report/' \
   'docs/spec/' \
   'module/'
 

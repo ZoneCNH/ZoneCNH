@@ -37,7 +37,7 @@
 - G0 端到端 postgresx + clickhousex 建连接证 PASS。
 
 ### Pending（SRE/CI 解锁，零代码）
-- redisx/taosx/Kafka/OSS infra 配置（见 `docs/report/binance/sre-unblock-checklist-20260625.md`）。
+- redisx/taosx/Kafka/OSS infra 配置（见 `report/binance/sre-unblock-checklist-20260625.md`）。
 - CI 私有依赖修复（issue #94）后打 v0.2.0 release tag。
 
 ---
@@ -168,7 +168,7 @@
 - 新建 `scripts/check-binance-docs.sh`，作为 Stage1 可执行文档治理检查
 - 新建 `module/binance/DATA-LIFECYCLE.md`，记录 Stage2 lifecycle gap 与 FR-012..FR-024 草案
 - 新建 `module/binance/STANDARD.md`，记录 FR-024 前置 runtime control 标准与证据门禁
-- 新建 `docs/report/binance/INDEX.md`，收口报告索引与 Stage0–Stage2 gate 入口
+- 新建 `report/binance/INDEX.md`，收口报告索引与 Stage0–Stage2 gate 入口
 
 ### Reviewed
 - 关闭 `DATA-LIFECYCLE.md` review checklist，确认 FR-012..FR-024 的落点、bump class、依赖顺序与 `STANDARD.md` 前置关系；该结论不修改 root SPEC，也不标记 Release DoD
@@ -201,11 +201,11 @@
 ### Changed
 - TRACEABILITY BR-001/002/003/005/006/007/008/009 → Implemented（boundary gate §2-§11 PASS）
 - TRACEABILITY TC-020/021/022 → PASS（boundary gate 证据对齐）；TC-005 保持 Pending，等待 FR-003 独立进程 publish/consume 集成证据
-- 业务报告 `docs/report/binance/business-types-coverage-20260622.md` §Runtime 核对建议 → §Runtime 核对结果（[INFERRED] → [COMPUTED][HIGH]）
+- 业务报告 `report/binance/business-types-coverage-20260622.md` §Runtime 核对建议 → §Runtime 核对结果（[INFERRED] → [COMPUTED][HIGH]）
 
 ### Fixed
 - 归档 5 个 v2.0.0 前 task 到 `archive/`（R5 物理隔离）
-- DEEP-ANALYSIS 归档到 `docs/report/binance/`
+- DEEP-ANALYSIS 归档到 `report/binance/`
 
 ---
 
@@ -221,7 +221,7 @@
 
 ### Fixed
 - 子规格版本不一致：client TRACEABILITY 引用 → client/SPEC v2.1.1，server TRACEABILITY 引用 → server/SPEC v2.1.0
-- 报告归类：binance 深度分析报告移到 `docs/report/binance/` 子目录
+- 报告归类：binance 深度分析报告移到 `report/binance/` 子目录
 
 ---
 

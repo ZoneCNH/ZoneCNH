@@ -117,7 +117,7 @@ docs/governance/improvements/20260609-auto-delivery-hook/SPEC.md
 
 近 30 天 1266 commits（日均 42）集中在 "preserve evidence" / "保存已验证变更" / "avoid 传播未经验证断言" 等语义，反映**文档追代码**的反向工作流：大量精力消耗在文档同步而非实现推进。
 
-### 根因分析（来自 docs/report/architecture-structural-analysis-20260622.md §7.2）
+### 根因分析（来自 report/architecture-structural-analysis-20260622.md §7.2）
 
 **投影层与事实层未分离**：
 

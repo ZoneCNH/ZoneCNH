@@ -116,7 +116,7 @@
 
 [COMPUTED][HIGH] 上表 5 个模型为 fred 目标领域语义。`domain-macro` 仓库 v0.1.0 源码（`pkg/domainmacro/`）当前只有 `MacroPoint`（字段 `SeriesCode/Value/ObservedAt/ReleasedAt/AvailableAt/RevisionVersion/IsPreliminary/Source`，含 `Validate()` 与 `IsVisibleAt()` no-lookahead 判定）和 `MacroInformationSet`；`MacroSeries/MacroRelease/MacroRevision/MacroIngestJob` 尚不存在。
 
-[INFERRED][HIGH] 绑定决策（详见 [stage2-contracts-binding-20260622.md](../../docs/report/fred/stage2-contracts-binding-20260622.md) §2）：
+[INFERRED][HIGH] 绑定决策（详见 [stage2-contracts-binding-20260622.md](../../report/fred/stage2-contracts-binding-20260622.md) §2）：
 - `MacroObservation` 映射到现有 `MacroPoint`，fred 实施期推动 `domain-macro` 补 `provider/unit/period_start/period_end/vintage_at` 字段。
 - `MacroSeries/MacroRelease/MacroRevision` 标注为 fred 实施期在 `domain-macro` 补齐。
 - `MacroIngestJob` 为 fred internal 定义，不进 `domain-macro`。

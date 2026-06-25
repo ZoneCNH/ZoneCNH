@@ -14,8 +14,8 @@
 
 **证据基线：**
 
-- Report1：[`docs/report/binance/production-readiness-recheck-20260624.md`](../../docs/report/binance/production-readiness-recheck-20260624.md)（runtime HEAD `8290dc9`）
-- Report2：[`docs/report/arch/foundationx-binance-decoupling-architecture-20260624.md`](../../docs/report/arch/foundationx-binance-decoupling-architecture-20260624.md)
+- Report1：[`report/binance/production-readiness-recheck-20260624.md`](../../report/binance/production-readiness-recheck-20260624.md)（runtime HEAD `8290dc9`）
+- Report2：[`report/arch/foundationx-binance-decoupling-architecture-20260624.md`](../../report/arch/foundationx-binance-decoupling-architecture-20260624.md)
 - 代码锚点已 **8/8 独立核实**（见 §1.3，全部 ✅ 一致）
 - 前序 Plan006：49/49 DONE（本计划是其复核勘误后的**增量**，不重复其工作）
 
