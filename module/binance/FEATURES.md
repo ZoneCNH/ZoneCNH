@@ -7,7 +7,7 @@
 | Status | Generated from current module SSOT |
 | Last-Updated | 2026-06-25 |
 | Module-Version | v3.6.1 |
-| Module-State | 规格扩展到 v3.6.1；当前状态投影对齐 Runtime-Anchor `/home/binance@f18a329` 与 Issue-Ledger `../../report/binance/issues-sync-20260625.md`，刷新为 **24 Done / 10 Partial / 0 Pending**。Partial FR: FR-007, FR-007a, FR-011, FR-016, FR-017, FR-023, FR-024, FR-026, FR-027, FR-028。GitHub #1104~#1118 已同步；#1106 文档对齐项本轮关闭，其余 runtime/evidence issues 保持开放。 |
+| Module-State | 规格扩展到 v3.6.1；当前状态投影对齐 Runtime-Anchor `/home/binance@f18a329` 与 Issue-Ledger `../../report/binance/issues-sync-20260625.md`，刷新为 **24 Done / 10 Partial / 0 Pending**。Partial FR: FR-007, FR-007a, FR-011, FR-016, FR-017, FR-023, FR-024, FR-026, FR-027, FR-028。GitHub #1104~#1118 已同步；#1106 文档对齐项关闭条件已满足（所有 active 文档统一 anchor `f18a329` + 统一 `24/10/0` 投影 + 历史口径标注覆盖），已关闭；其余 runtime/evidence issues 保持开放。 |
 | Layer | 数据域 / Binance-specific market_data C/S module |
 | Runtime-Repo | `/home/binance` |
 | Source | `goal.md`, `SPEC.md`, `TRACEABILITY.md`, `DATA-LIFECYCLE.md`, `STANDARD.md`, `BOUNDARY-GATES.md`, `RUNTIME-MAPPING.md`, `IMPLEMENTATION-PLAN.md`, `client/`, `server/`, `tasks/` |
