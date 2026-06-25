@@ -293,7 +293,7 @@
 | ------------------------------------------------- | ---- | ------ | ------------------------------- | ---------- | --------------------------------------------------------- |
 | [x.go](https://github.com/ZoneCNH/x.go)           | 入口 | v0.0.1 | ███░ 80%                        | 100%       | 组合根，2.8MB/33 项                                       |
 | [composer](https://github.com/ZoneCNH/composer)   | 入口 | v0.2.0 | ████████░ 85%                   | 100%       | 数据域组合根：25 进程 + HTTP health + Docker Compose；✅ SinkPort 适配器（14 tests）；✅ RegimeCoordinator v0.2.0（dispatch→regime→engine→signal_factory 全链路，6 tests PASS） |
-| [alertx](https://github.com/ZoneCNH/alertx)       | 横切 | v0.1.0 | ░░░░ 5%                         | 100%       | 告警引擎                                                  |
+| [alertx](https://github.com/ZoneCNH/alertx)       | 横切 | v1.0.0 | █████ 100%                      | 100%       | 告警引擎（规则 DSL + 去重 + 分级 + 通知 + 双订阅）；✅ v1.0.0 spec→code 全链 pass；✅ AT-007 横切贯穿 |
 | [observex](https://github.com/ZoneCNH/observex)   | 横切 | v0.3.4 | 全管线 --force pass (spec→code) | 100%       | 可观测性（同时归属基座）；✅ v0.3.4 GitHub Release 已发布；Labels type alias；redisx/kafkax/clickhousex 已对齐 |
 | [module](./module/README.md)                      | 独立 | -      | -                               | 100%       | 项目技术规范与接口定义                                    |
 
@@ -302,7 +302,7 @@
 ## 总览仪表盘
 
 ```text
-组件总数: 73    已有: 58    已创建: 15    平均进度: 62%
+组件总数: 73    已有: 59    已创建: 14    平均进度: 81%
 
 进度分布 (domain-sum 口径, 2026-06-22 移除 4 个废弃占位后):
   已验证数字 — 由 python3 scripts/audit-status.py --network 最终确认
@@ -323,9 +323,9 @@
 | 决策域                 | 5      | 1      | 4      | 10%                                | 5 (signal_factory v0.1.0 ✅；其余 v0.1.0+)              |
 | 执行域                 | 4      | 1      | 3      | 10%                                | 4 (riskx v0.1.0 ✅ 最小实现；其余 v0.1.0+)              |
 | 入口                   | 2      | 2      | 0      | 85%                                | 2 (x.go v0.0.1；composer v0.2.0 ✅ Coordinator+SinkPort) |
-| 横切                   | 2      | 1      | 1      | 53%                                | 2 (observex, alertx)                                  |
+| 横切                   | 2      | 2      | 0      | 100%                               | 2 (observex, alertx)                                  |
 | 独立                   | 1      | 1      | 0      | -                                  | 0                                                     |
-| **合计**               | **73** | **58** | **15** | **62%**                            | **73**                                                |
+| **合计**               | **73** | **59** | **14** | **81%**                            | **73**                                                |
 
 > ⚠️ **历史占位移除说明**（2026-06-22）：4 个历史占位模块（`backtest_engine`/`risk_engine`/`order_engine`/`portfolio_engine`）已从 `module/` 目录物理移除，迁移至对应新名称（backtestx/riskx/orderx/positionx）。多维成熟度表中保留行作为档案，标注"已移除"。当前活跃组件 73 个（原 77，扣除 4 个已移除占位）。
 
@@ -393,7 +393,7 @@
 
 ### 🟡 横切（注意）
 
-- alertx 仅创建（5%），observex 已完成（100%，v0.3.4，✅ GitHub Release 已发布）
+- alertx v1.0.0 已完成（100%，spec→code 全链 pass，AT-007 横切贯穿，✅ GitHub Release v1.0.0 已发布）；observex 已完成（100%，v0.3.4，✅ GitHub Release 已发布）
 - observex 同属基座和横切，职责边界通过 ADR 明确（见 `module/observex/ADR-dual-attribution.md`，R7 已闭环）
 
 ---
