@@ -14,6 +14,20 @@
 - 模块代码的本地工作目录统一为 `/home/{module}`，其中 `{module}` 与 GitHub 仓库名一致；本仓库只引用这些路径，不复制或收纳模块源码。
 - 本仓库的 feature worktree 统一放在 `/home/{module}/.worktree/workspaces/<branch-name>`，其中 `{module}` 是仓库目录名，`<branch-name>` 按 Git 分支名原样落盘（仅去掉 `refs/heads/` 前缀，`feat/...` 会自然形成嵌套目录）；纯文档仓库的仓库根 checkout 只在 feature branch 承载时可视为例外，不算新增 worktree。禁止再把新 worktree 放在仓库根外的零散目录。
 
+## 制品归属（Spec 制品 vs 运行时文档）
+
+各类制品有明确的仓归属，避免 spec 制品错放到 runtime 仓。runtime 仓通过自身 `boundary-gates.sh` §15 gate 机器强制；主仓通过下表约定与 `ADR-TEMPLATE.md` 归属字段约束。
+
+| 制品类型 | 归属仓 | 路径 |
+| -------- | ------ | ---- |
+| ADR（架构决策记录） | ZoneCNH 主仓 | `module/{模块}/ADR-NNN-*.md`（模块专属）或 `module/ADR-NNN-*.md`（跨模块治理类） |
+| SPEC / TRACEABILITY / goal.md | ZoneCNH 主仓 | `module/{模块}/` |
+| FEATURES / ACCEPTANCE / IMPLEMENTATION-PLAN / CHANGELOG / RULES / STANDARD | ZoneCNH 主仓 | `module/{模块}/` |
+| README / BOUNDARY-GATES / AGENTS | 各 runtime 仓 | 仓根 |
+| 代码 / 测试 | 各 runtime 仓 | `internal/` `cmd/` `pkg/` 等 |
+
+**规则**：runtime 仓的 `module/` 目录只承载运行时文档与代码，不得承载 ADR/SPEC 等任何 spec 制品。binance runtime 仓的 `scripts/boundary-gates.sh` §15 gate 扫描 `module/` 下禁止文件名（`ADR-*.md`、`SPEC*.md`、`TRACEABILITY.md`、`goal.md`、`FEATURES.md`、`ACCEPTANCE.md` 等），命中即 CI FAIL。
+
 ## 构建、测试与开发命令
 
 本仓库仅包含文档，没有本地构建系统。提交前使用轻量检查：
