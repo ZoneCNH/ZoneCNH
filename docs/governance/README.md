@@ -38,8 +38,25 @@
 | [BOM-FREEZE-GOVERNANCE.md](BOM-FREEZE-GOVERNANCE.md) | BOM 与 freeze 声明边界 |
 | [anti-requirements.md](anti-requirements.md)   | 反需求与范围约束       |
 
+## 模块治理
+
+| 文档 | 用途 |
+| --- | --- |
+| [MODULE-GOVERNANCE.md](MODULE-GOVERNANCE.md) | 模块治理总纲 — 八域总览、三 SSOT 边界、效力层级 |
+| [module-governance/README.md](module-governance/README.md) | 模块治理八专题 + 模板索引 |
+| [module-governance/01-module-registry.md](module-governance/01-module-registry.md) | 模块统一注册表 schema 与登记规则 |
+| [module-governance/02-module-lifecycle.md](module-governance/02-module-lifecycle.md) | 模块生命周期五态状态机 |
+| [module-governance/03-module-ownership.md](module-governance/03-module-ownership.md) | 模块负责人机制 |
+| [module-governance/04-module-release-ledger.md](module-governance/04-module-release-ledger.md) | 模块发布账本 |
+| [module-governance/05-module-health.md](module-governance/05-module-health.md) | 模块健康度四维模型 |
+| [module-governance/06-module-onboarding.md](module-governance/06-module-onboarding.md) | 新模块准入流程 |
+| [module-governance/07-module-decommission.md](module-governance/07-module-decommission.md) | 模块退役/迁移流程 |
+| [module-governance/08-business-domain-deps.md](module-governance/08-business-domain-deps.md) | 业务域依赖矩阵扩展规划 |
+| [`module/registry.yaml`](../module/registry.yaml) | 统一模块注册表（机器可读 SSOT） |
+
 ## 路径边界
 
 - 治理规则、模板、rubric 和门禁协议放在 `docs/governance/`。
+- 模块治理总纲与专题放在 `docs/governance/module-governance/`；机器可读注册表放在 `module/registry.yaml`。
 - 模块级产物放在 `module/{module}/`。
 - 跨平台 agent、CI 和 CODEOWNERS 应引用 `docs/governance/...`，不得恢复到治理文件位于 `module/` 下的旧布局。

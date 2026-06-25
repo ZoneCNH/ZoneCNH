@@ -1,0 +1,976 @@
+# module/registry.yaml — 统一模块注册表
+#
+# 这是模块身份与治理状态的单一 SSOT（Single Source of Truth）。
+# 管辖：repo / local_path / domain / layer / arch_type / lifecycle / owner / spec_ref / registered
+# 不管辖（引用其他 SSOT）：
+#   - 依赖矩阵 → module/FOUNDATION-DEPS.yaml（deps_ref）
+#   - 成熟度事实（version/release/factory）→ .foundationx/status/index.json（maturity_ref）
+#
+# Schema 定义：docs/governance/module-governance/01-module-registry.md
+# 治理总纲：docs/governance/MODULE-GOVERNANCE.md
+#
+# 字段性质：
+#   - 治理事实：repo, local_path, domain, layer, arch_type, lifecycle, owner, registered
+#   - 引用：spec_ref, deps_ref, maturity_ref
+#   - 投影：spec_version（mirror from SPEC.md Metadata），release 块（mirror from GitHub Release / .foundationx/status）
+#
+# 强制级别：本文件字段变更须遵循 01-module-registry.md §4 登记变更规则。
+
+schema_version: module-registry/v1
+updated: 2026-06-25
+
+# ============================================================================
+# 基座层（Foundation）— 20 模块
+# 依赖矩阵 SSOT: module/FOUNDATION-DEPS.yaml
+# 成熟度事实 SSOT: .foundationx/status/index.json
+# ============================================================================
+
+# --- 标准源 / 生成器 / 证据 / 门禁（4）---
+xlib_standard:
+  repo: github.com/ZoneCNH/xlib_standard
+  local_path: /home/xlib_standard
+  domain: foundation
+  layer: standard_source
+  arch_type: library
+  lifecycle: active
+  owner: ZoneCNH
+  registered: 2026-06-01
+  spec_ref: module/xlib_standard/SPEC.md
+  deps_ref: module/FOUNDATION-DEPS.yaml
+  maturity_ref: .foundationx/status/index.json#xlib_standard
+  spec_version: v1.0.1
+  release:
+    latest_tag: v1.0.1
+    release_date: 2026-06-01
+    cadence: stable
+
+xlib_harness:
+  repo: github.com/ZoneCNH/xlib_harness
+  local_path: /home/xlib_harness
+  domain: foundation
+  layer: harness
+  arch_type: library
+  lifecycle: active
+  owner: ZoneCNH
+  registered: 2026-06-01
+  spec_ref: module/xlib_harness/SPEC.md
+  deps_ref: module/FOUNDATION-DEPS.yaml
+  maturity_ref: .foundationx/status/index.json#xlib_harness
+  spec_version: v1.0.0
+  release:
+    latest_tag: v0.1.6
+    cadence: stable
+
+xlib_evidence:
+  repo: github.com/ZoneCNH/xlib_evidence
+  local_path: /home/xlib_evidence
+  domain: foundation
+  layer: evidence
+  arch_type: library
+  lifecycle: active
+  owner: ZoneCNH
+  registered: 2026-06-01
+  spec_ref: module/xlib_evidence/SPEC.md
+  deps_ref: module/FOUNDATION-DEPS.yaml
+  maturity_ref: .foundationx/status/index.json#xlib_evidence
+  spec_version: v0.2.4
+  release:
+    latest_tag: v0.2.4
+    cadence: stable
+
+xlibgate:
+  repo: github.com/ZoneCNH/xlibgate
+  local_path: /home/xlibgate
+  domain: foundation
+  layer: gate
+  arch_type: cli
+  lifecycle: active
+  owner: ZoneCNH
+  registered: 2026-06-01
+  spec_ref: module/xlibgate/SPEC.md
+  deps_ref: module/FOUNDATION-DEPS.yaml
+  maturity_ref: .foundationx/status/index.json#xlibgate
+  spec_version: v1.0.0
+  release:
+    latest_tag: v1.0.0
+    cadence: stable
+
+# --- L0 原语（1）---
+kernel:
+  repo: github.com/ZoneCNH/kernel
+  local_path: /home/kernel
+  domain: foundation
+  layer: L0
+  arch_type: library
+  lifecycle: active
+  owner: ZoneCNH
+  registered: 2026-06-01
+  spec_ref: module/kernel/SPEC.md
+  deps_ref: module/FOUNDATION-DEPS.yaml
+  maturity_ref: .foundationx/status/index.json#kernel
+  spec_version: v1.1.0
+  release:
+    latest_tag: v1.1.0
+    cadence: stable
+
+# --- L1 primitives（4）---
+configx:
+  repo: github.com/ZoneCNH/configx
+  local_path: /home/configx
+  domain: foundation
+  layer: L1
+  arch_type: library
+  lifecycle: active
+  owner: ZoneCNH
+  registered: 2026-06-01
+  spec_ref: module/configx/SPEC.md
+  deps_ref: module/FOUNDATION-DEPS.yaml
+  maturity_ref: .foundationx/status/index.json#configx
+  spec_version: v1.0.0
+  release:
+    latest_tag: v1.0.0
+    cadence: stable
+
+observex:
+  repo: github.com/ZoneCNH/observex
+  local_path: /home/observex
+  domain: foundation
+  layer: L1
+  arch_type: library
+  lifecycle: active
+  owner: ZoneCNH
+  registered: 2026-06-01
+  spec_ref: module/observex/SPEC.md
+  deps_ref: module/FOUNDATION-DEPS.yaml
+  maturity_ref: .foundationx/status/index.json#observex
+  spec_version: v0.3.1
+  release:
+    latest_tag: v0.3.1
+    cadence: stable
+
+resiliencx:
+  repo: github.com/ZoneCNH/resiliencx
+  local_path: /home/resiliencx
+  domain: foundation
+  layer: L1
+  arch_type: library
+  lifecycle: active
+  owner: ZoneCNH
+  registered: 2026-06-01
+  spec_ref: module/resiliencx/SPEC.md
+  deps_ref: module/FOUNDATION-DEPS.yaml
+  maturity_ref: .foundationx/status/index.json#resiliencx
+  spec_version: v1.0.2
+  release:
+    latest_tag: v0.4.9
+    cadence: stable
+
+schedulex:
+  repo: github.com/ZoneCNH/schedulex
+  local_path: /home/schedulex
+  domain: foundation
+  layer: L1
+  arch_type: library
+  lifecycle: active
+  owner: ZoneCNH
+  registered: 2026-06-01
+  spec_ref: module/schedulex/SPEC.md
+  deps_ref: module/FOUNDATION-DEPS.yaml
+  maturity_ref: .foundationx/status/index.json#schedulex
+  spec_version: v1.0.0
+  release:
+    latest_tag: v1.0.0
+    cadence: stable
+
+# --- L1 Assembly（1）---
+bootstrap:
+  repo: github.com/ZoneCNH/bootstrap
+  local_path: /home/bootstrap
+  domain: foundation
+  layer: L1
+  arch_type: library
+  lifecycle: active
+  owner: ZoneCNH
+  registered: 2026-06-01
+  spec_ref: module/bootstrap/SPEC.md
+  deps_ref: module/FOUNDATION-DEPS.yaml
+  maturity_ref: .foundationx/status/index.json#bootstrap
+  spec_version: v0.1.7
+  release:
+    latest_tag: v0.2.0
+    cadence: stable
+
+# --- L1 测试（1）---
+testkitx:
+  repo: github.com/ZoneCNH/testkitx
+  local_path: /home/testkitx
+  domain: foundation
+  layer: L1
+  arch_type: library
+  lifecycle: active
+  owner: ZoneCNH
+  registered: 2026-06-01
+  spec_ref: module/testkitx/SPEC.md
+  deps_ref: module/FOUNDATION-DEPS.yaml
+  maturity_ref: .foundationx/status/index.json#testkitx
+  spec_version: v0.4.0
+  release:
+    latest_tag: v0.4.0
+    cadence: stable
+
+# --- 存储扩展（7）---
+redisx:
+  repo: github.com/ZoneCNH/redisx
+  local_path: /home/redisx
+  domain: foundation
+  layer: storage
+  arch_type: library
+  lifecycle: active
+  owner: ZoneCNH
+  registered: 2026-06-01
+  spec_ref: module/redisx/SPEC.md
+  deps_ref: module/FOUNDATION-DEPS.yaml
+  maturity_ref: .foundationx/status/index.json#redisx
+  spec_version: v1.1.0
+  release:
+    latest_tag: v1.1.0
+    cadence: stable
+
+kafkax:
+  repo: github.com/ZoneCNH/kafkax
+  local_path: /home/kafkax
+  domain: foundation
+  layer: storage
+  arch_type: library
+  lifecycle: active
+  owner: ZoneCNH
+  registered: 2026-06-01
+  spec_ref: module/kafkax/SPEC.md
+  deps_ref: module/FOUNDATION-DEPS.yaml
+  maturity_ref: .foundationx/status/index.json#kafkax
+  spec_version: v1.2.0
+  release:
+    latest_tag: v1.0.2
+    cadence: stable
+
+natsx:
+  repo: github.com/ZoneCNH/natsx
+  local_path: /home/natsx
+  domain: foundation
+  layer: storage
+  arch_type: library
+  lifecycle: active
+  owner: ZoneCNH
+  registered: 2026-06-01
+  spec_ref: module/natsx/SPEC.md
+  deps_ref: module/FOUNDATION-DEPS.yaml
+  maturity_ref: .foundationx/status/index.json#natsx
+  spec_version: v1.2.0
+  release:
+    latest_tag: v1.0.2
+    cadence: stable
+
+postgresx:
+  repo: github.com/ZoneCNH/postgresx
+  local_path: /home/postgresx
+  domain: foundation
+  layer: storage
+  arch_type: library
+  lifecycle: active
+  owner: ZoneCNH
+  registered: 2026-06-01
+  spec_ref: module/postgresx/SPEC.md
+  deps_ref: module/FOUNDATION-DEPS.yaml
+  maturity_ref: .foundationx/status/index.json#postgresx
+  spec_version: v1.0.0
+  release:
+    latest_tag: v1.0.0
+    cadence: stable
+
+taosx:
+  repo: github.com/ZoneCNH/taosx
+  local_path: /home/taosx
+  domain: foundation
+  layer: storage
+  arch_type: library
+  lifecycle: active
+  owner: ZoneCNH
+  registered: 2026-06-01
+  spec_ref: module/taosx/SPEC.md
+  deps_ref: module/FOUNDATION-DEPS.yaml
+  maturity_ref: .foundationx/status/index.json#taosx
+  spec_version: v1.0.5
+  release:
+    latest_tag: v1.0.1
+    cadence: stable
+
+ossx:
+  repo: github.com/ZoneCNH/ossx
+  local_path: /home/ossx
+  domain: foundation
+  layer: storage
+  arch_type: library
+  lifecycle: active
+  owner: ZoneCNH
+  registered: 2026-06-01
+  spec_ref: module/ossx/SPEC.md
+  deps_ref: module/FOUNDATION-DEPS.yaml
+  maturity_ref: .foundationx/status/index.json#ossx
+  spec_version: v1.2.0
+  release:
+    latest_tag: v1.2.1
+    cadence: stable
+
+clickhousex:
+  repo: github.com/ZoneCNH/clickhousex
+  local_path: /home/clickhousex
+  domain: foundation
+  layer: storage
+  arch_type: library
+  lifecycle: active
+  owner: ZoneCNH
+  registered: 2026-06-01
+  spec_ref: module/clickhousex/SPEC.md
+  deps_ref: module/FOUNDATION-DEPS.yaml
+  maturity_ref: .foundationx/status/index.json#clickhousex
+  spec_version: v1.0.10
+  release:
+    latest_tag: v1.0.1
+    cadence: stable
+
+# --- 契约与传输（2）---
+contracts:
+  repo: github.com/ZoneCNH/contracts
+  local_path: /home/contracts
+  domain: foundation
+  layer: contracts
+  arch_type: contract
+  lifecycle: active
+  owner: ZoneCNH
+  registered: 2026-06-01
+  spec_ref: module/contracts/SPEC.md
+  deps_ref: module/FOUNDATION-DEPS.yaml
+  maturity_ref: .foundationx/status/index.json#contracts
+  spec_version: v1.2.0
+  release:
+    latest_tag: v1.0.1-spec
+    cadence: stable
+
+transportx:
+  repo: github.com/ZoneCNH/transportx
+  local_path: /home/transportx
+  domain: foundation
+  layer: contracts
+  arch_type: contract
+  lifecycle: active
+  owner: ZoneCNH
+  registered: 2026-06-01
+  spec_ref: module/transportx/SPEC.md
+  deps_ref: module/FOUNDATION-DEPS.yaml
+  maturity_ref: .foundationx/status/index.json#transportx
+  spec_version: v1.1.1
+  release:
+    latest_tag: v1.1.1-spec
+    cadence: stable
+
+# ============================================================================
+# L2.5 领域共享层（5 模块）
+# domainx 在 FOUNDATION-DEPS.yaml modules 段（基座依赖治理锚点）；
+# decimalx/domain_market/domain_macro/domain_exchange 暂不在 DEPS modules 段（后续补登记，见 08）。
+# 计数口径：domainx 计入 L2.5（domain=l2_5）；基座计数仍为 20（DEPS modules 段口径不变）。
+# ============================================================================
+
+domainx:
+  repo: github.com/ZoneCNH/domainx
+  local_path: /home/domainx
+  domain: l2_5
+  layer: l2_5
+  arch_type: library
+  lifecycle: active
+  owner: ZoneCNH
+  registered: 2026-06-01
+  spec_ref: module/domainx/SPEC.md
+  deps_ref: module/FOUNDATION-DEPS.yaml
+  maturity_ref: .foundationx/status/index.json#domainx
+  spec_version: v1.0.1
+  release:
+    latest_tag: v1.0.1
+    cadence: stable
+
+decimalx:
+  repo: github.com/ZoneCNH/decimalx
+  local_path: /home/decimalx
+  domain: l2_5
+  layer: l2_5
+  arch_type: library
+  lifecycle: active
+  owner: ZoneCNH
+  registered: 2026-06-01
+  spec_ref: module/decimalx/SPEC.md
+  deps_ref: module/FOUNDATION-DEPS.yaml  # 注：L2.5 补登记待完成（08 §3.3）
+  maturity_ref: .foundationx/status/index.json#decimalx
+  spec_version: v0.2.0
+  release:
+    latest_tag: v0.2.0
+    cadence: irregular
+
+domain_market:
+  repo: github.com/ZoneCNH/domain_market
+  local_path: /home/domain_market
+  domain: l2_5
+  layer: l2_5
+  arch_type: library
+  lifecycle: active
+  owner: ZoneCNH
+  registered: 2026-06-01
+  spec_ref: module/domain_market/SPEC.md
+  deps_ref: module/FOUNDATION-DEPS.yaml  # 注：L2.5 补登记待完成（08 §3.3）
+  maturity_ref: .foundationx/status/index.json#domain_market
+  spec_version: v1.1.0
+  release:
+    latest_tag: v1.1.0
+    cadence: stable
+
+domain_macro:
+  repo: github.com/ZoneCNH/domain_macro
+  local_path: /home/domain_macro
+  domain: l2_5
+  layer: l2_5
+  arch_type: library
+  lifecycle: active
+  owner: ZoneCNH
+  registered: 2026-06-01
+  spec_ref: module/domain_macro/SPEC.md
+  deps_ref: module/FOUNDATION-DEPS.yaml  # 注：L2.5 补登记待完成（08 §3.3）
+  maturity_ref: .foundationx/status/index.json#domain_macro
+  spec_version: v0.1.0
+  release:
+    latest_tag: v0.1.0
+    cadence: irregular
+
+domain_exchange:
+  repo: github.com/ZoneCNH/domain_exchange
+  local_path: /home/domain_exchange
+  domain: l2_5
+  layer: l2_5
+  arch_type: library
+  lifecycle: active
+  owner: ZoneCNH
+  registered: 2026-06-01
+  spec_ref: module/domain_exchange/SPEC.md
+  deps_ref: module/FOUNDATION-DEPS.yaml  # 注：L2.5 补登记待完成（08 §3.3）
+  maturity_ref: .foundationx/status/index.json#domain_exchange
+  spec_version: v0.1.0
+  release:
+    latest_tag: v0.1.0
+    cadence: irregular
+
+# ============================================================================
+# 数据域（Data Domain）— C/S 采集器 + 独立进程聚合层
+# 业务域依赖矩阵待登记（见 08-business-domain-deps.md）
+# ============================================================================
+
+# --- C/S 采集器（4 交易所 + 2 宏观）---
+binance:
+  repo: github.com/ZoneCNH/binance
+  local_path: /home/binance
+  domain: data
+  layer: business
+  arch_type: cs_module
+  lifecycle: active
+  owner: ZoneCNH
+  registered: 2026-06-01
+  spec_ref: module/binance/SPEC.md
+  deps_ref: module/FOUNDATION-DEPS.yaml  # forbidden_deps 黑名单成员
+  maturity_ref: .foundationx/status/index.json#binance
+  spec_version: v3.6.0
+  release:
+    latest_tag: v3.6.0
+    cadence: on-demand
+
+okx:
+  repo: github.com/ZoneCNH/okx
+  local_path: /home/okx
+  domain: data
+  layer: business
+  arch_type: cs_module
+  lifecycle: proposed
+  owner: ZoneCNH
+  registered: 2026-06-10
+  spec_ref: module/okx/SPEC.md
+  spec_version: v0.1.0-draft
+  release:
+    cadence: irregular
+
+hyperliquid:
+  repo: github.com/ZoneCNH/hyperliquid
+  local_path: /home/hyperliquid
+  domain: data
+  layer: business
+  arch_type: cs_module
+  lifecycle: proposed
+  owner: ZoneCNH
+  registered: 2026-06-10
+  spec_ref: module/hyperliquid/SPEC.md
+  spec_version: v0.1.0-draft
+  release:
+    cadence: irregular
+
+coinglass:
+  repo: github.com/ZoneCNH/coinglass
+  local_path: /home/coinglass
+  domain: data
+  layer: business
+  arch_type: cs_module
+  lifecycle: proposed
+  owner: ZoneCNH
+  registered: 2026-06-10
+  spec_ref: module/coinglass/SPEC.md
+  spec_version: v0.1.0-draft
+  release:
+    cadence: irregular
+
+fred:
+  repo: github.com/ZoneCNH/fred
+  local_path: /home/fred
+  domain: data
+  layer: business
+  arch_type: cs_module
+  lifecycle: proposed
+  owner: ZoneCNH
+  registered: 2026-06-10
+  spec_ref: module/fred/SPEC.md
+  spec_version: v0.1.0-draft
+  release:
+    cadence: irregular
+
+treasury:
+  repo: github.com/ZoneCNH/treasury
+  local_path: /home/treasury
+  domain: data
+  layer: business
+  arch_type: cs_module
+  lifecycle: proposed
+  owner: ZoneCNH
+  registered: 2026-06-10
+  spec_ref: ~  # module/treasury/ 尚无 SPEC.md；根 README 已登记
+  spec_version: ~
+  release:
+    cadence: irregular
+
+# --- 独立进程聚合层 ---
+market_data:
+  repo: github.com/ZoneCNH/market_data
+  local_path: /home/market_data
+  domain: data
+  layer: business
+  arch_type: independent_process
+  lifecycle: proposed
+  owner: ZoneCNH
+  registered: 2026-06-10
+  spec_ref: module/market_data/SPEC.md
+  spec_version: v0.1.0-draft
+  release:
+    cadence: irregular
+
+macro_data:
+  repo: github.com/ZoneCNH/macro_data
+  local_path: /home/macro_data
+  domain: data
+  layer: business
+  arch_type: independent_process
+  lifecycle: proposed
+  owner: ZoneCNH
+  registered: 2026-06-10
+  spec_ref: module/macro_data/SPEC.md
+  spec_version: v0.1.0-draft
+  release:
+    cadence: irregular
+
+pe_data:
+  repo: github.com/ZoneCNH/pe_data
+  local_path: /home/pe_data
+  domain: data
+  layer: business
+  arch_type: independent_process
+  lifecycle: proposed
+  owner: ZoneCNH
+  registered: 2026-06-10
+  spec_ref: module/pe_data/SPEC.md
+  spec_version: v0.1.0-draft
+  release:
+    cadence: irregular
+
+alternative_data:
+  repo: github.com/ZoneCNH/alternative_data
+  local_path: /home/alternative_data
+  domain: data
+  layer: business
+  arch_type: independent_process
+  lifecycle: proposed
+  owner: ZoneCNH
+  registered: 2026-06-10
+  spec_ref: ~  # module/alternative_data/ 尚无 SPEC.md；根 README 已登记
+  spec_version: ~
+  release:
+    cadence: irregular
+
+# ============================================================================
+# 分析域（Analytics Domain）— 独立进程（非 C/S）
+# ============================================================================
+
+factor_engine:
+  repo: github.com/ZoneCNH/factor_engine
+  local_path: /home/factor_engine
+  domain: analytics
+  layer: business
+  arch_type: independent_process
+  lifecycle: proposed
+  owner: ZoneCNH
+  registered: 2026-06-10
+  spec_ref: module/factor_engine/SPEC.md
+  spec_version: v0.1.0-draft
+  release:
+    cadence: irregular
+
+feature_store:
+  repo: github.com/ZoneCNH/feature_store
+  local_path: /home/feature_store
+  domain: analytics
+  layer: business
+  arch_type: independent_process
+  lifecycle: proposed
+  owner: ZoneCNH
+  registered: 2026-06-10
+  spec_ref: module/feature_store/SPEC.md
+  spec_version: v0.1.0-draft
+  release:
+    cadence: irregular
+
+factor_eval:
+  repo: github.com/ZoneCNH/factor_eval
+  local_path: /home/factor_eval
+  domain: analytics
+  layer: business
+  arch_type: independent_process
+  lifecycle: proposed
+  owner: ZoneCNH
+  registered: 2026-06-10
+  spec_ref: module/factor_eval/SPEC.md
+  spec_version: v0.1.0-draft
+  release:
+    cadence: irregular
+
+market_regime:
+  repo: github.com/ZoneCNH/market_regime
+  local_path: /home/market_regime
+  domain: analytics
+  layer: business
+  arch_type: independent_process
+  lifecycle: proposed
+  owner: ZoneCNH
+  registered: 2026-06-10
+  spec_ref: module/market_regime/SPEC.md
+  spec_version: v0.1.0-draft
+  release:
+    cadence: irregular
+
+macro_regime:
+  repo: github.com/ZoneCNH/macro_regime
+  local_path: /home/macro_regime
+  domain: analytics
+  layer: business
+  arch_type: independent_process
+  lifecycle: proposed
+  owner: ZoneCNH
+  registered: 2026-06-10
+  spec_ref: module/macro_regime/SPEC.md
+  spec_version: v0.1.0-draft
+  release:
+    cadence: irregular
+
+regime_engine:
+  repo: github.com/ZoneCNH/regime_engine
+  local_path: /home/regime_engine
+  domain: analytics
+  layer: business
+  arch_type: independent_process
+  lifecycle: proposed
+  owner: ZoneCNH
+  registered: 2026-06-10
+  spec_ref: module/regime_engine/SPEC.md
+  spec_version: v0.1.0-draft
+  release:
+    cadence: irregular
+
+ms_brain:
+  repo: github.com/ZoneCNH/ms_brain
+  local_path: /home/ms_brain
+  domain: analytics
+  layer: business
+  arch_type: independent_process
+  lifecycle: proposed
+  owner: ZoneCNH
+  registered: 2026-06-10
+  spec_ref: module/ms_brain/SPEC.md
+  spec_version: v0.1.0-draft
+  release:
+    cadence: irregular
+
+flowx:
+  repo: github.com/ZoneCNH/flowx
+  local_path: /home/flowx
+  domain: analytics
+  layer: business
+  arch_type: independent_process
+  lifecycle: proposed
+  owner: ZoneCNH
+  registered: 2026-06-10
+  spec_ref: module/flowx/SPEC.md
+  spec_version: v0.1.0-draft
+  release:
+    cadence: irregular
+
+# ============================================================================
+# 决策域（Decision Domain）
+# ============================================================================
+
+signal_factory:
+  repo: github.com/ZoneCNH/signal_factory
+  local_path: /home/signal_factory
+  domain: decision
+  layer: business
+  arch_type: independent_process
+  lifecycle: proposed
+  owner: ZoneCNH
+  registered: 2026-06-10
+  spec_ref: module/signal_factory/SPEC.md
+  spec_version: v0.1.0-draft
+  release:
+    cadence: irregular
+
+backtestx:
+  repo: github.com/ZoneCNH/backtestx
+  local_path: /home/backtestx
+  domain: decision
+  layer: business
+  arch_type: independent_process
+  lifecycle: proposed
+  owner: ZoneCNH
+  registered: 2026-06-10
+  spec_ref: module/backtestx/SPEC.md
+  spec_version: v0.1.0-draft
+  release:
+    cadence: irregular
+
+optimizer:
+  repo: github.com/ZoneCNH/optimizer
+  local_path: /home/optimizer
+  domain: decision
+  layer: business
+  arch_type: independent_process
+  lifecycle: proposed
+  owner: ZoneCNH
+  registered: 2026-06-10
+  spec_ref: module/optimizer/SPEC.md
+  spec_version: v0.1.0-draft
+  release:
+    cadence: irregular
+
+strategyx:
+  repo: github.com/ZoneCNH/strategyx
+  local_path: /home/strategyx
+  domain: decision
+  layer: business
+  arch_type: independent_process
+  lifecycle: proposed
+  owner: ZoneCNH
+  registered: 2026-06-10
+  spec_ref: module/strategyx/SPEC.md
+  spec_version: v0.1.0-draft
+  release:
+    cadence: irregular
+
+maestro:
+  repo: github.com/ZoneCNH/maestro
+  local_path: /home/maestro
+  domain: decision
+  layer: business
+  arch_type: independent_process
+  lifecycle: proposed
+  owner: ZoneCNH
+  registered: 2026-06-10
+  spec_ref: module/maestro/SPEC.md
+  spec_version: v0.1.0-draft
+  release:
+    cadence: irregular
+
+# ============================================================================
+# 执行域（Execution Domain）
+# ============================================================================
+
+riskx:
+  repo: github.com/ZoneCNH/riskx
+  local_path: /home/riskx
+  domain: execution
+  layer: business
+  arch_type: independent_process
+  lifecycle: proposed
+  owner: ZoneCNH
+  registered: 2026-06-10
+  spec_ref: module/riskx/SPEC.md
+  spec_version: v0.1.0-draft
+  release:
+    latest_tag: v0.1.0
+    cadence: irregular
+
+orderx:
+  repo: github.com/ZoneCNH/orderx
+  local_path: /home/orderx
+  domain: execution
+  layer: business
+  arch_type: independent_process
+  lifecycle: proposed
+  owner: ZoneCNH
+  registered: 2026-06-10
+  spec_ref: module/orderx/SPEC.md
+  spec_version: v0.1.0-draft
+  release:
+    cadence: irregular
+
+positionx:
+  repo: github.com/ZoneCNH/positionx
+  local_path: /home/positionx
+  domain: execution
+  layer: business
+  arch_type: independent_process
+  lifecycle: proposed
+  owner: ZoneCNH
+  registered: 2026-06-10
+  spec_ref: module/positionx/SPEC.md
+  spec_version: v0.1.0-draft
+  release:
+    cadence: irregular
+
+settlement:
+  repo: github.com/ZoneCNH/settlement
+  local_path: /home/settlement
+  domain: execution
+  layer: business
+  arch_type: independent_process
+  lifecycle: proposed
+  owner: ZoneCNH
+  registered: 2026-06-10
+  spec_ref: module/settlement/SPEC.md
+  spec_version: v0.1.0-draft
+  release:
+    cadence: irregular
+
+# ============================================================================
+# 入口（Entry）— 组合根
+# ============================================================================
+
+composer:
+  repo: github.com/ZoneCNH/composer
+  local_path: /home/composer
+  domain: entry
+  layer: business
+  arch_type: independent_process
+  lifecycle: proposed
+  owner: ZoneCNH
+  registered: 2026-06-10
+  spec_ref: ~  # module/composer/ 尚无 SPEC.md；根 README 已登记
+  spec_version: v0.2.0
+  release:
+    latest_tag: v0.2.0
+    cadence: irregular
+
+# ============================================================================
+# 横切（Crosscut）
+# ============================================================================
+
+alertx:
+  repo: github.com/ZoneCNH/alertx
+  local_path: /home/alertx
+  domain: crosscut
+  layer: business
+  arch_type: independent_process
+  lifecycle: proposed
+  owner: ZoneCNH
+  registered: 2026-06-10
+  spec_ref: ~  # module/alertx/ 尚无 SPEC.md；根 README 已登记
+  spec_version: ~
+  release:
+    cadence: irregular
+
+x.go:
+  repo: github.com/ZoneCNH/x.go
+  local_path: /home/x.go
+  domain: crosscut
+  layer: business
+  arch_type: cli
+  lifecycle: active
+  owner: ZoneCNH
+  registered: 2026-06-01
+  spec_ref: ~  # module/x.go/ 不作为模块规格维护（module/README §1 声明）
+  spec_version: ~
+  release:
+    cadence: irregular
+  note: "治理/工具 CLI（goalcli + templatex）；运行时 Composition Root 职责由 composer 承担；命名例外（§7.2）"
+
+# ============================================================================
+# 已归档模块（历史保留，lifecycle=archived）
+# 2026-06-22 物理删除 4 个占位模块（无 release 无下游），符合 07 §4 决策矩阵
+# ============================================================================
+
+backtest_engine:
+  repo: github.com/ZoneCNH/backtest_engine
+  local_path: ~
+  domain: decision
+  layer: business
+  arch_type: independent_process
+  lifecycle: archived
+  owner: ZoneCNH
+  registered: 2026-01-01
+  spec_ref: ~
+  spec_version: ~
+  note: "已删除占位模块（2026-06-22）；重命名为 backtestx；07 §4 仅占位可删除先例"
+
+risk_engine:
+  repo: github.com/ZoneCNH/risk_engine
+  local_path: ~
+  domain: execution
+  layer: business
+  arch_type: independent_process
+  lifecycle: archived
+  owner: ZoneCNH
+  registered: 2026-01-01
+  spec_ref: ~
+  spec_version: ~
+  note: "已删除占位模块（2026-06-22）；重命名为 riskx"
+
+order_engine:
+  repo: github.com/ZoneCNH/order_engine
+  local_path: ~
+  domain: execution
+  layer: business
+  arch_type: independent_process
+  lifecycle: archived
+  owner: ZoneCNH
+  registered: 2026-01-01
+  spec_ref: ~
+  spec_version: ~
+  note: "已删除占位模块（2026-06-22）；重命名为 orderx"
+
+portfolio_engine:
+  repo: github.com/ZoneCNH/portfolio_engine
+  local_path: ~
+  domain: execution
+  layer: business
+  arch_type: independent_process
+  lifecycle: archived
+  owner: ZoneCNH
+  registered: 2026-01-01
+  spec_ref: ~
+  spec_version: ~
+  note: "已删除占位模块（2026-06-22）；重命名为 positionx"
