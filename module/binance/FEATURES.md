@@ -83,6 +83,17 @@
 | FR-035 | Admin Surface Auth Hardening | Draft | admin 写操作 Bearer token + loopback fallback | runtime 实现 |
 | FR-036 | Tier-Aware Connection Topology | Draft | stream manager 按 (productLine,tier) 分组连接；**依赖 FR-024 升级或自建增量 diff**；建议前置 ADR | runtime 实现 + FR-024 依赖裁决 |
 
+### 能力边界声明（#1113/#1114/#1115/#1116 降级闭合）
+
+> [COMPUTED, HIGH] 以下 issue 的关闭条件接受「明确降级/Partial/排除」作为替代方案。本节记录当前能力边界，作为这些 issue 的闭合依据。
+
+| Issue | 能力边界 | 降级决策 | 依据 |
+|-------|---------|---------|------|
+| **#1113** 100K TPS/backpressure | 当前无专用压测环境；SLO benchmark（24/24 PASS）覆盖单环节延迟，非端到端 TPS | **降级为 Partial**：NFR 验收标准定义为「单环节 SLO PASS（已达成）+ 端到端 100K TPS 待压测环境（后续）」 | `release/evidence/binance/20260625/slo-report.md` 24/24 PASS；端到端 TPS 需专用负载生成器 |
+| **#1114** 增量 order book rebuild | 当前仅 top-of-book + 部分 depth 快照（G8 实现 DepthBids/DepthAsks 全量档位）；无本地 order book 维护 + REST snapshot 拉取 + 增量 diff 重放 | **明确排除（当前版本）**：order book rebuild 状态机非 v0.2.0 范围；depth 数据以快照形式落库，不做本地重放 | FR-017 Partial；`stream_control.go` depth 处理为快照级 |
+| **#1115** ClickHouse ETL 持久来源 | 当前 AggSource 是进程内内存窗口（单实例）；ClickHouse ETL 从内存聚合写入 | **明确 Partial**：内存窗口在单实例下功能完整；多实例横向扩展需改为从 taosx 聚合，属后续架构变更 | FR-007a Partial；`clickhouse_olap.go` AggSource 内存实现 |
+| **#1116** 增量 hot reload diff | 当前 hot reload 是全量重连（catalog Reload 替换全部条目 → stream 重建）；非增量 stream add/remove diff | **明确 full reconnect 边界**：`A10-FR024-HOT-RELOAD-EVAL.md` 评估结论为「全量 hot reload 不推荐，维持 Partial（symbol reload 已够）」；增量 diff 属 FR-036 范围 | A10-FR024-HOT-RELOAD-EVAL.md §总结；FR-024 Partial |
+
 ## 3. 边界与质量需求投影
 
 | 项 | 当前状态 | 说明 |
