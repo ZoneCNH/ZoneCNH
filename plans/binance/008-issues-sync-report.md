@@ -62,7 +62,7 @@ GitHub issues 建在 **`ZoneCNH/ZoneCNH`**（而非 `ZoneCNH/binance`），理�
 | --- | --- | --- | --- |
 | 关闭错建 issue | ZoneCNH/binance | #105-#144（40 个） | ✅ 全部 CLOSED（reason: not planned） |
 | 重建 issue | ZoneCNH/ZoneCNH | #1132-#1171（40 个） | ✅ 已重建；当前 #1132-#1169 closed，#1170/#1171 release-gated open |
-| 更新 beads external_ref | ZoneCNH workspace | 40 个 issue | ✅ gh-105~144 → gh-1132~1171 |
+| 更新 beads external_ref / description | ZoneCNH workspace | 40 个 issue | ✅ gh-105~144 → gh-1132~1171；description 内 GitHub 引用已归一到 `ZoneCNH/ZoneCNH` |
 | 更新 beads github 配置 | config.yaml | owner/repo | ✅ ZoneCNH/ZoneCNH |
 | 删除 beads 重复 issue | ZoneCNH workspace | 40 个（pull 误建） | ✅ 已清理 |
 
