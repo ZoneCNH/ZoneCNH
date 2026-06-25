@@ -12,6 +12,7 @@
 - `ARCHITECTURE.md` 是向后兼容重定向存根；架构内容已拆分迁移至 `docs/architecture/`（01-overview / 02-domain-layers / 03-boundaries / 04-principles / 05-foundation / 06-dataflow / 07-three-engines / 08-contracts / adr）。
 - `kernel`、`market_data`、`factor_engine`、`x.go` 等模块位于独立 GitHub 仓库；不要把它们的源码树加入本仓库。
 - 模块代码的本地工作目录统一为 `/home/{module}`，其中 `{module}` 与 GitHub 仓库名一致；本仓库只引用这些路径，不复制或收纳模块源码。
+- `module/registry.yaml` 是模块身份与治理状态的统一注册表 SSOT（单一权威源），覆盖全域模块；与 `module/FOUNDATION-DEPS.yaml`（依赖矩阵 SSOT）和 `.foundationx/status/index.json`（成熟度事实 SSOT）三权分立，引用而非重复。治理规则见 `docs/governance/MODULE-GOVERNANCE.md`。
 - 本仓库的 feature worktree 统一放在 `/home/{module}/.worktree/workspaces/<branch-name>`，其中 `{module}` 是仓库目录名，`<branch-name>` 按 Git 分支名原样落盘（仅去掉 `refs/heads/` 前缀，`feat/...` 会自然形成嵌套目录）；纯文档仓库的仓库根 checkout 只在 feature branch 承载时可视为例外，不算新增 worktree。禁止再把新 worktree 放在仓库根外的零散目录。
 
 ## 构建、测试与开发命令
@@ -178,6 +179,9 @@ Spec → Matrix → Tasks → Plan → Prompt → Code
 | `CONSTITUTION.md`                         | 最高治理权威（§0-§19，向后兼容存根；完整条款见 `docs/constitution/`） |
 | `docs/constitution/`                      | 宪法章节视图（按条款拆分，含导航链接；[README](docs/constitution/README.md)） |
 | `module/FOUNDATION-DEPS.yaml`             | Foundation 依赖矩阵（机器可读，规定允许/禁止的依赖边与特殊约束） |
+| `module/registry.yaml`                   | 统一模块注册表（身份+治理状态 SSOT：lifecycle/owner/domain/arch_type） |
+| `docs/governance/MODULE-GOVERNANCE.md`   | 模块治理总纲 — 八域总览、三 SSOT 边界、效力层级 |
+| `docs/governance/module-governance/`     | 模块治理八专题（注册/生命周期/负责人/发布/健康度/准入/退役/业务域依赖）+ ADR 模板 |
 
 ## Goal 驱动交付体系
 
