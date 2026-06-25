@@ -6,6 +6,10 @@
 | 适用范围 | `github.com/ZoneCNH/binance` runtime 代码 + `module/binance/` 治理投影   |
 | 制定依据 | 现行代码实现提炼 + `module/binance/{NAMING,RULES,STANDARD,SPEC}.md` 整合 |
 | 规范定位 | **整合层**：不重复 NAMING.md（命名 SSOT）内容，补全其未覆盖的工程约定    |
+| 当前 Runtime-Anchor | `/home/binance@f18a329` |
+| 当前 Issue-Ledger | [`issues-sync-20260625.md`](./issues-sync-20260625.md) |
+| 当前状态投影 | `24 Done / 10 Partial / 0 Pending` |
+| 当前 issue 状态 | `#1106` Closed；`#1104`, `#1105`, `#1107`-`#1118` Open |
 | 置信度   | HIGH（基于代码逐文件核验）                                               |
 
 ---
@@ -230,7 +234,7 @@ flowchart LR
 | `SPEC.md`            | 功能与边界规格（FR/BR/NFR） | FR 变更必同步                                                        |
 | `TRACEABILITY.md`    | FR/AC/TC/Task 追溯          | 状态变更必同步                                                       |
 | `NAMING.md`          | 命名 SSOT                   | 新增 canonical token 必更新                                          |
-| `FEATURES.md`        | 实现投影                    | **⚠️ 必须与 runtime 代码同步，当前 G0 状态已漂移**（见主报告 §2 #1） |
+| `FEATURES.md`        | 实现投影                    | 必须与 runtime 代码同步；历史 G0 漂移仅保留为语境，当前 `report/binance/` 行动状态以 [`issues-sync-20260625.md`](./issues-sync-20260625.md) 为准（`#1106` Closed；本切片不修改 `module/binance/`） |
 | `RUNTIME-MAPPING.md` | docs↔runtime 路径映射       | 端点/路径变更必同步                                                  |
 | `BOUNDARY-GATES.md`  | 边界漂移防线                | 边界变更必更新 + 重跑 gate                                           |
 | `CHANGELOG.md`       | 版本化变更                  | 每个 release 必更新                                                  |
@@ -238,13 +242,15 @@ flowchart LR
 
 ### 6.3 文档同步红线
 
-> **[FRAME, HIGH]** 任何 PR 若修改了 runtime 代码却未同步 `FEATURES.md` / `TRACEABILITY.md` 状态，**不得合并**。文档-代码漂移（如当前 G0 案例）会直接误导发布决策。
+> **[FRAME, HIGH]** 任何 PR 若修改了 runtime 代码却未同步对应状态投影，**不得合并**。历史文档-代码漂移会直接误导发布决策；当前 `report/binance/` 文档对齐项 `#1106` 已关闭，剩余 runtime/evidence 事项按 [`issues-sync-20260625.md`](./issues-sync-20260625.md) 保持开放。
 
 文档同步检查：本仓 `scripts/check-binance-docs.sh`（L1 文档治理 gate）+ runtime 仓 `scripts/boundary-gates.sh`（L1 runtime 边界 gate），两者互补不重叠（详见 `module/binance/STANDARD.md` §5）。
 
 ---
 
 ## 7. 规范缺口登记
+
+`[COMPUTED, HIGH]` 下表是规范缺口分类，不是当前行动清单；当前 issue、关闭条件和状态统一维护在 [`issues-sync-20260625.md`](./issues-sync-20260625.md)。
 
 基于本次分析，现行规范仍需补全：
 

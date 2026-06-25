@@ -10,6 +10,19 @@
 >
 > [COMPUTED, HIGH] 本次归档共覆盖 28 份 Markdown 报告：20260622 9 份、20260623 9 份、20260624 2 份、20260625 8 份。
 
+## 当前有效基线
+
+| 字段 | 值 |
+| --- | --- |
+| Runtime-Anchor | `/home/binance@f18a329` |
+| Issue-Ledger | [`issues-sync-20260625.md`](issues-sync-20260625.md) |
+| Status-Projection | `24 Done / 10 Partial / 0 Pending` |
+| Issue-Range | GitHub / Beads `#1104`-`#1118`（15 项） |
+| Closed-By-This-Slice | `#1106` 文档对齐 |
+| Still-Open | `#1104`, `#1105`, `#1107`-`#1118` runtime/evidence items |
+
+> [COMPUTED, HIGH] 历史报告继续作为语境保留；任何当前行动清单、关闭条件和 issue 状态以 [`issues-sync-20260625.md`](issues-sync-20260625.md) 为准。
+
 ## 归档批次
 
 | 批次 | 数量 | 说明 |
@@ -18,6 +31,20 @@
 | [`archive/20260623/`](archive/20260623/) | 9 | 数据流、基础设施解耦、治理闭环、issue/PR 审计与未完成项。 |
 | [`archive/20260624/`](archive/20260624/) | 2 | 生产就绪差距分析与 HEAD 复核。 |
 | [`archive/20260625/`](archive/20260625/) | 8 | 20 轮深度分析、生产就绪评估/修复/SRE 清单，以及本轮主分析、架构、规范报告。 |
+
+## 根层活跃报告
+
+> [COMPUTED, HIGH] 根层保留当前生效的分析与裁决报告；历史快照归档至 `archive/`。根层报告是最新口径权威，归档报告被根层覆盖时以根层为准。
+
+| Report | Purpose |
+| --- | --- |
+| [binance-module-analysis.md](binance-module-analysis.md) | 生产级模块分析报告（当前主分析）。 |
+| [binance-data-flow-architecture.md](binance-data-flow-architecture.md) | 数据流架构图与职责边界。 |
+| [binance-module-standards.md](binance-module-standards.md) | binance 模块开发与生产规范。 |
+| [issues-sync-20260625.md](issues-sync-20260625.md) | 2026-06-25 Beads/GitHub issue 同步账本（15 缺口映射）。 |
+| [v0.2.0-release-gate-verdict-20260625.md](v0.2.0-release-gate-verdict-20260625.md) | v0.2.0 发布门禁增量裁决（推翻「零阻塞」断言，记录 readiness-audit gate 红 + FR 状态漂移）。 |
+| [symbol-sync-deep-analysis-20260625.md](symbol-sync-deep-analysis-20260625.md) | **Symbol 同步深度分析**：实测 3,616 symbol 规模、数据量、限流权重、服务器评估、分批规则。 |
+| [exchangeinfo-sync-design-20260625.md](exchangeinfo-sync-design-20260625.md) | **ExchangeInfo 同步技术选型**：落库触发方/DB/刷新策略/分级白名单/优先级模型 6 项决策权衡分析。配套 `module/binance/SPEC-exchangeinfo-sync.md`。 |
 
 ## 20260622
 

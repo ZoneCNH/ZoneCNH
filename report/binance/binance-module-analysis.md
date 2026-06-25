@@ -5,9 +5,13 @@
 | 报告类型 | 生产就绪度（Production-Ready）深度分析 |
 | 分析对象 | `github.com/ZoneCNH/binance`（运行时代码仓 `/home/binance`） |
 | 治理投影 | `/home/ZoneCNH/module/binance/`（spec / TRACEABILITY 投影仓） |
+| 当前 Runtime-Anchor | `/home/binance@f18a329` |
+| 当前 Issue-Ledger | [`issues-sync-20260625.md`](./issues-sync-20260625.md) |
+| 当前状态投影 | `24 Done / 10 Partial / 0 Pending` |
+| 当前 issue 状态 | `#1106` Closed；`#1104`, `#1105`, `#1107`-`#1118` Open |
 | 代码规模 | ~13.5K 行生产代码 + ~11.2K 行测试代码（66 个测试文件） |
 | 分析日期 | 2026-06-25 |
-| 证据基准 | 运行时代码 `git` HEAD + `release/evidence/binance/20260625/` 实证 + mainnet live |
+| 证据基准 | 运行时代码 `/home/binance@f18a329` + `release/evidence/binance/20260625/` 实证 + mainnet live |
 | 置信度 | HIGH（代码逐文件核验 + release evidence 交叉验证） |
 | 证据标签 | 见各节内联标注 |
 
@@ -37,7 +41,9 @@
 - **REST 历史端点 Spot-only**：`routeEndpoint` 只路由现货，UM/CM/Options 的历史回补完全缺失。
 - **Kafka 广播 PARTIAL**：driver 装配修复、producer 建连成功，但 `producer.Send` 受 dev broker 配置阻塞（topic 自动创建 / SASL），未实证 produce→consume roundtrip。
 
-**可信度说明**：模块治理投影文档（`module/binance/FEATURES.md` v3.6.0）仍把 **G0 存储装配** 标为"P0 阻断发布"，但运行时代码与 `storage-assembly-live.txt` 证据表明该缺口**已于 2026-06-25 修复并通过 5/5 infra LIVE-PASS**。这是**文档滞后于代码**的典型漂移，本报告以运行时代码 + release evidence 为准（见 §2 关键发现 #1）。
+`[COMPUTED, HIGH]` 当前行动清单、关闭条件和 issue 状态统一维护在 [`issues-sync-20260625.md`](./issues-sync-20260625.md)。本文保留历史分析语境，不再作为独立 checklist 权威。
+
+**可信度说明**：模块治理投影文档与 runtime 曾存在状态漂移；本报告保留该历史语境。当前 `report/binance/` 有效口径以 `/home/binance@f18a329`、[`issues-sync-20260625.md`](./issues-sync-20260625.md) 和 `24 Done / 10 Partial / 0 Pending` 为准；`module/binance/` 不在本写入切片内。
 
 > **[RULES]** 报告遵循 [`docs/constitution/20-epistemic-standards.md`](../../docs/constitution/20-epistemic-standards.md) 认识论标准。凡事实性声明带 `[COMPUTED]`/`[KNOWN]`/`[INFERRED]` 标签 + 显式置信度；文档与代码冲突时以代码为优先，并显式标注冲突。
 
@@ -53,7 +59,7 @@
 - `cmd/binance-server/main.go:135` 调用 `storageFromEnv`，`:144-150` 注入 `asm.idempotency` / `serverConfig.StorageWriter` / `PostAcceptHooks` / `etlRun` goroutine。
 - `release/evidence/binance/20260625/storage-assembly-live.txt`：5/5 infra LIVE-PASS（taosx healthy / pg SELECT 1 / redis Set-Get / ch SELECT 1 / Kafka roundtrip 9.07s）。
 
-**影响**：FEATURES.md 的 FR-005/006a-d/007/007a/010/011 状态"Partial"应更新为"Done"。读者若信任文档会严重低估模块成熟度。
+**影响**：该漂移解释了为什么需要后续 issue ledger；当前行动入口是 [`issues-sync-20260625.md`](./issues-sync-20260625.md)，其中 `#1106` 文档对齐已关闭，其余 runtime/evidence issues 保持开放。
 
 ### #2 归一化层是产品线无关的单点分派 `[KNOWN]` 置信度 HIGH
 
@@ -251,7 +257,7 @@ flowchart LR
 | --- | --- | --- | --- | --- |
 | P0-1 | **FR-016 历史回补未接线**：`runtime.go:96` 用 `DefaultHistoryRuntimeConfig()` 未注入真实 REST fetcher | 冷启动回补、gap-fill、每日对账均无法执行 | runtime 注入 `restHistoryFetcher`（需 `SpotBaseURL` 配置）+ 接入 `history_lifecycle.go` | `internal/client/runtime.go:96`；`module/binance/FEATURES.md` FR-016 |
 | P0-2 | **Kafka produce→consume roundtrip 未实证** | FR-008 广播通路 driver 正确但 send 受 dev broker 配置阻塞 | 确认 broker `auto.create.topics.enable` 或预建 topic + SASL 配置；解锁后重跑 `TestKafkaBroker_ProduceConsumeRoundtrip` | `release/evidence/binance/20260625/kafka-broker-live.txt`（PARTIAL） |
-| P0-3 | **FEATURES.md / TRACEABILITY 状态漂移** | 治理投影把已闭合的 G0 标为 P0 阻断，误导决策；28 Done/2 Partial 实际更乐观 | 用 `storage-assembly-live.txt` + `release-v020-live.txt` 刷新 FR-005/006a-d/007/007a/010/011 至 Done | `module/binance/FEATURES.md:10,137` vs `storage_env.go:64` |
+| P0-3 | **report/binance 当前口径对齐（#1106）** | 文档行动项已闭合；保留历史漂移语境，避免把旧 module 投影当作当前行动清单 | 本报告族统一指向 `issues-sync-20260625.md`、`/home/binance@f18a329` 与 `24 Done / 10 Partial / 0 Pending`；`module/binance/` 不在本写入切片 | [`issues-sync-20260625.md`](./issues-sync-20260625.md) |
 
 ### 建议优化（提升质量）— P1
 
@@ -287,14 +293,13 @@ flowchart LR
 
 **总判断** `[COMPUTED]` 置信度 HIGH：binance 模块**架构成熟、实现完整、测试扎实、可观测性良好**，已发布 v0.2.0 生产就绪版本。距"严格生产级"的差距集中在**接线类与验证类**工作（FR-016 注入、Kafka e2e、文档同步），不涉及架构返工。
 
-**立即行动清单（按优先级）**：
+**当前行动入口** `[COMPUTED, HIGH]`：所有当前行动项、关闭条件与 issue 状态统一维护在 [`issues-sync-20260625.md`](./issues-sync-20260625.md)。本文不再维护独立 checklist，以避免历史报告与 issue ledger 分叉。
 
-1. **[P0]** 刷新 `module/binance/FEATURES.md` G0 状态：9 个存储 FR Partial→Done（用 storage-assembly-live 证据）
-2. **[P0]** FR-016：`runtime.go` 注入 `restHistoryFetcher` + `SpotBaseURL` 配置
-3. **[P0]** Kafka：解锁 dev broker（topic / SASL），重跑 roundtrip 测试
-4. **[P1]** 扩展 `routeEndpoint` 覆盖 UM/CM REST 历史
-5. **[P1]** Options `parseOptionTicker` mainnet 样本校验
-6. **[P1]** 限流升级 token bucket + 分布式 trace 引入
+| 状态 | 范围 | Issue |
+| --- | --- | --- |
+| Closed | `report/binance/` 文档对齐 | `#1106` |
+| Open | P0 runtime/evidence | `#1104`, `#1105` |
+| Open | P1/P2 runtime/evidence | `#1107`-`#1118` |
 
 ---
 
