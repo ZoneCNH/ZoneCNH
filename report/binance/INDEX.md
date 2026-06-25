@@ -45,6 +45,7 @@
 | [v0.2.0-release-gate-verdict-20260625.md](v0.2.0-release-gate-verdict-20260625.md) | v0.2.0 发布门禁增量裁决（推翻「零阻塞」断言，记录 readiness-audit gate 红 + FR 状态漂移）。 |
 | [symbol-sync-deep-analysis-20260625.md](symbol-sync-deep-analysis-20260625.md) | **Symbol 同步深度分析**：实测 3,616 symbol 规模、数据量、限流权重、服务器评估、分批规则。 |
 | [exchangeinfo-sync-design-20260625.md](exchangeinfo-sync-design-20260625.md) | **ExchangeInfo 同步技术选型**：落库触发方/DB/刷新策略/分级白名单/优先级模型 6 项决策权衡分析。配套 `module/binance/SPEC-exchangeinfo-sync.md`。 |
+| [HANDOFF-FOR-CODEX-20260625.md](HANDOFF-FOR-CODEX-20260625.md) | **并发 agent 交接说明**：Draft FR（FR-031~036 禁止执行）、已完成工作、可执行 open issues、依赖交叉、恢复前必做检查。 |
 
 ## 20260622
 
