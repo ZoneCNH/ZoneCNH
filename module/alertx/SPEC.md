@@ -1,6 +1,6 @@
 # alertx 规格
 
-- Status: Draft
+- Status: Approved
 - Spec-Version: v1.0.0
 - Last-Updated: 2026-06-26
 - Owner: ZoneCNH
