@@ -120,6 +120,17 @@ jobs:
       - name: 校验 spec 结构完整性
         run: bash .github/ci/spec-lint.sh
 
+  # ── 6c. 模块注册表校验 ─────────────────────────────────────
+  registry-lint:
+    name: Registry Lint
+    runs-on: [self-hosted, Linux, X64, homepage]
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 校验 module/registry.yaml 完整性
+        run: bash .github/ci/registry-lint.sh
+
   # ── 6b. Spec 漂移防护 ──────────────────────────────────────
   spec-drift-guard:
     name: Spec Drift Guard

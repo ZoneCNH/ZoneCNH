@@ -3,7 +3,7 @@
 - Status: Docs Baseline Approved
 - Spec-Version: v1.0.0
 - Last-Updated: 2026-06-17
-- Layer: L3 行情摄取与分发
+- Layer: 数据域 · 行情摄取与分发
 - Version: v1.0.0-spec
 - Related: `module/binance`, `module/domain_market`, `module/contracts`
 

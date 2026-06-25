@@ -3,7 +3,7 @@
 - Status: Spec Approved / Tasks Pending
 - Spec-Version: v1.0.0
 - Last-Updated: 2026-06-14
-- Layer: 分析域 · 回测引擎
+- Layer: 决策域 · 回测引擎
 - Version: v0.1.0-draft
 - Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `strategyx`, `riskx`
 
