@@ -124,7 +124,7 @@ L2.5: domainx / decimalx / domain_market / domain_macro / domain_exchange (5/5 �
 
 **交易所 SDK / C/S Module：**
 
-- [binance](https://github.com/ZoneCNH/binance) — 币安 Binance Market Data C/S Module (Spot/USDⓈ-M/COIN-M/Options)；spec v3.6.2 Plan008 overlay；2026-06-26 PR #145 本地、远端 CI 与 partial-live 修复证据已归档（remote CI anchor `a991c46c7959ad533196e9392c90a04734de2eda`；local follow-up HEAD `2107a46009ec1a9c3ece4b0e7b4ff27705a1fe57`）；Plan008 T008.001-T008.038 可按本地+PR CI 证据闭合；foundation PRs taosx#18 / natsx#19 / kafkax#20 / clickhousex#11；release_closeable=NO（已捕获 JetStream ack/ManualAck/NAK、dev storage assembly、Kafka broker roundtrip 与部分 Binance WS；已补 options expiry aggregate normalization/live selector 与 `BINANCE_OSSX_LIVE` archive/list/delete opt-in gate；仍缺重新运行归档的 options WS、ossx live I/O、release tag、chaos+SLO evidence） `公开`
+- [binance](https://github.com/ZoneCNH/binance) — 币安 Binance Market Data C/S Module (Spot/USDⓈ-M/COIN-M/Options)；spec v3.6.2 Plan008 overlay；2026-06-26 PR #145 本地、远端 CI 与 partial-live 修复证据已归档（remote CI anchor `a991c46c7959ad533196e9392c90a04734de2eda`；local follow-up HEAD `e32a126391ab03dcddcbc31945fcf2dc757e8025`，其中 `efb63f8` 补齐 optionTicker exact-key 解析）；Plan008 T008.001-T008.038 可按本地+PR CI 证据闭合；foundation PRs taosx#18 / natsx#19 / kafkax#20 / clickhousex#11；release_closeable=NO（已捕获 JetStream ack/ManualAck/NAK、dev storage assembly、Kafka broker roundtrip、Binance Spot/UM/CM/Options WS 与 OSSX archive/list/delete live I/O；仍缺 release tag artifact） `公开`
 - [okx](https://github.com/ZoneCNH/okx) — OKX `公开`
 - [bybit](https://github.com/ZoneCNH/bybit) — Bybit `公开`
 - [bitget](https://github.com/ZoneCNH/bitget) — Bitget `公开`

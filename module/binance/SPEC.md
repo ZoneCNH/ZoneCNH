@@ -4,11 +4,11 @@
 
 - Status: Approved
 - Spec-Version: v3.6.2
-- Last-Updated: 2026-06-26 (v3.6.2 Plan008 overlay: runtime HEAD `2107a46009ec1a9c3ece4b0e7b4ff27705a1fe57` latest local follow-up + PR #145 remote CI anchor `a991c46c7959ad533196e9392c90a04734de2eda`; T008.001-T008.038 locally closeable; T008.039/T008.040 remain release-gated)
+- Last-Updated: 2026-06-26 (v3.6.2 Plan008 overlay: runtime HEAD `e32a126391ab03dcddcbc31945fcf2dc757e8025` latest local follow-up + PR #145 remote CI anchor `a991c46c7959ad533196e9392c90a04734de2eda`; T008.001-T008.038 locally closeable; T008.039/T008.040 remain release-gated)
 - Owner: ZoneCNH
 - Layer: 数据域 · 行情
 - Runtime-Version: v0.2.1
-- Runtime-HEAD: `2107a46009ec1a9c3ece4b0e7b4ff27705a1fe57` (Plan008 latest local follow-up; PR #145 remote CI anchor `a991c46c7959ad533196e9392c90a04734de2eda`; release_closeable=NO pending rerun options WS, ossx live I/O, release tag, chaos/SLO gates)
+- Runtime-HEAD: `e32a126391ab03dcddcbc31945fcf2dc757e8025` (Plan008 latest local follow-up; PR #145 remote CI anchor `a991c46c7959ad533196e9392c90a04734de2eda`; release_closeable=NO pending release tag artifact / release publication evidence)
 - Repository: [github.com/ZoneCNH/binance](https://github.com/ZoneCNH/binance)
 - Related: [CONSTITUTION.md](../../CONSTITUTION.md), [ARCHITECTURE.md](../../ARCHITECTURE.md), `module/domain_market`, `module/natsx`, `module/redisx`, `module/taosx`, `module/kafkax`, `module/ossx`, `module/postgresx`, `module/clickhousex`
 
