@@ -11,11 +11,11 @@
 | Sync Result | Beads 15 / GitHub 15（已实现口径）；FR-031~036 仅在账本登记 |
 | Team Evidence | Pauli 完成 Beads/GitHub 查重；Jason 完成 `/home/binance@f18a329` 运行时代码与证据复核 |
 | Team Limitation | OMX team worktree 因当前仓库已有未提交文档迁移变更被阻断，改用 native agent team 执行 |
-| Status Policy | `#1106` 关闭条件已满足（PR #1119 完成文档对齐），但 GitHub 状态仍为 Open，待人工确认关闭；`#1104`、`#1105`、`#1107`-`#1118` 保持 Open，直到 runtime 或证据闭合 |
+| Status Policy | `#1106` 关闭条件已验证满足（anchor/投影/ledger/历史标注四项逐条核对），PR #1121 关闭；`#1104`、`#1105`、`#1107`-`#1118` 保持 Open，直到 runtime 或证据闭合 |
 
 ## 当前结论
 
-`report/binance/` 的当前严格口径是：`binance` runtime 已闭合 storage assembly 基础设施路径，但仍有 15 个可追踪事项。其中 3 个为 P0，7 个为 P1，5 个为 P2（已实现 FR 缺口）。此外，PR #1119 引入了 FR-031~036 共 6 个 exchangeInfo 同步规格草案（Draft，未计入实现投影），定义于 `module/binance/SPEC-exchangeinfo-sync.md`，经五轮审查修正，待 pipeline-arbiter 翻转 Approved 后进入 task-split → code 管线。
+`report/binance/` 的当前严格口径是：`binance` runtime 已闭合 storage assembly 基础设施路径，剩余 14 个可追踪事项（#1106 文档对齐已验证关闭）。其中 2 个为 P0，7 个为 P1，5 个为 P2（已实现 FR 缺口）。此外，PR #1119 引入了 FR-031~036 共 6 个 exchangeInfo 同步规格草案（Draft，未计入实现投影），定义于 `module/binance/SPEC-exchangeinfo-sync.md`，经五轮审查修正，待 pipeline-arbiter 翻转 Approved 后进入 task-split → code 管线。
 
 当前模块状态投影统一为 `24 Done / 10 Partial / 0 Pending`（FR-001~030 实现）+ `6 Draft`（FR-031~036 规格草案）。Partial FR 为 `FR-007`、`FR-007a`、`FR-011`、`FR-016`、`FR-017`、`FR-023`、`FR-024`、`FR-026`、`FR-027`、`FR-028`。
 
@@ -25,7 +25,7 @@
 | --- | --- | --- | --- | --- | --- | --- |
 | RB-20260625-P0-01 | P0 | ZoneCNH-4ba | #1104 | 补齐 FR-016 历史回补运行时 REST fetcher 注入 | Open | runtime 注入真实 REST fetcher，并用 live/smoke 证据证明 history backfill 不再只依赖 mock |
 | RB-20260625-P0-02 | P0 | ZoneCNH-rfx | #1105 | 厘清 Kafka broker roundtrip 证据冲突 | Open | 以同一 commit、同一 broker 配置重新运行 producer/consumer roundtrip，并废弃或标注旧冲突证据 |
-| RB-20260625-P0-03 | P0 | ZoneCNH-hw2 | #1106 | 对齐 report/binance 状态文档 | **Open（状态修正）** | 关闭条件已满足（PR #1119 完成文档对齐），但 GitHub 状态仍 Open；待人工确认关闭。账本此前误记为 Closed，本轮修正。 |
+| RB-20260625-P0-03 | P0 | ZoneCNH-hw2 | #1106 | 对齐 report/binance 状态文档 | **Closed（条件已验证满足）** | 关闭条件逐条验证：(1) 9 个 active 文档统一 anchor `f18a329`；(2) 统一 `24/10/0` 投影；(3) 统一指向 issue ledger；(4) 历史口径标注覆盖（verdict 报告「历史语境」+ TRACEABILITY「仅保留为历史记录」）。PR #1121 关闭。 |
 | RB-20260625-P1-01 | P1 | ZoneCNH-9p8 | #1107 | 明确或实现 UM/CM/Options 历史 REST endpoint 支持 | Open | spot/um/cm/options 历史 endpoint 行为被实现或明确降级，并有测试覆盖 |
 | RB-20260625-P1-02 | P1 | ZoneCNH-5kn | #1108 | 用 mainnet 样本校验 Options ticker 字段归一化 | Open | Options ticker mainnet 样本覆盖 `normalize.go` 中 Options 字段映射 |
 | RB-20260625-P1-03 | P1 | ZoneCNH-0y2 | #1109 | 补齐速率限制平滑与 token bucket 机制 | Open | 从窗口计数升级为可验证的平滑/token bucket 限流，并覆盖 websocket/reconnect 场景 |
