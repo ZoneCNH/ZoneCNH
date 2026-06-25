@@ -10,14 +10,14 @@
 |------|-------|----------|--------|------------|--------|
 | 006 | binance 模块生产就绪修复（49 Task，8 Phase；Phase 4-ALT 作废；新增 Task 7.0 infra 凭据+configx 接入） | P0 | XL(4.8~9pm) | Task 0.1 DONE(v2.0.0) | ✅ DONE（2026-06-24 六批次 PR#68/69/70/71/72/73 + 四文档 PR#1020/1021/1022/1023 合并）：**49/49 Task 全闭环**。beads 0 open · GitHub 0 open。验证：build(100x)/vet(100x)/test-race/boundary-gates(13)/govulncheck(0) 全绿。详见 [006-execution-alignment.md](006-execution-alignment.md) |
 | 007 | binance 生产就绪收尾 + FoundationX 解耦隐患修复（双轨：Track A 功能 G1~G6/R1~R8 + Track B 跨仓库 §7.1~§7.7；18 Task，8 Phase） | P0/P1/P2 | M(1.1~2.05pm) | Plan006 DONE | ✅ **DONE（2026-06-25）** — 18/18 全部完成。A1/A2/A3/A4/A5/A6/A7/A8/A9/A10 + B1/B2/B3/B4/B5/B6/B7/B8。22/22 GitHub issues 关闭。证据: testnet 3/3 PASS + NATS JetStream PASS + 24 benchmarks PASS。详见 [007-binance-readiness-arch-fix.md](007-binance-readiness-arch-fix.md) · [007-execution-alignment.md](007-execution-alignment.md) |
-| 008 | binance 生产修复总计划（40 Task，5 Phase；Beads/GitHub #1132-#1171） | P0/P1/P2 | XL | Plan007 DONE | 🟡 LOCAL+CI DONE / RELEASE-GATED（2026-06-26） — T008.001-T008.038 本地+PR CI 闭合；runtime PR #145 @ `a991c46c7959ad533196e9392c90a04734de2eda`；local follow-up @ `e32a126391ab03dcddcbc31945fcf2dc757e8025` 已补 options aggregate、bounded Options live selector、`efb63f8` exact-key parser 与 OSSX live gate；foundation PRs taosx#18/natsx#19/kafkax#20/clickhousex#11；10 轮一致性 + 7 轮忠实性验证 PASS；partial-live 已捕获 JetStream、storage assembly、Kafka roundtrip、Binance Spot/UM/CM/Options WS 与 OSSX archive/list/delete live I/O；T008.039/T008.040 因 release tag artifact 尚未归档保持 open。详见 [008-binance-production-fix-master-plan.md](008-binance-production-fix-master-plan.md) · [008-issues-sync-report.md](008-issues-sync-report.md) |
+| 008 | binance 生产修复总计划（40 Task，5 Phase；Beads/GitHub #1132-#1171） | P0/P1/P2 | XL | Plan007 DONE | ✅ RELEASE CLOSED（2026-06-26） — T008.001-T008.040 本地+PR CI+release 闭合；runtime PR #145 @ `a991c46c7959ad533196e9392c90a04734de2eda`；implementation follow-up @ `e32a126391ab03dcddcbc31945fcf2dc757e8025` 已补 options aggregate、bounded Options live selector、`efb63f8` exact-key parser 与 OSSX live gate；release evidence @ `c16a681b88f901e399efb7eb42b18ab29ffe6beb`，GitHub Release `v0.2.0` / workflow `28126779885`；foundation PRs taosx#18/natsx#19/kafkax#20/clickhousex#11；10 轮一致性 + 7 轮忠实性验证 PASS；partial-live 已捕获 JetStream、storage assembly、Kafka roundtrip、Binance Spot/UM/CM/Options WS、OSSX archive/list/delete live I/O 与 release artifacts。详见 [008-binance-production-fix-master-plan.md](008-binance-production-fix-master-plan.md) · [008-issues-sync-report.md](008-issues-sync-report.md) |
 
 Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJECTED (with one-line rationale)
 
 ## 执行对齐记录
 
 - 2026-06-24: [Plan006 执行对齐记录](006-execution-alignment.md) 同步本地验证、Beads、GitHub issue 状态；不改变 Plan006 生产级验收口径。
-- 2026-06-26: [Plan008 同步报告](008-issues-sync-report.md) 登记 40 Task 三方映射、runtime PR #145、foundation PRs、partial-live gate 和 10 轮核验；本地+PR CI 可闭合 T008.001-T008.038，不改变 release_closeable=NO 口径。
+- 2026-06-26: [Plan008 同步报告](008-issues-sync-report.md) 登记 40 Task 三方映射、runtime PR #145、foundation PRs、partial-live gate、release evidence 和 10 轮核验；本地+PR CI+release evidence 可闭合 T008.001-T008.040，Plan008 issue ledger 进入 release_closeable=YES 口径。
 
 ## 依赖说明
 

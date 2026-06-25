@@ -8,7 +8,8 @@
 > - **GitHub 仓库：`ZoneCNH/ZoneCNH`**（issues #1132-#1171）
 > - beads workspace：`ZoneCNH`（prefix=ZoneCNH，label `plan008`）
 > - Plan Runtime-Anchor：`/home/binance@3f20be0`（Plan 输入基线）
-> - Execution Runtime-Anchor：`/home/binance@e32a126391ab03dcddcbc31945fcf2dc757e8025`（Plan008 最新本地 follow-up）
+> - Execution Runtime-Anchor：`/home/binance@e32a126391ab03dcddcbc31945fcf2dc757e8025`（Plan008 implementation follow-up）
+> - Release-Evidence Anchor：`/home/binance@c16a681b88f901e399efb7eb42b18ab29ffe6beb`（GitHub Release `v0.2.0` / workflow `28126779885`）
 > - Remote CI Anchor：`ZoneCNH/binance#145@a991c46c7959ad533196e9392c90a04734de2eda`（Plan008 PR CI 修复证据）
 
 ---
@@ -20,28 +21,29 @@
 | 维度 | 数量 | 位置 |
 | --- | --- | --- |
 | Plan Task（SSOT） | 40 | `008-tasks.json` |
-| GitHub issues | 40 | **`ZoneCNH/ZoneCNH`** #1132-#1171（当前权威状态：38 closed / 2 open；#1170/#1171 release-gated open，label `plan008`） |
-| beads issues | 40 | ZoneCNH workspace（当前状态：38 closed / 2 open；label `plan008`，external-ref `gh-N`） |
+| GitHub issues | 40 | **`ZoneCNH/ZoneCNH`** #1132-#1171（当前权威状态：40 closed / 0 open；#1170/#1171 按 release closeout evidence 闭合，label `plan008`） |
+| beads issues | 40 | ZoneCNH workspace（当前状态：40 closed / 0 open；label `plan008`，external-ref `gh-N`） |
 | 依赖链接（beads） | 25 | `bd link --type blocks` |
 | 覆盖缺口 G1-G9 | 9/9 | 全部有 Task |
 | 覆盖标准 S1-S35 | 35/35 | 全部有 Task |
 | 覆盖里程碑 M1-M4 | 4/4 | 全部有 Task |
 
-**映射 100% 一致，0 遗漏；release-gated 状态需保守处理。**
+**映射 100% 一致，0 遗漏；release evidence 已归档，Plan008 issue ledger 可全量关闭。**
 
 ### 1.1 Plan008 执行闭环（2026-06-26）
 
-`[COMPUTED, HIGH]` GitHub 与 Beads 实时复核显示 #1132-#1171 / T008.001-T008.040 均为 38 closed、2 open。T008.001-T008.038 已完成闭合；T008.039/T008.040 保持 release-gated open，因为 `release/evidence/binance/20260625-task2/external-gates.log` 仍记录 `release_tag=NOT_CAPTURED` 与 `release_closeable=NO`。最新本地 follow-up 已补 options expiry aggregate normalization、bounded combined options live selector、optionTicker exact-key parsing 与 `BINANCE_OSSX_LIVE` archive/list/delete opt-in gate；`live-gates-20260626.txt` 已记录 Options WS 和 OSSX live I/O captured。
+`[COMPUTED, HIGH]` GitHub 与 Beads 实时复核显示 #1132-#1171 / T008.001-T008.040 均为 40 closed、0 open。T008.001-T008.040 已完成闭合；T008.039/T008.040 的 release gate 由 code release-evidence commit `c16a681b88f901e399efb7eb42b18ab29ffe6beb`、GitHub Release `v0.2.0` 与 release workflow `28126779885` 补齐。最新 implementation follow-up 已补 options expiry aggregate normalization、bounded combined options live selector、optionTicker exact-key parsing 与 `BINANCE_OSSX_LIVE` archive/list/delete opt-in gate；`live-gates-20260626.txt` 已记录 Options WS 和 OSSX live I/O captured。
 
 | Evidence | Result |
 | --- | --- |
 | Binance runtime PR | [ZoneCNH/binance#145](https://github.com/ZoneCNH/binance/pull/145) @ `a991c46c7959ad533196e9392c90a04734de2eda`（remote CI anchor） |
-| Binance local follow-up | `/home/binance/.worktree/workspaces/fix/plan008-production-fixes` @ `e32a126391ab03dcddcbc31945fcf2dc757e8025`（options aggregate normalization + bounded Options live selector + `efb63f8` exact-key parser + OSSX live gate；本地 changed-package 10 轮 PASS） |
+| Binance implementation follow-up | `/home/binance/.worktree/workspaces/fix/plan008-production-fixes` @ `e32a126391ab03dcddcbc31945fcf2dc757e8025`（options aggregate normalization + bounded Options live selector + `efb63f8` exact-key parser + OSSX live gate；本地 changed-package 10 轮 PASS） |
+| Binance release evidence | `/home/binance/.worktree/workspaces/fix/plan008-production-fixes` @ `c16a681b88f901e399efb7eb42b18ab29ffe6beb`；GitHub Release [`v0.2.0`](https://github.com/ZoneCNH/binance/releases/tag/v0.2.0)；Release workflow [`28126779885`](https://github.com/ZoneCNH/binance/actions/runs/28126779885) completed/success；assets: `binance-binaries-v0.2.0-linux-amd64.tar.gz` sha256 `bf12f8777af02ab37283a41fc7310185040012b4f5bde2c3749cad9ca0a6a09f`, `binance-evidence-v0.2.0.tar.gz` sha256 `7b01cc3318efaedffb9f1a21df893ee27cffc178d75d4669875a3048ed1a507f` |
 | Foundation PRs | [taosx#18](https://github.com/ZoneCNH/taosx/pull/18) @ `6dd70cb`; [natsx#19](https://github.com/ZoneCNH/natsx/pull/19) @ `6bbfda0`; [kafkax#20](https://github.com/ZoneCNH/kafkax/pull/20) @ `7b2d9ce`; [clickhousex#11](https://github.com/ZoneCNH/clickhousex/pull/11) @ `457d9ff` |
 | Local runtime gates | `gofmt -l cmd internal pkg test tools`; `git diff --check`; `./scripts/readiness-audit.sh`; `go test ./...`; `go test -race ./...`; `go vet ./...`; `golangci-lint run`; `govulncheck ./...`; `runtime-release-evidence.sh` 全 PASS |
 | Remote CI | 截至 2026-06-26 01:14 +0800，GitHub Actions for PR #145: Boundary Gates, Build & Vet, Test & Race & Cover, gitleaks, golangci-lint, govulncheck 全 PASS |
 | T008.011 local fix | [#1142 evidence comment](https://github.com/ZoneCNH/ZoneCNH/issues/1142#issuecomment-4802133265)；`go test ./internal/client -run 'TestHistoryRuntimePersistsAndRestoresState\|TestPostgresHistoryStateStore\|TestResolveStandaloneConfigModeAndOverrides' -count=1`；`go test ./cmd/binance-client ./internal/client -count=1`；migration 006 实际 schema 为 `history_runtime_state(snapshot JSONB)` |
-| External gates | `release_closeable=NO`; live gate evidence in `live-gates-20260626.txt`: JetStream ack/ManualAck/NAK captured, taosx/postgresx/redisx/clickhousex assembly captured, Kafka broker roundtrip captured, Binance Spot/bookTicker/UM/CM/Options WS captured, OSSX archive live I/O captured; release tag evidence remains uncaptured |
+| External gates | `release_closeable=YES`; `release_tag=CAPTURED_GITHUB_RELEASE_V0_2_0_WORKFLOW_28126779885`; live gate evidence in `live-gates-20260626.txt`: JetStream ack/ManualAck/NAK captured, taosx/postgresx/redisx/clickhousex assembly captured, Kafka broker roundtrip captured, Binance Spot/bookTicker/UM/CM/Options WS captured, OSSX archive live I/O captured; release artifacts captured with sha256 evidence |
 
 ---
 
@@ -63,7 +65,7 @@ GitHub issues 建在 **`ZoneCNH/ZoneCNH`**（而非 `ZoneCNH/binance`），理�
 | 操作 | 仓库 | 范围 | 状态 |
 | --- | --- | --- | --- |
 | 关闭错建 issue | ZoneCNH/binance | #105-#144（40 个） | ✅ 全部 CLOSED（reason: not planned） |
-| 重建 issue | ZoneCNH/ZoneCNH | #1132-#1171（40 个） | ✅ 已重建；当前 #1132-#1169 closed，#1170/#1171 release-gated open |
+| 重建 issue | ZoneCNH/ZoneCNH | #1132-#1171（40 个） | ✅ 已重建；当前 #1132-#1171 closed |
 | 更新 beads external_ref / description | ZoneCNH workspace | 40 个 issue | ✅ gh-105~144 → gh-1132~1171；description 内 GitHub 引用已归一到 `ZoneCNH/ZoneCNH` |
 | 更新 beads github 配置 | config.yaml | owner/repo | ✅ ZoneCNH/ZoneCNH |
 | 删除 beads 重复 issue | ZoneCNH workspace | 40 个（pull 误建） | ✅ 已清理 |
@@ -193,12 +195,12 @@ T039 ──blocks──▶ T040(TRACEABILITY 同步)
 - **40/40 Task** 三方映射完整
 - **0 遗漏**（9 缺口 + 35 标准 + 4 里程碑 = 48 项 100% 覆盖）
 - **映射 0 不一致**（GH 实时编号、Beads external_ref、SSOT、Plan 文档四方吻合）
-- **Release-gated 状态仍需保守处理**：#1132-#1169 当前已关闭；#1170/#1171 保持 open。后续完成判定以 GitHub issue 状态、代码验证和 Plan DoD 为准。
+- **Release closeout 已闭合**：#1132-#1171 当前已关闭；后续完成判定以 GitHub issue 状态、代码验证和 Plan DoD 为准。
 - binance 仓旧 issue 40 个全部 CLOSED，无活跃重复
 
 ### 5.4 执行同步更新（2026-06-26）
 
-`[COMPUTED, HIGH]` 截至 2026-06-26 实时复核，GitHub #1132-#1171 与 Beads Plan008 项均为 38 closed / 2 open。#1170/#1171 已补 partial-live blocker 评论并保持 open。
+`[COMPUTED, HIGH]` 截至 2026-06-26 实时复核，GitHub #1132-#1171 与 Beads Plan008 项均为 40 closed / 0 open。#1170/#1171 已补 release closeout evidence 并按 completed 关闭。
 
 `[COMPUTED, HIGH]` 本轮新增 T008.011/#1142 的代码证据评论；以下为本报告可直接追溯的关闭/证据补充记录。
 
@@ -210,17 +212,19 @@ T039 ──blocks──▶ T040(TRACEABILITY 同步)
 | T008.025 | #1156 | `ZoneCNH-x6an` | `go test -count=1 ./internal/server/storage/olap -run 'TestEnsureSchema_ExecsDDL'` 验证 ClickHouse TTL DDL |
 | T008.029 | #1160 | `ZoneCNH-jfma` | `go test -count=1 ./internal/server -run 'TestDefaultValidator(RejectsInvalidSchemaVersion\|AcceptsSupportedSemanticSchemaVersion)'` |
 | T008.032 | #1163 | `ZoneCNH-z9sa` | `go test -count=1 ./internal/server/controlplane -run 'TestLifecycle_(DrainWaitsInFlightAndAudits\|DrainTimeoutRecordsError\|AuditRecentExposesAllActions)'` |
+| T008.039 | #1170 | `ZoneCNH-036r` | code release-evidence commit `c16a681b88f901e399efb7eb42b18ab29ffe6beb`；GitHub Release [`v0.2.0`](https://github.com/ZoneCNH/binance/releases/tag/v0.2.0)；release workflow [`28126779885`](https://github.com/ZoneCNH/binance/actions/runs/28126779885) completed/success；`release_closeable=YES` |
+| T008.040 | #1171 | `ZoneCNH-771j` | code release-evidence commit `c16a681b88f901e399efb7eb42b18ab29ffe6beb`；GitHub Release [`v0.2.0`](https://github.com/ZoneCNH/binance/releases/tag/v0.2.0)；release workflow [`28126779885`](https://github.com/ZoneCNH/binance/actions/runs/28126779885) completed/success；`release_tag=CAPTURED_GITHUB_RELEASE_V0_2_0_WORKFLOW_28126779885` |
 
 | 系统 | total | closed | open | 判定 |
 | ---- | ----- | ------ | ---- | ---- |
-| GitHub | 40 | 38 | 2 | 权威执行状态 |
-| Beads | 40 | 38 | 2 | 本地追踪状态已同步到 release-gated open |
+| GitHub | 40 | 40 | 0 | 权威执行状态 |
+| Beads | 40 | 40 | 0 | 本地追踪状态已同步到 completed |
 
-`[INFERRED, HIGH]` 剩余 2 个 GitHub issue 不应关闭，原因是 strict DoD 的 release/live gate 仍缺外部证据。
+`[COMPUTED, HIGH]` 剩余 release gate 已由 release tag artifact / release publication evidence 补齐，#1170/#1171 与 Beads `ZoneCNH-036r` / `ZoneCNH-771j` 已按 completed 关闭。
 
-- Release-gated open：T008.039、T008.040；GitHub partial-live comments: [#1170](https://github.com/ZoneCNH/ZoneCNH/issues/1170#issuecomment-4802238741), [#1171](https://github.com/ZoneCNH/ZoneCNH/issues/1171#issuecomment-4802238748)。
+- Release closeout：T008.039、T008.040；GitHub release evidence comments: [#1170](https://github.com/ZoneCNH/ZoneCNH/issues/1170), [#1171](https://github.com/ZoneCNH/ZoneCNH/issues/1171)。
 - 已捕获进展：本地 JetStream PubAck/duplicate/ManualAck/NAK；dev storage assembly（taosx/postgresx/redisx/clickhousex）；Kafka broker produce/consume；Binance Spot/bookTicker/UM/CM/Options WS；`BINANCE_OSSX_LIVE` archive/list/delete。
-- 关键缺口：release tag artifact / release publication evidence 尚未归档；T008.039/T008.040 因此保持 release-gated open。
+- 关键 release evidence：GitHub Release `v0.2.0`；release workflow `28126779885` completed/success；`binance-binaries-v0.2.0-linux-amd64.tar.gz` sha256 `bf12f8777af02ab37283a41fc7310185040012b4f5bde2c3749cad9ca0a6a09f`；`binance-evidence-v0.2.0.tar.gz` sha256 `7b01cc3318efaedffb9f1a21df893ee27cffc178d75d4669875a3048ed1a507f`。
 
 ---
 
