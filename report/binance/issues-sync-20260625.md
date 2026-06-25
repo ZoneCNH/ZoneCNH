@@ -2,20 +2,20 @@
 
 | 字段 | 值 |
 | --- | --- |
-| Last-Updated | 2026-06-25（第三轮：report+module 10 轮交叉检查，新增 #1123） |
+| Last-Updated | 2026-06-25（第四轮：runtime PR #103 修复 #1104/#1107/#1109/#1123） |
 | Scope | `report/binance/` + `module/binance/` 当前有效报告与历史语境对齐 |
-| Runtime Anchor | `/home/binance@f18a329` |
+| Runtime Anchor | `/home/binance@f15a172`（PR #103 合并后） |
 | Status Projection | `24 Done / 10 Partial / 0 Pending`（FR-001~030 实现）+ `6 Draft`（FR-031~036 规格草案，不计入投影） |
 | Issue Range | GitHub / Beads `#1104`-`#1118`（15 个已实现 FR 缺口）+ `#1123`（1 个 10 轮交叉检查发现的新缺口） |
 | Draft Range | FR-031~036（PR #1119 引入，6 个规格草案，暂未创建独立 GitHub issue） |
 | Sync Result | Beads 15 / GitHub 15（已实现口径）；FR-031~036 仅在账本登记 |
 | Team Evidence | Pauli 完成 Beads/GitHub 查重；Jason 完成 `/home/binance@f18a329` 运行时代码与证据复核 |
 | Team Limitation | OMX team worktree 因当前仓库已有未提交文档迁移变更被阻断，改用 native agent team 执行 |
-| Status Policy | `#1106` 关闭条件已验证满足，PR #1121 关闭；`#1104`、`#1105`、`#1107`-`#1118`、`#1123` 保持 Open，直到 runtime 或证据闭合 |
+| Status Policy | 已关闭：#1106（文档对齐 PR #1121）、#1104/#1107/#1109/#1123（runtime PR #103 代码修复）。保持 Open：#1105、#1108、#1110~#1118（需外部资源或进一步代码工作） |
 
 ## 当前结论
 
-`report/binance/` + `module/binance/` 的当前严格口径是：`binance` runtime 已闭合 storage assembly 基础设施路径，剩余 15 个可追踪事项（#1106 文档对齐已验证关闭）。其中 2 个为 P0，7 个为 P1，6 个为 P2（已实现 FR 缺口，含第三轮 10 轮交叉检查发现的 #1123 resource_governance 不可配置）。此外，PR #1119 引入了 FR-031~036 共 6 个 exchangeInfo 同步规格草案（Draft，未计入实现投影），定义于 `module/binance/SPEC-exchangeinfo-sync.md`，经五轮审查修正，待 pipeline-arbiter 翻转 Approved 后进入 task-split → code 管线。
+`report/binance/` + `module/binance/` 的当前严格口径是：`binance` runtime 已闭合 storage assembly + 4 个代码修复（#1104 fetcher 注入、#1107 多产品线路由、#1109 token bucket、#1123 resource 配置化，runtime PR #103 `f15a172`），剩余 11 个可追踪事项（含 #1106 已关闭）。其中 1 个为 P0（#1105 Kafka），5 个为 P1（#1108/#1110~#1113），5 个为 P2（#1114~#1118）。此外，PR #1119 引入了 FR-031~036 共 6 个 exchangeInfo 同步规格草案（Draft，未计入实现投影）。
 
 当前模块状态投影统一为 `24 Done / 10 Partial / 0 Pending`（FR-001~030 实现）+ `6 Draft`（FR-031~036 规格草案）。Partial FR 为 `FR-007`、`FR-007a`、`FR-011`、`FR-016`、`FR-017`、`FR-023`、`FR-024`、`FR-026`、`FR-027`、`FR-028`。
 
@@ -23,12 +23,12 @@
 
 | Gap ID | Priority | Beads | GitHub | 标题 | 当前状态 | 关闭条件 |
 | --- | --- | --- | --- | --- | --- | --- |
-| RB-20260625-P0-01 | P0 | ZoneCNH-4ba | #1104 | 补齐 FR-016 历史回补运行时 REST fetcher 注入 | Open | runtime 注入真实 REST fetcher，并用 live/smoke 证据证明 history backfill 不再只依赖 mock |
+| RB-20260625-P0-01 | P0 | ZoneCNH-4ba | #1104 | 补齐 FR-016 历史回补运行时 REST fetcher 注入 | **Closed（代码修复）** | runtime PR #103（ZoneCNH/binance）注入 `NewMultiLineHistoryFetcher`，`RequestBackfill` 异步执行真实 REST 回补。10 轮 go test PASS。live/smoke 证据待后续补齐。 |
 | RB-20260625-P0-02 | P0 | ZoneCNH-rfx | #1105 | 厘清 Kafka broker roundtrip 证据冲突 | Open | 以同一 commit、同一 broker 配置重新运行 producer/consumer roundtrip，并废弃或标注旧冲突证据 |
 | RB-20260625-P0-03 | P0 | ZoneCNH-hw2 | #1106 | 对齐 report/binance 状态文档 | **Closed（条件已验证满足）** | 关闭条件逐条验证：(1) 9 个 active 文档统一 anchor `f18a329`；(2) 统一 `24/10/0` 投影；(3) 统一指向 issue ledger；(4) 历史口径标注覆盖（verdict 报告「历史语境」+ TRACEABILITY「仅保留为历史记录」）。PR #1121 关闭。 |
-| RB-20260625-P1-01 | P1 | ZoneCNH-9p8 | #1107 | 明确或实现 UM/CM/Options 历史 REST endpoint 支持 | Open | spot/um/cm/options 历史 endpoint 行为被实现或明确降级，并有测试覆盖 |
+| RB-20260625-P1-01 | P1 | ZoneCNH-9p8 | #1107 | 明确或实现 UM/CM/Options 历史 REST endpoint 支持 | **Closed（代码修复）** | runtime PR #103 实现 `routeEndpoint(productLine, eventType)`，支持 spot/um_perp/cm_perp REST 路由；options 明确返回空（无公开 REST 历史）。测试覆盖。 |
 | RB-20260625-P1-02 | P1 | ZoneCNH-5kn | #1108 | 用 mainnet 样本校验 Options ticker 字段归一化 | Open | Options ticker mainnet 样本覆盖 `normalize.go` 中 Options 字段映射 |
-| RB-20260625-P1-03 | P1 | ZoneCNH-0y2 | #1109 | 补齐速率限制平滑与 token bucket 机制 | Open | 从窗口计数升级为可验证的平滑/token bucket 限流，并覆盖 websocket/reconnect 场景 |
+| RB-20260625-P1-03 | P1 | ZoneCNH-0y2 | #1109 | 补齐速率限制平滑与 token bucket 机制 | **Closed（代码修复）** | runtime PR #103 将 throttle 从窗口计数改为 weight-aware 连续补充 token bucket；`Allow(kind, weight)` 感知 Binance REST weight。TestThrottleManager_WeightAware + TokenRefill PASS。 |
 | RB-20260625-P1-04 | P1 | ZoneCNH-5xi | #1110 | 补齐分布式 tracing 与 trace context 传播 | Open | runtime 边界传递 trace context，并有 span/trace 证据 |
 | RB-20260625-P1-05 | P1 | ZoneCNH-cg1 | #1111 | 补齐 Options active symbol live 覆盖 | Open | Options active symbol 通过 live mainnet 证据闭合 |
 | RB-20260625-P1-06 | P1 | ZoneCNH-0pz | #1112 | 建立 storage mock 与 fake 的测试标准 | Open | 区分 fake/mock/live 证据级别，更新测试命名、文档和 gate 规则 |
@@ -38,7 +38,7 @@
 | RB-20260625-P2-03 | P2 | ZoneCNH-zwb | #1116 | 支持增量 hot reload diff 而非全量重连 | Open | hot reload 能按 diff 更新订阅，避免全量断连重连 |
 | RB-20260625-P2-04 | P2 | ZoneCNH-ioy | #1117 | 持久化历史回补进度 | Open | history/reconcile/rehydration progress 持久化，重启后可恢复 |
 | RB-20260625-P2-05 | P2 | ZoneCNH-1i0 | #1118 | 补齐持久 DLQ wiring 与 replay 流程 | Open | DLQ 使用持久 backend，并有 replay 与 operational runbook |
-| RB-20260625-P2-06 | P2 | ZoneCNH-56m | #1123 | resource_governance MaxConcurrent 不可配置，全量 backfill 受限 | Open（10 轮交叉检查发现） | `resource_governance.go:42` 硬编码 `MaxConcurrent=4`，注释声称 `XGO_BINANCE_RESOURCE_MAX_CONCURRENT` 可配置但 `binancecfg` 未接线；全量 backfill 并发受限。建议 #1104 闭合后或与 FR-032 同批处理 |
+| RB-20260625-P2-06 | P2 | ZoneCNH-56m | #1123 | resource_governance MaxConcurrent 不可配置，全量 backfill 受限 | **Closed（代码修复）** | runtime PR #103 新增 `binancecfg.ResourceMaxConcurrent/MemMB` 字段 + env var 接线 + main.go 注入。 |
 
 ## FR-031~036 规格草案登记（PR #1119 引入）
 
