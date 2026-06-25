@@ -10,7 +10,7 @@
 > - Plan Runtime-Anchor：`/home/binance@3f20be0`（Plan 输入基线）
 > - Execution Runtime-Anchor：`/home/binance@e32a126391ab03dcddcbc31945fcf2dc757e8025`（Plan008 implementation follow-up）
 > - Release-Evidence Anchor：`/home/binance@c16a681b88f901e399efb7eb42b18ab29ffe6beb`（GitHub Release `v0.2.0` / workflow `28126779885`）
-> - Remote CI Anchor：`ZoneCNH/binance#145@a991c46c7959ad533196e9392c90a04734de2eda`（Plan008 PR CI 修复证据）
+> - Remote CI Anchor：`ZoneCNH/binance#145@4133b6d9c126148cdb4f8059471f1a6bc3385039`（Plan008 PR CI 修复证据）
 
 ---
 
@@ -36,12 +36,12 @@
 
 | Evidence | Result |
 | --- | --- |
-| Binance runtime PR | [ZoneCNH/binance#145](https://github.com/ZoneCNH/binance/pull/145) @ `a991c46c7959ad533196e9392c90a04734de2eda`（remote CI anchor） |
+| Binance runtime PR | [ZoneCNH/binance#145](https://github.com/ZoneCNH/binance/pull/145) @ `4133b6d9c126148cdb4f8059471f1a6bc3385039`（remote CI anchor） |
 | Binance implementation follow-up | `/home/binance/.worktree/workspaces/fix/plan008-production-fixes` @ `e32a126391ab03dcddcbc31945fcf2dc757e8025`（options aggregate normalization + bounded Options live selector + `efb63f8` exact-key parser + OSSX live gate；本地 changed-package 10 轮 PASS） |
 | Binance release evidence | `/home/binance/.worktree/workspaces/fix/plan008-production-fixes` @ `c16a681b88f901e399efb7eb42b18ab29ffe6beb`；GitHub Release [`v0.2.0`](https://github.com/ZoneCNH/binance/releases/tag/v0.2.0)；Release workflow [`28126779885`](https://github.com/ZoneCNH/binance/actions/runs/28126779885) completed/success；assets: `binance-binaries-v0.2.0-linux-amd64.tar.gz` sha256 `bf12f8777af02ab37283a41fc7310185040012b4f5bde2c3749cad9ca0a6a09f`, `binance-evidence-v0.2.0.tar.gz` sha256 `7b01cc3318efaedffb9f1a21df893ee27cffc178d75d4669875a3048ed1a507f` |
 | Foundation PRs | [taosx#18](https://github.com/ZoneCNH/taosx/pull/18) @ `6dd70cb`; [natsx#19](https://github.com/ZoneCNH/natsx/pull/19) @ `6bbfda0`; [kafkax#20](https://github.com/ZoneCNH/kafkax/pull/20) @ `7b2d9ce`; [clickhousex#11](https://github.com/ZoneCNH/clickhousex/pull/11) @ `457d9ff` |
 | Local runtime gates | `gofmt -l cmd internal pkg test tools`; `git diff --check`; `./scripts/readiness-audit.sh`; `go test ./...`; `go test -race ./...`; `go vet ./...`; `golangci-lint run`; `govulncheck ./...`; `runtime-release-evidence.sh` 全 PASS |
-| Remote CI | 截至 2026-06-26 01:14 +0800，GitHub Actions for PR #145: Boundary Gates, Build & Vet, Test & Race & Cover, gitleaks, golangci-lint, govulncheck 全 PASS |
+| Remote CI | 截至 2026-06-26 02:35 +0800，GitHub Actions for PR #145: Boundary Gates, Build & Vet, Test & Race & Cover, gitleaks, golangci-lint, govulncheck 全 PASS |
 | T008.011 local fix | [#1142 evidence comment](https://github.com/ZoneCNH/ZoneCNH/issues/1142#issuecomment-4802133265)；`go test ./internal/client -run 'TestHistoryRuntimePersistsAndRestoresState\|TestPostgresHistoryStateStore\|TestResolveStandaloneConfigModeAndOverrides' -count=1`；`go test ./cmd/binance-client ./internal/client -count=1`；migration 006 实际 schema 为 `history_runtime_state(snapshot JSONB)` |
 | External gates | `release_closeable=YES`; `release_tag=CAPTURED_GITHUB_RELEASE_V0_2_0_WORKFLOW_28126779885`; live gate evidence in `live-gates-20260626.txt`: JetStream ack/ManualAck/NAK captured, taosx/postgresx/redisx/clickhousex assembly captured, Kafka broker roundtrip captured, Binance Spot/bookTicker/UM/CM/Options WS captured, OSSX archive live I/O captured; release artifacts captured with sha256 evidence |
 
