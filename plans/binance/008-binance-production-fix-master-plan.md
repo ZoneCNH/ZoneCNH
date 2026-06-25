@@ -264,7 +264,7 @@ Phase 4（验收与门禁）
 | T008.039 | 全量回归 + 生产级 SLO 验收（build/vet/test-race/boundary-gates/govulncheck + 四维 SLO）       | 全部 | binance | T001-T038 | CI 全绿；四维 SLO 达标；chaos 测试 0 丢失             | R1§1.3 / R7§9 |
 | T008.040 | TRACEABILITY.md + SPEC.md + FEATURES.md 同步（FR 状态按 L0-L3 重判，runtime SHA+CI URL 回填） | 全部 | binance |   T039    | 30 FR 状态按 SLA 驱动重判；TRACEABILITY 有 SHA+CI URL | R1§5.1        |
 
-> `[COMPUTED, HIGH]` Phase 4 验收注记（2026-06-26）：`release/evidence/binance/20260625-task2/live-gates-20260626.txt` 已记录 partial-live 进展；JetStream ack/ManualAck/NAK、dev storage assembly、Kafka broker roundtrip 与部分 Binance WS 已捕获，但 options WS、ossx live I/O、release tag、chaos/SLO release evidence 尚未闭合，`external-gates.log` 仍为 `release_closeable=NO`。T008.039/T008.040 因此保持 release-gated open。
+> `[COMPUTED, HIGH]` Phase 4 验收注记（2026-06-26）：`release/evidence/binance/20260625-task2/live-gates-20260626.txt` 已记录 partial-live 进展；JetStream ack/ManualAck/NAK、dev storage assembly、Kafka broker roundtrip 与部分 Binance WS 已捕获。最新本地 follow-up `2107a46009ec1a9c3ece4b0e7b4ff27705a1fe57` 已补 options expiry aggregate normalization/live selector 与 `BINANCE_OSSX_LIVE` archive/list/delete opt-in gate；但重新运行归档的 options WS、ossx live I/O、release tag、chaos/SLO release evidence 尚未闭合，`external-gates.log` 仍为 `release_closeable=NO`。T008.039/T008.040 因此保持 release-gated open。
 
 ---
 

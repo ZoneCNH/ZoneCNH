@@ -8,7 +8,8 @@
 > - **GitHub 仓库：`ZoneCNH/ZoneCNH`**（issues #1132-#1171）
 > - beads workspace：`ZoneCNH`（prefix=ZoneCNH，label `plan008`）
 > - Plan Runtime-Anchor：`/home/binance@3f20be0`（Plan 输入基线）
-> - Execution Runtime-Anchor：`/home/binance@a991c46c7959ad533196e9392c90a04734de2eda`（Plan008 本地+PR CI 修复证据）
+> - Execution Runtime-Anchor：`/home/binance@2107a46009ec1a9c3ece4b0e7b4ff27705a1fe57`（Plan008 最新本地 follow-up）
+> - Remote CI Anchor：`ZoneCNH/binance#145@a991c46c7959ad533196e9392c90a04734de2eda`（Plan008 PR CI 修复证据）
 
 ---
 
@@ -30,16 +31,17 @@
 
 ### 1.1 Plan008 执行闭环（2026-06-26）
 
-`[COMPUTED, HIGH]` GitHub 与 Beads 实时复核显示 #1132-#1171 / T008.001-T008.040 均为 38 closed、2 open。T008.001-T008.038 已完成闭合；T008.039/T008.040 保持 release-gated open，因为 `release/evidence/binance/20260625-task2/external-gates.log` 仍记录 `release_closeable=NO`：live Binance 已部分捕获但 options websocket 超时；local JetStream PubAck+ManualAck、dev storage/Kafka 已捕获或部分捕获；ossx archive live I/O、release tag、chaos+SLO 仍未捕获。
+`[COMPUTED, HIGH]` GitHub 与 Beads 实时复核显示 #1132-#1171 / T008.001-T008.040 均为 38 closed、2 open。T008.001-T008.038 已完成闭合；T008.039/T008.040 保持 release-gated open，因为 `release/evidence/binance/20260625-task2/external-gates.log` 仍记录 `release_closeable=NO`。最新本地 follow-up 已补 options expiry aggregate normalization/live selector 与 `BINANCE_OSSX_LIVE` archive/list/delete opt-in gate，但尚未重新运行并归档 options WS、ossx live I/O、release tag、chaos+SLO 外部证据。
 
 | Evidence | Result |
 | --- | --- |
-| Binance runtime PR | [ZoneCNH/binance#145](https://github.com/ZoneCNH/binance/pull/145) @ `a991c46c7959ad533196e9392c90a04734de2eda` |
+| Binance runtime PR | [ZoneCNH/binance#145](https://github.com/ZoneCNH/binance/pull/145) @ `a991c46c7959ad533196e9392c90a04734de2eda`（remote CI anchor） |
+| Binance local follow-up | `/home/binance/.worktree/workspaces/fix/plan008-production-fixes` @ `2107a46009ec1a9c3ece4b0e7b4ff27705a1fe57`（options aggregate normalization/live selector + OSSX opt-in gate；本地 changed-package 10 轮 PASS） |
 | Foundation PRs | [taosx#18](https://github.com/ZoneCNH/taosx/pull/18) @ `6dd70cb`; [natsx#19](https://github.com/ZoneCNH/natsx/pull/19) @ `6bbfda0`; [kafkax#20](https://github.com/ZoneCNH/kafkax/pull/20) @ `7b2d9ce`; [clickhousex#11](https://github.com/ZoneCNH/clickhousex/pull/11) @ `457d9ff` |
 | Local runtime gates | `gofmt -l cmd internal pkg test tools`; `git diff --check`; `./scripts/readiness-audit.sh`; `go test ./...`; `go test -race ./...`; `go vet ./...`; `golangci-lint run`; `govulncheck ./...`; `runtime-release-evidence.sh` 全 PASS |
 | Remote CI | 截至 2026-06-26 01:14 +0800，GitHub Actions for PR #145: Boundary Gates, Build & Vet, Test & Race & Cover, gitleaks, golangci-lint, govulncheck 全 PASS |
 | T008.011 local fix | [#1142 evidence comment](https://github.com/ZoneCNH/ZoneCNH/issues/1142#issuecomment-4802133265)；`go test ./internal/client -run 'TestHistoryRuntimePersistsAndRestoresState\|TestPostgresHistoryStateStore\|TestResolveStandaloneConfigModeAndOverrides' -count=1`；`go test ./cmd/binance-client ./internal/client -count=1`；migration 006 实际 schema 为 `history_runtime_state(snapshot JSONB)` |
-| External gates | `release_closeable=NO`; partial-live evidence in `live-gates-20260626.txt`: JetStream ack/ManualAck/NAK captured, taosx/postgresx/redisx/clickhousex assembly captured, Kafka broker roundtrip captured, Binance WS partial; options WS / ossx live I/O / release tag / chaos+SLO remain uncaptured |
+| External gates | `release_closeable=NO`; partial-live evidence in `live-gates-20260626.txt`: JetStream ack/ManualAck/NAK captured, taosx/postgresx/redisx/clickhousex assembly captured, Kafka broker roundtrip captured, Binance WS partial; latest code has options expiry aggregate live selector and OSSX opt-in gate, but options WS / ossx live I/O / release tag / chaos+SLO evidence remains uncaptured until rerun and archived |
 
 ---
 
@@ -218,7 +220,7 @@ T039 ──blocks──▶ T040(TRACEABILITY 同步)
 
 - Release-gated open：T008.039、T008.040；GitHub partial-live comments: [#1170](https://github.com/ZoneCNH/ZoneCNH/issues/1170#issuecomment-4802238741), [#1171](https://github.com/ZoneCNH/ZoneCNH/issues/1171#issuecomment-4802238748)。
 - 已捕获进展：本地 JetStream PubAck/duplicate/ManualAck/NAK；dev storage assembly（taosx/postgresx/redisx/clickhousex）；Kafka broker produce/consume；Binance WS partial（spot trade/bookTicker + UM/CM pass）。
-- 关键缺口：Binance options `@optionTicker` 证据、ossx archive live I/O、release tag、chaos+SLO release evidence 仍未捕获。
+- 关键缺口：重新运行并归档 Binance options expiry aggregate WS、`BINANCE_OSSX_LIVE` archive/list/delete、release tag、chaos+SLO release evidence。
 
 ---
 
