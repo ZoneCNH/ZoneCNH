@@ -245,18 +245,18 @@ Plan/Prompt/Evidence 三阶段 3 天无变化。52% tasks 全部来自基座 + �
 4. ✅ **LIFECYCLE 状态机补态**（P1-2）：`LIFECYCLE.md` §1/§3/§5.1/§7 补"主态+描述性后缀"说明。
 5. ✅ **CI 数口径修正**（P2-1 核实取消）：治理文档无"14 CI"口径，无需修正。
 
-### 中期（3-6 周，跨仓库协同）
+### 中期（3-6 周，跨仓库协同）— PR #1098 部分落地
 
-6. **业务域 tasks 拆分**：从 `regime_engine`/`signal_factory`/`riskx` 三 P0 节点开始，目标三业务域 tasks 覆盖率 ≥50%（P0-1）
-7. **管线 S4-S6 补洞**：按 AC→TC→tasks→plan→prompt→evidence 顺序，目标 plan/prompt/evidence ≥30%（A2）
-8. **存根 SPEC 补全**：优先 `regime_engine`（87 行，P0 链路节点）至 23 节完整结构（P1-3）
-9. **ADR 补录**：补 L2.5 设计、三引擎契约、命名 snake_case 统一、废弃占位移除等关键决策 ADR，目标 ≥10（G3 缓解）
+6. ✅ **业务域 tasks 拆分**（P0-1，#1086 closed）：`regime_engine`/`signal_factory`/`riskx` 三 P0 节点各 1 task spec。残留：14 模块仍待拆。
+7. ✅ **管线 S4-S6 补洞**（A2，#1087 closed）：三 P0 节点 PLAN.md 建成，S4 覆盖率 4%→10%。残留：prompt/evidence 仍低。
+8. ✅ **存根 SPEC 补全**（P1-3，#1091 closed）：`regime_engine` SPEC 87→305 行 23 节完整。残留：5 模块仍存根。
+9. ✅ **ADR 补录**（G3，#1092 closed）：4 份新 ADR（L2.5/三引擎/命名/占位移除），6→10 达目标。
 
-### 长期（6-12 周，实现推进）
+### 长期（6-12 周，实现推进）— PR #1098 框架落地
 
-10. **核心交易闭环跑通**：`数据→因子→信号→风控→订单→仓位` 端到端验证，`live_integration` 从 7 推进到 15+
-11. **管线右段 CI gate**：缺 plan/prompt/evidence 阻断升入下一状态，可观察阻断率（A2）
-12. **投影层机器生成**：业务域模块补入 `index.json` 事实层，投影层手工块最小化，降低文档同步 churn（A6）
+10. 🟡 **核心交易闭环跑通**（#1093 open）：`CORE-LOOP-MILESTONES.md` 建成 M1-M4 里程碑。M1-M4 全 ⬜（依赖跨仓库实现）。
+11. ✅ **管线右段 CI gate**（#1094 closed）：`pipeline-right-segment-check.sh` WARN 门禁建成。未来可升 FAIL。
+12. ✅ **投影层机器生成**（#1095 closed）：`PROJECTION-AUTOMATION-PLAN.md` 框架建成。实施阶段 2-3 待实施。
 
 ---
 

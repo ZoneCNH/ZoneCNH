@@ -8,7 +8,8 @@
 
 | 报告 | 日期 | 主题 | 综合评分 |
 |---|---|---|:---:|
-| [architecture-structural-analysis-20260625-v1.md](./architecture-structural-analysis-20260625-v1.md) | 2026-06-25 | 架构深度分析与结构性评分 v1（Supersedes 0622-v2；audit 52/52；B 维首破 60；含 5 项短期修复落地） | 72/100 (B) |
+| [audit-issues-20260625.md](./audit-issues-20260625.md) | 2026-06-25 | 架构审计 10 项 issue 状态总表（9 closed + 1 long-term open，PR #1098 修复落地） | — |
+| [architecture-structural-analysis-20260625-v1.md](./architecture-structural-analysis-20260625-v1.md) | 2026-06-25 | 架构深度分析与结构性评分 v1（Supersedes 0622-v2；audit 52/52；B 维首破 60；路线图 12 项：5 短期✅ + 4 中期✅ + 3 长期框架✅） | 72/100 (B) |
 | [binance/deep-analysis-20260622-backlog.md](./binance/deep-analysis-20260622-backlog.md) | 2026-06-23 | binance 5 份深度分析未完成项汇总（20 类问题，11 已解决 / 9 剩余，含版本漂移新发现） | — |
 | [binance/github-issues-923-931-closure-ledger-20260623.md](./binance/github-issues-923-931-closure-ledger-20260623.md) | 2026-06-23 | binance GitHub #923-#931 closure ledger（9/9 GitHub issues closed；runtime/release readiness 仍由 acceptance/release gates 单独治理） | — |
 | [binance/goal-execution-plan-20260622.md](./binance/goal-execution-plan-20260622.md) | 2026-06-22 | binance Goal 执行方案（82→95 分，7 阶段 × 9 AC × 26 issues，遵循 docs/goal/02-goal-standard.md） | — |
