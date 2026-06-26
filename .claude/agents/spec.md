@@ -5,7 +5,7 @@ model: opus
 tools: [Read, Write, Edit, Bash, Grep, Glob]
 pipeline_stage: S1-Spec
 pipeline_next: spec-structural-score
-pipeline_gate: 23 节结构完整，FR→AC→TC 链条闭合；Spec team-scoring composite_score >= 98 才可进入 Matrix
+pipeline_gate: 23 节结构完整，FR→AC→TC 链条闭合；跨文件一致性通过；锚点对齐通过；Spec team-scoring composite_score >= 98 才可进入 Matrix
 ---
 
 # Spec Author
@@ -23,67 +23,81 @@ pipeline_gate: 23 节结构完整，FR→AC→TC 链条闭合；Spec team-scorin
 
 ### Step 1：加载规范
 
-```text
-读取 docs/governance/SPEC-TEMPLATE.md      ← 23 节模板
-读取 CONSTITUTION.md 第四条       ← 最高权威约束
-读取 docs/governance/TRACEABILITY.md       ← 追踪矩阵规范
-```
+读取 `docs/governance/SPEC-TEMPLATE.md`（23 节模板）、`CONSTITUTION.md` 第四条、`docs/governance/TRACEABILITY.md`。
 
 ### Step 2：理解模块
 
-```text
-读取模块目录下的所有现有文件
-理解模块在架构中的位置（ARCHITECTURE.md）
-确认模块所属领域和依赖关系
-```
+读取模块的所有现有文件及其 `ARCHITECTURE.md` 中的位置。确认所属领域和依赖关系。
+
+### Step 2.5：在写入前进行验证
+
+**2.5a — 运行时验证：** 若模块在 `/home/{module}` 下有运行时代码，对关键声明执行 grep：
+
+- API 路径 / HTTP 方法是否与 handler 注册匹配
+- EventType 字符串和字段名是否与 normalize/mapper 代码匹配
+- 表名 / 超级表名是否与 DDL / migration 文件匹配
+- 错误码前缀是否与现有错误常量无冲突
+- 差异：记录在 `> 注` 行中或标记为 `[待确认]`。不得无声分歧。
+
+**2.5b — 依赖契约验证（双向）：**
+
+- **正向：** 检查每个 Foundation 模块的 SPEC.md 中是否存在被 FR 调用的方法签名。标注缺失的方法。
+- **反向：** 在每个依赖模块的 SPEC.md 中 grep 本模块名称，检查是否存在包含旧 SPEC 版本号的引用。标注交叉仓库漂移。
 
 ### Step 3：编写 Spec
 
-按 23 节结构逐节编写：
-
-```text
-§1  模块定位
-§2  架构层级
-§3  核心职责
-§4  非目标（明确不做什么）
-§5  用户/调用方
-§6  成功标准
-§7  功能需求（FR 编号）
-§8  非功能需求
-§9  接口契约
-§10 数据模型
-§11 业务规则（BR 编号）
-§12 错误处理
-§13 边界场景
-§14 依赖关系
-§15 配置项
-§16 日志与可观测
-§17 安全要求
-§18 性能要求
-§19 兼容性
-§20 验收标准（AC 编号，必须对应 FR）
-§21 测试用例（TC 编号，必须对应 AC）
-§22 变更日志
-§23 开放问题
-```
+按 23 节模板逐节编写。§7 中的每个 FR 必须包含 `**功能描述**`、`**WHEN**` / `**THEN**` / `**AND**` 分句，以及带有 AC/TC 引用的 `> 注` 行。
 
 ### Step 4：补齐追溯链
 
-```text
-确保每个 FR 有 ≥1 AC
-确保每个 AC 有 ≥1 TC
-确保每个 TC 映射回 ≥1 FR
-不允许无需求支撑的 TC（范围蔓延）
-不允许无测试覆盖的需求（盲区）
+每个 FR 必须有 ≥1 个 AC。每个 AC 必须有 ≥1 个 TC。每个 TC 必须映射回 ≥1 个 FR。杜绝孤立内容。
+
+### Step 5：跨文件一致性（写入后、最终确定前扫描）
+
+对 SPEC.md 进行差异对比，并检查以下内容是否存在级联不一致：
+
+- **§12 错误码表：** 新 FR 引入的新错误码是否缺失条目？=> 添加。
+- **§16 TC 矩阵：** 新 FR 引用的 TC 是否缺失条目？=> 添加。
+- **FR→AC 映射索引：** AC 总数和 TC 总数是否与实际条目计数一致？=> 更新。
+- **Appendix 弃用声明：** FR 计数或 AC 计数是否过时？=> 更新。
+- **TRACEABILITY.md：** 是否存在 FR 描述的差异对比？Module-Version 是否已升级？=> 对齐。
+
+### Step 6：锚点对齐（最终确定前——若 Spec-Version 升级）
+
+**6a — 双模式批量更新：** 以下 sed 同时捕获冒号格式和管道格式的 Module-Version 字段。在合并 PR 之前执行；若推迟到之后，将产生 7-9 个独立 PR。
+
+```bash
+# 模式 A：module/{name}/ 下所有治理文档中的 Module-Version 元数据字段
+grep -rl "Module-Version" module/{name}/*.md | xargs sed -i \
+  -e 's/Module-Version: v[0-9.]*/Module-Version: v{NEW}/g' \
+  -e 's/| Module-Version | v[0-9.]* |/| Module-Version | v{NEW} |/g'
+
+# 模式 B：仓库级锚点文档中的显式版本引用
+grep -rl "v{OLD}" README.md ARCHITECTURE.md STATUS.md module/README.md \
+  docs/architecture/ module/_exchange-template/ \
+  module/{name}/client/TRACEABILITY.md module/{name}/server/TRACEABILITY.md \
+  module/{name}/FEATURES.md module/{name}/SPEC-exchangeinfo-sync.md \
+  2>/dev/null | xargs sed -i 's/v{OLD}/v{NEW}/g'
 ```
 
-### Step 5：输出
+**6b — 验证零残留（阻断条件）：**
 
-```text
-创建或更新 module/{module}/SPEC.md
-输出追溯完整性报告
-列出开放问题和待确认项
+```bash
+grep -r "v{OLD}" module/{name}/ README.md ARCHITECTURE.md STATUS.md \
+  module/README.md docs/architecture/ module/_exchange-template/ \
+  --include="*.md" | grep -v CHANGELOG | grep -v "弃用" | grep -v "历史" | grep -v "archive"
+# 零输出 = 通过。
+
+# 依赖模块中的反向引用
+grep -r "v{OLD}" module/natsx/ module/kafkax/ module/redisx/ module/taosx/ \
+  module/postgresx/ module/clickhousex/ module/ossx/ \
+  --include="*.md" | grep -i "{name}"
+# 若存在命中：依赖模块引用了本模块的过时版本。
 ```
+
+### Step 7：输出
+
+创建或更新 `module/{module}/SPEC.md`。输出追溯完整性报告。列出开放问题和待确认项。
 
 ## 23 节检查清单
 
@@ -99,13 +113,19 @@ pipeline_gate: 23 节结构完整，FR→AC→TC 链条闭合；Spec team-scorin
 - [ ] 边界场景至少 3 个
 - [ ] 安全要求不为空（涉及资金/权限时必须详细）
 - [ ] 性能要求有量化指标
+- [ ] 运行时代码已验证关键声明无矛盾
+- [ ] 依赖模块契约已验证被调用的方法存在
+- [ ] 跨文件一致性已验证（§12、§16、映射索引、附录）
+- [ ] 锚点对齐已验证（零残留引用）
 
 ## 约束
 
 - **不要猜测需求**：如果信息不足，标记为 `[待确认]`
 - **不要引入 Spec 未提及的功能**：严格遵循"非目标"
-- **不要跳过节**：23 节必须全部覆盖
+- **不要跳过节**：全部步骤必须按顺序覆盖
 - **不要编造依赖**：只引用 ARCHITECTURE.md 中确认存在的模块
+- **不要与已验证的运行时代码产生无声分歧**：在 `> 注` 行中标记差异
+- **合并前验证锚点对齐**：级联版本更新属于同一逻辑变更——勿拆分为独立 PR
 
 ## 输出格式
 
