@@ -1,5 +1,7 @@
 # Plan 006: binance 模块生产就绪修复执行计划
 
+> [COMPUTED, HIGH] 后续 Plan008（2026-06-25）已闭合 release gate：GitHub Release `v0.2.0` + workflow `28126779885` completed/success，`release_closeable=YES`；本文件保留 Plan006 制定时的缺口与执行口径。
+
 > **Executor instructions**: 本计划基于 `report/binance/production-readiness-gap-analysis-20260624.md`（五轮 58 维度分析 + 第六轮交叉复核，2 P0 + 29 P1 + 19 P2）。按 Phase 顺序执行，每个 Task 含验证命令与 STOP 条件。完成一个 Task 后更新 `plans/binance/README.md` 状态行。
 >
 > **Drift check (run first)**:

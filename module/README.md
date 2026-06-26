@@ -395,7 +395,7 @@ FoundationX 运行模块分为两种架构类型。详见 [`ARCHITECTURE.md`](..
 
 **宏观模块规格**：[`fred`](./fred/README.md) — FRED 独立 C/S 服务，覆盖共享基座、`domain_macro` 领域共享层、完整持久化和 dev 配置来源。
 
-**参考实现**：[binance](https://github.com/ZoneCNH/binance)（spec v3.5.0 Approved；2026-06-23 PR #19 本地 lifecycle/runtime/release-gate evidence 已归档：`/home/binance/release/evidence/binance/20260623/`，实现提交 `c7967dd7eec6523927f2157a2e7c49a0f2fb820d`，证据刷新 `56a7f5c7eb174e352fc91371227877365c6ae299`；boundary-gates、go test、go test -race、go vet、runtime-release-evidence 与 smoke/split-process self-test PASS；FR-012~FR-030 本地 lifecycle 规划/admin 合约可测；release_closeable=NO，未归档 live websocket、historical REST、natsx PubAck/ManualAck、外部存储/fanout/query、remote CI、release tag。）
+**参考实现**：[binance](https://github.com/ZoneCNH/binance)（spec v3.6.0；Runtime-Version `v0.2.0`；2026-06-25 Plan008 final closeout 已归档：Runtime-Anchor `/home/binance@f18a329`，GitHub Release `v0.2.0`，Release workflow `28126779885` completed/success，`release_closeable=YES`；当前 FR 投影为 `24 Done / 10 Partial / 0 Pending`，remaining Partial FR 继续由 `module/binance/README.md` 与 `module/binance/TRACEABILITY.md` 单独治理。）
 
 ### 独立进程（非 C/S）
 

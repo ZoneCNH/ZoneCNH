@@ -4,7 +4,7 @@
 
 - Spec-Version: v3.6.0 (root) / v2.1.1 (client) / v2.2.0 (server)
 - Runtime-Version: v0.2.0（Runtime-Anchor: `/home/binance@f18a329`）
-- Delivery-State: FR-001~FR-030 spec/traceability registered; **2026-06-25 issue-ledger sync — Status-Projection `24 Done / 10 Partial / 0 Pending`**. Runtime-Anchor `/home/binance@f18a329`; Issue-Ledger [`../../report/binance/issues-sync-20260625.md`](../../report/binance/issues-sync-20260625.md). Partial FR: FR-007, FR-007a, FR-011, FR-016, FR-017, FR-023, FR-024, FR-026, FR-027, FR-028. GitHub #1104~#1118 已同步；#1106 为文档对齐项，本轮对齐后表述为已关闭，其余 runtime/evidence issues 保持开放。
+- Delivery-State: FR-001~FR-030 spec/traceability registered; **2026-06-25 issue-ledger sync — Status-Projection `24 Done / 10 Partial / 0 Pending`**. Runtime-Anchor `/home/binance@f18a329`; Issue-Ledger [`../../report/binance/issues-sync-20260625.md`](../../report/binance/issues-sync-20260625.md). Partial FR: FR-007, FR-007a, FR-011, FR-016, FR-017, FR-023, FR-024, FR-026, FR-027, FR-028. GitHub #1104~#1118 与后续 Plan008 issue 已同步闭合；Release closeout 已由 `plans/binance/008-issues-sync-report.md` 归档为 `release_closeable=YES`。
 - Last-Updated: 2026-06-25
 
 It is split into two submodules:

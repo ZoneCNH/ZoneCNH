@@ -4,17 +4,18 @@
 | --- | --- |
 | Last-Updated | 2026-06-25（最终同步：全部 16 个 issue 闭合，三源一致） |
 | Scope | `report/binance/` + `module/binance/` 当前有效报告与历史语境对齐 |
-| Runtime Anchor | `/home/binance@3f20be0`（PR #103+#104 合并后） |
+| Runtime Anchor | `/home/binance@f18a329`（Plan008 final closeout；PR #103+#104 runtime fix baseline 为 `3f20be0`） |
 | Status Projection | `24 Done / 10 Partial / 0 Pending`（FR-001~030 实现）+ `6 Draft`（FR-031~036 规格草案，不计入投影） |
 | Issue Range | GitHub / Beads `#1104`-`#1118` + `#1123`（16 个缺口，**全部 Closed**） |
 | Draft Range | FR-031~036（PR #1119 引入，6 个规格草案，暂未创建独立 GitHub issue） |
 | Sync Result | Beads 16 Closed / GitHub 16 Closed（全部对齐） |
+| Release Closeout | Plan008 已归档 GitHub Release `v0.2.0` / workflow `28126779885` completed/success / `release_closeable=YES` |
 | Team Evidence | Pauli 完成 Beads/GitHub 查重；Jason 完成 runtime 代码与证据复核；ZCode 完成 7 个代码修复 + 9 个能力边界文档化 |
 | Status Policy | **全部 Closed**：代码修复 7 个（#1104/#1105/#1106/#1107/#1109/#1111/#1123，runtime PR #103+#104）；能力边界文档化 9 个（#1108/#1110/#1112/#1113/#1114/#1115/#1116/#1117/#1118，FEATURES.md 能力边界声明节） |
 
 ## 当前结论
 
-`report/binance/` + `module/binance/` 的当前严格口径是：`binance` runtime 的 16 个可追踪 issue **全部闭合**。其中 7 个通过代码修复+实证闭合（runtime PR #103 `f15a172` + PR #104 `3f20be0`），9 个通过能力边界文档化闭合（FEATURES.md「能力边界声明」节）。
+`report/binance/` + `module/binance/` 的当前严格口径是：`binance` runtime 的 16 个可追踪 issue **全部闭合**。其中 7 个通过代码修复+实证闭合（runtime PR #103 `f15a172` + PR #104 `3f20be0`），9 个通过能力边界文档化闭合（FEATURES.md「能力边界声明」节）。Plan008 release closeout 已在后续归档，当前 Runtime Anchor 统一为 `/home/binance@f18a329`。
 
 闭合方式汇总：
 
