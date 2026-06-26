@@ -79,8 +79,8 @@ tools: [Read, Write, Edit, Bash, Grep, Glob]
 **0.5 — 批量版本对齐（机械化操作——不跳过任何文件）：** 对上述列表中的全部 25 个文件执行版本更新。分两次批量执行以捕获两种模式：module/{name}/ 内部的 `Module-Version` 字段，以及锚点文档内的显式 `vX.Y.Z` 引用。
 
 ```bash
-# 模式 A：module/{name}/ 下所有治理文档中的 Module-Version 元数据字段
-grep -rl "Module-Version: v3\.[0-9]\.[0-9]" module/{name}/ | xargs sed -i 's/Module-Version: v[0-9.]*/Module-Version: v{NEW}/'
+# 模式 A：module/{name}/ 下所有治理文档中的 Module-Version 元数据字段（冒号 + 管道两种格式）
+grep -rl "Module-Version[:|] *v3\.[0-9]\.[0-9]" module/{name}/ | xargs sed -i 's/Module-Version[:|] *v[0-9.]*/Module-Version: v{NEW}/g; s/| Module-Version | v[0-9.]* |/| Module-Version | v{NEW} |/g'
 
 # 模式 B：锚点文档与跨仓文件中的显式版本引用
 grep -rl "v{OLD}" README.md ARCHITECTURE.md STATUS.md module/README.md \
