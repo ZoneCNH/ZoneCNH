@@ -4,7 +4,7 @@
 | --- | --- |
 | Last-Updated | 2026-06-25（最终同步：全部 16 个 issue 闭合，三源一致） |
 | Scope | `report/binance/` + `module/binance/` 当前有效报告与历史语境对齐 |
-| Runtime Anchor | `/home/binance@f18a329`（Plan008 final closeout；PR #103+#104 runtime fix baseline 为 `3f20be0`） |
+| Runtime Anchor | `/home/binance@f046e16`（含 Plan008 全部 40 Task 代码实现；PR #145 合并） |
 | Status Projection | `24 Done / 10 Partial / 0 Pending`（FR-001~030 实现）+ `6 Draft`（FR-031~036 规格草案，不计入投影） |
 | Issue Range | GitHub / Beads `#1104`-`#1118` + `#1123`（16 个缺口，**全部 Closed**） |
 | Draft Range | FR-031~036（PR #1119 引入，6 个规格草案，暂未创建独立 GitHub issue） |
@@ -15,7 +15,7 @@
 
 ## 当前结论
 
-`report/binance/` + `module/binance/` 的当前严格口径是：`binance` runtime 的 16 个可追踪 issue **全部闭合**。其中 7 个通过代码修复+实证闭合（runtime PR #103 `f15a172` + PR #104 `3f20be0`），9 个通过能力边界文档化闭合（FEATURES.md「能力边界声明」节）。Plan008 release closeout 已在后续归档，当前 Runtime Anchor 统一为 `/home/binance@f18a329`。
+`report/binance/` + `module/binance/` 的当前严格口径是：`binance` runtime 的 16 个可追踪 issue **全部闭合**。其中 7 个通过代码修复+实证闭合（runtime PR #103 `f15a172` + PR #104 `3f20be0`），9 个通过能力边界文档化闭合（FEATURES.md「能力边界声明」节）。Plan008 release closeout 已在后续归档（PR #145 合并至 `f046e16`），当前 Runtime Anchor 统一为 `/home/binance@f046e16`。
 
 闭合方式汇总：
 
@@ -62,18 +62,18 @@
 
 ## 依赖交叉关系（已实现 issue ↔ 新 draft FR）
 
-`[COMPUTED, HIGH]` PR #1119 引入的 FR-031~036 与现有 open issue 存在以下交叉关系，task-split 阶段须注意去重与依赖排序：
+`[COMPUTED, HIGH]` PR #1119 引入的 FR-031~036 与已闭合 issue ledger 存在以下交叉关系，task-split 阶段须注意复用、去重与依赖排序：
 
 | 现有 issue | 关系 | 新 draft FR | 说明 |
 | --- | --- | --- | --- |
-| #1107（UM/CM/Options 历史 REST） | **被包含** | FR-031 | FR-031 的四产品线 exchangeInfo 发现覆盖了 #1107 的「UM/CM/Options REST endpoint」需求。task-split 时 #1107 可合并入 FR-031 task，或在 FR-031 实现后关闭 #1107。 |
-| #1116（增量 hot reload diff） | **被依赖** | FR-036 | FR-036 AC-127 的 tier 升降级增量 drain 依赖 #1116 提供的增量 stream diff。若 #1116 先闭合，FR-036 可复用；否则 FR-036 须自建。详见 `SPEC-exchangeinfo-sync.md` AC-127 前置依赖警示。 |
-| #1104（FR-016 REST fetcher 注入） | **路径复用** | FR-032 | FR-032 的 exchangeInfo 拉取复用 #1104 修复的 REST fetcher 注入路径。#1104 先闭合可降低 FR-032 实现成本。 |
-| #1108（Options ticker 字段校验） | **数据基础** | FR-031 | FR-031 的 Options exchangeInfo 解析为 #1108 的 ticker 字段校验提供 contract 基础。 |
+| #1107（UM/CM/Options 历史 REST） | **被包含** | FR-031 | #1107 已 Closed；FR-031 的四产品线 exchangeInfo 发现需复用其路由结论，task-split 时不要重复登记同一 runtime issue。 |
+| #1116（增量 hot reload diff） | **被依赖** | FR-036 | #1116 已以能力边界文档化 Closed；FR-036 AC-127 若要落地 tier 升降级增量 drain，须在 Draft Approved 后自带增量 diff 实现任务。 |
+| #1104（FR-016 REST fetcher 注入） | **路径复用** | FR-032 | #1104 已 Closed；FR-032 的 exchangeInfo 拉取可复用已修复的 REST fetcher 注入路径。 |
+| #1108（Options ticker 字段校验） | **数据基础** | FR-031 | #1108 已以能力边界文档化 Closed；FR-031 的 Options exchangeInfo 解析可作为后续 ticker 字段校验 contract 基础。 |
 
 ## 文档对齐范围
 
-本轮（第二轮）仅更新 `report/binance/issues-sync-20260625.md`（本文件）：修正 #1106 状态漂移 + 补登记 FR-031~036 draft + 依赖交叉。
+本轮最终同步将 `report/binance/issues-sync-20260625.md` 作为当前 issue ledger SSOT：修正 #1106 历史漂移、补登记 FR-031~036 draft、补齐 #1123，并对齐为 GitHub/Beads 16 Closed。
 
 第一轮同步更新了以下 `report/binance/` 文档；`module/binance/` 不在第一轮写入切片内：
 
@@ -87,12 +87,11 @@
 
 ## 证据锚点
 
-- `/home/binance@f18a329`
+- `/home/binance@f046e16`
 - `report/binance/archive/2026-06-25-v0.2.0-live-gate/release-evidence/storage-assembly-live.txt`
 - `report/binance/archive/2026-06-25-v0.2.0-live-gate/release-evidence/kafka-broker-live.txt`
 - Beads IDs `ZoneCNH-4ba`、`ZoneCNH-rfx`、`ZoneCNH-hw2`、`ZoneCNH-9p8`、`ZoneCNH-5kn`、`ZoneCNH-0y2`、`ZoneCNH-5xi`、`ZoneCNH-cg1`、`ZoneCNH-0pz`、`ZoneCNH-nr1`、`ZoneCNH-3e1`、`ZoneCNH-eg8`、`ZoneCNH-zwb`、`ZoneCNH-ioy`、`ZoneCNH-1i0`
-- GitHub Issues #1104-#1118
+- GitHub Issues #1104-#1118 + #1123
 
 [RULES I BROKE]：
-1. 第一轮账本将 #1106 记为 Closed，但 GitHub 实际状态为 Open（`gh issue view 1106` 确认 `state: OPEN, closedAt: null`）。这是账本与 GitHub 的状态漂移，本轮修正为 Open 并注明「关闭条件已满足，待人工确认关闭」。违反了 §20「事实字段只能来自权威来源」——issue 状态的权威是 GitHub，不是账本叙述。
-2. FR-031~036 的优先级标注为 [INFERRED, MED]：基于规格复杂度和依赖关系推断，非 GitHub issue 正式分级。Approved 后 task-split 阶段可能调整。
+无。本轮同步以 GitHub/Beads 已闭合账本、Plan008 release closeout、PR #145 合并至 `f046e16` 为当前口径；早期 #1106/Open 状态漂移只作为历史背景保留。

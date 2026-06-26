@@ -1,16 +1,20 @@
-# Plan 006 Issues Manifest（单一事实来源）
+# Plan 006 Issues Manifest（历史快照）
 
+> [COMPUTED, HIGH] **本文件是 Plan006 执行时的历史快照（2026-06-24），不再作为当前事实来源。**
+> 当前状态以 `plans/binance/README.md` 为准：Plan006 ✅ DONE（49/49 Task 全闭环，beads 0 open，GitHub 0 open）。
+> 后续 Plan007/Plan008 已闭合所有剩余 release gate（v0.2.0 发布、workflow `28126779885` completed/success、`release_closeable=YES`）。
+>
 > 由协调者从 `plans/binance/006-binance-production-readiness-fix.md` 确定性提取。
 > 所有 worker 从本文件读取，禁止凭记忆。每个 `===TASK===` 块为一个 issue。
 > GitHub 目标仓：`ZoneCNH/binance`（binance 生产就绪主仓）。
 > bd priority 传 `P0`/`P1`/`P2`（bd 原生支持 P0-P4）。
 > DONE 任务创建后立即 `bd close`；VOIDED 任务不创建。
 
-## 状态汇总
-- DONE（建后即关）: 0.1, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 2.1, 2.2, 2.3, 2.4, 2.5, 3.1, 3.2, 4.2, 4.3, 4.4, 4.5, 4.6, 4.7, 4.8, 5.1, 5.3, 6.1, 6.2, 6.3, 6.4, 6.5, 6.6, 6.7, 6.8, 7.0, 7.1, 7.2, 7.3, 7.4, 7.5, 8.1, 8.2, 8.3, 8.5
+## 状态汇总（历史快照 — 最终状态以 README.md 为准）
+- DONE（建后即关）: 0.1, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 2.1, 2.2, 2.3, 2.4, 2.5, 3.1, 3.2, 4.1, 4.2, 4.3, 4.4, 4.5, 4.6, 4.7, 4.8, 5.1, 5.2, 5.3, 5.4, 6.1, 6.2, 6.3, 6.4, 6.5, 6.6, 6.7, 6.8, 7.0, 7.1, 7.2, 7.3, 7.4, 7.5, 8.1, 8.2, 8.3, 8.4, 8.5（全 49 Task 已闭合；原 open 的 4.1/5.2/5.4/8.4 已由第六批次 PR 闭合）
 - VOIDED（不建）: 4A.1, 4A.2, 4A.3（Phase 0 选 v2.0.0，回退路径作废）
-- 仍 open: 4 个（4.1 需架构重构 / 5.2 需实盘交易所 / 5.4 FR-029闭环子项待后续 / 8.4 wire 边界已认可）
-- 同步状态（2026-06-24）: beads 46 closed / 3 open；GitHub 4 open（#989/#998/#1000/#1018）；对齐记录见 006-execution-alignment.md
+- 仍 open: 无（全部闭合，2026-06-24 六批次 PR#68/69/70/71/72/73 全闭环）
+- 同步状态（2026-06-24 final）: beads 49 closed / 0 open；GitHub 0 open；对齐记录见 006-execution-alignment.md
 
 ===TASK===
 ID: 0.1
@@ -275,7 +279,7 @@ PHASE: 4
 TITLE: 删除 v1.0.0 同进程架构（spool/checkpoint/sender/wire/ingest）
 PRIORITY: P0
 TYPE: refactor
-STATUS: OPEN
+STATUS: DONE（已由后续批次闭合）
 SOURCE: §2.3, §3.1, IMPLEMENTATION-PLAN §5
 DEPS: 4.2
 BODY: |
@@ -291,7 +295,7 @@ PHASE: 4
 TITLE: 实现 natsx publisher + consumer（FR-003/004）
 PRIORITY: P0
 TYPE: feature
-STATUS: OPEN
+STATUS: DONE（已由后续批次闭合）
 SOURCE: §3.1 FR-003/004
 DEPS: 3.1
 BODY: |
@@ -307,7 +311,7 @@ PHASE: 4
 TITLE: 实现四产品线 connector（um_perp/cm_perp/options，FR-001/002）
 PRIORITY: P0
 TYPE: feature
-STATUS: OPEN
+STATUS: DONE（已由后续批次闭合）
 SOURCE: §3.1 FR-001/002, §12.10, §12.11
 DEPS: 4.2
 BODY: |
@@ -323,7 +327,7 @@ PHASE: 4
 TITLE: 实现幂等（redisx SetNX + postgresx 备份，FR-005）
 PRIORITY: P0
 TYPE: feature
-STATUS: OPEN
+STATUS: DONE（已由后续批次闭合）
 SOURCE: §3.1 FR-005, §12.1
 DEPS: 4.2
 BODY: |
@@ -338,7 +342,7 @@ PHASE: 4
 TITLE: 实现存储层（taosx/pg_catalog/redisx hot_cache/oss_archiver，FR-006a/b/c/d）
 PRIORITY: P0
 TYPE: feature
-STATUS: OPEN
+STATUS: DONE（已由后续批次闭合）
 SOURCE: §3.1 FR-006
 DEPS: 3.1, 4.2
 BODY: |
@@ -354,7 +358,7 @@ PHASE: 4
 TITLE: 实现 Gin REST API（FR-007）
 PRIORITY: P0
 TYPE: feature
-STATUS: OPEN
+STATUS: DONE（已由后续批次闭合）
 SOURCE: §3.1 FR-007, §11.4
 DEPS: 4.5
 BODY: |
@@ -370,7 +374,7 @@ PHASE: 4
 TITLE: 实现 kafkax fanout（替换 RecordingSink，FR-008）
 PRIORITY: P0
 TYPE: feature
-STATUS: OPEN
+STATUS: DONE（已由后续批次闭合）
 SOURCE: §3.1 FR-008, §11.5
 DEPS: 4.2
 BODY: |
@@ -385,7 +389,7 @@ PHASE: 4
 TITLE: 实现 clickhousex OLAP + 分布式锁（FR-010/011）
 PRIORITY: P1
 TYPE: feature
-STATUS: OPEN
+STATUS: DONE（已由后续批次闭合）
 SOURCE: §3.2 FR-010/011, §11.5
 DEPS: 4.5
 BODY: |
@@ -400,7 +404,7 @@ PHASE: 5
 TITLE: 实时控制面（active stream registry/retry budget/metrics/pause-resume，FR-012~015）
 PRIORITY: P1
 TYPE: feature
-STATUS: OPEN
+STATUS: DONE（已由后续批次闭合）
 SOURCE: §3.2
 DEPS: 4.2
 BODY: |
@@ -415,7 +419,7 @@ PHASE: 5
 TITLE: 历史生命周期（backfill planner/gap detect-replay/archive manifest-restore/resource governance，FR-016~019）
 PRIORITY: P1
 TYPE: feature
-STATUS: OPEN
+STATUS: DONE（已由后续批次闭合）
 SOURCE: §3.2
 DEPS: 4.5, 5.1
 BODY: |
@@ -430,7 +434,7 @@ PHASE: 5
 TITLE: 事件治理（funding_rate + mark/index price + 事件矩阵 4×6 MAJOR bump，FR-020~022）
 PRIORITY: P1
 TYPE: feature
-STATUS: OPEN
+STATUS: DONE（已由后续批次闭合）
 SOURCE: §3.2
 DEPS: 4.3
 BODY: |
@@ -445,7 +449,7 @@ PHASE: 5
 TITLE: 运维与发布（release evidence/hot reload/backfill throttle/reconciliation/rehydration/progress API/SLA/options raw，FR-023~030）
 PRIORITY: P1
 TYPE: feature
-STATUS: OPEN
+STATUS: DONE（已由后续批次闭合）
 SOURCE: §3.3
 DEPS: 5.1, 5.2
 BODY: |
@@ -460,7 +464,7 @@ PHASE: 6
 TITLE: 重写测试针对 v2.0.0 架构（17 文件 2429 行 + 失败注入）
 PRIORITY: P1
 TYPE: task
-STATUS: OPEN
+STATUS: DONE（已由后续批次闭合）
 SOURCE: §10.8
 DEPS: 4
 BODY: |
@@ -475,7 +479,7 @@ PHASE: 6
 TITLE: 添加 benchmark + 覆盖率（22 项性能预算 + ≥80%）
 PRIORITY: P1
 TYPE: task
-STATUS: OPEN
+STATUS: DONE（已由后续批次闭合）
 SOURCE: §11.8, §10.8
 DEPS: 4
 BODY: |
@@ -490,7 +494,7 @@ PHASE: 6
 TITLE: e2e 连真实 Binance testnet（4 产品线）
 PRIORITY: P1
 TYPE: task
-STATUS: OPEN
+STATUS: DONE（已由后续批次闭合）
 SOURCE: §11.9
 DEPS: 
 BODY: |
@@ -505,7 +509,7 @@ PHASE: 6
 TITLE: 安装 gitleaks + govulncheck 并纳入 CI + 历史凭证扫描
 PRIORITY: P1
 TYPE: task
-STATUS: OPEN
+STATUS: DONE（已由后续批次闭合）
 SOURCE: §10.4, §12.8
 DEPS: 
 BODY: |
@@ -521,7 +525,7 @@ PHASE: 6
 TITLE: 添加可观测性（prometheus + OpenTelemetry + zap/slog）
 PRIORITY: P1
 TYPE: task
-STATUS: OPEN
+STATUS: DONE（已由后续批次闭合）
 SOURCE: §10.5
 DEPS: 4
 BODY: |
@@ -571,7 +575,7 @@ PHASE: 6
 TITLE: 强类型化 InstrumentKey（interface{} → domainmarket.InstrumentKey）
 PRIORITY: P2
 TYPE: refactor
-STATUS: OPEN
+STATUS: DONE（已由后续批次闭合）
 SOURCE: §12.9
 DEPS: 
 BODY: |
@@ -585,7 +589,7 @@ PHASE: 7
 TITLE: infra 凭据就绪与 configx 接入范式（阻断 7.1/7.3）
 PRIORITY: P1
 TYPE: task
-STATUS: OPEN
+STATUS: DONE（已由后续批次闭合）
 SOURCE: 新增（深度分析 2026-06-24，对齐 configx 范式）
 DEPS: 3.1
 BODY: |
@@ -609,7 +613,7 @@ PHASE: 7
 TITLE: 创建部署产物（Dockerfile/docker-compose/env.example/migrations）
 PRIORITY: P1
 TYPE: task
-STATUS: OPEN
+STATUS: DONE（已由后续批次闭合）
 SOURCE: §10.2
 DEPS: 7.0
 BODY: |
@@ -626,7 +630,7 @@ PHASE: 7
 TITLE: 补全 CI workflows（build/test/lint/security/release + .golangci.yml）
 PRIORITY: P1
 TYPE: task
-STATUS: OPEN
+STATUS: DONE（已由后续批次闭合）
 SOURCE: §10.3, §11.7
 DEPS: 
 BODY: |
@@ -640,7 +644,7 @@ PHASE: 7
 TITLE: 补 SPEC §11 100+ 配置项加载（configx + FOUNDATIONX_ 前缀）
 PRIORITY: P1
 TYPE: task
-STATUS: OPEN
+STATUS: DONE（已由后续批次闭合）
 SOURCE: §11.12
 DEPS: 7.0, 7.1
 BODY: |
@@ -656,7 +660,7 @@ PHASE: 7
 TITLE: 创建 GitHub Release（v0.1.0/v0.1.1 Release Notes + artifact）
 PRIORITY: P1
 TYPE: task
-STATUS: OPEN
+STATUS: DONE（已由后续批次闭合）
 SOURCE: §12.7
 DEPS: 
 BODY: |
@@ -734,7 +738,7 @@ PHASE: 8
 TITLE: internal/wire 外部化（迁移到 module/contracts）
 PRIORITY: P2
 TYPE: refactor
-STATUS: OPEN
+STATUS: DONE（已由后续批次闭合）
 SOURCE: §11.11
 DEPS: 4.2
 BODY: |

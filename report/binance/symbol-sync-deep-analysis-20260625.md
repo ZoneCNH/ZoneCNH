@@ -2,10 +2,10 @@
 
 - Report-Date: 2026-06-25
 - Report-Type: Deep Analysis（symbol 同步清单、数据量、限流、服务器评估、分批策略）
-- Runtime-Anchor: `/home/binance@f18a329` (v0.2.0+9)
+- Runtime-Anchor: `/home/binance@f046e16`（含 Plan008 全部 40 Task 代码实现；PR #145 合并）
 - Issue-Ledger: [`issues-sync-20260625.md`](./issues-sync-20260625.md)
 - Status-Projection: `24 Done / 10 Partial / 0 Pending`
-- Issue-State: `#1106` Closed；`#1104`、`#1105`、`#1107`-`#1118` Open
+- Issue-State: report ledger `#1104`-`#1118` + `#1123` = 16/16 Closed；Plan008 `#1132`-`#1171` = 40/40 Closed
 - Doc-Anchor: `module/binance/` SPEC v3.6.0
 - Analyst: ZCode（GLM-5.2），受 `docs/constitution/20-epistemic-standards.md` §20 约束
 
@@ -19,7 +19,7 @@
 
 `[INFERRED, HIGH]` **全量实时采集的目标服务器配置**：8 核 CPU / 16 GB RAM / 200 Mbps 上行 / TDengine 独立 SSD 节点（500GB NVMe 起）。当前 `resource_governance.go` 默认 `MaxConcurrent=4`、`MaxMemMB=256`，仅适合 **~200 symbol** 的中等规模，无法支撑全量。
 
-`[INFERRED, HIGH]` **关键结论：当前模块的「symbol 同步」能力存在三层断层**——(1) catalog 硬编码 5 个 symbol，无全量发现装载机制；(2) REST backfill 的 `routeEndpoint` 仅覆盖 spot，um/cm/options 未路由；(3) throttle 全局上限 `DefaultBackfillThrottlePerMinute=120` 是本地规划守卫，未对接 Binance 真实权重预算。
+`[INFERRED, HIGH]` **历史关键结论（PR #103/#104 前）：模块的「symbol 同步」能力曾存在三层断层**——(1) catalog 硬编码 5 个 symbol，无全量发现装载机制；(2) REST backfill 产品线路由不完整；(3) throttle 使用本地规划守卫，未对接 Binance 真实权重预算。当前 issue ledger 已闭合 REST route、HistoryFetcher 注入与 weight-aware token bucket 类缺口；严格能力边界仍以 `10 Partial + 6 Draft` 表达。
 
 `[COMPUTED, HIGH]` 本报告保留 symbol 同步深度分析语境；当前行动清单、关闭条件和 issue 状态统一指向 [`issues-sync-20260625.md`](./issues-sync-20260625.md)。
 
@@ -176,7 +176,7 @@
         ├─ 冷启动 backfill（REST，历史补齐）─────────────────────┐
         │  history_rest.go FetchHistorical (klines/aggTrades)   │
         │  限制: weight budget + 分页 + 重试                     │
-        │  断层: 仅 spot 路由，um/cm/options 未实现 (§4.1)       │
+        │  历史断层: 产品线路由缺口（ledger 已 Closed）          │
         └────────────────────────────────────────────────────────┘
         │
         ├─ Gap 检测与 replay（FR-017）──────────────────────────┐
@@ -193,7 +193,7 @@
         │
         └─ 资源治理（FR-019/025）───────────────────────────────┐
            resource_governance.go: MaxConcurrent=4, MaxMemMB=256 │
-           throttle.go: 80/20 split, 120/min 本地守卫             │
+           throttle.go: 历史 80/20 split + 本地规划守卫            │
         ──────────────────────────────────────────────────────────
 ```
 
@@ -202,7 +202,7 @@
 | 分类                      | 触发           | 数据源      | 优先级             | 限流归属                          | 当前状态                          |
 | ------------------------- | -------------- | ----------- | ------------------ | --------------------------------- | --------------------------------- |
 | **实时 WS 采集**          | 进程启动       | WS mainnet  | P0 实时            | 无 weight 约束（WS 不计 weight）  | ✅ spot 装配；um/cm/options 待 G7 |
-| **冷启动 kline backfill** | 首次启动       | REST klines | P1 cold_start(80%) | spot 1200/futures 2400 weight/min | ⚠️ 仅 spot 路由                   |
+| **冷启动 kline backfill** | 首次启动       | REST klines | P1 cold_start(80%) | spot 1200/futures 2400 weight/min | 历史路由缺口已由 ledger 闭合       |
 | **Gap replay**            | 断流检测       | REST klines | P2 repair(20%)     | 共享 weight budget                | ⚠️ Partial（FR-017）              |
 | **每日对账**              | 04:00 UTC cron | REST klines | P2 repair(20%)     | 共享 weight budget                | ⚠️ Partial（FR-026）              |
 | **冷数据回热**            | 查询命中 OSS   | OSS parquet | P3 按需            | 无 weight（本地 IO）              | ⚠️ Partial（FR-027）              |
@@ -218,27 +218,27 @@
 | **COIN-M**  | `dapi.binance.com` | **2,400 weight/min**（IP 维度） | Binance COIN-M docs `[KNOWN]`  |
 | **Options** | `vapi.binance.com` | **6,000 weight/min**（IP 维度） | Binance Options docs `[KNOWN]` |
 
-`[COMPUTED, HIGH]` **runtime 当前权重处理（throttle.go）存在严重错配**：
+`[COMPUTED, HIGH]` **历史 runtime 权重处理（throttle.go）曾存在严重错配**：
 
 ```
-throttle.go:14  DefaultBackfillThrottlePerMinute = 120   // 本地规划守卫
-lifecycle.go:48 BackfillThrottlePerMinute: 120           // 注入 throttle
+throttle.go:14  历史默认 backfill 规划守卫
+lifecycle.go:48 历史默认值注入 throttle
 ```
 
-- runtime 用 **120/min** 作为全局 backfill 节流上限——这是 **spot 官方限额 1,200 的 1/10**，远低于实际可用预算
-- throttle.go 实现的是**滑动窗口计数**（`Allow()` 增减 `coldStartUsed`），**不是 token bucket**（SPEC FR-025 AC-087 要求「token bucket 感知 weight」）
+- runtime 曾用保守全局 backfill 节流上限——这是 spot 官方限额的约 1/10，远低于实际可用预算
+- throttle.go 历史实现是**滑动窗口计数**（`Allow()` 增减 `coldStartUsed`），不是 SPEC FR-025 AC-087 要求的 weight-aware token bucket
 - **未区分产品线**：spot/um/cm 共享同一 120/min 预算，而实际三者限额独立（1,200/2,400/2,400）
 
-`[INFERRED, HIGH]` 这是 `issues-sync-20260625.md` P1-03「补齐速率限制平滑与 token bucket 机制」的根因——窗口计数既不感知真实 weight（每页 5 weight 不是 1），也不分产品线。
+`[INFERRED, HIGH]` 这是 `issues-sync-20260625.md` #1109「补齐速率限制平滑与 token bucket 机制」的历史根因；#1109 当前已 Closed（代码修复）。
 
 **80/20 配额拆分（throttle.go）**：
 
 | 预算块     | 占比 | weight/min（spot 基准） | 用途                  |
 | ---------- | ---- | ----------------------- | --------------------- |
-| cold_start | 80%  | 120 × 80% = **96**      | 冷启动历史回补        |
-| repair     | 20%  | 120 × 20% = **24**      | gap replay + 每日对账 |
+| cold_start | 80%  | 历史默认值 × 80%        | 冷启动历史回补        |
+| repair     | 20%  | 历史默认值 × 20%        | gap replay + 每日对账 |
 
-`[COMPUTED, HIGH]` cold_start 仅 96 weight/min，单 symbol 30d kline 需 220 weight → **一个 symbol 就耗尽近 2.3 分钟配额**。全量回补效率极低。
+`[COMPUTED, HIGH]` 在历史默认值下，单 symbol 30d kline 需 220 weight，单 symbol 即会消耗多分钟配额。该效率缺口已归入 #1109 的历史根因。
 
 ---
 
@@ -392,16 +392,16 @@ um_perp（`/fapi/v1/klines`）、cm_perp（`/dapi/v1/klines`）**未路由**。�
 | -------------------------------------- | --------------------------------------------------- | ----------------------------- | --------------------------------------------------- |
 | **catalog 仅硬编码 5 symbol**          | `runtime.go:92` `DefaultSpotCatalog()`              | 无法装载全量 symbol           | 默认启用 exchangeInfo 发现 + 注入 `ExchangeInfoURL` |
 | **um/cm/options 无 exchangeInfo 发现** | `exchangeinfo.go` 仅 spot                           | 合约/期权 symbol 无法自动同步 | 实现 `FetchUM/CM/OptionsExchangeInfo`               |
-| **backfill 仅 spot 路由**              | `history_rest.go:143-154`                           | 合约/期权无法历史回补         | `routeEndpoint` 补 um/cm/options 分支               |
+| **历史 backfill 路由缺口**             | `history_rest.go:143-154`                           | 合约/期权无法历史回补         | `routeEndpoint` 补 um/cm/options 分支               |
 | **runtime 未注入 HistoryFetcher**      | `runtime.go:96,102` `DefaultHistoryRuntimeConfig()` | backfill 走 stub              | 注入 `newRESTHistoryFetcher`                        |
 
 ### 6.2 P1 优化（影响效率与正确性）
 
 | 缺口                                   | 文件:行号                         | 影响                        | 修复                                            |
 | -------------------------------------- | --------------------------------- | --------------------------- | ----------------------------------------------- |
-| **throttle 用窗口计数非 token bucket** | `throttle.go:90-117`              | 不感知真实 weight，过度保守 | 实现 weight-aware token bucket（AC-087）        |
+| **历史 throttle 计数模型缺口**         | `throttle.go:90-117`              | 不感知真实 weight，过度保守 | 实现 weight-aware token bucket（AC-087）        |
 | **throttle 不分产品线**                | `throttle.go:31-40` 全局单 budget | spot/um/cm 共享限额浪费     | 按产品线独立 budget（1200/2400/2400）           |
-| **throttle 默认 120/min 远低于官方**   | `lifecycle.go:14`                 | 仅用 spot 额度的 1/10       | 默认对齐官方（spot 1200，或按配置注入）         |
+| **历史 throttle 默认值偏保守**         | `lifecycle.go:14`                 | 仅用 spot 额度的一小部分    | 默认对齐官方（spot 1200，或按配置注入）         |
 | **WS 单连接不分批**                    | `spot.go:315`                     | 超 256 symbol 单连接溢出    | 多连接 manager（`stream_registry.go` 已有骨架） |
 
 ### 6.3 P2 增强（规模化所需）
@@ -424,7 +424,7 @@ um_perp（`/fapi/v1/klines`）、cm_perp（`/dapi/v1/klines`）**未路由**。�
 2. **实时 WS 带宽**：L2 830 symbol ~80 Mbps，L3 spot 1,360 ~98 Mbps（含 depth）；全量 3,616 需 15 个 WS 连接、~260 Mbps
 3. **Backfill 是 weight 约束任务**：spot 1,360 symbol 30d kline 需 ~5.2 小时（80/20 配额）；trade 历史不可行
 4. **服务器配置**：L2 推荐 4C/8G client + 8C/16G/8TB taosx；L3 需 taosx 集群（单节点上限 ~4TB 活跃数据）
-5. **当前 runtime 有 3 层断层**：catalog 硬编码 5 symbol + backfill 仅 spot 路由 + throttle 配置错配（120/min vs 官方 1,200）
+5. **历史 runtime 曾有 3 层断层**：catalog 硬编码 5 symbol + backfill 路由缺口 + throttle 配置错配；其中 backfill route、HistoryFetcher 注入与 token bucket 类缺口已由当前 issue ledger 记录为 Closed
 6. **Options 是 6-underlying 动态问题**：1,546 合约 = 6 标的 × 多 strike/expiry，本质是动态发现而非静态同步
 
 ### 7.2 实测校验结果（2026-06-25 已执行）
@@ -460,10 +460,10 @@ curl -s https://eapi.binance.com/eapi/v1/exchangeInfo | jq '[.optionSymbols[]|se
 | catalog 硬编码 5 symbol          | `catalog.go:45-67`             | `DefaultSpotCatalog` + `DefaultMarketCatalog`                            |
 | exchangeInfo 仅 spot             | `exchangeinfo.go:60`           | `FetchSpotExchangeInfo`，无 um/cm/options 版本                           |
 | runtime 默认不走 exchangeInfo    | `runtime.go:92,130`            | `DefaultSpotCatalog()` + `if cfg.ExchangeInfoURL != ""`                  |
-| backfill 仅 spot 路由            | `history_rest.go:143-154`      | `routeEndpoint` 仅 spot/kline、spot/aggTrade                             |
+| 历史 backfill 路由缺口           | `history_rest.go:143-154`      | `routeEndpoint` 曾只覆盖 spot/kline、spot/aggTrade                       |
 | runtime 未注入 fetcher           | `runtime.go:96,102`            | `DefaultHistoryRuntimeConfig()` 无 fetcher                               |
-| throttle 窗口计数非 token bucket | `throttle.go:90-117`           | `Allow()` 用 `coldStartUsed++` 计数                                      |
-| throttle 默认 120/min            | `lifecycle.go:14`              | `DefaultBackfillThrottlePerMinute = 120`                                 |
+| 历史 throttle 计数模型           | `throttle.go:90-117`           | `Allow()` 曾用窗口计数                                                   |
+| 历史 throttle 默认值             | `lifecycle.go:14`              | 历史默认 backfill 规划守卫                                               |
 | throttle 不分产品线              | `throttle.go:31-40`            | 单 `ThrottleManager` 全局 budget                                         |
 | resource_governance 默认 4 并发  | `resource_governance.go:42-47` | `MaxConcurrent: 4, MaxMemMB: 256`                                        |
 | WS 组合流 1024 stream 上限       | `spot.go:315`                  | `buildStreamURL` 拼接                                                    |

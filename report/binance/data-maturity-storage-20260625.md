@@ -2,11 +2,13 @@
 
 - Report-ID: binance-data-maturity-storage-20260625
 - 所属主报告：[`data-maturity-assessment-20260625.md`](data-maturity-assessment-20260625.md) §3 数据存储行
-- Runtime-Anchor：`/home/binance@3f20be0`
+- Historical Runtime Anchor：`/home/binance@3f20be0`
+- Current Effective Runtime Anchor：`/home/binance@f046e16`（含 Plan008 全部 40 Task 代码实现；PR #145 合并）
 - 评估日期：2026-06-25
 - 范围：FR-005（幂等）/ FR-006a~d（taos/pg/redis/oss 四层存储）/ FR-007/007a（API）/ FR-010（clickhouse OLAP）/ FR-011（分布式锁）/ FR-018（归档 manifest）
 
 > [COMPUTED, HIGH] 本报告所有缺口声明经 Explore agent 在 runtime `/home/binance` 逐条 file:line 核查。规格参数来自 `module/binance/SPEC.md` §11 Config 实读。
+> [COMPUTED, HIGH] 本报告保留 2026-06-25 历史评估语境；当前 issue ledger 与 runtime anchor 以 [`issues-sync-20260625.md`](issues-sync-20260625.md) 和 `/home/binance@f046e16`（含 Plan008 全部 40 Task 代码实现；PR #145 合并）为准。
 
 ---
 
