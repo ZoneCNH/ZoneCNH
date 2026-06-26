@@ -34,7 +34,9 @@
 
 `[COMPUTED, HIGH]` 二次补证状态（2026-06-26）：Plan008 closeout 后新增的证据补强 GitHub issues #1180-#1186 已 7/7 CLOSED；对应 beads `ZoneCNH-rm93` / `ZoneCNH-gar4` / `ZoneCNH-9ql1` / `ZoneCNH-an3k` / `ZoneCNH-lfel` / `ZoneCNH-7k6i` / `ZoneCNH-1xwk` 已 7/7 `closed`。这些 issue 是 closeout evidence backfill，不新增或改写 T008.001-T040 的 40 Task SSOT。
 
-**三方 100% 一致，0 遗漏，0 open Plan008 issue。**
+`[COMPUTED, HIGH]` 最终对齐复核（2026-06-26）：最终 10 轮当前态校验已输出 `10_ROUNDS_PASS`；校验面覆盖 GitHub #1180-#1186 CLOSED、对应 beads closed、七个 `fix/plan008-live-followups` worktree clean 且与远端分支一致、两份对齐文档包含所有 issue/beads/commit 锚点。
+
+**三方 100% 一致，0 遗漏，0 open Plan008 issue；二次补证 #1180-#1186 也已 7/7 CLOSED。**
 
 ---
 
@@ -203,6 +205,8 @@ T039 ──blocks──▶ T040(TRACEABILITY 同步)
 - **40/40 CLOSED**（GitHub `plan008` issues #1132-#1171）
 - **40/40 closed**（beads `plan008` issues）
 - **T008.039/T008.040 release evidence**：`v0.2.0` / workflow `28126779885` / `release_closeable=YES`
+- **二次补证 #1180-#1186**：GitHub 7/7 CLOSED，beads 7/7 closed
+- **最终当前态 10 轮复核**：`10_ROUNDS_PASS`；7 个 worktree clean 且与远端分支一致，两份对齐文档锚点完整
 - **0 open Plan008 issue**
 - binance 仓旧 issue 40 个全部 CLOSED，无活跃重复
 - binance PR #145 仍为 OPEN 但远端检查 CLEAN/全部 SUCCESS；这是代码同步 PR 状态，不是 Plan008 issue 遗留
