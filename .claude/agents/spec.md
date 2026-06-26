@@ -107,7 +107,7 @@ grep -rl "v{OLD}" README.md ARCHITECTURE.md STATUS.md module/README.md \
 
 ```bash
 # 优先：运行 CI 门禁脚本（覆盖 5 个范围，具备智能过滤）
-bash scripts/check-version-drift.sh {name} {OLD} {NEW}
+bash scripts/check-version-drift.sh {name} {OLD} {NEW}  # 6 个范围，模块感知，动态依赖/模板
 
 # 备用：手动验证（若脚本不可用）
 grep -r "v{OLD}" module/{name}/ README.md ARCHITECTURE.md STATUS.md \
