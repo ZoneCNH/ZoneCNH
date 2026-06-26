@@ -8,7 +8,7 @@
 > - **GitHub 仓库：`ZoneCNH/ZoneCNH`**（issues #1132-#1171）
 > - beads workspace：`ZoneCNH`（prefix=ZoneCNH，label `plan008`）
 > - Runtime-Anchor：`/home/binance@f18a329`（Plan008 final closeout；PR #103+#104 runtime fix baseline 为 `3f20be0`）
-> - Final-Code-Anchor：`/home/binance` `fix/plan008-production-fixes@46d8aa8`（PR #145，OPEN）；`/home/kafkax` `fix/plan008-production-fixes@7b2d9ce`
+> - Final-Code-Anchor：`/home/binance` `fix/plan008-production-fixes@564cb67`（PR #145，OPEN，远端检查 CLEAN/全部 SUCCESS）；`/home/kafkax` `fix/plan008-production-fixes@7b2d9ce` / tag `v1.1.1`
 
 ---
 
@@ -28,7 +28,7 @@
 
 `[COMPUTED, HIGH]` 最终收口状态：GitHub `plan008` issues 40/40 CLOSED，beads `plan008` issues 40/40 `closed`；T008.039/T008.040 已记录 release closeout 证据：GitHub Release `v0.2.0`，workflow `28126779885` completed/success，`release_closeable=YES`，#1170/#1171 closed。
 
-`[COMPUTED, HIGH]` Kafka 补证状态：T008.003 的最终代码证据落在 `kafkax@7b2d9ce` 与 `binance@46d8aa8`；binance PR #145 已推送但仍为 OPEN。验证证据为 `go test ./cmd/binance-server`、`go test ./...`、10 轮 `git diff --check && go test ./... -count=1` 通过；未运行 live Kafka broker E2E 或生产凭证场景。
+`[COMPUTED, HIGH]` Kafka 补证状态：T008.003 的最终代码证据落在 `kafkax@7b2d9ce` / tag `v1.1.1` 与 `binance@564cb67`；binance PR #145 已推送且仍为 OPEN，但远端 `mergeStateStatus=CLEAN`，11 个 check run 全部 SUCCESS。验证证据为 `go test ./cmd/binance-server`、`go test ./...`、`make build`、`make test`、`make vet`、`make lint`、`make govulncheck`、`make test-race`、`make cover`、10 轮 `git diff --check && go test ./... -count=1` 通过；未运行 live Kafka broker E2E 或生产凭证场景。
 
 `[COMPUTED, HIGH]` 验证脚本路径口径（2026-06-26）：`008-verify-faithfulness.sh` 与 `008-verify-10rounds.sh` 从脚本所在目录解析 Plan、SSOT 与映射文件，避免 feature worktree 中误读主 checkout；release 与 issue 状态口径不变。
 
@@ -189,7 +189,7 @@ T039 ──blocks──▶ T040(TRACEABILITY 同步)
 - **T008.039/T008.040 release evidence**：`v0.2.0` / workflow `28126779885` / `release_closeable=YES`
 - **0 open Plan008 issue**
 - binance 仓旧 issue 40 个全部 CLOSED，无活跃重复
-- binance PR #145 仍为 OPEN；这是代码同步 PR 状态，不是 Plan008 issue 遗留
+- binance PR #145 仍为 OPEN 但远端检查 CLEAN/全部 SUCCESS；这是代码同步 PR 状态，不是 Plan008 issue 遗留
 
 ---
 

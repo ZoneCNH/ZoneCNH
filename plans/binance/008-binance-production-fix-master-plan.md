@@ -5,7 +5,7 @@
 - Plan-ID: 008
 - 日期：2026-06-25
 - Runtime-Anchor：`/home/binance@f18a329`（Plan008 final closeout；PR #103+#104 runtime fix baseline 为 `3f20be0`）
-- Final-Code-Anchor：`/home/binance` `fix/plan008-production-fixes@46d8aa8`（PR #145，OPEN）；`/home/kafkax` `fix/plan008-production-fixes@7b2d9ce`
+- Final-Code-Anchor：`/home/binance` `fix/plan008-production-fixes@564cb67`（PR #145，OPEN，远端检查 CLEAN/全部 SUCCESS）；`/home/kafkax` `fix/plan008-production-fixes@7b2d9ce` / tag `v1.1.1`
 - Spec-Anchor：`module/binance/SPEC.md` v3.6.0 / `TRACEABILITY.md` v3.6.1
 - Status-Projection（修复前）：`24 Done / 10 Partial / 0 Pending`（FR-001~030）+ `6 Draft`（FR-031~036）
 - 前序 Plan：[Plan 006](006-binance-production-readiness-fix.md)（49 Task，✅ DONE）/ [Plan 007](007-binance-readiness-arch-fix.md)（18 Task，✅ DONE）
@@ -25,7 +25,7 @@
 
 > `[COMPUTED, HIGH]` Final-Closeout（2026-06-25 UTC）：Plan008 40/40 Task 已完成收口；GitHub `ZoneCNH/ZoneCNH` #1132-#1171 全部 CLOSED，beads `plan008` 40/40 `closed`，T008.039/T008.040 已记录 release closeout 证据：GitHub Release `v0.2.0`，Release workflow `28126779885` completed/success，`release_closeable=YES`。
 
-> `[COMPUTED, HIGH]` Kafka 补证（2026-06-25 UTC）：T008.003 的最后阻塞点已在 `kafkax@7b2d9ce` 修复并测试，`binance@46d8aa8` 已切到 `github.com/ZoneCNH/kafkax v1.1.1-0.20260625153455-7b2d9ce55658`，`kafkaxRuntimeConfig` 使用 `RequiredAcks=-1` + `Idempotent=true` 并由 `config.Validate()` 回归覆盖；`go test ./cmd/binance-server`、`go test ./...`、10 轮 `git diff --check && go test ./... -count=1` 均通过。边界：本轮未使用生产凭证，未跑 live Kafka broker E2E。
+> `[COMPUTED, HIGH]` Kafka 补证（2026-06-26 UTC）：T008.003 的最后阻塞点已在 `kafkax@7b2d9ce` 修复并发布 tag `v1.1.1`，`binance@564cb67` 已切到 `github.com/ZoneCNH/kafkax v1.1.1`，`kafkaxRuntimeConfig` 使用 `RequiredAcks=-1` + `Idempotent=true` 并由 `config.Validate()` 回归覆盖；`go test ./cmd/binance-server`、`go test ./...`、`make build`、`make test`、`make vet`、`make lint`、`make govulncheck`、`make test-race`、`make cover`、10 轮 `git diff --check && go test ./... -count=1` 均通过。PR #145 远端 `mergeStateStatus=CLEAN`，11 个 check run 全部 SUCCESS（含 Test & Race & Cover run `28210343266`/`28210341784`）。边界：本轮未使用生产凭证，未跑 live Kafka broker E2E。
 
 ---
 
@@ -200,7 +200,7 @@ Phase 4（验收与门禁）
 | -------- | --------------------------------------------------------------------- | :--------: | --------------- | :--: | ---------------------------------------------- | --------------- |
 | T008.001 | taosx Client interface 新增 `DeleteRange(ctx, table, before)`         |     S1     | Foundation      |  —   | interface 合入 taosx 仓 + 单测；binance 可调用 | R5§3.1 / R6§2.5 |
 | T008.002 | natsx 新增 `OnDeadLetter(msg)` 回调 hook（MaxDeliver 超限 Term 触发） |     S5     | Foundation      |  —   | hook 合入 natsx 仓 + 单测；binance 可注入      | R6§2.1          |
-| T008.003 | kafkax Producer 默认 `RequiredAcks=all`，确认并修正默认值             |     S7     | Foundation      |  —   | `kafkax@7b2d9ce` 支持 `RequiredAcks=-1`；`binance@46d8aa8` 依赖补丁版并用 `config.Validate()` 回归 | R6§2.2          |
+| T008.003 | kafkax Producer 默认 `RequiredAcks=all`，确认并修正默认值             |     S7     | Foundation      |  —   | `kafkax@7b2d9ce` / `v1.1.1` 支持 `RequiredAcks=-1`；`binance@564cb67` 依赖 tag 版并用 `config.Validate()` 回归；PR #145 远端检查全绿 | R6§2.2          |
 | T008.004 | FR-032 exchangeInfo 6h 刷新落地（G4/G5 的 catalog 前置）              |   FR-032   | binance         |  —   | exchangeInfo 6h cron 刷新 + symbol 目录准确    | R1§6 / R2§4.3   |
 | T008.005 | clickhousex DDL 校验：文档要求 ReplicatedMergeTree + TTL              | S3/S4 前置 | Foundation/文档 |  —   | 文档明确生产 DDL 要求                          | R6§2.7          |
 | T008.006 | kafkax dead-letter/retry topic 模式内建或文档化                       |     S6     | Foundation      |  —   | DLQ 模式合入或文档化                           | R6§2.2          |
