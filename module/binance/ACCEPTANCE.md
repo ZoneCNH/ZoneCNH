@@ -37,6 +37,7 @@
 | 文档文件存在 | `cd /home/ZoneCNH && test -f module/binance/FEATURES.md && test -f module/binance/ACCEPTANCE.md` | 两个文件都存在。 |
 | 文档补丁格式 | `cd /home/ZoneCNH && git diff --check -- module/binance` | 无 trailing whitespace 或 patch 格式错误。 |
 | 追溯锚点覆盖 | `cd /home/ZoneCNH && rg -n "FR-001|FR-010|FR-030|TC-001|TC-022|TC-049|AC-001|AC-035|AC-104" module/binance/SPEC.md module/binance/TRACEABILITY.md module/binance/FEATURES.md module/binance/ACCEPTANCE.md` | 根级 FR、AC、TC 锚点在规格、追溯和补齐文档中可定位。 |
+| 生产就绪门禁锚点覆盖 | `cd /home/ZoneCNH && rg -n "PRG-001|PRG-007|NFR-021|NFR-027" module/binance/SPEC.md module/binance/TRACEABILITY.md module/binance/ACCEPTANCE.md` | production readiness gates 与 NFR 追溯锚点可定位。 |
 | Runtime build | `cd /home/binance && go build ./...` | 所有 package 构建通过。 |
 | Runtime tests | `cd /home/binance && go test ./...` | 单元与集成测试通过。 |
 | Runtime race | `cd /home/binance && go test ./... -race -count=1` | 并发路径无 race。 |
@@ -44,6 +45,18 @@
 | Runtime lint | `cd /home/binance && golangci-lint run` | 无 lint blocker。 |
 | Secret scan | `cd /home/binance && gitleaks detect --no-git` | 无凭证泄漏。 |
 | Boundary gates | `cd /home/binance && bash -n scripts/boundary-gates.sh && ./scripts/boundary-gates.sh` | 13/13 PASS：禁止路径、禁止导入、禁止同进程 C/S、禁止 ownership drift、natsx/storage/gin presence 与 go.mod drift 全部 PASS；本地证据归档见 `/home/binance/release/evidence/binance/20260623/boundary-gates.log`。 |
+
+### 1.1 Production Readiness Gate 登记
+
+| Gate | 来源 | 验收证据 | 当前状态 |
+|------|------|----------|----------|
+| PRG-001 | SPEC §4.2 / NFR-021 | ClickHouse DDL diff、migration/test output、TTL 验证。 | Pending evidence |
+| PRG-002 | SPEC §4.2 / NFR-022 | `kafkax` retry/DLQ topic contract、failure-injection evidence、broker e2e 或等价 gated test。 | Pending evidence |
+| PRG-003 | SPEC §4.2 / NFR-023 | feature flag default、canary `/readyz`/error-rate evidence、rollback drill 或 runbook；FR-031~036 全量上线依赖本 gate。 | Pending evidence |
+| PRG-004 | SPEC §4.2 / NFR-024 | quota config、resource limit、failure isolation test。 | Pending evidence |
+| PRG-005 | SPEC §4.2 / NFR-025 | OpenTelemetry trace span/log evidence；未交付时 release notes 显式标 Deferred。 | Pending evidence |
+| PRG-006 | SPEC §4.2 / NFR-026 | append-only audit test、HA/DR/RPO/RTO 文档链接。 | Pending evidence |
+| PRG-007 | SPEC §4.2 / NFR-027 | capacity/cost metrics、data classification/retention/destroy evidence、credential rotation、stale/gap/DLQ/reconcile runbook。 | Pending evidence |
 
 ## 2. Acceptance Criteria 登记
 
