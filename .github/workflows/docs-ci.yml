@@ -175,6 +175,19 @@ jobs:
       - name: 校验 binance 文档治理规则
         run: bash scripts/check-binance-docs.sh
 
+  # ── 9b. 版本漂移检测 ────────────────────────────────────────
+  version-drift-guard:
+    name: Version Drift Guard
+    runs-on: [self-hosted, Linux, X64, homepage]
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 检测模块版本漂移（binance）
+        run: |
+          echo "检查 binance v3.6.0→v3.7.1 版本漂移..."
+          bash scripts/check-version-drift.sh binance 3.6.0 3.7.1
+
   # ── 10. Spec 状态报告 ───────────────────────────────────────
   spec-status-report:
     name: Spec Status Report
