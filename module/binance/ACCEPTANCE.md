@@ -164,6 +164,13 @@
 | FR-023~FR-024 | AC-081~AC-086 | TC-040~TC-042 | Not Closed |
 | FR-025~FR-028 | AC-087~AC-098 | TC-043~TC-046 | Not Closed |
 | FR-029~FR-030 | AC-099~AC-104 | TC-047~TC-049 | Not Closed |
+| FR-013 | AC-048~AC-051 | TC-030 | Not Closed（含于 FR-012~015 batch） |
+| FR-014 | AC-052~AC-055 | TC-031 | Not Closed（含于 FR-012~015 batch） |
+| FR-017 | AC-060~AC-063 | TC-034 | Not Closed（含于 FR-016~019 batch） |
+| FR-018 | AC-064~AC-067 | TC-035 | Not Closed（含于 FR-016~019 batch） |
+| FR-021 | AC-072~AC-075 | TC-038 | Not Closed（含于 FR-020~022 batch） |
+| FR-026 | AC-090~AC-092 | TC-044 | Not Closed（含于 FR-025~028 batch） |
+| FR-027 | AC-093~AC-095 | TC-045 | Not Closed（含于 FR-025~028 batch） |
 
 ## 5. Release Definition of Done
 
