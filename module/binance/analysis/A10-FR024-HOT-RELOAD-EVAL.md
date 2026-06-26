@@ -51,7 +51,7 @@
 
 ### 建议的分层文档化
 
-在 `module/binance/PERSISTENCE-WIRING.md` 已记录 storageFromEnv 装配契约。建议在 bootstrap 仓（或 ZoneCNH 架构文档）补充：
+在 `module/binance/server/PERSISTENCE-WIRING.md` 已记录 storageFromEnv 装配契约。建议在 bootstrap 仓（或 ZoneCNH 架构文档）补充：
 
 ```
 进程分层（composition root 层级）：
@@ -64,7 +64,7 @@
 ### 当前状态
 
 - binance 已隐式实现装配层（storage_env.go），但未显式文档化为「composition root」
-- 建议：在 PERSISTENCE-WIRING.md §1 补一句「本文件定义 binance 的 composition root（装配层）」
+- 建议：在 server/PERSISTENCE-WIRING.md §1 补一句「本文件定义 binance 的 composition root（装配层）」
 
 `[FRAME, HIGH]` 装配层概念已实质落地（storage_env.go），文档化是增强认知清晰度，非功能缺口。
 

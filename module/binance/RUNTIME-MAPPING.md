@@ -4,7 +4,7 @@
 > Module-Version: v3.7.1
 > 更新日期：2026-06-25
 > 替代：v1.0.0（gRPC + SQLite spool 架构）
-> 参见：`DEEP-ANALYSIS.md`（架构决策全文）
+> 参见：`analysis/DEEP-ANALYSIS.md`（架构决策全文）
 
 ---
 

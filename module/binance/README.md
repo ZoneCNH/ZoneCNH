@@ -86,7 +86,7 @@ module/binance/server
   └─ Gin REST API -> market_data / downstream consumers
 ```
 
-详细版见 `DEEP-ANALYSIS.md` 的 §2.1 和 §5.1。
+详细版见 `analysis/DEEP-ANALYSIS.md` 的 §2.1 和 §5.1。
 
 ## GitHub Issue Sync Gate
 
@@ -98,10 +98,31 @@ module/binance/server
 
 ## Read Next
 
-- `SPEC.md`
-- `BOUNDARY-GATES.md`
-- `STANDARD.md`
-- `DATA-LIFECYCLE.md`
-- `RUNTIME-MAPPING.md`
+**模块级**：
+- `SPEC.md` — 根规格（C/S 边界契约）
+- `TRACEABILITY.md` — 全模块追溯矩阵
+- `BOUNDARY-GATES.md` — CI 门禁
+- `RUNTIME-MAPPING.md` — 运行时仓映射
+- `RULES.md` — 治理规则
+- `STANDARD.md` — 模块标准
+- `NAMING.md` — 命名 SSOT
+- `ACCEPTANCE.md` — 验收清单
+- `FEATURES.md` — 功能特性
+- `CHANGELOG.md` — 变更历史
+
+**Client**：
 - `client/SPEC.md`
+- `client/TRACEABILITY.md`
+
+**Server**：
 - `server/SPEC.md`
+- `server/TRACEABILITY.md`
+- `server/PERSISTENCE-WIRING.md` — 存储装配契约
+- `server/ENDPOINTS.md` — REST API 端点
+- `server/OPERATIONS.md` — 部署与运维
+- `server/DATA-LIFECYCLE.md` — 数据生命周期
+- `server/DATA-QUALITY-SLA.md` — 数据质量 SLA
+
+**分析归档**：
+- `analysis/DEEP-ANALYSIS.md` — 架构决策深度分析
+- `analysis/DEEP-ANALYSIS-INDEX.md` — 归档索引

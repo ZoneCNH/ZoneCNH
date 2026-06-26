@@ -199,9 +199,17 @@ bash scripts/check-binance-docs.sh   # 含 R6 全量版本统一校验
 | `CHANGELOG.md` | 模块变更历史 |
 | `client/SPEC.md` + `client/TRACEABILITY.md` | 客户端子规格 |
 | `server/SPEC.md` + `server/TRACEABILITY.md` | 服务端子规格 |
+| `server/PERSISTENCE-WIRING.md` | 存储装配契约（server 专属） |
+| `server/ENDPOINTS.md` | REST API 端点（server 专属） |
+| `server/OPERATIONS.md` | 部署与运维（server 为主） |
+| `server/DATA-LIFECYCLE.md` | 数据生命周期正式提案（FR-012~030 impact ledger；runtime pending） |
+| `server/DATA-QUALITY-SLA.md` | 数据质量 SLA（server 专属） |
 | `{client,server}/tasks/archive/README.md` | 归档映射 |
 | `STANDARD.md` | 模块标准入口（runtime control + evidence 薄层索引） |
-| `DATA-LIFECYCLE.md` | 数据生命周期正式提案（FR-012~030 impact ledger；runtime pending） |
+| `analysis/DEEP-ANALYSIS.md` | 深度分析归档索引 |
+| `analysis/DEEP-ANALYSIS-INDEX.md` | 深度分析快速跳转索引 |
+| `analysis/DEEP-ANALYSIS-ARCHIVE-*.md` | 深度分析专题归档（×3） |
+| `analysis/A10-FR024-HOT-RELOAD-EVAL.md` | FR-024 热重载评估报告 |
 | `scripts/check-binance-docs.sh` | binance 文档漂移 CI gate（仓库脚本） |
 
 **检测**：
@@ -209,6 +217,17 @@ bash scripts/check-binance-docs.sh   # 含 R6 全量版本统一校验
 for f in SPEC.md TRACEABILITY.md ACCEPTANCE.md FEATURES.md IMPLEMENTATION-PLAN.md \
          RUNTIME-MAPPING.md BOUNDARY-GATES.md NAMING.md RULES.md \
          ARCHITECTURE-DRIFT-WATCHLIST.md CHANGELOG.md; do
+  [ -f "module/binance/$f" ] && echo "✓ $f" || echo "✗ $f MISSING"
+done
+for f in server/PERSISTENCE-WIRING.md server/ENDPOINTS.md server/OPERATIONS.md \
+         server/DATA-LIFECYCLE.md server/DATA-QUALITY-SLA.md; do
+  [ -f "module/binance/$f" ] && echo "✓ $f" || echo "✗ $f MISSING"
+done
+for f in analysis/DEEP-ANALYSIS.md analysis/DEEP-ANALYSIS-INDEX.md \
+         analysis/DEEP-ANALYSIS-ARCHIVE-architecture.md \
+         analysis/DEEP-ANALYSIS-ARCHIVE-integration.md \
+         analysis/DEEP-ANALYSIS-ARCHIVE-operations.md \
+         analysis/A10-FR024-HOT-RELOAD-EVAL.md; do
   [ -f "module/binance/$f" ] && echo "✓ $f" || echo "✗ $f MISSING"
 done
 test -x scripts/check-binance-docs.sh

@@ -675,7 +675,7 @@ Plan008 的 `release_closeable=YES` 只表示 release gate 可关闭；它不自
 **WHEN** catalog reload 失败（postgresx 或 exchangeInfo 不可达）
 **THEN** 保留当前 catalog 不变；返回 HTTP 503 + 错误信息；记录 ERROR 日志
 
-> 注：Plan007 A10 gap — runtime config hot reload。全量 config hot reload 经 FR-024 评估不推荐（infra 连接/存储装配热切换复杂度极高、收益低）。维持 symbol catalog hot reload（当前已 Partial 实现）。评估见 `module/binance/A10-FR024-HOT-RELOAD-EVAL.md`。AC-084~086 / TC-042。
+> 注：Plan007 A10 gap — runtime config hot reload。全量 config hot reload 经 FR-024 评估不推荐（infra 连接/存储装配热切换复杂度极高、收益低）。维持 symbol catalog hot reload（当前已 Partial 实现）。评估见 `module/binance/analysis/A10-FR024-HOT-RELOAD-EVAL.md`。AC-084~086 / TC-042。
 
 ### FR-025: Backfill Throttle & Priority
 

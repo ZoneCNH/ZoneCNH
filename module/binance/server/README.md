@@ -16,6 +16,11 @@ It consumes Binance market data envelopes from `natsx` JetStream, validates and 
 - Binance-specific query APIs
 - `kafkax` fanout
 - server Gin admin endpoints
+- Storage assembly wiring ([PERSISTENCE-WIRING.md](PERSISTENCE-WIRING.md))
+- REST API endpoints ([ENDPOINTS.md](ENDPOINTS.md))
+- Deployment & operations ([OPERATIONS.md](OPERATIONS.md))
+- Data lifecycle management ([DATA-LIFECYCLE.md](DATA-LIFECYCLE.md))
+- Data quality SLA ([DATA-QUALITY-SLA.md](DATA-QUALITY-SLA.md))
 
 ## Does Not Own
 
