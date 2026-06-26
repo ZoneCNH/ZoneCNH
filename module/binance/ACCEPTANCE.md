@@ -5,9 +5,9 @@
 | 字段 | 值 |
 | --- | --- |
 | Status | Generated from current module SSOT |
-| Last-Updated | 2026-06-25 |
-| Module-Version | v3.6.1 |
-| Module-State | 验收清单已补齐；L1 边界治理 FR-009 Done（13 gates PASS）；L2 当前状态投影以 Runtime-Anchor `/home/binance@f18a329` 与 `TRACEABILITY.md` v3.6.1 为准：FR **24 Done / 10 Partial / 0 Pending**；Plan008 已闭合 release gate（GitHub Release `v0.2.0`，workflow `28126779885` completed/success，`release_closeable=YES`），但不自动升格为 30/30 FR Done。 |
+| Last-Updated | 2026-06-26 |
+| Module-Version | v3.7.0 |
+| Module-State | 验收清单已补齐；L1 边界治理 FR-009 Done（13 gates PASS）；L2 当前状态投影以 Runtime-Anchor `/home/binance@f046e16` 与 `TRACEABILITY.md` v3.7.0 为准：FR **24 Done / 10 Partial / 10 Pending**（含 v3.7.0 新增 FR-037~044 全 Pending）；Plan008 已闭合 release gate（GitHub Release `v0.2.0`，workflow `28126779885` completed/success，`release_closeable=YES`）。
 | Runtime-Repo | `/home/binance` |
 | Source | `SPEC.md`, `TRACEABILITY.md`, `DATA-LIFECYCLE.md`, `STANDARD.md`, `client/TRACEABILITY.md`, `server/TRACEABILITY.md`, `BOUNDARY-GATES.md` |
 
@@ -161,9 +161,9 @@
 | 根、Client、Server traceability 存在 | Done | 三个 traceability 文件可定位。 |
 | natsx / ManualAck / redisx / ossx / kafkax 边界已写入规格 | Done | `SPEC.md` 与 `TRACEABILITY.md` 可定位对应 FR/AC/TC。 |
 | Boundary gates 文档化 | Done | `BOUNDARY-GATES.md` 存在。 |
-| 所有 FR implemented | 24 Done / 10 Partial / 0 Pending | 当前口径以 `TRACEABILITY.md` v3.6.1 为准：基于 Runtime-Anchor `/home/binance@f18a329` 与 Issue-Ledger `../../report/binance/issues-sync-20260625.md`；Partial FR 为 FR-007/007a/011/016/017/023/024/026/027/028。 |
-| 所有 AC passed | Not Done | AC-001~AC-104 全部有测试证据。 |
-| 所有 TC passed | Not Done | TC-001~TC-049 全部 PASS。 |
+| 所有 FR implemented | 24 Done / 10 Partial / 10 Pending | 当前口径以 `TRACEABILITY.md` v3.7.0 为准：基于 Runtime-Anchor `/home/binance@f046e16` 与 Issue-Ledger `../../report/binance/issues-sync-20260625.md`；Partial FR 为 FR-007/007a/011/016/017/023/024/026/027/028；Pending FR 为 FR-037~044（v3.7.0 新增）+ FR-031~036（Draft）。 |
+| 所有 AC passed | Not Done | AC-001~AC-130 全部有测试证据。 |
+| 所有 TC passed | Not Done | TC-001~TC-065 全部 PASS。 |
 | Runtime test evidence | Local+CI+Release Evidence Done / Full external E2E Pending | `/home/binance/release/evidence/binance/{20260623,20260625}/` 已归档 build/test/race/vet/lint/smoke/boundary gate/testnet-live/SLO；runtime anchor `/home/binance@f18a329`；Plan008 release gate 已闭合：GitHub Release `v0.2.0`，workflow `28126779885` completed/success，`release_closeable=YES`；真实 Kafka broker e2e、覆盖率/性能与全量 AC/TC 仍按本表单独治理。 |
 | Coverage and performance evidence | Not Done | 覆盖率、延迟、吞吐、重放与故障注入报告归档。 |
 | CI pass | Done (release workflow) | GitHub Actions workflow `28126779885` completed/success and linked to release closeout. |

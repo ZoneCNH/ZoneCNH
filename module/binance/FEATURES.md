@@ -5,9 +5,9 @@
 | 字段 | 值 |
 | --- | --- |
 | Status | Generated from current module SSOT |
-| Last-Updated | 2026-06-25 |
-| Module-Version | v3.6.1 |
-| Module-State | 规格扩展到 v3.6.1；当前状态投影对齐 Runtime-Anchor `/home/binance@f18a329` 与 Issue-Ledger `../../report/binance/issues-sync-20260625.md`，刷新为 **24 Done / 10 Partial / 0 Pending**。Partial FR: FR-007, FR-007a, FR-011, FR-016, FR-017, FR-023, FR-024, FR-026, FR-027, FR-028。GitHub #1104~#1118 与后续 Plan008 issue 已同步闭合；Release closeout 已由 `../../plans/binance/008-issues-sync-report.md` 归档为 `release_closeable=YES`；剩余风险以保守 FR projection 的 `10 Partial` 表达，不再表述为开放 issue。 |
+| Last-Updated | 2026-06-26 |
+| Module-Version | v3.7.0 |
+| Module-State | 规格扩展到 v3.7.0；新增 FR-037~044（发布安全/taosx retention/tracing/资源隔离/审计/成本/合规/Schema 版本策略）对齐 Plan008 S26-S32/G6/S1-S2/M1-M4；当前状态投影对齐 Runtime-Anchor `/home/binance@f046e16`（PR #145 合并含 Plan008 全部 40 Task）与 Issue-Ledger `../../report/binance/issues-sync-20260625.md`，刷新为 **24 Done / 10 Partial / 10 Pending**。Pending FR: FR-037~044（v3.7.0 新增，全部 Pending）。Partial FR: FR-007, FR-007a, FR-011, FR-016, FR-017, FR-023, FR-024, FR-026, FR-027, FR-028。GitHub #1104~#1118 与后续 Plan008 issues 已同步闭合；Release closeout 已由 `../../plans/binance/008-issues-sync-report.md` 归档为 `release_closeable=YES`；剩余风险以保守 FR projection 的 `10 Partial + 10 Pending` 表达。 |
 | Layer | 数据域 / Binance-specific market_data C/S module |
 | Runtime-Repo | `/home/binance` |
 | Source | `goal.md`, `SPEC.md`, `TRACEABILITY.md`, `DATA-LIFECYCLE.md`, `STANDARD.md`, `BOUNDARY-GATES.md`, `RUNTIME-MAPPING.md`, `IMPLEMENTATION-PLAN.md`, `client/`, `server/`, `tasks/` |
@@ -83,6 +83,21 @@
 | FR-035 | Admin Surface Auth Hardening | Draft | admin 写操作 Bearer token + loopback fallback | runtime 实现 |
 | FR-036 | Tier-Aware Connection Topology | Draft | stream manager 按 (productLine,tier) 分组连接；**依赖 FR-024 升级或自建增量 diff**；建议前置 ADR | runtime 实现 + FR-024 依赖裁决 |
 
+### v3.7.0 新增 FR-037~044（P0/P1/P2 — 全部 Pending）
+
+> [COMPUTED, HIGH] 以下 FR 为 2026-06-26 v3.7.0 新增，对齐 Plan008 生产级缺口终审（S26-S32 + G6/S1-S2）的标准化要求。所有新增 FR 当前状态 **Pending**（仅规格登记，runtime 未实现）。对应 GitHub issue #1180-#1186（Plan008 7 项剩余 Task）。
+
+| FR | 名称 | 状态 | 核心内容 | 对应标准化 |
+| --- | --- | --- | --- | --- |
+| FR-037 | Release Safety Net | Pending | feature flag (`XGO_BINANCE_FEATURE_{name}`) + canary 部署 + 健康门禁 + 自动回滚 runbook | S26 |
+| FR-038 | taosx Data Retention Lifecycle | Pending | DB 级 KEEP 365 + 定时 DELETE trade/tick(30d)/bar(90d) + OSS ETag 前置校验 + 删除审计 | G6 / S1 / S2 |
+| FR-039 | Distributed Tracing (OpenTelemetry) | Pending | OTel SDK 埋点 + W3C traceparent header 传播 NATS/Kafka + slog trace_id 关联 + 采样率可配 | S28 |
+| FR-040 | Resource Quota & Isolation | Pending | per-consumer-group Kafka 配额 + per-product-line WS 连接池隔离 + per-caller API 限流 + CH 查询超时 | S29 |
+| FR-041 | Audit Log Completeness | Pending | admin 写操作审计 + 数据生命周期审计 + append-only (REVOKE UPDATE,DELETE) + ≥1 年保留 + OSS 归档 | S30 / S33 |
+| FR-042 | Schema Version Compatibility Policy | Pending | MAJOR terminal reject (BNC-014) + MINOR 向后兼容 + 兼容矩阵 (postgresx) + 升级顺序 | S27 |
+| FR-043 | Cost Observability | Pending | 存储容量/带宽 per-product-line Prometheus 指标 + 成本告警 (AlertManager) | S31 |
+| FR-044 | Data Compliance & Destruction | Pending | data_classification 标注 + 合规保留期 + 不可逆销毁 + certificate_of_destruction | S32 |
+
 ### 能力边界声明（#1113/#1114/#1115/#1116 降级闭合）
 
 > [COMPUTED, HIGH] 以下 issue 的关闭条件接受「明确降级/Partial/排除」作为替代方案。本节记录当前能力边界，作为这些 issue 的闭合依据。
@@ -157,16 +172,19 @@
 | Storage/API/archival/broadcast/runtime 扩展闭合 | Partial | FR-005/006a-d/008/010/012~015/018~022/025/029/030 Done；当前 Partial 固定为 FR-007/007a/011/016/017/023/024/026/027/028。 |
 | 全量 AC/TC 通过 | Not Done | Boundary gates 13/13 PASS；TC-020~TC-022 local PASS；多数 TC 仍 Pending 真实外部集成证据（G2/G7）与 G0 存储装配。 |
 
-## 7. 当前缺口登记
+## 7. 当前缺口登记（2026-06-26 刷新：所有引用 issue 已闭合）
+
+> [COMPUTED, HIGH] 以下 issue 在 `report/binance/issues-sync-20260625.md` 中已全部 Closed（16/16）。本节标注已更新为"已关闭（issues-sync-20260625）"。Plan008 40 Task 也已全部 Closed；7 项剩余 P2 Task（#1180-#1186）对应 FR-037~044 的实现。
 
 | 缺口 | 影响 | 关闭条件 |
 | --- | --- | --- |
-| **#1106 文档对齐项（P0，已关闭）** | module/binance 投影曾残留旧 `28 Done / 2 Partial`、旧 runtime anchor 与旧行动清单。 | 本轮将 README/FEATURES/TRACEABILITY 对齐 `issues-sync-20260625.md`，#1106 表述为已关闭。 |
-| **#1104/#1107/#1109 历史回填 runtime/evidence（P0/P1，开放）** | FR-016 仍缺 fetcher runtime 注入、UM/CM/Options REST endpoint 与 rate-limit smoothing 证据。 | runtime 注入 ExchangeHistoryFetcher + 产品线 endpoint + token bucket/rate-limit evidence。 |
-| **#1105/#1113 Kafka 与性能证据（P0/P1，开放）** | FR-023 release/evidence 不能替代真实 Kafka broker roundtrip、100K TPS/backpressure evidence。 | 真实 Kafka broker e2e + 100K TPS/backpressure 标准与证据。 |
-| **#1108/#1111 产品线 live 覆盖（P1，开放）** | Options ticker mainnet normalization sample 与 active symbol live coverage 未闭合。 | mainnet/live sample + active symbol coverage evidence。 |
-| **#1110 trace context（P1，开放）** | tracing/trace context 尚未形成端到端证据。 | ingest/backfill/replay trace context propagation evidence。 |
-| **#1112 存储 mock/fake/live 标准（P1，开放）** | FR-007/FR-007a/FR-011 的 Done 判定仍需要统一 fake/mock/live 分层证据标准。 | 存储证据分层标准 + runtime/live gate 记录。 |
-| **#1114/#1116 runtime 增量状态机（P2，开放）** | order book rebuild 与 hot reload 仍需增量 diff/state machine 证据。 | incremental order book rebuild + hot reload add/remove evidence。 |
-| **#1115 ClickHouse ETL 持久化（P2，开放）** | FR-007a 仍需持久化、多实例 source 与 live OLAP evidence。 | persistent/multi-instance ETL source + query evidence。 |
-| **#1117/#1118 持久化进度与 DLQ（P2，开放）** | FR-017/026/027/028 仍缺持久化 progress/history/reconcile/rehydration 证据；DLQ 仍需持久化 wiring/replay。 | persistent progress/history/reconcile/rehydration + DLQ wiring/replay evidence。 |
+| **#1106 文档对齐项（P0，已关闭）** | module/binance 投影曾残留旧 `28 Done / 2 Partial`、旧 runtime anchor 与旧行动清单。 | v3.6.1 已对齐 `issues-sync-20260625.md`，#1106 已关闭。 |
+| **#1104/#1107/#1109 历史回填 runtime/evidence（P0/P1，已关闭）** | FR-016 曾缺 fetcher runtime 注入、UM/CM/Options REST endpoint 与 rate-limit smoothing 证据。 | runtime PR #103+104 已修复；issue 已 Closed。 |
+| **#1105/#1113 Kafka 与性能证据（P0/P1，已关闭）** | FR-023 release/evidence 曾缺真实 Kafka broker roundtrip、100K TPS/backpressure evidence。 | PR #104 已修复 Kafka roundtrip；#1113 以能力边界文档化 Closed。 |
+| **#1108/#1111 产品线 live 覆盖（P1，已关闭）** | Options ticker mainnet normalization sample 与 active symbol live coverage 曾未闭合。 | PR #104 已修复 Options live；#1108 以能力边界文档化 Closed。 |
+| **#1110 trace context（P1，已关闭）** | tracing/trace context 曾未形成端到端证据。 | 以能力边界文档化 Closed（v3.7.0 FR-039 将此升级为正式 FR）。 |
+| **#1112 存储 mock/fake/live 标准（P1，已关闭）** | FR-007/FR-007a/FR-011 的 Done 判定曾需统一证据标准。 | 以能力边界文档化 Closed。 |
+| **#1114/#1116 runtime 增量状态机（P2，已关闭）** | order book rebuild 与 hot reload 曾需增量 diff/state machine 证据。 | 以能力边界文档化 Closed（#1114 明确排除，#1116 维持 Partial）。 |
+| **#1115 ClickHouse ETL 持久化（P2，已关闭）** | FR-007a 曾需持久化、多实例 source 与 live OLAP evidence。 | 以能力边界文档化 Closed。 |
+| **#1117/#1118 持久化进度与 DLQ（P2，已关闭）** | FR-017/026/027/028 曾缺持久化 progress/history/reconcile/rehydration 证据；DLQ 曾缺持久化 wiring/replay。 | 以能力边界文档化 Closed。 |
+| **#1180-#1186 Plan008 剩余 P2 Task（P0/P1/P2，开放）** | FR-037~044（v3.7.0 新增）的 runtime 实现。 | 追踪：https://github.com/ZoneCNH/ZoneCNH/issues?q=is%3Aopen+label%3Aplan008 |
