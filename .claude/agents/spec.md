@@ -110,7 +110,7 @@ bash scripts/check-version-drift.sh {name} {OLD} {NEW}
 
 # 备用：手动验证（若脚本不可用）
 grep -r "v{OLD}" module/{name}/ README.md ARCHITECTURE.md STATUS.md \
-  module/README.md docs/architecture/ module/_exchange-template/ \
+  module/README.md docs/architecture/ module/_*/ \
   --include="*.md" | grep -v CHANGELOG | grep -v "弃用" | grep -v "历史" | grep -v "archive"
 # 零输出 = 通过。
 
