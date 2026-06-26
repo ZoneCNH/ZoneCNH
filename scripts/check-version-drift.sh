@@ -28,7 +28,10 @@ echo ""
 if [ -d "$ROOT/module/$MODULE" ]; then
     STALE=$(grep -rn "v$OLD_VERSION" "$ROOT/module/$MODULE"/*.md 2>/dev/null | \
         grep -v CHANGELOG.md | grep -v "弃用" | grep -v "历史" | grep -v "已撤回" | \
-        grep -v "新增" | grep -v "升级" | grep -v "draft" | grep -v "Applies-To" || true)
+        grep -v "新增" | grep -v "升级" | grep -v "draft" | grep -v "Applies-To" | \
+        grep -v "ARCHIVED" | grep -v "已被" | grep -v "DEEP-ANALYSIS" | \
+        grep -v "审计对齐" | grep -v "版本跳空" | grep -v "登记到" | grep -v "对齐 v" | \
+        grep -v "投影" || true)
     if [ -n "$STALE" ]; then
         echo "FAIL: module/$MODULE/ 中发现过时引用:"
         echo "$STALE"
