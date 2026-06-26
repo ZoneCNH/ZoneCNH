@@ -76,8 +76,10 @@ if [ -f "$ROOT/module/_exchange-template/README.md" ]; then
     fi
 fi
 
-# ── 范围 E: 依赖模块反向引用 ──
-for DEP in natsx kafkax redisx taosx postgresx clickhousex ossx; do
+# ── 范围 E: 依赖模块反向引用（动态读取 — 从 SPEC.md §1 Related 行获取）──
+RELATED=$(grep '^\- Related:' "$ROOT/module/$MODULE/SPEC.md" 2>/dev/null | \
+    grep -oP 'module/[a-z_]+' | sed 's|^module/||' || true)
+for DEP in $RELATED; do
     DEP_DIR="$ROOT/module/$DEP"
     if [ -d "$DEP_DIR" ]; then
         STALE=$(grep -rni "$MODULE" "$DEP_DIR"/*.md 2>/dev/null | grep "v$OLD_VERSION" || true)
