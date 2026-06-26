@@ -5,18 +5,16 @@
 | 字段 | 值 |
 | --- | --- |
 | Status | Generated from current module SSOT |
-| Last-Updated | 2026-06-26 |
-| Module-Version | v3.6.2 |
-| Module-State | 规格扩展到 v3.6.2 Plan008 overlay；v3.6.1 release-state baseline 仍为 Runtime-Anchor `/home/binance@f18a329` 与 Issue-Ledger `../../report/binance/issues-sync-20260625.md` 的 **24 Done / 10 Partial / 0 Pending**。Plan008 release closeout overlay 对齐 runtime PR #145 @ `4133b6d9c126148cdb4f8059471f1a6bc3385039`、implementation follow-up @ `e32a126391ab03dcddcbc31945fcf2dc757e8025`（其中 `efb63f8` 补齐 optionTicker exact-key parser）、release evidence @ `c16a681b88f901e399efb7eb42b18ab29ffe6beb`、GitHub Release `v0.2.0` / workflow `28126779885` 与 foundation PRs taosx#18/natsx#19/kafkax#20/clickhousex#11：T008.001-T008.040 可按本地/PR CI/release evidence 闭合；partial-live 已捕获 JetStream、storage assembly、Kafka roundtrip、Binance Spot/UM/CM/Options WS、OSSX archive/list/delete live I/O 与 release artifacts。 |
+| Last-Updated | 2026-06-25 |
+| Module-Version | v3.6.1 |
+| Module-State | 规格扩展到 v3.6.1；当前状态投影对齐 Runtime-Anchor `/home/binance@f18a329` 与 Issue-Ledger `../../report/binance/issues-sync-20260625.md`，刷新为 **24 Done / 10 Partial / 0 Pending**。Partial FR: FR-007, FR-007a, FR-011, FR-016, FR-017, FR-023, FR-024, FR-026, FR-027, FR-028。GitHub #1104~#1118 与后续 Plan008 issue 已同步闭合；Release closeout 已由 `../../plans/binance/008-issues-sync-report.md` 归档为 `release_closeable=YES`；剩余风险以保守 FR projection 的 `10 Partial` 表达，不再表述为开放 issue。 |
 | Layer | 数据域 / Binance-specific market_data C/S module |
 | Runtime-Repo | `/home/binance` |
 | Source | `goal.md`, `SPEC.md`, `TRACEABILITY.md`, `DATA-LIFECYCLE.md`, `STANDARD.md`, `BOUNDARY-GATES.md`, `RUNTIME-MAPPING.md`, `IMPLEMENTATION-PLAN.md`, `client/`, `server/`, `tasks/` |
 
 本文档是 `module/binance` 当前规格库的实现投影，不是 runtime 代码验收证据。实际完成状态以 `TRACEABILITY.md`、`client/TRACEABILITY.md`、`server/TRACEABILITY.md` 和 `/home/binance` 的测试证据为准。
 
-> **v3.6.1 状态口径（2026-06-25）**：Done = Runtime-Anchor `/home/binance@f18a329` 下代码、装配与证据闭合；Partial = 代码、子链路或局部证据存在，但 runtime 注入、持久化、live/release evidence 或产品线覆盖未闭合；Pending = 仅规格登记。当前投影以 Issue-Ledger `../../report/binance/issues-sync-20260625.md` 为准，历史 `28 Done / 2 Partial` 仅保留为已撤回历史口径。
-
-> **v3.6.2 Plan008 overlay（2026-06-26）**：runtime PR #145 @ `4133b6d9c126148cdb4f8059471f1a6bc3385039`、implementation follow-up @ `e32a126391ab03dcddcbc31945fcf2dc757e8025`、release evidence @ `c16a681b88f901e399efb7eb42b18ab29ffe6beb`、GitHub Release `v0.2.0` / workflow `28126779885` 与 foundation PRs taosx#18/natsx#19/kafkax#20/clickhousex#11 已完成本地/PR CI/release evidence；T008.001-T008.040 可按 issue closure 关闭。partial-live 已捕获 JetStream、storage assembly、Kafka roundtrip、Binance Spot/bookTicker/UM/CM/Options WS 与 OSSX archive/list/delete live I/O；最新本地 follow-up 已补 options expiry aggregate normalization、bounded Options live selector、`efb63f8` exact-key parser 与 `BINANCE_OSSX_LIVE` archive/list/delete opt-in gate；`release_closeable=YES`，release tag artifact / release publication evidence 已归档。本文档 FR 状态投影仍沿用 v3.6.1 baseline；Plan008 issue closeout 不自动重判 FR Done/Partial 状态。
+> **v3.6.1 状态口径（2026-06-25）**：Done = Runtime-Anchor `/home/binance@f18a329` 下代码、装配与证据闭合；Partial = 代码、子链路或局部证据存在，但 runtime 注入、持久化、外部 E2E/live evidence、FR-specific acceptance evidence 或产品线覆盖未闭合；Pending = 仅规格登记。当前投影以 Issue-Ledger `../../report/binance/issues-sync-20260625.md` 为准，历史 `28 Done / 2 Partial` 仅保留为已撤回历史口径。
 
 ## 1. 模块边界
 
@@ -95,7 +93,7 @@
 | **#1114** 增量 order book rebuild | 当前仅 top-of-book + 部分 depth 快照（G8 实现 DepthBids/DepthAsks 全量档位）；无本地 order book 维护 + REST snapshot 拉取 + 增量 diff 重放 | **明确排除（当前版本）**：order book rebuild 状态机非 v0.2.0 范围；depth 数据以快照形式落库，不做本地重放 | FR-017 Partial；`stream_control.go` depth 处理为快照级 |
 | **#1115** ClickHouse ETL 持久来源 | 当前 AggSource 是进程内内存窗口（单实例）；ClickHouse ETL 从内存聚合写入 | **明确 Partial**：内存窗口在单实例下功能完整；多实例横向扩展需改为从 taosx 聚合，属后续架构变更 | FR-007a Partial；`clickhouse_olap.go` AggSource 内存实现 |
 | **#1116** 增量 hot reload diff | 当前 hot reload 是全量重连（catalog Reload 替换全部条目 → stream 重建）；非增量 stream add/remove diff | **明确 full reconnect 边界**：`A10-FR024-HOT-RELOAD-EVAL.md` 评估结论为「全量 hot reload 不推荐，维持 Partial（symbol reload 已够）」；增量 diff 属 FR-036 范围 | A10-FR024-HOT-RELOAD-EVAL.md §总结；FR-024 Partial |
-| **#1108** Options ticker 字段校验 | `parseOptionTicker` 已改为 exact-key JSON 解析，避免 Options 24hrTicker 小写 `c/o` 价格字段与大写 `C/O` 统计时间字段发生大小写不敏感解码碰撞；bounded live gate 已覆盖 aggregate + single-contract candidates | **fixture + live evidence**：`normalize_option_test.go` 覆盖 mainnet-style `24hrTicker` payload、Greeks 与 expiry aggregate stream；`test/e2e` 选取 active aggregate/single-contract combined `@optionTicker` streams | `efb63f8` targeted + changed-package 10 轮 PASS；`live-gates-20260626.txt` 记录 `BINANCE_MAINNET_LIVE=1 ... TestMainnetLive_OptionsTicker` PASS |
+| **#1108** Options ticker 字段校验 | `parseOptionTicker` 字段名（`e/E/s/o/c/p/q/d/g/t/v`）基于文档约定；`@optionTicker` WS 报文字段名未经 mainnet 实样确认 | **REST fixture 替代**：使用 eapi exchangeInfo 的 `optionSymbols[]` metadata（symbol/underlying/side/strike/expiry）作为 fixture 校验 `parseOptionSymbolMeta`；WS `@optionTicker` body 字段名待 BINANCE_MAINNET_LIVE 抓样确认（normalize.go:502 TODO） | eapi REST 1,550 symbols 实测；`normalize_option_test.go` 已覆盖 symbol 解析路径 |
 | **#1110** 分布式 tracing | 当前无 OpenTelemetry 集成；trace context 不跨 client→NATS→server→Kafka 传播 | **明确未覆盖链路**：当前可观测性依赖 17 个 Prometheus 指标 + slog JSON 日志（OBSERVABILITY.md）；分布式 tracing 属后续 NFR 增强，不在 v0.2.0 范围 | OBSERVABILITY.md 9 metrics；`metrics.go:153-247` |
 | **#1112** storage mock/fake 标准 | 当前测试用 in-memory fake（fakeKafkaProducer、fakeOSSStore 等），无统一的 mock/live 证据分级准则 | **明确测试证据分级**：fake 测试（in-memory mock）标记为 unit；live 测试（真实 infra）需 `*_LIVE` env gate；报告引用需区分 fake vs live | `consumer_integration_test.go` BINANCE_NATSX_INTEGRATION gate；`kafka_broker_test.go` BINANCE_KAFKA_LIVE gate |
 | **#1117** 持久化 backfill progress | backfill progress 当前 in-memory（HistoryRuntime.jobs map）；重启后丢失 | **明确恢复协议**：重启后 backfill 从头开始（coverage 丢失）；持久化到 postgresx 属 FR-032 exchangeInfo 同步的后续工作（catalog_exchange_info_snapshots 表已规划） | `history_lifecycle.go:166` HistoryRuntime in-memory；migration 005 snapshots 表（Draft） |

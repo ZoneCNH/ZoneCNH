@@ -2,10 +2,10 @@
 
 `module/binance` is the Binance-specific Market Data C/S Module for ZoneCNH.
 
-- Spec-Version: v3.6.2 Plan008 overlay (root) / v2.1.1 (client) / v2.2.0 (server)
-- Runtime-Version: v0.2.1（Runtime-Anchor: `/home/binance@e32a126391ab03dcddcbc31945fcf2dc757e8025`；Release-Evidence Anchor: `/home/binance@c16a681b88f901e399efb7eb42b18ab29ffe6beb`；Remote CI Anchor: PR #145 @ `4133b6d9c126148cdb4f8059471f1a6bc3385039`；GitHub Release: `v0.2.0` / run `28126779885`）
-- Delivery-State: FR-001~FR-030 spec/traceability registered; v3.6.1 baseline Status-Projection `24 Done / 10 Partial / 0 Pending` remains the FR release-state baseline. **Plan008 release closeout overlay（2026-06-26）**：T008.001-T008.040 已有本地/PR CI/release closure evidence（runtime PR #145 @ `4133b6d9c126148cdb4f8059471f1a6bc3385039`；implementation follow-up @ `e32a126391ab03dcddcbc31945fcf2dc757e8025`，其中 `efb63f8` 补齐 optionTicker exact-key parser；release evidence @ `c16a681b88f901e399efb7eb42b18ab29ffe6beb`；foundation PRs taosx#18/natsx#19/kafkax#20/clickhousex#11）。partial-live 已捕获 JetStream、storage assembly、Kafka roundtrip、Binance Spot/UM/CM/Options WS 与 OSSX archive/list/delete live I/O；release tag artifact / release publication evidence 已归档至 GitHub Release `v0.2.0`。
-- Last-Updated: 2026-06-26
+- Spec-Version: v3.6.0 (root) / v2.1.1 (client) / v2.2.0 (server)
+- Runtime-Version: v0.2.0（Runtime-Anchor: `/home/binance@f18a329`）
+- Delivery-State: FR-001~FR-030 spec/traceability registered; **2026-06-25 issue-ledger sync — Status-Projection `24 Done / 10 Partial / 0 Pending`**. Runtime-Anchor `/home/binance@f18a329`; Issue-Ledger [`../../report/binance/issues-sync-20260625.md`](../../report/binance/issues-sync-20260625.md). Partial FR: FR-007, FR-007a, FR-011, FR-016, FR-017, FR-023, FR-024, FR-026, FR-027, FR-028. GitHub #1104~#1118 与后续 Plan008 issue 已同步闭合；Release closeout 已由 `plans/binance/008-issues-sync-report.md` 归档为 `release_closeable=YES`。
+- Last-Updated: 2026-06-25
 
 It is split into two submodules:
 

@@ -2,48 +2,37 @@
 
 > beads issues ↔ GitHub issues ↔ Plan 008 Task 三方一致性核验报告
 >
-> - 日期：2026-06-26
+> - 日期：2026-06-25
 > - Plan：`plans/binance/008-binance-production-fix-master-plan.md`
 > - SSOT：`plans/binance/008-tasks.json`
 > - **GitHub 仓库：`ZoneCNH/ZoneCNH`**（issues #1132-#1171）
 > - beads workspace：`ZoneCNH`（prefix=ZoneCNH，label `plan008`）
-> - Plan Runtime-Anchor：`/home/binance@3f20be0`（Plan 输入基线）
-> - Execution Runtime-Anchor：`/home/binance@e32a126391ab03dcddcbc31945fcf2dc757e8025`（Plan008 implementation follow-up）
-> - Release-Evidence Anchor：`/home/binance@c16a681b88f901e399efb7eb42b18ab29ffe6beb`（GitHub Release `v0.2.0` / workflow `28126779885`）
-> - Remote CI Anchor：`ZoneCNH/binance#145@4133b6d9c126148cdb4f8059471f1a6bc3385039`（Plan008 PR CI 修复证据）
+> - Runtime-Anchor：`/home/binance@f18a329`（Plan008 final closeout；PR #103+#104 runtime fix baseline 为 `3f20be0`）
+> - Final-Code-Anchor：`/home/binance` `fix/plan008-production-fixes@46d8aa8`（PR #145，OPEN）；`/home/kafkax` `fix/plan008-production-fixes@7b2d9ce`
 
 ---
 
 ## 1. 执行摘要
 
-`[COMPUTED, HIGH]` Plan 008 的 **40 个 Task**（T008.001-T008.040）已完整拆解为可追踪的 issue 体系：
+`[COMPUTED, HIGH]` Plan 008 的 **40 个 Task**（T008.001-T040）已完整拆解为可追踪的 issue 体系：
 
 | 维度 | 数量 | 位置 |
 | --- | --- | --- |
 | Plan Task（SSOT） | 40 | `008-tasks.json` |
-| GitHub issues | 40 | **`ZoneCNH/ZoneCNH`** #1132-#1171（当前权威状态：40 closed / 0 open；#1170/#1171 按 release closeout evidence 闭合，label `plan008`） |
-| beads issues | 40 | ZoneCNH workspace（当前状态：40 closed / 0 open；label `plan008`，external-ref `gh-N`） |
+| GitHub issues | 40 | **`ZoneCNH/ZoneCNH`** #1132-#1171（closed，label `plan008`） |
+| beads issues | 40 | ZoneCNH workspace（label `plan008`，status `closed`，external-ref `gh-N`） |
 | 依赖链接（beads） | 25 | `bd link --type blocks` |
 | 覆盖缺口 G1-G9 | 9/9 | 全部有 Task |
 | 覆盖标准 S1-S35 | 35/35 | 全部有 Task |
 | 覆盖里程碑 M1-M4 | 4/4 | 全部有 Task |
 
-**映射 100% 一致，0 遗漏；release evidence 已归档，Plan008 issue ledger 可全量关闭。**
+`[COMPUTED, HIGH]` 最终收口状态：GitHub `plan008` issues 40/40 CLOSED，beads `plan008` issues 40/40 `closed`；T008.039/T008.040 已记录 release closeout 证据：GitHub Release `v0.2.0`，workflow `28126779885` completed/success，`release_closeable=YES`，#1170/#1171 closed。
 
-### 1.1 Plan008 执行闭环（2026-06-26）
+`[COMPUTED, HIGH]` Kafka 补证状态：T008.003 的最终代码证据落在 `kafkax@7b2d9ce` 与 `binance@46d8aa8`；binance PR #145 已推送但仍为 OPEN。验证证据为 `go test ./cmd/binance-server`、`go test ./...`、10 轮 `git diff --check && go test ./... -count=1` 通过；未运行 live Kafka broker E2E 或生产凭证场景。
 
-`[COMPUTED, HIGH]` GitHub 与 Beads 实时复核显示 #1132-#1171 / T008.001-T008.040 均为 40 closed、0 open。T008.001-T008.040 已完成闭合；T008.039/T008.040 的 release gate 由 code release-evidence commit `c16a681b88f901e399efb7eb42b18ab29ffe6beb`、GitHub Release `v0.2.0` 与 release workflow `28126779885` 补齐。最新 implementation follow-up 已补 options expiry aggregate normalization、bounded combined options live selector、optionTicker exact-key parsing 与 `BINANCE_OSSX_LIVE` archive/list/delete opt-in gate；`live-gates-20260626.txt` 已记录 Options WS 和 OSSX live I/O captured。
+`[COMPUTED, HIGH]` 验证脚本路径口径（2026-06-26）：`008-verify-faithfulness.sh` 与 `008-verify-10rounds.sh` 从脚本所在目录解析 Plan、SSOT 与映射文件，避免 feature worktree 中误读主 checkout；release 与 issue 状态口径不变。
 
-| Evidence | Result |
-| --- | --- |
-| Binance runtime PR | [ZoneCNH/binance#145](https://github.com/ZoneCNH/binance/pull/145) @ `4133b6d9c126148cdb4f8059471f1a6bc3385039`（remote CI anchor） |
-| Binance implementation follow-up | `/home/binance/.worktree/workspaces/fix/plan008-production-fixes` @ `e32a126391ab03dcddcbc31945fcf2dc757e8025`（options aggregate normalization + bounded Options live selector + `efb63f8` exact-key parser + OSSX live gate；本地 changed-package 10 轮 PASS） |
-| Binance release evidence | `/home/binance/.worktree/workspaces/fix/plan008-production-fixes` @ `c16a681b88f901e399efb7eb42b18ab29ffe6beb`；GitHub Release [`v0.2.0`](https://github.com/ZoneCNH/binance/releases/tag/v0.2.0)；Release workflow [`28126779885`](https://github.com/ZoneCNH/binance/actions/runs/28126779885) completed/success；assets: `binance-binaries-v0.2.0-linux-amd64.tar.gz` sha256 `bf12f8777af02ab37283a41fc7310185040012b4f5bde2c3749cad9ca0a6a09f`, `binance-evidence-v0.2.0.tar.gz` sha256 `7b01cc3318efaedffb9f1a21df893ee27cffc178d75d4669875a3048ed1a507f` |
-| Foundation PRs | [taosx#18](https://github.com/ZoneCNH/taosx/pull/18) @ `6dd70cb`; [natsx#19](https://github.com/ZoneCNH/natsx/pull/19) @ `6bbfda0`; [kafkax#20](https://github.com/ZoneCNH/kafkax/pull/20) @ `7b2d9ce`; [clickhousex#11](https://github.com/ZoneCNH/clickhousex/pull/11) @ `457d9ff` |
-| Local runtime gates | `gofmt -l cmd internal pkg test tools`; `git diff --check`; `./scripts/readiness-audit.sh`; `go test ./...`; `go test -race ./...`; `go vet ./...`; `golangci-lint run`; `govulncheck ./...`; `runtime-release-evidence.sh` 全 PASS |
-| Remote CI | 截至 2026-06-26 02:35 +0800，GitHub Actions for PR #145: Boundary Gates, Build & Vet, Test & Race & Cover, gitleaks, golangci-lint, govulncheck 全 PASS |
-| T008.011 local fix | [#1142 evidence comment](https://github.com/ZoneCNH/ZoneCNH/issues/1142#issuecomment-4802133265)；`go test ./internal/client -run 'TestHistoryRuntimePersistsAndRestoresState\|TestPostgresHistoryStateStore\|TestResolveStandaloneConfigModeAndOverrides' -count=1`；`go test ./cmd/binance-client ./internal/client -count=1`；migration 006 实际 schema 为 `history_runtime_state(snapshot JSONB)` |
-| External gates | `release_closeable=YES`; `release_tag=CAPTURED_GITHUB_RELEASE_V0_2_0_WORKFLOW_28126779885`; live gate evidence in `live-gates-20260626.txt`: JetStream ack/ManualAck/NAK captured, taosx/postgresx/redisx/clickhousex assembly captured, Kafka broker roundtrip captured, Binance Spot/bookTicker/UM/CM/Options WS captured, OSSX archive live I/O captured; release artifacts captured with sha256 evidence |
+**三方 100% 一致，0 遗漏，0 open Plan008 issue。**
 
 ---
 
@@ -65,8 +54,8 @@ GitHub issues 建在 **`ZoneCNH/ZoneCNH`**（而非 `ZoneCNH/binance`），理�
 | 操作 | 仓库 | 范围 | 状态 |
 | --- | --- | --- | --- |
 | 关闭错建 issue | ZoneCNH/binance | #105-#144（40 个） | ✅ 全部 CLOSED（reason: not planned） |
-| 重建 issue | ZoneCNH/ZoneCNH | #1132-#1171（40 个） | ✅ 已重建；当前 #1132-#1171 closed |
-| 更新 beads external_ref / description | ZoneCNH workspace | 40 个 issue | ✅ gh-105~144 → gh-1132~1171；description 内 GitHub 引用已归一到 `ZoneCNH/ZoneCNH` |
+| 重建 issue | ZoneCNH/ZoneCNH | #1132-#1171（40 个） | ✅ 创建后 OPEN；最终收口为 40/40 CLOSED |
+| 更新 beads external_ref | ZoneCNH workspace | 40 个 issue | ✅ gh-105~144 → gh-1132~1171 |
 | 更新 beads github 配置 | config.yaml | owner/repo | ✅ ZoneCNH/ZoneCNH |
 | 删除 beads 重复 issue | ZoneCNH workspace | 40 个（pull 误建） | ✅ 已清理 |
 
@@ -163,7 +152,7 @@ T039 ──blocks──▶ T040(TRACEABILITY 同步)
 
 | 轮次 | 检查维度 | 结果 |
 | --- | --- | :--: |
-| 1 | 数量一致：SSOT(40)==GH(40)==beads(40) | ✅ |
+| 1 | 数量/状态一致：SSOT(40)==GH(40 CLOSED)==beads(40 closed) | ✅ |
 | 2 | 每个 SSOT task_id 在 GH map 有记录 | ✅ |
 | 3 | 每个 SSOT task_id 在 beads map 有记录 | ✅ |
 | 4 | GH 编号唯一连续（#1132-#1171） | ✅ |
@@ -172,7 +161,7 @@ T039 ──blocks──▶ T040(TRACEABILITY 同步)
 | 7 | GH map 编号集合 == GH 实时编号集合（精确匹配） | ✅ |
 | 8 | 每个 GH issue 标题含 [task_id]（批量查询） | ✅ |
 | 9 | 9 个数据缺口 G1-G9 全覆盖 | ✅ |
-| 10 | 35 标准 S1-S35 + 4 里程碑 M1-M4 全覆盖 | ✅ |
+| 10 | 35 标准 S1-S35 + 4 里程碑 M1-M4 全覆盖，且 release/workflow/closeout 证据存在 | ✅ |
 
 ### 5.2 SSOT 忠实性核验（7 维度）
 
@@ -190,41 +179,17 @@ T039 ──blocks──▶ T040(TRACEABILITY 同步)
 
 ### 5.3 核验结论
 
-`[COMPUTED, HIGH]` 经 **17 轮多维核验**，最终运行 10/10 + 7/7 全通过：
+`[COMPUTED, HIGH]` 经 **17 轮多维核验**，以 final closeout 口径最终运行 10/10 + 7/7 全通过：
 
 - **40/40 Task** 三方映射完整
 - **0 遗漏**（9 缺口 + 35 标准 + 4 里程碑 = 48 项 100% 覆盖）
-- **映射 0 不一致**（GH 实时编号、Beads external_ref、SSOT、Plan 文档四方吻合）
-- **Release closeout 已闭合**：#1132-#1171 当前已关闭；后续完成判定以 GitHub issue 状态、代码验证和 Plan DoD 为准。
+- **0 不一致**（GH 实时、beads 实时、SSOT、Plan 文档四方吻合）
+- **40/40 CLOSED**（GitHub `plan008` issues #1132-#1171）
+- **40/40 closed**（beads `plan008` issues）
+- **T008.039/T008.040 release evidence**：`v0.2.0` / workflow `28126779885` / `release_closeable=YES`
+- **0 open Plan008 issue**
 - binance 仓旧 issue 40 个全部 CLOSED，无活跃重复
-
-### 5.4 执行同步更新（2026-06-26）
-
-`[COMPUTED, HIGH]` 截至 2026-06-26 实时复核，GitHub #1132-#1171 与 Beads Plan008 项均为 40 closed / 0 open。#1170/#1171 已补 release closeout evidence 并按 completed 关闭。
-
-`[COMPUTED, HIGH]` 本轮新增 T008.011/#1142 的代码证据评论；以下为本报告可直接追溯的关闭/证据补充记录。
-
-| Task | GitHub | Beads | 关闭依据 |
-| ---- | ------ | ----- | -------- |
-| T008.011 | #1142 | `ZoneCNH-8kt` | `go test ./internal/client -run 'TestHistoryRuntimePersistsAndRestoresState\|TestPostgresHistoryStateStore\|TestResolveStandaloneConfigModeAndOverrides' -count=1`；`go test ./cmd/binance-client ./internal/client -count=1`；[#1142 evidence comment](https://github.com/ZoneCNH/ZoneCNH/issues/1142#issuecomment-4802133265)；migration 006 实际 schema 为 `history_runtime_state(snapshot JSONB)` |
-| T008.013 | #1144 | `ZoneCNH-y941` | `go test -count=1 ./internal/server/deadletter -run 'TestFileWriter_(Write_OK\|Idempotent\|EmptyID_Error)'`；`go test -count=1 ./internal/server -run 'TestAppendDeadLetterWritesConfiguredFileWriter'`；`go test -count=1 ./internal/server/consumer -run 'TestRunnerWritesDeadLetterBeforeTerminalReject'` |
-| T008.024 | #1155 | `ZoneCNH-ugsm` | `go test -count=1 ./internal/server/storage/olap -run 'TestEnsureSchema_ExecsDDL'` 验证 `ReplicatedMergeTree` DDL |
-| T008.025 | #1156 | `ZoneCNH-x6an` | `go test -count=1 ./internal/server/storage/olap -run 'TestEnsureSchema_ExecsDDL'` 验证 ClickHouse TTL DDL |
-| T008.029 | #1160 | `ZoneCNH-jfma` | `go test -count=1 ./internal/server -run 'TestDefaultValidator(RejectsInvalidSchemaVersion\|AcceptsSupportedSemanticSchemaVersion)'` |
-| T008.032 | #1163 | `ZoneCNH-z9sa` | `go test -count=1 ./internal/server/controlplane -run 'TestLifecycle_(DrainWaitsInFlightAndAudits\|DrainTimeoutRecordsError\|AuditRecentExposesAllActions)'` |
-| T008.039 | #1170 | `ZoneCNH-036r` | code release-evidence commit `c16a681b88f901e399efb7eb42b18ab29ffe6beb`；GitHub Release [`v0.2.0`](https://github.com/ZoneCNH/binance/releases/tag/v0.2.0)；release workflow [`28126779885`](https://github.com/ZoneCNH/binance/actions/runs/28126779885) completed/success；`release_closeable=YES` |
-| T008.040 | #1171 | `ZoneCNH-771j` | code release-evidence commit `c16a681b88f901e399efb7eb42b18ab29ffe6beb`；GitHub Release [`v0.2.0`](https://github.com/ZoneCNH/binance/releases/tag/v0.2.0)；release workflow [`28126779885`](https://github.com/ZoneCNH/binance/actions/runs/28126779885) completed/success；`release_tag=CAPTURED_GITHUB_RELEASE_V0_2_0_WORKFLOW_28126779885` |
-
-| 系统 | total | closed | open | 判定 |
-| ---- | ----- | ------ | ---- | ---- |
-| GitHub | 40 | 40 | 0 | 权威执行状态 |
-| Beads | 40 | 40 | 0 | 本地追踪状态已同步到 completed |
-
-`[COMPUTED, HIGH]` 剩余 release gate 已由 release tag artifact / release publication evidence 补齐，#1170/#1171 与 Beads `ZoneCNH-036r` / `ZoneCNH-771j` 已按 completed 关闭。
-
-- Release closeout：T008.039、T008.040；GitHub release evidence comments: [#1170](https://github.com/ZoneCNH/ZoneCNH/issues/1170), [#1171](https://github.com/ZoneCNH/ZoneCNH/issues/1171)。
-- 已捕获进展：本地 JetStream PubAck/duplicate/ManualAck/NAK；dev storage assembly（taosx/postgresx/redisx/clickhousex）；Kafka broker produce/consume；Binance Spot/bookTicker/UM/CM/Options WS；`BINANCE_OSSX_LIVE` archive/list/delete。
-- 关键 release evidence：GitHub Release `v0.2.0`；release workflow `28126779885` completed/success；`binance-binaries-v0.2.0-linux-amd64.tar.gz` sha256 `bf12f8777af02ab37283a41fc7310185040012b4f5bde2c3749cad9ca0a6a09f`；`binance-evidence-v0.2.0.tar.gz` sha256 `7b01cc3318efaedffb9f1a21df893ee27cffc178d75d4669875a3048ed1a507f`。
+- binance PR #145 仍为 OPEN；这是代码同步 PR 状态，不是 Plan008 issue 遗留
 
 ---
 

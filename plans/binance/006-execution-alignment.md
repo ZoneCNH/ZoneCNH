@@ -1,6 +1,8 @@
 # Plan006 执行对齐记录（2026-06-24）
 
 > Scope: 本记录同步 agent team、本地验证、Beads、GitHub issue 状态；不改变 `006-binance-production-readiness-fix.md` 的发布就绪或生产级验收口径。
+>
+> [COMPUTED, HIGH] 后续 Plan008（2026-06-25）已闭合 release gate：GitHub Release `v0.2.0` + workflow `28126779885` completed/success，`release_closeable=YES`；本文件保留 Plan006 当时的生产级缺口口径。
 
 ## 状态摘要
 

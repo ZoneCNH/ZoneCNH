@@ -3,12 +3,12 @@
 ## 1. Metadata
 
 - Status: Approved
-- Spec-Version: v3.6.2
-- Last-Updated: 2026-06-26 (v3.6.2 Plan008 overlay: runtime implementation HEAD `e32a126391ab03dcddcbc31945fcf2dc757e8025` + release-evidence HEAD `c16a681b88f901e399efb7eb42b18ab29ffe6beb` + PR #145 remote CI anchor `4133b6d9c126148cdb4f8059471f1a6bc3385039`; T008.001-T008.040 closeable by local/CI/release evidence)
+- Spec-Version: v3.6.0
+- Last-Updated: 2026-06-25 (v3.6.0: TRACEABILITY FR 状态刷新为 19 Done / 11 Partial，引入 main.go 装配级证据标准，对齐 runtime HEAD `e02b190`；Plan007 A1~A10 + B1~B8 已执行；v3.6.1/Plan008 投影已对齐 Runtime-Anchor `/home/binance@f18a329`、Release `v0.2.0`、workflow `28126779885`、`release_closeable=YES`)
 - Owner: ZoneCNH
 - Layer: 数据域 · 行情
-- Runtime-Version: v0.2.1
-- Runtime-HEAD: `e32a126391ab03dcddcbc31945fcf2dc757e8025` (Plan008 implementation follow-up; PR #145 remote CI anchor `4133b6d9c126148cdb4f8059471f1a6bc3385039`; release evidence captured at `c16a681b88f901e399efb7eb42b18ab29ffe6beb`; release_closeable=YES via GitHub Release `v0.2.0` / run `28126779885`)
+- Runtime-Version: v0.2.0
+- Runtime-HEAD: `f18a329` (short Runtime-Anchor for `v0.2.0` release; Plan008 final closeout)
 - Repository: [github.com/ZoneCNH/binance](https://github.com/ZoneCNH/binance)
 - Related: [CONSTITUTION.md](../../CONSTITUTION.md), [ARCHITECTURE.md](../../ARCHITECTURE.md), `module/domain_market`, `module/natsx`, `module/redisx`, `module/taosx`, `module/kafkax`, `module/ossx`, `module/postgresx`, `module/clickhousex`
 
@@ -1126,7 +1126,7 @@ github.com/ZoneCNH/binance/
 
 ## 22. Release DoD
 
-`module/binance` v3.5.0 发布完成标准：
+`module/binance` 当前发布完成标准：
 
 - [x] `binance-market` references 已移除或隔离到 migration history（BR-001）
 - [x] `module/binance/client` 和 `module/binance/server` specs 完成并通过 spec-lint（即 `docs/governance/scoring/RUBRIC-spec.md` 结构评分门禁）

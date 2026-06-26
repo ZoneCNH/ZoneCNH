@@ -98,7 +98,7 @@
 
 > [FRAME, HIGH] 以下为历史讨论稿到当前 `SPEC.md`/`TRACEABILITY.md` 的落点对齐声明。FR-025~FR-030 已登记；runtime/release evidence 仍 Pending，不得据此关闭功能实现或发布 DoD。
 >
-> [COMPUTED, HIGH] 追溯闭环口径：FR-012~FR-030 的 FR/AC/TC 已登记于 `SPEC.md`/`TRACEABILITY.md`；本讨论稿保持 non-normative，runtime evidence 仍为 Pending（L1/local 证据已采集，L2/L3/live/release 未闭合）。
+> [COMPUTED, HIGH] 追溯闭环口径：FR-012~FR-030 的 FR/AC/TC 已登记于 `SPEC.md`/`TRACEABILITY.md`；本讨论稿保持 non-normative，runtime evidence 仍按当前 FR 投影单独关闭；release evidence 已由 Plan008 final closeout 归档。
 
 | FR | 标题 | Landing | Bump | 覆盖 issue / Beads |
 | --- | --- | --- | --- | --- |
@@ -112,7 +112,7 @@
 | NAMING subject | `instruments.changed`（symbol 目录变更）+ `symbols.changed`（订阅白黑名单热重载） | `NAMING.md` §3 | MINOR | #880, #892 |
 | FR-015 扩展 | depth 订阅档位：spot/um_perp/cm_perp = @depth20@100ms + @depth@1000ms 增量；options = @depth1000；update_id 拼合 | `SPEC.md` §9 | MINOR | #883 |
 
-[FRAME, HIGH] 本节声明后，issue #880~#892 与 Beads P2-2/P2-4 的规格层落点都有明确 FR 承接（已覆盖 6 项 + FR-025~FR-030 + NAMING/FR 扩展）。runtime evidence 和 release evidence 未闭合；后续只能按 `/home/binance` runtime 测试、CI/live smoke 与 release evidence 关闭实现项。
+[FRAME, HIGH] 本节声明后，issue #880~#892 与 Beads P2-2/P2-4 的规格层落点都有明确 FR 承接（已覆盖 6 项 + FR-025~FR-030 + NAMING/FR 扩展）。runtime evidence 继续按 `/home/binance` runtime 测试与 CI/live smoke 关闭实现项；release evidence 已由 Plan008 final closeout 归档。
 
 ## 8. 版本与影响矩阵（runtime pending）
 
@@ -155,4 +155,3 @@
   - **#929** — FR-025~FR-030: throttle、daily reconciliation、cold rehydration、progress API、freshness SLA、Options raw field
 - 任一 FR 翻转为 Done 前必须通过：Spec -> Review -> Matrix -> Tasks -> Plan -> Prompt -> Code 管线、runtime 测试证据、CI/live smoke 和 release gate
 - 不得将本备忘录视为 runtime behavior、CI pass、GitHub Release 或 release evidence 完成证明
-

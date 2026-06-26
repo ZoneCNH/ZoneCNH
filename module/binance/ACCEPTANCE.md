@@ -6,8 +6,8 @@
 | --- | --- |
 | Status | Generated from current module SSOT |
 | Last-Updated | 2026-06-25 |
-| Module-Version | v3.6.0 |
-| Module-State | 验收清单已补齐；L1 边界治理 FR-009 Done（13 gates PASS）；L2 功能 FR **19/30 Done / 11 Partial / 0 Pending**（runtime HEAD `e02b190`，Plan007 A1~A10 + B1~B8 已执行）；本次引入 main.go 装配级证据标准——9 存储类 FR（FR-005/006a-d/007/007a/010/011）writer 代码完整但 `main.go` 未装配实例（`bootstrap.Spec{Stores: bootstrap.None}` + `NewMemoryIdempotencyStore` + `StorageWriter=nil`），runtime 永不执行，下调为 Partial；6 FR 上调（FR-002/004/008/025/030 Done + FR-016 实质升级）；BR-004 提升为 Done |
+| Module-Version | v3.6.1 |
+| Module-State | 验收清单已补齐；L1 边界治理 FR-009 Done（13 gates PASS）；L2 当前状态投影以 Runtime-Anchor `/home/binance@f18a329` 与 `TRACEABILITY.md` v3.6.1 为准：FR **24 Done / 10 Partial / 0 Pending**；Plan008 已闭合 release gate（GitHub Release `v0.2.0`，workflow `28126779885` completed/success，`release_closeable=YES`），但不自动升格为 30/30 FR Done。 |
 | Runtime-Repo | `/home/binance` |
 | Source | `SPEC.md`, `TRACEABILITY.md`, `DATA-LIFECYCLE.md`, `STANDARD.md`, `client/TRACEABILITY.md`, `server/TRACEABILITY.md`, `BOUNDARY-GATES.md` |
 
@@ -28,7 +28,7 @@
 >
 > [COMPUTED, HIGH] 2026-06-24 gated `natsx` integration 已在真实本地 NATS JetStream 上验证 PubAck duplicate、ManualAck 成功不重投、immediate Nak 至 `MaxDeliver=5` 后停止；TC-004/TC-006 仍保持 Pending，因为独立 client/server 进程、`NakWithDelay(5s)`、dead-letter/parking 和完整 live 链路未闭合。
 >
-> [COMPUTED, HIGH] 2026-06-24 kafkax fanout local unit subset 已验证 topic/key 与 strict handoff：目标 server 测试、`go test ./cmd/binance-server ./internal/server -count=1`、`go test ./...`、`go vet ./...`、`./scripts/boundary-gates.sh` 与 `plan006_task_4_7_repeat_checks=100` PASS；真实 Kafka broker e2e、production topic/ACL 与 release evidence 仍未闭合。
+> [COMPUTED, HIGH] 2026-06-24 kafkax fanout local unit subset 已验证 topic/key 与 strict handoff：目标 server 测试、`go test ./cmd/binance-server ./internal/server -count=1`、`go test ./...`、`go vet ./...`、`./scripts/boundary-gates.sh` 与 `plan006_task_4_7_repeat_checks=100` PASS；真实 Kafka broker e2e 与 production topic/ACL 仍未闭合；release evidence 已由后续 Plan008 closeout 闭合。
 
 ## 1. 验收命令
 
@@ -161,27 +161,27 @@
 | 根、Client、Server traceability 存在 | Done | 三个 traceability 文件可定位。 |
 | natsx / ManualAck / redisx / ossx / kafkax 边界已写入规格 | Done | `SPEC.md` 与 `TRACEABILITY.md` 可定位对应 FR/AC/TC。 |
 | Boundary gates 文档化 | Done | `BOUNDARY-GATES.md` 存在。 |
-| 所有 FR implemented | 19/30 Done, 11 Partial | FR-001~030 全部有实现（0 Pending）。v3.6.0 引入 main.go 装配级证据标准：9 存储类 FR（FR-005/006a-d/007/007a/010/011）writer 代码完整但 main.go 未装配实例，下调为 Partial；6 FR 上调（FR-002/004/008/025/030 + FR-016 实质升级）。详见 `TRACEABILITY.md` v3.6.0 变更摘要。 |
+| 所有 FR implemented | 24 Done / 10 Partial / 0 Pending | 当前口径以 `TRACEABILITY.md` v3.6.1 为准：基于 Runtime-Anchor `/home/binance@f18a329` 与 Issue-Ledger `../../report/binance/issues-sync-20260625.md`；Partial FR 为 FR-007/007a/011/016/017/023/024/026/027/028。 |
 | 所有 AC passed | Not Done | AC-001~AC-104 全部有测试证据。 |
 | 所有 TC passed | Not Done | TC-001~TC-049 全部 PASS。 |
-| Runtime test evidence | Local Evidence Done / Secret+CI+Live+Release Pending | `/home/binance/release/evidence/binance/{20260623,20260625}/` 已归档 build/test/race/vet/lint/smoke/boundary gate/testnet-live/SLO；runtime HEAD `e02b190`（Plan007 A1~A10 + B1~B8 已执行）；Plan007 已闭合 G1(历史回填真实REST)/G3(NakWithDelay+DLQ)/G4(跨产品线碰撞)；secret scan、remote CI、合约/期权 testnet 凭据、真实 Kafka broker e2e、release evidence/tag 未闭合。 |
+| Runtime test evidence | Local+CI+Release Evidence Done / Full external E2E Pending | `/home/binance/release/evidence/binance/{20260623,20260625}/` 已归档 build/test/race/vet/lint/smoke/boundary gate/testnet-live/SLO；runtime anchor `/home/binance@f18a329`；Plan008 release gate 已闭合：GitHub Release `v0.2.0`，workflow `28126779885` completed/success，`release_closeable=YES`；真实 Kafka broker e2e、覆盖率/性能与全量 AC/TC 仍按本表单独治理。 |
 | Coverage and performance evidence | Not Done | 覆盖率、延迟、吞吐、重放与故障注入报告归档。 |
-| CI pass | Not Done | GitHub Actions 或等价 CI run 通过并链接到 release evidence。 |
+| CI pass | Done (release workflow) | GitHub Actions workflow `28126779885` completed/success and linked to release closeout. |
 
 ## 6. 当前验收缺口
 
 | 缺口 | 风险 | 下一步关闭动作 |
 | --- | --- | --- |
-| release 证据仍未闭合 | 本地 evidence 不能替代 remote CI、live websocket、外部集成或 release tag。 | 补齐 secret scan、GitHub Actions、live websocket、外部依赖集成与 release evidence bundle。 |
+| release gate 已闭合但不等于 30/30 FR Done | Release `v0.2.0` + workflow `28126779885` 关闭发布证据与 Plan008 ledger，不自动关闭 remaining FR/AC/TC。 | 后续按 `TRACEABILITY.md` 单独重判 FR/AC/TC 与 production-grade external E2E。 |
 | FR-001/FR-002 Partial | 四 product line 与 identity contract 不完整。 | 补齐 USDM、COINM、Options parser/mapper/connector/server acceptance。 |
-| FR-003~FR-008/FR-010~FR-030 未整体闭合 | C/S runtime、存储、API、广播、归档、实时控制面、历史生命周期、事件治理、数据质量、Options 字段透传与发布证据未闭合；FR-008 仅 local unit subset Partial。 | 按 `IMPLEMENTATION-PLAN.md` 和 tasks 顺序实现并更新 traceability。 |
-| Release DoD 未达成 | 不能声明 binance v3.5.0 已可发布。 | 全量 AC/TC PASS 后再更新 release 状态。 |
+| FR-003~FR-008/FR-010~FR-030 未整体闭合 | C/S runtime、存储、API、广播、归档、实时控制面、历史生命周期、事件治理、数据质量、Options 字段透传未整体闭合；release gate 已由 Plan008 闭合但不自动关闭这些 FR；FR-008 仅 local unit subset Partial。 | 按 `IMPLEMENTATION-PLAN.md` 和 tasks 顺序实现并更新 traceability。 |
+| 生产级 DoD 未达成 | 已发布 `v0.2.0` 不等于生产级全量 DoD。 | 补齐全量 AC/TC、覆盖率/性能与外部 E2E 后再声明 30/30 FR L2 Done。 |
 
 ## 7. GitHub Issue Closure Ledger（2026-06-23）
 
 > [COMPUTED, HIGH] 2026-06-23 GitHub 核查后，#923~#931 均为 `CLOSED`。完整账本见 [`report/binance/github-issues-923-931-closure-ledger-20260623.md`](../../report/binance/github-issues-923-931-closure-ledger-20260623.md)。
 >
-> [COMPUTED, HIGH] 本节记录 issue tracking closure，而不是 runtime/release promotion。Live websocket、remote CI、外部集成、release artifact/tag 与 FR-012~FR-030 runtime evidence 仍必须由对应 acceptance/release gate 单独关闭。
+> [COMPUTED, HIGH] 本节记录 2026-06-23 issue tracking closure，而不是 runtime/release promotion。后续 Plan008 已关闭 release artifact/tag/remote workflow 证据；live/external E2E 与 FR runtime promotion 仍必须由对应 acceptance/release gate 单独关闭。
 
 | Issue | GitHub 状态 | 已有证据 | Runtime/release 边界 |
 | --- | --- | --- | --- |

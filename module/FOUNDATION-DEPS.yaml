@@ -175,6 +175,7 @@ allowed_deps:
   contracts:     []                                    # 跨域契约独立，无 Foundation 运行时依赖
   transportx:    [contracts, configx, observex, resiliencx]  # 传输契约可消费公开契约和横切接口
   domainx:       [kernel]                              # 领域共享原语只依赖 kernel
+  alertx:        [observex, contracts]                # 横切告警消费者：单向依赖 observex 导出 + contracts 契约（ADR-001 D1）
 
 # ============================================================
 # 禁止的依赖（任何基础模块都不得导入）

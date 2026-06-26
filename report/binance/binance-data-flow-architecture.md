@@ -5,10 +5,10 @@
 | 文档类型 | 数据流架构（含 Mermaid 图 + 模块职责边界） |
 | 分析对象 | `github.com/ZoneCNH/binance` C/S 双进程数据通路 |
 | 证据基准 | 运行时代码逐文件核验 |
-| 当前 Runtime-Anchor | `/home/binance@3f20be0`（PR #103+#104 合并后） |
+| 当前 Runtime-Anchor | `/home/binance@f18a329`（Plan008 final closeout；PR #103+#104 runtime fix baseline 为 `3f20be0`） |
 | 当前 Issue-Ledger | [`issues-sync-20260625.md`](./issues-sync-20260625.md) |
 | 当前状态投影 | `24 Done / 10 Partial / 0 Pending` + `6 Draft`（FR-031~036） |
-| 当前 issue 状态 | ✅ **全部 Closed**（#1104~#1118 + #1123）：7 代码修复 + 9 能力边界文档化 |
+| 当前 issue 状态 | ✅ **全部 Closed**（#1104~#1118 + #1123）：7 代码修复 + 9 能力边界文档化；Plan008 release closeout 已归档 |
 | 置信度 | HIGH |
 
 `[COMPUTED, HIGH]` 本文保留数据流架构语境；当前行动清单和关闭条件统一维护在 [`issues-sync-20260625.md`](./issues-sync-20260625.md)。

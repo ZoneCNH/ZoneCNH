@@ -5,13 +5,13 @@
 | 报告类型 | 生产就绪度（Production-Ready）深度分析 |
 | 分析对象 | `github.com/ZoneCNH/binance`（运行时代码仓 `/home/binance`） |
 | 治理投影 | `/home/ZoneCNH/module/binance/`（spec / TRACEABILITY 投影仓） |
-| 当前 Runtime-Anchor | `/home/binance@3f20be0`（PR #103+#104 合并后） |
+| 当前 Runtime-Anchor | `/home/binance@f18a329`（Plan008 final closeout；PR #103+#104 runtime fix baseline 为 `3f20be0`） |
 | 当前 Issue-Ledger | [`issues-sync-20260625.md`](./issues-sync-20260625.md) |
 | 当前状态投影 | `24 Done / 10 Partial / 0 Pending` + `6 Draft`（FR-031~036 规格草案） |
 | 当前 issue 状态 | ✅ **全部 Closed**（#1104~#1118 + #1123）：7 个代码修复+实证，9 个能力边界文档化 |
 | 代码规模 | ~13.5K 行生产代码 + ~11.2K 行测试代码（66 个测试文件） |
 | 分析日期 | 2026-06-25 |
-| 证据基准 | 运行时代码 `/home/binance@3f20be0` + `release/evidence/binance/20260625/` 实证 + mainnet live |
+| 证据基准 | 运行时代码 `/home/binance@f18a329` + `release/evidence/binance/20260625/` 实证 + mainnet live + Plan008 release workflow `28126779885` |
 | 置信度 | HIGH（代码逐文件核验 + release evidence 交叉验证） |
 | 证据标签 | 见各节内联标注 |
 
@@ -35,7 +35,7 @@
 
 `binance` 是一个**币安交易所多产品线市场数据采集与服务**的双服务（C/S）模块：`binance-client` 连接币安 WebSocket/REST、归一化事件并经 NATS JetStream 发布；`binance-server` 消费、去重、落盘四路存储（TDengine / ClickHouse / Postgres / OSS）、提供查询 API 并经 Kafka 广播。
 
-**核心判断**：模块在**架构完整度、代码质量、测试覆盖、可观测性**上已达到生产级水准；**首个生产就绪 release v0.2.0 已发布**（`release/evidence/binance/20260625/release-v020-live.txt`）。~~3 类阻塞性或半阻塞性缺口~~ **✅ 已全部闭合**（runtime PR #103+#104）：
+**核心判断**：模块在**架构完整度、代码质量、测试覆盖、可观测性**上已达到生产级水准；**首个生产就绪 release v0.2.0 已发布**（`release/evidence/binance/20260625/release-v020-live.txt`）。~~3 类阻塞性或半阻塞性缺口~~ **✅ 已全部闭合**（runtime PR #103+#104；release closeout 由 Plan008 归档）：
 
 - ~~**FR-016 历史回补未接线**~~ → ✅ **已修复**（#1104）：PR #103 注入 `NewMultiLineHistoryFetcher`，`RequestBackfill` 异步执行真实 REST 回补。
 - ~~**REST 历史端点 Spot-only**~~ → ✅ **已修复**（#1107）：PR #103 实现 `routeEndpoint(productLine, eventType)`，支持 spot/um_perp/cm_perp REST 路由。
@@ -43,7 +43,7 @@
 
 `[COMPUTED, HIGH]` 当前行动清单、关闭条件和 issue 状态统一维护在 [`issues-sync-20260625.md`](./issues-sync-20260625.md)。**全部 16 个 issue 已闭合**（7 代码修复 + 9 能力边界文档化）。本文保留历史分析语境。
 
-**可信度说明**：模块治理投影文档与 runtime 曾存在状态漂移；本报告保留该历史语境。当前 `report/binance/` 有效口径以 `/home/binance@3f20be0`、[`issues-sync-20260625.md`](./issues-sync-20260625.md) 和 `24 Done / 10 Partial / 0 Pending + 6 Draft` 为准；`module/binance/` 不在本写入切片内。
+**可信度说明**：模块治理投影文档与 runtime 曾存在状态漂移；本报告保留该历史语境。当前 `report/binance/` 有效口径以 `/home/binance@f18a329`、[`issues-sync-20260625.md`](./issues-sync-20260625.md)、[`plans/binance/008-issues-sync-report.md`](../../plans/binance/008-issues-sync-report.md) 和 `24 Done / 10 Partial / 0 Pending + 6 Draft` 为准；本文其余 runtime file/line 细节保留 PR #103/#104 分析语境。
 
 > **[RULES]** 报告遵循 [`docs/constitution/20-epistemic-standards.md`](../../docs/constitution/20-epistemic-standards.md) 认识论标准。凡事实性声明带 `[COMPUTED]`/`[KNOWN]`/`[INFERRED]` 标签 + 显式置信度；文档与代码冲突时以代码为优先，并显式标注冲突。
 
@@ -59,7 +59,7 @@
 - `cmd/binance-server/main.go:135` 调用 `storageFromEnv`，`:144-150` 注入 `asm.idempotency` / `serverConfig.StorageWriter` / `PostAcceptHooks` / `etlRun` goroutine。
 - `release/evidence/binance/20260625/storage-assembly-live.txt`：5/5 infra LIVE-PASS（taosx healthy / pg SELECT 1 / redis Set-Get / ch SELECT 1 / Kafka roundtrip 9.07s）。
 
-**影响**：该漂移解释了为什么需要后续 issue ledger；当前行动入口是 [`issues-sync-20260625.md`](./issues-sync-20260625.md)，其中 `#1106` 文档对齐已关闭，其余 runtime/evidence issues 保持开放。
+**影响**：该漂移解释了为什么需要后续 issue ledger；当前行动入口是 [`issues-sync-20260625.md`](./issues-sync-20260625.md)。该 ledger 的执行结果已由 Plan008 归档为 GitHub issues 40/40 CLOSED、Release `v0.2.0` 已发布、`release_closeable=YES`；当前剩余风险以 FR projection 的 `10 Partial` 表达，不再表述为开放 issue。
 
 ### #2 归一化层是产品线无关的单点分派 `[KNOWN]` 置信度 HIGH
 
