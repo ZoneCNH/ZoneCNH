@@ -77,6 +77,17 @@ Step 1 → 2 → 2.5 → 3 → 4 → 5 → 6 → 7
 
 **6a — 双模式批量更新：** 以下 sed 同时捕获冒号格式和管道格式的 Module-Version 字段。在合并 PR 之前执行；若推迟到之后，将产生 7-9 个独立 PR。
 
+**写入 sed 前强制验证：** 在运行 sed 之前，验证模块目录中实际存在的每种格式是否均能被模式覆盖。遗漏任何一种格式会导致静默失败，之后需要额外的补丁 PR。
+
+```bash
+# 验证：列出所有 Module-Version 格式。每个格式必须被下面的某个 sed 捕获。
+grep -r "Module-Version" module/{name}/*.md | grep -oP 'Module-Version[:|].*v[0-9.]*' | sort -u
+# 预期输出示例：
+#   Module-Version: v3.6.0          ← 冒号格式 → sed 第 1 行处理
+#   | Module-Version | v3.6.0 |     ← 管道格式 → sed 第 2 行处理
+# 若出现第三种格式，先扩展 sed，再执行。
+```
+
 ```bash
 # 模式 A：module/{name}/ 下所有治理文档中的 Module-Version 元数据字段
 grep -rl "Module-Version" module/{name}/*.md | xargs sed -i \
