@@ -117,3 +117,4 @@ report/package-lock.json
 *.db
 .beads-credential-key
 .beads/proxieddb/
+__pycache__/
