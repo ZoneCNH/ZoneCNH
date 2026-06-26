@@ -21,6 +21,14 @@ pipeline_gate: 23 节结构完整，FR→AC→TC 链条闭合；跨文件一致�
 
 ## 工作流程
 
+### 顺序
+
+```
+Step 1 → 2 → 2.5 → 3 → 4 → 5 → 6 → 7
+```
+
+如果跳转顺序执行 Step 5 或 Step 6，将产生事后修复 PR。如果按此顺序执行，仅产生 1 个 PR——最多 2 个。Spec-Version 变更是级联操作——更新时需同步 25+ 个文件。在 PR 合并前执行；推迟到合并后将产生 7-9 个独立补丁 PR。
+
 ### Step 1：加载规范
 
 读取 `docs/governance/SPEC-TEMPLATE.md`（23 节模板）、`CONSTITUTION.md` 第四条、`docs/governance/TRACEABILITY.md`。
@@ -61,6 +69,9 @@ pipeline_gate: 23 节结构完整，FR→AC→TC 链条闭合；跨文件一致�
 - **FR→AC 映射索引：** AC 总数和 TC 总数是否与实际条目计数一致？=> 更新。
 - **Appendix 弃用声明：** FR 计数或 AC 计数是否过时？=> 更新。
 - **TRACEABILITY.md：** 是否存在 FR 描述的差异对比？Module-Version 是否已升级？=> 对齐。
+- **ACCEPTANCE.md：** 覆盖率百分比是否改变？FR 状态是否需要刷新？=> 如有需要则更新。
+
+在合并之前修复这些问题——它们是与新增内容逻辑上属于同一变更的同一文件内一致性修复，并非独立 PR。
 
 ### Step 6：锚点对齐（最终确定前——若 Spec-Version 升级）
 
