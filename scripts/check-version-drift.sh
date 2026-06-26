@@ -69,14 +69,15 @@ if [ -n "$ARCH_FILES" ]; then
 fi
 
 # ── 范围 D: 模板文件 ──
-if [ -f "$ROOT/module/_exchange-template/README.md" ]; then
-    STALE=$(grep -n "v$OLD_VERSION" "$ROOT/module/_exchange-template/README.md" 2>/dev/null || true)
+for TEMPLATE_DIR in $(ls -d "$ROOT/module/_"* 2>/dev/null); do
+    STALE=$(grep -rn "v$OLD_VERSION" "$TEMPLATE_DIR"/*.md 2>/dev/null | grep -i "$MODULE" | \
+        grep -v "弃用" | grep -v "历史" || true)
     if [ -n "$STALE" ]; then
-        echo "FAIL: _exchange-template 中发现过时引用:"
+        echo "FAIL: $(basename "$TEMPLATE_DIR") 中发现过时引用:"
         echo "$STALE"
         FAILED=1
     fi
-fi
+done
 
 # ── 范围 E: 依赖模块反向引用（动态读取 — 从 SPEC.md §1 Related 行获取）──
 RELATED=$(grep '^\- Related:' "$ROOT/module/$MODULE/SPEC.md" 2>/dev/null | \
