@@ -17,7 +17,7 @@ SPEC-GAP-004	SPEC.md	P2	§13 边界场景	审计-FR-012~030	FR-012~030 引入的
 SPEC-GAP-005	SPEC.md	P2	§15 配置表	审计-FR-012~030	FR-013/019/025/026/027 的新配置键未列入 §15 配置表（clock_skew_threshold / max_concurrent_backfill_jobs / max_backfill_per_instrument / backfill_rate_limit / reconciliation.tolerance / rehydration.ttl）	#1193
 SPEC-GAP-006	SPEC-exchangeinfo-sync.md	P2	FR-031~036 迁移路径	审计-FR-031~036	FR-031~036 定义于 SPEC-exchangeinfo-sync.md 而非 SPEC.md §7；Draft→Active 提升时需迁移并协调 AC/TC 编号	#1193
 SPEC-GAP-007	SPEC.md	P3	TC 总数不一致	审计-§16	已修复——FR→AC 映射索引现已显示 65 TC（TC-001~065），与 §16 条目计数匹配	已修复（PR #1189）
-SPEC-GAP-008	ACCEPTANCE.md	P2	跨文件 FR 覆盖缺口	审计-FR-013/014/017/018/021/026/027	ACCEPTANCE.md 中 7 个 FR 零引用（FR-013/014/017/018/021/026/027）；FR-012/015/016/019/020/022~025/028~030 有 3~7 引用但未验证 AC 状态一致性	#1193
+SPEC-GAP-008	ACCEPTANCE.md	P3	跨文件 FR 覆盖缺口	审计-FR-012~030	已确认：ACCEPTANCE.md 通过批量范围行覆盖全部 19 个 FR（AC-048~059/FR-012~015、AC-060~071/FR-016~019、AC-072~080/FR-020~022 等）；先前报告的"7 个 FR 零引用"有误——覆盖是基于范围分组而非逐 FR 条目。降级为 P3。	#1193
 SPEC-GAP-009	SPEC.md	P3	§6 Consumers 表	审计-§6	§6 列出 "Operator / SRE : client :8081 / server :8082 Gin admin 端点" 但未反映 FR-016/019/024~028 引入的新 admin 管理面	#1193
 SPEC-GAP-010	SPEC.md	P3	§22 DoD 范围	审计-§22	DoD "[ ] 所有 FR 实现完成" 范围已扩至 38 FR；DoD 描述未显式反映扩展后的 FR 集	#1193
 SPEC-GAP-011	SPEC.md	P3	FR→AC 映射表缺 FR-031~036	审计-§7	FR→AC 映射表 42 行覆盖 FR-001~044 但直接从 FR-030 跳到 FR-037；FR-031~036（Draft）零行；Draft 提升时需补充	#1193
