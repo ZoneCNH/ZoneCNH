@@ -79,11 +79,34 @@ def test_spec_missing_file_redline(tmp_module):
 
 def test_spec_duplicate_fr_redline(tmp_module):
     mod_dir, module = tmp_module
-    text = _perfect_spec_text() + "\n" + "\n".join(f"- FR-001: 重复！" for _ in range(12)) + "\n"
+    # 重复"定义"：同一 FR-001 在 Functional Requirements 节内有两个 ### 标题。
+    # 合理的追溯引用（AC/TC 表引用 FR-001）不应被误判，只有重复定义才 redline。
+    text = _perfect_spec_text()
+    text = text.replace(
+        "- FR-001: WHEN x THEN y",
+        "### FR-001: WHEN x THEN y\n\n占位\n\n### FR-001: 重复定义\n\n占位",
+    )
     (mod_dir / "SPEC.md").write_text(text, encoding="utf-8")
     s = rs.score_spec(module)
     assert s.redline is True
     assert any("duplicate" in d["rule"] for d in s.deductions)
+
+
+def test_spec_traceability_refs_not_flagged_as_duplicate(tmp_module):
+    """合理的追溯引用（AC/TC 表在全文多次引用同一 FR）不应触发 spec_fr_duplicate。
+
+    回归保护：旧逻辑用「全文出现 vs 节内唯一×3」会误判 alertx 这类在测试矩阵、
+    AC 表、BR 引用中反复提到 FR-001 的合规 SPEC。新逻辑只检测节内重复定义标题。
+    """
+    mod_dir, module = tmp_module
+    text = _perfect_spec_text()
+    # 在 Functional Requirements 节外大量引用 FR-001（模拟 AC/TC 表追溯引用）
+    text += "\n| AC-001 | FR-001 | 验收 |\n" * 20
+    (mod_dir / "SPEC.md").write_text(text, encoding="utf-8")
+    s = rs.score_spec(module)
+    assert not any("duplicate" in d["rule"] for d in s.deductions), (
+        f"追溯引用被误判为重复: {s.deductions}"
+    )
 
 
 def test_spec_no_fr_deducts(tmp_module):

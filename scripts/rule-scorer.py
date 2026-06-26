@@ -110,6 +110,58 @@ def count_sections(text: str, level: int = 2) -> list[str]:
     return [_strip_number(m.group(1)) for m in pattern.finditer(text)]
 
 
+# 中文节名 → SPEC_REQUIRED_SECTIONS 英文 key 的归一化映射。
+# SPEC-TEMPLATE.md 与所有实际 SPEC（observex/alertx 等）使用中文节名；
+# SPEC_REQUIRED_SECTIONS 用英文 key。此映射让 count_sections 的中文输出
+# 能与英文 key 匹配，消除"缺章节"误报（同时保留对英文 SPEC 的直接匹配）。
+# 来源：module/observex/SPEC.md（已 Approved 参照）+ SPEC-TEMPLATE.md 实际用法。
+SECTION_CN_TO_EN = {
+    "元数据": "Metadata",
+    "摘要": "Summary",
+    "问题与背景": "Problem",
+    "目标": "Goals",
+    "非目标": "Non-goals",
+    "消费者": "Consumers",
+    "功能需求": "Functional Requirements",
+    "行为约束": "Business Rules",
+    "接口契约": "Interface Contract",
+    "数据模型": "Data Model",
+    "配置模式": "Config Schema",
+    "配置 schema": "Config Schema",
+    "配置schema": "Config Schema",
+    "错误处理": "Error Handling",
+    "边界情况": "Edge Cases",
+    "目录结构": "Directory Structure",
+    "依赖": "Dependencies",
+    "测试": "Testing",
+    "性能预算": "Performance Budget",
+    "可观测性": "Observability",
+    "安全": "Security",
+    "ci 门禁": "CI Gate",
+    "ci门禁": "CI Gate",
+    "升级兼容性": "Upgrade Compatibility",
+    "发布 dod": "Release DoD",
+    "发布dod": "Release DoD",
+    "待解决问题": "Open Questions",
+    "变更历史": "Change Log",
+}
+
+
+def normalize_section(heading: str) -> str:
+    """归一化节标题到 SPEC_REQUIRED_SECTIONS 的英文 key。
+
+    中文节名经 SECTION_CN_TO_EN 映射；英文节名原样返回（小写化由调用方处理）。
+    """
+    key = heading.strip()
+    return SECTION_CN_TO_EN.get(key.lower(), key)
+
+
+def count_sections_normalized(text: str, level: int = 2) -> list[str]:
+    """提取 markdown 标题并归一化（中文→英文 key）。"""
+    pattern = re.compile(rf"^{'#' * level} +(.+?)\s*$", re.MULTILINE)
+    return [normalize_section(_strip_number(m.group(1))) for m in pattern.finditer(text)]
+
+
 # ---------- 阶段评分 ----------
 
 
@@ -155,7 +207,7 @@ def score_spec(module: str) -> Score:
     trace_text = read(trace_path) or ""
 
     # 1. 23 节结构（15 分）
-    found_sections = {h.lower() for h in count_sections(text, 2)}
+    found_sections = {h.lower() for h in count_sections_normalized(text, 2)}
     missing = [
         sec for sec in SPEC_REQUIRED_SECTIONS if sec.lower() not in found_sections
     ]
@@ -180,10 +232,20 @@ def score_spec(module: str) -> Score:
         s.deduct(5, "spec_no_fr", "未发现 FR-NNN 编号")
     if not br_ids:
         s.deduct(3, "spec_no_br", "未发现 BR-NNN 编号")
-    # 唯一性
-    fr_in_section = set(re.findall(r"\bFR-\d{3}\b", _section_body(text, "Functional Requirements")))
-    if len(fr_ids) > len(fr_in_section) * 3:
-        s.flag_redline("spec_fr_duplicate", "FR 编号过度重复（可能定义错误）")
+    # 唯一性：检测 FR 重复定义（同一编号有两个 "### FR-NNN:" 定义标题）。
+    # 旧逻辑用「全文出现 vs 节内唯一×3」会误判合理的追溯引用（AC/TC 表引用 FR），
+    # 改为检测 Functional Requirements 节内重复的 FR 定义标题。
+    fr_section = _section_body(text, "Functional Requirements")
+    fr_def_headings = re.findall(r"(?m)^###\s+(FR-\d{3})\b", fr_section)
+    fr_def_counts = {}
+    for fid in fr_def_headings:
+        fr_def_counts[fid] = fr_def_counts.get(fid, 0) + 1
+    dup_defs = {fid: c for fid, c in fr_def_counts.items() if c > 1}
+    if dup_defs:
+        s.flag_redline(
+            "spec_fr_duplicate",
+            f"FR 编号重复定义: {dup_defs}",
+        )
 
     # 4. 追溯链：AC/TC 编号存在（双文档架构：SPEC.md + TRACEABILITY.md）
     ac_ids_spec = re.findall(r"\bAC-\d{3}\b", text)
@@ -237,12 +299,22 @@ def score_spec(module: str) -> Score:
 
 
 def _section_body(text: str, heading: str) -> str:
-    m = re.search(
-        rf"^##\s+(?:\d+[. ]\s*)?{re.escape(heading)}\s*$([\s\S]*?)(?=^##\s|\Z)",
-        text,
-        re.MULTILINE | re.IGNORECASE,
-    )
-    return m.group(1) if m else ""
+    """提取指定节正文。heading 为英文 key，同时尝试匹配中文节名。"""
+    # 候选 heading：英文 key + 反查的中文节名
+    candidates = [heading]
+    for cn, en in SECTION_CN_TO_EN.items():
+        if en.lower() == heading.lower():
+            candidates.append(cn)
+            break
+    for cand in candidates:
+        m = re.search(
+            rf"^##\s+(?:\d+[. ]\s*)?{re.escape(cand)}\s*$([\s\S]*?)(?=^##\s|\Z)",
+            text,
+            re.MULTILINE | re.IGNORECASE,
+        )
+        if m:
+            return m.group(1)
+    return ""
 
 
 def score_matrix(module: str) -> Score:

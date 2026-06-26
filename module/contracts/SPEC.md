@@ -22,6 +22,7 @@
 | 端口 | `MarketDataProvider`, `MacroDataProvider`, `DecisionCardProvider`, `SignalFactoryProvider` | 提供最新值读取、订阅与信号生成能力。 |
 | 摄入链路 | `MarketDataService`, `IngestRequest`, `IngestResult`, `IngestAck`, `IngestReject`, `RejectCode`, `AllRejectCodes()` | 统一的市场数据摄入契约。 |
 | 兼容层 | `RegimeSnapshotEvent`, `RegimeCardEvent`, `DecisionCardEvent`, `MarketRegimePort`, `MacroRegimePort`, `RegimeEnginePort` | 旧名桥接到当前 runtime 符号。 |
+| 告警契约 | `AlertEvent`, `AlertRule`, `Severity`, `AlertStatus`, `AlertSink`, `AlertRuleStore` | alertx 告警引擎的跨域输入面：告警事件、声明式规则、严重等级、端口订阅。来源 `pkg/contracts/alert.go`（待 v1.6.0 tag）。 |
 
 ## 2. 功能需求
 
@@ -99,6 +100,18 @@
 
 - 任何新增、删除或重命名的公开符号都必须同步更新这些文档
 - 任何旧术语回流都视为文档回归
+
+### FR-009: 告警契约
+
+`AlertEvent`、`AlertRule`、`Severity`、`AlertStatus`、`AlertSink`、`AlertRuleStore` 是 alertx 告警引擎的跨域稳定契约面，定义在 `pkg/contracts/alert.go`。
+
+- `AlertEvent`：告警事件载体（ID / Source / Severity / Status / Message / Context / FiredAt / ResolvedAt / TraceID / DedupKey）。`ResolvedAt` 用 `*time.Time` 指针确保未解决告警的 JSON `omitempty` 正确省略。
+- `AlertRule`：声明式规则契约（ID / Name / Source / Severity / Condition / DedupKey / SuppressWindow / Channels / Enabled）。`Condition` 是 alertx 规则 DSL 的不透明表达式串，contracts 不持有解析逻辑。
+- `Severity`：三态常量 `critical` / `warning` / `info`，映射 `docs/goal/rsi-standard/23` 的 I4-I5 / I2-I3 / I0-I1 事件分级。
+- `AlertStatus`：四态生命周期 `firing` / `pending` / `resolved` / `suppressed`。
+- `AlertSink` / `AlertRuleStore`：P1 Port 接口，由 alertx 实现；下游可经 `SubscribeAlerts` 订阅告警流。
+
+> 设计来源：`module/alertx/ADR-001-foundations.md`（双订阅 + YAML DSL + v1.0.0 目标）。`Severity` 常量值是稳定字符串，变更属破坏性变更（须走 BR-010 兼容层流程）。
 
 ## 3. 行为约束
 
