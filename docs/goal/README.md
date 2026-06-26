@@ -109,13 +109,13 @@ Goal 体系定义目标交付规则、状态机、Gate、Registry 和证据闭�
 | -------------------------------------------------------------------- | ------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Goal 方法、Gate、Registry、Evidence                                  | `docs/goal/` + `.config/goal/`                                                  | 描述目标、状态、门禁和运行证据，不复制模块完整规格                                                                                                                                           |
 | 产品/工具级 Spec                                                     | `docs/spec/`                                                                    | 由 `docs/goal/` 的 Goal、Spec、Gate、Matrix、Evidence、Registry、Lint 等需求派生；不作为模块事实源，不新增 Goal 体系语义                                                                     |
-| 模块 Feature Spec、Traceability、Task、Prompt 输入与模块级 Goal 文档 | `module/`                                                                       | 作为编码前模块制品事实源，通过 Goal ID / Task ID / 路径被引用；模块级 Goal 固定为 `module/{module}/goal.md`，不得使用 `goal/` 目录或 `goal/1.md`；实现代码统一位于 `/home/{module}` 对应仓库 |
+| 模块 Feature Spec、Traceability、Task、Prompt 输入与模块级 Goal 文档 | `module/`                                                                       | 作为编码前模块制品事实源，通过 Goal ID / Task ID / 路径被引用；模块采用目录化结构（goal/spec/design/plan/tasks/prompt/matrix/gate/evidence/registry），Goal 文档位于 `module/{module}/goal/goal.md`；实现代码统一位于 `/home/{module}` 对应仓库 |
 | Spec → Code 模板、生命周期、门禁、评分与仲裁规则                     | `docs/governance/`                                                              | 作为流程与治理规则事实源，被模块制品、agent 和 CI 引用                                                                                                                                       |
 | 根目录索引与三平台 agent 入口                                        | `README.md`、`ARCHITECTURE.md`、`STATUS.md`、`.claude/`、`.codex/`、`.copilot/` | 只同步入口、路径和门禁口径，不成为新的 SSOT                                                                                                                                                  |
 
 迁移后不得恢复旧 `specs/` 目录；若 Goal 文档、agent 配置或 CI 脚本需要引用模块规格制品，应指向 `module/` 或 `docs/governance/`；若引用 Goal 体系自身工具或控制面规格，应指向 `docs/spec/`，且必须声明 Source Goal / Source Requirement 与对应 `docs/goal/` 权威来源。
 
-模块级 Goal 文档是模块规格制品的一部分，固定路径为 `module/{module}/goal.md`；不得使用 `module/{module}/goal/` 目录、`module/{module}/goal/1.md` 或 `goal/*.md` 多文件槽位。
+模块采用目录化管线结构：`module/{module}/goal/`、`spec/`、`design/`、`plan/`、`tasks/`、`prompt/`、`matrix/`、`gate/`、`evidence/`、`registry/`。Goal 文档位于 `module/{module}/goal/goal.md`。`.config/goal/` 为跨模块控制面 SSOT（Registry、Matrix canonical edge、Gate 状态、Evidence Bundle、Pipeline 状态），模块级 `matrix/`、`gate/`、`evidence/`、`registry/` 为本地投影。
 
 模块实现代码不属于 `module/{module}/`；本地实现、测试和源码修改统一在 `/home/{module}` 对应 GitHub 仓库中完成，`module/{module}/` 只同步规格、任务、计划、Prompt 和证据引用。
 

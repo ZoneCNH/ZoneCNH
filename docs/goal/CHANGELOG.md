@@ -2,6 +2,15 @@
 
 > 记录 docs/goal/ 体系的重大结构性变更。
 
+## 2026-06-26 — 模块目录化结构治理规则变更
+
+- **模块目录化结构**：模块规格制品从扁平文件升级为 10 层管线目录结构（`goal/spec/design/plan/tasks/prompt/matrix/gate/evidence/registry`）
+- **Goal 文档路径**：`module/{module}/goal.md` → `module/{module}/goal/goal.md`
+- **受影响的 SSOT**：`AGENTS.md`、`docs/goal/README.md`、`module/README.md`、`module/AGENTS.md`、`docs/goal/00-authority-map.md`、`.config/goal/schema/rules.yaml`
+- **`.config/goal/` 边界不变**：Registry、Matrix canonical edge、Gate 状态、Evidence Bundle 和 Pipeline 状态仍归属 `.config/goal/` 跨模块控制面；模块级 `matrix/`、`gate/`、`evidence/`、`registry/` 为本地投影
+- **首个目标模块**：`module/binance` 按新结构重构
+- **Change Request**：`docs/goal/change-requests/CR-20260626-module-directory-structure.md`
+
 ## 2026-06-12 — Phase 5 完成 + 愿景更新 + 对齐文档最终化
 
 - **Phase 5 完整版**: Eval Dataset 100 cases (100 类别) + RSI Scorecard 自动触发 (`rsi-trigger.py`) + `goal-workflow.sh rsi-check` 命令

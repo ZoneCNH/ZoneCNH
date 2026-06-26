@@ -24,7 +24,7 @@
 
 - `module/` 是当前仓库的模块规格制品 SSOT：承载 `module/*/SPEC.md`、`module/*/TRACEABILITY.md`、`module/*/tasks/` 和模块实现计划；`docs/governance/` 是 Spec → Code 治理、模板、门禁和评分规则 SSOT。
 - [PRODUCTION-STANDARD-COVERAGE.md](./PRODUCTION-STANDARD-COVERAGE.md) 记录生产标准到 `module/` 文档五件套的覆盖矩阵、缺口优先级和本地 / 生产证据口径。
-- 模块级 Goal 文档固定为 `module/{module}/goal.md`；禁止使用 `module/{module}/goal/` 目录、`module/{module}/goal/1.md` 或 `goal/*.md` 多文件槽位。
+- 模块采用目录化管线结构（`goal/`、`spec/`、`design/`、`plan/`、`tasks/`、`prompt/`、`matrix/`、`gate/`、`evidence/`、`registry/`）；Goal 文档位于 `module/{module}/goal/goal.md`。
 - `module/{module}/` 只保存 Goal、Spec、Traceability、Task、Plan、Prompt、Evidence 等交付制品；对应模块代码仓库的本地工作目录统一为 `/home/{module}`。
 - `docs/goal/` 是 Goal 驱动交付规则 SSOT；`.config/goal/` 是 Goal 运行状态、Registry、Gate、Evidence 和 Prompt 版本的 SSOT。
 - Goal 制品通过 ID 和路径引用 `module/`，不复制完整模块规格；根目录 `README.md`、`ARCHITECTURE.md`、`STATUS.md` 与三平台 agent 配置只做索引和执行入口同步。
@@ -53,7 +53,7 @@
 
 ## Goal 文档索引
 
-命名规则：每个模块最多一个 `goal.md`，路径固定为 `module/{module}/goal.md`。
+命名规则：每个模块一个 Goal 文档，路径固定为 `module/{module}/goal/goal.md`。
 
 以下 `goal.md` 来自 `/home/zone/Downloads/xlib-v1.0-module-goals-md/xlib-v1.0-module-goals/` 的 1.0 发布基线，用于定义模块发布定位、边界、契约、测试证据和 DoD；`SPEC.md` 仍是模块功能规格 SSOT。
 

@@ -134,14 +134,13 @@ module/{module}/
 | 将 Evidence Runtime 列为 non-goal     | Evidence Runtime 是五角色之一    |
 | 从非 main 分支创建新分支              | 必须从 main HEAD 创建            |
 | 在 main 上直接编辑                    | 使用 worktree 或 feature branch  |
-| 新建 `module/{module}/goal/` 目录     | goal.md 固定为单文件             |
 
 ### ⚠️ 注意
 
 - **矛盾≠错误**：SPEC.md 和 goal.md 可能各描述了同一模块的不同侧面。先对照 CONSTITUTION 裁决，不要直接 "调和"
 - **修复前先分类**：区分实质矛盾（必须修）、粒度差异（以上游为准）、术语角度差异（装饰性，可保留）
 - **历史文档加归档标记**：不删除历史计划/任务，而是在文件头添加 `⚠️ 归档警告` 并指向当前权威定义
-- **goal.md 固定单文件**：禁止创建 `goal/` 子目录或多文件槽位
+- **模块目录化结构**：按管线层级 `goal/spec/design/plan/tasks/prompt/matrix/gate/evidence/registry` 组织；Goal 文档位于 `goal/goal.md`；`.config/goal/` 为跨模块控制面 SSOT，模块级 `matrix/`、`gate/`、`evidence/`、`registry/` 为本地投影
 
 ### ⚡ 效率规则
 

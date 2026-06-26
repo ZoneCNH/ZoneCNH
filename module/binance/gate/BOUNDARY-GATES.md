@@ -134,6 +134,6 @@ Runtime `go.mod` 必须保留边界所需 direct dependencies，不得通过依�
 
 ```bash
 # 以 binance 为模板，逐模块复制并裁剪：
-cp /home/binance/scripts/boundary-gates.sh /home/<module>/scripts/
+cp /home/binance/scripts/boundary-gates.sh /home/{module}/scripts/
 # 编辑 gate 列表，移除不适用项，添加模块专属规则
 ```

@@ -65,6 +65,16 @@
 | 目录                         | 性质              | 可提交内容                                                 |
 | ---------------------------- | ----------------- | ---------------------------------------------------------- |
 | `docs/goal/`                 | 方法论与规范权威  | SSOT、说明、SOP、Runtime/CI 规范、对齐账本                 |
+| `module/{module}/goal/`      | 模块 Goal 层      | 目标定义（goal.md）                                        |
+| `module/{module}/spec/`      | 模块 Spec 层      | 需求规格（SPEC.md）                                        |
+| `module/{module}/design/`    | 模块 Design 层    | 设计方案（DESIGN.md）                                      |
+| `module/{module}/plan/`      | 模块 Plan 层      | 执行计划（PLAN.md）                                        |
+| `module/{module}/tasks/`     | 模块 Tasks 层     | 任务清单                                                   |
+| `module/{module}/prompt/`    | 模块 Prompt 层    | Context Package                                            |
+| `module/{module}/matrix/`    | 模块追溯视图      | 人类可读追溯表（投影）；canonical edge SSOT 见 `.config/goal/matrix/` |
+| `module/{module}/gate/`      | 模块 Gate 层      | 模块级门禁定义与检查清单（投影）；Gate 状态 SSOT 见 `.config/goal/gates/` |
+| `module/{module}/evidence/`  | 模块证据快照      | 模块级测试/验证证据；Gate 级 Evidence Bundle SSOT 见 `.config/goal/evidence/` |
+| `module/{module}/registry/`  | 模块注册投影      | 模块本地 Goal/Task/Issue 投影；跨模块 Registry SSOT 见 `.config/goal/registry/` |
 | `.config/goal/schema/`       | 控制面校验配置    | 从 SSOT 镜像出的规则、schema 与兼容映射                    |
 | `.config/goal/registry/`     | Registry 控制面   | 6 个 Registry 子系统文件                                   |
 | `.config/goal/matrix/`       | 追溯矩阵快照      | 可审查矩阵与链路校验结果                                   |

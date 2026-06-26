@@ -237,10 +237,27 @@ Goal → Spec → Design → Plan → Tasks → Prompt → Code → Test → Rev
 
 Matrix 是横切追溯制品，贯穿所有阶段但不作为主流程阶段。
 
-### 模块级 Goal 文档命名规则
+### 模块目录结构规则
 
-- 模块级 Goal 文档固定为 `module/{module}/goal.md`。
-- 禁止新建 `module/{module}/goal/` 目录、`module/{module}/goal/1.md` 或 `goal/*.md` 多文件槽位；未来如需多版本 Goal，必须先更新 `docs/goal/00-authority-map.md`、`.config/goal/schema/rules.yaml` 和 `module/README.md`。
+模块规格制品按 Goal 驱动交付体系的管线层级组织为目录化结构：
+
+```text
+module/{module}/
+├── goal/          ← Goal 层：目标定义（goal.md）
+├── spec/          ← Spec 层：需求规格（SPEC.md）
+├── design/        ← Design 层：设计方案（DESIGN.md）
+├── plan/          ← Plan 层：执行计划（PLAN.md）
+├── tasks/         ← Tasks 层：任务清单
+├── prompt/        ← Prompt 层：Context Package
+├── matrix/        ← Matrix：模块级追溯视图（.config/goal/matrix/ 为 canonical edge SSOT）
+├── gate/          ← Gate：模块级门禁定义与检查清单（.config/goal/gates/ 为 Gate 状态 SSOT）
+├── evidence/      ← Evidence：模块级交付证据（.config/goal/evidence/ 为 Gate 级 SSOT）
+└── registry/      ← Registry：模块级注册投影（.config/goal/registry/ 为跨模块 SSOT）
+```
+
+- 模块级 Goal 文档位于 `module/{module}/goal/goal.md`。
+- 各层可含子模块子目录（如 `client/`、`server/`），子模块复用相同目录结构。
+- `.config/goal/` 仍为 Registry、Matrix canonical edge、Gate 状态、Evidence Bundle 和 Pipeline 状态的跨模块控制面 SSOT；模块级 `matrix/`、`evidence/`、`registry/` 为模块本地投影，不得与 `.config/goal/` 控制面冲突。
 
 ### 关键文档
 
