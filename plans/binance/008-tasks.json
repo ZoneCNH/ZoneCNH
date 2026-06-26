@@ -332,7 +332,7 @@
     {
       "id": "T008.016",
       "phase": 1,
-      "title": "G6 Layer B：新增 taos_retention.go 定时删 tick(30d)/depth(3d)",
+      "title": "G6 Layer B：新增 taos_retention.go 定时删 trade/tick(30d) 与 bar(90d)",
       "map": "G6/S1",
       "gap": "G6",
       "priority": "P0",
@@ -342,7 +342,7 @@
         "T008.001",
         "T008.015"
       ],
-      "acceptance": "tick 30d/depth 3d 后从 taosx 消失；磁盘稳定",
+      "acceptance": "trade/tick 30d、bar 90d 后从 taosx 消失；磁盘稳定",
       "source": "R4§4.1",
       "gh_labels": [
         "p0",
@@ -356,14 +356,14 @@
     {
       "id": "T008.017",
       "phase": 1,
-      "title": "G7 Path B：新增 oss_lifecycle_scheduler.go 每日 03:00 UTC 定时迁移",
+      "title": "G7 Path B：新增 oss_lifecycle_scheduler.go RunOnStart + 24h interval 定时迁移",
       "map": "G7/S12/S13",
       "gap": "G7",
       "priority": "P0",
       "owner": "binance",
       "owner_repo": "binance",
       "deps": [],
-      "acceptance": "03:00 UTC 扫描超期数据；OSS ETag 校验后删热",
+      "acceptance": "启动即扫 + 每 24h 扫描超期数据；OSS ETag 校验后删热",
       "source": "R4§4.2",
       "gh_labels": [
         "p0",
@@ -377,7 +377,7 @@
     {
       "id": "T008.018",
       "phase": 1,
-      "title": "G6+G7 删除顺序契约：G7 归档+ETag 校验成功 → 才触发 G6 删 taosx",
+      "title": "G6+G7 删除顺序契约：G7 归档+ETag/ChecksumHex 校验成功 → 才触发 G6 删 taosx",
       "map": "G6/G7",
       "gap": "G6/G7",
       "priority": "P0",
@@ -387,7 +387,7 @@
         "T008.016",
         "T008.017"
       ],
-      "acceptance": "顺序严格；归档失败不删热",
+      "acceptance": "顺序严格；归档失败或证明缺失不删热",
       "source": "R4§7",
       "gh_labels": [
         "p0",

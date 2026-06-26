@@ -14,9 +14,9 @@ T008.012	1143	G3：新增 internal/server/replay_bridge.go，消费 RepairRequir
 T008.013	1144	G8：appendDeadLetter 接线 deadletter.FileWriter（JSONL 落盘）
 T008.014	1145	G8：新增 POST /api/v1/admin/deadletter/replay replay endpoint
 T008.015	1146	G6 Layer A：ALTER DATABASE binance KEEP 365（DDL 层 retention）
-T008.016	1147	G6 Layer B：新增 taos_retention.go 定时删 tick(30d)/depth(3d)
-T008.017	1148	G7 Path B：新增 oss_lifecycle_scheduler.go 每日 03:00 UTC 定时迁移
-T008.018	1149	G6+G7 删除顺序契约：G7 归档+ETag 校验成功 → 才触发 G6 删 taosx
+T008.016	1147	G6 Layer B：新增 taos_retention.go 定时删 trade/tick(30d) 与 bar(90d)
+T008.017	1148	G7 Path B：新增 oss_lifecycle_scheduler.go RunOnStart + 24h interval 定时迁移
+T008.018	1149	G6+G7 删除顺序契约：G7 归档+ETag/ChecksumHex 校验成功 → 才触发 G6 删 taosx
 T008.019	1150	DLQ FileWriter 路径纳入 OSS 归档（跨磁盘安全）
 T008.020	1151	G5：新增 reconcile_worker.go 消费 LifecycleTask 执行真实对账
 T008.021	1152	G5：新增 binance_reconciliation_alerts 表（migration 007）

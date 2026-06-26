@@ -1,23 +1,52 @@
 #!/usr/bin/env bash
-# 10-round completeness verification for Plan 008 issues (v2 — fixed jq paths + range logic)
+# 10-round final closeout verification for Plan 008 issues (v3 — closed-state + release evidence)
 set -uo pipefail
 
-JSON="/home/ZoneCNH/plans/binance/008-tasks.json"
-GH_MAP="/home/ZoneCNH/plans/binance/008-gh-issue-map.tsv"
-BMAP="/home/ZoneCNH/plans/binance/008-beads-issue-map.tsv"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+JSON="$SCRIPT_DIR/008-tasks.json"
+GH_MAP="$SCRIPT_DIR/008-gh-issue-map.tsv"
+BMAP="$SCRIPT_DIR/008-beads-issue-map.tsv"
 REPO="ZoneCNH/ZoneCNH"
-export BEADS_DIR="/home/ZoneCNH/.beads"
+RELEASE_REPO="ZoneCNH/binance"
+RELEASE_TAG="v0.2.0"
+RELEASE_WORKFLOW_RUN="28126779885"
+if [ -z "${BEADS_DIR:-}" ]; then
+  for candidate in "$REPO_ROOT/.beads" "$REPO_ROOT/../../../../.beads"; do
+    if [ -d "$candidate" ]; then
+      export BEADS_DIR="$(cd "$candidate" && pwd)"
+      break
+    fi
+  done
+fi
+export BEADS_DIR="${BEADS_DIR:-$REPO_ROOT/.beads}"
 
 SSOT_COUNT=$(jq '.tasks | length' "$JSON")
 
-# GitHub live: all open issues with plan008 label
-GH_LIVE=$(gh issue list --repo "$REPO" --state open --label plan008 --limit 200 --json number,title --jq '.[] | "\(.number)\t\(.title)"' 2>/dev/null)
+# GitHub live: all issues with plan008 label, final closeout requires all CLOSED.
+GH_LIVE=$(gh issue list --repo "$REPO" --state all --label plan008 --limit 200 --json number,state,title --jq '.[] | "\(.number)\t\(.state)\t\(.title)"' 2>/dev/null)
 GH_LIVE_COUNT=$(echo "$GH_LIVE" | grep -c . )
+GH_CLOSED_COUNT=$(echo "$GH_LIVE" | awk -F'\t' '$2=="CLOSED"{c++} END{print c+0}')
+GH_NON_CLOSED_COUNT=$(echo "$GH_LIVE" | awk -F'\t' '$2!="CLOSED"{c++} END{print c+0}')
 
-# beads live: all issues, filter plan008 label via jq
+# beads live: all issues, filter plan008 label via jq; final closeout requires all closed.
 BD_ALL=$(bd list --all --json 2>/dev/null)
-BD_LIVE=$(echo "$BD_ALL" | jq '[.[] | select(.labels | index("plan008"))]')
+BD_LIVE=$(echo "$BD_ALL" | jq '[.[] | select((.labels // []) | index("plan008"))]')
 BD_LIVE_COUNT=$(echo "$BD_LIVE" | jq 'length')
+BD_CLOSED_COUNT=$(echo "$BD_LIVE" | jq '[.[] | select(.status == "closed")] | length')
+BD_NON_CLOSED_COUNT=$(echo "$BD_LIVE" | jq '[.[] | select(.status != "closed")] | length')
+
+RELEASE_INFO=$(gh release view "$RELEASE_TAG" --repo "$RELEASE_REPO" --json tagName,isDraft,isPrerelease,url 2>/dev/null)
+RELEASE_OK=$(echo "$RELEASE_INFO" | jq -r 'select(.tagName=="v0.2.0" and (.isDraft|not) and (.isPrerelease|not)) | "true"' 2>/dev/null)
+RUN_INFO=$(gh run view "$RELEASE_WORKFLOW_RUN" --repo "$RELEASE_REPO" --json status,conclusion,url 2>/dev/null)
+RUN_OK=$(echo "$RUN_INFO" | jq -r 'select(.status=="completed" and .conclusion=="success") | "true"' 2>/dev/null)
+CLOSEOUT_039=$(bd show ZoneCNH-036r --json 2>/dev/null | jq -r '.[0] | (.notes // "") + "\n" + (.close_reason // "")' 2>/dev/null)
+CLOSEOUT_040=$(bd show ZoneCNH-771j --json 2>/dev/null | jq -r '.[0] | (.notes // "") + "\n" + (.close_reason // "")' 2>/dev/null)
+CLOSEOUT_TEXT="${CLOSEOUT_039}
+${CLOSEOUT_040}"
+HAS_RELEASE_CLOSEABLE=$(echo "$CLOSEOUT_TEXT" | grep -q "release_closeable=YES" && echo true || echo false)
+HAS_RELEASE_TAG=$(echo "$CLOSEOUT_TEXT" | grep -q "v0.2.0" && echo true || echo false)
+HAS_RELEASE_WORKFLOW=$(echo "$CLOSEOUT_TEXT" | grep -q "28126779885" && echo true || echo false)
 
 PASS_COUNT=0
 FAIL_COUNT=0
@@ -35,20 +64,21 @@ check() {
 }
 
 echo "============================================================"
-echo "Plan 008 — 10-Round Completeness Verification (v2)"
+echo "Plan 008 — 10-Round Final Closeout Verification (v3)"
 echo "============================================================"
 echo "SSOT tasks:         $SSOT_COUNT"
-echo "GitHub live (P008):  $GH_LIVE_COUNT"
-echo "beads live (P008):   $BD_LIVE_COUNT"
+echo "GitHub live (P008):  $GH_LIVE_COUNT (closed=$GH_CLOSED_COUNT non_closed=$GH_NON_CLOSED_COUNT)"
+echo "beads live (P008):   $BD_LIVE_COUNT (closed=$BD_CLOSED_COUNT non_closed=$BD_NON_CLOSED_COUNT)"
+echo "Release closeout:    release_ok=${RELEASE_OK:-false} run_ok=${RUN_OK:-false} release_closeable=$HAS_RELEASE_CLOSEABLE tag_note=$HAS_RELEASE_TAG workflow_note=$HAS_RELEASE_WORKFLOW"
 echo "============================================================"
 echo ""
 
-# ROUND 1: Count match — SSOT 40 == GitHub 40 == beads 40
-R1_GH=$( [ "$SSOT_COUNT" -eq "$GH_LIVE_COUNT" ] && echo true || echo false )
-R1_BD=$( [ "$SSOT_COUNT" -eq "$BD_LIVE_COUNT" ] && echo true || echo false )
-check 1 "Count: SSOT($SSOT_COUNT)==GH($GH_LIVE_COUNT)==beads($BD_LIVE_COUNT)" \
+# ROUND 1: Count/state match — SSOT 40 == GitHub 40 CLOSED == beads 40 closed
+R1_GH=$( [ "$SSOT_COUNT" -eq "$GH_LIVE_COUNT" ] && [ "$GH_CLOSED_COUNT" -eq 40 ] && [ "$GH_NON_CLOSED_COUNT" -eq 0 ] && echo true || echo false )
+R1_BD=$( [ "$SSOT_COUNT" -eq "$BD_LIVE_COUNT" ] && [ "$BD_CLOSED_COUNT" -eq 40 ] && [ "$BD_NON_CLOSED_COUNT" -eq 0 ] && echo true || echo false )
+check 1 "Count/state: SSOT($SSOT_COUNT)==GH($GH_LIVE_COUNT CLOSED)==beads($BD_LIVE_COUNT closed)" \
   "$([ "$R1_GH" = true ] && [ "$R1_BD" = true ] && echo true || echo false)" \
-  "GH match=$R1_GH, beads match=$R1_BD"
+  "GH match=$R1_GH closed=$GH_CLOSED_COUNT non_closed=$GH_NON_CLOSED_COUNT, beads match=$R1_BD closed=$BD_CLOSED_COUNT non_closed=$BD_NON_CLOSED_COUNT"
 
 # ROUND 2: Every SSOT task_id present in GH map
 MISSING_IN_GHMAP=""
@@ -70,7 +100,7 @@ check 3 "Every SSOT task_id has beads map entry" \
   "$([ -z "$MISSING_IN_BMAP" ] && echo true || echo false)" \
   "missing in beads map:${MISSING_IN_BMAP:- none}"
 
-# ROUND 4: GH issue numbers unique & contiguous (#105-#144)
+# ROUND 4: GH issue numbers unique & contiguous (#1132-#1171)
 GH_NUMS=$(awk -F'\t' 'NR>1{print $2}' "$GH_MAP" | sort -n)
 GH_UNIQUE=$(echo "$GH_NUMS" | sort -u | wc -l)
 GH_TOTAL=$(echo "$GH_NUMS" | wc -l)
@@ -114,7 +144,7 @@ check 7 "GH map numbers == GH live numbers (exact set match)" \
 
 # ROUND 8: Title consistency — every live GH issue title contains its task_id
 # Batch-fetch all titles in one API call to avoid rate limits
-GH_TITLES_JSON=$(gh issue list --repo "$REPO" --state open --label plan008 --limit 200 --json number,title 2>/dev/null)
+GH_TITLES_JSON=$(gh issue list --repo "$REPO" --state all --label plan008 --limit 200 --json number,state,title 2>/dev/null)
 TITLE_MISMATCH=""
 for i in $(seq 0 $((SSOT_COUNT - 1))); do
   TID=$(jq -r ".tasks[$i].id" "$JSON")
@@ -136,7 +166,8 @@ check 9 "All 9 data gaps (G1-G9) covered by >=1 task" \
   "$([ -z "$GAPS_MISSING" ] && echo true || echo false)" \
   "gaps without task:${GAPS_MISSING:- none}"
 
-# ROUND 10: Coverage — all 35 standards (S1-S35) + 4 milestones (M1-M4) referenced in map field
+# ROUND 10: Coverage — all 35 standards (S1-S35) + 4 milestones (M1-M4) referenced in map field,
+# plus release/workflow closeout evidence for final documentation tasks.
 # map field uses: exact "S1", range "S18-S25", combo "S8/S10/S11/S15", or "M1-M4"
 # Expand all map fields into a flat set of covered standard/milestone codes
 expand_map() {
@@ -179,9 +210,11 @@ for m in 1 2 3 4; do
   M="M$m"
   echo "$COVERED_SORTED" | grep -qx "$M" || MILESTONES_MISSING="$MILESTONES_MISSING $M"
 done
-check 10 "All 35 standards (S1-S35) + 4 milestones (M1-M4) covered" \
-  "$([ -z "$STANDARDS_MISSING" ] && [ -z "$MILESTONES_MISSING" ] && echo true || echo false)" \
-  "standards missing:${STANDARDS_MISSING:- none} | milestones missing:${MILESTONES_MISSING:- none}"
+R10_COVERAGE=$([ -z "$STANDARDS_MISSING" ] && [ -z "$MILESTONES_MISSING" ] && echo true || echo false)
+R10_CLOSEOUT=$([ "${RELEASE_OK:-false}" = true ] && [ "${RUN_OK:-false}" = true ] && [ "$HAS_RELEASE_CLOSEABLE" = true ] && [ "$HAS_RELEASE_TAG" = true ] && [ "$HAS_RELEASE_WORKFLOW" = true ] && echo true || echo false)
+check 10 "All 35 standards (S1-S35) + 4 milestones (M1-M4) + release closeout covered" \
+  "$([ "$R10_COVERAGE" = true ] && [ "$R10_CLOSEOUT" = true ] && echo true || echo false)" \
+  "standards missing:${STANDARDS_MISSING:- none} | milestones missing:${MILESTONES_MISSING:- none} | release_ok=${RELEASE_OK:-false} run_ok=${RUN_OK:-false} release_closeable=$HAS_RELEASE_CLOSEABLE release_tag_note=$HAS_RELEASE_TAG workflow_note=$HAS_RELEASE_WORKFLOW"
 
 echo ""
 echo "============================================================"

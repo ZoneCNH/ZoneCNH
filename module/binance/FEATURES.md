@@ -7,14 +7,14 @@
 | Status | Generated from current module SSOT |
 | Last-Updated | 2026-06-25 |
 | Module-Version | v3.6.1 |
-| Module-State | 规格扩展到 v3.6.1；当前状态投影对齐 Runtime-Anchor `/home/binance@f18a329` 与 Issue-Ledger `../../report/binance/issues-sync-20260625.md`，刷新为 **24 Done / 10 Partial / 0 Pending**。Partial FR: FR-007, FR-007a, FR-011, FR-016, FR-017, FR-023, FR-024, FR-026, FR-027, FR-028。GitHub #1104~#1118 已同步；#1106 文档对齐项关闭条件已满足（所有 active 文档统一 anchor `f18a329` + 统一 `24/10/0` 投影 + 历史口径标注覆盖），已关闭；其余 runtime/evidence issues 保持开放。 |
+| Module-State | 规格扩展到 v3.6.1；当前状态投影对齐 Runtime-Anchor `/home/binance@f18a329` 与 Issue-Ledger `../../report/binance/issues-sync-20260625.md`，刷新为 **24 Done / 10 Partial / 0 Pending**。Partial FR: FR-007, FR-007a, FR-011, FR-016, FR-017, FR-023, FR-024, FR-026, FR-027, FR-028。GitHub #1104~#1118 与后续 Plan008 issue 已同步闭合；Release closeout 已由 `../../plans/binance/008-issues-sync-report.md` 归档为 `release_closeable=YES`；剩余风险以保守 FR projection 的 `10 Partial` 表达，不再表述为开放 issue。 |
 | Layer | 数据域 / Binance-specific market_data C/S module |
 | Runtime-Repo | `/home/binance` |
 | Source | `goal.md`, `SPEC.md`, `TRACEABILITY.md`, `DATA-LIFECYCLE.md`, `STANDARD.md`, `BOUNDARY-GATES.md`, `RUNTIME-MAPPING.md`, `IMPLEMENTATION-PLAN.md`, `client/`, `server/`, `tasks/` |
 
 本文档是 `module/binance` 当前规格库的实现投影，不是 runtime 代码验收证据。实际完成状态以 `TRACEABILITY.md`、`client/TRACEABILITY.md`、`server/TRACEABILITY.md` 和 `/home/binance` 的测试证据为准。
 
-> **v3.6.1 状态口径（2026-06-25）**：Done = Runtime-Anchor `/home/binance@f18a329` 下代码、装配与证据闭合；Partial = 代码、子链路或局部证据存在，但 runtime 注入、持久化、live/release evidence 或产品线覆盖未闭合；Pending = 仅规格登记。当前投影以 Issue-Ledger `../../report/binance/issues-sync-20260625.md` 为准，历史 `28 Done / 2 Partial` 仅保留为已撤回历史口径。
+> **v3.6.1 状态口径（2026-06-25）**：Done = Runtime-Anchor `/home/binance@f18a329` 下代码、装配与证据闭合；Partial = 代码、子链路或局部证据存在，但 runtime 注入、持久化、外部 E2E/live evidence、FR-specific acceptance evidence 或产品线覆盖未闭合；Pending = 仅规格登记。当前投影以 Issue-Ledger `../../report/binance/issues-sync-20260625.md` 为准，历史 `28 Done / 2 Partial` 仅保留为已撤回历史口径。
 
 ## 1. 模块边界
 

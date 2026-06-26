@@ -3,8 +3,10 @@
 # Extracts task IDs + titles from the Plan markdown and compares with SSOT
 set -uo pipefail
 
-PLAN="/home/ZoneCNH/plans/binance/008-binance-production-fix-master-plan.md"
-JSON="/home/ZoneCNH/plans/binance/008-tasks.json"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PLAN="$SCRIPT_DIR/008-binance-production-fix-master-plan.md"
+JSON="$SCRIPT_DIR/008-tasks.json"
+FAILURES=0
 
 echo "============================================================"
 echo "Round 11+: SSOT faithfulness vs Plan 008 document"
@@ -27,6 +29,7 @@ if [ -z "$DIFF" ]; then
 else
   echo "❌ Round 11a FAIL: ID set mismatch"
   echo "diff: $DIFF"
+  FAILURES=$((FAILURES+1))
 fi
 
 # 11b: Count == 40
@@ -34,6 +37,7 @@ if [ "$PLAN_TASK_COUNT" -eq 40 ] && [ "$SSOT_TASK_COUNT" -eq 40 ]; then
   echo "✅ Round 11b PASS: Both Plan doc and SSOT have exactly 40 tasks"
 else
   echo "❌ Round 11b FAIL: count plan=$PLAN_TASK_COUNT ssot=$SSOT_TASK_COUNT"
+  FAILURES=$((FAILURES+1))
 fi
 
 # 11c: Sequential T008.001 to T008.040, no gaps
@@ -46,6 +50,7 @@ if [ -z "$GAPS" ]; then
   echo "✅ Round 11c PASS: T008.001-T008.040 sequential, no gaps"
 else
   echo "❌ Round 11c FAIL: gaps:$GAPS"
+  FAILURES=$((FAILURES+1))
 fi
 
 # 11d: Phase distribution matches Plan §7 execution summary (Phase0=6, Phase1=13, Phase2=14, Phase3=5, Phase4=2)
@@ -61,6 +66,7 @@ if [ "$P0" -eq 6 ] && [ "$P1" -eq 13 ] && [ "$P2" -eq 14 ] && [ "$P3" -eq 5 ] &&
   echo "✅ Round 11d PASS: Phase distribution matches Plan §7 (6/13/14/5/2)"
 else
   echo "❌ Round 11d FAIL: phase distribution mismatch"
+  FAILURES=$((FAILURES+1))
 fi
 
 # 11e: Priority distribution — Plan says 6 P0 gaps + P0 standards + P1 + P2
@@ -74,6 +80,7 @@ if [ "$((PR0+PR1+PR2))" -eq 40 ]; then
   echo "✅ Round 11e PASS: All 40 tasks have valid P0/P1/P2 priority (sum=40)"
 else
   echo "❌ Round 11e FAIL: priority sum=$((PR0+PR1+PR2))"
+  FAILURES=$((FAILURES+1))
 fi
 
 # 11f: Title faithfulness — extract the title cell for each T008.NNN row from Plan §2 tables,
@@ -97,6 +104,7 @@ if [ -z "$TITLE_FAIL" ]; then
 else
   echo "❌ Round 11f FAIL: title mismatches:"
   echo -e "$TITLE_FAIL"
+  FAILURES=$((FAILURES+1))
 fi
 
 # 11g: Coverage cross-check against Plan §3.6 coverage declaration (9/9, 35/35, 4/4, 4/4, 14/14, 6/6)
@@ -108,5 +116,13 @@ echo "✅ Round 11g PASS: Coverage declaration consistent with verified data"
 
 echo ""
 echo "============================================================"
-echo "Round 11+ SUMMARY: SSOT is faithful to Plan 008 document"
+if [ "$FAILURES" -eq 0 ]; then
+  echo "Round 11+ SUMMARY: SSOT is faithful to Plan 008 document"
+else
+  echo "Round 11+ SUMMARY: FAIL ($FAILURES failed check(s))"
+fi
 echo "============================================================"
+
+if [ "$FAILURES" -ne 0 ]; then
+  exit 1
+fi

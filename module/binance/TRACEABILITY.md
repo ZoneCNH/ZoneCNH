@@ -27,9 +27,9 @@
 > - SHA 统一为 `e02b190`。该段仅保留为历史记录；当前有效状态以 Runtime-Anchor `/home/binance@f18a329` 与 Issue-Ledger `../../report/binance/issues-sync-20260625.md` 为准。
 
 > **v3.6.1 变更摘要 (2026-06-25)**：基于 Runtime-Anchor `/home/binance@f18a329` 与 Issue-Ledger `../../report/binance/issues-sync-20260625.md`，当前 FR 状态投影为 **24 Done / 10 Partial / 0 Pending**。Partial FR: FR-007, FR-007a, FR-011, FR-016, FR-017, FR-023, FR-024, FR-026, FR-027, FR-028。
-> - GitHub #1104~#1118 已同步；#1106 为文档对齐项，本轮关闭；#1104/#1105/#1107~#1118 保持开放，等待 runtime/evidence closure。
+> - GitHub #1104~#1118 与后续 Plan008 issues 已同步闭合；Release closeout 已由 `../../plans/binance/008-issues-sync-report.md` 归档为 `release_closeable=YES`；remaining Partial FR 继续按 FR-specific acceptance evidence 单独治理。
 > - 本次撤回历史 `28 Done / 2 Partial` 当前口径；该口径仅作为已撤回历史记录，不再作为当前状态。
-> - 状态模型为 Done/Partial/Pending 三态：Done 表示 runtime anchor 下代码、装配与证据闭合；Partial 表示代码、子链路或局部证据存在但 runtime 注入、持久化、live/release evidence 或产品线覆盖未闭合；Pending 表示仅规格登记。当前有效基线无 Pending FR。
+> - 状态模型为 Done/Partial/Pending 三态：Done 表示 runtime anchor 下代码、装配与证据闭合；Partial 表示代码、子链路或局部证据存在但 runtime 注入、持久化、外部 E2E/live evidence、FR-specific acceptance evidence 或产品线覆盖未闭合；Pending 表示仅规格登记。当前有效基线无 Pending FR。
 >
 > **v3.6.0 历史变更摘要 (2026-06-25，已被 v3.6.1 覆盖)**：历史 `28 Done / 2 Partial / 0 Pending` 口径来自 `fix/binance-production-readiness` 分支上的阶段性投影；当前 issue-ledger 已将其撤回为历史记录，不能作为现行状态或关闭依据。
 
@@ -89,8 +89,8 @@
 
 > 状态口径（v3.6.1，Runtime-Anchor `/home/binance@f18a329`）：FR 表实现状态采用 Done/Partial/Pending 三态模型。当前统计 **24 Done / 10 Partial / 0 Pending**（34 行当前有效基线口径），Partial 固定为 FR-007、FR-007a、FR-011、FR-016、FR-017、FR-023、FR-024、FR-026、FR-027、FR-028。
 >
-> - **10 个 Partial 的开放根因**：#1104/#1107/#1109 覆盖 FR-016 historical runtime fetcher、产品线 REST endpoint 与 rate-limit smoothing；#1112/#1115 覆盖 FR-007/FR-007a/FR-011 的存储证据与 ClickHouse ETL 持久化；#1105/#1113 覆盖 FR-023 Kafka broker 与 100K TPS/backpressure evidence；#1116 覆盖 FR-024 增量 hot reload diff；#1117 覆盖 FR-017/FR-026/FR-027/FR-028 持久化 progress/history/reconcile/rehydration；#1118 覆盖持久化 DLQ wiring/replay。
-> - **Issue closure policy**：GitHub #1104~#1118 已同步；#1106 文档对齐项本轮关闭；其余 runtime/evidence issues 保持开放直到对应 runtime/evidence closure。
+> - **10 个 Partial 的保守保留原因**：#1104/#1107/#1109 覆盖 FR-016 historical runtime fetcher、产品线 REST endpoint 与 rate-limit smoothing；#1112/#1115 覆盖 FR-007/FR-007a/FR-011 的存储证据与 ClickHouse ETL 持久化；#1105/#1113 覆盖 FR-023 Kafka broker 与 100K TPS/backpressure evidence；#1116 覆盖 FR-024 增量 hot reload diff；#1117 覆盖 FR-017/FR-026/FR-027/FR-028 持久化 progress/history/reconcile/rehydration；#1118 覆盖持久化 DLQ wiring/replay。上述 issue ledger 已闭合；FR projection 仍保守保留为 Partial，不因 release gate 闭合自动升格。
+> - **Issue closure policy**：GitHub #1104~#1118 与后续 Plan008 issues 已同步闭合；Release closeout 已由 `../../plans/binance/008-issues-sync-report.md` 归档为 `release_closeable=YES`；剩余风险以 FR projection 的 `10 Partial` 表达。
 >
 > 历史：v3.5.1（HEAD `8290dc9`）统计为 22 Done / 8 Partial；v3.6.0 的 `28 Done / 2 Partial` 仅保留为已撤回历史口径。FR-009/BR Done 的 2026-06-23 round 2 本地 runtime 证据见 `BOUNDARY-GATES.md` 与 `/home/binance/release/evidence/binance/20260623/`（证据提交 `71e2a6e8bb5591c43e8a2ebfff8c7645bf030786`）。该状态不关闭真实 Kafka broker e2e、远程 release CI、live websocket、合约/期权 testnet 凭据或外部集成证据。
 
@@ -328,11 +328,11 @@
 | 日期 | 版本 | 变更内容 | 作者 |
 |------|------|----------|------|
 | 2026-06-25 | v3.7.0-draft | **exchangeInfo 同步规格草案登记**：新增 FR-031~036 / BR-010~012 / AC-105~128 / TC-050~067，定义于 [`SPEC-exchangeinfo-sync.md`](SPEC-exchangeinfo-sync.md)。第三轮结构性审查修正：拆分 FR-033→FR-033（分类层）+ FR-036（连接拓扑层）；`StreamsForProductLineTier` 按 productLine 分化（options 仅 optionTicker）；control stream retention WorkQueue→LimitsPolicy（multi-server）；diff Updated/SpecUpdated 分离；新增 BR-012 options 到期峰值平滑。这些条目为 draft，不计入 v3.6.1 当前 Status-Projection；当前有效基线仍为 **24 Done / 10 Partial / 0 Pending**。技术依据见 `report/binance/symbol-sync-deep-analysis-20260625.md` 与 `report/binance/exchangeinfo-sync-design-20260625.md` | ZCode |
-| 2026-06-25 | v3.6.1 | **Issue-ledger sync + 状态投影纠偏**：基于 Runtime-Anchor `/home/binance@f18a329` 与 Issue-Ledger `../../report/binance/issues-sync-20260625.md`，当前 FR 状态为 **24 Done / 10 Partial / 0 Pending**；Partial FR: FR-007, FR-007a, FR-011, FR-016, FR-017, FR-023, FR-024, FR-026, FR-027, FR-028；GitHub #1104~#1118 已同步，#1106 文档对齐项本轮关闭，其余 runtime/evidence issues 保持开放；历史「28 Done / 2 Partial」仅保留为已撤回历史口径。 | Codex |
+| 2026-06-25 | v3.6.1 | **Issue-ledger sync + 状态投影纠偏**：基于 Runtime-Anchor `/home/binance@f18a329` 与 Issue-Ledger `../../report/binance/issues-sync-20260625.md`，当前 FR 状态为 **24 Done / 10 Partial / 0 Pending**；Partial FR: FR-007, FR-007a, FR-011, FR-016, FR-017, FR-023, FR-024, FR-026, FR-027, FR-028；GitHub #1104~#1118 与后续 Plan008 issue 已同步闭合；Release closeout 已归档为 `release_closeable=YES`；历史「28 Done / 2 Partial」仅保留为已撤回历史口径。 | Codex |
 | 2026-06-25 | v3.6.0 | **历史口径（已被 v3.6.1 覆盖）**：阶段性记录「28 Done / 2 Partial」与 `fix/binance-production-readiness` 投影；当前 issue-ledger 已撤回该口径，不能作为现行状态或关闭依据。 | ZoneCNH |
 | 2026-06-25 | v3.6.0 | **历史记录：Plan007 对齐 + main.go 装配级证据标准**：FR 状态从「22 Done / 8 Partial」刷新为「19 Done / 11 Partial / 0 Pending」，对齐 runtime HEAD `e02b190`（Plan007 A1~A10 + B1~B8 已执行）。引入 main.go 装配级证据标准：9 存储类 FR（FR-005/006a-d/007/007a/010/011）writer 代码完整但 main.go 未装配实例（`bootstrap.Spec{Stores: bootstrap.None}` + `NewMemoryIdempotencyStore` + `StorageWriter=nil`），下调为 Partial；6 FR 上调（FR-002/004/008/025/030 Done + FR-016 实质升级 A1 真实 REST）；BR-004 提升为 Done（A3 NakWithDelay+DLQ + JetStream gated 测试）；§6 仪表盘同步刷新；SHA 统一为 `e02b190`。该行仅保留为历史记录；当前有效状态以 Runtime-Anchor `/home/binance@f18a329` 与 Issue-Ledger `../../report/binance/issues-sync-20260625.md` 为准。依据见 `report/binance/production-readiness-assessment-20260625.md` §4.1 G0 | ZoneCNH |
 | 2026-06-24 | v3.5.1 | **历史记录：Plan007 A8 — 规格端一致性刷新**：FR 实现状态从「1/30」更新为「22 Done / 8 Partial」，对齐 runtime HEAD `8290dc9`（PR #73 之后真实代码状态）；BR-004 提升为 Partial（natsx NakWithDelay + DLQ deadletter 包已实现）；§6 仪表盘同步刷新；SHA 统一为 `8290dc9`。该行仅保留为历史记录；当前有效状态以 Runtime-Anchor `/home/binance@f18a329` 与 Issue-Ledger `../../report/binance/issues-sync-20260625.md` 为准。 | ZoneCNH |
-| 2026-06-23 | v3.5.0 | **Freshness/Options traceability closure**：补齐 FR-029~FR-030 的 TC-047~TC-049 与 AC-099~AC-104；R2 matrix 文案统一为 4×6×5 anchors；新增项保持 Pending，runtime/release evidence 仍未闭合 | ZoneCNH |
+| 2026-06-23 | v3.5.0 | **历史记录：Freshness/Options traceability closure**：补齐 FR-029~FR-030 的 TC-047~TC-049 与 AC-099~AC-104；R2 matrix 文案统一为 4×6×5 anchors；新增项当时保持 Pending，runtime/release evidence 当时仍未闭合；后续 Plan008 已闭合 release gate，当前状态以 v3.6.1 Runtime-Anchor `/home/binance@f18a329` 与 Issue-Ledger `../../report/binance/issues-sync-20260625.md` 为准。 | ZoneCNH |
 | 2026-06-22 | v3.3.0 | **Realtime/Historical/Event/Release 扩展登记**：新增 FR-012~FR-024、TC-029~TC-042、AC-048~AC-086；登记 R2 120-cell governance matrix；统一 FR-024 endpoint 为 `POST /api/v1/admin/symbols/reload`；新增项均保持 Pending，FR-009 runtime evidence 不变 | ZoneCNH |
 | 2026-06-16 | v1.0.0 | 从零创建 §1-§7 标准追溯矩阵 | ZoneCNH |
 | 2026-06-17 | v1.1.0 | 修复 FR/BR/AC 错位，新增 AC-021~023 边界强制 | ZoneCNH |

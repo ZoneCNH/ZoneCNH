@@ -4,11 +4,11 @@
 
 - Status: Approved
 - Spec-Version: v3.6.0
-- Last-Updated: 2026-06-25 (v3.6.0: TRACEABILITY FR 状态刷新为 19 Done / 11 Partial，引入 main.go 装配级证据标准，对齐 runtime HEAD `e02b190`；Plan007 A1~A10 + B1~B8 已执行)
+- Last-Updated: 2026-06-25 (v3.6.0: TRACEABILITY FR 状态刷新为 19 Done / 11 Partial，引入 main.go 装配级证据标准，对齐 runtime HEAD `e02b190`；Plan007 A1~A10 + B1~B8 已执行；v3.6.1/Plan008 投影已对齐 Runtime-Anchor `/home/binance@f18a329`、Release `v0.2.0`、workflow `28126779885`、`release_closeable=YES`)
 - Owner: ZoneCNH
 - Layer: 数据域 · 行情
-- Runtime-Version: v0.1.0
-- Runtime-HEAD: `e02b190` (Plan007 final slice, 含 A1~A10 + B1~B8)
+- Runtime-Version: v0.2.0
+- Runtime-HEAD: `f18a329` (short Runtime-Anchor for `v0.2.0` release; Plan008 final closeout)
 - Repository: [github.com/ZoneCNH/binance](https://github.com/ZoneCNH/binance)
 - Related: [CONSTITUTION.md](../../CONSTITUTION.md), [ARCHITECTURE.md](../../ARCHITECTURE.md), `module/domain_market`, `module/natsx`, `module/redisx`, `module/taosx`, `module/kafkax`, `module/ossx`, `module/postgresx`, `module/clickhousex`
 
@@ -1126,7 +1126,7 @@ github.com/ZoneCNH/binance/
 
 ## 22. Release DoD
 
-`module/binance` v3.5.0 发布完成标准：
+`module/binance` 当前发布完成标准：
 
 - [x] `binance-market` references 已移除或隔离到 migration history（BR-001）
 - [x] `module/binance/client` 和 `module/binance/server` specs 完成并通过 spec-lint（即 `docs/governance/scoring/RUBRIC-spec.md` 结构评分门禁）

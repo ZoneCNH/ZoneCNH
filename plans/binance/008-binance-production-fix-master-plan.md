@@ -4,7 +4,8 @@
 
 - Plan-ID: 008
 - 日期：2026-06-25
-- Runtime-Anchor：`/home/binance@3f20be0`（PR #103+#104 合并后）
+- Runtime-Anchor：`/home/binance@f18a329`（Plan008 final closeout；PR #103+#104 runtime fix baseline 为 `3f20be0`）
+- Final-Code-Anchor：`/home/binance` `fix/plan008-production-fixes@46d8aa8`（PR #145，OPEN）；`/home/kafkax` `fix/plan008-production-fixes@7b2d9ce`
 - Spec-Anchor：`module/binance/SPEC.md` v3.6.0 / `TRACEABILITY.md` v3.6.1
 - Status-Projection（修复前）：`24 Done / 10 Partial / 0 Pending`（FR-001~030）+ `6 Draft`（FR-031~036）
 - 前序 Plan：[Plan 006](006-binance-production-readiness-fix.md)（49 Task，✅ DONE）/ [Plan 007](007-binance-readiness-arch-fix.md)（18 Task，✅ DONE）
@@ -21,6 +22,10 @@
 | R7  | `production-gaps-audit-20260625.md`       | 生产级遗漏维度终审（S26-S32）         |
 
 > `[COMPUTED, HIGH]` 本 Plan 基于 7 份报告的实证核查结果（Explore agent 逐条 file:line 验证），将 **9 个数据缺口（G1-G9）+ 32 项标准化要求（S1-S32）+ 3 项未编号横切要求 + 4 项阶段三规模化** 归并为 **40 个可执行 Task**，按依赖拓扑分 5 个 Phase。所有 Task 均有来源报告与缺口/标准编号追溯。
+
+> `[COMPUTED, HIGH]` Final-Closeout（2026-06-25 UTC）：Plan008 40/40 Task 已完成收口；GitHub `ZoneCNH/ZoneCNH` #1132-#1171 全部 CLOSED，beads `plan008` 40/40 `closed`，T008.039/T008.040 已记录 release closeout 证据：GitHub Release `v0.2.0`，Release workflow `28126779885` completed/success，`release_closeable=YES`。
+
+> `[COMPUTED, HIGH]` Kafka 补证（2026-06-25 UTC）：T008.003 的最后阻塞点已在 `kafkax@7b2d9ce` 修复并测试，`binance@46d8aa8` 已切到 `github.com/ZoneCNH/kafkax v1.1.1-0.20260625153455-7b2d9ce55658`，`kafkaxRuntimeConfig` 使用 `RequiredAcks=-1` + `Idempotent=true` 并由 `config.Validate()` 回归覆盖；`go test ./cmd/binance-server`、`go test ./...`、10 轮 `git diff --check && go test ./... -count=1` 均通过。边界：本轮未使用生产凭证，未跑 live Kafka broker E2E。
 
 ---
 
@@ -195,7 +200,7 @@ Phase 4（验收与门禁）
 | -------- | --------------------------------------------------------------------- | :--------: | --------------- | :--: | ---------------------------------------------- | --------------- |
 | T008.001 | taosx Client interface 新增 `DeleteRange(ctx, table, before)`         |     S1     | Foundation      |  —   | interface 合入 taosx 仓 + 单测；binance 可调用 | R5§3.1 / R6§2.5 |
 | T008.002 | natsx 新增 `OnDeadLetter(msg)` 回调 hook（MaxDeliver 超限 Term 触发） |     S5     | Foundation      |  —   | hook 合入 natsx 仓 + 单测；binance 可注入      | R6§2.1          |
-| T008.003 | kafkax Producer 默认 `RequiredAcks=all`，确认并修正默认值             |     S7     | Foundation      |  —   | 默认值=all 合入 kafkax 仓 + 测试               | R6§2.2          |
+| T008.003 | kafkax Producer 默认 `RequiredAcks=all`，确认并修正默认值             |     S7     | Foundation      |  —   | `kafkax@7b2d9ce` 支持 `RequiredAcks=-1`；`binance@46d8aa8` 依赖补丁版并用 `config.Validate()` 回归 | R6§2.2          |
 | T008.004 | FR-032 exchangeInfo 6h 刷新落地（G4/G5 的 catalog 前置）              |   FR-032   | binance         |  —   | exchangeInfo 6h cron 刷新 + symbol 目录准确    | R1§6 / R2§4.3   |
 | T008.005 | clickhousex DDL 校验：文档要求 ReplicatedMergeTree + TTL              | S3/S4 前置 | Foundation/文档 |  —   | 文档明确生产 DDL 要求                          | R6§2.7          |
 | T008.006 | kafkax dead-letter/retry topic 模式内建或文档化                       |     S6     | Foundation      |  —   | DLQ 模式合入或文档化                           | R6§2.2          |
@@ -215,9 +220,9 @@ Phase 4（验收与门禁）
 | T008.013 | G8：`appendDeadLetter` 接线 deadletter.FileWriter（JSONL 落盘）                 |   G8/S5    | binance      |   T002    | 死信写入后磁盘 JSONL 存在；重启后磁盘保留       | R3§4.2          |
 | T008.014 | G8：新增 `POST /api/v1/admin/deadletter/replay` replay endpoint                 |     G8     | binance      |   T013    | replay 能读 JSONL 重投；已处理事件被 SetNX 拦截 | R3§4.2          |
 | T008.015 | G6 Layer A：`ALTER DATABASE binance KEEP 365`（DDL 层 retention）               |   G6/S2    | binance+运维 |     —     | DDL 含 KEEP；bar 365d 自动淘汰                  | R4§4.1          |
-| T008.016 | G6 Layer B：新增 `taos_retention.go` 定时删 tick(30d)/depth(3d)                 |   G6/S1    | binance      | T001/T015 | tick 30d/depth 3d 后从 taosx 消失；磁盘稳定     | R4§4.1          |
-| T008.017 | G7 Path B：新增 `oss_lifecycle_scheduler.go` 每日 03:00 UTC 定时迁移            | G7/S12/S13 | binance      |     —     | 03:00 UTC 扫描超期数据；OSS ETag 校验后删热     | R4§4.2          |
-| T008.018 | G6+G7 删除顺序契约：G7 归档+ETag 校验成功 → 才触发 G6 删 taosx                  |   G6/G7    | binance      | T016/T017 | 顺序严格；归档失败不删热                        | R4§7            |
+| T008.016 | G6 Layer B：新增 `taos_retention.go` 定时删 trade/tick(30d) 与 bar(90d)        |   G6/S1    | binance      | T001/T015 | trade/tick 30d、bar 90d 后从 taosx 消失；磁盘稳定 | R4§4.1          |
+| T008.017 | G7 Path B：新增 `oss_lifecycle_scheduler.go` RunOnStart + 24h interval 定时迁移 | G7/S12/S13 | binance      |     —     | 启动即扫 + 每 24h 扫描超期数据；OSS ETag 校验后删热 | R4§4.2          |
+| T008.018 | G6+G7 删除顺序契约：G7 归档+ETag/ChecksumHex 校验成功 → 才触发 G6 删 taosx     |   G6/G7    | binance      | T016/T017 | 顺序严格；归档失败或证明缺失不删热                 | R4§7            |
 | T008.019 | DLQ FileWriter 路径纳入 OSS 归档（跨磁盘安全）                                  |   G8/S12   | binance      | T013/T017 | 死信 JSONL 纳入 OSS 归档                        | R3§4.2 / R4§7   |
 
 ### Phase 2 — 生命周期 + 治理（P1，14 Task）
@@ -401,9 +406,10 @@ Phase 4（验收与门禁）
 - 35 项标准化要求（S1-S35）全部完成
 - 4 项阶段三规模化（M1-M4）全部完成
 - 30 FR 状态按 SLA 驱动（L0-L3）重判
-- 104/104 AC PASS + CI 全绿 + release tag/artifact
+- 104/104 AC PASS + CI 全绿 + GitHub Release `v0.2.0` / workflow `28126779885` completed/success / release artifacts
 - chaos 测试故障注入下数据 0 丢失
 - TRACEABILITY.md 有 runtime SHA + CI URL
+- T008.039/T008.040 `release_closeable=YES`，GitHub #1170/#1171 closed
 
 ### 6.3 SLA 驱动的 FR 状态重判标准（R1§5.1）
 

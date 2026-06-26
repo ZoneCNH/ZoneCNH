@@ -10,12 +10,15 @@
 |------|-------|----------|--------|------------|--------|
 | 006 | binance 模块生产就绪修复（49 Task，8 Phase；Phase 4-ALT 作废；新增 Task 7.0 infra 凭据+configx 接入） | P0 | XL(4.8~9pm) | Task 0.1 DONE(v2.0.0) | ✅ DONE（2026-06-24 六批次 PR#68/69/70/71/72/73 + 四文档 PR#1020/1021/1022/1023 合并）：**49/49 Task 全闭环**。beads 0 open · GitHub 0 open。验证：build(100x)/vet(100x)/test-race/boundary-gates(13)/govulncheck(0) 全绿。详见 [006-execution-alignment.md](006-execution-alignment.md) |
 | 007 | binance 生产就绪收尾 + FoundationX 解耦隐患修复（双轨：Track A 功能 G1~G6/R1~R8 + Track B 跨仓库 §7.1~§7.7；18 Task，8 Phase） | P0/P1/P2 | M(1.1~2.05pm) | Plan006 DONE | ✅ **DONE（2026-06-25）** — 18/18 全部完成。A1/A2/A3/A4/A5/A6/A7/A8/A9/A10 + B1/B2/B3/B4/B5/B6/B7/B8。22/22 GitHub issues 关闭。证据: testnet 3/3 PASS + NATS JetStream PASS + 24 benchmarks PASS。详见 [007-binance-readiness-arch-fix.md](007-binance-readiness-arch-fix.md) · [007-execution-alignment.md](007-execution-alignment.md) |
+| 008 | binance final closeout / release evidence sync（40 Task；GitHub/beads ledger + release gate） | P0 | S | Plan007 DONE | ✅ **DONE（2026-06-25）** — 40/40 Task 全部闭合；GitHub #1132-#1171 CLOSED；beads `plan008` 40/40 `closed`；GitHub Release `v0.2.0` + workflow `28126779885` completed/success；`release_closeable=YES`。详见 [008-binance-production-fix-master-plan.md](008-binance-production-fix-master-plan.md) · [008-issues-sync-report.md](008-issues-sync-report.md) |
 
 Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJECTED (with one-line rationale)
 
 ## 执行对齐记录
 
 - 2026-06-24: [Plan006 执行对齐记录](006-execution-alignment.md) 同步本地验证、Beads、GitHub issue 状态；不改变 Plan006 生产级验收口径。
+- 2026-06-25: [Plan008 final closeout](008-binance-production-fix-master-plan.md) 与 [issues sync report](008-issues-sync-report.md) 同步 GitHub/beads 40/40 closed、Release `v0.2.0`、workflow `28126779885` completed/success、`release_closeable=YES`；不自动重判 FR 为 30/30 Done。
+- 2026-06-26: Plan008 验证脚本从脚本目录解析 Plan、SSOT 与映射文件，feature worktree 内运行时读取 PR 分支文件，不再误读主 checkout。
 
 ## 依赖说明
 
