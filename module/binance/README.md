@@ -100,10 +100,6 @@ module/binance/server
 
 - `spec/SPEC.md`
 - `gate/BOUNDARY-GATES.md`
-- `gate/STANDARD.md`
-- `spec/DATA-LIFECYCLE.md`
-- `design/RUNTIME-MAPPING.md`
-- `spec/client/SPEC.md`
-- `spec/server/SPEC.md`
 - `design/DESIGN.md`
 - `matrix/TRACEABILITY.md`
+- `evidence/v3.7.1/`

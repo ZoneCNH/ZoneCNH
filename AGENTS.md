@@ -243,25 +243,28 @@ Matrix 是横切追溯制品，贯穿所有阶段但不作为主流程阶段。
 
 ```text
 module/{module}/
-├── goal/            ← S1  Goal 层：目标定义
-├── spec/            ← S2  Spec 层：需求规格
-├── design/          ← S3  Design 层：设计方案
-├── plan/            ← S4  Plan 层：执行计划
-├── tasks/           ← S5  Tasks 层：任务清单
-├── prompt/          ← S6  Prompt 层：Context Package
-├── test/            ← S8  Test 层：测试计划与用例
-├── review/          ← S9  Review 层：审查记录与裁决
-├── release/         ← S10 Release 层：发布清单与回滚计划
-├── retrospective/   ← S11 Retrospective 层：复盘与改进
-├── schema/          ← Schema：模块级数据/API/契约 schema
-├── matrix/          ← Matrix：模块级追溯视图（.config/goal/matrix/ 为 canonical edge SSOT）
-├── gate/            ← Gate：模块级门禁定义与检查清单（.config/goal/gates/ 为 Gate 状态 SSOT）
-├── evidence/        ← Evidence：模块级交付证据（.config/goal/evidence/ 为 Gate 级 SSOT）
-└── registry/        ← Registry：模块级注册投影（.config/goal/registry/ 为跨模块 SSOT）
+├── goal/            ← S1  Goal 层
+├── spec/            ← S2  Spec 层
+├── design/          ← S3  Design 层
+├── plan/            ← S4  Plan 层
+├── tasks/           ← S5  Tasks 层
+├── prompt/          ← S6  Prompt 层
+├── evidence/        ← S8-S11 合层（按版本组织）
+│   └── v<version>/
+│       ├── test/           ← S8 测试计划/用例/结果
+│       ├── review/         ← S9 审查记录
+│       ├── release/        ← S10 Release Manifest
+│       └── retrospective/  ← S11 复盘
+├── matrix/          ← 模块追溯（模块级 SSOT）
+├── gate/            ← 模块门禁（模块级 SSOT）
+├── schema/          ← 模块级 schema
+├── README.md
+└── CHANGELOG.md
 ```
 
 > 管线阶段（S1-S11）：goal → spec → design → plan → tasks → prompt → (Code: /home/{module}) → test → review → release → retrospective
-> 横切关切：schema / matrix / gate / evidence / registry — 模块级为本地投影；跨模块控制面 SSOT 归属 `.config/goal/`。
+> S8-S11 归并入 `evidence/{版本}/` 下按版本组织（一个发布周期一份）。
+> `.config/goal/` 为跨模块控制面 SSOT（Registry、Pipeline 状态）；模块级 `matrix/` `gate/` 为模块自身记录源。
 
 - 模块级 Goal 文档位于 `module/{module}/goal/goal.md`。
 - 各层可含子模块子目录（如 `client/`、`server/`），子模块复用相同目录结构。
