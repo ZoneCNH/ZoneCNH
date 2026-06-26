@@ -1,8 +1,8 @@
 # taosx 规格
 
 - Status: Approved
-- Spec-Version: v1.1.0
-- Last-Updated: 2026-06-21
+- Spec-Version: v1.2.0
+- Last-Updated: 2026-06-26
 - Layer: L2 存储适配器
 - Version: v1.0.5
 - Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `kernel`
@@ -140,6 +140,17 @@ v1.0.5 保持 `pkg/taosx` 为公共运行时 API：默认驱动仍显式不可�
 **AC**: AC-TAO-010: 未注入时零开销；注入后正确记录；指标名统一 `taosx_client_*` 前缀
 **TC**: TC-018 (no-op 零开销), TC-019 (指标记录)
 
+### FR-011: DeleteRange 时间范围删除
+
+**WHEN** 调用 `DeleteRange(ctx, table, before)` 且 table 为有效标识符、before 为非零时间戳  
+**THEN** 生成 `DELETE FROM {table} WHERE ts < ?` 语句并委托驱动执行，返回 ExecResult  
+**WHEN** table 包含非法字符或为空  
+**THEN** 返回 validation error，不委托驱动  
+**WHEN** before 为零值时间戳  
+**THEN** 返回 validation error  
+**AC**: AC-TAO-011: 合法 table + before 委托驱动；非法 table 拒绝；零值 before 拒绝；驱动错误透传  
+**TC**: TC-020 (table 校验与零值拒绝), TC-021 (驱动委托与错误透传)
+
 ### Acceptance Criteria Registry
 
 | AC 编号 | 对应 FR | 验收条件 |
@@ -154,6 +165,7 @@ v1.0.5 保持 `pkg/taosx` 为公共运行时 API：默认驱动仍显式不可�
 | AC-TAO-008 | FR-008 | 默认驱动返回 degraded 状态；注入驱动透传健康状态；调用不 panic；错误信息不含密码 |
 | AC-TAO-009 | FR-009 | 首次关闭成功；重复关闭幂等返回 nil；关闭后操作返回 closed 错误 |
 | AC-TAO-010 | FR-010 | 未注入 Metrics 时零开销；注入后正确记录指标；指标名统一 `taosx_client_*` 前缀 |
+| AC-TAO-011 | FR-011 | 合法 table + before 委托驱动执行 DELETE；非法 table（空/注入字符）拒绝；零值 before 拒绝；驱动错误透传 |
 
 ## 6. 行为约束
 
@@ -172,8 +184,9 @@ v1.0.5 保持 `pkg/taosx` 为公共运行时 API：默认驱动仍显式不可�
 
 ```go
 type Client interface {
-	Exec(context.Context, Statement) (ExecResult, error)
-	Query(context.Context, Query) (Rows, error)
+    Exec(context.Context, Statement) (ExecResult, error)
+    DeleteRange(context.Context, string, time.Time) (ExecResult, error)
+    Query(context.Context, Query) (Rows, error)
 	WriteBatch(context.Context, Batch) (WriteResult, error)
 	SchemalessWrite(context.Context, SchemalessPayload) (WriteResult, error)
 	Health(context.Context) HealthStatus
@@ -264,6 +277,8 @@ defer rows.Close()
 | 空 SQL/Query | validation | Exec/Query 收到空字符串或空 batch |
 | 驱动未注入 | unavailable | 操作用到未注入驱动的默认实例 |
 | ctx 取消 | context canceled | 操作前或操作中 ctx 被取消 |
+| DeleteRange table 非法 | validation | table 为空或包含 SQL 注入字符 |
+| DeleteRange before 零值 | validation | before 为零值时间戳 |
 | 超时 | deadline exceeded | 操作超过 Config.Timeout |
 | 关闭后操作 | closed | Close() 后调用任何 Client 方法 |
 | 驱动透传 | 保留原始 cause | 驱动返回的错误，携带驱动诊断信息 |
@@ -278,6 +293,9 @@ defer rows.Close()
 - **重复 Close**：第二次及后续 `Close(ctx)` 调用 → 幂等返回 nil，不 panic，不重复释放资源。
 - **Close 后操作**：`Close` 完成后调用任何 Client 方法 → 返回 closed 错误，操作名如 `taosx.Exec`。
 - **并发读写**：多个 goroutine 同时调用同一 Client 的 `Exec`/`Query`/`WriteBatch`/`SchemalessWrite` → 驱动必须线程安全；Client 层不做额外序列化。
+- **DeleteRange table 校验**：table 为空或含注入字符（如 `;`、`--`）→ 返回 validation error；零值 before → 返回 validation error。
+- **DeleteRange 驱动未注入**：调用 `DeleteRange` 时驱动未注入 → 返回 unavailable 错误，操作名 `taosx.DeleteRange`。
+- **DeleteRange 关闭后调用**：`Close` 完成后调用 `DeleteRange` → 返回 closed 错误。
 - **Config.RedactedDSN 脱敏**：RedactedDSN 不得包含密码明文；即使 Password 为空，输出也不应暗示凭据结构。
 - **TLS=true 但驱动不支持**：驱动在 `Open` 时检测 → 返回 configuration error，操作名 `taosx.New`。
 - **超时触发**：操作超过 `Config.Timeout` → ctx deadline exceeded，wrapped with operation name；不重试除非调用方注入 retry middleware。
@@ -362,7 +380,8 @@ v1.0.5 本地发布候选证据必须包含单元测试、契约测试、示例�
 
 ## 22. 验收状态
 
-本规格状态为 Approved。进入 release_ready 前，必须确认 TRACEABILITY 中 FR-001 到 FR-010 与 BR-001 到 BR-008 的测试证据均为通过状态；BR-008 live dev 证据已在 2026-06-19 补齐，但外部发布与 factory-grade 声明仍需单独发布证据。
+本规格状态为 Approved。进入 release_ready 前，必须确认 TRACEABILITY 中 FR-001 到 FR-011 与 BR-001 到 BR-008 的测试证据均为通过状态；BR-008 live dev 证据已在 2026-06-19 补齐，但外部发布与 factory-grade 声明仍需单独发布证据。
+| 2026-06-26 | v1.2.0 | 新增 FR-011 DeleteRange 时间范围删除文档（binance FR-006e/038 依赖，Plan008 T008.001）；补充 Client interface、AC-TAO-011、边界情况与错误分类 | ZCode |
 
 ## 23. 开放问题
 

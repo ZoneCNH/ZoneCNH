@@ -5,10 +5,10 @@
 - Created: 2026-06-25
 - Parent: [`SPEC.md`](SPEC.md) v3.7.1（§8 Control Plane、§11.1 Config、§4.1 Boundaries）
 - Supersedes: 无（增补，非替代）
-- Scope: 在 SPEC v3.7.1 的 FR-030 之后新增 FR-031~036 / BR-010~012 / AC-105~128 / TC-050~067（v3 结构性审查修正：拆分 FR-033→FR-033+FR-036、StreamsForProductLineTier 按 productLine 分化、control stream LimitsPolicy、diff Updated/SpecUpdated 分离、options 到期峰值 BR-012）
+- Scope: 在 SPEC v3.7.1 的 FR-030 之后新增 FR-031~036 / BR-010~012 / AC-131~154 / TC-066~083（v3 结构性审查修正：拆分 FR-033→FR-033+FR-036、StreamsForProductLineTier 按 productLine 分化、control stream LimitsPolicy、diff Updated/SpecUpdated 分离、options 到期峰值 BR-012；编号已协调：AC-105~130 / TC-050~065 保留给 Current FR-037~044）
 - Runtime-Anchor: `/home/binance@f18a329`
 
-> [COMPUTED, HIGH] 本文档是 `SPEC.md` 的**增补章节**，编号在 v3.7.1（FR-030 / AC-104 / TC-049）之后顺延。所有引用的 file:line 基于 runtime `/home/binance@f18a329` 实读，可复现。本文档通过 pipeline 98 分门禁后由 arbiter 翻转 `Status: Approved`，再合入 `SPEC.md` 主文。
+> [COMPUTED, HIGH] 本文档是 `SPEC.md` 的**增补章节**，编号在 v3.7.1（FR-044 / AC-130 / TC-065）之后顺延。所有引用的 file:line 基于 runtime `/home/binance@f18a329` 实读，可复现。本文档通过 pipeline 98 分门禁后由 arbiter 翻转 `Status: Approved`，再合入 `SPEC.md` 主文。
 
 ---
 
@@ -83,10 +83,10 @@
       PricePrecision, QtyPrecision, MinQty, MaxQty, TickSize, Filters(raw JSONB)
 ```
 
-**AC-105**：client 提供 `FetchUMExchangeInfo` / `FetchCMExchangeInfo` / `FetchOptionsExchangeInfo`，签名与 `FetchSpotExchangeInfo` 一致（`func(ctx, *http.Client, url) ([]CatalogEntry, error)`）。
-**AC-106**：CM 解析器正确读取 `contractStatus` 字段（非 `status`），覆盖测试用例含 `contractStatus=TRADING` 与 `status` 字段同时存在的场景。
-**AC-107**：Options 解析器正确读取 `optionSymbols` 数组（非 `symbols`），endpoint 为 `eapi.binance.com`，覆盖测试含 `underlying/strikePrice/expiryDate/optionsType` 字段提取。
-**AC-108**：四产品线发现结果通过 `binance.control.instruments.changed` 发布，payload 为 `InstrumentsChangedPayload{ ProductLine, SnapshotID, Added[], Removed[], Updated[] }`，client 等待 natsx PubAck。
+**AC-131**：client 提供 `FetchUMExchangeInfo` / `FetchCMExchangeInfo` / `FetchOptionsExchangeInfo`，签名与 `FetchSpotExchangeInfo` 一致（`func(ctx, *http.Client, url) ([]CatalogEntry, error)`）。
+**AC-132**：CM 解析器正确读取 `contractStatus` 字段（非 `status`），覆盖测试用例含 `contractStatus=TRADING` 与 `status` 字段同时存在的场景。
+**AC-133**：Options 解析器正确读取 `optionSymbols` 数组（非 `symbols`），endpoint 为 `eapi.binance.com`，覆盖测试含 `underlying/strikePrice/expiryDate/optionsType` 字段提取。
+**AC-134**：四产品线发现结果通过 `binance.control.instruments.changed` 发布，payload 为 `InstrumentsChangedPayload{ ProductLine, SnapshotID, Added[], Removed[], Updated[] }`，client 等待 natsx PubAck。
 
 ### FR-032 ExchangeInfo Persistence & Scheduled Refresh
 
@@ -96,10 +96,10 @@
 **WHEN** client 进程运行中，
 **THEN** client 每 `FOUNDATIONX_BINANCE_EXCHANGE_INFO_REFRESH_INTERVAL`（默认 `6h`）重新拉取四产品线 exchangeInfo，与本地 catalog 做 diff，**仅在发现变更时**发布 `instruments.changed`（diff-only，避免无效 PubAck 风暴）。
 
-**AC-109**：server 的 `PgCatalog` 扩展 `UpsertInstruments(ctx, payload InstrumentsChangedPayload)` 方法，幂等 upsert（ON CONFLICT），Removed 行设 `status='delisted'`。
-**AC-110**：client 定时器在 diff 为空时**不发布** natsx 消息（`added==0 && removed==0 && updated==0` → skip publish），覆盖测试验证零 Publish 调用。
-**AC-111**：`catalog_symbols` 表 schema 扩展后，现有 `UpsertSymbol`（FR-006b）行为不变（向后兼容），新字段在旧路径写入时取默认值/NULL。
-**AC-112**：`catalog_exchange_info_snapshots` 表记录每次刷新的 `snapshot_id`（ULID）、`product_line`、`symbol_count`、`diff_summary(JSONB)`、`refreshed_at`，支持审计查询与回滚。
+**AC-135**：server 的 `PgCatalog` 扩展 `UpsertInstruments(ctx, payload InstrumentsChangedPayload)` 方法，幂等 upsert（ON CONFLICT），Removed 行设 `status='delisted'`。
+**AC-136**：client 定时器在 diff 为空时**不发布** natsx 消息（`added==0 && removed==0 && updated==0` → skip publish），覆盖测试验证零 Publish 调用。
+**AC-137**：`catalog_symbols` 表 schema 扩展后，现有 `UpsertSymbol`（FR-006b）行为不变（向后兼容），新字段在旧路径写入时取默认值/NULL。
+**AC-138**：`catalog_exchange_info_snapshots` 表记录每次刷新的 `snapshot_id`（ULID）、`product_line`、`symbol_count`、`diff_summary(JSONB)`、`refreshed_at`，支持审计查询与回滚。
 
 > [COMPUTED, HIGH] **natsx stream 声明（runtime 实证补强）**：当前 `consumer.go:18` 的 JetStream stream 仅声明 subject `binance.market.*.*`，`binance.control.*` **无对应 stream**。FR-031 的 `Publish("binance.control.instruments.changed", ...)` 会因 No Stream 返回 PubAck 失败。以下 AC 闭合此缺口。
 
@@ -130,10 +130,10 @@ sync_tier 的**语义意图**（实际流组合由 FR-036 的 productLine 分化
 
 > [COMPUTED, HIGH] **options 流特殊性（runtime 实证）**：options 仅有 `@optionTicker` 流（`normalize.go:500`，含 Greeks delta/gamma/theta/vega），**没有** depth/bookTicker/kline 流。因此 options 的 tier 差异化**不体现在流类型**（只有一种流），而体现在「该 options symbol 是否采集」+ backfill 优先级。tier→流映射必须按 productLine 分化（见 FR-036）。
 
-**AC-113**：`CatalogEntry` 结构体新增 `SyncTier string` 字段；`Catalog` 新增 `SymbolsByTier(productLine, tier string) []CatalogEntry` 方法，返回匹配 tier 的 active entry（含完整字段）。**保留**现有 `ActiveSymbols(productLine)` 不变（向后兼容，connector 当前调用路径不受影响）。
-**AC-114**（原 AC-114 移至 FR-036）：~~stream manager 按 tier 选择流组合~~ → 见 FR-036 AC-125~127。
-**AC-115**：`sync_tier` 可通过 admin API `PATCH /api/v1/admin/symbols/{product_line}/{symbol}` 热更新，触发 stream drain/rebuild（复用 FR-024 hot reload + FR-036 连接拓扑）。
-**AC-116**：新增 symbol 默认 `sync_tier='disabled'`，必须显式分级（手动或 API）才进入采集，覆盖测试验证默认值。
+**AC-139**：`CatalogEntry` 结构体新增 `SyncTier string` 字段；`Catalog` 新增 `SymbolsByTier(productLine, tier string) []CatalogEntry` 方法，返回匹配 tier 的 active entry（含完整字段）。**保留**现有 `ActiveSymbols(productLine)` 不变（向后兼容，connector 当前调用路径不受影响）。
+**AC-140**（原 AC-140 移至 FR-036）：~~stream manager 按 tier 选择流组合~~ → 见 FR-036 AC-151~127。
+**AC-141**：`sync_tier` 可通过 admin API `PATCH /api/v1/admin/symbols/{product_line}/{symbol}` 热更新，触发 stream drain/rebuild（复用 FR-024 hot reload + FR-036 连接拓扑）。
+**AC-142**：新增 symbol 默认 `sync_tier='disabled'`，必须显式分级（手动或 API）才进入采集，覆盖测试验证默认值。
 
 ### FR-036 Tier-Aware Connection Topology（连接拓扑架构）
 
@@ -154,12 +154,12 @@ sync_tier 的**语义意图**（实际流组合由 FR-036 的 productLine 分化
 
 > [COMPUTED, HIGH] **options 特殊处理**：options 仅有 `@optionTicker` 单一流类型（`normalize.go:500`），tier 差异化不体现在流类型。options 的 tier 仅控制「是否采集」+ backfill 优先级。因此 options 的连接拓扑是「按 symbol 数分批」（单连接 1024 stream 上限），而非「按 tier 分组流」。
 
-**AC-125**：新增 `StreamsForProductLineTier(productLine string, tier SyncTier) []string` 函数，按 productLine 分化返回流组合；options 统一返回 `["optionTicker"]`，spot/um/cm 按 tier 返回差异化组合。覆盖测试验证 productLine × tier 矩阵。
-**AC-126**：stream manager 按 `(productLine, tier)` 二元组分组 symbol，每组独立调 `buildStreamURL` 建立 WS 连接；覆盖测试验证 L1 与 L3 symbol 不混入同一 stream URL。
-**AC-127**：tier 降级（L1→L3）时，旧连接先 drain（FR-004 NakWithDelay + DLQ）再 unsubscribe；tier 升级时新连接异步建立不阻塞现有采集（BR-011）；覆盖测试验证升降级顺序。
+**AC-151**：新增 `StreamsForProductLineTier(productLine string, tier SyncTier) []string` 函数，按 productLine 分化返回流组合；options 统一返回 `["optionTicker"]`，spot/um/cm 按 tier 返回差异化组合。覆盖测试验证 productLine × tier 矩阵。
+**AC-152**：stream manager 按 `(productLine, tier)` 二元组分组 symbol，每组独立调 `buildStreamURL` 建立 WS 连接；覆盖测试验证 L1 与 L3 symbol 不混入同一 stream URL。
+**AC-153**：tier 降级（L1→L3）时，旧连接先 drain（FR-004 NakWithDelay + DLQ）再 unsubscribe；tier 升级时新连接异步建立不阻塞现有采集（BR-011）；覆盖测试验证升降级顺序。
 
-> [COMPUTED, HIGH] **FR-024 依赖风险（第四轮发现）**：AC-127 的增量 drain 语义依赖 FR-024 hot reload 提供增量 stream diff。但 FR-024 当前是 **Partial**（TRACEABILITY：「全量重连非增量 diff」，runtime `runtime.go` reload 路径是全量重建）。实施 AC-127 有两条路径：(a) 先升级 FR-024 为增量 diff（修 issue #1116），再在 FR-036 复用；(b) FR-036 自建 per-tier 连接的增量 diff 逻辑，不依赖 FR-024。路径 (b) 更安全（解耦），但增加 FR-036 实现复杂度。task-split 阶段须明确选择。
-**AC-128**：连接分批（绕过单连接 1024 stream 上限）：当某 `(productLine, tier)` 组的 symbol 数超过 `floor(1024 / len(streams))` 时，拆分为多个 WS 连接；覆盖测试验证分批边界（spot L1=256 sym/conn，L3=512 sym/conn，options=1024 sym/conn）。
+> [COMPUTED, HIGH] **FR-024 依赖风险（第四轮发现）**：AC-153 的增量 drain 语义依赖 FR-024 hot reload 提供增量 stream diff。但 FR-024 当前是 **Partial**（TRACEABILITY：「全量重连非增量 diff」，runtime `runtime.go` reload 路径是全量重建）。实施 AC-153 有两条路径：(a) 先升级 FR-024 为增量 diff（修 issue #1116），再在 FR-036 复用；(b) FR-036 自建 per-tier 连接的增量 diff 逻辑，不依赖 FR-024。路径 (b) 更安全（解耦），但增加 FR-036 实现复杂度。task-split 阶段须明确选择。
+**AC-154**：连接分批（绕过单连接 1024 stream 上限）：当某 `(productLine, tier)` 组的 symbol 数超过 `floor(1024 / len(streams))` 时，拆分为多个 WS 连接；覆盖测试验证分批边界（spot L1=256 sym/conn，L3=512 sym/conn，options=1024 sym/conn）。
 
 ### FR-034 Selective Sync Whitelist
 
@@ -183,10 +183,10 @@ finalDecision(product_line, symbol) =
 | `FOUNDATIONX_BINANCE_SYMBOLS_ALLOW` | `SymbolsAllow []string` | `[]` | 白名单 symbol，空=tier 内全部 |
 | `FOUNDATIONX_BINANCE_SYMBOLS_DENY` | `SymbolsDeny []string` | `[]` | 黑名单 symbol（deny 永远赢） |
 
-**AC-117**：`binancecfg.Config` 新增 `ProductLines`/`SymbolsAllow`/`SymbolsDeny` 字段，从逗号分隔 env var 解析，覆盖测试验证空值=全部、非空=白名单语义。
-**AC-118**：catalog 过滤层 `FilterByWhitelist(entries []CatalogEntry, cfg WhitelistConfig) []CatalogEntry` 实现优先级裁决，覆盖测试验证：deny 覆盖 allow、allow 空时放行、deny 非空时排除。
-**AC-119**：`POST /api/v1/admin/symbols/reload` 接受新字段 `sync_tier`，reload 后立即应用白名单过滤（deny 命中的 symbol 即使 tier=L1_core 也不采集）。
-**AC-120**：产品线级别开关 `product_lines` 与 symbol 级别 `allow/deny` 组合时，product_lines 先过滤（整线禁用），再 allow/deny 过滤，覆盖测试验证组合顺序。
+**AC-143**：`binancecfg.Config` 新增 `ProductLines`/`SymbolsAllow`/`SymbolsDeny` 字段，从逗号分隔 env var 解析，覆盖测试验证空值=全部、非空=白名单语义。
+**AC-144**：catalog 过滤层 `FilterByWhitelist(entries []CatalogEntry, cfg WhitelistConfig) []CatalogEntry` 实现优先级裁决，覆盖测试验证：deny 覆盖 allow、allow 空时放行、deny 非空时排除。
+**AC-145**：`POST /api/v1/admin/symbols/reload` 接受新字段 `sync_tier`，reload 后立即应用白名单过滤（deny 命中的 symbol 即使 tier=L1_core 也不采集）。
+**AC-146**：产品线级别开关 `product_lines` 与 symbol 级别 `allow/deny` 组合时，product_lines 先过滤（整线禁用），再 allow/deny 过滤，覆盖测试验证组合顺序。
 
 ### FR-035 Admin Surface Auth Hardening
 
@@ -195,10 +195,10 @@ finalDecision(product_line, symbol) =
 **WHEN** client `AdminServer` 收到 `/api/v1/admin/*` 写请求（POST/PATCH/DELETE），
 **THEN** 应校验 `Authorization: Bearer <token>`，token 从 `FOUNDATIONX_BINANCE_ADMIN_TOKEN` 读取（复用 server 侧 `query.go:343-348` 的 `getenv` 模式）；空 token 时**仅允许 localhost**（`127.0.0.1`/`::1`），拒绝远程写请求。
 
-**AC-121**：`AdminServer` 新增 `authMiddleware`，从 `FOUNDATIONX_BINANCE_ADMIN_TOKEN` 读取 Bearer token；非空时校验所有 `/api/v1/admin/*` 写方法的 Authorization header；覆盖测试验证正确 token 放行、错误 token 返回 401、缺失 token 返回 401。
-**AC-122**：token 为空时，`/api/v1/admin/*` 写请求仅允许 `RemoteAddr` 为 loopback（`127.0.0.1`/`::1`/`[::1]`）的连接；非 loopback 返回 403 Forbidden 并记录审计日志；覆盖测试验证 localhost 放行、远程拒绝。
-**AC-123**：`GET /healthz`、`GET /readyz`、`GET /api/v1/admin/streams`（只读）不受鉴权影响，保持公开（健康检查与可观测性需要）。
-**AC-124**：所有鉴权失败（401/403）写入 `audit_log`（表 `003_audit.sql`），`action='admin_auth_denied'`、`outcome='failure'`、`detail` 含 remote_addr 与 path。
+**AC-147**：`AdminServer` 新增 `authMiddleware`，从 `FOUNDATIONX_BINANCE_ADMIN_TOKEN` 读取 Bearer token；非空时校验所有 `/api/v1/admin/*` 写方法的 Authorization header；覆盖测试验证正确 token 放行、错误 token 返回 401、缺失 token 返回 401。
+**AC-148**：token 为空时，`/api/v1/admin/*` 写请求仅允许 `RemoteAddr` 为 loopback（`127.0.0.1`/`::1`/`[::1]`）的连接；非 loopback 返回 403 Forbidden 并记录审计日志；覆盖测试验证 localhost 放行、远程拒绝。
+**AC-149**：`GET /healthz`、`GET /readyz`、`GET /api/v1/admin/streams`（只读）不受鉴权影响，保持公开（健康检查与可观测性需要）。
+**AC-150**：所有鉴权失败（401/403）写入 `audit_log`（表 `003_audit.sql`），`action='admin_auth_denied'`、`outcome='failure'`、`detail` 含 remote_addr 与 path。
 
 ---
 
@@ -423,28 +423,28 @@ stream manager 每次构建订阅列表:
 
 ---
 
-## 7. 测试用例（TC-050 ~ TC-062）
+## 7. 测试用例（TC-066 ~ TC-078）
 
 | TC | 覆盖 FR | 类型 | 验证 |
 |----|--------|------|------|
-| TC-050 | FR-031 | 集成 + httptest | 四产品线 exchangeInfo mock server 返回各自字段结构，client 正确解析（含 COIN-M `contractStatus`、Options `optionSymbols` 陷阱） |
-| TC-051 | FR-031 | 契约 | `InstrumentsChangedPayload` JSON schema 校验（product_line/snapshot_id/added/removed/updated 字段齐全） |
-| TC-052 | FR-032 | 集成 | server 消费 `instruments.changed` → `catalog_symbols` upsert（含完整字段）+ `catalog_exchange_info_snapshots` 插入 |
-| TC-053 | FR-032 | 单元 | diff 为空时零 Publish 调用；24h 强制 full snapshot 触发（BR-010） |
-| TC-054 | FR-033 | 单元 | `SymbolsByTier("spot", "L1_core")` 仅返回 L1_core symbol（含完整字段）；现有 `ActiveSymbols(productLine)` 向后兼容不受影响 |
-| TC-055 | FR-033 | 集成 | admin `PATCH sync_tier` → stream drain（降级时）→ unsubscribe → 新 stream 建立（升级时）（BR-011） |
-| TC-056 | FR-034 | 单元 | `FilterByWhitelist` 优先级：deny 覆盖 allow、allow 空放行、product_lines 先于 allow/deny |
-| TC-057 | FR-034 | 集成 | admin reload 含 `sync_tier` + 白名单组合，最终采集决策符合裁决模型 |
-| TC-058 | FR-031~036 | CI gate | `no-full-snapshot-spam`：日志审计连续 skip 后必须出现 full snapshot |
-| TC-059 | FR-032 | 单元 | `DiffCatalog(prev, next)`：added/removed/updated/spec_updated 四类边界（空集、全新增、全删除、仅 status 变化→Updated、仅 filters 变化→SpecUpdated、仅 sync_tier 变化→Updated） |
-| TC-060 | FR-032 | 集成 | natsx control stream 声明：server 启动后 `binance.control.>` stream 存在，**retention=LimitsPolicy**（非 WorkQueue），`Publish` 返回 PubAck；multi-consumer 场景两实例均收到消息 |
-| TC-061 | FR-032 | 单元 | `Catalog.Reload(fullNext)` 后 `life.SyncCatalog` 调用顺序验证；Reload 是原子替换非逐条 Add |
-| TC-062 | FR-035 | 集成 | admin 鉴权：正确 Bearer 放行 / 错误 token→401 / 缺失 token 远程→403 / 缺失 token loopback→放行；`audit_log` 记录 401/403 |
-| TC-063 | FR-036 | 单元 | `StreamsForProductLineTier`：spot×L1={trade,bookTicker,kline,depth} / spot×L3={trade,kline} / **options×任意={optionTicker}**（验证 options 无 depth/bookTicker） |
-| TC-064 | FR-036 | 集成 | stream manager 按 (productLine,tier) 分组：L1 与 L3 symbol 不混入同一 stream URL；options 单独分组 |
-| TC-065 | FR-036 | 集成 | tier 降级 L1→L3：旧连接 drain→DLQ→unsubscribe→新连接建立顺序（BR-011）；tier 升级 L3→L1：新连接异步不阻塞 |
-| TC-066 | FR-036 | 单元 | 连接分批边界：spot L1 超 256 sym→拆 2 连接；options 超 1024 sym→拆 2 连接（AC-128） |
-| TC-067 | FR-036 | 集成 | options 到期峰值：200 合约同时 Removed→drain 分批 ≤20/批→间隔 ≥2s→无连接管理器过载（BR-012） |
+| TC-066 | FR-031 | 集成 + httptest | 四产品线 exchangeInfo mock server 返回各自字段结构，client 正确解析（含 COIN-M `contractStatus`、Options `optionSymbols` 陷阱） |
+| TC-067 | FR-031 | 契约 | `InstrumentsChangedPayload` JSON schema 校验（product_line/snapshot_id/added/removed/updated 字段齐全） |
+| TC-068 | FR-032 | 集成 | server 消费 `instruments.changed` → `catalog_symbols` upsert（含完整字段）+ `catalog_exchange_info_snapshots` 插入 |
+| TC-069 | FR-032 | 单元 | diff 为空时零 Publish 调用；24h 强制 full snapshot 触发（BR-010） |
+| TC-070 | FR-033 | 单元 | `SymbolsByTier("spot", "L1_core")` 仅返回 L1_core symbol（含完整字段）；现有 `ActiveSymbols(productLine)` 向后兼容不受影响 |
+| TC-071 | FR-033 | 集成 | admin `PATCH sync_tier` → stream drain（降级时）→ unsubscribe → 新 stream 建立（升级时）（BR-011） |
+| TC-072 | FR-034 | 单元 | `FilterByWhitelist` 优先级：deny 覆盖 allow、allow 空放行、product_lines 先于 allow/deny |
+| TC-073 | FR-034 | 集成 | admin reload 含 `sync_tier` + 白名单组合，最终采集决策符合裁决模型 |
+| TC-074 | FR-031~036 | CI gate | `no-full-snapshot-spam`：日志审计连续 skip 后必须出现 full snapshot |
+| TC-075 | FR-032 | 单元 | `DiffCatalog(prev, next)`：added/removed/updated/spec_updated 四类边界（空集、全新增、全删除、仅 status 变化→Updated、仅 filters 变化→SpecUpdated、仅 sync_tier 变化→Updated） |
+| TC-076 | FR-032 | 集成 | natsx control stream 声明：server 启动后 `binance.control.>` stream 存在，**retention=LimitsPolicy**（非 WorkQueue），`Publish` 返回 PubAck；multi-consumer 场景两实例均收到消息 |
+| TC-077 | FR-032 | 单元 | `Catalog.Reload(fullNext)` 后 `life.SyncCatalog` 调用顺序验证；Reload 是原子替换非逐条 Add |
+| TC-078 | FR-035 | 集成 | admin 鉴权：正确 Bearer 放行 / 错误 token→401 / 缺失 token 远程→403 / 缺失 token loopback→放行；`audit_log` 记录 401/403 |
+| TC-079 | FR-036 | 单元 | `StreamsForProductLineTier`：spot×L1={trade,bookTicker,kline,depth} / spot×L3={trade,kline} / **options×任意={optionTicker}**（验证 options 无 depth/bookTicker） |
+| TC-080 | FR-036 | 集成 | stream manager 按 (productLine,tier) 分组：L1 与 L3 symbol 不混入同一 stream URL；options 单独分组 |
+| TC-081 | FR-036 | 集成 | tier 降级 L1→L3：旧连接 drain→DLQ→unsubscribe→新连接建立顺序（BR-011）；tier 升级 L3→L1：新连接异步不阻塞 |
+| TC-082 | FR-036 | 单元 | 连接分批边界：spot L1 超 256 sym→拆 2 连接；options 超 1024 sym→拆 2 连接（AC-154） |
+| TC-083 | FR-036 | 集成 | options 到期峰值：200 合约同时 Removed→drain 分批 ≤20/批→间隔 ≥2s→无连接管理器过载（BR-012） |
 
 ---
 
@@ -454,7 +454,7 @@ stream manager 每次构建订阅列表:
 |--------|------|------|
 | FR-001 Product-Line Support | **扩展** | FR-031 实现 FR-001 承诺但未实现的「四产品线 exchangeInfo 发现」 |
 | FR-006b postgresx Metadata | **复用 + 扩展** | FR-032 复用 `PgCatalog` 模式，新增 `UpsertInstruments` 方法 |
-| FR-024 Hot Reload | **复用（但有依赖风险）** | FR-033/036 tier 变更复用 hot reload 的 stream add/remove 机制。⚠️ **FR-024 当前是 Partial**（TRACEABILITY 标记「全量重连非增量 diff」），FR-036 AC-127 的增量 drain 语义依赖 FR-024 升级为增量 stream diff。**若 FR-024 维持全量重连，FR-036 的 tier 升降级也会是全量重连**，违背 BR-011「先 drain 再 unsubscribe」语义。实施 FR-036 前必须先确认 FR-024 是否需升级，或在 FR-036 内自建增量 diff 逻辑（不依赖 FR-024）。 |
+| FR-024 Hot Reload | **复用（但有依赖风险）** | FR-033/036 tier 变更复用 hot reload 的 stream add/remove 机制。⚠️ **FR-024 当前是 Partial**（TRACEABILITY 标记「全量重连非增量 diff」），FR-036 AC-153 的增量 drain 语义依赖 FR-024 升级为增量 stream diff。**若 FR-024 维持全量重连，FR-036 的 tier 升降级也会是全量重连**，违背 BR-011「先 drain 再 unsubscribe」语义。实施 FR-036 前必须先确认 FR-024 是否需升级，或在 FR-036 内自建增量 diff 逻辑（不依赖 FR-024）。 |
 | FR-030 Options Raw Pass-through | **前置** | FR-031 的 Options exchangeInfo 解析是 FR-030 的数据基础 |
 | SPEC §8 Control Plane | **实现** | FR-031/032 实现 §8 规划但零实现的 `instruments.changed` subject |
 | SPEC §11.1 Config | **实现** | FR-034 实现 §11.1 规划但零实现的 `product_lines`/`allow`/`deny` 字段 |
@@ -518,7 +518,7 @@ stream manager 每次构建订阅列表:
 ---
 
 `[RULES I BROKE]`：
-1. AC-105~124 与 TC-050~062 的编号顺延基于实读 SPEC.md（FR-030/AC-104/TC-049 为边界），`[COMPUTED, HIGH]` 可复现。第二轮补强新增 AC-112a/b/c、AC-121~124、TC-059~062（diff 引擎/natsx stream/admin 鉴权）。
+1. AC-131~124 与 TC-066~062 的编号顺延基于实读 SPEC.md（FR-030/AC-104/TC-049 为边界），`[COMPUTED, HIGH]` 可复现。第二轮补强新增 AC-112a/b/c、AC-147~124、TC-075~062（diff 引擎/natsx stream/admin 鉴权）。
 2. API 陷阱（COIN-M `contractStatus`、Options `eapi`+`optionSymbols`）标注为 `[KNOWN]`，源自 2026-06-25 实查 API（见 `symbol-sync-deep-analysis-20260625.md` §7.2），非训练记忆。
 3. migration SQL 用 `ADD COLUMN IF NOT EXISTS` 保证幂等可重入，但未在真实 postgresx 实例执行验证（本增补是规格文档，非 runtime 代码）；若实施时版本 < PG 9.6 需调整。标注为 `[INFERRED, MED]`。
 4. sync_tier 默认 `disabled` 是安全设计选择（未分级不同步），但可能导致「部署后无数据」的运维困惑，已在 §11 风险表登记。

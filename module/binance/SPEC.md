@@ -804,9 +804,9 @@ Plan008 的 `release_closeable=YES` 只表示 release gate 可关闭；它不自
 
 ### FR-031~036：ExchangeInfo Synchronization（Draft）
 
-> **弃用声明**：FR-031~036 的行为规范定义于 `module/binance/SPEC-exchangeinfo-sync.md`（v3.7.0-draft，第三轮结构性审查后）。这 6 个 FR 当前为 Draft 状态（不计入 v3.7.0 基线投影），覆盖 exchangeInfo 四产品线发现、定时刷新持久化、sync tier 分级、选择性同步白名单、admin 鉴权加固和 tier-aware 连接拓扑。AC-105~128 / TC-050~067。
+> **弃用声明**：FR-031~036 的行为规范定义于 `module/binance/SPEC-exchangeinfo-sync.md`（v3.7.0-draft，第三轮结构性审查后）。这 6 个 FR 当前为 Draft 状态（不计入 v3.7.0 基线投影），覆盖 exchangeInfo 四产品线发现、定时刷新持久化、sync tier 分级、选择性同步白名单、admin 鉴权加固和 tier-aware 连接拓扑。AC-131~154 / TC-066~083。编号已协调：AC-105~130 / TC-050~065 保留给 Current FR-037~044。
 >
-> FR-031~036 和 FR-037~044 在 TRACEABILITY.md 中共享 AC/TC 编号空间（AC-105~128、TC-050~065）。当 FR-031~036 从 Draft 提升为 Active 时，需协调编号以避免碰撞。
+> FR-031~036（Draft）和 FR-037~044（Current）已协调编号空间：Current 使用 AC-105~130 / TC-050~065，Draft 使用 AC-131~154 / TC-066~083。FR-031~036 从 Draft 提升为 Active 时无需重新编号。
 
 ### FR-037: Release Safety Net（P0 · 来源 S26）
 
