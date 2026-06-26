@@ -3,8 +3,8 @@
 ## 1. Metadata
 
 - Status: Approved
-- Spec-Version: v3.6.0
-- Last-Updated: 2026-06-25 (v3.6.0: TRACEABILITY FR 状态刷新为 19 Done / 11 Partial，引入 main.go 装配级证据标准，对齐 runtime HEAD `e02b190`；Plan007 A1~A10 + B1~B8 已执行；v3.6.1/Plan008 投影已对齐 Runtime-Anchor `/home/binance@f18a329`、Release `v0.2.0`、workflow `28126779885`、`release_closeable=YES`)
+- Spec-Version: v3.6.2
+- Last-Updated: 2026-06-26 (v3.6.0: TRACEABILITY FR 状态刷新为 19 Done / 11 Partial，引入 main.go 装配级证据标准，对齐 runtime HEAD `e02b190`；Plan007 A1~A10 + B1~B8 已执行；v3.6.1/Plan008 投影已对齐 Runtime-Anchor `/home/binance@f18a329`、Release `v0.2.0`、workflow `28126779885`、`release_closeable=YES`；v3.6.2 补充 Plan008 production readiness gates，不改变 FR 当前投影)
 - Owner: ZoneCNH
 - Layer: 数据域 · 行情
 - Runtime-Version: v0.2.0
@@ -87,6 +87,20 @@ Binance 行情集成面临以下问题：
 | C6 | 共享 wire contract 位于 `internal/wire`——canonical 市场语义属于 `domain_market`。 | BOUNDARY-GATES §8。 |
 
 以上约束对任何标记为 "production" 的部署 **不可协商**。`cmd/binance-smoke` 本地 self-test 是 C1 的唯一例外（仅限开发验证）。
+
+### 4.2 Production Readiness Gates
+
+Plan008 的 `release_closeable=YES` 只表示 release gate 可关闭；它不自动把 FR 投影提升为全 Done。任何 production-level claim 必须同时满足下列门禁，并在 `TRACEABILITY.md` / `ACCEPTANCE.md` 绑定 runtime SHA、CI run 或可审计 evidence。
+
+| Gate | 生产约束 | 最小证据 |
+|------|----------|----------|
+| PRG-001 | ClickHouse production DDL 必须使用 `ReplicatedMergeTree`；若采用单节点例外，必须在 release notes 记录原因；market fact / analytics 表必须配置 TTL。 | DDL diff、migration/test output、TTL 验证。 |
+| PRG-002 | `kafkax` fanout failure 必须有 retry topic 或 DLQ topic contract；NATS Ack 只能发生在 durable handoff 之后。 | topic/ACL contract、failure-injection evidence、broker e2e 或等价 gated test。 |
+| PRG-003 | 新的 production-affecting feature 默认关闭；全量 rollout 前必须完成 feature flag、canary health gate 和 rollback runbook。FR-031~036 全量上线依赖本 gate。 | flag default、canary `/readyz`/error-rate evidence、rollback drill 或 runbook。 |
+| PRG-004 | Kafka consumer group、product-line WebSocket 与 API caller 必须有 quota/isolation；单一产品线或调用方故障不得拖垮其他线。 | quota config、resource limit、failure isolation test。 |
+| PRG-005 | client→NATS→server→Kafka 必须传播 trace context；未交付时必须在 release notes 标记 Deferred，不能隐式声明可观测性闭合。 | OpenTelemetry span/log evidence 或 explicit deferral。 |
+| PRG-006 | 审计日志必须 append-only；NATS、Redis、Postgres、Kafka 的 HA/DR/RPO/RTO 必须有部署文档。 | append-only test、HA/DR/RPO/RTO 文档链接。 |
+| PRG-007 | 容量/成本指标、数据分类/保留/销毁证明、credential rotation、stale/gap/DLQ/reconcile runbook 必须可审计。 | metrics/rules/runbook/evidence 链接。 |
 
 ---
 
