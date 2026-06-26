@@ -159,7 +159,7 @@
 
 | 检查项 | 状态 | 依据 |
 | --- | --- | --- |
-| v2.0.0 根规格存在 | Done | `SPEC.md` v3.6.0。 |
+| v2.0.0 根规格存在 | Done | `SPEC.md` v3.7.1。 |
 | 根级 traceability 存在 | Done | `TRACEABILITY.md` v3.6.1；当前口径对齐 Runtime-Anchor `/home/binance@f18a329` 与 Issue-Ledger `../../report/binance/issues-sync-20260625.md`。 |
 | Client/Server 子域 traceability 存在 | Done | `client/TRACEABILITY.md`, `server/TRACEABILITY.md`。 |
 | C/S 独立进程边界已定义 | Done | `README.md`, `SPEC.md`, `BOUNDARY-GATES.md`。 |
