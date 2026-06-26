@@ -44,8 +44,8 @@ canonical_goal_object:
   canonical_schema: "docs/goal/schema/goal.schema.yaml"
 
 module_goal_document:
-  canonical_path_pattern: "module/{module}/goal/goal.md"
-  directory_structure: "管线: goal/spec/design/plan/tasks/prompt + evidence/{版本}/test review release retrospective (S8-S11合层) | 横切: matrix/gate/schema | 根: README.md CHANGELOG.md"
+  canonical_path_pattern: "module/{module}/v{version}/goal/goal.md"
+  directory_structure: "全版本化: v{版本}/goal spec design plan tasks prompt evidence (管线快照) | 模块根: matrix gate schema README.md CHANGELOG.md"
   source_index: "module/README.md"
   authority_view: "docs/goal/00-authority-map.md"
   required_filename: "goal.md"
@@ -70,13 +70,9 @@ module_code_location:
     - "docs/goal/10-lint-rules.md#5-code-lint"
   allowed_module_artifacts:
     - "goal.md"
-    - "goal/"
     - "SPEC.md"
-    - "spec/"
     - "DESIGN.md"
-    - "design/"
     - "TRACEABILITY.md"
-    - "matrix/"
     - "IMPLEMENTATION-PLAN.md"
     - "PLAN.md"
     - "INDEX.md"
@@ -94,6 +90,7 @@ module_code_location:
     - "FEATURES.md"
     - "ADR-*.md"
     - "ci-workflow.yaml"
+    - "v*/"
     - "analysis/"
     - "tasks/"
     - "plan/"

@@ -243,28 +243,26 @@ Matrix 是横切追溯制品，贯穿所有阶段但不作为主流程阶段。
 
 ```text
 module/{module}/
-├── goal/            ← S1  Goal 层
-├── spec/            ← S2  Spec 层
-├── design/          ← S3  Design 层
-├── plan/            ← S4  Plan 层
-├── tasks/           ← S5  Tasks 层
-├── prompt/          ← S6  Prompt 层
-├── evidence/        ← S8-S11 合层（按版本组织）
-│   └── v<version>/
-│       ├── test/           ← S8 测试计划/用例/结果
-│       ├── review/         ← S9 审查记录
-│       ├── release/        ← S10 Release Manifest
-│       └── retrospective/  ← S11 复盘
-├── matrix/          ← 模块追溯（模块级 SSOT）
-├── gate/            ← 模块门禁（模块级 SSOT）
-├── schema/          ← 模块级 schema
+├── v{version}/       ← 版本化管线快照（自包含）
+│   ├── goal/         ← S1  Goal 层
+│   ├── spec/         ← S2  Spec 层
+│   ├── design/       ← S3  Design 层
+│   ├── plan/         ← S4  Plan 层
+│   ├── tasks/        ← S5  Tasks 层
+│   ├── prompt/       ← S6  Prompt 层
+│   └── evidence/     ← S8-S11 合层（test/review/release/retrospective）
+├── matrix/           ← 跨版本追溯（模块 SSOT）
+├── gate/             ← 跨版本门禁（模块 SSOT）
+├── schema/           ← 跨版本 schema
 ├── README.md
-└── CHANGELOG.md
+├── CHANGELOG.md
+└── ci-workflow.yaml
 ```
 
 > 管线阶段（S1-S11）：goal → spec → design → plan → tasks → prompt → (Code: /home/{module}) → test → review → release → retrospective
-> S8-S11 归并入 `evidence/{版本}/` 下按版本组织（一个发布周期一份）。
-> `.config/goal/` 为跨模块控制面 SSOT（Registry、Pipeline 状态）；模块级 `matrix/` `gate/` 为模块自身记录源。
+> 每个 `v{version}/` 是一个自包含的管线快照，打开即见该版本交付的全貌。
+> `matrix/` `gate/` `schema/` 跨版本存于模块根——它们追踪模块整体演化，不属于单个版本。
+> Code 统一在 `/home/{module}`，不入 `module/`。
 
 - 模块级 Goal 文档位于 `module/{module}/goal/goal.md`。
 - 各层可含子模块子目录（如 `client/`、`server/`），子模块复用相同目录结构。

@@ -140,7 +140,7 @@ module/{module}/
 - **矛盾≠错误**：SPEC.md 和 goal.md 可能各描述了同一模块的不同侧面。先对照 CONSTITUTION 裁决，不要直接 "调和"
 - **修复前先分类**：区分实质矛盾（必须修）、粒度差异（以上游为准）、术语角度差异（装饰性，可保留）
 - **历史文档加归档标记**：不删除历史计划/任务，而是在文件头添加 `⚠️ 归档警告` 并指向当前权威定义
-- **模块目录化结构**：管线层 `goal/spec/design/plan/tasks/prompt`（S1-S6）+ `evidence/{版本}/` 含 S8-S11（test/review/release/retrospective）+ 横切层 `matrix/gate/schema` + 根文件 `README.md` `CHANGELOG.md`。Goal 文档位于 `goal/goal.md`；Code 在 `/home/{module}`
+- **模块全版本化结构**：`v{版本}/` 下自包含管线快照（goal/spec/design/plan/tasks/prompt/evidence）+ 跨版本层 `matrix/gate/schema` 存于模块根。Goal 文档位于 `v{版本}/goal/goal.md`；Code 在 `/home/{module}`
 
 ### ⚡ 效率规则
 
