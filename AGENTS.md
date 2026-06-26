@@ -250,6 +250,7 @@ module/{module}/
 ├── tasks/         ← Tasks 层：任务清单
 ├── prompt/        ← Prompt 层：Context Package
 ├── schema/        ← Schema 层：模块级数据/API/契约 schema
+├── review/        ← Review 层：审查记录与裁决
 ├── matrix/        ← Matrix：模块级追溯视图（.config/goal/matrix/ 为 canonical edge SSOT）
 ├── gate/          ← Gate：模块级门禁定义与检查清单（.config/goal/gates/ 为 Gate 状态 SSOT）
 ├── evidence/      ← Evidence：模块级交付证据（.config/goal/evidence/ 为 Gate 级 SSOT）
