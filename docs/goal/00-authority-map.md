@@ -71,6 +71,7 @@
 | `module/{module}/plan/`      | 模块 Plan 层      | 执行计划（PLAN.md）                                        |
 | `module/{module}/tasks/`     | 模块 Tasks 层     | 任务清单                                                   |
 | `module/{module}/prompt/`    | 模块 Prompt 层    | Context Package                                            |
+| `module/{module}/schema/`    | 模块 Schema 层    | 模块级数据/API/契约 schema（投影）；跨模块 schema SSOT 见 `docs/goal/schema/` |
 | `module/{module}/matrix/`    | 模块追溯视图      | 人类可读追溯表（投影）；canonical edge SSOT 见 `.config/goal/matrix/` |
 | `module/{module}/gate/`      | 模块 Gate 层      | 模块级门禁定义与检查清单（投影）；Gate 状态 SSOT 见 `.config/goal/gates/` |
 | `module/{module}/evidence/`  | 模块证据快照      | 模块级测试/验证证据；Gate 级 Evidence Bundle SSOT 见 `.config/goal/evidence/` |

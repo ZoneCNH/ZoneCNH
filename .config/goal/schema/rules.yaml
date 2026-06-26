@@ -45,7 +45,7 @@ canonical_goal_object:
 
 module_goal_document:
   canonical_path_pattern: "module/{module}/goal/goal.md"
-  directory_structure: "goal/spec/design/plan/tasks/prompt/matrix/gate/evidence/registry"
+  directory_structure: "goal/spec/design/plan/tasks/prompt/schema/matrix/gate/evidence/registry"
   source_index: "module/README.md"
   authority_view: "docs/goal/00-authority-map.md"
   required_filename: "goal.md"
@@ -100,6 +100,7 @@ module_code_location:
     - "plans/"
     - "prompt/"
     - "prompts/"
+    - "schema/"
     - "gate/"
     - "evidence/"
     - "registry/"
