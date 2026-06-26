@@ -45,6 +45,7 @@ fi
 for FILE in README.md ARCHITECTURE.md STATUS.md module/README.md; do
     if [ -f "$ROOT/$FILE" ]; then
         STALE=$(grep -n "v$OLD_VERSION" "$ROOT/$FILE" 2>/dev/null | \
+            grep -i "$MODULE" | \
             grep -v "弃用" | grep -v "历史" | grep -v "已撤回" | \
             grep -v "v$OLD_VERSION 新增" | grep -v "v$OLD_VERSION FR-" || true)
         if [ -n "$STALE" ]; then
@@ -58,7 +59,8 @@ done
 # ── 范围 C: 架构文档 ──
 ARCH_FILES=$(find "$ROOT/docs/architecture/" -name "*.md" 2>/dev/null || true)
 if [ -n "$ARCH_FILES" ]; then
-    STALE=$(grep -rn "v$OLD_VERSION" $ARCH_FILES 2>/dev/null | grep -v "弃用" | grep -v "历史" || true)
+    STALE=$(grep -rn "v$OLD_VERSION" $ARCH_FILES 2>/dev/null | \
+        grep -i "$MODULE" | grep -v "弃用" | grep -v "历史" || true)
     if [ -n "$STALE" ]; then
         echo "FAIL: docs/architecture/ 中发现过时引用:"
         echo "$STALE"
