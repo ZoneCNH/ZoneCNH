@@ -17,32 +17,33 @@ binance 是首个完整落地此体系的交易所模块（v0.2.0 生产就绪�
 
 ## 2. 规范文档骨架（从 binance 复制并适配）
 
-接入新交易所时，复制以下文档并替换交易所特定内容：
+模块采用**全版本化结构**。接入新交易所时，复制以下文档并替换交易所特定内容：
+
+### 版本快照（v1.0.0/）
 
 | 文档 | 用途 | binance 源 | 适配点 |
 | --- | --- | --- | --- |
-| `SPEC.md` | 23 节完整规格 | binance v3.7.1 | FR/BR/NFR 按交易所能力调整 |
-| `FEATURES.md` | FR 实现状态矩阵 | binance | 状态口径 + 装配级证据标准 |
-| `TRACEABILITY.md` | FR/BR/AC/TC 追溯 | binance | 矩阵结构复用 |
-| `ACCEPTANCE.md` | AC/TC 验收标准 | binance | 按交易所 AC 调整 |
-| `BOUNDARY-GATES.md` | 边界门禁定义 | binance §2-§14 + §20 | gate 按模块特性裁剪 |
-| `RULES.md` | 命名/矩阵/版本规则 | binance R1-R9 | snake_case 强制 |
-| `NAMING.md` | canonical 命名 | binance | product_line/event_type 按交易所 |
-| `DATA-LIFECYCLE.md` | 数据生命周期 | binance | 采集/存储/归档/回热 |
-| `RUNTIME-MAPPING.md` | docs→runtime 映射 | binance | 路径映射 |
-| `CHANGELOG.md` | 变更记录 | binance | Keep-a-Changelog |
+| `v1.0.0/spec/SPEC.md` | 23 节完整规格 | binance v3.7.1 | FR/BR/NFR 按交易所能力调整 |
+| `v1.0.0/spec/FEATURES.md` | FR 实现状态矩阵 | binance | 状态口径 + 装配级证据标准 |
+| `v1.0.0/spec/ACCEPTANCE.md` | AC/TC 验收标准 | binance | 按交易所 AC 调整 |
+| `v1.0.0/spec/DATA-LIFECYCLE.md` | 数据生命周期 | binance | 采集/存储/归档/回热 |
+| `v1.0.0/spec/NAMING.md` | canonical 命名 | binance | product_line/event_type 按交易所 |
+| `v1.0.0/spec/ENDPOINTS.md` | 交易所端点清单 | binance | mainnet 端点 |
+| `v1.0.0/design/DESIGN.md` | 设计方案 | binance | 模块拆分 |
+| `v1.0.0/plan/PLAN.md` | 执行计划 | binance | PR 序列 |
+
+### 跨版本层（模块根）
+
+| 文档 | 用途 | binance 源 | 适配点 |
+| --- | --- | --- | --- |
 | `README.md` | 模块入口 | binance | Delivery-State |
-
-### 运行时控制文档（C7，binance 新增）
-
-| 文档 | 用途 |
-| --- | --- |
-| `ENDPOINTS.md` | 交易所 mainnet 端点清单 + mainnet-only 策略 |
-| `PERSISTENCE-WIRING.md` | storageFromEnv 装配契约 |
-| `SECURITY.md` | API 认证/限流/凭据/扫描 |
-| `OBSERVABILITY.md` | metrics 语义 + 告警 + SLO |
-| `OPERATIONS.md` | 部署/扩缩容/灾恢复 Runbook |
-| `DATA-QUALITY-SLA.md` | freshness SLA + stale 告警 |
+| `CHANGELOG.md` | 变更记录 | binance | Keep-a-Changelog |
+| `matrix/TRACEABILITY.md` | FR/BR/AC/TC 追溯 | binance | 矩阵结构复用 |
+| `gate/BOUNDARY-GATES.md` | 边界门禁定义 | binance §2-§14 | gate 按模块特性裁剪 |
+| `gate/RULES.md` | 命名/矩阵/版本规则 | binance R1-R9 | snake_case 强制 |
+| `gate/SECURITY.md` | API 认证/限流 | binance | 凭据/扫描 |
+| `gate/OBSERVABILITY.md` | metrics 语义 + 告警 | binance | SLO |
+| `gate/OPERATIONS.md` | 部署/扩缩容 Runbook | binance | 灾恢复 |
 
 ---
 
@@ -65,13 +66,18 @@ scripts/boundary-gates.sh      # 边界门禁（参照 binance 13 gates 裁剪�
 
 `[FRAME, HIGH]`
 
-1. **创建模块仓** `ZoneCNH/<exchange>` + `module/<exchange>/` 规格目录
+1. **创建模块目录**：参照 `module/_template/cex-cs-module/README.md` Appendix 命令骨架
+   ```bash
+   EXCHANGE=newex VERSION=v1.0.0
+   mkdir -p module/$EXCHANGE/$VERSION/{goal,spec/{client,server},design,plan,tasks,prompt,evidence/{test,review,release,retrospective}}
+   mkdir -p module/$EXCHANGE/{matrix,gate,schema}
+   ```
 2. **复制模板文档**：从本 README §2 表列文档复制，替换 `<exchange>` 占位
 3. **定义 product_line**：按交易所产品线（如 okx: spot/swap/futures/option）
 4. **定义 endpoints**：交易所 mainnet WS/REST 端点清单
 5. **实现 connector**：参照 binance `NewProductLineConnector` 模式
 6. **落地 boundary-gates**：按推广指南裁剪 gate 子集
-7. **CI 配置**：复制 workflow 骨架 + GOPRIVATE/domain 依赖处理（参照 binance CI 修复）
+7. **CI 配置**：复制 workflow 骨架 + GOPRIVATE/domain 依赖处理
 
 ---
 

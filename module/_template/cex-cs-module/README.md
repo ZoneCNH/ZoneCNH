@@ -30,13 +30,15 @@ module/market_data                ← 交易所中立的后续管线
 
 | 引用文档 | 用途 |
 |----------|------|
-| [`module/binance/SPEC.md`](../../binance/SPEC.md) | 23 节标准结构示例 |
-| [`module/binance/client/SPEC.md`](../../binance/client/SPEC.md) | client 子模块标准结构 |
-| [`module/binance/server/SPEC.md`](../../binance/server/SPEC.md) | server 子模块标准结构 |
-| [`module/binance/BOUNDARY-GATES.md`](../../binance/BOUNDARY-GATES.md) | 9 项 CI 边界门禁的可执行脚本 |
-| [`module/binance/RUNTIME-MAPPING.md`](../../binance/RUNTIME-MAPPING.md) | spec → runtime 仓库映射 |
-| [`module/binance/IMPLEMENTATION-PLAN.md`](../../binance/IMPLEMENTATION-PLAN.md) | 推荐 PR 序列 |
-| [`module/binance/TRACEABILITY.md`](../../binance/TRACEABILITY.md) | 追溯矩阵 §1-§7 范式 |
+| [`module/binance/v3.7.1/spec/SPEC.md`](../../binance/v3.7.1/spec/SPEC.md) | 23 节标准结构示例 |
+| [`module/binance/v3.7.1/spec/client/SPEC.md`](../../binance/v3.7.1/spec/client/SPEC.md) | client 子模块标准结构 |
+| [`module/binance/v3.7.1/spec/server/SPEC.md`](../../binance/v3.7.1/spec/server/SPEC.md) | server 子模块标准结构 |
+| [`module/binance/gate/BOUNDARY-GATES.md`](../../binance/gate/BOUNDARY-GATES.md) | 9 项 CI 边界门禁的可执行脚本 |
+| [`module/binance/v3.7.1/design/RUNTIME-MAPPING.md`](../../binance/v3.7.1/design/RUNTIME-MAPPING.md) | spec → runtime 仓库映射 |
+| [`module/binance/v3.7.1/plan/PLAN.md`](../../binance/v3.7.1/plan/PLAN.md) | 推荐 PR 序列 |
+| [`module/binance/matrix/TRACEABILITY.md`](../../binance/matrix/TRACEABILITY.md) | 追溯矩阵 §1-§7 范式 |
+
+**本模板不复制 binance 的内容**，避免产生 12 份近乎相同的巨型重复。新模块通过引用 binance 继承标准结构，仅声明**交易所特异性差异**。
 
 **本模板不复制 binance 的内容**，避免产生 12 份近乎相同的巨型重复。新模块通过引用 binance 继承标准结构，仅声明**交易所特异性差异**。
 
@@ -44,20 +46,32 @@ module/market_data                ← 交易所中立的后续管线
 
 ## 3. 必填文件清单
 
-每个 `module/{exchange}/` 必须包含：
+模块采用**全版本化结构**（`v{version}/` 为自包含管线快照）。每个 `module/{exchange}/` 必须包含：
+
+### 版本快照（v1.0.0/）
 
 | 文件 | 必须性 | 是否可引用 binance |
 |------|:----:|:----:|
-| `goal.md` | ✅ | ❌ 必须独立编写 |
+| `v1.0.0/goal/goal.md` | ✅ | ❌ 必须独立编写 |
+| `v1.0.0/spec/SPEC.md` | ✅ | ⚠️ §1-§10 必填，§11-§23 可声明"按 binance 范式" |
+| `v1.0.0/spec/client/SPEC.md` | ✅ | ⚠️ §1-§7 必填，其余可声明"按 binance/client 范式" |
+| `v1.0.0/spec/server/SPEC.md` | ✅ | ⚠️ 大部分可继承 binance/server |
+| `v1.0.0/plan/PLAN.md` | ✅ | ⚠️ PR 序列结构相同，scope 须改写 |
+| `v1.0.0/design/DESIGN.md` | ⏭️ | 推迟到 SPEC Approved 后 |
+| `v1.0.0/tasks/` | ⏭️ | 推迟到 SPEC Approved 后 |
+| `v1.0.0/prompt/` | ⏭️ | 推迟到 Code 阶段 |
+| `v1.0.0/evidence/` | ⏭️ | 推迟到 Test 阶段 |
+
+### 跨版本层（模块根）
+
+| 文件 | 必须性 | 是否可引用 binance |
+|------|:----:|:----:|
 | `README.md` | ✅ | ❌ 必须独立编写 |
-| `SPEC.md` | ✅ | ⚠️ §1-§10 必填，§11-§23 可声明"按 binance 范式" |
-| `client/SPEC.md` | ✅ | ⚠️ §1-§7 必填，其余可声明"按 binance/client 范式" |
-| `server/SPEC.md` | ✅ | ⚠️ 大部分可继承 binance/server |
-| `IMPLEMENTATION-PLAN.md` | ✅ | ⚠️ PR 序列结构相同，scope 须改写 |
-| `TRACEABILITY.md` | ✅ | ❌ 必须独立编写（FR/AC 编号绑定本模块） |
-| `BOUNDARY-GATES.md` | ❌ | ✅ 单行 stub 引用 binance 等价文档 + exchange name 替换 |
-| `RUNTIME-MAPPING.md` | ❌ | ✅ 单行 stub 引用 binance 等价文档 + exchange name 替换 |
-| `tasks/` | ⏭️ | 推迟到 SPEC Approved 后 |
+| `CHANGELOG.md` | ✅ | ❌ 必须独立编写 |
+| `matrix/TRACEABILITY.md` | ✅ | ❌ 必须独立编写（FR/AC 编号绑定本模块） |
+| `gate/BOUNDARY-GATES.md` | ❌ | ✅ 单行 stub 引用 binance 等价文档 + exchange name 替换 |
+| `gate/RULES.md` | ❌ | ✅ 可继承 binance R1-R9 |
+| `schema/` | ⏭️ | 推迟到 API 定义阶段 |
 
 ---
 
@@ -108,7 +122,7 @@ module/market_data                ← 交易所中立的后续管线
 ```markdown
 # module/{exchange} BOUNDARY GATES
 
-本模块的 9 项 CI 边界门禁结构与 [`module/binance/BOUNDARY-GATES.md`](../binance/BOUNDARY-GATES.md) 一致。
+本模块的边界门禁结构与 [`module/binance/gate/BOUNDARY-GATES.md`](../binance/gate/BOUNDARY-GATES.md) 一致。
 
 替换规则：
 - `binance` → `{exchange}`
@@ -118,7 +132,7 @@ module/market_data                ← 交易所中立的后续管线
 CI 集成时复制 binance 脚本并应用上述替换。
 ```
 
-`RUNTIME-MAPPING.md` 同理：directory tree 结构相同，仅 `github.com/ZoneCNH/{exchange}` repo 名替换。
+`RUNTIME-MAPPING.md` 同理：directory tree 结构相同，仅 `github.com/ZoneCNH/{exchange}` repo 名替换。文件位于 `v{version}/design/RUNTIME-MAPPING.md`。
 
 ---
 
@@ -176,15 +190,26 @@ CI 集成时复制 binance 脚本并应用上述替换。
 ```bash
 # 新增 CEX C/S Module 时执行：
 EXCHANGE=newcex   # 替换为目标交易所
-mkdir -p module/$EXCHANGE/client module/$EXCHANGE/server
+VERSION=v1.0.0
+
+# 创建版本快照目录
+mkdir -p module/$EXCHANGE/$VERSION/{goal,spec/{client,server},design,plan,tasks,prompt,evidence/{test,review,release,retrospective}}
+# 跨版本层
+mkdir -p module/$EXCHANGE/{matrix,gate,schema}
 
 # 拷贝必填文件骨架（人工补内容）
-touch module/$EXCHANGE/{goal.md,README.md,SPEC.md,IMPLEMENTATION-PLAN.md,TRACEABILITY.md,BOUNDARY-GATES.md,RUNTIME-MAPPING.md}
-touch module/$EXCHANGE/client/SPEC.md
-touch module/$EXCHANGE/server/SPEC.md
+touch module/$EXCHANGE/README.md
+touch module/$EXCHANGE/CHANGELOG.md
+touch module/$EXCHANGE/$VERSION/goal/goal.md
+touch module/$EXCHANGE/$VERSION/spec/SPEC.md
+touch module/$EXCHANGE/$VERSION/spec/client/SPEC.md
+touch module/$EXCHANGE/$VERSION/spec/server/SPEC.md
+touch module/$EXCHANGE/$VERSION/plan/PLAN.md
+touch module/$EXCHANGE/matrix/TRACEABILITY.md
+touch module/$EXCHANGE/gate/BOUNDARY-GATES.md
 
 # 验收前自检
 ls module/$EXCHANGE/
-ls module/$EXCHANGE/client/
-ls module/$EXCHANGE/server/
+ls module/$EXCHANGE/$VERSION/
+ls module/$EXCHANGE/$VERSION/spec/
 ```
