@@ -98,9 +98,9 @@ module/binance/server
 
 ## Read Next
 
-- `v3.7.1/spec/SPEC.md`
-- `v3.7.1/goal/goal.md`
-- `v3.7.1/design/DESIGN.md`
+- `spec/SPEC.md`
+- `goal/goal.md`
+- `design/DESIGN.md`
 - `gate/BOUNDARY-GATES.md`
 - `matrix/TRACEABILITY.md`
-- `v3.7.1/evidence/`
+- `evidence/2026-06-26/`
