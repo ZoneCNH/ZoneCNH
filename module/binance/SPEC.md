@@ -1446,6 +1446,11 @@ server_unavailable
 | 无效 symbol | parser 收到未知 format 的 symbol | 返回结构化 `ErrInvalidSymbol`，不产生 canonical event |
 | 产品线禁用 | 配置中 product line 未启用 | connector 不订阅该 product line 的 stream |
 | `kafkax` fanout 持续失败 | `kafkax` 不可用 | 指数退避重试，超过阈值告警，不丢失已 accepted event |
+| 回填请求与在途回填重叠 | 同一 product_line:time_range 已存在活跃 cold_start/repair | server 拒绝重复回填，返回 `ErrBackfillOverlap`，不创建重复 job |
+| Stream drain 超时 | drain 期间超过 DrainTimeout 仍有未确认消息 | 记录告警，强制 unsubscribe，剩余消息进入 DLQ |
+| 冷数据 rehydration TTL 过期 | OSS 归档键超过 24h TTL | 返回 `ErrRehydrationExpired`，要求重新发起回填请求 |
+| Schema 版本漂移检测 | server DDL 与 SPEC §11 声明的 schema 不一致 | `check-version-drift.sh` 在 CI 中检测漂移，CI FAIL 阻断 PR |
+| 对账差异超出 tolerance | Daily Reconciliation Job 检测到 `count` 或 `checksum` 差异 > tolerance | 写入 `alerts` 表，触发 Prometheus 告警，保留差异行供人工对账 |
 
 ---
 
