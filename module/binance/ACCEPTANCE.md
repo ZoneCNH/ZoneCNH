@@ -6,7 +6,7 @@
 | --- | --- |
 | Status | Generated from current module SSOT |
 | Last-Updated | 2026-06-26 |
-| Module-Version | v3.7.0 |
+| Module-Version | v3.7.1 |
 | Module-State | 验收清单已补齐；L1 边界治理 FR-009 Done（13 gates PASS）；L2 当前状态投影以 Runtime-Anchor `/home/binance@f046e16` 与 `TRACEABILITY.md` v3.7.0 为准：FR **24 Done / 10 Partial / 10 Pending**（含 v3.7.0 新增 FR-037~044 全 Pending）；Plan008 已闭合 release gate（GitHub Release `v0.2.0`，workflow `28126779885` completed/success，`release_closeable=YES`）。
 | Runtime-Repo | `/home/binance` |
 | Source | `SPEC.md`, `TRACEABILITY.md`, `DATA-LIFECYCLE.md`, `STANDARD.md`, `client/TRACEABILITY.md`, `server/TRACEABILITY.md`, `BOUNDARY-GATES.md` |
