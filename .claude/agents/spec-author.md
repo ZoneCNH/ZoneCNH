@@ -94,9 +94,9 @@ grep -rl "Module-Version" module/{name}/*.md | xargs sed -i \
   -e 's/Module-Version: v[0-9.]*/Module-Version: v{NEW}/g' \
   -e 's/| Module-Version | v[0-9.]* |/| Module-Version | v{NEW} |/g'
 
-# 模式 B：仓库级锚点文档中的显式版本引用
+# 模式 B：仓库级锚点文档中的显式版本引用（含所有模板目录）
 grep -rl "v{OLD}" README.md ARCHITECTURE.md STATUS.md module/README.md \
-  docs/architecture/ module/_exchange-template/ \
+  docs/architecture/ module/_*/ \
   module/{name}/client/TRACEABILITY.md module/{name}/server/TRACEABILITY.md \
   module/{name}/FEATURES.md module/{name}/SPEC-exchangeinfo-sync.md \
   2>/dev/null | xargs sed -i 's/v{OLD}/v{NEW}/g'
