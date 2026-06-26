@@ -21,7 +21,7 @@ binance 是首个完整落地此体系的交易所模块（v0.2.0 生产就绪�
 
 | 文档 | 用途 | binance 源 | 适配点 |
 | --- | --- | --- | --- |
-| `SPEC.md` | 23 节完整规格 | binance v3.6.0 | FR/BR/NFR 按交易所能力调整 |
+| `SPEC.md` | 23 节完整规格 | binance v3.7.1 | FR/BR/NFR 按交易所能力调整 |
 | `FEATURES.md` | FR 实现状态矩阵 | binance | 状态口径 + 装配级证据标准 |
 | `TRACEABILITY.md` | FR/BR/AC/TC 追溯 | binance | 矩阵结构复用 |
 | `ACCEPTANCE.md` | AC/TC 验收标准 | binance | 按交易所 AC 调整 |
