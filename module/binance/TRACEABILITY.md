@@ -4,9 +4,9 @@
 >
 > 规范来源：`docs/governance/TRACEABILITY.md`
 
-- Module-Version: v3.7.0
+- Module-Version: v3.7.1
 - Last-Updated: 2026-06-26
-- Spec-Reference: `module/binance/SPEC.md` v3.7.0
+- Spec-Reference: `module/binance/SPEC.md` v3.7.1
 - Runtime-Anchor: `/home/binance@f046e16`（含 Plan008 全部 40 Task 代码实现；PR #145 合并）
 
 ---
@@ -27,7 +27,7 @@
 > - **BR-004** 由 Partial 提升为 Done（A3 NakWithDelay+DLQ 已实现并经本地 NATS JetStream gated 测试验证）。
 > - SHA 统一为 `e02b190`。该段仅保留为历史记录；当前有效状态以 Runtime-Anchor `/home/binance@f18a329` 与 Issue-Ledger `../../report/binance/issues-sync-20260625.md` 为准。
 
-> **v3.7.0 变更摘要 (2026-06-26)**：新增 FR-037~044 覆盖发布安全网/taosx retention 生命周期/分布式 tracing/资源配额隔离/审计日志完整性/Schema 版本兼容策略/成本可观测/数据合规销毁（来源 Plan008 S26-S32 + G6/S1-S2 + M1-M4）；AC 扩展至 130（AC-001~130）、TC 扩展至 65（TC-001~065）、FR 总数扩展至 44（含 FR-031~036 Draft + FR-037~044 Pending）。当前有效基线投影为 **24 Done / 10 Partial / 10 Pending**（FR-037~044 全 Pending）。Runtime-Anchor 对齐 `/home/binance@f046e16`（PR #145 合并含 Plan008 全部 40 Task）。
+> **v3.7.1 变更摘要 (2026-06-26)**：对齐 SPEC.md v3.7.1——FR-021 IndexPrice 作为 mark_price 字段承载（非独立 event_type，与运行时一致）；FR-025 限流拆分对齐 cold_start/repair 命名；FR-019 MaxConcurrent 对齐运行时 5→4；FR-016 错误码更新 BNC-017/018；TC-043~049 已登记至 SPEC.md §16（TC 总数十进制闭合 61→65）；§12 错误码表补充 BNC-017/018；Appendix D 弃用声明更新 30→38 FR / 104→130 AC；FR-031~036 Draft 交叉引用新增至 SPEC.md §7。PR #1189 合并。本轮不改变 FR 实现状态投影。
 
 > **v3.6.1 变更摘要 (2026-06-25)**：基于 Runtime-Anchor `/home/binance@f18a329` 与 Issue-Ledger `../../report/binance/issues-sync-20260625.md`，当前 FR 状态投影为 **24 Done / 10 Partial / 0 Pending**。Partial FR: FR-007, FR-007a, FR-011, FR-016, FR-017, FR-023, FR-024, FR-026, FR-027, FR-028。
 > - GitHub #1104~#1118 与后续 Plan008 issues 已同步闭合；Release closeout 已由 `../../plans/binance/008-issues-sync-report.md` 归档为 `release_closeable=YES`；remaining Partial FR 继续按 FR-specific acceptance evidence 单独治理。
@@ -71,7 +71,7 @@
 | FR-018 | Archive Manifest and Restore：归档 manifest、restore、retention delete 可审计 | AC-066 ~ AC-068 | TC-035 | SERVER-020 | Done |
 | FR-019 | Backfill Resource Governance：全局与单 instrument 资源限额、取消与 cursor 恢复 | AC-069 ~ AC-071 | TC-036 | SERVER-021 | Done |
 | FR-020 | Funding Rate Event Support：funding_rate 事件 mapping、存储、查询与广播一致 | AC-072 ~ AC-074 | TC-037 | SERVER-022 | Done |
-| FR-021 | Mark and Index Price Support：mark_price/index_price 事件类型、topic 与存储不混淆 | AC-075 ~ AC-077 | TC-038 | SERVER-023 | Done |
+| FR-021 | Mark and Index Price Support：单一 mark_price 事件承载 IndexPrice 字段，topic 与存储不与 last/bid/ask 混淆 | AC-075 ~ AC-077 | TC-038 | SERVER-023 | Done |
 | FR-022 | Event-Type Governance Matrix：R2 120-cell matrix 锁定 event/product/governance 覆盖面 | AC-078 ~ AC-080 | TC-039 | ROOT-008 | Done |
 | FR-023 | Release Evidence Bundle：local/CI/live/release evidence 分层归档且不可互相替代 | AC-081 ~ AC-083 | TC-040, TC-041 | ROOT-009 | Partial |
 | FR-024 | Runtime Config Hot Reload：`POST /api/v1/admin/symbols/reload` 重载目录并应用 stream diff | AC-084 ~ AC-086 | TC-042 | CLIENT-019 | Partial |
